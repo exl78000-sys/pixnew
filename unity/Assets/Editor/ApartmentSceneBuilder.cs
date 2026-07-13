@@ -64,7 +64,8 @@ namespace Pixnew.EditorTools
             view.Floor = floor;
             view.Walls = walls;
             view.Furniture = furniture;
-            root.AddComponent<M1TestDriver>(); // P-04 測試鷹架:時鐘 + 3 室友隨機遊走
+            root.AddComponent<Pixnew.Boot.GameRoot>();  // P-05 正式進入點:時鐘/LLM/HUD/日夜
+            root.AddComponent<M1TestDriver>();          // P-04 測試鷹架:3 室友隨機遊走
 
             AssetDatabase.SaveAssets();
             if (!Directory.Exists("Assets/Scenes")) Directory.CreateDirectory("Assets/Scenes");

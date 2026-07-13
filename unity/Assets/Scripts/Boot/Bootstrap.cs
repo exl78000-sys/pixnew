@@ -10,6 +10,7 @@ namespace Pixnew.Boot
     /// 功能:模擬時鐘 + 速度控制 + LLM 連線測試 + 花費記帳板(全用 OnGUI,不需佈置場景)。
     /// M1 之後由 ApartmentScene 與正式 UI 取代。
     /// </summary>
+    [System.Obsolete("P-05 起正式進入點為 GameRoot(公寓場景);本腳本僅保留給 Boot 場景做 LLM 連線測試")]
     public class Bootstrap : MonoBehaviour
     {
         private GameConfig _config;
