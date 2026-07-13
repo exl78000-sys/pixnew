@@ -1,76 +1,72 @@
 using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Pixnew.Core;
 using UnityEngine;
 
 namespace Pixnew.LLM
 {
-    /// <summary>LLM 呼叫類型 → 決定路由到哪個模型與哪個提示詞模板</summary>
     public enum LlmKind
     {
-        ActionDecision, // Haiku:每 30 模擬分的行動決策
-        TalkIntent,     // Haiku:相遇時是否交談
-        DialogueTurn,   // Sonnet:對話逐輪生成
-        DailyPlan,      // Sonnet:每日日程規劃
-        Reflection,     // Sonnet:反思
-        WeeklyRecap     // Sonnet:週報剪輯
+        ActionDecision,
+        TalkIntent,
+        DialogueTurn,
+        DailyPlan,
+        Reflection,
+        WeeklyRecap
     }
 
     /// <summary>
-    /// 全專案唯一的 LLM 呼叫入口。
-    /// 職責:分層路由(Haiku/Sonnet)、mock 模式攔截、之後掛提示詞模板(M1-T4 之後逐步填入)。
+    /// Unity-facing adapter for the pure-C# LLM gateway.  P-06 deliberately
+    /// replays checked-in fixtures only; it does not call a provider API.
     /// </summary>
     public class LlmRouter : MonoBehaviour
     {
+        private ILlmGateway _gateway;
+        private LlmUsageLedger _ledger;
         private AnthropicClient _client;
-        private GameConfig _config;
 
+        public ILlmGateway Gateway => _gateway;
+        public LlmUsageLedger Ledger => _ledger;
+        /// <summary>Legacy diagnostics only; RouteAsync never delegates to this client in P-06.</summary>
         public AnthropicClient Client => _client;
 
         public void Init(GameConfig config)
         {
-            _config = config;
+            string fixtureDirectory = Path.Combine(Application.streamingAssetsPath, "fixtures");
+            _gateway = new FixtureLlmGateway(fixtureDirectory);
+            _ledger = new LlmUsageLedger(Path.Combine(Application.persistentDataPath, "ledger.json"));
+            _ledger.Load();
             _client = gameObject.AddComponent<AnthropicClient>();
             _client.Init(config);
+
+            if (config != null && config.IsLive)
+                Debug.LogWarning("[LLM] Live API is deferred by the producer decision; fixture replay remains active.");
         }
 
-        public static string ModelFor(LlmKind kind) => kind switch
+        public Task<LlmResult> RouteAsync(LlmKind kind, LlmPrompt prompt, CancellationToken cancellationToken = default)
         {
-            LlmKind.ActionDecision => AnthropicClient.ModelHaiku,
-            LlmKind.TalkIntent => AnthropicClient.ModelHaiku,
-            _ => AnthropicClient.ModelSonnet
-        };
+            if (_gateway == null) throw new InvalidOperationException("LlmRouter.Init must be called before routing.");
+            return RouteAndRecordAsync(kind, prompt, cancellationToken);
+        }
 
-        private static int MaxTokensFor(LlmKind kind) => kind switch
+        public void Route(LlmKind kind, string systemPrompt, string userPrompt, Action<string> onSuccess, Action<string> onError)
         {
-            LlmKind.ActionDecision => 300,
-            LlmKind.TalkIntent => 150,
-            LlmKind.DialogueTurn => 400,
-            LlmKind.DailyPlan => 1500,
-            LlmKind.Reflection => 1000,
-            LlmKind.WeeklyRecap => 2500,
-            _ => 500
-        };
-
-        /// <summary>
-        /// 路由一次 LLM 呼叫。mock 模式回傳固定假資料(零成本,供測試與 CI)。
-        /// </summary>
-        public void Route(LlmKind kind, string systemPrompt, string userPrompt,
-            Action<string> onSuccess, Action<string> onError)
-        {
-            if (!_config.IsLive)
+            var task = RouteAsync(kind, new LlmPrompt(systemPrompt, userPrompt));
+            task.ContinueWith(t =>
             {
-                onSuccess?.Invoke(MockResponse(kind));
-                return;
-            }
-            _client.Complete(ModelFor(kind), systemPrompt, userPrompt, MaxTokensFor(kind), onSuccess, onError);
+                if (t.IsCanceled) { onError?.Invoke("LLM request cancelled."); return; }
+                if (t.IsFaulted) { onError?.Invoke(t.Exception.GetBaseException().Message); return; }
+                onSuccess?.Invoke(t.Result.Json);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        /// <summary>mock 回應(M1-T4 會改為從 StreamingAssets/fixtures 回放)</summary>
-        private static string MockResponse(LlmKind kind) => kind switch
+        private async Task<LlmResult> RouteAndRecordAsync(LlmKind kind, LlmPrompt prompt, CancellationToken cancellationToken)
         {
-            LlmKind.TalkIntent => "{\"talk\":true,\"topic\":\"昨晚的恐怖片\"}",
-            LlmKind.DialogueTurn => "{\"speaker\":\"amei\",\"text\":\"欸,你昨天是不是又偷吃我的布丁?\",\"end\":false}",
-            _ => "{\"mock\":true}"
-        };
+            LlmResult result = await _gateway.CompleteAsync(new LlmRequest(kind, prompt), cancellationToken);
+            _ledger.Record(kind, result.Attempts);
+            return result;
+        }
     }
 }
