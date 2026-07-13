@@ -1,7 +1,9 @@
 {
     "name": "Pixnew.Runtime",
     "rootNamespace": "Pixnew",
-    "references": [],
+    "references": [
+        "UnityEngine.UI"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
