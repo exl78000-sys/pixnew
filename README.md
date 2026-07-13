@@ -23,6 +23,18 @@
 - **語言**:全繁體中文
 - **開發路線**:MVP 先行(M1 → M4 逐步進化)
 
+## 快速啟動(M0 骨架已就緒)
+
+```bash
+npm install        # Node 20+
+npm run dev        # 同時啟動前端 (http://localhost:5173) 與後端 (127.0.0.1:3001)
+```
+
+開瀏覽器到 http://localhost:5173 —— 應看到標題畫面、跳動的模擬時鐘與速度按鈕(⏸/1x/4x/16x)。
+檢查工具:`npm run test`(單元測試)、`npm run lint`、`npm run build`。
+
+LLM 相關功能(M1-T4 起)需要先 `cp .env.example .env` 並填入 `ANTHROPIC_API_KEY`。
+
 ## 分工模式
 
 - **製作人(你)**:創意決策(角色人設、事件卡)、每個里程碑試玩驗收、提供 API key
