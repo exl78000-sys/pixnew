@@ -1,0 +1,94 @@
+{
+  "grid": { "width": 40, "height": 30 },
+
+  "sheets": {
+    "floors": "room_builder_floors_32",
+    "walls": "room_builder_walls_32",
+    "living": "theme_living_room_32",
+    "bedroom": "theme_bedroom_32",
+    "kitchen": "theme_kitchen_32",
+    "bathroom": "theme_bathroom_32",
+    "generic": "theme_generic_32"
+  },
+
+  "floorTiles": {
+    "living":  { "sheet": "floors", "cell": [0, 12], "block": [3, 2] },
+    "bedroom": { "sheet": "floors", "cell": [4, 12], "block": [3, 2] },
+    "kitchen": { "sheet": "floors", "cell": [8, 14], "block": [3, 2] },
+    "bath":    { "sheet": "floors", "cell": [8, 24], "block": [2, 2] },
+    "hall":    { "sheet": "floors", "cell": [4, 30], "block": [2, 2] }
+  },
+
+  "wallTiles": {
+    "hTop":    [8, 2],
+    "hBottom": [8, 3],
+    "vTop":    [3, 2],
+    "vMid":    [3, 3]
+  },
+
+  "rooms": [
+    { "id": "bedroom_1",   "rect": [1, 2, 9, 8],    "floor": "bedroom" },
+    { "id": "bedroom_2",   "rect": [11, 2, 9, 8],   "floor": "bedroom" },
+    { "id": "bedroom_3",   "rect": [21, 2, 9, 8],   "floor": "bedroom" },
+    { "id": "bathroom",    "rect": [31, 2, 8, 8],   "floor": "bath" },
+    { "id": "hallway",     "rect": [1, 12, 38, 4],  "floor": "hall" },
+    { "id": "living_room", "rect": [1, 18, 24, 10], "floor": "living" },
+    { "id": "kitchen",     "rect": [26, 18, 13, 10], "floor": "kitchen" }
+  ],
+
+  "extraFloor": [
+    { "rect": [4, 10, 2, 2],  "floor": "hall" },
+    { "rect": [14, 10, 2, 2], "floor": "hall" },
+    { "rect": [24, 10, 2, 2], "floor": "hall" },
+    { "rect": [34, 10, 2, 2], "floor": "hall" },
+    { "rect": [12, 16, 2, 2], "floor": "hall" },
+    { "rect": [32, 16, 2, 2], "floor": "hall" }
+  ],
+
+  "walls": [
+    { "dir": "h", "x": 0,  "y": 0,  "len": 40 },
+    { "dir": "h", "x": 1,  "y": 10, "len": 38, "gaps": [[4, 2], [14, 2], [24, 2], [34, 2]] },
+    { "dir": "h", "x": 1,  "y": 16, "len": 38, "gaps": [[12, 2], [32, 2]] },
+    { "dir": "h", "x": 0,  "y": 28, "len": 40 },
+    { "dir": "v", "x": 0,  "y": 2,  "len": 26 },
+    { "dir": "v", "x": 39, "y": 2,  "len": 26 },
+    { "dir": "v", "x": 10, "y": 2,  "len": 8 },
+    { "dir": "v", "x": 20, "y": 2,  "len": 8 },
+    { "dir": "v", "x": 30, "y": 2,  "len": 8 },
+    { "dir": "v", "x": 25, "y": 18, "len": 10 }
+  ],
+
+  "objects": [
+    { "id": "bed_1",        "sheet": "bedroom",  "atlas": [8, 21, 2, 3],  "pos": [1, 2],   "use": [2, 5] },
+    { "id": "desk_1",       "sheet": "generic",  "atlas": [6, 1, 2, 2],   "pos": [6, 2],   "use": [6, 4] },
+    { "id": "bed_2",        "sheet": "bedroom",  "atlas": [10, 21, 2, 3], "pos": [11, 2],  "use": [12, 5] },
+    { "id": "desk_2",       "sheet": "generic",  "atlas": [6, 1, 2, 2],   "pos": [16, 2],  "use": [16, 4] },
+    { "id": "bed_3",        "sheet": "bedroom",  "atlas": [12, 21, 2, 3], "pos": [21, 2],  "use": [22, 5] },
+    { "id": "desk_3",       "sheet": "generic",  "atlas": [6, 1, 2, 2],   "pos": [26, 2],  "use": [26, 4] },
+    { "id": "toilet",       "sheet": "bathroom", "atlas": [10, 0, 1, 3],  "pos": [31, 2],  "use": [31, 5] },
+    { "id": "bath_sink",    "sheet": "bathroom", "atlas": [7, 6, 2, 2],   "pos": [33, 2],  "use": [33, 4] },
+    { "id": "shower",       "sheet": "bathroom", "atlas": [7, 12, 2, 3],  "pos": [36, 2],  "use": [36, 5] },
+    { "id": "washer",       "sheet": "bathroom", "atlas": [12, 0, 2, 3],  "pos": [36, 7],  "use": [35, 8] },
+    { "id": "tv",           "sheet": "living",   "atlas": [2, 2, 2, 2],   "pos": [9, 18],  "use": [9, 23] },
+    { "id": "sofa",         "sheet": "living",   "atlas": [7, 28, 3, 2],  "pos": [8, 21],  "use": [9, 23] },
+    { "id": "rug",          "sheet": "generic",  "atlas": [9, 7, 4, 3],   "pos": [8, 23],  "use": [9, 24], "walkable": true },
+    { "id": "plant_1",      "sheet": "living",   "atlas": [10, 0, 1, 3],  "pos": [1, 18],  "use": [2, 20] },
+    { "id": "plant_2",      "sheet": "living",   "atlas": [10, 0, 1, 3],  "pos": [23, 18], "use": [22, 20] },
+    { "id": "fridge",       "sheet": "kitchen",  "atlas": [0, 1, 2, 3],   "pos": [26, 18], "use": [27, 21] },
+    { "id": "stove",        "sheet": "kitchen",  "atlas": [7, 11, 2, 2],  "pos": [28, 18], "use": [29, 20] },
+    { "id": "kitchen_sink", "sheet": "kitchen",  "atlas": [9, 7, 2, 1],   "pos": [30, 18], "use": [30, 19] },
+    { "id": "counter",      "sheet": "kitchen",  "atlas": [12, 9, 2, 1],  "pos": [34, 18], "use": [34, 19] },
+    { "id": "dining_table", "sheet": "kitchen",  "atlas": [4, 15, 2, 3],  "pos": [30, 22], "use": [33, 24] },
+    { "id": "chair_a",      "sheet": "kitchen",  "atlas": [4, 11, 1, 2],  "pos": [29, 22], "use": [29, 24] },
+    { "id": "chair_b",      "sheet": "kitchen",  "atlas": [4, 11, 1, 2],  "pos": [32, 22], "use": [32, 24] }
+  ],
+
+  "doors": [
+    { "id": "door_bed1",    "pos": [4, 11] },
+    { "id": "door_bed2",    "pos": [14, 11] },
+    { "id": "door_bed3",    "pos": [24, 11] },
+    { "id": "door_bath",    "pos": [34, 11] },
+    { "id": "door_living",  "pos": [12, 17] },
+    { "id": "door_kitchen", "pos": [32, 17] }
+  ]
+}
