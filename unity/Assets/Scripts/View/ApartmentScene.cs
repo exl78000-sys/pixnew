@@ -15,6 +15,7 @@ namespace Pixnew.View
     public class ApartmentScene : MonoBehaviour
     {
         [Tooltip("地板層")] public Tilemap Floor;
+        [Tooltip("牆腳陰影層")] public Tilemap WallShadows;
         [Tooltip("牆壁層")] public Tilemap Walls;
         [Tooltip("家具層")] public Tilemap Furniture;
 
@@ -106,6 +107,8 @@ namespace Pixnew.View
             _fitSize = Mathf.Max(halfByHeight, halfByWidth) + 0.5f;
 
             _cam.orthographic = true;
+            _cam.transparencySortMode = TransparencySortMode.CustomAxis;
+            _cam.transparencySortAxis = Vector3.up;
             _cam.orthographicSize = _fitSize;
             _cam.transform.position = new Vector3(w / 2f, h / 2f, -10f);
         }

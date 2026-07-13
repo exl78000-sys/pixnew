@@ -22,19 +22,28 @@ namespace Pixnew.Boot
         private readonly Dictionary<string, AgentVariableState> _characterStates = new();
         private readonly AgentVariableSystem _variableSystem = new();
 
-        private void Awake()
+        private void Awake() => EnsureInitialized();
+
+        // Unity 在 Play Mode 中重新編譯腳本時，非序列化的純 C# 狀態會被清空。
+        // OnEnable 會在 domain reload 後再次呼叫，讓時鐘、角色變數與 Router 自動復原。
+        private void OnEnable() => EnsureInitialized();
+
+        private void EnsureInitialized()
         {
+            if (Clock != null && Router != null && Cast != null) return;
             _scene = GetComponent<ApartmentScene>();
             Clock = new SimClock();
             Cast = new PersonaGenerator().GenerateSix(DefaultWorldSeed, new DateTime(2026, 7, 13));
+            _characterStates.Clear();
             foreach (Persona persona in Cast)
                 _characterStates[persona.Id] = new AgentVariableState
                 {
                     LastUpdateMinute = Clock.SimTime,
                     LastDecisionMinute = Clock.SimTime
-                };
+            };
             Clock.OnTick += UpdateCharacterVariables;
-            Router = gameObject.AddComponent<LlmRouter>();
+            Router = GetComponent<LlmRouter>();
+            if (Router == null) Router = gameObject.AddComponent<LlmRouter>();
             Router.Init(GameConfig.Load());
         }
         private void Start() { Hud.Create(this); DayNightTint.Create(this); }

@@ -38,7 +38,8 @@ namespace Pixnew.LLM
             _gateway = new FixtureLlmGateway(fixtureDirectory);
             _ledger = new LlmUsageLedger(Path.Combine(Application.persistentDataPath, "ledger.json"));
             _ledger.Load();
-            _client = gameObject.AddComponent<AnthropicClient>();
+            if (_client == null) _client = GetComponent<AnthropicClient>();
+            if (_client == null) _client = gameObject.AddComponent<AnthropicClient>();
             _client.Init(config);
 
             if (config != null && config.IsLive)

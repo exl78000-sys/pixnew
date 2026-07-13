@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Pixnew.EditorTools
 {
-    /// <summary>Builds the three roommate animation controllers from LimeZu character sheets.</summary>
+    /// <summary>Builds six roommate animation controllers from local LimeZu character sheets.</summary>
     public static class CharacterAssetBuilder
     {
         private const int FrameW = 32;
@@ -18,20 +19,47 @@ namespace Pixnew.EditorTools
         private const int WalkBand = 1;
         private const int FramesPerDir = 6;
         private static readonly char[] DirOrder = { 'r', 'u', 'l', 'd' };
+        private static readonly int[] SourceCharacterIndices = { 1, 3, 6, 9, 12, 15 };
 
         [MenuItem("Tools/Pixnew/Build Character Assets (P-04)")]
         public static void Build()
         {
+            StageLocalLicensedSheets();
             if (!AssetDatabase.IsValidFolder("Assets/Resources"))
                 AssetDatabase.CreateFolder("Assets", "Resources");
             if (!AssetDatabase.IsValidFolder("Assets/Resources/Characters"))
                 AssetDatabase.CreateFolder("Assets/Resources", "Characters");
 
-            for (int i = 1; i <= 3; i++)
+            for (int i = 1; i <= 6; i++)
                 BuildCharacter(i);
 
             AssetDatabase.SaveAssets();
-            Debug.Log("[Builder] Character assets rebuilt: roommate_01~03.controller");
+            Debug.Log("[Builder] Character assets rebuilt: roommate_01~06.controller");
+        }
+
+        /// <summary>
+        /// 從 gitignored 的付費素材原檔挑六位外觀差異明顯的角色到正式匯入目錄。
+        /// 目的 PNG 仍受 .gitignore 保護；公開 clone 缺素材時只警告、不破壞編譯。
+        /// </summary>
+        private static void StageLocalLicensedSheets()
+        {
+            const string sourceDir = "Assets/Art/Raw~/ModernInteriors/2_Characters/Character_Generator/0_Premade_Characters/32x32";
+            const string targetDir = "Assets/Art/Characters";
+            if (!Directory.Exists(sourceDir))
+            {
+                Debug.LogWarning("[Builder] 本機沒有 LimeZu Raw~ 素材，沿用已匯入的角色圖。");
+                return;
+            }
+
+            Directory.CreateDirectory(targetDir);
+            for (int output = 1; output <= SourceCharacterIndices.Length; output++)
+            {
+                int source = SourceCharacterIndices[output - 1];
+                string from = $"{sourceDir}/Premade_Character_32x32_{source:00}.png";
+                string to = $"{targetDir}/premade_character_32_{output:00}.png";
+                File.Copy(from, to, true);
+            }
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         }
 
         private static void BuildCharacter(int index)

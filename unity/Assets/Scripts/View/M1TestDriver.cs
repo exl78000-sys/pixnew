@@ -9,11 +9,14 @@ namespace Pixnew.View
 {
     /// <summary>
     /// M1 測試鷹架(P-04;P-07 固定作息接手後移除):
-    /// 硬編 3 位測試室友,掛上 GameRoot 的時鐘,每 30 模擬分鐘隨機指派一個物件點位走過去。
+    /// 顯示六位 seed 角色,掛上 GameRoot 的時鐘,每 30 模擬分鐘指派一個可重播的物件點位走過去。
     /// 時鐘驅動、調速、HUD 均由 GameRoot / Hud 負責。
     /// </summary>
     public class M1TestDriver : MonoBehaviour
     {
+        private static readonly string[] SpawnObjects =
+            { "bed_1", "bed_2", "bed_3", "bed_4", "sofa", "dining_table" };
+
         private WorldGrid _grid;
         private List<string> _targets;
         private DeterministicRandom _random;
@@ -35,11 +38,11 @@ namespace Pixnew.View
             // 家具點位池(排除門,免得一直站在門口)
             _targets = _grid.ObjectIds.Where(id => !id.StartsWith("door_")).ToList();
 
-            Persona[] visibleCast = root.Cast.Take(3).ToArray();
+            Persona[] visibleCast = root.Cast.Take(6).ToArray();
             for (int i = 0; i < visibleCast.Length; i++)
             {
                 Persona persona = visibleCast[i];
-                string spawnObject = $"bed_{i + 1}";
+                string spawnObject = SpawnObjects[i];
                 _grid.TryGetUsePoint(spawnObject, out var spawn);
                 _grid.RegisterAgent(persona.Id, spawn);
                 RoommateView.Create(persona.Id, persona.Name, i + 1, _grid);

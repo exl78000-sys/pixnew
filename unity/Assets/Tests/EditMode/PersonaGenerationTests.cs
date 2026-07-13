@@ -48,7 +48,7 @@ namespace Pixnew.Tests
             foreach (Persona persona in personas)
             {
                 Assert.AreEqual(ZiWeiSeedProfile.CurrentRuleVersion, persona.ZiWeiSeed.RuleVersion);
-                Assert.That(persona.ZiWeiSeed.BureauNumber, Is.AnyOf(2, 3, 4, 5, 6));
+                CollectionAssert.Contains(new[] { 2, 3, 4, 5, 6 }, persona.ZiWeiSeed.BureauNumber);
                 Assert.That(persona.Birth.ShichenIndex, Is.InRange(0, 11));
                 Assert.That(persona.Traits.Sociability, Is.InRange(10, 90));
                 Assert.That(persona.Traits.Resilience, Is.InRange(10, 90));

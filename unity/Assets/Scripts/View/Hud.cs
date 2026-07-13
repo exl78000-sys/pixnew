@@ -6,10 +6,10 @@ namespace Pixnew.View
 {
     public class Hud : MonoBehaviour
     {
-        private GameRoot _root;
-        private Text _clockText;
-        private Text _llmText;
-        private Font _font;
+        [SerializeField] private GameRoot _root;
+        [SerializeField] private Text _clockText;
+        [SerializeField] private Text _llmText;
+        [SerializeField] private Font _font;
 
         public static Hud Create(GameRoot root)
         {
@@ -23,7 +23,7 @@ namespace Pixnew.View
             hud._root = root;
             hud._font = Resources.Load<Font>("Fonts/Cubic_11");
             hud.BuildUi();
-            if (Object.FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
+            if (Object.FindAnyObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
                 new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.EventSystems.StandaloneInputModule));
             return hud;
         }
@@ -44,6 +44,11 @@ namespace Pixnew.View
 
         private void Update()
         {
+            // 支援 Play Mode domain reload；動態建立的 HUD 參考會由 Unity 序列化保留，
+            // 若舊場景尚未保存欄位則在第一幀安全地重新取得。
+            if (_root == null) _root = Object.FindAnyObjectByType<GameRoot>();
+            if (_root == null || _root.Clock == null || _root.Router == null ||
+                _root.Router.Ledger == null || _clockText == null || _llmText == null) return;
             var clock = _root.Clock;
             string speed = clock.Speed == 0 ? "Paused" : $"{clock.Speed}x";
             _clockText.text = $"Day {clock.Day} {clock.Hhmm} [{speed}]";

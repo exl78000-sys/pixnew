@@ -18,15 +18,15 @@ namespace Pixnew.Tests
             var gateway = new FixtureLlmGateway(directory);
             var intent = await gateway.CompleteAsync(new LlmRequest(LlmKind.TalkIntent, new LlmPrompt("s", "u")));
             var turn = await gateway.CompleteAsync(new LlmRequest(LlmKind.DialogueTurn, new LlmPrompt("s", "u")));
-            Assert.IsTrue((bool)intent.Document["talk"]);
-            Assert.AreEqual("a", (string)turn.Document["speaker"]);
+            Assert.That(intent.Json, Does.Contain("\"talk\":true"));
+            Assert.That(turn.Json, Does.Contain("\"speaker\":\"a\""));
         }
 
         [Test]
         public void JsonParser_StripsMarkdownFence()
         {
             var result = LlmJson.Parse("```json\n{\"talk\":false,\"topic\":\"\"}\n```");
-            Assert.IsFalse((bool)result.Document["talk"]);
+            Assert.That(result.Json, Does.Contain("\"talk\":false"));
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace Pixnew.Tests
             var gateway = new FakeLlmGateway("not json", "{\"talk\":true,\"topic\":\"tea\"}");
             var result = await gateway.CompleteAsync(new LlmRequest(LlmKind.TalkIntent, new LlmPrompt("s", "u")));
             Assert.AreEqual(2, result.Attempts);
-            Assert.IsTrue((bool)result.Document["talk"]);
+            Assert.That(result.Json, Does.Contain("\"talk\":true"));
         }
 
         [Test]

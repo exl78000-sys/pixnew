@@ -29,6 +29,7 @@ namespace Pixnew.EditorTools
         private static readonly Dictionary<string, Texture2D> Sheets = new();
         private static readonly Dictionary<string, Tile> Tiles = new();
         private static Tile _containerMain;
+        private static Tile _wallShadowTile;
 
         [MenuItem("Tools/Pixnew/Build Apartment Scene (P-03)")]
         public static void Build()
@@ -42,6 +43,7 @@ namespace Pixnew.EditorTools
             Sheets.Clear();
             Tiles.Clear();
             _containerMain = null;
+            _wallShadowTile = null;
 
             LoadSheets();
             PrepareTilesAsset();
@@ -50,10 +52,12 @@ namespace Pixnew.EditorTools
 
             var grid = new GameObject("Grid", typeof(Grid));
             var floor = CreateLayer(grid.transform, "Floor", 0);
+            var wallShadows = CreateLayer(grid.transform, "WallShadows", 8);
             var walls = CreateLayer(grid.transform, "Walls", 10);
             var furniture = CreateLayer(grid.transform, "Furniture", 20);
 
             PaintFloors(floor);
+            PaintWallShadows(wallShadows);
             PaintWalls(walls);
             PaintFurniture(furniture);
 
@@ -62,10 +66,11 @@ namespace Pixnew.EditorTools
             var root = new GameObject("ApartmentRoot");
             var view = root.AddComponent<ApartmentScene>();
             view.Floor = floor;
+            view.WallShadows = wallShadows;
             view.Walls = walls;
             view.Furniture = furniture;
             root.AddComponent<Pixnew.Boot.GameRoot>();  // P-05 正式進入點:時鐘/LLM/HUD/日夜
-            root.AddComponent<M1TestDriver>();          // P-04 測試鷹架:3 室友隨機遊走
+            root.AddComponent<M1TestDriver>();          // M1 測試鷹架:六位 seed 室友可重播遊走
 
             AssetDatabase.SaveAssets();
             if (!Directory.Exists("Assets/Scenes")) Directory.CreateDirectory("Assets/Scenes");
@@ -153,6 +158,8 @@ namespace Pixnew.EditorTools
             var go = new GameObject(name, typeof(Tilemap), typeof(TilemapRenderer));
             go.transform.SetParent(parent, false);
             go.GetComponent<TilemapRenderer>().sortingOrder = sortingOrder;
+            if (name == "Furniture")
+                go.GetComponent<TilemapRenderer>().mode = TilemapRenderer.Mode.Individual;
             return go.GetComponent<Tilemap>();
         }
 
@@ -205,6 +212,57 @@ namespace Pixnew.EditorTools
             }
         }
 
+        private static void PaintWallShadows(Tilemap map)
+        {
+            Tile shadow = GetWallShadowTile();
+            foreach (var run in _layout.Walls)
+            {
+                if (run.Dir == "h")
+                {
+                    int y = run.Y + 2;
+                    if (y >= _layout.Grid.Height) continue;
+                    for (int i = 0; i < run.Len; i++)
+                    {
+                        int x = run.X + i;
+                        if (!InGap(run, x)) map.SetTile(Tm(x, y), shadow);
+                    }
+                }
+                else
+                {
+                    int x = run.X + 1;
+                    if (x >= _layout.Grid.Width) continue;
+                    for (int i = 0; i < run.Len; i++)
+                    {
+                        int y = run.Y + i;
+                        if (!InGap(run, y)) map.SetTile(Tm(x, y), shadow);
+                    }
+                }
+            }
+        }
+
+        private static Tile GetWallShadowTile()
+        {
+            if (_wallShadowTile != null) return _wallShadowTile;
+            var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false)
+            {
+                name = "wall_shadow_texture",
+                filterMode = FilterMode.Point
+            };
+            texture.SetPixel(0, 0, new Color(0.12f, 0.08f, 0.16f, 0.16f));
+            texture.Apply();
+            var sprite = Sprite.Create(texture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1f);
+            sprite.name = "wall_shadow_sprite";
+            var tile = ScriptableObject.CreateInstance<Tile>();
+            tile.name = "wall_shadow";
+            tile.sprite = sprite;
+            tile.colliderType = Tile.ColliderType.None;
+            AssetDatabase.AddObjectToAsset(texture, TilesAssetPath);
+            AssetDatabase.AddObjectToAsset(sprite, TilesAssetPath);
+            AssetDatabase.AddObjectToAsset(tile, TilesAssetPath);
+            _wallShadowTile = tile;
+            return tile;
+        }
+
         private static bool InGap(WallRunSpec run, int coord)
         {
             if (run.Gaps == null) return false;
@@ -234,6 +292,8 @@ namespace Pixnew.EditorTools
             cam.orthographic = true;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.08f, 0.08f, 0.12f);
+            cam.transparencySortMode = TransparencySortMode.CustomAxis;
+            cam.transparencySortAxis = Vector3.up;
             int w = _layout.Grid.Width, h = _layout.Grid.Height;
             cam.orthographicSize = Mathf.Max(h / 2f, w / 2f / 1.7778f) + 0.5f;
             go.transform.position = new Vector3(w / 2f, h / 2f, -10f);
