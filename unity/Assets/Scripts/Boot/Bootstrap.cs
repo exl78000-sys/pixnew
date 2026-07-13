@@ -42,6 +42,11 @@ namespace Pixnew.Boot
             }
         }
 
+        private void Start()
+        {
+            TestLlm(); // 開機自動跑一次連線測試(mock 模式即時回應、零成本)
+        }
+
         private void Update()
         {
             _clock.Advance(Time.deltaTime);
@@ -93,11 +98,12 @@ namespace Pixnew.Boot
                 $"LLM 模式:{mode}|tokens in/out:{c.TotalInputTokens}/{c.TotalOutputTokens}|今日花費:${c.TodaySpendUsd:F4}",
                 _small);
 
-            if (GUI.Button(new Rect(16, Screen.height - 110, 180, 40), _llmTesting ? "測試中…" : "測試 LLM 連線"))
+            GUI.Label(new Rect(16, 68, w - 32, 24), $"LLM 連線測試:{_llmTestResult}", _small);
+
+            if (GUI.Button(new Rect(16, Screen.height - 110, 180, 40), _llmTesting ? "測試中…" : "重測 LLM 連線"))
             {
                 TestLlm();
             }
-            GUI.Label(new Rect(210, Screen.height - 104, w - 226, 60), _llmTestResult, _small);
         }
 
         private void TestLlm()
