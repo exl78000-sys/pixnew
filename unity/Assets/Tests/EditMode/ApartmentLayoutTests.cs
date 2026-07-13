@@ -34,6 +34,16 @@ namespace Pixnew.Tests
         }
 
         [Test]
+        public void ApartmentIsCompactAndHasLivedInFurnitureDensity()
+        {
+            var layout = LoadLayout();
+            Assert.LessOrEqual(layout.Grid.Height, 32,
+                "全屋固定鏡頭在 1080p 下應保持可讀的像素密度。");
+            Assert.GreaterOrEqual(layout.Objects.Count, 50,
+                "四房公寓至少需要 50 個可見家具／裝飾物，避免功能測試場觀感。");
+        }
+
+        [Test]
         public void EveryUsePointAndDoorIsWalkableAndConnected()
         {
             var layout = LoadLayout();

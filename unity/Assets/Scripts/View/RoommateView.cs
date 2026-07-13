@@ -20,6 +20,7 @@ namespace Pixnew.View
         private string _currentState = "";
         private char _facing = 'd';
         private readonly Queue<Vector3> _waypoints = new();
+        private static Sprite _shadowSprite;
 
         /// <summary>建立一位室友(id、顯示名、角色編號 1~3、邏輯網格)</summary>
         public static RoommateView Create(string agentId, string displayName, int charIndex, WorldGrid grid)
@@ -28,9 +29,19 @@ namespace Pixnew.View
             var view = go.AddComponent<RoommateView>();
             view._grid = grid;
             view._agentId = agentId;
+            go.transform.localScale = Vector3.one * 1.18f;
 
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 25;
+            sr.sortingOrder = 20;
+
+            var shadowGo = new GameObject("GroundShadow");
+            shadowGo.transform.SetParent(go.transform, false);
+            shadowGo.transform.localPosition = new Vector3(0f, -0.42f, 0f);
+            shadowGo.transform.localScale = new Vector3(1.25f, 0.55f, 1f);
+            var shadowRenderer = shadowGo.AddComponent<SpriteRenderer>();
+            shadowRenderer.sprite = CreateShadowSprite();
+            shadowRenderer.color = new Color(0.08f, 0.06f, 0.12f, 0.34f);
+            shadowRenderer.sortingOrder = 19;
 
             view._animator = go.AddComponent<Animator>();
             var ctrl = Resources.Load<RuntimeAnimatorController>($"Characters/roommate_{charIndex:00}");
@@ -55,6 +66,12 @@ namespace Pixnew.View
                 labelGo.GetComponent<MeshRenderer>().material = font.material;
             }
             labelGo.GetComponent<MeshRenderer>().sortingOrder = 30;
+
+            var labelShadowGo = Object.Instantiate(labelGo, go.transform);
+            labelShadowGo.name = "NameShadow";
+            labelShadowGo.transform.localPosition = new Vector3(0.035f, 1.315f, 0f);
+            labelShadowGo.GetComponent<TextMesh>().color = new Color(0.08f, 0.06f, 0.12f, 0.9f);
+            labelShadowGo.GetComponent<MeshRenderer>().sortingOrder = 29;
 
             var agent = grid.GetAgent(agentId);
             go.transform.position = CellCenter(grid, agent.Pos);
@@ -108,6 +125,31 @@ namespace Pixnew.View
             if (state == _currentState || _animator.runtimeAnimatorController == null) return;
             _animator.Play(state);
             _currentState = state;
+        }
+
+        private static Sprite CreateShadowSprite()
+        {
+            if (_shadowSprite != null) return _shadowSprite;
+            const int width = 16;
+            const int height = 8;
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            {
+                name = "roommate_ground_shadow",
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp
+            };
+            var pixels = new Color[width * height];
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                {
+                    float nx = (x + 0.5f - width / 2f) / (width / 2f);
+                    float ny = (y + 0.5f - height / 2f) / (height / 2f);
+                    pixels[y * width + x] = nx * nx + ny * ny <= 1f ? Color.white : Color.clear;
+                }
+            texture.SetPixels(pixels);
+            texture.Apply();
+            _shadowSprite = Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 16f);
+            return _shadowSprite;
         }
 
         /// <summary>邏輯格(y 向下)→ 世界座標(格中心)</summary>
