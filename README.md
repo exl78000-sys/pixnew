@@ -4,6 +4,8 @@
 > 玩家扮演「節目製作人」,俯視一間像素公寓,觀察 6 個由大語言模型驅動的 AI 室友自主生活、
 > 社交、發展關係,並透過「事件卡」介入劇情走向。
 
+**引擎:Unity(2D)** — Unity 專案位於 [`unity/`](unity/) 資料夾。
+
 ## 專案文檔
 
 | 文檔 | 內容 |
@@ -16,27 +18,27 @@
 ## 核心決策速覽
 
 - **遊戲形式**:上帝視角觀察箱(玩家不操控角色,投放事件觀察湧現劇情)
-- **遊戲引擎**:Phaser 3(TypeScript + Vite)
+- **引擎**:Unity 2022.3 LTS 以上(Unity 6 亦可),2D Tilemap
 - **AI 大腦**:Anthropic API 分層 — Haiku 4.5 跑日常決策、Sonnet 5 跑對話/反思/規劃
-- **部署**:單機自玩(瀏覽器前端 + 本地 Node.js 後端)
-- **美術**:LimeZu Modern Interiors 免費素材包 + Cubic 11 繁中像素字型
-- **語言**:全繁體中文
+- **部署**:單機自玩(Windows 桌面)
+- **語言**:全繁體中文(UI 字型:Cubic 11)
 - **開發路線**:MVP 先行(M1 → M4 逐步進化)
 
 ## 快速啟動(M0 骨架已就緒)
 
-```bash
-npm install        # Node 20+
-npm run dev        # 同時啟動前端 (http://localhost:5173) 與後端 (127.0.0.1:3001)
-```
-
-開瀏覽器到 http://localhost:5173 —— 應看到標題畫面、跳動的模擬時鐘與速度按鈕(⏸/1x/4x/16x)。
-檢查工具:`npm run test`(單元測試)、`npm run lint`、`npm run build`。
-
-LLM 相關功能(M1-T4 起)需要先 `cp .env.example .env` 並填入 `ANTHROPIC_API_KEY`。
+1. 安裝 **Unity Hub** 與 **Unity 2022.3 LTS 以上**。
+2. Unity Hub → **Add(加入專案)** → 選擇本 repo 的 `unity/` 資料夾 → 開啟(首次會建索引)。
+3. 素材:把你的素材資料夾(如 `C:\Users\Gon\Desktop\素材`)整包複製到
+   `unity/Assets/Art/Raw/`;字型 `.ttf` 放 `unity/Assets/Art/Fonts/`。
+4. API key:把 `unity/Assets/StreamingAssets/config.example.json` 複製為同資料夾的
+   `config.json`,填入 Anthropic API key(此檔不進版控)。沒填也能跑,會是 mock 模式。
+5. 開任意場景(如 SampleScene)→ Hierarchy 按右鍵 **Create Empty** → 選取後
+   **Add Component → Bootstrap** → 按 **Play**。
+6. 應看到:標題、跳動的模擬時鐘(第 N 天 HH:MM)、速度按鈕(⏸/1x/4x/16x,
+   鍵盤空白/1/2/3),與「測試 LLM 連線」按鈕(填了 key 後按應回 ✅ 並顯示花費)。
 
 ## 分工模式
 
-- **製作人(你)**:創意決策(角色人設、事件卡)、每個里程碑試玩驗收、提供 API key
-- **架構師(Claude)**:系統設計、任務拆解、提示詞撰寫、程式碼審查
+- **製作人(你)**:創意決策(角色人設、事件卡)、Unity Editor 實機驗收、提供 API key 與素材
+- **架構師(Claude)**:系統設計、任務拆解、提示詞撰寫、程式碼撰寫與審查
 - **AI 助手**:依照 `docs/04` 的提示詞逐一執行開發任務
