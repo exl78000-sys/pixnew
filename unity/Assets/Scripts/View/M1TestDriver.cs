@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Pixnew.Agents;
 using Pixnew.Boot;
 using Pixnew.Sim;
 using UnityEngine;
@@ -13,15 +14,9 @@ namespace Pixnew.View
     /// </summary>
     public class M1TestDriver : MonoBehaviour
     {
-        private static readonly (string id, string name, int charIndex, string spawnObject)[] TestRoommates =
-        {
-            ("amei", "小美", 1, "bed_1"),
-            ("aqiang", "阿強", 2, "bed_2"),
-            ("xiaoyu", "小魚", 3, "bed_3")
-        };
-
         private WorldGrid _grid;
         private List<string> _targets;
+        private DeterministicRandom _random;
 
         private void Start()
         {
@@ -34,16 +29,20 @@ namespace Pixnew.View
                 return;
             }
             _grid = scene.Grid;
+            _random = new DeterministicRandom(GameRoot.DefaultWorldSeed ^ 0x4D3154455354UL);
             root.Clock.OnTick += OnTick;
 
             // 家具點位池(排除門,免得一直站在門口)
             _targets = _grid.ObjectIds.Where(id => !id.StartsWith("door_")).ToList();
 
-            foreach (var (id, name, charIndex, spawnObject) in TestRoommates)
+            Persona[] visibleCast = root.Cast.Take(3).ToArray();
+            for (int i = 0; i < visibleCast.Length; i++)
             {
+                Persona persona = visibleCast[i];
+                string spawnObject = $"bed_{i + 1}";
                 _grid.TryGetUsePoint(spawnObject, out var spawn);
-                _grid.RegisterAgent(id, spawn);
-                RoommateView.Create(id, name, charIndex, _grid);
+                _grid.RegisterAgent(persona.Id, spawn);
+                RoommateView.Create(persona.Id, persona.Name, i + 1, _grid);
             }
             AssignRandomTargets();
         }
@@ -60,7 +59,7 @@ namespace Pixnew.View
             foreach (var agent in _grid.Agents)
             {
                 if (agent.IsMoving) continue;
-                string target = _targets[Random.Range(0, _targets.Count)];
+                string target = _targets[_random.Next(0, _targets.Count)];
                 _grid.MoveAgentTo(agent.Id, target);
             }
         }

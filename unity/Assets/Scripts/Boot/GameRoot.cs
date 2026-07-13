@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using Pixnew.Agents;
 using Pixnew.Core;
 using Pixnew.LLM;
 using Pixnew.Sim;
@@ -8,14 +11,29 @@ namespace Pixnew.Boot
 {
     public class GameRoot : MonoBehaviour
     {
+        public const ulong DefaultWorldSeed = 20260713UL;
+
         public SimClock Clock { get; private set; }
         public LlmRouter Router { get; private set; }
+        public IReadOnlyList<Persona> Cast { get; private set; }
+        public IReadOnlyDictionary<string, AgentVariableState> CharacterStates => _characterStates;
         public WorldGrid Grid => _scene != null ? _scene.Grid : null;
         private ApartmentScene _scene;
+        private readonly Dictionary<string, AgentVariableState> _characterStates = new();
+        private readonly AgentVariableSystem _variableSystem = new();
+
         private void Awake()
         {
             _scene = GetComponent<ApartmentScene>();
             Clock = new SimClock();
+            Cast = new PersonaGenerator().GenerateSix(DefaultWorldSeed, new DateTime(2026, 7, 13));
+            foreach (Persona persona in Cast)
+                _characterStates[persona.Id] = new AgentVariableState
+                {
+                    LastUpdateMinute = Clock.SimTime,
+                    LastDecisionMinute = Clock.SimTime
+                };
+            Clock.OnTick += UpdateCharacterVariables;
             Router = gameObject.AddComponent<LlmRouter>();
             Router.Init(GameConfig.Load());
         }
@@ -28,6 +46,22 @@ namespace Pixnew.Boot
             if (Input.GetKeyDown(KeyCode.Alpha1)) Clock.SetSpeed(1);
             if (Input.GetKeyDown(KeyCode.Alpha2)) Clock.SetSpeed(4);
             if (Input.GetKeyDown(KeyCode.Alpha3)) Clock.SetSpeed(16);
+        }
+
+        public CharacterContextSnapshot BuildCharacterSnapshot(string personaId, string currentAction)
+        {
+            Persona persona = null;
+            foreach (Persona candidate in Cast)
+                if (candidate.Id == personaId) { persona = candidate; break; }
+            if (persona == null || !_characterStates.TryGetValue(personaId, out AgentVariableState state)) return null;
+            return CharacterContextSnapshot.Create(persona, state, currentAction, Clock.SimTime);
+        }
+
+        private void UpdateCharacterVariables(long simMinute)
+        {
+            if (simMinute % AgentVariableSystem.UpdateIntervalMinutes != 0) return;
+            foreach (Persona persona in Cast)
+                _variableSystem.AdvanceTo(_characterStates[persona.Id], persona.Traits, AgentActivity.Idle, simMinute);
         }
     }
 }
