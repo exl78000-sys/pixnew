@@ -29,8 +29,9 @@
 
 1. 安裝 **Unity Hub** 與 **Unity 2022.3 LTS 以上**。
 2. Unity Hub → **Add(加入專案)** → 選擇本 repo 的 `unity/` 資料夾 → 開啟(首次會建索引)。
-3. 素材:把你的素材資料夾(如 `C:\Users\Gon\Desktop\素材`)整包複製到
-   `unity/Assets/Art/Raw/`;字型 `.ttf` 放 `unity/Assets/Art/Fonts/`。
+3. 素材:✅ 已解壓到 `unity/Assets/Art/Raw~/ModernInteriors/`(`~` 結尾 = Unity 不匯入,
+   避免 5 萬張 PNG 拖垮開啟;盤點見 [docs/licenses/assets-inventory.md](docs/licenses/assets-inventory.md))。
+   字型 `.ttf` 放 `unity/Assets/Art/Fonts/`(Cubic 11 尚待下載)。
 4. API key:把 `unity/Assets/StreamingAssets/config.example.json` 複製為同資料夾的
    `config.json`,填入 Anthropic API key(此檔不進版控)。沒填也能跑,會是 mock 模式。
 5. 開任意場景(如 SampleScene)→ Hierarchy 按右鍵 **Create Empty** → 選取後
