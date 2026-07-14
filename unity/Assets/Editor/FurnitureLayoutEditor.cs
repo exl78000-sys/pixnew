@@ -296,6 +296,9 @@ namespace Pixnew.EditorTools
                 GUILayout.EndHorizontal();
 
                 if (GUILayout.Button("＋ 複製選取家具（新增）")) DuplicateSelected();
+                GUI.backgroundColor = new Color(1f, 0.55f, 0.55f);
+                if (GUILayout.Button("－ 刪除選取家具")) DeleteSelectedFurniture();
+                GUI.backgroundColor = Color.white;
                 EditorGUILayout.Space(6f);
                 EditorGUI.BeginChangeCheck();
                 int x = EditorGUILayout.IntField("家具 X", _selected.Pos[0]);
@@ -700,6 +703,22 @@ namespace Pixnew.EditorTools
                 : _layout.ExtraFloor[Mathf.Clamp(index - 1, 0, _layout.ExtraFloor.Count - 1)];
             _dirty = true;
             _message = "已刪除選取的地板區塊，尚未儲存。";
+            Repaint();
+        }
+
+        private void DeleteSelectedFurniture()
+        {
+            if (_selected == null) return;
+            string id = _selected.Id;
+            if (!EditorUtility.DisplayDialog("刪除家具？", $"確定要刪除 {id}？儲存後會從公寓場景移除。", "刪除", "取消")) return;
+
+            int index = _layout.Objects.IndexOf(_selected);
+            _layout.Objects.Remove(_selected);
+            _selected = _layout.Objects.Count == 0
+                ? null
+                : _layout.Objects[Mathf.Clamp(index - 1, 0, _layout.Objects.Count - 1)];
+            _dirty = true;
+            _message = $"已刪除 {id}；尚未儲存。";
             Repaint();
         }
 
