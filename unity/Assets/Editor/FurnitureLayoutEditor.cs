@@ -52,7 +52,7 @@ namespace Pixnew.EditorTools
             new("梳妝台", "客廳", "dresser", "living", 2, 5, 2, 2),
             new("軟墊長椅", "客廳", "bench", "living", 2, 8, 2, 1),
             new("壁爐", "客廳", "fireplace", "living", 4, 25, 2, 2),
-            new("落地鏡", "客廳", "floor_mirror", "living", 6, 23, 2, 4),
+            new("落地鏡", "客廳", "floor_mirror", "living", 6, 23, 2, 3),
             new("書櫃", "客廳", "bookcase", "living", 10, 24, 2, 3),
             new("白色沙發", "客廳", "sofa_white", "living", 4, 28, 3, 2),
             new("米黃沙發", "客廳", "sofa_yellow", "living", 7, 28, 3, 2),
