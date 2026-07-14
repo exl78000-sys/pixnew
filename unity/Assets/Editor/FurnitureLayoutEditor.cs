@@ -22,6 +22,52 @@ namespace Pixnew.EditorTools
         private const float SidebarWidth = 270f;
         private const int AtlasCell = 32;
 
+        private sealed class CatalogItem
+        {
+            public string Label;
+            public string Category;
+            public string IdPrefix;
+            public string Sheet;
+            public int[] Atlas;
+            public bool Walkable;
+
+            public CatalogItem(string label, string category, string idPrefix, string sheet, int x, int y, int width, int height, bool walkable = false)
+            {
+                Label = label;
+                Category = category;
+                IdPrefix = idPrefix;
+                Sheet = sheet;
+                Atlas = new[] { x, y, width, height };
+                Walkable = walkable;
+            }
+        }
+
+        private static readonly CatalogItem[] FurnitureCatalog =
+        {
+            new("沙發", "客廳", "sofa", "living", 1, 28, 3, 2),
+            new("電視", "客廳", "tv", "bedroom", 9, 12, 2, 2),
+            new("客廳地毯", "客廳", "living_rug", "generic", 9, 7, 4, 3, true),
+            new("收納櫃", "客廳", "cabinet", "living", 7, 4, 2, 3),
+            new("盆栽", "客廳", "plant", "living", 10, 0, 2, 3),
+
+            new("綠色單人床", "臥室", "bed_green", "bedroom", 8, 21, 2, 3),
+            new("黃色單人床", "臥室", "bed_yellow", "bedroom", 10, 21, 2, 3),
+            new("藍色單人床", "臥室", "bed_blue", "bedroom", 12, 21, 2, 3),
+            new("書桌", "臥室", "desk", "generic", 0, 8, 4, 3),
+
+            new("餐桌", "廚房", "dining_table", "generic", 0, 5, 4, 3),
+            new("餐椅", "廚房", "chair", "kitchen", 2, 11, 1, 2),
+            new("冰箱", "廚房", "fridge", "kitchen", 0, 1, 2, 3),
+            new("爐具", "廚房", "stove", "kitchen", 8, 11, 1, 1),
+            new("廚房水槽", "廚房", "kitchen_sink", "kitchen", 8, 7, 2, 1),
+            new("流理台", "廚房", "counter", "kitchen", 12, 9, 2, 2),
+
+            new("馬桶", "衛浴", "toilet", "bathroom", 10, 0, 1, 3),
+            new("洗手台", "衛浴", "sink", "bathroom", 7, 6, 2, 2),
+            new("淋浴設備", "衛浴", "shower", "bathroom", 6, 12, 2, 3),
+            new("洗衣機", "衛浴", "washer", "bathroom", 12, 0, 2, 3)
+        };
+
         private ApartmentLayout _layout;
         private ObjectSpec _selected;
         private DoorSpec _selectedDoor;
@@ -35,6 +81,8 @@ namespace Pixnew.EditorTools
         private Vector2Int _floorDragStart;
         private Vector2Int _floorDragCurrent;
         private string _paintFloor = "living";
+        private Vector2 _catalogScroll;
+        private int _catalogCategory;
         private WallRunSpec _dragDoorWall;
         private int[] _dragDoorGap;
         private bool _dirty;
@@ -323,9 +371,62 @@ namespace Pixnew.EditorTools
                 }
             }
 
+            EditorGUILayout.Space(10f);
+            DrawFurnitureCatalog();
             GUILayout.FlexibleSpace();
             EditorGUILayout.HelpBox("儲存並重建後，正式 Apartment 場景才會更新。若擺到牆上或堵住通道，EditMode 可達性測試會指出物件 ID。", MessageType.Warning);
             GUILayout.EndArea();
+        }
+
+        private void DrawFurnitureCatalog()
+        {
+            GUILayout.Label("家具圖庫", EditorStyles.boldLabel);
+            string[] categories = { "全部", "客廳", "臥室", "廚房", "衛浴" };
+            _catalogCategory = GUILayout.Toolbar(_catalogCategory, categories);
+
+            _catalogScroll = EditorGUILayout.BeginScrollView(_catalogScroll, GUILayout.Height(300f));
+            int column = 0;
+            GUILayout.BeginHorizontal();
+            foreach (CatalogItem item in FurnitureCatalog)
+            {
+                if (_catalogCategory > 0 && item.Category != categories[_catalogCategory]) continue;
+
+                if (column == 2)
+                {
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    column = 0;
+                }
+
+                Rect buttonRect = GUILayoutUtility.GetRect(112f, 92f, GUILayout.Width(112f), GUILayout.Height(92f));
+                if (GUI.Button(buttonRect, GUIContent.none)) AddFurnitureFromCatalog(item);
+                DrawCatalogThumbnail(buttonRect, item);
+                GUI.Label(new Rect(buttonRect.x + 2f, buttonRect.yMax - 20f, buttonRect.width - 4f, 18f), item.Label, CenteredMiniStyle());
+                column++;
+            }
+            GUILayout.EndHorizontal();
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.HelpBox("點縮圖會在地圖中央新增家具，再把它拖到房間內。", MessageType.None);
+        }
+
+        private void DrawCatalogThumbnail(Rect buttonRect, CatalogItem item)
+        {
+            Texture2D texture = GetTexture(item.Sheet);
+            if (texture == null) return;
+            Rect uv = new Rect(
+                item.Atlas[0] * AtlasCell / (float)texture.width,
+                1f - (item.Atlas[1] + item.Atlas[3]) * AtlasCell / (float)texture.height,
+                item.Atlas[2] * AtlasCell / (float)texture.width,
+                item.Atlas[3] * AtlasCell / (float)texture.height);
+            float maxWidth = buttonRect.width - 12f;
+            float maxHeight = buttonRect.height - 28f;
+            float scale = Mathf.Min(maxWidth / item.Atlas[2], maxHeight / item.Atlas[3]);
+            Rect imageRect = new Rect(
+                buttonRect.center.x - item.Atlas[2] * scale * 0.5f,
+                buttonRect.y + 5f,
+                item.Atlas[2] * scale,
+                item.Atlas[3] * scale);
+            GUI.DrawTextureWithTexCoords(imageRect, texture, uv, true);
         }
 
         private void DrawDoorSidebar()
@@ -1071,6 +1172,37 @@ namespace Pixnew.EditorTools
             _selected = clone;
             _dirty = true;
             _message = $"已新增 {clone.Id}；拖到位置後記得儲存。";
+            Repaint();
+        }
+
+        private void AddFurnitureFromCatalog(CatalogItem item)
+        {
+            string candidate = item.IdPrefix + "_custom_1";
+            int suffix = 2;
+            while (_layout.Objects.Exists(x => x.Id == candidate))
+                candidate = item.IdPrefix + "_custom_" + suffix++;
+
+            int width = item.Atlas[2];
+            int height = item.Atlas[3];
+            int x = Mathf.Clamp(_layout.Grid.Width / 2 - width / 2, 0, _layout.Grid.Width - width);
+            int y = Mathf.Clamp(_layout.Grid.Height / 2 - height / 2, 0, _layout.Grid.Height - height);
+            var furniture = new ObjectSpec
+            {
+                Id = candidate,
+                Sheet = item.Sheet,
+                Atlas = (int[])item.Atlas.Clone(),
+                Pos = new[] { x, y },
+                Use = new[]
+                {
+                    Mathf.Clamp(x + width / 2, 0, _layout.Grid.Width - 1),
+                    Mathf.Clamp(y + height, 0, _layout.Grid.Height - 1)
+                },
+                Walkable = item.Walkable
+            };
+            _layout.Objects.Add(furniture);
+            _selected = furniture;
+            _dirty = true;
+            _message = $"已從圖庫新增 {item.Label}（{candidate}）；請拖到正確位置。";
             Repaint();
         }
 
