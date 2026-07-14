@@ -49,11 +49,25 @@ namespace Pixnew.EditorTools
             new("客廳地毯", "客廳", "living_rug", "generic", 9, 7, 4, 3, true),
             new("收納櫃", "客廳", "cabinet", "living", 7, 4, 2, 3),
             new("盆栽", "客廳", "plant", "living", 10, 0, 2, 3),
+            new("梳妝台", "客廳", "dresser", "living", 2, 5, 2, 2),
+            new("軟墊長椅", "客廳", "bench", "living", 2, 8, 2, 1),
+            new("壁爐", "客廳", "fireplace", "living", 4, 25, 2, 2),
+            new("落地鏡", "客廳", "floor_mirror", "living", 6, 23, 2, 4),
+            new("書櫃", "客廳", "bookcase", "living", 10, 24, 2, 3),
+            new("白色沙發", "客廳", "sofa_white", "living", 4, 28, 3, 2),
+            new("米黃沙發", "客廳", "sofa_yellow", "living", 7, 28, 3, 2),
+            new("電視櫃", "客廳", "tv_console", "living", 12, 35, 2, 2),
 
             new("綠色單人床", "臥室", "bed_green", "bedroom", 8, 21, 2, 3),
             new("黃色單人床", "臥室", "bed_yellow", "bedroom", 10, 21, 2, 3),
             new("藍色單人床", "臥室", "bed_blue", "bedroom", 12, 21, 2, 3),
             new("書桌", "臥室", "desk", "generic", 0, 8, 4, 3),
+            new("粉色圓地毯", "臥室", "round_rug_pink", "bedroom", 0, 22, 3, 2, true),
+            new("灰色圓地毯", "臥室", "round_rug_gray", "bedroom", 3, 22, 3, 2, true),
+            new("紅木衣櫃", "臥室", "wardrobe_red", "bedroom", 12, 0, 4, 3),
+            new("淺木衣櫃", "臥室", "wardrobe_light", "bedroom", 12, 3, 4, 3),
+            new("休閒圓桌", "臥室", "round_table", "bedroom", 3, 13, 2, 3),
+            new("床頭櫃", "臥室", "nightstand", "bedroom", 6, 10, 1, 2),
 
             new("餐桌", "廚房", "dining_table", "generic", 0, 5, 4, 3),
             new("餐椅", "廚房", "chair", "kitchen", 2, 11, 1, 2),
@@ -61,11 +75,20 @@ namespace Pixnew.EditorTools
             new("爐具", "廚房", "stove", "kitchen", 8, 11, 1, 1),
             new("廚房水槽", "廚房", "kitchen_sink", "kitchen", 8, 7, 2, 1),
             new("流理台", "廚房", "counter", "kitchen", 12, 9, 2, 2),
+            new("微波爐", "廚房", "microwave", "kitchen", 9, 6, 1, 1),
+            new("雙爐烤箱", "廚房", "double_oven", "kitchen", 8, 11, 2, 2),
+            new("方形餐桌", "廚房", "square_table", "kitchen", 4, 16, 2, 2),
+            new("廚房長桌", "廚房", "kitchen_long_table", "kitchen", 9, 17, 3, 2),
 
             new("馬桶", "衛浴", "toilet", "bathroom", 10, 0, 1, 3),
             new("洗手台", "衛浴", "sink", "bathroom", 7, 6, 2, 2),
             new("淋浴設備", "衛浴", "shower", "bathroom", 6, 12, 2, 3),
-            new("洗衣機", "衛浴", "washer", "bathroom", 12, 0, 2, 3)
+            new("洗衣機", "衛浴", "washer", "bathroom", 12, 0, 2, 3),
+            new("木質浴櫃", "衛浴", "bath_vanity", "bathroom", 0, 8, 2, 2),
+            new("衛浴落地鏡", "衛浴", "bath_floor_mirror", "bathroom", 2, 8, 1, 3),
+            new("雙門浴櫃", "衛浴", "bath_cabinet", "bathroom", 0, 10, 2, 2),
+            new("浴缸", "衛浴", "bathtub", "bathroom", 8, 16, 2, 2),
+            new("衛浴地墊", "衛浴", "bath_mat", "bathroom", 9, 20, 2, 2, true)
         };
 
         private ApartmentLayout _layout;
