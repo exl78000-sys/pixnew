@@ -5,7 +5,7 @@ const app = document.getElementById('app');
 try {
   const { meta, clubs, teams, coaches } = await C.load('meta', 'clubs', 'teams', 'coaches');
   C.registerTeams(clubs); C.registerTeams(teams);
-  C.nav('coaches.html');
+  C.nav();
 
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const list = [...coaches.coaches].sort((a, b) => (b.seasonRecord?.ppg ?? -1) - (a.seasonRecord?.ppg ?? -1));
@@ -47,7 +47,7 @@ try {
     const years = c.tenureDays ? (c.tenureDays / 365).toFixed(1) : null;
     return `<div class="card">
       <div class="row" style="gap:11px">
-        <a href="teams.html?code=${c.team}">${C.badge(c.team, 'lg')}</a>
+        <a href="${C.link('teams', { code: c.team })}">${C.badge(c.team, 'lg')}</a>
         <div style="flex:1">
           <div class="spread">
             <div style="font-weight:800;font-size:16px">${c.name ? C.esc(c.zh) : '待確認'}
@@ -88,6 +88,6 @@ try {
     { key: 'winPct', label: '勝率', value: c => c.seasonRecord.winPct, num: true, render: c => `${c.seasonRecord.winPct}%` },
     { key: 'ppg', label: '場均勝點', value: c => c.seasonRecord.ppg, num: true, render: c => `<b>${c.seasonRecord.ppg}</b>` },
     { key: 'conf', label: '資料可信度', value: c => c.confidence, sortable: false, render: c => confPill(c) },
-  ], { sortKey: 'ppg', desc: true, onRow: c => { location.href = `teams.html?code=${c.team}`; } });
+  ], { sortKey: 'ppg', desc: true, onRow: c => { C.go('teams', { code: c.team }); } });
 
 } catch (err) { C.fail(err); }

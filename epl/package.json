@@ -10,7 +10,9 @@
     "all": "node scripts/fetch.mjs --force && node scripts/build.mjs",
     "serve": "node scripts/serve.mjs",
     "test": "node scripts/test.mjs",
-    "news": "node scripts/fetch-news.mjs"
+    "news": "node scripts/fetch-news.mjs",
+    "bundle": "node scripts/bundle.mjs",
+    "fonts": "node scripts/fetch-fonts.mjs"
   },
   "engines": {
     "node": ">=18"

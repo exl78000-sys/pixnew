@@ -4,6 +4,8 @@ const cache = new Map();
 export async function load(...names) {
   const out = {};
   await Promise.all(names.map(async n => {
+    // 單檔打包版的資料直接內嵌在頁面裡,不用發請求
+    if (globalThis.__DATA__?.[n]) { out[n] = globalThis.__DATA__[n]; return; }
     if (!cache.has(n)) cache.set(n, fetch(`data/${n}.json`).then(r => {
       if (!r.ok) throw new Error(`讀取 data/${n}.json 失敗(${r.status})`);
       return r.json();
@@ -12,6 +14,28 @@ export async function load(...names) {
   }));
   return out;
 }
+
+/* ── 路由 ───────────────────────────── */
+// 多頁模式:teams.html?code=ARS   單檔模式:#teams?code=ARS
+export const BUNDLE = !!globalThis.__WARROOM_BUNDLE__;
+
+export function link(page, params = {}) {
+  const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null)).toString();
+  return BUNDLE ? `#${page}${q ? '?' + q : ''}` : `${page}.html${q ? '?' + q : ''}`;
+}
+export const go = (page, params) => { location.href = link(page, params); };
+
+export const qs = k => {
+  if (BUNDLE) {
+    const h = location.hash.slice(1), i = h.indexOf('?');
+    return i < 0 ? null : new URLSearchParams(h.slice(i + 1)).get(k);
+  }
+  return new URLSearchParams(location.search).get(k);
+};
+
+export const currentPage = () => (BUNDLE
+  ? location.hash.slice(1).split('?')[0] || 'index'
+  : (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index');
 
 /* ── 球隊 ───────────────────────────── */
 let TEAMS = new Map();
@@ -34,10 +58,10 @@ export function badge(code, size = '') {
   const fg = luminance(bg) > 0.55 ? '#12091a' : '#fff';
   return `<span class="badge ${size}" style="background:${bg};color:${fg}">${code}</span>`;
 }
-export function teamCell(code, { link = true, name = null } = {}) {
+export function teamCell(code, { link: withLink = true, name = null } = {}) {
   const label = name ?? zh(code);
   const inner = `<span class="team-cell">${badge(code)}<span class="nm">${label}</span></span>`;
-  return link ? `<a href="teams.html?code=${code}" style="color:inherit;text-decoration:none">${inner}</a>` : inner;
+  return withLink ? `<a href="${link('teams', { code })}" style="color:inherit;text-decoration:none">${inner}</a>` : inner;
 }
 
 /* ── 格式 ───────────────────────────── */
@@ -46,7 +70,6 @@ export const fx = (v, d = 2) => (v === null || v === undefined || Number.isNaN(v
 export const signed = (v, d = 1) => (v > 0 ? '+' : '') + fx(v, d);
 export const dateZh = s => (s ? `${s.slice(5, 7)}/${s.slice(8, 10)}` : '—');
 export const dateFull = s => (s ? s.replace(/-/g, '/') : '—');
-export const qs = k => new URLSearchParams(location.search).get(k);
 export const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 export const formRun = arr => `<span class="form-run">${(arr ?? []).map(f => `<i class="frm ${f}">${f}</i>`).join('')}</span>`;
@@ -61,21 +84,21 @@ export const bar = (v, max = 100, cls = '') =>
 
 /* ── 導覽列 ─────────────────────────── */
 const PAGES = [
-  ['index.html', '總覽'],
-  ['fixtures.html', '賽程預測'],
-  ['teams.html', '球隊'],
-  ['tactics.html', '戰術'],
-  ['players.html', '球員'],
-  ['coaches.html', '教練'],
-  ['news.html', '動態'],
+  ['index', '總覽'],
+  ['fixtures', '賽程預測'],
+  ['teams', '球隊'],
+  ['tactics', '戰術'],
+  ['players', '球員'],
+  ['coaches', '教練'],
+  ['news', '動態'],
 ];
-export function nav(active) {
-  const here = active ?? location.pathname.split('/').pop() ?? 'index.html';
+export function nav() {
+  const here = currentPage();
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
-      <a class="brand" href="index.html"><span class="dot"></span>英超戰情室<small>PL WAR ROOM</small></a>
-      <nav class="tabs">${PAGES.map(([h, l]) =>
-        `<a href="${h}" class="${h === here || (here === '' && h === 'index.html') ? 'on' : ''}">${l}</a>`).join('')}</nav>
+      <a class="brand" href="${link('index')}"><span class="dot"></span>英超戰情室<small>PL WAR ROOM</small></a>
+      <nav class="tabs">${PAGES.map(([p, l]) =>
+        `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${l}</a>`).join('')}</nav>
     </div></header>`);
 }
 
@@ -92,6 +115,8 @@ export function foot(meta) {
 /* ── 抽屜 ───────────────────────────── */
 let drawerEl, bgEl;
 export function drawer(title, html) {
+  // 換頁後舊節點會被移除,這裡要偵測並重建,否則抽屜開不起來
+  if (drawerEl && !document.body.contains(drawerEl)) drawerEl = null;
   if (!drawerEl) {
     document.body.insertAdjacentHTML('beforeend',
       `<div class="drawer-bg" id="dbg"></div><aside class="drawer" id="dw">

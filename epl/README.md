@@ -10,6 +10,12 @@ npm run build     # 跑分析引擎,產生前端資料集
 npm run serve     # 開 http://localhost:5173
 ```
 
+想寄給別人、或不想開伺服器?打包成單一 HTML 檔,直接雙擊就能看:
+
+```bash
+npm run bundle    # → dist/warroom.html(約 1.6 MB,含全部資料與字體,零外部請求)
+```
+
 ---
 
 ## 這個平台能回答什麼
@@ -110,6 +116,8 @@ epl/
 │   ├── fetch-news.mjs     選用:抓外部 RSS → data/raw/news.json
 │   ├── build.mjs          跑分析 → web/data/*.json
 │   ├── test.mjs           走查回測(驗證預測引擎)
+│   ├── bundle.mjs         打包成單一 HTML 檔
+│   ├── fetch-fonts.mjs    下載字體內嵌成 data URI
 │   ├── serve.mjs          零依賴靜態伺服器
 │   └── lib/
 │       ├── sources.mjs    賽季與來源設定(換季只改這裡)
@@ -186,3 +194,19 @@ export const HISTORY_SEASONS = ['2023-24', '2024-25', '2025-26'];
   動態頁仍有傷停、轉會、賽前看點與數據敘事。
 
 **預測數字僅供分析參考,不構成任何投注建議。**
+
+---
+
+## 兩種執行模式
+
+同一份程式碼支援兩種模式,靠 `core.js` 的路由抽象切換:
+
+| | 多頁模式 | 單檔模式 |
+|---|---|---|
+| 進入點 | `web/index.html`(需伺服器) | `dist/warroom.html`(可直接開) |
+| 連結 | `teams.html?code=ARS` | `#teams?code=ARS` |
+| 資料 | `fetch('data/*.json')` | 內嵌於 `window.__DATA__` |
+| 字體 | `fonts.css` 的 data URI | 同上,一併攤平進單檔 |
+
+寫程式時一律用 `C.link(page, params)` 與 `C.go(page, params)`,不要寫死 `.html` 連結,
+兩種模式才會同時正確。

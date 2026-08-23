@@ -5,7 +5,7 @@ const app = document.getElementById('app');
 try {
   const { meta, clubs, teams, players, leaders } = await C.load('meta', 'clubs', 'teams', 'players', 'leaders');
   C.registerTeams(clubs); C.registerTeams(teams);
-  C.nav('players.html');
+  C.nav();
 
   const byCode = new Map(players.map(p => [p.code, p]));
   const codes = [...new Set(players.map(p => p.team))].sort((a, b) => C.zh(a).localeCompare(C.zh(b), 'zh-Hant'));
@@ -177,7 +177,7 @@ try {
         ${p.setPieces.fk ? line('直接自由球', `第 ${p.setPieces.fk} 順位`) : ''}
         ${p.setPieces.corner ? line('角球 / 間接球', `第 ${p.setPieces.corner} 順位`) : ''}
       </div>` : ''}
-      <div><a href="teams.html?code=${p.team}">看 ${t.zh} 的完整剖析 →</a></div>`);
+      <div><a href="${C.link('teams', { code: p.team })}">看 ${t.zh} 的完整剖析 →</a></div>`);
   }
 
   const pc = C.qs('code');

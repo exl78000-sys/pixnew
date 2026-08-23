@@ -1,0 +1,88 @@
+#!/usr/bin/env node
+// 把整個平台(CSS + 所有頁面程式 + 全部資料)打包成單一 HTML 檔。
+// 用途:寄給別人、丟上任何靜態空間、或直接用瀏覽器開 —— 不需要伺服器。
+// 用法: npm run bundle  → dist/warroom.html
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const WEB = join(ROOT, 'web');
+const PAGES = ['index', 'fixtures', 'teams', 'tactics', 'players', 'coaches', 'news'];
+
+// 單檔版把所有模組併成同一個 <script type="module">:
+//   core.js 去掉 export 變成模組層宣告,再組一個 C 物件給各頁面用;
+//   各頁面去掉 import 那行後包成 async function,由路由決定執行哪一個。
+const CORE_EXPORTS = [
+  'load', 'BUNDLE', 'link', 'go', 'qs', 'currentPage', 'registerTeams', 'team', 'zh',
+  'badge', 'teamCell', 'pct', 'fx', 'signed', 'dateZh', 'dateFull', 'esc', 'formRun',
+  'probBar', 'bar', 'nav', 'foot', 'drawer', 'table', 'radar', 'scoreHeat', 'scatter',
+  'sparkline', 'fail',
+];
+
+async function main() {
+  // app.css 會 @import 內嵌字體,單檔版要把它一起攤平進來
+  const fonts = await readFile(join(WEB, 'assets', 'css', 'fonts.css'), 'utf8');
+  const css = (await readFile(join(WEB, 'assets', 'css', 'app.css'), 'utf8'))
+    .replace(/@import url\('fonts\.css'\);/, fonts);
+  const core = (await readFile(join(WEB, 'assets', 'js', 'core.js'), 'utf8'))
+    .replace(/^export /gm, '');
+
+  const pageSrc = {};
+  for (const p of PAGES) {
+    const src = await readFile(join(WEB, 'assets', 'js', `page-${p}.js`), 'utf8');
+    pageSrc[p] = src.replace(/^import \* as C from '\.\/core\.js';\s*/m, '');
+  }
+
+  const dataFiles = (await readdir(join(WEB, 'data'))).filter(f => f.endsWith('.json'));
+  const data = {};
+  for (const f of dataFiles) data[f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(WEB, 'data', f), 'utf8'));
+  const meta = data.meta;
+
+  // 資料裡若出現 </script 會提前關掉標籤,要先拆開
+  const dataJson = JSON.stringify(data).replace(/<\/script/gi, '<\\/script');
+
+  const html = `<title>英超戰情室</title>
+<meta name="description" content="英超比賽分析平台:球員、戰術、教練、動態與賽果預測。">
+<style>
+${css}
+</style>
+<main class="wrap" id="app"><div class="loading">載入資料中…</div></main>
+<script>window.__WARROOM_BUNDLE__ = true; window.__DATA__ = ${dataJson};</script>
+<script type="module">
+${core}
+
+const C = { ${CORE_EXPORTS.join(', ')} };
+
+const PAGE_FNS = {
+${PAGES.map(p => `  '${p}': async () => {\n${pageSrc[p].split('\n').map(l => '    ' + l).join('\n')}\n  },`).join('\n')}
+};
+
+// 單檔版沒有真的換頁,靠 hash 路由重新渲染:先清掉上一頁留下的節點再跑新頁
+async function route() {
+  const page = location.hash.slice(1).split('?')[0] || 'index';
+  document.querySelector('.topbar')?.remove();
+  document.getElementById('dw')?.remove();
+  document.getElementById('dbg')?.remove();
+  const app = document.getElementById('app');
+  app.innerHTML = '<div class="loading">載入中…</div>';
+  window.scrollTo(0, 0);
+  try {
+    await (PAGE_FNS[page] ?? PAGE_FNS.index)();
+  } catch (err) {
+    app.innerHTML = '<div class="note">頁面載入失敗:' + esc(err.message) + '</div>';
+    console.error(err);
+  }
+}
+addEventListener('hashchange', route);
+route();
+</script>`;
+
+  await mkdir(join(ROOT, 'dist'), { recursive: true });
+  const out = join(ROOT, 'dist', 'warroom.html');
+  await writeFile(out, html);
+  console.log(`✔ 單檔版完成 → dist/warroom.html(${(html.length / 1024 / 1024).toFixed(2)} MB)`);
+  console.log(`  含 ${PAGES.length} 個頁面、${dataFiles.length} 份資料集、基準日 ${meta.asOf}`);
+}
+
+main().catch(err => { console.error('✗ 打包失敗:', err); process.exit(1); });

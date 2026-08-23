@@ -7,7 +7,7 @@ try {
     await C.load('meta', 'teams', 'sim', 'fixtures', 'news', 'table', 'clubs');
   C.registerTeams(clubs);
   C.registerTeams(teams);
-  C.nav('index.html');
+  C.nav();
 
   const played = fixtures.filter(f => f.played);
   const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
@@ -42,12 +42,12 @@ try {
     <div class="card">
       <h2>接下來的比賽</h2>
       <div id="next"></div>
-      <div style="margin-top:10px"><a href="fixtures.html">看完整賽程與單場分析 →</a></div>
+      <div style="margin-top:10px"><a href="${C.link('fixtures')}">看完整賽程與單場分析 →</a></div>
     </div>
     <div class="card">
       <h2>最新動態</h2>
       <div id="news"></div>
-      <div style="margin-top:10px"><a href="news.html">看全部動態 →</a></div>
+      <div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>
     </div>
   </div>
 
@@ -87,11 +87,11 @@ try {
       render: r => { const t = teams.find(x => x.code === r.code); return t?.lastSeason ? `第 ${t.lastSeason.pos} 名` : '<span class="pill">升班馬</span>'; }, num: true },
     { key: 'elo', label: 'Elo', value: r => teams.find(x => x.code === r.code)?.elo ?? 0, num: true,
       render: r => C.fx(teams.find(x => x.code === r.code)?.elo, 0) },
-  ], { sortKey: 'expectedPoints', desc: true, onRow: r => { location.href = `teams.html?code=${r.code}`; } });
+  ], { sortKey: 'expectedPoints', desc: true, onRow: r => { C.go('teams', { code: r.code }); } });
 
   /* 近期比賽 */
   document.getElementById('next').innerHTML = upcoming.slice(0, 6).map(f => `
-    <a href="fixtures.html?id=${f.id}" style="color:inherit;text-decoration:none">
+    <a href="${C.link('fixtures', { id: f.id })}" style="color:inherit;text-decoration:none">
       <div class="spread" style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
         <div style="min-width:0">
           <div class="row" style="gap:7px">${C.badge(f.home)}<b>${C.zh(f.home)}</b>
@@ -129,6 +129,6 @@ try {
     { key: 'homeAwayGap', label: '主客差', value: r => r.homeAwayGap, num: true,
       title: '主場場均勝點 − 客場場均勝點', render: r => C.signed(r.homeAwayGap, 2) },
     { key: 'form', label: '末段狀態', value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
-  ], { sortKey: 'pts', desc: true, onRow: r => { location.href = `teams.html?code=${r.code}`; } });
+  ], { sortKey: 'pts', desc: true, onRow: r => { C.go('teams', { code: r.code }); } });
 
 } catch (err) { C.fail(err); }

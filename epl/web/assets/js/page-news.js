@@ -5,7 +5,7 @@ const app = document.getElementById('app');
 try {
   const { meta, clubs, teams, news } = await C.load('meta', 'clubs', 'teams', 'news');
   C.registerTeams(clubs); C.registerTeams(teams);
-  C.nav('news.html');
+  C.nav();
 
   const cats = [...new Set(news.map(n => n.cat))];
   const codes = [...new Set(news.map(n => n.team).filter(Boolean))].sort((a, b) => C.zh(a).localeCompare(C.zh(b), 'zh-Hant'));
@@ -41,7 +41,7 @@ try {
         </div>
         <div style="font-weight:700;margin-top:6px">${C.esc(n.title)}</div>
         <div class="small muted" style="margin-top:3px">${C.esc(n.body)}</div>
-        ${n.fixtureId ? `<div class="small" style="margin-top:6px"><a href="fixtures.html?id=${n.fixtureId}">看這場的完整分析 →</a></div>` : ''}
+        ${n.fixtureId ? `<div class="small" style="margin-top:6px"><a href="${C.link('fixtures', { id: n.fixtureId })}">看這場的完整分析 →</a></div>` : ''}
         ${n.link ? `<div class="small" style="margin-top:6px"><a href="${C.esc(n.link)}" target="_blank" rel="noopener">${C.esc(n.source ?? '原文')} →</a></div>` : ''}
       </div>`).join('') || '<div class="note">沒有符合條件的動態。</div>';
   };

@@ -6,7 +6,7 @@ try {
   const { meta, clubs, teams, players, fixtures, coaches, results } =
     await C.load('meta', 'clubs', 'teams', 'players', 'fixtures', 'coaches', 'results');
   C.registerTeams(clubs); C.registerTeams(teams);
-  C.nav('teams.html');
+  C.nav();
 
   const code = C.qs('code');
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
@@ -26,7 +26,7 @@ try {
 
   function card(t) {
     const s = t.sim, ls = t.lastSeason;
-    return `<a class="card" href="teams.html?code=${t.code}" style="text-decoration:none;color:inherit;display:block">
+    return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
       <div class="row" style="gap:11px">${C.badge(t.code, 'lg')}
         <div><div style="font-weight:800;font-size:16px">${t.zh}</div>
           <div class="tiny dim">${t.venue}</div></div></div>
@@ -59,7 +59,7 @@ try {
         <div><h1 style="margin:0">${t.zh}<span class="dim" style="font-size:15px;font-weight:400"> ${t.nickname}</span></h1>
           <p class="small">${t.venue}・${t.city}・可容納 ${t.capacity.toLocaleString()} 人
             ${co?.name ? `・教練 <b>${co.zh}</b>(${co.nat})` : '・教練資料待補'}</p></div></div>
-      <div class="row small" style="margin-top:6px"><a href="teams.html">← 回球隊列表</a></div>
+      <div class="row small" style="margin-top:6px"><a href="${C.link('teams')}">← 回球隊列表</a></div>
     </div>
 
     <div class="grid g4">
@@ -158,7 +158,7 @@ try {
         const isHome = f.home === t.code;
         const p = f.prediction;
         const win = isHome ? p.home : p.away;
-        return `<a href="fixtures.html?id=${f.id}" style="color:inherit;text-decoration:none">
+        return `<a href="${C.link('fixtures', { id: f.id })}" style="color:inherit;text-decoration:none">
           <div class="stat-line"><span class="small">${C.dateFull(f.date)} ${isHome ? '主' : '客'} vs ${C.zh(isHome ? f.away : f.home)}</span>
           <span class="mono small">勝率 ${C.pct(win, 0)}</span></div></a>`;
       }).join('')}</div>` : ''}
@@ -175,6 +175,6 @@ try {
       { key: 'xgi90', label: 'xGI/90', value: p => p.last?.xgi90 ?? 0, num: true, render: p => (p.qualified ? p.last.xgi90 : '—') },
       { key: 'defCon90', label: '防守貢獻/90', value: p => p.last?.defCon90 ?? 0, num: true, render: p => (p.qualified ? p.last.defCon90 : '—') },
       { key: 'price', label: '身價', value: p => p.price, num: true, render: p => `£${p.price.toFixed(1)}m` },
-    ], { sortKey: 'minutes', desc: true, onRow: p => { location.href = `players.html?code=${p.code}`; } });
+    ], { sortKey: 'minutes', desc: true, onRow: p => { C.go('players', { code: p.code }); } });
   }
 } catch (err) { C.fail(err); }
