@@ -1,0 +1,89 @@
+# 英超戰情室 —— 定時更新資料並部署到 GitHub Pages
+#
+# 為什麼需要這個:即時比分要連官方 FPL API,而開發環境不一定連得到。
+# GitHub 的 runner 沒有這個限制,所以讓它去抓資料、建置、部署,
+# 你就有一個「自己會更新」的網站,不必在本機開著任何程式。
+#
+# 啟用方式:
+#   1. repo 的 Settings → Pages → Source 選 "GitHub Actions"
+#   2. Actions 分頁按 "Run workflow" 跑一次,或等排程自己觸發
+#   3. 網址會是 https://<你的帳號>.github.io/<repo 名>/
+#
+# 不想要自動排程就把下面的 schedule 段落註解掉,只留 workflow_dispatch(手動觸發)。
+
+name: 英超戰情室 資料更新與部署
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 每 15 分鐘一次。GitHub 的排程可能延遲 5~15 分鐘,所以這是「準即時」不是逐分鐘。
+    # 想更省資源可以改成只在比賽時段跑,例如:'*/15 12-22 * * 6,0'(週末白天到晚上)
+    - cron: '*/15 * * * *'
+  push:
+    branches: [main, master]
+    paths: ['epl/**', '.github/workflows/epl-live.yml']
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: epl-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: epl
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 專案零依賴,不需要 npm install
+
+      - name: 抓賽程與賽果(openfootball / FPL 鏡像)
+        run: npm run fetch -- --force
+        continue-on-error: true
+
+      - name: 抓即時比賽狀態(官方 FPL API)
+        run: npm run live
+        continue-on-error: true
+
+      - name: 抓本季逐輪球員資料
+        run: npm run season
+        continue-on-error: true
+
+      - name: 走查回測(產生模型準度與每場賽前預測)
+        run: npm test
+        continue-on-error: true
+
+      - name: 建立資料集
+        run: npm run build
+
+      - name: 打包單檔版(順便附在網站裡)
+        run: npm run bundle
+
+      - name: 把單檔版一起放進要部署的目錄
+        run: cp dist/warroom.html web/warroom.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: epl/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
