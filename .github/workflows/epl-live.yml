@@ -1,16 +1,12 @@
-# 英超戰情室 —— 定時更新資料並部署到 GitHub Pages
+# 英超戰情室 —— 定時抓即時資料、回寫 repo、並(若已啟用)部署到 GitHub Pages
 #
 # 為什麼需要這個:即時比分要連官方 FPL API,而開發環境不一定連得到。
-# GitHub 的 runner 沒有這個限制,所以讓它去抓資料、建置、部署,
-# 你就有一個「自己會更新」的網站,不必在本機開著任何程式。
+# GitHub 的 runner 沒有這個限制,所以讓它去抓,再把資料提交回來,
+# 這樣不論在哪裡 build 都能拿到最新比分。
 #
-# 這個工作流程會「自己啟用」GitHub Pages(configure-pages 的 enablement),
-# 所以正常情況下你不需要手動去 Settings 開啟。網址是 https://<帳號>.github.io/<repo>/
-#
-# 注意:GitHub 的排程(schedule)只會從「預設分支」觸發。
-# 如果這個檔案不在預設分支上,push 觸發仍然有效,但 15 分鐘自動更新不會跑。
-#
-# 不想要自動排程就把下面的 schedule 段落註解掉,只留 workflow_dispatch(手動觸發)。
+# GitHub Pages(選用):預設的 GITHUB_TOKEN 沒有「建立 Pages 站台」的權限,
+# 所以第一次必須手動到 Settings → Pages → Source 選 "GitHub Actions"。
+# 開啟之後這個工作流程會自動部署,不必再做任何事;還沒開啟就只會略過部署,不會讓整個流程失敗。
 
 name: 英超戰情室 資料更新與部署
 
@@ -18,7 +14,7 @@ on:
   workflow_dispatch:
   schedule:
     # 每 15 分鐘一次。GitHub 的排程可能延遲 5~15 分鐘,所以這是「準即時」不是逐分鐘。
-    # 想更省資源可以改成只在比賽時段跑,例如:'*/15 12-22 * * 6,0'(週末白天到晚上)
+    # 注意:schedule 只會從「預設分支」觸發。
     - cron: '*/15 * * * *'
   push:
     branches:
@@ -28,17 +24,19 @@ on:
     paths: ['epl/**', '.github/workflows/epl-live.yml']
 
 permissions:
-  contents: read
+  contents: write      # 把抓到的即時資料提交回 repo
   pages: write
   id-token: write
 
 concurrency:
-  group: epl-pages
-  cancel-in-progress: true
+  group: epl-live
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      pages_enabled: ${{ steps.pages_check.outputs.enabled }}
     defaults:
       run:
         working-directory: epl
@@ -47,7 +45,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # 專案零依賴,不需要 npm install
 
@@ -63,31 +61,68 @@ jobs:
         run: npm run season
         continue-on-error: true
 
-      - name: 走查回測(產生模型準度與每場賽前預測)
+      - name: 走查回測(模型準度與每場賽前預測)
         run: npm test
         continue-on-error: true
 
       - name: 建立資料集
         run: npm run build
 
-      - name: 打包單檔版(順便附在網站裡)
+      - name: 打包單檔版
         run: npm run bundle
 
+      # 把抓到的即時資料寫回 repo,這樣在別的環境(拿不到官方 API 的地方)
+      # 只要 git pull 就能用最新比分重新建置。
+      - name: 回寫即時資料
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f epl/data/raw/live.json epl/data/raw/season-gws.json \
+                     epl/data/raw/openfootball/ epl/data/backtest.json epl/data/backtest-matches.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "資料沒有變化,不提交"
+          else
+            # [skip ci] 避免這個提交又觸發自己
+            git commit -m "chore(epl): 更新即時資料 $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+            echo "已回寫即時資料"
+          fi
+
+      # Pages 還沒啟用時,deploy 會失敗;先問一下,沒開就跳過,不讓整個流程變紅
+      - name: 檢查 GitHub Pages 是否已啟用
+        id: pages_check
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages")
+          if [ "$code" = "200" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "✔ Pages 已啟用,將進行部署"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "⚠ Pages 尚未啟用(HTTP $code),略過部署。"
+            echo "  到 Settings → Pages → Source 選 \"GitHub Actions\" 即可,之後每次執行都會自動部署。"
+          fi
+
       - name: 把單檔版一起放進要部署的目錄
+        if: steps.pages_check.outputs.enabled == 'true'
         run: cp dist/warroom.html web/warroom.html
 
-      - name: 設定(必要時自動啟用)GitHub Pages
+      - name: 設定 GitHub Pages
+        if: steps.pages_check.outputs.enabled == 'true'
         uses: actions/configure-pages@v5
-        with:
-          # 沒開過 Pages 的話由這一步直接開啟,不必手動去 Settings
-          enablement: true
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: 上傳網站
+        if: steps.pages_check.outputs.enabled == 'true'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: epl/web
 
   deploy:
     needs: build
+    if: needs.build.outputs.pages_enabled == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
