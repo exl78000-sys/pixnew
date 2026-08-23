@@ -6,7 +6,7 @@ try {
   const { meta, clubs, teams, fixtures, h2h, players, tactics } =
     await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics');
   C.registerTeams(clubs); C.registerTeams(teams);
-  C.nav('fixtures.html');
+  C.nav();
 
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const tacBy = new Map(tactics.map(t => [t.code, t]));

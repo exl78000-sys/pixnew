@@ -5,7 +5,7 @@ const app = document.getElementById('app');
 try {
   const { meta, clubs, teams, tactics } = await C.load('meta', 'clubs', 'teams', 'tactics');
   C.registerTeams(clubs); C.registerTeams(teams);
-  C.nav('tactics.html');
+  C.nav();
 
   const tacBy = new Map(tactics.map(t => [t.code, t]));
   const colour = c => C.team(c).colors?.[0] ?? '#888';
@@ -47,7 +47,7 @@ try {
   <div class="section"><h2>各隊風格卡</h2><span class="hint">雷達為 20 隊之中的百分位</span></div>
   <div class="grid g3">${tactics.map(t => `
     <div class="card">
-      <a href="teams.html?code=${t.code}" style="color:inherit;text-decoration:none">
+      <a href="${C.link('teams', { code: t.code })}" style="color:inherit;text-decoration:none">
         <div class="row" style="gap:9px">${C.badge(t.code)}<b>${C.zh(t.code)}</b>
           <span class="dim tiny" style="margin-left:auto">${t.formation.label}</span></div></a>
       ${C.radar([{ name: C.zh(t.code), color: colour(t.code), values: t.radar }], { size: 230 })}
@@ -69,7 +69,7 @@ try {
     { key: 'setp', label: '後場進球佔比', value: t => t.setPieces.defenderGoalShare, num: true,
       title: '後衛與門將的進球佔全隊比例,常被當成定位球威脅的代理指標',
       render: t => `${t.setPieces.defenderGoalShare}%` },
-  ], { sortKey: 'def', desc: true, onRow: t => { location.href = `teams.html?code=${t.code}`; } });
+  ], { sortKey: 'def', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
 
   document.getElementById('tempo').innerHTML = C.table(tactics, [
     { key: 'team', label: '球隊', value: t => C.zh(t.code), render: t => C.teamCell(t.code) },
@@ -84,6 +84,6 @@ try {
       render: t => `<b>${C.signed(t.tempo.secondHalfSwing, 1)}</b>` },
     { key: 'comeback', label: '逆轉', value: t => t.resilience.comeback, num: true },
     { key: 'collapse', label: '被逆轉', value: t => t.resilience.collapse, num: true },
-  ], { sortKey: 'swing', desc: true, onRow: t => { location.href = `teams.html?code=${t.code}`; } });
+  ], { sortKey: 'swing', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
 
 } catch (err) { C.fail(err); }

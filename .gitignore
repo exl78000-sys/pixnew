@@ -31,6 +31,8 @@ unity/Assets/StreamingAssets/config.json.meta
 # clone 下來不用連網、不用 build 就能直接開站。
 node_modules/
 epl/.cache/
+# 單檔打包產物:內容是既有資料的重組,每次重建整份都會變,用 npm run bundle 現產即可
+epl/dist/
 
 # ── 通用 ──────────────────────────────
 *.log
