@@ -4,10 +4,11 @@
 # GitHub 的 runner 沒有這個限制,所以讓它去抓資料、建置、部署,
 # 你就有一個「自己會更新」的網站,不必在本機開著任何程式。
 #
-# 啟用方式:
-#   1. repo 的 Settings → Pages → Source 選 "GitHub Actions"
-#   2. Actions 分頁按 "Run workflow" 跑一次,或等排程自己觸發
-#   3. 網址會是 https://<你的帳號>.github.io/<repo 名>/
+# 這個工作流程會「自己啟用」GitHub Pages(configure-pages 的 enablement),
+# 所以正常情況下你不需要手動去 Settings 開啟。網址是 https://<帳號>.github.io/<repo>/
+#
+# 注意:GitHub 的排程(schedule)只會從「預設分支」觸發。
+# 如果這個檔案不在預設分支上,push 觸發仍然有效,但 15 分鐘自動更新不會跑。
 #
 # 不想要自動排程就把下面的 schedule 段落註解掉,只留 workflow_dispatch(手動觸發)。
 
@@ -20,7 +21,10 @@ on:
     # 想更省資源可以改成只在比賽時段跑,例如:'*/15 12-22 * * 6,0'(週末白天到晚上)
     - cron: '*/15 * * * *'
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+      - 'claude/premier-league-analysis-platform-**'
     paths: ['epl/**', '.github/workflows/epl-live.yml']
 
 permissions:
@@ -72,7 +76,11 @@ jobs:
       - name: 把單檔版一起放進要部署的目錄
         run: cp dist/warroom.html web/warroom.html
 
-      - uses: actions/configure-pages@v5
+      - name: 設定(必要時自動啟用)GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          # 沒開過 Pages 的話由這一步直接開啟,不必手動去 Settings
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
