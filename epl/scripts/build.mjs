@@ -14,7 +14,7 @@ import { buildElo, eloProbs } from './lib/elo.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { loadFpl } from './lib/fpl.mjs';
-import { buildPlayers, leaderboards } from './lib/players.mjs';
+import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics } from './lib/tactics.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
@@ -76,7 +76,19 @@ async function main() {
   const livePath = join(ROOT, 'data', 'raw', 'live.json');
   const liveState = existsSync(livePath) ? JSON.parse(await readFile(livePath, 'utf8')) : null;
 
+  // 隊徽(npm run crests 產生,已內嵌為 data URI)直接掛到球隊登錄上,
+  // 前端就不必為了圖片再多載一份資料。
+  const crestPath = join(ROOT, 'data', 'manual', 'crests.json');
+  const crestData = existsSync(crestPath) ? JSON.parse(await readFile(crestPath, 'utf8')).crests ?? {} : {};
+
+  // 每一場的走查預測(npm test 產生),用來做「賽前預測 vs 實際結果」對照
+  const btMatchPath = join(ROOT, 'data', 'backtest-matches.json');
+  const btMatches = existsSync(btMatchPath) ? JSON.parse(await readFile(btMatchPath, 'utf8')) : null;
+  const predByMatch = new Map();
+  for (const m of btMatches?.matches ?? []) predByMatch.set(`${m.season}|${m.home}|${m.away}`, m.pred);
+
   const T = loadTeams(ROOT);
+  for (const t of T.list) if (crestData[t.code]) t.crest = crestData[t.code];
   const seasons = [...new Set([...HISTORY_SEASONS, CURRENT_SEASON])];
   const bySeason = new Map(seasons.map(s => [s, loadSeason(ROOT, s, T.codeOf)]));
   const history = HISTORY_SEASONS.flatMap(s => bySeason.get(s));
@@ -116,10 +128,25 @@ async function main() {
   const fplCur = loadFpl(ROOT, CURRENT_SEASON, T.codeOf);
   const diff = loadDifficulty(ROOT, T.codeOf, fplCur.teamById);
 
-  const { players, poolSizes } = buildPlayers({
-    current: fplCur.players, last: fplLast.players, asOf: AS_OF,
+  // 本季逐輪累計(npm run season 產生);賽季剛開始或上游還沒發布時會是空的
+  const seasonPath = join(ROOT, 'data', 'raw', 'season-gws.json');
+  const seasonStore = existsSync(seasonPath) ? JSON.parse(await readFile(seasonPath, 'utf8')) : null;
+  const seasonUsable = seasonStore && seasonStore.season === CURRENT_SEASON && (seasonStore.rounds?.length ?? 0) > 0;
+  const { totals: currentTotals, teamMatches } = seasonUsable
+    ? aggregateSeason(seasonStore.rounds)
+    : { totals: new Map(), teamMatches: new Map() };
+
+  const { players, poolSizes, currentPoolSizes } = buildPlayers({
+    current: fplCur.players, last: fplLast.players,
+    currentTotals, teamMatches, asOf: AS_OF,
   });
-  const leaders = leaderboards(players);
+  const leaders = {
+    seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
+    currentAvailable: currentTotals.size > 0,
+    currentRounds: seasonUsable ? seasonStore.rounds.length : 0,
+    last: leaderboards(players, 'last'),
+    current: currentTotals.size ? leaderboards(players, 'current') : null,
+  };
 
   const tactics = buildTactics({
     tableRows: lastTable, lastPlayers: fplLast.players, currentPlayers: fplCur.players, asOf: AS_OF,
@@ -248,7 +275,7 @@ async function main() {
         fixture: f,
         prediction: predictionFor(f),
         tactics: tacticsBy,
-        zh: code => T.byCode.get(code)?.zh ?? code,
+        zh: code => T.byCode.get(code)?.en ?? code,
       });
       return {
         ...rep,
@@ -274,6 +301,31 @@ async function main() {
       },
       matches,
     };
+  }
+
+  // ── 賽後報告 ──────────────────────────────
+  // 只要拿得到出場名單就產生報告,不論來自即時、重播或本季逐輪累積。
+  const reports = {};
+  const reportSources = [];
+  if (liveState) reportSources.push({ season: liveState.season ?? CURRENT_SEASON, fixtures: liveState.fixtures, demo: !!liveState.demo });
+  if (seasonStore?.rounds?.length) {
+    for (const r of seasonStore.rounds) reportSources.push({ season: seasonStore.season, fixtures: r.fixtures, demo: false });
+  }
+  for (const src of reportSources) {
+    for (const f of src.fixtures) {
+      if (!f.started || !Object.values(f.lineups).some(l => l.length)) continue;
+      const key = `${src.season}|${f.home}|${f.away}`;
+      if (reports[key]) continue;
+      const isCur = src.season === CURRENT_SEASON;
+      const pre = isCur ? fixtureByKey.get(f.key)?.prediction ?? null : predByMatch.get(key) ?? null;
+      reports[key] = {
+        ...buildMatchReport({
+          fixture: f, prediction: pre, tactics: tacticsBy,
+          zh: code => T.byCode.get(code)?.en ?? code,
+        }),
+        season: src.season, demo: src.demo,
+      };
+    }
   }
 
   // ── 新聞 ──────────────────────────────────
@@ -316,7 +368,9 @@ async function main() {
     },
     counts: {
       teams: teams.length, players: players.length, fixtures: fixtures.length,
-      news: news.length, injuries: injuries.length, poolSizes,
+      news: news.length, injuries: injuries.length, poolSizes, currentPoolSizes,
+      currentSeasonRounds: leaders.currentRounds,
+      currentSeasonPlayers: currentTotals.size,
     },
     coachDataAsOf: coaches.asOf,
     live: liveOut.available
@@ -336,7 +390,15 @@ async function main() {
   await write('sim.json', sim);
   await write('live.json', liveOut);
   await write('h2h.json', h2h);
-  await write('results.json', [...history, ...curPlayed].filter(m => m.played));
+  await write('reports.json', {
+    seasons: [...new Set(Object.keys(reports).map(k => k.split('|')[0]))],
+    count: Object.keys(reports).length,
+    reports,
+  });
+  await write('results.json', [...history, ...curPlayed].filter(m => m.played).map(m => {
+    const pred = predByMatch.get(`${m.season}|${m.home}|${m.away}`);
+    return pred ? { ...m, prediction: pred } : m;
+  }));
 
   console.log(`\n✔ 完成:${teams.length} 隊 / ${players.length} 名球員 / ${fixtures.length} 場賽程 / ${news.length} 則動態`);
   if (liveOut.available) {

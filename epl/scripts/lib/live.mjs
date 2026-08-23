@@ -34,7 +34,9 @@ function dedupe(list) {
 
 const blankPlayer = () => ({
   minutes: 0, starts: 0, goals: 0, assists: 0, own: 0, yellow: 0, red: 0,
-  saves: 0, conceded: 0, xG: 0, xA: 0, xGC: 0, bonus: 0, bps: 0,
+  saves: 0, conceded: 0, cleanSheets: 0, xG: 0, xA: 0, xGC: 0, bonus: 0, bps: 0,
+  influence: 0, creativity: 0, threat: 0, ict: 0,
+  tackles: 0, recoveries: 0, cbi: 0, defCon: 0, points: 0,
 });
 
 /* ── 來源 A:官方 API(真正即時) ─────────────────── */
@@ -66,9 +68,13 @@ async function fromApi({ codeOf, round }) {
         ...blankPlayer(), code: meta.code, name: meta.name, pos: meta.pos,
         minutes: num(s.minutes), starts: num(s.starts), goals: num(s.goals_scored), assists: num(s.assists),
         own: num(s.own_goals), yellow: num(s.yellow_cards), red: num(s.red_cards),
-        saves: num(s.saves), conceded: num(s.goals_conceded),
+        saves: num(s.saves), conceded: num(s.goals_conceded), cleanSheets: num(s.clean_sheets),
         xG: num(s.expected_goals), xA: num(s.expected_assists), xGC: num(s.expected_goals_conceded),
         bonus: num(s.bonus), bps: num(s.bps),
+        influence: num(s.influence), creativity: num(s.creativity), threat: num(s.threat), ict: num(s.ict_index),
+        tackles: num(s.tackles), recoveries: num(s.recoveries),
+        cbi: num(s.clearances_blocks_interceptions), defCon: num(s.defensive_contribution),
+        points: num(s.total_points),
       });
     }
     return {
@@ -120,9 +126,13 @@ async function fromMirror({ codeOf, season, round, demo, root }) {
         code: codeById.get(r.element) ?? null, name: r.name, pos: r.position,
         minutes: num(r.minutes), starts: num(r.starts), goals: num(r.goals_scored), assists: num(r.assists),
         own: num(r.own_goals), yellow: num(r.yellow_cards), red: num(r.red_cards),
-        saves: num(r.saves), conceded: num(r.goals_conceded),
+        saves: num(r.saves), conceded: num(r.goals_conceded), cleanSheets: num(r.clean_sheets),
         xG: num(r.expected_goals), xA: num(r.expected_assists), xGC: num(r.expected_goals_conceded),
         bonus: num(r.bonus), bps: num(r.bps),
+        influence: num(r.influence), creativity: num(r.creativity), threat: num(r.threat), ict: num(r.ict_index),
+        tackles: num(r.tackles), recoveries: num(r.recoveries),
+        cbi: num(r.clearances_blocks_interceptions), defCon: num(r.defensive_contribution),
+        points: num(r.total_points),
       });
     }
     out.push({

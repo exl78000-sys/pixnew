@@ -77,7 +77,7 @@ try {
   const simRows = sim.map(s => ({ ...s, t: C.team(s.code) }));
   document.getElementById('simTable').innerHTML = C.table(simRows, [
     { key: 'pos', label: '#', value: r => r.expectedPos, render: (r, i) => i + 1, sortable: false, num: true },
-    { key: 'team', label: '球隊', value: r => C.zh(r.code), render: r => C.teamCell(r.code) },
+    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
     { key: 'expectedPoints', label: '期望積分', value: r => r.expectedPoints, num: true,
       render: r => `<b>${r.expectedPoints}</b>` },
     { key: 'titlePct', label: '奪冠', value: r => r.titlePct, num: true,
@@ -97,8 +97,8 @@ try {
     <a href="${C.link('fixtures', { id: f.id })}" style="color:inherit;text-decoration:none">
       <div class="spread" style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
         <div style="min-width:0">
-          <div class="row" style="gap:7px">${C.badge(f.home)}<b>${C.zh(f.home)}</b>
-            <span class="dim">vs</span>${C.badge(f.away)}<b>${C.zh(f.away)}</b></div>
+          <div class="row" style="gap:7px">${C.badge(f.home)}<b>${C.name(f.home)}</b>
+            <span class="dim">vs</span>${C.badge(f.away)}<b>${C.name(f.away)}</b></div>
           <div class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪・
             預期比分 ${f.prediction.xgHome}:${f.prediction.xgAway}</div>
           <div class="tiny"><span class="dim">開賽倒數 </span>${C.countdown(f.kickoff)}</div>
@@ -122,7 +122,7 @@ try {
   /* 上季積分榜 */
   document.getElementById('lastTable').innerHTML = C.table(table.last, [
     { key: 'pos', label: '#', value: r => r.pos, num: true },
-    { key: 'team', label: '球隊', value: r => C.zh(r.code), render: r => C.teamCell(r.code) },
+    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
     { key: 'p', label: '賽', value: r => r.p, num: true },
     { key: 'w', label: '勝', value: r => r.w, num: true },
     { key: 'd', label: '和', value: r => r.d, num: true },

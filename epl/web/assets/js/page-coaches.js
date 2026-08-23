@@ -54,7 +54,7 @@ try {
               <span class="dim small" style="font-weight:400">${c.name ? C.esc(c.name) : ''}</span></div>
             ${confPill(c)}
           </div>
-          <div class="tiny dim">${t.zh}${c.nat ? `・${c.nat}` : ''}${c.since ? `・${c.since} 上任(約 ${years} 年)` : ''}</div>
+          <div class="tiny dim">${t.en}${c.nat ? `・${c.nat}` : ''}${c.since ? `・${c.since} 上任(約 ${years} 年)` : ''}</div>
         </div>
       </div>
       ${c.name ? `
@@ -78,7 +78,7 @@ try {
   const rankRows = current.concat(gone).filter(c => c.seasonRecord?.p);
   document.getElementById('rank').innerHTML = C.table(rankRows, [
     { key: 'coach', label: '教練', value: c => c.zh ?? '', render: c => `${C.esc(c.zh)} <span class="dim tiny">${C.esc(c.name ?? '')}</span>` },
-    { key: 'team', label: '球隊', value: c => C.zh(c.team), render: c => C.teamCell(c.team) },
+    { key: 'team', label: '球隊', value: c => C.name(c.team), render: c => C.teamCell(c.team) },
     { key: 'p', label: '場次', value: c => c.seasonRecord.p, num: true },
     { key: 'w', label: '勝', value: c => c.seasonRecord.w, num: true },
     { key: 'd', label: '和', value: c => c.seasonRecord.d, num: true },

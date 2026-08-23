@@ -8,7 +8,7 @@ try {
   C.nav();
 
   const cats = [...new Set(news.map(n => n.cat))];
-  const codes = [...new Set(news.map(n => n.team).filter(Boolean))].sort((a, b) => C.zh(a).localeCompare(C.zh(b), 'zh-Hant'));
+  const codes = [...new Set(news.map(n => n.team).filter(Boolean))].sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
   const CLS = { 傷停: 'bad', 禁賽: 'bad', 轉會: 'info', 賽前: 'info', 賽程: 'warn', 數據: 'accent', 戰術: 'accent', 陣容: '', 外電: 'warn' };
   let cat = '';
 
@@ -22,7 +22,7 @@ try {
   <div class="filters">
     <button class="btn on" data-c="">全部</button>
     ${cats.map(c => `<button class="btn" data-c="${c}">${c}</button>`).join('')}
-    <select id="fTeam"><option value="">所有球隊</option>${codes.map(c => `<option value="${c}">${C.zh(c)}</option>`).join('')}</select>
+    <select id="fTeam"><option value="">所有球隊</option>${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
     <span class="dim small" id="count"></span>
   </div>
   <div id="feed" class="grid" style="gap:10px"></div>

@@ -44,7 +44,9 @@ export function registerTeams(list) {
   for (const t of list) TEAMS.set(t.code, { ...(TEAMS.get(t.code) ?? {}), ...t });
   return TEAMS;
 }
-export const team = code => TEAMS.get(code) ?? { code, zh: code, colors: ['#444', '#888'] };
+export const team = code => TEAMS.get(code) ?? { code, en: code, zh: code, colors: ['#444', '#888'] };
+// 顯示一律用英文隊名;中文名保留給球隊詳情頁做對照
+export const name = code => team(code).en ?? team(code).zh ?? code;
 export const zh = code => team(code).zh ?? code;
 
 const luminance = hex => {
@@ -54,12 +56,14 @@ const luminance = hex => {
 };
 export function badge(code, size = '') {
   const t = team(code);
+  // 有隊徽就用隊徽(已內嵌為 data URI);沒有才退回配色方塊
+  if (t.crest) return `<img class="crest ${size}" src="${t.crest}" alt="${t.en ?? code}" title="${t.en ?? code}" loading="lazy" width="26" height="26">`;
   const bg = t.colors?.[0] ?? '#444';
   const fg = luminance(bg) > 0.55 ? '#12091a' : '#fff';
   return `<span class="badge ${size}" style="background:${bg};color:${fg}">${code}</span>`;
 }
-export function teamCell(code, { link: withLink = true, name = null } = {}) {
-  const label = name ?? zh(code);
+export function teamCell(code, { link: withLink = true, label: custom = null } = {}) {
+  const label = custom ?? name(code);
   const inner = `<span class="team-cell">${badge(code)}<span class="nm">${label}</span></span>`;
   return withLink ? `<a href="${link('teams', { code })}" style="color:inherit;text-decoration:none">${inner}</a>` : inner;
 }
@@ -129,7 +133,7 @@ export const tzName = () => {
 
 export function countdownText(iso, now = Date.now()) {
   const diff = new Date(iso).getTime() - now;
-  if (diff <= 0) return { text: '已開賽', past: true };
+  if (diff <= 0) return { text: '已開賽・等待資料', past: true };
   const s = Math.floor(diff / 1000);
   const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600);
   const m = Math.floor((s % 3600) / 60), sec = s % 60;
@@ -177,6 +181,68 @@ export function drawer(title, html) {
   drawerEl.classList.add('open');
   bgEl.classList.add('open');
   drawerEl.scrollTop = 0;
+}
+
+/* ── 賽後 / 場中報告(實時戰況頁與賽程頁共用)──── */
+export function matchReportCards(m) {
+  const H = m.sides[m.home], A = m.sides[m.away];
+  const line = (l, hv, av) => `<div class="stat-line"><b class="mono">${hv}</b><span class="small muted">${l}</span><b class="mono">${av}</b></div>`;
+  const xiHtml = s => `<div class="xi">
+    ${s.xi.map(p => `<div class="p"><span><span class="pos">${p.pos}</span>${esc(p.name)}
+      ${p.goals ? ` <span style="color:var(--accent)">⚽${p.goals > 1 ? p.goals : ''}</span>` : ''}
+      ${p.assists ? ` <span class="dim">🅰${p.assists > 1 ? p.assists : ''}</span>` : ''}
+      ${p.red ? ' <span style="color:var(--loss)">🟥</span>' : p.yellow ? ' <span style="color:var(--draw)">🟨</span>' : ''}</span>
+      <span class="dim mono tiny">${p.minutes}'</span></div>`).join('')}
+    ${s.bench.length ? `<div class="tiny dim" style="margin-top:6px">替補上場(時間為推估)</div>
+      ${s.bench.map(p => `<div class="p sub"><span><span class="pos">${p.pos}</span>${esc(p.name)}
+        ${p.goals ? ` <span style="color:var(--accent)">⚽${p.goals > 1 ? p.goals : ''}</span>` : ''}
+        ${p.assists ? ' <span class="dim">🅰</span>' : ''}</span>
+        <span class="dim mono tiny">≈${p.onAbout}' 上</span></div>`).join('')}` : ''}
+  </div>`;
+
+  return `
+    ${m.notes.length ? `<div class="card"><h3>戰術解讀</h3>
+      ${m.notes.map(n => `<div class="stat-line"><span class="small">・${esc(n)}</span></div>`).join('')}
+    </div>` : ''}
+
+    <div class="card"><h3>實際排出的陣容</h3>
+      <div class="grid g2">
+        <div><div class="row small" style="gap:7px;margin-bottom:6px">${badge(m.home)}<b>${name(m.home)}</b>
+          <span class="pill">${H.shape.label}</span></div>
+          <div class="tiny dim" style="margin-bottom:6px">${H.shape.shapeZh}
+            ${H.seasonShape ? `・上季常態 ${H.seasonShape.label}` : ''}</div>
+          ${xiHtml(H)}</div>
+        <div><div class="row small" style="gap:7px;margin-bottom:6px">${badge(m.away)}<b>${name(m.away)}</b>
+          <span class="pill">${A.shape.label}</span></div>
+          <div class="tiny dim" style="margin-bottom:6px">${A.shape.shapeZh}
+            ${A.seasonShape ? `・上季常態 ${A.seasonShape.label}` : ''}</div>
+          ${xiHtml(A)}</div>
+      </div>
+      <div class="tiny dim" style="margin-top:10px">陣型依 FPL 的位置分類統計先發人數,邊鋒會被算進中場;
+        換人時間由出場分鐘反推,標示 ≈ 者為推估值。</div>
+    </div>
+
+    <div class="card"><h3>數據對比</h3>
+      <div class="row small dim" style="justify-content:space-between;margin-bottom:4px">
+        <span>${name(m.home)}</span><span>${name(m.away)}</span></div>
+      ${line('進球', m.hs ?? 0, m.as ?? 0)}
+      ${line('期望進球 xG', H.xG, A.xG)}
+      ${line('期望助攻 xA', H.xA, A.xA)}
+      ${line('黃牌', H.yellow, A.yellow)}
+      ${line('紅牌', H.red, A.red)}
+      ${line('使用球員', H.used, A.used)}
+      ${H.keeper && A.keeper ? line('門將撲救', H.keeper.saves, A.keeper.saves) : ''}
+      ${H.keeper && A.keeper ? line('門將少失球', signed(H.keeper.stopped, 2), signed(A.keeper.stopped, 2)) : ''}
+    </div>
+
+    <div class="card"><h3>本場最佳(FPL 表現分)</h3>
+      <div class="grid g2">
+        <div>${H.best.map(b => `<div class="stat-line"><span class="small">${esc(b.name)}
+          <span class="dim tiny">${b.pos} ${b.minutes}'</span></span><b class="mono">${b.bps}</b></div>`).join('')}</div>
+        <div>${A.best.map(b => `<div class="stat-line"><span class="small">${esc(b.name)}
+          <span class="dim tiny">${b.pos} ${b.minutes}'</span></span><b class="mono">${b.bps}</b></div>`).join('')}</div>
+      </div>
+    </div>`;
 }
 
 /* ── 可排序表格 ─────────────────────── */

@@ -46,6 +46,7 @@ function main() {
   const rounds = [...new Set(test.map(m => m.round))].sort((a, b) => a - b);
 
   const dc = [], el = [], base = [], blend = [];
+  const perMatch = [];   // 每一場的走查預測,build 會拿去做「預測 vs 實際」對照
   // 賽季基準線:英超長期的主/和/客分佈
   const BASE = { home: 0.44, draw: 0.25, away: 0.31 };
 
@@ -68,6 +69,16 @@ function main() {
         hit: [pr.home, pr.draw, pr.away].indexOf(Math.max(pr.home, pr.draw, pr.away)) === o,
       });
       push(dc, p); push(el, e); push(base, BASE); push(blend, b);
+      perMatch.push({
+        season: m.season, date: m.date, home: m.home, away: m.away, round: m.round,
+        fh: m.fh, fa: m.fa,
+        pred: {
+          home: round(b.home, 4), draw: round(b.draw, 4), away: round(b.away, 4),
+          xgHome: p.xgHome, xgAway: p.xgAway,
+          topScores: p.topScores.slice(0, 3),
+          over25: p.over25, btts: p.btts,
+        },
+      });
     }
   }
 
@@ -93,7 +104,10 @@ function main() {
   };
   mkdirSync(join(ROOT, 'data'), { recursive: true });
   writeFileSync(join(ROOT, 'data', 'backtest.json'), JSON.stringify(report, null, 2));
-  console.log('→ 已寫入 data/backtest.json(build 時會帶進網站)');
+  writeFileSync(join(ROOT, 'data', 'backtest-matches.json'), JSON.stringify({
+    season: TEST_SEASON, ranAt: report.ranAt, matches: perMatch,
+  }));
+  console.log(`→ 已寫入 data/backtest.json 與 backtest-matches.json(${perMatch.length} 場走查預測)`);
 
   // 即時勝率模型的自我檢查:性質對不對比數字漂亮更重要
   console.log('\n▶ 即時勝率模型自我檢查');

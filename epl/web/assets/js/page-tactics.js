@@ -22,7 +22,7 @@ try {
   <div class="card">
     ${C.scatter(tactics.map(t => ({
       x: t.attack.xG90, y: t.defence.xGA90, code: t.code, color: colour(t.code),
-      label: `${C.zh(t.code)} xG ${t.attack.xG90} / xGA ${t.defence.xGA90}`,
+      label: `${C.name(t.code)} xG ${t.attack.xG90} / xGA ${t.defence.xGA90}`,
     })), { xLabel: '每場期望進球 xG(越右攻擊力越強)', yLabel: '每場期望失球 xGA(越上防守越穩)', invertY: true })}
     <div class="tiny dim">右上角 = 攻守俱佳;左下角 = 兩頭落空。xG 來自球員層級的期望進球加總,xGA 取自門將的期望失球。</div>
   </div>
@@ -36,7 +36,7 @@ try {
   <div class="card">
     ${C.scatter(tactics.filter(t => t.resilience.leadHoldPct !== null && t.resilience.trailRescuePct !== null).map(t => ({
       x: t.resilience.leadHoldPct, y: t.resilience.trailRescuePct, code: t.code, color: colour(t.code),
-      label: `${C.zh(t.code)} 保分 ${t.resilience.leadHoldPct}% / 搶分 ${t.resilience.trailRescuePct}%`,
+      label: `${C.name(t.code)} 保分 ${t.resilience.leadHoldPct}% / 搶分 ${t.resilience.trailRescuePct}%`,
     })), { xLabel: '半場領先時的保分率 %', yLabel: '半場落後時的搶分率 %' })}
     <div class="tiny dim">右上角是最難纏的球隊:領先守得住、落後還能追。左下角就是俗稱的「玻璃心」。</div>
   </div>
@@ -48,15 +48,15 @@ try {
   <div class="grid g3">${tactics.map(t => `
     <div class="card">
       <a href="${C.link('teams', { code: t.code })}" style="color:inherit;text-decoration:none">
-        <div class="row" style="gap:9px">${C.badge(t.code)}<b>${C.zh(t.code)}</b>
+        <div class="row" style="gap:9px">${C.badge(t.code)}<b>${C.name(t.code)}</b>
           <span class="dim tiny" style="margin-left:auto">${t.formation.label}</span></div></a>
-      ${C.radar([{ name: C.zh(t.code), color: colour(t.code), values: t.radar }], { size: 230 })}
+      ${C.radar([{ name: C.name(t.code), color: colour(t.code), values: t.radar }], { size: 230 })}
       <div class="tags">${t.tags.slice(0, 5).map(x => `<span class="pill">${x}</span>`).join('')}</div>
     </div>`).join('')}</div>
   ${C.foot(meta)}`;
 
   document.getElementById('shape').innerHTML = C.table(tactics, [
-    { key: 'team', label: '球隊', value: t => C.zh(t.code), render: t => C.teamCell(t.code) },
+    { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },
     { key: 'def', label: '後場', value: t => t.formation.def, num: true },
     { key: 'mid', label: '中場', value: t => t.formation.mid, num: true },
     { key: 'fwd', label: '鋒線', value: t => t.formation.fwd, num: true },
@@ -72,7 +72,7 @@ try {
   ], { sortKey: 'def', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
 
   document.getElementById('tempo').innerHTML = C.table(tactics, [
-    { key: 'team', label: '球隊', value: t => C.zh(t.code), render: t => C.teamCell(t.code) },
+    { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },
     { key: 'gf1', label: '上半進', value: t => t.tempo.gf1, num: true },
     { key: 'ga1', label: '上半失', value: t => t.tempo.ga1, num: true },
     { key: 'gd1', label: '上半淨', value: t => t.tempo.gf1 - t.tempo.ga1, num: true, render: t => C.signed(t.tempo.gf1 - t.tempo.ga1, 0) },
