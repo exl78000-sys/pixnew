@@ -159,6 +159,31 @@ export function startCountdowns() {
   cdTimer = setInterval(tick, 1000);
 }
 
+/* ── 依賽程推導比賽狀態 ─────────────── */
+// 就算完全沒有即時資料源,光靠開賽時間也能知道「現在有哪幾場正在踢」。
+// 注意:這裡算的是「開賽後經過幾分鐘」(含中場休息),不是比賽時鐘的分鐘數,
+// 所以顯示時要講清楚,不能假裝知道現在是第幾分鐘。
+const MATCH_WINDOW_MIN = 115;   // 90 分鐘 + 中場 15 + 傷停,寬估
+
+export function scheduleState(fixture, now = Date.now()) {
+  if (!fixture.kickoff) return { phase: fixture.played ? 'finished' : 'unknown' };
+  const t = new Date(fixture.kickoff).getTime();
+  const elapsed = Math.floor((now - t) / 60000);
+  if (fixture.played) return { phase: 'finished', elapsed };
+  if (elapsed < 0) return { phase: 'upcoming', elapsed };
+  if (elapsed < MATCH_WINDOW_MIN) return { phase: 'inplay', elapsed };
+  return { phase: 'awaiting', elapsed };   // 時間上早該結束,但還沒拿到賽果
+}
+
+// 開賽後經過的時間,轉成人看得懂的描述
+export function elapsedText(elapsed) {
+  if (elapsed < 0) return '尚未開賽';
+  if (elapsed <= 47) return `開賽後約 ${elapsed} 分鐘`;
+  if (elapsed <= 62) return '約中場休息';
+  if (elapsed <= MATCH_WINDOW_MIN) return `開賽後約 ${elapsed} 分鐘(下半場)`;
+  return `開賽後 ${Math.floor(elapsed / 60)} 小時`;
+}
+
 /* ── 抽屜 ───────────────────────────── */
 let drawerEl, bgEl;
 export function drawer(title, html) {
