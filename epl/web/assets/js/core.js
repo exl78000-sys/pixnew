@@ -85,6 +85,7 @@ export const bar = (v, max = 100, cls = '') =>
 /* ── 導覽列 ─────────────────────────── */
 const PAGES = [
   ['index', '總覽'],
+  ['live', '實時戰況'],
   ['fixtures', '賽程預測'],
   ['teams', '球隊'],
   ['tactics', '戰術'],
@@ -110,6 +111,48 @@ export function foot(meta) {
       ? `(回測 RPS ${meta.model.backtest.rps},優於基準線 ${meta.model.backtest.baselineRps})` : '(尚未回測)'}。
     預測僅供分析參考,不構成任何投注建議。
   </footer>`;
+}
+
+/* ── 倒數計時 ───────────────────────── */
+// 開賽時間存的是 UTC,這裡一律換算成觀看者所在時區顯示。
+export const kickoffLocal = iso => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  // 不同年份的比賽(例如重播上季)要把年份標出來,不然 8/15 會被誤認為今年
+  const opts = { month: 'numeric', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false };
+  if (d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric';
+  return d.toLocaleString('zh-TW', opts);
+};
+export const tzName = () => {
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return '本地時間'; }
+};
+
+export function countdownText(iso, now = Date.now()) {
+  const diff = new Date(iso).getTime() - now;
+  if (diff <= 0) return { text: '已開賽', past: true };
+  const s = Math.floor(diff / 1000);
+  const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60), sec = s % 60;
+  const pad = n => String(n).padStart(2, '0');
+  return { text: d > 0 ? `${d} 天 ${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(h)}:${pad(m)}:${pad(sec)}`, past: false, soon: diff < 3600000 };
+}
+
+export const countdown = iso => `<span class="cd mono" data-kickoff="${iso}">${countdownText(iso).text}</span>`;
+
+let cdTimer = null;
+export function startCountdowns() {
+  const tick = () => {
+    const now = Date.now();
+    for (const el of document.querySelectorAll('.cd[data-kickoff]')) {
+      const { text, past, soon } = countdownText(el.dataset.kickoff, now);
+      el.textContent = text;
+      el.classList.toggle('past', past);
+      el.classList.toggle('soon', !!soon);
+    }
+  };
+  if (cdTimer) clearInterval(cdTimer);
+  tick();
+  cdTimer = setInterval(tick, 1000);
 }
 
 /* ── 抽屜 ───────────────────────────── */

@@ -18,7 +18,8 @@ try {
   <div class="page-head">
     <h1>賽程與單場預測</h1>
     <p>每一場都用 Dixon-Coles Poisson 與 Elo 各算一次再取平均(回測顯示兩者平均最準)。
-       點任一場可以看比分機率分佈、雙方戰術對比、交手紀錄與傷停。</p>
+       點任一場可以看比分機率分佈、雙方戰術對比、交手紀錄與傷停。
+       開賽時間已換算成你所在時區(${C.tzName()}),並採用會反映轉播改期的官方時間。</p>
   </div>
   <div class="filters">
     <label>輪次</label><select id="fRound"><option value="">全部</option>
@@ -41,7 +42,11 @@ try {
       (!st || (st === '已賽' ? f.played : !f.played)));
     document.getElementById('count').textContent = `共 ${rows.length} 場`;
     document.getElementById('list').innerHTML = C.table(rows, [
-      { key: 'date', label: '日期', value: f => f.date, render: f => `<span class="mono small">${C.dateFull(f.date)}</span>` },
+      { key: 'date', label: '開賽時間', value: f => f.kickoff ?? f.date,
+        render: f => `<span class="small">${C.kickoffLocal(f.kickoff)}</span>` },
+      { key: 'cd', label: '倒數', value: f => f.kickoff ?? '', sortable: false,
+        render: f => (f.played ? '<span class="dim small">完場</span>'
+          : `<span class="small">${C.countdown(f.kickoff)}</span>`) },
       { key: 'round', label: '輪', value: f => f.round, num: true },
       { key: 'home', label: '主隊', value: f => C.zh(f.home), render: f => C.teamCell(f.home) },
       { key: 'score', label: '比分 / 預期', value: f => (f.played ? f.fh - f.fa : 0), sortable: false,
@@ -57,6 +62,7 @@ try {
         title: 'FPL 官方賽程難度(主/客,1~5)',
         render: f => f.difficulty ? `<span class="small dim">${f.difficulty.home} / ${f.difficulty.away}</span>` : '—' },
     ], { sortKey: 'date', desc: false, onRow: openMatch });
+    C.startCountdowns();
   };
 
   ['fRound', 'fTeam', 'fState'].forEach(id => { document.getElementById(id).onchange = render; });
@@ -103,7 +109,8 @@ try {
 
     C.drawer(`${C.badge(f.home)} ${C.zh(f.home)} <span class="dim">vs</span> ${C.zh(f.away)} ${C.badge(f.away)}`, `
       <div class="card">
-        <div class="spread"><span class="small dim">${C.dateFull(f.date)} ${f.time ?? ''}・第 ${f.round} 輪
+        <div class="spread"><span class="small dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪
+          ${!f.played ? `・開賽倒數 ${C.countdown(f.kickoff)}` : ''}
           ${f.date < meta.asOf && !f.played ? '<span class="pill warn tiny">賽果待更新</span>' : ''}</span>
           ${f.played ? `<b class="mono" style="font-size:19px">${f.fh} - ${f.fa}</b>` : ''}</div>
         <div style="margin:12px 0">${C.probBar(p)}</div>

@@ -8,25 +8,29 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WEB = join(ROOT, 'web');
-const PAGES = ['index', 'fixtures', 'teams', 'tactics', 'players', 'coaches', 'news'];
+const PAGES = ['index', 'live', 'fixtures', 'teams', 'tactics', 'players', 'coaches', 'news'];
 
 // 單檔版把所有模組併成同一個 <script type="module">:
 //   core.js 去掉 export 變成模組層宣告,再組一個 C 物件給各頁面用;
 //   各頁面去掉 import 那行後包成 async function,由路由決定執行哪一個。
-const CORE_EXPORTS = [
-  'load', 'BUNDLE', 'link', 'go', 'qs', 'currentPage', 'registerTeams', 'team', 'zh',
-  'badge', 'teamCell', 'pct', 'fx', 'signed', 'dateZh', 'dateFull', 'esc', 'formRun',
-  'probBar', 'bar', 'nav', 'foot', 'drawer', 'table', 'radar', 'scoreHeat', 'scatter',
-  'sparkline', 'fail',
-];
+//
+// 匯出清單一定要從原始碼解析,不能手寫 —— 手寫的清單會跟著 core.js 漂移,
+// 少一個名字就是某個頁面在單檔版上整頁掛掉(而多頁版還好好的)。
+function coreExports(src) {
+  const names = new Set();
+  for (const m of src.matchAll(/^export\s+(?:async\s+)?function\s+([A-Za-z_$][\w$]*)/gm)) names.add(m[1]);
+  for (const m of src.matchAll(/^export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)/gm)) names.add(m[1]);
+  return [...names];
+}
 
 async function main() {
   // app.css 會 @import 內嵌字體,單檔版要把它一起攤平進來
   const fonts = await readFile(join(WEB, 'assets', 'css', 'fonts.css'), 'utf8');
   const css = (await readFile(join(WEB, 'assets', 'css', 'app.css'), 'utf8'))
     .replace(/@import url\('fonts\.css'\);/, fonts);
-  const core = (await readFile(join(WEB, 'assets', 'js', 'core.js'), 'utf8'))
-    .replace(/^export /gm, '');
+  const coreSrc = await readFile(join(WEB, 'assets', 'js', 'core.js'), 'utf8');
+  const exportNames = coreExports(coreSrc);
+  const core = coreSrc.replace(/^export /gm, '');
 
   const pageSrc = {};
   for (const p of PAGES) {
@@ -52,7 +56,7 @@ ${css}
 <script type="module">
 ${core}
 
-const C = { ${CORE_EXPORTS.join(', ')} };
+const C = { ${exportNames.join(', ')} };
 
 const PAGE_FNS = {
 ${PAGES.map(p => `  '${p}': async () => {\n${pageSrc[p].split('\n').map(l => '    ' + l).join('\n')}\n  },`).join('\n')}
@@ -82,7 +86,7 @@ route();
   const out = join(ROOT, 'dist', 'warroom.html');
   await writeFile(out, html);
   console.log(`✔ 單檔版完成 → dist/warroom.html(${(html.length / 1024 / 1024).toFixed(2)} MB)`);
-  console.log(`  含 ${PAGES.length} 個頁面、${dataFiles.length} 份資料集、基準日 ${meta.asOf}`);
+  console.log(`  含 ${PAGES.length} 個頁面、${dataFiles.length} 份資料集、${exportNames.length} 個共用函式、基準日 ${meta.asOf}`);
 }
 
 main().catch(err => { console.error('✗ 打包失敗:', err); process.exit(1); });

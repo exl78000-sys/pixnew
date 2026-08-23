@@ -164,6 +164,35 @@ td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .bar.alt > i { background: var(--accent-3); }
 .bar.hot > i { background: linear-gradient(90deg, #ffb020, #e90052); }
 
+/* ── 即時 / 倒數 ────────────────────── */
+.cd { font-variant-numeric: tabular-nums; letter-spacing: .3px; }
+.cd.soon { color: var(--draw); }
+.cd.past { color: var(--ink-3); }
+
+.livedot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent-2); margin-right: 5px; vertical-align: middle;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #e9005266; } 50% { opacity: .45; box-shadow: 0 0 0 6px #e9005200; } }
+@media (prefers-reduced-motion: reduce) { .livedot { animation: none; } }
+
+.scoreline { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.scoreline .sc {
+  font-family: var(--mono); font-size: 30px; font-weight: 700; letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+.scoreline .side { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.scoreline .side.away { flex-direction: row-reverse; }
+
+.xi { display: grid; gap: 3px; }
+.xi .p { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; padding: 2px 0; }
+.xi .p .pos { display: inline-block; width: 30px; font-size: 10px; color: var(--ink-3); font-family: var(--mono); }
+.xi .p.sub { color: var(--ink-2); }
+
+.matchcard { display: block; text-decoration: none; color: inherit; }
+.matchcard:hover { border-color: var(--ink-3); text-decoration: none; }
+
 /* ── 表單 ───────────────────────────── */
 input, select, button.btn {
   background: #1a1226; color: var(--ink); border: 1px solid var(--line);
