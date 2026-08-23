@@ -20,7 +20,7 @@ on:
     branches:
       - main
       - master
-      - 'claude/premier-league-analysis-platform-**'
+      - 'claude/**'
     paths: ['epl/**', '.github/workflows/epl-live.yml']
 
 permissions:
