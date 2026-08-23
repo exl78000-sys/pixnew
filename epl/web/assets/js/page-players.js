@@ -8,7 +8,14 @@ try {
   C.nav();
 
   const byCode = new Map(players.map(p => [p.code, p]));
-  const codes = [...new Set(players.map(p => p.team))].sort((a, b) => C.zh(a).localeCompare(C.zh(b), 'zh-Hant'));
+  // 本季 / 上季 —— 所有數字都明確標示是哪一季,不再混在一起
+  const SEASONS = {
+    current: { key: 'current', label: `本季 ${leaders.seasons.current}`, stat: p => p.current, q: p => p.qualifiedCurrent, radar: p => p.radarCurrent, team: p => p.team },
+    last: { key: 'last', label: `上季 ${leaders.seasons.last}`, stat: p => p.last, q: p => p.qualified, radar: p => p.radar, team: p => p.lastTeam ?? p.team },
+  };
+  let mode = leaders.currentAvailable ? 'current' : 'last';
+  const S = () => SEASONS[mode];
+  const codes = [...new Set(players.map(p => p.team))].sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
   const POS = [['GK', '門將'], ['DEF', '後衛'], ['MID', '中場'], ['FWD', '前鋒']];
   let compare = [];
 
@@ -28,30 +35,28 @@ try {
   app.innerHTML = `
   <div class="page-head">
     <h1>球員</h1>
-    <p>${meta.counts.players} 名 ${meta.currentSeason} 註冊球員,數據來自上季 ${meta.lastSeason} 的完整表現。
-       百分位是跟「同位置、上季出場 600 分鐘以上」的球員比(門將 ${meta.counts.poolSizes.GK} 人、
-       後衛 ${meta.counts.poolSizes.DEF} 人、中場 ${meta.counts.poolSizes.MID} 人、前鋒 ${meta.counts.poolSizes.FWD} 人)。
-       點球員看雷達圖,可以勾選兩人做對比。</p>
+    <p>${meta.counts.players} 名 ${meta.currentSeason} 註冊球員。數據分成<b>本季至今</b>與<b>上季完整賽季</b>兩套,
+       用下面的按鈕切換 —— 每個數字都會標明是哪一季,不會混在一起。
+       百分位是跟同位置、出場達門檻的球員相比;點球員看雷達圖,可勾選兩人對比。</p>
   </div>
 
-  <div class="section"><h2>排行榜</h2><span class="hint">上季數據・掛在當時效力的球隊</span></div>
-  <div class="grid g3">${boardDefs.map(([k, title, unit, fmt]) => `
-    <div class="card"><h3>${title} <span class="dim tiny">${unit}</span></h3>
-      ${(leaders[k] ?? []).slice(0, 8).map((p, i) => `
-        <div class="stat-line" style="cursor:pointer" data-p="${p.code}">
-          <span class="small"><span class="dim mono">${String(i + 1).padStart(2)}</span>
-            ${C.badge(p.lastTeam ?? p.team)} ${C.esc(p.name)}
-            ${p.transferred ? `<span class="tiny dim">→ ${C.zh(p.team)}</span>` : ''}</span>
-          <b class="mono small">${fmt(p.value)}</b></div>`).join('')}
-    </div>`).join('')}</div>
+  <div class="filters" style="margin-bottom:0">
+    <button class="btn" data-season="current">${SEASONS.current.label}</button>
+    <button class="btn" data-season="last">${SEASONS.last.label}</button>
+    <span class="dim small" id="seasonNote"></span>
+  </div>
+  <div id="seasonBanner"></div>
+
+  <div class="section"><h2>排行榜</h2><span class="hint" id="boardHint"></span></div>
+  <div class="grid g3" id="boards"></div>
 
   <div class="section"><h2>全部球員</h2><span class="hint">可排序、可篩選</span></div>
   <div class="filters">
     <input id="q" type="search" placeholder="搜尋球員…" style="min-width:180px">
-    <select id="fTeam"><option value="">所有球隊</option>${codes.map(c => `<option value="${c}">${C.zh(c)}</option>`).join('')}</select>
+    <select id="fTeam"><option value="">所有球隊</option>${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
     <select id="fPos"><option value="">所有位置</option>${POS.map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select>
-    <select id="fMin"><option value="0">不限出場</option><option value="600" selected>上季 600 分鐘以上</option>
-      <option value="1800">上季 1800 分鐘以上</option></select>
+    <select id="fMin"><option value="0" selected>不限出場</option><option value="90">90 分鐘以上</option>
+      <option value="600">600 分鐘以上</option><option value="1800">1800 分鐘以上</option></select>
     <button class="btn" id="cmpBtn">對比模式:關</button>
     <span class="dim small" id="count"></span>
   </div>
@@ -59,7 +64,44 @@ try {
   <div id="list"></div>
   ${C.foot(meta)}`;
 
-  document.querySelectorAll('[data-p]').forEach(el => { el.onclick = () => openPlayer(byCode.get(el.dataset.p)); });
+  function renderSeasonUI() {
+    document.querySelectorAll('[data-season]').forEach(b => b.classList.toggle('on', b.dataset.season === mode));
+    const boards = mode === 'current' ? leaders.current : leaders.last;
+    document.getElementById('boardHint').textContent = mode === 'current'
+      ? `本季 ${leaders.seasons.current} 至今(${leaders.currentRounds} 輪)`
+      : `上季 ${leaders.seasons.last} 完整賽季・掛在當時效力的球隊`;
+    document.getElementById('seasonNote').textContent = mode === 'current'
+      ? `${meta.counts.currentSeasonPlayers} 名球員有本季出場紀錄`
+      : `${meta.counts.poolSizes.MID + meta.counts.poolSizes.DEF + meta.counts.poolSizes.FWD + meta.counts.poolSizes.GK} 名球員達上季百分位門檻`;
+
+    document.getElementById('seasonBanner').innerHTML = (mode === 'current' && !boards)
+      ? `<div class="note" style="margin-top:10px"><b>本季 ${leaders.seasons.current} 還沒有逐球員數據</b> ——
+          賽季剛開打,上游資料源要等該輪結束後才會發布。<br>
+          有資料之後執行 <span class="mono">npm run season</span> 再 <span class="mono">npm run build</span>,
+          這一頁就會自動填上本季數字。現在先看上季。</div>`
+      : '';
+
+    if (!boards) { document.getElementById('boards').innerHTML = ''; return; }
+    document.getElementById('boards').innerHTML = boardDefs.map(([k, title, unit, fmt]) => `
+      <div class="card"><h3>${title} <span class="dim tiny">${unit}</span></h3>
+        ${(boards[k] ?? []).slice(0, 8).map((p, i) => `
+          <div class="stat-line" style="cursor:pointer" data-p="${p.code}">
+            <span class="small"><span class="dim mono">${String(i + 1).padStart(2)}</span>
+              ${C.badge(p.lastTeam ?? p.team)} ${C.esc(p.name)}
+              ${p.transferred ? `<span class="tiny dim">→ ${C.name(p.team)}</span>` : ''}</span>
+            <b class="mono small">${fmt(p.value)}</b></div>`).join('') || '<div class="dim small">本季尚無資料</div>'}
+      </div>`).join('');
+    document.querySelectorAll('[data-p]').forEach(el => { el.onclick = () => openPlayer(byCode.get(el.dataset.p)); });
+  }
+
+  document.querySelectorAll('[data-season]').forEach(b => {
+    b.onclick = () => {
+      if (b.dataset.season === 'current' && !leaders.current) { mode = 'current'; renderSeasonUI(); render(); return; }
+      mode = b.dataset.season;
+      renderSeasonUI();
+      render();
+    };
+  });
 
   let cmpMode = false;
   document.getElementById('cmpBtn').onclick = e => {
@@ -77,26 +119,28 @@ try {
     const minMin = +document.getElementById('fMin').value;
     const rows = players.filter(p =>
       (!t || p.team === t) && (!pos || p.pos === pos) &&
-      ((p.last?.minutes ?? 0) >= minMin) &&
+      ((S().stat(p)?.minutes ?? 0) >= minMin) &&
       (!q || p.name.toLowerCase().includes(q) || p.fullName.toLowerCase().includes(q)));
     document.getElementById('count').textContent = `共 ${rows.length} 人`;
     document.getElementById('list').innerHTML = C.table(rows, [
       { key: 'name', label: '球員', value: p => p.name,
         render: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}` },
-      { key: 'team', label: '球隊', value: p => C.zh(p.team), render: p => C.teamCell(p.team) },
+      { key: 'team', label: '球隊', value: p => C.name(p.team), render: p => C.teamCell(p.team) },
       { key: 'pos', label: '位置', value: p => ['GK', 'DEF', 'MID', 'FWD'].indexOf(p.pos), render: p => p.posZh },
       { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true },
-      { key: 'minutes', label: '分鐘', value: p => p.last?.minutes ?? 0, num: true },
-      { key: 'goals', label: '進球', value: p => p.last?.goals ?? 0, num: true },
-      { key: 'assists', label: '助攻', value: p => p.last?.assists ?? 0, num: true },
-      { key: 'xg90', label: 'xG/90', value: p => p.last?.xg90 ?? 0, num: true },
-      { key: 'xa90', label: 'xA/90', value: p => p.last?.xa90 ?? 0, num: true },
-      { key: 'finishing', label: '終結', value: p => p.last?.finishing ?? 0, num: true,
-        title: '進球 − 期望進球', render: p => (p.last ? C.signed(p.last.finishing, 1) : '—') },
-      { key: 'defCon90', label: '防守貢獻/90', value: p => p.last?.defCon90 ?? 0, num: true },
+      { key: 'minutes', label: '分鐘', value: p => S().stat(p)?.minutes ?? 0, num: true },
+      { key: 'goals', label: '進球', value: p => S().stat(p)?.goals ?? 0, num: true },
+      { key: 'assists', label: '助攻', value: p => S().stat(p)?.assists ?? 0, num: true },
+      { key: 'xg90', label: 'xG/90', value: p => S().stat(p)?.xg90 ?? 0, num: true },
+      { key: 'xa90', label: 'xA/90', value: p => S().stat(p)?.xa90 ?? 0, num: true },
+      { key: 'finishing', label: '終結', value: p => S().stat(p)?.finishing ?? 0, num: true,
+        title: '進球 − 期望進球', render: p => (S().stat(p) ? C.signed(S().stat(p).finishing, 1) : '—') },
+      { key: 'defCon90', label: '防守貢獻/90', value: p => S().stat(p)?.defCon90 ?? 0, num: true },
       { key: 'price', label: '身價', value: p => p.price, num: true, render: p => `£${p.price.toFixed(1)}m` },
     ], { sortKey: 'minutes', desc: true, onRow: p => (cmpMode ? toggleCompare(p) : openPlayer(p)) });
   };
+
+  renderSeasonUI();
 
   ['q', 'fTeam', 'fPos', 'fMin'].forEach(id => {
     const el = document.getElementById(id);
@@ -143,22 +187,37 @@ try {
       <div class="card">
         <div class="spread">
           <div><div style="font-size:19px;font-weight:800">${C.esc(p.fullName)}</div>
-            <div class="small muted">${p.posZh}・${p.age ?? '?'} 歲・${t.zh}
+            <div class="small muted">${p.posZh}・${p.age ?? '?'} 歲・${t.en}
               ${p.squadNumber ? `・背號 ${p.squadNumber}` : ''}・£${p.price.toFixed(1)}m</div></div>
           ${p.status !== 'a' ? `<span class="pill bad">${p.statusZh}</span>` : '<span class="pill accent">可出賽</span>'}
         </div>
         ${p.news ? `<div class="note" style="margin-top:10px">${C.esc(p.news)}</div>` : ''}
-        ${p.transferred ? `<div class="note info" style="margin-top:10px">上季效力 ${C.zh(p.lastTeam)},本季已加盟 ${t.zh};下方數據為在原隊的表現。</div>` : ''}
+        ${p.transferred ? `<div class="note info" style="margin-top:10px">上季效力 ${C.name(p.lastTeam)},本季已加盟 ${t.en};下方數據為在原隊的表現。</div>` : ''}
         ${p.isNewFace ? '<div class="note info" style="margin-top:10px">上季沒有英超出場紀錄(新援、新秀或長期缺陣),沒有可比較的數據。</div>' : ''}
       </div>
 
-      ${p.last && p.qualified ? `<div class="card"><h3>能力雷達</h3>
-        ${C.radar([{ name: p.name, color: t.colors[0], values: p.radar }], { size: 300 })}
-        <div class="tiny dim center">與同位置、上季出場 600 分鐘以上的球員相比的百分位</div>
-        <div style="margin-top:12px">${p.radar.map(r => pctLine(r.label, r.value, r.raw)).join('')}</div>
-      </div>` : ''}
+      ${(() => {
+        const useCurrent = mode === 'current' && p.radarCurrent && p.qualifiedCurrent;
+        const radar = useCurrent ? p.radarCurrent : (p.qualified ? p.radar : null);
+        if (!radar) return '';
+        return `<div class="card"><h3>能力雷達 <span class="dim tiny">${useCurrent ? `本季 ${leaders.seasons.current}` : `上季 ${leaders.seasons.last}`}</span></h3>
+          ${C.radar([{ name: p.name, color: t.colors[0], values: radar }], { size: 300 })}
+          <div class="tiny dim center">與同位置、出場達門檻的球員相比的百分位</div>
+          <div style="margin-top:12px">${radar.map(r => pctLine(r.label, r.value, r.raw)).join('')}</div>
+        </div>`;
+      })()}
 
-      ${p.last ? `<div class="card"><h3>上季數據(${meta.lastSeason})</h3>
+      ${p.current ? `<div class="card"><h3>本季至今(${leaders.seasons.current})
+          <span class="dim tiny">${p.appearances} 場</span></h3>
+        ${line('出場 / 先發', `${p.current.minutes} 分鐘 / ${p.current.starts} 場`)}
+        ${line('進球 / 助攻', `${p.current.goals} / ${p.current.assists}`)}
+        ${line('期望進球 xG / 助攻 xA', `${p.current.xG} / ${p.current.xA}`)}
+        ${line('每 90 分鐘進球參與 xGI', p.current.xgi90)}
+        ${line('防守貢獻 / 90', p.current.defCon90)}
+        ${line('FPL 得分', p.current.points)}
+      </div>` : `<div class="note info">本季 ${leaders.seasons.current} 尚無出場資料。</div>`}
+
+      ${p.last ? `<div class="card"><h3>上季完整賽季(${meta.lastSeason})</h3>
         ${line('出場 / 先發', `${p.last.minutes} 分鐘 / ${p.last.starts} 場`)}
         ${line('進球 / 助攻', `${p.last.goals} / ${p.last.assists}`)}
         ${line('期望進球 xG / 助攻 xA', `${p.last.xG} / ${p.last.xA}`)}
@@ -177,7 +236,7 @@ try {
         ${p.setPieces.fk ? line('直接自由球', `第 ${p.setPieces.fk} 順位`) : ''}
         ${p.setPieces.corner ? line('角球 / 間接球', `第 ${p.setPieces.corner} 順位`) : ''}
       </div>` : ''}
-      <div><a href="${C.link('teams', { code: p.team })}">看 ${t.zh} 的完整剖析 →</a></div>`);
+      <div><a href="${C.link('teams', { code: p.team })}">看 ${t.en} 的完整剖析 →</a></div>`);
   }
 
   const pc = C.qs('code');

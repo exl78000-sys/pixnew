@@ -28,8 +28,8 @@ try {
     const s = t.sim, ls = t.lastSeason;
     return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
       <div class="row" style="gap:11px">${C.badge(t.code, 'lg')}
-        <div><div style="font-weight:800;font-size:16px">${t.zh}</div>
-          <div class="tiny dim">${t.venue}</div></div></div>
+        <div><div style="font-weight:800;font-size:16px">${t.en}</div>
+          <div class="tiny dim">${t.zh}・${t.venue}</div></div></div>
       <div class="grid g3" style="margin-top:12px;gap:8px">
         <div><div class="tiny dim">上季</div><div class="mono">${ls ? `第 ${ls.pos} 名 · ${ls.pts} 分` : '<span class="pill">升班馬</span>'}</div></div>
         <div><div class="tiny dim">期望積分</div><div class="mono"><b>${s?.expectedPoints ?? '—'}</b></div></div>
@@ -55,8 +55,8 @@ try {
 
     app.innerHTML = `
     <div class="page-head">
-      <div class="row" style="gap:14px">${C.badge(t.code, 'lg')}
-        <div><h1 style="margin:0">${t.zh}<span class="dim" style="font-size:15px;font-weight:400"> ${t.nickname}</span></h1>
+      <div class="row" style="gap:14px">${C.badge(t.code, 'xl')}
+        <div><h1 style="margin:0">${t.en}<span class="dim" style="font-size:15px;font-weight:400"> ${t.zh}・${t.nickname}</span></h1>
           <p class="small">${t.venue}・${t.city}・可容納 ${t.capacity.toLocaleString()} 人
             ${co?.name ? `・教練 <b>${co.zh}</b>(${co.nat})` : '・教練資料待補'}</p></div></div>
       <div class="row small" style="margin-top:6px"><a href="${C.link('teams')}">← 回球隊列表</a></div>
@@ -94,12 +94,12 @@ try {
         ${line('逆轉 / 被逆轉', `${ls.half.comeback} / ${ls.half.collapse}`)}
         <div class="tiny dim" style="margin-top:8px">領先保分率 = 半場領先的比賽中,實際拿到的分數佔可能分數的比例。</div>
       </div>
-    </div>` : `<div class="note" style="margin-top:16px">${t.zh} 上季不在英超,所有上季指標從缺;
+    </div>` : `<div class="note" style="margin-top:16px">${t.en} 上季不在英超,所有上季指標從缺;
       模型改用「聯盟後段先驗」估計強度,不確定性標得比較大。</div>`}
 
     <div class="grid g2" style="margin-top:14px">
       ${tac ? `<div class="card"><h3>戰術風格</h3>
-        ${C.radar([{ name: t.zh, color: t.colors[0], values: tac.radar }], { size: 300 })}
+        ${C.radar([{ name: t.en, color: t.colors[0], values: tac.radar }], { size: 300 })}
         <div class="tags" style="margin-top:8px">${tac.tags.map(x => `<span class="pill accent">${x}</span>`).join('')}</div>
         <div class="tiny dim" style="margin-top:8px">數值為該指標在 20 隊中的百分位。</div>
       </div>
@@ -134,11 +134,11 @@ try {
     ${t.schedule ? `<div class="section"><h2>開季賽程</h2><span class="hint">FPL 官方難度 1(易)~5(難)</span></div>
     <div class="card"><div class="grid g3">
       ${t.schedule.detail.map(d => `<div class="stat-line">
-        <span class="small">第 ${d.event} 輪 ${d.home ? '主' : '客'} ${C.zh(d.opp)}</span>
+        <span class="small">第 ${d.event} 輪 ${d.home ? '主' : '客'} ${C.name(d.opp)}</span>
         <span class="pill ${d.diff >= 4 ? 'bad' : d.diff <= 2 ? 'accent' : 'warn'}">${d.diff}</span></div>`).join('')}
     </div><div class="tiny dim" style="margin-top:8px">前 ${t.schedule.detail.length} 輪平均難度 ${t.schedule.avg}</div></div>` : ''}
 
-    <div class="section"><h2>陣容</h2><span class="hint">${squad.length} 人・數據為上季表現</span></div>
+    <div class="section"><h2>陣容</h2><span class="hint">${squad.length} 人・下表數據為上季 ${meta.lastSeason} 的表現</span></div>
     ${out.length ? `<div class="note" style="margin-bottom:10px">傷停/異動 ${out.length} 人:
       ${out.map(p => `${C.esc(p.name)}(${C.esc(p.statusZh)})`).join('、')}</div>` : ''}
     <div id="squad"></div>
@@ -149,7 +149,7 @@ try {
       const gf = isHome ? m.fh : m.fa, ga = isHome ? m.fa : m.fh;
       const r = gf > ga ? 'W' : gf === ga ? 'D' : 'L';
       return `<div class="stat-line"><span class="small">
-        <i class="frm ${r}">${r}</i> ${isHome ? '主' : '客'} vs ${C.zh(isHome ? m.away : m.home)}</span>
+        <i class="frm ${r}">${r}</i> ${isHome ? '主' : '客'} vs ${C.name(isHome ? m.away : m.home)}</span>
         <span class="mono small">${gf} - ${ga} <span class="dim">${C.dateFull(m.date)}</span></span></div>`;
     }).join('')}</div>
 
@@ -159,19 +159,23 @@ try {
         const p = f.prediction;
         const win = isHome ? p.home : p.away;
         return `<a href="${C.link('fixtures', { id: f.id })}" style="color:inherit;text-decoration:none">
-          <div class="stat-line"><span class="small">${C.dateFull(f.date)} ${isHome ? '主' : '客'} vs ${C.zh(isHome ? f.away : f.home)}</span>
+          <div class="stat-line"><span class="small">${C.dateFull(f.date)} ${isHome ? '主' : '客'} vs ${C.name(isHome ? f.away : f.home)}</span>
           <span class="mono small">勝率 ${C.pct(win, 0)}</span></div></a>`;
       }).join('')}</div>` : ''}
     ${C.foot(meta)}`;
 
     document.getElementById('squad').innerHTML = C.table(squad, [
       { key: 'name', label: '球員', value: p => p.name,
-        render: p => `${C.esc(p.name)}${p.squadNumber ? ` <span class="dim tiny">#${p.squadNumber}</span>` : ''}${p.status !== 'a' ? ' <span class="pill bad tiny">' + p.statusZh + '</span>' : ''}${p.transferred ? ` <span class="pill tiny">來自 ${C.zh(p.lastTeam)}</span>` : ''}` },
+        render: p => `${C.esc(p.name)}${p.squadNumber ? ` <span class="dim tiny">#${p.squadNumber}</span>` : ''}${p.status !== 'a' ? ' <span class="pill bad tiny">' + p.statusZh + '</span>' : ''}${p.transferred ? ` <span class="pill tiny">來自 ${C.name(p.lastTeam)}</span>` : ''}` },
       { key: 'pos', label: '位置', value: p => ['GK', 'DEF', 'MID', 'FWD'].indexOf(p.pos), render: p => p.posZh },
       { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true },
       { key: 'minutes', label: '上季分鐘', value: p => p.last?.minutes ?? 0, num: true, render: p => p.last?.minutes ?? '—' },
-      { key: 'goals', label: '進球', value: p => p.last?.goals ?? 0, num: true, render: p => p.last?.goals ?? '—' },
-      { key: 'assists', label: '助攻', value: p => p.last?.assists ?? 0, num: true, render: p => p.last?.assists ?? '—' },
+      { key: 'goals', label: '上季進球', value: p => p.last?.goals ?? 0, num: true, render: p => p.last?.goals ?? '—' },
+      { key: 'assists', label: '上季助攻', value: p => p.last?.assists ?? 0, num: true, render: p => p.last?.assists ?? '—' },
+      { key: 'curMin', label: '本季分鐘', value: p => p.current?.minutes ?? 0, num: true,
+        render: p => p.current?.minutes ?? '—' },
+      { key: 'curGoals', label: '本季進球', value: p => p.current?.goals ?? 0, num: true,
+        render: p => p.current?.goals ?? '—' },
       { key: 'xgi90', label: 'xGI/90', value: p => p.last?.xgi90 ?? 0, num: true, render: p => (p.qualified ? p.last.xgi90 : '—') },
       { key: 'defCon90', label: '防守貢獻/90', value: p => p.last?.defCon90 ?? 0, num: true, render: p => (p.qualified ? p.last.defCon90 : '—') },
       { key: 'price', label: '身價', value: p => p.price, num: true, render: p => `£${p.price.toFixed(1)}m` },

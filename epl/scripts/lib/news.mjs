@@ -41,7 +41,8 @@ export function translateNews(text) {
   return out;
 }
 
-const zh = (teams, code) => teams.byCode.get(code)?.zh ?? code;
+// 隊名一律顯示英文(中文名只在球隊詳情頁做對照)
+const zh = (teams, code) => teams.byCode.get(code)?.en ?? teams.byCode.get(code)?.zh ?? code;
 
 // 1) 傷停名單 —— 來自 FPL 的真實欄位(status / news / news_added)
 export function injuryFeed(players, teams, asOf) {

@@ -13,7 +13,9 @@
     "news": "node scripts/fetch-news.mjs",
     "bundle": "node scripts/bundle.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",
-    "live": "node scripts/fetch-live.mjs"
+    "live": "node scripts/fetch-live.mjs",
+    "crests": "node scripts/fetch-crests.mjs",
+    "season": "node scripts/fetch-season.mjs"
   },
   "engines": {
     "node": ">=18"

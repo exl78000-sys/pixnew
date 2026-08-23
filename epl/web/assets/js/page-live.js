@@ -53,7 +53,7 @@ try {
     ${kpi('本季已完賽', `${curPlayed} 場`, `${meta.currentSeason}・共 ${fixtures.length} 場`)}
     ${kpi('進行中', inPlay.length, live.available ? `第 ${live.round} 輪` : '尚無即時資料')}
     ${kpi('下一場開賽', upcoming[0] ? C.countdown(upcoming[0].kickoff) : '—',
-      upcoming[0] ? `${C.zh(upcoming[0].home)} vs ${C.zh(upcoming[0].away)}` : '本季賽程已結束')}
+      upcoming[0] ? `${C.name(upcoming[0].home)} vs ${C.name(upcoming[0].away)}` : '本季賽程已結束')}
     ${kpi('本輪已完賽', done.length, live.available ? `第 ${live.round} 輪共 ${matches.length} 場` : '—')}
   </div>
 
@@ -82,7 +82,7 @@ try {
   if (curPlayed > 0) {
     document.getElementById('curTable').innerHTML = C.table(cur.filter(r => r.p > 0), [
       { key: 'pos', label: '#', value: r => r.pos, num: true },
-      { key: 'team', label: '球隊', value: r => C.zh(r.code), render: r => C.teamCell(r.code) },
+      { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
       { key: 'p', label: '賽', value: r => r.p, num: true },
       { key: 'w', label: '勝', value: r => r.w, num: true },
       { key: 'd', label: '和', value: r => r.d, num: true },
@@ -104,9 +104,9 @@ try {
   // 這兩個要用函式宣告 —— 上面的模板字串會先執行,const 會落在暫時死區
   function scoreLine(home, away, middle) {
     return `<div class="scoreline">
-      <div class="side">${C.badge(home)}<b>${C.zh(home)}</b></div>
+      <div class="side">${C.badge(home)}<b>${C.name(home)}</b></div>
       <div class="sc">${middle}</div>
-      <div class="side away">${C.badge(away)}<b>${C.zh(away)}</b></div>
+      <div class="side away">${C.badge(away)}<b>${C.name(away)}</b></div>
     </div>`;
   }
   function scoreOf(m) { return scoreLine(m.home, m.away, `${m.hs ?? '-'} : ${m.as ?? '-'}`); }
@@ -122,7 +122,7 @@ try {
         ・場上 xG ${H.xG} : ${A.xG}</div>
       ${p ? `${C.probBar(p)}
         <div class="tiny dim center" style="margin-top:6px">剩餘時間期望進球 ${p.xgRestHome} : ${p.xgRestAway}
-          ・下一球 ${C.zh(m.home)} ${C.pct(p.nextGoal.home, 0)} / ${C.zh(m.away)} ${C.pct(p.nextGoal.away, 0)}</div>` : ''}
+          ・下一球 ${C.name(m.home)} ${C.pct(p.nextGoal.home, 0)} / ${C.name(m.away)} ${C.pct(p.nextGoal.away, 0)}</div>` : ''}
       ${H.scorers.length || A.scorers.length ? `<div class="tiny" style="margin-top:8px">
         ⚽ ${[...H.scorers.map(s => `${C.esc(s.name)}${s.goals > 1 ? ' ×' + s.goals : ''}`),
              ...A.scorers.map(s => `${C.esc(s.name)}${s.goals > 1 ? ' ×' + s.goals : ''}`)].join('、')}</div>` : ''}
@@ -162,22 +162,8 @@ try {
   function openReport(m) {
     if (!m) return;
     const H = m.sides[m.home], A = m.sides[m.away];
-    const line = (l, hv, av) => `<div class="stat-line"><b class="mono">${hv}</b><span class="small muted">${l}</span><b class="mono">${av}</b></div>`;
-    const xiHtml = s => `<div class="xi">
-      ${s.xi.map(p => `<div class="p"><span><span class="pos">${p.pos}</span>${C.esc(p.name)}
-        ${p.goals ? ` <span style="color:var(--accent)">⚽${p.goals > 1 ? p.goals : ''}</span>` : ''}
-        ${p.assists ? ` <span class="dim">🅰${p.assists > 1 ? p.assists : ''}</span>` : ''}
-        ${p.red ? ' <span style="color:var(--loss)">🟥</span>' : p.yellow ? ' <span style="color:var(--draw)">🟨</span>' : ''}</span>
-        <span class="dim mono tiny">${p.minutes}'</span></div>`).join('')}
-      ${s.bench.length ? `<div class="tiny dim" style="margin-top:6px">替補上場(時間為推估)</div>
-        ${s.bench.map(p => `<div class="p sub"><span><span class="pos">${p.pos}</span>${C.esc(p.name)}
-          ${p.goals ? ` <span style="color:var(--accent)">⚽${p.goals > 1 ? p.goals : ''}</span>` : ''}
-          ${p.assists ? ' <span class="dim">🅰</span>' : ''}</span>
-          <span class="dim mono tiny">≈${p.onAbout}' 上</span></div>`).join('')}` : ''}
-    </div>`;
-
     const p = m.inplay;
-    C.drawer(`${C.badge(m.home)} ${C.zh(m.home)} ${m.hs ?? '-'}-${m.as ?? '-'} ${C.zh(m.away)} ${C.badge(m.away)}`, `
+    C.drawer(`${C.badge(m.home)} ${C.name(m.home)} ${m.hs ?? '-'}-${m.as ?? '-'} ${C.name(m.away)} ${C.badge(m.away)}`, `
       <div class="card">
         <div class="spread">
           <span class="small dim">${C.kickoffLocal(m.kickoff)}・第 ${m.round} 輪</span>
@@ -193,48 +179,7 @@ try {
             ・預期比分 ${m.preMatch.xgHome}:${m.preMatch.xgAway}</span></div>` : ''}
       </div>
 
-      ${m.notes.length ? `<div class="card"><h3>戰術解讀</h3>
-        ${m.notes.map(n => `<div class="stat-line"><span class="small">・${C.esc(n)}</span></div>`).join('')}
-      </div>` : ''}
-
-      <div class="card"><h3>實際排出的陣容</h3>
-        <div class="grid g2">
-          <div><div class="row small" style="gap:7px;margin-bottom:6px">${C.badge(m.home)}<b>${C.zh(m.home)}</b>
-            <span class="pill">${H.shape.label}</span></div>
-            <div class="tiny dim" style="margin-bottom:6px">${H.shape.shapeZh}
-              ${H.seasonShape ? `・上季常態 ${H.seasonShape.label}` : ''}</div>
-            ${xiHtml(H)}</div>
-          <div><div class="row small" style="gap:7px;margin-bottom:6px">${C.badge(m.away)}<b>${C.zh(m.away)}</b>
-            <span class="pill">${A.shape.label}</span></div>
-            <div class="tiny dim" style="margin-bottom:6px">${A.shape.shapeZh}
-              ${A.seasonShape ? `・上季常態 ${A.seasonShape.label}` : ''}</div>
-            ${xiHtml(A)}</div>
-        </div>
-        <div class="tiny dim" style="margin-top:10px">陣型依 FPL 的位置分類統計先發人數,邊鋒會被算進中場;
-          換人時間由出場分鐘反推,標示 ≈ 者為推估值。</div>
-      </div>
-
-      <div class="card"><h3>數據對比</h3>
-        <div class="row small dim" style="justify-content:space-between;margin-bottom:4px">
-          <span>${C.zh(m.home)}</span><span>${C.zh(m.away)}</span></div>
-        ${line('進球', m.hs ?? 0, m.as ?? 0)}
-        ${line('期望進球 xG', H.xG, A.xG)}
-        ${line('期望助攻 xA', H.xA, A.xA)}
-        ${line('黃牌', H.yellow, A.yellow)}
-        ${line('紅牌', H.red, A.red)}
-        ${line('使用球員', H.used, A.used)}
-        ${H.keeper && A.keeper ? line('門將撲救', H.keeper.saves, A.keeper.saves) : ''}
-        ${H.keeper && A.keeper ? line('門將少失球', C.signed(H.keeper.stopped, 2), C.signed(A.keeper.stopped, 2)) : ''}
-      </div>
-
-      <div class="card"><h3>本場最佳(FPL 表現分)</h3>
-        <div class="grid g2">
-          <div>${H.best.map(b => `<div class="stat-line"><span class="small">${C.esc(b.name)}
-            <span class="dim tiny">${b.pos} ${b.minutes}'</span></span><b class="mono">${b.bps}</b></div>`).join('')}</div>
-          <div>${A.best.map(b => `<div class="stat-line"><span class="small">${C.esc(b.name)}
-            <span class="dim tiny">${b.pos} ${b.minutes}'</span></span><b class="mono">${b.bps}</b></div>`).join('')}</div>
-        </div>
-      </div>
+      ${C.matchReportCards(m)}
 
       ${m.fixtureId ? `<div><a href="${C.link('fixtures', { id: m.fixtureId })}">看這場的賽前完整分析 →</a></div>` : ''}`);
   }
