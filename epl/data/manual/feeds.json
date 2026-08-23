@@ -1,0 +1,10 @@
+{
+  "_note": "外部新聞來源(選用)。跑 npm run news 會抓這些 RSS,存成 data/raw/news.json,build 時自動併入動態頁。",
+  "_warning": "某些執行環境(例如受限的雲端沙箱)只允許連 GitHub,抓不到這些網域;抓不到不影響其他功能。",
+  "feeds": [
+    { "name": "BBC Sport 英超", "url": "https://feeds.bbci.co.uk/sport/football/premier-league/rss.xml" },
+    { "name": "Sky Sports 英超", "url": "https://feeds.skynews.com/feeds/rss/sports.xml" },
+    { "name": "Guardian 英超", "url": "https://www.theguardian.com/football/premierleague/rss" }
+  ],
+  "maxPerFeed": 15
+}

@@ -1,0 +1,18 @@
+{
+  "name": "epl-warroom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "英超戰情室 — Premier League match / player / tactics / coach analysis platform",
+  "type": "module",
+  "scripts": {
+    "fetch": "node scripts/fetch.mjs",
+    "build": "node scripts/build.mjs",
+    "all": "node scripts/fetch.mjs --force && node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test": "node scripts/test.mjs",
+    "news": "node scripts/fetch-news.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

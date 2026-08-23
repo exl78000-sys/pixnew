@@ -1,3 +1,14 @@
+# pixnew
+
+這個 repo 目前放兩個獨立專案:
+
+| 專案 | 內容 | 說明 |
+|---|---|---|
+| [`unity/`](unity/) + [`docs/`](docs/) | **AI 魚缸公寓** — Unity 2D 觀察箱遊戲 | 見下方 |
+| [`epl/`](epl/) | **英超戰情室** — 英超比賽分析平台 | 球員 / 戰術 / 教練 / 動態 / 賽果預測,Node + 原生前端,`cd epl && npm run build && npm run serve` |
+
+---
+
 # AI 魚缸公寓(暫定名)
 
 > 靈感來自林亦 LYi《我让六个AI合租,居然出了个海王?》與史丹佛 Generative Agents 論文。
