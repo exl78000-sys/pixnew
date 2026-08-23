@@ -26,6 +26,12 @@ unity/Assets/Art/Characters/*.png
 unity/Assets/StreamingAssets/config.json
 unity/Assets/StreamingAssets/config.json.meta
 
+# ── 英超戰情室(epl/)────────────────
+# 注意:epl/data/raw 與 epl/web/data 是「刻意進版控」的 —— 
+# clone 下來不用連網、不用 build 就能直接開站。
+node_modules/
+epl/.cache/
+
 # ── 通用 ──────────────────────────────
 *.log
 .DS_Store

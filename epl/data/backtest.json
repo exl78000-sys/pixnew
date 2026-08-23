@@ -1,0 +1,28 @@
+{
+  "ranAt": "2026-08-23T11:07:26.921Z",
+  "season": "2025-26",
+  "games": 380,
+  "models": {
+    "poisson": {
+      "rps": 0.2084,
+      "logLoss": 1.0268,
+      "hitRate": 0.4789
+    },
+    "elo": {
+      "rps": 0.2085,
+      "logLoss": 1.0264,
+      "hitRate": 0.4711
+    },
+    "blend": {
+      "rps": 0.2076,
+      "logLoss": 1.0237,
+      "hitRate": 0.4868
+    },
+    "baseline": {
+      "rps": 0.2274,
+      "logLoss": 1.0808,
+      "hitRate": 0.4263
+    }
+  },
+  "chosen": "blend"
+}
