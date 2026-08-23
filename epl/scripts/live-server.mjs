@@ -56,6 +56,9 @@ async function poll() {
 
     cache = {
       available: true,
+      // 讓前端知道自己是被「即時模式」服務的,不必再多發一個探測請求
+      liveMode: true,
+      pollIntervalMs: INTERVAL,
       source: state.source, sourceLabel: state.sourceLabel, demo: !!state.demo,
       season: state.season ?? CURRENT_SEASON, round: state.round,
       fetchedAt: state.fetchedAt,
