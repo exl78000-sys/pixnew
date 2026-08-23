@@ -31,7 +31,9 @@ try {
       `${meta.currentSeason}・已賽 ${played.length} / ${fixtures.length} 場`)}
     ${kpi('模型準度', bt.available ? bt.rps : '—', bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : '執行 npm test 後產生')}
     ${kpi('命中率', bt.available ? C.pct(bt.hitRate, 1) : '—', bt.available ? `${bt.season} ${bt.games} 場走查回測` : '尚未回測')}
-    ${kpi('傷停名單', injuries.length, `涵蓋 ${meta.counts.players} 名註冊球員`)}
+    ${meta.live?.demo === false && meta.live?.counts?.live > 0
+      ? kpi('進行中', `${meta.live.counts.live} 場`, `第 ${meta.live.round} 輪・點上方實時戰況`)
+      : kpi('傷停名單', injuries.length, `涵蓋 ${meta.counts.players} 名註冊球員`)}
   </div>
 
   <div class="section"><h2>本季預測積分榜</h2>
@@ -42,7 +44,8 @@ try {
     <div class="card">
       <h2>接下來的比賽</h2>
       <div id="next"></div>
-      <div style="margin-top:10px"><a href="${C.link('fixtures')}">看完整賽程與單場分析 →</a></div>
+      <div style="margin-top:10px"><a href="${C.link('live')}">看實時戰況與開賽倒數 →</a>
+        ・<a href="${C.link('fixtures')}">完整賽程</a></div>
     </div>
     <div class="card">
       <h2>最新動態</h2>
@@ -96,9 +99,9 @@ try {
         <div style="min-width:0">
           <div class="row" style="gap:7px">${C.badge(f.home)}<b>${C.zh(f.home)}</b>
             <span class="dim">vs</span>${C.badge(f.away)}<b>${C.zh(f.away)}</b></div>
-          <div class="tiny dim">${C.dateFull(f.date)} ${f.time ?? ''}・第 ${f.round} 輪・
-            預期比分 ${f.prediction.xgHome}:${f.prediction.xgAway}
-            ${f.date < meta.asOf ? '・<span class="pill warn tiny">賽果待更新</span>' : ''}</div>
+          <div class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪・
+            預期比分 ${f.prediction.xgHome}:${f.prediction.xgAway}</div>
+          <div class="tiny"><span class="dim">開賽倒數 </span>${C.countdown(f.kickoff)}</div>
         </div>
         ${C.probBar(f.prediction)}
       </div></a>`).join('');
@@ -113,6 +116,8 @@ try {
       </div>
       <div class="tiny muted" style="margin-top:2px">${C.esc(n.body).slice(0, 96)}</div>
     </div>`).join('');
+
+  C.startCountdowns();
 
   /* 上季積分榜 */
   document.getElementById('lastTable').innerHTML = C.table(table.last, [

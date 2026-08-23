@@ -9,6 +9,7 @@ import { loadSeason } from './lib/matches.mjs';
 import { fitPoisson, applyPromotedPrior, predict } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { round } from './lib/util.mjs';
+import { inPlay } from './lib/inplay.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -94,9 +95,21 @@ function main() {
   writeFileSync(join(ROOT, 'data', 'backtest.json'), JSON.stringify(report, null, 2));
   console.log('→ 已寫入 data/backtest.json(build 時會帶進網站)');
 
+  // 即時勝率模型的自我檢查:性質對不對比數字漂亮更重要
+  console.log('\n▶ 即時勝率模型自我檢查');
+  const L = { lambdaHome: 1.8, lambdaAway: 1.1 };
+  const checks = [
+    ['機率總和為 1', Math.abs(((x => x.home + x.draw + x.away)(inPlay({ ...L }))) - 1) < 1e-3],
+    ['領先時間越晚勝率越高', inPlay({ ...L, hs: 1, minute: 80 }).home > inPlay({ ...L, hs: 1, minute: 45 }).home],
+    ['完賽後收斂成實際結果', inPlay({ ...L, hs: 2, as: 1, minute: 90, finished: true }).home === 1],
+    ['紅牌會壓低該隊勝率', inPlay({ ...L, minute: 20, redHome: 1 }).home < inPlay({ ...L, minute: 20 }).home],
+  ];
+  let inplayFail = 0;
+  for (const [name, ok] of checks) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) inplayFail++; }
+
   const better = report.models.blend.rps < report.models.baseline.rps;
-  console.log(better ? '✔ 預測引擎優於基準線' : '✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better) process.exitCode = 1;
+  console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
+  if (!better || inplayFail) process.exitCode = 1;
 }
 
 main();

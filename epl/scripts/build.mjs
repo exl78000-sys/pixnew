@@ -18,6 +18,7 @@ import { buildPlayers, leaderboards } from './lib/players.mjs';
 import { buildTactics } from './lib/tactics.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
+import { buildMatchReport } from './lib/matchreport.mjs';
 import { parseCSVObjects, num } from './lib/csv.mjs';
 import { round } from './lib/util.mjs';
 
@@ -44,7 +45,8 @@ function loadDifficulty(root, codeOf, teamById) {
     const h = teamById.get(r.team_h)?.code, a = teamById.get(r.team_a)?.code;
     if (!h || !a) continue;
     const hd = num(r.team_h_difficulty), ad = num(r.team_a_difficulty);
-    byPair.set(`${h}|${a}`, { home: hd, away: ad, event: num(r.event) });
+    // FPL 的 kickoff_time 是 UTC 且會反映轉播改期,比 openfootball 的預設時段準
+    byPair.set(`${h}|${a}`, { home: hd, away: ad, event: num(r.event), kickoff: r.kickoff_time || null });
     for (const [code, diff, opp, isHome] of [[h, hd, a, true], [a, ad, h, false]]) {
       if (!byTeam.has(code)) byTeam.set(code, []);
       byTeam.get(code).push({ event: num(r.event), diff, opp, home: isHome, kickoff: r.kickoff_time });
@@ -70,6 +72,10 @@ async function main() {
     };
   }
 
+  // 即時比賽狀態(npm run live 產生;沒有就當作本輪尚無任何開踢資訊)
+  const livePath = join(ROOT, 'data', 'raw', 'live.json');
+  const liveState = existsSync(livePath) ? JSON.parse(await readFile(livePath, 'utf8')) : null;
+
   const T = loadTeams(ROOT);
   const seasons = [...new Set([...HISTORY_SEASONS, CURRENT_SEASON])];
   const bySeason = new Map(seasons.map(s => [s, loadSeason(ROOT, s, T.codeOf)]));
@@ -81,6 +87,20 @@ async function main() {
 
   // ── 積分榜 ────────────────────────────────
   const lastTable = buildTable(lastMatches, lastCodes);
+
+  // 即時來源已完賽、但 openfootball 還沒更新的場次,先補進本季賽果,
+  // 這樣積分榜不用等上游更新就是最新的。
+  let liveFilled = 0;
+  if (liveState && !liveState.demo) {
+    const byKey = new Map(curMatches.map(m => [`${m.home}|${m.away}`, m]));
+    for (const f of liveState.fixtures) {
+      if (!f.finished || f.hs == null) continue;
+      const m = byKey.get(f.key);
+      if (!m || m.played) continue;
+      Object.assign(m, { played: true, fh: f.hs, fa: f.as, fromLive: true });
+      liveFilled++;
+    }
+  }
   const curPlayed = curMatches.filter(m => m.played);
   const curTable = buildTable(curMatches, curCodes);
 
@@ -124,6 +144,9 @@ async function main() {
     const d = diff.byPair.get(`${m.home}|${m.away}`) ?? null;
     return {
       ...m,
+      // 倒數計時要用精確到分鐘的 UTC 時間;沒有 FPL 資料才退回 openfootball 的英國當地時間
+      kickoff: d?.kickoff ?? `${m.date}T${(m.time ?? '15:00')}:00+01:00`,
+      kickoffSource: d?.kickoff ? 'fpl' : 'openfootball',
       difficulty: d ? { home: d.home, away: d.away } : null,
       prediction: { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e },
     };
@@ -185,6 +208,74 @@ async function main() {
     if (rec.games) h2h[key] = rec;
   }
 
+  // ── 即時戰況 ──────────────────────────────
+  const fixtureByKey = new Map(fixtures.map(f => [`${f.home}|${f.away}`, f]));
+  let liveOut = {
+    available: false,
+    note: '尚未取得即時狀態。執行 npm run live(需要能連到官方 FPL API)或 npm run live -- --replay=2025-26:1 看真實比賽的示範。',
+  };
+  if (liveState) {
+    // 重播的是過去賽季的比賽,不能接到本季賽程上(輪次會亂),
+    // 賽前機率也必須用「那場開賽前」的資料重新擬合,不能拿今天的強度去預測去年的比賽。
+    const liveSeason = liveState.season ?? CURRENT_SEASON;
+    const isCurrentSeason = !liveState.demo && liveSeason === CURRENT_SEASON;
+
+    let predictionFor;
+    if (isCurrentSeason) {
+      predictionFor = f => fixtureByKey.get(f.key)?.prediction ?? null;
+    } else {
+      const refDate = liveState.fixtures.map(f => f.kickoff).filter(Boolean).sort()[0]?.slice(0, 10) ?? AS_OF;
+      const before = [...history, ...curPlayed].filter(m => m.date < refDate);
+      const replayCodes = [...new Set(liveState.fixtures.flatMap(f => [f.home, f.away]))].sort();
+      const rModel = applyPromotedPrior(fitPoisson(before, replayCodes, { refDate }));
+      const rElo = buildElo(before);
+      console.log(`  ↻ 重播模式:用 ${refDate} 之前的 ${before.length} 場比賽重新擬合賽前模型`);
+      predictionFor = f => {
+        const p = predict(rModel, f.home, f.away);
+        const e = eloProbs(rElo.get(f.home)?.elo ?? 1500, rElo.get(f.away)?.elo ?? 1500);
+        return {
+          ...p,
+          home: round((p.home + e.home) / 2, 4),
+          draw: round((p.draw + e.draw) / 2, 4),
+          away: round((p.away + e.away) / 2, 4),
+        };
+      };
+    }
+
+    const matches = liveState.fixtures.map(f => {
+      const fx = isCurrentSeason ? fixtureByKey.get(f.key) : null;
+      const rep = buildMatchReport({
+        fixture: f,
+        prediction: predictionFor(f),
+        tactics: tacticsBy,
+        zh: code => T.byCode.get(code)?.zh ?? code,
+      });
+      return {
+        ...rep,
+        fixtureId: fx?.id ?? null,
+        round: isCurrentSeason ? (fx?.round ?? liveState.round) : liveState.round,
+        difficulty: fx?.difficulty ?? null,
+      };
+    }).sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
+
+    liveOut = {
+      available: true,
+      source: liveState.source,
+      sourceLabel: liveState.sourceLabel,
+      demo: !!liveState.demo,
+      season: liveState.season ?? CURRENT_SEASON,
+      round: liveState.round,
+      fetchedAt: liveState.fetchedAt,
+      counts: {
+        total: matches.length,
+        live: matches.filter(m => m.started && !m.finished).length,
+        finished: matches.filter(m => m.finished).length,
+        upcoming: matches.filter(m => !m.started).length,
+      },
+      matches,
+    };
+  }
+
   // ── 新聞 ──────────────────────────────────
   const injuries = injuryFeed(players, T, AS_OF);
   const stories = dataStories({ table: lastTable, tactics, teams: T, season: LAST_SEASON, asOf: AS_OF });
@@ -228,6 +319,10 @@ async function main() {
       news: news.length, injuries: injuries.length, poolSizes,
     },
     coachDataAsOf: coaches.asOf,
+    live: liveOut.available
+      ? { source: liveOut.source, sourceLabel: liveOut.sourceLabel, demo: liveOut.demo, round: liveOut.round, fetchedAt: liveOut.fetchedAt, counts: liveOut.counts }
+      : { available: false },
+    liveResultsMerged: liveFilled,
   });
   await write('clubs.json', T.list); // 27 隊完整名稱登錄(含已降級球隊,顯示歷史資料用)
   await write('teams.json', teams);
@@ -239,10 +334,18 @@ async function main() {
   await write('coaches.json', coaches);
   await write('news.json', news);
   await write('sim.json', sim);
+  await write('live.json', liveOut);
   await write('h2h.json', h2h);
   await write('results.json', [...history, ...curPlayed].filter(m => m.played));
 
   console.log(`\n✔ 完成:${teams.length} 隊 / ${players.length} 名球員 / ${fixtures.length} 場賽程 / ${news.length} 則動態`);
+  if (liveOut.available) {
+    console.log(`  即時:${liveOut.sourceLabel}`);
+    console.log(`        第 ${liveOut.round} 輪 —— 進行中 ${liveOut.counts.live}・已完賽 ${liveOut.counts.finished}・未開賽 ${liveOut.counts.upcoming}` +
+      (liveFilled ? `(其中 ${liveFilled} 場結果已補進積分榜)` : ''));
+  } else {
+    console.log('  即時:尚未取得(npm run live)');
+  }
 }
 
 main().catch(err => { console.error('✗ 建置失敗:', err); process.exit(1); });

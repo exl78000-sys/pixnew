@@ -12,7 +12,8 @@
     "test": "node scripts/test.mjs",
     "news": "node scripts/fetch-news.mjs",
     "bundle": "node scripts/bundle.mjs",
-    "fonts": "node scripts/fetch-fonts.mjs"
+    "fonts": "node scripts/fetch-fonts.mjs",
+    "live": "node scripts/fetch-live.mjs"
   },
   "engines": {
     "node": ">=18"
