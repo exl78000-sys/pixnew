@@ -138,16 +138,25 @@ npm run crests    # 27 隊隊徽 → 縮圖 → 內嵌成 data URI
 
 `npm run live` 預設是 `--source=auto`:先試官方 API,連不到就自動改用 GitHub 鏡像。
 
-### 自動更新的網站(GitHub Actions + Pages)
+### 自動更新(GitHub Actions)
 
-`.github/workflows/epl-live.yml` 會定時在 GitHub 的 runner 上抓資料、建置、部署到 GitHub Pages。
-runner 沒有本機的網路限制,所以這是「不用自己開電腦也能有即時資料」的做法。
+`.github/workflows/epl-live.yml` 定時在 GitHub 的 runner 上抓資料。**runner 連得到官方 FPL API**,
+所以即使你的開發環境連不到,也能拿到真實即時比分。它做兩件事:
 
-啟用:**Settings → Pages → Source 選 `GitHub Actions`**,然後在 Actions 分頁手動跑一次或等排程。
-網址是 `https://<帳號>.github.io/<repo>/`,單檔版也會一併放在 `/warroom.html`。
+1. **把抓到的即時資料提交回 repo**(`epl/data/raw/live.json` 等,帶 `[skip ci]` 避免遞迴觸發)。
+   之後在任何環境只要 `git pull` + `npm run build`,就是最新比分。
+2. **部署到 GitHub Pages**(需要先啟用,見下)。
 
-排程預設每 15 分鐘一次(GitHub 的排程本身可能再延遲 5~15 分鐘,所以是「準即時」)。
-不想要自動跑就把 workflow 裡的 `schedule` 段落註解掉。
+**啟用 Pages(只需做一次)**:Settings → Pages → Source 選 `GitHub Actions`。
+> 為什麼不能自動開:工作流程預設的 `GITHUB_TOKEN` 沒有「建立 Pages 站台」的權限
+> (`Resource not accessible by integration`),這是 GitHub 的限制。
+> 在還沒啟用之前,工作流程會自動偵測並**略過部署**,不會讓執行失敗。
+
+啟用後網址是 `https://<帳號>.github.io/<repo>/`,單檔版一併放在 `/warroom.html`。
+
+**排程的限制**:GitHub 的 `schedule` 只會從**預設分支**觸發。這個 repo 的預設分支目前不是
+放 epl 的分支,所以 15 分鐘自動更新還不會跑;`push` 觸發與手動觸發(Actions → Run workflow)
+都正常。要讓排程生效,把這個分支合併到預設分支,或把預設分支改成這一個。
 
 ### 比賽進行中拿得到什麼
 

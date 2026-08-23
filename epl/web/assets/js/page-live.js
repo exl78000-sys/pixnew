@@ -12,6 +12,8 @@ try {
   // 整頁的渲染包成函式:輪詢到新資料、或單純時間往前走(比賽從未開賽變成進行中)時,
   // 都可以重跑一次,不必整頁重新載入。
   let live = liveInitial;
+  // 即時模式(npm run live:watch)會在資料裡自報;靜態站沒有這個旗標
+  const isLiveMode = () => !!live.liveMode;
 
   function renderPage() {
     const scrollY = window.scrollY;
@@ -47,9 +49,14 @@ try {
           要接上本季真正的即時比分,在自己的電腦上跑 <span class="mono">npm run live:watch</span>。</div>`;
       }
       const fresh = new Date(live.fetchedAt);
+      const age = Math.round((Date.now() - fresh.getTime()) / 60000);
+      const ageText = age < 2 ? '剛剛' : age < 90 ? `${age} 分鐘前` : `${Math.round(age / 60)} 小時前`;
       return `<div class="note info">資料來源:${C.esc(live.sourceLabel)}・
-        最後更新 ${fresh.toLocaleString('zh-TW', { hour12: false })}
-        ${live.source === 'mirror' ? '<br>鏡像是每輪賽後才更新的,比賽進行中不會逐分鐘變動;要逐分鐘更新請用 <span class="mono">npm run live -- --source=api</span>。' : ''}</div>`;
+        資料時間 ${fresh.toLocaleString('zh-TW', { hour12: false })}(${ageText})
+        ${isLiveMode()
+          ? `<br><b>即時模式進行中</b> —— 每 ${Math.round((live.pollIntervalMs ?? 60000) / 1000)} 秒自動更新,不用重整。`
+          : '<br>這是<b>當時的快照</b>,不會自己更新。要逐分鐘更新請在自己的電腦上跑 <span class="mono">npm run live:watch</span>。'}
+        ${live.source === 'mirror' ? '<br>鏡像是每輪賽後才更新的,比賽進行中不會逐分鐘變動。' : ''}</div>`;
     };
 
     const kpi = (l, v, sub) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub}</div></div>`;
@@ -114,7 +121,8 @@ try {
     ${C.foot(meta)}`;
 
     if (curPlayed > 0) {
-      document.getElementById('curTable').innerHTML = C.table(cur.filter(r => r.p > 0), [
+      // 列全部 20 隊(含尚未出賽的),名次才不會跳號
+      document.getElementById('curTable').innerHTML = C.table(cur, [
         { key: 'pos', label: '#', value: r => r.pos, num: true },
         { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
         { key: 'p', label: '賽', value: r => r.p, num: true },
@@ -125,7 +133,8 @@ try {
         { key: 'ga', label: '失', value: r => r.ga, num: true },
         { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
         { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
-        { key: 'form', label: '戰績', value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
+        { key: 'form', label: '戰績', value: r => r.pts, sortable: false,
+          render: r => (r.p ? C.formRun(r.form) : '<span class="dim tiny">尚未出賽</span>') },
       ], { sortKey: 'pts', desc: true, onRow: r => C.go('teams', { code: r.code }) });
     }
 
