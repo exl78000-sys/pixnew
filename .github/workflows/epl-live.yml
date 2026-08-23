@@ -73,7 +73,10 @@ jobs:
 
       # 把抓到的即時資料寫回 repo,這樣在別的環境(拿不到官方 API 的地方)
       # 只要 git pull 就能用最新比分重新建置。
+      # 只在預設分支回寫,否則多個分支各自累積資料提交會互相分岔。
+      # 排程本來就只在預設分支跑,所以資料一律以預設分支為準。
       - name: 回寫即時資料
+        if: github.ref_name == github.event.repository.default_branch
         run: |
           cd "$GITHUB_WORKSPACE"
           git config user.name  "github-actions[bot]"
