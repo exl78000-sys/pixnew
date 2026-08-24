@@ -55,7 +55,9 @@ const sideOf = tl => ({
 
 async function main() {
   const T = loadTeams(ROOT);
-  let store = { version: STORE_VERSION, season: null, teams: {}, managers: {}, managersFetchedAt: null, matches: {} };
+  // version 預設 null 而不是 STORE_VERSION —— 舊檔沒有這個鍵,展開時不會覆蓋掉預設值,
+  // 預設就填新版號的話升級檢查永遠不會觸發(舊檔會被誤認為已是新版)
+  let store = { version: null, season: null, teams: {}, managers: {}, managersFetchedAt: null, matches: {} };
   try { store = { ...store, ...JSON.parse(await readFile(OUT, 'utf8')) }; } catch { /* 第一次執行 */ }
   if (store.version !== STORE_VERSION) {
     console.log(`  存檔格式從 v${store.version ?? 1} 升到 v${STORE_VERSION},重抓所有場次的陣容`);
