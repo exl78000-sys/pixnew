@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-08-24T16:23:18.923Z",
+  "ranAt": "2026-08-24T16:23:50.017Z",
   "season": "2025-26",
   "games": 380,
   "models": {
@@ -599,6 +599,248 @@
     "away": 0.31
   },
   "market": {
-    "available": false
+    "available": true,
+    "games": 380,
+    "source": "Pinnacle 收盤",
+    "model": {
+      "rps": 0.2076,
+      "logLoss": 1.0237,
+      "hitRate": 0.4868
+    },
+    "market": {
+      "rps": 0.2051,
+      "logLoss": 1.0139,
+      "hitRate": 0.4868
+    },
+    "byRound": [
+      {
+        "round": 1,
+        "games": 10,
+        "modelRps": 0.1466,
+        "marketRps": 0.1584
+      },
+      {
+        "round": 2,
+        "games": 10,
+        "modelRps": 0.2206,
+        "marketRps": 0.2195
+      },
+      {
+        "round": 3,
+        "games": 10,
+        "modelRps": 0.2766,
+        "marketRps": 0.2756
+      },
+      {
+        "round": 4,
+        "games": 10,
+        "modelRps": 0.1393,
+        "marketRps": 0.1338
+      },
+      {
+        "round": 5,
+        "games": 10,
+        "modelRps": 0.1965,
+        "marketRps": 0.1709
+      },
+      {
+        "round": 6,
+        "games": 10,
+        "modelRps": 0.2226,
+        "marketRps": 0.2603
+      },
+      {
+        "round": 7,
+        "games": 10,
+        "modelRps": 0.1908,
+        "marketRps": 0.1532
+      },
+      {
+        "round": 8,
+        "games": 10,
+        "modelRps": 0.2406,
+        "marketRps": 0.2509
+      },
+      {
+        "round": 9,
+        "games": 10,
+        "modelRps": 0.2709,
+        "marketRps": 0.2866
+      },
+      {
+        "round": 10,
+        "games": 10,
+        "modelRps": 0.1649,
+        "marketRps": 0.169
+      },
+      {
+        "round": 11,
+        "games": 10,
+        "modelRps": 0.1675,
+        "marketRps": 0.1765
+      },
+      {
+        "round": 12,
+        "games": 10,
+        "modelRps": 0.2399,
+        "marketRps": 0.2466
+      },
+      {
+        "round": 13,
+        "games": 10,
+        "modelRps": 0.2095,
+        "marketRps": 0.1922
+      },
+      {
+        "round": 14,
+        "games": 10,
+        "modelRps": 0.2291,
+        "marketRps": 0.228
+      },
+      {
+        "round": 15,
+        "games": 10,
+        "modelRps": 0.1892,
+        "marketRps": 0.1841
+      },
+      {
+        "round": 16,
+        "games": 10,
+        "modelRps": 0.1735,
+        "marketRps": 0.171
+      },
+      {
+        "round": 17,
+        "games": 10,
+        "modelRps": 0.1701,
+        "marketRps": 0.1701
+      },
+      {
+        "round": 18,
+        "games": 10,
+        "modelRps": 0.1956,
+        "marketRps": 0.191
+      },
+      {
+        "round": 19,
+        "games": 10,
+        "modelRps": 0.1815,
+        "marketRps": 0.1892
+      },
+      {
+        "round": 20,
+        "games": 10,
+        "modelRps": 0.1678,
+        "marketRps": 0.1641
+      },
+      {
+        "round": 21,
+        "games": 10,
+        "modelRps": 0.1952,
+        "marketRps": 0.1953
+      },
+      {
+        "round": 22,
+        "games": 10,
+        "modelRps": 0.2824,
+        "marketRps": 0.2692
+      },
+      {
+        "round": 23,
+        "games": 10,
+        "modelRps": 0.2755,
+        "marketRps": 0.2726
+      },
+      {
+        "round": 24,
+        "games": 10,
+        "modelRps": 0.17,
+        "marketRps": 0.1563
+      },
+      {
+        "round": 25,
+        "games": 10,
+        "modelRps": 0.2296,
+        "marketRps": 0.2216
+      },
+      {
+        "round": 26,
+        "games": 10,
+        "modelRps": 0.2247,
+        "marketRps": 0.2223
+      },
+      {
+        "round": 27,
+        "games": 10,
+        "modelRps": 0.2034,
+        "marketRps": 0.1798
+      },
+      {
+        "round": 28,
+        "games": 10,
+        "modelRps": 0.1972,
+        "marketRps": 0.1915
+      },
+      {
+        "round": 29,
+        "games": 10,
+        "modelRps": 0.2821,
+        "marketRps": 0.2788
+      },
+      {
+        "round": 30,
+        "games": 10,
+        "modelRps": 0.2049,
+        "marketRps": 0.1887
+      },
+      {
+        "round": 31,
+        "games": 10,
+        "modelRps": 0.2132,
+        "marketRps": 0.2346
+      },
+      {
+        "round": 32,
+        "games": 10,
+        "modelRps": 0.2394,
+        "marketRps": 0.2449
+      },
+      {
+        "round": 33,
+        "games": 10,
+        "modelRps": 0.1981,
+        "marketRps": 0.1738
+      },
+      {
+        "round": 34,
+        "games": 10,
+        "modelRps": 0.1907,
+        "marketRps": 0.1605
+      },
+      {
+        "round": 35,
+        "games": 10,
+        "modelRps": 0.2137,
+        "marketRps": 0.2182
+      },
+      {
+        "round": 36,
+        "games": 10,
+        "modelRps": 0.1377,
+        "marketRps": 0.1361
+      },
+      {
+        "round": 37,
+        "games": 10,
+        "modelRps": 0.1867,
+        "marketRps": 0.2098
+      },
+      {
+        "round": 38,
+        "games": 10,
+        "modelRps": 0.2515,
+        "marketRps": 0.2503
+      }
+    ]
   }
 }
