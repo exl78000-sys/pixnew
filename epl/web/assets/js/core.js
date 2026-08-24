@@ -62,6 +62,19 @@ export function badge(code, size = '') {
   const fg = luminance(bg) > 0.55 ? '#12091a' : '#fff';
   return `<span class="badge ${size}" style="background:${bg};color:${fg}">${code}</span>`;
 }
+// 球員頭貼:有圖用圖,沒圖退回隊徽。
+// 缺圖是常態(新援、年輕球員常常沒照片),所以「沒有」必須是設計的一部分,不是例外狀況。
+export function playerPhoto(player, size = 34) {
+  const alt = esc(player.name ?? '');
+  // 有圖沒圖都必須佔一樣的空間,否則同一張表裡行高會忽高忽低
+  const box = `width:${size}px;height:${size}px`;
+  if (player.photo) {
+    return `<img class="pphoto" src="${player.photo}" alt="${alt}" title="${alt}"
+      loading="lazy" style="${box}">`;
+  }
+  return `<span class="pphoto fallback" style="${box}" title="${alt}">${badge(player.team)}</span>`;
+}
+
 export function teamCell(code, { link: withLink = true, label: custom = null } = {}) {
   const label = custom ?? name(code);
   const inner = `<span class="team-cell">${badge(code)}<span class="nm">${label}</span></span>`;

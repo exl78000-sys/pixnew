@@ -282,3 +282,12 @@ input:focus-visible, tbody tr.clickable:focus-visible {
 /* ── 資料時效標記 ───────────────────── */
 .stamp-row { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; }
 .stamp { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ── 球員頭貼 ───────────────────────── */
+.pphoto {
+  border-radius: 50%; object-fit: cover; flex: none; vertical-align: middle;
+  background: #1a1420; border: 1px solid var(--line);
+}
+/* 沒有頭貼時退回隊徽,但外框尺寸要跟有頭貼時一致,行高才不會跳動 */
+.pphoto.fallback { display: inline-flex; align-items: center; justify-content: center; border: none; background: none; }
+.pphoto.fallback .crest, .pphoto.fallback .badge { width: 78%; height: 78%; }

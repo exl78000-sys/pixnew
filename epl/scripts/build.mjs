@@ -89,6 +89,11 @@ async function main() {
   const crestPath = join(ROOT, 'data', 'manual', 'crests.json');
   const crestData = existsSync(crestPath) ? JSON.parse(await readFile(crestPath, 'utf8')).crests ?? {} : {};
 
+  // 球員頭貼(選用):外部產生的 data URI,鍵是 FPL 的 code。
+  // 沒有這個檔也完全正常 —— 前端會退回顯示隊徽,不會有破圖。
+  const photoPath = join(ROOT, 'data', 'manual', 'photos.json');
+  const photoData = existsSync(photoPath) ? JSON.parse(await readFile(photoPath, 'utf8')).photos ?? {} : {};
+
   // 每一場的走查預測(npm test 產生),用來做「賽前預測 vs 實際結果」對照
   const btMatchPath = join(ROOT, 'data', 'backtest-matches.json');
   const btMatches = existsSync(btMatchPath) ? JSON.parse(await readFile(btMatchPath, 'utf8')) : null;
@@ -445,7 +450,7 @@ async function main() {
   await write('teams.json', teams);
   await write('fixtures.json', fixtures);
   await write('table.json', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
-  await write('players.json', players);
+  await write('players.json', players.map(p => (photoData[p.code] ? { ...p, photo: photoData[p.code] } : p)));
   await write('leaders.json', leaders);
   await write('tactics.json', tactics);
   await write('coaches.json', coaches);
@@ -473,6 +478,8 @@ async function main() {
   }));
 
   console.log(`\n✔ 完成:${teams.length} 隊 / ${players.length} 名球員 / ${fixtures.length} 場賽程 / ${news.length} 則動態`);
+  const photoHits = players.filter(p => photoData[p.code]).length;
+  console.log(`  球員頭貼:${photoHits ? `${photoHits} / ${players.length} 名有圖` : '未提供(data/manual/photos.json 不存在,前端退回隊徽)'}`);
   console.log(`  分析文章:賽前 ${aiSummary.pre} 篇・賽後 ${aiSummary.post} 篇,快取命中 ${aiSummary.cacheHits} 篇` +
     (aiSummary.enabled ? `,LLM 潤稿 ${aiSummary.llmWritten} 篇` : '(模板版;設定 ANTHROPIC_API_KEY 可啟用 LLM 潤稿)'));
   if (liveOut.available) {
