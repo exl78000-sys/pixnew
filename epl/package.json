@@ -16,7 +16,8 @@
     "live": "node scripts/fetch-live.mjs",
     "crests": "node scripts/fetch-crests.mjs",
     "season": "node scripts/fetch-season.mjs",
-    "live:watch": "node scripts/live-server.mjs"
+    "live:watch": "node scripts/live-server.mjs",
+    "coaches:check": "node scripts/fetch-coaches.mjs"
   },
   "engines": {
     "node": ">=18"

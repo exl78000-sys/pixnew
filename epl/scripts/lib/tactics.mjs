@@ -149,3 +149,53 @@ function deriveTags(t, all) {
   if (t.squad.avgAgeWeighted >= 28.5) tags.push('老練陣容');
   return tags;
 }
+
+/* ── 陣型有沒有影響 ───────────────────
+ * 這一段刻意做成「相關係數 + 散點」而不是「分組長條圖」。
+ * 原因:上季 20 隊裡雙前鋒只有 1 隊、三後衛只有 1 隊,分組平均會變成拿 1 隊
+ * 對比 19 隊,那種數字看起來很有說服力但完全站不住腳。
+ * 連續相關至少誠實呈現整個散布,讀者看得到樣本有多稀疏。
+ */
+export function formationImpact({ tactics, table }) {
+  const by = new Map(table.map(r => [r.code, r]));
+  const rows = tactics
+    .map(t => {
+      const r = by.get(t.code);
+      if (!r) return null;
+      return {
+        code: t.code,
+        def: t.formation.def, mid: t.formation.mid, fwd: t.formation.fwd,
+        pts: r.pts, pos: r.pos, xg90: t.attack.xG90, xga90: t.defence.xGA90,
+      };
+    })
+    .filter(Boolean);
+
+  const n = rows.length;
+  const corr = (fa, fb) => {
+    if (n < 3) return null;
+    const ma = rows.reduce((s, r) => s + fa(r), 0) / n;
+    const mb = rows.reduce((s, r) => s + fb(r), 0) / n;
+    let num = 0, da = 0, db = 0;
+    for (const r of rows) { const x = fa(r) - ma, y = fb(r) - mb; num += x * y; da += x * x; db += y * y; }
+    return da && db ? round(num / Math.sqrt(da * db), 3) : null;
+  };
+
+  // n=20 時 p=0.05 的臨界值約 0.44;低於這個就別當成有發現
+  const CRITICAL = n >= 3 ? round(1.96 / Math.sqrt(n - 1), 2) : 1;
+
+  const pairs = [
+    { key: 'def-pts', x: '後衛平均人數', y: '聯賽積分', r: corr(r => r.def, r => r.pts) },
+    { key: 'def-xga', x: '後衛平均人數', y: '每場期望失球', r: corr(r => r.def, r => r.xga90) },
+    { key: 'mid-pts', x: '中場平均人數', y: '聯賽積分', r: corr(r => r.mid, r => r.pts) },
+    { key: 'fwd-pts', x: '前鋒平均人數', y: '聯賽積分', r: corr(r => r.fwd, r => r.pts) },
+    { key: 'fwd-xg', x: '前鋒平均人數', y: '每場期望進球', r: corr(r => r.fwd, r => r.xg90) },
+  ].map(p => ({
+    ...p,
+    significant: p.r !== null && Math.abs(p.r) >= CRITICAL,
+    strength: p.r === null ? '無法計算'
+      : Math.abs(p.r) < 0.2 ? '幾乎無關' : Math.abs(p.r) < 0.4 ? '很弱'
+        : Math.abs(p.r) < 0.6 ? '中等' : '強',
+  }));
+
+  return { n, critical: CRITICAL, pairs, points: rows };
+}
