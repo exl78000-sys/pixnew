@@ -17,6 +17,7 @@ import { simulateSeason } from './lib/simulate.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics, formationImpact } from './lib/tactics.mjs';
 import { projectXI } from './lib/lineup.mjs';
+import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, standardShape } from './lib/roles.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
@@ -170,6 +171,11 @@ async function main() {
     tableRows: lastTable, lastPlayers: fplLast.players, currentPlayers: fplCur.players, asOf: AS_OF,
   });
   const tacticsBy = new Map(tactics.map(t => [t.code, t]));
+
+  // 角色分類器要在這裡就建好 —— 下面寫 players.json 與 shapes.json 都會用到,
+  // 宣告在使用點之後會撞上 TDZ
+  const classify = buildClassifier(players);
+  const pools = rolePools(players, classify);
 
   const coaches = buildCoaches(ROOT, {
     allMatches: [...history, ...curPlayed], seasonMatches: lastMatches, season: LAST_SEASON,
@@ -451,7 +457,14 @@ async function main() {
   await write('teams.json', teams);
   await write('fixtures.json', fixtures);
   await write('table.json', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
-  await write('players.json', players.map(p => (photoData[p.code] ? { ...p, photo: photoData[p.code] } : p)));
+  const roleOf = p => {
+    const r = classify(p, p.last ?? p.current);
+    return { key: r.key, zh: r.zh, lowSample: !!r.lowSample };
+  };
+  await write('players.json', players.map(p => ({
+    ...(photoData[p.code] ? { ...p, photo: photoData[p.code] } : p),
+    role: roleOf(p),
+  })));
   await write('leaders.json', leaders);
   await write('tactics.json', tactics);
   await write('formation.json', formationImpact({ tactics, table: lastTable }));
@@ -462,6 +475,17 @@ async function main() {
     players, team: code, tactics: tacticsBy.get(code), rounds: leaders.currentRounds ?? 0,
   })]));
   await write('lineups.json', lineups);
+
+  // 標準陣型與攻守分型:先把 FPL 的四個粗類細分成八種角色,再由角色的出場分鐘推導。
+  // 升班馬沒有足夠的英超樣本,會回報 insufficient 而不是硬編一個陣型出來。
+  const shapes = Object.fromEntries(curCodes.map(code => {
+    const squad = players.filter(p => p.team === code);
+    const rf = roleFormation(squad, classify);
+    if (rf.insufficient) return [code, { insufficient: true, contributors: rf.contributors, totalMinutes: rf.totalMinutes }];
+    const ph = phaseShapes(rf.counts, squad, classify, pools);
+    return [code, { counts: rf.counts, raw: rf.raw, ...ph }];
+  }));
+  await write('shapes.json', shapes);
   await write('coaches.json', coaches);
   await write('news.json', news);
   await write('sim.json', sim);
