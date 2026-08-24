@@ -10,6 +10,17 @@ try {
   C.nav();
 
   const played = fixtures.filter(f => f.played);
+  const curBy = new Map((table.current ?? []).map(r => [r.code, r]));
+
+  // 開季前幾輪的排名幾乎沒有意義(大家場次都一樣少),與其讓讀者自己踩坑,不如明講
+  const earlyNote = () => {
+    const maxPlayed = Math.max(0, ...(table.current ?? []).map(r => r.p));
+    if (maxPlayed >= 6) return '';
+    return `<div class="note" style="margin-top:10px">
+      才踢了 ${maxPlayed} 輪,這張表<b>還不能當實力排序看</b> ——
+      同分的隊伍靠淨勝球和進球數分先後,一場大勝就能把人推到第一。
+      要看實力請往下看預測積分榜,那裡吃的是過去三季的完整樣本。</div>`;
+  };
   const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
   const nextRound = upcoming[0]?.round ?? null;
   const injuries = news.filter(n => n.cat === '傷停' || n.cat === '禁賽');
@@ -41,9 +52,20 @@ try {
       : kpi('傷停名單', injuries.length, `涵蓋 ${meta.counts.players} 名註冊球員`)}
   </div>
 
+  <div class="section"><h2>本季目前戰績</h2>
+    <span class="hint">${meta.currentSeason}・已踢完 ${played.length} 場的真實積分榜</span></div>
+  ${played.length ? '<div id="curTable"></div>' + earlyNote() : `
+    <div class="note">本季還沒有比賽踢完,所以還沒有積分榜。
+      下面的預測完全來自過去幾季的資料;等第一輪踢完,這裡就會出現真實戰績。</div>`}
+
   <div class="section"><h2>本季預測積分榜</h2>
     <span class="hint">蒙地卡羅模擬 ${meta.model.simulationRuns.toLocaleString()} 次賽季</span></div>
   <div id="simTable"></div>
+  <div class="note info" style="margin-top:10px">
+    <b>每踢完一場就會重算。</b>期望積分 =<b>已經拿到的分數</b>+ 剩餘賽程的模擬結果,
+    而且已完賽的比分也會回頭修正球隊強度,影響後面每一場的機率。
+    ${played.length ? `目前已計入 ${played.length} 場真實賽果。` : ''}
+  </div>
 
   <div class="grid g2" style="margin-top:16px">
     <div class="card">
@@ -83,7 +105,12 @@ try {
   document.getElementById('simTable').innerHTML = C.table(simRows, [
     { key: 'pos', label: '#', value: r => r.expectedPos, render: (r, i) => i + 1, sortable: false, num: true },
     { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+    { key: 'earned', label: '本季實得', value: r => (curBy.get(r.code)?.pts ?? 0), num: true,
+      title: '已經踢完的比賽拿到的分數,這部分不是預測',
+      render: r => { const c = curBy.get(r.code);
+        return c?.p ? `<b>${c.pts}</b><span class="dim tiny"> / ${c.p} 場</span>` : '<span class="dim">—</span>'; } },
     { key: 'expectedPoints', label: '期望積分', value: r => r.expectedPoints, num: true,
+      title: '本季實得 + 剩餘賽程的模擬結果',
       render: r => `<b>${r.expectedPoints}</b>` },
     { key: 'titlePct', label: '奪冠', value: r => r.titlePct, num: true,
       render: r => `${r.titlePct}%${C.bar(r.titlePct, 100)}` },
@@ -96,6 +123,23 @@ try {
     { key: 'elo', label: 'Elo', value: r => teams.find(x => x.code === r.code)?.elo ?? 0, num: true,
       render: r => C.fx(teams.find(x => x.code === r.code)?.elo, 0) },
   ], { sortKey: 'expectedPoints', desc: true, onRow: r => { C.go('teams', { code: r.code }); } });
+
+  /* 本季目前戰績 */
+  if (played.length) {
+    document.getElementById('curTable').innerHTML = C.table(table.current, [
+      { key: 'pos', label: '#', value: r => r.pos, num: true },
+      { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+      { key: 'p', label: '賽', value: r => r.p, num: true },
+      { key: 'w', label: '勝', value: r => r.w, num: true },
+      { key: 'd', label: '和', value: r => r.d, num: true },
+      { key: 'l', label: '負', value: r => r.l, num: true },
+      { key: 'gf', label: '進', value: r => r.gf, num: true },
+      { key: 'ga', label: '失', value: r => r.ga, num: true },
+      { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
+      { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
+      { key: 'form', label: '近況', value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
+    ], { sortKey: 'pos', desc: false, onRow: r => { C.go('teams', { code: r.code }); } });
+  }
 
   /* 近期比賽 */
   document.getElementById('next').innerHTML = upcoming.slice(0, 6).map(f => `

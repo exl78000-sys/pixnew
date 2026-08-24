@@ -326,11 +326,18 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, l
       });
     }
     if (limit) data = data.slice(0, limit);
+    // 表格預設靠右(數字才好比對),但隊伍欄的內容是 flex 排版,一定靠左顯示 ——
+    // 表頭若還是靠右,標題就會飄到欄位的另一端,離自己的資料好幾百 px。
+    // 這裡直接看第一列渲染出來的內容判斷,call site 不用逐一標註。
+    const cellHtml = (c, r, i) => (c.render ? c.render(r, i) : c.value(r));
+    const isLeft = c => c.left ?? (data.length > 0 && /class="team-cell"/.test(String(cellHtml(c, data[0], 0))));
+    const cls = (c, extra = '') => [c.num ? 'num' : '', isLeft(c) ? 'left' : '', extra].filter(Boolean).join(' ');
+
     const head = cols.map(c =>
-      `<th class="${c.num ? 'num' : ''} ${c.sortable === false ? '' : 'sortable'} ${state.key === c.key ? 'sorted' : ''}" data-k="${c.key}" title="${c.title ?? ''}">${c.label}${state.key === c.key ? (state.desc ? ' ▾' : ' ▴') : ''}</th>`).join('');
+      `<th class="${cls(c, c.sortable === false ? '' : 'sortable') + (state.key === c.key ? ' sorted' : '')}" data-k="${c.key}" title="${c.title ?? ''}">${c.label}${state.key === c.key ? (state.desc ? ' ▾' : ' ▴') : ''}</th>`).join('');
     const body = data.map((r, i) =>
       `<tr class="${onRow ? 'clickable' : ''}" data-i="${rows.indexOf(r)}">${cols.map(c =>
-        `<td class="${c.num ? 'num' : ''}">${c.render ? c.render(r, i) : c.value(r)}</td>`).join('')}</tr>`).join('');
+        `<td class="${cls(c)}">${cellHtml(c, r, i)}</td>`).join('')}</tr>`).join('');
     const el = document.getElementById(id);
     el.querySelector('table').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
     el.querySelectorAll('th.sortable').forEach(th => {
