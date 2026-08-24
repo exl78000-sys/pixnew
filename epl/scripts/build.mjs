@@ -209,12 +209,29 @@ async function main() {
       if (!off?.name) continue;
       c.officialName = off.name;
       c.officialMismatch = norm(off.name) !== norm(c.name);
+      if (!c.officialMismatch) continue;
+
+      // 換帥了。現任是誰要對(顯示官方的名字),但任期、戰績、戰術風格全部是前任的 ——
+      // 掛在新教練名下等於憑空幫他捏造了一份履歷,所以搬到 predecessor 底下明講。
+      c.predecessor = {
+        name: c.name, zh: c.zh, nat: c.nat,
+        since: c.since, tenureDays: c.tenureDays,
+        formation: c.formation, style: c.style, note: c.note,
+        seasonRecord: c.seasonRecord, allRecord: c.allRecord,
+      };
+      c.name = off.name;
+      c.zh = null;                 // 官方只給英文名,沒有中文譯名就不要編一個
+      c.nat = null;
+      c.since = null; c.tenureDays = null;
+      c.formation = null; c.style = []; c.note = '';
+      c.seasonRecord = null; c.allRecord = null;
+      c.confidence = 'high';       // 現任是誰以官方為準,這件事本身是確定的
     }
     coaches.officialAsOf = offManagers.asOf;
     const stale = coaches.coaches.filter(c => c.officialMismatch);
     if (stale.length) {
-      console.log(`  ⚠ 教練與官方不一致 ${stale.length} 隊:` +
-        stale.map(c => `${c.team} 我們寫 ${c.name}、官方是 ${c.officialName}`).join('; '));
+      console.log(`  ⚠ 已換帥 ${stale.length} 隊(顯示官方現任,戰術與戰績標為前任):`);
+      for (const c of stale) console.log(`      ${c.team} ${c.predecessor.name || '(空白)'} → ${c.name}`);
     }
   }
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));

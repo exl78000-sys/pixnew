@@ -1,77 +1,481 @@
 {
-  "_note": "教練名冊(人工維護)。沒有免費且穩定的教練 API,這份檔案要靠人手更新;更新後重跑 npm run build 即可。",
+  "_note": "教練名冊(人工維護的戰術風格與任期)。現任是誰已改由英超官方(pulselive)每天核對 —— build 時會比對,不一致的隊伍會在教練頁標示「已換帥」。官方只給名字,戰術註解與任期起訖仍要人手更新;更新後重跑 npm run build。",
   "_disclaimer": "資料整理自公開資訊,asOf 為整理時點。confidence=high 表示長期在任、變動可能性低;medium 表示近期上任或曾有異動傳聞;low/unknown 請務必自行查證後補上。",
   "_asOf": "2026-05",
   "_howToUpdate": "spells[] 由新到舊排列。from/to 為 ISO 日期(to 留 null 代表在任中);系統會用這些區間切分該隊的比賽,自動算出各任教練的場均勝點、進失球與勝率。",
   "coaches": [
-    { "team": "ARS", "name": "Mikel Arteta", "zh": "阿爾特塔", "nat": "西班牙", "confidence": "high", "formation": "4-3-3", "style": ["高位壓迫", "定位球武器化", "控球建構"],
+    {
+      "team": "ARS",
+      "name": "Mikel Arteta",
+      "zh": "阿爾特塔",
+      "nat": "西班牙",
+      "confidence": "high",
+      "formation": "4-3-3",
+      "style": [
+        "高位壓迫",
+        "定位球武器化",
+        "控球建構"
+      ],
       "note": "以結構化控球與角球戰術著稱,倒三角中場配置,邊後衛內收形成 3-2-5 進攻結構。",
-      "spells": [{ "from": "2019-12-20", "to": null }] },
-    { "team": "AVL", "name": "Unai Emery", "zh": "埃梅里", "nat": "西班牙", "confidence": "high", "formation": "4-2-3-1", "style": ["高位越位陷阱", "對手客製化", "快速轉換"],
+      "spells": [
+        {
+          "from": "2019-12-20",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "AVL",
+      "name": "Unai Emery",
+      "zh": "埃梅里",
+      "nat": "西班牙",
+      "confidence": "high",
+      "formation": "4-2-3-1",
+      "style": [
+        "高位越位陷阱",
+        "對手客製化",
+        "快速轉換"
+      ],
       "note": "以極高防線與越位陷阱聞名,賽前針對性佈署強烈,常在半場調整陣型。",
-      "spells": [{ "from": "2022-10-24", "to": null }] },
-    { "team": "BOU", "name": "Andoni Iraola", "zh": "伊拉歐拉", "nat": "西班牙", "confidence": "medium", "formation": "4-2-3-1", "style": ["瘋狗式壓迫", "高強度跑動", "反搶即攻"],
+      "spells": [
+        {
+          "from": "2022-10-24",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "BOU",
+      "name": "Andoni Iraola",
+      "zh": "伊拉歐拉",
+      "nat": "西班牙",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "瘋狗式壓迫",
+        "高強度跑動",
+        "反搶即攻"
+      ],
       "note": "全聯盟最激進的壓迫體系之一,失球後 5 秒內反搶,體能負荷極高。",
-      "spells": [{ "from": "2023-06-19", "to": null }] },
-    { "team": "BRE", "name": "Keith Andrews", "zh": "安德魯斯", "nat": "愛爾蘭", "confidence": "medium", "formation": "4-3-3", "style": ["定位球專精", "直接進攻", "數據導向"],
+      "spells": [
+        {
+          "from": "2023-06-19",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "BRE",
+      "name": "Keith Andrews",
+      "zh": "安德魯斯",
+      "nat": "愛爾蘭",
+      "confidence": "medium",
+      "formation": "4-3-3",
+      "style": [
+        "定位球專精",
+        "直接進攻",
+        "數據導向"
+      ],
       "note": "定位球教練出身,延續球隊長打與死球得分的傳統優勢。",
-      "spells": [{ "from": "2025-06-01", "to": null }] },
-    { "team": "BHA", "name": "Fabian Hürzeler", "zh": "赫澤勒", "nat": "德國", "confidence": "medium", "formation": "4-2-3-1", "style": ["高位防線", "位置輪轉", "年輕化"],
+      "spells": [
+        {
+          "from": "2025-06-01",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "BHA",
+      "name": "Fabian Hürzeler",
+      "zh": "赫澤勒",
+      "nat": "德國",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "高位防線",
+        "位置輪轉",
+        "年輕化"
+      ],
       "note": "極高防線加上中場多人輪轉,強調在對手半場完成攻防。",
-      "spells": [{ "from": "2024-06-15", "to": null }] },
-    { "team": "BUR", "name": "Scott Parker", "zh": "帕克", "nat": "英格蘭", "confidence": "medium", "formation": "4-4-2", "style": ["低位防守", "區塊緊縮", "務實"],
+      "spells": [
+        {
+          "from": "2024-06-15",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "BUR",
+      "name": "Scott Parker",
+      "zh": "帕克",
+      "nat": "英格蘭",
+      "confidence": "medium",
+      "formation": "4-4-2",
+      "style": [
+        "低位防守",
+        "區塊緊縮",
+        "務實"
+      ],
       "note": "升班馬體系,重心放在減少失球與定位球得分。",
-      "spells": [{ "from": "2024-09-05", "to": null }] },
-    { "team": "CHE", "name": "Enzo Maresca", "zh": "馬雷斯卡", "nat": "義大利", "confidence": "medium", "formation": "4-2-3-1", "style": ["邊後衛內收", "耐心控球", "年輕陣容"],
+      "spells": [
+        {
+          "from": "2024-09-05",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "CHE",
+      "name": "Enzo Maresca",
+      "zh": "馬雷斯卡",
+      "nat": "義大利",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "邊後衛內收",
+        "耐心控球",
+        "年輕陣容"
+      ],
       "note": "瓜迪奧拉體系分支,後場出球時形成 3-2 結構,強調控制節奏。",
-      "spells": [{ "from": "2024-06-03", "to": null }] },
-    { "team": "COV", "name": "Frank Lampard", "zh": "蘭帕德", "nat": "英格蘭", "confidence": "medium", "formation": "4-2-3-1", "style": ["快速轉換", "邊路突破"],
+      "spells": [
+        {
+          "from": "2024-06-03",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "COV",
+      "name": "Frank Lampard",
+      "zh": "蘭帕德",
+      "nat": "英格蘭",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "快速轉換",
+        "邊路突破"
+      ],
       "note": "帶隊自英冠升級,升上英超後的體系仍待觀察。",
-      "spells": [{ "from": "2024-11-28", "to": null }] },
-    { "team": "CRY", "name": "Oliver Glasner", "zh": "格拉斯納", "nat": "奧地利", "confidence": "medium", "formation": "3-4-2-1", "style": ["三中衛", "翼衛推進", "反擊致命"],
+      "spells": [
+        {
+          "from": "2024-11-28",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "CRY",
+      "name": "Oliver Glasner",
+      "zh": "格拉斯納",
+      "nat": "奧地利",
+      "confidence": "medium",
+      "formation": "3-4-2-1",
+      "style": [
+        "三中衛",
+        "翼衛推進",
+        "反擊致命"
+      ],
       "note": "三中衛體系的代表,兩名影子前鋒配合翼衛,反擊效率極高。",
-      "spells": [{ "from": "2024-02-19", "to": null }] },
-    { "team": "EVE", "name": "David Moyes", "zh": "莫耶斯", "nat": "蘇格蘭", "confidence": "medium", "formation": "4-2-3-1", "style": ["防守紀律", "定位球", "體能對抗"],
+      "spells": [
+        {
+          "from": "2024-02-19",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "EVE",
+      "name": "David Moyes",
+      "zh": "莫耶斯",
+      "nat": "蘇格蘭",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "防守紀律",
+        "定位球",
+        "體能對抗"
+      ],
       "note": "強調防守組織與二點球爭奪,球隊失球數明顯改善。",
-      "spells": [{ "from": "2025-01-11", "to": null }] },
-    { "team": "FUL", "name": "Marco Silva", "zh": "馬可·席爾瓦", "nat": "葡萄牙", "confidence": "medium", "formation": "4-2-3-1", "style": ["中場控制", "主場強勢"],
+      "spells": [
+        {
+          "from": "2025-01-11",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "FUL",
+      "name": "Marco Silva",
+      "zh": "馬可·席爾瓦",
+      "nat": "葡萄牙",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "中場控制",
+        "主場強勢"
+      ],
       "note": "體系穩定,主場表現長期優於客場。",
-      "spells": [{ "from": "2021-07-01", "to": null }] },
-    { "team": "HUL", "name": null, "zh": "待確認", "nat": null, "confidence": "unknown", "formation": null, "style": [],
+      "spells": [
+        {
+          "from": "2021-07-01",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "HUL",
+      "name": null,
+      "zh": "待確認",
+      "nat": null,
+      "confidence": "unknown",
+      "formation": null,
+      "style": [],
       "note": "升班馬,教練資訊待人工補上(請編輯 data/manual/coaches.json)。",
-      "spells": [] },
-    { "team": "IPS", "name": "Kieran McKenna", "zh": "麥肯納", "nat": "北愛爾蘭", "confidence": "medium", "formation": "4-2-3-1", "style": ["結構化進攻", "邊路超載"],
+      "spells": []
+    },
+    {
+      "team": "IPS",
+      "name": "Kieran McKenna",
+      "zh": "麥肯納",
+      "nat": "北愛爾蘭",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "結構化進攻",
+        "邊路超載"
+      ],
       "note": "連續升級的少壯派教練,強調有球階段的位置結構。",
-      "spells": [{ "from": "2021-12-16", "to": null }] },
-    { "team": "LEE", "name": "Daniel Farke", "zh": "法爾克", "nat": "德國", "confidence": "medium", "formation": "4-2-3-1", "style": ["控球主導", "邊路傳中"],
+      "spells": [
+        {
+          "from": "2021-12-16",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "LEE",
+      "name": "Daniel Farke",
+      "zh": "法爾克",
+      "nat": "德國",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "控球主導",
+        "邊路傳中"
+      ],
       "note": "英冠時期控球率極高,升上英超後需在控球與防守間取捨。",
-      "spells": [{ "from": "2023-07-04", "to": null }] },
-    { "team": "LIV", "name": "Arne Slot", "zh": "斯洛特", "nat": "荷蘭", "confidence": "high", "formation": "4-2-3-1", "style": ["控球壓迫", "位置足球", "節奏控制"],
+      "spells": [
+        {
+          "from": "2023-07-04",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "LIV",
+      "name": "Arne Slot",
+      "zh": "斯洛特",
+      "nat": "荷蘭",
+      "confidence": "high",
+      "formation": "4-2-3-1",
+      "style": [
+        "控球壓迫",
+        "位置足球",
+        "節奏控制"
+      ],
       "note": "承接克洛普體系後降低瘋狗壓迫比重,改以控球與位置紀律控制比賽。",
-      "spells": [{ "from": "2024-06-01", "to": null }] },
-    { "team": "MCI", "name": "Pep Guardiola", "zh": "瓜迪奧拉", "nat": "西班牙", "confidence": "high", "formation": "4-3-3", "style": ["極致控球", "偽中場", "反擊防守"],
+      "spells": [
+        {
+          "from": "2024-06-01",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "MCI",
+      "name": "Pep Guardiola",
+      "zh": "瓜迪奧拉",
+      "nat": "西班牙",
+      "confidence": "high",
+      "formation": "4-3-3",
+      "style": [
+        "極致控球",
+        "偽中場",
+        "反擊防守"
+      ],
       "note": "位置足球代表人物,後腰內收、邊後衛進中路,持續進化的結構變形。",
-      "spells": [{ "from": "2016-07-01", "to": null }] },
-    { "team": "MUN", "name": "Ruben Amorim", "zh": "阿莫林", "nat": "葡萄牙", "confidence": "medium", "formation": "3-4-2-1", "style": ["三中衛", "翼衛寬度", "垂直進攻"],
+      "spells": [
+        {
+          "from": "2016-07-01",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "MUN",
+      "name": "Ruben Amorim",
+      "zh": "阿莫林",
+      "nat": "葡萄牙",
+      "confidence": "medium",
+      "formation": "3-4-2-1",
+      "style": [
+        "三中衛",
+        "翼衛寬度",
+        "垂直進攻"
+      ],
       "note": "堅持三中衛體系,對翼衛與影子前鋒的人選要求高。",
-      "spells": [{ "from": "2024-11-11", "to": null }] },
-    { "team": "NEW", "name": "Eddie Howe", "zh": "豪威", "nat": "英格蘭", "confidence": "high", "formation": "4-3-3", "style": ["高強度壓迫", "主場氣勢", "直接進攻"],
+      "spells": [
+        {
+          "from": "2024-11-11",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "NEW",
+      "name": "Eddie Howe",
+      "zh": "豪威",
+      "nat": "英格蘭",
+      "confidence": "high",
+      "formation": "4-3-3",
+      "style": [
+        "高強度壓迫",
+        "主場氣勢",
+        "直接進攻"
+      ],
       "note": "球隊主場強度為聯盟前段,壓迫觸發點設在對手邊後衛。",
-      "spells": [{ "from": "2021-11-08", "to": null }] },
-    { "team": "NFO", "name": "Sean Dyche", "zh": "戴奇", "nat": "英格蘭", "confidence": "medium", "formation": "4-4-2", "style": ["中低區塊", "定位球", "直接長傳"],
+      "spells": [
+        {
+          "from": "2021-11-08",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "NFO",
+      "name": "Sean Dyche",
+      "zh": "戴奇",
+      "nat": "英格蘭",
+      "confidence": "medium",
+      "formation": "4-4-2",
+      "style": [
+        "中低區塊",
+        "定位球",
+        "直接長傳"
+      ],
       "note": "2025-26 賽季中期接手,球隊風格轉向防守紀律與死球得分。",
-      "spells": [{ "from": "2025-10-01", "to": null }, { "from": "2025-09-10", "to": "2025-09-30", "name": "Ange Postecoglou", "zh": "波斯堤高古", "confidence": "low" }, { "from": "2023-12-20", "to": "2025-09-09", "name": "Nuno Espírito Santo", "zh": "努諾", "confidence": "medium" }] },
-    { "team": "SUN", "name": "Régis Le Bris", "zh": "勒布里", "nat": "法國", "confidence": "medium", "formation": "4-2-3-1", "style": ["緊湊防守", "快速反擊", "年輕陣容"],
+      "spells": [
+        {
+          "from": "2025-10-01",
+          "to": null
+        },
+        {
+          "from": "2025-09-10",
+          "to": "2025-09-30",
+          "name": "Ange Postecoglou",
+          "zh": "波斯堤高古",
+          "confidence": "low"
+        },
+        {
+          "from": "2023-12-20",
+          "to": "2025-09-09",
+          "name": "Nuno Espírito Santo",
+          "zh": "努諾",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "team": "SUN",
+      "name": "Régis Le Bris",
+      "zh": "勒布里",
+      "nat": "法國",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "緊湊防守",
+        "快速反擊",
+        "年輕陣容"
+      ],
       "note": "以低失球撐起升班馬的保級基礎。",
-      "spells": [{ "from": "2024-07-01", "to": null }] },
-    { "team": "TOT", "name": "Thomas Frank", "zh": "法蘭克", "nat": "丹麥", "confidence": "medium", "formation": "4-2-3-1", "style": ["定位球", "防守結構", "數據導向"],
+      "spells": [
+        {
+          "from": "2024-07-01",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "TOT",
+      "name": "Thomas Frank",
+      "zh": "法蘭克",
+      "nat": "丹麥",
+      "confidence": "medium",
+      "formation": "4-2-3-1",
+      "style": [
+        "定位球",
+        "防守結構",
+        "數據導向"
+      ],
       "note": "自布倫特福帶來的定位球與數據化選材,球隊防守結構明顯收緊。",
-      "spells": [{ "from": "2025-06-12", "to": null }] },
-    { "team": "WHU", "name": "Nuno Espírito Santo", "zh": "努諾", "nat": "葡萄牙", "confidence": "medium", "formation": "3-4-3", "style": ["緊湊防守", "反擊"],
+      "spells": [
+        {
+          "from": "2025-06-12",
+          "to": null
+        }
+      ]
+    },
+    {
+      "team": "WHU",
+      "name": "Nuno Espírito Santo",
+      "zh": "努諾",
+      "nat": "葡萄牙",
+      "confidence": "medium",
+      "formation": "3-4-3",
+      "style": [
+        "緊湊防守",
+        "反擊"
+      ],
       "note": "2025-26 賽季中期接手,球隊未能避免降級。",
-      "spells": [{ "from": "2025-09-27", "to": null }, { "from": "2025-01-09", "to": "2025-09-26", "name": "Graham Potter", "zh": "波特", "confidence": "medium" }] },
-    { "team": "WOL", "name": "Rob Edwards", "zh": "愛德華茲", "nat": "威爾斯", "confidence": "low", "formation": "3-4-3", "style": ["三中衛", "反擊"],
+      "spells": [
+        {
+          "from": "2025-09-27",
+          "to": null
+        },
+        {
+          "from": "2025-01-09",
+          "to": "2025-09-26",
+          "name": "Graham Potter",
+          "zh": "波特",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "team": "WOL",
+      "name": "Rob Edwards",
+      "zh": "愛德華茲",
+      "nat": "威爾斯",
+      "confidence": "low",
+      "formation": "3-4-3",
+      "style": [
+        "三中衛",
+        "反擊"
+      ],
       "note": "2025-26 賽季中期接手,球隊仍降級。",
-      "spells": [{ "from": "2025-12-01", "to": null }, { "from": "2024-12-19", "to": "2025-11-30", "name": "Vítor Pereira", "zh": "佩雷拉", "confidence": "medium" }] }
+      "spells": [
+        {
+          "from": "2025-12-01",
+          "to": null
+        },
+        {
+          "from": "2024-12-19",
+          "to": "2025-11-30",
+          "name": "Vítor Pereira",
+          "zh": "佩雷拉",
+          "confidence": "medium"
+        }
+      ]
+    }
   ]
 }

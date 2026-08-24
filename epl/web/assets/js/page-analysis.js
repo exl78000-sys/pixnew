@@ -229,9 +229,13 @@ try {
   function officialXI(f) {
     const m = official?.matches?.[`${f.home}|${f.away}`];
     if (!m?.home?.xi?.length || !m?.away?.xi?.length) return null;
-    const side = s => m[s].xi.map(x => ({ ...x, photo: x.code ? photoOf(x.code) : null }));
+    const pic = x => ({ ...x, photo: x.code ? photoOf(x.code) : null });
+    const side = s => m[s].xi.map(pic);
+    // 官方排位:每一排實際有誰。有這個才畫得出真正的 4-1-4-1(而不是 FPL 粗類的 4-4-2)
+    const rowsOf = s => (m[s].rows ? m[s].rows.map(r => r.map(pic)) : null);
     return { m, home: side('home'), away: side('away'),
-      formation: { home: m.home.formation, away: m.away.formation } };
+      formation: { home: m.home.formation, away: m.away.formation },
+      rows: { home: rowsOf('home'), away: rowsOf('away') } };
   }
 
 
@@ -242,7 +246,7 @@ try {
     const proj = { home: lineups[f.home], away: lineups[f.away] };
     if (!real && !proj.home && !proj.away) return '';
 
-    const board = (code, list, shape, thisFormation) => {
+    const board = (code, list, shape, thisFormation, officialRows) => {
       const sh = shapes[code];
       const std = sh?.official
         ? `<b class="mono">${sh.official.formation}</b><span class="pill accent tiny">官方</span>`
@@ -260,7 +264,7 @@ try {
           進攻 <span class="mono" style="color:var(--accent)">${sh.attacking.label}</span>・
           防守 <span class="mono" style="color:var(--accent-3)">${sh.defending.label}</span>` : ''}
           </div>` : '<div class="tiny dim" style="margin-bottom:8px">升班馬,英超樣本不足以推導標準陣型</div>'}
-        ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85' })}
+        ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85', officialRows })}
       </div>`;
     };
 
@@ -269,8 +273,18 @@ try {
     const shapeOf = (code, side) => (live_
       ? (live_.m.sides?.[code]?.shape?.label ?? '—')
       : (proj[side]?.shape ?? '—'));
-    // 這場的官方陣型:即使名單走 live,陣型仍以官方公布的為準
+    // 這場的官方陣型與排位:即使名單走 live,陣型與站位仍以官方公布的為準。
     const fmOf = side => off?.formation?.[side] ?? null;
+    // live 名單帶著進球、紅牌等場中狀態,官方排位只有站位 —— 用 code 把兩邊接起來,
+    // 兩樣都留住:官方的站位 + live 的場中標記。接不齊就回 null,退回 FPL 粗類分排。
+    const rowsOf = (side, list) => {
+      const r = off?.rows?.[side] ?? null;
+      if (!r) return null;
+      if (!live_) return r;
+      const byCode = new Map(list.filter(p => p.code != null).map(p => [String(p.code), p]));
+      const mapped = r.map(row => row.map(p => (p.code != null ? byCode.get(String(p.code)) ?? p : p)));
+      return mapped.reduce((a, x) => a + x.length, 0) === list.length ? mapped : null;
+    };
 
     return `
     <div class="section"><h2>${real ? '實際先發陣容' : '預估先發陣容'}</h2>
@@ -280,8 +294,8 @@ try {
           ? `英超官方公布的正式名單${off.m.kickoff ? `・${C.ageText ? C.ageText(off.m.kickoff) : ''}` : ''}`
           : `推測值,不是官方名單 —— 依球員近期先發紀錄推算`}</span></div>
     <div class="grid g2">
-      ${board(f.home, withPhoto(xi.home), shapeOf(f.home, 'home'), fmOf('home'))}
-      ${board(f.away, withPhoto(xi.away), shapeOf(f.away, 'away'), fmOf('away'))}
+      ${board(f.home, withPhoto(xi.home), shapeOf(f.home, 'home'), fmOf('home'), rowsOf('home', withPhoto(xi.home)))}
+      ${board(f.away, withPhoto(xi.away), shapeOf(f.away, 'away'), fmOf('away'), rowsOf('away', withPhoto(xi.away)))}
     </div>
     ${real ? '' : `<div class="note" style="margin-top:10px">
       <b>這是推測,不是官方公布的名單。</b>

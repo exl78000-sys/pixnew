@@ -577,9 +577,28 @@ export function fail(err) {
 const ROW_Y = { GK: 92, DEF: 74, MID: 50, FWD: 26 };
 const ROW_Y_PHOTO = { GK: 89, DEF: 70, MID: 46, FWD: 20 };
 
-export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = false, badge: showBadge = null } = {}) {
-  const rows = { GK: [], DEF: [], MID: [], FWD: [] };
-  for (const p of xi) (rows[p.pos] ?? rows.MID).push(p);
+// 有官方排位時,排數不固定(4-2-3-1 是五排、4-4-2 是四排),y 座標得現算。
+// 第一排是門將擺最下面,最後一排是最前面的攻擊線。
+function rowYs(n, photos) {
+  const gk = photos ? ROW_Y_PHOTO.GK : ROW_Y.GK;
+  const top = photos ? ROW_Y_PHOTO.FWD : ROW_Y.FWD;
+  if (n <= 1) return [gk];
+  return Array.from({ length: n }, (_, i) => gk - ((gk - top) * i) / (n - 1));
+}
+
+// officialRows:官方公布的每一排有誰。給了就照它畫 ——
+// 否則只能用 FPL 的四個粗類分排,會把 4-1-4-1 畫成 4-4-2。
+export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = false, badge: showBadge = null, officialRows = null } = {}) {
+  const useOfficial = Array.isArray(officialRows) && officialRows.length > 1
+    && officialRows.reduce((n, r) => n + r.length, 0) === xi.length;
+  const ys = useOfficial ? rowYs(officialRows.length, photos) : null;
+  const rows = useOfficial
+    ? Object.fromEntries(officialRows.map((list, i) => [`r${i}`, list]))
+    : (() => {
+        const r = { GK: [], DEF: [], MID: [], FWD: [] };
+        for (const p of xi) (r[p.pos] ?? r.MID).push(p);
+        return r;
+      })();
 
   const line = 'rgba(255,255,255,.14)';
   const marks = `
@@ -596,9 +615,10 @@ export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = f
   const R = photos ? 5.6 : 3.2;
 
   let seq = -1;
-  const dots = Object.entries(rows).flatMap(([pos, list]) => list.map((p, i) => {
+  const dots = Object.entries(rows).flatMap(([key, list], rowIx) => list.map((p, i) => {
     const x = ((i + 1) / (list.length + 1)) * 96 + 2;
-    const y = (photos ? ROW_Y_PHOTO : ROW_Y)[pos];
+    const pos = useOfficial ? (p.pos ?? 'MID') : key;
+    const y = useOfficial ? ys[rowIx] : (photos ? ROW_Y_PHOTO : ROW_Y)[key];
     // 一排塞越多人,名字就得越短越小,否則五個中場的名字會疊在一起
     const slot = 96 / (list.length + 1);
     const size = photos ? Math.min(3.4, Math.max(2.3, slot / 5.0)) : Math.min(3.2, Math.max(2.1, slot / 5.2));

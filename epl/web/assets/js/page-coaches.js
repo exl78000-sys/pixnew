@@ -14,6 +14,10 @@ try {
   const CONF = { high: ['accent', '長期在任'], medium: ['warn', '需留意異動'], low: ['bad', '可信度低'], unknown: ['bad', '待確認'] };
 
   const confPill = c => {
+    // 官方核對過就別再顯示「需留意異動」—— 那個標籤問的問題已經有答案了
+    if (coaches.officialAsOf && c.officialName) {
+      return '<span class="pill accent tiny" title="英超官方登記的現任教練">官方確認在任</span>';
+    }
     const [cls, label] = CONF[c.confidence] ?? ['', c.confidence];
     return `<span class="pill ${cls} tiny">${label}</span>`;
   };
@@ -44,19 +48,44 @@ try {
     return `<div class="note ${mism.length ? 'warn' : 'ok'}">
       <b>已和英超官方核對過。</b>
       ${mism.length
-        ? `<b>${mism.length} 隊已經換帥</b>,本站名冊還沒更新 —— 下面這幾隊請以官方那一欄為準:
+        ? `<b>${mism.length} 隊在本站上次整理之後換了教練</b>,名字已改用官方的:
            <div style="margin-top:6px">${mism.map(c => `<div class="tiny">
-             ${C.name(c.team)}:名冊寫 <b>${c.name || '(空白)'}</b>,官方是 <b class="accent">${c.officialName}</b></div>`).join('')}</div>
-           <div class="tiny dim" style="margin-top:6px">戰術風格與任期起訖還是舊教練的,先別當成新教練的特徵在讀。</div>`
+             ${C.name(c.team)}:<b class="accent">${C.esc(c.name)}</b>
+             <span class="dim">接替 ${C.esc(c.predecessor?.zh ?? c.predecessor?.name ?? '(空白)')}</span></div>`).join('')}</div>
+           <div class="tiny dim" style="margin-top:6px">這幾位的任期、戰績與戰術風格本站還沒整理,
+             卡片上只會看到前任的資料並標明是前任 —— 不會拿舊數字充當新教練的履歷。</div>`
         : `20 隊的現任教練都和官方一致。`}
     </div>`;
   })()}
 
   ${(() => {
-    // 講「資料可能過期」沒有用,要講「過期多久、幾隊沒把握、哪幾隊」,讀者才知道該不該信
     const days = Math.round((Date.now() - new Date(`${coaches.asOf}-01`).getTime()) / 86400000);
     const unsure = current.filter(c => c.confidence !== 'high');
     const unknown = current.filter(c => !c.name);
+    const mism = current.filter(c => c.officialMismatch);
+
+    // 接了官方名單之後,「他還在不在任上」已經不用猜了 ——
+    // 剩下會過期的是任期起訖、戰術風格與中文譯名,講清楚是這些,不要再嚇人
+    if (coaches.officialAsOf) {
+      return `<div class="note">
+        <b>還有什麼是人工維護、可能過期的。</b>
+        現任是誰每天跟官方核對,20 隊都確定了;但下面這些官方沒有提供,仍是人工整理的
+        (整理時點 ${coaches.asOf},距今 ${days} 天):
+        <div style="margin-top:6px" class="tiny">
+          <b>任期起訖</b> —— 戰績是依這個日期切分比賽算出來的,日期不對戰績就會算到別人頭上。<br>
+          <b>戰術風格與慣用陣型</b> —— 同一位教練也可能改打法,而且新教練完全沒有(共 ${mism.length} 位)。<br>
+          <b>中文譯名</b> —— 沒有譯名的直接顯示英文,不會硬編一個。
+        </div>
+        <div class="tiny" style="margin-top:8px">
+          補上新教練的資料:編輯 <span class="mono">data/manual/coaches.json</span> ——
+          把舊教練那筆的 <span class="mono">spells[0].to</span> 填上離任日期,再在最前面加一筆新教練
+          (<span class="mono">to: null</span> 代表在任中),然後重跑 <span class="mono">npm run build</span>。
+          <b>戰績不用手算</b>,系統會依任期日期自動切分比賽重算。
+        </div>
+      </div>`;
+    }
+
+    // 沒有官方資料時,只能講「過期多久、幾隊沒把握、哪幾隊」,讀者才知道該不該信
     const stale = days > 60;
     return `<div class="note ${stale ? 'warn' : ''}">
       <b>這份名冊已經 ${days} 天沒更新</b>(整理時點 ${coaches.asOf},今天 ${meta.asOf})。
@@ -94,16 +123,29 @@ try {
         <a href="${C.link('teams', { code: c.team })}">${C.badge(c.team, 'lg')}</a>
         <div style="flex:1">
           <div class="spread">
-            <div style="font-weight:800;font-size:16px">${c.name ? C.esc(c.zh) : '待確認'}
-              <span class="dim small" style="font-weight:400">${c.name ? C.esc(c.name) : ''}</span></div>
-            ${c.officialMismatch ? '<span class="pill bad tiny" title="英超官方登記的現任教練不是這一位">已換帥</span>' : confPill(c)}
+            <div style="font-weight:800;font-size:16px">${c.name ? C.esc(c.zh ?? c.name) : '待確認'}
+              <span class="dim small" style="font-weight:400">${c.zh && c.name ? C.esc(c.name) : ''}</span></div>
+            ${c.officialMismatch ? '<span class="pill accent tiny" title="英超官方登記的現任教練">官方現任</span>' : confPill(c)}
           </div>
-          ${c.officialMismatch ? `<div class="tiny" style="color:var(--accent);margin-top:2px">
-            官方現任:<b>${C.esc(c.officialName)}</b>(下面的戰術與戰績仍屬前任)</div>` : ''}
           <div class="tiny dim">${t.en}${c.nat ? `・${c.nat}` : ''}${c.since ? `・${c.since} 上任(約 ${years} 年)` : ''}</div>
         </div>
       </div>
-      ${c.name ? `
+      ${c.officialMismatch ? `
+        <div class="note" style="margin-top:10px">
+          <b>本站還沒有這位教練的資料。</b>名字取自英超官方,但任期、戰績與戰術風格尚未整理 ——
+          不會拿前任的數字充當他的履歷。
+        </div>
+        ${c.predecessor ? `<div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
+          <div class="tiny dim" style="margin-bottom:4px">前任 ${C.esc(c.predecessor.zh ?? c.predecessor.name ?? '(空白)')}
+            <span class="dim">${c.predecessor.name && c.predecessor.zh ? C.esc(c.predecessor.name) : ''}</span>
+            ${c.predecessor.since ? `・${c.predecessor.since} 上任` : ''}</div>
+          <div class="stat-line"><span class="small muted">${meta.lastSeason} 任內</span>
+            <span class="small">${rec(c.predecessor.seasonRecord)}</span></div>
+          <div class="stat-line"><span class="small muted">慣用陣型</span>
+            <b class="mono">${c.predecessor.formation ?? '—'}</b></div>
+          <div class="tags" style="margin-top:6px">${(c.predecessor.style ?? []).map(x => `<span class="pill">${x}</span>`).join('')}</div>
+        </div>` : ''}`
+      : c.name ? `
         <div class="stat-line" style="margin-top:10px"><span class="small muted">${meta.lastSeason} 任內</span>
           <span class="small">${rec(c.seasonRecord)}</span></div>
         <div class="stat-line"><span class="small muted">近三季任內</span>
@@ -123,7 +165,7 @@ try {
 
   const rankRows = current.concat(gone).filter(c => c.seasonRecord?.p);
   document.getElementById('rank').innerHTML = C.table(rankRows, [
-    { key: 'coach', label: '教練', value: c => c.zh ?? '', render: c => `${C.esc(c.zh)} <span class="dim tiny">${C.esc(c.name ?? '')}</span>` },
+    { key: 'coach', label: '教練', value: c => c.zh ?? c.name ?? '', render: c => `${C.esc(c.zh ?? c.name ?? '')} <span class="dim tiny">${C.esc(c.zh ? (c.name ?? '') : '')}</span>` },
     { key: 'team', label: '球隊', value: c => C.name(c.team), render: c => C.teamCell(c.team) },
     { key: 'p', label: '場次', value: c => c.seasonRecord.p, num: true },
     { key: 'w', label: '勝', value: c => c.seasonRecord.w, num: true },

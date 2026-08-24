@@ -134,14 +134,25 @@ export function attachCodes(lineups, players) {
     return { ...x, code: hit?.code ?? null, pos: POS[x.pos] ?? hit?.pos ?? 'MID', posRaw: x.pos ?? null };
   });
 
+  // 官方的 formation.players 是「每一排有誰」的 id 陣列 —— 這才是真正的站位。
+  // 有了它就不用再拿 FPL 的四個粗類去湊,4-1-4-1 才不會被畫成 4-4-2。
+  // 對不齊(有人查不到、人數不等於 11)就回 null,前端自動退回舊畫法。
+  const resolveRows = side => {
+    if (!Array.isArray(side.rows) || !side.rows.length) return null;
+    const byId = new Map(side.xi.filter(p => p.id != null).map(p => [p.id, p]));
+    const rows = side.rows.map(r => r.map(id => byId.get(id)).filter(Boolean));
+    const total = rows.reduce((n, r) => n + r.length, 0);
+    return total === side.xi.length ? rows : null;
+  };
+
   const out = {};
   for (const [key, m] of Object.entries(lineups.matches)) {
     const [home, away] = key.split('|');
-    out[key] = {
-      ...m,
-      home: { ...m.home, xi: fix(home, m.home.xi), subs: fix(home, m.home.subs) },
-      away: { ...m.away, xi: fix(away, m.away.xi), subs: fix(away, m.away.subs) },
+    const side = (code, s) => {
+      const withCodes = { ...s, xi: fix(code, s.xi), subs: fix(code, s.subs) };
+      return { ...withCodes, rows: resolveRows(withCodes) };
     };
+    out[key] = { ...m, home: side(home, m.home), away: side(away, m.away) };
   }
   return { ...lineups, matches: out, matchStats: { matched, missed, missedNames: missedNames.slice(0, 20) } };
 }

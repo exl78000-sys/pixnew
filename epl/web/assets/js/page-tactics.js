@@ -135,8 +135,11 @@ try {
   ${C.foot(meta)}`;
 
   const ROLE_ZH = { CB: '中衛', FB: '邊後衛', DM: '防中', CM: '中場', AM: '前腰', W: '邊鋒', ST: '中鋒' };
+  // 這張表講的是「本季這 20 隊」,所以由 shapes 起頭而不是 tactics ——
+  // tactics 來自上季英超,升班馬在裡面沒有資料,用它當來源會把三支升班馬整個漏掉,
+  // 而它們正好是最需要官方陣型的隊伍(自己推導不出來)
   document.getElementById('shapeTable').innerHTML = C.table(
-    tactics.filter(t => shapes[t.code]).map(t => ({ ...t, s: shapes[t.code] })), [
+    Object.entries(shapes).map(([code, s]) => ({ ...(tacBy.get(code) ?? { code }), code, s })), [
       { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },
       { key: 'base', label: '標準陣型', value: t => (t.s?.official?.formation ?? t.s?.base?.label ?? ''), sortable: false,
         title: '官方公布的優先;沒有官方資料才用出場分鐘推導',
@@ -163,9 +166,11 @@ try {
               t.s.official ? `,攻守分型待樣本累積(官方陣型已有 ${t.s.official.games} 場)` : ''}</span>`
           : `<span class="tiny dim">${Object.entries(t.s.counts).filter(([, n]) => n > 0)
               .map(([k, n]) => `${n}${ROLE_ZH[k]}`).join('・')}</span>`) },
-      { key: 'fpl', label: 'FPL 粗類', value: t => t.formation.def, num: true,
-        title: '出場分鐘反推的四類人力配置,是上面那張表的原料',
-        render: t => `<span class="dim tiny mono">${t.formation.label}</span>` },
+      { key: 'fpl', label: 'FPL 粗類', value: t => t.formation?.def ?? -1, num: true,
+        title: '上季英超出場分鐘反推的四類人力配置。升班馬上季不在英超,所以沒有',
+        render: t => (t.formation
+          ? `<span class="dim tiny mono">${t.formation.label}</span>`
+          : '<span class="dim tiny">升班馬・上季不在英超</span>') },
     ], { sortKey: 'base', desc: false });
 
   document.getElementById('corrTable').innerHTML = C.table(formation.pairs, [

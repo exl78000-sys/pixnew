@@ -19,6 +19,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'data', 'raw', 'pulselive', 'official.json');
 const has = k => process.argv.includes(`--${k}`);
 
+// 存檔格式版本。改欄位就把它加一 —— 下次執行會自動重抓已存的場次,
+// 不然舊檔會一直被當成「已經抓過」,新欄位永遠是空的。
+const STORE_VERSION = 2;
+
 const MAX_DETAIL = has('all') ? 400 : 14;   // 每次執行最多抓幾場詳情
 const SOON_MS = 3 * 60 * 60 * 1000;         // 開賽前 3 小時內就開始試(正式陣容約賽前 1 小時公布)
 const MANAGER_TTL = 24 * 60 * 60 * 1000;
@@ -31,6 +35,8 @@ const j = async url => {
 
 // 官方的 lineup 一筆 → 我們要的形狀。名字、背號、場上位置都直接沿用官方的。
 const person = p => ({
+  // 兩個 id 都要:formation.players 的排位用的是 id,不是 playerId
+  id: p.id ?? null,
   playerId: p.playerId || null,
   name: p.name?.display ?? null,
   shirt: p.matchShirtNumber ?? p.info?.shirtNum ?? null,
@@ -49,8 +55,13 @@ const sideOf = tl => ({
 
 async function main() {
   const T = loadTeams(ROOT);
-  let store = { season: null, teams: {}, managers: {}, managersFetchedAt: null, matches: {} };
+  let store = { version: STORE_VERSION, season: null, teams: {}, managers: {}, managersFetchedAt: null, matches: {} };
   try { store = { ...store, ...JSON.parse(await readFile(OUT, 'utf8')) }; } catch { /* 第一次執行 */ }
+  if (store.version !== STORE_VERSION) {
+    console.log(`  存檔格式從 v${store.version ?? 1} 升到 v${STORE_VERSION},重抓所有場次的陣容`);
+    store.matches = {};
+    store.version = STORE_VERSION;
+  }
 
   const season = await findSeason(j);
   console.log(`▶ 官方賽季:${season.label}(id ${season.id})`);
