@@ -35,6 +35,24 @@ try {
     const withRealData = liveCards.filter(x => x.m).length;
 
     /* 資料來源說明 —— 這一段一定要講清楚,免得把重播當成現正進行 */
+    /* 有比賽在踢、資料卻已經舊了的時候要明講。
+       不講的話讀者會把 40 分鐘前的比分當成現在的比分 —— 那比沒有比分更糟。
+       門檻抓 5 分鐘:比賽日的輪詢是每 2 分鐘一次,超過 5 分鐘代表更新機制沒在跑。 */
+    const staleBanner = () => {
+      if (!live.available || !live.fetchedAt) return '';
+      const playing = (live.matches ?? []).filter(m => m.started && !m.finished).length;
+      if (!playing) return '';
+      const mins = Math.round((Date.now() - Date.parse(live.fetchedAt)) / 60000);
+      if (mins < 5) return '';
+      return `<div class="note ${mins >= 15 ? 'warn' : ''}" style="margin-top:12px">
+        <b>比分已經 ${mins} 分鐘沒更新</b>(有 ${playing} 場正在踢)。
+        畫面上的比分與分鐘數是 ${C.kickoffLocal(live.fetchedAt)} 抓到的,<b>不是現在的實況</b>。
+        <div class="tiny dim" style="margin-top:6px">
+          比賽中正常是每 2 分鐘更新一次。超過這個時間通常是更新流程還沒被觸發或正在排隊 ——
+          這一頁每 20 秒會自己重新取一次,拿到新資料就會自動換掉,不需要重新整理。</div>
+      </div>`;
+    };
+
     const sourceBanner = () => {
       if (!live.available) {
         return `<div class="note">目前沒有接上即時比賽資料源。<br>
@@ -77,6 +95,7 @@ try {
       ])}
     </div>
 
+    ${staleBanner()}
     ${sourceBanner()}
 
     <div class="grid g4" style="margin-top:14px">
@@ -270,11 +289,25 @@ try {
   // 就算完全沒有即時資料源,也要定期重畫,比賽才會自己從「倒數」變成「進行中」。
   const POLL_MS = 20000, REDRAW_MS = 30000;
   let lastStamp = live.fetchedAt ?? null;
+  /* 取回最新的 live.json。
+     優先走 raw.githubusercontent.com —— 比賽日的輪詢每 2 分鐘就把資料推回 repo,
+     那裡拿得到的比 Pages 上的新(Pages 要等下一次部署)。
+     raw 掛掉、或本機開啟時,退回讀本站自己的 data/live.json。 */
+  const feeds = [meta.liveFeed, 'data/live.json'].filter(Boolean);
+  const fetchLive = async () => {
+    for (const url of feeds) {
+      try {
+        const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`, { cache: 'no-store' });
+        if (res.ok) return await res.json();
+      } catch { /* 換下一個來源 */ }
+    }
+    return null;
+  };
+
   C.pageInterval(async () => {
     try {
-      const res = await fetch(`data/live.json?t=${Date.now()}`, { cache: 'no-store' });
-      if (!res.ok) return;
-      const fresh = await res.json();
+      const fresh = await fetchLive();
+      if (!fresh) return;
       const stamp = fresh.fetchedAt ?? null;
       if (stamp !== lastStamp || fresh.available !== live.available) {
         lastStamp = stamp;

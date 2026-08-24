@@ -536,6 +536,14 @@ async function main() {
       ? { available: true, source: liveOut.source, sourceLabel: liveOut.sourceLabel, demo: liveOut.demo, round: liveOut.round, fetchedAt: liveOut.fetchedAt, counts: liveOut.counts }
       : { available: false },
     liveResultsMerged: liveFilled,
+    /* 比賽中的快速通道。比賽日的輪詢工作流程每 2 分鐘把 live.json 提交回 repo,
+       但 Pages 重新部署要等下一次建置 —— 所以前端直接讀 raw.githubusercontent.com,
+       資料一進 repo 就看得到,不用等部署。
+       raw 有 access-control-allow-origin: * (已實測),瀏覽器讀得到。
+       只有在 Actions 裡建置時才有 repo/分支資訊;本機建置就是 null,前端自動退回讀本地檔。 */
+    liveFeed: (process.env.GITHUB_REPOSITORY && process.env.GITHUB_REF_NAME)
+      ? `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${process.env.GITHUB_REF_NAME}/epl/web/data/live.json`
+      : null,
     official: offShapes
       ? {
           available: true, source: 'pulselive', asOf: offShapes.asOf, season: offShapes.season,

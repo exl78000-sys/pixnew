@@ -1,0 +1,112 @@
+# 比賽日高頻更新 —— 有比賽在踢的時候,每 2 分鐘更新一次比分與陣容。
+#
+# 為什麼要獨立一個工作流程:
+# GitHub 的 schedule 是 best-effort,實測設定 15 分鐘、實際間隔是 28~78 分鐘
+# (平均 46 分鐘)。比賽中靠 cron 更新根本來不及。
+#
+# 但有一件事 cron 管不到:**job 內部的迴圈**。單一 job 最長可以跑 6 小時,
+# 迴圈裡的 sleep 是準的。所以這裡換一個機制:
+#   cron 只負責「開場」(延遲多久都沒關係,反正會提早 75 分鐘進場等),
+#   真正的高頻更新放在 job 內的 while 迴圈裡。
+#
+# 沒有比賽時這個工作流程幾秒鐘就結束,不 build、不部署、不提交 ——
+# 符合「沒比賽就不用頻繁」。repo 是公開的,Actions 分鐘數不計費。
+
+name: 英超戰情室 比賽日高頻更新
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 只是「開場」用。就算延遲 46 分鐘也接得上 —— 因為開賽前 75 分鐘就會進場,
+    # 而且進行中的比賽任何一次執行都會抓到。
+    - cron: '*/15 * * * *'
+
+permissions:
+  contents: write
+
+# 跟建置/部署分開,才不會互相卡住;同時只跑一個,避免兩個迴圈重複提交
+concurrency:
+  group: epl-matchday
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330      # 5.5 小時(GitHub 上限 6),足夠涵蓋一整個比賽時段
+    defaults:
+      run:
+        working-directory: epl
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 現在該不該進場?
+        id: win
+        run: node scripts/live-window.mjs --github
+
+      - name: 沒比賽就結束
+        if: steps.win.outputs.active != 'true'
+        run: echo "· 不進場:${{ steps.win.outputs.reason }}"
+
+      - name: 輪詢更新(每 2 分鐘)
+        if: steps.win.outputs.active == 'true'
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: |
+          set -u
+          echo "▶ 進場:${{ steps.win.outputs.reason }}"
+
+          cd "$GITHUB_WORKSPACE"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cd epl
+
+          # 還沒開賽就先睡到開賽前,不要空轉燒時間
+          SLEEP='${{ steps.win.outputs.sleep }}'
+          if [ "$SLEEP" -gt 0 ] 2>/dev/null; then
+            echo "  距離進場還有 ${SLEEP}s,先等"
+            sleep "$SLEEP"
+          fi
+
+          POLL=120                      # 每 2 分鐘一次
+          END=$(( $(date +%s) + 18000 )) # 這次執行最多撐 5 小時
+          N=0; PUSHED=0
+
+          while [ "$(date +%s)" -lt "$END" ]; do
+            N=$((N+1))
+            npm run live      >/dev/null 2>&1 || true
+            npm run official  >/dev/null 2>&1 || true
+
+            # 只有資料真的變了才 build + 提交 —— 沒變就不要製造空提交
+            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/; then
+              echo "  [$N] 無變化"
+            else
+              npm run build >/dev/null 2>&1 || true
+              cd "$GITHUB_WORKSPACE"
+              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/web/data/ 2>/dev/null || true
+              if git diff --cached --quiet; then
+                echo "  [$N] 產物無變化"
+              else
+                git commit -q -m "chore(epl): 比賽中更新 $(date -u '+%H:%M UTC') [skip ci]"
+                # 建置/部署工作流程也會推同一個分支,推之前先接上
+                for try in 1 2 3; do
+                  git pull --rebase -q origin "$GITHUB_REF_NAME" 2>/dev/null || true
+                  if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
+                    PUSHED=$((PUSHED+1)); echo "  [$N] ✔ 已更新並推送"; break
+                  fi
+                  echo "  [$N] 推送衝突,重試 $try"; sleep 3
+                done
+              fi
+              cd epl
+            fi
+
+            # 還有比賽在踢嗎?沒有就收工
+            if [ "$(node scripts/live-window.mjs | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).active))')" != "true" ]; then
+              echo "  比賽都結束了,收工(共輪詢 $N 次、推送 $PUSHED 次)"
+              break
+            fi
+            sleep "$POLL"
+          done
+          echo "◀ 結束:輪詢 $N 次、推送 $PUSHED 次"

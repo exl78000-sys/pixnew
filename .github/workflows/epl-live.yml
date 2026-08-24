@@ -13,9 +13,13 @@ name: 英超戰情室 資料更新與部署
 on:
   workflow_dispatch:
   schedule:
-    # 每 15 分鐘一次。GitHub 的排程可能延遲 5~15 分鐘,所以這是「準即時」不是逐分鐘。
+    # 每 12 小時一次 —— 這是「沒有比賽時」的日常更新(賽程、球員、賠率、教練)。
+    #
+    # 比賽中的高頻更新不靠這裡:GitHub 的 schedule 是 best-effort,實測設定 15 分鐘、
+    # 實際間隔 28~78 分鐘(平均 46),比賽中根本來不及。那件事交給
+    # epl-matchday.yml —— 它在 job 內部用迴圈每 2 分鐘更新一次,不受排程延遲影響。
     # 注意:schedule 只會從「預設分支」觸發。
-    - cron: '*/15 * * * *'
+    - cron: '0 */12 * * *'
   push:
     branches:
       - main
