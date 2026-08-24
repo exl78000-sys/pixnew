@@ -3,6 +3,9 @@
 # clone 下來不用連網、不用 build 就能直接開站。
 node_modules/
 epl/.cache/
+# API 快取與額度記帳:每次執行都會變,而且可能含供應商回傳的原始資料
+epl/data/cache/api-football-*.json
+epl/data/cache/af-*.json
 # 單檔打包產物:內容是既有資料的重組,每次重建整份都會變,用 npm run bundle 現產即可
 epl/dist/
 

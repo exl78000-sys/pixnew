@@ -67,6 +67,11 @@ jobs:
 
       - name: 建立資料集
         run: npm run build
+        env:
+          # 選用的資料源:沒設 secret 就是空字串,adapter 會自動跳過,build 照樣完成。
+          # 設定方式:repo → Settings → Secrets and variables → Actions
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: 打包單檔版
         run: npm run bundle
