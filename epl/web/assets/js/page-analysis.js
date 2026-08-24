@@ -147,18 +147,26 @@ try {
           ${(p.topScores ?? []).map(s => `<span class="pill">${s.s} <span class="dim">·</span> ${C.pct(s.p, 0)}</span>`).join(' ')}</div>
       </div>
       <div class="card"><h3>數據對比</h3>
-        <div class="row small dim" style="justify-content:space-between;margin-bottom:6px">
-          <span>${C.name(f.home)}</span><span>${C.name(f.away)}</span></div>
-        ${cmp('Elo 實力評分', H.elo, A.elo, 0)}
-        ${cmp('上季聯賽名次', H.lastSeason?.pos ?? null, A.lastSeason?.pos ?? null, 0, 'low')}
-        ${cmp('上季場均勝點', H.lastSeason?.ppg ?? null, A.lastSeason?.ppg ?? null)}
-        ${cmp('每場期望進球 xG', th?.attack.xG90 ?? null, ta?.attack.xG90 ?? null)}
-        ${cmp('每場期望失球 xGA', th?.defence.xGA90 ?? null, ta?.defence.xGA90 ?? null, 2, 'low')}
-        ${cmp('領先守成率 %', th?.resilience.leadHoldPct ?? null, ta?.resilience.leadHoldPct ?? null, 1)}
-        ${cmp('落後翻盤率 %', th?.resilience.trailRescuePct ?? null, ta?.resilience.trailRescuePct ?? null, 1)}
-        <div class="tiny dim" style="margin-top:8px">綠色代表該項較佳(名次與失球是越低越好)。
-          ${promoted(f).length ? `${promoted(f).join('、')} 是升班馬,沒有上季英超資料,所以這幾欄是空的 ——
-            模型改用「聯盟後段先驗」估計其實力,不確定性比其他球隊大。` : ''}</div>
+        ${C.versus([
+          { label: 'Elo 實力評分', h: H.elo, a: A.elo, digits: 0 },
+          { label: '上季聯賽名次', h: H.lastSeason?.pos ?? null, a: A.lastSeason?.pos ?? null, digits: 0, better: 'low' },
+          { label: '上季場均勝點', h: H.lastSeason?.ppg ?? null, a: A.lastSeason?.ppg ?? null },
+          { label: '每場期望進球', h: th?.attack.xG90 ?? null, a: ta?.attack.xG90 ?? null, hint: 'xG' },
+          { label: '每場期望失球', h: th?.defence.xGA90 ?? null, a: ta?.defence.xGA90 ?? null, hint: 'xGA', better: 'low' },
+          { label: '領先守成率', h: th?.resilience.leadHoldPct ?? null, a: ta?.resilience.leadHoldPct ?? null, digits: 1, unit: '%' },
+          { label: '落後翻盤率', h: th?.resilience.trailRescuePct ?? null, a: ta?.resilience.trailRescuePct ?? null, digits: 1, unit: '%' },
+        ], {
+          home: f.home, away: f.away, colors: f.colors,
+          note: `<b>條長代表「這一列誰比較好」,不是數值大小</b> ——
+            標了 <span class="vs-dir">↓</span> 的項目(名次、失球)越低越好,條長會取倒數,
+            否則第 16 名的條會比第 5 名長,圖形反而跟 ▲ 打架。實際數值就在條的外側。
+            每一列各自比較,不共用同一條軸(單位本來就不同)。
+            ${sameHue(f) ? '' : `<br><b>${C.name(f.away)}這一邊沒有用它的主色</b> ——
+              兩隊主色太接近(英超九隊是紅的、六隊是深藍的),同色系會讓圖表等於沒有顏色,
+              所以自動換成可分辨的替代色。隊名、色塊與左右位置才是識別依據。`}
+            ${promoted(f).length ? `<br>${promoted(f).join('、')} 是升班馬,沒有上季英超資料,所以那幾列是空的 ——
+              模型改用「聯盟後段先驗」估計其實力,不確定性比其他球隊大。` : ''}`,
+        })}
       </div>
     </div>
 
@@ -172,9 +180,10 @@ try {
       等本季累積足夠場次後,這一段會自動出現。</div>` : ''}
     ${th && ta ? `<div class="section"><h2>戰術風格對比</h2><span class="hint">上季全季統計的百分位</span></div>
       <div class="card">
+        ${/* 雷達圖跟上面的對照條用同一組隊色,兩張圖才對得起來 */ ''}
         ${C.radar([
-          { name: C.name(f.home), color: '#00ff85', values: th.radar },
-          { name: C.name(f.away), color: '#04f5ff', values: ta.radar },
+          { name: C.name(f.home), color: f.colors?.home ?? '#00ff85', values: th.radar },
+          { name: C.name(f.away), color: f.colors?.away ?? '#04f5ff', values: ta.radar },
         ], { size: 340 })}
         <div class="stat-line" style="margin-top:10px"><span class="small">${C.teamCell(f.home, { link: false })}</span>
           <span class="row tiny" style="gap:5px">${th.tags.slice(0, 3).map(t => `<span class="pill accent">${C.esc(t)}</span>`).join('')}
@@ -411,6 +420,15 @@ try {
         不是任何人的主觀判斷。
       </div>
     </div>`;
+  }
+
+  // 客隊實際用的顏色跟它自己的主色差多少 —— 差很多就是被換過(兩隊撞色)
+  function sameHue(f) {
+    const own = C.team(f.away)?.colors?.[0];
+    if (!own || !f.colors?.away) return true;
+    const hx = s => s.replace('#', '').match(/../g).map(v => parseInt(v, 16));
+    const [r1, g1, b1] = hx(own), [r2, g2, b2] = hx(f.colors.away);
+    return Math.hypot(r1 - r2, g1 - g2, b1 - b2) < 90;
   }
 
   function compareRows(f, home, away) {

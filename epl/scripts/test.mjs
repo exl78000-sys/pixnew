@@ -16,6 +16,7 @@ import {
 } from './lib/report/index.mjs';
 import { attachCodes } from './lib/adapters/pulselive.mjs';
 import { oddsIndex, devig, parseOddsCsv } from './lib/odds.mjs';
+import { pickPair, oklch, contrast, deltaE, THRESHOLDS } from './lib/colour.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -319,9 +320,61 @@ async function main() {
   console.log('\n▶ 賠率去水錢自我檢查');
   const oddsFail = checkOdds();
 
+  // 兩隊對照的配色:紅隊對紅隊的話圖表等於沒有顏色,而且色盲讀者要分得出來
+  console.log('\n▶ 兩隊對照配色自我檢查');
+  const colourFail = checkColours(T);
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || nameFail || oddsFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail) process.exitCode = 1;
+}
+
+/* 每一種對戰組合都要通過資料視覺化的可量測檢查。
+   門檻與數學都照 dataviz 技能的驗證器:OKLab ΔE、Machado-Oliveira-Fernandes(2009)
+   色盲模擬、WCAG 對比。眼睛看不出「這兩個紅差多少」,所以用算的。 */
+function checkColours(T) {
+  const codes = T.list.map(t => t.code);
+  const S = '#171021';
+  let band = 0, chroma = 0, cvd = 0, normal = 0, con = 0, n = 0;
+  let wN = 99, wC = 99, wCon = 99, wNpair = null;
+  for (const h of codes) for (const a of codes) {
+    if (h === a) continue;
+    n++;
+    const p = pickPair(T.byCode.get(h).colors, T.byCode.get(a).colors, { surface: S });
+    for (const c of [p.home, p.away]) {
+      const o = oklch(c);
+      if (o.L < 0.48 || o.L > 0.67) band++;          // 驗證器的深色模式明度區間
+      if (o.C < THRESHOLDS.chroma) chroma++;
+      const k = contrast(c, S);
+      if (k < THRESHOLDS.contrast) con++;
+      wCon = Math.min(wCon, k);
+    }
+    const dn = deltaE(p.home, p.away);
+    const dc = Math.min(deltaE(p.home, p.away, 'protan'), deltaE(p.home, p.away, 'deutan'));
+    if (dn < THRESHOLDS.normal) normal++;
+    if (dc < THRESHOLDS.cvd) cvd++;
+    if (dn < wN) { wN = dn; wNpair = `${h} vs ${a}`; }
+    wC = Math.min(wC, dc);
+  }
+  const cases = [
+    [`${n} 組對戰的明度都在區間內`, band === 0],
+    ['彩度都夠(不會讀成灰色)', chroma === 0],
+    [`色盲仍分得出來(最差 ΔE ${wC.toFixed(1)} ≥ ${THRESHOLDS.cvd})`, cvd === 0],
+    [`一般視覺分得出來(最差 ΔE ${wN.toFixed(1)} ≥ ${THRESHOLDS.normal},${wNpair})`, normal === 0],
+    [`對比都夠(最差 ${wCon.toFixed(2)} ≥ ${THRESHOLDS.contrast})`, con === 0],
+    // 同色系的球隊一定要被拉開,否則這整套就沒有意義
+    ['紅隊對紅隊會自動換色', (() => {
+      const p = pickPair(T.byCode.get('LIV').colors, T.byCode.get('NFO').colors, { surface: S });
+      return deltaE(p.home, p.away) >= THRESHOLDS.normal;
+    })()],
+    ['主隊保留自己的主色', (() => {
+      const p = pickPair(T.byCode.get('LIV').colors, T.byCode.get('NFO').colors, { surface: S });
+      return oklch(p.home).h > 10 && oklch(p.home).h < 45;   // 仍是紅色系
+    })()],
+  ];
+  let fail = 0;
+  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
+  return fail;
 }
 
 function checkOdds() {

@@ -27,6 +27,7 @@ import {
 } from './lib/report/index.mjs';
 import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
+import { pickPair } from './lib/colour.mjs';
 import { round } from './lib/util.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -270,6 +271,9 @@ async function main() {
       difficulty: d ? { home: d.home, away: d.away } : null,
       prediction: { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e },
       market: marketBy[`${m.home}|${m.away}`] ?? null,
+      // 兩隊對照圖用的配色。英超九隊主色是紅的、六隊是深藍的,直接用會撞色 ——
+      // 所以每一場都算一次,兩隊同色系時自動把客隊拉開。詳見 lib/colour.mjs。
+      colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),
     };
   });
   {

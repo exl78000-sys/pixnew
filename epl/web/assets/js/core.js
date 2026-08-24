@@ -658,3 +658,58 @@ export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = f
     <rect x="0" y="0" width="100" height="100" rx="2" fill="#0d1a12"/>
     ${marks}${dots}</svg>`;
 }
+
+/* ── 兩隊對照條 ─────────────────────────
+   每一列一個指標,主隊的條從中線往左長、客隊往右長,左右各一個數字。
+   長度是「該列」內的相對值(每列各自 normalize)—— 不同列的單位不同,
+   本來就不該共用一條軸;每列自己是一組完整的比較。
+
+   顏色只做一件事:標示是哪一隊。誰比較好是用粗體 + ▲ 表示,不是用顏色 ——
+   因為「名次」和「失球」是越低越好,用顏色表示好壞會跟隊伍顏色打架。
+   配色由 build 時算好(見 scripts/lib/colour.mjs):兩隊同色系時會自動拉開,
+   702 種對戰組合都通過色盲分離、一般視覺分離與對比檢查。 */
+export function versus(rows, { home, away, colors, note = null } = {}) {
+  const cH = colors?.home ?? '#00ff85', cA = colors?.away ?? '#04f5ff';
+  const swatch = c => `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;
+    background:${c};vertical-align:-1px"></span>`;
+
+  const line = r => {
+    const { label, h, a, unit = '', digits = 2, better = 'high', hint = '' } = r;
+    const has = h !== null && h !== undefined && a !== null && a !== undefined;
+    // 條長代表的是「這一列誰比較好」,不是數值大小。
+    // 「越低越好」的項目(名次、失球)要取倒數,否則第 16 名的條會比第 5 名長 ——
+    // 圖形會跟旁邊的 ▲ 互相矛盾,那比沒有圖還糟。
+    const w = v => (better === 'low' ? 1 / Math.max(1e-6, Math.abs(v)) : Math.abs(v));
+    const max = has ? Math.max(w(h), w(a)) || 1 : 1;
+    const pct = v => (has ? Math.max(2, (w(v) / max) * 100) : 0);
+    const win = !has ? null : better === 'high' ? (h > a ? 'h' : h < a ? 'a' : null)
+      : (h < a ? 'h' : h > a ? 'a' : null);
+    const val = (v, side) => {
+      if (v === null || v === undefined) return '<span class="dim">—</span>';
+      const s = fx(v, digits) + unit;
+      return win === side ? `<b>${s} <span class="vs-win" title="這一項較佳">▲</span></b>` : s;
+    };
+    const tip = side => esc(`${side === 'h' ? name(home) : name(away)}・${label}`
+      + `:${side === 'h' ? fx(h, digits) : fx(a, digits)}${unit}`
+      + (better === 'low' ? '(越低越好)' : ''));
+    // 條的外側是圓角、貼中線的一端是方的 —— 兩條加起來才像從同一條基線長出去
+    return `<div class="vs-row">
+      <div class="vs-val right">${val(h, 'h')}</div>
+      <div class="vs-track left"><span class="vs-bar" style="width:${pct(h)}%;background:${cH}" title="${tip('h')}"></span></div>
+      <div class="vs-label">${esc(label)}${better === 'low' ? '<span class="vs-dir" title="這一項越低越好">↓</span>' : ''}
+        ${hint ? `<span class="tiny dim">${esc(hint)}</span>` : ''}</div>
+      <div class="vs-track right"><span class="vs-bar" style="width:${pct(a)}%;background:${cA}" title="${tip('a')}"></span></div>
+      <div class="vs-val left">${val(a, 'a')}</div>
+    </div>`;
+  };
+
+  return `<div class="vs">
+    <div class="vs-head">
+      <div class="vs-team">${swatch(cH)} <b>${esc(name(home))}</b></div>
+      <div class="tiny dim">▲ = 該項較佳・<span class="vs-dir">↓</span> = 越低越好</div>
+      <div class="vs-team right"><b>${esc(name(away))}</b> ${swatch(cA)}</div>
+    </div>
+    ${rows.map(line).join('')}
+    ${note ? `<div class="tiny dim" style="margin-top:10px">${note}</div>` : ''}
+  </div>`;
+}
