@@ -1,0 +1,29 @@
+# 資料源探測 —— 只手動觸發,不排程。
+#
+# 用途:沙箱與開發機不一定連得到外部 API,但 GitHub 的 runner 可以。
+# 設好 secret 之後跑這個,就能知道哪些資料源真的能接、回傳長什麼樣。
+#
+# 設定金鑰:repo → Settings → Secrets and variables → Actions → New repository secret
+#   API_FOOTBALL_KEY    api-sports.io 的金鑰
+#   FOOTBALL_DATA_TOKEN football-data.org 的 token
+# 兩個都是選用的,沒設就會顯示「略過」,不會讓流程失敗。
+
+name: 資料源探測
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+
+      - name: 探測各候選資料源
+        working-directory: epl
+        run: npm run probe:apis
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
