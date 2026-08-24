@@ -3,14 +3,18 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis } =
-    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis');
+  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, lineups, live } =
+    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'lineups', 'live');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const tacBy = new Map(tactics.map(t => [t.code, t]));
   const articleFor = f => analysis.pre[`${f.home}|${f.away}`] ?? null;
+  // 這幾個會在 renderMatch 裡用到,必須在呼叫點之前就初始化好 —— 放在下面的
+  // 函式區只會撞上 TDZ(函式宣告會提升,const 不會)
+  const photoByCode = new Map(players.map(x => [x.code, x.photo ?? null]));
+  const photoOf = code => photoByCode.get(code) ?? null;
 
   // 網址可以用 ?id=(跟賽程頁一致)或 ?home=&away=(人看得懂,可以直接手打)
   const id = C.qs('id');
@@ -153,6 +157,8 @@ try {
       </div>
     </div>
 
+    ${lineupSection(f)}
+
     ${p.grid ? `<div class="section"><h2>比分機率分佈</h2><span class="hint">顏色越亮代表越可能</span></div>
       <div class="card">${C.scoreHeat(p.grid, f.home, f.away)}</div>` : ''}
 
@@ -206,6 +212,98 @@ try {
   // 升班馬沒有上季英超資料,頁面上多處要據實說明,不能只留空白
   function promoted(f) {
     return [f.home, f.away].filter(c => !tacBy.has(c)).map(c => C.name(c));
+  }
+
+  // 開賽後 FPL 才會給真實名單。賽前只能推測 —— 這兩件事必須讓讀者一眼分得出來,
+  // 所以標題、標籤、說明三處都要改,不能只換資料悄悄蒙混過去。
+  function actualXI(f) {
+    const m = (live?.matches ?? []).find(x => x.home === f.home && x.away === f.away && x.started);
+    if (!m) return null;
+    const side = code => (m.sides?.[code]?.xi ?? []).map(x => ({ ...x, photo: photoOf(x.code) }));
+    const home = side(f.home), away = side(f.away);
+    return home.length && away.length ? { m, home, away } : null;
+  }
+
+
+  function lineupSection(f) {
+    const real = actualXI(f);
+    const proj = { home: lineups[f.home], away: lineups[f.away] };
+    if (!real && !proj.home && !proj.away) return '';
+
+    const board = (code, list, shape) => `
+      <div class="card">
+        <div class="spread" style="margin-bottom:8px">
+          <span class="row" style="gap:8px">${C.badge(code)}<b>${C.name(code)}</b></span>
+          <span class="pill tiny">${shape}</span>
+        </div>
+        ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85' })}
+      </div>`;
+
+    const xi = real ? real : { home: proj.home?.xi ?? [], away: proj.away?.xi ?? [] };
+    const withPhoto = list => list.map(x => ({ ...x, photo: x.photo ?? photoOf(x.code) }));
+    const shapeOf = (code, side) => (real
+      ? (real.m.sides?.[code]?.shape?.label ?? '—')
+      : (proj[side]?.shape ?? '—'));
+
+    return `
+    <div class="section"><h2>${real ? '實際先發陣容' : '預估先發陣容'}</h2>
+      <span class="hint">${real
+        ? `官方名單・第 ${real.m.minute} 分鐘`
+        : `推測值,不是官方名單 —— 依球員近期先發紀錄推算`}</span></div>
+    <div class="grid g2">
+      ${board(f.home, withPhoto(xi.home), shapeOf(f.home, 'home'))}
+      ${board(f.away, withPhoto(xi.away), shapeOf(f.away, 'away'))}
+    </div>
+    ${real ? '' : `<div class="note" style="margin-top:10px">
+      <b>這是推測,不是官方公布的名單。</b>
+      官方要到開賽前約一小時才公布,而本站的資料源(FPL API)是<b>開賽後</b>才給真實名單 ——
+      所以賽前只能從「誰最近一直在先發」反推。
+      ${proj.home?.basis === 'last' || proj.away?.basis === 'last'
+        ? '本季才剛開打,目前主要依據<b>上季</b>的先發紀錄,準度會比賽季中段低不少。'
+        : proj.home?.basis === 'mixed'
+          ? `本季只進行了 ${proj.home?.rounds ?? 0} 輪,推測同時參考本季與上季,本季佔比會隨輪次增加。`
+          : '已累積足夠的本季樣本,推測主要依據本季先發紀錄。'}
+      <b>比賽一開始,這一區就會自動換成真實名單。</b>
+    </div>`}
+    ${real ? '' : injuryNote(f, proj)}
+
+    <div class="section"><h2>兩隊陣容對照</h2>
+      <span class="hint">依位置線並排,同一列是同一條線上的人</span></div>
+    <div class="card">${compareRows(f, withPhoto(xi.home), withPhoto(xi.away))}</div>`;
+  }
+
+  function injuryNote(f, proj) {
+    const rows = [['home', f.home], ['away', f.away]]
+      .map(([k, code]) => {
+        const out = proj[k]?.unavailable ?? [];
+        const doubt = (proj[k]?.xi ?? []).filter(x => x.doubt);
+        if (!out.length && !doubt.length) return '';
+        return `<div class="stat-line"><span class="small">${C.teamCell(code, { link: false })}</span>
+          <span class="small right">
+            ${out.length ? `<span style="color:var(--loss)">缺陣 ${out.map(u => C.esc(u.name)).join('、')}</span>` : ''}
+            ${out.length && doubt.length ? '　' : ''}
+            ${doubt.length ? `<span style="color:var(--draw)">有疑慮 ${doubt.map(u => C.esc(u.name)).join('、')}</span>` : ''}
+          </span></div>`;
+      }).filter(Boolean).join('');
+    return rows ? `<div class="card" style="margin-top:12px"><h3>傷停與疑慮</h3>${rows}
+      <div class="tiny dim" style="margin-top:8px">傷停與禁賽的球員已從上面的預估陣容剔除;
+        「有疑慮」的仍列入 —— 那種狀態的球員實際上經常還是先發。</div></div>` : '';
+  }
+
+  // 兩隊各站一列,依 GK/DEF/MID/FWD 分段對照
+  function compareRows(f, home, away) {
+    const LINE = [['GK', '門將'], ['DEF', '後衛'], ['MID', '中場'], ['FWD', '前鋒']];
+    const cell = (p, code) => `<span class="lu-p" title="${C.esc(p.name)}">
+      ${C.playerPhoto({ ...p, team: code }, 26)}<span class="nm">${C.esc(p.name)}${p.doubt ? ' ⚠' : ''}</span></span>`;
+    return LINE.map(([pos, zh]) => {
+      const h = home.filter(x => x.pos === pos), a = away.filter(x => x.pos === pos);
+      if (!h.length && !a.length) return '';
+      return `<div class="lu-line">
+        <div class="lu-side">${h.map(p => cell(p, f.home)).join('')}</div>
+        <div class="lu-pos">${zh}<span class="dim tiny"> ${h.length}v${a.length}</span></div>
+        <div class="lu-side right">${a.map(p => cell(p, f.away)).join('')}</div>
+      </div>`;
+    }).join('');
   }
 
   function h2hHtml(f, rec) {

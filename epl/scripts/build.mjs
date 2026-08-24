@@ -16,6 +16,7 @@ import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/po
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics, formationImpact } from './lib/tactics.mjs';
+import { projectXI } from './lib/lineup.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
@@ -454,6 +455,13 @@ async function main() {
   await write('leaders.json', leaders);
   await write('tactics.json', tactics);
   await write('formation.json', formationImpact({ tactics, table: lastTable }));
+
+  // 預估先發:每隊算一次就好(推測不看對手是誰),比每場算一次小得多。
+  // 頭貼刻意不帶進來 —— players.json 已經有一份,重複塞會讓這個檔從 40 KB 變 900 KB。
+  const lineups = Object.fromEntries(curCodes.map(code => [code, projectXI({
+    players, team: code, tactics: tacticsBy.get(code), rounds: leaders.currentRounds ?? 0,
+  })]));
+  await write('lineups.json', lineups);
   await write('coaches.json', coaches);
   await write('news.json', news);
   await write('sim.json', sim);

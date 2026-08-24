@@ -575,8 +575,9 @@ export function fail(err) {
 // 所以這是「站位示意」不是真實的平均位置熱圖 —— 標題必須講清楚,不能讓讀者以為
 // 我們有球員追蹤資料。同一排的人平均分布,排與排之間依人數多寡調整縱向間距。
 const ROW_Y = { GK: 92, DEF: 74, MID: 50, FWD: 26 };
+const ROW_Y_PHOTO = { GK: 89, DEF: 70, MID: 46, FWD: 20 };
 
-export function pitch(xi, { w = 300, h = 420, color = '#00ff85', label = null, vertical = true } = {}) {
+export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = false, badge: showBadge = null } = {}) {
   const rows = { GK: [], DEF: [], MID: [], FWD: [] };
   for (const p of xi) (rows[p.pos] ?? rows.MID).push(p);
 
@@ -590,24 +591,43 @@ export function pitch(xi, { w = 300, h = 420, color = '#00ff85', label = null, v
     <rect x="40" y="2" width="20" height="5" fill="none" stroke="${line}" stroke-width=".3"/>
     <rect x="40" y="93" width="20" height="5" fill="none" stroke="${line}" stroke-width=".3"/>`;
 
+  // 有頭貼時改用大一點的圓形照片(官方陣容圖那種樣式);沒有頭貼的球員畫成有位置字母的圓
+  const uid = `pt${Math.random().toString(36).slice(2, 8)}`;
+  const R = photos ? 5.6 : 3.2;
+
+  let seq = -1;
   const dots = Object.entries(rows).flatMap(([pos, list]) => list.map((p, i) => {
     const x = ((i + 1) / (list.length + 1)) * 96 + 2;
-    const y = ROW_Y[pos];
+    const y = (photos ? ROW_Y_PHOTO : ROW_Y)[pos];
     // 一排塞越多人,名字就得越短越小,否則五個中場的名字會疊在一起
     const slot = 96 / (list.length + 1);
-    const size = Math.min(3.2, Math.max(2.1, slot / 5.2));
+    const size = photos ? Math.min(3.4, Math.max(2.3, slot / 5.0)) : Math.min(3.2, Math.max(2.1, slot / 5.2));
     const maxChars = Math.max(4, Math.floor(slot / (size * 0.62)));
     const raw = (p.name ?? '').split(' ').at(-1);
     const short = raw.length > maxChars ? raw.slice(0, maxChars - 1) + '·' : raw;
-    const evt = p.red ? '🟥' : p.goals > 0 ? '⚽' : '';
-    // 門將在底線,名字要放圓點上方,不然會掉出球場外
-    const ty = y > 85 ? y - 5.2 : y + 6.6;
-    return `<g>
-      <circle cx="${x.toFixed(1)}" cy="${y}" r="3.2" fill="${color}" fill-opacity=".92"
-        stroke="var(--panel-solid)" stroke-width=".7">
-        <title>${esc(p.name ?? '')}・${pos}${p.minutes != null ? `・${p.minutes} 分鐘` : ''}</title></circle>
+    const evt = p.red ? '🟥' : p.goals > 0 ? '⚽' : p.doubt ? '⚠' : '';
+    // 名字預設放圓點下方;只有真的會掉出球場外才翻到上方 ——
+    // 一律翻上去會讓門將的名字撞到後衛那一排
+    const below = y + R + 3.4;
+    const ty = below > 99 ? y - (R + 2.2) : below;
+    seq++;
+    const tip = `${esc(p.name ?? '')}・${pos}${p.minutes != null ? `・${p.minutes} 分鐘` : ''}${p.doubt ? '・出賽有疑慮' : ''}`;
+
+    // 沒有頭貼(或不用頭貼模式)就畫實心圓,並在圓內標位置字母,才不會變成一片無資訊的點
+    const fallback = `<circle cx="${x.toFixed(1)}" cy="${y}" r="${R}" fill="${color}"
+        fill-opacity="${photos && p.photo ? 0 : 0.92}" stroke="${color}" stroke-opacity=".85" stroke-width=".8"/>
+      ${photos && !p.photo ? `<text x="${x.toFixed(1)}" y="${(y + 1.6).toFixed(1)}" text-anchor="middle"
+        font-size="3.4" font-weight="700" fill="#0d1a12">${pos}</text>` : ''}`;
+
+    return `<g><title>${tip}</title>
+      ${photos && p.photo ? `<g transform="translate(${x.toFixed(1)},${y})">
+        <clipPath id="${uid}-${seq}"><circle cx="0" cy="0" r="${R}"/></clipPath>
+        <image href="${p.photo}" x="${-R}" y="${-R}" width="${R * 2}" height="${R * 2}"
+          preserveAspectRatio="xMidYMid slice" clip-path="url(#${uid}-${seq})"/>
+        <circle cx="0" cy="0" r="${R}" fill="none" stroke="${color}" stroke-opacity=".9" stroke-width=".8"/>
+      </g>` : fallback}
       <text x="${x.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" font-size="${size.toFixed(2)}"
-        fill="var(--ink-2)" stroke="var(--panel-solid)" stroke-width="1.1"
+        fill="var(--ink)" stroke="#0d1a12" stroke-width="1.2"
         paint-order="stroke" stroke-linejoin="round">${esc(short)}${evt}</text></g>`;
   })).join('');
 
