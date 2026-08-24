@@ -117,7 +117,8 @@ try {
         ${art.note ? `<div class="tiny dim" style="margin-top:8px">${C.esc(art.note)}</div>` : ''}
       </div>` : ''}
 
-    <div class="section"><h2>兩套模型怎麼看</h2><span class="hint">分歧本身就是資訊</span></div>
+    <div class="section"><h2>兩套模型怎麼看${f.market ? '・市場怎麼看' : ''}</h2>
+      <span class="hint">分歧本身就是資訊</span></div>
     <div class="card">
       <div class="stat-line"><span class="small">Dixon-Coles Poisson(看進失球的量)</span>
         <span class="mono small">${C.pct(p.poisson.home, 0)} / ${C.pct(p.poisson.draw, 0)} / ${C.pct(p.poisson.away, 0)}</span></div>
@@ -125,12 +126,16 @@ try {
         <span class="mono small">${C.pct(p.elo.home, 0)} / ${C.pct(p.elo.draw, 0)} / ${C.pct(p.elo.away, 0)}</span></div>
       <div class="stat-line"><span class="small"><b>取平均(本站採用)</b></span>
         <span class="mono small"><b>${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}</b></span></div>
+      ${f.market ? `<div class="stat-line" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px">
+        <span class="small" style="color:var(--draw)"><b>博彩市場</b>(${f.market.source}・去水錢後)</span>
+        <span class="mono small" style="color:var(--draw)"><b>${C.pct(f.market.probs.home, 0)} / ${C.pct(f.market.probs.draw, 0)} / ${C.pct(f.market.probs.away, 0)}</b></span></div>` : ''}
       <div class="tiny dim" style="margin-top:8px">
         為什麼取平均:${meta.model.backtest.available
           ? `回測 ${meta.model.backtest.games} 場,平均後的 RPS ${meta.model.backtest.rps} 比單獨使用任一個都低。`
           : '回測顯示兩者平均最穩。'}
         <a href="${C.link('model')}">看完整驗證 →</a></div>
     </div>
+    ${f.market ? marketNote(f, p) : ''}
 
     <div class="grid g2" style="margin-top:16px">
       <div class="card"><h3>其他機率</h3>
@@ -356,6 +361,42 @@ try {
   }
 
   // 兩隊各站一列,依 GK/DEF/MID/FWD 分段對照
+  /* 這一場的模型 vs 市場。重點不是「誰對」——賽前沒人知道 ——
+     而是「差多少、差在哪一邊」,以及讀者該用什麼態度看這個差距。 */
+  function marketNote(f, p) {
+    const m = f.market.probs;
+    const gaps = [
+      ['home', C.name(f.home) + '勝', p.home - m.home],
+      ['draw', '和局', p.draw - m.draw],
+      ['away', C.name(f.away) + '勝', p.away - m.away],
+    ];
+    const biggest = [...gaps].sort((a, b) => Math.abs(b[2]) - Math.abs(a[2]))[0];
+    const maxGap = Math.abs(biggest[2]);
+    // 三個結果的總偏差,拿來判斷「基本一致」還是「明顯分歧」
+    const total = gaps.reduce((a, g) => a + Math.abs(g[2]), 0) / 2;
+    const level = total < 0.05 ? 'agree' : total < 0.12 ? 'mild' : 'strong';
+    const backtest = meta.model.backtest;
+    const mk = backtest.market;
+    return `<div class="note ${level === 'strong' ? 'warn' : ''}" style="margin-top:10px">
+      <b>${level === 'agree'
+        ? '模型和市場看法一致。'
+        : level === 'mild'
+          ? '模型和市場略有分歧。'
+          : '模型和市場明顯分歧 —— 這種時候通常是市場對。'}</b>
+      最大的差距在<b>${biggest[1]}</b>:本站 ${C.pct(p[biggest[0]], 0)}、市場 ${C.pct(m[biggest[0]], 0)}
+      (相差 ${(maxGap * 100).toFixed(1)} 個百分點)。
+      <div class="tiny dim" style="margin-top:6px">
+        盤口看得到傷停、輪換、轉會與士氣,本站的模型只吃比賽結果與 FPL 統計 —— 那些都看不到。
+        ${mk?.available
+          ? `整季回測下來,本站 RPS ${mk.model.rps}、市場 ${mk.market.rps} ——
+             差距很小,但<b>市場仍略勝一籌</b>。所以兩邊不同時,不要預設是市場錯了。`
+          : '所以兩邊不同時,不要預設是市場錯了。'}
+        市場機率是把十進位賠率取倒數、再按比例去掉莊家水錢(本場 ${(f.market.overround * 100).toFixed(1)}%)算出來的,
+        不是任何人的主觀判斷。
+      </div>
+    </div>`;
+  }
+
   function compareRows(f, home, away) {
     // 依角色分帶,不是 FPL 的四粗類 —— 粗類會讓 4-2-3-1 和 3-4-2-1 都顯示成「中場 5v4」,
     // 看不出兩隊的差別在哪。角色分帶才分得出「防中 2v1、前場 3v2」這種真正的對比。

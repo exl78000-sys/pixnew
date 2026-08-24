@@ -26,6 +26,7 @@ import {
   preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled,
 } from './lib/report/index.mjs';
 import { parseCSVObjects, num } from './lib/csv.mjs';
+import { upcomingOdds } from './lib/odds.mjs';
 import { round } from './lib/util.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -240,6 +241,16 @@ async function main() {
 
   // ── 賽程 + 預測 ───────────────────────────
   // 回測顯示 Poisson 與 Elo 平均後的表現最好,所以正式預測用兩者的平均
+  /* 市場機率(博彩收盤/開盤賠率去水錢後)。有的話每場都能做「模型 vs 市場」對照 ——
+     這是模型唯一有意義的外部對手。抓不到就整個略過,預測照常顯示。 */
+  const oddsPath = join(ROOT, 'data', 'raw', 'football-data-couk', 'fixtures.csv');
+  let marketBy = {};
+  if (existsSync(oddsPath)) {
+    const r = upcomingOdds(readFileSync(oddsPath, 'utf8'), { codeOf: T.codeOf });
+    marketBy = r.byMatch;
+    console.log(`  市場賠率:${r.count} 場有賽前盤口`);
+  }
+
   const fixtures = curMatches.map(m => {
     const p = predict(model, m.home, m.away);
     const e = eloProbs(elo.get(m.home)?.elo ?? 1500, elo.get(m.away)?.elo ?? 1500);
@@ -258,8 +269,13 @@ async function main() {
       kickoffSource: d?.kickoff ? 'fpl' : 'openfootball',
       difficulty: d ? { home: d.home, away: d.away } : null,
       prediction: { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e },
+      market: marketBy[`${m.home}|${m.away}`] ?? null,
     };
   });
+  {
+    const n = fixtures.filter(f => f.market).length;
+    if (n) console.log(`  逐場模型 vs 市場:${n} 場對得上`);
+  }
 
   // ── 賽季模擬 ──────────────────────────────
   const sim = simulateSeason({

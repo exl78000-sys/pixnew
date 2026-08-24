@@ -67,13 +67,17 @@ function fdDate(s) {
 const codeFor = (name, codeOf) => FD_NAMES[name] ?? codeOf?.(name) ?? null;
 
 /* 解析一整季的 CSV → 每場一筆 {date, home, away, fh, fa, probs, source}。
-   對不上隊碼、或整列沒有任何賠率的,跳過並記進 skipped(呼叫端決定要不要在意)。 */
-export function parseOddsCsv(text, { codeOf } = {}) {
+   對不上隊碼、或整列沒有任何賠率的,跳過並記進 skipped(呼叫端決定要不要在意)。
+
+   div:只留這個聯賽(fixtures.csv 是全歐洲混在一起的,英超是 E0)。
+   未開賽的比賽沒有比分,fh/fa 會是 null —— 那正是我們要的「賽前市場機率」。 */
+export function parseOddsCsv(text, { codeOf, div = null } = {}) {
   const rows = parseCSVObjects(text);
   const matches = [];
   const unmatched = new Set();
   let noOdds = 0;
   for (const r of rows) {
+    if (div && r.Div !== div) continue;
     if (!r.HomeTeam || !r.AwayTeam) continue;
     const home = codeFor(r.HomeTeam, codeOf), away = codeFor(r.AwayTeam, codeOf);
     if (!home) unmatched.add(r.HomeTeam);
@@ -88,7 +92,12 @@ export function parseOddsCsv(text, { codeOf } = {}) {
       overround: o.overround, source: o.source, decimals: o.decimals,
     });
   }
-  return { matches, unmatched: [...unmatched], noOdds };
+  const header = Object.keys(rows[0] ?? {});
+  return {
+    matches, unmatched: [...unmatched], noOdds,
+    // 一場都解不出來時,把表頭裡像賠率的欄位列出來,下次不用再猜
+    oddsColumns: matches.length ? null : header.filter(h => /^(B365|PS|Avg|Max|BF|BW|BV|IW|LB|VC|WH)/.test(h)),
+  };
 }
 
 // 給回測用:key = `${home}|${away}`(一季內主客對戰組合唯一)→ 市場機率
@@ -98,3 +107,23 @@ export function oddsIndex(text, opts) {
   for (const m of matches) byMatch.set(`${m.home}|${m.away}`, m);
   return { byMatch, count: matches.length, unmatched, noOdds };
 }
+
+/* 未來賽事的賠率(football-data.co.uk 的 fixtures.csv)。
+   本季的賽季檔要等賽季結束前才會完整發布,但這個檔每天更新、含未開賽場次 ——
+   逐場的「模型 vs 市場」就靠它。 */
+export function upcomingOdds(text, { codeOf } = {}) {
+  const { matches, unmatched, oddsColumns } = parseOddsCsv(text, { codeOf, div: 'E0' });
+  const byMatch = {};
+  for (const m of matches) {
+    byMatch[`${m.home}|${m.away}`] = {
+      date: m.date,
+      probs: { home: round4(m.probs.home), draw: round4(m.probs.draw), away: round4(m.probs.away) },
+      overround: round4(m.overround),
+      source: m.source,
+      decimals: m.decimals,
+    };
+  }
+  return { byMatch, count: matches.length, unmatched, oddsColumns };
+}
+
+const round4 = n => Math.round(n * 1e4) / 1e4;

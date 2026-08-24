@@ -11,7 +11,7 @@ import { writeFile, readFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseOddsCsv } from './lib/odds.mjs';
+import { parseOddsCsv, upcomingOdds } from './lib/odds.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { CURRENT_SEASON } from './lib/sources.mjs';
 
@@ -53,6 +53,26 @@ async function main() {
       console.log(`  ✗ ${season}:${e.message}`);
     }
   }
+  /* 未來賽事的賠率。本季的賽季檔要到賽季後段才發布(現在打 2627 是 HTTP 300),
+     但 fixtures.csv 每天更新且含未開賽場次 —— 逐場的「模型 vs 市場」就靠它。 */
+  try {
+    const res = await fetch('https://www.football-data.co.uk/fixtures.csv',
+      { headers: { 'user-agent': 'pl-war-room/1.0 (football analysis side project)' } });
+    if (!res.ok) console.log(`  ✗ 未來賽事賠率:HTTP ${res.status}`);
+    else {
+      const text = await res.text();
+      const r = upcomingOdds(text, { codeOf: T.codeOf });
+      if (!r.count) {
+        // 一場都解不出來時把表頭印出來,下次不用再猜欄位名稱
+        console.log(`  ✗ 未來賽事賠率:解析後 0 場英超。表頭裡的賠率欄位:${(r.oddsColumns ?? []).join(',') || '(找不到)'}`);
+      } else {
+        await writeFile(join(DIR, 'fixtures.csv'), text);
+        console.log(`  ✔ 未來賽事賠率:${r.count} 場英超`
+          + (r.unmatched.length ? `・對不上隊名:${r.unmatched.join('、')}` : ''));
+      }
+    }
+  } catch (e) { console.log(`  ✗ 未來賽事賠率:${e.message}`); }
+
   console.log('\n完成。回測會自動讀進來,產生「模型 vs 市場」的對照。');
 }
 
