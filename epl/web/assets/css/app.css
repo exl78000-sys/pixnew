@@ -114,6 +114,8 @@ thead th {
   padding: 9px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line);
 }
 thead th:first-child, tbody td:first-child { text-align: left; }
+/* 內容靠左的欄位(例如隊伍名):表頭要跟著靠左,才會落在自己的資料上方 */
+thead th.left, tbody td.left { text-align: left; }
 thead th.sortable { cursor: pointer; user-select: none; }
 thead th.sortable:hover { color: var(--ink); }
 thead th.sorted { color: var(--accent); }
