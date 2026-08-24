@@ -27,7 +27,7 @@ import {
 } from './lib/report/index.mjs';
 import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
-import { pickPair } from './lib/colour.mjs';
+import { pickPair, intoBand } from './lib/colour.mjs';
 import { round } from './lib/util.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -107,7 +107,13 @@ async function main() {
   for (const m of btMatches?.matches ?? []) predByMatch.set(`${m.season}|${m.home}|${m.away}`, m.pred);
 
   const T = loadTeams(ROOT);
-  for (const t of T.list) if (crestData[t.code]) t.crest = crestData[t.code];
+  for (const t of T.list) {
+    if (crestData[t.code]) t.crest = crestData[t.code];
+    /* 圖表用的隊色:球隊主色不能直接畫在深色底上 —— Fulham 是 #1A1A1A、
+       Newcastle 是 #241F20,畫在深綠球場上等於隱形。這裡把色相保留、
+       明度與彩度拉進可見範圍;整隊都是黑白的就退回中性色。 */
+    t.chartColor = intoBand(t.colors?.[0]) ?? intoBand(t.colors?.[1]) ?? '#9aa0aa';
+  }
   const seasons = [...new Set([...HISTORY_SEASONS, CURRENT_SEASON])];
   const load = season => loadMatches({ root: ROOT, competition: COMPETITION, season, codeOf: T.codeOf });
   const bySeason = new Map(seasons.map(s => [s, load(s)]));
@@ -378,6 +384,8 @@ async function main() {
         prediction: predictionFor(f),
         tactics: tacticsBy,
         zh: code => T.byCode.get(code)?.en ?? code,
+        // 官方陣型與排位:有的話陣型與球場圖都以官方為準
+        official: offLineups?.matches?.[`${f.home}|${f.away}`] ?? null,
       });
       return {
         ...rep,
@@ -423,6 +431,7 @@ async function main() {
       reports[key] = {
         ...buildMatchReport({
           fixture: f, prediction: pre, tactics: tacticsBy,
+          official: isCur ? offLineups?.matches?.[`${f.home}|${f.away}`] ?? null : null,
           zh: code => T.byCode.get(code)?.en ?? code,
         }),
         season: src.season, demo: src.demo,

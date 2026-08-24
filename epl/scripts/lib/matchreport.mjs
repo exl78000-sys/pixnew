@@ -8,21 +8,38 @@ import { inPlay } from './inplay.mjs';
 
 const ORDER = { GK: 0, DEF: 1, MID: 2, FWD: 3 };
 
-function shapeOf(xi) {
+/* 這場的陣型。
+   有官方公布就用官方的 —— FPL 只有四個粗類、又把邊鋒歸為中場、翼衛歸為後衛,
+   照它數的話 Chelsea 的 3-4-2-1 會變成「6-3-1」(三中衛+兩翼衛+一個算進後衛),
+   Fulham 的 4-2-3-1 會變成「4-5-1」。那不是球隊排的陣型,是分類太粗。 */
+function shapeOf(xi, official = null) {
   const c = { GK: 0, DEF: 0, MID: 0, FWD: 0 };
   for (const p of xi) c[p.pos] = (c[p.pos] ?? 0) + 1;
-  const label = `${c.DEF}-${c.MID}-${c.FWD}`;
+
+  // 官方排位:rows[0] 是門將,其餘由後往前一排一排
+  const lines = official?.rows?.length > 1 ? official.rows.slice(1).map(r => r.length) : null;
+  const label = official?.formation ?? `${c.DEF}-${c.MID}-${c.FWD}`;
+  const back = lines ? lines[0] : c.DEF;
+  const front = lines ? lines[lines.length - 1] : c.FWD;
+
   let shapeZh;
-  if (c.DEF >= 5) shapeZh = '五後衛 / 三中衛體系';
-  else if (c.DEF <= 3) shapeZh = '三後衛';
+  if (back >= 5) shapeZh = '五後衛 / 三中衛體系';
+  else if (back <= 3) shapeZh = '三後衛';
   else shapeZh = '四後衛';
-  if (c.FWD >= 2) shapeZh += '・雙前鋒';
-  else if (c.FWD <= 0) shapeZh += '・無正印中鋒';
+  if (front >= 2) shapeZh += '・雙前鋒';
+  else if (front <= 0) shapeZh += '・無正印中鋒';
   else shapeZh += '・單箭頭';
-  return { ...c, label, shapeZh };
+
+  return {
+    ...c, label, shapeZh,
+    // 註記來源:前端要能講清楚這個陣型是官方公布的還是我們數出來的
+    source: official?.formation ? 'official' : 'fpl',
+    // 攻守判斷用官方的線數,沒有才退回 FPL 粗類
+    back, front,
+  };
 }
 
-function sideReport(players, matchMinutes, seasonShape) {
+function sideReport(players, matchMinutes, seasonShape, official = null) {
   const xi = players.filter(p => p.starts > 0).sort((a, b) => ORDER[a.pos] - ORDER[b.pos] || b.minutes - a.minutes);
   const bench = players.filter(p => !p.starts && p.minutes > 0)
     .map(p => ({ ...p, onAbout: Math.max(1, (matchMinutes || 90) - p.minutes) }))
@@ -31,11 +48,21 @@ function sideReport(players, matchMinutes, seasonShape) {
     .map(p => ({ ...p, offAbout: p.minutes }))
     .sort((a, b) => a.offAbout - b.offAbout);
 
-  const shape = shapeOf(xi);
+  const shape = shapeOf(xi, official);
   const gk = players.filter(p => p.pos === 'GK').sort((a, b) => b.minutes - a.minutes)[0] ?? null;
 
+  /* 球場圖要照官方排位畫。站位取官方、場中狀態(進球/卡牌/分鐘)取即時資料,
+     兩邊用 code 接起來 —— 只用官方的話會少掉進球標記,只用即時的話站位是錯的。 */
+  const byCode = new Map(xi.map(p => [p.code, p]));
+  const rows = official?.rows?.length
+    ? official.rows.map(row => row.map(op => {
+      const live = op.code ? byCode.get(op.code) : null;
+      return live ? { ...live, role: op.role ?? live.role ?? null } : { name: op.name, pos: op.pos, code: op.code ?? null, minutes: null };
+    }))
+    : null;
+
   return {
-    xi, bench, offs, shape,
+    xi, bench, offs, shape, rows,
     seasonShape: seasonShape ?? null,
     shapeDelta: seasonShape ? {
       def: round(shape.DEF - seasonShape.def, 1),
@@ -65,13 +92,15 @@ function notesFor(rep, zh) {
 
   for (const [code, s, name] of [[rep.home, H, nameH], [rep.away, A, nameA]]) {
     if (!s.xi.length) continue;
-    if (s.shapeDelta && Math.abs(s.shapeDelta.def) >= 0.7) {
+    // 官方陣型跟上季常態不能直接比:常態是 FPL 四粗類算的(翼衛算後衛、邊鋒算中場),
+    // 官方是真正的線。拿 3(官方後衛線)去減 4.4(FPL 後衛數)會得到假的差距。
+    if (s.shape.source !== 'official' && s.shapeDelta && Math.abs(s.shapeDelta.def) >= 0.7) {
       push('shape', s.shapeDelta.def > 0
         ? `${name} 這場排出 ${s.shape.label},後場比上季常態多約 ${Math.abs(s.shapeDelta.def)} 人,重心明顯往後壓。`
         : `${name} 這場排出 ${s.shape.label},後場比上季常態少約 ${Math.abs(s.shapeDelta.def)} 人,防線推得更前面。`);
     }
-    if (s.shape.FWD >= 2) push('shape', `${name} 用雙前鋒(${s.shape.label}),前場有兩個支點。`);
-    if (s.shape.FWD === 0) push('shape', `${name} 先發沒有正印中鋒(${s.shape.label}),偏向無鋒陣、由中場插上。`);
+    if (s.shape.front >= 2) push('shape', `${name} 用雙前鋒(${s.shape.label}),前場有兩個支點。`);
+    if (s.shape.front === 0) push('shape', `${name} 先發沒有正印中鋒(${s.shape.label}),偏向無鋒陣、由中場插上。`);
     if (s.red > 0) push('cards', `${name} 吃到 ${s.red} 張紅牌,少打一人已反映在即時勝率上。`);
   }
 
@@ -102,7 +131,7 @@ function notesFor(rep, zh) {
   return n;
 }
 
-export function buildMatchReport({ fixture, prediction, tactics, zh }) {
+export function buildMatchReport({ fixture, prediction, tactics, zh, official = null }) {
   const { home, away, lineups } = fixture;
   const matchMinutes = fixture.minutes || (fixture.finished ? 90 : 0);
   const seasonShape = code => {
@@ -115,8 +144,8 @@ export function buildMatchReport({ fixture, prediction, tactics, zh }) {
     started: fixture.started, finished: fixture.finished,
     minute: matchMinutes, hs: fixture.hs, as: fixture.as,
     sides: {
-      [home]: sideReport(lineups[home] ?? [], matchMinutes, seasonShape(home)),
-      [away]: sideReport(lineups[away] ?? [], matchMinutes, seasonShape(away)),
+      [home]: sideReport(lineups[home] ?? [], matchMinutes, seasonShape(home), official?.home ?? null),
+      [away]: sideReport(lineups[away] ?? [], matchMinutes, seasonShape(away), official?.away ?? null),
     },
   };
 

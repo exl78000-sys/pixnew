@@ -286,19 +286,41 @@ export function drawer(title, html) {
 /* ── 賽後 / 場中報告(實時戰況頁與賽程頁共用)──── */
 export function matchReportCards(m) {
   const H = m.sides[m.home], A = m.sides[m.away];
+
+  /* 一隊的陣容卡。有官方排位就照官方畫(3-4-2-1 就畫成 3-4-2-1),
+     沒有才退回 FPL 四粗類分排 —— 那會把三中衛體系畫成 6-3-1。 */
+  const sideBoard = (code, S) => {
+    const official = S.shape?.source === 'official';
+    // 用 chartColor 不是 colors[0]:主色可能是近黑(Fulham/Newcastle),畫在球場上會隱形
+    const colour = team(code).chartColor ?? team(code).colors?.[0] ?? '#00ff85';
+    return `<div>
+      <div class="row small" style="gap:7px;margin-bottom:6px">${badge(code)}<b>${name(code)}</b>
+        <span class="pill ${official ? 'accent' : ''}">${S.shape.label}</span>
+        ${official ? '<span class="pill accent tiny">官方</span>' : ''}</div>
+      <div class="tiny dim" style="margin-bottom:6px">${S.shape.shapeZh}
+        ${S.seasonShape && !official ? `・上季常態 ${S.seasonShape.label}` : ''}</div>
+      <div class="center" style="margin-bottom:8px">${pitch(S.xi, {
+        color: colour, label: `${name(code)} 站位`, officialRows: S.rows ?? null,
+      })}</div>
+      ${xiHtml(S)}</div>`;
+  };
   const line = (l, hv, av) => `<div class="stat-line"><b class="mono">${hv}</b><span class="small muted">${l}</span><b class="mono">${av}</b></div>`;
-  const xiHtml = s => `<div class="xi">
-    ${s.xi.map(p => `<div class="p"><span><span class="pos">${p.pos}</span>${esc(p.name)}
+  const xiHtml = s => {
+    // 名單已公布但還沒開踢時 s.xi 是空的 —— 改列官方排位裡的人,不要留一片空白
+    const list = s.xi.length ? s.xi : (s.rows ?? []).flat();
+    return `<div class="xi">
+    ${list.map(p => `<div class="p"><span><span class="pos">${p.role ?? p.pos}</span>${esc(p.name)}
       ${p.goals ? ` <span style="color:var(--accent)">⚽${p.goals > 1 ? p.goals : ''}</span>` : ''}
       ${p.assists ? ` <span class="dim">🅰${p.assists > 1 ? p.assists : ''}</span>` : ''}
       ${p.red ? ' <span style="color:var(--loss)">🟥</span>' : p.yellow ? ' <span style="color:var(--draw)">🟨</span>' : ''}</span>
-      <span class="dim mono tiny">${p.minutes}'</span></div>`).join('')}
+      <span class="dim mono tiny">${p.minutes == null ? '' : p.minutes + "'"}</span></div>`).join('')}
     ${s.bench.length ? `<div class="tiny dim" style="margin-top:6px">替補上場(時間為推估)</div>
       ${s.bench.map(p => `<div class="p sub"><span><span class="pos">${p.pos}</span>${esc(p.name)}
         ${p.goals ? ` <span style="color:var(--accent)">⚽${p.goals > 1 ? p.goals : ''}</span>` : ''}
         ${p.assists ? ' <span class="dim">🅰</span>' : ''}</span>
         <span class="dim mono tiny">≈${p.onAbout}' 上</span></div>`).join('')}` : ''}
   </div>`;
+  };
 
   return `
     ${m.notes.length ? `<div class="card"><h3>戰術解讀</h3>
@@ -307,22 +329,15 @@ export function matchReportCards(m) {
 
     <div class="card"><h3>實際排出的陣容</h3>
       <div class="grid g2">
-        <div><div class="row small" style="gap:7px;margin-bottom:6px">${badge(m.home)}<b>${name(m.home)}</b>
-          <span class="pill">${H.shape.label}</span></div>
-          <div class="tiny dim" style="margin-bottom:6px">${H.shape.shapeZh}
-            ${H.seasonShape ? `・上季常態 ${H.seasonShape.label}` : ''}</div>
-          <div class="center" style="margin-bottom:8px">${pitch(H.xi, { color: team(m.home).colors?.[0] ?? '#00ff85', label: `${name(m.home)} 站位` })}</div>
-          ${xiHtml(H)}</div>
-        <div><div class="row small" style="gap:7px;margin-bottom:6px">${badge(m.away)}<b>${name(m.away)}</b>
-          <span class="pill">${A.shape.label}</span></div>
-          <div class="tiny dim" style="margin-bottom:6px">${A.shape.shapeZh}
-            ${A.seasonShape ? `・上季常態 ${A.seasonShape.label}` : ''}</div>
-          <div class="center" style="margin-bottom:8px">${pitch(A.xi, { color: team(m.away).colors?.[0] ?? '#04f5ff', label: `${name(m.away)} 站位` })}</div>
-          ${xiHtml(A)}</div>
+        ${sideBoard(m.home, H)}
+        ${sideBoard(m.away, A)}
       </div>
-      <div class="tiny dim" style="margin-top:10px">球場圖是<b>站位示意</b>,不是球員追蹤資料 —— 位置只分門將/後衛/中場/前鋒四類,同一排平均分布。
-        陣型依 FPL 的位置分類統計先發人數,邊鋒會被算進中場;
-        換人時間由出場分鐘反推,標示 ≈ 者為推估值。</div>
+      <div class="tiny dim" style="margin-top:10px">${H.shape.source === 'official' || A.shape.source === 'official'
+        ? `標<span class="pill accent tiny">官方</span>的陣型與每一排的人,都是<b>英超官方公布的正式名單</b>,球場圖照那個排位畫。`
+        : `陣型是依 FPL 的位置分類統計先發人數 —— 它只分門將/後衛/中場/前鋒四類,
+           邊鋒會被算進中場、翼衛會被算進後衛,所以三中衛體系可能會顯示成「6-3-1」這種數字。
+           官方名單一公布就會自動換成官方陣型。`}
+        球場圖是<b>站位示意</b>,不是球員追蹤資料;換人時間由出場分鐘反推,標示 ≈ 者為推估值。</div>
     </div>
 
     <div class="card"><h3>數據對比</h3>
@@ -612,8 +627,11 @@ function rowYs(n, photos) {
 // officialRows:官方公布的每一排有誰。給了就照它畫 ——
 // 否則只能用 FPL 的四個粗類分排,會把 4-1-4-1 畫成 4-4-2。
 export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = false, badge: showBadge = null, officialRows = null } = {}) {
-  const useOfficial = Array.isArray(officialRows) && officialRows.length > 1
-    && officialRows.reduce((n, r) => n + r.length, 0) === xi.length;
+  // 排位本身湊滿 11 人就照它畫。原本這裡要求「排位人數 == xi 人數」,
+  // 但名單已公布、比賽還沒開踢時 xi 是空的(FPL 要開賽後才給出場資料),
+  // 條件就永遠不成立 —— 球場會整片空白。排位是完整的就夠了,不必等 xi。
+  const rowTotal = Array.isArray(officialRows) ? officialRows.reduce((n, r) => n + r.length, 0) : 0;
+  const useOfficial = Array.isArray(officialRows) && officialRows.length > 1 && rowTotal === 11;
   const ys = useOfficial ? rowYs(officialRows.length, photos) : null;
   const rows = useOfficial
     ? Object.fromEntries(officialRows.map((list, i) => [`r${i}`, list]))
