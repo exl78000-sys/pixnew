@@ -61,6 +61,14 @@ export function loadSquads({ root, season, codeOf }) {
     selectedBy: num(r.selected_by_percent),
     tackles: num(r.tackles), recoveries: num(r.recoveries),
     cbi: num(r.clearances_blocks_interceptions), defCon: num(r.defensive_contribution),
+    // 官方最佳陣容次數:每輪選出的單週最佳 11 人,是「打出過幾次亮眼表現」的直接計數,
+    // 跟我們自己算的 per-90 指標互不重疊(那些是平均值,會被穩定的平庸拉高)
+    dreamteam: num(r.dreamteam_count),
+    // starts_per_90 = 先發次數 ÷ (出場分鐘/90)。正選穩定 ≈ 1.0,越低代表越常替補上場
+    startRate: r.starts_per_90 === '' ? null : num(r.starts_per_90, null),
+    // FPL 官方近期狀態(近 30 天每場均分),球季剛開打時全是 0
+    form: num(r.form),
+    transfersIn: num(r.transfers_in), transfersOut: num(r.transfers_out),
     penOrder: r.penalties_order ? num(r.penalties_order) : null,
     fkOrder: r.direct_freekicks_order ? num(r.direct_freekicks_order) : null,
     cornerOrder: r.corners_and_indirect_freekicks_order ? num(r.corners_and_indirect_freekicks_order) : null,

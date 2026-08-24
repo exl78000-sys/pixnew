@@ -123,6 +123,10 @@ function metrics(p, seasonMinutes) {
     availability: round(seasonMinutes ? (m / seasonMinutes) * 100 : 0, 1),
     cards: p.yellow + p.red * 2,
     points: p.points, ppg: p.ppg, bonus: p.bonus,
+    dreamteam: p.dreamteam ?? 0,
+    startRate: p.startRate ?? null,
+    // 淨轉入是 FPL 玩家的動向,不是足球數據 —— 顯示時要標清楚,別跟場上表現混為一談
+    netTransfers: (p.transfersIn ?? 0) - (p.transfersOut ?? 0),
   };
 }
 
@@ -221,5 +225,12 @@ export function leaderboards(players, season = 'last') {
     youngGuns: top(q.filter(p => p.age !== null && p.age <= 22), p => stat(p).points),
     workhorses: top(q, p => stat(p).recoveries90),
     value: top(withLast.filter(p => stat(p).minutes >= minMinutes), p => stat(p).points / p.price),
+    // 官方單週最佳陣容次數:計數而非平均,抓的是「打出過幾次高光表現」,
+    // 跟 per-90 平均值互補 —— 穩定的平庸拉不高這一項
+    dreamteam: top(withLast.filter(p => stat(p).dreamteam > 0), p => stat(p).dreamteam),
+    // 先發率低但出場多 = 板凳奇兵。門檻設在有一定出場量,免得少量樣本造成假訊號
+    supersubs: top(
+      withLast.filter(p => stat(p).startRate !== null && stat(p).minutes >= minMinutes && stat(p).startRate < 0.95),
+      p => stat(p).startRate, 12, 1),
   };
 }

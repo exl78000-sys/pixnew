@@ -20,8 +20,8 @@ try {
   let compare = [];
 
   const boardDefs = [
-    ['scorers', '射手榜', '上季進球', v => v],
-    ['assisters', '助攻榜', '上季助攻', v => v],
+    ['scorers', '射手榜', '進球', v => v],
+    ['assisters', '助攻榜', '助攻', v => v],
     ['xgi', '每 90 分鐘進球參與', 'xGI/90', v => C.fx(v, 2)],
     ['creators', '創造機會', 'xA/90', v => C.fx(v, 2)],
     ['finishers', '終結超出期望', '進球 − xG', v => C.signed(v, 1)],
@@ -30,6 +30,8 @@ try {
     ['workhorses', '回收球', '回收/90', v => C.fx(v, 1)],
     ['youngGuns', '22 歲以下', '總得分', v => v],
     ['value', 'CP 值', '每百萬身價得分', v => C.fx(v, 1)],
+    ['dreamteam', '單週最佳陣容', '入選次數', v => `${v} 次`],
+    ['supersubs', '板凳奇兵', '先發率(越低越常替補上場)', v => C.fx(v, 2)],
   ];
 
   app.innerHTML = `
@@ -87,11 +89,11 @@ try {
 
     if (!boards) { document.getElementById('boards').innerHTML = ''; return; }
     document.getElementById('boards').innerHTML = boardDefs.map(([k, title, unit, fmt]) => `
-      <div class="card"><h3>${title} <span class="dim tiny">${unit}</span></h3>
+      <div class="card"><h3>${title} <span class="dim tiny">${S().label}・${unit}</span></h3>
         ${(boards[k] ?? []).slice(0, 8).map((p, i) => `
           <div class="stat-line" style="cursor:pointer" data-p="${p.code}">
             <span class="small"><span class="dim mono">${String(i + 1).padStart(2)}</span>
-              ${C.badge(p.lastTeam ?? p.team)} ${C.esc(p.name)}
+              ${C.playerPhoto(byCode.get(p.code) ?? p, 28)} ${C.esc(p.name)}
               ${p.transferred ? `<span class="tiny dim">→ ${C.name(p.team)}</span>` : ''}</span>
             <b class="mono small">${fmt(p.value)}</b></div>`).join('') || '<div class="dim small">本季尚無資料</div>'}
       </div>`).join('');
@@ -127,7 +129,7 @@ try {
       (!q || p.name.toLowerCase().includes(q) || p.fullName.toLowerCase().includes(q)));
     document.getElementById('count').textContent = `共 ${rows.length} 人`;
     document.getElementById('list').innerHTML = C.table(rows, [
-      { key: 'name', label: '球員', value: p => p.name,
+      { key: 'name', label: '球員', value: p => p.name, left: true,
         render: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}` },
       { key: 'team', label: '球隊', value: p => C.name(p.team), render: p => C.teamCell(p.team) },
       { key: 'pos', label: '位置', value: p => ['GK', 'DEF', 'MID', 'FWD'].indexOf(p.pos), render: p => p.posZh },
@@ -186,8 +188,21 @@ try {
         <span class="muted">${label}</span><span class="mono">${raw ?? '—'}${v === null ? '' : ` <span class="dim">(${v} 分位)</span>`}</span></div>
       ${C.bar(v ?? 0, 100, v >= 80 ? '' : v >= 50 ? 'alt' : 'hot')}</div>`;
     const line = (l, v) => `<div class="stat-line"><span class="small muted">${l}</span><b class="mono">${v}</b></div>`;
+    // 角色與高光:平均值看不出來的兩件事
+    const roleCard = st => {
+      if (!st) return '';
+      const rows = [
+        st.dreamteam > 0 ? line('入選官方單週最佳陣容', `${st.dreamteam} 次`) : '',
+        st.startRate !== null && st.startRate !== undefined
+          ? line('先發率', `${C.fx(st.startRate, 2)}${st.startRate >= 0.95 ? ' (幾乎場場先發)' : st.startRate < 0.8 ? ' (常從板凳上場)' : ''}`) : '',
+      ].filter(Boolean);
+      return rows.length ? `<div class="card"><h3>角色與高光</h3>${rows.join('')}
+        <div class="tiny dim" style="margin-top:8px">最佳陣容是每輪選出的單週最佳 11 人,計數不是平均 ——
+          它抓的是「打出過幾次亮眼表現」,跟上面的 per-90 平均值互補。
+          先發率 = 先發次數 ÷(出場分鐘/90),1.0 代表上場就是先發。</div></div>` : '';
+    };
 
-    C.drawer(`${C.badge(p.team)} ${C.esc(p.name)}`, `
+    C.drawer(`${C.playerPhoto(p)} ${C.esc(p.name)}`, `
       <div class="card">
         <div class="spread">
           <div><div style="font-size:19px;font-weight:800">${C.esc(p.fullName)}</div>
@@ -210,6 +225,8 @@ try {
           <div style="margin-top:12px">${radar.map(r => pctLine(r.label, r.value, r.raw)).join('')}</div>
         </div>`;
       })()}
+
+      ${roleCard(mode === 'current' ? p.current : p.last)}
 
       ${p.current ? `<div class="card"><h3>本季至今(${leaders.seasons.current})
           <span class="dim tiny">${p.appearances} 場</span></h3>
