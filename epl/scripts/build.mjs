@@ -19,6 +19,7 @@ import { buildTactics, formationImpact } from './lib/tactics.mjs';
 import { projectXI } from './lib/lineup.mjs';
 import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, standardShape } from './lib/roles.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
+import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
 import {
@@ -177,9 +178,45 @@ async function main() {
   const classify = buildClassifier(players);
   const pools = rolePools(players, classify);
 
+  // ── 英超官方資料(pulselive)────────────────
+  // 官方公布的陣型/先發/教練是事實,拿得到就蓋掉我們自己的推導。
+  // 抓不到(檔案不存在、賽季剛開打還沒資料)全部回 null,下面每一處都會自動退回推導。
+  const offShapes = officialFormations(ROOT);
+  // 官方只給「顯示名 + 背號」,這裡把它接回我們的球員庫,前端才畫得出頭貼、連得到球員頁
+  const offLineups = attachCodes(officialLineups(ROOT), players);
+  const offManagers = officialManagers(ROOT);
+  if (offShapes) {
+    const n = Object.keys(offShapes.teams).length;
+    console.log(`  官方陣型:${n} 隊有紀錄(共 ${Object.keys(offLineups?.matches ?? {}).length} 場正式名單)`);
+    const ms = offLineups?.matchStats;
+    if (ms) {
+      console.log(`  官方名單對照球員:${ms.matched} 人成功、${ms.missed} 人對不上`
+        + (ms.missedNames.length ? `(${ms.missedNames.slice(0, 6).join('、')}${ms.missed > 6 ? '…' : ''})` : ''));
+    }
+  } else {
+    console.log('  官方陣型:沒有 data/raw/pulselive/official.json,本次全部用角色推導');
+  }
+
   const coaches = buildCoaches(ROOT, {
     allMatches: [...history, ...curPlayed], seasonMatches: lastMatches, season: LAST_SEASON,
   });
+  // 官方教練名單:只標示不一致,不覆蓋 —— coaches.json 的戰術註解是綁在某位教練身上的,
+  // 直接改名字會讓註解變成在講另一個人。
+  if (offManagers) {
+    const norm = s => String(s ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+    for (const c of coaches.coaches) {
+      const off = offManagers.managers[c.team];
+      if (!off?.name) continue;
+      c.officialName = off.name;
+      c.officialMismatch = norm(off.name) !== norm(c.name);
+    }
+    coaches.officialAsOf = offManagers.asOf;
+    const stale = coaches.coaches.filter(c => c.officialMismatch);
+    if (stale.length) {
+      console.log(`  ⚠ 教練與官方不一致 ${stale.length} 隊:` +
+        stale.map(c => `${c.team} 我們寫 ${c.name}、官方是 ${c.officialName}`).join('; '));
+    }
+  }
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
 
   // ── 賽程 + 預測 ───────────────────────────
@@ -451,6 +488,14 @@ async function main() {
       ? { available: true, source: liveOut.source, sourceLabel: liveOut.sourceLabel, demo: liveOut.demo, round: liveOut.round, fetchedAt: liveOut.fetchedAt, counts: liveOut.counts }
       : { available: false },
     liveResultsMerged: liveFilled,
+    official: offShapes
+      ? {
+          available: true, source: 'pulselive', asOf: offShapes.asOf, season: offShapes.season,
+          teamsWithFormation: Object.keys(offShapes.teams).length,
+          matchesWithLineup: Object.keys(offLineups?.matches ?? {}).length,
+          managersAsOf: offManagers?.asOf ?? null,
+        }
+      : { available: false },
     ai: aiSummary,
   });
   await write('clubs.json', T.list); // 27 隊完整名稱登錄(含已降級球隊,顯示歷史資料用)
@@ -480,12 +525,29 @@ async function main() {
   // 升班馬沒有足夠的英超樣本,會回報 insufficient 而不是硬編一個陣型出來。
   const shapes = Object.fromEntries(curCodes.map(code => {
     const squad = players.filter(p => p.team === code);
+    const official = offShapes?.teams?.[code] ?? null;
     const rf = roleFormation(squad, classify);
-    if (rf.insufficient) return [code, { insufficient: true, contributors: rf.contributors, totalMinutes: rf.totalMinutes }];
+    // 升班馬推導不出來,但官方陣型照樣拿得到 —— 這正是接官方資料最大的收穫
+    if (rf.insufficient) {
+      return [code, {
+        insufficient: true, contributors: rf.contributors, totalMinutes: rf.totalMinutes,
+        official, source: official ? 'official' : 'insufficient',
+      }];
+    }
     const ph = phaseShapes(rf.counts, squad, classify, pools);
-    return [code, { counts: rf.counts, raw: rf.raw, ...ph }];
+    return [code, {
+      counts: rf.counts, raw: rf.raw, ...ph,
+      official,
+      // 攻守分型只有推導版本(官方只公布一個陣型,不分有球無球),
+      // 所以 base 用官方的、attacking/defending 仍是推導 —— 前端要照這個標示來源
+      source: official ? 'official' : 'derived',
+    }];
   }));
   await write('shapes.json', shapes);
+  await write('official.json', offLineups
+    ? { available: true, asOf: offLineups.asOf, season: offLineups.season, matches: offLineups.matches,
+        managers: offManagers?.managers ?? {}, managersAsOf: offManagers?.asOf ?? null }
+    : { available: false, matches: {}, managers: {} });
   await write('coaches.json', coaches);
   await write('news.json', news);
   await write('sim.json', sim);

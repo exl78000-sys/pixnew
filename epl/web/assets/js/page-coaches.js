@@ -22,13 +22,35 @@ try {
   app.innerHTML = `
   <div class="page-head">
     <h1>教練</h1>
-    <p>沒有免費又穩定的教練 API,所以這份名冊是人工維護的(<span class="mono">data/manual/coaches.json</span>);
-       但戰績不是 —— 只要填好任期起訖,系統就會自動用比賽日期切分,算出每位教練任內的真實成績。</p>
+    <p>${coaches.officialAsOf
+      ? `現任是誰以<b>英超官方</b>為準(每天核對一次);戰術風格與任期起訖仍是人工整理的
+         (<span class="mono">data/manual/coaches.json</span>)。戰績兩者都不用手算 ——
+         只要任期起訖填對,系統就會用比賽日期切分,算出每位教練任內的真實成績。`
+      : `沒有免費又穩定的教練 API,所以這份名冊是人工維護的(<span class="mono">data/manual/coaches.json</span>);
+         但戰績不是 —— 只要填好任期起訖,系統就會自動用比賽日期切分,算出每位教練任內的真實成績。`}</p>
     ${C.stampRow([
-      C.stamp('教練名冊', { kind: 'manual', note: '人工整理,夏季異動不會自動更新' }),
+      coaches.officialAsOf
+        ? C.stamp('英超官方現任名單', { iso: coaches.officialAsOf, kind: 'daily', note: 'pulselive・每天核對一次' })
+        : null,
+      C.stamp('戰術風格與任期', { kind: 'manual', note: '人工整理,夏季異動不會自動更新' }),
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
     ])}
   </div>
+
+  ${(() => {
+    // 接上官方名單後,「可能過期」就不用猜了 —— 直接把不一致的隊伍點名出來
+    const mism = current.filter(c => c.officialMismatch);
+    if (!coaches.officialAsOf) return '';
+    return `<div class="note ${mism.length ? 'warn' : 'ok'}">
+      <b>已和英超官方核對過。</b>
+      ${mism.length
+        ? `<b>${mism.length} 隊已經換帥</b>,本站名冊還沒更新 —— 下面這幾隊請以官方那一欄為準:
+           <div style="margin-top:6px">${mism.map(c => `<div class="tiny">
+             ${C.name(c.team)}:名冊寫 <b>${c.name || '(空白)'}</b>,官方是 <b class="accent">${c.officialName}</b></div>`).join('')}</div>
+           <div class="tiny dim" style="margin-top:6px">戰術風格與任期起訖還是舊教練的,先別當成新教練的特徵在讀。</div>`
+        : `20 隊的現任教練都和官方一致。`}
+    </div>`;
+  })()}
 
   ${(() => {
     // 講「資料可能過期」沒有用,要講「過期多久、幾隊沒把握、哪幾隊」,讀者才知道該不該信
@@ -74,8 +96,10 @@ try {
           <div class="spread">
             <div style="font-weight:800;font-size:16px">${c.name ? C.esc(c.zh) : '待確認'}
               <span class="dim small" style="font-weight:400">${c.name ? C.esc(c.name) : ''}</span></div>
-            ${confPill(c)}
+            ${c.officialMismatch ? '<span class="pill bad tiny" title="英超官方登記的現任教練不是這一位">已換帥</span>' : confPill(c)}
           </div>
+          ${c.officialMismatch ? `<div class="tiny" style="color:var(--accent);margin-top:2px">
+            官方現任:<b>${C.esc(c.officialName)}</b>(下面的戰術與戰績仍屬前任)</div>` : ''}
           <div class="tiny dim">${t.en}${c.nat ? `・${c.nat}` : ''}${c.since ? `・${c.since} 上任(約 ${years} 年)` : ''}</div>
         </div>
       </div>

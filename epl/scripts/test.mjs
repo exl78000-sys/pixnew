@@ -14,6 +14,7 @@ import { inPlay } from './lib/inplay.mjs';
 import {
   preMatchBundle, postMatchBundle, templateFor, verify, generateReport, ReportCache,
 } from './lib/report/index.mjs';
+import { attachCodes } from './lib/adapters/pulselive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -262,9 +263,48 @@ async function main() {
   console.log('\n▶ AI 報告層自我檢查');
   const reportFail = await checkReports();
 
+  // 官方名單對照:配錯人比對不上更糟 —— 對不上只是少張頭貼,配錯是把數據掛到別人身上
+  console.log('\n▶ 官方名單球員對照自我檢查');
+  const nameFail = checkOfficialNames();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || nameFail) process.exitCode = 1;
+}
+
+function checkOfficialNames() {
+  let players;
+  try { players = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'players.json'), 'utf8')); }
+  catch { console.log('  ⚠ 還沒有 web/data/players.json,略過'); return 0; }
+
+  // 官方寫法 → 期望對到我們球員庫的哪一位(用 FPL 的 web name 表示)。
+  // 挑的都是「三種寫法都不一樣」的難例:同隊三個 Gabriel、含重音、複姓、暱稱式 web name。
+  const want = [
+    ['ARS', 'Gabriel Magalhães', 'Gabriel'],
+    ['ARS', 'Gabriel Martinelli', 'Martinelli'],
+    ['ARS', 'Gabriel Jesus', 'G.Jesus'],
+    ['ARS', 'Martin Ødegaard', 'Ødegaard'],
+    ['ARS', 'Myles Lewis-Skelly', 'Lewis-Skelly'],
+    ['ARS', 'David Raya', 'Raya'],
+    ['ARS', 'Gabriel', null],          // 同隊三個 Gabriel,分不出來就該回 null,不准亂配
+    ['ARS', 'Nobody Here', null],
+  ];
+  const byCode = new Map(players.map(p => [p.code, p]));
+  let fail = 0;
+  for (const [team, official, expect] of want) {
+    const r = attachCodes({
+      asOf: null, season: null,
+      matches: { [`${team}|XXX`]: {
+        home: { formation: null, xi: [{ name: official, shirt: null, pos: 'M' }], subs: [] },
+        away: { formation: null, xi: [], subs: [] } } },
+    }, players);
+    const got = r.matches[`${team}|XXX`].home.xi[0].code;
+    const gotName = got ? byCode.get(got)?.name ?? got : null;
+    const ok = gotName === expect;
+    if (!ok) fail++;
+    console.log(`  ${ok ? '✔' : '✗'} ${official} → ${gotName ?? '(對不上)'}${ok ? '' : `,應該是 ${expect ?? '(對不上)'}`}`);
+  }
+  return fail;
 }
 
 await main();

@@ -19,7 +19,8 @@
     "live:watch": "node scripts/live-server.mjs",
     "coaches:check": "node scripts/fetch-coaches.mjs",
     "probe:apis": "node scripts/probe-apis.mjs",
-    "explore:apis": "node scripts/explore-apis.mjs"
+    "explore:apis": "node scripts/explore-apis.mjs",
+    "official": "node scripts/fetch-official.mjs"
   },
   "engines": {
     "node": ">=18"

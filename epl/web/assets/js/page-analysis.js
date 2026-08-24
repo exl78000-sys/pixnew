@@ -3,8 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, lineups, live, shapes } =
-    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'lineups', 'live', 'shapes');
+  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, lineups, live, shapes, official } =
+    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'lineups', 'live', 'shapes', 'official');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -224,24 +224,41 @@ try {
     return home.length && away.length ? { m, home, away } : null;
   }
 
+  // 英超官方在開賽前約一小時就公布正式名單,比 FPL(開賽後才給)早得多。
+  // 所以賽前優先用官方的;開賽後改用 live,因為那裡才有進球、換人、紅牌等場中狀態。
+  function officialXI(f) {
+    const m = official?.matches?.[`${f.home}|${f.away}`];
+    if (!m?.home?.xi?.length || !m?.away?.xi?.length) return null;
+    const side = s => m[s].xi.map(x => ({ ...x, photo: x.code ? photoOf(x.code) : null }));
+    return { m, home: side('home'), away: side('away'),
+      formation: { home: m.home.formation, away: m.away.formation } };
+  }
+
 
   function lineupSection(f) {
-    const real = actualXI(f);
+    const live_ = actualXI(f);
+    const off = officialXI(f);
+    const real = live_ ?? off;                 // 有其一就是「實際」名單,不是推測
     const proj = { home: lineups[f.home], away: lineups[f.away] };
     if (!real && !proj.home && !proj.away) return '';
 
-    const board = (code, list, shape) => {
+    const board = (code, list, shape, thisFormation) => {
       const sh = shapes[code];
+      const std = sh?.official
+        ? `<b class="mono">${sh.official.formation}</b><span class="pill accent tiny">官方</span>`
+        : (sh && !sh.insufficient ? `<b class="mono">${sh.base.label}</b><span class="pill tiny">推導</span>` : null);
       return `
       <div class="card">
         <div class="spread" style="margin-bottom:4px">
           <span class="row" style="gap:8px">${C.badge(code)}<b>${C.name(code)}</b></span>
-          <span class="pill tiny" title="這場名單的四類人數(FPL 分類)">${shape}</span>
+          ${thisFormation
+            ? `<span class="pill accent tiny" title="英超官方公布的這場陣型">${thisFormation}</span>`
+            : `<span class="pill tiny" title="這場名單的四類人數(FPL 分類)">${shape}</span>`}
         </div>
-        ${sh && !sh.insufficient ? `<div class="tiny dim" style="margin-bottom:8px">
-          常態 <b class="mono">${sh.base.label}</b>・
+        ${std ? `<div class="tiny dim" style="margin-bottom:8px">
+          常態 ${std}${sh && !sh.insufficient ? `・
           進攻 <span class="mono" style="color:var(--accent)">${sh.attacking.label}</span>・
-          防守 <span class="mono" style="color:var(--accent-3)">${sh.defending.label}</span>
+          防守 <span class="mono" style="color:var(--accent-3)">${sh.defending.label}</span>` : ''}
           </div>` : '<div class="tiny dim" style="margin-bottom:8px">升班馬,英超樣本不足以推導標準陣型</div>'}
         ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85' })}
       </div>`;
@@ -249,29 +266,32 @@ try {
 
     const xi = real ? real : { home: proj.home?.xi ?? [], away: proj.away?.xi ?? [] };
     const withPhoto = list => list.map(x => ({ ...x, photo: x.photo ?? photoOf(x.code) }));
-    const shapeOf = (code, side) => (real
-      ? (real.m.sides?.[code]?.shape?.label ?? '—')
+    const shapeOf = (code, side) => (live_
+      ? (live_.m.sides?.[code]?.shape?.label ?? '—')
       : (proj[side]?.shape ?? '—'));
+    // 這場的官方陣型:即使名單走 live,陣型仍以官方公布的為準
+    const fmOf = side => off?.formation?.[side] ?? null;
 
     return `
     <div class="section"><h2>${real ? '實際先發陣容' : '預估先發陣容'}</h2>
-      <span class="hint">${real
-        ? `官方名單・第 ${real.m.minute} 分鐘`
-        : `推測值,不是官方名單 —— 依球員近期先發紀錄推算`}</span></div>
+      <span class="hint">${live_
+        ? `官方名單・第 ${live_.m.minute} 分鐘`
+        : off
+          ? `英超官方公布的正式名單${off.m.kickoff ? `・${C.ageText ? C.ageText(off.m.kickoff) : ''}` : ''}`
+          : `推測值,不是官方名單 —— 依球員近期先發紀錄推算`}</span></div>
     <div class="grid g2">
-      ${board(f.home, withPhoto(xi.home), shapeOf(f.home, 'home'))}
-      ${board(f.away, withPhoto(xi.away), shapeOf(f.away, 'away'))}
+      ${board(f.home, withPhoto(xi.home), shapeOf(f.home, 'home'), fmOf('home'))}
+      ${board(f.away, withPhoto(xi.away), shapeOf(f.away, 'away'), fmOf('away'))}
     </div>
     ${real ? '' : `<div class="note" style="margin-top:10px">
       <b>這是推測,不是官方公布的名單。</b>
-      官方要到開賽前約一小時才公布,而本站的資料源(FPL API)是<b>開賽後</b>才給真實名單 ——
-      所以賽前只能從「誰最近一直在先發」反推。
+      官方要到開賽前約一小時才公布 —— 在那之前只能從「誰最近一直在先發」反推。
       ${proj.home?.basis === 'last' || proj.away?.basis === 'last'
         ? '本季才剛開打,目前主要依據<b>上季</b>的先發紀錄,準度會比賽季中段低不少。'
         : proj.home?.basis === 'mixed'
           ? `本季只進行了 ${proj.home?.rounds ?? 0} 輪,推測同時參考本季與上季,本季佔比會隨輪次增加。`
           : '已累積足夠的本季樣本,推測主要依據本季先發紀錄。'}
-      <b>比賽一開始,這一區就會自動換成真實名單。</b>
+      <b>官方名單一公布(約開賽前一小時),這一區就會自動換成正式名單。</b>
     </div>`}
     ${real ? '' : injuryNote(f, proj)}
 

@@ -61,6 +61,13 @@ jobs:
         run: npm run season
         continue-on-error: true
 
+      # 英超官方(pulselive)的正式陣容、陣型與現任教練。
+      # 抓過的已完賽場次不會再抓,平常一次執行只打 2~3 個請求;
+      # 失敗完全無害 —— build 拿不到官方檔就自動退回角色推導。
+      - name: 抓官方陣容與教練(pulselive)
+        run: npm run official
+        continue-on-error: true
+
       - name: 走查回測(模型準度與每場賽前預測)
         run: npm test
         continue-on-error: true
@@ -87,7 +94,8 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f epl/data/raw/live.json epl/data/raw/season-gws.json \
-                     epl/data/raw/openfootball/ epl/data/backtest.json epl/data/backtest-matches.json 2>/dev/null || true
+                     epl/data/raw/openfootball/ epl/data/raw/pulselive/ \
+                     epl/data/backtest.json epl/data/backtest-matches.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "資料沒有變化,不提交"
           else

@@ -38,10 +38,21 @@ try {
     重點看小數:後場接近 5 就是三中衛/五後衛體系,鋒線超過 1.5 就是雙前鋒。</div>
 
   <div class="section"><h2>標準陣型與攻守分型</h2>
-    <span class="hint">把 FPL 的四個粗類細分成八種角色後推導</span></div>
+    <span class="hint">${meta.official?.available
+      ? `標準陣型取自英超官方・${meta.official.matchesWithLineup} 場正式名單`
+      : '把 FPL 的四個粗類細分成八種角色後推導'}</span></div>
   <div id="shapeTable"></div>
+  ${meta.official?.available ? `<div class="note ok" style="margin-top:10px">
+    <b>標準陣型是官方公布的,不是我們算的。</b>
+    每場比賽英超官方都會公布兩隊的正式陣型,這裡取本季出現次數最多的那一個,
+    並標上採計了幾場 —— 只有 1 場的球隊,它的「標準陣型」跟 10 場的球隊不是同一回事,別當成一樣可靠。
+    <div style="margin-top:6px">${C.stamp('英超官方陣型', {
+      iso: meta.official.asOf, kind: 'daily',
+      note: `pulselive・${meta.official.season ?? ''}・${meta.official.teamsWithFormation} 隊有紀錄`,
+    })}</div>
+  </div>` : ''}
   <div class="note info" style="margin-top:10px">
-    <b>這是怎麼推出來的。</b>FPL 只把球員分成門將/後衛/中場/前鋒四類,而且把邊鋒歸為中場 ——
+    <b>${meta.official?.available ? '沒有官方資料時,是這樣推出來的。' : '這是怎麼推出來的。'}</b>FPL 只把球員分成門將/後衛/中場/前鋒四類,而且把邊鋒歸為中場 ——
     光看「五名中場」分不出那是三中場加兩邊鋒,還是五個中路球員,那是完全不同的球隊。
     所以這裡先用 per-90 的產出側寫把每個人細分成<b>中衛 / 邊後衛 / 防守中場 / 中場 / 前腰 / 邊鋒 / 中鋒</b>,
     再由各角色的出場分鐘推導常態陣型。
@@ -50,7 +61,8 @@ try {
       已用 15 位位置明確的球員驗證,全部分類正確。</div>
   </div>
   <div class="note" style="margin-top:10px">
-    <b>攻守分型是推論,不是實際站位資料。</b>
+    <b>攻守分型永遠是推論,官方沒有這個東西。</b>
+    官方只公布一個陣型,不分有球無球;下面兩欄是我們自己推的,接了官方資料也不會變。
     我們沒有球員追蹤資料,做不到真正的「有球/無球站位」。這裡只用兩條最沒有爭議的規則:
     <b>創造力排在同角色前段的邊後衛,進攻時前壓</b>;<b>防守貢獻排在同角色前段的邊鋒,無球時退回中場線</b>。
     兩條都能從資料驗證,但它推的是傾向,不是實測位置。
@@ -126,11 +138,18 @@ try {
   document.getElementById('shapeTable').innerHTML = C.table(
     tactics.filter(t => shapes[t.code]).map(t => ({ ...t, s: shapes[t.code] })), [
       { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },
-      { key: 'base', label: '標準陣型', value: t => (t.s?.base?.label ?? ''), sortable: false,
-        render: t => (t.s?.insufficient
-          ? '<span class="dim small">資料不足</span>'
-          : `<b class="mono">${t.s.base.label}</b>`) },
+      { key: 'base', label: '標準陣型', value: t => (t.s?.official?.formation ?? t.s?.base?.label ?? ''), sortable: false,
+        title: '官方公布的優先;沒有官方資料才用出場分鐘推導',
+        render: t => {
+          const o = t.s?.official;
+          if (o) return `<b class="mono">${o.formation}</b>
+            <span class="pill accent tiny" title="英超官方公布,${o.games} 場中最常用的一個">官方</span>
+            <span class="tiny dim">${o.games} 場</span>`;
+          if (t.s?.insufficient) return '<span class="dim small">資料不足</span>';
+          return `<b class="mono">${t.s.base.label}</b><span class="pill tiny" title="沒有官方資料,由角色出場分鐘推導">推導</span>`;
+        } },
       { key: 'att', label: '進攻時', value: t => (t.s?.attacking?.label ?? ''), sortable: false,
+        title: '攻守分型一律是推導 —— 官方只公布一個陣型,不分有球無球',
         render: t => (t.s?.insufficient ? '—'
           : `<span class="mono" style="color:var(--accent)">${t.s.attacking.label}</span>${
             t.s.attacking.pushedUp ? `<span class="tiny dim"> 邊後衛前壓 ${t.s.attacking.pushedUp}</span>` : ''}`) },
@@ -140,7 +159,8 @@ try {
             t.s.defending.droppedBack ? `<span class="tiny dim"> 邊鋒回收 ${t.s.defending.droppedBack}</span>` : ''}`) },
       { key: 'roles', label: '角色組成', value: () => 0, sortable: false, left: true,
         render: t => (t.s?.insufficient
-          ? `<span class="tiny dim">只有 ${t.s.contributors} 名球員有足夠的英超樣本</span>`
+          ? `<span class="tiny dim">只有 ${t.s.contributors} 名球員有足夠的英超樣本${
+              t.s.official ? `,攻守分型待樣本累積(官方陣型已有 ${t.s.official.games} 場)` : ''}</span>`
           : `<span class="tiny dim">${Object.entries(t.s.counts).filter(([, n]) => n > 0)
               .map(([k, n]) => `${n}${ROLE_ZH[k]}`).join('・')}</span>`) },
       { key: 'fpl', label: 'FPL 粗類', value: t => t.formation.def, num: true,

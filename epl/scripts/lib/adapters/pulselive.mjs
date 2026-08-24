@@ -1,0 +1,147 @@
+// Adapter:pulselive(英超官網後端)→ 官方陣型、正式先發、現任教練
+//
+// 定位:官方公布的事實。凡是這裡拿得到的,一律蓋掉我們自己推導的結果 ——
+// 推導是「沒有官方資料時的替代品」,不是跟官方並列的另一種說法。
+//
+// 資料由 scripts/fetch-official.mjs 在有外網的環境抓好寫成 JSON,
+// 這一支只負責讀檔與轉成上層要的形狀。抓不到就回 null,上層自動退回推導。
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+export const id = 'pulselive';
+export const label = '英超官方(pulselive)';
+export const supports = ['formations', 'lineups', 'coaches'];
+
+const FILE = root => join(root, 'data', 'raw', 'pulselive', 'official.json');
+
+export function loadOfficial(root) {
+  const f = FILE(root);
+  if (!existsSync(f)) return null;
+  try {
+    const s = JSON.parse(readFileSync(f, 'utf8'));
+    return s && s.matches ? s : null;
+  } catch { return null; }
+}
+
+/* 每場比賽的官方陣型與正式先發,key 是 `主隊|客隊`(一季內唯一)。 */
+export function officialLineups(root) {
+  const s = loadOfficial(root);
+  if (!s) return null;
+  const out = {};
+  for (const [key, m] of Object.entries(s.matches)) {
+    if (!m.home?.xi?.length || !m.away?.xi?.length) continue;
+    out[key] = {
+      fixtureId: m.fixtureId, kickoff: m.kickoff, final: Boolean(m.final),
+      home: { formation: m.home.formation, xi: m.home.xi, subs: m.home.subs },
+      away: { formation: m.away.formation, xi: m.away.xi, subs: m.away.subs },
+    };
+  }
+  return { asOf: s.fetchedAt, season: s.season?.label ?? null, matches: out };
+}
+
+/* 每隊的官方陣型使用紀錄 → 本季最常用的那個就是「官方標準陣型」。
+   注意:回傳的 games 是「有官方陣型的場次數」,不是球隊踢了幾場 ——
+   前端要標示樣本數,不能讓 1 場的結論看起來跟 10 場一樣可靠。 */
+export function officialFormations(root) {
+  const s = loadOfficial(root);
+  if (!s) return null;
+  const by = new Map();
+  const push = (code, formation, key, isHome, kickoff) => {
+    if (!code || !formation) return;
+    if (!by.has(code)) by.set(code, []);
+    by.get(code).push({ formation, match: key, home: isHome, kickoff });
+  };
+  for (const [key, m] of Object.entries(s.matches)) {
+    const [home, away] = key.split('|');
+    push(home, m.home?.formation, key, true, m.kickoff);
+    push(away, m.away?.formation, key, false, m.kickoff);
+  }
+
+  const out = {};
+  for (const [code, list] of by) {
+    const counts = {};
+    for (const g of list) counts[g.formation] = (counts[g.formation] ?? 0) + 1;
+    const ranked = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    // 最近一場優先當「目前陣型」的判斷依據之一,但主陣型仍以出現次數為準
+    const recent = [...list].sort((a, b) => String(b.kickoff ?? '').localeCompare(String(a.kickoff ?? '')))[0];
+    out[code] = {
+      formation: ranked[0][0],
+      games: list.length,
+      used: ranked.map(([f, n]) => ({ formation: f, games: n })),
+      latest: recent ? { formation: recent.formation, match: recent.match, kickoff: recent.kickoff } : null,
+    };
+  }
+  return { asOf: s.fetchedAt, season: s.season?.label ?? null, teams: out };
+}
+
+/* 官方現任教練。人工維護的 coaches.json 有戰術註解,不能直接覆蓋 ——
+   這裡只回報官方是誰,由上層決定怎麼標示不一致。 */
+export function officialManagers(root) {
+  const s = loadOfficial(root);
+  if (!s || !s.managers || !Object.keys(s.managers).length) return null;
+  return { asOf: s.managersFetchedAt ?? s.fetchedAt, managers: s.managers };
+}
+
+/* ── 官方名單 → 我們的球員 ────────────────────
+   官方給「顯示名 + 背號」,我們的球員庫是 FPL 的 code,得對起來。
+
+   背號看起來是最好的鍵,但 FPL 快照的 squadNumber 目前全是 null,所以實務上靠名字。
+   而名字不能直接比:官方寫 "Gabriel Magalhães",FPL 的 fullName 是
+   "Gabriel dos Santos Magalhães"、web name 只有 "Gabriel" —— 三種寫法沒有一種相等。
+
+   所以改成比對「詞」:官方名字的最後一個詞(姓)必須出現在我方的名字詞集裡,
+   其餘的詞每中一個加分,取分數最高且唯一的那一位。姓對不上就不算 ——
+   同隊有三個 Gabriel 時,寧可對不上也不要配錯人。
+   對不上的不丟掉:保留官方名字照樣畫得出來,只是沒有頭貼與球員頁連結。 */
+const POS = { G: 'GK', D: 'DEF', M: 'MID', F: 'FWD' };
+const norm = s => String(s ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase().replace(/[^a-z]/g, '');
+const tokens = s => String(s ?? '').split(/[\s.]+/).map(norm).filter(Boolean);
+
+export function attachCodes(lineups, players) {
+  if (!lineups) return null;
+  const byTeam = new Map();
+  for (const p of players) {
+    if (!byTeam.has(p.team)) byTeam.set(p.team, []);
+    byTeam.get(p.team).push({ p, words: new Set([...tokens(p.fullName), ...tokens(p.name)]) });
+  }
+
+  let matched = 0, missed = 0;
+  const missedNames = [];
+  const findOne = (code, official) => {
+    const squad = byTeam.get(code);
+    if (!squad) return null;
+    if (official.shirt != null) {
+      const byShirt = squad.filter(x => x.p.squadNumber === official.shirt);
+      if (byShirt.length === 1) return byShirt[0].p;
+    }
+    const t = tokens(official.name);
+    if (!t.length) return null;
+    const surname = t[t.length - 1];
+    let best = null, bestScore = 0, tied = false;
+    for (const cand of squad) {
+      if (!cand.words.has(surname)) continue;              // 姓對不上就不考慮
+      const score = t.reduce((n, w) => n + (cand.words.has(w) ? 1 : 0), 0);
+      if (score > bestScore) { best = cand.p; bestScore = score; tied = false; }
+      else if (score === bestScore && best) tied = true;
+    }
+    return tied ? null : best;                              // 分不出高下就不猜
+  };
+
+  const fix = (code, list) => (list ?? []).map(x => {
+    const hit = findOne(code, x);
+    if (hit) matched++; else { missed++; if (x.name) missedNames.push(`${code}:${x.name}`); }
+    return { ...x, code: hit?.code ?? null, pos: POS[x.pos] ?? hit?.pos ?? 'MID', posRaw: x.pos ?? null };
+  });
+
+  const out = {};
+  for (const [key, m] of Object.entries(lineups.matches)) {
+    const [home, away] = key.split('|');
+    out[key] = {
+      ...m,
+      home: { ...m.home, xi: fix(home, m.home.xi), subs: fix(home, m.home.subs) },
+      away: { ...m.away, xi: fix(away, m.away.xi), subs: fix(away, m.away.subs) },
+    };
+  }
+  return { ...lineups, matches: out, matchStats: { matched, missed, missedNames: missedNames.slice(0, 20) } };
+}
