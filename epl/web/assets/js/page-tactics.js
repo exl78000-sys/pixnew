@@ -3,8 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, tactics, formation } =
-    await C.load('meta', 'clubs', 'teams', 'tactics', 'formation');
+  const { meta, clubs, teams, tactics, formation, shapes } =
+    await C.load('meta', 'clubs', 'teams', 'tactics', 'formation', 'shapes');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -36,6 +36,28 @@ try {
   <div id="shape"></div>
   <div class="note info" style="margin-top:10px">FPL 把邊鋒歸類為中場,所以這裡量的是「人力分佈」而不是轉播圖上的陣型。
     重點看小數:後場接近 5 就是三中衛/五後衛體系,鋒線超過 1.5 就是雙前鋒。</div>
+
+  <div class="section"><h2>標準陣型與攻守分型</h2>
+    <span class="hint">把 FPL 的四個粗類細分成八種角色後推導</span></div>
+  <div id="shapeTable"></div>
+  <div class="note info" style="margin-top:10px">
+    <b>這是怎麼推出來的。</b>FPL 只把球員分成門將/後衛/中場/前鋒四類,而且把邊鋒歸為中場 ——
+    光看「五名中場」分不出那是三中場加兩邊鋒,還是五個中路球員,那是完全不同的球隊。
+    所以這裡先用 per-90 的產出側寫把每個人細分成<b>中衛 / 邊後衛 / 防守中場 / 中場 / 前腰 / 邊鋒 / 中鋒</b>,
+    再由各角色的出場分鐘推導常態陣型。
+    <div style="margin-top:6px">分得開是因為差距很大:邊鋒每 90 分鐘的威脅值約 30、防守中場約 7;
+      中衛的解圍攔截約 8、邊後衛約 3.5 而創造力是中衛的四倍。
+      已用 15 位位置明確的球員驗證,全部分類正確。</div>
+  </div>
+  <div class="note" style="margin-top:10px">
+    <b>攻守分型是推論,不是實際站位資料。</b>
+    我們沒有球員追蹤資料,做不到真正的「有球/無球站位」。這裡只用兩條最沒有爭議的規則:
+    <b>創造力排在同角色前段的邊後衛,進攻時前壓</b>;<b>防守貢獻排在同角色前段的邊鋒,無球時退回中場線</b>。
+    兩條都能從資料驗證,但它推的是傾向,不是實測位置。
+    ${Object.values(shapes).filter(s => s.insufficient).length
+      ? `另外有 ${Object.values(shapes).filter(s => s.insufficient).length} 支球隊(升班馬)沒有足夠的英超樣本,
+         寧可標示資料不足也不編一個陣型出來。` : ''}
+  </div>
 
   <div class="section"><h2>陣型到底有沒有影響</h2>
     <span class="hint">${formation.n} 隊・${meta.lastSeason} 完整賽季</span></div>
@@ -99,6 +121,32 @@ try {
       <div class="tags">${t.tags.slice(0, 5).map(x => `<span class="pill">${x}</span>`).join('')}</div>
     </div>`).join('')}</div>
   ${C.foot(meta)}`;
+
+  const ROLE_ZH = { CB: '中衛', FB: '邊後衛', DM: '防中', CM: '中場', AM: '前腰', W: '邊鋒', ST: '中鋒' };
+  document.getElementById('shapeTable').innerHTML = C.table(
+    tactics.filter(t => shapes[t.code]).map(t => ({ ...t, s: shapes[t.code] })), [
+      { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },
+      { key: 'base', label: '標準陣型', value: t => (t.s?.base?.label ?? ''), sortable: false,
+        render: t => (t.s?.insufficient
+          ? '<span class="dim small">資料不足</span>'
+          : `<b class="mono">${t.s.base.label}</b>`) },
+      { key: 'att', label: '進攻時', value: t => (t.s?.attacking?.label ?? ''), sortable: false,
+        render: t => (t.s?.insufficient ? '—'
+          : `<span class="mono" style="color:var(--accent)">${t.s.attacking.label}</span>${
+            t.s.attacking.pushedUp ? `<span class="tiny dim"> 邊後衛前壓 ${t.s.attacking.pushedUp}</span>` : ''}`) },
+      { key: 'def', label: '防守時', value: t => (t.s?.defending?.label ?? ''), sortable: false,
+        render: t => (t.s?.insufficient ? '—'
+          : `<span class="mono" style="color:var(--accent-3)">${t.s.defending.label}</span>${
+            t.s.defending.droppedBack ? `<span class="tiny dim"> 邊鋒回收 ${t.s.defending.droppedBack}</span>` : ''}`) },
+      { key: 'roles', label: '角色組成', value: () => 0, sortable: false, left: true,
+        render: t => (t.s?.insufficient
+          ? `<span class="tiny dim">只有 ${t.s.contributors} 名球員有足夠的英超樣本</span>`
+          : `<span class="tiny dim">${Object.entries(t.s.counts).filter(([, n]) => n > 0)
+              .map(([k, n]) => `${n}${ROLE_ZH[k]}`).join('・')}</span>`) },
+      { key: 'fpl', label: 'FPL 粗類', value: t => t.formation.def, num: true,
+        title: '出場分鐘反推的四類人力配置,是上面那張表的原料',
+        render: t => `<span class="dim tiny mono">${t.formation.label}</span>` },
+    ], { sortKey: 'base', desc: false });
 
   document.getElementById('corrTable').innerHTML = C.table(formation.pairs, [
     { key: 'x', label: '陣型指標', value: p => p.x, left: true },

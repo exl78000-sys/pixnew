@@ -3,8 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, lineups, live } =
-    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'lineups', 'live');
+  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, lineups, live, shapes } =
+    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'lineups', 'live', 'shapes');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -230,14 +230,22 @@ try {
     const proj = { home: lineups[f.home], away: lineups[f.away] };
     if (!real && !proj.home && !proj.away) return '';
 
-    const board = (code, list, shape) => `
+    const board = (code, list, shape) => {
+      const sh = shapes[code];
+      return `
       <div class="card">
-        <div class="spread" style="margin-bottom:8px">
+        <div class="spread" style="margin-bottom:4px">
           <span class="row" style="gap:8px">${C.badge(code)}<b>${C.name(code)}</b></span>
-          <span class="pill tiny">${shape}</span>
+          <span class="pill tiny" title="這場名單的四類人數(FPL 分類)">${shape}</span>
         </div>
+        ${sh && !sh.insufficient ? `<div class="tiny dim" style="margin-bottom:8px">
+          常態 <b class="mono">${sh.base.label}</b>・
+          進攻 <span class="mono" style="color:var(--accent)">${sh.attacking.label}</span>・
+          防守 <span class="mono" style="color:var(--accent-3)">${sh.defending.label}</span>
+          </div>` : '<div class="tiny dim" style="margin-bottom:8px">升班馬,英超樣本不足以推導標準陣型</div>'}
         ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85' })}
       </div>`;
+    };
 
     const xi = real ? real : { home: proj.home?.xi ?? [], away: proj.away?.xi ?? [] };
     const withPhoto = list => list.map(x => ({ ...x, photo: x.photo ?? photoOf(x.code) }));
@@ -293,8 +301,13 @@ try {
   // 兩隊各站一列,依 GK/DEF/MID/FWD 分段對照
   function compareRows(f, home, away) {
     const LINE = [['GK', '門將'], ['DEF', '後衛'], ['MID', '中場'], ['FWD', '前鋒']];
-    const cell = (p, code) => `<span class="lu-p" title="${C.esc(p.name)}">
-      ${C.playerPhoto({ ...p, team: code }, 26)}<span class="nm">${C.esc(p.name)}${p.doubt ? ' ⚠' : ''}</span></span>`;
+    const roleOf = code => players.find(x => x.code === code)?.role ?? null;
+    const cell = (p, code) => {
+      const r = roleOf(p.code);
+      return `<span class="lu-p" title="${C.esc(p.name)}${r ? `・${r.zh}` : ''}">
+        ${C.playerPhoto({ ...p, team: code }, 26)}<span class="nm">${C.esc(p.name)}${p.doubt ? ' ⚠' : ''}
+        ${r && !r.lowSample ? `<span class="dim tiny"> ${r.zh}</span>` : ''}</span></span>`;
+    };
     return LINE.map(([pos, zh]) => {
       const h = home.filter(x => x.pos === pos), a = away.filter(x => x.pos === pos);
       if (!h.length && !a.length) return '';
