@@ -24,6 +24,11 @@ try {
     <p>把 ${meta.historySeasons.join('、')} 的每一場比賽、每一位球員的進階數據跑成模型,
        做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。
        所有數字都可以往下追到原始資料,沒有一項是拍腦袋填的。</p>
+    ${C.stampRow([
+      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
+      C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
+      meta.live?.available ? C.stamp('即時比分', { iso: meta.live.fetchedAt, kind: 'live', note: '來源:' + meta.live.sourceLabel }) : null,
+    ])}
   </div>
 
   <div class="grid g4">
@@ -44,8 +49,8 @@ try {
     <div class="card">
       <h2>接下來的比賽</h2>
       <div id="next"></div>
-      <div style="margin-top:10px"><a href="${C.link('live')}">看實時戰況與開賽倒數 →</a>
-        ・<a href="${C.link('fixtures')}">完整賽程</a></div>
+      <div style="margin-top:10px"><a href="${C.link('analysis')}">所有賽前分析 →</a>
+        ・<a href="${C.link('live')}">實時戰況</a>・<a href="${C.link('fixtures')}">完整賽程</a></div>
     </div>
     <div class="card">
       <h2>最新動態</h2>
@@ -94,7 +99,7 @@ try {
 
   /* 近期比賽 */
   document.getElementById('next').innerHTML = upcoming.slice(0, 6).map(f => `
-    <a href="${C.link('fixtures', { id: f.id })}" style="color:inherit;text-decoration:none">
+    <a href="${C.link('analysis', { id: f.id })}" style="color:inherit;text-decoration:none">
       <div class="spread" style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
         <div style="min-width:0">
           <div class="row" style="gap:7px">${C.badge(f.home)}<b>${C.name(f.home)}</b>

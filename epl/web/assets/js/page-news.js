@@ -18,6 +18,9 @@ try {
     <p>三種來源:<b>傷停與轉會</b>來自 FPL 官方欄位(含更新日期,是真的即時資料);
        <b>賽前看點</b>由預測模型自動生成;<b>數據 / 戰術 / 陣容</b>則是從上季 380 場比賽跑出來的敘事。
        外部新聞 RSS 可以自行接上(見 <span class="mono">scripts/fetch-news.mjs</span>)。</p>
+    ${C.stampRow([
+      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
+    ])}
   </div>
   <div class="filters">
     <button class="btn on" data-c="">全部</button>

@@ -24,6 +24,10 @@ try {
     <h1>教練</h1>
     <p>沒有免費又穩定的教練 API,所以這份名冊是人工維護的(<span class="mono">data/manual/coaches.json</span>);
        但戰績不是 —— 只要填好任期起訖,系統就會自動用比賽日期切分,算出每位教練任內的真實成績。</p>
+    ${C.stampRow([
+      C.stamp('教練名冊', { kind: 'manual', note: '人工整理,夏季異動不會自動更新' }),
+      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
+    ])}
   </div>
 
   <div class="note">

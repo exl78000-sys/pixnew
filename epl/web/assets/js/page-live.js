@@ -3,8 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, live: liveInitial, fixtures, table, tactics } =
-    await C.load('meta', 'clubs', 'teams', 'live', 'fixtures', 'table', 'tactics');
+  const { meta, clubs, teams, live: liveInitial, fixtures, table, tactics, analysis } =
+    await C.load('meta', 'clubs', 'teams', 'live', 'fixtures', 'table', 'tactics', 'analysis');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -68,6 +68,13 @@ try {
       <h1>實時戰況</h1>
       <p>進行中的比賽會顯示即時比分、實際排出的陣容與陣型,以及隨比分和時間更新的勝率;
          尚未開賽的顯示倒數計時(已換算成你所在時區 ${C.tzName()});已完賽的直接給賽後解讀。</p>
+      ${C.stampRow([
+        live.available
+          ? C.stamp('比分與陣容', { iso: live.fetchedAt, kind: 'live', note: '來源:' + live.sourceLabel })
+          : C.stamp('比分與陣容', { kind: 'live', note: '目前沒有接上即時資料源' }),
+        C.stamp('賽前勝率與開賽時間', { iso: meta.builtAt, kind: 'daily' }),
+        C.stamp('倒數計時', { kind: 'live', note: '瀏覽器每秒重算,不需要資料源' }),
+      ])}
     </div>
 
     ${sourceBanner()}
@@ -94,7 +101,7 @@ try {
     ${awaiting.length ? `
       <div class="section"><h2>等待賽果</h2><span class="hint">時間上早該結束,但資料源還沒更新比分</span></div>
       <div class="grid g3">${awaiting.map(({ f, s }) => `
-        <a class="card matchcard" href="${C.link('fixtures', { id: f.id })}" style="padding:12px 14px">
+        <a class="card matchcard" href="${C.link('analysis', { id: f.id })}" style="padding:12px 14px">
           <div class="spread"><span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span>
             <span class="pill warn tiny">賽果未取得</span></div>
           <div class="row" style="gap:7px;margin-top:8px">${C.badge(f.home)}<b class="small">${C.name(f.home)}</b>
@@ -160,7 +167,7 @@ try {
   // 沒有即時資料時的卡片:誠實顯示「正在進行、比分未知」
   function schedCard({ f, s }) {
     const p = f.prediction;
-    return `<a class="card matchcard" href="${C.link('fixtures', { id: f.id })}">
+    return `<a class="card matchcard" href="${C.link('analysis', { id: f.id })}">
       <div class="spread"><span class="pill bad"><span class="livedot"></span>${C.elapsedText(s.elapsed)}</span>
         <span class="tiny dim">第 ${f.round} 輪</span></div>
       <div style="margin:12px 0">${scoreLine(f.home, f.away, '<span class="dim" style="font-size:22px">? : ?</span>')}</div>
@@ -191,7 +198,7 @@ try {
 
   function countdownCard(f) {
     const p = f.prediction;
-    return `<a class="card matchcard" href="${C.link('fixtures', { id: f.id })}">
+    return `<a class="card matchcard" href="${C.link('analysis', { id: f.id })}">
       <div class="spread">
         <span class="pill info">第 ${f.round} 輪</span>
         <span class="small">${C.kickoffLocal(f.kickoff)}</span>
@@ -214,11 +221,22 @@ try {
       <div style="margin:12px 0">${scoreOf(m)}</div>
       <div class="tiny dim center">陣型 ${H.shape.label} vs ${A.shape.label}・xG ${H.xG} : ${A.xG}
         ${surprise !== null ? `・賽前模型給這結果 ${C.pct(surprise, 0)}` : ''}</div>
-      ${m.notes.length ? `<div class="small muted" style="margin-top:8px">${C.esc(m.notes[0])}</div>` : ''}
+      ${m.notes.length ? `<div class="small muted" style="margin-top:8px">${C.esc(m.notes[0].text)}</div>` : ''}
     </a>`;
   }
 
   /* ── 完整賽後 / 場中報告 ───────────── */
+  // 賽後文章跟賽前分析走同一套流程:數字先算完,文字只能引用算好的數字
+  function articleCard(m) {
+    const art = analysis.post[`${m.season ?? meta.currentSeason}|${m.home}|${m.away}`];
+    if (!art) return '';
+    return `<div class="card"><h3>${C.esc(art.title)}
+        <span class="pill tiny ${art.source === 'llm' ? 'accent' : ''}">${art.source === 'llm' ? 'AI 潤稿' : '自動生成'}</span></h3>
+      <div style="display:grid;gap:10px;line-height:1.8">
+        ${art.paragraphs.map(t => `<p class="small" style="margin:0">${C.esc(t)}</p>`).join('')}</div>
+      <div class="tiny dim" style="margin-top:10px">${C.esc(art.caveat)}</div></div>`;
+  }
+
   function openReport(m) {
     if (!m) return;
     const H = m.sides[m.home], A = m.sides[m.away];
@@ -239,9 +257,11 @@ try {
             ・預期比分 ${m.preMatch.xgHome}:${m.preMatch.xgAway}</span></div>` : ''}
       </div>
 
+      ${articleCard(m)}
+
       ${C.matchReportCards(m)}
 
-      ${m.fixtureId ? `<div><a href="${C.link('fixtures', { id: m.fixtureId })}">看這場的賽前完整分析 →</a></div>` : ''}`);
+      ${m.fixtureId ? `<div><a href="${C.link('analysis', { id: m.fixtureId })}">看這場的賽前完整分析 →</a></div>` : ''}`);
   }
 
   renderPage();

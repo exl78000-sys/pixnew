@@ -3,8 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, results, reports } =
-    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'results', 'reports');
+  const { meta, clubs, teams, fixtures, h2h, players, tactics, results, reports, analysis } =
+    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'results', 'reports', 'analysis');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -28,6 +28,10 @@ try {
     <p>每一場都用 Dixon-Coles Poisson 與 Elo 各算一次再取平均(回測顯示兩者平均最準)。
        點任一場可以看比分機率分佈、雙方戰術對比、交手紀錄與傷停。
        開賽時間已換算成你所在時區(${C.tzName()}),並採用會反映轉播改期的官方時間。</p>
+    ${C.stampRow([
+      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
+      C.stamp('開賽時間(官方,含改期)', { iso: meta.builtAt, kind: 'daily' }),
+    ])}
   </div>
   <div class="filters">
     <label>賽季</label><select id="fSeason">
@@ -87,6 +91,10 @@ try {
       { key: 'diff', label: '難度', value: f => (f.difficulty ? f.difficulty.home + f.difficulty.away : 0), num: true,
         title: 'FPL 官方賽程難度(主/客,1~5)',
         render: f => f.difficulty ? `<span class="small dim">${f.difficulty.home} / ${f.difficulty.away}</span>` : '—' },
+      { key: 'article', label: '分析', value: () => 0, sortable: false,
+        render: f => (!f.played && analysis.pre[`${f.home}|${f.away}`]
+          ? `<a class="pill info tiny" href="${C.link('analysis', { id: f.id })}"
+               onclick="event.stopPropagation()">賽前分析</a>` : '') },
     ], { sortKey: 'date', desc: false, onRow: openMatch });
     C.startCountdowns();
   };
@@ -167,8 +175,10 @@ try {
           <div><div class="tiny dim">雙方進球</div><div class="mono"><b>${C.pct(p.btts ?? 0)}</b></div></div>
         </div>
         <div class="small dim" style="margin-top:10px">
-          最可能比分 ${(p.topScores ?? []).map(s => `<span class="pill">${s.s} ${C.pct(s.p, 0)}</span>`).join(' ')}
+          最可能比分 ${(p.topScores ?? []).map(s => `<span class="pill">${s.s} <span class="dim">·</span> ${C.pct(s.p, 0)}</span>`).join(' ')}
         </div>` : ''}
+        ${!f.played && p ? `<div style="margin-top:12px">
+          <a class="pill accent" href="${C.link('analysis', { id: f.id })}">完整賽前分析(獨立頁面)→</a></div>` : ''}
       </div>
 
       ${rep ? C.matchReportCards(rep) : (f.played
