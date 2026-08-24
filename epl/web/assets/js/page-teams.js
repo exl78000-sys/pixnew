@@ -19,6 +19,10 @@ try {
       <h1>球隊</h1>
       <p>${meta.currentSeason} 的 20 支球隊。卡片上的期望積分來自 ${meta.model.simulationRuns.toLocaleString()} 次賽季模擬,
          風格標籤則是從上季的每一場比賽與每一位球員的數據推出來的。點進去看完整剖析。</p>
+    ${C.stampRow([
+      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
+      C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
+    ])}
     </div>
     <div class="grid g3">${teams.map(card).join('')}</div>
     ${C.foot(meta)}`;

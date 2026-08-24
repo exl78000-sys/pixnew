@@ -1,4 +1,6 @@
 // 資料來源設定 —— 換賽季只要改這裡
+// 賽事定義在 lib/canonical.mjs 的 COMPETITIONS;這裡只指定「現在要跑哪一個」。
+export const COMPETITION = 'eng.1';
 export const CURRENT_SEASON = '2026-27';   // 進行中賽季(賽程 / 現役名單 / 傷病)
 export const LAST_SEASON = '2025-26';      // 最近一個完整賽季(所有進階數據的基準)
 export const HISTORY_SEASONS = ['2023-24', '2024-25', '2025-26']; // 交手紀錄與長期趨勢

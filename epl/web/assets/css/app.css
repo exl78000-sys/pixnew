@@ -243,6 +243,8 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
 }
 .heat th { position: static; padding: 2px 4px; }
 .scatter { width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto; }
+.chart { width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto; }
+.chart.square { max-width: 560px; }
 .radar { max-width: 420px; display: block; margin: 0 auto; }
 
 .stat-line { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px dashed var(--line-soft); font-size: 13px; }
@@ -274,3 +276,7 @@ input:focus-visible, tbody tr.clickable:focus-visible {
   .wrap { padding: 0 14px 56px; }
   .kpi .value { font-size: 22px; }
 }
+
+/* ── 資料時效標記 ───────────────────── */
+.stamp-row { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; }
+.stamp { display: inline-flex; align-items: center; gap: 6px; }

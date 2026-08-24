@@ -1,7 +1,6 @@
 import { round, sum, percentile } from './util.mjs';
-import { ageOn } from './fpl.mjs';
+import { ageOn } from './adapters/fpl-snapshot.mjs';
 
-const OUTFIELD_MIN = 34200; // 38 場 × 90 分 × 10 名外場球員
 
 // 由出場分鐘的位置分佈反推「平均場上陣型」
 function formationOf(teamPlayers) {
@@ -79,7 +78,8 @@ export function buildTactics({ tableRows, lastPlayers, currentPlayers, asOf }) {
       },
       squad: {
         used: used.length,
-        top11Share: round((top11 / (38 * 90 * 11)) * 100, 1),
+        // 用該隊實際出賽場次推,不寫死 38 場
+        top11Share: round((top11 / (p * 90 * 11)) * 100, 1),
         avgAgeWeighted: round(ageW, 1),
         currentSize: (curByTeam.get(row.code) ?? []).length,
       },

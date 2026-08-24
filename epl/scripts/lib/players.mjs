@@ -1,5 +1,5 @@
 import { round, per90, percentile } from './util.mjs';
-import { ageOn, POS_ZH, STATUS_ZH } from './fpl.mjs';
+import { ageOn, POS_ZH, STATUS_ZH } from './adapters/fpl-snapshot.mjs';
 
 const QUALIFY_MINUTES = 600;       // 上季:進入百分位母體的出場門檻
 const CURRENT_QUALIFY_RATIO = 0.3; // 本季:至少要打滿球隊已賽時間的三成

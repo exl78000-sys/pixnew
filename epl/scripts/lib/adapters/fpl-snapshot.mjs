@@ -1,31 +1,48 @@
+// Adapter:FPL 賽季快照(GitHub 鏡像的 players_raw.csv / teams.csv)→ Canonical Squad
+//
+// 特性:免費,提供每位球員的進階數據(xG/xA/xGC、防守貢獻、ICT)與傷停狀態,
+// 但只有英超,而且沒有事件座標。
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { parseCSVObjects, num } from './csv.mjs';
+import { parseCSVObjects, num } from '../csv.mjs';
+import { assertSquadPlayer } from '../canonical.mjs';
+
+export const id = 'fpl-snapshot';
+export const label = 'FPL 賽季快照(GitHub 鏡像)';
+export const supports = ['squads'];
 
 export const POS = { 1: 'GK', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 export const POS_ZH = { GK: '門將', DEF: '後衛', MID: '中場', FWD: '前鋒' };
+export const STATUS_ZH = { a: '可出賽', d: '有疑慮', i: '傷停', s: '禁賽', u: '不可用', n: '未註冊' };
 
-// 讀取某季的 FPL 快照,並把隊伍 id 換成我們的三碼隊碼
-export function loadFpl(root, season, codeOf) {
+export const ageOn = (birthDate, onDate) => {
+  if (!birthDate) return null;
+  const b = new Date(birthDate), d = new Date(onDate);
+  let a = d.getFullYear() - b.getFullYear();
+  const mm = d.getMonth() - b.getMonth();
+  if (mm < 0 || (mm === 0 && d.getDate() < b.getDate())) a--;
+  return a;
+};
+
+export function loadSquads({ root, season, codeOf }) {
   const dir = join(root, 'data', 'raw', 'fpl');
   const teamRows = parseCSVObjects(readFileSync(join(dir, `${season}-teams.csv`), 'utf8'));
   const teamById = new Map();
   for (const t of teamRows) {
     const code = codeOf(t.name);
-    if (!code) throw new Error(`FPL 隊名無法對照:${t.name}`);
+    if (!code) throw new Error(`[${id}] 隊名無法對照:${t.name}`);
     teamById.set(t.id, { code, strength: num(t.strength), name: t.name, short: t.short_name });
   }
 
   const rows = parseCSVObjects(readFileSync(join(dir, `${season}-players.csv`), 'utf8'));
   const players = rows.map(r => ({
-    code: r.code,                        // 跨季不變的球員代碼
-    id: r.id,
+    code: r.code, id: r.id,
     name: r.web_name,
     fullName: `${r.first_name} ${r.second_name}`.trim(),
     team: teamById.get(r.team)?.code ?? null,
     pos: POS[r.element_type] ?? '?',
     price: num(r.now_cost) / 10,
-    status: r.status,                    // a=可上場 d=有疑慮 i=傷 s=停賽 u=不可用
+    status: r.status,
     news: r.news || '',
     newsAdded: r.news_added || null,
     chanceNext: r.chance_of_playing_next_round === '' ? null : num(r.chance_of_playing_next_round, null),
@@ -47,18 +64,9 @@ export function loadFpl(root, season, codeOf) {
     penOrder: r.penalties_order ? num(r.penalties_order) : null,
     fkOrder: r.direct_freekicks_order ? num(r.direct_freekicks_order) : null,
     cornerOrder: r.corners_and_indirect_freekicks_order ? num(r.corners_and_indirect_freekicks_order) : null,
+    source: id,
   })).filter(p => p.team);
 
+  players.forEach(p => assertSquadPlayer(p, id));
   return { players, teamById };
 }
-
-export const ageOn = (birthDate, onDate) => {
-  if (!birthDate) return null;
-  const b = new Date(birthDate), d = new Date(onDate);
-  let a = d.getFullYear() - b.getFullYear();
-  const mm = d.getMonth() - b.getMonth();
-  if (mm < 0 || (mm === 0 && d.getDate() < b.getDate())) a--;
-  return a;
-};
-
-export const STATUS_ZH = { a: '可出賽', d: '有疑慮', i: '傷停', s: '禁賽', u: '不可用', n: '未註冊' };

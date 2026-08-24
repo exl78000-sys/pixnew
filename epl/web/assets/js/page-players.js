@@ -38,6 +38,10 @@ try {
     <p>${meta.counts.players} 名 ${meta.currentSeason} 註冊球員。數據分成<b>本季至今</b>與<b>上季完整賽季</b>兩套,
        用下面的按鈕切換 —— 每個數字都會標明是哪一季,不會混在一起。
        百分位是跟同位置、出場達門檻的球員相比;點球員看雷達圖,可勾選兩人對比。</p>
+    ${C.stampRow([
+      C.stamp(`本季至今(${leaders.currentRounds} 輪)`, { iso: meta.builtAt, kind: 'daily' }),
+      C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
+    ])}
   </div>
 
   <div class="filters" style="margin-bottom:0">

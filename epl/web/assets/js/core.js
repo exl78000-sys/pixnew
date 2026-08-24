@@ -86,16 +86,55 @@ export function probBar(p) {
 export const bar = (v, max = 100, cls = '') =>
   `<span class="bar ${cls}"><i style="width:${Math.max(0, Math.min(100, (v / max) * 100))}%"></i></span>`;
 
+/* ── 資料時效 ───────────────────────── */
+// 這個站的資料來自好幾條不同節奏的管線:即時比分幾分鐘一次、賽程每天一次、
+// 上季統計整季不動、教練名冊是人工整理的。全部混在同一頁時,讀者無從判斷
+// 哪一塊是新的。所以每一頁的標題下面都標出「這一頁的數字有多新」。
+
+export const ageText = (iso, now = Date.now()) => {
+  if (!iso) return '未知';
+  const min = Math.round((now - new Date(iso).getTime()) / 60000);
+  if (min < 0) return '剛剛';
+  if (min < 2) return '剛剛';
+  if (min < 90) return `${min} 分鐘前`;
+  const hr = Math.round(min / 60);
+  if (hr < 36) return `${hr} 小時前`;
+  return `${Math.round(hr / 24)} 天前`;
+};
+
+/* 一個資料來源的時效標記。
+   kind: live(分鐘級)/ daily(每日重建)/ season(整季固定)/ manual(人工維護) */
+const KIND = {
+  live: { cls: 'accent', zh: '即時' },
+  daily: { cls: 'info', zh: '每日更新' },
+  season: { cls: '', zh: '整季固定' },
+  manual: { cls: 'warn', zh: '人工維護' },
+};
+
+export function stamp(label, { iso = null, kind = 'daily', note = null } = {}) {
+  const k = KIND[kind] ?? KIND.daily;
+  const when = iso ? `${ageText(iso)}` : null;
+  return `<span class="stamp" title="${esc(note ?? '')}">
+    <span class="pill tiny ${k.cls}">${k.zh}</span>
+    <span class="tiny dim">${esc(label)}${when ? `・${when}` : ''}</span></span>`;
+}
+
+// 頁面標題下的那一列時效標記
+export const stampRow = items =>
+  `<div class="stamp-row">${items.filter(Boolean).join('')}</div>`;
+
 /* ── 導覽列 ─────────────────────────── */
 const PAGES = [
   ['index', '總覽'],
   ['live', '實時戰況'],
   ['fixtures', '賽程預測'],
+  ['analysis', '賽前分析'],
   ['teams', '球隊'],
   ['tactics', '戰術'],
   ['players', '球員'],
   ['coaches', '教練'],
   ['news', '動態'],
+  ['model', '模型驗證'],
 ];
 export function nav() {
   const here = currentPage();
@@ -227,7 +266,7 @@ export function matchReportCards(m) {
 
   return `
     ${m.notes.length ? `<div class="card"><h3>戰術解讀</h3>
-      ${m.notes.map(n => `<div class="stat-line"><span class="small">・${esc(n)}</span></div>`).join('')}
+      ${m.notes.map(n => `<div class="stat-line"><span class="small">・${esc(n.text)}</span></div>`).join('')}
     </div>` : ''}
 
     <div class="card"><h3>實際排出的陣容</h3>
@@ -357,7 +396,7 @@ export function scoreHeat(grid, homeCode, awayCode) {
   const rowsHtml = grid.map((row, x) =>
     `<tr><th class="num tiny">${x}</th>${row.map((p, y) =>
       `<td><div class="cell" style="background:${colour(p)}" title="${x}-${y}:${(p * 100).toFixed(1)}%">${(p * 100).toFixed(0)}</div></td>`).join('')}</tr>`).join('');
-  return `<div class="small dim center" style="margin-bottom:6px">縱軸 ${zh(homeCode)} 進球 × 橫軸 ${zh(awayCode)} 進球(數字為 %)</div>
+  return `<div class="small dim center" style="margin-bottom:6px">縱軸 ${name(homeCode)} 進球 × 橫軸 ${name(awayCode)} 進球(數字為 %)</div>
     <table class="heat">${head}${rowsHtml}</table>`;
 }
 
@@ -394,6 +433,98 @@ export function scatter(points, { w = 1000, h = 470, xLabel = '', yLabel = '', i
     ${q}${dots}
     <text x="${w / 2}" y="${h - 10}" text-anchor="middle" fill="#6f6389" font-size="12">${xLabel}</text>
     <text x="14" y="${h / 2}" text-anchor="middle" fill="#6f6389" font-size="12" transform="rotate(-90 14 ${h / 2})">${yLabel}</text>
+  </svg>`;
+}
+
+/* ── 校準圖 ─────────────────────────────
+   問題:「模型說 70% 會贏的比賽,實際是不是真的贏了 70%?」
+   形式:預測值對實際值的散點 + y=x 參考線;點的大小代表樣本數。
+   單一序列,所以不需要類別配色,也不需要圖例(標題已說明是什麼)。 */
+export function calibrationChart(bins, { w = 620, h = 620 } = {}) {
+  const pad = { l: 62, r: 20, t: 20, b: 56 };
+  const X = v => pad.l + v * (w - pad.l - pad.r);
+  const Y = v => h - pad.b - v * (h - pad.t - pad.b);
+  const pts = bins.filter(b => b.n > 0 && b.predicted !== null);
+  const maxN = Math.max(...pts.map(b => b.n), 1);
+
+  const ticks = [0, 0.25, 0.5, 0.75, 1];
+  const grid = ticks.map(t => `
+    <line x1="${X(t).toFixed(1)}" y1="${pad.t}" x2="${X(t).toFixed(1)}" y2="${h - pad.b}" stroke="var(--line-soft)" stroke-width="1"/>
+    <line x1="${pad.l}" y1="${Y(t).toFixed(1)}" x2="${w - pad.r}" y2="${Y(t).toFixed(1)}" stroke="var(--line-soft)" stroke-width="1"/>
+    <text x="${X(t).toFixed(1)}" y="${h - pad.b + 20}" text-anchor="middle" font-size="11.5" fill="var(--ink-3)">${t * 100}%</text>
+    <text x="${pad.l - 10}" y="${(Y(t) + 4).toFixed(1)}" text-anchor="end" font-size="11.5" fill="var(--ink-3)">${t * 100}%</text>`).join('');
+
+  // 完美校準就是這條對角線 —— 參考線要收斂,不能搶過資料
+  const diag = `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(1)}"
+    stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="5 5"/>
+    <text x="${X(0.72)}" y="${(Y(0.72) - 10).toFixed(1)}" font-size="11.5" fill="var(--ink-3)"
+      transform="rotate(-45 ${X(0.72)} ${Y(0.72)})">完美校準</text>`;
+
+  const dots = pts.map(b => {
+    const r = 5 + 9 * Math.sqrt(b.n / maxN);
+    return `<circle cx="${X(b.predicted).toFixed(1)}" cy="${Y(b.actual).toFixed(1)}" r="${r.toFixed(1)}"
+      fill="var(--accent)" fill-opacity="0.75" stroke="var(--panel-solid)" stroke-width="2">
+      <title>預測 ${(b.predicted * 100).toFixed(1)}% → 實際 ${(b.actual * 100).toFixed(1)}%(${b.n} 個預測)</title></circle>`;
+  }).join('');
+
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="校準圖:預測機率對實際發生率">
+    <rect x="${pad.l}" y="${pad.t}" width="${w - pad.l - pad.r}" height="${h - pad.t - pad.b}"
+      fill="none" stroke="var(--line)"/>
+    ${grid}${diag}${dots}
+    <text x="${(pad.l + w - pad.r) / 2}" y="${h - 12}" text-anchor="middle" font-size="12.5" fill="var(--ink-2)">模型預測的機率</text>
+    <text x="16" y="${h / 2}" text-anchor="middle" font-size="12.5" fill="var(--ink-2)"
+      transform="rotate(-90 16 ${h / 2})">實際發生的比例</text>
+  </svg>`;
+}
+
+/* ── 逐輪折線圖 ─────────────────────────
+   單一序列 + 一條基準線參考,同樣不需要圖例。 */
+export function roundChart(rows, { w = 1000, h = 340, baseline = null, valueKey = 'rps', lower = true } = {}) {
+  // 頂端留一條給基準線圖例用的空白帶,標註就不會壓到折線
+  const pad = { l: 58, r: 22, t: baseline === null ? 20 : 42, b: 46 };
+  const vals = rows.map(r => r[valueKey]);
+  const lo = Math.min(...vals, baseline ?? Infinity) * 0.92;
+  const hi = Math.max(...vals, baseline ?? -Infinity) * 1.06;
+  const X = i => pad.l + (i / Math.max(1, rows.length - 1)) * (w - pad.l - pad.r);
+  const Y = v => h - pad.b - ((v - lo) / (hi - lo || 1)) * (h - pad.t - pad.b);
+
+  const yTicks = 4;
+  const grid = [...Array(yTicks + 1)].map((_, i) => {
+    const v = lo + (i / yTicks) * (hi - lo);
+    return `<line x1="${pad.l}" y1="${Y(v).toFixed(1)}" x2="${w - pad.r}" y2="${Y(v).toFixed(1)}"
+        stroke="var(--line-soft)" stroke-width="1"/>
+      <text x="${pad.l - 10}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end" font-size="11.5" fill="var(--ink-3)">${v.toFixed(3)}</text>`;
+  }).join('');
+
+  // SVG 沒有測字寬的辦法,用中日韓全形 / 半形分開估,圖例才不會自己疊在一起
+  const textW = t => [...t].reduce((a, c) => a + (c.codePointAt(0) > 0x2e80 ? 11.5 : 6.3), 0);
+  const legendHint = lower ? '・越低越好,壓在線下才算有用' : '・越高越好';
+  const legendW = textW(`基準線 ${(baseline ?? 0).toFixed(4)}${legendHint}`);
+
+  // 基準線畫在圖上,說明放到頂端的空白帶當圖例,兩者不會互相遮擋
+  const base = baseline === null ? '' : `
+    <line x1="${pad.l}" y1="${Y(baseline).toFixed(1)}" x2="${w - pad.r}" y2="${Y(baseline).toFixed(1)}"
+      stroke="var(--loss)" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <line x1="${(w - pad.r - legendW - 34).toFixed(1)}" y1="14" x2="${(w - pad.r - legendW - 8).toFixed(1)}" y2="14"
+      stroke="var(--loss)" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="${w - pad.r}" y="18" text-anchor="end" font-size="11.5"><tspan fill="var(--loss)"
+      >基準線 ${baseline.toFixed(4)}</tspan><tspan fill="var(--ink-3)">${legendHint}</tspan></text>`;
+
+  const d = rows.map((r, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(r[valueKey]).toFixed(1)}`).join(' ');
+  const dots = rows.map((r, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(r[valueKey]).toFixed(1)}" r="4"
+      fill="${r[valueKey] <= (baseline ?? Infinity) ? 'var(--accent)' : 'var(--loss)'}"
+      stroke="var(--panel-solid)" stroke-width="1.5">
+      <title>第 ${r.round} 輪・${r.games} 場・RPS ${r.rps}・命中率 ${(r.hitRate * 100).toFixed(0)}%</title></circle>`).join('');
+
+  const xLabels = rows.filter((_, i) => i % 5 === 0 || i === rows.length - 1)
+    .map(r => `<text x="${X(rows.indexOf(r)).toFixed(1)}" y="${h - pad.b + 20}" text-anchor="middle"
+      font-size="11.5" fill="var(--ink-3)">${r.round}</text>`).join('');
+
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="每一輪的預測準度">
+    ${grid}${base}
+    <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
+    ${dots}${xLabels}
+    <text x="${(pad.l + w - pad.r) / 2}" y="${h - 10}" text-anchor="middle" font-size="12.5" fill="var(--ink-2)">輪次</text>
   </svg>`;
 }
 
