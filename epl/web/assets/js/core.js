@@ -288,14 +288,17 @@ export function matchReportCards(m) {
           <span class="pill">${H.shape.label}</span></div>
           <div class="tiny dim" style="margin-bottom:6px">${H.shape.shapeZh}
             ${H.seasonShape ? `・上季常態 ${H.seasonShape.label}` : ''}</div>
+          <div class="center" style="margin-bottom:8px">${pitch(H.xi, { color: team(m.home).colors?.[0] ?? '#00ff85', label: `${name(m.home)} 站位` })}</div>
           ${xiHtml(H)}</div>
         <div><div class="row small" style="gap:7px;margin-bottom:6px">${badge(m.away)}<b>${name(m.away)}</b>
           <span class="pill">${A.shape.label}</span></div>
           <div class="tiny dim" style="margin-bottom:6px">${A.shape.shapeZh}
             ${A.seasonShape ? `・上季常態 ${A.seasonShape.label}` : ''}</div>
+          <div class="center" style="margin-bottom:8px">${pitch(A.xi, { color: team(m.away).colors?.[0] ?? '#04f5ff', label: `${name(m.away)} 站位` })}</div>
           ${xiHtml(A)}</div>
       </div>
-      <div class="tiny dim" style="margin-top:10px">陣型依 FPL 的位置分類統計先發人數,邊鋒會被算進中場;
+      <div class="tiny dim" style="margin-top:10px">球場圖是<b>站位示意</b>,不是球員追蹤資料 —— 位置只分門將/後衛/中場/前鋒四類,同一排平均分布。
+        陣型依 FPL 的位置分類統計先發人數,邊鋒會被算進中場;
         換人時間由出場分鐘反推,標示 ≈ 者為推估值。</div>
     </div>
 
@@ -565,4 +568,51 @@ export function fail(err) {
   document.querySelector('.wrap')?.insertAdjacentHTML('beforeend',
     `<div class="note">載入失敗:${esc(err.message)}<br>請先執行 <span class="mono">npm run build</span>,並用 <span class="mono">npm run serve</span> 開啟(直接用 file:// 開會被瀏覽器擋住)。</div>`);
   console.error(err);
+}
+
+/* ── 戰術視圖:球場 ─────────────────── */
+// 把一份先發名單畫到球場上。位置只有 GK/DEF/MID/FWD 四類(FPL 的分類粒度就到這裡),
+// 所以這是「站位示意」不是真實的平均位置熱圖 —— 標題必須講清楚,不能讓讀者以為
+// 我們有球員追蹤資料。同一排的人平均分布,排與排之間依人數多寡調整縱向間距。
+const ROW_Y = { GK: 92, DEF: 74, MID: 50, FWD: 26 };
+
+export function pitch(xi, { w = 300, h = 420, color = '#00ff85', label = null, vertical = true } = {}) {
+  const rows = { GK: [], DEF: [], MID: [], FWD: [] };
+  for (const p of xi) (rows[p.pos] ?? rows.MID).push(p);
+
+  const line = 'rgba(255,255,255,.14)';
+  const marks = `
+    <rect x="2" y="2" width="96" height="96" fill="none" stroke="${line}" stroke-width=".5"/>
+    <line x1="2" y1="50" x2="98" y2="50" stroke="${line}" stroke-width=".4"/>
+    <circle cx="50" cy="50" r="9" fill="none" stroke="${line}" stroke-width=".4"/>
+    <rect x="28" y="2" width="44" height="14" fill="none" stroke="${line}" stroke-width=".4"/>
+    <rect x="28" y="84" width="44" height="14" fill="none" stroke="${line}" stroke-width=".4"/>
+    <rect x="40" y="2" width="20" height="5" fill="none" stroke="${line}" stroke-width=".3"/>
+    <rect x="40" y="93" width="20" height="5" fill="none" stroke="${line}" stroke-width=".3"/>`;
+
+  const dots = Object.entries(rows).flatMap(([pos, list]) => list.map((p, i) => {
+    const x = ((i + 1) / (list.length + 1)) * 96 + 2;
+    const y = ROW_Y[pos];
+    // 一排塞越多人,名字就得越短越小,否則五個中場的名字會疊在一起
+    const slot = 96 / (list.length + 1);
+    const size = Math.min(3.2, Math.max(2.1, slot / 5.2));
+    const maxChars = Math.max(4, Math.floor(slot / (size * 0.62)));
+    const raw = (p.name ?? '').split(' ').at(-1);
+    const short = raw.length > maxChars ? raw.slice(0, maxChars - 1) + '·' : raw;
+    const evt = p.red ? '🟥' : p.goals > 0 ? '⚽' : '';
+    // 門將在底線,名字要放圓點上方,不然會掉出球場外
+    const ty = y > 85 ? y - 5.2 : y + 6.6;
+    return `<g>
+      <circle cx="${x.toFixed(1)}" cy="${y}" r="3.2" fill="${color}" fill-opacity=".92"
+        stroke="var(--panel-solid)" stroke-width=".7">
+        <title>${esc(p.name ?? '')}・${pos}${p.minutes != null ? `・${p.minutes} 分鐘` : ''}</title></circle>
+      <text x="${x.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" font-size="${size.toFixed(2)}"
+        fill="var(--ink-2)" stroke="var(--panel-solid)" stroke-width="1.1"
+        paint-order="stroke" stroke-linejoin="round">${esc(short)}${evt}</text></g>`;
+  })).join('');
+
+  return `<svg class="pitch" viewBox="0 0 100 100" role="img"
+    aria-label="${esc(label ?? '陣型站位示意')}" style="width:100%;max-width:${w}px;height:auto">
+    <rect x="0" y="0" width="100" height="100" rx="2" fill="#0d1a12"/>
+    ${marks}${dots}</svg>`;
 }

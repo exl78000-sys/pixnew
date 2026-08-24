@@ -30,11 +30,29 @@ try {
     ])}
   </div>
 
-  <div class="note">
-    <b>資料鮮度提醒</b>:名冊整理時點為 <b>${coaches.asOf}</b>,${meta.currentSeason} 夏季之後的異動不會自動更新。
-    請直接編輯 <span class="mono">data/manual/coaches.json</span> 的 <span class="mono">spells[]</span>(from / to 用 ISO 日期),
-    再重跑 <span class="mono">npm run build</span>。標示「待確認」的欄位代表整理時無法確認,請務必查證。
-  </div>
+  ${(() => {
+    // 講「資料可能過期」沒有用,要講「過期多久、幾隊沒把握、哪幾隊」,讀者才知道該不該信
+    const days = Math.round((Date.now() - new Date(`${coaches.asOf}-01`).getTime()) / 86400000);
+    const unsure = current.filter(c => c.confidence !== 'high');
+    const unknown = current.filter(c => !c.name);
+    const stale = days > 60;
+    return `<div class="note ${stale ? 'warn' : ''}">
+      <b>這份名冊已經 ${days} 天沒更新</b>(整理時點 ${coaches.asOf},今天 ${meta.asOf})。
+      ${stale ? `這段期間<b>整個夏季轉會窗都過去了</b> —— 換帥通常就發生在這時候,
+        所以下面有幾位很可能已經不在任上。` : ''}
+      <div style="margin-top:8px">
+        20 隊裡 <b>${current.length - unsure.length}</b> 隊標為長期在任、
+        <b>${unsure.length}</b> 隊需要查證${unknown.length ? `、<b>${unknown.length}</b> 隊完全沒有資料` : ''}。
+        ${unsure.length ? `<div class="tiny dim" style="margin-top:6px">需要查證:${unsure.map(c => C.name(c.team)).join('、')}</div>` : ''}
+      </div>
+      <div class="tiny" style="margin-top:8px">
+        更新方式:編輯 <span class="mono">data/manual/coaches.json</span> —— 換帥時把舊教練那筆的
+        <span class="mono">spells[0].to</span> 填上離任日期,再在最前面加一筆新教練
+        (<span class="mono">to: null</span> 代表在任中),然後重跑 <span class="mono">npm run build</span>。
+        <b>戰績不用手算</b>,系統會依任期日期自動切分比賽重算。
+      </div>
+    </div>`;
+  })()}
 
   <div class="section"><h2>本季教練席</h2><span class="hint">戰績為 ${meta.lastSeason} 任內實際數字</span></div>
   <div class="grid g2">${current.map(cardHtml).join('')}</div>

@@ -3,7 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, tactics } = await C.load('meta', 'clubs', 'teams', 'tactics');
+  const { meta, clubs, teams, tactics, formation } =
+    await C.load('meta', 'clubs', 'teams', 'tactics', 'formation');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -36,6 +37,46 @@ try {
   <div class="note info" style="margin-top:10px">FPL 把邊鋒歸類為中場,所以這裡量的是「人力分佈」而不是轉播圖上的陣型。
     重點看小數:後場接近 5 就是三中衛/五後衛體系,鋒線超過 1.5 就是雙前鋒。</div>
 
+  <div class="section"><h2>陣型到底有沒有影響</h2>
+    <span class="hint">${formation.n} 隊・${meta.lastSeason} 完整賽季</span></div>
+  <div class="grid g2">
+    <div class="card">
+      ${C.scatter(formation.points.map(p => ({
+        x: p.mid, y: p.pts, code: p.code, color: colour(p.code),
+        label: `${C.name(p.code)} 中場 ${p.mid} 人・${p.pts} 分`,
+      })), { w: 560, h: 460, xLabel: '平均每場擺出幾名中場', yLabel: '該季聯賽積分', quadrants: false })}
+      <div class="tiny dim">每個點是一支球隊。這是五組關係裡<b>最強的一組</b>,但請看右邊為什麼不能就這樣下結論。</div>
+    </div>
+    <div class="card">
+      <h3>五組關係的相關係數</h3>
+      <div id="corrTable"></div>
+      <div class="tiny dim" style="margin-top:8px">
+        r 介於 −1 到 1,絕對值越大關係越強。以 ${formation.n} 隊的樣本量來說,
+        <b>|r| 要達到 ${formation.critical} 以上</b>才勉強算得上不是雜訊。
+      </div>
+    </div>
+  </div>
+  <div class="note" style="margin-top:10px">
+    <b>先講結論:這幾個數字最可能是反過來的因果。</b>
+    中場擺得多的隊積分高、前鋒擺得多的隊積分低 —— 但真實世界的順序比較可能是:
+    <b>強隊控球多所以中場站得住,弱隊經常落後只好再推一個前鋒上去追分。</b>
+    也就是陣型反映了球隊的處境與實力,而不是陣型造就了成績。
+    要真的分離出「陣型的效果」,需要同一支球隊在實力相近時換陣型的對照,
+    這個平台目前的資料量做不到,所以這裡只呈現相關,不宣稱因果。
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>後衛人數幾乎跟成績無關 —— 這件事本身值得說</h3>
+    <div class="small muted" style="display:grid;gap:8px">
+      <div>後衛平均人數與積分的 r 只有 <b>${formation.pairs.find(p => p.key === 'def-pts')?.r}</b>,
+        與期望失球的 r 是 <b>${formation.pairs.find(p => p.key === 'def-xga')?.r}</b> ——
+        兩個都遠低於門檻。<b>「三後衛比較穩」「五後衛比較保守」在這份資料裡看不出來。</b></div>
+      <div>合理的解釋是:後防人數只是站位的起點,真正決定失球的是防線高度、壓迫強度、
+        中場的保護,以及對手的水準 —— 這些都不會顯示在「擺了幾個後衛」這個數字上。</div>
+      <div class="dim">注意:這裡的人數是用<b>出場分鐘反推的平均值</b>,不是轉播畫面上的陣型圖。
+        FPL 把邊鋒歸類為中場,所以中場人數偏高是正常的。</div>
+    </div>
+  </div>
+
   <div class="section"><h2>領先之後守不守得住</h2><span class="hint">半場領先 / 落後時的實際收分能力</span></div>
   <div class="card">
     ${C.scatter(tactics.filter(t => t.resilience.leadHoldPct !== null && t.resilience.trailRescuePct !== null).map(t => ({
@@ -58,6 +99,17 @@ try {
       <div class="tags">${t.tags.slice(0, 5).map(x => `<span class="pill">${x}</span>`).join('')}</div>
     </div>`).join('')}</div>
   ${C.foot(meta)}`;
+
+  document.getElementById('corrTable').innerHTML = C.table(formation.pairs, [
+    { key: 'x', label: '陣型指標', value: p => p.x, left: true },
+    { key: 'y', label: '對照的結果', value: p => p.y, left: true },
+    { key: 'r', label: 'r', value: p => Math.abs(p.r ?? 0), num: true,
+      render: p => `<b style="color:${p.significant ? 'var(--accent)' : 'var(--ink-3)'}">${p.r}</b>` },
+    { key: 'sig', label: '達門檻?', value: p => (p.significant ? 1 : 0), sortable: false,
+      render: p => (p.significant
+        ? `<span class="pill accent tiny">是・${p.strength}</span>`
+        : `<span class="pill tiny">否・${p.strength}</span>`) },
+  ], { sortKey: 'r', desc: true });
 
   document.getElementById('shape').innerHTML = C.table(tactics, [
     { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },

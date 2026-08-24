@@ -15,7 +15,7 @@ import { buildElo, eloProbs } from './lib/elo.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
-import { buildTactics } from './lib/tactics.mjs';
+import { buildTactics, formationImpact } from './lib/tactics.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
@@ -453,6 +453,7 @@ async function main() {
   await write('players.json', players.map(p => (photoData[p.code] ? { ...p, photo: photoData[p.code] } : p)));
   await write('leaders.json', leaders);
   await write('tactics.json', tactics);
+  await write('formation.json', formationImpact({ tactics, table: lastTable }));
   await write('coaches.json', coaches);
   await write('news.json', news);
   await write('sim.json', sim);
