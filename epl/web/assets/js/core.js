@@ -617,7 +617,9 @@ export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = f
   let seq = -1;
   const dots = Object.entries(rows).flatMap(([key, list], rowIx) => list.map((p, i) => {
     const x = ((i + 1) / (list.length + 1)) * 96 + 2;
-    const pos = useOfficial ? (p.pos ?? 'MID') : key;
+    // 圓圈裡標的字:有角色就用角色(DM/CB/FB/W/AM/ST),那才對得上他站的那一排;
+    // 沒有才退回 FPL 的粗類 —— 那個會讓防守中場也寫成 MID
+    const pos = useOfficial ? (p.role ?? p.pos ?? 'MID') : key;
     const y = useOfficial ? ys[rowIx] : (photos ? ROW_Y_PHOTO : ROW_Y)[key];
     // 一排塞越多人,名字就得越短越小,否則五個中場的名字會疊在一起
     const slot = 96 / (list.length + 1);

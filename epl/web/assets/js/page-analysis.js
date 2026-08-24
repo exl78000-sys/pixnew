@@ -256,7 +256,11 @@ try {
         <div class="spread" style="margin-bottom:4px">
           <span class="row" style="gap:8px">${C.badge(code)}<b>${C.name(code)}</b></span>
           ${thisFormation
-            ? `<span class="pill accent tiny" title="英超官方公布的這場陣型">${thisFormation}</span>`
+            ? `<span class="pill ${off || sh?.official ? 'accent' : ''} tiny" title="${off
+                ? '英超官方公布的這場陣型'
+                : sh?.official
+                  ? `依該隊官方陣型(${sh.official.games} 場)排出的預估陣容`
+                  : '官方尚無資料,由球員角色推導'}">${thisFormation}</span>`
             : `<span class="pill tiny" title="這場名單的四類人數(FPL 分類)">${shape}</span>`}
         </div>
         ${std ? `<div class="tiny dim" style="margin-bottom:8px">
@@ -274,13 +278,16 @@ try {
       ? (live_.m.sides?.[code]?.shape?.label ?? '—')
       : (proj[side]?.shape ?? '—'));
     // 這場的官方陣型與排位:即使名單走 live,陣型與站位仍以官方公布的為準。
-    const fmOf = side => off?.formation?.[side] ?? null;
+    const fmOf = side => off?.formation?.[side] ?? (real ? null : proj[side]?.shape ?? null);
     // live 名單帶著進球、紅牌等場中狀態,官方排位只有站位 —— 用 code 把兩邊接起來,
     // 兩樣都留住:官方的站位 + live 的場中標記。接不齊就回 null,退回 FPL 粗類分排。
     const rowsOf = (side, list) => {
-      const r = off?.rows?.[side] ?? null;
-      if (!r) return null;
-      if (!live_) return r;
+      // 沒有官方名單時,預估名單自己也帶排位(依官方陣型 + 角色分類排的)
+      const raw = off?.rows?.[side] ?? (real ? null : proj[side]?.rows ?? null);
+      if (!raw) return null;
+      // 排位是另一條路徑,頭貼要自己補 —— 少了這行球場圖會整片沒有照片
+      const r = raw.map(row => row.map(x => ({ ...x, photo: x.photo ?? photoOf(x.code) })));
+      if (!live_ || !off?.rows?.[side]) return r;
       const byCode = new Map(list.filter(p => p.code != null).map(p => [String(p.code), p]));
       const mapped = r.map(row => row.map(p => (p.code != null ? byCode.get(String(p.code)) ?? p : p)));
       return mapped.reduce((a, x) => a + x.length, 0) === list.length ? mapped : null;
@@ -300,6 +307,15 @@ try {
     ${real ? '' : `<div class="note" style="margin-top:10px">
       <b>這是推測,不是官方公布的名單。</b>
       官方要到開賽前約一小時才公布 —— 在那之前只能從「誰最近一直在先發」反推。
+      <div style="margin-top:6px"><b>陣型不是猜的。</b>
+        ${[f.home, f.away].every(c => shapes[c]?.official)
+          ? `兩隊都用<b>官方公布的陣型</b>把人排進各條線
+             (${C.name(f.home)} ${shapes[f.home].official.formation}、${C.name(f.away)} ${shapes[f.away].official.formation}),
+             再由球員的角色(中衛/邊後衛/防中/中場/前腰/邊鋒/中鋒)決定誰站哪一格。`
+          : `有官方陣型的隊伍就照官方排,沒有的(本季還沒開踢)才由球員角色推導。`}
+        <span class="dim">先前這裡是用 FPL 的四個粗類分線,而 FPL 把邊鋒歸為中場 ——
+        結果 20 隊裡有 13 隊都會顯示成 4-5-1,那是分類太粗,不是球隊真的都這樣踢。</span>
+      </div>
       ${proj.home?.basis === 'last' || proj.away?.basis === 'last'
         ? '本季才剛開打,目前主要依據<b>上季</b>的先發紀錄,準度會比賽季中段低不少。'
         : proj.home?.basis === 'mixed'
@@ -310,8 +326,15 @@ try {
     ${real ? '' : injuryNote(f, proj)}
 
     <div class="section"><h2>兩隊陣容對照</h2>
-      <span class="hint">依位置線並排,同一列是同一條線上的人</span></div>
-    <div class="card">${compareRows(f, withPhoto(xi.home), withPhoto(xi.away))}</div>`;
+      <span class="hint">依球員角色分帶並排,看得出兩隊把人放在哪裡</span></div>
+    <div class="card">${compareRows(f, withPhoto(xi.home), withPhoto(xi.away))}</div>
+    <div class="note" style="margin-top:10px">
+      <b>這裡是依「球員是什麼角色」分帶,不是照球場上的排。</b>
+      兩隊陣型不同時(例如 4-2-3-1 對 3-4-2-1),排數與每排人數本來就對不齊,
+      硬要並排會變成拿蘋果比橘子;角色分帶才有共同的軸可以比。
+      所以<b>翼衛算在後防</b>(他本來就是後衛),即使他在上面的球場圖裡站在中場那一排。
+      要看實際站位請看上面的球場圖。
+    </div>`;
   }
 
   function injuryNote(f, proj) {
@@ -334,16 +357,21 @@ try {
 
   // 兩隊各站一列,依 GK/DEF/MID/FWD 分段對照
   function compareRows(f, home, away) {
-    const LINE = [['GK', '門將'], ['DEF', '後衛'], ['MID', '中場'], ['FWD', '前鋒']];
+    // 依角色分帶,不是 FPL 的四粗類 —— 粗類會讓 4-2-3-1 和 3-4-2-1 都顯示成「中場 5v4」,
+    // 看不出兩隊的差別在哪。角色分帶才分得出「防中 2v1、前場 3v2」這種真正的對比。
+    const BAND = { GK: 'GK', CB: 'DEF', FB: 'DEF', DM: 'MID', CM: 'MID', AM: 'ATT', W: 'ATT', ST: 'FWD' };
+    const LINE = [['GK', '門將'], ['DEF', '後防'], ['MID', '中場'], ['ATT', '前場'], ['FWD', '鋒線']];
     const roleOf = code => players.find(x => x.code === code)?.role ?? null;
+    // 名單本身帶的 role 優先(預估名單排位時就分好了),沒有才回球員庫查
+    const bandOf = p => BAND[p.role ?? roleOf(p.code)?.key] ?? (p.pos === 'GK' ? 'GK' : p.pos === 'DEF' ? 'DEF' : p.pos === 'FWD' ? 'FWD' : 'MID');
     const cell = (p, code) => {
-      const r = roleOf(p.code);
+      const r = p.roleZh ? { zh: p.roleZh, key: p.role } : roleOf(p.code);
       return `<span class="lu-p" title="${C.esc(p.name)}${r ? `・${r.zh}` : ''}">
         ${C.playerPhoto({ ...p, team: code }, 26)}<span class="nm">${C.esc(p.name)}${p.doubt ? ' ⚠' : ''}
         ${r && !r.lowSample ? `<span class="dim tiny"> ${r.zh}</span>` : ''}</span></span>`;
     };
-    return LINE.map(([pos, zh]) => {
-      const h = home.filter(x => x.pos === pos), a = away.filter(x => x.pos === pos);
+    return LINE.map(([band, zh]) => {
+      const h = home.filter(x => bandOf(x) === band), a = away.filter(x => bandOf(x) === band);
       if (!h.length && !a.length) return '';
       return `<div class="lu-line">
         <div class="lu-side">${h.map(p => cell(p, f.home)).join('')}</div>

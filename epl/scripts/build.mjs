@@ -533,13 +533,6 @@ async function main() {
   await write('tactics.json', tactics);
   await write('formation.json', formationImpact({ tactics, table: lastTable }));
 
-  // 預估先發:每隊算一次就好(推測不看對手是誰),比每場算一次小得多。
-  // 頭貼刻意不帶進來 —— players.json 已經有一份,重複塞會讓這個檔從 40 KB 變 900 KB。
-  const lineups = Object.fromEntries(curCodes.map(code => [code, projectXI({
-    players, team: code, tactics: tacticsBy.get(code), rounds: leaders.currentRounds ?? 0,
-  })]));
-  await write('lineups.json', lineups);
-
   // 標準陣型與攻守分型:先把 FPL 的四個粗類細分成八種角色,再由角色的出場分鐘推導。
   // 升班馬沒有足夠的英超樣本,會回報 insufficient 而不是硬編一個陣型出來。
   const shapes = Object.fromEntries(curCodes.map(code => {
@@ -563,6 +556,29 @@ async function main() {
     }];
   }));
   await write('shapes.json', shapes);
+
+  // 預估先發:每隊算一次就好(推測不看對手是誰),比每場算一次小得多。
+  // 頭貼刻意不帶進來 —— players.json 已經有一份,重複塞會讓這個檔從 40 KB 變 900 KB。
+  //
+  // 陣型的優先序:官方公布 > 角色推導 > FPL 四粗類。
+  // 為什麼不能直接用 FPL:它只有 GK/DEF/MID/FWD 四類,而且把邊鋒歸為中場,
+  // 照它分線的話 20 隊裡有 13 隊都會變成 4-5-1 —— 那是分類太粗,不是球隊真的都這樣踢。
+  const shapeFor = code => {
+    const off = offShapes?.teams?.[code]?.formation;
+    if (off) return { formation: off, formationSource: 'official' };
+    const derived = shapes[code]?.insufficient ? null : shapes[code]?.base?.label ?? null;
+    return { formation: derived, formationSource: 'derived' };
+  };
+  const lineups = Object.fromEntries(curCodes.map(code => [code, projectXI({
+    players, team: code, tactics: tacticsBy.get(code), rounds: leaders.currentRounds ?? 0,
+    ...shapeFor(code), classify,
+  })]));
+  {
+    const n = src => Object.values(lineups).filter(l => l.shapeSource === src).length;
+    console.log(`  預估先發陣型:官方 ${n('official')} 隊・角色推導 ${n('derived')} 隊・FPL 粗類 ${n('fpl')} 隊`);
+  }
+  await write('lineups.json', lineups);
+
   await write('official.json', offLineups
     ? { available: true, asOf: offLineups.asOf, season: offLineups.season, matches: offLineups.matches,
         managers: offManagers?.managers ?? {}, managersAsOf: offManagers?.asOf ?? null }
