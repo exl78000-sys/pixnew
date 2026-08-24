@@ -296,3 +296,18 @@ input:focus-visible, tbody tr.clickable:focus-visible {
 
 /* ── 戰術視圖:球場 ─────────────────── */
 .pitch { display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--line); }
+
+/* ── 兩隊陣容對照 ───────────────────── */
+.lu-line { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
+.lu-line:last-child { border-bottom: none; }
+.lu-side { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.lu-side.right { justify-content: flex-end; }
+.lu-pos { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; text-align: center; min-width: 62px; }
+.lu-p { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; }
+.lu-p .nm { white-space: nowrap; }
+@media (max-width: 640px) {
+  .lu-line { grid-template-columns: 1fr; }
+  .lu-side.right { justify-content: flex-start; }
+  .lu-pos { text-align: left; }
+}
