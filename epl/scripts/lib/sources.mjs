@@ -24,4 +24,6 @@ export function sourceList() {
 export const ATTRIBUTION = [
   { name: 'openfootball / football.json', url: 'https://github.com/openfootball/football.json', use: '英超賽程、比分(含半場)', license: 'Public Domain' },
   { name: 'vaastav / Fantasy-Premier-League', url: 'https://github.com/vaastav/Fantasy-Premier-League', use: '球員進階數據、傷停狀態、賽程難度', license: 'FPL 官方 API 鏡像' },
+  { name: '英超官方 (pulselive)', url: 'https://www.premierleague.com', use: '官方正式陣容、陣型、現任教練', license: '官網公開端點' },
+  { name: 'football-data.co.uk', url: 'https://www.football-data.co.uk', use: '博彩收盤賠率(模型 vs 市場的基準)', license: '免費、可自由使用' },
 ];

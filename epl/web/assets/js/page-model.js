@@ -19,6 +19,45 @@ try {
   const kpi = (l, v, sub) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub}</div></div>`;
   const better = ((M.baseline.rps - M.blend.rps) / M.baseline.rps) * 100;
 
+  // 模型 vs 市場:同一批有收盤賠率的比賽
+  const mkt = bt.market ?? { available: false };
+  const mktBeat = mkt.available ? ((mkt.market.rps - mkt.model.rps) / mkt.market.rps) * 100 : 0;
+  const mktRoundsWon = mkt.available ? mkt.byRound.filter(r => r.modelRps <= r.marketRps).length : 0;
+
+  // 逐輪雙線圖:模型與市場的 RPS(都是越低越好)。只在這頁用,放這裡不進 core。
+  function vsChart(rows, { w = 1000, h = 320 } = {}) {
+    const pad = { l: 58, r: 22, t: 30, b: 46 };
+    const vals = rows.flatMap(r => [r.modelRps, r.marketRps]);
+    const lo = Math.min(...vals) * 0.9, hi = Math.max(...vals) * 1.08;
+    const X = i => pad.l + (i / Math.max(1, rows.length - 1)) * (w - pad.l - pad.r);
+    const Y = v => h - pad.b - ((v - lo) / (hi - lo || 1)) * (h - pad.t - pad.b);
+    const yTicks = 4;
+    const grid = [...Array(yTicks + 1)].map((_, i) => {
+      const v = lo + (i / yTicks) * (hi - lo);
+      return `<line x1="${pad.l}" y1="${Y(v).toFixed(1)}" x2="${w - pad.r}" y2="${Y(v).toFixed(1)}"
+          stroke="var(--line-soft)" stroke-width="1"/>
+        <text x="${pad.l - 10}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end" font-size="11.5" fill="var(--ink-3)">${v.toFixed(3)}</text>`;
+    }).join('');
+    const path = (key, color) => {
+      const d = rows.map((r, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(r[key]).toFixed(1)}`).join(' ');
+      const dots = rows.map((r, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(r[key]).toFixed(1)}" r="3"
+        fill="${color}" stroke="var(--panel-solid)" stroke-width="1.2"><title>第 ${r.round} 輪・${key === 'modelRps' ? '模型' : '市場'} RPS ${r[key]}</title></circle>`).join('');
+      return `<path d="${d}" fill="none" stroke="${color}" stroke-width="2"/>${dots}`;
+    };
+    const xLabels = rows.filter((_, i) => i % 5 === 0 || i === rows.length - 1)
+      .map(r => `<text x="${X(rows.indexOf(r)).toFixed(1)}" y="${h - pad.b + 20}" text-anchor="middle"
+        font-size="11.5" fill="var(--ink-3)">${r.round}</text>`).join('');
+    // 圖例(兩個系列一定要有,不能只靠顏色)
+    const legend = `
+      <line x1="${pad.l}" y1="14" x2="${pad.l + 22}" y2="14" stroke="var(--accent)" stroke-width="2"/>
+      <text x="${pad.l + 28}" y="18" font-size="11.5" fill="var(--ink-2)">模型</text>
+      <line x1="${pad.l + 76}" y1="14" x2="${pad.l + 98}" y2="14" stroke="var(--draw)" stroke-width="2"/>
+      <text x="${pad.l + 104}" y="18" font-size="11.5" fill="var(--ink-2)">市場(收盤盤口)</text>
+      <text x="${w - pad.r}" y="18" text-anchor="end" font-size="11.5" fill="var(--ink-3)">RPS 越低越好</text>`;
+    return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto" role="img" aria-label="模型與市場逐輪 RPS 對照">
+      ${grid}${legend}${path('marketRps', 'var(--draw)')}${path('modelRps', 'var(--accent)')}${xLabels}</svg>`;
+  }
+
   app.innerHTML = `
   <div class="page-head">
     <h1>模型驗證</h1>
@@ -61,6 +100,45 @@ try {
     平台採用的是<b>兩者平均</b>:Poisson 與 Elo 各自預測後取平均。
     三項指標都比單獨使用任一個好,所以這不是憑感覺選的。
   </div>
+
+  ${mkt.available ? `
+  <div class="section"><h2>模型 vs 市場</h2>
+    <span class="hint">同一批 ${mkt.games} 場有收盤賠率的比賽</span></div>
+  <div class="grid g4">
+    ${kpi('模型 RPS', mkt.model.rps, mktBeat >= 0 ? `比市場低 ${mktBeat.toFixed(1)}%` : `比市場高 ${(-mktBeat).toFixed(1)}%`)}
+    ${kpi('市場 RPS', mkt.market.rps, `${mkt.source ?? '博彩收盤'}・去水錢後`)}
+    ${kpi('命中率', C.pct(mkt.model.hitRate, 1), `市場 ${C.pct(mkt.market.hitRate, 1)}`)}
+    ${kpi('贏過市場的輪次', `${mktRoundsWon} / ${mkt.byRound.length}`, '該輪 RPS ≤ 市場')}
+  </div>
+  <div class="card" style="margin-top:14px">
+    ${vsChart(mkt.byRound)}
+    <div class="tiny dim" style="margin-top:8px">
+      每一輪各 10 場,兩條線都是越低越好。市場是全世界資訊最充分的一群人用真金白銀押出來的機率,
+      當作模型的天花板來看 —— 貼著它就很強,壓過它要當心是樣本僥倖而非真本事。</div>
+  </div>
+  <div class="note ${mktBeat >= 3 ? 'warn' : ''}" style="margin-top:10px">
+    ${mktBeat >= 3
+      ? `<b>模型在這批比賽上壓過了收盤市場(RPS ${mkt.model.rps} vs ${mkt.market.rps})。</b>
+         這件事要非常小心地看:能穩定贏過博彩收盤盤口的人極少,在單一賽季上勝出,
+         更可能是這批比賽的樣本僥倖、或某個環節不小心讓模型看到了未來,而不是真的找到了市場的破綻。
+         正確的態度是存疑,而不是慶祝。`
+      : mktBeat <= -3
+        ? `<b>市場略勝一籌(RPS ${mkt.market.rps} vs 模型 ${mkt.model.rps}),這完全是意料之中。</b>
+           盤口看得到傷停、輪換、轉會、士氣,而這個模型只吃比賽結果與 FPL 統計 —— 看不到那些。
+           重點不是「有沒有輸」,是<b>差距有多小</b>:一個只用公開數據的免費模型能貼到這個距離,已經是誠實可用的水準。`
+        : `<b>模型和收盤市場旗鼓相當(RPS ${mkt.model.rps} vs ${mkt.market.rps})。</b>
+           以一個只吃公開數據、看不到傷停與轉會的免費模型來說,能跟全世界最銳利的盤口打平,
+           已經是這個平台最有說服力的一個結果。`}
+    <div class="tiny dim" style="margin-top:6px">
+      市場機率的算法:取博彩收盤的十進位賠率,倒數得到含水錢的隱含機率,再按比例去掉莊家利潤(overround)使三者加總為 1。
+      全程是決定性的算術,沒有一個數字是猜的。資料源 football-data.co.uk,免金鑰。</div>
+  </div>` : `
+  <div class="section"><h2>模型 vs 市場</h2><span class="hint">尚未載入賠率</span></div>
+  <div class="note">
+    這一段會拿模型跟<b>博彩收盤盤口</b>比 —— 那是最銳利的外部基準,「贏過市場」才是真的準。
+    目前還沒有賠率資料:在連得到外網的環境跑 <span class="mono">npm run odds</span> 再
+    <span class="mono">npm test</span> 就會出現。資料源 football-data.co.uk,免金鑰。
+  </div>`}
 
   <div class="section"><h2>校準:說 70% 的時候,是不是真的 70%</h2>
     <span class="hint">比「準不準」更重要的問題</span></div>

@@ -15,6 +15,7 @@ import {
   preMatchBundle, postMatchBundle, templateFor, verify, generateReport, ReportCache,
 } from './lib/report/index.mjs';
 import { attachCodes } from './lib/adapters/pulselive.mjs';
+import { oddsIndex, devig, parseOddsCsv } from './lib/odds.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -138,6 +139,19 @@ async function main() {
   // 賽季基準線:英超長期的主/和/客分佈
   const BASE = { home: 0.44, draw: 0.25, away: 0.31 };
 
+  // 市場基準:讀當季的博彩收盤賠率(去水錢後的隱含機率)。
+  // 有就在同一批比賽上比「模型 vs 市場」;沒有(檔案不存在)這一段就整個略過。
+  let oddsBy = new Map();
+  const srcCount = new Map();
+  try {
+    const csv = readFileSync(join(ROOT, 'data', 'raw', 'football-data-couk', `${TEST_SEASON}.csv`), 'utf8');
+    const ix = oddsIndex(csv, { codeOf: T.codeOf });
+    oddsBy = ix.byMatch;
+    console.log(`  市場基準:讀到 ${oddsBy.size} 場賠率(${TEST_SEASON})`);
+  } catch { /* 沒有賠率檔就不比市場 */ }
+  const mkt = [], blendMkt = [];   // 只含「有賠率」那批;兩者比較才公平
+  const perMkt = [];               // 逐輪對照要用
+
   for (const rd of rounds) {
     const games = test.filter(m => m.round === rd);
     const before = [...past, ...test.filter(m => m.round < rd)];
@@ -157,6 +171,16 @@ async function main() {
         hit: [pr.home, pr.draw, pr.away].indexOf(Math.max(pr.home, pr.draw, pr.away)) === o,
       });
       push(dc, p); push(el, e); push(base, BASE); push(blend, b);
+
+      // 這場有市場賠率的話,把市場機率與模型預測都記進「重疊集」——
+      // 必須是同一批比賽,不然拿模型的全季去比市場的半季不公平
+      const mk = oddsBy.get(`${m.home}|${m.away}`);
+      if (mk) {
+        push(mkt, mk.probs); push(blendMkt, b);
+        srcCount.set(mk.source, (srcCount.get(mk.source) ?? 0) + 1);
+        perMkt.push({ round: rd, model: rps(b, o), market: rps(mk.probs, o) });
+      }
+
       perMatch.push({
         season: m.season, date: m.date, home: m.home, away: m.away, round: m.round,
         fh: m.fh, fa: m.fa,
@@ -177,6 +201,10 @@ async function main() {
     summarise('兩者平均', blend),
     summarise('基準線(固定機率)', base),
   ]);
+  if (mkt.length) {
+    console.log('\n▶ 模型 vs 市場(同一批有賠率的比賽)');
+    console.table([summarise('兩者平均(模型)', blendMkt), summarise('博彩收盤(市場)', mkt)]);
+  }
   // ── 校準:模型說 70% 會贏的比賽,實際是不是真的贏了 70% ──────────
   // 每場比賽貢獻三個點(主勝/和/客勝各一),這是多類別校準的標準做法。
   function calibration(bins = 10) {
@@ -239,6 +267,26 @@ async function main() {
     byRound: byRound(),
     surprises: surprises(),
     baselineProbs: BASE,
+    // 模型 vs 市場:同一批有賠率的比賽上,模型與博彩收盤各自的表現
+    market: mkt.length ? {
+      available: true,
+      games: mkt.length,
+      source: [...srcCount.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null,
+      model: metric(blendMkt),
+      market: metric(mkt),
+      byRound: (() => {
+        const g = new Map();
+        for (const r of perMkt) {
+          if (!g.has(r.round)) g.set(r.round, []);
+          g.get(r.round).push(r);
+        }
+        return [...g.entries()].sort((a, b) => a[0] - b[0]).map(([rd, rows]) => ({
+          round: rd, games: rows.length,
+          modelRps: round(rows.reduce((a, x) => a + x.model, 0) / rows.length, 4),
+          marketRps: round(rows.reduce((a, x) => a + x.market, 0) / rows.length, 4),
+        }));
+      })(),
+    } : { available: false },
   };
   mkdirSync(join(ROOT, 'data'), { recursive: true });
   writeFileSync(join(ROOT, 'data', 'backtest.json'), JSON.stringify(report, null, 2));
@@ -267,9 +315,42 @@ async function main() {
   console.log('\n▶ 官方名單球員對照自我檢查');
   const nameFail = checkOfficialNames();
 
+  // 市場基準去水錢:算錯的話整段「模型 vs 市場」都是騙人的
+  console.log('\n▶ 賠率去水錢自我檢查');
+  const oddsFail = checkOdds();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || nameFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || nameFail || oddsFail) process.exitCode = 1;
+}
+
+function checkOdds() {
+  const cases = [];
+  // 加總為 1
+  const p = devig(2.0, 3.5, 4.0);
+  cases.push(['去水錢後三者加總為 1', p && Math.abs(p.home + p.draw + p.away - 1) < 1e-9]);
+  // 賠率越低 → 機率越高(單調)
+  cases.push(['賠率越低機率越高', p && p.home > p.draw && p.draw > p.away]);
+  // overround 為正(莊家一定有水錢)
+  cases.push(['水錢(overround)為正', p && p.overround > 0 && p.overround < 0.3]);
+  // 壞賠率回 null,不會污染
+  cases.push(['壞賠率回 null 不亂算', devig(0, 0, 0) === null && devig(1, 2, 3) === null]);
+  // CSV 解析 + 隊名對照
+  const csv = 'Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,PSCH,PSCD,PSCA\n'
+    + 'E0,16/08/25,Man United,Arsenal,1,2,3.10,3.40,2.30\n'
+    + 'E0,16/08/25,Nowhere,Chelsea,0,0,2.0,3.0,4.0';
+  const r = parseOddsCsv(csv, {});
+  cases.push(['CSV 解析 + 隊名對照', r.matches.length === 1 && r.matches[0].home === 'MUN'
+    && r.matches[0].away === 'ARS' && r.unmatched.includes('Nowhere')]);
+  // 收盤優先於開盤:同一列給兩種,要挑收盤(PSCH)
+  const csv2 = 'Div,Date,HomeTeam,AwayTeam,PSH,PSD,PSA,PSCH,PSCD,PSCA\n'
+    + 'E0,16/08/25,Arsenal,Chelsea,9,9,9,1.50,4.00,7.00';
+  const r2 = parseOddsCsv(csv2, {});
+  cases.push(['收盤賠率優先於開盤', r2.matches[0]?.source === 'Pinnacle 收盤' && r2.matches[0]?.decimals.home === 1.5]);
+
+  let fail = 0;
+  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
+  return fail;
 }
 
 function checkOfficialNames() {

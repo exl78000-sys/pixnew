@@ -20,7 +20,8 @@
     "coaches:check": "node scripts/fetch-coaches.mjs",
     "probe:apis": "node scripts/probe-apis.mjs",
     "explore:apis": "node scripts/explore-apis.mjs",
-    "official": "node scripts/fetch-official.mjs"
+    "official": "node scripts/fetch-official.mjs",
+    "odds": "node scripts/fetch-odds.mjs"
   },
   "engines": {
     "node": ">=18"

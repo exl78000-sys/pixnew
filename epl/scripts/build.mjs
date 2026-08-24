@@ -80,6 +80,7 @@ async function main() {
       // 模型驗證頁需要完整資料,不只摘要
       calibration: r.calibration ?? [], byRound: r.byRound ?? [],
       surprises: r.surprises ?? [], baselineProbs: r.baselineProbs ?? null,
+      market: r.market ?? { available: false },   // 模型 vs 市場
     };
   }
 

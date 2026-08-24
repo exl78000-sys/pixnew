@@ -1,0 +1,100 @@
+// football-data.co.uk 的賠率 → 去除水錢後的隱含機率(市場的預測)。
+//
+// 為什麼要它:這個平台沒有付費的進階數據當賣點,唯一該被檢驗的就是「準不準」。
+// 而博彩市場的收盤賠率,是全世界資訊最充分的一群人用真金白銀押出來的機率 ——
+// 拿它當基準,「贏過市場」才是真的準,「跟市場差不多」已經很好,
+// 「輸給市場」就得承認模型只吃比賽結果、看不到傷停與轉會的侷限。
+//
+// 全部是決定性的算術,沒有一個數字是模型或 LLM 猜的。
+import { parseCSVObjects, num } from './csv.mjs';
+
+/* football-data.co.uk 的隊名 → 我們的隊碼。
+   它用的拼法是第三種(不同於 openfootball 的「Arsenal FC」與 FPL 的「Spurs」),
+   所以要獨立一張表。對不上的隊(改朝換代、拼法變了)由 fetch 腳本回報,不會靜靜漏掉。 */
+export const FD_NAMES = {
+  Arsenal: 'ARS', 'Aston Villa': 'AVL', Bournemouth: 'BOU', Brentford: 'BRE',
+  Brighton: 'BHA', Burnley: 'BUR', Chelsea: 'CHE', Coventry: 'COV',
+  'Crystal Palace': 'CRY', Everton: 'EVE', Fulham: 'FUL', Hull: 'HUL',
+  Ipswich: 'IPS', Leeds: 'LEE', Leicester: 'LEI', Liverpool: 'LIV',
+  Luton: 'LUT', 'Man City': 'MCI', 'Man United': 'MUN', Newcastle: 'NEW',
+  "Nott'm Forest": 'NFO', 'Sheffield United': 'SHU', Southampton: 'SOU',
+  Sunderland: 'SUN', Tottenham: 'TOT', 'West Ham': 'WHU', Wolves: 'WOL',
+};
+
+/* 賠率欄位偏好順序。收盤(C)比開盤準,Pinnacle 是公認最銳利的莊家,
+   市場平均次之,Bet365 保底 —— 誰有值就用誰,全部沒有才放棄這場。 */
+const ODDS_COLS = [
+  ['PSCH', 'PSCD', 'PSCA', 'Pinnacle 收盤'],
+  ['AvgCH', 'AvgCD', 'AvgCA', '市場平均收盤'],
+  ['MaxCH', 'MaxCD', 'MaxCA', '市場最佳收盤'],
+  ['PSH', 'PSD', 'PSA', 'Pinnacle 開盤'],
+  ['AvgH', 'AvgD', 'AvgA', '市場平均開盤'],
+  ['B365H', 'B365D', 'B365A', 'Bet365 開盤'],
+  ['BbAvH', 'BbAvD', 'BbAvA', '市場平均(舊格式)'],
+];
+
+// 十進位賠率 → 去除水錢的隱含機率。
+// 1/賠率 是含水錢的隱含機率,三個加起來 > 1(莊家的利潤);
+// 按比例normalize成加總為 1 —— 這是最沒有爭議的去水錢法(proportional/multiplicative)。
+export function devig(oH, oD, oA) {
+  if (!(oH > 1) || !(oD > 1) || !(oA > 1)) return null;
+  const iH = 1 / oH, iD = 1 / oD, iA = 1 / oA;
+  const s = iH + iD + iA;
+  if (!(s > 0)) return null;
+  return { home: iH / s, draw: iD / s, away: iA / s, overround: s - 1 };
+}
+
+// 從一列 CSV 取出最好的一組賠率,回傳去水錢後的機率 + 用了哪一組
+function rowOdds(row) {
+  for (const [h, d, a, label] of ODDS_COLS) {
+    if (row[h] === undefined) continue;
+    const oH = num(row[h], 0), oD = num(row[d], 0), oA = num(row[a], 0);
+    const p = devig(oH, oD, oA);
+    if (p) return { ...p, source: label, decimals: { home: oH, draw: oD, away: oA } };
+  }
+  return null;
+}
+
+// football-data.co.uk 的日期是 dd/mm/yy 或 dd/mm/yyyy → ISO
+function fdDate(s) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{2,4})$/.exec(String(s).trim());
+  if (!m) return null;
+  const [, dd, mm, yy] = m;
+  const yyyy = yy.length === 2 ? (Number(yy) > 70 ? `19${yy}` : `20${yy}`) : yy;
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+const codeFor = (name, codeOf) => FD_NAMES[name] ?? codeOf?.(name) ?? null;
+
+/* 解析一整季的 CSV → 每場一筆 {date, home, away, fh, fa, probs, source}。
+   對不上隊碼、或整列沒有任何賠率的,跳過並記進 skipped(呼叫端決定要不要在意)。 */
+export function parseOddsCsv(text, { codeOf } = {}) {
+  const rows = parseCSVObjects(text);
+  const matches = [];
+  const unmatched = new Set();
+  let noOdds = 0;
+  for (const r of rows) {
+    if (!r.HomeTeam || !r.AwayTeam) continue;
+    const home = codeFor(r.HomeTeam, codeOf), away = codeFor(r.AwayTeam, codeOf);
+    if (!home) unmatched.add(r.HomeTeam);
+    if (!away) unmatched.add(r.AwayTeam);
+    if (!home || !away) continue;
+    const o = rowOdds(r);
+    if (!o) { noOdds++; continue; }
+    matches.push({
+      date: fdDate(r.Date), home, away,
+      fh: r.FTHG === '' ? null : num(r.FTHG), fa: r.FTAG === '' ? null : num(r.FTAG),
+      probs: { home: o.home, draw: o.draw, away: o.away },
+      overround: o.overround, source: o.source, decimals: o.decimals,
+    });
+  }
+  return { matches, unmatched: [...unmatched], noOdds };
+}
+
+// 給回測用:key = `${home}|${away}`(一季內主客對戰組合唯一)→ 市場機率
+export function oddsIndex(text, opts) {
+  const { matches, unmatched, noOdds } = parseOddsCsv(text, opts);
+  const byMatch = new Map();
+  for (const m of matches) byMatch.set(`${m.home}|${m.away}`, m);
+  return { byMatch, count: matches.length, unmatched, noOdds };
+}
