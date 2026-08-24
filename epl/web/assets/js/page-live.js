@@ -270,7 +270,7 @@ try {
   // 就算完全沒有即時資料源,也要定期重畫,比賽才會自己從「倒數」變成「進行中」。
   const POLL_MS = 20000, REDRAW_MS = 30000;
   let lastStamp = live.fetchedAt ?? null;
-  setInterval(async () => {
+  C.pageInterval(async () => {
     try {
       const res = await fetch(`data/live.json?t=${Date.now()}`, { cache: 'no-store' });
       if (!res.ok) return;
@@ -283,6 +283,6 @@ try {
       }
     } catch { /* 靜態站沒有即時端點時會失敗,忽略即可 */ }
   }, POLL_MS);
-  setInterval(renderPage, REDRAW_MS);
+  C.pageInterval(renderPage, REDRAW_MS);
 
 } catch (err) { C.fail(err); }

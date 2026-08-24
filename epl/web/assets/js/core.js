@@ -196,6 +196,23 @@ export function countdownText(iso, now = Date.now()) {
 export const countdown = iso => `<span class="cd mono" data-kickoff="${iso}">${countdownText(iso).text}</span>`;
 
 let cdTimer = null;
+/* ── 換頁時要收乾淨的計時器 ───────────────
+   單檔版是 hash 路由:只換 #app 的內容,不會真的重新載入頁面。
+   所以上一頁 setInterval 出來的計時器會活下來,30 秒後把你正在看的內容整個蓋掉 ——
+   網址還停在原本那頁,但畫面已經變成別頁,看起來就像「自己跳走」。
+   頁面要用 pageInterval() 註冊,路由切換前呼叫 clearPageTimers() 收掉。 */
+let pageTimers = [];
+export function pageInterval(fn, ms) {
+  const id = setInterval(fn, ms);
+  pageTimers.push(id);
+  return id;
+}
+export function clearPageTimers() {
+  for (const id of pageTimers) clearInterval(id);
+  pageTimers = [];
+  if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
+}
+
 export function startCountdowns() {
   const tick = () => {
     const now = Date.now();
@@ -238,6 +255,14 @@ export function elapsedText(elapsed) {
 
 /* ── 抽屜 ───────────────────────────── */
 let drawerEl, bgEl;
+const closeDrawer = () => {
+  drawerEl?.classList.remove('open');
+  bgEl?.classList.remove('open');
+};
+// Esc 只綁一次。綁在重建抽屜的分支裡的話,每換一次頁就多一個監聽器,
+// 而且舊的那個關的是已經被移除的節點 —— 越積越多又都沒作用。
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
 export function drawer(title, html) {
   // 換頁後舊節點會被移除,這裡要偵測並重建,否則抽屜開不起來
   if (drawerEl && !document.body.contains(drawerEl)) drawerEl = null;
@@ -248,10 +273,8 @@ export function drawer(title, html) {
         <div class="db" id="dwb"></div></aside>`);
     drawerEl = document.getElementById('dw');
     bgEl = document.getElementById('dbg');
-    const close = () => { drawerEl.classList.remove('open'); bgEl.classList.remove('open'); };
-    bgEl.onclick = close;
-    document.getElementById('dwx').onclick = close;
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    bgEl.onclick = closeDrawer;
+    document.getElementById('dwx').onclick = closeDrawer;
   }
   document.getElementById('dwt').innerHTML = title;
   document.getElementById('dwb').innerHTML = html;

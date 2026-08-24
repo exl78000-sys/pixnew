@@ -65,6 +65,9 @@ ${PAGES.map(p => `  '${p}': async () => {\n${pageSrc[p].split('\n').map(l => '  
 // 單檔版沒有真的換頁,靠 hash 路由重新渲染:先清掉上一頁留下的節點再跑新頁
 async function route() {
   const page = location.hash.slice(1).split('?')[0] || 'index';
+  // 先收掉上一頁的計時器 —— 不收的話實時戰況頁的重畫計時器會在 30 秒後
+  // 把你正在看的比賽分析整個蓋掉(網址沒變,畫面卻換了)
+  clearPageTimers();
   document.querySelector('.topbar')?.remove();
   document.getElementById('dw')?.remove();
   document.getElementById('dbg')?.remove();
