@@ -18,7 +18,8 @@
     "season": "node scripts/fetch-season.mjs",
     "live:watch": "node scripts/live-server.mjs",
     "coaches:check": "node scripts/fetch-coaches.mjs",
-    "probe:apis": "node scripts/probe-apis.mjs"
+    "probe:apis": "node scripts/probe-apis.mjs",
+    "explore:apis": "node scripts/explore-apis.mjs"
   },
   "engines": {
     "node": ">=18"
