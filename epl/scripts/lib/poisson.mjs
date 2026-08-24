@@ -104,9 +104,25 @@ export function applyPromotedPrior(model, minWeight = 4) {
   return model;
 }
 
+/* 只要三路機率的輕量版本。
+   回測調參要跑幾萬次,不需要完整比分矩陣與排序,拆出來單獨算比較快。 */
+export function outcomeProbs(lh, la, rho) {
+  const ph = poissonPmf(lh), pa = poissonPmf(la);
+  let h = 0, d = 0, a = 0, total = 0;
+  for (let x = 0; x <= MAX_GOALS; x++) {
+    for (let y = 0; y <= MAX_GOALS; y++) {
+      const p = Math.max(0, ph[x] * pa[y] * tau(x, y, lh, la, rho));
+      total += p;
+      if (x > y) h += p; else if (x === y) d += p; else a += p;
+    }
+  }
+  return { home: h / total, draw: d / total, away: a / total };
+}
+
 // 單場預測:比分機率矩陣 + 各種衍生機率
-export function predict(model, home, away) {
-  const { lh, la } = lambdas(model, home, away);
+// lam 給了就用給的 λ(近期狀況調整過的),沒給就用模型原本的。
+export function predict(model, home, away, lam) {
+  const { lh, la } = lam ?? lambdas(model, home, away);
   const ph = poissonPmf(lh), pa = poissonPmf(la);
   const grid = [];
   let total = 0;

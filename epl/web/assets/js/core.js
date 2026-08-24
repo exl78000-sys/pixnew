@@ -717,12 +717,22 @@ export function versus(rows, { home, away, colors, note = null } = {}) {
   const line = r => {
     const { label, h, a, unit = '', digits = 2, better = 'high', hint = '' } = r;
     const has = h !== null && h !== undefined && a !== null && a !== undefined;
-    // 條長代表的是「這一列誰比較好」,不是數值大小。
-    // 「越低越好」的項目(名次、失球)要取倒數,否則第 16 名的條會比第 5 名長 ——
-    // 圖形會跟旁邊的 ▲ 互相矛盾,那比沒有圖還糟。
-    const w = v => (better === 'low' ? 1 / Math.max(1e-6, Math.abs(v)) : Math.abs(v));
+    /* 條長代表的是「這一列誰比較好」,不是數值大小。
+       「越低越好」的項目(名次、失球)要取倒數,否則第 16 名的條會比第 5 名長 ——
+       圖形會跟旁邊的 ▲ 互相矛盾,那比沒有圖還糟。
+
+       倒數有一個會爆掉的情況:值是 0(例如「傷停佔上場時間 0%」)。
+       1/0 會變成無限大,於是 0 那一邊畫滿、另一邊只剩一根針 ——
+       方向雖然對,比例卻荒謬。所以分母加一個跟資料同量級的緩衝 eps,
+       讓 0 仍然明顯較好、但不會壓成一根針。 */
+    const w = v => {
+      if (better !== 'low') return Math.abs(v);
+      const eps = (Math.max(Math.abs(h ?? 0), Math.abs(a ?? 0)) || 1) * 0.08;
+      return 1 / (Math.abs(v) + eps);
+    };
     const max = has ? Math.max(w(h), w(a)) || 1 : 1;
-    const pct = v => (has ? Math.max(2, (w(v) / max) * 100) : 0);
+    // 下限拉到 6%:條太短會看不出是「短」還是「沒有資料」
+    const pct = v => (has ? Math.max(6, (w(v) / max) * 100) : 0);
     const win = !has ? null : better === 'high' ? (h > a ? 'h' : h < a ? 'a' : null)
       : (h < a ? 'h' : h > a ? 'a' : null);
     const val = (v, side) => {

@@ -137,7 +137,7 @@ try {
       <div style="margin-top:8px">${rec.list.slice(0, 5).map(m => `
         <div class="stat-line"><span class="small dim mono">${C.dateFull(m.date)}</span>
           <span class="small">${C.name(m.home)} <b class="mono">${m.fh}-${m.fa}</b> ${C.name(m.away)}</span></div>`).join('')}</div>`
-      : '<div class="dim small">近三季沒有交手紀錄(可能是升班馬)。</div>';
+      : `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在英超交手過(多半是剛升上來的球隊)。</div>`;
 
     const squadHtml = code => `
       <div><div class="small muted" style="margin-bottom:4px">${C.teamCell(code, { link: false })}</div>
@@ -218,7 +218,7 @@ try {
           ${ta.tags.slice(0, 3).map(t => `<span class="pill info">${t}</span>`).join('')}
         </div></div>` : ''}
 
-      <div class="card"><h3>近三季交手</h3>${h2hHtml}</div>
+      <div class="card"><h3>歷來交手</h3><div class="tiny dim" style="margin:-4px 0 8px">涵蓋 ${meta.h2hSeasons?.length ?? 0} 個賽季(${C.esc(meta.h2hSeasons?.[0] ?? "?")} 起)</div>${h2hHtml}</div>
 
       <div class="card"><h3>關鍵球員(上季 xGI/90)</h3>
         <div class="grid g2">${squadHtml(f.home)}${squadHtml(f.away)}</div>

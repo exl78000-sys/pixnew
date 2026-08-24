@@ -82,6 +82,12 @@ jobs:
         run: npm test
         continue-on-error: true
 
+      # 近況/交手特徵的調參與驗收。三個賽季都已完結,數字很穩定 ——
+      # 跑它是為了讓模型頁上「測過但沒進模型」那一段的數字永遠是現跑的,而不是寫死的。
+      - name: 特徵驗證(調參賽季挑係數、驗收賽季驗收)
+        run: npm run tune:form
+        continue-on-error: true
+
       - name: 建立資料集
         run: npm run build
         env:
@@ -89,6 +95,12 @@ jobs:
           # 設定方式:repo → Settings → Secrets and variables → Actions
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      # 存一份「今天誰不能上」。上游(FPL)只給現在、不給歷史,
+      # 自己每天存才能累積出逐輪快照 —— 那是將來把傷停拿去走查回測的唯一辦法。
+      - name: 傷停快照(累積成可回測的歷史)
+        run: npm run snapshot
+        continue-on-error: true
 
       - name: 打包單檔版
         run: npm run bundle
@@ -106,7 +118,8 @@ jobs:
           git add -f epl/data/raw/live.json epl/data/raw/season-gws.json \
                      epl/data/raw/openfootball/ epl/data/raw/pulselive/ \
                      epl/data/raw/football-data-couk/ \
-                     epl/data/backtest.json epl/data/backtest-matches.json 2>/dev/null || true
+                     epl/data/backtest.json epl/data/backtest-matches.json \
+                     epl/data/form-tuning.json epl/data/availability-history.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "資料沒有變化,不提交"
           else

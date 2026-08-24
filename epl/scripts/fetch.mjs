@@ -43,8 +43,10 @@ async function main() {
       console.log(`${(body.length / 1024).toFixed(0)} KB`);
       ok++;
     } catch (err) {
-      console.log(`✗ ${err.message}`);
-      failed++;
+      // optional 的來源(例如更早賽季的交手紀錄)上游沒有就算了,
+      // 不能因為它讓整個抓取流程算失敗 —— 主資料還是好的
+      console.log(`✗ ${err.message}${it.optional ? '(選用來源,略過)' : ''}`);
+      if (it.optional) skipped++; else failed++;
     }
   }
   console.log(`\n✔ 完成:新增 ${ok} / 略過 ${skipped} / 失敗 ${failed}`);

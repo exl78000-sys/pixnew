@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { COMPETITION, CURRENT_SEASON, LAST_SEASON, HISTORY_SEASONS, ATTRIBUTION } from './lib/sources.mjs';
+import { COMPETITION, CURRENT_SEASON, LAST_SEASON, HISTORY_SEASONS, H2H_EXTRA_SEASONS, ATTRIBUTION } from './lib/sources.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { loadMatches, loadSquads } from './lib/adapters/index.mjs';
 import { competition as competitionDef, seasonLength } from './lib/canonical.mjs';
@@ -28,6 +28,8 @@ import {
 import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
+import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
+import { teamAvailability } from './lib/availability.mjs';
 import { round } from './lib/util.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -333,15 +335,55 @@ async function main() {
     };
   }).sort((a, b) => (b.sim?.expectedPoints ?? 0) - (a.sim?.expectedPoints ?? 0));
 
+  /* ── 近況與傷停(給人看的資訊,沒有進預測模型) ────────────
+     為什麼特別註明「沒有進模型」:近期狀況與交手紀錄都走過一次完整的
+     走查回測(npm run tune:form),在沒參與挑係數的賽季上,改善幅度
+     連一個標準誤都不到;把特徵拿去跟模型殘差求相關也全部不顯著。
+     所以係數留 0 —— 資訊照給,但不假裝它讓預測變準了。 */
+  const formIndex = buildFormIndex([...history, ...curMatches]);
+  const LATEST = '9999-12-31';        // 索引裡本來就只有已完賽的比賽,取最後五場即可
+  const curTableBy = new Map(curTable.map(r => [r.code, r]));
+  const teamForm = {};
+  for (const code of curCodes) {
+    const squad = players.filter(p => p.team === code);
+    const rows = recentForm(formIndex, code, LATEST, 5);
+    teamForm[code] = {
+      recent: rows,
+      summary: formSummary(rows),
+      // 相對於自己長期水準的落差,正 = 最近超常。這是回測用的特徵值,
+      // 顯示出來是為了讓讀者看到「我們確實算了,只是量出來沒用」。
+      delta: round(formDelta(formIndex, code, LATEST), 3),
+      availability: teamAvailability(squad, { teamMatches: curTableBy.get(code)?.p ?? 0 }),
+    };
+  }
+
   // ── 交手紀錄(本季所有對戰組合) ────────────
   const h2h = {};
   const pairs = new Set();
   for (const f of curMatches) pairs.add([f.home, f.away].sort().join('|'));
+  /* 更早的賽季只給交手紀錄用,不進模型(見 sources.mjs 的說明)。
+     檔案不存在就跳過 —— 上游沒有那一季不該讓整個 build 掛掉。 */
+  const deepMatches = [];
+  const deepSeasons = [];
+  for (const s of H2H_EXTRA_SEASONS) {
+    if (!existsSync(join(ROOT, 'data', 'raw', 'openfootball', `${s}.json`))) continue;
+    deepMatches.push(...loadMatches({
+      root: ROOT, competition: COMPETITION, season: s, codeOf: T.codeOf, tolerant: true,
+    }));
+    deepSeasons.push(s);
+  }
+  const h2hPool = [...deepMatches, ...history, ...curPlayed];
   for (const key of pairs) {
     const [a, b] = key.split('|');
-    const rec = headToHead(history, a, b);
+    /* 交手紀錄要含本季已經踢過的那場 —— 兩隊本季碰過一次卻查不到,
+       對讀者來說就是漏資料。history 只到上一季,所以要把本季賽果併進來。 */
+    const rec = headToHead(h2hPool, a, b);
     if (rec.games) h2h[key] = rec;
   }
+  const h2hSeasons = [...deepSeasons, ...HISTORY_SEASONS, CURRENT_SEASON];
+  console.log(`  歷來交手:${h2hSeasons.length} 個賽季(${h2hSeasons[0]} 起)・${Object.keys(h2h).length} 組對戰`
+    + (deepSeasons.length < H2H_EXTRA_SEASONS.length
+      ? `,另有 ${H2H_EXTRA_SEASONS.length - deepSeasons.length} 季尚未抓取(npm run fetch)` : ''));
 
   // ── 即時戰況 ──────────────────────────────
   const fixtureByKey = new Map(fixtures.map(f => [`${f.home}|${f.away}`, f]));
@@ -509,6 +551,8 @@ async function main() {
     currentSeason: CURRENT_SEASON,
     lastSeason: LAST_SEASON,
     historySeasons: HISTORY_SEASONS,
+    // 交手紀錄涵蓋的賽季 —— 比訓練窗長(見 sources.mjs),頁面上要照實說幾季
+    h2hSeasons,
     sources: ATTRIBUTION,
     model: {
       type: 'Dixon-Coles Poisson + Elo(取平均)',
@@ -625,6 +669,19 @@ async function main() {
   await write('sim.json', sim);
   await write('live.json', liveOut);
   await write('h2h.json', h2h);
+  /* 調參與驗收的完整數字(npm run tune:form 產生)。
+     沒跑過就沒有 —— 前端會據實顯示「尚未驗證」而不是留白。 */
+  const tuningPath = join(ROOT, 'data', 'form-tuning.json');
+  const tuning = existsSync(tuningPath) ? JSON.parse(await readFile(tuningPath, 'utf8')) : null;
+  await write('form.json', {
+    asOf: AS_OF,
+    // 誠實標註:這份資料不影響任何一個機率數字
+    inModel: false,
+    tuned: TUNED,
+    tuning,
+    note: '近五戰、交手紀錄與傷停都經過走查回測驗證,改善幅度小於雜訊,因此不進預測模型,僅作為資訊呈現。',
+    teams: teamForm,
+  });
   await write('analysis.json', { ...aiSummary, pre: aiPre, post: aiPost, counts: { pre: aiSummary.pre, post: aiSummary.post } });
   await write('reports.json', {
     seasons: [...new Set(Object.keys(reports).map(k => k.split('|')[0]))],

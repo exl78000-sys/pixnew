@@ -122,6 +122,8 @@ function metrics(p, seasonMinutes) {
     csRate: round(m > 0 ? (p.cleanSheets / (m / 90)) * 100 : 0, 1),
     availability: round(seasonMinutes ? (m / seasonMinutes) * 100 : 0, 1),
     cards: p.yellow + p.red * 2,
+    // 黃/紅分開留一份:累積黃牌會停賽,合併的加權值算不出「還差幾張」
+    yellow: p.yellow, red: p.red,
     points: p.points, ppg: p.ppg, bonus: p.bonus,
     dreamteam: p.dreamteam ?? 0,
     startRate: p.startRate ?? null,

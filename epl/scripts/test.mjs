@@ -17,6 +17,10 @@ import {
 import { attachCodes } from './lib/adapters/pulselive.mjs';
 import { oddsIndex, devig, parseOddsCsv } from './lib/odds.mjs';
 import { pickPair, oklch, contrast, deltaE, THRESHOLDS } from './lib/colour.mjs';
+import {
+  buildFormIndex, formDelta, goalForm, h2hDelta, recentForm, formSummary, adjustLambdas, TUNED,
+} from './lib/form.mjs';
+import { teamAvailability, cardWatch } from './lib/availability.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -324,9 +328,185 @@ async function main() {
   console.log('\n▶ 兩隊對照配色自我檢查');
   const colourFail = checkColours(T);
 
+  // 近況/交手的特徵:最重要的一項是「它現在不准動到預測」
+  console.log('\n▶ 近況與交手特徵自我檢查');
+  const formFail = checkForm(past, test);
+
+  console.log('\n▶ 傷停與拿牌自我檢查');
+  const availFail = checkAvailability();
+
+  // 兩隊對照條:條長必須跟 ▲ 說的是同一件事
+  console.log('\n▶ 兩隊對照條長自我檢查');
+  const barFail = await checkBars();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail) process.exitCode = 1;
+}
+
+/* 兩隊對照條(core.js 的 versus)。
+   這個元件踩過兩次雷,兩次都是「圖跟字互相矛盾」:
+     1. 「越低越好」的項目沒取倒數,第 16 名的條比第 5 名長;
+     2. 取了倒數之後,值是 0 的那一邊變成 1/0,把對面壓成一根針。
+   兩次都是眼睛看出來的,那就把它變成算得出來的 —— 直接讀元件吐出的
+   width 百分比,檢查它跟 ▲ 標的方向一致。
+
+   core.js 是給瀏覽器用的,模組載入時會綁一個 keydown。這裡補一個最小的
+   document 樁就能在 Node 裡載入真正的元件 —— 抄一份到測試裡是沒有意義的,
+   抄本不會跟著壞。 */
+async function checkBars() {
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+
+  // 每一列拆出:主隊條長、客隊條長、▲ 標在哪一邊
+  const parse = html => html.split('class="vs-row"').slice(1).map(chunk => {
+    const w = [...chunk.matchAll(/width:([\d.]+)%/g)].map(m => Number(m[1]));
+    const vals = chunk.split('vs-track');            // [主隊值, 主隊條…, 標籤+客隊條, 客隊值]
+    const homeWin = /vs-win/.test(vals[0]);
+    const awayWin = /vs-win/.test(vals[vals.length - 1]);
+    return { h: w[0], a: w[1], win: homeWin ? 'h' : awayWin ? 'a' : null };
+  });
+
+  const rows = [
+    { label: '越低越好・一邊是 0', h: 0, a: 7.3, better: 'low' },
+    { label: '越低越好・兩邊都 0', h: 0, a: 0, better: 'low' },
+    { label: '越低越好・名次', h: 5, a: 16, better: 'low' },
+    { label: '越低越好・失球', h: 10, a: 5, better: 'low' },
+    { label: '越高越好・一邊是 0', h: 0, a: 3 },
+    { label: '越高越好・勝點', h: 1.4, a: 0.8 },
+    { label: '一邊沒有資料', h: null, a: 2 },
+  ];
+  const out = parse(V.versus(rows, { home: 'AAA', away: 'BBB' }));
+
+  const named = rows.map((r, i) => ({ ...r, ...out[i] }));
+  const withWin = named.filter(r => r.win);
+  const agree = withWin.every(r => (r.win === 'h' ? r.h >= r.a : r.a >= r.h));
+  const inRange = named.filter(r => r.h != null && r.a != null && r.h !== 0)
+    .every(r => r.h >= 6 && r.h <= 100 && r.a >= 6 && r.a <= 100);
+  const zeroRow = named[0];
+  const bothZero = named[1];
+  const noData = named[6];
+
+  const cases = [
+    ['條長方向跟 ▲ 一致', agree,
+      withWin.filter(r => (r.win === 'h' ? r.h < r.a : r.a < r.h)).map(r => r.label).join('、')],
+    ['條長都在 6%~100% 之間', inRange, named.map(r => `${r.h}/${r.a}`).join(' ')],
+    ['值是 0 時對面不會被壓成一根針', zeroRow.a >= 6, `對面只有 ${zeroRow.a}%`],
+    ['兩邊都 0 時一樣長', bothZero.h === bothZero.a, `${bothZero.h} vs ${bothZero.a}`],
+    ['沒有資料就不畫條', noData.h === 0 && noData.a === 0, `${noData.h} vs ${noData.a}`],
+  ];
+
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* 近況與交手紀錄的特徵。
+   這些特徵目前**沒有進模型**(TUNED 全 0),所以第一條也是最重要的一條檢查是:
+   套用調整之後 λ 必須一模一樣。哪天有人手滑改了係數卻沒重跑 tune:form,
+   這裡就會擋下來 —— 模型頁上寫著「這些沒有進模型」,那就得是真的。
+
+   第二重要的是不准偷看未來:把未來的比賽塞進索引,算出來的值不能改變。
+   走查回測的可信度整個押在這件事上。 */
+function checkForm(past, test) {
+  const all = [...past, ...test];
+  const index = buildFormIndex(all);
+  const code = test[0].home;
+  const cut = test[Math.floor(test.length / 2)].date;
+
+  // 只用 cut 之前的比賽另外建一個索引;兩邊在 cut 這個時間點算出來的值必須相同
+  const partial = buildFormIndex(all.filter(m => m.date < cut));
+  const leakOk = ['formH'].every(() => Math.abs(formDelta(index, code, cut) - formDelta(partial, code, cut)) < 1e-12)
+    && Math.abs(goalForm(index, code, cut).gf - goalForm(partial, code, cut).gf) < 1e-12;
+
+  const pairA = test[0].home, pairB = test[0].away;
+  const hLate = h2hDelta(index, pairA, pairB, '9999-12-31');
+  const hEarly = h2hDelta(index, pairA, pairB, '1990-01-01');
+
+  const rows = recentForm(index, code, '9999-12-31', 5);
+  const sum = formSummary(rows);
+  const lam = { lh: 1.73, la: 1.21 };
+  const feats = {
+    formH: 1.2, formA: -0.8, gfH: 0.9, gaH: -0.3, gfA: 0.4, gaA: 0.7, h2h: 2.5,
+  };
+  const zero = adjustLambdas(lam, feats, TUNED);
+  const nonZero = adjustLambdas(lam, feats, { bForm: 0.1, bGoal: 0.1, bH2h: 0.05 });
+
+  const cases = [
+    ['目前的係數不會動到 λ(這些特徵沒有進模型)',
+      zero.lh === lam.lh && zero.la === lam.la,
+      `λ 變成 ${zero.lh.toFixed(4)} / ${zero.la.toFixed(4)}`],
+    ['係數不是 0 時確實會調整', nonZero.lh !== lam.lh && nonZero.la !== lam.la, ''],
+    ['不偷看未來:未來的比賽不影響當下的特徵值', leakOk, ''],
+    ['沒交手過回 0,不亂猜', hEarly.gd === 0 && hEarly.n === 0, ''],
+    ['有交手紀錄時 n 會大於 0', hLate.n > 0, `n=${hLate.n}`],
+    ['近五戰最多五場、由新到舊', rows.length <= 5 && rows.every((r, i) => i === 0 || r.date <= rows[i - 1].date), ''],
+    ['近五戰的勝負與比分一致',
+      rows.every(r => r.res === (r.gf > r.ga ? 'W' : r.gf === r.ga ? 'D' : 'L')), ''],
+    ['彙總的勝點跟逐場對得起來', sum.pts === sum.w * 3 + sum.d && sum.w + sum.d + sum.l === rows.length, ''],
+  ];
+
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* 傷停與拿牌。這一段沒有回測(上游不給歷史快照),所以檢查的是「算術對不對」,
+   不是「有沒有預測力」—— 後者要等 snapshot-availability.mjs 累積夠了才談得上。 */
+function checkAvailability() {
+  const p = (code, status, minutes, xGI, yellow = 0, red = 0) => ({
+    code, name: code, pos: 'MID', status, statusZh: status, news: '', chanceNext: null,
+    last: { minutes, xGI, startRate: 1 },
+    current: { minutes: 0, xGI: 0, yellow, red, startRate: 1 },
+  });
+  // 四個人各 900 分鐘,其中一個傷停 → 缺了 25% 的上場時間
+  const squad = [
+    p('A', 'a', 900, 4), p('B', 'a', 900, 4), p('C', 'a', 900, 4), p('D', 'i', 900, 8),
+  ];
+  const a = teamAvailability(squad, { teamMatches: 10 });
+
+  const cases = [
+    ['用上季當基準(本季場次不足)', a.baseline === 'last', a.baseline],
+    ['缺陣佔上場時間算得對', Math.abs(a.missing.minutes - 0.25) < 1e-9, String(a.missing.minutes)],
+    ['缺陣佔期望進球參與算得對', Math.abs(a.missing.threat - 0.4) < 1e-9, String(a.missing.threat)],
+    ['沒有參考資料的球員會被標出來',
+      teamAvailability([...squad, p('E', 'a', 0, 0)], { teamMatches: 10 }).noBaseline === 1, ''],
+    ['4 張黃牌 → 再一張停 1 場', cardWatch(4, 10)?.away === 1 && cardWatch(4, 10)?.ban === 1, ''],
+    ['5 張黃牌之後改看下一個門檻', cardWatch(5, 10)?.next === 10, ''],
+    ['過了第 19 場,5 張的門檻就不再適用', cardWatch(4, 20)?.next === 10, ''],
+    ['整季門檻都過了就沒有停賽風險', cardWatch(16, 38) === null, ''],
+    ['有疑慮的人不算進「確定缺陣」',
+      teamAvailability([p('A', 'a', 900, 4), p('B', 'd', 900, 4)], { teamMatches: 10 }).missing.minutes === 0, ''],
+  ];
+
+  /* 已經轉隊的人不是傷兵。把他算進「這場缺了多少戰力」會誤導 ——
+     他不在隊上了,位置也多半有新援補上。所以他要整個移出母體。 */
+  const gone = { ...p('X', 'u', 900, 4), news: 'Has joined Como permanently' };
+  const withGone = teamAvailability([p('A', 'a', 900, 4), p('B', 'i', 900, 4), gone], { teamMatches: 10 });
+  cases.push(
+    ['轉隊的人不算傷停', withGone.outCount === 1 && withGone.out[0].name === 'B', `outCount=${withGone.outCount}`],
+    ['轉隊的人移出母體(剩兩人,傷停就是一半)',
+      Math.abs(withGone.missing.minutes - 0.5) < 1e-9, String(withGone.missing.minutes)],
+    ['換血幅度單獨算(三人裡走一個 = 三分之一)',
+      withGone.departed.count === 1 && Math.abs(withGone.departed.minutes - 1 / 3) < 1e-9,
+      String(withGone.departed.minutes)],
+    ['status=u 但看不出是轉隊時仍算缺陣',
+      teamAvailability([p('A', 'a', 900, 4), { ...p('Y', 'u', 900, 4), news: 'Not in squad' }],
+        { teamMatches: 10 }).outCount === 1, ''],
+  );
+
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
 }
 
 /* 每一種對戰組合都要通過資料視覺化的可量測檢查。

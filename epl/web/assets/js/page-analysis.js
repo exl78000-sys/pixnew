@@ -3,8 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, lineups, live, shapes, official } =
-    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'lineups', 'live', 'shapes', 'official');
+  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, lineups, live, shapes, official, form } =
+    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'lineups', 'live', 'shapes', 'official', 'form');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -194,8 +194,10 @@ try {
         <div class="tiny dim" style="margin-top:6px">標籤是上季全季統計歸納出的風格,右側為平均站位。</div>
       </div>` : ''}
 
+    ${formSection(f)}
+
     <div class="grid g2" style="margin-top:16px">
-      <div class="card"><h3>近三季交手</h3>${h2hHtml(f, rec)}</div>
+      <div class="card"><h3>歷來交手</h3><div class="tiny dim" style="margin:-4px 0 8px">涵蓋 ${meta.h2hSeasons?.length ?? 0} 個賽季(${C.esc(meta.h2hSeasons?.[0] ?? "?")} 起)</div>${h2hHtml(f, rec)}</div>
       <div class="card"><h3>關鍵球員(上季 xGI/90)</h3>
         <div class="grid g2">${squadHtml(f.home)}${squadHtml(f.away)}</div>
       </div>
@@ -456,8 +458,111 @@ try {
     }).join('');
   }
 
+  /* ── 近況、傷停與拿牌 ──────────────────────────
+     這一段刻意跟上面的勝率分開放,而且標題就寫明「沒有進模型」——
+     近五戰跟交手紀錄都跑過完整的走查回測(npm run tune:form),
+     在沒參與挑係數的賽季上改善不到一個標準誤,所以係數留 0。
+     資訊照給,但不能讓讀者以為勝率裡面已經算進去了。 */
+  function formSection(f) {
+    const H = form?.teams?.[f.home], A = form?.teams?.[f.away];
+    if (!H || !A) return '';
+    const sh = H.summary, sa = A.summary;
+    const av = c => form.teams[c].availability;
+    const pct = v => (v == null ? null : v * 100);
+
+    return `
+    <div class="section" style="margin-top:18px"><h2>近況、傷停與拿牌</h2>
+      <span class="hint">這一段不影響上面的勝率</span></div>
+    <div class="card">
+      ${C.versus([
+        { label: '近五戰場均勝點', h: sh.ppg, a: sa.ppg },
+        { label: '近五戰進球', h: sh.gf, a: sa.gf, digits: 0 },
+        { label: '近五戰失球', h: sh.ga, a: sa.ga, digits: 0, better: 'low' },
+        { label: '傷停佔上場時間', h: pct(av(f.home).missing.minutes), a: pct(av(f.away).missing.minutes),
+          digits: 1, unit: '%', better: 'low' },
+        { label: '傷停佔進攻產出', h: pct(av(f.home).missing.threat), a: pct(av(f.away).missing.threat),
+          digits: 1, unit: '%', better: 'low', hint: 'xGI' },
+        { label: '夏天換血幅度', h: pct(av(f.home).departed.minutes), a: pct(av(f.away).departed.minutes),
+          digits: 1, unit: '%', better: 'low', hint: '離隊者上季佔比' },
+      ], {
+        home: f.home, away: f.away, colors: f.colors,
+        note: `<b>這五列的數字沒有進預測模型。</b>近期狀況與交手紀錄都做過走查回測 ——
+          挑係數只用一個賽季,驗收用另一個完全沒參與挑選的賽季,結果最好的一組只贏基準
+          RPS 0.00013,而成對比較的標準誤是 0.00025,改善連一個標準誤都不到。
+          再把特徵拿去跟模型的殘差求相關,760 場全部落在 ±0.07 以內、沒有一個顯著。
+          <a href="${C.link('model')}">驗證細節在模型頁</a>。
+          <br><b>那三個百分比是什麼:</b>「傷停」兩列是目前確定不能上場的球員,
+          在${av(f.home).baseline === 'current' ? '本季' : '上季'}合計吃掉了球隊多少比例的上場時間與進攻產出;
+          用時間當權重是因為教練讓誰上場久誰就是主力,不必我們自己發明球員評分。
+          「夏天換血幅度」則是已經轉隊或外借出去的球員 —— 他們不算這場的傷兵
+          (位置多半已有新援補上),但走掉多少戰力本身就是賽前該知道的事。
+          ${av(f.home).noBaseline + av(f.away).noBaseline > 0
+            ? `<br><b>會低估:</b>兩隊合計有 ${av(f.home).noBaseline + av(f.away).noBaseline}
+               名球員沒有參考賽季的數據(多半是剛加盟的新援),他們缺陣算不進上面的比例。` : ''}`,
+      })}
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      ${sideCard(f.home, f.colors?.home)}
+      ${sideCard(f.away, f.colors?.away)}
+    </div>`;
+  }
+
+  function sideCard(code, colour) {
+    const t = form.teams[code], a = t.availability;
+    const dot = `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;
+      background:${colour ?? 'var(--accent)'};vertical-align:-1px"></span>`;
+    // 勝負用固定的狀態色(綠/黃/紅),不用隊色 —— 隊色是識別,狀態色是結果,
+    // 兩者混用的話「紅色」到底代表輸球還是代表某一隊就說不清了。
+    const runs = t.recent.map(r => `<i class="frm ${r.res}"
+      title="${C.esc(`${r.date}・${r.venue === 'H' ? '主' : '客'}場對 ${C.name(r.opp)}・${r.gf}-${r.ga}`)}">${r.res}</i>`).join('');
+
+    const person = (o, extra = '') => `<div class="stat-line">
+      <span class="small">${C.esc(o.name)} <span class="dim tiny">${o.pos}</span></span>
+      <span class="tiny dim">${extra}</span></div>`;
+
+    return `<div class="card">
+      <h3>${dot} ${C.esc(C.name(code))} 近況</h3>
+      <div class="row" style="gap:8px;align-items:center;margin-bottom:8px">
+        <span class="form-run">${runs}</span>
+        <span class="small dim">${t.summary.w}勝 ${t.summary.d}和 ${t.summary.l}負・
+          進 ${t.summary.gf} 失 ${t.summary.ga}</span>
+      </div>
+      ${t.recent.map(r => `<div class="stat-line">
+        <span class="small dim mono">${C.dateFull(r.date)}</span>
+        <span class="small">${r.venue === 'H' ? '主' : '客'} vs ${C.esc(C.name(r.opp))}
+          <b class="mono">${r.gf}-${r.ga}</b></span></div>`).join('')}
+
+      <div class="small muted" style="margin:12px 0 4px">確定缺陣${a.outCount > a.out.length ? `(共 ${a.outCount} 人,列出影響最大的 ${a.out.length} 位)` : ''}</div>
+      ${a.out.length
+        ? a.out.map(o => person(o, `${(o.minutesShare * 100).toFixed(1)}% 上場時間・${C.esc(o.statusZh)}`)).join('')
+        : '<div class="dim small">沒有確定缺陣的球員</div>'}
+
+      ${a.departed.count ? `<div class="small muted" style="margin:10px 0 4px">夏天離隊
+        <span class="dim tiny">(不算這場的傷兵)</span></div>
+        <div class="stat-line"><span class="small">${a.departed.names.map(C.esc).join('、')}${a.departed.count > a.departed.names.length ? ` 等 ${a.departed.count} 人` : ''}</span>
+          <span class="tiny dim">上季佔 ${(a.departed.minutes * 100).toFixed(1)}% 上場時間</span></div>` : ''}
+
+      ${a.doubt.length ? `<div class="small muted" style="margin:10px 0 4px">有疑慮(可能趕不上)</div>
+        ${a.doubt.map(o => person(o, `${(o.minutesShare * 100).toFixed(1)}% 上場時間${o.chanceNext != null ? `・${o.chanceNext}% 機會出賽` : ''}`)).join('')}` : ''}
+
+      <div class="small muted" style="margin:12px 0 4px">本季拿牌</div>
+      ${a.cards.length
+        ? a.cards.map(c => `<div class="stat-line">
+            <span class="small">${C.esc(c.name)} <span class="dim tiny">${c.pos}</span></span>
+            <span class="tiny">
+              ${c.yellow ? `<span class="pill tiny" style="border-color:#ffb02055;color:var(--draw)">黃 ${c.yellow}</span>` : ''}
+              ${c.red ? `<span class="pill bad tiny">紅 ${c.red}</span>` : ''}
+              ${c.watch && c.watch.away === 1 ? `<span class="pill bad tiny">再一張停 ${c.watch.ban} 場</span>` : ''}
+            </span></div>`).join('')
+        : '<div class="dim small">本季還沒有人拿牌</div>'}
+      <div class="tiny dim" style="margin-top:6px">英超規則:球隊第 19 場之前累積 5 張黃牌停 1 場,
+        第 32 場之前 10 張停 2 場。目前踢了 ${a.teamMatches} 場。</div>
+    </div>`;
+  }
+
   function h2hHtml(f, rec) {
-    if (!rec) return '<div class="dim small">近三季沒有交手紀錄(可能是升班馬)。</div>';
+    if (!rec) return `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在英超交手過(多半是剛升上來的球隊)。</div>`;
     const homeIsA = [f.home, f.away].sort()[0] === f.home;
     return `<div class="row small" style="justify-content:space-between">
         <span>${C.name(f.home)} <b>${homeIsA ? rec.aWin : rec.bWin}</b> 勝</span>

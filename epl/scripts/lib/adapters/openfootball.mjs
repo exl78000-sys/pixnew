@@ -28,11 +28,18 @@ const roundNo = r => {
   return m ? Number(m[1]) : null;
 };
 
-export function loadMatches({ root, competition, season, codeOf }) {
+/* tolerant:對照不到隊名時跳過那場,而不是整份拋錯。
+   只有「歷來交手」那條路徑會開 —— 更早的賽季會有早就降級、現在不在英超的球隊,
+   為了顯示交手紀錄去補一整批已經不相干的球隊資料並不划算,
+   而那些場次本來就不會出現在任何一組現役球隊的交手紀錄裡。
+   進模型的資料一律不開這個開關:那裡少一支球隊就是資料錯了,必須吵。 */
+export function loadMatches({ root, competition, season, codeOf, tolerant = false }) {
   const raw = JSON.parse(readFileSync(join(root, 'data', 'raw', 'openfootball', `${season}.json`), 'utf8'));
+  const skipped = [];
   return raw.matches.map((m, i) => {
     const home = codeOf(m.team1), away = codeOf(m.team2);
     if (!home || !away) {
+      if (tolerant) { skipped.push(m.team1, m.team2); return null; }
       throw new Error(`[${id}] 隊名無法對照:${m.team1} / ${m.team2}(請補 data/manual/teams.json)`);
     }
     const s = readScore(m.score);
@@ -50,5 +57,5 @@ export function loadMatches({ root, competition, season, codeOf }) {
       hh: s?.ht ? s.ht[0] : null,
       ha: s?.ht ? s.ht[1] : null,
     });
-  }).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  }).filter(Boolean).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 }

@@ -3,7 +3,7 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams } = await C.load('meta', 'clubs', 'teams');
+  const { meta, clubs, teams, form } = await C.load('meta', 'clubs', 'teams', 'form');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -56,6 +56,70 @@ try {
       <text x="${w - pad.r}" y="18" text-anchor="end" font-size="11.5" fill="var(--ink-3)">RPS 越低越好</text>`;
     return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto" role="img" aria-label="模型與市場逐輪 RPS 對照">
       ${grid}${legend}${path('marketRps', 'var(--draw)')}${path('modelRps', 'var(--accent)')}${xLabels}</svg>`;
+  }
+
+  /* ── 測過、但沒有進模型的特徵 ──────────────────────
+     這一段存在的理由:一個模型「沒有用到什麼」跟「用了什麼」一樣重要。
+     近五戰狀況與交手紀錄是最多人以為理所當然會有用的兩個特徵,
+     我們真的接上去量過了,量出來沒用 —— 那就把量的過程和數字攤開來,
+     而不是悄悄拿掉,也不是為了看起來厲害硬加進去。 */
+  function rejectedSection() {
+    const t = form?.tuning;
+    if (!t) {
+      return `<div class="card" style="margin-top:20px">
+        <h2>測過但沒有進模型的特徵</h2>
+        <div class="note">尚未跑過特徵驗證。執行 <span class="mono">npm run tune:form</span> 再
+          <span class="mono">npm run build</span>,這一段就會出現完整的調參與驗收數字。</div></div>`;
+    }
+    const H = t.holdout;
+    const rows = H.trials.map(r => `<tr>
+      <td>${C.esc(r.係數)}</td>
+      <td class="mono num">${r.RPS}</td>
+      <td class="mono num">${r.對基準 > 0 ? '+' : ''}${r.對基準}</td>
+      <td class="mono num">±${r['±標準誤']}</td>
+      <td class="mono num">${r['bootstrap p']}</td>
+      <td><span class="pill tiny ${Math.abs(r.對基準) > r['±標準誤'] && r.對基準 < 0 ? 'accent' : ''}">
+        ${Math.abs(r.對基準) > r['±標準誤'] && r.對基準 < 0 ? '有效' : '在雜訊範圍內'}</span></td></tr>`).join('');
+
+    return `
+  <div class="section" style="margin-top:20px"><h2>測過但沒有進模型的特徵</h2>
+    <span class="hint">沒有回測證據就不加</span></div>
+  <div class="card">
+    <div class="small muted" style="display:grid;gap:8px;margin-bottom:14px">
+      <div><b>測了什麼:</b>近五戰狀況(相對於自己的長期水準)、近五戰進失球、歷來交手淨勝球。
+        這三個是最常被認為「一定有用」的特徵。</div>
+      <div><b>怎麼測的:</b>挑係數只用 ${C.esc(t.tuneSeason)}(${t.tuneGames} 場),
+        驗收用 ${C.esc(t.holdoutSeason)}(${t.holdoutGames} 場)—— 驗收這批完全沒參與挑選。
+        同一批資料又調參又驗收,挑出來的一定是雜訊,那種「改善」不算數。</div>
+      <div><b>結論:</b>${t.accepted ? '有特徵通過驗收,已進模型。' : '沒有一個通過。係數維持 0,這三個特徵只在賽前分析頁當資訊顯示,不影響任何一個機率數字。'}</div>
+    </div>
+
+    <div class="small muted" style="margin-bottom:6px">驗收賽季 ${C.esc(t.holdoutSeason)}:基準 RPS
+      <b class="mono">${H.baselineRps}</b></div>
+    <div class="table-wrap"><table><thead><tr>
+      <th>係數組合</th><th class="num">RPS</th><th class="num">對基準</th>
+      <th class="num">成對標準誤</th><th class="num">bootstrap p</th><th>判定</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="tiny dim" style="margin-top:8px">
+      「對基準」是負數才代表變好。要能算數,它的絕對值至少要大過旁邊那個標準誤 ——
+      不然只是換一批比賽就會翻盤的隨機波動。
+    </div>
+
+    <div class="small muted" style="margin:16px 0 6px">更直接的證據:特徵跟模型殘差的相關性</div>
+    <div class="table-wrap"><table><thead><tr>
+      <th>特徵</th><th class="num">相關係數 r</th><th class="num">t</th><th>顯著</th>
+    </tr></thead><tbody>${t.residuals.map(r => `<tr>
+      <td>${C.esc(r.特徵)}</td><td class="mono num">${r.相關係數}</td>
+      <td class="mono num">${r.t}</td>
+      <td><span class="pill tiny ${r.顯著 === '是' ? 'accent' : ''}">${r.顯著 === '是' ? '顯著' : '不顯著'}</span></td>
+      </tr>`).join('')}</tbody></table></div>
+    <div class="tiny dim" style="margin-top:8px">
+      殘差 = 實際結果 − 模型的期望值,也就是<b>模型還不知道的那一部分</b>。
+      如果一個特徵跟殘差沒有相關,代表它帶不進新資訊 —— 係數怎麼調都不會有用。
+      這比網格搜尋更能說明「為什麼沒用」:球隊強弱本來就在 Dixon-Coles 的攻守參數與 Elo 裡了,
+      近五場扣掉自己的長期水準之後,剩下的多半真的只是運氣。
+    </div>
+  </div>`;
   }
 
   app.innerHTML = `
@@ -176,6 +240,8 @@ try {
     這幾場不是 bug,是足球。任何機率模型都會有低機率事件發生 ——
     重點是<b>它們發生的頻率要跟模型說的一致</b>,那正是上面校準圖在檢查的事。
   </div>
+
+  ${rejectedSection()}
 
   <div class="card" style="margin-top:20px">
     <h2>這個模型不知道的事</h2>

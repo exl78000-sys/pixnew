@@ -21,7 +21,9 @@
     "probe:apis": "node scripts/probe-apis.mjs",
     "explore:apis": "node scripts/explore-apis.mjs",
     "official": "node scripts/fetch-official.mjs",
-    "odds": "node scripts/fetch-odds.mjs"
+    "odds": "node scripts/fetch-odds.mjs",
+    "tune:form": "node scripts/tune-form.mjs",
+    "snapshot": "node scripts/snapshot-availability.mjs"
   },
   "engines": {
     "node": ">=18"

@@ -3,7 +3,14 @@
 export const COMPETITION = 'eng.1';
 export const CURRENT_SEASON = '2026-27';   // 進行中賽季(賽程 / 現役名單 / 傷病)
 export const LAST_SEASON = '2025-26';      // 最近一個完整賽季(所有進階數據的基準)
-export const HISTORY_SEASONS = ['2023-24', '2024-25', '2025-26']; // 交手紀錄與長期趨勢
+export const HISTORY_SEASONS = ['2023-24', '2024-25', '2025-26']; // 進模型的訓練窗
+
+/* 只給「歷來交手」用的更早賽季 —— 刻意**不進模型**。
+   為什麼分開:訓練窗放太長會讓 Poisson 的時間衰減與 Elo 的跨季繼承一起走樣,
+   那是動到預測本身,要重跑回測才知道好壞。但交手紀錄是給人看的資訊,
+   多幾季只是讓「歷來對戰」名副其實,不影響任何一個機率數字。
+   這些檔案是 optional:上游沒有就跳過,不讓 fetch 失敗。 */
+export const H2H_EXTRA_SEASONS = ['2018-19', '2019-20', '2020-21', '2021-22', '2022-23'];
 
 const OF = 'https://raw.githubusercontent.com/openfootball/football.json/master';
 const FPL = 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data';
@@ -12,6 +19,9 @@ export function sourceList() {
   const list = [];
   for (const s of [...new Set([...HISTORY_SEASONS, CURRENT_SEASON])]) {
     list.push({ url: `${OF}/${s}/en.1.json`, file: `openfootball/${s}.json`, label: `賽果/賽程 ${s}` });
+  }
+  for (const s of H2H_EXTRA_SEASONS) {
+    list.push({ url: `${OF}/${s}/en.1.json`, file: `openfootball/${s}.json`, label: `歷來交手 ${s}`, optional: true });
   }
   for (const s of [...new Set([LAST_SEASON, CURRENT_SEASON])]) {
     list.push({ url: `${FPL}/${s}/players_raw.csv`, file: `fpl/${s}-players.csv`, label: `球員數據 ${s}` });
