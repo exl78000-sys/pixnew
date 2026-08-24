@@ -192,6 +192,7 @@ async function main() {
     if (ms) {
       console.log(`  官方名單對照球員:${ms.matched} 人成功、${ms.missed} 人對不上`
         + (ms.missedNames.length ? `(${ms.missedNames.slice(0, 6).join('、')}${ms.missed > 6 ? '…' : ''})` : ''));
+      console.log(`  官方排位(陣容圖照官方畫):${ms.rowsOk} 邊可用、${ms.rowsFail} 邊對不齊`);
     }
   } else {
     console.log('  官方陣型:沒有 data/raw/pulselive/official.json,本次全部用角色推導');

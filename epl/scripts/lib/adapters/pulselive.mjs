@@ -32,8 +32,9 @@ export function officialLineups(root) {
     if (!m.home?.xi?.length || !m.away?.xi?.length) continue;
     out[key] = {
       fixtureId: m.fixtureId, kickoff: m.kickoff, final: Boolean(m.final),
-      home: { formation: m.home.formation, xi: m.home.xi, subs: m.home.subs },
-      away: { formation: m.away.formation, xi: m.away.xi, subs: m.away.subs },
+      // rows 是官方的每一排有誰,別漏掉 —— 少了它陣容圖只能退回 FPL 粗類分排
+      home: { formation: m.home.formation, rows: m.home.rows ?? null, xi: m.home.xi, subs: m.home.subs },
+      away: { formation: m.away.formation, rows: m.away.rows ?? null, xi: m.away.xi, subs: m.away.subs },
     };
   }
   return { asOf: s.fetchedAt, season: s.season?.label ?? null, matches: out };
@@ -106,7 +107,7 @@ export function attachCodes(lineups, players) {
     byTeam.get(p.team).push({ p, words: new Set([...tokens(p.fullName), ...tokens(p.name)]) });
   }
 
-  let matched = 0, missed = 0;
+  let matched = 0, missed = 0, rowsOk = 0, rowsFail = 0;
   const missedNames = [];
   const findOne = (code, official) => {
     const squad = byTeam.get(code);
@@ -142,7 +143,9 @@ export function attachCodes(lineups, players) {
     const byId = new Map(side.xi.filter(p => p.id != null).map(p => [p.id, p]));
     const rows = side.rows.map(r => r.map(id => byId.get(id)).filter(Boolean));
     const total = rows.reduce((n, r) => n + r.length, 0);
-    return total === side.xi.length ? rows : null;
+    if (total !== side.xi.length) { rowsFail++; return null; }
+    rowsOk++;
+    return rows;
   };
 
   const out = {};
@@ -154,5 +157,6 @@ export function attachCodes(lineups, players) {
     };
     out[key] = { ...m, home: side(home, m.home), away: side(away, m.away) };
   }
-  return { ...lineups, matches: out, matchStats: { matched, missed, missedNames: missedNames.slice(0, 20) } };
+  return { ...lineups, matches: out,
+    matchStats: { matched, missed, missedNames: missedNames.slice(0, 20), rowsOk, rowsFail } };
 }
