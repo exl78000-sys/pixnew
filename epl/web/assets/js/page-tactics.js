@@ -16,6 +16,10 @@ try {
     <p>這一頁不談印象,只談上季 ${meta.lastSeason} 的 380 場比賽留下的痕跡:
        每支球隊實際把人力放在哪裡、機會創造得多好、領先之後守不守得住、進球集中在上半場還是下半場。
        所有指標都能對回原始賽果與球員數據。</p>
+    ${C.stampRow([
+      C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
+      C.stamp('風格標籤與雷達圖', { kind: 'season', note: '由上季全季統計歸納' }),
+    ])}
   </div>
 
   <div class="section"><h2>攻守四象限</h2><span class="hint">橫軸每場期望進球,縱軸每場期望失球(越上面防守越好)</span></div>

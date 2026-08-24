@@ -9,6 +9,7 @@ import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseCSVObjects, num } from './csv.mjs';
+import { blankLivePlayer, assertLiveFixture } from './canonical.mjs';
 
 const API = 'https://fantasy.premierleague.com/api';
 const MIRROR = 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data';
@@ -32,12 +33,7 @@ function dedupe(list) {
   });
 }
 
-const blankPlayer = () => ({
-  minutes: 0, starts: 0, goals: 0, assists: 0, own: 0, yellow: 0, red: 0,
-  saves: 0, conceded: 0, cleanSheets: 0, xG: 0, xA: 0, xGC: 0, bonus: 0, bps: 0,
-  influence: 0, creativity: 0, threat: 0, ict: 0,
-  tackles: 0, recoveries: 0, cbi: 0, defCon: 0, points: 0,
-});
+const blankPlayer = blankLivePlayer;
 
 /* ── 來源 A:官方 API(真正即時) ─────────────────── */
 async function fromApi({ codeOf, round }) {

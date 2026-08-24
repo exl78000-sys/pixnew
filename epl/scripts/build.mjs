@@ -6,19 +6,22 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { CURRENT_SEASON, LAST_SEASON, HISTORY_SEASONS, ATTRIBUTION } from './lib/sources.mjs';
+import { COMPETITION, CURRENT_SEASON, LAST_SEASON, HISTORY_SEASONS, ATTRIBUTION } from './lib/sources.mjs';
 import { loadTeams } from './lib/teams.mjs';
-import { loadSeason } from './lib/matches.mjs';
+import { loadMatches, loadSquads } from './lib/adapters/index.mjs';
+import { competition as competitionDef, seasonLength } from './lib/canonical.mjs';
 import { buildTable, headToHead } from './lib/table.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
-import { loadFpl } from './lib/fpl.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics } from './lib/tactics.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
+import {
+  preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled,
+} from './lib/report/index.mjs';
 import { parseCSVObjects, num } from './lib/csv.mjs';
 import { round } from './lib/util.mjs';
 
@@ -27,6 +30,8 @@ const OUT = join(ROOT, 'web', 'data');
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 const AS_OF = arg('as-of') || new Date().toISOString().slice(0, 10);
 const RUNS = Number(arg('runs') || 10000);
+// 賽前分析只寫最近幾場:整季 380 篇對讀者沒意義,對 LLM 帳單也不友善
+const AI_PREVIEW_COUNT = Number(arg('ai-previews') || 20);
 
 const write = async (name, data) => {
   const path = join(OUT, name);
@@ -69,6 +74,9 @@ async function main() {
       available: true, season: r.season, games: r.games, ranAt: r.ranAt,
       rps: r.models.blend.rps, logLoss: r.models.blend.logLoss, hitRate: r.models.blend.hitRate,
       baselineRps: r.models.baseline.rps, models: r.models,
+      // 模型驗證頁需要完整資料,不只摘要
+      calibration: r.calibration ?? [], byRound: r.byRound ?? [],
+      surprises: r.surprises ?? [], baselineProbs: r.baselineProbs ?? null,
     };
   }
 
@@ -90,7 +98,8 @@ async function main() {
   const T = loadTeams(ROOT);
   for (const t of T.list) if (crestData[t.code]) t.crest = crestData[t.code];
   const seasons = [...new Set([...HISTORY_SEASONS, CURRENT_SEASON])];
-  const bySeason = new Map(seasons.map(s => [s, loadSeason(ROOT, s, T.codeOf)]));
+  const load = season => loadMatches({ root: ROOT, competition: COMPETITION, season, codeOf: T.codeOf });
+  const bySeason = new Map(seasons.map(s => [s, load(s)]));
   const history = HISTORY_SEASONS.flatMap(s => bySeason.get(s));
   const lastMatches = bySeason.get(LAST_SEASON);
   const curMatches = bySeason.get(CURRENT_SEASON);
@@ -124,8 +133,8 @@ async function main() {
   const strengthBy = new Map(strength.map(s => [s.code, s]));
 
   // ── FPL 資料 ──────────────────────────────
-  const fplLast = loadFpl(ROOT, LAST_SEASON, T.codeOf);
-  const fplCur = loadFpl(ROOT, CURRENT_SEASON, T.codeOf);
+  const fplLast = loadSquads({ root: ROOT, season: LAST_SEASON, codeOf: T.codeOf });
+  const fplCur = loadSquads({ root: ROOT, season: CURRENT_SEASON, codeOf: T.codeOf });
   const diff = loadDifficulty(ROOT, T.codeOf, fplCur.teamById);
 
   // 本季逐輪累計(npm run season 產生);賽季剛開始或上游還沒發布時會是空的
@@ -136,9 +145,12 @@ async function main() {
     ? aggregateSeason(seasonStore.rounds)
     : { totals: new Map(), teamMatches: new Map() };
 
+  // 賽季長度由實際賽果推,不要寫死 38 場 —— 之後接盃賽才不會算錯
+  const lastSeasonMatches = seasonLength(lastMatches);
   const { players, poolSizes, currentPoolSizes } = buildPlayers({
     current: fplCur.players, last: fplLast.players,
     currentTotals, teamMatches, asOf: AS_OF,
+    seasonMinutes: lastSeasonMatches * 90,
   });
   const leaders = {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
@@ -170,7 +182,9 @@ async function main() {
     };
     const d = diff.byPair.get(`${m.home}|${m.away}`) ?? null;
     return {
-      ...m,
+      id: m.id, season: m.season, round: m.round, date: m.date,
+      home: m.home, away: m.away, played: m.played,
+      fh: m.fh, fa: m.fa, hh: m.hh, ha: m.ha, time: m.time ?? null,
       // 倒數計時要用精確到分鐘的 UTC 時間;沒有 FPL 資料才退回 openfootball 的英國當地時間
       kickoff: d?.kickoff ?? `${m.date}T${(m.time ?? '15:00')}:00+01:00`,
       kickoffSource: d?.kickoff ? 'fpl' : 'openfootball',
@@ -328,6 +342,53 @@ async function main() {
     }
   }
 
+  // ── AI 分析文章 ────────────────────────────
+  // 流程:分析引擎算好 feature bundle → 有 API key 就交給 LLM 潤稿 → 數字驗證 → 寫入快取。
+  // 沒有 key(預設情況)就用模板版,內容一樣完整,只是文字比較制式。
+  // 不論走哪條路,文章裡的每個數字都必須在 bundle 的 facts 裡找得到,否則整篇退回模板。
+  const cache = await new ReportCache(ROOT).load();
+  const usedHashes = new Set();
+  const aiPre = {}, aiPost = {};
+  const seasonLabel = `${CURRENT_SEASON} 賽季`;
+  const teamOf = code => T.byCode.get(code) ?? { code, en: code, zh: code };
+  const teamFull = code => {
+    const t = teams.find(x => x.code === code);
+    return t ?? teamOf(code);
+  };
+
+  // 賽前:只寫還沒開打、而且是最近 20 場的比賽,不必整季 380 篇都寫
+  const upcoming = fixtures.filter(f => !f.played)
+    .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1)).slice(0, AI_PREVIEW_COUNT);
+  for (const f of upcoming) {
+    const bundle = preMatchBundle({
+      fixture: f, home: teamFull(f.home), away: teamFull(f.away),
+      h2h: h2h[[f.home, f.away].sort().join('|')] ?? null,
+      tacticsHome: tacticsBy.get(f.home), tacticsAway: tacticsBy.get(f.away),
+      asOf: AS_OF, seasonLabel,
+    });
+    const rep = await generateReport(bundle, { cache });
+    usedHashes.add(rep.hash);
+    aiPre[`${f.home}|${f.away}`] = rep;
+  }
+
+  // 賽後:所有已經有出場名單的比賽
+  for (const [key, r] of Object.entries(reports)) {
+    const bundle = postMatchBundle({
+      report: r, home: teamOf(r.home), away: teamOf(r.away), asOf: AS_OF, seasonLabel,
+    });
+    const rep = await generateReport(bundle, { cache });
+    usedHashes.add(rep.hash);
+    aiPost[key] = rep;
+  }
+
+  const kept = await cache.save(usedHashes);
+  const aiSummary = {
+    enabled: llmEnabled(),
+    pre: Object.keys(aiPre).length, post: Object.keys(aiPost).length,
+    llmWritten: [...Object.values(aiPre), ...Object.values(aiPost)].filter(r => r.source === 'llm').length,
+    cacheHits: cache.hits, cacheEntries: kept,
+  };
+
   // ── 新聞 ──────────────────────────────────
   const injuries = injuryFeed(players, T, AS_OF);
   const stories = dataStories({ table: lastTable, tactics, teams: T, season: LAST_SEASON, asOf: AS_OF });
@@ -372,11 +433,13 @@ async function main() {
       currentSeasonRounds: leaders.currentRounds,
       currentSeasonPlayers: currentTotals.size,
     },
+    competition: competitionDef(COMPETITION),
     coachDataAsOf: coaches.asOf,
     live: liveOut.available
-      ? { source: liveOut.source, sourceLabel: liveOut.sourceLabel, demo: liveOut.demo, round: liveOut.round, fetchedAt: liveOut.fetchedAt, counts: liveOut.counts }
+      ? { available: true, source: liveOut.source, sourceLabel: liveOut.sourceLabel, demo: liveOut.demo, round: liveOut.round, fetchedAt: liveOut.fetchedAt, counts: liveOut.counts }
       : { available: false },
     liveResultsMerged: liveFilled,
+    ai: aiSummary,
   });
   await write('clubs.json', T.list); // 27 隊完整名稱登錄(含已降級球隊,顯示歷史資料用)
   await write('teams.json', teams);
@@ -390,17 +453,28 @@ async function main() {
   await write('sim.json', sim);
   await write('live.json', liveOut);
   await write('h2h.json', h2h);
+  await write('analysis.json', { ...aiSummary, pre: aiPre, post: aiPost, counts: { pre: aiSummary.pre, post: aiSummary.post } });
   await write('reports.json', {
     seasons: [...new Set(Object.keys(reports).map(k => k.split('|')[0]))],
     count: Object.keys(reports).length,
     reports,
   });
+  // Canonical 格式是內部契約,不要原封不動送到前端 —— 空欄位會把檔案灌胖一倍
+  const slimMatch = m => {
+    const out = { id: m.id, season: m.season, round: m.round, date: m.date, home: m.home, away: m.away, played: m.played, fh: m.fh, fa: m.fa };
+    if (m.hh !== null) { out.hh = m.hh; out.ha = m.ha; }
+    if (m.kickoff) out.kickoff = m.kickoff;
+    return out;
+  };
   await write('results.json', [...history, ...curPlayed].filter(m => m.played).map(m => {
     const pred = predByMatch.get(`${m.season}|${m.home}|${m.away}`);
-    return pred ? { ...m, prediction: pred } : m;
+    const slim = slimMatch(m);
+    return pred ? { ...slim, prediction: pred } : slim;
   }));
 
   console.log(`\n✔ 完成:${teams.length} 隊 / ${players.length} 名球員 / ${fixtures.length} 場賽程 / ${news.length} 則動態`);
+  console.log(`  分析文章:賽前 ${aiSummary.pre} 篇・賽後 ${aiSummary.post} 篇,快取命中 ${aiSummary.cacheHits} 篇` +
+    (aiSummary.enabled ? `,LLM 潤稿 ${aiSummary.llmWritten} 篇` : '(模板版;設定 ANTHROPIC_API_KEY 可啟用 LLM 潤稿)'));
   if (liveOut.available) {
     console.log(`  即時:${liveOut.sourceLabel}`);
     console.log(`        第 ${liveOut.round} 輪 —— 進行中 ${liveOut.counts.live}・已完賽 ${liveOut.counts.finished}・未開賽 ${liveOut.counts.upcoming}` +

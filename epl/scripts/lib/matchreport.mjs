@@ -59,19 +59,20 @@ function sideReport(players, matchMinutes, seasonShape) {
 
 function notesFor(rep, zh) {
   const n = [];
+  const push = (kind, text) => n.push({ kind, text });
   const H = rep.sides[rep.home], A = rep.sides[rep.away];
   const nameH = zh(rep.home), nameA = zh(rep.away);
 
   for (const [code, s, name] of [[rep.home, H, nameH], [rep.away, A, nameA]]) {
     if (!s.xi.length) continue;
     if (s.shapeDelta && Math.abs(s.shapeDelta.def) >= 0.7) {
-      n.push(s.shapeDelta.def > 0
-        ? `${name}這場排出 ${s.shape.label},後場比上季常態多約 ${Math.abs(s.shapeDelta.def)} 人,重心明顯往後壓。`
-        : `${name}這場排出 ${s.shape.label},後場比上季常態少約 ${Math.abs(s.shapeDelta.def)} 人,防線推得更前面。`);
+      push('shape', s.shapeDelta.def > 0
+        ? `${name} 這場排出 ${s.shape.label},後場比上季常態多約 ${Math.abs(s.shapeDelta.def)} 人,重心明顯往後壓。`
+        : `${name} 這場排出 ${s.shape.label},後場比上季常態少約 ${Math.abs(s.shapeDelta.def)} 人,防線推得更前面。`);
     }
-    if (s.shape.FWD >= 2) n.push(`${name}用雙前鋒(${s.shape.label}),前場有兩個支點。`);
-    if (s.shape.FWD === 0) n.push(`${name}先發沒有正印中鋒(${s.shape.label}),偏向無鋒陣、由中場插上。`);
-    if (s.red > 0) n.push(`${name}吃到 ${s.red} 張紅牌,少打一人已反映在即時勝率上。`);
+    if (s.shape.FWD >= 2) push('shape', `${name} 用雙前鋒(${s.shape.label}),前場有兩個支點。`);
+    if (s.shape.FWD === 0) push('shape', `${name} 先發沒有正印中鋒(${s.shape.label}),偏向無鋒陣、由中場插上。`);
+    if (s.red > 0) push('cards', `${name} 吃到 ${s.red} 張紅牌,少打一人已反映在即時勝率上。`);
   }
 
   // 比分與內容(xG)是否一致
@@ -80,22 +81,22 @@ function notesFor(rep, zh) {
   if (rep.started && Math.abs(xgd) >= 0.6 && Math.sign(xgd) !== Math.sign(gd) && gd !== 0) {
     const lucky = gd > 0 ? nameH : nameA;
     const robbed = gd > 0 ? nameA : nameH;
-    n.push(`比分站在 ${lucky} 這邊,但期望進球是 ${H.xG} 比 ${A.xG} —— 內容其實是 ${robbed} 佔優,結果超出了表現。`);
+    push('xg', `比分站在 ${lucky} 這邊,但期望進球是 ${H.xG} 比 ${A.xG} —— 內容其實是 ${robbed} 佔優,結果超出了表現。`);
   } else if (rep.started && Math.abs(xgd) >= 1.2) {
-    n.push(`期望進球 ${H.xG} 比 ${A.xG},場面一面倒,比分與內容一致。`);
+    push('xg', `期望進球 ${H.xG} 比 ${A.xG},場面一面倒,比分與內容一致。`);
   }
 
   for (const [s, name, opp] of [[H, nameH, nameA], [A, nameA, nameH]]) {
     if (s.keeper && s.keeper.saves >= 5) {
-      n.push(`${name}門將 ${s.keeper.name} 撲救 ${s.keeper.saves} 次` +
+      push('keeper', `${name} 門將 ${s.keeper.name} 撲救 ${s.keeper.saves} 次` +
         (s.keeper.stopped > 0.5 ? `,比期望少失 ${s.keeper.stopped} 球,是這場撐住球隊的人。` : '。'));
     }
     const benchGoals = sum(s.bench, p => p.goals + p.assists);
-    if (benchGoals > 0) n.push(`${name}的替補直接參與 ${benchGoals} 球,換人換出了效果。`);
+    if (benchGoals > 0) push('bench', `${name} 的替補直接參與 ${benchGoals} 球,換人換出了效果。`);
     if (s.bench.length >= 3) {
       const window = s.bench.slice(0, 3);
       const spread = Math.max(...window.map(p => p.onAbout)) - Math.min(...window.map(p => p.onAbout));
-      if (spread <= 3) n.push(`${name}在約第 ${window[0].onAbout} 分鐘一次換上三人,是明顯的整批調整。`);
+      if (spread <= 3) push('bench', `${name} 在約第 ${window[0].onAbout} 分鐘一次換上三人,是明顯的整批調整。`);
     }
   }
   return n;

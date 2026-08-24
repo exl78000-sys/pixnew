@@ -3,13 +3,17 @@
 // 用來驗證預測引擎沒有偷看未來,而且真的比亂猜好。
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { loadTeams } from './lib/teams.mjs';
-import { loadSeason } from './lib/matches.mjs';
+import { loadMatches } from './lib/adapters/index.mjs';
+import { COMPETITION } from './lib/sources.mjs';
 import { fitPoisson, applyPromotedPrior, predict } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { round } from './lib/util.mjs';
 import { inPlay } from './lib/inplay.mjs';
+import {
+  preMatchBundle, postMatchBundle, templateFor, verify, generateReport, ReportCache,
+} from './lib/report/index.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -38,10 +42,93 @@ function summarise(name, rows) {
   };
 }
 
-function main() {
+/* AI 報告層的檢查分三塊:
+   1. 模板產出的每一篇都要能通過數字驗證(模板自己也不准編數字)
+   2. 驗證器擋得住編造的數字與 bundle 沒有的主題
+   3. LLM 產出沒通過驗證時,確實會退回模板版而不是照登
+*/
+async function checkReports() {
+  const rd = f => JSON.parse(readFileSync(join(ROOT, 'web', 'data', f), 'utf8'));
+  let fixtures, teams, h2h, tactics, reports;
+  try {
+    [fixtures, teams, h2h, tactics, reports] =
+      ['fixtures.json', 'teams.json', 'h2h.json', 'tactics.json', 'reports.json'].map(rd);
+  } catch {
+    console.log('  ⚠ 找不到前端資料集,跳過(請先跑 npm run build)');
+    return 0;
+  }
+  const byCode = new Map(teams.map(t => [t.code, t]));
+  const tacBy = new Map(tactics.map(t => [t.code, t]));
+  const bundles = [];
+  for (const f of fixtures.filter(x => !x.played)) {
+    bundles.push(preMatchBundle({
+      fixture: f, home: byCode.get(f.home), away: byCode.get(f.away),
+      h2h: h2h[[f.home, f.away].sort().join('|')] ?? null,
+      tacticsHome: tacBy.get(f.home), tacticsAway: tacBy.get(f.away),
+      asOf: '2026-01-01', seasonLabel: 'test',
+    }));
+  }
+  for (const r of Object.values(reports.reports)) {
+    bundles.push(postMatchBundle({
+      report: r, home: byCode.get(r.home) ?? { en: r.home, zh: r.home },
+      away: byCode.get(r.away) ?? { en: r.away, zh: r.away },
+      asOf: '2026-01-01', seasonLabel: 'test',
+    }));
+  }
+  const unverified = bundles.filter(b => !verify(templateFor(b).paragraphs.join('\n'), b.facts).ok);
+
+  const facts = [{ id: 'p', label: '主勝', value: 0.45, text: '45%' }];
+  const cases = [
+    [`模板 ${bundles.length} 篇全部通過數字驗證`, unverified.length === 0,
+      unverified.slice(0, 3).map(b => `${b.key}:${verify(templateFor(b).paragraphs.join('\n'), b.facts).reason}`).join(' / ')],
+    ['擋得住編造的數字', !verify('主勝 45%,近 7 場不敗。', facts).ok, ''],
+    ['擋得住 bundle 沒有的主題', !verify('主勝 45%,但傷兵滿營。', facts).ok, ''],
+    ['4-4-2 不會被誤判成負數', verify('陣型是 4-4-2。', [{ id: 'a', label: 'x', value: 4, text: '4' }, { id: 'b', label: 'y', value: 2, text: '2' }]).ok, ''],
+  ];
+
+  // LLM 造假的完整流程:給一個會編數字的假模型,結果必須是模板版而不是它寫的
+  const liar = async () => ({
+    ok: true, status: 200, json: async () => ({ content: [{ type: 'text', text: '主隊近 17 場不敗,勝率高達 91%。' }] }),
+    text: async () => '',
+  });
+  const out = await generateReport(bundles[0], { env: { ANTHROPIC_API_KEY: 'test-key' }, fetchImpl: liar });
+  cases.push(['LLM 編數字時會退回模板版', out.source === 'template' && /未通過數字驗證/.test(out.note ?? ''), out.note ?? '']);
+
+  const honest = async () => ({
+    ok: true, status: 200,
+    json: async () => ({ model: 'test', content: [{ type: 'text', text: templateFor(bundles[0]).paragraphs.join('\n\n') }] }),
+    text: async () => '',
+  });
+  const ok2 = await generateReport(bundles[0], { env: { ANTHROPIC_API_KEY: 'test-key' }, fetchImpl: honest });
+  cases.push(['LLM 只引用有據數字時會被採用', ok2.source === 'llm', ok2.note ?? '']);
+
+  // 快取存在的意義就是省錢:同一份 bundle 只該打一次 API
+  let calls = 0;
+  const counted = async (...a) => { calls++; return honest(...a); };
+  const cache = new ReportCache(ROOT);
+  const env = { ANTHROPIC_API_KEY: 'test-key' };
+  await generateReport(bundles[0], { cache, env, fetchImpl: counted });
+  const second = await generateReport(bundles[0], { cache, env, fetchImpl: counted });
+  cases.push(['同一份資料只打一次 LLM', calls === 1 && second.cached === true, `實際呼叫 ${calls} 次`]);
+
+  // 資料變了就必須重寫,否則讀者會看到跟數字對不上的舊文章
+  calls = 0;
+  await generateReport(bundles[1], { cache, env, fetchImpl: counted });
+  cases.push(['資料變了就重新產生', calls === 1, `實際呼叫 ${calls} 次`]);
+
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+async function main() {
   const T = loadTeams(ROOT);
-  const past = TRAIN_FROM.flatMap(s => loadSeason(ROOT, s, T.codeOf));
-  const test = loadSeason(ROOT, TEST_SEASON, T.codeOf).filter(m => m.played);
+  const load = season => loadMatches({ root: ROOT, competition: COMPETITION, season, codeOf: T.codeOf });
+  const past = TRAIN_FROM.flatMap(load);
+  const test = load(TEST_SEASON).filter(m => m.played);
   const codes = [...new Set(test.flatMap(m => [m.home, m.away]))].sort();
   const rounds = [...new Set(test.map(m => m.round))].sort((a, b) => a - b);
 
@@ -89,6 +176,52 @@ function main() {
     summarise('兩者平均', blend),
     summarise('基準線(固定機率)', base),
   ]);
+  // ── 校準:模型說 70% 會贏的比賽,實際是不是真的贏了 70% ──────────
+  // 每場比賽貢獻三個點(主勝/和/客勝各一),這是多類別校準的標準做法。
+  function calibration(bins = 10) {
+    const pts = [];
+    for (const m of perMatch) {
+      const real = m.fh > m.fa ? 'home' : m.fh === m.fa ? 'draw' : 'away';
+      for (const o of ['home', 'draw', 'away']) pts.push({ p: m.pred[o], hit: real === o ? 1 : 0 });
+    }
+    const out = [];
+    for (let i = 0; i < bins; i++) {
+      const lo = i / bins, hi = (i + 1) / bins;
+      const inBin = pts.filter(r => r.p >= lo && (i === bins - 1 ? r.p <= hi : r.p < hi));
+      out.push({
+        lo: round(lo, 2), hi: round(hi, 2), n: inBin.length,
+        predicted: inBin.length ? round(inBin.reduce((a, r) => a + r.p, 0) / inBin.length, 4) : null,
+        actual: inBin.length ? round(inBin.reduce((a, r) => a + r.hit, 0) / inBin.length, 4) : null,
+      });
+    }
+    return out;
+  }
+
+  // ── 逐輪表現:模型隨著資料變多有沒有變準 ──────────
+  function byRound() {
+    const g = new Map();
+    for (let i = 0; i < perMatch.length; i++) {
+      const r = perMatch[i].round;
+      if (!g.has(r)) g.set(r, []);
+      g.get(r).push(blend[i]);
+    }
+    return [...g.entries()].sort((a, b) => a[0] - b[0]).map(([r, rows]) => ({
+      round: r, games: rows.length,
+      rps: round(rows.reduce((a, x) => a + x.rps, 0) / rows.length, 4),
+      hitRate: round(rows.filter(x => x.hit).length / rows.length, 3),
+    }));
+  }
+
+  // ── 最意外的比賽:模型給實際結果的機率最低的那幾場 ──────────
+  function surprises(n = 8) {
+    return perMatch.map(m => {
+      const real = m.fh > m.fa ? 'home' : m.fh === m.fa ? 'draw' : 'away';
+      return { ...m, real, pReal: m.pred[real] };
+    }).sort((a, b) => a.pReal - b.pReal).slice(0, n)
+      .map(m => ({ date: m.date, round: m.round, home: m.home, away: m.away, fh: m.fh, fa: m.fa,
+        real: m.real, pReal: round(m.pReal, 4), pred: m.pred }));
+  }
+
   // 把結果寫成檔案,build 會讀進去顯示在頁面上 —— 頁面上的準度數字必須是真的跑出來的
   const metric = rows => ({
     rps: round(rows.reduce((a, r) => a + r.rps, 0) / rows.length, 4),
@@ -101,6 +234,10 @@ function main() {
     games: dc.length,
     models: { poisson: metric(dc), elo: metric(el), blend: metric(blend), baseline: metric(base) },
     chosen: 'blend',
+    calibration: calibration(),
+    byRound: byRound(),
+    surprises: surprises(),
+    baselineProbs: BASE,
   };
   mkdirSync(join(ROOT, 'data'), { recursive: true });
   writeFileSync(join(ROOT, 'data', 'backtest.json'), JSON.stringify(report, null, 2));
@@ -121,9 +258,13 @@ function main() {
   let inplayFail = 0;
   for (const [name, ok] of checks) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) inplayFail++; }
 
+  // AI 報告層:重點不是文字好不好看,是「數字有沒有被編造」這條線守不守得住
+  console.log('\n▶ AI 報告層自我檢查');
+  const reportFail = await checkReports();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail) process.exitCode = 1;
 }
 
-main();
+await main();
