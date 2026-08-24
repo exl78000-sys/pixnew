@@ -371,6 +371,14 @@ try {
       ['away', C.name(f.away) + '勝', p.away - m.away],
     ];
     const biggest = [...gaps].sort((a, b) => Math.abs(b[2]) - Math.abs(a[2]))[0];
+    // 已完賽的話就直接對答案:誰給實際結果的機率高,誰這場比較準。
+    // 一場定不了輸贏,所以順帶把整季的數字擺出來 —— 免得讀者拿單場當結論。
+    const settled = f.played && f.fh != null ? (() => {
+      const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
+      const zh = { home: `${C.name(f.home)}勝`, draw: '和局', away: `${C.name(f.away)}勝` }[real];
+      const dm = p[real], dk = m[real];
+      return { real, zh, model: dm, market: dk, winner: dm > dk ? '模型' : dm < dk ? '市場' : null };
+    })() : null;
     const maxGap = Math.abs(biggest[2]);
     // 三個結果的總偏差,拿來判斷「基本一致」還是「明顯分歧」
     const total = gaps.reduce((a, g) => a + Math.abs(g[2]), 0) / 2;
@@ -378,6 +386,14 @@ try {
     const backtest = meta.model.backtest;
     const mk = backtest.market;
     return `<div class="note ${level === 'strong' ? 'warn' : ''}" style="margin-top:10px">
+      ${settled ? `<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line)">
+        <b>結果是${settled.zh}。</b>賽前本站給 ${C.pct(settled.model, 0)}、市場給 ${C.pct(settled.market, 0)} ——
+        ${settled.winner
+          ? `<b style="color:${settled.winner === '模型' ? 'var(--accent)' : 'var(--draw)'}">這場${settled.winner}比較準</b>。`
+          : '兩邊一樣。'}
+        <span class="tiny dim">單場說明不了什麼 —— 機率模型本來就會有低機率事件發生,
+        要看的是整季的平均。${mk?.available ? `整季 380 場:本站 RPS ${mk.model.rps}、市場 ${mk.market.rps}。` : ''}</span>
+      </div>` : ''}
       <b>${level === 'agree'
         ? '模型和市場看法一致。'
         : level === 'mild'
