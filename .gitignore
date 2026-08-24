@@ -1,31 +1,3 @@
-# ── Unity ──────────────────────────────
-unity/[Ll]ibrary/
-unity/[Tt]emp/
-unity/[Oo]bj/
-unity/[Ll]ogs/
-unity/[Uu]serSettings/
-unity/[Bb]uild/
-unity/[Bb]uilds/
-unity/*.csproj
-unity/*.sln
-unity/.vs/
-unity/.idea/
-
-# 素材包原始檔(授權禁止再散布,只留在本機)
-# Raw~ 結尾帶 ~:Unity 不會匯入(避免 5 萬張 PNG 拖垮首次開啟)
-unity/Assets/Art/Raw/*
-!unity/Assets/Art/Raw/README.md
-!unity/Assets/Art/Raw/README.md.meta
-unity/Assets/Art/Raw~/
-
-# 整理後素材 PNG(本 repo 公開;LimeZu 授權禁止再散布,圖檔只留本機,.meta 進版控保 GUID)
-unity/Assets/Art/Tilesets/*.png
-unity/Assets/Art/Characters/*.png
-
-# 本機設定(含 API key,絕不進版控)
-unity/Assets/StreamingAssets/config.json
-unity/Assets/StreamingAssets/config.json.meta
-
 # ── 英超戰情室(epl/)────────────────
 # 注意:epl/data/raw 與 epl/web/data 是「刻意進版控」的 —— 
 # clone 下來不用連網、不用 build 就能直接開站。
