@@ -1,5 +1,4 @@
 {
- "version": 3,
  "season": {
   "id": 841,
   "label": "English Premier League Season 2026/2027"
@@ -108,7 +107,7 @@
    "officialId": 17072
   }
  },
- "managersFetchedAt": "2026-08-24T15:30:22.071Z",
+ "managersFetchedAt": "2026-08-24T20:08:40.756Z",
  "matches": {
   "NEW|LIV": {
    "fixtureId": 128931,
@@ -3963,7 +3962,7 @@
   "FUL|CHE": {
    "fixtureId": 128932,
    "kickoff": "2026-08-24T19:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "home": {
     "formation": "4-2-3-1",
@@ -3979,12 +3978,12 @@
       14624
      ],
      [
-      128976,
-      21614
+      21614,
+      4717
      ],
      [
       66657,
-      4717,
+      128976,
       123594
      ],
      [
@@ -4177,8 +4176,8 @@
     ]
    },
    "away": {
-    "formation": "3-4-3",
-    "formationRaw": "3-4-3",
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
     "rows": [
      [
       14538
@@ -4196,8 +4195,10 @@
      ],
      [
       49293,
-      72371,
       23968
+     ],
+     [
+      72371
      ]
     ],
     "xi": [
@@ -4387,5 +4388,5 @@
    }
   }
  },
- "fetchedAt": "2026-08-24T20:06:29.477Z"
+ "fetchedAt": "2026-08-24T20:08:46.520Z"
 }
