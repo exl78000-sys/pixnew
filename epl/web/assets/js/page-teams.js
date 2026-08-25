@@ -9,8 +9,75 @@ try {
   C.nav();
 
   const code = C.qs('code');
+  const teamBy = new Map(teams.map(t => [t.code, t]));
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
+
+  /* 教練資料原本自成一頁,現在併進來 —— 教練是球隊的屬性,
+     一個人的任期、戰績、慣用陣型放在他帶的那支球隊底下才找得到。
+     跨教練的比較(場均勝點排行)留在總覽頁,那裡本來就是「20 隊一起看」。 */
+  const CONF = { high: ['accent', '長期在任'], medium: ['warn', '需留意異動'], low: ['bad', '可信度低'], unknown: ['bad', '待確認'] };
+  const confPill = c => {
+    // 官方核對過就別再顯示「需留意異動」—— 那個標籤問的問題已經有答案了
+    if (coaches.officialAsOf && c.officialName) {
+      return '<span class="pill accent tiny" title="英超官方登記的現任教練">官方確認在任</span>';
+    }
+    const [cls, label] = CONF[c.confidence] ?? ['', c.confidence];
+    return `<span class="pill ${cls} tiny">${label}</span>`;
+  };
+  const rec = r => (r && r.p ? `${r.p} 場・${r.w}勝${r.d}和${r.l}負・場均 <b>${r.ppg}</b> 分` : '任內無本季比賽紀錄');
+
   code && teams.some(t => t.code === code) ? detail(teams.find(t => t.code === code)) : overview();
+
+  /* 單隊的教練區塊。原本整頁的教練卡就是這一段 ——
+     搬過來之後,「誰在帶這支球隊、帶多久、成績如何」跟球隊的其他資料在同一頁,
+     不用先猜要去哪一頁找。 */
+  function coachCard(c) {
+    if (!c) return '';
+    const years = c.tenureDays ? (c.tenureDays / 365).toFixed(1) : null;
+    const head = `<div class="spread" style="align-items:flex-start">
+      <div><h3 style="margin:0">${c.name ? C.esc(c.zh ?? c.name) : '教練待確認'}
+        <span class="dim small" style="font-weight:400">${c.zh && c.name ? C.esc(c.name) : ''}</span></h3>
+        <div class="tiny dim" style="margin-top:2px">${c.nat ?? ''}${c.since ? `${c.nat ? '・' : ''}${c.since} 上任(約 ${years} 年)` : ''}</div></div>
+      ${c.officialMismatch ? '<span class="pill accent tiny" title="英超官方登記的現任教練">官方現任</span>' : confPill(c)}
+    </div>`;
+
+    /* 官方說換人了、但本站還沒整理他的資料 —— 這種情況要說清楚,
+       絕對不能把前任的戰績掛在新教練名下。 */
+    const body = c.officialMismatch
+      ? `<div class="note" style="margin-top:10px">
+          <b>本站還沒有這位教練的資料。</b>名字取自英超官方,但任期、戰績與戰術風格尚未整理 ——
+          不會拿前任的數字充當他的履歷。
+        </div>
+        ${c.predecessor ? `<div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
+          <div class="tiny dim" style="margin-bottom:4px">前任 ${C.esc(c.predecessor.zh ?? c.predecessor.name ?? '(空白)')}
+            <span class="dim">${c.predecessor.name && c.predecessor.zh ? C.esc(c.predecessor.name) : ''}</span>
+            ${c.predecessor.since ? `・${c.predecessor.since} 上任` : ''}</div>
+          <div class="stat-line"><span class="small muted">${meta.lastSeason} 任內</span>
+            <span class="small">${rec(c.predecessor.seasonRecord)}</span></div>
+          <div class="stat-line"><span class="small muted">慣用陣型</span>
+            <b class="mono">${c.predecessor.formation ?? '—'}</b></div>
+          <div class="tags" style="margin-top:6px">${(c.predecessor.style ?? []).map(x => `<span class="pill">${C.esc(x)}</span>`).join('')}</div>
+        </div>` : ''}`
+      : c.name
+        ? `<div class="stat-line" style="margin-top:10px"><span class="small muted">${meta.lastSeason} 任內</span>
+            <span class="small">${rec(c.seasonRecord)}</span></div>
+          <div class="stat-line"><span class="small muted">近三季任內</span>
+            <span class="small">${rec(c.allRecord)}</span></div>
+          <div class="stat-line"><span class="small muted">慣用陣型</span><b class="mono">${c.formation ?? '—'}</b></div>
+          <div class="tags" style="margin-top:8px">${(c.style ?? []).map(x => `<span class="pill">${C.esc(x)}</span>`).join('')}</div>
+          ${c.note ? `<div class="small muted" style="margin-top:8px">${C.esc(c.note)}</div>` : ''}
+          ${c.predecessors?.length ? `<div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
+            <div class="tiny dim" style="margin-bottom:4px">同隊前任(${meta.lastSeason} 任內)</div>
+            ${c.predecessors.map(p => `<div class="stat-line"><span class="small">${C.esc(p.zh ?? p.name)}
+              <span class="dim tiny">${p.from ?? ''} ~ ${p.to ?? ''}</span></span>
+              <span class="small mono">${p.seasonRecord.p ? `${p.seasonRecord.p} 場・場均 ${p.seasonRecord.ppg}` : '—'}</span></div>`).join('')}
+          </div>` : ''}`
+        : `<div class="note" style="margin-top:10px">${C.esc(c.note ?? '這支球隊的教練資料尚未整理。')}</div>`;
+
+    return `<div class="section" style="margin-top:18px"><h2>教練</h2>
+      <span class="hint">現任由英超官方每天核對・任期與風格為人工整理</span></div>
+      <div class="card">${head}${body}</div>`;
+  }
 
   /* ── 列表 ─────────────────────────── */
   function overview() {
@@ -25,7 +92,99 @@ try {
     ])}
     </div>
     <div class="grid g3">${teams.map(card).join('')}</div>
+
+    ${coachNotes()}
+    <div class="section" style="margin-top:20px"><h2>教練席</h2>
+      <span class="hint">戰績為 ${meta.lastSeason} 任內實際數字・點一列看該隊詳情</span></div>
+    <div id="coachRank"></div>
+    ${coachRankNote()}
     ${C.foot(meta)}`;
+
+    renderCoachRank();
+  }
+
+  /* 教練資料的誠實層:哪些是官方每天核對的、哪些還是人工整理會過期的。
+     這兩段原本在教練頁,不能因為併頁就弄丟 —— 讀者要知道哪個數字能信。 */
+  function coachNotes() {
+    const cur = coaches.coaches.filter(c => teamBy.has(c.team));
+    const mism = cur.filter(c => c.officialMismatch);
+    const days = Math.round((Date.now() - new Date(`${coaches.asOf}-01`).getTime()) / 86400000);
+
+    const official = !coaches.officialAsOf ? '' : `<div class="note ${mism.length ? 'warn' : 'ok'}" style="margin-top:16px">
+      <b>現任教練是誰,每天跟英超官方核對。</b>
+      ${mism.length
+        ? `<b>${mism.length} 隊在本站上次整理之後換了教練</b>,名字已改用官方的:
+           <div style="margin-top:6px">${mism.map(c => `<div class="tiny">
+             ${C.name(c.team)}:<b class="accent">${C.esc(c.name)}</b>
+             <span class="dim">接替 ${C.esc(c.predecessor?.zh ?? c.predecessor?.name ?? '(空白)')}</span></div>`).join('')}</div>
+           <div class="tiny dim" style="margin-top:6px">這幾位的任期、戰績與戰術風格本站還沒整理,
+             球隊頁上只會看到前任的資料並標明是前任 —— 不會拿舊數字充當新教練的履歷。</div>`
+        : `${cur.length} 隊的現任教練都和官方一致。`}
+    </div>`;
+
+    const manual = coaches.officialAsOf
+      ? `<div class="note" style="margin-top:10px">
+          <b>官方沒提供、仍是人工維護的部分</b>(整理時點 ${coaches.asOf},距今 ${days} 天):
+          <div style="margin-top:6px" class="tiny">
+            <b>任期起訖</b> —— 戰績是依這個日期切分比賽算出來的,日期不對戰績就會算到別人頭上。<br>
+            <b>戰術風格與慣用陣型</b> —— 同一位教練也可能改打法,而且新教練完全沒有(共 ${mism.length} 位)。<br>
+            <b>中文譯名</b> —— 沒有譯名的直接顯示英文,不會硬編一個。
+          </div>
+          <div class="tiny" style="margin-top:8px">
+            補資料:編輯 <span class="mono">data/manual/coaches.json</span> ——
+            把舊教練那筆的 <span class="mono">spells[0].to</span> 填上離任日期,再在最前面加一筆新教練
+            (<span class="mono">to: null</span> 代表在任中),然後重跑 <span class="mono">npm run build</span>。
+            <b>戰績不用手算</b>,系統會依任期日期自動切分比賽重算。
+          </div>
+        </div>`
+      : (() => {
+        const unsure = cur.filter(c => c.confidence !== 'high');
+        const unknown = cur.filter(c => !c.name);
+        const stale = days > 60;
+        return `<div class="note ${stale ? 'warn' : ''}" style="margin-top:16px">
+          <b>教練名冊已經 ${days} 天沒更新</b>(整理時點 ${coaches.asOf},今天 ${meta.asOf})。
+          ${stale ? '這段期間<b>整個夏季轉會窗都過去了</b> —— 換帥通常就發生在這時候,所以有幾位很可能已經不在任上。' : ''}
+          <div style="margin-top:8px">${cur.length} 隊裡 <b>${cur.length - unsure.length}</b> 隊標為長期在任、
+            <b>${unsure.length}</b> 隊需要查證${unknown.length ? `、<b>${unknown.length}</b> 隊完全沒有資料` : ''}。
+            ${unsure.length ? `<div class="tiny dim" style="margin-top:6px">需要查證:${unsure.map(c => C.name(c.team)).join('、')}</div>` : ''}</div>
+        </div>`;
+      })();
+
+    return official + manual;
+  }
+
+  /* 排行只列得出「在這支球隊有任內比賽紀錄」的教練。
+     本季有一半以上的球隊是新帥,他們在這裡沒有數字 —— 那是對的
+     (不能把前任的成績掛在他頭上),但如果不講,讀者只會看到一張少了一半人的表
+     而不知道為什麼。所以直接把缺席的隊伍點名出來。 */
+  function coachRankNote() {
+    const cur = coaches.coaches.filter(c => teamBy.has(c.team));
+    const missing = cur.filter(c => !c.seasonRecord?.p);
+    return `<div class="tiny dim" style="margin-top:8px">
+      含賽季中途接手者,場次少的參考價值低。每位教練的任期、慣用陣型與風格標籤在各隊的詳情頁。
+      ${missing.length ? `<br><b>${cur.length} 隊裡有 ${missing.length} 隊不在表上</b> ——
+        他們的教練在 ${meta.lastSeason} 沒有帶過這支球隊(多半是這個夏天才上任),
+        本站不會把前任的成績算到他頭上:
+        ${missing.map(c => C.name(c.team)).join('、')}。` : ''}
+    </div>`;
+  }
+
+  function renderCoachRank() {
+    const rows = coaches.coaches.filter(c => c.seasonRecord?.p);
+    document.getElementById('coachRank').innerHTML = C.table(rows, [
+      { key: 'coach', label: '教練', value: c => c.zh ?? c.name ?? '',
+        render: c => `${C.esc(c.zh ?? c.name ?? '')} <span class="dim tiny">${C.esc(c.zh ? (c.name ?? '') : '')}</span>` },
+      { key: 'team', label: '球隊', value: c => C.name(c.team), render: c => C.teamCell(c.team) },
+      { key: 'p', label: '場次', value: c => c.seasonRecord.p, num: true },
+      { key: 'w', label: '勝', value: c => c.seasonRecord.w, num: true },
+      { key: 'd', label: '和', value: c => c.seasonRecord.d, num: true },
+      { key: 'l', label: '負', value: c => c.seasonRecord.l, num: true },
+      { key: 'gf', label: '進', value: c => c.seasonRecord.gf, num: true },
+      { key: 'ga', label: '失', value: c => c.seasonRecord.ga, num: true },
+      { key: 'winPct', label: '勝率', value: c => c.seasonRecord.winPct, num: true, render: c => `${c.seasonRecord.winPct}%` },
+      { key: 'ppg', label: '場均勝點', value: c => c.seasonRecord.ppg, num: true, render: c => `<b>${c.seasonRecord.ppg}</b>` },
+      { key: 'conf', label: '資料可信度', value: c => c.confidence, sortable: false, render: confPill },
+    ], { sortKey: 'ppg', desc: true, onRow: c => { C.go('teams', { code: c.team }); } });
   }
 
   function card(t) {
@@ -100,6 +259,8 @@ try {
       </div>
     </div>` : `<div class="note" style="margin-top:16px">${t.en} 上季不在英超,所有上季指標從缺;
       模型改用「聯盟後段先驗」估計強度,不確定性標得比較大。</div>`}
+
+    ${coachCard(co)}
 
     <div class="grid g2" style="margin-top:14px">
       ${tac ? `<div class="card"><h3>戰術風格</h3>

@@ -13,6 +13,10 @@
 //
 // 存的東西刻意很小:每隊只留缺陣者的球員代碼與兩個比例。
 // 名字、傷勢描述都不存 —— 那些查得到,而且會把檔案撐大。
+//
+// 合併衝突怎麼解:這個檔 runner 每天寫、本機 build 也會寫,所以 git merge 一定會撞。
+// 解法固定是「隨便挑一邊,然後重跑這支」—— 因為它是以日期為鍵覆寫的,
+// 重跑只會蓋掉今天那一筆,以前的天數原封不動。不要手動編輯 JSON。
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
