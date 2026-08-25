@@ -123,15 +123,20 @@ try {
   <div class="section"><h2>比賽時段</h2><span class="hint">上半場與下半場的淨勝球差異</span></div>
   <div id="tempo"></div>
 
-  <div class="section"><h2>各隊風格卡</h2><span class="hint">雷達為 20 隊之中的百分位</span></div>
-  <div class="grid g3">${tactics.map(t => `
-    <div class="card">
-      <a href="${C.link('teams', { code: t.code })}" style="color:inherit;text-decoration:none">
-        <div class="row" style="gap:9px">${C.badge(t.code)}<b>${C.name(t.code)}</b>
-          <span class="dim tiny" style="margin-left:auto">${t.formation.label}</span></div></a>
-      ${C.radar([{ name: C.name(t.code), color: colour(t.code), values: t.radar }], { size: 230 })}
-      <div class="tags">${t.tags.slice(0, 5).map(x => `<span class="pill">${x}</span>`).join('')}</div>
-    </div>`).join('')}</div>
+  ${/* 這裡原本有一段「各隊風格卡」—— 20 張雷達圖,跟球隊詳情頁的「戰術風格」
+       是同一張圖、同一組標籤,而且每張卡本身只是一個連到球隊頁的連結。
+       同一份圖畫兩次,改了一邊另一邊就會悄悄過期,所以只留球隊頁那一份,
+       這裡改成一排連結,要看誰就點誰。 */ ''}
+  <div class="section"><h2>看單一球隊</h2>
+    <span class="hint">風格雷達、人員配置、定位球順位與教練都在各隊自己的頁面</span></div>
+  <div class="card">
+    <div class="row" style="flex-wrap:wrap;gap:8px">
+      ${tactics.map(t => `<a class="pill" href="${C.link('teams', { code: t.code })}"
+        style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+        ${C.badge(t.code)}${C.name(t.code)}
+        <span class="dim tiny mono">${t.formation.label}</span></a>`).join('')}
+    </div>
+  </div>
   ${C.foot(meta)}`;
 
   const ROLE_ZH = { CB: '中衛', FB: '邊後衛', DM: '防中', CM: '中場', AM: '前腰', W: '邊鋒', ST: '中鋒' };
