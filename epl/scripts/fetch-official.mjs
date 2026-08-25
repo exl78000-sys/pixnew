@@ -24,7 +24,8 @@ const has = k => process.argv.includes(`--${k}`);
 // v2 是壞掉的那次寫進去的(升級檢查沒觸發,格式其實還是 v1),
 // 所以要跳到 3 才推得動 —— 檔案裡已經寫著 2 了。
 // v4:開始存進球事件(events)。
-const STORE_VERSION = 4;
+// v5:改用「比分變了就是進球」判定,不再只認 type==='G' —— 烏龍球不是 G。
+const STORE_VERSION = 5;
 
 const MAX_DETAIL = has('all') ? 400 : 14;   // 每次執行最多抓幾場詳情
 const SOON_MS = 3 * 60 * 60 * 1000;         // 開賽前 3 小時內就開始試(正式陣容約賽前 1 小時公布)
@@ -67,22 +68,48 @@ export const minuteOf = label => {
   return m ? Number(m[1]) : null;
 };
 
-export const goalsOf = events => (Array.isArray(events) ? events : [])
-  .filter(e => e.type === 'G')
-  .map(e => ({
-    person: e.personId ?? null,
-    assist: e.assistId ?? null,
-    team: e.teamId ?? null,
-    min: minuteOf(e.clock?.label),
-    label: e.clock?.label ?? null,
-    phase: e.phase ?? null,
-    // description 的值原封不動存,不自己翻譯 —— 十二碼與烏龍球的代碼還沒確認,
-    // 等資料累積夠了直接統計就知道,不要現在猜一個對照表寫死。
-    kind: e.description ?? null,
-    hs: e.score?.homeScore ?? null,
-    as: e.score?.awayScore ?? null,
-  }))
-  .sort((a, b) => (a.min ?? 0) - (b.min ?? 0));
+// 事件的先後順序。time.millis 是實際時鐘,最可靠;沒有就退回比賽進行秒數。
+const seq = e => e.time?.millis ?? (Number(e.clock?.secs) || 0);
+
+/* 怎麼判定一筆事件是進球:**比分變了就是進球**,而不是看 type === 'G'。
+
+   一開始我是用 type 過濾的,結果對到真實資料就露餡了:
+   Brighton 4-0 Aston Villa 只抓到 3 顆,少的第一顆是**烏龍球** ——
+   烏龍球在官方的事件流裡不是 G,是另一種型別。只認 G 就會少算。
+
+   比分差判定不需要事先知道所有型別代碼:官方每一筆事件都帶著當下比分
+   (而且是該事件發生**之後**的比分,已用 FUL 2-3 CHE 的五顆進球逐筆核對過),
+   所以只要比上一筆高,中間必然發生了一顆進球,不管它叫什麼名字。
+
+   進哪一邊也由比分差決定,不看 teamId —— 烏龍球的 teamId 是踢進自家門的那一隊,
+   拿它當得分方會把球算到錯的隊上。 */
+export const goalsOf = events => {
+  const all = (Array.isArray(events) ? events : []).slice().sort((a, b) => seq(a) - seq(b));
+  const out = [];
+  let ph = 0, pa = 0;
+  for (const e of all) {
+    const hs = e.score?.homeScore, as = e.score?.awayScore;
+    if (hs == null || as == null) continue;
+    if (hs > ph || as > pa) {
+      out.push({
+        side: hs > ph ? 'H' : 'A',          // 得分方,由比分差決定
+        person: e.personId ?? null,
+        assist: e.assistId ?? null,
+        team: e.teamId ?? null,             // 烏龍球時這是「踢進自家門的那一隊」
+        min: minuteOf(e.clock?.label),
+        label: e.clock?.label ?? null,
+        phase: e.phase ?? null,
+        // type 與 description 都原封不動存,不自己翻譯 ——
+        // 烏龍球與十二碼的代碼還沒集滿,等資料累積直接統計就知道,不要現在猜。
+        type: e.type ?? null,
+        kind: e.description ?? null,
+        hs, as,
+      });
+    }
+    ph = hs; pa = as;
+  }
+  return out;
+};
 
 const sideOf = tl => ({
   formation: normaliseFormation(tl.formation?.label),

@@ -353,30 +353,44 @@ async function main() {
 }
 
 /* 官方進球事件的解析。
-   踩過的雷:官方的 event.type 是代碼(G/B/S/PS/PE)不是英文字,
-   第一次用 /goal/i 去比對就得到「0 顆進球」,差點誤報成「官方不給進球事件」。
-   測資直接用實測回來的真實事件形狀,不要自己編一個好看的。 */
+   踩過兩次雷,兩條都要有測試守著:
+
+   1. 官方的 event.type 是代碼(G/B/S/PS/PE)不是英文字。第一次用 /goal/i
+      去比對就得到「0 顆進球」,差點誤報成「官方不給進球事件」。
+   2. 改用 type === 'G' 之後,對上真實資料才發現 Brighton 4-0 Aston Villa
+      只抓到 3 顆 —— 少的那顆是**烏龍球,型別不是 G**。
+      所以現在改用「比分變了就是進球」判定,不需要事先知道所有型別代碼。
+
+   測資用實測回來的真實事件形狀,不要自己編一個好看的。 */
 function checkGoalEvents() {
   const events = [
-    { clock: { secs: 0, label: "00'00" }, phase: '1', type: 'PS', score: { homeScore: 0, awayScore: 0 } },
-    { id: 183587, personId: 72371, teamId: 4, assistId: 49293, clock: { secs: 60, label: "01'00" }, phase: '1', type: 'G', description: 'G', score: { homeScore: 0, awayScore: 1 } },
-    { id: 227665, personId: 51229, teamId: 4, clock: { secs: 300, label: "05'00" }, phase: '1', type: 'B', description: 'Y', score: { homeScore: 0, awayScore: 1 } },
-    { id: 391374, personId: 63741, teamId: 4, clock: { secs: 3900, label: "65'00" }, phase: '2', type: 'S', description: 'ON', score: { homeScore: 2, awayScore: 3 } },
-    // 後進的球先放,驗證會被排序到後面
-    { id: 9, personId: 999, teamId: 4, clock: { secs: 5600, label: "90+4'00" }, phase: '2', type: 'G', description: 'P', score: { homeScore: 2, awayScore: 3 } },
-    { id: 183594, personId: 128976, teamId: 34, assistId: 6712, clock: { secs: 1380, label: "23'00" }, phase: '1', type: 'G', description: 'G', score: { homeScore: 1, awayScore: 1 } },
+    { clock: { secs: 0, label: "00'00" }, phase: '1', type: 'PS', time: { millis: 1000 }, score: { homeScore: 0, awayScore: 0 } },
+    { id: 183587, personId: 72371, teamId: 4, assistId: 49293, clock: { secs: 60, label: "01'00" }, phase: '1', type: 'G', description: 'G', time: { millis: 2000 }, score: { homeScore: 0, awayScore: 1 } },
+    { id: 227665, personId: 51229, teamId: 4, clock: { secs: 300, label: "05'00" }, phase: '1', type: 'B', description: 'Y', time: { millis: 2500 }, score: { homeScore: 0, awayScore: 1 } },
+    { id: 391374, personId: 63741, teamId: 4, clock: { secs: 3900, label: "65'00" }, phase: '2', type: 'S', description: 'ON', time: { millis: 5000 }, score: { homeScore: 1, awayScore: 2 } },
+    // 刻意亂序:後進的球放前面,驗證會被排回時間順序
+    { id: 9, personId: 999, teamId: 4, clock: { secs: 5600, label: "90+4'00" }, phase: '2', type: 'G', description: 'P', time: { millis: 9000 }, score: { homeScore: 2, awayScore: 2 } },
+    { id: 183594, personId: 128976, teamId: 34, assistId: 6712, clock: { secs: 1380, label: "23'00" }, phase: '1', type: 'G', description: 'G', time: { millis: 3000 }, score: { homeScore: 1, awayScore: 1 } },
+    // 烏龍球:型別不是 G,踢進自家門的是客隊球員(teamId 34),但分要算給主隊
+    { id: 77, personId: 88888, teamId: 34, clock: { secs: 2600, label: "43'00" }, phase: '1', type: 'OG', description: 'O', time: { millis: 4000 }, score: { homeScore: 1, awayScore: 2 } },
   ];
   const g = goalsOf(events);
+  const own = g.find(x => x.type === 'OG');
   const cases = [
-    ['只挑出進球,出牌與換人不算', g.length === 3, `抓到 ${g.length} 筆`],
+    ['比分變了就算進球,出牌與換人不算', g.length === 4, `抓到 ${g.length} 筆`],
+    ['烏龍球也算進去(型別不是 G,只認 G 會漏掉)', Boolean(own), g.map(x => x.type).join()],
+    ['烏龍球算給得分的那一隊,不是踢進去的那一隊',
+      own?.side === 'A' && own?.team === 34, `side=${own?.side} team=${own?.team}`],
     ['助攻者跟著那一顆球', g[0].person === 72371 && g[0].assist === 49293, JSON.stringify(g[0])],
-    ['沒有助攻者時是 null,不是 0 或 undefined', g[2].assist === null, String(g[2].assist)],
-    ['依進球時間排序', g.map(x => x.min).join() === '1,23,90', g.map(x => x.min).join()],
+    ['沒有助攻者時是 null,不是 0 或 undefined', g.at(-1).assist === null, String(g.at(-1).assist)],
+    ['亂序的事件會排回時間順序', g.map(x => x.min).join() === '1,23,43,90', g.map(x => x.min).join()],
     ['傷停時間算進該半場的最後一分鐘', minuteOf("90+4'00") === 90, String(minuteOf("90+4'00"))],
-    ['description 原封不動保留,不自己翻譯', g[2].kind === 'P', String(g[2].kind)],
+    ['type 與 description 原封不動保留,不自己翻譯',
+      g.at(-1).kind === 'P' && g.at(-1).type === 'G', `${g.at(-1).type}/${g.at(-1).kind}`],
     ['進球當下比分有帶出來', g[0].hs === 0 && g[0].as === 1, `${g[0].hs}-${g[0].as}`],
-    ['沒有 events 也不會炸', Array.isArray(goalsOf(undefined)) && goalsOf(undefined).length === 0, ''],
-    ['type 用代碼比對(不是英文字)', goalsOf([{ type: 'Goal', personId: 1 }]).length === 0, ''],
+    ['沒有 events 也不會炸', goalsOf(undefined).length === 0, ''],
+    ['沒有比分的事件不會被誤判成進球',
+      goalsOf([{ type: 'G', personId: 1 }]).length === 0, ''],
   ];
   let fail = 0;
   for (const [name, pass, detail] of cases) {
