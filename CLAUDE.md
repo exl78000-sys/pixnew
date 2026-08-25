@@ -79,7 +79,7 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 | FPL 的 `round` 是 **gameweek**,不是賽程輪次 | 改期的比賽對不上(AVL vs LIV:FPL GW25、賽程第 29 輪) | 配對用**日期優先**、輪次備援 |
 | 官方 event 的 `type` 是**代碼**不是英文字 | 用 `/goal/i` 比對 → 一顆進球都抓不到 | 型別是 `G`/`B`/`S`/`PS`/`PE` |
 | **烏龍球不是 `G` 事件** | 只認 `G` → 少算(Brighton 4-0 Aston Villa 只抓到 3 顆) | 用「**比分變了就是進球**」判定,不看型別 |
-| 烏龍球的 `teamId` 是**踢進自家門的那一隊** | 球算到錯的隊上 | 得分方由**比分差**決定 |
+| 烏龍球事件的 `teamId` 語意不明確 | 實測一例是**得分方**(Lindelöf 替維拉踢進烏龍,teamId 卻是 Brighton),但樣本只有一個,不要當通則 | 別依賴 `teamId`。得分方一律由**比分差**決定,`goalsOf()` 就是這樣寫的 |
 | openfootball 的隊名寫法**跨季不同** | `Manchester United` vs `Manchester United FC` → 整季資料被 tolerant 模式吞掉 | `codeOf` 已有寬鬆比對;tolerant 模式會把跳過的隊名印出來,**要看那行輸出** |
 | FPL 的球隊 `short_name` 恰好等於本專案隊碼 | —— | 這是驗證過的,20 隊全對,可以直接用 |
 | `versus()` 的「越低越好」取倒數 | 值是 0 時 1/0 爆掉,對面壓成一根針 | 分母加同量級緩衝(已修,有測試守著) |
@@ -96,6 +96,10 @@ npm test          # 走查回測 + 13 個自我檢查區塊,零依賴
 npm run build     # 產生 web/data/*.json
 npm run bundle    # 產生單檔版 dist/warroom.html
 ```
+
+進球事件的 `description` 子代碼目前已見過 **`G`(一般)、`P`(十二碼)、`O`(烏龍球)** ——
+`O` 已用名單核對過(踢進的人在對方名單裡)。要再往下分類可以從這三個開始,
+但仍不要憑空補沒見過的代碼。
 
 `npm test` 會跑**兩個聯賽**(`test.mjs` 英超 → `test-laliga.mjs` 西甲),
 目前 18 個區塊、101 條斷言。涵蓋:走查回測、模型 vs 市場、即時勝率、AI 報告層、
