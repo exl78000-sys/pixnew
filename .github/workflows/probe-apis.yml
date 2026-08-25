@@ -33,3 +33,8 @@ jobs:
         run: npm run explore:apis
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+
+      # 進球細節:官方單場詳情有沒有進球事件、FPL 鏡像有沒有逐輪歷史檔
+      - name: 探測進球細節資料源
+        working-directory: epl
+        run: npm run probe:goals
