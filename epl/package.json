@@ -34,7 +34,8 @@
     "snapshot": "node scripts/snapshot-availability.mjs",
     "probe:goals": "node scripts/probe-goals.mjs",
     "probe:events": "node scripts/probe-events.mjs",
-    "probe:laliga-players": "node scripts/probe-laliga-players.mjs"
+    "probe:laliga-players": "node scripts/probe-laliga-players.mjs",
+    "probe:laliga-playerdata": "node scripts/probe-laliga-playerdata.mjs"
   },
   "engines": {
     "node": ">=18"

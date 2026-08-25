@@ -50,3 +50,9 @@ jobs:
         run: npm run probe:laliga-players
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+
+      # API-Football 的 Free 方案只開放 2022–2024,本季與上季都拿不到 ——
+      # 回頭找已經在用、而且不需要大量請求的來源。單線,最多 5 個請求。
+      - name: 探測西甲球員整季數據的替代來源
+        working-directory: epl
+        run: npm run probe:laliga-playerdata
