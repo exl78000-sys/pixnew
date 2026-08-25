@@ -22,6 +22,9 @@ import {
 } from './lib/form.mjs';
 import { teamAvailability, cardWatch } from './lib/availability.mjs';
 import { goalsOf, minuteOf } from './fetch-official.mjs';
+import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
+import { GOAL_SEASONS } from './lib/sources.mjs';
+import { teamGoals } from './lib/goals.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -347,9 +350,66 @@ async function main() {
   console.log('\n▶ 官方進球事件解析自我檢查');
   const goalFail = checkGoalEvents();
 
+  console.log('\n▶ 逐場進球明細自我檢查');
+  const detailFail = checkGoalDetails(T);
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || goalFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || goalFail || detailFail) process.exitCode = 1;
+}
+
+/* 逐場進球明細。這份資料是外部協作抽回來的,所以檢查要當它可能有錯來寫。
+
+   最重要的一條是**比分核對**:每場「我方球員進球 + 對手烏龍球」必須等於實際比分。
+   這是拿 openfootball 的賽果來核的 —— 跟 FPL 是兩個獨立來源,對得上才算數。
+   交回來的第一版就是靠這條抓到 15 + 24 場對不上,追下去才發現球員隊伍
+   取自季末快照、轉隊的人整季的球都記到新東家(Rashford 替曼聯進的 2 球
+   被記成維拉的)。adapter 現在會在載入時修掉,這條檢查守著它別再壞。 */
+function checkGoalDetails(T) {
+  const cases = [];
+  let any = false;
+  for (const season of GOAL_SEASONS) {
+    const ms = loadMatches({ root: ROOT, competition: COMPETITION, season, codeOf: T.codeOf });
+    const g = loadGoals({ root: ROOT, season, matches: ms });
+    if (!g) { cases.push([`${season} 進球明細`, true, '(檔案不存在,略過)']); continue; }
+    any = true;
+    const rec = reconcile(g.records, ms);
+    cases.push(
+      [`${season} 比分與賽果完全相符(${rec.ok}/${rec.checked} 場)`, rec.mismatches.length === 0,
+        rec.mismatches.slice(0, 3).map(m => `${m.date} ${m.home} ${m.real} ${m.away}→${m.got}`).join(' / ')],
+      [`${season} 每一筆都對得回賽程`, g.orphan === 0, `${g.orphan} 筆對不到`],
+    );
+    // 烏龍球必須算給對手,不是算給踢進去的那一隊
+    const og = g.records.filter(r => r.og > 0);
+    if (og.length) {
+      const one = og[0];
+      const t = teamGoals(g.records, one.team);
+      const opp = teamGoals(g.records, one.opp);
+      cases.push([`${season} 烏龍球算給對手(${one.team} 的烏龍記成 ${one.opp} 的進球)`,
+        t.ownAgainst > 0 && opp.ownFor > 0, `ownAgainst=${t.ownAgainst} ownFor=${opp.ownFor}`]);
+    }
+  }
+  if (!any) return 0;
+
+  /* 隊伍修正:用一筆刻意寫錯 team 的紀錄,驗證 adapter 會從賽程反推回正確的隊伍。
+     (這正是 Rashford 那個 bug 的形狀:對手與主客都對,只有 team 是錯的。) */
+  const season = GOAL_SEASONS[0];
+  const ms = loadMatches({ root: ROOT, competition: COMPETITION, season, codeOf: T.codeOf });
+  const g = loadGoals({ root: ROOT, season, matches: ms });
+  if (g) {
+    const sample = g.records.find(r => r.g > 0);
+    const m = ms.find(x => x.date === sample.date && (x.home === sample.team || x.away === sample.team));
+    cases.push(['球員的隊伍是從賽程反推的,不是照抄檔案裡的欄位',
+      Boolean(m) && (sample.home ? m.home : m.away) === sample.team,
+      `${sample.date} ${sample.team} vs ${sample.opp}`]);
+  }
+
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
 }
 
 /* 官方進球事件的解析。

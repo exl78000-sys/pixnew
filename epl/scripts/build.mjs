@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { COMPETITION, CURRENT_SEASON, LAST_SEASON, HISTORY_SEASONS, H2H_EXTRA_SEASONS, ATTRIBUTION } from './lib/sources.mjs';
+import { COMPETITION, CURRENT_SEASON, LAST_SEASON, HISTORY_SEASONS, H2H_EXTRA_SEASONS, GOAL_SEASONS, ATTRIBUTION } from './lib/sources.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { loadMatches, loadSquads } from './lib/adapters/index.mjs';
 import { competition as competitionDef, seasonLength } from './lib/canonical.mjs';
@@ -30,6 +30,8 @@ import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
+import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
+import { buildGoals } from './lib/goals.mjs';
 import { round } from './lib/util.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -357,6 +359,27 @@ async function main() {
     };
   }
 
+  /* ── 逐場進球明細 ────────────────────────────
+     來源檔由外部協作產生;adapter 會在載入時修正 team 欄(季末快照對轉隊的人是錯的)
+     並用日期把每一筆對回賽程。這裡再核一次比分 —— 對不上就不出這份資料,
+     寧可少一個區塊,也不要在頁面上放一組跟賽果矛盾的數字。 */
+  const goalsBySeason = {};
+  for (const gs of GOAL_SEASONS) {
+    const seasonMs = bySeason.get(gs) ?? (HISTORY_SEASONS.includes(gs) || gs === CURRENT_SEASON ? null : load(gs));
+    if (!seasonMs) continue;
+    const g = loadGoals({ root: ROOT, season: gs, matches: seasonMs });
+    if (!g) continue;
+    const rec = reconcile(g.records, seasonMs);
+    if (rec.mismatches.length) {
+      console.log(`  ⚠ ${gs} 進球明細與賽果對不上 ${rec.mismatches.length} 場,略過這一季`);
+      rec.mismatches.slice(0, 3).forEach(m => console.log(`     ${m.date} ${m.home} ${m.real} ${m.away} → 推得 ${m.got}`));
+      continue;
+    }
+    goalsBySeason[gs] = g.records;
+    console.log(`  進球明細 ${gs}:${g.records.length} 筆・比分核對 ${rec.ok}/${rec.checked} ✔`
+      + (g.repaired ? `・修正球員隊伍 ${g.repaired} 筆` : ''));
+  }
+
   // ── 交手紀錄(本季所有對戰組合) ────────────
   const h2h = {};
   const pairs = new Set();
@@ -673,6 +696,33 @@ async function main() {
      沒跑過就沒有 —— 前端會據實顯示「尚未驗證」而不是留白。 */
   const tuningPath = join(ROOT, 'data', 'form-tuning.json');
   const tuning = existsSync(tuningPath) ? JSON.parse(await readFile(tuningPath, 'utf8')) : null;
+  /* 進球明細的球員姓名要涵蓋往季 —— 2024-25 有六十幾位進球者已經離開英超,
+     只有那一季的名冊查得到他們。名冊抓不到就顯示代碼,不編一個名字出來。 */
+  const goalNames = new Map(players.map(p => [p.code, p.name]));
+  for (const gs of GOAL_SEASONS) {
+    const csv = join(ROOT, 'data', 'raw', 'fpl', `${gs}-players.csv`);
+    if (!existsSync(csv)) continue;
+    for (const r of parseCSVObjects(readFileSync(csv, 'utf8'))) {
+      if (!goalNames.has(r.code)) goalNames.set(r.code, r.web_name);
+    }
+  }
+  const goalsOut = buildGoals(goalsBySeason, {
+    nameOf: c => goalNames.get(c) ?? `#${c}`,
+    codes: [...new Set(Object.values(goalsBySeason).flatMap(rs => rs.map(r => r.team)))].sort(),
+  });
+  {
+    const unnamed = new Set();
+    for (const s of Object.values(goalsOut)) for (const t of Object.values(s.teams)) {
+      for (const p of t.players) if (p.name.startsWith('#')) unnamed.add(p.code);
+    }
+    if (unnamed.size) console.log(`  ⚠ 進球明細有 ${unnamed.size} 位球員查不到名字(缺該季名冊,顯示為代碼)`);
+  }
+  await write('goals.json', {
+    seasons: Object.keys(goalsOut),
+    note: '逐場進球與助攻。進球方式(運動戰/角球/任意球)沒有免費資料源,因此不提供。',
+    data: goalsOut,
+  });
+
   await write('form.json', {
     asOf: AS_OF,
     // 誠實標註:這份資料不影響任何一個機率數字

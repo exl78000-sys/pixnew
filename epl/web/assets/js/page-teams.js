@@ -3,8 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, players, fixtures, coaches, results } =
-    await C.load('meta', 'clubs', 'teams', 'players', 'fixtures', 'coaches', 'results');
+  const { meta, clubs, teams, players, fixtures, coaches, results, goals } =
+    await C.load('meta', 'clubs', 'teams', 'players', 'fixtures', 'coaches', 'results', 'goals');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -27,6 +27,117 @@ try {
   const rec = r => (r && r.p ? `${r.p} 場・${r.w}勝${r.d}和${r.l}負・場均 <b>${r.ppg}</b> 分` : '任內無本季比賽紀錄');
 
   code && teams.some(t => t.code === code) ? detail(teams.find(t => t.code === code)) : overview();
+
+  /* 進球來源。
+     能回答:對每一隊進幾球/被進幾球、誰進的、誰助攻、先發還是替補進的。
+     **不能回答:怎麼進的(運動戰/角球/任意球)。** 那是 Opta qualifier 等級的資料,
+     免費源沒有 —— 所以連欄位都不留,不做一個永遠空白的格子。 */
+  function goalSection(t) {
+    const seasons = (goals?.seasons ?? []).filter(s => goals.data[s]?.teams?.[t.code]);
+    if (!seasons.length) return '';
+    const id = 'gs' + t.code;
+    queueMicrotask(() => renderGoals(t, seasons.at(-1)));
+    return `
+    <div class="section" style="margin-top:18px"><h2>進球來源</h2>
+      <span class="hint">逐場進球與助攻・${seasons.length > 1 ? '可切換賽季' : seasons[0]}</span></div>
+    ${seasons.length > 1 ? `<div class="filters" style="margin-bottom:12px">
+      <label>賽季</label><select id="${id}">
+        ${seasons.map(s => `<option value="${s}" ${s === seasons.at(-1) ? 'selected' : ''}>${s}</option>`).join('')}
+      </select></div>` : ''}
+    <div id="${id}box"></div>`;
+  }
+
+  function renderGoals(t, season) {
+    const id = 'gs' + t.code;
+    const sel = document.getElementById(id);
+    if (sel) sel.onchange = () => renderGoals(t, sel.value);
+    const S = goals.data[season];
+    const g = S?.teams?.[t.code];
+    const box = document.getElementById(id + 'box');
+    if (!box || !g) return;
+
+    const col = t.chartColor ?? 'var(--accent)';
+    const maxV = Math.max(1, ...g.vs.map(v => Math.max(v.f, v.a)));
+    /* 對手用中性灰而不是對手的隊色 —— 19 個對手一起出現時,
+       19 種顏色等於沒有顏色,重點反而看不出來。本隊用本隊的色,對手一律灰。
+
+       每條都畫在一條淡軌道上:0 球的話條長是 0,沒有軌道就整列消失,
+       讀者會以為那一列缺資料,而不是「這隊一球沒進」。 */
+    const bar = (n, colour) => `<span style="flex:1;height:9px;border-radius:3px;background:var(--line-soft);
+      position:relative;overflow:hidden">
+      <span style="position:absolute;inset:0 auto 0 0;width:${(n / maxV) * 100}%;
+        background:${colour};border-radius:3px"></span></span>`;
+
+    const subPct = g.for ? (g.subGoals / (g.starterGoals + g.subGoals || 1)) * 100 : 0;
+    const leaguePct = (S.subShare ?? 0) * 100;
+
+    box.innerHTML = `
+    <div class="grid g2">
+      <div class="card">
+        <h3>進球數</h3>
+        <div class="grid g3" style="grid-template-columns:repeat(3,1fr);margin-top:4px">
+          <div><div class="tiny dim">進球</div><div class="value mono" style="font-size:24px;font-weight:700">${g.for}</div></div>
+          <div><div class="tiny dim">失球</div><div class="value mono" style="font-size:24px;font-weight:700">${g.against}</div></div>
+          <div><div class="tiny dim">助攻</div><div class="value mono" style="font-size:24px;font-weight:700">${g.assists}</div></div>
+        </div>
+        <div class="stat-line" style="margin-top:10px"><span class="small muted">先發進球</span>
+          <b class="mono">${g.starterGoals}</b></div>
+        <div class="stat-line"><span class="small muted">替補進球</span>
+          <b class="mono">${g.subGoals} <span class="dim tiny">${C.fx(subPct, 1)}%</span></b></div>
+        <div class="tiny dim" style="margin-top:6px">
+          全聯盟平均有 ${C.fx(leaguePct, 1)}% 的進球來自替補 ——
+          這隊${subPct > leaguePct + 3 ? '<b>比平均更依賴板凳</b>' : subPct < leaguePct - 3 ? '<b>幾乎都靠先發解決</b>' : '跟平均差不多'}。
+        </div>
+        ${g.ownFor || g.ownAgainst ? `<div class="tiny dim" style="margin-top:6px">
+          其中 ${g.ownFor} 球是對手的烏龍球;另有 ${g.ownAgainst} 球是自己人踢進自家門。
+          上面的進球榜不含烏龍球(那不算任何人的進球)。</div>` : ''}
+      </div>
+
+      <div class="card">
+        <h3>對誰進球</h3>
+        <div class="tiny dim" style="margin-bottom:8px">
+          <span style="display:inline-block;width:9px;height:9px;background:${col};border-radius:2px"></span> 進球
+          ・<span style="display:inline-block;width:9px;height:9px;background:var(--ink-3);border-radius:2px"></span> 失球
+        </div>
+        <div style="display:grid;gap:5px;max-height:340px;overflow-y:auto">
+          ${g.vs.map(v => `<div class="row" style="gap:8px;align-items:center;
+            padding:3px 0;border-bottom:1px solid var(--line-soft)">
+            <span class="small" style="width:78px;flex:none">${C.esc(C.name(v.opp))}</span>
+            <span style="flex:1;display:grid;gap:3px">
+              <span class="row" style="gap:6px;align-items:center">${bar(v.f, col)}
+                <span class="tiny mono" style="width:14px;flex:none;text-align:right">${v.f}</span></span>
+              <span class="row" style="gap:6px;align-items:center">${bar(v.a, 'var(--ink-3)')}
+                <span class="tiny mono dim" style="width:14px;flex:none;text-align:right">${v.a}</span></span>
+            </span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>誰進的、誰助攻的</h3>
+      <div id="${id}tbl"></div>
+      <div class="tiny dim" style="margin-top:8px">
+        每 90 分鐘的分母是<b>上場分鐘</b>,不是出賽場次。上場不足 450 分鐘的不給這個數字 ——
+        替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。
+        <br><b>沒有「進球方式」這一欄。</b>運動戰、角球、任意球的區分是 Opta qualifier 等級的資料,
+        免費資料源給不到,所以不做,也不留一個永遠空白的欄位。
+      </div>
+    </div>`;
+
+    document.getElementById(id + 'tbl').innerHTML = C.table(g.players, [
+      { key: 'name', label: '球員', value: p => p.name,
+        render: p => `<span class="team-cell">${C.playerPhoto({ code: p.code, name: p.name, team: t.code }, 24)}
+          <span>${C.esc(p.name)}</span></span>` },
+      { key: 'g', label: '進球', value: p => p.g, num: true, render: p => (p.g ? `<b>${p.g}</b>` : '—') },
+      { key: 'a', label: '助攻', value: p => p.a, num: true, render: p => (p.a ? p.a : '—') },
+      { key: 'start', label: '先發 / 替補', value: p => p.startG, sortable: false, num: true,
+        title: '這名球員的進球中,先發上場與替補上場各幾球',
+        render: p => (p.g ? `<span class="mono">${p.startG} <span class="dim">/</span> ${p.subG}</span>` : '—') },
+      { key: 'min', label: '上場分鐘', value: p => p.min, num: true },
+      { key: 'g90', label: '進球 / 90', value: p => p.g90 ?? -1, num: true, render: p => p.g90 ?? '—' },
+      { key: 'a90', label: '助攻 / 90', value: p => p.a90 ?? -1, num: true, render: p => p.a90 ?? '—' },
+    ], { sortKey: 'g', desc: true });
+  }
 
   /* 單隊的教練區塊。原本整頁的教練卡就是這一段 ——
      搬過來之後,「誰在帶這支球隊、帶多久、成績如何」跟球隊的其他資料在同一頁,
@@ -261,6 +372,8 @@ try {
       模型改用「聯盟後段先驗」估計強度,不確定性標得比較大。</div>`}
 
     ${coachCard(co)}
+
+    ${goalSection(t)}
 
     <div class="grid g2" style="margin-top:14px">
       ${tac ? `<div class="card"><h3>戰術風格</h3>

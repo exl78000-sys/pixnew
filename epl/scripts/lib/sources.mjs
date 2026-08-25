@@ -12,6 +12,11 @@ export const HISTORY_SEASONS = ['2023-24', '2024-25', '2025-26']; // 進模型�
    這些檔案是 optional:上游沒有就跳過,不讓 fetch 失敗。 */
 export const H2H_EXTRA_SEASONS = ['2018-19', '2019-20', '2020-21', '2021-22', '2022-23'];
 
+/* 有逐場進球明細的賽季。檔案由外部協作產生(docs/提示詞A-逐場進球助攻.md),
+   放在 data/raw/fpl/{season}-goals.json。沒有檔案的賽季會自動略過。
+   本季(2026-27)上游還沒發布 gws,要等它出來才補得了。 */
+export const GOAL_SEASONS = ['2024-25', '2025-26'];
+
 const OF = 'https://raw.githubusercontent.com/openfootball/football.json/master';
 const FPL = 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data';
 
@@ -26,6 +31,13 @@ export function sourceList() {
   for (const s of [...new Set([LAST_SEASON, CURRENT_SEASON])]) {
     list.push({ url: `${FPL}/${s}/players_raw.csv`, file: `fpl/${s}-players.csv`, label: `球員數據 ${s}` });
     list.push({ url: `${FPL}/${s}/teams.csv`, file: `fpl/${s}-teams.csv`, label: `球隊強度 ${s}` });
+  }
+  /* 進球明細涵蓋的賽季,球員名冊也要有 —— 不然「誰進的」只查得到代碼查不到名字。
+     2024-25 有 65 位進球者已經離開英超,他們的名字只存在於那一季的名冊裡。
+     這是靜態檔,抓一次就不用再抓。 */
+  for (const s of GOAL_SEASONS) {
+    if (s === LAST_SEASON || s === CURRENT_SEASON) continue;
+    list.push({ url: `${FPL}/${s}/players_raw.csv`, file: `fpl/${s}-players.csv`, label: `球員名冊 ${s}(進球明細用)`, optional: true });
   }
   list.push({ url: `${FPL}/${CURRENT_SEASON}/fixtures.csv`, file: `fpl/${CURRENT_SEASON}-fixtures.csv`, label: `賽程難度 ${CURRENT_SEASON}` });
   return list;
