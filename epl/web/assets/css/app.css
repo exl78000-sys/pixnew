@@ -74,6 +74,9 @@ a:hover { text-decoration: underline; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .3px; font-size: 16px; color: var(--ink); }
 .brand .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
 .brand small { font-weight: 500; color: var(--ink-3); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; }
+.league-switch { display:flex; gap:3px; padding:3px; border:1px solid var(--line); border-radius:999px; background:#ffffff08; }
+.league-switch a { color:var(--ink-3); padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; text-decoration:none; }
+.league-switch a.on { color:#0b0710; background:var(--accent); }
 nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
 nav.tabs a {
   color: var(--ink-2); padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600;

@@ -39,6 +39,13 @@ function checkApiFootball(T) {
   const raw = {
     fixture: { id: 123, date: '2026-08-22T14:00:00Z', status: { short: 'FT' } },
     teams: { home: { name: homeName }, away: { name: awayName } },
+    goals: { home: 2, away: 1 },
+    lineups: [
+      { team: { name: homeName }, formation: '4-3-3', coach: { name: 'Home Coach' },
+        startXI: Array.from({ length: 11 }, (_, i) => ({ player: { id: 100 + i, name: `Home ${i + 1}`, number: i + 1, pos: i ? 'D' : 'G', grid: i ? `2:${i}` : '1:1' } })), substitutes: [] },
+      { team: { name: awayName }, formation: '4-2-3-1', coach: { name: 'Away Coach' },
+        startXI: Array.from({ length: 11 }, (_, i) => ({ player: { id: 200 + i, name: `Away ${i + 1}`, number: i + 1, pos: i ? 'M' : 'G', grid: i ? `2:${i}` : '1:1' } })), substitutes: [] },
+    ],
     statistics: [{ team: { name: homeName }, statistics: [
       { type: 'Ball Possession', value: '61%' }, { type: 'Total Shots', value: 17 },
       { type: 'Passes %', value: '88%' }, { type: 'expected_goals', value: '2.14' },
@@ -64,6 +71,8 @@ function checkApiFootball(T) {
     ['百分比與 xG 轉成數值', d?.teamStats?.ARS?.possession === 61 && d.teamStats.ARS.xG === 2.14],
     ['球員評分與完整攻守欄位保留', p?.rating === 7.4 && p.shots.on === 2 && p.passes.key === 3 && p.duels.won === 6 && p.tackles.interceptions === 2],
     ['事件含補時、球員與類型', d?.events?.[0]?.label === "45+2'" && d.events[0].playerId === 7 && d.events[0].type === 'Goal'],
+    ['正式陣容、陣型與比分保留', d?.coverage?.lineups === true && d.lineups.ARS.formation === '4-3-3'
+      && d.lineups.ARS.xi.length === 11 && d.score.home === 2 && d.score.away === 1],
     ['速度/距離/衝刺明確標成不可用', d?.coverage?.speed === false && d.coverage.distance === false && d.coverage.sprints === false
       && d.unavailable.join('|') === 'speed|distance|sprints'],
   ];

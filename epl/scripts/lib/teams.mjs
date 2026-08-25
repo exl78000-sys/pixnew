@@ -14,8 +14,8 @@ const loose = name => String(name ?? '')
   .replace(/&/g, ' and ')
   .replace(/[^a-z0-9]/g, '');
 
-export function loadTeams(root) {
-  const raw = JSON.parse(readFileSync(join(root, 'data', 'manual', 'teams.json'), 'utf8'));
+export function loadTeams(root, { file = 'teams.json' } = {}) {
+  const raw = JSON.parse(readFileSync(join(root, 'data', 'manual', file), 'utf8'));
   const byCode = new Map(), byOf = new Map(), byFpl = new Map(), byLoose = new Map();
   for (const t of raw.teams) {
     byCode.set(t.code, t);

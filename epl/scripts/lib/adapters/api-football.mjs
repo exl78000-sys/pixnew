@@ -20,7 +20,11 @@ export const supports = [
 ];
 
 const BASE = 'https://v3.football.api-sports.io';
-const LEAGUE_EPL = 39;          // API-Football 的英超 league id
+export const API_FOOTBALL_LEAGUES = Object.freeze({
+  pl: 39,                      // Premier League
+  es1: 140,                    // La Liga
+});
+const LEAGUE_EPL = API_FOOTBALL_LEAGUES.pl;
 const COMPLETED = new Set(['FT', 'AET', 'PEN']);
 const RETRY_AFTER_MS = 30 * 60e3;
 
@@ -162,14 +166,15 @@ export async function loadFormations({ root, season, round, codeOf, env = proces
    live 輪詢可以一直呼叫這個函式；已成功的比賽會在任何網路請求之前被略過。
    供應商沒有速度、跑動距離與衝刺資料,因此 canonical schema 明確標成 unavailable,
    絕不從其他欄位推估。 */
-const postMatchPath = root => join(root, 'data', 'raw', 'api-football', 'match-details.json');
+const postMatchPath = (root, { storeDir = 'api-football', storeFile = 'match-details.json' } = {}) =>
+  join(root, 'data', 'raw', storeDir, storeFile);
 const emptyPostMatchStore = season => ({
   version: 1, source: id, season, updatedAt: null, matches: {}, attempts: {},
 });
 
-async function readPostMatchStore(root, season) {
+async function readPostMatchStore(root, season, storage) {
   try {
-    const parsed = JSON.parse(await readFile(postMatchPath(root), 'utf8'));
+    const parsed = JSON.parse(await readFile(postMatchPath(root, storage), 'utf8'));
     if (parsed.season && parsed.season !== season) return emptyPostMatchStore(season);
     return {
       ...emptyPostMatchStore(season), ...parsed, season,
@@ -178,8 +183,8 @@ async function readPostMatchStore(root, season) {
   } catch { return emptyPostMatchStore(season); }
 }
 
-async function writePostMatchStore(root, store) {
-  const file = postMatchPath(root);
+async function writePostMatchStore(root, store, storage) {
+  const file = postMatchPath(root, storage);
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, JSON.stringify(store, null, 1));
 }
@@ -271,6 +276,26 @@ function canonicalEvent(row, codeOf) {
   };
 }
 
+const canonicalLineupPlayer = row => ({
+  providerId: row?.player?.id ?? null,
+  name: row?.player?.name ?? '',
+  shirt: numberOrNull(row?.player?.number),
+  pos: row?.player?.pos ?? null,
+  grid: row?.player?.grid ?? null,
+});
+
+function canonicalLineup(row, codeOf) {
+  const team = codeOf(row?.team?.name);
+  if (!team) return null;
+  return {
+    team,
+    formation: row.formation ?? null,
+    coach: row.coach?.name ?? null,
+    xi: (row.startXI ?? []).map(canonicalLineupPlayer).filter(p => p.name),
+    bench: (row.substitutes ?? []).map(canonicalLineupPlayer).filter(p => p.name),
+  };
+}
+
 const hasObjectValue = obj => Object.values(obj ?? {}).some(v => v !== null && v !== undefined);
 
 /* 匯出純轉換函式,讓測試可用假回應驗證欄位,不需要真的消耗 API 額度。 */
@@ -296,17 +321,24 @@ export function normaliseMatchDetail(row, { codeOf, season = null } = {}) {
   const hasStats = Object.values(teamStats).some(hasObjectValue);
   const hasPlayers = Object.values(players).some(list => list.length);
   const hasEvents = events.length > 0;
+  const lineups = {};
+  for (const rowLineup of row.lineups ?? []) {
+    const lineup = canonicalLineup(rowLineup, codeOf);
+    if (lineup) lineups[lineup.team] = lineup;
+  }
+  const hasLineups = [home, away].every(code => lineups[code]?.xi?.length === 11);
   const fetchedAt = new Date().toISOString();
   return {
-    key: `${home}|${away}`, season,
+    key: `${home}|${away}`, season, source: id,
     fixtureId: row.fixture?.id ?? null,
     kickoff: row.fixture?.date ?? null,
     status: row.fixture?.status?.short ?? null,
     home, away, fetchedAt,
-    teamStats, players, events,
+    score: { home: numberOrNull(row.goals?.home), away: numberOrNull(row.goals?.away) },
+    teamStats, players, events, lineups,
     coverage: {
       teamStatistics: hasStats, playerStatistics: hasPlayers, ratings: Object.values(players).flat().some(p => p.rating !== null),
-      events: hasEvents,
+      events: hasEvents, lineups: hasLineups,
       tracking: false, speed: false, distance: false, sprints: false,
     },
     unavailable: ['speed', 'distance', 'sprints'],
@@ -322,10 +354,13 @@ const chunks = (rows, size) => Array.from({ length: Math.ceil(rows.length / size
  */
 export async function fetchCompletedMatchDetails({
   root, season, codeOf, onlyKeys = null, force = false,
+  leagueId = LEAGUE_EPL, storeDir = 'api-football', storeFile = 'match-details.json',
+  expectedScores = null, requireLineups = false,
   env = process.env, fetchImpl = fetch,
 } = {}) {
   if (!enabled(env)) return { enabled: false, fetched: 0, cached: 0, note: '未設定 API_FOOTBALL_KEY' };
-  const store = await readPostMatchStore(root, season);
+  const storage = { storeDir, storeFile };
+  const store = await readPostMatchStore(root, season, storage);
   const requested = onlyKeys ? [...new Set([...onlyKeys])] : null;
   const now = Date.now();
   const today = new Date(now).toISOString().slice(0, 10);
@@ -342,7 +377,8 @@ export async function fetchCompletedMatchDetails({
   }
 
   const budget = await new Budget(root).load();
-  const fixtures = await call(`/fixtures?league=${LEAGUE_EPL}&season=${apiSeason(season)}&status=FT-AET-PEN`,
+  const budgetBefore = budget.left();
+  const fixtures = await call(`/fixtures?league=${leagueId}&season=${apiSeason(season)}&status=FT-AET-PEN`,
     { env, budget, fetchImpl });
   if (!Array.isArray(fixtures)) return { enabled: true, fetched: 0, cached: 0, error: '完賽清單取得失敗', budgetLeft: budget.left() };
 
@@ -371,19 +407,29 @@ export async function fetchCompletedMatchDetails({
       const candidate = byId.get(String(raw.fixture?.id));
       const detail = normaliseMatchDetail(raw, { codeOf, season });
       if (!candidate || !detail || !COMPLETED.has(detail.status)) continue;
+      const expected = expectedScores instanceof Map ? expectedScores.get(candidate.key) : expectedScores?.[candidate.key];
+      if (expected && (detail.score.home !== expected.home || detail.score.away !== expected.away)) {
+        store.attempts[candidate.key] = {
+          ...store.attempts[candidate.key], error: 'score-mismatch',
+          expected: `${expected.home}-${expected.away}`, received: `${detail.score.home}-${detail.score.away}`,
+        };
+        continue;
+      }
       // 不把半成品當永久完成：三條資料都齊、且至少一位球員有供應商評分才落盤。
       // 否則 live 會稍後重試；一天每場最多三次,避免終場瞬間一直燒額度。
       if (!detail.coverage.teamStatistics || !detail.coverage.playerStatistics || !detail.coverage.ratings || !detail.coverage.events) continue;
+      if (requireLineups && !detail.coverage.lineups) continue;
       store.matches[candidate.key] = detail;
       delete store.attempts[candidate.key];
       fetched++;
     }
   }
   store.updatedAt = new Date().toISOString();
-  await writePostMatchStore(root, store);
+  await writePostMatchStore(root, store, storage);
   return {
     enabled: true, fetched,
     cached: requested?.filter(k => store.matches[k]).length ?? Object.keys(store.matches).length,
-    missing: attemptedKeys.size - fetched, budgetLeft: budget.left(), file: postMatchPath(root),
+    missing: attemptedKeys.size - fetched, budgetLeft: budget.left(), requestsUsed: budgetBefore - budget.left(),
+    file: postMatchPath(root, storage),
   };
 }

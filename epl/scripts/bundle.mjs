@@ -41,10 +41,22 @@ async function main() {
   const dataFiles = (await readdir(join(WEB, 'data'))).filter(f => f.endsWith('.json'));
   const data = {};
   for (const f of dataFiles) data[f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(WEB, 'data', f), 'utf8'));
+  const datasets = { pl: data };
+  const leaguesDir = join(WEB, 'data', 'leagues');
+  try {
+    for (const ent of await readdir(leaguesDir, { withFileTypes: true })) {
+      if (!ent.isDirectory()) continue;
+      const dir = join(leaguesDir, ent.name);
+      const files = (await readdir(dir)).filter(f => f.endsWith('.json'));
+      datasets[ent.name] = {};
+      for (const f of files) datasets[ent.name][f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(dir, f), 'utf8'));
+    }
+  } catch { /* 沒有額外聯賽時維持只有英超 */ }
   const meta = data.meta;
 
   // 資料裡若出現 </script 會提前關掉標籤,要先拆開
   const dataJson = JSON.stringify(data).replace(/<\/script/gi, '<\\/script');
+  const datasetsJson = JSON.stringify(datasets).replace(/<\/script/gi, '<\\/script');
 
   const html = `<title>英超戰情室</title>
 <meta name="description" content="英超比賽分析平台:球員、戰術、教練、動態與賽果預測。">
@@ -52,7 +64,7 @@ async function main() {
 ${css}
 </style>
 <main class="wrap" id="app"><div class="loading">載入資料中…</div></main>
-<script>window.__WARROOM_BUNDLE__ = true; window.__DATA__ = ${dataJson};</script>
+<script>window.__WARROOM_BUNDLE__ = true; window.__DATA__ = ${dataJson}; window.__DATASETS__ = ${datasetsJson};</script>
 <script type="module">
 ${core}
 
@@ -89,7 +101,8 @@ route();
   const out = join(ROOT, 'dist', 'warroom.html');
   await writeFile(out, html);
   console.log(`✔ 單檔版完成 → dist/warroom.html(${(html.length / 1024 / 1024).toFixed(2)} MB)`);
-  console.log(`  含 ${PAGES.length} 個頁面、${dataFiles.length} 份資料集、${exportNames.length} 個共用函式、基準日 ${meta.asOf}`);
+  const datasetCount = Object.values(datasets).reduce((n, d) => n + Object.keys(d).length, 0);
+  console.log(`  含 ${PAGES.length} 個頁面、${datasetCount} 份資料集(${Object.keys(datasets).length} 個聯賽)、${exportNames.length} 個共用函式、基準日 ${meta.asOf}`);
 }
 
 main().catch(err => { console.error('✗ 打包失敗:', err); process.exit(1); });

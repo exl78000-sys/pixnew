@@ -7,6 +7,7 @@ try {
     await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
+  const basic = meta.edition === 'basic';
 
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const tacBy = new Map(tactics.map(t => [t.code, t]));
@@ -35,6 +36,7 @@ try {
 
   /* ── 單場分析 ────────────────────────────── */
   function renderMatch(f) {
+    if (basic) { renderBasicMatch(f); return; }
     const p = f.prediction;
     const preArt = preArticleFor(f);
     const postArt = postArticleFor(f);
@@ -228,6 +230,57 @@ try {
     setupExpertPagers();
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
     C.startCountdowns();
+  }
+
+  function renderBasicMatch(f) {
+    const report = reportFor(f);
+    const H = teamBy.get(f.home), A = teamBy.get(f.away);
+    const ht = H?.tactics, at = A?.tactics;
+    const val = (obj, path) => path.reduce((v, key) => v?.[key], obj) ?? null;
+    const comparison = C.versus([
+      { label: 'Elo', h: H?.elo ?? null, a: A?.elo ?? null, digits: 0 },
+      { label: '上季名次', h: H?.lastSeason?.pos ?? null, a: A?.lastSeason?.pos ?? null, digits: 0, better: 'low' },
+      { label: '場均勝點', h: H?.lastSeason?.ppg ?? null, a: A?.lastSeason?.ppg ?? null },
+      { label: 'xG / 場', h: val(ht, ['attack', 'xG90']), a: val(at, ['attack', 'xG90']) },
+      { label: 'xGA / 場', h: val(ht, ['defence', 'xGA90']), a: val(at, ['defence', 'xGA90']), better: 'low' },
+      { label: '定位球 xG / 場', h: val(ht, ['setPieces', 'xG90']), a: val(at, ['setPieces', 'xG90']), digits: 3 },
+    ], {
+      home: f.home, away: f.away, colors: f.colors,
+      note: `${meta.lastSeason} 球隊層級資料只供背景對比；下方賽後數字才是這一場的真實資料。`,
+    });
+
+    app.innerHTML = `
+    <div class="page-head">
+      <a class="small dim" href="${C.link('fixtures')}">← 回賽程與預測</a>
+      <h1 style="margin-top:6px">${C.teamLink(f.home)} <span class="dim">vs</span> ${C.teamLink(f.away)}</h1>
+      <p>西甲 ${f.season}・第 ${f.round} 輪・${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</p>
+      ${C.stampRow([
+        C.stamp('正式比分', { iso: meta.builtAt, kind: 'daily' }),
+        report ? C.stamp('完整賽後資料', { iso: report.advanced?.fetchedAt, kind: 'season', note: '完賽後抓取一次並永久快取' }) : null,
+      ])}
+    </div>
+    <div class="card">
+      <div class="scoreline" style="margin:4px 0 10px">
+        <div class="side">${C.badge(f.home, 'big')}<b>${C.teamLink(f.home)}</b></div>
+        <div class="sc" style="font-size:22px">${f.played ? `${f.fh} <span class="dim">:</span> ${f.fa}` : '未開賽'}</div>
+        <div class="side away">${C.badge(f.away, 'big')}<b>${C.teamLink(f.away)}</b></div>
+      </div>
+      <div class="center tiny dim">${f.played
+        ? '這場沒有保存可驗證的賽前機率快照，因此不拿賽後重建機率冒充賽前預測。'
+        : '賽前機率請回賽程頁查看。'}</div>
+    </div>
+
+    <div class="section"><h2>兩隊上季背景</h2><span class="hint">${meta.lastSeason}・不調整賽後結論</span></div>
+    <div class="card">${comparison}</div>
+
+    <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
+    ${report
+      ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode))
+      : `<div class="card"><div class="note info"><b>這場尚待 API 永久快取。</b>
+          更新流程只會在完賽後抓取；必須同時取得球隊統計、兩隊正式陣容、事件、球員數據與至少一筆評分，且比分核對一致才會發布。缺任何一項都不會用估算值補上。</div>
+        <div class="tiny dim" style="margin-top:10px">本機開頁不會呼叫 API；資料由 <span class="mono">npm run laliga:postmatch</span> 或 GitHub 定時流程寫入。</div></div>`}
+    ${C.foot(meta)}`;
+    C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
   }
 
   function articleCard(art, fallbackTitle, phase = 'pre') {

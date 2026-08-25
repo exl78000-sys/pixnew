@@ -33,8 +33,12 @@ const roundNo = r => {
    為了顯示交手紀錄去補一整批已經不相干的球隊資料並不划算,
    而那些場次本來就不會出現在任何一組現役球隊的交手紀錄裡。
    進模型的資料一律不開這個開關:那裡少一支球隊就是資料錯了,必須吵。 */
-export function loadMatches({ root, competition, season, codeOf, tolerant = false }) {
-  const raw = JSON.parse(readFileSync(join(root, 'data', 'raw', 'openfootball', `${season}.json`), 'utf8'));
+export function loadMatches({
+  root, competition, season, codeOf, tolerant = false,
+  rawDir = 'openfootball',
+  kickoffOf = m => (m.time ? `${m.date}T${m.time}:00+01:00` : null),
+}) {
+  const raw = JSON.parse(readFileSync(join(root, 'data', 'raw', rawDir, `${season}.json`), 'utf8'));
   const skipped = [];
   const out = raw.matches.map((m, i) => {
     const home = codeOf(m.team1), away = codeOf(m.team2);
@@ -48,8 +52,8 @@ export function loadMatches({ root, competition, season, codeOf, tolerant = fals
       competition, season,
       round: roundNo(m.round),
       date: m.date,
-      // openfootball 給的是英國當地時間;有 FPL 的精確 UTC 時就會在 build 覆蓋掉
-      kickoff: m.time ? `${m.date}T${m.time}:00+01:00` : null,
+      // openfootball 給的是聯賽當地時間；時區由各賽事的 adapter 設定。
+      kickoff: kickoffOf(m),
       home, away,
       played: !!s,
       fh: s ? s.ft[0] : null,

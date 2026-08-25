@@ -111,8 +111,8 @@ export function oddsIndex(text, opts) {
 /* 未來賽事的賠率(football-data.co.uk 的 fixtures.csv)。
    本季的賽季檔要等賽季結束前才會完整發布,但這個檔每天更新、含未開賽場次 ——
    逐場的「模型 vs 市場」就靠它。 */
-export function upcomingOdds(text, { codeOf } = {}) {
-  const { matches, unmatched, oddsColumns } = parseOddsCsv(text, { codeOf, div: 'E0' });
+export function upcomingOdds(text, { codeOf, div = 'E0' } = {}) {
+  const { matches, unmatched, oddsColumns } = parseOddsCsv(text, { codeOf, div });
   const byMatch = {};
   for (const m of matches) {
     byMatch[`${m.home}|${m.away}`] = {

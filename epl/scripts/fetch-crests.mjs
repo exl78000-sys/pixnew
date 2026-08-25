@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// 抓球隊隊徽 → 縮圖 → 內嵌成 data URI(data/manual/crests.json)
+// 抓球隊隊徽 → 縮圖 → 內嵌成 data URI(data/manual/crests*.json)
 // artifact 的 CSP 會擋所有外部資源,所以隊徽必須內嵌;順便讓網站離線也看得到。
 // 用法: npm run crests [--width=64] [--force]
+//       npm run laliga:crests [-- --width=64] [-- --force]
 import { writeFile, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -10,27 +11,48 @@ import { loadTeams } from './lib/teams.mjs';
 import { decodePNG, resizeRGBA, encodePNG } from './lib/png.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = join(ROOT, 'data', 'manual', 'crests.json');
 const REPO = 'https://raw.githubusercontent.com/luukhopman/football-logos/master';
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 const WIDTH = Number(arg('width') || 64);
 const force = process.argv.includes('--force');
+const LEAGUE = arg('league') || 'pl';
+
+const PROFILES = {
+  pl: {
+    teamFile: 'teams.json', outFile: 'crests.json', currentRaw: null,
+    folders: [
+      'logos/England - Premier League',
+      'history/2025-26/England - Premier League',
+      'history/2024-25/England - Premier League',
+      'history/2023-24/England - Premier League',
+    ],
+  },
+  es1: {
+    teamFile: 'teams-la-liga.json', outFile: 'crests-la-liga.json',
+    currentRaw: join(ROOT, 'data', 'raw', 'openfootball-la-liga', '2026-27.json'),
+    folders: [
+      'logos/Spain - LaLiga',
+      'history/2025-26/Spain - LaLiga',
+    ],
+  },
+};
+const PROFILE = PROFILES[LEAGUE];
+if (!PROFILE) throw new Error(`不支援的聯賽 --league=${LEAGUE}`);
+const OUT = join(ROOT, 'data', 'manual', PROFILE.outFile);
 
 // 該來源依「當季所屬聯賽」放檔案,所以降級球隊要去對應賽季的歷史目錄找
-const FOLDERS = [
-  'logos/England - Premier League',
-  'history/2025-26/England - Premier League',
-  'history/2024-25/England - Premier League',
-  'history/2023-24/England - Premier League',
-];
+const FOLDERS = PROFILE.folders;
 
 // 檔名跟 openfootball 的隊名不完全一致(有的留 FC 有的不留),所以逐一試候選
 const candidates = t => [...new Set([
+  t.crestSource,
   t.of,
+  t.en,
+  ...(t.alias ?? []),
   t.of.replace(/\s+FC$/, ''),
   t.of.replace(/\s+AFC$/, ''),
   t.of.replace(/^AFC\s+/, ''),
-])];
+].filter(Boolean))];
 
 const url = (folder, name) => `${REPO}/${encodeURI(folder)}/${encodeURIComponent(name)}.png`;
 
@@ -45,16 +67,31 @@ async function findCrest(team) {
 }
 
 async function main() {
-  const T = loadTeams(ROOT);
+  const T = loadTeams(ROOT, { file: PROFILE.teamFile });
+  let selected = T.list;
+  // 西甲名冊包含上一季已降級的球隊；第一版先抓 2026-27 當季實際參賽的 20 隊。
+  if (PROFILE.currentRaw) {
+    const raw = JSON.parse(await readFile(PROFILE.currentRaw, 'utf8'));
+    const currentCodes = new Set();
+    for (const m of raw.matches ?? []) {
+      for (const name of [m.team1, m.team2]) {
+        const code = T.codeOf(name);
+        if (!code) throw new Error(`當季隊名無法對照：${name}`);
+        currentCodes.add(code);
+      }
+    }
+    selected = T.list.filter(t => currentCodes.has(t.code));
+    if (selected.length !== 20) throw new Error(`西甲當季隊數應為 20，實際 ${selected.length}`);
+  }
   const existing = !force && existsSync(OUT) ? JSON.parse(await readFile(OUT, 'utf8')) : { crests: {} };
   const crests = { ...(existing.crests ?? {}) };
   const sources = { ...(existing.sources ?? {}) };
 
-  console.log(`▶ 抓取 ${T.list.length} 支球隊的隊徽(縮到寬 ${WIDTH}px)\n`);
+  console.log(`▶ 抓取 ${selected.length} 支${LEAGUE === 'es1' ? '西甲' : '英超'}球隊的隊徽(縮到寬 ${WIDTH}px)\n`);
   let got = 0, skipped = 0, failed = [];
   let raw = 0, small = 0;
 
-  for (const t of T.list) {
+  for (const t of selected) {
     if (crests[t.code] && !force) { skipped++; continue; }
     process.stdout.write(`  ${t.code} ${t.en ?? t.of} … `);
     try {
@@ -74,9 +111,10 @@ async function main() {
   }
 
   await writeFile(OUT, JSON.stringify({
-    _note: '球隊隊徽(自動產生,請勿手改)。執行 npm run crests -- --force 可重抓。',
+    _note: `球隊隊徽(自動產生,請勿手改)。執行 npm run ${LEAGUE === 'es1' ? 'laliga:crests' : 'crests'} -- --force 可重抓。`,
     _source: 'https://github.com/luukhopman/football-logos',
     _license: '隊徽為各俱樂部商標,此處僅作為分析工具的識別用途。',
+    _league: LEAGUE,
     _width: WIDTH,
     _updated: new Date().toISOString().slice(0, 10),
     sources, crests,

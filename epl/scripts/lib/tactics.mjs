@@ -28,9 +28,9 @@ function setPieceTakers(teamPlayers) {
   return { pen: pick('penOrder'), fk: pick('fkOrder'), corner: pick('cornerOrder') };
 }
 
-const situation = s => s ? {
-  shots: s.shots, goals: s.goals, xG: s.xG,
-  against: { shots: s.against.shots, goals: s.against.goals, xG: s.against.xG },
+const situation = (s, goalsReliable = true) => s ? {
+  shots: s.shots, goals: goalsReliable ? s.goals : null, xG: s.xG,
+  against: { shots: s.against.shots, goals: goalsReliable ? s.against.goals : null, xG: s.against.xG },
 } : null;
 
 // Understat 的 SetPiece 是「非角球、非直接任意球」的其他定位球,
@@ -44,6 +44,7 @@ export function setPieceProfile(raw, games, { takers, defenderGoals = 0, teamGoa
     return { available: false, takers, ...proxy };
   }
   const s = raw.nonPenaltySetPiece;
+  const goalsReliable = raw.validation.situationGoalsReconciled !== false;
   return {
     available: true,
     source: 'Understat',
@@ -52,20 +53,21 @@ export function setPieceProfile(raw, games, { takers, defenderGoals = 0, teamGoa
     matches: raw.matches,
     takers,
     shots: s.shots,
-    goals: s.goals,
+    goals: goalsReliable ? s.goals : null,
     xG: s.xG,
     xG90: round(s.xG / games, 3),
     concededShots: s.against.shots,
-    conceded: s.against.goals,
+    conceded: goalsReliable ? s.against.goals : null,
     xGA: s.against.xG,
     xGA90: round(s.against.xG / games, 3),
     breakdown: {
-      openPlay: situation(raw.situations?.OpenPlay),
-      corner: situation(raw.situations?.FromCorner),
-      otherSetPiece: situation(raw.situations?.SetPiece),
-      directFreeKick: situation(raw.situations?.DirectFreekick),
-      penalty: situation(raw.situations?.Penalty),
+      openPlay: situation(raw.situations?.OpenPlay, goalsReliable),
+      corner: situation(raw.situations?.FromCorner, goalsReliable),
+      otherSetPiece: situation(raw.situations?.SetPiece, goalsReliable),
+      directFreeKick: situation(raw.situations?.DirectFreekick, goalsReliable),
+      penalty: situation(raw.situations?.Penalty, goalsReliable),
     },
+    goalsReliable,
     ...proxy,
   };
 }

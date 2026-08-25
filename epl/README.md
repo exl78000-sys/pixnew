@@ -1,6 +1,6 @@
-# 英超戰情室(PL War Room)
+# 英超／西甲戰情室(PL & La Liga War Room)
 
-以英超為準的比賽分析平台:**賽事預測、球隊、戰術、球員、動態**五個面向,全部建立在真實資料上。
+以英超為主的比賽分析平台；另有西甲的**總覽、賽程預測與球隊數據第二版**。所有畫面都只呈現已取得的真實資料。
 
 > **要接手開發?** 先看 `../CLAUDE.md`(工作規則與踩過的坑)
 > 與 `docs/接手資訊.md`(這個時間點的狀態與待辦)。
@@ -14,10 +14,26 @@ npm run build     # 跑分析引擎,產生前端資料集
 npm run serve     # 開 http://localhost:5173
 ```
 
+西甲使用獨立資料目錄，不會覆蓋英超。抓取與建置方式：
+
+```bash
+npm run laliga:fetch    # 只抓 2025-26、2026-27 兩季
+npm run laliga:crests   # 抓本季 20 隊隊徽並縮圖內嵌（首次／換季執行）
+npm run laliga:setpieces # 抓上一季 20 隊 xG、射門、陣型與進球情境（首次／換季執行）
+npm run laliga:postmatch # 只補尚未快取的完賽統計、正式陣容、事件與球員評分
+npm run laliga:build    # → web/data/leagues/es1/
+npm run serve           # 頁首可在英超／西甲間切換
+```
+
+西甲目前支援賽程、積分榜、近期戰績、歷來交手、球隊逐季資料、Poisson + Elo 預測、可取得的市場去水機率，
+以及上一季球隊 xG/xGA、射門、實際使用陣型、進攻速度、五種進球情境、風格雷達和單場兩隊比較。
+完賽場次在完整欄位與正式比分都核對通過後，會顯示球隊統計、正式陣容、事件與逐球員評分；
+全季球員頁、傷停、教練與即時比分仍未接入，頁面不會拿英超資料代替。
+
 想寄給別人、或不想開伺服器?打包成單一 HTML 檔,直接雙擊就能看:
 
 ```bash
-npm run bundle    # → dist/warroom.html(約 2.6 MB,含全部資料、隊徽與字體,零外部請求)
+npm run bundle    # → dist/warroom.html(約 12 MB,含兩聯賽資料、隊徽與字體,零外部請求)
 ```
 
 **想看進行中的比賽,用即時模式**(一個指令搞定,不用反覆重建):
@@ -62,14 +78,18 @@ npm run crests    # 27 隊隊徽 → 縮圖 → 內嵌成 data URI
 
 | 來源 | 用途 | 授權 |
 |---|---|---|
-| [openfootball / football.json](https://github.com/openfootball/football.json) | 英超賽程、全場與**半場**比分(2023-24 起) | Public Domain |
+| [openfootball / football.json](https://github.com/openfootball/football.json) | 英超賽程、全場與**半場**比分(2023-24 起)；西甲 2025-26、2026-27 賽程與賽果 | Public Domain |
 | [vaastav / Fantasy-Premier-League](https://github.com/vaastav/Fantasy-Premier-League) | 球員進階數據(xG/xA/xGC、防守貢獻、ICT)、傷停狀態、賽程難度 | FPL 官方 API 鏡像 |
 | [luukhopman / football-logos](https://github.com/luukhopman/football-logos) | 球隊隊徽(縮圖後內嵌) | 隊徽為各俱樂部商標,此處僅作識別用途 |
 | `data/manual/teams.json` | 27 隊英文名/中文名、綽號、球場、代表色、跨來源隊名對照 | 人工維護 |
+| `data/manual/teams-la-liga.json` | 西甲兩季涉及的球隊名稱、代表色與跨來源隊名對照 | 人工維護 |
 | `data/manual/coaches.json` | 教練名冊與任期 | 人工維護 |
 | `data/manual/feeds.json` | 外部新聞 RSS(選用) | 人工維護 |
 
 原始檔都落在 `data/raw/`,並且**進版控** —— 換一台電腦 clone 下來,不連網也能直接 build。
+
+西甲原始檔固定在 `data/raw/openfootball-la-liga/`，前端輸出固定在 `web/data/leagues/es1/`；
+英超仍沿用原本的根資料集路徑，因此既有網址與建置流程不變。
 
 > **半場比分是這個平台的關鍵資料**。有了它才算得出「領先保分率」「逆轉次數」「下半場強弱」
 > 這些一般免費資料源給不了的戰術指標。
@@ -146,15 +166,18 @@ npm run crests    # 27 隊隊徽 → 縮圖 → 內嵌成 data URI
 
 ### 完賽球員評分與完整攻守數據
 
-設定 `API_FOOTBALL_KEY` 後，`npm run live` 會在確認完賽時補抓一次 API-Football 的球隊統計、
+設定 `API_FOOTBALL_KEY` 後，英超的 `npm run live` 與西甲的定時流程會在確認完賽後補抓一次 API-Football 的球隊統計、
 球員 0–10 評分、射門、傳球、關鍵傳球、傳球成功率、對抗、盤帶、鏟球、抄截、攔阻、犯規、
-門將與完整事件時間軸。三類資料都齊全才寫進 `data/raw/api-football/match-details.json` 永久快取；
+門將、正式陣容與完整事件時間軸。西甲另要求供應商比分與 openfootball 正式比分完全一致；所有必需欄位都齊全才寫進
+`data/raw/api-football-la-liga/2026-27-match-details.json` 永久快取；
 同一場後續輪詢不再呼叫 API。若供應商剛完賽尚未補齊，至少隔 30 分鐘才重試，且每場每天最多三次。
 
 ```bash
 export API_FOOTBALL_KEY=xxxx
 npm run postmatch       # 手動補抓本季所有尚未快取的完賽場次
+npm run laliga:postmatch # 西甲；目前一輪通常只需「完賽清單 + 批次詳情」2 次請求
 npm run build
+npm run laliga:build
 ```
 
 金鑰只存在 Node 執行環境，不會寫入 JSON 或前端。API-Football 不提供速度、跑動距離與衝刺資料，

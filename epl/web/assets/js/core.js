@@ -3,14 +3,19 @@ const cache = new Map();
 
 export async function load(...names) {
   const out = {};
+  const lg = league();
   await Promise.all(names.map(async n => {
     // 單檔打包版的資料直接內嵌在頁面裡,不用發請求
-    if (globalThis.__DATA__?.[n]) { out[n] = globalThis.__DATA__[n]; return; }
-    if (!cache.has(n)) cache.set(n, fetch(`data/${n}.json`).then(r => {
-      if (!r.ok) throw new Error(`讀取 data/${n}.json 失敗(${r.status})`);
+    const embedded = globalThis.__DATASETS__?.[lg]?.[n]
+      ?? (lg === 'pl' ? globalThis.__DATA__?.[n] : undefined);
+    if (embedded !== undefined) { out[n] = embedded; return; }
+    const key = `${lg}:${n}`;
+    const path = lg === 'pl' ? `data/${n}.json` : `data/leagues/${lg}/${n}.json`;
+    if (!cache.has(key)) cache.set(key, fetch(path).then(r => {
+      if (!r.ok) throw new Error(`讀取 ${path} 失敗(${r.status})`);
       return r.json();
     }));
-    out[n] = await cache.get(n);
+    out[n] = await cache.get(key);
   }));
   return out;
 }
@@ -19,8 +24,17 @@ export async function load(...names) {
 // 多頁模式:teams.html?code=ARS   單檔模式:#teams?code=ARS
 export const BUNDLE = !!globalThis.__WARROOM_BUNDLE__;
 
+export function league() {
+  const params = BUNDLE
+    ? new URLSearchParams((location.hash.split('?')[1] ?? ''))
+    : new URLSearchParams(location.search);
+  return params.get('league') === 'es1' ? 'es1' : 'pl';
+}
+
 export function link(page, params = {}) {
-  const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null)).toString();
+  const values = { ...params };
+  if (values.league == null && league() !== 'pl') values.league = league();
+  const q = new URLSearchParams(Object.entries(values).filter(([, v]) => v != null)).toString();
   return BUNDLE ? `#${page}${q ? '?' + q : ''}` : `${page}.html${q ? '?' + q : ''}`;
 }
 export const go = (page, params) => { location.href = link(page, params); };
@@ -160,10 +174,19 @@ const PAGES = [
 ];
 export function nav() {
   const here = currentPage();
+  const lg = league();
+  const basic = lg === 'es1';
+  const pages = basic ? PAGES.filter(([p]) => ['index', 'fixtures', 'teams'].includes(p)) : PAGES;
+  const brand = basic ? ['西甲戰情室', 'LA LIGA WAR ROOM'] : ['英超戰情室', 'PL WAR ROOM'];
+  document.title = document.title.replace(/(?:英超|西甲)戰情室/, basic ? '西甲戰情室' : '英超戰情室');
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
-      <a class="brand" href="${link('index')}"><span class="dot"></span>英超戰情室<small>PL WAR ROOM</small></a>
-      <nav class="tabs">${PAGES.map(([p, l]) =>
+      <a class="brand" href="${link('index')}"><span class="dot"></span>${brand[0]}<small>${brand[1]}</small></a>
+      <div class="league-switch" aria-label="切換聯賽">
+        <a href="${link('index', { league: 'pl' })}" class="${lg === 'pl' ? 'on' : ''}">英超</a>
+        <a href="${link('index', { league: 'es1' })}" class="${lg === 'es1' ? 'on' : ''}">西甲</a>
+      </div>
+      <nav class="tabs">${pages.map(([p, l]) =>
         `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${l}</a>`).join('')}</nav>
     </div></header>`);
 }
@@ -480,10 +503,10 @@ export function matchReportCards(m) {
   const playerButton = p => p?.code
     ? `<button class="player-name-btn" type="button" data-player-code="${esc(p.code)}" aria-label="查看 ${esc(p.name)} 球員資料">${esc(p.name)}</button>`
     : esc(p?.name);
-  const bestHtml = s => s.best.map(b => {
+  const bestHtml = (s, metric = 'bps') => s.best.map(b => {
     const p = [...s.xi, ...s.bench].find(x => x.name === b.name) ?? b;
     return `<div class="stat-line"><span class="small">${playerButton(p)}
-      <span class="dim tiny">${b.pos} ${b.minutes}'</span></span><b class="mono">${b.bps}</b></div>`;
+      <span class="dim tiny">${b.pos} ${b.minutes ?? '—'}'</span></span><b class="mono">${metric === 'rating' ? fx(b.rating, 1) : b.bps}</b></div>`;
   }).join('');
 
   const advancedHtml = () => {
@@ -560,7 +583,9 @@ export function matchReportCards(m) {
         ${sideBoard(m.away, A)}
       </div>
       <div class="tiny dim" style="margin-top:10px">${H.shape.source === 'official' || A.shape.source === 'official'
-        ? `標<span class="pill accent tiny">官方</span>的陣型與每一排的人,都是<b>英超官方公布的正式名單</b>,球場圖照那個排位畫。`
+        ? m.advanced
+          ? `標<span class="pill accent tiny">正式</span>的陣型與每一排球員，來自 API-Football 的完賽名單，球場圖依供應商格線排列。`
+          : `標<span class="pill accent tiny">官方</span>的陣型與每一排的人,都是<b>英超官方公布的正式名單</b>,球場圖照那個排位畫。`
         : `陣型是依 FPL 的位置分類統計先發人數 —— 它只分門將/後衛/中場/前鋒四類,
            邊鋒會被算進中場、翼衛會被算進後衛,所以三中衛體系可能會顯示成「6-3-1」這種數字。
            官方名單一公布就會自動換成官方陣型。`}
@@ -571,21 +596,21 @@ export function matchReportCards(m) {
       <div class="row small dim" style="justify-content:space-between;margin-bottom:4px">
         <span>${name(m.home)}</span><span>${name(m.away)}</span></div>
       ${line('進球', m.hs ?? 0, m.as ?? 0)}
-      ${line('期望進球 xG', H.xG, A.xG)}
-      ${line('期望助攻 xA', H.xA, A.xA)}
+      ${line('期望進球 xG', H.xG ?? '—', A.xG ?? '—')}
+      ${H.xA != null || A.xA != null ? line('期望助攻 xA', H.xA ?? '—', A.xA ?? '—') : ''}
       ${line('黃牌', H.yellow, A.yellow)}
       ${line('紅牌', H.red, A.red)}
       ${line('使用球員', H.used, A.used)}
-      ${H.keeper && A.keeper ? line('門將撲救', H.keeper.saves, A.keeper.saves) : ''}
-      ${H.keeper && A.keeper ? line('門將少失球', signed(H.keeper.stopped, 2), signed(A.keeper.stopped, 2)) : ''}
+      ${H.keeper && A.keeper ? line('門將撲救', H.keeper.saves ?? '—', A.keeper.saves ?? '—') : ''}
+      ${H.keeper?.stopped != null && A.keeper?.stopped != null ? line('門將少失球', signed(H.keeper.stopped, 2), signed(A.keeper.stopped, 2)) : ''}
     </div>
 
     ${advancedHtml()}
 
-    <div class="card"><h3>本場最佳(FPL 表現分)</h3>
+    <div class="card"><h3>${m.advanced ? '本場最佳（API-Football 評分）' : '本場最佳(FPL 表現分)'}</h3>
       <div class="grid g2">
-        <div>${bestHtml(H)}</div>
-        <div>${bestHtml(A)}</div>
+        <div>${bestHtml(H, m.advanced ? 'rating' : 'bps')}</div>
+        <div>${bestHtml(A, m.advanced ? 'rating' : 'bps')}</div>
       </div>
     </div>`;
 }

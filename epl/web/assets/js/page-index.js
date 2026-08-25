@@ -3,13 +3,14 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, teams, sim, fixtures, news, table, clubs } =
-    await C.load('meta', 'teams', 'sim', 'fixtures', 'news', 'table', 'clubs');
+  const { meta, teams, sim, fixtures, news, table, clubs, reports } =
+    await C.load('meta', 'teams', 'sim', 'fixtures', 'news', 'table', 'clubs', 'reports');
   C.registerTeams(clubs);
   C.registerTeams(teams);
   C.nav();
 
   const played = fixtures.filter(f => f.played);
+  const basic = meta.edition === 'basic';
   const curBy = new Map((table.current ?? []).map(r => [r.code, r]));
 
   // 開季前幾輪的排名幾乎沒有意義(大家場次都一樣少),與其讓讀者自己踩坑,不如明講
@@ -19,7 +20,7 @@ try {
     return `<div class="note" style="margin-top:10px">
       才踢了 ${maxPlayed} 輪,這張表<b>還不能當實力排序看</b> ——
       同分的隊伍靠淨勝球和進球數分先後,一場大勝就能把人推到第一。
-      要看實力請往下看預測積分榜,那裡吃的是過去三季的完整樣本。</div>`;
+      要看實力請往下看預測積分榜,那裡吃的是${basic ? '上一完整賽季' : '過去三季'}的樣本。</div>`;
   };
   const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
   const nextRound = upcoming[0]?.round ?? null;
@@ -31,10 +32,10 @@ try {
 
   app.innerHTML = `
   <div class="page-head">
-    <h1>英超戰情室</h1>
-    <p>把 ${meta.historySeasons.join('、')} 的每一場比賽、每一位球員的進階數據跑成模型,
-       做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。
-       所有數字都可以往下追到原始資料,沒有一項是拍腦袋填的。</p>
+    <h1>${basic ? '西甲戰情室・球隊數據第二版' : '英超戰情室'}</h1>
+    <p>${basic
+      ? `使用 ${meta.lastSeason} 完整賽果與 ${meta.currentSeason} 已完賽資料，產生積分榜、單場機率與賽季模擬；回歸球隊另有上季 xG、射門、實際陣型與進球情境。完賽後資料會一次性永久快取；全季球員頁、傷停、教練與即時資料尚未接入。`
+      : `把 ${meta.historySeasons.join('、')} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`}</p>
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
       C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
@@ -45,9 +46,11 @@ try {
   <div class="grid g4">
     ${kpi('本季進度', played.length ? `第 ${played.at(-1).round} 輪` : `第 ${nextRound ?? 1} 輪`,
       `${meta.currentSeason}・已賽 ${played.length} / ${fixtures.length} 場`)}
-    ${kpi('模型準度', bt.available ? bt.rps : '—', bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : '執行 npm test 後產生')}
+    ${kpi('模型準度', bt.available ? bt.rps : '—', bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : (basic ? '尚無獨立留出賽季' : '執行 npm test 後產生'))}
     ${kpi('命中率', bt.available ? C.pct(bt.hitRate, 1) : '—', bt.available ? `${bt.season} ${bt.games} 場走查回測` : '尚未回測')}
-    ${meta.live?.demo === false && meta.live?.counts?.live > 0
+    ${basic
+      ? kpi('資料範圍', '2 季', `${meta.lastSeason} 完整・${meta.currentSeason} 進行中`)
+      : meta.live?.demo === false && meta.live?.counts?.live > 0
       ? kpi('進行中', `${meta.live.counts.live} 場`, `第 ${meta.live.round} 輪・點上方實時戰況`)
       : kpi('傷停名單', injuries.length, `涵蓋 ${meta.counts.players} 名註冊球員`)}
   </div>
@@ -72,12 +75,18 @@ try {
       <h2>接下來的比賽</h2>
       <div id="next"></div>
       <div style="margin-top:10px"><a href="${C.link('fixtures')}">完整賽程與預測 →</a>
-        ・<a href="${C.link('live')}">實時戰況</a></div>
+        ${basic ? '' : `・<a href="${C.link('live')}">實時戰況</a>`}</div>
     </div>
     <div class="card">
-      <h2>最新動態</h2>
-      <div id="news"></div>
-      <div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>
+      <h2>${basic ? '目前資料界線' : '最新動態'}</h2>
+      <div id="news">${basic ? `<div class="small muted" style="display:grid;gap:8px">
+        <div>✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬</div>
+        <div>✓ 上季球隊 xG/xGA、射門、實際陣型、五種進球情境與風格百分位</div>
+        <div>✓ 完賽後完整資料永久快取 ${reports.count ?? 0}/${played.length} 場（球隊統計、正式陣容、事件與球員評分）</div>
+        <div>— 全季球員頁、傷停、教練與即時資料尚未接入</div>
+        <div class="dim">模型只使用一個完整賽季，尚無獨立留出賽季可做可靠回測。</div>
+      </div>` : ''}</div>
+      ${basic ? '' : `<div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>`}
     </div>
   </div>
 
@@ -148,16 +157,16 @@ try {
         <div style="min-width:0">
           <div class="row" style="gap:7px">${C.badge(f.home)}<b>${C.name(f.home)}</b>
             <span class="dim">vs</span>${C.badge(f.away)}<b>${C.name(f.away)}</b></div>
-          <div class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪・
+          <div class="tiny dim">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}・第 ${f.round} 輪・
             預期比分 ${f.prediction.xgHome}:${f.prediction.xgAway}</div>
-          <div class="tiny"><span class="dim">開賽倒數 </span>${C.countdown(f.kickoff)}</div>
+          ${f.kickoff ? `<div class="tiny"><span class="dim">開賽倒數 </span>${C.countdown(f.kickoff)}</div>` : '<div class="tiny dim">開球時間待賽程來源確認</div>'}
         </div>
         ${C.probBar(f.prediction)}
       </div></a>`).join('');
 
   /* 動態 */
   // 賽前預告已經在左邊那塊呈現了,這裡只放真正的動態
-  document.getElementById('news').innerHTML = news.filter(n => n.cat !== '賽前').slice(0, 7).map(n => `
+  if (!basic) document.getElementById('news').innerHTML = news.filter(n => n.cat !== '賽前').slice(0, 7).map(n => `
     <div style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
       <div class="row" style="gap:7px">
         <span class="pill ${n.cat === '傷停' || n.cat === '禁賽' ? 'bad' : n.cat === '賽前' ? 'info' : 'accent'}">${n.cat}</span>

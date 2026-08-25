@@ -26,7 +26,11 @@ try {
   };
   const rec = r => (r && r.p ? `${r.p} 場・${r.w}勝${r.d}和${r.l}負・場均 <b>${r.ppg}</b> 分` : '任內無本季比賽紀錄');
 
-  code && teams.some(t => t.code === code) ? detail(teams.find(t => t.code === code)) : overview();
+  if (meta.edition === 'basic') {
+    code && teams.some(t => t.code === code) ? basicDetail(teams.find(t => t.code === code)) : basicOverview();
+  } else {
+    code && teams.some(t => t.code === code) ? detail(teams.find(t => t.code === code)) : overview();
+  }
 
   /* 進球來源。
      能回答:對每一隊進幾球/被進幾球、誰進的、誰助攻、先發還是替補進的。
@@ -190,6 +194,114 @@ try {
       <div class="card">${head}${body}</div>`;
   }
 
+  /* 西甲只畫有可靠來源的球隊層級資料。
+     共用頁面保留在同一支檔案，但不讓空的球員/教練/FPL 欄位滲進畫面。 */
+  function basicOverview() {
+    app.innerHTML = `
+    <div class="page-head">
+      <h1>西甲球隊・數據第二版</h1>
+      <p>${meta.currentSeason} 的 20 支球隊；除戰績、近期表現與模型模擬外，
+        回歸球隊另有 ${meta.lastSeason} 真實 xG、射門、陣型、進球情境與數據風格。球員、教練、傷停與正式陣容尚未接入。</p>
+      ${C.stampRow([
+        C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily' }),
+        C.stamp(`${meta.lastSeason} 全季賽果`, { kind: 'season' }),
+        C.stamp(`${meta.lastSeason} 球隊 xG 與進球情境`, { kind: 'season' }),
+      ])}
+    </div>
+    <div class="grid g3">${teams.map(t => {
+      const ls = t.lastSeason, cur = t.current, s = t.sim;
+      return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
+        <div class="row" style="gap:11px">${C.badge(t.code, 'lg')}
+          <div><div style="font-weight:800;font-size:16px">${C.esc(t.en)}</div>
+          <div class="tiny dim">${C.esc(t.zh)}</div></div></div>
+        <div class="grid g3" style="margin-top:12px;gap:8px">
+          <div><div class="tiny dim">${meta.lastSeason}</div><div class="mono">${ls ? `第 ${ls.pos} 名・${ls.pts} 分` : '<span class="pill">升班馬</span>'}</div></div>
+          <div><div class="tiny dim">本季目前</div><div class="mono">${cur?.p ? `${cur.pts} 分 / ${cur.p} 場` : '尚未完賽'}</div></div>
+          <div><div class="tiny dim">期望積分</div><div class="mono"><b>${s?.expectedPoints ?? '—'}</b></div></div>
+        </div>
+        <div class="row tiny dim" style="margin-top:10px;justify-content:space-between">
+          <span>Elo ${C.fx(t.elo, 0)}</span><span>前四 ${s?.top4Pct ?? '—'}%・降級 ${s?.relegationPct ?? '—'}%</span>
+        </div>
+        ${t.tactics?.tags?.length ? `<div class="tags" style="margin-top:9px">${t.tactics.tags.slice(0, 3).map(x => `<span class="pill tiny">${C.esc(x)}</span>`).join('')}</div>` :
+          `<div class="tiny dim" style="margin-top:9px">${ls ? '上季風格資料從缺' : '升班馬・沒有上季西甲風格樣本'}</div>`}
+        </a>`;
+    }).join('')}</div>
+    ${C.foot(meta)}`;
+  }
+
+  function basicDetail(t) {
+    const ls = t.lastSeason, cur = t.current, s = t.sim;
+    const next = fixtures.filter(f => !f.played && (f.home === t.code || f.away === t.code))
+      .sort((a, b) => (a.date < b.date ? -1 : 1)).slice(0, 6);
+    const h2hDefault = next[0]
+      ? (next[0].home === t.code ? next[0].away : next[0].home)
+      : teams.find(x => x.code !== t.code)?.code;
+    const kpi = (label, value, sub = '') => `<div class="kpi"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;
+    const line = (label, value) => `<div class="stat-line"><span class="small muted">${label}</span><b class="mono">${value}</b></div>`;
+
+    app.innerHTML = `
+    <div class="page-head">
+      <div class="row" style="gap:14px">${C.badge(t.code, 'xl')}
+        <div><h1 style="margin:0">${C.esc(t.en)} <span class="dim" style="font-size:15px;font-weight:400">${C.esc(t.zh)}</span></h1>
+        <p class="small">西甲球隊數據第二版・賽果、模型與上季真實攻守風格</p></div></div>
+      <div class="row small" style="margin-top:6px"><a href="${C.link('teams')}">← 回球隊列表</a></div>
+    </div>
+    <div class="grid g4">
+      ${kpi('上季名次', ls ? `第 ${ls.pos} 名` : '升班馬', ls ? `${ls.pts} 分・${ls.p} 場` : `${meta.lastSeason} 未在西甲`)}
+      ${kpi('本季目前', cur?.p ? `${cur.pts} 分` : '尚無完賽', cur?.p ? `${cur.p} 場・${cur.w}勝${cur.d}和${cur.l}負` : meta.currentSeason)}
+      ${kpi('期望積分', s?.expectedPoints ?? '—', `期望名次第 ${s?.expectedPos ?? '—'} 名`)}
+      ${kpi('前四 / 降級', `${s?.top4Pct ?? '—'}% / ${s?.relegationPct ?? '—'}%`, `Elo ${C.fx(t.elo, 0)}`)}
+    </div>
+    <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
+    ${seasonHistorySection(t)}
+    ${ls ? `<div class="section"><h2>上季攻守摘要</h2><span class="hint">${meta.lastSeason}</span></div>
+      <div class="card grid g2">
+        <div>${line('勝 / 和 / 負', `${ls.w} / ${ls.d} / ${ls.l}`)}${line('進 / 失 / 淨勝', `${ls.gf} / ${ls.ga} / ${C.signed(ls.gd, 0)}`)}${line('場均勝點', ls.ppg)}${line('零封', ls.cleanSheets)}</div>
+        <div>${line('主場場均勝點', ls.home.ppg)}${line('客場場均勝點', ls.away.ppg)}${line('雙方進球比例', `${ls.bttsPct}%`)}${line('大於 2.5 球比例', `${ls.over25Pct}%`)}</div>
+      </div>` : `<div class="note" style="margin-top:16px">${C.esc(t.en)} 是本季升班馬，${meta.lastSeason} 沒有西甲樣本；模型使用聯盟後段先驗，畫面不補造上季數字。</div>`}
+    ${basicStyleSection(t)}
+    ${t.eloHistory?.length ? `<div class="card" style="margin-top:14px"><h3>Elo 實力走勢</h3>${C.sparkline(t.eloHistory.map(h => h.r), { color: t.colors[0] })}<div class="tiny dim">最近 ${t.eloHistory.length} 場・目前 ${C.fx(t.elo, 0)}</div></div>` : ''}
+    ${next.length ? `<div class="card" style="margin-top:14px"><h3>接下來的比賽</h3>${next.map(f => {
+      const home = f.home === t.code, opp = home ? f.away : f.home;
+      return `<a href="${C.link('fixtures', { id: f.id })}" style="color:inherit;text-decoration:none"><div class="stat-line">
+        <span class="small">${C.dateFull(f.date)}・${home ? '主' : '客'} vs ${C.name(opp)}</span>
+        <span class="mono small">勝率 ${C.pct(home ? f.prediction.home : f.prediction.away, 0)}</span>
+      </div></a>`;
+    }).join('')}</div>` : ''}
+    <div class="note" style="margin-top:14px">第二版已接球隊層級攻守、實際使用陣型與進球情境；逐球員、教練、傷停與正式先發仍未接入，取得可靠來源前不顯示。</div>
+    ${C.foot(meta)}`;
+    renderTeamH2H(t);
+  }
+
+  function basicStyleSection(t) {
+    const tac = t.tactics;
+    if (!tac) return '';
+    const line = (label, value) => `<div class="stat-line"><span class="small muted">${label}</span><b class="mono">${value ?? '—'}</b></div>`;
+    const formations = tac.formation?.list?.slice(0, 3) ?? [];
+    return `
+    <div class="section"><h2>上季數據風格</h2><span class="hint">${meta.lastSeason}・20 隊百分位</span></div>
+    <div class="grid g2">
+      <div class="card"><h3>風格雷達</h3>
+        ${C.radar([{ name: t.en, color: t.chartColor ?? t.colors[0], values: tac.radar }], { size: 300 })}
+        <div class="tags" style="margin-top:8px">${tac.tags.map(x => `<span class="pill accent">${C.esc(x)}</span>`).join('')}</div>
+        <div class="tiny dim" style="margin-top:8px">每一軸是 ${meta.lastSeason} 西甲 20 隊中的百分位，不是主觀評分。依據為 xG/xGA、運動戰與定位球 xG、快速進攻 xG 佔比，以及半場領先保分／落後搶分；目前沒有可靠控球與壓迫資料，因此不畫這兩軸。</div>
+      </div>
+      <div class="card"><h3>攻守與實際陣型</h3>
+        ${line('進球 / xG（每場）', `${tac.attack.goals90} / ${tac.attack.xG90}`)}
+        ${line('失球 / xGA（每場）', `${tac.defence.conceded90} / ${tac.defence.xGA90}`)}
+        ${line('射門 / 被射門（每場）', `${tac.attack.shots90} / ${tac.defence.shots90}`)}
+        ${line('終結相對 xG', C.signed(tac.attack.finishing, 1))}
+        ${line('快速進攻 xG 佔比', `${tac.attack.fastXGShare}%`)}
+        ${line('禁區內射門佔比', `${tac.attack.boxShotShare}%`)}
+        ${line('主要陣型', tac.formation?.primary)}
+        ${formations.length ? `<div style="margin-top:8px;border-top:1px dashed var(--line);padding-top:6px">${formations.map(f =>
+          `<div class="stat-line"><span class="small">${C.esc(f.name)}</span><span class="mono small">${f.share}% <span class="dim">・${f.minutes} 分</span></span></div>`).join('')}</div>` : ''}
+        <div class="tiny dim" style="margin-top:8px">陣型為供應商逐場紀錄的實際使用時間；風格只描述上季表現，不額外改動本季單場模型機率。</div>
+      </div>
+    </div>
+    ${goalSituationCard(tac)}`;
+  }
+
   /* ── 列表 ─────────────────────────── */
   function overview() {
     app.innerHTML = `
@@ -349,7 +461,7 @@ try {
       <select id="teamH2HOpp" aria-label="選擇交手對手">
         ${opponents.map(o => `<option value="${o.code}" ${o.code === selected ? 'selected' : ''}>${C.esc(C.name(o.code))}</option>`).join('')}
       </select></div>
-      <div class="tiny dim" style="margin:6px 0 8px">英超 ${C.esc(meta.h2hSeasons?.[0] ?? '')} 起・不影響模型勝率</div>
+      <div class="tiny dim" style="margin:6px 0 8px">${C.esc(meta.competition?.short ?? '聯賽')} ${C.esc(meta.h2hSeasons?.[0] ?? '')} 起・不影響模型勝率</div>
       <div id="teamH2HBox"></div>
     </div>`;
   }
@@ -364,7 +476,7 @@ try {
     const rec = h2h?.[key];
     if (!rec) {
       box.innerHTML = `<div class="small" style="margin-bottom:8px">對手球隊：${C.teamLink(opp)}</div>
-        <div class="dim small">${C.esc(meta.h2hSeasons?.[0] ?? '')} 以來沒有在英超交手過。</div>`;
+        <div class="dim small">${C.esc(meta.h2hSeasons?.[0] ?? '')} 以來沒有在${C.esc(meta.competition?.short ?? '聯賽')}交手過。</div>`;
       return;
     }
     const ownIsA = key.split('|')[0] === t.code;
@@ -408,8 +520,7 @@ try {
       { key: 'cleanSheets', label: '零封', value: r => r.cleanSheets, num: true },
     ], { sortKey: null })}
       <div class="tiny dim" style="margin-top:8px">
-        防守以失球、場均失球與零封呈現。上一完整賽季的運動戰、角球、其他定位球、
-        直接任意球與十二碼進失球,列在下方戰術區。
+        防守以失球、場均失球與零封呈現。${meta.capabilities?.setPieces ? '上一完整賽季的運動戰、角球、其他定位球、直接任意球與十二碼進失球，列在下方數據風格區。' : '目前沒有可靠的進球情境分類，因此不顯示運動戰／角球／任意球拆分。'}
       </div>
     </div>`;
   }
@@ -424,23 +535,24 @@ try {
     return `<div class="card" style="margin-top:14px"><div class="spread">
       <h3 style="margin:0">上季進球方式</h3><span class="pill tiny">${meta.lastSeason}</span></div>
       <div class="grid g4" style="margin:12px 0">
-        <div><div class="tiny dim">非十二碼定位球</div><b class="mono">${sp.goals} 球</b></div>
+        <div><div class="tiny dim">非十二碼定位球</div><b class="mono">${sp.goals ?? '—'}${sp.goals === null ? '' : ' 球'}</b></div>
         <div><div class="tiny dim">定位球 xG</div><b class="mono">${C.fx(sp.xG, 2)}</b></div>
-        <div><div class="tiny dim">定位球失球</div><b class="mono">${sp.conceded}</b></div>
+        <div><div class="tiny dim">定位球失球</div><b class="mono">${sp.conceded ?? '—'}</b></div>
         <div><div class="tiny dim">定位球 xGA</div><b class="mono">${C.fx(sp.xGA, 2)}</b></div>
       </div>
       ${C.table(rows, [
         { key: 'label', label: '情境', value: r => r.label, left: true },
-        { key: 'goals', label: '進球', value: r => r.goals, num: true },
+        { key: 'goals', label: '進球', value: r => r.goals ?? -1, num: true, render: r => r.goals ?? '—' },
         { key: 'xg', label: 'xG', value: r => r.xG, num: true, render: r => C.fx(r.xG, 2) },
         { key: 'shots', label: '射門', value: r => r.shots, num: true },
-        { key: 'against', label: '失球', value: r => r.against.goals, num: true },
+        { key: 'against', label: '失球', value: r => r.against.goals ?? -1, num: true, render: r => r.against.goals ?? '—' },
         { key: 'xga', label: 'xGA', value: r => r.against.xG, num: true, render: r => C.fx(r.against.xG, 2) },
       ], { sortKey: null })}
+      ${sp.goalsReliable === false ? `<div class="note warn" style="margin-top:8px">此隊的供應商情境進球加總與正式比分總進球相差 1，因此進球／失球分類顯示從缺；已逐場核對的射門、xG 與 xGA 仍保留。</div>` : ''}
       <div class="tiny dim" style="margin-top:8px">
         來源: <a href="${C.esc(sp.sourceUrl)}" target="_blank" rel="noopener">Understat</a>。
         「其他定位球」是非角球、非直接任意球的定位球;
-        五類進失球已跟聯賽實際比分逐隊核對。
+        ${sp.goalsReliable === false ? '逐場比分已核對，但情境進球加總未通過總量核對。' : '五類進失球已跟聯賽實際比分逐隊核對。'}
       </div></div>`;
   }
 

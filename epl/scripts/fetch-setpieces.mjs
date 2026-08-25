@@ -2,6 +2,7 @@
 // 抓上一完整賽季的 Understat 球隊「進攻情境」摘要。
 //
 //   npm run setpieces
+//   npm run laliga:setpieces
 //   npm run setpieces -- --force
 //   npm run setpieces -- --limit=1 --delay=0   # 開發時只驗一隊
 //
@@ -19,15 +20,31 @@ import { loadTeams } from './lib/teams.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
 import { teamRecord } from './lib/table.mjs';
 import { round } from './lib/util.mjs';
-import { COMPETITION, LAST_SEASON } from './lib/sources.mjs';
+import { COMPETITION as PL_COMPETITION, LAST_SEASON as PL_LAST_SEASON } from './lib/sources.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const DIR = join(ROOT, 'data', 'raw', 'understat');
-const FILE = join(DIR, `${LAST_SEASON}-team-situations.json`);
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 const FORCE = process.argv.includes('--force');
 const DELAY = Math.max(0, Number(arg('delay') ?? 1600));
 const LIMIT = Math.max(1, Number(arg('limit') ?? 999));
+const LEAGUE = arg('league') || 'pl';
+const PROFILES = {
+  pl: {
+    label: '英超', teamFile: 'teams.json', competition: PL_COMPETITION,
+    lastSeason: PL_LAST_SEASON, rawDir: 'openfootball', cacheDir: 'understat',
+    providerLeague: 'EPL',
+  },
+  es1: {
+    label: '西甲', teamFile: 'teams-la-liga.json', competition: 'esp.1',
+    lastSeason: '2025-26', rawDir: 'openfootball-la-liga', cacheDir: 'understat-la-liga',
+    providerLeague: 'La_liga',
+  },
+};
+const PROFILE = PROFILES[LEAGUE];
+if (!PROFILE) throw new Error(`不支援的聯賽 --league=${LEAGUE}`);
+const { competition: COMPETITION, lastSeason: LAST_SEASON } = PROFILE;
+const DIR = join(ROOT, 'data', 'raw', PROFILE.cacheDir);
+const FILE = join(DIR, `${LAST_SEASON}-team-situations.json`);
 const PROVIDER_SEASON = LAST_SEASON.slice(0, 4);
 const SITUATIONS = ['OpenPlay', 'FromCorner', 'SetPiece', 'DirectFreekick', 'Penalty'];
 
@@ -45,6 +62,11 @@ const compact = s => ({
     shots: num(s?.against?.shots), goals: num(s?.against?.goals), xG: round(num(s?.against?.xG), 4),
   },
 });
+const compactGroup = group => Object.fromEntries(Object.entries(group ?? {}).map(([key, row]) => [key, {
+  stat: row?.stat ?? key,
+  time: num(row?.time),
+  ...compact(row),
+}]));
 
 function combine(rows) {
   return {
@@ -91,8 +113,11 @@ async function save(out) {
 }
 
 async function main() {
-  const T = loadTeams(ROOT);
-  const matches = loadMatches({ root: ROOT, competition: COMPETITION, season: LAST_SEASON, codeOf: T.codeOf });
+  const T = loadTeams(ROOT, { file: PROFILE.teamFile });
+  const matches = loadMatches({
+    root: ROOT, competition: COMPETITION, season: LAST_SEASON, codeOf: T.codeOf,
+    rawDir: PROFILE.rawDir,
+  });
   const codes = [...new Set(matches.flatMap(m => [m.home, m.away]))].sort();
   await mkdir(DIR, { recursive: true });
 
@@ -100,7 +125,8 @@ async function main() {
     season: LAST_SEASON,
     providerSeason: PROVIDER_SEASON,
     source: 'Understat',
-    sourceUrl: `https://understat.com/league/EPL/${PROVIDER_SEASON}`,
+    league: LEAGUE,
+    sourceUrl: `https://understat.com/league/${PROFILE.providerLeague}/${PROVIDER_SEASON}`,
     note: '情境分類為 OpenPlay / FromCorner / SetPiece / DirectFreekick / Penalty。非十二碼定位球為後三者中的前兩種加直接任意球。',
     complete: false,
     retrievedAt: null,
@@ -111,7 +137,7 @@ async function main() {
     if (prev.season === LAST_SEASON) out = { ...out, ...prev, complete: false, teams: prev.teams ?? {} };
   }
 
-  console.log(`▶ Understat ${LAST_SEASON} 情境資料(${codes.length} 隊・單線・間隔 ${DELAY}ms)\n`);
+  console.log(`▶ Understat ${PROFILE.label} ${LAST_SEASON} 情境資料(${codes.length} 隊・單線・間隔 ${DELAY}ms)\n`);
   let fetched = 0;
   for (const code of codes) {
     if (!FORCE && out.teams[code]?.validation?.ok) {
@@ -119,7 +145,7 @@ async function main() {
       continue;
     }
     if (fetched >= LIMIT) break;
-    const slug = NAME[code] ?? T.byCode.get(code)?.en;
+    const slug = T.byCode.get(code)?.understat ?? NAME[code] ?? T.byCode.get(code)?.en;
     if (!slug) throw new Error(`${code} 缺 Understat 隊名`);
     try {
       const { data, url } = await fetchTeam(slug);
@@ -127,10 +153,32 @@ async function main() {
       const all = combine(Object.values(situations));
       const setPiece = combine(['FromCorner', 'SetPiece', 'DirectFreekick'].map(k => situations[k]));
       const real = teamRecord(matches, code);
-      const providerMatches = (data.dates ?? []).filter(m => m.isResult).length;
+      const providerResults = (data.dates ?? []).filter(m => m.isResult);
+      const providerMatches = providerResults.length;
+      const providerByMatch = new Map(providerResults.map(m => {
+        const home = T.codeOf(m.h?.title), away = T.codeOf(m.a?.title);
+        // 聯賽每個主客組合一季只出現一次。來源曾有同一場相差一天的日期口徑，
+        // 所以比分核對以主客組合為鍵；日期仍保留在 mismatch 訊息供人工查核。
+        return [`${home}|${away}`, {
+          date: String(m.datetime).slice(0, 10), score: [Number(m.goals?.h), Number(m.goals?.a)],
+        }];
+      }));
+      const expectedGames = matches.filter(m => m.played && (m.home === code || m.away === code));
+      const scorelineMismatches = expectedGames.flatMap(m => {
+        const provider = providerByMatch.get(`${m.home}|${m.away}`);
+        return provider && provider.score[0] === m.fh && provider.score[1] === m.fa
+          ? []
+          : [{ date: m.date, home: m.home, away: m.away, expected: [m.fh, m.fa], provider: provider ?? null }];
+      });
+      const situationGoalsReconciled = all.goals === real.gf && all.against.goals === real.ga;
       const validation = {
-        ok: providerMatches === real.p && all.goals === real.gf && all.against.goals === real.ga,
+        // 逐場比分核對比單純總和更嚴格。情境加總若因烏龍球口徑不同而不符，
+        // 該隊的情境「進球數」不發布，但 xG/射門仍可使用。
+        ok: providerMatches === real.p && scorelineMismatches.length === 0,
         providerMatches, expectedMatches: real.p,
+        scorelinesReconciled: scorelineMismatches.length === 0,
+        scorelineMismatches,
+        situationGoalsReconciled,
         providerGoals: all.goals, expectedGoals: real.gf,
         providerConceded: all.against.goals, expectedConceded: real.ga,
       };
@@ -141,10 +189,16 @@ async function main() {
         matches: providerMatches,
         situations,
         nonPenaltySetPiece: setPiece,
+        profile: {
+          formation: compactGroup(data.statistics.formation),
+          attackSpeed: compactGroup(data.statistics.attackSpeed),
+          shotZone: compactGroup(data.statistics.shotZone),
+          timing: compactGroup(data.statistics.timing),
+        },
         validation,
       };
       await save(out);
-      console.log(`  ✔ ${code} ${slug}:定位球 ${setPiece.goals} 球 / ${setPiece.xG} xG・失 ${setPiece.against.goals} 球 / ${setPiece.against.xG} xGA`);
+      console.log(`  ✔ ${code} ${slug}:定位球 ${situationGoalsReconciled ? `${setPiece.goals} 球 / ` : '進球分類從缺・'}${setPiece.xG} xG・${situationGoalsReconciled ? `失 ${setPiece.against.goals} 球 / ` : ''}${setPiece.against.xG} xGA`);
       fetched++;
       if (fetched < LIMIT) await sleep(DELAY);
     } catch (e) {
@@ -158,14 +212,16 @@ async function main() {
     teams: Object.keys(out.teams).length,
     expectedTeams: codes.length,
     allScorelinesReconciled: out.complete,
+    situationGoalTotalsReconciled: codes.filter(code => out.teams[code]?.validation?.situationGoalsReconciled !== false).length,
+    situationGoalTotalsExpected: codes.length,
     arsenalCornerGoals: out.teams.ARS?.situations?.FromCorner?.goals ?? null,
-    arsenalOfficialCheck: {
+    arsenalOfficialCheck: LEAGUE === 'pl' ? {
       expected: 19,
       ok: out.teams.ARS?.situations?.FromCorner?.goals === 19,
       source: 'https://www.arsenal.com/news/arsenal-analysed-how-we-won-the-premier-league-aO1ug2E0S5oq',
-    },
+    } : null,
   };
-  if (out.complete && !out.validation.arsenalOfficialCheck.ok) {
+  if (out.complete && LEAGUE === 'pl' && !out.validation.arsenalOfficialCheck.ok) {
     out.complete = false;
     throw new Error(`Arsenal 官方角球進球核對失敗:實際 ${out.validation.arsenalCornerGoals},官方 19`);
   }

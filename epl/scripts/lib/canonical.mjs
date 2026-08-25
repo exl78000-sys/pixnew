@@ -22,6 +22,13 @@ export const COMPETITIONS = {
     extraTime: false, penalties: false, twoLegged: false,
     crossLeague: false, crossTier: false,
   },
+  'esp.1': {
+    code: 'esp.1', name: 'La Liga', zh: '西班牙足球甲級聯賽', short: '西甲',
+    country: 'ESP', type: 'league',
+    teams: 20, roundsPerSeason: 38,
+    extraTime: false, penalties: false, twoLegged: false,
+    crossLeague: false, crossTier: false,
+  },
   // 之後要加的(規劃已寫好,尚未實作):
   // 'uefa.cl': { type:'europe', extraTime:true, penalties:true, twoLegged:true, crossLeague:true }
   // 'eng.fa' : { type:'cup',    extraTime:true, penalties:true, twoLegged:false, crossTier:true }

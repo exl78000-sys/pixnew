@@ -57,6 +57,11 @@ jobs:
         run: npm run fetch -- --force
         continue-on-error: true
 
+      # 西甲只抓兩季公開賽程；獨立目錄，不會覆蓋英超同名賽季檔。
+      - name: 抓西甲兩季賽程與賽果(openfootball)
+        run: npm run laliga:fetch
+        continue-on-error: true
+
       - name: 抓即時比賽狀態(官方 FPL API)
         run: npm run live
         env:
@@ -68,6 +73,14 @@ jobs:
       # 因此每 12 小時執行不會反覆消耗額度。
       - name: 補抓完整賽後資料(API-Football)
         run: npm run postmatch
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        continue-on-error: true
+
+      # 西甲完賽後只抓一次完整資料。每次先讀永久快取，已成功場次在任何網路請求前略過；
+      # 一場必須同時有球隊統計、兩隊正式陣容、事件、球員資料與評分，且比分核對一致才發布。
+      - name: 補抓西甲完整賽後資料(API-Football)
+        run: npm run laliga:postmatch
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         continue-on-error: true
@@ -88,6 +101,10 @@ jobs:
       - name: 抓博彩賠率(football-data.co.uk)
         run: npm run odds
         continue-on-error: true
+
+      # 先建西甲，讓接下來的 npm test 驗證剛抓回來的兩季資料，而不是版控裡的舊輸出。
+      - name: 建立西甲資料集
+        run: npm run laliga:build
 
       - name: 走查回測(模型準度與每場賽前預測)
         run: npm test
@@ -128,7 +145,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f epl/data/raw/live.json epl/data/raw/season-gws.json \
                      epl/data/raw/openfootball/ epl/data/raw/pulselive/ \
+                     epl/data/raw/openfootball-la-liga/ \
                      epl/data/raw/api-football/ \
+                     epl/data/raw/api-football-la-liga/ \
                      epl/data/raw/football-data-couk/ \
                      epl/data/backtest.json epl/data/backtest-matches.json \
                      epl/data/form-tuning.json epl/data/availability-history.json 2>/dev/null || true
