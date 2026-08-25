@@ -43,3 +43,10 @@ jobs:
       - name: 探測進球方式資料源
         working-directory: epl
         run: npm run probe:events
+
+      # 西甲球員資料:動手寫抓取管線之前先確定拿得到什麼。硬上限 5 個請求。
+      - name: 探測西甲球員端點
+        working-directory: epl
+        run: npm run probe:laliga-players
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
