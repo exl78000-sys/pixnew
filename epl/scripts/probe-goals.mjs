@@ -52,14 +52,30 @@ async function pulselive() {
   if (!Array.isArray(ev)) {
     console.log('  ✗ 沒有 events 陣列 → 官方這個端點不給進球事件');
   } else {
+    /* 型別是代碼不是英文字(G/B/S/PS/PE),別用 /goal/i 去比對 ——
+       第一次探測就是這樣誤判成「沒有進球事件」的。
+       每一種型別各印一筆完整內容,型別代表什麼由資料自己說。 */
     console.log(`  ✔ events:${ev.length} 筆`);
-    const types = [...new Set(ev.map(e => e.type))];
-    console.log(`    事件型別:${types.join(', ')}`);
-    const goals = ev.filter(e => /goal/i.test(e.type ?? ''));
-    console.log(`    進球類事件:${goals.length} 筆`);
-    for (const g of goals.slice(0, 4)) console.log(`    · ${head(JSON.stringify(g), 320)}`);
-    // 助攻是否單獨成一種事件、或掛在進球上
-    console.log(`    第一筆事件全文:${head(JSON.stringify(ev[0]), 400)}`);
+    const byType = new Map();
+    for (const e of ev) {
+      if (!byType.has(e.type)) byType.set(e.type, []);
+      byType.get(e.type).push(e);
+    }
+    console.log(`    型別分佈:${[...byType].map(([t, a]) => `${t}×${a.length}`).join(', ')}`);
+    for (const [t, arr] of byType) {
+      console.log(`    ── 型別 ${t}(${arr.length} 筆)全文範例:`);
+      console.log(`       ${head(JSON.stringify(arr[0]), 700)}`);
+      if (arr.length > 1) console.log(`       ${head(JSON.stringify(arr[1]), 700)}`);
+    }
+    // 進球事件有沒有引用球員 id → 決定能不能對回我們的球員庫
+    const ids = new Set();
+    for (const e of ev) for (const [k, v] of Object.entries(e)) {
+      if (/person|player|assist|scorer/i.test(k)) ids.add(`${k}=${JSON.stringify(v)}`);
+    }
+    console.log(`    事件裡跟人有關的欄位:${[...ids].slice(0, 8).join(' | ') || '(無)'}`);
+    // teamLists 的球員 id 長什麼樣,才知道對不對得起來
+    const tl = j.teamLists?.[0]?.lineup?.[0];
+    if (tl) console.log(`    teamLists 球員欄位:${Object.keys(tl).join(', ')}`);
   }
 
   // 有些版本把統計放在 teams[].stats,順便看一眼有沒有 goal type 的彙總
