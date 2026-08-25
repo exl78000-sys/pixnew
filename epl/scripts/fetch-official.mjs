@@ -23,7 +23,8 @@ const has = k => process.argv.includes(`--${k}`);
 // 不然舊檔會一直被當成「已經抓過」,新欄位永遠是空的。
 // v2 是壞掉的那次寫進去的(升級檢查沒觸發,格式其實還是 v1),
 // 所以要跳到 3 才推得動 —— 檔案裡已經寫著 2 了。
-const STORE_VERSION = 3;
+// v4:開始存進球事件(events)。
+const STORE_VERSION = 4;
 
 const MAX_DETAIL = has('all') ? 400 : 14;   // 每次執行最多抓幾場詳情
 const SOON_MS = 3 * 60 * 60 * 1000;         // 開賽前 3 小時內就開始試(正式陣容約賽前 1 小時公布)
@@ -46,6 +47,42 @@ const person = p => ({
   posInfo: p.info?.positionInfo ?? null,
   captain: Boolean(p.captain),
 });
+
+/* 進球事件。
+   這是**零額外請求**的功能 —— 同一個 /fixtures/{id} 回應本來就帶著 events,
+   我們以前只讀 teamLists 就把其餘欄位丟掉了。與其為了進球細節去一場一場
+   重打人家的端點(一季 380 次),不如把已經拿在手上的東西存下來。
+
+   官方的事件型別是代碼不是英文字:
+     G  進球(description 是子類型,一般進球是 "G")
+     B  出牌(description 是 Y / R)
+     S  換人(description 是 ON / OFF)
+     PS / PE  半場開始與結束
+   所以不要用 /goal/i 去比對 type —— 那樣會一顆進球都找不到。
+
+   assistId 是官方直接給的「這一球是誰助攻的」。FPL 只給「這場某人有 N 次助攻」,
+   配不到是哪一球;官方這個欄位是唯一能把球與助攻配起來的來源。 */
+export const minuteOf = label => {
+  const m = /^(\d+)/.exec(String(label ?? ''));
+  return m ? Number(m[1]) : null;
+};
+
+export const goalsOf = events => (Array.isArray(events) ? events : [])
+  .filter(e => e.type === 'G')
+  .map(e => ({
+    person: e.personId ?? null,
+    assist: e.assistId ?? null,
+    team: e.teamId ?? null,
+    min: minuteOf(e.clock?.label),
+    label: e.clock?.label ?? null,
+    phase: e.phase ?? null,
+    // description 的值原封不動存,不自己翻譯 —— 十二碼與烏龍球的代碼還沒確認,
+    // 等資料累積夠了直接統計就知道,不要現在猜一個對照表寫死。
+    kind: e.description ?? null,
+    hs: e.score?.homeScore ?? null,
+    as: e.score?.awayScore ?? null,
+  }))
+  .sort((a, b) => (a.min ?? 0) - (b.min ?? 0));
 
 const sideOf = tl => ({
   formation: normaliseFormation(tl.formation?.label),
@@ -135,15 +172,19 @@ async function main() {
       const byTeam = new Map(lists.map(tl => [tl.teamId, tl]));
       const h = byTeam.get(w.f.teams[0].team.id), a = byTeam.get(w.f.teams[1].team.id);
       if (!h || !a) { empty++; continue; }
+      const goals = goalsOf(d.events);
       store.matches[w.key] = {
         fixtureId: w.f.id,
         kickoff: w.ko ? new Date(w.ko).toISOString() : null,
         status: d.status ?? w.f.status,
         final: w.done,                                  // 已完賽 = 這筆定案,以後不用再抓
+        homeId: w.f.teams[0].team.id, awayId: w.f.teams[1].team.id,   // 事件的 teamId 要對回主客
         home: sideOf(h), away: sideOf(a),
+        goals,
       };
       got++;
-      console.log(`  ✔ ${w.key}  ${store.matches[w.key].home.formation ?? '?'} vs ${store.matches[w.key].away.formation ?? '?'}`);
+      const gTxt = goals.length ? `・${goals.length} 顆進球` : '';
+      console.log(`  ✔ ${w.key}  ${store.matches[w.key].home.formation ?? '?'} vs ${store.matches[w.key].away.formation ?? '?'}${gTxt}`);
     } catch (e) { console.log(`  ✗ ${w.key}:${e.message}`); }
   }
 
@@ -155,4 +196,9 @@ async function main() {
   console.log(`  本次新增 ${got} 場・陣容未公布 ${empty} 場・累計有官方陣型 ${withF} 場・教練 ${Object.keys(store.managers).length} 隊`);
 }
 
-main().catch(e => { console.error('✗ ' + e.message); process.exit(1); });
+/* 只有直接執行才跑主流程。
+   goalsOf 等純函式要能被 npm test 匯入驗證 —— 沒有這個守衛的話,
+   光是 import 就會去打官方端點(而且在沙箱裡必定 403)。 */
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  main().catch(e => { console.error('✗ ' + e.message); process.exit(1); });
+}

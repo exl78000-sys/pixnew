@@ -21,6 +21,7 @@ import {
   buildFormIndex, formDelta, goalForm, h2hDelta, recentForm, formSummary, adjustLambdas, TUNED,
 } from './lib/form.mjs';
 import { teamAvailability, cardWatch } from './lib/availability.mjs';
+import { goalsOf, minuteOf } from './fetch-official.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -343,9 +344,46 @@ async function main() {
   console.log('\n▶ 兩隊對照條長自我檢查');
   const barFail = await checkBars();
 
+  console.log('\n▶ 官方進球事件解析自我檢查');
+  const goalFail = checkGoalEvents();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || goalFail) process.exitCode = 1;
+}
+
+/* 官方進球事件的解析。
+   踩過的雷:官方的 event.type 是代碼(G/B/S/PS/PE)不是英文字,
+   第一次用 /goal/i 去比對就得到「0 顆進球」,差點誤報成「官方不給進球事件」。
+   測資直接用實測回來的真實事件形狀,不要自己編一個好看的。 */
+function checkGoalEvents() {
+  const events = [
+    { clock: { secs: 0, label: "00'00" }, phase: '1', type: 'PS', score: { homeScore: 0, awayScore: 0 } },
+    { id: 183587, personId: 72371, teamId: 4, assistId: 49293, clock: { secs: 60, label: "01'00" }, phase: '1', type: 'G', description: 'G', score: { homeScore: 0, awayScore: 1 } },
+    { id: 227665, personId: 51229, teamId: 4, clock: { secs: 300, label: "05'00" }, phase: '1', type: 'B', description: 'Y', score: { homeScore: 0, awayScore: 1 } },
+    { id: 391374, personId: 63741, teamId: 4, clock: { secs: 3900, label: "65'00" }, phase: '2', type: 'S', description: 'ON', score: { homeScore: 2, awayScore: 3 } },
+    // 後進的球先放,驗證會被排序到後面
+    { id: 9, personId: 999, teamId: 4, clock: { secs: 5600, label: "90+4'00" }, phase: '2', type: 'G', description: 'P', score: { homeScore: 2, awayScore: 3 } },
+    { id: 183594, personId: 128976, teamId: 34, assistId: 6712, clock: { secs: 1380, label: "23'00" }, phase: '1', type: 'G', description: 'G', score: { homeScore: 1, awayScore: 1 } },
+  ];
+  const g = goalsOf(events);
+  const cases = [
+    ['只挑出進球,出牌與換人不算', g.length === 3, `抓到 ${g.length} 筆`],
+    ['助攻者跟著那一顆球', g[0].person === 72371 && g[0].assist === 49293, JSON.stringify(g[0])],
+    ['沒有助攻者時是 null,不是 0 或 undefined', g[2].assist === null, String(g[2].assist)],
+    ['依進球時間排序', g.map(x => x.min).join() === '1,23,90', g.map(x => x.min).join()],
+    ['傷停時間算進該半場的最後一分鐘', minuteOf("90+4'00") === 90, String(minuteOf("90+4'00"))],
+    ['description 原封不動保留,不自己翻譯', g[2].kind === 'P', String(g[2].kind)],
+    ['進球當下比分有帶出來', g[0].hs === 0 && g[0].as === 1, `${g[0].hs}-${g[0].as}`],
+    ['沒有 events 也不會炸', Array.isArray(goalsOf(undefined)) && goalsOf(undefined).length === 0, ''],
+    ['type 用代碼比對(不是英文字)', goalsOf([{ type: 'Goal', personId: 1 }]).length === 0, ''],
+  ];
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
 }
 
 /* 隊名對照。踩過的雷:openfootball 在 2018-19 寫 "Manchester United"、
