@@ -38,3 +38,8 @@ jobs:
       - name: 探測進球細節資料源
         working-directory: epl
         run: npm run probe:goals
+
+      # 進球方式(運動戰/角球/任意球):找不需要大量請求的來源。這一步只打 2 個請求。
+      - name: 探測進球方式資料源
+        working-directory: epl
+        run: npm run probe:events

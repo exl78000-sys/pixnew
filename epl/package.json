@@ -24,7 +24,8 @@
     "odds": "node scripts/fetch-odds.mjs",
     "tune:form": "node scripts/tune-form.mjs",
     "snapshot": "node scripts/snapshot-availability.mjs",
-    "probe:goals": "node scripts/probe-goals.mjs"
+    "probe:goals": "node scripts/probe-goals.mjs",
+    "probe:events": "node scripts/probe-events.mjs"
   },
   "engines": {
     "node": ">=18"
