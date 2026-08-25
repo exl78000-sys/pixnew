@@ -28,7 +28,49 @@ function setPieceTakers(teamPlayers) {
   return { pen: pick('penOrder'), fk: pick('fkOrder'), corner: pick('cornerOrder') };
 }
 
-export function buildTactics({ tableRows, lastPlayers, currentPlayers, asOf }) {
+const situation = s => s ? {
+  shots: s.shots, goals: s.goals, xG: s.xG,
+  against: { shots: s.against.shots, goals: s.against.goals, xG: s.against.xG },
+} : null;
+
+// Understat 的 SetPiece 是「非角球、非直接任意球」的其他定位球,
+// 所以站內的非十二碼定位球 = FromCorner + SetPiece + DirectFreekick。
+export function setPieceProfile(raw, games, { takers, defenderGoals = 0, teamGoals = 0 } = {}) {
+  const proxy = {
+    defenderGoals,
+    defenderGoalShare: round(teamGoals ? (defenderGoals / teamGoals) * 100 : 0, 1),
+  };
+  if (!raw?.validation?.ok || !raw.nonPenaltySetPiece || !games) {
+    return { available: false, takers, ...proxy };
+  }
+  const s = raw.nonPenaltySetPiece;
+  return {
+    available: true,
+    source: 'Understat',
+    sourceUrl: raw.url?.replace('/getTeamData/', '/team/'),
+    sourceDataUrl: raw.url,
+    matches: raw.matches,
+    takers,
+    shots: s.shots,
+    goals: s.goals,
+    xG: s.xG,
+    xG90: round(s.xG / games, 3),
+    concededShots: s.against.shots,
+    conceded: s.against.goals,
+    xGA: s.against.xG,
+    xGA90: round(s.against.xG / games, 3),
+    breakdown: {
+      openPlay: situation(raw.situations?.OpenPlay),
+      corner: situation(raw.situations?.FromCorner),
+      otherSetPiece: situation(raw.situations?.SetPiece),
+      directFreeKick: situation(raw.situations?.DirectFreekick),
+      penalty: situation(raw.situations?.Penalty),
+    },
+    ...proxy,
+  };
+}
+
+export function buildTactics({ tableRows, lastPlayers, currentPlayers, teamSituations, asOf }) {
   const byTeam = new Map();
   for (const p of lastPlayers) {
     if (!byTeam.has(p.team)) byTeam.set(p.team, []);
@@ -71,11 +113,9 @@ export function buildTactics({ tableRows, lastPlayers, currentPlayers, asOf }) {
         cleanSheets: row.cleanSheets,
         defCon90: round(sum(squad, s => s.defCon) / p, 1),
       },
-      setPieces: {
-        takers: setPieceTakers(squad),
-        defenderGoalShare: round(row.gf ? (defGoals / row.gf) * 100 : 0, 1),
-        defenderGoals: defGoals,
-      },
+      setPieces: setPieceProfile(teamSituations?.teams?.[row.code], p, {
+        takers: setPieceTakers(squad), defenderGoals: defGoals, teamGoals: row.gf,
+      }),
       squad: {
         used: used.length,
         // 用該隊實際出賽場次推,不寫死 38 場
@@ -107,9 +147,12 @@ export function buildTactics({ tableRows, lastPlayers, currentPlayers, asOf }) {
     { label: '終結效率', get: t => t.attack.finishing },
     { label: '防守穩固', get: t => t.defence.xGA90, inverse: true },
     { label: '傳球創造', get: t => t.attack.creativity90 },
-    { label: '定位球威脅', get: t => t.setPieces.defenderGoalShare },
     { label: '比賽韌性', get: t => ((t.resilience.leadHoldPct ?? 0) + (t.resilience.trailRescuePct ?? 0) * 1.5) / 2 },
   ];
+  // 資料缺隊時整軸略過,不用舊的「後場球員進球佔比」偽裝成定位球數據。
+  if (profiles.every(t => t.setPieces.available)) {
+    axes.splice(4, 0, { label: '定位球威脅', get: t => t.setPieces.xG90 });
+  }
   for (const t of profiles) {
     t.radar = axes.map(a => {
       const pool = profiles.map(a.get);
@@ -144,7 +187,7 @@ function deriveTags(t, all) {
   if (t.squad.top11Share >= 70) tags.push('主力吃重');
   if (t.squad.top11Share <= 58) tags.push('大幅輪換');
   if (t.discipline.perGame >= 2.2) tags.push('動作兇悍');
-  if (t.setPieces.defenderGoalShare >= 25) tags.push('定位球強權');
+  if (t.setPieces.available && rank(x => x.setPieces.xG90) <= 5) tags.push('定位球強權');
   if (t.squad.avgAgeWeighted <= 25.5) tags.push('青春軍團');
   if (t.squad.avgAgeWeighted >= 28.5) tags.push('老練陣容');
   return tags;

@@ -59,6 +59,17 @@ jobs:
 
       - name: 抓即時比賽狀態(官方 FPL API)
         run: npm run live
+        env:
+          # 完賽時 fetch-live 會沿用既有 Secret 補抓完整球員/球隊/事件資料。
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        continue-on-error: true
+
+      # 補抓先前已完賽但尚未進永久快取的場次。已成功的比賽在任何 API 請求前就會略過，
+      # 因此每 12 小時執行不會反覆消耗額度。
+      - name: 補抓完整賽後資料(API-Football)
+        run: npm run postmatch
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         continue-on-error: true
 
       - name: 抓本季逐輪球員資料
@@ -117,6 +128,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f epl/data/raw/live.json epl/data/raw/season-gws.json \
                      epl/data/raw/openfootball/ epl/data/raw/pulselive/ \
+                     epl/data/raw/api-football/ \
                      epl/data/raw/football-data-couk/ \
                      epl/data/backtest.json epl/data/backtest-matches.json \
                      epl/data/form-tuning.json epl/data/availability-history.json 2>/dev/null || true

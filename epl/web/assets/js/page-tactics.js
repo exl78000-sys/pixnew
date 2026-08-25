@@ -200,9 +200,13 @@ try {
     { key: 'top11', label: '主力佔比', value: t => t.squad.top11Share, num: true, render: t => `${t.squad.top11Share}%` },
     { key: 'age', label: '加權年齡', value: t => t.squad.avgAgeWeighted, num: true },
     { key: 'cards', label: '每場牌數', value: t => t.discipline.perGame, num: true },
-    { key: 'setp', label: '後場進球佔比', value: t => t.setPieces.defenderGoalShare, num: true,
-      title: '後衛與門將的進球佔全隊比例,常被當成定位球威脅的代理指標',
-      render: t => `${t.setPieces.defenderGoalShare}%` },
+    { key: 'setp', label: '定位球 xG/場', value: t => t.setPieces.xG90 ?? -1, num: true,
+      title: '上一完整賽季非十二碼定位球(角球 + 其他定位球 + 直接任意球)的每場期望進球',
+      render: t => t.setPieces.available ? t.setPieces.xG90 : '—' },
+    { key: 'spg', label: '定位球進 / 失', value: t => t.setPieces.goals ?? -1, num: true,
+      render: t => t.setPieces.available ? `${t.setPieces.goals} / ${t.setPieces.conceded}` : '—' },
+    { key: 'corner', label: '角球進球', value: t => t.setPieces.breakdown?.corner?.goals ?? -1, num: true,
+      render: t => t.setPieces.breakdown?.corner?.goals ?? '—' },
   ], { sortKey: 'def', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
 
   document.getElementById('tempo').innerHTML = C.table(tactics, [

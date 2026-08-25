@@ -3,17 +3,22 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, lineups, live, shapes, official, form } =
-    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'lineups', 'live', 'shapes', 'official', 'form');
+  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } =
+    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const tacBy = new Map(tactics.map(t => [t.code, t]));
-  const articleFor = f => analysis.pre[`${f.home}|${f.away}`] ?? null;
+  const preArticleFor = f => analysis.pre[`${f.home}|${f.away}`] ?? null;
+  const reportKey = f => `${f.season}|${f.home}|${f.away}`;
+  const postArticleFor = f => analysis.post[reportKey(f)] ?? null;
+  const reportFor = f => reports.reports[reportKey(f)] ?? null;
+  const expertsFor = f => experts.matches[reportKey(f)] ?? [];
   // 這幾個會在 renderMatch 裡用到,必須在呼叫點之前就初始化好 —— 放在下面的
   // 函式區只會撞上 TDZ(函式宣告會提升,const 不會)
   const photoByCode = new Map(players.map(x => [x.code, x.photo ?? null]));
+  const playerByCode = new Map(players.map(x => [x.code, x]));
   const photoOf = code => photoByCode.get(code) ?? null;
 
   // 網址可以用 ?id=(跟賽程頁一致)或 ?home=&away=(人看得懂,可以直接手打)
@@ -31,7 +36,10 @@ try {
   /* ── 單場分析 ────────────────────────────── */
   function renderMatch(f) {
     const p = f.prediction;
-    const art = articleFor(f);
+    const preArt = preArticleFor(f);
+    const postArt = postArticleFor(f);
+    const postReport = reportFor(f);
+    const expertRows = expertsFor(f);
     const H = teamBy.get(f.home), A = teamBy.get(f.away);
     const th = tacBy.get(f.home), ta = tacBy.get(f.away);
     const rec = h2h[[f.home, f.away].sort().join('|')] ?? null;
@@ -48,12 +56,14 @@ try {
     app.innerHTML = `
     <div class="page-head">
       <a class="small dim" href="${C.link('fixtures')}">← 回賽程與預測</a>
-      <h1 style="margin-top:6px">${C.name(f.home)} <span class="dim">vs</span> ${C.name(f.away)}</h1>
+      <h1 style="margin-top:6px">${C.teamLink(f.home)} <span class="dim">vs</span> ${C.teamLink(f.away)}</h1>
       <p>${f.season} 賽季第 ${f.round} 輪・${C.kickoffLocal(f.kickoff)}(${C.tzName()})</p>
       ${C.stampRow([
         C.stamp('勝率與預期進球', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算' }),
         C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '戰術指標與關鍵球員來自上季' }),
-        art ? C.stamp('本文', { iso: meta.builtAt, kind: 'daily', note: art.source === 'llm' ? 'AI 撰寫,數字經過驗證' : '由統計結果自動生成' }) : null,
+        preArt ? C.stamp('賽前本文', { iso: meta.builtAt, kind: 'daily', note: preArt.source === 'llm' ? 'AI 撰寫,數字經過驗證' : '由統計結果自動生成' }) : null,
+        postArt ? C.stamp('賽後本文', { iso: meta.builtAt, kind: 'daily', note: postArt.source === 'llm' ? 'AI 撰寫,數字經過驗證' : '由統計結果自動生成' }) : null,
+        expertRows.length ? C.stamp(`真人觀點 ${expertRows.length} 筆`, { iso: experts.updatedAt, kind: 'manual', note: '具名來源,人工核對後才發布' }) : null,
       ])}
     </div>
 
@@ -62,11 +72,11 @@ try {
          這種文字對一場三天前踢完的比賽毫無意義。 */ ''}
     <div class="card">
       <div class="scoreline" style="margin:4px 0 14px">
-        <div class="side">${C.badge(f.home, 'big')}<b>${C.name(f.home)}</b></div>
+        <div class="side">${C.badge(f.home, 'big')}<b>${C.teamLink(f.home)}</b></div>
         <div class="sc" style="font-size:20px">${f.played
           ? `${f.fh} <span class="dim">:</span> ${f.fa}`
           : `${p.xgHome} <span class="dim">:</span> ${p.xgAway}`}</div>
-        <div class="side away">${C.badge(f.away, 'big')}<b>${C.name(f.away)}</b></div>
+        <div class="side away">${C.badge(f.away, 'big')}<b>${C.teamLink(f.away)}</b></div>
       </div>
       <div class="center small dim" style="margin-bottom:10px">${f.played
         ? `最終比分・賽前模型預期 ${p.xgHome} : ${p.xgAway}` : '模型預期進球'}</div>
@@ -86,21 +96,26 @@ try {
           ? `開賽倒數 ${C.countdown(f.kickoff)}`
           : `<span class="pill warn tiny">${C.elapsedText(state.elapsed)}</span>`}</span>
         ${f.played
-          ? `<a class="pill info tiny" href="${C.link('fixtures', { id: f.id })}">看賽後分析 →</a>`
+          ? `<a class="pill info tiny" href="#panel-post" data-view="post">看賽後分析 ↓</a>`
           : `<a class="pill info tiny" href="${C.link('live')}">看實時戰況 →</a>`}
       </div>
     </div>
 
-    ${art ? `<div class="section"><h2>${C.esc(art.title)}</h2>
-      <span class="hint">${art.source === 'llm' ? 'AI 撰寫,數字經過驗證' : '由統計結果自動生成'}</span></div>
-      <div class="card">
-        <div id="article" style="display:grid;gap:12px;line-height:1.85"></div>
-        <div class="note" style="margin-top:14px">${C.esc(art.caveat)}</div>
-        ${art.note ? `<div class="tiny dim" style="margin-top:8px">${C.esc(art.note)}</div>` : ''}
-      </div>` : ''}
+    <div class="analysis-switch" id="analysis-views" role="tablist" aria-label="分析階段">
+      ${f.played ? '<button class="btn analysis-tab" type="button" role="tab" data-view="compare" aria-controls="panel-compare">綜合對比</button>' : ''}
+      <button class="btn analysis-tab" type="button" role="tab" data-view="pre" aria-controls="panel-pre">賽前分析</button>
+      ${f.played ? '<button class="btn analysis-tab" type="button" role="tab" data-view="post" aria-controls="panel-post">賽後分析</button>' : ''}
+    </div>
 
-    <div class="section"><h2>兩套模型怎麼看${f.market ? '・市場怎麼看' : ''}</h2>
-      <span class="hint">分歧本身就是資訊</span></div>
+    ${f.played ? `<section class="analysis-panel" id="panel-compare" role="tabpanel">
+      ${phaseComparison(f, postReport)}
+    </section>` : ''}
+
+    <section class="analysis-panel" id="panel-pre" role="tabpanel">
+    ${articleCard(preArt, '賽前觀察', 'pre')}
+
+    <div class="section"><h2>模型預測</h2>
+      <span class="hint">兩套方法交叉驗證</span></div>
     <div class="card">
       <div class="stat-line"><span class="small">Dixon-Coles Poisson(看進失球的量)</span>
         <span class="mono small">${C.pct(p.poisson.home, 0)} / ${C.pct(p.poisson.draw, 0)} / ${C.pct(p.poisson.away, 0)}</span></div>
@@ -108,15 +123,16 @@ try {
         <span class="mono small">${C.pct(p.elo.home, 0)} / ${C.pct(p.elo.draw, 0)} / ${C.pct(p.elo.away, 0)}</span></div>
       <div class="stat-line"><span class="small"><b>取平均(本站採用)</b></span>
         <span class="mono small"><b>${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}</b></span></div>
-      ${f.market ? `<div class="stat-line" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px">
-        <span class="small" style="color:var(--draw)"><b>博彩市場</b>(${f.market.source}・去水錢後)</span>
-        <span class="mono small" style="color:var(--draw)"><b>${C.pct(f.market.probs.home, 0)} / ${C.pct(f.market.probs.draw, 0)} / ${C.pct(f.market.probs.away, 0)}</b></span></div>` : ''}
       <div class="tiny dim" style="margin-top:8px">
         為什麼取平均:${meta.model.backtest.available
           ? `回測 ${meta.model.backtest.games} 場,平均後的 RPS ${meta.model.backtest.rps} 比單獨使用任一個都低。`
           : '回測顯示兩者平均最穩。'}
         <a href="${C.link('model')}">看完整驗證 →</a></div>
     </div>
+
+    <div class="section"><h2>專業市場機率</h2>
+      <span class="hint">去除莊家水錢後的三向市場共識</span></div>
+    ${professionalMarketCard(f, p)}
     ${f.market ? marketNote(f, p) : ''}
 
     <div class="grid g2" style="margin-top:16px">
@@ -198,13 +214,244 @@ try {
         <div><b>不知道的事:</b>${meta.model.caveats[0]}</div>
       </div>
     </div>
+    </section>
+
+    ${f.played ? `<section class="analysis-panel post-report-grid" id="panel-post" role="tabpanel">
+      ${expertOpinionSection(f, expertRows)}
+      ${articleCard(postArt, '賽後結論', 'post')}
+      ${postReport ? C.matchReportCards(C.reportWithPlayerPhotos(postReport, playerByCode))
+        : '<div class="note">這場尚未取得逐球員與實際 xG 資料，因此目前只能對照最終比分與賽前機率。</div>'}
+    </section>` : ''}
     ${C.foot(meta)}`;
 
-    if (art) {
-      document.getElementById('article').innerHTML =
-        art.paragraphs.map(t => `<p style="margin:0">${C.esc(t)}</p>`).join('');
-    }
+    setupAnalysisTabs(f.played ? 'compare' : 'pre');
+    setupExpertPagers();
+    C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
     C.startCountdowns();
+  }
+
+  function articleCard(art, fallbackTitle, phase = 'pre') {
+    if (!art) return '';
+    const llm = art.source === 'llm';
+    const label = llm ? '本站 AI 分析' : '本站統計模板';
+    return `<div class="section"><h2>${phase === 'post' ? '本站 AI／模型分析' : C.esc(art.title || fallbackTitle)}</h2>
+      <span class="hint">${phase === 'post' ? '與真人專家觀點分開呈現' : (llm ? 'AI 撰寫,數字經過驗證' : '由統計結果自動生成')}</span></div>
+      <div class="card article-card site-analysis-card">
+        ${phase === 'post' ? `<div class="spread article-source-head"><h3>${C.esc(art.title || fallbackTitle)}</h3>
+          <span class="pill ${llm ? 'info' : ''}">${label}・非真人觀點</span></div>` : ''}
+        <div style="display:grid;gap:12px;line-height:1.85">
+          ${(art.paragraphs ?? []).map(t => `<p style="margin:0">${C.esc(t)}</p>`).join('')}
+        </div>
+        ${art.caveat ? `<div class="note" style="margin-top:14px">${C.esc(art.caveat)}</div>` : ''}
+        ${art.note ? `<div class="tiny dim" style="margin-top:8px">${C.esc(art.note)}</div>` : ''}
+      </div>`;
+  }
+
+  function expertOpinionSection(f, rows) {
+    const typeZh = {
+      article: '文章', broadcast: '轉播', video: '影片', podcast: 'Podcast', 'press-conference': '記者會',
+    };
+    const categoryZh = { news: '新聞', legend: '名宿', expert: '專家' };
+    const counts = Object.fromEntries(['news', 'legend', 'expert'].map(key => [key, rows.filter(x => x.category === key).length]));
+    const defaultFilter = counts.news ? 'news' : counts.legend ? 'legend' : 'expert';
+    const cards = rows.map((item, index) => `<article class="card expert-card" data-expert-card data-category="${C.esc(item.category)}" ${index ? 'hidden' : ''}>
+      <div class="expert-head">
+        <span class="expert-avatar" aria-hidden="true">${C.esc(item.expert.trim().slice(0, 1).toUpperCase())}</span>
+        <div><h3>${C.esc(item.expert)}</h3><div class="small dim">${C.esc(item.role)}</div></div>
+        <span class="pill expert-kind ${C.esc(item.category)} tiny">${categoryZh[item.category] ?? '觀點'}</span>
+      </div>
+      <p class="expert-summary">${C.esc(item.summary)}</p>
+      ${item.topics?.length ? `<div class="tags">${item.topics.map(t => `<span class="pill tiny">${C.esc(t)}</span>`).join('')}</div>` : ''}
+      ${item.evidence?.length ? `<div class="expert-evidence"><b>與本站數據對照</b>
+        ${item.evidence.map(x => `<span>${C.esc(x)}</span>`).join('')}</div>` : ''}
+      <div class="expert-source">
+        <span><b>${C.esc(item.publisher)}</b>・${typeZh[item.sourceType] ?? C.esc(item.sourceType)}・${C.dateFull(item.publishedAt)}</span>
+        <a href="${C.esc(item.url)}" target="_blank" rel="noopener noreferrer">查看原始來源 ↗</a>
+      </div>
+    </article>`).join('');
+
+    return `<div class="section"><h2>新聞／名宿／專家觀點</h2>
+      <span class="hint">每場約 3 筆・分類切換・與本站 AI 分開</span></div>
+      ${rows.length ? `<div class="expert-shell" data-expert-pager data-default-filter="${defaultFilter}">
+        <div class="expert-filters" role="group" aria-label="觀點分類">
+          <button class="btn" type="button" data-expert-filter="news" aria-pressed="false">新聞 <b>${counts.news}</b></button>
+          <button class="btn" type="button" data-expert-filter="legend" aria-pressed="false">名宿 <b>${counts.legend}</b></button>
+          <button class="btn" type="button" data-expert-filter="expert" aria-pressed="false">專家 <b>${counts.expert}</b></button>
+        </div>
+        <div class="expert-viewport" aria-live="polite">${cards}</div>
+        <div class="expert-filter-empty card" data-expert-empty hidden>
+          <b>這場目前沒有此分類的已核對觀點</b><span class="small dim">可切換其他分類查看具名來源。</span>
+        </div>
+        <div class="expert-pager-controls">
+          <button class="btn" type="button" data-expert-prev aria-label="上一則觀點">← 上一則</button>
+          <div><b data-expert-position>0 / 0</b><span class="tiny dim" data-expert-label>觀點</span></div>
+          <button class="btn" type="button" data-expert-next aria-label="下一則觀點">下一則 →</button>
+        </div>
+      </div>
+        <div class="tiny dim" style="margin-top:8px">只摘要原始來源可證實的觀點,不代表本站立場。每張卡都可回到原文或原始節目。</div>`
+        : `<div class="card expert-empty">
+          <div><span class="pill">0 筆已核對</span><h3>本場尚無可驗證的名宿／專家觀點</h3>
+            <p class="small dim">需要具名專家、媒體、發布時間與原始連結,人工核對後才會顯示。本站不會為了填滿版面,把下方自動分析冒充成真人發言。</p></div>
+          <span class="expert-empty-mark" aria-hidden="true">來源<br>待核</span>
+        </div>`}`;
+  }
+
+  function setupExpertPagers() {
+    const labels = { news: '新聞觀點', legend: '名宿觀點', expert: '專家觀點' };
+    document.querySelectorAll('[data-expert-pager]').forEach(root => {
+      const cards = [...root.querySelectorAll('[data-expert-card]')];
+      const filters = [...root.querySelectorAll('[data-expert-filter]')];
+      const prev = root.querySelector('[data-expert-prev]');
+      const next = root.querySelector('[data-expert-next]');
+      const position = root.querySelector('[data-expert-position]');
+      const label = root.querySelector('[data-expert-label]');
+      const empty = root.querySelector('[data-expert-empty]');
+      let filter = root.dataset.defaultFilter || 'news', current = 0;
+
+      const visibleCards = () => cards.filter(card => card.dataset.category === filter);
+      const render = () => {
+        const visible = visibleCards();
+        if (current >= visible.length) current = 0;
+        cards.forEach(card => { card.hidden = true; card.classList.remove('active'); });
+        if (visible[current]) { visible[current].hidden = false; visible[current].classList.add('active'); }
+        filters.forEach(button => {
+          const on = button.dataset.expertFilter === filter;
+          button.classList.toggle('on', on);
+          button.setAttribute('aria-pressed', String(on));
+        });
+        empty.hidden = visible.length > 0;
+        position.textContent = visible.length ? `${current + 1} / ${visible.length}` : '0 / 0';
+        label.textContent = labels[filter] ?? '觀點';
+        prev.disabled = visible.length < 2;
+        next.disabled = visible.length < 2;
+      };
+      filters.forEach(button => { button.onclick = () => { filter = button.dataset.expertFilter; current = 0; render(); }; });
+      prev.onclick = () => { const n = visibleCards().length; if (n) { current = (current - 1 + n) % n; render(); } };
+      next.onclick = () => { const n = visibleCards().length; if (n) { current = (current + 1) % n; render(); } };
+      render();
+    });
+  }
+
+  function setupAnalysisTabs(initial) {
+    const tabs = [...document.querySelectorAll('.analysis-tab')];
+    const panels = [...document.querySelectorAll('.analysis-panel')];
+    const show = view => {
+      tabs.forEach(tab => {
+        const on = tab.dataset.view === view;
+        tab.classList.toggle('on', on);
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach(panel => { panel.hidden = panel.id !== `panel-${view}`; });
+    };
+    tabs.forEach(tab => { tab.onclick = () => show(tab.dataset.view); });
+    document.querySelectorAll('[data-view][href^="#panel-"]').forEach(link => {
+      link.onclick = event => {
+        event.preventDefault();
+        show(link.dataset.view);
+        document.getElementById(`panel-${link.dataset.view}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    });
+    show(initial);
+  }
+
+  function professionalMarketCard(f, p) {
+    if (!f.market) return `<div class="card market-card market-empty">
+      <div class="spread"><h3>市場盤口尚未發布</h3><span class="pill tiny">等待資料</span></div>
+      <p class="small dim" style="margin:8px 0 0">目前只有本站模型機率。取得可驗證的三向盤口後，才會計算去水機率與模型差距，不會用猜測值補空白。</p>
+    </div>`;
+
+    const market = f.market;
+    const rows = [
+      ['home', `${C.name(f.home)}勝`],
+      ['draw', '和局'],
+      ['away', `${C.name(f.away)}勝`],
+    ].map(([key, label]) => {
+      const gap = (p[key] - market.probs[key]) * 100;
+      const gapText = `${gap > 0 ? '+' : ''}${gap.toFixed(1)}pp`;
+      return `<div class="market-row">
+        <b class="market-outcome">${C.esc(label)}</b>
+        <div class="market-bars" aria-label="本站 ${C.pct(p[key], 1)}，市場 ${C.pct(market.probs[key], 1)}">
+          <div class="market-track"><i class="model" style="width:${(p[key] * 100).toFixed(2)}%"></i></div>
+          <div class="market-track"><i class="market" style="width:${(market.probs[key] * 100).toFixed(2)}%"></i></div>
+        </div>
+        <span class="mono market-prob"><b>${C.pct(p[key], 1)}</b><small>本站</small></span>
+        <span class="mono market-prob market-value"><b>${C.pct(market.probs[key], 1)}</b><small>市場</small></span>
+        <span class="mono market-odds"><b>${C.fx(market.decimals?.[key], 2)}</b><small>十進位</small></span>
+        <span class="pill tiny ${Math.abs(gap) >= 5 ? 'warn' : ''}" title="本站減市場">${gapText}</span>
+      </div>`;
+    }).join('');
+
+    return `<div class="card market-card">
+      <div class="market-head">
+        <div><h3>模型 vs 市場共識</h3>
+          <div class="small dim">${C.esc(market.source)}・盤口日期 ${C.dateFull(market.date)}</div></div>
+        <div class="right"><span class="pill warn">莊家水錢 ${(market.overround * 100).toFixed(1)}%</span>
+          <div class="tiny dim" style="margin-top:5px">下列市場機率已去水，合計 100%</div></div>
+      </div>
+      <div class="market-legend tiny dim"><span><i class="model"></i>本站模型</span><span><i class="market"></i>市場去水機率</span><span>差距 = 本站 − 市場</span></div>
+      <div class="market-rows">${rows}</div>
+      <div class="note info" style="margin-top:12px"><b>這是市場定價共識，不是資金流向。</b>
+        它由十進位賠率取倒數、再按比例去除莊家水錢得出；不能據此判斷大戶或專業玩家實際押了多少資金。</div>
+    </div>`;
+  }
+
+  function phaseComparison(f, report) {
+    const p = f.prediction;
+    const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
+    const outcome = { home: `${C.name(f.home)}勝`, draw: '和局', away: `${C.name(f.away)}勝` }[real];
+    const pick = [['home', p.home], ['draw', p.draw], ['away', p.away]].sort((a, b) => b[1] - a[1])[0];
+    const market = f.market?.probs ?? null;
+    const actualHomeXg = report?.sides?.[f.home]?.xG ?? null;
+    const actualAwayXg = report?.sides?.[f.away]?.xG ?? null;
+    const marketVerdict = market
+      ? (market[real] > p[real] ? '市場' : market[real] < p[real] ? '本站模型' : '兩邊相同')
+      : null;
+    const fmt = value => value == null ? '—' : C.fx(value, 2);
+
+    return `<div class="section"><h2>賽前 → 市場 → 賽後</h2>
+      <span class="hint">把當時的判斷與實際內容放在同一條時間線</span></div>
+    <div class="phase-flow">
+      <div class="phase-node pre">
+        <span class="phase-kicker">01・賽前模型</span>
+        <strong>${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}</strong>
+        <small>預期進球 ${p.xgHome} : ${p.xgAway}</small>
+      </div>
+      <span class="phase-arrow" aria-hidden="true">→</span>
+      <div class="phase-node market">
+        <span class="phase-kicker">02・市場共識</span>
+        <strong>${market ? `${C.pct(market.home, 0)} / ${C.pct(market.draw, 0)} / ${C.pct(market.away, 0)}` : '尚無盤口'}</strong>
+        <small>${f.market ? `${C.esc(f.market.source)}・已去水` : '等待可驗證資料'}</small>
+      </div>
+      <span class="phase-arrow" aria-hidden="true">→</span>
+      <div class="phase-node post">
+        <span class="phase-kicker">03・賽後結果</span>
+        <strong>${f.fh} : ${f.fa}</strong>
+        <small>${outcome}${report ? `・實際 xG ${fmt(actualHomeXg)} : ${fmt(actualAwayXg)}` : ''}</small>
+      </div>
+    </div>
+
+    <div class="grid g2 phase-summary">
+      <div class="card">
+        <h3>實際結果的賽前信心</h3>
+        <div class="result-confidence">
+          <div><span class="tiny dim">本站模型</span><b class="mono">${C.pct(p[real], 1)}</b></div>
+          <div><span class="tiny dim">市場共識</span><b class="mono">${market ? C.pct(market[real], 1) : '—'}</b></div>
+        </div>
+        <div class="small muted">實際發生<b>${outcome}</b>。模型賽前最看好${pick[0] === real ? '的就是這個結果' : '的不是這個結果'}；
+          ${marketVerdict ? `${marketVerdict}給實際結果的機率較高。` : '這場沒有市場盤口可比較。'}</div>
+        <div class="tiny dim" style="margin-top:8px">單場只能對答案，不能據此判定整套模型優劣；長期表現仍要看模型頁的 RPS 回測。</div>
+      </div>
+      <div class="card">
+        <h3>預期、場面與比分</h3>
+        <div class="pre-post-row"><span>${C.name(f.home)}</span><b class="mono">${p.xgHome}</b><i>賽前 xG</i><b class="mono">${fmt(actualHomeXg)}</b><i>實際 xG</i><b class="mono accent-text">${f.fh}</b><i>進球</i></div>
+        <div class="pre-post-row"><span>${C.name(f.away)}</span><b class="mono">${p.xgAway}</b><i>賽前 xG</i><b class="mono">${fmt(actualAwayXg)}</b><i>實際 xG</i><b class="mono accent-text">${f.fa}</b><i>進球</i></div>
+        <div class="tiny dim" style="margin-top:10px">賽前 xG 是模型對整場進球量的預估；實際 xG 是比賽中射門品質的累積，兩者概念不同但可用來檢查預測與場面是否同向。</div>
+      </div>
+    </div>
+
+    <div class="section"><h2>三向機率並排</h2><span class="hint">同一尺度比較本站與市場</span></div>
+    ${professionalMarketCard(f, p)}`;
   }
 
   // 升班馬沒有上季英超資料,頁面上多處要據實說明,不能只留空白
@@ -244,7 +491,7 @@ try {
     const proj = { home: lineups[f.home], away: lineups[f.away] };
     if (!real && !proj.home && !proj.away) return '';
 
-    const board = (code, list, shape, thisFormation, officialRows) => {
+    const board = (code, list, shape, thisFormation, officialRows, reverseRows = false) => {
       const sh = shapes[code];
       const std = sh?.official
         ? `<b class="mono">${sh.official.formation}</b><span class="pill accent tiny">官方</span>`
@@ -266,7 +513,7 @@ try {
           進攻 <span class="mono" style="color:var(--accent)">${sh.attacking.label}</span>・
           防守 <span class="mono" style="color:var(--accent-3)">${sh.defending.label}</span>` : ''}
           </div>` : '<div class="tiny dim" style="margin-bottom:8px">升班馬,英超樣本不足以推導標準陣型</div>'}
-        ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85', officialRows })}
+        ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85', officialRows, reverseRows })}
       </div>`;
     };
 
@@ -299,8 +546,8 @@ try {
           ? `英超官方公布的正式名單${off.m.kickoff ? `・${C.ageText ? C.ageText(off.m.kickoff) : ''}` : ''}`
           : `推測值,不是官方名單 —— 依球員近期先發紀錄推算`}</span></div>
     <div class="grid g2">
-      ${board(f.home, withPhoto(xi.home), shapeOf(f.home, 'home'), fmOf('home'), rowsOf('home', withPhoto(xi.home)))}
-      ${board(f.away, withPhoto(xi.away), shapeOf(f.away, 'away'), fmOf('away'), rowsOf('away', withPhoto(xi.away)))}
+      ${board(f.home, withPhoto(xi.home), shapeOf(f.home, 'home'), fmOf('home'), rowsOf('home', withPhoto(xi.home)), !!off?.rows?.home)}
+      ${board(f.away, withPhoto(xi.away), shapeOf(f.away, 'away'), fmOf('away'), rowsOf('away', withPhoto(xi.away)), !!off?.rows?.away)}
     </div>
     ${real ? '' : `<div class="note" style="margin-top:10px">
       <b>這是推測,不是官方公布的名單。</b>
@@ -512,7 +759,7 @@ try {
       </div>
       ${t.recent.map(r => `<div class="stat-line">
         <span class="small dim mono">${C.dateFull(r.date)}</span>
-        <span class="small">${r.venue === 'H' ? '主' : '客'} vs ${C.esc(C.name(r.opp))}
+        <span class="small">${r.venue === 'H' ? '主' : '客'} vs ${C.teamLink(r.opp)}
           <b class="mono">${r.gf}-${r.ga}</b></span></div>`).join('')}
 
       <div class="small muted" style="margin:12px 0 4px">確定缺陣${a.outCount > a.out.length ? `(共 ${a.outCount} 人,列出影響最大的 ${a.out.length} 位)` : ''}</div>
@@ -547,13 +794,13 @@ try {
     if (!rec) return `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在英超交手過(多半是剛升上來的球隊)。</div>`;
     const homeIsA = [f.home, f.away].sort()[0] === f.home;
     return `<div class="row small" style="justify-content:space-between">
-        <span>${C.name(f.home)} <b>${homeIsA ? rec.aWin : rec.bWin}</b> 勝</span>
+        <span>${C.teamLink(f.home)} <b>${homeIsA ? rec.aWin : rec.bWin}</b> 勝</span>
         <span class="dim">和 ${rec.draw}</span>
-        <span><b>${homeIsA ? rec.bWin : rec.aWin}</b> 勝 ${C.name(f.away)}</span>
+        <span><b>${homeIsA ? rec.bWin : rec.aWin}</b> 勝 ${C.teamLink(f.away)}</span>
       </div>
       <div style="margin-top:8px">${rec.list.slice(0, 6).map(m => `
         <div class="stat-line"><span class="small dim mono">${C.dateFull(m.date)}</span>
-          <span class="small">${C.name(m.home)} <b class="mono">${m.fh}-${m.fa}</b> ${C.name(m.away)}</span></div>`).join('')}</div>`;
+          <span class="small">${C.teamLink(m.home)} <b class="mono">${m.fh}-${m.fa}</b> ${C.teamLink(m.away)}</span></div>`).join('')}</div>`;
   }
 
   function squadHtml(code) {

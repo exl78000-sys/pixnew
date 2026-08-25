@@ -140,7 +140,7 @@ export function recentForm(index, code, date, n = 5) {
   });
 }
 
-/* 近五戰的彙總:幾勝幾和幾負、進失球、場均勝點。 */
+/* 近五戰的彙總:幾勝幾和幾負、勝率、進失球、場均勝點。 */
 export function formSummary(rows) {
   const s = { games: rows.length, w: 0, d: 0, l: 0, gf: 0, ga: 0 };
   for (const r of rows) {
@@ -149,5 +149,6 @@ export function formSummary(rows) {
   }
   s.pts = s.w * 3 + s.d;
   s.ppg = rows.length ? s.pts / rows.length : 0;
+  s.winPct = rows.length ? Math.round((s.w / rows.length) * 1000) / 10 : 0;
   return s;
 }

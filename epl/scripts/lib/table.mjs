@@ -9,6 +9,34 @@ function apply(rec, gf, ga) {
   else rec.l++;
 }
 
+// 單隊在一段賽程裡的攻守摘要。
+// limit 從該隊按日期排序後的第一場開始算,所以 limit:10 就是「開季前 10 場」,
+// 不會誤切成整個聯盟最早的 10 場。這份資料只供頁面呈現,不進預測模型。
+export function teamRecord(matches, code, { limit = null } = {}) {
+  const games = matches
+    .filter(m => m.played && m.fh != null && m.fa != null && (m.home === code || m.away === code))
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : (a.round ?? 0) - (b.round ?? 0)));
+  const selected = limit == null ? games : games.slice(0, limit);
+  const rec = { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, cleanSheets: 0 };
+  for (const m of selected) {
+    const home = m.home === code;
+    const gf = home ? m.fh : m.fa;
+    const ga = home ? m.fa : m.fh;
+    rec.p++;
+    rec.gf += gf;
+    rec.ga += ga;
+    if (gf > ga) rec.w++;
+    else if (gf === ga) rec.d++;
+    else rec.l++;
+    if (ga === 0) rec.cleanSheets++;
+  }
+  rec.gd = rec.gf - rec.ga;
+  rec.winPct = round(rec.p ? (rec.w / rec.p) * 100 : 0, 1);
+  rec.avgGF = rec.p ? round(rec.gf / rec.p, 2) : null;
+  rec.avgGA = rec.p ? round(rec.ga / rec.p, 2) : null;
+  return rec;
+}
+
 // 由賽果算出完整的球隊賽季檔案(積分榜 + 主客分段 + 半場行為 + 連續紀錄)
 export function buildTable(matches, codes) {
   const rows = new Map();

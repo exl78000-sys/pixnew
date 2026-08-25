@@ -110,9 +110,12 @@ export function dataStories({ table, tactics, teams, season, asOf }) {
   push('戰術', `${zh(teams, leaky.code)} 守不住領先`,
     `半場領先 ${leaky.half.htLead} 次卻只拿下 ${leaky.half.leadHoldPct}% 的可能分數,被逆轉 ${leaky.half.collapse} 場。`, leaky.code);
 
-  const setPiece = best(tactics, t => t.setPieces.defenderGoalShare);
-  push('戰術', `${zh(teams, setPiece.code)} 的進球高度依賴後場球員`,
-    `全隊 ${setPiece.setPieces.defenderGoalShare}% 的進球來自後衛與門將(${setPiece.setPieces.defenderGoals} 球),通常是定位球威脅的訊號。`, setPiece.code);
+  const setPieceTeams = tactics.filter(t => t.setPieces.available);
+  if (setPieceTeams.length) {
+    const setPiece = best(setPieceTeams, t => t.setPieces.xG90);
+    push('戰術', `${zh(teams, setPiece.code)} 製造全聯盟最高的定位球威脅`,
+      `非十二碼定位球每場 ${setPiece.setPieces.xG90} xG,全季進 ${setPiece.setPieces.goals} 球、預期 ${setPiece.setPieces.xG} 球。`, setPiece.code);
+  }
 
   const young = best(tactics, t => t.squad.avgAgeWeighted, false);
   push('陣容', `${zh(teams, young.code)} 是最年輕的先發群`,

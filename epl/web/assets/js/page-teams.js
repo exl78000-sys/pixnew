@@ -3,8 +3,8 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, players, fixtures, coaches, results, goals } =
-    await C.load('meta', 'clubs', 'teams', 'players', 'fixtures', 'coaches', 'results', 'goals');
+  const { meta, clubs, teams, players, fixtures, coaches, goals, h2h, form } =
+    await C.load('meta', 'clubs', 'teams', 'players', 'fixtures', 'coaches', 'goals', 'h2h', 'form');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -30,8 +30,8 @@ try {
 
   /* 進球來源。
      能回答:對每一隊進幾球/被進幾球、誰進的、誰助攻、先發還是替補進的。
-     **不能回答:怎麼進的(運動戰/角球/任意球)。** 那是 Opta qualifier 等級的資料,
-     免費源沒有 —— 所以連欄位都不留,不做一個永遠空白的格子。 */
+     FPL 事件不能把「某一球」分成運動戰/角球/任意球;上季球隊層級的
+     五種進球情境已另由 Understat 摘要數據提供,放在戰術區。 */
   function goalSection(t) {
     const seasons = (goals?.seasons ?? []).filter(s => goals.data[s]?.teams?.[t.code]);
     if (!seasons.length) return '';
@@ -119,8 +119,8 @@ try {
       <div class="tiny dim" style="margin-top:8px">
         每 90 分鐘的分母是<b>上場分鐘</b>,不是出賽場次。上場不足 450 分鐘的不給這個數字 ——
         替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。
-        <br><b>沒有「進球方式」這一欄。</b>運動戰、角球、任意球的區分是 Opta qualifier 等級的資料,
-        免費資料源給不到,所以不做,也不留一個永遠空白的欄位。
+        <br><b>這張表不把進球方式掛到個別球員。</b>FPL 事件沒有這個 qualifier;
+        上季的球隊級運動戰、角球與任意球加總列在下方「上季進球方式」。
       </div>
     </div>`;
 
@@ -316,13 +316,143 @@ try {
       </div></a>`;
   }
 
+  // 近期與交手都是「資訊」,不是模型特徵。兩者做過跨季走查後沒有穩定增益,
+  // 所以球隊頁可以完整呈現,但不能讓讀者誤以為它們已經改動上方預測。
+  function recentCard(t) {
+    const f = form?.teams?.[t.code];
+    if (!f) return '<div class="card"><h3>近期比賽</h3><div class="dim small">尚無近期賽果。</div></div>';
+    const s = f.summary;
+    const runs = f.recent.map(r => `<i class="frm ${r.res}"
+      title="${C.esc(`${r.date}・${r.venue === 'H' ? '主' : '客'}場對 ${C.name(r.opp)}・${r.gf}-${r.ga}`)}">${r.res}</i>`).join('');
+    return `<div class="card"><h3>近期 ${s.games} 場</h3>
+      <div class="row" style="gap:8px;align-items:center;margin-bottom:10px">
+        <span class="form-run">${runs}</span>
+        <b class="small">${s.w}勝 ${s.d}和 ${s.l}負・勝率 ${s.winPct}%</b>
+      </div>
+      <div class="grid g3" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
+        <div><div class="tiny dim">進 / 失</div><b class="mono">${s.gf} / ${s.ga}</b></div>
+        <div><div class="tiny dim">場均勝點</div><b class="mono">${C.fx(s.ppg, 2)}</b></div>
+        <div><div class="tiny dim">樣本</div><b class="mono">${s.games} 場</b></div>
+      </div>
+      ${f.recent.map(r => `<div class="stat-line">
+        <span class="small"><i class="frm ${r.res}">${r.res}</i> ${r.venue === 'H' ? '主' : '客'} vs ${C.teamLink(r.opp)}</span>
+        <span class="mono small">${r.gf}-${r.ga} <span class="dim">${C.dateFull(r.date)}</span></span></div>`).join('')}
+      <div class="tiny dim" style="margin-top:8px">跨賽季取最近五場;不影響模型勝率。</div>
+    </div>`;
+  }
+
+  function h2hCard(t, selected) {
+    const opponents = teams.filter(x => x.code !== t.code)
+      .sort((a, b) => C.name(a.code).localeCompare(C.name(b.code), 'zh-Hant'));
+    return `<div class="card"><div class="spread" style="align-items:center;gap:10px">
+      <h3 style="margin:0">面對對手過往</h3>
+      <select id="teamH2HOpp" aria-label="選擇交手對手">
+        ${opponents.map(o => `<option value="${o.code}" ${o.code === selected ? 'selected' : ''}>${C.esc(C.name(o.code))}</option>`).join('')}
+      </select></div>
+      <div class="tiny dim" style="margin:6px 0 8px">英超 ${C.esc(meta.h2hSeasons?.[0] ?? '')} 起・不影響模型勝率</div>
+      <div id="teamH2HBox"></div>
+    </div>`;
+  }
+
+  function renderTeamH2H(t) {
+    const sel = document.getElementById('teamH2HOpp');
+    const box = document.getElementById('teamH2HBox');
+    if (!sel || !box) return;
+    sel.onchange = () => renderTeamH2H(t);
+    const opp = sel.value;
+    const key = [t.code, opp].sort().join('|');
+    const rec = h2h?.[key];
+    if (!rec) {
+      box.innerHTML = `<div class="small" style="margin-bottom:8px">對手球隊：${C.teamLink(opp)}</div>
+        <div class="dim small">${C.esc(meta.h2hSeasons?.[0] ?? '')} 以來沒有在英超交手過。</div>`;
+      return;
+    }
+    const ownIsA = key.split('|')[0] === t.code;
+    const w = ownIsA ? rec.aWin : rec.bWin;
+    const l = ownIsA ? rec.bWin : rec.aWin;
+    const gf = ownIsA ? rec.aGoals : rec.bGoals;
+    const ga = ownIsA ? rec.bGoals : rec.aGoals;
+    const winPct = rec.games ? Math.round((w / rec.games) * 1000) / 10 : 0;
+    box.innerHTML = `<div class="small" style="margin-bottom:8px">對手球隊：${C.teamLink(opp)}</div>
+    <div class="grid g3" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
+      <div><div class="tiny dim">勝 / 和 / 負</div><b class="mono">${w} / ${rec.draw} / ${l}</b></div>
+      <div><div class="tiny dim">進 / 失</div><b class="mono">${gf} / ${ga}</b></div>
+      <div><div class="tiny dim">交手勝率</div><b class="mono">${winPct}%</b></div>
+    </div>
+    ${rec.list.slice(0, 5).map(m => `<div class="stat-line"><span class="small dim mono">${C.dateFull(m.date)}</span>
+      <span class="small">${C.teamLink(m.home)} <b class="mono">${m.fh}-${m.fa}</b> ${C.teamLink(m.away)}</span></div>`).join('')}`;
+  }
+
+  function seasonHistorySection(t) {
+    const seasons = [...(t.history ?? [])].reverse();
+    if (!seasons.length) return '';
+    const rows = seasons.flatMap(s => [
+      { ...s, scope: s.season === meta.currentSeason ? '目前' : '全季' },
+      { season: s.season, ...s.first10, scope: `前 10 場${s.first10.p < 10 ? `(${s.first10.p}/10)` : ''}` },
+    ]);
+    return `<div class="section"><h2>逐季攻守</h2>
+      <span class="hint">全季與開季前 10 場並列</span></div>
+    <div class="card">${C.table(rows, [
+      { key: 'season', label: '賽季', value: r => r.season, left: true,
+        render: r => `<b>${r.season}</b>${r.season === meta.currentSeason ? ' <span class="pill accent tiny">進行中</span>' : ''}` },
+      { key: 'scope', label: '範圍', value: r => r.scope, left: true },
+      { key: 'p', label: '場', value: r => r.p, num: true },
+      { key: 'record', label: '勝 / 和 / 負', value: r => r.w, sortable: false, num: true,
+        render: r => `${r.w} / ${r.d} / ${r.l}` },
+      { key: 'winPct', label: '勝率', value: r => r.winPct, num: true, render: r => `${r.winPct}%` },
+      { key: 'gf', label: '進球', value: r => r.gf, num: true },
+      { key: 'ga', label: '失球', value: r => r.ga, num: true },
+      { key: 'gd', label: '淨勝', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
+      { key: 'avgGF', label: '場均進球', value: r => r.avgGF ?? -1, num: true, render: r => r.avgGF ?? '—' },
+      { key: 'avgGA', label: '場均失球', value: r => r.avgGA ?? -1, num: true, render: r => r.avgGA ?? '—' },
+      { key: 'cleanSheets', label: '零封', value: r => r.cleanSheets, num: true },
+    ], { sortKey: null })}
+      <div class="tiny dim" style="margin-top:8px">
+        防守以失球、場均失球與零封呈現。上一完整賽季的運動戰、角球、其他定位球、
+        直接任意球與十二碼進失球,列在下方戰術區。
+      </div>
+    </div>`;
+  }
+
+  function goalSituationCard(tac) {
+    if (!tac?.setPieces?.available) return '';
+    const sp = tac.setPieces;
+    const rows = [
+      ['openPlay', '運動戰'], ['corner', '角球'], ['otherSetPiece', '其他定位球'],
+      ['directFreeKick', '直接任意球'], ['penalty', '十二碼'],
+    ].map(([key, label]) => ({ label, ...sp.breakdown[key] }));
+    return `<div class="card" style="margin-top:14px"><div class="spread">
+      <h3 style="margin:0">上季進球方式</h3><span class="pill tiny">${meta.lastSeason}</span></div>
+      <div class="grid g4" style="margin:12px 0">
+        <div><div class="tiny dim">非十二碼定位球</div><b class="mono">${sp.goals} 球</b></div>
+        <div><div class="tiny dim">定位球 xG</div><b class="mono">${C.fx(sp.xG, 2)}</b></div>
+        <div><div class="tiny dim">定位球失球</div><b class="mono">${sp.conceded}</b></div>
+        <div><div class="tiny dim">定位球 xGA</div><b class="mono">${C.fx(sp.xGA, 2)}</b></div>
+      </div>
+      ${C.table(rows, [
+        { key: 'label', label: '情境', value: r => r.label, left: true },
+        { key: 'goals', label: '進球', value: r => r.goals, num: true },
+        { key: 'xg', label: 'xG', value: r => r.xG, num: true, render: r => C.fx(r.xG, 2) },
+        { key: 'shots', label: '射門', value: r => r.shots, num: true },
+        { key: 'against', label: '失球', value: r => r.against.goals, num: true },
+        { key: 'xga', label: 'xGA', value: r => r.against.xG, num: true, render: r => C.fx(r.against.xG, 2) },
+      ], { sortKey: null })}
+      <div class="tiny dim" style="margin-top:8px">
+        來源: <a href="${C.esc(sp.sourceUrl)}" target="_blank" rel="noopener">Understat</a>。
+        「其他定位球」是非角球、非直接任意球的定位球;
+        五類進失球已跟聯賽實際比分逐隊核對。
+      </div></div>`;
+  }
+
   /* ── 單隊 ─────────────────────────── */
   function detail(t) {
     const ls = t.lastSeason, tac = t.tactics, s = t.sim, co = coachBy.get(t.code);
     const squad = players.filter(p => p.team === t.code);
     const out = squad.filter(p => p.news && p.status !== 'a');
-    const seasonGames = results.filter(m => m.season === meta.lastSeason && (m.home === t.code || m.away === t.code));
     const next = fixtures.filter(f => !f.played && (f.home === t.code || f.away === t.code)).slice(0, 6);
+    const h2hDefault = next[0]
+      ? (next[0].home === t.code ? next[0].away : next[0].home)
+      : teams.find(x => x.code !== t.code)?.code;
 
     const kpi = (l, v, sub = '') => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub}</div></div>`;
     const line = (l, v) => `<div class="stat-line"><span class="small muted">${l}</span><b class="mono">${v}</b></div>`;
@@ -342,6 +472,13 @@ try {
       ${kpi('前四機率', `${s?.top4Pct ?? '—'}%`, `奪冠 ${s?.titlePct ?? '—'}%`)}
       ${kpi('降級機率', `${s?.relegationPct ?? '—'}%`, `Elo ${C.fx(t.elo, 0)}`)}
     </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      ${recentCard(t)}
+      ${h2hCard(t, h2hDefault)}
+    </div>
+
+    ${seasonHistorySection(t)}
 
     ${ls ? `
     <div class="section"><h2>上季戰績剖析</h2><span class="hint">${meta.lastSeason}</span></div>
@@ -388,7 +525,11 @@ try {
         ${line('每場期望失球 xGA', tac.defence.xGA90)}
         ${line('終結超出期望', C.signed(tac.attack.finishing, 1))}
         ${line('門將守住的期望失球', C.signed(tac.defence.overperform, 1))}
-        ${line('後衛+門將進球佔比', `${tac.setPieces.defenderGoalShare}%`)}
+        ${tac.setPieces.available ? `
+          ${line('非十二碼定位球 進 / 失', `${tac.setPieces.goals} / ${tac.setPieces.conceded}`)}
+          ${line('定位球 xG / 場', tac.setPieces.xG90)}
+          ${line('定位球 xGA / 場', tac.setPieces.xGA90)}`
+          : line('後場球員進球佔比(代理)', `${tac.setPieces.defenderGoalShare}%`)}
         ${line('使用球員數', tac.squad.used)}
         ${line('前 11 人出場佔比', `${tac.squad.top11Share}%`)}
         ${line('出場加權平均年齡', tac.squad.avgAgeWeighted)}
@@ -396,6 +537,8 @@ try {
         <div class="tiny dim" style="margin-top:8px">${tac.formation.notes.join('・') || '　'}</div>
       </div>` : ''}
     </div>
+
+    ${goalSituationCard(tac)}
 
     ${tac ? `<div class="card" style="margin-top:14px"><h3>定位球主罰順位</h3>
       <div class="grid g3">
@@ -420,16 +563,6 @@ try {
     ${out.length ? `<div class="note" style="margin-bottom:10px">傷停/異動 ${out.length} 人:
       ${out.map(p => `${C.esc(p.name)}(${C.esc(p.statusZh)})`).join('、')}</div>` : ''}
     <div id="squad"></div>
-
-    <div class="section"><h2>近期比賽</h2><span class="hint">${meta.lastSeason} 最後 10 場</span></div>
-    <div class="card">${seasonGames.slice(-10).reverse().map(m => {
-      const isHome = m.home === t.code;
-      const gf = isHome ? m.fh : m.fa, ga = isHome ? m.fa : m.fh;
-      const r = gf > ga ? 'W' : gf === ga ? 'D' : 'L';
-      return `<div class="stat-line"><span class="small">
-        <i class="frm ${r}">${r}</i> ${isHome ? '主' : '客'} vs ${C.name(isHome ? m.away : m.home)}</span>
-        <span class="mono small">${gf} - ${ga} <span class="dim">${C.dateFull(m.date)}</span></span></div>`;
-    }).join('')}</div>
 
     ${next.length ? `<div class="card" style="margin-top:14px"><h3>接下來的對手</h3>
       ${next.map(f => {
@@ -458,5 +591,6 @@ try {
       { key: 'defCon90', label: '防守貢獻/90', value: p => p.last?.defCon90 ?? 0, num: true, render: p => (p.qualified ? p.last.defCon90 : '—') },
       { key: 'price', label: '身價', value: p => p.price, num: true, render: p => `£${p.price.toFixed(1)}m` },
     ], { sortKey: 'minutes', desc: true, onRow: p => { C.go('players', { code: p.code }); } });
+    renderTeamH2H(t);
   }
 } catch (err) { C.fail(err); }

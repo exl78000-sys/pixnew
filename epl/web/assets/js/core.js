@@ -81,6 +81,12 @@ export function teamCell(code, { link: withLink = true, label: custom = null } =
   return withLink ? `<a href="${link('teams', { code })}" style="color:inherit;text-decoration:none">${inner}</a>` : inner;
 }
 
+// 緊湊文字區(比分、近期賽果、交手紀錄)不適合塞隊徽,但隊名仍應能進球隊頁。
+// 跟 teamCell 分開,避免每個 call site 自己拼網址或漏掉單檔版的 hash 路由。
+export function teamLink(code, { label: custom = null } = {}) {
+  return `<a href="${link('teams', { code })}" style="color:inherit;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px">${esc(custom ?? name(code))}</a>`;
+}
+
 /* ── 格式 ───────────────────────────── */
 export const pct = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 export const fx = (v, d = 2) => (v === null || v === undefined || Number.isNaN(v) ? '—' : Number(v).toFixed(d));
@@ -286,6 +292,152 @@ export function drawer(title, html) {
   drawerEl.scrollTop = 0;
 }
 
+/* ── 共用球員詳情 ───────────────────── */
+// 球員頁、賽後分析與實時戰況共用同一份內容，避免三個頁面各自長出不同版本。
+export function openPlayerDrawer(p, { meta, mode = 'current' } = {}) {
+  if (!p) return;
+  const t = team(p.team);
+  const currentSeason = meta?.currentSeason ?? '本季';
+  const lastSeason = meta?.lastSeason ?? '上季';
+  const pctLine = (label, v, raw) => `
+    <div style="margin-bottom:7px"><div class="row small" style="justify-content:space-between">
+      <span class="muted">${label}</span><span class="mono">${raw ?? '—'}${v === null ? '' : ` <span class="dim">(${v} 分位)</span>`}</span></div>
+    ${bar(v ?? 0, 100, v >= 80 ? '' : v >= 50 ? 'alt' : 'hot')}</div>`;
+  const line = (l, v) => `<div class="stat-line"><span class="small muted">${l}</span><b class="mono">${v}</b></div>`;
+  const roleCard = st => {
+    if (!st) return '';
+    const rows = [
+      st.dreamteam > 0 ? line('入選官方單週最佳陣容', `${st.dreamteam} 次`) : '',
+      st.startRate !== null && st.startRate !== undefined
+        ? line('先發率', `${fx(st.startRate, 2)}${st.startRate >= 0.95 ? ' (幾乎場場先發)' : st.startRate < 0.8 ? ' (常從板凳上場)' : ''}`) : '',
+    ].filter(Boolean);
+    return rows.length ? `<div class="card"><h3>角色與高光</h3>${rows.join('')}
+      <div class="tiny dim" style="margin-top:8px">最佳陣容是每輪選出的單週最佳 11 人，計數不是平均 ——
+        它抓的是「打出過幾次亮眼表現」，跟上面的 per-90 平均值互補。
+        先發率 = 先發次數 ÷(出場分鐘/90)，1.0 代表上場就是先發。</div></div>` : '';
+  };
+
+  drawer(`${playerPhoto(p)} ${esc(p.name)}`, `
+    <div class="card">
+      <div class="spread">
+        <div><div style="font-size:19px;font-weight:800">${esc(p.fullName)}</div>
+          <div class="small muted">${p.posZh}・${p.age ?? '?'} 歲・${esc(t.en)}
+            ${p.squadNumber ? `・背號 ${p.squadNumber}` : ''}・£${fx(p.price, 1)}m</div></div>
+        ${p.status !== 'a' ? `<span class="pill bad">${esc(p.statusZh)}</span>` : '<span class="pill accent">可出賽</span>'}
+      </div>
+      ${p.news ? `<div class="note" style="margin-top:10px">${esc(p.news)}</div>` : ''}
+      ${p.transferred ? `<div class="note info" style="margin-top:10px">上季效力 ${name(p.lastTeam)}，本季已加盟 ${esc(t.en)}；下方數據為在原隊的表現。</div>` : ''}
+      ${p.isNewFace ? '<div class="note info" style="margin-top:10px">上季沒有英超出場紀錄(新援、新秀或長期缺陣)，沒有可比較的數據。</div>' : ''}
+    </div>
+
+    ${(() => {
+      const useCurrent = mode === 'current' && p.radarCurrent && p.qualifiedCurrent;
+      const radarValues = useCurrent ? p.radarCurrent : (p.qualified ? p.radar : null);
+      if (!radarValues) return '';
+      return `<div class="card"><h3>能力雷達 <span class="dim tiny">${useCurrent ? `本季 ${currentSeason}` : `上季 ${lastSeason}`}</span></h3>
+        ${radar([{ name: p.name, color: t.colors?.[0] ?? '#00ff85', values: radarValues }], { size: 300 })}
+        <div class="tiny dim center">與同位置、出場達門檻的球員相比的百分位</div>
+        <div style="margin-top:12px">${radarValues.map(r => pctLine(r.label, r.value, r.raw)).join('')}</div>
+      </div>`;
+    })()}
+
+    ${roleCard(mode === 'current' ? p.current : p.last)}
+
+    ${p.current ? `<div class="card"><h3>本季至今(${currentSeason})
+        <span class="dim tiny">${p.appearances} 場</span></h3>
+      ${line('出場 / 先發', `${p.current.minutes} 分鐘 / ${p.current.starts} 場`)}
+      ${line('進球 / 助攻', `${p.current.goals} / ${p.current.assists}`)}
+      ${line('期望進球 xG / 助攻 xA', `${p.current.xG} / ${p.current.xA}`)}
+      ${line('每 90 分鐘進球參與 xGI', p.current.xgi90)}
+      ${line('防守貢獻 / 90', p.current.defCon90)}
+      ${line('FPL 得分', p.current.points)}
+    </div>` : `<div class="note info">本季 ${currentSeason} 尚無出場數據。</div>`}
+
+    ${p.last ? `<div class="card"><h3>上季完整賽季(${lastSeason})</h3>
+      ${line('出場 / 先發', `${p.last.minutes} 分鐘 / ${p.last.starts} 場`)}
+      ${line('進球 / 助攻', `${p.last.goals} / ${p.last.assists}`)}
+      ${line('期望進球 xG / 助攻 xA', `${p.last.xG} / ${p.last.xA}`)}
+      ${line('終結超出期望', signed(p.last.finishing, 2))}
+      ${line('每 90 分鐘進球參與 xGI', p.last.xgi90)}
+      ${p.pos === 'GK' ? line('撲救 / 90・少失球', `${p.last.saves90} ・ ${signed(p.last.shotStop, 1)}`) : ''}
+      ${line('防守貢獻 / 90', p.last.defCon90)}
+      ${line('搶斷 / 解圍攔截 / 回收(每 90)', `${p.last.tackles90} / ${p.last.cbi90} / ${p.last.recoveries90}`)}
+      ${line('零封率', `${p.last.csRate}%`)}
+      ${line('黃紅牌加權', p.last.cards)}
+      ${line('FPL 總得分', p.last.points)}
+    </div>` : ''}
+
+    ${p.setPieces?.pen || p.setPieces?.fk || p.setPieces?.corner ? `<div class="card"><h3>定位球順位</h3>
+      ${p.setPieces.pen ? line('十二碼', `第 ${p.setPieces.pen} 順位`) : ''}
+      ${p.setPieces.fk ? line('直接自由球', `第 ${p.setPieces.fk} 順位`) : ''}
+      ${p.setPieces.corner ? line('角球 / 間接球', `第 ${p.setPieces.corner} 順位`) : ''}
+    </div>` : ''}
+    <div><a href="${link('players', { code: p.code })}">在球員頁開啟完整資料 →</a></div>
+    <div style="margin-top:8px"><a href="${link('teams', { code: p.team })}">看 ${esc(t.en)} 的完整剖析 →</a></div>`);
+}
+
+// resolvePlayer 可以回傳球員或 Promise；實時頁因此可在第一次點擊時才載入大型球員檔。
+export function bindPlayerLinks(root, resolvePlayer, options = {}) {
+  if (!root) return;
+  if (root.__playerLinkClick) root.removeEventListener('click', root.__playerLinkClick);
+  if (root.__playerLinkKeydown) root.removeEventListener('keydown', root.__playerLinkKeydown);
+
+  const activate = async trigger => {
+    const code = trigger?.dataset?.playerCode;
+    if (!code) return;
+    trigger.setAttribute('aria-busy', 'true');
+    try {
+      const p = await resolvePlayer(code);
+      if (p) openPlayerDrawer(p, typeof options === 'function' ? options() : options);
+    } finally {
+      trigger.removeAttribute('aria-busy');
+    }
+  };
+  root.__playerLinkClick = event => {
+    const trigger = event.target.closest?.('[data-player-code]');
+    if (!trigger || !root.contains(trigger)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    activate(trigger);
+  };
+  root.__playerLinkKeydown = event => {
+    const trigger = event.target.closest?.('[data-player-code]');
+    if (!trigger || trigger.tagName === 'BUTTON' || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    activate(trigger);
+  };
+  root.addEventListener('click', root.__playerLinkClick);
+  root.addEventListener('keydown', root.__playerLinkKeydown);
+}
+
+// 賽後報告為了壓小資料檔沒有重複儲存 base64 頭貼；開頁時再依 code 與球員庫合併。
+export function reportWithPlayerPhotos(m, players) {
+  if (!m?.sides) return m;
+  const byCode = players instanceof Map ? players : new Map((players ?? []).map(p => [String(p.code), p]));
+  const decorate = p => {
+    if (!p) return p;
+    const full = p.code == null ? null : byCode.get(String(p.code));
+    return { ...p, photo: p.photo ?? full?.photo ?? null };
+  };
+  const side = s => ({
+    ...s,
+    xi: (s.xi ?? []).map(decorate),
+    bench: (s.bench ?? []).map(decorate),
+    rows: s.rows?.map(row => row.map(decorate)) ?? null,
+  });
+  const advanced = m.advanced ? {
+    ...m.advanced,
+    players: Object.fromEntries(Object.entries(m.advanced.players ?? {}).map(([teamCode, list]) => [
+      teamCode, list.map(p => ({ ...decorate(p), team: teamCode })),
+    ])),
+  } : null;
+  return {
+    ...m,
+    sides: Object.fromEntries(Object.entries(m.sides).map(([code, s]) => [code, side(s)])),
+    ...(advanced ? { advanced } : {}),
+  };
+}
+
 /* ── 賽後 / 場中報告(實時戰況頁與賽程頁共用)──── */
 export function matchReportCards(m) {
   const H = m.sides[m.home], A = m.sides[m.away];
@@ -304,6 +456,7 @@ export function matchReportCards(m) {
         ${S.seasonShape && !official ? `・上季常態 ${S.seasonShape.label}` : ''}</div>
       <div class="center" style="margin-bottom:8px">${pitch(S.xi, {
         color: colour, label: `${name(code)} 站位`, officialRows: S.rows ?? null,
+        photos: true, playerLinks: true, reverseRows: true,
       })}</div>
       ${xiHtml(S)}</div>`;
   };
@@ -312,17 +465,88 @@ export function matchReportCards(m) {
     // 名單已公布但還沒開踢時 s.xi 是空的 —— 改列官方排位裡的人,不要留一片空白
     const list = s.xi.length ? s.xi : (s.rows ?? []).flat();
     return `<div class="xi">
-    ${list.map(p => `<div class="p"><span><span class="pos">${p.role ?? p.pos}</span>${esc(p.name)}
+    ${list.map(p => `<div class="p"><span><span class="pos">${p.role ?? p.pos}</span>${playerButton(p)}
       ${p.goals ? ` <span style="color:var(--accent)">⚽${p.goals > 1 ? p.goals : ''}</span>` : ''}
       ${p.assists ? ` <span class="dim">🅰${p.assists > 1 ? p.assists : ''}</span>` : ''}
       ${p.red ? ' <span style="color:var(--loss)">🟥</span>' : p.yellow ? ' <span style="color:var(--draw)">🟨</span>' : ''}</span>
       <span class="dim mono tiny">${p.minutes == null ? '' : p.minutes + "'"}</span></div>`).join('')}
     ${s.bench.length ? `<div class="tiny dim" style="margin-top:6px">替補上場(時間為推估)</div>
-      ${s.bench.map(p => `<div class="p sub"><span><span class="pos">${p.pos}</span>${esc(p.name)}
+      ${s.bench.map(p => `<div class="p sub"><span><span class="pos">${p.pos}</span>${playerButton(p)}
         ${p.goals ? ` <span style="color:var(--accent)">⚽${p.goals > 1 ? p.goals : ''}</span>` : ''}
         ${p.assists ? ' <span class="dim">🅰</span>' : ''}</span>
         <span class="dim mono tiny">≈${p.onAbout}' 上</span></div>`).join('')}` : ''}
   </div>`;
+  };
+  const playerButton = p => p?.code
+    ? `<button class="player-name-btn" type="button" data-player-code="${esc(p.code)}" aria-label="查看 ${esc(p.name)} 球員資料">${esc(p.name)}</button>`
+    : esc(p?.name);
+  const bestHtml = s => s.best.map(b => {
+    const p = [...s.xi, ...s.bench].find(x => x.name === b.name) ?? b;
+    return `<div class="stat-line"><span class="small">${playerButton(p)}
+      <span class="dim tiny">${b.pos} ${b.minutes}'</span></span><b class="mono">${b.bps}</b></div>`;
+  }).join('');
+
+  const advancedHtml = () => {
+    const d = m.advanced;
+    if (!d) return m.finished ? `<div class="card"><h3>完整賽後數據</h3>
+      <div class="note info">API-Football 的球員評分、射門、傳球、對抗、防守與事件資料尚未寫入永久快取。
+      目前下方仍顯示已取得的 FPL 賽後資料；未取得的欄位不會用估算值代替。</div></div>` : '';
+
+    const hs = d.teamStats?.[m.home] ?? {}, as = d.teamStats?.[m.away] ?? {};
+    const value = (v, suffix = '') => v === null || v === undefined ? '—' : `${v}${suffix}`;
+    const stat = (label, key, suffix = '') => hs[key] == null && as[key] == null ? ''
+      : line(label, value(hs[key], suffix), value(as[key], suffix));
+    const metric = (label, v, suffix = '') => `<span><small>${label}</small><b>${value(v, suffix)}</b></span>`;
+    const ratio = (a, b) => a == null && b == null ? '—' : `${value(a)}/${value(b)}`;
+    const ratingClass = v => v == null ? '' : v >= 7.5 ? 'accent' : v < 6 ? 'bad' : 'info';
+    const person = (p, code) => {
+      const withTeam = { ...p, team: code };
+      return `<details class="rating-player">
+        <summary>${playerPhoto(withTeam, 38)}<span class="rating-name">${playerButton(p)}
+          <small>${esc(p.pos ?? '—')}・${value(p.minutes, "'")}${p.captain ? '・隊長' : ''}</small></span>
+          <span class="pill ${ratingClass(p.rating)} mono">${p.rating == null ? '未評分' : fx(p.rating, 1)}</span></summary>
+        <div class="player-metric-grid">
+          ${metric('進球', p.goals?.total)}${metric('助攻', p.goals?.assists)}
+          ${metric('射正 / 射門', ratio(p.shots?.on, p.shots?.total))}${metric('越位', p.offsides)}
+          ${metric('傳球', p.passes?.total)}${metric('關鍵傳球', p.passes?.key)}${metric('傳球成功率', p.passes?.accuracy, '%')}
+          ${metric('對抗成功 / 總數', ratio(p.duels?.won, p.duels?.total))}
+          ${metric('盤帶成功 / 嘗試', ratio(p.dribbles?.success, p.dribbles?.attempts))}
+          ${metric('抄截', p.tackles?.interceptions)}${metric('攔阻', p.tackles?.blocks)}${metric('鏟球', p.tackles?.total)}
+          ${metric('被犯規', p.fouls?.drawn)}${metric('犯規', p.fouls?.committed)}
+          ${metric('黃 / 紅牌', ratio(p.cards?.yellow, p.cards?.red))}${metric('撲救', p.goals?.saves)}
+          ${metric('失球', p.goals?.conceded)}${metric('撲出點球', p.penalty?.saved)}
+        </div>
+      </details>`;
+    };
+    const playerSide = code => {
+      const rows = [...(d.players?.[code] ?? [])].sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
+      return `<div><div class="row small" style="gap:7px;margin-bottom:8px">${badge(code)}<b>${name(code)}</b></div>
+        ${rows.length ? rows.map(p => person(p, code)).join('') : '<div class="tiny dim">供應商沒有這隊的球員資料</div>'}</div>`;
+    };
+    const eventIcon = type => ({ Goal: '⚽', Card: '▰', subst: '↔', Var: 'VAR' }[type] ?? '•');
+    const eventType = type => ({ Goal: '進球', Card: '牌', subst: '換人', Var: 'VAR' }[type] ?? type ?? '事件');
+    const eventPlayer = e => e.playerCode
+      ? `<button class="player-name-btn" type="button" data-player-code="${esc(e.playerCode)}">${esc(e.player)}</button>`
+      : esc(e.player ?? '');
+    const timeline = (d.events ?? []).map(e => `<div class="match-event ${e.team === m.away ? 'away' : ''}">
+      <b class="mono event-minute">${esc(e.label || '—')}</b><span class="event-icon">${eventIcon(e.type)}</span>
+      <span><b>${eventType(e.type)}</b>${e.team ? `・${esc(name(e.team))}` : ''}${e.player ? `・${eventPlayer(e)}` : ''}
+      ${e.assist ? `<small>相關球員：${esc(e.assist)}</small>` : ''}
+      ${e.detail ? `<small>${esc(e.detail)}</small>` : ''}${e.comments ? `<small>${esc(e.comments)}</small>` : ''}</span></div>`).join('');
+
+    return `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start">
+        <h3>完整球隊攻守數據</h3><span class="pill accent tiny">API-Football・完賽永久快取</span></div>
+      <div class="row small dim" style="justify-content:space-between;margin-bottom:4px"><span>${name(m.home)}</span><span>${name(m.away)}</span></div>
+      ${stat('控球率', 'possession', '%')}${stat('總射門', 'shots')}${stat('射正', 'shotsOn')}
+      ${stat('射偏', 'shotsOff')}${stat('被封阻射門', 'blockedShots')}${stat('角球', 'corners')}
+      ${stat('越位', 'offsides')}${stat('犯規', 'fouls')}${stat('門將撲救', 'saves')}
+      ${stat('傳球', 'passes')}${stat('成功傳球', 'passesAccurate')}${stat('傳球成功率', 'passAccuracy', '%')}
+      ${stat('期望進球 xG', 'xG')}
+      <div class="tiny dim" style="margin-top:10px">速度、跑動距離、衝刺次數：此資料源不提供，因此不顯示也不推估。</div>
+    </div>
+    <div class="card"><h3>球員評分與明細</h3><div class="grid g2 advanced-players">${playerSide(m.home)}${playerSide(m.away)}</div>
+      <div class="tiny dim" style="margin-top:10px">點球員姓名可開啟球員頁；展開每列可看完整進攻、組織、防守與紀律欄位。</div></div>
+    <div class="card"><h3>完整比賽事件</h3>${timeline || '<div class="tiny dim">供應商沒有回傳事件時間軸</div>'}</div>`;
   };
 
   return `
@@ -356,12 +580,12 @@ export function matchReportCards(m) {
       ${H.keeper && A.keeper ? line('門將少失球', signed(H.keeper.stopped, 2), signed(A.keeper.stopped, 2)) : ''}
     </div>
 
+    ${advancedHtml()}
+
     <div class="card"><h3>本場最佳(FPL 表現分)</h3>
       <div class="grid g2">
-        <div>${H.best.map(b => `<div class="stat-line"><span class="small">${esc(b.name)}
-          <span class="dim tiny">${b.pos} ${b.minutes}'</span></span><b class="mono">${b.bps}</b></div>`).join('')}</div>
-        <div>${A.best.map(b => `<div class="stat-line"><span class="small">${esc(b.name)}
-          <span class="dim tiny">${b.pos} ${b.minutes}'</span></span><b class="mono">${b.bps}</b></div>`).join('')}</div>
+        <div>${bestHtml(H)}</div>
+        <div>${bestHtml(A)}</div>
       </div>
     </div>`;
 }
@@ -629,15 +853,18 @@ function rowYs(n, photos) {
 
 // officialRows:官方公布的每一排有誰。給了就照它畫 ——
 // 否則只能用 FPL 的四個粗類分排,會把 4-1-4-1 畫成 4-4-2。
-export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = false, badge: showBadge = null, officialRows = null } = {}) {
+export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = false, badge: showBadge = null, officialRows = null, playerLinks = false, reverseRows = false } = {}) {
   // 排位本身湊滿 11 人就照它畫。原本這裡要求「排位人數 == xi 人數」,
   // 但名單已公布、比賽還沒開踢時 xi 是空的(FPL 要開賽後才給出場資料),
   // 條件就永遠不成立 —— 球場會整片空白。排位是完整的就夠了,不必等 xi。
   const rowTotal = Array.isArray(officialRows) ? officialRows.reduce((n, r) => n + r.length, 0) : 0;
   const useOfficial = Array.isArray(officialRows) && officialRows.length > 1 && rowTotal === 11;
   const ys = useOfficial ? rowYs(officialRows.length, photos) : null;
+  // PulseLive 官方排位每排是「右路 → 左路」，球場圖則是守門員在下、攻擊朝上，
+  // 因此官方原始排位要水平鏡射，RB/RW 才會出現在球員的右側。
+  const orientedRows = reverseRows ? officialRows?.map(list => [...list].reverse()) : officialRows;
   const rows = useOfficial
-    ? Object.fromEntries(officialRows.map((list, i) => [`r${i}`, list]))
+    ? Object.fromEntries(orientedRows.map((list, i) => [`r${i}`, list]))
     : (() => {
         const r = { GK: [], DEF: [], MID: [], FWD: [] };
         for (const p of xi) (r[p.pos] ?? r.MID).push(p);
@@ -685,7 +912,10 @@ export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = f
       ${photos && !p.photo ? `<text x="${x.toFixed(1)}" y="${(y + 1.6).toFixed(1)}" text-anchor="middle"
         font-size="3.4" font-weight="700" fill="#0d1a12">${pos}</text>` : ''}`;
 
-    return `<g><title>${tip}</title>
+    const playerAttrs = playerLinks && p.code
+      ? ` class="pitch-player" data-player-code="${esc(p.code)}" role="button" tabindex="0" aria-label="查看 ${esc(p.name)} 球員資料"`
+      : '';
+    return `<g${playerAttrs}><title>${tip}</title>
       ${photos && p.photo ? `<g transform="translate(${x.toFixed(1)},${y})">
         <clipPath id="${uid}-${seq}"><circle cx="0" cy="0" r="${R}"/></clipPath>
         <image href="${p.photo}" x="${-R}" y="${-R}" width="${R * 2}" height="${R * 2}"

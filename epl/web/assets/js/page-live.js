@@ -14,6 +14,17 @@ try {
   let live = liveInitial;
   // 即時模式(npm run live:watch)會在資料裡自報;靜態站沒有這個旗標
   const isLiveMode = () => !!live.liveMode;
+  // 球員檔約 3 MB，平常不跟即時戰況一起載入；第一次點球員才取得，之後沿用快取。
+  let playerByCodePromise = null;
+  const getPlayerByCode = async () => {
+    if (!playerByCodePromise) {
+      playerByCodePromise = C.load('players').then(({ players }) => new Map(players.map(p => [String(p.code), p])));
+    }
+    return playerByCodePromise;
+  };
+  const resolvePlayer = async code => (await getPlayerByCode()).get(String(code));
+  // 比賽報告是掛在 body 的抽屜，不在 #app 內，所以監聽整份 document。
+  C.bindPlayerLinks(document, resolvePlayer, { meta, mode: 'current' });
 
   function renderPage() {
     const scrollY = window.scrollY;
@@ -256,10 +267,11 @@ try {
       <div class="tiny dim" style="margin-top:10px">${C.esc(art.caveat)}</div></div>`;
   }
 
-  function openReport(m) {
+  async function openReport(m) {
     if (!m) return;
-    const H = m.sides[m.home], A = m.sides[m.away];
-    const p = m.inplay;
+    // 報告本體不重複儲存大型 base64 圖片，點開報告時才與本機球員庫合併頭貼。
+    try { m = C.reportWithPlayerPhotos(m, await getPlayerByCode()); } catch { /* 圖片失敗仍顯示報告 */ }
+    const p = m.finished ? m.preMatch : m.inplay;
     C.drawer(`${C.badge(m.home)} ${C.name(m.home)} ${m.hs ?? '-'}-${m.as ?? '-'} ${C.name(m.away)} ${C.badge(m.away)}`, `
       <div class="card">
         <div class="spread">
@@ -269,7 +281,7 @@ try {
         <div style="margin:14px 0">${scoreOf(m)}</div>
         ${p ? `${C.probBar(p)}
           <div class="tiny dim center" style="margin-top:6px">
-            ${m.finished ? '完場後機率收斂為實際結果' : `剩餘 ${Math.round(p.remaining * 90)} 分鐘・期望再進 ${p.xgRestHome} : ${p.xgRestAway}`}</div>` : ''}
+            ${m.finished ? '完場後保留賽前機率・不用賽果改成 100%' : `剩餘 ${Math.round(p.remaining * 90)} 分鐘・期望再進 ${p.xgRestHome} : ${p.xgRestAway}`}</div>` : ''}
         ${m.preMatch ? `<div class="stat-line" style="margin-top:10px">
           <span class="small muted">賽前模型</span>
           <span class="mono small">${C.pct(m.preMatch.home, 0)} / ${C.pct(m.preMatch.draw, 0)} / ${C.pct(m.preMatch.away, 0)}

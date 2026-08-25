@@ -10,7 +10,7 @@ import { COMPETITION, CURRENT_SEASON, LAST_SEASON, HISTORY_SEASONS, H2H_EXTRA_SE
 import { loadTeams } from './lib/teams.mjs';
 import { loadMatches, loadSquads } from './lib/adapters/index.mjs';
 import { competition as competitionDef, seasonLength } from './lib/canonical.mjs';
-import { buildTable, headToHead } from './lib/table.mjs';
+import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
@@ -33,6 +33,7 @@ import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { buildGoals } from './lib/goals.mjs';
 import { round } from './lib/util.mjs';
+import { loadExpertOpinions } from './lib/experts.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data');
@@ -41,6 +42,43 @@ const AS_OF = arg('as-of') || new Date().toISOString().slice(0, 10);
 const RUNS = Number(arg('runs') || 10000);
 // 賽前分析只寫最近幾場:整季 380 篇對讀者沒意義,對 LLM 帳單也不友善
 const AI_PREVIEW_COUNT = Number(arg('ai-previews') || 20);
+
+const playerNameKey = name => String(name ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+
+// API-Football 與 FPL 的人名格式不同(B. Saka / Bukayo Saka)。先用全名,再用隊內唯一姓氏對應,
+// 只在能確定唯一人選時掛本站 code；不確定就保留供應商名字,不猜。
+function attachAdvancedCodes(detail, report) {
+  if (!detail || !report?.sides) return null;
+  const players = {};
+  const idToCode = new Map();
+  for (const teamCode of [report.home, report.away]) {
+    const side = report.sides[teamCode] ?? {};
+    const roster = [...(side.xi ?? []), ...(side.bench ?? []), ...(side.rows ?? []).flat()]
+      .filter((p, i, all) => p?.name && all.findIndex(x => x?.name === p.name) === i);
+    const byFull = new Map(roster.map(p => [playerNameKey(p.name), p]));
+    const byLast = new Map();
+    for (const p of roster) {
+      const last = playerNameKey(p.name).split(' ').at(-1);
+      if (!last) continue;
+      const list = byLast.get(last) ?? []; list.push(p); byLast.set(last, list);
+    }
+    players[teamCode] = (detail.players?.[teamCode] ?? []).map(p => {
+      const key = playerNameKey(p.name), last = key.split(' ').at(-1);
+      const exact = byFull.get(key);
+      const surname = byLast.get(last)?.length === 1 ? byLast.get(last)[0] : null;
+      const local = exact ?? surname;
+      if (local?.code && p.providerId != null) idToCode.set(`${teamCode}|${p.providerId}`, local.code);
+      return { ...p, code: local?.code ?? null, photo: local?.photo ?? p.photo ?? null };
+    });
+  }
+  const events = (detail.events ?? []).map(e => ({
+    ...e,
+    playerCode: e.playerId == null ? null : idToCode.get(`${e.team}|${e.playerId}`) ?? null,
+    assistCode: e.assistId == null ? null : idToCode.get(`${e.team}|${e.assistId}`) ?? null,
+  }));
+  return { ...detail, source: 'API-Football', players, events };
+}
 
 const write = async (name, data) => {
   const path = join(OUT, name);
@@ -93,6 +131,14 @@ async function main() {
   // 即時比賽狀態(npm run live 產生;沒有就當作本輪尚無任何開踢資訊)
   const livePath = join(ROOT, 'data', 'raw', 'live.json');
   const liveState = existsSync(livePath) ? JSON.parse(await readFile(livePath, 'utf8')) : null;
+
+  // API-Football 完賽資料只由 fetch-live / fetch-postmatch 寫入；build 永遠只讀本地永久快取。
+  const advancedPath = join(ROOT, 'data', 'raw', 'api-football', 'match-details.json');
+  let advancedStore = { matches: {} };
+  if (existsSync(advancedPath)) {
+    try { advancedStore = JSON.parse(await readFile(advancedPath, 'utf8')); }
+    catch { console.log('  ⚠ API-Football 賽後快取損壞,本次略過進階資料'); }
+  }
 
   // 隊徽(npm run crests 產生,已內嵌為 data URI)直接掛到球隊登錄上,
   // 前端就不必為了圖片再多載一份資料。
@@ -158,6 +204,20 @@ async function main() {
   const fplCur = loadSquads({ root: ROOT, season: CURRENT_SEASON, codeOf: T.codeOf });
   const diff = loadDifficulty(ROOT, T.codeOf, fplCur.teamById);
 
+  // 上一完整賽季的進球情境。這份靜態快取由 npm run setpieces 低頻率、
+  // 可續跑地產生;只有 20 隊全部跟獨立賽果核對成功才會進入前端。
+  const situationsPath = join(ROOT, 'data', 'raw', 'understat', `${LAST_SEASON}-team-situations.json`);
+  let teamSituations = null;
+  if (existsSync(situationsPath)) {
+    const raw = JSON.parse(await readFile(situationsPath, 'utf8'));
+    if (raw.season === LAST_SEASON && raw.complete && raw.validation?.allScorelinesReconciled) {
+      teamSituations = raw;
+      console.log(`  Understat 進球情境:${Object.keys(raw.teams ?? {}).length} 隊已核對`);
+    } else {
+      console.log('  ⚠ Understat 進球情境未完整核對,本次不使用');
+    }
+  }
+
   // 本季逐輪累計(npm run season 產生);賽季剛開始或上游還沒發布時會是空的
   const seasonPath = join(ROOT, 'data', 'raw', 'season-gws.json');
   const seasonStore = existsSync(seasonPath) ? JSON.parse(await readFile(seasonPath, 'utf8')) : null;
@@ -182,7 +242,8 @@ async function main() {
   };
 
   const tactics = buildTactics({
-    tableRows: lastTable, lastPlayers: fplLast.players, currentPlayers: fplCur.players, asOf: AS_OF,
+    tableRows: lastTable, lastPlayers: fplLast.players, currentPlayers: fplCur.players,
+    teamSituations, asOf: AS_OF,
   });
   const tacticsBy = new Map(tactics.map(t => [t.code, t]));
 
@@ -305,6 +366,22 @@ async function main() {
     return { code, avg, opponents: list.map(x => x.opp), detail: list };
   }).filter(x => x.avg !== null);
 
+  // 逐季攻守與開季前 10 場。只算現有、已核對的賽果檔,不新增 API 呼叫;
+  // 每支隊只列它確實參賽的賽季,升降級空窗不補 0、更不猜數字。
+  const teamHistory = new Map(curCodes.map(code => [code, []]));
+  for (const season of seasons) {
+    const matches = bySeason.get(season);
+    const participants = new Set(matches.flatMap(m => [m.home, m.away]));
+    for (const code of curCodes) {
+      if (!participants.has(code)) continue;
+      teamHistory.get(code).push({
+        season,
+        ...teamRecord(matches, code),
+        first10: teamRecord(matches, code, { limit: 10 }),
+      });
+    }
+  }
+
   // ── 球隊總表 ──────────────────────────────
   const teams = curCodes.map(code => {
     const reg = T.byCode.get(code);
@@ -332,6 +409,7 @@ async function main() {
         style: coachBy.get(code).style,
       } : null,
       schedule: difficultySummary.find(d => d.code === code) ?? null,
+      history: teamHistory.get(code),
       squadSize: players.filter(p => p.team === code).length,
       injuries: players.filter(p => p.team === code && p.status !== 'a' && p.news).length,
     };
@@ -452,12 +530,14 @@ async function main() {
         // 官方陣型與排位:有的話陣型與球場圖都以官方為準
         official: offLineups?.matches?.[`${f.home}|${f.away}`] ?? null,
       });
-      return {
+      const report = {
         ...rep,
         fixtureId: fx?.id ?? null,
         round: isCurrentSeason ? (fx?.round ?? liveState.round) : liveState.round,
         difficulty: fx?.difficulty ?? null,
       };
+      const detail = isCurrentSeason && advancedStore.season === liveSeason ? advancedStore.matches?.[f.key] : null;
+      return detail ? { ...report, advanced: attachAdvancedCodes(detail, report) } : report;
     }).sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
 
     liveOut = {
@@ -493,7 +573,7 @@ async function main() {
       if (reports[key]) continue;
       const isCur = src.season === CURRENT_SEASON;
       const pre = isCur ? fixtureByKey.get(f.key)?.prediction ?? null : predByMatch.get(key) ?? null;
-      reports[key] = {
+      const report = {
         ...buildMatchReport({
           fixture: f, prediction: pre, tactics: tacticsBy,
           official: isCur ? offLineups?.matches?.[`${f.home}|${f.away}`] ?? null : null,
@@ -501,6 +581,8 @@ async function main() {
         }),
         season: src.season, demo: src.demo,
       };
+      const detail = isCur && advancedStore.season === src.season ? advancedStore.matches?.[f.key] : null;
+      reports[key] = detail ? { ...report, advanced: attachAdvancedCodes(detail, report) } : report;
     }
   }
 
@@ -719,7 +801,7 @@ async function main() {
   }
   await write('goals.json', {
     seasons: Object.keys(goalsOut),
-    note: '逐場進球與助攻。進球方式(運動戰/角球/任意球)沒有免費資料源,因此不提供。',
+    note: '逐場進球與助攻;FPL 事件不含單球進球方式。球隊層級的運動戰/角球/定位球季統計另由 Understat 提供。',
     data: goalsOut,
   });
 
@@ -738,6 +820,9 @@ async function main() {
     count: Object.keys(reports).length,
     reports,
   });
+  const knownMatchKeys = new Set([...history, ...curMatches].map(m => `${m.season}|${m.home}|${m.away}`));
+  const expertOpinions = loadExpertOpinions(ROOT, { validMatchKeys: knownMatchKeys });
+  await write('experts.json', expertOpinions);
   // Canonical 格式是內部契約,不要原封不動送到前端 —— 空欄位會把檔案灌胖一倍
   const slimMatch = m => {
     const out = { id: m.id, season: m.season, round: m.round, date: m.date, home: m.home, away: m.away, played: m.played, fh: m.fh, fa: m.fa };
@@ -756,6 +841,7 @@ async function main() {
   console.log(`  球員頭貼:${photoHits ? `${photoHits} / ${players.length} 名有圖` : '未提供(data/manual/photos.json 不存在,前端退回隊徽)'}`);
   console.log(`  分析文章:賽前 ${aiSummary.pre} 篇・賽後 ${aiSummary.post} 篇,快取命中 ${aiSummary.cacheHits} 篇` +
     (aiSummary.enabled ? `,LLM 潤稿 ${aiSummary.llmWritten} 篇` : '(模板版;設定 ANTHROPIC_API_KEY 可啟用 LLM 潤稿)'));
+  console.log(`  真人專家觀點:${expertOpinions.counts.opinions} 筆已核對・${expertOpinions.counts.drafts} 筆草稿(開頁不呼叫 API)`);
   if (liveOut.available) {
     console.log(`  即時:${liveOut.sourceLabel}`);
     console.log(`        第 ${liveOut.round} 輪 —— 進行中 ${liveOut.counts.live}・已完賽 ${liveOut.counts.finished}・未開賽 ${liveOut.counts.upcoming}` +

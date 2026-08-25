@@ -10,7 +10,7 @@
 #   真正的高頻更新放在 job 內的 while 迴圈裡。
 #
 # 沒有比賽時這個工作流程幾秒鐘就結束,不 build、不部署、不提交 ——
-# 符合「沒比賽就不用頻繁」。repo 是公開的,Actions 分鐘數不計費。
+# 符合「沒比賽就不用頻繁」。私人 repo 也避免不必要地消耗 Actions 分鐘數。
 
 name: 英超戰情室 比賽日高頻更新
 
@@ -54,6 +54,8 @@ jobs:
         if: steps.win.outputs.active == 'true'
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          # 沿用 repo 已存在的 Secret；fetch-live 只在完賽且尚未快取時才會呼叫。
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: |
           set -u
           echo "▶ 進場:${{ steps.win.outputs.reason }}"
@@ -80,12 +82,12 @@ jobs:
             npm run official  >/dev/null 2>&1 || true
 
             # 只有資料真的變了才 build + 提交 —— 沒變就不要製造空提交
-            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/; then
+            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/; then
               echo "  [$N] 無變化"
             else
               npm run build >/dev/null 2>&1 || true
               cd "$GITHUB_WORKSPACE"
-              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/web/data/ 2>/dev/null || true
+              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/web/data/ 2>/dev/null || true
               if git diff --cached --quiet; then
                 echo "  [$N] 產物無變化"
               else

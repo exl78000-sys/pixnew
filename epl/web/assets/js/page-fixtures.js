@@ -9,6 +9,14 @@ try {
     await C.load('meta', 'clubs', 'teams', 'fixtures', 'results', 'reports', 'analysis');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
+  // 抽屜本身仍不預載 3 MB 球員檔；真的點姓名時才載入並開球員資料。
+  let playerByCodePromise = null;
+  const resolvePlayer = async code => {
+    if (!playerByCodePromise) playerByCodePromise = C.load('players')
+      .then(({ players }) => new Map(players.map(p => [String(p.code), p])));
+    return (await playerByCodePromise).get(String(code));
+  };
+  C.bindPlayerLinks(document, resolvePlayer, { meta, mode: 'current' });
   // 本季看賽程與預測,過去賽季看已完賽的比分與賽後分析
   const pastSeasons = [...new Set(results.map(m => m.season))].filter(x => x !== meta.currentSeason).sort().reverse();
   const bySeason = season => season === meta.currentSeason
@@ -16,8 +24,10 @@ try {
     : results.filter(m => m.season === season).map(m => ({ ...m, kickoff: null }));
   let season = meta.currentSeason;
   const reportFor = f => reports.reports[`${f.season}|${f.home}|${f.away}`] ?? null;
-  // 賽前分析頁只處理未開賽的場次,已完賽的別給一個點進去是空的連結
-  const hasArticle = f => !f.played && !!analysis.pre[`${f.home}|${f.away}`];
+  // 本季單場頁現在同時承接賽前、賽後與兩者對比;過去賽季不在 fixtures.json,仍留在抽屜看報告。
+  const hasFullAnalysis = f => f.season === meta.currentSeason && (f.played
+    ? !!reportFor(f) || !!analysis.post[`${f.season}|${f.home}|${f.away}`]
+    : !!analysis.pre[`${f.home}|${f.away}`]);
 
   const rounds = [...new Set(fixtures.map(f => f.round))].sort((a, b) => a - b);
   const codes = [...new Set(fixtures.flatMap(f => [f.home, f.away]))].sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
@@ -28,7 +38,7 @@ try {
     <h1>賽程與預測</h1>
     <p>每一場都用 Dixon-Coles Poisson 與 Elo 各算一次再取平均(回測顯示兩者平均最準)。
        點任一場會開速覽:未開賽看勝率與最可能比分,已完賽看賽果與模型有沒有命中;
-       想看陣容、戰術對比、近況與傷停,速覽裡有一顆進<b>完整賽前分析</b>的按鈕。
+       想看陣容、戰術、近況與傷停,可進完整單場頁;已完賽還能把<b>賽前預測、市場機率與賽後數據並排對比</b>。
        開賽時間已換算成你所在時區(${C.tzName()}),並採用會反映轉播改期的官方時間。</p>
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
@@ -95,9 +105,9 @@ try {
         render: f => f.difficulty ? `<span class="small dim">${f.difficulty.home} / ${f.difficulty.away}</span>` : '—' },
       { key: 'article', label: '分析', value: () => 0, sortable: false,
         // 直達完整分析,不用先開抽屜再點一次
-        render: f => (hasArticle(f)
+        render: f => (hasFullAnalysis(f)
           ? `<a class="pill info tiny" href="${C.link('analysis', { id: f.id })}"
-               onclick="event.stopPropagation()">完整分析 →</a>` : '') },
+               onclick="event.stopPropagation()">${f.played ? '賽前／賽後對比' : '完整賽前分析'} →</a>` : '') },
     ], { sortKey: 'date', desc: false, onRow: openMatch });
     C.startCountdowns();
   };
@@ -119,7 +129,7 @@ try {
   function openMatch(f) {
     const p = f.prediction;
     const rep = reportFor(f);
-    const full = `<a class="pill accent" href="${C.link('analysis', { id: f.id })}">完整賽前分析 →</a>`;
+    const full = `<a class="pill accent" href="${C.link('analysis', { id: f.id })}">${f.played ? '完整賽前／賽後對比' : '完整賽前分析'} →</a>`;
 
     C.drawer(`${C.badge(f.home)} ${C.name(f.home)} <span class="dim">vs</span> ${C.name(f.away)} ${C.badge(f.away)}`, `
       <div class="card">
@@ -152,8 +162,8 @@ try {
         <div class="small dim" style="margin-top:10px">
           最可能比分 ${(p.topScores ?? []).map(s => `<span class="pill">${s.s} <span class="dim">·</span> ${C.pct(s.p, 0)}</span>`).join(' ')}
         </div>` : ''}
-        ${hasArticle(f) ? `<div class="spread" style="margin-top:14px;align-items:center">
-          <span class="tiny dim">陣容、戰術對比、歷來交手、近況與傷停都在那一頁</span>${full}</div>` : ''}
+        ${hasFullAnalysis(f) ? `<div class="spread" style="margin-top:14px;align-items:center">
+          <span class="tiny dim">${f.played ? '賽前模型、市場共識、實際 xG、陣容與賽後解讀都能並排查看' : '陣容、戰術對比、歷來交手、近況與傷停都在那一頁'}</span>${full}</div>` : ''}
       </div>
 
       ${rep ? C.matchReportCards(rep) : (f.played

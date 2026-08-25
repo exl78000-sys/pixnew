@@ -23,12 +23,54 @@ import {
 import { teamAvailability, cardWatch } from './lib/availability.mjs';
 import { goalsOf, minuteOf } from './fetch-official.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
-import { GOAL_SEASONS } from './lib/sources.mjs';
+import { GOAL_SEASONS, LAST_SEASON } from './lib/sources.mjs';
 import { teamGoals } from './lib/goals.mjs';
+import { teamRecord } from './lib/table.mjs';
+import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
+import { normaliseMatchDetail } from './lib/adapters/api-football.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
 const TRAIN_FROM = ['2023-24', '2024-25'];
+
+function checkApiFootball(T) {
+  const homeName = T.byCode.get('ARS')?.en ?? 'Arsenal';
+  const awayName = T.byCode.get('CHE')?.en ?? 'Chelsea';
+  const raw = {
+    fixture: { id: 123, date: '2026-08-22T14:00:00Z', status: { short: 'FT' } },
+    teams: { home: { name: homeName }, away: { name: awayName } },
+    statistics: [{ team: { name: homeName }, statistics: [
+      { type: 'Ball Possession', value: '61%' }, { type: 'Total Shots', value: 17 },
+      { type: 'Passes %', value: '88%' }, { type: 'expected_goals', value: '2.14' },
+    ] }, { team: { name: awayName }, statistics: [
+      { type: 'Ball Possession', value: '39%' }, { type: 'Total Shots', value: 8 },
+    ] }],
+    players: [{ team: { name: homeName }, players: [{
+      player: { id: 7, name: 'Test Player', photo: 'https://example.com/p.png' },
+      statistics: [{
+        games: { minutes: 90, number: 7, position: 'M', rating: '7.4', captain: false, substitute: false },
+        shots: { total: 3, on: 2 }, goals: { total: 1, assists: 1 },
+        passes: { total: 52, key: 3, accuracy: '86%' }, tackles: { total: 2, blocks: 1, interceptions: 2 },
+        duels: { total: 9, won: 6 }, dribbles: { attempts: 4, success: 3 },
+        fouls: { drawn: 2, committed: 1 }, cards: { yellow: 0, red: 0 },
+      }],
+    }] }],
+    events: [{ time: { elapsed: 45, extra: 2 }, team: { name: homeName }, player: { id: 7, name: 'Test Player' }, type: 'Goal', detail: 'Normal Goal' }],
+  };
+  const d = normaliseMatchDetail(raw, { codeOf: T.codeOf, season: '2026-27' });
+  const p = d?.players?.ARS?.[0];
+  const cases = [
+    ['完賽資料對到正確球隊', d?.key === 'ARS|CHE' && d.status === 'FT'],
+    ['百分比與 xG 轉成數值', d?.teamStats?.ARS?.possession === 61 && d.teamStats.ARS.xG === 2.14],
+    ['球員評分與完整攻守欄位保留', p?.rating === 7.4 && p.shots.on === 2 && p.passes.key === 3 && p.duels.won === 6 && p.tackles.interceptions === 2],
+    ['事件含補時、球員與類型', d?.events?.[0]?.label === "45+2'" && d.events[0].playerId === 7 && d.events[0].type === 'Goal'],
+    ['速度/距離/衝刺明確標成不可用', d?.coverage?.speed === false && d.coverage.distance === false && d.coverage.sprints === false
+      && d.unavailable.join('|') === 'speed|distance|sprints'],
+  ];
+  let fail = 0;
+  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
+  return fail;
+}
 
 const outcome = m => (m.fh > m.fa ? 0 : m.fh === m.fa ? 1 : 2);
 const logLoss = (p, o) => -Math.log(Math.max(1e-9, [p.home, p.draw, p.away][o]));
@@ -132,6 +174,50 @@ async function checkReports() {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
     if (!pass) fail++;
   }
+  return fail;
+}
+
+function checkExpertOpinions() {
+  const good = {
+    version: 1, updatedAt: '2026-08-25', matches: {
+      '2026-27|ARS|COV': [{
+        id: 'verified-example', category: 'expert', expert: 'Test Expert', role: '評論員', publisher: 'Test Publisher',
+        publishedAt: '2026-08-22T12:00:00Z', url: 'https://example.com/analysis', sourceType: 'article',
+        summary: '這是一段經過人工核對、只用來測試資料驗證器的完整摘要內容。',
+        topics: ['壓迫'], evidence: ['與實際 xG 對照'], reviewedAt: '2026-08-25T10:00:00Z', verified: true,
+      }, {
+        id: 'draft-example', category: 'legend', expert: 'Draft Expert', role: '名宿', publisher: 'Test Publisher',
+        publishedAt: '2026-08-22T13:00:00Z', url: 'https://example.com/draft', sourceType: 'broadcast',
+        summary: '這是一段欄位完整但尚未經人工核對的草稿,不可以送到前端顯示。', verified: false,
+      }],
+    },
+  };
+  const out = validateExpertOpinions(good, { validMatchKeys: new Set(['2026-27|ARS|COV']) });
+  const throws = raw => { try { validateExpertOpinions(raw); return false; } catch { return true; } };
+  const directQuote = structuredClone(good);
+  directQuote.matches['2026-27|ARS|COV'][0].quote = '不應接受的直接引言';
+  const missingSource = structuredClone(good);
+  missingSource.matches['2026-27|ARS|COV'][0].url = '';
+  const badCategory = structuredClone(good);
+  badCategory.matches['2026-27|ARS|COV'][0].category = 'fan';
+  const sharedSource = structuredClone(good);
+  sharedSource.matches['2026-27|ARS|COV'][1] = {
+    ...sharedSource.matches['2026-27|ARS|COV'][0], id: 'same-page-other-person',
+    category: 'news', expert: 'Other Person', url: 'https://example.com/analysis', verified: true,
+  };
+  const actual = loadExpertOpinions(ROOT);
+  const publicRows = Object.values(actual.matches).flat();
+  const cases = [
+    ['已核對真人觀點會發布', out.counts.opinions === 1 && out.matches['2026-27|ARS|COV']?.length === 1],
+    ['未核對草稿不會送到前端', out.counts.drafts === 1 && !out.matches['2026-27|ARS|COV'].some(x => x.id === 'draft-example')],
+    ['缺原始來源會被擋住', throws(missingSource)],
+    ['不支援的分類會被擋住', throws(badCategory)],
+    ['同一篇原始頁可以收錄不同具名人物', !throws(sharedSource)],
+    ['第一版直接引言會被擋住', throws(directQuote)],
+    ['目前公開資料全部是具名、已分類且已核對的真人來源', publicRows.every(x => x.human && x.verified && x.expert && x.url && ['news', 'legend', 'expert'].includes(x.category))],
+  ];
+  let fail = 0;
+  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
   return fail;
 }
 
@@ -320,6 +406,12 @@ async function main() {
   console.log('\n▶ AI 報告層自我檢查');
   const reportFail = await checkReports();
 
+  console.log('\n▶ 真人專家觀點自我檢查');
+  const expertFail = checkExpertOpinions();
+
+  console.log('\n▶ API-Football 完賽資料自我檢查');
+  const apiFootballFail = checkApiFootball(T);
+
   // 官方名單對照:配錯人比對不上更糟 —— 對不上只是少張頭貼,配錯是把數據掛到別人身上
   console.log('\n▶ 官方名單球員對照自我檢查');
   const nameFail = checkOfficialNames();
@@ -353,9 +445,43 @@ async function main() {
   console.log('\n▶ 逐場進球明細自我檢查');
   const detailFail = checkGoalDetails(T);
 
+  console.log('\n▶ Understat 進球情境自我檢查');
+  const situationFail = checkGoalSituations();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || goalFail || detailFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || goalFail || detailFail || situationFail) process.exitCode = 1;
+}
+
+function checkGoalSituations() {
+  let raw, tactics;
+  try {
+    raw = JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'understat', `${LAST_SEASON}-team-situations.json`), 'utf8'));
+    tactics = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'tactics.json'), 'utf8'));
+  } catch {
+    console.log('  ✗ 找不到原始或建置後的進球情境資料');
+    return 1;
+  }
+  const teams = Object.values(raw.teams ?? {});
+  const reconciled = teams.every(t => {
+    const rows = Object.values(t.situations ?? {});
+    return t.validation?.ok
+      && rows.reduce((n, s) => n + s.goals, 0) === t.validation.expectedGoals
+      && rows.reduce((n, s) => n + s.against.goals, 0) === t.validation.expectedConceded;
+  });
+  const ars = raw.teams?.ARS;
+  const arsTactics = tactics.find(t => t.code === 'ARS');
+  const cases = [
+    ['20 隊資料完整', raw.complete && teams.length === 20],
+    ['五類進失球逐隊對上獨立賽果', reconciled],
+    ['Arsenal 角球進球對上官方 19 球', ars?.situations?.FromCorner?.goals === 19 && raw.validation?.arsenalOfficialCheck?.ok],
+    ['定位球雷達改用 xG/場', arsTactics?.setPieces?.available
+      && arsTactics.setPieces.xG90 === round(ars.nonPenaltySetPiece.xG / ars.matches, 3)
+      && arsTactics.radar.some(a => a.label === '定位球威脅' && a.raw === arsTactics.setPieces.xG90)],
+  ];
+  let fail = 0;
+  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
+  return fail;
 }
 
 /* 逐場進球明細。這份資料是外部協作抽回來的,所以檢查要當它可能有錯來寫。
@@ -585,6 +711,8 @@ function checkForm(past, test) {
 
   const rows = recentForm(index, code, '9999-12-31', 5);
   const sum = formSummary(rows);
+  const seasonRec = teamRecord(test, code);
+  const first10 = teamRecord([...test].reverse(), code, { limit: 10 });
   const lam = { lh: 1.73, la: 1.21 };
   const feats = {
     formH: 1.2, formA: -0.8, gfH: 0.9, gaH: -0.3, gfA: 0.4, gaA: 0.7, h2h: 2.5,
@@ -604,6 +732,10 @@ function checkForm(past, test) {
     ['近五戰的勝負與比分一致',
       rows.every(r => r.res === (r.gf > r.ga ? 'W' : r.gf === r.ga ? 'D' : 'L')), ''],
     ['彙總的勝點跟逐場對得起來', sum.pts === sum.w * 3 + sum.d && sum.w + sum.d + sum.l === rows.length, ''],
+    ['近五戰勝率跟勝場數對得起來', sum.winPct === Math.round((sum.w / rows.length) * 1000) / 10, `${sum.winPct}%`],
+    ['逐季攻守的勝和負與場次對得起來', seasonRec.w + seasonRec.d + seasonRec.l === seasonRec.p, ''],
+    ['前 10 場不受輸入順序影響且最多 10 場', first10.p <= 10 && first10.p === Math.min(10, seasonRec.p), `p=${first10.p}`],
+    ['前 10 場攻守平均跟總數對得起來', first10.p === 0 || (first10.avgGF === round(first10.gf / first10.p, 2) && first10.avgGA === round(first10.ga / first10.p, 2)), ''],
   ];
 
   let fail = 0;

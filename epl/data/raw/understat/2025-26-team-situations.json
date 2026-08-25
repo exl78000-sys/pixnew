@@ -1,0 +1,1542 @@
+{
+  "season": "2025-26",
+  "providerSeason": "2025",
+  "source": "Understat",
+  "sourceUrl": "https://understat.com/league/EPL/2025",
+  "note": "情境分類為 OpenPlay / FromCorner / SetPiece / DirectFreekick / Penalty。非十二碼定位球為後三者中的前兩種加直接任意球。",
+  "complete": true,
+  "retrievedAt": "2026-08-25T09:14:27.048Z",
+  "teams": {
+    "ARS": {
+      "providerName": "Arsenal",
+      "url": "https://understat.com/getTeamData/Arsenal/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 395,
+          "goals": 44,
+          "xG": 53.8865,
+          "against": {
+            "shots": 240,
+            "goals": 20,
+            "xG": 26.6815
+          }
+        },
+        "FromCorner": {
+          "shots": 110,
+          "goals": 19,
+          "xG": 20.5064,
+          "against": {
+            "shots": 43,
+            "goals": 4,
+            "xG": 5.7355
+          }
+        },
+        "SetPiece": {
+          "shots": 40,
+          "goals": 4,
+          "xG": 6.2096,
+          "against": {
+            "shots": 21,
+            "goals": 2,
+            "xG": 2.6267
+          }
+        },
+        "DirectFreekick": {
+          "shots": 8,
+          "goals": 0,
+          "xG": 0.3351,
+          "against": {
+            "shots": 7,
+            "goals": 1,
+            "xG": 0.4151
+          }
+        },
+        "Penalty": {
+          "shots": 4,
+          "goals": 4,
+          "xG": 3.0447,
+          "against": {
+            "shots": 0,
+            "goals": 0,
+            "xG": 0
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 158,
+        "goals": 23,
+        "xG": 27.0511,
+        "against": {
+          "shots": 71,
+          "goals": 7,
+          "xG": 8.7773
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 71,
+        "expectedGoals": 71,
+        "providerConceded": 27,
+        "expectedConceded": 27
+      }
+    },
+    "AVL": {
+      "providerName": "Aston Villa",
+      "url": "https://understat.com/getTeamData/Aston%20Villa/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 351,
+          "goals": 39,
+          "xG": 44.6345,
+          "against": {
+            "shots": 371,
+            "goals": 35,
+            "xG": 43.0381
+          }
+        },
+        "FromCorner": {
+          "shots": 98,
+          "goals": 14,
+          "xG": 11.8522,
+          "against": {
+            "shots": 84,
+            "goals": 10,
+            "xG": 10.3222
+          }
+        },
+        "SetPiece": {
+          "shots": 21,
+          "goals": 1,
+          "xG": 3.8431,
+          "against": {
+            "shots": 25,
+            "goals": 2,
+            "xG": 3.0343
+          }
+        },
+        "DirectFreekick": {
+          "shots": 15,
+          "goals": 2,
+          "xG": 1.1247,
+          "against": {
+            "shots": 9,
+            "goals": 1,
+            "xG": 0.6216
+          }
+        },
+        "Penalty": {
+          "shots": 0,
+          "goals": 0,
+          "xG": 0,
+          "against": {
+            "shots": 2,
+            "goals": 1,
+            "xG": 1.5223
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 134,
+        "goals": 17,
+        "xG": 16.82,
+        "against": {
+          "shots": 118,
+          "goals": 13,
+          "xG": 13.9781
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 56,
+        "expectedGoals": 56,
+        "providerConceded": 49,
+        "expectedConceded": 49
+      }
+    },
+    "BHA": {
+      "providerName": "Brighton",
+      "url": "https://understat.com/getTeamData/Brighton/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 373,
+          "goals": 39,
+          "xG": 44.4077,
+          "against": {
+            "shots": 328,
+            "goals": 32,
+            "xG": 39.7932
+          }
+        },
+        "FromCorner": {
+          "shots": 83,
+          "goals": 9,
+          "xG": 9.5675,
+          "against": {
+            "shots": 74,
+            "goals": 7,
+            "xG": 8.7222
+          }
+        },
+        "SetPiece": {
+          "shots": 20,
+          "goals": 0,
+          "xG": 1.086,
+          "against": {
+            "shots": 30,
+            "goals": 1,
+            "xG": 4.763
+          }
+        },
+        "DirectFreekick": {
+          "shots": 14,
+          "goals": 1,
+          "xG": 0.7749,
+          "against": {
+            "shots": 10,
+            "goals": 1,
+            "xG": 0.4989
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 3,
+          "xG": 3.8058,
+          "against": {
+            "shots": 6,
+            "goals": 5,
+            "xG": 4.567
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 117,
+        "goals": 10,
+        "xG": 11.4284,
+        "against": {
+          "shots": 114,
+          "goals": 9,
+          "xG": 13.9841
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 52,
+        "expectedGoals": 52,
+        "providerConceded": 46,
+        "expectedConceded": 46
+      }
+    },
+    "BOU": {
+      "providerName": "Bournemouth",
+      "url": "https://understat.com/getTeamData/Bournemouth/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 410,
+          "goals": 41,
+          "xG": 51.8028,
+          "against": {
+            "shots": 327,
+            "goals": 30,
+            "xG": 36.6374
+          }
+        },
+        "FromCorner": {
+          "shots": 66,
+          "goals": 5,
+          "xG": 8.6633,
+          "against": {
+            "shots": 102,
+            "goals": 10,
+            "xG": 13.2992
+          }
+        },
+        "SetPiece": {
+          "shots": 24,
+          "goals": 5,
+          "xG": 3.3237,
+          "against": {
+            "shots": 37,
+            "goals": 4,
+            "xG": 4.824
+          }
+        },
+        "DirectFreekick": {
+          "shots": 20,
+          "goals": 2,
+          "xG": 1.3333,
+          "against": {
+            "shots": 10,
+            "goals": 4,
+            "xG": 0.7783
+          }
+        },
+        "Penalty": {
+          "shots": 6,
+          "goals": 5,
+          "xG": 4.567,
+          "against": {
+            "shots": 6,
+            "goals": 6,
+            "xG": 4.567
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 110,
+        "goals": 12,
+        "xG": 13.3203,
+        "against": {
+          "shots": 149,
+          "goals": 18,
+          "xG": 18.9015
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 58,
+        "expectedGoals": 58,
+        "providerConceded": 54,
+        "expectedConceded": 54
+      }
+    },
+    "BRE": {
+      "providerName": "Brentford",
+      "url": "https://understat.com/getTeamData/Brentford/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 294,
+          "goals": 43,
+          "xG": 47.3631,
+          "against": {
+            "shots": 381,
+            "goals": 41,
+            "xG": 47.788
+          }
+        },
+        "FromCorner": {
+          "shots": 70,
+          "goals": 4,
+          "xG": 8.7129,
+          "against": {
+            "shots": 84,
+            "goals": 4,
+            "xG": 7.0035
+          }
+        },
+        "SetPiece": {
+          "shots": 24,
+          "goals": 0,
+          "xG": 4.2286,
+          "against": {
+            "shots": 20,
+            "goals": 2,
+            "xG": 2.2842
+          }
+        },
+        "DirectFreekick": {
+          "shots": 10,
+          "goals": 0,
+          "xG": 0.7001,
+          "against": {
+            "shots": 8,
+            "goals": 0,
+            "xG": 0.5116
+          }
+        },
+        "Penalty": {
+          "shots": 10,
+          "goals": 8,
+          "xG": 7.6117,
+          "against": {
+            "shots": 8,
+            "goals": 5,
+            "xG": 6.0894
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 104,
+        "goals": 4,
+        "xG": 13.6416,
+        "against": {
+          "shots": 112,
+          "goals": 6,
+          "xG": 9.7993
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 55,
+        "expectedGoals": 55,
+        "providerConceded": 52,
+        "expectedConceded": 52
+      }
+    },
+    "BUR": {
+      "providerName": "Burnley",
+      "url": "https://understat.com/getTeamData/Burnley/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 257,
+          "goals": 32,
+          "xG": 28.5655,
+          "against": {
+            "shots": 483,
+            "goals": 55,
+            "xG": 65.2484
+          }
+        },
+        "FromCorner": {
+          "shots": 59,
+          "goals": 4,
+          "xG": 6.4983,
+          "against": {
+            "shots": 111,
+            "goals": 11,
+            "xG": 13.3267
+          }
+        },
+        "SetPiece": {
+          "shots": 25,
+          "goals": 0,
+          "xG": 2.8873,
+          "against": {
+            "shots": 26,
+            "goals": 2,
+            "xG": 2.725
+          }
+        },
+        "DirectFreekick": {
+          "shots": 14,
+          "goals": 0,
+          "xG": 0.7937,
+          "against": {
+            "shots": 12,
+            "goals": 0,
+            "xG": 0.7142
+          }
+        },
+        "Penalty": {
+          "shots": 2,
+          "goals": 2,
+          "xG": 1.5223,
+          "against": {
+            "shots": 8,
+            "goals": 7,
+            "xG": 6.0894
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 98,
+        "goals": 4,
+        "xG": 10.1793,
+        "against": {
+          "shots": 149,
+          "goals": 13,
+          "xG": 16.7659
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 38,
+        "expectedGoals": 38,
+        "providerConceded": 75,
+        "expectedConceded": 75
+      }
+    },
+    "CHE": {
+      "providerName": "Chelsea",
+      "url": "https://understat.com/getTeamData/Chelsea/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 377,
+          "goals": 37,
+          "xG": 52.1285,
+          "against": {
+            "shots": 307,
+            "goals": 37,
+            "xG": 45.7601
+          }
+        },
+        "FromCorner": {
+          "shots": 83,
+          "goals": 10,
+          "xG": 12.7495,
+          "against": {
+            "shots": 60,
+            "goals": 11,
+            "xG": 8.3025
+          }
+        },
+        "SetPiece": {
+          "shots": 21,
+          "goals": 1,
+          "xG": 2.2221,
+          "against": {
+            "shots": 32,
+            "goals": 2,
+            "xG": 4.0998
+          }
+        },
+        "DirectFreekick": {
+          "shots": 21,
+          "goals": 3,
+          "xG": 1.328,
+          "against": {
+            "shots": 15,
+            "goals": 0,
+            "xG": 1.0291
+          }
+        },
+        "Penalty": {
+          "shots": 8,
+          "goals": 7,
+          "xG": 6.0894,
+          "against": {
+            "shots": 2,
+            "goals": 2,
+            "xG": 1.5223
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 125,
+        "goals": 14,
+        "xG": 16.2996,
+        "against": {
+          "shots": 107,
+          "goals": 13,
+          "xG": 13.4314
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 58,
+        "expectedGoals": 58,
+        "providerConceded": 52,
+        "expectedConceded": 52
+      }
+    },
+    "CRY": {
+      "providerName": "Crystal Palace",
+      "url": "https://understat.com/getTeamData/Crystal%20Palace/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 322,
+          "goals": 25,
+          "xG": 43.4954,
+          "against": {
+            "shots": 307,
+            "goals": 31,
+            "xG": 42.0906
+          }
+        },
+        "FromCorner": {
+          "shots": 75,
+          "goals": 7,
+          "xG": 11.144,
+          "against": {
+            "shots": 80,
+            "goals": 10,
+            "xG": 12.2747
+          }
+        },
+        "SetPiece": {
+          "shots": 32,
+          "goals": 1,
+          "xG": 2.8038,
+          "against": {
+            "shots": 37,
+            "goals": 4,
+            "xG": 3.3293
+          }
+        },
+        "DirectFreekick": {
+          "shots": 6,
+          "goals": 0,
+          "xG": 0.3699,
+          "against": {
+            "shots": 15,
+            "goals": 1,
+            "xG": 1.1157
+          }
+        },
+        "Penalty": {
+          "shots": 8,
+          "goals": 8,
+          "xG": 6.0894,
+          "against": {
+            "shots": 7,
+            "goals": 5,
+            "xG": 5.3282
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 113,
+        "goals": 8,
+        "xG": 14.3177,
+        "against": {
+          "shots": 132,
+          "goals": 15,
+          "xG": 16.7197
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 41,
+        "expectedGoals": 41,
+        "providerConceded": 51,
+        "expectedConceded": 51
+      }
+    },
+    "EVE": {
+      "providerName": "Everton",
+      "url": "https://understat.com/getTeamData/Everton/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 294,
+          "goals": 35,
+          "xG": 36.9975,
+          "against": {
+            "shots": 383,
+            "goals": 37,
+            "xG": 42.5692
+          }
+        },
+        "FromCorner": {
+          "shots": 75,
+          "goals": 7,
+          "xG": 8.1294,
+          "against": {
+            "shots": 107,
+            "goals": 9,
+            "xG": 12.7502
+          }
+        },
+        "SetPiece": {
+          "shots": 41,
+          "goals": 3,
+          "xG": 5.4375,
+          "against": {
+            "shots": 26,
+            "goals": 1,
+            "xG": 2.5212
+          }
+        },
+        "DirectFreekick": {
+          "shots": 11,
+          "goals": 0,
+          "xG": 0.4655,
+          "against": {
+            "shots": 11,
+            "goals": 0,
+            "xG": 0.6481
+          }
+        },
+        "Penalty": {
+          "shots": 2,
+          "goals": 2,
+          "xG": 1.5223,
+          "against": {
+            "shots": 4,
+            "goals": 3,
+            "xG": 3.0447
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 127,
+        "goals": 10,
+        "xG": 14.0324,
+        "against": {
+          "shots": 144,
+          "goals": 10,
+          "xG": 15.9195
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 47,
+        "expectedGoals": 47,
+        "providerConceded": 50,
+        "expectedConceded": 50
+      }
+    },
+    "FUL": {
+      "providerName": "Fulham",
+      "url": "https://understat.com/getTeamData/Fulham/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 362,
+          "goals": 31,
+          "xG": 38.2478,
+          "against": {
+            "shots": 331,
+            "goals": 38,
+            "xG": 43.312
+          }
+        },
+        "FromCorner": {
+          "shots": 88,
+          "goals": 9,
+          "xG": 10.1743,
+          "against": {
+            "shots": 85,
+            "goals": 8,
+            "xG": 14.0545
+          }
+        },
+        "SetPiece": {
+          "shots": 16,
+          "goals": 1,
+          "xG": 1.0763,
+          "against": {
+            "shots": 21,
+            "goals": 2,
+            "xG": 3.2486
+          }
+        },
+        "DirectFreekick": {
+          "shots": 13,
+          "goals": 1,
+          "xG": 1.1224,
+          "against": {
+            "shots": 10,
+            "goals": 0,
+            "xG": 0.5559
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 5,
+          "xG": 3.8058,
+          "against": {
+            "shots": 4,
+            "goals": 3,
+            "xG": 3.0447
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 117,
+        "goals": 11,
+        "xG": 12.373,
+        "against": {
+          "shots": 116,
+          "goals": 10,
+          "xG": 17.859
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 47,
+        "expectedGoals": 47,
+        "providerConceded": 51,
+        "expectedConceded": 51
+      }
+    },
+    "LIV": {
+      "providerName": "Liverpool",
+      "url": "https://understat.com/getTeamData/Liverpool/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 458,
+          "goals": 47,
+          "xG": 56.6934,
+          "against": {
+            "shots": 314,
+            "goals": 36,
+            "xG": 40.2975
+          }
+        },
+        "FromCorner": {
+          "shots": 83,
+          "goals": 9,
+          "xG": 8.7458,
+          "against": {
+            "shots": 78,
+            "goals": 11,
+            "xG": 8.6719
+          }
+        },
+        "SetPiece": {
+          "shots": 25,
+          "goals": 2,
+          "xG": 1.8249,
+          "against": {
+            "shots": 21,
+            "goals": 2,
+            "xG": 2.0753
+          }
+        },
+        "DirectFreekick": {
+          "shots": 18,
+          "goals": 4,
+          "xG": 1.0178,
+          "against": {
+            "shots": 17,
+            "goals": 1,
+            "xG": 0.7552
+          }
+        },
+        "Penalty": {
+          "shots": 2,
+          "goals": 1,
+          "xG": 1.5223,
+          "against": {
+            "shots": 4,
+            "goals": 3,
+            "xG": 3.0447
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 126,
+        "goals": 15,
+        "xG": 11.5885,
+        "against": {
+          "shots": 116,
+          "goals": 14,
+          "xG": 11.5024
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 63,
+        "expectedGoals": 63,
+        "providerConceded": 53,
+        "expectedConceded": 53
+      }
+    },
+    "MCI": {
+      "providerName": "Manchester City",
+      "url": "https://understat.com/getTeamData/Manchester%20City/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 451,
+          "goals": 63,
+          "xG": 67.2036,
+          "against": {
+            "shots": 283,
+            "goals": 23,
+            "xG": 36.8411
+          }
+        },
+        "FromCorner": {
+          "shots": 114,
+          "goals": 11,
+          "xG": 11.9976,
+          "against": {
+            "shots": 48,
+            "goals": 9,
+            "xG": 7.0212
+          }
+        },
+        "SetPiece": {
+          "shots": 14,
+          "goals": 0,
+          "xG": 1.0501,
+          "against": {
+            "shots": 27,
+            "goals": 1,
+            "xG": 2.6225
+          }
+        },
+        "DirectFreekick": {
+          "shots": 13,
+          "goals": 0,
+          "xG": 0.8639,
+          "against": {
+            "shots": 10,
+            "goals": 1,
+            "xG": 0.6107
+          }
+        },
+        "Penalty": {
+          "shots": 4,
+          "goals": 3,
+          "xG": 3.0447,
+          "against": {
+            "shots": 2,
+            "goals": 1,
+            "xG": 1.5223
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 141,
+        "goals": 11,
+        "xG": 13.9116,
+        "against": {
+          "shots": 85,
+          "goals": 11,
+          "xG": 10.2544
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 77,
+        "expectedGoals": 77,
+        "providerConceded": 35,
+        "expectedConceded": 35
+      }
+    },
+    "MUN": {
+      "providerName": "Manchester United",
+      "url": "https://understat.com/getTeamData/Manchester%20United/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 451,
+          "goals": 45,
+          "xG": 56.7331,
+          "against": {
+            "shots": 317,
+            "goals": 33,
+            "xG": 36.3835
+          }
+        },
+        "FromCorner": {
+          "shots": 104,
+          "goals": 14,
+          "xG": 10.9403,
+          "against": {
+            "shots": 79,
+            "goals": 11,
+            "xG": 9.7852
+          }
+        },
+        "SetPiece": {
+          "shots": 32,
+          "goals": 5,
+          "xG": 4.5252,
+          "against": {
+            "shots": 26,
+            "goals": 0,
+            "xG": 2.6046
+          }
+        },
+        "DirectFreekick": {
+          "shots": 6,
+          "goals": 1,
+          "xG": 0.4829,
+          "against": {
+            "shots": 15,
+            "goals": 2,
+            "xG": 1.0268
+          }
+        },
+        "Penalty": {
+          "shots": 6,
+          "goals": 4,
+          "xG": 4.567,
+          "against": {
+            "shots": 4,
+            "goals": 4,
+            "xG": 3.0447
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 142,
+        "goals": 20,
+        "xG": 15.9484,
+        "against": {
+          "shots": 120,
+          "goals": 13,
+          "xG": 13.4166
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 69,
+        "expectedGoals": 69,
+        "providerConceded": 50,
+        "expectedConceded": 50
+      }
+    },
+    "NEW": {
+      "providerName": "Newcastle United",
+      "url": "https://understat.com/getTeamData/Newcastle%20United/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 328,
+          "goals": 34,
+          "xG": 38.8992,
+          "against": {
+            "shots": 370,
+            "goals": 36,
+            "xG": 45.3159
+          }
+        },
+        "FromCorner": {
+          "shots": 90,
+          "goals": 9,
+          "xG": 11.8112,
+          "against": {
+            "shots": 63,
+            "goals": 11,
+            "xG": 6.8686
+          }
+        },
+        "SetPiece": {
+          "shots": 55,
+          "goals": 4,
+          "xG": 7.1521,
+          "against": {
+            "shots": 20,
+            "goals": 2,
+            "xG": 3.5883
+          }
+        },
+        "DirectFreekick": {
+          "shots": 13,
+          "goals": 0,
+          "xG": 0.647,
+          "against": {
+            "shots": 12,
+            "goals": 1,
+            "xG": 0.6764
+          }
+        },
+        "Penalty": {
+          "shots": 6,
+          "goals": 6,
+          "xG": 4.567,
+          "against": {
+            "shots": 5,
+            "goals": 5,
+            "xG": 3.8058
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 158,
+        "goals": 13,
+        "xG": 19.6103,
+        "against": {
+          "shots": 95,
+          "goals": 14,
+          "xG": 11.1333
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 53,
+        "expectedGoals": 53,
+        "providerConceded": 55,
+        "expectedConceded": 55
+      }
+    },
+    "NFO": {
+      "providerName": "Nottingham Forest",
+      "url": "https://understat.com/getTeamData/Nottingham%20Forest/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 356,
+          "goals": 34,
+          "xG": 37.0244,
+          "against": {
+            "shots": 357,
+            "goals": 32,
+            "xG": 44.5928
+          }
+        },
+        "FromCorner": {
+          "shots": 80,
+          "goals": 8,
+          "xG": 7.9834,
+          "against": {
+            "shots": 93,
+            "goals": 9,
+            "xG": 12.6135
+          }
+        },
+        "SetPiece": {
+          "shots": 24,
+          "goals": 2,
+          "xG": 2.1279,
+          "against": {
+            "shots": 38,
+            "goals": 4,
+            "xG": 6.0954
+          }
+        },
+        "DirectFreekick": {
+          "shots": 13,
+          "goals": 1,
+          "xG": 0.7457,
+          "against": {
+            "shots": 14,
+            "goals": 1,
+            "xG": 0.8393
+          }
+        },
+        "Penalty": {
+          "shots": 3,
+          "goals": 3,
+          "xG": 2.2835,
+          "against": {
+            "shots": 6,
+            "goals": 5,
+            "xG": 4.567
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 117,
+        "goals": 11,
+        "xG": 10.857,
+        "against": {
+          "shots": 145,
+          "goals": 14,
+          "xG": 19.5482
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 48,
+        "expectedGoals": 48,
+        "providerConceded": 51,
+        "expectedConceded": 51
+      }
+    },
+    "SUN": {
+      "providerName": "Sunderland",
+      "url": "https://understat.com/getTeamData/Sunderland/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 291,
+          "goals": 31,
+          "xG": 34.3872,
+          "against": {
+            "shots": 400,
+            "goals": 33,
+            "xG": 47.8526
+          }
+        },
+        "FromCorner": {
+          "shots": 52,
+          "goals": 4,
+          "xG": 4.6,
+          "against": {
+            "shots": 94,
+            "goals": 11,
+            "xG": 9.5787
+          }
+        },
+        "SetPiece": {
+          "shots": 44,
+          "goals": 3,
+          "xG": 4.3691,
+          "against": {
+            "shots": 30,
+            "goals": 2,
+            "xG": 2.807
+          }
+        },
+        "DirectFreekick": {
+          "shots": 7,
+          "goals": 0,
+          "xG": 0.3901,
+          "against": {
+            "shots": 15,
+            "goals": 0,
+            "xG": 0.8498
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 4,
+          "xG": 3.8058,
+          "against": {
+            "shots": 3,
+            "goals": 2,
+            "xG": 2.2835
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 103,
+        "goals": 7,
+        "xG": 9.3592,
+        "against": {
+          "shots": 139,
+          "goals": 13,
+          "xG": 13.2355
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 42,
+        "expectedGoals": 42,
+        "providerConceded": 48,
+        "expectedConceded": 48
+      }
+    },
+    "TOT": {
+      "providerName": "Tottenham",
+      "url": "https://understat.com/getTeamData/Tottenham/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 301,
+          "goals": 30,
+          "xG": 33.4997,
+          "against": {
+            "shots": 340,
+            "goals": 46,
+            "xG": 39.6563
+          }
+        },
+        "FromCorner": {
+          "shots": 101,
+          "goals": 18,
+          "xG": 13.4906,
+          "against": {
+            "shots": 73,
+            "goals": 5,
+            "xG": 9.118
+          }
+        },
+        "SetPiece": {
+          "shots": 22,
+          "goals": 0,
+          "xG": 1.2666,
+          "against": {
+            "shots": 34,
+            "goals": 2,
+            "xG": 4.2548
+          }
+        },
+        "DirectFreekick": {
+          "shots": 12,
+          "goals": 0,
+          "xG": 0.678,
+          "against": {
+            "shots": 15,
+            "goals": 1,
+            "xG": 0.8137
+          }
+        },
+        "Penalty": {
+          "shots": 0,
+          "goals": 0,
+          "xG": 0,
+          "against": {
+            "shots": 3,
+            "goals": 3,
+            "xG": 2.2835
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 135,
+        "goals": 18,
+        "xG": 15.4352,
+        "against": {
+          "shots": 122,
+          "goals": 8,
+          "xG": 14.1865
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 48,
+        "expectedGoals": 48,
+        "providerConceded": 57,
+        "expectedConceded": 57
+      }
+    },
+    "WHU": {
+      "providerName": "West Ham",
+      "url": "https://understat.com/getTeamData/West%20Ham/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 291,
+          "goals": 28,
+          "xG": 33.1064,
+          "against": {
+            "shots": 399,
+            "goals": 43,
+            "xG": 51.0715
+          }
+        },
+        "FromCorner": {
+          "shots": 80,
+          "goals": 13,
+          "xG": 13.5008,
+          "against": {
+            "shots": 113,
+            "goals": 15,
+            "xG": 13.5726
+          }
+        },
+        "SetPiece": {
+          "shots": 26,
+          "goals": 2,
+          "xG": 3.0155,
+          "against": {
+            "shots": 34,
+            "goals": 1,
+            "xG": 2.1503
+          }
+        },
+        "DirectFreekick": {
+          "shots": 5,
+          "goals": 0,
+          "xG": 0.3276,
+          "against": {
+            "shots": 15,
+            "goals": 0,
+            "xG": 0.9257
+          }
+        },
+        "Penalty": {
+          "shots": 3,
+          "goals": 3,
+          "xG": 2.2835,
+          "against": {
+            "shots": 7,
+            "goals": 6,
+            "xG": 5.3282
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 111,
+        "goals": 15,
+        "xG": 16.8439,
+        "against": {
+          "shots": 162,
+          "goals": 16,
+          "xG": 16.6486
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 46,
+        "expectedGoals": 46,
+        "providerConceded": 65,
+        "expectedConceded": 65
+      }
+    },
+    "WOL": {
+      "providerName": "Wolverhampton Wanderers",
+      "url": "https://understat.com/getTeamData/Wolverhampton%20Wanderers/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 253,
+          "goals": 16,
+          "xG": 22.6015,
+          "against": {
+            "shots": 385,
+            "goals": 52,
+            "xG": 51.2815
+          }
+        },
+        "FromCorner": {
+          "shots": 68,
+          "goals": 6,
+          "xG": 8.6726,
+          "against": {
+            "shots": 94,
+            "goals": 9,
+            "xG": 13.6362
+          }
+        },
+        "SetPiece": {
+          "shots": 25,
+          "goals": 2,
+          "xG": 3.3497,
+          "against": {
+            "shots": 33,
+            "goals": 1,
+            "xG": 3.2485
+          }
+        },
+        "DirectFreekick": {
+          "shots": 19,
+          "goals": 0,
+          "xG": 1.2362,
+          "against": {
+            "shots": 14,
+            "goals": 1,
+            "xG": 1.0228
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 3,
+          "xG": 3.8058,
+          "against": {
+            "shots": 5,
+            "goals": 5,
+            "xG": 3.8058
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 112,
+        "goals": 8,
+        "xG": 13.2585,
+        "against": {
+          "shots": 141,
+          "goals": 11,
+          "xG": 17.9075
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 27,
+        "expectedGoals": 27,
+        "providerConceded": 68,
+        "expectedConceded": 68
+      }
+    },
+    "LEE": {
+      "providerName": "Leeds",
+      "url": "https://understat.com/getTeamData/Leeds/2025",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 336,
+          "goals": 31,
+          "xG": 42.2622,
+          "against": {
+            "shots": 328,
+            "goals": 35,
+            "xG": 37.7288
+          }
+        },
+        "FromCorner": {
+          "shots": 95,
+          "goals": 7,
+          "xG": 10.525,
+          "against": {
+            "shots": 109,
+            "goals": 12,
+            "xG": 13.6081
+          }
+        },
+        "SetPiece": {
+          "shots": 28,
+          "goals": 2,
+          "xG": 3.442,
+          "against": {
+            "shots": 21,
+            "goals": 1,
+            "xG": 2.3383
+          }
+        },
+        "DirectFreekick": {
+          "shots": 10,
+          "goals": 3,
+          "xG": 0.6739,
+          "against": {
+            "shots": 14,
+            "goals": 2,
+            "xG": 1.0018
+          }
+        },
+        "Penalty": {
+          "shots": 8,
+          "goals": 6,
+          "xG": 6.0893,
+          "against": {
+            "shots": 6,
+            "goals": 6,
+            "xG": 4.567
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 133,
+        "goals": 12,
+        "xG": 14.6409,
+        "against": {
+          "shots": 144,
+          "goals": 15,
+          "xG": 16.9482
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "providerGoals": 49,
+        "expectedGoals": 49,
+        "providerConceded": 56,
+        "expectedConceded": 56
+      }
+    }
+  },
+  "validation": {
+    "teams": 20,
+    "expectedTeams": 20,
+    "allScorelinesReconciled": true,
+    "arsenalCornerGoals": 19,
+    "arsenalOfficialCheck": {
+      "expected": 19,
+      "ok": true,
+      "source": "https://www.arsenal.com/news/arsenal-analysed-how-we-won-the-premier-league-aO1ug2E0S5oq"
+    }
+  }
+}

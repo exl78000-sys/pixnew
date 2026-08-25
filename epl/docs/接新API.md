@@ -113,6 +113,10 @@ unset API_FOOTBALL_KEY && npm run build   # 應該正常完成,只是少了那�
 |---|---|---|
 | `openfootball` | matches(賽程、賽果、半場比分) | 否 |
 | `fpl-snapshot` | squads(球員數據、傷停) | 否 |
-| `api-football` | formations、coaches | **是** |
+| `api-football` | formations、coaches、完賽球隊/球員統計、0–10 評分、事件時間軸 | **是** |
+
+API-Football 的完賽資料已正式接入：`npm run live` 在終場後自動補抓，或用
+`npm run postmatch` 手動補齊。完整結果永久保存在
+`data/raw/api-football/match-details.json`；速度、距離與衝刺不在供應商欄位內，因此明確標為不可用。
 
 即時比分走另一條路(`lib/live.mjs`),因為場中資料有自己的取捨(官方 API / 鏡像 / 重播三種來源)。

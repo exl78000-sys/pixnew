@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
 import { fetchLive } from './lib/live.mjs';
 import { CURRENT_SEASON } from './lib/sources.mjs';
+import { enabled as apiFootballEnabled, fetchCompletedMatchDetails } from './lib/adapters/api-football.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
@@ -49,10 +50,23 @@ async function main() {
   await mkdir(join(ROOT, 'data', 'raw'), { recursive: true });
   await writeFile(join(ROOT, 'data', 'raw', 'live.json'), JSON.stringify(data, null, 1));
 
+  // 完賽後才抓一次完整數據；成功的比賽永久快取，之後的 live 輪詢不會再打 API。
+  // 剛吹終場但供應商尚未補齊時，adapter 會限成至少 30 分鐘才重試。
+  let postMatch = null;
+  if (!data.demo && done.length && apiFootballEnabled()) {
+    postMatch = await fetchCompletedMatchDetails({
+      root: ROOT, season: data.season ?? opts.season, codeOf: T.codeOf,
+      onlyKeys: done.map(f => f.key),
+    });
+  }
+
   console.log(`  來源:${data.sourceLabel}`);
   console.log(`  第 ${data.round} 輪・共 ${data.fixtures.length} 場`);
   console.log(`  進行中 ${live.length}・已完賽 ${done.length}・未開賽 ${data.fixtures.length - started.length}`);
   console.log(`  有出場名單的比賽:${withLineups.length}`);
+  if (postMatch) console.log(`  API-Football 賽後詳情:新抓 ${postMatch.fetched ?? 0}・已快取 ${postMatch.cached ?? 0}`
+    + (postMatch.missing ? `・待補 ${postMatch.missing}` : '')
+    + (postMatch.budgetLeft == null ? '' : `・今日餘額 ${postMatch.budgetLeft}`));
   if (data.demo) console.log('  ⚠ 這是重播資料,網站上會明確標示不是現在進行中的比賽');
   console.log('\n✔ 已寫入 data/raw/live.json,請接著跑 npm run build');
 }

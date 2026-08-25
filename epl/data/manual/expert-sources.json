@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "researchedAt": "2026-08-25T19:10:47+08:00",
+  "scope": {
+    "season": "2026-27",
+    "round": 1,
+    "completedMatches": 10,
+    "method": "逐場以完整比分、日期、球隊與 analysis/pundit/tactical 關鍵字搜尋，再開啟原始頁核對作者、身分、日期與內容。"
+  },
+  "rules": [
+    "只把具名記者、資料分析作者、教練或可確認身分的名宿評論列入真人觀點。",
+    "只保存人工改寫摘要與原始 HTTPS 連結，不保存全文或逐字引言。",
+    "搜尋引擎與聚合服務只負責發現來源，不能當作觀點的最終證據。",
+    "任何每日自動化上線前都要重新檢查各站條款、robots.txt、頻率限制與商業使用權。"
+  ],
+  "sources": [
+    {
+      "id": "sky-sports",
+      "name": "Sky Sports Football",
+      "url": "https://www.skysports.com/football",
+      "status": "used-manual",
+      "use": "具名名宿評論、教練賽後訪問、記者分析、比賽報告與原始影片入口",
+      "coverage": ["HUL-MUN", "IPS-SUN", "NFO-LEE", "EVE-CRY", "BRE-TOT", "BHA-AVL", "NEW-LIV", "FUL-CHE"],
+      "automation": "目前只採人工搜尋、人工摘要與回鏈；未取得自動重製授權，不抓全文。"
+    },
+    {
+      "id": "opta-analyst",
+      "name": "Opta Analyst",
+      "url": "https://theanalyst.com/",
+      "status": "used-manual",
+      "use": "具作者的資料型賽後分析、xG、傳球網路與比賽趨勢",
+      "coverage": ["MCI-BOU"],
+      "automation": "適合當人工核對資料來源；圖表與內容仍受權利保護，不直接搬運。"
+    },
+    {
+      "id": "diario-as",
+      "name": "Diario AS",
+      "url": "https://as.com/futbol/internacional/",
+      "status": "used-manual",
+      "use": "具名駐英記者的英超賽後觀察",
+      "coverage": ["ARS-COV"],
+      "automation": "目前只採人工搜尋與中文摘要；多語來源需特別核對人名與語意。"
+    },
+    {
+      "id": "nbc-sports",
+      "name": "NBC Sports Premier League",
+      "url": "https://www.nbcsports.com/soccer/premier-league",
+      "status": "verified-backup",
+      "use": "具名記者的戰術段落、賽後反應與轉播分析",
+      "coverage": ["HUL-MUN"],
+      "automation": "可作交叉核對與備援；目前不自動擷取正文。"
+    },
+    {
+      "id": "bbc-sport",
+      "name": "BBC Sport Football",
+      "url": "https://www.bbc.com/sport/football",
+      "status": "discovery-with-conditions",
+      "use": "賽後訪問、Match of the Day 觀點、具名記者評分；RSS 可用於發現標題",
+      "coverage": ["BHA-AVL", "MCI-BOU"],
+      "automation": "BBC 條款要求明確標示來源與連結；商業使用 RSS/metadata 需另獲許可，因此本專案不自動摘要 BBC 正文。"
+    },
+    {
+      "id": "coaches-voice",
+      "name": "Coaches' Voice",
+      "url": "https://learning.coachesvoice.com/",
+      "status": "specialist-backup",
+      "use": "教練視角的陣型、壓迫與進攻階段戰術拆解",
+      "coverage": ["NEW-LIV"],
+      "automation": "適合人工戰術研究；只保存自行改寫摘要與原始連結。"
+    },
+    {
+      "id": "the-anfield-wrap",
+      "name": "The Anfield Wrap",
+      "url": "https://www.theanfieldwrap.com/",
+      "status": "specialist-backup",
+      "use": "具名作者的 Liverpool 賽後長篇評論與 Podcast",
+      "coverage": ["NEW-LIV"],
+      "automation": "球隊取向鮮明，適合補充觀點而非中立結論；只保存人工改寫摘要與回鏈。"
+    },
+    {
+      "id": "official-clubs",
+      "name": "英超球會官方網站",
+      "url": "https://www.premierleague.com/clubs",
+      "status": "primary-but-partisan",
+      "use": "教練與球員原始訪問、官方 Podcast、比賽資料",
+      "coverage": ["BHA-AVL", "BRE-TOT", "NEW-LIV", "FUL-CHE"],
+      "automation": "可確認發言出處，但屬球會立場；顯示時必須標示官方來源，不能當中立分析。"
+    },
+    {
+      "id": "gdelt",
+      "name": "GDELT DOC API",
+      "url": "https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/",
+      "status": "discovery-only",
+      "use": "以球隊、比分、日期與人物搜尋多語新聞網址",
+      "coverage": [],
+      "automation": "只拿來發現候選網址；入庫前仍須回原始媒體人工核對。"
+    },
+    {
+      "id": "guardian",
+      "name": "The Guardian Football",
+      "url": "https://www.theguardian.com/football/premierleague",
+      "status": "manual-link-only",
+      "use": "人工閱讀與交叉核對",
+      "coverage": ["ARS-COV", "IPS-SUN", "BRE-TOT", "BHA-AVL"],
+      "automation": "現行條款限制未經授權的 scraping、collection、mining 與 extraction；不納入自動抓取或 AI 摘要流程。"
+    }
+  ],
+  "excluded": [
+    {
+      "group": "Reddit 與一般球迷留言",
+      "reason": "身分與專業背景通常無法核實，只能視為球迷情緒，不放入專家層。"
+    },
+    {
+      "group": "來源不明或無完整作者頁的戰術／比分網站",
+      "examples": ["RFZ Football", "SoccerHerald", "Global Goal Post"],
+      "reason": "即使內容看似完整，仍不足以確認作者身分、編輯責任與資料來源。"
+    },
+    {
+      "group": "搜尋結果摘要與新聞聚合頁",
+      "reason": "可能截斷、改寫或混合來源，只能用來找到原始頁。"
+    }
+  ]
+}
