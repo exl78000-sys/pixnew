@@ -448,6 +448,9 @@ async function main() {
   console.log('\n▶ 兩隊對照條長自我檢查');
   const barFail = await checkBars();
 
+  console.log('\n▶ 資料缺口判斷自我檢查');
+  const gapFail = await checkDataGap();
+
   console.log('\n▶ 官方進球事件解析自我檢查');
   const goalFail = checkGoalEvents();
 
@@ -459,7 +462,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || goalFail || detailFail || situationFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || detailFail || situationFail) process.exitCode = 1;
 }
 
 function checkGoalSituations() {
@@ -691,6 +694,49 @@ async function checkBars() {
   let fail = 0;
   for (const [name, pass, detail] of cases) {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* 資料缺口判斷(core.js 的 dataGap)。
+   西甲的戰術頁與球員頁曾經吐出「載入失敗…請先執行 npm run build」——
+   訊息對象是開發者,而且理由是錯的:真正的原因是西甲還沒有那份資料。
+   現在由 dataGap 判斷該不該擋,判錯就直接變成讀者看到的錯訊息,
+   所以這裡把每一種情況都釘死。
+
+   特別要守住兩條相反方向的:
+     · 導覽列沒掛的主頁面要擋(不然又回到開發者訊息)
+     · 單場分析**不能**擋 —— 它是從賽程表點進去的,西甲有比分、預測與
+       風格對比,真的做得出來,一起擋掉等於砍掉一個能用的功能。 */
+async function checkDataGap() {
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const full = { formation: { a: 1 }, shapes: { a: 1 }, players: [1], leaders: { a: 1 }, news: [1], live: { a: 1 }, form: { a: 1 } };
+  const g = (lg, page, names, data = full, absent = []) => V.dataGap(lg, page, names, data, absent);
+
+  const cases = [
+    ['西甲的戰術頁擋下來', !!g('es1', 'tactics', ['formation', 'shapes'])],
+    ['西甲的球員頁擋下來', !!g('es1', 'players', ['players', 'leaders'])],
+    ['西甲的動態頁擋下來', !!g('es1', 'news', ['news'])],
+    ['西甲的實時戰況擋下來', !!g('es1', 'live', ['live'])],
+    ['西甲的模型驗證擋下來', !!g('es1', 'model', ['form'])],
+    ['西甲的單場分析不擋', !g('es1', 'analysis', ['players', 'shapes'], { players: [], shapes: {} })],
+    ['西甲已開放的賽程頁不擋', !g('es1', 'fixtures', ['fixtures'], { fixtures: [1] })],
+    ['西甲已開放的球隊頁不擋(球員是空的也一樣)', !g('es1', 'teams', ['players'], { players: [] })],
+    ['英超每一頁都不擋', ['index', 'live', 'fixtures', 'teams', 'tactics', 'players', 'news', 'model']
+      .every(p => !g('pl', p, Object.keys(full)))],
+    ['宣告開放但資料是空的仍然擋(保險)', !!g('pl', 'news', ['news'], { ...full, news: [] })],
+    ['資料集缺檔也算缺口', !!g('pl', 'players', ['players', 'leaders'], { players: [1] }, ['leaders'])],
+    ['缺口訊息不出現 build / 404 這些字',
+      !/build|404|npm/i.test(g('es1', 'tactics', ['formation', 'shapes']).message)],
+    ['缺口帶得出這一頁需要什麼',
+      g('es1', 'tactics', ['formation', 'shapes']).needs.join() === 'formation,shapes'],
+  ];
+
+  let fail = 0;
+  for (const [name, pass] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}`);
     if (!pass) fail++;
   }
   return fail;

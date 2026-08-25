@@ -1,23 +1,89 @@
 // 共用資料存取與 UI 元件(原生 ES module,不需要打包)
 const cache = new Map();
 
+/* ── 這個聯賽還沒有這一頁 ───────────────
+   西甲目前只補到賽程、積分與球隊,其餘資料集不是空的就是根本沒產出來。
+   沒有這一段的話,讀者會撞上「載入失敗…請先執行 npm run build」或
+   「執行 npm test 再 npm run build」—— 那是給開發者看的,而且理由是錯的:
+   真正的原因是這個聯賽還沒有這份資料,不是誰忘了 build。
+
+   要不要擋,看聯賽自己宣告的 open(導覽列開放哪幾頁)。導覽列沒掛的頁面
+   仍然進得來 —— 有人存過網址、或從搜尋進來 —— 那時給一句實話。
+   只擋導覽列上的主頁面:單場分析是從賽程表點進去的,西甲有比分、預測與
+   風格對比,做得出來,不能一起擋掉。
+
+   ESSENTIAL 是「這一頁靠什麼才畫得出來」,兩個用途:寫訊息給讀者,
+   以及當保險 —— 萬一哪天把一頁加進 open、資料卻還沒落地,一樣擋下來。 */
+const ESSENTIAL = {
+  live: ['live'],
+  tactics: ['formation', 'shapes'],
+  players: ['players', 'leaders'],
+  news: ['news'],
+  model: ['form'],
+};
+
+const isEmpty = v => v == null
+  || (Array.isArray(v) ? v.length === 0
+    : typeof v === 'object' ? Object.keys(v).length === 0 : false);
+
+// 「檔案根本不存在」與「讀取失敗」是兩件事,要分得開才能給對訊息。
+const ABSENT = Symbol('absent');
+
+export class LeagueGap extends Error {
+  constructor(lg, page, needs) {
+    super(`${LEAGUES[lg]?.zh ?? lg} 還沒有 ${page} 這一頁的資料`);
+    this.name = 'LeagueGap';
+    this.league = lg;
+    this.page = page;
+    this.needs = needs;
+  }
+}
+
 export async function load(...names) {
   const out = {};
   const lg = league();
+  const absent = [];
   await Promise.all(names.map(async n => {
-    // 單檔打包版的資料直接內嵌在頁面裡,不用發請求
-    const embedded = globalThis.__DATASETS__?.[lg]?.[n]
-      ?? (lg === 'pl' ? globalThis.__DATA__?.[n] : undefined);
-    if (embedded !== undefined) { out[n] = embedded; return; }
+    // 單檔打包版的資料直接內嵌在頁面裡,不用發請求。
+    // 用 `in` 而不是取值比對 undefined —— 打包時沒收進來的資料集要認得出來,
+    // 不然單檔模式會退回去 fetch 一個不存在的路徑,錯誤訊息就變成網路錯誤。
+    const bundled = globalThis.__DATASETS__?.[lg] ?? (lg === 'pl' ? globalThis.__DATA__ : undefined);
+    if (bundled) {
+      if (n in bundled) out[n] = bundled[n]; else absent.push(n);
+      return;
+    }
     const key = `${lg}:${n}`;
     const path = lg === 'pl' ? `data/${n}.json` : `data/leagues/${lg}/${n}.json`;
     if (!cache.has(key)) cache.set(key, fetch(path).then(r => {
+      // 英超是預設聯賽,它的資料集少一份就真的是沒 build,維持原本的開發者訊息。
+      // 其他聯賽的 404 是「還沒補到這裡」,交給下面判斷該說哪一句。
+      if (r.status === 404 && lg !== 'pl') return ABSENT;
       if (!r.ok) throw new Error(`讀取 ${path} 失敗(${r.status})`);
       return r.json();
     }));
-    out[n] = await cache.get(key);
+    const v = await cache.get(key);
+    if (v === ABSENT) absent.push(n); else out[n] = v;
   }));
+
+  const gap = dataGap(lg, currentPage(), names, out, absent);
+  if (gap) throw gap;
+  if (absent.length) throw new Error(`讀取 ${absent.join('、')} 失敗(404)`);
   return out;
+}
+
+/* 判斷「這個聯賽有沒有這一頁」。抽成獨立函式是為了能在 npm test 裡直接驗 ——
+   判錯的話讀者就會看到錯的訊息,這種事不能只靠開瀏覽器用眼睛看。
+
+   兩個條件任一成立就算缺口:
+     closed —— 聯賽的 open 沒掛這一頁(只看導覽列上的主頁面;
+               單場分析是從賽程表點進去的,西甲做得出來,不能一起擋)
+     hollow —— 保險。宣告開放了、ESSENTIAL 的資料卻缺檔或是空的。 */
+export function dataGap(lg, page, names, data, absent = []) {
+  const open = LEAGUES[lg]?.open;
+  const closed = Boolean(open) && PAGES.some(([p]) => p === page) && !open.includes(page);
+  const need = ESSENTIAL[page] ?? [];
+  const hollow = need.some(n => names.includes(n) && (absent.includes(n) || isEmpty(data[n])));
+  return closed || hollow ? new LeagueGap(lg, page, need) : null;
 }
 
 /* ── 路由 ───────────────────────────── */
@@ -157,6 +223,14 @@ export const stampRow = items =>
   `<div class="stamp-row">${items.filter(Boolean).join('')}</div>`;
 
 /* ── 導覽列 ─────────────────────────── */
+// open 是「這個聯賽的導覽列開放哪幾頁」。西甲只補到賽程與球隊,
+// 其餘的頁面資料還是空的,先不掛上去 —— 但網址仍然進得來,
+// 進來時由 LeagueGap 給一句實話,不是一個空白頁。
+export const LEAGUES = {
+  pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'fixtures', 'teams'] },
+};
+
 const PAGES = [
   ['index', '總覽'],
   ['live', '實時戰況'],
@@ -172,20 +246,24 @@ const PAGES = [
   ['news', '動態'],
   ['model', '模型驗證'],
 ];
+export const pageLabel = p => PAGES.find(([n]) => n === p)?.[1] ?? p;
+
+let navDone = false;
 export function nav() {
+  // 資料缺口的畫面也要有導覽列,而它是在 catch 裡補畫的 ——
+  // 沒有這個旗標的話,錯誤發生在 nav() 之後就會疊出第二條列。
+  if (navDone) return;
+  navDone = true;
   const here = currentPage();
   const lg = league();
-  const basic = lg === 'es1';
-  const pages = basic ? PAGES.filter(([p]) => ['index', 'fixtures', 'teams'].includes(p)) : PAGES;
-  const brand = basic ? ['西甲戰情室', 'LA LIGA WAR ROOM'] : ['英超戰情室', 'PL WAR ROOM'];
-  document.title = document.title.replace(/(?:英超|西甲)戰情室/, basic ? '西甲戰情室' : '英超戰情室');
+  const L = LEAGUES[lg] ?? LEAGUES.pl;
+  const pages = L.open ? PAGES.filter(([p]) => L.open.includes(p)) : PAGES;
+  document.title = document.title.replace(/(?:英超|西甲)戰情室/, L.brand);
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
-      <a class="brand" href="${link('index')}"><span class="dot"></span>${brand[0]}<small>${brand[1]}</small></a>
-      <div class="league-switch" aria-label="切換聯賽">
-        <a href="${link('index', { league: 'pl' })}" class="${lg === 'pl' ? 'on' : ''}">英超</a>
-        <a href="${link('index', { league: 'es1' })}" class="${lg === 'es1' ? 'on' : ''}">西甲</a>
-      </div>
+      <a class="brand" href="${link('index')}"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
+      <div class="league-switch" aria-label="切換聯賽">${Object.entries(LEAGUES).map(([k, v]) =>
+        `<a href="${link('index', { league: k })}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div>
       <nav class="tabs">${pages.map(([p, l]) =>
         `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${l}</a>`).join('')}</nav>
     </div></header>`);
@@ -854,10 +932,50 @@ export function sparkline(values, { w = 320, h = 70, color = '#00ff85' } = {}) {
   </svg>`;
 }
 
+// 缺口畫面要說「這一頁靠什麼」,而讀者不認得 shapes、leaders 這些檔名。
+const DATASET_ZH = {
+  live: '即時比賽資料',
+  formation: '官方陣型',
+  shapes: '攻守分型',
+  players: '球員資料',
+  leaders: '球員排行榜',
+  news: '球隊動態',
+  form: '走查回測結果',
+};
+
 export function fail(err) {
+  if (err instanceof LeagueGap) return gapScreen(err);
   document.querySelector('.wrap')?.insertAdjacentHTML('beforeend',
     `<div class="note">載入失敗:${esc(err.message)}<br>請先執行 <span class="mono">npm run build</span>,並用 <span class="mono">npm run serve</span> 開啟(直接用 file:// 開會被瀏覽器擋住)。</div>`);
   console.error(err);
+}
+
+/* 資料缺口不是故障,是「還沒做到這裡」。畫面要回答三件事:
+   缺什麼、為什麼還不給、現在可以去哪 —— 不要出現 build、404 這種讀者無關的字眼。
+   導覽列照常畫,不然這一頁看起來像整個站掛了。 */
+function gapScreen({ league: lg, page, needs }) {
+  nav();
+  const L = LEAGUES[lg] ?? LEAGUES.pl;
+  const app = document.getElementById('app') ?? document.querySelector('.wrap');
+  if (!app) return;
+  const what = (needs ?? []).map(n => DATASET_ZH[n] ?? n).join('、');
+  const open = (L.open ?? PAGES.map(([n]) => n))
+    .map(p => `<a class="pill" href="${esc(link(p))}">${esc(pageLabel(p))}</a>`).join('');
+  app.innerHTML = `
+    <div class="page-head">
+      <h1>${esc(L.zh)}還沒有「${esc(pageLabel(page))}」這一頁</h1>
+      <p>${what
+        ? `這一頁得靠${esc(what)}才畫得出來,${esc(L.zh)}的${needs.length > 1 ? '這幾份' : '這份'}資料還在補。`
+        : `${esc(L.zh)}這一頁需要的資料還在補。`}
+         寧可先不給,也不要拿半套的數字撐版面 —— 那會讓人以為是真的。</p>
+    </div>
+    <div class="card">
+      <h3>${esc(L.zh)}現在看得到的</h3>
+      <div class="tags">${open}</div>
+      <p class="dim" style="margin-top:16px">
+        英超的<a href="${esc(link(page, { league: 'pl' }))}">${esc(pageLabel(page))}</a>是完整的,可以先過去看。</p>
+    </div>`;
+  console.info(`[資料缺口] ${lg}/${page}`);
 }
 
 /* ── 戰術視圖:球場 ─────────────────── */
