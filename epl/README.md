@@ -6,6 +6,7 @@
 > 與 `docs/接手資訊.md`(這個時間點的狀態與待辦)。
 
 免安裝套件、免打包工具 —— 只要有 Node 18+,三行指令就能在本機跑起來。
+(程式碼沒用到 Node 18 之後才有的 API;CI 與開發環境跑的是 22。)
 
 ```bash
 cd epl
@@ -365,8 +366,16 @@ epl/
 │   ├── fetch-season.mjs   抓本季每一輪 → data/raw/season-gws.json
 │   ├── fetch-crests.mjs   抓隊徽、縮圖、內嵌成 data URI
 │   ├── fetch-news.mjs     選用:抓外部 RSS → data/raw/news.json
+│   ├── fetch-official.mjs 英超官方:正式名單、陣型、教練、**進球事件**
+│   ├── fetch-odds.mjs     博彩收盤賠率(模型 vs 市場的基準)
+│   ├── fetch-coaches.mjs  教練名冊與官方現任核對
 │   ├── build.mjs          跑分析 → web/data/*.json
-│   ├── test.mjs           走查回測(驗證預測引擎)
+│   ├── test.mjs           走查回測 + 13 個自我檢查區塊
+│   ├── tune-form.mjs      特徵調參與驗收(調參/驗收用不同賽季)
+│   ├── snapshot-availability.mjs  每日傷停快照(累積成可回測的歷史)
+│   ├── live-window.mjs    現在該不該進入比賽日高頻模式
+│   ├── probe-*.mjs        資料源探測(沙箱連不到外網,交給 Actions 跑)
+│   ├── explore-apis.mjs   探勘 API 回傳結構
 │   ├── bundle.mjs         打包成單一 HTML 檔
 │   ├── fetch-fonts.mjs    下載字體內嵌成 data URI
 │   ├── serve.mjs          零依賴靜態伺服器
@@ -375,8 +384,11 @@ epl/
 │       ├── canonical.mjs  **資料層契約**:賽事定義與正規化格式(見下方「資料層」)
 │       ├── adapters/      供應商轉接層 —— 換資料源只動這裡
 │       │   ├── index.mjs        adapter 註冊表與挑選邏輯
-│       │   ├── openfootball.mjs 賽果(相容兩種比分格式)
-│       │   └── fpl-snapshot.mjs 陣容與球員統計
+│       │   ├── openfootball.mjs 賽果(相容兩種比分格式與跨季隊名寫法)
+│       │   ├── fpl-snapshot.mjs 陣容與球員統計
+│       │   ├── fpl-goals.mjs    逐場進球助攻(載入時修正隊伍歸屬 + 比分核對)
+│       │   ├── pulselive.mjs    英超官方正式名單與陣型
+│       │   └── api-football.mjs 選用:需要金鑰,沒設就自動跳過
 │       ├── report/        **AI 報告層**(見下方「文字分析怎麼產生」)
 │       │   ├── features.mjs  feature bundle:文章唯一的數字來源
 │       │   ├── template.mjs  模板引擎:沒有 API key 也一定有報告
@@ -386,6 +398,7 @@ epl/
 │       │   └── index.mjs     串起上面五個的流程
 │       ├── sources.mjs    賽季與來源設定(換季只改這裡)
 │       ├── csv.mjs        RFC4180 CSV 解析
+│       ├── util.mjs       四捨五入、日期差等小工具
 │       ├── teams.mjs      隊名對照
 │       ├── table.mjs      積分榜、主客分段、半場行為、交手紀錄
 │       ├── elo.mjs        Elo 評分
@@ -396,6 +409,13 @@ epl/
 │       ├── players.mjs    球員指標與百分位
 │       ├── tactics.mjs    戰術剖析
 │       ├── coaches.mjs    教練任期戰績切分
+│       ├── roles.mjs      球員角色分類與標準陣型推導
+│       ├── lineup.mjs     預估先發與陣型排位
+│       ├── form.mjs       近況與交手特徵(**係數 0,量過沒用,只當資訊**)
+│       ├── availability.mjs 傷停、停賽、累積黃牌與「缺了多少戰力」
+│       ├── goals.mjs      逐場進球彙總成球隊頁的切面
+│       ├── odds.mjs       賠率去水錢與市場隱含機率
+│       ├── colour.mjs     兩隊對照配色(OKLab ΔE + 色盲模擬 + 對比)
 │       ├── png.mjs        純 Node PNG 解碼/縮圖/編碼(隊徽用)
 │       └── news.mjs       傷停翻譯與自動看點生成
 ├── data/
@@ -403,7 +423,8 @@ epl/
 │   ├── cache/             LLM 產出的快取(沒有 API key 時不存在)
 │   └── manual/            人工維護的對照表
 └── web/                   靜態網站(原生 ES module,無打包)
-    ├── *.html             10 個頁面
+    ├── *.html             10 個頁面(導覽列 8 項;analysis 從賽程表進入、
+    │                       coaches 是併頁後保留的導向頁)
     ├── assets/css/app.css 設計系統
     ├── assets/js/core.js  共用元件:表格、雷達、散點、熱圖、抽屜、時效標記
     └── data/*.json        build 產生的資料集(進版控,clone 完即可看)
