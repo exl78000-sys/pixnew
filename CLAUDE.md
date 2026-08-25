@@ -84,7 +84,8 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 | FPL 的球隊 `short_name` 恰好等於本專案隊碼 | —— | 這是驗證過的,20 隊全對,可以直接用 |
 | `versus()` 的「越低越好」取倒數 | 值是 0 時 1/0 爆掉,對面壓成一根針 | 分母加同量級緩衝(已修,有測試守著) |
 | 頁面切換後計時器沒清 | 舊頁面 30 秒後覆蓋 `#app`,看起來像「自動跳回去」 | 用 `C.pageInterval()`,不要裸 `setInterval` |
-| Understat 的資料**不在球隊 HTML 頁裡** | 抓 `/team/{隊}/{年}` 解析不到任何東西,誤以為擋爬蟲 | 用 `/getTeamData/{隊}/{年}`,那是獨立的 JSON 端點 |
+| Understat 的資料**不在 HTML 頁裡**(球隊頁與聯賽頁都是) | 抓 `/team/{隊}/{年}` 或 `/league/{聯賽}/{年}` 只回 18 KB 外殼,一個資料變數都沒有 | 球隊用 `/getTeamData/{隊}/{年}`;球員整季數據用 `POST /main/getPlayersStats/`,body 是 `league=La_liga&season=2025`,一個請求回整季 600 人 |
+| API 回 **HTTP 200 加一個 error 物件** | 只看 `res.ok` 會把失敗當成功;排程每天跑、每天回報成功,實際一筆都沒抓到 | API-Football 看 `j.errors`、Understat 看 `j.error`。而且要分得出「暫時失敗」與「這個方案就是拿不到」,後者要記錄下來讓畫面講實話 |
 
 ---
 
