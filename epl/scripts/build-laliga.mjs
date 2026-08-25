@@ -428,7 +428,9 @@ async function main() {
   console.log(`\n✔ 西甲球隊數據第二版：${teams.length} 隊・${LAST_SEASON} ${lastMatches.filter(m => m.played).length} 場・${CURRENT_SEASON} ${curPlayed.length}/${curMatches.length} 場已完賽`);
   console.log(`  球隊隊徽：${crestHits}/${teams.length}`);
   console.log(`  上季風格資料：${teamProfiles.length}/20；本季回歸球隊：${teams.filter(t => t.tactics).length}/20`);
-  console.log(`  完整賽後資料：${reportCount}/${curPlayed.length}（其餘等待 laliga:postmatch 永久快取）`);
+  console.log(blocked
+    ? `  完整賽後資料：0/${curPlayed.length}（方案不含本賽季，不是等待中）`
+    : `  完整賽後資料：${reportCount}/${curPlayed.length}（其餘等待 laliga:postmatch 永久快取）`);
 }
 
 main().catch(err => { console.error(`✗ 西甲建置失敗：${err.stack ?? err.message}`); process.exit(1); });

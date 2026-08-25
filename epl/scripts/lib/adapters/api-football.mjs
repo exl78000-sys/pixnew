@@ -388,6 +388,13 @@ export async function fetchCompletedMatchDetails({
     return { enabled: true, fetched: 0, cached: requested.filter(k => store.matches[k]).length, throttled: requested.filter(k => !store.matches[k]).length };
   }
 
+  /* 已知被方案擋住的話,同一天不要再打了 —— 那個請求註定失敗,
+     卻照樣從每日額度扣一次。一天重試一次就夠:方案換掉當天就會恢復。 */
+  if (!force && store.blocked?.at?.slice(0, 10) === today) {
+    return { enabled: true, fetched: 0, cached: Object.keys(store.matches).length,
+      error: '這個 API 方案不含此賽季', blocked: store.blocked, skippedCall: true };
+  }
+
   const budget = await new Budget(root).load();
   const budgetBefore = budget.left();
   const report = {};

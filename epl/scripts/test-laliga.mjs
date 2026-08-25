@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // 西甲資料邊界測試：守住兩季、20 隊、真實球隊風格與「不假裝已有球員資料」。
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -115,6 +115,37 @@ const secondFetch = await fetchCompletedMatchDetails(fetchArgs);
 check('一次完整補抓只用完賽清單與批次詳情兩次請求', firstFetch.fetched === 1 && firstFetch.requestsUsed === 2 && fakeCalls === 2);
 check('成功場次第二次執行在網路請求前永久略過', secondFetch.fetched === 0 && secondFetch.cached === 1 && fakeCalls === 2);
 await rm(tempRoot, { recursive: true, force: true });
+
+/* 「這個方案拿不到此賽季」必須跟「暫時失敗」分得開。
+   實測過:這把金鑰是 Free 方案,league=140 的 2025/2026 兩季都回
+   {"errors":{"plan":"Free plans do not have access to this season…"}}。
+   原本上層只看得到「取得失敗」,於是排程每天照跑、每天回報成功,
+   讀者看到的卻是「尚待永久快取」—— 那句話會一直等下去。
+   所以這裡釘死三件事:認得出來、寫得進存檔、拿得到之後會自己清掉。 */
+const blockedRoot = await mkdtemp(join(tmpdir(), 'laliga-plan-blocked-'));
+const planError = async () => ({ ok: true, status: 200, json: async () => ({ errors: { plan: 'Free plans do not have access to this season, try from 2022 to 2024.' } }) });
+const blockedArgs = { ...fetchArgs, root: blockedRoot, fetchImpl: planError };
+const blockedRun = await fetchCompletedMatchDetails(blockedArgs);
+const storeFile = join(blockedRoot, 'data', 'raw', 'api-football-la-liga', '2026-27-match-details.json');
+const storedBlocked = existsSync(storeFile) ? JSON.parse(readFileSync(storeFile, 'utf8')).blocked : null;
+check('方案不含此賽季會被認出來,不會混成一般失敗', blockedRun.blocked?.reason === 'plan');
+check('封鎖原因寫進存檔(不落盤的話 build 永遠看不到)', storedBlocked?.reason === 'plan' && /Free plans/.test(storedBlocked.message ?? ''));
+check('封鎖時回報的訊息不是「還沒抓到」', /拿不到|不含/.test(blockedRun.error ?? ''));
+
+// 已知被擋住就不要再打同一個註定失敗的請求 —— 那也是從每日額度扣一次
+let repeatCalls = 0;
+const repeat = await fetchCompletedMatchDetails({ ...blockedArgs, fetchImpl: async () => { repeatCalls++; return planError(); } });
+check('同一天已知被擋住就不再連線,不白燒額度', repeat.skippedCall === true && repeatCalls === 0);
+
+// 方案換掉之後要自己復原 —— 不能要求下一個人記得回來手動清一個旗標
+let recoverCalls = 0;
+const recovered = await fetchCompletedMatchDetails({ ...blockedArgs, force: true, fetchImpl: async () => {
+  recoverCalls++;
+  return { ok: true, status: 200, json: async () => ({ response: [fakeRaw] }) };
+} });
+const afterRecover = JSON.parse(readFileSync(storeFile, 'utf8'));
+check('拿得到之後封鎖紀錄自動清掉', recovered.fetched === 1 && afterRecover.blocked === undefined && recoverCalls === 2);
+await rm(blockedRoot, { recursive: true, force: true });
 
 if (process.exitCode) throw new Error('西甲球隊數據第二版自我檢查失敗');
 console.log('  西甲球隊數據第二版全部通過');

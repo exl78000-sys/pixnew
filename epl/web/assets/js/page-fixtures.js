@@ -46,7 +46,11 @@ try {
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
       C.stamp(basic ? '西甲公開賽程時間' : '開賽時間(官方,含改期)', { iso: meta.builtAt, kind: 'daily' }),
-      basic ? C.stamp(`完整賽後資料 ${reports.count ?? 0}/${playedCount} 場`, { iso: meta.builtAt, kind: 'daily', note: '完賽後抓取一次並永久快取' }) : null,
+      /* 資料源方案不含本賽季時,「0/11 場・完賽後抓取一次」會讓人以為在等 ——
+         那是永遠等不到的。標籤跟著改成講實話的那一句。 */
+      basic ? (reports.blocked
+        ? C.stamp('完整賽後資料目前拿不到', { kind: 'manual', note: '資料源方案不含本賽季,不是等待中' })
+        : C.stamp(`完整賽後資料 ${reports.count ?? 0}/${playedCount} 場`, { iso: meta.builtAt, kind: 'daily', note: '完賽後抓取一次並永久快取' })) : null,
     ])}
   </div>
   ${basic ? `<div class="note ${reports.count ? 'info' : ''}" style="margin-bottom:14px">

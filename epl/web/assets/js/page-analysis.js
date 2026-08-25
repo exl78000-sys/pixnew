@@ -291,8 +291,7 @@ try {
     if (b) {
       return `<div class="card"><div class="note warn"><b>這一季的完整賽後資料目前拿不到。</b>
           本站使用的資料源方案不含本賽季,所以這不是「還沒抓到」——
-          在換成涵蓋本賽季的方案之前,球隊統計、正式陣容、事件與球員評分都不會出現。
-          寧可這樣寫,也不要讓它看起來像快來了。</div>
+          在換成涵蓋本賽季的方案之前,球隊統計、正式陣容、事件與球員評分都不會出現。</div>
         <div class="tiny dim" style="margin-top:10px">上方的比分、預測與兩隊風格對比不受影響,那些不靠這個資料源。</div></div>`;
     }
     return `<div class="card"><div class="note info"><b>這場尚待永久快取。</b>
