@@ -780,7 +780,9 @@ async function checkDataGap() {
 
   const cases = [
     ['西甲的戰術頁擋下來', !!g('es1', 'tactics', ['formation', 'shapes'])],
-    ['西甲的球員頁擋下來', !!g('es1', 'players', ['players', 'leaders'])],
+    ['西甲的球員頁已開放,不擋', !g('es1', 'players', ['players', 'leaders'])],
+    ['球員頁開放了但資料是空的,保險仍然會擋',
+      !!g('es1', 'players', ['players', 'leaders'], { ...full, players: [] })],
     ['西甲的動態頁擋下來', !!g('es1', 'news', ['news'])],
     ['西甲的實時戰況擋下來', !!g('es1', 'live', ['live'])],
     ['西甲的模型驗證擋下來', !!g('es1', 'model', ['form'])],

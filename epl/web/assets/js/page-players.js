@@ -7,6 +7,15 @@ try {
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
+  /* 西甲的球員資料來自 Understat,欄位跟英超那套 FPL 完全不同 ——
+     沒有背號、頭貼、傷停、防守數據。與其把英超版面留一堆空欄位
+     (那比不做更糟,讀者會以為壞掉),不如另外畫一頁只放真的有的東西。
+     由資料層自己宣告來源,前端不用去猜現在是哪個聯賽。 */
+  if (leaders.source === 'Understat') {
+    renderUnderstat({ meta, players, leaders });
+    throw new Error('skip');
+  }
+
   const byCode = new Map(players.map(p => [p.code, p]));
   // 本季 / 上季 —— 所有數字都明確標示是哪一季,不再混在一起
   const SEASONS = {
@@ -263,4 +272,149 @@ try {
   const pc = C.qs('code');
   if (pc && byCode.has(pc)) openPlayer(byCode.get(pc));
 
-} catch (err) { C.fail(err); }
+} catch (err) { if (err.message !== 'skip') C.fail(err); }
+
+/* ── 西甲球員頁(Understat)──────────────────
+   刻意跟英超版分開。這個來源給的是**整季彙總**,不是逐場,
+   而且只有進攻與串聯類的欄位。能做的都做滿,做不到的直接寫出來。 */
+function renderUnderstat({ meta, players, leaders }) {
+  const app = document.getElementById('app');
+  const SEASONS = { current: leaders.seasons.current, last: leaders.seasons.last };
+  // 本季剛開打時沒有人踢滿門檻,每 90 分鐘的榜會整片空 —— 那時預設看上季
+  let season = leaders.currentQualified > 0 ? SEASONS.current : SEASONS.last;
+  let posFilter = '', teamFilter = '', query = '';
+
+  const bySeason = s => players.filter(p => p.season === s);
+  const codeName = c => C.name(c);
+  const teamCell = p => p.teams.map(t => C.teamLink(t)).join('<span class="dim"> → </span>')
+    + (p.multiTeam ? ' <span class="pill warn tiny" title="本季效力兩隊,數字是兩隊合計">跨隊</span>' : '');
+
+  const boardCard = b => {
+    const rows = (leaders[season === SEASONS.current ? 'current' : 'last'] ?? {})[b.key] ?? [];
+    if (!rows.length) {
+      return `<div class="card"><h3>${C.esc(b.label)}</h3>
+        <div class="tiny dim">${b.per90
+          ? `本季還沒有人踢滿 ${leaders.minMinutes} 分鐘,每 90 分鐘的數字現在給了會誤導,所以先不給。`
+          : '這一季還沒有資料。'}</div></div>`;
+    }
+    const fmt = v => (b.per90 || String(v).includes('.') ? C.fx(v, 2) : v);
+    return `<div class="card"><div class="spread"><h3>${C.esc(b.label)}</h3>
+        <span class="pill tiny">${C.esc(b.unit)}</span></div>
+      ${rows.map((r, i) => `<div class="stat-line">
+        <span class="small"><span class="dim mono" style="display:inline-block;width:1.6em">${i + 1}</span>
+          ${C.esc(r.name)}<span class="dim tiny"> ${r.teams.map(codeName).join(' / ')}</span></span>
+        <b class="mono">${fmt(r.value)}</b></div>`).join('')}</div>`;
+  };
+
+  const COLS = [
+    { key: 'name', label: '球員', get: p => C.esc(p.name) },
+    { key: 'team', label: '球隊', get: teamCell },
+    { key: 'posZh', label: '位置', get: p => `<span class="dim">${C.esc(p.posZh)}</span>` },
+    { key: 'games', label: '出場', num: true },
+    { key: 'minutes', label: '分鐘', num: true },
+    { key: 'goals', label: '進球', num: true },
+    { key: 'assists', label: '助攻', num: true },
+    { key: 'xG', label: 'xG', num: true, d: 2 },
+    { key: 'xA', label: 'xA', num: true, d: 2 },
+    { key: 'shots', label: '射門', num: true },
+    { key: 'keyPasses', label: '關鍵傳球', num: true },
+    { key: 'xgi90', label: 'xGI/90', num: true, d: 2 },
+  ];
+  let sortKey = 'goals', sortDesc = true;
+
+  const tableHtml = () => {
+    let rows = bySeason(season);
+    if (posFilter) rows = rows.filter(p => p.pos === posFilter);
+    if (teamFilter) rows = rows.filter(p => p.teams.includes(teamFilter));
+    if (query) { const q = query.toLowerCase(); rows = rows.filter(p => p.name.toLowerCase().includes(q)); }
+    rows = rows.slice().sort((a, b) => {
+      const av = a[sortKey] ?? -Infinity, bv = b[sortKey] ?? -Infinity;
+      if (typeof av === 'string') return sortDesc ? String(bv).localeCompare(av) : String(av).localeCompare(String(bv));
+      return sortDesc ? bv - av : av - bv;
+    }).slice(0, 100);
+    return `<div class="table-wrap"><table class="tbl"><thead><tr>${COLS.map(c =>
+      `<th class="${c.num ? 'num' : ''} sortable" data-sort="${c.key}">${C.esc(c.label)}${
+        sortKey === c.key ? (sortDesc ? ' ▾' : ' ▴') : ''}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(p => `<tr>${COLS.map(c => `<td class="${c.num ? 'num mono' : ''}">${
+        c.get ? c.get(p) : (c.num && c.d ? C.fx(p[c.key], c.d) : (p[c.key] ?? '—'))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      <div class="tiny dim" style="margin-top:8px">依${C.esc(COLS.find(c => c.key === sortKey)?.label ?? sortKey)}排序,最多顯示 100 人(符合條件 ${
+        rows.length >= 100 ? '超過 100' : rows.length} 人)。點欄位標題可換排序。
+        <span class="mono">xGI/90</span> 只在上場時間達 ${leaders.minMinutes} 分鐘時給出。</div>`;
+  };
+
+  const codes = [...new Set(players.flatMap(p => p.teams))].sort((a, b) => codeName(a).localeCompare(codeName(b), 'zh-Hant'));
+  const draw = () => {
+    const cur = bySeason(season);
+    app.innerHTML = `
+    <div class="page-head">
+      <h1>西甲球員</h1>
+      <p>${C.esc(season)} 的 ${cur.length} 名球員。數字是<b>整季彙總</b>,不是逐場 ——
+         來源(Understat)給的就是這個粒度。每 90 分鐘的數字只在上場時間達
+         ${leaders.minMinutes} 分鐘時給出,樣本太少的給了會誤導。</p>
+      ${C.stampRow([
+        C.stamp(`${C.esc(season)} 整季統計`, { iso: leaders.retrievedAt, kind: 'season', note: '來源:Understat' }),
+        C.stamp('百分位雷達', { kind: 'season', note: '只跟同季、同位置、達門檻的西甲球員比' }),
+      ])}
+      <div class="note" style="margin-top:14px"><b>西甲沒有、英超才有的東西:</b>
+        ${leaders.missing.map(C.esc).join('、')}。這些欄位這個來源就是沒有,
+        所以這一頁不放 —— 留一個永遠空白的欄位比不做更糟。</div>
+    </div>
+
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      ${Object.entries(SEASONS).map(([k, v]) => `<button class="btn season-btn ${v === season ? 'on' : ''}" data-season="${C.esc(v)}">${
+        k === 'current' ? '本季' : '上季'} ${C.esc(v)}</button>`).join('')}
+      ${leaders.currentQualified === 0 && season === SEASONS.last
+        ? '<span class="tiny dim" style="align-self:center">本季才剛開打,還沒有人踢滿門檻,所以預設看上季</span>' : ''}
+    </div>
+
+    <div class="section"><h2>榜單</h2><span class="hint">只做這個來源真的有的項目</span></div>
+    <div class="grid g2">${leaders.boards.map(boardCard).join('')}</div>
+
+    <div class="section"><h2>全部球員</h2><span class="hint">可篩選與排序</span></div>
+    <div class="card">
+      <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <input id="pq" type="search" placeholder="搜尋球員…" value="${C.esc(query)}"
+               style="flex:1;min-width:160px;padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+        <select id="ppos" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+          <option value="">全部位置</option>
+          ${[['GK', '門將'], ['D', '後衛'], ['M', '中場'], ['F', '前鋒']].map(([k, l]) =>
+            `<option value="${k}" ${posFilter === k ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+        <select id="pteam" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+          <option value="">全部球隊</option>
+          ${codes.map(c => `<option value="${c}" ${teamFilter === c ? 'selected' : ''}>${C.esc(codeName(c))}</option>`).join('')}
+        </select>
+      </div>
+      ${tableHtml()}
+    </div>
+
+    <div class="card">
+      <h3>這一頁的數字怎麼來的</h3>
+      <div class="small muted" style="display:grid;gap:8px">
+        <div><b>位置</b>是來源給的 GK/D/M/F 標記。一個人有多個位置時,取<b>最偏防守</b>的那個當分組依據
+          —— 兼踢中場的後衛拿去跟後衛比比較合理。這是推論,不是官方登錄位置。
+          整季只以替補出場、來源沒標位置的人顯示「來源未標位置」,不參與百分位。</div>
+        <div><b>跨隊球員</b>本季效力過兩隊時,來源給的是兩隊合計,不是分開的。
+          所以標記出來,不硬掛到其中一隊 —— 掛錯的話那個隊的數字就是假的。</div>
+        <div><b>終結超出期望</b>用非十二碼進球減 npxG。十二碼的 xG 是固定值,
+          混進來只會反映罰球次數,不反映終結能力。</div>
+        <div><b>來源:</b>Understat,整季一個請求取得並快取,開頁不連外。${C.esc(leaders.note)}</div>
+      </div>
+    </div>
+    ${C.foot(meta)}`;
+
+    app.querySelectorAll('.season-btn').forEach(b => b.onclick = () => { season = b.dataset.season; draw(); });
+    app.querySelectorAll('th.sortable').forEach(th => th.onclick = () => {
+      const k = th.dataset.sort;
+      if (k === sortKey) sortDesc = !sortDesc; else { sortKey = k; sortDesc = true; }
+      draw();
+    });
+    const q = app.querySelector('#pq');
+    if (q) { q.oninput = () => { query = q.value; draw(); q.focus(); }; }
+    const ps = app.querySelector('#ppos');
+    if (ps) ps.onchange = () => { posFilter = ps.value; draw(); };
+    const ts = app.querySelector('#pteam');
+    if (ts) ts.onchange = () => { teamFilter = ts.value; draw(); };
+  };
+  draw();
+}

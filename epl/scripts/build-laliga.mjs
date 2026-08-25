@@ -20,6 +20,7 @@ import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { percentile, round } from './lib/util.mjs';
+import { loadPlayers, buildLeaders, attachRadar, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -357,6 +358,29 @@ async function main() {
     available: false,
     note: '西甲目前只有 2025-26 一季完整歷史，尚無獨立留出賽季可做可靠回測。',
   };
+  /* ── 球員(Understat)────────────────────────
+     兩季各一份。上季完整、本季至今 —— 兩者性質不同,不能混在一起算,
+     所以分開輸出並各自標明是哪一季。
+
+     API-Football 那條路走不通(Free 方案只到 2024,實測過),
+     所以這裡的欄位就是 Understat 有的那些。缺的欄位**不補、不留空**:
+     沒有背號、頭貼、傷停、防守數據 —— 前端據實說明,不要跟英超版面對齊。 */
+  const playerSeasons = {};
+  for (const season of [CURRENT_SEASON, LAST_SEASON]) {
+    const loaded = loadPlayers(ROOT, season);
+    if (!loaded) { console.log(`  ⚠ 西甲球員 ${season}:沒有快取,略過`); continue; }
+    attachRadar(loaded.players);
+    playerSeasons[season] = loaded;
+    const multi = loaded.players.filter(p => p.multiTeam).length;
+    const qualified = loaded.players.filter(p => p.qualified).length;
+    console.log(`  西甲球員 ${season}:${loaded.players.length} 人・達 ${MIN_MINUTES} 分鐘門檻 ${qualified} 人・跨隊 ${multi} 人`);
+  }
+
+  const playersOut = [];
+  for (const [season, data] of Object.entries(playerSeasons)) {
+    for (const p of data.players) playersOut.push({ ...p, season });
+  }
+
   const meta = {
     builtAt: new Date().toISOString(), asOf: AS_OF,
     league: 'es1', edition: 'basic',
@@ -364,7 +388,11 @@ async function main() {
     historySeasons: [LAST_SEASON], h2hSeasons: [LAST_SEASON, CURRENT_SEASON],
     sources,
     capabilities: {
-      live: false, players: false, injuries: false, tactics: teamProfiles.length > 0,
+      /* players 是 true,但**只有整季彙總的進攻與串聯數據**(Understat)。
+         沒有背號、頭貼、傷停、防守數據 —— 那些是英超的 FPL 才有的。
+         前端靠 leaders.missing 把界線寫在畫面上,不要因為這裡是 true
+         就假設兩個聯賽的球員頁欄位一樣。 */
+      live: false, players: playersOut.length > 0, injuries: false, tactics: teamProfiles.length > 0,
       coaches: false, news: false, officialLineups: reportCount > 0, matchReports: reportCount > 0,
       fixtures: true, standings: true, teams: true, predictions: true, market: true,
       teamProfiles: teamProfiles.length > 0, setPieces: teamProfiles.length > 0,
@@ -404,7 +432,25 @@ async function main() {
   await write('h2h', h2h);
   await write('results', [...lastMatches, ...curPlayed].filter(m => m.played).map(slimMatch));
   await write('news', []);
-  await write('players', []);
+  await write('players', playersOut);
+  await write('leaders', {
+    seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
+    currentAvailable: Boolean(playerSeasons[CURRENT_SEASON]?.players?.length),
+    /* 本季剛開打,沒有人踢滿門檻 —— 那時「每 90 分鐘」的榜是空的。
+       前端要據此預設切到上季並說明原因,而不是端一張空表出來。 */
+    currentQualified: playerSeasons[CURRENT_SEASON]?.players?.filter(p => p.qualified).length ?? 0,
+    minMinutes: MIN_MINUTES,
+    source: 'Understat',
+    retrievedAt: playerSeasons[CURRENT_SEASON]?.retrievedAt ?? playerSeasons[LAST_SEASON]?.retrievedAt ?? null,
+    boards: BOARDS.map(({ key, label, unit, per90 }) => ({ key, label, unit, per90 })),
+    axes: RADAR_AXES,
+    /* 誠實層:西甲球員頁**沒有**哪些東西,由資料層直接宣告,
+       前端照著說。不要讓讀者以為是還沒載入或壞掉。 */
+    missing: ['背號', '頭貼', '出生日期與身價', '傷停與停賽', '防守數據(鏟球/攔截/撲救)'],
+    note: 'Understat 提供整季彙總,不是逐場;每 90 分鐘僅在上場時間達門檻時給出。',
+    current: playerSeasons[CURRENT_SEASON] ? buildLeaders(playerSeasons[CURRENT_SEASON].players) : null,
+    last: playerSeasons[LAST_SEASON] ? buildLeaders(playerSeasons[LAST_SEASON].players) : null,
+  });
   await write('coaches', { asOf: null, officialAsOf: null, season: LAST_SEASON, coaches: [] });
   await write('goals', { seasons: [], note: '西甲尚未接逐球員進球明細。', data: {} });
   await write('reports', {

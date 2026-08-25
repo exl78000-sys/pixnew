@@ -34,7 +34,23 @@ check('未賽場次預測三向機率加總約等於 1', fixtures.filter(f => !f
   return p && Math.abs(p.home + p.draw + p.away - 1) < 0.002;
 }));
 check('已完賽場次不拿重擬合機率冒充賽前預測', fixtures.filter(f => f.played).every(f => f.prediction === null));
-check('西甲明確關閉球員能力', meta.capabilities?.players === false && players.length === 0);
+/* 球員資料改由 Understat 提供(API-Football 的 Free 方案不含本季與上季,實測過)。
+   這裡守的不再是「關閉」,而是**開了之後不能偷偷造欄位**:
+   Understat 沒有背號、頭貼、傷停與防守數據,那就一個都不准出現。 */
+const leaders = out('leaders');
+const FORBIDDEN = ['squadNumber', 'photo', 'price', 'status', 'news', 'defCon90', 'saves90', 'tackles90'];
+check('西甲球員資料已接上', meta.capabilities?.players === true && players.length > 0);
+check('沒有假造 Understat 給不了的欄位',
+  players.every(p => FORBIDDEN.every(k => !(k in p))), FORBIDDEN.join());
+check('缺什麼有寫在資料層讓畫面照講', Array.isArray(leaders.missing) && leaders.missing.length > 0);
+check('每 90 分鐘只在達門檻時給出,不足門檻一律 null',
+  players.every(p => (p.minutes >= leaders.minMinutes) === (p.xgi90 !== null)));
+check('跨隊球員標記出來,不硬掛到單一球隊',
+  players.filter(p => p.teams.length > 1).every(p => p.multiTeam === true));
+check('百分位只跟同季同位置達門檻的人比',
+  players.every(p => (p.radar == null) || (p.qualified && p.pos && p.peerCount >= 5)));
+check('兩季分開存放,不混在一起',
+  new Set(players.map(p => p.season)).size === 2);
 check('沒有虛構 FPL 賽程難度', fixtures.every(f => f.difficulty === null));
 check('Understat 上季 20 隊快取完整', understat.complete && Object.keys(understat.teams ?? {}).length === 20);
 check('Understat 20 隊逐場比分全部核對', understat.validation?.allScorelinesReconciled === true);
