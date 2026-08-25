@@ -35,7 +35,8 @@
     "probe:goals": "node scripts/probe-goals.mjs",
     "probe:events": "node scripts/probe-events.mjs",
     "probe:laliga-players": "node scripts/probe-laliga-players.mjs",
-    "probe:laliga-playerdata": "node scripts/probe-laliga-playerdata.mjs"
+    "probe:laliga-playerdata": "node scripts/probe-laliga-playerdata.mjs",
+    "laliga:players": "node scripts/fetch-laliga-players.mjs"
   },
   "engines": {
     "node": ">=18"

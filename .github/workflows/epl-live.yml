@@ -62,6 +62,13 @@ jobs:
         run: npm run laliga:fetch
         continue-on-error: true
 
+      # 西甲球員整季數據(Understat)。一季一個請求,兩季共兩個 ——
+      # API-Football 的 Free 方案不含這兩季,這是實測後改走的路。
+      # 上季已完結,有檔就跳過;只有本季會每次重抓。
+      - name: 抓西甲球員整季數據(Understat)
+        run: npm run laliga:players
+        continue-on-error: true
+
       - name: 抓即時比賽狀態(官方 FPL API)
         run: npm run live
         env:
@@ -146,6 +153,7 @@ jobs:
           git add -f epl/data/raw/live.json epl/data/raw/season-gws.json \
                      epl/data/raw/openfootball/ epl/data/raw/pulselive/ \
                      epl/data/raw/openfootball-la-liga/ \
+                     epl/data/raw/understat-la-liga/ \
                      epl/data/raw/api-football/ \
                      epl/data/raw/api-football-la-liga/ \
                      epl/data/raw/football-data-couk/ \
