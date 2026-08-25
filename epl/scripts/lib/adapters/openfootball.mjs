@@ -36,10 +36,10 @@ const roundNo = r => {
 export function loadMatches({ root, competition, season, codeOf, tolerant = false }) {
   const raw = JSON.parse(readFileSync(join(root, 'data', 'raw', 'openfootball', `${season}.json`), 'utf8'));
   const skipped = [];
-  return raw.matches.map((m, i) => {
+  const out = raw.matches.map((m, i) => {
     const home = codeOf(m.team1), away = codeOf(m.team2);
     if (!home || !away) {
-      if (tolerant) { skipped.push(m.team1, m.team2); return null; }
+      if (tolerant) { if (!home) skipped.push(m.team1); if (!away) skipped.push(m.team2); return null; }
       throw new Error(`[${id}] 隊名無法對照:${m.team1} / ${m.team2}(請補 data/manual/teams.json)`);
     }
     const s = readScore(m.score);
@@ -58,4 +58,17 @@ export function loadMatches({ root, competition, season, codeOf, tolerant = fals
       ha: s?.ht ? s.ht[1] : null,
     });
   }).filter(Boolean).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  const dropped = raw.matches.length - out.length;
+
+  /* 跳過了誰一定要講出來。
+     tolerant 的用意是「已降級、現在不相干的球隊可以略過」,
+     但它同樣會吞掉「隊名寫法變了所以對不上」—— 那是真的漏資料。
+     這裡把跳過的隊名印出來,由人判斷是哪一種。(實際踩過:openfootball
+     2018-19 寫 "Manchester United"、2020-21 起寫 "Manchester United FC",
+     曼聯的交手紀錄因此少了兩季,而畫面上完全看不出來。) */
+  if (skipped.length) {
+    const names = [...new Set(skipped)].sort();
+    console.log(`  · ${season} 跳過 ${dropped} 場,對照不到:${names.join('、')}`);
+  }
+  return out;
 }

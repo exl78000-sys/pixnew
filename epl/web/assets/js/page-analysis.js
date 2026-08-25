@@ -22,45 +22,11 @@ try {
   const target = id ? fixtures.find(f => f.id === id)
     : hq && aq ? fixtures.find(f => f.home === hq && f.away === aq) : null;
 
-  if (target) renderMatch(target); else renderList();
-
-  /* ── 沒指定比賽:列出有分析的場次 ─────────── */
-  function renderList() {
-    const list = fixtures.filter(f => !f.played && articleFor(f))
-      .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
-    app.innerHTML = `
-    <div class="page-head">
-      <h1>賽前分析</h1>
-      <p>每場比賽一頁,有固定網址,可以直接分享。文章裡的每個數字都來自本站的統計模型,
-         不是評論員的印象 —— 也因此它不會談轉會八卦或更衣室氣氛,那些我們沒有資料。</p>
-    ${C.stampRow([
-      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
-      C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
-    ])}
-    </div>
-    ${list.length ? '' : '<div class="note">目前沒有待分析的場次(可能本季賽程尚未開始,或都已完賽)。</div>'}
-    <div id="list"></div>
-    ${C.foot(meta)}`;
-
-    if (!list.length) return;
-    document.getElementById('list').innerHTML = C.table(list, [
-      { key: 'date', label: '開賽時間', value: f => f.kickoff,
-        render: f => `<span class="small">${C.kickoffLocal(f.kickoff)}</span>` },
-      { key: 'cd', label: '倒數', value: f => f.kickoff, sortable: false,
-        render: f => `<span class="small">${C.countdown(f.kickoff)}</span>` },
-      { key: 'round', label: '輪', value: f => f.round, num: true },
-      { key: 'home', label: '主隊', value: f => C.name(f.home), render: f => C.teamCell(f.home) },
-      { key: 'away', label: '客隊', value: f => C.name(f.away), render: f => C.teamCell(f.away) },
-      { key: 'prob', label: '主 / 和 / 客', value: f => f.prediction.home, sortable: false,
-        render: f => C.probBar(f.prediction) },
-      { key: 'src', label: '文章', value: f => articleFor(f).source, sortable: false,
-        render: f => (articleFor(f).source === 'llm'
-          ? '<span class="pill accent tiny">AI 潤稿</span>' : '<span class="pill tiny">模板</span>') },
-      { key: 'go', label: '', value: () => 0, sortable: false,
-        render: f => `<a class="pill info tiny" href="${C.link('analysis', { id: f.id })}">看分析 →</a>` },
-    ], { sortKey: 'date', desc: false });
-    C.startCountdowns();
-  }
+  /* 這一頁只處理「一場比賽」。沒指定是哪一場就導回賽程表 ——
+     以前這裡有自己的列表,但它是賽程表的子集(只有未開賽且有文章的場次,
+     還沒有篩選),兩個入口只會讓人猶豫該點哪一個。 */
+  if (target) renderMatch(target);
+  else location.replace(C.link('fixtures'));
 
   /* ── 單場分析 ────────────────────────────── */
   function renderMatch(f) {
@@ -81,7 +47,7 @@ try {
 
     app.innerHTML = `
     <div class="page-head">
-      <a class="small dim" href="${C.link('analysis')}">← 所有賽前分析</a>
+      <a class="small dim" href="${C.link('fixtures')}">← 回賽程與預測</a>
       <h1 style="margin-top:6px">${C.name(f.home)} <span class="dim">vs</span> ${C.name(f.away)}</h1>
       <p>${f.season} 賽季第 ${f.round} 輪・${C.kickoffLocal(f.kickoff)}(${C.tzName()})</p>
       ${C.stampRow([
@@ -91,21 +57,37 @@ try {
       ])}
     </div>
 
+    ${/* 已完賽的場次也會走到這一頁(實時戰況頁的每張比賽卡都連過來)。
+         那時候大字要放真的比分,不是賽前的預期進球 —— 而且「開賽後 90 小時」
+         這種文字對一場三天前踢完的比賽毫無意義。 */ ''}
     <div class="card">
       <div class="scoreline" style="margin:4px 0 14px">
         <div class="side">${C.badge(f.home, 'big')}<b>${C.name(f.home)}</b></div>
-        <div class="sc" style="font-size:20px">${p.xgHome} <span class="dim">:</span> ${p.xgAway}</div>
+        <div class="sc" style="font-size:20px">${f.played
+          ? `${f.fh} <span class="dim">:</span> ${f.fa}`
+          : `${p.xgHome} <span class="dim">:</span> ${p.xgAway}`}</div>
         <div class="side away">${C.badge(f.away, 'big')}<b>${C.name(f.away)}</b></div>
       </div>
-      <div class="center small dim" style="margin-bottom:10px">模型預期進球</div>
+      <div class="center small dim" style="margin-bottom:10px">${f.played
+        ? `最終比分・賽前模型預期 ${p.xgHome} : ${p.xgAway}` : '模型預期進球'}</div>
       ${C.probBar(p)}
       <div class="row small dim" style="justify-content:space-between;margin-top:6px">
         <span>主勝 ${C.pct(p.home, 0)}</span><span>和局 ${C.pct(p.draw, 0)}</span><span>客勝 ${C.pct(p.away, 0)}</span></div>
+      <div class="tiny dim center" style="margin-top:6px">${f.played ? '以上是賽前的機率,沒有事後修改' : ''}</div>
       <div class="spread" style="margin-top:14px">
-        <span class="small">${state.phase === 'upcoming'
+        <span class="small">${f.played ? (() => {
+          const ZH = { home: '主勝', draw: '和局', away: '客勝' };
+          const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
+          const pick = [['home', p.home], ['draw', p.draw], ['away', p.away]].sort((x, y) => y[1] - x[1])[0];
+          return pick[0] === real
+            ? `<span class="pill accent tiny">模型命中${ZH[real]} ${C.pct(p[real], 0)}</span>`
+            : `<span class="pill tiny">模型失準・給${ZH[real]} ${C.pct(p[real], 0)}</span>`;
+        })() : state.phase === 'upcoming'
           ? `開賽倒數 ${C.countdown(f.kickoff)}`
           : `<span class="pill warn tiny">${C.elapsedText(state.elapsed)}</span>`}</span>
-        <a class="pill info tiny" href="${C.link('live')}">看實時戰況 →</a>
+        ${f.played
+          ? `<a class="pill info tiny" href="${C.link('fixtures', { id: f.id })}">看賽後分析 →</a>`
+          : `<a class="pill info tiny" href="${C.link('live')}">看實時戰況 →</a>`}
       </div>
     </div>
 

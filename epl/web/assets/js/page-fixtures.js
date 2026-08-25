@@ -3,13 +3,12 @@ import * as C from './core.js';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, results, reports, analysis } =
-    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'results', 'reports', 'analysis');
+  /* 抽屜瘦身之後就不需要 h2h / players / tactics 了 —— 那三張卡片搬去賽前分析頁,
+     這裡少載 players.json 一份(2 MB 出頭),分頁模式下的首次開啟明顯變快。 */
+  const { meta, clubs, teams, fixtures, results, reports, analysis } =
+    await C.load('meta', 'clubs', 'teams', 'fixtures', 'results', 'reports', 'analysis');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
-
-  const teamBy = new Map(teams.map(t => [t.code, t]));
-  const tacBy = new Map(tactics.map(t => [t.code, t]));
   // 本季看賽程與預測,過去賽季看已完賽的比分與賽後分析
   const pastSeasons = [...new Set(results.map(m => m.season))].filter(x => x !== meta.currentSeason).sort().reverse();
   const bySeason = season => season === meta.currentSeason
@@ -17,6 +16,8 @@ try {
     : results.filter(m => m.season === season).map(m => ({ ...m, kickoff: null }));
   let season = meta.currentSeason;
   const reportFor = f => reports.reports[`${f.season}|${f.home}|${f.away}`] ?? null;
+  // 賽前分析頁只處理未開賽的場次,已完賽的別給一個點進去是空的連結
+  const hasArticle = f => !f.played && !!analysis.pre[`${f.home}|${f.away}`];
 
   const rounds = [...new Set(fixtures.map(f => f.round))].sort((a, b) => a - b);
   const codes = [...new Set(fixtures.flatMap(f => [f.home, f.away]))].sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
@@ -24,9 +25,10 @@ try {
 
   app.innerHTML = `
   <div class="page-head">
-    <h1>賽程與單場預測</h1>
+    <h1>賽程與預測</h1>
     <p>每一場都用 Dixon-Coles Poisson 與 Elo 各算一次再取平均(回測顯示兩者平均最準)。
-       點任一場可以看比分機率分佈、雙方戰術對比、交手紀錄與傷停。
+       點任一場會開速覽:未開賽看勝率與最可能比分,已完賽看賽果與模型有沒有命中;
+       想看陣容、戰術對比、近況與傷停,速覽裡有一顆進<b>完整賽前分析</b>的按鈕。
        開賽時間已換算成你所在時區(${C.tzName()}),並採用會反映轉播改期的官方時間。</p>
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
@@ -92,9 +94,10 @@ try {
         title: 'FPL 官方賽程難度(主/客,1~5)',
         render: f => f.difficulty ? `<span class="small dim">${f.difficulty.home} / ${f.difficulty.away}</span>` : '—' },
       { key: 'article', label: '分析', value: () => 0, sortable: false,
-        render: f => (!f.played && analysis.pre[`${f.home}|${f.away}`]
+        // 直達完整分析,不用先開抽屜再點一次
+        render: f => (hasArticle(f)
           ? `<a class="pill info tiny" href="${C.link('analysis', { id: f.id })}"
-               onclick="event.stopPropagation()">賽前分析</a>` : '') },
+               onclick="event.stopPropagation()">完整分析 →</a>` : '') },
     ], { sortKey: 'date', desc: false, onRow: openMatch });
     C.startCountdowns();
   };
@@ -108,45 +111,15 @@ try {
   ['fSeason', 'fRound', 'fTeam', 'fState'].forEach(id => { document.getElementById(id).onchange = render; });
   render();
 
-  function keyPlayers(code, n = 4) {
-    return players.filter(p => p.team === code && p.last && p.last.minutes >= 450)
-      .sort((a, b) => b.last.xgi90 - a.last.xgi90).slice(0, n);
-  }
-  function outList(code) {
-    return players.filter(p => p.team === code && p.news && p.status !== 'a' && !/joined|loan|left/i.test(p.news));
-  }
-
+  /* 速覽抽屜。刻意只放「這一場的結果或機率」——
+     陣容、戰術對比、交手紀錄、近況傷停全部在賽前分析頁,
+     以前這裡各複製了一份,而且是比較差的版本(戰術雷達寫死綠藍兩色、
+     數據對比沒有隊色對照條、傷停用字串比對而不是傷停模組)。
+     一份資料兩個地方畫,改了一邊另一邊就會悄悄過期 —— 所以只留一份。 */
   function openMatch(f) {
     const p = f.prediction;
     const rep = reportFor(f);
-    const H = teamBy.get(f.home), A = teamBy.get(f.away);
-    const key = [f.home, f.away].sort().join('|');
-    const rec = h2h[key];
-    const th = tacBy.get(f.home), ta = tacBy.get(f.away);
-
-    const compare = (label, hv, av, d = 2) => `
-      <div class="stat-line"><b class="mono">${C.fx(hv, d)}</b>
-        <span class="small muted">${label}</span><b class="mono">${C.fx(av, d)}</b></div>`;
-
-    const h2hHtml = rec ? `
-      <div class="row small" style="justify-content:space-between">
-        <span>${C.name(f.home)} <b>${rec.aWin || rec.bWin ? (f.home < f.away ? rec.aWin : rec.bWin) : 0}</b> 勝</span>
-        <span class="dim">和 ${rec.draw}</span>
-        <span><b>${f.home < f.away ? rec.bWin : rec.aWin}</b> 勝 ${C.name(f.away)}</span>
-      </div>
-      <div style="margin-top:8px">${rec.list.slice(0, 5).map(m => `
-        <div class="stat-line"><span class="small dim mono">${C.dateFull(m.date)}</span>
-          <span class="small">${C.name(m.home)} <b class="mono">${m.fh}-${m.fa}</b> ${C.name(m.away)}</span></div>`).join('')}</div>`
-      : `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在英超交手過(多半是剛升上來的球隊)。</div>`;
-
-    const squadHtml = code => `
-      <div><div class="small muted" style="margin-bottom:4px">${C.teamCell(code, { link: false })}</div>
-        ${keyPlayers(code).map(pl => `
-          <div class="stat-line"><span class="small">${C.esc(pl.name)} <span class="dim tiny">${pl.posZh}</span></span>
-            <b class="mono small">${pl.last.xgi90} xGI/90</b></div>`).join('') || '<div class="dim small">上季無足夠出場資料</div>'}
-        ${outList(code).length ? `<div class="tiny" style="margin-top:6px;color:var(--loss)">
-          傷停:${outList(code).slice(0, 5).map(x => C.esc(x.name)).join('、')}</div>` : ''}
-      </div>`;
+    const full = `<a class="pill accent" href="${C.link('analysis', { id: f.id })}">完整賽前分析 →</a>`;
 
     C.drawer(`${C.badge(f.home)} ${C.name(f.home)} <span class="dim">vs</span> ${C.name(f.away)} ${C.badge(f.away)}`, `
       <div class="card">
@@ -169,7 +142,9 @@ try {
             實際是<b>${ZH[real]}</b>,模型給這結果 <b>${C.pct(p[real], 0)}</b> —— ${hit ? '判斷正確' : '沒有命中'}。
             預期比分 ${p.xgHome}:${p.xgAway},實際 ${f.fh}:${f.fa}。</div>`;
         })() : ''}
-        ${p ? `<div class="grid g3" style="margin-top:10px">
+        ${/* g3 的自動欄寬在 680px 的抽屜裡只排得下兩欄,第三項會單獨掉到下一行。
+             這三個值都很短,直接指定三等分即可,手機上(抽屜滿版 ~390px)也還有餘裕。 */ ''}
+        ${p ? `<div class="grid g3" style="margin-top:10px;grid-template-columns:repeat(3,1fr)">
           <div><div class="tiny dim">${f.played ? '賽前預期進球' : '預期進球'}</div><div class="mono"><b>${p.xgHome}</b> : <b>${p.xgAway}</b></div></div>
           <div><div class="tiny dim">大於 2.5 球</div><div class="mono"><b>${C.pct(p.over25)}</b></div></div>
           <div><div class="tiny dim">雙方進球</div><div class="mono"><b>${C.pct(p.btts ?? 0)}</b></div></div>
@@ -177,52 +152,13 @@ try {
         <div class="small dim" style="margin-top:10px">
           最可能比分 ${(p.topScores ?? []).map(s => `<span class="pill">${s.s} <span class="dim">·</span> ${C.pct(s.p, 0)}</span>`).join(' ')}
         </div>` : ''}
-        ${!f.played && p ? `<div style="margin-top:12px">
-          <a class="pill accent" href="${C.link('analysis', { id: f.id })}">完整賽前分析(獨立頁面)→</a></div>` : ''}
+        ${hasArticle(f) ? `<div class="spread" style="margin-top:14px;align-items:center">
+          <span class="tiny dim">陣容、戰術對比、歷來交手、近況與傷停都在那一頁</span>${full}</div>` : ''}
       </div>
 
       ${rep ? C.matchReportCards(rep) : (f.played
         ? '<div class="note">這場沒有逐球員的出場資料,所以沒有陣容與戰術解讀。有資料的輪次可用 <span class="mono">npm run season</span> 補上。</div>'
-        : '')}
-
-      ${p?.grid ? `<div class="card"><h3>比分機率分佈</h3>${C.scoreHeat(p.grid, f.home, f.away)}</div>` : ''}
-
-      ${p?.poisson ? `<div class="card"><h3>兩套模型怎麼看</h3>
-        <div class="stat-line"><span class="small">Poisson 進攻/防守模型</span>
-          <span class="mono small">${C.pct(p.poisson.home, 0)} / ${C.pct(p.poisson.draw, 0)} / ${C.pct(p.poisson.away, 0)}</span></div>
-        <div class="stat-line"><span class="small">Elo 實力評分</span>
-          <span class="mono small">${C.pct(p.elo.home, 0)} / ${C.pct(p.elo.draw, 0)} / ${C.pct(p.elo.away, 0)}</span></div>
-        <div class="stat-line"><span class="small"><b>取平均(採用值)</b></span>
-          <span class="mono small"><b>${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}</b></span></div>
-        <div class="tiny dim" style="margin-top:6px">零封機率:${C.name(f.home)} ${C.pct(p.csHome, 0)}・${C.name(f.away)} ${C.pct(p.csAway, 0)}</div>
-      </div>` : ''}
-
-      <div class="card"><h3>上季數據對比</h3>
-        <div class="row small dim" style="justify-content:space-between;margin-bottom:6px">
-          <span>${C.name(f.home)}</span><span>${C.name(f.away)}</span></div>
-        ${compare('聯賽名次', H.lastSeason?.pos ?? null, A.lastSeason?.pos ?? null, 0)}
-        ${compare('場均勝點', H.lastSeason?.ppg ?? null, A.lastSeason?.ppg ?? null)}
-        ${compare('每場期望進球 xG', th?.attack.xG90 ?? null, ta?.attack.xG90 ?? null)}
-        ${compare('每場期望失球 xGA', th?.defence.xGA90 ?? null, ta?.defence.xGA90 ?? null)}
-        ${compare('主場 / 客場場均勝點', H.lastSeason?.home.ppg ?? null, A.lastSeason?.away.ppg ?? null)}
-        ${compare('Elo 實力評分', H.elo, A.elo, 0)}
-      </div>
-
-      ${th && ta ? `<div class="card"><h3>戰術風格對比</h3>
-        ${C.radar([
-          { name: C.name(f.home), color: '#00ff85', values: th.radar },
-          { name: C.name(f.away), color: '#04f5ff', values: ta.radar },
-        ], { size: 320 })}
-        <div class="row tiny" style="justify-content:center;gap:6px;margin-top:6px">
-          ${th.tags.slice(0, 3).map(t => `<span class="pill accent">${t}</span>`).join('')}
-          ${ta.tags.slice(0, 3).map(t => `<span class="pill info">${t}</span>`).join('')}
-        </div></div>` : ''}
-
-      <div class="card"><h3>歷來交手</h3><div class="tiny dim" style="margin:-4px 0 8px">涵蓋 ${meta.h2hSeasons?.length ?? 0} 個賽季(${C.esc(meta.h2hSeasons?.[0] ?? "?")} 起)</div>${h2hHtml}</div>
-
-      <div class="card"><h3>關鍵球員(上季 xGI/90)</h3>
-        <div class="grid g2">${squadHtml(f.home)}${squadHtml(f.away)}</div>
-      </div>`);
+        : '')}`);
   }
 
   const id = C.qs('id');

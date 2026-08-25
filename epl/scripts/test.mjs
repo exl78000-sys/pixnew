@@ -15,7 +15,7 @@ import {
   preMatchBundle, postMatchBundle, templateFor, verify, generateReport, ReportCache,
 } from './lib/report/index.mjs';
 import { attachCodes } from './lib/adapters/pulselive.mjs';
-import { oddsIndex, devig, parseOddsCsv } from './lib/odds.mjs';
+import { oddsIndex, devig, parseOddsCsv, FD_NAMES } from './lib/odds.mjs';
 import { pickPair, oklch, contrast, deltaE, THRESHOLDS } from './lib/colour.mjs';
 import {
   buildFormIndex, formDelta, goalForm, h2hDelta, recentForm, formSummary, adjustLambdas, TUNED,
@@ -321,6 +321,10 @@ async function main() {
   const nameFail = checkOfficialNames();
 
   // 市場基準去水錢:算錯的話整段「模型 vs 市場」都是騙人的
+  // 隊名對照:同一個來源在不同賽季會換寫法,對不上就是靜靜漏資料
+  console.log('\n▶ 隊名對照自我檢查');
+  const teamFail = checkTeamNames(T);
+
   console.log('\n▶ 賠率去水錢自我檢查');
   const oddsFail = checkOdds();
 
@@ -341,7 +345,48 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail) process.exitCode = 1;
+}
+
+/* 隊名對照。踩過的雷:openfootball 在 2018-19 寫 "Manchester United"、
+   2020-21 起改寫 "Manchester United FC",對照不到就被 tolerant 模式靜靜吞掉,
+   曼聯的歷來交手因此少了兩季,而畫面上完全看不出來。
+   所以這裡把「同一支隊的各種寫法」直接列出來當測資。 */
+function checkTeamNames(T) {
+  const same = [
+    ['MUN', ['Manchester United', 'Manchester United FC', 'Man Utd', 'Man United']],
+    ['MCI', ['Manchester City', 'Manchester City FC', 'Man City']],
+    ['BOU', ['AFC Bournemouth', 'Bournemouth', 'Bournemouth FC']],
+    ['BHA', ['Brighton & Hove Albion', 'Brighton & Hove Albion FC', 'Brighton and Hove Albion', 'Brighton']],
+    ['NFO', ['Nottingham Forest', 'Nottingham Forest FC', "Nott'm Forest"]],
+    ['TOT', ['Tottenham Hotspur', 'Tottenham Hotspur FC', 'Spurs', 'Tottenham']],
+    ['WHU', ['West Ham United', 'West Ham United FC', 'West Ham']],
+    ['WOL', ['Wolverhampton Wanderers', 'Wolverhampton Wanderers FC', 'Wolves']],
+  ];
+  const bad = [];
+  for (const [code, names] of same) {
+    for (const n of names) if (T.codeOf(n) !== code) bad.push(`${n} → ${T.codeOf(n)}(應為 ${code})`);
+  }
+  /* 賠率來源(football-data.co.uk)自己有一份隊名對照表。
+     兩份對照表遲早會走鐘,所以這裡直接拿它的 27 個隊名去打 codeOf ——
+     哪天有一邊漏了新球隊,這條會先叫。 */
+  const fdBad = Object.entries(FD_NAMES).filter(([n, c]) => T.codeOf(n) !== c)
+    .map(([n, c]) => `${n} → ${T.codeOf(n)}(應為 ${c})`);
+  // 反向:不在名冊裡的球隊必須回 null,不能被寬鬆比對硬湊給某一隊
+  const gone = ['Watford FC', 'Norwich City', 'West Bromwich Albion FC', 'Cardiff City', 'Huddersfield Town'];
+  const wrong = gone.filter(n => T.codeOf(n) !== null).map(n => `${n} → ${T.codeOf(n)}`);
+
+  const cases = [
+    [`同一隊的 ${same.reduce((a, x) => a + x[1].length, 0)} 種寫法都對得上`, bad.length === 0, bad.slice(0, 3).join(' / ')],
+    [`賠率來源的 ${Object.keys(FD_NAMES).length} 個隊名 codeOf 也認得`, fdBad.length === 0, fdBad.slice(0, 3).join(' / ')],
+    ['已降級、名冊裡沒有的球隊回 null,不會硬湊', wrong.length === 0, wrong.join(' / ')],
+  ];
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
 }
 
 /* 兩隊對照條(core.js 的 versus)。
