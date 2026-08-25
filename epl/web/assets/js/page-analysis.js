@@ -275,13 +275,29 @@ try {
     <div class="card">${comparison}</div>
 
     <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
-    ${report
-      ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode))
-      : `<div class="card"><div class="note info"><b>這場尚待 API 永久快取。</b>
-          更新流程只會在完賽後抓取；必須同時取得球隊統計、兩隊正式陣容、事件、球員數據與至少一筆評分，且比分核對一致才會發布。缺任何一項都不會用估算值補上。</div>
-        <div class="tiny dim" style="margin-top:10px">本機開頁不會呼叫 API；資料由 <span class="mono">npm run laliga:postmatch</span> 或 GitHub 定時流程寫入。</div></div>`}
+    ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
+  }
+
+  /* 沒有賽後資料時,要分清楚是「還沒抓到」還是「這個方案根本拿不到」。
+
+     這兩句話對讀者的意義完全不同,而我們原本只講前者 —— 於是排程每天照跑、
+     每天回報成功,畫面上永遠寫著「尚待永久快取」,像是快來了。
+     實測結果是後者:目前的 API-Football 方案不含本賽季。
+     抓取端撞到就會把原因寫進 reports.blocked,這裡照它說的講。 */
+  function missingReportCard() {
+    const b = reports?.blocked;
+    if (b) {
+      return `<div class="card"><div class="note warn"><b>這一季的完整賽後資料目前拿不到。</b>
+          本站使用的資料源方案不含本賽季,所以這不是「還沒抓到」——
+          在換成涵蓋本賽季的方案之前,球隊統計、正式陣容、事件與球員評分都不會出現。
+          寧可這樣寫,也不要讓它看起來像快來了。</div>
+        <div class="tiny dim" style="margin-top:10px">上方的比分、預測與兩隊風格對比不受影響,那些不靠這個資料源。</div></div>`;
+    }
+    return `<div class="card"><div class="note info"><b>這場尚待永久快取。</b>
+        必須同時取得球隊統計、兩隊正式陣容、事件、球員數據與至少一筆評分,且比分核對一致才會發布。缺任何一項都不會用估算值補上。</div>
+      <div class="tiny dim" style="margin-top:10px">開頁不會呼叫 API;資料由定時流程在完賽後抓取一次並永久保存。</div></div>`;
   }
 
   /* 官方進球事件。有名單就一定有這批事件 —— 兩者來自同一個請求,

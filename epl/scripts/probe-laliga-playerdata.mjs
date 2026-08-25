@@ -42,11 +42,14 @@ async function get(url, { json = false, method = 'GET', body = null } = {}) {
         ...(body ? { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' } : {}),
       },
     });
-    const body = await res.text();
-    console.log(`  [${used}/${MAX_REQUESTS}] ${url}\n      → HTTP ${res.status}・${body.length} 位元組`);
-    return { status: res.status, body };
+    // 不要叫 body —— 那是上面的參數名,函式內再 const 一次會蓋掉它並掉進 TDZ,
+    // 每一個請求都變成「Cannot access 'body' before initialization」,
+    // 而且錯誤被 catch 吃掉之後看起來像對方擋我們。這個坑踩過一次就夠了。
+    const text = await res.text();
+    console.log(`  [${used}/${MAX_REQUESTS}] ${url}\n      → HTTP ${res.status}・${text.length} 位元組`);
+    return { status: res.status, body: text };
   } catch (e) {
-    used--;
+    // 失敗不退回計數:請求可能已經送到對方那裡了,寧可高估也不要低估
     console.log(`  [!] ${url}\n      → ${e.message}`);
     return null;
   }

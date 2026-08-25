@@ -83,7 +83,14 @@ async function cached(root, key, ttlMs, produce) {
 /* ── 4. 請求 ──────────────────────────────────
    逾時、重試、節流都在這裡。任何失敗都回 null,不丟例外 ——
    資料源掛掉不該讓整個 build 失敗。 */
-async function call(path, { env = process.env, budget, fetchImpl = fetch, retries = 2 } = {}) {
+/* report 是選用的「把失敗原因帶回去」的出口。
+
+   踩過的坑:這個函式原本遇到 errors 就 warn 一句然後回 null,原因就丟掉了。
+   上層只知道「取得失敗」,於是西甲賽後管線每天照跑、每天回報成功,
+   實際上是方案不含這個賽季 —— 讀者看到的卻是「尚待 API 永久快取」,
+   讀起來像快來了,但它永遠不會來。分得出「暫時失敗」與「這個方案就是拿不到」
+   才有辦法在畫面上講實話。 */
+async function call(path, { env = process.env, budget, fetchImpl = fetch, retries = 2, report = null } = {}) {
   if (!enabled(env)) return null;
   if (budget && budget.left() <= 0) {
     console.warn(`  ⚠ API-Football 今日額度用完(${DAILY_BUDGET}),略過`);
@@ -107,6 +114,11 @@ async function call(path, { env = process.env, budget, fetchImpl = fetch, retrie
       // API-Football 即使 HTTP 200 也可能在 errors 裡回錯誤
       if (j.errors && Object.keys(j.errors).length) {
         console.warn(`  ⚠ API-Football 回報錯誤:${JSON.stringify(j.errors).slice(0, 120)}`);
+        if (report) {
+          // plan / requests 是「重試也沒用」的那種;其他的當暫時性失敗
+          const kind = j.errors.plan ? 'plan' : j.errors.requests ? 'quota' : 'other';
+          report.error = { kind, message: String(j.errors.plan ?? j.errors.requests ?? JSON.stringify(j.errors)).slice(0, 300) };
+        }
         return null;
       }
       return j.response ?? null;
@@ -378,9 +390,26 @@ export async function fetchCompletedMatchDetails({
 
   const budget = await new Budget(root).load();
   const budgetBefore = budget.left();
+  const report = {};
   const fixtures = await call(`/fixtures?league=${leagueId}&season=${apiSeason(season)}&status=FT-AET-PEN`,
-    { env, budget, fetchImpl });
-  if (!Array.isArray(fixtures)) return { enabled: true, fetched: 0, cached: 0, error: '完賽清單取得失敗', budgetLeft: budget.left() };
+    { env, budget, fetchImpl, report });
+  if (!Array.isArray(fixtures)) {
+    /* 方案不含這個賽季的話,重試一萬次也一樣。把原因寫進存檔並落盤 ——
+       落盤這一步很重要:原本這裡直接 return,存檔從來沒被建立過,
+       build 因此看不到任何線索,只能顯示「尚待抓取」。 */
+    if (report.error?.kind === 'plan') {
+      store.blocked = { reason: 'plan', message: report.error.message, at: new Date().toISOString(), leagueId, season };
+      store.updatedAt = new Date().toISOString();
+      await writePostMatchStore(root, store, storage);
+    }
+    return {
+      enabled: true, fetched: 0, cached: Object.keys(store.matches).length,
+      error: report.error?.kind === 'plan' ? '這個 API 方案不含此賽季' : '完賽清單取得失敗',
+      blocked: store.blocked ?? null, budgetLeft: budget.left(),
+    };
+  }
+  // 拿得到清單就代表沒被方案擋住了;把舊的封鎖紀錄清掉,升級方案後會自己復原
+  delete store.blocked;
 
   const wanted = new Set(pendingRequested ?? []);
   const candidates = fixtures.map(row => {
@@ -427,7 +456,7 @@ export async function fetchCompletedMatchDetails({
   store.updatedAt = new Date().toISOString();
   await writePostMatchStore(root, store, storage);
   return {
-    enabled: true, fetched,
+    enabled: true, fetched, blocked: null,
     cached: requested?.filter(k => store.matches[k]).length ?? Object.keys(store.matches).length,
     missing: attemptedKeys.size - fetched, budgetLeft: budget.left(), requestsUsed: budgetBefore - budget.left(),
     file: postMatchPath(root, storage),

@@ -302,7 +302,13 @@ async function main() {
     if (report) reports[`${CURRENT_SEASON}|${pair}`] = report;
   }
   const reportCount = Object.keys(reports).length;
-  console.log(`  API-Football 西甲賽後永久快取：${reportCount}/${curPlayed.length} 場可發布`);
+  /* 抓取端如果撞到「這個方案不含此賽季」,會把原因寫進存檔的 blocked。
+     有 blocked 就代表這不是「還沒抓到」而是「拿不到」—— 畫面上要說的是後者。
+     方案升級之後抓取端會自己把 blocked 清掉,這裡不必記得改。 */
+  const blocked = postMatchStore.blocked ?? null;
+  console.log(blocked
+    ? `  ⚠ API-Football 西甲賽後資料拿不到:${blocked.message}`
+    : `  API-Football 西甲賽後永久快取：${reportCount}/${curPlayed.length} 場可發布`);
 
   const formIndex = buildFormIndex(trainMatches);
   const teamForm = {};
@@ -404,7 +410,10 @@ async function main() {
   await write('reports', {
     seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,
     source: 'api-football', pending: Math.max(0, curPlayed.length - reportCount),
-    note: '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；開頁不呼叫 API。',
+    blocked,
+    note: blocked
+      ? '目前使用的 API-Football 方案不含本賽季，因此這不是「還沒抓到」而是拿不到。換成涵蓋本賽季的方案後會自動恢復。'
+      : '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；開頁不呼叫 API。',
   });
   await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 } });
   // analysis.html 共用同一組載入契約。西甲沒有這些模組時寫出明確空資料，避免 404。

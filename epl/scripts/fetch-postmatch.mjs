@@ -54,6 +54,13 @@ async function main() {
     console.log(`  設定環境變數後再執行：API_FOOTBALL_KEY=你的金鑰 npm run ${isLaLiga ? 'laliga:postmatch' : 'postmatch'}`);
     return;
   }
+  if (result.blocked) {
+    // 「重試也沒用」要講清楚,不然排程會每天照跑、每天看起來成功
+    console.log(`  ✗ 這個 API 方案拿不到 ${season}:${result.blocked.message}`);
+    console.log('    原因已寫進賽後存檔,build 會據實顯示,不會再寫成「尚待抓取」。');
+    console.log('    要改變只有一條路:換一個涵蓋此賽季的方案。');
+    return;
+  }
   if (result.error) console.log(`  ⚠ ${result.error}`);
   console.log(`  新抓 ${result.fetched ?? 0} 場・永久快取共 ${result.cached ?? 0} 場`
     + (result.missing ? `・待補 ${result.missing} 場` : '')
