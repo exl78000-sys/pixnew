@@ -35,6 +35,13 @@ export function officialLineups(root) {
       // rows 是官方的每一排有誰,別漏掉 —— 少了它陣容圖只能退回 FPL 粗類分排
       home: { formation: m.home.formation, rows: m.home.rows ?? null, xi: m.home.xi, subs: m.home.subs },
       away: { formation: m.away.formation, rows: m.away.rows ?? null, xi: m.away.xi, subs: m.away.subs },
+      /* 進球事件。fetch-official 已經用「比分變了就是進球」抓出來,所以不看型別、
+         烏龍球也在裡面。這裡不丟掉 teamId 以外的任何欄位 —— 得分方一律看 side,
+         那是由比分差算出來的,teamId 的語意實測不明確,不要拿它判隊。 */
+      goals: (m.goals ?? []).map(g => ({
+        side: g.side, min: g.min, label: g.label, phase: g.phase,
+        kind: g.kind, person: g.person, assist: g.assist, hs: g.hs, as: g.as,
+      })),
     };
   }
   return { asOf: s.fetchedAt, season: s.season?.label ?? null, matches: out };
@@ -155,8 +162,45 @@ export function attachCodes(lineups, players) {
       const withCodes = { ...s, xi: fix(code, s.xi), subs: fix(code, s.subs) };
       return { ...withCodes, rows: resolveRows(withCodes) };
     };
-    out[key] = { ...m, home: side(home, m.home), away: side(away, m.away) };
+    const H = side(home, m.home), A = side(away, m.away);
+    out[key] = { ...m, home: H, away: A, goals: namedGoals(m.goals, H, A, home, away) };
   }
   return { ...lineups, matches: out,
     matchStats: { matched, missed, missedNames: missedNames.slice(0, 20), rowsOk, rowsFail } };
+}
+
+/* 進球事件裡的 personId 換成看得懂的名字與我們的球員 code。
+
+   查表要**跨兩隊一起查**:烏龍球的踢球者在失球那一隊的名單裡,
+   只查得分方會查成 null。得分方由 side 決定(比分差算出來的),
+   踢球者屬於哪一隊則另外標,兩件事不要混在一起。
+
+   kind 是官方 event 的 description 子代碼。目前只認三種:
+   G 一般、P 十二碼、O 烏龍球 —— O 已用名單核對過(踢進的人在對方名單裡)。
+   沒見過的代碼一律留 null,不要憑空補一個對照。 */
+const GOAL_KIND = { G: null, P: 'penalty', O: 'own' };
+
+export function namedGoals(goals, H, A, homeCode, awayCode) {
+  if (!Array.isArray(goals) || !goals.length) return [];
+  const who = new Map();
+  for (const [code, s] of [[homeCode, H], [awayCode, A]]) {
+    for (const p of [...(s.xi ?? []), ...(s.subs ?? [])]) {
+      if (p.id != null) who.set(p.id, { name: p.name, code: p.code ?? null, team: code });
+    }
+  }
+  return goals.map(g => {
+    const scorer = g.person != null ? who.get(g.person) ?? null : null;
+    const assist = g.assist != null ? who.get(g.assist) ?? null : null;
+    const forCode = g.side === 'H' ? homeCode : awayCode;
+    return {
+      min: g.min, label: g.label, phase: g.phase ?? null,
+      team: forCode,                                   // 這球算給誰
+      kind: GOAL_KIND[g.kind] ?? null,                 // 認得的才給,其餘 null
+      kindRaw: g.kind ?? null,                         // 留原碼,將來要再分類時有跡可循
+      scorer: scorer?.name ?? null, scorerCode: scorer?.code ?? null,
+      scorerTeam: scorer?.team ?? null,                // 烏龍球時會等於失球那一隊
+      assist: assist?.name ?? null, assistCode: assist?.code ?? null,
+      hs: g.hs, as: g.as,
+    };
+  });
 }

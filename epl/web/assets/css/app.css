@@ -399,6 +399,20 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
   .player-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-left: 0; }
 }
 
+/* 進球時間軸。第四欄是累積比分 —— 讀者是照著比分在追這場比賽怎麼走的,
+   少了它就只剩一串名字。等寬數字讓比分那一欄自己對齊,不必再排格線。 */
+.goal-lines { display: grid; }
+.goal-line {
+  display: grid; grid-template-columns: 54px 22px minmax(0, 1fr) auto; gap: 9px;
+  align-items: baseline; padding: 9px 0; border-bottom: 1px dashed var(--line-soft); font-size: 13px;
+}
+.goal-line:last-child { border-bottom: none; }
+.goal-line .gl-min { font-family: var(--mono); text-align: right; color: var(--accent); }
+.goal-line.away .gl-min { color: var(--accent-3); }
+.goal-line .gl-icon { text-align: center; }
+.goal-line .gl-score { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.goal-line small { display: block; color: var(--ink-3); margin-top: 3px; }
+
 .note {
   border-left: 3px solid var(--draw); background: #ffb0200f; padding: 9px 13px;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12.5px; color: var(--ink-2);

@@ -3,7 +3,7 @@
 // 用來驗證預測引擎沒有偷看未來,而且真的比亂猜好。
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 import { loadTeams } from './lib/teams.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
 import { COMPETITION } from './lib/sources.mjs';
@@ -454,6 +454,9 @@ async function main() {
   console.log('\n▶ 官方進球事件解析自我檢查');
   const goalFail = checkGoalEvents();
 
+  console.log('\n▶ 進球子類型自我檢查');
+  const kindFail = await checkGoalKinds();
+
   console.log('\n▶ 逐場進球明細自我檢查');
   const detailFail = checkGoalDetails(T);
 
@@ -462,7 +465,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || detailFail || situationFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail) process.exitCode = 1;
 }
 
 function checkGoalSituations() {
@@ -590,6 +593,66 @@ function checkGoalEvents() {
     ['沒有比分的事件不會被誤判成進球',
       goalsOf([{ type: 'G', personId: 1 }]).length === 0, ''],
   ];
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* 進球子類型:一般 / 十二碼 / 烏龍球。
+
+   接手文件曾經寫「description 還沒集滿,不要猜一個對照表寫死」。現在集到三種了
+   —— G 一般、P 十二碼、O 烏龍球,O 是拿名單核對的(踢進的人在對方名單裡)——
+   所以開始顯示。但界線要守住:**沒見過的代碼一律 null**,不能因為
+   「看起來應該是某某」就補一個進去,那就變成編數據了。
+
+   烏龍球另外有一個容易寫反的地方:球算給得分方(team),
+   踢進去的人卻在失球那一隊的名單裡。查名字要跨兩隊一起查,
+   只查得分方會查成「不詳」。 */
+async function checkGoalKinds() {
+  const { namedGoals } = await import('../scripts/lib/adapters/pulselive.mjs');
+  const H = { xi: [{ id: 1, name: '主隊射手', code: 'h1' }, { id: 2, name: '主隊助攻', code: 'h2' }], subs: [] };
+  const A = { xi: [{ id: 9, name: '客隊自擺烏龍', code: 'a9' }], subs: [{ id: 8, name: '客隊替補', code: null }] };
+  const raw = [
+    { side: 'H', person: 1, assist: 2, min: 10, label: "10'00", kind: 'G', hs: 1, as: 0 },
+    { side: 'H', person: 9, assist: null, min: 20, label: "20'00", kind: 'O', hs: 2, as: 0 },
+    { side: 'A', person: 8, assist: null, min: 30, label: "30'00", kind: 'P', hs: 2, as: 1 },
+    { side: 'A', person: 8, assist: null, min: 40, label: "40'00", kind: 'ZZ', hs: 2, as: 2 },
+  ];
+  const g = namedGoals(raw, H, A, 'HOM', 'AWY');
+  const [normal, own, pen, unknown] = g;
+
+  const cases = [
+    ['一般進球不給子類型標籤', normal.kind === null, String(normal.kind)],
+    ['P 認成十二碼', pen.kind === 'penalty', String(pen.kind)],
+    ['O 認成烏龍球', own.kind === 'own', String(own.kind)],
+    ['沒見過的代碼一律 null,不憑空補分類', unknown.kind === null, String(unknown.kind)],
+    ['沒見過的代碼仍留下原碼,將來要再分類查得到', unknown.kindRaw === 'ZZ', String(unknown.kindRaw)],
+    ['烏龍球算給得分的那一隊', own.team === 'HOM', String(own.team)],
+    ['烏龍球標得出踢進去的人是哪一隊的', own.scorerTeam === 'AWY', String(own.scorerTeam)],
+    ['烏龍球的射手查得到名字(要跨兩隊查,只查得分方會變不詳)',
+      own.scorer === '客隊自擺烏龍', String(own.scorer)],
+    ['助攻跟著那一顆球', normal.assist === '主隊助攻' && normal.assistCode === 'h2', JSON.stringify(normal)],
+    ['沒有助攻時是 null', pen.assist === null, String(pen.assist)],
+    ['對不上我方球員庫時仍給名字,code 是 null,不編一個 code',
+      pen.scorer === '客隊替補' && pen.scorerCode === null, JSON.stringify(pen)],
+    ['沒有進球事件時回空陣列,不是 null', namedGoals([], H, A, 'HOM', 'AWY').length === 0, ''],
+  ];
+
+  // 真實資料也要照同一套規則:目前見過的代碼只有 G/P/O,多出來的一定要先核對過再放行
+  const store = join(ROOT, 'web', 'data', 'official.json');
+  if (existsSync(store)) {
+    const live = Object.values(JSON.parse(readFileSync(store, 'utf8')).matches ?? {})
+      .flatMap(m => m.goals ?? []);
+    const seen = [...new Set(live.map(x => x.kindRaw))].filter(Boolean).sort();
+    cases.push(
+      ['正式資料裡沒有沒核對過的子代碼', seen.every(k => ['G', 'P', 'O'].includes(k)), seen.join()],
+      ['正式資料每一顆進球都查得到射手', live.every(x => x.scorer), `${live.filter(x => !x.scorer).length} 顆查不到`],
+    );
+  }
+
   let fail = 0;
   for (const [name, pass, detail] of cases) {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);

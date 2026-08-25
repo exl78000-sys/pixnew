@@ -219,6 +219,7 @@ try {
     </section>
 
     ${f.played ? `<section class="analysis-panel post-report-grid" id="panel-post" role="tabpanel">
+      ${goalsCard(f)}
       ${expertOpinionSection(f, expertRows)}
       ${articleCard(postArt, '賽後結論', 'post')}
       ${postReport ? C.matchReportCards(C.reportWithPlayerPhotos(postReport, playerByCode))
@@ -281,6 +282,15 @@ try {
         <div class="tiny dim" style="margin-top:10px">本機開頁不會呼叫 API；資料由 <span class="mono">npm run laliga:postmatch</span> 或 GitHub 定時流程寫入。</div></div>`}
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
+  }
+
+  /* 官方進球事件。有名單就一定有這批事件 —— 兩者來自同一個請求,
+     所以這一段不需要任何額外抓取。沒有就不畫,不留空卡片。 */
+  function goalsCard(f) {
+    const goals = official?.matches?.[`${f.home}|${f.away}`]?.goals ?? [];
+    if (!goals.length) return '';
+    return `<div class="section"><h2>進球時間軸</h2><span class="hint">英超官方比賽事件</span></div>
+      <div class="card">${C.goalTimeline(goals, { home: f.home, away: f.away })}</div>`;
   }
 
   function articleCard(art, fallbackTitle, phase = 'pre') {

@@ -42,6 +42,10 @@ export class LeagueGap extends Error {
 export async function load(...names) {
   const out = {};
   const lg = league();
+  const page = currentPage();
+  // 聯賽沒開放這一頁的話,連請求都不用發 —— 否則瀏覽器 console 會留下
+  // 一串我們自己預期中的 404,看起來像出了事。
+  if (closedPage(lg, page)) throw new LeagueGap(lg, page, ESSENTIAL[page] ?? []);
   const absent = [];
   await Promise.all(names.map(async n => {
     // 單檔打包版的資料直接內嵌在頁面裡,不用發請求。
@@ -65,7 +69,7 @@ export async function load(...names) {
     if (v === ABSENT) absent.push(n); else out[n] = v;
   }));
 
-  const gap = dataGap(lg, currentPage(), names, out, absent);
+  const gap = dataGap(lg, page, names, out, absent);
   if (gap) throw gap;
   if (absent.length) throw new Error(`讀取 ${absent.join('、')} 失敗(404)`);
   return out;
@@ -78,12 +82,15 @@ export async function load(...names) {
      closed —— 聯賽的 open 沒掛這一頁(只看導覽列上的主頁面;
                單場分析是從賽程表點進去的,西甲做得出來,不能一起擋)
      hollow —— 保險。宣告開放了、ESSENTIAL 的資料卻缺檔或是空的。 */
-export function dataGap(lg, page, names, data, absent = []) {
+export function closedPage(lg, page) {
   const open = LEAGUES[lg]?.open;
-  const closed = Boolean(open) && PAGES.some(([p]) => p === page) && !open.includes(page);
+  return Boolean(open) && PAGES.some(([p]) => p === page) && !open.includes(page);
+}
+
+export function dataGap(lg, page, names, data, absent = []) {
   const need = ESSENTIAL[page] ?? [];
   const hollow = need.some(n => names.includes(n) && (absent.includes(n) || isEmpty(data[n])));
-  return closed || hollow ? new LeagueGap(lg, page, need) : null;
+  return closedPage(lg, page) || hollow ? new LeagueGap(lg, page, need) : null;
 }
 
 /* ── 路由 ───────────────────────────── */
@@ -942,6 +949,46 @@ const DATASET_ZH = {
   news: '球隊動態',
   form: '走查回測結果',
 };
+
+/* ── 官方進球時間軸 ─────────────────── */
+/* 進球子類型只認三種:一般、十二碼(P)、烏龍球(O)。
+   這是實際在官方 event 的 description 裡見過、而且核對過的全部 ——
+   O 是拿名單核對的(踢進的人在對方名單裡)。沒見過的代碼一律不給標籤,
+   寧可少講一句,也不要編一個看起來很合理的分類出來。
+
+   烏龍球的顯示要特別小心:球算給得分方(team),踢進去的人卻在失球那一隊
+   (scorerTeam)。兩邊都標出來,不然讀者會以為我們把人記到錯的隊上。 */
+const GOAL_TAG = { penalty: ['十二碼', 'info'], own: ['烏龍球', 'bad'] };
+
+export function goalTimeline(goals, { home, away } = {}) {
+  const list = (goals ?? []).filter(g => g && g.min != null)
+    .slice().sort((a, b) => a.min - b.min || (a.hs + a.as) - (b.hs + b.as));
+  if (!list.length) return '';
+  return `<div class="goal-lines">${list.map(g => {
+    const tag = GOAL_TAG[g.kind];
+    const own = g.kind === 'own';
+    const scorer = g.scorerCode
+      ? `<button class="player-name-btn" type="button" data-player-code="${esc(g.scorerCode)}"
+           aria-label="查看 ${esc(g.scorer ?? '')} 球員資料">${esc(g.scorer ?? '')}</button>`
+      : esc(g.scorer ?? '不詳');
+    const assist = g.assistCode
+      ? `<button class="player-name-btn" type="button" data-player-code="${esc(g.assistCode)}"
+           aria-label="查看 ${esc(g.assist ?? '')} 球員資料">${esc(g.assist ?? '')}</button>`
+      : g.assist ? esc(g.assist) : '';
+    return `<div class="goal-line ${g.team === away ? 'away' : ''}">
+      <b class="gl-min">${esc(g.label ? g.label.replace(/'\d+$/, "'") : `${g.min}'`)}</b>
+      <span class="gl-icon">⚽</span>
+      <span>${badge(g.team)} <b>${esc(name(g.team))}</b>・${scorer}
+        ${tag ? `<span class="pill ${tag[1]} tiny">${tag[0]}</span>` : ''}
+        ${own && g.scorerTeam ? `<small>${esc(name(g.scorerTeam))} 的球員踢進自家球門,這球算給 ${esc(name(g.team))}</small>` : ''}
+        ${assist ? `<small>助攻 ${assist}</small>` : ''}</span>
+      <b class="gl-score mono">${g.hs}<span class="dim">:</span>${g.as}</b>
+    </div>`;
+  }).join('')}</div>
+  <div class="tiny dim" style="margin-top:10px">來自英超官方比賽事件,與同一批請求一起取得,沒有額外抓取。
+    進球判定看比分變化而不是事件型別 —— 烏龍球在官方資料裡不是進球事件,只認型別會漏掉。
+    子類型目前只分得出十二碼與烏龍球,官方沒有再細的分類就不硬分。</div>`;
+}
 
 export function fail(err) {
   if (err instanceof LeagueGap) return gapScreen(err);
