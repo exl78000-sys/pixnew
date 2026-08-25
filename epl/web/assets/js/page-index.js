@@ -71,8 +71,8 @@ try {
     <div class="card">
       <h2>接下來的比賽</h2>
       <div id="next"></div>
-      <div style="margin-top:10px"><a href="${C.link('analysis')}">所有賽前分析 →</a>
-        ・<a href="${C.link('live')}">實時戰況</a>・<a href="${C.link('fixtures')}">完整賽程</a></div>
+      <div style="margin-top:10px"><a href="${C.link('fixtures')}">完整賽程與預測 →</a>
+        ・<a href="${C.link('live')}">實時戰況</a></div>
     </div>
     <div class="card">
       <h2>最新動態</h2>
