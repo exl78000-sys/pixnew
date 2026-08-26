@@ -21,6 +21,7 @@ const DAILY_LIMIT = Math.max(1, Number(process.env.API_FOOTBALL_PHOTO_DAILY_LIMI
 const LIMIT = Math.max(1, Number(process.argv.find(x => x.startsWith('--limit='))?.split('=')[1] ?? DAILY_LIMIT));
 const DELAY = Math.max(1000, Number(process.env.API_FOOTBALL_PHOTO_DELAY ?? 1200));
 const RETRY_FAILED = process.argv.includes('--retry-failed');
+const ATTEMPT_KEY = `${SEASON}:direct-url-v2`;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const sha = buf => createHash('sha256').update(buf).digest('hex');
 const normalise = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
@@ -45,8 +46,9 @@ sys.stdout.buffer.write(out.getvalue())
 
 function toJpeg(raw) {
   const run = spawnSync('python3', ['-c', PYTHON], { input: raw, encoding: null, maxBuffer: 5 * 1024 * 1024 });
-  if (run.error) throw run.error;
-  if (run.status !== 0) throw new Error(`Pillow 處理失敗: ${run.stderr.toString().trim()}`);
+  // GitHub runner 不一定預裝 Pillow；圖片已由 API 驗證過時，退回保存公開
+  // media URL，前端仍能顯示，不讓轉檔工具缺少阻斷整批補圖。
+  if (run.error || run.status !== 0) return null;
   return Buffer.from(run.stdout);
 }
 
@@ -97,7 +99,7 @@ function pickCandidate(rows, target, T) {
   if (!best) return null;
   const exactFull = best.rank.full && best.rank.full === normalise(target.fullName);
   // 有隊伍資訊必須同隊；沒有隊伍資訊只接受完整姓名精確相同。
-  if (best.rank.teams.length ? !best.rank.sameTeam : !exactFull) return null;
+  if (best.rank.teams.length ? (!best.rank.sameTeam && !exactFull) : !exactFull) return null;
   return best.row;
 }
 
@@ -125,7 +127,7 @@ async function main() {
   const remaining = Math.max(0, Math.min(LIMIT, DAILY_LIMIT - usedToday));
   if (!remaining) { console.log(`✔ 今日 API 頭貼額度已用 ${usedToday}/${DAILY_LIMIT}，下次再補。`); return; }
   const missing = manifest.players.filter(p => !store.photos[p.code]
-    && (RETRY_FAILED || !store._apiPhotoAttempts[p.code]?.[String(SEASON)])).slice(0, remaining);
+    && (RETRY_FAILED || !store._apiPhotoAttempts[p.code]?.[ATTEMPT_KEY])).slice(0, remaining);
   if (!missing.length) { console.log(`✔ 沒有可用 API 頭貼待補（仍缺 ${manifest.players.filter(p => !store.photos[p.code]).length} 人）。`); return; }
   const hashes = new Set(Object.values(store.photos).map(uri => uri.includes(',') ? sha(Buffer.from(uri.split(',')[1], 'base64')) : null).filter(Boolean));
   const record = { source: 'api-football', season: SEASON, attempted: 0, got: 0, date: today };
@@ -138,16 +140,20 @@ async function main() {
       const candidate = pickCandidate(await apiSearch(target.name || target.fullName), target, T);
       if (!candidate) throw new Error('沒有通過姓名／隊伍核對的候選人');
       const jpeg = toJpeg(await fetchImage(candidate.player.photo));
-      const digest = sha(jpeg);
-      if (hashes.has(digest)) throw new Error('重複圖');
-      hashes.add(digest);
-      store.photos[target.code] = `data:image/jpeg;base64,${jpeg.toString('base64')}`;
+      if (jpeg) {
+        const digest = sha(jpeg);
+        if (hashes.has(digest)) throw new Error('重複圖');
+        hashes.add(digest);
+        store.photos[target.code] = `data:image/jpeg;base64,${jpeg.toString('base64')}`;
+      } else {
+        store.photos[target.code] = candidate.player.photo;
+      }
       delete store._apiPhotoAttempts[target.code];
       record.got++;
       console.log(`✔ ${candidate.player.name}`);
     } catch (error) {
       store._apiPhotoAttempts[target.code] ??= {};
-      store._apiPhotoAttempts[target.code][String(SEASON)] = String(error.message).slice(0, 180);
+      store._apiPhotoAttempts[target.code][ATTEMPT_KEY] = String(error.message).slice(0, 180);
       console.log(`略過（${String(error.message).slice(0, 100)}）`);
     }
     store._apiPhotoBudget = { date: today, season: SEASON, used };
