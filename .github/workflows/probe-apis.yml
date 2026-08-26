@@ -63,4 +63,8 @@ jobs:
         working-directory: epl
         run: npm run probe:sportmonks
         env:
+          # 幾種常見命名都接受 —— secret 名字取不一樣就整支空跑,
+          # 而那會看起來像「金鑰無效」,浪費一輪往返
           SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}

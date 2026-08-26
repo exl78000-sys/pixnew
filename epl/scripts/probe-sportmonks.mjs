@@ -23,7 +23,7 @@
 //      → 這是「增加資訊」的實際內容
 //
 // 請求上限硬寫死。探測不該把別人的額度燒掉,而且使用者明確要求過不要大量抓取。
-const TOKEN = process.env.SPORTMONKS_TOKEN || process.env.SPORTMONKS_KEY;
+const TOKEN = process.env.SPORTMONKS_TOKEN || process.env.SPORTMONKS_KEY || process.env.SPORTMONKS_API_KEY;
 const BASE = 'https://api.sportmonks.com/v3';
 const MAX_REQUESTS = 12;
 const DELAY = 400;
