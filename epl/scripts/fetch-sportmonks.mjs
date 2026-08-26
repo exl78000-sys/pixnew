@@ -296,6 +296,10 @@ async function syncCurrentMatches(T, seasonStore, season) {
   let detailRejected = 0;
   let detailFailed = 0;
   const detailFailureReasons = {};
+  const previousBlockUntil = Date.parse(previous?.blocked?.until ?? '');
+  const detailBlocked = previous?.blocked?.status === 403
+    && Number.isFinite(previousBlockUntil) && previousBlockUntil > Date.now();
+  if (detailBlocked) console.log(`  · SportMonks 賽後詳情暫停至 ${previous.blocked.until}（HTTP 403，避免重複消耗額度）`);
   const dateDistance = (a, b) => {
     const left = Date.parse(`${a}T00:00:00Z`), right = Date.parse(`${b}T00:00:00Z`);
     return Number.isFinite(left) && Number.isFinite(right) ? Math.abs(left - right) / 86400000 : Infinity;
@@ -322,7 +326,7 @@ async function syncCurrentMatches(T, seasonStore, season) {
   }
   console.log(`▶ SportMonks ${CONFIG.key === 'pl' ? '英超' : '西甲'}賽後詳情：${season.label} 已完賽 ${played.length} 場・待補 ${candidates.length} 場・本次最多 ${MAX_DETAILS} 場`);
   let fetched = 0;
-  for (const { sf, localMatch, key } of candidates.slice(0, MAX_DETAILS)) {
+  for (const { sf, localMatch, key } of (detailBlocked ? [] : candidates.slice(0, MAX_DETAILS))) {
     detailAttempts++;
     try {
       // 使用 Fixture 端點文件列出的關聯；sidelined.sideline 在部分方案會被
@@ -344,6 +348,10 @@ async function syncCurrentMatches(T, seasonStore, season) {
       console.log(`  ⚠ ${key} 失敗：${error.message}`);
     }
   }
+  const blocked = detailBlocked ? previous.blocked
+    : (fetched === 0 && detailFailureReasons['403']
+      ? { status: 403, reason: 'fixture-detail-forbidden', until: new Date(Date.now() + 86400000).toISOString() }
+      : null);
   const out = {
     season: season.label, providerSeason: season.id, source: 'SportMonks',
     sourceUrl: 'https://api.sportmonks.com/v3/football/fixtures/{fixture_id}',
@@ -355,7 +363,9 @@ async function syncCurrentMatches(T, seasonStore, season) {
       localDateRange: played.length ? [played[0].date, played.at(-1).date] : [],
       providerSamples,
       detailAttempts, detailRejected, detailFailed, detailFailureReasons,
+      detailSkippedByBlock: detailBlocked ? candidates.length : 0,
     },
+    ...(blocked ? { blocked } : {}),
     note: '與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。',
   };
   await writeFile(file, JSON.stringify(out, null, 2) + '\n');
