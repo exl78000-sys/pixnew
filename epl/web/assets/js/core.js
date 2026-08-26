@@ -551,6 +551,49 @@ export function reportWithPlayerPhotos(m, players) {
       : p.providerId != null ? byCode.get(String(p.providerId)) : null;
     return { ...p, code: p.code ?? full?.code ?? null, photo: p.photo ?? full?.photo ?? null };
   };
+  // 防線：即使使用者的 reports.json 仍是修正前的快取，也不准把一隊失球數
+  // 複製成每位球員的 ⚽。事件兩隊合計能對回終場比分時，事件是唯一的射手來源；
+  // 事件不完整則只接受「球員進球加總 = 最終比分」的舊統計，否則全數隱藏。
+  const identity = p => p?.providerId != null || p?.playerId != null
+    ? `id:${p.providerId ?? p.playerId}`
+    : `name:${String(p?.name ?? p?.player ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()}`;
+  const scores = { [m.home]: Number(m.hs), [m.away]: Number(m.as) };
+  const eventCount = { [m.home]: 0, [m.away]: 0 };
+  const scorers = new Map(), assisters = new Map();
+  for (const event of m.advanced?.events ?? []) {
+    if (event?.type !== 'Goal' || !(event.team in eventCount)) continue;
+    eventCount[event.team]++;
+    const scorer = identity({ providerId: event.playerId, name: event.player });
+    if (scorer && !scorer.endsWith(':')) scorers.set(scorer, (scorers.get(scorer) ?? 0) + 1);
+    if (event.assistId != null || event.assist) {
+      const assister = identity({ providerId: event.assistId, name: event.assist });
+      if (assister && !assister.endsWith(':')) assisters.set(assister, (assisters.get(assister) ?? 0) + 1);
+    }
+  }
+  const verifiedEvents = eventCount[m.home] === scores[m.home] && eventCount[m.away] === scores[m.away];
+  const reconcileSide = (code, source) => {
+    const used = [...(source.xi ?? []), ...(source.bench ?? [])];
+    const legacyTotal = used.reduce((total, player) => total + Number(player.goals ?? 0), 0);
+    const legacyIsCoherent = legacyTotal === scores[code];
+    const reconcilePlayer = player => {
+      const key = identity(player);
+      const goals = verifiedEvents ? (scorers.get(key) ?? 0) : (legacyIsCoherent ? Number(player.goals ?? 0) : 0);
+      const assists = verifiedEvents ? (assisters.get(key) ?? 0) : Number(player.assists ?? 0);
+      return { ...player, goals, assists };
+    };
+    const xi = (source.xi ?? []).map(reconcilePlayer);
+    const bench = (source.bench ?? []).map(reconcilePlayer);
+    const byId = new Map([...xi, ...bench].filter(p => p.providerId != null).map(p => [String(p.providerId), p]));
+    return {
+      ...source, xi, bench,
+      rows: source.rows?.map(row => row.map(p => byId.get(String(p.providerId)) ?? reconcilePlayer(p))) ?? null,
+      goals: [...xi, ...bench].reduce((total, player) => total + player.goals, 0),
+      assists: [...xi, ...bench].reduce((total, player) => total + player.assists, 0),
+      scorers: [...xi, ...bench].filter(p => p.goals).map(p => ({ name: p.name, goals: p.goals })),
+      assisters: [...xi, ...bench].filter(p => p.assists).map(p => ({ name: p.name, assists: p.assists })),
+    };
+  };
+  const safeSides = Object.fromEntries(Object.entries(m.sides).map(([code, source]) => [code, reconcileSide(code, source)]));
   const side = s => ({
     ...s,
     xi: (s.xi ?? []).map(decorate),
@@ -560,7 +603,7 @@ export function reportWithPlayerPhotos(m, players) {
   // 賽後陣容卡的 `sides` 是已對過終場比分／事件的發布層；細項表原始
   // `advanced.players` 可能來自較舊的供應商快取。用發布層覆寫位置、進球、
   // 助攻，避免同一位球員在球場圖正確、評分表卻又顯示成門將或 3 球。
-  const publishedPlayer = new Map(Object.values(m.sides).flatMap(side => [
+  const publishedPlayer = new Map(Object.values(safeSides).flatMap(side => [
     ...(side.xi ?? []), ...(side.bench ?? []),
   ]).filter(p => p?.providerId != null).map(p => [String(p.providerId), p]));
   const advanced = m.advanced ? {
@@ -580,7 +623,7 @@ export function reportWithPlayerPhotos(m, players) {
   } : null;
   return {
     ...m,
-    sides: Object.fromEntries(Object.entries(m.sides).map(([code, s]) => [code, side(s)])),
+    sides: Object.fromEntries(Object.entries(safeSides).map(([code, s]) => [code, side(s)])),
     ...(advanced ? { advanced } : {}),
   };
 }
