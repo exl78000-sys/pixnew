@@ -180,6 +180,9 @@ export function coverage(players) {
 const valueOf = row => row?.data?.value ?? row?.value ?? null;
 const textOf = row => String(row?.type?.code ?? row?.type?.developer_name ?? row?.type?.name ?? '').toLowerCase();
 const teamIdOf = (row, teamCodeById) => teamCodeById?.get(String(row?.team_id ?? row?.participant_id)) ?? null;
+const relatedRows = value => Array.isArray(value) ? value
+  : Array.isArray(value?.data) ? value.data
+    : Array.isArray(value?.data?.data) ? value.data.data : [];
 
 const playerPosition = id => {
   const n = Number(id);
@@ -241,14 +244,14 @@ function formationOf(raw, teamId) {
 // 僅在資料確實存在時宣告 coverage，缺欄位就讓前端保持「未取得」而非補零。
 export function normaliseSportmonksMatch(raw, { codeOf, fixture = null, teamCodeById = new Map(), season = null } = {}) {
   if (!raw || typeof codeOf !== 'function') return null;
-  const participants = Array.isArray(raw.participants) ? raw.participants : [];
+  const participants = relatedRows(raw.participants);
   const sideFor = location => participants.find(p => p.meta?.location === location || p.location === location);
   const homeParticipant = sideFor('home'), awayParticipant = sideFor('away');
   const home = codeOf(homeParticipant?.name) ?? fixture?.home ?? teamIdOf(homeParticipant, teamCodeById);
   const away = codeOf(awayParticipant?.name) ?? fixture?.away ?? teamIdOf(awayParticipant, teamCodeById);
   if (!home || !away) return null;
   const byTeam = new Map();
-  for (const row of raw.lineups ?? []) {
+  for (const row of relatedRows(raw.lineups)) {
     const code = teamIdOf(row, teamCodeById) ?? (String(row.team_id) === String(homeParticipant?.id) ? home : String(row.team_id) === String(awayParticipant?.id) ? away : null);
     if (code) {
       if (!byTeam.has(code)) byTeam.set(code, []);
@@ -275,7 +278,7 @@ export function normaliseSportmonksMatch(raw, { codeOf, fixture = null, teamCode
 
   const teamStats = {};
   for (const code of [home, away]) {
-    const rows = (raw.statistics ?? []).filter(x => teamIdOf(x, teamCodeById) === code || (x.location === 'home' && code === home) || (x.location === 'away' && code === away));
+    const rows = relatedRows(raw.statistics).filter(x => teamIdOf(x, teamCodeById) === code || (x.location === 'home' && code === home) || (x.location === 'away' && code === away));
     const out = { possession: null, shots: null, shotsOn: null, shotsOff: null, blockedShots: null, corners: null, offsides: null, fouls: null, saves: null, passes: null, passesAccurate: null, passAccuracy: null, xG: null };
     const put = (keys, field) => { const n = statValue(rows, ...keys); if (n !== null) out[field] = n; };
     put(['ball-possession', 'ball_possession', 'possession'], 'possession'); put(['shots-total', 'shots_total'], 'shots');
@@ -285,7 +288,7 @@ export function normaliseSportmonksMatch(raw, { codeOf, fixture = null, teamCode
     put(['pass-accuracy', 'pass_accuracy'], 'passAccuracy'); put(['expected-goals', 'expected_goals', 'xg'], 'xG');
     teamStats[code] = out;
   }
-  const events = (raw.events ?? []).map(e => {
+  const events = relatedRows(raw.events).map(e => {
     const code = teamIdOf(e, teamCodeById) ?? (e.location === 'home' ? home : e.location === 'away' ? away : null);
     const type = String(e.type?.code ?? e.type?.name ?? '').toLowerCase();
     return { minute: numberOrNull(e.minute ?? e.time), extra: numberOrNull(e.extra_minute ?? e.addition), label: e.minute == null ? '' : `${e.minute}${e.extra_minute ? `+${e.extra_minute}` : ''}'`, team: code, type: /goal/.test(type) ? 'Goal' : /card/.test(type) ? 'Card' : /subst|substitution/.test(type) ? 'subst' : e.type?.name ?? type, detail: e.info ?? e.type?.name ?? null, comments: e.addition ?? null, player: e.player_name ?? e.player?.display_name ?? e.player?.name ?? null, playerId: e.player_id ?? e.player?.id ?? null, assist: e.assist_name ?? e.assist?.name ?? null, assistId: e.assist_id ?? e.assist?.id ?? null };
