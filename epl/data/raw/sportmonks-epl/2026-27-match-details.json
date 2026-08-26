@@ -3,7 +3,7 @@
   "providerSeason": 28083,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/football/fixtures/{fixture_id}",
-  "retrievedAt": "2026-08-26T12:02:17.472Z",
+  "retrievedAt": "2026-08-26T12:04:34.797Z",
   "matches": {},
   "coverage": {
     "cached": 0,
@@ -14,7 +14,69 @@
     "fixturesWithParticipants": 25,
     "fixturesWithMappedTeams": 25,
     "fixturesWithLocalPair": 0,
-    "fixturesWithLocalDate": 0
+    "fixturesWithLocalDate": 0,
+    "localDateRange": [
+      "2026-08-21",
+      "2026-08-24"
+    ],
+    "providerSamples": [
+      {
+        "date": "2027-05-30",
+        "codes": [
+          "SUN",
+          "MCI"
+        ]
+      },
+      {
+        "date": "2027-05-30",
+        "codes": [
+          "MUN",
+          "FUL"
+        ]
+      },
+      {
+        "date": "2027-05-30",
+        "codes": [
+          "LIV",
+          "BOU"
+        ]
+      },
+      {
+        "date": "2027-05-30",
+        "codes": [
+          "IPS",
+          "EVE"
+        ]
+      },
+      {
+        "date": "2027-05-30",
+        "codes": [
+          "HUL",
+          "NEW"
+        ]
+      },
+      {
+        "date": "2027-05-30",
+        "codes": [
+          "CRY",
+          "LEE"
+        ]
+      },
+      {
+        "date": "2027-05-30",
+        "codes": [
+          "NFO",
+          "COV"
+        ]
+      },
+      {
+        "date": "2027-05-30",
+        "codes": [
+          "CHE",
+          "BRE"
+        ]
+      }
+    ]
   },
   "note": "與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。"
 }
