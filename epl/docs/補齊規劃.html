@@ -201,7 +201,7 @@
 
 <div class="wrap">
   <header class="head">
-    <p class="eyebrow">補齊分析與規劃 · 2026-08-25 · 階段 1 已完成 · 階段 2 進行中</p>
+    <p class="eyebrow">補齊分析與規劃 · 2026-08-26 · 階段 1 已完成 · 階段 2 進行中</p>
     <h1>戰情室補齊規劃</h1>
     <p class="lede">
       現在是兩個聯賽。英超接近完整,西甲只有骨架 —— 8 個資料集是空的。
@@ -411,8 +411,9 @@
           <li>✓ <strong>資料源改走 Understat</strong> —— 一季一個請求,不是原本規劃的 API-Football</li>
           <li>✓ <strong>球員頁與八個榜單上線</strong>,導覽列西甲從三頁變四頁</li>
           <li>✓ 三個會靜靜出錯的地方各有斷言:跨隊球員合計、per90 門檻、位置推論</li>
+          <li>✓ <strong>已確認 FotMob 完賽名單來源</strong> —— 最多 3 個請求的探測器可取得陣型、11 名先發、位置座標與評分</li>
           <li>接下來:<code>shapes</code> 與 <code>lineups</code> → 戰術頁。
-            Understat 有實際使用陣型,但<strong>沒有逐場先發名單</strong>,要先確認做得到哪一半</li>
+            先做有硬上限的小批量快取,不直接抓整季,也不把推估值當官方資料</li>
           <li>教練名冊仍是人工的,可平行進行</li>
         </ul>
       </div>
@@ -467,7 +468,7 @@
   </section>
 
   <footer>
-    依 2026-08-25 的實測結果整理:8 個頁面 × 2 個聯賽逐頁開啟、
+    依 2026-08-26 的實測結果整理:8 個頁面 × 2 個聯賽逐頁開啟、
     23 份資料集逐一計數、<code>npm test</code> 166 條全過。階段 1 與階段 2 的球員頁已交付並推上兩條分支。
     常駐工作規則在 <code>CLAUDE.md</code>,狀態快照在 <code>epl/docs/接手資訊.md</code>。
   </footer>

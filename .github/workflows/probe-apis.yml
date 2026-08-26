@@ -56,3 +56,8 @@ jobs:
       - name: 探測西甲球員整季數據的替代來源
         working-directory: epl
         run: npm run probe:laliga-playerdata
+
+      # 西甲逐場先發/陣型/評分:只找一場已完賽比賽,最多 3 個請求,不做整季抓取
+      - name: 探測西甲逐場先發與陣型來源
+        working-directory: epl
+        run: npm run probe:laliga-lineups

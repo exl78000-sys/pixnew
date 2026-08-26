@@ -36,6 +36,7 @@
     "probe:events": "node scripts/probe-events.mjs",
     "probe:laliga-players": "node scripts/probe-laliga-players.mjs",
     "probe:laliga-playerdata": "node scripts/probe-laliga-playerdata.mjs",
+    "probe:laliga-lineups": "node scripts/probe-laliga-lineups.mjs",
     "laliga:players": "node scripts/fetch-laliga-players.mjs"
   },
   "engines": {
