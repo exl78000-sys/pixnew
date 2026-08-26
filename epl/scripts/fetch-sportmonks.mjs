@@ -324,7 +324,9 @@ async function syncCurrentMatches(T, seasonStore, season) {
   for (const { sf, localMatch, key } of candidates.slice(0, MAX_DETAILS)) {
     detailAttempts++;
     try {
-      const raw = await get(`/football/fixtures/${sf.id}?include=participants;lineups.details.type;formations;events.type;statistics.type;xGFixture;sidelined.sideline`);
+      // 使用 Fixture 端點文件列出的關聯；sidelined.sideline 在部分方案會被
+      // 視為無效 nested include，導致整個詳情請求 4xx，故不列入主請求。
+      const raw = await get(`/football/fixtures/${sf.id}?include=participants;lineups.details.type;formations;events.type;statistics.type;xGFixture`);
       const detail = normaliseSportmonksMatch(raw, { codeOf: T.codeOf, fixture: localMatch, teamCodeById, season: season.label });
       if (!detail || detail.score.home !== localMatch.fh || detail.score.away !== localMatch.fa) {
         detailRejected++;
