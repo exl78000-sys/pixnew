@@ -779,7 +779,7 @@ async function checkDataGap() {
   const g = (lg, page, names, data = full, absent = []) => V.dataGap(lg, page, names, data, absent);
 
   const cases = [
-    ['西甲的戰術頁擋下來', !!g('es1', 'tactics', ['formation', 'shapes'])],
+    ['西甲的戰術頁已開放,只依賴可核對的 Understat 球隊資料', !g('es1', 'tactics', ['tactics'], { tactics: [1] })],
     ['西甲的球員頁已開放,不擋', !g('es1', 'players', ['players', 'leaders'])],
     ['球員頁開放了但資料是空的,保險仍然會擋',
       !!g('es1', 'players', ['players', 'leaders'], { ...full, players: [] })],
@@ -794,9 +794,9 @@ async function checkDataGap() {
     ['宣告開放但資料是空的仍然擋(保險)', !!g('pl', 'news', ['news'], { ...full, news: [] })],
     ['資料集缺檔也算缺口', !!g('pl', 'players', ['players', 'leaders'], { players: [1] }, ['leaders'])],
     ['缺口訊息不出現 build / 404 這些字',
-      !/build|404|npm/i.test(g('es1', 'tactics', ['formation', 'shapes']).message)],
+      !/build|404|npm/i.test(g('es1', 'news', ['news']).message)],
     ['缺口帶得出這一頁需要什麼',
-      g('es1', 'tactics', ['formation', 'shapes']).needs.join() === 'formation,shapes'],
+      g('es1', 'news', ['news']).needs.join() === 'news'],
   ];
 
   let fail = 0;

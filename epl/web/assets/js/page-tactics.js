@@ -2,11 +2,70 @@ import * as C from './core.js';
 
 const app = document.getElementById('app');
 
+// 西甲沒有英超 pulselive 的逐場官方陣型／先發檔；但 Understat 的 getTeamData
+// 有上一季整隊實際使用陣型比例。只呈現這個可核對的半部，絕不把它包裝成官方先發。
+function renderLaLigaTactics({ meta, teams, tactics }) {
+  const colour = code => C.team(code).colors?.[0] ?? '#888';
+  const formationRows = tactics.flatMap(t => (t.formation?.list ?? []).map(f => ({
+    code: t.code, formation: f.name, minutes: f.minutes, share: f.share,
+  })));
+  const primary = tactics.map(t => ({
+    code: t.code, formation: t.formation?.primary ?? null,
+    matches: t.matches, xG90: t.attack?.xG90 ?? null, xGA90: t.defence?.xGA90 ?? null,
+    share: t.formation?.list?.[0]?.share ?? null,
+  }));
+  C.registerTeams(teams); C.nav();
+  app.innerHTML = `
+    <div class="page-head">
+      <h1>西甲戰術摘要</h1>
+      <p>${meta.lastSeason} 完整賽季・資料來自 Understat 整隊統計。這裡顯示實際使用過的陣型比例、攻守 xG 與比賽節奏，供比較參考。</p>
+      ${C.stampRow([
+        C.stamp(`${meta.lastSeason} 整季`, { kind: 'season', note: '一季固定快取' }),
+        C.stamp('Understat 球隊資料', { kind: 'manual', note: '不在開頁時連外請求' }),
+      ])}
+    </div>
+    <div class="note info"><b>資料界線</b>：Understat 提供整隊實際使用陣型的統計，但西甲沒有 pulselive 等價的逐場官方先發、球員站位或攻守形狀資料；本頁不推導 lineups、shapes，也不把整季比例當成單場先發。</div>
+    <div class="section"><h2>各隊主要陣型</h2><span class="hint">整季使用分鐘最多的陣型</span></div>
+    <div id="primary"></div>
+    <div class="section"><h2>各隊陣型使用比例</h2><span class="hint">只列 Understat 有回報的整隊統計</span></div>
+    <div id="formations"></div>
+    <div class="section"><h2>攻守與節奏對比</h2><span class="hint">上一季每場平均</span></div>
+    <div id="attack"></div>
+    <div class="note" style="margin-top:14px"><b>下一步尚未開放</b>：若要顯示賽前預估先發，必須另找可靠的西甲名單來源；在沒有逐場來源前，不以球員位置自行拼出「官方陣型」。</div>
+    ${C.foot(meta)}`;
+  document.getElementById('primary').innerHTML = C.table(primary, [
+    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+    { key: 'formation', label: '主要陣型', value: r => r.formation ?? '', render: r => r.formation ? `<b class="mono">${r.formation}</b>` : '—' },
+    { key: 'share', label: '分鐘占比', value: r => r.share ?? -1, num: true, render: r => r.share == null ? '—' : `${r.share}%` },
+    { key: 'matches', label: '整季場次', value: r => r.matches, num: true },
+    { key: 'xG90', label: 'xG/場', value: r => r.xG90 ?? -1, num: true, render: r => C.fx(r.xG90, 2) },
+    { key: 'xGA90', label: 'xGA/場', value: r => r.xGA90 ?? -1, num: true, render: r => C.fx(r.xGA90, 2) },
+  ], { sortKey: 'xG90', desc: true, onRow: r => C.go('teams', { code: r.code }) });
+  document.getElementById('formations').innerHTML = C.table(formationRows, [
+    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+    { key: 'formation', label: '陣型', value: r => r.formation },
+    { key: 'share', label: '分鐘占比', value: r => r.share, num: true, render: r => `${r.share}%` },
+    { key: 'minutes', label: '分鐘', value: r => r.minutes, num: true },
+  ], { sortKey: 'share', desc: true, onRow: r => C.go('teams', { code: r.code }) });
+  document.getElementById('attack').innerHTML = C.table(tactics, [
+    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+    { key: 'xG90', label: 'xG/場', value: r => r.attack?.xG90 ?? -1, num: true, render: r => C.fx(r.attack?.xG90, 2) },
+    { key: 'xGA90', label: 'xGA/場', value: r => r.defence?.xGA90 ?? -1, num: true, render: r => C.fx(r.defence?.xGA90, 2) },
+    { key: 'tempo', label: '進攻速度', value: r => r.tempo?.attackSpeed ?? -1, num: true, render: r => C.fx(r.tempo?.attackSpeed, 1) },
+    { key: 'ppg', label: '場均勝點', value: r => r.ppg ?? -1, num: true, render: r => C.fx(r.ppg, 2) },
+  ], { sortKey: 'xG90', desc: true, onRow: r => C.go('teams', { code: r.code }) });
+}
+
 try {
-  const { meta, clubs, teams, tactics, formation, shapes } =
-    await C.load('meta', 'clubs', 'teams', 'tactics', 'formation', 'shapes');
+  const { meta, clubs, teams, tactics } =
+    await C.load('meta', 'clubs', 'teams', 'tactics');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
+
+  if (meta.edition === 'basic') {
+    renderLaLigaTactics({ meta, teams, tactics });
+  } else {
+    const { formation, shapes } = await C.load('formation', 'shapes');
 
   const tacBy = new Map(tactics.map(t => [t.code, t]));
   const colour = c => C.team(c).colors?.[0] ?? '#888';
@@ -224,4 +283,5 @@ try {
     { key: 'collapse', label: '被逆轉', value: t => t.resilience.collapse, num: true },
   ], { sortKey: 'swing', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
 
+  }
 } catch (err) { C.fail(err); }
