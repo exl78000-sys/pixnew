@@ -119,7 +119,9 @@ async function main() {
   store._apiPhotoAttempts ??= {};
   const T = loadTeams(ROOT);
   const today = new Date().toISOString().slice(0, 10);
-  const usedToday = store._apiPhotoBudget?.date === today ? Number(store._apiPhotoBudget.used ?? 0) : 0;
+  const sameBudget = store._apiPhotoBudget?.date === today
+    && Number(store._apiPhotoBudget.season ?? 0) === SEASON;
+  const usedToday = sameBudget ? Number(store._apiPhotoBudget.used ?? 0) : 0;
   const remaining = Math.max(0, Math.min(LIMIT, DAILY_LIMIT - usedToday));
   if (!remaining) { console.log(`✔ 今日 API 頭貼額度已用 ${usedToday}/${DAILY_LIMIT}，下次再補。`); return; }
   const missing = manifest.players.filter(p => !store.photos[p.code]
@@ -148,11 +150,11 @@ async function main() {
       store._apiPhotoAttempts[target.code][String(SEASON)] = String(error.message).slice(0, 180);
       console.log(`略過（${String(error.message).slice(0, 100)}）`);
     }
-    store._apiPhotoBudget = { date: today, used };
+    store._apiPhotoBudget = { date: today, season: SEASON, used };
     await save(store, manifest);
     if (i < missing.length - 1) await sleep(DELAY);
   }
-  store._apiPhotoBudget = { date: today, used };
+  store._apiPhotoBudget = { date: today, season: SEASON, used };
   store._sources = [...(store._sources ?? []), record];
   await save(store, manifest);
   console.log(`✔ 本批新增 ${record.got}/${record.attempted}・仍缺 ${store._missing.length}`);
