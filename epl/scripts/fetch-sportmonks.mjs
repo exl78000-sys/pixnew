@@ -284,6 +284,8 @@ async function syncCurrentMatches(T, seasonStore, season) {
   const candidates = [];
   let fixturesWithParticipants = 0;
   let fixturesWithMappedTeams = 0;
+  let fixturesWithLocalPair = 0;
+  let fixturesWithLocalDate = 0;
   const dateDistance = (a, b) => {
     const left = Date.parse(`${a}T00:00:00Z`), right = Date.parse(`${b}T00:00:00Z`);
     return Number.isFinite(left) && Number.isFinite(right) ? Math.abs(left - right) / 86400000 : Infinity;
@@ -296,6 +298,8 @@ async function syncCurrentMatches(T, seasonStore, season) {
     const codes = participants.map(p => teamCodeById.get(String(p.id)) || providerTeamCode(T, p)).filter(Boolean);
     if (codes.length >= 2) fixturesWithMappedTeams++;
     const date = String(sf.starting_at ?? '').slice(0, 10);
+    if (played.some(m => codes.includes(m.home) && codes.includes(m.away))) fixturesWithLocalPair++;
+    if (played.some(m => dateDistance(m.date, date) <= 1)) fixturesWithLocalDate++;
     // starting_at 可能以 UTC 日期呈現，而 openfootball 使用球場當地日期；
     // 同一季同一對球隊只會有一場，允許一天時差仍要求兩隊都對上。
     const localMatch = played.find(m => dateDistance(m.date, date) <= 1
@@ -327,7 +331,7 @@ async function syncCurrentMatches(T, seasonStore, season) {
     coverage: {
       cached: Object.keys(details).length, fetchedThisRun: fetched,
       localPlayed: played.length, providerFixtures: fixtureRows.length, candidates: candidates.length,
-      fixturesWithParticipants, fixturesWithMappedTeams,
+      fixturesWithParticipants, fixturesWithMappedTeams, fixturesWithLocalPair, fixturesWithLocalDate,
     },
     note: '與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。',
   };
