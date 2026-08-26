@@ -274,12 +274,17 @@ async function syncCurrentMatches(T, seasonStore, season) {
 
   // 只抓本季已完賽且尚未永久快取的場次；不以每次開頁或 build 觸發 API。
   let fixtureRows = [];
-  for (let page = 1; page <= 5; page++) {
+  const seenFixtureIds = new Set();
+  // SportMonks 可能忽略 per_page=100，實際每頁只回 25 場；一直翻頁到
+  // 空頁或重複頁，才不會只拿到賽季最後一輪而漏掉已完賽場次。
+  for (let page = 1; page <= 20; page++) {
     // SportMonks v3 在不同邊緣節點可能回傳純陣列或 { data: [...] }；
     // 兩者都視為同一份 fixtures，避免把有效賽程誤判成 0 場。
     const batch = relatedRows(await get(`/football/fixtures?filters=fixtureSeasons:${season.id}&include=participants&per_page=100&page=${page}`));
-    fixtureRows.push(...batch);
-    if (batch.length < 100) break;
+    const fresh = batch.filter(row => row?.id == null || !seenFixtureIds.has(String(row.id)));
+    for (const row of fresh) if (row?.id != null) seenFixtureIds.add(String(row.id));
+    fixtureRows.push(...fresh);
+    if (!batch.length || !fresh.length) break;
   }
   const candidates = [];
   let fixturesWithParticipants = 0;
