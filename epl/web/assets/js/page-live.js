@@ -7,6 +7,7 @@ try {
     await C.load('meta', 'clubs', 'teams', 'live', 'fixtures', 'table', 'tactics', 'analysis');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
+  const isLaLiga = C.league() === 'es1';
 
   const tacBy = new Map(tactics.map(t => [t.code, t]));
   // 整頁的渲染包成函式:輪詢到新資料、或單純時間往前走(比賽從未開賽變成進行中)時,
@@ -31,6 +32,10 @@ try {
     const matches = live.available ? live.matches : [];
     const liveByKey = new Map(matches.filter(m => !live.demo).map(m => [`${m.home}|${m.away}`, m]));
     const done = matches.filter(m => m.finished);
+    // 西甲目前尚未接入逐分鐘 feed，但賽程已有已完賽比分；先用同一張卡片模板呈現，
+    // 點擊後仍可進入單場分析與可用的賽後報告，不把空的 live feed 當成沒有賽果。
+    const finishedSchedule = fixtures.filter(f => f.played)
+      .sort((a, b) => (a.kickoff < b.kickoff ? 1 : -1));
     const now = Date.now();
 
     // 就算沒有即時資料源,光靠賽程也知道現在有哪幾場正在踢 —— 這一段永遠可用
@@ -66,6 +71,9 @@ try {
 
     const sourceBanner = () => {
       if (!live.available) {
+        if (isLaLiga) return `<div class="note">西甲實時頁面已啟用賽程推算、開賽倒數與賽後分析模板；目前尚未接入西甲即時比分資料源，畫面不會把賽前預測冒充實況。<br>
+          即時比分、場上陣容與勝率會在 SportMonks 即時端點完成後由此頁自動接入；目前可先點賽程或完賽場次查看完整分析。
+          <br>下方的<b>開賽倒數</b>與依時間判斷的<b>進行中</b>區塊不需要即時資料源。</div>`;
         return `<div class="note">目前沒有接上即時比賽資料源。<br>
           在自己的電腦上執行 <span class="mono">npm run live</span> 會連官方 FPL API 取得逐分鐘更新;
           受限網路可改用 <span class="mono">npm run live -- --replay=2025-26:1</span> 看真實比賽的示範。
@@ -116,7 +124,7 @@ try {
         : '目前沒有比賽在踢')}
       ${kpi('下一場開賽', upcoming[0] ? C.countdown(upcoming[0].kickoff) : '—',
         upcoming[0] ? `${C.name(upcoming[0].home)} vs ${C.name(upcoming[0].away)}` : '本季賽程已結束')}
-      ${kpi('本輪已完賽', done.length, live.available ? `第 ${live.round} 輪共 ${matches.length} 場` : '—')}
+      ${kpi('本輪已完賽', live.available ? done.length : '—', live.available ? `第 ${live.round} 輪共 ${matches.length} 場` : '即時來源尚未接入')}
     </div>
 
     ${inPlaySched.length ? `
@@ -124,8 +132,9 @@ try {
         <span class="hint">依賽程推算・${withRealData ? `${withRealData} 場已接上即時比分` : '尚未接上即時比分'}</span></div>
       ${!withRealData ? `<div class="note" style="margin-bottom:10px">
         這 ${inPlaySched.length} 場<b>依賽程現在正在進行</b>,但目前沒有接上即時資料源,所以看不到比分。<br>
-        在自己的電腦上執行 <span class="mono">npm run live:watch</span>,頁面就會每分鐘自動更新真實比分、
-        場上陣容與即時勝率。</div>` : ''}
+        ${isLaLiga
+          ? '西甲即時端點尚未接入；目前只顯示賽前預測與開賽時間。'
+          : '在自己的電腦上執行 <span class="mono">npm run live:watch</span>,頁面就會每分鐘自動更新真實比分、場上陣容與即時勝率。'}</div>` : ''}
       <div class="grid g2">${liveCards.map(x => x.m ? liveCard(x.m) : schedCard(x)).join('')}</div>` : ''}
 
     ${awaiting.length ? `
@@ -143,18 +152,19 @@ try {
     <div class="grid g2">${upcoming.slice(0, 8).map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
     ${upcoming.length > 8 ? `<div style="margin-top:10px"><a href="${C.link('fixtures')}">看完整賽程(還有 ${upcoming.length - 8} 場)→</a></div>` : ''}
 
-    ${done.length ? `
+    ${(done.length || finishedSchedule.length) ? `
       <div class="section"><h2>已完賽${live.demo ? `(重播 ${live.season} 第 ${live.round} 輪)` : ''}</h2>
-        <span class="hint">${live.demo ? '真實比賽資料,非本季' : `${meta.currentSeason} 第 ${live.round} 輪`}・點任一場看完整賽後解讀</span></div>
-      <div class="grid g2">${done.map(finishedCard).join('')}</div>` : ''}
+        <span class="hint">${live.demo ? '真實比賽資料,非本季' : live.available ? `${meta.currentSeason} 第 ${live.round} 輪` : `${meta.currentSeason} 已取得 ${finishedSchedule.length} 場比分`}・點任一場看完整賽後解讀</span></div>
+      <div class="grid g2">${live.available ? done.map(finishedCard).join('') : finishedSchedule.slice(0, 12).map(finishedFixtureCard).join('')}</div>` : ''}
 
     ${curPlayed > 0 ? `
       <div class="section"><h2>本季即時積分榜</h2><span class="hint">${meta.currentSeason}・依目前已完賽場次計算</span></div>
       <div id="curTable"></div>` : `
       <div class="section"><h2>本季即時積分榜</h2></div>
       <div class="note">${meta.currentSeason} 目前還沒有已完賽的比賽進入資料源,積分榜是空的。
-        賽果由 <span class="mono">npm run fetch -- --force</span>(openfootball)或 <span class="mono">npm run live</span> 帶入,
-        兩者都會自動併進這張表。</div>`}
+        ${isLaLiga
+          ? '西甲賽果會由西甲同步流程帶入。'
+          : '賽果由 <span class="mono">npm run fetch -- --force</span>(openfootball)或 <span class="mono">npm run live</span> 帶入,兩者都會自動併進這張表。'}</div>`}
     ${C.foot(meta)}`;
 
     if (curPlayed > 0) {
@@ -252,6 +262,15 @@ try {
       <div class="tiny dim center">陣型 ${H.shape.label} vs ${A.shape.label}・xG ${H.xG} : ${A.xG}
         ${surprise !== null ? `・賽前模型給這結果 ${C.pct(surprise, 0)}` : ''}</div>
       ${m.notes.length ? `<div class="small muted" style="margin-top:8px">${C.esc(m.notes[0].text)}</div>` : ''}
+    </a>`;
+  }
+
+  function finishedFixtureCard(f) {
+    return `<a class="card matchcard" href="${C.link('analysis', { id: f.id })}">
+      <div class="spread"><span class="pill">完場</span>
+        <span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span></div>
+      <div style="margin:12px 0">${scoreLine(f.home, f.away, `${f.fh ?? '-'} : ${f.fa ?? '-'}`)}</div>
+      <div class="tiny dim center">已取得正式比分・點擊查看賽前機率與可用賽後資料 →</div>
     </a>`;
   }
 

@@ -758,7 +758,10 @@ async function main() {
     sources: [...new Set(Object.values(officialMatches).map(x => x.source))],
     matches: officialMatches,
   });
-  await write('live', { available: false, note: '西甲尚未接即時資料。' });
+  await write('live', {
+    available: false,
+    note: '西甲即時比分尚未接入；實時頁面目前以賽程推算進行中與開賽倒數，並保留賽前預測。',
+  });
 
   const crestHits = teams.filter(t => t.crest).length;
   console.log(`\n✔ 西甲球隊數據第二版：${teams.length} 隊・${LAST_SEASON} ${lastMatches.filter(m => m.played).length} 場・${CURRENT_SEASON} ${curPlayed.length}/${curMatches.length} 場已完賽`);
