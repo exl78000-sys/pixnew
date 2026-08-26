@@ -20,7 +20,7 @@ const check = (label, ok, detail = '') => {
 console.log('\n▶ 西甲球隊數據第二版自我檢查');
 const last = raw('2025-26'), current = raw('2026-27');
 const understat = situations();
-const meta = out('meta'), fixtures = out('fixtures'), teams = out('teams');
+const meta = out('meta'), fixtures = out('fixtures'), teams = out('teams'), official = out('official');
 const players = out('players');
 
 check('只納入指定兩季', meta.lastSeason === '2025-26' && meta.currentSeason === '2026-27');
@@ -34,6 +34,16 @@ check('未賽場次預測三向機率加總約等於 1', fixtures.filter(f => !f
   return p && Math.abs(p.home + p.draw + p.away - 1) < 0.002;
 }));
 check('已完賽場次不拿重擬合機率冒充賽前預測', fixtures.filter(f => f.played).every(f => f.prediction === null));
+const officialMatches = Object.entries(official.matches ?? {});
+check('FotMob 正式先發已轉成本站資料格式', official.available === true && official.source === 'fotmob/enetpulse' && officialMatches.length > 0);
+check('FotMob 正式先發逐場對回比分與兩隊 11 人', officialMatches.every(([key, match]) => {
+  const f = fixtures.find(x => `${x.home}|${x.away}` === key);
+  return f?.played && f.fh === match.score?.home && f.fa === match.score?.away
+    && match.home?.xi?.length === 11 && match.away?.xi?.length === 11
+    && match.home?.formation && match.away?.formation;
+}));
+check('FotMob 站位排數可供球場圖使用', officialMatches.every(([, match]) =>
+  match.home.rows?.flat().length === 11 && match.away.rows?.flat().length === 11));
 /* 球員資料改由 Understat 提供(API-Football 的 Free 方案不含本季與上季,實測過)。
    這裡守的不再是「關閉」,而是**開了之後不能偷偷造欄位**:
    Understat 沒有背號、頭貼、傷停與防守數據,那就一個都不准出現。 */

@@ -235,6 +235,7 @@ try {
 
   function renderBasicMatch(f) {
     const report = reportFor(f);
+    const lineup = official?.matches?.[`${f.home}|${f.away}`] ?? null;
     const H = teamBy.get(f.home), A = teamBy.get(f.away);
     const ht = H?.tactics, at = A?.tactics;
     const val = (obj, path) => path.reduce((v, key) => v?.[key], obj) ?? null;
@@ -275,9 +276,32 @@ try {
     <div class="card">${comparison}</div>
 
     <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
+    ${lineupCard(lineup, f)}
     ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
+  }
+
+  function lineupCard(match, f) {
+    if (!match?.home?.xi?.length || !match?.away?.xi?.length) return '';
+    const board = (side, code, reverseRows = false) => {
+      const top = [...side.xi].filter(p => p.rating !== null && p.rating !== undefined)
+        .sort((a, b) => b.rating - a.rating).slice(0, 3);
+      return `<div class="card">
+        <div class="spread" style="margin-bottom:4px">
+          <span class="row" style="gap:8px">${C.badge(code)}<b>${C.name(code)}</b></span>
+          <span class="pill accent tiny">${C.esc(side.formation)}</span>
+        </div>
+        ${C.pitch(side.xi, { photos: true, officialRows: side.rows, reverseRows,
+          color: C.team(code).colors?.[0] ?? '#00ff85', label: `${C.name(code)} ${side.formation}` })}
+        <div class="tiny dim" style="margin-top:6px">先發評分：${top.length
+          ? top.map(p => `${C.esc(p.name)} ${C.fx(p.rating, 1)}`).join('・') : '此來源沒有評分'}</div>
+      </div>`;
+    };
+    return `<div class="section"><h2>本場正式先發</h2>
+      <span class="hint">FotMob / enetpulse・${C.dateFull(match.date)}・陣型與站位來自完賽資料</span></div>
+      <div class="grid g2">${board(match.home, f.home)}${board(match.away, f.away, true)}</div>
+      <div class="note" style="margin-top:10px"><b>資料界線：</b>本卡是已核對的完賽正式先發、陣型、位置與評分；目前來源沒有球員頭貼，完整球隊統計、事件與替補細節仍等待另一條賽後資料管線，不用估算值補上。</div>`;
   }
 
   /* 沒有賽後資料時,要分清楚是「還沒抓到」還是「這個方案根本拿不到」。

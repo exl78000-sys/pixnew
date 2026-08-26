@@ -69,6 +69,54 @@ const sumRows = rows => ({
   xGA: rows.reduce((n, x) => n + Number(x?.against?.xG ?? 0), 0),
 });
 
+// FotMob 的垂直球場座標可還原成「門將 → 後防 → 中場 → 前場」的排位。
+// 不把 positionId 直接暴露給前端；只在 canonical 轉換這一層做最小映射。
+const fotmobPos = id => {
+  const n = Number(id);
+  if (n === 11) return 'G';
+  if (n >= 30 && n < 50) return 'D';
+  if (n >= 70 && n < 100) return 'M';
+  if (n >= 100) return 'F';
+  return '?';
+};
+
+const fotmobPlayer = p => ({
+  providerId: p.providerId ?? null, name: p.name ?? '', number: p.shirt ?? null,
+  pos: fotmobPos(p.positionId), rating: p.rating ?? null, photo: null,
+  verticalLayout: p.verticalLayout ?? null,
+});
+
+function fotmobRows(players) {
+  const groups = new Map();
+  for (const p of players) {
+    const y = Number(p.verticalLayout?.y);
+    const key = Number.isFinite(y) ? y.toFixed(3) : `pos-${fotmobPos(p.positionId)}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(fotmobPlayer(p));
+  }
+  const rows = [...groups.entries()]
+    .sort(([a], [b]) => Number.isFinite(Number(a)) && Number.isFinite(Number(b)) ? Number(a) - Number(b) : a.localeCompare(b))
+    .map(([, row]) => row.sort((a, b) => Number(a.verticalLayout?.x ?? 0) - Number(b.verticalLayout?.x ?? 0)));
+  return rows.length > 1 && rows.flat().length === 11 ? rows : null;
+}
+
+function canonicalFotmobOfficial(record) {
+  const side = raw => {
+    const starters = raw?.starters ?? [];
+    return {
+      team: raw?.name ?? null, formation: raw?.formation ?? null,
+      xi: starters.map(fotmobPlayer), rows: fotmobRows(starters),
+      source: record.source ?? 'fotmob/enetpulse',
+    };
+  };
+  const home = side(record.lineup?.home), away = side(record.lineup?.away);
+  if (!home.formation || !away.formation || home.xi.length !== 11 || away.xi.length !== 11) return null;
+  return {
+    season: record.season, matchId: record.matchId, date: record.date,
+    fetchedAt: record.fetchedAt, source: record.source ?? 'fotmob/enetpulse', score: record.score ?? null, home, away,
+  };
+}
+
 // 西甲沒有 FPL 球員層資料，風格只用可逐隊核對的賽果與 Understat 球隊摘要。
 // 不把球員年齡、傳球創造或壓迫等目前沒有來源的欄位塞進來。
 function buildTeamProfiles(tableRows, store) {
@@ -311,6 +359,25 @@ async function main() {
     ? `  ⚠ API-Football 西甲賽後資料拿不到:${blocked.message}`
     : `  API-Football 西甲賽後永久快取：${reportCount}/${curPlayed.length} 場可發布`);
 
+  // FotMob 快取只包含逐場正式先發與陣型,沒有冒充完整賽後統計；
+  // 先轉成既有 official.matches 契約,讓分析頁能顯示本場真實排位。
+  const fotmobPath = join(ROOT, 'data', 'raw', 'fotmob-la-liga', `${CURRENT_SEASON}-lineups.json`);
+  let officialMatches = {};
+  let fotmobStore = null;
+  if (existsSync(fotmobPath)) {
+    try {
+      fotmobStore = JSON.parse(await readFile(fotmobPath, 'utf8'));
+      for (const [pair, record] of Object.entries(fotmobStore.matches ?? {})) {
+        const fixture = fixtureByPair.get(pair);
+        const converted = canonicalFotmobOfficial(record);
+        if (!fixture || !converted || record.score?.home !== fixture.fh || record.score?.away !== fixture.fa) continue;
+        officialMatches[pair] = converted;
+      }
+      console.log(`  FotMob 西甲正式先發：${Object.keys(officialMatches).length}/${Object.keys(fotmobStore.matches ?? {}).length} 場比分核對通過`);
+    } catch { console.log('  ⚠ FotMob 西甲先發快取損壞,本次略過'); }
+  }
+  const officialLineupCount = Object.keys(officialMatches).length;
+
   const formIndex = buildFormIndex(trainMatches);
   const teamForm = {};
   for (const code of curCodes) {
@@ -353,6 +420,12 @@ async function main() {
       use: '2026-27 完賽後球隊統計、正式陣容、事件與球員評分（成功後永久快取）',
       license: 'API 方案資料',
     },
+    {
+      name: 'FotMob / enetpulse',
+      url: 'https://www.fotmob.com/',
+      use: '已完賽西甲逐場先發、陣型與位置座標（小批量永久快取）',
+      license: '公開網站資料端點，需遵守來源使用條款',
+    },
   ];
   const backtest = {
     available: false,
@@ -393,7 +466,7 @@ async function main() {
          前端靠 leaders.missing 把界線寫在畫面上,不要因為這裡是 true
          就假設兩個聯賽的球員頁欄位一樣。 */
       live: false, players: playersOut.length > 0, injuries: false, tactics: teamProfiles.length > 0,
-      coaches: false, news: false, officialLineups: reportCount > 0, matchReports: reportCount > 0,
+      coaches: false, news: false, officialLineups: reportCount > 0 || officialLineupCount > 0, matchReports: reportCount > 0,
       fixtures: true, standings: true, teams: true, predictions: true, market: true,
       teamProfiles: teamProfiles.length > 0, setPieces: teamProfiles.length > 0,
     },
@@ -412,13 +485,18 @@ async function main() {
       teams: teams.length, players: 0, fixtures: fixtures.length,
       news: 0, injuries: 0, currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
       currentSeasonPlayers: 0, teamProfiles: teams.filter(t => t.tactics).length,
-      matchReports: reportCount,
+      matchReports: reportCount, officialLineups: officialLineupCount,
     },
     competition: competition(COMPETITION),
     live: { available: false }, official: { available: false }, ai: { enabled: false, pre: 0, post: 0 },
   };
 
   console.log('寫入西甲球隊數據第二版資料集：');
+  meta.official = {
+    available: officialLineupCount > 0 || reportCount > 0,
+    source: officialLineupCount > 0 ? 'fotmob/enetpulse' : (reportCount ? 'api-football' : null),
+    matches: officialLineupCount,
+  };
   await write('meta', meta);
   await write('clubs', T.list);
   await write('teams', teams);
@@ -467,7 +545,12 @@ async function main() {
   await write('experts', { updatedAt: null, count: 0, matches: {} });
   await write('lineups', {});
   await write('shapes', {});
-  await write('official', { available: false, matches: {} });
+  await write('official', {
+    available: officialLineupCount > 0 || reportCount > 0,
+    season: CURRENT_SEASON,
+    source: officialLineupCount > 0 ? 'fotmob/enetpulse' : (reportCount ? 'api-football' : null),
+    matches: officialMatches,
+  });
   await write('live', { available: false, note: '西甲尚未接即時資料。' });
 
   const crestHits = teams.filter(t => t.crest).length;
