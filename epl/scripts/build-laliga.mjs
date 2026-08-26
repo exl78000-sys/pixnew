@@ -32,6 +32,20 @@ const AS_OF = process.argv.find(a => a.startsWith('--as-of='))?.split('=')[1]
   ?? new Date().toISOString().slice(0, 10);
 const RUNS = Number(process.argv.find(a => a.startsWith('--runs='))?.split('=')[1] ?? 5000);
 
+// SportMonks 提供出生日期，但前端不應把生日直接當作主要欄位；
+// 統一用同一個資料基準日計算整數年齡，並保留原始日期供追溯。
+const ageAt = (birthDate, asOf) => {
+  if (!birthDate || !asOf) return null;
+  const birth = new Date(`${birthDate}T00:00:00Z`);
+  const on = new Date(`${asOf}T00:00:00Z`);
+  if (!Number.isFinite(birth.getTime()) || !Number.isFinite(on.getTime()) || birth > on) return null;
+  let age = on.getUTCFullYear() - birth.getUTCFullYear();
+  const beforeBirthday = on.getUTCMonth() < birth.getUTCMonth()
+    || (on.getUTCMonth() === birth.getUTCMonth() && on.getUTCDate() < birth.getUTCDate());
+  if (beforeBirthday) age--;
+  return age >= 0 ? age : null;
+};
+
 const lastSunday = (year, month) => {
   const d = new Date(Date.UTC(year, month, 0));
   return d.getUTCDate() - d.getUTCDay();
@@ -522,13 +536,14 @@ async function main() {
   for (const [season, data] of Object.entries(playerSeasons)) {
     const store = loadSquadStore(ROOT, season);
     const enriched = enrichPlayers(data.players, store, { codeOf: T.codeOf });
+    const withAge = enriched.players.map(p => ({ ...p, age: ageAt(p.dateOfBirth, AS_OF) }));
     sportmonksBySeason[season] = {
       available: enriched.available,
-      ...sportmonksCoverage(enriched.players),
+      ...sportmonksCoverage(withAge),
       retrievedAt: store?.retrievedAt ?? null,
     };
     console.log(`  SportMonks 球員補充 ${season}：${enriched.matched}/${data.players.length} 人對上${store ? '' : '（無快取）'}`);
-    for (const p of enriched.players) playersOut.push({ ...p, season });
+    for (const p of withAge) playersOut.push({ ...p, season });
   }
 
   const meta = {
@@ -565,9 +580,9 @@ async function main() {
       ],
     },
     counts: {
-      teams: teams.length, players: 0, fixtures: fixtures.length,
+      teams: teams.length, players: playersOut.length, fixtures: fixtures.length,
       news: 0, injuries: 0, currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
-      currentSeasonPlayers: 0, teamProfiles: teams.filter(t => t.tactics).length,
+      currentSeasonPlayers: playerSeasons[CURRENT_SEASON]?.players?.length ?? 0, teamProfiles: teams.filter(t => t.tactics).length,
       matchReports: reportCount, officialLineups: officialLineupCount,
     },
     competition: competition(COMPETITION),

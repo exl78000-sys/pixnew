@@ -7,7 +7,8 @@
 //   有:games time goals xG assists xA shots key_passes yellow_cards red_cards
 //       position team_title npg npxG xGChain xGBuildup
 //   沒有:背號、頭貼、出生日期、身價、傷停、以及英超那套 FPL 的
-//       防守貢獻 / BPS / 撲救 / 零封。西甲球員頁不要為了跟英超版面對齊而補這些。
+//       防守貢獻 / BPS / 撲救 / 零封。背號、頭貼、出生日期由 SportMonks
+//       本地快取補入；其餘沒有可靠來源的欄位不補造。
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 

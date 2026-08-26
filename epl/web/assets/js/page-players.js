@@ -7,12 +7,10 @@ try {
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
-  /* 西甲的球員資料來自 Understat,欄位跟英超那套 FPL 完全不同 ——
-     沒有背號、頭貼、傷停、防守數據。與其把英超版面留一堆空欄位
-     (那比不做更糟,讀者會以為壞掉),不如另外畫一頁只放真的有的東西。
-     由資料層自己宣告來源,前端不用去猜現在是哪個聯賽。 */
+  /* 西甲的比賽統計來自 Understat，身分、背號、頭貼與生日由 SportMonks
+     本地快取補充；前端只呈現資料層確實提供的欄位，沒有的資料明確標示。 */
   if (leaders.source === 'Understat') {
-    renderUnderstat({ meta, players, leaders });
+    renderUnderstat({ meta, clubs, teams, players, leaders });
     throw new Error('skip');
   }
 
@@ -139,19 +137,26 @@ try {
     document.getElementById('count').textContent = `共 ${rows.length} 人`;
     document.getElementById('list').innerHTML = C.table(rows, [
       { key: 'name', label: '球員', value: p => p.name, left: true,
-        render: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}` },
+        render: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.playerPhoto(p, 28)} ${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}` },
       { key: 'team', label: '球隊', value: p => C.name(p.team), render: p => C.teamCell(p.team) },
       { key: 'pos', label: '位置', value: p => ['GK', 'DEF', 'MID', 'FWD'].indexOf(p.pos), render: p => p.posZh },
       { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true },
+      { key: 'squadNumber', label: '背號', value: p => p.squadNumber ?? 0, num: true, render: p => p.squadNumber ?? '—' },
+      { key: 'appearances', label: '出場', value: p => mode === 'current' ? (p.appearances ?? 0) : 0, num: true, render: p => mode === 'current' ? (p.appearances ?? '—') : '—' },
       { key: 'minutes', label: '分鐘', value: p => S().stat(p)?.minutes ?? 0, num: true },
       { key: 'goals', label: '進球', value: p => S().stat(p)?.goals ?? 0, num: true },
       { key: 'assists', label: '助攻', value: p => S().stat(p)?.assists ?? 0, num: true },
+      { key: 'ga', label: '進球參與', value: p => S().stat(p)?.ga ?? 0, num: true },
+      { key: 'xG', label: 'xG', value: p => S().stat(p)?.xG ?? 0, num: true, render: p => C.fx(S().stat(p)?.xG, 2) },
+      { key: 'xA', label: 'xA', value: p => S().stat(p)?.xA ?? 0, num: true, render: p => C.fx(S().stat(p)?.xA, 2) },
+      { key: 'xGI', label: 'xGI', value: p => S().stat(p)?.xGI ?? 0, num: true, render: p => C.fx(S().stat(p)?.xGI, 2) },
       { key: 'xg90', label: 'xG/90', value: p => S().stat(p)?.xg90 ?? 0, num: true },
       { key: 'xa90', label: 'xA/90', value: p => S().stat(p)?.xa90 ?? 0, num: true },
-      { key: 'finishing', label: '終結', value: p => S().stat(p)?.finishing ?? 0, num: true,
-        title: '進球 − 期望進球', render: p => (S().stat(p) ? C.signed(S().stat(p).finishing, 1) : '—') },
-      { key: 'defCon90', label: '防守貢獻/90', value: p => S().stat(p)?.defCon90 ?? 0, num: true },
-      { key: 'price', label: '身價', value: p => p.price, num: true, render: p => `£${p.price.toFixed(1)}m` },
+      { key: 'xgi90', label: 'xGI/90', value: p => S().stat(p)?.xgi90 ?? 0, num: true },
+      { key: 'shots', label: '射門', value: p => S().stat(p)?.shots ?? 0, num: true, render: p => S().stat(p)?.shots ?? '—' },
+      { key: 'keyPasses', label: '關鍵傳球', value: p => S().stat(p)?.keyPasses ?? 0, num: true, render: p => S().stat(p)?.keyPasses ?? '—' },
+      { key: 'yellow', label: '黃牌', value: p => S().stat(p)?.yellow ?? 0, num: true, render: p => S().stat(p)?.yellow ?? '—' },
+      { key: 'red', label: '紅牌', value: p => S().stat(p)?.red ?? 0, num: true, render: p => S().stat(p)?.red ?? '—' },
     ], { sortKey: 'minutes', desc: true, onRow: p => (cmpMode ? toggleCompare(p) : openPlayer(p)) });
   };
 
@@ -274,10 +279,10 @@ try {
 
 } catch (err) { if (err.message !== 'skip') C.fail(err); }
 
-/* ── 西甲球員頁(Understat)──────────────────
-   刻意跟英超版分開。這個來源給的是**整季彙總**,不是逐場,
-   而且只有進攻與串聯類的欄位。能做的都做滿,做不到的直接寫出來。 */
-function renderUnderstat({ meta, players, leaders }) {
+/* ── 西甲球員頁(Understat + SportMonks)────────
+   Understat 給整季彙總，SportMonks 補身分欄位；版面與英超統一，
+   但仍保留資料來源的界線，沒有來源的進階欄位不自行推估。 */
+function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   const app = document.getElementById('app');
   const SEASONS = { current: leaders.seasons.current, last: leaders.seasons.last };
   // 本季剛開打時沒有人踢滿門檻,每 90 分鐘的榜會整片空 —— 那時預設看上季
@@ -285,9 +290,28 @@ function renderUnderstat({ meta, players, leaders }) {
   let posFilter = '', teamFilter = '', query = '';
 
   const bySeason = s => players.filter(p => p.season === s);
-  const codeName = c => C.name(c);
-  const teamCell = p => p.teams.map(t => C.teamLink(t)).join('<span class="dim"> → </span>')
+  const normalise = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  // Understat 用隊名、頁面其餘元件用三碼代號；先在資料層已註冊的隊伍中做別名對照，
+  // 否則西甲球員連結會把「Barcelona」誤當成隊碼而無法進入球隊頁。
+  const teamNames = new Map();
+  for (const t of [...clubs, ...teams]) {
+    for (const value of [t.code, t.en, t.zh, t.of, t.understat, ...(t.alias ?? [])]) {
+      const key = normalise(value);
+      if (key && !teamNames.has(key)) teamNames.set(key, t.code);
+    }
+  }
+  const codeOf = value => teamNames.get(normalise(value)) ?? value;
+  const codeName = c => C.name(codeOf(c));
+  const codesOf = p => (p.teams ?? []).map(codeOf);
+  const teamCell = p => p.teams.map(t => {
+    const code = codeOf(t);
+    return C.team(code).en !== code ? C.teamLink(code, { label: C.name(code) }) : C.esc(t);
+  }).join('<span class="dim"> → </span>')
     + (p.multiTeam ? ' <span class="pill warn tiny" title="本季效力兩隊,數字是兩隊合計">跨隊</span>' : '');
+
+  const playerForPhoto = p => ({ ...p, team: codeOf(p.teams?.[0]) });
+  const playerById = () => new Map(bySeason(season).map(p => [String(p.id), p]));
 
   const boardCard = b => {
     const rows = (leaders[season === SEASONS.current ? 'current' : 'last'] ?? {})[b.key] ?? [];
@@ -298,56 +322,60 @@ function renderUnderstat({ meta, players, leaders }) {
           : '這一季還沒有資料。'}</div></div>`;
     }
     const fmt = v => (b.per90 || String(v).includes('.') ? C.fx(v, 2) : v);
+    const byId = playerById();
     return `<div class="card"><div class="spread"><h3>${C.esc(b.label)}</h3>
         <span class="pill tiny">${C.esc(b.unit)}</span></div>
-      ${rows.map((r, i) => `<div class="stat-line">
+      ${rows.map((r, i) => { const p = byId.get(String(r.id)); return `<div class="stat-line clickable" data-player-code="${C.esc(r.id)}" tabindex="0" role="button">
         <span class="small"><span class="dim mono" style="display:inline-block;width:1.6em">${i + 1}</span>
-          ${C.esc(r.name)}<span class="dim tiny"> ${r.teams.map(codeName).join(' / ')}</span></span>
-        <b class="mono">${fmt(r.value)}</b></div>`).join('')}</div>`;
+          ${p ? C.playerPhoto(playerForPhoto(p), 28) : ''} ${C.esc(r.name)}<span class="dim tiny"> ${r.teams.map(codeName).join(' / ')}</span></span>
+        <b class="mono">${fmt(r.value)}</b></div>`; }).join('')}</div>`;
   };
 
-  const hasSportMonks = players.some(p => p.sportmonksId);
   const COLS = [
-    { key: 'name', label: '球員', get: p => `${p.photo ? C.playerPhoto(p, 26) : ''}${C.esc(p.name)}` },
+    { key: 'name', label: '球員', get: p => `${C.playerPhoto(playerForPhoto(p), 28)} ${C.esc(p.name)}` },
     { key: 'team', label: '球隊', get: teamCell },
     { key: 'posZh', label: '位置', get: p => `<span class="dim">${C.esc(p.posZh)}</span>` },
-    ...(hasSportMonks ? [
-      { key: 'squadNumber', label: '背號', num: true },
-      { key: 'dateOfBirth', label: '出生日期', get: p => p.dateOfBirth ?? '—' },
-    ] : []),
+    { key: 'age', label: '年齡', num: true, get: p => p.age ?? '—' },
+    { key: 'squadNumber', label: '背號', num: true, get: p => p.squadNumber ?? '—' },
     { key: 'games', label: '出場', num: true },
     { key: 'minutes', label: '分鐘', num: true },
     { key: 'goals', label: '進球', num: true },
     { key: 'assists', label: '助攻', num: true },
+    { key: 'ga', label: '進球參與', num: true },
     { key: 'xG', label: 'xG', num: true, d: 2 },
     { key: 'xA', label: 'xA', num: true, d: 2 },
+    { key: 'xGI', label: 'xGI', num: true, d: 2 },
+    { key: 'xg90', label: 'xG/90', num: true, d: 2 },
+    { key: 'xa90', label: 'xA/90', num: true, d: 2 },
     { key: 'shots', label: '射門', num: true },
     { key: 'keyPasses', label: '關鍵傳球', num: true },
     { key: 'xgi90', label: 'xGI/90', num: true, d: 2 },
+    { key: 'yellow', label: '黃牌', num: true },
+    { key: 'red', label: '紅牌', num: true },
   ];
   let sortKey = 'goals', sortDesc = true;
 
   const tableHtml = () => {
     let rows = bySeason(season);
     if (posFilter) rows = rows.filter(p => p.pos === posFilter);
-    if (teamFilter) rows = rows.filter(p => p.teams.includes(teamFilter));
+    if (teamFilter) rows = rows.filter(p => codesOf(p).includes(teamFilter));
     if (query) { const q = query.toLowerCase(); rows = rows.filter(p => p.name.toLowerCase().includes(q)); }
     rows = rows.slice().sort((a, b) => {
       const av = a[sortKey] ?? -Infinity, bv = b[sortKey] ?? -Infinity;
       if (typeof av === 'string') return sortDesc ? String(bv).localeCompare(av) : String(av).localeCompare(String(bv));
       return sortDesc ? bv - av : av - bv;
-    }).slice(0, 100);
+    });
     return `<div class="table-wrap"><table class="tbl"><thead><tr>${COLS.map(c =>
       `<th class="${c.num ? 'num' : ''} sortable" data-sort="${c.key}">${C.esc(c.label)}${
         sortKey === c.key ? (sortDesc ? ' ▾' : ' ▴') : ''}</th>`).join('')}</tr></thead>
-      <tbody>${rows.map(p => `<tr>${COLS.map(c => `<td class="${c.num ? 'num mono' : ''}">${
+      <tbody>${rows.map(p => `<tr class="clickable" data-player-code="${C.esc(p.id)}" tabindex="0" role="button">${COLS.map(c => `<td class="${c.num ? 'num mono' : ''}">${
         c.get ? c.get(p) : (c.num && c.d ? C.fx(p[c.key], c.d) : (p[c.key] ?? '—'))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
-      <div class="tiny dim" style="margin-top:8px">依${C.esc(COLS.find(c => c.key === sortKey)?.label ?? sortKey)}排序,最多顯示 100 人(符合條件 ${
-        rows.length >= 100 ? '超過 100' : rows.length} 人)。點欄位標題可換排序。
+      <div class="tiny dim" style="margin-top:8px">依${C.esc(COLS.find(c => c.key === sortKey)?.label ?? sortKey)}排序,共 ${rows.length} 人。
+        點欄位標題可換排序。
         <span class="mono">xGI/90</span> 只在上場時間達 ${leaders.minMinutes} 分鐘時給出。</div>`;
   };
 
-  const codes = [...new Set(players.flatMap(p => p.teams))].sort((a, b) => codeName(a).localeCompare(codeName(b), 'zh-Hant'));
+  const codes = [...new Set(players.flatMap(codesOf))].sort((a, b) => codeName(a).localeCompare(codeName(b), 'zh-Hant'));
   const draw = () => {
     const cur = bySeason(season);
     app.innerHTML = `
@@ -360,9 +388,9 @@ function renderUnderstat({ meta, players, leaders }) {
         C.stamp(`${C.esc(season)} 整季統計`, { iso: leaders.retrievedAt, kind: 'season', note: '來源:Understat' }),
         C.stamp('百分位雷達', { kind: 'season', note: '只跟同季、同位置、達門檻的西甲球員比' }),
       ])}
-      <div class="note" style="margin-top:14px"><b>西甲沒有、英超才有的東西:</b>
-        ${leaders.missing.map(C.esc).join('、')}。這些欄位這個來源就是沒有,
-        所以這一頁不放 —— 留一個永遠空白的欄位比不做更糟。</div>
+      <div class="note" style="margin-top:14px"><b>資料界線:</b>
+        ${leaders.missing.map(C.esc).join('、')} 目前沒有可靠來源，詳細面板只顯示已取得欄位；
+        缺少的數值以「—」表示，不自行估算。</div>
     </div>
 
     <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:14px">
@@ -420,6 +448,62 @@ function renderUnderstat({ meta, players, leaders }) {
     if (ps) ps.onchange = () => { posFilter = ps.value; draw(); };
     const ts = app.querySelector('#pteam');
     if (ts) ts.onchange = () => { teamFilter = ts.value; draw(); };
+    const byId = playerById();
+    const activatePlayer = event => {
+      const el = event.target.closest?.('[data-player-code]');
+      if (!el || !app.contains(el)) return;
+      event.preventDefault();
+      const p = byId.get(String(el.dataset.playerCode));
+      if (p) openUnderstatPlayer(p);
+    };
+    app.querySelectorAll('[data-player-code]').forEach(el => {
+      el.onclick = activatePlayer;
+      el.onkeydown = e => { if (['Enter', ' '].includes(e.key)) activatePlayer(e); };
+    });
   };
+
+  function openUnderstatPlayer(p) {
+    const codes = codesOf(p);
+    const primaryCode = codes[0];
+    const photoPlayer = playerForPhoto(p);
+    const teamLabel = codes.map((code, i) => C.team(code).en !== code
+      ? C.teamLink(code, { label: C.name(code) }) : C.esc(p.teams[i] ?? code)).join('、');
+    const line = (label, value) => `<div class="stat-line"><span class="small muted">${label}</span><b class="mono">${value ?? '—'}</b></div>`;
+    const value = (v, d = 0) => v == null ? '—' : (d ? C.fx(v, d) : v);
+    const stat = p;
+    const info = [
+      line('球隊', teamLabel), line('位置', p.posZh ?? '來源未標位置'),
+      line('年齡', p.age == null ? '—' : `${p.age} 歲`), line('背號', p.squadNumber ?? '—'),
+      line('身高', p.height == null ? '—' : `${p.height} cm`), line('體重', p.weight == null ? '—' : `${p.weight} kg`),
+    ].join('');
+    const performance = [
+      line('出場', value(stat.games)), line('分鐘', value(stat.minutes)),
+      line('進球 / 助攻', `${value(stat.goals)} / ${value(stat.assists)}`),
+      line('進球參與', value(stat.ga)), line('xG / xA', `${value(stat.xG, 2)} / ${value(stat.xA, 2)}`),
+      line('xGI', value(stat.xGI, 2)), line('xG/90 / xA/90', `${value(stat.xg90, 2)} / ${value(stat.xa90, 2)}`),
+      line('xGI/90', value(stat.xgi90, 2)), line('射門 / 關鍵傳球', `${value(stat.shots)} / ${value(stat.keyPasses)}`),
+      line('黃牌 / 紅牌', `${value(stat.yellow)} / ${value(stat.red)}`),
+    ].join('');
+    const advanced = [
+      line('終結超出期望', C.signed(stat.finishing, 2)),
+      line('xG 串聯', value(stat.xGChain, 2)), line('xG 推進', value(stat.xGBuildup, 2)),
+      line('xG 串聯/90', value(stat.chain90, 2)), line('xG 推進/90', value(stat.buildup90, 2)),
+      line('防守貢獻/90', '—'), line('門將撲救/90', '—'),
+    ].join('');
+    const radar = p.radar ? `<div class="card"><h3>能力雷達 <span class="dim tiny">${C.esc(season)}</span></h3>
+      ${C.radar([{ name: p.name, color: C.team(primaryCode).colors?.[0] ?? '#00ff85', values: p.radar }], { size: 300 })}
+      <div class="tiny dim center">與同季、同位置且達 ${leaders.minMinutes} 分鐘門檻的西甲球員相比</div></div>` : '';
+    C.drawer(`${C.playerPhoto(photoPlayer, 34)} ${C.esc(p.name)}`, `
+      <div class="card"><div class="spread"><div>
+        <div style="font-size:19px;font-weight:800">${C.esc(p.name)}</div>
+        <div class="small muted">${teamLabel}・資料來源 Understat + SportMonks</div>
+      </div><span class="pill info">${C.esc(p.season)}</span></div></div>
+      <div class="card"><h3>基本資料</h3>${info}</div>
+      <div class="card"><h3>表現數據</h3>${performance}</div>
+      <div class="card"><h3>進階數據</h3>${advanced}<div class="tiny dim" style="margin-top:8px">西甲目前沒有可靠的逐球員防守與門將統計，該欄位不以其他數字代替。</div></div>
+      ${radar}
+      <div class="tiny dim">球員編號 ${C.esc(p.id)}・原始生日保留於本地資料作追溯，介面統一顯示年齡。</div>
+      <div style="margin-top:10px">${primaryCode ? `<a href="${C.link('teams', { code: primaryCode })}">查看球隊完整剖析 →</a>` : ''}</div>`);
+  }
   draw();
 }

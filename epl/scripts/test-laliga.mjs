@@ -52,12 +52,12 @@ check('西甲官網補齊缺漏場次並保留頭像', official.sources?.include
   && ['DEP|ELC', 'MAL|DEP'].every(key => official.matches?.[key]?.source === 'laliga.com')
   && ['DEP|ELC', 'MAL|DEP'].every(key => official.matches[key].home.xi.some(p => p.photo)
     && official.matches[key].away.xi.some(p => p.photo)));
-/* 球員資料改由 Understat 提供(API-Football 的 Free 方案不含本季與上季,實測過)。
-   這裡守的不再是「關閉」,而是**開了之後不能偷偷造欄位**:
-   Understat 沒有背號、頭貼、傷停與防守數據,那就一個都不准出現。 */
+/* 球員表的比賽統計來自 Understat，SportMonks 只補經核對的身分欄位。
+   這裡守的是**開了之後不能偷偷造欄位**：沒有來源的進階欄位不准出現。 */
 const leaders = out('leaders');
 const FORBIDDEN = ['price', 'status', 'news', 'defCon90', 'saves90', 'tackles90'];
 check('西甲球員資料已接上', meta.capabilities?.players === true && players.length > 0);
+check('西甲年齡以資料基準日輸出', players.some(p => p.dateOfBirth && Number.isInteger(p.age) && p.age >= 0));
 check('沒有假造 Understat 給不了的欄位',
   players.every(p => FORBIDDEN.every(k => !(k in p))), FORBIDDEN.join());
 check('缺什麼有寫在資料層讓畫面照講', Array.isArray(leaders.missing) && leaders.missing.length > 0);
