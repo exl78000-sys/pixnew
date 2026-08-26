@@ -80,11 +80,15 @@ async function readStore(file) {
 async function syncSeason(T, season) {
   const file = join(OUT, `${season.label}-squads.json`);
   const previous = await readStore(file);
+  const previousVillarrealName = String(previous?.teams?.VIL?.name ?? '')
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const hasTeamMappingDrift = /deportivo.*coruna/.test(previousVillarrealName);
   if (!FORCE && previous?.season === season.label && !stale(previous)
-      && Object.keys(previous.squads ?? {}).length) {
+      && Object.keys(previous.squads ?? {}).length && !hasTeamMappingDrift) {
     console.log(`  · ${season.label} SportMonks 名單快取仍新鮮，跳過（--force 可重抓）`);
     return previous;
   }
+  if (hasTeamMappingDrift) console.log(`  ⚠ ${season.label} 發現錯隊名快取，強制重新抓取`);
 
   console.log(`▶ SportMonks ${season.label}（season=${season.id}）`);
   const teamRows = rows(await get(`/football/teams/seasons/${season.id}?per_page=100`));
