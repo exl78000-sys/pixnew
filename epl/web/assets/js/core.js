@@ -124,6 +124,23 @@ export const currentPage = () => (BUNDLE
   ? location.hash.slice(1).split('?')[0] || 'index'
   : (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index');
 
+/* 聯賽切換不能一律回總覽:
+   在球隊／球員詳情頁時,讀者通常是想比較另一個聯賽的同一類頁面。
+   但兩聯賽的隊碼與球員 ID 沒有共用契約,把目前的 `code` 帶過去會落到
+   不存在的資料；因此跨聯賽只保留頁型,清掉詳情識別碼。當使用者點目前
+   聯賽的標籤時則保留 code,讓連結仍回到正在看的詳情頁。單場分析的 id
+   也只屬於原聯賽,切換時回到目標聯賽賽程表。 */
+export function leagueSwitchLink(targetLeague) {
+  const here = currentPage();
+  const currentLeague = league();
+  if (here === 'analysis') return link('fixtures', { league: targetLeague });
+  if (here === 'teams' || here === 'players') {
+    const code = targetLeague === currentLeague ? qs('code') : null;
+    return link(here, { league: targetLeague, code });
+  }
+  return link(here, { league: targetLeague });
+}
+
 /* ── 球隊 ───────────────────────────── */
 let TEAMS = new Map();
 // 顯示用的名稱登錄要涵蓋所有出現過的球隊(含已降級的),不然歷史表格會只剩三碼代號
@@ -270,7 +287,7 @@ export function nav() {
     <header class="topbar"><div class="inner">
       <a class="brand" href="${link('index')}"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
       <div class="league-switch" aria-label="切換聯賽">${Object.entries(LEAGUES).map(([k, v]) =>
-        `<a href="${link('index', { league: k })}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div>
+        `<a href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div>
       <nav class="tabs">${pages.map(([p, l]) =>
         `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${l}</a>`).join('')}</nav>
     </div></header>`);
