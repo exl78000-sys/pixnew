@@ -78,8 +78,15 @@ const smCoachRows = coachesFromSquadStore({ providerSeason: 27965, teams: {
 check('SportMonks 教練身分轉成西甲球隊契約', smCoachRows.length === 1
   && smCoachRows[0].team === 'BAR' && smCoachRows[0].name === 'Test Coach'
   && smCoachRows[0].source === 'SportMonks' && smCoachRows[0].formation === null);
+const smHydratedCoach = coachesFromSquadStore({ providerSeason: 27965, teams: {
+  BAR: { coaches: [{ id: 77, name: null, active: true }] },
+} }, { details: { '77': { id: 77, name: 'Hydrated Coach', imagePath: 'https://cdn.example/coach.png' } } });
+check('SportMonks coach ID 可由詳情快取補姓名', smHydratedCoach.length === 1
+  && smHydratedCoach[0].name === 'Hydrated Coach' && smHydratedCoach[0].imagePath.includes('coach.png'));
 check('SportMonks 教練沿用球隊名單請求,不增加 API 請求',
   /teams\/seasons\/\$\{season\.id\}\?include=coaches/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
+check('教練詳情只透過 coach ID 去重請求',
+  /football\/coaches\/\$\{encodeURIComponent\(id\)\}/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
 const smCurrentStore = loadSquadStore(ROOT, '2026-27');
 check('SportMonks 錯隊名不會把 Deportivo 掛到 Villarreal',
   !smCurrentStore?.teams?.VIL?.name?.toLowerCase().includes('deportivo')

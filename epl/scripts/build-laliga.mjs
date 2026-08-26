@@ -21,7 +21,7 @@ import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
-import { loadSquadStore, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
+import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -341,9 +341,10 @@ async function main() {
   // SportMonks 名單只讀本地快取；有核對過的隊伍就把實際名單人數帶到球隊頁，
   // 沒有快取的隊伍維持 0，讓缺口可見而不是把歷史名單誤當成本季名單。
   const currentSquadStore = loadSquadStore(ROOT, CURRENT_SEASON);
+  const coachDetails = loadCoachDetails(ROOT);
   const currentSquadSize = new Map(Object.entries(currentSquadStore?.squads ?? {})
     .map(([code, list]) => [code, Array.isArray(list) ? list.length : 0]));
-  const coachData = coachesFromSquadStore(currentSquadStore);
+  const coachData = coachesFromSquadStore(currentSquadStore, { details: coachDetails });
   const coachBy = new Map(coachData.map(c => [c.team, c]));
 
   const historyByTeam = new Map(curCodes.map(code => [code, []]));

@@ -27,6 +27,8 @@ const MAX_REQUESTS = Number(process.argv.find(x => x.startsWith('--max-requests=
 const TTL_DAYS = 7;
 const FETCH_MATCHES = !process.argv.includes('--no-matches');
 const MAX_DETAILS = Number(process.argv.find(x => x.startsWith('--max-details='))?.split('=')[1] ?? 20);
+const MAX_COACH_DETAILS = Number(process.argv.find(x => x.startsWith('--max-coach-details='))?.split('=')[1] ?? 20);
+const COACH_TTL_DAYS = 30;
 
 const LEAGUE = arg('league') ?? 'es1';
 const CONFIG = LEAGUE === 'pl'
@@ -111,21 +113,75 @@ function providerTeamCode(T, team) {
 
 function normaliseCoach(coach, seasonId) {
   if (!coach || typeof coach !== 'object') return null;
-  const name = coach.display_name ?? coach.name
-    ?? ([coach.firstname, coach.lastname].filter(Boolean).join(' ') || null);
-  if (!name && coach.id == null) return null;
+  // 依 endpoint 不同，教練資料可能直接放在關聯列，也可能包在
+  // coach/person/data 內；先攤平外層，避免只拿到關聯列的 id。
+  const profile = [coach.coach, coach.person, coach.data].find(x => x && typeof x === 'object') ?? coach;
+  const name = profile.display_name ?? profile.name
+    ?? ([profile.firstname, profile.lastname].filter(Boolean).join(' ') || null);
+  const id = profile.id ?? coach.coach_id ?? coach.id ?? null;
+  if (!name && id == null) return null;
   return {
-    id: coach.id ?? coach.coach_id ?? null,
+    id,
     name,
-    firstName: coach.firstname ?? null,
-    lastName: coach.lastname ?? null,
-    imagePath: coach.image_path ?? null,
-    nationalityId: coach.nationality_id ?? coach.country_id ?? null,
-    seasonId: coach.season_id ?? seasonId,
+    firstName: profile.firstname ?? profile.first_name ?? null,
+    lastName: profile.lastname ?? profile.last_name ?? null,
+    imagePath: profile.image_path ?? null,
+    nationalityId: profile.nationality_id ?? profile.country_id ?? null,
+    seasonId: profile.season_id ?? coach.season_id ?? seasonId,
     active: coach.active !== false,
     from: coach.started_at ?? coach.start ?? coach.from ?? null,
     to: coach.ended_at ?? coach.end ?? coach.to ?? null,
   };
+}
+
+function coachIdsFromStore(store) {
+  return [...new Set(Object.values(store?.teams ?? {}).flatMap(team =>
+    (Array.isArray(team?.coaches) ? team.coaches : [])
+      .filter(c => c?.active !== false && !c?.to && c?.id != null)
+      .map(c => String(c.id))))];
+}
+
+async function syncCoachDetails(store, season) {
+  const file = join(OUT, 'coach-details.json');
+  const previous = await readStore(file);
+  const details = { ...(previous?.details ?? {}) };
+  const ids = coachIdsFromStore(store);
+  const now = Date.now();
+  const pending = ids.filter(id => {
+    const row = details[id];
+    if (!row?.attemptedAt) return true;
+    const ttl = row.name ? COACH_TTL_DAYS : 7;
+    return now - Date.parse(row.attemptedAt) > ttl * 86400000;
+  });
+  let fetched = 0;
+  console.log(`▶ SportMonks 教練詳情：${ids.length} 個去重 ID・待補 ${pending.length} 個・本次最多 ${MAX_COACH_DETAILS} 個`);
+  for (const id of pending.slice(0, MAX_COACH_DETAILS)) {
+    try {
+      const raw = await get(`/football/coaches/${encodeURIComponent(id)}`);
+      const coach = normaliseCoach(raw, season.id);
+      details[id] = {
+        ...(coach ?? { id: Number(id), name: null }),
+        attemptedAt: new Date().toISOString(),
+      };
+      fetched++;
+      console.log(`  ${id}：${coach?.name ? '已取得姓名' : '回應未提供姓名'}`);
+    } catch (error) {
+      details[id] = { id: Number(id), name: null, attemptedAt: new Date().toISOString(), error: error.message };
+      console.log(`  ⚠ ${id} 詳情失敗：${error.message}`);
+    }
+  }
+  const out = {
+    source: 'SportMonks',
+    sourceUrl: 'https://api.sportmonks.com/v3/football/coaches/{coach_id}',
+    retrievedAt: new Date().toISOString(),
+    providerSeason: season.id,
+    details,
+    coverage: { ids: ids.length, cached: Object.keys(details).length, fetchedThisRun: fetched },
+    note: '只以去重 coach ID 補抓詳情；姓名未回傳時保留空值，不以人工資料猜測。',
+  };
+  await writeFile(file, JSON.stringify(out, null, 2) + '\n');
+  console.log(`  ✔ ${file}`);
+  return out;
 }
 
 async function readStore(file) {
@@ -272,9 +328,14 @@ async function main() {
     try { stores.push(await syncSeason(T, season)); }
     catch (error) { console.log(`  ⚠ ${season.label} 未完成：${error.message}`); }
   }
+  const currentSeason = seasons.find(x => x.label === '2026-27') ?? seasons[0];
+  const currentStore = stores.find(x => x?.season === currentSeason.label);
+  if (currentStore) {
+    try { await syncCoachDetails(currentStore, currentSeason); }
+    catch (error) { console.log(`  ⚠ ${currentSeason.label} 教練詳情未完成：${error.message}`); }
+  }
   if (FETCH_MATCHES) {
-    const currentSeason = seasons.find(x => x.label === '2026-27') ?? seasons[0];
-    const current = stores.find(x => x?.season === currentSeason.label);
+    const current = currentStore;
     if (current) {
       try { await syncCurrentMatches(T, current, currentSeason); }
       catch (error) { console.log(`  ⚠ ${currentSeason.label} 賽後詳情未完成：${error.message}`); }

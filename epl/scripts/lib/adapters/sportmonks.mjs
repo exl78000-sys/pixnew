@@ -12,6 +12,8 @@ export const supports = ['playerMetadata', 'lineups', 'formations', 'postmatch-d
 
 const STORE = (root, season, directory = 'sportmonks-la-liga') =>
   join(root, 'data', 'raw', directory, `${season}-squads.json`);
+const COACH_DETAILS = (root, directory = 'sportmonks-la-liga') =>
+  join(root, 'data', 'raw', directory, 'coach-details.json');
 
 export const normaliseName = value => String(value ?? '')
   .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
@@ -52,15 +54,27 @@ export function loadSquadStore(root, season, { directory = 'sportmonks-la-liga' 
   } catch { return null; }
 }
 
+export function loadCoachDetails(root, { directory = 'sportmonks-la-liga' } = {}) {
+  const file = COACH_DETAILS(root, directory);
+  if (!existsSync(file)) return {};
+  try {
+    const raw = JSON.parse(readFileSync(file, 'utf8'));
+    return raw?.details && typeof raw.details === 'object' ? raw.details : {};
+  } catch { return {}; }
+}
+
 // 只把 SportMonks 明確回傳的現任教練身分轉成本站球隊頁契約。
 // 任期、戰績、慣用陣型與風格不在球隊 include 的可靠範圍內，不用前任或人工猜測補值。
-export function coachesFromSquadStore(store, { sourceUrl = 'https://api.sportmonks.com/v3/football/teams/seasons/{season_id}?include=coaches' } = {}) {
+export function coachesFromSquadStore(store, { details = {}, sourceUrl = 'https://api.sportmonks.com/v3/football/teams/seasons/{season_id}?include=coaches' } = {}) {
   if (!store?.teams || typeof store.teams !== 'object') return [];
   const out = [];
   for (const [team, entry] of Object.entries(store.teams)) {
     const rows = Array.isArray(entry?.coaches) ? entry.coaches : [];
     const active = rows.filter(c => c?.active !== false && !c?.to);
-    const coach = (active.length ? active : rows).at(-1);
+    const base = (active.length ? active : rows).at(-1);
+    const coach = base?.id != null && details?.[String(base.id)]
+      ? { ...base, ...details[String(base.id)] }
+      : base;
     if (!coach?.name) continue;
     out.push({
       team,
