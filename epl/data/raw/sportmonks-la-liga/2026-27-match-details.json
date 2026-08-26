@@ -3,14 +3,16 @@
   "providerSeason": 27965,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/football/fixtures/{fixture_id}",
-  "retrievedAt": "2026-08-26T11:54:44.601Z",
+  "retrievedAt": "2026-08-26T11:57:36.274Z",
   "matches": {},
   "coverage": {
     "cached": 0,
     "fetchedThisRun": 0,
     "localPlayed": 16,
     "providerFixtures": 25,
-    "candidates": 0
+    "candidates": 0,
+    "fixturesWithParticipants": 25,
+    "fixturesWithMappedTeams": 25
   },
   "note": "與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。"
 }
