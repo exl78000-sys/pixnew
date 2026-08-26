@@ -284,6 +284,10 @@ try {
 
   function lineupCard(match, f) {
     if (!match?.home?.xi?.length || !match?.away?.xi?.length) return '';
+    const sourceName = source => source === 'laliga.com' ? '西甲官方 LaLiga.com' : 'FotMob / enetpulse';
+    const sourceHint = source => source === 'laliga.com'
+      ? '官方公布的先發、替補、陣型與頭像；本站未補入第三方評分'
+      : '官方先發、陣型、站位與完賽評分';
     const board = (side, code, reverseRows = false) => {
       const top = [...side.xi].filter(p => p.rating !== null && p.rating !== undefined)
         .sort((a, b) => b.rating - a.rating).slice(0, 3);
@@ -298,10 +302,17 @@ try {
           ? top.map(p => `${C.esc(p.name)} ${C.fx(p.rating, 1)}`).join('・') : '此來源沒有評分'}</div>
       </div>`;
     };
+    const sources = [match, match.home, match.away].map(x => x?.source).filter(Boolean);
+    const source = sources.includes('laliga.com') ? 'laliga.com' : 'fotmob/enetpulse';
+    const coverage = match.coverage ?? {};
+    const boundary = source === 'laliga.com'
+      ? '西甲官網未提供第三方球員評分與座標；球場分行依官網陣型及先發順序呈現，不把推估評分或站位寫入資料。'
+      : '本卡是已核對的完賽正式先發、陣型、位置與評分；目前來源沒有球員頭貼，完整球隊統計、事件與替補細節仍等待另一條賽後資料管線，不用估算值補上。';
     return `<div class="section"><h2>本場正式先發</h2>
-      <span class="hint">FotMob / enetpulse・${C.dateFull(match.date)}・陣型與站位來自完賽資料</span></div>
+      <span class="hint">${sourceName(source)}・${C.dateFull(match.date)}・${sourceHint(source)}</span></div>
       <div class="grid g2">${board(match.home, f.home)}${board(match.away, f.away, true)}</div>
-      <div class="note" style="margin-top:10px"><b>資料界線：</b>本卡是已核對的完賽正式先發、陣型、位置與評分；目前來源沒有球員頭貼，完整球隊統計、事件與替補細節仍等待另一條賽後資料管線，不用估算值補上。</div>`;
+      <div class="note" style="margin-top:10px"><b>資料界線：</b>${boundary}
+        ${coverage.photos ? '本場頭像直接使用官方圖片網址。' : ''}</div>`;
   }
 
   /* 沒有賽後資料時,要分清楚是「還沒抓到」還是「這個方案根本拿不到」。

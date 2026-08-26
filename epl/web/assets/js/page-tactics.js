@@ -2,9 +2,10 @@ import * as C from './core.js';
 
 const app = document.getElementById('app');
 
-// 西甲沒有英超 pulselive 的逐場官方陣型／先發檔；但 Understat 的 getTeamData
-// 有上一季整隊實際使用陣型比例。只呈現這個可核對的半部，絕不把它包裝成官方先發。
+// 西甲的逐場官方先發另存於單場分析頁；本頁的整季陣型比例仍只讀 Understat
+// getTeamData，絕不把整季比例包裝成單場官方先發。
 function renderLaLigaTactics({ meta, teams, tactics }) {
+  const hasTeamFormationOfficial = meta.official?.teamFormation === true;
   const colour = code => C.team(code).colors?.[0] ?? '#888';
   const formationRows = tactics.flatMap(t => (t.formation?.list ?? []).map(f => ({
     code: t.code, formation: f.name, minutes: f.minutes, share: f.share,
@@ -36,14 +37,14 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
         C.stamp('Understat 球隊資料', { kind: 'manual', note: '不在開頁時連外請求' }),
       ])}
     </div>
-    <div class="note info"><b>資料界線</b>：Understat 提供整隊實際使用陣型的統計，但西甲沒有 pulselive 等價的逐場官方先發、球員站位或攻守形狀資料；本頁不推導 lineups、shapes，也不把整季比例當成單場先發。</div>
+    <div class="note info"><b>資料界線</b>：Understat 提供整隊實際使用陣型的統計；西甲逐場官方先發已在單場分析頁提供，但本頁不把整季比例當成單場先發，也不把官方陣型順序冒充精確球場座標。</div>
     <div class="section"><h2>各隊主要陣型</h2><span class="hint">整季使用分鐘最多的陣型</span></div>
     <div id="primary"></div>
     <div class="section"><h2>陣型佔比比較</h2><span class="hint">固定 A／B／C 三欄比較；選單保留全部可取得的陣型</span></div>
     <div id="formations"></div>
     <div class="section"><h2>攻守與節奏對比</h2><span class="hint">上一季每場平均</span></div>
     <div id="attack"></div>
-    <div class="note" style="margin-top:14px"><b>下一步尚未開放</b>：若要顯示賽前預估先發，必須另找可靠的西甲名單來源；在沒有逐場來源前，不以球員位置自行拼出「官方陣型」。</div>
+    <div class="note" style="margin-top:14px"><b>逐場資料</b>：單場分析頁已可查看目前完賽場次的官方先發；官網來源沒有第三方評分與座標時，畫面會保留從缺，不用推估值補上。</div>
     ${C.foot(meta)}`;
   document.getElementById('primary').innerHTML = C.table(primary, [
     { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
@@ -127,11 +128,11 @@ try {
     重點看小數:後場接近 5 就是三中衛/五後衛體系,鋒線超過 1.5 就是雙前鋒。</div>
 
   <div class="section"><h2>標準陣型與攻守分型</h2>
-    <span class="hint">${meta.official?.available
+    <span class="hint">${hasTeamFormationOfficial
       ? `標準陣型取自英超官方・${meta.official.matchesWithLineup} 場正式名單`
       : '把 FPL 的四個粗類細分成八種角色後推導'}</span></div>
   <div id="shapeTable"></div>
-  ${meta.official?.available ? `<div class="note ok" style="margin-top:10px">
+  ${hasTeamFormationOfficial ? `<div class="note ok" style="margin-top:10px">
     <b>標準陣型是官方公布的,不是我們算的。</b>
     每場比賽英超官方都會公布兩隊的正式陣型,這裡取本季出現次數最多的那一個,
     並標上採計了幾場 —— 只有 1 場的球隊,它的「標準陣型」跟 10 場的球隊不是同一回事,別當成一樣可靠。
@@ -141,7 +142,7 @@ try {
     })}</div>
   </div>` : ''}
   <div class="note info" style="margin-top:10px">
-    <b>${meta.official?.available ? '沒有官方資料時,是這樣推出來的。' : '這是怎麼推出來的。'}</b>FPL 只把球員分成門將/後衛/中場/前鋒四類,而且把邊鋒歸為中場 ——
+    <b>${hasTeamFormationOfficial ? '沒有官方資料時,是這樣推出來的。' : '這是怎麼推出來的。'}</b>FPL 只把球員分成門將/後衛/中場/前鋒四類,而且把邊鋒歸為中場 ——
     光看「五名中場」分不出那是三中場加兩邊鋒,還是五個中路球員,那是完全不同的球隊。
     所以這裡先用 per-90 的產出側寫把每個人細分成<b>中衛 / 邊後衛 / 防守中場 / 中場 / 前腰 / 邊鋒 / 中鋒</b>,
     再由各角色的出場分鐘推導常態陣型。

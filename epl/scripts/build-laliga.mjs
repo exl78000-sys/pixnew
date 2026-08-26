@@ -113,9 +113,42 @@ function canonicalFotmobOfficial(record) {
   if (!home.formation || !away.formation || home.xi.length !== 11 || away.xi.length !== 11) return null;
   return {
     season: record.season, matchId: record.matchId, date: record.date,
-    fetchedAt: record.fetchedAt, source: record.source ?? 'fotmob/enetpulse', score: record.score ?? null, home, away,
+    fetchedAt: record.fetchedAt, source: record.source ?? 'fotmob/enetpulse', sourceUrl: record.sourceUrl ?? 'https://www.fotmob.com/',
+    score: record.score ?? null, coverage: record.coverage ?? {
+      formations: true, starters: true, positions: true, layouts: true, ratings: true, photos: false,
+    }, home, away,
   };
 }
+
+// LaLiga 官網的正式頁提供完整先發、替補、背號與頭像，但不提供第三方評分或球場座標。
+// rows 是依官網公布的 formation 與先發順序分行，並明確保留 layouts=false 的資料界線。
+function canonicalLaLigaOfficial(record) {
+  const side = raw => {
+    const xi = raw?.xi ?? [];
+    const clean = p => ({
+      providerId: p.providerId ?? null, name: p.name ?? '', number: p.number ?? null,
+      pos: p.pos ?? '?', rating: null, photo: p.photo ?? null, captain: p.captain === true,
+    });
+    return {
+      team: raw?.team ?? null, formation: raw?.formation ?? null,
+      xi: xi.map(clean), rows: Array.isArray(raw?.rows) ? raw.rows.map(row => row.map(clean)) : null,
+      source: 'laliga.com',
+    };
+  };
+  const home = side(record.lineup?.home), away = side(record.lineup?.away);
+  if (!home.formation || !away.formation || home.xi.length !== 11 || away.xi.length !== 11) return null;
+  return {
+    season: record.season, matchId: record.matchId, date: record.date,
+    fetchedAt: record.fetchedAt, source: 'laliga.com', sourceUrl: record.sourceUrl ?? 'https://www.laliga.com/',
+    score: record.score ?? null, coverage: {
+      ...(record.coverage ?? {}), formations: true, starters: true, positions: false,
+      layouts: false, ratings: false, photos: true,
+    }, home, away,
+  };
+}
+
+const canonicalOfficial = record => record?.source === 'laliga.com'
+  ? canonicalLaLigaOfficial(record) : canonicalFotmobOfficial(record);
 
 // 西甲沒有 FPL 球員層資料，風格只用可逐隊核對的賽果與 Understat 球隊摘要。
 // 不把球員年齡、傳球創造或壓迫等目前沒有來源的欄位塞進來。
@@ -359,8 +392,8 @@ async function main() {
     ? `  ⚠ API-Football 西甲賽後資料拿不到:${blocked.message}`
     : `  API-Football 西甲賽後永久快取：${reportCount}/${curPlayed.length} 場可發布`);
 
-  // FotMob 快取只包含逐場正式先發與陣型,沒有冒充完整賽後統計；
-  // 先轉成既有 official.matches 契約,讓分析頁能顯示本場真實排位。
+  // 逐場正式先發優先使用 FotMob/enetpulse；找不到的場次再使用西甲官網。
+  // 兩者都先轉成既有 official.matches 契約，比分不一致一律不發布。
   const fotmobPath = join(ROOT, 'data', 'raw', 'fotmob-la-liga', `${CURRENT_SEASON}-lineups.json`);
   let officialMatches = {};
   let fotmobStore = null;
@@ -369,12 +402,27 @@ async function main() {
       fotmobStore = JSON.parse(await readFile(fotmobPath, 'utf8'));
       for (const [pair, record] of Object.entries(fotmobStore.matches ?? {})) {
         const fixture = fixtureByPair.get(pair);
-        const converted = canonicalFotmobOfficial(record);
+        const converted = canonicalOfficial(record);
         if (!fixture || !converted || record.score?.home !== fixture.fh || record.score?.away !== fixture.fa) continue;
         officialMatches[pair] = converted;
       }
       console.log(`  FotMob 西甲正式先發：${Object.keys(officialMatches).length}/${Object.keys(fotmobStore.matches ?? {}).length} 場比分核對通過`);
     } catch { console.log('  ⚠ FotMob 西甲先發快取損壞,本次略過'); }
+  }
+  const officialPath = join(ROOT, 'data', 'raw', 'laliga-official', `${CURRENT_SEASON}-lineups.json`);
+  let officialStore = null;
+  if (existsSync(officialPath)) {
+    try {
+      officialStore = JSON.parse(await readFile(officialPath, 'utf8'));
+      let added = 0;
+      for (const [pair, record] of Object.entries(officialStore.matches ?? {})) {
+        const fixture = fixtureByPair.get(pair);
+        const converted = canonicalOfficial(record);
+        if (!fixture || !converted || record.score?.home !== fixture.fh || record.score?.away !== fixture.fa) continue;
+        if (!officialMatches[pair]) { officialMatches[pair] = converted; added++; }
+      }
+      console.log(`  LaLiga 官方先發：新增 ${added} 場・合計 ${Object.keys(officialStore.matches ?? {}).length} 場快取`);
+    } catch { console.log('  ⚠ LaLiga 官方先發快取損壞,本次略過'); }
   }
   const officialLineupCount = Object.keys(officialMatches).length;
 
@@ -494,7 +542,9 @@ async function main() {
   console.log('寫入西甲球隊數據第二版資料集：');
   meta.official = {
     available: officialLineupCount > 0 || reportCount > 0,
-    source: officialLineupCount > 0 ? 'fotmob/enetpulse' : (reportCount ? 'api-football' : null),
+    source: officialLineupCount > 0 ? [...new Set(Object.values(officialMatches).map(x => x.source))].join(' + ') : (reportCount ? 'api-football' : null),
+    sources: [...new Set(Object.values(officialMatches).map(x => x.source))],
+    teamFormation: false,
     matches: officialLineupCount,
   };
   await write('meta', meta);
@@ -548,7 +598,8 @@ async function main() {
   await write('official', {
     available: officialLineupCount > 0 || reportCount > 0,
     season: CURRENT_SEASON,
-    source: officialLineupCount > 0 ? 'fotmob/enetpulse' : (reportCount ? 'api-football' : null),
+    source: officialLineupCount > 0 ? [...new Set(Object.values(officialMatches).map(x => x.source))].join(' + ') : (reportCount ? 'api-football' : null),
+    sources: [...new Set(Object.values(officialMatches).map(x => x.source))],
     matches: officialMatches,
   });
   await write('live', { available: false, note: '西甲尚未接即時資料。' });

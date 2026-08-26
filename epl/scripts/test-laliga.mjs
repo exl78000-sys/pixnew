@@ -35,7 +35,8 @@ check('未賽場次預測三向機率加總約等於 1', fixtures.filter(f => !f
 }));
 check('已完賽場次不拿重擬合機率冒充賽前預測', fixtures.filter(f => f.played).every(f => f.prediction === null));
 const officialMatches = Object.entries(official.matches ?? {});
-check('FotMob 正式先發已轉成本站資料格式', official.available === true && official.source === 'fotmob/enetpulse' && officialMatches.length > 0);
+check('逐場正式先發已轉成本站資料格式', official.available === true && officialMatches.length > 0
+  && official.sources?.includes('fotmob/enetpulse'));
 check('FotMob 正式先發逐場對回比分與兩隊 11 人', officialMatches.every(([key, match]) => {
   const f = fixtures.find(x => `${x.home}|${x.away}` === key);
   return f?.played && f.fh === match.score?.home && f.fa === match.score?.away
@@ -44,6 +45,10 @@ check('FotMob 正式先發逐場對回比分與兩隊 11 人', officialMatches.e
 }));
 check('FotMob 站位排數可供球場圖使用', officialMatches.every(([, match]) =>
   match.home.rows?.flat().length === 11 && match.away.rows?.flat().length === 11));
+check('西甲官網補齊缺漏場次並保留頭像', official.sources?.includes('laliga.com')
+  && ['DEP|ELC', 'MAL|DEP'].every(key => official.matches?.[key]?.source === 'laliga.com')
+  && ['DEP|ELC', 'MAL|DEP'].every(key => official.matches[key].home.xi.some(p => p.photo)
+    && official.matches[key].away.xi.some(p => p.photo)));
 /* 球員資料改由 Understat 提供(API-Football 的 Free 方案不含本季與上季,實測過)。
    這裡守的不再是「關閉」,而是**開了之後不能偷偷造欄位**:
    Understat 沒有背號、頭貼、傷停與防守數據,那就一個都不准出現。 */

@@ -39,6 +39,7 @@
     "probe:laliga-playerdata": "node scripts/probe-laliga-playerdata.mjs",
     "probe:laliga-lineups": "node scripts/probe-laliga-lineups.mjs",
     "laliga:lineups": "node scripts/fetch-laliga-lineups.mjs",
+    "laliga:official-lineups": "node scripts/fetch-laliga-official-lineups.mjs",
     "laliga:players": "node scripts/fetch-laliga-players.mjs"
   },
   "engines": {

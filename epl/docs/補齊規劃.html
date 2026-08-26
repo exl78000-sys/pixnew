@@ -258,7 +258,7 @@
       <span class="sec-note">做得了,是工作量問題</span>
     </div>
     <p class="body-copy">
-      <strong>關鍵路徑的 <code>players</code> 已經補上了</strong>(見下方卡片)。剩下六份仍是空的,
+      <strong>關鍵路徑的 <code>players</code> 已經補上了</strong>(見下方卡片)。剩下資料模組仍分階段補齊,
       其中 <code>shapes</code> 與 <code>lineups</code> 是下一個瓶頸 —— 戰術頁靠它們。
     </p>
 
@@ -269,11 +269,11 @@
         </thead>
         <tbody>
           <tr><td><code>players</code></td><td class="num">599</td><td class="num" style="color:var(--accent);font-weight:600">946</td><td>已補(Understat・上季 600 + 本季 346)</td></tr>
-          <tr><td><code>lineups</code></td><td class="num">20</td><td class="num" style="color:var(--accent);font-weight:600">9</td><td>已接 9 場完賽正式先發,其餘待補</td></tr>
+          <tr><td><code>lineups</code></td><td class="num">20</td><td class="num" style="color:var(--accent);font-weight:600">16</td><td>目前 16 場完賽正式先發已接入</td></tr>
           <tr><td><code>shapes</code></td><td class="num">20</td><td class="num zero">0</td><td>整隊常態陣型仍由 Understat 提供</td></tr>
           <tr><td><code>analysis</code></td><td class="num">30</td><td class="num zero">0</td><td>單場賽前分析文章</td></tr>
           <tr><td><code>reports</code></td><td class="num">10</td><td class="num zero">0</td><td>賽後戰術解讀</td></tr>
-          <tr><td><code>official</code></td><td class="num">10</td><td class="num" style="color:var(--accent);font-weight:600">9</td><td>已接 9 場 FotMob 完賽正式名單</td></tr>
+          <tr><td><code>official</code></td><td class="num">10</td><td class="num" style="color:var(--accent);font-weight:600">16</td><td>14 場 FotMob + 2 場西甲官網</td></tr>
           <tr><td><code>coaches</code></td><td class="num">23</td><td class="num zero">0</td><td>球隊頁的教練區塊</td></tr>
           <tr><td><code>news</code></td><td class="num">80</td><td class="num zero">0</td><td>動態頁</td></tr>
           <tr><td><code>leaders</code></td><td class="num">有</td><td class="num" style="color:var(--accent);font-weight:600">有</td><td>已補・八個榜單</td></tr>
@@ -412,8 +412,9 @@
           <li>✓ <strong>球員頁與八個榜單上線</strong>,導覽列西甲從三頁變四頁</li>
           <li>✓ 三個會靜靜出錯的地方各有斷言:跨隊球員合計、per90 門檻、位置推論</li>
           <li>✓ <strong>已確認 FotMob 完賽名單來源</strong> —— 最多 3 個請求的探測器可取得陣型、11 名先發、位置座標與評分</li>
-          <li>✓ <strong>9 場已轉 canonical 並接入單場分析頁</strong> —— 顯示正式先發、陣型、位置與評分；<code>DEP|ELC</code> 對不到來源而保留缺口</li>
-          <li>接下來:<code>shapes</code> 與剩餘 <code>lineups</code> → 先補資料再開放,不直接抓整季,也不把推估值當官方資料</li>
+          <li>✓ <strong>16 場已轉 canonical 並接入單場分析頁</strong> —— 14 場 FotMob 提供站位與評分，2 場西甲官網補提供替補、背號與頭像</li>
+          <li>✓ 官網沒有第三方評分與球場座標，畫面保留資料界線，不將陣型順序冒充精確座標</li>
+          <li>接下來:<code>shapes</code> 與 API-Football 賽後統計 → 先補資料再開放,不直接抓整季,也不把推估值當官方資料</li>
           <li>教練名冊仍是人工的,可平行進行</li>
         </ul>
       </div>
