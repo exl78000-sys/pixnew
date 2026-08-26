@@ -40,7 +40,9 @@ jobs:
         run: |
           set -u
           cd "$GITHUB_WORKSPACE"
-          if git diff --quiet -- epl/data/raw/sportmonks-la-liga/live.json; then
+          # git diff 不會把未追蹤檔視為變化；首次成功抓到的快照必須照樣建置並回寫。
+          if git diff --quiet -- epl/data/raw/sportmonks-la-liga/live.json \
+            && git ls-files --error-unmatch epl/data/raw/sportmonks-la-liga/live.json >/dev/null 2>&1; then
             echo "即時快照沒有變化"
             exit 0
           fi
