@@ -70,7 +70,8 @@ export function coachesFromSquadStore(store, { details = {}, sourceUrl = 'https:
   const out = [];
   for (const [team, entry] of Object.entries(store.teams)) {
     const rows = Array.isArray(entry?.coaches) ? entry.coaches : [];
-    const active = rows.filter(c => c?.active !== false && !c?.to);
+    // 在任教練常有未來的合約終點；以 provider 的 active 旗標為準。
+    const active = rows.filter(c => c?.active !== false);
     const base = (active.length ? active : rows).at(-1);
     const coach = base?.id != null && details?.[String(base.id)]
       ? { ...base, ...details[String(base.id)] }
@@ -89,7 +90,7 @@ export function coachesFromSquadStore(store, { details = {}, sourceUrl = 'https:
       tenureDays: null,
       seasonRecord: null,
       allRecord: null,
-      spells: rows.map(c => ({ name: c.name, from: c.from ?? null, to: c.to ?? null, current: c.active !== false && !c.to })),
+      spells: rows.map(c => ({ name: c.name, from: c.from ?? null, to: c.to ?? null, current: c.active !== false })),
       predecessors: rows.filter(c => c !== coach).map(c => ({ name: c.name, from: c.from ?? null, to: c.to ?? null, seasonRecord: null })),
       source: 'SportMonks',
       sourceUrl,

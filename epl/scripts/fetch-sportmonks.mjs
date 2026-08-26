@@ -137,7 +137,9 @@ function normaliseCoach(coach, seasonId) {
 function coachIdsFromStore(store) {
   return [...new Set(Object.values(store?.teams ?? {}).flatMap(team =>
     (Array.isArray(team?.coaches) ? team.coaches : [])
-      .filter(c => c?.active !== false && !c?.to && c?.id != null)
+      // SportMonks 會把在任教練的合約終點設成未來日期；active 才是
+      // 目前身分旗標，不能用「沒有 to」判斷在任。
+      .filter(c => c?.active !== false && c?.id != null)
       .map(c => String(c.id))))];
 }
 

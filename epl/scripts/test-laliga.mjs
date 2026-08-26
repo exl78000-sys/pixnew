@@ -79,7 +79,7 @@ check('SportMonks 教練身分轉成西甲球隊契約', smCoachRows.length === 
   && smCoachRows[0].team === 'BAR' && smCoachRows[0].name === 'Test Coach'
   && smCoachRows[0].source === 'SportMonks' && smCoachRows[0].formation === null);
 const smHydratedCoach = coachesFromSquadStore({ providerSeason: 27965, teams: {
-  BAR: { coaches: [{ id: 77, name: null, active: true }] },
+  BAR: { coaches: [{ id: 77, name: null, active: true, to: '2029-06-30' }] },
 } }, { details: { '77': { id: 77, name: 'Hydrated Coach', imagePath: 'https://cdn.example/coach.png' } } });
 check('SportMonks coach ID 可由詳情快取補姓名', smHydratedCoach.length === 1
   && smHydratedCoach[0].name === 'Hydrated Coach' && smHydratedCoach[0].imagePath.includes('coach.png'));
