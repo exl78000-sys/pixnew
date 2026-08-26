@@ -26,7 +26,27 @@ export function loadSquadStore(root, season) {
   if (!existsSync(file)) return null;
   try {
     const store = JSON.parse(readFileSync(file, 'utf8'));
-    return store?.season === season && Object.keys(store.squads ?? {}).length ? store : null;
+    if (store?.season !== season || !Object.keys(store.squads ?? {}).length) return null;
+
+    /* SportMonks 曾把 2026-27 的 Deportivo A Coruña 回傳成 team code VIL，
+       因為 provider 的 common_name 與隊名不一致；若直接使用會把拉科球員掛到
+       Villarreal。以 provider 回傳的正式名稱做一次保守修復：移到 DEP，VIL 保持
+       缺資料，直到下一次同步取得真正 Villarreal 名單，絕不把錯隊資料留在頁面。 */
+    const driftName = String(store.teams?.VIL?.name ?? '').normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (/deportivo.*(a\s*)?coruna/.test(driftName)) {
+      const teams = { ...(store.teams ?? {}) };
+      const squads = { ...(store.squads ?? {}) };
+      if (!teams.DEP) teams.DEP = teams.VIL;
+      if (!squads.DEP) squads.DEP = squads.VIL;
+      delete teams.VIL;
+      delete squads.VIL;
+      return {
+        ...store, teams, squads,
+        coverage: { ...(store.coverage ?? {}), teams: Object.keys(teams).length, squads: Object.keys(squads).length },
+      };
+    }
+    return store;
   } catch { return null; }
 }
 

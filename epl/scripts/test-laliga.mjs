@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { fetchCompletedMatchDetails, normaliseMatchDetail } from './lib/adapters/api-football.mjs';
-import { enrichPlayers, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
+import { enrichPlayers, loadSquadStore, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -29,6 +29,8 @@ check('2025-26 原始賽程 380 場', last.matches.length === 380, String(last.m
 check('2026-27 原始賽程 380 場', current.matches.length === 380, String(current.matches.length));
 check('本季輸出 20 隊', teams.length === 20, String(teams.length));
 check('本季 20 隊都有內嵌 PNG 隊徽', teams.every(t => t.crest?.startsWith('data:image/png;base64,')), String(teams.filter(t => t.crest).length));
+check('球隊頁顯示已核對的 SportMonks 名單人數', teams.filter(t => t.squadSize > 0).length === 19
+  && teams.find(t => t.code === 'VIL')?.squadSize === 0);
 check('本季輸出 380 場', fixtures.length === 380, String(fixtures.length));
 check('未賽場次預測三向機率加總約等於 1', fixtures.filter(f => !f.played).every(f => {
   const p = f.prediction;
@@ -68,6 +70,10 @@ const smPlayer = enrichPlayers([{ name: 'Pedri', teams: ['Barcelona'] }], {
 check('SportMonks 欄位只從本地快取補入', smPlayer.matched === 1
   && smPlayer.players[0].squadNumber === 8 && smPlayer.players[0].photo?.startsWith('https://')
   && sportmonksCoverage(smPlayer.players).physical === 1);
+const smCurrentStore = loadSquadStore(ROOT, '2026-27');
+check('SportMonks 錯隊名不會把 Deportivo 掛到 Villarreal',
+  !smCurrentStore?.teams?.VIL?.name?.toLowerCase().includes('deportivo')
+  && (!smCurrentStore?.teams?.DEP || /deportivo/i.test(smCurrentStore.teams.DEP.name ?? '')));
 const smXI = (teamId, prefix) => Array.from({ length: 11 }, (_, i) => ({
   player_id: teamId * 100 + i, team_id: teamId, player_name: `${prefix} ${i + 1}`,
   jersey_number: i + 1, position_id: i === 0 ? 24 : i < 5 ? 26 : i < 8 ? 31 : 37,

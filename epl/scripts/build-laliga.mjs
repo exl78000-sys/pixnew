@@ -324,6 +324,11 @@ async function main() {
   const simBy = new Map(sim.map(x => [x.code, x]));
   const lastBy = new Map(lastTable.map(x => [x.code, x]));
   const curBy = new Map(curTable.map(x => [x.code, x]));
+  // SportMonks 名單只讀本地快取；有核對過的隊伍就把實際名單人數帶到球隊頁，
+  // 沒有快取的隊伍維持 0，讓缺口可見而不是把歷史名單誤當成本季名單。
+  const currentSquadStore = loadSquadStore(ROOT, CURRENT_SEASON);
+  const currentSquadSize = new Map(Object.entries(currentSquadStore?.squads ?? {})
+    .map(([code, list]) => [code, Array.isArray(list) ? list.length : 0]));
 
   const historyByTeam = new Map(curCodes.map(code => [code, []]));
   for (const [season, matches] of [[LAST_SEASON, lastMatches], [CURRENT_SEASON, curMatches]]) {
@@ -360,7 +365,7 @@ async function main() {
       strength: strengthBy.get(code) ?? null,
       sim: simBy.get(code) ?? null,
       tactics: profileBy.get(code) ?? null, coach: null, schedule: null,
-      history: historyByTeam.get(code), squadSize: 0, injuries: 0,
+      history: historyByTeam.get(code), squadSize: currentSquadSize.get(code) ?? 0, injuries: 0,
     };
   }).sort((a, b) => (b.sim?.expectedPoints ?? 0) - (a.sim?.expectedPoints ?? 0));
 

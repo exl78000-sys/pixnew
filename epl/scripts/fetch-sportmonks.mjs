@@ -61,6 +61,17 @@ const stale = store => {
   return !Number.isFinite(age) || age > TTL_DAYS * 86400000;
 };
 
+// 供應商偶爾會在 common_name 回傳歷史／別名，若直接拿最後一欄對照，
+// 可能把 Deportivo A Coruña 覆蓋到 Villarreal。先採用完整隊名的明確規則，
+// 再退回本站別名表；同一個 provider id 不會被另一隊覆蓋。
+function providerTeamCode(T, team) {
+  const name = String(team?.name ?? '')
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (/deportivo.*coruna/.test(name)) return 'DEP';
+  if (/villarreal/.test(name)) return 'VIL';
+  return T.codeOf(team?.name) || T.codeOf(team?.short_code) || T.codeOf(team?.common_name);
+}
+
 async function readStore(file) {
   if (!existsSync(file)) return null;
   try { return JSON.parse(await readFile(file, 'utf8')); } catch { return null; }
@@ -79,9 +90,13 @@ async function syncSeason(T, season) {
   const teamRows = rows(await get(`/football/teams/seasons/${season.id}?per_page=100`));
   const teams = {};
   for (const team of teamRows) {
-    const code = T.codeOf(team.name) || T.codeOf(team.short_code) || T.codeOf(team.common_name);
+    const code = providerTeamCode(T, team);
     if (!code) {
       console.log(`  ⚠ 球隊對不上本站隊碼：${team.name ?? '(無名)'}`);
+      continue;
+    }
+    if (teams[code] && String(teams[code].id) !== String(team.id)) {
+      console.log(`  ⚠ 球隊代碼衝突 ${code}：保留 ${teams[code].name}，略過 ${team.name ?? '(無名)'}`);
       continue;
     }
     teams[code] = { id: team.id, name: team.name, shortCode: team.short_code ?? null };
@@ -141,7 +156,7 @@ async function syncCurrentMatches(T, seasonStore) {
   const candidates = [];
   for (const sf of fixtureRows) {
     const participants = rows(sf.participants);
-    const codes = participants.map(p => teamCodeById.get(String(p.id)) || T.codeOf(p.name)).filter(Boolean);
+    const codes = participants.map(p => teamCodeById.get(String(p.id)) || providerTeamCode(T, p)).filter(Boolean);
     const date = String(sf.starting_at ?? '').slice(0, 10);
     const localMatch = played.find(m => m.date === date && codes.includes(m.home) && codes.includes(m.away));
     if (!localMatch) continue;
