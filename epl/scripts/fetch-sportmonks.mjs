@@ -295,6 +295,7 @@ async function syncCurrentMatches(T, seasonStore, season) {
   let detailAttempts = 0;
   let detailRejected = 0;
   let detailFailed = 0;
+  const detailFailureReasons = {};
   const dateDistance = (a, b) => {
     const left = Date.parse(`${a}T00:00:00Z`), right = Date.parse(`${b}T00:00:00Z`);
     return Number.isFinite(left) && Number.isFinite(right) ? Math.abs(left - right) / 86400000 : Infinity;
@@ -336,7 +337,12 @@ async function syncCurrentMatches(T, seasonStore, season) {
       details[key] = detail;
       fetched++;
       console.log(`  ${key}：${detail.coverage.lineups ? '正式先發' : '無完整先發'}・${detail.coverage.ratings ? '有評分' : '無評分'}・${detail.coverage.teamStatistics ? '有球隊統計' : '無球隊統計'}`);
-    } catch (error) { detailFailed++; console.log(`  ⚠ ${key} 失敗：${error.message}`); }
+    } catch (error) {
+      detailFailed++;
+      const status = String(error.message ?? '').match(/HTTP (\d{3})/)?.[1] ?? 'other';
+      detailFailureReasons[status] = (detailFailureReasons[status] ?? 0) + 1;
+      console.log(`  ⚠ ${key} 失敗：${error.message}`);
+    }
   }
   const out = {
     season: season.label, providerSeason: season.id, source: 'SportMonks',
@@ -348,7 +354,7 @@ async function syncCurrentMatches(T, seasonStore, season) {
       fixturesWithParticipants, fixturesWithMappedTeams, fixturesWithLocalPair, fixturesWithLocalDate,
       localDateRange: played.length ? [played[0].date, played.at(-1).date] : [],
       providerSamples,
-      detailAttempts, detailRejected, detailFailed,
+      detailAttempts, detailRejected, detailFailed, detailFailureReasons,
     },
     note: '與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。',
   };
