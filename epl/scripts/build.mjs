@@ -35,6 +35,7 @@ import { buildGoals } from './lib/goals.mjs';
 import { round } from './lib/util.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
+import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data');
@@ -337,6 +338,11 @@ async function main() {
       console.log(`  ⚠ 已換帥 ${stale.length} 隊(顯示官方現任,戰術與戰績標為前任):`);
       for (const c of stale) console.log(`      ${c.team} ${c.predecessor.name || '(空白)'} → ${c.name}`);
     }
+  }
+  const coachPhotos = loadCoachPhotos(ROOT);
+  for (const c of coaches.coaches) {
+    const photo = coachPhotoFor(coachPhotos, 'epl', c.team);
+    if (photo?.imagePath) { c.imagePath = photo.imagePath; c.photoSource = photo.source; c.photoSourceUrl = photo.sourceUrl; }
   }
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
 

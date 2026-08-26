@@ -24,6 +24,9 @@ try {
     const [cls, label] = CONF[c.confidence] ?? ['', c.confidence];
     return `<span class="pill ${cls} tiny">${label}</span>`;
   };
+  const coachAvatar = (c, size = 48) => c?.imagePath
+    ? `<img class="coach-avatar coach-photo" src="${C.esc(c.imagePath)}" alt="${C.esc(c.name ?? '教練')}" width="${size}" height="${size}" loading="lazy" referrerpolicy="no-referrer">`
+    : `<span class="coach-avatar" aria-hidden="true">${C.esc((c?.name ?? '教').slice(0, 1))}</span>`;
   const rec = r => (r && r.p ? `${r.p} 場・${r.w}勝${r.d}和${r.l}負・場均 <b>${r.ppg}</b> 分` : '任內無本季比賽紀錄');
 
   if (meta.edition === 'basic') {
@@ -150,7 +153,7 @@ try {
     if (!c) return '';
     const years = c.tenureDays ? (c.tenureDays / 365).toFixed(1) : null;
     const head = `<div class="spread" style="align-items:flex-start">
-      <div><h3 style="margin:0">${c.name ? C.esc(c.zh ?? c.name) : '教練待確認'}
+      ${coachAvatar(c, 48)}<div><h3 style="margin:0">${c.name ? C.esc(c.zh ?? c.name) : '教練待確認'}
         <span class="dim small" style="font-weight:400">${c.zh && c.name ? C.esc(c.name) : ''}</span></h3>
         <div class="tiny dim" style="margin-top:2px">${c.nat ?? ''}${c.since ? `${c.nat ? '・' : ''}${c.since} 上任(約 ${years} 年)` : ''}</div></div>
       ${c.officialMismatch ? '<span class="pill accent tiny" title="英超官方登記的現任教練">官方現任</span>' : confPill(c)}
@@ -286,7 +289,7 @@ try {
     return `<div class="section" style="margin-top:18px"><h2>現任教練</h2><span class="hint">${C.esc(sourceLabel)}</span></div>
       <div class="card">
         <div class="spread" style="align-items:flex-start">
-          <div class="row" style="gap:10px"><div class="coach-avatar" aria-hidden="true">${C.esc(c.name.slice(0, 1))}</div>
+          <div class="row" style="gap:10px">${coachAvatar(c, 48)}
             <div><h3 style="margin:0">${C.esc(c.name)}</h3><div class="tiny dim">${c.since ? `資料回傳任期起點 ${C.esc(String(c.since).slice(0, 10))}` : '任期日期未提供'}</div></div></div>
           <span class="pill accent tiny">來源已核對</span>
         </div>

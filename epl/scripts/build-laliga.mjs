@@ -23,6 +23,7 @@ import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
 import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
 import { loadOfficialCoachStore, officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
+import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -351,6 +352,13 @@ async function main() {
   // 官方 staff 頁是現任姓名的優先核對來源；SportMonks 只補官方尚未解析到的球隊。
   const officialCoachTeams = new Set(officialCoachData.map(c => c.team));
   const coachData = [...officialCoachData, ...sportmonksCoachData.filter(c => !officialCoachTeams.has(c.team))];
+  const coachPhotos = loadCoachPhotos(ROOT);
+  for (const c of coachData) {
+    const photo = (c.imagePath && !/default-player|placeholder/i.test(c.imagePath))
+      ? { imagePath: c.imagePath, source: c.source, sourceUrl: c.sourceUrl }
+      : coachPhotoFor(coachPhotos, 'es1', c.team);
+    if (photo?.imagePath) { c.imagePath = photo.imagePath; c.photoSource = photo.source; c.photoSourceUrl = photo.sourceUrl; }
+  }
   const coachBy = new Map(coachData.map(c => [c.team, c]));
 
   const historyByTeam = new Map(curCodes.map(code => [code, []]));
@@ -556,6 +564,12 @@ async function main() {
       url: 'https://www.fotmob.com/',
       use: '已完賽西甲逐場先發、陣型與位置座標（小批量永久快取）',
       license: '公開網站資料端點，需遵守來源使用條款',
+    },
+    {
+      name: 'Wikipedia / Wikimedia Commons',
+      url: 'https://en.wikipedia.org/api/rest_v1/',
+      use: '西甲教練頭貼備援；LaLiga 官方真實頭貼優先',
+      license: '依 Wikimedia 使用條款與圖片授權',
     },
   ];
   const backtest = {

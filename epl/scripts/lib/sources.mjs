@@ -48,6 +48,7 @@ export const ATTRIBUTION = [
   { name: 'openfootball / football.json', url: 'https://github.com/openfootball/football.json', use: '英超賽程、比分(含半場)', license: 'Public Domain' },
   { name: 'vaastav / Fantasy-Premier-League', url: 'https://github.com/vaastav/Fantasy-Premier-League', use: '球員進階數據、傷停狀態、賽程難度', license: 'FPL 官方 API 鏡像' },
   { name: '英超官方 (pulselive)', url: 'https://www.premierleague.com', use: '官方正式陣容、陣型、現任教練', license: '官網公開端點' },
+  { name: 'Wikipedia / Wikimedia Commons', url: 'https://en.wikipedia.org/api/rest_v1/', use: '英超與西甲教練公開人物縮圖備援；官方有真實頭貼時優先官方', license: '依 Wikimedia 使用條款與圖片授權' },
   { name: 'API-Football', url: 'https://www.api-football.com/', use: 'SportMonks 尚未提供時的賽後資料與球員頭貼備援', license: 'API 方案資料' },
   { name: 'Understat', url: 'https://understat.com/league/EPL/2025', use: '上一完整賽季的運動戰、角球、定位球與直接任意球 xG/進失球', license: '公開頁面低頻率快取' },
   { name: 'football-data.co.uk', url: 'https://www.football-data.co.uk', use: '博彩收盤賠率(模型 vs 市場的基準)', license: '免費、可自由使用' },

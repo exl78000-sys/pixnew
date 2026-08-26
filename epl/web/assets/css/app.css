@@ -312,6 +312,13 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
   border-radius: 50%; background: #04f5ff18; border: 1px solid #04f5ff55; color: var(--accent-3);
   font: 700 18px var(--sans);
 }
+.coach-avatar {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 48px;
+  width: 48px; height: 48px; border-radius: 50%; object-fit: cover;
+  background: #04f5ff18; border: 1px solid #04f5ff55; color: var(--accent-3);
+  font: 700 18px var(--sans); overflow: hidden;
+}
+.coach-photo { display: block; }
 .expert-summary { margin: 0; color: var(--ink); line-height: 1.75; font-size: 14px; }
 .expert-kind.news { color: var(--accent-3); border-color: #04f5ff55; background: #04f5ff12; }
 .expert-kind.legend { color: #ffd166; border-color: #ffd16655; background: #ffd16612; }

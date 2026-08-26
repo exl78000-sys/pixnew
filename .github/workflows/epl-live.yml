@@ -140,6 +140,12 @@ jobs:
         run: npm run official
         continue-on-error: true
 
+      # 英超官方沒有教練頭貼欄位；西甲官方缺圖也由公開人物縮圖補位。
+      # 24 小時快取，成功與失敗都記錄，不在開頁時連線。
+      - name: 補齊英超與西甲教練頭貼
+        run: npm run coach-photos
+        continue-on-error: true
+
       # 博彩收盤賠率(football-data.co.uk,免金鑰)。歷史季固定、抓過就跳過;
       # 回測會拿它去算「模型 vs 市場」。抓不到就少一條基準線,其餘照常。
       - name: 抓博彩賠率(football-data.co.uk)
