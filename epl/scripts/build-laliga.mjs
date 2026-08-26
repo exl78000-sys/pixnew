@@ -22,6 +22,7 @@ import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
 import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
+import { loadOfficialCoachStore, officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -344,7 +345,12 @@ async function main() {
   const coachDetails = loadCoachDetails(ROOT);
   const currentSquadSize = new Map(Object.entries(currentSquadStore?.squads ?? {})
     .map(([code, list]) => [code, Array.isArray(list) ? list.length : 0]));
-  const coachData = coachesFromSquadStore(currentSquadStore, { details: coachDetails });
+  const sportmonksCoachData = coachesFromSquadStore(currentSquadStore, { details: coachDetails });
+  const officialCoachStore = loadOfficialCoachStore(ROOT, { season: CURRENT_SEASON });
+  const officialCoachData = officialCoachesFromStore(officialCoachStore);
+  // 官方 staff 頁是現任姓名的優先核對來源；SportMonks 只補官方尚未解析到的球隊。
+  const officialCoachTeams = new Set(officialCoachData.map(c => c.team));
+  const coachData = [...officialCoachData, ...sportmonksCoachData.filter(c => !officialCoachTeams.has(c.team))];
   const coachBy = new Map(coachData.map(c => [c.team, c]));
 
   const historyByTeam = new Map(curCodes.map(code => [code, []]));
@@ -601,6 +607,12 @@ async function main() {
         use: '西甲球員背號、頭貼、生日、身高體重、國籍、隊長與合約（只讀本地快取）',
         license: '訂閱 API 資料',
       },
+      {
+        name: 'LaLiga 官方球隊頁',
+        url: 'https://www.laliga.com/en-US/laliga-easports/clubs',
+        use: '西甲現任主教練 staff 姓名核對（每日快取，官方缺頁才由 SportMonks 補位）',
+        license: '官方網站資料，遵守網站使用條款',
+      },
     ],
     capabilities: {
       /* players 是 true；整季進攻與串聯來自 Understat，身分欄位可由
@@ -679,13 +691,18 @@ async function main() {
     last: playerSeasons[LAST_SEASON] ? buildLeaders(playerSeasons[LAST_SEASON].players) : null,
   });
   await write('coaches', {
-    asOf: currentSquadStore?.retrievedAt ?? null,
-    officialAsOf: currentSquadStore?.retrievedAt ?? null,
+    asOf: officialCoachStore?.retrievedAt ?? currentSquadStore?.retrievedAt ?? null,
+    officialAsOf: officialCoachStore?.retrievedAt ?? null,
     season: CURRENT_SEASON,
-    source: coachData.length ? 'SportMonks' : null,
-    sourceUrl: coachData.length ? 'https://api.sportmonks.com/v3/football/teams/seasons/{season_id}?include=coaches' : null,
+    source: officialCoachData.length ? 'LaLiga + SportMonks' : (coachData.length ? 'SportMonks' : null),
+    sourceUrl: officialCoachData.length ? (officialCoachStore?.sourceUrl ?? 'https://www.laliga.com/en-US/laliga-easports/clubs')
+      : (coachData.length ? 'https://api.sportmonks.com/v3/football/teams/seasons/{season_id}?include=coaches' : null),
+    sources: {
+      official: { count: officialCoachData.length, coverage: officialCoachStore?.coverage ?? null },
+      sportmonks: { count: sportmonksCoachData.filter(c => !officialCoachTeams.has(c.team)).length },
+    },
     note: coachData.length
-      ? '僅顯示 SportMonks 球隊季名單回傳的現任教練姓名；任期、戰績、慣用陣型與風格尚未人工核對。'
+      ? '現任姓名以 LaLiga 官方 staff 頁優先核對；官方未解析到的球隊才由 SportMonks 補位。任期、戰績、慣用陣型與風格尚未人工核對。'
       : '西甲尚未取得可核對的教練資料。',
     coaches: coachData,
   });

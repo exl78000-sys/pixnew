@@ -279,14 +279,18 @@ try {
     const c = t.coach;
     if (!c?.name) return `<div class="note" style="margin-top:16px">目前沒有可核對的現任教練資料，不以人工猜測填入。</div>`;
     const updated = coaches.asOf ? C.dateFull(String(coaches.asOf).slice(0, 10)) : '本次資料建置';
-    return `<div class="section" style="margin-top:18px"><h2>現任教練</h2><span class="hint">SportMonks 球隊季名單</span></div>
+    const sourceLabel = c.source === 'LaLiga' ? 'LaLiga 官方 staff 頁' : 'SportMonks 球隊季名單';
+    const sourceNote = c.source === 'LaLiga'
+      ? '姓名由 LaLiga 官方球隊 staff 頁核對；任期、戰績與戰術註解尚未人工核對。'
+      : 'SportMonks 此端點只保證教練身分，不代表本站已完成任期切分、歷史戰績或戰術風格整理。';
+    return `<div class="section" style="margin-top:18px"><h2>現任教練</h2><span class="hint">${C.esc(sourceLabel)}</span></div>
       <div class="card">
         <div class="spread" style="align-items:flex-start">
           <div class="row" style="gap:10px"><div class="coach-avatar" aria-hidden="true">${C.esc(c.name.slice(0, 1))}</div>
             <div><h3 style="margin:0">${C.esc(c.name)}</h3><div class="tiny dim">${c.since ? `資料回傳任期起點 ${C.esc(String(c.since).slice(0, 10))}` : '任期日期未提供'}</div></div></div>
           <span class="pill accent tiny">來源已核對</span>
         </div>
-        <div class="tiny dim" style="margin-top:10px">資料更新：${C.esc(updated)}。SportMonks 此端點只保證教練身分，不代表本站已完成任期切分、歷史戰績或戰術風格整理。</div>
+        <div class="tiny dim" style="margin-top:10px">資料更新：${C.esc(updated)}。${C.esc(sourceNote)}</div>
       </div>`;
   }
 

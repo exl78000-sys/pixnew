@@ -7,6 +7,8 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { fetchCompletedMatchDetails, normaliseMatchDetail } from './lib/adapters/api-football.mjs';
 import { coachesFromSquadStore, enrichPlayers, loadSquadStore, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
+import { parseClubSlugs, parseOfficialCoach, parseOfficialCoachPayload } from './fetch-laliga-official-coaches.mjs';
+import { officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -87,6 +89,24 @@ check('SportMonks 教練沿用球隊名單請求,不增加 API 請求',
   /teams\/seasons\/\$\{season\.id\}\?include=coaches/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
 check('教練詳情只透過 coach ID 去重請求',
   /football\/coaches\/\$\{encodeURIComponent\(id\)\}/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
+const officialSample = `<a href="/en-US/clubs/fc-barcelona/squad">Barcelona</a><a href="/en-US/clubs/fc-barcelona/squad">duplicate</a>
+  <script type="application/ld+json">${JSON.stringify({
+    name: 'FC Barcelona', coach: [
+      { '@type': 'Person', name: 'Hansi Flick', jobTitle: 'Coach', image: 'null' },
+      { '@type': 'Person', name: 'Marcus Sorg', jobTitle: 'Assistant coach' },
+    ],
+  })}</script>`;
+const parsedOfficial = parseOfficialCoach(officialSample);
+check('LaLiga 官方頁只取主教練,不把助理教練當主教練', parsedOfficial?.name === 'Hansi Flick'
+  && parsedOfficial.teamName === 'FC Barcelona' && parsedOfficial.imagePath === null);
+check('LaLiga 官方 API 只取 current Coach 並保留教練頭像', parseOfficialCoachPayload({ squads: [
+  { current: true, role: { name: 'Coach' }, person: { name: 'Hansi Flick', slug: 'hans-dieter-flick' },
+    team: { nickname: 'FC Barcelona' }, photos: { '002': { '64x64': 'https://assets.example/coach.jpg' } } },
+  { current: true, role: { name: 'Assistant coach' }, person: { name: 'Marcus Sorg' } },
+] })?.imagePath.endsWith('coach.jpg'));
+check('官方球隊目錄連結去重', parseClubSlugs(officialSample).join('|') === 'fc-barcelona');
+const officialRows = officialCoachesFromStore({ season: '2026-27', coaches: [{ team: 'BAR', name: 'Hansi Flick' }, { team: 'ATH', name: 'Ernesto Valverde' }] });
+check('官方教練快取轉成可合併資料列', officialRows.length === 2 && officialRows[0].team === 'BAR');
 const smCurrentStore = loadSquadStore(ROOT, '2026-27');
 check('SportMonks 錯隊名不會把 Deportivo 掛到 Villarreal',
   !smCurrentStore?.teams?.VIL?.name?.toLowerCase().includes('deportivo')
