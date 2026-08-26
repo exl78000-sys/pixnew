@@ -22,9 +22,9 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     const total = rows => rows.reduce((sum, row) => sum + (row.share ?? 0), 0);
     return total(b[1]) - total(a[1]);
   });
-  // 比較版面固定四欄，但選單保留 Understat 回報的所有陣型，方便重新挑選。
+  // 比較版面固定三欄，但選單保留 Understat 回報的所有陣型，方便重新挑選。
   const availableFormations = formationGroups.map(([name]) => name);
-  const compareFormations = availableFormations.slice(0, 4);
+  const compareFormations = availableFormations.slice(0, 3);
   const rowsByFormation = name => new Map((formationGroups.find(([key]) => key === name)?.[1] ?? []).map(r => [r.code, r]));
   C.registerTeams(teams); C.nav();
   app.innerHTML = `
@@ -39,7 +39,7 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     <div class="note info"><b>資料界線</b>：Understat 提供整隊實際使用陣型的統計，但西甲沒有 pulselive 等價的逐場官方先發、球員站位或攻守形狀資料；本頁不推導 lineups、shapes，也不把整季比例當成單場先發。</div>
     <div class="section"><h2>各隊主要陣型</h2><span class="hint">整季使用分鐘最多的陣型</span></div>
     <div id="primary"></div>
-    <div class="section"><h2>陣型佔比比較</h2><span class="hint">固定 4 欄比較；選單保留全部可取得的陣型</span></div>
+    <div class="section"><h2>陣型佔比比較</h2><span class="hint">固定 A／B／C 三欄比較；選單保留全部可取得的陣型</span></div>
     <div id="formations"></div>
     <div class="section"><h2>攻守與節奏對比</h2><span class="hint">上一季每場平均</span></div>
     <div id="attack"></div>
@@ -59,12 +59,11 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
       ${formationSelect('formationA', '陣型 A', compareFormations[0])}
       ${formationSelect('formationB', '陣型 B', compareFormations[1] ?? compareFormations[0])}
       ${formationSelect('formationC', '陣型 C', compareFormations[2] ?? compareFormations[0])}
-      ${formationSelect('formationD', '陣型 D', compareFormations[3] ?? compareFormations[0])}
       <span class="dim tiny">從選單切換，即時比較各隊整季分鐘佔比</span>
     </div>
     <div class="grid g2" id="formationCompare"></div>`;
   const renderFormationCompare = () => {
-    const selected = ['formationA', 'formationB', 'formationC', 'formationD'].map(id => document.getElementById(id).value);
+    const selected = ['formationA', 'formationB', 'formationC'].map(id => document.getElementById(id).value);
     const maps = selected.map(rowsByFormation);
     const palette = ['var(--accent)', 'var(--accent-3)', 'var(--accent-2)', '#c58cff'];
     const bar = (row, tint) => row ? `<span style="height:6px;flex:1;background:var(--ink-5);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100, Math.max(0, row.share))}%;background:${tint}"></i></span><b class="mono small" style="min-width:42px;text-align:right">${row.share}%</b>` : '<span class="dim small">—</span>';
@@ -76,7 +75,7 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     }).join('');
     document.getElementById('formationCompare').innerHTML = cards;
   };
-  ['formationA', 'formationB', 'formationC', 'formationD'].forEach(id => { document.getElementById(id).onchange = renderFormationCompare; });
+  ['formationA', 'formationB', 'formationC'].forEach(id => { document.getElementById(id).onchange = renderFormationCompare; });
   renderFormationCompare();
   document.getElementById('attack').innerHTML = C.table(tactics, [
     { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
