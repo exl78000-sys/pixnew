@@ -79,6 +79,15 @@ jobs:
           SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
         continue-on-error: true
 
+      # 英超官方 CDN 沒有的少量頭貼，改用 API-Football 逐名搜尋補充；
+      # 每次最多 10 人、每日最多 10 次，結果寫入 photos.json 快取。
+      - name: API 補抓英超缺少球員頭貼
+        run: npm run photos:api
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          API_FOOTBALL_PHOTO_DAILY_LIMIT: 10
+        continue-on-error: true
+
       - name: 抓即時比賽狀態(官方 FPL API)
         run: npm run live
         env:
@@ -170,6 +179,7 @@ jobs:
                      epl/data/raw/football-data-couk/ \
                      epl/data/backtest.json epl/data/backtest-matches.json \
                      epl/data/form-tuning.json epl/data/availability-history.json 2>/dev/null || true
+          git add -f epl/data/manual/photos.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "資料沒有變化,不提交"
           else

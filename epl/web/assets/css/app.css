@@ -190,12 +190,13 @@ td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 @keyframes pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #e9005266; } 50% { opacity: .45; box-shadow: 0 0 0 6px #e9005200; } }
 @media (prefers-reduced-motion: reduce) { .livedot { animation: none; } }
 
-.scoreline { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.scoreline { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; justify-content: center; gap: 14px; }
 .scoreline .sc {
   font-family: var(--mono); font-size: 30px; font-weight: 700; letter-spacing: -1px;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center;
 }
-.scoreline .side { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.scoreline .side { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
+.scoreline .side b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .scoreline .side.away { flex-direction: row-reverse; }
 
 .xi { display: grid; gap: 3px; }

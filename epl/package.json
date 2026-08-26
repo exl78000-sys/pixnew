@@ -20,6 +20,7 @@
     "laliga:crests": "node scripts/fetch-crests.mjs --league=es1",
     "laliga:history-crests": "node scripts/fetch-crests.mjs --league=es1 --include-history",
     "photos": "node scripts/fetch-photos.mjs",
+    "photos:api": "node scripts/fetch-api-photos.mjs",
     "season": "node scripts/fetch-season.mjs",
     "live:watch": "node scripts/live-server.mjs",
     "coaches:check": "node scripts/fetch-coaches.mjs",
