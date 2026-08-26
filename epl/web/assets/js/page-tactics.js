@@ -14,6 +14,14 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     matches: t.matches, xG90: t.attack?.xG90 ?? null, xGA90: t.defence?.xGA90 ?? null,
     share: t.formation?.list?.[0]?.share ?? null,
   }));
+  const formationGroups = [...formationRows.reduce((groups, row) => {
+    if (!groups.has(row.formation)) groups.set(row.formation, []);
+    groups.get(row.formation).push(row);
+    return groups;
+  }, new Map())].sort((a, b) => {
+    const total = rows => rows.reduce((sum, row) => sum + (row.share ?? 0), 0);
+    return total(b[1]) - total(a[1]);
+  });
   C.registerTeams(teams); C.nav();
   app.innerHTML = `
     <div class="page-head">
@@ -27,7 +35,7 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     <div class="note info"><b>資料界線</b>：Understat 提供整隊實際使用陣型的統計，但西甲沒有 pulselive 等價的逐場官方先發、球員站位或攻守形狀資料；本頁不推導 lineups、shapes，也不把整季比例當成單場先發。</div>
     <div class="section"><h2>各隊主要陣型</h2><span class="hint">整季使用分鐘最多的陣型</span></div>
     <div id="primary"></div>
-    <div class="section"><h2>各隊陣型使用比例</h2><span class="hint">只列 Understat 有回報的整隊統計</span></div>
+    <div class="section"><h2>按陣型查看使用比例</h2><span class="hint">先看常見陣型，再展開較少使用的陣型</span></div>
     <div id="formations"></div>
     <div class="section"><h2>攻守與節奏對比</h2><span class="hint">上一季每場平均</span></div>
     <div id="attack"></div>
@@ -41,12 +49,17 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     { key: 'xG90', label: 'xG/場', value: r => r.xG90 ?? -1, num: true, render: r => C.fx(r.xG90, 2) },
     { key: 'xGA90', label: 'xGA/場', value: r => r.xGA90 ?? -1, num: true, render: r => C.fx(r.xGA90, 2) },
   ], { sortKey: 'xG90', desc: true, onRow: r => C.go('teams', { code: r.code }) });
-  document.getElementById('formations').innerHTML = C.table(formationRows, [
-    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
-    { key: 'formation', label: '陣型', value: r => r.formation },
-    { key: 'share', label: '分鐘占比', value: r => r.share, num: true, render: r => `${r.share}%` },
-    { key: 'minutes', label: '分鐘', value: r => r.minutes, num: true },
-  ], { sortKey: 'share', desc: true, onRow: r => C.go('teams', { code: r.code }) });
+  const formationCard = ([formation, rows]) => `<div class="card">
+    <div class="spread"><h3 style="margin:0"><span class="mono">${formation}</span></h3><span class="dim tiny">${rows.length} 隊使用</span></div>
+    <div style="display:grid;gap:8px;margin-top:12px">${rows.sort((a, b) => b.share - a.share).map(r => `<a href="${C.link('teams', { code: r.code })}" class="stat-line" style="text-decoration:none;gap:10px">
+      <span class="small" style="min-width:130px">${C.badge(r.code)} ${C.name(r.code)}</span>
+      <span style="flex:1;display:flex;align-items:center;gap:8px"><span style="height:6px;flex:1;background:var(--ink-5);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100, Math.max(0, r.share))}%;background:${colour(r.code)}"></i></span><b class="mono small" style="min-width:42px;text-align:right">${r.share}%</b></span>
+    </a>`).join('')}</div>
+    <div class="tiny dim" style="margin-top:10px">占比是該隊整季使用這個陣型的分鐘比例，不是聯盟平均。</div>
+  </div>`;
+  const common = formationGroups.slice(0, 6).map(formationCard).join('');
+  const rare = formationGroups.slice(6).map(formationCard).join('');
+  document.getElementById('formations').innerHTML = `<div class="grid g3">${common}</div>${rare ? `<details style="margin-top:12px"><summary class="btn">顯示其他 ${formationGroups.length - 6} 種陣型</summary><div class="grid g3" style="margin-top:12px">${rare}</div></details>` : ''}`;
   document.getElementById('attack').innerHTML = C.table(tactics, [
     { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
     { key: 'xG90', label: 'xG/場', value: r => r.attack?.xG90 ?? -1, num: true, render: r => C.fx(r.attack?.xG90, 2) },
