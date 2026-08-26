@@ -278,14 +278,25 @@ try {
         : '賽前機率請回賽程頁查看。'}</div>
     </div>
 
-    <div class="section"><h2>兩隊上季背景</h2><span class="hint">${meta.lastSeason}・不調整賽後結論</span></div>
-    <div class="card">${comparison}</div>
+    ${f.played ? `<div class="analysis-switch" id="analysis-views" role="tablist" aria-label="西甲分析階段">
+      <button class="btn analysis-tab" type="button" role="tab" data-view="post" aria-controls="panel-post">賽後分析</button>
+      <button class="btn analysis-tab" type="button" role="tab" data-view="context" aria-controls="panel-context">賽前背景</button>
+    </div>` : ''}
 
-    <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
-    ${lineupCard(lineup, f)}
-    ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
+    <section class="analysis-panel" id="panel-context" role="tabpanel">
+      <div class="section"><h2>兩隊上季背景</h2><span class="hint">${meta.lastSeason}・不調整賽後結論</span></div>
+      <div class="card">${comparison}</div>
+      <div class="note" style="margin-top:12px">本場沒有保存可驗證的賽前機率快照；這裡只呈現賽前可用的上季背景，不把賽後重建數字當成賽前預測。</div>
+    </section>
+
+    <section class="analysis-panel" id="panel-post" role="tabpanel">
+      <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
+      ${lineupCard(lineup, f)}
+      ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
+    </section>
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
+    if (f.played) setupAnalysisTabs('post');
   }
 
   function lineupCard(match, f) {
