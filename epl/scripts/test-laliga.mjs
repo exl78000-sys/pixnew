@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { fetchCompletedMatchDetails, normaliseMatchDetail } from './lib/adapters/api-football.mjs';
-import { enrichPlayers, loadSquadStore, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
+import { coachesFromSquadStore, enrichPlayers, loadSquadStore, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -72,6 +72,14 @@ const smPlayer = enrichPlayers([{ name: 'Pedri', teams: ['Barcelona'] }], {
 check('SportMonks 欄位只從本地快取補入', smPlayer.matched === 1
   && smPlayer.players[0].squadNumber === 8 && smPlayer.players[0].photo?.startsWith('https://')
   && sportmonksCoverage(smPlayer.players).physical === 1);
+const smCoachRows = coachesFromSquadStore({ providerSeason: 27965, teams: {
+  BAR: { coaches: [{ id: 77, name: 'Test Coach', active: true, from: '2026-07-01' }] },
+} });
+check('SportMonks 教練身分轉成西甲球隊契約', smCoachRows.length === 1
+  && smCoachRows[0].team === 'BAR' && smCoachRows[0].name === 'Test Coach'
+  && smCoachRows[0].source === 'SportMonks' && smCoachRows[0].formation === null);
+check('SportMonks 教練沿用球隊名單請求,不增加 API 請求',
+  /teams\/seasons\/\$\{season\.id\}\?include=coaches/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
 const smCurrentStore = loadSquadStore(ROOT, '2026-27');
 check('SportMonks 錯隊名不會把 Deportivo 掛到 Villarreal',
   !smCurrentStore?.teams?.VIL?.name?.toLowerCase().includes('deportivo')

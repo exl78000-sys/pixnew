@@ -21,7 +21,7 @@ import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
-import { loadSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
+import { loadSquadStore, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -343,6 +343,8 @@ async function main() {
   const currentSquadStore = loadSquadStore(ROOT, CURRENT_SEASON);
   const currentSquadSize = new Map(Object.entries(currentSquadStore?.squads ?? {})
     .map(([code, list]) => [code, Array.isArray(list) ? list.length : 0]));
+  const coachData = coachesFromSquadStore(currentSquadStore);
+  const coachBy = new Map(coachData.map(c => [c.team, c]));
 
   const historyByTeam = new Map(curCodes.map(code => [code, []]));
   for (const [season, matches] of [[LAST_SEASON, lastMatches], [CURRENT_SEASON, curMatches]]) {
@@ -378,7 +380,7 @@ async function main() {
       eloHistory: elo.get(code)?.history ?? [],
       strength: strengthBy.get(code) ?? null,
       sim: simBy.get(code) ?? null,
-      tactics: profileBy.get(code) ?? null, coach: null, schedule: null,
+      tactics: profileBy.get(code) ?? null, coach: coachBy.get(code) ?? null, schedule: null,
       history: historyByTeam.get(code), squadSize: currentSquadSize.get(code) ?? 0, injuries: 0,
     };
   }).sort((a, b) => (b.sim?.expectedPoints ?? 0) - (a.sim?.expectedPoints ?? 0));
@@ -603,7 +605,7 @@ async function main() {
       /* players 是 true；整季進攻與串聯來自 Understat，身分欄位可由
          SportMonks 快取補充。前端仍靠 leaders.missing 宣告尚未取得的項目。 */
       live: false, players: playersOut.length > 0, injuries: false, tactics: teamProfiles.length > 0,
-      coaches: false, news: false, officialLineups: reportCount > 0 || officialLineupCount > 0, matchReports: reportCount > 0,
+      coaches: coachData.length > 0, news: false, officialLineups: reportCount > 0 || officialLineupCount > 0, matchReports: reportCount > 0,
       fixtures: true, standings: true, teams: true, predictions: true, market: true,
       teamProfiles: teamProfiles.length > 0, setPieces: teamProfiles.length > 0,
     },
@@ -622,6 +624,7 @@ async function main() {
       teams: teams.length, players: playersOut.length, fixtures: fixtures.length,
       news: 0, injuries: 0, currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
       currentSeasonPlayers: playerSeasons[CURRENT_SEASON]?.players?.length ?? 0, teamProfiles: teams.filter(t => t.tactics).length,
+      coaches: coachData.length,
       matchReports: reportCount, officialLineups: officialLineupCount,
     },
     competition: competition(COMPETITION),
@@ -674,7 +677,17 @@ async function main() {
     current: playerSeasons[CURRENT_SEASON] ? buildLeaders(playerSeasons[CURRENT_SEASON].players) : null,
     last: playerSeasons[LAST_SEASON] ? buildLeaders(playerSeasons[LAST_SEASON].players) : null,
   });
-  await write('coaches', { asOf: null, officialAsOf: null, season: LAST_SEASON, coaches: [] });
+  await write('coaches', {
+    asOf: currentSquadStore?.retrievedAt ?? null,
+    officialAsOf: currentSquadStore?.retrievedAt ?? null,
+    season: CURRENT_SEASON,
+    source: coachData.length ? 'SportMonks' : null,
+    sourceUrl: coachData.length ? 'https://api.sportmonks.com/v3/football/teams/seasons/{season_id}?include=coaches' : null,
+    note: coachData.length
+      ? '僅顯示 SportMonks 球隊季名單回傳的現任教練姓名；任期、戰績、慣用陣型與風格尚未人工核對。'
+      : '西甲尚未取得可核對的教練資料。',
+    coaches: coachData,
+  });
   await write('goals', { seasons: [], note: '西甲尚未接逐球員進球明細。', data: {} });
   await write('reports', {
     seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,

@@ -52,6 +52,41 @@ export function loadSquadStore(root, season, { directory = 'sportmonks-la-liga' 
   } catch { return null; }
 }
 
+// 只把 SportMonks 明確回傳的現任教練身分轉成本站球隊頁契約。
+// 任期、戰績、慣用陣型與風格不在球隊 include 的可靠範圍內，不用前任或人工猜測補值。
+export function coachesFromSquadStore(store, { sourceUrl = 'https://api.sportmonks.com/v3/football/teams/seasons/{season_id}?include=coaches' } = {}) {
+  if (!store?.teams || typeof store.teams !== 'object') return [];
+  const out = [];
+  for (const [team, entry] of Object.entries(store.teams)) {
+    const rows = Array.isArray(entry?.coaches) ? entry.coaches : [];
+    const active = rows.filter(c => c?.active !== false && !c?.to);
+    const coach = (active.length ? active : rows).at(-1);
+    if (!coach?.name) continue;
+    out.push({
+      team,
+      name: coach.name,
+      zh: null,
+      nat: null,
+      confidence: 'medium',
+      formation: null,
+      style: [],
+      note: '現任教練姓名來自 SportMonks 球隊季名單；任期、戰績與戰術註解尚未人工核對。',
+      since: coach.from ?? null,
+      tenureDays: null,
+      seasonRecord: null,
+      allRecord: null,
+      spells: rows.map(c => ({ name: c.name, from: c.from ?? null, to: c.to ?? null, current: c.active !== false && !c.to })),
+      predecessors: rows.filter(c => c !== coach).map(c => ({ name: c.name, from: c.from ?? null, to: c.to ?? null, seasonRecord: null })),
+      source: 'SportMonks',
+      sourceUrl,
+      providerId: coach.id ?? null,
+      providerSeason: coach.seasonId ?? store.providerSeason ?? null,
+      imagePath: coach.imagePath ?? null,
+    });
+  }
+  return out;
+}
+
 function candidateFor(player, candidates, codeOf) {
   const exact = new Map();
   for (const c of candidates) {

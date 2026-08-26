@@ -222,6 +222,7 @@ try {
         <div class="row tiny dim" style="margin-top:10px;justify-content:space-between">
           <span>Elo ${C.fx(t.elo, 0)}</span><span>前四 ${s?.top4Pct ?? '—'}%・降級 ${s?.relegationPct ?? '—'}%</span>
         </div>
+        ${t.coach?.name ? `<div class="tiny dim" style="margin-top:8px">教練 ${C.esc(t.coach.name)}・SportMonks 已核對姓名</div>` : ''}
         ${t.tactics?.tags?.length ? `<div class="tags" style="margin-top:9px">${t.tactics.tags.slice(0, 3).map(x => `<span class="pill tiny">${C.esc(x)}</span>`).join('')}</div>` :
           `<div class="tiny dim" style="margin-top:9px">${ls ? '上季風格資料從缺' : '升班馬・沒有上季西甲風格樣本'}</div>`}
         </a>`;
@@ -252,6 +253,7 @@ try {
       ${kpi('期望積分', s?.expectedPoints ?? '—', `期望名次第 ${s?.expectedPos ?? '—'} 名`)}
       ${kpi('前四 / 降級', `${s?.top4Pct ?? '—'}% / ${s?.relegationPct ?? '—'}%`, `Elo ${C.fx(t.elo, 0)}`)}
     </div>
+    ${basicCoachSection(t)}
     <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
     ${seasonHistorySection(t)}
     ${ls ? `<div class="section"><h2>上季攻守摘要</h2><span class="hint">${meta.lastSeason}</span></div>
@@ -268,9 +270,24 @@ try {
         <span class="mono small">勝率 ${C.pct(home ? f.prediction.home : f.prediction.away, 0)}</span>
       </div></a>`;
     }).join('')}</div>` : ''}
-    <div class="note" style="margin-top:14px">第二版已接球隊層級攻守、實際使用陣型與進球情境；逐球員、教練、傷停與正式先發仍未接入，取得可靠來源前不顯示。</div>
+    <div class="note" style="margin-top:14px">第二版已接球隊層級攻守、實際使用陣型與進球情境；球員資料與教練姓名已由可用來源補充，任期、戰績、傷停與完整賽後統計仍依資料契約逐步接入。</div>
     ${C.foot(meta)}`;
     renderTeamH2H(t);
+  }
+
+  function basicCoachSection(t) {
+    const c = t.coach;
+    if (!c?.name) return `<div class="note" style="margin-top:16px">目前沒有可核對的現任教練資料，不以人工猜測填入。</div>`;
+    const updated = coaches.asOf ? C.dateFull(String(coaches.asOf).slice(0, 10)) : '本次資料建置';
+    return `<div class="section" style="margin-top:18px"><h2>現任教練</h2><span class="hint">SportMonks 球隊季名單</span></div>
+      <div class="card">
+        <div class="spread" style="align-items:flex-start">
+          <div class="row" style="gap:10px"><div class="coach-avatar" aria-hidden="true">${C.esc(c.name.slice(0, 1))}</div>
+            <div><h3 style="margin:0">${C.esc(c.name)}</h3><div class="tiny dim">${c.since ? `資料回傳任期起點 ${C.esc(String(c.since).slice(0, 10))}` : '任期日期未提供'}</div></div></div>
+          <span class="pill accent tiny">來源已核對</span>
+        </div>
+        <div class="tiny dim" style="margin-top:10px">資料更新：${C.esc(updated)}。SportMonks 此端點只保證教練身分，不代表本站已完成任期切分、歷史戰績或戰術風格整理。</div>
+      </div>`;
   }
 
   function basicStyleSection(t) {

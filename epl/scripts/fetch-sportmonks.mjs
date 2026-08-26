@@ -65,6 +65,9 @@ async function get(path) {
 }
 
 const rows = value => Array.isArray(value) ? value : [];
+const relatedRows = value => Array.isArray(value) ? value
+  : Array.isArray(value?.data) ? value.data
+    : value && typeof value === 'object' ? [value] : [];
 const stale = store => {
   if (!store?.retrievedAt) return true;
   const age = Date.now() - Date.parse(store.retrievedAt);
@@ -106,6 +109,25 @@ function providerTeamCode(T, team) {
   return T.codeOf(team?.name) || T.codeOf(team?.short_code) || T.codeOf(team?.common_name);
 }
 
+function normaliseCoach(coach, seasonId) {
+  if (!coach || typeof coach !== 'object') return null;
+  const name = coach.display_name ?? coach.name
+    ?? ([coach.firstname, coach.lastname].filter(Boolean).join(' ') || null);
+  if (!name && coach.id == null) return null;
+  return {
+    id: coach.id ?? coach.coach_id ?? null,
+    name,
+    firstName: coach.firstname ?? null,
+    lastName: coach.lastname ?? null,
+    imagePath: coach.image_path ?? null,
+    nationalityId: coach.nationality_id ?? coach.country_id ?? null,
+    seasonId: coach.season_id ?? seasonId,
+    active: coach.active !== false,
+    from: coach.started_at ?? coach.start ?? coach.from ?? null,
+    to: coach.ended_at ?? coach.end ?? coach.to ?? null,
+  };
+}
+
 async function readStore(file) {
   if (!existsSync(file)) return null;
   try { return JSON.parse(await readFile(file, 'utf8')); } catch { return null; }
@@ -117,15 +139,20 @@ async function syncSeason(T, season) {
   const previousVillarrealName = String(previous?.teams?.VIL?.name ?? '')
     .normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const hasTeamMappingDrift = /deportivo.*coruna/.test(previousVillarrealName);
+  // 教練欄位是後續版本才加入的 include；舊快取即使仍在 TTL 內也要重抓一次，
+  // 否則新的資料契約會永遠等到七天後才出現。
+  const hasCoachField = Object.keys(previous?.teams ?? {}).length > 0
+    && Object.values(previous.teams).every(team => Array.isArray(team?.coaches));
   if (!FORCE && previous?.season === season.label && !stale(previous)
-      && Object.keys(previous.squads ?? {}).length && !hasTeamMappingDrift) {
+      && Object.keys(previous.squads ?? {}).length && !hasTeamMappingDrift && hasCoachField) {
     console.log(`  · ${season.label} SportMonks 名單快取仍新鮮，跳過（--force 可重抓）`);
     return previous;
   }
   if (hasTeamMappingDrift) console.log(`  ⚠ ${season.label} 發現錯隊名快取，強制重新抓取`);
 
   console.log(`▶ SportMonks ${season.label}（season=${season.id}）`);
-  const teamRows = rows(await get(`/football/teams/seasons/${season.id}?per_page=100`));
+  // coaches 是球隊端點的既有 include，不增加請求次數；資料不足時仍保留球隊名單。
+  const teamRows = rows(await get(`/football/teams/seasons/${season.id}?include=coaches&per_page=100`));
   const teams = {};
   for (const team of teamRows) {
     const code = providerTeamCode(T, team);
@@ -137,7 +164,9 @@ async function syncSeason(T, season) {
       console.log(`  ⚠ 球隊代碼衝突 ${code}：保留 ${teams[code].name}，略過 ${team.name ?? '(無名)'}`);
       continue;
     }
-    teams[code] = { id: team.id, name: team.name, shortCode: team.short_code ?? null };
+    const coaches = relatedRows(team.coaches ?? team.coach)
+      .map(coach => normaliseCoach(coach, season.id)).filter(Boolean);
+    teams[code] = { id: team.id, name: team.name, shortCode: team.short_code ?? null, coaches };
   }
   if (!Object.keys(teams).length) throw new Error('SportMonks 沒有回傳可對應的西甲球隊');
 
