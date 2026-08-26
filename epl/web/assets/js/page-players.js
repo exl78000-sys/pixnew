@@ -168,6 +168,11 @@ try {
   });
   render();
 
+  // 從賽後陣容、即時戰況或外部連結帶入 ?code= 時，直接開該球員詳情；
+  // 不要求使用者先在 599 人清單裡重新搜尋一次。
+  const requestedPlayer = C.qs('code') ? byCode.get(String(C.qs('code'))) : null;
+  if (requestedPlayer) openPlayer(requestedPlayer);
+
   function toggleCompare(p) {
     compare = compare.includes(p.code) ? compare.filter(c => c !== p.code) : [...compare, p.code].slice(-2);
     render();
@@ -507,5 +512,13 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       <div class="tiny dim">球員編號 ${C.esc(p.id)}・原始生日保留於本地資料作追溯，介面統一顯示年齡。</div>
       <div style="margin-top:10px">${primaryCode ? `<a href="${C.link('teams', { code: primaryCode })}">查看球隊完整剖析 →</a>` : ''}</div>`);
   }
+  // 西甲球員頁也支援和英超相同的 ?code= 深連結。若指定球員屬於另一季，
+  // 先切到該球員的資料季，再開詳細面板，避免連結落到空的預設季。
+  const requestedId = C.qs('code');
+  const requestedPlayer = requestedId
+    ? players.find(p => String(p.id) === String(requestedId))
+    : null;
+  if (requestedPlayer) season = requestedPlayer.season;
   draw();
+  if (requestedPlayer) openUnderstatPlayer(requestedPlayer);
 }

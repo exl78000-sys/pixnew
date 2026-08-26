@@ -307,7 +307,7 @@ try {
     const coverage = match.coverage ?? {};
     const boundary = source === 'laliga.com'
       ? '西甲官網未提供第三方球員評分與座標；球場分行依官網陣型及先發順序呈現，不把推估評分或站位寫入資料。'
-      : '本卡是已核對的完賽正式先發、陣型、位置與評分；目前來源沒有球員頭貼，完整球隊統計、事件與替補細節仍等待另一條賽後資料管線，不用估算值補上。';
+      : '本卡是已核對的完賽正式先發、陣型、位置與評分；目前來源沒有球員頭貼，完整球隊統計、事件與替補細節由下方 SportMonks 賽後報告卡提供，不用估算值補上。';
     return `<div class="section"><h2>本場正式先發</h2>
       <span class="hint">${sourceName(source)}・${C.dateFull(match.date)}・${sourceHint(source)}</span></div>
       <div class="grid g2">${board(match.home, f.home)}${board(match.away, f.away, true)}</div>
