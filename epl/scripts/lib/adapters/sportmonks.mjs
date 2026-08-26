@@ -184,14 +184,12 @@ const relatedRows = value => Array.isArray(value) ? value
   : Array.isArray(value?.data) ? value.data
     : Array.isArray(value?.data?.data) ? value.data.data : [];
 
-const playerPosition = id => {
-  const n = Number(id);
-  if (n === 24 || n === 25) return 'GK';
-  if (n >= 26 && n <= 30) return 'DEF';
-  if (n >= 31 && n <= 36) return 'MID';
-  if (n >= 37 && n <= 41) return 'FWD';
-  return null;
-};
+// SportMonks v3 的 football position IDs 不是連續的本站位置分組；
+// 24/25/26/27 分別是 goalkeeper/defender/midfielder/forward。
+// 不可用舊的範圍猜測，否則同一場所有球員會被錯畫成 GK。
+export const playerPosition = id => ({
+  24: 'GK', 25: 'DEF', 26: 'MID', 27: 'FWD',
+}[Number(id)] ?? null);
 
 const numberOrNull = value => {
   if (value === null || value === undefined || value === '') return null;
@@ -201,7 +199,10 @@ const numberOrNull = value => {
 
 const statValue = (details, ...keys) => {
   for (const key of keys) {
-    const row = details.find(d => textOf(d).includes(key));
+    const wanted = String(key).toLowerCase().replace(/_/g, '-');
+    // `goals` 不能模糊比對到 `goals-conceded`；那會把全隊失球數複製到
+    // 每一位球員的進球欄。統計 type 可能使用底線，先正規化後再精確比對。
+    const row = details.find(d => textOf(d).replace(/_/g, '-') === wanted);
     if (row) return numberOrNull(valueOf(row));
   }
   return null;

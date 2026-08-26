@@ -21,7 +21,7 @@ import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
-import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
+import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage, playerPosition as sportmonksPlayerPosition } from './lib/adapters/sportmonks.mjs';
 import { loadOfficialCoachStore, officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 
@@ -348,6 +348,13 @@ async function main() {
   const coachDetails = loadCoachDetails(ROOT);
   const currentSquadSize = new Map(Object.entries(currentSquadStore?.squads ?? {})
     .map(([code, list]) => [code, Array.isArray(list) ? list.length : 0]));
+  // 以本季球隊名單的 provider ID 作為賽後位置的校正來源。舊快取曾使用
+  // 錯誤 position ID 範圍，這層可在不重抓 API 的情況下安全修復已完成賽事。
+  const sportmonksPositionByProviderId = new Map(Object.values(currentSquadStore?.squads ?? {}).flatMap(rows =>
+    (Array.isArray(rows) ? rows : []).map(row => [
+      String(row?.player_id ?? row?.player?.id ?? ''),
+      sportmonksPlayerPosition(row?.position_id ?? row?.player?.position_id),
+    ]).filter(([id, position]) => id && position)));
   const sportmonksCoachData = coachesFromSquadStore(currentSquadStore, { details: coachDetails });
   const officialCoachStore = loadOfficialCoachStore(ROOT, { season: CURRENT_SEASON });
   const officialCoachData = officialCoachesFromStore(officialCoachStore);
@@ -429,7 +436,10 @@ async function main() {
       const sm = JSON.parse(await readFile(sportmonksMatchPath, 'utf8'));
       for (const [pair, detail] of Object.entries(sm.matches ?? {})) {
         const fixture = fixtureByPair.get(pair);
-        const report = buildProviderMatchReport({ fixture, detail, nameOf: code => T.byCode.get(code)?.en ?? code });
+        const report = buildProviderMatchReport({
+          fixture, detail, nameOf: code => T.byCode.get(code)?.en ?? code,
+          positionByProviderId: sportmonksPositionByProviderId,
+        });
         // 主要來源的結果最後寫入，確保同場同時存在兩個來源時仍以 SportMonks 為準。
         if (report) reports[`${CURRENT_SEASON}|${pair}`] = report;
       }

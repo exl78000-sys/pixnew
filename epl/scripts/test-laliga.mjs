@@ -141,9 +141,12 @@ check('SportMonks 錯隊名不會把 Deportivo 掛到 Villarreal',
   && (!smCurrentStore?.teams?.DEP || /deportivo/i.test(smCurrentStore.teams.DEP.name ?? '')));
 const smXI = (teamId, prefix) => Array.from({ length: 11 }, (_, i) => ({
   player_id: teamId * 100 + i, team_id: teamId, player_name: `${prefix} ${i + 1}`,
-  jersey_number: i + 1, position_id: i === 0 ? 24 : i < 5 ? 26 : i < 8 ? 31 : 37,
+  jersey_number: i + 1, position_id: i === 0 ? 24 : i < 5 ? 25 : i < 8 ? 26 : 27,
   type_id: 11, formation_field: `${i < 1 ? 1 : i < 5 ? 2 : i < 8 ? 3 : 4}:${(i % 4) + 1}`,
-  details: [{ type: { code: 'rating' }, data: { value: 7.2 } }, { type: { code: 'minutes-played' }, data: { value: 90 } }],
+  details: [
+    { type: { code: 'rating' }, data: { value: 7.2 } }, { type: { code: 'minutes-played' }, data: { value: 90 } },
+    ...(i === 1 && teamId === 1 ? [{ type: { code: 'goals' }, data: { value: 1 } }, { type: { code: 'goals-conceded' }, data: { value: 3 } }] : []),
+  ],
 }));
 const smDetail = normaliseSportmonksMatch({
   id: 123, starting_at: '2026-08-20 19:00:00', participants: [
@@ -152,13 +155,29 @@ const smDetail = normaliseSportmonksMatch({
   lineups: [...smXI(1, 'BAR'), ...smXI(2, 'ATH')],
   statistics: [{ participant_id: 1, type: { code: 'shots-total' }, data: { value: 12 }, location: 'home' },
     { participant_id: 2, type: { code: 'shots-total' }, data: { value: 8 }, location: 'away' }],
-  events: [{ participant_id: 1, type: { code: 'goal' }, minute: 22, player_name: 'BAR 2' }],
+  events: [{ participant_id: 1, type: { code: 'goal' }, minute: 22, player_name: 'BAR 2', player_id: 101 }],
 }, { codeOf: name => ({ Barcelona: 'BAR', 'Athletic Club': 'ATH' }[name] ?? null),
   fixture: { home: 'BAR', away: 'ATH', season: '2026-27', played: true, fh: 1, fa: 0 },
   teamCodeById: new Map([['1', 'BAR'], ['2', 'ATH']]), season: '2026-27' });
 check('SportMonks 賽後資料轉成本站格式', smDetail?.coverage?.lineups === true
   && smDetail.lineups.BAR.xi.length === 11 && smDetail.lineups.ATH.formation === '4-2-3-1'
   && smDetail.coverage.ratings === true && smDetail.events[0].type === 'Goal');
+check('SportMonks 位置 ID 與球員進失球統計精確對應', smDetail.lineups.BAR.xi.slice(0, 6).map(p => p.pos).join('|') === 'GK|DEF|DEF|DEF|DEF|MID'
+  && smDetail.players.BAR[1].goals.total === 1 && smDetail.players.BAR[1].goals.conceded === 3);
+const staleSportmonksDetail = {
+  ...smDetail,
+  players: Object.fromEntries(Object.entries(smDetail.players).map(([code, list]) => [code, list.map(p => ({
+    ...p, pos: 'GK', goals: { ...p.goals, total: code === 'BAR' ? 3 : 0 },
+  }))])),
+};
+const stalePositionMap = new Map(Object.values(smDetail.lineups).flatMap(lineup => lineup.xi.map(p => [String(p.providerId), p.pos])));
+const repairedSportmonksReport = buildProviderMatchReport({
+  fixture: { home: 'BAR', away: 'ATH', season: '2026-27', played: true, fh: 1, fa: 0 },
+  detail: staleSportmonksDetail, positionByProviderId: stalePositionMap,
+});
+check('完整事件會修復舊快取的錯誤射手與位置', repairedSportmonksReport?.sides.BAR.goals === 1
+  && repairedSportmonksReport.sides.BAR.scorers[0]?.name === 'BAR 2'
+  && repairedSportmonksReport.sides.BAR.xi.slice(0, 6).map(p => p.pos).join('|') === 'GK|DEF|DEF|DEF|DEF|MID');
 check('每 90 分鐘只在達門檻時給出,不足門檻一律 null',
   players.every(p => (p.minutes >= leaders.minMinutes) === (p.xgi90 !== null)));
 check('跨隊球員標記出來,不硬掛到單一球隊',

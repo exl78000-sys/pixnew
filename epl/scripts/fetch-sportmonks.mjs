@@ -335,7 +335,9 @@ async function syncCurrentMatches(T, seasonStore, season) {
       && codes.includes(m.home) && codes.includes(m.away));
     if (!localMatch) continue;
     const key = `${localMatch.home}|${localMatch.away}`;
-    if (details[key]) continue;
+    // 平常保留永久快取以節省額度；明確 --force 時才重新探測既有完賽資料，
+    // 讓修正過的 adapter 可以重建舊場次，且不需要手動刪除快取。
+    if (details[key] && !FORCE) continue;
     candidates.push({ sf, localMatch, key });
   }
   console.log(`▶ SportMonks ${CONFIG.key === 'pl' ? '英超' : '西甲'}賽後詳情：${season.label} 已完賽 ${played.length} 場・待補 ${candidates.length} 場・本次最多 ${MAX_DETAILS} 場`);

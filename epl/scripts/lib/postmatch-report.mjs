@@ -27,21 +27,56 @@ function rowsOf(players) {
     .sort((a, b) => Number(String(a.grid).split(':')[1]) - Number(String(b.grid).split(':')[1])));
 }
 
-const ratingRows = list => [...list].filter(p => p.rating !== null)
-  .sort((a, b) => b.rating - a.rating).slice(0, 3)
-  .map(p => ({ name: p.name, pos: pos(p.pos), minutes: p.minutes, rating: p.rating }));
+const playerKey = player => player?.providerId != null || player?.playerId != null
+  ? `id:${String(player.providerId ?? player.playerId)}`
+  : `name:${String(player?.name ?? player?.player ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()}`;
 
-function sideOf(code, detail) {
+const addCount = (map, player) => {
+  const key = playerKey(player);
+  if (!key || key.endsWith(':')) return;
+  map.set(key, (map.get(key) ?? 0) + 1);
+};
+
+function goalEvidence(detail, fixture) {
+  const goals = new Map(), assists = new Map();
+  const byTeam = { [fixture.home]: 0, [fixture.away]: 0 };
+  for (const event of detail.events ?? []) {
+    if (event?.type !== 'Goal' || !(event.team in byTeam)) continue;
+    byTeam[event.team]++;
+    addCount(goals, { providerId: event.playerId, name: event.player });
+    if (event.assistId != null || event.assist) addCount(assists, { providerId: event.assistId, name: event.assist });
+  }
+  // 只有兩隊事件進球都精確對回最終比分，才可以拿它覆寫球員統計。
+  // 這避免不完整的事件清單把真實射手錯清成 0。
+  return {
+    complete: byTeam[fixture.home] === fixture.fh && byTeam[fixture.away] === fixture.fa,
+    goals, assists,
+  };
+}
+
+const ratingRows = (list, positionByProviderId = new Map()) => [...list].filter(p => p.rating !== null)
+  .sort((a, b) => b.rating - a.rating).slice(0, 3)
+  .map(p => ({ name: p.name, pos: pos(positionByProviderId.get(String(p.providerId)) ?? p.pos), minutes: p.minutes, rating: p.rating }));
+
+function sideOf(code, detail, { expectedGoals = null, evidence = null, positionByProviderId = new Map() } = {}) {
   const lineup = detail.lineups?.[code] ?? { xi: [], bench: [], formation: null };
   const stats = detail.players?.[code] ?? [];
   const byId = new Map(stats.filter(p => p.providerId != null).map(p => [String(p.providerId), p]));
+  const rawGoalTotal = stats.reduce((total, p) => total + num(p.goals?.total), 0);
+  const rawGoalsReliable = expectedGoals !== null && rawGoalTotal === expectedGoals;
   const merge = (player, starts) => {
     const s = byId.get(String(player.providerId)) ?? stats.find(x => x.name === player.name) ?? {};
+    const key = playerKey(s.providerId != null ? s : player);
+    const eventGoals = evidence?.goals.get(key) ?? 0;
+    const eventAssists = evidence?.assists.get(key) ?? 0;
+    const goals = evidence?.complete ? eventGoals : (rawGoalsReliable ? num(s.goals?.total) : 0);
+    const assists = evidence?.complete ? eventAssists : num(s.goals?.assists);
+    const resolvedPos = positionByProviderId.get(String(s.providerId ?? player.providerId)) ?? s.pos ?? player.pos;
     return {
-      ...player, ...s, code: null, pos: pos(s.pos ?? player.pos), role: pos(s.pos ?? player.pos),
+      ...player, ...s, code: null, pos: pos(resolvedPos), role: pos(resolvedPos),
       starts, minutes: s.minutes ?? null,
       goalStats: s.goals ?? {},
-      goals: num(s.goals?.total), assists: num(s.goals?.assists),
+      goals, assists,
       yellow: num(s.cards?.yellow), red: num(s.cards?.red),
       photo: s.photo ?? null,
     };
@@ -66,7 +101,7 @@ function sideOf(code, detail) {
     scorers: used.filter(p => p.goals).map(p => ({ name: p.name, goals: p.goals })),
     assisters: used.filter(p => p.assists).map(p => ({ name: p.name, assists: p.assists })),
     cards: used.filter(p => p.yellow || p.red).map(p => ({ name: p.name, yellow: p.yellow, red: p.red })),
-    best: ratingRows(stats), used: used.length, coach: lineup.coach ?? null,
+    best: ratingRows(stats, positionByProviderId), used: used.length, coach: lineup.coach ?? null,
   };
 }
 
@@ -90,7 +125,7 @@ function notesFor(report, detail, nameOf) {
   return notes;
 }
 
-export function buildProviderMatchReport({ fixture, detail, nameOf = code => code } = {}) {
+export function buildProviderMatchReport({ fixture, detail, nameOf = code => code, positionByProviderId = new Map() } = {}) {
   if (!fixture?.played || !detail || fixture.home !== detail.home || fixture.away !== detail.away) return null;
   if (detail.score?.home !== fixture.fh || detail.score?.away !== fixture.fa) return null;
   if (!detail.coverage?.teamStatistics || !detail.coverage?.playerStatistics || !detail.coverage?.ratings || !detail.coverage?.events || !detail.coverage?.lineups) return null;
@@ -99,8 +134,8 @@ export function buildProviderMatchReport({ fixture, detail, nameOf = code => cod
     home: fixture.home, away: fixture.away, kickoff: detail.kickoff ?? fixture.kickoff ?? null,
     started: true, finished: true, minute: 90, hs: fixture.fh, as: fixture.fa,
     sides: {
-      [fixture.home]: sideOf(fixture.home, detail),
-      [fixture.away]: sideOf(fixture.away, detail),
+      [fixture.home]: sideOf(fixture.home, detail, { expectedGoals: fixture.fh, evidence: goalEvidence(detail, fixture), positionByProviderId }),
+      [fixture.away]: sideOf(fixture.away, detail, { expectedGoals: fixture.fa, evidence: goalEvidence(detail, fixture), positionByProviderId }),
     },
     advanced: detail, source: detail.source ?? 'api-football', demo: false,
   };

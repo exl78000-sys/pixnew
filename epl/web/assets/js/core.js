@@ -557,10 +557,25 @@ export function reportWithPlayerPhotos(m, players) {
     bench: (s.bench ?? []).map(decorate),
     rows: s.rows?.map(row => row.map(decorate)) ?? null,
   });
+  // 賽後陣容卡的 `sides` 是已對過終場比分／事件的發布層；細項表原始
+  // `advanced.players` 可能來自較舊的供應商快取。用發布層覆寫位置、進球、
+  // 助攻，避免同一位球員在球場圖正確、評分表卻又顯示成門將或 3 球。
+  const publishedPlayer = new Map(Object.values(m.sides).flatMap(side => [
+    ...(side.xi ?? []), ...(side.bench ?? []),
+  ]).filter(p => p?.providerId != null).map(p => [String(p.providerId), p]));
   const advanced = m.advanced ? {
     ...m.advanced,
     players: Object.fromEntries(Object.entries(m.advanced.players ?? {}).map(([teamCode, list]) => [
-      teamCode, list.map(p => ({ ...decorate(p), team: teamCode })),
+      teamCode, list.map(p => {
+        const published = publishedPlayer.get(String(p.providerId));
+        return {
+          ...decorate(p), team: teamCode,
+          ...(published ? {
+            pos: published.pos,
+            goals: { ...(p.goals ?? {}), total: published.goals, assists: published.assists },
+          } : {}),
+        };
+      }),
     ])),
   } : null;
   return {
