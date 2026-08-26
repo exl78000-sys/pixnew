@@ -304,13 +304,15 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   const codeOf = value => teamNames.get(normalise(value)) ?? value;
   const codeName = c => C.name(codeOf(c));
   const codesOf = p => (p.teams ?? []).map(codeOf);
-  const teamCell = p => p.teams.map(t => {
-    const code = codeOf(t);
-    return C.team(code).en !== code ? C.teamLink(code, { label: C.name(code) }) : C.esc(t);
-  }).join('<span class="dim"> → </span>')
-    + (p.multiTeam ? ' <span class="pill warn tiny" title="本季效力兩隊,數字是兩隊合計">跨隊</span>' : '');
+  // 跨隊球員的整季數字仍是兩隊合計，但畫面只掛目前球隊，避免隊名與欄位拉開；
+  // SportMonks 有核對結果時優先使用它，否則退回來源最後一隊。
+  const currentTeamCode = p => codeOf(p.sportmonksTeam ?? p.teams?.at(-1));
+  const teamCell = p => `${C.teamCell(currentTeamCode(p), {
+    label: C.name(currentTeamCode(p)) !== currentTeamCode(p)
+      ? C.name(currentTeamCode(p)) : (p.teams?.at(-1) ?? currentTeamCode(p)),
+  })}${p.multiTeam ? ' <span class="pill warn tiny" title="本季效力過兩隊，數字是兩隊合計">跨隊</span>' : ''}`;
 
-  const playerForPhoto = p => ({ ...p, team: codeOf(p.teams?.[0]) });
+  const playerForPhoto = p => ({ ...p, team: currentTeamCode(p) });
   const playerById = () => new Map(bySeason(season).map(p => [String(p.id), p]));
 
   const boardCard = b => {
@@ -327,13 +329,13 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
         <span class="pill tiny">${C.esc(b.unit)}</span></div>
       ${rows.map((r, i) => { const p = byId.get(String(r.id)); return `<div class="stat-line clickable" data-player-code="${C.esc(r.id)}" tabindex="0" role="button">
         <span class="small"><span class="dim mono" style="display:inline-block;width:1.6em">${i + 1}</span>
-          ${p ? C.playerPhoto(playerForPhoto(p), 28) : ''} ${C.esc(r.name)}<span class="dim tiny"> ${r.teams.map(codeName).join(' / ')}</span></span>
+          ${p ? C.playerPhoto(playerForPhoto(p), 28) : ''} ${C.esc(r.name)}<span class="dim tiny"> ${p ? C.name(currentTeamCode(p)) : r.teams.map(codeName).join(' / ')}${p?.multiTeam ? '・跨隊' : ''}</span></span>
         <b class="mono">${fmt(r.value)}</b></div>`; }).join('')}</div>`;
   };
 
   const COLS = [
-    { key: 'name', label: '球員', get: p => `${C.playerPhoto(playerForPhoto(p), 28)} ${C.esc(p.name)}` },
-    { key: 'team', label: '球隊', get: teamCell },
+    { key: 'name', label: '球員', left: true, get: p => `<span class="player-cell">${C.playerPhoto(playerForPhoto(p), 28)}<span>${C.esc(p.name)}</span></span>` },
+    { key: 'team', label: '球隊', left: true, get: teamCell },
     { key: 'posZh', label: '位置', get: p => `<span class="dim">${C.esc(p.posZh)}</span>` },
     { key: 'age', label: '年齡', num: true, get: p => p.age ?? '—' },
     { key: 'squadNumber', label: '背號', num: true, get: p => p.squadNumber ?? '—' },
@@ -365,10 +367,10 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       if (typeof av === 'string') return sortDesc ? String(bv).localeCompare(av) : String(av).localeCompare(String(bv));
       return sortDesc ? bv - av : av - bv;
     });
-    return `<div class="table-wrap"><table class="tbl"><thead><tr>${COLS.map(c =>
+    return `<div class="table-wrap"><table class="tbl players-table"><thead><tr>${COLS.map(c =>
       `<th class="${c.num ? 'num' : ''} sortable" data-sort="${c.key}">${C.esc(c.label)}${
         sortKey === c.key ? (sortDesc ? ' ▾' : ' ▴') : ''}</th>`).join('')}</tr></thead>
-      <tbody>${rows.map(p => `<tr class="clickable" data-player-code="${C.esc(p.id)}" tabindex="0" role="button">${COLS.map(c => `<td class="${c.num ? 'num mono' : ''}">${
+      <tbody>${rows.map(p => `<tr class="clickable" data-player-code="${C.esc(p.id)}" tabindex="0" role="button">${COLS.map(c => `<td class="${[c.num ? 'num mono' : '', c.left ? 'left' : ''].filter(Boolean).join(' ')}">${
         c.get ? c.get(p) : (c.num && c.d ? C.fx(p[c.key], c.d) : (p[c.key] ?? '—'))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
       <div class="tiny dim" style="margin-top:8px">依${C.esc(COLS.find(c => c.key === sortKey)?.label ?? sortKey)}排序,共 ${rows.length} 人。
         點欄位標題可換排序。
@@ -463,11 +465,11 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   };
 
   function openUnderstatPlayer(p) {
-    const codes = codesOf(p);
-    const primaryCode = codes[0];
+    const primaryCode = currentTeamCode(p);
     const photoPlayer = playerForPhoto(p);
-    const teamLabel = codes.map((code, i) => C.team(code).en !== code
-      ? C.teamLink(code, { label: C.name(code) }) : C.esc(p.teams[i] ?? code)).join('、');
+    const teamLabel = `${C.teamCell(primaryCode, {
+      label: C.name(primaryCode) !== primaryCode ? C.name(primaryCode) : (p.teams?.at(-1) ?? primaryCode),
+    })}${p.multiTeam ? ' <span class="pill warn tiny">跨隊</span>' : ''}`;
     const line = (label, value) => `<div class="stat-line"><span class="small muted">${label}</span><b class="mono">${value ?? '—'}</b></div>`;
     const value = (v, d = 0) => v == null ? '—' : (d ? C.fx(v, d) : v);
     const stat = p;

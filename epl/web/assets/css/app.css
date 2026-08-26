@@ -127,6 +127,11 @@ tbody tr:hover { background: #ffffff08; }
 tbody tr.clickable { cursor: pointer; }
 tbody tr:last-child td { border-bottom: none; }
 td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+/* 球員頁欄位很多，讓姓名與球隊欄保持緊湊，避免 100% 寬度把兩者撐得太開。 */
+.players-table { width: max-content; min-width: 100%; }
+.players-table th:first-child, .players-table td:first-child { min-width: 190px; }
+.players-table th:nth-child(2), .players-table td:nth-child(2) { min-width: 155px; }
+.player-cell { display: inline-flex; align-items: center; gap: 6px; }
 
 /* ── 隊徽 ───────────────────────────── */
 .crest {
