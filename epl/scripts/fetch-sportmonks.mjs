@@ -2,7 +2,8 @@
 // 從 SportMonks 補西甲球員名單欄位。
 //
 // 只快取 Understat 沒有的資料：背號、頭貼、生日、身高、體重、國籍、隊長與合約。
-// 逐場 lineups / formations 仍先留在探測階段，待欄位形狀核對後再接正式賽後報告。
+// 逐場 lineups / formations 會在已完賽且比分核對通過後寫入獨立快取，
+// build 再透過 adapter 轉成本站 canonical 賽後格式；不把探測回應直接當正式資料。
 // 沒有 token 時安全略過；不會把金鑰寫入檔案或 log。
 //
 //   npm run sportmonks:sync
@@ -114,7 +115,7 @@ async function syncSeason(T, season) {
       loadedThisRun: loaded,
       players: Object.values(squads).reduce((n, list) => n + list.length, 0),
     },
-    note: 'SportMonks 只作 Understat 球員欄位補充；逐場資料另有獨立探測與快取流程。',
+    note: 'SportMonks 只作 Understat 球員欄位補充；逐場資料另有獨立快取，需通過隊伍與比分核對。',
   };
   await writeFile(file, JSON.stringify(store, null, 2) + '\n');
   console.log(`  ✔ ${file}`);

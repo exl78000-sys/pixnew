@@ -63,9 +63,11 @@ jobs:
         working-directory: epl
         run: npm run probe:laliga-lineups
 
-      # SportMonks：只打日期賽程、單場詳情與聯賽索引各一次，不寫正式資料。
+      # SportMonks：先驗證方案／聯賽／賽季，再用已完賽場次探測完整欄位；最多 12 次請求，不寫正式資料。
       - name: 探測 SportMonks 西甲完整欄位
         working-directory: epl
         run: npm run probe:sportmonks
         env:
           SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
