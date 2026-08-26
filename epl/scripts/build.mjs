@@ -220,14 +220,17 @@ async function main() {
   const fplCurRaw = loadSquads({ root: ROOT, season: CURRENT_SEASON, codeOf: T.codeOf });
   const sportmonksLast = loadSportMonksSquadStore(ROOT, LAST_SEASON, { directory: 'sportmonks-epl' });
   const sportmonksCur = loadSportMonksSquadStore(ROOT, CURRENT_SEASON, { directory: 'sportmonks-epl' });
-  const enrich = (base, store, season) => {
+  const enrich = (base, store, season, options = {}) => {
     if (!store) return base;
-    const result = enrichSportMonksPlayers(base.players, store, { codeOf: T.codeOf });
+    const result = enrichSportMonksPlayers(base.players, store, { codeOf: T.codeOf, ...options });
     console.log(`  SportMonks ${season}:${result.matched}/${base.players.length} 名球員已合併主要身分／頭貼資料`);
     return { ...base, players: result.players };
   };
   const fplLast = enrich(fplLastRaw, sportmonksLast, LAST_SEASON);
-  const fplCur = enrich(fplCurRaw, sportmonksCur, CURRENT_SEASON);
+  // 當季名單找不到的新球員，仍可從上一季 SportMonks 快取補回照片／身分；
+  // 只填空欄位，不覆蓋當季主要來源。
+  const fplCurPrimary = enrich(fplCurRaw, sportmonksCur, CURRENT_SEASON);
+  const fplCur = enrich(fplCurPrimary, sportmonksLast, `${LAST_SEASON} 備援`, { fillMissing: true });
   const diff = loadDifficulty(ROOT, T.codeOf, fplCur.teamById);
 
   // 上一完整賽季的進球情境。這份靜態快取由 npm run setpieces 低頻率、

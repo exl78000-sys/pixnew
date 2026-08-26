@@ -61,7 +61,9 @@ function candidateFor(player, candidates, codeOf) {
     }
   }
   const teamCodes = new Set((player.teams ?? []).map(x => codeOf?.(x)).filter(Boolean));
-  for (const name of [player.name]) {
+  // FPL 的 web_name 常只有姓氏；全名也納入精確核對，能接回
+  // António Silva、Ronald Araujo 這類縮寫球員而不靠猜測。
+  for (const name of [player.name, player.fullName]) {
     const key = normaliseName(name);
     for (const code of teamCodes) {
       const hit = exact.get(`${code}|${key}`);
@@ -82,7 +84,7 @@ function candidateFor(player, candidates, codeOf) {
   return fuzzy.length === 1 ? fuzzy[0] : null;
 }
 
-export function enrichPlayers(players, store, { codeOf } = {}) {
+export function enrichPlayers(players, store, { codeOf, fillMissing = false } = {}) {
   if (!Array.isArray(players) || !store) return { players: players ?? [], matched: 0, available: false };
   const candidates = rowsOf(store).filter(x => x.player && x.player.id != null);
   let matched = 0;
@@ -93,7 +95,10 @@ export function enrichPlayers(players, store, { codeOf } = {}) {
     const q = hit.player ?? {};
     matched++;
     const out = { ...p, sportmonksId: String(q.id), sportmonksTeam: hit.teamCode };
-    const put = (key, value) => { if (value !== null && value !== undefined && value !== '') out[key] = value; };
+    const put = (key, value) => {
+      if (value === null || value === undefined || value === '') return;
+      if (!fillMissing || out[key] === null || out[key] === undefined || out[key] === '') out[key] = value;
+    };
     put('squadNumber', row.jersey_number);
     // SportMonks 會用 placeholder URL 表示沒有頭貼；它不是有效照片，
     // 必須讓既有手動／備援來源接手，不能把 placeholder 當成已補齊。
