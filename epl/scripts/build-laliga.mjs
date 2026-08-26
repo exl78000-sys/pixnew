@@ -420,11 +420,44 @@ async function main() {
     } catch { console.log('  ⚠ 西甲賽後快取損壞，本次略過'); }
   }
   const fixtureByPair = new Map(fixtures.map(f => [`${f.home}|${f.away}`, f]));
+  // 少數場次的 SportMonks 事件回應可能只有部分入球。人工覆寫只接受「兩隊
+  // 射手數加總精確等於終場比分」且每場都有來源網址的資料；它獨立存放，絕不
+  // 回寫或偽裝成 API 原始快取。
+  const goalOverridePath = join(ROOT, 'data', 'manual', 'laliga-goal-overrides.json');
+  let goalOverrides = {};
+  if (existsSync(goalOverridePath)) {
+    try {
+      const raw = JSON.parse(await readFile(goalOverridePath, 'utf8'));
+      if (raw?.season === CURRENT_SEASON) goalOverrides = raw.matches ?? {};
+    } catch { console.log('  ⚠ 西甲已核對射手覆寫檔損壞，本次略過'); }
+  }
+  const withVerifiedScorers = (fixture, detail) => {
+    const override = goalOverrides[`${fixture?.home}|${fixture?.away}`];
+    if (!fixture || !detail || !Array.isArray(override?.goals)) return detail;
+    const counts = { [fixture.home]: 0, [fixture.away]: 0 };
+    for (const goal of override.goals) {
+      if (!(goal?.team in counts) || !goal.player) return detail;
+      counts[goal.team]++;
+    }
+    if (counts[fixture.home] !== fixture.fh || counts[fixture.away] !== fixture.fa) return detail;
+    const goals = override.goals.map(goal => ({
+      minute: goal.minute ?? null, extra: goal.extra ?? null,
+      label: goal.minute == null ? '' : `${goal.minute}${goal.extra ? `+${goal.extra}` : ''}'`,
+      team: goal.team, type: 'Goal', detail: 'verified scorer', comments: null,
+      player: goal.player, playerId: null, assist: null, assistId: null,
+      source: override.source, sourceUrl: override.sourceUrl,
+    }));
+    return {
+      ...detail,
+      events: [...(detail.events ?? []).filter(event => event?.type !== 'Goal'), ...goals],
+      scorerOverride: { source: override.source, sourceUrl: override.sourceUrl },
+    };
+  };
   const reports = {};
   for (const [pair, detail] of Object.entries(postMatchStore.matches ?? {})) {
     const fixture = fixtureByPair.get(pair);
     const report = buildProviderMatchReport({
-      fixture, detail,
+      fixture, detail: withVerifiedScorers(fixture, detail),
       nameOf: code => T.byCode.get(code)?.en ?? code,
     });
     if (report) reports[`${CURRENT_SEASON}|${pair}`] = report;
@@ -437,7 +470,7 @@ async function main() {
       for (const [pair, detail] of Object.entries(sm.matches ?? {})) {
         const fixture = fixtureByPair.get(pair);
         const report = buildProviderMatchReport({
-          fixture, detail, nameOf: code => T.byCode.get(code)?.en ?? code,
+          fixture, detail: withVerifiedScorers(fixture, detail), nameOf: code => T.byCode.get(code)?.en ?? code,
           positionByProviderId: sportmonksPositionByProviderId,
         });
         // 主要來源的結果最後寫入，確保同場同時存在兩個來源時仍以 SportMonks 為準。

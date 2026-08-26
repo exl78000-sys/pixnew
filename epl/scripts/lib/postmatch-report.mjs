@@ -27,15 +27,19 @@ function rowsOf(players) {
     .sort((a, b) => Number(String(a.grid).split(':')[1]) - Number(String(b.grid).split(':')[1])));
 }
 
-const playerKey = player => player?.providerId != null || player?.playerId != null
-  ? `id:${String(player.providerId ?? player.playerId)}`
-  : `name:${String(player?.name ?? player?.player ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()}`;
+const playerKeys = player => {
+  const name = String(player?.name ?? player?.player ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  const id = player?.providerId ?? player?.playerId;
+  return [...new Set([id != null ? `id:${String(id)}` : null, name ? `name:${name}` : null].filter(Boolean))];
+};
+
+const playerKey = player => playerKeys(player)[0] ?? null;
 
 const addCount = (map, player) => {
-  const key = playerKey(player);
-  if (!key || key.endsWith(':')) return;
-  map.set(key, (map.get(key) ?? 0) + 1);
+  for (const key of playerKeys(player)) map.set(key, (map.get(key) ?? 0) + 1);
 };
+
+const countFor = (map, player) => playerKeys(player).map(key => map.get(key) ?? 0).find(Boolean) ?? 0;
 
 function goalEvidence(detail, fixture) {
   const goals = new Map(), assists = new Map();
@@ -66,9 +70,9 @@ function sideOf(code, detail, { expectedGoals = null, evidence = null, positionB
   const rawGoalsReliable = expectedGoals !== null && rawGoalTotal === expectedGoals;
   const merge = (player, starts) => {
     const s = byId.get(String(player.providerId)) ?? stats.find(x => x.name === player.name) ?? {};
-    const key = playerKey(s.providerId != null ? s : player);
-    const eventGoals = evidence?.goals.get(key) ?? 0;
-    const eventAssists = evidence?.assists.get(key) ?? 0;
+    const lookup = s.providerId != null ? s : player;
+    const eventGoals = evidence ? countFor(evidence.goals, lookup) : 0;
+    const eventAssists = evidence ? countFor(evidence.assists, lookup) : 0;
     const goals = evidence?.complete ? eventGoals : (rawGoalsReliable ? num(s.goals?.total) : 0);
     const assists = evidence?.complete ? eventAssists : num(s.goals?.assists);
     const resolvedPos = positionByProviderId.get(String(s.providerId ?? player.providerId)) ?? s.pos ?? player.pos;

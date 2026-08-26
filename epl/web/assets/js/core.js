@@ -554,20 +554,24 @@ export function reportWithPlayerPhotos(m, players) {
   // 防線：即使使用者的 reports.json 仍是修正前的快取，也不准把一隊失球數
   // 複製成每位球員的 ⚽。事件兩隊合計能對回終場比分時，事件是唯一的射手來源；
   // 事件不完整則只接受「球員進球加總 = 最終比分」的舊統計，否則全數隱藏。
-  const identity = p => p?.providerId != null || p?.playerId != null
-    ? `id:${p.providerId ?? p.playerId}`
-    : `name:${String(p?.name ?? p?.player ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()}`;
+  const identities = p => {
+    const name = String(p?.name ?? p?.player ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const id = p?.providerId ?? p?.playerId;
+    return [...new Set([id != null ? `id:${id}` : null, name ? `name:${name}` : null].filter(Boolean))];
+  };
+  const addEventCount = (map, player) => {
+    for (const key of identities(player)) map.set(key, (map.get(key) ?? 0) + 1);
+  };
+  const eventCountFor = (map, player) => identities(player).map(key => map.get(key) ?? 0).find(Boolean) ?? 0;
   const scores = { [m.home]: Number(m.hs), [m.away]: Number(m.as) };
   const eventCount = { [m.home]: 0, [m.away]: 0 };
   const scorers = new Map(), assisters = new Map();
   for (const event of m.advanced?.events ?? []) {
     if (event?.type !== 'Goal' || !(event.team in eventCount)) continue;
     eventCount[event.team]++;
-    const scorer = identity({ providerId: event.playerId, name: event.player });
-    if (scorer && !scorer.endsWith(':')) scorers.set(scorer, (scorers.get(scorer) ?? 0) + 1);
+    addEventCount(scorers, { providerId: event.playerId, name: event.player });
     if (event.assistId != null || event.assist) {
-      const assister = identity({ providerId: event.assistId, name: event.assist });
-      if (assister && !assister.endsWith(':')) assisters.set(assister, (assisters.get(assister) ?? 0) + 1);
+      addEventCount(assisters, { providerId: event.assistId, name: event.assist });
     }
   }
   const verifiedEvents = eventCount[m.home] === scores[m.home] && eventCount[m.away] === scores[m.away];
@@ -576,9 +580,8 @@ export function reportWithPlayerPhotos(m, players) {
     const legacyTotal = used.reduce((total, player) => total + Number(player.goals ?? 0), 0);
     const legacyIsCoherent = legacyTotal === scores[code];
     const reconcilePlayer = player => {
-      const key = identity(player);
-      const goals = verifiedEvents ? (scorers.get(key) ?? 0) : (legacyIsCoherent ? Number(player.goals ?? 0) : 0);
-      const assists = verifiedEvents ? (assisters.get(key) ?? 0) : Number(player.assists ?? 0);
+      const goals = verifiedEvents ? eventCountFor(scorers, player) : (legacyIsCoherent ? Number(player.goals ?? 0) : 0);
+      const assists = verifiedEvents ? eventCountFor(assisters, player) : Number(player.assists ?? 0);
       return { ...player, goals, assists };
     };
     const xi = (source.xi ?? []).map(reconcilePlayer);

@@ -139,6 +139,10 @@ const smCurrentStore = loadSquadStore(ROOT, '2026-27');
 check('SportMonks 錯隊名不會把 Deportivo 掛到 Villarreal',
   !smCurrentStore?.teams?.VIL?.name?.toLowerCase().includes('deportivo')
   && (!smCurrentStore?.teams?.DEP || /deportivo/i.test(smCurrentStore.teams.DEP.name ?? '')));
+const verifiedScorers = JSON.parse(readFileSync(join(ROOT, 'data', 'manual', 'laliga-goal-overrides.json'), 'utf8'));
+check('人工核對射手只收錄能對回最終比分且有來源網址的場次', verifiedScorers.season === '2026-27'
+  && Object.values(verifiedScorers.matches ?? {}).every(match => /^https:\/\//.test(match.sourceUrl ?? '')
+    && Array.isArray(match.goals) && match.goals.length > 0));
 const smXI = (teamId, prefix) => Array.from({ length: 11 }, (_, i) => ({
   player_id: teamId * 100 + i, team_id: teamId, player_name: `${prefix} ${i + 1}`,
   jersey_number: i + 1, position_id: i === 0 ? 24 : i < 5 ? 25 : i < 8 ? 26 : 27,

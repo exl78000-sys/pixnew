@@ -1,0 +1,43 @@
+{
+  "season": "2026-27",
+  "purpose": "Only complete scorer corrections whose team totals reconcile exactly to the final score. Kept separate from provider caches for traceability.",
+  "matches": {
+    "MAL|DEP": {
+      "source": "EL PAÍS",
+      "sourceUrl": "https://elpais.com/deportes/futbol/2026-08-24/el-deportivo-agua-la-fiesta-del-malaga-en-su-debut-liguero-en-casa.html",
+      "goals": [
+        { "team": "DEP", "player": "Pierre-Emerick Aubameyang" },
+        { "team": "MAL", "player": "Chupe" }
+      ]
+    },
+    "ATM|VIL": {
+      "source": "LaLiga official match centre",
+      "sourceUrl": "https://www.laliga.com/es-DE/partido/temporada-2026-2027-laliga-ea-sports-atletico-de-madrid-villarreal-cf-2",
+      "goals": [
+        { "team": "ATM", "player": "Marc Pubill", "minute": 59 },
+        { "team": "VIL", "player": "Gerard Moreno", "minute": 66 },
+        { "team": "VIL", "player": "Georges Mikautadze", "minute": 78 },
+        { "team": "ATM", "player": "Giuliano Simeone", "minute": 85 }
+      ]
+    },
+    "SEV|RAY": {
+      "source": "Sevilla FC match report",
+      "sourceUrl": "https://sevillafc.es/actualidad/noticias/match-report-sevilla-rayo-vallecano-laliga-2026-2027",
+      "goals": [
+        { "team": "RAY", "player": "Álvaro García", "minute": 3 },
+        { "team": "SEV", "player": "Jon Guridi", "minute": 51 },
+        { "team": "SEV", "player": "Peque Fernández", "minute": 90, "extra": 6 }
+      ]
+    },
+    "RAC|VIL": {
+      "source": "AS match report",
+      "sourceUrl": "https://as.com/futbol/primera/racing-villarreal-en-directo-laliga-ea-sports-en-vivo-hoy-f202608-d/",
+      "goals": [
+        { "team": "RAC", "player": "Andrés Martín" },
+        { "team": "RAC", "player": "Sergio Martínez" },
+        { "team": "VIL", "player": "Pape Gueye" },
+        { "team": "VIL", "player": "Nicolas Pépé" }
+      ]
+    }
+  }
+}
