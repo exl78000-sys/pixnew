@@ -292,7 +292,7 @@ try {
 
     <section class="analysis-panel" id="panel-post" role="tabpanel">
       <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
-      ${lineupCard(lineup, f)}
+      ${lineupCard(lineup, f, report)}
       ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
       ${expertOpinionSection(f, expertRows)}
     </section>
@@ -302,13 +302,43 @@ try {
     setupExpertPagers();
   }
 
-  function lineupCard(match, f) {
+  function lineupCard(match, f, report = null) {
     if (!match?.home?.xi?.length || !match?.away?.xi?.length) return '';
     const sourceName = source => source === 'laliga.com' ? '西甲官方 LaLiga.com' : 'FotMob / enetpulse';
     const sourceHint = source => source === 'laliga.com'
       ? '官方公布的先發、替補、陣型與頭像；本站未補入第三方評分'
       : '官方先發、陣型、站位與完賽評分';
-    const board = (side, code, reverseRows = false) => {
+    // 正式先發的站位與下方賽後報告是不同資料集；把已核對的射手結果
+    // 只讀地投影到這張戰術圖，避免下方有 ⚽、上方先發圖卻沒有的矛盾。
+    const keyOf = name => String(name ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const scorerMap = code => {
+      const exact = new Map(), surname = new Map();
+      for (const player of [...(report?.sides?.[code]?.xi ?? []), ...(report?.sides?.[code]?.bench ?? [])]) {
+        if (!player.goals) continue;
+        const full = keyOf(player.name), last = full.split(' ').at(-1);
+        if (full) exact.set(full, (exact.get(full) ?? 0) + player.goals);
+        if (last) {
+          const hit = surname.get(last) ?? { goals: 0, names: new Set() };
+          hit.goals += player.goals;
+          hit.names.add(full);
+          surname.set(last, hit);
+        }
+      }
+      return player => {
+        const full = keyOf(player.name);
+        const short = surname.get(full.split(' ').at(-1));
+        return exact.get(full) ?? (short?.names.size === 1 ? short.goals : 0);
+      };
+    };
+    const board = (sourceSide, code, reverseRows = false) => {
+      const scoreOf = scorerMap(code);
+      const withGoals = player => ({ ...player, goals: scoreOf(player) });
+      const side = {
+        ...sourceSide,
+        xi: sourceSide.xi.map(withGoals),
+        rows: sourceSide.rows?.map(row => row.map(withGoals)) ?? null,
+      };
       const top = [...side.xi].filter(p => p.rating !== null && p.rating !== undefined)
         .sort((a, b) => b.rating - a.rating).slice(0, 3);
       return `<div class="card">
