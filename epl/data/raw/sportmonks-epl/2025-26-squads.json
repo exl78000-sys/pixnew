@@ -3,107 +3,1503 @@
   "providerSeason": 25583,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/football/squads/teams/{team_id}?include=player",
-  "retrievedAt": "2026-08-26T09:31:18.032Z",
+  "retrievedAt": "2026-08-26T10:36:05.905Z",
   "teams": {
     "BHA": {
       "id": 78,
       "name": "Brighton & Hove Albion",
-      "shortCode": "BHA"
+      "shortCode": "BHA",
+      "coaches": [
+        {
+          "id": 84,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2019-05-19"
+        },
+        {
+          "id": 446496,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-09-18",
+          "to": "2024-06-14"
+        },
+        {
+          "id": 418722,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-09-08",
+          "to": null
+        },
+        {
+          "id": 22749,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2019-05-20",
+          "to": "2022-09-07"
+        },
+        {
+          "id": 4369502,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2024-07-01",
+          "to": "2029-06-30"
+        },
+        {
+          "id": 4256879,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-06-15",
+          "to": "2024-06-30"
+        }
+      ]
     },
     "FUL": {
       "id": 11,
       "name": "Fulham",
-      "shortCode": "FUL"
+      "shortCode": "FUL",
+      "coaches": [
+        {
+          "id": 10,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-07-01",
+          "to": "2026-07-06"
+        },
+        {
+          "id": 13623340,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-07",
+          "to": "2029-06-30"
+        }
+      ]
     },
     "LIV": {
       "id": 8,
       "name": "Liverpool",
-      "shortCode": "LIV"
+      "shortCode": "LIV",
+      "coaches": [
+        {
+          "id": 23054,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2015-10-08",
+          "to": "2024-06-30"
+        },
+        {
+          "id": 5868859,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-07-01",
+          "to": "2026-06-30"
+        },
+        {
+          "id": 13622714,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-01",
+          "to": "2028-06-30"
+        }
+      ]
     },
     "ARS": {
       "id": 19,
       "name": "Arsenal",
-      "shortCode": "ARS"
+      "shortCode": "ARS",
+      "coaches": [
+        {
+          "id": 23057,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2019-12-22",
+          "to": "2027-06-30"
+        }
+      ]
     },
     "WOL": {
       "id": 29,
       "name": "Wolverhampton Wanderers",
-      "shortCode": "WOL"
+      "shortCode": "WOL",
+      "coaches": [
+        {
+          "id": 632322,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-10-03",
+          "to": "2023-06-30"
+        },
+        {
+          "id": 23060,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-06-09",
+          "to": "2022-10-02"
+        },
+        {
+          "id": 13622717,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-01",
+          "to": "2028-06-30"
+        },
+        {
+          "id": 744140,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-11-14",
+          "to": "2023-01-06"
+        },
+        {
+          "id": 4291144,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-08-09",
+          "to": "2024-12-16"
+        },
+        {
+          "id": 11285366,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2025-11-12"
+        },
+        {
+          "id": 5922929,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-12-19",
+          "to": "2025-08-12"
+        },
+        {
+          "id": 11694108,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2025-11-12",
+          "to": "2026-06-30"
+        },
+        {
+          "id": 8245646,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2025-11-02"
+        }
+      ]
     },
     "LEE": {
       "id": 71,
       "name": "Leeds United",
-      "shortCode": "LEE"
+      "shortCode": "LEE",
+      "coaches": [
+        {
+          "id": 82,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2022-02-27"
+        },
+        {
+          "id": 1324202,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-02-24",
+          "to": "2023-05-02"
+        },
+        {
+          "id": 23070,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-02-28",
+          "to": "2023-02-24"
+        },
+        {
+          "id": 1301738,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-02-25",
+          "to": "2023-02-23"
+        },
+        {
+          "id": 1733889,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-05-03",
+          "to": "2023-07-03"
+        },
+        {
+          "id": 2167524,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2023-07-04",
+          "to": "2027-06-30"
+        }
+      ]
     },
     "CRY": {
       "id": 51,
       "name": "Crystal Palace",
-      "shortCode": "CRY"
+      "shortCode": "CRY",
+      "coaches": [
+        {
+          "id": 75,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2021-07-03"
+        },
+        {
+          "id": 2279833,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-03-21",
+          "to": "2023-03-20"
+        },
+        {
+          "id": 23067,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-07-04",
+          "to": "2023-03-16"
+        },
+        {
+          "id": 1442989,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-03-17",
+          "to": "2023-03-20"
+        },
+        {
+          "id": 13622719,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-01",
+          "to": "2029-06-30"
+        },
+        {
+          "id": 3425768,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-02-20",
+          "to": "2026-06-30"
+        },
+        {
+          "id": 1457180,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-03-21",
+          "to": "2024-02-19"
+        }
+      ]
     },
     "MUN": {
       "id": 14,
       "name": "Manchester United",
-      "shortCode": "MUN"
+      "shortCode": "MUN",
+      "coaches": [
+        {
+          "id": 5334588,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-11-11",
+          "to": "2026-01-04"
+        },
+        {
+          "id": 23492,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-12-03",
+          "to": "2022-06-30"
+        },
+        {
+          "id": 45239,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-05-16",
+          "to": "2022-06-30"
+        },
+        {
+          "id": 46528,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-07-01",
+          "to": "2024-10-27"
+        },
+        {
+          "id": 5232986,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-10-28",
+          "to": "2024-11-10"
+        },
+        {
+          "id": 12290925,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-01-13",
+          "to": "2026-05-21"
+        },
+        {
+          "id": 12189375,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-01-05",
+          "to": "2026-01-12"
+        },
+        {
+          "id": 13593891,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-05-22",
+          "to": "2028-06-30"
+        }
+      ]
     },
     "BRE": {
       "id": 236,
       "name": "Brentford",
-      "shortCode": "BRE"
+      "shortCode": "BRE",
+      "coaches": [
+        {
+          "id": 23095,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2018-10-16",
+          "to": "2025-07-14"
+        },
+        {
+          "id": 7312506,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2025-07-01",
+          "to": "2032-06-30"
+        },
+        {
+          "id": 7300895,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": null
+        }
+      ]
     },
     "SUN": {
       "id": 3,
       "name": "Sunderland",
-      "shortCode": "SUN"
+      "shortCode": "SUN",
+      "coaches": [
+        {
+          "id": 2956183,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-12-18",
+          "to": "2024-02-18"
+        },
+        {
+          "id": 3450178,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-02-22",
+          "to": "2024-02-18"
+        },
+        {
+          "id": 354036,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-08-30",
+          "to": "2023-12-03"
+        },
+        {
+          "id": 5,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-02-11",
+          "to": "2022-08-29"
+        },
+        {
+          "id": 2868127,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-12-04",
+          "to": "2023-12-17"
+        },
+        {
+          "id": 3430675,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-02-19",
+          "to": "2024-06-30"
+        },
+        {
+          "id": 4369493,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2024-07-01",
+          "to": "2028-06-30"
+        }
+      ]
     },
     "BOU": {
       "id": 52,
       "name": "AFC Bournemouth",
-      "shortCode": "BOU"
+      "shortCode": "BOU",
+      "coaches": [
+        {
+          "id": 13622720,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-01",
+          "to": "2029-06-30"
+        },
+        {
+          "id": 2143289,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-07-01",
+          "to": "2026-06-30"
+        },
+        {
+          "id": 359773,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-08-30",
+          "to": null
+        },
+        {
+          "id": 39,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-07-01",
+          "to": "2022-08-29"
+        },
+        {
+          "id": 806517,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-11-28",
+          "to": "2023-06-30"
+        }
+      ]
     },
     "NEW": {
       "id": 20,
       "name": "Newcastle United",
-      "shortCode": "NEW"
+      "shortCode": "NEW",
+      "coaches": [
+        {
+          "id": 13628927,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-08-05",
+          "to": "2030-06-30"
+        },
+        {
+          "id": 17637,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-11-08",
+          "to": "2026-08-04"
+        }
+      ]
     },
     "NFO": {
       "id": 63,
       "name": "Nottingham Forest",
-      "shortCode": "NFO"
+      "shortCode": "NFO",
+      "coaches": [
+        {
+          "id": 2968390,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-12-20",
+          "to": "2025-08-16"
+        },
+        {
+          "id": 12738688,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-02-15",
+          "to": "2026-07-05"
+        },
+        {
+          "id": 13623244,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-06",
+          "to": "2029-06-30"
+        },
+        {
+          "id": 11694114,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2025-10-21",
+          "to": "2026-02-14"
+        },
+        {
+          "id": 45,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-09-21",
+          "to": "2023-12-19"
+        }
+      ]
     },
     "EVE": {
       "id": 13,
       "name": "Everton",
-      "shortCode": "EVE"
+      "shortCode": "EVE",
+      "coaches": [
+        {
+          "id": 29,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2022-01-30"
+        },
+        {
+          "id": 1176245,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-01-30",
+          "to": "2025-01-10"
+        },
+        {
+          "id": 5790163,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2025-01-11",
+          "to": null
+        },
+        {
+          "id": 23056,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-01-31",
+          "to": "2023-01-23"
+        },
+        {
+          "id": 1158920,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-01-24",
+          "to": null
+        }
+      ]
     },
     "MCI": {
       "id": 9,
       "name": "Manchester City",
-      "shortCode": "MCI"
+      "shortCode": "MCI",
+      "coaches": [
+        {
+          "id": 13622713,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-01",
+          "to": "2029-06-30"
+        },
+        {
+          "id": 23053,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2016-07-01",
+          "to": "2026-06-30"
+        }
+      ]
     },
     "WHU": {
       "id": 1,
       "name": "West Ham United",
-      "shortCode": "WHU"
+      "shortCode": "WHU",
+      "coaches": [
+        {
+          "id": 2279827,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-09-05",
+          "to": "2024-06-30"
+        },
+        {
+          "id": 22,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2019-12-28"
+        },
+        {
+          "id": 23051,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2019-12-29",
+          "to": "2024-06-30"
+        },
+        {
+          "id": 4369492,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-07-01",
+          "to": "2025-01-08"
+        },
+        {
+          "id": 5774384,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2025-01-09",
+          "to": "2025-08-12"
+        },
+        {
+          "id": 13623243,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-07-01",
+          "to": "2025-09-26"
+        },
+        {
+          "id": 11694102,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2025-09-27",
+          "to": "2028-06-30"
+        }
+      ]
     },
     "CHE": {
       "id": 18,
       "name": "Chelsea",
-      "shortCode": "CHE"
+      "shortCode": "CHE",
+      "coaches": [
+        {
+          "id": 38,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2021-01-25"
+        },
+        {
+          "id": 2279832,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-09-08",
+          "to": "2027-06-30"
+        },
+        {
+          "id": 1536866,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-04-03",
+          "to": "2023-04-05"
+        },
+        {
+          "id": 4369496,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-07-01",
+          "to": "2025-12-31"
+        },
+        {
+          "id": 13622715,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-01",
+          "to": "2030-06-30"
+        },
+        {
+          "id": 1550368,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-04-06",
+          "to": "2023-06-30"
+        },
+        {
+          "id": 395323,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-09-08",
+          "to": "2023-04-02"
+        },
+        {
+          "id": 23058,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-01-26",
+          "to": "2022-09-07"
+        },
+        {
+          "id": 12140867,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2024-06-30"
+        },
+        {
+          "id": 2143286,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-07-01",
+          "to": "2024-06-20"
+        },
+        {
+          "id": 12189376,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-01-06",
+          "to": "2026-01-07"
+        },
+        {
+          "id": 12161670,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-01-01",
+          "to": "2026-01-05"
+        },
+        {
+          "id": 12210153,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-01-08",
+          "to": "2026-04-21"
+        },
+        {
+          "id": 13500903,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-04-22",
+          "to": "2026-06-30"
+        }
+      ]
     },
     "AVL": {
       "id": 15,
       "name": "Aston Villa",
-      "shortCode": "AVL"
+      "shortCode": "AVL",
+      "coaches": [
+        {
+          "id": 31,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2021-11-10"
+        },
+        {
+          "id": 23055,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-11-11",
+          "to": "2022-10-25"
+        },
+        {
+          "id": 2030079,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2022-11-01",
+          "to": "2029-06-30"
+        }
+      ]
     },
     "TOT": {
       "id": 6,
       "name": "Tottenham Hotspur",
-      "shortCode": "TOT"
+      "shortCode": "TOT",
+      "coaches": [
+        {
+          "id": 23,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2021-11-01"
+        },
+        {
+          "id": 2279825,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-07-01",
+          "to": "2027-06-30"
+        },
+        {
+          "id": 23052,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2021-11-02",
+          "to": "2023-03-25"
+        },
+        {
+          "id": 12724909,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-02-14",
+          "to": "2026-03-28"
+        },
+        {
+          "id": 1689019,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-04-24",
+          "to": "2023-06-30"
+        },
+        {
+          "id": 1493932,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-03-26",
+          "to": "2023-04-23"
+        },
+        {
+          "id": 13340144,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-03-31",
+          "to": "2031-06-30"
+        },
+        {
+          "id": 6901203,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2025-07-01",
+          "to": "2028-06-30"
+        },
+        {
+          "id": 2143285,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2023-07-01",
+          "to": "2025-06-30"
+        },
+        {
+          "id": 13312842,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-03-29",
+          "to": "2026-03-30"
+        }
+      ]
     },
     "BUR": {
       "id": 27,
       "name": "Burnley",
-      "shortCode": "BUR"
+      "shortCode": "BUR",
+      "coaches": [
+        {
+          "id": 53,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": null,
+          "to": "2012-10-29"
+        },
+        {
+          "id": 2279828,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-07-01",
+          "to": "2024-07-04"
+        },
+        {
+          "id": 23061,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2012-10-30",
+          "to": "2022-06-30"
+        },
+        {
+          "id": 32760,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-04-15",
+          "to": "2024-07-04"
+        },
+        {
+          "id": 13623530,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": true,
+          "from": "2026-07-10",
+          "to": "2029-06-30"
+        },
+        {
+          "id": 4408493,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2024-07-05",
+          "to": "2026-04-29"
+        },
+        {
+          "id": 65227,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2022-07-01",
+          "to": "2024-07-04"
+        },
+        {
+          "id": 13522694,
+          "name": null,
+          "firstName": null,
+          "lastName": null,
+          "imagePath": null,
+          "nationalityId": null,
+          "seasonId": 25583,
+          "active": false,
+          "from": "2026-04-30",
+          "to": "2026-07-09"
+        }
+      ]
     }
   },
   "squads": {
