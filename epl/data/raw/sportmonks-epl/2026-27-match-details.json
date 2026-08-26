@@ -3,7 +3,7 @@
   "providerSeason": 28083,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/football/fixtures/{fixture_id}",
-  "retrievedAt": "2026-08-26T12:08:00.984Z",
+  "retrievedAt": "2026-08-26T12:10:53.710Z",
   "matches": {},
   "coverage": {
     "cached": 0,
@@ -76,7 +76,10 @@
           "BRE"
         ]
       }
-    ]
+    ],
+    "detailAttempts": 10,
+    "detailRejected": 0,
+    "detailFailed": 10
   },
   "note": "與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。"
 }
