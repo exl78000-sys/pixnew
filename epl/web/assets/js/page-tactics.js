@@ -62,23 +62,19 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
       ${formationSelect('formationD', '陣型 D', compareFormations[3] ?? compareFormations[0])}
       <span class="dim tiny">從選單切換，即時比較各隊整季分鐘佔比</span>
     </div>
-    <div id="formationCompare"></div>`;
+    <div class="grid g2" id="formationCompare"></div>`;
   const renderFormationCompare = () => {
     const selected = ['formationA', 'formationB', 'formationC', 'formationD'].map(id => document.getElementById(id).value);
     const maps = selected.map(rowsByFormation);
-    const codes = [...new Set(maps.flatMap(m => [...m.keys()]))].sort((x, y) =>
-      Math.max(...maps.map(m => m.get(y)?.share ?? 0)) - Math.max(...maps.map(m => m.get(x)?.share ?? 0)));
     const palette = ['var(--accent)', 'var(--accent-3)', 'var(--accent-2)', '#c58cff'];
-    const bar = (row, tint) => row ? `<span style="flex:1;min-width:110px;display:flex;align-items:center;gap:8px"><span style="height:6px;flex:1;background:var(--ink-5);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100, Math.max(0, row.share))}%;background:${tint}"></i></span><b class="mono small" style="min-width:42px;text-align:right">${row.share}%</b></span>` : '<span class="dim small" style="flex:1;min-width:110px;text-align:right">—</span>';
-    document.getElementById('formationCompare').innerHTML = `<div class="card">
-      <div class="spread"><h3 style="margin:0"><span class="mono">${selected.join('</span> <span class="dim">vs</span> <span class="mono">')}</span></h3><span class="dim tiny">${codes.length} 隊有其中一種紀錄</span></div>
-      <div style="overflow-x:auto;margin-top:12px"><div style="min-width:640px"><div class="stat-line tiny dim" style="gap:10px"><span style="min-width:130px">球隊</span>${selected.map((name, i) => `<span style="flex:1;min-width:110px" class="mono">${String.fromCharCode(65 + i)}・${name}</span>`).join('')}</div>
-      <div style="display:grid;gap:8px;margin-top:4px">${codes.map(code => `<div class="stat-line" style="gap:10px;align-items:center">
-        <a href="${C.link('teams', { code })}" class="small" style="min-width:130px;text-decoration:none">${C.badge(code)} ${C.name(code)}</a>
-        ${maps.map((m, i) => bar(m.get(code), palette[i])).join('')}
-      </div>`).join('')}</div></div>
-      <div class="tiny dim" style="margin-top:10px">A～D 對應上方四個選單；佔比是該隊整季使用該陣型的分鐘比例，不是聯盟平均。</div>
-    </div>`;
+    const bar = (row, tint) => row ? `<span style="height:6px;flex:1;background:var(--ink-5);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100, Math.max(0, row.share))}%;background:${tint}"></i></span><b class="mono small" style="min-width:42px;text-align:right">${row.share}%</b>` : '<span class="dim small">—</span>';
+    const cards = selected.map((formation, i) => {
+      const rows = [...maps[i].values()].sort((a, b) => b.share - a.share);
+      return `<div class="card"><div class="spread"><h3 style="margin:0"><span class="pill tiny">${String.fromCharCode(65 + i)}</span> <span class="mono">${formation}</span></h3><span class="dim tiny">${rows.length} 隊使用</span></div>
+        <div style="display:grid;gap:8px;margin-top:12px">${rows.map(row => `<a href="${C.link('teams', { code: row.code })}" class="stat-line" style="text-decoration:none;gap:10px"><span class="small" style="min-width:130px">${C.badge(row.code)} ${C.name(row.code)}</span><span style="flex:1;display:flex;align-items:center;gap:8px">${bar(row, palette[i])}</span></a>`).join('')}</div>
+        <div class="tiny dim" style="margin-top:10px">${formation} 佔該隊整季使用分鐘的比例。</div></div>`;
+    }).join('');
+    document.getElementById('formationCompare').innerHTML = cards;
   };
   ['formationA', 'formationB', 'formationC', 'formationD'].forEach(id => { document.getElementById(id).onchange = renderFormationCompare; });
   renderFormationCompare();
