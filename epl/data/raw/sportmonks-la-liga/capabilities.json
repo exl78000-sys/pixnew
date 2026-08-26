@@ -1,0 +1,62 @@
+{
+  "league": "es1",
+  "season": 27965,
+  "fixtureId": 19732363,
+  "source": "SportMonks",
+  "sourceUrl": "https://api.sportmonks.com/v3/my/resources",
+  "retrievedAt": "2026-08-26T13:05:49.011Z",
+  "requests": 10,
+  "my": {
+    "resources": {
+      "status": 200,
+      "available": true,
+      "errorCode": null,
+      "items": 122
+    },
+    "leagues": {
+      "status": 200,
+      "available": true,
+      "errorCode": null,
+      "items": 5
+    },
+    "usage": {
+      "status": 200,
+      "available": true,
+      "errorCode": null,
+      "items": 25
+    }
+  },
+  "includes": {
+    "participants": {
+      "status": 200,
+      "available": true,
+      "errorCode": null
+    },
+    "lineups": {
+      "status": 200,
+      "available": true,
+      "errorCode": null
+    },
+    "events": {
+      "status": 200,
+      "available": true,
+      "errorCode": null
+    },
+    "statistics": {
+      "status": 200,
+      "available": true,
+      "errorCode": null
+    },
+    "formations": {
+      "status": 200,
+      "available": true,
+      "errorCode": null
+    },
+    "xGFixture": {
+      "status": 403,
+      "available": false,
+      "errorCode": 5002
+    }
+  },
+  "note": "只記錄 HTTP 狀態與方案能力；不保存 Token、完整回應或個人資料。200 表示此探測請求可用，403 表示方案未提供。"
+}

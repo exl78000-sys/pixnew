@@ -3,7 +3,7 @@
   "providerSeason": 28083,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/football/fixtures/{fixture_id}",
-  "retrievedAt": "2026-08-26T12:44:51.125Z",
+  "retrievedAt": "2026-08-26T13:06:08.348Z",
   "matches": {},
   "coverage": {
     "cached": 0,
@@ -81,7 +81,18 @@
     "detailRejected": 0,
     "detailFailed": 0,
     "detailFailureReasons": {},
-    "detailSkippedByBlock": 10
+    "detailSkippedByBlock": 10,
+    "capabilityChecked": false,
+    "capabilityDenied": [],
+    "requestedIncludes": [
+      "participants",
+      "lineups.details.type",
+      "formations",
+      "events.type",
+      "statistics.type",
+      "xGFixture"
+    ],
+    "detailSkippedByCapability": 0
   },
   "blocked": {
     "status": 403,
