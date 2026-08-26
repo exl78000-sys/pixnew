@@ -204,7 +204,7 @@ try {
     <div class="page-head">
       <h1>西甲球隊・數據第二版</h1>
       <p>${meta.currentSeason} 的 20 支球隊；除戰績、近期表現與模型模擬外，
-        回歸球隊另有 ${meta.lastSeason} 真實 xG、射門、陣型、進球情境與數據風格。球員、教練、傷停與正式陣容尚未接入。</p>
+        回歸球隊另有 ${meta.lastSeason} 真實 xG、射門、陣型、進球情境與數據風格；球員與教練資料已由可用來源接入，正式陣容則僅在已核對的完賽場次顯示，傷停目前沒有可靠來源。</p>
       ${C.stampRow([
         C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily' }),
         C.stamp(`${meta.lastSeason} 全季賽果`, { kind: 'season' }),

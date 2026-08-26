@@ -34,7 +34,7 @@ try {
   <div class="page-head">
     <h1>${basic ? '西甲戰情室・球隊數據第二版' : '英超戰情室'}</h1>
     <p>${basic
-      ? `使用 ${meta.lastSeason} 完整賽果與 ${meta.currentSeason} 已完賽資料，產生積分榜、單場機率與賽季模擬；回歸球隊另有上季 xG、射門、實際陣型與進球情境。完賽後資料會一次性永久快取；全季球員頁、傷停、教練與即時資料尚未接入。`
+      ? `使用 ${meta.lastSeason} 完整賽果與 ${meta.currentSeason} 已完賽資料，產生積分榜、單場機率與賽季模擬；回歸球隊另有上季 xG、射門、實際陣型與進球情境。完賽後資料會一次性永久快取；球員與教練資料已接入，傷停仍無可靠來源${meta.live?.available ? '，即時比分也已接入' : ''}。`
       : `把 ${meta.historySeasons.join('、')} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`}</p>
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
@@ -83,7 +83,7 @@ try {
         <div>✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬</div>
         <div>✓ 上季球隊 xG/xGA、射門、實際陣型、五種進球情境與風格百分位</div>
         <div>✓ 完賽後完整資料永久快取 ${reports.count ?? 0}/${played.length} 場（球隊統計、正式陣容、事件與球員評分）</div>
-        <div>— 全季球員頁、傷停、教練與即時資料尚未接入</div>
+        <div>— 球員與教練資料已接入；傷停${meta.capabilities?.injuries ? '已接入' : '尚無可靠來源'}；即時比分${meta.live?.available ? '已接入' : '仍以賽程推算'}</div>
         <div class="dim">模型只使用一個完整賽季，尚無獨立留出賽季可做可靠回測。</div>
       </div>` : ''}</div>
       ${basic ? '' : `<div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>`}

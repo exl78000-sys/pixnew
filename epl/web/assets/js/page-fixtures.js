@@ -217,7 +217,7 @@ try {
       ${basicTeamComparison(f)}
 
       ${rep ? C.matchReportCards(rep) : (f.played
-        ? `<div class="note">${basic ? '這場尚待 API-Football 永久快取；球隊統計、正式陣容、事件、球員資料與評分未全部通過前不顯示半成品。' : '這場沒有逐球員的出場資料,所以沒有陣容與戰術解讀。有資料的輪次可用 <span class="mono">npm run season</span> 補上。'}</div>`
+        ? `<div class="note">${basic ? '這場尚待主要資料源完成永久快取；球隊統計、正式陣容、事件、球員資料與評分未全部通過前不顯示半成品。' : '這場沒有逐球員的出場資料,所以沒有陣容與戰術解讀。有資料的輪次可用 <span class="mono">npm run season</span> 補上。'}</div>`
         : '')}`);
   }
 
