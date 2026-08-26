@@ -1,0 +1,48 @@
+name: 西甲新聞每日快取
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub Actions 使用 UTC；02:00 UTC = 台北時間 10:00。
+    - cron: '0 2 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: laliga-news-daily
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: epl
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 只抓 RSS 標題、短摘要與原文連結；不抓全文、不呼叫 LLM。
+      - name: 抓西甲外電 RSS
+        run: npm run news -- --league=es1
+        continue-on-error: true
+
+      # 讓新聞快取可以直接在下一次 Pages 部署前先落到資料集。
+      - name: 建立西甲資料集
+        run: npm run laliga:build
+
+      - name: 回寫西甲新聞快取
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f epl/data/raw/news-la-liga.json epl/web/data/leagues/es1/news.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "新聞沒有變化，不提交"
+          else
+            git commit -m "chore(news): 更新西甲每日外電快取"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

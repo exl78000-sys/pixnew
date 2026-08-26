@@ -611,6 +611,19 @@ async function main() {
     for (const p of withAge) playersOut.push({ ...p, season });
   }
 
+  // 西甲新聞只讀每日快取；開頁不抓外部網站。抓取器會先限制來源數量，
+  // 這裡再做一次最小欄位驗證，避免損壞或無連結的 RSS 項目進入前端。
+  const externalNewsPath = join(ROOT, 'data', 'raw', 'news-la-liga.json');
+  let externalNews = [];
+  if (existsSync(externalNewsPath)) {
+    try {
+      const rawNews = JSON.parse(await readFile(externalNewsPath, 'utf8'));
+      externalNews = Array.isArray(rawNews)
+        ? rawNews.filter(item => item && item.title && item.link && item.source).slice(0, 100)
+        : [];
+    } catch { externalNews = []; }
+  }
+
   const meta = {
     builtAt: new Date().toISOString(), asOf: AS_OF,
     league: 'es1', edition: 'basic',
@@ -635,7 +648,7 @@ async function main() {
       /* players 是 true；整季進攻與串聯來自 Understat，身分欄位可由
          SportMonks 快取補充。前端仍靠 leaders.missing 宣告尚未取得的項目。 */
       live: false, players: playersOut.length > 0, injuries: false, tactics: teamProfiles.length > 0,
-      coaches: coachData.length > 0, news: false, officialLineups: reportCount > 0 || officialLineupCount > 0, matchReports: reportCount > 0,
+      coaches: coachData.length > 0, news: externalNews.length > 0, officialLineups: reportCount > 0 || officialLineupCount > 0, matchReports: reportCount > 0,
       fixtures: true, standings: true, teams: true, predictions: true, market: true,
       teamProfiles: teamProfiles.length > 0, setPieces: teamProfiles.length > 0,
     },
@@ -652,7 +665,7 @@ async function main() {
     },
     counts: {
       teams: teams.length, players: playersOut.length, fixtures: fixtures.length,
-      news: 0, injuries: 0, currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
+      news: externalNews.length, injuries: 0, currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
       currentSeasonPlayers: playerSeasons[CURRENT_SEASON]?.players?.length ?? 0, teamProfiles: teams.filter(t => t.tactics).length,
       coaches: coachData.length,
       matchReports: reportCount, officialLineups: officialLineupCount,
@@ -681,7 +694,7 @@ async function main() {
   });
   await write('h2h', h2h);
   await write('results', [...lastMatches, ...curPlayed].filter(m => m.played).map(slimMatch));
-  await write('news', []);
+  await write('news', externalNews);
   await write('players', playersOut);
   await write('leaders', {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },

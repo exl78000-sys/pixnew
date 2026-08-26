@@ -9,15 +9,15 @@ try {
 
   const cats = [...new Set(news.map(n => n.cat))];
   const codes = [...new Set(news.map(n => n.team).filter(Boolean))].sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
-  const CLS = { 傷停: 'bad', 禁賽: 'bad', 轉會: 'info', 賽前: 'info', 賽程: 'warn', 數據: 'accent', 戰術: 'accent', 陣容: '', 外電: 'warn' };
+  const CLS = { 傷停: 'bad', 禁賽: 'bad', 轉會: 'info', 賽前: 'info', 賽程: 'warn', 數據: 'accent', 戰術: 'accent', 陣容: '', 外電: 'warn', 西甲外電: 'warn' };
   let cat = '';
 
   app.innerHTML = `
   <div class="page-head">
     <h1>動態</h1>
-    <p>三種來源:<b>傷停與轉會</b>來自 FPL 官方欄位(含更新日期,是真的即時資料);
-       <b>賽前看點</b>由預測模型自動生成;<b>數據 / 戰術 / 陣容</b>則是從上季 380 場比賽跑出來的敘事。
-       外部新聞 RSS 可以自行接上(見 <span class="mono">scripts/fetch-news.mjs</span>)。</p>
+    <p>${meta.league === 'es1'
+      ? '西甲目前顯示 The Guardian La Liga 與 BBC Sport 關鍵字篩選後的外電；每日台北時間 10:00 快取一次，只保存短摘要與原文連結，不抓全文。'
+      : '三種來源:<b>傷停與轉會</b>來自 FPL 官方欄位(含更新日期,是真的即時資料); <b>賽前看點</b>由預測模型自動生成;<b>數據 / 戰術 / 陣容</b>則是從上季 380 場比賽跑出來的敘事。外部新聞 RSS 可由 <span class="mono">scripts/fetch-news.mjs</span> 更新。'}</p>
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
     ])}

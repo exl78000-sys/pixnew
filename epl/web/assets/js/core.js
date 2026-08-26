@@ -230,12 +230,12 @@ export const stampRow = items =>
   `<div class="stamp-row">${items.filter(Boolean).join('')}</div>`;
 
 /* ── 導覽列 ─────────────────────────── */
-// open 是「這個聯賽的導覽列開放哪幾頁」。西甲只補到賽程與球隊,
-// 其餘的頁面資料還是空的,先不掛上去 —— 但網址仍然進得來,
+// open 是「這個聯賽的導覽列開放哪幾頁」。西甲已補到外電動態，
+// 其餘資料仍空的頁面先不掛上去 —— 但網址仍然進得來,
 // 進來時由 LeagueGap 給一句實話,不是一個空白頁。
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
-  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'fixtures', 'teams', 'players', 'tactics'] },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'fixtures', 'teams', 'players', 'tactics', 'news'] },
 };
 
 const PAGES = [

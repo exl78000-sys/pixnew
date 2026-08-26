@@ -1,0 +1,25 @@
+{
+  "_note": "西甲外電 RSS。只保存標題、短摘要、來源與原文連結，不抓整篇文章；每日最多執行一次。",
+  "_sources": {
+    "guardian": "https://www.theguardian.com/football/laligafootball/rss",
+    "bbc": "https://feeds.bbci.co.uk/sport/football/rss.xml"
+  },
+  "feeds": [
+    {
+      "name": "The Guardian La Liga",
+      "url": "https://www.theguardian.com/football/laligafootball/rss"
+    },
+    {
+      "name": "BBC Sport Football（西甲關鍵字篩選）",
+      "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+      "keywords": [
+        "la liga", "laliga", "barcelona", "real madrid", "atletico madrid",
+        "sevilla", "valencia", "villarreal", "athletic bilbao", "real sociedad",
+        "real betis", "espanyol", "girona", "mallorca", "osasuna", "getafe",
+        "rayo vallecano", "celta vigo", "alaves", "levante", "elche", "oviedo",
+        "malaga", "racing santander", "deportivo la coruna"
+      ]
+    }
+  ],
+  "maxPerFeed": 8
+}

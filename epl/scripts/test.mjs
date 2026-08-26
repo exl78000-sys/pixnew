@@ -783,7 +783,8 @@ async function checkDataGap() {
     ['西甲的球員頁已開放,不擋', !g('es1', 'players', ['players', 'leaders'])],
     ['球員頁開放了但資料是空的,保險仍然會擋',
       !!g('es1', 'players', ['players', 'leaders'], { ...full, players: [] })],
-    ['西甲的動態頁擋下來', !!g('es1', 'news', ['news'])],
+    ['西甲的動態頁已開放,資料存在時不擋', !g('es1', 'news', ['news'], { ...full, news: [1] })],
+    ['西甲的動態頁資料空的仍擋', !!g('es1', 'news', ['news'], { ...full, news: [] })],
     ['西甲的實時戰況擋下來', !!g('es1', 'live', ['live'])],
     ['西甲的模型驗證擋下來', !!g('es1', 'model', ['form'])],
     ['西甲的單場分析不擋', !g('es1', 'analysis', ['players', 'shapes'], { players: [], shapes: {} })],
@@ -794,9 +795,9 @@ async function checkDataGap() {
     ['宣告開放但資料是空的仍然擋(保險)', !!g('pl', 'news', ['news'], { ...full, news: [] })],
     ['資料集缺檔也算缺口', !!g('pl', 'players', ['players', 'leaders'], { players: [1] }, ['leaders'])],
     ['缺口訊息不出現 build / 404 這些字',
-      !/build|404|npm/i.test(g('es1', 'news', ['news']).message)],
+      !/build|404|npm/i.test(g('es1', 'news', ['news'], { ...full, news: [] }).message)],
     ['缺口帶得出這一頁需要什麼',
-      g('es1', 'news', ['news']).needs.join() === 'news'],
+      g('es1', 'news', ['news'], { ...full, news: [] }).needs.join() === 'news'],
   ];
 
   let fail = 0;
