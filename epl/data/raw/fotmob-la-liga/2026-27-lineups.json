@@ -1,0 +1,6259 @@
+{
+ "version": 1,
+ "source": "fotmob/enetpulse",
+ "season": "2026-27",
+ "updatedAt": "2026-08-26T05:17:15.989Z",
+ "matches": {
+  "ALA|GET": {
+   "matchId": "5868011",
+   "season": "2026-27",
+   "date": "2026-08-15",
+   "home": "ALA",
+   "away": "GET",
+   "score": {
+    "home": 3,
+    "away": 0
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:03.077Z",
+   "lineup": {
+    "home": {
+     "providerId": 9866,
+     "name": "Deportivo Alavés",
+     "formation": "3-5-2",
+     "rating": 7.4,
+     "starters": [
+      {
+       "providerId": 530468,
+       "name": "Antonio Sivera",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.2
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.2,
+        "width": 1
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4
+       }
+      },
+      {
+       "providerId": 860314,
+       "name": "Nahuel Tenaglia",
+       "positionId": 33,
+       "usualPlayingPositionId": 1,
+       "shirt": "14",
+       "captain": false,
+       "countryCode": "ARG",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.79,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.21,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 8.6,
+       "performance": {
+        "rating": 8.6,
+        "events": [
+         {
+          "type": "goal"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1056461,
+       "name": "Ville Koski",
+       "positionId": 35,
+       "usualPlayingPositionId": 1,
+       "shirt": "16",
+       "captain": false,
+       "countryCode": "FIN",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9
+       }
+      },
+      {
+       "providerId": 360918,
+       "name": "Jonny Otto",
+       "positionId": 37,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.21,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.79,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7
+       }
+      },
+      {
+       "providerId": 1563022,
+       "name": "Ángel Pérez",
+       "positionId": 71,
+       "usualPlayingPositionId": 2,
+       "shirt": "7",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.89,
+        "height": 0.195,
+        "width": 0.773
+       },
+       "verticalLayout": {
+        "x": 0.11,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "substitutionEvents": [
+         {
+          "time": 65,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1238154,
+       "name": "Pablo Ibánez",
+       "positionId": 73,
+       "usualPlayingPositionId": 2,
+       "shirt": "19",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.695,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.305,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9
+       }
+      },
+      {
+       "providerId": 845998,
+       "name": "Antonio Blanco",
+       "positionId": 75,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 90,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 282281,
+       "name": "Denis Suárez",
+       "positionId": 77,
+       "usualPlayingPositionId": 2,
+       "shirt": "4",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.305,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.695,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 57,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1200941,
+       "name": "Abderrahman Rebbach",
+       "positionId": 79,
+       "usualPlayingPositionId": 2,
+       "shirt": "21",
+       "captain": false,
+       "countryCode": "ALG",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.11,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.89,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 90,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 640123,
+       "name": "Toni Martínez",
+       "positionId": 104,
+       "usualPlayingPositionId": 3,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.7,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 7.2,
+       "performance": {
+        "rating": 7.2
+       }
+      },
+      {
+       "providerId": 1553663,
+       "name": "Aitor Mañas",
+       "positionId": 106,
+       "usualPlayingPositionId": 3,
+       "shirt": "20",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.3,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6,
+        "substitutionEvents": [
+         {
+          "time": 57,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 8305,
+     "name": "Getafe",
+     "formation": "3-5-2",
+     "rating": 6.1,
+     "starters": [
+      {
+       "providerId": 581919,
+       "name": "David Soria",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "13",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.2
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.2,
+        "width": 1
+       },
+       "rating": 6.3,
+       "performance": {
+        "rating": 6.3
+       }
+      },
+      {
+       "providerId": 421365,
+       "name": "Djené",
+       "positionId": 33,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": true,
+       "countryCode": "TOG",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.79,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.21,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 6.5,
+       "performance": {
+        "rating": 6.5,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 81,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 956921,
+       "name": "Abdelkabir Abqar",
+       "positionId": 35,
+       "usualPlayingPositionId": 1,
+       "shirt": "5",
+       "captain": false,
+       "countryCode": "MAR",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 6,
+       "performance": {
+        "rating": 6
+       }
+      },
+      {
+       "providerId": 1118199,
+       "name": "Zaid Abner Romero",
+       "positionId": 37,
+       "usualPlayingPositionId": 1,
+       "shirt": "24",
+       "captain": false,
+       "countryCode": "ARG",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.21,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.79,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4
+       }
+      },
+      {
+       "providerId": 175311,
+       "name": "Kiko",
+       "positionId": 71,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.89,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.11,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 4.7,
+       "performance": {
+        "rating": 4.7,
+        "events": [
+         {
+          "type": "redCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1202587,
+       "name": "Ramón Terrats",
+       "positionId": 73,
+       "usualPlayingPositionId": 2,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.695,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.305,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.5,
+       "performance": {
+        "rating": 6.5
+       }
+      },
+      {
+       "providerId": 765693,
+       "name": "Orel Mangala",
+       "positionId": 75,
+       "usualPlayingPositionId": 2,
+       "shirt": "23",
+       "captain": false,
+       "countryCode": "BEL",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6
+       }
+      },
+      {
+       "providerId": 1321605,
+       "name": "Mario Martín",
+       "positionId": 77,
+       "usualPlayingPositionId": 2,
+       "shirt": "6",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.305,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.695,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 66,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1676086,
+       "name": "Davinchi",
+       "positionId": 79,
+       "usualPlayingPositionId": 1,
+       "shirt": "3",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.11,
+        "height": 0.195,
+        "width": 0.773
+       },
+       "verticalLayout": {
+        "x": 0.89,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1430406,
+       "name": "Andrés García",
+       "positionId": 104,
+       "usualPlayingPositionId": 2,
+       "shirt": "21",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.7,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "substitutionEvents": [
+         {
+          "time": 81,
+          "type": "subOut"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1197039,
+       "name": "Martín Satriano",
+       "positionId": 106,
+       "usualPlayingPositionId": 3,
+       "shirt": "10",
+       "captain": false,
+       "countryCode": "URU",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.3,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 6,
+       "performance": {
+        "rating": 6,
+        "substitutionEvents": [
+         {
+          "time": 73,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  },
+  "SEV|RAY": {
+   "matchId": "5868019",
+   "season": "2026-27",
+   "date": "2026-08-15",
+   "home": "SEV",
+   "away": "RAY",
+   "score": {
+    "home": 2,
+    "away": 1
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:04.874Z",
+   "lineup": {
+    "home": {
+     "providerId": 8302,
+     "name": "Sevilla",
+     "formation": "4-2-3-1",
+     "rating": 7,
+     "starters": [
+      {
+       "providerId": 304355,
+       "name": "Odysseas Vlachodimos",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "GRE",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 7.6,
+       "performance": {
+        "rating": 7.6
+       }
+      },
+      {
+       "providerId": 1102289,
+       "name": "Juan Iglesias",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.3,
+       "performance": {
+        "rating": 7.3
+       }
+      },
+      {
+       "providerId": 1244272,
+       "name": "Arouna Sangante",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "12",
+       "captain": false,
+       "countryCode": "SEN",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.3,
+       "performance": {
+        "rating": 6.3
+       }
+      },
+      {
+       "providerId": 1327489,
+       "name": "Kike Salas",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "4",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "events": [
+         {
+          "type": "redCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 659490,
+       "name": "Gabriel Suazo",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": true,
+       "countryCode": "CHI",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.3,
+       "performance": {
+        "rating": 7.3,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 971790,
+       "name": "Lucien Agoumé",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "6",
+       "captain": false,
+       "countryCode": "FRA",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7.2,
+       "performance": {
+        "rating": 7.2,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1783498,
+       "name": "Nico Guillen",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "27",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9,
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1797904,
+       "name": "Miguel Sierra",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "30",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5,
+        "substitutionEvents": [
+         {
+          "time": 70,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 678192,
+       "name": "Jon Guridi",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "18",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 7.7,
+       "performance": {
+        "rating": 7.7,
+        "events": [
+         {
+          "type": "yellowCard"
+         },
+         {
+          "type": "goal"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 82,
+          "type": "subOut",
+          "reason": "injury"
+         }
+        ],
+        "playerOfTheMatch": true
+       }
+      },
+      {
+       "providerId": 1575945,
+       "name": "Oso",
+       "positionId": 87,
+       "usualPlayingPositionId": 1,
+       "shirt": "19",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 6.8,
+       "performance": {
+        "rating": 6.8,
+        "substitutionEvents": [
+         {
+          "time": 78,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1130991,
+       "name": "Isaac Romero",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "16",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 8370,
+     "name": "Rayo Vallecano",
+     "formation": "4-2-3-1",
+     "rating": 6.5,
+     "starters": [
+      {
+       "providerId": 621415,
+       "name": "Augusto Batalla",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "13",
+       "captain": false,
+       "countryCode": "ARG",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4
+       }
+      },
+      {
+       "providerId": 970578,
+       "name": "Andrei Ratiu",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": false,
+       "countryCode": "ROU",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7
+       }
+      },
+      {
+       "providerId": 184521,
+       "name": "Florian Lejeune",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "24",
+       "captain": false,
+       "countryCode": "FRA",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.6,
+       "performance": {
+        "rating": 7.6
+       }
+      },
+      {
+       "providerId": 872396,
+       "name": "Pathé Ciss",
+       "positionId": 36,
+       "usualPlayingPositionId": 2,
+       "shirt": "6",
+       "captain": false,
+       "countryCode": "SEN",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 264885,
+       "name": "Iván Balliu",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "20",
+       "captain": false,
+       "countryCode": "ALB",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.5,
+       "performance": {
+        "rating": 6.5
+       }
+      },
+      {
+       "providerId": 956622,
+       "name": "Óscar Valentín",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "23",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 6.7,
+       "performance": {
+        "rating": 6.7,
+        "substitutionEvents": [
+         {
+          "time": 78,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 571615,
+       "name": "Unai López",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 78,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 797901,
+       "name": "Jorge de Frutos",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "19",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6
+       }
+      },
+      {
+       "providerId": 638010,
+       "name": "Isi Palazón",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "7",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 6.5,
+       "performance": {
+        "rating": 6.5,
+        "substitutionEvents": [
+         {
+          "time": 64,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 474658,
+       "name": "Álvaro Garcia",
+       "positionId": 87,
+       "usualPlayingPositionId": 3,
+       "shirt": "18",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 7.3,
+       "performance": {
+        "rating": 7.3,
+        "events": [
+         {
+          "type": "yellowCard"
+         },
+         {
+          "type": "goal"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 70,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 915264,
+       "name": "Randy Nteka",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "ANG",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 5.8,
+       "performance": {
+        "rating": 5.8,
+        "substitutionEvents": [
+         {
+          "time": 64,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  },
+  "RAC|VIL": {
+   "matchId": "5868017",
+   "season": "2026-27",
+   "date": "2026-08-16",
+   "home": "RAC",
+   "away": "VIL",
+   "score": {
+    "home": 2,
+    "away": 2
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:06.363Z",
+   "lineup": {
+    "home": {
+     "providerId": 8696,
+     "name": "Racing Santander",
+     "formation": "4-2-3-1",
+     "rating": 6.8,
+     "starters": [
+      {
+       "providerId": 1280020,
+       "name": "Julen Agirrezabala",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "13",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7
+       }
+      },
+      {
+       "providerId": 1199649,
+       "name": "Álvaro Mantilla",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.3,
+       "performance": {
+        "rating": 6.3
+       }
+      },
+      {
+       "providerId": 1644302,
+       "name": "Pedro Felipe",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "22",
+       "captain": false,
+       "countryCode": "BRA",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 5.9,
+       "performance": {
+        "rating": 5.9,
+        "substitutionEvents": [
+         {
+          "time": 16,
+          "type": "subOut",
+          "reason": "injury"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 982734,
+       "name": "Pablo Ramón",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "5",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 77,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1670161,
+       "name": "Jorge Salinas",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5
+       }
+      },
+      {
+       "providerId": 1331597,
+       "name": "Gustavo Puerta",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "COL",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1791769,
+       "name": "Sergio Martínez",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "36",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4,
+        "events": [
+         {
+          "type": "goal"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 69,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 899195,
+       "name": "Andrés Martin",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 8.2,
+       "performance": {
+        "rating": 8.2,
+        "events": [
+         {
+          "type": "goal"
+         }
+        ],
+        "playerOfTheMatch": true
+       }
+      },
+      {
+       "providerId": 150649,
+       "name": "Sergio Canales",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "20",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "substitutionEvents": [
+         {
+          "time": 77,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 889229,
+       "name": "Iñigo Vicente",
+       "positionId": 87,
+       "usualPlayingPositionId": 3,
+       "shirt": "10",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 7.7,
+       "performance": {
+        "rating": 7.7
+       }
+      },
+      {
+       "providerId": 670031,
+       "name": "Asier Villalibre",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "12",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "substitutionEvents": [
+         {
+          "time": 69,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 10205,
+     "name": "Villarreal",
+     "formation": "4-4-2",
+     "rating": 7.1,
+     "starters": [
+      {
+       "providerId": 1187044,
+       "name": "Luiz Júnior",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "BRA",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.2
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.2,
+        "width": 1
+       },
+       "rating": 6,
+       "performance": {
+        "rating": 6
+       }
+      },
+      {
+       "providerId": 1407468,
+       "name": "Santiago Mouriño",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "15",
+       "captain": false,
+       "countryCode": "URU",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 88,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 833219,
+       "name": "Juan Foyth",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "8",
+       "captain": true,
+       "countryCode": "ARG",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.7,
+       "performance": {
+        "rating": 7.7,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1343750,
+       "name": "Renato Veiga",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "12",
+       "captain": false,
+       "countryCode": "POR",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1
+       }
+      },
+      {
+       "providerId": 1395964,
+       "name": "Carlos Romero",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "20",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 8,
+       "performance": {
+        "rating": 8,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 575735,
+       "name": "Nicolas Pépé",
+       "positionId": 72,
+       "usualPlayingPositionId": 2,
+       "shirt": "19",
+       "captain": false,
+       "countryCode": "CIV",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 8.2,
+       "performance": {
+        "rating": 8.2,
+        "events": [
+         {
+          "type": "goal"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 77,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 671865,
+       "name": "Santi Comesaña",
+       "positionId": 74,
+       "usualPlayingPositionId": 2,
+       "shirt": "14",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6,
+        "substitutionEvents": [
+         {
+          "time": 56,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 844544,
+       "name": "Pape Gueye",
+       "positionId": 76,
+       "usualPlayingPositionId": 2,
+       "shirt": "18",
+       "captain": false,
+       "countryCode": "SEN",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 8.1,
+       "performance": {
+        "rating": 8.1,
+        "events": [
+         {
+          "type": "yellowCard"
+         },
+         {
+          "type": "goal"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1184694,
+       "name": "Alberto Moleiro",
+       "positionId": 78,
+       "usualPlayingPositionId": 2,
+       "shirt": "10",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4,
+        "events": [
+         {
+          "type": "assist"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 56,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 479020,
+       "name": "Ayoze Pérez",
+       "positionId": 104,
+       "usualPlayingPositionId": 3,
+       "shirt": "22",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4,
+        "substitutionEvents": [
+         {
+          "time": 56,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1117069,
+       "name": "Georges Mikautadze",
+       "positionId": 106,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": false,
+       "countryCode": "GEO",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 7.9,
+       "performance": {
+        "rating": 7.9,
+        "events": [
+         {
+          "type": "assist"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  },
+  "ESP|LEV": {
+   "matchId": "5868015",
+   "season": "2026-27",
+   "date": "2026-08-16",
+   "home": "ESP",
+   "away": "LEV",
+   "score": {
+    "home": 3,
+    "away": 0
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:08.047Z",
+   "lineup": {
+    "home": {
+     "providerId": 8558,
+     "name": "Espanyol",
+     "formation": "4-2-3-1",
+     "rating": 7.4,
+     "starters": [
+      {
+       "providerId": 280818,
+       "name": "Marko Dmitrovic",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "13",
+       "captain": false,
+       "countryCode": "SRB",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1
+       }
+      },
+      {
+       "providerId": 1208708,
+       "name": "Omar El Hilali",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "23",
+       "captain": false,
+       "countryCode": "MAR",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1
+       }
+      },
+      {
+       "providerId": 1279557,
+       "name": "Clemens Riedel",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "5",
+       "captain": false,
+       "countryCode": "GER",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7
+       }
+      },
+      {
+       "providerId": 805352,
+       "name": "Unai Núñez",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "14",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5
+       }
+      },
+      {
+       "providerId": 1727689,
+       "name": "Roger Hinojo",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "29",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5
+       }
+      },
+      {
+       "providerId": 1187767,
+       "name": "Urko González",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "4",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7.6,
+       "performance": {
+        "rating": 7.6,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 72,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 837089,
+       "name": "Edu Expósito",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "substitutionEvents": [
+         {
+          "time": 86,
+          "type": "subOut",
+          "reason": "injury"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1181101,
+       "name": "Tyrhys Dolan",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "24",
+       "captain": false,
+       "countryCode": "ENG",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 8.3,
+       "performance": {
+        "rating": 8.3,
+        "events": [
+         {
+          "type": "goal"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 81,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ],
+        "seasonGoals": 1
+       }
+      },
+      {
+       "providerId": 1427828,
+       "name": "Javi Hernández",
+       "positionId": 85,
+       "usualPlayingPositionId": 3,
+       "shirt": "28",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 7.9,
+       "performance": {
+        "rating": 7.9,
+        "events": [
+         {
+          "type": "yellowCard"
+         },
+         {
+          "type": "assist"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 82,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ],
+        "seasonAssists": 1
+       }
+      },
+      {
+       "providerId": 1300457,
+       "name": "Álex Calatrava",
+       "positionId": 87,
+       "usualPlayingPositionId": 3,
+       "shirt": "22",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 72,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1252373,
+       "name": "Roberto Fernández",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 8.8,
+       "performance": {
+        "rating": 8.8,
+        "events": [
+         {
+          "type": "goal"
+         },
+         {
+          "type": "goal"
+         }
+        ],
+        "seasonGoals": 2,
+        "playerOfTheMatch": true
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 8581,
+     "name": "Levante",
+     "formation": "4-2-3-1",
+     "rating": 6.1,
+     "starters": [
+      {
+       "providerId": 185644,
+       "name": "Mathew Ryan",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "13",
+       "captain": false,
+       "countryCode": "AUS",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4
+       }
+      },
+      {
+       "providerId": 1800611,
+       "name": "Nacho Pérez",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "29",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "substitutionEvents": [
+         {
+          "time": 76,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 952528,
+       "name": "Adrián De La Fuente",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "4",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 5.9,
+       "performance": {
+        "rating": 5.9
+       }
+      },
+      {
+       "providerId": 210683,
+       "name": "Aïssa Mandi",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": false,
+       "countryCode": "ALG",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.5,
+       "performance": {
+        "rating": 6.5
+       }
+      },
+      {
+       "providerId": 1052330,
+       "name": "Manuel Sánchez",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "23",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 5.5,
+       "performance": {
+        "rating": 5.5
+       }
+      },
+      {
+       "providerId": 1131957,
+       "name": "Jon Olasagasti",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1
+       }
+      },
+      {
+       "providerId": 914401,
+       "name": "Oriol Rey",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "20",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 5.9,
+       "performance": {
+        "rating": 5.9
+       }
+      },
+      {
+       "providerId": 977618,
+       "name": "Víctor García",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 5.9,
+       "performance": {
+        "rating": 5.9,
+        "substitutionEvents": [
+         {
+          "time": 76,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1209980,
+       "name": "Carlos Álvarez",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "10",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1649293,
+       "name": "Paco Cortés",
+       "positionId": 87,
+       "usualPlayingPositionId": 3,
+       "shirt": "27",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1209441,
+       "name": "Iván Romero",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.3,
+       "performance": {
+        "rating": 6.3,
+        "substitutionEvents": [
+         {
+          "time": 64,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  },
+  "ATM|MAL": {
+   "matchId": "5868012",
+   "season": "2026-27",
+   "date": "2026-08-19",
+   "home": "ATM",
+   "away": "MAL",
+   "score": {
+    "home": 2,
+    "away": 0
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:09.684Z",
+   "lineup": {
+    "home": {
+     "providerId": 9906,
+     "name": "Atletico Madrid",
+     "formation": "5-4-1",
+     "rating": 7.1,
+     "starters": [
+      {
+       "providerId": 177126,
+       "name": "Jan Oblak",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "13",
+       "captain": false,
+       "countryCode": "SVN",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.2
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.2,
+        "width": 1
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7
+       }
+      },
+      {
+       "providerId": 1842329,
+       "name": "Jorge Domínguez",
+       "positionId": 33,
+       "usualPlayingPositionId": 1,
+       "shirt": "27",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.695,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.305,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 609516,
+       "name": "Robin Le Normand",
+       "positionId": 35,
+       "usualPlayingPositionId": 1,
+       "shirt": "24",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7.6,
+       "performance": {
+        "rating": 7.6
+       }
+      },
+      {
+       "providerId": 727897,
+       "name": "Dávid Hancko",
+       "positionId": 37,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "SVK",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.305,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.695,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 8.7,
+       "performance": {
+        "rating": 8.7,
+        "events": [
+         {
+          "type": "yellowCard"
+         },
+         {
+          "type": "assist"
+         }
+        ],
+        "playerOfTheMatch": true
+       }
+      },
+      {
+       "providerId": 1282015,
+       "name": "Carlos Martín",
+       "positionId": 51,
+       "usualPlayingPositionId": 3,
+       "shirt": "12",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.371,
+        "y": 0.89,
+        "height": 0.195,
+        "width": 0.243
+       },
+       "verticalLayout": {
+        "x": 0.11,
+        "y": 0.371,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "substitutionEvents": [
+         {
+          "time": 57,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1531100,
+       "name": "Dani Martinez",
+       "positionId": 59,
+       "usualPlayingPositionId": 1,
+       "shirt": "30",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.371,
+        "y": 0.11,
+        "height": 0.195,
+        "width": 0.243
+       },
+       "verticalLayout": {
+        "x": 0.89,
+        "y": 0.371,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5
+       }
+      },
+      {
+       "providerId": 1419969,
+       "name": "Rodrigo Mendoza",
+       "positionId": 72,
+       "usualPlayingPositionId": 2,
+       "shirt": "4",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.875,
+        "height": 0.195,
+        "width": 0.243
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "substitutionEvents": [
+         {
+          "time": 57,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1338192,
+       "name": "Pablo Barrios",
+       "positionId": 74,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.625,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 8,
+       "performance": {
+        "rating": 8
+       }
+      },
+      {
+       "providerId": 184533,
+       "name": "Koke",
+       "positionId": 76,
+       "usualPlayingPositionId": 2,
+       "shirt": "6",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.375,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4,
+        "substitutionEvents": [
+         {
+          "time": 78,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1297989,
+       "name": "Arnau Ortiz",
+       "positionId": 78,
+       "usualPlayingPositionId": 3,
+       "shirt": "16",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.125,
+        "height": 0.195,
+        "width": 0.243
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6,
+        "substitutionEvents": [
+         {
+          "time": 57,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 690516,
+       "name": "Ademola Lookman",
+       "positionId": 115,
+       "usualPlayingPositionId": 2,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "NGA",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 1
+       },
+       "rating": 6.8,
+       "performance": {
+        "rating": 6.8
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 9864,
+     "name": "Malaga",
+     "formation": "4-4-1-1",
+     "rating": 6.5,
+     "starters": [
+      {
+       "providerId": 616538,
+       "name": "Alfonso Herrero",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.7,
+       "performance": {
+        "rating": 6.7
+       }
+      },
+      {
+       "providerId": 1668274,
+       "name": "Carlos Puga",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "3",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.3,
+       "performance": {
+        "rating": 7.3,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 72,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1260010,
+       "name": "Ángel Recio",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "15",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1
+       }
+      },
+      {
+       "providerId": 516803,
+       "name": "Einar Galilea",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "4",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.8,
+       "performance": {
+        "rating": 6.8,
+        "substitutionEvents": [
+         {
+          "time": 80,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1717331,
+       "name": "Rafita",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "31",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1
+       }
+      },
+      {
+       "providerId": 1108863,
+       "name": "David Larrubia",
+       "positionId": 72,
+       "usualPlayingPositionId": 2,
+       "shirt": "10",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.3,
+       "performance": {
+        "rating": 6.3
+       }
+      },
+      {
+       "providerId": 1317624,
+       "name": "Dani Lorenzo",
+       "positionId": 74,
+       "usualPlayingPositionId": 2,
+       "shirt": "22",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7,
+        "substitutionEvents": [
+         {
+          "time": 80,
+          "type": "subOut",
+          "reason": "injury"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1669619,
+       "name": "Izan Merino",
+       "positionId": 76,
+       "usualPlayingPositionId": 2,
+       "shirt": "23",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4
+       }
+      },
+      {
+       "providerId": 951739,
+       "name": "Joaquín Muñoz",
+       "positionId": 78,
+       "usualPlayingPositionId": 2,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4,
+        "substitutionEvents": [
+         {
+          "time": 67,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1209421,
+       "name": "Carlos Dotor",
+       "positionId": 95,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5,
+        "substitutionEvents": [
+         {
+          "time": 68,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1669622,
+       "name": "Chupe",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 5.9,
+       "performance": {
+        "rating": 5.9
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  },
+  "RAY|ALA": {
+   "matchId": "5868029",
+   "season": "2026-27",
+   "date": "2026-08-20",
+   "home": "RAY",
+   "away": "ALA",
+   "score": {
+    "home": 1,
+    "away": 1
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:11.238Z",
+   "lineup": {
+    "home": {
+     "providerId": 8370,
+     "name": "Rayo Vallecano",
+     "formation": "4-2-3-1",
+     "rating": 6.7,
+     "starters": [
+      {
+       "providerId": 621415,
+       "name": "Augusto Batalla",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "13",
+       "captain": false,
+       "countryCode": "ARG",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9,
+        "substitutionEvents": [
+         {
+          "time": 60,
+          "type": "subOut",
+          "reason": "injury"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 970578,
+       "name": "Andrei Ratiu",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": false,
+       "countryCode": "ROU",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6,
+       "performance": {
+        "rating": 6
+       }
+      },
+      {
+       "providerId": 184521,
+       "name": "Florian Lejeune",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "24",
+       "captain": false,
+       "countryCode": "FRA",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9
+       }
+      },
+      {
+       "providerId": 1411818,
+       "name": "Pelayo Fernández",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "22",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.5,
+       "performance": {
+        "rating": 6.5,
+        "substitutionEvents": [
+         {
+          "time": 55,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1255090,
+       "name": "Jozhua Vertrouwd",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "33",
+       "captain": false,
+       "countryCode": "NED",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4
+       }
+      },
+      {
+       "providerId": 872396,
+       "name": "Pathé Ciss",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "6",
+       "captain": false,
+       "countryCode": "SEN",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6
+       }
+      },
+      {
+       "providerId": 571615,
+       "name": "Unai López",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5
+       }
+      },
+      {
+       "providerId": 797901,
+       "name": "Jorge de Frutos",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "19",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 7.7,
+       "performance": {
+        "rating": 7.7,
+        "events": [
+         {
+          "type": "assist"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 638010,
+       "name": "Isi Palazón",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "7",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "substitutionEvents": [
+         {
+          "time": 17,
+          "type": "subOut",
+          "reason": "injury"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1284430,
+       "name": "Fran Pérez",
+       "positionId": 87,
+       "usualPlayingPositionId": 3,
+       "shirt": "21",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 6.5,
+       "performance": {
+        "rating": 6.5,
+        "substitutionEvents": [
+         {
+          "time": 55,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 980422,
+       "name": "Sergio Camello",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "10",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4,
+        "events": [
+         {
+          "type": "yellowCard"
+         },
+         {
+          "type": "goal"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 9866,
+     "name": "Deportivo Alaves",
+     "formation": "5-3-2",
+     "rating": 6.9,
+     "starters": [
+      {
+       "providerId": 530468,
+       "name": "Antonio Sivera",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.2
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.2,
+        "width": 1
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9
+       }
+      },
+      {
+       "providerId": 860314,
+       "name": "Nahuel Tenaglia",
+       "positionId": 33,
+       "usualPlayingPositionId": 1,
+       "shirt": "14",
+       "captain": false,
+       "countryCode": "ARG",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.695,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.305,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1056461,
+       "name": "Ville Koski",
+       "positionId": 35,
+       "usualPlayingPositionId": 1,
+       "shirt": "16",
+       "captain": false,
+       "countryCode": "FIN",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9,
+        "substitutionEvents": [
+         {
+          "time": 80,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 360918,
+       "name": "Jonny Otto",
+       "positionId": 37,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.305,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.695,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9,
+        "substitutionEvents": [
+         {
+          "time": 70,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1563022,
+       "name": "Ángel Pérez",
+       "positionId": 51,
+       "usualPlayingPositionId": 2,
+       "shirt": "7",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.371,
+        "y": 0.89,
+        "height": 0.195,
+        "width": 0.243
+       },
+       "verticalLayout": {
+        "x": 0.11,
+        "y": 0.371,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7,
+        "substitutionEvents": [
+         {
+          "time": 80,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1200941,
+       "name": "Abderrahman Rebbach",
+       "positionId": 59,
+       "usualPlayingPositionId": 2,
+       "shirt": "21",
+       "captain": false,
+       "countryCode": "ALG",
+       "horizontalLayout": {
+        "x": 0.371,
+        "y": 0.11,
+        "height": 0.195,
+        "width": 0.741
+       },
+       "verticalLayout": {
+        "x": 0.89,
+        "y": 0.371,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7
+       }
+      },
+      {
+       "providerId": 1238154,
+       "name": "Pablo Ibánez",
+       "positionId": 73,
+       "usualPlayingPositionId": 2,
+       "shirt": "19",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.79,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.21,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 7.7,
+       "performance": {
+        "rating": 7.7,
+        "playerOfTheMatch": true
+       }
+      },
+      {
+       "providerId": 845998,
+       "name": "Antonio Blanco",
+       "positionId": 75,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4
+       }
+      },
+      {
+       "providerId": 1426189,
+       "name": "Mikel Rodríguez",
+       "positionId": 77,
+       "usualPlayingPositionId": 2,
+       "shirt": "18",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.21,
+        "height": 0.195,
+        "width": 0.243
+       },
+       "verticalLayout": {
+        "x": 0.79,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "substitutionEvents": [
+         {
+          "time": 62,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 561164,
+       "name": "Lucas Boyé",
+       "positionId": 104,
+       "usualPlayingPositionId": 3,
+       "shirt": "15",
+       "captain": false,
+       "countryCode": "ARG",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.7,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4,
+        "substitutionEvents": [
+         {
+          "time": 62,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 640123,
+       "name": "Toni Martínez",
+       "positionId": 106,
+       "usualPlayingPositionId": 3,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.3,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  },
+  "BET|RSO": {
+   "matchId": "5868023",
+   "season": "2026-27",
+   "date": "2026-08-21",
+   "home": "BET",
+   "away": "RSO",
+   "score": {
+    "home": 1,
+    "away": 0
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:12.502Z",
+   "lineup": {
+    "home": {
+     "providerId": 8603,
+     "name": "Real Betis",
+     "formation": "4-2-3-1",
+     "rating": 7.5,
+     "starters": [
+      {
+       "providerId": 999171,
+       "name": "Álvaro Vallés",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 8.1,
+       "performance": {
+        "rating": 8.1
+       }
+      },
+      {
+       "providerId": 427438,
+       "name": "Héctor Bellerín",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.7,
+       "performance": {
+        "rating": 6.7,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 195305,
+       "name": "Marc Bartra",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "5",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.8,
+       "performance": {
+        "rating": 7.8
+       }
+      },
+      {
+       "providerId": 1188375,
+       "name": "Natan",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "4",
+       "captain": false,
+       "countryCode": "BRA",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.6,
+       "performance": {
+        "rating": 7.6,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 750028,
+       "name": "Fran García",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.8,
+       "performance": {
+        "rating": 7.8,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1436133,
+       "name": "Facundo Bernal",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "6",
+       "captain": false,
+       "countryCode": "URU",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7,
+        "substitutionEvents": [
+         {
+          "time": 58,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 640220,
+       "name": "Marc Roca",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "21",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7.9,
+       "performance": {
+        "rating": 7.9
+       }
+      },
+      {
+       "providerId": 967622,
+       "name": "Antony",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "7",
+       "captain": false,
+       "countryCode": "BRA",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 8.1,
+       "performance": {
+        "rating": 8.1
+       }
+      },
+      {
+       "providerId": 683450,
+       "name": "Pablo Fornals",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 8.2,
+       "performance": {
+        "rating": 8.2
+       }
+      },
+      {
+       "providerId": 1072200,
+       "name": "Rodrigo Riquelme",
+       "positionId": 87,
+       "usualPlayingPositionId": 3,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 8.3,
+       "performance": {
+        "rating": 8.3,
+        "events": [
+         {
+          "type": "goal"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 73,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ],
+        "seasonGoals": 1,
+        "playerOfTheMatch": true
+       }
+      },
+      {
+       "providerId": 852071,
+       "name": "Juan Hernández",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": false,
+       "countryCode": "COL",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 7.7,
+       "performance": {
+        "rating": 7.7,
+        "events": [
+         {
+          "type": "assist"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 80,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ],
+        "seasonAssists": 1
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 8560,
+     "name": "Real Sociedad",
+     "formation": "4-2-3-1",
+     "rating": 6.6,
+     "starters": [
+      {
+       "providerId": 616539,
+       "name": "Alex Remiro",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 8,
+       "performance": {
+        "rating": 8
+       }
+      },
+      {
+       "providerId": 1249284,
+       "name": "Jon Aramburu",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": false,
+       "countryCode": "VEN",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 698653,
+       "name": "Igor Zubeldia",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "5",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1523234,
+       "name": "Jon Martín",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "31",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.7,
+       "performance": {
+        "rating": 6.7
+       }
+      },
+      {
+       "providerId": 844477,
+       "name": "Sergio Gómez",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.2,
+       "performance": {
+        "rating": 7.2,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 72,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 730901,
+       "name": "Yangel Herrera",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "21",
+       "captain": false,
+       "countryCode": "VEN",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 6.2,
+       "performance": {
+        "rating": 6.2,
+        "substitutionEvents": [
+         {
+          "time": 72,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 708890,
+       "name": "Carlos Soler",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "18",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1
+       }
+      },
+      {
+       "providerId": 848289,
+       "name": "Takefusa Kubo",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "14",
+       "captain": false,
+       "countryCode": "JPN",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 6.7,
+       "performance": {
+        "rating": 6.7,
+        "substitutionEvents": [
+         {
+          "time": 58,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 959597,
+       "name": "Luka Sucic",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "24",
+       "captain": false,
+       "countryCode": "CRO",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4,
+        "substitutionEvents": [
+         {
+          "time": 87,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1002618,
+       "name": "Ander Barrenetxea",
+       "positionId": 87,
+       "usualPlayingPositionId": 3,
+       "shirt": "7",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 5.9,
+       "performance": {
+        "rating": 5.9,
+        "substitutionEvents": [
+         {
+          "time": 58,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1097229,
+       "name": "Orri Óskarsson",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": false,
+       "countryCode": "ISL",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6,
+       "performance": {
+        "rating": 6
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  },
+  "ATH|SEV": {
+   "matchId": "5868021",
+   "season": "2026-27",
+   "date": "2026-08-22",
+   "home": "ATH",
+   "away": "SEV",
+   "score": {
+    "home": 1,
+    "away": 3
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:14.091Z",
+   "lineup": {
+    "home": {
+     "providerId": 8315,
+     "name": "Athletic Club",
+     "formation": "4-2-3-1",
+     "rating": 6.4,
+     "starters": [
+      {
+       "providerId": 660625,
+       "name": "Unai Simón",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 4.3,
+       "performance": {
+        "rating": 4.3
+       }
+      },
+      {
+       "providerId": 1037537,
+       "name": "Jesús Areso",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "12",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 5,
+       "performance": {
+        "rating": 5,
+        "substitutionEvents": [
+         {
+          "time": 58,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 639450,
+       "name": "Yeray Álvarez",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "5",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5,
+        "events": [
+         {
+          "type": "assist"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1191407,
+       "name": "Aitor Paredes",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "4",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5,
+        "events": [
+         {
+          "type": "goal"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 74,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 80295,
+       "name": "Yuri Berchiche",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 4.5,
+       "performance": {
+        "rating": 4.5,
+        "events": [
+         {
+          "type": "redCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1425173,
+       "name": "Beñat Gerenabarrena",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "24",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 6.5,
+       "performance": {
+        "rating": 6.5,
+        "substitutionEvents": [
+         {
+          "time": 83,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1585726,
+       "name": "Peio Canales",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "28",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 7,
+       "performance": {
+        "rating": 7
+       }
+      },
+      {
+       "providerId": 604105,
+       "name": "Iñaki Williams",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": true,
+       "countryCode": "GHA",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 7.3,
+       "performance": {
+        "rating": 7.3,
+        "substitutionEvents": [
+         {
+          "time": 58,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 950545,
+       "name": "Oihan Sancet",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 7.2,
+       "performance": {
+        "rating": 7.2
+       }
+      },
+      {
+       "providerId": 574629,
+       "name": "Alex Berenguer",
+       "positionId": 87,
+       "usualPlayingPositionId": 3,
+       "shirt": "7",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 6.8,
+       "performance": {
+        "rating": 6.8
+       }
+      },
+      {
+       "providerId": 711231,
+       "name": "Gorka Guruzeta",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "11",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 58,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 8302,
+     "name": "Sevilla",
+     "formation": "4-2-3-1",
+     "rating": 7.1,
+     "starters": [
+      {
+       "providerId": 304355,
+       "name": "Odysseas Vlachodimos",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "GRE",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 7.6,
+       "performance": {
+        "rating": 7.6
+       }
+      },
+      {
+       "providerId": 1102289,
+       "name": "Juan Iglesias",
+       "positionId": 32,
+       "usualPlayingPositionId": 1,
+       "shirt": "2",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4
+       }
+      },
+      {
+       "providerId": 1244272,
+       "name": "Arouna Sangante",
+       "positionId": 34,
+       "usualPlayingPositionId": 1,
+       "shirt": "12",
+       "captain": false,
+       "countryCode": "SEN",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9,
+        "substitutionEvents": [
+         {
+          "time": 68,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1334767,
+       "name": "Andrés Lopez",
+       "positionId": 36,
+       "usualPlayingPositionId": 1,
+       "shirt": "5",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.3,
+       "performance": {
+        "rating": 7.3
+       }
+      },
+      {
+       "providerId": 659490,
+       "name": "Gabriel Suazo",
+       "positionId": 38,
+       "usualPlayingPositionId": 1,
+       "shirt": "17",
+       "captain": true,
+       "countryCode": "CHI",
+       "horizontalLayout": {
+        "x": 0.292,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.292,
+        "height": 0.192,
+        "width": 0.25
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4
+       }
+      },
+      {
+       "providerId": 971790,
+       "name": "Lucien Agoumé",
+       "positionId": 64,
+       "usualPlayingPositionId": 2,
+       "shirt": "6",
+       "captain": false,
+       "countryCode": "FRA",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.7,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 8,
+       "performance": {
+        "rating": 8
+       }
+      },
+      {
+       "providerId": 678192,
+       "name": "Jon Guridi",
+       "positionId": 66,
+       "usualPlayingPositionId": 2,
+       "shirt": "18",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.485,
+        "y": 0.3,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.485,
+        "height": 0.192,
+        "width": 0.4
+       },
+       "rating": 6.2,
+       "performance": {
+        "rating": 6.2,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1797904,
+       "name": "Miguel Sierra",
+       "positionId": 83,
+       "usualPlayingPositionId": 3,
+       "shirt": "30",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.837,
+        "height": 0.25,
+        "width": 0.193
+       },
+       "verticalLayout": {
+        "x": 0.162,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 6.9,
+       "performance": {
+        "rating": 6.9,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1132607,
+       "name": "Peque Fernández",
+       "positionId": 85,
+       "usualPlayingPositionId": 2,
+       "shirt": "10",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.337
+       },
+       "rating": 6.2,
+       "performance": {
+        "rating": 6.2,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1575945,
+       "name": "Oso",
+       "positionId": 87,
+       "usualPlayingPositionId": 1,
+       "shirt": "19",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.678,
+        "y": 0.163,
+        "height": 0.25,
+        "width": 0.385
+       },
+       "verticalLayout": {
+        "x": 0.837,
+        "y": 0.678,
+        "height": 0.192,
+        "width": 0.325
+       },
+       "rating": 8.8,
+       "performance": {
+        "rating": 8.8,
+        "events": [
+         {
+          "type": "goal"
+         },
+         {
+          "type": "assist"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 78,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ],
+        "playerOfTheMatch": true
+       }
+      },
+      {
+       "providerId": 1399218,
+       "name": "Robbie Ure",
+       "positionId": 115,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": false,
+       "countryCode": "SCO",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.192
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.192,
+        "width": 1
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  },
+  "VAL|CEL": {
+   "matchId": "5868030",
+   "season": "2026-27",
+   "date": "2026-08-22",
+   "home": "VAL",
+   "away": "CEL",
+   "score": {
+    "home": 0,
+    "away": 0
+   },
+   "source": "fotmob/enetpulse",
+   "fetchedAt": "2026-08-26T05:17:15.986Z",
+   "lineup": {
+    "home": {
+     "providerId": 10267,
+     "name": "Valencia",
+     "formation": "5-3-2",
+     "rating": 6.8,
+     "starters": [
+      {
+       "providerId": 254241,
+       "name": "Stole Dimitrievski",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "1",
+       "captain": false,
+       "countryCode": "MKD",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.2
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.2,
+        "width": 1
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1311985,
+       "name": "César Tárrega",
+       "positionId": 33,
+       "usualPlayingPositionId": 1,
+       "shirt": "5",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.695,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.305,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 8,
+       "performance": {
+        "rating": 8
+       }
+      },
+      {
+       "providerId": 673689,
+       "name": "Pepelu",
+       "positionId": 35,
+       "usualPlayingPositionId": 2,
+       "shirt": "18",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4
+       }
+      },
+      {
+       "providerId": 969711,
+       "name": "Justin De Haas",
+       "positionId": 37,
+       "usualPlayingPositionId": 1,
+       "shirt": "12",
+       "captain": false,
+       "countryCode": "NED",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.305,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.695,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ],
+        "substitutionEvents": [
+         {
+          "time": 46,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1220187,
+       "name": "Jesus Vázquez",
+       "positionId": 51,
+       "usualPlayingPositionId": 1,
+       "shirt": "21",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.371,
+        "y": 0.89,
+        "height": 0.195,
+        "width": 0.741
+       },
+       "verticalLayout": {
+        "x": 0.11,
+        "y": 0.371,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 7.2,
+       "performance": {
+        "rating": 7.2
+       }
+      },
+      {
+       "providerId": 391058,
+       "name": "José Gayà",
+       "positionId": 59,
+       "usualPlayingPositionId": 1,
+       "shirt": "14",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.371,
+        "y": 0.11,
+        "height": 0.195,
+        "width": 0.243
+       },
+       "verticalLayout": {
+        "x": 0.89,
+        "y": 0.371,
+        "height": 0.2,
+        "width": 0.195
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6,
+        "substitutionEvents": [
+         {
+          "time": 69,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 800615,
+       "name": "Filip Ugrinic",
+       "positionId": 73,
+       "usualPlayingPositionId": 2,
+       "shirt": "23",
+       "captain": false,
+       "countryCode": "SUI",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.79,
+        "height": 0.195,
+        "width": 0.243
+       },
+       "verticalLayout": {
+        "x": 0.21,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 7.1,
+       "performance": {
+        "rating": 7.1,
+        "substitutionEvents": [
+         {
+          "time": 69,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 586768,
+       "name": "Guido Rodríguez",
+       "positionId": 75,
+       "usualPlayingPositionId": 2,
+       "shirt": "2",
+       "captain": false,
+       "countryCode": "ARG",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.5,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 7.3,
+       "performance": {
+        "rating": 7.3
+       }
+      },
+      {
+       "providerId": 1611149,
+       "name": "Ryunosuke Sato",
+       "positionId": 77,
+       "usualPlayingPositionId": 2,
+       "shirt": "39",
+       "captain": false,
+       "countryCode": "JPN",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.21,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.79,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 6.3,
+       "performance": {
+        "rating": 6.3,
+        "substitutionEvents": [
+         {
+          "time": 57,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 704151,
+       "name": "Arnaut Danjuma",
+       "positionId": 104,
+       "usualPlayingPositionId": 3,
+       "shirt": "7",
+       "captain": false,
+       "countryCode": "NED",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.7,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.3,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 6.4,
+       "performance": {
+        "rating": 6.4,
+        "substitutionEvents": [
+         {
+          "time": 83,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1284429,
+       "name": "Javier Guerra",
+       "positionId": 106,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.3,
+        "height": 0.195,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.7,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.4
+       },
+       "rating": 6.6,
+       "performance": {
+        "rating": 6.6
+       }
+      }
+     ],
+     "substitutes": []
+    },
+    "away": {
+     "providerId": 9910,
+     "name": "Celta Vigo",
+     "formation": "3-4-3",
+     "rating": 6.8,
+     "starters": [
+      {
+       "providerId": 681213,
+       "name": "Ionut Radu",
+       "positionId": 11,
+       "usualPlayingPositionId": 0,
+       "shirt": "13",
+       "captain": false,
+       "countryCode": "ROU",
+       "horizontalLayout": {
+        "x": 0.1,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.2
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.1,
+        "height": 0.2,
+        "width": 1
+       },
+       "rating": 7.5,
+       "performance": {
+        "rating": 7.5,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1435439,
+       "name": "Javi Rodríguez",
+       "positionId": 33,
+       "usualPlayingPositionId": 1,
+       "shirt": "20",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.79,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.21,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4
+       }
+      },
+      {
+       "providerId": 1578176,
+       "name": "Yoel Lago",
+       "positionId": 35,
+       "usualPlayingPositionId": 1,
+       "shirt": "29",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4
+       }
+      },
+      {
+       "providerId": 196169,
+       "name": "Marcos Alonso",
+       "positionId": 37,
+       "usualPlayingPositionId": 1,
+       "shirt": "3",
+       "captain": true,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.357,
+        "y": 0.21,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.79,
+        "y": 0.357,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 8.1,
+       "performance": {
+        "rating": 8.1,
+        "playerOfTheMatch": true
+       }
+      },
+      {
+       "providerId": 1106742,
+       "name": "Sergio Carreira",
+       "positionId": 72,
+       "usualPlayingPositionId": 2,
+       "shirt": "5",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.875,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.125,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.4,
+       "performance": {
+        "rating": 7.4,
+        "events": [
+         {
+          "type": "yellowCard"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1359911,
+       "name": "Miguel Román",
+       "positionId": 74,
+       "usualPlayingPositionId": 2,
+       "shirt": "8",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.625,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.375,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.3,
+       "performance": {
+        "rating": 7.3
+       }
+      },
+      {
+       "providerId": 671686,
+       "name": "Aleix Febas",
+       "positionId": 76,
+       "usualPlayingPositionId": 2,
+       "shirt": "14",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.375,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.625,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 7.2,
+       "performance": {
+        "rating": 7.2,
+        "substitutionEvents": [
+         {
+          "time": 77,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 695062,
+       "name": "Javi Galán",
+       "positionId": 78,
+       "usualPlayingPositionId": 1,
+       "shirt": "22",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.613,
+        "y": 0.125,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.875,
+        "y": 0.613,
+        "height": 0.2,
+        "width": 0.25
+       },
+       "rating": 6.8,
+       "performance": {
+        "rating": 6.8,
+        "substitutionEvents": [
+         {
+          "time": 64,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1379196,
+       "name": "Jones El-Abdellaoui",
+       "positionId": 103,
+       "usualPlayingPositionId": 2,
+       "shirt": "39",
+       "captain": false,
+       "countryCode": "MAR",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.79,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.21,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 6.1,
+       "performance": {
+        "rating": 6.1,
+        "substitutionEvents": [
+         {
+          "time": 64,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1102732,
+       "name": "Ferrán Jutglà",
+       "positionId": 105,
+       "usualPlayingPositionId": 3,
+       "shirt": "9",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.5,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.5,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 5.8,
+       "performance": {
+        "rating": 5.8,
+        "substitutionEvents": [
+         {
+          "time": 64,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      },
+      {
+       "providerId": 1308414,
+       "name": "Hugo Álvarez",
+       "positionId": 107,
+       "usualPlayingPositionId": 3,
+       "shirt": "23",
+       "captain": false,
+       "countryCode": "ESP",
+       "horizontalLayout": {
+        "x": 0.87,
+        "y": 0.21,
+        "height": 0.25,
+        "width": 0.257
+       },
+       "verticalLayout": {
+        "x": 0.79,
+        "y": 0.87,
+        "height": 0.2,
+        "width": 0.29
+       },
+       "rating": 6.2,
+       "performance": {
+        "rating": 6.2,
+        "substitutionEvents": [
+         {
+          "time": 57,
+          "type": "subOut",
+          "reason": "tactical"
+         }
+        ]
+       }
+      }
+     ],
+     "substitutes": []
+    }
+   },
+   "coverage": {
+    "formations": true,
+    "starters": true,
+    "positions": true,
+    "layouts": true,
+    "ratings": true
+   }
+  }
+ },
+ "attempts": {
+  "DEP|ELC": {
+   "at": "2026-08-26T05:17:08.049Z",
+   "reason": "FotMob 賽程找不到對應場次"
+  }
+ }
+}
