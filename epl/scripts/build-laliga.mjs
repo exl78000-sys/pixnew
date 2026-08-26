@@ -438,7 +438,10 @@ async function main() {
   /* 抓取端如果撞到「這個方案不含此賽季」,會把原因寫進存檔的 blocked。
      有 blocked 就代表這不是「還沒抓到」而是「拿不到」—— 畫面上要說的是後者。
      方案升級之後抓取端會自己把 blocked 清掉,這裡不必記得改。 */
-  const blocked = postMatchStore.blocked ?? null;
+  // 只有在仍有未發布場次時才把 API-Football 的方案限制傳到前端。
+  // SportMonks 已補齊全部完賽場次時，舊的 API-Football blocked 快取不應
+  // 覆蓋「已可用」的狀態，否則畫面會同時顯示 count=16 與「拿不到」。
+  const blocked = reportCount < curPlayed.length ? (postMatchStore.blocked ?? null) : null;
   console.log(blocked
     ? `  ⚠ API-Football 西甲賽後資料拿不到:${blocked.message}`
     : `  API-Football 西甲賽後永久快取：${reportCount}/${curPlayed.length} 場可發布`);
