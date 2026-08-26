@@ -105,11 +105,16 @@ npm run bundle    # 產生單檔版 dist/warroom.html
 測試有一條守著:正式資料裡出現第四種代碼就會紅,要先核對過才放行。
 
 `npm test` 會跑**兩個聯賽**(`test.mjs` 英超 → `test-laliga.mjs` 西甲),
-目前 19 個區塊、154 條斷言。涵蓋:走查回測、模型 vs 市場、即時勝率、AI 報告層、
+目前 19 個區塊、168 條斷言。涵蓋:走查回測、模型 vs 市場、即時勝率、AI 報告層、
 真人專家觀點、API-Football 完賽資料、官方名單球員對照、隊名對照、賠率去水錢、
 兩隊配色(702 組對戰的 ΔE 與對比)、近況特徵、傷停與拿牌、對照條長、
 資料缺口判斷、官方進球事件解析、進球子類型、逐場進球明細、
-Understat 進球情境、西甲球隊數據。
+Understat 進球情境、Understat 西甲球員整季數據、FotMob 西甲正式先發、西甲球隊數據。
+
+**西甲的 `official.json`(FotMob 先發)與 `fixtures.json` 是兩份產物,要一起重跑。**
+FotMob 快取到的場次比 openfootball 賽果先落地時,只重跑其中一份會讓
+「逐場對回比分」那條斷言紅掉 —— 看起來像資料錯,其實是 `fixtures.json` 沒跟上。
+`npm run laliga:build` 一次產出兩份,不要單獨手動改任何一份。
 
 **改前端一定要真的開來看。** 測試檢查不到版面 —— 用 Playwright 截圖
 (`/opt/pw-browsers/chromium` 已裝好),分頁模式與單檔模式都要看。

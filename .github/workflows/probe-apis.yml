@@ -61,3 +61,15 @@ jobs:
       - name: 探測西甲逐場先發與陣型來源
         working-directory: epl
         run: npm run probe:laliga-lineups
+
+      # SportMonks:接進 build 之前先問清楚訂閱涵蓋哪些聯賽與賽季。
+      # 這一題就是 API-Football 那次沒問、結果整條路報廢的地方。最多 12 個請求。
+      - name: 探測 SportMonks
+        working-directory: epl
+        run: npm run probe:sportmonks
+        env:
+          # 幾種常見命名都接受 —— secret 名字取不一樣就整支空跑,
+          # 而那會看起來像「金鑰無效」,浪費一輪往返
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}

@@ -36,7 +36,7 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
         C.stamp('Understat 球隊資料', { kind: 'manual', note: '不在開頁時連外請求' }),
       ])}
     </div>
-    <div class="note info"><b>資料界線</b>：Understat 提供整隊實際使用陣型的統計，但西甲沒有 pulselive 等價的逐場官方先發、球員站位或攻守形狀資料；本頁不推導 lineups、shapes，也不把整季比例當成單場先發。</div>
+    <div class="note info"><b>資料界線</b>：本頁的陣型比例來自 Understat 的<b>整隊整季</b>統計，不是單場先發，也不推導 lineups 與 shapes。<b>已完賽</b>場次的官方先發與站位另有來源（FotMob），在各場的賽後分析頁；西甲沒有 pulselive 等價的<b>賽前</b>官方名單，所以開賽前那一份永遠是推估。</div>
     <div class="section"><h2>各隊主要陣型</h2><span class="hint">整季使用分鐘最多的陣型</span></div>
     <div id="primary"></div>
     <div class="section"><h2>陣型佔比比較</h2><span class="hint">固定 A／B／C 三欄比較；選單保留全部可取得的陣型</span></div>
