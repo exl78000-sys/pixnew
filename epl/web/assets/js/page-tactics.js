@@ -97,6 +97,10 @@ try {
     renderLaLigaTactics({ meta, teams, tactics });
   } else {
     const { formation, shapes } = await C.load('formation', 'shapes');
+  // 英超官方陣型狀態來自 build 輸出的 meta.official；不能引用西甲
+  // renderLaLigaTactics 函式內的區域變數，否則英超頁會直接拋例外。
+  const hasTeamFormationOfficial = meta.official?.available === true
+    && Number(meta.official?.teamsWithFormation ?? 0) > 0;
 
   const tacBy = new Map(tactics.map(t => [t.code, t]));
   const colour = c => C.team(c).colors?.[0] ?? '#888';

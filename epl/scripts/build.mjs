@@ -738,8 +738,8 @@ async function main() {
     return { key: r.key, zh: r.zh, lowSample: !!r.lowSample };
   };
   await write('players.json', players.map(p => ({
-    // SportMonks 是主要照片來源；舊有手動快取只在主要來源沒有照片時備援。
-    ...(p.photo || photoData[p.code] ? { ...p, photo: p.photo || photoData[p.code] } : p),
+    // 照片採「補齊」策略：既有官方／手動快取保持不動，缺圖才使用 SportMonks。
+    ...(p.photo || photoData[p.code] ? { ...p, photo: photoData[p.code] || p.photo } : p),
     role: roleOf(p),
   })));
   await write('leaders.json', leaders);
