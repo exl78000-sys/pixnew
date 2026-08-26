@@ -1,7 +1,8 @@
 # 英超戰情室 —— 給接手 AI 助手的常駐規則
 
 專案在 `epl/`。這份是**工作規則**;專案在做什麼看 `epl/README.md`,
-這個時間點的狀態看 `epl/docs/接手資訊.md`。
+這個時間點的狀態看 `epl/docs/接手資訊.md`,
+**接下來要做什麼看 `epl/docs/補齊規劃.md`**(唯一一份待辦,不要在別處再開一份)。
 
 **已經是兩個聯賽**:英超(根目錄的資料集)與西甲(`web/data/leagues/es1/`)。
 新增聯賽的做法看 `scripts/build-laliga.mjs` 與 `scripts/test-laliga.mjs`。

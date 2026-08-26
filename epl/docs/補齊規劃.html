@@ -1,0 +1,474 @@
+<title>戰情室補齊規劃</title>
+<!--
+  這是 docs/補齊規劃.md 的呈現版(用來發布成網頁)。
+  **兩邊不一致時以 .md 為準** —— 改計畫改那一份,這裡跟著更新。
+  同一個道理已經用在 docs/提示詞A-逐場進球助攻.md 上。
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* 沿用專案自己的設計系統(epl/web/assets/css/app.css)——
+     深紫黑底、英超綠、Archivo + JetBrains Mono。計畫看起來就該像產品的一部分。 */
+  :root {
+    --bg: #faf7fc;
+    --bg-tint: #f2ecf7;
+    --panel: #ffffff;
+    --line: #e4dbee;
+    --line-soft: #efe9f5;
+    --ink: #1a1024;
+    --ink-2: #574a68;
+    --ink-3: #877895;
+    --accent: #00874a;
+    --accent-soft: #e2f6ea;
+    --red: #c1004a;
+    --red-soft: #fdeaf1;
+    --amber: #8a5a00;
+    --amber-soft: #fbf0dc;
+    --cyan: #06697d;
+    --cyan-soft: #e0f4f8;
+    --radius: 14px;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "Archivo", system-ui, -apple-system, "Noto Sans TC", "PingFang TC",
+            "Microsoft JhengHei", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b0710;
+      --bg-tint: #120b1a;
+      --panel: #171021;
+      --line: #2b1f3d;
+      --line-soft: #221833;
+      --ink: #ece7f5;
+      --ink-2: #a99cc4;
+      --ink-3: #6f6389;
+      --accent: #00ff85;
+      --accent-soft: #0c2b1e;
+      --red: #ff5c8a;
+      --red-soft: #2e0f1d;
+      --amber: #ffb020;
+      --amber-soft: #2d2109;
+      --cyan: #04f5ff;
+      --cyan-soft: #072a2f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b0710;
+    --bg-tint: #120b1a;
+    --panel: #171021;
+    --line: #2b1f3d;
+    --line-soft: #221833;
+    --ink: #ece7f5;
+    --ink-2: #a99cc4;
+    --ink-3: #6f6389;
+    --accent: #00ff85;
+    --accent-soft: #0c2b1e;
+    --red: #ff5c8a;
+    --red-soft: #2e0f1d;
+    --amber: #ffb020;
+    --amber-soft: #2d2109;
+    --cyan: #04f5ff;
+    --cyan-soft: #072a2f;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 56px 24px 96px; }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ── 頁首 ── */
+  header.head { margin-bottom: 40px; }
+  .eyebrow {
+    font-size: 11.5px; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600; margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 44px); font-weight: 800; letter-spacing: -1px;
+    margin: 0 0 14px; text-wrap: balance; line-height: 1.15;
+  }
+  .lede { font-size: 16.5px; color: var(--ink-2); margin: 0; max-width: 64ch; }
+
+  /* ── 現況數字 ── */
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px; background: var(--line); border: 1px solid var(--line);
+    border-radius: var(--radius); overflow: hidden; margin: 32px 0 8px;
+  }
+  .stat { background: var(--panel); padding: 16px 18px; }
+  .stat .k { font-size: 11.5px; color: var(--ink-3); letter-spacing: .4px; }
+  .stat .v {
+    font-family: var(--mono); font-size: 25px; font-weight: 600;
+    letter-spacing: -.5px; margin-top: 3px;
+  }
+  .stat .n { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+  .stat.warn .v { color: var(--red); }
+  .stat.ok .v { color: var(--accent); }
+
+  /* ── 區塊 ── */
+  section { margin-top: 52px; }
+  .sec-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  h2 {
+    font-size: 21px; font-weight: 700; letter-spacing: -.4px; margin: 0;
+  }
+  .sec-note { font-size: 13px; color: var(--ink-3); }
+  .body-copy { color: var(--ink-2); max-width: 66ch; font-size: 15px; }
+  .body-copy strong { color: var(--ink); font-weight: 600; }
+
+  /* ── 阻塞類型:這是真的分類,決定了你現在能不能動手 ── */
+  .gate {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .3px;
+    padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .gate::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .gate.broken { color: var(--red); background: var(--red-soft); }
+  .gate.work { color: var(--cyan); background: var(--cyan-soft); }
+  .gate.wait { color: var(--amber); background: var(--amber-soft); }
+  .gate.ready { color: var(--accent); background: var(--accent-soft); }
+  .gate.done { color: var(--accent); background: var(--accent-soft); }
+  .gate.done::before { content: "✓"; width: auto; height: auto; border-radius: 0; background: none; font-size: 11px; }
+  .card.shipped { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 20px 22px; margin-top: 16px;
+  }
+  .card h3 {
+    font-size: 16px; font-weight: 700; margin: 0 0 4px; letter-spacing: -.2px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .card p { margin: 8px 0 0; color: var(--ink-2); font-size: 14.5px; max-width: 68ch; }
+  .card p strong { color: var(--ink); font-weight: 600; }
+  .fix {
+    margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+    font-size: 14px; color: var(--ink-2);
+  }
+  .fix b { color: var(--ink); }
+
+  /* ── 表格 ── */
+  .tbl-wrap { overflow-x: auto; margin-top: 16px; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600; padding: 11px 14px;
+    background: var(--bg-tint); border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .zero { color: var(--red); font-weight: 600; }
+  .dash { color: var(--ink-3); }
+
+  /* ── 階段 ── */
+  .phase {
+    display: grid; grid-template-columns: auto 1fr; gap: 0 20px;
+    padding: 22px 0; border-top: 1px solid var(--line);
+  }
+  .phase:first-of-type { border-top: none; }
+  .phase-n {
+    font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent);
+    padding-top: 3px; letter-spacing: 0;
+  }
+  .phase h3 { font-size: 17px; font-weight: 700; margin: 0 0 3px; letter-spacing: -.2px; }
+  .phase .when { font-size: 12.5px; color: var(--ink-3); margin-bottom: 10px; }
+  .phase ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 14.5px; }
+  .phase li { margin-bottom: 7px; }
+  .phase li strong { color: var(--ink); font-weight: 600; }
+  .phase li:last-child { margin-bottom: 0; }
+
+  /* ── 不做的事 ── */
+  .nope { border-color: var(--red); }
+  .nope h3 { color: var(--red); }
+  .nope ul { margin: 10px 0 0; padding-left: 18px; color: var(--ink-2); font-size: 14.5px; }
+  .nope li { margin-bottom: 8px; }
+  .nope li strong { color: var(--ink); font-weight: 600; }
+
+  code {
+    font-family: var(--mono); font-size: .89em; background: var(--bg-tint);
+    padding: 1.5px 5px; border-radius: 4px; border: 1px solid var(--line-soft);
+  }
+  footer {
+    margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-3);
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <p class="eyebrow">補齊分析與規劃 · 2026-08-25 · 階段 1 已完成 · 階段 2 進行中</p>
+    <h1>戰情室補齊規劃</h1>
+    <p class="lede">
+      現在是兩個聯賽。英超接近完整,西甲只有骨架 —— 8 個資料集是空的。
+      下面的每個缺口都標了<strong>是什麼擋住它</strong>,因為那決定了現在能不能動手。
+    </p>
+  </header>
+
+  <div class="stats">
+    <div class="stat ok"><div class="k">測試</div><div class="v">166</div><div class="n">19 區塊全過</div></div>
+    <div class="stat"><div class="k">英超回測 RPS</div><div class="v">0.2076</div><div class="n">基準線 0.2274</div></div>
+    <div class="stat warn"><div class="k">對市場</div><div class="v">+0.0025</div><div class="n">仍然輸給收盤盤口</div></div>
+    <div class="stat warn"><div class="k">西甲空資料集</div><div class="v">6</div><div class="n">共 24 份・球員已補上</div></div>
+    <div class="stat warn"><div class="k">傷停快照</div><div class="v">2 / 60</div><div class="n">天,才夠回測</div></div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <h2>一、現在就壞的</h2>
+      <span class="sec-note">使用者已經看得到</span>
+    </div>
+    <p class="body-copy">實測 8 個頁面 × 2 個聯賽,只有這一項是真的破口。<strong>已經修掉了</strong> —— 下面留著原始診斷,因為它解釋了為什麼修法要那樣寫。</p>
+
+    <div class="card shipped">
+      <h3><span class="gate done">已修</span> 西甲的戰術頁與球員頁吐出開發者訊息</h3>
+      <p>
+        <code>tactics.html?league=es1</code> 與 <code>players.html?league=es1</code>
+        會停在轉圈畫面,底下附一行
+        <strong>「載入失敗:讀取 data/leagues/es1/formation.json 失敗(404)。請先執行 npm run build」</strong>。
+      </p>
+      <p>
+        兩個問題:那是給開發者看的訊息,不是給讀者的;而且<strong>理由是錯的</strong> ——
+        真正的原因是西甲還沒有這一頁的資料,不是誰忘了 build。
+        導覽列在西甲模式下本來就只開放三頁,所以一般點擊不會走到這裡,
+        但只要有人存過網址、或從搜尋進來就會撞上。
+      </p>
+      <div class="fix">
+        <b>做法</b> —— 由聯賽自己宣告開放哪幾頁(<code>LEAGUES[lg].open</code>),
+        導覽列與缺口判斷共用同一份宣告。以後補齊一頁只要加進 <code>open</code>,
+        守衛自動消失,不必記得改第二個地方。連請求都不發,瀏覽器 console 也不再留 404。
+      </div>
+      <div class="fix">
+        <b>界線</b> —— <b>單場分析不擋</b>。它是從賽程表點進去的,西甲有比分、預測、
+        市場機率與兩隊風格對比,真的做得出來;一起擋掉等於砍掉一個能用的功能。
+        這條有專門的斷言守著。另外五頁(實時戰況、戰術、球員、動態、模型驗證)
+        都改成同一張空狀態:說明這一頁靠什麼資料、列出西甲現在看得到的頁面、
+        附一個切到英超同一頁的連結。
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>二、西甲的資料空洞</h2>
+      <span class="sec-note">做得了,是工作量問題</span>
+    </div>
+    <p class="body-copy">
+      <strong>關鍵路徑的 <code>players</code> 已經補上了</strong>(見下方卡片)。剩下六份仍是空的,
+      其中 <code>shapes</code> 與 <code>lineups</code> 是下一個瓶頸 —— 戰術頁靠它們。
+    </p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>資料集</th><th class="num">英超</th><th class="num">西甲</th><th>擋住誰</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>players</code></td><td class="num">599</td><td class="num" style="color:var(--accent);font-weight:600">946</td><td>已補(Understat・上季 600 + 本季 346)</td></tr>
+          <tr><td><code>lineups</code></td><td class="num">20</td><td class="num zero">0</td><td>賽前預估先發</td></tr>
+          <tr><td><code>shapes</code></td><td class="num">20</td><td class="num zero">0</td><td>戰術頁的標準陣型</td></tr>
+          <tr><td><code>analysis</code></td><td class="num">30</td><td class="num zero">0</td><td>單場賽前分析文章</td></tr>
+          <tr><td><code>reports</code></td><td class="num">10</td><td class="num zero">0</td><td>賽後戰術解讀</td></tr>
+          <tr><td><code>official</code></td><td class="num">10</td><td class="num zero">0</td><td>官方正式名單與進球事件</td></tr>
+          <tr><td><code>coaches</code></td><td class="num">23</td><td class="num zero">0</td><td>球隊頁的教練區塊</td></tr>
+          <tr><td><code>news</code></td><td class="num">80</td><td class="num zero">0</td><td>動態頁</td></tr>
+          <tr><td><code>leaders</code></td><td class="num">有</td><td class="num" style="color:var(--accent);font-weight:600">有</td><td>已補・八個榜單</td></tr>
+          <tr><td><code>formation</code></td><td class="num">有</td><td class="num dash">檔案不存在</td><td>戰術頁</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card shipped">
+      <h3><span class="gate done">已完成</span> 西甲球員資料源</h3>
+      <p>
+        原本規劃寫的是「同一把 API-Football 金鑰就能拿到球員名單」。
+        <strong>那是錯的,而且是實測推翻的</strong> —— 那把金鑰是 Free 方案,
+        只開放 2022–2024,<code>league=140</code> 的本季與上季都回 plan 錯誤。
+      </p>
+      <p>
+        改走 <strong>Understat</strong>,結果比原路更好:
+        <code>POST /main/getPlayersStats/</code> 帶 <code>league=La_liga&amp;season=2025</code>,
+        <strong>一個請求回整季 600 名球員</strong>——原路要分頁抓 25–30 次。
+        找到它的過程本身值得記:聯賽 HTML 頁只端 18 KB 外殼、一個資料變數都沒有,
+        <code>getLeaguePlayers</code> 是 404,第三個候選回的是
+        <code>{"error":{"error_code":4}}</code>——回結構化錯誤而不是 404,
+        代表端點在、只是少參數。在前兩個就下結論就錯過了。
+      </p>
+      <div class="fix">
+        <b>界線</b> —— Understat 沒有背號、頭貼、傷停、防守數據。
+        所以西甲球員頁<b>不是</b>英超那一頁的複製品,頁首直接列出缺什麼。
+        留一排永遠空白的欄位比不做更糟。
+      </div>
+      <div class="fix">
+        <b>順帶抓出一個線上的謊</b> —— 西甲賽後資料「0/11・完賽後抓取一次並永久快取」
+        讀起來像在等,其實是同一個 plan 限制,永遠等不到。三處文案都改成講實話,
+        而且原因由抓取端記錄、換方案後自動恢復,不必記得回來改。
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>三、已經可以做,只是文件說還不行</h2>
+      <span class="sec-note">今天就能動</span>
+    </div>
+
+    <div class="card shipped">
+      <h3><span class="gate done">已完成</span> 進球子類型:十二碼與烏龍球</h3>
+      <p>
+        接手文件寫「<code>description</code> 還沒集滿,不要猜一個對照表寫死」。
+        <strong>那是舊的</strong>,已經改掉 —— 10 場 30 顆進球裡出現三種代碼,
+        而且我用名單核對過:<code>O</code> 那一顆是 Lindelöf(維拉)踢進自家門,
+        分算給 Brighton,確定是烏龍球;<code>P</code> 是十二碼。
+      </p>
+      <p>
+        單場分析頁的<b>進球時間軸</b>已經上線(賽後分頁的第一張卡):分鐘、射手、助攻、
+        累積比分,十二碼與烏龍球各有標籤。烏龍球會同時標出「這球算給誰」與
+        「踢進去的是哪一隊的人」—— 那兩件事不一樣,少標一個讀者就會以為我們記錯隊。
+      </p>
+      <div class="fix">
+        <b>守住的界線</b> —— 沒見過的代碼一律不給分類,原碼留在 <code>kindRaw</code>。
+        測試會拿正式資料檢查有沒有第四種代碼,有的話就紅,逼下一個人先核對再放行。
+      </div>
+      <div class="fix">
+        <b>沒做的</b> —— 球隊頁的進球時間分布面板。本季只有 10 場,
+        拿這種樣本畫分布會誤導人,等累積到半季再說。
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>四、只能等時間</h2>
+      <span class="sec-note">現在做不了,別排進工期</span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>項目</th><th class="num">現在</th><th class="num">需要</th><th>在等什麼</th></tr></thead>
+        <tbody>
+          <tr><td>傷停特徵回測</td><td class="num">2 天</td><td class="num">60 天</td><td>每日快照累積。上游只給「現在」不給歷史</td></tr>
+          <tr><td>英超本季逐輪</td><td class="num">1 輪</td><td class="num">—</td><td>賽季才剛開打</td></tr>
+          <tr><td>本季逐場進球</td><td class="num zero">無</td><td class="num">—</td><td>vaastav 的 2026-27 gws 還沒發布(404)</td></tr>
+          <tr><td>西甲模型準度</td><td class="num zero">無</td><td class="num">2 季</td><td>只有一季完整資料,沒有獨立留出賽季可報</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="body-copy" style="margin-top:14px">
+      西甲那一項要特別小心:<strong>已完賽場次若沒有留下賽前快照,<code>prediction</code> 就是 <code>null</code></strong>。
+      不要拿賽後重建的模型冒充賽前預測 —— 那會讓整個模型頁的可信度歸零。
+    </p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>五、模型本身</h2>
+      <span class="sec-note">最難的一項</span>
+    </div>
+    <div class="card">
+      <h3><span class="gate work">要工</span> 英超模型仍然輸給市場 0.0025</h3>
+      <p>
+        RPS 0.2076 對收盤盤口的 0.2051。已經量過而沒通過的特徵:近五戰狀況、
+        近五戰進失球、歷來交手淨勝球 —— 三個都在雜訊範圍內,係數維持 0。
+      </p>
+      <p>
+        還沒試過、而且資料已經有的方向:<strong>進球情境</strong>(Understat 的五類 xG,
+        兩個聯賽都有了)、<strong>賽程密度</strong>(從賽程表就算得出來)、
+        <strong>傷停</strong>(等快照累積)。
+      </p>
+      <div class="fix">
+        <b>規矩不變</b> —— 調參與驗收用不同賽季,改善要大過成對比較的標準誤,
+        照 <code>npm run tune:form</code> 的做法。<b>沒通過就誠實寫在模型頁上,不要偷偷放進去。</b>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>六、建議順序</h2></div>
+
+    <div class="phase">
+      <div class="phase-n">階段 1 ✓</div>
+      <div>
+        <h3>止血 <span class="gate done">已完成</span></h3>
+        <p class="when">已交付 · 測試從 127 條加到 154 條</p>
+        <ul>
+          <li><strong>西甲五頁的開發者訊息換成空狀態</strong> —— 實時戰況、戰術、球員、動態、模型驗證;單場分析刻意不擋</li>
+          <li><strong>進球子類型上線</strong> —— 單場分析頁的進球時間軸,分得出十二碼與烏龍球</li>
+          <li>接手文件與規格文件裡三處過期的敘述都改掉了(含「烏龍球的 teamId 是踢進自家門那一隊」那句,實測不成立)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-n">階段 2</div>
+      <div>
+        <h3>西甲球員資料 <span class="gate done">球員頁已上線</span></h3>
+        <p class="when">進行中 · 測試 154 → 166 條</p>
+        <ul>
+          <li>✓ <strong>資料源改走 Understat</strong> —— 一季一個請求,不是原本規劃的 API-Football</li>
+          <li>✓ <strong>球員頁與八個榜單上線</strong>,導覽列西甲從三頁變四頁</li>
+          <li>✓ 三個會靜靜出錯的地方各有斷言:跨隊球員合計、per90 門檻、位置推論</li>
+          <li>接下來:<code>shapes</code> 與 <code>lineups</code> → 戰術頁。
+            Understat 有實際使用陣型,但<strong>沒有逐場先發名單</strong>,要先確認做得到哪一半</li>
+          <li>教練名冊仍是人工的,可平行進行</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-n">階段 3</div>
+      <div>
+        <h3>西甲補到與英超同級</h3>
+        <p class="when">階段 2 之後</p>
+        <ul>
+          <li><code>analysis</code> 賽前分析、<code>news</code> 動態、<code>official</code> 官方名單</li>
+          <li>導覽列逐頁開放 —— <strong>資料真的到位才開,不要先開空頁</strong></li>
+          <li>進球時間分布面板(兩個聯賽一起)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-n">階段 4</div>
+      <div>
+        <h3>時間到了才做</h3>
+        <p class="when">被日曆擋住,不是被工作量擋住</p>
+        <ul>
+          <li>傷停特徵回測(約 60 天後)</li>
+          <li>本季逐場進球(等 vaastav 發布 2026-27 gws)</li>
+          <li>西甲模型準度(等第二個完整賽季)</li>
+          <li>歐冠 —— <strong>英國盃賽不在 football-data.org 免費方案裡,別再找了</strong>。
+            盃賽要另一套模型(加時、PK、兩回合),不是套用現有的就好</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>七、不做的事</h2><span class="sec-note">同樣重要</span></div>
+    <div class="card nope">
+      <h3>這些請不要做</h3>
+      <ul>
+        <li><strong>單一進球的球員級「進球方式」</strong> —— Understat 給的是球隊整季摘要,
+          把某一類掛到某位球員的某一顆球是我們沒有的資料。球員逐球表不要加那一欄。</li>
+        <li><strong>把沒通過驗收的特徵放進模型</strong> —— 近五戰與交手紀錄的係數是 0,
+          <code>npm test</code> 有一條專門守著。直覺上該有用不是理由。</li>
+        <li><strong>大量爬網站</strong> —— 靜態檔下載沒問題,官方進球事件是零額外請求。
+          一場一個請求的做法先不要做。</li>
+        <li><strong>為了畫面好看補測試資料</strong> —— 西甲賽後快照現在是 0/11,
+          那是因為本機沒有金鑰。要真實數字就在有 Secret 的 runner 上跑,不要寫假資料進正式快取。</li>
+        <li><strong>拿賽後重建的模型冒充賽前預測</strong> —— 沒有賽前快照的場次,
+          <code>prediction</code> 就該是 <code>null</code>。</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    依 2026-08-25 的實測結果整理:8 個頁面 × 2 個聯賽逐頁開啟、
+    23 份資料集逐一計數、<code>npm test</code> 166 條全過。階段 1 與階段 2 的球員頁已交付並推上兩條分支。
+    常駐工作規則在 <code>CLAUDE.md</code>,狀態快照在 <code>epl/docs/接手資訊.md</code>。
+  </footer>
+</div>
