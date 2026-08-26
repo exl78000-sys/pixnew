@@ -114,6 +114,9 @@ async function main() {
     laliga = find(/la\s*liga|laliga|primera/i);
     console.log(`\n      英超:${epl ? `id ${epl.id}(${epl.name})✔` : '**不在訂閱裡**'}`);
     console.log(`      西甲:${laliga ? `id ${laliga.id}(${laliga.name})✔` : '**不在訂閱裡**'}`);
+    global.__VERDICT = [(epl || laliga)
+      ? `聯賽:${[epl && '英超', laliga && '西甲'].filter(Boolean).join('與')}都在訂閱裡(共 ${rows.length} 個聯賽)`
+      : '聯賽:英超與西甲**都不在**訂閱裡 → 這個訂閱對本專案沒用,先別接'];
     if (!epl && !laliga) {
       console.log('\n      ⚠ 兩個都不在 —— 那這個訂閱對本專案沒有用,先不要接。');
       console.log('        要接的話得先升級到含英超/西甲的方案。');
@@ -135,7 +138,13 @@ async function main() {
       }
       const cur = sorted.find(x => x.is_current) ?? sorted[0];
       if (cur) global.__CURRENT_SEASON_ID = cur.id;
-      console.log(`\n      → 本季 season id:${cur?.id ?? '找不到'}`);
+      // 已完結的賽季拿來取樣「單場能拿到多深」—— 那一季的比賽一定踢完了
+      const done = sorted.find(x => x.id !== cur?.id && x.finished !== false);
+      if (done) global.__DONE_SEASON_ID = done.id;
+      console.log(`\n      → 本季 season id:${cur?.id ?? '找不到'}・已完結取樣季:${done?.id ?? '無'}(${done?.name ?? ''})`);
+      (global.__VERDICT ??= []).push(cur?.is_current
+        ? `賽季:本季 ${cur.name} **拿得到**(這是 API-Football 死掉的那一題)`
+        : `賽季:最新只到 ${cur?.name ?? '?'},本季拿不到 → 跟 API-Football 同一個坑`);
     }
   }
 
@@ -143,12 +152,21 @@ async function main() {
      這是西甲戰術頁的瓶頸:shapes 與 lineups 目前是空的,
      而 Understat 沒有逐場先發名單。SportMonks 給不給,決定戰術頁做不做得成。 */
   const seasonId = global.__CURRENT_SEASON_ID;
+  const doneSeasonId = global.__DONE_SEASON_ID;
   if (seasonId) {
+    /* 取樣一定要用**確定已完賽**的場次。
+       第一輪踩到:用 per_page=1 拿到的是賽季第一場,lineups/events/statistics 全空 ——
+       但那可能只是「還沒踢」,不是「方案不給」。兩者結論天差地遠,
+       一個是「這條路能走」,一個是「整個白做」。所以改用已完結的上一季取樣。 */
     line('4. 單場能拿到多深?(lineups / formation / events / statistics)');
-    const f = await get(`/football/fixtures?filters=fixtureSeasons:${seasonId}&per_page=1`);
+    const src = doneSeasonId ?? seasonId;
+    const f = await get(`/football/fixtures?filters=fixtureSeasons:${src}&per_page=1`,
+      { label: doneSeasonId ? '取樣自已完結的上一季' : '本季(可能還沒踢)' });
     const fx = f?.json?.data?.[0];
     if (fx) {
       console.log(`      取樣場次 id ${fx.id}:${brief(fx, 6)}`);
+      console.log(`      state_id=${fx.state_id}  result_info=${JSON.stringify(fx.result_info)}  starting_at=${fx.starting_at}`);
+      console.log('      ↑ result_info 有值 = 已完賽。空的話下面全空就只是「還沒踢」,不代表拿不到');
       const inc = 'lineups;lineups.player;formations;events;statistics;participants';
       const d = await get(`/football/fixtures/${fx.id}?include=${inc}`);
       const one = d?.json?.data;
@@ -162,6 +180,14 @@ async function main() {
             console.log(`      ✗ ${k}:${v == null ? '沒有這個欄位(include 可能不被方案允許)' : '空的'}`);
           }
         }
+        const deep = ['lineups', 'formations'].filter(k => Array.isArray(one[k]) && one[k].length);
+        (global.__VERDICT ??= []).push(deep.length === 2
+          ? '單場深度:lineups 與 formations 都拿得到 → **西甲戰術頁的瓶頸解開了**'
+          : deep.length
+            ? `單場深度:只拿得到 ${deep.join('、')},另一個是空的`
+            : (one.result_info
+                ? '單場深度:已完賽場次仍拿不到 lineups/formations → 這個方案給不了,戰術頁另想辦法'
+                : '單場深度:**無法判定** —— 取樣那場還沒踢完,空的很正常,要換一場已完賽的重測'));
       }
     }
   }
@@ -183,23 +209,46 @@ async function main() {
         const has = k => (k in row) || (row.player && k in row.player);
         console.log(`        背號 jersey_number:${has('jersey_number') ? '✔' : '✗'}`);
         console.log(`        頭貼 image_path:${has('image_path') ? '✔' : '✗'}`);
+        (global.__VERDICT ??= []).push(
+          `球員欄位:背號 ${has('jersey_number') ? '✔' : '✗'}、頭貼 ${has('image_path') ? '✔' : '✗'}`
+          + ' —— 這兩樣正是西甲球員頁現在標示「沒有」的');
       }
     }
-    const inj = await get('/football/injuries?per_page=1', { label: '傷停' });
-    if (inj?.json?.data?.length) {
-      console.log(`      ✔ 傷停可用,欄位:${keysOf(inj.json.data[0]).join(', ')}`);
-    } else if (inj) {
-      console.log('      ✗ 傷停:這個方案拿不到(或端點名稱不同)');
+    /* 傷停:第一輪 /football/injuries 回 404「The requested endpoint does not exist」。
+       **404 不是 403** —— 404 是「這個路徑不存在」,403 才是「方案不含」。
+       所以這是端點名字的問題,不是拿不到。列候選逐一試,通不通都照實印。
+       (抓頭貼時就踩過把 403 當 404 的坑,反過來也一樣要小心) */
+    let injOk = false;
+    for (const path of ['/football/sidelined?per_page=1',
+                        `/football/sidelined/teams/${team?.id ?? 0}`,
+                        `/football/squads/teams/${team?.id ?? 0}?include=player.sidelined`]) {
+      const r = await get(path, { label: '傷停候選' });
+      const d = r?.json?.data;
+      const row = Array.isArray(d) ? d[0] : d;
+      if (row) {
+        const inner = row.player?.sidelined?.[0] ?? row.sidelined?.[0] ?? row;
+        console.log(`      ✔ 傷停可用 → ${path.split('?')[0]}`);
+        console.log(`        欄位:${keysOf(inner).join(', ')}`);
+        console.log(`        ${brief(inner, 8)}`);
+        injOk = true;
+        break;
+      }
     }
+    if (!injOk) console.log('      ✗ 以上候選都沒回傷停資料 —— 照實記錄,不要當成「一定拿不到」');
+    (global.__VERDICT ??= []).push(injOk
+      ? '傷停:拿得到 → 西甲可以補上「缺了多少戰力」,跟英超同級'
+      : '傷停:試過的候選端點都沒回資料(第一輪的 /football/injuries 是 404,不是 403 —— 路徑問題不是權限問題)');
   }
 
   console.log(`\n${'─'.repeat(72)}`);
   console.log(`共用掉 ${used} 個請求。`);
-  console.log('\n判讀重點(照上面的實測結果,不要憑印象):');
-  console.log('  · 第 2 題兩個聯賽都不在 → 這個訂閱對本專案沒用,先別接');
-  console.log('  · 第 3 題本季不在 → 跟 API-Football 同一個坑,只能拿歷史,不能拿本季');
-  console.log('  · 第 4 題 lineups/formations 拿得到 → 西甲戰術頁的瓶頸解開了');
-  console.log('  · 第 5 題背號/頭貼/傷停拿得到 → 這才是「增加資訊」的實際內容');
+  /* 判讀重點要**依實際結果產生**,不能寫死。
+     第一輪就是寫死的,四行裡兩行跟實際結果相反 —— log 讀起來會誤導人,
+     而 log 正是下一個人唯一看得到的東西。 */
+  const verdict = global.__VERDICT ?? [];
+  console.log('\n判讀(依這次實測產生,不是預先寫好的):');
+  if (!verdict.length) console.log('  (沒有跑到結論 —— 看上面哪一步斷掉)');
+  for (const v of verdict) console.log(`  · ${v}`);
 }
 
 main().catch(err => { console.error(`✗ ${err.message}`); process.exitCode = 1; });
