@@ -201,7 +201,7 @@
 
 <div class="wrap">
   <header class="head">
-    <p class="eyebrow">補齊分析與規劃 · 2026-08-25 · 階段 1 已完成 · 階段 2 進行中</p>
+    <p class="eyebrow">補齊分析與規劃 · 2026-08-26 · 階段 1 已完成 · 階段 2 進行中 · 已接 SportMonks</p>
     <h1>戰情室補齊規劃</h1>
     <p class="lede">
       現在是兩個聯賽。英超接近完整,西甲只有骨架 —— 8 個資料集是空的。
@@ -214,6 +214,7 @@
     <div class="stat"><div class="k">英超回測 RPS</div><div class="v">0.2076</div><div class="n">基準線 0.2274</div></div>
     <div class="stat warn"><div class="k">對市場</div><div class="v">+0.0025</div><div class="n">仍然輸給收盤盤口</div></div>
     <div class="stat warn"><div class="k">西甲空資料集</div><div class="v">6</div><div class="n">共 24 份・球員已補上</div></div>
+    <div class="stat ok"><div class="k">SportMonks 額度</div><div class="v">2000</div><div class="n">每小時・五大聯賽</div></div>
     <div class="stat warn"><div class="k">傷停快照</div><div class="v">2 / 60</div><div class="n">天,才夠回測</div></div>
   </div>
 
@@ -313,7 +314,83 @@
 
   <section>
     <div class="sec-head">
-      <h2>三、已經可以做,只是文件說還不行</h2>
+      <h2>三、SportMonks:實測拿得到什麼</h2>
+      <span class="sec-note">2026-08-26 · 兩輪探測</span>
+    </div>
+    <p class="body-copy">
+      方案 <b>Starter(Advanced)</b>,額度 <strong>每小時 2000 次</strong> ——
+      對比 API-Football Free 的每天 100 次,差 480 倍。
+      重跑實測:<code>npm run probe:sportmonks</code>(硬上限 12 個請求)。
+    </p>
+
+    <div class="card shipped">
+      <h3><span class="gate done">確認可用</span> 本季拿得到,五大聯賽都在</h3>
+      <p>
+        英超 <code>8</code>、德甲 <code>82</code>、法甲 <code>301</code>、
+        義甲 <code>384</code>、西甲 <code>564</code>。
+        西甲三季:<code>27965</code> 2026/2027(本季・進行中)、
+        <code>25659</code> 2025/2026、<code>23621</code> 2024/2025。
+      </p>
+      <p><strong>本季拿得到</strong> —— 這正是 API-Football 死掉的那一題。同一個坑,這次過了。</p>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>欄位</th><th>Understat</th><th>SportMonks</th><th>意義</th></tr></thead>
+        <tbody>
+          <tr><td>進球、助攻、xG、xA、關鍵傳球</td><td style="color:var(--accent)">✅</td><td class="dash">未測</td><td>球員頁現在的內容</td></tr>
+          <tr><td><b>背號</b> <code>jersey_number</code></td><td class="zero">✗</td><td style="color:var(--accent);font-weight:600">✅</td><td>球員頁現在標示「沒有」</td></tr>
+          <tr><td><b>頭貼</b> <code>image_path</code></td><td class="zero">✗</td><td style="color:var(--accent);font-weight:600">✅</td><td>同上</td></tr>
+          <tr><td>生日、身高、體重、國籍</td><td class="zero">✗</td><td style="color:var(--accent)">✅</td><td>球員卡片可以做得更完整</td></tr>
+          <tr><td>隊長、合約起訖</td><td class="zero">✗</td><td style="color:var(--accent)">✅</td><td>—</td></tr>
+          <tr><td><b>逐場先發名單</b></td><td class="zero">✗</td><td style="color:var(--accent);font-weight:600">✅</td><td><b>解開戰術頁的瓶頸</b></td></tr>
+          <tr><td><b>逐場陣型</b></td><td class="zero">✗</td><td style="color:var(--accent);font-weight:600">✅</td><td>同上</td></tr>
+          <tr><td>傷停</td><td class="zero">✗</td><td class="zero">✗</td><td>端點名稱待查,見下</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="body-copy" style="margin-top:14px">
+      <strong>兩邊不是替代關係。</strong> Understat 的 xG / xA / xGChain 是 SportMonks 這個方案沒測到的,
+      而背號、頭貼、逐場名單是 Understat 沒有的。球員頁最終會是兩邊合併。
+    </p>
+
+    <div class="card">
+      <h3><span class="gate wait">待查</span> 傷停:四個端點全部 404</h3>
+      <p>
+        <code>/football/injuries</code>、<code>/football/sidelined</code>、
+        <code>/football/sidelined/teams/{id}</code> 都回
+        「The requested endpoint does not exist」;
+        <code>?include=player.sidelined</code> 回
+        「The requested include 'sidelined' does not exist on Player」。
+      </p>
+      <p>
+        <strong>四個都是 404 不是 403</strong> —— 照專案的規矩,那是<b>路徑名稱</b>的問題,
+        不是方案不含。最後一句最有價值:SportMonks 自己說 <code>Player</code> 上沒有這個 include。
+        要查它官方文件的正確名稱再試,<b>不要再靠猜多燒幾輪</b>。
+      </p>
+      <div class="fix">
+        <b>不擋路</b> —— 英超的傷停走 FPL,西甲少這一項不影響戰術頁與球員頁。
+      </div>
+    </div>
+
+    <div class="card nope" style="border-color:var(--amber)">
+      <h3 style="color:var(--amber)">探測腳本自己踩過的兩個坑</h3>
+      <ul>
+        <li><strong>取樣場次要用「確定已完賽」的。</strong>第一輪用 <code>per_page=1</code>
+          拿到賽季第一場,<code>lineups</code>/<code>events</code>/<code>statistics</code> 全空 ——
+          但那只是<b>還沒踢</b>。差一點就據此判定「這個方案給不了逐場名單」,
+          那會直接砍掉西甲戰術頁這條路。換成已完結的上一季取樣之後,兩個都有資料。</li>
+        <li><strong>判讀結論不要寫死在腳本裡。</strong>第一輪最後印的四行「判讀重點」是預先寫好的,
+          其中兩行跟實際結果相反(寫「聯賽都不在」「本季不在」,實際上都在)。
+          log 是下一個人唯一看得到的東西,寫死的結論會直接誤導他。
+          現在改成依實際結果產生,而且「無法判定」要明講是無法判定。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>四、已經可以做,只是文件說還不行</h2>
       <span class="sec-note">今天就能動</span>
     </div>
 
@@ -343,7 +420,7 @@
 
   <section>
     <div class="sec-head">
-      <h2>四、只能等時間</h2>
+      <h2>五、只能等時間</h2>
       <span class="sec-note">現在做不了,別排進工期</span>
     </div>
     <div class="tbl-wrap">
@@ -365,7 +442,7 @@
 
   <section>
     <div class="sec-head">
-      <h2>五、模型本身</h2>
+      <h2>六、模型本身</h2>
       <span class="sec-note">最難的一項</span>
     </div>
     <div class="card">
@@ -387,7 +464,7 @@
   </section>
 
   <section>
-    <div class="sec-head"><h2>六、建議順序</h2></div>
+    <div class="sec-head"><h2>七、建議順序</h2></div>
 
     <div class="phase">
       <div class="phase-n">階段 1 ✓</div>
@@ -411,8 +488,10 @@
           <li>✓ <strong>資料源改走 Understat</strong> —— 一季一個請求,不是原本規劃的 API-Football</li>
           <li>✓ <strong>球員頁與八個榜單上線</strong>,導覽列西甲從三頁變四頁</li>
           <li>✓ 三個會靜靜出錯的地方各有斷言:跨隊球員合計、per90 門檻、位置推論</li>
+          <li>✓ <strong>接上 SportMonks</strong> —— 兩輪探測,五大聯賽與本季都拿得到</li>
           <li>接下來:<code>shapes</code> 與 <code>lineups</code> → 戰術頁。
-            Understat 有實際使用陣型,但<strong>沒有逐場先發名單</strong>,要先確認做得到哪一半</li>
+            <strong>瓶頸已解開</strong> —— SportMonks 有逐場官方名單與陣型,
+            不必再從球員名單推導</li>
           <li>教練名冊仍是人工的,可平行進行</li>
         </ul>
       </div>
@@ -448,7 +527,7 @@
   </section>
 
   <section>
-    <div class="sec-head"><h2>七、不做的事</h2><span class="sec-note">同樣重要</span></div>
+    <div class="sec-head"><h2>八、不做的事</h2><span class="sec-note">同樣重要</span></div>
     <div class="card nope">
       <h3>這些請不要做</h3>
       <ul>
@@ -468,7 +547,7 @@
 
   <footer>
     依 2026-08-25 的實測結果整理:8 個頁面 × 2 個聯賽逐頁開啟、
-    23 份資料集逐一計數、<code>npm test</code> 166 條全過。階段 1 與階段 2 的球員頁已交付並推上兩條分支。
+    23 份資料集逐一計數、<code>npm test</code> 166 條全過。階段 1 與階段 2 的球員頁已交付;SportMonks 已實測兩輪並寫進規劃。
     常駐工作規則在 <code>CLAUDE.md</code>,狀態快照在 <code>epl/docs/接手資訊.md</code>。
   </footer>
 </div>
