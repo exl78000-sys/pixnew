@@ -6,6 +6,7 @@
 # 設定金鑰:repo → Settings → Secrets and variables → Actions → New repository secret
 #   API_FOOTBALL_KEY    api-sports.io 的金鑰
 #   FOOTBALL_DATA_TOKEN football-data.org 的 token
+#   SPORTMONKS_TOKEN    SportMonks Football API token
 # 兩個都是選用的,沒設就會顯示「略過」,不會讓流程失敗。
 
 name: 資料源探測
@@ -61,3 +62,10 @@ jobs:
       - name: 探測西甲逐場先發與陣型來源
         working-directory: epl
         run: npm run probe:laliga-lineups
+
+      # SportMonks：只打日期賽程、單場詳情與聯賽索引各一次，不寫正式資料。
+      - name: 探測 SportMonks 西甲完整欄位
+        working-directory: epl
+        run: npm run probe:sportmonks
+        env:
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
