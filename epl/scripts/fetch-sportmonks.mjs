@@ -292,6 +292,9 @@ async function syncCurrentMatches(T, seasonStore, season) {
   let fixturesWithLocalPair = 0;
   let fixturesWithLocalDate = 0;
   const providerSamples = [];
+  let detailAttempts = 0;
+  let detailRejected = 0;
+  let detailFailed = 0;
   const dateDistance = (a, b) => {
     const left = Date.parse(`${a}T00:00:00Z`), right = Date.parse(`${b}T00:00:00Z`);
     return Number.isFinite(left) && Number.isFinite(right) ? Math.abs(left - right) / 86400000 : Infinity;
@@ -319,17 +322,19 @@ async function syncCurrentMatches(T, seasonStore, season) {
   console.log(`▶ SportMonks ${CONFIG.key === 'pl' ? '英超' : '西甲'}賽後詳情：${season.label} 已完賽 ${played.length} 場・待補 ${candidates.length} 場・本次最多 ${MAX_DETAILS} 場`);
   let fetched = 0;
   for (const { sf, localMatch, key } of candidates.slice(0, MAX_DETAILS)) {
+    detailAttempts++;
     try {
       const raw = await get(`/football/fixtures/${sf.id}?include=participants;lineups.details.type;formations;events.type;statistics.type;xGFixture;sidelined.sideline`);
       const detail = normaliseSportmonksMatch(raw, { codeOf: T.codeOf, fixture: localMatch, teamCodeById, season: season.label });
       if (!detail || detail.score.home !== localMatch.fh || detail.score.away !== localMatch.fa) {
+        detailRejected++;
         console.log(`  ⚠ ${key} fixture ${sf.id} 未通過比分／隊伍核對，略過`);
         continue;
       }
       details[key] = detail;
       fetched++;
       console.log(`  ${key}：${detail.coverage.lineups ? '正式先發' : '無完整先發'}・${detail.coverage.ratings ? '有評分' : '無評分'}・${detail.coverage.teamStatistics ? '有球隊統計' : '無球隊統計'}`);
-    } catch (error) { console.log(`  ⚠ ${key} 失敗：${error.message}`); }
+    } catch (error) { detailFailed++; console.log(`  ⚠ ${key} 失敗：${error.message}`); }
   }
   const out = {
     season: season.label, providerSeason: season.id, source: 'SportMonks',
@@ -341,6 +346,7 @@ async function syncCurrentMatches(T, seasonStore, season) {
       fixturesWithParticipants, fixturesWithMappedTeams, fixturesWithLocalPair, fixturesWithLocalDate,
       localDateRange: played.length ? [played[0].date, played.at(-1).date] : [],
       providerSamples,
+      detailAttempts, detailRejected, detailFailed,
     },
     note: '與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。',
   };
