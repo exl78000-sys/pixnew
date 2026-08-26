@@ -241,6 +241,7 @@ try {
 
   function renderBasicMatch(f) {
     const report = reportFor(f);
+    const expertRows = expertsFor(f);
     const lineup = official?.matches?.[`${f.home}|${f.away}`] ?? null;
     const H = teamBy.get(f.home), A = teamBy.get(f.away);
     const ht = H?.tactics, at = A?.tactics;
@@ -293,10 +294,12 @@ try {
       <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
       ${lineupCard(lineup, f)}
       ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
+      ${expertOpinionSection(f, expertRows)}
     </section>
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
     if (f.played) setupAnalysisTabs('post');
+    setupExpertPagers();
   }
 
   function lineupCard(match, f) {
