@@ -403,16 +403,15 @@ async function main() {
     });
     if (report) reports[`${CURRENT_SEASON}|${pair}`] = report;
   }
-  // API-Football 沒有西甲本季權限時，使用已由 SportMonks 快取且逐場核比分的資料。
-  // 兩個來源都保留；API-Football 若成功仍優先，避免不必要的畫面變動。
+  // SportMonks 是西甲賽後主要來源；API-Football 只在 SportMonks 沒有可發布資料時補缺口。
   const sportmonksMatchPath = join(ROOT, 'data', 'raw', 'sportmonks-la-liga', `${CURRENT_SEASON}-match-details.json`);
   if (existsSync(sportmonksMatchPath)) {
     try {
       const sm = JSON.parse(await readFile(sportmonksMatchPath, 'utf8'));
       for (const [pair, detail] of Object.entries(sm.matches ?? {})) {
-        if (reports[`${CURRENT_SEASON}|${pair}`]) continue;
         const fixture = fixtureByPair.get(pair);
         const report = buildProviderMatchReport({ fixture, detail, nameOf: code => T.byCode.get(code)?.en ?? code });
+        // 主要來源的結果最後寫入，確保同場同時存在兩個來源時仍以 SportMonks 為準。
         if (report) reports[`${CURRENT_SEASON}|${pair}`] = report;
       }
       console.log(`  SportMonks 西甲賽後快取：${Object.keys(sm.matches ?? {}).length} 場・可發布 ${Object.keys(reports).length} 場（含既有來源）`);
@@ -460,6 +459,46 @@ async function main() {
     } catch { console.log('  ⚠ LaLiga 官方先發快取損壞,本次略過'); }
   }
   const officialLineupCount = Object.keys(officialMatches).length;
+
+  // 只用已通過比分核對的正式陣型建立本季 shapes；沒有正式場次的球隊保持資料不足，
+  // 不把 Understat 的整季陣型比例或角色推導冒充逐場官方陣型。
+  const shapeSamples = new Map();
+  const sourceRank = source => /sportmonks/i.test(String(source ?? '')) ? 3
+    : /api-football/i.test(String(source ?? '')) ? 2 : 1;
+  const addShape = (pair, code, formation, source) => {
+    if (!formation) return;
+    const key = `${pair}|${code}`;
+    const previous = shapeSamples.get(key);
+    if (!previous || sourceRank(source) > sourceRank(previous.source)) {
+      shapeSamples.set(key, { pair, code, formation, source });
+    }
+  };
+  for (const [pair, match] of Object.entries(officialMatches)) {
+    addShape(pair, T.codeOf(match.home?.team) ?? match.home?.code ?? pair.split('|')[0], match.home?.formation, match.source);
+    addShape(pair, T.codeOf(match.away?.team) ?? match.away?.code ?? pair.split('|')[1], match.away?.formation, match.source);
+  }
+  for (const report of Object.values(reports)) {
+    for (const code of [report.home, report.away]) {
+      addShape(report.key, code, report.sides?.[code]?.shape?.label, report.source);
+    }
+  }
+  const shapes = Object.fromEntries(curCodes.map(code => {
+    const samples = [...shapeSamples.values()].filter(x => x.code === code);
+    if (!samples.length) return [code, { insufficient: true, source: 'unavailable', games: 0 }];
+    const counts = new Map();
+    for (const row of samples) counts.set(row.formation, (counts.get(row.formation) ?? 0) + 1);
+    const used = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    return [code, {
+      official: {
+        formation: used[0][0], games: samples.length,
+        used: used.map(([formation, games]) => ({ formation, games })),
+      },
+      source: 'official',
+      sources: [...new Set(samples.map(x => x.source).filter(Boolean))],
+      note: '只統計已核對比分的正式先發陣型；場次不足時不可視為整季常態。',
+    }];
+  }));
+  console.log(`  西甲正式陣型摘要：${Object.values(shapes).filter(s => s.official).length}/${curCodes.length} 隊有已核對場次`);
 
   const formIndex = buildFormIndex(trainMatches);
   const teamForm = {};
@@ -639,18 +678,18 @@ async function main() {
   await write('goals', { seasons: [], note: '西甲尚未接逐球員進球明細。', data: {} });
   await write('reports', {
     seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,
-    source: reportCount ? [...new Set(Object.values(reports).map(r => r.source))].join(' + ') : 'api-football', pending: Math.max(0, curPlayed.length - reportCount),
+    source: reportCount ? [...new Set(Object.values(reports).map(r => r.source))].join(' + ') : 'sportmonks + api-football', pending: Math.max(0, curPlayed.length - reportCount),
     blocked,
     note: blocked
       ? '目前使用的 API-Football 方案不含本賽季，因此這不是「還沒抓到」而是拿不到。換成涵蓋本賽季的方案後會自動恢復。'
-      : '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；API-Football 或 SportMonks 任一來源通過核對即可發布；開頁不呼叫 API。',
+      : '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；SportMonks 優先，API-Football 僅補缺口；開頁不呼叫 API。',
   });
   await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 } });
   // analysis.html 共用同一組載入契約。西甲沒有這些模組時寫出明確空資料，避免 404。
   await write('tactics', teamProfiles);
   await write('experts', { updatedAt: null, count: 0, matches: {} });
   await write('lineups', {});
-  await write('shapes', {});
+  await write('shapes', shapes);
   await write('official', {
     available: officialLineupCount > 0 || reportCount > 0,
     season: CURRENT_SEASON,

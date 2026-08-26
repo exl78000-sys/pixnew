@@ -21,7 +21,7 @@ const check = (label, ok, detail = '') => {
 console.log('\n▶ 西甲球隊數據第二版自我檢查');
 const last = raw('2025-26'), current = raw('2026-27');
 const understat = situations();
-const meta = out('meta'), fixtures = out('fixtures'), teams = out('teams'), official = out('official');
+const meta = out('meta'), fixtures = out('fixtures'), teams = out('teams'), official = out('official'), shapes = out('shapes');
 const players = out('players');
 
 check('只納入指定兩季', meta.lastSeason === '2025-26' && meta.currentSeason === '2026-27');
@@ -52,6 +52,8 @@ check('西甲官網補齊缺漏場次並保留頭像', official.sources?.include
   && ['DEP|ELC', 'MAL|DEP'].every(key => official.matches?.[key]?.source === 'laliga.com')
   && ['DEP|ELC', 'MAL|DEP'].every(key => official.matches[key].home.xi.some(p => p.photo)
     && official.matches[key].away.xi.some(p => p.photo)));
+check('正式陣型摘要只來自已核對場次', Object.values(shapes).some(s => s.official?.games > 0)
+  && Object.values(shapes).every(s => !s.official || (s.official.formation && s.official.games > 0)));
 /* 球員表的比賽統計來自 Understat，SportMonks 只補經核對的身分欄位。
    這裡守的是**開了之後不能偷偷造欄位**：沒有來源的進階欄位不准出現。 */
 const leaders = out('leaders');

@@ -69,10 +69,10 @@ jobs:
         run: npm run laliga:players
         continue-on-error: true
 
-      # SportMonks 西甲欄位同步；有快取且未超過 7 天就不重抓。
+      # SportMonks 西甲欄位與已完賽資料同步；有快取且未超過 7 天就不重抓。
       # 沒有 Secret 時安全略過，不影響其他資料建置。
       - name: 補齊西甲球員欄位(SportMonks)
-        run: npm run sportmonks:sync
+        run: npm run sportmonks:sync -- --league=es1 --max-requests=75 --max-details=20
         env:
           SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
           SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
