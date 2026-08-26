@@ -69,6 +69,7 @@ async function get(path) {
 const rows = value => Array.isArray(value) ? value : [];
 const relatedRows = value => Array.isArray(value) ? value
   : Array.isArray(value?.data) ? value.data
+    : Array.isArray(value?.data?.data) ? value.data.data
     : value && typeof value === 'object' ? [value] : [];
 const stale = store => {
   if (!store?.retrievedAt) return true;
@@ -281,11 +282,18 @@ async function syncCurrentMatches(T, seasonStore, season) {
     if (batch.length < 100) break;
   }
   const candidates = [];
+  const dateDistance = (a, b) => {
+    const left = Date.parse(`${a}T00:00:00Z`), right = Date.parse(`${b}T00:00:00Z`);
+    return Number.isFinite(left) && Number.isFinite(right) ? Math.abs(left - right) / 86400000 : Infinity;
+  };
   for (const sf of fixtureRows) {
     const participants = rows(sf.participants);
     const codes = participants.map(p => teamCodeById.get(String(p.id)) || providerTeamCode(T, p)).filter(Boolean);
     const date = String(sf.starting_at ?? '').slice(0, 10);
-    const localMatch = played.find(m => m.date === date && codes.includes(m.home) && codes.includes(m.away));
+    // starting_at 可能以 UTC 日期呈現，而 openfootball 使用球場當地日期；
+    // 同一季同一對球隊只會有一場，允許一天時差仍要求兩隊都對上。
+    const localMatch = played.find(m => dateDistance(m.date, date) <= 1
+      && codes.includes(m.home) && codes.includes(m.away));
     if (!localMatch) continue;
     const key = `${localMatch.home}|${localMatch.away}`;
     if (details[key]) continue;
@@ -310,7 +318,10 @@ async function syncCurrentMatches(T, seasonStore, season) {
     season: season.label, providerSeason: season.id, source: 'SportMonks',
     sourceUrl: 'https://api.sportmonks.com/v3/football/fixtures/{fixture_id}',
     retrievedAt: new Date().toISOString(), matches: details,
-    coverage: { cached: Object.keys(details).length, fetchedThisRun: fetched },
+    coverage: {
+      cached: Object.keys(details).length, fetchedThisRun: fetched,
+      localPlayed: played.length, providerFixtures: fixtureRows.length, candidates: candidates.length,
+    },
     note: '與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。',
   };
   await writeFile(file, JSON.stringify(out, null, 2) + '\n');
