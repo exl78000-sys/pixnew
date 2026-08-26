@@ -32,6 +32,8 @@ try {
     const matches = live.available ? live.matches : [];
     const liveByKey = new Map(matches.filter(m => !live.demo).map(m => [`${m.home}|${m.away}`, m]));
     const done = matches.filter(m => m.finished);
+    // SportMonks livescores 沒有比賽時不一定帶輪次；不要把 undefined 顯示給使用者。
+    const liveRound = Number.isFinite(Number(live.round)) ? Number(live.round) : null;
     // 西甲目前尚未接入逐分鐘 feed，但賽程已有已完賽比分；先用同一張卡片模板呈現，
     // 點擊後仍可進入單場分析與可用的賽後報告，不把空的 live feed 當成沒有賽果。
     const finishedSchedule = fixtures.filter(f => f.played)
@@ -124,7 +126,9 @@ try {
         : '目前沒有比賽在踢')}
       ${kpi('下一場開賽', upcoming[0] ? C.countdown(upcoming[0].kickoff) : '—',
         upcoming[0] ? `${C.name(upcoming[0].home)} vs ${C.name(upcoming[0].away)}` : '本季賽程已結束')}
-      ${kpi('本輪已完賽', live.available ? done.length : '—', live.available ? `第 ${live.round} 輪共 ${matches.length} 場` : '即時來源尚未接入')}
+      ${kpi('本輪已完賽', live.available ? done.length : '—', live.available
+        ? (liveRound ? `第 ${liveRound} 輪共 ${matches.length} 場` : `即時快照共 ${matches.length} 場`)
+        : '即時來源尚未接入')}
     </div>
 
     ${inPlaySched.length ? `
@@ -153,8 +157,8 @@ try {
     ${upcoming.length > 8 ? `<div style="margin-top:10px"><a href="${C.link('fixtures')}">看完整賽程(還有 ${upcoming.length - 8} 場)→</a></div>` : ''}
 
     ${(done.length || finishedSchedule.length) ? `
-      <div class="section"><h2>已完賽${live.demo ? `(重播 ${live.season} 第 ${live.round} 輪)` : ''}</h2>
-        <span class="hint">${live.demo ? '真實比賽資料,非本季' : live.available ? `${meta.currentSeason} 第 ${live.round} 輪` : `${meta.currentSeason} 已取得 ${finishedSchedule.length} 場比分`}・點任一場看完整賽後解讀</span></div>
+      <div class="section"><h2>已完賽${live.demo && liveRound ? `(重播 ${live.season} 第 ${liveRound} 輪)` : ''}</h2>
+        <span class="hint">${live.demo ? '真實比賽資料,非本季' : live.available && liveRound ? `${meta.currentSeason} 第 ${liveRound} 輪` : `${meta.currentSeason} 已取得 ${finishedSchedule.length} 場比分`}・點任一場看完整賽後解讀</span></div>
       <div class="grid g2">${live.available && done.length ? done.map(finishedCard).join('') : finishedSchedule.slice(0, 12).map(finishedFixtureCard).join('')}</div>` : ''}
 
     ${curPlayed > 0 ? `
