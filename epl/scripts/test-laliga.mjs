@@ -89,6 +89,8 @@ check('SportMonks 教練沿用球隊名單請求,不增加 API 請求',
   /teams\/seasons\/\$\{season\.id\}\?include=coaches/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
 check('教練詳情只透過 coach ID 去重請求',
   /football\/coaches\/\$\{encodeURIComponent\(id\)\}/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
+check('SportMonks fixtures 接受純陣列與 data 包裝回應',
+  /const batch = relatedRows\(await get\(`\/football\/fixtures/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
 const officialSample = `<a href="/en-US/clubs/fc-barcelona/squad">Barcelona</a><a href="/en-US/clubs/fc-barcelona/squad">duplicate</a>
   <script type="application/ld+json">${JSON.stringify({
     name: 'FC Barcelona', coach: [

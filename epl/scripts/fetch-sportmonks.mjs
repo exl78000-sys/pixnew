@@ -274,7 +274,9 @@ async function syncCurrentMatches(T, seasonStore, season) {
   // 只抓本季已完賽且尚未永久快取的場次；不以每次開頁或 build 觸發 API。
   let fixtureRows = [];
   for (let page = 1; page <= 5; page++) {
-    const batch = rows(await get(`/football/fixtures?filters=fixtureSeasons:${season.id}&include=participants&per_page=100&page=${page}`));
+    // SportMonks v3 在不同邊緣節點可能回傳純陣列或 { data: [...] }；
+    // 兩者都視為同一份 fixtures，避免把有效賽程誤判成 0 場。
+    const batch = relatedRows(await get(`/football/fixtures?filters=fixtureSeasons:${season.id}&include=participants&per_page=100&page=${page}`));
     fixtureRows.push(...batch);
     if (batch.length < 100) break;
   }
