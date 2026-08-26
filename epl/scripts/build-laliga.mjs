@@ -20,7 +20,7 @@ import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { percentile, round } from './lib/util.mjs';
-import { loadPlayers, buildLeaders, attachRadar, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
+import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
 import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
 import { loadOfficialCoachStore, officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
@@ -204,7 +204,9 @@ function buildTeamProfiles(tableRows, store) {
         overperform: round(totals.xGA - row.ga, 1), cleanSheets: row.cleanSheets,
       },
       setPieces,
-      formation: { primary: formations[0]?.name ?? null, list: formations },
+      // `label` 是英超模板的共同欄位；`primary` 與 `list` 保留西甲來源語意。
+      // Understat 沒有逐場位置座標，因此不填英超專用的 shape/def/mid/fwd。
+      formation: { label: formations[0]?.name ?? null, primary: formations[0]?.name ?? null, list: formations, source: 'Understat' },
       tempo: { ...row.half },
       resilience: {
         leadHoldPct: row.half.leadHoldPct, trailRescuePct: row.half.trailRescuePct,
@@ -608,7 +610,7 @@ async function main() {
       retrievedAt: store?.retrievedAt ?? null,
     };
     console.log(`  SportMonks 球員補充 ${season}：${enriched.matched}/${data.players.length} 人對上${store ? '' : '（無快取）'}`);
-    for (const p of withAge) playersOut.push({ ...p, season });
+    for (const p of withAge) playersOut.push(normalisePlayerForSite({ ...p, season }, { codeOf: T.codeOf }));
   }
 
   // 西甲新聞只讀每日快取；開頁不抓外部網站。抓取器會先限制來源數量，
@@ -640,6 +642,19 @@ async function main() {
   const meta = {
     builtAt: new Date().toISOString(), asOf: AS_OF,
     league: 'es1', edition: 'basic',
+    schema: {
+      version: 2,
+      players: {
+        common: ['code', 'name', 'fullName', 'team', 'teamCodes', 'age', 'photo', 'squadNumber', 'stats'],
+        performanceSource: 'Understat', identitySource: 'SportMonks',
+        note: 'stats 是單季彙總；未提供的身價、傷停與防守欄位不加入資料契約。',
+      },
+      tactics: {
+        common: ['code', 'attack', 'defence', 'setPieces', 'formation.label', 'formation.list', 'tempo', 'resilience'],
+        formationSource: 'Understat',
+        note: 'formation.label 是整季主要陣型；沒有逐場座標，不提供英超專用 shape。',
+      },
+    },
     currentSeason: CURRENT_SEASON, lastSeason: LAST_SEASON,
     historySeasons: [LAST_SEASON], h2hSeasons: [LAST_SEASON, CURRENT_SEASON],
     sources: [

@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { fetchCompletedMatchDetails, normaliseMatchDetail } from './lib/adapters/api-football.mjs';
+import { normalisePlayerForSite } from './lib/adapters/understat-players.mjs';
 import { coachesFromSquadStore, enrichPlayers, loadSquadStore, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 import { parseClubSlugs, parseOfficialCoach, parseOfficialCoachPayload } from './fetch-laliga-official-coaches.mjs';
 import { officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
@@ -62,6 +63,16 @@ const leaders = out('leaders');
 const FORBIDDEN = ['price', 'status', 'news', 'defCon90', 'saves90', 'tackles90'];
 check('西甲球員資料已接上', meta.capabilities?.players === true && players.length > 0);
 check('西甲年齡以資料基準日輸出', players.some(p => p.dateOfBirth && Number.isInteger(p.age) && p.age >= 0));
+check('西甲球員提供英超模板共用欄位', meta.schema?.version === 2
+  && players.every(p => p.code && p.fullName && p.team && Array.isArray(p.teamCodes) && p.stats?.season));
+check('西甲球員共用欄位仍保留來源粒度', players.every(p => p.stats?.minutes === p.minutes
+  && p.stats?.goals === p.goals && p.stats?.xGI === p.xGI));
+check('球員正規化不把未提供欄位塞進契約', (() => {
+  const sample = normalisePlayerForSite({ id: '1', name: 'Test', teams: ['Barcelona'], minutes: 90, goals: 1, xGI: 1.2 }, { codeOf: x => x === 'Barcelona' ? 'BAR' : x });
+  return sample.code === '1' && sample.team === 'BAR' && !('price' in sample) && !('defCon90' in sample);
+})());
+check('戰術主要陣型提供共同 label', meta.schema?.tactics?.common?.includes('formation.label')
+  && teams.some(t => t.tactics?.formation?.label === t.tactics?.formation?.primary));
 check('沒有假造 Understat 給不了的欄位',
   players.every(p => FORBIDDEN.every(k => !(k in p))), FORBIDDEN.join());
 check('缺什麼有寫在資料層讓畫面照講', Array.isArray(leaders.missing) && leaders.missing.length > 0);

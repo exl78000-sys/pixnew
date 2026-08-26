@@ -93,6 +93,52 @@ export function loadPlayers(root, season) {
   };
 }
 
+/*
+ * 將西甲球員資料轉成網站共用的最小球員契約。
+ *
+ * Understat 與英超 FPL 的粒度不同：西甲是一季一筆彙總，沒有身價、傷停
+ * 或防守欄位。因此這裡只補「確實有來源」且各頁面都能理解的欄位，
+ * 不用 null 欄位假裝與英超資料完整相同。原始 Understat 欄位全部保留，
+ * 讓球員頁仍可按來源專用欄位排序。
+ */
+export function normalisePlayerForSite(player, { codeOf } = {}) {
+  const names = Array.isArray(player?.teams) ? player.teams : [];
+  const mappedTeams = names.map(name => codeOf?.(name) ?? name).filter(Boolean);
+  const providerTeam = player?.sportmonksTeam ? (codeOf?.(player.sportmonksTeam) ?? player.sportmonksTeam) : null;
+  const team = providerTeam ?? mappedTeams.at(-1) ?? null;
+  const snapshot = {
+    season: player?.season ?? null,
+    games: player?.games ?? 0,
+    minutes: player?.minutes ?? 0,
+    goals: player?.goals ?? 0,
+    assists: player?.assists ?? 0,
+    ga: player?.ga ?? 0,
+    xG: player?.xG ?? 0,
+    xA: player?.xA ?? 0,
+    xGI: player?.xGI ?? 0,
+    xg90: player?.xg90 ?? null,
+    xa90: player?.xa90 ?? null,
+    xgi90: player?.xgi90 ?? null,
+    shots: player?.shots ?? 0,
+    keyPasses: player?.keyPasses ?? 0,
+    yellow: player?.yellow ?? 0,
+    red: player?.red ?? 0,
+  };
+  return {
+    ...player,
+    // 英超模板使用 code/fullName/team；西甲保留 id/teams 供來源專用頁使用。
+    code: String(player?.id ?? player?.sportmonksId ?? ''),
+    fullName: player?.name ?? '',
+    team,
+    teamCodes: [...new Set(mappedTeams.concat(providerTeam ?? []))],
+    stats: snapshot,
+    dataSources: {
+      performance: player?.source ?? 'Understat',
+      identity: player?.sportmonksId ? 'SportMonks' : null,
+    },
+  };
+}
+
 /* 榜單。只做這個來源真的有的項目 ——
    英超版有門將撲救效率與後衛防守貢獻,Understat 沒有那些欄位,就不做,
    也不要拿別的數字硬湊一個看起來像的榜。 */
