@@ -9,7 +9,7 @@ import { fetchCompletedMatchDetails, normaliseMatchDetail } from './lib/adapters
 import { coachesFromSquadStore, enrichPlayers, loadSquadStore, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 import { parseClubSlugs, parseOfficialCoach, parseOfficialCoachPayload } from './fetch-laliga-official-coaches.mjs';
 import { officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
-import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
+import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
@@ -97,6 +97,15 @@ check('SportMonks Token 走 Authorization Header,不落在 URL',
 check('SportMonks 分頁遵守 per_page 最大 50',
   /fixtures\?filters=fixtureSeasons:\$\{season\.id\}&include=participants&per_page=50/.test(sportmonksSyncSource)
   && /teams\/seasons\/\$\{season\.id\}\?include=coaches&per_page=50/.test(sportmonksSyncSource));
+const sportmonksLiveSource = readFileSync(join(ROOT, 'scripts', 'fetch-laliga-live.mjs'), 'utf8');
+check('SportMonks 西甲即時端點走 livescores/inplay 且使用 Header Token',
+  /football\/livescores\/inplay/.test(sportmonksLiveSource)
+  && /Authorization: TOKEN/.test(sportmonksLiveSource)
+  && !/api_token=\$\{/.test(sportmonksLiveSource));
+check('西甲即時輪詢有 include fallback 與硬上限',
+  /participants;state;scores;events/.test(sportmonksLiveSource)
+  && /participants;state;scores/.test(sportmonksLiveSource)
+  && /MAX_REQUESTS/.test(sportmonksLiveSource));
 const officialSample = `<a href="/en-US/clubs/fc-barcelona/squad">Barcelona</a><a href="/en-US/clubs/fc-barcelona/squad">duplicate</a>
   <script type="application/ld+json">${JSON.stringify({
     name: 'FC Barcelona', coach: [
@@ -209,6 +218,15 @@ check('賽後正規化保留兩隊正式陣容與格線', fakeDetail?.coverage?.
 check('賽後報告含真實 xG、評分、事件與正式陣型', fakeReport?.sides?.BAR?.xG === 1.82 && fakeReport.sides.BAR.best[0].rating === 8.1
   && fakeReport.advanced.events.length === 1 && fakeReport.sides.ATH.shape.label === '4-2-3-1');
 check('比分不一致的供應商資料禁止發布', buildProviderMatchReport({ fixture: { ...fakeFixture, fh: 3 }, detail: fakeDetail }) === null);
+const liveReport = buildLiveProviderReport({
+  fixture: { ...fakeFixture, played: false, finished: false, fh: 1, fa: 0 },
+  detail: { ...fakeDetail, score: { home: 1, away: 0 }, source: 'sportmonks' },
+  prediction: { home: 0.5, draw: 0.25, away: 0.25, xgHome: 1.4, xgAway: 0.8 },
+  minute: 63, nameOf: code => teams.find(t => t.code === code)?.en ?? code,
+});
+check('西甲即時報告沿用 canonical 欄位且保留場中機率', liveReport?.finished === false
+  && liveReport.minute === 63 && liveReport.inplay?.home + liveReport.inplay?.draw + liveReport.inplay?.away > 0.99
+  && liveReport.advanced.source === 'sportmonks');
 
 const tempRoot = await mkdtemp(join(tmpdir(), 'laliga-postmatch-test-'));
 let fakeCalls = 0;

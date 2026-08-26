@@ -155,7 +155,7 @@ try {
     ${(done.length || finishedSchedule.length) ? `
       <div class="section"><h2>已完賽${live.demo ? `(重播 ${live.season} 第 ${live.round} 輪)` : ''}</h2>
         <span class="hint">${live.demo ? '真實比賽資料,非本季' : live.available ? `${meta.currentSeason} 第 ${live.round} 輪` : `${meta.currentSeason} 已取得 ${finishedSchedule.length} 場比分`}・點任一場看完整賽後解讀</span></div>
-      <div class="grid g2">${live.available ? done.map(finishedCard).join('') : finishedSchedule.slice(0, 12).map(finishedFixtureCard).join('')}</div>` : ''}
+      <div class="grid g2">${live.available && done.length ? done.map(finishedCard).join('') : finishedSchedule.slice(0, 12).map(finishedFixtureCard).join('')}</div>` : ''}
 
     ${curPlayed > 0 ? `
       <div class="section"><h2>本季即時積分榜</h2><span class="hint">${meta.currentSeason}・依目前已完賽場次計算</span></div>

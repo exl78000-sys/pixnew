@@ -1,6 +1,7 @@
 // 由供應商中立的完賽資料建立前端共用的 MatchReport。
 // 這條路徑不依賴 FPL；西甲可直接用正式陣容、球隊統計與球員評分產生賽後頁。
 import { round } from './util.mjs';
+import { inPlay } from './inplay.mjs';
 
 const pos = value => ({ G: 'GK', D: 'DEF', M: 'MID', F: 'FWD' }[value] ?? value ?? '?');
 const num = value => Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -106,5 +107,35 @@ export function buildProviderMatchReport({ fixture, detail, nameOf = code => cod
   report.notes = notesFor(report, detail, nameOf);
   const hxg = report.sides[fixture.home].xG, axg = report.sides[fixture.away].xG;
   report.actual = { xGHome: hxg == null ? null : round(hxg, 2), xGAway: axg == null ? null : round(axg, 2) };
+  return report;
+}
+
+// 即時賽事沿用同一份 canonical detail，但不要求完賽才有的完整欄位。
+// 缺少陣容、評分或統計時仍可畫比分卡；前端會把缺欄位顯示成「未取得」。
+export function buildLiveProviderReport({ fixture, detail, prediction = null, minute = 0, nameOf = code => code } = {}) {
+  if (!fixture || !detail || fixture.home !== detail.home || fixture.away !== detail.away) return null;
+  const hs = detail.score?.home ?? fixture.fh ?? null;
+  const as = detail.score?.away ?? fixture.fa ?? null;
+  const report = {
+    key: `${fixture.home}|${fixture.away}`, season: fixture.season,
+    home: fixture.home, away: fixture.away, kickoff: detail.kickoff ?? fixture.kickoff ?? null,
+    started: true, finished: fixture.finished === true, minute: Number.isFinite(Number(minute)) ? Number(minute) : 0,
+    hs, as,
+    sides: {
+      [fixture.home]: sideOf(fixture.home, detail),
+      [fixture.away]: sideOf(fixture.away, detail),
+    },
+    advanced: detail, source: detail.source ?? 'sportmonks', demo: false,
+  };
+  report.notes = notesFor(report, detail, nameOf);
+  if (prediction && hs != null && as != null) {
+    // 即時勝率由「賽前預測 + 目前比分／分鐘」計算，不使用賽後結果重擬合。
+    report.inplay = inPlay({
+      lambdaHome: prediction.xgHome, lambdaAway: prediction.xgAway,
+      hs, as, minute: report.minute, finished: report.finished,
+      redHome: report.sides[fixture.home].red, redAway: report.sides[fixture.away].red,
+    });
+    report.preMatch = { home: prediction.home, draw: prediction.draw, away: prediction.away, xgHome: prediction.xgHome, xgAway: prediction.xgAway };
+  }
   return report;
 }

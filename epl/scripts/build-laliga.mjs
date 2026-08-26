@@ -624,6 +624,19 @@ async function main() {
     } catch { externalNews = []; }
   }
 
+  // 西甲即時快照只讀 SportMonks 本地檔；開頁與 build 都不連外。
+  // 沒有快照或快照損壞時，保留賽程推算 fallback，不把空資料宣告成即時。
+  const liveCachePath = join(ROOT, 'data', 'raw', 'sportmonks-la-liga', 'live.json');
+  let liveOut = { available: false, note: '西甲即時比分尚未接入；實時頁面目前以賽程推算進行中與開賽倒數，並保留賽前預測。' };
+  if (existsSync(liveCachePath)) {
+    try {
+      const cachedLive = JSON.parse(await readFile(liveCachePath, 'utf8'));
+      if (cachedLive?.source === 'sportmonks' && Array.isArray(cachedLive.matches)) {
+        liveOut = cachedLive;
+      }
+    } catch { /* 損壞快照不阻塞其他西甲資料 */ }
+  }
+
   const meta = {
     builtAt: new Date().toISOString(), asOf: AS_OF,
     league: 'es1', edition: 'basic',
@@ -647,7 +660,7 @@ async function main() {
     capabilities: {
       /* players 是 true；整季進攻與串聯來自 Understat，身分欄位可由
          SportMonks 快取補充。前端仍靠 leaders.missing 宣告尚未取得的項目。 */
-      live: false, players: playersOut.length > 0, injuries: false, tactics: teamProfiles.length > 0,
+      live: liveOut.available === true, players: playersOut.length > 0, injuries: false, tactics: teamProfiles.length > 0,
       coaches: coachData.length > 0, news: externalNews.length > 0, officialLineups: reportCount > 0 || officialLineupCount > 0, matchReports: reportCount > 0,
       fixtures: true, standings: true, teams: true, predictions: true, market: true,
       teamProfiles: teamProfiles.length > 0, setPieces: teamProfiles.length > 0,
@@ -671,7 +684,13 @@ async function main() {
       matchReports: reportCount, officialLineups: officialLineupCount,
     },
     competition: competition(COMPETITION),
-    live: { available: false }, official: { available: false }, ai: { enabled: false, pre: 0, post: 0 },
+    live: liveOut.available
+      ? { available: true, source: liveOut.source, sourceLabel: liveOut.sourceLabel, fetchedAt: liveOut.fetchedAt, counts: liveOut.counts }
+      : { available: false, note: liveOut.note },
+    liveFeed: (process.env.GITHUB_REPOSITORY && process.env.GITHUB_REF_NAME)
+      ? `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${process.env.GITHUB_REF_NAME}/epl/web/data/leagues/es1/live.json`
+      : null,
+    official: { available: false }, ai: { enabled: false, pre: 0, post: 0 },
   };
 
   console.log('寫入西甲球隊數據第二版資料集：');
@@ -758,10 +777,7 @@ async function main() {
     sources: [...new Set(Object.values(officialMatches).map(x => x.source))],
     matches: officialMatches,
   });
-  await write('live', {
-    available: false,
-    note: '西甲即時比分尚未接入；實時頁面目前以賽程推算進行中與開賽倒數，並保留賽前預測。',
-  });
+  await write('live', liveOut);
 
   const crestHits = teams.filter(t => t.crest).length;
   console.log(`\n✔ 西甲球隊數據第二版：${teams.length} 隊・${LAST_SEASON} ${lastMatches.filter(m => m.played).length} 場・${CURRENT_SEASON} ${curPlayed.length}/${curMatches.length} 場已完賽`);

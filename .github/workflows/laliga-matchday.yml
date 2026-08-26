@@ -1,0 +1,68 @@
+name: 西甲戰情室 即時比分
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub schedule 最短實務間隔 5 分鐘；每小時最多 12 次，低於方案額度。
+    # schedule 只會由預設分支觸發；需要時可手動 workflow_dispatch。
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: laliga-matchday
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: epl
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 抓取西甲 SportMonks 即時比分
+        run: npm run laliga:live -- --max-requests=2
+        env:
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+        continue-on-error: true
+
+      # 快照內容沒有變化時不 build、不提交，避免空耗 Actions 與觸發部署。
+      - name: 有變化才建置並回寫
+        run: |
+          set -u
+          cd "$GITHUB_WORKSPACE"
+          if git diff --quiet -- epl/data/raw/sportmonks-la-liga/live.json; then
+            echo "即時快照沒有變化"
+            exit 0
+          fi
+          cd epl
+          npm run laliga:build
+          cd "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f epl/data/raw/sportmonks-la-liga/live.json \
+            epl/web/data/leagues/es1/live.json epl/web/data/leagues/es1/meta.json
+          if git diff --cached --quiet; then
+            echo "建置後沒有可提交的即時資料"
+            exit 0
+          fi
+          git commit -m "chore(laliga): 更新即時比分 [skip ci]"
+          for try in 1 2 3; do
+            git pull --rebase -q origin "$GITHUB_REF_NAME" 2>/dev/null || true
+            if git push -q origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "已回寫西甲即時比分"
+              exit 0
+            fi
+            echo "推送衝突，重試 $try"
+            sleep 3
+          done
+          exit 1

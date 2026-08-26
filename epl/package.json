@@ -23,6 +23,7 @@
     "photos:api": "node scripts/fetch-api-photos.mjs",
     "season": "node scripts/fetch-season.mjs",
     "live:watch": "node scripts/live-server.mjs",
+    "laliga:live": "node scripts/fetch-laliga-live.mjs",
     "coaches:check": "node scripts/fetch-coaches.mjs",
     "probe:apis": "node scripts/probe-apis.mjs",
     "explore:apis": "node scripts/explore-apis.mjs",

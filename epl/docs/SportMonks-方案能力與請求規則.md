@@ -26,6 +26,20 @@
 
 探測快照：`data/raw/sportmonks-la-liga/capabilities.json`。檔案只保存狀態碼、錯誤碼與數量，**不保存 Token、完整回應或個人資料**。
 
+## 西甲即時比分
+
+`scripts/fetch-laliga-live.mjs` 使用官方 `GET /football/livescores/inplay`，以
+`filters=fixtureLeagues:564` 限定西甲；正常輪詢最多 2 次請求，優先請求
+`participants;state;scores;events`，若目前方案不接受四個 include，會退回
+`participants;state;scores`，不繞過方案限制。SportMonks 官方說明列出 Inplay Livescores、
+All Livescores 與 Latest Updated Livescores 三種端點，並支援以 include 擴充回應：
+[Livescores endpoints](https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/livescores)。
+
+即時快照先寫入 `data/raw/sportmonks-la-liga/live.json`，再由 `laliga:build` 發布到
+`web/data/leagues/es1/live.json`；頁面只讀本地快取。比分、狀態與事件若缺少就顯示未取得，
+速度、距離、衝刺不在本站資料契約內。相同比分／分鐘不重寫 `fetchedAt`，GitHub Actions
+不會因空輪詢反覆提交。
+
 本次同步實際找到 380 場供應商賽程、16 場本地已完賽候選，並成功取得 16/16 場詳情。16 場均通過：兩隊比分核對、正式陣容、球員評分、球隊統計與事件。報告來源為 SportMonks，`reports.json` 為 `count=16`、`pending=0`。
 
 ## 固定請求規則
