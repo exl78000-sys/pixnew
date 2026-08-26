@@ -51,10 +51,10 @@ async function get(path) {
   if (requests >= MAX_REQUESTS) throw new Error(`已達本次 ${MAX_REQUESTS} 個請求上限`);
   if (requests) await sleep(DELAY);
   requests++;
-  const url = `${BASE}${path}${path.includes('?') ? '&' : '?'}api_token=${encodeURIComponent(TOKEN)}`;
+  const url = `${BASE}${path}`;
   const res = await fetch(url, {
     signal: AbortSignal.timeout(30000),
-    headers: { accept: 'application/json' },
+    headers: { accept: 'application/json', Authorization: TOKEN },
   });
   const text = await res.text();
   let body;
@@ -211,7 +211,7 @@ async function syncSeason(T, season) {
 
   console.log(`▶ SportMonks ${season.label}（season=${season.id}）`);
   // coaches 是球隊端點的既有 include，不增加請求次數；資料不足時仍保留球隊名單。
-  const teamRows = rows(await get(`/football/teams/seasons/${season.id}?include=coaches&per_page=100`));
+  const teamRows = rows(await get(`/football/teams/seasons/${season.id}?include=coaches&per_page=50`));
   const teams = {};
   for (const team of teamRows) {
     const code = providerTeamCode(T, team);
@@ -266,6 +266,15 @@ async function syncSeason(T, season) {
 async function syncCurrentMatches(T, seasonStore, season) {
   const file = join(OUT, `${season.label}-match-details.json`);
   const previous = await readStore(file);
+  const capability = await readStore(join(OUT, 'capabilities.json'));
+  const capabilityValid = capability?.league === CONFIG.key && Number(capability.season) === Number(season.id);
+  const preferredIncludes = ['participants', 'lineups.details.type', 'formations', 'events.type', 'statistics.type', 'xGFixture'];
+  const detailIncludes = capabilityValid
+    ? preferredIncludes.filter(include => capability.includes?.[include.split('.')[0]]?.available !== false)
+    : preferredIncludes;
+  const capabilityDenied = capabilityValid
+    ? preferredIncludes.filter(include => capability.includes?.[include.split('.')[0]]?.available === false)
+    : [];
   const local = loadMatches({ root: ROOT, competition: CONFIG.competition, season: season.label, codeOf: T.codeOf,
     rawDir: CONFIG.key === 'es1' ? 'openfootball-la-liga' : 'openfootball' });
   const played = local.filter(x => x.played);
@@ -275,12 +284,12 @@ async function syncCurrentMatches(T, seasonStore, season) {
   // 只抓本季已完賽且尚未永久快取的場次；不以每次開頁或 build 觸發 API。
   let fixtureRows = [];
   const seenFixtureIds = new Set();
-  // SportMonks 可能忽略 per_page=100，實際每頁只回 25 場；一直翻頁到
+  // 官方 per_page 上限是 50；即使邊緣節點實際只回 25 場，也一直翻頁到
   // 空頁或重複頁，才不會只拿到賽季最後一輪而漏掉已完賽場次。
   for (let page = 1; page <= 20; page++) {
     // SportMonks v3 在不同邊緣節點可能回傳純陣列或 { data: [...] }；
     // 兩者都視為同一份 fixtures，避免把有效賽程誤判成 0 場。
-    const batch = relatedRows(await get(`/football/fixtures?filters=fixtureSeasons:${season.id}&include=participants&per_page=100&page=${page}`));
+    const batch = relatedRows(await get(`/football/fixtures?filters=fixtureSeasons:${season.id}&include=participants&per_page=50&page=${page}`));
     const fresh = batch.filter(row => row?.id == null || !seenFixtureIds.has(String(row.id)));
     for (const row of fresh) if (row?.id != null) seenFixtureIds.add(String(row.id));
     fixtureRows.push(...fresh);
@@ -300,6 +309,8 @@ async function syncCurrentMatches(T, seasonStore, season) {
   const detailBlocked = previous?.blocked?.status === 403
     && Number.isFinite(previousBlockUntil) && previousBlockUntil > Date.now();
   if (detailBlocked) console.log(`  · SportMonks 賽後詳情暫停至 ${previous.blocked.until}（HTTP 403，避免重複消耗額度）`);
+  const capabilityBlocked = capabilityValid && detailIncludes.length === 0 && candidates.length > 0;
+  if (capabilityBlocked) console.log('  · 方案能力探測顯示沒有可用的 Fixture 詳情 include，跳過請求');
   const dateDistance = (a, b) => {
     const left = Date.parse(`${a}T00:00:00Z`), right = Date.parse(`${b}T00:00:00Z`);
     return Number.isFinite(left) && Number.isFinite(right) ? Math.abs(left - right) / 86400000 : Infinity;
@@ -326,12 +337,10 @@ async function syncCurrentMatches(T, seasonStore, season) {
   }
   console.log(`▶ SportMonks ${CONFIG.key === 'pl' ? '英超' : '西甲'}賽後詳情：${season.label} 已完賽 ${played.length} 場・待補 ${candidates.length} 場・本次最多 ${MAX_DETAILS} 場`);
   let fetched = 0;
-  for (const { sf, localMatch, key } of (detailBlocked ? [] : candidates.slice(0, MAX_DETAILS))) {
+  for (const { sf, localMatch, key } of ((detailBlocked || capabilityBlocked) ? [] : candidates.slice(0, MAX_DETAILS))) {
     detailAttempts++;
     try {
-      // 使用 Fixture 端點文件列出的關聯；sidelined.sideline 在部分方案會被
-      // 視為無效 nested include，導致整個詳情請求 4xx，故不列入主請求。
-      const raw = await get(`/football/fixtures/${sf.id}?include=participants;lineups.details.type;formations;events.type;statistics.type;xGFixture`);
+      const raw = await get(`/football/fixtures/${sf.id}?include=${detailIncludes.join(';')}`);
       const detail = normaliseSportmonksMatch(raw, { codeOf: T.codeOf, fixture: localMatch, teamCodeById, season: season.label });
       if (!detail || detail.score.home !== localMatch.fh || detail.score.away !== localMatch.fa) {
         detailRejected++;
@@ -349,6 +358,7 @@ async function syncCurrentMatches(T, seasonStore, season) {
     }
   }
   const blocked = detailBlocked ? previous.blocked
+    : capabilityBlocked ? { status: 403, reason: 'fixture-includes-not-permitted', until: new Date(Date.now() + 86400000).toISOString() }
     : (fetched === 0 && detailFailureReasons['403']
       ? { status: 403, reason: 'fixture-detail-forbidden', until: new Date(Date.now() + 86400000).toISOString() }
       : null);
@@ -364,6 +374,10 @@ async function syncCurrentMatches(T, seasonStore, season) {
       providerSamples,
       detailAttempts, detailRejected, detailFailed, detailFailureReasons,
       detailSkippedByBlock: detailBlocked ? candidates.length : 0,
+      capabilityChecked: capabilityValid,
+      capabilityDenied,
+      requestedIncludes: detailIncludes,
+      detailSkippedByCapability: capabilityBlocked ? candidates.length : 0,
     },
     ...(blocked ? { blocked } : {}),
     note: '與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。',

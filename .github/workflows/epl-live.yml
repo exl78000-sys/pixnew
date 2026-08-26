@@ -71,6 +71,14 @@ jobs:
 
       # SportMonks 西甲欄位與已完賽資料同步；有快取且未超過 7 天就不重抓。
       # 沒有 Secret 時安全略過，不影響其他資料建置。
+      - name: 探測西甲 SportMonks 方案能力
+        run: npm run sportmonks:capabilities -- --league=es1
+        env:
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+        continue-on-error: true
+
       - name: 補齊西甲球員欄位(SportMonks)
         # 兩季名單、現任教練與本季完賽詳情共約 90 次；保留 160 次餘額，
         # 確保同步器不會在抓完名單／教練後因舊上限而跳過賽後統計。

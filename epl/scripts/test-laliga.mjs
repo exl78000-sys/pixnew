@@ -91,6 +91,12 @@ check('教練詳情只透過 coach ID 去重請求',
   /football\/coaches\/\$\{encodeURIComponent\(id\)\}/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
 check('SportMonks fixtures 接受純陣列與 data 包裝回應',
   /const batch = relatedRows\(await get\(`\/football\/fixtures/.test(readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8')));
+const sportmonksSyncSource = readFileSync(join(ROOT, 'scripts', 'fetch-sportmonks.mjs'), 'utf8');
+check('SportMonks Token 走 Authorization Header,不落在 URL',
+  /Authorization: TOKEN/.test(sportmonksSyncSource) && !/api_token=\$\{encodeURIComponent\(TOKEN\)\}/.test(sportmonksSyncSource));
+check('SportMonks 分頁遵守 per_page 最大 50',
+  /fixtures\?filters=fixtureSeasons:\$\{season\.id\}&include=participants&per_page=50/.test(sportmonksSyncSource)
+  && /teams\/seasons\/\$\{season\.id\}\?include=coaches&per_page=50/.test(sportmonksSyncSource));
 const officialSample = `<a href="/en-US/clubs/fc-barcelona/squad">Barcelona</a><a href="/en-US/clubs/fc-barcelona/squad">duplicate</a>
   <script type="application/ld+json">${JSON.stringify({
     name: 'FC Barcelona', coach: [

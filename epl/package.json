@@ -40,6 +40,7 @@
     "probe:laliga-playerdata": "node scripts/probe-laliga-playerdata.mjs",
     "probe:laliga-lineups": "node scripts/probe-laliga-lineups.mjs",
     "probe:sportmonks": "node scripts/probe-sportmonks.mjs",
+    "sportmonks:capabilities": "node scripts/probe-sportmonks-capabilities.mjs",
     "laliga:lineups": "node scripts/fetch-laliga-lineups.mjs",
     "laliga:official-lineups": "node scripts/fetch-laliga-official-lineups.mjs",
     "laliga:official-coaches": "node scripts/fetch-laliga-official-coaches.mjs",
