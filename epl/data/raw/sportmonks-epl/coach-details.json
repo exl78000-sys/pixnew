@@ -1,0 +1,20 @@
+{
+  "source": "SportMonks",
+  "sourceUrl": "https://api.sportmonks.com/v3/football/coaches/{coach_id}",
+  "retrievedAt": "2026-08-26T10:47:43.107Z",
+  "providerSeason": 28083,
+  "details": {
+    "5790163": {
+      "id": 5790163,
+      "name": null,
+      "attemptedAt": "2026-08-26T10:47:43.107Z",
+      "error": "HTTP 200: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription."
+    }
+  },
+  "coverage": {
+    "ids": 1,
+    "cached": 1,
+    "fetchedThisRun": 0
+  },
+  "note": "只以去重 coach ID 補抓詳情；姓名未回傳時保留空值，不以人工資料猜測。"
+}
