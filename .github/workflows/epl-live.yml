@@ -85,6 +85,7 @@ jobs:
         run: npm run photos:api
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          API_FOOTBALL_PHOTO_SEASON: 2024
           API_FOOTBALL_PHOTO_DAILY_LIMIT: 10
         continue-on-error: true
 

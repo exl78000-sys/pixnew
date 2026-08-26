@@ -14,7 +14,9 @@ const MANIFEST = join(ROOT, 'data', 'manual', 'photo-manifest.json');
 const OUT = join(ROOT, 'data', 'manual', 'photos.json');
 const KEY = process.env.API_FOOTBALL_KEY;
 const BASE = 'https://v3.football.api-sports.io';
-const SEASON = Number(process.env.API_FOOTBALL_PHOTO_SEASON ?? 2025);
+// API-Football Free 方案目前只開放到 2024；用最後可用賽季查球員檔案，
+// 頭貼本身是球員 profile，不會把 2024 的比賽統計混進本季資料。
+const SEASON = Number(process.env.API_FOOTBALL_PHOTO_SEASON ?? 2024);
 const DAILY_LIMIT = Math.max(1, Number(process.env.API_FOOTBALL_PHOTO_DAILY_LIMIT ?? 10));
 const LIMIT = Math.max(1, Number(process.argv.find(x => x.startsWith('--limit='))?.split('=')[1] ?? DAILY_LIMIT));
 const DELAY = Math.max(1000, Number(process.env.API_FOOTBALL_PHOTO_DELAY ?? 1200));
