@@ -552,6 +552,7 @@ try {
   function goalSituationCard(tac) {
     if (!tac?.setPieces?.available) return '';
     const sp = tac.setPieces;
+    const penalty = sp.breakdown?.penalty ?? {};
     const rows = [
       ['openPlay', '運動戰'], ['corner', '角球'], ['otherSetPiece', '其他定位球'],
       ['directFreeKick', '直接任意球'], ['penalty', '十二碼'],
@@ -559,11 +560,12 @@ try {
     return `<div class="card" style="margin-top:14px"><div class="spread">
       <h3 style="margin:0">上季進球方式</h3><span class="pill tiny">${meta.lastSeason}</span></div>
       <div class="grid g4" style="margin:12px 0">
-        <div><div class="tiny dim">非十二碼定位球</div><b class="mono">${sp.goals ?? '—'}${sp.goals === null ? '' : ' 球'}</b></div>
-        <div><div class="tiny dim">定位球 xG</div><b class="mono">${C.fx(sp.xG, 2)}</b></div>
-        <div><div class="tiny dim">定位球失球</div><b class="mono">${sp.conceded ?? '—'}</b></div>
-        <div><div class="tiny dim">定位球 xGA</div><b class="mono">${C.fx(sp.xGA, 2)}</b></div>
+        <div><div class="tiny dim">全季進球 / 失球</div><b class="mono">${tac.attack.goals ?? '—'} / ${tac.defence.conceded ?? '—'}</b></div>
+        <div><div class="tiny dim">非十二碼定位球 進 / 失</div><b class="mono">${sp.goals ?? '—'} / ${sp.conceded ?? '—'}</b></div>
+        <div><div class="tiny dim">定位球 xG / xGA（不含十二碼）</div><b class="mono">${C.fx(sp.xG, 2)} / ${C.fx(sp.xGA, 2)}</b></div>
+        <div><div class="tiny dim">十二碼 進 / 失</div><b class="mono">${penalty.goals ?? '—'} / ${penalty.against?.goals ?? '—'}</b></div>
       </div>
+      <div class="tiny dim" style="margin-bottom:8px">下方五類明細合計就是全季進球／失球；上方「非十二碼定位球」只包含角球、其他定位球與直接任意球，故不會等於運動戰或五類總和。</div>
       ${C.table(rows, [
         { key: 'label', label: '情境', value: r => r.label, left: true },
         { key: 'goals', label: '進球', value: r => r.goals ?? -1, num: true, render: r => r.goals ?? '—' },

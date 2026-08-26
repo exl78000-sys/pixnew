@@ -179,6 +179,16 @@ check('風格資料都有五種進球情境與來源', teams.filter(t => t.tacti
   t.tactics.setPieces?.available && Object.keys(t.tactics.setPieces.breakdown ?? {}).length === 5 && /^https:\/\//.test(t.tactics.sourceUrl)));
 const bar = teams.find(t => t.code === 'BAR')?.tactics?.setPieces;
 check('Barcelona 情境進球與 xG 可呈現', bar?.goalsReliable === true && Number.isFinite(bar.goals) && Number.isFinite(bar.xG90));
+check('進球方式摘要與五類明細總數一致', teams.filter(t => t.tactics?.setPieces?.goalsReliable).every(t => {
+  const sp = t.tactics.setPieces, b = sp.breakdown ?? {};
+  const keys = ['openPlay', 'corner', 'otherSetPiece', 'directFreeKick', 'penalty'];
+  const total = keys.reduce((n, k) => n + Number(b[k]?.goals ?? 0), 0);
+  const nonPenalty = ['corner', 'otherSetPiece', 'directFreeKick'].reduce((n, k) => n + Number(b[k]?.goals ?? 0), 0);
+  const againstTotal = keys.reduce((n, k) => n + Number(b[k]?.against?.goals ?? 0), 0);
+  const nonPenaltyAgainst = ['corner', 'otherSetPiece', 'directFreeKick'].reduce((n, k) => n + Number(b[k]?.against?.goals ?? 0), 0);
+  return total === t.tactics.attack.goals && nonPenalty === sp.goals
+    && againstTotal === t.tactics.defence.conceded && nonPenaltyAgainst === sp.conceded;
+}));
 const vil = teams.find(t => t.code === 'VIL')?.tactics?.setPieces;
 check('Villarreal 不硬補未核對的情境進球', vil?.goalsReliable === false && vil.goals === null && Number.isFinite(vil.xG90));
 check('陣型使用比例合計約 100%', teams.filter(t => t.tactics).every(t => {
