@@ -21,6 +21,7 @@ import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
+import { loadSquadStore, enrichPlayers, coverage as sportmonksCoverage } from './lib/adapters/sportmonks.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -383,6 +384,21 @@ async function main() {
     });
     if (report) reports[`${CURRENT_SEASON}|${pair}`] = report;
   }
+  // API-Football 沒有西甲本季權限時，使用已由 SportMonks 快取且逐場核比分的資料。
+  // 兩個來源都保留；API-Football 若成功仍優先，避免不必要的畫面變動。
+  const sportmonksMatchPath = join(ROOT, 'data', 'raw', 'sportmonks-la-liga', `${CURRENT_SEASON}-match-details.json`);
+  if (existsSync(sportmonksMatchPath)) {
+    try {
+      const sm = JSON.parse(await readFile(sportmonksMatchPath, 'utf8'));
+      for (const [pair, detail] of Object.entries(sm.matches ?? {})) {
+        if (reports[`${CURRENT_SEASON}|${pair}`]) continue;
+        const fixture = fixtureByPair.get(pair);
+        const report = buildProviderMatchReport({ fixture, detail, nameOf: code => T.byCode.get(code)?.en ?? code });
+        if (report) reports[`${CURRENT_SEASON}|${pair}`] = report;
+      }
+      console.log(`  SportMonks 西甲賽後快取：${Object.keys(sm.matches ?? {}).length} 場・可發布 ${Object.keys(reports).length} 場（含既有來源）`);
+    } catch { console.log('  ⚠ SportMonks 賽後快取損壞,本次略過'); }
+  }
   const reportCount = Object.keys(reports).length;
   /* 抓取端如果撞到「這個方案不含此賽季」,會把原因寫進存檔的 blocked。
      有 blocked 就代表這不是「還沒抓到」而是「拿不到」—— 畫面上要說的是後者。
@@ -483,9 +499,8 @@ async function main() {
      兩季各一份。上季完整、本季至今 —— 兩者性質不同,不能混在一起算,
      所以分開輸出並各自標明是哪一季。
 
-     API-Football 那條路走不通(Free 方案只到 2024,實測過),
-     所以這裡的欄位就是 Understat 有的那些。缺的欄位**不補、不留空**:
-     沒有背號、頭貼、傷停、防守數據 —— 前端據實說明,不要跟英超版面對齊。 */
+     API-Football 那條路走不通(Free 方案只到 2024,實測過)。SportMonks
+     若有本地快取,只補經核對的球員身分欄位；傷停與防守統計仍不補。 */
   const playerSeasons = {};
   for (const season of [CURRENT_SEASON, LAST_SEASON]) {
     const loaded = loadPlayers(ROOT, season);
@@ -498,8 +513,17 @@ async function main() {
   }
 
   const playersOut = [];
+  const sportmonksBySeason = {};
   for (const [season, data] of Object.entries(playerSeasons)) {
-    for (const p of data.players) playersOut.push({ ...p, season });
+    const store = loadSquadStore(ROOT, season);
+    const enriched = enrichPlayers(data.players, store, { codeOf: T.codeOf });
+    sportmonksBySeason[season] = {
+      available: enriched.available,
+      ...sportmonksCoverage(enriched.players),
+      retrievedAt: store?.retrievedAt ?? null,
+    };
+    console.log(`  SportMonks 球員補充 ${season}：${enriched.matched}/${data.players.length} 人對上${store ? '' : '（無快取）'}`);
+    for (const p of enriched.players) playersOut.push({ ...p, season });
   }
 
   const meta = {
@@ -507,12 +531,18 @@ async function main() {
     league: 'es1', edition: 'basic',
     currentSeason: CURRENT_SEASON, lastSeason: LAST_SEASON,
     historySeasons: [LAST_SEASON], h2hSeasons: [LAST_SEASON, CURRENT_SEASON],
-    sources,
+    sources: [
+      ...sources,
+      {
+        name: 'SportMonks',
+        url: 'https://api.sportmonks.com/v3/football/squads/teams/{team_id}?include=player',
+        use: '西甲球員背號、頭貼、生日、身高體重、國籍、隊長與合約（只讀本地快取）',
+        license: '訂閱 API 資料',
+      },
+    ],
     capabilities: {
-      /* players 是 true,但**只有整季彙總的進攻與串聯數據**(Understat)。
-         沒有背號、頭貼、傷停、防守數據 —— 那些是英超的 FPL 才有的。
-         前端靠 leaders.missing 把界線寫在畫面上,不要因為這裡是 true
-         就假設兩個聯賽的球員頁欄位一樣。 */
+      /* players 是 true；整季進攻與串聯來自 Understat，身分欄位可由
+         SportMonks 快取補充。前端仍靠 leaders.missing 宣告尚未取得的項目。 */
       live: false, players: playersOut.length > 0, injuries: false, tactics: teamProfiles.length > 0,
       coaches: false, news: false, officialLineups: reportCount > 0 || officialLineupCount > 0, matchReports: reportCount > 0,
       fixtures: true, standings: true, teams: true, predictions: true, market: true,
@@ -574,8 +604,14 @@ async function main() {
     axes: RADAR_AXES,
     /* 誠實層:西甲球員頁**沒有**哪些東西,由資料層直接宣告,
        前端照著說。不要讓讀者以為是還沒載入或壞掉。 */
-    missing: ['背號', '頭貼', '出生日期與身價', '傷停與停賽', '防守數據(鏟球/攔截/撲救)'],
-    note: 'Understat 提供整季彙總,不是逐場;每 90 分鐘僅在上場時間達門檻時給出。',
+    missing: [
+      ...(Object.values(sportmonksBySeason).some(x => x.squadNumber > 0) ? [] : ['背號']),
+      ...(Object.values(sportmonksBySeason).some(x => x.photo > 0) ? [] : ['頭貼']),
+      ...(Object.values(sportmonksBySeason).some(x => x.dateOfBirth > 0) ? [] : ['出生日期與身價']),
+      '傷停與停賽', '防守數據(鏟球/攔截/撲救)',
+    ],
+    sportmonks: sportmonksBySeason,
+    note: 'Understat 提供整季彙總；SportMonks 補充可取得的球員身分欄位。每 90 分鐘僅在上場時間達門檻時給出。',
     current: playerSeasons[CURRENT_SEASON] ? buildLeaders(playerSeasons[CURRENT_SEASON].players) : null,
     last: playerSeasons[LAST_SEASON] ? buildLeaders(playerSeasons[LAST_SEASON].players) : null,
   });
@@ -583,11 +619,11 @@ async function main() {
   await write('goals', { seasons: [], note: '西甲尚未接逐球員進球明細。', data: {} });
   await write('reports', {
     seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,
-    source: 'api-football', pending: Math.max(0, curPlayed.length - reportCount),
+    source: reportCount ? [...new Set(Object.values(reports).map(r => r.source))].join(' + ') : 'api-football', pending: Math.max(0, curPlayed.length - reportCount),
     blocked,
     note: blocked
       ? '目前使用的 API-Football 方案不含本賽季，因此這不是「還沒抓到」而是拿不到。換成涵蓋本賽季的方案後會自動恢復。'
-      : '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；開頁不呼叫 API。',
+      : '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；API-Football 或 SportMonks 任一來源通過核對即可發布；開頁不呼叫 API。',
   });
   await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 } });
   // analysis.html 共用同一組載入契約。西甲沒有這些模組時寫出明確空資料，避免 404。

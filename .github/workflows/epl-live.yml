@@ -69,6 +69,16 @@ jobs:
         run: npm run laliga:players
         continue-on-error: true
 
+      # SportMonks 補 Understat 沒有的西甲球員欄位；有快取且未超過 7 天就不重抓。
+      # 沒有 Secret 時安全略過，不影響其他資料建置。
+      - name: 補齊西甲球員欄位(SportMonks)
+        run: npm run sportmonks:sync
+        env:
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+        continue-on-error: true
+
       - name: 抓即時比賽狀態(官方 FPL API)
         run: npm run live
         env:
@@ -154,6 +164,7 @@ jobs:
                      epl/data/raw/openfootball/ epl/data/raw/pulselive/ \
                      epl/data/raw/openfootball-la-liga/ \
                      epl/data/raw/understat-la-liga/ \
+                     epl/data/raw/sportmonks-la-liga/ \
                      epl/data/raw/api-football/ \
                      epl/data/raw/api-football-la-liga/ \
                      epl/data/raw/football-data-couk/ \

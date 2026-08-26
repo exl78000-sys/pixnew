@@ -306,10 +306,15 @@ function renderUnderstat({ meta, players, leaders }) {
         <b class="mono">${fmt(r.value)}</b></div>`).join('')}</div>`;
   };
 
+  const hasSportMonks = players.some(p => p.sportmonksId);
   const COLS = [
-    { key: 'name', label: '球員', get: p => C.esc(p.name) },
+    { key: 'name', label: '球員', get: p => `${p.photo ? C.playerPhoto(p, 26) : ''}${C.esc(p.name)}` },
     { key: 'team', label: '球隊', get: teamCell },
     { key: 'posZh', label: '位置', get: p => `<span class="dim">${C.esc(p.posZh)}</span>` },
+    ...(hasSportMonks ? [
+      { key: 'squadNumber', label: '背號', num: true },
+      { key: 'dateOfBirth', label: '出生日期', get: p => p.dateOfBirth ?? '—' },
+    ] : []),
     { key: 'games', label: '出場', num: true },
     { key: 'minutes', label: '分鐘', num: true },
     { key: 'goals', label: '進球', num: true },
@@ -398,7 +403,7 @@ function renderUnderstat({ meta, players, leaders }) {
           所以標記出來,不硬掛到其中一隊 —— 掛錯的話那個隊的數字就是假的。</div>
         <div><b>終結超出期望</b>用非十二碼進球減 npxG。十二碼的 xG 是固定值,
           混進來只會反映罰球次數,不反映終結能力。</div>
-        <div><b>來源:</b>Understat,整季一個請求取得並快取,開頁不連外。${C.esc(leaders.note)}</div>
+        <div><b>來源:</b>Understat 整季統計 + SportMonks 球員名單欄位（均為本地快取,開頁不連外）。${C.esc(leaders.note)}</div>
       </div>
     </div>
     ${C.foot(meta)}`;

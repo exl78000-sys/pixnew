@@ -642,8 +642,9 @@ export function matchReportCards(m) {
       ${e.assist ? `<small>相關球員：${esc(e.assist)}</small>` : ''}
       ${e.detail ? `<small>${esc(e.detail)}</small>` : ''}${e.comments ? `<small>${esc(e.comments)}</small>` : ''}</span></div>`).join('');
 
+    const sourceLabel = d.source === 'sportmonks' ? 'SportMonks' : 'API-Football';
     return `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start">
-        <h3>完整球隊攻守數據</h3><span class="pill accent tiny">API-Football・完賽永久快取</span></div>
+        <h3>完整球隊攻守數據</h3><span class="pill accent tiny">${sourceLabel}・完賽永久快取</span></div>
       <div class="row small dim" style="justify-content:space-between;margin-bottom:4px"><span>${name(m.home)}</span><span>${name(m.away)}</span></div>
       ${stat('控球率', 'possession', '%')}${stat('總射門', 'shots')}${stat('射正', 'shotsOn')}
       ${stat('射偏', 'shotsOff')}${stat('被封阻射門', 'blockedShots')}${stat('角球', 'corners')}
@@ -669,7 +670,7 @@ export function matchReportCards(m) {
       </div>
       <div class="tiny dim" style="margin-top:10px">${H.shape.source === 'official' || A.shape.source === 'official'
         ? m.advanced
-          ? `標<span class="pill accent tiny">正式</span>的陣型與每一排球員，來自 API-Football 的完賽名單，球場圖依供應商格線排列。`
+          ? `標<span class="pill accent tiny">正式</span>的陣型與每一排球員，來自 ${m.advanced.source === 'sportmonks' ? 'SportMonks' : 'API-Football'} 的完賽名單，球場圖依供應商格線排列。`
           : `標<span class="pill accent tiny">官方</span>的陣型與每一排的人,都是<b>英超官方公布的正式名單</b>,球場圖照那個排位畫。`
         : `陣型是依 FPL 的位置分類統計先發人數 —— 它只分門將/後衛/中場/前鋒四類,
            邊鋒會被算進中場、翼衛會被算進後衛,所以三中衛體系可能會顯示成「6-3-1」這種數字。

@@ -114,6 +114,7 @@ unset API_FOOTBALL_KEY && npm run build   # 應該正常完成,只是少了那�
 | `openfootball` | matches(賽程、賽果、半場比分) | 否 |
 | `fpl-snapshot` | squads(球員數據、傷停) | 否 |
 | `api-football` | formations、coaches、完賽球隊/球員統計、0–10 評分、事件時間軸 | **是** |
+| `sportmonks` | 西甲球員名單補充（背號、頭貼、生日、身高體重、國籍、隊長、合約） | **是** |
 
 API-Football 的完賽資料已正式接入：`npm run live` 在終場後自動補抓，或用
 `npm run postmatch` 手動補齊。完整結果永久保存在

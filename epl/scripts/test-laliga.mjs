@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { fetchCompletedMatchDetails, normaliseMatchDetail } from './lib/adapters/api-football.mjs';
+import { enrichPlayers, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -53,11 +54,40 @@ check('西甲官網補齊缺漏場次並保留頭像', official.sources?.include
    這裡守的不再是「關閉」,而是**開了之後不能偷偷造欄位**:
    Understat 沒有背號、頭貼、傷停與防守數據,那就一個都不准出現。 */
 const leaders = out('leaders');
-const FORBIDDEN = ['squadNumber', 'photo', 'price', 'status', 'news', 'defCon90', 'saves90', 'tackles90'];
+const FORBIDDEN = ['price', 'status', 'news', 'defCon90', 'saves90', 'tackles90'];
 check('西甲球員資料已接上', meta.capabilities?.players === true && players.length > 0);
 check('沒有假造 Understat 給不了的欄位',
   players.every(p => FORBIDDEN.every(k => !(k in p))), FORBIDDEN.join());
 check('缺什麼有寫在資料層讓畫面照講', Array.isArray(leaders.missing) && leaders.missing.length > 0);
+const smPlayer = enrichPlayers([{ name: 'Pedri', teams: ['Barcelona'] }], {
+  season: '2026-27', squads: { BAR: [{ jersey_number: 8, captain: true, player: {
+    id: 42, display_name: 'Pedri', image_path: 'https://cdn.example/pedri.png',
+    date_of_birth: '2002-11-25', height: 174, weight: 60, nationality_id: 214,
+  } }] },
+}, { codeOf: name => name === 'Barcelona' ? 'BAR' : null });
+check('SportMonks 欄位只從本地快取補入', smPlayer.matched === 1
+  && smPlayer.players[0].squadNumber === 8 && smPlayer.players[0].photo?.startsWith('https://')
+  && sportmonksCoverage(smPlayer.players).physical === 1);
+const smXI = (teamId, prefix) => Array.from({ length: 11 }, (_, i) => ({
+  player_id: teamId * 100 + i, team_id: teamId, player_name: `${prefix} ${i + 1}`,
+  jersey_number: i + 1, position_id: i === 0 ? 24 : i < 5 ? 26 : i < 8 ? 31 : 37,
+  type_id: 11, formation_field: `${i < 1 ? 1 : i < 5 ? 2 : i < 8 ? 3 : 4}:${(i % 4) + 1}`,
+  details: [{ type: { code: 'rating' }, data: { value: 7.2 } }, { type: { code: 'minutes-played' }, data: { value: 90 } }],
+}));
+const smDetail = normaliseSportmonksMatch({
+  id: 123, starting_at: '2026-08-20 19:00:00', participants: [
+    { id: 1, name: 'Barcelona', meta: { location: 'home' } }, { id: 2, name: 'Athletic Club', meta: { location: 'away' } },
+  ], formations: [{ participant_id: 1, formation: '4-3-3' }, { participant_id: 2, formation: '4-2-3-1' }],
+  lineups: [...smXI(1, 'BAR'), ...smXI(2, 'ATH')],
+  statistics: [{ participant_id: 1, type: { code: 'shots-total' }, data: { value: 12 }, location: 'home' },
+    { participant_id: 2, type: { code: 'shots-total' }, data: { value: 8 }, location: 'away' }],
+  events: [{ participant_id: 1, type: { code: 'goal' }, minute: 22, player_name: 'BAR 2' }],
+}, { codeOf: name => ({ Barcelona: 'BAR', 'Athletic Club': 'ATH' }[name] ?? null),
+  fixture: { home: 'BAR', away: 'ATH', season: '2026-27', played: true, fh: 1, fa: 0 },
+  teamCodeById: new Map([['1', 'BAR'], ['2', 'ATH']]), season: '2026-27' });
+check('SportMonks 賽後資料轉成本站格式', smDetail?.coverage?.lineups === true
+  && smDetail.lineups.BAR.xi.length === 11 && smDetail.lineups.ATH.formation === '4-2-3-1'
+  && smDetail.coverage.ratings === true && smDetail.events[0].type === 'Goal');
 check('每 90 分鐘只在達門檻時給出,不足門檻一律 null',
   players.every(p => (p.minutes >= leaders.minMinutes) === (p.xgi90 !== null)));
 check('跨隊球員標記出來,不硬掛到單一球隊',
