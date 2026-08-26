@@ -306,7 +306,10 @@ async function syncCurrentMatches(T, seasonStore, season) {
   let detailFailed = 0;
   const detailFailureReasons = {};
   const previousBlockUntil = Date.parse(previous?.blocked?.until ?? '');
-  const detailBlocked = previous?.blocked?.status === 403
+  // 新的能力探測若證明至少有一項完整賽後 include 可用，就清掉舊版把
+  // 所有 include 綁在一起時留下的 403 封鎖，立即改抓可用欄位。
+  const capabilityClearsBlock = capabilityValid && detailIncludes.some(include => include !== 'participants');
+  const detailBlocked = !capabilityClearsBlock && previous?.blocked?.status === 403
     && Number.isFinite(previousBlockUntil) && previousBlockUntil > Date.now();
   if (detailBlocked) console.log(`  · SportMonks 賽後詳情暫停至 ${previous.blocked.until}（HTTP 403，避免重複消耗額度）`);
   const capabilityBlocked = capabilityValid && detailIncludes.length === 0 && candidates.length > 0;
