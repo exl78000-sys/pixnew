@@ -521,11 +521,18 @@ export function bindPlayerLinks(root, resolvePlayer, options = {}) {
 // 賽後報告為了壓小資料檔沒有重複儲存 base64 頭貼；開頁時再依 code 與球員庫合併。
 export function reportWithPlayerPhotos(m, players) {
   if (!m?.sides) return m;
-  const byCode = players instanceof Map ? players : new Map((players ?? []).map(p => [String(p.code), p]));
+  const byCode = players instanceof Map ? players : new Map((players ?? []).flatMap(p => [
+    ...(p?.code != null ? [[String(p.code), p]] : []),
+    ...(p?.sportmonksId != null ? [[String(p.sportmonksId), p]] : []),
+  ]));
   const decorate = p => {
     if (!p) return p;
-    const full = p.code == null ? null : byCode.get(String(p.code));
-    return { ...p, photo: p.photo ?? full?.photo ?? null };
+    // 賽後報告保留供應商 providerId；球員主檔則同時有 Understat code
+    // 與 SportMonks sportmonksId。兩者都能找到時，統一回傳網站內部 code，
+    // 讓頭貼與 data-player-code 點擊都能回到同一個球員詳情。
+    const full = p.code != null ? byCode.get(String(p.code))
+      : p.providerId != null ? byCode.get(String(p.providerId)) : null;
+    return { ...p, code: p.code ?? full?.code ?? null, photo: p.photo ?? full?.photo ?? null };
   };
   const side = s => ({
     ...s,

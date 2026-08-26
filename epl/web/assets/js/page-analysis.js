@@ -18,8 +18,14 @@ try {
   const expertsFor = f => experts.matches[reportKey(f)] ?? [];
   // 這幾個會在 renderMatch 裡用到,必須在呼叫點之前就初始化好 —— 放在下面的
   // 函式區只會撞上 TDZ(函式宣告會提升,const 不會)
-  const photoByCode = new Map(players.map(x => [x.code, x.photo ?? null]));
-  const playerByCode = new Map(players.map(x => [x.code, x]));
+  // 西甲賽後報告使用 SportMonks providerId；英超與球員頁使用網站 code。
+  // 同一份索引收兩個鍵，避免賽後球員頭貼／詳情因來源 ID 不同而斷線。
+  const playerEntries = players.flatMap(x => [
+    ...(x.code != null ? [[String(x.code), x]] : []),
+    ...(x.sportmonksId != null ? [[String(x.sportmonksId), x]] : []),
+  ]);
+  const photoByCode = new Map(playerEntries.map(([code, x]) => [code, x.photo ?? null]));
+  const playerByCode = new Map(playerEntries);
   const photoOf = code => photoByCode.get(code) ?? null;
 
   // 網址可以用 ?id=(跟賽程頁一致)或 ?home=&away=(人看得懂,可以直接手打)
