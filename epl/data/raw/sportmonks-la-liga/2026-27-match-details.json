@@ -3,7 +3,7 @@
   "providerSeason": 27965,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/football/fixtures/{fixture_id}",
-  "retrievedAt": "2026-08-26T12:13:31.741Z",
+  "retrievedAt": "2026-08-26T12:17:00.867Z",
   "matches": {},
   "coverage": {
     "cached": 0,
@@ -79,7 +79,10 @@
     ],
     "detailAttempts": 16,
     "detailRejected": 0,
-    "detailFailed": 16
+    "detailFailed": 16,
+    "detailFailureReasons": {
+      "403": 16
+    }
   },
   "note": "與 openfootball 比分逐場核對後才發布；速度、距離、衝刺不在本資料源。"
 }
