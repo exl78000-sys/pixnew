@@ -1,15 +1,17 @@
 // SportMonks 球員名單補充層。
 //
-// Understat 是西甲球員統計的主來源；SportMonks 只補 Understat 沒有的
-// 穩定欄位。這裡只讀本地快取，開頁與 build 都不連外。
+// SportMonks 是本專案的主要球員身分／頭貼來源；英超仍以 FPL 的
+// 表現統計為計算基礎，SportMonks 補足背號、頭貼與身分欄位。這裡只讀
+// 本地快取，開頁與 build 都不連外。
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const id = 'sportmonks';
-export const label = 'SportMonks（球員名單補充）';
+export const label = 'SportMonks（主要球員資料來源）';
 export const supports = ['playerMetadata', 'lineups', 'formations', 'postmatch-details'];
 
-const STORE = (root, season) => join(root, 'data', 'raw', 'sportmonks-la-liga', `${season}-squads.json`);
+const STORE = (root, season, directory = 'sportmonks-la-liga') =>
+  join(root, 'data', 'raw', directory, `${season}-squads.json`);
 
 export const normaliseName = value => String(value ?? '')
   .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
@@ -21,8 +23,8 @@ const namesOf = player => [player?.display_name, player?.name, player?.common_na
 const rowsOf = store => Object.entries(store?.squads ?? {}).flatMap(([teamCode, rows]) =>
   (Array.isArray(rows) ? rows : []).map(row => ({ teamCode, row, player: row?.player ?? row })));
 
-export function loadSquadStore(root, season) {
-  const file = STORE(root, season);
+export function loadSquadStore(root, season, { directory = 'sportmonks-la-liga' } = {}) {
+  const file = STORE(root, season, directory);
   if (!existsSync(file)) return null;
   try {
     const store = JSON.parse(readFileSync(file, 'utf8'));
@@ -93,7 +95,9 @@ export function enrichPlayers(players, store, { codeOf } = {}) {
     const out = { ...p, sportmonksId: String(q.id), sportmonksTeam: hit.teamCode };
     const put = (key, value) => { if (value !== null && value !== undefined && value !== '') out[key] = value; };
     put('squadNumber', row.jersey_number);
-    put('photo', q.image_path);
+    // SportMonks 會用 placeholder URL 表示沒有頭貼；它不是有效照片，
+    // 必須讓既有手動／備援來源接手，不能把 placeholder 當成已補齊。
+    if (q.image_path && !/placeholder/i.test(String(q.image_path))) put('photo', q.image_path);
     put('dateOfBirth', q.date_of_birth);
     put('height', q.height);
     put('weight', q.weight);

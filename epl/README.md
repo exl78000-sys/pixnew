@@ -169,7 +169,10 @@ npm run crests    # 27 隊隊徽 → 縮圖 → 內嵌成 data URI
 
 ### 完賽球員評分與完整攻守數據
 
-設定 `API_FOOTBALL_KEY` 後，英超的 `npm run live` 與西甲的定時流程會在確認完賽後補抓一次 API-Football 的球隊統計、
+英超的球員／賽後主要資料改由 `SPORTMONKS_TOKEN` 同步；設定後執行 `npm run sportmonks:sync -- --league=pl`，
+資料會先寫入本地快取，建置時優先採用 SportMonks。FPL 仍負責英超表現統計與即時賽程鏡像。
+
+設定 `API_FOOTBALL_KEY` 後，英超的 `npm run live` 與西甲的定時流程會在確認完賽後補抓一次 API-Football 的球隊統計（作為 SportMonks 缺口備援）、
 球員 0–10 評分、射門、傳球、關鍵傳球、傳球成功率、對抗、盤帶、鏟球、抄截、攔阻、犯規、
 門將、正式陣容與完整事件時間軸。西甲另要求供應商比分與 openfootball 正式比分完全一致；所有必需欄位都齊全才寫進
 `data/raw/api-football-la-liga/2026-27-match-details.json` 永久快取；

@@ -171,6 +171,18 @@ export function buildPlayers({ current, last, currentTotals, teamMatches, season
       transferred: !!prev && prev.team !== p.team,
       pos: p.pos, posZh: POS_ZH[p.pos], price: p.price,
       squadNumber: p.squadNumber,
+      // SportMonks 主要來源補入的穩定身分欄位；沒有快取時保留 null，
+      // 不用猜測或在前端連外抓圖。
+      photo: p.photo ?? null,
+      sportmonksId: p.sportmonksId ?? null,
+      sportmonksTeam: p.sportmonksTeam ?? null,
+      dateOfBirth: p.dateOfBirth ?? null,
+      height: p.height ?? null,
+      weight: p.weight ?? null,
+      nationalityId: p.nationalityId ?? null,
+      contractStart: p.contractStart ?? null,
+      contractEnd: p.contractEnd ?? null,
+      captain: p.captain === true,
       age: ageOn(p.birthDate, asOf),
       status: p.status, statusZh: STATUS_ZH[p.status] ?? p.status,
       news: p.news, newsAdded: p.newsAdded, chanceNext: p.chanceNext,

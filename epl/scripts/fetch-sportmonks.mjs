@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// 從 SportMonks 補西甲球員名單欄位。
+// 從 SportMonks 同步英超／西甲球員名單與已完賽資料。
 //
-// 只快取 Understat 沒有的資料：背號、頭貼、生日、身高、體重、國籍、隊長與合約。
+// 名單只快取穩定身分欄位：背號、頭貼、生日、身高、體重、國籍、隊長與合約。
 // 逐場 lineups / formations 會在已完賽且比分核對通過後寫入獨立快取，
 // build 再透過 adapter 轉成本站 canonical 賽後格式；不把探測回應直接當正式資料。
 // 沒有 token 時安全略過；不會把金鑰寫入檔案或 log。
@@ -18,19 +18,29 @@ import { loadMatches } from './lib/adapters/openfootball.mjs';
 import { normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const arg = key => process.argv.find(x => x.startsWith(`--${key}=`))?.split('=')[1];
 const TOKEN = process.env.SPORTMONKS_TOKEN || process.env.SPORTMONKS_KEY || process.env.SPORTMONKS_API_KEY;
 const BASE = 'https://api.sportmonks.com/v3';
-const OUT = join(ROOT, 'data', 'raw', 'sportmonks-la-liga');
 const FORCE = process.argv.includes('--force');
 const DELAY = 350;
 const MAX_REQUESTS = Number(process.argv.find(x => x.startsWith('--max-requests='))?.split('=')[1] ?? 80);
 const TTL_DAYS = 7;
-const SEASONS = [
-  { label: '2026-27', id: 27965 },
-  { label: '2025-26', id: 25659 },
-];
 const FETCH_MATCHES = !process.argv.includes('--no-matches');
 const MAX_DETAILS = Number(process.argv.find(x => x.startsWith('--max-details='))?.split('=')[1] ?? 20);
+
+const LEAGUE = arg('league') ?? 'es1';
+const CONFIG = LEAGUE === 'pl'
+  ? {
+      key: 'pl', leagueId: Number(process.env.SPORTMONKS_EPL_LEAGUE_ID ?? 8),
+      teamsFile: 'teams.json', outputDir: 'sportmonks-epl', competition: 'eng.1',
+      note: 'SportMonks 英超主要球員／賽後資料；FPL 僅保留作表現統計與賽程鏡像。',
+    }
+  : {
+      key: 'es1', leagueId: Number(process.env.SPORTMONKS_LALIGA_LEAGUE_ID ?? 564),
+      teamsFile: 'teams-la-liga.json', outputDir: 'sportmonks-la-liga', competition: 'esp.1',
+      note: 'SportMonks 西甲球員名單補充；逐場資料需通過隊伍與比分核對。',
+    };
+const OUT = join(ROOT, 'data', 'raw', CONFIG.outputDir);
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 let requests = 0;
@@ -60,6 +70,30 @@ const stale = store => {
   const age = Date.now() - Date.parse(store.retrievedAt);
   return !Number.isFinite(age) || age > TTL_DAYS * 86400000;
 };
+
+const seasonLabel = value => {
+  const m = String(value ?? '').match(/(20\d{2})\s*[\/-]\s*(20\d{2})/);
+  return m ? `${m[1]}-${m[2].slice(-2)}` : String(value ?? '');
+};
+
+async function resolveSeasons() {
+  // 西甲保留既有、已核對過的 season id；英超則依 token 實際可用賽季動態解析，
+  // 避免把不同方案的 season id 硬寫死，也不會把不存在的賽季誤當成成功。
+  if (CONFIG.key === 'es1') return [
+    { label: '2026-27', id: 27965 },
+    { label: '2025-26', id: 25659 },
+  ];
+  const seasonRows = rows(await get(`/football/seasons?filters=seasonLeagues:${CONFIG.leagueId}&per_page=50`));
+  const usable = seasonRows.map(row => ({
+    label: seasonLabel(row.name), id: row.id,
+    current: row.is_current === true, finished: row.finished,
+  })).filter(row => /^20\d{2}-\d{2}$/.test(row.label) && row.id != null);
+  const wanted = ['2026-27', '2025-26'];
+  const selected = wanted.map(label => usable.find(row => row.label === label)).filter(Boolean);
+  if (selected.length) return selected;
+  const sorted = usable.sort((a, b) => String(b.label).localeCompare(String(a.label)));
+  return sorted.slice(0, 2);
+}
 
 // 供應商偶爾會在 common_name 回傳歷史／別名，若直接拿最後一欄對照，
 // 可能把 Deportivo A Coruña 覆蓋到 Villarreal。先採用完整隊名的明確規則，
@@ -134,18 +168,18 @@ async function syncSeason(T, season) {
       loadedThisRun: loaded,
       players: Object.values(squads).reduce((n, list) => n + list.length, 0),
     },
-    note: 'SportMonks 只作 Understat 球員欄位補充；逐場資料另有獨立快取，需通過隊伍與比分核對。',
+    note: CONFIG.note,
   };
   await writeFile(file, JSON.stringify(store, null, 2) + '\n');
   console.log(`  ✔ ${file}`);
   return store;
 }
 
-async function syncCurrentMatches(T, seasonStore) {
-  const season = SEASONS.find(x => x.label === '2026-27');
+async function syncCurrentMatches(T, seasonStore, season) {
   const file = join(OUT, `${season.label}-match-details.json`);
   const previous = await readStore(file);
-  const local = loadMatches({ root: ROOT, competition: 'esp.1', season: season.label, codeOf: T.codeOf, rawDir: 'openfootball-la-liga' });
+  const local = loadMatches({ root: ROOT, competition: CONFIG.competition, season: season.label, codeOf: T.codeOf,
+    rawDir: CONFIG.key === 'es1' ? 'openfootball-la-liga' : 'openfootball' });
   const played = local.filter(x => x.played);
   const teamCodeById = new Map(Object.entries(seasonStore.teams ?? {}).map(([code, t]) => [String(t.id), code]));
   const details = { ...(previous?.matches ?? {}) };
@@ -168,7 +202,7 @@ async function syncCurrentMatches(T, seasonStore) {
     if (details[key]) continue;
     candidates.push({ sf, localMatch, key });
   }
-  console.log(`▶ SportMonks 賽後詳情：本季已完賽 ${played.length} 場・待補 ${candidates.length} 場・本次最多 ${MAX_DETAILS} 場`);
+  console.log(`▶ SportMonks ${CONFIG.key === 'pl' ? '英超' : '西甲'}賽後詳情：${season.label} 已完賽 ${played.length} 場・待補 ${candidates.length} 場・本次最多 ${MAX_DETAILS} 場`);
   let fetched = 0;
   for (const { sf, localMatch, key } of candidates.slice(0, MAX_DETAILS)) {
     try {
@@ -201,20 +235,23 @@ async function main() {
     return;
   }
   await mkdir(OUT, { recursive: true });
-  const T = loadTeams(ROOT, { file: 'teams-la-liga.json' });
+  const T = loadTeams(ROOT, { file: CONFIG.teamsFile });
+  const seasons = await resolveSeasons();
+  if (!seasons.length) throw new Error(`SportMonks 找不到 ${CONFIG.key === 'pl' ? '英超' : '西甲'} 可用賽季`);
   const stores = [];
-  for (const season of SEASONS) {
+  for (const season of seasons) {
     try { stores.push(await syncSeason(T, season)); }
     catch (error) { console.log(`  ⚠ ${season.label} 未完成：${error.message}`); }
   }
   if (FETCH_MATCHES) {
-    const current = stores.find(x => x?.season === '2026-27');
+    const currentSeason = seasons.find(x => x.label === '2026-27') ?? seasons[0];
+    const current = stores.find(x => x?.season === currentSeason.label);
     if (current) {
-      try { await syncCurrentMatches(T, current); }
-      catch (error) { console.log(`  ⚠ 2026-27 賽後詳情未完成：${error.message}`); }
+      try { await syncCurrentMatches(T, current, currentSeason); }
+      catch (error) { console.log(`  ⚠ ${currentSeason.label} 賽後詳情未完成：${error.message}`); }
     }
   }
-  console.log(`\nSportMonks 名單同步完成：${stores.filter(Boolean).length}/${SEASONS.length} 季・使用 ${requests} 個請求`);
+  console.log(`\nSportMonks ${CONFIG.key === 'pl' ? '英超' : '西甲'}同步完成：${stores.filter(Boolean).length}/${seasons.length} 季・使用 ${requests} 個請求`);
 }
 
 main().catch(error => { console.error(`✗ SportMonks 同步失敗：${error.message}`); process.exitCode = 1; });

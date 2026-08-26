@@ -69,7 +69,7 @@ jobs:
         run: npm run laliga:players
         continue-on-error: true
 
-      # SportMonks 補 Understat 沒有的西甲球員欄位；有快取且未超過 7 天就不重抓。
+      # SportMonks 西甲欄位同步；有快取且未超過 7 天就不重抓。
       # 沒有 Secret 時安全略過，不影響其他資料建置。
       - name: 補齊西甲球員欄位(SportMonks)
         run: npm run sportmonks:sync
@@ -79,7 +79,19 @@ jobs:
           SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
         continue-on-error: true
 
-      # 英超官方 CDN 沒有的少量頭貼，改用 API-Football 逐名搜尋補充；
+      # SportMonks 是英超的主要球員／賽後資料來源；FPL 與 API-Football 只作
+      # 統計鏡像或備援。同步器會依 token 實際可用賽季動態找 season id。
+      - name: 同步英超主要資料(SportMonks)
+        run: npm run sportmonks:sync -- --league=pl --max-requests=65 --max-details=10
+        env:
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+          SPORTMONKS_EPL_LEAGUE_ID: 8
+        continue-on-error: true
+
+      # 英超官方 CDN 沒有的少量頭貼，SportMonks 名單會先補入；
+      # API-Football 僅作最後備援，避免把兩個來源的資料混在一起。
       # 每次最多 10 人、每日最多 10 次，結果寫入 photos.json 快取。
       - name: API 補抓英超缺少球員頭貼
         run: npm run photos:api
@@ -175,6 +187,7 @@ jobs:
                      epl/data/raw/openfootball-la-liga/ \
                      epl/data/raw/understat-la-liga/ \
                      epl/data/raw/sportmonks-la-liga/ \
+                     epl/data/raw/sportmonks-epl/ \
                      epl/data/raw/api-football/ \
                      epl/data/raw/api-football-la-liga/ \
                      epl/data/raw/football-data-couk/ \

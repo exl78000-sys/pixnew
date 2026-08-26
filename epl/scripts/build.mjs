@@ -34,6 +34,7 @@ import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { buildGoals } from './lib/goals.mjs';
 import { round } from './lib/util.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
+import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data');
@@ -77,7 +78,7 @@ function attachAdvancedCodes(detail, report) {
     playerCode: e.playerId == null ? null : idToCode.get(`${e.team}|${e.playerId}`) ?? null,
     assistCode: e.assistId == null ? null : idToCode.get(`${e.team}|${e.assistId}`) ?? null,
   }));
-  return { ...detail, source: 'API-Football', players, events };
+  return { ...detail, source: detail.source === 'sportmonks' ? 'sportmonks' : 'API-Football', players, events };
 }
 
 const write = async (name, data) => {
@@ -139,6 +140,21 @@ async function main() {
     try { advancedStore = JSON.parse(await readFile(advancedPath, 'utf8')); }
     catch { console.log('  ⚠ API-Football 賽後快取損壞,本次略過進階資料'); }
   }
+  // SportMonks 是主要的英超進階資料來源；API-Football 只作備援。
+  // build 只讀 Actions 已快取的檔案，不在開頁或建置時連外。
+  const sportmonksAdvancedPath = join(ROOT, 'data', 'raw', 'sportmonks-epl', `${CURRENT_SEASON}-match-details.json`);
+  let sportmonksAdvancedStore = { matches: {} };
+  if (existsSync(sportmonksAdvancedPath)) {
+    try { sportmonksAdvancedStore = JSON.parse(await readFile(sportmonksAdvancedPath, 'utf8')); }
+    catch { console.log('  ⚠ SportMonks 英超賽後快取損壞,本次略過進階資料'); }
+  }
+  const advancedFor = (season, key) => {
+    if (season !== CURRENT_SEASON) return null;
+    // 主要來源優先；若 SportMonks 尚未完成該場，再退回 API-Football。
+    return sportmonksAdvancedStore.season === season
+      ? sportmonksAdvancedStore.matches?.[key] ?? advancedStore.matches?.[key] ?? null
+      : advancedStore.season === season ? advancedStore.matches?.[key] ?? null : null;
+  };
 
   // 隊徽(npm run crests 產生,已內嵌為 data URI)直接掛到球隊登錄上,
   // 前端就不必為了圖片再多載一份資料。
@@ -200,8 +216,18 @@ async function main() {
   const strengthBy = new Map(strength.map(s => [s.code, s]));
 
   // ── FPL 資料 ──────────────────────────────
-  const fplLast = loadSquads({ root: ROOT, season: LAST_SEASON, codeOf: T.codeOf });
-  const fplCur = loadSquads({ root: ROOT, season: CURRENT_SEASON, codeOf: T.codeOf });
+  const fplLastRaw = loadSquads({ root: ROOT, season: LAST_SEASON, codeOf: T.codeOf });
+  const fplCurRaw = loadSquads({ root: ROOT, season: CURRENT_SEASON, codeOf: T.codeOf });
+  const sportmonksLast = loadSportMonksSquadStore(ROOT, LAST_SEASON, { directory: 'sportmonks-epl' });
+  const sportmonksCur = loadSportMonksSquadStore(ROOT, CURRENT_SEASON, { directory: 'sportmonks-epl' });
+  const enrich = (base, store, season) => {
+    if (!store) return base;
+    const result = enrichSportMonksPlayers(base.players, store, { codeOf: T.codeOf });
+    console.log(`  SportMonks ${season}:${result.matched}/${base.players.length} 名球員已合併主要身分／頭貼資料`);
+    return { ...base, players: result.players };
+  };
+  const fplLast = enrich(fplLastRaw, sportmonksLast, LAST_SEASON);
+  const fplCur = enrich(fplCurRaw, sportmonksCur, CURRENT_SEASON);
   const diff = loadDifficulty(ROOT, T.codeOf, fplCur.teamById);
 
   // 上一完整賽季的進球情境。這份靜態快取由 npm run setpieces 低頻率、
@@ -536,7 +562,7 @@ async function main() {
         round: isCurrentSeason ? (fx?.round ?? liveState.round) : liveState.round,
         difficulty: fx?.difficulty ?? null,
       };
-      const detail = isCurrentSeason && advancedStore.season === liveSeason ? advancedStore.matches?.[f.key] : null;
+      const detail = isCurrentSeason ? advancedFor(liveSeason, f.key) : null;
       return detail ? { ...report, advanced: attachAdvancedCodes(detail, report) } : report;
     }).sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
 
@@ -581,7 +607,7 @@ async function main() {
         }),
         season: src.season, demo: src.demo,
       };
-      const detail = isCur && advancedStore.season === src.season ? advancedStore.matches?.[f.key] : null;
+      const detail = isCur ? advancedFor(src.season, f.key) : null;
       reports[key] = detail ? { ...report, advanced: attachAdvancedCodes(detail, report) } : report;
     }
   }
@@ -712,7 +738,8 @@ async function main() {
     return { key: r.key, zh: r.zh, lowSample: !!r.lowSample };
   };
   await write('players.json', players.map(p => ({
-    ...(photoData[p.code] ? { ...p, photo: photoData[p.code] } : p),
+    // SportMonks 是主要照片來源；舊有手動快取只在主要來源沒有照片時備援。
+    ...(p.photo || photoData[p.code] ? { ...p, photo: p.photo || photoData[p.code] } : p),
     role: roleOf(p),
   })));
   await write('leaders.json', leaders);
@@ -837,7 +864,7 @@ async function main() {
   }));
 
   console.log(`\n✔ 完成:${teams.length} 隊 / ${players.length} 名球員 / ${fixtures.length} 場賽程 / ${news.length} 則動態`);
-  const photoHits = players.filter(p => photoData[p.code]).length;
+  const photoHits = players.filter(p => p.photo || photoData[p.code]).length;
   console.log(`  球員頭貼:${photoHits ? `${photoHits} / ${players.length} 名有圖` : '未提供(data/manual/photos.json 不存在,前端退回隊徽)'}`);
   console.log(`  分析文章:賽前 ${aiSummary.pre} 篇・賽後 ${aiSummary.post} 篇,快取命中 ${aiSummary.cacheHits} 篇` +
     (aiSummary.enabled ? `,LLM 潤稿 ${aiSummary.llmWritten} 篇` : '(模板版;設定 ANTHROPIC_API_KEY 可啟用 LLM 潤稿)'));
