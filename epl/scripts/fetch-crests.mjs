@@ -2,7 +2,7 @@
 // 抓球隊隊徽 → 縮圖 → 內嵌成 data URI(data/manual/crests*.json)
 // artifact 的 CSP 會擋所有外部資源,所以隊徽必須內嵌;順便讓網站離線也看得到。
 // 用法: npm run crests [--width=64] [--force]
-//       npm run laliga:crests [-- --width=64] [-- --force]
+//       npm run laliga:crests [-- --width=64] [-- --force] [--include-history]
 import { writeFile, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -34,11 +34,28 @@ const PROFILES = {
       'logos/Spain - LaLiga',
       'history/2025-26/Spain - LaLiga',
     ],
+    // football-logos 沒有西乙目錄；這三隊是名冊裡的歷史球隊，
+    // 由 TheSportsDB 的 Spanish La Liga 2（西乙）資料補充，並在本地內嵌。
+    historyFallbacks: {
+      GIR: {
+        name: 'Girona',
+        url: 'https://r2.thesportsdb.com/images/media/team/badge/kfu7zu1659897499.png',
+      },
+      MLL: {
+        name: 'Mallorca',
+        url: 'https://r2.thesportsdb.com/images/media/team/badge/ssptsx1473503730.png',
+      },
+      OVI: {
+        name: 'Real Oviedo',
+        url: 'https://r2.thesportsdb.com/images/media/team/badge/yuwqus1447590681.png',
+      },
+    },
   },
 };
 const PROFILE = PROFILES[LEAGUE];
 if (!PROFILE) throw new Error(`不支援的聯賽 --league=${LEAGUE}`);
 const OUT = join(ROOT, 'data', 'manual', PROFILE.outFile);
+const INCLUDE_HISTORY = process.argv.includes('--include-history');
 
 // 該來源依「當季所屬聯賽」放檔案,所以降級球隊要去對應賽季的歷史目錄找
 const FOLDERS = PROFILE.folders;
@@ -57,6 +74,13 @@ const candidates = t => [...new Set([
 const url = (folder, name) => `${REPO}/${encodeURI(folder)}/${encodeURIComponent(name)}.png`;
 
 async function findCrest(team) {
+  // 歷史球隊優先使用已核對的西乙資料；這樣即使同一隊也出現在西甲歷史資料夾，
+  // 仍會把「西乙補充」的來源留下來，方便之後追溯。
+  const fallback = PROFILE.historyFallbacks?.[team.code];
+  if (fallback && INCLUDE_HISTORY) {
+    const res = await fetch(fallback.url, { method: 'GET' });
+    if (res.ok) return { buf: Buffer.from(await res.arrayBuffer()), folder: 'TheSportsDB/Spanish La Liga 2', name: fallback.name };
+  }
   for (const folder of FOLDERS) {
     for (const name of candidates(team)) {
       const res = await fetch(url(folder, name), { method: 'GET' });
@@ -69,8 +93,9 @@ async function findCrest(team) {
 async function main() {
   const T = loadTeams(ROOT, { file: PROFILE.teamFile });
   let selected = T.list;
-  // 西甲名冊包含上一季已降級的球隊；第一版先抓 2026-27 當季實際參賽的 20 隊。
-  if (PROFILE.currentRaw) {
+  // 西甲名冊包含上一季已降級的球隊；一般更新只抓 2026-27 當季 20 隊。
+  // --include-history 才會另外補抓名冊中不在本季的歷史球隊。
+  if (PROFILE.currentRaw && !INCLUDE_HISTORY) {
     const raw = JSON.parse(await readFile(PROFILE.currentRaw, 'utf8'));
     const currentCodes = new Set();
     for (const m of raw.matches ?? []) {
@@ -87,7 +112,7 @@ async function main() {
   const crests = { ...(existing.crests ?? {}) };
   const sources = { ...(existing.sources ?? {}) };
 
-  console.log(`▶ 抓取 ${selected.length} 支${LEAGUE === 'es1' ? '西甲' : '英超'}球隊的隊徽(縮到寬 ${WIDTH}px)\n`);
+  console.log(`▶ 抓取 ${selected.length} 支${LEAGUE === 'es1' ? (INCLUDE_HISTORY ? '西甲／西乙名冊' : '西甲') : '英超'}球隊的隊徽(縮到寬 ${WIDTH}px)\n`);
   let got = 0, skipped = 0, failed = [];
   let raw = 0, small = 0;
 
@@ -113,6 +138,7 @@ async function main() {
   await writeFile(OUT, JSON.stringify({
     _note: `球隊隊徽(自動產生,請勿手改)。執行 npm run ${LEAGUE === 'es1' ? 'laliga:crests' : 'crests'} -- --force 可重抓。`,
     _source: 'https://github.com/luukhopman/football-logos',
+    _fallbackSource: LEAGUE === 'es1' ? 'https://www.thesportsdb.com (Spanish La Liga 2 歷史補充)' : undefined,
     _license: '隊徽為各俱樂部商標,此處僅作為分析工具的識別用途。',
     _league: LEAGUE,
     _width: WIDTH,

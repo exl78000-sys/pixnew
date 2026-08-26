@@ -18,6 +18,7 @@
     "laliga:postmatch": "node scripts/fetch-postmatch.mjs --league=es1",
     "crests": "node scripts/fetch-crests.mjs",
     "laliga:crests": "node scripts/fetch-crests.mjs --league=es1",
+    "laliga:history-crests": "node scripts/fetch-crests.mjs --league=es1 --include-history",
     "photos": "node scripts/fetch-photos.mjs",
     "season": "node scripts/fetch-season.mjs",
     "live:watch": "node scripts/live-server.mjs",
