@@ -1,0 +1,6949 @@
+{
+  "season": "2023-24",
+  "providerSeason": "2023",
+  "source": "Understat",
+  "league": "es1",
+  "sourceUrl": "https://understat.com/league/La_liga/2023",
+  "note": "情境分類為 OpenPlay / FromCorner / SetPiece / DirectFreekick / Penalty。非十二碼定位球為後三者中的前兩種加直接任意球。",
+  "complete": true,
+  "retrievedAt": "2026-08-27T16:56:56.660Z",
+  "teams": {
+    "ALA": {
+      "providerName": "Alaves",
+      "url": "https://understat.com/getTeamData/Alaves/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 336,
+          "goals": 24,
+          "xG": 39.7742,
+          "against": {
+            "shots": 342,
+            "goals": 31,
+            "xG": 38.5694
+          }
+        },
+        "FromCorner": {
+          "shots": 77,
+          "goals": 5,
+          "xG": 5.2677,
+          "against": {
+            "shots": 67,
+            "goals": 5,
+            "xG": 6.8239
+          }
+        },
+        "SetPiece": {
+          "shots": 33,
+          "goals": 4,
+          "xG": 4.2861,
+          "against": {
+            "shots": 21,
+            "goals": 2,
+            "xG": 2.1275
+          }
+        },
+        "DirectFreekick": {
+          "shots": 15,
+          "goals": 0,
+          "xG": 0.7516,
+          "against": {
+            "shots": 15,
+            "goals": 0,
+            "xG": 0.8276
+          }
+        },
+        "Penalty": {
+          "shots": 7,
+          "goals": 3,
+          "xG": 5.2029,
+          "against": {
+            "shots": 8,
+            "goals": 8,
+            "xG": 5.9462
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 125,
+        "goals": 9,
+        "xG": 10.3054,
+        "against": {
+          "shots": 103,
+          "goals": 7,
+          "xG": 9.779
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 2830,
+            "shots": 361,
+            "goals": 29,
+            "xG": 44.7272,
+            "against": {
+              "shots": 355,
+              "goals": 32,
+              "xG": 40.5352
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 238,
+            "shots": 23,
+            "goals": 2,
+            "xG": 2.9996,
+            "against": {
+              "shots": 31,
+              "goals": 5,
+              "xG": 4.2348
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 195,
+            "shots": 26,
+            "goals": 0,
+            "xG": 2.0102,
+            "against": {
+              "shots": 30,
+              "goals": 2,
+              "xG": 4.3867
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 143,
+            "shots": 19,
+            "goals": 1,
+            "xG": 0.8416,
+            "against": {
+              "shots": 12,
+              "goals": 3,
+              "xG": 2.1963
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 130,
+            "shots": 19,
+            "goals": 4,
+            "xG": 2.3752,
+            "against": {
+              "shots": 16,
+              "goals": 3,
+              "xG": 2.4678
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 115,
+            "shots": 20,
+            "goals": 0,
+            "xG": 2.3288,
+            "against": {
+              "shots": 9,
+              "goals": 1,
+              "xG": 0.4739
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 281,
+            "goals": 17,
+            "xG": 31.7284,
+            "against": {
+              "shots": 286,
+              "goals": 28,
+              "xG": 33.2873
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 132,
+            "goals": 12,
+            "xG": 15.5084,
+            "against": {
+              "shots": 111,
+              "goals": 15,
+              "xG": 15.7252
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 30,
+            "goals": 5,
+            "xG": 4.5671,
+            "against": {
+              "shots": 27,
+              "goals": 2,
+              "xG": 3.1566
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 25,
+            "goals": 2,
+            "xG": 3.4786,
+            "against": {
+              "shots": 29,
+              "goals": 1,
+              "xG": 2.1255
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 3,
+            "goals": 3,
+            "xG": 3,
+            "against": {
+              "shots": 2,
+              "goals": 2,
+              "xG": 2
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 165,
+            "goals": 5,
+            "xG": 5.483,
+            "against": {
+              "shots": 149,
+              "goals": 7,
+              "xG": 4.6862
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 259,
+            "goals": 23,
+            "xG": 35.0982,
+            "against": {
+              "shots": 272,
+              "goals": 30,
+              "xG": 38.0336
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 41,
+            "goals": 5,
+            "xG": 11.7014,
+            "against": {
+              "shots": 30,
+              "goals": 7,
+              "xG": 9.5748
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 67,
+            "goals": 8,
+            "xG": 9.5535,
+            "against": {
+              "shots": 57,
+              "goals": 5,
+              "xG": 7.1356
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 68,
+            "goals": 2,
+            "xG": 8.7116,
+            "against": {
+              "shots": 72,
+              "goals": 6,
+              "xG": 7.231
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 77,
+            "goals": 5,
+            "xG": 9.1653,
+            "against": {
+              "shots": 74,
+              "goals": 13,
+              "xG": 9.6063
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 87,
+            "goals": 10,
+            "xG": 10.8522,
+            "against": {
+              "shots": 87,
+              "goals": 4,
+              "xG": 9.1917
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 56,
+            "goals": 4,
+            "xG": 7.6684,
+            "against": {
+              "shots": 60,
+              "goals": 7,
+              "xG": 8.4413
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 113,
+            "goals": 7,
+            "xG": 9.3316,
+            "against": {
+              "shots": 103,
+              "goals": 11,
+              "xG": 12.6887
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 36,
+        "expectedGoals": 36,
+        "providerConceded": 46,
+        "expectedConceded": 46
+      }
+    },
+    "ALM": {
+      "providerName": "Almeria",
+      "url": "https://understat.com/getTeamData/Almeria/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 362,
+          "goals": 37,
+          "xG": 40.5721,
+          "against": {
+            "shots": 435,
+            "goals": 58,
+            "xG": 50.6208
+          }
+        },
+        "FromCorner": {
+          "shots": 61,
+          "goals": 1,
+          "xG": 5.0682,
+          "against": {
+            "shots": 103,
+            "goals": 8,
+            "xG": 9.6707
+          }
+        },
+        "SetPiece": {
+          "shots": 37,
+          "goals": 3,
+          "xG": 3.9041,
+          "against": {
+            "shots": 28,
+            "goals": 3,
+            "xG": 4.3035
+          }
+        },
+        "DirectFreekick": {
+          "shots": 18,
+          "goals": 0,
+          "xG": 0.9494,
+          "against": {
+            "shots": 18,
+            "goals": 0,
+            "xG": 1.0403
+          }
+        },
+        "Penalty": {
+          "shots": 2,
+          "goals": 2,
+          "xG": 1.4866,
+          "against": {
+            "shots": 9,
+            "goals": 6,
+            "xG": 6.6895
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 116,
+        "goals": 4,
+        "xG": 9.9217,
+        "against": {
+          "shots": 149,
+          "goals": 11,
+          "xG": 15.0145
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 2596,
+            "shots": 355,
+            "goals": 31,
+            "xG": 39.8446,
+            "against": {
+              "shots": 413,
+              "goals": 48,
+              "xG": 46.7319
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 278,
+            "shots": 24,
+            "goals": 2,
+            "xG": 1.9286,
+            "against": {
+              "shots": 51,
+              "goals": 8,
+              "xG": 6.7698
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 265,
+            "shots": 37,
+            "goals": 5,
+            "xG": 3.732,
+            "against": {
+              "shots": 38,
+              "goals": 9,
+              "xG": 6.2991
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 136,
+            "shots": 12,
+            "goals": 2,
+            "xG": 0.9785,
+            "against": {
+              "shots": 25,
+              "goals": 4,
+              "xG": 3.79
+            }
+          },
+          "3-4-1-2": {
+            "stat": "3-4-1-2",
+            "time": 117,
+            "shots": 18,
+            "goals": 1,
+            "xG": 1.69,
+            "against": {
+              "shots": 15,
+              "goals": 3,
+              "xG": 2.3103
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 97,
+            "shots": 20,
+            "goals": 0,
+            "xG": 2.2451,
+            "against": {
+              "shots": 5,
+              "goals": 0,
+              "xG": 0.2466
+            }
+          },
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 95,
+            "shots": 10,
+            "goals": 2,
+            "xG": 1.4091,
+            "against": {
+              "shots": 30,
+              "goals": 3,
+              "xG": 4.3099
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 52,
+            "shots": 4,
+            "goals": 0,
+            "xG": 0.1524,
+            "against": {
+              "shots": 12,
+              "goals": 0,
+              "xG": 0.8043
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 23,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 4,
+              "goals": 0,
+              "xG": 1.0629
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 289,
+            "goals": 27,
+            "xG": 28.4165,
+            "against": {
+              "shots": 370,
+              "goals": 48,
+              "xG": 43.9021
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 118,
+            "goals": 6,
+            "xG": 11.4083,
+            "against": {
+              "shots": 158,
+              "goals": 17,
+              "xG": 21.7041
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 44,
+            "goals": 6,
+            "xG": 8.0769,
+            "against": {
+              "shots": 34,
+              "goals": 7,
+              "xG": 3.6363
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 29,
+            "goals": 4,
+            "xG": 4.0787,
+            "against": {
+              "shots": 31,
+              "goals": 3,
+              "xG": 3.0824
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 1,
+            "goals": 1,
+            "xG": 1,
+            "against": {
+              "shots": 0,
+              "goals": 0,
+              "xG": 0
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 200,
+            "goals": 5,
+            "xG": 6.0209,
+            "against": {
+              "shots": 191,
+              "goals": 7,
+              "xG": 6.8676
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 245,
+            "goals": 26,
+            "xG": 31.7282,
+            "against": {
+              "shots": 344,
+              "goals": 51,
+              "xG": 46.4414
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 34,
+            "goals": 11,
+            "xG": 13.2313,
+            "against": {
+              "shots": 58,
+              "goals": 17,
+              "xG": 19.0159
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 56,
+            "goals": 6,
+            "xG": 4.8855,
+            "against": {
+              "shots": 90,
+              "goals": 11,
+              "xG": 10.0463
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 55,
+            "goals": 5,
+            "xG": 5.238,
+            "against": {
+              "shots": 97,
+              "goals": 14,
+              "xG": 13.8056
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 85,
+            "goals": 10,
+            "xG": 11.1088,
+            "against": {
+              "shots": 96,
+              "goals": 9,
+              "xG": 9.4831
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 104,
+            "goals": 6,
+            "xG": 11.0056,
+            "against": {
+              "shots": 111,
+              "goals": 12,
+              "xG": 12.9608
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 85,
+            "goals": 12,
+            "xG": 11.6458,
+            "against": {
+              "shots": 63,
+              "goals": 12,
+              "xG": 7.746
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 95,
+            "goals": 4,
+            "xG": 8.0967,
+            "against": {
+              "shots": 136,
+              "goals": 17,
+              "xG": 18.2831
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 43,
+        "expectedGoals": 43,
+        "providerConceded": 75,
+        "expectedConceded": 75
+      }
+    },
+    "ATH": {
+      "providerName": "Athletic Club",
+      "url": "https://understat.com/getTeamData/Athletic%20Club/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 349,
+          "goals": 48,
+          "xG": 51.1495,
+          "against": {
+            "shots": 299,
+            "goals": 30,
+            "xG": 34.3083
+          }
+        },
+        "FromCorner": {
+          "shots": 80,
+          "goals": 7,
+          "xG": 6.5275,
+          "against": {
+            "shots": 61,
+            "goals": 3,
+            "xG": 4.5519
+          }
+        },
+        "SetPiece": {
+          "shots": 24,
+          "goals": 3,
+          "xG": 2.0341,
+          "against": {
+            "shots": 30,
+            "goals": 3,
+            "xG": 2.8242
+          }
+        },
+        "DirectFreekick": {
+          "shots": 7,
+          "goals": 0,
+          "xG": 0.4256,
+          "against": {
+            "shots": 16,
+            "goals": 0,
+            "xG": 0.8945
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 3,
+          "xG": 3.7163,
+          "against": {
+            "shots": 5,
+            "goals": 1,
+            "xG": 3.7164
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 111,
+        "goals": 10,
+        "xG": 8.9872,
+        "against": {
+          "shots": 107,
+          "goals": 6,
+          "xG": 8.2706
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 3583,
+            "shots": 461,
+            "goals": 61,
+            "xG": 63.603,
+            "against": {
+              "shots": 410,
+              "goals": 37,
+              "xG": 46.0025
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 20,
+            "shots": 3,
+            "goals": 0,
+            "xG": 0.1525,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.2929
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 18,
+            "shots": 1,
+            "goals": 0,
+            "xG": 0.0973,
+            "against": {
+              "shots": 0,
+              "goals": 0,
+              "xG": 0
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 297,
+            "goals": 38,
+            "xG": 43.3728,
+            "against": {
+              "shots": 248,
+              "goals": 24,
+              "xG": 26.216
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 116,
+            "goals": 13,
+            "xG": 12.7034,
+            "against": {
+              "shots": 112,
+              "goals": 7,
+              "xG": 11.987
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 29,
+            "goals": 6,
+            "xG": 4.7779,
+            "against": {
+              "shots": 26,
+              "goals": 4,
+              "xG": 4.8822
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 23,
+            "goals": 4,
+            "xG": 2.9988,
+            "against": {
+              "shots": 25,
+              "goals": 2,
+              "xG": 3.2102
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 2,
+            "goals": 2,
+            "xG": 2,
+            "against": {
+              "shots": 4,
+              "goals": 4,
+              "xG": 4
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 121,
+            "goals": 7,
+            "xG": 4.1871,
+            "against": {
+              "shots": 157,
+              "goals": 6,
+              "xG": 4.8704
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 300,
+            "goals": 34,
+            "xG": 39.6844,
+            "against": {
+              "shots": 221,
+              "goals": 21,
+              "xG": 28.1941
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 42,
+            "goals": 18,
+            "xG": 17.9814,
+            "against": {
+              "shots": 29,
+              "goals": 6,
+              "xG": 9.2309
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 60,
+            "goals": 8,
+            "xG": 5.3343,
+            "against": {
+              "shots": 54,
+              "goals": 6,
+              "xG": 7.1731
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 84,
+            "goals": 14,
+            "xG": 13.3979,
+            "against": {
+              "shots": 51,
+              "goals": 3,
+              "xG": 4.0722
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 79,
+            "goals": 7,
+            "xG": 10.806,
+            "against": {
+              "shots": 71,
+              "goals": 4,
+              "xG": 5.1406
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 95,
+            "goals": 10,
+            "xG": 11.3108,
+            "against": {
+              "shots": 59,
+              "goals": 8,
+              "xG": 9.1858
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 65,
+            "goals": 14,
+            "xG": 11.5258,
+            "against": {
+              "shots": 77,
+              "goals": 9,
+              "xG": 8.8482
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 82,
+            "goals": 8,
+            "xG": 11.4782,
+            "against": {
+              "shots": 99,
+              "goals": 7,
+              "xG": 11.8754
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 61,
+        "expectedGoals": 61,
+        "providerConceded": 37,
+        "expectedConceded": 37
+      }
+    },
+    "ATM": {
+      "providerName": "Atletico Madrid",
+      "url": "https://understat.com/getTeamData/Atletico%20Madrid/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 388,
+          "goals": 61,
+          "xG": 61.4859,
+          "against": {
+            "shots": 334,
+            "goals": 38,
+            "xG": 33.2748
+          }
+        },
+        "FromCorner": {
+          "shots": 57,
+          "goals": 4,
+          "xG": 4.4719,
+          "against": {
+            "shots": 86,
+            "goals": 3,
+            "xG": 6.0962
+          }
+        },
+        "SetPiece": {
+          "shots": 22,
+          "goals": 1,
+          "xG": 2.8825,
+          "against": {
+            "shots": 20,
+            "goals": 1,
+            "xG": 2.4677
+          }
+        },
+        "DirectFreekick": {
+          "shots": 9,
+          "goals": 0,
+          "xG": 0.5934,
+          "against": {
+            "shots": 9,
+            "goals": 0,
+            "xG": 0.6407
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 4,
+          "xG": 3.7164,
+          "against": {
+            "shots": 2,
+            "goals": 1,
+            "xG": 1.4866
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 88,
+        "goals": 5,
+        "xG": 7.9478,
+        "against": {
+          "shots": 115,
+          "goals": 4,
+          "xG": 9.2046
+        }
+      },
+      "profile": {
+        "formation": {
+          "3-5-2": {
+            "stat": "3-5-2",
+            "time": 1581,
+            "shots": 219,
+            "goals": 30,
+            "xG": 37.2415,
+            "against": {
+              "shots": 207,
+              "goals": 19,
+              "xG": 19.2283
+            }
+          },
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 951,
+            "shots": 104,
+            "goals": 21,
+            "xG": 16.4042,
+            "against": {
+              "shots": 126,
+              "goals": 9,
+              "xG": 11.3409
+            }
+          },
+          "3-4-2-1": {
+            "stat": "3-4-2-1",
+            "time": 355,
+            "shots": 60,
+            "goals": 5,
+            "xG": 6.8507,
+            "against": {
+              "shots": 33,
+              "goals": 1,
+              "xG": 2.4536
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 286,
+            "shots": 33,
+            "goals": 5,
+            "xG": 4.7249,
+            "against": {
+              "shots": 29,
+              "goals": 2,
+              "xG": 1.8053
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 264,
+            "shots": 38,
+            "goals": 7,
+            "xG": 4.9582,
+            "against": {
+              "shots": 37,
+              "goals": 5,
+              "xG": 4.8771
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 94,
+            "shots": 12,
+            "goals": 0,
+            "xG": 0.5787,
+            "against": {
+              "shots": 9,
+              "goals": 3,
+              "xG": 1.9497
+            }
+          },
+          "3-1-4-2": {
+            "stat": "3-1-4-2",
+            "time": 51,
+            "shots": 13,
+            "goals": 2,
+            "xG": 2.2574,
+            "against": {
+              "shots": 7,
+              "goals": 3,
+              "xG": 1.8368
+            }
+          },
+          "4-1-2-1-2": {
+            "stat": "4-1-2-1-2",
+            "time": 12,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.1346,
+            "against": {
+              "shots": 2,
+              "goals": 0,
+              "xG": 0.4414
+            }
+          },
+          "4-1-3-2": {
+            "stat": "4-1-3-2",
+            "time": 10,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 1,
+              "goals": 1,
+              "xG": 0.033
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 331,
+            "goals": 45,
+            "xG": 48.517,
+            "against": {
+              "shots": 270,
+              "goals": 32,
+              "xG": 26.7536
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 93,
+            "goals": 9,
+            "xG": 11.6642,
+            "against": {
+              "shots": 117,
+              "goals": 5,
+              "xG": 10.6912
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 30,
+            "goals": 6,
+            "xG": 6.6967,
+            "against": {
+              "shots": 44,
+              "goals": 3,
+              "xG": 3.2326
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 27,
+            "goals": 10,
+            "xG": 6.2722,
+            "against": {
+              "shots": 20,
+              "goals": 3,
+              "xG": 3.2886
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 2,
+            "goals": 2,
+            "xG": 2,
+            "against": {
+              "shots": 0,
+              "goals": 0,
+              "xG": 0
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 130,
+            "goals": 6,
+            "xG": 4.6099,
+            "against": {
+              "shots": 179,
+              "goals": 9,
+              "xG": 5.9298
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 310,
+            "goals": 46,
+            "xG": 49.6599,
+            "against": {
+              "shots": 233,
+              "goals": 23,
+              "xG": 23.8999
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 39,
+            "goals": 16,
+            "xG": 16.8803,
+            "against": {
+              "shots": 39,
+              "goals": 11,
+              "xG": 14.1364
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 72,
+            "goals": 11,
+            "xG": 11.8136,
+            "against": {
+              "shots": 64,
+              "goals": 6,
+              "xG": 6.6487
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 70,
+            "goals": 9,
+            "xG": 11.0557,
+            "against": {
+              "shots": 62,
+              "goals": 8,
+              "xG": 8.1226
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 81,
+            "goals": 13,
+            "xG": 11.534,
+            "against": {
+              "shots": 57,
+              "goals": 6,
+              "xG": 7.2401
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 103,
+            "goals": 12,
+            "xG": 14.463,
+            "against": {
+              "shots": 86,
+              "goals": 7,
+              "xG": 7.5154
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 65,
+            "goals": 9,
+            "xG": 9.419,
+            "against": {
+              "shots": 72,
+              "goals": 10,
+              "xG": 6.3545
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 90,
+            "goals": 16,
+            "xG": 14.8648,
+            "against": {
+              "shots": 110,
+              "goals": 6,
+              "xG": 8.0847
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 70,
+        "expectedGoals": 70,
+        "providerConceded": 43,
+        "expectedConceded": 43
+      }
+    },
+    "BAR": {
+      "providerName": "Barcelona",
+      "url": "https://understat.com/getTeamData/Barcelona/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 441,
+          "goals": 61,
+          "xG": 67.6823,
+          "against": {
+            "shots": 318,
+            "goals": 38,
+            "xG": 36.7491
+          }
+        },
+        "FromCorner": {
+          "shots": 106,
+          "goals": 9,
+          "xG": 8.7545,
+          "against": {
+            "shots": 60,
+            "goals": 1,
+            "xG": 4.6499
+          }
+        },
+        "SetPiece": {
+          "shots": 20,
+          "goals": 1,
+          "xG": 2.8971,
+          "against": {
+            "shots": 25,
+            "goals": 3,
+            "xG": 2.6641
+          }
+        },
+        "DirectFreekick": {
+          "shots": 21,
+          "goals": 2,
+          "xG": 1.3218,
+          "against": {
+            "shots": 8,
+            "goals": 0,
+            "xG": 0.4519
+          }
+        },
+        "Penalty": {
+          "shots": 7,
+          "goals": 6,
+          "xG": 5.2029,
+          "against": {
+            "shots": 2,
+            "goals": 2,
+            "xG": 1.4866
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 147,
+        "goals": 12,
+        "xG": 12.9734,
+        "against": {
+          "shots": 93,
+          "goals": 4,
+          "xG": 7.7659
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 2660,
+            "shots": 439,
+            "goals": 62,
+            "xG": 63.526,
+            "against": {
+              "shots": 305,
+              "goals": 39,
+              "xG": 33.8743
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 578,
+            "shots": 90,
+            "goals": 10,
+            "xG": 13.545,
+            "against": {
+              "shots": 63,
+              "goals": 2,
+              "xG": 7.7986
+            }
+          },
+          "3-4-1-2": {
+            "stat": "3-4-1-2",
+            "time": 193,
+            "shots": 24,
+            "goals": 2,
+            "xG": 2.334,
+            "against": {
+              "shots": 26,
+              "goals": 2,
+              "xG": 1.7693
+            }
+          },
+          "3-4-2-1": {
+            "stat": "3-4-2-1",
+            "time": 87,
+            "shots": 22,
+            "goals": 1,
+            "xG": 3.0683,
+            "against": {
+              "shots": 6,
+              "goals": 0,
+              "xG": 0.9435
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 47,
+            "shots": 10,
+            "goals": 3,
+            "xG": 1.6501,
+            "against": {
+              "shots": 6,
+              "goals": 1,
+              "xG": 0.9385
+            }
+          },
+          "4-3-2-1": {
+            "stat": "4-3-2-1",
+            "time": 45,
+            "shots": 7,
+            "goals": 0,
+            "xG": 1.0391,
+            "against": {
+              "shots": 2,
+              "goals": 0,
+              "xG": 0.082
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 26,
+            "shots": 3,
+            "goals": 1,
+            "xG": 0.6961,
+            "against": {
+              "shots": 4,
+              "goals": 0,
+              "xG": 0.3309
+            }
+          },
+          "3-1-4-2": {
+            "stat": "3-1-4-2",
+            "time": 16,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.2645
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 354,
+            "goals": 49,
+            "xG": 54.5096,
+            "against": {
+              "shots": 261,
+              "goals": 28,
+              "xG": 28.8196
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 154,
+            "goals": 18,
+            "xG": 18.1763,
+            "against": {
+              "shots": 95,
+              "goals": 6,
+              "xG": 9.2525
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 58,
+            "goals": 7,
+            "xG": 8.1708,
+            "against": {
+              "shots": 27,
+              "goals": 3,
+              "xG": 2.0594
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 29,
+            "goals": 5,
+            "xG": 5.0019,
+            "against": {
+              "shots": 30,
+              "goals": 7,
+              "xG": 5.87
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 3,
+            "goals": 3,
+            "xG": 3,
+            "against": {
+              "shots": 0,
+              "goals": 0,
+              "xG": 0
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 183,
+            "goals": 7,
+            "xG": 7.2331,
+            "against": {
+              "shots": 139,
+              "goals": 5,
+              "xG": 4.3232
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 342,
+            "goals": 51,
+            "xG": 50.8438,
+            "against": {
+              "shots": 243,
+              "goals": 31,
+              "xG": 32.4819
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 67,
+            "goals": 18,
+            "xG": 24.7817,
+            "against": {
+              "shots": 31,
+              "goals": 8,
+              "xG": 9.1964
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 83,
+            "goals": 9,
+            "xG": 11.2816,
+            "against": {
+              "shots": 68,
+              "goals": 6,
+              "xG": 8.7121
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 71,
+            "goals": 7,
+            "xG": 9.2325,
+            "against": {
+              "shots": 67,
+              "goals": 6,
+              "xG": 6.7083
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 94,
+            "goals": 10,
+            "xG": 13.9921,
+            "against": {
+              "shots": 61,
+              "goals": 7,
+              "xG": 7.6995
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 113,
+            "goals": 13,
+            "xG": 12.2003,
+            "against": {
+              "shots": 70,
+              "goals": 8,
+              "xG": 7.0804
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 98,
+            "goals": 17,
+            "xG": 14.1109,
+            "against": {
+              "shots": 58,
+              "goals": 10,
+              "xG": 6.1723
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 136,
+            "goals": 23,
+            "xG": 25.0411,
+            "against": {
+              "shots": 89,
+              "goals": 7,
+              "xG": 9.629
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 79,
+        "expectedGoals": 79,
+        "providerConceded": 44,
+        "expectedConceded": 44
+      }
+    },
+    "BET": {
+      "providerName": "Real Betis",
+      "url": "https://understat.com/getTeamData/Real%20Betis/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 352,
+          "goals": 37,
+          "xG": 43.3356,
+          "against": {
+            "shots": 316,
+            "goals": 29,
+            "xG": 40.0443
+          }
+        },
+        "FromCorner": {
+          "shots": 99,
+          "goals": 5,
+          "xG": 6.3581,
+          "against": {
+            "shots": 80,
+            "goals": 3,
+            "xG": 5.4867
+          }
+        },
+        "SetPiece": {
+          "shots": 23,
+          "goals": 3,
+          "xG": 2.8935,
+          "against": {
+            "shots": 31,
+            "goals": 3,
+            "xG": 5.6466
+          }
+        },
+        "DirectFreekick": {
+          "shots": 14,
+          "goals": 1,
+          "xG": 0.9074,
+          "against": {
+            "shots": 18,
+            "goals": 3,
+            "xG": 1.0114
+          }
+        },
+        "Penalty": {
+          "shots": 3,
+          "goals": 2,
+          "xG": 2.2298,
+          "against": {
+            "shots": 8,
+            "goals": 7,
+            "xG": 5.9461
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 136,
+        "goals": 9,
+        "xG": 10.159,
+        "against": {
+          "shots": 129,
+          "goals": 9,
+          "xG": 12.1447
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 3359,
+            "shots": 467,
+            "goals": 46,
+            "xG": 53.2742,
+            "against": {
+              "shots": 413,
+              "goals": 43,
+              "xG": 52.6967
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 94,
+            "shots": 6,
+            "goals": 0,
+            "xG": 0.7698,
+            "against": {
+              "shots": 20,
+              "goals": 0,
+              "xG": 2.7144
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 87,
+            "shots": 7,
+            "goals": 2,
+            "xG": 0.525,
+            "against": {
+              "shots": 7,
+              "goals": 2,
+              "xG": 1.4798
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 84,
+            "shots": 11,
+            "goals": 0,
+            "xG": 1.1555,
+            "against": {
+              "shots": 12,
+              "goals": 0,
+              "xG": 1.2078
+            }
+          },
+          "4-5-1": {
+            "stat": "4-5-1",
+            "time": 9,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.0364
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 306,
+            "goals": 31,
+            "xG": 36.9576,
+            "against": {
+              "shots": 265,
+              "goals": 25,
+              "xG": 33.4535
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 139,
+            "goals": 11,
+            "xG": 12.3889,
+            "against": {
+              "shots": 137,
+              "goals": 16,
+              "xG": 18.0908
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 27,
+            "goals": 2,
+            "xG": 3.307,
+            "against": {
+              "shots": 19,
+              "goals": 2,
+              "xG": 2.7943
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 19,
+            "goals": 4,
+            "xG": 3.0709,
+            "against": {
+              "shots": 32,
+              "goals": 2,
+              "xG": 3.7965
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 2,
+            "goals": 2,
+            "xG": 2,
+            "against": {
+              "shots": 3,
+              "goals": 3,
+              "xG": 3
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 163,
+            "goals": 8,
+            "xG": 5.4489,
+            "against": {
+              "shots": 167,
+              "goals": 5,
+              "xG": 4.8226
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 296,
+            "goals": 32,
+            "xG": 37.1426,
+            "against": {
+              "shots": 246,
+              "goals": 28,
+              "xG": 36.4477
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 30,
+            "goals": 6,
+            "xG": 11.133,
+            "against": {
+              "shots": 37,
+              "goals": 9,
+              "xG": 13.8648
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 61,
+            "goals": 8,
+            "xG": 7.6762,
+            "against": {
+              "shots": 55,
+              "goals": 4,
+              "xG": 7.31
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 76,
+            "goals": 6,
+            "xG": 9.4267,
+            "against": {
+              "shots": 63,
+              "goals": 5,
+              "xG": 9.1139
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 82,
+            "goals": 9,
+            "xG": 12.3549,
+            "against": {
+              "shots": 71,
+              "goals": 11,
+              "xG": 11.2688
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 103,
+            "goals": 11,
+            "xG": 10.7051,
+            "against": {
+              "shots": 72,
+              "goals": 7,
+              "xG": 7.3573
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 75,
+            "goals": 8,
+            "xG": 6.3671,
+            "against": {
+              "shots": 71,
+              "goals": 8,
+              "xG": 8.3697
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 94,
+            "goals": 6,
+            "xG": 9.1945,
+            "against": {
+              "shots": 121,
+              "goals": 10,
+              "xG": 14.7155
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 48,
+        "expectedGoals": 48,
+        "providerConceded": 45,
+        "expectedConceded": 45
+      }
+    },
+    "CAD": {
+      "providerName": "Cadiz",
+      "url": "https://understat.com/getTeamData/Cadiz/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 280,
+          "goals": 16,
+          "xG": 27.3219,
+          "against": {
+            "shots": 384,
+            "goals": 45,
+            "xG": 48.1961
+          }
+        },
+        "FromCorner": {
+          "shots": 64,
+          "goals": 4,
+          "xG": 5.3957,
+          "against": {
+            "shots": 66,
+            "goals": 6,
+            "xG": 5.3551
+          }
+        },
+        "SetPiece": {
+          "shots": 30,
+          "goals": 2,
+          "xG": 2.891,
+          "against": {
+            "shots": 31,
+            "goals": 2,
+            "xG": 3.2776
+          }
+        },
+        "DirectFreekick": {
+          "shots": 21,
+          "goals": 1,
+          "xG": 1.1876,
+          "against": {
+            "shots": 26,
+            "goals": 0,
+            "xG": 1.6103
+          }
+        },
+        "Penalty": {
+          "shots": 3,
+          "goals": 3,
+          "xG": 2.2298,
+          "against": {
+            "shots": 2,
+            "goals": 2,
+            "xG": 1.4866
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 115,
+        "goals": 7,
+        "xG": 9.4743,
+        "against": {
+          "shots": 123,
+          "goals": 8,
+          "xG": 10.243
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 3182,
+            "shots": 347,
+            "goals": 22,
+            "xG": 34.0965,
+            "against": {
+              "shots": 427,
+              "goals": 40,
+              "xG": 47.8134
+            }
+          },
+          "4-5-1": {
+            "stat": "4-5-1",
+            "time": 148,
+            "shots": 13,
+            "goals": 1,
+            "xG": 2.1316,
+            "against": {
+              "shots": 19,
+              "goals": 4,
+              "xG": 2.4298
+            }
+          },
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 138,
+            "shots": 12,
+            "goals": 2,
+            "xG": 1.1497,
+            "against": {
+              "shots": 21,
+              "goals": 3,
+              "xG": 3.3133
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 90,
+            "shots": 12,
+            "goals": 1,
+            "xG": 0.4946,
+            "against": {
+              "shots": 28,
+              "goals": 6,
+              "xG": 4.6877
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 84,
+            "shots": 10,
+            "goals": 0,
+            "xG": 0.934,
+            "against": {
+              "shots": 10,
+              "goals": 2,
+              "xG": 1.4884
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 15,
+            "shots": 4,
+            "goals": 0,
+            "xG": 0.2197,
+            "against": {
+              "shots": 2,
+              "goals": 0,
+              "xG": 0.1541
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 6,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 2,
+              "goals": 0,
+              "xG": 0.0389
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 234,
+            "goals": 12,
+            "xG": 21.1943,
+            "against": {
+              "shots": 323,
+              "goals": 35,
+              "xG": 38.9572
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 118,
+            "goals": 10,
+            "xG": 11.7042,
+            "against": {
+              "shots": 125,
+              "goals": 10,
+              "xG": 11.7295
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 25,
+            "goals": 2,
+            "xG": 2.3071,
+            "against": {
+              "shots": 27,
+              "goals": 3,
+              "xG": 2.815
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 21,
+            "goals": 2,
+            "xG": 3.8204,
+            "against": {
+              "shots": 34,
+              "goals": 7,
+              "xG": 6.4239
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 1,
+            "goals": 1,
+            "xG": 1,
+            "against": {
+              "shots": 1,
+              "goals": 1,
+              "xG": 1
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 159,
+            "goals": 4,
+            "xG": 4.5538,
+            "against": {
+              "shots": 200,
+              "goals": 4,
+              "xG": 6.7727
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 210,
+            "goals": 14,
+            "xG": 25.2549,
+            "against": {
+              "shots": 270,
+              "goals": 39,
+              "xG": 38.5151
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 28,
+            "goals": 7,
+            "xG": 8.2174,
+            "against": {
+              "shots": 38,
+              "goals": 11,
+              "xG": 13.6378
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 41,
+            "goals": 5,
+            "xG": 4.6809,
+            "against": {
+              "shots": 70,
+              "goals": 9,
+              "xG": 7.8963
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 77,
+            "goals": 8,
+            "xG": 7.6118,
+            "against": {
+              "shots": 57,
+              "goals": 4,
+              "xG": 7.5919
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 68,
+            "goals": 2,
+            "xG": 6.5336,
+            "against": {
+              "shots": 84,
+              "goals": 6,
+              "xG": 7.4203
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 75,
+            "goals": 4,
+            "xG": 6.776,
+            "against": {
+              "shots": 116,
+              "goals": 11,
+              "xG": 11.4343
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 46,
+            "goals": 2,
+            "xG": 4.3909,
+            "against": {
+              "shots": 80,
+              "goals": 14,
+              "xG": 11.3455
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 91,
+            "goals": 5,
+            "xG": 9.0329,
+            "against": {
+              "shots": 102,
+              "goals": 11,
+              "xG": 14.2373
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 26,
+        "expectedGoals": 26,
+        "providerConceded": 55,
+        "expectedConceded": 55
+      }
+    },
+    "CEL": {
+      "providerName": "Celta Vigo",
+      "url": "https://understat.com/getTeamData/Celta%20Vigo/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 355,
+          "goals": 36,
+          "xG": 43.0197,
+          "against": {
+            "shots": 342,
+            "goals": 41,
+            "xG": 44.3556
+          }
+        },
+        "FromCorner": {
+          "shots": 66,
+          "goals": 3,
+          "xG": 6.796,
+          "against": {
+            "shots": 93,
+            "goals": 8,
+            "xG": 11.1975
+          }
+        },
+        "SetPiece": {
+          "shots": 32,
+          "goals": 4,
+          "xG": 3.5637,
+          "against": {
+            "shots": 24,
+            "goals": 2,
+            "xG": 2.4724
+          }
+        },
+        "DirectFreekick": {
+          "shots": 14,
+          "goals": 0,
+          "xG": 0.9939,
+          "against": {
+            "shots": 12,
+            "goals": 0,
+            "xG": 0.6204
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 3,
+          "xG": 3.7164,
+          "against": {
+            "shots": 8,
+            "goals": 6,
+            "xG": 5.946
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 112,
+        "goals": 7,
+        "xG": 11.3536,
+        "against": {
+          "shots": 129,
+          "goals": 10,
+          "xG": 14.2903
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 1496,
+            "shots": 205,
+            "goals": 16,
+            "xG": 22.8731,
+            "against": {
+              "shots": 173,
+              "goals": 21,
+              "xG": 20.8126
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 1042,
+            "shots": 123,
+            "goals": 17,
+            "xG": 17.9972,
+            "against": {
+              "shots": 138,
+              "goals": 17,
+              "xG": 17.1279
+            }
+          },
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 573,
+            "shots": 63,
+            "goals": 5,
+            "xG": 7.2004,
+            "against": {
+              "shots": 105,
+              "goals": 12,
+              "xG": 16.6301
+            }
+          },
+          "3-4-2-1": {
+            "stat": "3-4-2-1",
+            "time": 241,
+            "shots": 41,
+            "goals": 3,
+            "xG": 4.6515,
+            "against": {
+              "shots": 22,
+              "goals": 1,
+              "xG": 2.573
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 107,
+            "shots": 17,
+            "goals": 0,
+            "xG": 1.3041,
+            "against": {
+              "shots": 13,
+              "goals": 3,
+              "xG": 2.4351
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 99,
+            "shots": 14,
+            "goals": 3,
+            "xG": 1.9706,
+            "against": {
+              "shots": 16,
+              "goals": 2,
+              "xG": 3.1642
+            }
+          },
+          "3-5-2": {
+            "stat": "3-5-2",
+            "time": 98,
+            "shots": 8,
+            "goals": 2,
+            "xG": 2.0208,
+            "against": {
+              "shots": 11,
+              "goals": 1,
+              "xG": 1.7577
+            }
+          },
+          "3-4-1-2": {
+            "stat": "3-4-1-2",
+            "time": 10,
+            "shots": 1,
+            "goals": 0,
+            "xG": 0.0719,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.0913
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 299,
+            "goals": 29,
+            "xG": 35.0764,
+            "against": {
+              "shots": 280,
+              "goals": 33,
+              "xG": 36.0025
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 117,
+            "goals": 10,
+            "xG": 15.07,
+            "against": {
+              "shots": 137,
+              "goals": 16,
+              "xG": 20.2363
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 32,
+            "goals": 5,
+            "xG": 6.3497,
+            "against": {
+              "shots": 28,
+              "goals": 5,
+              "xG": 5.1017
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 24,
+            "goals": 2,
+            "xG": 1.5937,
+            "against": {
+              "shots": 34,
+              "goals": 3,
+              "xG": 3.2514
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 1,
+            "goals": 1,
+            "xG": 1,
+            "against": {
+              "shots": 3,
+              "goals": 3,
+              "xG": 3
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 163,
+            "goals": 6,
+            "xG": 5.3879,
+            "against": {
+              "shots": 135,
+              "goals": 5,
+              "xG": 3.8517
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 268,
+            "goals": 27,
+            "xG": 37.3958,
+            "against": {
+              "shots": 305,
+              "goals": 37,
+              "xG": 42.4169
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 40,
+            "goals": 12,
+            "xG": 14.306,
+            "against": {
+              "shots": 36,
+              "goals": 12,
+              "xG": 15.3234
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 59,
+            "goals": 3,
+            "xG": 6.3943,
+            "against": {
+              "shots": 72,
+              "goals": 8,
+              "xG": 7.5667
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 60,
+            "goals": 9,
+            "xG": 7.6694,
+            "against": {
+              "shots": 64,
+              "goals": 7,
+              "xG": 9.494
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 85,
+            "goals": 7,
+            "xG": 10.2647,
+            "against": {
+              "shots": 71,
+              "goals": 6,
+              "xG": 9.0646
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 92,
+            "goals": 7,
+            "xG": 10.4938,
+            "against": {
+              "shots": 93,
+              "goals": 9,
+              "xG": 11.3353
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 78,
+            "goals": 12,
+            "xG": 10.6723,
+            "against": {
+              "shots": 79,
+              "goals": 7,
+              "xG": 9.7104
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 98,
+            "goals": 8,
+            "xG": 12.5953,
+            "against": {
+              "shots": 100,
+              "goals": 20,
+              "xG": 17.4211
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 46,
+        "expectedGoals": 46,
+        "providerConceded": 57,
+        "expectedConceded": 57
+      }
+    },
+    "GET": {
+      "providerName": "Getafe",
+      "url": "https://understat.com/getTeamData/Getafe/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 330,
+          "goals": 29,
+          "xG": 36.1995,
+          "against": {
+            "shots": 321,
+            "goals": 37,
+            "xG": 40.4337
+          }
+        },
+        "FromCorner": {
+          "shots": 70,
+          "goals": 6,
+          "xG": 5.6416,
+          "against": {
+            "shots": 69,
+            "goals": 7,
+            "xG": 8.4353
+          }
+        },
+        "SetPiece": {
+          "shots": 32,
+          "goals": 1,
+          "xG": 2.8849,
+          "against": {
+            "shots": 39,
+            "goals": 5,
+            "xG": 3.4692
+          }
+        },
+        "DirectFreekick": {
+          "shots": 13,
+          "goals": 0,
+          "xG": 0.9569,
+          "against": {
+            "shots": 14,
+            "goals": 0,
+            "xG": 0.7472
+          }
+        },
+        "Penalty": {
+          "shots": 7,
+          "goals": 6,
+          "xG": 5.2029,
+          "against": {
+            "shots": 7,
+            "goals": 5,
+            "xG": 5.2029
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 115,
+        "goals": 7,
+        "xG": 9.4834,
+        "against": {
+          "shots": 122,
+          "goals": 12,
+          "xG": 12.6517
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 1926,
+            "shots": 255,
+            "goals": 26,
+            "xG": 28.8897,
+            "against": {
+              "shots": 224,
+              "goals": 21,
+              "xG": 27.502
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 580,
+            "shots": 61,
+            "goals": 9,
+            "xG": 10.3571,
+            "against": {
+              "shots": 70,
+              "goals": 12,
+              "xG": 10.6582
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 285,
+            "shots": 41,
+            "goals": 2,
+            "xG": 3.6232,
+            "against": {
+              "shots": 32,
+              "goals": 3,
+              "xG": 3.9868
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 241,
+            "shots": 22,
+            "goals": 0,
+            "xG": 1.1869,
+            "against": {
+              "shots": 27,
+              "goals": 5,
+              "xG": 4.2897
+            }
+          },
+          "4-5-1": {
+            "stat": "4-5-1",
+            "time": 199,
+            "shots": 15,
+            "goals": 0,
+            "xG": 1.1213,
+            "against": {
+              "shots": 30,
+              "goals": 4,
+              "xG": 4.363
+            }
+          },
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 138,
+            "shots": 18,
+            "goals": 0,
+            "xG": 0.5051,
+            "against": {
+              "shots": 16,
+              "goals": 2,
+              "xG": 2.6173
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 128,
+            "shots": 23,
+            "goals": 3,
+            "xG": 3.1381,
+            "against": {
+              "shots": 17,
+              "goals": 3,
+              "xG": 1.6004
+            }
+          },
+          "4-1-3-2": {
+            "stat": "4-1-3-2",
+            "time": 100,
+            "shots": 6,
+            "goals": 1,
+            "xG": 0.8937,
+            "against": {
+              "shots": 26,
+              "goals": 2,
+              "xG": 2.6622
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 81,
+            "shots": 11,
+            "goals": 1,
+            "xG": 1.1708,
+            "against": {
+              "shots": 8,
+              "goals": 2,
+              "xG": 0.6088
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 271,
+            "goals": 22,
+            "xG": 28.1262,
+            "against": {
+              "shots": 273,
+              "goals": 31,
+              "xG": 33.0761
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 122,
+            "goals": 13,
+            "xG": 14.6864,
+            "against": {
+              "shots": 129,
+              "goals": 17,
+              "xG": 17.8547
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 30,
+            "goals": 3,
+            "xG": 3.3752,
+            "against": {
+              "shots": 19,
+              "goals": 0,
+              "xG": 0.9115
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 29,
+            "goals": 4,
+            "xG": 4.6981,
+            "against": {
+              "shots": 29,
+              "goals": 6,
+              "xG": 6.4461
+            }
+          }
+        },
+        "shotZone": {
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 174,
+            "goals": 1,
+            "xG": 5.0213,
+            "against": {
+              "shots": 149,
+              "goals": 5,
+              "xG": 4.7345
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 242,
+            "goals": 30,
+            "xG": 32.4893,
+            "against": {
+              "shots": 267,
+              "goals": 31,
+              "xG": 37.851
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 36,
+            "goals": 11,
+            "xG": 13.3754,
+            "against": {
+              "shots": 34,
+              "goals": 18,
+              "xG": 15.7028
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 49,
+            "goals": 7,
+            "xG": 8.2353,
+            "against": {
+              "shots": 45,
+              "goals": 10,
+              "xG": 8.0031
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 66,
+            "goals": 5,
+            "xG": 7.2214,
+            "against": {
+              "shots": 60,
+              "goals": 5,
+              "xG": 5.5681
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 49,
+            "goals": 10,
+            "xG": 5.9968,
+            "against": {
+              "shots": 78,
+              "goals": 11,
+              "xG": 12.0256
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 93,
+            "goals": 8,
+            "xG": 8.8307,
+            "against": {
+              "shots": 95,
+              "goals": 14,
+              "xG": 14.5231
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 74,
+            "goals": 3,
+            "xG": 6.635,
+            "against": {
+              "shots": 74,
+              "goals": 6,
+              "xG": 7.0586
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 121,
+            "goals": 9,
+            "xG": 13.9668,
+            "against": {
+              "shots": 98,
+              "goals": 8,
+              "xG": 11.1097
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 42,
+        "expectedGoals": 42,
+        "providerConceded": 54,
+        "expectedConceded": 54
+      }
+    },
+    "GIR": {
+      "providerName": "Girona",
+      "url": "https://understat.com/getTeamData/Girona/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 360,
+          "goals": 67,
+          "xG": 61.0175,
+          "against": {
+            "shots": 406,
+            "goals": 32,
+            "xG": 48.1734
+          }
+        },
+        "FromCorner": {
+          "shots": 76,
+          "goals": 7,
+          "xG": 8.3705,
+          "against": {
+            "shots": 62,
+            "goals": 8,
+            "xG": 6.6448
+          }
+        },
+        "SetPiece": {
+          "shots": 28,
+          "goals": 4,
+          "xG": 5.0381,
+          "against": {
+            "shots": 20,
+            "goals": 1,
+            "xG": 1.3424
+          }
+        },
+        "DirectFreekick": {
+          "shots": 13,
+          "goals": 0,
+          "xG": 0.8273,
+          "against": {
+            "shots": 14,
+            "goals": 0,
+            "xG": 1.0721
+          }
+        },
+        "Penalty": {
+          "shots": 8,
+          "goals": 7,
+          "xG": 5.9462,
+          "against": {
+            "shots": 7,
+            "goals": 5,
+            "xG": 5.2028
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 117,
+        "goals": 11,
+        "xG": 14.2359,
+        "against": {
+          "shots": 96,
+          "goals": 9,
+          "xG": 9.0593
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 1375,
+            "shots": 185,
+            "goals": 24,
+            "xG": 29.0106,
+            "against": {
+              "shots": 193,
+              "goals": 17,
+              "xG": 24.7103
+            }
+          },
+          "3-4-2-1": {
+            "stat": "3-4-2-1",
+            "time": 455,
+            "shots": 60,
+            "goals": 16,
+            "xG": 10.297,
+            "against": {
+              "shots": 62,
+              "goals": 6,
+              "xG": 6.8284
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 437,
+            "shots": 58,
+            "goals": 14,
+            "xG": 9.9325,
+            "against": {
+              "shots": 60,
+              "goals": 6,
+              "xG": 8.0381
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 361,
+            "shots": 36,
+            "goals": 5,
+            "xG": 4.9423,
+            "against": {
+              "shots": 63,
+              "goals": 5,
+              "xG": 7.9661
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 276,
+            "shots": 42,
+            "goals": 6,
+            "xG": 4.6037,
+            "against": {
+              "shots": 24,
+              "goals": 2,
+              "xG": 2.5462
+            }
+          },
+          "4-5-1": {
+            "stat": "4-5-1",
+            "time": 248,
+            "shots": 34,
+            "goals": 1,
+            "xG": 5.4436,
+            "against": {
+              "shots": 42,
+              "goals": 7,
+              "xG": 7.1979
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 228,
+            "shots": 36,
+            "goals": 6,
+            "xG": 7.4903,
+            "against": {
+              "shots": 38,
+              "goals": 2,
+              "xG": 3.5244
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 163,
+            "shots": 24,
+            "goals": 9,
+            "xG": 6.0144,
+            "against": {
+              "shots": 13,
+              "goals": 1,
+              "xG": 1.1789
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 48,
+            "shots": 4,
+            "goals": 1,
+            "xG": 0.9672,
+            "against": {
+              "shots": 6,
+              "goals": 0,
+              "xG": 0.2705
+            }
+          },
+          "3-5-1-1": {
+            "stat": "3-5-1-1",
+            "time": 28,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.5196,
+            "against": {
+              "shots": 7,
+              "goals": 0,
+              "xG": 0.1474
+            }
+          },
+          "3-5-2": {
+            "stat": "3-5-2",
+            "time": 24,
+            "shots": 4,
+            "goals": 3,
+            "xG": 1.9784,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.0274
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 315,
+            "goals": 58,
+            "xG": 53.502,
+            "against": {
+              "shots": 335,
+              "goals": 25,
+              "xG": 41.414
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 125,
+            "goals": 18,
+            "xG": 20.1821,
+            "against": {
+              "shots": 103,
+              "goals": 14,
+              "xG": 14.2621
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 30,
+            "goals": 4,
+            "xG": 3.9124,
+            "against": {
+              "shots": 44,
+              "goals": 2,
+              "xG": 3.263
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 15,
+            "goals": 5,
+            "xG": 3.6031,
+            "against": {
+              "shots": 27,
+              "goals": 5,
+              "xG": 3.4964
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 1,
+            "goals": 1,
+            "xG": 1,
+            "against": {
+              "shots": 0,
+              "goals": 0,
+              "xG": 0
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 151,
+            "goals": 6,
+            "xG": 5.2237,
+            "against": {
+              "shots": 176,
+              "goals": 2,
+              "xG": 5.3365
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 268,
+            "goals": 53,
+            "xG": 46.8647,
+            "against": {
+              "shots": 288,
+              "goals": 34,
+              "xG": 39.2969
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 65,
+            "goals": 25,
+            "xG": 28.1112,
+            "against": {
+              "shots": 45,
+              "goals": 10,
+              "xG": 17.8021
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 65,
+            "goals": 12,
+            "xG": 11.3382,
+            "against": {
+              "shots": 67,
+              "goals": 10,
+              "xG": 7.6739
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 76,
+            "goals": 10,
+            "xG": 9.7504,
+            "against": {
+              "shots": 73,
+              "goals": 5,
+              "xG": 9.7552
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 70,
+            "goals": 17,
+            "xG": 14.1671,
+            "against": {
+              "shots": 73,
+              "goals": 6,
+              "xG": 9.4482
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 84,
+            "goals": 14,
+            "xG": 12.519,
+            "against": {
+              "shots": 109,
+              "goals": 13,
+              "xG": 12.8509
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 81,
+            "goals": 13,
+            "xG": 12.1586,
+            "against": {
+              "shots": 73,
+              "goals": 4,
+              "xG": 8.8978
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 109,
+            "goals": 19,
+            "xG": 21.2663,
+            "against": {
+              "shots": 114,
+              "goals": 8,
+              "xG": 13.8096
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 85,
+        "expectedGoals": 85,
+        "providerConceded": 46,
+        "expectedConceded": 46
+      }
+    },
+    "GRA": {
+      "providerName": "Granada",
+      "url": "https://understat.com/getTeamData/Granada/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 287,
+          "goals": 25,
+          "xG": 29.3178,
+          "against": {
+            "shots": 361,
+            "goals": 60,
+            "xG": 55.1848
+          }
+        },
+        "FromCorner": {
+          "shots": 56,
+          "goals": 3,
+          "xG": 5.9227,
+          "against": {
+            "shots": 81,
+            "goals": 12,
+            "xG": 8.1221
+          }
+        },
+        "SetPiece": {
+          "shots": 37,
+          "goals": 5,
+          "xG": 4.9553,
+          "against": {
+            "shots": 28,
+            "goals": 2,
+            "xG": 3.3876
+          }
+        },
+        "DirectFreekick": {
+          "shots": 15,
+          "goals": 0,
+          "xG": 0.6914,
+          "against": {
+            "shots": 20,
+            "goals": 0,
+            "xG": 1.0943
+          }
+        },
+        "Penalty": {
+          "shots": 8,
+          "goals": 5,
+          "xG": 5.9462,
+          "against": {
+            "shots": 6,
+            "goals": 5,
+            "xG": 4.4597
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 108,
+        "goals": 8,
+        "xG": 11.5694,
+        "against": {
+          "shots": 129,
+          "goals": 14,
+          "xG": 12.604
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 1530,
+            "shots": 178,
+            "goals": 22,
+            "xG": 25.1162,
+            "against": {
+              "shots": 207,
+              "goals": 27,
+              "xG": 28.0475
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 636,
+            "shots": 88,
+            "goals": 2,
+            "xG": 6.6351,
+            "against": {
+              "shots": 74,
+              "goals": 11,
+              "xG": 10.6575
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 530,
+            "shots": 63,
+            "goals": 5,
+            "xG": 7.6671,
+            "against": {
+              "shots": 74,
+              "goals": 12,
+              "xG": 11.4548
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 255,
+            "shots": 18,
+            "goals": 4,
+            "xG": 1.7252,
+            "against": {
+              "shots": 35,
+              "goals": 8,
+              "xG": 4.5121
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 195,
+            "shots": 17,
+            "goals": 2,
+            "xG": 1.0293,
+            "against": {
+              "shots": 35,
+              "goals": 3,
+              "xG": 4.2722
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 153,
+            "shots": 9,
+            "goals": 1,
+            "xG": 1.2685,
+            "against": {
+              "shots": 26,
+              "goals": 10,
+              "xG": 4.8856
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 131,
+            "shots": 6,
+            "goals": 0,
+            "xG": 0.2383,
+            "against": {
+              "shots": 16,
+              "goals": 4,
+              "xG": 2.8441
+            }
+          },
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 99,
+            "shots": 7,
+            "goals": 1,
+            "xG": 1.1362,
+            "against": {
+              "shots": 14,
+              "goals": 3,
+              "xG": 3.0125
+            }
+          },
+          "4-2-2-2": {
+            "stat": "4-2-2-2",
+            "time": 81,
+            "shots": 9,
+            "goals": 1,
+            "xG": 1.2503,
+            "against": {
+              "shots": 10,
+              "goals": 1,
+              "xG": 2.3295
+            }
+          },
+          "4-1-3-2": {
+            "stat": "4-1-3-2",
+            "time": 46,
+            "shots": 8,
+            "goals": 0,
+            "xG": 0.7671,
+            "against": {
+              "shots": 5,
+              "goals": 0,
+              "xG": 0.2328
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 228,
+            "goals": 20,
+            "xG": 22.62,
+            "against": {
+              "shots": 294,
+              "goals": 47,
+              "xG": 39.4032
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 116,
+            "goals": 13,
+            "xG": 17.5155,
+            "against": {
+              "shots": 135,
+              "goals": 19,
+              "xG": 17.0637
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 42,
+            "goals": 4,
+            "xG": 4.6288,
+            "against": {
+              "shots": 34,
+              "goals": 4,
+              "xG": 9.1605
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 17,
+            "goals": 1,
+            "xG": 2.069,
+            "against": {
+              "shots": 33,
+              "goals": 9,
+              "xG": 6.6211
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 3,
+            "goals": 3,
+            "xG": 3,
+            "against": {
+              "shots": 2,
+              "goals": 2,
+              "xG": 2
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 134,
+            "goals": 3,
+            "xG": 4.3845,
+            "against": {
+              "shots": 178,
+              "goals": 8,
+              "xG": 6.5157
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 240,
+            "goals": 25,
+            "xG": 30.6218,
+            "against": {
+              "shots": 271,
+              "goals": 49,
+              "xG": 43.3122
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 26,
+            "goals": 7,
+            "xG": 8.827,
+            "against": {
+              "shots": 45,
+              "goals": 20,
+              "xG": 20.4207
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 49,
+            "goals": 4,
+            "xG": 7.2189,
+            "against": {
+              "shots": 54,
+              "goals": 9,
+              "xG": 9.3342
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 50,
+            "goals": 5,
+            "xG": 4.6609,
+            "against": {
+              "shots": 83,
+              "goals": 13,
+              "xG": 10.2601
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 59,
+            "goals": 6,
+            "xG": 6.4751,
+            "against": {
+              "shots": 81,
+              "goals": 15,
+              "xG": 14.1631
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 67,
+            "goals": 5,
+            "xG": 9.3583,
+            "against": {
+              "shots": 93,
+              "goals": 17,
+              "xG": 11.8196
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 69,
+            "goals": 9,
+            "xG": 8.55,
+            "against": {
+              "shots": 71,
+              "goals": 10,
+              "xG": 11.2195
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 109,
+            "goals": 9,
+            "xG": 10.57,
+            "against": {
+              "shots": 114,
+              "goals": 15,
+              "xG": 15.452
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 38,
+        "expectedGoals": 38,
+        "providerConceded": 79,
+        "expectedConceded": 79
+      }
+    },
+    "LPA": {
+      "providerName": "Las Palmas",
+      "url": "https://understat.com/getTeamData/Las%20Palmas/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 301,
+          "goals": 24,
+          "xG": 24.9589,
+          "against": {
+            "shots": 331,
+            "goals": 35,
+            "xG": 49.2888
+          }
+        },
+        "FromCorner": {
+          "shots": 54,
+          "goals": 4,
+          "xG": 5.2141,
+          "against": {
+            "shots": 75,
+            "goals": 6,
+            "xG": 5.2905
+          }
+        },
+        "SetPiece": {
+          "shots": 10,
+          "goals": 1,
+          "xG": 1.4586,
+          "against": {
+            "shots": 17,
+            "goals": 2,
+            "xG": 2.7571
+          }
+        },
+        "DirectFreekick": {
+          "shots": 20,
+          "goals": 1,
+          "xG": 0.9354,
+          "against": {
+            "shots": 15,
+            "goals": 0,
+            "xG": 0.7387
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 3,
+          "xG": 3.7163,
+          "against": {
+            "shots": 8,
+            "goals": 4,
+            "xG": 5.9462
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 84,
+        "goals": 6,
+        "xG": 7.6081,
+        "against": {
+          "shots": 107,
+          "goals": 8,
+          "xG": 8.7863
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-5-1": {
+            "stat": "4-5-1",
+            "time": 2403,
+            "shots": 253,
+            "goals": 25,
+            "xG": 22.2451,
+            "against": {
+              "shots": 288,
+              "goals": 33,
+              "xG": 39.6877
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 581,
+            "shots": 57,
+            "goals": 4,
+            "xG": 6.407,
+            "against": {
+              "shots": 70,
+              "goals": 4,
+              "xG": 9.4821
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 288,
+            "shots": 39,
+            "goals": 3,
+            "xG": 5.1513,
+            "against": {
+              "shots": 47,
+              "goals": 4,
+              "xG": 7.0247
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 281,
+            "shots": 33,
+            "goals": 1,
+            "xG": 1.8394,
+            "against": {
+              "shots": 31,
+              "goals": 4,
+              "xG": 5.9277
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 100,
+            "shots": 8,
+            "goals": 0,
+            "xG": 0.6406,
+            "against": {
+              "shots": 10,
+              "goals": 2,
+              "xG": 1.8991
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 252,
+            "goals": 18,
+            "xG": 21.1707,
+            "against": {
+              "shots": 279,
+              "goals": 26,
+              "xG": 40.0445
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 89,
+            "goals": 9,
+            "xG": 11.3244,
+            "against": {
+              "shots": 115,
+              "goals": 12,
+              "xG": 14.7326
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 33,
+            "goals": 5,
+            "xG": 1.8056,
+            "against": {
+              "shots": 27,
+              "goals": 4,
+              "xG": 5.4108
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 16,
+            "goals": 1,
+            "xG": 1.9826,
+            "against": {
+              "shots": 25,
+              "goals": 5,
+              "xG": 3.8335
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 3,
+              "goals": 3,
+              "xG": 3
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 183,
+            "goals": 8,
+            "xG": 4.7933,
+            "against": {
+              "shots": 133,
+              "goals": 3,
+              "xG": 5.3544
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 187,
+            "goals": 18,
+            "xG": 23.9464,
+            "against": {
+              "shots": 274,
+              "goals": 37,
+              "xG": 45.0872
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 20,
+            "goals": 7,
+            "xG": 7.5436,
+            "against": {
+              "shots": 36,
+              "goals": 4,
+              "xG": 10.5798
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 58,
+            "goals": 4,
+            "xG": 5.8528,
+            "against": {
+              "shots": 62,
+              "goals": 4,
+              "xG": 8.43
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 51,
+            "goals": 4,
+            "xG": 5.0455,
+            "against": {
+              "shots": 58,
+              "goals": 6,
+              "xG": 9.73
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 57,
+            "goals": 3,
+            "xG": 5.5035,
+            "against": {
+              "shots": 85,
+              "goals": 7,
+              "xG": 14.235
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 78,
+            "goals": 8,
+            "xG": 7.0514,
+            "against": {
+              "shots": 77,
+              "goals": 9,
+              "xG": 9.3903
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 53,
+            "goals": 6,
+            "xG": 3.8171,
+            "against": {
+              "shots": 74,
+              "goals": 11,
+              "xG": 10.7792
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 93,
+            "goals": 8,
+            "xG": 9.013,
+            "against": {
+              "shots": 90,
+              "goals": 10,
+              "xG": 11.4569
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 33,
+        "expectedGoals": 33,
+        "providerConceded": 47,
+        "expectedConceded": 47
+      }
+    },
+    "MLL": {
+      "providerName": "Mallorca",
+      "url": "https://understat.com/getTeamData/Mallorca/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 287,
+          "goals": 18,
+          "xG": 27.6828,
+          "against": {
+            "shots": 344,
+            "goals": 29,
+            "xG": 34.8268
+          }
+        },
+        "FromCorner": {
+          "shots": 90,
+          "goals": 10,
+          "xG": 9.1352,
+          "against": {
+            "shots": 64,
+            "goals": 4,
+            "xG": 4.5298
+          }
+        },
+        "SetPiece": {
+          "shots": 34,
+          "goals": 4,
+          "xG": 3.2635,
+          "against": {
+            "shots": 37,
+            "goals": 6,
+            "xG": 3.9937
+          }
+        },
+        "DirectFreekick": {
+          "shots": 4,
+          "goals": 0,
+          "xG": 0.2141,
+          "against": {
+            "shots": 30,
+            "goals": 1,
+            "xG": 1.8618
+          }
+        },
+        "Penalty": {
+          "shots": 3,
+          "goals": 1,
+          "xG": 2.2297,
+          "against": {
+            "shots": 5,
+            "goals": 4,
+            "xG": 3.7164
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 128,
+        "goals": 14,
+        "xG": 12.6128,
+        "against": {
+          "shots": 131,
+          "goals": 11,
+          "xG": 10.3853
+        }
+      },
+      "profile": {
+        "formation": {
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 1427,
+            "shots": 164,
+            "goals": 9,
+            "xG": 15.379,
+            "against": {
+              "shots": 186,
+              "goals": 18,
+              "xG": 19.1594
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 1033,
+            "shots": 96,
+            "goals": 7,
+            "xG": 11.0803,
+            "against": {
+              "shots": 146,
+              "goals": 15,
+              "xG": 16.3914
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 628,
+            "shots": 87,
+            "goals": 10,
+            "xG": 8.8255,
+            "against": {
+              "shots": 77,
+              "goals": 7,
+              "xG": 7.2244
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 183,
+            "shots": 23,
+            "goals": 3,
+            "xG": 2.5279,
+            "against": {
+              "shots": 16,
+              "goals": 1,
+              "xG": 2.3195
+            }
+          },
+          "3-5-1-1": {
+            "stat": "3-5-1-1",
+            "time": 96,
+            "shots": 5,
+            "goals": 1,
+            "xG": 0.5502,
+            "against": {
+              "shots": 19,
+              "goals": 0,
+              "xG": 0.5545
+            }
+          },
+          "3-4-2-1": {
+            "stat": "3-4-2-1",
+            "time": 95,
+            "shots": 15,
+            "goals": 3,
+            "xG": 1.6935,
+            "against": {
+              "shots": 12,
+              "goals": 2,
+              "xG": 1.6845
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 94,
+            "shots": 20,
+            "goals": 0,
+            "xG": 1.5137,
+            "against": {
+              "shots": 7,
+              "goals": 0,
+              "xG": 0.3148
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 58,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.0747,
+            "against": {
+              "shots": 14,
+              "goals": 1,
+              "xG": 0.9729
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 20,
+            "shots": 6,
+            "goals": 0,
+            "xG": 0.8805,
+            "against": {
+              "shots": 3,
+              "goals": 0,
+              "xG": 0.3072
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 237,
+            "goals": 16,
+            "xG": 21.4145,
+            "against": {
+              "shots": 301,
+              "goals": 22,
+              "xG": 27.4986
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 131,
+            "goals": 15,
+            "xG": 14.8425,
+            "against": {
+              "shots": 136,
+              "goals": 15,
+              "xG": 14.1017
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 34,
+            "goals": 2,
+            "xG": 5.7248,
+            "against": {
+              "shots": 24,
+              "goals": 5,
+              "xG": 4.5639
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 16,
+            "goals": 0,
+            "xG": 0.5435,
+            "against": {
+              "shots": 19,
+              "goals": 2,
+              "xG": 2.7643
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 1,
+              "goals": 1,
+              "xG": 1
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 127,
+            "goals": 2,
+            "xG": 3.6318,
+            "against": {
+              "shots": 219,
+              "goals": 7,
+              "xG": 7.412
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 261,
+            "goals": 24,
+            "xG": 30.2921,
+            "against": {
+              "shots": 239,
+              "goals": 30,
+              "xG": 33.4281
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 30,
+            "goals": 7,
+            "xG": 8.6015,
+            "against": {
+              "shots": 21,
+              "goals": 6,
+              "xG": 7.0885
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 55,
+            "goals": 7,
+            "xG": 5.5116,
+            "against": {
+              "shots": 61,
+              "goals": 10,
+              "xG": 5.8095
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 53,
+            "goals": 2,
+            "xG": 4.2787,
+            "against": {
+              "shots": 62,
+              "goals": 2,
+              "xG": 5.1937
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 59,
+            "goals": 5,
+            "xG": 7.5536,
+            "against": {
+              "shots": 72,
+              "goals": 9,
+              "xG": 6.7422
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 75,
+            "goals": 4,
+            "xG": 6.39,
+            "against": {
+              "shots": 106,
+              "goals": 6,
+              "xG": 10.1033
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 64,
+            "goals": 3,
+            "xG": 6.2382,
+            "against": {
+              "shots": 94,
+              "goals": 12,
+              "xG": 12.0716
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 112,
+            "goals": 12,
+            "xG": 12.5534,
+            "against": {
+              "shots": 85,
+              "goals": 5,
+              "xG": 9.0083
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 33,
+        "expectedGoals": 33,
+        "providerConceded": 44,
+        "expectedConceded": 44
+      }
+    },
+    "OSA": {
+      "providerName": "Osasuna",
+      "url": "https://understat.com/getTeamData/Osasuna/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 303,
+          "goals": 28,
+          "xG": 31.0396,
+          "against": {
+            "shots": 321,
+            "goals": 46,
+            "xG": 46.872
+          }
+        },
+        "FromCorner": {
+          "shots": 71,
+          "goals": 7,
+          "xG": 6.975,
+          "against": {
+            "shots": 77,
+            "goals": 8,
+            "xG": 6.1441
+          }
+        },
+        "SetPiece": {
+          "shots": 34,
+          "goals": 6,
+          "xG": 4.0206,
+          "against": {
+            "shots": 22,
+            "goals": 1,
+            "xG": 2.593
+          }
+        },
+        "DirectFreekick": {
+          "shots": 14,
+          "goals": 0,
+          "xG": 0.9641,
+          "against": {
+            "shots": 15,
+            "goals": 0,
+            "xG": 0.7909
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 4,
+          "xG": 3.7164,
+          "against": {
+            "shots": 2,
+            "goals": 1,
+            "xG": 1.4866
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 119,
+        "goals": 13,
+        "xG": 11.9597,
+        "against": {
+          "shots": 114,
+          "goals": 9,
+          "xG": 9.528
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 1628,
+            "shots": 187,
+            "goals": 18,
+            "xG": 22.3592,
+            "against": {
+              "shots": 197,
+              "goals": 22,
+              "xG": 23.2231
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 449,
+            "shots": 59,
+            "goals": 5,
+            "xG": 6.8747,
+            "against": {
+              "shots": 44,
+              "goals": 8,
+              "xG": 7.4237
+            }
+          },
+          "3-5-2": {
+            "stat": "3-5-2",
+            "time": 383,
+            "shots": 39,
+            "goals": 7,
+            "xG": 3.8498,
+            "against": {
+              "shots": 46,
+              "goals": 8,
+              "xG": 6.9761
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 382,
+            "shots": 51,
+            "goals": 8,
+            "xG": 5.2402,
+            "against": {
+              "shots": 49,
+              "goals": 6,
+              "xG": 6.5993
+            }
+          },
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 335,
+            "shots": 38,
+            "goals": 2,
+            "xG": 3.7589,
+            "against": {
+              "shots": 57,
+              "goals": 4,
+              "xG": 7.2076
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 246,
+            "shots": 28,
+            "goals": 4,
+            "xG": 2.6339,
+            "against": {
+              "shots": 21,
+              "goals": 4,
+              "xG": 2.7437
+            }
+          },
+          "3-5-1-1": {
+            "stat": "3-5-1-1",
+            "time": 94,
+            "shots": 7,
+            "goals": 0,
+            "xG": 0.1852,
+            "against": {
+              "shots": 11,
+              "goals": 2,
+              "xG": 2.1772
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 68,
+            "shots": 10,
+            "goals": 0,
+            "xG": 0.9251,
+            "against": {
+              "shots": 8,
+              "goals": 2,
+              "xG": 1.3626
+            }
+          },
+          "4-3-1-2": {
+            "stat": "4-3-1-2",
+            "time": 26,
+            "shots": 6,
+            "goals": 1,
+            "xG": 0.7893,
+            "against": {
+              "shots": 2,
+              "goals": 0,
+              "xG": 0.0889
+            }
+          },
+          "4-5-1": {
+            "stat": "4-5-1",
+            "time": 25,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.0996,
+            "against": {
+              "shots": 2,
+              "goals": 0,
+              "xG": 0.0842
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 255,
+            "goals": 27,
+            "xG": 25.0372,
+            "against": {
+              "shots": 259,
+              "goals": 39,
+              "xG": 39.7136
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 124,
+            "goals": 17,
+            "xG": 15.6761,
+            "against": {
+              "shots": 116,
+              "goals": 10,
+              "xG": 11.0145
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 28,
+            "goals": 0,
+            "xG": 2.2625,
+            "against": {
+              "shots": 37,
+              "goals": 1,
+              "xG": 1.735
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 20,
+            "goals": 1,
+            "xG": 3.7399,
+            "against": {
+              "shots": 25,
+              "goals": 6,
+              "xG": 5.4234
+            }
+          }
+        },
+        "shotZone": {
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 152,
+            "goals": 5,
+            "xG": 4.2037,
+            "against": {
+              "shots": 138,
+              "goals": 5,
+              "xG": 3.904
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 248,
+            "goals": 32,
+            "xG": 32.9798,
+            "against": {
+              "shots": 256,
+              "goals": 34,
+              "xG": 37.6822
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 27,
+            "goals": 8,
+            "xG": 9.5322,
+            "against": {
+              "shots": 43,
+              "goals": 17,
+              "xG": 16.3004
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 52,
+            "goals": 8,
+            "xG": 5.502,
+            "against": {
+              "shots": 67,
+              "goals": 6,
+              "xG": 8.4242
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 58,
+            "goals": 8,
+            "xG": 7.0485,
+            "against": {
+              "shots": 49,
+              "goals": 9,
+              "xG": 6.6479
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 79,
+            "goals": 3,
+            "xG": 7.9811,
+            "against": {
+              "shots": 73,
+              "goals": 5,
+              "xG": 7.0361
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 75,
+            "goals": 9,
+            "xG": 9.635,
+            "against": {
+              "shots": 80,
+              "goals": 11,
+              "xG": 10.4418
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 67,
+            "goals": 7,
+            "xG": 6.0118,
+            "against": {
+              "shots": 72,
+              "goals": 11,
+              "xG": 11.1971
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 96,
+            "goals": 10,
+            "xG": 10.5373,
+            "against": {
+              "shots": 96,
+              "goals": 14,
+              "xG": 14.1394
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 45,
+        "expectedGoals": 45,
+        "providerConceded": 56,
+        "expectedConceded": 56
+      }
+    },
+    "RAY": {
+      "providerName": "Rayo Vallecano",
+      "url": "https://understat.com/getTeamData/Rayo%20Vallecano/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 337,
+          "goals": 16,
+          "xG": 31.8781,
+          "against": {
+            "shots": 331,
+            "goals": 39,
+            "xG": 39.4451
+          }
+        },
+        "FromCorner": {
+          "shots": 73,
+          "goals": 3,
+          "xG": 5.15,
+          "against": {
+            "shots": 76,
+            "goals": 5,
+            "xG": 5.4894
+          }
+        },
+        "SetPiece": {
+          "shots": 28,
+          "goals": 3,
+          "xG": 3.4115,
+          "against": {
+            "shots": 22,
+            "goals": 2,
+            "xG": 1.6224
+          }
+        },
+        "DirectFreekick": {
+          "shots": 46,
+          "goals": 1,
+          "xG": 2.1792,
+          "against": {
+            "shots": 12,
+            "goals": 1,
+            "xG": 0.7265
+          }
+        },
+        "Penalty": {
+          "shots": 6,
+          "goals": 6,
+          "xG": 4.4597,
+          "against": {
+            "shots": 2,
+            "goals": 1,
+            "xG": 1.4866
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 147,
+        "goals": 7,
+        "xG": 10.7407,
+        "against": {
+          "shots": 110,
+          "goals": 8,
+          "xG": 7.8383
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 1604,
+            "shots": 220,
+            "goals": 15,
+            "xG": 23.5325,
+            "against": {
+              "shots": 180,
+              "goals": 14,
+              "xG": 19.3758
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 1569,
+            "shots": 208,
+            "goals": 11,
+            "xG": 19.5472,
+            "against": {
+              "shots": 189,
+              "goals": 26,
+              "xG": 21.2719
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 203,
+            "shots": 27,
+            "goals": 0,
+            "xG": 2.3365,
+            "against": {
+              "shots": 38,
+              "goals": 3,
+              "xG": 4.0708
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 133,
+            "shots": 20,
+            "goals": 2,
+            "xG": 0.9826,
+            "against": {
+              "shots": 22,
+              "goals": 3,
+              "xG": 2.2233
+            }
+          },
+          "3-4-2-1": {
+            "stat": "3-4-2-1",
+            "time": 96,
+            "shots": 10,
+            "goals": 1,
+            "xG": 0.4266,
+            "against": {
+              "shots": 8,
+              "goals": 2,
+              "xG": 1.2988
+            }
+          },
+          "3-4-1-2": {
+            "stat": "3-4-1-2",
+            "time": 48,
+            "shots": 5,
+            "goals": 0,
+            "xG": 0.253,
+            "against": {
+              "shots": 6,
+              "goals": 0,
+              "xG": 0.5294
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 267,
+            "goals": 13,
+            "xG": 24.0694,
+            "against": {
+              "shots": 263,
+              "goals": 26,
+              "xG": 29.6154
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 153,
+            "goals": 13,
+            "xG": 15.2003,
+            "against": {
+              "shots": 112,
+              "goals": 9,
+              "xG": 9.3248
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 40,
+            "goals": 3,
+            "xG": 6.3911,
+            "against": {
+              "shots": 35,
+              "goals": 7,
+              "xG": 5.2646
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 30,
+            "goals": 0,
+            "xG": 1.4176,
+            "against": {
+              "shots": 33,
+              "goals": 6,
+              "xG": 4.5651
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 2,
+              "goals": 2,
+              "xG": 2
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 230,
+            "goals": 5,
+            "xG": 7.2225,
+            "against": {
+              "shots": 149,
+              "goals": 5,
+              "xG": 4.7598
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 229,
+            "goals": 17,
+            "xG": 29.1722,
+            "against": {
+              "shots": 267,
+              "goals": 34,
+              "xG": 33.4045
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 31,
+            "goals": 7,
+            "xG": 10.6837,
+            "against": {
+              "shots": 25,
+              "goals": 7,
+              "xG": 8.6057
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 76,
+            "goals": 3,
+            "xG": 7.0762,
+            "against": {
+              "shots": 60,
+              "goals": 5,
+              "xG": 6.4744
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 79,
+            "goals": 8,
+            "xG": 9.2888,
+            "against": {
+              "shots": 59,
+              "goals": 5,
+              "xG": 5.8558
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 57,
+            "goals": 5,
+            "xG": 4.7972,
+            "against": {
+              "shots": 82,
+              "goals": 8,
+              "xG": 7.8669
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 88,
+            "goals": 1,
+            "xG": 6.9511,
+            "against": {
+              "shots": 85,
+              "goals": 7,
+              "xG": 7.5486
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 74,
+            "goals": 2,
+            "xG": 6.3075,
+            "against": {
+              "shots": 62,
+              "goals": 10,
+              "xG": 6.7995
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 116,
+            "goals": 10,
+            "xG": 12.6576,
+            "against": {
+              "shots": 95,
+              "goals": 13,
+              "xG": 14.2248
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 29,
+        "expectedGoals": 29,
+        "providerConceded": 48,
+        "expectedConceded": 48
+      }
+    },
+    "RMA": {
+      "providerName": "Real Madrid",
+      "url": "https://understat.com/getTeamData/Real%20Madrid/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 464,
+          "goals": 74,
+          "xG": 66.8469,
+          "against": {
+            "shots": 296,
+            "goals": 23,
+            "xG": 31.7842
+          }
+        },
+        "FromCorner": {
+          "shots": 83,
+          "goals": 10,
+          "xG": 9.9518,
+          "against": {
+            "shots": 64,
+            "goals": 2,
+            "xG": 5.2598
+          }
+        },
+        "SetPiece": {
+          "shots": 22,
+          "goals": 1,
+          "xG": 2.4343,
+          "against": {
+            "shots": 23,
+            "goals": 0,
+            "xG": 2.8242
+          }
+        },
+        "DirectFreekick": {
+          "shots": 25,
+          "goals": 0,
+          "xG": 1.6541,
+          "against": {
+            "shots": 7,
+            "goals": 0,
+            "xG": 0.386
+          }
+        },
+        "Penalty": {
+          "shots": 5,
+          "goals": 2,
+          "xG": 3.7164,
+          "against": {
+            "shots": 1,
+            "goals": 1,
+            "xG": 0.7433
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 130,
+        "goals": 11,
+        "xG": 14.0402,
+        "against": {
+          "shots": 94,
+          "goals": 2,
+          "xG": 8.47
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-3-1-2": {
+            "stat": "4-3-1-2",
+            "time": 1450,
+            "shots": 271,
+            "goals": 34,
+            "xG": 39.5451,
+            "against": {
+              "shots": 162,
+              "goals": 8,
+              "xG": 14.92
+            }
+          },
+          "4-1-2-1-2": {
+            "stat": "4-1-2-1-2",
+            "time": 560,
+            "shots": 87,
+            "goals": 9,
+            "xG": 11.0628,
+            "against": {
+              "shots": 76,
+              "goals": 7,
+              "xG": 10.3591
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 534,
+            "shots": 67,
+            "goals": 10,
+            "xG": 8.9184,
+            "against": {
+              "shots": 62,
+              "goals": 6,
+              "xG": 6.0362
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 420,
+            "shots": 70,
+            "goals": 14,
+            "xG": 9.5567,
+            "against": {
+              "shots": 32,
+              "goals": 2,
+              "xG": 3.3693
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 292,
+            "shots": 54,
+            "goals": 13,
+            "xG": 9.4735,
+            "against": {
+              "shots": 17,
+              "goals": 2,
+              "xG": 2.6555
+            }
+          },
+          "4-2-2-2": {
+            "stat": "4-2-2-2",
+            "time": 257,
+            "shots": 35,
+            "goals": 5,
+            "xG": 4.6549,
+            "against": {
+              "shots": 25,
+              "goals": 0,
+              "xG": 2.1782
+            }
+          },
+          "4-1-3-2": {
+            "stat": "4-1-3-2",
+            "time": 96,
+            "shots": 13,
+            "goals": 2,
+            "xG": 0.9594,
+            "against": {
+              "shots": 14,
+              "goals": 1,
+              "xG": 1.3314
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 14,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.4328,
+            "against": {
+              "shots": 3,
+              "goals": 0,
+              "xG": 0.1478
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 391,
+            "goals": 64,
+            "xG": 57.1055,
+            "against": {
+              "shots": 245,
+              "goals": 16,
+              "xG": 23.1431
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 135,
+            "goals": 13,
+            "xG": 17.7566,
+            "against": {
+              "shots": 95,
+              "goals": 3,
+              "xG": 9.2133
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 47,
+            "goals": 5,
+            "xG": 3.7694,
+            "against": {
+              "shots": 27,
+              "goals": 3,
+              "xG": 3.7144
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 26,
+            "goals": 5,
+            "xG": 5.972,
+            "against": {
+              "shots": 24,
+              "goals": 4,
+              "xG": 4.9267
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 2,
+            "goals": 2,
+            "xG": 2,
+            "against": {
+              "shots": 1,
+              "goals": 1,
+              "xG": 1
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 215,
+            "goals": 9,
+            "xG": 7.4211,
+            "against": {
+              "shots": 150,
+              "goals": 2,
+              "xG": 4.5889
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 343,
+            "goals": 62,
+            "xG": 56.9022,
+            "against": {
+              "shots": 216,
+              "goals": 18,
+              "xG": 25.8397
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 39,
+            "goals": 14,
+            "xG": 18.2802,
+            "against": {
+              "shots": 24,
+              "goals": 5,
+              "xG": 9.569
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 78,
+            "goals": 10,
+            "xG": 9.74,
+            "against": {
+              "shots": 57,
+              "goals": 8,
+              "xG": 9.4378
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 80,
+            "goals": 13,
+            "xG": 12.5212,
+            "against": {
+              "shots": 55,
+              "goals": 4,
+              "xG": 5.1733
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 103,
+            "goals": 9,
+            "xG": 10.1331,
+            "against": {
+              "shots": 64,
+              "goals": 3,
+              "xG": 5.6722
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 113,
+            "goals": 22,
+            "xG": 15.4977,
+            "against": {
+              "shots": 75,
+              "goals": 5,
+              "xG": 8.76
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 112,
+            "goals": 17,
+            "xG": 17.3146,
+            "against": {
+              "shots": 45,
+              "goals": 3,
+              "xG": 5.1666
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 113,
+            "goals": 16,
+            "xG": 19.397,
+            "against": {
+              "shots": 95,
+              "goals": 3,
+              "xG": 6.7876
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 87,
+        "expectedGoals": 87,
+        "providerConceded": 26,
+        "expectedConceded": 26
+      }
+    },
+    "RSO": {
+      "providerName": "Real Sociedad",
+      "url": "https://understat.com/getTeamData/Real%20Sociedad/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 325,
+          "goals": 35,
+          "xG": 38.5632,
+          "against": {
+            "shots": 265,
+            "goals": 26,
+            "xG": 31.0377
+          }
+        },
+        "FromCorner": {
+          "shots": 81,
+          "goals": 7,
+          "xG": 7.4557,
+          "against": {
+            "shots": 67,
+            "goals": 6,
+            "xG": 8.6259
+          }
+        },
+        "SetPiece": {
+          "shots": 30,
+          "goals": 3,
+          "xG": 2.6917,
+          "against": {
+            "shots": 34,
+            "goals": 1,
+            "xG": 2.6762
+          }
+        },
+        "DirectFreekick": {
+          "shots": 24,
+          "goals": 2,
+          "xG": 1.4513,
+          "against": {
+            "shots": 24,
+            "goals": 0,
+            "xG": 1.3998
+          }
+        },
+        "Penalty": {
+          "shots": 4,
+          "goals": 4,
+          "xG": 2.9731,
+          "against": {
+            "shots": 7,
+            "goals": 6,
+            "xG": 5.2029
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 135,
+        "goals": 12,
+        "xG": 11.5987,
+        "against": {
+          "shots": 125,
+          "goals": 7,
+          "xG": 12.7019
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 1555,
+            "shots": 213,
+            "goals": 18,
+            "xG": 23.133,
+            "against": {
+              "shots": 156,
+              "goals": 16,
+              "xG": 19.5588
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 676,
+            "shots": 83,
+            "goals": 9,
+            "xG": 9.5762,
+            "against": {
+              "shots": 67,
+              "goals": 10,
+              "xG": 8.2202
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 660,
+            "shots": 81,
+            "goals": 17,
+            "xG": 12.1066,
+            "against": {
+              "shots": 92,
+              "goals": 6,
+              "xG": 12.0181
+            }
+          },
+          "4-1-3-2": {
+            "stat": "4-1-3-2",
+            "time": 295,
+            "shots": 48,
+            "goals": 6,
+            "xG": 5.6067,
+            "against": {
+              "shots": 28,
+              "goals": 5,
+              "xG": 4.0899
+            }
+          },
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 191,
+            "shots": 12,
+            "goals": 1,
+            "xG": 0.8813,
+            "against": {
+              "shots": 11,
+              "goals": 0,
+              "xG": 0.3871
+            }
+          },
+          "3-4-2-1": {
+            "stat": "3-4-2-1",
+            "time": 102,
+            "shots": 12,
+            "goals": 0,
+            "xG": 0.892,
+            "against": {
+              "shots": 12,
+              "goals": 1,
+              "xG": 0.9378
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 96,
+            "shots": 11,
+            "goals": 0,
+            "xG": 0.5837,
+            "against": {
+              "shots": 11,
+              "goals": 0,
+              "xG": 1.0483
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 57,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.2017,
+            "against": {
+              "shots": 14,
+              "goals": 0,
+              "xG": 1.3359
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 18,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.1539,
+            "against": {
+              "shots": 6,
+              "goals": 1,
+              "xG": 1.3464
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 266,
+            "goals": 24,
+            "xG": 28.6321,
+            "against": {
+              "shots": 215,
+              "goals": 21,
+              "xG": 23.4965
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 139,
+            "goals": 16,
+            "xG": 14.5718,
+            "against": {
+              "shots": 132,
+              "goals": 13,
+              "xG": 17.9048
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 37,
+            "goals": 4,
+            "xG": 5.4935,
+            "against": {
+              "shots": 24,
+              "goals": 1,
+              "xG": 3.1382
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 22,
+            "goals": 7,
+            "xG": 4.4376,
+            "against": {
+              "shots": 26,
+              "goals": 4,
+              "xG": 4.403
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 3,
+            "goals": 3,
+            "xG": 3,
+            "against": {
+              "shots": 1,
+              "goals": 1,
+              "xG": 1
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 188,
+            "goals": 6,
+            "xG": 7.2765,
+            "against": {
+              "shots": 143,
+              "goals": 4,
+              "xG": 4.7887
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 228,
+            "goals": 29,
+            "xG": 31.4486,
+            "against": {
+              "shots": 221,
+              "goals": 25,
+              "xG": 29.0179
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 45,
+            "goals": 13,
+            "xG": 11.4099,
+            "against": {
+              "shots": 32,
+              "goals": 9,
+              "xG": 14.136
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 71,
+            "goals": 9,
+            "xG": 8.9507,
+            "against": {
+              "shots": 47,
+              "goals": 5,
+              "xG": 5.721
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 52,
+            "goals": 4,
+            "xG": 4.592,
+            "against": {
+              "shots": 67,
+              "goals": 8,
+              "xG": 8.7937
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 78,
+            "goals": 12,
+            "xG": 7.2844,
+            "against": {
+              "shots": 62,
+              "goals": 5,
+              "xG": 8.0417
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 97,
+            "goals": 7,
+            "xG": 10.1145,
+            "against": {
+              "shots": 60,
+              "goals": 6,
+              "xG": 5.799
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 66,
+            "goals": 9,
+            "xG": 9.9025,
+            "against": {
+              "shots": 65,
+              "goals": 4,
+              "xG": 7.8519
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 100,
+            "goals": 10,
+            "xG": 12.291,
+            "against": {
+              "shots": 96,
+              "goals": 11,
+              "xG": 12.7353
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 51,
+        "expectedGoals": 51,
+        "providerConceded": 39,
+        "expectedConceded": 39
+      }
+    },
+    "SEV": {
+      "providerName": "Sevilla",
+      "url": "https://understat.com/getTeamData/Sevilla/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 344,
+          "goals": 33,
+          "xG": 40.7916,
+          "against": {
+            "shots": 356,
+            "goals": 36,
+            "xG": 47.7481
+          }
+        },
+        "FromCorner": {
+          "shots": 91,
+          "goals": 11,
+          "xG": 9.3647,
+          "against": {
+            "shots": 85,
+            "goals": 4,
+            "xG": 7.7028
+          }
+        },
+        "SetPiece": {
+          "shots": 39,
+          "goals": 2,
+          "xG": 4.0143,
+          "against": {
+            "shots": 40,
+            "goals": 8,
+            "xG": 5.5732
+          }
+        },
+        "DirectFreekick": {
+          "shots": 15,
+          "goals": 0,
+          "xG": 1.0143,
+          "against": {
+            "shots": 16,
+            "goals": 1,
+            "xG": 1.1042
+          }
+        },
+        "Penalty": {
+          "shots": 2,
+          "goals": 2,
+          "xG": 1.4866,
+          "against": {
+            "shots": 5,
+            "goals": 5,
+            "xG": 3.7164
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 145,
+        "goals": 13,
+        "xG": 14.3933,
+        "against": {
+          "shots": 141,
+          "goals": 13,
+          "xG": 14.3802
+        }
+      },
+      "profile": {
+        "formation": {
+          "5-3-2": {
+            "stat": "5-3-2",
+            "time": 1140,
+            "shots": 123,
+            "goals": 14,
+            "xG": 17.5533,
+            "against": {
+              "shots": 173,
+              "goals": 21,
+              "xG": 21.5733
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 932,
+            "shots": 154,
+            "goals": 14,
+            "xG": 14.4093,
+            "against": {
+              "shots": 121,
+              "goals": 15,
+              "xG": 16.9229
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 438,
+            "shots": 80,
+            "goals": 4,
+            "xG": 7.7746,
+            "against": {
+              "shots": 42,
+              "goals": 6,
+              "xG": 7.4616
+            }
+          },
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 405,
+            "shots": 56,
+            "goals": 6,
+            "xG": 8.3525,
+            "against": {
+              "shots": 71,
+              "goals": 5,
+              "xG": 8.9174
+            }
+          },
+          "3-5-2": {
+            "stat": "3-5-2",
+            "time": 356,
+            "shots": 28,
+            "goals": 4,
+            "xG": 2.1909,
+            "against": {
+              "shots": 46,
+              "goals": 2,
+              "xG": 4.8947
+            }
+          },
+          "3-4-2-1": {
+            "stat": "3-4-2-1",
+            "time": 281,
+            "shots": 35,
+            "goals": 4,
+            "xG": 5.707,
+            "against": {
+              "shots": 34,
+              "goals": 4,
+              "xG": 3.4902
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 95,
+            "shots": 13,
+            "goals": 1,
+            "xG": 0.6156,
+            "against": {
+              "shots": 14,
+              "goals": 1,
+              "xG": 2.5067
+            }
+          },
+          "4-2-2-2": {
+            "stat": "4-2-2-2",
+            "time": 17,
+            "shots": 2,
+            "goals": 1,
+            "xG": 0.0682,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.0778
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 276,
+            "goals": 26,
+            "xG": 30.8439,
+            "against": {
+              "shots": 303,
+              "goals": 33,
+              "xG": 39.6253
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 147,
+            "goals": 15,
+            "xG": 15.8798,
+            "against": {
+              "shots": 146,
+              "goals": 18,
+              "xG": 18.0965
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 37,
+            "goals": 2,
+            "xG": 3.4634,
+            "against": {
+              "shots": 25,
+              "goals": 2,
+              "xG": 3.4168
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 31,
+            "goals": 5,
+            "xG": 6.4842,
+            "against": {
+              "shots": 28,
+              "goals": 1,
+              "xG": 4.706
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 2,
+            "goals": 2,
+            "xG": 2,
+            "against": {
+              "shots": 2,
+              "goals": 2,
+              "xG": 2
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 169,
+            "goals": 7,
+            "xG": 5.6139,
+            "against": {
+              "shots": 175,
+              "goals": 7,
+              "xG": 5.3403
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 282,
+            "goals": 30,
+            "xG": 33.999,
+            "against": {
+              "shots": 282,
+              "goals": 37,
+              "xG": 45.2892
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 38,
+            "goals": 9,
+            "xG": 15.0585,
+            "against": {
+              "shots": 43,
+              "goals": 8,
+              "xG": 13.2152
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 69,
+            "goals": 9,
+            "xG": 8.6505,
+            "against": {
+              "shots": 55,
+              "goals": 9,
+              "xG": 7.714
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 83,
+            "goals": 6,
+            "xG": 11.3412,
+            "against": {
+              "shots": 79,
+              "goals": 12,
+              "xG": 9.6936
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 67,
+            "goals": 7,
+            "xG": 8.3757,
+            "against": {
+              "shots": 77,
+              "goals": 6,
+              "xG": 12.6645
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 104,
+            "goals": 9,
+            "xG": 11.8922,
+            "against": {
+              "shots": 116,
+              "goals": 8,
+              "xG": 14.2824
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 68,
+            "goals": 7,
+            "xG": 6.6742,
+            "against": {
+              "shots": 79,
+              "goals": 5,
+              "xG": 9.3656
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 100,
+            "goals": 10,
+            "xG": 9.7376,
+            "against": {
+              "shots": 96,
+              "goals": 14,
+              "xG": 12.1245
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 48,
+        "expectedGoals": 48,
+        "providerConceded": 54,
+        "expectedConceded": 54
+      }
+    },
+    "VAL": {
+      "providerName": "Valencia",
+      "url": "https://understat.com/getTeamData/Valencia/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 279,
+          "goals": 31,
+          "xG": 33.4757,
+          "against": {
+            "shots": 302,
+            "goals": 32,
+            "xG": 40.6548
+          }
+        },
+        "FromCorner": {
+          "shots": 45,
+          "goals": 1,
+          "xG": 2.5954,
+          "against": {
+            "shots": 54,
+            "goals": 7,
+            "xG": 4.3467
+          }
+        },
+        "SetPiece": {
+          "shots": 26,
+          "goals": 0,
+          "xG": 2.8637,
+          "against": {
+            "shots": 28,
+            "goals": 2,
+            "xG": 4.4872
+          }
+        },
+        "DirectFreekick": {
+          "shots": 16,
+          "goals": 0,
+          "xG": 0.9675,
+          "against": {
+            "shots": 22,
+            "goals": 1,
+            "xG": 1.337
+          }
+        },
+        "Penalty": {
+          "shots": 9,
+          "goals": 8,
+          "xG": 6.6894,
+          "against": {
+            "shots": 6,
+            "goals": 3,
+            "xG": 4.4597
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 87,
+        "goals": 1,
+        "xG": 6.4266,
+        "against": {
+          "shots": 104,
+          "goals": 10,
+          "xG": 10.1709
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 2826,
+            "shots": 289,
+            "goals": 32,
+            "xG": 35.3238,
+            "against": {
+              "shots": 314,
+              "goals": 31,
+              "xG": 42.4287
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 741,
+            "shots": 75,
+            "goals": 7,
+            "xG": 9.4505,
+            "against": {
+              "shots": 88,
+              "goals": 13,
+              "xG": 11.9304
+            }
+          },
+          "4-1-4-1": {
+            "stat": "4-1-4-1",
+            "time": 36,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.0672,
+            "against": {
+              "shots": 6,
+              "goals": 1,
+              "xG": 0.7062
+            }
+          },
+          "4-4-1-1": {
+            "stat": "4-4-1-1",
+            "time": 20,
+            "shots": 8,
+            "goals": 1,
+            "xG": 1.6759,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.0917
+            }
+          },
+          "5-4-1": {
+            "stat": "5-4-1",
+            "time": 11,
+            "shots": 0,
+            "goals": 0,
+            "xG": 0,
+            "against": {
+              "shots": 2,
+              "goals": 0,
+              "xG": 0.062
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 5,
+            "shots": 1,
+            "goals": 0,
+            "xG": 0.0743,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.0663
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 228,
+            "goals": 21,
+            "xG": 24.8768,
+            "against": {
+              "shots": 264,
+              "goals": 25,
+              "xG": 33.1141
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 96,
+            "goals": 9,
+            "xG": 13.116,
+            "against": {
+              "shots": 110,
+              "goals": 13,
+              "xG": 14.6306
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 28,
+            "goals": 3,
+            "xG": 4.4839,
+            "against": {
+              "shots": 24,
+              "goals": 4,
+              "xG": 4.5845
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 23,
+            "goals": 7,
+            "xG": 4.115,
+            "against": {
+              "shots": 14,
+              "goals": 3,
+              "xG": 2.9562
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 1,
+            "goals": 1,
+            "xG": 1,
+            "against": {
+              "shots": 2,
+              "goals": 2,
+              "xG": 2
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 145,
+            "goals": 3,
+            "xG": 4.5235,
+            "against": {
+              "shots": 140,
+              "goals": 4,
+              "xG": 4.8807
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 204,
+            "goals": 32,
+            "xG": 32.5885,
+            "against": {
+              "shots": 230,
+              "goals": 21,
+              "xG": 31.8713
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 25,
+            "goals": 4,
+            "xG": 8.4796,
+            "against": {
+              "shots": 40,
+              "goals": 18,
+              "xG": 16.5335
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 64,
+            "goals": 7,
+            "xG": 8.3117,
+            "against": {
+              "shots": 50,
+              "goals": 4,
+              "xG": 6.4213
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 53,
+            "goals": 7,
+            "xG": 8.2678,
+            "against": {
+              "shots": 65,
+              "goals": 4,
+              "xG": 8.1516
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 62,
+            "goals": 3,
+            "xG": 6.0066,
+            "against": {
+              "shots": 57,
+              "goals": 5,
+              "xG": 7.8762
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 64,
+            "goals": 10,
+            "xG": 8.3705,
+            "against": {
+              "shots": 96,
+              "goals": 13,
+              "xG": 12.3377
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 48,
+            "goals": 6,
+            "xG": 8.411,
+            "against": {
+              "shots": 54,
+              "goals": 7,
+              "xG": 7.8243
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 84,
+            "goals": 7,
+            "xG": 7.224,
+            "against": {
+              "shots": 90,
+              "goals": 12,
+              "xG": 12.6743
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 40,
+        "expectedGoals": 40,
+        "providerConceded": 45,
+        "expectedConceded": 45
+      }
+    },
+    "VIL": {
+      "providerName": "Villarreal",
+      "url": "https://understat.com/getTeamData/Villarreal/2023",
+      "matches": 38,
+      "situations": {
+        "OpenPlay": {
+          "shots": 353,
+          "goals": 48,
+          "xG": 44.7808,
+          "against": {
+            "shots": 429,
+            "goals": 43,
+            "xG": 49.3255
+          }
+        },
+        "FromCorner": {
+          "shots": 80,
+          "goals": 8,
+          "xG": 8.3479,
+          "against": {
+            "shots": 90,
+            "goals": 9,
+            "xG": 8.3412
+          }
+        },
+        "SetPiece": {
+          "shots": 19,
+          "goals": 4,
+          "xG": 2.7622,
+          "against": {
+            "shots": 40,
+            "goals": 6,
+            "xG": 4.6408
+          }
+        },
+        "DirectFreekick": {
+          "shots": 8,
+          "goals": 0,
+          "xG": 0.4653,
+          "against": {
+            "shots": 21,
+            "goals": 1,
+            "xG": 1.0962
+          }
+        },
+        "Penalty": {
+          "shots": 7,
+          "goals": 5,
+          "xG": 5.2029,
+          "against": {
+            "shots": 6,
+            "goals": 6,
+            "xG": 4.4597
+          }
+        }
+      },
+      "nonPenaltySetPiece": {
+        "shots": 107,
+        "goals": 12,
+        "xG": 11.5754,
+        "against": {
+          "shots": 151,
+          "goals": 16,
+          "xG": 14.0782
+        }
+      },
+      "profile": {
+        "formation": {
+          "4-4-2": {
+            "stat": "4-4-2",
+            "time": 2854,
+            "shots": 372,
+            "goals": 56,
+            "xG": 51.298,
+            "against": {
+              "shots": 479,
+              "goals": 51,
+              "xG": 55.5109
+            }
+          },
+          "4-3-3": {
+            "stat": "4-3-3",
+            "time": 496,
+            "shots": 64,
+            "goals": 5,
+            "xG": 5.9498,
+            "against": {
+              "shots": 66,
+              "goals": 10,
+              "xG": 7.6173
+            }
+          },
+          "4-2-3-1": {
+            "stat": "4-2-3-1",
+            "time": 199,
+            "shots": 19,
+            "goals": 3,
+            "xG": 2.5951,
+            "against": {
+              "shots": 25,
+              "goals": 3,
+              "xG": 2.9281
+            }
+          },
+          "3-1-4-2": {
+            "stat": "3-1-4-2",
+            "time": 88,
+            "shots": 10,
+            "goals": 1,
+            "xG": 1.5893,
+            "against": {
+              "shots": 15,
+              "goals": 1,
+              "xG": 1.7828
+            }
+          },
+          "3-4-3": {
+            "stat": "3-4-3",
+            "time": 9,
+            "shots": 2,
+            "goals": 0,
+            "xG": 0.1271,
+            "against": {
+              "shots": 1,
+              "goals": 0,
+              "xG": 0.0242
+            }
+          }
+        },
+        "attackSpeed": {
+          "Normal": {
+            "stat": "Normal",
+            "time": 0,
+            "shots": 313,
+            "goals": 41,
+            "xG": 39.4022,
+            "against": {
+              "shots": 356,
+              "goals": 34,
+              "xG": 39.0369
+            }
+          },
+          "Standard": {
+            "stat": "Standard",
+            "time": 0,
+            "shots": 114,
+            "goals": 17,
+            "xG": 16.7785,
+            "against": {
+              "shots": 157,
+              "goals": 22,
+              "xG": 18.5378
+            }
+          },
+          "Fast": {
+            "stat": "Fast",
+            "time": 0,
+            "shots": 21,
+            "goals": 5,
+            "xG": 3.4146,
+            "against": {
+              "shots": 28,
+              "goals": 5,
+              "xG": 5.7926
+            }
+          },
+          "Slow": {
+            "stat": "Slow",
+            "time": 0,
+            "shots": 19,
+            "goals": 2,
+            "xG": 1.964,
+            "against": {
+              "shots": 45,
+              "goals": 4,
+              "xG": 4.496
+            }
+          }
+        },
+        "shotZone": {
+          "ownGoals": {
+            "stat": "ownGoals",
+            "time": 0,
+            "shots": 1,
+            "goals": 1,
+            "xG": 1,
+            "against": {
+              "shots": 1,
+              "goals": 1,
+              "xG": 1
+            }
+          },
+          "shotOboxTotal": {
+            "stat": "shotOboxTotal",
+            "time": 0,
+            "shots": 121,
+            "goals": 1,
+            "xG": 3.8563,
+            "against": {
+              "shots": 206,
+              "goals": 4,
+              "xG": 6.3573
+            }
+          },
+          "shotPenaltyArea": {
+            "stat": "shotPenaltyArea",
+            "time": 0,
+            "shots": 314,
+            "goals": 49,
+            "xG": 44.5783,
+            "against": {
+              "shots": 331,
+              "goals": 44,
+              "xG": 44.18
+            }
+          },
+          "shotSixYardBox": {
+            "stat": "shotSixYardBox",
+            "time": 0,
+            "shots": 31,
+            "goals": 14,
+            "xG": 12.1247,
+            "against": {
+              "shots": 48,
+              "goals": 16,
+              "xG": 16.3261
+            }
+          }
+        },
+        "timing": {
+          "1-15": {
+            "stat": "1-15",
+            "time": 0,
+            "shots": 69,
+            "goals": 5,
+            "xG": 7.7564,
+            "against": {
+              "shots": 99,
+              "goals": 8,
+              "xG": 9.8316
+            }
+          },
+          "16-30": {
+            "stat": "16-30",
+            "time": 0,
+            "shots": 62,
+            "goals": 10,
+            "xG": 7.0402,
+            "against": {
+              "shots": 81,
+              "goals": 16,
+              "xG": 12.4376
+            }
+          },
+          "31-45": {
+            "stat": "31-45",
+            "time": 0,
+            "shots": 82,
+            "goals": 8,
+            "xG": 11.3201,
+            "against": {
+              "shots": 84,
+              "goals": 9,
+              "xG": 8.659
+            }
+          },
+          "46-60": {
+            "stat": "46-60",
+            "time": 0,
+            "shots": 91,
+            "goals": 19,
+            "xG": 14.0994,
+            "against": {
+              "shots": 115,
+              "goals": 14,
+              "xG": 14.5989
+            }
+          },
+          "61-75": {
+            "stat": "61-75",
+            "time": 0,
+            "shots": 71,
+            "goals": 9,
+            "xG": 9.4869,
+            "against": {
+              "shots": 92,
+              "goals": 9,
+              "xG": 12.088
+            }
+          },
+          "76+": {
+            "stat": "76+",
+            "time": 0,
+            "shots": 92,
+            "goals": 14,
+            "xG": 11.8563,
+            "against": {
+              "shots": 115,
+              "goals": 9,
+              "xG": 10.2482
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "providerMatches": 38,
+        "expectedMatches": 38,
+        "scorelinesReconciled": true,
+        "scorelineMismatches": [],
+        "situationGoalsReconciled": true,
+        "providerGoals": 65,
+        "expectedGoals": 65,
+        "providerConceded": 65,
+        "expectedConceded": 65
+      }
+    }
+  },
+  "validation": {
+    "teams": 20,
+    "expectedTeams": 20,
+    "allScorelinesReconciled": true,
+    "situationGoalTotalsReconciled": 20,
+    "situationGoalTotalsExpected": 20,
+    "arsenalCornerGoals": null,
+    "arsenalOfficialCheck": null
+  }
+}
