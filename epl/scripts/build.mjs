@@ -33,6 +33,7 @@ import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { buildGoals } from './lib/goals.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
+import { numberProfile, traditionVsData, formationFromLineups } from './lib/knowledge.mjs';
 import { round } from './lib/util.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
@@ -169,6 +170,12 @@ async function main() {
 
   // 球員頭貼(選用):外部產生的 data URI,鍵是 FPL 的 code。
   // 沒有這個檔也完全正常 —— 前端會退回顯示隊徽,不會有破圖。
+  /* 足球共識層(陣型/背號/位置的傳統定義)。人工整理、逐條帶來源,
+     跟計算出來的數字分開存放,前端才分得出哪一半是共識、哪一半是資料。 */
+  const knowledgePath = join(ROOT, 'data', 'manual', 'football-knowledge.json');
+  const KNOWLEDGE = existsSync(knowledgePath)
+    ? JSON.parse(await readFile(knowledgePath, 'utf8')) : null;
+
   const photoPath = join(ROOT, 'data', 'manual', 'photos.json');
   const photoData = existsSync(photoPath) ? JSON.parse(await readFile(photoPath, 'utf8')).photos ?? {} : {};
 
@@ -935,6 +942,24 @@ async function main() {
     note: '逐場進球與助攻;FPL 事件不含單球進球方式。球隊層級的運動戰/角球/定位球季統計另由 Understat 提供。',
     data: goalsOut,
   });
+
+  /* 足球知識頁的資料層。共識層(陣型定義、背號慣例、位置分工)是人工整理的,
+     放在 data/manual/football-knowledge.json;這裡只算**本站真的算得出來的**:
+     每個背號實際上是什麼位置的人在穿、實際用過哪些陣型。
+     兩層在前端必須分得出來 —— 把共識寫成看起來像統計的樣子就是編數字。 */
+  if (KNOWLEDGE) {
+    const profile = numberProfile(players);
+    await write('knowledge.json', {
+      season: CURRENT_SEASON,
+      /* 共識層直接嵌進來。它不分聯賽,兩份各帶一次是重複 ——
+         但前端的載入器與單檔打包都是「一個聯賽一組資料集」,
+         為了它另開一條載入路徑不划算,而且這份只有十幾 KB。 */
+      guide: KNOWLEDGE,
+      numbers: { ...profile, tradition: traditionVsData(KNOWLEDGE.numbers, profile) },
+      // 英超沒有逐場陣型使用時間,只有本季正式名單上的陣型 —— 粒度不同,unit 標出來
+      formations: formationFromLineups(offLineups?.matches ?? offShapes?.matches ?? null),
+    });
+  }
 
   await write('form.json', {
     asOf: AS_OF,

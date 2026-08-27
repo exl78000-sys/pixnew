@@ -20,6 +20,8 @@ const ESSENTIAL = {
   players: ['players', 'leaders'],
   news: ['news'],
   model: ['form'],
+  // 知識頁的共識層在 knowledge.json 裡;沒有它整頁就只剩空殼,要當成缺口擋下來
+  knowledge: ['knowledge'],
 };
 
 const isEmpty = v => v == null
@@ -262,7 +264,7 @@ export const stampRow = items =>
 // 進來時由 LeagueGap 給一句實話,不是一個空白頁。
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
-  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'fixtures', 'teams', 'players', 'tactics', 'news', 'live', 'model'] },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'fixtures', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge'] },
 };
 
 const PAGES = [
@@ -279,6 +281,10 @@ const PAGES = [
   ['players', '球員'],
   ['news', '動態'],
   ['model', '模型驗證'],
+  /* 足球知識:陣型、背號、位置分工。這一頁的內容大半是**足球共識**不是本站的統計,
+     所以它自己會把兩層分開標示。兩個聯賽都能開 —— 共識是共用的,
+     對照用的數字各聯賽算自己的。 */
+  ['knowledge', '足球知識'],
 ];
 export const pageLabel = p => PAGES.find(([n]) => n === p)?.[1] ?? p;
 

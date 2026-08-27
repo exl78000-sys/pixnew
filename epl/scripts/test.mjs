@@ -28,6 +28,7 @@ import { teamGoals } from './lib/goals.mjs';
 // 走查回測的實作抽到 lib,英超與西甲跑同一份 —— 複製一份會讓兩個聯賽的數字慢慢不能比
 import { walkForward, rps, outcome, logLoss, pairedDiff } from './lib/backtest.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
+import { numberProfile, traditionVsData, formationUsage, formationFromLineups } from './lib/knowledge.mjs';
 import { teamRecord } from './lib/table.mjs';
 import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
 import { normaliseMatchDetail } from './lib/adapters/api-football.mjs';
@@ -341,9 +342,12 @@ async function main() {
   console.log('\n▶ 兩聯賽回測共用實作自我檢查');
   const btFail = checkBacktestShared();
 
+  console.log('\n▶ 足球知識層自我檢查');
+  const knFail = checkKnowledge();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -456,6 +460,102 @@ function checkGoalsDataset() {
 
    另外守 pairedDiff:它是「這個優勢穩不穩」的唯一根據,
    算錯的話頁面上那句「幾個標準誤」就是錯的。 */
+/* 足球知識層。這一頁大半是**共識**不是本站的統計,所以檢查的重點不是數字對不對,
+   而是**兩層有沒有混在一起、每一條共識查不查得到出處**:
+
+   · 每一條共識都要掛得到來源 id,掛不到就是隨口說的
+   · 陣型的站位圖每一排加起來要是 11 人,而且要跟 bands 對得上
+   · 背號分佈的母體要排除「沒有背號」與「沒有位置」的人,而且要報出排除了幾個 ——
+     母體悄悄變小跟編數字是同一件事 */
+function checkKnowledge() {
+  const cases = [];
+  let guide = null;
+  try { guide = JSON.parse(readFileSync(join(ROOT, 'data', 'manual', 'football-knowledge.json'), 'utf8')); }
+  catch { console.log('  ⚠ 找不到共識層資料,略過'); return 0; }
+
+  const ids = new Set((guide._sources ?? []).map(s => s.id));
+  const orphan = [];
+  const chk = (o, label) => { for (const id of o.sources ?? []) if (!ids.has(id)) orphan.push(`${label}:${id}`); };
+  chk(guide.numberOrigin, 'numberOrigin');
+  guide.numbers.forEach(n => chk(n, `#${n.n}`));
+  guide.positions.forEach(p => chk(p, p.key));
+  guide.formations.forEach(f => chk(f, f.key));
+  cases.push(['每一條共識都掛得到來源', orphan.length === 0, orphan.join('、')]);
+  cases.push(['每個來源都有短名與網址',
+    (guide._sources ?? []).every(s => s.id && s.url && s.short), '']);
+
+  const badRows = guide.formations.filter(f => {
+    const flat = (f.rows ?? []).reduce((n, r) => n + r.length, 0);
+    const bands = (f.rows ?? []).slice(1).map(r => r.length);
+    return flat !== 11 || JSON.stringify(bands) !== JSON.stringify(f.bands);
+  }).map(f => f.label);
+  cases.push(['每個陣型的站位圖都是 11 人且跟 bands 一致', badRows.length === 0, badRows.join('、')]);
+
+  // 母體:沒有背號、沒有位置的都不能算進去,而且要報出來
+  const roster = [
+    { squadNumber: 1, pos: 'GK' }, { squadNumber: 1, pos: 'GK' },
+    { squadNumber: 9, pos: 'FWD' }, { squadNumber: 9, pos: 'MID' },
+    { squadNumber: 9, pos: null },        // 沒有位置 → 不列入
+    { squadNumber: null, pos: 'DEF' },    // 沒有背號 → 不列入
+    { squadNumber: 99, pos: 'DEF' },      // 超出上限 → 不列入分佈
+  ];
+  const prof = numberProfile(roster, { maxNumber: 26 });
+  const nine = prof.rows.find(r => r.n === 9);
+  cases.push(
+    ['沒有位置的人不列入分佈,但要算進 droppedNoPos',
+      nine.total === 2 && prof.coverage.droppedNoPos === 1],
+    ['沒有背號的人不算進 withNumber',
+      prof.coverage.withNumber === 6 && prof.coverage.players === 7],
+    ['最多的位置與佔比算得對', nine.topPos === 'FWD' || nine.topPos === 'MID' ? nine.topShare === 0.5 : false],
+    ['超出上限的號碼不進分佈', !prof.rows.some(r => r.n === 99)],
+  );
+
+  const trad = traditionVsData(guide.numbers, prof);
+  cases.push(
+    ['傳統說法逐號對得上實際分佈', trad.find(t => t.n === 1)?.actual?.total === 2],
+    ['沒有樣本的號碼回 null,不硬湊', trad.find(t => t.n === 13)?.actual === null],
+  );
+
+  const usage = formationUsage([
+    { code: 'AAA', formation: { list: [{ name: '4-4-2', minutes: 300, share: 60 }, { name: '4-3-3', minutes: 200, share: 40 }] } },
+    { code: 'BBB', formation: { list: [{ name: '4-4-2', minutes: 500, share: 100 }] } },
+  ]);
+  cases.push(
+    ['陣型使用分鐘逐隊加總', usage.rows[0].label === '4-4-2' && usage.rows[0].minutes === 800],
+    ['佔比用全部分鐘當分母', usage.rows[0].share === 0.8],
+    ['用最多的隊排在前面', usage.rows[0].topTeams[0].code === 'BBB'],
+  );
+
+  const fromLineups = formationFromLineups({
+    a: { home: { formation: '4-2-3-1' }, away: { formation: '4-4-2' } },
+    b: { home: { formation: '4-2-3-1' }, away: {} },
+  });
+  cases.push(
+    ['正式名單的陣型逐份計數', fromLineups.total === 3 && fromLineups.rows[0].count === 2],
+    ['沒有陣型的那一邊不算進母體', fromLineups.rows.reduce((n, r) => n + r.count, 0) === 3],
+    ['沒有任何名單時回 null,不回空表', formationFromLineups({}) === null],
+  );
+
+  // 產物:兩個聯賽都要有,而且共識層要嵌得進去(前端只載入一組資料集)
+  for (const [label, f] of [['英超', ['web', 'data', 'knowledge.json']],
+    ['西甲', ['web', 'data', 'leagues', 'es1', 'knowledge.json']]]) {
+    try {
+      const k = JSON.parse(readFileSync(join(ROOT, ...f), 'utf8'));
+      cases.push(
+        [`${label}產物帶著共識層`, k.guide?.formations?.length === guide.formations.length],
+        [`${label}產物的背號母體有報涵蓋率`, k.numbers?.coverage?.players > 0],
+      );
+    } catch { cases.push([`${label}知識產物還沒建置,略過`, true]); }
+  }
+
+  let fail = 0;
+  for (const [name, ok, detail] of cases) {
+    console.log(`  ${ok ? '✔' : '✗'} ${name}${ok || !detail ? '' : ` —— ${detail}`}`);
+    if (!ok) fail++;
+  }
+  return fail;
+}
+
 function checkBacktestShared() {
   const cases = [];
 
@@ -908,6 +1008,10 @@ async function checkDataGap() {
     ['西甲的單場分析不擋', !g('es1', 'analysis', ['players', 'shapes'], { players: [], shapes: {} })],
     ['西甲已開放的賽程頁不擋', !g('es1', 'fixtures', ['fixtures'], { fixtures: [1] })],
     ['西甲已開放的球隊頁不擋(球員是空的也一樣)', !g('es1', 'teams', ['players'], { players: [] })],
+    ['西甲的足球知識頁已開放,共識層在就不擋',
+      !g('es1', 'knowledge', ['knowledge'], { knowledge: { guide: { formations: [1] } } })],
+    ['知識頁的共識層是空的仍然擋(保險)',
+      !!g('es1', 'knowledge', ['knowledge'], { knowledge: {} })],
     ['英超每一頁都不擋', ['index', 'live', 'fixtures', 'teams', 'tactics', 'players', 'news', 'model']
       .every(p => !g('pl', p, Object.keys(full)))],
     ['宣告開放但資料是空的仍然擋(保險)', !!g('pl', 'news', ['news'], { ...full, news: [] })],

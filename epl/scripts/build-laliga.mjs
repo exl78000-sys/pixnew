@@ -14,6 +14,7 @@ import { competition } from './lib/canonical.mjs';
 import { buildGoals } from './lib/goals.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
+import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './lib/knowledge.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
@@ -927,6 +928,26 @@ async function main() {
       };
     }
   }
+  /* 足球知識頁的資料層。西甲跟英超取得的粒度不同:
+     背號分佈一樣算得出來,但陣型這邊有**上季逐場的使用分鐘**(Understat),
+     比英超那份「本季 20 份正式名單」細得多 —— unit 標出來,畫面才講得對。 */
+  {
+    const knowledgePath = join(ROOT, 'data', 'manual', 'football-knowledge.json');
+    const K = existsSync(knowledgePath)
+      ? JSON.parse(await readFile(knowledgePath, 'utf8')) : null;
+    if (K) {
+      const roster = playersOut.filter(p => p.season === CURRENT_SEASON);
+      const profile = numberProfile(roster);
+      await write('knowledge', {
+        season: CURRENT_SEASON,
+        guide: K,
+        numbers: { ...profile, tradition: traditionVsData(K.numbers, profile) },
+        formations: usageAsRows(formationUsage(teamProfiles)),
+        formationSeason: LAST_SEASON,
+      });
+    }
+  }
+
   await write('form', {
     asOf: AS_OF, inModel: false, tuned: TUNED, tuning: null,
     situationTuning,
