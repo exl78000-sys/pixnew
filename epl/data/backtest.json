@@ -1,6 +1,10 @@
 {
-  "ranAt": "2026-08-27T15:54:50.032Z",
+  "ranAt": "2026-08-27T16:06:24.714Z",
   "season": "2025-26",
+  "trainSeasons": [
+    "2023-24",
+    "2024-25"
+  ],
   "games": 380,
   "models": {
     "poisson": {
@@ -598,6 +602,19 @@
     "draw": 0.25,
     "away": 0.31
   },
+  "vsBaseline": {
+    "diff": 0.01982,
+    "se": 0.0053,
+    "ratio": 3.74,
+    "n": 380
+  },
+  "vsMarket": {
+    "diff": -0.00246,
+    "se": 0.00282,
+    "ratio": -0.87,
+    "n": 380
+  },
+  "skippedRounds": [],
   "market": {
     "available": true,
     "games": 380,

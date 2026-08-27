@@ -123,8 +123,11 @@ async function main() {
     const r = JSON.parse(await readFile(btPath, 'utf8'));
     backtest = {
       available: true, season: r.season, games: r.games, ranAt: r.ranAt,
+      trainSeasons: r.trainSeasons ?? [],
       rps: r.models.blend.rps, logLoss: r.models.blend.logLoss, hitRate: r.models.blend.hitRate,
       baselineRps: r.models.baseline.rps, models: r.models,
+      // 贏過基準線／市場多少,以及那個差距是幾個標準誤 —— 沒有標準誤的比較讀者無從判斷
+      vsBaseline: r.vsBaseline ?? null, vsMarket: r.vsMarket ?? null,
       // 模型驗證頁需要完整資料,不只摘要
       calibration: r.calibration ?? [], byRound: r.byRound ?? [],
       surprises: r.surprises ?? [], baselineProbs: r.baselineProbs ?? null,

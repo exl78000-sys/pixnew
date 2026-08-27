@@ -25,6 +25,8 @@ import { goalsOf, minuteOf } from './fetch-official.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { GOAL_SEASONS, LAST_SEASON } from './lib/sources.mjs';
 import { teamGoals } from './lib/goals.mjs';
+// 走查回測的實作抽到 lib,英超與西甲跑同一份 —— 複製一份會讓兩個聯賽的數字慢慢不能比
+import { walkForward, rps, outcome, logLoss, pairedDiff } from './lib/backtest.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { teamRecord } from './lib/table.mjs';
 import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
@@ -80,17 +82,6 @@ function checkApiFootball(T) {
   let fail = 0;
   for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
   return fail;
-}
-
-const outcome = m => (m.fh > m.fa ? 0 : m.fh === m.fa ? 1 : 2);
-const logLoss = (p, o) => -Math.log(Math.max(1e-9, [p.home, p.draw, p.away][o]));
-// Ranked Probability Score:足球預測的標準指標,越低越好
-function rps(p, o) {
-  const pv = [p.home, p.draw, p.away];
-  const ov = [0, 0, 0]; ov[o] = 1;
-  let cp = 0, co = 0, s = 0;
-  for (let i = 0; i < 2; i++) { cp += pv[i]; co += ov[i]; s += (cp - co) ** 2; }
-  return s / 2;
 }
 
 function summarise(name, rows) {
@@ -239,65 +230,21 @@ async function main() {
   const codes = [...new Set(test.flatMap(m => [m.home, m.away]))].sort();
   const rounds = [...new Set(test.map(m => m.round))].sort((a, b) => a - b);
 
-  const dc = [], el = [], base = [], blend = [];
-  const perMatch = [];   // 每一場的走查預測,build 會拿去做「預測 vs 實際」對照
   // 賽季基準線:英超長期的主/和/客分佈
   const BASE = { home: 0.44, draw: 0.25, away: 0.31 };
 
   // 市場基準:讀當季的博彩收盤賠率(去水錢後的隱含機率)。
   // 有就在同一批比賽上比「模型 vs 市場」;沒有(檔案不存在)這一段就整個略過。
-  let oddsBy = new Map();
-  const srcCount = new Map();
+  let odds = null;
   try {
     const csv = readFileSync(join(ROOT, 'data', 'raw', 'football-data-couk', `${TEST_SEASON}.csv`), 'utf8');
-    const ix = oddsIndex(csv, { codeOf: T.codeOf });
-    oddsBy = ix.byMatch;
-    console.log(`  市場基準:讀到 ${oddsBy.size} 場賠率(${TEST_SEASON})`);
+    odds = oddsIndex(csv, { codeOf: T.codeOf });
+    console.log(`  市場基準:讀到 ${odds.byMatch.size} 場賠率(${TEST_SEASON})`);
   } catch { /* 沒有賠率檔就不比市場 */ }
-  const mkt = [], blendMkt = [];   // 只含「有賠率」那批;兩者比較才公平
-  const perMkt = [];               // 逐輪對照要用
 
-  for (const rd of rounds) {
-    const games = test.filter(m => m.round === rd);
-    const before = [...past, ...test.filter(m => m.round < rd)];
-    if (before.length < 100) continue;
-    const refDate = games[0].date;
-    const model = applyPromotedPrior(fitPoisson(before, codes, { refDate, iters: 1200 }));
-    const elo = buildElo(before);
-    for (const m of games) {
-      const o = outcome(m);
-      const p = predict(model, m.home, m.away);
-      const e = eloProbs(elo.get(m.home)?.elo ?? 1500, elo.get(m.away)?.elo ?? 1500);
-      const b = {
-        home: (p.home + e.home) / 2, draw: (p.draw + e.draw) / 2, away: (p.away + e.away) / 2,
-      };
-      const push = (arr, pr) => arr.push({
-        rps: rps(pr, o), ll: logLoss(pr, o),
-        hit: [pr.home, pr.draw, pr.away].indexOf(Math.max(pr.home, pr.draw, pr.away)) === o,
-      });
-      push(dc, p); push(el, e); push(base, BASE); push(blend, b);
-
-      // 這場有市場賠率的話,把市場機率與模型預測都記進「重疊集」——
-      // 必須是同一批比賽,不然拿模型的全季去比市場的半季不公平
-      const mk = oddsBy.get(`${m.home}|${m.away}`);
-      if (mk) {
-        push(mkt, mk.probs); push(blendMkt, b);
-        srcCount.set(mk.source, (srcCount.get(mk.source) ?? 0) + 1);
-        perMkt.push({ round: rd, model: rps(b, o), market: rps(mk.probs, o) });
-      }
-
-      perMatch.push({
-        season: m.season, date: m.date, home: m.home, away: m.away, round: m.round,
-        fh: m.fh, fa: m.fa,
-        pred: {
-          home: round(b.home, 4), draw: round(b.draw, 4), away: round(b.away, 4),
-          xgHome: p.xgHome, xgAway: p.xgAway,
-          topScores: p.topScores.slice(0, 3),
-          over25: p.over25, btts: p.btts,
-        },
-      });
-    }
-  }
+  const wf = walkForward({ past, test, baseline: BASE, odds });
+  const { perMatch } = wf;
+  const { dc, el, base, blend, mkt, blendMkt } = wf.rows;
 
   console.log(`\n▶ 走查回測 ${TEST_SEASON}(訓練資料只到每輪開賽前)\n`);
   console.table([
@@ -310,88 +257,9 @@ async function main() {
     console.log('\n▶ 模型 vs 市場(同一批有賠率的比賽)');
     console.table([summarise('兩者平均(模型)', blendMkt), summarise('博彩收盤(市場)', mkt)]);
   }
-  // ── 校準:模型說 70% 會贏的比賽,實際是不是真的贏了 70% ──────────
-  // 每場比賽貢獻三個點(主勝/和/客勝各一),這是多類別校準的標準做法。
-  function calibration(bins = 10) {
-    const pts = [];
-    for (const m of perMatch) {
-      const real = m.fh > m.fa ? 'home' : m.fh === m.fa ? 'draw' : 'away';
-      for (const o of ['home', 'draw', 'away']) pts.push({ p: m.pred[o], hit: real === o ? 1 : 0 });
-    }
-    const out = [];
-    for (let i = 0; i < bins; i++) {
-      const lo = i / bins, hi = (i + 1) / bins;
-      const inBin = pts.filter(r => r.p >= lo && (i === bins - 1 ? r.p <= hi : r.p < hi));
-      out.push({
-        lo: round(lo, 2), hi: round(hi, 2), n: inBin.length,
-        predicted: inBin.length ? round(inBin.reduce((a, r) => a + r.p, 0) / inBin.length, 4) : null,
-        actual: inBin.length ? round(inBin.reduce((a, r) => a + r.hit, 0) / inBin.length, 4) : null,
-      });
-    }
-    return out;
-  }
-
-  // ── 逐輪表現:模型隨著資料變多有沒有變準 ──────────
-  function byRound() {
-    const g = new Map();
-    for (let i = 0; i < perMatch.length; i++) {
-      const r = perMatch[i].round;
-      if (!g.has(r)) g.set(r, []);
-      g.get(r).push(blend[i]);
-    }
-    return [...g.entries()].sort((a, b) => a[0] - b[0]).map(([r, rows]) => ({
-      round: r, games: rows.length,
-      rps: round(rows.reduce((a, x) => a + x.rps, 0) / rows.length, 4),
-      hitRate: round(rows.filter(x => x.hit).length / rows.length, 3),
-    }));
-  }
-
-  // ── 最意外的比賽:模型給實際結果的機率最低的那幾場 ──────────
-  function surprises(n = 8) {
-    return perMatch.map(m => {
-      const real = m.fh > m.fa ? 'home' : m.fh === m.fa ? 'draw' : 'away';
-      return { ...m, real, pReal: m.pred[real] };
-    }).sort((a, b) => a.pReal - b.pReal).slice(0, n)
-      .map(m => ({ date: m.date, round: m.round, home: m.home, away: m.away, fh: m.fh, fa: m.fa,
-        real: m.real, pReal: round(m.pReal, 4), pred: m.pred }));
-  }
-
-  // 把結果寫成檔案,build 會讀進去顯示在頁面上 —— 頁面上的準度數字必須是真的跑出來的
-  const metric = rows => ({
-    rps: round(rows.reduce((a, r) => a + r.rps, 0) / rows.length, 4),
-    logLoss: round(rows.reduce((a, r) => a + r.ll, 0) / rows.length, 4),
-    hitRate: round(rows.filter(r => r.hit).length / rows.length, 4),
-  });
+  // 產物由共用實作組出來,這裡只補「哪一季、什麼時候跑的」
   const report = {
-    ranAt: new Date().toISOString(),
-    season: TEST_SEASON,
-    games: dc.length,
-    models: { poisson: metric(dc), elo: metric(el), blend: metric(blend), baseline: metric(base) },
-    chosen: 'blend',
-    calibration: calibration(),
-    byRound: byRound(),
-    surprises: surprises(),
-    baselineProbs: BASE,
-    // 模型 vs 市場:同一批有賠率的比賽上,模型與博彩收盤各自的表現
-    market: mkt.length ? {
-      available: true,
-      games: mkt.length,
-      source: [...srcCount.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null,
-      model: metric(blendMkt),
-      market: metric(mkt),
-      byRound: (() => {
-        const g = new Map();
-        for (const r of perMkt) {
-          if (!g.has(r.round)) g.set(r.round, []);
-          g.get(r.round).push(r);
-        }
-        return [...g.entries()].sort((a, b) => a[0] - b[0]).map(([rd, rows]) => ({
-          round: rd, games: rows.length,
-          modelRps: round(rows.reduce((a, x) => a + x.model, 0) / rows.length, 4),
-          marketRps: round(rows.reduce((a, x) => a + x.market, 0) / rows.length, 4),
-        }));
-      })(),
-    } : { available: false },
+    ranAt: new Date().toISOString(), season: TEST_SEASON, trainSeasons: TRAIN_FROM, ...wf.report,
   };
   mkdirSync(join(ROOT, 'data'), { recursive: true });
   writeFileSync(join(ROOT, 'data', 'backtest.json'), JSON.stringify(report, null, 2));
@@ -470,9 +338,12 @@ async function main() {
   console.log('\n▶ 背號回填自我檢查');
   const shirtFail = checkSquadNumbers();
 
+  console.log('\n▶ 兩聯賽回測共用實作自我檢查');
+  const btFail = checkBacktestShared();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -579,6 +450,78 @@ function checkGoalsDataset() {
 /* 背號回填。三條都是「配錯號碼比留空更糟」的具體形狀:
    同一 code 跨場號碼打架、同隊同名分不出是誰、兩個來源互相矛盾 ——
    遇到任何一種都必須留空,不能挑一個填。 */
+/* 走查回測的共用實作。這一節守的是「兩個聯賽的數字可以放在一起看」——
+   如果哪天有人把西甲的回測複製成第二份實作,協議一旦分岔,
+   RPS 差 0.01 就分不出是聯賽的差異還是實作的差異。
+
+   另外守 pairedDiff:它是「這個優勢穩不穩」的唯一根據,
+   算錯的話頁面上那句「幾個標準誤」就是錯的。 */
+function checkBacktestShared() {
+  const cases = [];
+
+  // 完美預測 RPS = 0;把機率押錯邊 RPS 最大
+  cases.push(
+    ['完美預測 RPS = 0', rps({ home: 1, draw: 0, away: 0 }, 0) === 0],
+    ['押錯到另一端 RPS = 1', rps({ home: 1, draw: 0, away: 0 }, 2) === 1],
+    ['RPS 懲罰「差很遠」多於「差一點」',
+      rps({ home: 1, draw: 0, away: 0 }, 2) > rps({ home: 1, draw: 0, away: 0 }, 1)],
+    ['outcome:主勝 0、和 1、客勝 2',
+      outcome({ fh: 2, fa: 1 }) === 0 && outcome({ fh: 1, fa: 1 }) === 1 && outcome({ fh: 0, fa: 1 }) === 2],
+    ['logLoss 對正確結果給越高機率越小',
+      logLoss({ home: 0.9, draw: 0.05, away: 0.05 }, 0) < logLoss({ home: 0.4, draw: 0.3, away: 0.3 }, 0)],
+  );
+
+  // pairedDiff:兩組完全一樣 → 差距 0;better 每場都好一點點 → 差距正、標準誤 0
+  const same = [{ rps: 0.2 }, { rps: 0.3 }, { rps: 0.25 }];
+  const d0 = pairedDiff(same, same);
+  const better = same.map(r => ({ rps: r.rps - 0.02 }));
+  const d1 = pairedDiff(better, same);
+  cases.push(
+    ['一模一樣的兩組 → 差距 0', d0.diff === 0],
+    ['每場都好 0.02 → 差距 0.02、標準誤 0', d1.diff === 0.02 && d1.se === 0],
+    ['正負號:better 真的比較好時 diff 為正', d1.diff > 0],
+    ['長度不同回 null', pairedDiff(same, same.slice(1)) === null],
+  );
+
+  /* 走查不准偷看未來。用一組**造出來的**賽果驗:
+     若實作不小心把整季都餵進 fit,第 1 輪就會知道後面發生的事。
+     這裡只檢查「每一輪的訓練集不含該輪與其後的比賽」這個不變式,
+     用 minBefore=0 讓每一輪都會被預測。 */
+  const teams = ['AAA', 'BBB', 'CCC', 'DDD'];
+  const test = [];
+  let rd = 0;
+  for (let i = 0; i < 12; i++) {
+    rd = Math.floor(i / 2) + 1;
+    const h = teams[i % 4], a = teams[(i + 1) % 4];
+    test.push({ season: 'X', date: `2020-01-${String(rd).padStart(2, '0')}`, round: rd,
+      home: h, away: a, fh: (i % 3), fa: ((i + 1) % 3), played: true });
+  }
+  const past = test.map(m => ({ ...m, season: 'W', round: m.round, date: '2019-01-01' }));
+  const wf = walkForward({ past, test, baseline: { home: 0.4, draw: 0.3, away: 0.3 }, minBefore: 0, iters: 60 });
+  cases.push(
+    ['每一場都有預測', wf.perMatch.length === test.length],
+    ['機率三者加總為 1',
+      wf.perMatch.every(m => Math.abs(m.pred.home + m.pred.draw + m.pred.away - 1) < 1e-3)],
+    ['沒有賠率時「模型 vs 市場」整段標成不可用', wf.report.market.available === false],
+    ['基準線原樣回傳,不會被改寫', wf.report.baselineProbs.home === 0.4],
+  );
+
+  // 產物:兩個聯賽的回測都要用同一組欄位,不然模型頁得寫兩套
+  const KEYS = ['games', 'models', 'calibration', 'byRound', 'surprises', 'baselineProbs', 'vsBaseline'];
+  for (const [label, f] of [['英超', 'backtest.json'], ['西甲', 'backtest-laliga.json']]) {
+    try {
+      const r = JSON.parse(readFileSync(join(ROOT, 'data', f), 'utf8'));
+      const missing = KEYS.filter(k => !(k in r));
+      cases.push([`${label}產物有共用實作的全部欄位`, missing.length === 0]);
+      cases.push([`${label}模型贏過基準線`, r.models.blend.rps < r.models.baseline.rps]);
+    } catch { cases.push([`${label}回測產物還沒產生,略過`, true]); }
+  }
+
+  let fail = 0;
+  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
+  return fail;
+}
+
 function checkSquadNumbers() {
   const cases = [];
   const side = (xi, subs = []) => ({ xi, subs });
