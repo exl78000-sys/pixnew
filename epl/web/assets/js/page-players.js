@@ -292,6 +292,9 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   const SEASONS = { current: leaders.seasons.current, last: leaders.seasons.last };
   // 本季剛開打時沒有人踢滿門檻,每 90 分鐘的榜會整片空 —— 那時預設看上季
   let season = leaders.currentQualified > 0 ? SEASONS.current : SEASONS.last;
+  /* 榜單標題一定要帶季別。這一頁有季別切換鈕,而且上面那行會在本季樣本不足時
+     **自動改看上季** —— 標題不說是哪一季的話,讀者看到的預設值正好不是他以為的那一季。 */
+  const seasonLabel = () => (season === SEASONS.current ? `本季 ${SEASONS.current}` : `上季 ${SEASONS.last}`);
   let posFilter = '', teamFilter = '', minMinutes = 0, query = '';
 
   const bySeason = s => players.filter(p => p.season === s);
@@ -320,22 +323,33 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   const playerForPhoto = p => ({ ...p, team: currentTeamCode(p) });
   const playerById = () => new Map(bySeason(season).map(p => [String(p.id), p]));
 
+  /* 年齡來自 SportMonks 的出生日期,沒對上的人整批不在榜裡。
+     涵蓋率不到全部時要說出來 —— 這是「排除了誰」,不是小數點後的細節。 */
+  const ageNote = () => {
+    const c = leaders.ageCoverage?.[season];
+    if (!c || !c.total || c.known >= c.total) return '';
+    return `<div class="tiny dim" style="margin-top:8px">只計入有出生日期的
+      ${c.known} / ${c.total} 人 —— 其餘來源沒給生日,不列入也不猜。</div>`;
+  };
+
   const boardCard = b => {
     const rows = (leaders[season === SEASONS.current ? 'current' : 'last'] ?? {})[b.key] ?? [];
     if (!rows.length) {
-      return `<div class="card"><h3>${C.esc(b.label)}</h3>
+      return `<div class="card"><h3>${C.esc(b.label)}
+        <span class="dim tiny">${seasonLabel()}・${C.esc(b.unit)}</span></h3>
         <div class="tiny dim">${b.per90
           ? `本季還沒有人踢滿 ${leaders.minMinutes} 分鐘,每 90 分鐘的數字現在給了會誤導,所以先不給。`
           : '這一季還沒有資料。'}</div></div>`;
     }
     const fmt = v => (b.per90 || String(v).includes('.') ? C.fx(v, 2) : v);
     const byId = playerById();
-    return `<div class="card"><div class="spread"><h3>${C.esc(b.label)}</h3>
+    return `<div class="card"><div class="spread"><h3>${C.esc(b.label)}
+        <span class="dim tiny">${seasonLabel()}</span></h3>
         <span class="pill tiny">${C.esc(b.unit)}</span></div>
       ${rows.map((r, i) => { const p = byId.get(String(r.id)); return `<div class="stat-line clickable" data-player-code="${C.esc(r.id)}" tabindex="0" role="button">
         <span class="small"><span class="dim mono" style="display:inline-block;width:1.6em">${i + 1}</span>
           ${p ? C.playerPhoto(playerForPhoto(p), 28) : ''} ${C.esc(r.name)}<span class="dim tiny"> ${p ? C.name(currentTeamCode(p)) : r.teams.map(codeName).join(' / ')}${p?.multiTeam ? '・跨隊' : ''}</span></span>
-        <b class="mono">${fmt(r.value)}</b></div>`; }).join('')}</div>`;
+        <b class="mono">${fmt(r.value)}</b></div>`; }).join('')}${b.key === 'youth' ? ageNote() : ''}</div>`;
   };
 
   const COLS = [

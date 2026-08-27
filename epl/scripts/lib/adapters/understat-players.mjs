@@ -151,13 +151,18 @@ export const BOARDS = [
   { key: 'finishers', label: '終結超出期望', unit: '非十二碼進球 − npxG', pick: p => p.finishing, per90: false },
   { key: 'chain', label: '參與得分串聯', unit: 'xGChain/90', pick: p => p.chain90, per90: true },
   { key: 'buildup', label: '推進(不含射門與助攻)', unit: 'xGBuildup/90', pick: p => p.buildup90, per90: true },
+  /* 年齡不是 Understat 給的,是 SportMonks 的出生日期算出來的,所以只有對上的人才有。
+     沒有年齡的人**不進這個榜也不假裝是超齡** —— 頁面要標出涵蓋率,見 leaders.ageCoverage。 */
+  { key: 'youth', label: '22 歲以下', unit: '進球+助攻', pick: p => p.ga, per90: false,
+    filter: p => p.age != null && p.age <= 22 },
 ];
 
 export function buildLeaders(players, { top = 10 } = {}) {
   const out = {};
   for (const b of BOARDS) {
     // per90 的榜只收達門檻的人;總數榜不設限,因為「他就是進了那麼多球」
-    const pool = b.per90 ? players.filter(p => p.qualified) : players;
+    let pool = b.per90 ? players.filter(p => p.qualified) : players;
+    if (b.filter) pool = pool.filter(b.filter);
     out[b.key] = pool
       .map(p => ({ id: p.id, name: p.name, teams: p.teams, multiTeam: p.multiTeam, value: b.pick(p), minutes: p.minutes }))
       .filter(r => r.value != null && r.value !== 0)

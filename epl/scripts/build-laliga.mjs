@@ -654,6 +654,9 @@ async function main() {
       retrievedAt: store?.retrievedAt ?? null,
     };
     console.log(`  SportMonks 球員補充 ${season}：${enriched.matched}/${data.players.length} 人對上${store ? '' : '（無快取）'}`);
+    /* 年齡是這一步才算出來的。buildLeaders 讀的是 playerSeasons,所以要寫回去 ——
+       不寫回去,吃 age 的榜(22 歲以下)會永遠是空的,而且空得沒有理由可查。 */
+    data.players = withAge;
     for (const p of withAge) playersOut.push(normalisePlayerForSite({ ...p, season }, { codeOf: T.codeOf }));
   }
 
@@ -797,6 +800,12 @@ async function main() {
     note: 'Understat 提供整季彙總；SportMonks 補充可取得的球員身分欄位。每 90 分鐘僅在上場時間達門檻時給出。',
     current: playerSeasons[CURRENT_SEASON] ? buildLeaders(playerSeasons[CURRENT_SEASON].players) : null,
     last: playerSeasons[LAST_SEASON] ? buildLeaders(playerSeasons[LAST_SEASON].players) : null,
+    /* 22 歲以下這個榜只看得到有出生日期的人。涵蓋率不寫出來的話,
+       讀者會以為那是完整名單 —— 實際上沒對上 SportMonks 的人整批不在裡面。 */
+    ageCoverage: Object.fromEntries(Object.entries(playerSeasons).map(([season, data]) => [season, {
+      known: data.players.filter(p => p.age != null).length,
+      total: data.players.length,
+    }])),
   });
   await write('coaches', {
     asOf: officialCoachStore?.retrievedAt ?? currentSquadStore?.retrievedAt ?? null,
