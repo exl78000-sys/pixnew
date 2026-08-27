@@ -290,6 +290,19 @@ try {
         ${C.pct(meta.model.backtest.baselineProbs?.draw ?? 0.25, 0)} /
         ${C.pct(meta.model.backtest.baselineProbs?.away ?? 0.31, 0)} ——
         任何模型至少要贏過它才有存在意義。</div>
+      ${bt.vsBaseline ? `<div><b>贏過基準線 ${bt.vsBaseline.diff.toFixed(4)} RPS,
+        那個差距是它自己標準誤的 ${bt.vsBaseline.ratio.toFixed(1)} 倍。</b>
+        逐場配對相減再算標準誤 —— 只說「這個數字比較低」不夠,
+        讀者無從判斷那是穩定的優勢,還是換一批比賽就會翻掉的波動。
+        ${bt.vsBaseline.ratio >= 2
+          ? '兩倍以上可以當成真的贏,不是運氣。'
+          : '<b>不到兩倍,不足以宣稱模型真的比較好</b> —— 這一頁照實報。'}</div>` : ''}
+      ${bt.trainSeasons?.length ? `<div class="dim">訓練資料:${bt.trainSeasons.join('、')}
+        (驗收季 ${bt.season} 的每一輪另外加上該輪之前已踢完的場次)</div>` : ''}
+      ${bt.coverage?.note ? `<div class="dim">母體:${Object.entries(bt.coverage)
+        .filter(([k]) => k !== 'note')
+        .map(([k, v]) => `${k} ${v.played}/${v.scheduled} 場`).join('、')} ——
+        ${C.esc(bt.coverage.note)}</div>` : ''}
       <div class="dim">回測執行時間:${new Date(bt.ranAt).toLocaleString('zh-TW', { hour12: false })}</div>
     </div>
   </div>
@@ -329,6 +342,14 @@ try {
         : `<b>模型和收盤市場旗鼓相當(RPS ${mkt.model.rps} vs ${mkt.market.rps})。</b>
            以一個只吃公開數據、看不到傷停與轉會的免費模型來說,能跟全世界最銳利的盤口打平,
            已經是這個平台最有說服力的一個結果。`}
+    ${bt.vsMarket ? `<div class="small muted" style="margin-top:8px">
+      這個「贏／輸／打平」不是看百分比大小決定的:模型與市場的逐場 RPS 配對相減後
+      差距 ${Math.abs(bt.vsMarket.diff).toFixed(5)}、標準誤 ${bt.vsMarket.se.toFixed(5)},
+      也就是 <b>${Math.abs(bt.vsMarket.ratio).toFixed(1)} 個標準誤</b>。
+      ${Math.abs(bt.vsMarket.ratio) < 2
+        ? '不到兩個標準誤 —— <b>統計上分不出高下</b>,所以這裡說「旗鼓相當」而不是誰贏。'
+        : `超過兩個標準誤,${bt.vsMarket.diff > 0 ? '模型' : '市場'}的優勢是穩定的,不是這批比賽的巧合。`}
+    </div>` : ''}
     <div class="tiny dim" style="margin-top:6px">
       市場機率的算法:取博彩收盤的十進位賠率,倒數得到含水錢的隱含機率,再按比例去掉莊家利潤(overround)使三者加總為 1。
       全程是決定性的算術,沒有一個數字是猜的。資料源 football-data.co.uk,免金鑰。</div>
@@ -336,8 +357,13 @@ try {
   <div class="section"><h2>模型 vs 市場</h2><span class="hint">尚未載入賠率</span></div>
   <div class="note">
     這一段會拿模型跟<b>博彩收盤盤口</b>比 —— 那是最銳利的外部基準,「贏過市場」才是真的準。
-    目前還沒有賠率資料:在連得到外網的環境跑 <span class="mono">npm run odds</span> 再
-    <span class="mono">npm test</span> 就會出現。資料源 football-data.co.uk,免金鑰。
+    ${/* 每個聯賽缺賠率的原因不一樣,有 note 就照講。
+          原本那句「跑 npm run odds 再 npm test」是寫給開發者的,
+          讀者看到只會覺得頁面壞了(任務 #44 修過同一種問題)。 */
+      bt.market?.note
+        ? C.esc(bt.market.note)
+        : '目前還沒有賠率資料;抓到之後這一段會自動出現。'}
+    資料源 football-data.co.uk,免金鑰。
   </div>`}
 
   <div class="section"><h2>校準:說 70% 的時候,是不是真的 70%</h2>

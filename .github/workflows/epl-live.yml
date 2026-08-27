@@ -179,6 +179,13 @@ jobs:
         run: npm run odds
         continue-on-error: true
 
+      # 西甲回測要在 laliga:build **之前**跑:模型頁上的準度數字是 build 讀
+      # data/backtest-laliga.json 帶進 meta 的。順序反過來的話,這次抓回來的新賽果
+      # 要等下一次執行才會反映在頁面上 —— 畫面比資料晚一輪,而且沒人看得出來。
+      - name: 西甲走查回測(模型準度)
+        run: npm run laliga:backtest
+        continue-on-error: true
+
       # 先建西甲，讓接下來的 npm test 驗證剛抓回來的兩季資料，而不是版控裡的舊輸出。
       - name: 建立西甲資料集
         run: npm run laliga:build
@@ -232,6 +239,7 @@ jobs:
                      epl/data/raw/api-football-la-liga/ \
                      epl/data/raw/football-data-couk/ \
                      epl/data/backtest.json epl/data/backtest-matches.json \
+                     epl/data/backtest-laliga.json epl/data/backtest-laliga-matches.json \
                      epl/data/form-tuning.json epl/data/availability-history.json 2>/dev/null || true
           git add -f epl/data/manual/photos.json 2>/dev/null || true
           if git diff --cached --quiet; then

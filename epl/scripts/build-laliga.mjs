@@ -672,15 +672,35 @@ async function main() {
       license: '依 Wikimedia 使用條款與圖片授權',
     },
   ];
-  const backtest = {
+  /* 回測結果由 npm run laliga:backtest 產生,跟英超跑同一份實作。
+     沒跑過就標成未回測 —— **不憑空填數字,也不拿英超的數字充當西甲的**。
+     這句 note 會直接印在模型頁上,所以必須跟實際用了幾季一致。 */
+  const btLaPath = join(ROOT, 'data', 'backtest-laliga.json');
+  let backtest = {
     available: false,
-    /* 這句話會直接印在模型頁上,所以**必須跟實際用了幾季一致** ——
-       寫死成「只有一季」而實際上有兩季,就是畫面在騙人。 */
     note: fullSeasons.length >= 2
-      ? `西甲已有 ${fullSeasons.join('、')} 兩季完整歷史，走查回測可以跑；`
-        + '目前尚未把西甲接進回測管線,接上之後這一頁會顯示實測準度。'
+      ? `西甲已有 ${fullSeasons.join('、')} 兩季完整歷史，走查回測跑得起來；`
+        + '但這次 build 沒有讀到回測產物,請先執行 npm run laliga:backtest。'
       : `西甲目前只有 ${fullSeasons.join('、') || LAST_SEASON} 一季完整歷史，尚無獨立留出賽季可做可靠回測。`,
   };
+  if (existsSync(btLaPath)) {
+    const r = JSON.parse(await readFile(btLaPath, 'utf8'));
+    backtest = {
+      available: true, season: r.season, games: r.games, ranAt: r.ranAt,
+      trainSeasons: r.trainSeasons ?? [],
+      rps: r.models.blend.rps, logLoss: r.models.blend.logLoss, hitRate: r.models.blend.hitRate,
+      baselineRps: r.models.baseline.rps, models: r.models,
+      calibration: r.calibration ?? [], byRound: r.byRound ?? [],
+      surprises: r.surprises ?? [], baselineProbs: r.baselineProbs ?? null,
+      vsBaseline: r.vsBaseline ?? null,
+      coverage: r.coverage ?? null,
+      /* 西甲沒有博彩收盤賠率的來源(football-data.co.uk 的西甲檔本站沒抓),
+         所以「模型 vs 市場」這一段整段不出現,不用英超的市場數字頂替。 */
+      market: { available: false, note: '本站尚未取得西甲的博彩收盤賠率,無法與市場比較。' },
+    };
+    console.log(`  走查回測:${r.season} ${r.games} 場・RPS ${r.models.blend.rps}`
+      + `(基準線 ${r.models.baseline.rps}、差距 ${r.vsBaseline?.ratio ?? '—'} 個標準誤)`);
+  }
   /* ── 球員(Understat)────────────────────────
      兩季各一份。上季完整、本季至今 —— 兩者性質不同,不能混在一起算,
      所以分開輸出並各自標明是哪一季。
