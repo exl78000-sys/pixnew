@@ -35,6 +35,7 @@ import { buildGoals } from './lib/goals.mjs';
 import { round } from './lib/util.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
+import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoachRecords } from './lib/adapters/fotmob-manual.mjs';
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -305,6 +306,33 @@ async function main() {
   const coaches = buildCoaches(ROOT, {
     allMatches: [...history, ...curPlayed], seasonMatches: lastMatches, season: LAST_SEASON,
   });
+  /* 教練本季戰績(FotMob 人工交付)。跟西甲同一套:**先用我們自己的賽果重算核對**,
+     對不上的整隊不採用。英超原本只有 11/23 位有戰績,而且是人工維護的。
+     這一批的 since 全是 null,所以只補戰績不補任期。 */
+  {
+    const fmCoaches = fotmobCoaches(ROOT);
+    if (fmCoaches) {
+      const ourPlayed = curPlayed.map(m => ({ home: m.home, away: m.away, fh: m.fh, fa: m.fa }));
+      const fmGoalsAll = fotmobGoals(ROOT);
+      const gv = fmGoalsAll ? verifyGoals('pl', fmGoalsAll, ourPlayed) : { newer: [] };
+      const cv = verifyCoachRecords('pl', fmCoaches, ourPlayed, gv.newer);
+      const byTeam = new Map(coaches.coaches.map(c => [c.team, c]));
+      for (const { coach } of cv.agree) {
+        const target = byTeam.get(coach.team);
+        // 只補「本季」戰績,不動 coaches.json 原有的上季 seasonRecord 與戰術註解
+        if (target) target.currentSeasonRecord = { season: CURRENT_SEASON, ...coach.seasonRecord };
+      }
+      coaches.currentRecordSource = {
+        source: fmCoaches.source, retrievedAt: fmCoaches.retrievedAt,
+        verified: cv.agree.length, differ: cv.differ.length,
+        aheadMatches: gv.newer.map(x => x.key),
+        note: 'FotMob 交付的教練本季戰績,已用本站 openfootball 賽果逐欄位核對;對不上的整隊不採用。',
+      };
+      console.log(`  教練本季戰績(FotMob):核對通過 ${cv.agree.length} 隊`
+        + (cv.differ.length ? `・對不上 ${cv.differ.length} 隊(不採用)` : ''));
+    }
+  }
+
   // 官方教練名單:只標示不一致,不覆蓋 —— coaches.json 的戰術註解是綁在某位教練身上的,
   // 直接改名字會讓註解變成在講另一個人。
   if (offManagers) {

@@ -9,6 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadMatches } from './lib/adapters/openfootball.mjs';
+import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoachRecords } from './lib/adapters/fotmob-manual.mjs';
 import { competition } from './lib/canonical.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
@@ -381,6 +382,36 @@ async function main() {
   // 官方 staff 頁是現任姓名的優先核對來源；SportMonks 只補官方尚未解析到的球隊。
   const officialCoachTeams = new Set(officialCoachData.map(c => c.team));
   const coachData = [...officialCoachData, ...sportmonksCoachData.filter(c => !officialCoachTeams.has(c.team))];
+
+  /* 教練任內戰績(FotMob 人工交付)。**接之前先用我們自己的賽果重算核對** ——
+     協作方自報「全過」不算數(鐵則五)。核對不過的整隊不掛,不是「先掛上去再說」。
+
+     這一批的 since(接任日期)四十筆全是 null,所以只補戰績不補任期;
+     畫面上不要因為有了戰績就宣稱知道任期。 */
+  const coachBy0 = new Map(coachData.map(c => [c.team, c]));
+  const fmCoaches = fotmobCoaches(ROOT);
+  let coachRecordSource = null;
+  if (fmCoaches) {
+    const ourPlayed = curPlayed.map(m => ({ home: m.home, away: m.away, fh: m.fh, fa: m.fa }));
+    const fmGoalsAll = fotmobGoals(ROOT);
+    const gv = fmGoalsAll ? verifyGoals('es1', fmGoalsAll, ourPlayed) : { newer: [] };
+    const cv = verifyCoachRecords('es1', fmCoaches, ourPlayed, gv.newer);
+    for (const { coach } of cv.agree) {
+      const target = coachBy0.get(coach.team);
+      if (target) target.seasonRecord = { season: CURRENT_SEASON, ...coach.seasonRecord };
+    }
+    coachRecordSource = {
+      source: fmCoaches.source, retrievedAt: fmCoaches.retrievedAt,
+      verified: cv.agree.length, differ: cv.differ.length, noRecord: cv.noRecord.length,
+      // 上游比我們新的場次要講出來 —— 那是「我們的賽果還沒更新」不是「資料錯」
+      aheadMatches: gv.newer.map(x => x.key),
+      note: 'FotMob 交付的教練本季戰績,已用本站 openfootball 賽果逐欄位核對;'
+        + '對不上的整隊不採用。接任日期上游沒有,維持未知。',
+    };
+    console.log(`  教練戰績(FotMob):核對通過 ${cv.agree.length} 隊`
+      + (cv.differ.length ? `・對不上 ${cv.differ.length} 隊(不採用)` : '')
+      + (gv.newer.length ? `・上游多 ${gv.newer.length} 場(已計入核對)` : ''));
+  }
   const coachPhotos = loadCoachPhotos(ROOT);
   for (const c of coachData) {
     const photo = (c.imagePath && !/default-player|placeholder/i.test(c.imagePath))
@@ -860,6 +891,8 @@ async function main() {
     }])),
   });
   await write('coaches', {
+    // 戰績來源另外標:它跟教練姓名不是同一個來源,畫面要分得開
+    recordSource: coachRecordSource,
     asOf: officialCoachStore?.retrievedAt ?? currentSquadStore?.retrievedAt ?? null,
     officialAsOf: officialCoachStore?.retrievedAt ?? null,
     season: CURRENT_SEASON,

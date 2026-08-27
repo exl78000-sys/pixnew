@@ -273,6 +273,7 @@ try {
         <span class="mono small">勝率 ${C.pct(home ? f.prediction.home : f.prediction.away, 0)}</span>
       </div></a>`;
     }).join('')}</div>` : ''}
+    ${basicCoachRank()}
     ${squadRows(t).length ? `<div class="section" style="margin-top:20px"><h2>陣容</h2>
       <span class="hint">${squadRows(t).length} 人・數據為上季 ${meta.lastSeason} 的表現</span></div>
     <div id="squad"></div>` : ''}
@@ -280,6 +281,45 @@ try {
     ${C.foot(meta)}`;
     renderTeamH2H(t);
     renderSquad(t);
+    renderBasicCoachRank();
+  }
+
+  /* 西甲教練席。上一輪我判斷「做不了」是對的 —— 當時 seasonRecord 20 筆全 null。
+     現在 FotMob 交付的戰績逐隊用本站賽果核對過(19 隊通過),所以做得成了。
+     但**任期仍然沒有**(上游 since 全 null),所以這張表只有戰績沒有任期,
+     跟英超那張不同 —— 不要因為欄位少就補一個空欄位上去。 */
+  function basicCoachRank() {
+    const rows = coaches?.coaches?.filter(c => c.seasonRecord?.p) ?? [];
+    if (rows.length < 2) return '';
+    const src = coaches.recordSource;
+    return `<div class="section" style="margin-top:20px"><h2>教練席</h2>
+      <span class="hint">本季 ${meta.currentSeason} 任內戰績・${rows.length} 位</span></div>
+    <div id="coachRank"></div>
+    <div class="tiny dim" style="margin-top:8px">
+      戰績來自 ${C.esc(src?.source ?? 'FotMob')},已用本站賽果逐欄位核對,對不上的整隊不列。
+      <b>接任日期上游沒有</b>,所以這張表不談任期長短。
+      ${src?.aheadMatches?.length ? `另有 ${src.aheadMatches.length} 場上游已有、本站賽果尚未更新的比賽已計入。` : ''}
+    </div>`;
+  }
+
+  function renderBasicCoachRank() {
+    const el = document.getElementById('coachRank');
+    const rows = coaches?.coaches?.filter(c => c.seasonRecord?.p) ?? [];
+    if (!el || !rows.length) return;
+    el.innerHTML = C.table(rows, [
+      { key: 'coach', label: '教練', value: c => c.zh ?? c.name ?? '', left: true,
+        render: c => C.esc(c.zh ?? c.name ?? '') },
+      { key: 'team', label: '球隊', value: c => C.name(c.team), render: c => C.teamCell(c.team) },
+      { key: 'p', label: '場次', value: c => c.seasonRecord.p, num: true },
+      { key: 'w', label: '勝', value: c => c.seasonRecord.w, num: true },
+      { key: 'd', label: '和', value: c => c.seasonRecord.d, num: true },
+      { key: 'l', label: '負', value: c => c.seasonRecord.l, num: true },
+      { key: 'gf', label: '進', value: c => c.seasonRecord.gf, num: true },
+      { key: 'ga', label: '失', value: c => c.seasonRecord.ga, num: true },
+      { key: 'ppg', label: '場均勝點', num: true,
+        value: c => (c.seasonRecord.w * 3 + c.seasonRecord.d) / c.seasonRecord.p,
+        render: c => `<b>${C.fx((c.seasonRecord.w * 3 + c.seasonRecord.d) / c.seasonRecord.p, 2)}</b>` },
+    ], { sortKey: 'ppg', desc: true, onRow: c => { C.go('teams', { code: c.team }); } });
   }
 
   /* 西甲陣容。欄位只列這個來源真的有的 —— 英超那張表的身價、防守貢獻與傷停狀態
