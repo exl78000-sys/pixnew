@@ -69,6 +69,16 @@ jobs:
           npm run setpieces -- --season=2024-25
         continue-on-error: true
 
+      # 西甲外電翻成中文。**只翻已經抓下來的快取,不連外抓新聞** ——
+      # 翻譯結果依內容雜湊永久快取,同一篇不會翻第二次。
+      # 沒有 ANTHROPIC_API_KEY 就安靜跳過,畫面顯示原文(不是錯誤)。
+      - name: 翻譯西甲外電
+        working-directory: epl
+        run: npm run news:translate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        continue-on-error: true
+
       # SportMonks 西甲欄位與已完賽資料同步；有快取且未超過 7 天就不重抓。
       # 沒有 Secret 時安全略過，不影響其他資料建置。
       - name: 探測西甲 SportMonks 方案能力
@@ -206,6 +216,7 @@ jobs:
           git add -f epl/data/raw/live.json epl/data/raw/season-gws.json \
                      epl/data/raw/openfootball/ epl/data/raw/pulselive/ \
                      epl/data/raw/openfootball-la-liga/ \
+                     epl/data/raw/news-la-liga-zh.json \
                      epl/data/raw/understat/ \
                      epl/data/raw/understat-la-liga/ \
                      epl/data/raw/sportmonks-la-liga/ \

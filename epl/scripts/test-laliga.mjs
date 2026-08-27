@@ -10,6 +10,7 @@ import { normalisePlayerForSite } from './lib/adapters/understat-players.mjs';
 import { coachesFromSquadStore, enrichPlayers, loadSquadStore, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 import { parseClubSlugs, parseOfficialCoach, parseOfficialCoachPayload } from './fetch-laliga-official-coaches.mjs';
 import { officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
+import { verifyTranslation } from './lib/report/translate.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -320,6 +321,23 @@ const recovered = await fetchCompletedMatchDetails({ ...blockedArgs, force: true
 const afterRecover = JSON.parse(readFileSync(storeFile, 'utf8'));
 check('拿得到之後封鎖紀錄自動清掉', recovered.fetched === 1 && afterRecover.blocked === undefined && recoverCalls === 2);
 await rm(blockedRoot, { recursive: true, force: true });
+
+/* 外電翻譯的驗證器。這是整個翻譯層唯一的安全機制 —— 模型改了數字、
+   加了原文沒有的東西,只有它擋得住。所以要有測試守著。
+   守的是「會不會放行不該放行的」,不是「翻得好不好」。 */
+console.log('\n▶ 外電翻譯驗證器');
+const trSrc = { title: 'Mbappe hat-trick sinks Sociedad 4-1', body: 'Madrid won 4-1 on Wednesday in the 40th minute.' };
+check('正常翻譯放行',
+  verifyTranslation(trSrc, { title: 'Mbappe 帽子戲法 4-1 擊沉 Sociedad', body: 'Madrid 週三以 4-1 獲勝,第 40 分鐘。' }).ok === true);
+check('標題把比分改掉 → 擋下',
+  verifyTranslation(trSrc, { title: 'Mbappe 帽子戲法 3-1 擊沉 Sociedad' }).ok === false);
+check('標題把數字整個吃掉 → 擋下',
+  verifyTranslation(trSrc, { title: 'Mbappe 帽子戲法擊沉 Sociedad' }).ok === false);
+check('空標題 → 擋下', verifyTranslation(trSrc, { title: '' }).ok === false);
+check('標題暴長(多半是加了原文沒有的東西)→ 擋下',
+  verifyTranslation(trSrc, { title: 'Mbappe 帽子戲法 4-1 擊沉 Sociedad,'.repeat(4) }).ok === false);
+check('摘要漏掉大部分數字 → 擋下',
+  verifyTranslation(trSrc, { title: 'Mbappe 帽子戲法 4-1 擊沉 Sociedad', body: 'Madrid 週三獲勝。' }).ok === false);
 
 if (process.exitCode) throw new Error('西甲球隊數據第二版自我檢查失敗');
 console.log('  西甲球隊數據第二版全部通過');

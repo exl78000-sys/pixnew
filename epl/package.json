@@ -51,7 +51,8 @@
     "laliga:players": "node scripts/fetch-laliga-players.mjs",
     "sportmonks:sync": "node scripts/fetch-sportmonks.mjs",
     "tune:situations": "node scripts/tune-situations.mjs",
-    "tune:congestion": "node scripts/tune-congestion.mjs"
+    "tune:congestion": "node scripts/tune-congestion.mjs",
+    "news:translate": "node scripts/translate-news.mjs"
   },
   "engines": {
     "node": ">=18"

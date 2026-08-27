@@ -4,6 +4,7 @@
 // 輸出維持既有前端的核心資料形狀，但明確關閉沒有可靠來源的球員、傷停、即時與戰術模組。
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -694,6 +695,29 @@ async function main() {
         ? rawNews.filter(item => item && item.title && item.link && item.source).slice(0, 100)
         : [];
     } catch { externalNews = []; }
+  }
+
+  /* 譯文快取(npm run news:translate 產生)。沒有就整批顯示原文 ——
+     前端有分辨,不會留空。譯文一律**附在原文旁邊**而不是取代它:
+     這是機器翻譯,讀者要能自己對照(鐵則四)。 */
+  const zhPath = join(ROOT, 'data', 'raw', 'news-la-liga-zh.json');
+  let translated = 0;
+  if (existsSync(zhPath)) {
+    try {
+      const zh = JSON.parse(await readFile(zhPath, 'utf8'));
+      const keyOf = item => createHash('sha1')
+        .update(`${item.title}\n${item.body ?? ''}`).digest('hex').slice(0, 16);
+      for (const item of externalNews) {
+        const hit = zh.entries?.[keyOf(item)];
+        if (hit?.ok && hit.title) {
+          item.titleZh = hit.title;
+          item.bodyZh = hit.body ?? null;
+          item.translatedBy = hit.model ?? 'machine';
+          translated++;
+        }
+      }
+      if (translated) console.log(`  西甲外電譯文:${translated}/${externalNews.length} 則有中文`);
+    } catch { /* 快取壞掉就當沒有,顯示原文 */ }
   }
 
   // 西甲即時快照只讀 SportMonks 本地檔；開頁與 build 都不連外。
