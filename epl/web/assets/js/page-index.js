@@ -20,7 +20,9 @@ try {
     return `<div class="note" style="margin-top:10px">
       才踢了 ${maxPlayed} 輪,這張表<b>還不能當實力排序看</b> ——
       同分的隊伍靠淨勝球和進球數分先後,一場大勝就能把人推到第一。
-      要看實力請往下看預測積分榜,那裡吃的是${basic ? '上一完整賽季' : '過去三季'}的樣本。</div>`;
+      要看實力請往下看預測積分榜,那裡吃的是${
+        // 訓練用了幾季是資料說了算,不要按聯賽寫死 —— 西甲補上 2024-25 之後就不是「一季」了
+        meta.historySeasons?.length ? `${meta.historySeasons.join('、')}` : '過往賽季'}的樣本。</div>`;
   };
   const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
   const nextRound = upcoming[0]?.round ?? null;
@@ -46,7 +48,11 @@ try {
   <div class="grid g4">
     ${kpi('本季進度', played.length ? `第 ${played.at(-1).round} 輪` : `第 ${nextRound ?? 1} 輪`,
       `${meta.currentSeason}・已賽 ${played.length} / ${fixtures.length} 場`)}
-    ${kpi('模型準度', bt.available ? bt.rps : '—', bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : (basic ? '尚無獨立留出賽季' : '執行 npm test 後產生'))}
+    ${/* 兩個聯賽現在都有走查回測,所以這裡不再分聯賽。
+          舊的兩句都已經過期:西甲那句「尚無獨立留出賽季」不成立了,
+          英超那句「執行 npm test 後產生」是寫給開發者的。 */''}
+    ${kpi('模型準度', bt.available ? bt.rps : '—',
+      bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : '這個聯賽還沒有回測結果')}
     ${kpi('命中率', bt.available ? C.pct(bt.hitRate, 1) : '—', bt.available ? `${bt.season} ${bt.games} 場走查回測` : '尚未回測')}
     ${basic
       ? kpi('資料範圍', '2 季', `${meta.lastSeason} 完整・${meta.currentSeason} 進行中`)
@@ -75,7 +81,9 @@ try {
       <h2>接下來的比賽</h2>
       <div id="next"></div>
       <div style="margin-top:10px"><a href="${C.link('fixtures')}">完整賽程與預測 →</a>
-        ${basic ? '' : `・<a href="${C.link('live')}">實時戰況</a>`}</div>
+        ${/* 以前是「西甲一律不給實時戰況連結」。西甲的即時比分已經接上了
+              (meta.live.available = true),所以改成看有沒有來源。 */''}
+        ${meta.live?.available ? `・<a href="${C.link('live')}">實時戰況</a>` : ''}</div>
     </div>
     <div class="card">
       <h2>最新動態</h2>
@@ -91,7 +99,13 @@ try {
         <div>✓ 上季球隊 xG/xGA、射門、實際陣型、五種進球情境與風格百分位</div>
         <div>✓ 完賽後完整資料永久快取 ${reports.count ?? 0}/${played.length} 場（球隊統計、正式陣容、事件與球員評分）</div>
         <div>— 球員與教練資料已接入；傷停${meta.capabilities?.injuries ? '已接入' : '尚無可靠來源'}；即時比分${meta.live?.available ? '已接入' : '仍以賽程推算'}</div>
-        <div class="dim">模型只使用一個完整賽季，尚無獨立留出賽季可做可靠回測。</div>
+        ${/* 這一行本來寫死「只使用一個完整賽季，尚無獨立留出賽季可做可靠回測」——
+              補上 2024-25 並接進回測管線之後兩句都不成立了。改成跟著產物走。 */''}
+        <div class="dim">模型訓練用了 ${meta.historySeasons?.join('、') ?? '過往賽季'};
+          ${bt.available
+            ? `走查回測 ${bt.season} ${bt.games} 場,RPS ${bt.rps}(基準線 ${bt.baselineRps})——
+               <a href="${C.link('model')}">看驗證過程</a>。`
+            : '尚未跑走查回測,所以這一頁不給準度數字。'}</div>
       </div>`}</div>
     </div>` : ''}
 
@@ -108,7 +122,7 @@ try {
         採用值 RPS ${bt.rps} / LogLoss ${bt.logLoss} / 命中率 ${C.pct(bt.hitRate)};
         單獨用 Poisson 是 ${bt.models.poisson.rps}、單獨用 Elo 是 ${bt.models.elo.rps}、
         固定機率基準線是 ${bt.models.baseline.rps} —— 兩者平均最好,所以平台採用平均值。</div>`
-        : '<div class="dim">尚未跑過回測,執行 <span class="mono">npm test</span> 再重跑 build 就會顯示實測準度。</div>'}
+        : '<div class="dim">這個聯賽還沒有走查回測結果,所以這一頁不給準度數字 —— 給了就是假的。</div>'}
       ${meta.model.caveats.map(c => `<div class="dim">・${c}</div>`).join('')}
     </div>
   </div>

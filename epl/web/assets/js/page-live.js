@@ -76,16 +76,15 @@ try {
         if (isLaLiga) return `<div class="note">西甲實時頁面已啟用賽程推算、開賽倒數與賽後分析模板；目前尚未接入西甲即時比分資料源，畫面不會把賽前預測冒充實況。<br>
           即時比分、場上陣容與勝率會在 SportMonks 即時端點完成後由此頁自動接入；目前可先點賽程或完賽場次查看完整分析。
           <br>下方的<b>開賽倒數</b>與依時間判斷的<b>進行中</b>區塊不需要即時資料源。</div>`;
-        return `<div class="note">目前沒有接上即時比賽資料源。<br>
-          在自己的電腦上執行 <span class="mono">npm run live</span> 會連官方 FPL API 取得逐分鐘更新;
-          受限網路可改用 <span class="mono">npm run live -- --replay=2025-26:1</span> 看真實比賽的示範。
-          <br>下方的<b>開賽倒數</b>不需要即時資料,永遠可用。</div>`;
+        return `<div class="note">目前沒有接上即時比賽資料源,所以這一頁不會顯示場中比分 ——
+          畫面不會把賽前預測冒充實況。
+          <br>下方的<b>開賽倒數</b>與依時間判斷的<b>進行中</b>區塊不需要即時資料,永遠可用。</div>`;
       }
       if (live.demo) {
         return `<div class="note">上方的<b>進行中 / 等待賽果 / 開賽倒數</b>是依本季賽程與現在時間推算的,是真的。<br>
           下方<b>「已完賽」區塊</b>目前放的是${C.esc(live.sourceLabel)} —— 資料完全真實(真實出場名單、真實 xG、
           真實比分),但<b>不是本季的比賽</b>,只是用來示範賽後分析長什麼樣。<br>
-          要接上本季真正的即時比分,在自己的電腦上跑 <span class="mono">npm run live:watch</span>。</div>`;
+          本季真正的即時比分接上之後,這一段會自動換成實況。</div>`;
       }
       const fresh = new Date(live.fetchedAt);
       const age = Math.round((Date.now() - fresh.getTime()) / 60000);
@@ -94,7 +93,7 @@ try {
         資料時間 ${fresh.toLocaleString('zh-TW', { hour12: false })}(${ageText})
         ${isLiveMode()
           ? `<br><b>即時模式進行中</b> —— 每 ${Math.round((live.pollIntervalMs ?? 60000) / 1000)} 秒自動更新,不用重整。`
-          : '<br>這是<b>當時的快照</b>,不會自己更新。要逐分鐘更新請在自己的電腦上跑 <span class="mono">npm run live:watch</span>。'}
+          : '<br>這是<b>當時的快照</b>,不會自己更新 —— 下次資料更新時這裡才會換。'}
         ${live.source === 'mirror' ? '<br>鏡像是每輪賽後才更新的,比賽進行中不會逐分鐘變動。' : ''}</div>`;
     };
 
@@ -138,7 +137,7 @@ try {
         這 ${inPlaySched.length} 場<b>依賽程現在正在進行</b>,但目前沒有接上即時資料源,所以看不到比分。<br>
         ${isLaLiga
           ? '西甲即時端點尚未接入；目前只顯示賽前預測與開賽時間。'
-          : '在自己的電腦上執行 <span class="mono">npm run live:watch</span>,頁面就會每分鐘自動更新真實比分、場上陣容與即時勝率。'}</div>` : ''}
+          : '接上即時來源之後,這一頁會自動更新真實比分、場上陣容與即時勝率。'}</div>` : ''}
       <div class="grid g2">${liveCards.map(x => x.m ? liveCard(x.m) : schedCard(x)).join('')}</div>` : ''}
 
     ${awaiting.length ? `
@@ -168,7 +167,7 @@ try {
       <div class="note">${meta.currentSeason} 目前還沒有已完賽的比賽進入資料源,積分榜是空的。
         ${isLaLiga
           ? '西甲賽果會由西甲同步流程帶入。'
-          : '賽果由 <span class="mono">npm run fetch -- --force</span>(openfootball)或 <span class="mono">npm run live</span> 帶入,兩者都會自動併進這張表。'}</div>`}
+          : '賽果由 openfootball 與即時來源兩邊帶入,兩者都會自動併進這張表。'}</div>`}
     ${C.foot(meta)}`;
 
     if (curPlayed > 0) {

@@ -67,6 +67,10 @@ jobs:
         run: |
           npm run setpieces -- --season=2023-24
           npm run setpieces -- --season=2024-25
+          # 西甲兩季。特徵驗收要「調參一季、驗收另一季」,而兩季都要各自的**前一季**
+          # 當先驗(用本季彙總預測本季就是偷看未來),所以 2023-24 與 2024-25 都要。
+          npm run laliga:setpieces -- --season=2023-24
+          npm run laliga:setpieces -- --season=2024-25
         continue-on-error: true
 
       # 西甲外電翻成中文。**只翻已經抓下來的快取,不連外抓新聞** ——
