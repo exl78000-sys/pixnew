@@ -2,11 +2,85 @@ import * as C from './core.js';
 
 const app = document.getElementById('app');
 
+/* ── 兩個聯賽共用的區塊 ─────────────────────────────
+   西甲原本整頁另寫一套(meta.edition === 'basic'),補一個區塊要在兩邊各寫一次,
+   而且兩邊排版本來就不一樣 —— 那正是「西甲以英超為模板」要解的問題。
+   這四塊改成只定義一次、兩邊都呼叫。之後補版面照這個做法,不要再往 basic 分支加。
+
+   每塊都自己判斷資料在不在,缺就整塊不出現 —— 不留空欄位(鐵則三)。 */
+
+const colourOf = code => C.team(code).colors?.[0] ?? '#888';
+
+/* xG 的來源兩個聯賽不一樣:英超是球員層級的期望進球加總,西甲是 Understat 整隊統計。
+   所以來源那句話由呼叫端給,不要寫死成其中一種 —— 寫死的話另一個聯賽的出處就是錯的。 */
+function quadrantBlock(tactics, sourceNote) {
+  const rows = tactics.filter(t => t.attack?.xG90 != null && t.defence?.xGA90 != null);
+  if (!rows.length) return '';
+  return `
+  <div class="section"><h2>攻守四象限</h2><span class="hint">橫軸每場期望進球,縱軸每場期望失球(越上面防守越好)</span></div>
+  <div class="card">
+    ${C.scatter(rows.map(t => ({
+      x: t.attack.xG90, y: t.defence.xGA90, code: t.code, color: colourOf(t.code),
+      label: `${C.name(t.code)} xG ${t.attack.xG90} / xGA ${t.defence.xGA90}`,
+    })), { xLabel: '每場期望進球 xG(越右攻擊力越強)', yLabel: '每場期望失球 xGA(越上防守越穩)', invertY: true })}
+    <div class="tiny dim">右上角 = 攻守俱佳;左下角 = 兩頭落空。${sourceNote}</div>
+  </div>`;
+}
+
+function resilienceBlock(tactics) {
+  const rows = tactics.filter(t => t.resilience?.leadHoldPct != null && t.resilience?.trailRescuePct != null);
+  if (!rows.length) return '';
+  return `
+  <div class="section"><h2>領先之後守不守得住</h2><span class="hint">半場領先 / 落後時的實際收分能力</span></div>
+  <div class="card">
+    ${C.scatter(rows.map(t => ({
+      x: t.resilience.leadHoldPct, y: t.resilience.trailRescuePct, code: t.code, color: colourOf(t.code),
+      label: `${C.name(t.code)} 保分 ${t.resilience.leadHoldPct}% / 搶分 ${t.resilience.trailRescuePct}%`,
+    })), { xLabel: '半場領先時的保分率 %', yLabel: '半場落後時的搶分率 %' })}
+    <div class="tiny dim">右上角是最難纏的球隊:領先守得住、落後還能追。左下角就是俗稱的「玻璃心」。</div>
+  </div>`;
+}
+
+/* 比賽時段。回傳欄位定義而不是直接塞 DOM,讓兩邊自己決定掛在哪個容器。 */
+const tempoColumns = () => [
+  { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },
+  { key: 'gf1', label: '上半進', value: t => t.tempo.gf1, num: true },
+  { key: 'ga1', label: '上半失', value: t => t.tempo.ga1, num: true },
+  { key: 'gd1', label: '上半淨', value: t => t.tempo.gf1 - t.tempo.ga1, num: true, render: t => C.signed(t.tempo.gf1 - t.tempo.ga1, 0) },
+  { key: 'gf2', label: '下半進', value: t => t.tempo.gf2, num: true },
+  { key: 'ga2', label: '下半失', value: t => t.tempo.ga2, num: true },
+  { key: 'gd2', label: '下半淨', value: t => t.tempo.gf2 - t.tempo.ga2, num: true, render: t => C.signed(t.tempo.gf2 - t.tempo.ga2, 0) },
+  { key: 'swing', label: '下半場增減', value: t => t.tempo.secondHalfSwing, num: true,
+    title: '下半場淨勝球 − 上半場淨勝球,正值代表越踢越強',
+    render: t => `<b>${C.signed(t.tempo.secondHalfSwing, 1)}</b>` },
+  { key: 'comeback', label: '逆轉', value: t => t.resilience.comeback, num: true },
+  { key: 'collapse', label: '被逆轉', value: t => t.resilience.collapse, num: true },
+];
+
+const tempoBlock = tactics => tactics.some(t => t.tempo) ? `
+  <div class="section"><h2>比賽時段</h2><span class="hint">上半場與下半場的淨勝球差異</span></div>
+  <div id="tempo"></div>` : '';
+
+/* 各隊入口。hint 要照實列該聯賽真的有的東西 —— 西甲沒有人員配置與定位球順位,
+   照抄英超那句就是承諾了做不到的事。 */
+function teamLinksBlock(tactics, hint) {
+  if (!tactics.length) return '';
+  return `
+  <div class="section"><h2>看單一球隊</h2><span class="hint">${hint}</span></div>
+  <div class="card">
+    <div class="row" style="flex-wrap:wrap;gap:8px">
+      ${tactics.map(t => `<a class="pill" href="${C.link('teams', { code: t.code })}"
+        style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+        ${C.badge(t.code)}${C.name(t.code)}
+        ${t.formation?.label ? `<span class="dim tiny mono">${t.formation.label}</span>` : ''}</a>`).join('')}
+    </div>
+  </div>`;
+}
+
 // 西甲的逐場官方先發另存於單場分析頁；本頁的整季陣型比例仍只讀 Understat
 // getTeamData，絕不把整季比例包裝成單場官方先發。
 function renderLaLigaTactics({ meta, teams, tactics }) {
   const hasTeamFormationOfficial = meta.official?.teamFormation === true;
-  const colour = code => C.team(code).colors?.[0] ?? '#888';
   const formationRows = tactics.flatMap(t => (t.formation?.list ?? []).map(f => ({
     code: t.code, formation: f.name, minutes: f.minutes, share: f.share,
   })));
@@ -42,8 +116,12 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     <div id="primary"></div>
     <div class="section"><h2>陣型佔比比較</h2><span class="hint">固定 A／B／C 三欄比較；選單保留全部可取得的陣型</span></div>
     <div id="formations"></div>
+    ${quadrantBlock(tactics, 'xG 與 xGA 來自 Understat 的整隊整季統計,不是球員層級加總。')}
     <div class="section"><h2>攻守與節奏對比</h2><span class="hint">上一季每場平均</span></div>
     <div id="attack"></div>
+    ${resilienceBlock(tactics)}
+    ${tempoBlock(tactics)}
+    ${teamLinksBlock(tactics, '風格雷達、實際使用陣型與教練都在各隊自己的頁面')}
     <div class="note" style="margin-top:14px"><b>逐場資料</b>：單場分析頁已可查看目前完賽場次的官方先發；官網來源沒有第三方評分與座標時，畫面會保留從缺，不用推估值補上。</div>
     ${C.foot(meta)}`;
   document.getElementById('primary').innerHTML = C.table(primary, [
@@ -82,9 +160,11 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
     { key: 'xG90', label: 'xG/場', value: r => r.attack?.xG90 ?? -1, num: true, render: r => C.fx(r.attack?.xG90, 2) },
     { key: 'xGA90', label: 'xGA/場', value: r => r.defence?.xGA90 ?? -1, num: true, render: r => C.fx(r.defence?.xGA90, 2) },
-    { key: 'tempo', label: '進攻速度', value: r => r.tempo?.attackSpeed ?? -1, num: true, render: r => C.fx(r.tempo?.attackSpeed, 1) },
     { key: 'ppg', label: '場均勝點', value: r => r.ppg ?? -1, num: true, render: r => C.fx(r.ppg, 2) },
   ], { sortKey: 'xG90', desc: true, onRow: r => C.go('teams', { code: r.code }) });
+  const tempoEl = document.getElementById('tempo');
+  if (tempoEl) tempoEl.innerHTML = C.table(tactics.filter(t => t.tempo), tempoColumns(),
+    { sortKey: 'swing', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
 }
 
 try {
@@ -103,7 +183,6 @@ try {
     && Number(meta.official?.teamsWithFormation ?? 0) > 0;
 
   const tacBy = new Map(tactics.map(t => [t.code, t]));
-  const colour = c => C.team(c).colors?.[0] ?? '#888';
 
   app.innerHTML = `
   <div class="page-head">
@@ -117,14 +196,7 @@ try {
     ])}
   </div>
 
-  <div class="section"><h2>攻守四象限</h2><span class="hint">橫軸每場期望進球,縱軸每場期望失球(越上面防守越好)</span></div>
-  <div class="card">
-    ${C.scatter(tactics.map(t => ({
-      x: t.attack.xG90, y: t.defence.xGA90, code: t.code, color: colour(t.code),
-      label: `${C.name(t.code)} xG ${t.attack.xG90} / xGA ${t.defence.xGA90}`,
-    })), { xLabel: '每場期望進球 xG(越右攻擊力越強)', yLabel: '每場期望失球 xGA(越上防守越穩)', invertY: true })}
-    <div class="tiny dim">右上角 = 攻守俱佳;左下角 = 兩頭落空。xG 來自球員層級的期望進球加總,xGA 取自門將的期望失球。</div>
-  </div>
+  ${quadrantBlock(tactics, 'xG 來自球員層級的期望進球加總,xGA 取自門將的期望失球。')}
 
   <div class="section"><h2>人力配置</h2><span class="hint">用出場分鐘反推,平均每場擺出幾名後衛 / 中場 / 前鋒</span></div>
   <div id="shape"></div>
@@ -170,7 +242,7 @@ try {
   <div class="grid g2">
     <div class="card">
       ${C.scatter(formation.points.map(p => ({
-        x: p.mid, y: p.pts, code: p.code, color: colour(p.code),
+        x: p.mid, y: p.pts, code: p.code, color: colourOf(p.code),
         label: `${C.name(p.code)} 中場 ${p.mid} 人・${p.pts} 分`,
       })), { w: 560, h: 460, xLabel: '平均每場擺出幾名中場', yLabel: '該季聯賽積分', quadrants: false })}
       <div class="tiny dim">每個點是一支球隊。這是五組關係裡<b>最強的一組</b>,但請看右邊為什麼不能就這樣下結論。</div>
@@ -205,32 +277,15 @@ try {
     </div>
   </div>
 
-  <div class="section"><h2>領先之後守不守得住</h2><span class="hint">半場領先 / 落後時的實際收分能力</span></div>
-  <div class="card">
-    ${C.scatter(tactics.filter(t => t.resilience.leadHoldPct !== null && t.resilience.trailRescuePct !== null).map(t => ({
-      x: t.resilience.leadHoldPct, y: t.resilience.trailRescuePct, code: t.code, color: colour(t.code),
-      label: `${C.name(t.code)} 保分 ${t.resilience.leadHoldPct}% / 搶分 ${t.resilience.trailRescuePct}%`,
-    })), { xLabel: '半場領先時的保分率 %', yLabel: '半場落後時的搶分率 %' })}
-    <div class="tiny dim">右上角是最難纏的球隊:領先守得住、落後還能追。左下角就是俗稱的「玻璃心」。</div>
-  </div>
+  ${resilienceBlock(tactics)}
 
-  <div class="section"><h2>比賽時段</h2><span class="hint">上半場與下半場的淨勝球差異</span></div>
-  <div id="tempo"></div>
+  ${tempoBlock(tactics)}
 
   ${/* 這裡原本有一段「各隊風格卡」—— 20 張雷達圖,跟球隊詳情頁的「戰術風格」
        是同一張圖、同一組標籤,而且每張卡本身只是一個連到球隊頁的連結。
        同一份圖畫兩次,改了一邊另一邊就會悄悄過期,所以只留球隊頁那一份,
        這裡改成一排連結,要看誰就點誰。 */ ''}
-  <div class="section"><h2>看單一球隊</h2>
-    <span class="hint">風格雷達、人員配置、定位球順位與教練都在各隊自己的頁面</span></div>
-  <div class="card">
-    <div class="row" style="flex-wrap:wrap;gap:8px">
-      ${tactics.map(t => `<a class="pill" href="${C.link('teams', { code: t.code })}"
-        style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
-        ${C.badge(t.code)}${C.name(t.code)}
-        <span class="dim tiny mono">${t.formation.label}</span></a>`).join('')}
-    </div>
-  </div>
+  ${teamLinksBlock(tactics, '風格雷達、人員配置、定位球順位與教練都在各隊自己的頁面')}
   ${C.foot(meta)}`;
 
   const ROLE_ZH = { CB: '中衛', FB: '邊後衛', DM: '防中', CM: '中場', AM: '前腰', W: '邊鋒', ST: '中鋒' };
@@ -303,20 +358,9 @@ try {
       render: t => t.setPieces.breakdown?.corner?.goals ?? '—' },
   ], { sortKey: 'def', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
 
-  document.getElementById('tempo').innerHTML = C.table(tactics, [
-    { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },
-    { key: 'gf1', label: '上半進', value: t => t.tempo.gf1, num: true },
-    { key: 'ga1', label: '上半失', value: t => t.tempo.ga1, num: true },
-    { key: 'gd1', label: '上半淨', value: t => t.tempo.gf1 - t.tempo.ga1, num: true, render: t => C.signed(t.tempo.gf1 - t.tempo.ga1, 0) },
-    { key: 'gf2', label: '下半進', value: t => t.tempo.gf2, num: true },
-    { key: 'ga2', label: '下半失', value: t => t.tempo.ga2, num: true },
-    { key: 'gd2', label: '下半淨', value: t => t.tempo.gf2 - t.tempo.ga2, num: true, render: t => C.signed(t.tempo.gf2 - t.tempo.ga2, 0) },
-    { key: 'swing', label: '下半場增減', value: t => t.tempo.secondHalfSwing, num: true,
-      title: '下半場淨勝球 − 上半場淨勝球,正值代表越踢越強',
-      render: t => `<b>${C.signed(t.tempo.secondHalfSwing, 1)}</b>` },
-    { key: 'comeback', label: '逆轉', value: t => t.resilience.comeback, num: true },
-    { key: 'collapse', label: '被逆轉', value: t => t.resilience.collapse, num: true },
-  ], { sortKey: 'swing', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
+  const plTempo = document.getElementById('tempo');
+  if (plTempo) plTempo.innerHTML = C.table(tactics, tempoColumns(),
+    { sortKey: 'swing', desc: true, onRow: t => { C.go('teams', { code: t.code }); } });
 
   }
 } catch (err) { C.fail(err); }
