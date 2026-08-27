@@ -1,11 +1,8 @@
 name: 西甲戰情室 即時比分
 
 on:
+  # 本機優先模式：停止 GitHub 每五分鐘請求，避免佔用 Actions 佇列與 API 額度。
   workflow_dispatch:
-  schedule:
-    # GitHub schedule 最短實務間隔 5 分鐘；每小時最多 12 次，低於方案額度。
-    # schedule 只會由預設分支觸發；需要時可手動 workflow_dispatch。
-    - cron: '*/5 * * * *'
 
 permissions:
   contents: write

@@ -24,6 +24,7 @@ import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS,
 import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage, playerPosition as sportmonksPlayerPosition } from './lib/adapters/sportmonks.mjs';
 import { loadOfficialCoachStore, officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
+import { loadExpertOpinions } from './lib/experts.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -825,7 +826,21 @@ async function main() {
   await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 } });
   // analysis.html 共用同一組載入契約。西甲沒有這些模組時寫出明確空資料，避免 404。
   await write('tactics', teamProfiles);
-  await write('experts', { updatedAt: null, count: 0, matches: {} });
+  // 真人觀點共用同一份人工核對來源，但西甲輸出只能留下西甲賽事鍵，
+  // 避免英超觀點因為兩聯賽共用前端而被誤掛到西甲頁面。
+  const validExpertKeys = new Set(curMatches.map(m => `${m.season}|${m.home}|${m.away}`));
+  const allExpertOpinions = loadExpertOpinions(ROOT);
+  const expertMatches = Object.fromEntries(Object.entries(allExpertOpinions.matches)
+    .filter(([key]) => validExpertKeys.has(key)));
+  const expertRows = Object.values(expertMatches).flat();
+  const expertCategories = Object.fromEntries(['news', 'legend', 'expert']
+    .map(category => [category, expertRows.filter(row => row.category === category).length]));
+  await write('experts', {
+    ...allExpertOpinions,
+    count: expertRows.length,
+    counts: { matches: Object.keys(expertMatches).length, opinions: expertRows.length, drafts: 0, categories: expertCategories },
+    matches: expertMatches,
+  });
   await write('lineups', {});
   await write('shapes', shapes);
   await write('official', {

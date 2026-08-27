@@ -45,6 +45,34 @@ npm run bundle    # → dist/warroom.html(約 12 MB,含兩聯賽資料、隊徽�
 npm run live:watch    # 服務網站 + 背景輪詢官方 API,頁面每分鐘自己更新
 ```
 
+### 本機優先／一次發布模式
+
+日常開發與比賽日改由本機執行，不讓 GitHub Actions 的排程與高頻工作搶 runner。
+啟動英超與西甲的本機即時模式：
+
+```bash
+export SPORTMONKS_TOKEN=...  # 西甲即時快取需要；只留在本機終端，不會寫入檔案
+npm run local:watch          # 英超每 60 秒；西甲每 120 秒，兩者皆不會 git push
+```
+
+準備發布前，用一次同步把最新即時快照寫回本機並重建兩聯賽資料集：
+
+```bash
+npm run local:sync            # 英超 + 西甲即時快照（西甲最多 2 次請求）→ build
+git diff --stat               # 檢查變更
+git add . && git commit       # 確認內容後才做
+git push                      # 最後一次上傳
+```
+
+`local:sync` 不會執行賽後大批量補抓，也不會自行提交或推送；Token 只從目前終端環境讀取。
+
+本機即時模式的健康檢查頁為 `http://localhost:5173/api/live-status`，會同時列出英超與西甲
+最後輪詢時間、錯誤狀態與輪詢間隔；這個頁面不會觸發 API 請求。
+
+同一個 Wi-Fi 的其他裝置可開 `http://<這台電腦的區網 IP>:5173`。完成一段工作後，
+才以 `git add`、`git commit`、`git push` 一次上傳；GitHub 的資料更新／Pages 部署工作流程
+已改為 **Actions → Run workflow** 才會執行，避免每次 push 又佔用遠端佇列。
+
 或手動抓一次:
 
 ```bash
@@ -142,7 +170,7 @@ npm run crests    # 27 隊隊徽 → 縮圖 → 內嵌成 data URI
 | 執行方式 | 即時比分 | 說明 |
 |---|---|---|
 | **`npm run live:watch`(自己的電腦)** | ✅ 有 | 背景每分鐘輪詢,頁面自己更新。**要看即時比分就用這個** |
-| **GitHub Actions + Pages** | ✅ 有(約 15 分鐘更新一次) | runner 沒有網路限制,見下方「自動更新的網站」 |
+| **GitHub Actions + Pages** | ✅ 可手動發布 | 只在本機完成後手動執行，避免高頻工作佔用 runner |
 | 單檔版 `warroom.html` / 發布出去的頁面 | ❌ 沒有 | 為了安全,這類頁面不允許對外請求,只能顯示打包當下的資料 |
 | 受限網路的開發環境 | ❌ 沒有 | 例如只放行 GitHub 的沙箱 |
 
@@ -189,10 +217,10 @@ npm run laliga:build
 金鑰只存在 Node 執行環境，不會寫入 JSON 或前端。API-Football 不提供速度、跑動距離與衝刺資料，
 介面會明確標示不可用，不會由其他欄位估算。
 
-### 自動更新(GitHub Actions)
+### 一次發布(GitHub Actions)
 
-`.github/workflows/epl-live.yml` 定時在 GitHub 的 runner 上抓資料。**runner 連得到官方 FPL API**,
-所以即使你的開發環境連不到,也能拿到真實即時比分。它做兩件事:
+`.github/workflows/epl-live.yml` 現在只在 **Actions → Run workflow** 時執行。建議先在本機更新並驗證，
+再一次推送與發布；GitHub runner 仍能連官方 FPL API，但不會自行高頻輪詢:
 
 1. **把抓到的即時資料提交回 repo**(`epl/data/raw/live.json` 等,帶 `[skip ci]` 避免遞迴觸發)。
    之後在任何環境只要 `git pull` + `npm run build`,就是最新比分。
@@ -205,9 +233,8 @@ npm run laliga:build
 
 啟用後網址是 `https://<帳號>.github.io/<repo>/`,單檔版一併放在 `/warroom.html`。
 
-**排程的限制**:GitHub 的 `schedule` 只會從**預設分支**觸發。這個 repo 的預設分支目前不是
-放 epl 的分支,所以 15 分鐘自動更新還不會跑;`push` 觸發與手動觸發(Actions → Run workflow)
-都正常。要讓排程生效,把這個分支合併到預設分支,或把預設分支改成這一個。
+目前三個資料／比賽工作流程都保留 `workflow_dispatch` 作為遠端備援，沒有 schedule 或 push 觸發；
+需要遠端抓取時才在 Actions 手動執行。
 
 ### 比賽進行中拿得到什麼
 

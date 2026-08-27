@@ -11,21 +11,9 @@
 name: 英超戰情室 資料更新與部署
 
 on:
+  # 本機優先模式：只有準備好一次發布時才由 Actions 手動執行。
+  # 不再因為每次 push 或定時排程佔用 runner，避免高頻更新與部署互相排隊。
   workflow_dispatch:
-  schedule:
-    # 每 12 小時一次 —— 這是「沒有比賽時」的日常更新(賽程、球員、賠率、教練)。
-    #
-    # 比賽中的高頻更新不靠這裡:GitHub 的 schedule 是 best-effort,實測設定 15 分鐘、
-    # 實際間隔 28~78 分鐘(平均 46),比賽中根本來不及。那件事交給
-    # epl-matchday.yml —— 它在 job 內部用迴圈每 2 分鐘更新一次,不受排程延遲影響。
-    # 注意:schedule 只會從「預設分支」觸發。
-    - cron: '0 */12 * * *'
-  push:
-    branches:
-      - main
-      - master
-      - 'claude/**'
-    paths: ['epl/**', '.github/workflows/epl-live.yml']
 
 permissions:
   contents: write      # 把抓到的即時資料提交回 repo

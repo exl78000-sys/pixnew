@@ -15,11 +15,8 @@
 name: 英超戰情室 比賽日高頻更新
 
 on:
+  # 本機優先模式：停止 GitHub 排程與長時間輪詢；如需遠端臨時更新才手動執行。
   workflow_dispatch:
-  schedule:
-    # 只是「開場」用。就算延遲 46 分鐘也接得上 —— 因為開賽前 75 分鐘就會進場,
-    # 而且進行中的比賽任何一次執行都會抓到。
-    - cron: '*/15 * * * *'
 
 permissions:
   contents: write

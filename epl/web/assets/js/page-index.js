@@ -37,7 +37,7 @@ try {
       ? `使用 ${meta.lastSeason} 完整賽果與 ${meta.currentSeason} 已完賽資料，產生積分榜、單場機率與賽季模擬；回歸球隊另有上季 xG、射門、實際陣型與進球情境。完賽後資料會一次性永久快取；球員與教練資料已接入，傷停仍無可靠來源${meta.live?.available ? '，即時比分也已接入' : ''}。`
       : `把 ${meta.historySeasons.join('、')} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`}</p>
     ${C.stampRow([
-      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算;GitHub Actions 每 15 分鐘跑一次' }),
+      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算；本機同步後再手動發布' }),
       C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
       meta.live?.available ? C.stamp('即時比分', { iso: meta.live.fetchedAt, kind: 'live', note: '來源:' + meta.live.sourceLabel }) : null,
     ])}

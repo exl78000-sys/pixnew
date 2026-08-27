@@ -19,7 +19,7 @@ npm run serve     # 開 http://localhost:5173
 | 路徑 | 內容 |
 |---|---|
 | [`epl/`](epl/) | 英超戰情室的全部程式碼、資料與網站 |
-| `.github/workflows/epl-live.yml` | 定時抓即時比賽資料、重建網站並部署 |
+| `.github/workflows/epl-live.yml` | 手動抓資料、重建網站並部署（本機完成後一次發布） |
 
 ---
 

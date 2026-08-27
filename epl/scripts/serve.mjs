@@ -9,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'web');
 const PORT = Number(process.env.PORT || 5173);
+// 靜態模式也可由同一個 Wi-Fi 的其他裝置透過電腦區網 IP 存取。
+const HOST = process.env.HOST || '0.0.0.0';
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
@@ -28,4 +30,4 @@ createServer(async (req, res) => {
   } catch {
     res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' }).end('找不到檔案');
   }
-}).listen(PORT, () => console.log(`▶ 英超戰情室 → http://localhost:${PORT}`));
+}).listen(PORT, HOST, () => console.log(`▶ 英超戰情室 → http://localhost:${PORT}`));

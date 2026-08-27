@@ -292,7 +292,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   const SEASONS = { current: leaders.seasons.current, last: leaders.seasons.last };
   // 本季剛開打時沒有人踢滿門檻,每 90 分鐘的榜會整片空 —— 那時預設看上季
   let season = leaders.currentQualified > 0 ? SEASONS.current : SEASONS.last;
-  let posFilter = '', teamFilter = '', query = '';
+  let posFilter = '', teamFilter = '', minMinutes = 0, query = '';
 
   const bySeason = s => players.filter(p => p.season === s);
   const normalise = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
@@ -362,11 +362,16 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   ];
   let sortKey = 'goals', sortDesc = true;
 
-  const tableHtml = () => {
+  const filteredRows = () => {
     let rows = bySeason(season);
     if (posFilter) rows = rows.filter(p => p.pos === posFilter);
     if (teamFilter) rows = rows.filter(p => codesOf(p).includes(teamFilter));
+    if (minMinutes) rows = rows.filter(p => (p.minutes ?? 0) >= minMinutes);
     if (query) { const q = query.toLowerCase(); rows = rows.filter(p => p.name.toLowerCase().includes(q)); }
+    return rows;
+  };
+  const tableHtml = () => {
+    let rows = filteredRows();
     rows = rows.slice().sort((a, b) => {
       const av = a[sortKey] ?? -Infinity, bv = b[sortKey] ?? -Infinity;
       if (typeof av === 'string') return sortDesc ? String(bv).localeCompare(av) : String(av).localeCompare(String(bv));
@@ -413,17 +418,25 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     <div class="section"><h2>全部球員</h2><span class="hint">可篩選與排序</span></div>
     <div class="card">
       <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">
-        <input id="pq" type="search" placeholder="搜尋球員…" value="${C.esc(query)}"
+        <input id="q" type="search" placeholder="搜尋球員…" value="${C.esc(query)}"
                style="flex:1;min-width:160px;padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
-        <select id="ppos" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
-          <option value="">全部位置</option>
+        <select id="fTeam" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+          <option value="">所有球隊</option>
+          ${codes.map(c => `<option value="${C.esc(c)}" ${teamFilter === c ? 'selected' : ''}>${C.esc(codeName(c))}</option>`).join('')}
+        </select>
+        <select id="fPos" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+          <option value="">所有位置</option>
           ${[['GK', '門將'], ['D', '後衛'], ['M', '中場'], ['F', '前鋒']].map(([k, l]) =>
             `<option value="${k}" ${posFilter === k ? 'selected' : ''}>${l}</option>`).join('')}
         </select>
-        <select id="pteam" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
-          <option value="">全部球隊</option>
-          ${codes.map(c => `<option value="${c}" ${teamFilter === c ? 'selected' : ''}>${C.esc(codeName(c))}</option>`).join('')}
+        <select id="fMin" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+          <option value="0" ${minMinutes === 0 ? 'selected' : ''}>不限出場</option>
+          <option value="90" ${minMinutes === 90 ? 'selected' : ''}>90 分鐘以上</option>
+          <option value="600" ${minMinutes === 600 ? 'selected' : ''}>600 分鐘以上</option>
+          <option value="1800" ${minMinutes === 1800 ? 'selected' : ''}>1800 分鐘以上</option>
         </select>
+        <button class="btn" id="cmpBtn" type="button" disabled title="西甲目前沒有可核對的跨球員雷達資料">對比模式:不可用</button>
+        <span class="dim small" id="count">共 ${filteredRows().length} 人</span>
       </div>
       ${tableHtml()}
     </div>
@@ -449,12 +462,14 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       if (k === sortKey) sortDesc = !sortDesc; else { sortKey = k; sortDesc = true; }
       draw();
     });
-    const q = app.querySelector('#pq');
+    const q = app.querySelector('#q');
     if (q) { q.oninput = () => { query = q.value; draw(); q.focus(); }; }
-    const ps = app.querySelector('#ppos');
+    const ps = app.querySelector('#fPos');
     if (ps) ps.onchange = () => { posFilter = ps.value; draw(); };
-    const ts = app.querySelector('#pteam');
+    const ts = app.querySelector('#fTeam');
     if (ts) ts.onchange = () => { teamFilter = ts.value; draw(); };
+    const ms = app.querySelector('#fMin');
+    if (ms) ms.onchange = () => { minMinutes = Number(ms.value); draw(); };
     const byId = playerById();
     const activatePlayer = event => {
       const el = event.target.closest?.('[data-player-code]');

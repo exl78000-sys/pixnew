@@ -245,6 +245,8 @@ try {
     const lineup = official?.matches?.[`${f.home}|${f.away}`] ?? null;
     const H = teamBy.get(f.home), A = teamBy.get(f.away);
     const ht = H?.tactics, at = A?.tactics;
+    const p = f.prediction;
+    const rec = h2h[[f.home, f.away].sort().join('|')] ?? null;
     const val = (obj, path) => path.reduce((v, key) => v?.[key], obj) ?? null;
     const comparison = C.versus([
       { label: 'Elo', h: H?.elo ?? null, a: A?.elo ?? null, digits: 0 },
@@ -257,6 +259,68 @@ try {
       home: f.home, away: f.away, colors: f.colors,
       note: `${meta.lastSeason} 球隊層級資料只供背景對比；下方賽後數字才是這一場的真實資料。`,
     });
+
+    // 西甲初版沒有英超那種傷停／預估先發資料，但已經有模型、盤口、近況、
+    // 交手、上季戰術與本季球員彙總。賽前頁把這些已核對欄位集中呈現，缺少的
+    // 快照仍明確標示，不用賽後結果倒推。
+    const recentCard = code => {
+      const t = form?.teams?.[code];
+      if (!t) return `<div class="card"><h3>${C.esc(C.name(code))} 近況</h3><div class="dim small">尚無近期資料</div></div>`;
+      const runs = (t.recent ?? []).map(r => `<i class="frm ${r.res}" title="${C.esc(`${r.date}・${r.venue === 'H' ? '主' : '客'}場對 ${C.name(r.opp)}・${r.gf}-${r.ga}`)}">${r.res}</i>`).join('');
+      return `<div class="card">
+        <h3>${C.teamCell(code, { link: false })} 近況</h3>
+        <div class="row" style="gap:8px;align-items:center;margin-bottom:8px">
+          <span class="form-run">${runs || '<span class="dim small">—</span>'}</span>
+          <span class="small dim">${t.summary?.w ?? 0}勝 ${t.summary?.d ?? 0}和 ${t.summary?.l ?? 0}負・進 ${t.summary?.gf ?? 0} 失 ${t.summary?.ga ?? 0}</span>
+        </div>
+        ${(t.recent ?? []).map(r => `<div class="stat-line">
+          <span class="small dim mono">${C.dateFull(r.date)}</span>
+          <span class="small">${r.venue === 'H' ? '主' : '客'} vs ${C.teamLink(r.opp)} <b class="mono">${r.gf}-${r.ga}</b></span></div>`).join('')}
+        <div class="tiny dim" style="margin-top:8px">近五場資料只供賽前參照，不併入本站模型機率。</div>
+      </div>`;
+    };
+    const recent = form?.teams?.[f.home] && form?.teams?.[f.away] ? `
+      <div class="section" style="margin-top:18px"><h2>近期狀態</h2><span class="hint">近五場・不調整模型</span></div>
+      <div class="card">${C.versus([
+        { label: '近五戰場均勝點', h: form.teams[f.home].summary?.ppg, a: form.teams[f.away].summary?.ppg },
+        { label: '近五戰進球', h: form.teams[f.home].summary?.gf, a: form.teams[f.away].summary?.gf, digits: 0 },
+        { label: '近五戰失球', h: form.teams[f.home].summary?.ga, a: form.teams[f.away].summary?.ga, digits: 0, better: 'low' },
+      ], { home: f.home, away: f.away, colors: f.colors, note: '近況是獨立參考欄位，沒有偷偷加權到上方機率。' })}</div>
+      <div class="grid g2">${recentCard(f.home)}${recentCard(f.away)}</div>` : '';
+    const squadCard = code => {
+      const rows = players.filter(x => x.team === code && x.season === f.season && (x.minutes ?? 0) >= 90)
+        .sort((a, b) => (b.goals ?? 0) - (a.goals ?? 0) || (b.xGI ?? 0) - (a.xGI ?? 0)).slice(0, 5);
+      return `<div class="card"><h3>${C.teamCell(code, { link: false })} 關鍵球員</h3>
+        ${rows.length ? rows.map(x => `<div class="stat-line clickable" data-player-code="${C.esc(x.code ?? x.id)}" tabindex="0" role="button">
+          <span class="row small" style="gap:7px">${C.playerPhoto({ ...x, team: code }, 28)}<span>${C.esc(x.name)} <span class="dim tiny">${C.esc(x.posZh ?? '')}</span></span></span>
+          <span class="mono small">${x.goals ?? 0} 球・${x.assists ?? 0} 助・xGI ${C.fx(x.xGI, 2)}</span></div>`).join('')
+          : '<div class="dim small">本季尚無足夠出場資料</div>'}
+        <div class="tiny dim" style="margin-top:8px">點擊球員可開啟完整資料；排序以本季進球，再以 xGI 輔助。</div>
+      </div>`;
+    };
+    const tacticsBlock = ht?.radar && at?.radar ? `
+      <div class="section" style="margin-top:18px"><h2>戰術風格背景</h2><span class="hint">${meta.lastSeason} 整季資料</span></div>
+      <div class="card">${C.radar([
+        { name: C.name(f.home), color: f.colors?.home ?? '#00ff85', values: ht.radar },
+        { name: C.name(f.away), color: f.colors?.away ?? '#04f5ff', values: at.radar },
+      ], { size: 320 })}
+        <div class="stat-line"><span>${C.teamCell(f.home, { link: false })}</span><span class="tiny">${(ht.tags ?? []).slice(0, 3).map(t => `<span class="pill accent">${C.esc(t)}</span>`).join(' ')} <span class="mono dim">${C.esc(ht.formation?.label ?? '—')}</span></span></div>
+        <div class="stat-line"><span>${C.teamCell(f.away, { link: false })}</span><span class="tiny">${(at.tags ?? []).slice(0, 3).map(t => `<span class="pill info">${C.esc(t)}</span>`).join(' ')} <span class="mono dim">${C.esc(at.formation?.label ?? '—')}</span></span></div>
+        <div class="tiny dim" style="margin-top:8px">雷達與定位球指標來自上季整季統計，作為賽前背景，不代表本場實際表現。</div>
+      </div>` : '';
+    const preForecast = p ? `
+      <div class="section"><h2>模型預測</h2><span class="hint">Dixon-Coles Poisson + Elo 平均</span></div>
+      <div class="card">
+        ${C.probBar(p)}
+        <div class="row small dim" style="justify-content:space-between;margin-top:6px"><span>主勝 ${C.pct(p.home, 0)}</span><span>和局 ${C.pct(p.draw, 0)}</span><span>客勝 ${C.pct(p.away, 0)}</span></div>
+        <div class="grid g2" style="margin-top:12px"><div class="stat-line"><span class="small">預期進球</span><b class="mono">${C.fx(p.xgHome, 2)} : ${C.fx(p.xgAway, 2)}</b></div><div class="stat-line"><span class="small">雙方進球</span><b class="mono">${C.pct(p.btts, 0)}</b></div><div class="stat-line"><span class="small">大於 2.5 球</span><b class="mono">${C.pct(p.over25, 0)}</b></div><div class="stat-line"><span class="small">零封</span><b class="mono">${C.pct(p.csHome, 0)} / ${C.pct(p.csAway, 0)}</b></div></div>
+        <div class="small dim" style="margin-top:10px">最可能比分：${(p.topScores ?? []).slice(0, 4).map(s => `<span class="pill">${C.esc(s.s)}・${C.pct(s.p, 0)}</span>`).join(' ')}</div>
+        ${p.grid ? `<div style="margin-top:14px">${C.scoreHeat(p.grid, f.home, f.away)}</div>` : ''}
+        <div class="tiny dim" style="margin-top:8px">預測在開賽前生成；完賽後不重新收斂成 100% 或回填結果。</div>
+      </div>
+      <div class="section"><h2>專業市場機率</h2><span class="hint">有盤口才顯示，未把市場當資金流向</span></div>
+      ${professionalMarketCard(f, p)}${f.market ? marketNote(f, p) : ''}`
+      : `<div class="note info"><b>本場沒有保存可驗證的賽前機率快照。</b>已完賽場次只保留正式比分；不使用賽後重建數字冒充當時的預測。</div>`;
 
     app.innerHTML = `
     <div class="page-head">
@@ -279,15 +343,28 @@ try {
         : '賽前機率請回賽程頁查看。'}</div>
     </div>
 
-    ${f.played ? `<div class="analysis-switch" id="analysis-views" role="tablist" aria-label="西甲分析階段">
+    ${f.played ? `<div class="analysis-switch" id="analysis-views" role="tablist" aria-label="分析階段">
+      <button class="btn analysis-tab" type="button" role="tab" data-view="compare" aria-controls="panel-compare">綜合對比</button>
+      <button class="btn analysis-tab" type="button" role="tab" data-view="pre" aria-controls="panel-pre">賽前分析</button>
       <button class="btn analysis-tab" type="button" role="tab" data-view="post" aria-controls="panel-post">賽後分析</button>
-      <button class="btn analysis-tab" type="button" role="tab" data-view="context" aria-controls="panel-context">賽前背景</button>
     </div>` : ''}
 
-    <section class="analysis-panel" id="panel-context" role="tabpanel">
-      <div class="section"><h2>兩隊上季背景</h2><span class="hint">${meta.lastSeason}・不調整賽後結論</span></div>
+    ${f.played ? `<section class="analysis-panel" id="panel-compare" role="tabpanel">
+      <div class="section"><h2>綜合對比</h2><span class="hint">賽前背景與實際比分</span></div>
       <div class="card">${comparison}</div>
-      <div class="note" style="margin-top:12px">本場沒有保存可驗證的賽前機率快照；這裡只呈現賽前可用的上季背景，不把賽後重建數字當成賽前預測。</div>
+      <div class="note" style="margin-top:12px">這裡把賽前可用的球隊背景與最終比分放在同一頁；西甲目前沒有保存可驗證的賽前機率快照，不以賽後資料回填預測。</div>
+    </section>` : ''}
+
+    <section class="analysis-panel" id="panel-pre" role="tabpanel">
+      <div class="section"><h2>賽前分析</h2><span class="hint">${meta.lastSeason} 球隊背景・不調整賽後結論</span></div>
+      ${preForecast}
+      <div class="card">${comparison}</div>
+      ${recent}
+      ${tacticsBlock}
+      <div class="section" style="margin-top:18px"><h2>歷來交手</h2><span class="hint">${meta.h2hSeasons?.[0] ?? ''} 起的可核對紀錄</span></div>
+      <div class="card">${h2hHtml(f, rec)}</div>
+      <div class="section" style="margin-top:18px"><h2>賽前關鍵球員</h2><span class="hint">本季已取得的整季彙總</span></div>
+      <div class="grid g2">${squadCard(f.home)}${squadCard(f.away)}</div>
     </section>
 
     <section class="analysis-panel" id="panel-post" role="tabpanel">
@@ -298,7 +375,7 @@ try {
     </section>
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
-    if (f.played) setupAnalysisTabs('post');
+    setupAnalysisTabs(f.played ? 'compare' : 'pre');
     setupExpertPagers();
   }
 
@@ -381,7 +458,7 @@ try {
     }
     return `<div class="card"><div class="note info"><b>這場尚待永久快取。</b>
         必須同時取得球隊統計、兩隊正式陣容、事件、球員數據與至少一筆評分,且比分核對一致才會發布。缺任何一項都不會用估算值補上。</div>
-      <div class="tiny dim" style="margin-top:10px">開頁不會呼叫 API;資料由定時流程在完賽後抓取一次並永久保存。</div></div>`;
+      <div class="tiny dim" style="margin-top:10px">開頁不會呼叫 API；資料由本機同步或手動流程在完賽後抓取一次並永久保存。</div></div>`;
   }
 
   /* 官方進球事件。有名單就一定有這批事件 —— 兩者來自同一個請求,
@@ -954,7 +1031,7 @@ try {
   }
 
   function h2hHtml(f, rec) {
-    if (!rec) return `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在英超交手過(多半是剛升上來的球隊)。</div>`;
+    if (!rec) return `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在${meta.edition === 'basic' ? '西甲' : '英超'}交手過(多半是剛升上來的球隊)。</div>`;
     const homeIsA = [f.home, f.away].sort()[0] === f.home;
     return `<div class="row small" style="justify-content:space-between">
         <span>${C.teamLink(f.home)} <b>${homeIsA ? rec.aWin : rec.bWin}</b> 勝</span>

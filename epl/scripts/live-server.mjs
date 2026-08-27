@@ -7,6 +7,7 @@
 //   npm run live:watch -- --source=mirror  改用 GitHub 鏡像(不會場中更新)
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
 import { join, extname, normalize, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
@@ -18,7 +19,13 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WEB = join(ROOT, 'web');
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 const PORT = Number(process.env.PORT || 5173);
+// 明確綁定所有網路介面，讓同一個區網的裝置可以使用電腦區網 IP 開啟。
+const HOST = process.env.HOST || '0.0.0.0';
 const INTERVAL = Math.max(15, Number(arg('interval') || 60)) * 1000;
+// SportMonks 額度雖足夠，西甲快取與建置較重；本機預設兩分鐘一次即可，
+// 並且只在使用者明確以 --laliga 啟動時才會請求。
+const LALIGA = process.argv.includes('--laliga');
+const LALIGA_INTERVAL = Math.max(120, Number(arg('laliga-interval') || 120)) * 1000;
 const SOURCE = arg('source') ?? 'auto';
 
 const TYPES = {
@@ -33,6 +40,8 @@ const readJson = async name => JSON.parse(await readFile(join(WEB, 'data', `${na
 let cache = null;          // 目前這一份即時資料(直接餵給前端)
 let lastError = null;
 let lastPoll = null;
+let laligaLastError = null;
+let laligaLastPoll = null;
 
 async function poll() {
   try {
@@ -81,6 +90,39 @@ async function poll() {
   }
 }
 
+async function runLocal(command, args) {
+  await new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [command, ...args], {
+      cwd: ROOT,
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let stderr = '';
+    child.stderr.on('data', chunk => { stderr += chunk; });
+    child.on('error', reject);
+    child.on('close', code => code === 0 ? resolve() : reject(new Error(stderr.trim() || `exit ${code}`)));
+  });
+}
+
+async function pollLaLiga() {
+  if (!process.env.SPORTMONKS_TOKEN && !process.env.SPORTMONKS_KEY && !process.env.SPORTMONKS_API_KEY) {
+    laligaLastError = '未設定 SPORTMONKS_TOKEN';
+    console.warn('  ⚠ 西甲本機即時模式未設定 SPORTMONKS_TOKEN，略過輪詢。');
+    return;
+  }
+  try {
+    await runLocal('scripts/fetch-laliga-live.mjs', ['--max-requests=2']);
+    await runLocal('scripts/build-laliga.mjs', []);
+    laligaLastError = null;
+    laligaLastPoll = new Date().toISOString();
+    console.log(`  ↻ ${new Date().toLocaleTimeString('zh-TW', { hour12: false })} 西甲即時快取已更新`);
+  } catch (err) {
+    laligaLastError = err.message.split('\n')[0];
+    laligaLastPoll = new Date().toISOString();
+    console.warn(`  ✗ 西甲即時更新失敗: ${err.message.split('\n')[0]}`);
+  }
+}
+
 createServer(async (req, res) => {
   const path = decodeURIComponent(req.url.split('?')[0]);
 
@@ -98,7 +140,20 @@ createServer(async (req, res) => {
   }
   if (path === '/api/live-status') {
     res.writeHead(200, { 'content-type': TYPES['.json'], 'cache-control': 'no-store' });
-    res.end(JSON.stringify({ source: SOURCE, intervalMs: INTERVAL, lastPoll, lastError, counts: cache?.counts ?? null }));
+    res.end(JSON.stringify({
+      source: SOURCE,
+      intervalMs: INTERVAL,
+      lastPoll,
+      lastError,
+      counts: cache?.counts ?? null,
+      laliga: {
+        source: 'sportmonks',
+        intervalMs: LALIGA_INTERVAL,
+        lastPoll: laligaLastPoll,
+        lastError: laligaLastError,
+        enabled: LALIGA,
+      },
+    }));
     return;
   }
 
@@ -113,9 +168,13 @@ createServer(async (req, res) => {
   } catch {
     res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' }).end('找不到檔案');
   }
-}).listen(PORT, () => {
-  console.log(`▶ 英超戰情室【即時模式】→ http://localhost:${PORT}`);
-  console.log(`  來源 ${SOURCE}・每 ${INTERVAL / 1000} 秒輪詢一次・頁面會自己更新\n`);
+}).listen(PORT, HOST, () => {
+  console.log(`▶ 戰情室【本機即時模式】→ http://localhost:${PORT}`);
+  console.log(`  英超 ${SOURCE}・每 ${INTERVAL / 1000} 秒輪詢；西甲 ${LALIGA ? `SportMonks・每 ${LALIGA_INTERVAL / 1000} 秒輪詢` : '未啟用'}・不會自動推送\n`);
   poll();
   setInterval(poll, INTERVAL);
+  if (LALIGA) {
+    pollLaLiga();
+    setInterval(pollLaLiga, LALIGA_INTERVAL);
+  }
 });
