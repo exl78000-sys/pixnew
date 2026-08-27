@@ -11,7 +11,7 @@
 // - 單線、預設每隊至少間隔 1.6 秒,不做大量並發。
 // - 每抓完一隊就寫 checkpoint;中途失敗下次從缺的隊繼續。
 // - 每隊的五種情境進失球總和必須跟 openfootball 賽果完全一致,否則不標完成。
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -111,9 +111,14 @@ async function fetchTeam(slug) {
   throw last;
 }
 
+/* 先寫暫存檔再改名。直接寫 FILE 的話,程序被中斷(管線被關掉、runner 被砍)
+   會留下一個**半截或 0 位元組**的檔案,而下一次執行會 JSON.parse 它然後炸掉 ——
+   而且看起來像上游資料壞了。改名是原子操作,要嘛舊的要嘛新的。 */
 async function save(out) {
   out.retrievedAt = new Date().toISOString();
-  await writeFile(FILE, JSON.stringify(out, null, 2) + '\n');
+  const tmp = `${FILE}.tmp`;
+  await writeFile(tmp, JSON.stringify(out, null, 2) + '\n');
+  await rename(tmp, FILE);
 }
 
 async function main() {
@@ -137,8 +142,11 @@ async function main() {
     teams: {},
   };
   if (!FORCE && existsSync(FILE)) {
-    const prev = JSON.parse(await readFile(FILE, 'utf8'));
-    if (prev.season === LAST_SEASON) out = { ...out, ...prev, complete: false, teams: prev.teams ?? {} };
+    // 舊檔壞掉(先前被中斷)就當作沒有,重抓一次 —— 不要因為一個殘檔整條管線停住
+    try {
+      const prev = JSON.parse(await readFile(FILE, 'utf8'));
+      if (prev.season === LAST_SEASON) out = { ...out, ...prev, complete: false, teams: prev.teams ?? {} };
+    } catch { console.log(`  ⚠ 既有的 ${LAST_SEASON} 快取解析不了(多半是上次被中斷),這次重抓。`); }
   }
 
   console.log(`▶ Understat ${PROFILE.label} ${LAST_SEASON} 情境資料(${codes.length} 隊・單線・間隔 ${DELAY}ms)\n`);

@@ -1,6 +1,6 @@
 {
   "_updated": "2026-08-27",
-  "_note": "西甲第一版只登錄 2025-26 與 2026-27 出現過的球隊；隊碼由本站維護。",
+  "_note": "西甲登錄 2023-24 起在西甲出現過的球隊(回測與特徵驗收要用到往季的隊名);隊碼由本站維護。",
   "teams": [
     {
       "code": "ALA",
@@ -14,6 +14,22 @@
       "understat": "Alaves",
       "colors": [
         "#0057A8",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "ALM",
+      "en": "UD Almería",
+      "zh": "阿爾梅里亞",
+      "of": "UD Almería",
+      "alias": [
+        "Almeria",
+        "Almería",
+        "UD Almeria"
+      ],
+      "understat": "Almeria",
+      "colors": [
+        "#CE1126",
         "#FFFFFF"
       ]
     },
@@ -74,6 +90,22 @@
       "colors": [
         "#00954C",
         "#FFFFFF"
+      ]
+    },
+    {
+      "code": "CAD",
+      "en": "Cádiz CF",
+      "zh": "加的斯",
+      "of": "Cádiz CF",
+      "alias": [
+        "Cadiz",
+        "Cádiz",
+        "Cadiz CF"
+      ],
+      "understat": "Cadiz",
+      "colors": [
+        "#FFE500",
+        "#0067B1"
       ]
     },
     {
@@ -164,6 +196,20 @@
       "understat": "Girona",
       "colors": [
         "#CD2534",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "GRA",
+      "en": "Granada CF",
+      "zh": "格拉納達",
+      "of": "Granada CF",
+      "alias": [
+        "Granada"
+      ],
+      "understat": "Granada",
+      "colors": [
+        "#C4122E",
         "#FFFFFF"
       ]
     },

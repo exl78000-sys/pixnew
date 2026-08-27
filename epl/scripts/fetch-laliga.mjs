@@ -9,11 +9,18 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'data', 'raw', 'openfootball-la-liga');
 const BASE = 'https://raw.githubusercontent.com/openfootball/football.json/master';
 /* 2025-26 與 2026-27 是必要的(少了就不能建站,拿不到要當錯誤)。
-   2024-25 是**選配**:有的話西甲就有兩季完整歷史,可以跑走查回測與特徵驗收
-   (調參一季、驗收另一季);沒有的話照現況運作,只是回測仍然跑不了。
-   所以歷史季拿不到只警告不拋錯 —— 但一定要印出來,不要靜靜吞掉。 */
+
+   2023-24 與 2024-25 是**選配**。它們解開兩件事:
+   - 2024-25:西甲有兩季完整歷史 → 走查回測跑得起來(已完成,RPS 0.2043)
+   - 2023-24:進球情境特徵的驗收跑得起來 —— 調參季 2024-25 需要
+     **它自己的前一季**當先驗(拿本季彙總預測本季就是偷看未來),
+     那就是 2023-24。少了它,調參那一段整個做不成。
+   而 fetch-setpieces 需要該季的賽果檔才推得出當季的 20 隊隊碼,
+   所以要抓的不只是情境,還有賽果本身。
+
+   歷史季拿不到只警告不拋錯 —— 但一定要印出來,不要靜靜吞掉。 */
 const REQUIRED = ['2025-26', '2026-27'];
-const OPTIONAL = ['2024-25'];
+const OPTIONAL = ['2023-24', '2024-25'];
 const SEASONS = [...OPTIONAL, ...REQUIRED];
 
 async function main() {
@@ -24,7 +31,7 @@ async function main() {
     if (!res.ok) {
       if (OPTIONAL.includes(season)) {
         console.log(`  ⚠ ${season}(選配)拿不到:HTTP ${res.status} —— 跳過。`);
-        console.log(`     沒有它西甲仍然只有一季完整歷史,回測與特徵驗收都跑不了。`);
+        console.log(`     少了它,依賴這一季的回測或特徵驗收會照實擋下來,不會硬跑出假結果。`);
         continue;
       }
       throw new Error(`${season} 抓取失敗:HTTP ${res.status}`);

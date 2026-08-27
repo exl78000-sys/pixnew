@@ -38,7 +38,12 @@ const CURRENT_SEASON = '2026-27';
    為什麼要:多一季訓練資料本身就會讓 Poisson 的攻守參數穩一些,
    而且兩季完整歷史才跑得動走查回測(調參一季、驗收另一季)。
    Poisson 有時間衰減(refDate),舊比賽會自動降權,不必手動加權。 */
-const PRIOR_SEASONS = ['2024-25'];
+/* 2023-24 是**量過才加的**,不是「資料越多越好」的直覺:
+   走查回測把兩種組合各跑一次,驗收季 2025-26 上
+   2023-24+2024-25 的 RPS 0.2031 比只用 2024-25 的 0.2043 好 0.0012,
+   差距是 2.1 個標準誤 —— 超過一個標準誤才採用(專案鐵則二的門檻)。
+   線上模型與回測必須吃同一組訓練季,不然頁面上的準度講的是另一個模型。 */
+const PRIOR_SEASONS = ['2023-24', '2024-25'];
 const AS_OF = process.argv.find(a => a.startsWith('--as-of='))?.split('=')[1]
   ?? new Date().toISOString().slice(0, 10);
 const RUNS = Number(process.argv.find(a => a.startsWith('--runs='))?.split('=')[1] ?? 5000);
@@ -842,15 +847,26 @@ async function main() {
       type: 'Dixon-Coles Poisson + Elo（取平均）',
       homeAdvantage: round(Math.exp(model.gamma), 3), rho: model.rho, decayXi: model.xi,
       promotedPrior: model.promoted, simulationRuns: RUNS, backtest,
+      /* 這些話會原樣印在模型頁上,所以**每一句都要跟這次 build 的實際資料一致**。
+         兩句舊的已經過期又講錯:
+         - 「最後一輪上游沒有比分,該季實際納入 750 場而不是 380 場」——
+           把兩季的總場數拿去跟一季的 380 比,而且只有 2024-25 缺,2023-24 是完整的。
+           改成逐季報,而且只報真的有缺的那幾季。
+         - 「尚未把西甲接進走查回測管線」—— 已經接了(RPS 0.2031)。改成看產物。 */
       caveats: [
-        `西甲模型使用 ${fullSeasons.join('、')} 完整賽季與 ${CURRENT_SEASON} 已完賽資料，樣本少於英超版。`,
-        ...(priorSeasons.length
-          ? [`${priorSeasons.map(x => x.season).join('、')} 的最後一輪上游沒有比分，該季實際納入 `
-             + `${priorMatches.length} 場而不是 380 場。`]
-          : []),
-        '尚未把西甲接進走查回測管線，因此機率只適合作為初版比較基準。',
+        `西甲模型使用 ${fullSeasons.join('、')} 完整賽季與 ${CURRENT_SEASON} 已完賽資料,樣本少於英超版。`,
+        ...(() => {
+          const short = priorSeasons.filter(x => x.matches.length < 380);
+          return short.length
+            ? [`${short.map(x => `${x.season} 實際納入 ${x.matches.length} 場(上游少了 ${380 - x.matches.length} 場比分)`).join('、')}。`]
+            : [];
+        })(),
+        backtest.available
+          ? `走查回測 ${backtest.season} ${backtest.games} 場:RPS ${backtest.rps}、基準線 ${backtest.baselineRps}`
+            + `${backtest.vsBaseline ? `,差距 ${backtest.vsBaseline.ratio} 個標準誤` : ''}。`
+          : '尚未跑走查回測,因此機率只適合作為初版比較基準。',
         '不含球員、傷停、轉會、教練異動、賽程密度與歐戰疲勞。',
-        '升班馬沒有上一季西甲樣本，套用聯盟後段先驗並提高模擬不確定性。',
+        '升班馬沒有上一季西甲樣本,套用聯盟後段先驗並提高模擬不確定性。',
       ],
     },
     counts: {
