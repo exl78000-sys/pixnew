@@ -57,6 +57,18 @@ jobs:
         run: npm run laliga:players
         continue-on-error: true
 
+      # 歷史賽季的 Understat 進球情境。這是為了測「上一季的定位球/運動戰強弱
+      # 對下一季有沒有預測力」—— 情境是整季彙總,拿本季彙總預測本季比賽是偷看未來,
+      # 只能用上一季當先驗。所以調參季 2024-25 要 2023-24 的、驗收季 2025-26 要 2024-25 的。
+      #
+      # 一季 20 個請求、間隔 1.6 秒,而且**抓過就跳過**(歷史季不會變),
+      # 所以只有第一次會真的連外。抓不到不擋部署。
+      - name: 抓歷史賽季的進球情境(Understat・一次性)
+        run: |
+          npm run setpieces -- --season=2023-24
+          npm run setpieces -- --season=2024-25
+        continue-on-error: true
+
       # SportMonks 西甲欄位與已完賽資料同步；有快取且未超過 7 天就不重抓。
       # 沒有 Secret 時安全略過，不影響其他資料建置。
       - name: 探測西甲 SportMonks 方案能力

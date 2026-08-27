@@ -42,7 +42,11 @@ const PROFILES = {
 };
 const PROFILE = PROFILES[LEAGUE];
 if (!PROFILE) throw new Error(`不支援的聯賽 --league=${LEAGUE}`);
-const { competition: COMPETITION, lastSeason: LAST_SEASON } = PROFILE;
+const { competition: COMPETITION } = PROFILE;
+/* 預設抓「上一完整賽季」,但要測進球情境有沒有預測力時得往回多抓幾季 ——
+   情境是整季彙總,拿本季彙總預測本季比賽等於偷看未來,只能用**上一季**當先驗。
+   所以開一個 --season= 覆寫,歷史季各抓一次就好(抓完會存檔,不會重抓)。 */
+const LAST_SEASON = arg('season') || PROFILE.lastSeason;
 const DIR = join(ROOT, 'data', 'raw', PROFILE.cacheDir);
 const FILE = join(DIR, `${LAST_SEASON}-team-situations.json`);
 const PROVIDER_SEASON = LAST_SEASON.slice(0, 4);
