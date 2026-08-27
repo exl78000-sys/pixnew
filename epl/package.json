@@ -50,7 +50,8 @@
     "coach-photos": "node scripts/fetch-coach-photos.mjs",
     "laliga:players": "node scripts/fetch-laliga-players.mjs",
     "sportmonks:sync": "node scripts/fetch-sportmonks.mjs",
-    "tune:situations": "node scripts/tune-situations.mjs"
+    "tune:situations": "node scripts/tune-situations.mjs",
+    "tune:congestion": "node scripts/tune-congestion.mjs"
   },
   "engines": {
     "node": ">=18"

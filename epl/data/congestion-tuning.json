@@ -1,0 +1,70 @@
+{
+  "ranAt": "2026-08-27T14:52:47.827Z",
+  "league": "pl",
+  "leagueLabel": "英超",
+  "hypothesis": "休息天數少的球隊表現較差(疲勞、輪換、傷兵累積)。",
+  "limitation": "賽程只有聯賽:歐冠、歐霸與盃賽都不在資料裡,所以有打歐戰的球隊休息天數是系統性高估。沒通過只代表「用聯賽日期算出來的密度沒有預測力」,不代表賽程密度沒有影響。",
+  "normalRest": 7,
+  "restCap": 14,
+  "tuneSeason": "2024-25",
+  "tuneGames": 380,
+  "holdoutSeason": "2025-26",
+  "holdoutGames": 380,
+  "restProfile": {
+    "tune": {
+      "median": 7,
+      "shortRestPct": 15.6,
+      "unknown": 3
+    },
+    "holdout": {
+      "median": 7,
+      "shortRestPct": 16.9,
+      "unknown": 2
+    }
+  },
+  "tuneBaselineRps": 0.20131,
+  "tuneBest": {
+    "coef": {
+      "bRest": -0.25,
+      "bOpp": 0.2
+    },
+    "rps": 0.20105
+  },
+  "holdout": {
+    "baselineRps": 0.20761,
+    "baselineHitRate": 0.4868,
+    "trials": [
+      {
+        "係數": "最佳組合",
+        "bRest": -0.25,
+        "bOpp": 0.2,
+        "RPS": 0.20735,
+        "對基準": -0.00025,
+        "±標準誤": 0.00051,
+        "bootstrap p": 0.314,
+        "命中率": "49.5%"
+      },
+      {
+        "係數": "只開 bRest",
+        "bRest": -0.3,
+        "bOpp": 0,
+        "RPS": 0.20762,
+        "對基準": 0.00001,
+        "±標準誤": 0.00044,
+        "bootstrap p": 0.492,
+        "命中率": "49.7%"
+      },
+      {
+        "係數": "只開 bOpp",
+        "bRest": 0,
+        "bOpp": 0.3,
+        "RPS": 0.20722,
+        "對基準": -0.00038,
+        "±標準誤": 0.00042,
+        "bootstrap p": 0.182,
+        "命中率": "49.7%"
+      }
+    ]
+  },
+  "accepted": null
+}

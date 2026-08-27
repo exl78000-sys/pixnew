@@ -820,6 +820,9 @@ async function main() {
   const situationTuningPath = join(ROOT, 'data', 'situation-tuning.json');
   const situationTuning = existsSync(situationTuningPath)
     ? JSON.parse(await readFile(situationTuningPath, 'utf8')) : null;
+  const congestionTuningPath = join(ROOT, 'data', 'congestion-tuning.json');
+  const congestionTuning = existsSync(congestionTuningPath)
+    ? JSON.parse(await readFile(congestionTuningPath, 'utf8')) : null;
   /* 進球明細的球員姓名要涵蓋往季 —— 2024-25 有六十幾位進球者已經離開英超,
      只有那一季的名冊查得到他們。名冊抓不到就顯示代碼,不編一個名字出來。 */
   const goalNames = new Map(players.map(p => [p.code, p.name]));
@@ -854,7 +857,8 @@ async function main() {
     tuned: TUNED,
     tuning,
     situationTuning,
-    note: '近五戰、交手紀錄、傷停與上季進球情境都經過走查回測驗證,改善幅度小於雜訊,因此不進預測模型,僅作為資訊呈現。',
+    congestionTuning,
+    note: '近五戰、交手紀錄、傷停、上季進球情境與賽程密度都經過走查回測驗證,改善幅度小於雜訊,因此不進預測模型,僅作為資訊呈現。',
     teams: teamForm,
   });
   await write('analysis.json', { ...aiSummary, pre: aiPre, post: aiPost, counts: { pre: aiSummary.pre, post: aiSummary.post } });

@@ -168,58 +168,92 @@ try {
       近五場扣掉自己的長期水準之後,剩下的多半真的只是運氣。
     </div>
   </div>
-  ${situationSection()}`;
+  ${featureSection(form?.situationTuning, SITUATION_VIEW)}
+  ${featureSection(form?.congestionTuning, CONGESTION_VIEW)}`;
   }
 
-  /* 上一季的進球情境(定位球強弱)。跟上面那三個特徵一樣:量過、沒用、照實寫。
-     這一段不是附註 —— 它是這個平台的做法本身:提出假說、用不同賽季驗收、
-     沒過就留下紀錄,而不是換一個說法把它包裝成有用。 */
-  function situationSection() {
-    const t = form?.situationTuning;
-    if (!t) return '';
-    const cov = c => (c.noPrior?.length
-      ? `${c.teams} 隊有先驗,${c.noPrior.length} 隊沒有(${c.noPrior.join('、')})`
-      : `${c.teams} 隊都有先驗`);
-    const rows = (t.holdout?.trials ?? []).map(r => `<tr>
-      <td>${C.esc(r.係數)}</td>
-      <td class="mono num">${r.bAtk}</td><td class="mono num">${r.bDef}</td>
-      <td class="mono num">${r.RPS}</td>
-      <td class="mono num">${r.對基準 > 0 ? '+' : ''}${r.對基準}</td>
-      <td class="mono num">±${r['±標準誤']}</td>
-      <td><span class="pill tiny ${r.對基準 < 0 && Math.abs(r.對基準) > r['±標準誤'] ? 'accent' : ''}">
-        ${r.對基準 < 0 && Math.abs(r.對基準) > r['±標準誤'] ? '有效' : '在雜訊範圍內'}</span></td></tr>`).join('');
-
-    return `
-  <div class="section" style="margin-top:20px"><h2>上一季的定位球強弱有沒有預測力</h2>
-    <span class="hint">${t.accepted ? '通過驗收' : '測過,沒通過'}</span></div>
-  <div class="card">
-    <div class="small muted" style="display:grid;gap:8px;margin-bottom:14px">
-      <div><b>假說:</b>${C.esc(t.hypothesis)}</div>
+  /* 「測過但沒進模型」的實驗,一份渲染兩邊共用。
+     這些實驗的價值不在結果好看,而在把過程攤開:假說是什麼、怎麼定義、
+     為什麼這樣切賽季、涵蓋率多少、結論是什麼。沒通過也要畫 ——
+     悄悄不顯示等於假裝沒測過。以後再多測幾個特徵,加一個 VIEW 就好。 */
+  const SITUATION_VIEW = {
+    title: '上一季的定位球強弱有沒有預測力',
+    coefLabels: { bAtk: 'bAtk', bDef: 'bDef' },
+    extra: t => `
       <div><b>怎麼定義:</b>定位球 = ${t.deadBall.join(' + ')}。
         <b>十二碼不算</b> —— 罰球次數主要反映被犯規多少與裁判尺度,不是定位球能力。</div>
       <div><b>為什麼用上一季:</b>Understat 給的是整季彙總不是逐場,
         拿本季彙總預測本季比賽就是偷看未來,那個「改善」完全是假的。</div>
-      <div><b>怎麼測的:</b>調參 ${C.esc(t.tuneSeason)}(先驗 ${C.esc(t.tunePrior)},${t.tuneGames} 場)、
-        驗收 ${C.esc(t.holdoutSeason)}(先驗 ${C.esc(t.holdoutPrior)},${t.holdoutGames} 場)。
-        驗收這批完全沒參與挑選。</div>
-      <div class="dim">先驗涵蓋:調參 ${cov(t.priorCoverage.tune)};驗收 ${cov(t.priorCoverage.holdout)}。
-        沒有先驗的隊特徵給 0(不調整),不猜一個值。
-        聯盟平均每場定位球進 ${t.leagueAverage.deadBallFor90} 球 / 失 ${t.leagueAverage.deadBallAgainst90} 球。</div>
+      <div class="dim">先驗涵蓋:調參 ${cover(t.priorCoverage?.tune)};驗收 ${cover(t.priorCoverage?.holdout)}。
+        沒有先驗的隊特徵給 0(不調整),不猜一個值。</div>`,
+    verdict: t => `而且<b>連調參賽季都幾乎挑不出改善</b>(基準 ${t.tuneBaselineRps} → 最佳 ${t.tuneBest.rps})——
+      調參是可以盡情挑的,連挑都挑不到東西,代表訊號是真的不存在,
+      而不是「有訊號但被雜訊蓋過」。合理的解釋是:定位球得分能力本來就已經
+      反映在 Dixon-Coles 的攻守參數裡了,再把它單獨拉出來並沒有多給模型任何資訊。`,
+  };
+
+  const CONGESTION_VIEW = {
+    title: '賽程密度(休息天數)有沒有預測力',
+    coefLabels: { bRest: 'bRest', bOpp: 'bOpp' },
+    extra: t => `
+      <div><b>怎麼定義:</b>距離上一場聯賽幾天,以 ${t.normalRest} 天(一般一週)為基準取對數比,
+        上限壓在 ${t.restCap} 天 —— 休 14 天跟休 29 天對疲勞的意義差不多。</div>
+      <div class="dim">休息天數:調參中位數 ${t.restProfile?.tune?.median} 天、
+        ≤4 天佔 ${t.restProfile?.tune?.shortRestPct}%;
+        驗收中位數 ${t.restProfile?.holdout?.median} 天、≤4 天佔 ${t.restProfile?.holdout?.shortRestPct}%。</div>
+      <div class="note" style="margin-top:6px"><b>這個特徵有量測缺陷,結論要連著它一起讀。</b>
+        ${C.esc(t.limitation)}</div>`,
+    verdict: t => {
+      const c = t.tuneBest?.coef ?? {};
+      const flipped = (c.bRest ?? 0) < 0;
+      return `${flipped ? `<b>而且方向跟假說相反</b>:調參挑出來的最佳係數是
+        bRest=${c.bRest}(休得越多、進球期望越<b>低</b>)、bOpp=${c.bOpp}(對手休得越多、自己進球期望越<b>高</b>)。
+        疲勞假說預期的是相反的號誌。最可能的解釋是<b>混淆</b>:在只有聯賽日期的資料裡,
+        「休息短」幾乎等於「有打歐戰」,而打歐戰的正好是強隊 ——
+        所以係數抓到的是球隊實力,不是疲勞。這跟本頁「陣型到底有沒有影響」那一段
+        是同一種陷阱:相關不等於因果,而且因果可能是反過來的。` : ''}
+        調參賽季基準 ${t.tuneBaselineRps} → 最佳 ${t.tuneBest.rps}。`;
+    },
+  };
+
+  const cover = c => (!c ? '—' : c.noPrior?.length
+    ? `${c.teams} 隊有先驗,${c.noPrior.length} 隊沒有(${c.noPrior.join('、')})`
+    : `${c.teams} 隊都有先驗`);
+
+  function featureSection(t, view) {
+    if (!t) return '';
+    const keys = Object.keys(view.coefLabels);
+    const pass = r => r.對基準 < 0 && Math.abs(r.對基準) > r['±標準誤'];
+    const rows = (t.holdout?.trials ?? []).map(r => `<tr>
+      <td>${C.esc(r.係數)}</td>
+      ${keys.map(k => `<td class="mono num">${r[k] ?? 0}</td>`).join('')}
+      <td class="mono num">${r.RPS}</td>
+      <td class="mono num">${r.對基準 > 0 ? '+' : ''}${r.對基準}</td>
+      <td class="mono num">±${r['±標準誤']}</td>
+      <td><span class="pill tiny ${pass(r) ? 'accent' : ''}">${pass(r) ? '有效' : '在雜訊範圍內'}</span></td>
+      </tr>`).join('');
+
+    return `
+  <div class="section" style="margin-top:20px"><h2>${C.esc(view.title)}</h2>
+    <span class="hint">${t.accepted ? '通過驗收' : '測過,沒通過'}</span></div>
+  <div class="card">
+    <div class="small muted" style="display:grid;gap:8px;margin-bottom:14px">
+      <div><b>假說:</b>${C.esc(t.hypothesis)}</div>
+      ${view.extra(t)}
+      <div><b>怎麼測的:</b>調參 ${C.esc(t.tuneSeason)}(${t.tuneGames} 場)、
+        驗收 ${C.esc(t.holdoutSeason)}(${t.holdoutGames} 場)。驗收這批完全沒參與挑選。</div>
     </div>
 
     <div class="small muted" style="margin-bottom:6px">驗收賽季 ${C.esc(t.holdoutSeason)}:基準 RPS
       <b class="mono">${t.holdout.baselineRps}</b></div>
     <div class="table-wrap"><table><thead><tr>
-      <th>係數組合</th><th class="num">bAtk</th><th class="num">bDef</th>
+      <th>係數組合</th>${keys.map(k => `<th class="num">${view.coefLabels[k]}</th>`).join('')}
       <th class="num">RPS</th><th class="num">對基準</th><th class="num">±標準誤</th><th>判定</th>
     </tr></thead><tbody>${rows}</tbody></table></div>
 
     <div class="note" style="margin-top:12px">
       <b>結論:${t.accepted ? '通過,已進模型。' : '沒有一組通過,係數維持 0。'}</b>
-      ${t.accepted ? '' : `而且<b>連調參賽季都幾乎挑不出改善</b>(基準 ${t.tuneBaselineRps} → 最佳 ${t.tuneBest.rps})——
-      調參是可以盡情挑的,連挑都挑不到東西,代表訊號是真的不存在,
-      而不是「有訊號但被雜訊蓋過」。合理的解釋是:定位球得分能力本來就已經
-      反映在 Dixon-Coles 的攻守參數裡了,再把它單獨拉出來並沒有多給模型任何資訊。`}
+      ${t.accepted ? '' : view.verdict(t)}
     </div>
   </div>`;
   }
