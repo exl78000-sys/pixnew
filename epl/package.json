@@ -31,6 +31,7 @@
     "explore:apis": "node scripts/explore-apis.mjs",
     "official": "node scripts/fetch-official.mjs",
     "odds": "node scripts/fetch-odds.mjs",
+    "laliga:odds": "node scripts/fetch-odds.mjs --league=es1",
     "setpieces": "node scripts/fetch-setpieces.mjs",
     "laliga:setpieces": "node scripts/fetch-setpieces.mjs --league=es1",
     "laliga:fetch": "node scripts/fetch-laliga.mjs",

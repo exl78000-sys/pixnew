@@ -179,6 +179,14 @@ jobs:
         run: npm run odds
         continue-on-error: true
 
+      # 西甲賠率。這個站的西甲隊名拼法本站還沒見過,而沙箱連不到外網沒辦法先看 ——
+      # 所以腳本設計成:對不上太多就**拒絕寫入並把上游隊名印出來**。
+      # 第一次跑預期會失敗並列出那些字串,照著補進對照表之後下一次就會成功。
+      # 猜一張看起來很合理的對照表是最糟的做法:配錯的比賽會靜靜消失在回測母體外。
+      - name: 抓西甲博彩賠率
+        run: npm run laliga:odds
+        continue-on-error: true
+
       # 西甲回測要在 laliga:build **之前**跑:模型頁上的準度數字是 build 讀
       # data/backtest-laliga.json 帶進 meta 的。順序反過來的話,這次抓回來的新賽果
       # 要等下一次執行才會反映在頁面上 —— 畫面比資料晚一輪,而且沒人看得出來。
@@ -238,6 +246,7 @@ jobs:
                      epl/data/raw/api-football/ \
                      epl/data/raw/api-football-la-liga/ \
                      epl/data/raw/football-data-couk/ \
+                     epl/data/raw/football-data-couk-la-liga/ \
                      epl/data/backtest.json epl/data/backtest-matches.json \
                      epl/data/backtest-laliga.json epl/data/backtest-laliga-matches.json \
                      epl/data/form-tuning.json epl/data/availability-history.json 2>/dev/null || true

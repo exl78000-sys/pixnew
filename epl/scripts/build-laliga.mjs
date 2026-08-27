@@ -694,9 +694,12 @@ async function main() {
       surprises: r.surprises ?? [], baselineProbs: r.baselineProbs ?? null,
       vsBaseline: r.vsBaseline ?? null,
       coverage: r.coverage ?? null,
-      /* 西甲沒有博彩收盤賠率的來源(football-data.co.uk 的西甲檔本站沒抓),
-         所以「模型 vs 市場」這一段整段不出現,不用英超的市場數字頂替。 */
-      market: { available: false, note: '本站尚未取得西甲的博彩收盤賠率,無法與市場比較。' },
+      /* 拿到西甲賠率之後這一段會自動出現(回測產物裡的 market 直接帶上來)。
+         還沒拿到就標成不可用並說明原因 —— **不用英超的市場數字頂替**,
+         那是另一個聯賽的盤口,借過來就是編數字。 */
+      market: r.market?.available
+        ? r.market
+        : { available: false, note: '本站尚未取得西甲的博彩收盤賠率,無法與市場比較。' },
     };
     console.log(`  走查回測:${r.season} ${r.games} 場・RPS ${r.models.blend.rps}`
       + `(基準線 ${r.models.baseline.rps}、差距 ${r.vsBaseline?.ratio ?? '—'} 個標準誤)`);

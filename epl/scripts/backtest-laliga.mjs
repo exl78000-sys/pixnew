@@ -15,10 +15,11 @@
  */
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { loadTeams } from './lib/teams.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
-import { walkForward, metric } from './lib/backtest.mjs';
+import { walkForward } from './lib/backtest.mjs';
+import { oddsIndex } from './lib/odds.mjs';
 import { round } from './lib/util.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -69,7 +70,24 @@ function main() {
   };
   console.log(`  基準線(取自 ${TRAIN_SEASON} 實際分佈):主 ${BASE.home} / 和 ${BASE.draw} / 客 ${BASE.away}`);
 
-  const wf = walkForward({ past, test, baseline: BASE, odds: null });
+  /* 市場基準。西甲的賠率檔要 npm run laliga:odds 才有,拿不到就整段略過 ——
+     **絕對不能拿英超的市場數字頂替**,那是另一個聯賽的盤口。 */
+  let odds = null;
+  const oddsPath = join(ROOT, 'data', 'raw', 'football-data-couk-la-liga', `${TEST_SEASON}.csv`);
+  if (existsSync(oddsPath)) {
+    const ix = oddsIndex(readFileSync(oddsPath, 'utf8'), { codeOf: T.codeOf, div: 'SP1' });
+    if (ix.count) {
+      odds = ix;
+      console.log(`  市場基準:讀到 ${ix.count} 場賠率`
+        + (ix.unmatched.length ? `(對不上隊名:${ix.unmatched.join('、')})` : ''));
+    } else {
+      console.log(`  ⚠ 賠率檔存在但一場都解不出來,不比市場(對不上:${ix.unmatched.join('、') || '未知'})`);
+    }
+  } else {
+    console.log('  市場基準:沒有西甲賠率檔,不比市場(跑 npm run laliga:odds 取得)');
+  }
+
+  const wf = walkForward({ past, test, baseline: BASE, odds });
   const M = wf.report.models;
   console.table([
     ['Dixon-Coles Poisson', M.poisson], ['Elo', M.elo],
