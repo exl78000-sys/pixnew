@@ -463,9 +463,113 @@ async function main() {
   console.log('\n▶ Understat 進球情境自我檢查');
   const situationFail = checkGoalSituations();
 
+  console.log('\n▶ 進球資料集「不知道 vs 是 0」自我檢查');
+  const nullFail = checkGoalsDataset();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail) process.exitCode = 1;
+}
+
+/* 建置後的 goals.json:守兩件真的踩過的事。
+
+   一、**沒進過球的球隊不能從資料集消失。**
+   codes 原本只從 records 的 team 欄位取,一支「還沒進球、只失球」的球隊
+   (Coventry 首輪 0-3)整隊查無資料,球隊頁連整段都不出現 ——
+   看起來像壞掉,實際答案是「進 0 失 3」。逐隊對回賽果就抓得到。
+
+   二、**「不知道」不能靜靜變成 0。**
+   FotMob 的逐球事件沒有上場分鐘、也沒有先發/替補。第一版 `p.min += null`
+   讓分鐘變成 0、`if (r.start)` 把 null 判成替補,產出的是
+   「Arsenal 三球全由替補打進,每個人上場 0 分鐘」—— 畫面上看起來像真資料。
+   所以 startKnown/minKnown 是 false 的賽季,那些欄位必須是 null 而不是 0。 */
+function checkGoalsDataset() {
+  const LEAGUES = [
+    ['英超', join(ROOT, 'web', 'data', 'goals.json'), join(ROOT, 'web', 'data', 'fixtures.json')],
+    ['西甲', join(ROOT, 'web', 'data', 'leagues', 'es1', 'goals.json'),
+      join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json')],
+  ];
+  const cases = [];
+  let any = false;
+  for (const [label, gPath, fPath] of LEAGUES) {
+    let G, F;
+    try {
+      G = JSON.parse(readFileSync(gPath, 'utf8'));
+      F = JSON.parse(readFileSync(fPath, 'utf8'));
+    } catch { cases.push([`${label} 進球資料集`, true, '(還沒建置,略過)']); continue; }
+    any = true;
+    const fixtures = (F.fixtures ?? F).filter(m => m.played);
+
+    for (const season of G.seasons) {
+      const S = G.data[season];
+      // 逐隊對回賽果。goals.json 只收「已核對」的場次,所以拿同一批場次來比:
+      // 用 vs 裡出現過的對手組合反推是繞路,直接比整季總和即可 ——
+      // 兩邊都涵蓋同一批比賽時,總和必須一模一樣。
+      const acc = new Map();
+      const bump = (c, gf, ga) => {
+        const v = acc.get(c) ?? { gf: 0, ga: 0 };
+        v.gf += gf; v.ga += ga; acc.set(c, v);
+      };
+      for (const m of fixtures.filter(m => m.season === season)) {
+        bump(m.home, m.fh, m.fa); bump(m.away, m.fa, m.fh);
+      }
+      /* 賽程檔只放本季,往季的比較就沒有對照組。**這種情況要印成「略過」
+         而不是通過** —— 「0 隊全對」是空的綠燈,正是這個專案最怕的東西。
+         往季的比分核對由上面的「逐場進球明細」用 openfootball 做。 */
+      if (!acc.size) {
+        cases.push([`${label} ${season} 逐隊進失球對回賽果`, true,
+          '', `(賽程檔沒有 ${season},由逐場進球明細那節核對)`]);
+      } else {
+      const bad = [];
+      for (const [code, v] of acc) {
+        const t = S.teams[code];
+        if (!t) { if (v.gf || v.ga) bad.push(`${code} 整隊不見(${v.gf}-${v.ga})`); continue; }
+        if (t.for !== v.gf || t.against !== v.ga) bad.push(`${code} ${t.for}-${t.against}≠${v.gf}-${v.ga}`);
+      }
+      cases.push([`${label} ${season} 逐隊進失球對回賽果(${acc.size} 隊)`,
+        bad.length === 0, bad.slice(0, 3).join(' / ')]);
+      }
+
+      // 沒有 start 的賽季:先發/替補與整季佔比一律 null
+      if (S.startKnown === false) {
+        const teams = Object.values(S.teams);
+        const zeroed = teams.filter(t => t.starterGoals !== null || t.subGoals !== null);
+        const players = teams.flatMap(t => t.players);
+        const pZero = players.filter(p => p.startG !== null || p.subG !== null);
+        cases.push(
+          [`${label} ${season} 沒有先發欄位 → 球隊的先發/替補進球是 null 不是 0`,
+            zeroed.length === 0 && S.subShare === null,
+            `${zeroed.length} 隊被填了數字・subShare=${S.subShare}`],
+          [`${label} ${season} 沒有先發欄位 → 球員的先發/替補進球是 null 不是 0`,
+            pZero.length === 0, `${pZero.length} 人被填了數字`],
+        );
+      }
+      if (S.minKnown === false) {
+        const players = Object.values(S.teams).flatMap(t => t.players);
+        const zeroed = players.filter(p => p.min !== null);
+        const per90 = players.filter(p => p.g90 !== null || p.a90 !== null);
+        cases.push([`${label} ${season} 沒有上場分鐘 → min 與每 90 分鐘一律 null`,
+          zeroed.length === 0 && per90.length === 0,
+          `min 被填 ${zeroed.length} 人・per90 被填 ${per90.length} 人`]);
+      }
+      // 有 start 的賽季:先發 + 替補 = 本隊球員自己進的球(不含對手烏龍)
+      if (S.startKnown === true) {
+        const bad2 = Object.entries(S.teams)
+          .filter(([, t]) => t.starterGoals + t.subGoals !== t.for - t.ownFor)
+          .map(([c, t]) => `${c} ${t.starterGoals}+${t.subGoals}≠${t.for - t.ownFor}`);
+        cases.push([`${label} ${season} 先發進球 + 替補進球 = 本隊球員進球`,
+          bad2.length === 0, bad2.slice(0, 3).join(' / ')]);
+      }
+    }
+  }
+  if (!any) return 0;
+  let fail = 0;
+  for (const [name, pass, detail, skip] of cases) {
+    if (skip) { console.log(`  ⚠ ${name} —— ${skip}`); continue; }
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
 }
 
 function checkGoalSituations() {

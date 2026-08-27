@@ -47,6 +47,7 @@ try {
     return `
     <div class="section" style="margin-top:18px"><h2>進球來源</h2>
       <span class="hint">逐場進球與助攻・${seasons.length > 1 ? '可切換賽季' : seasons[0]}</span></div>
+    ${goals.note ? `<div class="tiny dim" style="margin:-4px 0 10px">${C.esc(goals.note)}</div>` : ''}
     ${seasons.length > 1 ? `<div class="filters" style="margin-bottom:12px">
       <label>賽季</label><select id="${id}">
         ${seasons.map(s => `<option value="${s}" ${s === seasons.at(-1) ? 'selected' : ''}>${s}</option>`).join('')}
@@ -136,12 +137,15 @@ try {
           每 90 分鐘的換算也做不了 —— 補一個 0 進去會被讀成「沒上場卻進了球」。`
         : `每 90 分鐘的分母是<b>上場分鐘</b>,不是出賽場次。上場不足 450 分鐘的不給這個數字 ——
           替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。`}
-        <br><b>這張表不把進球方式掛到個別球員。</b>FPL 事件沒有這個 qualifier;
-        上季的球隊級運動戰、角球與任意球加總列在下方「上季進球方式」。
+        <br><b>這張表不把進球方式掛到個別球員。</b>逐球事件沒有這個 qualifier;
+        球隊層級的運動戰、角球與任意球加總來自 Understat,列在戰術區。
       </div>
     </div>`;
 
-    document.getElementById(id + 'tbl').innerHTML = C.table(g.players, [
+    /* 一球未進的球隊(例如剛升上來、首輪就輸的)進球榜是空的。
+       只印表頭會看起來像載入失敗,直接說「還沒有進球」比較清楚。 */
+    document.getElementById(id + 'tbl').innerHTML = g.players.length
+      ? C.table(g.players, [
       { key: 'name', label: '球員', value: p => p.name,
         render: p => `<span class="team-cell">${C.playerPhoto({ code: p.code, name: p.name, team: t.code }, 24)}
           <span>${C.esc(p.name)}</span></span>` },
@@ -156,7 +160,8 @@ try {
       { key: 'min', label: '上場分鐘', value: p => p.min ?? -1, num: true, render: p => p.min ?? '—' },
       { key: 'g90', label: '進球 / 90', value: p => p.g90 ?? -1, num: true, render: p => p.g90 ?? '—' },
       { key: 'a90', label: '助攻 / 90', value: p => p.a90 ?? -1, num: true, render: p => p.a90 ?? '—' },
-    ], { sortKey: 'g', desc: true });
+      ], { sortKey: 'g', desc: true })
+      : '<div class="note">這一季還沒有進球,所以進球榜是空的 —— 不是資料缺漏。</div>';
   }
 
   /* 單隊的教練區塊。原本整頁的教練卡就是這一段 ——
@@ -272,6 +277,7 @@ try {
     ${basicCoachSection(t)}
     <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
     ${seasonHistorySection(t)}
+    ${goalSection(t)}
     ${ls ? `<div class="section"><h2>上季攻守摘要</h2><span class="hint">${meta.lastSeason}</span></div>
       <div class="card grid g2">
         <div>${line('勝 / 和 / 負', `${ls.w} / ${ls.d} / ${ls.l}`)}${line('進 / 失 / 淨勝', `${ls.gf} / ${ls.ga} / ${C.signed(ls.gd, 0)}`)}${line('場均勝點', ls.ppg)}${line('零封', ls.cleanSheets)}</div>

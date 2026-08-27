@@ -881,7 +881,12 @@ async function main() {
   }
   const goalsOut = buildGoals(goalsBySeason, {
     nameOf: c => goalNames.get(c) ?? `#${c}`,
-    codes: [...new Set(Object.values(goalsBySeason).flatMap(rs => rs.map(r => r.team)))].sort(),
+    /* team 與 opp 都要收。只收 team 的話,一支「還沒進過球」的球隊
+       整個從資料集消失 —— Coventry 首輪 0-3 輸球,goals.json 裡查無此隊,
+       球隊頁連「進球來源」整段都不出現,讀起來像資料壞了,
+       其實答案是「進 0 失 3」。沒進球跟沒資料是兩件事。 */
+    codes: [...new Set(Object.values(goalsBySeason)
+      .flatMap(rs => rs.flatMap(r => [r.team, r.opp])))].sort(),
   });
   {
     const unnamed = new Set();
