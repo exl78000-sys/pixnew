@@ -191,6 +191,16 @@ export function teamLink(code, { label: custom = null } = {}) {
   return `<a href="${link('teams', { code })}" style="color:inherit;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px">${esc(custom ?? name(code))}</a>`;
 }
 
+/* 背號的來源標記。
+   FPL 快照缺的那幾個是後來補的,補的來源可信度不一樣:
+   官方名單是英超自己公布的,不用特別說;FotMob 那幾筆只有單一來源、
+   沒有第二個來源背書,所以標一個小記號,滑上去說明它是哪裡來的。
+   標記只在「補進來的」身上出現 —— 533 筆 FPL 原本就有的不加雜訊。 */
+export function numberSourceMark(p) {
+  if (p?.squadNumberSource !== 'fotmob') return '';
+  return '<span class="dim tiny" title="這個背號來自 FotMob 的單一來源補件,沒有第二個來源核對過">*</span>';
+}
+
 /* ── 格式 ───────────────────────────── */
 export const pct = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 export const fx = (v, d = 2) => (v === null || v === undefined || Number.isNaN(v) ? '—' : Number(v).toFixed(d));
@@ -447,7 +457,7 @@ export function openPlayerDrawer(p, { meta, mode = 'current' } = {}) {
       <div class="spread">
         <div><div style="font-size:19px;font-weight:800">${esc(p.fullName)}</div>
           <div class="small muted">${p.posZh}・${p.age ?? '?'} 歲・${esc(t.en)}
-            ${p.squadNumber ? `・背號 ${p.squadNumber}` : ''}・£${fx(p.price, 1)}m</div></div>
+            ${p.squadNumber ? `・背號 ${p.squadNumber}${numberSourceMark(p)}` : ''}・£${fx(p.price, 1)}m</div></div>
         ${p.status !== 'a' ? `<span class="pill bad">${esc(p.statusZh)}</span>` : '<span class="pill accent">可出賽</span>'}
       </div>
       ${p.news ? `<div class="note" style="margin-top:10px">${esc(p.news)}</div>` : ''}

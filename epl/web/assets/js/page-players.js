@@ -75,6 +75,11 @@ try {
   </div>
   <div id="cmpBox"></div>
   <div id="list"></div>
+  <div class="tiny dim" style="margin-top:8px">
+    背號以 FPL 官方快照為主;快照沒有的,先用英超官方名單上的號碼補
+    (那是零額外請求、既有排程就抓回來的),再不然才用單一來源的補件並標
+    <span class="dim">*</span>。兩個來源對不上的一律不填 —— 掛錯號碼比留空更糟。
+    仍然查不到的顯示「—」。</div>
   ${C.foot(meta)}`;
 
   function renderSeasonUI() {
@@ -141,7 +146,8 @@ try {
       { key: 'team', label: '球隊', value: p => C.name(p.team), render: p => C.teamCell(p.team) },
       { key: 'pos', label: '位置', value: p => ['GK', 'DEF', 'MID', 'FWD'].indexOf(p.pos), render: p => p.posZh },
       { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true },
-      { key: 'squadNumber', label: '背號', value: p => p.squadNumber ?? 0, num: true, render: p => p.squadNumber ?? '—' },
+      { key: 'squadNumber', label: '背號', value: p => p.squadNumber ?? 0, num: true,
+        render: p => (p.squadNumber == null ? '—' : `${p.squadNumber}${C.numberSourceMark(p)}`) },
       { key: 'appearances', label: '出場', value: p => mode === 'current' ? (p.appearances ?? 0) : 0, num: true, render: p => mode === 'current' ? (p.appearances ?? '—') : '—' },
       { key: 'minutes', label: '分鐘', value: p => S().stat(p)?.minutes ?? 0, num: true },
       { key: 'goals', label: '進球', value: p => S().stat(p)?.goals ?? 0, num: true },
@@ -226,7 +232,7 @@ try {
         <div class="spread">
           <div><div style="font-size:19px;font-weight:800">${C.esc(p.fullName)}</div>
             <div class="small muted">${p.posZh}・${p.age ?? '?'} 歲・${t.en}
-              ${p.squadNumber ? `・背號 ${p.squadNumber}` : ''}・£${p.price.toFixed(1)}m</div></div>
+              ${p.squadNumber ? `・背號 ${p.squadNumber}${C.numberSourceMark(p)}` : ''}・£${p.price.toFixed(1)}m</div></div>
           ${p.status !== 'a' ? `<span class="pill bad">${p.statusZh}</span>` : '<span class="pill accent">可出賽</span>'}
         </div>
         ${p.news ? `<div class="note" style="margin-top:10px">${C.esc(p.news)}</div>` : ''}
@@ -357,7 +363,8 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     { key: 'team', label: '球隊', left: true, get: teamCell },
     { key: 'posZh', label: '位置', get: p => `<span class="dim">${C.esc(p.posZh)}</span>` },
     { key: 'age', label: '年齡', num: true, get: p => p.age ?? '—' },
-    { key: 'squadNumber', label: '背號', num: true, get: p => p.squadNumber ?? '—' },
+    { key: 'squadNumber', label: '背號', num: true,
+      get: p => (p.squadNumber == null ? '—' : `${p.squadNumber}${C.numberSourceMark(p)}`) },
     { key: 'games', label: '出場', num: true },
     { key: 'minutes', label: '分鐘', num: true },
     { key: 'goals', label: '進球', num: true },

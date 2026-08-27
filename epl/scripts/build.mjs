@@ -32,10 +32,11 @@ import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { buildGoals } from './lib/goals.mjs';
+import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { round } from './lib/util.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
-import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
+import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -290,6 +291,24 @@ async function main() {
   // 官方只給「顯示名 + 背號」,這裡把它接回我們的球員庫,前端才畫得出頭貼、連得到球員頁
   const offLineups = attachCodes(officialLineups(ROOT), players);
   const offManagers = officialManagers(ROOT);
+
+  /* 背號回填。FPL 快照有 66 人沒有背號,而官方名單本來就帶背號 ——
+     零額外請求,只是以前沒人把它接回球員庫。 */
+  {
+    const off = shirtsFromOfficial(offLineups);
+    const man = shirtsFromManual(squadNumbers(ROOT), players);
+    const r = backfillSquadNumbers(players, { official: off.shirts, manual: man.shirts });
+    const have = players.filter(x => x.squadNumber != null).length;
+    console.log(`  背號:${have} / ${players.length} 人`
+      + `(官方名單補 ${r.fromOfficial}、FotMob 補 ${r.fromManual};兩來源重疊 ${r.agree} 筆全部相符)`);
+    if (r.disagree.length) console.log(`  ⚠ 官方與 FotMob 背號不一致,兩邊都不採用:${r.disagree.join('、')}`);
+    if (off.unstable.length) console.log(`  ⚠ 同一 code 跨場背號不一致(多半是名單對照配錯人),不採用:${off.unstable.join('、')}`);
+    if (man.ambiguous.length) console.log(`  ⚠ FotMob 背號對不到唯一球員:${man.ambiguous.join('、')}`);
+    for (const c of r.conflicts) {
+      console.log(`  ⚠ ${c.team}:${c.name} FPL 背號 ${c.fpl}、官方名單 ${c.official} —— 保留 FPL 的,不自動改`);
+    }
+  }
+
   if (offShapes) {
     const n = Object.keys(offShapes.teams).length;
     console.log(`  官方陣型:${n} 隊有紀錄(共 ${Object.keys(offLineups?.matches ?? {}).length} 場正式名單)`);

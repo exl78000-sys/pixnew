@@ -25,6 +25,7 @@ import { goalsOf, minuteOf } from './fetch-official.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { GOAL_SEASONS, LAST_SEASON } from './lib/sources.mjs';
 import { teamGoals } from './lib/goals.mjs';
+import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { teamRecord } from './lib/table.mjs';
 import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
 import { normaliseMatchDetail } from './lib/adapters/api-football.mjs';
@@ -466,9 +467,12 @@ async function main() {
   console.log('\n▶ 進球資料集「不知道 vs 是 0」自我檢查');
   const nullFail = checkGoalsDataset();
 
+  console.log('\n▶ 背號回填自我檢查');
+  const shirtFail = checkSquadNumbers();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -569,6 +573,68 @@ function checkGoalsDataset() {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
     if (!pass) fail++;
   }
+  return fail;
+}
+
+/* 背號回填。三條都是「配錯號碼比留空更糟」的具體形狀:
+   同一 code 跨場號碼打架、同隊同名分不出是誰、兩個來源互相矛盾 ——
+   遇到任何一種都必須留空,不能挑一個填。 */
+function checkSquadNumbers() {
+  const cases = [];
+  const side = (xi, subs = []) => ({ xi, subs });
+
+  // 一、同一 code 在兩場的背號不同 → 多半是名單對照把兩個人配成同一位,兩筆都丟
+  const unstable = shirtsFromOfficial({ matches: {
+    'A|B': { home: side([{ code: '1', shirt: 7 }, { code: '2', shirt: 9 }]), away: side([]) },
+    'C|D': { home: side([{ code: '1', shirt: 21 }]), away: side([]) },
+  } });
+  cases.push(['同一球員跨場背號不一致 → 兩筆都不採用',
+    !unstable.shirts.has('1') && unstable.shirts.get('2') === 9 && unstable.unstable.includes('1')]);
+
+  // 二、FotMob 交付只有「隊碼 + 顯示名」,同隊同名兩位就不猜
+  const roster = [
+    { code: 'a1', team: 'ARS', name: 'White' },
+    { code: 'b1', team: 'BOU', name: 'Silva' },
+    { code: 'b2', team: 'BOU', name: 'Silva' },
+  ];
+  const man = shirtsFromManual({ hit: new Map([
+    ['ARS|White', { squadNumber: 4 }],
+    ['BOU|Silva', { squadNumber: 14 }],
+  ]) }, roster);
+  cases.push(['同隊同名兩位 → 背號不填,並記下原因',
+    man.shirts.get('a1') === 4 && !man.shirts.has('b1') && !man.shirts.has('b2')
+      && man.ambiguous.some(x => x.startsWith('BOU:Silva'))]);
+
+  // 三、兩個來源都有值但互相矛盾 → 兩邊都不採用(不是挑官方的)
+  const players = [
+    { code: 'x', team: 'T', name: 'X', squadNumber: null },
+    { code: 'y', team: 'T', name: 'Y', squadNumber: null },
+    { code: 'z', team: 'T', name: 'Z', squadNumber: null },
+    { code: 'w', team: 'T', name: 'W', squadNumber: 21 },
+  ];
+  const r = backfillSquadNumbers(players, {
+    official: new Map([['x', 5], ['z', 8], ['w', 47]]),
+    manual: new Map([['x', 6], ['y', 11], ['z', 8]]),
+  });
+  const byCode = Object.fromEntries(players.map(p => [p.code, p]));
+  cases.push(
+    ['官方與補件矛盾 → 兩邊都不填', byCode.x.squadNumber === null && r.disagree.includes('x')],
+    ['只有補件有 → 填,並標來源', byCode.y.squadNumber === 11 && byCode.y.squadNumberSource === 'fotmob'],
+    ['兩邊一致 → 填,來源記官方', byCode.z.squadNumber === 8 && byCode.z.squadNumberSource === 'official' && r.agree === 1],
+    ['FPL 已有值不覆蓋,但要把衝突報出來',
+      byCode.w.squadNumber === 21 && r.conflicts.some(c => c.code === 'w' && c.official === 47)],
+  );
+
+  // 四、實際產物:標了來源的一定有號碼,沒補過的不該帶來源欄位
+  try {
+    const built = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'players.json'), 'utf8'));
+    const bad = built.filter(p => p.squadNumberSource && p.squadNumber == null);
+    const src = built.filter(p => p.squadNumberSource).length;
+    cases.push([`產物:${src} 人的背號是補進來的,每一筆都真的有號碼`, bad.length === 0]);
+  } catch { cases.push(['產物:還沒建置 players.json,略過', true]); }
+
+  let fail = 0;
+  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
   return fail;
 }
 

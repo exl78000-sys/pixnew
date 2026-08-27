@@ -13,6 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { playerPhotos } from './lib/adapters/fotmob-manual.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const MANIFEST = join(ROOT, 'data', 'manual', 'photo-manifest.json');
@@ -23,11 +24,19 @@ const LIMIT = Math.max(1, Number(arg('limit') || 25));
 const DELAY_MS = Math.max(1000, Number(arg('delay') || 1200));
 const PROBE = arg('probe') || null;
 const RETRY_FAILED = process.argv.includes('--retry-failed');
+/* 開發沙箱連不到外網,任何請求都回 403。在沙箱裡跑一次就會把那個 403
+   寫進 _photoAttempts,之後在真的有網路的 runner 上重跑會直接跳過那個人 ——
+   一個假的失敗紀錄能永久蓋掉一張拿得到的圖。要在沙箱驗流程就加 --dry-run。 */
+const DRY_RUN = process.argv.includes('--dry-run');
 const CHECKPOINT_EVERY = 5;
 const MAX_BLOCK_STREAK = 3;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-const urlFor = code => TEMPLATE.replace('{code}', code);
+/* 預設走英超 CDN 的樣板網址。但有些人在那個 CDN 上就是沒有圖
+   (試過三次 404,_photoAttempts 記著),而別的來源查得到明確的圖片網址。
+   那種情況允許 manifest 帶一個 photoUrl 直接指定 ——
+   一個人一個網址、走同一條節流與去重路徑,不另外開一套抓圖流程。 */
+const urlFor = (code, override = null) => override ?? TEMPLATE.replace('{code}', code);
 const sha = buf => createHash('sha256').update(buf).digest('hex');
 
 const PYTHON = String.raw`
@@ -67,8 +76,8 @@ function toJpeg(png) {
   return out;
 }
 
-async function request(code) {
-  const url = urlFor(code);
+async function request(code, override = null) {
+  const url = urlFor(code, override);
   let last = null;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
@@ -114,6 +123,7 @@ function jpegHashes(photos) {
 }
 
 async function save(store, manifest, batch) {
+  if (DRY_RUN) { console.log('  (--dry-run:不寫入 photos.json)'); return; }
   const codes = new Set(Object.keys(store.photos));
   store._count = codes.size;
   store._missing = manifest.players.map(p => p.code).filter(code => !codes.has(code));
@@ -126,6 +136,25 @@ async function save(store, manifest, batch) {
 
 async function main() {
   const manifest = JSON.parse(await readFile(MANIFEST, 'utf8'));
+  /* 人工交付的頭貼網址併進 manifest(不改 manifest 檔本身 —— 那是產物)。
+     交付檔給的是「隊碼 + 我方顯示名」,所以同隊同名超過一位就不採用:
+     把 A 的臉掛到 B 身上,比留一個隊徽佔位更糟。 */
+  {
+    const manual = playerPhotos(ROOT);
+    let linked = 0;
+    const ambiguous = [];
+    for (const [key, row] of manual?.hit ?? []) {
+      const [team, query] = key.split('|');
+      const cand = manifest.players.filter(p => p.team === team && p.name === query);
+      if (cand.length !== 1) { ambiguous.push(`${team}:${query}(${cand.length} 位同名)`); continue; }
+      cand[0].photoUrl = row.photoUrl;
+      linked++;
+    }
+    if (linked || ambiguous.length) {
+      console.log(`  人工交付頭貼網址:${linked} 人可用`
+        + (ambiguous.length ? `,${ambiguous.length} 人對不到唯一球員(${ambiguous.join('、')})` : ''));
+    }
+  }
   const store = JSON.parse(await readFile(OUT, 'utf8'));
   store.photos ??= {};
   store._failReasons ??= {};
@@ -145,7 +174,7 @@ async function main() {
 
   const missing = manifest.players.filter(p => {
     if (store.photos[p.code]) return false;
-    return RETRY_FAILED || !store._photoAttempts[p.code]?.[TEMPLATE];
+    return RETRY_FAILED || !store._photoAttempts[p.code]?.[p.photoUrl ?? TEMPLATE];
   }).slice(0, LIMIT);
   if (!missing.length) {
     const totalMissing = manifest.players.filter(p => !store.photos[p.code]).length;
@@ -172,13 +201,15 @@ async function main() {
 
   for (const [index, player] of missing.entries()) {
     process.stdout.write(`  ${String(index + 1).padStart(3)}/${missing.length} ${player.team} ${player.fullName} … `);
-    const result = await request(player.code);
+    const result = await request(player.code, player.photoUrl ?? null);
     batch.attempted++;
 
     if (!result.ok) {
       store._failReasons[player.code] = result.status;
       store._photoAttempts[player.code] ??= {};
-      store._photoAttempts[player.code][TEMPLATE] = result.status;
+      // 鍵用「這次實際打的網址規則」。指定網址失敗記在樣板名下的話,
+      // 之後換樣板重跑會誤以為樣板試過了而跳過這個人。
+      store._photoAttempts[player.code][player.photoUrl ?? TEMPLATE] = result.status;
       console.log(`HTTP ${result.status}`);
       blocked = result.status === 403 || result.status === 429 ? blocked + 1 : 0;
       if (blocked >= MAX_BLOCK_STREAK) {

@@ -115,6 +115,13 @@ jobs:
           SPORTMONKS_EPL_LEAGUE_ID: 8
         continue-on-error: true
 
+      # 人工交付的頭貼「指定網址」在這一步生效。單線、每次上限 5 人，
+      # 而且只挑「這個網址規則還沒試過」的人 —— 已經在官方 CDN 試過並失敗的
+      # 不會重來，所以實際請求數通常是個位數。
+      - name: 補抓指定網址的球員頭貼
+        run: npm run photos -- --limit=5
+        continue-on-error: true
+
       # 英超官方 CDN 沒有的少量頭貼，SportMonks 名單會先補入；
       # API-Football 僅作最後備援，避免把兩個來源的資料混在一起。
       # 每次最多 10 人、每日最多 10 次，結果寫入 photos.json 快取。
