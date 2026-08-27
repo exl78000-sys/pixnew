@@ -19,7 +19,14 @@ try {
   const confPill = c => {
     // 官方核對過就別再顯示「需留意異動」—— 那個標籤問的問題已經有答案了
     if (coaches.officialAsOf && c.officialName) {
-      return '<span class="pill accent tiny" title="英超官方登記的現任教練">官方確認在任</span>';
+      return '<span class="pill accent tiny" title="聯賽官方登記的現任教練">官方確認在任</span>';
+    }
+    /* **沒有任期資料就不准說「長期在任」。** confidence=high 的原意是
+       「這個人選我們有把握」,但標籤寫成「長期在任」講的是任期長短 ——
+       而西甲的 since / tenureDays 全部是 null,我們根本不知道他帶多久。
+       同一頁下面才剛寫「接任日期上游沒有」,上面卻說長期在任,那是自相矛盾。 */
+    if (c.confidence === 'high' && c.since == null && c.tenureDays == null) {
+      return '<span class="pill accent tiny" title="姓名已與聯賽官方核對;任期長短本站沒有資料">姓名已核對</span>';
     }
     const [cls, label] = CONF[c.confidence] ?? ['', c.confidence];
     return `<span class="pill ${cls} tiny">${label}</span>`;
@@ -29,11 +36,6 @@ try {
     : `<span class="coach-avatar" aria-hidden="true">${C.esc((c?.name ?? '教').slice(0, 1))}</span>`;
   const rec = r => (r && r.p ? `${r.p} 場・${r.w}勝${r.d}和${r.l}負・場均 <b>${r.ppg}</b> 分` : '任內無本季比賽紀錄');
 
-  if (meta.edition === 'basic') {
-    code && teams.some(t => t.code === code) ? basicDetail(teams.find(t => t.code === code)) : basicOverview();
-  } else {
-    code && teams.some(t => t.code === code) ? detail(teams.find(t => t.code === code)) : overview();
-  }
 
   /* 進球來源。
      能回答:對每一隊進幾球/被進幾球、誰進的、誰助攻、先發還是替補進的。
@@ -174,7 +176,7 @@ try {
       ${coachAvatar(c, 48)}<div><h3 style="margin:0">${c.name ? C.esc(c.zh ?? c.name) : '教練待確認'}
         <span class="dim small" style="font-weight:400">${c.zh && c.name ? C.esc(c.name) : ''}</span></h3>
         <div class="tiny dim" style="margin-top:2px">${c.nat ?? ''}${c.since ? `${c.nat ? '・' : ''}${c.since} 上任(約 ${years} 年)` : ''}</div></div>
-      ${c.officialMismatch ? '<span class="pill accent tiny" title="英超官方登記的現任教練">官方現任</span>' : confPill(c)}
+      ${c.officialMismatch ? '<span class="pill accent tiny" title="聯賽官方登記的現任教練">官方現任</span>' : confPill(c)}
     </div>`;
 
     /* 官方說換人了、但本站還沒整理他的資料 —— 這種情況要說清楚,
@@ -217,40 +219,6 @@ try {
 
   /* 西甲只畫有可靠來源的球隊層級資料。
      共用頁面保留在同一支檔案，但不讓空的球員/教練/FPL 欄位滲進畫面。 */
-  function basicOverview() {
-    app.innerHTML = `
-    <div class="page-head">
-      <h1>西甲球隊・數據第二版</h1>
-      <p>${meta.currentSeason} 的 20 支球隊；除戰績、近期表現與模型模擬外，
-        回歸球隊另有 ${meta.lastSeason} 真實 xG、射門、陣型、進球情境與數據風格；球員與教練資料已由可用來源接入，正式陣容則僅在已核對的完賽場次顯示，傷停目前沒有可靠來源。</p>
-      ${C.stampRow([
-        C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily' }),
-        C.stamp(`${meta.lastSeason} 全季賽果`, { kind: 'season' }),
-        C.stamp(`${meta.lastSeason} 球隊 xG 與進球情境`, { kind: 'season' }),
-      ])}
-    </div>
-    <div class="grid g3">${teams.map(t => {
-      const ls = t.lastSeason, cur = t.current, s = t.sim;
-      return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
-        <div class="row" style="gap:11px">${C.badge(t.code, 'lg')}
-          <div><div style="font-weight:800;font-size:16px">${C.esc(t.en)}</div>
-          <div class="tiny dim">${C.esc(t.zh)}</div></div></div>
-        <div class="grid g3" style="margin-top:12px;gap:8px">
-          <div><div class="tiny dim">${meta.lastSeason}</div><div class="mono">${ls ? `第 ${ls.pos} 名・${ls.pts} 分` : '<span class="pill">升班馬</span>'}</div></div>
-          <div><div class="tiny dim">本季目前</div><div class="mono">${cur?.p ? `${cur.pts} 分 / ${cur.p} 場` : '尚未完賽'}</div></div>
-          <div><div class="tiny dim">期望積分</div><div class="mono"><b>${s?.expectedPoints ?? '—'}</b></div></div>
-        </div>
-        <div class="row tiny dim" style="margin-top:10px;justify-content:space-between">
-          <span>Elo ${C.fx(t.elo, 0)}</span><span>前四 ${s?.top4Pct ?? '—'}%・降級 ${s?.relegationPct ?? '—'}%</span>
-        </div>
-        ${t.coach?.name ? `<div class="tiny dim" style="margin-top:8px">教練 ${C.esc(t.coach.name)}・SportMonks 已核對姓名</div>` : ''}
-        ${t.tactics?.tags?.length ? `<div class="tags" style="margin-top:9px">${t.tactics.tags.slice(0, 3).map(x => `<span class="pill tiny">${C.esc(x)}</span>`).join('')}</div>` :
-          `<div class="tiny dim" style="margin-top:9px">${ls ? '上季風格資料從缺' : '升班馬・沒有上季西甲風格樣本'}</div>`}
-        </a>`;
-    }).join('')}</div>
-    ${C.foot(meta)}`;
-  }
-
   function basicDetail(t) {
     const ls = t.lastSeason, cur = t.current, s = t.sim;
     const next = fixtures.filter(f => !f.played && (f.home === t.code || f.away === t.code))
@@ -419,38 +387,61 @@ try {
   }
 
   /* ── 列表 ─────────────────────────── */
+  /* 球隊列表。兩個聯賽共用 —— basicOverview 已經收掉。
+     開場那段文字是**內容**不是版面,兩個聯賽本來就該講不同的話
+     (英超有球員級數據與傷停,西甲沒有),所以留一個小函式各給各的;
+     卡片、教練席、教練資料的誠實層則是同一份。 */
+  function overviewIntro() {
+    if (meta.edition === 'basic') {
+      return `${meta.currentSeason} 的 20 支球隊。除戰績、近期表現與模型模擬外,
+        回歸球隊另有 ${meta.lastSeason} 真實 xG、射門、陣型與進球情境;
+        球員與教練資料已由可用來源接入,傷停目前沒有可靠來源。`;
+    }
+    return `${meta.currentSeason} 的 20 支球隊。卡片上的期望積分來自 ${meta.model.simulationRuns.toLocaleString()} 次賽季模擬,
+      風格標籤則是從上季的每一場比賽與每一位球員的數據推出來的。點進去看完整剖析。`;
+  }
+
   function overview() {
+    const stamps = [
+      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算' }),
+      C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
+    ];
     app.innerHTML = `
     <div class="page-head">
       <h1>球隊</h1>
-      <p>${meta.currentSeason} 的 20 支球隊。卡片上的期望積分來自 ${meta.model.simulationRuns.toLocaleString()} 次賽季模擬,
-         風格標籤則是從上季的每一場比賽與每一位球員的數據推出來的。點進去看完整剖析。</p>
-    ${C.stampRow([
-      C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算；本機同步後再手動發布' }),
-      C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
-    ])}
+      <p>${overviewIntro()}</p>
+      ${C.stampRow(stamps)}
     </div>
     <div class="grid g3">${teams.map(card).join('')}</div>
 
     ${coachNotes()}
-    <div class="section" style="margin-top:20px"><h2>教練席</h2>
-      <span class="hint">戰績為 ${meta.lastSeason} 任內實際數字・點一列看該隊詳情</span></div>
-    <div id="coachRank"></div>
-    ${coachRankNote()}
+    ${coachRankSection()}
     ${C.foot(meta)}`;
-
-    renderCoachRank();
   }
 
   /* 教練資料的誠實層:哪些是官方每天核對的、哪些還是人工整理會過期的。
      這兩段原本在教練頁,不能因為併頁就弄丟 —— 讀者要知道哪個數字能信。 */
+  /* 教練資料的誠實層:哪些是官方每天核對的、哪些還是人工整理會過期的。
+
+     兩個聯賽共用。以前這段寫死「跟**英超**官方核對」,而西甲的來源是 LaLiga 官方 ——
+     照抄過去那句話就是假的。來源名稱改成跟著資料走。
+
+     另外拿掉了原本那段「編輯 data/manual/coaches.json、重跑 npm run build」——
+     那是寫給開發者的操作說明,出現在讀者頁上只會讓人以為壞了
+     (跟模型頁那句「執行 npm test」是同一種問題)。 */
   function coachNotes() {
-    const cur = coaches.coaches.filter(c => teamBy.has(c.team));
+    const cur = (coaches?.coaches ?? []).filter(c => teamBy.has(c.team));
+    if (!cur.length) return '';
     const mism = cur.filter(c => c.officialMismatch);
-    const days = Math.round((Date.now() - new Date(`${coaches.asOf}-01`).getTime()) / 86400000);
+    /* asOf 兩個聯賽的格式不同:英超是 '2026-05'(年月),西甲是完整 ISO 時間。
+       直接 `${asOf}-01` 對西甲會拼出無效日期 → NaN 天,畫面上就是「已經 NaN 天沒更新」。 */
+    const asOfIso = /^\d{4}-\d{2}$/.test(String(coaches.asOf ?? '')) ? `${coaches.asOf}-01` : coaches.asOf;
+    const parsed = asOfIso ? new Date(asOfIso).getTime() : NaN;
+    const days = Number.isFinite(parsed) ? Math.round((Date.now() - parsed) / 86400000) : null;
+    const officialName = coaches.source ?? '聯賽官方';
 
     const official = !coaches.officialAsOf ? '' : `<div class="note ${mism.length ? 'warn' : 'ok'}" style="margin-top:16px">
-      <b>現任教練是誰,每天跟英超官方核對。</b>
+      <b>現任教練是誰,每次更新都跟${C.esc(officialName)}核對。</b>
       ${mism.length
         ? `<b>${mism.length} 隊在本站上次整理之後換了教練</b>,名字已改用官方的:
            <div style="margin-top:6px">${mism.map(c => `<div class="tiny">
@@ -461,86 +452,165 @@ try {
         : `${cur.length} 隊的現任教練都和官方一致。`}
     </div>`;
 
-    const manual = coaches.officialAsOf
-      ? `<div class="note" style="margin-top:10px">
-          <b>官方沒提供、仍是人工維護的部分</b>(整理時點 ${coaches.asOf},距今 ${days} 天):
-          <div style="margin-top:6px" class="tiny">
-            <b>任期起訖</b> —— 戰績是依這個日期切分比賽算出來的,日期不對戰績就會算到別人頭上。<br>
-            <b>戰術風格與慣用陣型</b> —— 同一位教練也可能改打法,而且新教練完全沒有(共 ${mism.length} 位)。<br>
-            <b>中文譯名</b> —— 沒有譯名的直接顯示英文,不會硬編一個。
-          </div>
-          <div class="tiny" style="margin-top:8px">
-            補資料:編輯 <span class="mono">data/manual/coaches.json</span> ——
-            把舊教練那筆的 <span class="mono">spells[0].to</span> 填上離任日期,再在最前面加一筆新教練
-            (<span class="mono">to: null</span> 代表在任中),然後重跑 <span class="mono">npm run build</span>。
-            <b>戰績不用手算</b>,系統會依任期日期自動切分比賽重算。
-          </div>
-        </div>`
-      : (() => {
-        const unsure = cur.filter(c => c.confidence !== 'high');
-        const unknown = cur.filter(c => !c.name);
-        const stale = days > 60;
-        return `<div class="note ${stale ? 'warn' : ''}" style="margin-top:16px">
-          <b>教練名冊已經 ${days} 天沒更新</b>(整理時點 ${coaches.asOf},今天 ${meta.asOf})。
-          ${stale ? '這段期間<b>整個夏季轉會窗都過去了</b> —— 換帥通常就發生在這時候,所以有幾位很可能已經不在任上。' : ''}
-          <div style="margin-top:8px">${cur.length} 隊裡 <b>${cur.length - unsure.length}</b> 隊標為長期在任、
-            <b>${unsure.length}</b> 隊需要查證${unknown.length ? `、<b>${unknown.length}</b> 隊完全沒有資料` : ''}。
-            ${unsure.length ? `<div class="tiny dim" style="margin-top:6px">需要查證:${unsure.map(c => C.name(c.team)).join('、')}</div>` : ''}</div>
-        </div>`;
-      })();
+    /* 官方只給名字,其餘欄位是人工整理的,會過期 —— 這件事一定要講。
+       但「有沒有人工整理過」兩個聯賽不一樣:英超有任期與風格,西甲只有名字。
+       所以照實列出「這個聯賽目前有什麼、缺什麼」,不要寫死成英超那份。 */
+    const hasTenure = cur.some(c => c.since);
+    const hasStyle = cur.some(c => c.style?.length);
+    const hasZh = cur.some(c => c.zh);
+    const gaps = [
+      hasTenure
+        ? '<b>任期起訖</b> —— 人工維護;戰績是依這個日期切分比賽算出來的,日期不對戰績就會算到別人頭上。'
+        : '<b>任期起訖</b> —— <b>目前完全沒有</b>,上游不提供,所以本站不談任期長短。',
+      hasStyle
+        ? `<b>戰術風格與慣用陣型</b> —— 人工維護;同一位教練也可能改打法${mism.length ? `,而且新上任的 ${mism.length} 位完全沒有` : ''}。`
+        : '<b>戰術風格與慣用陣型</b> —— <b>尚未整理</b>,不以推測填入。',
+      hasZh ? '<b>中文譯名</b> —— 沒有譯名的直接顯示英文,不會硬編一個。'
+        : '<b>中文譯名</b> —— 尚未整理,一律顯示原文。',
+    ];
 
-    return official + manual;
+    const stale = days != null && days > 60 && hasTenure;
+    return `${official}
+    <div class="note ${stale ? 'warn' : ''}" style="margin-top:10px">
+      <b>官方沒提供、需要人工維護的部分</b>${days == null ? '' : `(整理時點 ${C.esc(String(coaches.asOf).slice(0, 10))},距今 ${days} 天)`}:
+      <div style="margin-top:6px" class="tiny">${gaps.join('<br>')}</div>
+      ${stale ? '<div class="tiny" style="margin-top:8px">這段期間<b>整個夏季轉會窗都過去了</b> —— 換帥通常就發生在這時候,人工維護的欄位要當成可能過期來讀。</div>' : ''}
+    </div>`;
   }
 
-  /* 排行只列得出「在這支球隊有任內比賽紀錄」的教練。
-     本季有一半以上的球隊是新帥,他們在這裡沒有數字 —— 那是對的
-     (不能把前任的成績掛在他頭上),但如果不講,讀者只會看到一張少了一半人的表
-     而不知道為什麼。所以直接把缺席的隊伍點名出來。 */
+  /* ── 教練席 ──────────────────────────
+     以前這是兩張表(英超 renderCoachRank / 西甲 renderBasicCoachRank),欄位各寫一份。
+
+     合併時發現一個真的會出錯的地方:**兩邊的 seasonRecord 指的不是同一季。**
+     英超的是上季完整 38 場(依人工任期切分算出來),西甲的是本季(FotMob 交付、
+     已用本站賽果核對)。直接合併會把「本季 1 場」跟「上季 38 場」排進同一張表。
+     所以先在 build 端把欄位名對齊:currentSeasonRecord = 本季、seasonRecord = 上季。
+
+     對齊之後多出一個好處:英超的 currentSeasonRecord 本來就抓回來也核對過了,
+     但前端從來沒顯示過。現在兩季都有的聯賽會多一個切換鈕。 */
+  /* 這幾個寫成 function 而不是 const 箭頭函式,是因為入口在檔案最上方就呼叫 overview() ——
+     const 不會提升(TDZ),整頁會直接掛在「Cannot access before initialization」。
+     這個檔案的其他區塊函式也都是 function 宣告,照同一個規矩走。 */
+  const SLOTS = [['current', 'currentSeasonRecord'], ['last', 'seasonRecord']];
+  function slotRows(key) { return (coaches?.coaches ?? []).filter(c => c[key]?.p); }
+  function availableSlots() { return SLOTS.filter(([, key]) => slotRows(key).length >= 2); }
+  function seasonLabel(key) {
+    return slotRows(key)[0]?.[key]?.season
+      ?? (key === 'seasonRecord' ? meta.lastSeason : meta.currentSeason);
+  }
+  // 場均勝點:上游沒給就自己算(純算術,不是估計)
+  function ppgOf(r) { return r.ppg ?? Math.round(((r.w * 3 + r.d) / r.p) * 100) / 100; }
+
+  let rankSlot = null;
+
+  function coachRankSection() {
+    const slots = availableSlots();
+    if (!slots.length) return '';
+    /* 預設看**場次多的**那一季,不是「本季」。開季第一輪每位教練只有 1 場,
+       場均勝點不是 3.00 就是 0.00,那張表排出來沒有任何意義。
+       兩季都在選單裡,讀者要看本季隨時可以切。 */
+    const games = key => slotRows(key).reduce((a, c) => a + c[key].p, 0);
+    rankSlot = [...slots].sort((a, b) => games(b[1]) - games(a[1]))[0][1];
+    const rows = slotRows(rankSlot);
+    queueMicrotask(() => {
+      const sel = document.getElementById('rankSeason');
+      if (sel) sel.onchange = () => { rankSlot = sel.value; renderCoachRank(); };
+      renderCoachRank();
+    });
+    return `<div class="section" style="margin-top:20px"><h2>教練席</h2>
+      <span class="hint">任內戰績・${rows.length} 位・點一列看該隊詳情</span></div>
+    ${slots.length > 1 ? `<div class="filters" style="margin-bottom:12px">
+      <label>賽季</label><select id="rankSeason">
+        ${slots.map(([, key]) => `<option value="${key}" ${key === rankSlot ? 'selected' : ''}>`
+          + `${seasonLabel(key)}(${slotRows(key).reduce((a, c) => a + c[key].p, 0)} 場)</option>`).join('')}
+      </select></div>` : ''}
+    <div id="coachRank"></div>
+    <div id="coachRankNote"></div>`;
+  }
+
   function coachRankNote() {
-    const cur = coaches.coaches.filter(c => teamBy.has(c.team));
-    const missing = cur.filter(c => !c.seasonRecord?.p);
+    const key = rankSlot;
+    const season = seasonLabel(key);
+    const cur = (coaches?.coaches ?? []).filter(c => teamBy.has(c.team));
+    const missing = cur.filter(c => !c[key]?.p);
+    /* 本季戰績兩個聯賽都來自同一份外部交付,所以來源說明也共用一個欄位。
+       英超的在 currentRecordSource、西甲的在 recordSource —— 名字不同是歷史包袱,
+       這裡一起讀,不要因為欄位名不同就少講一邊的出處。 */
+    const src = key === 'currentSeasonRecord'
+      ? (coaches?.currentRecordSource ?? coaches?.recordSource)
+      : null;
     return `<div class="tiny dim" style="margin-top:8px">
-      含賽季中途接手者,場次少的參考價值低。每位教練的任期、慣用陣型與風格標籤在各隊的詳情頁。
+      含賽季中途接手者,場次少的參考價值低。
+      ${src ? `戰績來自 ${C.esc(src.source ?? '外部來源')},已用本站賽果逐欄位核對(${src.verified ?? '—'} 隊通過),
+        對不上的整隊不列。<b>接任日期上游沒有</b>,所以這一季的表不談任期長短。
+        ${src.aheadMatches?.length ? `另有 ${src.aheadMatches.length} 場上游已有、本站賽果尚未更新的比賽已計入。` : ''}`
+        : '每位教練的任期、慣用陣型與風格標籤在各隊的詳情頁。'}
       ${missing.length ? `<br><b>${cur.length} 隊裡有 ${missing.length} 隊不在表上</b> ——
-        他們的教練在 ${meta.lastSeason} 沒有帶過這支球隊(多半是這個夏天才上任),
+        他們的教練在 ${season} 沒有帶過這支球隊(多半是剛上任),
         本站不會把前任的成績算到他頭上:
         ${missing.map(c => C.name(c.team)).join('、')}。` : ''}
     </div>`;
   }
 
   function renderCoachRank() {
-    const rows = coaches.coaches.filter(c => c.seasonRecord?.p);
-    document.getElementById('coachRank').innerHTML = C.table(rows, [
+    const el = document.getElementById('coachRank');
+    const rows = slotRows(rankSlot);
+    if (!el || !rows.length) return;
+    // 有值才給欄位:西甲的紀錄沒有 winPct,硬給會是一整欄的「—」(鐵則三)
+    const rec = c => c[rankSlot];
+    const has = k => rows.some(c => rec(c)[k] != null);
+    el.innerHTML = C.table(rows, [
       { key: 'coach', label: '教練', value: c => c.zh ?? c.name ?? '',
         render: c => `${C.esc(c.zh ?? c.name ?? '')} <span class="dim tiny">${C.esc(c.zh ? (c.name ?? '') : '')}</span>` },
       { key: 'team', label: '球隊', value: c => C.name(c.team), render: c => C.teamCell(c.team) },
-      { key: 'p', label: '場次', value: c => c.seasonRecord.p, num: true },
-      { key: 'w', label: '勝', value: c => c.seasonRecord.w, num: true },
-      { key: 'd', label: '和', value: c => c.seasonRecord.d, num: true },
-      { key: 'l', label: '負', value: c => c.seasonRecord.l, num: true },
-      { key: 'gf', label: '進', value: c => c.seasonRecord.gf, num: true },
-      { key: 'ga', label: '失', value: c => c.seasonRecord.ga, num: true },
-      { key: 'winPct', label: '勝率', value: c => c.seasonRecord.winPct, num: true, render: c => `${c.seasonRecord.winPct}%` },
-      { key: 'ppg', label: '場均勝點', value: c => c.seasonRecord.ppg, num: true, render: c => `<b>${c.seasonRecord.ppg}</b>` },
+      { key: 'p', label: '場次', value: c => rec(c).p, num: true },
+      { key: 'w', label: '勝', value: c => rec(c).w, num: true },
+      { key: 'd', label: '和', value: c => rec(c).d, num: true },
+      { key: 'l', label: '負', value: c => rec(c).l, num: true },
+      { key: 'gf', label: '進', value: c => rec(c).gf, num: true },
+      { key: 'ga', label: '失', value: c => rec(c).ga, num: true },
+      ...(has('winPct') ? [{ key: 'winPct', label: '勝率', num: true,
+        value: c => rec(c).winPct, render: c => `${rec(c).winPct}%` }] : []),
+      { key: 'ppg', label: '場均勝點', num: true,
+        value: c => ppgOf(rec(c)), render: c => `<b>${C.fx(ppgOf(rec(c)), 2)}</b>` },
       { key: 'conf', label: '資料可信度', value: c => c.confidence, sortable: false, render: confPill },
     ], { sortKey: 'ppg', desc: true, onRow: c => { C.go('teams', { code: c.team }); } });
+    const note = document.getElementById('coachRankNote');
+    if (note) note.innerHTML = coachRankNote();
   }
 
+  /* 總覽卡片。兩個聯賽共用一份 —— 以前是兩份(card / basicOverview 裡內嵌那段),
+     結果同一塊要改兩次,而且慢慢長歪:英超那張有場館與傷停、西甲那張有本季戰績與 Elo,
+     兩邊其實都該有。每一格自己判斷資料在不在,缺就不出現。
+
+     **傷停那格特別要小心**:西甲沒有傷停來源。以前 build 給 0、卡片印「無傷停回報」——
+     那句話是假的,我們根本沒查過。現在 null(沒有來源)整格不出現,
+     0(查過、沒人傷)才印「無傷停回報」。 */
   function card(t) {
-    const s = t.sim, ls = t.lastSeason;
+    const s = t.sim, ls = t.lastSeason, cur = t.current;
+    const cells = [
+      ['上季', ls ? `第 ${ls.pos} 名 · ${ls.pts} 分` : '<span class="pill">升班馬</span>'],
+      cur?.p ? ['本季目前', `${cur.pts} 分 / ${cur.p} 場`] : null,
+      ['期望積分', `<b>${s?.expectedPoints ?? '—'}</b>`],
+      ['前四 / 降級', `<span class="small">${s?.top4Pct ?? '—'}% / ${s?.relegationPct ?? '—'}%</span>`],
+    ].filter(Boolean);
+    const coachName = t.coach?.zh ?? t.coach?.name ?? null;
     return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
       <div class="row" style="gap:11px">${C.badge(t.code, 'lg')}
-        <div><div style="font-weight:800;font-size:16px">${t.en}</div>
-          <div class="tiny dim">${t.zh}・${t.venue}</div></div></div>
-      <div class="grid g3" style="margin-top:12px;gap:8px">
-        <div><div class="tiny dim">上季</div><div class="mono">${ls ? `第 ${ls.pos} 名 · ${ls.pts} 分` : '<span class="pill">升班馬</span>'}</div></div>
-        <div><div class="tiny dim">期望積分</div><div class="mono"><b>${s?.expectedPoints ?? '—'}</b></div></div>
-        <div><div class="tiny dim">前四 / 降級</div><div class="mono small">${s?.top4Pct ?? '—'}% / ${s?.relegationPct ?? '—'}%</div></div>
+        <div><div style="font-weight:800;font-size:16px">${C.esc(t.en)}</div>
+          <div class="tiny dim">${C.esc(t.zh)}${t.venue ? `・${C.esc(t.venue)}` : ''}</div></div></div>
+      <div class="grid" style="margin-top:12px;gap:8px;grid-template-columns:repeat(${cells.length},1fr)">
+        ${cells.map(([l, v]) => `<div><div class="tiny dim">${l}</div><div class="mono">${v}</div></div>`).join('')}
       </div>
-      ${t.tactics ? `<div class="tags" style="margin-top:10px">${t.tactics.tags.slice(0, 4).map(x => `<span class="pill">${x}</span>`).join('')}</div>` : ''}
+      ${t.tactics?.tags?.length
+        ? `<div class="tags" style="margin-top:10px">${t.tactics.tags.slice(0, 4).map(x => `<span class="pill">${C.esc(x)}</span>`).join('')}</div>`
+        : `<div class="tiny dim" style="margin-top:10px">${ls ? '上季風格資料從缺' : '升班馬・沒有上季風格樣本'}</div>`}
       <div class="row tiny dim" style="margin-top:10px;justify-content:space-between">
-        <span>${t.coach?.name ? `教練 ${t.coach.zh}` : '教練待補'}</span>
-        <span>${t.injuries ? `<span style="color:var(--loss)">傷停 ${t.injuries}</span>` : '無傷停回報'}</span>
+        <span>Elo ${C.fx(t.elo, 0)}</span>
+        <span>${coachName ? `教練 ${C.esc(coachName)}` : '教練待補'}</span>
+        ${t.injuries == null ? '' : `<span>${t.injuries
+          ? `<span style="color:var(--loss)">傷停 ${t.injuries}</span>`
+          : '無傷停回報'}</span>`}
       </div></a>`;
   }
 
@@ -822,5 +892,16 @@ try {
       { key: 'price', label: '身價', value: p => p.price, num: true, render: p => `£${p.price.toFixed(1)}m` },
     ], { sortKey: 'minutes', desc: true, onRow: p => { C.go('players', { code: p.code }); } });
     renderTeamH2H(t);
+  }
+
+  /* 入口放在最後面才呼叫。
+     以前寫在檔案開頭,但區塊函式用到的模組級 const/let(SLOTS、rankSlot…)
+     那時候還在 TDZ,整頁會掛在「Cannot access before initialization」——
+     而畫面上看到的是「載入失敗」,看起來像資料壞了。 */
+  if (code && teams.some(t => t.code === code)) {
+    const t = teams.find(x => x.code === code);
+    meta.edition === 'basic' ? basicDetail(t) : detail(t);
+  } else {
+    overview();
   }
 } catch (err) { C.fail(err); }

@@ -399,7 +399,11 @@ async function main() {
     const cv = verifyCoachRecords('es1', fmCoaches, ourPlayed, gv.newer);
     for (const { coach } of cv.agree) {
       const target = coachBy0.get(coach.team);
-      if (target) target.seasonRecord = { season: CURRENT_SEASON, ...coach.seasonRecord };
+      /* 掛在 currentSeasonRecord,**不是 seasonRecord** —— 這是本季的戰績。
+         英超那邊 seasonRecord 是「上季完整 38 場」、currentSeasonRecord 是本季,
+         兩個聯賽用同一組欄位名前端才能共用一張表;
+         以前西甲把本季塞進 seasonRecord,合併時就會拿本季 1 場去跟英超上季 38 場排在一起。 */
+      if (target) target.currentSeasonRecord = { season: CURRENT_SEASON, ...coach.seasonRecord };
     }
     coachRecordSource = {
       source: fmCoaches.source, retrievedAt: fmCoaches.retrievedAt,
@@ -457,7 +461,11 @@ async function main() {
       strength: strengthBy.get(code) ?? null,
       sim: simBy.get(code) ?? null,
       tactics: profileBy.get(code) ?? null, coach: coachBy.get(code) ?? null, schedule: null,
-      history: historyByTeam.get(code), squadSize: currentSquadSize.get(code) ?? 0, injuries: 0,
+      history: historyByTeam.get(code), squadSize: currentSquadSize.get(code) ?? 0,
+      /* 傷停:西甲沒有可靠來源,所以是 **null 不是 0**。
+         0 的意思是「查過了,這隊沒人受傷」,那是我們沒有的資訊;
+         前端會據此整段不顯示,而不是印出一個假的「無傷停回報」。 */
+      injuries: null,
     };
   }).sort((a, b) => (b.sim?.expectedPoints ?? 0) - (a.sim?.expectedPoints ?? 0));
 
