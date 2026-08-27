@@ -911,9 +911,28 @@ async function main() {
   await write('fixtures', fixtures);
   await write('table', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
   await write('sim', sim);
+  /* 進球情境特徵的驗收結果。**沒通過也要發布** —— 模型頁上「測過但沒進模型」
+     那一段的存在意義就是這個:讀者看得到我們試了什麼、為什麼不用。 */
+  const situationTuningPath = join(ROOT, 'data', 'situation-tuning-es1.json');
+  const situationTuning = existsSync(situationTuningPath)
+    ? JSON.parse(await readFile(situationTuningPath, 'utf8')) : null;
+  // 另一個聯賽的結果,給畫面做交叉引用(兩邊都沒過的話,那個結論比單一聯賽強很多)
+  if (situationTuning) {
+    const otherPath = join(ROOT, 'data', 'situation-tuning.json');
+    if (existsSync(otherPath)) {
+      const o = JSON.parse(await readFile(otherPath, 'utf8'));
+      situationTuning.other = {
+        league: o.league, leagueLabel: o.leagueLabel, accepted: o.accepted,
+        holdout: { baselineRps: o.holdout.baselineRps, trials: o.holdout.trials.slice(0, 1) },
+      };
+    }
+  }
   await write('form', {
     asOf: AS_OF, inModel: false, tuned: TUNED, tuning: null,
-    note: '近期資料只供顯示，不調整模型機率。', teams: teamForm,
+    situationTuning,
+    note: '近期資料只供顯示,不調整模型機率。'
+      + (situationTuning ? '上季進球情境也跑過走查回測驗收,改善小於雜訊,同樣不進模型。' : ''),
+    teams: teamForm,
   });
   await write('h2h', h2h);
   await write('results', [...lastMatches, ...curPlayed].filter(m => m.played).map(slimMatch));

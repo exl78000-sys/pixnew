@@ -26,6 +26,7 @@ import { fileURLToPath } from 'node:url';
 
 import { loadMatches } from './lib/adapters/index.mjs';
 import { loadTeams } from './lib/teams.mjs';
+import { laligaMatches } from './lib/laliga-matches.mjs';
 import { COMPETITION } from './lib/sources.mjs';
 import { fitPoisson, applyPromotedPrior, lambdas, outcomeProbs } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
@@ -43,8 +44,12 @@ const PROFILES = {
   },
   es1: {
     label: '西甲', competition: 'esp.1', teamFile: 'teams-la-liga.json', cacheDir: 'understat-la-liga',
-    tune: { season: '2024-25', train: [], prior: '2023-24' },
-    holdout: { season: '2025-26', train: ['2024-25'], prior: '2024-25' },
+    /* train 是「這一季開打前就已經有的比賽」。以前西甲的調參季寫成 []
+       (那時還沒有 2023-24 的賽果),結果走查前十幾輪因為樣本不足被跳過,
+       調參季只剩 280 場 —— 跟驗收季的 380 場不是同一個協議。
+       補上 2023-24 之後兩季都是完整 380 場,才跟英超那套對得起來。 */
+    tune: { season: '2024-25', train: ['2023-24'], prior: '2023-24' },
+    holdout: { season: '2025-26', train: ['2023-24', '2024-25'], prior: '2024-25' },
   },
 };
 const P = PROFILES[LEAGUE];
@@ -117,7 +122,12 @@ function collect({ season, train, prior }, T) {
   if (!situations) return { rows: [], missingPrior: prior };
   const { idx, avgF, avgA } = toIndex(situations);
 
-  const load = s => loadMatches({ root: ROOT, competition: P.competition, season: s, codeOf: T.codeOf });
+  /* 西甲走 laligaMatches:它讀對的目錄,而且會用**已核對過的**備援來源
+     補上 openfootball 缺的比分(2024-25 少了最後一輪 10 場)。
+     這裡少 10 場的話,調參季的樣本跟回測用的不是同一批,結論不能互相對照。 */
+  const load = s => (LEAGUE === 'es1'
+    ? laligaMatches(ROOT, s, { codeOf: T.codeOf }).matches
+    : loadMatches({ root: ROOT, competition: P.competition, season: s, codeOf: T.codeOf }));
   const past = train.flatMap(load);
   const test = load(season).filter(m => m.played);
   if (!test.length) return { rows: [], missingSeason: season };

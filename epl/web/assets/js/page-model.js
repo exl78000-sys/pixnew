@@ -111,13 +111,24 @@ try {
      近五戰狀況與交手紀錄是最多人以為理所當然會有用的兩個特徵,
      我們真的接上去量過了,量出來沒用 —— 那就把量的過程和數字攤開來,
      而不是悄悄拿掉,也不是為了看起來厲害硬加進去。 */
+  /* 這一整段以前是「沒有 form.tuning 就整段不畫」。
+     那會連帶把**其他已經測完的特徵**一起吃掉 ——
+     西甲沒有近況特徵的驗收,但進球情境的驗收有結果,結果整段不出現,
+     看起來像沒測過。改成:近況那一塊自己判斷,其他每一塊也各自判斷。 */
   function rejectedSection() {
+    return formTuningBlock()
+      + featureSection(form?.situationTuning, SITUATION_VIEW)
+      + featureSection(form?.congestionTuning, CONGESTION_VIEW);
+  }
+
+  function formTuningBlock() {
     const t = form?.tuning;
     if (!t) {
-      return `<div class="card" style="margin-top:20px">
-        <h2>測過但沒有進模型的特徵</h2>
-        <div class="note">這個聯賽還沒有跑過特徵驗證,所以這一段不給數字 ——
-          調參與驗收要用不同賽季,樣本不夠時做不成。</div></div>`;
+      return `<div class="section" style="margin-top:20px"><h2>近況與交手紀錄有沒有預測力</h2>
+        <span class="hint">這個聯賽還沒測</span></div>
+        <div class="card"><div class="small muted">調參與驗收必須用<b>不同賽季</b>,
+          同一批資料又調參又驗收挑出來的一定是雜訊。這個聯賽的樣本還不夠切成兩段,
+          所以這個特徵還沒有驗收結果 —— 不給數字,也不拿另一個聯賽的結果套用。</div></div>`;
     }
     const H = t.holdout;
     const rows = H.trials.map(r => `<tr>
@@ -167,9 +178,7 @@ try {
       這比網格搜尋更能說明「為什麼沒用」:球隊強弱本來就在 Dixon-Coles 的攻守參數與 Elo 裡了,
       近五場扣掉自己的長期水準之後,剩下的多半真的只是運氣。
     </div>
-  </div>
-  ${featureSection(form?.situationTuning, SITUATION_VIEW)}
-  ${featureSection(form?.congestionTuning, CONGESTION_VIEW)}`;
+  </div>`;
   }
 
   /* 「測過但沒進模型」的實驗,一份渲染兩邊共用。
@@ -186,7 +195,15 @@ try {
         拿本季彙總預測本季比賽就是偷看未來,那個「改善」完全是假的。</div>
       <div class="dim">先驗涵蓋:調參 ${cover(t.priorCoverage?.tune)};驗收 ${cover(t.priorCoverage?.holdout)}。
         沒有先驗的隊特徵給 0(不調整),不猜一個值。</div>`,
-    verdict: t => `而且<b>連調參賽季都幾乎挑不出改善</b>(基準 ${t.tuneBaselineRps} → 最佳 ${t.tuneBest.rps})——
+    /* 兩個聯賽都測過而且都沒過 —— 這句話比單一聯賽的結果強很多,
+       所以要講出來。但**只有在真的兩邊都有結果時才講**,不能寫死。 */
+    verdict: (t, other) => `${other && other.league !== t.league ? `
+      <b>兩個獨立聯賽都測過,都沒有通過。</b>
+      ${C.esc(t.leagueLabel)} 驗收季最佳 ${t.holdout.trials[0]?.RPS}(基準 ${t.holdout.baselineRps})、
+      ${C.esc(other.leagueLabel)} 最佳 ${other.holdout.trials[0]?.RPS}(基準 ${other.holdout.baselineRps})。
+      一個聯賽沒過還能說是這批比賽的巧合,兩個不同國家、不同球隊、不同賽季都沒過,
+      那就是這個特徵真的沒有額外資訊。<br>` : ''}
+      而且<b>連調參賽季都幾乎挑不出改善</b>(基準 ${t.tuneBaselineRps} → 最佳 ${t.tuneBest.rps})——
       調參是可以盡情挑的,連挑都挑不到東西,代表訊號是真的不存在,
       而不是「有訊號但被雜訊蓋過」。合理的解釋是:定位球得分能力本來就已經
       反映在 Dixon-Coles 的攻守參數裡了,再把它單獨拉出來並沒有多給模型任何資訊。`,
@@ -253,7 +270,7 @@ try {
 
     <div class="note" style="margin-top:12px">
       <b>結論:${t.accepted ? '通過,已進模型。' : '沒有一組通過,係數維持 0。'}</b>
-      ${t.accepted ? '' : view.verdict(t)}
+      ${t.accepted ? '' : view.verdict(t, t.other)}
     </div>
   </div>`;
   }
@@ -408,9 +425,12 @@ try {
   <div class="card" style="margin-top:20px">
     <h2>這個模型不知道的事</h2>
     <div class="small muted" style="display:grid;gap:6px">
+      ${/* caveats 已經是逐聯賽產生的。下面兩句以前是寫死補在後面,結果:
+            一句跟 caveats 的內容重覆,另一句「目前只做**英超**」出現在西甲頁上。
+            重覆的那句刪掉;盃賽那句改成不綁聯賽。 */''}
       ${meta.model.caveats.map(c => `<div>・${C.esc(c)}</div>`).join('')}
-      <div>・不含轉會、教練異動、賽程密度、歐戰疲勞、天氣、裁判。</div>
-      <div>・盃賽與歐冠需要不同的模型(加時賽、PK、兩回合、跨聯賽比較),目前只做英超。</div>
+      <div>・不含天氣與裁判。</div>
+      <div>・盃賽與洲際賽事需要不同的模型(加時賽、PK、兩回合、跨聯賽比較),本站目前只做聯賽。</div>
     </div>
   </div>
   ${C.foot(meta)}`;

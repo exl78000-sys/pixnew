@@ -212,6 +212,14 @@ jobs:
         run: npm run tune:form
         continue-on-error: true
 
+      # 進球情境特徵。兩個聯賽都跑 —— **沒通過也要跑**,
+      # 模型頁上「測過但沒進模型」那一段的數字必須是現跑的,不是寫死的。
+      - name: 進球情境特徵驗收(兩個聯賽)
+        run: |
+          npm run tune:situations
+          npm run tune:situations -- --league=es1
+        continue-on-error: true
+
       - name: 建立資料集
         run: npm run build
         env:
@@ -253,7 +261,9 @@ jobs:
                      epl/data/raw/football-data-couk-la-liga/ \
                      epl/data/backtest.json epl/data/backtest-matches.json \
                      epl/data/backtest-laliga.json epl/data/backtest-laliga-matches.json \
-                     epl/data/form-tuning.json epl/data/availability-history.json 2>/dev/null || true
+                     epl/data/form-tuning.json epl/data/availability-history.json \
+                     epl/data/situation-tuning.json epl/data/situation-tuning-es1.json \
+                     epl/data/congestion-tuning.json 2>/dev/null || true
           git add -f epl/data/manual/photos.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "資料沒有變化,不提交"

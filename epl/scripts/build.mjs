@@ -867,9 +867,22 @@ async function main() {
   /* 進球情境的驗收結果(npm run tune:situations 產生)。
      **沒通過也要帶到前端** —— 模型頁「測過但沒有進模型的特徵」那一段的價值,
      有一半在於把測過而無效的東西攤開來,悄悄不顯示等於假裝沒測過。 */
+  /* 進球情境特徵的驗收結果,外加**另一個聯賽**的摘要。
+     兩個獨立聯賽都測過都沒過,這個結論比單一聯賽強很多 ——
+     但要讓畫面講得出來,就得把另一邊的數字帶進來(而且只在真的有的時候帶)。 */
   const situationTuningPath = join(ROOT, 'data', 'situation-tuning.json');
   const situationTuning = existsSync(situationTuningPath)
     ? JSON.parse(await readFile(situationTuningPath, 'utf8')) : null;
+  if (situationTuning) {
+    const otherPath = join(ROOT, 'data', 'situation-tuning-es1.json');
+    if (existsSync(otherPath)) {
+      const o = JSON.parse(await readFile(otherPath, 'utf8'));
+      situationTuning.other = {
+        league: o.league, leagueLabel: o.leagueLabel, accepted: o.accepted,
+        holdout: { baselineRps: o.holdout.baselineRps, trials: o.holdout.trials.slice(0, 1) },
+      };
+    }
+  }
   const congestionTuningPath = join(ROOT, 'data', 'congestion-tuning.json');
   const congestionTuning = existsSync(congestionTuningPath)
     ? JSON.parse(await readFile(congestionTuningPath, 'utf8')) : null;
