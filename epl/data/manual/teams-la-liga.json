@@ -1,29 +1,384 @@
 {
-  "_updated": "2026-08-25",
+  "_updated": "2026-08-27",
   "_note": "西甲第一版只登錄 2025-26 與 2026-27 出現過的球隊；隊碼由本站維護。",
   "teams": [
-    { "code": "ALA", "en": "Deportivo Alavés", "zh": "阿拉維斯", "of": "Deportivo Alavés", "alias": ["Alaves", "Alavés"], "understat": "Alaves", "colors": ["#0057A8", "#FFFFFF"] },
-    { "code": "ATH", "en": "Athletic Club", "zh": "畢爾包競技", "of": "Athletic Club", "alias": ["Ath Bilbao", "Athletic Bilbao"], "understat": "Athletic Club", "crestSource": "Athletic Bilbao", "colors": ["#EE2523", "#FFFFFF"] },
-    { "code": "ATM", "en": "Atlético de Madrid", "zh": "馬德里競技", "of": "Club Atlético de Madrid", "alias": ["Ath Madrid", "Atletico Madrid", "Atlético Madrid"], "understat": "Atletico Madrid", "colors": ["#CB3524", "#1C2C5B"] },
-    { "code": "BAR", "en": "FC Barcelona", "zh": "巴塞隆納", "of": "FC Barcelona", "alias": ["Barcelona"], "understat": "Barcelona", "colors": ["#A50044", "#004D98"] },
-    { "code": "BET", "en": "Real Betis", "zh": "皇家貝提斯", "of": "Real Betis Balompié", "alias": ["Betis"], "colors": ["#00954C", "#FFFFFF"] },
-    { "code": "CEL", "en": "Celta Vigo", "zh": "塞爾塔", "of": "RC Celta de Vigo", "alias": ["Celta", "Celta Vigo"], "crestSource": "Celta de Vigo", "colors": ["#8AC3EE", "#D50032"] },
-    { "code": "DEP", "en": "Deportivo La Coruña", "zh": "拉科魯尼亞", "of": "RC Deportivo La Coruña", "alias": ["La Coruna", "Deportivo La Coruna", "Deportivo A Coruna", "Deportivo A Coruña", "COR"], "crestSource": "Deportivo A Coruña", "colors": ["#0057B8", "#FFFFFF"] },
-    { "code": "ELC", "en": "Elche CF", "zh": "艾爾切", "of": "Elche CF", "alias": ["Elche"], "understat": "Elche", "colors": ["#007A33", "#FFFFFF"] },
-    { "code": "ESP", "en": "RCD Espanyol", "zh": "西班牙人", "of": "RCD Espanyol de Barcelona", "alias": ["Espanol", "Espanyol"], "understat": "Espanyol", "crestSource": "RCD Espanyol Barcelona", "colors": ["#007FC8", "#FFFFFF"] },
-    { "code": "GET", "en": "Getafe CF", "zh": "赫塔費", "of": "Getafe CF", "alias": ["Getafe"], "understat": "Getafe", "colors": ["#005999", "#FFFFFF"] },
-    { "code": "GIR", "en": "Girona FC", "zh": "赫羅納", "of": "Girona FC", "alias": ["Girona"], "understat": "Girona", "colors": ["#CD2534", "#FFFFFF"] },
-    { "code": "LEV", "en": "Levante UD", "zh": "萊萬特", "of": "Levante UD", "alias": ["Levante"], "understat": "Levante", "colors": ["#005CA9", "#B00032"] },
-    { "code": "MAL", "en": "Málaga CF", "zh": "馬拉加", "of": "Málaga CF", "alias": ["Malaga", "Málaga"], "colors": ["#0093D0", "#FFFFFF"] },
-    { "code": "MLL", "en": "RCD Mallorca", "zh": "馬約卡", "of": "RCD Mallorca", "alias": ["Mallorca"], "understat": "Mallorca", "colors": ["#E20613", "#111111"] },
-    { "code": "OSA", "en": "CA Osasuna", "zh": "奧薩蘇納", "of": "CA Osasuna", "alias": ["Osasuna"], "understat": "Osasuna", "colors": ["#D91A21", "#0A346F"] },
-    { "code": "OVI", "en": "Real Oviedo", "zh": "皇家奧維耶多", "of": "Real Oviedo", "alias": ["Oviedo"], "understat": "Real Oviedo", "colors": ["#0050A4", "#FFFFFF"] },
-    { "code": "RAC", "en": "Racing Santander", "zh": "桑坦德競技", "of": "Real Racing Club de Santander", "alias": ["Santander", "Racing Santander"], "colors": ["#00843D", "#FFFFFF"] },
-    { "code": "RAY", "en": "Rayo Vallecano", "zh": "巴列卡諾", "of": "Rayo Vallecano de Madrid", "alias": ["Vallecano", "Rayo Vallecano"], "colors": ["#FFFFFF", "#E30613"] },
-    { "code": "RMA", "en": "Real Madrid", "zh": "皇家馬德里", "of": "Real Madrid CF", "alias": ["Real Madrid"], "colors": ["#FFFFFF", "#FEBE10"] },
-    { "code": "RSO", "en": "Real Sociedad", "zh": "皇家社會", "of": "Real Sociedad de Fútbol", "alias": ["Sociedad", "Real Sociedad"], "colors": ["#0067B1", "#FFFFFF"] },
-    { "code": "SEV", "en": "Sevilla FC", "zh": "塞維亞", "of": "Sevilla FC", "alias": ["Sevilla"], "understat": "Sevilla", "colors": ["#D71920", "#FFFFFF"] },
-    { "code": "VAL", "en": "Valencia CF", "zh": "瓦倫西亞", "of": "Valencia CF", "alias": ["Valencia"], "understat": "Valencia", "colors": ["#F7A600", "#111111"] },
-    { "code": "VIL", "en": "Villarreal CF", "zh": "比利亞雷亞爾", "of": "Villarreal CF", "alias": ["Villarreal"], "understat": "Villarreal", "colors": ["#FBE122", "#005187"] }
+    {
+      "code": "ALA",
+      "en": "Deportivo Alavés",
+      "zh": "阿拉維斯",
+      "of": "Deportivo Alavés",
+      "alias": [
+        "Alaves",
+        "Alavés"
+      ],
+      "understat": "Alaves",
+      "colors": [
+        "#0057A8",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "ATH",
+      "en": "Athletic Club",
+      "zh": "畢爾包競技",
+      "of": "Athletic Club",
+      "alias": [
+        "Ath Bilbao",
+        "Athletic Bilbao"
+      ],
+      "understat": "Athletic Club",
+      "crestSource": "Athletic Bilbao",
+      "colors": [
+        "#EE2523",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "ATM",
+      "en": "Atlético de Madrid",
+      "zh": "馬德里競技",
+      "of": "Club Atlético de Madrid",
+      "alias": [
+        "Ath Madrid",
+        "Atletico Madrid",
+        "Atlético Madrid"
+      ],
+      "understat": "Atletico Madrid",
+      "colors": [
+        "#CB3524",
+        "#1C2C5B"
+      ]
+    },
+    {
+      "code": "BAR",
+      "en": "FC Barcelona",
+      "zh": "巴塞隆納",
+      "of": "FC Barcelona",
+      "alias": [
+        "Barcelona"
+      ],
+      "understat": "Barcelona",
+      "colors": [
+        "#A50044",
+        "#004D98"
+      ]
+    },
+    {
+      "code": "BET",
+      "en": "Real Betis",
+      "zh": "皇家貝提斯",
+      "of": "Real Betis Balompié",
+      "alias": [
+        "Betis"
+      ],
+      "colors": [
+        "#00954C",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "CEL",
+      "en": "Celta Vigo",
+      "zh": "塞爾塔",
+      "of": "RC Celta de Vigo",
+      "alias": [
+        "Celta",
+        "Celta Vigo"
+      ],
+      "crestSource": "Celta de Vigo",
+      "colors": [
+        "#8AC3EE",
+        "#D50032"
+      ]
+    },
+    {
+      "code": "DEP",
+      "en": "Deportivo La Coruña",
+      "zh": "拉科魯尼亞",
+      "of": "RC Deportivo La Coruña",
+      "alias": [
+        "La Coruna",
+        "Deportivo La Coruna",
+        "Deportivo A Coruna",
+        "Deportivo A Coruña",
+        "COR"
+      ],
+      "crestSource": "Deportivo A Coruña",
+      "colors": [
+        "#0057B8",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "ELC",
+      "en": "Elche CF",
+      "zh": "艾爾切",
+      "of": "Elche CF",
+      "alias": [
+        "Elche"
+      ],
+      "understat": "Elche",
+      "colors": [
+        "#007A33",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "ESP",
+      "en": "RCD Espanyol",
+      "zh": "西班牙人",
+      "of": "RCD Espanyol de Barcelona",
+      "alias": [
+        "Espanol",
+        "Espanyol"
+      ],
+      "understat": "Espanyol",
+      "crestSource": "RCD Espanyol Barcelona",
+      "colors": [
+        "#007FC8",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "GET",
+      "en": "Getafe CF",
+      "zh": "赫塔費",
+      "of": "Getafe CF",
+      "alias": [
+        "Getafe"
+      ],
+      "understat": "Getafe",
+      "colors": [
+        "#005999",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "GIR",
+      "en": "Girona FC",
+      "zh": "赫羅納",
+      "of": "Girona FC",
+      "alias": [
+        "Girona"
+      ],
+      "understat": "Girona",
+      "colors": [
+        "#CD2534",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "LEG",
+      "en": "CD Leganés",
+      "zh": "萊加內斯",
+      "of": "CD Leganés",
+      "alias": [
+        "Leganes",
+        "Leganés",
+        "CD Leganes"
+      ],
+      "understat": "Leganes",
+      "colors": [
+        "#005BAC",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "LEV",
+      "en": "Levante UD",
+      "zh": "萊萬特",
+      "of": "Levante UD",
+      "alias": [
+        "Levante"
+      ],
+      "understat": "Levante",
+      "colors": [
+        "#005CA9",
+        "#B00032"
+      ]
+    },
+    {
+      "code": "LPA",
+      "en": "UD Las Palmas",
+      "zh": "拉斯帕爾馬斯",
+      "of": "UD Las Palmas",
+      "alias": [
+        "Las Palmas",
+        "UD Las Palmas"
+      ],
+      "understat": "Las Palmas",
+      "colors": [
+        "#FFE400",
+        "#0060A9"
+      ]
+    },
+    {
+      "code": "MAL",
+      "en": "Málaga CF",
+      "zh": "馬拉加",
+      "of": "Málaga CF",
+      "alias": [
+        "Malaga",
+        "Málaga"
+      ],
+      "colors": [
+        "#0093D0",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "MLL",
+      "en": "RCD Mallorca",
+      "zh": "馬約卡",
+      "of": "RCD Mallorca",
+      "alias": [
+        "Mallorca"
+      ],
+      "understat": "Mallorca",
+      "colors": [
+        "#E20613",
+        "#111111"
+      ]
+    },
+    {
+      "code": "OSA",
+      "en": "CA Osasuna",
+      "zh": "奧薩蘇納",
+      "of": "CA Osasuna",
+      "alias": [
+        "Osasuna"
+      ],
+      "understat": "Osasuna",
+      "colors": [
+        "#D91A21",
+        "#0A346F"
+      ]
+    },
+    {
+      "code": "OVI",
+      "en": "Real Oviedo",
+      "zh": "皇家奧維耶多",
+      "of": "Real Oviedo",
+      "alias": [
+        "Oviedo"
+      ],
+      "understat": "Real Oviedo",
+      "colors": [
+        "#0050A4",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "RAC",
+      "en": "Racing Santander",
+      "zh": "桑坦德競技",
+      "of": "Real Racing Club de Santander",
+      "alias": [
+        "Santander",
+        "Racing Santander"
+      ],
+      "colors": [
+        "#00843D",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "RAY",
+      "en": "Rayo Vallecano",
+      "zh": "巴列卡諾",
+      "of": "Rayo Vallecano de Madrid",
+      "alias": [
+        "Vallecano",
+        "Rayo Vallecano"
+      ],
+      "colors": [
+        "#FFFFFF",
+        "#E30613"
+      ]
+    },
+    {
+      "code": "RMA",
+      "en": "Real Madrid",
+      "zh": "皇家馬德里",
+      "of": "Real Madrid CF",
+      "alias": [
+        "Real Madrid"
+      ],
+      "colors": [
+        "#FFFFFF",
+        "#FEBE10"
+      ]
+    },
+    {
+      "code": "RSO",
+      "en": "Real Sociedad",
+      "zh": "皇家社會",
+      "of": "Real Sociedad de Fútbol",
+      "alias": [
+        "Sociedad",
+        "Real Sociedad"
+      ],
+      "colors": [
+        "#0067B1",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "SEV",
+      "en": "Sevilla FC",
+      "zh": "塞維亞",
+      "of": "Sevilla FC",
+      "alias": [
+        "Sevilla"
+      ],
+      "understat": "Sevilla",
+      "colors": [
+        "#D71920",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "code": "VAL",
+      "en": "Valencia CF",
+      "zh": "瓦倫西亞",
+      "of": "Valencia CF",
+      "alias": [
+        "Valencia"
+      ],
+      "understat": "Valencia",
+      "colors": [
+        "#F7A600",
+        "#111111"
+      ]
+    },
+    {
+      "code": "VIL",
+      "en": "Villarreal CF",
+      "zh": "比利亞雷亞爾",
+      "of": "Villarreal CF",
+      "alias": [
+        "Villarreal"
+      ],
+      "understat": "Villarreal",
+      "colors": [
+        "#FBE122",
+        "#005187"
+      ]
+    },
+    {
+      "code": "VLL",
+      "en": "Real Valladolid",
+      "zh": "巴利亞多利德",
+      "of": "Real Valladolid CF",
+      "alias": [
+        "Valladolid",
+        "Real Valladolid"
+      ],
+      "understat": "Real Valladolid",
+      "colors": [
+        "#7A2182",
+        "#FFFFFF"
+      ]
+    }
   ]
 }

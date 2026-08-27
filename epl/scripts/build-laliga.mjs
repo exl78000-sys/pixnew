@@ -31,6 +31,11 @@ const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
 const COMPETITION = 'esp.1';
 const LAST_SEASON = '2025-26';
 const CURRENT_SEASON = '2026-27';
+/* 更早的完整賽季。**選配** —— openfootball 拿得到就用,拿不到照樣建站。
+   為什麼要:多一季訓練資料本身就會讓 Poisson 的攻守參數穩一些,
+   而且兩季完整歷史才跑得動走查回測(調參一季、驗收另一季)。
+   Poisson 有時間衰減(refDate),舊比賽會自動降權,不必手動加權。 */
+const PRIOR_SEASONS = ['2024-25'];
 const AS_OF = process.argv.find(a => a.startsWith('--as-of='))?.split('=')[1]
   ?? new Date().toISOString().slice(0, 10);
 const RUNS = Number(process.argv.find(a => a.startsWith('--runs='))?.split('=')[1] ?? 5000);
@@ -270,6 +275,19 @@ async function main() {
   });
   const lastMatches = load(LAST_SEASON);
   const curMatches = load(CURRENT_SEASON);
+  /* 選配歷史季:檔案不在就安靜跳過(fetch-laliga.mjs 那邊也是選配),
+     但有拿到就要印出來 —— 訓練資料變多是會影響每一個機率的事,不能靜靜發生。 */
+  const priorSeasons = [];
+  for (const season of PRIOR_SEASONS) {
+    if (!existsSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`))) continue;
+    const ms = load(season).filter(m => m.played);
+    if (ms.length < 300) { console.log(`  ⚠ ${season} 只有 ${ms.length} 場,不足一季,不納入訓練`); continue; }
+    priorSeasons.push({ season, matches: ms });
+    console.log(`  歷史賽季 ${season}:${ms.length} 場納入模型訓練`);
+  }
+  const priorMatches = priorSeasons.flatMap(x => x.matches);
+  // 模型實際吃到的完整賽季,用來組畫面上的說明 —— 說明要跟資料一致
+  const fullSeasons = [...priorSeasons.map(x => x.season), LAST_SEASON];
   const curPlayed = curMatches.filter(m => m.played && m.date <= AS_OF);
   // 上游若先填入未來賽果，基準日之後仍一律當未賽，避免模型偷看未來。
   for (const m of curMatches) {
@@ -295,7 +313,7 @@ async function main() {
   }
   const teamProfiles = buildTeamProfiles(lastTable, teamSituations);
   const profileBy = new Map(teamProfiles.map(x => [x.code, x]));
-  const trainMatches = [...lastMatches, ...curPlayed];
+  const trainMatches = [...priorMatches, ...lastMatches, ...curPlayed];
   const model = applyPromotedPrior(fitPoisson(trainMatches, curCodes, { refDate: AS_OF }));
   const elo = buildElo(trainMatches);
   const strengthBy = new Map(strengthTable(model).map(x => [x.code, x]));
@@ -623,7 +641,12 @@ async function main() {
   ];
   const backtest = {
     available: false,
-    note: '西甲目前只有 2025-26 一季完整歷史，尚無獨立留出賽季可做可靠回測。',
+    /* 這句話會直接印在模型頁上,所以**必須跟實際用了幾季一致** ——
+       寫死成「只有一季」而實際上有兩季,就是畫面在騙人。 */
+    note: fullSeasons.length >= 2
+      ? `西甲已有 ${fullSeasons.join('、')} 兩季完整歷史，走查回測可以跑；`
+        + '目前尚未把西甲接進回測管線,接上之後這一頁會顯示實測準度。'
+      : `西甲目前只有 ${fullSeasons.join('、') || LAST_SEASON} 一季完整歷史，尚無獨立留出賽季可做可靠回測。`,
   };
   /* ── 球員(Understat)────────────────────────
      兩季各一份。上季完整、本季至今 —— 兩者性質不同,不能混在一起算,
@@ -703,7 +726,8 @@ async function main() {
       },
     },
     currentSeason: CURRENT_SEASON, lastSeason: LAST_SEASON,
-    historySeasons: [LAST_SEASON], h2hSeasons: [LAST_SEASON, CURRENT_SEASON],
+    historySeasons: [...priorSeasons.map(x => x.season), LAST_SEASON],
+    h2hSeasons: [...priorSeasons.map(x => x.season), LAST_SEASON, CURRENT_SEASON],
     sources: [
       ...sources,
       {
@@ -732,8 +756,12 @@ async function main() {
       homeAdvantage: round(Math.exp(model.gamma), 3), rho: model.rho, decayXi: model.xi,
       promotedPrior: model.promoted, simulationRuns: RUNS, backtest,
       caveats: [
-        '西甲模型只使用 2025-26 完整賽季與 2026-27 已完賽資料，樣本少於英超版。',
-        '尚無獨立留出賽季可做可靠回測，因此機率只適合作為初版比較基準。',
+        `西甲模型使用 ${fullSeasons.join('、')} 完整賽季與 ${CURRENT_SEASON} 已完賽資料，樣本少於英超版。`,
+        ...(priorSeasons.length
+          ? [`${priorSeasons.map(x => x.season).join('、')} 的最後一輪上游沒有比分，該季實際納入 `
+             + `${priorMatches.length} 場而不是 380 場。`]
+          : []),
+        '尚未把西甲接進走查回測管線，因此機率只適合作為初版比較基準。',
         '不含球員、傷停、轉會、教練異動、賽程密度與歐戰疲勞。',
         '升班馬沒有上一季西甲樣本，套用聯盟後段先驗並提高模擬不確定性。',
       ],
