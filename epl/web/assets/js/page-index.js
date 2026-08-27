@@ -78,17 +78,22 @@ try {
         ${basic ? '' : `・<a href="${C.link('live')}">實時戰況</a>`}</div>
     </div>
     <div class="card">
-      <h2>${basic ? '目前資料界線' : '最新動態'}</h2>
-      <div id="news">${basic ? `<div class="small muted" style="display:grid;gap:8px">
+      <h2>最新動態</h2>
+      <div id="news"></div>
+      <div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>
+    </div>
+  </div>
+
+  ${basic ? `<div class="card" style="margin-top:20px">
+      <h2>目前資料界線</h2>
+      <div>${`<div class="small muted" style="display:grid;gap:8px">
         <div>✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬</div>
         <div>✓ 上季球隊 xG/xGA、射門、實際陣型、五種進球情境與風格百分位</div>
         <div>✓ 完賽後完整資料永久快取 ${reports.count ?? 0}/${played.length} 場（球隊統計、正式陣容、事件與球員評分）</div>
         <div>— 球員與教練資料已接入；傷停${meta.capabilities?.injuries ? '已接入' : '尚無可靠來源'}；即時比分${meta.live?.available ? '已接入' : '仍以賽程推算'}</div>
         <div class="dim">模型只使用一個完整賽季，尚無獨立留出賽季可做可靠回測。</div>
-      </div>` : ''}</div>
-      ${basic ? '' : `<div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>`}
-    </div>
-  </div>
+      </div>`}</div>
+    </div>` : ''}
 
   <div class="section"><h2>上季最終戰績</h2><span class="hint">${meta.lastSeason}・所有進階指標的基準</span></div>
   <div id="lastTable"></div>
@@ -166,14 +171,19 @@ try {
 
   /* 動態 */
   // 賽前預告已經在左邊那塊呈現了,這裡只放真正的動態
-  if (!basic) document.getElementById('news').innerHTML = news.filter(n => n.cat !== '賽前').slice(0, 7).map(n => `
+  const newsRows = news.filter(n => n.cat !== '賽前').slice(0, 7);
+  document.getElementById('news').innerHTML = newsRows.length
+    ? newsRows.map(n => `
     <div style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
       <div class="row" style="gap:7px">
-        <span class="pill ${n.cat === '傷停' || n.cat === '禁賽' ? 'bad' : n.cat === '賽前' ? 'info' : 'accent'}">${n.cat}</span>
-        <b class="small">${C.esc(n.title)}</b>
+        <span class="pill ${n.cat === '傷停' || n.cat === '禁賽' ? 'bad' : n.cat === '賽前' ? 'info' : 'accent'}">${C.esc(n.cat)}</span>
+        ${n.link
+          ? `<a class="small" href="${C.esc(n.link)}" target="_blank" rel="noopener"><b>${C.esc(n.title)}</b></a>`
+          : `<b class="small">${C.esc(n.title)}</b>`}
       </div>
-      <div class="tiny muted" style="margin-top:2px">${C.esc(n.body).slice(0, 96)}</div>
-    </div>`).join('');
+      <div class="tiny muted" style="margin-top:2px">${C.esc(n.body).slice(0, 96)}${n.source ? `<span class="dim">・${C.esc(n.source)}</span>` : ''}</div>
+    </div>`).join('')
+    : '<div class="small dim">目前沒有動態。</div>';
 
   C.startCountdowns();
 
