@@ -35,7 +35,7 @@ import { buildGoals } from './lib/goals.mjs';
 import { round } from './lib/util.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
-import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoachRecords } from './lib/adapters/fotmob-manual.mjs';
+import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -859,6 +859,24 @@ async function main() {
     if (!existsSync(csv)) continue;
     for (const r of parseCSVObjects(readFileSync(csv, 'utf8'))) {
       if (!goalNames.has(r.code)) goalNames.set(r.code, r.web_name);
+    }
+  }
+  /* 本季逐球員進球明細(FotMob 人工交付)。規劃裡這一格原本卡在
+     「vaastav 的 2026-27 merged_gw 還沒發布(HTTP 404)」—— 現在有替代來源了。
+     只收**核對通過**的場次;min 與 start 上游沒有,所以那一季的每 90 分鐘
+     與先發/替補拆分不做。 */
+  {
+    const fmGoalsAll = fotmobGoals(ROOT);
+    if (fmGoalsAll && !goalsBySeason[CURRENT_SEASON]) {
+      const ourPlayed = curPlayed.map(m => ({ home: m.home, away: m.away, fh: m.fh, fa: m.fa }));
+      const v = verifyGoals('pl', fmGoalsAll, ourPlayed);
+      const keys = new Set(v.matched.map(x => x.key));
+      const { rows, ownGoals } = goalRecords('pl', fmGoalsAll, { onlyKeys: keys });
+      if (rows.length) {
+        goalsBySeason[CURRENT_SEASON] = rows;
+        for (const r of rows) if (!goalNames.has(r.code)) goalNames.set(r.code, r.name);
+        console.log(`  英超本季逐球明細(FotMob):${keys.size} 場・${rows.length} 筆・烏龍球 ${ownGoals}`);
+      }
     }
   }
   const goalsOut = buildGoals(goalsBySeason, {

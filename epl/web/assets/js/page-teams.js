@@ -75,7 +75,12 @@ try {
       <span style="position:absolute;inset:0 auto 0 0;width:${(n / maxV) * 100}%;
         background:${colour};border-radius:3px"></span></span>`;
 
-    const subPct = g.for ? (g.subGoals / (g.starterGoals + g.subGoals || 1)) * 100 : 0;
+    /* 有些賽季的來源沒有「先發還是替補」(逐球事件就沒有),那一季
+       startKnown 是 false、starterGoals/subGoals/subShare 都是 null。
+       那整個區塊要**整段換掉**而不是印 null 或 0 —— 印 0 會被讀成
+       「這隊沒有替補進球」,那是編出來的。 */
+    const startKnown = S.startKnown !== false && g.starterGoals != null;
+    const subPct = startKnown && g.for ? (g.subGoals / (g.starterGoals + g.subGoals || 1)) * 100 : 0;
     const leaguePct = (S.subShare ?? 0) * 100;
 
     box.innerHTML = `
@@ -87,14 +92,16 @@ try {
           <div><div class="tiny dim">失球</div><div class="value mono" style="font-size:24px;font-weight:700">${g.against}</div></div>
           <div><div class="tiny dim">助攻</div><div class="value mono" style="font-size:24px;font-weight:700">${g.assists}</div></div>
         </div>
-        <div class="stat-line" style="margin-top:10px"><span class="small muted">先發進球</span>
+        ${startKnown ? `<div class="stat-line" style="margin-top:10px"><span class="small muted">先發進球</span>
           <b class="mono">${g.starterGoals}</b></div>
         <div class="stat-line"><span class="small muted">替補進球</span>
           <b class="mono">${g.subGoals} <span class="dim tiny">${C.fx(subPct, 1)}%</span></b></div>
         <div class="tiny dim" style="margin-top:6px">
           全聯盟平均有 ${C.fx(leaguePct, 1)}% 的進球來自替補 ——
           這隊${subPct > leaguePct + 3 ? '<b>比平均更依賴板凳</b>' : subPct < leaguePct - 3 ? '<b>幾乎都靠先發解決</b>' : '跟平均差不多'}。
-        </div>
+        </div>` : `<div class="tiny dim" style="margin-top:10px">
+          這一季的來源是逐球事件,<b>沒有「先發還是替補」這個欄位</b>,
+          所以先發／替補進球的拆分與全聯盟比較做不了 —— 不給比給一個假的好。</div>`}
         ${g.ownFor || g.ownAgainst ? `<div class="tiny dim" style="margin-top:6px">
           其中 ${g.ownFor} 球是對手的烏龍球;另有 ${g.ownAgainst} 球是自己人踢進自家門。
           上面的進球榜不含烏龍球(那不算任何人的進球)。</div>` : ''}
@@ -124,8 +131,11 @@ try {
       <h3>誰進的、誰助攻的</h3>
       <div id="${id}tbl"></div>
       <div class="tiny dim" style="margin-top:8px">
-        每 90 分鐘的分母是<b>上場分鐘</b>,不是出賽場次。上場不足 450 分鐘的不給這個數字 ——
-        替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。
+        ${S.minKnown === false ? `這一季的來源是<b>逐球事件</b>,只記錄「哪一分鐘、誰進的」,
+          <b>沒有上場分鐘、也沒有先發或替補</b>。那三欄一律留「—」,
+          每 90 分鐘的換算也做不了 —— 補一個 0 進去會被讀成「沒上場卻進了球」。`
+        : `每 90 分鐘的分母是<b>上場分鐘</b>,不是出賽場次。上場不足 450 分鐘的不給這個數字 ——
+          替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。`}
         <br><b>這張表不把進球方式掛到個別球員。</b>FPL 事件沒有這個 qualifier;
         上季的球隊級運動戰、角球與任意球加總列在下方「上季進球方式」。
       </div>
@@ -137,10 +147,13 @@ try {
           <span>${C.esc(p.name)}</span></span>` },
       { key: 'g', label: '進球', value: p => p.g, num: true, render: p => (p.g ? `<b>${p.g}</b>` : '—') },
       { key: 'a', label: '助攻', value: p => p.a, num: true, render: p => (p.a ? p.a : '—') },
-      { key: 'start', label: '先發 / 替補', value: p => p.startG, sortable: false, num: true,
+      /* startG / min 是 null 的時候要印「—」而不是 0。
+         `0 / 1` 會被讀成「先發沒進、替補進一球」,上場分鐘 0 會被讀成
+         「他沒上場卻進了球」—— 兩個都是這個來源根本沒給的東西。 */
+      { key: 'start', label: '先發 / 替補', value: p => p.startG ?? -1, sortable: false, num: true,
         title: '這名球員的進球中,先發上場與替補上場各幾球',
-        render: p => (p.g ? `<span class="mono">${p.startG} <span class="dim">/</span> ${p.subG}</span>` : '—') },
-      { key: 'min', label: '上場分鐘', value: p => p.min, num: true },
+        render: p => (p.g && p.startG != null ? `<span class="mono">${p.startG} <span class="dim">/</span> ${p.subG}</span>` : '—') },
+      { key: 'min', label: '上場分鐘', value: p => p.min ?? -1, num: true, render: p => p.min ?? '—' },
       { key: 'g90', label: '進球 / 90', value: p => p.g90 ?? -1, num: true, render: p => p.g90 ?? '—' },
       { key: 'a90', label: '助攻 / 90', value: p => p.a90 ?? -1, num: true, render: p => p.a90 ?? '—' },
     ], { sortKey: 'g', desc: true });

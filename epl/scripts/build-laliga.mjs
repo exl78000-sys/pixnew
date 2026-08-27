@@ -9,8 +9,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadMatches } from './lib/adapters/openfootball.mjs';
-import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoachRecords } from './lib/adapters/fotmob-manual.mjs';
+import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
 import { competition } from './lib/canonical.mjs';
+import { buildGoals } from './lib/goals.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
@@ -908,7 +909,40 @@ async function main() {
       : '西甲尚未取得可核對的教練資料。',
     coaches: coachData,
   });
-  await write('goals', { seasons: [], note: '西甲尚未接逐球員進球明細。', data: {} });
+  /* 本季逐球員進球明細(FotMob 人工交付)。只收**核對通過**的場次 ——
+     上游多出來的場次不收,不然逐隊加總會跟本站賽果對不上。
+     min 與 start 這個來源沒有,所以每 90 分鐘與「替補進球佔比」不做,
+     欄位標 null 而不是 0(0 代表「沒有替補進球」,跟「不知道」是兩件事)。 */
+  let goalsOut = { seasons: [], note: '西甲尚未接逐球員進球明細。', data: {} };
+  {
+    const fmGoalsAll = fotmobGoals(ROOT);
+    if (fmGoalsAll) {
+      const ourPlayed = curPlayed.map(m => ({ home: m.home, away: m.away, fh: m.fh, fa: m.fa }));
+      const v = verifyGoals('es1', fmGoalsAll, ourPlayed);
+      const keys = new Set(v.matched.map(x => x.key));
+      const { rows, ownGoals } = goalRecords('es1', fmGoalsAll, { onlyKeys: keys });
+      if (rows.length) {
+        const names = new Map(rows.map(r => [r.code, r.name]));
+        const data = buildGoals({ [CURRENT_SEASON]: rows }, {
+          nameOf: c => names.get(c) ?? `#${c}`,
+          codes: curCodes,
+        });
+        // subShare 對這一季無效(算不出先發/替補),標 null 讓畫面知道不能用
+        for (const s of Object.values(data)) s.subShare = null;
+        goalsOut = {
+          seasons: [CURRENT_SEASON], data,
+          source: fmGoalsAll.source, retrievedAt: fmGoalsAll.retrievedAt,
+          matchesUsed: keys.size, ownGoals,
+          unavailable: ['每 90 分鐘進球/助攻', '先發與替補進球拆分'],
+          note: `本季 ${keys.size} 場已核對比分的逐球明細(來源 ${fmGoalsAll.source})。`
+            + '上游沒有上場分鐘與先發/替補,所以每 90 分鐘與替補進球佔比不做。'
+            + (v.newer.length ? `上游另有 ${v.newer.length} 場本站賽果尚未更新,暫不納入。` : ''),
+        };
+        console.log(`  西甲逐球明細:${keys.size} 場・${rows.length} 筆球員記錄・烏龍球 ${ownGoals}`);
+      }
+    }
+  }
+  await write('goals', goalsOut);
   await write('reports', {
     seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,
     source: reportCount ? [...new Set(Object.values(reports).map(r => r.source))].join(' + ') : 'sportmonks + api-football', pending: Math.max(0, curPlayed.length - reportCount),

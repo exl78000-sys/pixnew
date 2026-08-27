@@ -136,3 +136,50 @@ export function verifyCoachRecords(league, fmCoaches, ourMatches, extraMatches =
   }
   return out;
 }
+
+/* ── 逐球 → 本站的逐球員記錄 ─────────────────────
+   FotMob 給的是「一顆球一筆」,本站 goals.mjs 吃的是「一位球員一場一筆」。
+
+   **兩個欄位這個來源沒有,所以不做,也不填 0 冒充**:
+     min   上場分鐘 → 每 90 分鐘的進球/助攻算不出來
+     start 先發或替補 → 「替補進球佔比」算不出來
+   goals.mjs 的 subShare()、starterGoals、subGoals 因此對這一季無效,
+   上層要把它們標成 null 而不是 0 —— 0 的意思是「沒有替補進球」,
+   跟「不知道是先發還是替補」完全是兩件事。
+
+   **烏龍球要翻面。** FotMob 的 team 是**得分方**(實測:Lindelöf 替 AVL
+   踢進烏龍球,那一筆的 team 是 BHA)。本站的記錄則是掛在**踢球者自己那一隊**,
+   由 goals.mjs 再換算成對手得分。所以這裡要把 og 記到另一隊去 ——
+   照抄 team 會讓烏龍球算成得分方自己進的,兩邊各錯一球。 */
+export function goalRecords(league, fmGoals, { onlyKeys = null } = {}) {
+  const rows = [];
+  let ownGoals = 0;
+  for (const m of fmGoals?.leagues?.[league]?.matches ?? []) {
+    const key = `${m.home}|${m.away}`;
+    if (onlyKeys && !onlyKeys.has(key)) continue;
+    const byPlayer = new Map();
+    const touch = (code, name, team, opp) => {
+      const k = `${team}|${code}`;
+      if (!byPlayer.has(k)) {
+        byPlayer.set(k, { team, opp, code: String(code), name, g: 0, a: 0, og: 0, min: null, start: null });
+      }
+      return byPlayer.get(k);
+    };
+    for (const g of m.goals) {
+      const scoringSide = g.team;
+      const other = scoringSide === m.home ? m.away : m.home;
+      if (g.kind === 'own') {
+        // 踢進烏龍球的人屬於**失分那一隊**,記在那一隊的 og
+        ownGoals++;
+        touch(g.scorerId ?? g.scorer, g.scorer, other, scoringSide).og += 1;
+        continue;
+      }
+      touch(g.scorerId ?? g.scorer, g.scorer, scoringSide, other).g += 1;
+      if (g.assistId ?? g.assist) {
+        touch(g.assistId ?? g.assist, g.assist, scoringSide, other).a += 1;
+      }
+    }
+    rows.push(...byPlayer.values());
+  }
+  return { rows, ownGoals };
+}
