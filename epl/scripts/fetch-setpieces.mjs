@@ -17,6 +17,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadTeams } from './lib/teams.mjs';
+import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
 import { teamRecord } from './lib/table.mjs';
 import { round } from './lib/util.mjs';
@@ -123,10 +124,21 @@ async function save(out) {
 
 async function main() {
   const T = loadTeams(ROOT, { file: PROFILE.teamFile });
-  const matches = loadMatches({
-    root: ROOT, competition: COMPETITION, season: LAST_SEASON, codeOf: T.codeOf,
-    rawDir: PROFILE.rawDir,
-  });
+  /* 西甲走 laligaMatches:openfootball 2024-25 少了最後一輪 10 場比分,
+     而下面的逐場核對要求「供應商場次 === 我們的場次」——
+     少 10 場會讓**整季 20 隊全部拒收**,看起來像 Understat 給錯資料,
+     實際是我們這邊的賽果不完整。備援來源補完之前先核對過重疊場次(見該檔說明)。 */
+  const matches = LEAGUE === 'es1'
+    ? (() => {
+      const { matches: ms, backfill } = laligaMatches(ROOT, LAST_SEASON, { codeOf: T.codeOf });
+      const line = backfillLine(LAST_SEASON, backfill);
+      if (line) console.log(line);
+      return ms;
+    })()
+    : loadMatches({
+      root: ROOT, competition: COMPETITION, season: LAST_SEASON, codeOf: T.codeOf,
+      rawDir: PROFILE.rawDir,
+    });
   const codes = [...new Set(matches.flatMap(m => [m.home, m.away]))].sort();
   await mkdir(DIR, { recursive: true });
 

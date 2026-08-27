@@ -17,13 +17,12 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { loadTeams } from './lib/teams.mjs';
-import { loadMatches } from './lib/adapters/index.mjs';
+import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
 import { walkForward, pairedDiff } from './lib/backtest.mjs';
 import { oddsIndex } from './lib/odds.mjs';
 import { round } from './lib/util.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const COMPETITION = 'esp.1';
 /* 訓練季由「檔案在不在」決定,不寫死。但**加一季不等於更準** ——
    太舊的賽季陣容早就換過,可能只是雜訊。所以下面會把每一種組合各跑一次,
    讓數字自己說話,不憑「資料越多越好」的直覺決定。 */
@@ -32,11 +31,13 @@ const TEST_SEASON = '2025-26';
 
 function main() {
   const T = loadTeams(ROOT, { file: 'teams-la-liga.json' });
-  const load = season => loadMatches({
-    root: ROOT, competition: COMPETITION, season, codeOf: T.codeOf,
-    // 回測只用日期、輪次與比分,開賽鐘面時間用不到,所以不帶 kickoffOf
-    rawDir: 'openfootball-la-liga',
-  });
+  // 回測只用日期、輪次與比分,開賽鐘面時間用不到,所以不帶 kickoffOf
+  const load = season => {
+    const { matches, backfill } = laligaMatches(ROOT, season, { codeOf: T.codeOf });
+    const line = backfillLine(season, backfill);
+    if (line) console.log(line);
+    return matches;
+  };
   const has = season => existsSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`));
   if (!has(TEST_SEASON)) {
     console.log(`✗ 缺少驗收季 ${TEST_SEASON} 的賽果。先跑 npm run laliga:fetch。`);

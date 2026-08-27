@@ -13,6 +13,7 @@ import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoac
 import { competition } from './lib/canonical.mjs';
 import { buildGoals } from './lib/goals.mjs';
 import { loadTeams } from './lib/teams.mjs';
+import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
@@ -277,10 +278,16 @@ async function main() {
     t.chartColor = intoBand(t.colors?.[0]) ?? intoBand(t.colors?.[1]) ?? '#9aa0aa';
   }
 
-  const load = season => loadMatches({
-    root: ROOT, competition: COMPETITION, season, codeOf: T.codeOf,
-    rawDir: 'openfootball-la-liga', kickoffOf: madridKickoff,
-  });
+  /* 賽果統一走 laligaMatches:它會在主來源缺比分時用**已核對過的**備援來源補上。
+     回測與線上模型必須吃同一份賽果,不然頁面上的準度講的是另一批比賽。 */
+  const backfills = [];   // 補過比分的賽季要寫進畫面上的資料說明,不能只印在 log
+  const load = season => {
+    const { matches, backfill } = laligaMatches(ROOT, season, { codeOf: T.codeOf, kickoffOf: madridKickoff });
+    const line = backfillLine(season, backfill);
+    if (line) console.log(line);
+    if (backfill?.filled) backfills.push({ season, ...backfill });
+    return matches;
+  };
   const lastMatches = load(LAST_SEASON);
   const curMatches = load(CURRENT_SEASON);
   /* 選配歷史季:檔案不在就安靜跳過(fetch-laliga.mjs 那邊也是選配),
@@ -861,6 +868,10 @@ async function main() {
             ? [`${short.map(x => `${x.season} 實際納入 ${x.matches.length} 場(上游少了 ${380 - x.matches.length} 場比分)`).join('、')}。`]
             : [];
         })(),
+        /* 補過比分的賽季要講出來。這不是瑕疵,是**出處不同** ——
+           讀者有權知道哪幾場的比分不是主來源給的,以及我們憑什麼相信它。 */
+        ...backfills.map(b => `${b.season} 有 ${b.filled} 場的比分主來源(openfootball)沒有,`
+          + `改用 football-data.co.uk;兩邊重疊的 ${b.checked} 場逐場核對完全一致才採用。`),
         backtest.available
           ? `走查回測 ${backtest.season} ${backtest.games} 場:RPS ${backtest.rps}、基準線 ${backtest.baselineRps}`
             + `${backtest.vsBaseline ? `,差距 ${backtest.vsBaseline.ratio} 個標準誤` : ''}。`

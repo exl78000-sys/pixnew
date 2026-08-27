@@ -12,6 +12,7 @@ import { parseClubSlugs, parseOfficialCoach, parseOfficialCoachPayload } from '.
 import { officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
 import { verifyTranslation } from './lib/report/translate.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
+import { backfillScores } from './lib/laliga-matches.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
@@ -338,6 +339,53 @@ check('標題暴長(多半是加了原文沒有的東西)→ 擋下',
   verifyTranslation(trSrc, { title: 'Mbappe 帽子戲法 4-1 擊沉 Sociedad,'.repeat(4) }).ok === false);
 check('摘要漏掉大部分數字 → 擋下',
   verifyTranslation(trSrc, { title: 'Mbappe 帽子戲法 4-1 擊沉 Sociedad', body: 'Madrid 週三獲勝。' }).ok === false);
+
+/* ── 比分備援來源 ──────────────────────────
+   openfootball 的西甲 2024-25 少了最後一輪 10 場,football-data.co.uk 有。
+   補進來是對的,但**只有在兩邊重疊的場次逐場一致時才准補** ——
+   兩個來源對不上卻挑著用,等於自己選一個喜歡的答案(鐵則五)。
+   這一節守的就是那道門:對不上一場就整份不採用。 */
+{
+  const csv = ['Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,PSCH,PSCD,PSCA',
+    'SP1,24/05/25,Real Madrid,Real Sociedad,2,0,1.5,4,7',
+    'SP1,25/05/25,Athletic Club,Barcelona,0,3,3,3.5,2.2',
+    'SP1,23/05/25,Real Betis,Valencia,1,1,2,3.3,3.6'].join('\n');
+  const codeOf = n => ({ 'Real Madrid': 'RMA', 'Real Sociedad': 'RSO', 'Athletic Club': 'ATH',
+    Barcelona: 'BAR', 'Real Betis': 'BET', Valencia: 'VAL' }[n] ?? null);
+
+  const mk = () => ([
+    { home: 'RMA', away: 'RSO', played: false, fh: null, fa: null },
+    { home: 'ATH', away: 'BAR', played: false, fh: null, fa: null },
+    { home: 'BET', away: 'VAL', played: true, fh: 1, fa: 1 },
+  ]);
+
+  const ok = mk();
+  const r1 = backfillScores(ok, csv, codeOf);
+  check('重疊場次一致 → 補上缺的比分', r1.filled === 2 && r1.checked === 1 && r1.mismatches.length === 0);
+  check('補進來的標得出來源', ok[0].scoreSource === 'football-data.co.uk' && ok[0].fh === 2 && ok[0].fa === 0);
+  check('本來就有比分的不動', ok[2].scoreSource === undefined && ok[2].fh === 1);
+
+  const bad = mk();
+  bad[2].fh = 3;   // 我們說 3-1、備援說 1-1
+  const r2 = backfillScores(bad, csv, codeOf);
+  check('重疊場次對不上 → 整份不採用,一場都不補',
+    r2.filled === 0 && r2.mismatches.length === 1 && bad[0].played === false);
+  check('對不上時報得出是哪一場、兩邊各是多少',
+    r2.mismatches[0].key === 'BET|VAL' && r2.mismatches[0].ours[0] === 3 && r2.mismatches[0].theirs[0] === 1);
+
+  // 產物:2024-25 的訓練場次應該是 380(補完之後),而且畫面要講出補了幾場
+  const bt = (() => {
+    try { return JSON.parse(readFileSync(join(ROOT, 'data', 'backtest-laliga.json'), 'utf8')); }
+    catch { return null; }
+  })();
+  if (bt?.coverage) {
+    const cov = bt.coverage['2024-25'];
+    check('產物:2024-25 補完之後是 380 場', !cov || cov.played === 380, JSON.stringify(cov));
+  }
+  check('產物:模型頁的說明有講出比分來源不同',
+    meta.model.caveats.some(c => c.includes('football-data.co.uk')),
+    meta.model.caveats.join(' | '));
+}
 
 if (process.exitCode) throw new Error('西甲球隊數據第二版自我檢查失敗');
 console.log('  西甲球隊數據第二版全部通過');
