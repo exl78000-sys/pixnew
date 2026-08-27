@@ -116,8 +116,8 @@ try {
     if (!t) {
       return `<div class="card" style="margin-top:20px">
         <h2>測過但沒有進模型的特徵</h2>
-        <div class="note">尚未跑過特徵驗證。執行 <span class="mono">npm run tune:form</span> 再
-          <span class="mono">npm run build</span>,這一段就會出現完整的調參與驗收數字。</div></div>`;
+        <div class="note">這個聯賽還沒有跑過特徵驗證,所以這一段不給數字 ——
+          調參與驗收要用不同賽季,樣本不夠時做不成。</div></div>`;
     }
     const H = t.holdout;
     const rows = H.trials.map(r => `<tr>
@@ -264,7 +264,7 @@ try {
     <p>這個平台沒有付費的進階數據當賣點,所以「預測到底準不準」就是它唯一該被檢驗的地方。
        這一頁把驗證過程完整攤開:方法、數字、以及模型錯得最離譜的那幾場。</p>
     ${C.stampRow([
-      C.stamp('走查回測', { iso: bt.ranAt, kind: 'daily', note: '每次 npm test 重跑' }),
+      C.stamp('走查回測', { iso: bt.ranAt, kind: 'daily', note: '每次資料更新時重跑' }),
       C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
     ])}
   </div>

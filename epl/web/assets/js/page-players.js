@@ -95,8 +95,7 @@ try {
     document.getElementById('seasonBanner').innerHTML = (mode === 'current' && !boards)
       ? `<div class="note" style="margin-top:10px"><b>本季 ${leaders.seasons.current} 還沒有逐球員數據</b> ——
           賽季剛開打,上游資料源要等該輪結束後才會發布。<br>
-          有資料之後執行 <span class="mono">npm run season</span> 再 <span class="mono">npm run build</span>,
-          這一頁就會自動填上本季數字。現在先看上季。</div>`
+          上游釋出之後這一頁會自動填上本季數字。現在先看上季。</div>`
       : '';
 
     if (!boards) { document.getElementById('boards').innerHTML = ''; return; }

@@ -39,7 +39,12 @@ try {
   app.innerHTML = `
   <div class="page-head">
     <h1>賽程與預測</h1>
-    <p>每一場都用 Dixon-Coles Poisson 與 Elo 各算一次再取平均${basic ? '。西甲目前只有一個完整歷史賽季，尚未宣稱已經獨立回測優於其他模型' : '(回測顯示兩者平均最準)'}。
+    ${/* 「西甲只有一個完整歷史賽季、尚未獨立回測」這句已經過期 ——
+          兩個聯賽現在都跑過走查回測。改成讀 meta 的回測產物,誰有就講誰的。 */''}
+    <p>每一場都用 Dixon-Coles Poisson 與 Elo 各算一次再取平均${
+      meta.model.backtest?.available
+        ? `(${meta.model.backtest.season} 走查回測顯示兩者平均最準,RPS ${meta.model.backtest.rps}、基準線 ${meta.model.backtest.baselineRps})`
+        : '(這個聯賽還沒跑走查回測,所以不宣稱哪一種最準)'}。
        點任一場會開速覽:未開賽看勝率與最可能比分,已完賽看賽果與模型有沒有命中;
        ${basic ? `目前提供比分、預測、市場機率（有盤口時），以及 ${meta.lastSeason} 兩隊攻守與風格對比；已進永久快取的完賽場次另有球隊統計、正式陣容、事件與球員評分。` : '想看陣容、戰術、近況與傷停,可進完整單場頁;已完賽還能把<b>賽前預測、市場機率與賽後數據並排對比</b>。'}
        有明確開球時間時會換算成你所在時區(${C.tzName()});只有日期的遠期賽程不會自行猜時間。</p>
@@ -217,7 +222,9 @@ try {
       ${basicTeamComparison(f)}
 
       ${rep ? C.matchReportCards(rep) : (f.played
-        ? `<div class="note">${basic ? '這場尚待主要資料源完成永久快取；球隊統計、正式陣容、事件、球員資料與評分未全部通過前不顯示半成品。' : '這場沒有逐球員的出場資料,所以沒有陣容與戰術解讀。有資料的輪次可用 <span class="mono">npm run season</span> 補上。'}</div>`
+        ? `<div class="note">${basic
+          ? '這場尚待主要資料源完成永久快取;球隊統計、正式陣容、事件、球員資料與評分未全部通過前不顯示半成品。'
+          : '這場沒有逐球員的出場資料,所以沒有陣容與戰術解讀 —— 上游補上之後會自動出現。'}</div>`
         : '')}`);
   }
 
