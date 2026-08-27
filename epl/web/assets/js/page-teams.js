@@ -273,9 +273,42 @@ try {
         <span class="mono small">勝率 ${C.pct(home ? f.prediction.home : f.prediction.away, 0)}</span>
       </div></a>`;
     }).join('')}</div>` : ''}
+    ${squadRows(t).length ? `<div class="section" style="margin-top:20px"><h2>陣容</h2>
+      <span class="hint">${squadRows(t).length} 人・數據為上季 ${meta.lastSeason} 的表現</span></div>
+    <div id="squad"></div>` : ''}
     <div class="note" style="margin-top:14px">第二版已接球隊層級攻守、實際使用陣型與進球情境；球員資料與教練姓名已由可用來源補充，任期、戰績、傷停與完整賽後統計仍依資料契約逐步接入。</div>
     ${C.foot(meta)}`;
     renderTeamH2H(t);
+    renderSquad(t);
+  }
+
+  /* 西甲陣容。欄位只列這個來源真的有的 —— 英超那張表的身價、防守貢獻與傷停狀態
+     Understat/SportMonks 都沒有,照抄過來會是三整欄的「—」(鐵則三)。
+     跨隊球員的整季數字是兩隊合計,所以標記出來而不是靜靜掛在其中一隊。 */
+  function squadRows(t) {
+    return players.filter(p => p.season === meta.lastSeason
+      && (p.teams ?? []).some(name => (clubs.concat(teams).find(x =>
+        x.code === p.sportmonksTeam || x.en === name || x.understat === name
+        || (x.alias ?? []).includes(name))?.code ?? p.sportmonksTeam) === t.code));
+  }
+
+  function renderSquad(t) {
+    const rows = squadRows(t);
+    const el = document.getElementById('squad');
+    if (!el || !rows.length) return;
+    el.innerHTML = C.table(rows, [
+      { key: 'name', label: '球員', value: p => p.name,
+        render: p => `${C.esc(p.name)}${p.squadNumber ? ` <span class="dim tiny">#${p.squadNumber}</span>` : ''}${
+          p.multiTeam ? ' <span class="pill warn tiny" title="上季效力過兩隊,數字是兩隊合計">跨隊</span>' : ''}` },
+      { key: 'pos', label: '位置', value: p => ['GK', 'D', 'M', 'F'].indexOf(p.pos), render: p => p.posZh },
+      { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true, render: p => p.age ?? '—' },
+      { key: 'games', label: '場次', value: p => p.games ?? 0, num: true },
+      { key: 'minutes', label: '分鐘', value: p => p.minutes ?? 0, num: true },
+      { key: 'goals', label: '進球', value: p => p.goals ?? 0, num: true },
+      { key: 'assists', label: '助攻', value: p => p.assists ?? 0, num: true },
+      // 每 90 分鐘的數字只在達門檻時才有值,不足的照實給「—」而不是補 0
+      { key: 'xgi90', label: 'xGI/90', value: p => p.xgi90 ?? -1, num: true, render: p => p.xgi90 ?? '—' },
+    ], { sortKey: 'minutes', desc: true, onRow: p => { C.go('players', { code: p.id }); } });
   }
 
   function basicCoachSection(t) {

@@ -786,7 +786,12 @@ async function checkDataGap() {
     ['西甲的動態頁已開放,資料存在時不擋', !g('es1', 'news', ['news'], { ...full, news: [1] })],
     ['西甲的動態頁資料空的仍擋', !!g('es1', 'news', ['news'], { ...full, news: [] })],
     ['西甲的實時戰況頁已開放,沒有即時來源時仍可顯示模板', !g('es1', 'live', ['live'], { ...full, live: { available: false } })],
-    ['西甲的模型驗證擋下來', !!g('es1', 'model', ['form'])],
+    /* 模型頁對西甲開了 —— 但它沒有回測數字,所以「開」的意思是
+       「照實說明為什麼還不能回測,並攤開模型設定」,不是「假裝有驗證結果」。
+       守兩件事:有 form 就不擋;form 缺了保險照樣擋(不然會開出一個真的空頁)。 */
+    ['西甲的模型驗證頁已開放', !g('es1', 'model', ['form'])],
+    ['模型頁開放了但 form 缺了,保險仍然會擋',
+      !!g('es1', 'model', ['form'], { ...full, form: {} })],
     ['西甲的單場分析不擋', !g('es1', 'analysis', ['players', 'shapes'], { players: [], shapes: {} })],
     ['西甲已開放的賽程頁不擋', !g('es1', 'fixtures', ['fixtures'], { fixtures: [1] })],
     ['西甲已開放的球隊頁不擋(球員是空的也一樣)', !g('es1', 'teams', ['players'], { players: [] })],

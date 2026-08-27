@@ -8,10 +8,58 @@ try {
   C.nav();
 
   const bt = meta.model.backtest;
+  /* 沒有回測時,這一頁原本只吐一句「執行 npm test 再 npm run build」——
+     那是寫給開發者看的,讀者看到只會以為壞了(任務 #44 已經在別的頁修過同樣的問題)。
+     改成照實說明:模型參數照樣攤開、為什麼還不能回測講清楚、模型不知道的事照列。
+     **沒有回測數字就一個都不給**,不拿重擬合的數字冒充驗證結果。 */
   if (!bt.available) {
-    app.innerHTML = `<div class="page-head"><h1>模型驗證</h1></div>
-      <div class="note">尚未跑過回測。執行 <span class="mono">npm test</span> 再 <span class="mono">npm run build</span>,
-        這一頁就會出現完整的驗證結果。</div>${C.foot(meta)}`;
+    const M = meta.model;
+    const row = (k, v) => `<div class="stat-line"><span class="small">${k}</span><b class="mono">${v}</b></div>`;
+    app.innerHTML = `
+    <div class="page-head">
+      <h1>模型驗證</h1>
+      <p>這一頁的用途是攤開模型的實測準度。<b>目前這個聯賽還跑不了走查回測</b>,
+         所以下面只有模型本身的設定與它的已知限制 —— 準度數字一個都不給,
+         因為給了就是假的。</p>
+      ${C.stampRow([C.stamp('模型設定', { kind: 'season', note: '每次 build 重算' })])}
+    </div>
+
+    <div class="note">${C.esc(bt.note ?? '這個聯賽目前沒有可用的回測結果。')}
+      <div style="margin-top:6px" class="tiny dim">走查回測要把整季逐輪重跑,每一輪只用開賽前的資料重新訓練;
+        而且調參與驗收必須用<b>不同賽季</b>,否則挑出來的一定是雜訊。手上只有一季完整歷史時,
+        這件事在方法上就做不成 —— 不是還沒跑,是還不能跑。</div></div>
+
+    <div class="section" style="margin-top:20px"><h2>模型設定</h2>
+      <span class="hint">這些數字每次 build 都會重算</span></div>
+    <div class="card">
+      ${row('演算法', C.esc(M.type))}
+      ${row('主場優勢', `${M.homeAdvantage}× 進球`)}
+      ${row('低比分修正 ρ', M.rho)}
+      ${row('時間衰減 ξ', M.decayXi)}
+      ${row('賽季模擬次數', Number(M.simulationRuns).toLocaleString())}
+      ${M.promotedPrior?.length ? row('套用聯盟後段先驗的升班馬', M.promotedPrior.map(c => C.name(c)).join('、')) : ''}
+    </div>
+
+    ${form?.tuned ? `<div class="section" style="margin-top:20px"><h2>近況特徵目前不影響機率</h2>
+      <span class="hint">係數全為 0</span></div>
+    <div class="card"><div class="small muted" style="display:grid;gap:8px">
+      <div>近五戰狀況、近五戰進失球、歷來交手淨勝球這三個特徵<b>有算出來,但沒有進模型</b> ——
+        係數是 <span class="mono">${C.esc(JSON.stringify(form.tuned))}</span>,
+        套用之後 λ 一模一樣。</div>
+      <div>它們只在賽前分析頁當資訊顯示,不動任何一個機率數字。
+        ${C.esc(form.note ?? '')}</div>
+      <div class="dim">要讓它們進模型,得先在<b>另一個賽季</b>驗收出大過標準誤的改善 ——
+        跟回測卡在同一個地方:樣本不夠。</div>
+    </div></div>` : ''}
+
+    <div class="card" style="margin-top:20px">
+      <h2>這個模型不知道的事</h2>
+      <div class="small muted" style="display:grid;gap:6px">
+        ${(M.caveats ?? []).map(c => `<div>・${C.esc(c)}</div>`).join('')}
+        <div>・不含轉會、教練異動、賽程密度、歐戰疲勞、天氣、裁判。</div>
+      </div>
+    </div>
+    ${C.foot(meta)}`;
     throw new Error('skip');
   }
 
