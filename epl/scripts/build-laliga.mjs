@@ -692,7 +692,7 @@ async function main() {
       baselineRps: r.models.baseline.rps, models: r.models,
       calibration: r.calibration ?? [], byRound: r.byRound ?? [],
       surprises: r.surprises ?? [], baselineProbs: r.baselineProbs ?? null,
-      vsBaseline: r.vsBaseline ?? null,
+      vsBaseline: r.vsBaseline ?? null, vsMarket: r.vsMarket ?? null,
       coverage: r.coverage ?? null,
       /* 拿到西甲賠率之後這一段會自動出現(回測產物裡的 market 直接帶上來)。
          還沒拿到就標成不可用並說明原因 —— **不用英超的市場數字頂替**,
