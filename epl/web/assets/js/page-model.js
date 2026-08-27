@@ -167,6 +167,60 @@ try {
       這比網格搜尋更能說明「為什麼沒用」:球隊強弱本來就在 Dixon-Coles 的攻守參數與 Elo 裡了,
       近五場扣掉自己的長期水準之後,剩下的多半真的只是運氣。
     </div>
+  </div>
+  ${situationSection()}`;
+  }
+
+  /* 上一季的進球情境(定位球強弱)。跟上面那三個特徵一樣:量過、沒用、照實寫。
+     這一段不是附註 —— 它是這個平台的做法本身:提出假說、用不同賽季驗收、
+     沒過就留下紀錄,而不是換一個說法把它包裝成有用。 */
+  function situationSection() {
+    const t = form?.situationTuning;
+    if (!t) return '';
+    const cov = c => (c.noPrior?.length
+      ? `${c.teams} 隊有先驗,${c.noPrior.length} 隊沒有(${c.noPrior.join('、')})`
+      : `${c.teams} 隊都有先驗`);
+    const rows = (t.holdout?.trials ?? []).map(r => `<tr>
+      <td>${C.esc(r.係數)}</td>
+      <td class="mono num">${r.bAtk}</td><td class="mono num">${r.bDef}</td>
+      <td class="mono num">${r.RPS}</td>
+      <td class="mono num">${r.對基準 > 0 ? '+' : ''}${r.對基準}</td>
+      <td class="mono num">±${r['±標準誤']}</td>
+      <td><span class="pill tiny ${r.對基準 < 0 && Math.abs(r.對基準) > r['±標準誤'] ? 'accent' : ''}">
+        ${r.對基準 < 0 && Math.abs(r.對基準) > r['±標準誤'] ? '有效' : '在雜訊範圍內'}</span></td></tr>`).join('');
+
+    return `
+  <div class="section" style="margin-top:20px"><h2>上一季的定位球強弱有沒有預測力</h2>
+    <span class="hint">${t.accepted ? '通過驗收' : '測過,沒通過'}</span></div>
+  <div class="card">
+    <div class="small muted" style="display:grid;gap:8px;margin-bottom:14px">
+      <div><b>假說:</b>${C.esc(t.hypothesis)}</div>
+      <div><b>怎麼定義:</b>定位球 = ${t.deadBall.join(' + ')}。
+        <b>十二碼不算</b> —— 罰球次數主要反映被犯規多少與裁判尺度,不是定位球能力。</div>
+      <div><b>為什麼用上一季:</b>Understat 給的是整季彙總不是逐場,
+        拿本季彙總預測本季比賽就是偷看未來,那個「改善」完全是假的。</div>
+      <div><b>怎麼測的:</b>調參 ${C.esc(t.tuneSeason)}(先驗 ${C.esc(t.tunePrior)},${t.tuneGames} 場)、
+        驗收 ${C.esc(t.holdoutSeason)}(先驗 ${C.esc(t.holdoutPrior)},${t.holdoutGames} 場)。
+        驗收這批完全沒參與挑選。</div>
+      <div class="dim">先驗涵蓋:調參 ${cov(t.priorCoverage.tune)};驗收 ${cov(t.priorCoverage.holdout)}。
+        沒有先驗的隊特徵給 0(不調整),不猜一個值。
+        聯盟平均每場定位球進 ${t.leagueAverage.deadBallFor90} 球 / 失 ${t.leagueAverage.deadBallAgainst90} 球。</div>
+    </div>
+
+    <div class="small muted" style="margin-bottom:6px">驗收賽季 ${C.esc(t.holdoutSeason)}:基準 RPS
+      <b class="mono">${t.holdout.baselineRps}</b></div>
+    <div class="table-wrap"><table><thead><tr>
+      <th>係數組合</th><th class="num">bAtk</th><th class="num">bDef</th>
+      <th class="num">RPS</th><th class="num">對基準</th><th class="num">±標準誤</th><th>判定</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>
+
+    <div class="note" style="margin-top:12px">
+      <b>結論:${t.accepted ? '通過,已進模型。' : '沒有一組通過,係數維持 0。'}</b>
+      ${t.accepted ? '' : `而且<b>連調參賽季都幾乎挑不出改善</b>(基準 ${t.tuneBaselineRps} → 最佳 ${t.tuneBest.rps})——
+      調參是可以盡情挑的,連挑都挑不到東西,代表訊號是真的不存在,
+      而不是「有訊號但被雜訊蓋過」。合理的解釋是:定位球得分能力本來就已經
+      反映在 Dixon-Coles 的攻守參數裡了,再把它單獨拉出來並沒有多給模型任何資訊。`}
+    </div>
   </div>`;
   }
 

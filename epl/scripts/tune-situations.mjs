@@ -20,7 +20,7 @@
 //   驗收賽季 2025-26(先驗 2024-25 情境)→ 完全沒參與挑選,只跑一次
 //
 // 驗收賽季上改善**超過一個成對標準誤**才算數。沒有就照實說,係數留 0。
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -286,6 +286,29 @@ async function main() {
   if (!passed.length) {
     console.log('  照鐵則二:沒有回測證據就不進模型。這個結果要寫在模型頁上,不是悄悄拿掉。');
   }
+
+  /* 存檔給模型頁讀。**不通過也要存** —— 這一頁的價值有一半在「測了什麼、
+     結果沒用」,悄悄不存等於假裝沒測過。格式比照 data/form-tuning.json。 */
+  mkdirSync(join(ROOT, 'data'), { recursive: true });
+  const out = join(ROOT, 'data', LEAGUE === 'pl' ? 'situation-tuning.json' : `situation-tuning-${LEAGUE}.json`);
+  writeFileSync(out, JSON.stringify({
+    ranAt: new Date().toISOString(),
+    league: LEAGUE, leagueLabel: P.label,
+    deadBall: DEAD_BALL,
+    hypothesis: '定位球能力比運動戰能力更能跨季延續,所以上一季的定位球強弱可能帶有 Poisson 看不到的資訊。',
+    tuneSeason: P.tune.season, tunePrior: P.tune.prior, tuneGames: tune.rows.length,
+    holdoutSeason: P.holdout.season, holdoutPrior: P.holdout.prior, holdoutGames: hold.rows.length,
+    priorCoverage: {
+      tune: { teams: tune.priorTeams, noPrior: tune.noPrior },
+      holdout: { teams: hold.priorTeams, noPrior: hold.noPrior },
+    },
+    leagueAverage: { deadBallFor90: hold.avgF, deadBallAgainst90: hold.avgA },
+    tuneBaselineRps: round(t0.rps, 5),
+    tuneBest: { coef: best.c, rps: round(best.s.rps, 5) },
+    holdout: { baselineRps: round(h0.rps, 5), baselineHitRate: round(h0.hitRate, 4), trials: rowsOut },
+    accepted: passed.length ? passed[0] : null,
+  }, null, 2) + '\n');
+  console.log(`→ 已寫入 ${out.replace(ROOT + '/', '')}`);
 }
 
 main().catch(err => { console.error(`✗ ${err.message}`); process.exitCode = 1; });

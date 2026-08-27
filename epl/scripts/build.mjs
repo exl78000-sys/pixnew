@@ -814,6 +814,12 @@ async function main() {
      沒跑過就沒有 —— 前端會據實顯示「尚未驗證」而不是留白。 */
   const tuningPath = join(ROOT, 'data', 'form-tuning.json');
   const tuning = existsSync(tuningPath) ? JSON.parse(await readFile(tuningPath, 'utf8')) : null;
+  /* 進球情境的驗收結果(npm run tune:situations 產生)。
+     **沒通過也要帶到前端** —— 模型頁「測過但沒有進模型的特徵」那一段的價值,
+     有一半在於把測過而無效的東西攤開來,悄悄不顯示等於假裝沒測過。 */
+  const situationTuningPath = join(ROOT, 'data', 'situation-tuning.json');
+  const situationTuning = existsSync(situationTuningPath)
+    ? JSON.parse(await readFile(situationTuningPath, 'utf8')) : null;
   /* 進球明細的球員姓名要涵蓋往季 —— 2024-25 有六十幾位進球者已經離開英超,
      只有那一季的名冊查得到他們。名冊抓不到就顯示代碼,不編一個名字出來。 */
   const goalNames = new Map(players.map(p => [p.code, p.name]));
@@ -847,7 +853,8 @@ async function main() {
     inModel: false,
     tuned: TUNED,
     tuning,
-    note: '近五戰、交手紀錄與傷停都經過走查回測驗證,改善幅度小於雜訊,因此不進預測模型,僅作為資訊呈現。',
+    situationTuning,
+    note: '近五戰、交手紀錄、傷停與上季進球情境都經過走查回測驗證,改善幅度小於雜訊,因此不進預測模型,僅作為資訊呈現。',
     teams: teamForm,
   });
   await write('analysis.json', { ...aiSummary, pre: aiPre, post: aiPost, counts: { pre: aiSummary.pre, post: aiSummary.post } });

@@ -1,0 +1,84 @@
+{
+  "ranAt": "2026-08-27T14:42:08.960Z",
+  "league": "pl",
+  "leagueLabel": "英超",
+  "deadBall": [
+    "FromCorner",
+    "SetPiece",
+    "DirectFreekick"
+  ],
+  "hypothesis": "定位球能力比運動戰能力更能跨季延續,所以上一季的定位球強弱可能帶有 Poisson 看不到的資訊。",
+  "tuneSeason": "2024-25",
+  "tunePrior": "2023-24",
+  "tuneGames": 380,
+  "holdoutSeason": "2025-26",
+  "holdoutPrior": "2024-25",
+  "holdoutGames": 380,
+  "priorCoverage": {
+    "tune": {
+      "teams": 19,
+      "noPrior": [
+        "IPS",
+        "LEI",
+        "SOU"
+      ]
+    },
+    "holdout": {
+      "teams": 18,
+      "noPrior": [
+        "BUR",
+        "LEE",
+        "SUN"
+      ]
+    }
+  },
+  "leagueAverage": {
+    "deadBallFor90": 0.289,
+    "deadBallAgainst90": 0.266
+  },
+  "tuneBaselineRps": 0.20131,
+  "tuneBest": {
+    "coef": {
+      "bAtk": 0,
+      "bDef": -0.05
+    },
+    "rps": 0.2013
+  },
+  "holdout": {
+    "baselineRps": 0.20761,
+    "baselineHitRate": 0.4868,
+    "trials": [
+      {
+        "係數": "最佳組合",
+        "bAtk": 0,
+        "bDef": -0.05,
+        "RPS": 0.20768,
+        "對基準": 0.00008,
+        "±標準誤": 0.00013,
+        "bootstrap p": 0.265,
+        "命中率": "48.7%"
+      },
+      {
+        "係數": "只開 bAtk",
+        "bAtk": -0.05,
+        "bDef": 0,
+        "RPS": 0.20756,
+        "對基準": -0.00005,
+        "±標準誤": 0.00011,
+        "bootstrap p": 0.334,
+        "命中率": "48.4%"
+      },
+      {
+        "係數": "只開 bDef",
+        "bAtk": 0,
+        "bDef": -0.05,
+        "RPS": 0.20768,
+        "對基準": 0.00008,
+        "±標準誤": 0.00013,
+        "bootstrap p": 0.274,
+        "命中率": "48.7%"
+      }
+    ]
+  },
+  "accepted": null
+}
