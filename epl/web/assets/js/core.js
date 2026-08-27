@@ -1028,16 +1028,68 @@ export function roundChart(rows, { w = 1000, h = 340, baseline = null, valueKey 
   </svg>`;
 }
 
-/* ── 折線圖(Elo 走勢) ─────────────── */
-export function sparkline(values, { w = 320, h = 70, color = '#00ff85' } = {}) {
-  if (!values.length) return '';
-  const lo = Math.min(...values), hi = Math.max(...values);
-  const X = i => (i / Math.max(1, values.length - 1)) * (w - 4) + 2;
-  const Y = v => h - 4 - ((v - lo) / (hi - lo || 1)) * (h - 10);
-  const d = values.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
-  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">
-    <path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>
-    <circle cx="${X(values.length - 1).toFixed(1)}" cy="${Y(values.at(-1)).toFixed(1)}" r="3" fill="${color}"/>
+/* ── Elo 走勢折線圖 ───────────────────
+   原本是一條沒有座標軸的 sparkline:看得出「有起伏」,但看不出起伏多大、
+   也看不出那是三個月還是兩季之間的事 —— 沒有刻度的折線圖可以把 5 分的波動
+   畫得跟 200 分一樣劇烈。所以補上兩條軸,並在 x 軸放幾個日期節點。
+   線改細(1.25)是因為加了格線與刻度之後,粗線會壓過刻度、反而更難讀。 */
+export function eloTrend(points, { w = 760, h = 232, color = 'var(--accent)' } = {}) {
+  const rows = points.filter(p => Number.isFinite(p.r));
+  if (rows.length < 2) return '';
+  const pad = { l: 62, r: 16, t: 20, b: 46 };
+  const vals = rows.map(p => p.r);
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  // 上下各留一成的空間,否則最高點與最低點會貼在圖框上看不出來
+  const span = (hi - lo) || 20;
+  const y0 = lo - span * 0.12, y1 = hi + span * 0.12;
+  const X = i => pad.l + (i / (rows.length - 1)) * (w - pad.l - pad.r);
+  const Y = v => h - pad.b - ((v - y0) / (y1 - y0)) * (h - pad.t - pad.b);
+
+  const yTicks = 3;
+  const grid = [...Array(yTicks + 1)].map((_, i) => {
+    const v = y0 + (i / yTicks) * (y1 - y0);
+    return `<line x1="${pad.l}" y1="${Y(v).toFixed(1)}" x2="${w - pad.r}" y2="${Y(v).toFixed(1)}"
+        stroke="var(--line-soft)" stroke-width="1"/>
+      <text x="${pad.l - 8}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end"
+        font-size="11.5" fill="var(--ink-3)">${Math.round(v)}</text>`;
+  }).join('');
+
+  /* x 軸節點:等距取 4 個再加上最後一筆。跨年時標到年份,同年只標月日 ——
+     全部標成 2026/05 會塞不下,全部只標 05/24 又分不出是哪一季。 */
+  const idx = [...new Set([0, ...[1, 2, 3].map(k => Math.round((k / 4) * (rows.length - 1))), rows.length - 1])];
+  let lastYear = null;
+  const xLabels = idx.map(i => {
+    const d = rows[i].date ? new Date(rows[i].date) : null;
+    if (!d || Number.isNaN(d.getTime())) return '';
+    const yr = d.getUTCFullYear();
+    const text = yr === lastYear
+      ? `${d.getUTCMonth() + 1}/${d.getUTCDate()}`
+      : `${yr}/${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+    lastYear = yr;
+    const anchor = i === 0 ? 'start' : i === rows.length - 1 ? 'end' : 'middle';
+    return `<line x1="${X(i).toFixed(1)}" y1="${h - pad.b}" x2="${X(i).toFixed(1)}" y2="${h - pad.b + 4}"
+        stroke="var(--line)" stroke-width="1"/>
+      <text x="${X(i).toFixed(1)}" y="${h - pad.b + 16}" text-anchor="${anchor}"
+        font-size="11.5" fill="var(--ink-3)">${text}</text>`;
+  }).join('');
+
+  const d = rows.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.r).toFixed(1)}`).join(' ');
+  // 60 個點畫成實心圓會糊成一團,所以只留最後一點可見,其餘做成透明的滑鼠感應區
+  const hits = rows.map((p, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(p.r).toFixed(1)}" r="7" fill="transparent"
+      ><title>${p.date ? `${p.date}・` : ''}Elo ${p.r}</title></circle>`).join('');
+
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img"
+      aria-label="Elo 走勢,${rows.length} 場,由 ${rows[0].r} 到 ${rows.at(-1).r}"
+      style="width:100%;height:auto">
+    ${grid}
+    <line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${h - pad.b}" stroke="var(--line)" stroke-width="1"/>
+    <line x1="${pad.l}" y1="${h - pad.b}" x2="${w - pad.r}" y2="${h - pad.b}" stroke="var(--line)" stroke-width="1"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.5"
+      stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${X(rows.length - 1).toFixed(1)}" cy="${Y(rows.at(-1).r).toFixed(1)}" r="3.5" fill="${color}"/>
+    ${hits}${xLabels}
+    <text x="${pad.l - 8}" y="${pad.t - 6}" text-anchor="end" font-size="11.5" fill="var(--ink-2)">Elo</text>
+    <text x="${w - pad.r}" y="${h - 6}" text-anchor="end" font-size="11.5" fill="var(--ink-2)">比賽日期</text>
   </svg>`;
 }
 

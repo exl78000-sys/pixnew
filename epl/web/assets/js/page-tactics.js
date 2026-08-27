@@ -57,6 +57,76 @@ const tempoColumns = () => [
   { key: 'collapse', label: '被逆轉', value: t => t.resilience.collapse, num: true },
 ];
 
+/* ── 陣型佔比比較(兩個聯賽共用) ─────────────────────
+   固定 A／B／C 三欄,每欄挑一種陣型,列出哪些球隊用它、用了多少比例。
+
+   佔比的**單位兩個聯賽不一樣**:西甲量的是 Understat 的出場分鐘,
+   英超量的是官方正式名單的場次。寫死其中一種,另一個聯賽的說明就是假的 ——
+   這是抽共用區塊反覆會踩到的坑(程式共用了,文案裡的專屬事實沒跟著抽掉),
+   所以 unit 由呼叫端給,而且每張卡的下緣都會把它印出來。
+
+   rows: [{ code, formation, share, detail }] —— 一列是「某隊用某陣型的佔比」
+   missing: 沒有資料的球隊代碼,列在footnote 而不是留一片空白(鐵則三) */
+function formationCompare(mountId, rows, { unit, missing = [], missingNote = '' }) {
+  const mount = document.getElementById(mountId);
+  if (!mount) return;
+  if (!rows.length) {
+    mount.innerHTML = `<div class="note">目前沒有可用的陣型佔比資料。${missingNote}</div>`;
+    return;
+  }
+  const groups = [...rows.reduce((m, r) => {
+    if (!m.has(r.formation)) m.set(r.formation, []);
+    m.get(r.formation).push(r);
+    return m;
+  }, new Map())].sort((a, b) => {
+    const total = list => list.reduce((sum, r) => sum + (r.share ?? 0), 0);
+    return total(b[1]) - total(a[1]) || b[1].length - a[1].length;
+  });
+  const available = groups.map(([name]) => name);
+  const pick = available.slice(0, 3);
+  const rowsOf = name => (groups.find(([key]) => key === name)?.[1] ?? []);
+  const select = (id, label, selected) => `<label class="small" style="display:grid;gap:5px;min-width:170px">
+    <span class="muted">${label}</span>
+    <select id="${id}">${available.map(name => `<option value="${name}"${name === selected ? ' selected' : ''}>${name}</option>`).join('')}</select></label>`;
+
+  mount.innerHTML = `
+    <div class="filters" style="margin-bottom:12px;align-items:end">
+      ${select(`${mountId}A`, '陣型 A', pick[0])}
+      ${select(`${mountId}B`, '陣型 B', pick[1] ?? pick[0])}
+      ${select(`${mountId}C`, '陣型 C', pick[2] ?? pick[0])}
+      <span class="dim tiny">從選單切換,即時比較各隊的使用比例(單位:${unit})</span>
+    </div>
+    <div class="grid g2" id="${mountId}Compare"></div>
+    ${missing.length ? `<div class="tiny dim" style="margin-top:10px">
+      ${missing.length} 隊還沒有可統計的陣型:${missing.map(c => C.name(c)).join('、')}。${missingNote}</div>` : ''}`;
+
+  const ids = [`${mountId}A`, `${mountId}B`, `${mountId}C`];
+  const palette = ['var(--accent)', 'var(--accent-3)', 'var(--accent-2)'];
+  const render = () => {
+    const cards = ids.map((id, i) => {
+      const name = document.getElementById(id).value;
+      const list = [...rowsOf(name)].sort((a, b) => b.share - a.share || C.name(a.code).localeCompare(C.name(b.code), 'zh-Hant'));
+      return `<div class="card">
+        <div class="spread"><h3 style="margin:0"><span class="pill tiny">${String.fromCharCode(65 + i)}</span>
+          <span class="mono">${name}</span></h3><span class="dim tiny">${list.length} 隊使用</span></div>
+        <div style="display:grid;gap:8px;margin-top:12px">${list.map(r => `
+          <a href="${C.link('teams', { code: r.code })}" class="stat-line" style="text-decoration:none;gap:10px">
+            <span class="small" style="min-width:130px">${C.badge(r.code)} ${C.name(r.code)}</span>
+            <span style="flex:1;display:flex;align-items:center;gap:8px">
+              <span style="height:6px;flex:1;background:var(--ink-5);border-radius:4px;overflow:hidden"
+                ><i style="display:block;height:100%;width:${Math.min(100, Math.max(0, r.share))}%;background:${palette[i]}"></i></span>
+              <b class="mono small" style="min-width:42px;text-align:right">${r.share}%</b>
+            </span>
+            ${r.detail ? `<span class="dim tiny mono" style="min-width:64px;text-align:right">${r.detail}</span>` : ''}
+          </a>`).join('')}</div>
+        <div class="tiny dim" style="margin-top:10px">${name} 佔該隊${unit}的比例。</div></div>`;
+    }).join('');
+    document.getElementById(`${mountId}Compare`).innerHTML = cards;
+  };
+  ids.forEach(id => { document.getElementById(id).onchange = render; });
+  render();
+}
+
 const tempoBlock = tactics => tactics.some(t => t.tempo) ? `
   <div class="section"><h2>比賽時段</h2><span class="hint">上半場與下半場的淨勝球差異</span></div>
   <div id="tempo"></div>` : '';
@@ -80,27 +150,14 @@ function teamLinksBlock(tactics, hint) {
 // 西甲的逐場官方先發另存於單場分析頁；本頁的整季陣型比例仍只讀 Understat
 // getTeamData，絕不把整季比例包裝成單場官方先發。
 function renderLaLigaTactics({ meta, teams, tactics }) {
-  const hasTeamFormationOfficial = meta.official?.teamFormation === true;
   const formationRows = tactics.flatMap(t => (t.formation?.list ?? []).map(f => ({
-    code: t.code, formation: f.name, minutes: f.minutes, share: f.share,
+    code: t.code, formation: f.name, share: f.share, detail: `${f.minutes} 分`,
   })));
   const primary = tactics.map(t => ({
     code: t.code, formation: t.formation?.primary ?? null,
     matches: t.matches, xG90: t.attack?.xG90 ?? null, xGA90: t.defence?.xGA90 ?? null,
     share: t.formation?.list?.[0]?.share ?? null,
   }));
-  const formationGroups = [...formationRows.reduce((groups, row) => {
-    if (!groups.has(row.formation)) groups.set(row.formation, []);
-    groups.get(row.formation).push(row);
-    return groups;
-  }, new Map())].sort((a, b) => {
-    const total = rows => rows.reduce((sum, row) => sum + (row.share ?? 0), 0);
-    return total(b[1]) - total(a[1]);
-  });
-  // 比較版面固定三欄，但選單保留 Understat 回報的所有陣型，方便重新挑選。
-  const availableFormations = formationGroups.map(([name]) => name);
-  const compareFormations = availableFormations.slice(0, 3);
-  const rowsByFormation = name => new Map((formationGroups.find(([key]) => key === name)?.[1] ?? []).map(r => [r.code, r]));
   C.registerTeams(teams); C.nav();
   app.innerHTML = `
     <div class="page-head">
@@ -114,7 +171,7 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     <div class="note info"><b>資料界線</b>：Understat 提供整隊實際使用陣型的統計；西甲逐場官方先發已在單場分析頁提供，但本頁不把整季比例當成單場先發，也不把官方陣型順序冒充精確球場座標。</div>
     <div class="section"><h2>各隊主要陣型</h2><span class="hint">整季使用分鐘最多的陣型</span></div>
     <div id="primary"></div>
-    <div class="section"><h2>陣型佔比比較</h2><span class="hint">固定 A／B／C 三欄比較；選單保留全部可取得的陣型</span></div>
+    <div class="section"><h2>陣型佔比比較</h2><span class="hint">固定 A／B／C 三欄比較・佔比量的是整季出場分鐘</span></div>
     <div id="formations"></div>
     ${quadrantBlock(tactics, 'xG 與 xGA 來自 Understat 的整隊整季統計,不是球員層級加總。')}
     <div class="section"><h2>攻守與節奏對比</h2><span class="hint">上一季每場平均</span></div>
@@ -132,30 +189,8 @@ function renderLaLigaTactics({ meta, teams, tactics }) {
     { key: 'xG90', label: 'xG/場', value: r => r.xG90 ?? -1, num: true, render: r => C.fx(r.xG90, 2) },
     { key: 'xGA90', label: 'xGA/場', value: r => r.xGA90 ?? -1, num: true, render: r => C.fx(r.xGA90, 2) },
   ], { sortKey: 'xG90', desc: true, onRow: r => C.go('teams', { code: r.code }) });
-  const formationSelect = (id, label, selected) => `<label class="small" style="display:grid;gap:5px;min-width:170px"><span class="muted">${label}</span><select id="${id}">${availableFormations.map(name => `<option value="${name}"${name === selected ? ' selected' : ''}>${name}</option>`).join('')}</select></label>`;
-  document.getElementById('formations').innerHTML = `
-    <div class="filters" style="margin-bottom:12px;align-items:end">
-      ${formationSelect('formationA', '陣型 A', compareFormations[0])}
-      ${formationSelect('formationB', '陣型 B', compareFormations[1] ?? compareFormations[0])}
-      ${formationSelect('formationC', '陣型 C', compareFormations[2] ?? compareFormations[0])}
-      <span class="dim tiny">從選單切換，即時比較各隊整季分鐘佔比</span>
-    </div>
-    <div class="grid g2" id="formationCompare"></div>`;
-  const renderFormationCompare = () => {
-    const selected = ['formationA', 'formationB', 'formationC'].map(id => document.getElementById(id).value);
-    const maps = selected.map(rowsByFormation);
-    const palette = ['var(--accent)', 'var(--accent-3)', 'var(--accent-2)', '#c58cff'];
-    const bar = (row, tint) => row ? `<span style="height:6px;flex:1;background:var(--ink-5);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100, Math.max(0, row.share))}%;background:${tint}"></i></span><b class="mono small" style="min-width:42px;text-align:right">${row.share}%</b>` : '<span class="dim small">—</span>';
-    const cards = selected.map((formation, i) => {
-      const rows = [...maps[i].values()].sort((a, b) => b.share - a.share);
-      return `<div class="card"><div class="spread"><h3 style="margin:0"><span class="pill tiny">${String.fromCharCode(65 + i)}</span> <span class="mono">${formation}</span></h3><span class="dim tiny">${rows.length} 隊使用</span></div>
-        <div style="display:grid;gap:8px;margin-top:12px">${rows.map(row => `<a href="${C.link('teams', { code: row.code })}" class="stat-line" style="text-decoration:none;gap:10px"><span class="small" style="min-width:130px">${C.badge(row.code)} ${C.name(row.code)}</span><span style="flex:1;display:flex;align-items:center;gap:8px">${bar(row, palette[i])}</span></a>`).join('')}</div>
-        <div class="tiny dim" style="margin-top:10px">${formation} 佔該隊整季使用分鐘的比例。</div></div>`;
-    }).join('');
-    document.getElementById('formationCompare').innerHTML = cards;
-  };
-  ['formationA', 'formationB', 'formationC'].forEach(id => { document.getElementById(id).onchange = renderFormationCompare; });
-  renderFormationCompare();
+  // 佔比的單位是「整季出場分鐘」—— 跟英超的「正式名單場次」不一樣,所以要講明
+  formationCompare('formations', formationRows, { unit: '整季出場分鐘' });
   document.getElementById('attack').innerHTML = C.table(tactics, [
     { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
     { key: 'xG90', label: 'xG/場', value: r => r.attack?.xG90 ?? -1, num: true, render: r => C.fx(r.attack?.xG90, 2) },
@@ -203,20 +238,26 @@ try {
   <div class="note info" style="margin-top:10px">FPL 把邊鋒歸類為中場,所以這裡量的是「人力分佈」而不是轉播圖上的陣型。
     重點看小數:後場接近 5 就是三中衛/五後衛體系,鋒線超過 1.5 就是雙前鋒。</div>
 
-  <div class="section"><h2>標準陣型與攻守分型</h2>
-    <span class="hint">${hasTeamFormationOfficial
-      ? `標準陣型取自英超官方・${meta.official.matchesWithLineup} 場正式名單`
-      : '把 FPL 的四個粗類細分成八種角色後推導'}</span></div>
-  <div id="shapeTable"></div>
-  ${hasTeamFormationOfficial ? `<div class="note ok" style="margin-top:10px">
-    <b>標準陣型是官方公布的,不是我們算的。</b>
-    每場比賽英超官方都會公布兩隊的正式陣型,這裡取本季出現次數最多的那一個,
-    並標上採計了幾場 —— 只有 1 場的球隊,它的「標準陣型」跟 10 場的球隊不是同一回事,別當成一樣可靠。
+  ${hasTeamFormationOfficial ? `
+  <div class="section"><h2>官方陣型佔比</h2>
+    <span class="hint">英超官方・${meta.official.matchesWithLineup} 場正式名單・佔比量的是場次</span></div>
+  <div id="formations"></div>
+  <div class="note ok" style="margin-top:10px">
+    <b>這裡的陣型是官方公布的,不是我們算的。</b>
+    每場比賽英超官方都會公布兩隊的正式陣型,上面的百分比是「該隊用這個陣型的場次 ÷ 有官方名單的場次」。
+    <b>本季才剛開打,多數球隊只有一兩場</b> —— 一場 100% 跟十場 100% 不是同一回事,
+    所以每一列右邊都把場次原始數字印出來,別只看長條。
     <div style="margin-top:6px">${C.stamp('英超官方陣型', {
       iso: meta.official.asOf, kind: 'daily',
       note: `pulselive・${meta.official.season ?? ''}・${meta.official.teamsWithFormation} 隊有紀錄`,
     })}</div>
   </div>` : ''}
+
+  <div class="section"><h2>攻守分型</h2>
+    <span class="hint">${hasTeamFormationOfficial
+      ? '官方只公布一個陣型,有球無球的差別是我們自己推的'
+      : '把 FPL 的四個粗類細分成八種角色後推導'}</span></div>
+  <div id="shapeTable"></div>
   <div class="note info" style="margin-top:10px">
     <b>${hasTeamFormationOfficial ? '沒有官方資料時,是這樣推出來的。' : '這是怎麼推出來的。'}</b>FPL 只把球員分成門將/後衛/中場/前鋒四類,而且把邊鋒歸為中場 ——
     光看「五名中場」分不出那是三中場加兩邊鋒,還是五個中路球員,那是完全不同的球隊。
@@ -292,19 +333,34 @@ try {
   // 這張表講的是「本季這 20 隊」,所以由 shapes 起頭而不是 tactics ——
   // tactics 來自上季英超,升班馬在裡面沒有資料,用它當來源會把三支升班馬整個漏掉,
   // 而它們正好是最需要官方陣型的隊伍(自己推導不出來)
+  /* 官方陣型改用跟西甲同一套 A／B／C 比較版面。
+     佔比 = 該隊用這個陣型的場次 ÷ 有官方名單的場次 —— 單位是**場次**,
+     跟西甲的**出場分鐘**不同,所以 unit 要照實傳。 */
+  if (hasTeamFormationOfficial) {
+    const officialRows = Object.entries(shapes).flatMap(([code, sh]) => {
+      const o = sh.official;
+      if (!o?.games) return [];
+      return (o.used ?? []).map(u => ({
+        code, formation: u.formation,
+        share: Math.round((u.games / o.games) * 1000) / 10,
+        detail: `${u.games}/${o.games} 場`,
+      }));
+    });
+    formationCompare('formations', officialRows, {
+      unit: '官方名單場次',
+      missing: Object.entries(shapes).filter(([, sh]) => !sh.official?.games).map(([code]) => code),
+      missingNote: '官方要到開賽前約一小時才公布名單,這些球隊本季還沒有可採計的場次。',
+    });
+  }
+
   document.getElementById('shapeTable').innerHTML = C.table(
     Object.entries(shapes).map(([code, s]) => ({ ...(tacBy.get(code) ?? { code }), code, s })), [
       { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) },
-      { key: 'base', label: '標準陣型', value: t => (t.s?.official?.formation ?? t.s?.base?.label ?? ''), sortable: false,
-        title: '官方公布的優先;沒有官方資料才用出場分鐘推導',
-        render: t => {
-          const o = t.s?.official;
-          if (o) return `<b class="mono">${o.formation}</b>
-            <span class="pill accent tiny" title="英超官方公布,${o.games} 場中最常用的一個">官方</span>
-            <span class="tiny dim">${o.games} 場</span>`;
-          if (t.s?.insufficient) return '<span class="dim small">資料不足</span>';
-          return `<b class="mono">${t.s.base.label}</b><span class="pill tiny" title="沒有官方資料,由角色出場分鐘推導">推導</span>`;
-        } },
+      { key: 'base', label: '推導標準陣型', value: t => (t.s?.base?.label ?? ''), sortable: false,
+        title: '由角色出場分鐘推導 —— 官方公布的那一個在上面的「官方陣型佔比」',
+        render: t => (t.s?.insufficient
+          ? '<span class="dim small">資料不足</span>'
+          : `<b class="mono">${t.s.base.label}</b><span class="pill tiny" title="由角色出場分鐘推導">推導</span>`) },
       { key: 'att', label: '進攻時', value: t => (t.s?.attacking?.label ?? ''), sortable: false,
         title: '攻守分型一律是推導 —— 官方只公布一個陣型,不分有球無球',
         render: t => (t.s?.insufficient ? '—'

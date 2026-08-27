@@ -487,14 +487,21 @@ try {
       </div>`;
   }
 
+  /* 觀點區塊。原本有「新聞 / 名宿 / 專家」三顆分類鈕,但每場總共才約 3 筆 ——
+     一顆鈕後面常常只有一筆,分類切換的成本比它省下的翻閱多。改成合成一串直接翻,
+     順序是新聞 → 名宿 → 專家,所以打開就是新聞。分類本身沒有消失,
+     它在每張卡右上角的標籤上 —— 那是標示,不是篩選器。 */
   function expertOpinionSection(f, rows) {
     const typeZh = {
       article: '文章', broadcast: '轉播', video: '影片', podcast: 'Podcast', 'press-conference': '記者會',
     };
     const categoryZh = { news: '新聞', legend: '名宿', expert: '專家' };
-    const counts = Object.fromEntries(['news', 'legend', 'expert'].map(key => [key, rows.filter(x => x.category === key).length]));
-    const defaultFilter = counts.news ? 'news' : counts.legend ? 'legend' : 'expert';
-    const cards = rows.map((item, index) => `<article class="card expert-card" data-expert-card data-category="${C.esc(item.category)}" ${index ? 'hidden' : ''}>
+    const ORDER = { news: 0, legend: 1, expert: 2 };
+    const list = [...rows].sort((a, b) => (ORDER[a.category] ?? 9) - (ORDER[b.category] ?? 9));
+    const counts = ['news', 'legend', 'expert']
+      .map(key => [categoryZh[key], list.filter(x => x.category === key).length])
+      .filter(([, n]) => n > 0).map(([zh, n]) => `${zh} ${n}`).join('・');
+    const cards = list.map((item, index) => `<article class="card expert-card" data-expert-card data-category="${C.esc(item.category)}" ${index ? 'hidden' : ''}>
       <div class="expert-head">
         <span class="expert-avatar" aria-hidden="true">${C.esc(item.expert.trim().slice(0, 1).toUpperCase())}</span>
         <div><h3>${C.esc(item.expert)}</h3><div class="small dim">${C.esc(item.role)}</div></div>
@@ -511,20 +518,12 @@ try {
     </article>`).join('');
 
     return `<div class="section"><h2>新聞／名宿／專家觀點</h2>
-      <span class="hint">每場約 3 筆・分類切換・與本站 AI 分開</span></div>
-      ${rows.length ? `<div class="expert-shell" data-expert-pager data-default-filter="${defaultFilter}">
-        <div class="expert-filters" role="group" aria-label="觀點分類">
-          <button class="btn" type="button" data-expert-filter="news" aria-pressed="false">新聞 <b>${counts.news}</b></button>
-          <button class="btn" type="button" data-expert-filter="legend" aria-pressed="false">名宿 <b>${counts.legend}</b></button>
-          <button class="btn" type="button" data-expert-filter="expert" aria-pressed="false">專家 <b>${counts.expert}</b></button>
-        </div>
+      <span class="hint">${list.length ? `共 ${list.length} 則・${counts}・一則一則翻` : '需具名來源與原始連結'}</span></div>
+      ${list.length ? `<div class="expert-shell" data-expert-pager>
         <div class="expert-viewport" aria-live="polite">${cards}</div>
-        <div class="expert-filter-empty card" data-expert-empty hidden>
-          <b>這場目前沒有此分類的已核對觀點</b><span class="small dim">可切換其他分類查看具名來源。</span>
-        </div>
         <div class="expert-pager-controls">
           <button class="btn" type="button" data-expert-prev aria-label="上一則觀點">← 上一則</button>
-          <div><b data-expert-position>0 / 0</b><span class="tiny dim" data-expert-label>觀點</span></div>
+          <div><b data-expert-position>1 / ${list.length}</b><span class="tiny dim" data-expert-label>觀點</span></div>
           <button class="btn" type="button" data-expert-next aria-label="下一則觀點">下一則 →</button>
         </div>
       </div>
@@ -540,34 +539,26 @@ try {
     const labels = { news: '新聞觀點', legend: '名宿觀點', expert: '專家觀點' };
     document.querySelectorAll('[data-expert-pager]').forEach(root => {
       const cards = [...root.querySelectorAll('[data-expert-card]')];
-      const filters = [...root.querySelectorAll('[data-expert-filter]')];
+      if (!cards.length) return;
       const prev = root.querySelector('[data-expert-prev]');
       const next = root.querySelector('[data-expert-next]');
       const position = root.querySelector('[data-expert-position]');
       const label = root.querySelector('[data-expert-label]');
-      const empty = root.querySelector('[data-expert-empty]');
-      let filter = root.dataset.defaultFilter || 'news', current = 0;
+      let current = 0;
 
-      const visibleCards = () => cards.filter(card => card.dataset.category === filter);
       const render = () => {
-        const visible = visibleCards();
-        if (current >= visible.length) current = 0;
-        cards.forEach(card => { card.hidden = true; card.classList.remove('active'); });
-        if (visible[current]) { visible[current].hidden = false; visible[current].classList.add('active'); }
-        filters.forEach(button => {
-          const on = button.dataset.expertFilter === filter;
-          button.classList.toggle('on', on);
-          button.setAttribute('aria-pressed', String(on));
+        cards.forEach((card, i) => {
+          card.hidden = i !== current;
+          card.classList.toggle('active', i === current);
         });
-        empty.hidden = visible.length > 0;
-        position.textContent = visible.length ? `${current + 1} / ${visible.length}` : '0 / 0';
-        label.textContent = labels[filter] ?? '觀點';
-        prev.disabled = visible.length < 2;
-        next.disabled = visible.length < 2;
+        position.textContent = `${current + 1} / ${cards.length}`;
+        // 標籤跟著目前這一則走 —— 分類鈕拿掉之後,這裡是讀者知道「現在在看哪一類」的地方
+        label.textContent = labels[cards[current].dataset.category] ?? '觀點';
+        prev.disabled = cards.length < 2;
+        next.disabled = cards.length < 2;
       };
-      filters.forEach(button => { button.onclick = () => { filter = button.dataset.expertFilter; current = 0; render(); }; });
-      prev.onclick = () => { const n = visibleCards().length; if (n) { current = (current - 1 + n) % n; render(); } };
-      next.onclick = () => { const n = visibleCards().length; if (n) { current = (current + 1) % n; render(); } };
+      prev.onclick = () => { current = (current - 1 + cards.length) % cards.length; render(); };
+      next.onclick = () => { current = (current + 1) % cards.length; render(); };
       render();
     });
   }
@@ -809,17 +800,7 @@ try {
       <b>官方名單一公布(約開賽前一小時),這一區就會自動換成正式名單。</b>
     </div>`}
     ${real ? '' : injuryNote(f, proj)}
-
-    <div class="section"><h2>兩隊陣容對照</h2>
-      <span class="hint">依球員角色分帶並排,看得出兩隊把人放在哪裡</span></div>
-    <div class="card">${compareRows(f, withPhoto(xi.home), withPhoto(xi.away))}</div>
-    <div class="note" style="margin-top:10px">
-      <b>這裡是依「球員是什麼角色」分帶,不是照球場上的排。</b>
-      兩隊陣型不同時(例如 4-2-3-1 對 3-4-2-1),排數與每排人數本來就對不齊,
-      硬要並排會變成拿蘋果比橘子;角色分帶才有共同的軸可以比。
-      所以<b>翼衛算在後防</b>(他本來就是後衛),即使他在上面的球場圖裡站在中場那一排。
-      要看實際站位請看上面的球場圖。
-    </div>`;
+`;
   }
 
   function injuryNote(f, proj) {
@@ -840,7 +821,6 @@ try {
         「有疑慮」的仍列入 —— 那種狀態的球員實際上經常還是先發。</div></div>` : '';
   }
 
-  // 兩隊各站一列,依 GK/DEF/MID/FWD 分段對照
   /* 這一場的模型 vs 市場。重點不是「誰對」——賽前沒人知道 ——
      而是「差多少、差在哪一邊」,以及讀者該用什麼態度看這個差距。 */
   function marketNote(f, p) {
@@ -900,31 +880,6 @@ try {
     const hx = s => s.replace('#', '').match(/../g).map(v => parseInt(v, 16));
     const [r1, g1, b1] = hx(own), [r2, g2, b2] = hx(f.colors.away);
     return Math.hypot(r1 - r2, g1 - g2, b1 - b2) < 90;
-  }
-
-  function compareRows(f, home, away) {
-    // 依角色分帶,不是 FPL 的四粗類 —— 粗類會讓 4-2-3-1 和 3-4-2-1 都顯示成「中場 5v4」,
-    // 看不出兩隊的差別在哪。角色分帶才分得出「防中 2v1、前場 3v2」這種真正的對比。
-    const BAND = { GK: 'GK', CB: 'DEF', FB: 'DEF', DM: 'MID', CM: 'MID', AM: 'ATT', W: 'ATT', ST: 'FWD' };
-    const LINE = [['GK', '門將'], ['DEF', '後防'], ['MID', '中場'], ['ATT', '前場'], ['FWD', '鋒線']];
-    const roleOf = code => players.find(x => x.code === code)?.role ?? null;
-    // 名單本身帶的 role 優先(預估名單排位時就分好了),沒有才回球員庫查
-    const bandOf = p => BAND[p.role ?? roleOf(p.code)?.key] ?? (p.pos === 'GK' ? 'GK' : p.pos === 'DEF' ? 'DEF' : p.pos === 'FWD' ? 'FWD' : 'MID');
-    const cell = (p, code) => {
-      const r = p.roleZh ? { zh: p.roleZh, key: p.role } : roleOf(p.code);
-      return `<span class="lu-p" title="${C.esc(p.name)}${r ? `・${r.zh}` : ''}">
-        ${C.playerPhoto({ ...p, team: code }, 26)}<span class="nm">${C.esc(p.name)}${p.doubt ? ' ⚠' : ''}
-        ${r && !r.lowSample ? `<span class="dim tiny"> ${r.zh}</span>` : ''}</span></span>`;
-    };
-    return LINE.map(([band, zh]) => {
-      const h = home.filter(x => bandOf(x) === band), a = away.filter(x => bandOf(x) === band);
-      if (!h.length && !a.length) return '';
-      return `<div class="lu-line">
-        <div class="lu-side">${h.map(p => cell(p, f.home)).join('')}</div>
-        <div class="lu-pos">${zh}<span class="dim tiny"> ${h.length}v${a.length}</span></div>
-        <div class="lu-side right">${a.map(p => cell(p, f.away)).join('')}</div>
-      </div>`;
-    }).join('');
   }
 
   /* ── 近況、傷停與拿牌 ──────────────────────────

@@ -815,9 +815,13 @@ try {
 
   function eloBlock(t) {
     if (!t.eloHistory?.length) return '';
+    const first = t.eloHistory[0], last = t.eloHistory.at(-1);
+    const move = last.r - first.r;
     return `<div class="card" style="margin-top:14px"><h3>Elo 實力走勢</h3>
-      ${C.sparkline(t.eloHistory.map(h => h.r), { color: t.colors[0] })}
-      <div class="tiny dim">最近 ${t.eloHistory.length} 場・目前 ${C.fx(t.elo, 0)}</div></div>`;
+      ${C.eloTrend(t.eloHistory, { color: t.colors[0] })}
+      <div class="tiny dim">最近 ${t.eloHistory.length} 場・${first.date ? `${C.dateZh(first.date)} 起` : ''}
+        目前 ${C.fx(t.elo, 0)}・這段期間 ${move >= 0 ? '+' : ''}${Math.round(move)}
+        <span class="dim">(1500 是 Elo 的起點基準,跨季會朝它回歸;把游標移到線上可看單場數值)</span></div></div>`;
   }
 
   // 開季賽程難度是 FPL 特有的欄位,西甲沒有 → 整塊不出現
