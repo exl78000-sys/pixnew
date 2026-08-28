@@ -1314,15 +1314,29 @@ function checkAssetStamps() {
      順帶守著 import 有沒有真的加上去:上一次改這裡時,
      版本戳讓 import 那一行不再是字面字串,replace 靜靜沒命中,
      頁面變成「載入失敗」而 npm test 全綠 —— 測試檢查不到版面。 */
-  for (const page of ['page-index.js', 'page-live.js']) {
-    const src = readFileSync(join(W, 'assets', 'js', page), 'utf8');
-    ok(/import \{ mountSimTable \} from '\.\/sim-table\.js(\?v=[0-9a-f]{8})?';/.test(src),
-      `${page} 有 import 共用的預測積分榜`);
-    ok(src.includes("mountSimTable('simTable'"), `${page} 有呼叫它`);
-  }
-  // 本季目前戰績已移除(實時戰況頁的「本季即時積分榜」是同一份資料)
+  const liveSrc = readFileSync(join(W, 'assets', 'js', 'page-live.js'), 'utf8');
+  ok(/import \{ mountSimTable \} from '\.\/sim-table\.js(\?v=[0-9a-f]{8})?';/.test(liveSrc),
+    'page-live.js 有 import 共用的預測積分榜');
+  ok(liveSrc.includes("mountSimTable('simTable'"), 'page-live.js 有呼叫它');
+
+  /* 首頁只留賽程,兩張積分榜都在實時戰況頁 ——
+     這兩條是在守「不要又搬回來」:同一份資料兩個地方畫,
+     改了一邊另一邊會悄悄過期。 */
   const idx = readFileSync(join(W, 'assets', 'js', 'page-index.js'), 'utf8');
-  ok(!idx.includes('本季目前戰績'), '積分與賽程頁不再重複「本季目前戰績」');
+  ok(!idx.includes('本季目前戰績'), '首頁不重複「本季目前戰績」');
+  ok(!idx.includes('mountSimTable'), '首頁不重複「本季預測積分榜」');
+  ok(!/'sim'/.test(idx), '首頁不再載 sim.json(用不到就不要下載)');
+
+  /* 單檔版的 hash 路由每次換頁都會 `.topbar?.remove()`。
+     nav() 若用布林旗標擋重複渲染,旗標在第一頁就被設成 true,
+     之後永遠 return —— **第一頁之後整條導覽列都不見了**。
+     旗標記的是「這次載入畫過了」,DOM 記的才是「現在畫面上有沒有」。 */
+  const core = readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8');
+  // 註解裡會提到 navDone(它就記在那段註解裡),所以要先把註解去掉再檢查程式本身
+  const coreCode = core.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  ok(!/\bnavDone\b/.test(coreCode), 'nav() 不用布林旗標擋重複渲染(單檔版換頁會把導覽列砍掉)');
+  ok(core.includes("if (document.querySelector('.topbar')) return;"), 'nav() 改看 DOM 判斷要不要畫');
+  ok(core.includes("const SITE_PAGES"), '導覽列分成跨聯賽與聯賽兩組');
   return fail;
 }
 

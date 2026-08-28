@@ -77,7 +77,22 @@ a:hover { text-decoration: underline; }
 .league-switch { display:flex; gap:3px; padding:3px; border:1px solid var(--line); border-radius:999px; background:#ffffff08; }
 .league-switch a { color:var(--ink-3); padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; text-decoration:none; }
 .league-switch a.on { color:#0b0710; background:var(--accent); }
-nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
+nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+/* 跨聯賽的那一組(足球知識)排最左,用一條細線跟聯賽分頁隔開 */
+.nav-sep { width: 1px; align-self: stretch; min-height: 22px; background: var(--line); }
+/* 切換聯賽固定在最右邊 —— 它是最常按的東西之一,位置不該隨分頁數量浮動 */
+.league-switch { margin-left: auto; }
+
+/* 窄螢幕上分頁會換成三行,切換鈕排在最後就會自己獨佔第四行。
+   改用 order 把它拉到品牌那一行的最右邊 —— 一樣是「最右邊」,但不多吃一行。 */
+@media (max-width: 700px) {
+  .brand { order: -2; }
+  .league-switch { order: -1; }
+  nav.tabs.site { order: 0; }
+  nav.tabs { order: 1; }
+  /* 換行之後上下兩組本來就分開了,豎線反而變成一條沒有意義的裝飾 */
+  .nav-sep { display: none; }
+}
 nav.tabs a {
   color: var(--ink-2); padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
   border: 1px solid transparent; text-decoration: none; transition: .15s;
