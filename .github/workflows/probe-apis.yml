@@ -94,10 +94,13 @@ jobs:
           SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
           SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
 
+      # log 只看得到尾端,所以這裡只印真正要判讀的那一段。
+      # 上一輪用 `head -200` 把整份 JSON 倒出來,結果最重要的 sportmonks
+      # 那一節正好被截掉 —— 印太多跟沒印一樣。
       - name: 印出探測結果
         working-directory: epl
         run: |
-          echo '── 英格蘭盃賽 ──'
-          cat data/raw/probes/en-cups.json 2>/dev/null | head -200 || echo '(無)'
-          echo '── SportMonks 方案 ──'
-          cat data/raw/sportmonks-la-liga/capabilities.json 2>/dev/null || echo '(無)'
+          echo '── football-data.org 授權的賽事 ──'
+          node -e "const j=require('./data/raw/probes/en-cups.json');const f=j.footballData??{};console.log('HTTP',f.status,'・',f.count,'個・英格蘭盃賽:',JSON.stringify(f.englishCups??[]))" || echo '(無)'
+          echo '── SportMonks 盃賽結構(這一段是關鍵)──'
+          node -e "console.log(JSON.stringify(require('./data/raw/probes/en-cups.json').sportmonks,null,1))" || echo '(無)'
