@@ -14,7 +14,7 @@ const CONFIG = LEAGUE === 'pl'
   ? { season: Number(process.env.SPORTMONKS_EPL_SEASON_ID ?? 0), dir: 'sportmonks-epl', league: 'pl' }
   : { season: 27965, dir: 'sportmonks-la-liga', league: 'es1' };
 const OUT = join(ROOT, 'data', 'raw', CONFIG.dir, 'capabilities.json');
-const MAX_REQUESTS = 12;
+const MAX_REQUESTS = 15;   // 12 → 15:多兩次盃賽名稱搜尋,留一個緩衝
 const DELAY = 350;
 let requests = 0;
 
@@ -61,7 +61,34 @@ async function main() {
     if (result.status === 200) {
       const data = result.body?.data;
       my[endpoint].items = Array.isArray(data) ? data.length : data && typeof data === 'object' ? Object.keys(data).length : 0;
+      /* 只有 leagues 這一項要記下名字。以前只記「5 個」——
+         那個數字回答不了「英格蘭盃賽在不在方案裡」,而那正是我們現在要判斷的事。
+         記的是方案的賽事覆蓋(id / 名稱 / 國家),不是 Token 也不是個人資料。 */
+      if (endpoint === 'leagues' && Array.isArray(data)) {
+        my[endpoint].list = data.map(x => ({
+          id: x?.id ?? null,
+          name: x?.name ?? null,
+          country: x?.country?.name ?? x?.country_id ?? null,
+          type: x?.type ?? null,
+          subType: x?.sub_type ?? null,
+        }));
+      }
     }
+  }
+
+  /* 英格蘭盃賽單獨查一次。/my/leagues 給的是「方案授權的賽事」,
+     但授權清單有可能只列主要賽事,所以再用名稱搜尋確認一次 ——
+     兩邊都查不到才算真的沒有(斷言拿不到之前先確認端點對不對)。 */
+  const cupSearch = {};
+  for (const q of ['FA Cup', 'EFL Cup']) {
+    const result = await request(`/football/leagues/search/${encodeURIComponent(q)}`);
+    const data = result.body?.data;
+    cupSearch[q] = {
+      ...safeError(result.status, result.body),
+      hits: Array.isArray(data)
+        ? data.slice(0, 6).map(x => ({ id: x?.id ?? null, name: x?.name ?? null, country: x?.country?.name ?? x?.country_id ?? null }))
+        : null,
+    };
   }
 
   let fixtureId = null;
@@ -90,8 +117,9 @@ async function main() {
     retrievedAt: new Date().toISOString(),
     requests,
     my,
+    cupSearch,
     includes: includeCapabilities,
-    note: '只記錄 HTTP 狀態與方案能力；不保存 Token、完整回應或個人資料。200 表示此探測請求可用，403 表示方案未提供。',
+    note: '只記錄 HTTP 狀態、方案授權的賽事清單(id／名稱／國家)與 include 能力；不保存 Token、完整回應或個人資料。200 表示此探測請求可用，403 表示方案未提供。',
   };
   await writeFile(OUT, JSON.stringify(out, null, 2) + '\n');
   console.log(`✔ SportMonks ${CONFIG.league} 方案能力已寫入 ${OUT}（${requests}/${MAX_REQUESTS} 請求）`);
