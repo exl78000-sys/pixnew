@@ -1,4 +1,4 @@
-name: 兩聯賽外電每日快取
+name: 三聯賽外電每日快取
 
 on:
   workflow_dispatch:
@@ -38,10 +38,22 @@ jobs:
         run: npm run news -- --league=es1
         continue-on-error: true
 
+      # 英冠(2026-08-28 加)。來源是 BBC 與 Guardian 的英冠 feed,兩個都實測過;
+      # Sky 的 11663 看名字像英冠、實際回的是英超內容,所以不用
+      # (理由記在 data/manual/feeds-championship.json 的 _rejected)。
+      - name: 抓英冠外電 RSS
+        run: npm run en2:news
+        continue-on-error: true
+
       # 讓新聞快取可以直接在下一次 Pages 部署前先落到資料集。
       # 順序照 CLAUDE.md:laliga:build 要在 build 之前(資產戳)。
       - name: 建立西甲資料集
         run: npm run laliga:build
+
+      # 英冠也要排在英超 build 之前 —— 資產戳是 build 最後一步寫的,
+      # 排在它後面的話那個聯賽的戳會被重寫掉。
+      - name: 建立英冠資料集
+        run: npm run en2:build
 
       - name: 建立英超資料集
         run: npm run build
@@ -52,11 +64,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f epl/data/raw/news.json epl/data/raw/news-la-liga.json \
+            epl/data/raw/news-championship.json \
             epl/web/data/news.json epl/web/data/leagues/es1/news.json \
-            epl/web/data/meta.json epl/web/data/leagues/es1/meta.json 2>/dev/null || true
+            epl/web/data/leagues/en2/news.json \
+            epl/web/data/meta.json epl/web/data/leagues/es1/meta.json \
+            epl/web/data/leagues/en2/meta.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "新聞沒有變化，不提交"
           else
-            git commit -m "chore(news): 更新西甲每日外電快取"
+            git commit -m "chore(news): 更新三聯賽每日外電快取"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi

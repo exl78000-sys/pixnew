@@ -31,6 +31,7 @@ try {
      這一支原本就是反的(build → laliga:build),2026-08-28 修正。 */
   console.log('▶ 建立西甲資料集');
   await run('scripts/build-laliga.mjs');
+  await run('scripts/fetch-news.mjs', ['--league=en2']);
   await run('scripts/backtest-championship.mjs');
   await run('scripts/build-championship.mjs');
   console.log('▶ 建立英超資料集');

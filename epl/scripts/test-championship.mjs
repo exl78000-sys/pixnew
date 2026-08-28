@@ -231,7 +231,38 @@ const table = out('table'), results = out('results'), sim = out('sim');
     out('experts').matches && !Array.isArray(out('experts').matches));
 }
 
-// ── 10. 開賽時間的時區 ─────────────────────────────
+// ── 10. 外電 ──────────────────────────────────────
+{
+  const news = out('news');
+  check('外電有抓到', news.length > 0, `${news.length} 則`);
+  check('每一則都有標題、原文連結與來源',
+    news.every(n => n.title && n.link && n.source));
+  check('分類是「英冠外電」,不是套用別的聯賽',
+    news.every(n => n.cat === '英冠外電'),
+    [...new Set(news.map(n => n.cat))].join('、'));
+  check('meta.counts.news 跟實際筆數一致', meta.counts.news === news.length,
+    `${meta.counts.news} vs ${news.length}`);
+
+  /* **來源要實測過內容才收。** Sky 的 11663 看名字像英冠,實際回的是
+     「Gallery: New Premier League kits」那種英超內容 —— 跟 feeds.json 裡
+     「Sky Sports 英超」曾經指到 Sky News 綜合體育是同一個坑。
+     被退掉的來源要留紀錄,否則下一個人會再加一次。 */
+  const feeds = JSON.parse(readFileSync(join(ROOT, 'data', 'manual', 'feeds-championship.json'), 'utf8'));
+  check('被退掉的來源有留紀錄與理由',
+    Object.keys(feeds._rejected ?? {}).length > 0
+    && Object.values(feeds._rejected).every(v => /實測/.test(v)));
+  check('沒有把被退掉的來源又加回 feeds',
+    (feeds.feeds ?? []).every(f => !Object.hasOwn(feeds._rejected ?? {}, f.url)));
+
+  /* fetch-news 原本是「不是 es1 就是 pl」的二元判斷 —— 那種寫法會把
+     --league=en2 靜靜當成英超,於是英冠的動態頁長出英超的外電。 */
+  const src = readFileSync(join(ROOT, 'scripts', 'fetch-news.mjs'), 'utf8');
+  check('fetch-news 走註冊表,不是「是不是某一個」的二元判斷',
+    /const LEAGUES = \{/.test(src) && /Object\.hasOwn\(LEAGUES, want\)/.test(src)
+    && !/arg\('league'\) === 'es1' \? 'es1' : 'pl'/.test(src));
+}
+
+// ── 11. 開賽時間的時區 ─────────────────────────────
 {
   /* 英格蘭是 GMT/BST,不是固定 +01:00。冬季場次照抄西歐的偏移會整批早一小時。 */
   const winter = fixtures.filter(f => f.kickoff && /-(12|01|02)-/.test(f.date));

@@ -1067,8 +1067,12 @@ async function checkDataGap() {
     ['英冠的球員頁要擋', !!g('en2', 'players', ['players', 'leaders'])],
     ['英冠的戰術頁要擋', !!g('en2', 'tactics', ['tactics'], { tactics: [1] })],
     ['英冠的實時頁要擋', !!g('en2', 'live', ['live'])],
-    ['英冠的首頁、球隊、模型不擋',
-      ['index', 'teams', 'model'].every(p => !g('en2', p, Object.keys(full)))],
+    ['英冠的首頁、球隊、模型、動態不擋',
+      ['index', 'teams', 'model', 'news'].every(p => !g('en2', p, Object.keys(full)))],
+    /* 動態頁是 2026-08-28 補的:BBC 與 Guardian 的英冠 feed 實測可用。
+       但它跟其他三頁一樣要有保險 —— 宣告開放而資料是空的仍然要擋。 */
+    ['英冠的動態頁資料空的仍然擋(保險)',
+      !!g('en2', 'news', ['news'], { ...full, news: [] })],
     ['英冠的缺口說法是「沒有來源」不是「還在補」',
       /實測|做不出來/.test(V.LEAGUES.en2.gapNote ?? '')],
 

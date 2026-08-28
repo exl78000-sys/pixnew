@@ -42,6 +42,7 @@
     "laliga:fetch": "node scripts/fetch-laliga.mjs",
     "laliga:build": "node scripts/build-laliga.mjs",
     "en2:fetch": "node scripts/fetch-championship.mjs",
+    "en2:news": "node scripts/fetch-news.mjs --league=en2",
     "en2:backtest": "node scripts/backtest-championship.mjs",
     "en2:build": "node scripts/build-championship.mjs",
     "laliga:backtest": "node scripts/backtest-laliga.mjs",

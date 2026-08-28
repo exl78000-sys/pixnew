@@ -1,0 +1,19 @@
+{
+  "_note": "英冠外電 RSS。只保存標題、短摘要、來源與原文連結,不抓整篇文章;每日最多執行一次。",
+  "_warning": "**加來源之前先抓一次看標題,不要只看名字。** 這一條是踩過才寫的:feeds.json 裡叫「Sky Sports 英超」的那一筆,網址其實是 Sky News 的綜合體育,抓回來的拳擊與網球被標成英超外電,而畫面看起來完全正常。",
+  "_rejected": {
+    "https://www.skysports.com/rss/11663": "2026-08-28 實測**不是英冠**。回 14 則,標題裡有「Gallery: New Premier League kits」「Nike Premier League ball」「Daniel James: Teammates 2.0」—— 是英超與綜合內容。Sky 的 11661 才是英超那一筆;英冠沒有找到對應的 ID,所以不用 Sky。"
+  },
+  "_relevance": "2026-08-28 實測相關度(拿英冠 36 隊的隊名比對標題):BBC 36 則裡 20 則提到英冠球隊、4 則只提到英超球隊、12 則兩者皆無(多半是英甲英乙或 EFL 綜合);Guardian 20 則裡 12 / 2 / 6。離題比例跟英超與西甲那兩份差不多,**不用關鍵字黑名單去殺** —— 那會誤傷真文章(來源自己歸錯類的不算,例如 Guardian 把英超週報放在英冠 feed 裡)。",
+  "feeds": [
+    {
+      "name": "BBC Sport 英冠",
+      "url": "https://feeds.bbci.co.uk/sport/football/championship/rss.xml"
+    },
+    {
+      "name": "The Guardian Championship",
+      "url": "https://www.theguardian.com/football/championship/rss"
+    }
+  ],
+  "maxPerFeed": 20
+}

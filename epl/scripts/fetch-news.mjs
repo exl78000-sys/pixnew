@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // 選用:抓外部新聞 RSS → data/raw/news*.json,build 時會自動併進動態頁。
-// 用法: npm run news [-- --league=es1]
+// 用法: npm run news [-- --league=es1|en2]
 // 注意:受限網路環境(只放行 GitHub 的沙箱)會抓不到,這時其他功能照常運作。
 import { writeFile, readFile, mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -8,9 +8,22 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
-const league = arg('league') === 'es1' ? 'es1' : 'pl';
-const configFile = league === 'es1' ? 'feeds-laliga.json' : 'feeds.json';
-const outputFile = league === 'es1' ? 'news-la-liga.json' : 'news.json';
+/* 聯賽走註冊表,不要用「是不是 es1」的二元判斷 ——
+   加第三個聯賽時那種寫法會把 --league=en2 靜靜當成英超,
+   於是英冠的動態頁長出英超的外電,而畫面看起來完全正常。
+   (同一個坑在 core.js 的 league()、vault 的 dataDir 與 clubDirectory 都出現過。) */
+const LEAGUES = {
+  pl: { config: 'feeds.json', out: 'news.json', cat: '外電' },
+  es1: { config: 'feeds-laliga.json', out: 'news-la-liga.json', cat: '西甲外電' },
+  en2: { config: 'feeds-championship.json', out: 'news-championship.json', cat: '英冠外電' },
+};
+const want = arg('league') ?? 'pl';
+if (!Object.hasOwn(LEAGUES, want)) {
+  console.error(`✗ 不認得的聯賽:${want}(可用:${Object.keys(LEAGUES).join('、')})`);
+  process.exit(1);
+}
+const league = want;
+const { config: configFile, out: outputFile, cat: category } = LEAGUES[league];
 
 const strip = s => s
   .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
@@ -66,7 +79,7 @@ function parseFeed(xml, source, max, keywords = []) {
     const linkMatch = /<link[^>]*href="([^"]+)"/i.exec(b);
     return {
       id: `rss-${source.replace(/\W/g, '')}-${i}`,
-      cat: league === 'es1' ? '西甲外電' : '外電',
+      cat: category,
       date: iso,
       title: pick(b, 'title'),
       body: pick(b, 'description', 'summary', 'content').slice(0, 220),

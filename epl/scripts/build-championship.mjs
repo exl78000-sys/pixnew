@@ -342,6 +342,27 @@ async function main() {
     `${b.season} 有 ${b.filled} 場的比分主來源(openfootball)沒有,改用 football-data.co.uk;`
     + `兩邊重疊的 ${b.checked} 場逐場核對完全一致才採用。`);
 
+  /* 外電。只讀每日快取,開頁不抓外部網站(跟另外兩個聯賽一樣)。
+     這裡再做一次最小欄位驗證,壞掉或沒有連結的 RSS 項目不進前端。
+
+     **來源是實測過才收的**:Sky 的 11663 看名字像英冠,實際回的是英超與綜合內容
+     (「Gallery: New Premier League kits」),所以不用它 —— 理由記在
+     data/manual/feeds-championship.json 的 _rejected。
+     沒有譯文快取:英冠沒有接翻譯,標題與摘要維持原文。 */
+  let externalNews = [];
+  {
+    const p = join(ROOT, 'data', 'raw', 'news-championship.json');
+    if (existsSync(p)) {
+      try {
+        const raw = JSON.parse(await readFile(p, 'utf8'));
+        externalNews = Array.isArray(raw)
+          ? raw.filter(x => x && x.title && x.link && x.source).slice(0, 100)
+          : [];
+      } catch { externalNews = []; }
+    }
+    console.log(`  外電:${externalNews.length} 則`);
+  }
+
   const meta = {
     /* **不要設 edition**。那個欄位在前端被當成「是不是西甲」的二元旗標用
        (page-index / page-teams / page-tactics / fixture-list 都是),
@@ -373,6 +394,8 @@ async function main() {
       '✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬(前 2 直升、3~6 附加賽、後 3 降級)',
       '✓ 兩個獨立來源逐場核對:openfootball(en.2)與 football-data.co.uk(E1),對不上就整份不採用',
       '✓ 市場賠率並排比較(來源與英超西甲同一份 fixtures.csv,英冠本來就在裡面)',
+      '✓ 外電:BBC 與 Guardian 的英冠 feed(兩個都實測過內容才收;'
+      + 'Sky 有一個名字像英冠、實際回英超內容,不用它)。只有標題與短摘要,不翻譯',
       '— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
       + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超。**這是驗證過的沒有,不是還沒做**',
       '— 沒有教練、傷停、正式陣容與賽後統計;隊色與球場資料尚未取得,所以圖表暫時是中性灰',
@@ -423,7 +446,7 @@ async function main() {
     },
     counts: {
       teams: teams.length, fixtures: fixtures.length,
-      players: 0, news: 0, injuries: 0, coaches: 0,
+      players: 0, news: externalNews.length, injuries: 0, coaches: 0,
       crests: crestCount,
       currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
       playoffMatches: [...lastMatches, ...curMatches].filter(m => m.stage).length,
@@ -451,7 +474,7 @@ async function main() {
   /* 下面三份是首頁會讀的,英冠沒有內容 —— 寫**空的**而不是不寫。
      不寫的話前端拿到 404 會走「還沒 build」那條訊息,那是錯的:
      我們 build 了,是這個聯賽沒有這種資料。 */
-  await write('news', []);
+  await write('news', externalNews);
   /* 球員、教練、進球明細:英冠**沒有免費來源**(見檔頭的實測)。
      寫空的而不是不寫,而且每一份都帶 available:false 與一句為什麼 ——
      前端要能分得出「還沒 build」與「這個聯賽沒有這種資料」,
