@@ -53,6 +53,9 @@ jobs:
         run: npm run probe:encups
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
 
       # 西甲球員資料:動手寫抓取管線之前先確定拿得到什麼。硬上限 5 個請求。
       - name: 探測西甲球員端點
