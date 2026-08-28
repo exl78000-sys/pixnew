@@ -205,8 +205,8 @@ build → laliga:build,跑完 `npm run local:sync` 再跑 `npm test` 就會紅�
 兩者對讀者的意義不同,不可以混成一句「有租借紀錄」。
 
 **Obsidian vault 是產物,而且有一個不能刪的例外。**
-`npm run obsidian` 產生 `epl/vault/`(5,716 則筆記,會隨資料變動:兩個聯賽 + 歐冠 + 英格蘭盃賽 +
-足球知識),比照 `dist/` 不進版控 ——
+`npm run obsidian` 產生 `epl/vault/`(6,862 則筆記,會隨資料變動:三個聯賽 + 歐冠 +
+英格蘭盃賽 + 足球知識),比照 `dist/` 不進版控 ——
 但 `vault/我的筆記/` 是使用者手寫的,`.gitignore` 特地留了 `!epl/vault/我的筆記/`。
 產生器清空的範圍是**從這次要寫的路徑推出來的**(加新資料夾自動涵蓋),
 **不要改成 rm 整個 vault**:那會把手寫筆記不可逆地刪掉,重跑救不回來。
