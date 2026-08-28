@@ -11,7 +11,17 @@
 
    **測試的區塊數與斷言數不在這裡守**,因為那個每加一條測試就變 ——
    那兩個數字由 `npm test` 自己印出來,文件不寫死(見 scripts/test-all.mjs)。
-   這裡守的是資料類的數字:改資料的頻率低,而且讀者真的會拿它們當事實。 */
+
+   **而資料類的數字也要再分一次。** 第一版把它們全部當紅線,結果 CI 每跑一次
+   資料就紅一次 —— vault 筆記數會隨賽程與球員變(本機 5,716、CI 5,733)、
+   頭貼會隨每次 photos 抓到新圖而增加、傷停快照每天 +1。
+   把這種數字當紅線,只會訓練人忽略紅色,比不檢查更糟。
+
+   所以分兩種:
+     drifts: true   會隨資料自然變動 → **只回報,不擋**。文件裡那個數字是快照。
+     drifts: false  只有人為改動才會變(新交付、接了新資料源)→ 對不上就紅。
+
+   兩種都會把實際值印出來,CI 的 log 才能自己說明發生什麼事。 */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -48,11 +58,14 @@ const countVaultNotes = () => {
 const CHECKS = [
   {
     key: 'vault 筆記數',
+    drifts: true,   // 賽程、球員一變就變
     actual: countVaultNotes,
     patterns: [/共 ([\d,]+) 則筆記/g, /vault[^。\n]{0,20}?\(([\d,]{4,6}) 則/g, /\*\*([\d,]{4,6}) 則筆記/g],
   },
   {
     key: '租借發布筆數',
+    drifts: false,   // 只有新交付或核對邏輯改了才會變
+
     actual: () => (has('data/loans-verified.json') ? read(join(ROOT, 'data/loans-verified.json')).records.length : null),
     patterns: [/發布 (\d+) 筆\(confirmed/g, /核對後\*\*發布 (\d+) 筆/g],
   },
@@ -61,6 +74,8 @@ const CHECKS = [
        不是 ucl-teams.json 的 teams 長度(那是本站登錄過的球隊,不等於在歐冠出現過)。
        第一版就是這樣算錯的,算出 55。 */
     key: '歐冠有隊徽的球隊數',
+    drifts: false,   // 只有補了隊徽或多一季才會變
+
     actual: () => {
       if (!has('web/data/ucl.json') || !has('web/data/ucl-teams.json')) return null;
       const u = read(join(ROOT, 'web/data/ucl.json'));
@@ -79,6 +94,8 @@ const CHECKS = [
   },
   {
     key: '傷停快照天數',
+    drifts: true,   // 每天 +1
+
     actual: () => {
       const p = join(ROOT, 'data', 'availability-history.json');
       if (!existsSync(p)) return null;
@@ -92,6 +109,8 @@ const CHECKS = [
        「補球員背號 544/599」—— 那是背號不是頭貼,`--fix` 會把它改成 584 改壞。
        所以要求同一行裡出現「頭貼」才算。 */
     key: '英超球員頭貼',
+    drifts: true,   // 每次 photos 抓到新圖就增加
+
     actual: () => {
       if (!has('web/data/players.json')) return null;
       const pl = arr(read(join(ROOT, 'web/data/players.json')));
@@ -104,7 +123,7 @@ const CHECKS = [
 const DOCS = ['../CLAUDE.md', 'README.md', 'docs/接手資訊.md', 'docs/補齊規劃.md']
   .map(f => join(ROOT, f)).filter(existsSync);
 
-let bad = 0, fixed = 0, checked = 0;
+let bad = 0, drifted = 0, fixed = 0, checked = 0;
 console.log('\n▶ 文件數字對不對得回實際資料');
 
 for (const c of CHECKS) {
@@ -114,6 +133,8 @@ for (const c of CHECKS) {
     console.log(`  · ${c.key}:算不出實際值(資料還沒產生),略過`);
     continue;
   }
+  // 實際值一律印出來 —— CI 上出問題時,log 要能自己說明是什麼對不上
+  console.log(`  · ${c.key}:實際 ${actual}${c.drifts ? '(會隨資料變動,只回報)' : ''}`);
   const want = String(actual);
   const wantComma = actual.toLocaleString('en-US');
   for (const file of DOCS) {
@@ -124,11 +145,11 @@ for (const c of CHECKS) {
         checked++;
         const plain = String(got).replace(/,/g, '');
         if (plain === want) return m;
-        bad++;
+        if (c.drifts) drifted++; else bad++;
         const useComma = String(got).includes(',');
         const repl = m.replace(got, useComma ? wantComma : want);
-        console.log(`  ${FIX ? '✎' : '✗'} ${c.key} @ ${file.replace(`${ROOT}/`, '')}`
-          + `:文件寫 ${got},實際 ${want}`);
+        console.log(`  ${FIX ? '✎' : (c.drifts ? '·' : '✗')} ${c.key} @ ${file.replace(`${ROOT}/`, '')}`
+          + `:文件寫 ${got},實際 ${want}${c.drifts ? '(快照過期,不擋)' : ''}`);
         if (FIX) { changed = true; fixed++; return repl; }
         return m;
       });
@@ -137,7 +158,12 @@ for (const c of CHECKS) {
   }
 }
 
-console.log(`\n  掃到 ${checked} 處宣稱・對不上 ${bad} 處${FIX ? `・已修 ${fixed} 處` : ''}`);
+console.log(`\n  掃到 ${checked} 處宣稱・該紅的對不上 ${bad} 處・快照過期 ${drifted} 處`
+  + `${FIX ? `・已修 ${fixed} 處` : ''}`);
+if (drifted && !FIX) {
+  console.log('  快照過期的那幾處不會擋 CI(那些數字本來就會隨資料變動)。');
+  console.log('  想更新就跑:npm run docs:check -- --fix');
+}
 if (bad && !FIX) {
   console.log('  修法:npm run docs:check -- --fix');
   console.log('  (改完請看一眼 —— 自動改的是數字,句子的意思要人確認)');
