@@ -1,10 +1,11 @@
 import * as C from './core.js?v=7f50b1bd';
+import { mountSimTable } from './sim-table.js?v=1f16f75a';
 
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, live: liveInitial, fixtures, table, tactics, analysis } =
-    await C.load('meta', 'clubs', 'teams', 'live', 'fixtures', 'table', 'tactics', 'analysis');
+  const { meta, clubs, teams, live: liveInitial, fixtures, table, tactics, analysis, sim } =
+    await C.load('meta', 'clubs', 'teams', 'live', 'fixtures', 'table', 'tactics', 'analysis', 'sim');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
   const isLaLiga = C.league() === 'es1';
@@ -168,7 +169,16 @@ try {
         ${isLaLiga
           ? '西甲賽果會由西甲同步流程帶入。'
           : '賽果由 openfootball 與即時來源兩邊帶入,兩者都會自動併進這張表。'}</div>`}
+
+    ${/* 現況與預測並排。上面那張是「已經拿到幾分」,這張是「照目前實力跑完整季會是幾分」——
+         比賽進行中的時候,兩張一起看才知道這一場的結果把誰推去了哪裡。
+         表格本身跟積分與賽程頁共用同一份定義(sim-table.js),不複製。 */''}
+    <div class="section"><h2>本季預測積分榜</h2>
+      <span class="hint">蒙地卡羅模擬 ${meta.model.simulationRuns.toLocaleString()} 次賽季・跟上面那張是同一個賽季的兩種看法</span></div>
+    <div id="simTable"></div>
     ${C.foot(meta)}`;
+
+    mountSimTable('simTable', { sim, teams, table, meta });
 
     if (curPlayed > 0) {
       // 列全部 20 隊(含尚未出賽的),名次才不會跳號

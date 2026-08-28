@@ -1,5 +1,6 @@
 import * as C from './core.js?v=7f50b1bd';
 import { mountFixtureList } from './fixture-list.js?v=572ba18e';
+import { mountSimTable } from './sim-table.js?v=1f16f75a';
 
 const app = document.getElementById('app');
 
@@ -12,19 +13,7 @@ try {
 
   const played = fixtures.filter(f => f.played);
   const basic = meta.edition === 'basic';
-  const curBy = new Map((table.current ?? []).map(r => [r.code, r]));
 
-  // 開季前幾輪的排名幾乎沒有意義(大家場次都一樣少),與其讓讀者自己踩坑,不如明講
-  const earlyNote = () => {
-    const maxPlayed = Math.max(0, ...(table.current ?? []).map(r => r.p));
-    if (maxPlayed >= 6) return '';
-    return `<div class="note" style="margin-top:10px">
-      才踢了 ${maxPlayed} 輪,這張表<b>還不能當實力排序看</b> ——
-      同分的隊伍靠淨勝球和進球數分先後,一場大勝就能把人推到第一。
-      要看實力請往下看預測積分榜,那裡吃的是${
-        // 訓練用了幾季是資料說了算,不要按聯賽寫死 —— 西甲補上 2024-25 之後就不是「一季」了
-        meta.historySeasons?.length ? `${meta.historySeasons.join('、')}` : '過往賽季'}的樣本。</div>`;
-  };
   const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
   const nextRound = upcoming[0]?.round ?? null;
   const injuries = news.filter(n => n.cat === '傷停' || n.cat === '禁賽');
@@ -69,21 +58,6 @@ try {
       : kpi('傷停名單', injuries.length, `涵蓋 ${meta.counts.players} 名註冊球員`)}
   </div>
 
-  <div class="section"><h2>本季目前戰績</h2>
-    <span class="hint">${meta.currentSeason}・已踢完 ${played.length} 場的真實積分榜</span></div>
-  ${played.length ? '<div id="curTable"></div>' + earlyNote() : `
-    <div class="note">本季還沒有比賽踢完,所以還沒有積分榜。
-      下面的預測完全來自過去幾季的資料;等第一輪踢完,這裡就會出現真實戰績。</div>`}
-
-  <div class="section"><h2>本季預測積分榜</h2>
-    <span class="hint">蒙地卡羅模擬 ${meta.model.simulationRuns.toLocaleString()} 次賽季</span></div>
-  <div id="simTable"></div>
-  <div class="note info" style="margin-top:10px">
-    <b>每踢完一場就會重算。</b>期望積分 =<b>已經拿到的分數</b>+ 剩餘賽程的模擬結果,
-    而且已完賽的比分也會回頭修正球隊強度,影響後面每一場的機率。
-    ${played.length ? `目前已計入 ${played.length} 場真實賽果。` : ''}
-  </div>
-
   <div class="grid g2" style="margin-top:16px">
     <div class="card">
       <h2>接下來的比賽</h2>
@@ -99,23 +73,6 @@ try {
       <div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>
     </div>
   </div>
-
-  ${basic ? `<div class="card" style="margin-top:20px">
-      <h2>目前資料界線</h2>
-      <div>${`<div class="small muted" style="display:grid;gap:8px">
-        <div>✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬</div>
-        <div>✓ 上季球隊 xG/xGA、射門、實際陣型、五種進球情境與風格百分位</div>
-        <div>✓ 完賽後完整資料永久快取 ${reports.count ?? 0}/${played.length} 場（球隊統計、正式陣容、事件與球員評分）</div>
-        <div>— 球員與教練資料已接入；傷停${meta.capabilities?.injuries ? '已接入' : '尚無可靠來源'}；即時比分${meta.live?.available ? '已接入' : '仍以賽程推算'}</div>
-        ${/* 這一行本來寫死「只使用一個完整賽季，尚無獨立留出賽季可做可靠回測」——
-              補上 2024-25 並接進回測管線之後兩句都不成立了。改成跟著產物走。 */''}
-        <div class="dim">模型訓練用了 ${meta.historySeasons?.join('、') ?? '過往賽季'};
-          ${bt.available
-            ? `走查回測 ${bt.season} ${bt.games} 場,RPS ${bt.rps}(基準線 ${bt.baselineRps})——
-               <a href="${C.link('model')}">看驗證過程</a>。`
-            : '尚未跑走查回測,所以這一頁不給準度數字。'}</div>
-      </div>`}</div>
-    </div>` : ''}
 
   ${/* 賽程表原本是獨立的一頁。分成兩頁的話,讀者看完積分榜想看下一輪對誰,
         要再點一次而且整頁重載;而兩頁的頁首、時效標籤、模型說明本來就講同一件事,
@@ -136,6 +93,27 @@ try {
   </div>
   <div id="fixtureList"></div>
 
+  <div class="section"><h2>本季預測積分榜</h2>
+    <span class="hint">蒙地卡羅模擬 ${meta.model.simulationRuns.toLocaleString()} 次賽季</span></div>
+  <div id="simTable"></div>
+
+  ${basic ? `<div class="card" style="margin-top:20px">
+      <h2>目前資料界線</h2>
+      <div>${`<div class="small muted" style="display:grid;gap:8px">
+        <div>✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬</div>
+        <div>✓ 上季球隊 xG/xGA、射門、實際陣型、五種進球情境與風格百分位</div>
+        <div>✓ 完賽後完整資料永久快取 ${reports.count ?? 0}/${played.length} 場（球隊統計、正式陣容、事件與球員評分）</div>
+        <div>— 球員與教練資料已接入；傷停${meta.capabilities?.injuries ? '已接入' : '尚無可靠來源'}；即時比分${meta.live?.available ? '已接入' : '仍以賽程推算'}</div>
+        ${/* 這一行本來寫死「只使用一個完整賽季，尚無獨立留出賽季可做可靠回測」——
+              補上 2024-25 並接進回測管線之後兩句都不成立了。改成跟著產物走。 */''}
+        <div class="dim">模型訓練用了 ${meta.historySeasons?.join('、') ?? '過往賽季'};
+          ${bt.available
+            ? `走查回測 ${bt.season} ${bt.games} 場,RPS ${bt.rps}(基準線 ${bt.baselineRps})——
+               <a href="${C.link('model')}">看驗證過程</a>。`
+            : '尚未跑走查回測,所以這一頁不給準度數字。'}</div>
+      </div>`}</div>
+    </div>` : ''}
+
   <div class="section"><h2>上季最終戰績</h2><span class="hint">${meta.lastSeason}・所有進階指標的基準</span></div>
   <div id="lastTable"></div>
 
@@ -155,46 +133,8 @@ try {
   </div>
   ${C.foot(meta)}`;
 
-  /* 預測積分榜 */
-  const simRows = sim.map(s => ({ ...s, t: C.team(s.code) }));
-  document.getElementById('simTable').innerHTML = C.table(simRows, [
-    { key: 'pos', label: '#', value: r => r.expectedPos, render: (r, i) => i + 1, sortable: false, num: true },
-    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
-    { key: 'earned', label: '本季實得', value: r => (curBy.get(r.code)?.pts ?? 0), num: true,
-      title: '已經踢完的比賽拿到的分數,這部分不是預測',
-      render: r => { const c = curBy.get(r.code);
-        return c?.p ? `<b>${c.pts}</b><span class="dim tiny"> / ${c.p} 場</span>` : '<span class="dim">—</span>'; } },
-    { key: 'expectedPoints', label: '期望積分', value: r => r.expectedPoints, num: true,
-      title: '本季實得 + 剩餘賽程的模擬結果',
-      render: r => `<b>${r.expectedPoints}</b>` },
-    { key: 'titlePct', label: '奪冠', value: r => r.titlePct, num: true,
-      render: r => `${r.titlePct}%${C.bar(r.titlePct, 100)}` },
-    { key: 'top4Pct', label: '前四', value: r => r.top4Pct, num: true,
-      render: r => `${r.top4Pct}%${C.bar(r.top4Pct, 100, 'alt')}` },
-    { key: 'relegationPct', label: '降級', value: r => r.relegationPct, num: true,
-      render: r => `${r.relegationPct}%${C.bar(r.relegationPct, 100, 'hot')}` },
-    { key: 'last', label: '上季', value: r => (C.team(r.code).lastSeason?.pos ?? 99),
-      render: r => { const t = teams.find(x => x.code === r.code); return t?.lastSeason ? `第 ${t.lastSeason.pos} 名` : '<span class="pill">升班馬</span>'; }, num: true },
-    { key: 'elo', label: 'Elo', value: r => teams.find(x => x.code === r.code)?.elo ?? 0, num: true,
-      render: r => C.fx(teams.find(x => x.code === r.code)?.elo, 0) },
-  ], { sortKey: 'expectedPoints', desc: true, onRow: r => { C.go('teams', { code: r.code }); } });
-
-  /* 本季目前戰績 */
-  if (played.length) {
-    document.getElementById('curTable').innerHTML = C.table(table.current, [
-      { key: 'pos', label: '#', value: r => r.pos, num: true },
-      { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
-      { key: 'p', label: '賽', value: r => r.p, num: true },
-      { key: 'w', label: '勝', value: r => r.w, num: true },
-      { key: 'd', label: '和', value: r => r.d, num: true },
-      { key: 'l', label: '負', value: r => r.l, num: true },
-      { key: 'gf', label: '進', value: r => r.gf, num: true },
-      { key: 'ga', label: '失', value: r => r.ga, num: true },
-      { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
-      { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
-      { key: 'form', label: '近況', value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
-    ], { sortKey: 'pos', desc: false, onRow: r => { C.go('teams', { code: r.code }); } });
-  }
+  /* 預測積分榜(共用模組,實時戰況頁也用同一份) */
+  mountSimTable('simTable', { sim, teams, table, meta });
 
   /* 近期比賽 */
   document.getElementById('next').innerHTML = upcoming.slice(0, 6).map(f => `
