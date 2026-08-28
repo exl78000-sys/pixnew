@@ -137,7 +137,7 @@ export const currentPage = () => (BUNDLE
 export function leagueSwitchLink(targetLeague) {
   const here = currentPage();
   const currentLeague = league();
-  if (here === 'analysis') return link('fixtures', { league: targetLeague });
+  if (here === 'analysis') return link('index', { league: targetLeague });
   if (here === 'teams' || here === 'players') {
     const code = targetLeague === currentLeague ? qs('code') : null;
     return link(here, { league: targetLeague, code });
@@ -266,16 +266,15 @@ export const stampRow = items =>
 // 進來時由 LeagueGap 給一句實話,不是一個空白頁。
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
-  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'fixtures', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge'] },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge'] },
 };
 
 const PAGES = [
-  ['index', '總覽'],
+  /* 「總覽」與「賽程與預測」合併成一頁。分成兩頁時,讀者看完積分榜想看下一輪
+     對誰要再點一次而且整頁重載,而兩頁的頁首、時效標籤與模型說明本來就在講
+     同一件事 —— 等於同一段話維護兩份。名字也跟著改:「總覽」講不出這一頁有什麼。 */
+  ['index', '積分與賽程'],
   ['live', '實時戰況'],
-  /* 「賽前分析」不再獨立掛在導覽列 —— 它跟賽程表原本各有一份列表,
-     內容也重複了六張卡片。現在只留一個入口:賽程表是列表,
-     單場的完整分析仍然有自己的網址,從表格點進去。 */
-  ['fixtures', '賽程與預測'],
   /* 教練不再獨立成頁 —— 教練是球隊的屬性,詳細資料在球隊頁的單隊區塊,
      跨教練的場均勝點排行在球隊總覽頁下方。 */
   ['teams', '球隊'],
@@ -1032,6 +1031,42 @@ export function roundChart(rows, { w = 1000, h = 340, baseline = null, valueKey 
     ${dots}${xLabels}
     <text x="${(pad.l + w - pad.r) / 2}" y="${h - 10}" text-anchor="middle" font-size="12.5" fill="var(--ink-2)">輪次</text>
   </svg>`;
+}
+
+/* ── 統計格 ───────────────────────────
+   一組數字,每個自己帶標籤。用來取代「勝 / 和 / 負 → 26 / 7 / 5」——
+   斜線串起來的數字要讀者自己數到第幾個才知道是哪一項。
+
+   顏色只給**狀態**(勝/負),而且一定跟標籤一起出現,不靠顏色單獨表意;
+   和局不上色 —— 用 --draw 的橘色會讓「和局」看起來像警告。 */
+// 值是 0 的時候不上色 —— 紅色的 0 會把視線引到「什麼都沒發生」那一格
+const isZero = v => v === 0 || /^[+-]?0(\.0+)?$/.test(String(v ?? ''));
+
+export function statCells(cells, { align = 'center', compact = false } = {}) {
+  const list = cells.filter(Boolean);
+  if (!list.length) return '';
+  const cls = ['stat-cells', align === 'left' ? 'left' : '', compact ? 'compact' : ''].filter(Boolean).join(' ');
+  return `<div class="${cls}">${list.map(c => `
+    <div class="sc"${c.title ? ` title="${esc(c.title)}"` : ''}>
+      <div class="v"${c.tone && !isZero(c.value) ? ` style="color:var(--${c.tone})"` : ''}>${c.value ?? '—'}${
+        c.unit ? `<span class="u">${c.unit}</span>` : ''}</div>
+      <div class="l">${c.label}</div></div>`).join('')}</div>`;
+}
+
+/* 勝 / 和 / 負。站上至少四個地方在畫同一組數字(球隊卡、交手紀錄、
+   近期五場、逐季表),各寫一次的話順序與顏色遲早會走鐘。 */
+export const record = (w, d, l, opts) => statCells([
+  { label: '勝', value: w, tone: 'win' },
+  { label: '和', value: d },
+  { label: '負', value: l, tone: 'loss' },
+], opts);
+
+/* 兩個維度的數字排成矩陣。head 是欄名,rows 是 [列名, ...值]。 */
+export function statMatrix(head, rows) {
+  return `<table class="stat-matrix">
+    <thead><tr><th></th>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(([name, ...vals]) => `<tr><td>${name}</td>${
+      vals.map(v => `<td>${v ?? '—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
 }
 
 /* ── Elo 走勢折線圖 ───────────────────

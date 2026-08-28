@@ -373,6 +373,35 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
 .chart.square { max-width: 560px; }
 .radar { max-width: 420px; display: block; margin: 0 auto; }
 
+/* ── 統計格 ───────────────────────────
+   取代「勝 / 和 / 負 → 26 / 7 / 5」那種寫法。斜線串起來的數字要讀者
+   自己數到第幾個才知道是哪一項,而且常常三個數字單位還不一樣
+   (進球 / 失球 / 淨勝:前兩個是次數,第三個是差值而且帶正負號)。
+   拆開之後每個數字自己帶標籤,不用對位置。
+   tabular-nums 是必要的:同一欄的位數對不齊的話,一排數字讀起來會歪。 */
+.stat-cells { display: flex; flex-wrap: wrap; }
+.stat-cells .sc { flex: 1 1 0; min-width: 52px; text-align: center; padding: 7px 4px;
+  border-right: 1px solid var(--line-soft); }
+.stat-cells .sc:last-child { border-right: none; }
+.stat-cells .sc .v { font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 19px; font-weight: 700; line-height: 1.15; letter-spacing: -.4px; }
+.stat-cells .sc .l { font-size: 11px; color: var(--ink-3); margin-top: 3px; letter-spacing: .3px; }
+.stat-cells .sc .u { font-size: 11px; color: var(--ink-3); font-family: var(--sans); font-weight: 400; }
+.stat-cells.left .sc { text-align: left; padding-left: 0; }
+.stat-cells.compact .sc .v { font-size: 15px; }
+
+/* 兩個維度的數字用真的表格排,不要壓成兩行斜線。
+   「上半場 進/失 30/10」加「下半場 進/失 41/17」其實是一個 2×2,
+   攤成矩陣之後「上下半場哪邊進得多」一眼就看得出來,拆成兩行就要自己比對。 */
+.stat-matrix { width: 100%; border-collapse: collapse; font-size: 13px; }
+.stat-matrix th { font-weight: 500; color: var(--ink-3); font-size: 11px;
+  text-align: right; padding: 4px 8px; letter-spacing: .3px; }
+.stat-matrix th:first-child { text-align: left; }
+.stat-matrix td { font-family: var(--mono); font-variant-numeric: tabular-nums;
+  text-align: right; padding: 6px 8px; border-top: 1px solid var(--line-soft); font-weight: 700; }
+.stat-matrix td:first-child { font-family: var(--sans); font-weight: 400;
+  color: var(--ink-2); text-align: left; font-size: 12.5px; }
+
 .stat-line { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px dashed var(--line-soft); font-size: 13px; }
 .stat-line:last-child { border-bottom: none; }
 .stat-line b { font-family: var(--mono); font-weight: 700; }

@@ -552,15 +552,19 @@ try {
     const runs = f.recent.map(r => `<i class="frm ${r.res}"
       title="${C.esc(`${r.date}・${r.venue === 'H' ? '主' : '客'}場對 ${C.name(r.opp)}・${r.gf}-${r.ga}`)}">${r.res}</i>`).join('');
     return `<div class="card"><h3>近期 ${s.games} 場</h3>
-      <div class="row" style="gap:8px;align-items:center;margin-bottom:10px">
+      <div class="row" style="gap:8px;align-items:center;margin-bottom:6px">
         <span class="form-run">${runs}</span>
-        <b class="small">${s.w}勝 ${s.d}和 ${s.l}負・勝率 ${s.winPct}%</b>
       </div>
-      <div class="grid g3" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
-        <div><div class="tiny dim">進 / 失</div><b class="mono">${s.gf} / ${s.ga}</b></div>
-        <div><div class="tiny dim">場均勝點</div><b class="mono">${C.fx(s.ppg, 2)}</b></div>
-        <div><div class="tiny dim">樣本</div><b class="mono">${s.games} 場</b></div>
-      </div>
+      ${C.statCells([
+        { label: '勝', value: s.w, tone: 'win' },
+        { label: '和', value: s.d },
+        { label: '負', value: s.l, tone: 'loss' },
+        { label: '勝率', value: s.winPct, unit: '%' },
+        { label: '進球', value: s.gf },
+        { label: '失球', value: s.ga },
+        { label: '場均勝點', value: C.fx(s.ppg, 2) },
+      ], { compact: true })}
+      <div style="margin-bottom:8px"></div>
       ${f.recent.map(r => `<div class="stat-line">
         <span class="small"><i class="frm ${r.res}">${r.res}</i> ${r.venue === 'H' ? '主' : '客'} vs ${C.teamLink(r.opp)}</span>
         <span class="mono small">${r.gf}-${r.ga} <span class="dim">${C.dateFull(r.date)}</span></span></div>`).join('')}
@@ -601,11 +605,15 @@ try {
     const ga = ownIsA ? rec.bGoals : rec.aGoals;
     const winPct = rec.games ? Math.round((w / rec.games) * 1000) / 10 : 0;
     box.innerHTML = `<div class="small" style="margin-bottom:8px">對手球隊：${C.teamLink(opp)}</div>
-    <div class="grid g3" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
-      <div><div class="tiny dim">勝 / 和 / 負</div><b class="mono">${w} / ${rec.draw} / ${l}</b></div>
-      <div><div class="tiny dim">進 / 失</div><b class="mono">${gf} / ${ga}</b></div>
-      <div><div class="tiny dim">交手勝率</div><b class="mono">${winPct}%</b></div>
-    </div>
+    ${C.statCells([
+      { label: '勝', value: w, tone: 'win' },
+      { label: '和', value: rec.draw },
+      { label: '負', value: l, tone: 'loss' },
+      { label: '勝率', value: winPct, unit: '%' },
+      { label: '進球', value: gf },
+      { label: '失球', value: ga },
+    ], { compact: true })}
+    <div style="margin-bottom:8px"></div>
     ${rec.list.slice(0, 5).map(m => `<div class="stat-line"><span class="small dim mono">${C.dateFull(m.date)}</span>
       <span class="small">${C.teamLink(m.home)} <b class="mono">${m.fh}-${m.fa}</b> ${C.teamLink(m.away)}</span></div>`).join('')}`;
   }
@@ -624,8 +632,13 @@ try {
         render: r => `<b>${r.season}</b>${r.season === meta.currentSeason ? ' <span class="pill accent tiny">進行中</span>' : ''}` },
       { key: 'scope', label: '範圍', value: r => r.scope, left: true },
       { key: 'p', label: '場', value: r => r.p, num: true },
-      { key: 'record', label: '勝 / 和 / 負', value: r => r.w, sortable: false, num: true,
-        render: r => `${r.w} / ${r.d} / ${r.l}` },
+      /* 表格裡的勝和負拆成三欄。原本擠成一欄「26 / 7 / 5」——
+         在表格中特別難讀:上下列的斜線位置對不齊,而且三個數字都排不了序。 */
+      { key: 'w', label: '勝', value: r => r.w, num: true,
+        render: r => (r.w ? `<b style="color:var(--win)">${r.w}</b>` : '0') },
+      { key: 'd', label: '和', value: r => r.d, num: true },
+      { key: 'l', label: '負', value: r => r.l, num: true,
+        render: r => (r.l ? `<b style="color:var(--loss)">${r.l}</b>` : '0') },
       { key: 'winPct', label: '勝率', value: r => r.winPct, num: true, render: r => `${r.winPct}%` },
       { key: 'gf', label: '進球', value: r => r.gf, num: true },
       { key: 'ga', label: '失球', value: r => r.ga, num: true },
@@ -700,17 +713,28 @@ try {
     </div>`;
   }
 
+  /* KPI 列。第四格原本是「前四 / 降級 → 97.5% / 0%」——
+     兩個意思不同的機率被一條斜線串起來,看起來像分數。
+     機率拆成獨立一排、每個自己帶標籤,KPI 只留單一數字。 */
   function kpiRow(t) {
     const ls = t.lastSeason, cur = t.current, s = t.sim;
+    const probs = s ? C.statCells([
+      s.titlePct != null ? { label: '奪冠', value: `${s.titlePct}`, unit: '%', tone: s.titlePct >= 50 ? 'win' : null } : null,
+      { label: '前四', value: `${s.top4Pct}`, unit: '%' },
+      { label: '降級', value: `${s.relegationPct}`, unit: '%', tone: s.relegationPct >= 20 ? 'loss' : null },
+      { label: 'Elo', value: C.fx(t.elo, 0), title: '1500 是起點基準' },
+    ]) : '';
     return `<div class="grid g4">
       ${kpiOf('上季名次', ls ? `第 ${ls.pos} 名` : '升班馬',
         ls ? `${ls.pts} 分・場均 ${ls.ppg}` : `${meta.lastSeason} 未在這個聯賽`)}
       ${kpiOf('本季目前', cur?.p ? `${cur.pts} 分` : '尚無完賽',
         cur?.p ? `${cur.p} 場・${cur.w}勝${cur.d}和${cur.l}負` : meta.currentSeason)}
-      ${kpiOf('期望積分', s?.expectedPoints ?? '—', `期望名次 第 ${s?.expectedPos ?? '—'} 名`)}
-      ${kpiOf('前四 / 降級', `${s?.top4Pct ?? '—'}% / ${s?.relegationPct ?? '—'}%`,
-        `${s?.titlePct != null ? `奪冠 ${s.titlePct}%・` : ''}Elo ${C.fx(t.elo, 0)}`)}
-    </div>`;
+      ${kpiOf('期望積分', s?.expectedPoints ?? '—',
+        cur?.pts != null ? `已拿 ${cur.pts} 分 + 剩餘賽程模擬` : '整季模擬結果')}
+      ${kpiOf('期望名次', s ? `第 ${s.expectedPos} 名` : '—',
+        `${meta.model.simulationRuns.toLocaleString()} 次模擬的平均`)}
+    </div>
+    ${probs ? `<div class="card" style="margin-top:12px;padding:6px 14px">${probs}</div>` : ''}`;
   }
 
   /* 上季戰績剖析。lastSeason 的形狀兩個聯賽**完全一樣**(逐欄位比對過),
@@ -724,26 +748,41 @@ try {
     return `<div class="section"><h2>上季戰績剖析</h2><span class="hint">${meta.lastSeason}</span></div>
     <div class="grid g2">
       <div class="card"><h3>基本戰績</h3>
-        ${lineOf('勝 / 和 / 負', `${ls.w} / ${ls.d} / ${ls.l}`)}
-        ${lineOf('進球 / 失球 / 淨勝', `${ls.gf} / ${ls.ga} / ${C.signed(ls.gd, 0)}`)}
-        ${lineOf('主場場均勝點', ls.home.ppg)}
-        ${lineOf('客場場均勝點', ls.away.ppg)}
-        ${lineOf('主客落差', C.signed(ls.homeAwayGap, 2))}
-        ${lineOf('零封場次', ls.cleanSheets)}
-        ${lineOf('最長連勝 / 不敗', `${ls.longest.win} / ${ls.longest.unbeaten}`)}
+        ${C.record(ls.w, ls.d, ls.l)}
+        ${C.statCells([
+          { label: '進球', value: ls.gf },
+          { label: '失球', value: ls.ga },
+          { label: '淨勝', value: C.signed(ls.gd, 0), tone: ls.gd > 0 ? 'win' : ls.gd < 0 ? 'loss' : null },
+          { label: '零封', value: ls.cleanSheets },
+        ])}
+        <div style="margin-top:10px">
+          ${C.statMatrix(['場均勝點'], [['主場', C.fx(ls.home.ppg, 2)], ['客場', C.fx(ls.away.ppg, 2)],
+            ['主客落差', C.signed(ls.homeAwayGap, 2)]])}
+        </div>
+        ${lineOf('最長連勝', ls.longest.win)}
+        ${lineOf('最長不敗', ls.longest.unbeaten)}
         ${lineOf('雙方進球比例', `${ls.bttsPct}%`)}
         ${lineOf('大於 2.5 球比例', `${ls.over25Pct}%`)}
       </div>
       <div class="card"><h3>半場行為</h3>
-        ${lineOf('上半場 進 / 失', `${ls.half.gf1} / ${ls.half.ga1}`)}
-        ${lineOf('下半場 進 / 失', `${ls.half.gf2} / ${ls.half.ga2}`)}
+        ${/* 上下半場的進失球本來就是一個 2×2,壓成兩行斜線的話
+              「哪個半場進得多」要自己比對兩行的第一個數字。攤成矩陣一眼看得出來。 */''}
+        ${C.statMatrix(['進球', '失球', '淨勝'], [
+          ['上半場', ls.half.gf1, ls.half.ga1, C.signed(ls.half.gf1 - ls.half.ga1, 0)],
+          ['下半場', ls.half.gf2, ls.half.ga2, C.signed(ls.half.gf2 - ls.half.ga2, 0)],
+        ])}
         ${lineOf('下半場淨勝球增減', C.signed(ls.half.secondHalfSwing, 1))}
-        ${lineOf('半場領先場次', ls.half.htLead)}
-        ${lineOf('領先保分率', ls.half.leadHoldPct === null ? '—' : `${ls.half.leadHoldPct}%`)}
-        ${lineOf('半場落後場次', ls.half.htTrail)}
-        ${lineOf('落後搶分率', ls.half.trailRescuePct === null ? '—' : `${ls.half.trailRescuePct}%`)}
-        ${lineOf('逆轉 / 被逆轉', `${ls.half.comeback} / ${ls.half.collapse}`)}
-        <div class="tiny dim" style="margin-top:8px">領先保分率 = 半場領先的比賽中,實際拿到的分數佔可能分數的比例。</div>
+        <div style="margin-top:10px">
+          ${C.statMatrix(['場次', '收分率'], [
+            ['半場領先', ls.half.htLead, ls.half.leadHoldPct === null ? '—' : `${ls.half.leadHoldPct}%`],
+            ['半場落後', ls.half.htTrail, ls.half.trailRescuePct === null ? '—' : `${ls.half.trailRescuePct}%`],
+          ])}
+        </div>
+        ${C.statCells([
+          { label: '逆轉', value: ls.half.comeback, tone: 'win' },
+          { label: '被逆轉', value: ls.half.collapse, tone: 'loss' },
+        ])}
+        <div class="tiny dim" style="margin-top:8px">收分率 = 半場領先(或落後)的比賽中,實際拿到的分數佔可能分數的比例。</div>
       </div>
     </div>`;
   }
@@ -841,7 +880,7 @@ try {
       ${next.map(f => {
         const home = f.home === t.code;
         const win = home ? f.prediction?.home : f.prediction?.away;
-        return `<a href="${C.link('fixtures', { id: f.id })}" style="color:inherit;text-decoration:none">
+        return `<a href="${C.link('index', { id: f.id })}" style="color:inherit;text-decoration:none">
           <div class="stat-line"><span class="small">${C.dateFull(f.date)} ${home ? '主' : '客'} vs ${C.name(home ? f.away : f.home)}</span>
           <span class="mono small">${win == null ? '—' : `勝率 ${C.pct(win, 0)}`}</span></div></a>`;
       }).join('')}</div>`;

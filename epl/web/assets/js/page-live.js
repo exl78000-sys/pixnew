@@ -153,7 +153,7 @@ try {
 
     <div class="section"><h2>開賽倒數</h2><span class="hint">依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
     <div class="grid g2">${upcoming.slice(0, 8).map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
-    ${upcoming.length > 8 ? `<div style="margin-top:10px"><a href="${C.link('fixtures')}">看完整賽程(還有 ${upcoming.length - 8} 場)→</a></div>` : ''}
+    ${upcoming.length > 8 ? `<div style="margin-top:10px"><a href="${C.link('index')}">看完整賽程(還有 ${upcoming.length - 8} 場)→</a></div>` : ''}
 
     ${(done.length || finishedSchedule.length) ? `
       <div class="section"><h2>已完賽${live.demo && liveRound ? `(重播 ${live.season} 第 ${liveRound} 輪)` : ''}</h2>
