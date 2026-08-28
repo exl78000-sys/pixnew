@@ -2009,7 +2009,14 @@ function checkLoans() {
       `${label} 球員身上的租借都帶著核對等級`, `${list.length} 筆`);
   }
 
-  // 六、核對器真的在擋東西 —— 一筆都沒退回的話多半是它壞了,不是資料完美
+  // 六、核對結果要跟得上收件匣。對不上代表有人改了交付內容卻沒重跑核對 ——
+  //     build 會拿舊的核對結果背書新的資料,而且不會有任何地方報錯。
+  const inboxSha = createHash('sha256')
+    .update(readFileSync(join(ROOT, 'data', 'manual', 'loans.json'))).digest('hex');
+  ok(v.inboxSha === inboxSha, '核對結果是從目前這一版收件匣產生的',
+    v.inboxSha ? `記錄 ${String(v.inboxSha).slice(0, 8)} vs 實際 ${inboxSha.slice(0, 8)}` : '產物沒有記錄雜湊');
+
+  // 七、核對器真的在擋東西 —— 一筆都沒退回的話多半是它壞了,不是資料完美
   ok((v.rejected ?? []).length > 0, '核對器有實際退回紀錄(不是空轉)',
     `退回 ${(v.rejected ?? []).length} 筆`);
   return fail;

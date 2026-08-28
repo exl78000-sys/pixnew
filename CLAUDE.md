@@ -143,7 +143,9 @@ Understat 進球情境、SportMonks 欄位與賽後資料轉換、西甲球隊�
 **先跑 `laliga:build` 再跑 `build`。** `stamp-assets.mjs` 掛在 `npm run build` 的最後,
 會把戳寫進**兩個聯賽**的 `meta.json`;反過來跑的話,`laliga:build` 會把 es1 的
 `meta.json` 重寫掉、戳就不見了,`npm test` 的「meta 記的戳跟實際檔案一致」會紅。
-(workflow 裡的順序本來就是對的,這條是給手動重跑的人看的。)
+(workflow 裡的順序本來就是對的。**但 `scripts/local-sync.mjs` 原本是反的** ——
+build → laliga:build,跑完 `npm run local:sync` 再跑 `npm test` 就會紅在資產戳那條。
+2026-08-28 修正。這條規則不是只給「手動重跑的人」看的,寫成腳本的地方也要照。)
 
 **資產有版本戳。** `npm run build` 會跑 `scripts/stamp-assets.mjs`,
 依**內容雜湊**給 `web/*.html` 的 CSS/JS 與 JS 之間的 import 打上 `?v=`。
@@ -152,7 +154,11 @@ Understat 進球情境、SportMonks 欄位與賽後資料轉換、西甲球隊�
 手動改完前端沒重跑 build 的話,跑 `npm run stamp` 補上;`npm test` 有一節守著
 「戳對不對得回檔案內容」。
 
-**人工交付的租借資料要先過核對器。**
+**人工交付的租借資料要先過核對器,而且核對結果要跟得上收件匣。**
+`loans-verified.json` 記著收件匣的 sha256;收件匣改過卻沒重跑核對時,
+`loadVerifiedLoans` 回 `stale`,build **整批不掛**並印出原因,`npm test` 也會紅。
+沒有這道守門的話,build 會拿舊的核對結果背書新的交付內容,而且不會有任何地方報錯。
+`loans:verify` 已掛進 `local:sync` 與 `epl-live.yml`。
 `data/manual/loans.json` 是**收件匣**(協作方交付的原始內容,裡面有已知是錯的);
 `npm run loans:verify` 核對後產生 `data/loans-verified.json`,**build 只讀後者**。
 直接讀收件匣等於把核對整個繞過去。判定分四級,發布的只有 `confirmed`(有獨立來源

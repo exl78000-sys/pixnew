@@ -1012,7 +1012,10 @@ async function main() {
     nameOf: p => p.fullName || p.name,
     leagueCodes: new Set(teams.map(t => t.code)),
   });
-  if (loans.available) {
+  if (loans.stale) {
+    console.log(`  ✗ 租借紀錄過期,整批不掛:${loans.staleReason}`);
+    console.log('     修法:npm run loans:verify(核對結果要看過再發布)');
+  } else if (loans.available) {
     console.log(`  租借紀錄:掛上 ${loanHit.attached} 筆(核對過 ${loans.records.length} 筆・退回 ${(loans.rejected ?? []).length} 筆)`);
     /* 配不到球員的要印出來 —— 多半是名字寫法不同,那是可以修的。
        靜靜吞掉的話,資料明明在檔案裡卻永遠不會出現在畫面上,而且沒有人會發現。 */

@@ -243,6 +243,12 @@ jobs:
         run: npm run laliga:backtest
         continue-on-error: true
 
+      # 人工交付的租借紀錄要先過核對器才會被 build 採用。
+      # 核對是離線的(只讀倉庫裡的逐季聯賽成員資格、FPL 逐季分鐘與西甲逐季球員),
+      # 不呼叫任何外部 API;退回了哪幾筆會印在 log 裡,要看那一段。
+      - name: 核對人工交付的租借紀錄
+        run: npm run loans:verify
+
       # 先建西甲，讓接下來的 npm test 驗證剛抓回來的兩季資料，而不是版控裡的舊輸出。
       - name: 建立西甲資料集
         run: npm run laliga:build

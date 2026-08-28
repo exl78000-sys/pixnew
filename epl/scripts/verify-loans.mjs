@@ -22,6 +22,7 @@
    發布的只有前兩級,而且等級要跟著資料走到畫面上(鐵則四)。 */
 
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -305,9 +306,19 @@ function main() {
   }
 
   const published = out.filter(r => r.verdict === 'confirmed' || r.verdict === 'consistent');
+  /* 記下這一份是從哪一版收件匣核對出來的。
+
+     沒有它的話會出現這個組合:交付方更新了收件匣,有人只跑 build ——
+     build 讀的是舊的核對結果,畫面上照樣有資料,而且**不會有任何地方報錯**。
+     這正是本專案最在意的那種靜靜出錯,所以雜湊要存,消費端要比對。 */
+  const inboxSha = createHash('sha256')
+    .update(readFileSync(join(ROOT, 'data', 'manual', 'loans.json')))
+    .digest('hex');
+
   writeFileSync(join(ROOT, 'data', 'loans-verified.json'), `${JSON.stringify({
     _note: '產物:由 npm run loans:verify 從 data/manual/loans.json 核對後產生。不要手改,重跑就有。build 只讀這一份。',
     verifiedAt: new Date().toISOString(),
+    inboxSha,
     sources: inbox.sources,
     excluded: inbox._excluded,
     tally,

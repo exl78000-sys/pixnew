@@ -8,6 +8,7 @@
    直接讀它等於把核對整個繞過去。 */
 
 import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
 const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -15,10 +16,29 @@ const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '')
 
 export function loadVerifiedLoans(root) {
   const p = join(root, 'data', 'loans-verified.json');
-  if (!existsSync(p)) return { available: false, records: [], tally: {}, verifiedAt: null };
+  if (!existsSync(p)) return { available: false, stale: false, records: [], tally: {}, verifiedAt: null };
   const j = JSON.parse(readFileSync(p, 'utf8'));
+
+  /* 收件匣改過、核對卻沒重跑 —— 這種狀態下 build 會拿舊的核對結果當真,
+     畫面上有資料、沒有任何地方報錯。所以這裡主動比對雜湊,
+     對不上就回 stale,由呼叫端決定怎麼講(現在是整批不掛,寧可少也不要錯)。 */
+  const inbox = join(root, 'data', 'manual', 'loans.json');
+  let stale = false, staleReason = null;
+  if (existsSync(inbox)) {
+    const now = createHash('sha256').update(readFileSync(inbox)).digest('hex');
+    if (!j.inboxSha) {
+      stale = true;
+      staleReason = '核對結果沒有記錄收件匣雜湊(舊版產物),無法確認是不是最新的';
+    } else if (j.inboxSha !== now) {
+      stale = true;
+      staleReason = '收件匣 data/manual/loans.json 改過,但核對沒有重跑';
+    }
+  }
+
   return {
     available: true,
+    stale,
+    staleReason,
     records: j.records ?? [],
     rejected: j.rejected ?? [],
     tally: j.tally ?? {},
@@ -56,6 +76,10 @@ function matchOne(candidates, name, nameOf) {
    要印出來讓人看到,不能靜靜吞掉(配不到通常代表名字寫法不同,是可以修的)。 */
 export function attachLoans(players, loans, { nameOf, codesOf, leagueCodes }) {
   if (!loans.available) return { attached: 0, unmatched: [] };
+  /* 核對結果比收件匣舊 —— 整批不掛。
+     掛上去的話畫面會有資料,但那是拿舊核對結果背書新的交付內容,
+     等於把核對繞過去。寧可少也不要錯。 */
+  if (loans.stale) return { attached: 0, unmatched: [], stale: true };
   const inLeague = code => code && leagueCodes.has(code);
   const unmatched = [];
   let attached = 0;
