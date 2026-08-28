@@ -1028,6 +1028,7 @@ async function checkBars() {
 async function checkDataGap() {
   globalThis.document ??= { addEventListener() {} };
   const V = await import('../web/assets/js/core.js');
+  const W = await import('./live-window.mjs');
   const full = { formation: { a: 1 }, shapes: { a: 1 }, players: [1], leaders: { a: 1 }, news: [1], live: { a: 1 }, form: { a: 1 } };
   const g = (lg, page, names, data = full, absent = []) => V.dataGap(lg, page, names, data, absent);
 
@@ -1222,6 +1223,76 @@ async function checkDataGap() {
     ['overview.html 存在且載入 page-overview.js', (() => {
       const html = readFileSync(join(ROOT, 'web', 'overview.html'), 'utf8');
       return /page-overview\.js/.test(html);
+    })()],
+
+    /* ── 比賽日進場判斷(2026-08-29 修)──
+       **原本會讓整個高頻更新失效。** live-window 只要讀得到 data/raw/live.json
+       就信它,而那是**上一次抓的快照** —— 進場前根本還沒抓。
+       實測:Crystal Palace vs Man City 開賽 10 分鐘,而快照是 199 分鐘前的第 1 輪
+       (全部 finished),於是回報「不進場,下一場還有 979 分鐘」,手動觸發也進不去。 */
+    ['即時資料過期時,改用開賽時間判斷「正在踢」', (() => {
+      const now = Date.parse('2026-08-28T19:10:00Z');
+      const r = W.decideWindow({
+        now,
+        fixtures: [{ home: 'CRY', away: 'MCI', kickoff: '2026-08-28T19:00:00Z', played: false },
+          { home: 'LIV', away: 'NFO', kickoff: '2026-08-29T11:30:00Z', played: false }],
+        // 199 分鐘前的快照,內容是上一輪、全部踢完
+        live: { demo: false, fetchedAt: '2026-08-28T15:52:00Z', fixtures: [{ started: true, finished: true }] },
+      });
+      return r.active === true && r.liveCount === 1 && /開賽時間/.test(r.reason);
+    })()],
+    ['即時資料夠新時就信它(輪詢迴圈裡剛抓完的那一份)', (() => {
+      const now = Date.parse('2026-08-28T19:10:00Z');
+      const r = W.decideWindow({
+        now,
+        fixtures: [{ home: 'CRY', away: 'MCI', kickoff: '2026-08-28T19:00:00Z', played: false }],
+        live: { demo: false, fetchedAt: '2026-08-28T19:09:00Z', fixtures: [{ started: true, finished: false }] },
+      });
+      return r.active === true && /即時資料源/.test(r.reason);
+    })()],
+    /* 迴圈的退出條件靠這個:最後一場剛踢完,feed 已經說 finished,
+       但依開賽時間算還在 TAIL_MIN 內 —— 這時要信 feed 才不會空轉。 */
+    ['最後一場剛結束時要收工,不要靠開賽時間空轉', (() => {
+      const now = Date.parse('2026-08-28T20:50:00Z');
+      const r = W.decideWindow({
+        now,
+        fixtures: [{ home: 'CRY', away: 'MCI', kickoff: '2026-08-28T19:00:00Z', played: false }],
+        live: { demo: false, fetchedAt: '2026-08-28T20:49:00Z', fixtures: [{ started: true, finished: true }] },
+      });
+      return r.active === false;
+    })()],
+    ['沒有 fetchedAt 的即時資料當成過期', (() => {
+      const now = Date.parse('2026-08-28T19:10:00Z');
+      const r = W.decideWindow({
+        now,
+        fixtures: [{ home: 'CRY', away: 'MCI', kickoff: '2026-08-28T19:00:00Z', played: false }],
+        live: { demo: false, fixtures: [{ started: true, finished: true }] },
+      });
+      return r.active === true && /開賽時間/.test(r.reason);
+    })()],
+    ['完全沒有即時資料時也判斷得出正在踢', (() => {
+      const now = Date.parse('2026-08-28T19:10:00Z');
+      const r = W.decideWindow({ now, live: null,
+        fixtures: [{ home: 'CRY', away: 'MCI', kickoff: '2026-08-28T19:00:00Z', played: false }] });
+      return r.active === true;
+    })()],
+    ['已完賽的場次不算「正在踢」(補賽改期才不會空轉)', (() => {
+      const now = Date.parse('2026-08-28T19:10:00Z');
+      const r = W.decideWindow({ now, live: null,
+        fixtures: [{ home: 'CRY', away: 'MCI', kickoff: '2026-08-28T19:00:00Z', played: true }] });
+      return r.active === false;
+    })()],
+    ['下一場還很久就不進場', (() => {
+      const now = Date.parse('2026-08-28T19:10:00Z');
+      const r = W.decideWindow({ now, live: null,
+        fixtures: [{ home: 'LIV', away: 'NFO', kickoff: '2026-08-29T11:30:00Z', played: false }] });
+      return r.active === false && /下一場還有/.test(r.reason);
+    })()],
+    ['快開賽了就先睡到賽前 75 分再進場', (() => {
+      const now = Date.parse('2026-08-28T19:10:00Z');
+      const r = W.decideWindow({ now, live: null,
+        fixtures: [{ home: 'LIV', away: 'NFO', kickoff: '2026-08-28T21:00:00Z', played: false }] });
+      return r.active === true && r.sleepSec === Math.round((110 - 75) * 60);
     })()],
 
     ['缺口訊息不會把資料集的內部鍵給讀者看',

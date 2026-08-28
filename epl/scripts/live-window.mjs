@@ -25,28 +25,37 @@ const LEAD_MIN = 75;
 const TAIL_MIN = 140;
 // 比這個還久才開賽就先不進場,交給下一次 cron
 const MAX_WAIT_MIN = 180;
+/* 即時資料要多新才能拿來判斷「現在有沒有比賽在踢」。
 
-export function liveWindow(now = Date.now()) {
-  const fx = join(ROOT, 'web', 'data', 'fixtures.json');
-  if (!existsSync(fx)) return { active: false, reason: '找不到賽程資料', sleepSec: 0 };
+   **這是 2026-08-29 修的一個會讓整個功能失效的 bug。** 原本只要
+   data/raw/live.json 讀得到就信它,而那個檔是**上一次抓的快照** ——
+   進場前根本還沒抓,它可能是好幾小時前的。實測:Crystal Palace vs Man City
+   開賽 10 分鐘,而 live.json 是 199 分鐘前的第 1 輪(全部 finished),
+   於是 liveNow=0、fromFeed=true,依開賽時間判斷那條被整個跳過,
+   回報「不進場,下一場還有 979 分鐘」—— **手動觸發也進不去**。
 
-  const fixtures = JSON.parse(readFileSync(fx, 'utf8'));
+   迴圈裡信 feed 是對的(那裡剛抓完,而且它有 started/finished 兩個明確旗標,
+   比 fixtures.json 的 played 快一拍)。差別只在「新不新」,所以用時間分。
+   輪詢間隔是 2 分鐘,10 分鐘的門檻夠寬鬆;抓取連續失敗超過這個時間,
+   就退回用開賽時間推 —— 那會讓迴圈撐到 TAIL_MIN,比中途退場好。 */
+const FEED_FRESH_MIN = 10;
+
+/* 純判斷,不碰檔案 —— 測試看不到 DOM 也讀不到 workflow,
+   這一段的邏輯要能被 npm test 直接餵資料驗。 */
+export function decideWindow({ now, fixtures, live = null }) {
   const upcoming = [];
   let liveNow = 0;
-
-  /* 「現在有沒有比賽在踢」優先看剛抓回來的 live.json —— 它有 started/finished
-     兩個明確的旗標。fixtures.json 的 played 要等 build 跑完才會變,
-     在輪詢迴圈裡用它會慢一拍:比賽踢完了迴圈還在空轉。 */
-  const rawLive = join(ROOT, 'data', 'raw', 'live.json');
   let fromFeed = false;
-  if (existsSync(rawLive)) {
-    try {
-      const live = JSON.parse(readFileSync(rawLive, 'utf8'));
-      if (!live.demo && Array.isArray(live.fixtures)) {
-        liveNow = live.fixtures.filter(f => f.started && !f.finished).length;
-        fromFeed = true;
-      }
-    } catch { /* 檔壞了就退回用開賽時間推 */ }
+
+  /* 「現在有沒有比賽在踢」優先看即時資料 —— 它有 started/finished 兩個明確的旗標。
+     fixtures.json 的 played 要等 build 跑完才會變,在輪詢迴圈裡用它會慢一拍。
+     但**只有在這份資料夠新的時候才算數**(見 FEED_FRESH_MIN 的說明)。 */
+  if (live && !live.demo && Array.isArray(live.fixtures)) {
+    const age = (now - Date.parse(live.fetchedAt ?? '')) / 60000;
+    if (Number.isFinite(age) && age >= 0 && age <= FEED_FRESH_MIN) {
+      liveNow = live.fixtures.filter(f => f.started && !f.finished).length;
+      fromFeed = true;
+    }
   }
 
   for (const f of fixtures) {
@@ -54,7 +63,7 @@ export function liveWindow(now = Date.now()) {
     const ko = Date.parse(f.kickoff);
     if (!Number.isFinite(ko)) continue;
     const minsSince = (now - ko) / 60000;
-    // 沒有即時資料源時,只能用開賽時間推;已完賽的不算,補賽改期才不會空轉
+    // 沒有夠新的即時資料時,只能用開賽時間推;已完賽的不算,補賽改期才不會空轉
     if (!fromFeed && minsSince >= 0 && minsSince <= TAIL_MIN && !f.played) liveNow++;
     else if (minsSince < 0) upcoming.push({ ko, key: `${f.home}|${f.away}`, mins: -minsSince });
   }
@@ -87,10 +96,29 @@ export function liveWindow(now = Date.now()) {
   };
 }
 
-const out = liveWindow();
-console.log(JSON.stringify(out));
+export function liveWindow(now = Date.now()) {
+  const fx = join(ROOT, 'web', 'data', 'fixtures.json');
+  if (!existsSync(fx)) return { active: false, reason: '找不到賽程資料', sleepSec: 0 };
+  const fixtures = JSON.parse(readFileSync(fx, 'utf8'));
 
-if (process.argv.includes('--github') && process.env.GITHUB_OUTPUT) {
-  appendFileSync(process.env.GITHUB_OUTPUT,
-    `active=${out.active}\nsleep=${out.sleepSec}\nreason=${out.reason}\n`);
+  let live = null;
+  const rawLive = join(ROOT, 'data', 'raw', 'live.json');
+  if (existsSync(rawLive)) {
+    try { live = JSON.parse(readFileSync(rawLive, 'utf8')); } catch { /* 檔壞了就退回用開賽時間推 */ }
+  }
+  return decideWindow({ now, fixtures, live });
+}
+
+/* 只有被直接執行時才印 —— npm test 要 import decideWindow 來驗,
+   沒有這道守衛的話 import 就會在測試輸出裡插一行 JSON。
+   **不要用 `import.meta.url === \`file://${process.argv[1]}\``**:
+   本專案路徑含中文,import.meta.url 會被百分號編碼,永遠不相等。 */
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  const out = liveWindow();
+  console.log(JSON.stringify(out));
+
+  if (process.argv.includes('--github') && process.env.GITHUB_OUTPUT) {
+    appendFileSync(process.env.GITHUB_OUTPUT,
+      `active=${out.active}\nsleep=${out.sleepSec}\nreason=${out.reason}\n`);
+  }
 }
