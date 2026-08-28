@@ -167,6 +167,13 @@ jobs:
       # 人工交付的頭貼「指定網址」在這一步生效。單線、每次上限 5 人，
       # 而且只挑「這個網址規則還沒試過」的人 —— 已經在官方 CDN 試過並失敗的
       # 不會重來，所以實際請求數通常是個位數。
+      # 頭貼要縮圖並轉成 JPEG,本專案零 npm 依賴所以借 Python 的 Pillow。
+      # runner 預設沒有裝 —— 少了這一步,補抓頭貼會在抓第一個人時就掛掉,
+      # 而且因為 continue-on-error,那個錯誤從 2026-08-28 第一次跑起就一直沒被發現。
+      - name: 安裝 Pillow(頭貼縮圖與轉檔用)
+        run: python3 -m pip install --quiet --disable-pip-version-check pillow
+        continue-on-error: true
+
       - name: 補抓指定網址的球員頭貼
         run: npm run photos -- --limit=5
         continue-on-error: true
