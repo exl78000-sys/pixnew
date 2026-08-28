@@ -1,0 +1,155 @@
+{
+  "retrievedAt": "2026-08-28T01:44:46.983Z",
+  "question": "英格蘭盃賽(足總盃 / 聯賽盃)的免費資料源,哪一季拿得到、拿得到什麼",
+  "openfootball": {
+    "2022-23/facup": {
+      "status": 200,
+      "available": true,
+      "bytes": 11281,
+      "title": "English FA Cup 2022/23",
+      "headerMatches": 144,
+      "parsedMatches": 144,
+      "rounds": 8,
+      "roundNames": [
+        "Round 1",
+        "Round 2",
+        "Round 3",
+        "Round 4",
+        "Round of 16",
+        "Quarterfinals",
+        "Semifinals",
+        "Final"
+      ],
+      "aet": 6,
+      "shootouts": 3
+    },
+    "2022-23/eflcup": {
+      "status": 200,
+      "available": true,
+      "bytes": 7443,
+      "title": "English EFL Cup 2022/23",
+      "headerMatches": 93,
+      "parsedMatches": 93,
+      "rounds": 7,
+      "roundNames": [
+        "Round 1",
+        "Round 2",
+        "Round 3",
+        "Round of 16",
+        "Quarterfinals",
+        "Semifinals",
+        "Final"
+      ],
+      "aet": 0,
+      "shootouts": 18
+    },
+    "2023-24/facup": {
+      "status": 200,
+      "available": true,
+      "bytes": 11771,
+      "title": "English FA Cup 2023/24",
+      "headerMatches": 149,
+      "parsedMatches": 149,
+      "rounds": 8,
+      "roundNames": [
+        "Round 1",
+        "Round 2",
+        "Round 3",
+        "Round 4",
+        "Round of 16",
+        "Quarterfinals",
+        "Semifinals",
+        "Final"
+      ],
+      "aet": 11,
+      "shootouts": 5
+    },
+    "2023-24/eflcup": {
+      "status": 200,
+      "available": true,
+      "bytes": 7486,
+      "title": "English EFL Cup 2023/24",
+      "headerMatches": 93,
+      "parsedMatches": 93,
+      "rounds": 7,
+      "roundNames": [
+        "Round 1",
+        "Round 2",
+        "Round 3",
+        "Round of 16",
+        "Quarterfinals",
+        "Semifinals",
+        "Final"
+      ],
+      "aet": 1,
+      "shootouts": 24
+    },
+    "2024-25/facup": {
+      "status": 200,
+      "available": true,
+      "bytes": 10129,
+      "title": "English FA Cup 2024/25",
+      "headerMatches": 123,
+      "parsedMatches": 123,
+      "rounds": 8,
+      "roundNames": [
+        "Round 1",
+        "Round 2",
+        "Round 3",
+        "Round 4",
+        "Round of 16",
+        "Quarterfinals",
+        "Semifinals",
+        "Final"
+      ],
+      "aet": 33,
+      "shootouts": 18
+    },
+    "2024-25/eflcup": {
+      "status": 200,
+      "available": true,
+      "bytes": 7424,
+      "title": "English EFL Cup 2024/25",
+      "headerMatches": 93,
+      "parsedMatches": 93,
+      "rounds": 7,
+      "roundNames": [
+        "Round 1",
+        "Round 2",
+        "Round 3",
+        "Round of 16",
+        "Quarterfinals",
+        "Semifinals",
+        "Final"
+      ],
+      "aet": 0,
+      "shootouts": 15
+    },
+    "2025-26/facup": {
+      "status": 404,
+      "error": null,
+      "available": false
+    },
+    "2025-26/eflcup": {
+      "status": 404,
+      "error": null,
+      "available": false
+    },
+    "2026-27/facup": {
+      "status": 404,
+      "error": null,
+      "available": false
+    },
+    "2026-27/eflcup": {
+      "status": 404,
+      "error": null,
+      "available": false
+    }
+  },
+  "footballData": {
+    "skipped": "no-token"
+  },
+  "sportmonks": {
+    "skipped": "no-token"
+  }
+}

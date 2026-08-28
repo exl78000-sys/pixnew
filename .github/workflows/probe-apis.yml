@@ -45,6 +45,18 @@ jobs:
         working-directory: epl
         run: npm run probe:events
 
+      # 英格蘭盃賽:docs 上「英國盃賽不在免費方案裡」那句是對 football-data.org 說的,
+      # 但沒有人去看 openfootball 自己的 England 倉庫(那裡有 facup.txt / eflcup.txt)。
+      # 這一步把兩邊都實際打一次,順便讓 football-data.org 的賽事清單有紀錄。
+      - name: 探測英格蘭盃賽資料源
+        working-directory: epl
+        run: npm run probe:encups
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+
       # 西甲球員資料:動手寫抓取管線之前先確定拿得到什麼。硬上限 5 個請求。
       - name: 探測西甲球員端點
         working-directory: epl
@@ -71,3 +83,24 @@ jobs:
           SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
           SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
           SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+
+      # 方案授權了哪些賽事(名稱,不只個數)+ 用名稱搜尋兩個英格蘭盃賽。
+      # 以前只記「5 個聯賽」,那個數字回答不了「盃賽在不在方案裡」。
+      - name: 探測 SportMonks 方案授權的賽事
+        working-directory: epl
+        run: npm run sportmonks:capabilities
+        env:
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+
+      # log 只看得到尾端,所以這裡只印真正要判讀的那一段。
+      # 上一輪用 `head -200` 把整份 JSON 倒出來,結果最重要的 sportmonks
+      # 那一節正好被截掉 —— 印太多跟沒印一樣。
+      - name: 印出探測結果
+        working-directory: epl
+        run: |
+          echo '── football-data.org 授權的賽事 ──'
+          node -e "const j=require('./data/raw/probes/en-cups.json');const f=j.footballData??{};console.log('HTTP',f.status,'・',f.count,'個・英格蘭盃賽:',JSON.stringify(f.englishCups??[]))" || echo '(無)'
+          echo '── SportMonks 盃賽結構(這一段是關鍵)──'
+          node -e "console.log(JSON.stringify(require('./data/raw/probes/en-cups.json').sportmonks,null,1))" || echo '(無)'
