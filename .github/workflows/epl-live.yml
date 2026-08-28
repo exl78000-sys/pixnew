@@ -146,7 +146,6 @@ jobs:
       - name: 合併人工整理外電
         working-directory: epl
         run: npm run news:merge
-        continue-on-error: true
 
       - name: 抓歐冠賽果
         working-directory: epl
@@ -248,7 +247,6 @@ jobs:
       # 要等下一次執行才會反映在頁面上 —— 畫面比資料晚一輪,而且沒人看得出來。
       - name: 西甲走查回測(模型準度)
         run: npm run laliga:backtest
-        continue-on-error: true
 
       # 人工交付的租借紀錄要先過核對器才會被 build 採用。
       # 核對是離線的(只讀倉庫裡的逐季聯賽成員資格、FPL 逐季分鐘與西甲逐季球員),
@@ -265,7 +263,6 @@ jobs:
       # 跑它是為了讓模型頁上「測過但沒進模型」那一段的數字永遠是現跑的,而不是寫死的。
       - name: 特徵驗證(調參賽季挑係數、驗收賽季驗收)
         run: npm run tune:form
-        continue-on-error: true
 
       # 進球情境特徵。兩個聯賽都跑 —— **沒通過也要跑**,
       # 模型頁上「測過但沒進模型」那一段的數字必須是現跑的,不是寫死的。
@@ -273,7 +270,6 @@ jobs:
         run: |
           npm run tune:situations
           npm run tune:situations -- --league=es1
-        continue-on-error: true
 
       - name: 建立資料集
         run: npm run build
@@ -283,23 +279,13 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
-      # **必須在 build 之後。** 資產戳是 build 最後一步(stamp-assets)寫的,
-      # 而 npm test 有一節在驗「meta 記的戳跟實際檔案一致」。
-      # 原本這一步夾在 laliga:build 與 build 中間 —— 那個時間點 es1 的 meta 剛被
-      # laliga:build 重寫、戳還沒補回來,所以那兩條**每次 CI 都假紅**,
-      # 只是 continue-on-error 讓沒有人去看。2026-08-28 修正。
-      - name: 走查回測與自我檢查(要在 build 之後,資產戳才是最終狀態)
-        run: npm test
-        continue-on-error: true
-
+      # 這兩步刻意排在 npm test **之前**:測試是部署的閘門,擋下來的話後面都不會跑,
+      # 而傷停快照記的是「今天誰不能上」—— 漏掉一天明天補不回來(60 天累積會斷)。
+      # 資料先落地,測試再決定要不要部署。
       # 存一份「今天誰不能上」。上游(FPL)只給現在、不給歷史,
       # 自己每天存才能累積出逐輪快照 —— 那是將來把傷停拿去走查回測的唯一辦法。
       - name: 傷停快照(累積成可回測的歷史)
         run: npm run snapshot
-        continue-on-error: true
-
-      - name: 打包單檔版
-        run: npm run bundle
 
       # 把抓到的即時資料寫回 repo,這樣在別的環境(拿不到官方 API 的地方)
       # 只要 git pull 就能用最新比分重新建置。
@@ -343,6 +329,18 @@ jobs:
           fi
 
       # Pages 還沒啟用時,deploy 會失敗;先問一下,沒開就跳過,不讓整個流程變紅
+
+      # **必須在 build 之後。** 資產戳是 build 最後一步(stamp-assets)寫的,
+      # 而 npm test 有一節在驗「meta 記的戳跟實際檔案一致」。
+      # 原本這一步夾在 laliga:build 與 build 中間 —— 那個時間點 es1 的 meta 剛被
+      # laliga:build 重寫、戳還沒補回來,所以那兩條**每次 CI 都假紅**,
+      # 只是 continue-on-error 讓沒有人去看。2026-08-28 修正。
+      - name: 走查回測與自我檢查(要在 build 之後,資產戳才是最終狀態)
+        run: npm test
+
+      - name: 打包單檔版
+        run: npm run bundle
+
       - name: 檢查 GitHub Pages 是否已啟用
         id: pages_check
         run: |

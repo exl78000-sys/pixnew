@@ -187,6 +187,19 @@ build → laliga:build,跑完 `npm run local:sync` 再跑 `npm test` 就會紅�
 **不要改成 rm 整個 vault**:那會把手寫筆記不可逆地刪掉,重跑救不回來。
 另有一道斷言:產生器想寫進 `我的筆記/` 就中止。詳見 `docs/接手資訊.md` 的 Obsidian vault 一節。
 
+**`continue-on-error` 只給外部來源用。**
+分界線是「失敗代表什麼」:某個 API 不通不該擋住整條流程,所以抓取類的步驟容忍失敗;
+但**本站自己算的東西失敗就是有 bug**,要擋下來。目前擋的六個:
+`news:merge`、`laliga:backtest`、`tune:form`、`tune:situations`、`snapshot`、`npm test`
+(六個都是零 fetch 的本地計算或守門)。
+
+這條是 2026-08-28 補的,因為實測到兩件事被藏了很久:補抓頭貼從第一次 CI 就在失敗
+(runner 沒有 Pillow)、資產戳那兩條每次都假紅 —— 三次執行都沒有人發現,
+因為 Annotations 只寫「Process completed with exit code 1」,不說是哪一步。
+
+**`npm test` 擋下來會連帶跳過後面的步驟**,所以傷停快照與資料回寫刻意排在它之前 ——
+快照記的是「今天誰不能上」,漏掉一天明天補不回來(60 天累積會斷)。
+
 **改前端一定要真的開來看。** 測試檢查不到版面 —— 用 Playwright 截圖
 (`/opt/pw-browsers/chromium` 已裝好),分頁模式與單檔模式都要看。
 分頁模式(`npm run serve`,port 5173)才是 GitHub Pages 實際部署的那個。
