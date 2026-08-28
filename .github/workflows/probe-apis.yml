@@ -114,4 +114,9 @@ jobs:
           echo '── SportMonks 盃賽結構 ──'
           node -e "console.log(JSON.stringify(require('./data/raw/probes/en-cups.json').sportmonks,null,1))" || echo '(無)'
           echo '── 歐冠(這一輪的重點)──'
-          node -e "console.log(JSON.stringify(require('./data/raw/probes/ucl.json'),null,1))" || echo '(無)'
+          # 不要整份倒出來:competition.seasons 有四十幾季,會把結論擠出 log 尾端
+          node -e "const j=require('./data/raw/probes/ucl.json');
+            console.log('competition HTTP', j.competition.status, '|', j.competition.name,
+              '| 本季', JSON.stringify(j.competition.currentSeason),
+              '| 回報賽季數', j.competition.seasons.length);
+            for (const [k,v] of Object.entries(j.seasons)) console.log(JSON.stringify({season:k, ...v}));" || echo '(無)'
