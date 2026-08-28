@@ -28,7 +28,9 @@ const OUT = argOf('out') ?? join(ROOT, 'vault');
 
 const read = p => JSON.parse(readFileSync(p, 'utf8'));
 const arr = x => (Array.isArray(x) ? x : Object.values(x ?? {}));
-const dataDir = lg => (lg === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'web', 'data', 'leagues', 'es1'));
+/* 英超的資料在 web/data 根目錄,其餘聯賽各自一個子目錄。
+   原本非 pl 一律寫死成 'es1' —— 加第三個聯賽時它會安靜地把英冠資料讀成西甲的。 */
+const dataDir = lg => (lg === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'web', 'data', 'leagues', lg));
 const load = (lg, name) => {
   const p = join(dataDir(lg), `${name}.json`);
   return existsSync(p) ? read(p) : null;
@@ -37,6 +39,9 @@ const load = (lg, name) => {
 const LEAGUES = [
   { key: 'pl', zh: '英超', dir: '英超' },
   { key: 'es1', zh: '西甲', dir: '西甲' },
+  /* 英冠沒有球員與教練(來源就沒有),球隊與比賽照樣做得出來。
+     產生器對缺檔本來就是 load() 回 null → 該區塊不寫,所以不需要特判。 */
+  { key: 'en2', zh: '英冠', dir: '英冠' },
 ];
 
 /* ── Markdown / YAML 小工具 ──────────────────────────────────
@@ -567,9 +572,11 @@ function renderCoach(c, ctx) {
    所以名冊取聯集:有完整賽季資料的照常,只有身分的也給一則筆記。 */
 function clubDirectory(lg, teams) {
   const dir = new Map(teams.map(t => [t.code, { ...t, rich: true }]));
-  const extra = lg.key === 'pl'
-    ? arr(load('pl', 'clubs'))
-    : arr(read(join(ROOT, 'data', 'manual', 'teams-la-liga.json')).teams);
+  /* 每個聯賽讀**自己的** clubs.json(三個 build 都會寫,內容就是該聯賽的名冊)。
+     原本非 pl 一律讀死 teams-la-liga.json —— 加英冠時它把西甲那 29 隊
+     整批塞進英冠的名冊,vault 裡就出現了「英冠/球隊/FC Barcelona.md」。
+     跟 dataDir 那一行是同一類錯:「不是英超」不等於「就是西甲」。 */
+  const extra = arr(load(lg.key, 'clubs'));
   for (const c of extra) {
     if (!c?.code || dir.has(c.code)) continue;
     dir.set(c.code, { ...c, rich: false });
@@ -596,9 +603,31 @@ assignFilenames(allPlayers.flatMap(x => x.players));
 
 // 球隊筆記的檔名要先算好,別的地方(歐冠、盃賽)才連得過去。
 const teamFileByCode = new Map();   // lgKey:code → 檔名
+{
+  /* 同一支球隊會同時出現在兩個聯賽的名冊裡 —— 升降級的球隊本來就該兩邊都在
+     (Burnley 有英超的歷史,本季在英冠)。但 **Obsidian 的 [[連結]] 是拿檔名
+     跨資料夾解析的**,兩個同名檔案會讓連結指到其中一個,而且不會有任何地方報錯。
+     所以第一個聯賽用原名,之後的加聯賽後綴。順序照 LEAGUES ——
+     英超在最前面,所以既有的英超筆記檔名不會被改掉(改了會斷掉手寫筆記裡的連結)。 */
+  const claimed = new Map();          // 檔名 → 先用掉它的聯賽 key
+  for (const { lg, teams } of allPlayers) {
+    for (const [code, c] of clubDirectory(lg, teams)) {
+      const base = sanitize(c.en || c.of || code);
+      const taken = claimed.get(base);
+      teamFileByCode.set(lg.key + ':' + code, taken && taken !== lg.key ? base + '(' + lg.zh + ')' : base);
+      if (!taken) claimed.set(base, lg.key);
+    }
+  }
+}
+/* 一支球隊在哪幾個聯賽有筆記 —— 給筆記裡的「同一支球隊的其他聯賽」那一行用。
+   不放這一行的話,讀者站在英超的 Burnley 筆記上,不會知道還有一則英冠的。 */
+const teamAlsoIn = new Map();         // lgKey:code → [{ zh, file }]
 for (const { lg, teams } of allPlayers) {
-  for (const [code, c] of clubDirectory(lg, teams)) {
-    teamFileByCode.set(lg.key + ':' + code, sanitize(c.en || c.of || code));
+  for (const [code] of clubDirectory(lg, teams)) {
+    const others = allPlayers
+      .filter(x => x.lg.key !== lg.key && teamFileByCode.has(x.lg.key + ':' + code))
+      .map(x => ({ zh: x.lg.zh, file: teamFileByCode.get(x.lg.key + ':' + code) }));
+    if (others.length) teamAlsoIn.set(lg.key + ':' + code, others);
   }
 }
 
@@ -686,7 +715,14 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   addNote(D + '/' + lg.zh + '.md', leagueNote.body, leagueNote.links);
   for (const t of clubs.values()) {
     const r = renderTeam(t, ctx);
-    addNote(D + '/球隊/' + sanitize(t.en || t.of || t.code) + '.md', r.body, r.links);
+    const also = teamAlsoIn.get(lg.key + ':' + t.code) ?? [];
+    const body = also.length
+      ? r.body + '\n> 同一支球隊在本站其他聯賽也有筆記(升降級):'
+        + also.map(o => '[[' + o.file + '|' + o.zh + ']]').join('、') + '\n'
+      : r.body;
+    const links = also.length ? [...r.links, ...also.map(o => o.file)] : r.links;
+    // 檔名走 teamFileByCode —— 撞名時它已經加了聯賽後綴,這裡不可以自己再算一次
+    addNote(D + '/球隊/' + teamFileByCode.get(lg.key + ':' + t.code) + '.md', body, links);
   }
   for (const p of players) {
     const r = renderPlayer(p, ctx);

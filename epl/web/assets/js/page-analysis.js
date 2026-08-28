@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0965f58a';
+import * as C from './core.js?v=77b5da80';
 
 const app = document.getElementById('app');
 
@@ -103,9 +103,14 @@ try {
         })() : state.phase === 'upcoming'
           ? `開賽倒數 ${C.countdown(f.kickoff)}`
           : `<span class="pill warn tiny">${C.elapsedText(state.elapsed)}</span>`}</span>
+        ${/* 實時戰況這一頁不是每個聯賽都有(英冠沒有接即時來源)。
+              沒有的聯賽照樣給連結的話,讀者點過去只會撞上缺口頁 ——
+              那不是誠實,那是把人送去死路。用 C.closedPage 判斷,不寫死聯賽代碼。 */''}
         ${f.played
           ? `<a class="pill info tiny" href="#panel-post" data-view="post">看賽後分析 ↓</a>`
-          : `<a class="pill info tiny" href="${C.link('live')}">看實時戰況 →</a>`}
+          : C.closedPage(C.league(), 'live')
+            ? ''
+            : `<a class="pill info tiny" href="${C.link('live')}">看實時戰況 →</a>`}
       </div>
     </div>
 
@@ -997,7 +1002,7 @@ try {
   }
 
   function h2hHtml(f, rec) {
-    if (!rec) return `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在${meta.edition === 'basic' ? '西甲' : '英超'}交手過(多半是剛升上來的球隊)。</div>`;
+    if (!rec) return `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在${C.LEAGUES[C.league()]?.zh ?? '本聯賽'}交手過(多半是剛升上來的球隊)。</div>`;
     const homeIsA = [f.home, f.away].sort()[0] === f.home;
     return `<div class="row small" style="justify-content:space-between">
         <span>${C.teamLink(f.home)} <b>${homeIsA ? rec.aWin : rec.bWin}</b> 勝</span>

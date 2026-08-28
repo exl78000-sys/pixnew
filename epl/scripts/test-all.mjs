@@ -32,6 +32,9 @@ const STEPS = [
   ['scripts/test.mjs', []],
   ['scripts/backtest-laliga.mjs', []],
   ['scripts/test-laliga.mjs', []],
+  /* 英冠同理:backtest-championship 產生的數字是 test-championship 要驗的,順序不能反。 */
+  ['scripts/backtest-championship.mjs', []],
+  ['scripts/test-championship.mjs', []],
   ['scripts/check-docs.mjs', []],
   ['scripts/build-obsidian.mjs', [`--out=${VAULT_TMP}`]],
 ];

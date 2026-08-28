@@ -50,6 +50,13 @@ jobs:
         run: npm run laliga:fetch
         continue-on-error: true
 
+      # 英冠:openfootball 的 en.2 與 football-data.co.uk 的 E1,四季共八個靜態檔。
+      # 兩份是**獨立來源**,建站時逐場核對 —— 英冠沒有 FPL 也沒有 Understat,
+      # 能互相驗的就只有這兩份(鐵則五)。
+      - name: 抓英冠四季賽程、賽果與逐場統計
+        run: npm run en2:fetch
+        continue-on-error: true
+
       # 西甲球員整季數據(Understat)。一季一個請求,兩季共兩個 ——
       # API-Football 的 Free 方案不含這兩季,這是實測後改走的路。
       # 上季已完結,有檔就跳過;只有本季會每次重抓。
@@ -259,6 +266,18 @@ jobs:
       - name: 建立西甲資料集
         run: npm run laliga:build
 
+      # 英冠回測同樣要在 en2:build **之前**:模型頁的準度數字是 build 讀
+      # data/backtest-championship.json 帶進 meta 的。零 fetch 的本地計算,
+      # 所以失敗不容忍 —— 失敗代表真的有 bug。
+      - name: 英冠走查回測(模型準度)
+        run: npm run en2:backtest
+
+      # 英冠也要排在英超 build 之前:stamp-assets 掛在 build 最後,
+      # 會把資產戳寫進**每一個聯賽**的 meta.json;反過來跑的話戳會被重寫掉,
+      # npm test 的「meta 記的戳跟實際檔案一致」就會紅。
+      - name: 建立英冠資料集
+        run: npm run en2:build
+
       # 近況/交手特徵的調參與驗收。三個賽季都已完結,數字很穩定 ——
       # 跑它是為了讓模型頁上「測過但沒進模型」那一段的數字永遠是現跑的,而不是寫死的。
       - name: 特徵驗證(調參賽季挑係數、驗收賽季驗收)
@@ -314,6 +333,9 @@ jobs:
                      epl/data/raw/football-data-couk-la-liga/ \
                      epl/data/backtest.json epl/data/backtest-matches.json \
                      epl/data/backtest-laliga.json epl/data/backtest-laliga-matches.json \
+                     epl/data/raw/openfootball-championship/ \
+                     epl/data/raw/football-data-couk-championship/ \
+                     epl/data/backtest-championship.json epl/data/backtest-championship-matches.json \
                      epl/data/form-tuning.json epl/data/availability-history.json \
                      epl/data/situation-tuning.json epl/data/situation-tuning-es1.json \
                      epl/data/congestion-tuning.json 2>/dev/null || true

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0965f58a';
+import * as C from './core.js?v=77b5da80';
 
 const app = document.getElementById('app');
 
@@ -321,12 +321,24 @@ try {
      (英超有球員級數據與傷停,西甲沒有),所以留一個小函式各給各的;
      卡片、教練席、教練資料的誠實層則是同一份。 */
   function overviewIntro() {
+    /* **隊數不可以寫死。** 原本兩個分支都寫「20 支球隊」—— 英超西甲剛好都是 20,
+       所以三年都沒事;英冠是 24 隊,照抄就會在畫面上印一個假數字。
+       數字一律從資料來。 */
+    const n = teams.length;
+    const runs = meta.model.simulationRuns.toLocaleString();
+    /* 沒有球員資料的聯賽(英冠)要自己講一句實話 —— 不能套用下面那句
+       「風格標籤來自每一位球員的數據」,那在這裡是不存在的東西。 */
+    if (meta.capabilities?.players === false) {
+      return `${meta.currentSeason} 的 ${n} 支球隊。卡片上的期望積分來自 ${runs} 次賽季模擬。
+        這個聯賽沒有球員級資料源,所以沒有陣容、xG 與風格標籤 ——
+        詳情頁有的是戰績、近期表現、主客場差異與歷來交手。`;
+    }
     if (meta.edition === 'basic') {
-      return `${meta.currentSeason} 的 20 支球隊。除戰績、近期表現與模型模擬外,
+      return `${meta.currentSeason} 的 ${n} 支球隊。除戰績、近期表現與模型模擬外,
         回歸球隊另有 ${meta.lastSeason} 真實 xG、射門、陣型與進球情境;
         球員與教練資料已由可用來源接入,傷停目前沒有可靠來源。`;
     }
-    return `${meta.currentSeason} 的 20 支球隊。卡片上的期望積分來自 ${meta.model.simulationRuns.toLocaleString()} 次賽季模擬,
+    return `${meta.currentSeason} 的 ${n} 支球隊。卡片上的期望積分來自 ${runs} 次賽季模擬,
       風格標籤則是從上季的每一場比賽與每一位球員的數據推出來的。點進去看完整剖析。`;
   }
 
@@ -532,9 +544,14 @@ try {
       ['本季目前', cur?.p
         ? `${cur.pts} 分<span class="dim"> ${cur.p} 場</span>`
         : '<span class="dim">尚無完賽</span>'],
-      ['前四 / 降級', s
-        ? `${s.top4Pct}%<span class="dim"> / ${s.relegationPct}%</span>`
-        : '<span class="dim">—</span>'],
+      /* 「前四」是歐冠資格的界線,英冠沒有這回事(前 2 直升、3~6 附加賽)。
+         有 promotionPct 的聯賽換成「直升 / 降級」—— 判斷看資料有沒有這個欄位,
+         不要在前端寫死聯賽代碼。 */
+      s?.promotionPct != null
+        ? ['直升 / 降級', `${s.promotionPct}%<span class="dim"> / ${s.relegationPct}%</span>`]
+        : ['前四 / 降級', s
+          ? `${s.top4Pct}%<span class="dim"> / ${s.relegationPct}%</span>`
+          : '<span class="dim">—</span>'],
     ];
     const coachName = t.coach?.zh ?? t.coach?.name ?? null;
     return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
@@ -887,22 +904,53 @@ try {
     </div><div class="tiny dim" style="margin-top:8px">前 ${t.schedule.detail.length} 輪平均難度 ${t.schedule.avg}</div></div>`;
   }
 
-  function nextFixturesBlock(t, next) {
-    if (!next.length) return '';
-    return `<div class="card" style="margin-top:14px"><h3>接下來的對手</h3>
-      ${next.map(f => {
+  /* 接下來的賽程。三件事跟原本不一樣:
+
+     1. **位置**。原本排在最後、在「陣容」那一大塊後面 —— 那一頁往下捲二十幾個區塊
+        才看得到「下一場對誰」,等於沒有。現在排在戰績卡下面。
+     2. **連結**。原本連 `index.html?id=…`(首頁的速覽抽屜)。那是全站唯一這樣連的地方,
+        其他每一處單場連結都是 `analysis` 的完整單場頁。從球隊頁跳回首頁再開抽屜,
+        等於把讀者原本在看的球隊頁弄丟了。
+     3. **內容**。原本只有日期,沒有開球時間 —— 而讀者問「什麼時候打」時要的正是時間。
+        現在有本地時區的開球鐘面、輪次、對手隊徽,最近的一場另外給倒數。
+
+     開球時間可能是 null(上游還沒排定),那種就只顯示日期,不要印一個假的時間。 */
+  function nextFixturesBlock(t, next, nextFew) {
+    if (!nextFew.length) return '';
+    return `<div class="card" style="margin-top:14px">
+      <h3>接下來的賽程</h3>
+      <div class="tiny dim" style="margin-bottom:8px">未賽的下 ${nextFew.length} 場・時間已換算為 ${C.tzName()}・點任一場看完整賽前分析</div>
+      ${nextFew.map((f, i) => {
         const home = f.home === t.code;
+        const opp = home ? f.away : f.home;
         const win = home ? f.prediction?.home : f.prediction?.away;
-        return `<a href="${C.link('index', { id: f.id })}" style="color:inherit;text-decoration:none">
-          <div class="stat-line"><span class="small">${C.dateFull(f.date)} ${home ? '主' : '客'} vs ${C.name(home ? f.away : f.home)}</span>
-          <span class="mono small">${win == null ? '—' : `勝率 ${C.pct(win, 0)}`}</span></div></a>`;
-      }).join('')}</div>`;
+        return `<a href="${C.link('analysis', { id: f.id })}" style="color:inherit;text-decoration:none">
+          <div class="stat-line">
+            <span class="row small" style="gap:6px;min-width:0">
+              <span class="mono dim">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</span>
+              <span class="pill tiny">${home ? '主' : '客'}</span>${C.badge(opp)}<b>${C.name(opp)}</b>
+              ${f.round != null ? `<span class="tiny dim">第 ${f.round} 輪</span>` : ''}
+            </span>
+            <span class="mono small">${i === 0 && f.kickoff ? C.countdown(f.kickoff)
+              : win == null ? '—' : `勝率 ${C.pct(win, 0)}`}</span>
+          </div></a>`;
+      }).join('')}
+      ${/* 完整賽程連進首頁那張賽程表,並用 ?team= 預先篩好 ——
+            那張表本來就有球隊/賽季/輪次/狀態四個篩選、預測、賽果與賽後報告。
+            另外做一頁等於做第二份,改了一邊另一邊會悄悄過期。 */''}
+      ${next.length > nextFew.length ? `<div style="margin-top:10px">
+        <a href="${C.link('index', { team: t.code })}">看 ${C.name(t.code)} 的完整賽程(本季還有 ${next.length} 場)→</a></div>` : ''}
+    </div>`;
   }
 
   function detail(t) {
     const co = coachBy.get(t.code);
+    /* 這裡只放**下三場**。六場時這個區塊佔整頁高度 9.5%(量過,是頁面上第三大的卡片);
+       而「這週、下週、再下週」對絕大多數讀者已經夠,再往後的用下面那個連結看完整賽程。
+       完整賽程不另外做一頁 —— 首頁的賽程表本來就有球隊篩選,連進去就好。 */
     const next = fixtures.filter(f => !f.played && (f.home === t.code || f.away === t.code))
-      .sort((a, b) => (a.date < b.date ? -1 : 1)).slice(0, 6);
+      .sort((a, b) => (a.date < b.date ? -1 : 1));
+    const nextFew = next.slice(0, 3);
     const h2hDefault = next[0]
       ? (next[0].home === t.code ? next[0].away : next[0].home)
       : teams.find(x => x.code !== t.code)?.code;
@@ -911,6 +959,7 @@ try {
     ${detailHead(t, co)}
     ${kpiRow(t)}
     <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
+    ${nextFixturesBlock(t, next, nextFew)}
     ${seasonHistorySection(t)}
     ${lastSeasonBlock(t)}
     ${coachCard(co)}
@@ -921,9 +970,11 @@ try {
     ${eloBlock(t)}
     ${scheduleBlock(t)}
     ${squadSection(t)}
-    ${nextFixturesBlock(t, next)}
     ${C.foot(meta)}`;
 
+    /* 倒數要會走 —— 不叫這一支的話,數字停在載入當下,
+       讀者坐在頁面上看著一個慢慢變錯的時間。核心那支自己會清掉上一個計時器。 */
+    C.startCountdowns();
     renderTeamH2H(t);
     renderSquad(t);
   }
