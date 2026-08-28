@@ -1308,6 +1308,20 @@ function checkAssetStamps() {
   });
   ok(missed.length === 0, `${pages.length} 頁全部打上版本戳`, missed.join('、'));
 
+  /* meta.json 要記著這次建置的戳,前端才有辦法知道「我現在跑的是不是最新那一版」。
+     使用者實際遇到的症狀:在導覽列點來點去,有時候跳成上一版的排版 ——
+     GitHub Pages 給 HTML 的快取是十分鐘而且每個檔案各自計時,
+     所以同一次瀏覽裡可能一頁新、一頁舊。對不上就重載一次(core.js 的 checkStale)。
+     這幾條守著 meta 裡的戳跟實際檔案對得起來 —— 對不上的話,
+     每一次開頁都會白白重載一次。 */
+  for (const f of ['meta.json', join('leagues', 'es1', 'meta.json')]) {
+    const path = join(W, 'data', f);
+    if (!existsSync(path)) continue;
+    const m = JSON.parse(readFileSync(path, 'utf8'));
+    ok(m.assets?.core === coreStamp, `${f} 記的 core 戳跟實際檔案一致`, `${m.assets?.core} vs ${coreStamp}`);
+    ok(m.assets?.css === cssStamp, `${f} 記的 css 戳跟實際檔案一致`, `${m.assets?.css} vs ${cssStamp}`);
+  }
+
   /* 共用模組要真的被兩邊引用。這一條是在守「複製一份過去」——
      預測積分榜同時出現在積分與賽程頁與實時戰況頁,兩邊各寫一份的話
      改了一邊另一邊會悄悄變成另一個版本,而且畫面上看不出來。
@@ -1337,6 +1351,8 @@ function checkAssetStamps() {
   ok(!/\bnavDone\b/.test(coreCode), 'nav() 不用布林旗標擋重複渲染(單檔版換頁會把導覽列砍掉)');
   ok(core.includes("if (document.querySelector('.topbar')) return;"), 'nav() 改看 DOM 判斷要不要畫');
   ok(core.includes("const SITE_PAGES"), '導覽列分成跨聯賽與聯賽兩組');
+  ok(core.includes('checkStale'), 'core.js 有版本對不上時的自我修復');
+  ok(core.includes('sessionStorage'), '重載有 sessionStorage 記號,不會無限重載');
 
   /* 第二層分頁。GROUPS 裡列的頁面都必須真的存在於 PAGES ——
      打錯一個字的話那一頁會從導覽列整個消失(頂層排除它、子層又找不到它),

@@ -84,6 +84,7 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 | openfootball 的隊名寫法**跨季不同** | `Manchester United` vs `Manchester United FC` → 整季資料被 tolerant 模式吞掉 | `codeOf` 已有寬鬆比對;tolerant 模式會把跳過的隊名印出來,**要看那行輸出** |
 | FPL 的球隊 `short_name` 恰好等於本專案隊碼 | —— | 這是驗證過的,20 隊全對,可以直接用 |
 | `versus()` 的「越低越好」取倒數 | 值是 0 時 1/0 爆掉,對面壓成一根針 | 分母加同量級緩衝(已修,有測試守著) |
+| **同一次瀏覽裡一頁新版面、一頁舊版面** | 在導覽列點來點去,有時候跳成上一版的排版 —— 因為 GitHub Pages 給 HTML 的快取是十分鐘而且**每個檔案各自計時**,index.html 可能是舊的、teams.html 剛好過期換新的 | `stamp-assets.mjs` 把戳寫進 `meta.json` 的 `assets`,`core.js` 從 `import.meta.url` 讀自己的戳比對,對不上就重載一次(sessionStorage 記號防無限重載) |
 | **import 那一行帶著版本戳** | 用字面字串 `from './core.js'` 做 replace **靜靜沒命中**;程式呼叫了沒 import 的東西 → 頁面顯示「載入失敗」,而 `npm test` 全綠(測試檢查不到版面) | `stamp-assets.mjs` 會把 import 改成 `from './core.js?v=abcd1234'`。改 import 那幾行一律用正則 `from '\./x\.js(\?v=[0-9a-f]{8})?'`,而且 replace 之後要斷言真的有命中 |
 | 頁面切換後計時器沒清 | 舊頁面 30 秒後覆蓋 `#app`,看起來像「自動跳回去」 | 用 `C.pageInterval()`,不要裸 `setInterval` |
 | Understat 的資料**不在 HTML 頁裡**(球隊頁與聯賽頁都是) | 抓 `/team/{隊}/{年}` 或 `/league/{聯賽}/{年}` 只回 18 KB 外殼,一個資料變數都沒有 | 球隊用 `/getTeamData/{隊}/{年}`;球員整季數據用 `POST /main/getPlayersStats/`,body 是 `league=La_liga&season=2025`,一個請求回整季 600 人 |

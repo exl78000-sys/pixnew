@@ -43,6 +43,43 @@ export class LeagueGap extends Error {
   }
 }
 
+/* ── 版面跳回舊版的防護 ──────────────────────────
+   症狀:在導覽列點來點去,**有時候會跳成上一版的排版**。
+
+   原因是 GitHub Pages 給 HTML 的快取是十分鐘,而且**每個檔案各自計時**:
+   index.html 可能是五分鐘前抓的(舊的,指向 `core.js?v=舊`),
+   teams.html 剛好過期所以是新的(指向 `core.js?v=新`)——
+   兩份 HTML 都合法,但載到的是兩個版本的程式,於是同一次瀏覽裡
+   一頁新版面、一頁舊版面。版本戳沒有造成這件事,但讓它變得看得見:
+   以前是整站一起舊,現在是有的新有的舊。
+
+   偵測方式:core.js 從**自己的網址**讀得到自己的戳
+   (`import.meta.url` 是 `.../core.js`),
+   而 meta.json 裡記著這次建置**應該**是哪一個戳。對不上就是這一頁的 HTML 過期了。
+
+   對不上就重新載入一次,並用 sessionStorage 記下已經為這個戳重載過 ——
+   沒有這道記號的話,萬一 meta.json 自己也是舊的,就會變成無限重載。
+   單檔版沒有查詢字串也沒有快取問題,整段跳過。 */
+const MY_STAMP = (() => {
+  try { return new URL(import.meta.url).searchParams.get('v'); } catch { return null; }
+})();
+
+function checkStale(meta) {
+  const want = meta?.assets?.core;
+  if (!MY_STAMP || !want || want === MY_STAMP) return;
+  const key = `warroom:reloaded:${want}`;
+  try {
+    if (sessionStorage.getItem(key)) {
+      // 已經為這個戳重載過還是對不上 → 不再重載,只在 console 留線索
+      console.warn(`[版本] 這一頁的 HTML 是舊的(core ${MY_STAMP},應為 ${want}),重載過仍未更新。`);
+      return;
+    }
+    sessionStorage.setItem(key, '1');
+  } catch { /* 隱私模式下 sessionStorage 會丟例外,那就不做這道防護 */ return; }
+  console.warn(`[版本] 這一頁的 HTML 是舊的(core ${MY_STAMP},應為 ${want}),重新載入。`);
+  location.reload();
+}
+
 export async function load(...names) {
   const out = {};
   const lg = league();
@@ -72,6 +109,9 @@ export async function load(...names) {
     const v = await cache.get(key);
     if (v === ABSENT) absent.push(n); else out[n] = v;
   }));
+
+  // 拿到 meta 就順手比對版本 —— 對不上代表這一頁的 HTML 是舊的快取
+  if (out.meta) checkStale(out.meta);
 
   const gap = dataGap(lg, page, names, out, absent);
   if (gap) throw gap;

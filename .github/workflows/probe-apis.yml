@@ -57,6 +57,15 @@ jobs:
           SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
           SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
 
+      # 歐冠:football-data.org 的 token 授權清單裡有 CL,但免費方案常常只開放
+      # 目前那一季 —— 要分得開 403(方案不給)、404(路徑錯)、200+0 場(還沒開打)。
+      # 免費方案限 10 req/分,所以這一步硬上限 8 個請求、每個間隔 7 秒。
+      - name: 探測歐冠資料
+        working-directory: epl
+        run: npm run probe:ucl
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+
       # 西甲球員資料:動手寫抓取管線之前先確定拿得到什麼。硬上限 5 個請求。
       - name: 探測西甲球員端點
         working-directory: epl
@@ -102,5 +111,12 @@ jobs:
         run: |
           echo '── football-data.org 授權的賽事 ──'
           node -e "const j=require('./data/raw/probes/en-cups.json');const f=j.footballData??{};console.log('HTTP',f.status,'・',f.count,'個・英格蘭盃賽:',JSON.stringify(f.englishCups??[]))" || echo '(無)'
-          echo '── SportMonks 盃賽結構(這一段是關鍵)──'
+          echo '── SportMonks 盃賽結構 ──'
           node -e "console.log(JSON.stringify(require('./data/raw/probes/en-cups.json').sportmonks,null,1))" || echo '(無)'
+          echo '── 歐冠(這一輪的重點)──'
+          # 不要整份倒出來:competition.seasons 有四十幾季,會把結論擠出 log 尾端
+          node -e "const j=require('./data/raw/probes/ucl.json');
+            console.log('competition HTTP', j.competition.status, '|', j.competition.name,
+              '| 本季', JSON.stringify(j.competition.currentSeason),
+              '| 回報賽季數', j.competition.seasons.length);
+            for (const [k,v] of Object.entries(j.seasons)) console.log(JSON.stringify({season:k, ...v}));" || echo '(無)'

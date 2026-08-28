@@ -81,7 +81,28 @@ async function main() {
     if (out !== before) { await writeFile(join(WEB, f), out); htmlChanged++; }
   }
 
-  console.log(`✔ 版本戳:JS ${changed} 個檔案、HTML ${htmlChanged} 頁更新`
+  /* 把戳寫進每個聯賽的 meta.json。前端拿它跟 core.js 自己網址上的戳比對 ——
+     對不上就是那一頁的 HTML 是舊快取,重載一次(見 core.js 的 checkStale)。
+     沒有這一步的話,前端沒有任何辦法知道「我現在跑的是不是最新那一版」。 */
+  const stampInfo = { core: stamped.get('core.js') ?? null, css: cssHash };
+  const metaFiles = [join(WEB, 'data', 'meta.json')];
+  try {
+    const lgDir = join(WEB, 'data', 'leagues');
+    for (const ent of await readdir(lgDir, { withFileTypes: true })) {
+      if (ent.isDirectory()) metaFiles.push(join(lgDir, ent.name, 'meta.json'));
+    }
+  } catch { /* 沒有其他聯賽時只有英超那一份 */ }
+  let metaChanged = 0;
+  for (const f of metaFiles) {
+    let meta;
+    try { meta = JSON.parse(await readFile(f, 'utf8')); } catch { continue; }
+    if (JSON.stringify(meta.assets) === JSON.stringify(stampInfo)) continue;
+    meta.assets = stampInfo;
+    await writeFile(f, JSON.stringify(meta));
+    metaChanged++;
+  }
+
+  console.log(`✔ 版本戳:JS ${changed} 個檔案、HTML ${htmlChanged} 頁、meta ${metaChanged} 份更新`
     + `(app.css ${cssHash}、core.js ${stamped.get('core.js')})`);
 }
 
