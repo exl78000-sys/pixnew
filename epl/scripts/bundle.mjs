@@ -38,7 +38,9 @@ async function main() {
   /* 頁面之間共用的模組(不是 core、也不是某一頁)。單檔版沒有模組解析,
      所以要跟 core 一樣攤平成模組層宣告,並把頁面裡的 import 拿掉 ——
      漏掉的話單檔版會在該頁拋 "mountFixtureList is not defined"。 */
-  const SHARED = ['fixture-list'];
+  /* 相依順序:sim-table 與 fixture-list 都只引用 core,彼此無關,
+     所以這裡的順序不重要;真的出現「共用模組引用共用模組」時要照相依排。 */
+  const SHARED = ['fixture-list', 'sim-table'];
   const sharedSrc = [];
   for (const name of SHARED) {
     const src = await readFile(join(WEB, 'assets', 'js', `${name}.js`), 'utf8');

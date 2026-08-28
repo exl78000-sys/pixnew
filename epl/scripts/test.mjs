@@ -1307,6 +1307,22 @@ function checkAssetStamps() {
     return /src="assets\/js\/[\w-]+\.js"/.test(t) || /href="assets\/css\/app\.css"/.test(t);
   });
   ok(missed.length === 0, `${pages.length} 頁全部打上版本戳`, missed.join('、'));
+
+  /* 共用模組要真的被兩邊引用。這一條是在守「複製一份過去」——
+     預測積分榜同時出現在積分與賽程頁與實時戰況頁,兩邊各寫一份的話
+     改了一邊另一邊會悄悄變成另一個版本,而且畫面上看不出來。
+     順帶守著 import 有沒有真的加上去:上一次改這裡時,
+     版本戳讓 import 那一行不再是字面字串,replace 靜靜沒命中,
+     頁面變成「載入失敗」而 npm test 全綠 —— 測試檢查不到版面。 */
+  for (const page of ['page-index.js', 'page-live.js']) {
+    const src = readFileSync(join(W, 'assets', 'js', page), 'utf8');
+    ok(/import \{ mountSimTable \} from '\.\/sim-table\.js(\?v=[0-9a-f]{8})?';/.test(src),
+      `${page} 有 import 共用的預測積分榜`);
+    ok(src.includes("mountSimTable('simTable'"), `${page} 有呼叫它`);
+  }
+  // 本季目前戰績已移除(實時戰況頁的「本季即時積分榜」是同一份資料)
+  const idx = readFileSync(join(W, 'assets', 'js', 'page-index.js'), 'utf8');
+  ok(!idx.includes('本季目前戰績'), '積分與賽程頁不再重複「本季目前戰績」');
   return fail;
 }
 
