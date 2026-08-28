@@ -23,6 +23,7 @@ import { officialFormations, officialLineups, officialManagers, attachCodes } fr
 import { summariseSeason } from './lib/cups.mjs';
 import { loadUclSeasons } from './lib/ucl.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
+import { toFeedItems, forLeague } from './lib/adapters/curated-news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
 import {
   preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled,
@@ -739,7 +740,36 @@ async function main() {
     try { external = JSON.parse(await readFile(externalPath, 'utf8')); } catch { external = []; }
   }
 
-  const news = [...previews, ...schedule, ...stories, ...injuries.slice(0, 60), ...external]
+
+  /* 人工整理的外電摘要(data/manual/news-curated.json)。
+     跟 RSS 外電不同:中文是人寫的摘要,不是機器翻譯,所以**不掛翻譯標記**。
+     跟站內生成的動態也不同:那些是本站算出來的,這些是外部報導。
+     摘要裡引用的比分**每次 build 都拿本站賽果重新核對** ——
+     交付方自己在檔案裡寫 verified:true 不算數(鐵則五),而且賽果會更新、
+     這份檔案是靜態的,只核對一次的話兩邊哪天不一致不會有人發現。 */
+  let curatedNews = [];
+  {
+    const p = join(ROOT, 'data', 'manual', 'news-curated.json');
+    if (existsSync(p)) {
+      try {
+        const raw = JSON.parse(await readFile(p, 'utf8'));
+        const fx = fixtures;
+        const other = loadTeams(ROOT, { file: 'teams-la-liga.json' });
+        const out = toFeedItems(raw.stories ?? [], {
+          codeOf: n => T.codeOf(n) ?? other.codeOf(n) ?? null,
+          fixturesOf: comp => (comp === 'pl' ? fx : null),
+        });
+        curatedNews = forLeague(out.items, 'pl');
+        const v = curatedNews.filter(i => i.scoreCheck === 'verified').length;
+        const u = curatedNews.filter(i => i.scoreCheck === 'unverified').length;
+        console.log(`  人工整理外電:${curatedNews.length} 則(比分已核對 ${v}・無法核對 ${u}`
+          + `・因比分不符退回 ${out.rejected.length})`);
+        for (const r of out.rejected) console.log(`  ⚠ 退回 ${r.id}:${r.detail.join(' / ')}`);
+        if (out.unknownStatus.length) console.log(`  ⚠ 沒見過的 status:${out.unknownStatus.join('、')}`);
+      } catch (e) { console.log(`  ⚠ 人工整理外電讀取失敗:${e.message}`); }
+    }
+  }
+  const news = [...curatedNews, ...previews, ...schedule, ...stories, ...injuries.slice(0, 60), ...external]
     .sort((a, b) => (b.date < a.date ? -1 : b.date > a.date ? 1 : 0));
 
   // ── 輸出 ──────────────────────────────────

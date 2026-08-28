@@ -16,6 +16,7 @@ import { loadTeams } from './lib/teams.mjs';
 import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
 import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './lib/knowledge.mjs';
 import { loadUclSeasons } from './lib/ucl.mjs';
+import { toFeedItems, forLeague } from './lib/adapters/curated-news.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
@@ -972,7 +973,36 @@ async function main() {
   });
   await write('h2h', h2h);
   await write('results', [...lastMatches, ...curPlayed].filter(m => m.played).map(slimMatch));
-  await write('news', externalNews);
+
+  /* 人工整理的外電摘要(data/manual/news-curated.json)。
+     跟 RSS 外電不同:中文是人寫的摘要,不是機器翻譯,所以**不掛翻譯標記**。
+     跟站內生成的動態也不同:那些是本站算出來的,這些是外部報導。
+     摘要裡引用的比分**每次 build 都拿本站賽果重新核對** ——
+     交付方自己在檔案裡寫 verified:true 不算數(鐵則五),而且賽果會更新、
+     這份檔案是靜態的,只核對一次的話兩邊哪天不一致不會有人發現。 */
+  let curatedNews = [];
+  {
+    const p = join(ROOT, 'data', 'manual', 'news-curated.json');
+    if (existsSync(p)) {
+      try {
+        const raw = JSON.parse(await readFile(p, 'utf8'));
+        const fx = [...lastMatches, ...curPlayed];
+        const other = loadTeams(ROOT);
+        const out = toFeedItems(raw.stories ?? [], {
+          codeOf: n => T.codeOf(n) ?? other.codeOf(n) ?? null,
+          fixturesOf: comp => (comp === 'es1' ? fx : null),
+        });
+        curatedNews = forLeague(out.items, 'es1');
+        const v = curatedNews.filter(i => i.scoreCheck === 'verified').length;
+        const u = curatedNews.filter(i => i.scoreCheck === 'unverified').length;
+        console.log(`  人工整理外電:${curatedNews.length} 則(比分已核對 ${v}・無法核對 ${u}`
+          + `・因比分不符退回 ${out.rejected.length})`);
+        for (const r of out.rejected) console.log(`  ⚠ 退回 ${r.id}:${r.detail.join(' / ')}`);
+        if (out.unknownStatus.length) console.log(`  ⚠ 沒見過的 status:${out.unknownStatus.join('、')}`);
+      } catch (e) { console.log(`  ⚠ 人工整理外電讀取失敗:${e.message}`); }
+    }
+  }
+  await write('news', [...curatedNews, ...externalNews]);
   await write('players', playersOut);
   await write('leaders', {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },

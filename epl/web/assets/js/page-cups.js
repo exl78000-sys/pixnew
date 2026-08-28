@@ -201,9 +201,11 @@ try {
           <div id="runs"></div>` : ''}
         ${qualifyingToggle({ ...season, __showQual: showQualifying })}
         <div class="section"><h2>逐輪賽果</h2>
-          <span class="hint">依開球時間排序,不是照上游的輪次編號</span></div>
+          <span class="hint">最新的排在最上面(決賽 → 第一輪)・輪次順序依開球時間,不是照上游的輪次編號</span></div>
+        ${/* **先切再倒。** 資格賽是用「從第幾輪開始」這個索引切掉的;
+              先倒過來的話那個索引指的就變成另一頭,會把決賽那幾輪切掉。 */''}
         ${(showQualifying ? season.rounds : season.rounds.slice(season.firstKnownRound > 0 ? season.firstKnownRound : 0))
-            .map(roundCard).join('')}`;
+            .slice().reverse().map(roundCard).join('')}`;
       const runsEl = document.getElementById('runs');
       if (runsEl) runsEl.innerHTML = runsTable(season.runs);
       const qualBtn = document.getElementById('toggleQual');

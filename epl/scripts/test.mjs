@@ -36,6 +36,7 @@ import { teamRecord } from './lib/table.mjs';
 import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
 import { normaliseMatchDetail } from './lib/adapters/api-football.mjs';
 import { nameTokens as uclNameTokens } from './lib/adapters/fotmob-ucl.mjs';
+import { checkScores, toFeedItems, forLeague, KNOWN_STATUS } from './lib/adapters/curated-news.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -352,6 +353,9 @@ async function main() {
   console.log('\n▶ 英格蘭盃賽');
   const cupFail = checkCups();
 
+  console.log('\n▶ 人工整理外電');
+  const curatedFail = checkCuratedNews();
+
   console.log('\n▶ 歐冠');
   const uclFail = checkUcl();
 
@@ -360,7 +364,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1414,6 +1418,87 @@ function checkAssetStamps() {
    三、聯賽階段的名次要用官方那份,自己算的只拿來對帳。
    四、1-8 / 9-24 / 25-36 三段是**看實際參賽推出來的**,不是照名次假設的。
    五、導覽列的兩份清單都放同一頁的話,會出現兩個「歐冠」。 */
+/* 人工整理的外電。守四件事:
+
+   一、**比分核對真的會擋。** 交付方自己寫 verified:true 不算數(鐵則五),
+      而且賽果會更新、這份檔案是靜態的 —— 只核對一次不夠。
+   二、**不可以掛「機器翻譯」標記。** 中文摘要是人寫的,標成機器翻譯是講假話。
+   三、**傳聞與已確認的交易要分開**,而且沒見過的 status 不給語意。
+   四、**同一組對戰跨季會重複**,配錯季的話比分會全對不上(實際踩過)。 */
+function checkCuratedNews() {
+  let fail = 0;
+  const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
+
+  const src = join(ROOT, 'data', 'manual', 'news-curated.json');
+  if (!existsSync(src)) { console.log('  (沒有 news-curated.json,略過)'); return 0; }
+  const raw = JSON.parse(readFileSync(src, 'utf8'));
+
+  /* ── 核對器本身會不會擋 ──
+     用真的賽果造一則「比分寫錯」的摘要,必須被判成 conflict 並退回。
+     這一條在守「核對不是裝飾」。 */
+  const fixtures = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json'), 'utf8'));
+  const list = fixtures.fixtures ?? fixtures;
+  const sample = list.find(m => m.played);
+  const ctx = { codeOf: x => x, fixturesOf: () => list };
+  const good = { competition: 'es1', date: sample.date ?? sample.kickoff?.slice(0, 10),
+    matches: [{ home: sample.home, away: sample.away, score: `${sample.fh}-${sample.fa}` }] };
+  const bad = { ...good, matches: [{ ...good.matches[0], score: `${sample.fh + 3}-${sample.fa}` }] };
+  ok(checkScores(good, ctx).state === 'verified', '比分對得上 → verified');
+  ok(checkScores(bad, ctx).state === 'conflict', '比分對不上 → conflict(核對真的會擋)');
+  ok(toFeedItems([bad], ctx).items.length === 0 && toFeedItems([bad], ctx).rejected.length === 1,
+    '判成 conflict 的整則不出,而且會被列進 rejected');
+
+  /* 同一組對戰跨季重複時,要用報導日期收斂到對的那一季。
+     實際踩過:第一版用 find(home && away) 抓到上一季那一場,
+     西甲三則賽報全部被誤判成「比分不符」。 */
+  const twoSeasons = [
+    { ...sample, season: 'X', fh: sample.fh + 5, fa: sample.fa, date: '2000-01-01', kickoff: '2000-01-01T00:00:00Z' },
+    sample,
+  ];
+  ok(checkScores(good, { codeOf: x => x, fixturesOf: () => twoSeasons }).state === 'verified',
+    '同一組對戰有兩季時,用報導日期挑到對的那一場');
+
+  /* ── 產物 ── */
+  for (const [lg, path] of [['pl', join(ROOT, 'web', 'data', 'news.json')],
+    ['es1', join(ROOT, 'web', 'data', 'leagues', 'es1', 'news.json')]]) {
+    if (!existsSync(path)) continue;
+    const feed = JSON.parse(readFileSync(path, 'utf8'));
+    const cur = feed.filter(x => x.curated);
+    ok(cur.length > 0, `${lg}:動態流裡有人工整理的項目`, String(cur.length));
+    ok(cur.every(x => x.link && x.source), `${lg}:每一則都有原文連結與來源`);
+    // titleZh / bodyZh 會讓前端掛上「機器翻譯」標記 —— 這一類不是機器翻譯
+    ok(cur.every(x => !x.titleZh && !x.bodyZh), `${lg}:沒有用機器翻譯的欄位(標錯等於講假話)`);
+    ok(cur.every(x => ['verified', 'unverified', 'none'].includes(x.scoreCheck)),
+      `${lg}:比分核對狀態只有三種,不會有 conflict 漏出來`);
+    ok(cur.every(x => !x.status || x.statusLabel), `${lg}:每個 status 都有給讀者看的說法(沒見過的不給語意)`);
+    // 歐冠是跨聯賽的,兩邊都要看得到
+    ok(cur.some(x => x.competition === 'ucl'), `${lg}:歐冠的項目也在這個聯賽的動態流裡`);
+    ok(cur.every(x => x.competition === lg || x.competition === 'ucl'),
+      `${lg}:不會混進另一個聯賽的項目`);
+    const verified = cur.filter(x => x.scoreCheck === 'verified');
+    ok(verified.length > 0, `${lg}:至少有一則的比分是真的核對過的`, String(verified.length));
+  }
+
+  // 來源檔裡沒見過的 status 要被抓出來
+  const all = toFeedItems(raw.stories ?? [], { codeOf: () => null, fixturesOf: () => null });
+  ok(all.unknownStatus.length === 0, '來源檔沒有未定義語意的 status', all.unknownStatus.join('、'));
+  ok(Object.keys(KNOWN_STATUS).length >= 5, 'status 對照表有涵蓋傳聞與已確認兩類');
+  ok((raw.stories ?? []).every(x => /^https:\/\//.test(x.link ?? '')), '來源檔每一則都有 https 連結');
+
+  /* 前端:輪次顯示順序。使用者要求「最新的在最上面、決賽在最上面」。
+     盃賽那邊**要先切資格賽再倒**,順序反過來會把決賽切掉。 */
+  const W = join(ROOT, 'web', 'assets', 'js');
+  const uclSrc = readFileSync(join(W, 'page-ucl.js'), 'utf8');
+  const cupSrc = readFileSync(join(W, 'page-cups.js'), 'utf8');
+  ok(/\[\.\.\.s\.rounds\]\.reverse\(\)/.test(uclSrc), '歐冠:輪次顯示時倒過來(決賽在最上面)');
+  ok(uclSrc.indexOf('<h2>淘汰賽</h2>') < uclSrc.indexOf('<h2>聯賽階段</h2>'), '歐冠:淘汰賽排在聯賽階段前面');
+  ok(uclSrc.indexOf('<h2>聯賽階段</h2>') < uclSrc.indexOf('leaderBoards(s)'), '歐冠:球員榜排在最後,不會夾在標題與內容之間');
+  ok(/\.slice\(season\.firstKnownRound[^)]*\)\s*\n?\s*\.slice\(\)\.reverse\(\)/.test(cupSrc.replace(/\s+/g, ' ').replace(/ /g, ' ')) ||
+     /firstKnownRound[\s\S]{0,80}\.slice\(\)\.reverse\(\)/.test(cupSrc),
+    '盃賽:先切掉資格賽再倒過來(順序反了會把決賽切掉)');
+  return fail;
+}
+
 function checkUcl() {
   let fail = 0;
   const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };

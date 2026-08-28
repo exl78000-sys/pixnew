@@ -1,0 +1,209 @@
+{
+  "source": "Web research",
+  "retrievedAt": "2026-08-28T00:00:00+08:00",
+  "window": {
+    "from": "2026-08-22",
+    "to": "2026-08-28",
+    "timezone": "Asia/Taipei"
+  },
+  "note": "只收錄發表日或更新日在指定區間內、可開啟原文連結的項目；新聞摘要為整理後的繁體中文，不取代原文。轉會傳聞與已確認交易分開標示。",
+  "stories": [
+    {
+      "id": "pl-match-review-20260823-sunday-wrap",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-08-23",
+      "title": "英超首個週日：曼城逆轉、利物浦補時扳平、Brighton 大勝",
+      "body": "Premier League 官方回顧指出，曼城在新帥 Enzo Maresca 上任首戰以 2-1 逆轉 Bournemouth；利物浦靠 Dominik Szoboszlai 第九分鐘補時點球，在 Newcastle 主場 2-2 逼和；Brighton 則前 31 分鐘連進四球，以 4-0 擊敗十人 Aston Villa。",
+      "matches": [
+        { "home": "Manchester City", "away": "Bournemouth", "score": "2-1" },
+        { "home": "Newcastle United", "away": "Liverpool", "score": "2-2" },
+        { "home": "Brighton", "away": "Aston Villa", "score": "4-0" }
+      ],
+      "source": "Premier League",
+      "link": "https://www.premierleague.com/en/news/4695734/sunday-wrap-stoppage-time-drama-for-man-city-and-liverpool/",
+      "verified": true
+    },
+    {
+      "id": "laliga-match-review-20260822-espanyol-real-madrid",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-08-22",
+      "title": "皇馬客場 2-1 擊敗 Espanyol",
+      "body": "LaLiga 官方比賽頁記錄，Real Madrid 在 2026/27 西甲第 2 輪以 2-1 擊敗 Espanyol；Bellingham 第 9 分鐘先開紀錄，Cala 第 30 分鐘為主隊追平，C. Espí 第 90 分鐘攻入致勝球。",
+      "matches": [
+        { "home": "Espanyol", "away": "Real Madrid", "score": "1-2" }
+      ],
+      "source": "LALIGA",
+      "link": "https://www.laliga.com/en-GB/match/temporada-2026-2027-laliga-ea-sports-rcd-espanyol-de-barcelona-real-madrid-2",
+      "verified": true
+    },
+    {
+      "id": "laliga-match-review-20260827-barcelona-athletic",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-08-27",
+      "title": "Barcelona 2-0 Athletic：Rodri 完成主場首秀",
+      "body": "AS 的賽事直播與賽後整理顯示，Barcelona 以 2-0 擊敗 Athletic，Raphinha 第 36 分鐘、Fermín 第 81 分鐘進球；Rodri 在加盟後正式迎來 Barcelona 主場首秀。",
+      "matches": [
+        { "home": "Barcelona", "away": "Athletic Club", "score": "2-0" }
+      ],
+      "source": "AS",
+      "link": "https://as.com/futbol/primera/rodri-a-escena-f202608-n/",
+      "verified": true
+    },
+    {
+      "id": "laliga-news-20260822-referee-controversies",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "news",
+      "date": "2026-08-22",
+      "title": "西甲第 2 輪裁判爭議整理",
+      "body": "AS 邀請裁判分析員 Iturralde González 檢視第 2 輪的點球、紅牌與爭議判決，並以本季 CTA 新參數逐一說明判定。此篇屬判例與裁判評論，不等同於聯賽官方紀律裁決。",
+      "source": "AS",
+      "link": "https://as.com/futbol/primera/las-polemicas-de-la-jornada-2-de-laliga-ea-sports-todos-los-penaltis-expulsiones-y-jugadas-controvertidas-f202608-n/",
+      "verified": true
+    },
+    {
+      "id": "laliga-news-20260827-mbappe",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "news",
+      "date": "2026-08-27",
+      "title": "Mbappé 對 Real Sociedad 上演帽子戲法",
+      "body": "AS 報導，Mbappé 在 Bernabéu 對 Real Sociedad 的比賽完成帽子戲法，文章將其解讀為新賽季爭奪連續第三座 Pichichi 的強勢開局。",
+      "matches": [
+        { "home": "Real Madrid", "away": "Real Sociedad", "score": "4-1" }
+      ],
+      "source": "AS",
+      "link": "https://as.com/futbol/primera/mbappe-en-modo-mundial-f202608-n/",
+      "verified": true
+    },
+    {
+      "id": "ucl-match-review-20260826-playoffs",
+      "competition": "ucl",
+      "competitionName": "歐冠",
+      "type": "match-review",
+      "date": "2026-08-26",
+      "title": "歐冠附加賽次回合：Fenerbahçe、AEK、Viking、Slovan 晉級",
+      "body": "UEFA 官方賽後整理：Fenerbahçe 以總比分 3-2 淘汰 Lyon；Viking 以 5-3 淘汰 GNK Dinamo；AEK Athens 以 4-0 淘汰 Levski Sofia；Slovan Bratislava 加時 2-1、總比分 3-2 淘汰 Celje。至此 2026/27 歐冠聯賽階段 36 隊名單確定。",
+      "matches": [
+        { "home": "Lyon", "away": "Fenerbahçe", "score": "1-2", "aggregate": "2-3" },
+        { "home": "Viking", "away": "GNK Dinamo", "score": "3-1", "aggregate": "5-3" },
+        { "home": "AEK Athens", "away": "Levski Sofia", "score": "4-0", "aggregate": "4-0" },
+        { "home": "Celje", "away": "Slovan Bratislava", "score": "1-2 aet", "aggregate": "2-3" }
+      ],
+      "source": "UEFA",
+      "link": "https://www.uefa.com/uefachampionsleague/news/02a8-216f6e7c7e3c-fa74783c353d-1000--champions-league-play-off-second-leg-highlights-and-roun/",
+      "verified": true
+    },
+    {
+      "id": "ucl-news-20260827-draw",
+      "competition": "ucl",
+      "competitionName": "歐冠",
+      "type": "news",
+      "date": "2026-08-27",
+      "title": "歐冠聯賽階段抽籤完成：36 隊確定 8 個對手",
+      "body": "UEFA 公布 2026/27 歐冠聯賽階段抽籤結果。每隊取得 8 個對手；西甲代表包括 Atlético、Barcelona、Real Betis、Real Madrid、Villarreal，英超代表包括 Arsenal、Aston Villa、Liverpool、Manchester City、Manchester United。",
+      "source": "UEFA",
+      "link": "https://www.uefa.com/uefachampionsleague/news/02a8-216cd740d41f-fd3b45ac4a0f-1000--uefa-champions-league-league-phase-draw-all-36-teams-learn-their/",
+      "verified": true
+    },
+    {
+      "id": "ucl-news-20260827-registration",
+      "competition": "ucl",
+      "competitionName": "歐冠",
+      "type": "news",
+      "date": "2026-08-27",
+      "title": "歐冠名單登錄規則與期限公布",
+      "body": "UEFA 說明，聯賽階段 List A 的提交期限為 2026 年 9 月 2 日 23:59 CET；List A 上限仍為 25 人，並須符合 8 名本土培訓球員配額。國內轉會窗即使較晚關閉，球會仍須先符合 UEFA 名單期限。",
+      "source": "UEFA",
+      "link": "https://www.uefa.com/uefachampionsleague/news/02a8-216c54c7cf25-c163bc643149-1000--uefa-champions-league-league-phase-player-lists-registration/",
+      "verified": true
+    },
+    {
+      "id": "pl-transfer-20260827-window-overview",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "transfer-news",
+      "date": "2026-08-27",
+      "title": "英超各隊夏季轉會窗重點交易整理",
+      "body": "英超官方逐隊整理夏窗主要進出：Arsenal 的重點引援包括 Bruno Guimarães、Ezri Konsa、Christos Tzolis；Manchester City 進入換血期；Manchester United 以 Youri Tielemans、Andrey Santos 等人補強中場；Liverpool 則有 Mohamed Salah 離隊、Curtis Jones 轉往 Inter 等重大變化。",
+      "source": "Premier League",
+      "link": "https://www.premierleague.com/en/news/4681361/every-premier-league-clubs-biggest-deals-in-summer-transfer-window/",
+      "verified": true,
+      "status": "official-overview"
+    },
+    {
+      "id": "laliga-transfer-20260824-julian-alvarez",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "transfer-news",
+      "date": "2026-08-24",
+      "title": "Julián Álvarez 與 Atlético 的轉會僵局持續",
+      "body": "The Guardian 的 Sid Lowe 報導，Julián Álvarez 在 Atlético 與 Barcelona 的轉會傳聞中處於尷尬位置；文章提到他在對 Villarreal 的比賽後成為焦點。這是媒體報導與轉會動態，不代表已完成轉會。",
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/aug/24/julian-alvarez-walks-alone-at-atletico-madrid-barcelona-transfer-saga-la-liga",
+      "verified": true,
+      "status": "reported-saga"
+    },
+    {
+      "id": "laliga-transfer-20260826-market-live",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "transfer-news",
+      "date": "2026-08-26",
+      "title": "西甲轉會市場直播：Driouech、Saliba、Baleba 等動態",
+      "body": "AS 的轉會市場直播更新包括：Celta 官方確認 Driouech 簽約四季；Villarreal 的 Saliba 加盟消息；以及 Carlos Baleba 官方轉投 Manchester United。頁面也混合已確認交易與媒體傳聞，使用時需依條目狀態區分。",
+      "source": "AS",
+      "link": "https://as.com/futbol/primera/mercado-de-fichajes-en-directo-rumores-altas-y-bajas-de-laliga-premier-serie-a-f202608-d-24/",
+      "verified": true,
+      "status": "mixed-official-and-reported"
+    },
+    {
+      "id": "laliga-transfer-20260827-atletico",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "transfer-news",
+      "date": "2026-08-27",
+      "title": "Atlético 進入市場最後階段：尋找前鋒與邊路球員",
+      "body": "AS 報導，距離 9 月 1 日關窗前，Atlético 仍希望增加兩名球員並處理四名離隊人選；報導列出的優先位置是前鋒與邊路，並提到 Osimhen、Nicolas Jackson、Nico González、Matías Fernández-Pardo 等名字。這些屬市場報導，非全部已確認交易。",
+      "source": "AS",
+      "link": "https://as.com/futbol/primera/el-reto-de-mateu-en-seis-dias-f202608-n/",
+      "verified": true,
+      "status": "reported-targets"
+    },
+    {
+      "id": "laliga-transfer-20260828-fran-garcia",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "transfer-news",
+      "date": "2026-08-28",
+      "title": "Fran García 在 Betis 的早期表現受到關注",
+      "body": "AS 報導，Betis 以 400 萬歐元取得 Fran García 50% 權益；他在對 Valencia 的比賽送出助攻並帶來制勝球，文章以其進攻貢獻評估這筆交易的早期回報。",
+      "matches": [
+        { "home": "Valencia", "away": "Real Betis", "score": "0-1" }
+      ],
+      "source": "AS",
+      "link": "https://as.com/futbol/primera/fran-garcia-ya-sale-barato-f202608-n/",
+      "verified": true,
+      "status": "completed-transfer-follow-up"
+    },
+    {
+      "id": "laliga-transfer-20260823-real-madrid-market",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "transfer-news",
+      "date": "2026-08-23",
+      "title": "Real Madrid 對關窗前市場保持觀望",
+      "body": "AS 報導，Real Madrid 目前沒有主動尋找新援，但會留意意外離隊可能，也保留替代方案；文中指出球會認為主要補強工作已完成。",
+      "source": "AS",
+      "link": "https://as.com/futbol/primera/el-real-madrid-preparado-para-la-recta-final-del-mercado-f202608-n/?outputType=amp",
+      "verified": true,
+      "status": "club-market-analysis"
+    }
+  ]
+}

@@ -9,7 +9,32 @@ try {
 
   const cats = [...new Set(news.map(n => n.cat))];
   const codes = [...new Set(news.map(n => n.team).filter(Boolean))].sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
-  const CLS = { 傷停: 'bad', 禁賽: 'bad', 轉會: 'info', 賽前: 'info', 賽程: 'warn', 數據: 'accent', 戰術: 'accent', 陣容: '', 外電: 'warn', 西甲外電: 'warn' };
+  const CLS = { 傷停: 'bad', 禁賽: 'bad', 轉會: 'info', 賽前: 'info', 賽程: 'warn', 數據: 'accent', 戰術: 'accent', 陣容: '', 外電: 'warn', 西甲外電: 'warn', 賽報: 'accent', 轉會外電: 'info' };
+
+  /* 人工整理的外電有三件事一定要標出來,不然讀者分不出這是什麼(鐵則四):
+
+     一、**它不是機器翻譯。** 中文摘要是人寫的。掛上「機器翻譯」標記等於講一件假的事,
+        所以這一類走自己的標記,而且 titleZh / bodyZh 一律不用。
+     二、**摘要裡的比分有沒有跟本站賽果對過。** 對過就說對過;
+        本站沒有那一輪的資料(例如歐冠附加賽)就說無法核對 ——
+        不要讓讀者以為所有數字都驗證過。
+     三、**傳聞不是已確認的交易。** 來源檔自己帶 status,那個區別要一路傳到畫面上。 */
+  const CHECK = {
+    verified: { cls: 'ok', text: '比分已與本站賽果逐場核對' },
+    unverified: { cls: 'warn', text: '本站沒有這一輪的資料,比分無法核對' },
+    none: null,
+  };
+  const curatedMarks = n => {
+    if (!n.curated) return '';
+    const c = CHECK[n.scoreCheck] ?? null;
+    return `<div class="tiny dim" style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span class="pill tiny">人工整理摘要</span>
+      ${n.competition === 'ucl' ? '<span class="pill tiny accent">歐冠</span>' : ''}
+      ${c ? `<span class="pill tiny ${c.cls}">${c.text}</span>` : ''}
+      ${n.statusLabel ? `<span class="pill tiny ${n.statusTone ?? ''}">${C.esc(n.statusLabel)}</span>` : ''}
+      <span>中文摘要為人工整理,<b>不是機器翻譯、也不是原文照抄</b>;完整內容以原文為準。</span>
+    </div>`;
+  };
   let cat = '';
 
   app.innerHTML = `
@@ -20,7 +45,8 @@ try {
           news.some(n => n.titleZh)
             ? '標題與摘要為<b>機器翻譯</b>,原文保留在旁邊 —— 翻譯只做語言轉換,不摘要、不補背景,數字與人名隊名照原文。'
             : '目前顯示原文(尚未產生譯文)。'}`
-      : '三種來源:<b>傷停與轉會</b>來自 FPL 官方欄位(含更新日期,是真的即時資料); <b>賽前看點</b>由預測模型自動生成;<b>數據 / 戰術 / 陣容</b>則是從上季 380 場比賽跑出來的敘事。外部新聞 RSS 可由 <span class="mono">scripts/fetch-news.mjs</span> 更新。'}</p>
+      : '三種來源:<b>傷停與轉會</b>來自 FPL 官方欄位(含更新日期,是真的即時資料); <b>賽前看點</b>由預測模型自動生成;<b>數據 / 戰術 / 陣容</b>則是從上季 380 場比賽跑出來的敘事。外部新聞 RSS 可由 <span class="mono">scripts/fetch-news.mjs</span> 更新。'}
+      ${news.some(n => n.curated) ? '<br><b>賽報 / 外電 / 轉會外電</b>是<b>人工整理</b>的外電摘要,每一則都帶原文連結;摘要裡引用的比分<b>每次建置都會拿本站賽果重新核對</b>,對不上的整則不出。轉會項目會標明是<b>已確認</b>還是<b>媒體報導</b>。' : ''}</p>
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算；本機同步後再手動發布' }),
     ])}
@@ -50,6 +76,7 @@ try {
         <div class="small muted" style="margin-top:5px">${C.esc(n.bodyZh ?? n.body)}</div>
         ${/* 機器翻譯一定要標,而且原文要留著讓人自己對照(鐵則四)。
               沒有譯文時整個標記不出現 —— 不要留一個「未翻譯」的空欄位。 */''}
+        ${curatedMarks(n)}
         ${n.titleZh ? `<div class="tiny dim" style="margin-top:5px">
           <span class="pill tiny warn">機器翻譯</span>
           只翻譯不改寫,數字與人名隊名保留原文;上方灰字是原文標題,可點下方連結看全文。</div>` : ''}

@@ -309,8 +309,16 @@ try {
         ${s.runs.length ? `<div class="section"><h2>本站球隊走到哪一輪</h2>
           <span class="hint">英超與西甲・共 ${s.runs.length} 支・點一列進球隊頁</span></div>
           <div id="runs"></div>` : ''}
+        <div class="section"><h2>淘汰賽</h2>
+          <span class="hint">最新的排在最上面(決賽 → 附加賽)・兩回合制顯示總比分與各回合比分・決賽為單場</span></div>
+        ${/* rounds 的資料順序維持由早到晚(「晉級者有沒有出現在下一輪」那條核對照它走),
+              **只在顯示時倒過來** —— 把資料順序改掉會連帶要改核對邏輯,沒必要。 */''}
+        ${[...s.rounds].reverse().map(r => `<div style="margin-top:14px">
+          <div class="spread"><h3 style="margin:0">${C.esc(r.zh)}</h3>
+            <span class="dim tiny">${r.ties.length} 組・${r.played}/${r.total} 場</span></div>
+          ${[...r.ties].reverse().map(tieCard).join('')}</div>`).join('')}
         <div class="section"><h2>聯賽階段</h2>
-          <span class="hint">36 隊各打 8 場・名次${s.table.order === 'official' ? '取自資料源官方積分榜' : '由本站依賽果排出'}</span></div>
+          <span class="hint">36 隊各打 8 場・名次${s.table.order === 'official' ? '取自資料源官方積分榜' : '由本站依賽果排出'}・這是最早的階段,所以排在淘汰賽下面</span></div>
         <div id="tbl"></div>
         ${s.bandBroken ? `<div class="note" style="margin-top:8px;color:var(--loss)">
           ⚠ 三段結局的名次不連續 —— 賽制可能改了,或資料有問題,這張表的分段先不要當定論。</div>`
@@ -320,13 +328,7 @@ try {
           第 ${s.bands.out?.from}–${s.bands.out?.to} 名止步於此。
           <b>這三段不是照名次推的</b>,是看每一隊實際上出現在附加賽還是直接出現在十六強 ——
           推出來之後名次剛好連續,兩季都是。</div>`}
-        <div class="section"><h2>淘汰賽</h2>
-          <span class="hint">兩回合制・顯示總比分與各回合比分・決賽為單場</span></div>
-        ${leaderBoards(s)}
-        ${s.rounds.map(r => `<div style="margin-top:14px">
-          <div class="spread"><h3 style="margin:0">${C.esc(r.zh)}</h3>
-            <span class="dim tiny">${r.ties.length} 組・${r.played}/${r.total} 場</span></div>
-          ${r.ties.map(tieCard).join('')}</div>`).join('')}`;
+        ${leaderBoards(s)}`;
 
       const runsEl = document.getElementById('runs');
       if (runsEl) runsEl.innerHTML = runsTable(s.runs);
