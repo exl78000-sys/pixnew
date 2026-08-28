@@ -8,6 +8,10 @@ epl/data/cache/api-football-*.json
 epl/data/cache/af-*.json
 # 單檔打包產物:內容是既有資料的重組,每次重建整份都會變,用 npm run bundle 現產即可
 epl/dist/
+# Obsidian vault:聯賽資料夾同樣是產物(npm run obsidian 現產即可,2101 則筆記)。
+# 但 vault/我的筆記/ 是手寫的,一定要進版控 —— 產生器不碰它,git 也不該忽略它。
+epl/vault/*
+!epl/vault/我的筆記/
 
 # ── 通用 ──────────────────────────────
 *.log

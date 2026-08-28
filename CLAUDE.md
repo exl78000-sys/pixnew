@@ -148,6 +148,12 @@ Understat 進球情境、SportMonks 欄位與賽後資料轉換、西甲球隊�
 手動改完前端沒重跑 build 的話,跑 `npm run stamp` 補上;`npm test` 有一節守著
 「戳對不對得回檔案內容」。
 
+**Obsidian vault 是產物,而且有一個不能刪的例外。**
+`npm run obsidian` 產生 `epl/vault/`(2,101 則筆記),比照 `dist/` 不進版控 ——
+但 `vault/我的筆記/` 是使用者手寫的,`.gitignore` 特地留了 `!epl/vault/我的筆記/`。
+產生器只清空自己產生的聯賽資料夾,**不要改成 rm 整個 vault**:那會把手寫筆記
+不可逆地刪掉,而且重跑救不回來。詳見 `docs/接手資訊.md` 的 Obsidian vault 一節。
+
 **改前端一定要真的開來看。** 測試檢查不到版面 —— 用 Playwright 截圖
 (`/opt/pw-browsers/chromium` 已裝好),分頁模式與單檔模式都要看。
 分頁模式(`npm run serve`,port 5173)才是 GitHub Pages 實際部署的那個。
