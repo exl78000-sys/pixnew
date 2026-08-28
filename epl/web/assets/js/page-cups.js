@@ -2,6 +2,9 @@ import * as C from './core.js?v=4032db8f';
 
 const app = document.getElementById('app');
 
+// 盃賽對手的隊徽查表(sourceId → data URI),載入資料後填入
+let CUP_CRESTS = {};
+
 /* 盃賽頁。三件事跟聯賽頁不一樣,而且都會影響怎麼寫:
 
    1. **一百多支球隊,本站只認得英超那 20 支。** 認不得的只給名字,
@@ -23,8 +26,9 @@ function teamCell(t, { align = 'left' } = {}) {
      但本站沒有它的資料,所以點不進去 —— 這兩件事要分開,
      不能因為有圖就假裝我們有這一隊(鐵則三)。 */
   if (!t.code) {
-    const img = t.crest
-      ? `<img class="crest" src="${t.crest}" alt="${name}" title="${name}" loading="lazy" width="26" height="26">`
+    // 隊徽在 cups.json 的查表裡(一支球隊一份),不是掛在每一個球隊格上
+    const img = CUP_CRESTS[t.sourceId]
+      ? `<img class="crest" src="${CUP_CRESTS[t.sourceId]}" alt="${name}" title="${name}" loading="lazy" width="26" height="26">`
       : '';
     if (!img) return `<span class="small" style="text-align:${align}">${name}</span>`;
     return `<span class="small" style="display:inline-flex;align-items:center;gap:6px;text-align:${align};flex-direction:${
@@ -165,6 +169,7 @@ function runsTable(runs) {
 
 try {
   const { meta, clubs, teams, cups } = await C.load('meta', 'clubs', 'teams', 'cups');
+  CUP_CRESTS = cups?.crests ?? {};
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 

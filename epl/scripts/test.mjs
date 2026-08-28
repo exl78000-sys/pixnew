@@ -1680,6 +1680,37 @@ function checkUcl() {
   ok(/const PAGES = \[[^\]]*'ucl'/.test(bundle), '單檔版有收歐冠頁(漏了的話點進去是空白)');
   ok(existsSync(join(W, 'ucl.html')), 'ucl.html 存在');
 
+  /* 盃賽對手的隊徽。**一支球隊只存一份,用 sourceId 查表。**
+     第一版把 data URI 直接掛在每一個球隊格上,同一支球隊在一季裡出現很多次 ——
+     487 個位置 × 8.8 KB,cups.json 從 741 KB 漲到 5.2 MB、
+     單檔版從 16.9 MB 漲到 25.6 MB。同一張圖存了幾百遍,而畫面看不出差別。 */
+  {
+    const cupsPath = join(W, 'data', 'cups.json');
+    if (existsSync(cupsPath)) {
+      const cupsData = JSON.parse(readFileSync(cupsPath, 'utf8'));
+      const lookup = cupsData.crests ?? {};
+      ok(Object.keys(lookup).length > 0, '盃賽對手隊徽:有查表', String(Object.keys(lookup).length));
+      ok(Object.values(lookup).every(v => /^data:image\/png;base64,/.test(v)),
+        '盃賽對手隊徽:全部是內嵌的 PNG(CSP 會擋外部圖,熱連也等於每次開頁去要圖)');
+      // 場次裡不可以再夾帶隊徽 —— 那就是把同一張圖存幾百遍
+      let inline = 0;
+      for (const c of cupsData.cups ?? []) for (const s2 of c.seasons ?? []) {
+        for (const r of s2.rounds ?? []) for (const m of r.matches ?? []) {
+          for (const side of ['home', 'away']) if (m[side]?.crest) inline++;
+        }
+      }
+      ok(inline === 0, '盃賽對手隊徽:沒有掛在每一場上(同一張圖只存一份)', `${inline} 處`);
+      // 有隊徽 ≠ 有身分:那些球隊仍然沒有隊碼
+      const withCrestButCoded = Object.keys(lookup).length && (cupsData.cups ?? []).some(c =>
+        (c.seasons ?? []).some(s2 => (s2.rounds ?? []).some(r => (r.matches ?? []).some(m =>
+          ['home', 'away'].some(side => m[side]?.code && lookup[m[side]?.sourceId])))));
+      ok(!withCrestButCoded, '盃賽對手隊徽:只補本站沒有的球隊,不覆蓋本站自己那份');
+      const cupSrc3 = readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8');
+      ok(/CUP_CRESTS\[t\.sourceId\]/.test(cupSrc3), '盃賽頁:隊徽用 sourceId 查表');
+      ok(!/t\.crest/.test(cupSrc3), '盃賽頁:不再讀每場夾帶的隊徽');
+    }
+  }
+
   /* 盃賽頁:預設顯示哪幾輪要走 visibleRounds(),不要再散在樣板裡。
      「本站球隊還沒進場」那一支只顯示最新一輪 —— 全攤開是幾百場資格賽。 */
   const cupSrc2 = readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8');

@@ -918,21 +918,30 @@ async function main() {
        本站認得的球隊走 crests.json(前端 C.badge 自己會處理),
        這裡只補**認不得的那些對手**:有隊徽就顯示真的隊徽,沒有就維持只給名字。
        掛隊徽不等於給身分 —— 那些球隊仍然沒有隊碼、點不進去。 */
+    let cupCrests = {};
     {
       const p = join(ROOT, 'data', 'manual', 'crests-cups.json');
       const store = existsSync(p) ? JSON.parse(await readFile(p, 'utf8')) : null;
       const byId = store?.crests ?? {};
+      /* **隊徽只放一份,用 sourceId 查。**
+         第一版把 data URI 直接掛在每一個球隊格上,而同一支球隊在一季裡會出現
+         很多次 —— 487 個位置 × 8.8 KB,cups.json 從 741 KB 漲到 5.2 MB、
+         單檔版從 16.9 MB 漲到 25.6 MB。同一張圖存了幾百遍。
+         改成輸出一張 sourceId → data URI 的表,前端自己查。 */
+      const used = new Set();
       let hit = 0, miss = 0;
       for (const c of cups) for (const s of c.seasons) for (const r of s.rounds) for (const m of r.matches) {
         for (const side of ['home', 'away']) {
           const t = m[side];
           if (!t || t.code || !t.sourceId) continue;
-          const crest = byId[t.sourceId];
-          if (crest) { t.crest = crest; hit++; } else miss++;
+          if (byId[t.sourceId]) { used.add(t.sourceId); hit++; } else miss++;
         }
       }
+      cupCrests = Object.fromEntries([...used].map(id => [id, byId[id]]));
       if (Object.keys(byId).length) {
-        console.log(`  盃賽對手隊徽:${hit} 個位置掛上(${Object.keys(byId).length} 隊有圖)・${miss} 個位置沒有圖`);
+        const kb = Object.values(cupCrests).reduce((a, v) => a + v.length, 0) / 1024;
+        console.log(`  盃賽對手隊徽:${Object.keys(cupCrests).length} 隊有圖(蓋到 ${hit} 個球隊格)`
+          + `・${miss} 個格子沒有圖・表大小 ${kb.toFixed(0)} KB`);
       } else {
         console.log('  盃賽對手隊徽:還沒有 crests-cups.json(需要跑 npm run encups 後再跑 npm run cup-crests)');
       }
@@ -940,6 +949,8 @@ async function main() {
     if (cups.length) {
       await write('cups.json', {
         source: 'SportMonks',
+        // 對手隊徽查表:sourceId → data URI。**一支球隊只存一份**,不要掛在每一場上
+        crests: cupCrests,
         retrievedAt: cups.map(c => c.retrievedAt).sort().at(-1) ?? null,
         cups,
       });
