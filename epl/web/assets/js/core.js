@@ -269,11 +269,23 @@ export const LEAGUES = {
   es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge'] },
 };
 
+/* 導覽列分兩組:
+
+     跨聯賽    足球知識 —— 陣型、背號、位置分工。跟看的是英超還是西甲無關,
+               所以排在最左邊、跟下面那一組用一條分隔線隔開。
+     這個聯賽  首頁、實時戰況、球隊…… 換聯賽的時候換的是這一組的內容。
+
+   標籤可以是字串,也可以是「拿聯賽算出來」的函式 ——
+   首頁要顯示「英超首頁 / 西甲首頁」,那是唯一會隨聯賽變的一個。 */
+const SITE_PAGES = [
+  ['knowledge', '足球知識'],
+];
+
 const PAGES = [
   /* 「總覽」與「賽程與預測」合併成一頁。分成兩頁時,讀者看完積分榜想看下一輪
      對誰要再點一次而且整頁重載,而兩頁的頁首、時效標籤與模型說明本來就在講
-     同一件事 —— 等於同一段話維護兩份。名字也跟著改:「總覽」講不出這一頁有什麼。 */
-  ['index', '積分與賽程'],
+     同一件事 —— 等於同一段話維護兩份。 */
+  ['index', L => `${L.zh}首頁`],
   ['live', '實時戰況'],
   /* 教練不再獨立成頁 —— 教練是球隊的屬性,詳細資料在球隊頁的單隊區塊,
      跨教練的場均勝點排行在球隊總覽頁下方。 */
@@ -289,28 +301,38 @@ const PAGES = [
   /* 足球知識:陣型、背號、位置分工。這一頁的內容大半是**足球共識**不是本站的統計,
      所以它自己會把兩層分開標示。兩個聯賽都能開 —— 共識是共用的,
      對照用的數字各聯賽算自己的。 */
-  ['knowledge', '足球知識'],
 ];
 export const pageLabel = p => PAGES.find(([n]) => n === p)?.[1] ?? p;
 
-let navDone = false;
 export function nav() {
-  // 資料缺口的畫面也要有導覽列,而它是在 catch 裡補畫的 ——
-  // 沒有這個旗標的話,錯誤發生在 nav() 之後就會疊出第二條列。
-  if (navDone) return;
-  navDone = true;
+  /* 資料缺口的畫面也要有導覽列,而它是在 catch 裡補畫的 ——
+     沒有這道防護的話,錯誤發生在 nav() 之後就會疊出第二條列。
+
+     這裡**看 DOM 而不是用布林旗標**。原本是 `if (navDone) return;`,
+     而單檔版的 hash 路由每次換頁都會 `.topbar?.remove()` ——
+     旗標在第一頁就被設成 true,之後永遠 return,
+     結果**單檔版第一頁之後整條導覽列都不見了**(實測 bars: 1 → 0)。
+     旗標記的是「這次載入畫過了」,DOM 記的才是「現在畫面上有沒有」。 */
+  if (document.querySelector('.topbar')) return;
   const here = currentPage();
   const lg = league();
   const L = LEAGUES[lg] ?? LEAGUES.pl;
-  const pages = L.open ? PAGES.filter(([p]) => L.open.includes(p)) : PAGES;
+  const allow = ([p]) => (L.open ? L.open.includes(p) : true);
+  const site = SITE_PAGES.filter(allow);
+  const pages = PAGES.filter(allow);
   document.title = document.title.replace(/(?:英超|西甲)戰情室/, L.brand);
+  // 標籤可以是函式(首頁的「英超/西甲」要跟著切換走)
+  const tab = ([p, l]) =>
+    `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${typeof l === 'function' ? l(L) : l}</a>`;
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
       <a class="brand" href="${link('index')}"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
+      ${site.length ? `<nav class="tabs site">${site.map(tab).join('')}</nav><span class="nav-sep"></span>` : ''}
+      <nav class="tabs">${pages.map(tab).join('')}</nav>
+      ${/* 切換鈕固定在最右邊。原本排在品牌後面,位置會隨著分頁數量左右浮動 ——
+           換聯賽是最常按的東西之一,它應該永遠在同一個地方。 */''}
       <div class="league-switch" aria-label="切換聯賽">${Object.entries(LEAGUES).map(([k, v]) =>
         `<a href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div>
-      <nav class="tabs">${pages.map(([p, l]) =>
-        `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${l}</a>`).join('')}</nav>
     </div></header>`);
 }
 

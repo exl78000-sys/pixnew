@@ -1,12 +1,12 @@
-import * as C from './core.js?v=7f50b1bd';
-import { mountFixtureList } from './fixture-list.js?v=572ba18e';
-import { mountSimTable } from './sim-table.js?v=1f16f75a';
+import * as C from './core.js?v=3f75ca0d';
+import { mountFixtureList } from './fixture-list.js?v=24f478d5';
 
 const app = document.getElementById('app');
 
 try {
-  const { meta, teams, sim, fixtures, news, table, clubs, reports, results, analysis } =
-    await C.load('meta', 'teams', 'sim', 'fixtures', 'news', 'table', 'clubs', 'reports', 'results', 'analysis');
+  /* 預測積分榜移到實時戰況頁了,所以這一頁不再需要 sim.json —— 少載一份。 */
+  const { meta, teams, fixtures, news, table, clubs, reports, results, analysis } =
+    await C.load('meta', 'teams', 'fixtures', 'news', 'table', 'clubs', 'reports', 'results', 'analysis');
   C.registerTeams(clubs);
   C.registerTeams(teams);
   C.nav();
@@ -17,7 +17,6 @@ try {
   const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
   const nextRound = upcoming[0]?.round ?? null;
   const injuries = news.filter(n => n.cat === '傷停' || n.cat === '禁賽');
-  const simBy = new Map(sim.map(s => [s.code, s]));
   const bt = meta.model.backtest;
 
   /* ── 賽程表(原 page-fixtures.js)── */
@@ -31,7 +30,7 @@ try {
 
   app.innerHTML = `
   <div class="page-head">
-    <h1>${basic ? '西甲・積分與賽程' : '英超・積分與賽程'}</h1>
+    <h1>${basic ? '西甲首頁' : '英超首頁'}</h1>
     <p>${basic
       ? `使用 ${meta.lastSeason} 完整賽果與 ${meta.currentSeason} 已完賽資料，產生積分榜、單場機率與賽季模擬；回歸球隊另有上季 xG、射門、實際陣型與進球情境。完賽後資料會一次性永久快取；球員與教練資料已接入，傷停仍無可靠來源${meta.live?.available ? '，即時比分也已接入' : ''}。`
       : `把 ${meta.historySeasons.join('、')} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`}</p>
@@ -93,10 +92,6 @@ try {
   </div>
   <div id="fixtureList"></div>
 
-  <div class="section"><h2>本季預測積分榜</h2>
-    <span class="hint">蒙地卡羅模擬 ${meta.model.simulationRuns.toLocaleString()} 次賽季</span></div>
-  <div id="simTable"></div>
-
   ${basic ? `<div class="card" style="margin-top:20px">
       <h2>目前資料界線</h2>
       <div>${`<div class="small muted" style="display:grid;gap:8px">
@@ -132,9 +127,6 @@ try {
     </div>
   </div>
   ${C.foot(meta)}`;
-
-  /* 預測積分榜(共用模組,實時戰況頁也用同一份) */
-  mountSimTable('simTable', { sim, teams, table, meta });
 
   /* 近期比賽 */
   document.getElementById('next').innerHTML = upcoming.slice(0, 6).map(f => `
