@@ -114,6 +114,13 @@ export function normaliseCupFixture(fixture, { codeOf }) {
       // 見上面 buildCupTeamIndex 的註解 —— 用寬鬆比對會對錯球隊。
       code: name ? codeOf(name) : null,
       sourceId: p.id ?? null,
+      /* 上游的隊徽網址。**留著網址不等於掛隊徽** ——
+         隊徽會另外抓下來縮圖內嵌(見 fetch-cup-crests.mjs),
+         因為 artifact 的 CSP 會擋外部資源,而且熱連外站等於每次開頁都去要圖。
+         這裡只是把「哪裡拿得到」記下來,而且是**零額外請求**:
+         participants 本來就在 include 裡,image_path 是同一份回傳裡的欄位。 */
+      imageUrl: typeof p.image_path === 'string' && !/placeholder/i.test(p.image_path)
+        ? p.image_path : null,
     };
   }
 

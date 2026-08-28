@@ -18,7 +18,18 @@ const KO = m => (m.kickoff ? C.kickoffLocal(m.kickoff) : '待定');
 function teamCell(t, { align = 'left' } = {}) {
   if (!t) return '<span class="dim small">待定</span>';
   const name = C.esc(t.name ?? '');
-  if (!t.code) return `<span class="small" style="text-align:${align}">${name}</span>`;
+  /* 本站認不得的球隊:**有隊徽就畫隊徽,但仍然沒有連結**。
+     隊徽是那支球隊真實的徽章(上游給的),畫出來不是編身分;
+     但本站沒有它的資料,所以點不進去 —— 這兩件事要分開,
+     不能因為有圖就假裝我們有這一隊(鐵則三)。 */
+  if (!t.code) {
+    const img = t.crest
+      ? `<img class="crest" src="${t.crest}" alt="${name}" title="${name}" loading="lazy" width="26" height="26">`
+      : '';
+    if (!img) return `<span class="small" style="text-align:${align}">${name}</span>`;
+    return `<span class="small" style="display:inline-flex;align-items:center;gap:6px;text-align:${align};flex-direction:${
+      align === 'right' ? 'row-reverse' : 'row'}">${img}<span>${name}</span></span>`;
+  }
   return `<a class="small" href="${C.link('teams', { code: t.code })}"
     style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;flex-direction:${align === 'right' ? 'row-reverse' : 'row'}"
     >${C.badge(t.code)}<span>${C.name(t.code)}</span></a>`;

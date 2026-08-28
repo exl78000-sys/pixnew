@@ -34,7 +34,9 @@ const TTL_HOURS = 12;
    實際踩到:第一版用寬鬆比對把 AFC Liverpool 對成 Liverpool,
    修好之後快取還在 TTL 內,重跑會直接略過 —— **修了等於沒修**。
    版本不同就重抓,不管 TTL。 */
-const SCHEMA_VERSION = 3;   // 3:延長賽改由 ET 比分與 state 判定,不再用 CURRENT≠2ND_HALF 推導
+const SCHEMA_VERSION = 4;
+// 版本沿革:3 延長賽改由 ET 比分與 state 判定;4 留住 participants 的 image_path
+// (零額外請求 —— participants 本來就在 include 裡),供 fetch-cup-crests 抓隊徽用
 
 // 賽事名稱由 SportMonks 決定,不是我們取的 —— 中文名才是我們的。
 export const CUPS = [
