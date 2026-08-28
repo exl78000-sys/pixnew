@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
+import { matchPerson as loanMatchPerson, yearShifted as loanYearShifted } from './verify-loans.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
 import { COMPETITION } from './lib/sources.mjs';
 import { fitPoisson, applyPromotedPrior, predict } from './lib/poisson.mjs';
@@ -2006,10 +2007,20 @@ function checkLoans() {
   ok(v.records.every(r => !rejectedKeys.has(`${r.season}|${r.player}|${r.loanClub}`)),
     '與獨立來源衝突而被退回的紀錄沒有混進發布清單', `退回中 data 類 ${rejectedKeys.size} 筆`);
 
-  // 三、收件匣不可以再出現 2024-25 —— 那一批已判定偽造
-  ok(!inbox.records.some(r => r.season === '2024-25'),
-    '收件匣不含已判定偽造的 2024-25', `共 ${inbox.records.length} 筆`);
-  ok(!!inbox._excluded?.reason, '排除 2024-25 的理由有寫在收件匣裡');
+  /* 三、2024-25 的處置。
+
+     這一條改過一次:第一份交付的 2024-25 是偽造的(從 2025-26 複製、年份 -1),
+     所以當時斷言「收件匣不可以有 2024-25」。2026-08-28 的重做版**重新抽取**了那一季,
+     再用同一條擋就變成擋真資料了。
+
+     所以現在守的不是「有沒有 2024-25」,而是**它有沒有那個偽造的特徵** ——
+     年份平移的指紋(下面第五條在發布清單上守著),以及每一筆有沒有自己的來源。 */
+  const withSource = inbox.records.filter(r => r.source);
+  ok(withSource.length === inbox.records.length,
+    '收件匣每一筆都帶自己的來源網址(交回來的東西要查得到出處)',
+    `${withSource.length} / ${inbox.records.length}`);
+  ok(!!(inbox._delivery || inbox._excluded?.reason),
+    '收件匣寫明了這一份是什麼、前一版發生過什麼');
 
   // 四、年份平移的指紋不可以出現在發布清單裡(這正是偽造那批的特徵)
   const g = new Map();
@@ -2047,9 +2058,30 @@ function checkLoans() {
   ok(v.inboxSha === inboxSha, '核對結果是從目前這一版收件匣產生的',
     v.inboxSha ? `記錄 ${String(v.inboxSha).slice(0, 8)} vs 實際 ${inboxSha.slice(0, 8)}` : '產物沒有記錄雜湊');
 
-  // 七、核對器真的在擋東西 —— 一筆都沒退回的話多半是它壞了,不是資料完美
-  ok((v.rejected ?? []).length > 0, '核對器有實際退回紀錄(不是空轉)',
-    `退回 ${(v.rejected ?? []).length} 筆`);
+  /* 七、核對器本身還有沒有在運作。
+
+     原本這裡寫「一定要有退回紀錄,否則多半是它壞了」—— 那條是錯的:
+     2026-08-28 的重做版交付通過了每一項檢查,退回 0 筆是資料乾淨,不是核對器壞掉。
+     改成直接測那兩支純函式,而且測的正是**真的出過錯的那兩件事**。 */
+
+  // 姓名比對曾經「姓氏唯一就回傳」,於是 Gustavo Nunes 比到 Matheus Nunes(2861 分鐘),
+  // 核對器再拿那個分鐘去指控真紀錄是假的。名字首字母不同就不可以配對。
+  const fpl = [{ n: 'Matheus Nunes' }, { n: 'Konstantinos Tsimikas' }, { n: 'Harry Wilson' }, { n: 'Ben Wilson' }];
+  const nameOf = x => x.n;
+  ok(loanMatchPerson(fpl, 'Gustavo Nunes', nameOf) === null,
+    '姓名比對:姓氏相同但名字不同 → 不配對(Gustavo Nunes ≠ Matheus Nunes)');
+  ok(loanMatchPerson(fpl, 'Kostas Tsimikas', nameOf)?.n === 'Konstantinos Tsimikas',
+    '姓名比對:同姓且名字首字母相同且唯一 → 配得上(Kostas ↔ Konstantinos)');
+  ok(loanMatchPerson(fpl, 'Wilson', nameOf) === null,
+    '姓名比對:只有姓氏、對得到多個人 → 回 null 而不是猜一個');
+
+  // 年份平移偵測:整批複製的指紋。2026-08-28 第一份交付有 14 組。
+  const shiftedFixture = loanYearShifted([
+    { player: 'A', parentClub: 'X', loanClub: 'Y', date: '2024-08-31' },
+    { player: 'A', parentClub: 'X', loanClub: 'Y', date: '2025-08-31' },
+    { player: 'B', parentClub: 'X', loanClub: 'Y', date: '2025-01-10' },
+  ]);
+  ok(shiftedFixture.size === 2, '年份平移偵測:月日相同、差整數年的兩筆會被標記', `標記 ${shiftedFixture.size} 筆`);
   return fail;
 }
 

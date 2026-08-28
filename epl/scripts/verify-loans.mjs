@@ -117,18 +117,27 @@ function fplSeason(season) {
   return rows;
 }
 
-/* 姓名比對:先全名,再「姓氏相同且名字首字母相同」。
-   只比姓氏會對錯人(英超同姓的有 15 組),所以配對不唯一時一律回 null,
-   當成「對不到」而不是猜一個 —— 對錯人比對不到糟得多。 */
-function matchPerson(rows, name, nameOf) {
+/* 姓名比對。**這裡原本有一個會對錯人的 bug,2026-08-28 修掉。**
+
+   原本寫成「姓氏唯一就回傳」,完全沒有檢查名字 —— 於是:
+     Gustavo Nunes → 比到 Matheus Nunes(FPL 唯一姓 Nunes 的人,2861 分鐘)
+     Fer López     → 比到 Hugo Bueno López(2359 分鐘)
+   然後核對器拿那些分鐘去指控真紀錄是假的。整個專案最常講的一句話就是
+   「對錯人比對不到糟得多」,而這支自己犯了。
+
+   現在:全名精確 → 或者姓氏相同**且名字首字母相同**且唯一。
+   兩者都不成立就回 null,當成對不到。 */
+export function matchPerson(rows, name, nameOf) {
   const k = norm(name);
   const exact = rows.filter(r => norm(nameOf(r)) === k);
   if (exact.length === 1) return exact[0];
   const parts = k.split(' '), last = parts.at(-1), first = parts[0] ?? '';
-  const bySurname = rows.filter(r => norm(nameOf(r)).split(' ').at(-1) === last);
-  if (bySurname.length === 1) return bySurname[0];
-  const byInitial = bySurname.filter(r => norm(nameOf(r)).startsWith(first[0] ?? ' '));
-  return byInitial.length === 1 ? byInitial[0] : null;
+  if (!first) return null;
+  const byBoth = rows.filter(r => {
+    const n = norm(nameOf(r));
+    return n.split(' ').at(-1) === last && n.startsWith(first[0]);
+  });
+  return byBoth.length === 1 ? byBoth[0] : null;
 }
 
 // ── 獨立來源 3:西甲逐季球員(Understat)─────────────────
@@ -140,7 +149,7 @@ function laLigaPlayers() {
 /* 交付檔內部的年份平移痕跡。2026-08-28 那一份有 14 組
    「同一個球員 + 母隊 + 租借隊,月日完全相同、剛好差整數年」——
    真實轉會不會連續兩年落在同一個日期。這是整批複製的指紋。 */
-function yearShifted(records) {
+export function yearShifted(records) {
   const g = new Map();
   for (const r of records) {
     if (!r.date) continue;
@@ -166,6 +175,15 @@ function yearShifted(records) {
 /* 夏窗與冬窗的檢查強度不同。夏窗外借的人整季不該有出賽分鐘;
    冬窗外借的人前半季本來就在踢,拿同一個門檻去卡會把真紀錄誤判成假的。
    門檻不是憑感覺:一季 38 輪,冬窗離隊前最多打完約 20 輪 ≈ 1800 分鐘。 */
+/* **沒有日期的時候只能用最寬鬆的門檻。**
+
+   重做版的歷史賽季是 `date: null` + `datePrecision: 'season'` ——
+   對方抽不到穩定的交易日期,照實標了(這是對的做法)。
+   但這樣就分不出夏窗與冬窗,而夏窗門檻 450 分鐘套在真正的冬窗租借上
+   會把真紀錄判成假的:一月才離隊的人前半季本來就踢了一千多分鐘。
+
+   分不出來就用冬窗那個寬門檻 —— 寧可漏掉幾筆該擋的,
+   也不要憑一個我們其實沒有的日期去指控真資料。 */
 const windowOf = date => {
   if (!date) return null;
   const m = Number(date.slice(5, 7));
@@ -173,10 +191,36 @@ const windowOf = date => {
   if (m === 1 || m === 2) return 'winter';
   return 'other';
 };
-const MINUTES_CAP = { summer: 450, winter: 1800, other: 1800 };
+const MINUTES_CAP = { summer: 450, winter: 1800, other: 1800, unknown: 1800 };
+
+/* 交付檔是從 HTML 表格抽出來的,字串裡會留著沒解碼的 HTML entity:
+   `Brighton &amp; Hove Albion`、`Matt O&#039;Riley`(2026-08-28 那份有 44 筆)。
+   不只是難看 —— 姓名正規化會把 `&#039;` 變成 `039` 這個 token,
+   然後 O'Riley 就永遠配不到本站的球員。
+
+   在**讀進來的邊界**解掉,不手改交付檔:那份是協作方交的東西,
+   要保持原樣才對得回他們的來源;要修的是我們這一側的正規化。 */
+const HTML_ENTITY = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+const decodeEntities = v => (typeof v === 'string'
+  ? v.replace(/&(#\d+|#x[0-9a-fA-F]+|\w+);/g, (m, code) => {
+    if (code[0] === '#') {
+      const n = code[1] === 'x' ? parseInt(code.slice(2), 16) : Number(code.slice(1));
+      return Number.isFinite(n) ? String.fromCodePoint(n) : m;
+    }
+    return HTML_ENTITY[code.toLowerCase()] ?? m;
+  })
+  : v);
 
 function main() {
   const inbox = read(join(ROOT, 'data', 'manual', 'loans.json'));
+  let decoded = 0;
+  for (const r of inbox.records ?? []) {
+    for (const k of ['player', 'parentClub', 'loanClub']) {
+      const v = decodeEntities(r[k]);
+      if (v !== r[k]) { r[k] = v; decoded++; }
+    }
+  }
+  if (decoded) console.log(`  · 解掉 ${decoded} 個沒解碼的 HTML entity(交付檔是從 HTML 抽的)`);
   const mem = membership();
   const clubs = clubIndex();
   const es1 = laLigaPlayers();
@@ -188,6 +232,7 @@ function main() {
   const shifted = yearShifted(inbox.records);
 
   const seen = new Set();
+  const labelIssues = [];
   const out = [];
   for (const r of inbox.records) {
     const checks = [];
@@ -213,11 +258,24 @@ function main() {
        只查母隊,不查目的地 —— 租借目的地本來就常常是低一級或國外的球隊
        (2025-26 租到英冠的 Hull City、2026-27 租到英冠的 Leicester 都完全正常)。
        第一版連目的地一起查,一口氣誣賴了 15 筆真紀錄。 */
+    /* 2026-08-28 的重做版把 `league` 拆成 `parentLeague` / `loanLeague`,
+       這正是我們請對方改的 —— 舊的單一欄位有時是母隊的聯賽、有時是目的地的,
+       拿它當索引會誤判。舊格式仍然讀得動(fallback 到 league)。 */
     const LEAGUE_OF = { 'Premier League': 'pl', LaLiga: 'es1' };
-    if (parent && LEAGUE_OF[r.league] === parent.lg) {
+    const parentLeague = r.parentLeague !== undefined ? r.parentLeague : r.league;
+    /* 母隊的 parentLeague 標錯**不退回這一筆**。
+
+       標錯不代表這筆租借是假的,而且這個欄位下游根本沒有用到
+       (lib/loans.mjs 用的是隊碼,不是聯賽名)。為了一個 metadata 標籤退回真紀錄,
+       跟前面那兩個誤判是同一種錯。改成記成 labelIssue,收工時一次列出來回報。
+
+       原本用它抓到 Leeds 那批偽造的 —— 但真正定罪的是出賽分鐘與年份平移,
+       這一條只是最便宜的偵測器,不該單獨當判決依據。 */
+    if (parent && LEAGUE_OF[parentLeague] === parent.lg) {
       const set = mem.get(`${parent.lg}|${r.season}`);
       if (set && !set.has(parent.code)) {
-        fail(`母隊 ${r.parentClub} 當季不在${parent.lg === 'pl' ? '英超' : '西甲'}(逐季賽果證明)`);
+        labelIssues.push({ season: r.season, player: r.player, club: r.parentClub,
+          why: `標成${parent.lg === 'pl' ? '英超' : '西甲'},但該隊當季不在那個聯賽` });
       } else if (set) info(`母隊 ${parent.code} 當季確實在該聯賽`);
     }
 
@@ -225,16 +283,24 @@ function main() {
     if (parent?.lg === 'pl' && loanTo?.lg !== 'pl' && fpl[r.season]) {
       const hit = matchPerson(fpl[r.season], r.player, x => x.full)
         ?? matchPerson(fpl[r.season], r.player, x => x.web);
-      const win = windowOf(r.date) ?? 'summer';
+      const win = windowOf(r.date) ?? (r.datePrecision ? 'unknown' : 'summer');
       if (hit && hit.minutes > MINUTES_CAP[win]) {
-        fail(`宣稱${win === 'summer' ? '夏窗' : '該季'}外借出英超,但 FPL ${r.season} 有 ${hit.minutes} 分鐘出賽`);
+        fail(`宣稱${win === 'summer' ? '夏窗' : '該季'}外借出英超,但 FPL ${r.season} 有 ${hit.minutes} 分鐘出賽`
+          + (win === 'unknown' ? '(交付檔沒有日期,已用最寬鬆的門檻)' : ''));
       } else if (hit) {
         info(`FPL ${r.season} 出賽 ${hit.minutes} 分鐘,與外借不矛盾`);
       }
     }
 
-    // 檢查三:租到西甲的人,西甲逐季資料找不找得到他在那一隊
-    if (loanTo?.lg === 'es1') {
+    /* 檢查三:租到西甲的人,西甲逐季資料找不找得到他在那一隊。
+
+       **只有在目的地當季真的在西甲時才做。** 原本沒有這個前提,於是:
+       Racing Santander / Cádiz / Granada 2025-26 都在西乙,租過去的人本來就
+       不會出現在西甲資料裡 —— 而他在原隊留下的西甲出賽紀錄被當成「矛盾」。
+       (第一份交付的 Pelayo Fernández → Cádiz 就是被這樣誤判的,我發函退回過,那是錯的。) */
+    const loanInLeagueThatSeason = loanTo?.lg === 'es1'
+      && (mem.get(`es1|${r.season}`)?.has(loanTo.code) ?? false);
+    if (loanInLeagueThatSeason) {
       const sameSeason = es1.filter(p => p.season === r.season);
       if (sameSeason.length) {
         /* 判「矛盾」的門檻比判「確認」高:只有**全名精確對上**才敢說資料錯,
@@ -266,8 +332,11 @@ function main() {
       : positives.length ? 'confirmed'
         : checks.length ? 'consistent' : 'unverifiable';
 
+    /* 交付檔自己帶了 verification.status。**不採用** —— 協作方回報「檢查全過」不算數(鐵則五)。
+       但記下來,收工時可以比對「對方說 confirmed 的,本站核對結果是什麼」。 */
     out.push({
       ...r, verdict,
+      claimedStatus: r.verification?.status ?? null,
       checks: checks.map(c => (c.ok ? '✓ ' : '✗ ') + c.msg),
       dataFail: checks.some(c => !c.ok && c.kind === 'data'),
       parentCode: parent?.code ?? null,
@@ -334,6 +403,8 @@ function main() {
       evidence: r.checks.filter(c => c.startsWith('✓')),
       source: r.source ?? null,
     })),
+    /* 聯賽標籤對不上的紀錄照樣發布(標籤下游沒用到),但要列出來讓人看到、回報給交付方。 */
+    labelIssues,
     rejected: out.filter(r => r.verdict === 'contradicted' || r.verdict === 'block-suspect').map(r => ({
       season: r.season, player: r.player, parentClub: r.parentClub, loanClub: r.loanClub,
       kind: r.dataFail ? 'data' : 'hygiene',
@@ -354,6 +425,12 @@ function main() {
   for (const r of out.filter(x => x.verdict === 'contradicted' || x.verdict === 'block-suspect')) {
     console.log(`    ✗ ${r.season} ${r.player}(${r.parentClub} → ${r.loanClub}):${r.checks.filter(c => c.startsWith('✗')).join(';')}`);
   }
+  if (labelIssues.length) {
+    console.log(`\n  ⚠ ${labelIssues.length} 筆的母隊聯賽標籤對不上(照樣發布,標籤下游沒用到,但要回報):`);
+    for (const x of labelIssues.slice(0, 8)) console.log(`     ${x.season} ${x.player} —— ${x.club} ${x.why}`);
+    if (labelIssues.length > 8) console.log(`     …還有 ${labelIssues.length - 8} 筆`);
+  }
   console.log('\n→ data/loans-verified.json');
 }
-main();
+/* 直接執行才跑;被 test.mjs import 時只取純函式(matchPerson / yearShifted)。 */
+if (process.argv[1] && process.argv[1].endsWith("verify-loans.mjs")) main();
