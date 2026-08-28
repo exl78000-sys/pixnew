@@ -145,7 +145,11 @@ export function league() {
   const params = BUNDLE
     ? new URLSearchParams((location.hash.split('?')[1] ?? ''))
     : new URLSearchParams(location.search);
-  return params.get('league') === 'es1' ? 'es1' : 'pl';
+  /* 認得的聯賽由 LEAGUES 決定,不要在這裡再列一次 ——
+     第一版寫死成「是不是 es1」,加第三個聯賽時網址帶 ?league=en2
+     會靜靜退回英超:頁面正常顯示、只是顯示的是另一個聯賽的資料。 */
+  const v = params.get('league');
+  return v && Object.hasOwn(LEAGUES, v) ? v : 'pl';
 }
 
 export function link(page, params = {}) {
@@ -307,6 +311,21 @@ export const stampRow = items =>
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
   es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'ucl'] },
+  /* 英冠只掛「球隊與比賽」那一層。**不是還沒做,是做不出來** ——
+     英冠沒有免費的球員級資料源(Understat 只做五大聯賽、FPL 只有英超,
+     兩者都實測過,見 build-championship.mjs 的檔頭),
+     所以球員、戰術、實時、外電這幾頁在這個聯賽是沒有資料的,不掛上導覽列。
+     網址仍然進得來,由 LeagueGap 講一句實話,不是給一個空白頁。
+     歐冠與足球知識也不掛:英冠球隊不打歐冠,而足球知識的對照數字要靠球員名單。 */
+  en2: {
+    zh: '英冠', brand: '英冠戰情室', en: 'CHAMPIONSHIP WAR ROOM',
+    open: ['index', 'teams', 'model'],
+    /* 缺口頁的預設說法是「資料還在補」—— 那對英冠是**錯的**,
+       它不是還在補,是沒有來源(Understat 不做英冠、FPL 只有英超,兩者都實測過)。
+       說成「還在補」等於暗示以後會有,而我們知道不會。 */
+    gapNote: '英冠沒有球員級的免費資料源 —— Understat 不涵蓋這個聯賽、FPL 只有英超,'
+      + '兩者都實測過。所以這幾頁不是還在補,是做不出來。',
+  },
 };
 
 /* 導覽列分兩組:
@@ -359,7 +378,14 @@ const PAGES = [
      所以它自己會把兩層分開標示。兩個聯賽都能開 —— 共識是共用的,
      對照用的數字各聯賽算自己的。 */
 ];
-export const pageLabel = p => PAGES.find(([n]) => n === p)?.[1] ?? p;
+/* 分頁標籤。**有些標籤是函式**(首頁要顯示「英超首頁 / 西甲首頁 / 英冠首頁」),
+   原本這裡直接回傳,於是缺口頁的「現在看得到的」那一排把函式的原始碼印了出來:
+   `L => \`${L.zh}首頁\``。導覽列自己有解開,這一支沒有 —— 同一件事兩個地方各做一次
+   的典型後果。現在解開收在這裡,兩邊都用它。 */
+export const pageLabel = (p, lg = league()) => {
+  const l = (PAGES.find(([n]) => n === p) ?? SITE_PAGES.find(([n]) => n === p))?.[1] ?? p;
+  return typeof l === 'function' ? l(LEAGUES[lg] ?? LEAGUES.pl) : l;
+};
 
 export function nav() {
   /* 資料缺口的畫面也要有導覽列,而它是在 catch 裡補畫的 ——
@@ -1242,7 +1268,7 @@ export function eloTrend(points, { w = 760, h = 232, color = 'var(--accent)' } =
 }
 
 // 缺口畫面要說「這一頁靠什麼」,而讀者不認得 shapes、leaders 這些檔名。
-const DATASET_ZH = {
+export const DATASET_ZH = {
   live: '即時比賽資料',
   formation: '官方陣型',
   shapes: '攻守分型',
@@ -1250,6 +1276,10 @@ const DATASET_ZH = {
   leaders: '球員排行榜',
   news: '球隊動態',
   form: '走查回測結果',
+  tactics: '戰術資料',
+  knowledge: '足球知識的共識層',
+  // 缺這一條的話缺口頁會印「這一頁得靠 cups 才畫得出來」—— 把內部鍵給讀者看
+  cups: '英格蘭盃賽賽果',
 };
 
 /* ── 官方進球時間軸 ─────────────────── */
@@ -1313,9 +1343,10 @@ function gapScreen({ league: lg, page, needs }) {
   app.innerHTML = `
     <div class="page-head">
       <h1>${esc(L.zh)}還沒有「${esc(pageLabel(page))}」這一頁</h1>
-      <p>${what
-        ? `這一頁得靠${esc(what)}才畫得出來,${esc(L.zh)}的${needs.length > 1 ? '這幾份' : '這份'}資料還在補。`
-        : `${esc(L.zh)}這一頁需要的資料還在補。`}
+      <p>${what ? `這一頁得靠${esc(what)}才畫得出來。` : ''}
+         ${L.gapNote
+           ? esc(L.gapNote)
+           : `${esc(L.zh)}的${needs?.length > 1 ? '這幾份' : '這份'}資料還在補。`}
          寧可先不給,也不要拿半套的數字撐版面 —— 那會讓人以為是真的。</p>
     </div>
     <div class="card">

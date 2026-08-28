@@ -7,7 +7,12 @@ import { lambdas } from './poisson.mjs';
 const SIGMA_KNOWN = 0.10;    // 有充足樣本的球隊,強度估計的標準差
 const SIGMA_PRIOR = 0.15;    // 套用升班馬先驗的球隊,不確定性更大
 
-export function simulateSeason({ model, fixtures, codes, played = [], runs = 10000, seed = 20262027 }) {
+/* promotion:「前幾名直接升級」。英超與西甲沒有這個概念,不給就不算 ——
+   輸出多一個欄位對它們沒有意義,而且會讓前端以為每個聯賽都有直升。
+   英冠是前 2 直升、3~6 打附加賽,所以「前四」那一欄在那裡沒有意義,
+   要換成「直升」才講得對。既有的 top4Pct / top6Pct 語意不變(就是 ≤4 與 ≤6),
+   不去改它們的名字 —— 名字對得上值,是這個檔案最不該動的東西。 */
+export function simulateSeason({ model, fixtures, codes, played = [], runs = 10000, seed = 20262027, promotion = null }) {
   const idx = new Map(codes.map((c, i) => [c, i]));
   const n = codes.length;
 
@@ -43,6 +48,7 @@ export function simulateSeason({ model, fixtures, codes, played = [], runs = 100
 
   const sumPts = new Float64Array(n), sumPos = new Float64Array(n);
   const title = new Float64Array(n), top4 = new Float64Array(n), top6 = new Float64Array(n), releg = new Float64Array(n);
+  const promo = new Float64Array(n);
   const posHist = Array.from({ length: n }, () => new Float64Array(n + 1));
   const pts = new Float64Array(n), gd = new Float64Array(n);
   const nAtt = new Float64Array(n), nDef = new Float64Array(n);
@@ -68,6 +74,7 @@ export function simulateSeason({ model, fixtures, codes, played = [], runs = 100
       const t = order[k], pos = k + 1;
       sumPts[t] += pts[t]; sumPos[t] += pos; posHist[t][pos]++;
       if (pos === 1) title[t]++;
+      if (promotion && pos <= promotion) promo[t]++;
       if (pos <= 4) top4[t]++;
       if (pos <= 6) top6[t]++;
       if (pos >= n - 2) releg[t]++;
@@ -79,6 +86,7 @@ export function simulateSeason({ model, fixtures, codes, played = [], runs = 100
     expectedPoints: round(sumPts[i] / runs, 1),
     expectedPos: round(sumPos[i] / runs, 2),
     titlePct: round((title[i] / runs) * 100, 1),
+    ...(promotion ? { promotionPct: round((promo[i] / runs) * 100, 1) } : {}),
     top4Pct: round((top4[i] / runs) * 100, 1),
     top6Pct: round((top6[i] / runs) * 100, 1),
     relegationPct: round((releg[i] / runs) * 100, 1),

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0965f58a';
+import * as C from './core.js?v=79cced2d';
 
 const app = document.getElementById('app');
 
@@ -321,12 +321,24 @@ try {
      (英超有球員級數據與傷停,西甲沒有),所以留一個小函式各給各的;
      卡片、教練席、教練資料的誠實層則是同一份。 */
   function overviewIntro() {
+    /* **隊數不可以寫死。** 原本兩個分支都寫「20 支球隊」—— 英超西甲剛好都是 20,
+       所以三年都沒事;英冠是 24 隊,照抄就會在畫面上印一個假數字。
+       數字一律從資料來。 */
+    const n = teams.length;
+    const runs = meta.model.simulationRuns.toLocaleString();
+    /* 沒有球員資料的聯賽(英冠)要自己講一句實話 —— 不能套用下面那句
+       「風格標籤來自每一位球員的數據」,那在這裡是不存在的東西。 */
+    if (meta.capabilities?.players === false) {
+      return `${meta.currentSeason} 的 ${n} 支球隊。卡片上的期望積分來自 ${runs} 次賽季模擬。
+        這個聯賽沒有球員級資料源,所以沒有陣容、xG 與風格標籤 ——
+        詳情頁有的是戰績、近期表現、主客場差異與歷來交手。`;
+    }
     if (meta.edition === 'basic') {
-      return `${meta.currentSeason} 的 20 支球隊。除戰績、近期表現與模型模擬外,
+      return `${meta.currentSeason} 的 ${n} 支球隊。除戰績、近期表現與模型模擬外,
         回歸球隊另有 ${meta.lastSeason} 真實 xG、射門、陣型與進球情境;
         球員與教練資料已由可用來源接入,傷停目前沒有可靠來源。`;
     }
-    return `${meta.currentSeason} 的 20 支球隊。卡片上的期望積分來自 ${meta.model.simulationRuns.toLocaleString()} 次賽季模擬,
+    return `${meta.currentSeason} 的 ${n} 支球隊。卡片上的期望積分來自 ${runs} 次賽季模擬,
       風格標籤則是從上季的每一場比賽與每一位球員的數據推出來的。點進去看完整剖析。`;
   }
 
@@ -532,9 +544,14 @@ try {
       ['本季目前', cur?.p
         ? `${cur.pts} 分<span class="dim"> ${cur.p} 場</span>`
         : '<span class="dim">尚無完賽</span>'],
-      ['前四 / 降級', s
-        ? `${s.top4Pct}%<span class="dim"> / ${s.relegationPct}%</span>`
-        : '<span class="dim">—</span>'],
+      /* 「前四」是歐冠資格的界線,英冠沒有這回事(前 2 直升、3~6 附加賽)。
+         有 promotionPct 的聯賽換成「直升 / 降級」—— 判斷看資料有沒有這個欄位,
+         不要在前端寫死聯賽代碼。 */
+      s?.promotionPct != null
+        ? ['直升 / 降級', `${s.promotionPct}%<span class="dim"> / ${s.relegationPct}%</span>`]
+        : ['前四 / 降級', s
+          ? `${s.top4Pct}%<span class="dim"> / ${s.relegationPct}%</span>`
+          : '<span class="dim">—</span>'],
     ];
     const coachName = t.coach?.zh ?? t.coach?.name ?? null;
     return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">

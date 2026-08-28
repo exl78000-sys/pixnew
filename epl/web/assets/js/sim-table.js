@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0965f58a';
+import * as C from './core.js?v=79cced2d';
 
 /* ── 本季預測積分榜(共用模組) ─────────────────────────
    兩個地方在畫同一張表:積分與賽程頁,以及實時戰況頁
@@ -30,8 +30,22 @@ export function mountSimTable(mountId, { sim, teams, table, meta, note = true })
       render: r => `<b>${r.expectedPoints}</b>` },
     { key: 'titlePct', label: '奪冠', value: r => r.titlePct, num: true,
       render: r => `${r.titlePct}%${C.bar(r.titlePct, 100)}` },
-    { key: 'top4Pct', label: '前四', value: r => r.top4Pct, num: true,
-      render: r => `${r.top4Pct}%${C.bar(r.top4Pct, 100, 'alt')}` },
+    /* 「前四」是英超與西甲的界線(歐冠資格)。英冠不是 —— 那裡是**前 2 直升、
+       3~6 打附加賽**,第四名跟第五名沒有差別。所以哪個聯賽有 promotionPct
+       就換成「直升 / 附加賽區」,沒有的維持原樣。
+       用資料裡有沒有這個欄位來判斷,不要在前端寫死聯賽代碼 ——
+       寫死的話再加一個聯賽就要回來改這裡,而且會忘。 */
+    ...(sim[0]?.promotionPct != null ? [
+      { key: 'promotionPct', label: '直升', value: r => r.promotionPct, num: true,
+        title: '前 2 名直接升上英超',
+        render: r => `${r.promotionPct}%${C.bar(r.promotionPct, 100, 'alt')}` },
+      { key: 'top6Pct', label: '附加賽區', value: r => r.top6Pct, num: true,
+        title: '第 3~6 名打升級附加賽',
+        render: r => `${r.top6Pct}%${C.bar(r.top6Pct, 100, 'alt')}` },
+    ] : [
+      { key: 'top4Pct', label: '前四', value: r => r.top4Pct, num: true,
+        render: r => `${r.top4Pct}%${C.bar(r.top4Pct, 100, 'alt')}` },
+    ]),
     { key: 'relegationPct', label: '降級', value: r => r.relegationPct, num: true,
       render: r => `${r.relegationPct}%${C.bar(r.relegationPct, 100, 'hot')}` },
     { key: 'last', label: '上季', value: r => (teamBy.get(r.code)?.lastSeason?.pos ?? 99), num: true,

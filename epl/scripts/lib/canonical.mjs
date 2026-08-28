@@ -29,6 +29,15 @@ export const COMPETITIONS = {
     extraTime: false, penalties: false, twoLegged: false,
     crossLeague: false, crossTier: false,
   },
+  /* 英冠。附加賽(Playoffs)有延長賽與 PK,但那是季末四隊的事 ——
+     聯賽本身沒有,所以這裡照聯賽宣告,附加賽的場次在建站時單獨標 stage 並排除在積分榜外。 */
+  'eng.2': {
+    code: 'eng.2', name: 'EFL Championship', zh: '英格蘭足球冠軍聯賽', short: '英冠',
+    country: 'ENG', type: 'league',
+    teams: 24, roundsPerSeason: 46,
+    extraTime: false, penalties: false, twoLegged: false,
+    crossLeague: false, crossTier: false,
+  },
   // 之後要加的(規劃已寫好,尚未實作):
   // 'uefa.cl': { type:'europe', extraTime:true, penalties:true, twoLegged:true, crossLeague:true }
   // 'eng.fa' : { type:'cup',    extraTime:true, penalties:true, twoLegged:false, crossTier:true }

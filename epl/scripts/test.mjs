@@ -1060,6 +1060,29 @@ async function checkDataGap() {
       !/build|404|npm/i.test(g('es1', 'news', ['news'], { ...full, news: [] }).message)],
     ['缺口帶得出這一頁需要什麼',
       g('es1', 'news', ['news'], { ...full, news: [] }).needs.join() === 'news'],
+
+    /* ── 英冠(2026-08-28 加的第三個聯賽)──
+       它只掛三頁,而且**做不到的那幾頁不是「還在補」** —— 沒有來源。
+       缺口頁的文案要講得出這個差別。 */
+    ['英冠的球員頁要擋', !!g('en2', 'players', ['players', 'leaders'])],
+    ['英冠的戰術頁要擋', !!g('en2', 'tactics', ['tactics'], { tactics: [1] })],
+    ['英冠的實時頁要擋', !!g('en2', 'live', ['live'])],
+    ['英冠的首頁、球隊、模型不擋',
+      ['index', 'teams', 'model'].every(p => !g('en2', p, Object.keys(full)))],
+    ['英冠的缺口說法是「沒有來源」不是「還在補」',
+      /實測|做不出來/.test(V.LEAGUES.en2.gapNote ?? '')],
+
+    /* **分頁標籤有些是函式**(首頁要顯示「英超首頁 / 西甲首頁 / 英冠首頁」)。
+       pageLabel 原本直接回傳,於是缺口頁把函式的原始碼印在畫面上:
+       `L => \`${L.zh}首頁\``。實際看到才發現的,所以補一條守著。 */
+    ['pageLabel 解得開函式標籤', V.pageLabel('index', 'en2') === '英冠首頁'
+      && V.pageLabel('index', 'pl') === '英超首頁'],
+    ['pageLabel 不會把程式碼吐給讀者',
+      !['index', 'teams', 'model', 'ucl', 'knowledge', 'cups']
+        .some(p => /=>|\$\{/.test(V.pageLabel(p, 'en2')))],
+    ['缺口訊息不會把資料集的內部鍵給讀者看',
+      ['live', 'players', 'leaders', 'news', 'form', 'tactics', 'knowledge', 'cups']
+        .every(k => /[\u4e00-\u9fff]/.test(V.DATASET_ZH?.[k] ?? ''))],
   ];
 
   let fail = 0;
