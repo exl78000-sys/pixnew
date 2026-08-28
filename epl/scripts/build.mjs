@@ -909,6 +909,12 @@ async function main() {
     if (ucl) {
       await write('ucl.json', ucl);
       for (const s of ucl.seasons) {
+        if (s.availability === 'draw-only') {
+          console.log(`  歐冠 ${s.label}:已抽籤未開賽・${s.total} 組對戰・${s.teams} 隊`
+            + `・本站認得 ${s.teamsKnown}/${s.teamsTotal} 隊・結構自洽 ${s.draw.check.sane}`
+            + `・單一來源(${s.source})`);
+          continue;
+        }
         if (s.availability !== 'available') { console.log(`  歐冠 ${s.label}:${s.availability}`); continue; }
         console.log(`  歐冠 ${s.label}:${s.total} 場・完賽 ${s.played}・${s.teams} 隊`
           + `・延長 ${s.aet}・PK ${s.shootouts}・名次來源 ${s.table.order}`
@@ -916,6 +922,12 @@ async function main() {
           + (s.champion ? `・冠軍 ${s.champion.team.name}` : ''));
         if (s.advancementProblems.length) console.log(`  ⚠ 歐冠 ${s.label} 晉級核對有問題:`, s.advancementProblems);
         if (s.table.mismatches.length) console.log(`  ⚠ 歐冠 ${s.label} 積分榜與官方對不上:`, s.table.mismatches);
+        if (s.crossCheck) {
+          console.log(`    第二來源核對(${s.crossCheck.source}):隊名 ${s.crossCheck.teamsMatched}/${s.crossCheck.teamsTotal}`
+            + `・逐場 ${s.crossCheck.aligned}/${s.crossCheck.total}・問題 ${s.crossCheck.problemCount}`
+            + ` → ${s.crossCheck.passed ? '通過' : '未通過,球員榜不採用'}`);
+          if (!s.crossCheck.passed) console.log('     ', s.crossCheck.problems.slice(0, 5));
+        }
       }
     } else {
       console.log('  歐冠:沒有快取(需要 FOOTBALL_DATA_TOKEN 跑 npm run ucl),本次不產出 ucl.json');

@@ -35,6 +35,7 @@ import { groupByStage, winnerOf, runsByTeam, championOf } from './lib/cups.mjs';
 import { teamRecord } from './lib/table.mjs';
 import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
 import { normaliseMatchDetail } from './lib/adapters/api-football.mjs';
+import { nameTokens as uclNameTokens } from './lib/adapters/fotmob-ucl.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -1520,6 +1521,61 @@ function checkUcl() {
     // 沒見過的比分類別出現就要紅 —— 代表上游有我們沒核對過的東西
     ok(s.unknownDurations.length === 0, `${s.label}:沒有未核對的比分類別`, s.unknownDurations.join('、'));
     ok(s.champion !== null, `${s.label}:有冠軍`);
+  }
+
+  /* ── 六、人工交付的 FotMob 檔 ──────────────────
+     鐵則五:協作方自己回報「檢查全過」不算數,要拿獨立來源逐場核對。
+     這裡的獨立來源是 football-data.org(完全不同的供應商)。 */
+  for (const s2 of avail) {
+    const cc = s2.crossCheck;
+    if (!cc) { ok(false, `${s2.label}:應該要有第二來源核對結果`); continue; }
+    ok(cc.teamsMatched === cc.teamsTotal, `${s2.label}:FotMob 的 36 隊全部對得上主來源`,
+      `${cc.teamsMatched}/${cc.teamsTotal}`);
+    ok(cc.aligned === cc.total, `${s2.label}:${cc.total} 場的日期與主客全部對得上`, `${cc.aligned}/${cc.total}`);
+    ok(cc.problemCount === 0, `${s2.label}:兩個來源的比分 0 場不一致`,
+      cc.problems.slice(0, 3).map(p => p.text).join(' / '));
+    ok(cc.passed, `${s2.label}:第二來源核對通過`);
+    // 核對沒過就不可以採用球員榜 —— 這條守的是「不要挑一個喜歡的答案」
+    ok(cc.passed || !s2.leaders, `${s2.label}:核對沒過時不採用第二來源的球員榜`);
+    if (s2.leaders) {
+      ok(s2.leaders.length >= 4, `${s2.label}:球員榜有多個類別`, String(s2.leaders.length));
+      ok(s2.leaders.every(b => b.rows.length && b.rows.every(r => Number.isFinite(r.value))),
+        `${s2.label}:每一榜都有名次而且值是數字`);
+      ok(s2.leaders.every(b => Number.isFinite(b.pool)), `${s2.label}:每一榜都標了母體人數(不是完整名單)`);
+    }
+  }
+
+  /* 隊名橋兩個實際踩過的坑。
+     一、PSV:football-data 那邊整個隊名就叫 "PSV",當停用詞會變成空 token。
+     二、Inter / Brest:全名是 "FC Internazionale Milano" 與 "Stade Brestois 29",
+        跟 FotMob 的簡稱一個共同 token 都沒有 —— 一定要連 shortName 一起比。 */
+  {
+    const nameTokens = uclNameTokens;
+    ok(nameTokens('PSV').length > 0, '隊名橋:PSV 不會被正規化成空的');
+    ok(nameTokens('PSV Eindhoven').some(t => nameTokens('PSV').includes(t)),
+      '隊名橋:PSV 與 PSV Eindhoven 有共同 token');
+    ok(nameTokens('Olympiacos').join() === nameTokens('Olympiakos').join(), '隊名橋:c/k 拼法一致');
+    ok(nameTokens('Pafos FC').join() === nameTokens('Paphos FC').join(), '隊名橋:f/ph 拼法一致');
+  }
+
+  /* ── 七、只有抽籤的那一季 ─────────────────────
+     **不可以顯示開球時間與輪次** —— 上游那 144 場全部是同一個佔位時間、
+     輪次全是 null。把佔位時間端上畫面就是編數字(鐵則一)。 */
+  const draw = (ucl.seasons ?? []).filter(x => x.availability === 'draw-only');
+  for (const d of draw) {
+    ok(d.singleSource === true, `${d.label}:標記成單一來源(沒有第二份可以核對)`);
+    ok(d.draw?.check?.sane === true, `${d.label}:抽籤結構自洽`, JSON.stringify(d.draw?.check));
+    ok(d.draw.check.homePerTeam.length === 1 && d.draw.check.awayPerTeam.length === 1
+      && d.draw.check.homePerTeam[0] === d.draw.check.awayPerTeam[0],
+      `${d.label}:每隊主客場次數一樣`, JSON.stringify(d.draw.check));
+    ok(d.draw.check.repeatedPairs === 0, `${d.label}:沒有重複的對戰組合`);
+    ok(d.draw.check.distinctOpponents.join() === d.draw.check.playedPerTeam.join(),
+      `${d.label}:每個對手只碰一次`);
+    const json = JSON.stringify(d.draw);
+    ok(!/kickoff|utcDate|"date"/i.test(json), `${d.label}:抽籤資料裡沒有開球時間(上游只有佔位值)`);
+    ok(!/roundName|matchday/i.test(json), `${d.label}:抽籤資料裡沒有輪次(上游全是 null)`);
+    ok(d.played === 0 && !d.champion, `${d.label}:沒有比分也沒有冠軍`);
+    ok(d.teamsKnown > 0, `${d.label}:本站認得的球隊有對到隊碼`, `${d.teamsKnown}/${d.teamsTotal}`);
   }
 
   /* ── 五、導覽列 ─────────────────────────────
