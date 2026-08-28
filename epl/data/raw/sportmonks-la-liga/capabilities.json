@@ -4,8 +4,8 @@
   "fixtureId": 19732363,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/my/resources",
-  "retrievedAt": "2026-08-27T18:25:22.719Z",
-  "requests": 10,
+  "retrievedAt": "2026-08-28T01:53:17.381Z",
+  "requests": 12,
   "my": {
     "resources": {
       "status": 200,
@@ -17,13 +17,70 @@
       "status": 200,
       "available": true,
       "errorCode": null,
-      "items": 5
+      "items": 5,
+      "list": [
+        {
+          "id": 8,
+          "name": "Premier League",
+          "country": 462,
+          "type": "league",
+          "subType": "domestic"
+        },
+        {
+          "id": 9,
+          "name": "Championship",
+          "country": 462,
+          "type": "league",
+          "subType": "domestic"
+        },
+        {
+          "id": 24,
+          "name": "FA Cup",
+          "country": 462,
+          "type": "league",
+          "subType": "domestic_cup"
+        },
+        {
+          "id": 27,
+          "name": "Carabao Cup",
+          "country": 462,
+          "type": "league",
+          "subType": "domestic_cup"
+        },
+        {
+          "id": 564,
+          "name": "La Liga",
+          "country": 32,
+          "type": "league",
+          "subType": "domestic"
+        }
+      ]
     },
     "usage": {
       "status": 200,
       "available": true,
       "errorCode": null,
       "items": 25
+    }
+  },
+  "cupSearch": {
+    "FA Cup": {
+      "status": 200,
+      "available": true,
+      "errorCode": null,
+      "hits": [
+        {
+          "id": 24,
+          "name": "FA Cup",
+          "country": 462
+        }
+      ]
+    },
+    "EFL Cup": {
+      "status": 200,
+      "available": true,
+      "errorCode": null,
+      "hits": []
     }
   },
   "includes": {
@@ -58,5 +115,5 @@
       "errorCode": 5002
     }
   },
-  "note": "只記錄 HTTP 狀態與方案能力；不保存 Token、完整回應或個人資料。200 表示此探測請求可用，403 表示方案未提供。"
+  "note": "只記錄 HTTP 狀態、方案授權的賽事清單(id／名稱／國家)與 include 能力；不保存 Token、完整回應或個人資料。200 表示此探測請求可用，403 表示方案未提供。"
 }
