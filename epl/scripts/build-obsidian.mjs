@@ -716,10 +716,19 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
 
    **不放勝率預測。** 現有模型是用聯賽比賽調的,歐冠有跨聯賽實力比較、
    兩回合制、延長賽、PK 大戰四件它沒見過的事。沒有回測證據就不上(鐵則二)。 */
+/* 本站兩個聯賽認不得的球隊,在 vault 裡自己有一則筆記(`歐冠/球隊/`)。
+   網站那邊只給隊徽不給連結 —— 因為網站沒有這些球隊的頁面可以連。
+   vault 不一樣:一則筆記列出他們在歐冠踢過的每一場,是有內容的,所以連得過去。
+   **仍然不跟聯賽球隊筆記混在一起**:只有認不得的才在這裡開,認得的連回聯賽那一則,
+   否則同一支球隊會有兩個同名檔案,而 Obsidian 的 [[連結]] 會指錯。 */
+const uclExternalFile = new Map();   // football-data id → 筆記檔名
+
 function uclTeamRef(t, links) {
   if (!t) return '(未知)';
   const file = t.code && t.league ? teamFileByCode.get(t.league + ':' + t.code) : null;
   if (file) { links.push(file); return wl(file); }
+  const ext = uclExternalFile.get(t.id);
+  if (ext) { links.push(ext); return wl(ext); }
   return t.name ?? t.fullName ?? '(未知)';
 }
 
@@ -749,10 +758,32 @@ const scoreInconsistent = m => {
 const uclScoreLine = m => scoreParts(m) ?? '未賽';
 
 let uclSource = null;
+let uclExternalCount = 0;
 function buildUcl() {
   const u = load('pl', 'ucl');
   if (!u) return 0;
   uclSource = u.source;
+
+  /* 先走一遍收集認不得的球隊與他們的比賽,筆記檔名要在產生比賽之前就決定好 ——
+     比賽筆記裡的 [[連結]] 需要它。 */
+  const idPath = join(ROOT, 'data', 'manual', 'ucl-team-ids.json');
+  const known = existsSync(idPath)
+    ? new Map((read(idPath).teams ?? []).map(t => [t.fdId, t]))
+    : new Map();
+  const unmapped = existsSync(idPath) ? (read(idPath).unmapped ?? []) : [];
+  const externals = new Map();   // fdId → { name, seasons:Set, matches:[] }
+  for (const s of u.seasons) {
+    const see = t => {
+      if (!t || t.id == null || t.code) return;   // 有隊碼的走聯賽筆記
+      if (!externals.has(t.id)) externals.set(t.id, { id: t.id, name: t.name ?? t.fullName, seasons: new Set(), matches: [] });
+      externals.get(t.id).seasons.add(s.label);
+    };
+    for (const m of s.leagueMatches ?? []) { see(m.home); see(m.away); }
+    for (const rd of s.rounds ?? []) for (const tie of rd.ties ?? []) for (const leg of tie.legs ?? []) { see(leg.home); see(leg.away); }
+    for (const r of s.table?.rows ?? []) see(r);
+  }
+  for (const e of externals.values()) uclExternalFile.set(e.id, sanitize(e.name));
+  uclExternalCount = externals.size;
   const D = '歐冠';
   let count = 0;
   const mocLinks = [];
@@ -804,7 +835,11 @@ function buildUcl() {
       const file = sanitize('歐冠 ' + s.label + ' MD' + String(m.matchday ?? 0).padStart(2, '0')
         + ' ' + (m.home?.name ?? '?') + '-' + (m.away?.name ?? '?'));
       links.push(file);
-      addNote(D + '/比賽/' + file + '.md', renderUclMatch(m, s, '聯賽階段').body, renderUclMatch(m, s, '聯賽階段').links);
+      const r = renderUclMatch(m, s, '聯賽階段');
+      addNote(D + '/比賽/' + file + '.md', r.body, r.links);
+      for (const side of [m.home, m.away]) {
+        if (side && externals.has(side.id)) externals.get(side.id).matches.push({ file, season: s.label, stage: '聯賽階段', m });
+      }
       count++;
     }
     // 淘汰賽:每一回合是一則
@@ -817,6 +852,9 @@ function buildUcl() {
           links.push(file);
           const r = renderUclMatch(leg, s, rd.zh ?? rd.stage, tie);
           addNote(D + '/比賽/' + file + '.md', r.body, r.links);
+          for (const side of [leg.home, leg.away]) {
+            if (side && externals.has(side.id)) externals.get(side.id).matches.push({ file, season: s.label, stage: rd.zh ?? rd.stage, m: leg });
+          }
           count++;
         }
       }
@@ -837,6 +875,52 @@ function buildUcl() {
     addNote(D + '/賽季/' + sf + '.md', body.join(''), links);
     count++;
   }
+
+  /* 認不得的球隊各一則筆記。內容是「他們在歐冠踢過的每一場」——
+     那是真的有東西,不是為了讓連結有地方去而開的空殼(鐵則三)。 */
+  const noCrest = new Set(unmapped.map(x => x.fdId));
+  for (const e of [...externals.values()].sort((a, b) => a.id - b.id)) {
+    const eLinks = [];
+    const b = [];
+    b.push(frontmatter({
+      類型: '球隊', 賽事: '歐冠', 名稱: e.name,
+      來源球隊id: e.id, 出現賽季: [...e.seasons].sort(),
+      場次: e.matches.length, 產生時間: u.retrievedAt,
+    }));
+    b.push('\n# ' + e.name + '\n');
+    b.push('\n> **本站沒有這支球隊的聯賽資料。** 這一則只有他們在歐冠踢過的比賽,\n'
+      + '> 沒有名單、沒有賽季統計 —— 那些本站只收目前在英超與西甲的球隊。\n');
+    if (e.matches.length) {
+      b.push('\n## 歐冠比賽(' + e.matches.length + ' 場)\n\n');
+      const bySeason = new Map();
+      for (const x of e.matches) {
+        if (!bySeason.has(x.season)) bySeason.set(x.season, []);
+        bySeason.get(x.season).push(x);
+      }
+      for (const [season, list] of [...bySeason].sort((a, b2) => b2[0].localeCompare(a[0]))) {
+        b.push('**' + season + '**\n\n');
+        for (const x of list) {
+          eLinks.push(x.file);
+          const opp = x.m.home?.id === e.id ? x.m.away : x.m.home;
+          const ha = x.m.home?.id === e.id ? '主' : '客';
+          b.push('- ' + x.stage + ' ' + ha + ' vs ' + (opp?.name ?? '?') + ' ' + uclScoreLine(x.m) + ' → ' + wl(x.file) + '\n');
+        }
+        b.push('\n');
+      }
+    }
+    b.push('\n## 資料界線\n\n');
+    b.push(noCrest.has(e.id)
+      ? '- **連隊徽都沒有**:FotMob 三季檔案裡都沒有這一支,而本站不從別處找來源不明的圖補\n'
+      : '- 隊徽有(FotMob,人工交付並核對過);但本站仍然沒有這支球隊的聯賽資料\n');
+    b.push('- 來源:' + u.source + '(賽果)\n');
+    addNote(D + '/球隊/' + sanitize(e.name) + '.md', b.join(''), eLinks);
+    mocLinks.push(sanitize(e.name));
+    count++;
+  }
+
+  mocBody.push('\n## 本站沒有聯賽資料的球隊(' + externals.size + ' 支)\n\n');
+  mocBody.push([...externals.values()].sort((a, b) => a.id - b.id)
+    .map(e => wl(sanitize(e.name))).join(' · ') + '\n');
 
   mocBody.push('\n## 資料界線\n\n- 來源:' + u.source + '\n');
   mocBody.push('- **不做勝率預測** —— 見任一賽季筆記的說明\n');

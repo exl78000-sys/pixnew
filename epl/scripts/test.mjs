@@ -1609,6 +1609,37 @@ function checkCuratedNews() {
 
 function checkUcl() {
   let fail = 0;
+  /* 認不得的球隊的隊徽。三件事要釘住:
+     一、隊徽的 key 是 FotMob id,對照表是另一份檔;兩邊對不上就代表有一邊改過沒同步。
+     二、**有隊徽不等於有球隊頁** —— 網站上那些球隊只給圖不給連結。
+     三、對照不到的那一支(Paphos FC)不可以偷偷生一張圖出來。 */
+  {
+    const okU = (cond, label, extra = '') => {
+      if (!cond) fail++;
+      console.log(`  ${cond ? '✔' : '✗'} ${label}${extra ? ` (${extra})` : ''}`);
+    };
+    const idp = join(ROOT, 'data', 'manual', 'ucl-team-ids.json');
+    const crp = join(ROOT, 'data', 'manual', 'crests-ucl.json');
+    if (existsSync(idp) && existsSync(crp)) {
+      const map = JSON.parse(readFileSync(idp, 'utf8'));
+      const crests = JSON.parse(readFileSync(crp, 'utf8')).crests ?? {};
+      const mapIds = new Set((map.teams ?? []).map(t => String(t.fotmobId)));
+      const crestIds = new Set(Object.keys(crests));
+      okU([...mapIds].every(x => crestIds.has(x)) && [...crestIds].every(x => mapIds.has(x)),
+        '歐冠隊徽的 key 與 id 對照表完全一致',
+        `對照 ${mapIds.size} / 隊徽 ${crestIds.size}`);
+      okU((map.unmapped ?? []).every(u => !crestIds.has(String(u.fotmobId ?? ''))),
+        '對照不到的球隊沒有被硬補一張圖',
+        (map.unmapped ?? []).map(u => u.fdName).join('、') || '無');
+      const assets = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'ucl-teams.json'), 'utf8'));
+      okU((assets.external ?? []).every(t => t.crest && !t.code),
+        '外部球隊只帶名字與隊徽,沒有隊碼(有隊碼就會被當成有球隊頁)',
+        `${(assets.external ?? []).length} 支`);
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-ucl.js'), 'utf8');
+      okU(/externalCrest/.test(src) && !/externalCrest[\s\S]{0,400}C\.link\(/.test(src),
+        '歐冠頁對外部球隊不給連結(沒有球隊頁可以連)');
+    }
+  }
   const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
 
   const W = join(ROOT, 'web');

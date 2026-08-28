@@ -29,11 +29,23 @@ const KO = m => (m.kickoff ? C.kickoffLocal(m.kickoff) : '待定');
    照舊只給上游的名字、不畫隊徽(畫一個灰方塊寫代號看起來像壞掉)。 */
 const registered = code => !!code && C.team(code).en !== code;
 
+/* 本站認不得的球隊的隊徽,key 是 football-data 的 team id。
+   由 mount 時填入(ucl-teams.json 的 external)。
+   **有隊徽不等於有球隊頁** —— 這一組只畫圖,不給連結;
+   連到一個空頁比不連更糟(鐵則三)。 */
+let externalCrest = new Map();
+
 function teamCell(t, { align = 'left', strong = false } = {}) {
   if (!t?.name) return '<span class="dim small">待定</span>';
   const label = C.esc(registered(t.code) ? C.name(t.code) : t.name);
   const weight = strong ? 'font-weight:700' : '';
-  if (!t.code) return `<span class="small" style="${weight}">${label}</span>`;
+  if (!t.code) {
+    const crest = externalCrest.get(t.id);
+    const dir2 = align === 'right' ? 'row-reverse' : 'row';
+    if (!crest) return `<span class="small" style="${weight}">${label}</span>`;
+    return `<span class="small" style="display:inline-flex;align-items:center;gap:6px;flex-direction:${dir2};${weight}"
+      ><img class="crest" src="${crest}" alt="${label}" title="${label}" loading="lazy" width="26" height="26"><span>${label}</span></span>`;
+  }
   const dir = align === 'right' ? 'row-reverse' : 'row';
   return `<a class="small" href="${C.link('teams', { code: t.code, league: t.league ?? undefined })}"
     style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;flex-direction:${dir};${weight}"
@@ -249,6 +261,7 @@ try {
      順序反過來的話,本聯賽比較完整的那筆(配色、球場、chartColor)
      會被只帶名字與隊徽的那筆蓋掉一部分。 */
   C.registerTeams(uclTeams?.teams ?? []); C.registerTeams(clubs); C.registerTeams(teams);
+  externalCrest = new Map((uclTeams?.external ?? []).map(t => [t.id, t.crest]));
   C.nav();
 
   const seasons = ucl?.seasons ?? [];

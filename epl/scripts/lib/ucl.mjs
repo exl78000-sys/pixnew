@@ -404,9 +404,16 @@ export async function loadUclSeasons(root, sources) {
  * 所以把歐冠裡「本站認得的球隊」的名字與隊徽收成一份共用檔,
  * 兩個 build 各產一次、內容逐位元組相同(有測試守著)。
  *
- * **界線沒有變**:只收本站兩份名單裡真的有的球隊。
- * PSG、Bayern 這些我們沒有的,照舊只給上游的名字、不畫隊徽 ——
- * 畫一個灰方塊寫著代號看起來像壞掉(鐵則三)。
+ * **2026-08-28 起多一層:本站沒有的球隊也給隊徽,但仍然不給連結。**
+ * 54 支歐冠球隊裡本站只認得 13 支,其餘 41 支原本連隊徽都沒有。
+ * 現在 40 支有了(FotMob,人工交付並核對過),掛在 `external` 這一組,
+ * key 是 **football-data 的 team id** —— 因為 ucl.json 裡的球隊只有那個 id。
+ * fd id ↔ FotMob id 的對照落地在 `data/manual/ucl-team-ids.json`,
+ * **不在這裡做隊名比對**:模糊比對會靜靜對錯球隊(盃賽頁踩過兩次)。
+ *
+ * **界線仍然在**:有隊徽不等於有球隊頁。本站沒有 Bayern 的資料,
+ * 所以那一格是「隊徽 + 名字」,不是連結 —— 連到一個空頁比不連更糟(鐵則三)。
+ * Paphos FC 是 FotMob 三季檔案裡都沒有的那一支,照舊只有名字。
  */
 export async function uclTeamAssets(root, ucl) {
   const { readFile } = await import('node:fs/promises');
@@ -445,10 +452,34 @@ export async function uclTeamAssets(root, ucl) {
   }
   // 排序固定,兩個 build 的輸出才會逐位元組相同
   rows.sort((a, b) => (a.code < b.code ? -1 : a.code > b.code ? 1 : 0));
+
+  /* 本站認不得的球隊:只給名字與隊徽,不給連結。
+     對照與隊徽各自一份檔案,這裡只負責接起來 —— 接不起來就不給,不猜。 */
+  const external = [];
+  const idPath = join(root, 'data', 'manual', 'ucl-team-ids.json');
+  const crestPath = join(root, 'data', 'manual', 'crests-ucl.json');
+  let externalUnmapped = 0;
+  if (existsSync(idPath) && existsSync(crestPath)) {
+    const map = JSON.parse(await readFile(idPath, 'utf8'));
+    const crests = JSON.parse(await readFile(crestPath, 'utf8')).crests ?? {};
+    externalUnmapped = (map.unmapped ?? []).length;
+    for (const t of map.teams ?? []) {
+      const crest = crests[String(t.fotmobId)] ?? null;
+      if (!crest) continue;   // 對照有、圖沒抓到 → 當成沒有,不給半套
+      external.push({ id: t.fdId, en: t.fdName, crest });
+    }
+    external.sort((a, b) => a.id - b.id);
+  }
+
   return {
     note: '歐冠頁專用:本站兩個聯賽認得的球隊的名字與隊徽。跨聯賽一份,英超與西甲的內容相同。',
     codesInUcl: codes.size,
     known: rows.length,
     teams: rows,
+    /* 認不得的球隊的隊徽,key 是 football-data 的 team id。
+       有隊徽不代表有球隊頁 —— 前端只畫圖,不給連結。 */
+    externalNote: '本站沒有這些球隊的資料,只有名字與隊徽(FotMob,人工交付並核對過)。有隊徽不等於有球隊頁,所以不給連結。',
+    external,
+    externalUnmapped,
   };
 }

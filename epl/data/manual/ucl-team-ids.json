@@ -1,0 +1,259 @@
+{
+  "_note": "歐冠球隊的 football-data.org id ↔ FotMob id 對照。歐冠資料(ucl.json)用的是 football-data 的 id,隊徽(crests-ucl.json)用的是 FotMob 的 id,兩邊要靠這一份接起來。",
+  "_why": "不在 build 時做模糊隊名比對 —— 那種比對會靜靜對錯球隊(盃賽頁踩過兩次)。對照落地成檔案,錯了看得出來也改得掉。",
+  "_method": "以隊名 token 交集比對 web/data/ucl.json 三季出現過的球隊 × data/manual/fotmob-ucl-*.json 的球隊,只收完全涵蓋的配對。三支拼法不同的由人工確認:Olympiakos↔Olympiacos、Slavia Praha↔Slavia Prague、Sparta Praha↔Sparta Prague。",
+  "_scope": "只收本站兩個聯賽都不認得的球隊(有隊碼的走 clubs.json / teams-la-liga.json)。",
+  "verifiedAt": "2026-08-28",
+  "unmapped": [
+    {
+      "fdId": 11034,
+      "fdName": "Paphos FC",
+      "why": "FotMob 三季檔案裡都沒有這一支;不從別處找圖補(來源不明的圖比缺一張更糟)"
+    }
+  ],
+  "teams": [
+    {
+      "fdId": 3,
+      "fdName": "Leverkusen",
+      "fotmobId": 8178,
+      "fotmobName": "Bayer Leverkusen"
+    },
+    {
+      "fdId": 4,
+      "fdName": "Dortmund",
+      "fotmobId": 9789,
+      "fotmobName": "Borussia Dortmund"
+    },
+    {
+      "fdId": 5,
+      "fdName": "Bayern",
+      "fotmobId": 9823,
+      "fotmobName": "Bayern München"
+    },
+    {
+      "fdId": 10,
+      "fdName": "Stuttgart",
+      "fotmobId": 10269,
+      "fotmobName": "VfB Stuttgart"
+    },
+    {
+      "fdId": 19,
+      "fdName": "Frankfurt",
+      "fotmobId": 9810,
+      "fotmobName": "Eintracht Frankfurt"
+    },
+    {
+      "fdId": 98,
+      "fdName": "Milan",
+      "fotmobId": 8564,
+      "fotmobName": "Milan"
+    },
+    {
+      "fdId": 102,
+      "fdName": "Atalanta",
+      "fotmobId": 8524,
+      "fotmobName": "Atalanta"
+    },
+    {
+      "fdId": 103,
+      "fdName": "Bologna",
+      "fotmobId": 9857,
+      "fotmobName": "Bologna"
+    },
+    {
+      "fdId": 108,
+      "fdName": "Inter",
+      "fotmobId": 8636,
+      "fotmobName": "Inter"
+    },
+    {
+      "fdId": 109,
+      "fdName": "Juventus",
+      "fotmobId": 9885,
+      "fotmobName": "Juventus"
+    },
+    {
+      "fdId": 113,
+      "fdName": "Napoli",
+      "fotmobId": 9875,
+      "fotmobName": "Napoli"
+    },
+    {
+      "fdId": 498,
+      "fdName": "Sporting CP",
+      "fotmobId": 9768,
+      "fotmobName": "Sporting CP"
+    },
+    {
+      "fdId": 512,
+      "fdName": "Brest",
+      "fotmobId": 8521,
+      "fotmobName": "Brest"
+    },
+    {
+      "fdId": 516,
+      "fdName": "Marseille",
+      "fotmobId": 8592,
+      "fotmobName": "Marseille"
+    },
+    {
+      "fdId": 521,
+      "fdName": "Lille",
+      "fotmobId": 8639,
+      "fotmobName": "Lille"
+    },
+    {
+      "fdId": 524,
+      "fdName": "PSG",
+      "fotmobId": 9847,
+      "fotmobName": "Paris Saint-Germain"
+    },
+    {
+      "fdId": 548,
+      "fdName": "Monaco",
+      "fotmobId": 9829,
+      "fotmobName": "Monaco"
+    },
+    {
+      "fdId": 610,
+      "fdName": "Galatasaray",
+      "fotmobId": 8637,
+      "fotmobName": "Galatasaray"
+    },
+    {
+      "fdId": 611,
+      "fdName": "Qarabağ Ağdam",
+      "fotmobId": 7981,
+      "fotmobName": "Qarabağ FK"
+    },
+    {
+      "fdId": 654,
+      "fdName": "Olympiakos",
+      "fotmobId": 8638,
+      "fotmobName": "Olympiacos",
+      "aliasChecked": true
+    },
+    {
+      "fdId": 674,
+      "fdName": "PSV",
+      "fotmobId": 8640,
+      "fotmobName": "PSV Eindhoven"
+    },
+    {
+      "fdId": 675,
+      "fdName": "Feyenoord",
+      "fotmobId": 10235,
+      "fotmobName": "Feyenoord"
+    },
+    {
+      "fdId": 678,
+      "fdName": "Ajax",
+      "fotmobId": 8593,
+      "fotmobName": "Ajax"
+    },
+    {
+      "fdId": 721,
+      "fdName": "RB Leipzig",
+      "fotmobId": 178475,
+      "fotmobName": "RB Leipzig"
+    },
+    {
+      "fdId": 732,
+      "fdName": "Celtic",
+      "fotmobId": 9925,
+      "fotmobName": "Celtic"
+    },
+    {
+      "fdId": 755,
+      "fdName": "Dinamo Zagreb",
+      "fotmobId": 10156,
+      "fotmobName": "Dinamo Zagreb"
+    },
+    {
+      "fdId": 851,
+      "fdName": "Club Brugge",
+      "fotmobId": 8342,
+      "fotmobName": "Club Brugge"
+    },
+    {
+      "fdId": 907,
+      "fdName": "Sparta Praha",
+      "fotmobId": 10247,
+      "fotmobName": "Sparta Prague",
+      "aliasChecked": true
+    },
+    {
+      "fdId": 930,
+      "fdName": "Slavia Praha",
+      "fotmobId": 7787,
+      "fotmobName": "Slavia Prague",
+      "aliasChecked": true
+    },
+    {
+      "fdId": 1871,
+      "fdName": "Young Boys",
+      "fotmobId": 10192,
+      "fotmobName": "Young Boys"
+    },
+    {
+      "fdId": 1876,
+      "fdName": "København",
+      "fotmobId": 8391,
+      "fotmobName": "FC København"
+    },
+    {
+      "fdId": 1877,
+      "fdName": "RB Salzburg",
+      "fotmobId": 10013,
+      "fotmobName": "Salzburg"
+    },
+    {
+      "fdId": 1887,
+      "fdName": "Shaktar",
+      "fotmobId": 9728,
+      "fotmobName": "Shakhtar Donetsk"
+    },
+    {
+      "fdId": 1903,
+      "fdName": "SL Benfica",
+      "fotmobId": 9772,
+      "fotmobName": "Benfica"
+    },
+    {
+      "fdId": 2021,
+      "fdName": "Sturm Graz",
+      "fotmobId": 10014,
+      "fotmobName": "Sturm Graz"
+    },
+    {
+      "fdId": 3929,
+      "fdName": "Union SG",
+      "fotmobId": 7978,
+      "fotmobName": "Union St.Gilloise"
+    },
+    {
+      "fdId": 5721,
+      "fdName": "Bodø/Glimt",
+      "fotmobId": 8402,
+      "fotmobName": "Bodø/Glimt"
+    },
+    {
+      "fdId": 7283,
+      "fdName": "Crvena Zvedza",
+      "fotmobId": 8687,
+      "fotmobName": "FK Crvena Zvezda"
+    },
+    {
+      "fdId": 7509,
+      "fdName": "Sl. Bratislava",
+      "fotmobId": 6019,
+      "fotmobName": "Slovan Bratislava"
+    },
+    {
+      "fdId": 10601,
+      "fdName": "FK Kairat",
+      "fotmobId": 8037,
+      "fotmobName": "Kairat Almaty"
+    }
+  ]
+}
