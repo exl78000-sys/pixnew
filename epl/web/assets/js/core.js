@@ -506,6 +506,31 @@ export function startCountdowns() {
   cdTimer = setInterval(tick, 1000);
 }
 
+/* 「開賽倒數」要顯示哪幾場。
+
+   規則:**整輪顯示,永遠不把一輪切一半。**
+
+   為什麼不是「取前 N 場」:一輪有幾場是聯賽決定的(英超西甲 20 隊 → 10 場、
+   英冠 24 隊 → 12 場)。實時戰況頁原本寫死 slice(0, 8),於是**每一輪都固定有兩場
+   沒有倒數**,而且被切掉的是開球最晚的那兩場 —— 2026-27 第 2 輪就是
+   Man Utd vs Ipswich 與 Aston Villa vs Arsenal,那四支球隊的球迷在那一頁
+   找不到自己的比賽什麼時候開打。
+
+   為什麼不是「只取最近那一輪」:改期的比賽會讓最近的一場落在**更早的輪次**
+   (一場延到十二月才踢的第 1 輪)。只取它所屬的輪次就等於把整個第 2 輪藏起來,
+   比原本的 bug 更糟。所以是「往後收,湊滿一輪的場數之後在輪次交界處停」。
+
+   fixtures 要**先依開球時間排好**;perRound 從 meta.competition.teams 算,不要寫死。 */
+export function countdownFixtures(upcoming, perRound) {
+  const n = Math.max(1, Math.floor(perRound) || 1);
+  const out = [];
+  for (const f of upcoming) {
+    if (out.length >= n && f.round !== out.at(-1).round) break;
+    out.push(f);
+  }
+  return out;
+}
+
 /* ── 依賽程推導比賽狀態 ─────────────── */
 // 就算完全沒有即時資料源,光靠開賽時間也能知道「現在有哪幾場正在踢」。
 // 注意:這裡算的是「開賽後經過幾分鐘」(含中場休息),不是比賽時鐘的分鐘數,

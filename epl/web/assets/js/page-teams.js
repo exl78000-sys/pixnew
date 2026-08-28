@@ -1,4 +1,4 @@
-import * as C from './core.js?v=79cced2d';
+import * as C from './core.js?v=95deb3b8';
 
 const app = document.getElementById('app');
 
@@ -904,15 +904,36 @@ try {
     </div><div class="tiny dim" style="margin-top:8px">前 ${t.schedule.detail.length} 輪平均難度 ${t.schedule.avg}</div></div>`;
   }
 
+  /* 接下來的賽程。三件事跟原本不一樣:
+
+     1. **位置**。原本排在最後、在「陣容」那一大塊後面 —— 那一頁往下捲二十幾個區塊
+        才看得到「下一場對誰」,等於沒有。現在排在戰績卡下面。
+     2. **連結**。原本連 `index.html?id=…`(首頁的速覽抽屜)。那是全站唯一這樣連的地方,
+        其他每一處單場連結都是 `analysis` 的完整單場頁。從球隊頁跳回首頁再開抽屜,
+        等於把讀者原本在看的球隊頁弄丟了。
+     3. **內容**。原本只有日期,沒有開球時間 —— 而讀者問「什麼時候打」時要的正是時間。
+        現在有本地時區的開球鐘面、輪次、對手隊徽,最近的一場另外給倒數。
+
+     開球時間可能是 null(上游還沒排定),那種就只顯示日期,不要印一個假的時間。 */
   function nextFixturesBlock(t, next) {
     if (!next.length) return '';
-    return `<div class="card" style="margin-top:14px"><h3>接下來的對手</h3>
-      ${next.map(f => {
+    return `<div class="card" style="margin-top:14px">
+      <h3>接下來的賽程</h3>
+      <div class="tiny dim" style="margin-bottom:8px">未賽的下 ${next.length} 場・時間已換算為 ${C.tzName()}・點任一場看完整賽前分析</div>
+      ${next.map((f, i) => {
         const home = f.home === t.code;
+        const opp = home ? f.away : f.home;
         const win = home ? f.prediction?.home : f.prediction?.away;
-        return `<a href="${C.link('index', { id: f.id })}" style="color:inherit;text-decoration:none">
-          <div class="stat-line"><span class="small">${C.dateFull(f.date)} ${home ? '主' : '客'} vs ${C.name(home ? f.away : f.home)}</span>
-          <span class="mono small">${win == null ? '—' : `勝率 ${C.pct(win, 0)}`}</span></div></a>`;
+        return `<a href="${C.link('analysis', { id: f.id })}" style="color:inherit;text-decoration:none">
+          <div class="stat-line">
+            <span class="row small" style="gap:6px;min-width:0">
+              <span class="mono dim">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</span>
+              <span class="pill tiny">${home ? '主' : '客'}</span>${C.badge(opp)}<b>${C.name(opp)}</b>
+              ${f.round != null ? `<span class="tiny dim">第 ${f.round} 輪</span>` : ''}
+            </span>
+            <span class="mono small">${i === 0 && f.kickoff ? C.countdown(f.kickoff)
+              : win == null ? '—' : `勝率 ${C.pct(win, 0)}`}</span>
+          </div></a>`;
       }).join('')}</div>`;
   }
 
@@ -928,6 +949,7 @@ try {
     ${detailHead(t, co)}
     ${kpiRow(t)}
     <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
+    ${nextFixturesBlock(t, next)}
     ${seasonHistorySection(t)}
     ${lastSeasonBlock(t)}
     ${coachCard(co)}
@@ -938,9 +960,11 @@ try {
     ${eloBlock(t)}
     ${scheduleBlock(t)}
     ${squadSection(t)}
-    ${nextFixturesBlock(t, next)}
     ${C.foot(meta)}`;
 
+    /* 倒數要會走 —— 不叫這一支的話,數字停在載入當下,
+       讀者坐在頁面上看著一個慢慢變錯的時間。核心那支自己會清掉上一個計時器。 */
+    C.startCountdowns();
     renderTeamH2H(t);
     renderSquad(t);
   }

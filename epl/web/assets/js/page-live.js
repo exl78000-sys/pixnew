@@ -1,5 +1,5 @@
-import * as C from './core.js?v=79cced2d';
-import { mountSimTable } from './sim-table.js?v=f159f977';
+import * as C from './core.js?v=95deb3b8';
+import { mountSimTable } from './sim-table.js?v=1abf4b0e';
 
 const app = document.getElementById('app');
 
@@ -81,10 +81,18 @@ try {
     // 就算沒有即時資料源,光靠賽程也知道現在有哪幾場正在踢 —— 這一段永遠可用
     const phased = fixtures.map(f => ({ f, s: C.scheduleState(f, now) }));
     const inPlaySched = phased.filter(x => x.s.phase === 'inplay').sort((a, b) => (a.f.kickoff < b.f.kickoff ? -1 : 1));
+    /* 一輪有幾場是**聯賽決定的**:英超西甲 20 隊 → 10 場,英冠 24 隊 → 12 場。
+       這個數字不可以寫死(CLAUDE.md 那條「前端把聯賽的事實寫死」)。 */
+    const perRound = Math.max(1, Math.floor((meta.competition?.teams ?? 20) / 2));
     const awaiting = phased.filter(x => x.s.phase === 'awaiting' && !x.f.played)
-      .sort((a, b) => (a.f.kickoff > b.f.kickoff ? -1 : 1)).slice(0, 12);
+      .sort((a, b) => (a.f.kickoff > b.f.kickoff ? -1 : 1)).slice(0, perRound);
     const upcoming = phased.filter(x => x.s.phase === 'upcoming').map(x => x.f)
       .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
+
+    /* 開賽倒數顯示**整輪**,不是固定筆數。規則與理由(含原本 slice(0, 8) 每一輪
+       固定漏掉兩場的實測)寫在 core.js 的 countdownFixtures —— 抽到那裡是為了
+       能被 npm test 測到:測試看不到 DOM,留在頁面裡就只能用正則掃原始碼。 */
+    const countdownList = C.countdownFixtures(upcoming, perRound);
 
     // 有真正即時資料的比賽優先用即時資料,其餘用賽程推導
     const liveCards = inPlaySched.map(({ f, s }) => ({ f, s, m: liveByKey.get(`${f.home}|${f.away}`) ?? null }));
@@ -194,9 +202,11 @@ try {
           <div class="tiny dim" style="margin-top:6px">賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}</div>
         </a>`).join('')}</div>` : ''}
 
-    <div class="section"><h2>開賽倒數</h2><span class="hint">依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
-    <div class="grid g2">${upcoming.slice(0, 8).map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
-    ${upcoming.length > 8 ? `<div style="margin-top:10px"><a href="${C.link('index')}">看完整賽程(還有 ${upcoming.length - 8} 場)→</a></div>` : ''}
+    <div class="section"><h2>開賽倒數</h2><span class="hint">${countdownList.length
+      ? `第 ${[...new Set(countdownList.map(f => f.round))].join('、')} 輪共 ${countdownList.length} 場・`
+      : ''}依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
+    <div class="grid g2">${countdownList.map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
+    ${upcoming.length > countdownList.length ? `<div style="margin-top:10px"><a href="${C.link('index')}">看完整賽程(之後還有 ${upcoming.length - countdownList.length} 場)→</a></div>` : ''}
 
     ${(doneRest.length || finishedRest.length) ? `
       <div class="section"><h2>已完賽${live.demo && liveRound ? `(重播 ${live.season} 第 ${liveRound} 輪)` : ''}</h2>

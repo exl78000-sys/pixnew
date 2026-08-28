@@ -1080,6 +1080,58 @@ async function checkDataGap() {
     ['pageLabel 不會把程式碼吐給讀者',
       !['index', 'teams', 'model', 'ucl', 'knowledge', 'cups']
         .some(p => /=>|\$\{/.test(V.pageLabel(p, 'en2')))],
+    /* ── 開賽倒數要顯示整輪(2026-08-28 修)──
+       原本是 upcoming.slice(0, 8),而一輪有 10 場(英冠 12 場),
+       所以**每一輪都固定有兩場沒有倒數**,被切掉的還是開球最晚的那兩場。
+       實測 2026-27 第 2 輪:Man Utd vs Ipswich 與 Aston Villa vs Arsenal
+       在整個「開賽倒數」區都找不到。 */
+    ['倒數顯示整輪,不是固定筆數',
+      V.countdownFixtures([...Array(10)].map((_, i) => ({ id: i, round: 2 }))
+        .concat([...Array(10)].map((_, i) => ({ id: 10 + i, round: 3 }))), 10).length === 10],
+    ['英冠一輪 12 場也要整輪顯示',
+      V.countdownFixtures([...Array(12)].map((_, i) => ({ id: i, round: 2 }))
+        .concat([...Array(12)].map((_, i) => ({ id: 12 + i, round: 3 }))), 12).length === 12],
+    /* 改期的落單場次不可以吃掉整輪的名額 —— 只取「第一場所屬的輪次」的話,
+       一場延後到現在才踢的第 1 輪會把整個第 2 輪藏起來,比原本的 bug 更糟。 */
+    ['改期的落單場次不會吃掉整輪的名額', (() => {
+      const rows = [{ id: 'late', round: 1 }, ...[...Array(10)].map((_, i) => ({ id: i, round: 2 })),
+        ...[...Array(10)].map((_, i) => ({ id: 10 + i, round: 3 }))];
+      const out = V.countdownFixtures(rows, 10);
+      return out.length === 11 && out[0].id === 'late' && out.every(f => f.round <= 2);
+    })()],
+    ['永遠不會把一輪切一半', (() => {
+      const rows = [...[...Array(4)].map((_, i) => ({ id: i, round: 2 })),
+        ...[...Array(10)].map((_, i) => ({ id: 10 + i, round: 3 })),
+        ...[...Array(10)].map((_, i) => ({ id: 20 + i, round: 4 }))];
+      const out = V.countdownFixtures(rows, 10);
+      const byRound = new Map();
+      for (const f of out) byRound.set(f.round, (byRound.get(f.round) ?? 0) + 1);
+      // 收進來的每一輪都要是完整的(第 2 輪只剩 4 場就是它全部)
+      return byRound.get(2) === 4 && byRound.get(3) === 10 && !byRound.has(4);
+    })()],
+    ['沒有未賽場次時回空陣列', V.countdownFixtures([], 10).length === 0],
+
+    /* ── 球隊頁的「接下來的賽程」(2026-08-28 修)──
+       原本排在最後(陣容那一大塊後面)而且連到 index 的速覽抽屜 ——
+       全站其他每一處單場連結都是 analysis 的完整單場頁。 */
+    ['球隊頁的未來賽程連到單場分析,不是首頁', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      const blk = src.slice(src.indexOf('function nextFixturesBlock'), src.indexOf('function detail('));
+      return /C\.link\('analysis'/.test(blk) && !/C\.link\('index'/.test(blk);
+    })()],
+    ['球隊頁的未來賽程排在陣容之前(排在最後等於沒有)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      /* 兩個都只在版面樣板裡出現一次,直接比位置就夠 ——
+         不要拿 ${C.foot(meta)} 之類的當範圍錨點,那一段在別的函式裡也有。 */
+      const a = src.indexOf('${nextFixturesBlock(');
+      const b = src.indexOf('${squadSection(');
+      return a > 0 && b > 0 && a < b;
+    })()],
+    ['球隊頁的倒數會走(有叫 startCountdowns)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      return /C\.startCountdowns\(\)/.test(src);
+    })()],
+
     ['缺口訊息不會把資料集的內部鍵給讀者看',
       ['live', 'players', 'leaders', 'news', 'form', 'tactics', 'knowledge', 'cups']
         .every(k => /[\u4e00-\u9fff]/.test(V.DATASET_ZH?.[k] ?? ''))],
