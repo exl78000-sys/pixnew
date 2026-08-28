@@ -42,15 +42,15 @@ async function main() {
   const sharedSrc = [];
   for (const name of SHARED) {
     const src = await readFile(join(WEB, 'assets', 'js', `${name}.js`), 'utf8');
-    sharedSrc.push(src.replace(/^import \* as C from '\.\/core\.js';\s*/m, '').replace(/^export /gm, ''));
+    sharedSrc.push(src.replace(/^import \* as C from '\.\/core\.js(\?v=[0-9a-f]+)?';\s*/m, '').replace(/^export /gm, ''));
   }
 
   const pageSrc = {};
   for (const p of PAGES) {
     const src = await readFile(join(WEB, 'assets', 'js', `page-${p}.js`), 'utf8');
     pageSrc[p] = src
-      .replace(/^import \* as C from '\.\/core\.js';\s*/m, '')
-      .replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js';\s*/gm, '');
+      .replace(/^import \* as C from '\.\/core\.js(\?v=[0-9a-f]+)?';\s*/m, '')
+      .replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js(\?v=[0-9a-f]+)?';\s*/gm, '');
   }
 
   const dataFiles = (await readdir(join(WEB, 'data'))).filter(f => f.endsWith('.json'));

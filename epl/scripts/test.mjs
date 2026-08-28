@@ -3,7 +3,8 @@
 // 用來驗證預測引擎沒有偷看未來,而且真的比亂猜好。
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
 import { COMPETITION } from './lib/sources.mjs';
@@ -350,9 +351,12 @@ async function main() {
   console.log('\n▶ 英格蘭盃賽');
   const cupFail = checkCups();
 
+  console.log('\n▶ 資產版本戳(部署後看不看得到更新)');
+  const stampFail = checkAssetStamps();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1265,6 +1269,47 @@ function checkOfficialNames() {
    二、延長賽與 PK 的比分不能被壓成一個數字。
    三、未賽場次不能被算成「踢了但沒贏」。
    四、沒見過的比分類別不給語意,而且要報出來。 */
+/* ── 資產版本戳 ────────────────────────────────
+   「部署了卻沒看到更新」的根因:HTML 直接寫 assets/js/page-index.js,
+   沒有任何版本資訊,瀏覽器繼續端舊的那一份。
+   最難察覺的是 **meta.json 是新的、JS 是舊的** ——
+   頁尾顯示最新建置時間、版面卻是上一版,看起來像改動沒生效。
+   這一節守著:戳有打上、每一頁都有、而且**對得回檔案內容**
+   (對不回就是有人改了檔案卻忘記重跑 stamp)。 */
+function checkAssetStamps() {
+  let fail = 0;
+  const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
+  const W = join(ROOT, 'web');
+  const stripV = t => t.replace(/(\.(?:js|css))\?v=[0-9a-f]{8}/g, '$1');
+  const shortHash = t => createHash('sha256').update(t).digest('hex').slice(0, 8);
+
+  const html = readFileSync(join(W, 'index.html'), 'utf8');
+  ok(/href="assets\/css\/app\.css\?v=[0-9a-f]{8}"/.test(html), 'index.html 的 CSS 有版本戳');
+  ok(/src="assets\/js\/page-index\.js\?v=[0-9a-f]{8}"/.test(html), 'index.html 的頁面 JS 有版本戳');
+  ok(!/<title>總覽/.test(html), 'index.html 的 title 不再是「總覽」');
+
+  const pageIndex = readFileSync(join(W, 'assets', 'js', 'page-index.js'), 'utf8');
+  ok(/from '\.\/core\.js\?v=[0-9a-f]{8}'/.test(pageIndex), 'page-index 引用 core.js 時帶版本戳');
+  ok(/from '\.\/fixture-list\.js\?v=[0-9a-f]{8}'/.test(pageIndex), 'page-index 引用共用模組時帶版本戳');
+
+  const coreStamp = pageIndex.match(/core\.js\?v=([0-9a-f]{8})/)?.[1];
+  const coreSrc = readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8');
+  ok(coreStamp === shortHash(coreSrc), 'core.js 的戳對得回檔案內容', `${coreStamp} vs ${shortHash(coreSrc)}`);
+
+  const cssStamp = html.match(/app\.css\?v=([0-9a-f]{8})/)?.[1];
+  const cssSrc = stripV(readFileSync(join(W, 'assets', 'css', 'app.css'), 'utf8'));
+  ok(cssStamp === shortHash(cssSrc), 'app.css 的戳對得回檔案內容', `${cssStamp} vs ${shortHash(cssSrc)}`);
+
+  // 漏一頁的話,那一頁就是會「沒看到更新」的那一頁
+  const pages = readdirSync(W).filter(f => f.endsWith('.html'));
+  const missed = pages.filter(f => {
+    const t = readFileSync(join(W, f), 'utf8');
+    return /src="assets\/js\/[\w-]+\.js"/.test(t) || /href="assets\/css\/app\.css"/.test(t);
+  });
+  ok(missed.length === 0, `${pages.length} 頁全部打上版本戳`, missed.join('、'));
+  return fail;
+}
+
 function checkCups() {
   let fail = 0;
   const ok = (cond, label, extra = '') => {
