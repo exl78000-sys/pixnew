@@ -80,18 +80,29 @@ a:hover { text-decoration: underline; }
 nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
 /* 跨聯賽的那一組(足球知識)排最左,用一條細線跟聯賽分頁隔開 */
 .nav-sep { width: 1px; align-self: stretch; min-height: 22px; background: var(--line); }
+/* 分頁靠右,跟切換鈕排同一側;左邊留給品牌與足球知識 */
+nav.tabs.main { margin-left: auto; }
 /* 切換聯賽固定在最右邊 —— 它是最常按的東西之一,位置不該隨分頁數量浮動 */
-.league-switch { margin-left: auto; }
+.league-switch { margin-left: 14px; }
+
+/* 第二層分頁。只在「現在就在這一組裡」時才畫出來,所以它出現本身
+   就是在說「你在分析這一組」——因此左邊掛一個組名,不用讀者自己推。 */
+.subbar { border-top: 1px solid var(--line-soft); background: #ffffff05; }
+.subbar .inner { max-width: 1240px; margin: 0 auto; padding: 7px 20px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.sub-label { font-size: 11.5px; color: var(--ink-3); letter-spacing: 1px; }
+nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
 
 /* 窄螢幕上分頁會換成三行,切換鈕排在最後就會自己獨佔第四行。
    改用 order 把它拉到品牌那一行的最右邊 —— 一樣是「最右邊」,但不多吃一行。 */
 @media (max-width: 700px) {
   .brand { order: -2; }
-  .league-switch { order: -1; }
+  .league-switch { order: -1; margin-left: auto; }
   nav.tabs.site { order: 0; }
-  nav.tabs { order: 1; }
+  nav.tabs.main { order: 1; margin-left: 0; }
   /* 換行之後上下兩組本來就分開了,豎線反而變成一條沒有意義的裝飾 */
   .nav-sep { display: none; }
+  .subbar .inner { padding: 6px 14px; }
 }
 nav.tabs a {
   color: var(--ink-2); padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
@@ -387,6 +398,12 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
 .chart { width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto; }
 .chart.square { max-width: 560px; }
 .radar { max-width: 420px; display: block; margin: 0 auto; }
+
+/* 球隊卡的四個數字:2×2,不是一排四欄。
+   卡片只有頁面寬度的三分之一,四欄各約 55px —— 數字會斷行而且上下錯位。 */
+.team-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 12px; margin-top: 12px; }
+.team-card-stats .mono { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.team-card-stats .dim { font-size: 11.5px; }
 
 /* ── 統計格 ───────────────────────────
    取代「勝 / 和 / 負 → 26 / 7 / 5」那種寫法。斜線串起來的數字要讀者

@@ -281,6 +281,16 @@ const SITE_PAGES = [
   ['knowledge', '足球知識'],
 ];
 
+/* 第二層:五個「看資料」的頁面收成一組。頂層列九個分頁的時候,
+   讀者要在一排等重的名字裡找自己要的那一個;收成一組之後頂層只剩四項,
+   而且進到組裡才會出現子分頁 —— 站在哪一層一眼看得出來。
+
+   分組不是只改名字:子分頁列只在「目前這一頁屬於這一組」時才畫出來。 */
+const GROUPS = [
+  { key: 'analysis', label: '分析', pages: ['teams', 'tactics', 'players', 'news', 'model'] },
+];
+const GROUP_OF = new Map(GROUPS.flatMap(g => g.pages.map(p => [p, g])));
+
 const PAGES = [
   /* 「總覽」與「賽程與預測」合併成一頁。分成兩頁時,讀者看完積分榜想看下一輪
      對誰要再點一次而且整頁重載,而兩頁的頁首、時效標籤與模型說明本來就在講
@@ -317,23 +327,41 @@ export function nav() {
   const here = currentPage();
   const lg = league();
   const L = LEAGUES[lg] ?? LEAGUES.pl;
-  const allow = ([p]) => (L.open ? L.open.includes(p) : true);
-  const site = SITE_PAGES.filter(allow);
-  const pages = PAGES.filter(allow);
+  const allow = p => (L.open ? L.open.includes(p) : true);
+  const site = SITE_PAGES.filter(([p]) => allow(p));
   document.title = document.title.replace(/(?:英超|西甲)戰情室/, L.brand);
-  // 標籤可以是函式(首頁的「英超/西甲」要跟著切換走)
-  const tab = ([p, l]) =>
-    `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${typeof l === 'function' ? l(L) : l}</a>`;
+  const labelOf = l => (typeof l === 'function' ? l(L) : l);
+  const tab = ([p, l]) => `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${labelOf(l)}</a>`;
+
+  /* 頂層只列不在任何組裡的分頁,加上每一組一個入口。
+     組裡一個分頁都不開放的聯賽就整組不出現。 */
+  const top = PAGES.filter(([p]) => allow(p) && !GROUP_OF.has(p)).map(tab);
+  const hereGroup = GROUP_OF.get(here) ?? null;
+  for (const g of GROUPS) {
+    const open = g.pages.filter(allow);
+    if (!open.length) continue;
+    // 組的入口連到組裡第一個開放的分頁;目前正在組裡的話標成作用中
+    top.push(`<a href="${link(open[0])}" class="${g === hereGroup ? 'on' : ''}">${g.label}</a>`);
+  }
+
+  // 子分頁列只在「現在就在這一組裡」時才畫 —— 不然它只是一排跟情境無關的連結
+  const sub = hereGroup
+    ? `<div class="subbar"><div class="inner"><span class="sub-label">${hereGroup.label}</span>
+        <nav class="tabs sub">${PAGES.filter(([p]) => hereGroup.pages.includes(p) && allow(p)).map(tab).join('')}</nav>
+      </div></div>`
+    : '';
+
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
       <a class="brand" href="${link('index')}"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
       ${site.length ? `<nav class="tabs site">${site.map(tab).join('')}</nav><span class="nav-sep"></span>` : ''}
-      <nav class="tabs">${pages.map(tab).join('')}</nav>
+      ${/* 分頁靠右,跟切換鈕排在同一側;左邊留給品牌與跨聯賽的足球知識。 */''}
+      <nav class="tabs main">${top.join('')}</nav>
       ${/* 切換鈕固定在最右邊。原本排在品牌後面,位置會隨著分頁數量左右浮動 ——
            換聯賽是最常按的東西之一,它應該永遠在同一個地方。 */''}
       <div class="league-switch" aria-label="切換聯賽">${Object.entries(LEAGUES).map(([k, v]) =>
         `<a href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div>
-    </div></header>`);
+    </div>${sub}</header>`);
 }
 
 export function foot(meta) {

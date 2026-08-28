@@ -1337,6 +1337,19 @@ function checkAssetStamps() {
   ok(!/\bnavDone\b/.test(coreCode), 'nav() 不用布林旗標擋重複渲染(單檔版換頁會把導覽列砍掉)');
   ok(core.includes("if (document.querySelector('.topbar')) return;"), 'nav() 改看 DOM 判斷要不要畫');
   ok(core.includes("const SITE_PAGES"), '導覽列分成跨聯賽與聯賽兩組');
+
+  /* 第二層分頁。GROUPS 裡列的頁面都必須真的存在於 PAGES ——
+     打錯一個字的話那一頁會從導覽列整個消失(頂層排除它、子層又找不到它),
+     而且不會有任何地方報錯。 */
+  const groupPages = [...core.matchAll(/pages: \[([^\]]+)\]/g)]
+    .flatMap(m => m[1].split(',').map(x => x.trim().replace(/^'|'$/g, '')));
+  ok(groupPages.length >= 5, `分析組收了 ${groupPages.length} 個分頁`);
+  const declared = [...core.matchAll(/^  \['([\w-]+)',/gm)].map(m => m[1]);
+  const orphan = groupPages.filter(p => !declared.includes(p));
+  ok(orphan.length === 0, '分組列的分頁都真的存在於 PAGES', orphan.join('、'));
+  // 每一個被分組的頁面都要有對應的 html,否則子分頁會連到 404
+  const missingHtml = groupPages.filter(p => !existsSync(join(W, `${p}.html`)));
+  ok(missingHtml.length === 0, '分組的每一頁都有對應的 html', missingHtml.join('、'));
   return fail;
 }
 
