@@ -76,7 +76,13 @@ export function subShare(records) {
 }
 
 /* 給前端的完整資料集。每一季一份,球隊頁自己挑要看哪一季。 */
-export function buildGoals(bySeason, { nameOf, codes }) {
+/* matchKeys:這一季的逐球明細**涵蓋哪幾場**(主隊|客隊)。
+   非記不可,因為明細只收核對通過的場次,而賽程會先一步拿到新的賽果 ——
+   兩邊涵蓋的比賽不同時,整季總和本來就不會一樣。
+   沒有這份清單的話,「逐隊進失球對回賽果」那條斷言會在每次有新賽果、
+   而人工交付的明細還沒跟上時變紅,看起來像資料錯了,其實只是涵蓋範圍不同。
+   有了它,核對就限定在同一批比賽上,而且畫面也講得出涵蓋率(鐵則四)。 */
+export function buildGoals(bySeason, { nameOf, codes, matchKeys = {} }) {
   const seasons = {};
   for (const [season, records] of Object.entries(bySeason)) {
     const teams = {};
@@ -111,6 +117,8 @@ export function buildGoals(bySeason, { nameOf, codes }) {
       startKnown: hasStart,
       minKnown: hasMin,
       goals: records.reduce((a, r) => a + r.g, 0),
+      // null = 這一季的來源沒有回報涵蓋哪幾場(往季走 openfootball,整季都有)
+      matchKeys: matchKeys[season] ?? null,
     };
   }
   return seasons;

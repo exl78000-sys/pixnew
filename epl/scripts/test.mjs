@@ -351,12 +351,15 @@ async function main() {
   console.log('\n▶ 英格蘭盃賽');
   const cupFail = checkCups();
 
+  console.log('\n▶ 歐冠');
+  const uclFail = checkUcl();
+
   console.log('\n▶ 資產版本戳(部署後看不看得到更新)');
   const stampFail = checkAssetStamps();
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -398,8 +401,24 @@ function checkGoalsDataset() {
         const v = acc.get(c) ?? { gf: 0, ga: 0 };
         v.gf += gf; v.ga += ga; acc.set(c, v);
       };
-      for (const m of fixtures.filter(m => m.season === season)) {
+      /* **只比對明細真的涵蓋到的那幾場。**
+         逐球明細是人工交付的,只收核對通過的場次;賽程則會先一步拿到新賽果。
+         兩邊涵蓋的比賽不同時,整季總和本來就不會一樣 ——
+         第一版直接比整季總和,於是每次有新賽果落地、明細還沒跟上,
+         這條就變紅,看起來像上游資料錯了,其實只是涵蓋範圍不同。
+         matchKeys 是 build 記下來的涵蓋清單;沒有這個欄位(往季走 openfootball,
+         整季都有)就照舊比整季。 */
+      const covered = Array.isArray(S.matchKeys) ? new Set(S.matchKeys) : null;
+      const seasonFixtures = fixtures.filter(m => m.season === season
+        && (!covered || covered.has(`${m.home}|${m.away}`)));
+      for (const m of seasonFixtures) {
         bump(m.home, m.fh, m.fa); bump(m.away, m.fa, m.fh);
+      }
+      if (covered) {
+        const all = fixtures.filter(m => m.season === season).length;
+        cases.push([`${label} ${season} 明細涵蓋清單對得回賽程(${seasonFixtures.length}/${all} 場)`,
+          seasonFixtures.length === covered.size,
+          `清單 ${covered.size} 場,賽程裡找得到 ${seasonFixtures.length} 場`]);
       }
       /* 賽程檔只放本季,往季的比較就沒有對照組。**這種情況要印成「略過」
          而不是通過** —— 「0 隊全對」是空的綠燈,正是這個專案最怕的東西。
@@ -414,7 +433,7 @@ function checkGoalsDataset() {
         if (!t) { if (v.gf || v.ga) bad.push(`${code} 整隊不見(${v.gf}-${v.ga})`); continue; }
         if (t.for !== v.gf || t.against !== v.ga) bad.push(`${code} ${t.for}-${t.against}≠${v.gf}-${v.ga}`);
       }
-      cases.push([`${label} ${season} 逐隊進失球對回賽果(${acc.size} 隊)`,
+      cases.push([`${label} ${season} 逐隊進失球對回賽果(${acc.size} 隊${covered ? `・限明細涵蓋的 ${covered.size} 場` : ''})`,
         bad.length === 0, bad.slice(0, 3).join(' / ')]);
       }
 
@@ -1384,6 +1403,139 @@ function checkAssetStamps() {
   // 每一個被分組的頁面都要有對應的 html,否則子分頁會連到 404
   const missingHtml = groupPages.filter(p => !existsSync(join(W, `${p}.html`)));
   ok(missingHtml.length === 0, '分組的每一頁都有對應的 html', missingHtml.join('、'));
+  return fail;
+}
+
+/* 歐冠。這一節守的是五件**真的踩過或差一點踩到**的事。
+
+   一、上游的 fullTime 在 PK 場是**含 PK 的累加值**,不是比分。
+   二、兩回合的總比分不可以把 PK 加進去。
+   三、聯賽階段的名次要用官方那份,自己算的只拿來對帳。
+   四、1-8 / 9-24 / 25-36 三段是**看實際參賽推出來的**,不是照名次假設的。
+   五、導覽列的兩份清單都放同一頁的話,會出現兩個「歐冠」。 */
+function checkUcl() {
+  let fail = 0;
+  const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
+
+  const W = join(ROOT, 'web');
+  const uclPath = join(W, 'data', 'ucl.json');
+  if (!existsSync(uclPath)) { console.log('  (沒有 ucl.json,略過)'); return 0; }
+  const ucl = JSON.parse(readFileSync(uclPath, 'utf8'));
+
+  /* 兩個聯賽必須是**同一份**。歐冠是跨聯賽的賽事,兩邊看到不一樣的東西
+     代表有人複製了一份轉換邏輯過去,那份遲早會漂移。 */
+  const esPath = join(W, 'data', 'leagues', 'es1', 'ucl.json');
+  if (existsSync(esPath)) {
+    ok(JSON.stringify(ucl) === readFileSync(esPath, 'utf8').trim()
+      || JSON.stringify(ucl) === JSON.stringify(JSON.parse(readFileSync(esPath, 'utf8'))),
+      '英超與西甲的 ucl.json 完全相同(同一份資料,不是各算一份)');
+  }
+
+  ok(ucl.teamCodeConflicts?.length === 0, '沒有兩支歐冠球隊對到同一個隊碼',
+    JSON.stringify(ucl.teamCodeConflicts ?? []));
+
+  const avail = (ucl.seasons ?? []).filter(s => s.availability === 'available');
+  ok(avail.length >= 2, '至少兩季可用', `${avail.length} 季`);
+
+  for (const s of avail) {
+    const raw = JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'football-data', `ucl-${s.label}.json`), 'utf8'));
+
+    /* ── 一、PK 場的比分 ──────────────────────────
+       原始回傳的 fullTime = regularTime + extraTime + penalties(6 場實測全部成立)。
+       直接印 fullTime 的話,2025-26 決賽會顯示成「PSG 5-4 Arsenal」,
+       實際上是 1-1、PK 4-3 —— 那不是少一個欄位,是把冠軍講錯。 */
+    let sumBad = 0;
+    for (const m of raw.matches) {
+      const sc = m.score ?? {};
+      if (!sc.duration || sc.duration === 'REGULAR') continue;
+      for (const side of ['home', 'away']) {
+        const sum = (sc.regularTime?.[side] ?? 0) + (sc.extraTime?.[side] ?? 0) + (sc.penalties?.[side] ?? 0);
+        if (sum !== sc.fullTime?.[side]) sumBad++;
+      }
+    }
+    ok(sumBad === 0, `${s.label}:上游的 fullTime 仍等於 regular+et+pk(這條變了就要重看轉換)`, `${sumBad} 處不符`);
+
+    const pkMatches = s.rounds.flatMap(r => r.ties.flatMap(t => t.legs)).filter(m => m.pens);
+    ok(pkMatches.length > 0, `${s.label}:有 PK 場可以驗`);
+    for (const m of pkMatches) {
+      const rawM = raw.matches.find(x => x.id === m.id);
+      const ftPair = [rawM.score.fullTime.home, rawM.score.fullTime.away];
+      ok(JSON.stringify(m.final) !== JSON.stringify(ftPair),
+        `${s.label}:PK 場的比分不是 fullTime(${m.home.name} vs ${m.away.name})`,
+        `final ${JSON.stringify(m.final)} / fullTime ${JSON.stringify(ftPair)}`);
+      const expect = [(rawM.score.regularTime?.home ?? 0) + (rawM.score.extraTime?.home ?? 0),
+        (rawM.score.regularTime?.away ?? 0) + (rawM.score.extraTime?.away ?? 0)];
+      ok(JSON.stringify(m.final) === JSON.stringify(expect),
+        `${s.label}:PK 場的比分 = 正規時間 + 延長(${m.home.name} vs ${m.away.name})`);
+    }
+
+    /* ── 二、總比分不含 PK ────────────────────────
+       PK 是總比分打平之後才踢的,加進去等於算兩次。 */
+    for (const r of s.rounds) {
+      for (const t of r.ties) {
+        if (!t.aggregate) continue;
+        const byId = new Map(t.teams.map(x => [x.id, 0]));
+        for (const m of t.legs) {
+          if (!m.final) continue;
+          byId.set(m.home.id, byId.get(m.home.id) + m.final[0]);
+          byId.set(m.away.id, byId.get(m.away.id) + m.final[1]);
+        }
+        const want = t.teams.map(x => byId.get(x.id));
+        if (JSON.stringify(want) !== JSON.stringify(t.aggregate)) {
+          ok(false, `${s.label} ${r.zh}:總比分是兩回合相加、不含 PK`,
+            `${JSON.stringify(t.aggregate)} vs ${JSON.stringify(want)}`);
+        }
+        // PK 分勝負的那幾組,總比分一定是平的
+        if (t.decidedBy === 'penalties') {
+          ok(t.aggregate[0] === t.aggregate[1],
+            `${s.label} ${r.zh}:PK 分勝負的組別總比分是平的`, JSON.stringify(t.aggregate));
+        }
+      }
+    }
+
+    /* ── 三、晉級核對(這一層唯一的獨立驗證,鐵則五)──
+       總比分算錯、PK 判錯、兩回合配錯,任何一種都會讓這條對不上。 */
+    ok(s.advancementProblems.length === 0,
+      `${s.label}:每一組的晉級者都真的出現在下一輪`, JSON.stringify(s.advancementProblems));
+
+    // 兩回合配對:淘汰賽每一組剛好兩場,決賽一場
+    for (const r of s.rounds) {
+      const want = r.stage === 'FINAL' ? 1 : 2;
+      const bad = r.ties.filter(t => t.legs.length !== want);
+      ok(bad.length === 0, `${s.label} ${r.zh}:每一組 ${want} 場`,
+        bad.map(t => t.teams.map(x => x.name).join(' vs ')).join('、'));
+    }
+
+    /* ── 四、積分榜 ───────────────────────────── */
+    ok(s.table.order === 'official', `${s.label}:名次取自官方積分榜,不是本站排的`, s.table.order);
+    ok(s.table.mismatches.length === 0,
+      `${s.label}:本站依賽果算的積分與官方逐隊一致`, JSON.stringify(s.table.mismatches.slice(0, 3)));
+    ok(s.table.rows.length === s.teams, `${s.label}:積分榜的隊數等於參賽隊數`, `${s.table.rows.length} vs ${s.teams}`);
+
+    // 三段結局:名次連續,而且是從實際參賽推的
+    ok(s.bandBroken === false, `${s.label}:直接晉級 / 附加賽 / 淘汰三段的名次連續`, JSON.stringify(s.bands));
+    ok(s.bands.auto?.count + s.bands.playoff?.count + s.bands.out?.count === s.table.rows.length,
+      `${s.label}:三段加起來剛好是全部球隊`);
+
+    // 沒見過的比分類別出現就要紅 —— 代表上游有我們沒核對過的東西
+    ok(s.unknownDurations.length === 0, `${s.label}:沒有未核對的比分類別`, s.unknownDurations.join('、'));
+    ok(s.champion !== null, `${s.label}:有冠軍`);
+  }
+
+  /* ── 五、導覽列 ─────────────────────────────
+     歐冠與足球知識都在 SITE_PAGES(跨聯賽那一組)。
+     **兩份清單都放的話導覽列會出現兩個「歐冠」** —— 這個實際發生過。 */
+  const core = readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8');
+  const siteBlock = core.match(/const SITE_PAGES = \[([\s\S]*?)\];/)?.[1] ?? '';
+  const pagesBlock = core.match(/const PAGES = \[([\s\S]*?)\];/)?.[1] ?? '';
+  const stripComments = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  ok(/'ucl'/.test(siteBlock), '歐冠在 SITE_PAGES(跨聯賽那一組,排在足球知識右邊)');
+  ok(!/'ucl'/.test(stripComments(pagesBlock)), '歐冠**不**在 PAGES(兩邊都放會出現兩個「歐冠」)');
+  ok(/open: \[[^\]]*'ucl'/.test(core), '西甲也開放歐冠(兩個聯賽的球隊都在裡面)');
+
+  const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+  ok(/const PAGES = \[[^\]]*'ucl'/.test(bundle), '單檔版有收歐冠頁(漏了的話點進去是空白)');
+  ok(existsSync(join(W, 'ucl.html')), 'ucl.html 存在');
   return fail;
 }
 

@@ -15,6 +15,7 @@ import { buildGoals } from './lib/goals.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
 import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './lib/knowledge.mjs';
+import { loadUclSeasons } from './lib/ucl.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
@@ -948,6 +949,20 @@ async function main() {
     }
   }
 
+  /* 歐冠。**跟英超共用同一份** —— 歐冠是跨聯賽的賽事,
+     兩邊的頁面看到的必須一模一樣,所以載入與整理都在 lib/ucl.mjs,
+     這裡只是再呼叫一次寫進 es1 的目錄(前端的資料是按聯賽分目錄放的)。
+     複製一份轉換邏輯過來的話,改了一邊另一邊會悄悄過期。 */
+  {
+    const pl = loadTeams(ROOT);
+    const ucl = await loadUclSeasons(ROOT, [{ league: 'pl', codeOf: pl.codeOf }, { league: 'es1', codeOf: T.codeOf }]);
+    if (ucl) {
+      await write('ucl', ucl);
+      const avail = ucl.seasons.filter(x => x.availability === 'available');
+      console.log(`  歐冠:${avail.length} 季可用(${avail.map(x => x.label).join('、')})`);
+    }
+  }
+
   await write('form', {
     asOf: AS_OF, inModel: false, tuned: TUNED, tuning: null,
     situationTuning,
@@ -1024,6 +1039,7 @@ async function main() {
         const data = buildGoals({ [CURRENT_SEASON]: rows }, {
           nameOf: c => names.get(c) ?? `#${c}`,
           codes: curCodes,
+          matchKeys: { [CURRENT_SEASON]: [...keys] },
         });
         // subShare 對這一季無效(算不出先發/替補),標 null 讓畫面知道不能用
         for (const s of Object.values(data)) s.subShare = null;

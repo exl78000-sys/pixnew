@@ -306,7 +306,7 @@ export const stampRow = items =>
 // 進來時由 LeagueGap 給一句實話,不是一個空白頁。
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
-  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge'] },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'ucl'] },
 };
 
 /* 導覽列分兩組:
@@ -319,6 +319,10 @@ export const LEAGUES = {
    首頁要顯示「英超首頁 / 西甲首頁」,那是唯一會隨聯賽變的一個。 */
 const SITE_PAGES = [
   ['knowledge', '足球知識'],
+  /* 歐冠也是跨聯賽的:英超與西甲的球隊都在裡面,而且兩邊看到的是同一份資料。
+     所以它排在足球知識右邊、跟下面那一組用分隔線隔開 ——
+     換聯賽時換的是右邊那一組,這兩頁不換。 */
+  ['ucl', '歐冠'],
 ];
 
 /* 第二層:五個「看資料」的頁面收成一組。頂層列九個分頁的時候,
@@ -348,6 +352,9 @@ const PAGES = [
      這是英格蘭的賽事,西甲那邊連導覽列都不該出現這一項
      (nav() 會依 open 過濾,所以不列就是不顯示)。 */
   ['cups', '英格蘭盃賽'],
+  /* 歐冠不放在這裡 —— 它在上面的 SITE_PAGES(跨聯賽那一組)。
+     **兩份清單都放的話,導覽列會出現兩個「歐冠」**,一個在左邊一個在右邊。
+     足球知識同理,所以這裡也只有註解沒有項目。 */
   /* 足球知識:陣型、背號、位置分工。這一頁的內容大半是**足球共識**不是本站的統計,
      所以它自己會把兩層分開標示。兩個聯賽都能開 —— 共識是共用的,
      對照用的數字各聯賽算自己的。 */

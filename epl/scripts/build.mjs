@@ -21,6 +21,7 @@ import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, sta
 import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
 import { summariseSeason } from './lib/cups.mjs';
+import { loadUclSeasons } from './lib/ucl.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
 import {
@@ -899,6 +900,27 @@ async function main() {
       console.log('  英格蘭盃賽:沒有快取(需要 SPORTMONKS_TOKEN 跑 npm run encups),本次不產出 cups.json');
     }
   }
+  /* 歐冠。**跨聯賽**:英超與西甲兩邊的頁面看到的是同一份,
+     所以載入與整理收在 lib/ucl.mjs,兩邊各呼叫一次(build-laliga 也呼叫同一個)。
+     隊碼對照同時吃英超與西甲兩份名單 —— 歐冠裡兩邊的球隊都有。 */
+  {
+    const es = loadTeams(ROOT, { file: 'teams-la-liga.json' });
+    const ucl = await loadUclSeasons(ROOT, [{ league: 'pl', codeOf: T.codeOf }, { league: 'es1', codeOf: es.codeOf }]);
+    if (ucl) {
+      await write('ucl.json', ucl);
+      for (const s of ucl.seasons) {
+        if (s.availability !== 'available') { console.log(`  歐冠 ${s.label}:${s.availability}`); continue; }
+        console.log(`  歐冠 ${s.label}:${s.total} 場・完賽 ${s.played}・${s.teams} 隊`
+          + `・延長 ${s.aet}・PK ${s.shootouts}・名次來源 ${s.table.order}`
+          + `・本站認得 ${s.teamsKnown}/${s.teamsTotal} 隊`
+          + (s.champion ? `・冠軍 ${s.champion.team.name}` : ''));
+        if (s.advancementProblems.length) console.log(`  ⚠ 歐冠 ${s.label} 晉級核對有問題:`, s.advancementProblems);
+        if (s.table.mismatches.length) console.log(`  ⚠ 歐冠 ${s.label} 積分榜與官方對不上:`, s.table.mismatches);
+      }
+    } else {
+      console.log('  歐冠:沒有快取(需要 FOOTBALL_DATA_TOKEN 跑 npm run ucl),本次不產出 ucl.json');
+    }
+  }
   await write('coaches.json', coaches);
   await write('news.json', news);
   await write('sim.json', sim);
@@ -944,6 +966,7 @@ async function main() {
      「vaastav 的 2026-27 merged_gw 還沒發布(HTTP 404)」—— 現在有替代來源了。
      只收**核對通過**的場次;min 與 start 上游沒有,所以那一季的每 90 分鐘
      與先發/替補拆分不做。 */
+  const goalMatchKeys = {};
   {
     const fmGoalsAll = fotmobGoals(ROOT);
     if (fmGoalsAll && !goalsBySeason[CURRENT_SEASON]) {
@@ -953,12 +976,14 @@ async function main() {
       const { rows, ownGoals } = goalRecords('pl', fmGoalsAll, { onlyKeys: keys });
       if (rows.length) {
         goalsBySeason[CURRENT_SEASON] = rows;
+        goalMatchKeys[CURRENT_SEASON] = [...keys];
         for (const r of rows) if (!goalNames.has(r.code)) goalNames.set(r.code, r.name);
         console.log(`  英超本季逐球明細(FotMob):${keys.size} 場・${rows.length} 筆・烏龍球 ${ownGoals}`);
       }
     }
   }
   const goalsOut = buildGoals(goalsBySeason, {
+    matchKeys: goalMatchKeys,
     nameOf: c => goalNames.get(c) ?? `#${c}`,
     /* team 與 opp 都要收。只收 team 的話,一支「還沒進過球」的球隊
        整個從資料集消失 —— Coventry 首輪 0-3 輸球,goals.json 裡查無此隊,

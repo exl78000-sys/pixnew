@@ -88,6 +88,8 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 | **import 那一行帶著版本戳** | 用字面字串 `from './core.js'` 做 replace **靜靜沒命中**;程式呼叫了沒 import 的東西 → 頁面顯示「載入失敗」,而 `npm test` 全綠(測試檢查不到版面) | `stamp-assets.mjs` 會把 import 改成 `from './core.js?v=abcd1234'`。改 import 那幾行一律用正則 `from '\./x\.js(\?v=[0-9a-f]{8})?'`,而且 replace 之後要斷言真的有命中 |
 | 頁面切換後計時器沒清 | 舊頁面 30 秒後覆蓋 `#app`,看起來像「自動跳回去」 | 用 `C.pageInterval()`,不要裸 `setInterval` |
 | Understat 的資料**不在 HTML 頁裡**(球隊頁與聯賽頁都是) | 抓 `/team/{隊}/{年}` 或 `/league/{聯賽}/{年}` 只回 18 KB 外殼,一個資料變數都沒有 | 球隊用 `/getTeamData/{隊}/{年}`;球員整季數據用 `POST /main/getPlayersStats/`,body 是 `league=La_liga&season=2025`,一個請求回整季 600 人 |
+| **football-data.org 的 `fullTime` 在 PK 場是「累加值」不是比分** | 2025-26 歐冠決賽的 `fullTime` 是 `5-4`,實際上是 **1-1、PK 4-3** —— 直接印會把冠軍講錯 | 實測 6 場全部成立:`fullTime = regularTime + extraTime + penalties`。PK 場的比分要用 `regularTime + extraTime`,**不是 fullTime**。`duration` 是 `REGULAR` / `EXTRA_TIME` / `PENALTY_SHOOTOUT` |
+| **人工交付的明細與賽程涵蓋的比賽不同批** | 新賽果落地、逐球明細還沒跟上時,「逐隊進失球對回賽果」整條變紅,看起來像上游資料錯了 | 明細只收核對通過的場次,所以 `goals.json` 每季記 `matchKeys`(涵蓋哪幾場),核對限定在同一批比賽上 |
 | API 回 **HTTP 200 加一個 error 物件** | 只看 `res.ok` 會把失敗當成功;排程每天跑、每天回報成功,實際一筆都沒抓到 | API-Football 看 `j.errors`、Understat 看 `j.error`。而且要分得出「暫時失敗」與「這個方案就是拿不到」,後者要記錄下來讓畫面講實話 |
 
 ---
@@ -119,6 +121,20 @@ Understat 進球情境、SportMonks 欄位與賽後資料轉換、西甲球隊�
 還停在舊的一份、沒把新落地的賽果算進去,於是逐場比對時賽程說「未賽」。
 `npm run laliga:build` 一次產出兩份,不要單獨手動改任何一份。
 (這條被一次 rebase 弄丟過,補回來。)
+
+**跨聯賽的頁面只能有一份資料。** 足球知識與歐冠兩邊都看得到,
+所以轉換邏輯收在 `scripts/lib/`(歐冠是 `lib/ucl.mjs`),
+`build.mjs` 與 `build-laliga.mjs` **各呼叫一次同一個函式**,產出的 JSON 逐字元相同
+(`npm test` 有一條守著)。複製一份轉換過去的話,改了一邊另一邊會悄悄過期。
+
+**導覽列有兩份清單。** `SITE_PAGES` 是跨聯賽那一組(足球知識、歐冠),
+`PAGES` 是這個聯賽那一組。**同一頁兩邊都放的話,導覽列會出現兩個一樣的分頁** ——
+左邊一個、右邊一個,而且不會有任何地方報錯。實際踩過,測試補了一條。
+
+**先跑 `laliga:build` 再跑 `build`。** `stamp-assets.mjs` 掛在 `npm run build` 的最後,
+會把戳寫進**兩個聯賽**的 `meta.json`;反過來跑的話,`laliga:build` 會把 es1 的
+`meta.json` 重寫掉、戳就不見了,`npm test` 的「meta 記的戳跟實際檔案一致」會紅。
+(workflow 裡的順序本來就是對的,這條是給手動重跑的人看的。)
 
 **資產有版本戳。** `npm run build` 會跑 `scripts/stamp-assets.mjs`,
 依**內容雜湊**給 `web/*.html` 的 CSS/JS 與 JS 之間的 import 打上 `?v=`。
