@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "fetch": "node scripts/fetch.mjs",
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build.mjs && node scripts/stamp-assets.mjs",
+    "stamp": "node scripts/stamp-assets.mjs",
     "all": "node scripts/fetch.mjs --force && node scripts/build.mjs",
     "serve": "node scripts/serve.mjs",
     "test": "node scripts/test.mjs && node scripts/backtest-laliga.mjs && node scripts/test-laliga.mjs",
