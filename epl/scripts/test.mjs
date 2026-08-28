@@ -7,6 +7,7 @@ import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync } from 
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
 import { matchPerson as loanMatchPerson, yearShifted as loanYearShifted } from './verify-loans.mjs';
+import { normName, matchOne as nameMatchOne } from './lib/names.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
 import { COMPETITION } from './lib/sources.mjs';
 import { fitPoisson, applyPromotedPrior, predict } from './lib/poisson.mjs';
@@ -2066,6 +2067,34 @@ function checkLoans() {
 
   // 姓名比對曾經「姓氏唯一就回傳」,於是 Gustavo Nunes 比到 Matheus Nunes(2861 分鐘),
   // 核對器再拿那個分鐘去指控真紀錄是假的。名字首字母不同就不可以配對。
+  /* **只能有一份比對實作。** 2026-08-28 這段程式在 verify-loans.mjs 與 lib/loans.mjs
+     各有一份;我修好核對器那一份,另一份沒動 —— 於是實際掛到球員身上的那一步
+     仍在對錯人,而且畫面上看不出來。實測 20 筆掛錯(Ben Nelson 的租借掛到
+     Reiss Nelson、Gustavo Nunes 的掛到 Matheus Nunes)。這一條守住不准再複製回去。 */
+  for (const f of ['lib/loans.mjs', 'verify-loans.mjs']) {
+    const src = readFileSync(join(ROOT, 'scripts', f), 'utf8');
+    ok(src.includes("from './names.mjs'") || src.includes("from './lib/names.mjs'"),
+      `${f} 的姓名配對走共用的 lib/names.mjs`);
+    ok(!/const\s+norm\s*=\s*s\s*=>\s*String\([\s\S]{0,80}normalize\('NFD'\)/.test(src),
+      `${f} 沒有自己再寫一份姓名正規化`);
+  }
+
+  /* NFD 分解不掉的字母會被整個刪掉:Đorđe Petrović → "or e petrovic"。
+     那比配不到更糟 —— 剩下的殘骸有機會撞到別人。 */
+  ok(normName('Đorđe Petrović') === normName('Djordje Petrovic'),
+    '姓名正規化:Đ 照通用音譯換成 Dj(交付檔寫 Djordje)',
+    `${normName('Đorđe Petrović')} vs ${normName('Djordje Petrovic')}`);
+  ok(nameMatchOne([{ n: 'Đorđe Petrović' }, { n: 'Nikola Milenković' }], 'Djordje Petrovic',
+    { nameOf: x => x.n })?.n === 'Đorđe Petrović',
+    '姓名配對:Đorđe Petrović 配得到交付檔的 Djordje Petrovic');
+  ok(normName('Ø') === 'o' && normName('ß') === 'ss', '姓名正規化:Ø / ß 也處理');
+
+  /* 同一個人在資料裡有多筆(西甲是一人一季一筆,966 筆裡 266 組是跨季重複)——
+     不收成一個候選的話,exact 會配到兩筆然後判定不唯一,同一個人反而永遠配不上。 */
+  const twoSeasons = [{ id: 7, n: 'Rafa Mir' }, { id: 7, n: 'Rafa Mir' }, { id: 9, n: 'Otro Jugador' }];
+  ok(nameMatchOne(twoSeasons, 'Rafa Mir', { nameOf: x => x.n, idOf: x => x.id })?.id === 7,
+    '姓名配對:同一個人的多筆紀錄收成一個候選,不會因為「不唯一」而放棄');
+
   const fpl = [{ n: 'Matheus Nunes' }, { n: 'Konstantinos Tsimikas' }, { n: 'Harry Wilson' }, { n: 'Ben Wilson' }];
   const nameOf = x => x.n;
   ok(loanMatchPerson(fpl, 'Gustavo Nunes', nameOf) === null,

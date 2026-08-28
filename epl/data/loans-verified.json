@@ -1,16 +1,16 @@
 {
   "_note": "產物:由 npm run loans:verify 從 data/manual/loans.json 核對後產生。不要手改,重跑就有。build 只讀這一份。",
-  "verifiedAt": "2026-08-28T09:49:57.888Z",
+  "verifiedAt": "2026-08-28T10:24:40.340Z",
   "inboxSha": "fb54c6df98c0731fd4aac2566263ea04c5c6f91d1c0b5efda4bb9e47a5bde81f",
   "tally": {
-    "unverifiable": 166,
-    "confirmed": 153,
+    "unverifiable": 165,
+    "confirmed": 154,
     "consistent": 440
   },
   "bySeason": {
     "2024-25": {
-      "unverifiable": 131,
-      "confirmed": 43,
+      "unverifiable": 130,
+      "confirmed": 44,
       "consistent": 131
     },
     "2025-26": {
@@ -1102,7 +1102,8 @@
       "datePrecision": "season",
       "verdict": "consistent",
       "evidence": [
-        "✓ 母隊 CHE 當季確實在該聯賽"
+        "✓ 母隊 CHE 當季確實在該聯賽",
+        "✓ FPL 2024-25 出賽 0 分鐘,與外借不矛盾"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/465555/transfer_id/5237081"
     },
@@ -2408,6 +2409,21 @@
         "✓ FPL 2024-25 名單裡找得到他(出賽 1229 分鐘)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/513245/transfer_id/5148047"
+    },
+    {
+      "season": "2024-25",
+      "player": "Albert Grønbaek",
+      "parentClub": "Stade Rennais FC",
+      "loanClub": "Southampton FC",
+      "parentCode": null,
+      "loanCode": "SOU",
+      "date": null,
+      "datePrecision": "season",
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ FPL 2024-25 名單裡找得到他(出賽 141 分鐘)"
+      ],
+      "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/503866/transfer_id/5471610"
     },
     {
       "season": "2024-25",
@@ -9868,12 +9884,6 @@
       "player": "Walid Cheddira",
       "parentClub": "SSC Napoli",
       "loanClub": "RCD Espanyol Barcelona"
-    },
-    {
-      "season": "2024-25",
-      "player": "Albert Grønbaek",
-      "parentClub": "Stade Rennais FC",
-      "loanClub": "Southampton FC"
     },
     {
       "season": "2024-25",

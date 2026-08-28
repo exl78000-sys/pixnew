@@ -71,15 +71,16 @@ function run(file, args = []) {
 }
 
 let exitCode = 0;
+const failedSteps = [];
 for (const [step, args] of STEPS) {
   const code = await run(step, args);
   if (code !== 0) {
-    exitCode = code;
-    console.log(`\n✗ ${step} 結束碼 ${code},停在這裡`);
-    break;
+    exitCode = exitCode || code;
+    failedSteps.push(step);
   }
 }
 
+if (failedSteps.length) console.log(`\n✗ 失敗的步驟:${failedSteps.join('、')}`);
 console.log(`\n▶ 合計:${tally.blocks} 個區塊、${tally.pass + tally.fail} 條斷言、${tally.fail} 條失敗`);
 console.log('  這兩個數字不要寫進文件 —— 每加一條測試就會歪。要引用就指向這一行。');
 process.exit(exitCode);

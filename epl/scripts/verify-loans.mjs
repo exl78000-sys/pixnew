@@ -24,14 +24,14 @@
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
+import { normName, matchOne } from './lib/names.mjs';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = p => JSON.parse(readFileSync(p, 'utf8'));
 const arr = x => (Array.isArray(x) ? x : Object.values(x ?? {}));
 
-const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '')
-  .toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+const norm = normName;
 /* 隊名比對只去**字尾**的 FC/AFC/CF 這類法人形式。
    字首的 AFC 是球隊身分的一部分 —— 去掉的話 AFC Bournemouth 會被對成別人。
    這條在盃賽頁踩過兩次,規則寫在 CLAUDE.md。 */
@@ -117,27 +117,10 @@ function fplSeason(season) {
   return rows;
 }
 
-/* 姓名比對。**這裡原本有一個會對錯人的 bug,2026-08-28 修掉。**
-
-   原本寫成「姓氏唯一就回傳」,完全沒有檢查名字 —— 於是:
-     Gustavo Nunes → 比到 Matheus Nunes(FPL 唯一姓 Nunes 的人,2861 分鐘)
-     Fer López     → 比到 Hugo Bueno López(2359 分鐘)
-   然後核對器拿那些分鐘去指控真紀錄是假的。整個專案最常講的一句話就是
-   「對錯人比對不到糟得多」,而這支自己犯了。
-
-   現在:全名精確 → 或者姓氏相同**且名字首字母相同**且唯一。
-   兩者都不成立就回 null,當成對不到。 */
+/* 姓名配對與正規化都走 lib/names.mjs —— 這裡曾經有自己的一份,
+   跟 lib/loans.mjs 分岔之後造成 20 筆掛錯人。不要再複製回來。 */
 export function matchPerson(rows, name, nameOf) {
-  const k = norm(name);
-  const exact = rows.filter(r => norm(nameOf(r)) === k);
-  if (exact.length === 1) return exact[0];
-  const parts = k.split(' '), last = parts.at(-1), first = parts[0] ?? '';
-  if (!first) return null;
-  const byBoth = rows.filter(r => {
-    const n = norm(nameOf(r));
-    return n.split(' ').at(-1) === last && n.startsWith(first[0]);
-  });
-  return byBoth.length === 1 ? byBoth[0] : null;
+  return matchOne(rows, name, { nameOf });
 }
 
 // ── 獨立來源 3:西甲逐季球員(Understat)─────────────────

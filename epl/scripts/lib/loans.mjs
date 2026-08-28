@@ -10,9 +10,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
-
-const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '')
-  .toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+import { matchOne } from './names.mjs';
 
 export function loadVerifiedLoans(root) {
   const p = join(root, 'data', 'loans-verified.json');
@@ -49,21 +47,6 @@ export function loadVerifiedLoans(root) {
   };
 }
 
-/* 姓名配對跟核對器用同一套保守規則:全名精確 → 姓氏唯一 → 姓氏+名字首字母唯一。
-   配不出唯一的一律回 null。對錯人比對不到糟得多 ——
-   光英超同姓的就有 15 組(Martinez 兩個、Wilson 三個)。 */
-function matchOne(candidates, name, nameOf) {
-  const k = norm(name);
-  const exact = candidates.filter(c => norm(nameOf(c)) === k);
-  if (exact.length === 1) return exact[0];
-  const parts = k.split(' ');
-  const last = parts.at(-1), first = parts[0] ?? '';
-  const bySurname = candidates.filter(c => norm(nameOf(c)).split(' ').at(-1) === last);
-  if (bySurname.length === 1) return bySurname[0];
-  const byInitial = bySurname.filter(c => norm(nameOf(c)).startsWith(first[0] ?? ' '));
-  return byInitial.length === 1 ? byInitial[0] : null;
-}
-
 /* 把租借紀錄掛到球員身上。
 
    `side` 決定要掛哪一種:
@@ -89,7 +72,9 @@ export function attachLoans(players, loans, { nameOf, codesOf, leagueCodes }) {
     const inward = inLeague(rec.loanCode);
     if (!outward && !inward) continue;
 
-    const hit = matchOne(players, rec.player, nameOf);
+    /* 配對走共用的 lib/names.mjs。**不要在這裡再寫一份** ——
+       複製過的那一版曾經跟核對器分岔,結果 20 筆租借掛到了錯的人身上。 */
+    const hit = matchOne(players, rec.player, { nameOf });
     if (!hit) { unmatched.push(rec); continue; }
 
     hit.loans ??= [];
