@@ -323,6 +323,27 @@ const afterRecover = JSON.parse(readFileSync(storeFile, 'utf8'));
 check('拿得到之後封鎖紀錄自動清掉', recovered.fetched === 1 && afterRecover.blocked === undefined && recoverCalls === 2);
 await rm(blockedRoot, { recursive: true, force: true });
 
+/* 備援的方案限制不可以升格成「這一季拿不到」。
+
+   踩過:SportMonks 接成主要來源之後,只要還有場次沒發布,build 就照樣把
+   API-Football 的 blocked 傳到前端。2026-08-28 的實際狀態是已發布 16/20,
+   剛完賽的 4 場(含 RMA vs RSO)頁面卻寫著
+   「本站使用的資料源方案不含本賽季…在換成涵蓋本賽季的方案之前都不會出現」——
+   而隔壁 16 場的球隊統計、正式陣容、事件與評分全都在。
+   「還沒抓到」與「拿不到」對讀者的意義相反,這一條就是守住那條界線。 */
+const reportsOut = out('reports');
+check('主要來源已發布場次時,缺口不可以被講成「整季拿不到」',
+  reportsOut.count === 0 || reportsOut.blocked == null,
+  `count=${reportsOut.count} blocked=${reportsOut.blocked ? reportsOut.blocked.reason : 'null'}`);
+check('備援補不了缺口仍要照實說,但走的是 backupBlocked',
+  reportsOut.pending === 0 || reportsOut.count === 0 || reportsOut.backupBlocked === undefined
+  || reportsOut.backupBlocked === null || reportsOut.backupBlocked?.reason === 'plan');
+check('有缺口且主要來源可用時,說明講的是「還沒抓到」',
+  !(reportsOut.pending > 0 && reportsOut.count > 0) || /還沒|尚未/.test(reportsOut.note ?? ''));
+check('blocked 與 backupBlocked 最多只有一個非 null',
+  !(reportsOut.blocked && reportsOut.backupBlocked));
+
+
 /* 外電翻譯的驗證器。這是整個翻譯層唯一的安全機制 —— 模型改了數字、
    加了原文沒有的東西,只有它擋得住。所以要有測試守著。
    守的是「會不會放行不該放行的」,不是「翻得好不好」。 */

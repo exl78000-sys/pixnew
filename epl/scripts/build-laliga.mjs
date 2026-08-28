@@ -555,16 +555,26 @@ async function main() {
     } catch { console.log('  ⚠ SportMonks 賽後快取損壞,本次略過'); }
   }
   const reportCount = Object.keys(reports).length;
-  /* 抓取端如果撞到「這個方案不含此賽季」,會把原因寫進存檔的 blocked。
-     有 blocked 就代表這不是「還沒抓到」而是「拿不到」—— 畫面上要說的是後者。
-     方案升級之後抓取端會自己把 blocked 清掉,這裡不必記得改。 */
-  // 只有在仍有未發布場次時才把 API-Football 的方案限制傳到前端。
-  // SportMonks 已補齊全部完賽場次時，舊的 API-Football blocked 快取不應
-  // 覆蓋「已可用」的狀態，否則畫面會同時顯示 count=16 與「拿不到」。
-  const blocked = reportCount < curPlayed.length ? (postMatchStore.blocked ?? null) : null;
+  /* 「這一季拿不到」只能在**主要來源一場都發不出來**的時候講。
+
+     SportMonks 是西甲賽後的主要來源,API-Football 只是備援。原本這裡的判斷是
+     「還有場次沒發布 → 把備援的方案限制傳到前端」,於是 16/20 的狀態下,
+     剩下那 4 場(8/25~8/27 剛踢完)的頁面會寫著
+     「本站使用的資料源方案不含本賽季…在換成涵蓋本賽季的方案之前都不會出現」——
+     而隔壁 16 場的球隊統計、正式陣容、事件與評分全都在。
+     那是把「還沒抓到」講成「拿不到」,兩句話對讀者的意義完全相反。
+
+     所以分成兩個欄位:主要來源掛蛋才是 blocked(整季拿不到);
+     主要來源已經證明拿得到、只是缺幾場時走 backupBlocked
+     (缺口照實說是「還沒抓到」,同時交代備援補不了)。
+     兩個欄位最多只有一個非 null,沒有缺口時兩個都是 null。 */
+  const pendingCount = Math.max(0, curPlayed.length - reportCount);
+  const planBlocked = postMatchStore.blocked ?? null;
+  const blocked = pendingCount > 0 && reportCount === 0 ? planBlocked : null;
+  const backupBlocked = pendingCount > 0 && reportCount > 0 ? planBlocked : null;
   console.log(blocked
-    ? `  ⚠ API-Football 西甲賽後資料拿不到:${blocked.message}`
-    : `  API-Football 西甲賽後永久快取：${reportCount}/${curPlayed.length} 場可發布`);
+    ? `  ⚠ 西甲賽後資料整季拿不到:${blocked.message}`
+    : `  西甲賽後永久快取：${reportCount}/${curPlayed.length} 場可發布${backupBlocked ? '(缺的等主要來源;備援 API-Football 方案不含本賽季)' : ''}`);
 
   // 逐場正式先發優先使用 FotMob/enetpulse；找不到的場次再使用西甲官網。
   // 兩者都先轉成既有 official.matches 契約，比分不一致一律不發布。
@@ -1079,11 +1089,16 @@ async function main() {
   await write('goals', goalsOut);
   await write('reports', {
     seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,
-    source: reportCount ? [...new Set(Object.values(reports).map(r => r.source))].join(' + ') : 'sportmonks + api-football', pending: Math.max(0, curPlayed.length - reportCount),
+    source: reportCount ? [...new Set(Object.values(reports).map(r => r.source))].join(' + ') : 'sportmonks + api-football', pending: pendingCount,
     blocked,
+    // 備援補不了缺口這件事仍要說,但它不是「這一季拿不到」的理由 —— 主要來源已發布 reportCount 場。
+    backupBlocked,
     note: blocked
-      ? '目前使用的 API-Football 方案不含本賽季，因此這不是「還沒抓到」而是拿不到。換成涵蓋本賽季的方案後會自動恢復。'
-      : '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；SportMonks 優先，API-Football 僅補缺口；開頁不呼叫 API。',
+      ? '主要來源與備援目前都拿不到本賽季的完整賽後資料,因此這不是「還沒抓到」而是拿不到。換成涵蓋本賽季的方案後會自動恢復。'
+      : backupBlocked
+        ? `主要來源(SportMonks)已發布 ${reportCount} 場,其餘 ${pendingCount} 場是剛完賽、還沒快取到,不是拿不到。`
+          + '備援來源 API-Football 的方案不含本賽季,補不了這個缺口。開頁不呼叫 API。'
+        : '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；SportMonks 優先，API-Football 僅補缺口；開頁不呼叫 API。',
   });
   await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 } });
   // analysis.html 共用同一組載入契約。西甲沒有這些模組時寫出明確空資料，避免 404。
@@ -1118,9 +1133,10 @@ async function main() {
   console.log(`\n✔ 西甲球隊數據第二版：${teams.length} 隊・${LAST_SEASON} ${lastMatches.filter(m => m.played).length} 場・${CURRENT_SEASON} ${curPlayed.length}/${curMatches.length} 場已完賽`);
   console.log(`  球隊隊徽：${crestHits}/${teams.length}`);
   console.log(`  上季風格資料：${teamProfiles.length}/20；本季回歸球隊：${teams.filter(t => t.tactics).length}/20`);
-  console.log(blocked
-    ? `  完整賽後資料：0/${curPlayed.length}（方案不含本賽季，不是等待中）`
-    : `  完整賽後資料：${reportCount}/${curPlayed.length}（其餘等待 laliga:postmatch 永久快取）`);
+  console.log(`  完整賽後資料：${reportCount}/${curPlayed.length}${
+    blocked ? '（主要來源與備援都不含本賽季,不是等待中）'
+      : backupBlocked ? '（其餘剛完賽、等 laliga:postmatch；備援方案不含本賽季）'
+        : pendingCount ? '（其餘等待 laliga:postmatch 永久快取）' : ''}`);
 }
 
 main().catch(err => { console.error(`✗ 西甲建置失敗：${err.stack ?? err.message}`); process.exit(1); });
