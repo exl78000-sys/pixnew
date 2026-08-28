@@ -19,7 +19,7 @@ import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
-import { normaliseCupFixture } from './lib/adapters/sportmonks-cups.mjs';
+import { normaliseCupFixture, buildCupTeamIndex } from './lib/adapters/sportmonks-cups.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'data', 'raw', 'sportmonks-cups');
@@ -30,6 +30,11 @@ const DELAY = 350;
 const PER_PAGE = 50;
 const MAX_REQUESTS = Number(process.argv.find(x => x.startsWith('--max-requests='))?.split('=')[1] ?? 40);
 const TTL_HOURS = 12;
+/* 轉換邏輯改版時要讓舊快取失效。
+   實際踩到:第一版用寬鬆比對把 AFC Liverpool 對成 Liverpool,
+   修好之後快取還在 TTL 內,重跑會直接略過 —— **修了等於沒修**。
+   版本不同就重抓,不管 TTL。 */
+const SCHEMA_VERSION = 2;
 
 // 賽事名稱由 SportMonks 決定,不是我們取的 —— 中文名才是我們的。
 export const CUPS = [
@@ -78,6 +83,7 @@ async function allFixtures(seasonId) {
 
 const stale = store => {
   if (FORCE || !store?.retrievedAt) return true;
+  if (store.schemaVersion !== SCHEMA_VERSION) return true;
   const age = Date.now() - Date.parse(store.retrievedAt);
   return !Number.isFinite(age) || age > TTL_HOURS * 3600000;
 };
@@ -99,7 +105,12 @@ async function main() {
     console.log('⚠ 未設定 SPORTMONKS_TOKEN,略過英格蘭盃賽抓取。');
     return;
   }
-  const { codeOf } = loadTeams(ROOT);
+  /* **嚴格比對版**的 codeOf。loadTeams 的 codeOf 會做寬鬆比對(去掉 AFC/FC),
+     那在只有 20 隊的聯賽裡是對的,在有數百隊的盃賽裡會把
+     AFC Liverpool(第九級)對成 Liverpool。詳見 adapter 的註解。
+     loose 仍留著,但只用來找「近似但沒對到」的名字報給人看,不自動採用。 */
+  const { list, codeOf: looseCodeOf } = loadTeams(ROOT);
+  const codeOf = buildCupTeamIndex(list);
   await mkdir(OUT, { recursive: true });
 
   for (const cup of CUPS) {
@@ -123,12 +134,27 @@ async function main() {
       const matches = raw.map(f => normaliseCupFixture(f, { codeOf }));
       const unknown = [...new Set(matches.flatMap(m => m.unknownDescriptions))];
       const unknownStates = [...new Set(matches.filter(m => m.stateKnown === false).map(m => m.state))];
+
+      /* 近似但沒對到的名字:寬鬆比對會中、嚴格比對不中的。
+         **不自動採用** —— 這裡面同時混著「該對到的別名」與「不同的球隊」,
+         程式分不出來,只有人分得出來。列出來讓人核對後補進 teams.json 的 cupAlias。 */
+      const nearMisses = [...new Set(matches.flatMap(m => [m.home, m.away])
+        .filter(t => t?.name && !t.code && looseCodeOf(t.name))
+        .map(t => `${t.name}(id ${t.sourceId} → 疑似 ${looseCodeOf(t.name)})`))];
+
+      /* 延長賽的兩個判準要對得起來(直接看 ET 比分 vs 推導 CURRENT≠2ND_HALF)。
+         不一致不是致命錯誤,但要報出來 —— 通常代表延長賽 0-0 後進 PK。 */
+      const aetBoth = matches.filter(m => m.aetDirect && m.aetDerived === true).length;
+      const aetOnlyDirect = matches.filter(m => m.aetDirect && m.aetDerived !== true).length;
+      const aetOnlyDerived = matches.filter(m => !m.aetDirect && m.aetDerived === true).length;
       seasonsOut.push({
         label: want.label, seasonId: season.id, sourceName: season.name,
         finished: season.finished ?? null, current: season.is_current === true,
         matches: matches.map(({ unknownDescriptions, ...m }) => m),
         unknownDescriptions: unknown,
         unknownStates,
+        nearMisses,
+        aetCheck: { both: aetBoth, onlyDirect: aetOnlyDirect, onlyDerived: aetOnlyDerived },
       });
       const played = matches.filter(m => m.played).length;
       const pens = matches.filter(m => m.pens).length;
@@ -136,8 +162,12 @@ async function main() {
       const mapped = matches.filter(m => m.home?.code || m.away?.code).length;
       console.log(`  ${cup.zh} ${want.label}(season ${season.id}):${matches.length} 場・已完賽 ${played}`
         + `・延長 ${aet}・PK ${pens}・含英超球隊 ${mapped}`);
+      console.log(`    延長賽兩個判準:兩者皆是 ${aetBoth}・只有 ET 比分 ${aetOnlyDirect}`
+        + `・只有推導 ${aetOnlyDerived}${aetOnlyDerived ? ' ← 這一類要看一下' : ''}`);
       if (unknown.length) console.log(`    ⚠ 沒見過的比分類別:${unknown.join('、')} —— 核對過才可加進 KNOWN_SCORE_DESCRIPTIONS`);
       if (unknownStates.length) console.log(`    ⚠ 沒見過的狀態碼:${unknownStates.join('、')}`);
+      if (nearMisses.length) console.log(`    ⚠ 名字接近但沒自動對應(${nearMisses.length} 支,刻意不自動採用):\n       `
+        + nearMisses.join('\n       '));
     }
 
     if (missing.length) console.log(`  ⚠ ${cup.zh} 上游沒有這些賽季:${missing.join('、')}`);
@@ -145,6 +175,7 @@ async function main() {
 
     await writeAtomic(file, {
       key: cup.key, zh: cup.zh, en: cup.en, leagueId: cup.leagueId,
+      schemaVersion: SCHEMA_VERSION,
       source: 'SportMonks', retrievedAt: new Date().toISOString(),
       availableSeasons: seasons.map(s => s.name).slice(0, 40),
       missingSeasons: missing,

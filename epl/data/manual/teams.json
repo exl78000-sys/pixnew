@@ -75,6 +75,9 @@
       "colors": [
         "#0057B8",
         "#FFCD00"
+      ],
+      "cupAlias": [
+        "Brighton & Hove Albion"
       ]
     },
     {
@@ -279,6 +282,9 @@
       "colors": [
         "#6CABDD",
         "#1C2C5B"
+      ],
+      "cupAlias": [
+        "Manchester City"
       ]
     },
     {
@@ -297,6 +303,9 @@
       ],
       "alias": [
         "Man United"
+      ],
+      "cupAlias": [
+        "Manchester United"
       ]
     },
     {
@@ -312,6 +321,9 @@
       "colors": [
         "#241F20",
         "#FFFFFF"
+      ],
+      "cupAlias": [
+        "Newcastle United"
       ]
     },
     {
@@ -327,6 +339,9 @@
       "colors": [
         "#DD0000",
         "#FFFFFF"
+      ],
+      "cupAlias": [
+        "Nottingham Forest"
       ]
     },
     {
@@ -387,6 +402,9 @@
       "colors": [
         "#132257",
         "#FFFFFF"
+      ],
+      "cupAlias": [
+        "Tottenham Hotspur"
       ]
     },
     {
@@ -402,6 +420,9 @@
       "colors": [
         "#7A263A",
         "#1BB1E7"
+      ],
+      "cupAlias": [
+        "West Ham United"
       ]
     },
     {
@@ -417,7 +438,11 @@
       "colors": [
         "#FDB913",
         "#231F20"
+      ],
+      "cupAlias": [
+        "Wolverhampton Wanderers"
       ]
     }
-  ]
+  ],
+  "_cupAliasNote": "cupAlias 是盃賽資料源(SportMonks)用的隊名,只給**嚴格比對**用。盃賽有近八百支球隊,teams.mjs 的寬鬆比對(會拿掉開頭的 AFC/FC)在這個規模下會對錯 —— 實測 AFC Liverpool(id 19711,第九級)會被對成 Liverpool(id 8)、Bournemouth FC(id 19571)會被對成 AFC Bournemouth(id 52)。這裡列的八個是逐一核對過的:SportMonks id 落在 1~78、足總盃與聯賽盃都有、而且從 Round 3 進場(英超球隊的進場輪次)—— 三個訊號一致才採用。新增之前請跑 npm run encups 看 log 的「名字接近但沒自動對應」清單,不要憑印象加。"
 }

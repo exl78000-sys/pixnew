@@ -20,17 +20,57 @@
  * 由呼叫端報出來,測試有一條守著(比照進球事件子代碼的做法)。
  */
 
-// 已經在實際資料裡見過、而且知道語意的 description。多一種就要先核對過才加。
+/* 已經在**實際資料裡**見過、而且知道語意的 description。
+   前五個是第一輪探測看到的;後三個是第一次實抓才出現的 ——
+   探測只取樣了每季 3 場,而那 3 場都沒打延長。
+   **這正是白名單的價值**:沒見過的不給語意、由 log 報出來,
+   所以延長賽這件事是被發現的,不是被猜到的。 */
 export const KNOWN_SCORE_DESCRIPTIONS = new Set([
   'CURRENT',            // 最終比分(打完延長賽的話就是延長後的)
   '1ST_HALF',           // 上半場結束時
   '2ND_HALF',           // 90 分鐘結束時
   '2ND_HALF_ONLY',      // 只算下半場進的球(累計比分用不到,但會出現)
   'PENALTY_SHOOTOUT',   // PK 大戰
+  'ET',                 // 延長賽結束時(實抓才出現)
+  'ET_1ST_HALF',        // 延長賽上半
+  'ET_2ND_HALF',        // 延長賽下半
 ]);
 
-// state.state 的代碼。同樣只認見過的,其餘原樣保留。
-export const KNOWN_STATES = new Set(['FT', 'FT_PEN', 'AET', 'NS', 'LIVE', 'HT', 'POSTP', 'CANCL', 'ABAN', 'TBA', 'DELAYED', 'INT', 'AWARDED', 'WO']);
+// state.state 的代碼。CANCELLED / ABANDONED 是實抓才出現的完整寫法 ——
+// 原本我寫的 CANCL / ABAN 是猜的,實際資料裡沒有那兩個。
+export const KNOWN_STATES = new Set([
+  'FT', 'FT_PEN', 'AET', 'NS', 'LIVE', 'HT', 'INPLAY_1ST_HALF', 'INPLAY_2ND_HALF',
+  'POSTP', 'CANCELLED', 'ABANDONED', 'TBA', 'DELAYED', 'INT', 'AWARDED', 'WO', 'SUSPENDED',
+]);
+
+/* 盃賽的隊名比對:**只認完全相同的名字**。
+ *
+ * 實測踩到的坑(2026-08-28):teams.mjs 的 loose() 會把開頭的 AFC / FC 拿掉,
+ * 於是這四支變成兩個 key ——
+ *
+ *   Liverpool        id 8      Round 3 起(英超那支)
+ *   AFC Liverpool    id 19711  資格賽前置輪(第九級的另一支球隊)
+ *   AFC Bournemouth  id 52     Round 3
+ *   Bournemouth FC   id 19571  資格賽前置輪
+ *
+ * loose 在只有 20 隊的聯賽裡很好用;在有 745 隊的盃賽裡它會製造**假的對應**,
+ * 而且錯得很像真的 —— 把一支第九級球隊的資格賽顯示成利物浦的足總盃征程。
+ *
+ * 所以這裡只做大小寫與空白的正規化,不動 AFC/FC。
+ * loose 會中、exact 不中的名字一律記進 nearMisses 由人核對,不自動採用 ——
+ * 少對到一支只是少一個隊徽,對錯一支是在講一件假的事。
+ */
+const exactKey = name => String(name ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+
+export function buildCupTeamIndex(teams) {
+  const index = new Map();
+  for (const t of teams) {
+    for (const n of [t.en, t.of, t.fpl, ...(t.alias ?? []), ...(t.cupAlias ?? [])]) {
+      if (n) index.set(exactKey(n), t.code);
+    }
+  }
+  return name => index.get(exactKey(name)) ?? null;
+}
 
 const num = v => (Number.isFinite(Number(v)) ? Number(v) : null);
 
@@ -69,8 +109,9 @@ export function normaliseCupFixture(fixture, { codeOf }) {
     const name = p.name ?? null;
     teams[loc] = {
       name,
-      // 盃賽有一百多支球隊,本站只認得英超那 20 支。
-      // 認不得的**只給名字**,不編隊碼也不掛隊徽(鐵則三:不要留假的欄位)。
+      // 盃賽有數百支球隊,本站只認得英超那些。認不得的**只給名字**,
+      // 不編隊碼也不掛隊徽(鐵則三)。codeOf 必須是**嚴格比對版**,
+      // 見上面 buildCupTeamIndex 的註解 —— 用寬鬆比對會對錯球隊。
       code: name ? codeOf(name) : null,
       sourceId: p.id ?? null,
     };
@@ -82,9 +123,15 @@ export function normaliseCupFixture(fixture, { codeOf }) {
   const pens = pair(byDescription.PENALTY_SHOOTOUT);
   const state = fixture.state?.state ?? null;
 
-  /* 延長賽:CURRENT 跟 2ND_HALF 不同就是打過延長。
-     只有兩者都在才判斷 —— 少一邊就回 null(不知道),不要回 false(沒打過)。 */
-  const aet = final && ft90 ? (final[0] !== ft90[0] || final[1] !== ft90[1]) : null;
+  /* 延長賽有兩個判準,兩個都留著而且**互相對照**:
+       直接:有 ET 這筆比分 → 打過延長(實抓才發現有這個 description)
+       推導:CURRENT ≠ 2ND_HALF → 90 分之後還有進球
+     正常情況兩者應該一致。不一致代表上游的比分不完整(例如延長賽 0-0),
+     所以兩個都存下來,由呼叫端比對並報出差異 —— 不要只留一個然後假裝沒事。 */
+  const et = pair(byDescription.ET);
+  const aetDirect = et != null;
+  const aetDerived = final && ft90 ? (final[0] !== ft90[0] || final[1] !== ft90[1]) : null;
+  const aet = aetDirect ? true : aetDerived;
 
   return {
     id: fixture.id ?? null,
@@ -95,8 +142,8 @@ export function normaliseCupFixture(fixture, { codeOf }) {
     kickoff: fixture.starting_at ? `${String(fixture.starting_at).replace(' ', 'T')}Z` : null,
     home: teams.home ?? null,
     away: teams.away ?? null,
-    ht, ft90, final, pens,
-    aet,
+    ht, ft90, et, final, pens,
+    aet, aetDirect, aetDerived,
     state,
     stateKnown: state ? KNOWN_STATES.has(state) : null,
     resultInfo: fixture.result_info ?? null,

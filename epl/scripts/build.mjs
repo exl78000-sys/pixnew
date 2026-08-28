@@ -20,6 +20,7 @@ import { projectXI } from './lib/lineup.mjs';
 import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, standardShape } from './lib/roles.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
+import { summariseSeason } from './lib/cups.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
 import {
@@ -862,6 +863,42 @@ async function main() {
     ? { available: true, asOf: offLineups.asOf, season: offLineups.season, matches: offLineups.matches,
         managers: offManagers?.managers ?? {}, managersAsOf: offManagers?.asOf ?? null }
     : { available: false, matches: {}, managers: {} });
+  /* 英格蘭盃賽(足總盃 / 聯賽盃)。來源與聯賽完全不同(SportMonks,不是 FPL/openfootball),
+     所以**獨立一份產物、獨立一頁**,不混進 fixtures.json ——
+     混進去的話「本季 380 場」這個數字會突然變成 500 多場,而那不是聯賽場次。
+     沒抓到就整份不出現,前端整頁換成空狀態(不留空欄位)。 */
+  {
+    const cupsDir = join(ROOT, 'data', 'raw', 'sportmonks-cups');
+    const files = ['facup', 'eflcup'];
+    const cups = [];
+    for (const key of files) {
+      const f = join(cupsDir, `${key}.json`);
+      if (!existsSync(f)) continue;
+      const raw = JSON.parse(await readFile(f, 'utf8'));
+      cups.push({
+        key: raw.key, zh: raw.zh, en: raw.en,
+        retrievedAt: raw.retrievedAt,
+        missingSeasons: raw.missingSeasons ?? [],
+        seasons: (raw.seasons ?? []).map(summariseSeason),
+      });
+    }
+    if (cups.length) {
+      await write('cups.json', {
+        source: 'SportMonks',
+        retrievedAt: cups.map(c => c.retrievedAt).sort().at(-1) ?? null,
+        cups,
+      });
+      for (const c of cups) {
+        for (const s of c.seasons) {
+          console.log(`  ${c.zh} ${s.label}:${s.total} 場・已完賽 ${s.played}`
+            + `・${s.rounds.length} 輪・延長 ${s.aet}・PK ${s.shootouts}`
+            + `・球隊 ${s.teamsKnown}/${s.teamsTotal} 有本站資料`);
+        }
+      }
+    } else {
+      console.log('  英格蘭盃賽:沒有快取(需要 SPORTMONKS_TOKEN 跑 npm run encups),本次不產出 cups.json');
+    }
+  }
   await write('coaches.json', coaches);
   await write('news.json', news);
   await write('sim.json', sim);
