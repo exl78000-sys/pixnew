@@ -63,6 +63,22 @@ if len(result) > 3072:
 sys.stdout.buffer.write(result)
 `;
 
+/* 缺 Pillow 就整支跳過,而且要在開跑前就說。
+
+   原本是抓到第一個人、呼叫 toJpeg 的時候才丟例外 —— 訊息混在球員清單裡,
+   而這一步是 continue-on-error,所以在 CI 上一直紅、一直沒有人看到。
+   缺依賴不是「這一筆失敗」,是「這件事現在做不了」,要分開講。
+
+   縮圖與轉檔為什麼靠 Python:輸出是 JPEG,而本專案零 npm 依賴、
+   lib/png.mjs 只做 PNG。手寫一個 JPEG 編碼器不划算,所以借 Pillow。
+   runner 上要 pip install pillow(epl-live.yml 有一步在做)。 */
+function pillowReady() {
+  const probe = spawnSync('python3', ['-c', 'import PIL'], { encoding: 'utf8' });
+  if (probe.error) return { ok: false, why: '這台機器沒有 python3' };
+  if (probe.status !== 0) return { ok: false, why: "python3 有,但沒有 Pillow(pip install pillow)" };
+  return { ok: true };
+}
+
 function toJpeg(png) {
   const run = spawnSync('python3', ['-c', PYTHON], {
     input: png,
@@ -169,6 +185,16 @@ async function main() {
     const jpeg = toJpeg(result.buf);
     console.log(`✔ ${result.url}`);
     console.log(`  PNG ${(result.buf.length / 1024).toFixed(1)} KB → JPEG ${(jpeg.length / 1024).toFixed(1)} KB`);
+    return;
+  }
+
+  /* 依賴檢查放在開跑前。缺了就結束碼 0 離開 ——
+     這跟「抓不到圖」是兩件事,不要混成同一種失敗。 */
+  const pillow = pillowReady();
+  if (!pillow.ok) {
+    console.log(`✔ 略過補抓頭貼:${pillow.why}`);
+    console.log('  這不是錯誤 —— 既有的頭貼照常使用,只是這次不補新的。');
+    console.log('  要補的話:在跑這一步之前 pip install pillow。');
     return;
   }
 
