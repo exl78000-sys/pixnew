@@ -13,6 +13,7 @@
  *      畫面要講得出這件事。
  */
 import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { backfillScores } from './lib/league-matches.mjs';
@@ -231,7 +232,39 @@ const table = out('table'), results = out('results'), sim = out('sim');
     out('experts').matches && !Array.isArray(out('experts').matches));
 }
 
-// ── 10. 外電 ──────────────────────────────────────
+// ── 10. 人工交付的球隊資料 ──────────────────────────
+{
+  /* 收件匣 → 核對器 → 產物,build 只讀產物。直接讀收件匣等於把核對繞過去。 */
+  const vPath = join(ROOT, 'data', 'championship-teams-verified.json');
+  const inboxPath = join(ROOT, 'data', 'manual', 'championship-teams-delivery.json');
+  if (existsSync(vPath) && existsSync(inboxPath)) {
+    const v = JSON.parse(readFileSync(vPath, 'utf8'));
+    check('球隊資料交付通過核對', v.accepted === true, v.problems.join('、'));
+    /* **對照題不是裝飾。** 12 支本站既有球隊的城市/球場/容量/隊色是刻意留在
+       交付清單裡的,對不上就是訊號。 */
+    check('對照題涵蓋 12 支本站既有球隊', v.controlTeams === 12, String(v.controlTeams));
+
+    const sha = createHash('sha256').update(readFileSync(inboxPath)).digest('hex');
+    check('核對結果跟收件匣同步(sha 一致)', v.inboxSha === sha);
+
+    const clubs = out('clubs');
+    check('隊色掛到每一支球隊', clubs.every(c => Array.isArray(c.colors) && c.colors.length >= 1),
+      `${clubs.filter(c => c.colors?.length).length} / ${clubs.length}`);
+    check('球場與容量掛上了', clubs.every(c => c.venue && Number.isInteger(c.capacity)));
+    /* 綽號沒有的要維持 null,不可以硬編一個 —— 交付有 4 支回 null。 */
+    check('沒有綽號的維持 null,不硬編', clubs.some(c => c.nickname == null));
+
+    /* build 只讀產物:收件匣的內容不可以有任何一格直接進畫面而沒過核對。 */
+    const src = readFileSync(join(ROOT, 'scripts', 'build-championship.mjs'), 'utf8');
+    check('build 讀的是核對後的產物,不是收件匣',
+      /championship-teams-verified\.json/.test(src)
+      && !/readFile\([^)]*championship-teams-delivery\.json[^)]*,\s*'utf8'\)/.test(src));
+    check('build 會比對收件匣 sha(改過沒重跑核對就整批不掛)',
+      /inboxSha !== sha/.test(src));
+  }
+}
+
+// ── 11. 外電 ──────────────────────────────────────
 {
   const news = out('news');
   check('外電有抓到', news.length > 0, `${news.length} 則`);
@@ -262,7 +295,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
     && !/arg\('league'\) === 'es1' \? 'es1' : 'pl'/.test(src));
 }
 
-// ── 11. 開賽時間的時區 ─────────────────────────────
+// ── 12. 開賽時間的時區 ─────────────────────────────
 {
   /* 英格蘭是 GMT/BST,不是固定 +01:00。冬季場次照抄西歐的偏移會整批早一小時。 */
   const winter = fixtures.filter(f => f.kickoff && /-(12|01|02)-/.test(f.date));

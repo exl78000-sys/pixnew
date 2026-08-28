@@ -269,6 +269,12 @@ jobs:
       # 英冠回測同樣要在 en2:build **之前**:模型頁的準度數字是 build 讀
       # data/backtest-championship.json 帶進 meta 的。零 fetch 的本地計算,
       # 所以失敗不容忍 —— 失敗代表真的有 bug。
+      # 人工交付的球隊資料(隊色、城市、球場、容量、綽號)要先過核對器才會被 build 採用。
+      # 核對是離線的:對照 12 支本站既有球隊的既有欄位、拿倉庫裡的隊徽獨立比隊色、
+      # 檢查容量量級與逐欄位出處。有一項對不上就整份不採用,不挑著用。
+      - name: 核對人工交付的英冠球隊資料
+        run: npm run en2:verify-teams
+
       - name: 英冠走查回測(模型準度)
         run: npm run en2:backtest
 
@@ -321,6 +327,7 @@ jobs:
                      epl/data/raw/openfootball-la-liga/ \
                      epl/data/raw/news-la-liga-zh.json \
                      epl/data/raw/news-championship.json \
+                     epl/data/championship-teams-verified.json \
                      epl/data/raw/understat/ \
                      epl/data/raw/understat-la-liga/ \
                      epl/data/raw/sportmonks-la-liga/ \

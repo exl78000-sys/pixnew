@@ -1172,6 +1172,58 @@ async function checkDataGap() {
         && /options\].some/.test(blk);   // 隊碼對不上就當沒帶,不要靜靜篩成空的
     })()],
 
+    /* ── 跨聯賽總覽頁(2026-08-29 加)──
+       它是「本站有哪些聯賽、各做到哪一層」的入口。三件事要守住:
+       只放在 SITE_PAGES(兩邊都放會出現兩個一樣的分頁)、每個聯賽都掛得上、
+       而且不可以自己列一份聯賽清單。 */
+    ['總覽只在 SITE_PAGES,不在 PAGES(兩邊都放會出現兩個一樣的分頁)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const site = src.slice(src.indexOf('const SITE_PAGES = ['), src.indexOf('const GROUPS = ['));
+      const pages = src.slice(src.indexOf('const PAGES = ['), src.indexOf('const ESSENTIAL_') >= 0
+        ? src.indexOf('const ESSENTIAL_') : src.indexOf('export function nav'));
+      return /'overview'/.test(site) && !/\['overview'/.test(pages);
+    })()],
+    ['每個聯賽的導覽列都掛得上總覽', Object.entries(V.LEAGUES)
+      .every(([, L]) => !L.open || L.open.includes('overview'))],
+    ['總覽不會被當成某個聯賽的缺口頁擋掉',
+      Object.keys(V.LEAGUES).every(lg => !V.closedPage(lg, 'overview'))],
+    ['總覽的聯賽清單從註冊表長出來,不寫死', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /Object\.keys\(C\.LEAGUES\)/.test(src)
+        && !/\{\s*id:\s*'pl'/.test(src) && !/id === 'pl'/.test(src);
+    })()],
+    /* 讀取邏輯只留一份 —— 總覽自己再寫一次 fetch 的話,哪天改了快取或路徑規則,
+       那一頁會悄悄用舊的規則。 */
+    ['總覽走共用的 loadFrom,沒有自己再寫一份 fetch', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /C\.loadFrom\(/.test(src) && !/\bfetch\(/.test(src);
+    })()],
+    /* 英冠沒有球員頁,給連結等於把讀者送去缺口頁 —— 判斷走 closedPage,
+       不要在總覽頁再列一次哪個聯賽有哪些頁。 */
+    ['總覽只連得進去的頁才給連結', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /C\.closedPage\(/.test(src);
+    })()],
+    ['總覽對沒有球員來源的聯賽不顯示 0', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /capabilities\?\.players === false/.test(src) && /沒有來源/.test(src);
+    })()],
+    /* bundle.mjs 自己維護第三份頁面清單。忘了加的話那一頁不會壞,
+       只會從單檔版靜靜消失,而分頁版一切正常 —— 實際發生過(總覽)。 */
+    ['單檔版的頁面清單涵蓋 web/ 底下每一個 .html', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+      const list = /const PAGES = \[([^\]]*)\]/.exec(src)?.[1] ?? '';
+      const inBundle = new Set([...list.matchAll(/'([a-z0-9-]+)'/g)].map(m => m[1]));
+      const onDisk = readdirSync(join(ROOT, 'web')).filter(f => f.endsWith('.html'))
+        .map(f => f.replace(/\.html$/, ''));
+      const missing = onDisk.filter(p => !inBundle.has(p));
+      return missing.length === 0;
+    })()],
+    ['overview.html 存在且載入 page-overview.js', (() => {
+      const html = readFileSync(join(ROOT, 'web', 'overview.html'), 'utf8');
+      return /page-overview\.js/.test(html);
+    })()],
+
     ['缺口訊息不會把資料集的內部鍵給讀者看',
       ['live', 'players', 'leaders', 'news', 'form', 'tactics', 'knowledge', 'cups']
         .every(k => /[\u4e00-\u9fff]/.test(V.DATASET_ZH?.[k] ?? ''))],

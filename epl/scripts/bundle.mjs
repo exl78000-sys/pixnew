@@ -10,7 +10,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WEB = join(ROOT, 'web');
 /* 新增頁面時**這裡也要加**,否則單檔版點那個分頁會是空白 ——
    分頁模式與單檔模式是兩條路徑,只改一邊測不出來。 */
-const PAGES = ['index', 'live', 'fixtures', 'analysis', 'teams', 'tactics', 'players', 'coaches', 'news', 'model', 'knowledge', 'cups', 'ucl'];
+/* 這是**第三份**頁面清單(core.js 還有 PAGES 與 SITE_PAGES)。加新頁時忘了改這裡,
+   那一頁不會壞 —— 只會從單檔版靜靜消失,而分頁版一切正常。
+   `npm test` 有一條守著:這份清單要涵蓋 web/ 底下的每一個 .html。 */
+const PAGES = ['overview', 'index', 'live', 'fixtures', 'analysis', 'teams', 'tactics', 'players', 'coaches', 'news', 'model', 'knowledge', 'cups', 'ucl'];
 
 // 單檔版把所有模組併成同一個 <script type="module">:
 //   core.js 去掉 export 變成模組層宣告,再組一個 C 物件給各頁面用;

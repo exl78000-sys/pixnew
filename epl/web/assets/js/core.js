@@ -80,18 +80,20 @@ function checkStale(meta) {
   location.reload();
 }
 
-export async function load(...names) {
+/* 讀某一個聯賽的資料集。**跨聯賽的頁面(總覽)靠這一支** ——
+   它跟 load() 的差別只有「哪一個聯賽」,所以讀取邏輯只留一份:
+   單檔模式讀內嵌資料、分頁模式 fetch 並快取、404 分成「沒 build」與「還沒補到」。
+   複製一份到總覽頁的話,哪天改了快取或路徑規則,那一頁會悄悄用舊的規則。
+
+   回傳 { data, absent } —— 缺了哪幾份由呼叫端決定要不要當成錯誤:
+   load() 會擋下來,總覽頁只是少畫一塊。 */
+export async function loadFrom(lg, names) {
   const out = {};
-  const lg = league();
-  const page = currentPage();
-  // 聯賽沒開放這一頁的話,連請求都不用發 —— 否則瀏覽器 console 會留下
-  // 一串我們自己預期中的 404,看起來像出了事。
-  if (closedPage(lg, page)) throw new LeagueGap(lg, page, ESSENTIAL[page] ?? []);
   const absent = [];
   await Promise.all(names.map(async n => {
-    // 單檔打包版的資料直接內嵌在頁面裡,不用發請求。
-    // 用 `in` 而不是取值比對 undefined —— 打包時沒收進來的資料集要認得出來,
-    // 不然單檔模式會退回去 fetch 一個不存在的路徑,錯誤訊息就變成網路錯誤。
+    /* 單檔打包版的資料直接內嵌在頁面裡,不用發請求。
+       用 `in` 而不是取值比對 undefined —— 打包時沒收進來的資料集要認得出來,
+       不然單檔模式會退回去 fetch 一個不存在的路徑,錯誤訊息就變成網路錯誤。 */
     const bundled = globalThis.__DATASETS__?.[lg] ?? (lg === 'pl' ? globalThis.__DATA__ : undefined);
     if (bundled) {
       if (n in bundled) out[n] = bundled[n]; else absent.push(n);
@@ -101,7 +103,7 @@ export async function load(...names) {
     const path = lg === 'pl' ? `data/${n}.json` : `data/leagues/${lg}/${n}.json`;
     if (!cache.has(key)) cache.set(key, fetch(path).then(r => {
       // 英超是預設聯賽,它的資料集少一份就真的是沒 build,維持原本的開發者訊息。
-      // 其他聯賽的 404 是「還沒補到這裡」,交給下面判斷該說哪一句。
+      // 其他聯賽的 404 是「還沒補到這裡」,交給呼叫端判斷該說哪一句。
       if (r.status === 404 && lg !== 'pl') return ABSENT;
       if (!r.ok) throw new Error(`讀取 ${path} 失敗(${r.status})`);
       return r.json();
@@ -109,6 +111,16 @@ export async function load(...names) {
     const v = await cache.get(key);
     if (v === ABSENT) absent.push(n); else out[n] = v;
   }));
+  return { data: out, absent };
+}
+
+export async function load(...names) {
+  const lg = league();
+  const page = currentPage();
+  // 聯賽沒開放這一頁的話,連請求都不用發 —— 否則瀏覽器 console 會留下
+  // 一串我們自己預期中的 404,看起來像出了事。
+  if (closedPage(lg, page)) throw new LeagueGap(lg, page, ESSENTIAL[page] ?? []);
+  const { data: out, absent } = await loadFrom(lg, names);
 
   // 拿到 meta 就順手比對版本 —— 對不上代表這一頁的 HTML 是舊的快取
   if (out.meta) checkStale(out.meta);
@@ -310,7 +322,7 @@ export const stampRow = items =>
 // 進來時由 LeagueGap 給一句實話,不是一個空白頁。
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
-  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'ucl'] },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['overview', 'index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'ucl'] },
   /* 英冠只掛「球隊與比賽」那一層。**不是還沒做,是做不出來** ——
      英冠沒有免費的球員級資料源(Understat 只做五大聯賽、FPL 只有英超,
      兩者都實測過,見 build-championship.mjs 的檔頭),
@@ -321,7 +333,10 @@ export const LEAGUES = {
      歐冠與足球知識也不掛:英冠球隊不打歐冠,而足球知識的對照數字要靠球員名單。 */
   en2: {
     zh: '英冠', brand: '英冠戰情室', en: 'CHAMPIONSHIP WAR ROOM',
-    open: ['index', 'teams', 'model', 'news'],
+    /* 總覽是**跨聯賽**的入口(它自己就在列各聯賽做到哪一層),所以每個聯賽都掛。
+       導覽列的 open 過濾對 SITE_PAGES 也生效 —— 不列的話,從英冠點進總覽之後
+       導覽列上就找不到「總覽」了,而那一頁明明正開著。 */
+    open: ['overview', 'index', 'teams', 'model', 'news'],
     /* 缺口頁的預設說法是「資料還在補」—— 那對英冠是**錯的**,
        它不是還在補,是沒有來源(Understat 不做英冠、FPL 只有英超,兩者都實測過)。
        說成「還在補」等於暗示以後會有,而我們知道不會。 */
@@ -339,6 +354,10 @@ export const LEAGUES = {
    標籤可以是字串,也可以是「拿聯賽算出來」的函式 ——
    首頁要顯示「英超首頁 / 西甲首頁」,那是唯一會隨聯賽變的一個。 */
 const SITE_PAGES = [
+  /* 總覽排最左邊 —— 它是「本站有哪些聯賽、各做到哪一層」的入口,
+     不屬於任何一個聯賽。**只放在這一組**:同一頁兩邊都放的話,
+     導覽列會出現兩個一樣的分頁(左邊一個右邊一個),而且不會有任何地方報錯。 */
+  ['overview', '總覽'],
   ['knowledge', '足球知識'],
   /* 歐冠也是跨聯賽的:英超與西甲的球隊都在裡面,而且兩邊看到的是同一份資料。
      所以它排在足球知識右邊、跟下面那一組用分隔線隔開 ——
