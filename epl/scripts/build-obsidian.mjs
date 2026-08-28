@@ -784,6 +784,21 @@ function buildUcl() {
   }
   for (const e of externals.values()) uclExternalFile.set(e.id, sanitize(e.name));
   uclExternalCount = externals.size;
+
+  /* 這些球隊在站上原本只有名字、隊徽與比賽清單。但同一份資料裡本來就有
+     他們的聯賽階段戰績(runs)與逐隊球員數據(squads,FotMob,交叉核對通過才有)——
+     只是以前只算給本站認得的那 8~11 支。一起掛上去。 */
+  for (const s2 of u.seasons) {
+    for (const r of s2.runs ?? []) {
+      const e = externals.get(r.id);
+      if (e) (e.runs ??= []).push({ season: s2.label, ...r });
+    }
+    const sq = s2.squads?.teams ?? {};
+    for (const [fdId, list] of Object.entries(sq)) {
+      const e = externals.get(Number(fdId));
+      if (e) (e.squads ??= []).push({ season: s2.label, meta: s2.squads.statMeta ?? {}, players: list });
+    }
+  }
   const D = '歐冠';
   let count = 0;
   const mocLinks = [];
@@ -888,8 +903,53 @@ function buildUcl() {
       場次: e.matches.length, 產生時間: u.retrievedAt,
     }));
     b.push('\n# ' + e.name + '\n');
-    b.push('\n> **本站沒有這支球隊的聯賽資料。** 這一則只有他們在歐冠踢過的比賽,\n'
-      + '> 沒有名單、沒有賽季統計 —— 那些本站只收目前在英超與西甲的球隊。\n');
+    b.push('\n> **本站沒有這支球隊的聯賽資料。** 這一則只有歐冠範圍內的東西 ——\n'
+      + '> 戰績、歐冠出賽的球員與逐場比賽。他們在自己聯賽的成績、完整名冊、\n'
+      + '> 傷停與教練本站都沒有(那些只收目前在英超與西甲的球隊)。\n');
+    if (e.runs?.length) {
+      b.push('\n## 歐冠戰績\n\n');
+      b.push('| 賽季 | 走到哪一輪 | 聯賽階段名次 | 勝 | 和 | 負 | 進 | 失 | 淘汰賽 | 出局於 |\n');
+      b.push('|---|---|---|---|---|---|---|---|---|---|\n');
+      for (const r of e.runs.slice().sort((a, b2) => b2.season.localeCompare(a.season))) {
+        b.push('| ' + r.season + ' | ' + (r.best ?? '—') + ' | '
+          + (r.leaguePos ? '第 ' + r.leaguePos + ' 名' : '—') + ' | '
+          + r.lw + ' | ' + r.ld + ' | ' + r.ll + ' | ' + r.lgf + ' | ' + r.lga + ' | '
+          + (r.koPlayed ? r.koPlayed + ' 場 ' + r.koWon + ' 勝' : '—') + ' | '
+          + (r.out ? r.out + (r.outTo ? ' 輸給 ' + r.outTo : '') : '奪冠') + ' |\n');
+      }
+      b.push('\n> 淘汰賽的「勝」含 PK 大戰勝出 —— 盃賽的晉級就是這樣算的。\n');
+    }
+
+    if (e.squads?.length) {
+      for (const sq of e.squads.slice().sort((a, b2) => b2.season.localeCompare(a.season))) {
+        b.push('\n## ' + sq.season + " 歐冠出賽的球員(" + sq.players.length + ' 人)\n\n');
+        /* **欄位名與單位都照上游宣告的。** 這裡差點出錯:total_scoring_att 是
+           「每 90 分鐘射門」不是總射門數,標成總數就是編數字。所以標題直接印
+           上游 playerStatCategories 給的 title,不自己取名。 */
+        /* 中文欄名要**把單位寫進去**。上游的 title 是排行榜標題
+           (goals 的 title 是 "Top scorer"),拿來當欄位名讀起來是錯的;
+           但單位不能丟 —— total_scoring_att 是「每 90 分鐘」不是總數。
+           所以自己下標題、單位寫在標題裡,並在表格下面附上對回來源欄位的說明。 */
+        const LABEL = {
+          goals: '進球', goal_assist: '助攻', rating: 'FotMob 評分',
+          expected_goals: 'xG', total_att_assist: '創造機會',
+          total_scoring_att: '射門(每 90 分)', yellow_card: '黃牌',
+        };
+        const cols = Object.keys(LABEL).filter(k => sq.meta[k]);
+        b.push('| 球員 | 出賽 | 分鐘 | ' + cols.map(k => LABEL[k]).join(' | ') + ' |\n');
+        b.push('|---|---|---|' + cols.map(() => '---').join('|') + '|\n');
+        for (const pl of sq.players) {
+          b.push('| ' + pl.name + ' | ' + (pl.matches ?? '—') + ' | ' + pl.minutes + ' | '
+            + cols.map(k => (pl.stats[k] ?? '—')).join(' | ') + ' |\n');
+        }
+        b.push('\n> 數值原封不動來自 FotMob,本站沒有重算任何一格。\n');
+        b.push('> 欄位對照(右邊是來源自己宣告的欄位與名稱):\n');
+        for (const k of cols) b.push('> ' + LABEL[k] + ' ← ' + k + '「' + sq.meta[k] + '」\n');
+        b.push('>\n> **注意單位**:射門那一欄來源宣告的是「Shots per 90」,\n'
+          + '> 是每 90 分鐘的平均,不是整季總射門數。\n');
+      }
+    }
+
     if (e.matches.length) {
       b.push('\n## 歐冠比賽(' + e.matches.length + ' 場)\n\n');
       const bySeason = new Map();

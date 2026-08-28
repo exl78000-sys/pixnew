@@ -1,4 +1,4 @@
-import * as C from './core.js?v=4032db8f';
+import * as C from './core.js?v=0965f58a';
 
 const app = document.getElementById('app');
 
@@ -153,8 +153,9 @@ function leagueTable(season) {
 function runsTable(runs) {
   if (!runs.length) return '';
   return C.table(runs, [
-    { key: 'team', label: '球隊', value: r => C.name(r.code), left: true,
-      render: r => teamCell({ name: r.name, code: r.code, league: r.league }) },
+    /* 沒有隊碼的球隊 C.name() 會回 undefined,排序就亂掉 —— 用上游給的名字兜底。 */
+    { key: 'team', label: '球隊', value: r => (r.code ? C.name(r.code) : r.name), left: true,
+      render: r => teamCell({ id: r.id, name: r.name, code: r.code, league: r.league }) },
     { key: 'best', label: '走到哪一輪', value: r => r.bestOrder, num: true,
       render: r => `<span class="mono small">${C.esc(r.best ?? '—')}</span>` },
     { key: 'pos', label: '聯賽階段名次', value: r => r.leaguePos ?? 99, num: true,
@@ -168,7 +169,14 @@ function runsTable(runs) {
       render: r => (r.out
         ? `<span class="tiny dim">${C.esc(r.out)}${r.outTo ? ` 輸給 ${C.esc(r.outTo)}` : ''}</span>`
         : '<span class="pill tiny" style="color:var(--win)">奪冠</span>') },
-  ], { sortKey: 'best', desc: true, onRow: r => C.go('teams', { code: r.code, league: r.league ?? undefined }) });
+  ], {
+    sortKey: 'best',
+    desc: true,
+    /* 只有本站有球隊頁的才可以點。其餘 25 支只有名字、隊徽與這一列的戰績 ——
+       連到一個不存在的球隊頁比不連更糟。 */
+    rowClickable: r => !!r.code,
+    onRow: r => (r.code ? C.go('teams', { code: r.code, league: r.league ?? undefined }) : undefined),
+  });
 }
 
 /* 只有抽籤、還沒開賽的那一季。
@@ -327,8 +335,9 @@ try {
         ${s.unknownDurations.length ? `<div class="note" style="margin-top:12px;color:var(--loss)">
           ⚠ 上游出現沒核對過的比分類別:${s.unknownDurations.map(C.esc).join('、')} ——
           這些場次的比分<b>不顯示</b>,不猜。</div>` : ''}
-        ${s.runs.length ? `<div class="section"><h2>本站球隊走到哪一輪</h2>
-          <span class="hint">英超與西甲・共 ${s.runs.length} 支・點一列進球隊頁</span></div>
+        ${s.runs.length ? `<div class="section"><h2>各隊走到哪一輪</h2>
+          <span class="hint">${s.runs.length} 支全列出・本站有球隊頁的 ${s.runs.filter(r => r.code).length} 支可以點進去,
+          其餘只有這一列的戰績(本站沒有那些聯賽的資料)</span></div>
           <div id="runs"></div>` : ''}
         <div class="section"><h2>淘汰賽</h2>
           <span class="hint">最新的排在最上面(決賽 → 附加賽)・兩回合制顯示總比分與各回合比分・決賽為單場</span></div>

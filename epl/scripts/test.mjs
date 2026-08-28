@@ -1637,9 +1637,42 @@ function checkUcl() {
       okU((assets.external ?? []).every(t => t.crest && !t.code),
         '外部球隊只帶名字與隊徽,沒有隊碼(有隊碼就會被當成有球隊頁)',
         `${(assets.external ?? []).length} 支`);
+      /* 2026-08-28 起「走到哪一輪」涵蓋全部球隊,不再只算本站認得的那 8~11 支。
+         那些數字本來就在同一份資料裡,只是以前 runsByTeam 遇到沒有隊碼就 continue。 */
+      const ucl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'ucl.json'), 'utf8'));
+      for (const season of ucl.seasons ?? []) {
+        const rows = season.table?.rows ?? [];
+        if (!rows.length) continue;
+        okU((season.runs ?? []).length === rows.length,
+          `歐冠 ${season.label}:走到哪一輪涵蓋全部球隊`,
+          `runs ${(season.runs ?? []).length} / 積分榜 ${rows.length}`);
+        okU((season.runs ?? []).every(r => r.id != null),
+          `歐冠 ${season.label}:每一列都有球隊 id(沒有隊碼的也要在)`);
+
+        const sq = season.squads;
+        if (!sq) continue;
+        /* 陣容只掛對照表裡有的球隊 —— 不做隊名比對,對不到就不掛。 */
+        const mapped = new Set((map.teams ?? []).map(t => t.fdId));
+        const known = new Set(rows.map(r => r.id));
+        okU(Object.keys(sq.teams ?? {}).every(id => mapped.has(Number(id)) || known.has(Number(id))),
+          `歐冠 ${season.label}:陣容只掛得到對照表認得的球隊`);
+        /* **單位要跟著資料走。** total_scoring_att 是「每 90 分鐘射門」不是總數,
+           把它標成總數就是編數字。所以來源宣告的欄位名要一起輸出。 */
+        okU(sq.statMeta?.total_scoring_att === 'Shots per 90',
+          `歐冠 ${season.label}:球員數據帶著來源宣告的單位`,
+          sq.statMeta?.total_scoring_att ?? '(沒有 statMeta)');
+        const players = Object.values(sq.teams ?? {}).flat();
+        okU(players.every(x => x.minutes > 0),
+          `歐冠 ${season.label}:陣容只收有實際出賽的球員`, `${players.length} 人`);
+      }
+
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-ucl.js'), 'utf8');
       okU(/externalCrest/.test(src) && !/externalCrest[\s\S]{0,400}C\.link\(/.test(src),
         '歐冠頁對外部球隊不給連結(沒有球隊頁可以連)');
+      /* 走到哪一輪現在列出 36 隊,但只有本站有球隊頁的那幾支可以點 ——
+         其餘套上 clickable 會看起來能點卻沒有地方去。 */
+      okU(/rowClickable:\s*r\s*=>\s*!!r\.code/.test(src),
+        '歐冠頁:沒有球隊頁的球隊那一列不可點');
     }
   }
   const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };

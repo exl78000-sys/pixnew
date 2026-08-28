@@ -4,6 +4,10 @@
 
 import { KO_ORDER, STAGE_ZH, winnerOfMatch, buildUclTeamIndex, normaliseUclMatch as _n } from './adapters/football-data-ucl.mjs';
 import { crossCheck, checkDraw, drawIsSane, buildLeaders } from './adapters/fotmob-ucl.mjs';
+/* squadsByTeam 要讀落地的 id 對照表。這一支只在 Node 跑,靜態 import 就好 —— 
+   檔案其他地方用函式內動態 import 是既有風格,不要為了統一而改動它們。 */
+import { readFileSync as readFileSyncFn, existsSync as existsSyncFn } from 'node:fs';
+import { join as joinPath } from 'node:path';
 
 const conflictsOf = idx => (idx.conflicts?.length ? true : false);
 
@@ -156,21 +160,96 @@ export function championOf(rounds) {
 }
 
 /* 本站認得的球隊在這一季走到哪裡。認不得的不進這張表 —— 沒有本站身分,列了也點不進去。 */
+/* 把 FotMob 的球員按隊分組,並對回 football-data 的球隊 id。
+
+   FotMob 用自己的 teamId,而歐冠資料(ucl.json)用的是 football-data 的 id ——
+   兩邊靠 data/manual/ucl-team-ids.json 接起來,那份是落地的對照表。
+   **不在這裡做隊名比對**:模糊比對會靜靜對錯球隊(盃賽頁踩過兩次)。
+   對照表沒有的隊就不掛,不猜。
+
+   **單位一律沿用上游宣告的,不自己命名。** 這一點差點出錯:
+   我第一版把 total_scoring_att 叫成 `shots`、total_att_assist 叫成 `keyPasses`,
+   但交付檔的 playerStatCategories 自己寫著
+     total_scoring_att = "Shots per 90"(每 90 分鐘,不是總數)
+     total_att_assist  = "Chances created"(總數)
+     total_tackle / interception / defensive_contributions 也都是 per 90
+   把每 90 分鐘標成總數就是編數字。所以欄位鍵直接用上游的 slug,
+   標題也照抄上游的 title 一起輸出(statMeta),畫面照它講 ——
+   上游哪天改了單位,我們不會靜靜跟著標錯。 */
+const SQUAD_STATS = [
+  'mins_played', 'goals', 'goal_assist', 'rating',
+  'expected_goals', 'expected_assists',
+  'total_scoring_att', 'total_att_assist', 'big_chance_created',
+  'total_tackle', 'interception', 'yellow_card',
+];
+
+function squadsByTeam(players, categories, root) {
+  const idPath = joinPath(root, 'data', 'manual', 'ucl-team-ids.json');
+  const fmToFd = new Map();
+  if (existsSyncFn(idPath)) {
+    for (const t of JSON.parse(readFileSyncFn(idPath, 'utf8')).teams ?? []) {
+      fmToFd.set(t.fotmobId, t.fdId);
+    }
+  }
+  const titleOf = new Map((categories ?? []).map(c => [c.slug, c.title]));
+  const num = v => (Number.isFinite(v) ? v : null);
+  const byFd = new Map();
+  for (const p of players) {
+    const fd = fmToFd.get(p.teamId);
+    if (fd == null) continue;                            // 對照表沒有 → 不掛
+    const mins = p.stats?.mins_played?.value ?? null;
+    if (!Number.isFinite(mins) || mins <= 0) continue;    // 沒上場的不列
+    const stats = {};
+    for (const k of SQUAD_STATS) {
+      const v = num(p.stats?.[k]?.value);
+      if (v !== null) stats[k] = v;
+    }
+    if (!byFd.has(fd)) byFd.set(fd, []);
+    byFd.get(fd).push({
+      name: p.name,
+      countryCode: p.countryCode ?? null,
+      minutes: mins,
+      matches: p.stats?.mins_played?.subValue ?? null,
+      stats,
+    });
+  }
+  // 排序固定,兩個 build 的輸出才逐位元組相同
+  for (const list of byFd.values()) {
+    list.sort((a, b) => b.minutes - a.minutes || a.name.localeCompare(b.name));
+  }
+  return {
+    // 欄位名與單位都是上游宣告的,不是本站取的
+    statMeta: Object.fromEntries(SQUAD_STATS
+      .filter(k => titleOf.has(k))
+      .map(k => [k, titleOf.get(k)])),
+    teams: Object.fromEntries([...byFd.entries()].sort((a, b) => a[0] - b[0])),
+  };
+}
+
 export function runsByTeam(matches, rounds, table) {
+  /* **按球隊 id 建,不是按本站隊碼。**
+
+     原本是 `if (!code) continue` —— 只算本站兩個聯賽認得的那 8~11 支,
+     其餘 25 支在畫面上完全沒有戰績,而那些數字本來就在同一份資料裡。
+     2026-08-28 改成涵蓋全部 36 隊;`code` 仍然保留(null 代表本站沒有球隊頁),
+     前端照它決定要不要給連結。 */
   const runs = new Map();
-  const posOf = new Map((table?.rows ?? []).map(r => [r.code, r.position]).filter(([c]) => c));
+  const posOf = new Map((table?.rows ?? []).map(r => [r.id, r.position]).filter(([id]) => id != null));
   const stageOrder = new Map(rounds.map((r, i) => [r.stage, i]));
   for (const m of matches) {
     for (const s of ['home', 'away']) {
-      const t = m[s], code = t.code;
-      if (!code) continue;
+      const t = m[s];
+      if (!t || t.id == null) continue;
       /* bestOrder 從 -1 起跳,而聯賽階段不在 rounds 裡 ——
          只打聯賽階段就被淘汰的球隊(第 25-36 名)因此會停在 null。
          第一版就是這樣,畫面上 Girona 的「打到哪一輪」是空的,
          看起來像資料缺了,其實他們就是止步於聯賽階段。所以底線設在這裡。 */
-      const cur = runs.get(code) ?? { code, league: t.league, name: t.name, leaguePos: posOf.get(code) ?? null,
+      const cur = runs.get(t.id) ?? {
+        id: t.id, code: t.code ?? null, league: t.league ?? null, name: t.name,
+        leaguePos: posOf.get(t.id) ?? null,
         lp: 0, lw: 0, ld: 0, ll: 0, lgf: 0, lga: 0, koPlayed: 0, koWon: 0,
-        best: '聯賽階段', bestOrder: -1, out: null, outTo: null };
+        best: '聯賽階段', bestOrder: -1, out: null, outTo: null,
+      };
       if (m.stage === 'LEAGUE_STAGE') {
         if (m.played && m.final) {
           const [gf, ga] = s === 'home' ? m.final : [m.final[1], m.final[0]];
@@ -181,16 +260,15 @@ export function runsByTeam(matches, rounds, table) {
         cur.koPlayed++;
         if (winnerOfMatch(m) === s) cur.koWon++;
       }
-      runs.set(code, cur);
+      runs.set(t.id, cur);
     }
   }
   // 走到哪一輪,以「有出賽的最後一個階段」為準
   for (const r of rounds) {
     for (const t of r.ties) {
       for (const team of t.teams) {
-        const code = team.code;
-        if (!code) continue;
-        const cur = runs.get(code);
+        if (team?.id == null) continue;
+        const cur = runs.get(team.id);
         if (!cur) continue;
         const order = stageOrder.get(r.stage) ?? -1;
         if (order > cur.bestOrder) { cur.bestOrder = order; cur.best = r.zh; }
@@ -206,8 +284,10 @@ export function runsByTeam(matches, rounds, table) {
   for (const r of runs.values()) {
     if (r.bestOrder < 0 && r.lp > 0 && !r.out) r.out = '聯賽階段';
   }
+  /* 排序最後用 id 收尾 —— 兩個 build 各跑一次,輸出必須逐位元組相同(有測試守著)。
+     只靠前三個鍵的話,同分的球隊順序會依 Map 插入順序而定,那不保證穩定。 */
   return [...runs.values()].sort((a, b) => b.bestOrder - a.bestOrder || b.koWon - a.koWon
-    || (a.leaguePos ?? 99) - (b.leaguePos ?? 99));
+    || (a.leaguePos ?? 99) - (b.leaguePos ?? 99) || a.id - b.id);
 }
 
 export function summariseSeason(raw, codeOfTeam, normalise) {
@@ -379,6 +459,12 @@ export async function loadUclSeasons(root, sources) {
       if (s.crossCheck.passed && Array.isArray(fm.players) && fm.players.length) {
         s.leaders = buildLeaders(fm.players);
         s.leaderPool = fm.players.length;
+        /* 逐隊陣容。走的是**同一份、同一道核對**的資料 ——
+           球員榜本來就從這 879 人裡挑前幾名,只是以前沒有按隊分過。
+
+           為什麼值得做:36 隊裡本站只認得 8~11 支,其餘 25 支在站上
+           除了名字與隊徽之外什麼都沒有 —— 而他們的球員數據一直就在這個檔案裡。 */
+        s.squads = squadsByTeam(fm.players, fm.playerStatCategories, root);
       }
     }
     seasons.push(s);

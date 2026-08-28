@@ -905,7 +905,11 @@ export function matchReportCards(m) {
 }
 
 /* ── 可排序表格 ─────────────────────── */
-export function table(rows, cols, { sortKey = null, desc = true, onRow = null, limit = null } = {}) {
+/* rowClickable:哪幾列可以點。不給就是「有 onRow 就全部可點」——
+   既有呼叫端的行為完全不變。
+   會需要它是因為歐冠的球隊表現在列出全部 36 隊,但本站只有其中 8~11 支有球隊頁;
+   其餘的套上 clickable 會看起來能點卻沒有地方去(鐵則三:不要做出壞掉的樣子)。 */
+export function table(rows, cols, { sortKey = null, desc = true, onRow = null, rowClickable = null, limit = null } = {}) {
   const id = `t${Math.random().toString(36).slice(2, 8)}`;
   let state = { key: sortKey, desc };
 
@@ -931,7 +935,7 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, l
     const head = cols.map(c =>
       `<th class="${cls(c, c.sortable === false ? '' : 'sortable') + (state.key === c.key ? ' sorted' : '')}" data-k="${c.key}" title="${c.title ?? ''}">${c.label}${state.key === c.key ? (state.desc ? ' ▾' : ' ▴') : ''}</th>`).join('');
     const body = data.map((r, i) =>
-      `<tr class="${onRow ? 'clickable' : ''}" data-i="${rows.indexOf(r)}">${cols.map(c =>
+      `<tr class="${onRow && (!rowClickable || rowClickable(r)) ? 'clickable' : ''}" data-i="${rows.indexOf(r)}">${cols.map(c =>
         `<td class="${cls(c)}">${cellHtml(c, r, i)}</td>`).join('')}</tr>`).join('');
     const el = document.getElementById(id);
     el.querySelector('table').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
@@ -942,7 +946,13 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, l
         render();
       };
     });
-    if (onRow) el.querySelectorAll('tbody tr').forEach(tr => { tr.onclick = () => onRow(rows[+tr.dataset.i]); });
+    if (onRow) {
+      el.querySelectorAll('tbody tr').forEach(tr => {
+        const row = rows[+tr.dataset.i];
+        if (rowClickable && !rowClickable(row)) return;
+        tr.onclick = () => onRow(row);
+      });
+    }
   };
 
   queueMicrotask(render);
