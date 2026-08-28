@@ -1,8 +1,13 @@
 name: 西甲戰情室 即時比分
 
 on:
-  # 本機優先模式：停止 GitHub 每五分鐘請求，避免佔用 Actions 佇列與 API 額度。
   workflow_dispatch:
+  schedule:
+    # 原本是 */5,而這支**沒有「沒比賽就結束」的守衛** —— 等於沒有比賽也每天
+    # 打 288 次、576 個 SportMonks 請求,違背使用者「沒比賽就不用頻繁」那條。
+    # 2026-08-29 補上 live-window 守衛之後改成 */15:沒比賽時幾秒就結束,
+    # 有比賽時每次執行都會抓到(進場窗口是開賽前 75 分鐘到開賽後 140 分鐘)。
+    - cron: '*/15 * * * *'
 
 permissions:
   contents: write
@@ -24,7 +29,17 @@ jobs:
         with:
           node-version: '22'
 
+      # 沒有比賽就不要打 API。這支原本沒有這道守衛,排程一開就是不分晝夜每次都抓。
+      - name: 現在該不該進場?
+        id: win
+        run: node scripts/live-window.mjs --league=es1 --github
+
+      - name: 沒比賽就結束
+        if: steps.win.outputs.active != 'true'
+        run: echo "· 不進場:${{ steps.win.outputs.reason }}"
+
       - name: 抓取西甲 SportMonks 即時比分
+        if: steps.win.outputs.active == 'true'
         run: npm run laliga:live -- --max-requests=2
         env:
           SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
@@ -33,7 +48,9 @@ jobs:
         continue-on-error: true
 
       # 快照內容沒有變化時不 build、不提交，避免空耗 Actions 與觸發部署。
+      # 沒進場時連這一步都不用跑 —— 沒抓就不可能有變化。
       - name: 有變化才建置並回寫
+        if: steps.win.outputs.active == 'true'
         run: |
           set -u
           cd "$GITHUB_WORKSPACE"

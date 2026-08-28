@@ -1288,6 +1288,34 @@ async function checkDataGap() {
         fixtures: [{ home: 'LIV', away: 'NFO', kickoff: '2026-08-29T11:30:00Z', played: false }] });
       return r.active === false && /下一場還有/.test(r.reason);
     })()],
+    /* 進場判斷要認得每個有即時來源的聯賽。原本只讀英超的檔案,
+       西甲那支 workflow 因此沒有守衛 —— 排程一開就是不分晝夜每次都打 SportMonks。 */
+    ['進場判斷走註冊表,西甲與英超各讀自己的檔', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
+      return /const LEAGUES = \{/.test(src) && /leagues', 'es1', 'fixtures\.json'/.test(src)
+        && /sportmonks-la-liga/.test(src);
+    })()],
+    ['不認得的聯賽回 active:false,不會誤判成英超',
+      W.liveWindow(Date.now(), 'zzz').active === false],
+    /* 三支 workflow 的排程 2026-08-29 開回來。西甲那支同時補了守衛 ——
+       沒有守衛的「每 5 分鐘」等於沒比賽也每天打 576 次 API。
+       (別在 block comment 裡寫 cron 的星號斜線寫法,那會提早把註解關掉。) */
+    ['西甲比賽日 workflow 有「沒比賽就結束」的守衛', (() => {
+      const src = readFileSync(join(ROOT, '..', '.github', 'workflows', 'laliga-matchday.yml'), 'utf8');
+      return /live-window\.mjs --league=es1/.test(src)
+        && /steps\.win\.outputs\.active == 'true'/.test(src);
+    })()],
+    ['三支 workflow 都有排程', (() => {
+      return ['epl-live.yml', 'epl-matchday.yml', 'laliga-matchday.yml'].every(f =>
+        /cron:/.test(readFileSync(join(ROOT, '..', '.github', 'workflows', f), 'utf8')));
+    })()],
+    /* **push 觸發刻意不恢復。** 原本 push 到 claude/** 就跑一次完整建置與部署,
+       那是關掉排程的主因(高頻更新與部署互相排隊)。 */
+    ['部署那支不吃 push 觸發', (() => {
+      const src = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+      const on = src.slice(src.indexOf('\non:'), src.indexOf('\npermissions:'));
+      return !/^\s*push:/m.test(on);
+    })()],
     ['快開賽了就先睡到賽前 75 分再進場', (() => {
       const now = Date.parse('2026-08-28T19:10:00Z');
       const r = W.decideWindow({ now, live: null,

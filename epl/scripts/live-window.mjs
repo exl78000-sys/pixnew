@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // 現在該不該進入「比賽日模式」?回傳 JSON 給 workflow 判斷。
 //
-//   node scripts/live-window.mjs            → 印出 JSON
-//   node scripts/live-window.mjs --github   → 同時寫進 $GITHUB_OUTPUT
+//   node scripts/live-window.mjs                    → 印出 JSON(英超)
+//   node scripts/live-window.mjs --league=es1        → 西甲
+//   node scripts/live-window.mjs --github            → 同時寫進 $GITHUB_OUTPUT
 //
 // 為什麼需要這支:GitHub 的 cron 是 best-effort,實測今天 23 次排程的間隔是
 // 28~78 分鐘(設定 15 分鐘),平均 46 分鐘 —— 比賽中靠 cron 更新根本來不及。
@@ -96,13 +97,26 @@ export function decideWindow({ now, fixtures, live = null }) {
   };
 }
 
-export function liveWindow(now = Date.now()) {
-  const fx = join(ROOT, 'web', 'data', 'fixtures.json');
+/* 各聯賽的檔案位置。走註冊表,不要用「是不是某一個」的二元判斷 ——
+   那種寫法在只有兩個聯賽時看起來完全正確(CLAUDE.md 那條坑已經出現四次)。
+   英冠沒有即時來源,所以不在這裡;真的加了再補一筆。 */
+const LEAGUES = {
+  pl: { fixtures: ['web', 'data', 'fixtures.json'], live: ['data', 'raw', 'live.json'] },
+  es1: {
+    fixtures: ['web', 'data', 'leagues', 'es1', 'fixtures.json'],
+    live: ['data', 'raw', 'sportmonks-la-liga', 'live.json'],
+  },
+};
+
+export function liveWindow(now = Date.now(), league = 'pl') {
+  const cfg = LEAGUES[league];
+  if (!cfg) return { active: false, reason: `不認得的聯賽:${league}`, sleepSec: 0 };
+  const fx = join(ROOT, ...cfg.fixtures);
   if (!existsSync(fx)) return { active: false, reason: '找不到賽程資料', sleepSec: 0 };
   const fixtures = JSON.parse(readFileSync(fx, 'utf8'));
 
   let live = null;
-  const rawLive = join(ROOT, 'data', 'raw', 'live.json');
+  const rawLive = join(ROOT, ...cfg.live);
   if (existsSync(rawLive)) {
     try { live = JSON.parse(readFileSync(rawLive, 'utf8')); } catch { /* 檔壞了就退回用開賽時間推 */ }
   }
@@ -114,7 +128,8 @@ export function liveWindow(now = Date.now()) {
    **不要用 `import.meta.url === \`file://${process.argv[1]}\``**:
    本專案路徑含中文,import.meta.url 會被百分號編碼,永遠不相等。 */
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const out = liveWindow();
+  const league = process.argv.find(a => a.startsWith('--league='))?.split('=')[1] ?? 'pl';
+  const out = liveWindow(Date.now(), league);
   console.log(JSON.stringify(out));
 
   if (process.argv.includes('--github') && process.env.GITHUB_OUTPUT) {
