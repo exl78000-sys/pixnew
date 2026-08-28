@@ -21,7 +21,7 @@ import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, sta
 import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
 import { summariseSeason } from './lib/cups.mjs';
-import { loadUclSeasons } from './lib/ucl.mjs';
+import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { lookupTier, nearMisses } from './lib/adapters/england-tiers.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
@@ -1006,6 +1006,13 @@ async function main() {
     const ucl = await loadUclSeasons(ROOT, [{ league: 'pl', codeOf: T.codeOf }, { league: 'es1', codeOf: es.codeOf }]);
     if (ucl) {
       await write('ucl.json', ucl);
+      /* 歐冠頁的名字與隊徽走這一份跨聯賽的檔,不查目前聯賽的 clubs ——
+         兩份 clubs 的隊碼沒有交集,查了的話同一支球隊在兩頁會叫不同名字、
+         隊徽也只出現一半。內容與 build-laliga 產出的必須逐位元組相同。 */
+      const assets = await uclTeamAssets(ROOT, ucl);
+      await write('ucl-teams.json', assets);
+      console.log(`  歐冠球隊名字與隊徽(跨聯賽一份):${assets.known}/${assets.codesInUcl} 個隊碼認得`
+        + `・有隊徽 ${assets.teams.filter(t => t.crest).length}`);
       for (const s of ucl.seasons) {
         if (s.availability === 'draw-only') {
           console.log(`  歐冠 ${s.label}:已抽籤未開賽・${s.total} 組對戰・${s.teams} 隊`
