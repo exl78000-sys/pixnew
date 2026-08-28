@@ -22,6 +22,7 @@ import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
 import { summariseSeason } from './lib/cups.mjs';
 import { loadUclSeasons } from './lib/ucl.mjs';
+import { lookupTier, nearMisses } from './lib/adapters/england-tiers.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { toFeedItems, forLeague } from './lib/adapters/curated-news.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
@@ -918,6 +919,42 @@ async function main() {
        本站認得的球隊走 crests.json(前端 C.badge 自己會處理),
        這裡只補**認不得的那些對手**:有隊徽就顯示真的隊徽,沒有就維持只給名字。
        掛隊徽不等於給身分 —— 那些球隊仍然沒有隊碼、點不進去。 */
+    /* 對手是第幾級的球隊。盃賽頁上「Sunderland 輸給 Port Vale」看不出是不是冷門 ——
+       這一格就是在補那個背景。**層級逐季查**:2025-26 的比賽用 2025-26 的層級,
+       球隊每年升降級,拿某一季的層級講另一季就是編數字。
+       上游本季只發布到英冠,所以英甲英乙會退回上一季 —— 那種情況要把賽季
+       一起帶到前端,畫面必須標出來。對不上的(非聯賽球隊)不給層級,不猜。 */
+    {
+      const p = join(ROOT, 'data', 'manual', 'team-tiers.json');
+      const store = existsSync(p) ? JSON.parse(await readFile(p, 'utf8')) : null;
+      if (store) {
+        const unknownNames = new Set();
+        let exact = 0, stale = 0, none = 0;
+        for (const c of cups) for (const s of c.seasons) for (const r of s.rounds) for (const m of r.matches) {
+          for (const side of ['home', 'away']) {
+            const t = m[side];
+            if (!t?.name || t.code || t.name === 'TBC') continue;
+            unknownNames.add(t.name);
+            const hit = lookupTier(store, t.name, s.label);
+            if (!hit) { none++; continue; }
+            t.tier = hit.zh;
+            t.tierNo = hit.tier;
+            // exact=false 代表這一季查不到、退回別季 —— 帶著賽季讓畫面標出來
+            if (!hit.exact) { t.tierSeason = hit.season; stale++; } else exact++;
+          }
+        }
+        const nm = nearMisses(store, [...unknownNames]);
+        console.log(`  盃賽對手層級:${exact} 個位置用當季層級・${stale} 個退回別季(畫面會標賽季)`
+          + `・${none} 個沒有層級(多半是非聯賽球隊,不猜)`);
+        if (nm.length) {
+          console.log(`  ⚠ 隊名不完全相同、只是正規化後相等的配對 ${nm.length} 組,請人核對:`);
+          for (const x of nm.slice(0, 12)) console.log(`      ${x.cup}  ←→  ${x.source}(${x.season} ${x.tier})`);
+        }
+      } else {
+        console.log('  盃賽對手層級:還沒有 team-tiers.json(跑 npm run tiers)');
+      }
+    }
+
     let cupCrests = {};
     {
       const p = join(ROOT, 'data', 'manual', 'crests-cups.json');

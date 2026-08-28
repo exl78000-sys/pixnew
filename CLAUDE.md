@@ -91,6 +91,7 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 | **football-data.org 的 `fullTime` 在 PK 場是「累加值」不是比分** | 2025-26 歐冠決賽的 `fullTime` 是 `5-4`,實際上是 **1-1、PK 4-3** —— 直接印會把冠軍講錯 | 實測 6 場全部成立:`fullTime = regularTime + extraTime + penalties`。PK 場的比分要用 `regularTime + extraTime`,**不是 fullTime**。`duration` 是 `REGULAR` / `EXTRA_TIME` / `PENALTY_SHOOTOUT` |
 | **FotMob 的比賽網址順序不是主客** | `/matches/{甲}-vs-{乙}/` 看起來像「甲是主隊」,實際上只有一半對得上(2024-25:35 對 / 36 反) | 主客看 `home` / `away` **欄位**(378 場全對、0 場反),網址只是 slug。照 slug 推會得到「這份資料一半的主客是錯的」這種完全錯誤的結論 |
 | **兩份名單對照只比全名會整隊漏掉** | football-data 的 Inter 全名是 `FC Internazionale Milano`、Brest 是 `Stade Brestois 29`,跟另一邊的 `Inter` / `Brest` 一個共同 token 都沒有 | 全名與 **shortName 都要比**,取最好的一組。漏掉的那一隊會變成 10 場「隊名對不上」,交叉核對整份不通過 —— 看起來像資料錯,其實是對照表漏了 |
+| **隊名正規化去掉字首的 AFC** | `AFC Liverpool`(第九級)被對成 `Liverpool FC`、`Bournemouth FC`(第九級)被對成 `AFC Bournemouth` —— 兩支第九級球隊在盃賽頁被標成「英超」,而畫面看起來完全正常 | **字尾**的 FC/AFC 是法人形式(Barnsley = Barnsley FC),**字首**的 AFC 是球隊身分的一部分。只去字尾。這是「盃賽寬鬆比對會對錯球隊」的第二次出現,靠 nearMisses 清單抓到的 —— **那份清單不是裝飾** |
 | **同一組對戰在不同賽季會重複** | 用 `find(home===H && away===A)` 找比賽,拿到的可能是**上一季**那一場。西甲三則賽報因此全被判成「比分不符」:摘要寫 1-2、抓到上季的 0-2 | 用日期收斂(報導日或比賽日前後幾天內)。**收斂不到要記成「無法核對」,不是「不一致」** —— 那兩個結論差很多 |
 | **人工交付的明細與賽程涵蓋的比賽不同批** | 新賽果落地、逐球明細還沒跟上時,「逐隊進失球對回賽果」整條變紅,看起來像上游資料錯了 | 明細只收核對通過的場次,所以 `goals.json` 每季記 `matchKeys`(涵蓋哪幾場),核對限定在同一批比賽上 |
 | API 回 **HTTP 200 加一個 error 物件** | 只看 `res.ok` 會把失敗當成功;排程每天跑、每天回報成功,實際一筆都沒抓到 | API-Football 看 `j.errors`、Understat 看 `j.error`。而且要分得出「暫時失敗」與「這個方案就是拿不到」,後者要記錄下來讓畫面講實話 |

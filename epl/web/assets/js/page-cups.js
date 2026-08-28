@@ -26,13 +26,21 @@ function teamCell(t, { align = 'left' } = {}) {
      但本站沒有它的資料,所以點不進去 —— 這兩件事要分開,
      不能因為有圖就假裝我們有這一隊(鐵則三)。 */
   if (!t.code) {
+    /* 層級標籤。**退回別季的一定要標出賽季** —— 球隊每年升降級,
+       上游本季只發布到英冠,英甲英乙只有上一季的名單。
+       不標的話就是拿去年的事實講今年。 */
+    const tier = t.tier
+      ? `<span class="pill tiny${t.tierNo >= 3 ? ' warn' : ''}" title="${
+          t.tierSeason ? `${t.tierSeason} 賽季的層級(上游還沒有本季的英甲/英乙名單)` : '當季層級'}"
+          >${t.tier}${t.tierSeason ? `·${t.tierSeason.slice(2)}` : ''}</span>`
+      : '';
     // 隊徽在 cups.json 的查表裡(一支球隊一份),不是掛在每一個球隊格上
     const img = CUP_CRESTS[t.sourceId]
       ? `<img class="crest" src="${CUP_CRESTS[t.sourceId]}" alt="${name}" title="${name}" loading="lazy" width="26" height="26">`
       : '';
-    if (!img) return `<span class="small" style="text-align:${align}">${name}</span>`;
-    return `<span class="small" style="display:inline-flex;align-items:center;gap:6px;text-align:${align};flex-direction:${
-      align === 'right' ? 'row-reverse' : 'row'}">${img}<span>${name}</span></span>`;
+    if (!img && !tier) return `<span class="small" style="text-align:${align}">${name}</span>`;
+    return `<span class="small" style="display:inline-flex;align-items:center;gap:5px;text-align:${align};flex-direction:${
+      align === 'right' ? 'row-reverse' : 'row'}">${img}<span>${name}</span>${tier}</span>`;
   }
   return `<a class="small" href="${C.link('teams', { code: t.code })}"
     style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;flex-direction:${align === 'right' ? 'row-reverse' : 'row'}"

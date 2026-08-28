@@ -124,6 +124,14 @@ jobs:
       # 歐冠。football-data.org 免費方案限 10 req/分,所以一季一個請求、間隔 7 秒。
       # 2026-27 目前回 404(還沒建立,九月中才開打)—— 那不是「拿不到」,
       # 腳本會照實記成 not-published 並繼續,不讓整個流程變紅。
+      # 英格蘭各級聯賽的球隊名單(openfootball 靜態檔,免費、不用額度)。
+      # 盃賽頁靠它講出對手是第幾級的球隊。上游發布本季的英甲/英乙之後,
+      # 這一步會自動把「退回上一季」的那些改成當季層級。
+      - name: 更新英格蘭聯賽層級名單
+        working-directory: epl
+        run: npm run tiers
+        continue-on-error: true
+
       # 盃賽對手的隊徽。網址是 encups 順手留下來的(零額外 API 請求),
       # 這一步只是把圖抓下來縮圖內嵌。單線、間隔 200ms、每次上限 120 張、
       # 已抓過的略過,所以穩定之後每次執行幾乎不發請求。
@@ -296,7 +304,7 @@ jobs:
                      epl/data/form-tuning.json epl/data/availability-history.json \
                      epl/data/situation-tuning.json epl/data/situation-tuning-es1.json \
                      epl/data/congestion-tuning.json 2>/dev/null || true
-          git add -f epl/data/manual/photos.json epl/data/manual/crests-cups.json 2>/dev/null || true
+          git add -f epl/data/manual/photos.json epl/data/manual/crests-cups.json epl/data/manual/team-tiers.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "資料沒有變化,不提交"
           else

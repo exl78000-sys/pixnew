@@ -37,6 +37,7 @@ import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
 import { normaliseMatchDetail } from './lib/adapters/api-football.mjs';
 import { nameTokens as uclNameTokens } from './lib/adapters/fotmob-ucl.mjs';
 import { checkScores, toFeedItems, forLeague, KNOWN_STATUS } from './lib/adapters/curated-news.mjs';
+import { tierKey, lookupTier } from './lib/adapters/england-tiers.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -1708,6 +1709,72 @@ function checkUcl() {
       const cupSrc3 = readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8');
       ok(/CUP_CRESTS\[t\.sourceId\]/.test(cupSrc3), '盃賽頁:隊徽用 sourceId 查表');
       ok(!/t\.crest/.test(cupSrc3), '盃賽頁:不再讀每場夾帶的隊徽');
+    }
+  }
+
+  /* 對手層級。**這一節守的是 CLAUDE.md 陷阱表那條在這裡的第二次出現。**
+
+     第一版的隊名正規化把字首與字尾的 AFC/FC 都去掉,於是:
+       AFC Liverpool(第九級)  → 對成 Liverpool FC   → 標成「英超」
+       Bournemouth FC(第九級) → 對成 AFC Bournemouth → 標成「英超」
+     兩支第九級的球隊被標成英超,而且畫面上看起來完全正常。
+     **字尾的 FC/AFC 是法人形式,字首的 AFC 是球隊身分的一部分** —— 只能去字尾。 */
+  {
+    ok(tierKey('Barnsley') === tierKey('Barnsley FC'), '層級隊名:字尾 FC 去掉(同一支球隊)');
+    ok(tierKey('Barrow') === tierKey('Barrow AFC'), '層級隊名:字尾 AFC 去掉(同一支球隊)');
+    ok(tierKey('AFC Liverpool') !== tierKey('Liverpool FC'),
+      '層級隊名:**字首的 AFC 不可以去掉**(AFC Liverpool 不是 Liverpool)');
+    ok(tierKey('Bournemouth FC') !== tierKey('AFC Bournemouth'),
+      '層級隊名:Bournemouth FC 不是 AFC Bournemouth');
+    ok(tierKey('AFC Wimbledon') === tierKey('AFC Wimbledon'), '層級隊名:兩邊都有字首 AFC 時照樣對得上');
+
+    const tierPath = join(ROOT, 'data', 'manual', 'team-tiers.json');
+    if (existsSync(tierPath)) {
+      const store = JSON.parse(readFileSync(tierPath, 'utf8'));
+      ok(Object.keys(store.seasons ?? {}).length >= 2, '層級名單:至少兩季');
+      ok(lookupTier(store, 'AFC Liverpool', '2025-26') === null,
+        '層級名單:AFC Liverpool 查不到層級(它不是英超那支)');
+      ok(lookupTier(store, 'Bournemouth FC', '2025-26') === null,
+        '層級名單:Bournemouth FC 查不到層級');
+      const pv = lookupTier(store, 'Port Vale', '2025-26');
+      ok(pv?.zh === '英甲' && pv.exact === true, '層級名單:Port Vale 2025-26 是英甲(當季精確)', JSON.stringify(pv));
+      const pv27 = lookupTier(store, 'Port Vale', '2026-27');
+      ok(pv27?.exact === false, '層級名單:本季查不到就退回別季,而且標記成非當季', JSON.stringify(pv27));
+    }
+
+    const cupsPath2 = join(W, 'data', 'cups.json');
+    if (existsSync(cupsPath2)) {
+      const cd = JSON.parse(readFileSync(cupsPath2, 'utf8'));
+      const KNOWN_TIERS = new Set(['英超', '英冠', '英甲', '英乙']);
+      let tagged = 0, badTier = 0, codedWithTier = 0, staleNoSeason = 0;
+      for (const c of cd.cups ?? []) for (const s2 of c.seasons ?? []) {
+        for (const r of s2.rounds ?? []) for (const m of r.matches ?? []) {
+          for (const side of ['home', 'away']) {
+            const t = m[side];
+            if (!t?.tier) continue;
+            tagged++;
+            if (!KNOWN_TIERS.has(t.tier)) badTier++;
+            if (t.code) codedWithTier++;
+            // 非當季的層級一定要帶賽季,不然就是拿別季的事實講這一季
+            if (t.tierSeason && t.tierSeason === s2.label) staleNoSeason++;
+          }
+        }
+      }
+      ok(tagged > 0, '產物:盃賽對手有標層級', String(tagged));
+      ok(badTier === 0, '產物:層級只有四種已知的說法', String(badTier));
+      ok(codedWithTier === 0, '產物:本站認得的球隊不掛層級標籤(那一格用本站自己的身分)');
+      ok(staleNoSeason === 0, '產物:tierSeason 只在「不是當季」時才出現');
+      // AFC Liverpool 這種第九級球隊在產物裡一定沒有層級
+      let trap = 0;
+      for (const c of cd.cups ?? []) for (const s2 of c.seasons ?? []) {
+        for (const r of s2.rounds ?? []) for (const m of r.matches ?? []) {
+          for (const side of ['home', 'away']) {
+            const t = m[side];
+            if (['AFC Liverpool', 'Bournemouth FC'].includes(t?.name) && t?.tier) trap++;
+          }
+        }
+      }
+      ok(trap === 0, '產物:AFC Liverpool / Bournemouth FC 沒有被標成英超');
     }
   }
 
