@@ -34,7 +34,7 @@ const TTL_HOURS = 12;
    實際踩到:第一版用寬鬆比對把 AFC Liverpool 對成 Liverpool,
    修好之後快取還在 TTL 內,重跑會直接略過 —— **修了等於沒修**。
    版本不同就重抓,不管 TTL。 */
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;   // 3:延長賽改由 ET 比分與 state 判定,不再用 CURRENT≠2ND_HALF 推導
 
 // 賽事名稱由 SportMonks 決定,不是我們取的 —— 中文名才是我們的。
 export const CUPS = [
@@ -144,9 +144,9 @@ async function main() {
 
       /* 延長賽的兩個判準要對得起來(直接看 ET 比分 vs 推導 CURRENT≠2ND_HALF)。
          不一致不是致命錯誤,但要報出來 —— 通常代表延長賽 0-0 後進 PK。 */
-      const aetBoth = matches.filter(m => m.aetDirect && m.aetDerived === true).length;
-      const aetOnlyDirect = matches.filter(m => m.aetDirect && m.aetDerived !== true).length;
-      const aetOnlyDerived = matches.filter(m => !m.aetDirect && m.aetDerived === true).length;
+      const aetBoth = matches.filter(m => m.aetDirect && m.ninetyMismatch === true).length;
+      const aetOnlyDirect = matches.filter(m => m.aetDirect && m.ninetyMismatch !== true).length;
+      const suspect = matches.filter(m => m.ft90Suspect).length;
       seasonsOut.push({
         label: want.label, seasonId: season.id, sourceName: season.name,
         finished: season.finished ?? null, current: season.is_current === true,
@@ -154,7 +154,7 @@ async function main() {
         unknownDescriptions: unknown,
         unknownStates,
         nearMisses,
-        aetCheck: { both: aetBoth, onlyDirect: aetOnlyDirect, onlyDerived: aetOnlyDerived },
+        aetCheck: { withEtGoals: aetBoth, etGoalless: aetOnlyDirect, ft90Suspect: suspect },
       });
       const played = matches.filter(m => m.played).length;
       const pens = matches.filter(m => m.pens).length;
@@ -162,8 +162,8 @@ async function main() {
       const mapped = matches.filter(m => m.home?.code || m.away?.code).length;
       console.log(`  ${cup.zh} ${want.label}(season ${season.id}):${matches.length} 場・已完賽 ${played}`
         + `・延長 ${aet}・PK ${pens}・含英超球隊 ${mapped}`);
-      console.log(`    延長賽兩個判準:兩者皆是 ${aetBoth}・只有 ET 比分 ${aetOnlyDirect}`
-        + `・只有推導 ${aetOnlyDerived}${aetOnlyDerived ? ' ← 這一類要看一下' : ''}`);
+      console.log(`    延長賽 ${aetBoth + aetOnlyDirect} 場(延長有進球 ${aetBoth}・延長 0-0 ${aetOnlyDirect})`
+        + `・90 分比分不可信 ${suspect} 場(已捨棄那一欄,最終比分不受影響)`);
       if (unknown.length) console.log(`    ⚠ 沒見過的比分類別:${unknown.join('、')} —— 核對過才可加進 KNOWN_SCORE_DESCRIPTIONS`);
       if (unknownStates.length) console.log(`    ⚠ 沒見過的狀態碼:${unknownStates.join('、')}`);
       if (nearMisses.length) console.log(`    ⚠ 名字接近但沒自動對應(${nearMisses.length} 支,刻意不自動採用):\n       `

@@ -88,12 +88,20 @@ function qualifyingToggle(season) {
 function championCard(champ, cupName, seasonLabel) {
   if (!champ) return '';
   const m = champ.match;
+  /* 比分要從**冠軍的角度**寫。第一版直接印 final[0]-final[1],
+     決賽是「Chelsea 0-1 Manchester City」時就變成
+     「Manchester City 擊敗 Chelsea 0-1」—— 讀起來像曼城輸了。
+     所以下面把勝方的進球放前面,另外把主客場照實寫出來。 */
+  const w = winner(m);
+  const score = m.final ? (w === 'away' ? `${m.final[1]}-${m.final[0]}` : `${m.final[0]}-${m.final[1]}`) : '';
+  const pens = m.pens ? (w === 'away' ? `${m.pens[1]}-${m.pens[0]}` : `${m.pens[0]}-${m.pens[1]}`) : null;
   return `<div class="note ok" style="margin-top:12px">
     <b>${seasonLabel} ${cupName}冠軍:${C.esc(champ.team?.name ?? '')}</b>
     ${champ.team?.code ? C.badge(champ.team.code) : ''}
     <div class="small" style="margin-top:4px">${C.esc(champ.stage)}・
-      擊敗 ${C.esc(champ.runnerUp?.name ?? '')}
-      ${m.final ? `${m.final[0]}-${m.final[1]}` : ''}${m.pens ? `(PK ${m.pens[0]}-${m.pens[1]})` : ''}${m.aet === true ? '(延長賽)' : ''}</div>
+      ${score} 擊敗 ${C.esc(champ.runnerUp?.name ?? '')}${
+        m.aet === true ? '(延長賽)' : ''}${pens ? `,PK ${pens}` : ''}
+      <span class="dim tiny">(該場 ${C.esc(m.home?.name ?? '')} ${m.final ? m.final.join('-') : ''} ${C.esc(m.away?.name ?? '')})</span></div>
   </div>`;
 }
 

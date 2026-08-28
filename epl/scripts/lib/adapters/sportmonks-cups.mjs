@@ -122,16 +122,28 @@ export function normaliseCupFixture(fixture, { codeOf }) {
   const final = pair(byDescription.CURRENT);
   const pens = pair(byDescription.PENALTY_SHOOTOUT);
   const state = fixture.state?.state ?? null;
+  const played = final != null;
 
-  /* 延長賽有兩個判準,兩個都留著而且**互相對照**:
-       直接:有 ET 這筆比分 → 打過延長(實抓才發現有這個 description)
-       推導:CURRENT ≠ 2ND_HALF → 90 分之後還有進球
-     正常情況兩者應該一致。不一致代表上游的比分不完整(例如延長賽 0-0),
-     所以兩個都存下來,由呼叫端比對並報出差異 —— 不要只留一個然後假裝沒事。 */
+  /* 延長賽的判定。第一版我把「CURRENT ≠ 2ND_HALF」也當成判準之一,**那是錯的**。
+     實抓 1573 場之後對照出來的事實:
+
+       state 是 AET 的場次   →  100% 都有 ET 比分(足總盃 31/31、7/7)
+       state 是 FT 的場次    →  一場都沒有 ET 比分
+       聯賽盃 AET 是 0,20 場 PK 只有 5 場有 ET
+         ← 這正好對上規則:聯賽盃 2018 起平手直接踢 PK,不打延長
+
+     所以 state 與 ET 比分是兩個互相印證的可靠訊號。而「CURRENT ≠ 2ND_HALF」
+     在低級別輪次會**假陽性** —— 例如 Port Vale 6-1 的 90 分比分配上 5-1 的最終比分
+     (最終比分比 90 分還低,不可能),或 Burgess Hill 的 3-1 配 1-3(主客顛倒)。
+     那些場次 state 都是 FT,根本沒打延長,是上游的 2ND_HALF 壞掉。
+
+     結論:延長賽只認 ET 比分與 state,**推導只留下來當資料品質警示**,不拿來斷言。 */
   const et = pair(byDescription.ET);
-  const aetDirect = et != null;
-  const aetDerived = final && ft90 ? (final[0] !== ft90[0] || final[1] !== ft90[1]) : null;
-  const aet = aetDirect ? true : aetDerived;
+  const aetDirect = et != null || state === 'AET';
+  const ninetyMismatch = final && ft90 ? (final[0] !== ft90[0] || final[1] !== ft90[1]) : null;
+  const aet = played ? aetDirect : null;
+  // 90 分比分跟最終比分對不上、但又沒打延長 → 上游的 90 分比分不可信,畫面上不要顯示它
+  const ft90Suspect = ninetyMismatch === true && !aetDirect;
 
   return {
     id: fixture.id ?? null,
@@ -142,12 +154,12 @@ export function normaliseCupFixture(fixture, { codeOf }) {
     kickoff: fixture.starting_at ? `${String(fixture.starting_at).replace(' ', 'T')}Z` : null,
     home: teams.home ?? null,
     away: teams.away ?? null,
-    ht, ft90, et, final, pens,
-    aet, aetDirect, aetDerived,
+    ht, ft90: ft90Suspect ? null : ft90, et, final, pens,
+    aet, aetDirect, ninetyMismatch, ft90Suspect,
     state,
     stateKnown: state ? KNOWN_STATES.has(state) : null,
     resultInfo: fixture.result_info ?? null,
-    played: final != null,
+    played,
     unknownDescriptions: unknown,
   };
 }

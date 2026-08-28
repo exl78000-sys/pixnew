@@ -1309,6 +1309,7 @@ function checkCups() {
   ok(JSON.stringify(shootout.final) === '[1,1]', 'PK 場:最終比分是 1-1 而不是 5-4');
   ok(JSON.stringify(shootout.pens) === '[5,4]', 'PK 場:PK 比分獨立保留');
   ok(shootout.aet === true, 'PK 場:有 ET 比分 → 判定為延長賽');
+  ok(shootout.ft90Suspect === false, 'PK 場:90 分比分沒有被誤判成不可信');
   ok(winnerOf(shootout) === 'home', 'PK 場:勝方由 PK 決定,不是由 1-1 決定');
   ok(shootout.home.code === 'LIV' && shootout.away.code === 'BOU', 'PK 場:兩隊都對得到隊碼');
 
@@ -1339,6 +1340,42 @@ function checkCups() {
   ok(pending.played === false, '未賽場次 played 為 false');
   ok(pending.final === null, '未賽場次沒有比分,不是 0-0');
   ok(pending.aet === null, '未賽場次的延長賽是 null(不知道),不是 false');
+
+  /* 上游的 90 分比分會壞。實抓遇到 Port Vale 6-1 的 90 分配上 5-1 的最終比分 ——
+     最終比分比 90 分還低,不可能。那場 state 是 FT(沒打延長),
+     所以第一版「CURRENT ≠ 2ND_HALF 就是延長賽」的推導會**假陽性**。
+     現在只認 ET 比分與 state=AET,壞掉的 90 分比分直接捨棄那一欄。 */
+  const badNinety = normaliseCupFixture({
+    id: 5, stage: { name: 'Round 1' }, state: { state: 'FT' },
+    participants: [
+      { id: 8, name: 'Liverpool', meta: { location: 'home' } },
+      { id: 52, name: 'AFC Bournemouth', meta: { location: 'away' } },
+    ],
+    scores: [
+      { participant_id: 8, description: '2ND_HALF', score: { goals: 6 } },
+      { participant_id: 52, description: '2ND_HALF', score: { goals: 1 } },
+      { participant_id: 8, description: 'CURRENT', score: { goals: 5 } },
+      { participant_id: 52, description: 'CURRENT', score: { goals: 1 } },
+    ],
+  }, { codeOf });
+  ok(badNinety.aet === false, '90 分比分壞掉 + state 是 FT → 不判成延長賽');
+  ok(badNinety.ft90Suspect === true, '90 分比分對不上會被標成不可信');
+  ok(badNinety.ft90 === null, '不可信的 90 分比分不輸出,畫面上不會顯示錯的數字');
+  ok(JSON.stringify(badNinety.final) === '[5,1]', '最終比分不受影響');
+
+  // state 是 AET 但上游沒給 ET 比分 → 仍然算延長賽(兩個訊號任一成立即可)
+  const aetByState = normaliseCupFixture({
+    id: 6, stage: { name: 'Round 4' }, state: { state: 'AET' },
+    participants: [
+      { id: 8, name: 'Liverpool', meta: { location: 'home' } },
+      { id: 52, name: 'AFC Bournemouth', meta: { location: 'away' } },
+    ],
+    scores: [
+      { participant_id: 8, description: 'CURRENT', score: { goals: 2 } },
+      { participant_id: 52, description: 'CURRENT', score: { goals: 1 } },
+    ],
+  }, { codeOf });
+  ok(aetByState.aet === true, 'state 是 AET → 判定為延長賽(即使沒有 ET 比分)');
   const runs = runsByTeam(groupByStage([reversed, pending]));
   const liv = runs.find(r => r.code === 'LIV');
   ok(liv.played === 1, '晉級表:已賽只算 1 場', `實際 ${liv.played}`);
