@@ -1,0 +1,1375 @@
+{
+  "_note": "人工整理的租借紀錄(收件匣)。這一份是協作方交付的原始內容,不要直接拿來用 —— 由 `npm run loans:verify` 核對後才會產生 data/loans-verified.json,build 只讀核對過的那一份。",
+  "_excluded": {
+    "seasons": [
+      "2024-25"
+    ],
+    "reason": "2024-25 整批未採用:拿倉庫的獨立資料核對後判定為偽造。(1) results.json 的逐季聯賽成員資格顯示 Leeds United 2024-25 在英冠不在英超,但交付檔有 6 筆 season=2024-25 / league=Premier League / parentClub=Leeds United 的紀錄。(2) FPL 2024-25 逐季名單顯示 Jack Harrison 2068 分鐘、Tsimikas 829 分鐘、Harvey Elliott 359 分鐘,都與「該季外借出英超」矛盾。(3) 17 組重覆紀錄裡有 14 組月日完全相同且剛好差一年,是整批複製後年份 -1 的痕跡。西甲 Understat 另確認 Mateo Joseph 29 場、Ramazani 27 場都發生在 2025-26,所以真的是 2025-26 那一批。",
+    "verifiedAt": "2026-08-28"
+  },
+  "retrievedAt": "2026-08-28",
+  "scope": {
+    "seasons": [
+      "2025-26",
+      "2026-27"
+    ],
+    "asOf": "2026-08-28",
+    "leagues": [
+      "Premier League",
+      "LaLiga"
+    ],
+    "eventType": "loan-start",
+    "definition": "以母隊與租借目的地記錄租借開始事件；不把永久轉會或單純租借回歸列為租借開始。",
+    "coverage": "records 為來源轉會表中已核對的第一隊租借交易；來源統計則反映來源網站該賽季的租借球員總量，兩者不應直接相加或視為相同口徑。",
+    "note": "2024-25 已移除,原因見 _excluded。"
+  },
+  "sourceStats": {
+    "Premier League": {
+      "2025-26": {
+        "loanPlayers": 31,
+        "appearances": 342,
+        "goals": 16,
+        "averageMinutes": 57,
+        "startingMarketValueEUR": 597700000,
+        "source": "Transfermarkt"
+      },
+      "2026-27": {
+        "loanPlayers": null,
+        "note": "進行中賽季，截至 2026-08-28；本次以已確認交易清單為主，未填尚未穩定的總量統計。"
+      }
+    },
+    "LaLiga": {
+      "2025-26": {
+        "loanPlayers": 74,
+        "appearances": 1414,
+        "goals": 104,
+        "averageMinutes": 61,
+        "startingMarketValueEUR": 497550000,
+        "source": "Transfermarkt"
+      },
+      "2026-27": {
+        "loanPlayers": 3,
+        "appearances": 0,
+        "goals": 0,
+        "averageMinutes": null,
+        "startingMarketValueEUR": 9000000,
+        "source": "Transfermarkt",
+        "note": "進行中賽季，截至 2026-08-28；統計會隨轉會窗與比賽更新。"
+      }
+    }
+  },
+  "records": [
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Evan Ferguson",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Roma",
+      "date": "2025-07-23"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Carl Rushworth",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Coventry City",
+      "date": "2025-07-24"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Eiran Cashin",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Birmingham City",
+      "date": "2025-07-25"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Malick Yalcouye",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Swansea City",
+      "date": "2025-08-14"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Andrew Moran",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "LAFC",
+      "date": "2025-08-21"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Facundo Buonanotte",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Leeds United",
+      "date": "2026-01-15"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Ibrahim Osman",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Birmingham City",
+      "date": "2026-01-19"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Jeremy Sarmiento",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Middlesbrough",
+      "date": "2026-01-27"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Diego Coppola",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Paris FC",
+      "date": "2026-01-29"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Tom Watson",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Millwall",
+      "date": "2026-02-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Brajan Gruda",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "RB Leipzig",
+      "date": "2026-02-02"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Aaron Ramsey",
+      "parentClub": "Burnley",
+      "loanClub": "Leicester City",
+      "date": "2025-09-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Luca Koleosho",
+      "parentClub": "Burnley",
+      "loanClub": "Paris FC",
+      "date": "2026-01-09"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Michael Obafemi",
+      "parentClub": "Burnley",
+      "loanClub": "Blackpool",
+      "date": "2026-01-21"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Jaydon Banel",
+      "parentClub": "Burnley",
+      "loanClub": "Derby County",
+      "date": "2026-01-29"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Oliver Sonne",
+      "parentClub": "Burnley",
+      "loanClub": "Sparta Prague",
+      "date": "2026-01-29"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Max Wober",
+      "parentClub": "Leeds United",
+      "loanClub": "Werder Bremen",
+      "date": "2025-07-04"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Joe Gelhardt",
+      "parentClub": "Leeds United",
+      "loanClub": "Hull City",
+      "date": "2025-08-08"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Mateo Joseph",
+      "parentClub": "Leeds United",
+      "loanClub": "Mallorca",
+      "date": "2025-08-09"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Largie Ramazani",
+      "parentClub": "Leeds United",
+      "loanClub": "Valencia",
+      "date": "2025-08-27"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Isaac Schmidt",
+      "parentClub": "Leeds United",
+      "loanClub": "Werder Bremen",
+      "date": "2025-08-28"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Jack Harrison",
+      "parentClub": "Leeds United",
+      "loanClub": "Fiorentina",
+      "date": "2026-01-19"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Matheus Franca",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Vasco da Gama",
+      "date": "2025-08-26"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Jesurun Rak-Sakyi",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Rizespor",
+      "date": "2025-09-12"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Vitezslav Jaros",
+      "parentClub": "Liverpool",
+      "loanClub": "Ajax",
+      "date": "2025-06-18"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Owen Beck",
+      "parentClub": "Liverpool",
+      "loanClub": "Derby County",
+      "date": "2025-07-25"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Konstantinos Tsimikas",
+      "parentClub": "Liverpool",
+      "loanClub": "Roma",
+      "date": "2025-08-31"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Harvey Elliott",
+      "parentClub": "Liverpool",
+      "loanClub": "Aston Villa",
+      "date": "2025-09-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "Premier League",
+      "player": "Luis Semedo",
+      "parentClub": "Sunderland",
+      "loanClub": "Moreirense",
+      "date": "2025-08-27"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Ramon Terrats",
+      "parentClub": "Getafe",
+      "loanClub": "Espanyol",
+      "date": "2025-07-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Juan Berrocal",
+      "parentClub": "Getafe",
+      "loanClub": "Atlanta United",
+      "date": "2025-07-25"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Yvan Neyou",
+      "parentClub": "Getafe",
+      "loanClub": "Al Okhdood",
+      "date": "2026-01-31"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Coba da Costa",
+      "parentClub": "Getafe",
+      "loanClub": "Anderlecht",
+      "date": "2026-02-02"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Ansu Fati",
+      "parentClub": "Barcelona",
+      "loanClub": "Monaco",
+      "date": "2025-07-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Inaki Pena",
+      "parentClub": "Barcelona",
+      "loanClub": "Elche",
+      "date": "2025-08-27"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Hector Fort",
+      "parentClub": "Barcelona",
+      "loanClub": "Elche",
+      "date": "2025-09-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Abu Kamara",
+      "parentClub": "Alaves",
+      "loanClub": "Hull City",
+      "date": "2025-09-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Sebastian Boselli",
+      "parentClub": "River Plate",
+      "loanClub": "Alaves",
+      "date": "2026-01-16"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Zaid Romero",
+      "parentClub": "Club Brugge",
+      "loanClub": "Alaves",
+      "date": "2026-01-17"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Martin Satriano",
+      "parentClub": "Lyon",
+      "loanClub": "Alaves",
+      "date": "2026-01-17"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Luis Vazquez",
+      "parentClub": "Anderlecht",
+      "loanClub": "Alaves",
+      "date": "2026-01-21"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Veljko Birmancevic",
+      "parentClub": "Sparta Prague",
+      "loanClub": "Alaves",
+      "date": "2026-02-02"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Thomas Lemar",
+      "parentClub": "Atletico Madrid",
+      "loanClub": "Girona",
+      "date": "2025-07-30"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Claudio Echeverri",
+      "parentClub": "Manchester City",
+      "loanClub": "Girona",
+      "date": "2026-01-18"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Raul de Tomas",
+      "parentClub": "Osasuna",
+      "loanClub": "Al Wakrah",
+      "date": "2025-07-20"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Etienne Eto'o",
+      "parentClub": "Osasuna",
+      "loanClub": "Mirandes",
+      "date": "2025-09-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Pelayo Fernandez",
+      "parentClub": "Osasuna",
+      "loanClub": "Cadiz",
+      "date": "2025-09-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Alex Fores",
+      "parentClub": "Villarreal",
+      "loanClub": "Girona",
+      "date": "2025-07-24"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Jhon Solis",
+      "parentClub": "Girona",
+      "loanClub": "Birmingham City",
+      "date": "2026-01-17"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Yaser Asprilla",
+      "parentClub": "Girona",
+      "loanClub": "Galatasaray",
+      "date": "2026-01-25"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Carlos Fernandez",
+      "parentClub": "Real Sociedad",
+      "loanClub": "Mirandes",
+      "date": "2025-08-19"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Jon Pacheco",
+      "parentClub": "Real Sociedad",
+      "loanClub": "Alaves",
+      "date": "2025-08-25"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Rafael Mir",
+      "parentClub": "Sevilla",
+      "loanClub": "Elche",
+      "date": "2025-08-17"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Max Aarons",
+      "parentClub": "Valencia",
+      "loanClub": "Rangers",
+      "date": "2025-06-25"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Cenk Ozkacar",
+      "parentClub": "Valencia",
+      "loanClub": "Koln",
+      "date": "2025-08-09"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Sergi Canos",
+      "parentClub": "Valencia",
+      "loanClub": "Real Valladolid",
+      "date": "2025-09-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Alberto Mari",
+      "parentClub": "Valencia",
+      "loanClub": "Mirandes",
+      "date": "2025-09-01"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Cyle Larin",
+      "parentClub": "Mallorca",
+      "loanClub": "Feyenoord",
+      "date": "2025-09-02"
+    },
+    {
+      "season": "2025-26",
+      "league": "LaLiga",
+      "player": "Daniel Luna",
+      "parentClub": "Mallorca",
+      "loanClub": "Huesca",
+      "date": "2025-08-27"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Alex Paulsen",
+      "parentClub": "Bournemouth",
+      "loanClub": "Motherwell",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Alex Jimenez",
+      "parentClub": "Bournemouth",
+      "loanClub": "Fiorentina",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Alfie Merritt",
+      "parentClub": "Bournemouth",
+      "loanClub": "Newport County",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365 / MyFootballFacts"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Oliwier Zych",
+      "parentClub": "Aston Villa",
+      "loanClub": "Vitoria Guimaraes",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Andres Garcia",
+      "parentClub": "Aston Villa",
+      "loanClub": "Getafe",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Joe Gauci",
+      "parentClub": "Aston Villa",
+      "loanClub": "Lincoln City",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Evann Guessand",
+      "parentClub": "Aston Villa",
+      "loanClub": "Crystal Palace",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Samuel Iling-Junior",
+      "parentClub": "Aston Villa",
+      "loanClub": "Bolton Wanderers",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Kosta Nedeljkovic",
+      "parentClub": "Aston Villa",
+      "loanClub": "Rangers",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Romelle Donovan",
+      "parentClub": "Brentford",
+      "loanClub": "Sheffield United",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Matthew Cox",
+      "parentClub": "Brentford",
+      "loanClub": "Barnet",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Julian Eyestone",
+      "parentClub": "Brentford",
+      "loanClub": "Rotherham United",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Yunus Konak",
+      "parentClub": "Brentford",
+      "loanClub": "Lincoln City",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Benjamin Arthur",
+      "parentClub": "Brentford",
+      "loanClub": "Portsmouth",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Josh Stephenson",
+      "parentClub": "Brentford",
+      "loanClub": "Crewe Alexandra",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Do-Young Yoon",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Magdeburg",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Diego Coppola",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Paris FC",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Rodrigo Rego",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Castellon",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "James Beadle",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Birmingham City",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Nils Ramming",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Rochdale",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Tommy Watson",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Leicester City",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Facundo Buonanotte",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Elche",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Harry Howell",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Leicester City",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Brajan Gruda",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "RB Leipzig",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Jesse Derry",
+      "parentClub": "Chelsea",
+      "loanClub": "Sporting CP",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Harrison Murray-Campbell",
+      "parentClub": "Chelsea",
+      "loanClub": "KV Kortrijk",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Alejandro Garnacho",
+      "parentClub": "Chelsea",
+      "loanClub": "Aston Villa",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Filip Jorgensen",
+      "parentClub": "Chelsea",
+      "loanClub": "Strasbourg",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Ishe Samuels-Smith",
+      "parentClub": "Chelsea",
+      "loanClub": "Notts County",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Dastan Satpaev",
+      "parentClub": "Chelsea",
+      "loanClub": "Burnley",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Benoit Badiashile",
+      "parentClub": "Chelsea",
+      "loanClub": "Napoli",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Axel Disasi",
+      "parentClub": "Chelsea",
+      "loanClub": "Crystal Palace",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Owen Goodman",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Dundee",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Rio Cardines",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Bristol City",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Hindolo Mustapha",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Notts County",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Luke Harris",
+      "parentClub": "Fulham",
+      "loanClub": "Wigan Athletic",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Mason Burstow",
+      "parentClub": "Hull City",
+      "loanClub": "Sheffield Wednesday",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Harvey Cartwright",
+      "parentClub": "Hull City",
+      "loanClub": "Grimsby Town",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Thimothee Lo-Tutala",
+      "parentClub": "Hull City",
+      "loanClub": "Colchester United",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Harry Gray",
+      "parentClub": "Leeds United",
+      "loanClub": "Sheffield Wednesday",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Charlie Crew",
+      "parentClub": "Leeds United",
+      "loanClub": "Crewe Alexandra",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Joel Piroe",
+      "parentClub": "Leeds United",
+      "loanClub": "West Ham United",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Sebastiaan Bornauw",
+      "parentClub": "Leeds United",
+      "loanClub": "Hamburg",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Amara Nallo",
+      "parentClub": "Liverpool",
+      "loanClub": "HJK Helsinki",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Calum Scanlon",
+      "parentClub": "Liverpool",
+      "loanClub": "Cardiff City",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Kieran Morrison",
+      "parentClub": "Liverpool",
+      "loanClub": "Sheffield Wednesday",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Ifeanyi Ndukwe",
+      "parentClub": "Liverpool",
+      "loanClub": "Levante",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365 / Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Calvin Ramsay",
+      "parentClub": "Liverpool",
+      "loanClub": "St Mirren",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Mathys Detourbet",
+      "parentClub": "Manchester City",
+      "loanClub": "Monaco",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Sverre Nypan",
+      "parentClub": "Manchester City",
+      "loanClub": "Lommel SK",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Pierce Charles",
+      "parentClub": "Manchester City",
+      "loanClub": "Queens Park Rangers",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Divin Mubama",
+      "parentClub": "Manchester City",
+      "loanClub": "Southampton",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Kalvin Phillips",
+      "parentClub": "Manchester City",
+      "loanClub": "Sheffield United",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Max Alleyne",
+      "parentClub": "Manchester City",
+      "loanClub": "Burnley",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Divine Mukasa",
+      "parentClub": "Manchester City",
+      "loanClub": "West Ham United",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "Premier League",
+      "player": "Omar Marmoush",
+      "parentClub": "Manchester City",
+      "loanClub": "Tottenham Hotspur",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Altay Bayindir",
+      "parentClub": "Manchester United",
+      "loanClub": "Celta Vigo",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Damián Rodríguez",
+      "parentClub": "Celta Vigo",
+      "loanClub": "Cadiz",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Carlos Domínguez",
+      "parentClub": "Celta Vigo",
+      "loanClub": "Real Oviedo",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Ramón Terrats",
+      "parentClub": "Getafe",
+      "loanClub": "Anderlecht",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Bryan Zaragoza",
+      "parentClub": "Bayern Munich",
+      "loanClub": "Espanyol",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Gabriel Moscardo",
+      "parentClub": "Paris Saint-Germain",
+      "loanClub": "Espanyol",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Quilindschy Hartman",
+      "parentClub": "Burnley",
+      "loanClub": "Espanyol",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "José Salinas",
+      "parentClub": "Espanyol",
+      "loanClub": "Malaga",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "José Gragera",
+      "parentClub": "Espanyol",
+      "loanClub": "Burgos",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Omar Sadik",
+      "parentClub": "Espanyol",
+      "loanClub": "Ceuta",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Antoniu Roca",
+      "parentClub": "Espanyol",
+      "loanClub": "Mallorca",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Angeliño",
+      "parentClub": "Roma",
+      "loanClub": "Deportivo La Coruna",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Hugo Sotelo",
+      "parentClub": "Celta Vigo",
+      "loanClub": "Levante",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "loanFeeEUR": 100000,
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Ifeanyi Ndukwe",
+      "parentClub": "Liverpool",
+      "loanClub": "Levante",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Thiago Fernández",
+      "parentClub": "Villarreal",
+      "loanClub": "Levante",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "league": "LaLiga",
+      "player": "Dani Requena",
+      "parentClub": "Villarreal",
+      "loanClub": "Levante",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "status": "confirmed",
+      "source": "Transfermarkt"
+    }
+  ],
+  "sources": [
+    {
+      "name": "Footballdatabase Premier League 2025-26 transfers",
+      "url": "https://www.footballdatabase.eu/en/competition/transfers/22323-premier_league/2025-2026",
+      "usedFor": "Premier League 2025-26 loan-start records"
+    },
+    {
+      "name": "Footballdatabase LaLiga 2025-26 transfers",
+      "url": "https://www.footballdatabase.eu/en/competition/transfers/22357-la_liga_ea_sports/2025-2026",
+      "usedFor": "LaLiga 2025-26 loan-start records"
+    },
+    {
+      "name": "Transfermarkt Premier League 2025-26 loan players",
+      "url": "https://www.transfermarkt.co.uk/premier-league/leihspieler/wettbewerb/GB1/plus/",
+      "usedFor": "Premier League 2025-26 aggregate loan-player statistics"
+    },
+    {
+      "name": "Transfermarkt LaLiga 2025-26 loan players",
+      "url": "https://www.transfermarkt.co.uk/laliga/leihspieler/wettbewerb/ES1",
+      "usedFor": "LaLiga 2025-26 aggregate loan-player statistics"
+    },
+    {
+      "name": "Premier League official summer 2026 transfer window",
+      "url": "https://www.premierleague.com/en/transfers/2026-27/summer",
+      "usedFor": "確認 2026-27 賽季仍在進行，以及官方轉會窗日期"
+    },
+    {
+      "name": "Football365 Premier League summer 2026 confirmed transfers",
+      "url": "https://www.football365.com/news/every-premier-league-transfer-confirmed-in-the-summer-of-2026",
+      "usedFor": "Premier League 2026-27 confirmed loan-start records"
+    },
+    {
+      "name": "Transfermarkt Premier League 2026-27 transfers",
+      "url": "https://www.transfermarkt.co.uk/premier-league/transfers/wettbewerb/GB1/saison_id/2026",
+      "usedFor": "Premier League 2026-27 cross-check"
+    },
+    {
+      "name": "Transfermarkt LaLiga 2026-27 transfers",
+      "url": "https://www.transfermarkt.co.uk/laliga/transfers/wettbewerb/ES1/saison_id/2026",
+      "usedFor": "LaLiga 2026-27 loan-start records and loan fees"
+    },
+    {
+      "name": "LALIGA official latest transfers 2026-27",
+      "url": "https://www.laliga.com/en-ES/transfers/laliga-easports",
+      "usedFor": "LaLiga 2026-27 official transfer page and transfer-window dates"
+    }
+  ]
+}

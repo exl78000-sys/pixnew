@@ -89,6 +89,10 @@ const statTable = (cols, row) => {
 };
 
 const pct = v => (v === null || v === undefined ? null : (v * 100).toFixed(1) + '%');
+/* 租借紀錄的核對等級。confirmed 與 consistent 對讀者的意義不同,不可以只寫「有紀錄」。 */
+const loanConfidence = l => (l.verdict === 'confirmed'
+  ? '這一筆有獨立來源正面確認。'
+  : '這一筆只通過了「沒有矛盾」的檢查,沒有獨立來源正面確認。');
 
 const notes = [];        // { path, links: [] }
 const addNote = (path, body, links = []) => notes.push({ path, body, links });
@@ -106,6 +110,7 @@ function collectPlayers(lg, meta) {
       age: p.age, dob: p.dateOfBirth, height: p.height, weight: p.weight,
       captain: p.captain || null, statusZh: p.statusZh, news: p.news || null,
       price: p.price, transferred: p.transferred || null, lastTeam: p.lastTeam,
+      loans: p.loans ?? [],
       seasons: [
         { season: meta.lastSeason, kind: '上季', stats: p.last },
         { season: meta.currentSeason, kind: '本季至今', stats: p.current },
@@ -130,6 +135,9 @@ function collectPlayers(lg, meta) {
       squadNumber: newest.squadNumber, age: newest.age, dob: newest.dateOfBirth,
       height: newest.height, weight: newest.weight, captain: null,
       statusZh: null, news: null, price: null,
+      // 西甲是一人一季一筆,租借掛在哪一筆都算這個人的,收成一份去重
+      loans: [...new Map(p.seasons.flatMap(s => s.loans ?? [])
+        .map(l => [l.season + l.direction + l.loanCode, l])).values()],
       seasons: p.seasons
         .slice().sort((a, b) => String(a.season).localeCompare(String(b.season)))
         .map(s => ({ season: s.season, kind: null, stats: s, teams: s.teams })),
@@ -168,6 +176,7 @@ function renderPlayer(p, ctx) {
     位置: p.posZh || p.pos, 背號: p.squadNumber, 年齡: p.age, 出生日期: p.dob,
     身高cm: p.height, 體重kg: p.weight, 隊長: p.captain || null,
     狀態: p.statusZh, FPL身價百萬英鎊: p.price,
+    租借紀錄數: p.loans?.length || null,
     表現統計來源: p.sources.表現統計, 身分來源: p.sources.身分與背號,
     產生時間: ctx.builtAt,
   }));
@@ -199,13 +208,37 @@ function renderPlayer(p, ctx) {
        改成講清楚這個 0 代表什麼、不代表什麼。 */
     const appeared = (s.stats.minutes ?? 0) > 0 || (s.stats.games ?? 0) > 0;
     if (!appeared) {
-      body.push(`${p.sources.表現統計} 沒有這一季的出賽紀錄。\n\n`
-        + `> **這個 0 分不出兩件事**:「在${ctx.lg.zh}但沒上場」與「當季不在${ctx.lg.zh}」。\n`
-        + `> 外借到其他聯賽的球員在 ${p.sources.表現統計} 一樣是 0,所以這裡不列那一排 0。\n`);
+      /* 有一筆核對過的外借紀錄,這個 0 就講得清楚是哪一種了。
+         沒有的話仍然照實說分不出來 —— 不要用「大概是外借」把空白補起來。 */
+      const out = (p.loans ?? []).find(l => l.season === s.season && l.direction === 'out');
+      if (out) {
+        body.push(`${p.sources.表現統計} 沒有這一季的出賽紀錄,**因為他當季外借到 ${out.loanClub}**。\n\n`
+          + `> 這個 0 是「當季不在${ctx.lg.zh}」,不是「在${ctx.lg.zh}但沒上場」——\n`
+          + `> 上游的 0 本來分不出這兩件事,是租借紀錄補上的。${loanConfidence(out)}\n`);
+      } else {
+        body.push(`${p.sources.表現統計} 沒有這一季的出賽紀錄。\n\n`
+          + `> **這個 0 分不出兩件事**:「在${ctx.lg.zh}但沒上場」與「當季不在${ctx.lg.zh}」。\n`
+          + `> 外借到其他聯賽的球員在 ${p.sources.表現統計} 一樣是 0,而本站沒有這一季的租借紀錄可以分辨。\n`);
+      }
       continue;
     }
     body.push(t);
     if (s.teams?.length) body.push(`\n所屬:${s.teams.join('、')}\n`);
+  }
+
+  if (p.loans?.length) {
+    body.push(`\n## 租借紀錄\n\n`);
+    body.push(`| 賽季 | 方向 | 母隊 | 租借目的地 | 日期 | 核對 |\n|---|---|---|---|---|---|\n`);
+    for (const l of p.loans) {
+      body.push(`| ${l.season} | ${l.direction === 'out' ? '租出' : '租入'} | ${l.parentClub} | ${l.loanClub} `
+        + `| ${l.date ?? (l.datePrecision ? l.datePrecision + '(只到這個精度)' : '不詳')} `
+        + `| ${l.verdict === 'confirmed' ? '獨立來源確認' : '無矛盾'} |\n`);
+    }
+    /* 核對等級一定要跟數字一起出現。「有獨立來源確認」與「只是沒查到矛盾」
+       對讀者的意義差很多,混成一句「有租借紀錄」就等於把不確定性藏起來(鐵則四)。 */
+    body.push(`\n> 人工整理的租借資料,由 \`npm run loans:verify\` 拿本站的逐季聯賽成員資格、\n`
+      + `> FPL 逐季出賽分鐘與西甲逐季球員核對過。**「獨立來源確認」**是有其他來源正面\n`
+      + `> 指出他當季在那一隊;**「無矛盾」**只代表查得動的檢查都沒有衝突,不是同一件事。\n`);
   }
 
   /* 同名的處理照鐵則四寫在筆記上,不靠讀者自己發現。 */
@@ -214,7 +247,16 @@ function renderPlayer(p, ctx) {
     body.push(`\n這個名字在本站資料裡不只一筆。**兩份資料源沒有共用的球員 id 可以核對是不是同一人**,`
       + `所以各自成篇、不合併,也不宣稱是同一人:\n`);
     for (const h of p.homonyms) {
-      body.push(`- ${wl(h.file)} —— ${h.leagueZh} / ${h.teamCode ?? '球隊未知'}\n`);
+      /* 租借紀錄接得上的話,同名這件事就有證據了 ——
+         「Brighton → Elche」正好把英超那一則與西甲那一則接起來。
+         但這仍然是第三方的說法,不是共用 id,所以是「有紀錄支持」不是「已證實」。 */
+      const bridge = (p.loans ?? []).find(l => l.loanCode === h.teamCode || l.parentCode === h.teamCode);
+      body.push(`- ${wl(h.file)} —— ${h.leagueZh} / ${h.teamCode ?? '球隊未知'}`
+        + (bridge
+          ? `。**有一筆${bridge.verdict === 'confirmed' ? '經獨立來源確認' : '核對無矛盾'}的租借紀錄接得起來**`
+            + `(${bridge.season} ${bridge.parentClub} → ${bridge.loanClub}),支持是同一人 ——`
+            + ` 但那仍是第三方說法,兩邊資料源沒有共用 id,所以不合併。`
+          : '') + '\n');
       links.push(h.file);
     }
   }

@@ -1,0 +1,2001 @@
+{
+  "_note": "產物:由 npm run loans:verify 從 data/manual/loans.json 核對後產生。不要手改,重跑就有。build 只讀這一份。",
+  "verifiedAt": "2026-08-28T08:46:09.921Z",
+  "sources": [
+    {
+      "name": "Footballdatabase Premier League 2025-26 transfers",
+      "url": "https://www.footballdatabase.eu/en/competition/transfers/22323-premier_league/2025-2026",
+      "usedFor": "Premier League 2025-26 loan-start records"
+    },
+    {
+      "name": "Footballdatabase LaLiga 2025-26 transfers",
+      "url": "https://www.footballdatabase.eu/en/competition/transfers/22357-la_liga_ea_sports/2025-2026",
+      "usedFor": "LaLiga 2025-26 loan-start records"
+    },
+    {
+      "name": "Transfermarkt Premier League 2025-26 loan players",
+      "url": "https://www.transfermarkt.co.uk/premier-league/leihspieler/wettbewerb/GB1/plus/",
+      "usedFor": "Premier League 2025-26 aggregate loan-player statistics"
+    },
+    {
+      "name": "Transfermarkt LaLiga 2025-26 loan players",
+      "url": "https://www.transfermarkt.co.uk/laliga/leihspieler/wettbewerb/ES1",
+      "usedFor": "LaLiga 2025-26 aggregate loan-player statistics"
+    },
+    {
+      "name": "Premier League official summer 2026 transfer window",
+      "url": "https://www.premierleague.com/en/transfers/2026-27/summer",
+      "usedFor": "確認 2026-27 賽季仍在進行，以及官方轉會窗日期"
+    },
+    {
+      "name": "Football365 Premier League summer 2026 confirmed transfers",
+      "url": "https://www.football365.com/news/every-premier-league-transfer-confirmed-in-the-summer-of-2026",
+      "usedFor": "Premier League 2026-27 confirmed loan-start records"
+    },
+    {
+      "name": "Transfermarkt Premier League 2026-27 transfers",
+      "url": "https://www.transfermarkt.co.uk/premier-league/transfers/wettbewerb/GB1/saison_id/2026",
+      "usedFor": "Premier League 2026-27 cross-check"
+    },
+    {
+      "name": "Transfermarkt LaLiga 2026-27 transfers",
+      "url": "https://www.transfermarkt.co.uk/laliga/transfers/wettbewerb/ES1/saison_id/2026",
+      "usedFor": "LaLiga 2026-27 loan-start records and loan fees"
+    },
+    {
+      "name": "LALIGA official latest transfers 2026-27",
+      "url": "https://www.laliga.com/en-ES/transfers/laliga-easports",
+      "usedFor": "LaLiga 2026-27 official transfer page and transfer-window dates"
+    }
+  ],
+  "excluded": {
+    "seasons": [
+      "2024-25"
+    ],
+    "reason": "2024-25 整批未採用:拿倉庫的獨立資料核對後判定為偽造。(1) results.json 的逐季聯賽成員資格顯示 Leeds United 2024-25 在英冠不在英超,但交付檔有 6 筆 season=2024-25 / league=Premier League / parentClub=Leeds United 的紀錄。(2) FPL 2024-25 逐季名單顯示 Jack Harrison 2068 分鐘、Tsimikas 829 分鐘、Harvey Elliott 359 分鐘,都與「該季外借出英超」矛盾。(3) 17 組重覆紀錄裡有 14 組月日完全相同且剛好差一年,是整批複製後年份 -1 的痕跡。西甲 Understat 另確認 Mateo Joseph 29 場、Ramazani 27 場都發生在 2025-26,所以真的是 2025-26 那一批。",
+    "verifiedAt": "2026-08-28"
+  },
+  "tally": {
+    "consistent": 98,
+    "confirmed": 19,
+    "contradicted": 8,
+    "block-suspect": 1,
+    "unverifiable": 5
+  },
+  "bySeason": {
+    "2025-26": {
+      "consistent": 37,
+      "confirmed": 14,
+      "contradicted": 7,
+      "block-suspect": 1
+    },
+    "2026-27": {
+      "consistent": 61,
+      "confirmed": 5,
+      "unverifiable": 5,
+      "contradicted": 1
+    }
+  },
+  "records": [
+    {
+      "season": "2025-26",
+      "player": "Evan Ferguson",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Roma",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2025-07-23",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Carl Rushworth",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Coventry City",
+      "parentCode": "BHA",
+      "loanCode": "COV",
+      "date": "2025-07-24",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 名單裡找得到他(出賽 0 分鐘)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Eiran Cashin",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Birmingham City",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2025-07-25",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Malick Yalcouye",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Swansea City",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2025-08-14",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Andrew Moran",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "LAFC",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2025-08-21",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Facundo Buonanotte",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Leeds United",
+      "parentCode": "BHA",
+      "loanCode": "LEE",
+      "date": "2026-01-15",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 名單裡找得到他(出賽 81 分鐘)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Ibrahim Osman",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Birmingham City",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2026-01-19",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Jeremy Sarmiento",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Middlesbrough",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2026-01-27",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Diego Coppola",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Paris FC",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2026-01-29",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 193 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Tom Watson",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Millwall",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2026-02-01",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 57 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Brajan Gruda",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "RB Leipzig",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": "2026-02-02",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 708 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Aaron Ramsey",
+      "parentClub": "Burnley",
+      "loanClub": "Leicester City",
+      "parentCode": "BUR",
+      "loanCode": "LEI",
+      "date": "2025-09-01",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 BUR 當季確實在該聯賽",
+        "✓ FPL 2025-26 名單裡找得到他(出賽 0 分鐘)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Luca Koleosho",
+      "parentClub": "Burnley",
+      "loanClub": "Paris FC",
+      "parentCode": "BUR",
+      "loanCode": null,
+      "date": "2026-01-09",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BUR 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Michael Obafemi",
+      "parentClub": "Burnley",
+      "loanClub": "Blackpool",
+      "parentCode": "BUR",
+      "loanCode": null,
+      "date": "2026-01-21",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BUR 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Jaydon Banel",
+      "parentClub": "Burnley",
+      "loanClub": "Derby County",
+      "parentCode": "BUR",
+      "loanCode": null,
+      "date": "2026-01-29",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BUR 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 9 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Oliver Sonne",
+      "parentClub": "Burnley",
+      "loanClub": "Sparta Prague",
+      "parentCode": "BUR",
+      "loanCode": null,
+      "date": "2026-01-29",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BUR 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 164 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Max Wober",
+      "parentClub": "Leeds United",
+      "loanClub": "Werder Bremen",
+      "parentCode": "LEE",
+      "loanCode": null,
+      "date": "2025-07-04",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Joe Gelhardt",
+      "parentClub": "Leeds United",
+      "loanClub": "Hull City",
+      "parentCode": "LEE",
+      "loanCode": "HUL",
+      "date": "2025-08-08",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽",
+        "✓ FPL 2025-26 名單裡找得到他(出賽 0 分鐘)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Mateo Joseph",
+      "parentClub": "Leeds United",
+      "loanClub": "Mallorca",
+      "parentCode": "LEE",
+      "loanCode": "MLL",
+      "date": "2025-08-09",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾",
+        "✓ 西甲 2025-26 逐季資料確認他在 MLL(出賽 29 場)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Largie Ramazani",
+      "parentClub": "Leeds United",
+      "loanClub": "Valencia",
+      "parentCode": "LEE",
+      "loanCode": "VAL",
+      "date": "2025-08-27",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾",
+        "✓ 西甲 2025-26 逐季資料確認他在 VAL(出賽 27 場)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Isaac Schmidt",
+      "parentClub": "Leeds United",
+      "loanClub": "Werder Bremen",
+      "parentCode": "LEE",
+      "loanCode": null,
+      "date": "2025-08-28",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Jack Harrison",
+      "parentClub": "Leeds United",
+      "loanClub": "Fiorentina",
+      "parentCode": "LEE",
+      "loanCode": null,
+      "date": "2026-01-19",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 262 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Matheus Franca",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Vasco da Gama",
+      "parentCode": "CRY",
+      "loanCode": null,
+      "date": "2025-08-26",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CRY 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Jesurun Rak-Sakyi",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Rizespor",
+      "parentCode": "CRY",
+      "loanCode": null,
+      "date": "2025-09-12",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CRY 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Vitezslav Jaros",
+      "parentClub": "Liverpool",
+      "loanClub": "Ajax",
+      "parentCode": "LIV",
+      "loanCode": null,
+      "date": "2025-06-18",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Owen Beck",
+      "parentClub": "Liverpool",
+      "loanClub": "Derby County",
+      "parentCode": "LIV",
+      "loanCode": null,
+      "date": "2025-07-25",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Konstantinos Tsimikas",
+      "parentClub": "Liverpool",
+      "loanClub": "Roma",
+      "parentCode": "LIV",
+      "loanCode": null,
+      "date": "2025-08-31",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Harvey Elliott",
+      "parentClub": "Liverpool",
+      "loanClub": "Aston Villa",
+      "parentCode": "LIV",
+      "loanCode": "AVL",
+      "date": "2025-09-01",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽",
+        "✓ FPL 2025-26 名單裡找得到他(出賽 110 分鐘)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Luis Semedo",
+      "parentClub": "Sunderland",
+      "loanClub": "Moreirense",
+      "parentCode": "SUN",
+      "loanCode": null,
+      "date": "2025-08-27",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 SUN 當季確實在該聯賽",
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Ramon Terrats",
+      "parentClub": "Getafe",
+      "loanClub": "Espanyol",
+      "parentCode": "GET",
+      "loanCode": "ESP",
+      "date": "2025-07-01",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 GET 當季確實在該聯賽",
+        "✓ 西甲 2025-26 逐季資料確認他在 ESP(出賽 29 場)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Juan Berrocal",
+      "parentClub": "Getafe",
+      "loanClub": "Atlanta United",
+      "parentCode": "GET",
+      "loanCode": null,
+      "date": "2025-07-25",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 GET 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Yvan Neyou",
+      "parentClub": "Getafe",
+      "loanClub": "Al Okhdood",
+      "parentCode": "GET",
+      "loanCode": null,
+      "date": "2026-01-31",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 GET 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Coba da Costa",
+      "parentClub": "Getafe",
+      "loanClub": "Anderlecht",
+      "parentCode": "GET",
+      "loanCode": null,
+      "date": "2026-02-02",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 GET 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Ansu Fati",
+      "parentClub": "Barcelona",
+      "loanClub": "Monaco",
+      "parentCode": "BAR",
+      "loanCode": null,
+      "date": "2025-07-01",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BAR 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Inaki Pena",
+      "parentClub": "Barcelona",
+      "loanClub": "Elche",
+      "parentCode": "BAR",
+      "loanCode": "ELC",
+      "date": "2025-08-27",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 BAR 當季確實在該聯賽",
+        "✓ 西甲 2025-26 逐季資料確認他在 ELC(出賽 16 場)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Hector Fort",
+      "parentClub": "Barcelona",
+      "loanClub": "Elche",
+      "parentCode": "BAR",
+      "loanCode": "ELC",
+      "date": "2025-09-01",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 BAR 當季確實在該聯賽",
+        "✓ 西甲 2025-26 逐季資料確認他在 ELC(出賽 14 場)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Abu Kamara",
+      "parentClub": "Alaves",
+      "loanClub": "Hull City",
+      "parentCode": "ALA",
+      "loanCode": "HUL",
+      "date": "2025-09-01",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 ALA 當季確實在該聯賽",
+        "✓ FPL 2025-26 名單裡找得到他(出賽 1410 分鐘)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Thomas Lemar",
+      "parentClub": "Atletico Madrid",
+      "loanClub": "Girona",
+      "parentCode": "ATM",
+      "loanCode": "GIR",
+      "date": "2025-07-30",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 ATM 當季確實在該聯賽",
+        "✓ 西甲 2025-26 逐季資料確認他在 GIR(出賽 27 場)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Claudio Echeverri",
+      "parentClub": "Manchester City",
+      "loanClub": "Girona",
+      "parentCode": "MCI",
+      "loanCode": "GIR",
+      "date": "2026-01-18",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ FPL 2025-26 出賽 0 分鐘,與外借不矛盾",
+        "✓ 西甲 2025-26 逐季資料確認他在 GIR(出賽 17 場)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Raul de Tomas",
+      "parentClub": "Osasuna",
+      "loanClub": "Al Wakrah",
+      "parentCode": "OSA",
+      "loanCode": null,
+      "date": "2025-07-20",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 OSA 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Etienne Eto'o",
+      "parentClub": "Osasuna",
+      "loanClub": "Mirandes",
+      "parentCode": "OSA",
+      "loanCode": null,
+      "date": "2025-09-01",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 OSA 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Jhon Solis",
+      "parentClub": "Girona",
+      "loanClub": "Birmingham City",
+      "parentCode": "GIR",
+      "loanCode": null,
+      "date": "2026-01-17",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 GIR 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Yaser Asprilla",
+      "parentClub": "Girona",
+      "loanClub": "Galatasaray",
+      "parentCode": "GIR",
+      "loanCode": null,
+      "date": "2026-01-25",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 GIR 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Carlos Fernandez",
+      "parentClub": "Real Sociedad",
+      "loanClub": "Mirandes",
+      "parentCode": "RSO",
+      "loanCode": null,
+      "date": "2025-08-19",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 RSO 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Rafael Mir",
+      "parentClub": "Sevilla",
+      "loanClub": "Elche",
+      "parentCode": "SEV",
+      "loanCode": "ELC",
+      "date": "2025-08-17",
+      "datePrecision": null,
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 SEV 當季確實在該聯賽",
+        "✓ 西甲 2025-26 逐季資料確認他在 ELC(出賽 27 場)"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Max Aarons",
+      "parentClub": "Valencia",
+      "loanClub": "Rangers",
+      "parentCode": "VAL",
+      "loanCode": null,
+      "date": "2025-06-25",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 VAL 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Cenk Ozkacar",
+      "parentClub": "Valencia",
+      "loanClub": "Koln",
+      "parentCode": "VAL",
+      "loanCode": null,
+      "date": "2025-08-09",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 VAL 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Sergi Canos",
+      "parentClub": "Valencia",
+      "loanClub": "Real Valladolid",
+      "parentCode": "VAL",
+      "loanCode": "VLL",
+      "date": "2025-09-01",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 VAL 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Alberto Mari",
+      "parentClub": "Valencia",
+      "loanClub": "Mirandes",
+      "parentCode": "VAL",
+      "loanCode": null,
+      "date": "2025-09-01",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 VAL 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Cyle Larin",
+      "parentClub": "Mallorca",
+      "loanClub": "Feyenoord",
+      "parentCode": "MLL",
+      "loanCode": null,
+      "date": "2025-09-02",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MLL 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2025-26",
+      "player": "Daniel Luna",
+      "parentClub": "Mallorca",
+      "loanClub": "Huesca",
+      "parentCode": "MLL",
+      "loanCode": null,
+      "date": "2025-08-27",
+      "datePrecision": null,
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MLL 當季確實在該聯賽"
+      ],
+      "source": null
+    },
+    {
+      "season": "2026-27",
+      "player": "Alex Paulsen",
+      "parentClub": "Bournemouth",
+      "loanClub": "Motherwell",
+      "parentCode": "BOU",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BOU 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Alex Jimenez",
+      "parentClub": "Bournemouth",
+      "loanClub": "Fiorentina",
+      "parentCode": "BOU",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BOU 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Alfie Merritt",
+      "parentClub": "Bournemouth",
+      "loanClub": "Newport County",
+      "parentCode": "BOU",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BOU 當季確實在該聯賽"
+      ],
+      "source": "Football365 / MyFootballFacts"
+    },
+    {
+      "season": "2026-27",
+      "player": "Oliwier Zych",
+      "parentClub": "Aston Villa",
+      "loanClub": "Vitoria Guimaraes",
+      "parentCode": "AVL",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 AVL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Andres Garcia",
+      "parentClub": "Aston Villa",
+      "loanClub": "Getafe",
+      "parentCode": "AVL",
+      "loanCode": "GET",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 AVL 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 GET(出賽 2 場)"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Joe Gauci",
+      "parentClub": "Aston Villa",
+      "loanClub": "Lincoln City",
+      "parentCode": "AVL",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 AVL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Evann Guessand",
+      "parentClub": "Aston Villa",
+      "loanClub": "Crystal Palace",
+      "parentCode": "AVL",
+      "loanCode": "CRY",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 AVL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Samuel Iling-Junior",
+      "parentClub": "Aston Villa",
+      "loanClub": "Bolton Wanderers",
+      "parentCode": "AVL",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 AVL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Kosta Nedeljkovic",
+      "parentClub": "Aston Villa",
+      "loanClub": "Rangers",
+      "parentCode": "AVL",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 AVL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Romelle Donovan",
+      "parentClub": "Brentford",
+      "loanClub": "Sheffield United",
+      "parentCode": "BRE",
+      "loanCode": "SHU",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BRE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Matthew Cox",
+      "parentClub": "Brentford",
+      "loanClub": "Barnet",
+      "parentCode": "BRE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BRE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Julian Eyestone",
+      "parentClub": "Brentford",
+      "loanClub": "Rotherham United",
+      "parentCode": "BRE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BRE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Yunus Konak",
+      "parentClub": "Brentford",
+      "loanClub": "Lincoln City",
+      "parentCode": "BRE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BRE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Benjamin Arthur",
+      "parentClub": "Brentford",
+      "loanClub": "Portsmouth",
+      "parentCode": "BRE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BRE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Josh Stephenson",
+      "parentClub": "Brentford",
+      "loanClub": "Crewe Alexandra",
+      "parentCode": "BRE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BRE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Do-Young Yoon",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Magdeburg",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Diego Coppola",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Paris FC",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Rodrigo Rego",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Castellon",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "James Beadle",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Birmingham City",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Nils Ramming",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Rochdale",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Tommy Watson",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Leicester City",
+      "parentCode": "BHA",
+      "loanCode": "LEI",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Facundo Buonanotte",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Elche",
+      "parentCode": "BHA",
+      "loanCode": "ELC",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 ELC(出賽 1 場)"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Harry Howell",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "Leicester City",
+      "parentCode": "BHA",
+      "loanCode": "LEI",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Brajan Gruda",
+      "parentClub": "Brighton & Hove Albion",
+      "loanClub": "RB Leipzig",
+      "parentCode": "BHA",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 BHA 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Jesse Derry",
+      "parentClub": "Chelsea",
+      "loanClub": "Sporting CP",
+      "parentCode": "CHE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CHE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Harrison Murray-Campbell",
+      "parentClub": "Chelsea",
+      "loanClub": "KV Kortrijk",
+      "parentCode": "CHE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CHE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Alejandro Garnacho",
+      "parentClub": "Chelsea",
+      "loanClub": "Aston Villa",
+      "parentCode": "CHE",
+      "loanCode": "AVL",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CHE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Filip Jorgensen",
+      "parentClub": "Chelsea",
+      "loanClub": "Strasbourg",
+      "parentCode": "CHE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CHE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Ishe Samuels-Smith",
+      "parentClub": "Chelsea",
+      "loanClub": "Notts County",
+      "parentCode": "CHE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CHE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Dastan Satpaev",
+      "parentClub": "Chelsea",
+      "loanClub": "Burnley",
+      "parentCode": "CHE",
+      "loanCode": "BUR",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CHE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Benoit Badiashile",
+      "parentClub": "Chelsea",
+      "loanClub": "Napoli",
+      "parentCode": "CHE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CHE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Axel Disasi",
+      "parentClub": "Chelsea",
+      "loanClub": "Crystal Palace",
+      "parentCode": "CHE",
+      "loanCode": "CRY",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CHE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Owen Goodman",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Dundee",
+      "parentCode": "CRY",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CRY 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Rio Cardines",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Bristol City",
+      "parentCode": "CRY",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CRY 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Hindolo Mustapha",
+      "parentClub": "Crystal Palace",
+      "loanClub": "Notts County",
+      "parentCode": "CRY",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CRY 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Luke Harris",
+      "parentClub": "Fulham",
+      "loanClub": "Wigan Athletic",
+      "parentCode": "FUL",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 FUL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Mason Burstow",
+      "parentClub": "Hull City",
+      "loanClub": "Sheffield Wednesday",
+      "parentCode": "HUL",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 HUL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Harvey Cartwright",
+      "parentClub": "Hull City",
+      "loanClub": "Grimsby Town",
+      "parentCode": "HUL",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 HUL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Thimothee Lo-Tutala",
+      "parentClub": "Hull City",
+      "loanClub": "Colchester United",
+      "parentCode": "HUL",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 HUL 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Harry Gray",
+      "parentClub": "Leeds United",
+      "loanClub": "Sheffield Wednesday",
+      "parentCode": "LEE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Charlie Crew",
+      "parentClub": "Leeds United",
+      "loanClub": "Crewe Alexandra",
+      "parentCode": "LEE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Joel Piroe",
+      "parentClub": "Leeds United",
+      "loanClub": "West Ham United",
+      "parentCode": "LEE",
+      "loanCode": "WHU",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Sebastiaan Bornauw",
+      "parentClub": "Leeds United",
+      "loanClub": "Hamburg",
+      "parentCode": "LEE",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LEE 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Amara Nallo",
+      "parentClub": "Liverpool",
+      "loanClub": "HJK Helsinki",
+      "parentCode": "LIV",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Calum Scanlon",
+      "parentClub": "Liverpool",
+      "loanClub": "Cardiff City",
+      "parentCode": "LIV",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Kieran Morrison",
+      "parentClub": "Liverpool",
+      "loanClub": "Sheffield Wednesday",
+      "parentCode": "LIV",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Ifeanyi Ndukwe",
+      "parentClub": "Liverpool",
+      "loanClub": "Levante",
+      "parentCode": "LIV",
+      "loanCode": "LEV",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽"
+      ],
+      "source": "Football365 / Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "Calvin Ramsay",
+      "parentClub": "Liverpool",
+      "loanClub": "St Mirren",
+      "parentCode": "LIV",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 LIV 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Mathys Detourbet",
+      "parentClub": "Manchester City",
+      "loanClub": "Monaco",
+      "parentCode": "MCI",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MCI 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Sverre Nypan",
+      "parentClub": "Manchester City",
+      "loanClub": "Lommel SK",
+      "parentCode": "MCI",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MCI 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Pierce Charles",
+      "parentClub": "Manchester City",
+      "loanClub": "Queens Park Rangers",
+      "parentCode": "MCI",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MCI 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Divin Mubama",
+      "parentClub": "Manchester City",
+      "loanClub": "Southampton",
+      "parentCode": "MCI",
+      "loanCode": "SOU",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MCI 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Kalvin Phillips",
+      "parentClub": "Manchester City",
+      "loanClub": "Sheffield United",
+      "parentCode": "MCI",
+      "loanCode": "SHU",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MCI 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Max Alleyne",
+      "parentClub": "Manchester City",
+      "loanClub": "Burnley",
+      "parentCode": "MCI",
+      "loanCode": "BUR",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MCI 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Divine Mukasa",
+      "parentClub": "Manchester City",
+      "loanClub": "West Ham United",
+      "parentCode": "MCI",
+      "loanCode": "WHU",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MCI 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Omar Marmoush",
+      "parentClub": "Manchester City",
+      "loanClub": "Tottenham Hotspur",
+      "parentCode": "MCI",
+      "loanCode": "TOT",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 MCI 當季確實在該聯賽"
+      ],
+      "source": "Football365"
+    },
+    {
+      "season": "2026-27",
+      "player": "Damián Rodríguez",
+      "parentClub": "Celta Vigo",
+      "loanClub": "Cadiz",
+      "parentCode": "CEL",
+      "loanCode": "CAD",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CEL 當季確實在該聯賽"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "Carlos Domínguez",
+      "parentClub": "Celta Vigo",
+      "loanClub": "Real Oviedo",
+      "parentCode": "CEL",
+      "loanCode": "OVI",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 CEL 當季確實在該聯賽",
+        "✓ 西甲 2026-27 有姓氏相近的人在 ATM,但全名對不精確,不當證據"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "Ramón Terrats",
+      "parentClub": "Getafe",
+      "loanClub": "Anderlecht",
+      "parentCode": "GET",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 GET 當季確實在該聯賽"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "José Salinas",
+      "parentClub": "Espanyol",
+      "loanClub": "Malaga",
+      "parentCode": "ESP",
+      "loanCode": "MAL",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 ESP 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 MAL(出賽 1 場)"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "José Gragera",
+      "parentClub": "Espanyol",
+      "loanClub": "Burgos",
+      "parentCode": "ESP",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 ESP 當季確實在該聯賽"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "Omar Sadik",
+      "parentClub": "Espanyol",
+      "loanClub": "Ceuta",
+      "parentCode": "ESP",
+      "loanCode": null,
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 ESP 當季確實在該聯賽"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "Antoniu Roca",
+      "parentClub": "Espanyol",
+      "loanClub": "Mallorca",
+      "parentCode": "ESP",
+      "loanCode": "MLL",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 ESP 當季確實在該聯賽",
+        "✓ 西甲 2026-27 有姓氏相近的人在 BET,但全名對不精確,不當證據"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "Hugo Sotelo",
+      "parentClub": "Celta Vigo",
+      "loanClub": "Levante",
+      "parentCode": "CEL",
+      "loanCode": "LEV",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 CEL 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 LEV(出賽 1 場)"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "Thiago Fernández",
+      "parentClub": "Villarreal",
+      "loanClub": "Levante",
+      "parentCode": "VIL",
+      "loanCode": "LEV",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 母隊 VIL 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 LEV(出賽 1 場)"
+      ],
+      "source": "Transfermarkt"
+    },
+    {
+      "season": "2026-27",
+      "player": "Dani Requena",
+      "parentClub": "Villarreal",
+      "loanClub": "Levante",
+      "parentCode": "VIL",
+      "loanCode": "LEV",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "consistent",
+      "evidence": [
+        "✓ 母隊 VIL 當季確實在該聯賽"
+      ],
+      "source": "Transfermarkt"
+    }
+  ],
+  "rejected": [
+    {
+      "season": "2025-26",
+      "player": "Sebastian Boselli",
+      "parentClub": "River Plate",
+      "loanClub": "Alaves",
+      "kind": "data",
+      "why": [
+        "✗ 西甲 2025-26 資料把他放在 GET,不是 ALA"
+      ]
+    },
+    {
+      "season": "2025-26",
+      "player": "Zaid Romero",
+      "parentClub": "Club Brugge",
+      "loanClub": "Alaves",
+      "kind": "data",
+      "why": [
+        "✗ 西甲 2025-26 資料把他放在 GET,不是 ALA"
+      ]
+    },
+    {
+      "season": "2025-26",
+      "player": "Martin Satriano",
+      "parentClub": "Lyon",
+      "loanClub": "Alaves",
+      "kind": "data",
+      "why": [
+        "✗ 西甲 2025-26 資料把他放在 GET,不是 ALA"
+      ]
+    },
+    {
+      "season": "2025-26",
+      "player": "Luis Vazquez",
+      "parentClub": "Anderlecht",
+      "loanClub": "Alaves",
+      "kind": "data",
+      "why": [
+        "✗ 西甲 2025-26 資料把他放在 GET,不是 ALA"
+      ]
+    },
+    {
+      "season": "2025-26",
+      "player": "Veljko Birmancevic",
+      "parentClub": "Sparta Prague",
+      "loanClub": "Alaves",
+      "kind": "data",
+      "why": [
+        "✗ 西甲 2025-26 資料把他放在 GET,不是 ALA"
+      ]
+    },
+    {
+      "season": "2025-26",
+      "player": "Pelayo Fernandez",
+      "parentClub": "Osasuna",
+      "loanClub": "Cadiz",
+      "kind": "data",
+      "why": [
+        "✗ 西甲 2025-26 資料把他放在 RAY,不是 CAD"
+      ]
+    },
+    {
+      "season": "2025-26",
+      "player": "Alex Fores",
+      "parentClub": "Villarreal",
+      "loanClub": "Girona",
+      "kind": "data",
+      "why": [
+        "✗ 西甲 2025-26 資料把他放在 OVI,不是 GIR"
+      ]
+    },
+    {
+      "season": "2025-26",
+      "player": "Jon Pacheco",
+      "parentClub": "Real Sociedad",
+      "loanClub": "Alaves",
+      "kind": "hygiene",
+      "why": [
+        "✗ 同一批「2025-26 → Alaves」的 6 筆裡有 5 筆被證明是錯的,整批不採用"
+      ]
+    },
+    {
+      "season": "2026-27",
+      "player": "Ifeanyi Ndukwe",
+      "parentClub": "Liverpool",
+      "loanClub": "Levante",
+      "kind": "hygiene",
+      "why": [
+        "✗ 交付檔裡有完全相同的重覆紀錄"
+      ]
+    }
+  ],
+  "unverifiable": [
+    {
+      "season": "2026-27",
+      "player": "Altay Bayindir",
+      "parentClub": "Manchester United",
+      "loanClub": "Celta Vigo"
+    },
+    {
+      "season": "2026-27",
+      "player": "Bryan Zaragoza",
+      "parentClub": "Bayern Munich",
+      "loanClub": "Espanyol"
+    },
+    {
+      "season": "2026-27",
+      "player": "Gabriel Moscardo",
+      "parentClub": "Paris Saint-Germain",
+      "loanClub": "Espanyol"
+    },
+    {
+      "season": "2026-27",
+      "player": "Quilindschy Hartman",
+      "parentClub": "Burnley",
+      "loanClub": "Espanyol"
+    },
+    {
+      "season": "2026-27",
+      "player": "Angeliño",
+      "parentClub": "Roma",
+      "loanClub": "Deportivo La Coruna"
+    }
+  ]
+}

@@ -43,6 +43,7 @@ import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
+import { loadVerifiedLoans, attachLoans } from './lib/loans.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data');
@@ -832,6 +833,24 @@ async function main() {
     const r = classify(p, p.last ?? p.current);
     return { key: r.key, zh: r.zh, lowSample: !!r.lowSample };
   };
+  /* 租借紀錄。只讀核對過的那一份(data/loans-verified.json),不讀收件匣 ——
+     收件匣裡有已知是錯的紀錄,直接讀它等於把核對整個繞過去。
+     轉換與姓名配對收在 lib/loans.mjs,兩個聯賽呼叫同一支,不各寫一份。 */
+  const loans = loadVerifiedLoans(ROOT);
+  const loanHit = attachLoans(players, loans, {
+    nameOf: p => p.fullName || p.name,
+    leagueCodes: new Set(curCodes),
+  });
+  if (loans.available) {
+    console.log(`  租借紀錄:掛上 ${loanHit.attached} 筆(核對過 ${loans.records.length} 筆・退回 ${(loans.rejected ?? []).length} 筆)`);
+    /* 配不到球員的要印出來 —— 多半是名字寫法不同,那是可以修的。
+       靜靜吞掉的話,資料明明在檔案裡卻永遠不會出現在畫面上,而且沒有人會發現。 */
+    if (loanHit.unmatched.length) {
+      console.log(`  ⚠ 有 ${loanHit.unmatched.length} 筆租借配不到本聯賽球員:`
+        + loanHit.unmatched.slice(0, 5).map(r => r.player).join('、')
+        + (loanHit.unmatched.length > 5 ? ' …' : ''));
+    }
+  }
   await write('players.json', players.map(p => ({
     // 照片採「補齊」策略：既有官方／手動快取保持不動，缺圖才使用 SportMonks。
     ...(p.photo || photoData[p.code] ? { ...p, photo: photoData[p.code] || p.photo } : p),

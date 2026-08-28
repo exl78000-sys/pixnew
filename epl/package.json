@@ -13,6 +13,7 @@
     "test": "node scripts/test.mjs && node scripts/backtest-laliga.mjs && node scripts/test-laliga.mjs",
     "news": "node scripts/fetch-news.mjs",
     "news:merge": "node scripts/merge-curated-news.mjs",
+    "loans:verify": "node scripts/verify-loans.mjs",
     "bundle": "node scripts/bundle.mjs",
     "obsidian": "node scripts/build-obsidian.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",

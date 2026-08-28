@@ -361,12 +361,15 @@ async function main() {
   console.log('\n▶ 歐冠');
   const uclFail = checkUcl();
 
+  console.log('\n▶ 租借紀錄(人工交付,必須核對過才發布)');
+  const loanFail = checkLoans();
+
   console.log('\n▶ 資產版本戳(部署後看不看得到更新)');
   const stampFail = checkAssetStamps();
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1939,6 +1942,76 @@ function checkUcl() {
   ok(/noKnownYet\) return season\.rounds\.slice\(-1\)/.test(cupSrc2),
     '盃賽頁:本站球隊還沒進場時只顯示最新一輪');
   ok(cupSrc2.includes('season.noKnownYet'), '盃賽頁:資格賽說明會分辨「還沒進場」與「前 N 輪」');
+  return fail;
+}
+
+/* 租借紀錄:人工交付的東西一定要核對過才能發布(鐵則五)。
+
+   2026-08-28 那一份交付的 2024-25 整批是偽造的 —— 把 2025-26 複製一份、年份 -1。
+   Leeds United 2024-25 在英冠,而檔案裡有 6 筆「2024-25 英超 / 母隊 Leeds」。
+   協作方不會回報這件事,畫面上也看起來完全正常,所以這幾條要釘死。 */
+function checkLoans() {
+  let fail = 0;
+  const ok = (cond, label, extra = '') => {
+    if (!cond) fail++;
+    console.log(`  ${cond ? '✓' : '✗'} ${label}${extra ? ` (${extra})` : ''}`);
+  };
+  const vp = join(ROOT, 'data', 'loans-verified.json');
+  if (!existsSync(vp)) {
+    console.log('  · 沒有 data/loans-verified.json,跳過(執行 npm run loans:verify 產生)');
+    return 0;
+  }
+  const v = JSON.parse(readFileSync(vp, 'utf8'));
+  const inbox = JSON.parse(readFileSync(join(ROOT, 'data', 'manual', 'loans.json'), 'utf8'));
+
+  // 一、發布的只能是核對過的兩種等級
+  ok(v.records.every(r => r.verdict === 'confirmed' || r.verdict === 'consistent'),
+    '發布的紀錄只有 confirmed 與 consistent',
+    [...new Set(v.records.map(r => r.verdict))].join('/'));
+
+  // 二、被判定矛盾的絕對不可以出現在發布清單裡
+  const rejectedKeys = new Set((v.rejected ?? []).filter(r => r.kind === 'data')
+    .map(r => `${r.season}|${r.player}|${r.loanClub}`));
+  ok(v.records.every(r => !rejectedKeys.has(`${r.season}|${r.player}|${r.loanClub}`)),
+    '與獨立來源衝突而被退回的紀錄沒有混進發布清單', `退回中 data 類 ${rejectedKeys.size} 筆`);
+
+  // 三、收件匣不可以再出現 2024-25 —— 那一批已判定偽造
+  ok(!inbox.records.some(r => r.season === '2024-25'),
+    '收件匣不含已判定偽造的 2024-25', `共 ${inbox.records.length} 筆`);
+  ok(!!inbox._excluded?.reason, '排除 2024-25 的理由有寫在收件匣裡');
+
+  // 四、年份平移的指紋不可以出現在發布清單裡(這正是偽造那批的特徵)
+  const g = new Map();
+  for (const r of v.records) {
+    if (!r.date) continue;
+    const k = `${r.player}|${r.parentClub}|${r.loanClub}`;
+    if (!g.has(k)) g.set(k, []);
+    g.get(k).push(r.date);
+  }
+  let shifted = 0;
+  for (const dates of g.values()) {
+    for (let i = 0; i < dates.length; i++) {
+      for (let j = i + 1; j < dates.length; j++) {
+        if (dates[i].slice(5) === dates[j].slice(5)) shifted++;
+      }
+    }
+  }
+  ok(shifted === 0, '發布清單裡沒有「月日相同、只差年份」的複本', `${shifted} 組`);
+
+  // 五、掛到球員身上的租借,等級要跟著走(畫面才分得出兩種)
+  for (const [label, rel] of [['英超', join('web', 'data', 'players.json')],
+    ['西甲', join('web', 'data', 'leagues', 'es1', 'players.json')]]) {
+    const pf = join(ROOT, rel);
+    if (!existsSync(pf)) continue;
+    const players = JSON.parse(readFileSync(pf, 'utf8'));
+    const list = (Array.isArray(players) ? players : Object.values(players)).flatMap(x => x.loans ?? []);
+    ok(list.every(l => l.verdict === 'confirmed' || l.verdict === 'consistent'),
+      `${label} 球員身上的租借都帶著核對等級`, `${list.length} 筆`);
+  }
+
+  // 六、核對器真的在擋東西 —— 一筆都沒退回的話多半是它壞了,不是資料完美
+  ok((v.rejected ?? []).length > 0, '核對器有實際退回紀錄(不是空轉)',
+    `退回 ${(v.rejected ?? []).length} 筆`);
   return fail;
 }
 
