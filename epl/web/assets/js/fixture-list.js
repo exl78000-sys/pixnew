@@ -1,4 +1,4 @@
-import * as C from './core.js?v=95deb3b8';
+import * as C from './core.js?v=77b5da80';
 
 /* ── 賽程列表 + 單場速覽抽屜(共用模組) ─────────────────────────
    原本是獨立的 page-fixtures.js。「總覽」與「賽程與預測」合併成一頁之後,
@@ -85,6 +85,27 @@ export function mountFixtureList({
     const el = document.getElementById(selectIds[k]);
     if (el) el.onchange = render;
   });
+
+  /* 深連結:?team=<隊碼> 進來就把球隊篩選預設好,並捲到賽程表。
+
+     這一張表本來就有球隊/賽季/輪次/狀態四個篩選,還有預測、賽果與賽後報告 ——
+     球隊頁要「看這支球隊的完整賽程」時,該做的是連進來這裡,
+     **不是另外做一個賽程頁**。做第二份的話,改了一邊另一邊會悄悄過期
+     (歐冠與足球知識就是為了這條才收在 lib/)。
+
+     隊碼對不上就當沒帶(不要靜靜篩成空的,那看起來像這支球隊沒有比賽)。 */
+  {
+    const want = C.qs('team');
+    const el = want && document.getElementById(selectIds.team);
+    if (el && [...el.options].some(o => o.value === want)) {
+      el.value = want;
+      /* **輪次要一起放開。** 輪次篩選預設是「下一輪」,只設球隊的話
+         「看完整賽程」會只剩一場 —— 連結講的是完整賽程,給一場就是說了不算。 */
+      const round = document.getElementById(selectIds.round);
+      if (round) round.value = '';
+      requestAnimationFrame(() => el.closest('.filters')?.scrollIntoView({ block: 'start' }));
+    }
+  }
   render();
 
   /* 速覽抽屜。刻意只放「這一場的結果或機率」——

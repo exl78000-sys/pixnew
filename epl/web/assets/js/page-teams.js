@@ -1,4 +1,4 @@
-import * as C from './core.js?v=95deb3b8';
+import * as C from './core.js?v=77b5da80';
 
 const app = document.getElementById('app');
 
@@ -915,12 +915,12 @@ try {
         現在有本地時區的開球鐘面、輪次、對手隊徽,最近的一場另外給倒數。
 
      開球時間可能是 null(上游還沒排定),那種就只顯示日期,不要印一個假的時間。 */
-  function nextFixturesBlock(t, next) {
-    if (!next.length) return '';
+  function nextFixturesBlock(t, next, nextFew) {
+    if (!nextFew.length) return '';
     return `<div class="card" style="margin-top:14px">
       <h3>接下來的賽程</h3>
-      <div class="tiny dim" style="margin-bottom:8px">未賽的下 ${next.length} 場・時間已換算為 ${C.tzName()}・點任一場看完整賽前分析</div>
-      ${next.map((f, i) => {
+      <div class="tiny dim" style="margin-bottom:8px">未賽的下 ${nextFew.length} 場・時間已換算為 ${C.tzName()}・點任一場看完整賽前分析</div>
+      ${nextFew.map((f, i) => {
         const home = f.home === t.code;
         const opp = home ? f.away : f.home;
         const win = home ? f.prediction?.home : f.prediction?.away;
@@ -934,13 +934,23 @@ try {
             <span class="mono small">${i === 0 && f.kickoff ? C.countdown(f.kickoff)
               : win == null ? '—' : `勝率 ${C.pct(win, 0)}`}</span>
           </div></a>`;
-      }).join('')}</div>`;
+      }).join('')}
+      ${/* 完整賽程連進首頁那張賽程表,並用 ?team= 預先篩好 ——
+            那張表本來就有球隊/賽季/輪次/狀態四個篩選、預測、賽果與賽後報告。
+            另外做一頁等於做第二份,改了一邊另一邊會悄悄過期。 */''}
+      ${next.length > nextFew.length ? `<div style="margin-top:10px">
+        <a href="${C.link('index', { team: t.code })}">看 ${C.name(t.code)} 的完整賽程(本季還有 ${next.length} 場)→</a></div>` : ''}
+    </div>`;
   }
 
   function detail(t) {
     const co = coachBy.get(t.code);
+    /* 這裡只放**下三場**。六場時這個區塊佔整頁高度 9.5%(量過,是頁面上第三大的卡片);
+       而「這週、下週、再下週」對絕大多數讀者已經夠,再往後的用下面那個連結看完整賽程。
+       完整賽程不另外做一頁 —— 首頁的賽程表本來就有球隊篩選,連進去就好。 */
     const next = fixtures.filter(f => !f.played && (f.home === t.code || f.away === t.code))
-      .sort((a, b) => (a.date < b.date ? -1 : 1)).slice(0, 6);
+      .sort((a, b) => (a.date < b.date ? -1 : 1));
+    const nextFew = next.slice(0, 3);
     const h2hDefault = next[0]
       ? (next[0].home === t.code ? next[0].away : next[0].home)
       : teams.find(x => x.code !== t.code)?.code;
@@ -949,7 +959,7 @@ try {
     ${detailHead(t, co)}
     ${kpiRow(t)}
     <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
-    ${nextFixturesBlock(t, next)}
+    ${nextFixturesBlock(t, next, nextFew)}
     ${seasonHistorySection(t)}
     ${lastSeasonBlock(t)}
     ${coachCard(co)}

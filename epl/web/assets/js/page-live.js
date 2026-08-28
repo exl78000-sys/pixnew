@@ -1,5 +1,5 @@
-import * as C from './core.js?v=95deb3b8';
-import { mountSimTable } from './sim-table.js?v=1abf4b0e';
+import * as C from './core.js?v=77b5da80';
+import { mountSimTable } from './sim-table.js?v=d40a838d';
 
 const app = document.getElementById('app');
 
@@ -81,18 +81,34 @@ try {
     // 就算沒有即時資料源,光靠賽程也知道現在有哪幾場正在踢 —— 這一段永遠可用
     const phased = fixtures.map(f => ({ f, s: C.scheduleState(f, now) }));
     const inPlaySched = phased.filter(x => x.s.phase === 'inplay').sort((a, b) => (a.f.kickoff < b.f.kickoff ? -1 : 1));
-    /* 一輪有幾場是**聯賽決定的**:英超西甲 20 隊 → 10 場,英冠 24 隊 → 12 場。
-       這個數字不可以寫死(CLAUDE.md 那條「前端把聯賽的事實寫死」)。 */
+    /* 「還沒有賽果」那一區的上限。一輪有幾場是**聯賽決定的**(英超西甲 20 隊 → 10 場、
+       英冠 24 隊 → 12 場),不可以寫死一個數字(CLAUDE.md 那條「前端把聯賽的事實寫死」)。
+       開賽倒數不用這個數 —— 它按「同一輪連到哪就到哪」自己收斂。 */
     const perRound = Math.max(1, Math.floor((meta.competition?.teams ?? 20) / 2));
     const awaiting = phased.filter(x => x.s.phase === 'awaiting' && !x.f.played)
       .sort((a, b) => (a.f.kickoff > b.f.kickoff ? -1 : 1)).slice(0, perRound);
     const upcoming = phased.filter(x => x.s.phase === 'upcoming').map(x => x.f)
       .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
 
-    /* 開賽倒數顯示**整輪**,不是固定筆數。規則與理由(含原本 slice(0, 8) 每一輪
-       固定漏掉兩場的實測)寫在 core.js 的 countdownFixtures —— 抽到那裡是為了
-       能被 npm test 測到:測試看不到 DOM,留在頁面裡就只能用正則掃原始碼。 */
-    const countdownList = C.countdownFixtures(upcoming, perRound);
+    /* 開賽倒數只顯示「開球順序上第一段連續同輪」的場次,其餘收成一行摘要。
+       規則與量過的數字寫在 core.js 的 countdownFixtures —— 抽到那裡是為了能被
+       npm test 測到:測試看不到 DOM,留在頁面裡就只能用正則掃原始碼。 */
+    const countdownList = C.countdownFixtures(upcoming);
+    const countdownRest = upcoming.slice(countdownList.length);
+    /* 補賽:這一段的輪次**比已經踢過的輪次還低**,代表它是從更早的一輪延後過來的。
+       實測 2025-26 第 31 輪 Man City vs Crystal Palace —— 同輪其他九場 3/21 踢完,
+       它 5/13 才踢,晚了 53 天。畫面上要講出來,否則五月中冒出一個「第 31 輪」
+       看起來像資料錯了。判斷用「已完賽的最大輪次」,不要用「下一段的輪次」——
+       正常情況下一段本來就比較大,那樣會把每一輪都標成補賽。 */
+    const maxPlayedRound = Math.max(0, ...fixtures.filter(f => f.played && f.round != null).map(f => f.round));
+    /* 「本季還有幾場」要數**所有未賽的**,不能數 upcoming ——
+       upcoming 只收有開球時間的場次(scheduleState 對沒有 kickoff 的回 unknown),
+       而上游是逐月公布開球時間的:實測西甲 339/380、英冠 264/552 目前還沒有時間。
+       拿 upcoming 去講「本季還有 N 場」,西甲會顯示 11 場,而它其實還有三百多場。
+       那一批也不報「這一輪幾場」—— 同一輪可能只有一部分公布了時間,報出來是假的。 */
+    const unplayedCount = fixtures.filter(f => !f.played).length;
+    const isCatchUp = countdownList.length > 0 && countdownList[0].round != null
+      && countdownList[0].round < maxPlayedRound;
 
     // 有真正即時資料的比賽優先用即時資料,其餘用賽程推導
     const liveCards = inPlaySched.map(({ f, s }) => ({ f, s, m: liveByKey.get(`${f.home}|${f.away}`) ?? null }));
@@ -192,21 +208,32 @@ try {
       <div class="grid g2">${recentCards.join('')}</div>` : ''}
 
     ${awaiting.length ? `
-      <div class="section"><h2>等待賽果</h2><span class="hint">時間上早該結束,但資料源還沒更新比分</span></div>
+      ${/* 原本這一句寫「資料源還沒更新比分」—— **那對延賽是錯的**:它說我們的資料落後了,
+            但那場可能根本沒踢,讀者會等一個永遠不會來的比分。本站沒有延賽的資料來源,
+            分不出是哪一種,所以兩種都講,並且把「早該結束多久」給讀者自己判斷。
+            一季有 2~7 場改期(英超 2023-24 六次、英冠 2025-26 七次),這個空窗一定會出現。 */''}
+      <div class="section"><h2>還沒有賽果</h2><span class="hint">時間上早該結束,但本站還沒拿到比分 —— 可能是資料源還沒更新,也可能是這場延賽了</span></div>
       <div class="grid g3">${awaiting.map(({ f, s }) => `
         <a class="card matchcard" href="${C.link('analysis', { id: f.id })}" style="padding:12px 14px">
           <div class="spread"><span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span>
-            <span class="pill warn tiny">賽果未取得</span></div>
+            <span class="pill warn tiny">${s.elapsed > 60 * 24
+              ? `早該結束 ${Math.floor(s.elapsed / 60 / 24)} 天` : '賽果未取得'}</span></div>
           <div class="row" style="gap:7px;margin-top:8px">${C.badge(f.home)}<b class="small">${C.name(f.home)}</b>
             <span class="dim">vs</span>${C.badge(f.away)}<b class="small">${C.name(f.away)}</b></div>
           <div class="tiny dim" style="margin-top:6px">賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}</div>
         </a>`).join('')}</div>` : ''}
 
     <div class="section"><h2>開賽倒數</h2><span class="hint">${countdownList.length
-      ? `第 ${[...new Set(countdownList.map(f => f.round))].join('、')} 輪共 ${countdownList.length} 場・`
+      ? `第 ${countdownList[0].round} 輪${isCatchUp ? '補賽' : ''}・${countdownList.length} 場・`
       : ''}依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
+    ${isCatchUp ? `<div class="note" style="margin-bottom:10px">這是第 ${countdownList[0].round} 輪的補賽 ——
+      同一輪其他場次已經踢完,這場延後到現在。</div>` : ''}
     <div class="grid g2">${countdownList.map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
-    ${upcoming.length > countdownList.length ? `<div style="margin-top:10px"><a href="${C.link('index')}">看完整賽程(之後還有 ${upcoming.length - countdownList.length} 場)→</a></div>` : ''}
+    ${/* 沒顯示的不是藏起來:下一批幾號開始、哪一輪、幾場,都寫在這一行。
+          原本這裡寫「還有 362 場」(整季),讀者不會想到自己要找的那兩場就在裡面。 */''}
+    ${countdownRest.length ? `<div class="note" style="margin-top:10px">
+      下一批:第 ${countdownRest[0].round} 輪・${C.kickoffLocal(countdownRest[0].kickoff)} 起。
+      <a href="${C.link('index')}">看完整賽程(本季還有 ${unplayedCount} 場未賽)→</a></div>` : ''}
 
     ${(doneRest.length || finishedRest.length) ? `
       <div class="section"><h2>已完賽${live.demo && liveRound ? `(重播 ${live.season} 第 ${liveRound} 輪)` : ''}</h2>

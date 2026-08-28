@@ -506,26 +506,32 @@ export function startCountdowns() {
   cdTimer = setInterval(tick, 1000);
 }
 
-/* 「開賽倒數」要顯示哪幾場。
+/* 「開賽倒數」要顯示哪幾場:**開球順序上第一段連續同輪的場次**,其餘交給摘要行。
 
-   規則:**整輪顯示,永遠不把一輪切一半。**
+   為什麼不是「取前 N 場」:一輪有幾場是聯賽決定的(英超西甲 10 場、英冠 12 場)。
+   原本寫死 slice(0, 8),於是**每一輪都固定有兩場沒有倒數**,而且被切掉的是開球最晚的
+   那兩場 —— 2026-27 第 2 輪就是 Man Utd vs Ipswich 與 Aston Villa vs Arsenal,
+   那四支球隊的球迷在那一頁找不到自己的比賽什麼時候開打。
+   量過:固定筆數會把一輪切一半的時間比例是 英超 22% / 西甲 65% / 英冠 69%。
+   **加上「第幾輪」的標題也救不了**,只會讓不完整的那一組看起來完整。
 
-   為什麼不是「取前 N 場」:一輪有幾場是聯賽決定的(英超西甲 20 隊 → 10 場、
-   英冠 24 隊 → 12 場)。實時戰況頁原本寫死 slice(0, 8),於是**每一輪都固定有兩場
-   沒有倒數**,而且被切掉的是開球最晚的那兩場 —— 2026-27 第 2 輪就是
-   Man Utd vs Ipswich 與 Aston Villa vs Arsenal,那四支球隊的球迷在那一頁
-   找不到自己的比賽什麼時候開打。
+   為什麼不是「湊滿一輪的場數再停」(這一版之前的做法):那一輪只剩幾場時,
+   它會把下一輪**整輪**拉進來,最多 19~23 張倒數卡,而其中十張是七天以後的事。
+   量過:超過一輪份量的時間比例是 22% / 65% / 69%。
 
-   為什麼不是「只取最近那一輪」:改期的比賽會讓最近的一場落在**更早的輪次**
-   (一場延到十二月才踢的第 1 輪)。只取它所屬的輪次就等於把整個第 2 輪藏起來,
-   比原本的 bug 更糟。所以是「往後收,湊滿一輪的場數之後在輪次交界處停」。
+   現在的規則沒有任何 magic number:**同一輪連到哪就到哪**。
+   卡片數上限自然等於一輪的場數,下限是 1(只剩一場,或是一場改期的補賽)。
+   剩下的不是藏起來,是由呼叫端在下面補一行摘要(下一批幾號開始、幾場)。
 
-   fixtures 要**先依開球時間排好**;perRound 從 meta.competition.teams 算,不要寫死。 */
-export function countdownFixtures(upcoming, perRound) {
-  const n = Math.max(1, Math.floor(perRound) || 1);
+   改期的補賽會自成一段(它的輪次跟前後都不同),所以會單獨顯示一張卡 ——
+   那是對的:2026-05-13 的 Man City vs Crystal Palace 屬於第 31 輪,
+   而那一輪其他九場在 3/21 就踢完了。畫面要能講出「這是補賽」,不是硬塞進別輪。
+
+   fixtures 要**先依開球時間排好**。 */
+export function countdownFixtures(upcoming) {
   const out = [];
   for (const f of upcoming) {
-    if (out.length >= n && f.round !== out.at(-1).round) break;
+    if (out.length && f.round !== out.at(-1).round) break;
     out.push(f);
   }
   return out;

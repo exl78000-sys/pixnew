@@ -1080,36 +1080,38 @@ async function checkDataGap() {
     ['pageLabel 不會把程式碼吐給讀者',
       !['index', 'teams', 'model', 'ucl', 'knowledge', 'cups']
         .some(p => /=>|\$\{/.test(V.pageLabel(p, 'en2')))],
-    /* ── 開賽倒數要顯示整輪(2026-08-28 修)──
+    /* ── 開賽倒數(2026-08-28 修)──
        原本是 upcoming.slice(0, 8),而一輪有 10 場(英冠 12 場),
        所以**每一輪都固定有兩場沒有倒數**,被切掉的還是開球最晚的那兩場。
        實測 2026-27 第 2 輪:Man Utd vs Ipswich 與 Aston Villa vs Arsenal
-       在整個「開賽倒數」區都找不到。 */
-    ['倒數顯示整輪,不是固定筆數',
+       在整個「開賽倒數」區都找不到。
+
+       規則是「開球順序上第一段連續同輪」——沒有任何 magic number,
+       卡片數上限自然等於一輪的場數。量過三種做法「把一輪切一半」的時間比例:
+       固定筆數 22%/65%/69%、湊滿一輪再停 0%/13%/0%、現行 0%/13%/0%,
+       而現行的卡片上限從 19~23 降到 10~12。 */
+    ['一輪 10 場就顯示 10 場',
       V.countdownFixtures([...Array(10)].map((_, i) => ({ id: i, round: 2 }))
-        .concat([...Array(10)].map((_, i) => ({ id: 10 + i, round: 3 }))), 10).length === 10],
-    ['英冠一輪 12 場也要整輪顯示',
+        .concat([...Array(10)].map((_, i) => ({ id: 10 + i, round: 3 })))).length === 10],
+    ['英冠一輪 12 場就顯示 12 場',
       V.countdownFixtures([...Array(12)].map((_, i) => ({ id: i, round: 2 }))
-        .concat([...Array(12)].map((_, i) => ({ id: 12 + i, round: 3 }))), 12).length === 12],
-    /* 改期的落單場次不可以吃掉整輪的名額 —— 只取「第一場所屬的輪次」的話,
-       一場延後到現在才踢的第 1 輪會把整個第 2 輪藏起來,比原本的 bug 更糟。 */
-    ['改期的落單場次不會吃掉整輪的名額', (() => {
-      const rows = [{ id: 'late', round: 1 }, ...[...Array(10)].map((_, i) => ({ id: i, round: 2 })),
-        ...[...Array(10)].map((_, i) => ({ id: 10 + i, round: 3 }))];
-      const out = V.countdownFixtures(rows, 10);
-      return out.length === 11 && out[0].id === 'late' && out.every(f => f.round <= 2);
+        .concat([{ id: 'x', round: 3 }])).length === 12],
+    /* 改期的補賽自成一段(輪次跟前後都不同),單獨顯示一張卡 —— 那是對的:
+       2025-26 第 31 輪的 Man City vs Crystal Palace 晚了 53 天才踢,
+       同輪其他九場早就結束。剩下的不是藏起來,由呼叫端補一行摘要。 */
+    ['改期的補賽自成一段,不會把下一輪拖進來', (() => {
+      const rows = [{ id: 'late', round: 31 }, ...[...Array(10)].map((_, i) => ({ id: i, round: 36 }))];
+      const out = V.countdownFixtures(rows);
+      return out.length === 1 && out[0].id === 'late';
     })()],
     ['永遠不會把一輪切一半', (() => {
       const rows = [...[...Array(4)].map((_, i) => ({ id: i, round: 2 })),
-        ...[...Array(10)].map((_, i) => ({ id: 10 + i, round: 3 })),
-        ...[...Array(10)].map((_, i) => ({ id: 20 + i, round: 4 }))];
-      const out = V.countdownFixtures(rows, 10);
-      const byRound = new Map();
-      for (const f of out) byRound.set(f.round, (byRound.get(f.round) ?? 0) + 1);
-      // 收進來的每一輪都要是完整的(第 2 輪只剩 4 場就是它全部)
-      return byRound.get(2) === 4 && byRound.get(3) === 10 && !byRound.has(4);
+        ...[...Array(10)].map((_, i) => ({ id: 10 + i, round: 3 }))];
+      const out = V.countdownFixtures(rows);
+      // 第 2 輪只剩 4 場就是它全部;第 3 輪一場都不混進來(那一輪要嘛全給要嘛不給)
+      return out.length === 4 && out.every(f => f.round === 2);
     })()],
-    ['沒有未賽場次時回空陣列', V.countdownFixtures([], 10).length === 0],
+    ['沒有未賽場次時回空陣列', V.countdownFixtures([]).length === 0],
 
     /* ── 球隊頁的「接下來的賽程」(2026-08-28 修)──
        原本排在最後(陣容那一大塊後面)而且連到 index 的速覽抽屜 ——
@@ -1117,7 +1119,7 @@ async function checkDataGap() {
     ['球隊頁的未來賽程連到單場分析,不是首頁', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
       const blk = src.slice(src.indexOf('function nextFixturesBlock'), src.indexOf('function detail('));
-      return /C\.link\('analysis'/.test(blk) && !/C\.link\('index'/.test(blk);
+      return /C\.link\('analysis'/.test(blk);
     })()],
     ['球隊頁的未來賽程排在陣容之前(排在最後等於沒有)', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
@@ -1130,6 +1132,40 @@ async function checkDataGap() {
     ['球隊頁的倒數會走(有叫 startCountdowns)', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
       return /C\.startCountdowns\(\)/.test(src);
+    })()],
+    /* 「看完整賽程」連的是首頁那張賽程表(它本來就有球隊/賽季/輪次/狀態四個篩選),
+       **不是另外做一頁** —— 做第二份的話改了一邊另一邊會悄悄過期。 */
+    ['球隊頁的完整賽程連到既有的賽程表並帶球隊', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      const blk = src.slice(src.indexOf('function nextFixturesBlock'), src.indexOf('function detail('));
+      return /C\.link\('index', \{ team: t\.code \}\)/.test(blk);
+    })()],
+    /* 深連結進來要**同時**放開輪次篩選 —— 輪次預設是「下一輪」,
+       只設球隊的話「看完整賽程」會只剩一場,那就是說了不算。 */
+    /* 「本季還有 N 場」不可以數 upcoming —— upcoming 只收**有開球時間**的場次
+       (scheduleState 對沒有 kickoff 的回 unknown),而上游是逐月公布時間的:
+       實測西甲 339/380、英冠 264/552 目前還沒有時間。拿 upcoming 去講,
+       西甲會顯示「本季還有 11 場」,而它其實還有三百多場。 */
+    ['實時頁的「本季還有幾場」數的是未賽場次,不是有開球時間的場次', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      return /const unplayedCount = fixtures\.filter\(f => !f\.played\)\.length/.test(src)
+        && /本季還有 \$\{unplayedCount\} 場未賽/.test(src);
+    })()],
+    ['沒有開球時間的場次確實不會進倒數(三個聯賽都有這種場次)', (() => {
+      const has = ['data', 'data/leagues/es1', 'data/leagues/en2'].map(d => {
+        const f = JSON.parse(readFileSync(join(ROOT, 'web', d, 'fixtures.json'), 'utf8'));
+        return f.some(x => !x.kickoff && !x.played);
+      });
+      // 英超目前全有時間,另外兩個聯賽一定有沒時間的 —— 這條是在守「這件事真的存在」
+      return has[1] && has[2];
+    })()],
+    ['賽程表讀得到 ?team=,而且會把輪次篩選一起放開', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
+      const i = src.indexOf("C.qs('team')");
+      if (i < 0) return false;
+      const blk = src.slice(i, i + 700);
+      return /selectIds\.round/.test(blk) && /\.value = ''/.test(blk)
+        && /options\].some/.test(blk);   // 隊碼對不上就當沒帶,不要靜靜篩成空的
     })()],
 
     ['缺口訊息不會把資料集的內部鍵給讀者看',
