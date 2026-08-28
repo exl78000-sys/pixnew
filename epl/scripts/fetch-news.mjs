@@ -28,11 +28,41 @@ const pick = (block, ...tags) => {
   return '';
 };
 
+/* RSS 的 pubDate 會出現 JS 解不了的時區縮寫。
+
+   實際踩過:Sky Sports 的英超 feed 是 "Thu, 27 Aug 2026 19:00:00 **BST**",
+   `new Date()` 對它回 Invalid Date,而原本的寫法直接 `.toISOString()` —— 整支拋錯,
+   **那個來源的 15 則全部沒了**,只在輸出留下一行 "✗ Invalid time value"。
+   一筆日期壞掉不該讓整個來源掛掉。
+
+   所以:先照原樣解,不行就把字尾的時區縮寫換成偏移量再解,
+   還是不行就回 null 由呼叫端處理(用抓取日期,並且把筆數報出來)。 */
+const TZ_OFFSET = { GMT: '+0000', UTC: '+0000', UT: '+0000', Z: '+0000', BST: '+0100', CET: '+0100', CEST: '+0200', WET: '+0000', WEST: '+0100' };
+function parseFeedDate(raw) {
+  if (!raw) return null;
+  const t = String(raw).trim();
+  let d = new Date(t);
+  if (!Number.isNaN(d.getTime())) return d;
+  const m = /\s([A-Za-z]{1,4})$/.exec(t);
+  const off = m && TZ_OFFSET[m[1].toUpperCase()];
+  if (off) {
+    d = new Date(t.replace(/\s[A-Za-z]{1,4}$/, ` ${off}`));
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
+let unparsedDates = 0;
+
 function parseFeed(xml, source, max, keywords = []) {
   const blocks = xml.match(/<(item|entry)[\s\S]*?<\/(item|entry)>/gi) ?? [];
   return blocks.slice(0, max).map((b, i) => {
     const date = pick(b, 'pubDate', 'published', 'updated', 'dc:date');
-    const iso = date ? new Date(date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+    const parsed = parseFeedDate(date);
+    /* 解不出日期就用抓取當天,但要記下來報出去 ——
+       靜靜蓋上今天的日期會讓三天前的新聞排到最上面,而沒有人會發現。 */
+    if (date && !parsed) unparsedDates++;
+    const iso = (parsed ?? new Date()).toISOString().slice(0, 10);
     const linkMatch = /<link[^>]*href="([^"]+)"/i.exec(b);
     return {
       id: `rss-${source.replace(/\W/g, '')}-${i}`,
@@ -73,6 +103,10 @@ async function main() {
     .sort((a, b) => (a.date < b.date ? 1 : -1));
   await writeFile(join(ROOT, 'data', 'raw', outputFile), JSON.stringify(unique, null, 2));
   console.log(`\n✔ ${league} 共 ${unique.length} 則(失敗 ${failed} 個來源)→ data/raw/${outputFile},請接著建置`);
+  if (unparsedDates) {
+    console.log(`  ⚠ 有 ${unparsedDates} 則的 pubDate 解不出來,已用抓取當天的日期代替 —— `
+      + '那幾則的先後順序會不準,要去 parseFeedDate 補時區縮寫');
+  }
 }
 
 main();

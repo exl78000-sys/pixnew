@@ -1,4 +1,4 @@
-name: 西甲新聞每日快取
+name: 兩聯賽外電每日快取
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: laliga-news-daily
+  group: news-daily
   cancel-in-progress: false
 
 jobs:
@@ -26,20 +26,34 @@ jobs:
           node-version: '22'
 
       # 只抓 RSS 標題、短摘要與原文連結；不抓全文、不呼叫 LLM。
+      #
+      # 英超這一步是 2026-08-28 補的 —— 在那之前**沒有任何流程在抓英超的 RSS**,
+      # 所以英超動態頁的「外電」分類一直是空的(data/raw/news.json 從沒進過版控),
+      # 而頁面上還寫著「外部新聞 RSS 可由 scripts/fetch-news.mjs 更新」。
+      - name: 抓英超外電 RSS
+        run: npm run news
+        continue-on-error: true
+
       - name: 抓西甲外電 RSS
         run: npm run news -- --league=es1
         continue-on-error: true
 
       # 讓新聞快取可以直接在下一次 Pages 部署前先落到資料集。
+      # 順序照 CLAUDE.md:laliga:build 要在 build 之前(資產戳)。
       - name: 建立西甲資料集
         run: npm run laliga:build
+
+      - name: 建立英超資料集
+        run: npm run build
 
       - name: 回寫西甲新聞快取
         run: |
           cd "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f epl/data/raw/news-la-liga.json epl/web/data/leagues/es1/news.json 2>/dev/null || true
+          git add -f epl/data/raw/news.json epl/data/raw/news-la-liga.json \
+            epl/web/data/news.json epl/web/data/leagues/es1/news.json \
+            epl/web/data/meta.json epl/web/data/leagues/es1/meta.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "新聞沒有變化，不提交"
           else
