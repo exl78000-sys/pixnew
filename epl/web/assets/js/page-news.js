@@ -35,6 +35,29 @@ try {
       <span>中文摘要為人工整理,<b>不是機器翻譯、也不是原文照抄</b>;完整內容以原文為準。</span>
     </div>`;
   };
+  /* 人工整理外電是**一次一批交付**的,不是每天都有人整理。
+     所以「涵蓋 8/22~9/30」這種寫法會騙人 —— 中間可能只有兩個週末有交付。
+     實際收了哪幾段、中間斷在哪裡,兩件都要講(鐵則四)。 */
+  const coverageNote = () => {
+    const c = meta.curatedNews;
+    if (!c || !c.ranges?.length) return '';
+    const fmt = r => `${C.dateFull(r.from)} ~ ${C.dateFull(r.to)}`;
+    /* 檔案庫是跨聯賽的一份(英超、西甲、歐冠都在裡面),
+       這一頁只顯示屬於本聯賽 + 歐冠的那些。
+       只印檔案庫總數的話,「共 14 則」旁邊卻只有 5 張卡片 —— 讀者會以為壞了。 */
+    const here = news.filter(n => n.curated).length;
+    return `<div class="note small" style="margin-top:8px">
+      <b>人工整理外電的涵蓋範圍</b>:本頁 ${here} 則(檔案庫累計 ${c.stories} 則,含另一個聯賽的),
+      ${c.deliveries} 次整理,累計 ${c.days} 天。
+      ${c.ranges.map(fmt).join('、')}。
+      ${c.gaps.length
+        ? `<b style="color:var(--draw)">中間有 ${c.gaps.length} 段沒有人整理</b>:${c.gaps.map(fmt).join('、')} ——
+           那幾天不是沒有新聞,是本站沒有收;不要當成「這段期間沒事發生」。`
+        : '這段期間沒有斷檔。'}
+      ${c.keepDays ? `舊的保留 ${c.keepDays} 天,之後自動淘汰。` : ''}
+    </div>`;
+  };
+
   let cat = '';
 
   app.innerHTML = `
@@ -47,6 +70,7 @@ try {
             : '目前顯示原文(尚未產生譯文)。'}`
       : '三種來源:<b>傷停與轉會</b>來自 FPL 官方欄位(含更新日期,是真的即時資料); <b>賽前看點</b>由預測模型自動生成;<b>數據 / 戰術 / 陣容</b>則是從上季 380 場比賽跑出來的敘事。外部新聞 RSS 可由 <span class="mono">scripts/fetch-news.mjs</span> 更新。'}
       ${news.some(n => n.curated) ? '<br><b>賽報 / 外電 / 轉會外電</b>是<b>人工整理</b>的外電摘要,每一則都帶原文連結;摘要裡引用的比分<b>每次建置都會拿本站賽果重新核對</b>,對不上的整則不出。轉會項目會標明是<b>已確認</b>還是<b>媒體報導</b>。' : ''}</p>
+    ${coverageNote()}
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算；本機同步後再手動發布' }),
     ])}

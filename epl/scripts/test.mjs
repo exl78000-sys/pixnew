@@ -37,6 +37,7 @@ import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
 import { normaliseMatchDetail } from './lib/adapters/api-football.mjs';
 import { nameTokens as uclNameTokens } from './lib/adapters/fotmob-ucl.mjs';
 import { checkScores, toFeedItems, forLeague, KNOWN_STATUS } from './lib/adapters/curated-news.mjs';
+import { readDelivery, mergeDelivery, pruneArchive, coverageOf, overlay, emptyArchive } from './lib/curated-archive.mjs';
 import { tierKey, lookupTier } from './lib/adapters/england-tiers.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -1499,6 +1500,107 @@ function checkCuratedNews() {
      反過來(先 reverse 再切)會把決賽那幾輪切掉。 */
   ok(/visibleRounds\(season, showQualifying\)\.slice\(\)\.reverse\(\)/.test(cupSrc),
     '盃賽:先切掉資格賽再倒過來(順序反了會把決賽切掉)');
+
+  /* ── 收件匣 → 檔案庫 ──
+     交付檔一份只涵蓋一週。直接讀它的話,下一次交付會把上一週整批蓋掉,
+     而且**不會有任何地方報錯** —— 舊的賽報就這樣靜靜消失。
+     這一組守四件事:去重、firstSeen 不被後來的交付蓋掉、
+     淘汰要連交付紀錄一起淘汰、涵蓋範圍要把斷檔講出來。 */
+  {
+    const A = join(ROOT, 'data', 'manual', 'news-curated-archive.json');
+    ok(existsSync(A), '檔案庫存在(data/manual/news-curated-archive.json)');
+    const arc = existsSync(A) ? JSON.parse(readFileSync(A, 'utf8')) : { stories: [], deliveries: [] };
+    const ids = (arc.stories ?? []).map(s => s.id);
+    ok(new Set(ids).size === ids.length, '檔案庫沒有重複的 id', `${ids.length} 則`);
+    ok((arc.stories ?? []).every(s => /^\d{4}-\d{2}-\d{2}$/.test(s.firstSeen ?? '')),
+      '每一則都記了 firstSeen(第一次收到是哪天)');
+    ok((arc.stories ?? []).length >= (raw.stories ?? []).length,
+      '檔案庫的則數不少於收件匣(收件匣已經併進去了)',
+      `${(arc.stories ?? []).length} vs ${(raw.stories ?? []).length}`);
+
+    const d1 = readDelivery({ source: 'X', retrievedAt: '2026-01-08T00:00:00Z',
+      window: { from: '2026-01-01', to: '2026-01-07' },
+      stories: [{ id: 'a', date: '2026-01-02', title: '一' }, { id: 'b', date: '2026-01-03', title: '二' }] });
+    ok(d1.ok && d1.stories.length === 2, '交付檔讀得進來');
+    const m1 = mergeDelivery(emptyArchive(), d1, { now: '2026-01-08T00:00:00Z' });
+    ok(m1.added.length === 2 && m1.archive.stories.length === 2, '第一次交付:兩則都收');
+
+    // 同一份再送一次 → 完全沒有變化(排程每 10 分鐘跑一次,會變的話 git log 全是雜訊)
+    const m2 = mergeDelivery(m1.archive, d1, { now: '2026-01-09T00:00:00Z' });
+    ok(!m2.changed && m2.unchanged.length === 2 && m2.archive.stories.length === 2,
+      '同一份重送:不重複、也不算成有變化');
+
+    // 第二週:一則新的、一則改過內容的舊的
+    const d2 = readDelivery({ source: 'X', retrievedAt: '2026-01-15T00:00:00Z',
+      window: { from: '2026-01-08', to: '2026-01-14' },
+      stories: [{ id: 'b', date: '2026-01-03', title: '二(更正)' }, { id: 'c', date: '2026-01-10', title: '三' }] });
+    const m3 = mergeDelivery(m1.archive, d2, { now: '2026-01-15T00:00:00Z' });
+    ok(m3.archive.stories.length === 3, '第二次交付:舊的沒有被整批蓋掉(這就是這一層存在的理由)');
+    ok(m3.added.length === 1 && m3.updated.length === 1, '新的算新增、改過的算更新');
+    const b = m3.archive.stories.find(s => s.id === 'b');
+    ok(b.title === '二(更正)' && b.firstSeen === '2026-01-08' && b.lastSeen === '2026-01-15',
+      '更正會蓋掉內容,但 firstSeen 保留第一次看到的那天');
+
+    /* 涵蓋範圍:兩段相鄰 → 併成一段;中間空著 → 要算出斷檔。
+       不算斷檔的話,「1/1~1/31」看起來像連續 31 天,實際可能只有兩個週末。 */
+    const cov = coverageOf(m3.archive);
+    ok(cov.ranges.length === 1 && cov.from === '2026-01-01' && cov.to === '2026-01-14' && cov.days === 14,
+      '相鄰的兩次交付併成一段連續區間', JSON.stringify(cov.ranges));
+    ok(cov.gaps.length === 0, '連續就是沒有斷檔');
+    const d4 = readDelivery({ source: 'X', retrievedAt: '2026-02-05T00:00:00Z',
+      window: { from: '2026-02-01', to: '2026-02-04' },
+      stories: [{ id: 'd', date: '2026-02-02', title: '四' }] });
+    const m4 = mergeDelivery(m3.archive, d4, { now: '2026-02-05T00:00:00Z' });
+    const cov2 = coverageOf(m4.archive);
+    ok(cov2.ranges.length === 2 && cov2.gaps.length === 1
+      && cov2.gaps[0].from === '2026-01-15' && cov2.gaps[0].to === '2026-01-31',
+      '中間沒交付的那 17 天會被算成斷檔', JSON.stringify(cov2.gaps));
+    ok(cov2.days === 18, '累計天數只算真的有收的那幾天,不是頭尾相減', String(cov2.days));
+
+    /* 淘汰:交付紀錄要一起淘汰,不然涵蓋範圍會宣稱收了一段其實已經刪掉的日子。
+       跨過界線的那一次,from 要夾到界線上。 */
+    const pr = pruneArchive(m4.archive, { asOf: '2026-02-05', keepDays: 25 });
+    ok(pr.cutoff === '2026-01-11', '淘汰界線 = 基準日往前 keepDays 天', pr.cutoff);
+    ok(pr.archive.stories.every(s => s.date >= pr.cutoff), '界線之前的則被淘汰');
+    ok(pr.archive.deliveries.length === 2 && pr.droppedDeliveries === 1,
+      '整段都在界線之前的交付紀錄也被淘汰(留著的話涵蓋範圍會宣稱收了已刪掉的日子)',
+      `留 ${pr.archive.deliveries.length}・刪 ${pr.droppedDeliveries}`);
+    const clamped = pr.archive.deliveries.find(x => x.clamped);
+    ok(clamped && clamped.from === pr.cutoff,
+      '跨過界線的那一次交付,from 夾到界線上(界線前的內容已經不在了)');
+
+    /* 疊加:合併腳本與 build 是兩個步驟。新交付落地但還沒合併時,
+       只讀檔案庫的話這一批**整批看不到**。 */
+    const over = overlay(m1.archive.stories, [{ id: 'b', date: '2026-01-03', title: '二(收件匣版)' },
+      { id: 'z', date: '2026-01-20', title: '新的' }]);
+    ok(over.length === 3, '疊加:收件匣的新項目看得到');
+    ok(over.find(s => s.id === 'b').title === '二(收件匣版)', '同一個 id 以收件匣為準');
+    ok(over.find(s => s.id === 'b').firstSeen === '2026-01-08', '疊加時 firstSeen 仍然保留');
+    ok(over[0].id === 'z', '疊加後照日期由新到舊排');
+
+    // 壞掉的那幾則要被跳過,不是整份丟掉
+    const dBad = readDelivery({ window: { from: '2026-01-01', to: '2026-01-07' },
+      stories: [{ id: 'ok', date: '2026-01-02' }, { date: '2026-01-03' }, { id: 'x', date: '一月三號' }] });
+    ok(dBad.stories.length === 1 && dBad.problems.length === 1,
+      '沒有 id 或日期格式不對的被跳過,其他照收');
+    ok(!readDelivery({ stories: [] }).ok, 'window 壞掉 → 整份不收(涵蓋範圍會說不清楚)');
+
+    /* 產物:畫面上講的涵蓋範圍要跟檔案庫一致,而且兩個聯賽都要有。
+       這一段是「涵蓋範圍不是編的」那條的守門員。 */
+    const real = coverageOf(arc);
+    for (const [lg, mp] of [['pl', join(ROOT, 'web', 'data', 'meta.json')],
+      ['es1', join(ROOT, 'web', 'data', 'leagues', 'es1', 'meta.json')]]) {
+      if (!existsSync(mp)) continue;
+      const c = JSON.parse(readFileSync(mp, 'utf8')).curatedNews;
+      ok(c && c.days === real.days && c.from === real.from && c.to === real.to,
+        `${lg}:meta 講的涵蓋範圍跟檔案庫算出來的一致`,
+        c ? `${c.from}~${c.to} ${c.days}天` : '(沒有)');
+      ok(c && c.gaps.length === real.gaps.length, `${lg}:斷檔數目一致`);
+    }
+    const newsSrc = readFileSync(join(W, 'page-news.js'), 'utf8');
+    ok(/meta\.curatedNews/.test(newsSrc) && /斷檔|沒有人整理/.test(newsSrc),
+      '動態頁真的把涵蓋範圍與斷檔印出來(鐵則四)');
+  }
   return fail;
 }
 

@@ -140,6 +140,14 @@ jobs:
         run: npm run cup-crests
         continue-on-error: true
 
+      # 人工整理的外電:交付檔(收件匣)併進檔案庫。
+      # 沒有這一步的話,下一次交付會把上一週的整批蓋掉,而且不會有任何地方報錯。
+      # 內容沒變就不寫檔,所以每 10 分鐘跑一次不會產生雜訊提交。
+      - name: 合併人工整理外電
+        working-directory: epl
+        run: npm run news:merge
+        continue-on-error: true
+
       - name: 抓歐冠賽果
         working-directory: epl
         run: npm run ucl
@@ -305,6 +313,7 @@ jobs:
                      epl/data/situation-tuning.json epl/data/situation-tuning-es1.json \
                      epl/data/congestion-tuning.json 2>/dev/null || true
           git add -f epl/data/manual/photos.json epl/data/manual/crests-cups.json epl/data/manual/team-tiers.json 2>/dev/null || true
+          git add -f epl/data/manual/news-curated-archive.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "資料沒有變化,不提交"
           else

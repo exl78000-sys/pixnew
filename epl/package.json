@@ -12,6 +12,7 @@
     "serve": "node scripts/serve.mjs",
     "test": "node scripts/test.mjs && node scripts/backtest-laliga.mjs && node scripts/test-laliga.mjs",
     "news": "node scripts/fetch-news.mjs",
+    "news:merge": "node scripts/merge-curated-news.mjs",
     "bundle": "node scripts/bundle.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",
     "live": "node scripts/fetch-live.mjs",
