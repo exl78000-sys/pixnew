@@ -35,10 +35,22 @@ async function main() {
   const exportNames = coreExports(coreSrc);
   const core = coreSrc.replace(/^export /gm, '');
 
+  /* 頁面之間共用的模組(不是 core、也不是某一頁)。單檔版沒有模組解析,
+     所以要跟 core 一樣攤平成模組層宣告,並把頁面裡的 import 拿掉 ——
+     漏掉的話單檔版會在該頁拋 "mountFixtureList is not defined"。 */
+  const SHARED = ['fixture-list'];
+  const sharedSrc = [];
+  for (const name of SHARED) {
+    const src = await readFile(join(WEB, 'assets', 'js', `${name}.js`), 'utf8');
+    sharedSrc.push(src.replace(/^import \* as C from '\.\/core\.js';\s*/m, '').replace(/^export /gm, ''));
+  }
+
   const pageSrc = {};
   for (const p of PAGES) {
     const src = await readFile(join(WEB, 'assets', 'js', `page-${p}.js`), 'utf8');
-    pageSrc[p] = src.replace(/^import \* as C from '\.\/core\.js';\s*/m, '');
+    pageSrc[p] = src
+      .replace(/^import \* as C from '\.\/core\.js';\s*/m, '')
+      .replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js';\s*/gm, '');
   }
 
   const dataFiles = (await readdir(join(WEB, 'data'))).filter(f => f.endsWith('.json'));
@@ -72,6 +84,8 @@ ${css}
 ${core}
 
 const C = { ${exportNames.join(', ')} };
+
+${sharedSrc.join('\n')}
 
 const PAGE_FNS = {
 ${PAGES.map(p => `  '${p}': async () => {\n${pageSrc[p].split('\n').map(l => '    ' + l).join('\n')}\n  },`).join('\n')}

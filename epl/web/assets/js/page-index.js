@@ -1,10 +1,11 @@
 import * as C from './core.js';
+import { mountFixtureList } from './fixture-list.js';
 
 const app = document.getElementById('app');
 
 try {
-  const { meta, teams, sim, fixtures, news, table, clubs, reports } =
-    await C.load('meta', 'teams', 'sim', 'fixtures', 'news', 'table', 'clubs', 'reports');
+  const { meta, teams, sim, fixtures, news, table, clubs, reports, results, analysis } =
+    await C.load('meta', 'teams', 'sim', 'fixtures', 'news', 'table', 'clubs', 'reports', 'results', 'analysis');
   C.registerTeams(clubs);
   C.registerTeams(teams);
   C.nav();
@@ -30,11 +31,18 @@ try {
   const simBy = new Map(sim.map(s => [s.code, s]));
   const bt = meta.model.backtest;
 
+  /* ── 賽程表(原 page-fixtures.js)── */
+  const pastSeasons = [...new Set(results.map(m => m.season))].filter(x => x !== meta.currentSeason).sort().reverse();
+  const rounds = [...new Set(fixtures.map(f => f.round))].sort((a, b) => a - b);
+  const codes = [...new Set(fixtures.flatMap(f => [f.home, f.away]))]
+    .sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
+  const nextRoundNo = fixtures.find(f => !f.played && f.date >= meta.asOf)?.round ?? rounds[0];
+
   const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;
 
   app.innerHTML = `
   <div class="page-head">
-    <h1>${basic ? '西甲戰情室・球隊數據第二版' : '英超戰情室'}</h1>
+    <h1>${basic ? '西甲・積分與賽程' : '英超・積分與賽程'}</h1>
     <p>${basic
       ? `使用 ${meta.lastSeason} 完整賽果與 ${meta.currentSeason} 已完賽資料，產生積分榜、單場機率與賽季模擬；回歸球隊另有上季 xG、射門、實際陣型與進球情境。完賽後資料會一次性永久快取；球員與教練資料已接入，傷停仍無可靠來源${meta.live?.available ? '，即時比分也已接入' : ''}。`
       : `把 ${meta.historySeasons.join('、')} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`}</p>
@@ -80,7 +88,7 @@ try {
     <div class="card">
       <h2>接下來的比賽</h2>
       <div id="next"></div>
-      <div style="margin-top:10px"><a href="${C.link('fixtures')}">完整賽程與預測 →</a>
+      <div style="margin-top:10px"><a href="#allFixtures">往下看完整賽程與預測 →</a>
         ${/* 以前是「西甲一律不給實時戰況連結」。西甲的即時比分已經接上了
               (meta.live.available = true),所以改成看有沒有來源。 */''}
         ${meta.live?.available ? `・<a href="${C.link('live')}">實時戰況</a>` : ''}</div>
@@ -108,6 +116,25 @@ try {
             : '尚未跑走查回測,所以這一頁不給準度數字。'}</div>
       </div>`}</div>
     </div>` : ''}
+
+  ${/* 賽程表原本是獨立的一頁。分成兩頁的話,讀者看完積分榜想看下一輪對誰,
+        要再點一次而且整頁重載;而兩頁的頁首、時效標籤、模型說明本來就講同一件事,
+        等於同一段話維護兩份。合併之後這一頁就是「這個賽季的全部」。 */''}
+  <div class="section" id="allFixtures"><h2>完整賽程與預測</h2>
+    <span class="hint">點任一場看單場分析・${C.tzName()}</span></div>
+  <div class="filters">
+    <label>賽季</label><select id="fSeason">
+      <option value="${meta.currentSeason}">${meta.currentSeason}(本季・預測)</option>
+      ${pastSeasons.map(x => `<option value="${x}">${x}(已完賽)</option>`).join('')}</select>
+    <label>輪次</label><select id="fRound"><option value="">全部</option>
+      ${rounds.map(r => `<option value="${r}" ${r === nextRoundNo ? 'selected' : ''}>第 ${r} 輪</option>`).join('')}</select>
+    <label>球隊</label><select id="fTeam"><option value="">全部</option>
+      ${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
+    <label>狀態</label><select id="fState">
+      <option value="">全部</option><option value="未賽">未賽</option><option value="已賽">已賽</option></select>
+    <span class="dim small" id="fxCount"></span>
+  </div>
+  <div id="fixtureList"></div>
 
   <div class="section"><h2>上季最終戰績</h2><span class="hint">${meta.lastSeason}・所有進階指標的基準</span></div>
   <div id="lastTable"></div>
@@ -200,6 +227,9 @@ try {
     : '<div class="small dim">目前沒有動態。</div>';
 
   C.startCountdowns();
+
+  /* 賽程表(共用模組,原 page-fixtures.js) */
+  mountFixtureList({ meta, teams, fixtures, results, reports, analysis });
 
   /* 上季積分榜 */
   document.getElementById('lastTable').innerHTML = C.table(table.last, [

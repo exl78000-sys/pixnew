@@ -38,7 +38,7 @@ try {
      以前這裡有自己的列表,但它是賽程表的子集(只有未開賽且有文章的場次,
      還沒有篩選),兩個入口只會讓人猶豫該點哪一個。 */
   if (target) renderMatch(target);
-  else location.replace(C.link('fixtures'));
+  else location.replace(C.link('index'));
 
   /* ── 單場分析 ────────────────────────────── */
   function renderMatch(f) {
@@ -63,7 +63,7 @@ try {
 
     app.innerHTML = `
     <div class="page-head">
-      <a class="small dim" href="${C.link('fixtures')}">← 回賽程與預測</a>
+      <a class="small dim" href="${C.link('index')}">← 回積分與賽程</a>
       <h1 style="margin-top:6px">${C.teamLink(f.home)} <span class="dim">vs</span> ${C.teamLink(f.away)}</h1>
       <p>${f.season} 賽季第 ${f.round} 輪・${C.kickoffLocal(f.kickoff)}(${C.tzName()})</p>
       ${C.stampRow([
@@ -324,7 +324,7 @@ try {
 
     app.innerHTML = `
     <div class="page-head">
-      <a class="small dim" href="${C.link('fixtures')}">← 回賽程與預測</a>
+      <a class="small dim" href="${C.link('index')}">← 回積分與賽程</a>
       <h1 style="margin-top:6px">${C.teamLink(f.home)} <span class="dim">vs</span> ${C.teamLink(f.away)}</h1>
       <p>西甲 ${f.season}・第 ${f.round} 輪・${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</p>
       ${C.stampRow([
