@@ -110,6 +110,17 @@ jobs:
 
       # SportMonks 是英超的主要球員／賽後資料來源；FPL 與 API-Football 只作
       # 統計鏡像或備援。同步器會依 token 實際可用賽季動態找 season id。
+      # 英格蘭盃賽(足總盃 / 聯賽盃)。season id 當場解析,不寫死 ——
+      # 每季都會換一組,寫死的話明年會安靜地抓到去年的資料。
+      # 單線、間隔 350ms、硬上限 40 個請求;快取 12 小時內不重抓。
+      - name: 抓英格蘭盃賽賽果
+        working-directory: epl
+        run: npm run encups
+        env:
+          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
+          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+
       - name: 同步英超主要資料(SportMonks)
         run: npm run sportmonks:sync -- --league=pl --max-requests=65 --max-details=10
         env:
@@ -255,6 +266,8 @@ jobs:
                      epl/data/raw/understat-la-liga/ \
                      epl/data/raw/sportmonks-la-liga/ \
                      epl/data/raw/sportmonks-epl/ \
+                     epl/data/raw/sportmonks-cups/ \
+                     epl/data/raw/probes/ \
                      epl/data/raw/api-football/ \
                      epl/data/raw/api-football-la-liga/ \
                      epl/data/raw/football-data-couk/ \
