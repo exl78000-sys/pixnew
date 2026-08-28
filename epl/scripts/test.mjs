@@ -1493,8 +1493,10 @@ function checkCuratedNews() {
   ok(/\[\.\.\.s\.rounds\]\.reverse\(\)/.test(uclSrc), '歐冠:輪次顯示時倒過來(決賽在最上面)');
   ok(uclSrc.indexOf('<h2>淘汰賽</h2>') < uclSrc.indexOf('<h2>聯賽階段</h2>'), '歐冠:淘汰賽排在聯賽階段前面');
   ok(uclSrc.indexOf('<h2>聯賽階段</h2>') < uclSrc.indexOf('leaderBoards(s)'), '歐冠:球員榜排在最後,不會夾在標題與內容之間');
-  ok(/\.slice\(season\.firstKnownRound[^)]*\)\s*\n?\s*\.slice\(\)\.reverse\(\)/.test(cupSrc.replace(/\s+/g, ' ').replace(/ /g, ' ')) ||
-     /firstKnownRound[\s\S]{0,80}\.slice\(\)\.reverse\(\)/.test(cupSrc),
+  /* **先切再倒。** 切輪次的邏輯已經收進 visibleRounds();
+     這裡守的是「reverse 套在 visibleRounds() 的結果上」——
+     反過來(先 reverse 再切)會把決賽那幾輪切掉。 */
+  ok(/visibleRounds\(season, showQualifying\)\.slice\(\)\.reverse\(\)/.test(cupSrc),
     '盃賽:先切掉資格賽再倒過來(順序反了會把決賽切掉)');
   return fail;
 }
@@ -1677,6 +1679,14 @@ function checkUcl() {
   const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
   ok(/const PAGES = \[[^\]]*'ucl'/.test(bundle), '單檔版有收歐冠頁(漏了的話點進去是空白)');
   ok(existsSync(join(W, 'ucl.html')), 'ucl.html 存在');
+
+  /* 盃賽頁:預設顯示哪幾輪要走 visibleRounds(),不要再散在樣板裡。
+     「本站球隊還沒進場」那一支只顯示最新一輪 —— 全攤開是幾百場資格賽。 */
+  const cupSrc2 = readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8');
+  ok(/function visibleRounds\(/.test(cupSrc2), '盃賽頁:預設輪次由 visibleRounds() 決定');
+  ok(/noKnownYet\) return season\.rounds\.slice\(-1\)/.test(cupSrc2),
+    '盃賽頁:本站球隊還沒進場時只顯示最新一輪');
+  ok(cupSrc2.includes('season.noKnownYet'), '盃賽頁:資格賽說明會分辨「還沒進場」與「前 N 輪」');
   return fail;
 }
 
@@ -1857,6 +1867,22 @@ function checkCups() {
         `產物:${cup.zh} ${season.label} 分輪之後場次沒有增減`,
         `${rounded} vs ${rawSeason.matches.length}`);
       ok(season.total === rawSeason.matches.length, `產物:${cup.zh} ${season.label} 總場次對得回原始快取`);
+      /* 本站球隊還沒進場的賽季:整季都算資格賽,而且預設只顯示最新一輪。
+         **findIndex 找不到回的是 -1 不是 0** —— 原本 `firstKnown > 0 ? … : 0`
+         把 -1 當成 0,於是「整季都還沒有本站球隊」被當成「第一輪就有」,
+         資格賽既不收起來也沒有說明,足總盃 2026-27 一進頁就是 533 場
+         第九級的比賽攤在眼前。這幾條守著那個判斷。 */
+      if (season.firstKnownRound < 0) {
+        ok(season.noKnownYet === true, `產物:${cup.zh} ${season.label} 標記成「本站球隊還沒進場」`);
+        ok(season.qualifyingRounds === season.rounds.length,
+          `產物:${cup.zh} ${season.label} 整季都算資格賽`,
+          `${season.qualifyingRounds} vs ${season.rounds.length}`);
+        ok(season.qualifyingMatches === season.total,
+          `產物:${cup.zh} ${season.label} 資格賽場次等於整季場次`);
+      } else {
+        ok(season.noKnownYet !== true, `產物:${cup.zh} ${season.label} 有本站球隊,不算「還沒進場」`);
+      }
+
       // 沒見過的類別如果真的出現,這裡要紅 —— 代表上游有我們沒核對過的東西
       ok(!season.unknownDescriptions?.length,
         `產物:${cup.zh} ${season.label} 沒有未核對的比分類別`,

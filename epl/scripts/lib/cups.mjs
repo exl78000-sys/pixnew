@@ -112,13 +112,23 @@ export function championOf(rounds) {
 
 export function summariseSeason(season) {
   const rounds = groupByStage(season.matches ?? []);
-  // 第一個有本站球隊的輪次。找不到就給 0(整季都沒有,例如本季還在資格賽階段)
+  /* 第一個有本站球隊的輪次。
+     **findIndex 找不到時回的是 -1,不是 0** —— 原本的註解寫「找不到就給 0」,
+     而下面的 `firstKnown > 0 ? … : 0` 把 -1 也當成 0,於是
+     「整季都還沒有本站球隊」被當成「第一輪就有本站球隊」:
+     資格賽既不會被收起來,也不會有說明。實際後果是足總盃 2026-27
+     一進盃賽頁就是 **533 場第九級資格賽**攤在眼前,而且沒有任何提示。
+     這一季目前確實整季都是資格賽,所以要把整季都算成資格賽。 */
   const firstKnown = rounds.findIndex(r => r.hasKnown);
+  const noKnownYet = firstKnown < 0 && rounds.length > 0;
   return {
     firstKnownRound: firstKnown,
-    qualifyingRounds: firstKnown > 0 ? firstKnown : 0,
-    qualifyingMatches: firstKnown > 0
-      ? rounds.slice(0, firstKnown).reduce((a, r) => a + r.total, 0) : 0,
+    // 本站球隊還沒進場的話,目前打過的每一輪都是資格賽
+    noKnownYet,
+    qualifyingRounds: noKnownYet ? rounds.length : (firstKnown > 0 ? firstKnown : 0),
+    qualifyingMatches: noKnownYet
+      ? rounds.reduce((a, r) => a + r.total, 0)
+      : (firstKnown > 0 ? rounds.slice(0, firstKnown).reduce((a, r) => a + r.total, 0) : 0),
     label: season.label,
     seasonId: season.seasonId,
     current: season.current === true,

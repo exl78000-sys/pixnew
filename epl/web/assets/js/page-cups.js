@@ -85,8 +85,28 @@ function roundCard(round) {
    英超球隊要到第三輪才進場。預設從「第一個有本站球隊的輪次」開始,
    但**資格賽不刪掉**:那是真實發生過的比賽,只是收起來。
    收起來這件事本身要講出來,不然讀者會以為本站只有半個賽事。 */
+/* 預設要顯示哪幾輪。三種情況:
+     展開資格賽        → 全部
+     本站球隊還沒進場  → **只留最新一輪**(整季都是資格賽,全攤開是 533 場)
+     一般              → 從第一個有本站球隊的輪次開始 */
+function visibleRounds(season, showQual) {
+  if (showQual) return season.rounds;
+  if (season.noKnownYet) return season.rounds.slice(-1);
+  return season.rounds.slice(season.firstKnownRound > 0 ? season.firstKnownRound : 0);
+}
+
 function qualifyingToggle(season) {
   if (!season.qualifyingRounds) return '';
+  if (season.noKnownYet) {
+    return `<div class="note" style="margin-top:12px">
+      <b>這一季本站的球隊還沒進場。</b>足總盃從低級別聯賽一路打上來,英超球隊要到<b>第三輪</b>才加入;
+      目前打完的 ${season.qualifyingRounds} 輪(共 ${season.qualifyingMatches} 場)<b>全部是資格賽</b>。
+      這些場次<b>有抓到、也沒有刪掉</b>,只是預設只顯示最新一輪 ——
+      全部攤開是幾百場第九級的比賽,滑不完也不是讀者要看的。
+      <button class="btn tiny" id="toggleQual" style="margin-left:8px">${
+        season.__showQual ? '只看最新一輪' : `展開全部 ${season.qualifyingRounds} 輪`}</button>
+    </div>`;
+  }
   return `<div class="note" style="margin-top:12px">
     <b>前 ${season.qualifyingRounds} 輪是資格賽</b>(共 ${season.qualifyingMatches} 場)——
     足總盃從低級別聯賽一路打上來,英超球隊要到後面的輪次才進場。
@@ -215,8 +235,7 @@ try {
           <span class="hint">最新的排在最上面(決賽 → 第一輪)・輪次順序依開球時間,不是照上游的輪次編號</span></div>
         ${/* **先切再倒。** 資格賽是用「從第幾輪開始」這個索引切掉的;
               先倒過來的話那個索引指的就變成另一頭,會把決賽那幾輪切掉。 */''}
-        ${(showQualifying ? season.rounds : season.rounds.slice(season.firstKnownRound > 0 ? season.firstKnownRound : 0))
-            .slice().reverse().map(roundCard).join('')}`;
+        ${visibleRounds(season, showQualifying).slice().reverse().map(roundCard).join('')}`;
       const runsEl = document.getElementById('runs');
       if (runsEl) runsEl.innerHTML = runsTable(season.runs);
       const qualBtn = document.getElementById('toggleQual');
