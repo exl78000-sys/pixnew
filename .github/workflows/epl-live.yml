@@ -249,13 +249,10 @@ jobs:
       - name: 核對人工交付的租借紀錄
         run: npm run loans:verify
 
-      # 先建西甲，讓接下來的 npm test 驗證剛抓回來的兩季資料，而不是版控裡的舊輸出。
+      # 先建西甲再建英超。順序不能反:stamp-assets 掛在 build 最後,會把資產戳
+      # 寫進**兩個聯賽**的 meta.json;反過來跑的話 laliga:build 會把 es1 的 meta 重寫掉。
       - name: 建立西甲資料集
         run: npm run laliga:build
-
-      - name: 走查回測(模型準度與每場賽前預測)
-        run: npm test
-        continue-on-error: true
 
       # 近況/交手特徵的調參與驗收。三個賽季都已完結,數字很穩定 ——
       # 跑它是為了讓模型頁上「測過但沒進模型」那一段的數字永遠是現跑的,而不是寫死的。
@@ -278,6 +275,15 @@ jobs:
           # 設定方式:repo → Settings → Secrets and variables → Actions
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      # **必須在 build 之後。** 資產戳是 build 最後一步(stamp-assets)寫的,
+      # 而 npm test 有一節在驗「meta 記的戳跟實際檔案一致」。
+      # 原本這一步夾在 laliga:build 與 build 中間 —— 那個時間點 es1 的 meta 剛被
+      # laliga:build 重寫、戳還沒補回來,所以那兩條**每次 CI 都假紅**,
+      # 只是 continue-on-error 讓沒有人去看。2026-08-28 修正。
+      - name: 走查回測與自我檢查(要在 build 之後,資產戳才是最終狀態)
+        run: npm test
+        continue-on-error: true
 
       # 存一份「今天誰不能上」。上游(FPL)只給現在、不給歷史,
       # 自己每天存才能累積出逐輪快照 —— 那是將來把傷停拿去走查回測的唯一辦法。

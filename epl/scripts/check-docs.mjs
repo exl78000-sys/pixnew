@@ -26,6 +26,10 @@ const has = p => existsSync(join(ROOT, p));
 const countVaultNotes = () => {
   const dir = join(ROOT, 'vault');
   if (!existsSync(dir)) return null;
+  // 只有手寫資料夾 = 產物還沒產生(CI 的 checkout 就是這樣),不是「有 0 則筆記」
+  const generated = readdirSync(dir, { withFileTypes: true })
+    .filter(e => e.isDirectory() && e.name !== '我的筆記');
+  if (!generated.length) return null;
   let n = 0;
   const walk = d => {
     for (const e of readdirSync(d, { withFileTypes: true })) {
