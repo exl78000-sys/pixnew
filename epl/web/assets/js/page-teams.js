@@ -1,4 +1,4 @@
-import * as C from './core.js?v=3f75ca0d';
+import * as C from './core.js?v=d2b5dc53';
 
 const app = document.getElementById('app');
 
@@ -517,18 +517,31 @@ try {
      0(查過、沒人傷)才印「無傷停回報」。 */
   function card(t) {
     const s = t.sim, ls = t.lastSeason, cur = t.current;
+    /* 四個數字排成 2×2,不是一排四欄。卡片只有頁面寬度的三分之一,
+       四欄各約 55px —— 「第 1 名 · 85 分」在那個寬度裡會斷成三行,
+       上下卡片的數字還會錯位,整片看起來像壞掉。
+
+         上季        期望積分
+         本季目前     前四／降級
+
+       次要的數字(場次、上季積分、降級率)壓成同一行的灰字,
+       主要那個數字才有份量,不用讀者自己找。 */
     const cells = [
-      ['上季', ls ? `第 ${ls.pos} 名 · ${ls.pts} 分` : '<span class="pill">升班馬</span>'],
-      cur?.p ? ['本季目前', `${cur.pts} 分 / ${cur.p} 場`] : null,
+      ['上季', ls ? `第 ${ls.pos} 名<span class="dim"> ${ls.pts} 分</span>` : '<span class="pill">升班馬</span>'],
       ['期望積分', `<b>${s?.expectedPoints ?? '—'}</b>`],
-      ['前四 / 降級', `<span class="small">${s?.top4Pct ?? '—'}% / ${s?.relegationPct ?? '—'}%</span>`],
-    ].filter(Boolean);
+      ['本季目前', cur?.p
+        ? `${cur.pts} 分<span class="dim"> ${cur.p} 場</span>`
+        : '<span class="dim">尚無完賽</span>'],
+      ['前四 / 降級', s
+        ? `${s.top4Pct}%<span class="dim"> / ${s.relegationPct}%</span>`
+        : '<span class="dim">—</span>'],
+    ];
     const coachName = t.coach?.zh ?? t.coach?.name ?? null;
     return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
       <div class="row" style="gap:11px">${C.badge(t.code, 'lg')}
         <div><div style="font-weight:800;font-size:16px">${C.esc(t.en)}</div>
           <div class="tiny dim">${C.esc(t.zh)}${t.venue ? `・${C.esc(t.venue)}` : ''}</div></div></div>
-      <div class="grid" style="margin-top:12px;gap:8px;grid-template-columns:repeat(${cells.length},1fr)">
+      <div class="team-card-stats">
         ${cells.map(([l, v]) => `<div><div class="tiny dim">${l}</div><div class="mono">${v}</div></div>`).join('')}
       </div>
       ${t.tactics?.tags?.length
