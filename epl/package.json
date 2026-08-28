@@ -45,6 +45,7 @@
     "probe:encups": "node scripts/probe-encups.mjs",
     "probe:ucl": "node scripts/probe-ucl.mjs",
     "encups": "node scripts/fetch-encups.mjs",
+    "ucl": "node scripts/fetch-ucl.mjs",
     "probe:laliga-players": "node scripts/probe-laliga-players.mjs",
     "probe:laliga-playerdata": "node scripts/probe-laliga-playerdata.mjs",
     "probe:laliga-lineups": "node scripts/probe-laliga-lineups.mjs",

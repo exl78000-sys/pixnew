@@ -121,6 +121,16 @@ jobs:
           SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
           SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
 
+      # 歐冠。football-data.org 免費方案限 10 req/分,所以一季一個請求、間隔 7 秒。
+      # 2026-27 目前回 404(還沒建立,九月中才開打)—— 那不是「拿不到」,
+      # 腳本會照實記成 not-published 並繼續,不讓整個流程變紅。
+      - name: 抓歐冠賽果
+        working-directory: epl
+        run: npm run ucl
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        continue-on-error: true
+
       - name: 同步英超主要資料(SportMonks)
         run: npm run sportmonks:sync -- --league=pl --max-requests=65 --max-details=10
         env:
@@ -267,6 +277,7 @@ jobs:
                      epl/data/raw/sportmonks-la-liga/ \
                      epl/data/raw/sportmonks-epl/ \
                      epl/data/raw/sportmonks-cups/ \
+                     epl/data/raw/football-data/ \
                      epl/data/raw/probes/ \
                      epl/data/raw/api-football/ \
                      epl/data/raw/api-football-la-liga/ \
