@@ -21,7 +21,12 @@ const app = document.getElementById('app');
 
 const KO = m => (m.kickoff ? C.kickoffLocal(m.kickoff) : '待定');
 
-// 本站在**目前這個聯賽**的資料集裡認不認得這個隊碼 —— 認得才端得出隊徽
+/* 本站**兩個聯賽加起來**認不認得這個隊碼。
+   以前這裡只看目前這個聯賽,於是同一頁在英超與西甲會長得不一樣:
+   Barcelona 在英超頁叫上游給的 `Barça`、沒有隊徽,在西甲頁才是 `FC Barcelona` ——
+   而標題寫著「英超與西甲・共 11 支」。現在名字與隊徽走跨聯賽的 ucl-teams.json,
+   兩頁一致。**界線沒變**:PSG、Bayern 這些本站真的沒有的,
+   照舊只給上游的名字、不畫隊徽(畫一個灰方塊寫代號看起來像壞掉)。 */
 const registered = code => !!code && C.team(code).en !== code;
 
 function teamCell(t, { align = 'left', strong = false } = {}) {
@@ -239,8 +244,11 @@ function unavailableNote(season) {
 }
 
 try {
-  const { meta, clubs, teams, ucl } = await C.load('meta', 'clubs', 'teams', 'ucl');
-  C.registerTeams(clubs); C.registerTeams(teams);
+  const { meta, clubs, teams, ucl, 'ucl-teams': uclTeams } = await C.load('meta', 'clubs', 'teams', 'ucl', 'ucl-teams');
+  /* **先登錄跨聯賽那一份,再登錄本聯賽的。** registerTeams 是逐欄位覆蓋,
+     順序反過來的話,本聯賽比較完整的那筆(配色、球場、chartColor)
+     會被只帶名字與隊徽的那筆蓋掉一部分。 */
+  C.registerTeams(uclTeams?.teams ?? []); C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
   const seasons = ucl?.seasons ?? [];

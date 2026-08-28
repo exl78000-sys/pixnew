@@ -1625,6 +1625,58 @@ function checkUcl() {
   ok(ucl.teamCodeConflicts?.length === 0, '沒有兩支歐冠球隊對到同一個隊碼',
     JSON.stringify(ucl.teamCodeConflicts ?? []));
 
+  /* ── 歐冠頁的名字與隊徽是跨聯賽的一份 ──
+     以前名字與隊徽是查「目前這個聯賽的 clubs.json」,而兩份 clubs 的隊碼
+     **完全沒有交集**,於是同一支球隊在兩頁長得不一樣:Barcelona 在英超頁
+     叫上游的 `Barça`、沒有隊徽,在西甲頁才是 `FC Barcelona` ——
+     而標題寫著「英超與西甲・共 N 支」。這一組守著它不會再漂回去。 */
+  {
+    const ap = join(W, 'data', 'ucl-teams.json');
+    const bp = join(W, 'data', 'leagues', 'es1', 'ucl-teams.json');
+    ok(existsSync(ap) && existsSync(bp), '兩個聯賽都產出了 ucl-teams.json');
+    if (existsSync(ap) && existsSync(bp)) {
+      ok(readFileSync(ap, 'utf8') === readFileSync(bp, 'utf8'),
+        '英超與西甲的 ucl-teams.json 逐位元組相同(跨聯賽只能有一份)');
+      const at = JSON.parse(readFileSync(ap, 'utf8'));
+
+      /* ucl.json 裡出現過的每一個隊碼都要在這一份裡 ——
+         漏掉的那一支會退回顯示上游的縮寫,而且**只在其中一頁**,
+         那正是這次要修掉的症狀。整份走一遍收 code,不列舉區塊,
+         否則以後多一個區塊就會有一批球隊靜靜地少掉名字。 */
+      const codes = new Set();
+      const walk = v => {
+        if (Array.isArray(v)) { for (const x of v) walk(x); return; }
+        if (!v || typeof v !== 'object') return;
+        if (typeof v.code === 'string' && v.code) codes.add(v.code);
+        for (const x of Object.values(v)) walk(x);
+      };
+      walk(ucl);
+      const have = new Set(at.teams.map(t => t.code));
+      const missing = [...codes].filter(c => !have.has(c));
+      ok(missing.length === 0, 'ucl.json 裡的每一個隊碼在 ucl-teams.json 都查得到名字',
+        missing.join('、'));
+      ok(at.teams.every(t => t.en && t.en !== t.code),
+        '每一支都有本站自己的隊名(不是退回代號)');
+      ok(at.teams.every(t => t.crest), '每一支都有隊徽',
+        at.teams.filter(t => !t.crest).map(t => t.code).join('、'));
+      ok(at.teams.some(t => t.league === 'pl') && at.teams.some(t => t.league === 'es1'),
+        '兩個聯賽的球隊都收進來了(不是只有其中一邊)');
+      const codesSorted = at.teams.map(t => t.code);
+      ok(JSON.stringify(codesSorted) === JSON.stringify([...codesSorted].sort()),
+        '順序固定(排序不固定的話兩個 build 產出就不會逐位元組相同)');
+
+      /* **登錄順序**:跨聯賽那一份要先登錄,本聯賽的後登錄。
+         registerTeams 是逐欄位覆蓋,反過來的話本聯賽比較完整的那筆
+         (配色、球場、chartColor)會被只帶名字與隊徽的那筆蓋掉一部分。 */
+      const src = readFileSync(join(W, 'assets', 'js', 'page-ucl.js'), 'utf8');
+      const iShared = src.indexOf('C.registerTeams(uclTeams');
+      const iLocal = src.indexOf('C.registerTeams(clubs)');
+      ok(iShared > 0 && iLocal > 0 && iShared < iLocal,
+        '歐冠頁先登錄跨聯賽那一份、再登錄本聯賽的');
+      ok(/'ucl-teams'/.test(src), '歐冠頁真的載了 ucl-teams');
+    }
+  }
+
   const avail = (ucl.seasons ?? []).filter(s => s.availability === 'available');
   ok(avail.length >= 2, '至少兩季可用', `${avail.length} 季`);
 

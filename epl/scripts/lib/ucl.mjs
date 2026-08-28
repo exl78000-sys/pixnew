@@ -391,3 +391,64 @@ export async function loadUclSeasons(root, sources) {
     seasons,
   };
 }
+
+/* 歐冠頁要用的球隊名字與隊徽,**跨聯賽的一份**。
+ *
+ * 為什麼要獨立一份:歐冠頁兩邊看到的 ucl.json 是同一份(逐位元組相同),
+ * 但畫面**不一樣** —— 名字與隊徽是從「目前這個聯賽的 clubs.json」查的,
+ * 而兩份 clubs 的隊碼完全沒有交集(英超 27 支、西甲 29 支、重疊 0)。
+ * 於是同一支球隊在英超頁叫 `Barça`(上游給的縮寫)、在西甲頁叫 `FC Barcelona`,
+ * 隊徽也只有一半畫得出來。標題卻寫著「英超與西甲・共 11 支」——
+ * 說了兩個聯賽都算,畫面上卻有一半看起來像外人。
+ *
+ * 所以把歐冠裡「本站認得的球隊」的名字與隊徽收成一份共用檔,
+ * 兩個 build 各產一次、內容逐位元組相同(有測試守著)。
+ *
+ * **界線沒有變**:只收本站兩份名單裡真的有的球隊。
+ * PSG、Bayern 這些我們沒有的,照舊只給上游的名字、不畫隊徽 ——
+ * 畫一個灰方塊寫著代號看起來像壞掉(鐵則三)。
+ */
+export async function uclTeamAssets(root, ucl) {
+  const { readFile } = await import('node:fs/promises');
+  const { join } = await import('node:path');
+  const { existsSync } = await import('node:fs');
+  const { loadTeams } = await import('./teams.mjs');
+
+  /* 把整份 ucl 走一遍收 code,而不是列舉「走勢表、積分榜、淘汰賽、抽籤」四個地方 ——
+     列舉的話,以後多一個區塊就會有一批球隊靜靜地少掉名字與隊徽。 */
+  const codes = new Set();
+  const walk = v => {
+    if (Array.isArray(v)) { for (const x of v) walk(x); return; }
+    if (!v || typeof v !== 'object') return;
+    if (typeof v.code === 'string' && v.code) codes.add(v.code);
+    for (const x of Object.values(v)) walk(x);
+  };
+  walk(ucl);
+
+  const sources = [
+    { league: 'pl', teams: 'teams.json', crests: 'crests.json' },
+    { league: 'es1', teams: 'teams-la-liga.json', crests: 'crests-la-liga.json' },
+  ];
+  const rows = [];
+  for (const src of sources) {
+    const T = loadTeams(root, { file: src.teams });
+    const cp = join(root, 'data', 'manual', src.crests);
+    const crests = existsSync(cp) ? (JSON.parse(await readFile(cp, 'utf8')).crests ?? {}) : {};
+    for (const t of T.list) {
+      if (!codes.has(t.code)) continue;
+      rows.push({
+        code: t.code, league: src.league, en: t.en, zh: t.zh,
+        colors: t.colors ?? null,
+        crest: crests[t.code] ?? null,
+      });
+    }
+  }
+  // 排序固定,兩個 build 的輸出才會逐位元組相同
+  rows.sort((a, b) => (a.code < b.code ? -1 : a.code > b.code ? 1 : 0));
+  return {
+    note: '歐冠頁專用:本站兩個聯賽認得的球隊的名字與隊徽。跨聯賽一份,英超與西甲的內容相同。',
+    codesInUcl: codes.size,
+    known: rows.length,
+    teams: rows,
+  };
+}
