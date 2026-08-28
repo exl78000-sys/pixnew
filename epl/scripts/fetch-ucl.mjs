@@ -40,7 +40,7 @@ const FORCE = process.argv.includes('--force');
 const GAP = 7000;            // 免費方案 10 req/分,留餘裕
 const MAX_REQUESTS = 6;
 const TTL_HOURS = 12;
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;   // 2:多抓官方積分榜(聯賽階段的名次不要用我們自己的同分比較規則)
 
 /* 本站一律用 "2024-25" 這種寫法;football-data.org 的 season 參數是起始年。
    已完賽的兩季不會再變,但仍照樣重抓 —— 供應商事後修正比分是常有的事,
@@ -158,10 +158,32 @@ async function main() {
         source: 'football-data.org', competition: 'CL',
         season: s.label, seasonParam: s.season,
         retrievedAt: new Date().toISOString(), schemaVersion: SCHEMA_VERSION,
-        availability, status: r.status, message: r.message, matches: [],
+        availability, status: r.status, message: r.message, standings: null, matches: [],
       });
       continue;
     }
+
+    /* **官方積分榜要另外抓,不要用我們自己排的。**
+       聯賽階段 36 隊同分時,UEFA 的比較順序是淨勝球 → 進球 → 客場進球 →
+       勝場 → 客場勝場 → 紀律分 → 係數,而且**不看相互對戰**。
+       我們自己排到「淨勝球 → 進球」就停了,再往下就是猜。
+       名次直接關係到 1-8 / 9-24 / 25-36 三個分界,猜錯就是把晉級講錯,
+       所以名次以官方那份為準,自己算的那份只拿來對帳(鐵則五)。 */
+    let standings = null;
+    try {
+      const st = await get(`/competitions/CL/standings?season=${s.season}`);
+      const total = (st.body?.standings ?? []).find(x => x.type === 'TOTAL');
+      if (st.status === 200 && total) {
+        standings = total.table.map(r => ({
+          position: r.position, teamId: r.team?.id, teamName: r.team?.shortName ?? r.team?.name,
+          playedGames: r.playedGames, won: r.won, draw: r.draw, lost: r.lost,
+          points: r.points, goalsFor: r.goalsFor, goalsAgainst: r.goalsAgainst, goalDifference: r.goalDifference,
+        }));
+        console.log(`    官方積分榜:${standings.length} 隊・第 1 名 ${standings[0]?.teamName} ${standings[0]?.points} 分`);
+      } else {
+        console.log(`    ⚠ 官方積分榜拿不到(HTTP ${st.status})—— 名次改由賽果自算,畫面要標明`);
+      }
+    } catch (e) { console.log(`    ⚠ 官方積分榜:${e.message}`); }
 
     const d = describe(matches);
     console.log(`  歐冠 ${s.label}:${matches.length} 場`
@@ -176,6 +198,7 @@ async function main() {
       season: s.label, seasonParam: s.season,
       retrievedAt: new Date().toISOString(), schemaVersion: SCHEMA_VERSION,
       availability, status: r.status, message: null,
+      standings,
       // 原始回傳整份留著。這一支不解讀 —— 轉換邏輯要等看過真實資料再寫
       matches,
     });
