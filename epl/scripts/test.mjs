@@ -1354,6 +1354,24 @@ function checkAssetStamps() {
   ok(core.includes('checkStale'), 'core.js 有版本對不上時的自我修復');
   ok(core.includes('sessionStorage'), '重載有 sessionStorage 記號,不會無限重載');
 
+  /* 剛結束的比賽留在最上面三天。這三條守的是兩件會靜靜出錯的事:
+
+     一、**同一場出現兩次。** 頁尾的「已完賽」區如果還吃 done / finishedSchedule,
+        剛結束的那幾場會同時出現在兩個區塊 —— 版面看起來沒壞,只是重複,
+        而重複的比分讀者會以為是兩場不同的比賽。
+     二、**115 分鐘這個數字被抄成第二份。** 賽末時間 = 開球 + MATCH_WINDOW_MIN,
+        core 已經有這個常數;頁面自己再寫一個 115 的話,改了一邊另一邊不會跟著動。 */
+  ok(/export const MATCH_WINDOW_MIN/.test(core), 'core.js 把賽末時間常數匯出去給頁面共用');
+  ok(liveSrc.includes('C.MATCH_WINDOW_MIN'), '實時戰況頁用 core 的賽末時間,不自己再寫一份');
+  ok(!/\b115\b/.test(liveSrc.replace(/\/\*[\s\S]*?\*\//g, '')), '實時戰況頁沒有另一份寫死的 115');
+  ok(liveSrc.includes('const RECENT_MS = 3 * 24 * 3600 * 1000'), '「剛結束」的窗口是 3 天');
+  ok(liveSrc.includes('doneRest') && liveSrc.includes('finishedRest'),
+    '已完賽區吃的是扣掉「剛結束」之後的清單(否則同一場出現兩次)');
+  ok(!/\$\{live\.available && done\.length \?/.test(liveSrc),
+    '已完賽區不再直接用未扣除的 done');
+  ok(liveSrc.includes('live.demo ? new Set()'),
+    '重播模式不做排除(重播的是別季比賽,配對鍵可能撞上本季)');
+
   /* 第二層分頁。GROUPS 裡列的頁面都必須真的存在於 PAGES ——
      打錯一個字的話那一頁會從導覽列整個消失(頂層排除它、子層又找不到它),
      而且不會有任何地方報錯。 */

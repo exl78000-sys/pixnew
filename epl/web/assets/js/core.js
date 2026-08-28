@@ -477,7 +477,7 @@ export function startCountdowns() {
 // 就算完全沒有即時資料源,光靠開賽時間也能知道「現在有哪幾場正在踢」。
 // 注意:這裡算的是「開賽後經過幾分鐘」(含中場休息),不是比賽時鐘的分鐘數,
 // 所以顯示時要講清楚,不能假裝知道現在是第幾分鐘。
-const MATCH_WINDOW_MIN = 115;   // 90 分鐘 + 中場 15 + 傷停,寬估
+export const MATCH_WINDOW_MIN = 115;   // 90 分鐘 + 中場 15 + 傷停,寬估
 
 export function scheduleState(fixture, now = Date.now()) {
   if (!fixture.kickoff) return { phase: fixture.played ? 'finished' : 'unknown' };

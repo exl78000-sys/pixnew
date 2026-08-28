@@ -1,5 +1,5 @@
-import * as C from './core.js?v=299f2511';
-import { mountSimTable } from './sim-table.js?v=e2400623';
+import * as C from './core.js?v=89098b75';
+import { mountSimTable } from './sim-table.js?v=45b654e1';
 
 const app = document.getElementById('app');
 
@@ -40,6 +40,43 @@ try {
     const finishedSchedule = fixtures.filter(f => f.played)
       .sort((a, b) => (a.kickoff < b.kickoff ? 1 : -1));
     const now = Date.now();
+
+    /* 剛結束的比賽留在上面三天。
+       原本一完賽就掉到頁尾的「已完賽」區,而那一區在「開賽倒數」下面 ——
+       週末剛踢完的那幾場反而變成最難找的。
+
+       窗口從**結束時間**起算(開球 + MATCH_WINDOW_MIN),不是從開球起算,
+       否則同一天的晚場會比早場少留兩個小時。MATCH_WINDOW_MIN 直接用
+       core 的那一個,不在這裡另寫一份 —— 兩份會各自漂移。 */
+    const RECENT_MS = 3 * 24 * 3600 * 1000;
+    const endedAt = fx => (fx.kickoff ? Date.parse(fx.kickoff) + C.MATCH_WINDOW_MIN * 60000 : NaN);
+    const recentFinished = fixtures.filter(fx => {
+      if (!fx.played) return false;
+      const e = endedAt(fx);
+      // e 比 now 大(資料源比賽程先給比分)也算剛結束 —— 那是「更新」,不是「還沒發生」
+      return Number.isFinite(e) && now - e < RECENT_MS;
+    }).sort((a, b) => (a.kickoff < b.kickoff ? 1 : -1));
+    const recentIds = new Set(recentFinished.map(fx => fx.id));
+    /* 重播模式的 done 是**別季**的比賽,配對鍵可能剛好撞上本季的某一場,
+       撞到就會讓那張重播卡片憑空消失。所以只有非重播模式才做排除。 */
+    const recentKeys = live.demo ? new Set() : new Set(recentFinished.map(fx => `${fx.home}|${fx.away}`));
+    const doneRest = done.filter(m => !recentKeys.has(`${m.home}|${m.away}`));
+    const finishedRest = finishedSchedule.filter(fx => !recentIds.has(fx.id));
+
+    // 從人的角度講「多久以前」。負值(資料源比賽程早)不講,免得出現「-1 小時前」
+    const agoText = ms => {
+      if (!Number.isFinite(ms) || ms < 0) return null;
+      const h = Math.floor(ms / 3600000);
+      if (h < 1) return '剛結束';
+      if (h < 24) return `${h} 小時前`;
+      return `${Math.floor(h / 24)} 天前`;
+    };
+    // 有真正即時資料的那幾場用完整的完場卡(陣型、xG、賽前機率),其餘用賽程卡
+    const recentCards = recentFinished.map(fx => {
+      const m = liveByKey.get(`${fx.home}|${fx.away}`);
+      const ago = agoText(now - endedAt(fx));
+      return m && m.finished ? finishedCard(m, ago) : finishedFixtureCard(fx, ago);
+    });
 
     // 就算沒有即時資料源,光靠賽程也知道現在有哪幾場正在踢 —— 這一段永遠可用
     const phased = fixtures.map(f => ({ f, s: C.scheduleState(f, now) }));
@@ -141,6 +178,11 @@ try {
           : '接上即時來源之後,這一頁會自動更新真實比分、場上陣容與即時勝率。'}</div>` : ''}
       <div class="grid g2">${liveCards.map(x => x.m ? liveCard(x.m) : schedCard(x)).join('')}</div>` : ''}
 
+    ${recentCards.length ? `
+      <div class="section"><h2>剛結束</h2>
+        <span class="hint">完賽 3 天內・共 ${recentCards.length} 場・新到舊・點任一場看完整賽後解讀</span></div>
+      <div class="grid g2">${recentCards.join('')}</div>` : ''}
+
     ${awaiting.length ? `
       <div class="section"><h2>等待賽果</h2><span class="hint">時間上早該結束,但資料源還沒更新比分</span></div>
       <div class="grid g3">${awaiting.map(({ f, s }) => `
@@ -156,10 +198,10 @@ try {
     <div class="grid g2">${upcoming.slice(0, 8).map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
     ${upcoming.length > 8 ? `<div style="margin-top:10px"><a href="${C.link('index')}">看完整賽程(還有 ${upcoming.length - 8} 場)→</a></div>` : ''}
 
-    ${(done.length || finishedSchedule.length) ? `
+    ${(doneRest.length || finishedRest.length) ? `
       <div class="section"><h2>已完賽${live.demo && liveRound ? `(重播 ${live.season} 第 ${liveRound} 輪)` : ''}</h2>
-        <span class="hint">${live.demo ? '真實比賽資料,非本季' : live.available && liveRound ? `${meta.currentSeason} 第 ${liveRound} 輪` : `${meta.currentSeason} 已取得 ${finishedSchedule.length} 場比分`}・點任一場看完整賽後解讀</span></div>
-      <div class="grid g2">${live.available && done.length ? done.map(finishedCard).join('') : finishedSchedule.slice(0, 12).map(finishedFixtureCard).join('')}</div>` : ''}
+        <span class="hint">${live.demo ? '真實比賽資料,非本季' : live.available && liveRound ? `${meta.currentSeason} 第 ${liveRound} 輪` : `${meta.currentSeason} 已取得 ${finishedRest.length} 場比分`}・點任一場看完整賽後解讀</span></div>
+      <div class="grid g2">${live.available && doneRest.length ? doneRest.map(m => finishedCard(m)).join('') : finishedRest.slice(0, 12).map(fx => finishedFixtureCard(fx)).join('')}</div>` : ''}
 
     ${curPlayed > 0 ? `
       <div class="section"><h2>本季即時積分榜</h2><span class="hint">${meta.currentSeason}・依目前已完賽場次計算</span></div>
@@ -263,13 +305,14 @@ try {
     </a>`;
   }
 
-  function finishedCard(m) {
+  function finishedCard(m, ago = null) {
     const H = m.sides[m.home], A = m.sides[m.away];
     const surprise = m.preMatch
       ? (m.hs > m.as ? m.preMatch.home : m.hs < m.as ? m.preMatch.away : m.preMatch.draw)
       : null;
     return `<a class="card matchcard" href="#" data-match="${m.key}">
-      <div class="spread"><span class="pill">完場</span>
+      <div class="spread"><span class="row" style="gap:6px"><span class="pill">完場</span>${
+          ago ? `<span class="pill accent tiny">${ago}</span>` : ''}</span>
         <span class="tiny dim">${C.kickoffLocal(m.kickoff)}・第 ${m.round} 輪</span></div>
       <div style="margin:12px 0">${scoreOf(m)}</div>
       <div class="tiny dim center">陣型 ${H.shape.label} vs ${A.shape.label}・xG ${H.xG} : ${A.xG}
@@ -278,9 +321,10 @@ try {
     </a>`;
   }
 
-  function finishedFixtureCard(f) {
+  function finishedFixtureCard(f, ago = null) {
     return `<a class="card matchcard" href="${C.link('analysis', { id: f.id })}">
-      <div class="spread"><span class="pill">完場</span>
+      <div class="spread"><span class="row" style="gap:6px"><span class="pill">完場</span>${
+          ago ? `<span class="pill accent tiny">${ago}</span>` : ''}</span>
         <span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span></div>
       <div style="margin:12px 0">${scoreLine(f.home, f.away, `${f.fh ?? '-'} : ${f.fa ?? '-'}`)}</div>
       <div class="tiny dim center">已取得正式比分・點擊查看賽前機率與可用賽後資料 →</div>
