@@ -1,0 +1,4051 @@
+{
+  "source": "FotMob",
+  "retrievedAt": "2026-08-28T04:17:01.012Z",
+  "competition": "UEFA Champions League",
+  "season": "2026-27",
+  "fotmobSeason": "2026/2027",
+  "leagueId": 42,
+  "notes": [
+    "matches 為 FotMob 聯賽端點回傳的完整賽程；status.finished=false 代表截至抓取時間尚未完賽。",
+    "teams 為賽程中的參賽隊伍；points 是依所有已完賽比分簡單計算，不等同 UEFA 聯賽階段排名。",
+    "players 為 FotMob 統計榜中出現的球員，合併本檔抓取的統計類別；不是全體報名名單。"
+  ],
+  "matches": [
+    {
+      "matchId": "6106401",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/aek-athens-vs-real-madrid/2g1c0n#6106401",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8563,
+        "name": "AEK Athens",
+        "shortName": "AEK Athens"
+      },
+      "away": {
+        "id": 8633,
+        "name": "Real Madrid",
+        "shortName": "Real Madrid"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106402",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/aek-athens-vs-roma/2gkwe7#6106402",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8563,
+        "name": "AEK Athens",
+        "shortName": "AEK Athens"
+      },
+      "away": {
+        "id": 8686,
+        "name": "Roma",
+        "shortName": "Roma"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106403",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/aek-athens-vs-galatasaray/2g2t3p#6106403",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8563,
+        "name": "AEK Athens",
+        "shortName": "AEK Athens"
+      },
+      "away": {
+        "id": 8637,
+        "name": "Galatasaray",
+        "shortName": "Galatasaray"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106404",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/aek-athens-vs-lask/2uc3cn#6106404",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8563,
+        "name": "AEK Athens",
+        "shortName": "AEK Athens"
+      },
+      "away": {
+        "id": 9977,
+        "name": "LASK",
+        "shortName": "LASK"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106258",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-madrid-vs-arsenal/2tfkqo#6106258",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9825,
+        "name": "Arsenal",
+        "shortName": "Arsenal"
+      },
+      "away": {
+        "id": 8633,
+        "name": "Real Madrid",
+        "shortName": "Real Madrid"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106259",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/borussia-dortmund-vs-arsenal/36j8tu#6106259",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9825,
+        "name": "Arsenal",
+        "shortName": "Arsenal"
+      },
+      "away": {
+        "id": 9789,
+        "name": "Borussia Dortmund",
+        "shortName": "Dortmund"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106260",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/lille-vs-arsenal/2thy7l#6106260",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9825,
+        "name": "Arsenal",
+        "shortName": "Arsenal"
+      },
+      "away": {
+        "id": 8639,
+        "name": "Lille",
+        "shortName": "Lille"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106261",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/arsenal-vs-sabah-fk/5wg3j5gu#6106261",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9825,
+        "name": "Arsenal",
+        "shortName": "Arsenal"
+      },
+      "away": {
+        "id": 951893,
+        "name": "Sabah FK",
+        "shortName": "Sabah FK"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106282",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/paris-saint-germain-vs-aston-villa/3c9nwd#6106282",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10252,
+        "name": "Aston Villa",
+        "shortName": "Aston Villa"
+      },
+      "away": {
+        "id": 9847,
+        "name": "Paris Saint-Germain",
+        "shortName": "PSG"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106283",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/borussia-dortmund-vs-aston-villa/3bkpmy#6106283",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10252,
+        "name": "Aston Villa",
+        "shortName": "Aston Villa"
+      },
+      "away": {
+        "id": 9789,
+        "name": "Borussia Dortmund",
+        "shortName": "Dortmund"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106284",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/fenerbahce-vs-aston-villa/2yvksd#6106284",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10252,
+        "name": "Aston Villa",
+        "shortName": "Aston Villa"
+      },
+      "away": {
+        "id": 8695,
+        "name": "Fenerbahçe",
+        "shortName": "Fenerbahçe"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106285",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/viking-vs-aston-villa/2wfy91#6106285",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10252,
+        "name": "Aston Villa",
+        "shortName": "Aston Villa"
+      },
+      "away": {
+        "id": 8478,
+        "name": "Viking",
+        "shortName": "Viking"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106266",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bayern-munchen-vs-atletico-madrid/37vqh7#6106266",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9906,
+        "name": "Atlético Madrid",
+        "shortName": "Atlético Madrid"
+      },
+      "away": {
+        "id": 9823,
+        "name": "Bayern München",
+        "shortName": "Bayern München"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106267",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/atletico-madrid-vs-manchester-united/3d2krr#6106267",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9906,
+        "name": "Atlético Madrid",
+        "shortName": "Atlético Madrid"
+      },
+      "away": {
+        "id": 10260,
+        "name": "Manchester United",
+        "shortName": "Man United"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106268",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/fenerbahce-vs-atletico-madrid/2v0de7#6106268",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9906,
+        "name": "Atlético Madrid",
+        "shortName": "Atlético Madrid"
+      },
+      "away": {
+        "id": 8695,
+        "name": "Fenerbahçe",
+        "shortName": "Fenerbahçe"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106269",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/viking-vs-atletico-madrid/2smcyi#6106269",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9906,
+        "name": "Atlético Madrid",
+        "shortName": "Atlético Madrid"
+      },
+      "away": {
+        "id": 8478,
+        "name": "Viking",
+        "shortName": "Viking"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106262",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-city-vs-barcelona/2eydul#6106262",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8634,
+        "name": "Barcelona",
+        "shortName": "Barcelona"
+      },
+      "away": {
+        "id": 8456,
+        "name": "Manchester City",
+        "shortName": "Man City"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106263",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/barcelona-vs-aston-villa/2y6ucv#6106263",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8634,
+        "name": "Barcelona",
+        "shortName": "Barcelona"
+      },
+      "away": {
+        "id": 10252,
+        "name": "Aston Villa",
+        "shortName": "Aston Villa"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106264",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/barcelona-vs-feyenoord/2xzyq9#6106264",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8634,
+        "name": "Barcelona",
+        "shortName": "Barcelona"
+      },
+      "away": {
+        "id": 10235,
+        "name": "Feyenoord",
+        "shortName": "Feyenoord"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106265",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/barcelona-vs-como/2xa4hd#6106265",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8634,
+        "name": "Barcelona",
+        "shortName": "Barcelona"
+      },
+      "away": {
+        "id": 10171,
+        "name": "Como",
+        "shortName": "Como"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106238",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bayern-munchen-vs-arsenal/36xjup#6106238",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9823,
+        "name": "Bayern München",
+        "shortName": "Bayern München"
+      },
+      "away": {
+        "id": 9825,
+        "name": "Arsenal",
+        "shortName": "Arsenal"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106239",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-betis-vs-bayern-munchen/2t2xda#6106239",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9823,
+        "name": "Bayern München",
+        "shortName": "Bayern München"
+      },
+      "away": {
+        "id": 8603,
+        "name": "Real Betis",
+        "shortName": "Real Betis"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106240",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bodoglimt-vs-bayern-munchen/2qvz54#6106240",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9823,
+        "name": "Bayern München",
+        "shortName": "Bayern München"
+      },
+      "away": {
+        "id": 8402,
+        "name": "Bodø/Glimt",
+        "shortName": "Bodø/Glimt"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106241",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slavia-prague-vs-bayern-munchen/2kbsdy#6106241",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9823,
+        "name": "Bayern München",
+        "shortName": "Bayern München"
+      },
+      "away": {
+        "id": 7787,
+        "name": "Slavia Prague",
+        "shortName": "Slavia Prague"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106314",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bodoglimt-vs-atletico-madrid/2rsh30#6106314",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8402,
+        "name": "Bodø/Glimt",
+        "shortName": "Bodø/Glimt"
+      },
+      "away": {
+        "id": 9906,
+        "name": "Atlético Madrid",
+        "shortName": "Atlético Madrid"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106315",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bodoglimt-vs-borussia-dortmund/2qipf9#6106315",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8402,
+        "name": "Bodø/Glimt",
+        "shortName": "Bodø/Glimt"
+      },
+      "away": {
+        "id": 9789,
+        "name": "Borussia Dortmund",
+        "shortName": "Dortmund"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106316",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bodoglimt-vs-lille/2eggm0#6106316",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8402,
+        "name": "Bodø/Glimt",
+        "shortName": "Bodø/Glimt"
+      },
+      "away": {
+        "id": 8639,
+        "name": "Lille",
+        "shortName": "Lille"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106317",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bodoglimt-vs-lask/2ske3f#6106317",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8402,
+        "name": "Bodø/Glimt",
+        "shortName": "Bodø/Glimt"
+      },
+      "away": {
+        "id": 9977,
+        "name": "LASK",
+        "shortName": "LASK"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106270",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/inter-vs-borussia-dortmund/2t2j4i#6106270",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9789,
+        "name": "Borussia Dortmund",
+        "shortName": "Dortmund"
+      },
+      "away": {
+        "id": 8636,
+        "name": "Inter",
+        "shortName": "Inter"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106271",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-betis-vs-borussia-dortmund/2spidl#6106271",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9789,
+        "name": "Borussia Dortmund",
+        "shortName": "Dortmund"
+      },
+      "away": {
+        "id": 8603,
+        "name": "Real Betis",
+        "shortName": "Real Betis"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106272",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/borussia-dortmund-vs-villarreal/3b0joc#6106272",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9789,
+        "name": "Borussia Dortmund",
+        "shortName": "Dortmund"
+      },
+      "away": {
+        "id": 10205,
+        "name": "Villarreal",
+        "shortName": "Villarreal"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106273",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/aek-athens-vs-borussia-dortmund/2s9rbp#6106273",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9789,
+        "name": "Borussia Dortmund",
+        "shortName": "Dortmund"
+      },
+      "away": {
+        "id": 8563,
+        "name": "AEK Athens",
+        "shortName": "AEK Athens"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106294",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/club-brugge-vs-liverpool/2dyl8a#6106294",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8342,
+        "name": "Club Brugge",
+        "shortName": "Club Brugge"
+      },
+      "away": {
+        "id": 8650,
+        "name": "Liverpool",
+        "shortName": "Liverpool"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106295",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/club-brugge-vs-aston-villa/2uxjqh#6106295",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8342,
+        "name": "Club Brugge",
+        "shortName": "Club Brugge"
+      },
+      "away": {
+        "id": 10252,
+        "name": "Aston Villa",
+        "shortName": "Aston Villa"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106296",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/club-brugge-vs-bodoglimt/2bgx46#6106296",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8342,
+        "name": "Club Brugge",
+        "shortName": "Club Brugge"
+      },
+      "away": {
+        "id": 8402,
+        "name": "Bodø/Glimt",
+        "shortName": "Bodø/Glimt"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106297",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/club-brugge-vs-lens/2dc1r3#6106297",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8342,
+        "name": "Club Brugge",
+        "shortName": "Club Brugge"
+      },
+      "away": {
+        "id": 8588,
+        "name": "Lens",
+        "shortName": "Lens"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106409",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/paris-saint-germain-vs-como/3bau7m#6106409",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10171,
+        "name": "Como",
+        "shortName": "Como"
+      },
+      "away": {
+        "id": 9847,
+        "name": "Paris Saint-Germain",
+        "shortName": "PSG"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106410",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/como-vs-manchester-united/3g9vos#6106410",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10171,
+        "name": "Como",
+        "shortName": "Como"
+      },
+      "away": {
+        "id": 10260,
+        "name": "Manchester United",
+        "shortName": "Man United"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106411",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/como-vs-rb-leipzig/86a1nu8#6106411",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10171,
+        "name": "Como",
+        "shortName": "Como"
+      },
+      "away": {
+        "id": 178475,
+        "name": "RB Leipzig",
+        "shortName": "RB Leipzig"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106412",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/aek-athens-vs-como/2whk4s#6106412",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10171,
+        "name": "Como",
+        "shortName": "Como"
+      },
+      "away": {
+        "id": 8563,
+        "name": "AEK Athens",
+        "shortName": "AEK Athens"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106286",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-city-vs-fc-porto/2qxjd0#6106286",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9773,
+        "name": "FC Porto",
+        "shortName": "FC Porto"
+      },
+      "away": {
+        "id": 8456,
+        "name": "Manchester City",
+        "shortName": "Man City"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106287",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/psv-eindhoven-vs-fc-porto/2sxsk8#6106287",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9773,
+        "name": "FC Porto",
+        "shortName": "FC Porto"
+      },
+      "away": {
+        "id": 8640,
+        "name": "PSV Eindhoven",
+        "shortName": "PSV Eindhoven"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106288",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/fc-porto-vs-napoli/36xjw3#6106288",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9773,
+        "name": "FC Porto",
+        "shortName": "FC Porto"
+      },
+      "away": {
+        "id": 9875,
+        "name": "Napoli",
+        "shortName": "Napoli"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106289",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slavia-prague-vs-fc-porto/2jsxw9#6106289",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9773,
+        "name": "FC Porto",
+        "shortName": "FC Porto"
+      },
+      "away": {
+        "id": 7787,
+        "name": "Slavia Prague",
+        "shortName": "Slavia Prague"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106330",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/liverpool-vs-fenerbahce/2hkhp4#6106330",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8695,
+        "name": "Fenerbahçe",
+        "shortName": "Fenerbahçe"
+      },
+      "away": {
+        "id": 8650,
+        "name": "Liverpool",
+        "shortName": "Liverpool"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106331",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/roma-vs-fenerbahce/2hxw0m#6106331",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8695,
+        "name": "Fenerbahçe",
+        "shortName": "Fenerbahçe"
+      },
+      "away": {
+        "id": 8686,
+        "name": "Roma",
+        "shortName": "Roma"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106332",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/fenerbahce-vs-villarreal/2ycii1#6106332",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8695,
+        "name": "Fenerbahçe",
+        "shortName": "Fenerbahçe"
+      },
+      "away": {
+        "id": 10205,
+        "name": "Villarreal",
+        "shortName": "Villarreal"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106333",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slavia-prague-vs-fenerbahce/28vmqy#6106333",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8695,
+        "name": "Fenerbahçe",
+        "shortName": "Fenerbahçe"
+      },
+      "away": {
+        "id": 7787,
+        "name": "Slavia Prague",
+        "shortName": "Slavia Prague"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106306",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/inter-vs-feyenoord/2y0ruo#6106306",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10235,
+        "name": "Feyenoord",
+        "shortName": "Feyenoord"
+      },
+      "away": {
+        "id": 8636,
+        "name": "Inter",
+        "shortName": "Inter"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106307",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/fc-porto-vs-feyenoord/3b6jq9#6106307",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10235,
+        "name": "Feyenoord",
+        "shortName": "Feyenoord"
+      },
+      "away": {
+        "id": 9773,
+        "name": "FC Porto",
+        "shortName": "FC Porto"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106308",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/feyenoord-vs-rb-leipzig/86h8hao#6106308",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10235,
+        "name": "Feyenoord",
+        "shortName": "Feyenoord"
+      },
+      "away": {
+        "id": 178475,
+        "name": "RB Leipzig",
+        "shortName": "RB Leipzig"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106309",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/como-vs-feyenoord/3fyxs8#6106309",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10235,
+        "name": "Feyenoord",
+        "shortName": "Feyenoord"
+      },
+      "away": {
+        "id": 10171,
+        "name": "Como",
+        "shortName": "Como"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106338",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/barcelona-vs-galatasaray/2gt1cx#6106338",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8637,
+        "name": "Galatasaray",
+        "shortName": "Galatasaray"
+      },
+      "away": {
+        "id": 8634,
+        "name": "Barcelona",
+        "shortName": "Barcelona"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106339",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/galatasaray-vs-aston-villa/2y822y#6106339",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8637,
+        "name": "Galatasaray",
+        "shortName": "Galatasaray"
+      },
+      "away": {
+        "id": 10252,
+        "name": "Aston Villa",
+        "shortName": "Aston Villa"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106340",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/galatasaray-vs-feyenoord/2y16ex#6106340",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8637,
+        "name": "Galatasaray",
+        "shortName": "Galatasaray"
+      },
+      "away": {
+        "id": 10235,
+        "name": "Feyenoord",
+        "shortName": "Feyenoord"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106341",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/galatasaray-vs-vfb-stuttgart/2yexz0#6106341",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8637,
+        "name": "Galatasaray",
+        "shortName": "Galatasaray"
+      },
+      "away": {
+        "id": 10269,
+        "name": "VfB Stuttgart",
+        "shortName": "VfB Stuttgart"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106250",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/inter-vs-liverpool/2gylcv#6106250",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8636,
+        "name": "Inter",
+        "shortName": "Inter"
+      },
+      "away": {
+        "id": 8650,
+        "name": "Liverpool",
+        "shortName": "Liverpool"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106251",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/club-brugge-vs-inter/2dthqf#6106251",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8636,
+        "name": "Inter",
+        "shortName": "Inter"
+      },
+      "away": {
+        "id": 8342,
+        "name": "Club Brugge",
+        "shortName": "Club Brugge"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106252",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/inter-vs-shakhtar-donetsk/2seh9i#6106252",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8636,
+        "name": "Inter",
+        "shortName": "Inter"
+      },
+      "away": {
+        "id": 9728,
+        "name": "Shakhtar Donetsk",
+        "shortName": "Shakhtar Donetsk"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106253",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/inter-vs-vfb-stuttgart/2yejdt#6106253",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8636,
+        "name": "Inter",
+        "shortName": "Inter"
+      },
+      "away": {
+        "id": 10269,
+        "name": "VfB Stuttgart",
+        "shortName": "VfB Stuttgart"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106405",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/liverpool-vs-lask/2vaqvz#6106405",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9977,
+        "name": "LASK",
+        "shortName": "LASK"
+      },
+      "away": {
+        "id": 8650,
+        "name": "Liverpool",
+        "shortName": "Liverpool"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106406",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/fc-porto-vs-lask/384me6#6106406",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9977,
+        "name": "LASK",
+        "shortName": "LASK"
+      },
+      "away": {
+        "id": 9773,
+        "name": "FC Porto",
+        "shortName": "FC Porto"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106407",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/fenerbahce-vs-lask/2vsqgh#6106407",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9977,
+        "name": "LASK",
+        "shortName": "LASK"
+      },
+      "away": {
+        "id": 8695,
+        "name": "Fenerbahçe",
+        "shortName": "Fenerbahçe"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106408",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slovan-bratislava-vs-lask/246hxb#6106408",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9977,
+        "name": "LASK",
+        "shortName": "LASK"
+      },
+      "away": {
+        "id": 6019,
+        "name": "Slovan Bratislava",
+        "shortName": "Slovan Bratislava"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106413",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-city-vs-lens/2ehk0u#6106413",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8588,
+        "name": "Lens",
+        "shortName": "Lens"
+      },
+      "away": {
+        "id": 8456,
+        "name": "Manchester City",
+        "shortName": "Man City"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106414",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/lens-vs-sporting-cp/2sbbyi#6106414",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8588,
+        "name": "Lens",
+        "shortName": "Lens"
+      },
+      "away": {
+        "id": 9768,
+        "name": "Sporting CP",
+        "shortName": "Sporting CP"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106415",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bodoglimt-vs-lens/2dxuyl#6106415",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8588,
+        "name": "Lens",
+        "shortName": "Lens"
+      },
+      "away": {
+        "id": 8402,
+        "name": "Bodø/Glimt",
+        "shortName": "Bodø/Glimt"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106416",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/lens-vs-como/2wrls8#6106416",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8588,
+        "name": "Lens",
+        "shortName": "Lens"
+      },
+      "away": {
+        "id": 10171,
+        "name": "Como",
+        "shortName": "Como"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106310",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/lille-vs-bayern-munchen/2th5ps#6106310",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8639,
+        "name": "Lille",
+        "shortName": "Lille"
+      },
+      "away": {
+        "id": 9823,
+        "name": "Bayern München",
+        "shortName": "Bayern München"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106311",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-betis-vs-lille/2gib7i#6106311",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8639,
+        "name": "Lille",
+        "shortName": "Lille"
+      },
+      "away": {
+        "id": 8603,
+        "name": "Real Betis",
+        "shortName": "Real Betis"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106312",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/galatasaray-vs-lille/2guw05#6106312",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8639,
+        "name": "Lille",
+        "shortName": "Lille"
+      },
+      "away": {
+        "id": 8637,
+        "name": "Galatasaray",
+        "shortName": "Galatasaray"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106313",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slovan-bratislava-vs-lille/1rywo2#6106313",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8639,
+        "name": "Lille",
+        "shortName": "Lille"
+      },
+      "away": {
+        "id": 6019,
+        "name": "Slovan Bratislava",
+        "shortName": "Slovan Bratislava"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106246",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/liverpool-vs-atletico-madrid/2uigag#6106246",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8650,
+        "name": "Liverpool",
+        "shortName": "Liverpool"
+      },
+      "away": {
+        "id": 9906,
+        "name": "Atlético Madrid",
+        "shortName": "Atlético Madrid"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106247",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/liverpool-vs-fc-porto/2t1qoh#6106247",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8650,
+        "name": "Liverpool",
+        "shortName": "Liverpool"
+      },
+      "away": {
+        "id": 9773,
+        "name": "FC Porto",
+        "shortName": "FC Porto"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106248",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/liverpool-vs-villarreal/2xuaza#6106248",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8650,
+        "name": "Liverpool",
+        "shortName": "Liverpool"
+      },
+      "away": {
+        "id": 10205,
+        "name": "Villarreal",
+        "shortName": "Villarreal"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106249",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/lens-vs-liverpool/2ggu07#6106249",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8650,
+        "name": "Liverpool",
+        "shortName": "Liverpool"
+      },
+      "away": {
+        "id": 8588,
+        "name": "Lens",
+        "shortName": "Lens"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106254",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-city-vs-paris-saint-germain/2rqiev#6106254",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8456,
+        "name": "Manchester City",
+        "shortName": "Man City"
+      },
+      "away": {
+        "id": 9847,
+        "name": "Paris Saint-Germain",
+        "shortName": "PSG"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106255",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-city-vs-sporting-cp/2qvl1c#6106255",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8456,
+        "name": "Manchester City",
+        "shortName": "Man City"
+      },
+      "away": {
+        "id": 9768,
+        "name": "Sporting CP",
+        "shortName": "Sporting CP"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106256",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-city-vs-napoli/2s1i6l#6106256",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8456,
+        "name": "Manchester City",
+        "shortName": "Man City"
+      },
+      "away": {
+        "id": 9875,
+        "name": "Napoli",
+        "shortName": "Napoli"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106257",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-city-vs-aek-athens/2e8fgd#6106257",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8456,
+        "name": "Manchester City",
+        "shortName": "Man City"
+      },
+      "away": {
+        "id": 8563,
+        "name": "AEK Athens",
+        "shortName": "AEK Athens"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106290",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bayern-munchen-vs-manchester-united/3c2ru5#6106290",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10260,
+        "name": "Manchester United",
+        "shortName": "Man United"
+      },
+      "away": {
+        "id": 9823,
+        "name": "Bayern München",
+        "shortName": "Bayern München"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106291",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/roma-vs-manchester-united/2yv65t#6106291",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10260,
+        "name": "Manchester United",
+        "shortName": "Man United"
+      },
+      "away": {
+        "id": 8686,
+        "name": "Roma",
+        "shortName": "Roma"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106292",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-united-vs-rb-leipzig/86k1lsb#6106292",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10260,
+        "name": "Manchester United",
+        "shortName": "Man United"
+      },
+      "away": {
+        "id": 178475,
+        "name": "RB Leipzig",
+        "shortName": "RB Leipzig"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106293",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-united-vs-sabah-fk/5wn180eq#6106293",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10260,
+        "name": "Manchester United",
+        "shortName": "Man United"
+      },
+      "away": {
+        "id": 951893,
+        "name": "Sabah FK",
+        "shortName": "Sabah FK"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106234",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/barcelona-vs-paris-saint-germain/2toojk#6106234",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9847,
+        "name": "Paris Saint-Germain",
+        "shortName": "PSG"
+      },
+      "away": {
+        "id": 8634,
+        "name": "Barcelona",
+        "shortName": "Barcelona"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106235",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/roma-vs-paris-saint-germain/2u9b4m#6106235",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9847,
+        "name": "Paris Saint-Germain",
+        "shortName": "PSG"
+      },
+      "away": {
+        "id": 8686,
+        "name": "Roma",
+        "shortName": "Roma"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106236",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/galatasaray-vs-paris-saint-germain/2tpvbt#6106236",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9847,
+        "name": "Paris Saint-Germain",
+        "shortName": "PSG"
+      },
+      "away": {
+        "id": 8637,
+        "name": "Galatasaray",
+        "shortName": "Galatasaray"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106237",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slovan-bratislava-vs-paris-saint-germain/22y3ra#6106237",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9847,
+        "name": "Paris Saint-Germain",
+        "shortName": "PSG"
+      },
+      "away": {
+        "id": 6019,
+        "name": "Slovan Bratislava",
+        "shortName": "Slovan Bratislava"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106302",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/psv-eindhoven-vs-atletico-madrid/2ueh59#6106302",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8640,
+        "name": "PSV Eindhoven",
+        "shortName": "PSV Eindhoven"
+      },
+      "away": {
+        "id": 9906,
+        "name": "Atlético Madrid",
+        "shortName": "Atlético Madrid"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106303",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/club-brugge-vs-psv-eindhoven/2duy59#6106303",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8640,
+        "name": "PSV Eindhoven",
+        "shortName": "PSV Eindhoven"
+      },
+      "away": {
+        "id": 8342,
+        "name": "Club Brugge",
+        "shortName": "Club Brugge"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106304",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/psv-eindhoven-vs-shakhtar-donetsk/2sg1y8#6106304",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8640,
+        "name": "PSV Eindhoven",
+        "shortName": "PSV Eindhoven"
+      },
+      "away": {
+        "id": 9728,
+        "name": "Shakhtar Donetsk",
+        "shortName": "Shakhtar Donetsk"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106305",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/psv-eindhoven-vs-vfb-stuttgart/2yg5qr#6106305",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8640,
+        "name": "PSV Eindhoven",
+        "shortName": "PSV Eindhoven"
+      },
+      "away": {
+        "id": 10269,
+        "name": "VfB Stuttgart",
+        "shortName": "VfB Stuttgart"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106322",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/manchester-city-vs-rb-leipzig/80y7706#6106322",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 178475,
+        "name": "RB Leipzig",
+        "shortName": "RB Leipzig"
+      },
+      "away": {
+        "id": 8456,
+        "name": "Manchester City",
+        "shortName": "Man City"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106323",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/psv-eindhoven-vs-rb-leipzig/81iorv6#6106323",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 178475,
+        "name": "RB Leipzig",
+        "shortName": "RB Leipzig"
+      },
+      "away": {
+        "id": 8640,
+        "name": "PSV Eindhoven",
+        "shortName": "PSV Eindhoven"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106324",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/shakhtar-donetsk-vs-rb-leipzig/84w8y0i#6106324",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 178475,
+        "name": "RB Leipzig",
+        "shortName": "RB Leipzig"
+      },
+      "away": {
+        "id": 9728,
+        "name": "Shakhtar Donetsk",
+        "shortName": "Shakhtar Donetsk"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106325",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/lens-vs-rb-leipzig/81cw95c#6106325",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 178475,
+        "name": "RB Leipzig",
+        "shortName": "RB Leipzig"
+      },
+      "away": {
+        "id": 8588,
+        "name": "Lens",
+        "shortName": "Lens"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106298",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-betis-vs-arsenal/2t3pt3#6106298",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8603,
+        "name": "Real Betis",
+        "shortName": "Real Betis"
+      },
+      "away": {
+        "id": 9825,
+        "name": "Arsenal",
+        "shortName": "Arsenal"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106299",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-betis-vs-fc-porto/2sj7e9#6106299",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8603,
+        "name": "Real Betis",
+        "shortName": "Real Betis"
+      },
+      "away": {
+        "id": 9773,
+        "name": "FC Porto",
+        "shortName": "FC Porto"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106300",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-betis-vs-feyenoord/2xnfq0#6106300",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8603,
+        "name": "Real Betis",
+        "shortName": "Real Betis"
+      },
+      "away": {
+        "id": 10235,
+        "name": "Feyenoord",
+        "shortName": "Feyenoord"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106301",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-betis-vs-como/2wxn08#6106301",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8603,
+        "name": "Real Betis",
+        "shortName": "Real Betis"
+      },
+      "away": {
+        "id": 10171,
+        "name": "Como",
+        "shortName": "Como"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106242",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-madrid-vs-inter/2gsapf#6106242",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8633,
+        "name": "Real Madrid",
+        "shortName": "Real Madrid"
+      },
+      "away": {
+        "id": 8636,
+        "name": "Inter",
+        "shortName": "Inter"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106243",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-madrid-vs-psv-eindhoven/2gts0l#6106243",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8633,
+        "name": "Real Madrid",
+        "shortName": "Real Madrid"
+      },
+      "away": {
+        "id": 8640,
+        "name": "PSV Eindhoven",
+        "shortName": "PSV Eindhoven"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106244",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-madrid-vs-rb-leipzig/81hwp83#6106244",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8633,
+        "name": "Real Madrid",
+        "shortName": "Real Madrid"
+      },
+      "away": {
+        "id": 178475,
+        "name": "RB Leipzig",
+        "shortName": "RB Leipzig"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106245",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-madrid-vs-lask/2v3yno#6106245",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8633,
+        "name": "Real Madrid",
+        "shortName": "Real Madrid"
+      },
+      "away": {
+        "id": 9977,
+        "name": "LASK",
+        "shortName": "LASK"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106274",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-madrid-vs-roma/2hatyy#6106274",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8686,
+        "name": "Roma",
+        "shortName": "Roma"
+      },
+      "away": {
+        "id": 8633,
+        "name": "Real Madrid",
+        "shortName": "Real Madrid"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106275",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/roma-vs-sporting-cp/2tdzqd#6106275",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8686,
+        "name": "Roma",
+        "shortName": "Roma"
+      },
+      "away": {
+        "id": 9768,
+        "name": "Sporting CP",
+        "shortName": "Sporting CP"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106276",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/lille-vs-roma/2hd261#6106276",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8686,
+        "name": "Roma",
+        "shortName": "Roma"
+      },
+      "away": {
+        "id": 8639,
+        "name": "Lille",
+        "shortName": "Lille"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106277",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slovan-bratislava-vs-roma/1sdp5j#6106277",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8686,
+        "name": "Roma",
+        "shortName": "Roma"
+      },
+      "away": {
+        "id": 6019,
+        "name": "Slovan Bratislava",
+        "shortName": "Slovan Bratislava"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106421",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/barcelona-vs-sabah-fk/5vx6ki4t#6106421",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 951893,
+        "name": "Sabah FK",
+        "shortName": "Sabah FK"
+      },
+      "away": {
+        "id": 8634,
+        "name": "Barcelona",
+        "shortName": "Barcelona"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106422",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/borussia-dortmund-vs-sabah-fk/5wfix3jc#6106422",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 951893,
+        "name": "Sabah FK",
+        "shortName": "Sabah FK"
+      },
+      "away": {
+        "id": 9789,
+        "name": "Borussia Dortmund",
+        "shortName": "Dortmund"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106423",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/napoli-vs-sabah-fk/5wgw5tt3#6106423",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 951893,
+        "name": "Sabah FK",
+        "shortName": "Sabah FK"
+      },
+      "away": {
+        "id": 9875,
+        "name": "Napoli",
+        "shortName": "Napoli"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106424",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slavia-prague-vs-sabah-fk/5vjqemr9#6106424",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 951893,
+        "name": "Sabah FK",
+        "shortName": "Sabah FK"
+      },
+      "away": {
+        "id": 7787,
+        "name": "Slavia Prague",
+        "shortName": "Slavia Prague"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106334",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/real-madrid-vs-shakhtar-donetsk/2sdar9#6106334",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9728,
+        "name": "Shakhtar Donetsk",
+        "shortName": "Shakhtar Donetsk"
+      },
+      "away": {
+        "id": 8633,
+        "name": "Real Madrid",
+        "shortName": "Real Madrid"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106335",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/shakhtar-donetsk-vs-sporting-cp/355s9o#6106335",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9728,
+        "name": "Shakhtar Donetsk",
+        "shortName": "Shakhtar Donetsk"
+      },
+      "away": {
+        "id": 9768,
+        "name": "Sporting CP",
+        "shortName": "Sporting CP"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106336",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/fenerbahce-vs-shakhtar-donetsk/2t1qn8#6106336",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9728,
+        "name": "Shakhtar Donetsk",
+        "shortName": "Shakhtar Donetsk"
+      },
+      "away": {
+        "id": 8695,
+        "name": "Fenerbahçe",
+        "shortName": "Fenerbahçe"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106337",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/aek-athens-vs-shakhtar-donetsk/2rlswe#6106337",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9728,
+        "name": "Shakhtar Donetsk",
+        "shortName": "Shakhtar Donetsk"
+      },
+      "away": {
+        "id": 8563,
+        "name": "AEK Athens",
+        "shortName": "AEK Athens"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106389",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slavia-prague-vs-arsenal/2kcjkf#6106389",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 7787,
+        "name": "Slavia Prague",
+        "shortName": "Slavia Prague"
+      },
+      "away": {
+        "id": 9825,
+        "name": "Arsenal",
+        "shortName": "Arsenal"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106390",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slavia-prague-vs-aston-villa/2ovn7z#6106390",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 7787,
+        "name": "Slavia Prague",
+        "shortName": "Slavia Prague"
+      },
+      "away": {
+        "id": 10252,
+        "name": "Aston Villa",
+        "shortName": "Aston Villa"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106391",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slavia-prague-vs-villarreal/2odhv3#6106391",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 7787,
+        "name": "Slavia Prague",
+        "shortName": "Slavia Prague"
+      },
+      "away": {
+        "id": 10205,
+        "name": "Villarreal",
+        "shortName": "Villarreal"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106392",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slavia-prague-vs-lens/27ty9c#6106392",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 7787,
+        "name": "Slavia Prague",
+        "shortName": "Slavia Prague"
+      },
+      "away": {
+        "id": 8588,
+        "name": "Lens",
+        "shortName": "Lens"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106393",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slovan-bratislava-vs-inter/1rxyqk#6106393",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 6019,
+        "name": "Slovan Bratislava",
+        "shortName": "Slovan Bratislava"
+      },
+      "away": {
+        "id": 8636,
+        "name": "Inter",
+        "shortName": "Inter"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106394",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slovan-bratislava-vs-real-betis/1rnlyk#6106394",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 6019,
+        "name": "Slovan Bratislava",
+        "shortName": "Slovan Bratislava"
+      },
+      "away": {
+        "id": 8603,
+        "name": "Real Betis",
+        "shortName": "Real Betis"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106395",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slovan-bratislava-vs-shakhtar-donetsk/21ts92#6106395",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 6019,
+        "name": "Slovan Bratislava",
+        "shortName": "Slovan Bratislava"
+      },
+      "away": {
+        "id": 9728,
+        "name": "Shakhtar Donetsk",
+        "shortName": "Shakhtar Donetsk"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106396",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/slovan-bratislava-vs-vfb-stuttgart/26zfwz#6106396",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 6019,
+        "name": "Slovan Bratislava",
+        "shortName": "Slovan Bratislava"
+      },
+      "away": {
+        "id": 10269,
+        "name": "VfB Stuttgart",
+        "shortName": "VfB Stuttgart"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106278",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/barcelona-vs-sporting-cp/2stgbf#6106278",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9768,
+        "name": "Sporting CP",
+        "shortName": "Sporting CP"
+      },
+      "away": {
+        "id": 8634,
+        "name": "Barcelona",
+        "shortName": "Barcelona"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106279",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/sporting-cp-vs-manchester-united/3bf4ni#6106279",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9768,
+        "name": "Sporting CP",
+        "shortName": "Sporting CP"
+      },
+      "away": {
+        "id": 10260,
+        "name": "Manchester United",
+        "shortName": "Man United"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106280",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/galatasaray-vs-sporting-cp/2sumx3#6106280",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9768,
+        "name": "Sporting CP",
+        "shortName": "Sporting CP"
+      },
+      "away": {
+        "id": 8637,
+        "name": "Galatasaray",
+        "shortName": "Galatasaray"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106281",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/sporting-cp-vs-lask/382i7e#6106281",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9768,
+        "name": "Sporting CP",
+        "shortName": "Sporting CP"
+      },
+      "away": {
+        "id": 9977,
+        "name": "LASK",
+        "shortName": "LASK"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106318",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/arsenal-vs-napoli/37jhat#6106318",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9875,
+        "name": "Napoli",
+        "shortName": "Napoli"
+      },
+      "away": {
+        "id": 9825,
+        "name": "Arsenal",
+        "shortName": "Arsenal"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106319",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/club-brugge-vs-napoli/2qsupc#6106319",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9875,
+        "name": "Napoli",
+        "shortName": "Napoli"
+      },
+      "away": {
+        "id": 8342,
+        "name": "Club Brugge",
+        "shortName": "Club Brugge"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106320",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/bodoglimt-vs-napoli/2rgbhu#6106320",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9875,
+        "name": "Napoli",
+        "shortName": "Napoli"
+      },
+      "away": {
+        "id": 8402,
+        "name": "Bodø/Glimt",
+        "shortName": "Bodø/Glimt"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106321",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/viking-vs-napoli/2sa5jw#6106321",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 9875,
+        "name": "Napoli",
+        "shortName": "Napoli"
+      },
+      "away": {
+        "id": 8478,
+        "name": "Viking",
+        "shortName": "Viking"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106397",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/atletico-madrid-vs-vfb-stuttgart/3d6gui#6106397",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10269,
+        "name": "VfB Stuttgart",
+        "shortName": "VfB Stuttgart"
+      },
+      "away": {
+        "id": 9906,
+        "name": "Atlético Madrid",
+        "shortName": "Atlético Madrid"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106398",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/club-brugge-vs-vfb-stuttgart/2v4br8#6106398",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10269,
+        "name": "VfB Stuttgart",
+        "shortName": "VfB Stuttgart"
+      },
+      "away": {
+        "id": 8342,
+        "name": "Club Brugge",
+        "shortName": "Club Brugge"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106399",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/lille-vs-vfb-stuttgart/2yfr5h#6106399",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10269,
+        "name": "VfB Stuttgart",
+        "shortName": "VfB Stuttgart"
+      },
+      "away": {
+        "id": 8639,
+        "name": "Lille",
+        "shortName": "Lille"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106400",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/viking-vs-vfb-stuttgart/2wms20#6106400",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10269,
+        "name": "VfB Stuttgart",
+        "shortName": "VfB Stuttgart"
+      },
+      "away": {
+        "id": 8478,
+        "name": "Viking",
+        "shortName": "Viking"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106417",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/viking-vs-bayern-munchen/2rpq5e#6106417",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8478,
+        "name": "Viking",
+        "shortName": "Viking"
+      },
+      "away": {
+        "id": 9823,
+        "name": "Bayern München",
+        "shortName": "Bayern München"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106418",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/viking-vs-psv-eindhoven/2f8ne9#6106418",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8478,
+        "name": "Viking",
+        "shortName": "Viking"
+      },
+      "away": {
+        "id": 8640,
+        "name": "PSV Eindhoven",
+        "shortName": "PSV Eindhoven"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106419",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/viking-vs-feyenoord/2w94o3#6106419",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8478,
+        "name": "Viking",
+        "shortName": "Viking"
+      },
+      "away": {
+        "id": 10235,
+        "name": "Feyenoord",
+        "shortName": "Feyenoord"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106420",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/viking-vs-sabah-fk/5vupd4gz#6106420",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 8478,
+        "name": "Viking",
+        "shortName": "Viking"
+      },
+      "away": {
+        "id": 951893,
+        "name": "Sabah FK",
+        "shortName": "Sabah FK"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106326",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/paris-saint-germain-vs-villarreal/3bpfu1#6106326",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10205,
+        "name": "Villarreal",
+        "shortName": "Villarreal"
+      },
+      "away": {
+        "id": 9847,
+        "name": "Paris Saint-Germain",
+        "shortName": "PSG"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106327",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/villarreal-vs-manchester-united/3gos59#6106327",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10205,
+        "name": "Villarreal",
+        "shortName": "Villarreal"
+      },
+      "away": {
+        "id": 10260,
+        "name": "Manchester United",
+        "shortName": "Man United"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106328",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/napoli-vs-villarreal/3c1he3#6106328",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10205,
+        "name": "Villarreal",
+        "shortName": "Villarreal"
+      },
+      "away": {
+        "id": 9875,
+        "name": "Napoli",
+        "shortName": "Napoli"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    },
+    {
+      "matchId": "6106329",
+      "round": null,
+      "roundName": null,
+      "pageUrl": "https://www.fotmob.com/matches/villarreal-vs-sabah-fk/5wm5ptg0#6106329",
+      "date": "2026-09-08",
+      "kickoffUtc": "2026-09-08T19:00:00Z",
+      "home": {
+        "id": 10205,
+        "name": "Villarreal",
+        "shortName": "Villarreal"
+      },
+      "away": {
+        "id": 951893,
+        "name": "Sabah FK",
+        "shortName": "Sabah FK"
+      },
+      "status": {
+        "finished": false,
+        "started": false,
+        "cancelled": false,
+        "scoreStr": null,
+        "score": null
+      }
+    }
+  ],
+  "teams": [
+    {
+      "teamId": 8563,
+      "name": "AEK Athens",
+      "shortName": "AEK Athens",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9825,
+      "name": "Arsenal",
+      "shortName": "Arsenal",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 10252,
+      "name": "Aston Villa",
+      "shortName": "Aston Villa",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9906,
+      "name": "Atlético Madrid",
+      "shortName": "Atlético Madrid",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8634,
+      "name": "Barcelona",
+      "shortName": "Barcelona",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9823,
+      "name": "Bayern München",
+      "shortName": "Bayern München",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8402,
+      "name": "Bodø/Glimt",
+      "shortName": "Bodø/Glimt",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9789,
+      "name": "Borussia Dortmund",
+      "shortName": "Dortmund",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8342,
+      "name": "Club Brugge",
+      "shortName": "Club Brugge",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 10171,
+      "name": "Como",
+      "shortName": "Como",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9773,
+      "name": "FC Porto",
+      "shortName": "FC Porto",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8695,
+      "name": "Fenerbahçe",
+      "shortName": "Fenerbahçe",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 10235,
+      "name": "Feyenoord",
+      "shortName": "Feyenoord",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8637,
+      "name": "Galatasaray",
+      "shortName": "Galatasaray",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8636,
+      "name": "Inter",
+      "shortName": "Inter",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9977,
+      "name": "LASK",
+      "shortName": "LASK",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8588,
+      "name": "Lens",
+      "shortName": "Lens",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8639,
+      "name": "Lille",
+      "shortName": "Lille",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8650,
+      "name": "Liverpool",
+      "shortName": "Liverpool",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8456,
+      "name": "Manchester City",
+      "shortName": "Man City",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 10260,
+      "name": "Manchester United",
+      "shortName": "Man United",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9875,
+      "name": "Napoli",
+      "shortName": "Napoli",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9847,
+      "name": "Paris Saint-Germain",
+      "shortName": "PSG",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8640,
+      "name": "PSV Eindhoven",
+      "shortName": "PSV Eindhoven",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 178475,
+      "name": "RB Leipzig",
+      "shortName": "RB Leipzig",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8603,
+      "name": "Real Betis",
+      "shortName": "Real Betis",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8633,
+      "name": "Real Madrid",
+      "shortName": "Real Madrid",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8686,
+      "name": "Roma",
+      "shortName": "Roma",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 951893,
+      "name": "Sabah FK",
+      "shortName": "Sabah FK",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9728,
+      "name": "Shakhtar Donetsk",
+      "shortName": "Shakhtar Donetsk",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 7787,
+      "name": "Slavia Prague",
+      "shortName": "Slavia Prague",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 6019,
+      "name": "Slovan Bratislava",
+      "shortName": "Slovan Bratislava",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 9768,
+      "name": "Sporting CP",
+      "shortName": "Sporting CP",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 10269,
+      "name": "VfB Stuttgart",
+      "shortName": "VfB Stuttgart",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 8478,
+      "name": "Viking",
+      "shortName": "Viking",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    },
+    {
+      "teamId": 10205,
+      "name": "Villarreal",
+      "shortName": "Villarreal",
+      "matches": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 0,
+      "goalsAgainst": 0,
+      "points": 0
+    }
+  ],
+  "players": [],
+  "playerStatCategories": []
+}

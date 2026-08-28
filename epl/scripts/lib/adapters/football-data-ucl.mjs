@@ -58,9 +58,15 @@ const add = (a, b) => (a && b ? [a[0] + b[0], a[1] + b[1]] : (a ?? b ?? null));
    Club Atlético de Madrid → ATM 這種靠的就是它)。
    但**多對一要擋下來**:兩支不同的歐冠球隊對到同一個隊碼,一定有一個是錯的,
    寧可兩個都不對應也不要對錯一個(盃賽的 AFC Liverpool 就是這樣差點上線)。 */
+/* 兩種來源的欄位名不一樣:football-data 是 homeTeam / awayTeam,
+   FotMob 是 home / away。**只認其中一種的話,另一種會安靜地得到「0 隊」** ——
+   實際踩到:2026-27 的抽籤表 36 隊全部沒有隊碼,畫面上一個隊徽都沒有、
+   本站球隊也沒有排到前面,而沒有任何地方報錯。兩種都收。 */
 export function buildUclTeamIndex(matches, sources) {
   const teams = new Map();
-  for (const m of matches) for (const t of [m.homeTeam, m.awayTeam]) if (t?.id) teams.set(t.id, t);
+  for (const m of matches) for (const t of [m.homeTeam ?? m.home, m.awayTeam ?? m.away]) {
+    if (t?.id) teams.set(t.id, t);
+  }
   const byId = new Map();
   const claimed = new Map();     // 隊碼 → [球隊 id](多對一代表對錯了,要整組退掉)
   for (const t of teams.values()) {

@@ -154,9 +154,79 @@ function runsTable(runs) {
   ], { sortKey: 'best', desc: true, onRow: r => C.go('teams', { code: r.code, league: r.league ?? undefined }) });
 }
 
+/* 只有抽籤、還沒開賽的那一季。
+   **只畫「誰對誰、誰主誰客」** —— 上游那 144 場的開球時間全部是同一個佔位值、
+   輪次全是 null,所以日期與輪次我們沒有。沒有的東西不顯示,也不猜(鐵則一)。
+   而且這一季只有一個來源,沒得交叉核對,這件事要寫在最前面(鐵則四)。 */
+function drawView(season) {
+  const d = season.draw;
+  /* 本站也有的球隊要看得出來。第一版只掛了一個 data-strong 屬性、沒有樣式,
+     而提示文字卻寫著「加粗的是本站也有的球隊」—— 說了沒做到,
+     那跟寫錯一樣糟。改成直接套字重與顏色。 */
+  const oppList = list => list.map(o => `<span class="pill tiny" style="margin:2px 3px 0 0${
+    o.code ? ';font-weight:700;color:var(--accent)' : ''}">${C.esc(o.name)}</span>`).join('');
+  const rows = d.rows.map(t => `
+    <div class="card" style="margin-top:8px;padding:12px 14px">
+      <div class="row" style="gap:8px;align-items:center">
+        ${t.code && registered(t.code) ? C.badge(t.code) : ''}
+        <b>${C.esc(t.code && registered(t.code) ? C.name(t.code) : t.name)}</b>
+        ${t.code ? `<a class="tiny" href="${C.link('teams', { code: t.code, league: t.league ?? undefined })}"
+          style="text-decoration:none">本站球隊頁 →</a>` : ''}
+      </div>
+      <div class="small" style="margin-top:8px;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:start">
+        <span class="muted tiny" style="padding-top:3px">主場</span><span>${oppList(t.home)}</span>
+        <span class="muted tiny" style="padding-top:3px">客場</span><span>${oppList(t.away)}</span>
+      </div>
+    </div>`).join('');
+  return `
+    <div class="note" style="margin-top:12px">
+      <b>${season.label} 已經抽籤,但還沒開賽。</b>
+      下面是聯賽階段的 ${d.matches.length} 組對戰(36 隊 × 8 場,各 4 主 4 客)——
+      <b>這是抽籤結果,不是賽程</b>:上游目前<b>沒有開球時間、也沒有輪次</b>
+      (144 場的時間全部是同一個佔位值),所以這一頁不顯示日期與第幾輪。有了才會補上。
+      <div class="tiny dim" style="margin-top:6px">
+        ⚠ <b>這一季只有一個資料來源</b>(${C.esc(season.source ?? 'FotMob')}),沒有第二份可以逐場核對 ——
+        另外兩季是兩個獨立來源對過的。能做的是結構檢查:
+        ${d.check.matches} 場、${d.check.teams} 隊、每隊 ${d.check.homePerTeam.join('/')} 主
+        ${d.check.awayPerTeam.join('/')} 客、${d.check.distinctOpponents.join('/')} 個不重複對手、
+        重複對戰 ${d.check.repeatedPairs} 組 —— 瑞士制的硬性條件,這幾條都過了。
+      </div>
+    </div>
+    <div class="section"><h2>聯賽階段對戰表</h2>
+      <span class="hint">本站認得的球隊排在前面・對手名稱加粗的是本站也有的球隊</span></div>
+    ${rows}`;
+}
+
+/* 球員榜。FotMob 給的是**統計榜的母體**,不是全體報名名單(檔案自己這樣寫),
+   所以每一榜都標母體人數,不要讓讀者以為是完整名單。 */
+function leaderBoards(season) {
+  if (!season.leaders?.length) return '';
+  const fmt = (v, dp) => (dp ? Number(v).toFixed(dp) : v);
+  return `
+    <div class="section"><h2>球員榜</h2>
+      <span class="hint">來源 FotMob・${season.leaderPool} 人母體・已與另一來源逐場核對比分後才採用</span></div>
+    <div class="grid g3">
+      ${season.leaders.map(b => `<div class="card">
+        <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3>
+          <span class="dim tiny">母體 ${b.pool} 人</span></div>
+        <div style="display:grid;gap:2px;margin-top:8px">
+          ${b.rows.map((r, i) => `<div class="stat-line" style="gap:8px;align-items:center">
+            <span class="tiny dim mono" style="min-width:18px">${i + 1}</span>
+            <span class="small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.name)}</span>
+            <span class="tiny dim" style="max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.team)}</span>
+            <b class="mono small">${fmt(r.value, b.dp)}${C.esc(b.unit)}</b>
+          </div>`).join('')}
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+
 // 拿不到的賽季照樣列出來,而且要分得出是哪一種 —— 「還沒建立」與「方案不給」是兩句話
 function unavailableNote(season) {
   const why = {
+    'draw-unsound': `<b>${season.label} 的抽籤資料沒有通過結構檢查。</b>
+      瑞士制聯賽階段要求每隊 4 主 4 客、8 個不重複對手 —— 這份對不上,
+      所以<b>整份不顯示</b>。顯示一份可能錯的對戰表比不顯示更糟。`,
     'not-published': `<b>${season.label} 的賽程資料源還沒建立。</b>
       歐冠聯賽階段九月中才開打,資料源目前回報的本季仍是上一季 ——
       這是<b>還沒有</b>,不是拿不到。開打後這一頁會自動出現這一季。`,
@@ -184,15 +254,18 @@ try {
     app.innerHTML = `
     <div class="page-head">
       <h1>歐冠</h1>
-      <p>歐洲冠軍聯賽的聯賽階段積分榜與淘汰賽結果。跟聯賽不一樣的地方這一頁都照實顯示:
-        <b>兩回合的總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及本站兩個聯賽的球隊各自走到了哪一輪。</p>
+      <p>歐洲冠軍聯賽的聯賽階段積分榜、淘汰賽結果與球員榜。跟聯賽不一樣的地方這一頁都照實顯示:
+        <b>兩回合的總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及本站兩個聯賽的球隊各自走到了哪一輪。
+        已完賽的兩季是<b>兩個獨立來源逐場核對過</b>的;還沒開賽的那一季只呈現<b>抽籤結果</b>,
+        因為上游還沒有開球時間與輪次。</p>
       ${C.stampRow([
-        C.stamp('歐冠賽果', { iso: ucl.retrievedAt, kind: 'daily', note: 'football-data.org' }),
+        C.stamp('歐冠賽果', { iso: ucl.retrievedAt, kind: 'daily',
+          note: 'football-data.org(賽果與官方積分榜)+ FotMob(球員榜與 2026-27 抽籤)' }),
       ])}
     </div>
     <div class="filters" style="align-items:end">
       ${seasons.map(s => `<button class="btn${s.label === label ? ' on' : ''}" data-season="${s.label}"
-        >${s.label}${s.availability !== 'available' ? '(尚無資料)' : ''}</button>`).join('')}
+        >${s.label}${{ available: '', 'draw-only': '(已抽籤)' }[s.availability] ?? '(尚無資料)'}</button>`).join('')}
       <span class="dim small" id="count"></span>
     </div>
     <div id="body"></div>
@@ -212,6 +285,13 @@ try {
       const count = document.getElementById('count');
       const cov = document.getElementById('coverage');
 
+      if (s.availability === 'draw-only') {
+        body.innerHTML = drawView(s);
+        count.textContent = `${s.total} 組對戰・${s.teams} 隊・尚未開賽`;
+        cov.innerHTML = `<b>球隊涵蓋率:${s.teamsKnown} / ${s.teamsTotal} 支有本站資料。</b>
+          其餘只有名字,沒有隊徽也點不進去 —— 不替它們編一個身分。`;
+        return;
+      }
       if (s.availability !== 'available') {
         body.innerHTML = unavailableNote(s);
         count.textContent = '';
@@ -242,6 +322,7 @@ try {
           推出來之後名次剛好連續,兩季都是。</div>`}
         <div class="section"><h2>淘汰賽</h2>
           <span class="hint">兩回合制・顯示總比分與各回合比分・決賽為單場</span></div>
+        ${leaderBoards(s)}
         ${s.rounds.map(r => `<div style="margin-top:14px">
           <div class="spread"><h3 style="margin:0">${C.esc(r.zh)}</h3>
             <span class="dim tiny">${r.ties.length} 組・${r.played}/${r.total} 場</span></div>
@@ -261,6 +342,17 @@ try {
           另一個聯賽的球隊(例如在英超頁看到的皇馬)有連結、但沒有隊徽 ——
           隊徽是按聯賽打包的,這一頁只端得出目前這個聯賽那一份。點進去會切到對的聯賽。
         </div>
+        ${s.crossCheck ? `<div style="margin-top:6px">
+          ${s.crossCheck.passed
+            ? `<b style="color:var(--win)">✔ 兩個獨立來源逐場核對通過。</b>
+               ${C.esc(s.crossCheck.source)} 的同一季資料與本站主來源比對:
+               隊名 ${s.crossCheck.teamsMatched}/${s.crossCheck.teamsTotal} 對上、
+               <b>${s.crossCheck.aligned}/${s.crossCheck.total} 場的日期與主客完全一致、比分 0 場不符</b>。
+               協作方自己回報「檢查全過」不算數,這是拿另一個供應商實際比出來的。`
+            : `<b style="color:var(--loss)">⚠ 第二來源核對沒過(${s.crossCheck.problemCount} 處)。</b>
+               ${s.crossCheck.problems.slice(0, 3).map(p => C.esc(p.text)).join('、')}
+               —— 畫面顯示的是主來源,第二來源的球員榜<b>整份不採用</b>。`}
+        </div>` : ''}
         ${s.table.mismatches.length ? `<div style="margin-top:6px;color:var(--loss)">
           ⚠ 本站依賽果算出的積分榜與資料源官方那份對不上:
           ${s.table.mismatches.map(x => C.esc(`${x.team} 的${x.field}(我們 ${x.ours}、官方 ${x.official})`)).join('、')}

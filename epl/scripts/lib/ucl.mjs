@@ -2,7 +2,10 @@
    只做「資料本來就有的整理」—— 分階段、配兩回合、算總比分、排積分榜。
    不推論、不補值、不預測(歐冠沒有經過驗收的模型,理由見下方 build 產出的 note)。 */
 
-import { KO_ORDER, STAGE_ZH, winnerOfMatch } from './adapters/football-data-ucl.mjs';
+import { KO_ORDER, STAGE_ZH, winnerOfMatch, buildUclTeamIndex, normaliseUclMatch as _n } from './adapters/football-data-ucl.mjs';
+import { crossCheck, checkDraw, drawIsSane, buildLeaders } from './adapters/fotmob-ucl.mjs';
+
+const conflictsOf = idx => (idx.conflicts?.length ? true : false);
 
 const key = (a, b) => [a, b].sort((x, y) => x - y).join('-');
 
@@ -261,6 +264,41 @@ export function summariseSeason(raw, codeOfTeam, normalise) {
 /* 兩個聯賽的 build 都要產出同一份歐冠資料 —— 歐冠是跨聯賽的,
    英超頁與西甲頁看到的必須是同一份。所以載入與整理收在這裡,
    兩邊各呼叫一次;複製一份過去的話,改了一邊另一邊會悄悄過期。 */
+/* 讀 FotMob 人工交付的那一季(如果有)。回傳 null 代表沒有這個檔。 */
+async function readFotmob(root, label) {
+  const { readFile } = await import('node:fs/promises');
+  const { join } = await import('node:path');
+  const { existsSync } = await import('node:fs');
+  const f = join(root, 'data', 'manual', `fotmob-ucl-${label}.json`);
+  if (!existsSync(f)) return null;
+  try { return JSON.parse(await readFile(f, 'utf8')); } catch { return null; }
+}
+
+/* 只有抽籤、還沒開賽的那一季。
+   **只呈現「誰對誰、誰主誰客」** —— 上游的 144 場開球時間全部是同一個佔位值、
+   輪次全是 null,所以日期與輪次我們沒有,不顯示也不猜(鐵則一與鐵則三)。 */
+function summariseDraw(fm, codeOfTeam, check) {
+  const teams = new Map();
+  const touch = t => {
+    if (!teams.has(t.id)) {
+      const hit = codeOfTeam(t.id);
+      teams.set(t.id, { id: t.id, name: t.shortName ?? t.name, fullName: t.name,
+        code: hit?.code ?? null, league: hit?.league ?? null, home: [], away: [] });
+    }
+    return teams.get(t.id);
+  };
+  const matches = fm.matches.map(m => {
+    const h = touch(m.home), a = touch(m.away);
+    h.home.push({ id: a.id, name: a.name, code: a.code, league: a.league });
+    a.away.push({ id: h.id, name: h.name, code: h.code, league: h.league });
+    return { home: { id: h.id, name: h.name, code: h.code, league: h.league },
+      away: { id: a.id, name: a.name, code: a.code, league: a.league } };
+  });
+  const rows = [...teams.values()].sort((x, y) =>
+    (x.code ? 0 : 1) - (y.code ? 0 : 1) || String(x.name).localeCompare(String(y.name)));
+  return { rows, matches, check };
+}
+
 export async function loadUclSeasons(root, sources) {
   const { readFile, readdir } = await import('node:fs/promises');
   const { join } = await import('node:path');
@@ -278,9 +316,39 @@ export async function loadUclSeasons(root, sources) {
   for (const f of files) {
     const raw = JSON.parse(await readFile(join(dir, f), 'utf8'));
     if (raw.retrievedAt && (!retrievedAt || raw.retrievedAt > retrievedAt)) retrievedAt = raw.retrievedAt;
+    const fm = await readFotmob(root, raw.season);
+
     if (raw.availability !== 'available') {
       /* 拿不到也要出現在清單裡,而且要分得出是哪一種 ——
          「還沒建立」與「方案不給」對讀者是完全不同的兩句話(鐵則四)。 */
+      /* football-data 沒有這一季,但 FotMob 有抽籤結果 ——
+         那就把「誰對誰」端出來,而**不是**留一塊空白說「還沒有」。
+         但只有這一個來源,沒得核對,所以先跑結構自洽檢查,
+         而且畫面上要講明只有一個來源(鐵則四)。 */
+      if (fm && Array.isArray(fm.matches) && fm.matches.length) {
+        const c = checkDraw(fm.matches);
+        const sane = drawIsSane(c);
+        const idx = buildUclTeamIndex(fm.matches, sources);
+        if (conflictsOf(idx)) conflicts.push({ season: raw.season, conflicts: idx.conflicts });
+        const draw = summariseDraw(fm, idx.codeOfTeam, { ...c, sane });
+        seasons.push({
+          label: raw.season,
+          availability: sane ? 'draw-only' : 'draw-unsound',
+          message: raw.message ?? null,
+          source: fm.source ?? 'FotMob', retrievedAt: fm.retrievedAt ?? null,
+          singleSource: true,
+          total: fm.matches.length, played: 0, teams: draw.rows.length,
+          aet: 0, shootouts: 0,
+          teamsKnown: idx.matched, teamsTotal: idx.total,
+          table: { rows: [], order: 'none', mismatches: [] },
+          rounds: [], leagueRounds: [], leagueMatches: [],
+          champion: null, runs: [], advancementProblems: [],
+          unknownDurations: [], unknownStatuses: [],
+          bands: {}, bandBroken: false,
+          draw,
+        });
+        continue;
+      }
       seasons.push({
         label: raw.season, availability: raw.availability, message: raw.message ?? null,
         total: 0, played: 0, teams: 0, aet: 0, shootouts: 0,
@@ -294,6 +362,25 @@ export async function loadUclSeasons(root, sources) {
     const s = summariseSeason(raw, idx.codeOfTeam, normaliseUclMatch);
     s.teamsKnown = idx.matched;
     s.teamsTotal = idx.total;
+
+    /* **協作方交付的檔案要用獨立來源核對**(鐵則五)。
+       這裡的獨立來源就是 football-data.org 那份 —— 完全不同的供應商。
+       核對通過才採用 FotMob 的球員榜;沒通過就整份不用,並把問題留在資料裡
+       讓畫面講出來,不要靜靜挑一個來顯示。 */
+    if (fm && Array.isArray(fm.matches)) {
+      const cc = crossCheck(fm.matches, raw.matches);
+      s.crossCheck = {
+        source: fm.source ?? 'FotMob', retrievedAt: fm.retrievedAt ?? null,
+        teamsMatched: cc.teamsMatched, teamsTotal: cc.teamsTotal,
+        aligned: cc.aligned, total: cc.total,
+        problems: cc.problems.slice(0, 20), problemCount: cc.problems.length,
+        passed: cc.problems.length === 0 && cc.aligned === cc.total,
+      };
+      if (s.crossCheck.passed && Array.isArray(fm.players) && fm.players.length) {
+        s.leaders = buildLeaders(fm.players);
+        s.leaderPool = fm.players.length;
+      }
+    }
     seasons.push(s);
   }
   return {
