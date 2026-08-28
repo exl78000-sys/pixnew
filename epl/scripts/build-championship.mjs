@@ -26,6 +26,7 @@
  */
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -114,10 +115,34 @@ async function main() {
       if (c) crestBy.set(t.code, c);
     }
   }
+  /* 人工交付的隊色、城市、球場、容量、綽號。**只讀核對後的產物**,不讀收件匣 ——
+     直接讀收件匣等於把核對繞過去(比照租借那一條)。
+     收件匣改過卻沒重跑核對時 sha 對不上,整批不掛並印出原因,不會拿舊的核對結果背書新內容。 */
+  const delivered = new Map();
+  let deliveryNote = null;
+  {
+    const vPath = join(ROOT, 'data', 'championship-teams-verified.json');
+    const inboxPath = join(ROOT, 'data', 'manual', 'championship-teams-delivery.json');
+    if (existsSync(vPath) && existsSync(inboxPath)) {
+      const v = JSON.parse(await readFile(vPath, 'utf8'));
+      const sha = createHash('sha256').update(await readFile(inboxPath)).digest('hex');
+      if (!v.accepted) {
+        deliveryNote = `球隊資料交付未通過核對(${v.problems.length} 項),整批不採用。`;
+      } else if (v.inboxSha !== sha) {
+        deliveryNote = '收件匣改過但沒重跑核對(sha 對不上),整批不採用 —— 請跑 npm run en2:verify-teams。';
+      } else {
+        for (const rec of v.teams) delivered.set(rec.code, rec.fields);
+      }
+      if (deliveryNote) console.log(`  ⚠ ${deliveryNote}`);
+      else console.log(`  球隊資料交付:${delivered.size} 隊(對照題 ${v.controlTeams} 支既有球隊逐欄位一致)`);
+    }
+  }
+
   for (const t of T.list) {
+    Object.assign(t, delivered.get(t.code) ?? {});
     if (crestBy.has(t.code)) t.crest = crestBy.get(t.code);
-    /* 隊色還沒取得(見名冊的 _pending)。缺色時退中性灰 —— 畫面上看得出來是沒有,
-       比隨便給一個顏色好:給了顏色讀者會以為那是球隊的顏色。 */
+    /* 缺色時退中性灰 —— 畫面上看得出來是沒有,比隨便給一個顏色好:
+       給了顏色讀者會以為那是球隊的顏色。交付進來之後這一行就會拿到真的隊色。 */
     t.chartColor = intoBand(t.colors?.[0]) ?? intoBand(t.colors?.[1]) ?? '#9aa0aa';
   }
   const crestCount = crestBy.size;
@@ -398,7 +423,14 @@ async function main() {
       + 'Sky 有一個名字像英冠、實際回英超內容,不用它)。只有標題與短摘要,不翻譯',
       '— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
       + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超。**這是驗證過的沒有,不是還沒做**',
-      '— 沒有教練、傷停、正式陣容與賽後統計;隊色與球場資料尚未取得,所以圖表暫時是中性灰',
+      /* 這一行**不要寫死**。第一版寫「隊色與球場資料尚未取得」,交付進來之後它就變成
+         畫面上的一句假話 —— 而畫面說謊比缺一格嚴重。改成跟著資料走。 */
+      ...(delivered.size
+        ? [`✓ 隊色、城市、球場、容量與綽號:人工交付並通過核對(${delivered.size} 隊;`
+          + '其中 12 支跟本站既有的英超名冊逐欄位一致,那是刻意留的對照題)']
+        : ['— 隊色與球場資料尚未取得,所以圖表暫時是中性灰'
+          + (deliveryNote ? `(${deliveryNote}` + ')' : '')]),
+      '— 沒有教練、傷停、正式陣容與賽後統計',
       ...(tableCaveat ? [`— ${tableCaveat.note.replace(/\*\*/g, '')}`] : []),
       ...(backtest.available
         ? [`✓ 走查回測 ${backtest.season} ${backtest.games} 場:RPS ${backtest.rps}、基準線 ${backtest.baselineRps}`

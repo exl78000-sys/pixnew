@@ -1,0 +1,690 @@
+{
+  "source": "EFLChampionship.co.uk Football Grounds & Venues；Wikipedia EFL Championship、各球隊與球場頁；12 支既有英超名冊球隊並與 data/manual/teams.json 交叉核對。",
+  "retrievedAt": "2026-08-28",
+  "teams": [
+    {
+      "code": "BIR",
+      "en": "Birmingham City",
+      "colors": [
+        "#0000FF",
+        "#FFFFFF"
+      ],
+      "city": "伯明罕",
+      "venue": "聖安德魯球場 St Andrew's",
+      "capacity": 29409,
+      "nickname": "藍軍",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Birmingham_City_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Birmingham_City_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/St_Andrew's_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/St_Andrew's_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Birmingham_City_F.C."
+      }
+    },
+    {
+      "code": "BLB",
+      "en": "Blackburn Rovers",
+      "colors": [
+        "#009EE0",
+        "#FFFFFF"
+      ],
+      "city": "布萊克本",
+      "venue": "伊活公園 Ewood Park",
+      "capacity": 31367,
+      "nickname": "流浪者",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Blackburn_Rovers_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Blackburn_Rovers_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Ewood_Park",
+        "capacity": "https://en.wikipedia.org/wiki/Ewood_Park",
+        "nickname": "https://en.wikipedia.org/wiki/Blackburn_Rovers_F.C."
+      }
+    },
+    {
+      "code": "BOL",
+      "en": "Bolton Wanderers",
+      "colors": [
+        "#FFFFFF",
+        "#002B5C"
+      ],
+      "city": "博爾頓",
+      "venue": "塔夫希特社區球場 Toughsheet Community Stadium",
+      "capacity": 28723,
+      "nickname": null,
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Bolton_Wanderers_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Bolton_Wanderers_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Toughsheet_Community_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Toughsheet_Community_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Bolton_Wanderers_F.C."
+      }
+    },
+    {
+      "code": "BRC",
+      "en": "Bristol City",
+      "colors": [
+        "#D71920",
+        "#FFFFFF"
+      ],
+      "city": "布里斯托",
+      "venue": "阿什頓門球場 Ashton Gate",
+      "capacity": 26462,
+      "nickname": "知更鳥",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Bristol_City_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Bristol_City_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Ashton_Gate_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Ashton_Gate_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Bristol_City_F.C."
+      }
+    },
+    {
+      "code": "BUR",
+      "en": "Burnley",
+      "colors": [
+        "#6C1D45",
+        "#99D6EA"
+      ],
+      "city": "伯恩利",
+      "venue": "Turf Moor",
+      "capacity": 21944,
+      "nickname": "紅酒軍團",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Burnley_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Burnley_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Turf_Moor",
+        "capacity": "https://en.wikipedia.org/wiki/Turf_Moor",
+        "nickname": "https://en.wikipedia.org/wiki/Burnley_F.C."
+      }
+    },
+    {
+      "code": "CAR",
+      "en": "Cardiff City",
+      "colors": [
+        "#0070B5",
+        "#FFFFFF"
+      ],
+      "city": "卡迪夫",
+      "venue": "卡迪夫城球場 Cardiff City Stadium",
+      "capacity": 33280,
+      "nickname": "藍鳥",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Cardiff_City_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Cardiff_City_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Cardiff_City_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Cardiff_City_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Cardiff_City_F.C."
+      }
+    },
+    {
+      "code": "CHA",
+      "en": "Charlton Athletic",
+      "colors": [
+        "#D71920",
+        "#FFFFFF"
+      ],
+      "city": "倫敦",
+      "venue": "山谷球場 The Valley",
+      "capacity": 27111,
+      "nickname": null,
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Charlton_Athletic_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Charlton_Athletic_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/The_Valley_(London)",
+        "capacity": "https://en.wikipedia.org/wiki/The_Valley_(London)",
+        "nickname": "https://en.wikipedia.org/wiki/Charlton_Athletic_F.C."
+      }
+    },
+    {
+      "code": "COV",
+      "en": "Coventry City",
+      "colors": [
+        "#57B7E8",
+        "#0B1F3F"
+      ],
+      "city": "考文垂",
+      "venue": "Coventry Building Society Arena",
+      "capacity": 32609,
+      "nickname": "天藍軍團",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Coventry_City_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Coventry_City_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Coventry_Building_Society_Arena",
+        "capacity": "https://en.wikipedia.org/wiki/Coventry_Building_Society_Arena",
+        "nickname": "https://en.wikipedia.org/wiki/Coventry_City_F.C."
+      }
+    },
+    {
+      "code": "DER",
+      "en": "Derby County",
+      "colors": [
+        "#FFFFFF",
+        "#000000"
+      ],
+      "city": "德比",
+      "venue": "普萊德公園球場 Pride Park Stadium",
+      "capacity": 33597,
+      "nickname": "公羊",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Derby_County_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Derby_County_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Pride_Park_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Pride_Park_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Derby_County_F.C."
+      }
+    },
+    {
+      "code": "HUD",
+      "en": "Huddersfield Town",
+      "colors": [
+        "#0072CE",
+        "#FFFFFF"
+      ],
+      "city": "哈德斯菲爾德",
+      "venue": "柯克利斯球場 Kirklees Stadium",
+      "capacity": 24121,
+      "nickname": "梗犬",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Huddersfield_Town_A.F.C.",
+        "city": "https://en.wikipedia.org/wiki/Huddersfield_Town_A.F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Kirklees_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Kirklees_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Huddersfield_Town_A.F.C."
+      }
+    },
+    {
+      "code": "HUL",
+      "en": "Hull City",
+      "colors": [
+        "#F5A12D",
+        "#000000"
+      ],
+      "city": "赫爾",
+      "venue": "MKM Stadium",
+      "capacity": 25586,
+      "nickname": "老虎軍團",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Hull_City_A.F.C.",
+        "city": "https://en.wikipedia.org/wiki/Hull_City_A.F.C.",
+        "venue": "https://en.wikipedia.org/wiki/MKM_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/MKM_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Hull_City_A.F.C."
+      }
+    },
+    {
+      "code": "IPS",
+      "en": "Ipswich Town",
+      "colors": [
+        "#0044A9",
+        "#FFFFFF"
+      ],
+      "city": "伊普斯威奇",
+      "venue": "Portman Road",
+      "capacity": 30311,
+      "nickname": "拖拉機小子",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Ipswich_Town_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Ipswich_Town_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Portman_Road",
+        "capacity": "https://en.wikipedia.org/wiki/Portman_Road",
+        "nickname": "https://en.wikipedia.org/wiki/Ipswich_Town_F.C."
+      }
+    },
+    {
+      "code": "LEE",
+      "en": "Leeds United",
+      "colors": [
+        "#FFCD00",
+        "#1D428A"
+      ],
+      "city": "里茲",
+      "venue": "Elland Road",
+      "capacity": 37645,
+      "nickname": "白衣軍團",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Leeds_United_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Leeds_United_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Elland_Road",
+        "capacity": "https://en.wikipedia.org/wiki/Elland_Road",
+        "nickname": "https://en.wikipedia.org/wiki/Leeds_United_F.C."
+      }
+    },
+    {
+      "code": "LEI",
+      "en": "Leicester City",
+      "colors": [
+        "#003090",
+        "#FDBE11"
+      ],
+      "city": "萊斯特",
+      "venue": "King Power Stadium",
+      "capacity": 32262,
+      "nickname": "狐狸城",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Leicester_City_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Leicester_City_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/King_Power_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/King_Power_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Leicester_City_F.C."
+      }
+    },
+    {
+      "code": "LIN",
+      "en": "Lincoln City",
+      "colors": [
+        "#E31B23",
+        "#FFFFFF"
+      ],
+      "city": "林肯",
+      "venue": "LNER球場 LNER Stadium",
+      "capacity": 10669,
+      "nickname": "小鬼",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Lincoln_City_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Lincoln_City_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Sincil_Bank",
+        "capacity": "https://en.wikipedia.org/wiki/Sincil_Bank",
+        "nickname": "https://en.wikipedia.org/wiki/Lincoln_City_F.C."
+      }
+    },
+    {
+      "code": "LUT",
+      "en": "Luton Town",
+      "colors": [
+        "#F78F1E",
+        "#002D62"
+      ],
+      "city": "盧頓",
+      "venue": "Kenilworth Road",
+      "capacity": 12000,
+      "nickname": "帽匠",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Luton_Town_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Luton_Town_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Kenilworth_Road",
+        "capacity": "https://en.wikipedia.org/wiki/Kenilworth_Road",
+        "nickname": "https://en.wikipedia.org/wiki/Luton_Town_F.C."
+      }
+    },
+    {
+      "code": "MID",
+      "en": "Middlesbrough",
+      "colors": [
+        "#E1251B",
+        "#FFFFFF"
+      ],
+      "city": "米德爾斯堡",
+      "venue": "河畔球場 Riverside Stadium",
+      "capacity": 34742,
+      "nickname": "博羅",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Middlesbrough_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Middlesbrough_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Riverside_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Riverside_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Middlesbrough_F.C."
+      }
+    },
+    {
+      "code": "MIL",
+      "en": "Millwall",
+      "colors": [
+        "#001E62",
+        "#FFFFFF"
+      ],
+      "city": "倫敦",
+      "venue": "丹球場 The Den",
+      "capacity": 20146,
+      "nickname": "獅子",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Millwall_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Millwall_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/The_Den_(stadium)",
+        "capacity": "https://en.wikipedia.org/wiki/The_Den_(stadium)",
+        "nickname": "https://en.wikipedia.org/wiki/Millwall_F.C."
+      }
+    },
+    {
+      "code": "NOR",
+      "en": "Norwich City",
+      "colors": [
+        "#FFF200",
+        "#009A44"
+      ],
+      "city": "諾里奇",
+      "venue": "卡羅路球場 Carrow Road",
+      "capacity": 27359,
+      "nickname": "金絲雀",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Norwich_City_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Norwich_City_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Carrow_Road",
+        "capacity": "https://en.wikipedia.org/wiki/Carrow_Road",
+        "nickname": "https://en.wikipedia.org/wiki/Norwich_City_F.C."
+      }
+    },
+    {
+      "code": "OXF",
+      "en": "Oxford United",
+      "colors": [
+        "#F7DF00",
+        "#003A70"
+      ],
+      "city": "牛津",
+      "venue": "卡薩姆球場 Kassam Stadium",
+      "capacity": 12500,
+      "nickname": null,
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Oxford_United_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Oxford_United_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Kassam_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Kassam_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Oxford_United_F.C."
+      }
+    },
+    {
+      "code": "PLY",
+      "en": "Plymouth Argyle",
+      "colors": [
+        "#164042",
+        "#FFFFFF"
+      ],
+      "city": "普利茅斯",
+      "venue": "主場公園 Home Park",
+      "capacity": 17000,
+      "nickname": "朝聖者",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Plymouth_Argyle_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Plymouth_Argyle_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Home_Park",
+        "capacity": "https://en.wikipedia.org/wiki/Home_Park",
+        "nickname": "https://en.wikipedia.org/wiki/Plymouth_Argyle_F.C."
+      }
+    },
+    {
+      "code": "PNE",
+      "en": "Preston North End",
+      "colors": [
+        "#FFFFFF",
+        "#002D62"
+      ],
+      "city": "普雷斯頓",
+      "venue": "迪普戴爾球場 Deepdale",
+      "capacity": 23408,
+      "nickname": "百合白",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Preston_North_End_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Preston_North_End_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Deepdale",
+        "capacity": "https://en.wikipedia.org/wiki/Deepdale",
+        "nickname": "https://en.wikipedia.org/wiki/Preston_North_End_F.C."
+      }
+    },
+    {
+      "code": "POR",
+      "en": "Portsmouth",
+      "colors": [
+        "#001F5B",
+        "#FFFFFF"
+      ],
+      "city": "樸茨茅斯",
+      "venue": "弗拉頓公園 Fratton Park",
+      "capacity": 20867,
+      "nickname": "龐培",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Portsmouth_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Portsmouth_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Fratton_Park",
+        "capacity": "https://en.wikipedia.org/wiki/Fratton_Park",
+        "nickname": "https://en.wikipedia.org/wiki/Portsmouth_F.C."
+      }
+    },
+    {
+      "code": "QPR",
+      "en": "Queens Park Rangers",
+      "colors": [
+        "#0057B8",
+        "#FFFFFF"
+      ],
+      "city": "倫敦",
+      "venue": "洛夫特斯路球場 Loftus Road",
+      "capacity": 18439,
+      "nickname": null,
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Queens_Park_Rangers_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Queens_Park_Rangers_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Loftus_Road",
+        "capacity": "https://en.wikipedia.org/wiki/Loftus_Road",
+        "nickname": "https://en.wikipedia.org/wiki/Queens_Park_Rangers_F.C."
+      }
+    },
+    {
+      "code": "ROT",
+      "en": "Rotherham United",
+      "colors": [
+        "#E2231A",
+        "#FFFFFF"
+      ],
+      "city": "羅瑟勒姆",
+      "venue": "紐約球場 New York Stadium",
+      "capacity": 12021,
+      "nickname": "磨坊主",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Rotherham_United_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Rotherham_United_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/New_York_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/New_York_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Rotherham_United_F.C."
+      }
+    },
+    {
+      "code": "SHU",
+      "en": "Sheffield United",
+      "colors": [
+        "#EE2737",
+        "#000000"
+      ],
+      "city": "謝菲爾德",
+      "venue": "Bramall Lane",
+      "capacity": 32050,
+      "nickname": "刀鋒軍團",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Sheffield_United_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Sheffield_United_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Bramall_Lane",
+        "capacity": "https://en.wikipedia.org/wiki/Bramall_Lane",
+        "nickname": "https://en.wikipedia.org/wiki/Sheffield_United_F.C."
+      }
+    },
+    {
+      "code": "SHW",
+      "en": "Sheffield Wednesday",
+      "colors": [
+        "#00539F",
+        "#FFFFFF"
+      ],
+      "city": "謝菲爾德",
+      "venue": "希爾斯伯勒球場 Hillsborough",
+      "capacity": 39732,
+      "nickname": "貓頭鷹",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Sheffield_Wednesday_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Sheffield_Wednesday_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Hillsborough_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Hillsborough_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Sheffield_Wednesday_F.C."
+      }
+    },
+    {
+      "code": "SOU",
+      "en": "Southampton",
+      "colors": [
+        "#D71920",
+        "#130C0E"
+      ],
+      "city": "南安普敦",
+      "venue": "St Mary's Stadium",
+      "capacity": 32384,
+      "nickname": "聖徒",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Southampton_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Southampton_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/St_Mary's_Stadium,_Southampton",
+        "capacity": "https://en.wikipedia.org/wiki/St_Mary's_Stadium,_Southampton",
+        "nickname": "https://en.wikipedia.org/wiki/Southampton_F.C."
+      }
+    },
+    {
+      "code": "STK",
+      "en": "Stoke City",
+      "colors": [
+        "#E03A3E",
+        "#FFFFFF"
+      ],
+      "city": "特倫特河畔斯托克",
+      "venue": "bet365球場 bet365 Stadium",
+      "capacity": 30089,
+      "nickname": "陶工",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Stoke_City_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Stoke_City_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Bet365_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Bet365_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Stoke_City_F.C."
+      }
+    },
+    {
+      "code": "SUN",
+      "en": "Sunderland",
+      "colors": [
+        "#EB172B",
+        "#FFFFFF"
+      ],
+      "city": "桑德蘭",
+      "venue": "Stadium of Light",
+      "capacity": 48707,
+      "nickname": "黑貓",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Sunderland_A.F.C.",
+        "city": "https://en.wikipedia.org/wiki/Sunderland_A.F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Stadium_of_Light",
+        "capacity": "https://en.wikipedia.org/wiki/Stadium_of_Light",
+        "nickname": "https://en.wikipedia.org/wiki/Sunderland_A.F.C."
+      }
+    },
+    {
+      "code": "SWA",
+      "en": "Swansea City",
+      "colors": [
+        "#FFFFFF",
+        "#000000"
+      ],
+      "city": "斯旺西",
+      "venue": "斯旺西.com球場 Swansea.com Stadium",
+      "capacity": 21088,
+      "nickname": "天鵝",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Swansea_City_A.F.C.",
+        "city": "https://en.wikipedia.org/wiki/Swansea_City_A.F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Swansea.com_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Swansea.com_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Swansea_City_A.F.C."
+      }
+    },
+    {
+      "code": "WAT",
+      "en": "Watford",
+      "colors": [
+        "#FBEE23",
+        "#000000"
+      ],
+      "city": "沃特福德",
+      "venue": "維卡拉格路球場 Vicarage Road",
+      "capacity": 22200,
+      "nickname": "大黃蜂",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Watford_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Watford_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Vicarage_Road",
+        "capacity": "https://en.wikipedia.org/wiki/Vicarage_Road",
+        "nickname": "https://en.wikipedia.org/wiki/Watford_F.C."
+      }
+    },
+    {
+      "code": "WBA",
+      "en": "West Bromwich Albion",
+      "colors": [
+        "#122F67",
+        "#FFFFFF"
+      ],
+      "city": "西布羅姆維奇",
+      "venue": "山楂球場 The Hawthorns",
+      "capacity": 26850,
+      "nickname": "藍白軍團",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/West_Bromwich_Albion_F.C.",
+        "city": "https://en.wikipedia.org/wiki/West_Bromwich_Albion_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/The_Hawthorns",
+        "capacity": "https://en.wikipedia.org/wiki/The_Hawthorns",
+        "nickname": "https://en.wikipedia.org/wiki/West_Bromwich_Albion_F.C."
+      }
+    },
+    {
+      "code": "WHU",
+      "en": "West Ham United",
+      "colors": [
+        "#7A263A",
+        "#1BB1E7"
+      ],
+      "city": "倫敦",
+      "venue": "London Stadium",
+      "capacity": 62500,
+      "nickname": "鐵錘幫",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/West_Ham_United_F.C.",
+        "city": "https://en.wikipedia.org/wiki/West_Ham_United_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/London_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/London_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/West_Ham_United_F.C."
+      }
+    },
+    {
+      "code": "WOL",
+      "en": "Wolverhampton Wanderers",
+      "colors": [
+        "#FDB913",
+        "#231F20"
+      ],
+      "city": "伍爾弗漢普頓",
+      "venue": "Molineux",
+      "capacity": 31750,
+      "nickname": "狼",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Wolverhampton_Wanderers_F.C.",
+        "city": "https://en.wikipedia.org/wiki/Wolverhampton_Wanderers_F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Molineux_Stadium",
+        "capacity": "https://en.wikipedia.org/wiki/Molineux_Stadium",
+        "nickname": "https://en.wikipedia.org/wiki/Wolverhampton_Wanderers_F.C."
+      }
+    },
+    {
+      "code": "WRE",
+      "en": "Wrexham",
+      "colors": [
+        "#E30613",
+        "#FFFFFF"
+      ],
+      "city": "雷克瑟姆",
+      "venue": "賽馬場球場 STōK Cae Ras",
+      "capacity": 10771,
+      "nickname": "紅龍",
+      "sources": {
+        "colors": "https://en.wikipedia.org/wiki/Wrexham_A.F.C.",
+        "city": "https://en.wikipedia.org/wiki/Wrexham_A.F.C.",
+        "venue": "https://en.wikipedia.org/wiki/Racecourse_Ground",
+        "capacity": "https://en.wikipedia.org/wiki/Racecourse_Ground",
+        "nickname": "https://en.wikipedia.org/wiki/Wrexham_A.F.C."
+      }
+    }
+  ]
+}

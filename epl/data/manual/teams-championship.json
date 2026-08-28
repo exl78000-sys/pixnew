@@ -1,7 +1,7 @@
 {
   "_note": "英冠(EFL Championship)球隊對照表。of = openfootball 隊名,fd = football-data.co.uk 的簡稱。兩邊的對應**不是靠名字猜出來的**,是用「同一季裡每支球隊的比賽日期+比分」指紋配對出來的(見 docs/英冠-資料來源探測.md);Lincoln 一度被名字相近度配到 Preston North End,是指紋把它擋下來的。12 支球隊沿用本站既有隊碼(同一支球隊不可以有兩個碼)。",
   "_updated": "2026-08",
-  "_pending": "隊色、城市、球場、容量、綽號、教練**尚未取得**。那些是世界的事實,不是本站算得出來的東西,所以寧可缺欄位也不填猜測值 —— 缺色時圖表會退成中性灰,畫面上看得出來是沒有,不會假裝有。交付規格見 docs/英冠-球隊資料-交付提示詞.md。",
+  "_pending": "**教練尚未取得**。隊色、城市、球場、容量、綽號已於 2026-08-28 由人工交付並通過核對(收件匣 data/manual/championship-teams-delivery.json → 核對器 npm run en2:verify-teams → 產物 data/championship-teams-verified.json,build 只讀產物)。那些欄位**不在這個檔案裡** —— 這裡只放隊碼與三種來源的隊名對照,交付的內容由 build 掛上去,才不會有兩份各自漂移。交付規格見 docs/英冠-球隊資料-交付提示詞.md。",
   "teams": [
     { "code": "BIR", "en": "Birmingham City",     "of": "Birmingham City FC",          "fd": "Birmingham",       "zh": "伯明翰城" },
     { "code": "BLB", "en": "Blackburn Rovers",    "of": "Blackburn Rovers FC",         "fd": "Blackburn",        "zh": "布萊克本" },

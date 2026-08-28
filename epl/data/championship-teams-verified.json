@@ -1,0 +1,663 @@
+{
+  "ranAt": "2026-08-28T17:04:39.289Z",
+  "inboxSha": "8152c116a41e9f208da6525b6742ebd50058fea03394c06fe34511ab3f79f450",
+  "source": "EFLChampionship.co.uk Football Grounds & Venues；Wikipedia EFL Championship、各球隊與球場頁；12 支既有英超名冊球隊並與 data/manual/teams.json 交叉核對。",
+  "retrievedAt": "2026-08-28",
+  "accepted": true,
+  "controlTeams": 12,
+  "problems": [],
+  "notes": [],
+  "counts": {
+    "colors": 36,
+    "city": 36,
+    "venue": 36,
+    "capacity": 36,
+    "nickname": 32
+  },
+  "teams": [
+    {
+      "code": "BIR",
+      "en": "Birmingham City",
+      "fields": {
+        "colors": [
+          "#0000FF",
+          "#FFFFFF"
+        ],
+        "city": "伯明罕",
+        "venue": "聖安德魯球場 St Andrew's",
+        "capacity": 29409,
+        "nickname": "藍軍"
+      },
+      "checks": {
+        "crestDeltaE": 23,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "BLB",
+      "en": "Blackburn Rovers",
+      "fields": {
+        "colors": [
+          "#009EE0",
+          "#FFFFFF"
+        ],
+        "city": "布萊克本",
+        "venue": "伊活公園 Ewood Park",
+        "capacity": 31367,
+        "nickname": "流浪者"
+      },
+      "checks": {
+        "crestDeltaE": 0,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "BOL",
+      "en": "Bolton Wanderers",
+      "fields": {
+        "colors": [
+          "#FFFFFF",
+          "#002B5C"
+        ],
+        "city": "博爾頓",
+        "venue": "塔夫希特社區球場 Toughsheet Community Stadium",
+        "capacity": 28723
+      },
+      "checks": {
+        "crestDeltaE": 25,
+        "crestVerdict": "not-comparable"
+      }
+    },
+    {
+      "code": "BRC",
+      "en": "Bristol City",
+      "fields": {
+        "colors": [
+          "#D71920",
+          "#FFFFFF"
+        ],
+        "city": "布里斯托",
+        "venue": "阿什頓門球場 Ashton Gate",
+        "capacity": 26462,
+        "nickname": "知更鳥"
+      },
+      "checks": {
+        "crestDeltaE": 5,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "BUR",
+      "en": "Burnley",
+      "fields": {
+        "colors": [
+          "#6C1D45",
+          "#99D6EA"
+        ],
+        "city": "伯恩利",
+        "venue": "Turf Moor",
+        "capacity": 21944,
+        "nickname": "紅酒軍團"
+      },
+      "checks": {
+        "crestDeltaE": 4,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "CAR",
+      "en": "Cardiff City",
+      "fields": {
+        "colors": [
+          "#0070B5",
+          "#FFFFFF"
+        ],
+        "city": "卡迪夫",
+        "venue": "卡迪夫城球場 Cardiff City Stadium",
+        "capacity": 33280,
+        "nickname": "藍鳥"
+      },
+      "checks": {
+        "crestDeltaE": 6,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "CHA",
+      "en": "Charlton Athletic",
+      "fields": {
+        "colors": [
+          "#D71920",
+          "#FFFFFF"
+        ],
+        "city": "倫敦",
+        "venue": "山谷球場 The Valley",
+        "capacity": 27111
+      },
+      "checks": {
+        "crestDeltaE": 1,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "COV",
+      "en": "Coventry City",
+      "fields": {
+        "colors": [
+          "#57B7E8",
+          "#0B1F3F"
+        ],
+        "city": "考文垂",
+        "venue": "Coventry Building Society Arena",
+        "capacity": 32609,
+        "nickname": "天藍軍團"
+      },
+      "checks": {
+        "crestDeltaE": 11,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "DER",
+      "en": "Derby County",
+      "fields": {
+        "colors": [
+          "#FFFFFF",
+          "#000000"
+        ],
+        "city": "德比",
+        "venue": "普萊德公園球場 Pride Park Stadium",
+        "capacity": 33597,
+        "nickname": "公羊"
+      },
+      "checks": {
+        "crestDeltaE": 0,
+        "crestVerdict": "not-comparable"
+      }
+    },
+    {
+      "code": "HUD",
+      "en": "Huddersfield Town",
+      "fields": {
+        "colors": [
+          "#0072CE",
+          "#FFFFFF"
+        ],
+        "city": "哈德斯菲爾德",
+        "venue": "柯克利斯球場 Kirklees Stadium",
+        "capacity": 24121,
+        "nickname": "梗犬"
+      },
+      "checks": {
+        "crestDeltaE": 6,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "HUL",
+      "en": "Hull City",
+      "fields": {
+        "colors": [
+          "#F5A12D",
+          "#000000"
+        ],
+        "city": "赫爾",
+        "venue": "MKM Stadium",
+        "capacity": 25586,
+        "nickname": "老虎軍團"
+      },
+      "checks": {
+        "crestDeltaE": 5,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "IPS",
+      "en": "Ipswich Town",
+      "fields": {
+        "colors": [
+          "#0044A9",
+          "#FFFFFF"
+        ],
+        "city": "伊普斯威奇",
+        "venue": "Portman Road",
+        "capacity": 30311,
+        "nickname": "拖拉機小子"
+      },
+      "checks": {
+        "crestDeltaE": 10,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "LEE",
+      "en": "Leeds United",
+      "fields": {
+        "colors": [
+          "#FFCD00",
+          "#1D428A"
+        ],
+        "city": "里茲",
+        "venue": "Elland Road",
+        "capacity": 37645,
+        "nickname": "白衣軍團"
+      },
+      "checks": {
+        "crestDeltaE": 4,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "LEI",
+      "en": "Leicester City",
+      "fields": {
+        "colors": [
+          "#003090",
+          "#FDBE11"
+        ],
+        "city": "萊斯特",
+        "venue": "King Power Stadium",
+        "capacity": 32262,
+        "nickname": "狐狸城"
+      },
+      "checks": {
+        "crestDeltaE": 5,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "LIN",
+      "en": "Lincoln City",
+      "fields": {
+        "colors": [
+          "#E31B23",
+          "#FFFFFF"
+        ],
+        "city": "林肯",
+        "venue": "LNER球場 LNER Stadium",
+        "capacity": 10669,
+        "nickname": "小鬼"
+      },
+      "checks": {
+        "crestDeltaE": 5,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "LUT",
+      "en": "Luton Town",
+      "fields": {
+        "colors": [
+          "#F78F1E",
+          "#002D62"
+        ],
+        "city": "盧頓",
+        "venue": "Kenilworth Road",
+        "capacity": 12000,
+        "nickname": "帽匠"
+      },
+      "checks": {
+        "crestDeltaE": 0,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "MID",
+      "en": "Middlesbrough",
+      "fields": {
+        "colors": [
+          "#E1251B",
+          "#FFFFFF"
+        ],
+        "city": "米德爾斯堡",
+        "venue": "河畔球場 Riverside Stadium",
+        "capacity": 34742,
+        "nickname": "博羅"
+      },
+      "checks": {
+        "crestDeltaE": 3,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "MIL",
+      "en": "Millwall",
+      "fields": {
+        "colors": [
+          "#001E62",
+          "#FFFFFF"
+        ],
+        "city": "倫敦",
+        "venue": "丹球場 The Den",
+        "capacity": 20146,
+        "nickname": "獅子"
+      },
+      "checks": {
+        "crestDeltaE": 8,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "NOR",
+      "en": "Norwich City",
+      "fields": {
+        "colors": [
+          "#FFF200",
+          "#009A44"
+        ],
+        "city": "諾里奇",
+        "venue": "卡羅路球場 Carrow Road",
+        "capacity": 27359,
+        "nickname": "金絲雀"
+      },
+      "checks": {
+        "crestDeltaE": 3,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "OXF",
+      "en": "Oxford United",
+      "fields": {
+        "colors": [
+          "#F7DF00",
+          "#003A70"
+        ],
+        "city": "牛津",
+        "venue": "卡薩姆球場 Kassam Stadium",
+        "capacity": 12500
+      },
+      "checks": {
+        "crestDeltaE": 2,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "PLY",
+      "en": "Plymouth Argyle",
+      "fields": {
+        "colors": [
+          "#164042",
+          "#FFFFFF"
+        ],
+        "city": "普利茅斯",
+        "venue": "主場公園 Home Park",
+        "capacity": 17000,
+        "nickname": "朝聖者"
+      },
+      "checks": {
+        "crestDeltaE": 5,
+        "crestVerdict": "not-comparable"
+      }
+    },
+    {
+      "code": "PNE",
+      "en": "Preston North End",
+      "fields": {
+        "colors": [
+          "#FFFFFF",
+          "#002D62"
+        ],
+        "city": "普雷斯頓",
+        "venue": "迪普戴爾球場 Deepdale",
+        "capacity": 23408,
+        "nickname": "百合白"
+      },
+      "checks": {
+        "crestDeltaE": 0,
+        "crestVerdict": "not-comparable"
+      }
+    },
+    {
+      "code": "POR",
+      "en": "Portsmouth",
+      "fields": {
+        "colors": [
+          "#001F5B",
+          "#FFFFFF"
+        ],
+        "city": "樸茨茅斯",
+        "venue": "弗拉頓公園 Fratton Park",
+        "capacity": 20867,
+        "nickname": "龐培"
+      },
+      "checks": {
+        "crestDeltaE": 8,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "QPR",
+      "en": "Queens Park Rangers",
+      "fields": {
+        "colors": [
+          "#0057B8",
+          "#FFFFFF"
+        ],
+        "city": "倫敦",
+        "venue": "洛夫特斯路球場 Loftus Road",
+        "capacity": 18439
+      },
+      "checks": {
+        "crestDeltaE": 8,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "ROT",
+      "en": "Rotherham United",
+      "fields": {
+        "colors": [
+          "#E2231A",
+          "#FFFFFF"
+        ],
+        "city": "羅瑟勒姆",
+        "venue": "紐約球場 New York Stadium",
+        "capacity": 12021,
+        "nickname": "磨坊主"
+      },
+      "checks": {
+        "crestDeltaE": 3,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "SHU",
+      "en": "Sheffield United",
+      "fields": {
+        "colors": [
+          "#EE2737",
+          "#000000"
+        ],
+        "city": "謝菲爾德",
+        "venue": "Bramall Lane",
+        "capacity": 32050,
+        "nickname": "刀鋒軍團"
+      },
+      "checks": {
+        "crestDeltaE": 1,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "SHW",
+      "en": "Sheffield Wednesday",
+      "fields": {
+        "colors": [
+          "#00539F",
+          "#FFFFFF"
+        ],
+        "city": "謝菲爾德",
+        "venue": "希爾斯伯勒球場 Hillsborough",
+        "capacity": 39732,
+        "nickname": "貓頭鷹"
+      },
+      "checks": {
+        "crestDeltaE": 7,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "SOU",
+      "en": "Southampton",
+      "fields": {
+        "colors": [
+          "#D71920",
+          "#130C0E"
+        ],
+        "city": "南安普敦",
+        "venue": "St Mary's Stadium",
+        "capacity": 32384,
+        "nickname": "聖徒"
+      },
+      "checks": {
+        "crestDeltaE": 5,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "STK",
+      "en": "Stoke City",
+      "fields": {
+        "colors": [
+          "#E03A3E",
+          "#FFFFFF"
+        ],
+        "city": "特倫特河畔斯托克",
+        "venue": "bet365球場 bet365 Stadium",
+        "capacity": 30089,
+        "nickname": "陶工"
+      },
+      "checks": {
+        "crestDeltaE": 0,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "SUN",
+      "en": "Sunderland",
+      "fields": {
+        "colors": [
+          "#EB172B",
+          "#FFFFFF"
+        ],
+        "city": "桑德蘭",
+        "venue": "Stadium of Light",
+        "capacity": 48707,
+        "nickname": "黑貓"
+      },
+      "checks": {
+        "crestDeltaE": 0,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "SWA",
+      "en": "Swansea City",
+      "fields": {
+        "colors": [
+          "#FFFFFF",
+          "#000000"
+        ],
+        "city": "斯旺西",
+        "venue": "斯旺西.com球場 Swansea.com Stadium",
+        "capacity": 21088,
+        "nickname": "天鵝"
+      },
+      "checks": {
+        "crestDeltaE": 0,
+        "crestVerdict": "not-comparable"
+      }
+    },
+    {
+      "code": "WAT",
+      "en": "Watford",
+      "fields": {
+        "colors": [
+          "#FBEE23",
+          "#000000"
+        ],
+        "city": "沃特福德",
+        "venue": "維卡拉格路球場 Vicarage Road",
+        "capacity": 22200,
+        "nickname": "大黃蜂"
+      },
+      "checks": {
+        "crestDeltaE": 0,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "WBA",
+      "en": "West Bromwich Albion",
+      "fields": {
+        "colors": [
+          "#122F67",
+          "#FFFFFF"
+        ],
+        "city": "西布羅姆維奇",
+        "venue": "山楂球場 The Hawthorns",
+        "capacity": 26850,
+        "nickname": "藍白軍團"
+      },
+      "checks": {
+        "crestDeltaE": 3,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "WHU",
+      "en": "West Ham United",
+      "fields": {
+        "colors": [
+          "#7A263A",
+          "#1BB1E7"
+        ],
+        "city": "倫敦",
+        "venue": "London Stadium",
+        "capacity": 62500,
+        "nickname": "鐵錘幫"
+      },
+      "checks": {
+        "crestDeltaE": 1,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "WOL",
+      "en": "Wolverhampton Wanderers",
+      "fields": {
+        "colors": [
+          "#FDB913",
+          "#231F20"
+        ],
+        "city": "伍爾弗漢普頓",
+        "venue": "Molineux",
+        "capacity": 31750,
+        "nickname": "狼"
+      },
+      "checks": {
+        "crestDeltaE": 3,
+        "crestVerdict": "ok"
+      }
+    },
+    {
+      "code": "WRE",
+      "en": "Wrexham",
+      "fields": {
+        "colors": [
+          "#E30613",
+          "#FFFFFF"
+        ],
+        "city": "雷克瑟姆",
+        "venue": "賽馬場球場 STōK Cae Ras",
+        "capacity": 10771,
+        "nickname": "紅龍"
+      },
+      "checks": {
+        "crestDeltaE": 1,
+        "crestVerdict": "ok"
+      }
+    }
+  ]
+}
