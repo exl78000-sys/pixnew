@@ -305,7 +305,13 @@ export const formRun = arr => `<span class="form-run">${(arr ?? []).map(f => `<i
    - 不跨 45/90 界線:中場多久、補時多長沒有資料,越線停在 45+/90+。 */
 export function liveMinute(m, fetchedAt) {
   const off = typeof m.clock === 'string' ? m.clock.match(/^(\d+)\s*(?:\+(\d+))?/) : null;
-  const elapsed = fetchedAt ? Math.max(0, (Date.now() - Date.parse(fetchedAt)) / 60000) : 0;
+  /* 錨定時刻取「快照抓取」與「開球」較晚者。快照在開賽前抓的話(分鐘還是 0),
+     開球前的死時間不能算進比賽分鐘 —— 實測 TOT|NEW:快照 16:02、開球 16:30,
+     從快照起算把 28 分鐘白算進去,開賽 15 分時畫面已經 43(超過真實時間)。 */
+  const fetchT = fetchedAt ? Date.parse(fetchedAt) : NaN;
+  const ko = m.kickoff ? Date.parse(m.kickoff) : NaN;
+  const anchorT = Number.isFinite(fetchT) ? (Number.isFinite(ko) ? Math.max(fetchT, ko) : fetchT) : NaN;
+  const elapsed = Number.isFinite(anchorT) ? Math.max(0, (Date.now() - anchorT) / 60000) : 0;
   const offEff = off ? Number(off[1]) + (off[2] ? Number(off[2]) : 0) : null;
   const fpl = m.minute ?? 0;
   if (off && off[2] != null && offEff >= fpl) {   // 補時中且官方鐘沒落後:只推進補時的部分

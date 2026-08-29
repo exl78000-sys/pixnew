@@ -1945,6 +1945,8 @@ async function checkDataGap() {
           const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
           return /export function liveMinute/.test(core)
             && /'45\+'/.test(core) && /'90\+'/.test(core) && /offEff >= fpl/.test(core)
+            /* 賽前舊快照不算死時間:錨取快照與開球較晚者(TOT|NEW 超前真實時間那次) */
+            && /Math\.max\(fetchT, ko\)/.test(core)
             && !/function liveMinute/.test(pa) && !/function liveMinute/.test(pl)   // 不准各自再寫一份
             && /C\.liveMinute\(/.test(pa) && /C\.liveMinute\(/.test(pl)
             && /data-liveclock/.test(pa) && /data-liveclock/.test(pl)
