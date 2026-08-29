@@ -79,6 +79,49 @@ export function predictPair(sim, home, away, { neutral = false } = {}) {
   };
 }
 
+/* 播放模式的即時勝率 —— scripts/lib/inplay.mjs 的 inPlay 逐行移植
+   (跟實時頁同一顆引擎;紅牌參數保留,模擬目前傳 0)。
+   等價性同樣由 golden 守著:node 測試拿一批情境直接呼叫兩邊逐鍵比對。 */
+const MAX_MORE = 7;
+const RED_OWN = 0.72;
+const RED_OPP = 1.30;
+const FULL = 90;
+
+export function inPlaySim({ lambdaHome, lambdaAway, hs = 0, as = 0, minute = 0, finished = false, redHome = 0, redAway = 0 }) {
+  const f = finished ? 0 : (minute == null || minute <= 0 ? 1 : Math.max(0, Math.min(1, (FULL - minute) / FULL)));
+  const lh = lambdaHome * f * RED_OWN ** redHome * RED_OPP ** redAway;
+  const la = lambdaAway * f * RED_OWN ** redAway * RED_OPP ** redHome;
+
+  const ph = pmf(lh, MAX_MORE), pa = pmf(la, MAX_MORE);
+  let home = 0, draw = 0, away = 0;
+  const scores = new Map();
+  for (let i = 0; i <= MAX_MORE; i++) {
+    for (let j = 0; j <= MAX_MORE; j++) {
+      const p = ph[i] * pa[j];
+      const fh = hs + i, fa = as + j;
+      if (fh > fa) home += p; else if (fh === fa) draw += p; else away += p;
+      const k = `${fh}-${fa}`;
+      scores.set(k, (scores.get(k) ?? 0) + p);
+    }
+  }
+  const total = home + draw + away || 1;
+  const nextTotal = lh + la;
+  const anyMore = 1 - Math.exp(-nextTotal);
+
+  return {
+    minute, finished, remaining: round(f, 3),
+    home: round(home / total, 4), draw: round(draw / total, 4), away: round(away / total, 4),
+    xgRestHome: round(lh, 2), xgRestAway: round(la, 2),
+    expectedFinal: { home: round(hs + lh, 2), away: round(as + la, 2) },
+    nextGoal: nextTotal > 0
+      ? { home: round((lh / nextTotal) * anyMore, 3), away: round((la / nextTotal) * anyMore, 3), none: round(1 - anyMore, 3) }
+      : { home: 0, away: 0, none: 1 },
+    topScores: [...scores.entries()]
+      .map(([s, p]) => ({ s, p: round(p / total, 4) }))
+      .sort((a, b) => b.p - a.p).slice(0, 5),
+  };
+}
+
 // Elo 半邊(與 lib/elo.mjs 的 eloProbs 同一組常數,由 meta.model.sim.elo 帶進來)
 export function eloPair(sim, rh, ra, { neutral = false } = {}) {
   const e = sim.elo;
