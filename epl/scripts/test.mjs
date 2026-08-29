@@ -995,7 +995,11 @@ async function checkGoalKinds() {
   // 真實資料也要照同一套規則:目前見過的代碼只有 G/P/O,多出來的一定要先核對過再放行
   const store = join(ROOT, 'web', 'data', 'official.json');
   if (existsSync(store)) {
+    /* 只驗 final 的場次 —— 進行中的比賽官方事件是流式進來的,剛進的球
+       射手欄可能晚幾分鐘才補上(2026-08-29 LIV|NFO 進行中實際踩到:
+       0:1 那顆 scorer 還是 null,測試假紅)。暫態不是資料錯。 */
     const live = Object.values(JSON.parse(readFileSync(store, 'utf8')).matches ?? {})
+      .filter(m => m.final)
       .flatMap(m => m.goals ?? []);
     const seen = [...new Set(live.map(x => x.kindRaw))].filter(Boolean).sort();
     cases.push(
@@ -1797,6 +1801,38 @@ async function checkDataGap() {
         && /同名不代表同一人/.test(pg) && /不可直接互比/.test(pg)
         && (pg.match(/id="xleague"/g) ?? []).length === 2;
     })()],
+
+    /* ── 中場/戰況講評(2026-08-29,使用者要求)──
+       規則生成、每句只引用算好的數字;FPL 分鐘在中場停 45 → 43~50 標中場。 */
+    ...await (async () => {
+      const { buildMatchReport } = await import('./lib/matchreport.mjs');
+      const mkFix = minute => ({
+        key: 'AAA|BBB', home: 'AAA', away: 'BBB', kickoff: '2026-08-29T11:30:00Z',
+        started: true, finished: false, minutes: minute, hs: 0, as: 1,
+        lineups: { AAA: [], BBB: [] },
+      });
+      const args = { prediction: { home: 0.5, draw: 0.25, away: 0.25, xgHome: 1.8, xgAway: 1.0 },
+        tactics: new Map(), zh: c => c };
+      const ht = buildMatchReport({ fixture: mkFix(45), ...args });
+      const mid = buildMatchReport({ fixture: mkFix(30), ...args });
+      const done = buildMatchReport({ fixture: { ...mkFix(90), finished: true }, ...args });
+      return [
+        ['講評:43~50 分標中場、其餘標戰況、完場不給', ht.liveSummary?.kind === 'ht'
+          && mid.liveSummary?.kind === 'live' && done.liveSummary == null, ''],
+        ['講評:句子引用比分/勝率位移/下一球(全是算好的數字)', (() => {
+          const t = ht.liveSummary.paragraphs.join('');
+          return /上半場結束/.test(t) && /0:1/.test(t) && /百分點/.test(t) && /下一球/.test(t);
+        })(), ''],
+        ['講評:前端掛在實時抽屜、標自動生成', (() => {
+          const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+          return /liveSummary/.test(src) && /中場講評/.test(src) && /自動生成/.test(src);
+        })()],
+        ['比賽日迴圈:rebase 失敗要 abort、推不出去要重置(卡死那課)', (() => {
+          const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-matchday.yml'), 'utf8');
+          return /git rebase --abort/.test(wf) && /reset --hard -q "origin/.test(wf);
+        })()],
+      ];
+    })(),
 
     /* ── 延賽/改期偵測(探勘缺口 G,2026-08-29)──
        狀態轉入延期集合、utcDate 變更、延期後回排定 = 改期,三種事件;
