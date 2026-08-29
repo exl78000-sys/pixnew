@@ -317,6 +317,20 @@ function renderTeam(t, ctx) {
     if (cf) links.push(cf);
   }
 
+  /* 租借往來(球隊視角)。跨聯賽單一份 loans.json,隊碼指俱樂部所以升降級不影響。
+     球員名字不加 [[連結]] —— 租借對象常不在本站名單(239 筆配不到),而 Obsidian
+     的連結是跨資料夾用檔名解析的,配錯人比連不到糟。等級照鐵則四分開標。 */
+  const loans = ctx.loansFor?.(t.code) ?? [];
+  if (loans.length) {
+    body.push(`\n## 租借往來\n\n| 賽季 | 方向 | 球員 | 對象 | 核對 |\n|---|---|---|---|---|\n`);
+    for (const r of [...loans].sort((a, b) => b.season.localeCompare(a.season) || a.player.localeCompare(b.player))) {
+      const out = r.parentCode === t.code;
+      body.push(`| ${r.season} | ${out ? '外借' : '借入'} | ${r.player} | ${(out ? r.loan : r.parent) ?? '?'} | ${r.verdict === 'confirmed' ? '已確認' : '無矛盾'} |\n`);
+    }
+    body.push(`\n> 人工交付、經 \`npm run loans:verify\` 逐筆核對後發布。`
+      + `「已確認」= 有獨立來源正面確認;「無矛盾」= 查得動的檢查都通過但沒有正面確認 —— 兩者可信度不同。\n`);
+  }
+
   if (ls) {
     body.push(`\n## ${ctx.lastSeason} 全季\n\n`);
     body.push(statTable([['名次', 'pos'], ['場次', 'p'], ['勝', 'w'], ['和', 'd'], ['負', 'l'],
@@ -707,6 +721,11 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     walkForwardSeason: walkForwardSeason,
     goalsFor: code => goalsFile?.data?.[meta.lastSeason]?.teams?.[code] ?? null,
     goalsSeason: meta.lastSeason, goalsNote: goalsFile?.note ?? null,
+    /* 租借往來:跨聯賽單一份,掛英超目錄(cups 慣例)—— 三個聯賽的球隊筆記都從這裡讀 */
+    loansFor: (() => {
+      const all = arr(load('pl', 'loans')?.records ?? []);
+      return code => all.filter(r => r.parentCode === code || r.loanCode === code);
+    })(),
     builtAt: meta.builtAt, currentSeason: meta.currentSeason, lastSeason: meta.lastSeason,
     modelName: meta.model?.name ?? 'Dixon-Coles Poisson + Elo',
     sources: meta.sources, table,
