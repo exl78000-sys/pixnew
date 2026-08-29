@@ -1,6 +1,26 @@
-import * as C from './core.js?v=016fe78a';
+import * as C from './core.js?v=4e77ec5e';
 
 const app = document.getElementById('app');
+
+/* 跨聯賽搜尋結果塊(兩個渲染器共用一份 —— 複製會悄悄過期)。
+   token 防過期回應蓋掉新輸入;隊伍顯示隊碼不顯示名字 ——
+   隊名要載別的聯賽的名冊,而隊碼跨聯賽會重複,全域登錄解錯名字。 */
+let xleagueToken = 0;
+async function updateXLeague(q) {
+  const host = document.getElementById('xleague');
+  if (!host) return;
+  if (!q || q.trim().length < 2) { host.innerHTML = ''; return; }
+  const tok = ++xleagueToken;
+  const hits = await C.crossLeaguePlayers(q.trim(), C.league());
+  if (tok !== xleagueToken || !document.getElementById('xleague')) return;
+  host.innerHTML = hits.length ? `<div class="note info" style="margin-top:10px">
+    其他聯賽找到 ${hits.length} 筆:${hits.slice(0, 8).map(p =>
+      `<a href="${C.link('players', { code: p.code, league: p.league })}">${C.esc(p.name)}
+        <span class="dim tiny">(${C.esc(C.LEAGUES[p.league]?.zh ?? p.league)}・${C.esc(p.team ?? '')})</span></a>`).join('、')}
+    ${hits.length > 8 ? `<span class="dim tiny">…等 ${hits.length} 筆,輸入更完整的名字縮小範圍</span>` : ''}
+    <div class="tiny dim" style="margin-top:4px">同名不代表同一人;各聯賽的數據各自成池,不可直接互比。</div>
+  </div>` : '';
+}
 
 try {
   const { meta, clubs, teams, players, leaders } = await C.load('meta', 'clubs', 'teams', 'players', 'leaders');
@@ -75,6 +95,7 @@ try {
   </div>
   <div id="cmpBox"></div>
   <div id="list"></div>
+  <div id="xleague"></div>
   <div class="tiny dim" style="margin-top:8px">
     背號以 FPL 官方快照為主;快照沒有的,先用英超官方名單上的號碼補
     (那是零額外請求、既有排程就抓回來的),再不然才用單一來源的補件並標
@@ -139,6 +160,7 @@ try {
       ((S().stat(p)?.minutes ?? 0) >= minMin) &&
       (!q || p.name.toLowerCase().includes(q) || p.fullName.toLowerCase().includes(q)));
     document.getElementById('count').textContent = `共 ${rows.length} 人`;
+    updateXLeague(q);
     document.getElementById('list').innerHTML = C.table(rows, [
       { key: 'name', label: '球員', value: p => p.name, left: true,
         render: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.playerPhoto(p, 28)} ${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}` },
@@ -459,6 +481,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
         <span class="dim small" id="count">共 ${filteredRows().length} 人</span>
       </div>
       ${tableHtml()}
+      <div id="xleague"></div>
     </div>
 
     <div class="card">
@@ -484,6 +507,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     });
     const q = app.querySelector('#q');
     if (q) { q.oninput = () => { query = q.value; draw(); q.focus(); }; }
+    updateXLeague(query);
     const ps = app.querySelector('#fPos');
     if (ps) ps.onchange = () => { posFilter = ps.value; draw(); };
     const ts = app.querySelector('#fTeam');

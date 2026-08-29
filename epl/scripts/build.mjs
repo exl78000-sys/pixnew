@@ -36,6 +36,7 @@ import { appendSamples, historyForSite } from './lib/prob-history.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
 import { attachProfiles } from './lib/coach-profiles.mjs';
+import { coreFromFpl } from './lib/player-core.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
@@ -928,6 +929,8 @@ async function main() {
     ...(p.photo || photoData[p.code] ? { ...p, photo: photoData[p.code] || p.photo } : p),
     role: roleOf(p),
   })));
+  // 跨聯賽統一層(lib/player-core.mjs):聯集 + null、不帶照片,給跨聯賽搜尋用
+  await write('players-core.json', coreFromFpl(players, { lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON }));
   await write('leaders.json', leaders);
   await write('tactics.json', tactics);
   await write('formation.json', formationImpact({ tactics, table: lastTable }));

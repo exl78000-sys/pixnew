@@ -37,6 +37,7 @@ import { loadVerifiedLoans, attachLoans } from './lib/loans.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
 import { attachProfiles } from './lib/coach-profiles.mjs';
+import { coreFromUnderstat } from './lib/player-core.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -1040,6 +1041,8 @@ async function main() {
     }
   }
   await write('players', playersOut);
+  // 跨聯賽統一層(lib/player-core.mjs):聯集 + null(西甲沒有身價與傷停 → null 不是 0)
+  await write('players-core', coreFromUnderstat(playersOut));
   await write('leaders', {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
     currentAvailable: Boolean(playerSeasons[CURRENT_SEASON]?.players?.length),
