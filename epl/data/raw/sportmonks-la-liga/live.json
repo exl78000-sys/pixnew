@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-29T16:36:52.880Z",
+  "fetchedAt": "2026-08-29T16:43:35.191Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,8 +22,8 @@
       "kickoff": "2026-08-29 15:00:00",
       "started": true,
       "finished": false,
-      "minute": 17,
-      "hs": 1,
+      "minute": 74,
+      "hs": 4,
       "as": 2,
       "sides": {
         "LEV": {
@@ -90,9 +90,9 @@
         "status": 22,
         "home": "LEV",
         "away": "BET",
-        "fetchedAt": "2026-08-29T16:36:52.878Z",
+        "fetchedAt": "2026-08-29T16:43:35.189Z",
         "score": {
-          "home": 1,
+          "home": 4,
           "away": 2
         },
         "teamStats": {
@@ -198,6 +198,19 @@
             "assistId": null
           },
           {
+            "minute": 70,
+            "extra": null,
+            "label": "70'",
+            "team": "LEV",
+            "type": "",
+            "detail": "Left foot shot",
+            "comments": "6th Goal",
+            "player": "Roger Brugué",
+            "playerId": 6984712,
+            "assist": null,
+            "assistId": null
+          },
+          {
             "minute": 46,
             "extra": null,
             "label": "46'",
@@ -270,6 +283,58 @@
             "type": "",
             "detail": null,
             "comments": "6th Substitution",
+            "player": "Pablo García",
+            "playerId": 37722328,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 72,
+            "extra": null,
+            "label": "72'",
+            "team": "LEV",
+            "type": "",
+            "detail": null,
+            "comments": "7th Substitution",
+            "player": "Karl Etta Eyong",
+            "playerId": 37646866,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 72,
+            "extra": null,
+            "label": "72'",
+            "team": "LEV",
+            "type": "",
+            "detail": null,
+            "comments": "8th Substitution",
+            "player": "Víctor García",
+            "playerId": 21539177,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 74,
+            "extra": null,
+            "label": "74'",
+            "team": "BET",
+            "type": "",
+            "detail": null,
+            "comments": "9th Substitution",
+            "player": "Abde Ezzalzouli",
+            "playerId": 37297124,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 69,
+            "extra": null,
+            "label": "69'",
+            "team": "BET",
+            "type": "",
+            "detail": "Off the ball foul",
+            "comments": "1st Yellowcard",
             "player": "Pablo García",
             "playerId": 37722328,
             "assist": null,
