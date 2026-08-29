@@ -64,6 +64,11 @@ try {
   }
 
   const M = bt.models;
+  /* 即時機率的校準量測(build 從 live-history 算好)。沒有這一份的聯賽
+     (西甲/英冠沒有 in-play feed)整節不畫 —— loadFrom 的 absent 語意剛好。 */
+  const calib = (await C.loadFrom(C.league(), ['inplay-calibration']).catch(() => ({ data: {} })))
+    .data?.['inplay-calibration'] ?? null;
+
   const kpi = (l, v, sub) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub}</div></div>`;
   const better = ((M.baseline.rps - M.blend.rps) / M.baseline.rps) * 100;
 
@@ -104,6 +109,52 @@ try {
       <text x="${w - pad.r}" y="18" text-anchor="end" font-size="11.5" fill="var(--ink-3)">RPS 越低越好</text>`;
     return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto" role="img" aria-label="模型與市場逐輪 RPS 對照">
       ${grid}${legend}${path('marketRps', 'var(--draw)')}${path('modelRps', 'var(--accent)')}${xLabels}</svg>`;
+  }
+
+  /* ── 即時機率的可靠度(校準量測,累積中)──────────────
+     只量不改:in-play 模型要不要調,等這裡的數字自己說話(鐵則二)。
+     樣本不足時整節照畫、但把「還不夠下結論」打在最顯眼的位置(鐵則四)。 */
+  function inplayCalibSection() {
+    if (!calib || !calib.points) return '';
+    const STATE_ZH = { lead: '主隊領先', level: '平手', trail: '主隊落後' };
+    const insufficient = calib.verdict !== 'ok';
+    const fmt = v => (v == null ? '—' : v.toFixed(3));
+    const cellRows = calib.cells.map(c => `<tr>
+      <td>${c.band} 分</td><td>${STATE_ZH[c.state] ?? c.state}</td>
+      <td class="num">${fmt(c.brier)}</td><td class="num">${fmt(c.brierPre)}</td>
+      <td class="num dim">${c.matches} 場 / ${c.n} 點</td></tr>`).join('');
+    const trailRows = calib.trailing.map(t => `<tr>
+      <td>${t.band} 分</td>
+      <td class="num">${C.pct(t.avgProb, 0)}</td>
+      <td class="num">${C.pct(t.comebackRate, 0)}</td>
+      <td class="num dim">${t.matches} 場 / ${t.n} 點</td></tr>`).join('');
+    return `
+  <div class="section" style="margin-top:20px"><h2>即時機率的可靠度</h2>
+    <span class="hint">量測累積中・只量不改模型</span></div>
+  <div class="card">
+    ${insufficient ? `<div class="note warn"><b>樣本還不夠下結論</b> ——
+      目前累積 ${calib.matches} 場完賽(門檻 ${calib.minMatches} 場)。
+      每個比賽日自動累積,這一節的數字先當觀察、不當結論。</div>` : ''}
+    <p class="small" style="margin-top:10px">把每場比賽中每 2 分鐘的即時勝率對上最終結果,
+      算 Brier 分數(越低越準)。對照組是<b>賽前機率凍結不動</b> ——
+      即時更新至少要贏過「完全不看場上」的凍結版,才算有在提供資訊。</p>
+    <div class="stat-line"><span class="small">整體(${calib.matches} 場・${calib.points} 個時點)</span>
+      <b class="mono">即時 ${fmt(calib.overall.brier)} vs 凍結 ${fmt(calib.overall.brierPre)}</b></div>
+    <div class="table-wrap" style="margin-top:10px"><table>
+      <thead><tr><th>時間段</th><th>比分狀態</th><th class="num">即時 Brier</th>
+        <th class="num">凍結 Brier</th><th class="num">樣本</th></tr></thead>
+      <tbody>${cellRows}</tbody></table></div>
+    <h3 style="margin-top:16px">對落後方是不是太樂觀?</h3>
+    <p class="small">有一方落後的時點裡,模型平均給落後方的勝率 vs 落後方實際翻盤的比例。
+      兩個數字該接近;模型的那欄明顯偏高就是太樂觀。
+      (外部單點參照:2026-08-29 同一時刻本站給落後情境的客隊 54~58%、
+      Google/Sportradar 給 38% —— 一個觀察,不是結論,放這裡等樣本裁決。)</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>時間段</th><th class="num">模型給落後方(平均)</th>
+        <th class="num">實際翻盤率</th><th class="num">樣本</th></tr></thead>
+      <tbody>${trailRows}</tbody></table></div>
+    <div class="tiny dim" style="margin-top:8px">${C.esc(calib.note)}</div>
+  </div>`;
   }
 
   /* ── 測過、但沒有進模型的特徵 ──────────────────────
@@ -421,6 +472,8 @@ try {
   </div>
 
   ${rejectedSection()}
+
+  ${inplayCalibSection()}
 
   <div class="card" style="margin-top:20px">
     <h2>這個模型不知道的事</h2>
