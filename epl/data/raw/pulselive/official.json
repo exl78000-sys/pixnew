@@ -8994,19 +8994,6 @@
    "goals": [
     {
      "side": "H",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "1",
-     "type": "PE",
-     "kind": null,
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "H",
      "person": 74976,
      "assist": 33032,
      "team": 127,
@@ -9043,20 +9030,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+1'00"
+   "clock": "45+3'00"
   },
   "COV|HUL": {
    "fixtureId": 128936,
@@ -9501,21 +9488,21 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+3'00"
   }
  },
- "fetchedAt": "2026-08-29T14:46:08.970Z"
+ "fetchedAt": "2026-08-29T14:48:24.309Z"
 }
