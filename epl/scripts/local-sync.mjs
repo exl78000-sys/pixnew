@@ -32,6 +32,7 @@ try {
   console.log('▶ 建立西甲資料集');
   await run('scripts/build-laliga.mjs');
   await run('scripts/verify-championship-teams.mjs');
+  await run('scripts/verify-championship-coaches.mjs');
   await run('scripts/fetch-news.mjs', ['--league=en2']);
   await run('scripts/backtest-championship.mjs');
   await run('scripts/build-championship.mjs');

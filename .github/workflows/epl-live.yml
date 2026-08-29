@@ -287,6 +287,10 @@ jobs:
       - name: 核對人工交付的英冠球隊資料
         run: npm run en2:verify-teams
 
+      # 教練交付同一套:收件匣 → 核對器 → 產物,對照組是 6 支英超球隊的官方每日名單
+      - name: 核對人工交付的英冠教練
+        run: npm run en2:verify-coaches
+
       - name: 英冠走查回測(模型準度)
         run: npm run en2:backtest
 
@@ -341,6 +345,7 @@ jobs:
                      epl/data/raw/news-championship.json \
                      epl/data/championship-teams-verified.json \
                      epl/data/live-history.json \
+                     epl/data/championship-coaches-verified.json \
                      epl/data/raw/understat/ \
                      epl/data/raw/understat-la-liga/ \
                      epl/data/raw/sportmonks-la-liga/ \

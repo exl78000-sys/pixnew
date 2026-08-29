@@ -264,7 +264,44 @@ const table = out('table'), results = out('results'), sim = out('sim');
   }
 }
 
-// ── 11. 外電 ──────────────────────────────────────
+// ── 11. 教練交付 ───────────────────────────────────
+{
+  const vPath = join(ROOT, 'data', 'championship-coaches-verified.json');
+  const inboxPath = join(ROOT, 'data', 'manual', 'championship-coaches-delivery.json');
+  if (existsSync(vPath) && existsSync(inboxPath)) {
+    const v = JSON.parse(readFileSync(vPath, 'utf8'));
+    check('教練交付通過核對', v.accepted === true, (v.problems ?? []).join('、'));
+    check('對照組 6/6(英超官方每日名單)', v.controls?.ok === 6, JSON.stringify(v.controls));
+    const sha = createHash('sha256').update(readFileSync(inboxPath)).digest('hex');
+    check('核對結果跟收件匣同步(sha)', v.inboxSha === sha);
+    check('產物只發布英冠 24 隊(對照組是工具,不進產物)',
+      v.coaches.length === 24 && v.coaches.every(c => !['ARS','AVL','LIV','MCI','NEW','TOT'].includes(c.team)));
+
+    const co = out('coaches');
+    check('coaches.json available 且 24 隊', co.available === true && co.coaches.length === 24);
+    /* 任內戰績是拿本站賽果切分的 —— 抽一筆手驗:BIR 的 Chris Davies
+       since 2024-06-06,上季(2025-26)應該是完整 46 場,而且要等於積分榜那一列。 */
+    const bir = co.coaches.find(c => c.team === 'BIR');
+    const birTable = out('table').last.find(r => r.code === 'BIR');
+    check('任內戰績切分對得回積分榜(BIR 上季全季)',
+      bir?.seasonRecord?.p === 46 && bir.seasonRecord.pts === birTable.pts,
+      `${bir?.seasonRecord?.p} 場 ${bir?.seasonRecord?.pts} 分 vs 榜上 ${birTable?.pts}`);
+    /* 升班馬的教練:任期跨低級別聯賽,本站只有英冠比賽 —— 戰績只能是本站範圍。 */
+    const bol = co.coaches.find(c => c.team === 'BOL');
+    check('月精度的 since 有標 sincePrecision', bol?.sincePrecision === 'month', bol?.since);
+    check('沒有任期的教練不給戰績(不猜)',
+      co.coaches.filter(c => !c.since).every(c => !c.seasonRecord && !c.allRecord));
+    check('teams 卡掛上教練', out('teams').filter(t => t.coach?.name).length === 24);
+    check('meta.capabilities.coaches 已開', out('meta').capabilities.coaches === true);
+    /* **沒有收協作方自帶的 names.mjs**:本站的那份有 Đ→Dj 對照與 matchOne,
+       收簡化版就是複本漂移。核對器必須 import 本站的。 */
+    const src = readFileSync(join(ROOT, 'scripts', 'verify-championship-coaches.mjs'), 'utf8');
+    check('核對器用本站的 lib/names.mjs(normName)',
+      /from '\.\/lib\/names\.mjs'/.test(src) && /normName/.test(src));
+  }
+}
+
+// ── 12. 外電 ──────────────────────────────────────
 {
   const news = out('news');
   check('外電有抓到', news.length > 0, `${news.length} 則`);
@@ -295,7 +332,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
     && !/arg\('league'\) === 'es1' \? 'es1' : 'pl'/.test(src));
 }
 
-// ── 12. 開賽時間的時區 ─────────────────────────────
+// ── 13. 開賽時間的時區 ─────────────────────────────
 {
   /* 英格蘭是 GMT/BST,不是固定 +01:00。冬季場次照抄西歐的偏移會整批早一小時。 */
   const winter = fixtures.filter(f => f.kickoff && /-(12|01|02)-/.test(f.date));

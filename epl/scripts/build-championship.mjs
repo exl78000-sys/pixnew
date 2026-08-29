@@ -387,7 +387,10 @@ async function main() {
     /* capabilities 是前端用來決定「這一頁要不要畫」的旗標。
        沒有的一律 false,**不要留空不寫** —— 沒寫的話前端讀到 undefined,
        某些地方會當成「還沒判斷」而不是「沒有」。 */
-    capabilities: { players: false, injuries: false, coaches: false, xg: false, lineups: false, live: false },
+    capabilities: { players: false, injuries: false,
+      coaches: existsSync(join(ROOT, 'data', 'championship-coaches-verified.json'))
+        && JSON.parse(readFileSync(join(ROOT, 'data', 'championship-coaches-verified.json'), 'utf8')).accepted,
+      xg: false, lineups: false, live: false },
     builtAt: new Date().toISOString(), asOf: AS_OF,
     /* 欄位名要跟另外兩個聯賽一致:currentSeason / lastSeason。
        第一版寫成 season,首頁那句「2025-26 完整・undefined 進行中」就是這樣來的 ——
@@ -419,7 +422,11 @@ async function main() {
           + '其中 12 支跟本站既有的英超名冊逐欄位一致,那是刻意留的對照題)']
         : ['— 隊色與球場資料尚未取得,所以圖表暫時是中性灰'
           + (deliveryNote ? `(${deliveryNote}` + ')' : '')]),
-      '— 沒有教練、傷停、正式陣容與賽後統計',
+      ...(existsSync(join(ROOT, 'data', 'championship-coaches-verified.json'))
+        && JSON.parse(readFileSync(join(ROOT, 'data', 'championship-coaches-verified.json'), 'utf8')).accepted
+        ? ['✓ 教練名冊:人工交付並通過核對(6 支英超對照組跟官方每日名單全對;任內戰績由本站賽果依上任日期切分)']
+        : ['— 沒有教練名冊']),
+      '— 沒有傷停、正式陣容與賽後統計',
       ...(tableCaveat ? [`— ${tableCaveat.note.replace(/\*\*/g, '')}`] : []),
       ...(backtest.available
         ? [`✓ 走查回測 ${backtest.season} ${backtest.games} 場:RPS ${backtest.rps}、基準線 ${backtest.baselineRps}`
@@ -508,7 +515,57 @@ async function main() {
     + '西甲回 600 人,getTeamData 對英冠球隊一律 404),FPL 只有英超。';
   await write('players', []);
   await write('leaders', { available: false, note: noPlayerData, boards: [] });
-  await write('coaches', { available: false, note: '英冠教練名冊尚未取得,見 docs/英冠-球隊資料-交付提示詞.md。', season: CURRENT_SEASON, coaches: [] });
+  /* 教練。人工交付 → 核對器(npm run en2:verify-coaches)→ 產物,build 只讀產物。
+     收件匣改過沒重跑核對時 sha 對不上,整批不掛(比照球隊資料與租借)。
+     任期已知的,拿本站的英冠賽果**自動算任內戰績** —— 日期錯了戰績就會算到
+     前任頭上,所以這也是 since 日期錯誤會現形的地方。 */
+  {
+    let coachesOut = { available: false, note: '英冠教練交付未通過核對或還沒核對。', season: CURRENT_SEASON, coaches: [] };
+    const vPath = join(ROOT, 'data', 'championship-coaches-verified.json');
+    const inboxPath = join(ROOT, 'data', 'manual', 'championship-coaches-delivery.json');
+    if (existsSync(vPath) && existsSync(inboxPath)) {
+      const v = JSON.parse(await readFile(vPath, 'utf8'));
+      const sha = createHash('sha256').update(await readFile(inboxPath)).digest('hex');
+      if (!v.accepted) console.log('  ⚠ 教練交付未通過核對,整批不掛');
+      else if (v.inboxSha !== sha) console.log('  ⚠ 教練收件匣改過但沒重跑核對(sha 對不上),整批不掛');
+      else {
+        const allMatches = [...priorMatches, ...lastLeague, ...curPlayed];
+        const withPpg = r => ({ ...r, pts: r.w * 3 + r.d, ppg: r.p ? round((r.w * 3 + r.d) / r.p, 2) : 0 });
+        coachesOut = {
+          available: true, season: CURRENT_SEASON,
+          source: v.source, verifiedAt: v.ranAt,
+          note: '人工交付,已過核對器:6 支英超對照組跟官方每日名單全對、逐欄位出處齊全;'
+            + '外電庫比對為累積式訊號。任內戰績由本站賽果依 since 日期自動切分。',
+          coaches: v.coaches.map(c => {
+            const sinceIso = c.since ? (c.since.length === 7 ? `${c.since}-01` : c.since) : null;
+            /* datePrecision 要跟著標:YYYY-MM 的交付切分是取月初,那個月內的比賽
+               可能還是前任帶的 —— 戰績照算,但畫面要講得出精度。 */
+            const tenure = sinceIso
+              ? allMatches.filter(m => (m.home === c.team || m.away === c.team) && m.date >= sinceIso)
+              : null;
+            const lastTen = tenure ? tenure.filter(m => m.season === LAST_SEASON) : null;
+            const curTen = tenure ? tenure.filter(m => m.season === CURRENT_SEASON) : null;
+            return {
+              team: c.team, name: c.name, nat: c.nat, since: c.since, caretaker: c.caretaker,
+              sincePrecision: c.since ? (c.since.length === 7 ? 'month' : 'day') : null,
+              sourceVerified: true,
+              seasonRecord: lastTen?.length ? withPpg(teamRecord(lastTen, c.team)) : null,
+              currentSeasonRecord: curTen?.length ? withPpg(teamRecord(curTen, c.team)) : null,
+              allRecord: tenure?.length ? withPpg(teamRecord(tenure, c.team)) : null,
+            };
+          }),
+        };
+        console.log(`  教練:${coachesOut.coaches.length} 隊(任期已知 ${coachesOut.coaches.filter(c => c.since).length} 隊,任內戰績已切分)`);
+      }
+    }
+    await write('coaches', coachesOut);
+    // 球隊卡要看得到教練
+    for (const t of teams) {
+      const c = coachesOut.coaches.find(x => x.team === t.code);
+      if (c?.name) t.coach = { name: c.name, nat: c.nat, since: c.since, caretaker: c.caretaker };
+    }
+    await write('teams', teams);   // 重寫一次,把 coach 掛上去
+  }
   await write('goals', { available: false, note: noPlayerData, seasons: [], data: {}, unavailable: ['scorers'] });
 
   /* ── 單場分析頁要的六份 ──

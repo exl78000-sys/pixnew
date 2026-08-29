@@ -21,6 +21,11 @@ try {
     if (coaches.officialAsOf && c.officialName) {
       return '<span class="pill accent tiny" title="聯賽官方登記的現任教練">官方確認在任</span>';
     }
+    /* 人工交付並過核對器的(英冠)。沒有這個分支的話,c.confidence 是 undefined,
+       下面的 fallback 會把字面「undefined」印在畫面上。 */
+    if (c.sourceVerified) {
+      return '<span class="pill accent tiny" title="人工交付,已過核對器(6 支英超對照組跟官方每日名單全對)">交付已核對</span>';
+    }
     /* **沒有任期資料就不准說「長期在任」。** confidence=high 的原意是
        「這個人選我們有把握」,但標籤寫成「長期在任」講的是任期長短 ——
        而西甲的 since / tenureDays 全部是 null,我們根本不知道他帶多久。
@@ -178,7 +183,8 @@ try {
     /* 頭像與姓名要包在同一個 row 裡。以前是 spread 的三個直接子元素
        (頭像 / 姓名 / 標籤),姓名那格在沒有第二行說明時(西甲沒有任期)
        會被 space-between 推到正中間,看起來像跟頭像沒關係。 */
-    const meta2 = [c.nat, c.since ? `${c.since} 上任(約 ${years} 年)` : null].filter(Boolean).join('・');
+    // 交付來的教練沒有 tenureDays —— years 是 null 就別印「約 null 年」
+    const meta2 = [c.nat, c.since ? `${c.since} 上任${years != null ? `(約 ${years} 年)` : ''}` : null].filter(Boolean).join('・');
     const head = `<div class="spread" style="align-items:flex-start">
       <div class="row" style="gap:10px;align-items:flex-start">${coachAvatar(c, 48)}
         <div><h3 style="margin:0">${c.name ? C.esc(c.zh ?? c.name) : '教練待確認'}
@@ -217,11 +223,17 @@ try {
             c.currentSeasonRecord?.p ? [`${c.currentSeasonRecord.season ?? meta.currentSeason} 任內`, rec(c.currentSeasonRecord)] : null,
             c.seasonRecord?.p ? [`${meta.lastSeason} 任內`, rec(c.seasonRecord)] : null,
             c.allRecord?.p ? ['近三季任內', rec(c.allRecord)] : null,
+            c.caretaker === true ? ['身分', '<span class="pill warn tiny">看守教練</span>'] : null,
             c.formation ? ['慣用陣型', `<b class="mono">${C.esc(c.formation)}</b>`] : null,
           ].filter(Boolean).map(([l, v], i) => `<div class="stat-line"${i ? '' : ' style="margin-top:10px"'}>
             <span class="small muted">${l}</span><span class="small">${v}</span></div>`).join('')}
           ${(c.style ?? []).length ? `<div class="tags" style="margin-top:8px">${c.style.map(x => `<span class="pill">${C.esc(x)}</span>`).join('')}</div>` : ''}
           ${c.note ? `<div class="small muted" style="margin-top:8px">${C.esc(c.note)}</div>` : ''}
+          ${/* 交付來的教練:戰績是拿本站賽果依 since 切分的,而本站只有這個聯賽的比賽 ——
+                任期跨其他聯賽的部分(升班馬教練帶低級別那幾季)不在內,要講清楚。 */''}
+          ${c.sourceVerified && (c.allRecord?.p || c.seasonRecord?.p || c.currentSeasonRecord?.p) ? `<div class="tiny dim" style="margin-top:6px">
+            戰績由本站賽果依上任日期自動切分,只含本站資料範圍內的${C.esc(meta.competition?.short ?? '')}比賽
+            ${c.sincePrecision === 'month' ? ';上任日期只有月精度,該月內的比賽可能仍是前任帶的' : ''}。</div>` : ''}
           ${c.predecessors?.length ? `<div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
             <div class="tiny dim" style="margin-bottom:4px">同隊前任(${meta.lastSeason} 任內)</div>
             ${c.predecessors.map(p => `<div class="stat-line"><span class="small">${C.esc(p.zh ?? p.name)}
