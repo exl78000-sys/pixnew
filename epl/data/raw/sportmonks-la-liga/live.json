@@ -41,12 +41,17 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 0,
+          "goals": 1,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [],
+          "scorers": [
+            {
+              "name": "Ander Barrenetxea",
+              "goals": 1
+            }
+          ],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -68,12 +73,17 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 0,
+          "goals": 1,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [],
+          "scorers": [
+            {
+              "name": "Roberto Fernández",
+              "goals": 1
+            }
+          ],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -90,7 +100,7 @@
         "status": 3,
         "home": "RSO",
         "away": "ESP",
-        "fetchedAt": "2026-08-29T17:59:45.565Z",
+        "fetchedAt": "2026-08-29T18:00:37.177Z",
         "score": {
           "home": 1,
           "away": 1
@@ -268,6 +278,15 @@
         "away": 0.2845,
         "xgHome": 1.68,
         "xgAway": 1.22
+      },
+      "liveSummary": {
+        "kind": "ht",
+        "minute": 45,
+        "paragraphs": [
+          "上半場結束,Real Sociedad 1:1 RCD Espanyol。",
+          "賽前模型 46%/25%/28%(主/和/客),目前 38%/37%/25% —— 和局的機率升了 12 個百分點。",
+          "模型估下一球:Real Sociedad 44%、RCD Espanyol 32%,剩餘時間期望再進 0.84:0.61。"
+        ]
       }
     }
   ],
