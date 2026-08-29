@@ -1938,7 +1938,10 @@ async function checkDataGap() {
         && core.includes("'model', 'duel'] },")                     // 分析組
         && /不是預測的斷言/.test(pg) && /做了就是編數字/.test(pg)
         && /跨聯賽對戰也不提供/.test(pg) && /分鐘分布未建模/.test(pg)
-        && /seededRng/.test(pc) && /mulberry32/.test(pc);           // 種子亂數,同種子重播同一場
+        && /seededRng/.test(pc) && /mulberry32/.test(pc)            // 種子亂數,同種子重播同一場
+        /* 播放模式:in-play 引擎共用、計時器走 pageInterval(裸 setInterval 是老坑) */
+        && /inPlaySim/.test(pg) && /跳到結果/.test(pg)
+        && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
     /* ── 對戰模擬:前端預測核心的 golden(2026-08-30)──
@@ -1970,6 +1973,20 @@ async function checkDataGap() {
         out.push([`模擬 golden:${lg} 前端重算 ${n} 場未賽預測全部一致`,
           n > 50 && bad === 0, bad ? `${bad} 場不一致(首例 ${badKey})` : `只有 ${n} 場`]);
       }
+      /* 播放模式的 in-play 引擎:inPlaySim 對 lib/inplay.mjs 的 inPlay,
+         120 個情境(λ×比分×分鐘×紅牌×完場)逐鍵完全一致 */
+      const { inPlay } = await import('./lib/inplay.mjs');
+      const { inPlaySim } = await import('../web/assets/js/predict-core.js');
+      let ipBad = 0;
+      for (const lambdaHome of [0.8, 1.42, 2.68]) for (const lambdaAway of [0.7, 1.65])
+        for (const [hs, as] of [[0, 0], [1, 0], [1, 2], [3, 3]])
+          for (const minute of [0, 30, 45, 77, 90])
+            for (const args of [{}, { redHome: 1 }, { finished: true }]) {
+              const a = inPlay({ lambdaHome, lambdaAway, hs, as, minute, ...args });
+              const b = inPlaySim({ lambdaHome, lambdaAway, hs, as, minute, ...args });
+              if (JSON.stringify(a) !== JSON.stringify(b)) ipBad++;
+            }
+      out.push(['模擬 golden:播放模式的 in-play 引擎與實時頁逐鍵一致(360 情境)', ipBad === 0, `${ipBad} 個情境不一致`]);
       return out;
     })(),
 

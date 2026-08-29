@@ -1,5 +1,5 @@
 import * as C from './core.js?v=7d8fded0';
-import { blendPair, sampleMatch, seededRng } from './predict-core.js?v=a2765df2';
+import { blendPair, sampleMatch, seededRng, inPlaySim } from './predict-core.js?v=a99cd006';
 
 /* 對戰模擬(模擬遊戲第一步)。三條誠實界線,每一條都在畫面上講:
    1. **機率跟站上完全同源** —— predict-core 是模型的逐行移植,
@@ -69,30 +69,79 @@ try {
         .map(s => `${s.s}(${C.pct(s.p, 1)})`).join('、')}</div>`;
   }
 
+  /* 播放整場:分鐘走、比分跳、進球即時彈出、勝率條隨戰況動 ——
+     勝率用跟實時頁同一顆 in-play 引擎(inPlaySim,golden 鎖等價),
+     不是另編一套「看起來會動」的數字。計時器一律走 C.pageInterval
+     (裸 setInterval 是「頁面切換後計時器沒清」那條老坑),
+     重新模擬時先清掉上一場的。 */
+  let playTimer = null;
+  const SPEEDS = { slow: 260, normal: 130, fast: 55 };
+  let speed = 'normal';
+
   async function runSim() {
     const box = document.getElementById('simout');
     if (!box || state.home === state.away) return;
     const p = blendPair(sim, state.home, state.away, eloBy.get(state.home), eloBy.get(state.away),
       { neutral: state.neutral });
     if (!p) return;
-    const [hs, as] = [await sharesOf(state.home), await sharesOf(state.away)];
+    const [hshare, ashare] = [await sharesOf(state.home), await sharesOf(state.away)];
     const rng = seededRng(state.seed);
-    const m = sampleMatch(p, rng, { homeShares: hs.shares, awayShares: as.shares });
-    const line = e => `<div class="stat-line"><span class="small dim mono">${e.min}'</span>
-      <span class="small">⚽ ${e.side === 'home' ? C.esc(C.name(state.home)) : C.esc(C.name(state.away))}
-        ${e.scorer ? `—— ${C.esc(e.scorer)}` : '<span class="dim">(不指名:該隊可用的進球佔比樣本不足)</span>'}</span></div>`;
-    const seasonUsed = [...new Set([hs.season, as.season].filter(Boolean))];
-    box.innerHTML = `
-      <div class="scoreline" style="margin:8px 0">
-        <div class="side">${C.badge(state.home)}<b>${C.esc(C.name(state.home))}</b></div>
-        <div class="sc">${m.hs} : ${m.as}</div>
-        <div class="side away">${C.badge(state.away)}<b>${C.esc(C.name(state.away))}</b></div>
-      </div>
-      ${m.events.length ? `<div style="display:grid;gap:2px">${m.events.map(line).join('')}</div>`
-        : '<div class="tiny dim center">這一場沒有進球。</div>'}
-      <div class="tiny dim" style="margin-top:8px">種子 ${state.seed} —— 「重播」用同一顆種子重現同一場;「再抽」換一顆。
-        比分抽自模型分布;進球分鐘均勻抽樣(分鐘分布未建模,純演出);
-        進球者按${seasonUsed.length ? `${seasonUsed.join('/')} 實際進球佔比` : '實際進球佔比'}抽。</div>`;
+    const m = sampleMatch(p, rng, { homeShares: hshare.shares, awayShares: ashare.shares });
+    const seasonUsed = [...new Set([hshare.season, ashare.season].filter(Boolean))];
+    const endMin = Math.max(90, ...m.events.map(e => e.min));
+
+    if (playTimer) clearInterval(playTimer);
+    let min = 0;
+
+    const frame = () => {
+      const done = min >= endMin;
+      const seen = m.events.filter(e => e.min <= min);
+      const hs = seen.filter(e => e.side === 'home').length;
+      const as = seen.filter(e => e.side === 'away').length;
+      const ip = inPlaySim({ lambdaHome: p.xgHome, lambdaAway: p.xgAway,
+        hs, as, minute: min, finished: done });
+      const line = e => `<div class="stat-line"><span class="small dim mono">${e.min}'</span>
+        <span class="small">⚽ ${e.side === 'home' ? C.esc(C.name(state.home)) : C.esc(C.name(state.away))}
+          ${e.scorer ? `—— ${C.esc(e.scorer)}` : '<span class="dim">(不指名:進球佔比樣本不足)</span>'}</span></div>`;
+      const rows = [];
+      for (const e of seen) rows.push(line(e));
+      if (min >= 45) rows.splice(seen.filter(e => e.min <= 45).length, 0,
+        `<div class="tiny dim center">—— 中場 ——</div>`);
+      box.innerHTML = `
+        <div class="spread"><span class="pill ${done ? '' : 'bad'}">${done ? '完場'
+          : `<span class="livedot"></span>第 ${Math.min(min, 90)}${min > 90 ? '+' : ''} 分鐘`}</span>
+          <span class="tiny dim">播放速度
+            <select id="dSpeed">${Object.entries({ slow: '慢', normal: '正常', fast: '快' })
+              .map(([k, zh]) => `<option value="${k}"${k === speed ? ' selected' : ''}>${zh}</option>`).join('')}</select>
+            ${done ? '' : '<button class="btn tiny" id="dSkip">跳到結果</button>'}</span></div>
+        <div class="scoreline" style="margin:8px 0">
+          <div class="side">${C.badge(state.home)}<b>${C.esc(C.name(state.home))}</b></div>
+          <div class="sc">${hs} : ${as}</div>
+          <div class="side away">${C.badge(state.away)}<b>${C.esc(C.name(state.away))}</b></div>
+        </div>
+        ${C.probBar(ip)}
+        ${done ? '' : `<div class="tiny dim center" style="margin-top:4px">剩餘期望進球 ${ip.xgRestHome} : ${ip.xgRestAway}
+          ・下一球 ${C.esc(C.name(state.home))} ${C.pct(ip.nextGoal.home, 0)} / ${C.esc(C.name(state.away))} ${C.pct(ip.nextGoal.away, 0)}</div>`}
+        ${rows.length ? `<div style="display:grid;gap:2px;margin-top:8px">${rows.join('')}</div>` : ''}
+        ${done ? `<div class="tiny dim" style="margin-top:8px">種子 ${state.seed} —— 「重播」用同一顆種子重現同一場;「模擬一場」換一顆。
+          比分抽自模型分布;進球分鐘均勻抽樣(分鐘分布未建模,純演出);
+          進球者按${seasonUsed.length ? `${seasonUsed.join('/')} 實際進球佔比` : '實際進球佔比'}抽。
+          勝率條用跟實時頁同一顆 in-play 引擎,對著「模擬出來的比分」計算。</div>` : ''}`;
+      const sp = document.getElementById('dSpeed');
+      if (sp) sp.onchange = e => { speed = e.target.value; restart(); };
+      const sk = document.getElementById('dSkip');
+      if (sk) sk.onclick = () => { min = endMin; frame(); if (playTimer) clearInterval(playTimer); };
+    };
+    const restart = () => {
+      if (playTimer) clearInterval(playTimer);
+      playTimer = C.pageInterval(() => {
+        min++;
+        frame();
+        if (min >= endMin) clearInterval(playTimer);
+      }, SPEEDS[speed]);
+    };
+    frame();
+    restart();
   }
 
   function render() {
