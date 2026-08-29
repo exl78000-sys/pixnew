@@ -29,6 +29,15 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
 
+      # 探勘缺口 C/D/E/H:API-Football 的聯賽 ID 與逐季 coverage flags + 抽樣實打。
+      # ID 自己用 search 查(交付引用的是另一家同名服務的 ID,不能照抄);
+      # 約 15 個請求,遠低於免費層 100/day。
+      - name: 探測 API-Football 涵蓋範圍(傷停/英冠球員/教練聯賽)
+        working-directory: epl
+        run: npm run probe:apifootball
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+
       - name: 探勘回傳結構
         working-directory: epl
         run: npm run explore:apis

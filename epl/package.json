@@ -36,6 +36,7 @@
     "laliga:live": "node scripts/fetch-laliga-live.mjs",
     "coaches:check": "node scripts/fetch-coaches.mjs",
     "probe:apis": "node scripts/probe-apis.mjs",
+    "probe:apifootball": "node scripts/probe-apifootball-coverage.mjs",
     "explore:apis": "node scripts/explore-apis.mjs",
     "official": "node scripts/fetch-official.mjs",
     "odds": "node scripts/fetch-odds.mjs",
