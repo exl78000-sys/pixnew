@@ -15,6 +15,7 @@
     "news": "node scripts/fetch-news.mjs",
     "news:merge": "node scripts/merge-curated-news.mjs",
     "loans:verify": "node scripts/verify-loans.mjs",
+    "careers:verify": "node scripts/verify-coach-careers.mjs",
     "bundle": "node scripts/bundle.mjs",
     "obsidian": "node scripts/build-obsidian.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",

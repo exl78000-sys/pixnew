@@ -1582,6 +1582,46 @@ async function checkDataGap() {
         && /startCountdowns/.test(src);
     })()],
 
+    /* ── 教練職涯史核對器(B 層,2026-08-29)── */
+    ...await (async () => {
+      const { verifyCareers } = await import('./verify-coach-careers.mjs');
+      const { createHash } = await import('node:crypto');
+      const ctx = {
+        rosters: { pl: new Map([['CHE', { name: 'Calum McFarlane', since: null }],
+          ['AVL', { name: 'Unai Emery', since: '2022-10-24' }]]),
+          es1: new Map([['RMA', { name: 'José Mário Dos Santos Mourinho Félix', since: null }]]),
+          en2: new Map([['LIN', { name: 'Chris Cohen & Tom Shaw', since: '2026-05-29' }]]) },
+        teamCodes: { pl: new Map(), es1: new Map(), en2: new Map() },
+        seasons: { pl: [], es1: [], en2: [] }, membership: { pl: new Map(), es1: new Map(), en2: new Map() },
+      };
+      const run = coaches => verifyCareers({ coaches }, ctx);
+      const wrong = run([{ league: 'pl', team: 'CHE', name: 'Xabi Alonso', current: {}, previous: [] }]);
+      /* 西班牙雙姓:最後一個 token 不是姓氏的全部。第一版拿它當姓,冤枉了四筆 —— 對錯人比對不到糟。 */
+      const variant = run([{ league: 'es1', team: 'RMA', name: 'José Mourinho', current: {}, previous: [] }]);
+      const duo = run([{ league: 'en2', team: 'LIN', name: 'Tom Shaw', current: {}, previous: [] }]);
+      const selfContra = run([{ league: 'pl', team: 'AVL', name: 'Unai Emery', firstHeadCoachJob: true,
+        current: { club: 'Aston Villa' }, previous: [], note: 'Derby 官方公告寫明那是他的第一份管理工作' }]);
+      const dayVsMonth = run([{ league: 'en2', team: 'LIN', name: 'Chris Cohen',
+        current: { club: 'Lincoln City', from: '2026-05-29' }, previous: [] }]);
+      return [
+        ['職涯核對:與官方名冊不同人 → 定罪', wrong.pl.verdict === 'rejected'
+          && wrong.pl.convictions.some(c => c.includes('不是同一人')), ''],
+        ['職涯核對:西班牙雙姓變體不冤枉(Mourinho ≠ Félix 姓)', variant.es1.convictions.length === 0
+          && variant.es1.labelIssues.length === 1, JSON.stringify(variant.es1.convictions)],
+        ['職涯核對:雙教頭「甲 & 乙」拆開對,單人名字配得上', duo.en2.convictions.length === 0, ''],
+        ['職涯核對:宣稱第一份工作、note 卻指向別隊 → 自我矛盾定罪', selfContra.pl.verdict === 'rejected', ''],
+        ['職涯核對:本站 since 是日精度時 ±14 天容忍', dayVsMonth.en2.convictions.length === 0, ''],
+        ['職涯核對:收件匣在的話,核對產物要在而且 sha 對得上', (() => {
+          const inboxPath = join(ROOT, 'data', 'manual', 'coach-careers.json');
+          if (!existsSync(inboxPath)) return true;
+          const vPath = join(ROOT, 'data', 'coach-careers-verified.json');
+          if (!existsSync(vPath)) return false;
+          const v = JSON.parse(readFileSync(vPath, 'utf8'));
+          return v.inboxSha256 === createHash('sha256').update(readFileSync(inboxPath, 'utf8')).digest('hex');
+        })()],
+      ];
+    })(),
+
     /* ── 盃賽併頁 + 球隊完整賽程含盃賽(2026-08-29,使用者要求)── */
     ['球隊深連結預設只看未賽(「完整賽程」要的是未來)', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
