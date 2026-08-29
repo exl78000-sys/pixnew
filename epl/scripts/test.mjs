@@ -1742,6 +1742,50 @@ async function checkDataGap() {
         && (pg.match(/id="xleague"/g) ?? []).length === 2;
     })()],
 
+    /* ── 延賽/改期偵測(探勘缺口 G,2026-08-29)──
+       狀態轉入延期集合、utcDate 變更、延期後回排定 = 改期,三種事件;
+       快照 diff 以 fdId 對齊(主客組合在有附加賽的聯賽不唯一,老坑)。 */
+    ...await (async () => {
+      const { diffSnapshots, attachScheduleStatus, normalizeMatches } = await import('./lib/schedule-status.mjs');
+      const prev = [
+        { fdId: 1, home: 'AAA', away: 'BBB', utcDate: '2026-09-01T14:00:00Z', status: 'TIMED' },
+        { fdId: 2, home: 'CCC', away: 'DDD', utcDate: '2026-09-02T14:00:00Z', status: 'POSTPONED' },
+        { fdId: 3, home: 'EEE', away: 'FFF', utcDate: '2026-09-03T14:00:00Z', status: 'TIMED' },
+      ];
+      const next = [
+        { fdId: 1, home: 'AAA', away: 'BBB', utcDate: '2026-09-01T14:00:00Z', status: 'POSTPONED' },
+        { fdId: 2, home: 'CCC', away: 'DDD', utcDate: '2026-10-15T19:45:00Z', status: 'TIMED' },
+        { fdId: 3, home: 'EEE', away: 'FFF', utcDate: '2026-09-03T16:30:00Z', status: 'TIMED' },
+      ];
+      const ev = diffSnapshots(prev, next);
+      const fix = [{ home: 'AAA', away: 'BBB', played: false, kickoff: '2026-09-01T14:00:00+00:00' },
+        { home: 'EEE', away: 'FFF', played: false, kickoff: '2026-09-03T14:00:00+00:00' }];
+      const n = attachScheduleStatus(fix, next);
+      const norm = normalizeMatches([
+        { id: 9, stage: 'PLAYOFFS', homeTeam: { name: 'X' }, awayTeam: { name: 'Y' }, utcDate: 'd', status: 'TIMED' },
+        { id: 8, stage: 'REGULAR_SEASON', homeTeam: { name: 'Alpha FC' }, awayTeam: { name: 'Beta' }, utcDate: 'd', status: 'TIMED' },
+      ], nm => ({ alpha: 'AAA', beta: 'BBB' }[nm.toLowerCase().replace(' fc', '')] ?? null));
+      return [
+        ['延賽偵測:轉延期 / 延期後改期 / 換時間 三種事件都抓到',
+          ev.length === 3 && ev.some(e => e.kind === 'postponed' && e.fdId === 1)
+          && ev.some(e => e.kind === 'rescheduled' && e.fdId === 2 && e.to === '2026-10-15T19:45:00Z')
+          && ev.some(e => e.kind === 'rescheduled' && e.fdId === 3), JSON.stringify(ev)],
+        ['延賽偵測:只標有事的場次,沒事不加欄位', n === 1
+          && fix[0].officialStatus === 'POSTPONED' && fix[0].officialStatusZh === '延期'
+          && !('officialStatus' in fix[1]), ''],
+        ['延賽偵測:附加賽不收、隊名對不到就跳過', norm.length === 1 && norm[0].home === 'AAA', ''],
+        ['延賽偵測:接線(builds 掛 + 實時頁講官方狀態 + CI 抓取與回寫)', (() => {
+          const b1 = readFileSync(join(ROOT, 'scripts', 'build.mjs'), 'utf8');
+          const b2 = readFileSync(join(ROOT, 'scripts', 'build-championship.mjs'), 'utf8');
+          const lv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+          const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+          return /attachScheduleStatus\(fixtures/.test(b1) && /attachScheduleStatus\(fixtures/.test(b2)
+            && /officialStatusZh/.test(lv) && /schedule:status/.test(wf)
+            && /epl\/data\/raw\/schedule-status\.json/.test(wf);
+        })()],
+      ];
+    })(),
+
     /* ── 教練基本檔案核對器(2026-08-29)。核心是來源真偽:
        交付的 53 個戰術來源網址實測 41 個 404 —— 編造網址的筆定罪,整聯賽退。 ── */
     ...await (async () => {

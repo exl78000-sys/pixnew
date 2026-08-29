@@ -173,6 +173,14 @@ jobs:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
         continue-on-error: true
 
+      # 官方賽程狀態(延期/取消)+ 本站自建改期歷史。同一個 token、每次 2 個請求。
+      - name: 抓官方賽程狀態
+        working-directory: epl
+        run: npm run schedule:status
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        continue-on-error: true
+
       - name: 同步英超主要資料(SportMonks)
         run: npm run sportmonks:sync -- --league=pl --max-requests=65 --max-details=10
         env:
@@ -345,6 +353,7 @@ jobs:
                      epl/data/raw/news-championship.json \
                      epl/data/championship-teams-verified.json \
                      epl/data/live-history.json \
+                     epl/data/raw/schedule-status.json \
                      epl/data/championship-coaches-verified.json \
                      epl/data/raw/understat/ \
                      epl/data/raw/understat-la-liga/ \

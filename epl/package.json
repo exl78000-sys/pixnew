@@ -17,6 +17,7 @@
     "loans:verify": "node scripts/verify-loans.mjs",
     "careers:verify": "node scripts/verify-coach-careers.mjs",
     "profiles:verify": "node scripts/verify-coach-profiles.mjs",
+    "schedule:status": "node scripts/fetch-schedule-status.mjs",
     "bundle": "node scripts/bundle.mjs",
     "obsidian": "node scripts/build-obsidian.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",

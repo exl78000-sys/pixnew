@@ -37,6 +37,7 @@ import { buildTable, headToHead, teamRecord, applyDeductions } from './lib/table
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
 import { attachProfiles } from './lib/coach-profiles.mjs';
+import { attachScheduleStatus } from './lib/schedule-status.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
@@ -537,6 +538,18 @@ async function main() {
   await write('meta', meta);
   await write('clubs', T.list);
   await write('teams', teams);
+  /* 官方賽程狀態(延期/取消)—— 跟英超同一份實作,快照太舊不掛 */
+  {
+    const ssPath = join(ROOT, 'data', 'raw', 'schedule-status.json');
+    if (existsSync(ssPath)) {
+      const ss = JSON.parse(readFileSync(ssPath, 'utf8'));
+      const fresh = ss.leagues?.en2?.fetchedAt && (Date.now() - new Date(ss.leagues.en2.fetchedAt)) < 3 * 86400000;
+      if (fresh) {
+        const n = attachScheduleStatus(fixtures, ss.leagues.en2.matches);
+        if (n) console.log(`  官方賽程狀態:${n} 場標為延期/取消`);
+      }
+    }
+  }
   await write('fixtures', fixtures);
   await write('table', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
   await write('sim', sim);

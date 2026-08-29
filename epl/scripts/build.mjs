@@ -37,6 +37,7 @@ import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } fro
 import { attachCareers } from './lib/coach-career.mjs';
 import { attachProfiles } from './lib/coach-profiles.mjs';
 import { coreFromFpl } from './lib/player-core.mjs';
+import { attachScheduleStatus } from './lib/schedule-status.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
@@ -897,6 +898,19 @@ async function main() {
   });
   await write('clubs.json', T.list); // 27 隊完整名稱登錄(含已降級球隊,顯示歷史資料用)
   await write('teams.json', teams);
+  /* 官方賽程狀態(延期/取消,football-data.org 快照)。只標註有事的場次,
+     沒事不加欄位;快照太舊(>3 天)就不掛 —— 拿舊狀態講今天的事會誤導。 */
+  {
+    const ssPath = join(ROOT, 'data', 'raw', 'schedule-status.json');
+    if (existsSync(ssPath)) {
+      const ss = JSON.parse(readFileSync(ssPath, 'utf8'));
+      const fresh = ss.leagues?.pl?.fetchedAt && (Date.now() - new Date(ss.leagues.pl.fetchedAt)) < 3 * 86400000;
+      if (fresh) {
+        const n = attachScheduleStatus(fixtures, ss.leagues.pl.matches);
+        if (n) console.log(`  官方賽程狀態:${n} 場標為延期/取消`);
+      }
+    }
+  }
   await write('fixtures.json', fixtures);
   await write('table.json', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
   const roleOf = p => {

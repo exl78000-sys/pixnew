@@ -212,12 +212,16 @@ try {
             但那場可能根本沒踢,讀者會等一個永遠不會來的比分。本站沒有延賽的資料來源,
             分不出是哪一種,所以兩種都講,並且把「早該結束多久」給讀者自己判斷。
             一季有 2~7 場改期(英超 2023-24 六次、英冠 2025-26 七次),這個空窗一定會出現。 */''}
-      <div class="section"><h2>還沒有賽果</h2><span class="hint">時間上早該結束,但本站還沒拿到比分 —— 可能是資料源還沒更新,也可能是這場延賽了</span></div>
+      <div class="section"><h2>還沒有賽果</h2><span class="hint">時間上早該結束,但本站還沒拿到比分 —— 有官方狀態的直接標;沒有的可能是資料源還沒更新,也可能延賽了</span></div>
       <div class="grid g3">${awaiting.map(({ f, s }) => `
         <a class="card matchcard" href="${C.link('analysis', { id: f.id })}" style="padding:12px 14px">
           <div class="spread"><span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span>
-            <span class="pill warn tiny">${s.elapsed > 60 * 24
-              ? `早該結束 ${Math.floor(s.elapsed / 60 / 24)} 天` : '賽果未取得'}</span></div>
+            ${/* 官方狀態(football-data.org 快照)有的話直接講 —— 「早該結束 N 天」
+                  對延期的比賽是錯的:那場根本沒踢,讀者會等一個永遠不會來的比分 */''}
+            ${f.officialStatus
+              ? `<span class="pill bad tiny">官方:${f.officialStatusZh}</span>`
+              : `<span class="pill warn tiny">${s.elapsed > 60 * 24
+                  ? `早該結束 ${Math.floor(s.elapsed / 60 / 24)} 天` : '賽果未取得'}</span>`}</div>
           <div class="row" style="gap:7px;margin-top:8px">${C.badge(f.home)}<b class="small">${C.name(f.home)}</b>
             <span class="dim">vs</span>${C.badge(f.away)}<b class="small">${C.name(f.away)}</b></div>
           <div class="tiny dim" style="margin-top:6px">賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}</div>
