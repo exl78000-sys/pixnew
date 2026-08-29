@@ -10390,7 +10390,34 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": null,
+     "assist": null,
+     "team": null,
+     "min": null,
+     "label": null,
+     "phase": "2",
+     "type": "PE",
+     "kind": null,
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 49259,
+     "assist": null,
+     "team": 23,
+     "min": 62,
+     "label": "62'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -10440,8 +10467,8 @@
      }
     ]
    },
-   "clock": "60'00"
+   "clock": "62'00"
   }
  },
- "fetchedAt": "2026-08-29T17:46:30.714Z"
+ "fetchedAt": "2026-08-29T17:48:43.883Z"
 }
