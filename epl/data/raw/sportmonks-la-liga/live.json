@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-29T20:43:13.052Z",
+  "fetchedAt": "2026-08-29T20:46:19.293Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-29 19:30:00",
       "started": true,
       "finished": false,
-      "minute": 58,
+      "minute": 61,
       "hs": 0,
       "as": 3,
       "sides": {
@@ -99,7 +99,7 @@
         "status": 22,
         "home": "SEV",
         "away": "ATM",
-        "fetchedAt": "2026-08-29T20:43:13.049Z",
+        "fetchedAt": "2026-08-29T20:46:19.290Z",
         "score": {
           "home": 0,
           "away": 3
@@ -231,43 +231,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 58,
+        "minute": 61,
         "finished": false,
-        "remaining": 0.356,
-        "home": 0.001,
-        "draw": 0.0077,
-        "away": 0.9913,
-        "xgRestHome": 0.49,
-        "xgRestAway": 0.53,
+        "remaining": 0.322,
+        "home": 0.0008,
+        "draw": 0.0062,
+        "away": 0.993,
+        "xgRestHome": 0.45,
+        "xgRestAway": 0.48,
         "expectedFinal": {
-          "home": 0.49,
-          "away": 3.53
+          "home": 0.45,
+          "away": 3.48
         },
         "nextGoal": {
-          "home": 0.309,
-          "away": 0.333,
-          "none": 0.358
+          "home": 0.291,
+          "away": 0.314,
+          "none": 0.394
         },
         "topScores": [
           {
             "s": "0-3",
-            "p": 0.3579
+            "p": 0.3941
           },
           {
             "s": "0-4",
-            "p": 0.1909
+            "p": 0.1905
           },
           {
             "s": "1-3",
-            "p": 0.1769
+            "p": 0.1765
           },
           {
             "s": "1-4",
-            "p": 0.0943
+            "p": 0.0853
           },
           {
             "s": "0-5",
-            "p": 0.0509
+            "p": 0.046
           }
         ]
       },
@@ -280,11 +280,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 58,
+        "minute": 61,
         "paragraphs": [
-          "第 58 分鐘,Sevilla FC 0:3 Atlético de Madrid。",
+          "第 61 分鐘,Sevilla FC 0:3 Atlético de Madrid。",
           "賽前模型 34%/26%/40%(主/和/客),目前 0%/1%/99% —— Atlético de Madrid勝的機率升了 59 個百分點。",
-          "模型估下一球:Sevilla FC 31%、Atlético de Madrid 33%,剩餘時間期望再進 0.49:0.53。"
+          "模型估下一球:Sevilla FC 29%、Atlético de Madrid 31%,剩餘時間期望再進 0.45:0.48。"
         ]
       }
     }
