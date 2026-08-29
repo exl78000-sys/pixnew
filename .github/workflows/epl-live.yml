@@ -395,8 +395,21 @@ jobs:
           else
             # [skip ci] 避免這個提交又觸發自己
             git commit -m "chore(epl): 更新即時資料 $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
-            echo "已回寫即時資料"
+            # 比賽日的高頻迴圈每 2 分鐘推同一條分支,裸 push 必撞(2026-08-29 實際
+            # 把整次部署弄掉:回寫紅 → build job 失敗 → deploy 被跳過)。
+            # 重試 + rebase(失敗要 abort);三次不行就放棄回寫但**不擋部署** ——
+            # 這批資料下一輪重抓得回來,部署沒出去才是使用者看得到的損失。
+            PUSHED=0
+            for try in 1 2 3; do
+              if ! git pull --rebase -q origin "${GITHUB_REF_NAME}" 2>/dev/null; then
+                git rebase --abort 2>/dev/null || true
+              fi
+              if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
+                PUSHED=1; echo "已回寫即時資料(第 $try 次)"; break
+              fi
+              sleep 4
+            done
+            [ "$PUSHED" = "1" ] || echo "⚠ 回寫連撞三次(比賽日迴圈在推),放棄這一批 —— 不擋部署"
           fi
 
       # Pages 還沒啟用時,deploy 會失敗;先問一下,沒開就跳過,不讓整個流程變紅
