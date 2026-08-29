@@ -1,4 +1,4 @@
-import * as C from './core.js?v=f5b81714';
+import * as C from './core.js?v=e6794bcd';
 
 const app = document.getElementById('app');
 
@@ -248,40 +248,7 @@ try {
 
     setupAnalysisTabs(f.played ? 'compare' : 'pre');
 
-    /* 即時面板輪詢(只在未完賽時)。feed 與實時頁同一套:
-       raw 分支檔比 Pages 新(比賽日迴圈每 2 分鐘推),失敗退回本站檔。 */
-    if (!f.played) {
-      const findIn = l => (l?.matches ?? []).find(x => x.home === f.home && x.away === f.away);
-      const feeds = [meta.liveFeed, 'data/live.json'].filter(Boolean);
-      let cur = null;   // 最新一份 {m, fetchedAt},給走鐘用
-      const renderLive = (m, fetchedAt) => {
-        /* feed 只進不退:raw CDN 會新舊副本交替回應,拿到較舊的那份時
-           比分、場上數據、分鐘全部會倒退(實測「分鐘倒數」就是這條)。
-           舊的一律不採用 —— 走鐘照舊從上一份的錨往前推,等下一份新的。 */
-        if (cur && m && fetchedAt && cur.fetchedAt
-          && Date.parse(fetchedAt) < Date.parse(cur.fetchedAt)) return;
-        const el = document.getElementById('livePanel');
-        cur = (m && m.started && !m.finished) ? { m, fetchedAt } : null;
-        if (el) el.innerHTML = cur ? livePanelHtml(m, f.colors, fetchedAt) : '';
-      };
-      renderLive(findIn(data.live), data.live?.fetchedAt);
-      C.pageInterval(async () => {
-        for (const url of feeds) {
-          try {
-            const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`, { cache: 'no-store' });
-            if (res.ok) { const j = await res.json(); renderLive(findIn(j), j.fetchedAt); return; }
-          } catch { /* 換下一個來源 */ }
-        }
-      }, 20000);
-      /* 走鐘:面板 20 秒才重畫一次,分鐘顯示在兩次之間自己往前走 ——
-         使用者反饋「一直停在 75 分」就是這條鏈(FPL 分鐘塊狀跳 + 迴圈 2 分鐘
-         + CDN)疊出來的。只改字,不重畫面板。 */
-      C.pageInterval(() => {
-        if (!cur) return;
-        const t = `第 ${C.liveMinute(cur.m, cur.fetchedAt).disp} 分鐘`;
-        document.querySelectorAll('[data-liveclock]').forEach(n => { n.textContent = t; });
-      }, 1000);
-    }
+    mountLivePanel(f);
 
     setupExpertPagers();
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
@@ -391,6 +358,7 @@ try {
         ? '這場沒有保存可驗證的賽前機率快照，因此不拿賽後重建機率冒充賽前預測。'
         : '賽前機率請回賽程頁查看。'}</div>
     </div>
+    ${!f.played ? `<div id="livePanel"></div>` : ''}
 
     ${f.played ? `<div class="analysis-switch" id="analysis-views" role="tablist" aria-label="分析階段">
       <button class="btn analysis-tab" type="button" role="tab" data-view="compare" aria-controls="panel-compare">綜合對比</button>
@@ -426,6 +394,7 @@ try {
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
     setupAnalysisTabs(f.played ? 'compare' : 'pre');
     setupExpertPagers();
+    mountLivePanel(f);
   }
 
   function lineupCard(match, f, report = null) {
@@ -531,6 +500,45 @@ try {
      完場自動消失,由賽後分析接手 —— 單場的家始終只有這一頁。
      事件時間軸(進球/牌/換人)吃的是 official.json,重新整理才會更新;
      面板上的比分與機率不用重新整理。 */
+  /* 即時面板輪詢(英超與西甲兩條版面**共用這一支** —— 各寫一份的話修了一邊
+     另一邊悄悄過期,es1 版面第一版就是這樣整個漏掉面板的)。
+     feed 與實時頁同一套:raw 分支檔比 Pages 新(比賽日迴圈高頻推),
+     失敗退回本站檔 —— 退路要退到**自己聯賽**的 live.json,不寫死路徑。 */
+  function mountLivePanel(f) {
+    if (f.played) return;
+    const findIn = l => (l?.matches ?? []).find(x => x.home === f.home && x.away === f.away);
+    const lgPath = C.league() === 'pl' ? 'data/live.json' : `data/leagues/${C.league()}/live.json`;
+    const feeds = [meta.liveFeed, lgPath].filter(Boolean);
+    let cur = null;   // 最新一份 {m, fetchedAt},給走鐘用
+    const renderLive = (m, fetchedAt) => {
+      /* feed 只進不退:raw CDN 會新舊副本交替回應,拿到較舊的那份時
+         比分、場上數據、分鐘全部會倒退(實測「分鐘倒數」就是這條)。
+         舊的一律不採用 —— 走鐘照舊從上一份的錨往前推,等下一份新的。 */
+      if (cur && m && fetchedAt && cur.fetchedAt
+        && Date.parse(fetchedAt) < Date.parse(cur.fetchedAt)) return;
+      const el = document.getElementById('livePanel');
+      cur = (m && m.started && !m.finished) ? { m, fetchedAt } : null;
+      if (el) el.innerHTML = cur ? livePanelHtml(m, f.colors, fetchedAt) : '';
+    };
+    renderLive(findIn(data.live), data.live?.fetchedAt);
+    C.pageInterval(async () => {
+      for (const url of feeds) {
+        try {
+          const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`, { cache: 'no-store' });
+          if (res.ok) { const j = await res.json(); renderLive(findIn(j), j.fetchedAt); return; }
+        } catch { /* 換下一個來源 */ }
+      }
+    }, 20000);
+    /* 走鐘:面板 20 秒才重畫一次,分鐘顯示在兩次之間自己往前走 ——
+       「一直停在 75 分」就是這條鏈(FPL 分鐘塊狀跳 + 迴圈高頻 + CDN)疊出來的。
+       只改字,不重畫面板。 */
+    C.pageInterval(() => {
+      if (!cur) return;
+      const t = `第 ${C.liveMinute(cur.m, cur.fetchedAt).disp} 分鐘`;
+      document.querySelectorAll('[data-liveclock]').forEach(n => { n.textContent = t; });
+    }, 1000);
+  }
+
   /* 顯示用分鐘走 C.liveMinute(跟實時頁共用 —— 各寫一份的話修了這頁那頁照舊凍住) */
   function livePanelHtml(m, colors, fetchedAt) {
     const H = m.sides?.[m.home], A = m.sides?.[m.away];
@@ -565,7 +573,15 @@ try {
           <div class="sc">${m.hs ?? '-'} : ${m.as ?? '-'}</div>
           <div class="side away">${C.badge(m.away)}<b>${C.name(m.away)}</b></div>
         </div>
-        ${H?.shape && A?.shape ? `<div class="tiny dim center" style="margin-bottom:6px">實際陣型 ${H.shape.label} vs ${A.shape.label}・場上 xG ${H.xG} : ${A.xG}</div>` : ''}
+        ${(() => {
+          /* 兩段各自守門:西甲的即時來源沒有陣容(label 是 —)也沒有場上 xG(null)——
+             印出「— vs —・xG null:null」比不印糟 */
+          const shapeOk = H?.shape?.label && A?.shape?.label && H.shape.label !== '—' && A.shape.label !== '—';
+          const xgOk = H?.xG != null && A?.xG != null;
+          const bits = [shapeOk ? `實際陣型 ${H.shape.label} vs ${A.shape.label}` : '',
+            xgOk ? `場上 xG ${H.xG} : ${A.xG}` : ''].filter(Boolean);
+          return bits.length ? `<div class="tiny dim center" style="margin-bottom:6px">${bits.join('・')}</div>` : '';
+        })()}
         ${ip ? `${C.probBar(ip)}
           <div class="tiny dim center" style="margin-top:6px">剩餘時間期望進球 ${ip.xgRestHome} : ${ip.xgRestAway}
             ・下一球 ${C.name(m.home)} ${C.pct(ip.nextGoal.home, 0)} / ${C.name(m.away)} ${C.pct(ip.nextGoal.away, 0)}</div>` : ''}

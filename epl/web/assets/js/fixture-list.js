@@ -1,4 +1,4 @@
-import * as C from './core.js?v=f5b81714';
+import * as C from './core.js?v=e6794bcd';
 
 /* ── 賽程列表 + 單場速覽抽屜(共用模組) ─────────────────────────
    原本是獨立的 page-fixtures.js。「總覽」與「賽程與預測」合併成一頁之後,
