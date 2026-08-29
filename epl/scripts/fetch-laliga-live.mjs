@@ -124,11 +124,15 @@ async function main() {
     const finished = /finished|full.?time|after.?penalty|ft/.test(stateName) || Number(raw.state_id) === 5;
     const stateFloor = /2nd|second/i.test(stateName) ? 46 : /half.?time|ht|break/i.test(stateName) ? 45 : 0;
     /* 第三個訊號:開球時間推算(事件分鐘只到最後一筆事件,實測落後牆鐘十來分)。
-       用本站賽程的 kickoff(ISO 含時區,不用供應商那個無時區字串),
-       分段感知:上半場封頂 45、中場停 45、下半場扣 15 分鐘休息封頂 90。
-       補時長度沒有資料,到 90 就停 —— 前端走鐘會顯示 90+,不編數字。 */
+       開球時間用供應商同一筆 payload 的 starting_at(UTC、無時區字串,補上 Z 再解;
+       實測 "2026-08-29 15:00:00" 對得上真實開球)。本站賽程列只有日期沒有時間
+       (openfootball),當備援。分段感知:上半場封頂 45、中場停 45、
+       下半場扣 15 分鐘休息封頂 90 —— 補時長度沒有資料,到 90 就停,
+       前端走鐘會顯示 90+,不編數字。 */
     const wallEst = (() => {
-      const ko = Date.parse(fixture.kickoff ?? '');
+      const s = String(raw.starting_at ?? '');
+      const koRaw = s ? (/[zZ]$|[+-]\d\d:?\d\d$/.test(s) ? s : s.replace(' ', 'T') + 'Z') : (fixture.kickoff ?? '');
+      const ko = Date.parse(koRaw);
       if (!Number.isFinite(ko)) return 0;
       const el = (Date.now() - ko) / 60000;
       if (el <= 0 || el > 200) return 0;
