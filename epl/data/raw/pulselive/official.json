@@ -7832,8 +7832,8 @@
   "LIV|NFO": {
    "fixtureId": 128939,
    "kickoff": "2026-08-29T11:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "homeId": 10,
    "awayId": 15,
    "home": {
@@ -8260,19 +8260,6 @@
    },
    "goals": [
     {
-     "side": "H",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "2",
-     "type": "PE",
-     "kind": null,
-     "hs": 2,
-     "as": 2
-    },
-    {
      "side": "A",
      "person": 50623,
      "assist": 15259,
@@ -8508,15 +8495,45 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 115172,
+      "team": 15,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 304123,
+      "team": 15,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 23702,
+      "team": 15,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49270,
+      "team": 15,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -8534,10 +8551,16 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+1'00"
+   "clock": "90+6'00"
   },
   "BOU|EVE": {
    "fixtureId": 128934,
@@ -9326,5 +9349,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-29T13:27:10.960Z"
+ "fetchedAt": "2026-08-29T13:29:24.976Z"
 }
