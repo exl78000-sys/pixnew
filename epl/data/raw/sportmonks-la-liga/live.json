@@ -4,16 +4,185 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-29T17:00:11.765Z",
+  "fetchedAt": "2026-08-29T17:13:06.502Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
     "total": 2,
-    "live": 2,
-    "finished": 0,
+    "live": 1,
+    "finished": 1,
     "upcoming": 0
   },
   "matches": [
+    {
+      "key": "RSO|ESP",
+      "season": "2026-27",
+      "home": "RSO",
+      "away": "ESP",
+      "kickoff": "2026-08-29 17:00:00",
+      "started": true,
+      "finished": false,
+      "minute": 13,
+      "hs": 1,
+      "as": 0,
+      "sides": {
+        "RSO": {
+          "xi": [],
+          "bench": [],
+          "offs": [],
+          "rows": [],
+          "shape": {
+            "label": "—",
+            "shapeZh": "三後衛・無正印中鋒",
+            "source": "official",
+            "back": 0,
+            "front": 0
+          },
+          "seasonShape": null,
+          "xG": null,
+          "xA": null,
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0,
+          "keeper": null,
+          "scorers": [],
+          "assisters": [],
+          "cards": [],
+          "best": [],
+          "used": 0,
+          "coach": null
+        },
+        "ESP": {
+          "xi": [],
+          "bench": [],
+          "offs": [],
+          "rows": [],
+          "shape": {
+            "label": "—",
+            "shapeZh": "三後衛・無正印中鋒",
+            "source": "official",
+            "back": 0,
+            "front": 0
+          },
+          "seasonShape": null,
+          "xG": null,
+          "xA": null,
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0,
+          "keeper": null,
+          "scorers": [],
+          "assisters": [],
+          "cards": [],
+          "best": [],
+          "used": 0,
+          "coach": null
+        }
+      },
+      "advanced": {
+        "key": "RSO|ESP",
+        "season": "2026-27",
+        "source": "sportmonks",
+        "fixtureId": 19732714,
+        "kickoff": "2026-08-29 17:00:00",
+        "status": 2,
+        "home": "RSO",
+        "away": "ESP",
+        "fetchedAt": "2026-08-29T17:13:06.499Z",
+        "score": {
+          "home": 1,
+          "away": 0
+        },
+        "teamStats": {
+          "RSO": {
+            "possession": null,
+            "shots": null,
+            "shotsOn": null,
+            "shotsOff": null,
+            "blockedShots": null,
+            "corners": null,
+            "offsides": null,
+            "fouls": null,
+            "saves": null,
+            "passes": null,
+            "passesAccurate": null,
+            "passAccuracy": null,
+            "xG": null
+          },
+          "ESP": {
+            "possession": null,
+            "shots": null,
+            "shotsOn": null,
+            "shotsOff": null,
+            "blockedShots": null,
+            "corners": null,
+            "offsides": null,
+            "fouls": null,
+            "saves": null,
+            "passes": null,
+            "passesAccurate": null,
+            "passAccuracy": null,
+            "xG": null
+          }
+        },
+        "players": {
+          "RSO": [],
+          "ESP": []
+        },
+        "events": [
+          {
+            "minute": 4,
+            "extra": null,
+            "label": "4'",
+            "team": "RSO",
+            "type": "",
+            "detail": "Right foot shot",
+            "comments": "1st Goal",
+            "player": "Ander Barrenetxea",
+            "playerId": 27440827,
+            "assist": null,
+            "assistId": null
+          }
+        ],
+        "lineups": {
+          "RSO": {
+            "team": "RSO",
+            "formation": null,
+            "xi": [],
+            "bench": [],
+            "coach": null
+          },
+          "ESP": {
+            "team": "ESP",
+            "formation": null,
+            "xi": [],
+            "bench": [],
+            "coach": null
+          }
+        },
+        "coverage": {
+          "teamStatistics": false,
+          "playerStatistics": false,
+          "ratings": false,
+          "events": true,
+          "lineups": false,
+          "tracking": false,
+          "speed": false,
+          "distance": false,
+          "sprints": false
+        },
+        "unavailable": [
+          "speed",
+          "distance",
+          "sprints"
+        ]
+      },
+      "source": "sportmonks",
+      "demo": false,
+      "notes": []
+    },
     {
       "key": "LEV|BET",
       "season": "2026-27",
@@ -21,9 +190,9 @@
       "away": "BET",
       "kickoff": "2026-08-29 15:00:00",
       "started": true,
-      "finished": false,
+      "finished": true,
       "minute": 90,
-      "hs": 4,
+      "hs": 5,
       "as": 2,
       "sides": {
         "LEV": {
@@ -87,12 +256,12 @@
         "source": "sportmonks",
         "fixtureId": 19732718,
         "kickoff": "2026-08-29 15:00:00",
-        "status": 22,
+        "status": 5,
         "home": "LEV",
         "away": "BET",
-        "fetchedAt": "2026-08-29T17:00:11.763Z",
+        "fetchedAt": "2026-08-29T17:13:06.501Z",
         "score": {
-          "home": 4,
+          "home": 5,
           "away": 2
         },
         "teamStats": {
@@ -207,6 +376,19 @@
             "comments": "6th Goal",
             "player": "Roger Brugué",
             "playerId": 6984712,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 90,
+            "extra": 5,
+            "label": "90+5'",
+            "team": "LEV",
+            "type": "",
+            "detail": "Header",
+            "comments": "7th Goal",
+            "player": "Jon Ander Olasagasti",
+            "playerId": 22136693,
             "assist": null,
             "assistId": null
           },
@@ -390,161 +572,6 @@
           },
           "BET": {
             "team": "BET",
-            "formation": null,
-            "xi": [],
-            "bench": [],
-            "coach": null
-          }
-        },
-        "coverage": {
-          "teamStatistics": false,
-          "playerStatistics": false,
-          "ratings": false,
-          "events": true,
-          "lineups": false,
-          "tracking": false,
-          "speed": false,
-          "distance": false,
-          "sprints": false
-        },
-        "unavailable": [
-          "speed",
-          "distance",
-          "sprints"
-        ]
-      },
-      "source": "sportmonks",
-      "demo": false,
-      "notes": []
-    },
-    {
-      "key": "RSO|ESP",
-      "season": "2026-27",
-      "home": "RSO",
-      "away": "ESP",
-      "kickoff": "2026-08-29 17:00:00",
-      "started": true,
-      "finished": false,
-      "minute": 0,
-      "hs": 0,
-      "as": 0,
-      "sides": {
-        "RSO": {
-          "xi": [],
-          "bench": [],
-          "offs": [],
-          "rows": [],
-          "shape": {
-            "label": "—",
-            "shapeZh": "三後衛・無正印中鋒",
-            "source": "official",
-            "back": 0,
-            "front": 0
-          },
-          "seasonShape": null,
-          "xG": null,
-          "xA": null,
-          "goals": 0,
-          "assists": 0,
-          "yellow": 0,
-          "red": 0,
-          "keeper": null,
-          "scorers": [],
-          "assisters": [],
-          "cards": [],
-          "best": [],
-          "used": 0,
-          "coach": null
-        },
-        "ESP": {
-          "xi": [],
-          "bench": [],
-          "offs": [],
-          "rows": [],
-          "shape": {
-            "label": "—",
-            "shapeZh": "三後衛・無正印中鋒",
-            "source": "official",
-            "back": 0,
-            "front": 0
-          },
-          "seasonShape": null,
-          "xG": null,
-          "xA": null,
-          "goals": 0,
-          "assists": 0,
-          "yellow": 0,
-          "red": 0,
-          "keeper": null,
-          "scorers": [],
-          "assisters": [],
-          "cards": [],
-          "best": [],
-          "used": 0,
-          "coach": null
-        }
-      },
-      "advanced": {
-        "key": "RSO|ESP",
-        "season": "2026-27",
-        "source": "sportmonks",
-        "fixtureId": 19732714,
-        "kickoff": "2026-08-29 17:00:00",
-        "status": 1,
-        "home": "RSO",
-        "away": "ESP",
-        "fetchedAt": "2026-08-29T17:00:11.764Z",
-        "score": {
-          "home": 0,
-          "away": 0
-        },
-        "teamStats": {
-          "RSO": {
-            "possession": null,
-            "shots": null,
-            "shotsOn": null,
-            "shotsOff": null,
-            "blockedShots": null,
-            "corners": null,
-            "offsides": null,
-            "fouls": null,
-            "saves": null,
-            "passes": null,
-            "passesAccurate": null,
-            "passAccuracy": null,
-            "xG": null
-          },
-          "ESP": {
-            "possession": null,
-            "shots": null,
-            "shotsOn": null,
-            "shotsOff": null,
-            "blockedShots": null,
-            "corners": null,
-            "offsides": null,
-            "fouls": null,
-            "saves": null,
-            "passes": null,
-            "passesAccurate": null,
-            "passAccuracy": null,
-            "xG": null
-          }
-        },
-        "players": {
-          "RSO": [],
-          "ESP": []
-        },
-        "events": [],
-        "lineups": {
-          "RSO": {
-            "team": "RSO",
-            "formation": null,
-            "xi": [],
-            "bench": [],
-            "coach": null
-          },
-          "ESP": {
-            "team": "ESP",
             "formation": null,
             "xi": [],
             "bench": [],
