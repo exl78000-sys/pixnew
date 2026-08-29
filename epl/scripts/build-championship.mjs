@@ -34,7 +34,7 @@ import { leagueMatches, backfillLine, europeanKickoff } from './lib/league-match
 import { competition } from './lib/canonical.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
-import { teamMatchRows, styleTrendFor } from './lib/style-trend.mjs';
+import { teamMatchRows, styleTrendFor, attachTrendPercentiles } from './lib/style-trend.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
@@ -264,6 +264,7 @@ async function main() {
       });
       if (t) styleTrendBy.set(code, t);
     }
+    attachTrendPercentiles(styleTrendBy);
     console.log(`  風格位移:近 10 場視窗 ${styleTrendBy.size} 隊(上季不在英冠的基準為 null)`);
   }
 

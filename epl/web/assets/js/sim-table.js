@@ -1,4 +1,4 @@
-import * as C from './core.js?v=5c18269b';
+import * as C from './core.js?v=f8b58afd';
 
 /* ── 本季預測積分榜(共用模組) ─────────────────────────
    兩個地方在畫同一張表:積分與賽程頁,以及實時戰況頁

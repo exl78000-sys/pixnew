@@ -1,4 +1,4 @@
-import * as C from './core.js?v=5c18269b';
+import * as C from './core.js?v=f8b58afd';
 
 const app = document.getElementById('app');
 
@@ -762,9 +762,25 @@ try {
       if (Math.abs(d) < 0.5) return `<span class="dim">${mark} ${d > 0 ? '+' : ''}${d}</span>`;
       return `<span style="color:${good ? 'var(--accent)' : 'var(--loss)'}">${mark} ${d > 0 ? '+' : ''}${d}</span>`;
     };
+    /* 疊層雷達:實線=上季全季、虛線=近 10 場,同一張圖直接看位移方向。
+       軸是逐場真的量得到的欄位 —— 主雷達那六軸(xG 系)近 10 場沒有逐場來源,
+       疊上去就是編數字,所以這張自己一組軸。百分位的池在 build 端算
+       (近況跟各隊近況比、上季跟各隊上季比),前端只畫。 */
+    const AXES = [['sf', '射門'], ['stf', '射正'], ['cf', '角球'], ['sa', '被射門↓'], ['sta', '被射正↓'], ['cards', '吃牌↓']];
+    const radarBlock = st.recentPct ? (() => {
+      const vals = pct => AXES.map(([k, label]) => ({ label, value: pct[k] }));
+      const series = [];
+      if (st.baselinePct) series.push({ name: '上季全季', color: '#8a7fae', values: vals(st.baselinePct) });
+      series.push({ name: `近 ${st.recent.games} 場`, color: '#00ff85', dash: '6 5', values: vals(st.recentPct) });
+      return `${C.radar(series, { size: 280 })}
+        <div class="tiny dim" style="text-align:center;margin:2px 0 10px">
+          軸值為該指標在 ${st.pctPool.recent} 隊近 ${st.window} 場之間的百分位${st.baselinePct ? `;上季層跟 ${st.pctPool.baseline} 隊的上季全季比` : ''}。
+          ↓ 的軸反向計分:越靠外代表被射門/被射正/吃牌越少。</div>`;
+    })() : '';
     return `<div class="card" style="margin-top:14px">
       <div class="spread"><h3 style="margin:0">近 ${st.recent.games} 場風格位移</h3>
         <span class="tiny dim">${C.dateFull(st.span.from)} ~ ${C.dateFull(st.span.to)}・含本季 ${st.currentSeasonGames} 場</span></div>
+      ${radarBlock}
       ${C.table(ROWS.map(([k, label, lowerBetter]) => ({
         label, recent: st.recent[k], base: st.baseline?.[k] ?? null, d: st.delta?.[k] ?? null, lowerBetter,
       })), [
