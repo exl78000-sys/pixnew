@@ -131,6 +131,47 @@ function notesFor(rep, zh) {
   return n;
 }
 
+/* 中場/戰況講評(2026-08-29,使用者要求)。**每一句只引用已算好的數字**
+   (報告層的規矩:數字先算完,文字只能引用),規則生成、不經 LLM。
+   FPL 的 minute 在中場休息停在 45 —— 43~50 這段當「中場講評」,
+   其餘進行中時段是「戰況講評」。 */
+function liveSummaryFor(rep, zh) {
+  if (!rep.started || rep.finished || !rep.inplay) return null;
+  const H = rep.sides[rep.home], A = rep.sides[rep.away];
+  const nameH = zh(rep.home), nameA = zh(rep.away);
+  const pc = v => Math.round(v * 100) + '%';
+  const atHT = rep.minute >= 43 && rep.minute <= 50;
+  const ps = [];
+
+  ps.push(`${atHT ? '上半場結束' : `第 ${rep.minute} 分鐘`},${nameH} ${rep.hs ?? 0}:${rep.as ?? 0} ${nameA}。`);
+
+  const xgd = round(H.xG - A.xG, 2);
+  if (Math.abs(xgd) >= 0.4) {
+    const better = xgd > 0 ? nameH : nameA;
+    ps.push(`場上 xG ${H.xG}:${A.xG},內容上${better}佔優。`);
+  } else {
+    ps.push(`場上 xG ${H.xG}:${A.xG},兩邊創造的機會量接近。`);
+  }
+
+  const pm = rep.preMatch, ip = rep.inplay;
+  const moves = [
+    ['home', nameH + '勝'], ['draw', '和局'], ['away', nameA + '勝'],
+  ].map(([k, label]) => ({ label, d: ip[k] - pm[k] })).sort((a, b) => Math.abs(b.d) - Math.abs(a.d));
+  const top = moves[0];
+  ps.push(`賽前模型 ${pc(pm.home)}/${pc(pm.draw)}/${pc(pm.away)}(主/和/客),`
+    + `目前 ${pc(ip.home)}/${pc(ip.draw)}/${pc(ip.away)} —— `
+    + `${top.label}的機率${top.d >= 0 ? '升' : '降'}了 ${Math.abs(Math.round(top.d * 100))} 個百分點。`);
+
+  if (ip.nextGoal) {
+    ps.push(`模型估下一球:${nameH} ${pc(ip.nextGoal.home)}、${nameA} ${pc(ip.nextGoal.away)},`
+      + `剩餘時間期望再進 ${ip.xgRestHome}:${ip.xgRestAway}。`);
+  }
+  if (H.shape?.source === 'official' && A.shape?.source === 'official') {
+    ps.push(`實際陣型 ${H.shape.label} 對 ${A.shape.label}(官方名單)。`);
+  }
+  return { kind: atHT ? 'ht' : 'live', minute: rep.minute, paragraphs: ps };
+}
+
 export function buildMatchReport({ fixture, prediction, tactics, zh, official = null }) {
   const { home, away, lineups } = fixture;
   const matchMinutes = fixture.minutes || (fixture.finished ? 90 : 0);
@@ -163,5 +204,6 @@ export function buildMatchReport({ fixture, prediction, tactics, zh, official = 
     };
   }
   rep.notes = notesFor(rep, zh);
+  rep.liveSummary = liveSummaryFor(rep, zh);
   return rep;
 }

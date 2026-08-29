@@ -411,6 +411,14 @@ try {
             ・預期比分 ${m.preMatch.xgHome}:${m.preMatch.xgAway}</span></div>` : ''}
       </div>
 
+      ${/* 中場/戰況講評(規則生成,每句只引用算好的數字) */''}
+      ${m.liveSummary ? `<div class="card"><h3>${m.liveSummary.kind === 'ht' ? '中場講評' : `戰況講評 <span class="dim tiny">第 ${m.liveSummary.minute} 分鐘</span>`}
+          <span class="pill tiny">自動生成</span></h3>
+        <div style="display:grid;gap:8px;line-height:1.8">
+          ${m.liveSummary.paragraphs.map(t => `<p class="small" style="margin:0">${C.esc(t)}</p>`).join('')}</div>
+        <div class="tiny dim" style="margin-top:8px">每一句都只引用模型與官方名單算出的數字,不摻臆測;完場後由賽後分析接手。</div>
+      </div>` : ''}
+
       ${articleCard(m)}
 
       ${C.matchReportCards(m)}

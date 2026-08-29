@@ -98,13 +98,26 @@ jobs:
               else
                 git commit -q -m "chore(epl): 比賽中更新 $(date -u '+%H:%M UTC') [skip ci]"
                 # 建置/部署工作流程也會推同一個分支,推之前先接上
+                # rebase 失敗要 abort —— 半途的 rebase 會讓之後每一輪的 git 全部失效,
+                # 迴圈看起來還在跑、實際一筆都推不出去(2026-08-29 實際發生,
+                # 開發分支高頻推送時撞上,整場上半場沒有即時更新)
                 for try in 1 2 3; do
-                  git pull --rebase -q origin "$GITHUB_REF_NAME" 2>/dev/null || true
+                  if ! git pull --rebase -q origin "$GITHUB_REF_NAME" 2>/dev/null; then
+                    git rebase --abort 2>/dev/null || true
+                    git checkout --theirs -- epl/data/raw/live.json epl/data/live-history.json 2>/dev/null || true
+                  fi
                   if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
                     PUSHED=$((PUSHED+1)); echo "  [$N] ✔ 已更新並推送"; break
                   fi
                   echo "  [$N] 推送衝突,重試 $try"; sleep 3
                 done
+                # 三次都推不出去:放棄這一輪的提交、回到遠端狀態 —— 丟一輪資料
+                # 比整個迴圈卡死好;下一輪重抓就補回來了
+                if ! git diff --quiet origin/"$GITHUB_REF_NAME"..HEAD 2>/dev/null; then
+                  git rebase --abort 2>/dev/null || true
+                  git fetch -q origin "$GITHUB_REF_NAME" && git reset --hard -q "origin/$GITHUB_REF_NAME"
+                  echo "  [$N] ⚠ 推送失敗,重置到遠端狀態繼續"
+                fi
               fi
               cd epl
             fi
