@@ -122,6 +122,18 @@ check('西甲即時輪詢有 include fallback 與硬上限',
 /* 2026-08-29 實測 LEV|BET 踩到的兩個坑:分數列的正則連 1ST_HALF/2ND_HALF
    分段列一起收(分段不是累計,存成 1:2 而事件已 3:2);事件不按時間排,
    .at(-1) 撿到 17' 的越位當成現在分鐘。 */
+check('西甲勝率曲線與校準走共用件、產物存在', (() => {
+  const src = readFileSync(join(ROOT, 'scripts', 'build-laliga.mjs'), 'utf8');
+  try {
+    const ph = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'prob-history.json'), 'utf8'));
+    const cal = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'inplay-calibration.json'), 'utf8'));
+    return /from '\.\/lib\/prob-history\.mjs'/.test(src) && /from '\.\/lib\/inplay-calibration\.mjs'/.test(src)
+      && typeof ph.matches === 'object' && typeof cal.verdict === 'string' && Number.isFinite(cal.matches);
+  } catch { return false; }
+})());
+check('西甲即時帶場中機率:賽前預測從 build 產物借(openfootball 列沒有這欄)',
+  /predByPair/.test(sportmonksLiveSource)
+  && /fixture\.prediction \?\? predByPair\.get/.test(sportmonksLiveSource));
 check('西甲即時:比分只認 CURRENT 列、分鐘取全部訊號的最大值(不撿最後一筆事件)',
   /\\bCURRENT\\b/.test(sportmonksLiveSource)
   && /Math\.max\(0, \.\.\.eventRows\.map\(evMin\)/.test(sportmonksLiveSource)

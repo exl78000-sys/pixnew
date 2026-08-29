@@ -49,6 +49,15 @@ async function main() {
   const fixtures = loadMatches({ root: ROOT, competition: 'esp.1', season: CURRENT_SEASON,
     codeOf: T.codeOf, rawDir: 'openfootball-la-liga' });
   const fixtureByPair = new Map(fixtures.map(f => [`${f.home}|${f.away}`, f]));
+  /* 賽前預測:openfootball 的賽程列沒有這個欄位,從 build 產物借
+     (同一個 checkout 裡就有,零額外請求)。沒有預測就沒有場中機率 ——
+     實測 inplay/preMatch 整季全空,勝率條、勝率曲線與校準整條斷頭,
+     而畫面只是「少一條 bar」,不會報錯。 */
+  const predByPair = new Map();
+  const siteFx = await readJson(join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json'));
+  for (const f of Array.isArray(siteFx) ? siteFx : []) {
+    if (f.prediction) predByPair.set(`${f.home}|${f.away}`, f.prediction);
+  }
   const store = await readJson(join(ROOT, 'data', 'raw', 'sportmonks-la-liga', `${CURRENT_SEASON}-squads.json`));
   const providerIdToCode = new Map(Object.entries(store?.teams ?? {}).map(([code, team]) => [String(team.id), code]));
 
@@ -149,7 +158,7 @@ async function main() {
     if (!detail) continue;
     const report = buildLiveProviderReport({
       fixture: { ...fixture, played: false, started: true, finished, fh: hs, fa: as },
-      detail, prediction: fixture.prediction ?? null, minute,
+      detail, prediction: fixture.prediction ?? predByPair.get(`${homeCode}|${awayCode}`) ?? null, minute,
       nameOf: code => T.byCode.get(code)?.en ?? code,
     });
     if (report) matches.push(report);
