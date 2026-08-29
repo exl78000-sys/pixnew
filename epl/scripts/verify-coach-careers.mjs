@@ -35,7 +35,7 @@ const COMP_TO_LG = { 'premier league': 'pl', 'la liga': 'es1', championship: 'en
  * 交集為 0 → 不同人(Xabi Alonso vs Calum McFarlane 就是這種)。 */
 const NICK = { quique: 'enrique', manolo: 'manuel', juanfran: 'juan francisco', pep: 'josep', xabi: 'xabier' };
 const tokensOf = name => new Set(normName(name).split(' ').flatMap(t => (NICK[t] ?? t).split(' ')).filter(Boolean));
-const samePerson = (a, b) => {
+export const samePerson = (a, b) => {
   // 雙教頭名冊寫成「甲 & 乙」:拆開來,對得上任何一位就算同一人
   for (const part of String(b).split('&')) {
     const ta = tokensOf(a), tb = tokensOf(part);

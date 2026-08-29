@@ -1702,6 +1702,39 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* ── 教練基本檔案核對器(2026-08-29)。核心是來源真偽:
+       交付的 53 個戰術來源網址實測 41 個 404 —— 編造網址的筆定罪,整聯賽退。 ── */
+    ...await (async () => {
+      const { verifyProfiles } = await import('./verify-coach-profiles.mjs');
+      const ctx = {
+        rosters: { pl: new Map([['ARS', { name: 'Mikel Arteta', zh: '阿爾特塔', formation: '4-3-3' }]]),
+          es1: new Map(), en2: new Map() },
+        controls: { pl: new Map([['ARS', { zh: '阿爾特塔', formation: '4-3-3' }]]), es1: new Map(), en2: new Map() },
+        urlStatus: { 'https://dead.example/x': 404, 'https://ok.example/y': 200 },
+      };
+      const run = coaches => verifyProfiles({ coaches }, ctx);
+      const fabricated = run([{ league: 'pl', team: 'ARS', name: 'Mikel Arteta', zh: '阿爾特塔',
+        formation: '4-3-3', style: ['高位壓迫'], sources: ['https://dead.example/x', 'https://ok.example/y'] }]);
+      const honest = run([{ league: 'pl', team: 'ARS', name: 'Mikel Arteta', zh: '阿爾特塔',
+        formation: null, style: [], sources: ['https://ok.example/y', 'https://ok.example/y'] }]);
+      const zhWrong = run([{ league: 'pl', team: 'ARS', name: 'Mikel Arteta', zh: '亞提達',
+        formation: null, style: [], sources: ['https://ok.example/y', 'https://ok.example/y'] }]);
+      return [
+        ['檔案核對:死掉的來源網址 → 編造定罪、整聯賽退', fabricated.pl.verdict === 'rejected'
+          && fabricated.pl.convictions.some(c => c.includes('來源不存在')), ''],
+        ['檔案核對:誠實的 null + 真來源 → 通過', honest.pl.verdict === 'accepted', JSON.stringify(honest.pl.convictions)],
+        ['檔案核對:對照題譯名不符 → 定罪', zhWrong.pl.verdict === 'rejected', ''],
+        ['檔案核對:收件匣在的話,核對產物 sha 要對得上', (() => {
+          const inboxPath = join(ROOT, 'data', 'manual', 'coach-profiles.json');
+          if (!existsSync(inboxPath)) return true;
+          const vPath = join(ROOT, 'data', 'coach-profiles-verified.json');
+          if (!existsSync(vPath)) return false;
+          const v = JSON.parse(readFileSync(vPath, 'utf8'));
+          return v.inboxSha256 === createHash('sha256').update(readFileSync(inboxPath, 'utf8')).digest('hex');
+        })()],
+      ];
+    })(),
+
     /* ── 盃賽併頁 + 球隊完整賽程含盃賽(2026-08-29,使用者要求)── */
     ['球隊深連結預設只看未賽(「完整賽程」要的是未來)', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
