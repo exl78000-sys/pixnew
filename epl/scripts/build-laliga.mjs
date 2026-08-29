@@ -34,7 +34,7 @@ import { loadOfficialCoachStore, officialCoachesFromStore } from './lib/adapters
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadVerifiedLoans, attachLoans } from './lib/loans.mjs';
-import { teamMatchRows, styleTrendFor, attachTrendPercentiles } from './lib/style-trend.mjs';
+import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -457,7 +457,7 @@ async function main() {
       const t = styleTrendFor({ lastRows: trendLast.get(code) ?? [], curRows: trendCur.get(code) ?? [] });
       if (t) styleTrendBy.set(code, t);
     }
-    attachTrendPercentiles(styleTrendBy);
+    attachTrendPercentiles(styleTrendBy, { ruler: seasonRuler(trendLast) });
     console.log(`  風格位移:近 10 場視窗 ${styleTrendBy.size} 隊(升班馬基準為 null)`);
   }
 

@@ -92,24 +92,33 @@ export const TREND_RADAR_AXES = [
   ['sa', '被射門↓', true], ['sta', '被射正↓', true], ['cards', '吃牌↓', true],
 ];
 
-/* 把百分位掛回每隊的 styleTrend。兩個池分開:
- * 近 10 場跟各隊的近 10 場比、上季基準跟各隊的上季基準比 ——
- * 各自都是「當時在聯賽裡站哪個位置」,兩層畫在同一張雷達上意義才對得齊。
- * 池的大小(升班馬沒有基準、樣本不足的沒有近況)記在 pctPool,畫面要講。 */
-export function attachTrendPercentiles(byCode) {
-  const trends = [...byCode.values()];
-  const recentPool = Object.fromEntries(TREND_RADAR_AXES.map(([f]) => [f, trends.map(t => t.recent[f])]));
-  const withBase = trends.filter(t => t.baseline);
-  const basePool = Object.fromEntries(TREND_RADAR_AXES.map(([f]) => [f, withBase.map(t => t.baseline[f])]));
+/* 分級尺:上季全季**全部球隊**的場均分布 —— 含降級隊(上季的聯賽就是完整的
+ * 20/24 隊,尺不能只用留下來的那幾隊)。rowsByTeam 直接吃 teamMatchRows 的輸出;
+ * minGames 擋掉資料不完整的隊(整季 CSV 每隊都該接近全季場次)。 */
+export function seasonRuler(rowsByTeam, { minGames = 30 } = {}) {
+  const teams = [...rowsByTeam.values()].map(avg).filter(a => a && a.games >= minGames);
+  return {
+    teams: teams.length,
+    pools: Object.fromEntries(TREND_RADAR_AXES.map(([f]) => [f, teams.map(a => a[f])])),
+  };
+}
+
+/* 把級分用的百分位掛回每隊的 styleTrend。**兩層共用同一把尺**(上季全季分布):
+ * 第一版是近況跟各隊近況比、上季跟各隊上季比 —— 兩個池各自會動,
+ * 於是「6→9」分不出是你變了還是別隊變了。一張叫「位移」的圖,
+ * 箭頭必須只有一個意思:你自己動了。
+ * 代價要照實標在畫面上:10 場平均比整季抖,極端級分可能含小樣本雜訊。 */
+export function attachTrendPercentiles(byCode, { ruler } = {}) {
+  if (!ruler || ruler.teams === 0) return;   // 沒有上季整季 CSV 就不給級分,前端只畫表
   const pct = (v, pool, inverse) => {
     const p = percentile(v, pool);
     return inverse ? round(100 - p, 1) : p;
   };
-  for (const t of trends) {
-    t.recentPct = Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(t.recent[f], recentPool[f], inv)]));
+  for (const t of byCode.values()) {
+    t.recentPct = Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(t.recent[f], ruler.pools[f], inv)]));
     t.baselinePct = t.baseline
-      ? Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(t.baseline[f], basePool[f], inv)]))
+      ? Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(t.baseline[f], ruler.pools[f], inv)]))
       : null;
-    t.pctPool = { recent: trends.length, baseline: withBase.length };
+    t.pctPool = { ruler: ruler.teams };
   }
 }

@@ -33,7 +33,7 @@ import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
-import { teamMatchRows, styleTrendFor, attachTrendPercentiles } from './lib/style-trend.mjs';
+import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
@@ -499,7 +499,8 @@ async function main() {
       const t = styleTrendFor({ lastRows: lastRows.get(code) ?? [], curRows: curRows.get(code) ?? [] });
       if (t) styleTrendBy.set(code, t);
     }
-    attachTrendPercentiles(styleTrendBy);   // 疊層雷達的百分位(近況池與基準池分開)
+    // 級分的尺 = 上季全季**全部 20 隊**的分布(含降級隊),兩層同一把
+    attachTrendPercentiles(styleTrendBy, { ruler: seasonRuler(lastRows) });
     // 本季逐場 xG(FPL 逐輪的球員 xG 按隊加總)。只算本季,不假裝有上季的逐場 xG。
     try {
       const gws = JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'season-gws.json'), 'utf8'));

@@ -1476,7 +1476,7 @@ async function checkDataGap() {
 
     /* ── 近 10 場風格位移(A 層,2026-08-29 加)── */
     ...await (async () => {
-      const { styleTrendFor, teamMatchRows, attachTrendPercentiles } = await import('./lib/style-trend.mjs');
+      const { styleTrendFor, teamMatchRows, attachTrendPercentiles, seasonRuler } = await import('./lib/style-trend.mjs');
       const csv = 'Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HST,AST,HC,AC,HY,AY,HR,AR\n'
         + 'E0,10/08/2025,Alpha,Beta,2,1,15,8,6,3,7,2,1,2,0,0\n'
         + 'E0,17/08/2025,Beta,Alpha,0,0,10,12,2,5,4,6,3,1,1,0\n';
@@ -1497,22 +1497,37 @@ async function checkDataGap() {
         /* 升班馬拿英冠基準比會把「聯賽變強」誤讀成「打法變了」—— 基準一定是 null。 */
         ['升班馬沒有上季基準,delta 為 null', promoted && promoted.baseline === null && promoted.delta === null, ''],
         ['不足 5 場整包 null(三場的平均是雜訊)', thin === null, ''],
-        /* 疊層雷達的百分位(2026-08-29 加,使用者要求把近況跟基準畫在同一張圖)。
-           近況跟各隊近況比、上季跟各隊上季比 —— 池分開,pctPool 記大小。
-           被射門/被射正/牌反向:雷達慣例是越外越好。 */
+        /* 疊層雷達的級分(2026-08-29 加,同日依使用者建議改成**固定尺**)。
+           第一版是近況池跟基準池分開 —— 兩個池各自會動,「6→9」分不出是
+           你變了還是別隊變了。現在兩層共用同一把尺:上季全季全部球隊的分布
+           (含降級隊)。被射門/被射正/牌反向:雷達慣例是越外越好。 */
         ...(() => {
           const lo = styleTrendFor({ lastRows: mk(38), curRows: mk(2) });                    // sa=10
           const hi = styleTrendFor({ lastRows: mk(38).map(r => ({ ...r, sa: 20 })), curRows: [] }); // 被射門多
           const noBase = styleTrendFor({ lastRows: [], curRows: mk(6) });
           const m = new Map([['LO', lo], ['HI', hi], ['NB', noBase]]);
-          attachTrendPercentiles(m);
+          /* 尺含一支「已降級」的隊(REL):它不在 m 裡,但在上季 CSV 裡 —— 尺要算它 */
+          const ruler = seasonRuler(new Map([
+            ['LO', mk(38)], ['HI', mk(38).map(r => ({ ...r, sa: 20 }))], ['REL', mk(38).map(r => ({ ...r, sf: 20 }))],
+          ]));
+          attachTrendPercentiles(m, { ruler });
           const inRange = t => Object.values(t.recentPct).every(v => v >= 0 && v <= 100);
           return [
-            ['疊層百分位:每隊都有 recentPct 且 0~100', [...m.values()].every(t => t.recentPct && inRange(t)), ''],
+            ['疊層級分:每隊都有 recentPct 且 0~100、尺含降級隊', ruler.teams === 3
+              && [...m.values()].every(t => t.recentPct && inRange(t)), ''],
             ['被射門反向計分:被射門多的隊 saPct 較低', hi.recentPct.sa < lo.recentPct.sa,
               `hi=${hi.recentPct.sa} lo=${lo.recentPct.sa}`],
-            ['沒有上季基準的隊 baselinePct 為 null、池大小照實記', noBase.baselinePct === null
-              && noBase.pctPool.recent === 3 && noBase.pctPool.baseline === 2, ''],
+            /* 兩層同一把尺:同一個值不管在哪一層,百分位必須一樣 ——
+               這就是「箭頭只有一個意思」的那條性質 */
+            ['兩層同尺:近況值等於上季值時,兩層百分位相同', lo.recentPct.sa === lo.baselinePct.sa
+              && lo.recentPct.sf === lo.baselinePct.sf, ''],
+            ['沒有上季基準的隊 baselinePct 為 null、尺大小照實記', noBase.baselinePct === null
+              && noBase.pctPool.ruler === 3, ''],
+            ['沒有上季 CSV(尺是空的)就不給級分,前端只畫表', (() => {
+              const solo = new Map([['X', styleTrendFor({ lastRows: [], curRows: mk(6) })]]);
+              attachTrendPercentiles(solo, { ruler: seasonRuler(new Map()) });
+              return solo.get('X').recentPct === undefined;
+            })(), ''],
           ];
         })(),
       ];

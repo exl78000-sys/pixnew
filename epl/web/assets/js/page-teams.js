@@ -774,7 +774,9 @@ try {
       series.push({ name: `近 ${st.recent.games} 場`, color: '#00ff85', dash: '6 5', values: vals(st.recentPct) });
       return `${C.radar(series, { size: 280, levels: true })}
         <div class="tiny dim" style="text-align:center;margin:2px 0 10px">
-          軸旁數字為 10 級分(在 ${st.pctPool.recent} 隊近 ${st.window} 場之間的位置,10 最高)${st.baselinePct ? `,寫法是上季→近況;上季層跟 ${st.pctPool.baseline} 隊的上季全季比` : ''}。
+          軸旁數字為 10 級分${st.baselinePct ? '(上季→近況)' : ''},<b>兩層同一把尺</b>:上季全季 ${st.pctPool.ruler} 隊(含已降級的)的分布 ——
+          級分變了就是這支球隊自己動了,跟別隊本季的變化無關。
+          近 ${st.recent.games} 場的平均比整季抖,貼到 1 或 10 的極端級分可能含小樣本雜訊。
           ↓ 的軸反向計分:越靠外代表被射門/被射正/吃牌越少。</div>`;
     })() : '';
     return `<div class="card" style="margin-top:14px">
