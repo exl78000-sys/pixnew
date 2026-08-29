@@ -33,6 +33,7 @@ import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
+import { teamMatchRows, styleTrendFor } from './lib/style-trend.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
@@ -480,6 +481,62 @@ async function main() {
     }
   }
 
+  /* ── 近 10 場風格位移(A 層)──
+     風格雷達固定在上季全季 —— 而本季 20 隊裡約一半換了教練,雷達描述的是
+     前任的打法。這一層拿逐場可測的量(射門/射正/角球/牌,football-data 季檔,
+     同一來源跨季連續)做滾動視窗,跟上季基準比。升班馬沒有上季英超基準,
+     delta 為 null;不足 5 場整包 null。**這是資訊,不進模型。**
+     xG 只有本季有逐場來源(FPL 逐輪),另外算、另外標,不混進跨季視窗。 */
+  const styleTrendBy = new Map();
+  const xgTrendBy = new Map();
+  {
+    const csvOf = season => {
+      const p = join(ROOT, 'data', 'raw', 'football-data-couk', `${season}.csv`);
+      return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf: T.codeOf }) : new Map();
+    };
+    const lastRows = csvOf(LAST_SEASON), curRows = csvOf(CURRENT_SEASON);
+    for (const code of curCodes) {
+      const t = styleTrendFor({ lastRows: lastRows.get(code) ?? [], curRows: curRows.get(code) ?? [] });
+      if (t) styleTrendBy.set(code, t);
+    }
+    // 本季逐場 xG(FPL 逐輪的球員 xG 按隊加總)。只算本季,不假裝有上季的逐場 xG。
+    try {
+      const gws = JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'season-gws.json'), 'utf8'));
+      const acc = new Map();
+      for (const r of gws.rounds ?? []) for (const f of r.fixtures ?? []) {
+        if (!f.finished) continue;
+        const codes = Object.keys(f.lineups ?? {});
+        if (codes.length !== 2) continue;
+        const xgOf = c => (f.lineups[c] ?? []).reduce((s2, p) => s2 + (Number(p.xG) || 0), 0);
+        for (const c of codes) {
+          const opp = codes.find(x => x !== c);
+          const a = acc.get(c) ?? { games: 0, xg: 0, xga: 0 };
+          a.games++; a.xg += xgOf(c); a.xga += xgOf(opp); acc.set(c, a);
+        }
+      }
+      for (const [c, a] of acc) if (a.games > 0) {
+        xgTrendBy.set(c, { games: a.games, xg: round(a.xg / a.games, 2), xga: round(a.xga / a.games, 2) });
+      }
+    } catch { /* 逐輪檔壞了就不給,不擋 build */ }
+    console.log(`  風格位移:近 10 場視窗 ${styleTrendBy.size} 隊・本季逐場 xG ${xgTrendBy.size} 隊`);
+  }
+
+  /* 雷達的教練覆蓋:上季 38 場裡有幾場是現任帶的。換帥(officialMismatch)或
+     任期未知的,覆蓋數給 null —— 畫面要講「這張雷達不一定代表現任的打法」。 */
+  const radarCoverageBy = new Map();
+  for (const code of curCodes) {
+    const c = coachBy.get(code);
+    if (!c) continue;
+    const lastGames = lastMatches.filter(m => m.home === code || m.away === code);
+    const covered = c.since && !c.officialMismatch
+      ? lastGames.filter(m => m.date >= c.since).length
+      : null;
+    radarCoverageBy.set(code, {
+      coach: c.zh ?? c.name ?? null, changed: !!c.officialMismatch, since: c.since ?? null,
+      lastSeasonGames: covered, lastSeasonTotal: lastGames.length,
+    });
+  }
+
   // ── 球隊總表 ──────────────────────────────
   const teams = curCodes.map(code => {
     const reg = T.byCode.get(code);
@@ -506,6 +563,9 @@ async function main() {
         confidence: coachBy.get(code).confidence, formation: coachBy.get(code).formation,
         style: coachBy.get(code).style,
       } : null,
+      styleTrend: styleTrendBy.get(code) ?? null,
+      xgTrend: xgTrendBy.get(code) ?? null,
+      radarCoverage: radarCoverageBy.get(code) ?? null,
       schedule: difficultySummary.find(d => d.code === code) ?? null,
       history: teamHistory.get(code),
       squadSize: players.filter(p => p.team === code).length,

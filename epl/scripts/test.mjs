@@ -1474,6 +1474,42 @@ async function checkDataGap() {
       ['data', 'data/leagues/es1', 'data/leagues/en2'].every(d =>
         existsSync(join(ROOT, 'web', d, 'prob-history.json'))), ''],
 
+    /* ── 近 10 場風格位移(A 層,2026-08-29 加)── */
+    ...await (async () => {
+      const { styleTrendFor, teamMatchRows } = await import('./lib/style-trend.mjs');
+      const csv = 'Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HST,AST,HC,AC,HY,AY,HR,AR\n'
+        + 'E0,10/08/2025,Alpha,Beta,2,1,15,8,6,3,7,2,1,2,0,0\n'
+        + 'E0,17/08/2025,Beta,Alpha,0,0,10,12,2,5,4,6,3,1,1,0\n';
+      const rows = teamMatchRows(csv, { codeOf: n => ({ Alpha: 'AAA', Beta: 'BBB' }[n] ?? null) });
+      const aaa = rows.get('AAA');
+      const mk = n => Array.from({ length: n }, (_, i) => ({
+        date: `2026-0${1 + Math.floor(i / 28)}-${String((i % 28) + 1).padStart(2, '0')}`,
+        sf: 10, sa: 10, stf: 4, sta: 4, cf: 5, ca: 5, cards: 2, gf: 1, ga: 1 }));
+      const full = styleTrendFor({ lastRows: mk(38), curRows: mk(2) });
+      const promoted = styleTrendFor({ lastRows: [], curRows: mk(6) });
+      const thin = styleTrendFor({ lastRows: [], curRows: mk(3) });
+      return [
+        ['季檔逐場解析:主客展開、欄位對邊', aaa?.length === 2
+          && aaa[0].sf === 15 && aaa[0].sa === 8 && aaa[1].sf === 12 && aaa[1].home === false,
+          JSON.stringify(aaa?.[1] ?? null)],
+        ['視窗取最近 10 場且跨季', full && full.recent.games === 10 && full.currentSeasonGames === 2, ''],
+        ['上季完整才給基準與位移', full && full.baseline?.games === 38 && full.delta != null, ''],
+        /* 升班馬拿英冠基準比會把「聯賽變強」誤讀成「打法變了」—— 基準一定是 null。 */
+        ['升班馬沒有上季基準,delta 為 null', promoted && promoted.baseline === null && promoted.delta === null, ''],
+        ['不足 5 場整包 null(三場的平均是雜訊)', thin === null, ''],
+      ];
+    })(),
+    ['產物:多數球隊有位移資料、每隊有雷達覆蓋標註', (() => {
+      const teams = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
+      const withTrend = teams.filter(t => t.styleTrend).length;
+      const withCov = teams.filter(t => t.radarCoverage).length;
+      return withTrend >= 15 && withCov >= 18;
+    })()],
+    ['位移卡與雷達標註都講了「不進模型」與換帥警語', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      return /不影響模型勝率/.test(src) && /它描述的是前任的打法/.test(src);
+    })()],
+
     ['缺口訊息不會把資料集的內部鍵給讀者看',
       ['live', 'players', 'leaders', 'news', 'form', 'tactics', 'knowledge', 'cups']
         .every(k => /[\u4e00-\u9fff]/.test(V.DATASET_ZH?.[k] ?? ''))],

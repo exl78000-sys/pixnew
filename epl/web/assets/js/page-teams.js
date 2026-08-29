@@ -716,6 +716,64 @@ try {
       </div></div>`;
   }
 
+  /* 雷達的教練覆蓋說明。本季 20 隊裡約一半換了教練 —— 雷達描述的是上季全季,
+     換帥的球隊那是**前任的打法**,不講清楚就是讓讀者拿舊地圖看新球隊(鐵則四)。 */
+  function radarCoverageNote(t) {
+    const rc = t.radarCoverage;
+    if (!rc || rc.lastSeasonTotal === 0) return '';           // 升班馬:雷達本來就不畫
+    if (rc.changed || rc.lastSeasonGames == null) {
+      return `<div class="note warn" style="margin-top:8px;font-size:12px">
+        這張雷達是<b>上季全季</b>的風格,而現任教練 ${C.esc(rc.coach ?? '')} 是之後才上任
+        (任期本站尚未整理)—— <b>它描述的是前任的打法</b>,參考時要打折。
+        近 10 場的實測位移在下方。</div>`;
+    }
+    if (rc.lastSeasonGames < rc.lastSeasonTotal) {
+      return `<div class="tiny dim" style="margin-top:6px">上季 ${rc.lastSeasonTotal} 場中
+        ${C.esc(rc.coach ?? '現任教練')} 帶了 ${rc.lastSeasonGames} 場,其餘是前任 —— 雷達是全季混合。</div>`;
+    }
+    return '';
+  }
+
+  /* 近 10 場風格位移(A 層)。逐場可測的量(football-data 季檔,跨季同一來源),
+     跟上季全季基準比。**資訊,不進模型** —— 跟近況五場同一個規矩。 */
+  function styleTrendCard(t) {
+    const st = t.styleTrend;
+    if (!st) return '';
+    const ROWS = [
+      ['sf', '射門/場', false], ['stf', '射正/場', false], ['cf', '角球/場', false],
+      ['sa', '被射門/場', true], ['sta', '被射正/場', true], ['cards', '牌/場', true],
+    ];
+    const arrow = (d, lowerBetter) => {
+      if (d == null) return '';
+      const good = lowerBetter ? d < 0 : d > 0;
+      const mark = Math.abs(d) < 0.5 ? '≈' : (d > 0 ? '▲' : '▼');
+      if (Math.abs(d) < 0.5) return `<span class="dim">${mark} ${d > 0 ? '+' : ''}${d}</span>`;
+      return `<span style="color:${good ? 'var(--accent)' : 'var(--loss)'}">${mark} ${d > 0 ? '+' : ''}${d}</span>`;
+    };
+    return `<div class="card" style="margin-top:14px">
+      <div class="spread"><h3 style="margin:0">近 ${st.recent.games} 場風格位移</h3>
+        <span class="tiny dim">${C.dateFull(st.span.from)} ~ ${C.dateFull(st.span.to)}・含本季 ${st.currentSeasonGames} 場</span></div>
+      ${C.table(ROWS.map(([k, label, lowerBetter]) => ({
+        label, recent: st.recent[k], base: st.baseline?.[k] ?? null, d: st.delta?.[k] ?? null, lowerBetter,
+      })), [
+        { key: 'label', label: '指標', value: r => r.label, left: true },
+        { key: 'recent', label: `近 ${st.recent.games} 場`, value: r => r.recent, num: true,
+          render: r => `<b class="mono">${r.recent}</b>` },
+        { key: 'base', label: '上季全季', value: r => r.base ?? -1, num: true,
+          render: r => (r.base == null ? '<span class="dim">—</span>' : `<span class="mono dim">${r.base}</span>`) },
+        { key: 'd', label: '位移', value: r => Math.abs(r.d ?? 0), num: true, sortable: false,
+          render: r => arrow(r.d, r.lowerBetter) || '<span class="dim">—</span>' },
+      ], { sortKey: null })}
+      ${t.xgTrend ? `<div class="stat-line" style="margin-top:8px"><span class="small muted">本季 xG / xGA(每場,FPL 逐輪)</span>
+        <b class="mono">${t.xgTrend.xg} / ${t.xgTrend.xga} <span class="dim tiny">${t.xgTrend.games} 場</span></b></div>` : ''}
+      <div class="tiny dim" style="margin-top:8px">
+        逐場統計取自 football-data.co.uk 季檔 —— 上季到本季同一套欄位,視窗跨季不換尺。
+        ${st.baseline ? '' : '<b>沒有上季英超基準</b>(升班馬),只列近況不給位移。'}
+        xG 不進這個視窗:逐場 xG 只有本季有免費來源,混進來前後就不是同一種數字。
+        <b>這是資訊,不影響模型勝率</b>(跟近況五場同一個規矩)。</div>
+    </div>`;
+  }
+
   /* ── 單隊 ─────────────────────────── */
   /* ── 球隊詳情 ──────────────────────────
      以前是兩份(detail / basicDetail),同一塊要改兩次。合併成一份之後,
@@ -858,6 +916,7 @@ try {
         ${C.radar([{ name: t.en, color: t.chartColor ?? t.colors[0], values: tac.radar }], { size: 300 })}
         <div class="tags" style="margin-top:8px">${(tac.tags ?? []).map(x => `<span class="pill accent">${C.esc(x)}</span>`).join('')}</div>
         <div class="tiny dim" style="margin-top:8px">${radarNote}</div>
+        ${radarCoverageNote(t)}
       </div>
       <div class="card"><h3>攻守與陣型</h3>
         ${rows.map(([l, v]) => lineOf(l, v)).join('')}
@@ -965,6 +1024,7 @@ try {
     ${coachCard(co)}
     ${goalSection(t)}
     ${styleBlock(t)}
+    ${styleTrendCard(t)}
     ${goalSituationCard(t.tactics)}
     ${takersBlock(t.tactics)}
     ${eloBlock(t)}
