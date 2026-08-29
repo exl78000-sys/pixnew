@@ -4,13 +4,13 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-29T18:48:01.554Z",
+  "fetchedAt": "2026-08-29T19:00:27.842Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
     "total": 1,
-    "live": 1,
-    "finished": 0,
+    "live": 0,
+    "finished": 1,
     "upcoming": 0
   },
   "matches": [
@@ -21,7 +21,7 @@
       "away": "ESP",
       "kickoff": "2026-08-29 17:00:00",
       "started": true,
-      "finished": false,
+      "finished": true,
       "minute": 90,
       "hs": 2,
       "as": 1,
@@ -101,10 +101,10 @@
         "source": "sportmonks",
         "fixtureId": 19732714,
         "kickoff": "2026-08-29 17:00:00",
-        "status": 22,
+        "status": 5,
         "home": "RSO",
         "away": "ESP",
-        "fetchedAt": "2026-08-29T18:57:21.016Z",
+        "fetchedAt": "2026-08-29T19:00:27.838Z",
         "score": {
           "home": 2,
           "away": 1
@@ -399,7 +399,7 @@
             "label": "90+4'",
             "team": "RSO",
             "type": "",
-            "detail": null,
+            "detail": "Argument",
             "comments": "1st Redcard",
             "player": "Pellegrino Matarazzo",
             "playerId": null,
@@ -445,7 +445,7 @@
       "notes": [],
       "inplay": {
         "minute": 90,
-        "finished": false,
+        "finished": true,
         "remaining": 0,
         "home": 1,
         "draw": 0,
@@ -491,15 +491,7 @@
         "xgHome": 1.68,
         "xgAway": 1.22
       },
-      "liveSummary": {
-        "kind": "live",
-        "minute": 90,
-        "paragraphs": [
-          "第 90 分鐘,Real Sociedad 2:1 RCD Espanyol。",
-          "賽前模型 46%/25%/28%(主/和/客),目前 100%/0%/0% —— Real Sociedad勝的機率升了 54 個百分點。",
-          "模型估下一球:Real Sociedad 0%、RCD Espanyol 0%,剩餘時間期望再進 0:0。"
-        ]
-      }
+      "liveSummary": null
     }
   ],
   "note": "SportMonks livescores/inplay；比分與狀態來自即時端點。速度、距離、衝刺不在方案欄位內。"
