@@ -1,4 +1,4 @@
-import * as C from './core.js?v=cef0959b';
+import * as C from './core.js?v=64733501';
 
 const app = document.getElementById('app');
 
@@ -113,6 +113,12 @@ try {
             : `<a class="pill info tiny" href="${C.link('live')}">看實時戰況 →</a>`}
       </div>
     </div>
+
+    ${/* **比賽進行中也要看得到事件。** 時間軸原本只畫在 f.played 的賽後分頁裡,
+          而 fixtures.json 的 played 要等 openfootball 更新(它比官方慢好幾個小時) ——
+          結果是:官方那邊早就有進球、牌與換人了,畫面上一片空白。
+          所以 played 還是 false、但官方已經有事件時,把時間軸提到分頁之前直接顯示。 */''}
+    ${!f.played ? goalsCard(f, { live: true }) : ''}
 
     <div class="analysis-switch" id="analysis-views" role="tablist" aria-label="分析階段">
       ${f.played ? '<button class="btn analysis-tab" type="button" role="tab" data-view="compare" aria-controls="panel-compare">綜合對比</button>' : ''}
@@ -479,11 +485,21 @@ try {
 
   /* 官方進球事件。有名單就一定有這批事件 —— 兩者來自同一個請求,
      所以這一段不需要任何額外抓取。沒有就不畫,不留空卡片。 */
-  function goalsCard(f) {
-    const goals = official?.matches?.[`${f.home}|${f.away}`]?.goals ?? [];
-    if (!goals.length) return '';
-    return `<div class="section"><h2>進球時間軸</h2><span class="hint">英超官方比賽事件</span></div>
-      <div class="card">${C.goalTimeline(goals, { home: f.home, away: f.away })}</div>`;
+  function goalsCard(f, { live = false } = {}) {
+    const rec = official?.matches?.[`${f.home}|${f.away}`];
+    const goals = rec?.goals ?? [];
+    const timeline = rec?.timeline ?? null;
+    const extras = (timeline?.cards?.length ?? 0) + (timeline?.subs?.length ?? 0);
+    if (!goals.length && !extras) return '';
+    /* 牌與換人跟進球是**同一個請求**帶回來的,以前整批丟掉了。
+       標題跟著內容走:只有進球時不要說「完整事件」。 */
+    return `<div class="section"><h2>${extras ? '比賽事件' : '進球時間軸'}</h2>
+        <span class="hint">英超官方比賽事件${extras ? '・進球、牌、換人與半場' : ''}${
+          live ? `・官方比賽鐘 ${C.esc(rec?.clock ?? '進行中')}` : ''}</span></div>
+      <div class="card">${C.goalTimeline(goals, { home: f.home, away: f.away, timeline })}
+        ${live ? `<div class="note" style="margin-top:10px">這一場的賽果還沒進本站的賽程資料
+          (上游 openfootball 比官方慢),所以上面的分頁還停在賽前。
+          事件本身是官方的,兩分鐘更新一次。</div>` : ''}</div>`;
   }
 
   function articleCard(art, fallbackTitle, phase = 'pre') {

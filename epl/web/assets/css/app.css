@@ -476,6 +476,9 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
   align-items: baseline; padding: 9px 0; border-bottom: 1px dashed var(--line-soft); font-size: 13px;
 }
 .goal-line:last-child { border-bottom: none; }
+/* 半場/全場那一列是分隔,不是事件 —— 淡一點、分隔線實一點,一眼看得出是斷點 */
+.goal-line.period { opacity: .62; border-bottom: 1px solid var(--line); }
+.goal-line.period .gl-min { color: var(--ink-3); }
 .goal-line .gl-min { font-family: var(--mono); text-align: right; color: var(--accent); }
 .goal-line.away .gl-min { color: var(--accent-3); }
 .goal-line .gl-icon { text-align: center; }

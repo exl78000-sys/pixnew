@@ -336,6 +336,9 @@ async function main() {
   console.log('\n▶ 進球子類型自我檢查');
   const kindFail = await checkGoalKinds();
 
+  console.log('\n▶ 比賽事件時間軸自我檢查');
+  const timelineFail = await checkTimeline();
+
   console.log('\n▶ 逐場進球明細自我檢查');
   const detailFail = checkGoalDetails(T);
 
@@ -371,7 +374,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -846,6 +849,101 @@ function checkGoalEvents() {
     ['沒有比分的事件不會被誤判成進球',
       goalsOf([{ type: 'G', personId: 1 }]).length === 0, ''],
   ];
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* 比賽事件時間軸:牌、換人與半場標記(2026-08-29 加)。
+
+   這批資料本來就跟進球一起回來,只是以前整批丟掉了 —— 零額外請求。
+
+   三件要守住的事:
+   1. **換人不配對「誰換誰」。** 官方事件流沒有欄位把 ON 與 OFF 連起來,
+      而同一分鐘同一隊可以換兩人(實測 FUL vs CHE 第 65 分,四筆事件時間完全相同)。
+      配錯人比不配對糟得多。
+   2. **沒見過的代碼不分類。** 目前見過 Y 與 R;R 是拿 FPL 逐球員資料獨立核對過的
+      (BHA vs AVL 第 40 分,FPL 說 AVL 的 Gomes 紅牌 1、上場 39 分)。
+      第三種出現時 kind 是 null、原碼留在 kindRaw。
+   3. **隊伍用名單反查,不看 teamId** —— 跟進球那裡同一套。 */
+async function checkTimeline() {
+  const { timelineOf } = await import('./fetch-official.mjs');
+  const { namedTimeline } = await import('../scripts/lib/adapters/pulselive.mjs');
+
+  const events = [
+    { type: 'PS', clock: { label: "00'00", secs: 0 }, phase: '1' },
+    { type: 'B', clock: { label: "09'00", secs: 540 }, phase: '1', personId: 1, teamId: 100, description: 'Y' },
+    { type: 'B', clock: { label: "40'00", secs: 2400 }, phase: '1', personId: 1, teamId: 100, description: 'R' },
+    { type: 'PE', clock: { label: "45+3'00", secs: 2880 }, phase: '1' },
+    { type: 'PS', clock: { label: "45'00", secs: 2700 }, phase: '2' },
+    // 同一分鐘同一隊換兩人 —— 四筆的順序不可以被拿來配對
+    { type: 'S', clock: { label: "65'00", secs: 3900 }, phase: '2', personId: 2, teamId: 100, description: 'ON' },
+    { type: 'S', clock: { label: "65'00", secs: 3900 }, phase: '2', personId: 3, teamId: 100, description: 'OFF' },
+    { type: 'S', clock: { label: "65'00", secs: 3900 }, phase: '2', personId: 4, teamId: 100, description: 'ON' },
+    { type: 'S', clock: { label: "65'00", secs: 3900 }, phase: '2', personId: 5, teamId: 100, description: 'OFF' },
+    { type: 'B', clock: { label: "70'00", secs: 4200 }, phase: '2', personId: 9, teamId: 200, description: 'ZZ' },
+    { type: 'PE', clock: { label: "90+5'00", secs: 5700 }, phase: '2' },
+  ];
+  const t = timelineOf(events);
+  const H = { xi: [{ id: 1, name: '主隊吃牌', code: 'h1' }, { id: 3, name: '被換下', code: 'h3' }, { id: 5, name: '被換下二', code: 'h5' }],
+    subs: [{ id: 2, name: '換上一', code: 'h2' }, { id: 4, name: '換上二', code: 'h4' }] };
+  const A = { xi: [{ id: 9, name: '客隊怪牌', code: 'a9' }], subs: [] };
+  const n = namedTimeline(t, H, A, 'HOM', 'AWY');
+
+  const cases = [
+    ['牌抓得到', t.cards.length === 3, String(t.cards.length)],
+    ['換人抓得到', t.subs.length === 4, String(t.subs.length)],
+    ['半場標記只有 PS/PE 四筆', t.periods.length === 4, String(t.periods.length)],
+    ['黃牌與紅牌都分類得出來',
+      t.cards[0].kind === '黃牌' && t.cards[1].kind === '紅牌', ''],
+    /* 這一條是核心:沒見過的代碼**不可以**自己補一個中文名。 */
+    ['沒見過的牌代碼不分類,原碼留著',
+      t.cards[2].kind === null && t.cards[2].kindRaw === 'ZZ', JSON.stringify(t.cards[2])],
+    ['補時的 label 保留得到(45+3)',
+      t.periods.some(p => p.label === "45+3'00"), ''],
+    ['隊伍用名單反查,不是 teamId',
+      n.cards[0].team === 'HOM' && n.cards[2].team === 'AWY', ''],
+    ['球員名字對得上', n.cards[0].player === '主隊吃牌' && n.subs[0].player === '換上一', ''],
+    /* **沒有任何欄位宣稱誰替誰。** 有的話就是在猜。 */
+    ['換人沒有「誰替誰」的欄位',
+      n.subs.every(x => !('replaces' in x) && !('replacedBy' in x) && !('pairedWith' in x)), ''],
+    ['上場與下場分得出來',
+      n.subs.filter(x => x.dir === 'on').length === 2
+      && n.subs.filter(x => x.dir === 'off').length === 2, ''],
+    ['沒有 events 也不會炸', timelineOf(undefined).cards.length === 0, ''],
+    ['沒有 timeline 時 namedTimeline 回 null', namedTimeline(null, H, A, 'HOM', 'AWY') === null, ''],
+  ];
+
+  /* 正式資料裡出現沒見過的代碼就要紅 —— 先核對過才放行(跟進球子類型同一套規矩)。 */
+  const off = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'official.json'), 'utf8'));
+  const unknownCards = new Set(), unknownDirs = new Set();
+  let cardN = 0, subN = 0, noTeam = 0;
+  for (const m of Object.values(off.matches ?? {})) {
+    for (const c of m.timeline?.cards ?? []) { cardN++; if (!c.kind) unknownCards.add(c.kindRaw); if (!c.team) noTeam++; }
+    for (const x of m.timeline?.subs ?? []) { subN++; if (!x.dir) unknownDirs.add(x.dirRaw); if (!x.team) noTeam++; }
+  }
+  cases.push(
+    ['正式資料裡沒有沒見過的牌代碼', unknownCards.size === 0, [...unknownCards].join('、')],
+    ['正式資料裡沒有沒見過的換人代碼', unknownDirs.size === 0, [...unknownDirs].join('、')],
+    ['正式資料的事件都查得到隊伍', noTeam === 0, `${noTeam} 筆查不到`],
+    ['產物裡真的有牌與換人', cardN > 0 && subN > 0, `牌 ${cardN}・換人 ${subN}`],
+  );
+
+  /* **進行中的場次要重抓。** 原本的條件是「有陣容就跳過」,而陣容賽前一小時就有了,
+     於是整場比賽都不會再更新事件 —— 進球、牌與換人要等完賽才一次補上。
+     比賽日的迴圈每 2 分鐘叫一次 fetch-official 就是為了拿這些,跳過等於那一步白跑。 */
+  {
+    const src = readFileSync(join(ROOT, 'scripts', 'fetch-official.mjs'), 'utf8');
+    cases.push(
+      ['進行中的場次不會被「已有陣容」跳過',
+        /const live = f\.status === 'L'/.test(src) && /!done && !live && cached\.home/.test(src), ''],
+      ['牌與換人有存進快取', /timeline: timelineOf\(/.test(src) || /timelineOf\(d\.events\)/.test(src), ''],
+    );
+  }
+
   let fail = 0;
   for (const [name, pass, detail] of cases) {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);

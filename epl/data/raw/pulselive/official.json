@@ -1,5 +1,5 @@
 {
- "version": 5,
+ "version": 6,
  "season": {
   "id": 841,
   "label": "English Premier League Season 2026/2027"
@@ -110,6 +110,743 @@
  },
  "managersFetchedAt": "2026-08-28T07:21:55.614Z",
  "matches": {
+  "CRY|MCI": {
+   "fixtureId": 128937,
+   "kickoff": "2026-08-28T19:00:00.000Z",
+   "status": "C",
+   "final": true,
+   "homeId": 6,
+   "awayId": 11,
+   "home": {
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      13988
+     ],
+     [
+      147312,
+      50842,
+      115169
+     ],
+     [
+      123848,
+      69595,
+      49759,
+      24334
+     ],
+     [
+      109117,
+      14451
+     ],
+     [
+      35670
+     ]
+    ],
+    "xi": [
+     {
+      "id": 13988,
+      "playerId": null,
+      "name": "Dean Henderson",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": true
+     },
+     {
+      "id": 123848,
+      "playerId": null,
+      "name": "Anan Khalaili",
+      "shirt": 25,
+      "pos": "M",
+      "posInfo": "Forward",
+      "captain": false
+     },
+     {
+      "id": 69595,
+      "playerId": null,
+      "name": "Adam Wharton",
+      "shirt": 20,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 35670,
+      "playerId": null,
+      "name": "Jørgen Strand Larsen",
+      "shirt": 22,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 49759,
+      "playerId": null,
+      "name": "Daichi Kamada",
+      "shirt": 18,
+      "pos": "M",
+      "posInfo": "Centre Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 50842,
+      "playerId": null,
+      "name": "Chris Richards",
+      "shirt": 26,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 147312,
+      "playerId": null,
+      "name": "Jaydee Canvot",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 24334,
+      "playerId": null,
+      "name": "Tyrick Mitchell",
+      "shirt": 3,
+      "pos": "M",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 14451,
+      "playerId": null,
+      "name": "Eddie Nketiah",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 109117,
+      "playerId": null,
+      "name": "Yéremy Pino",
+      "shirt": 10,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 115169,
+      "playerId": null,
+      "name": "Takehiro Tomiyasu",
+      "shirt": 17,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 50909,
+      "playerId": null,
+      "name": "Óscar Mingueza",
+      "shirt": 30,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 76353,
+      "playerId": null,
+      "name": "Daniel Muñoz",
+      "shirt": 2,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 37776,
+      "playerId": null,
+      "name": "Jefferson Lerma",
+      "shirt": 8,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 72265,
+      "playerId": null,
+      "name": "Evann Guessand",
+      "shirt": 29,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 8589,
+      "playerId": null,
+      "name": "Will Hughes",
+      "shirt": 19,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 337813,
+      "playerId": null,
+      "name": "Zavier Gozo",
+      "shirt": 12,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 20497,
+      "playerId": null,
+      "name": "Walter Benítez",
+      "shirt": 44,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 54893,
+      "playerId": null,
+      "name": "Axel Disasi",
+      "shirt": 5,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 24797,
+      "playerId": null,
+      "name": "Dwight McNeil",
+      "shirt": 11,
+      "pos": "F",
+      "posInfo": "Left Winger",
+      "captain": false
+     }
+    ]
+   },
+   "away": {
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      137371,
+      16431,
+      14569,
+      67178
+     ],
+     [
+      112948,
+      51593
+     ],
+     [
+      14805,
+      68150,
+      25474
+     ],
+     [
+      65970
+     ]
+    ],
+    "xi": [
+     {
+      "id": 22857,
+      "playerId": null,
+      "name": "Gianluigi Donnarumma",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 112948,
+      "playerId": null,
+      "name": "Nico O'Reilly",
+      "shirt": 33,
+      "pos": "M",
+      "posInfo": "Left/Centre Full Back",
+      "captain": false
+     },
+     {
+      "id": 51593,
+      "playerId": null,
+      "name": "Elliot Anderson",
+      "shirt": 5,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 14569,
+      "playerId": null,
+      "name": "Marc Guéhi",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 68150,
+      "playerId": null,
+      "name": "Rayan Cherki",
+      "shirt": 10,
+      "pos": "M",
+      "posInfo": "Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 67178,
+      "playerId": null,
+      "name": "Josko Gvardiol",
+      "shirt": 24,
+      "pos": "D",
+      "posInfo": "Left/Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 65970,
+      "playerId": null,
+      "name": "Erling Haaland",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 16431,
+      "playerId": null,
+      "name": "Rúben Dias",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": true
+     },
+     {
+      "id": 137371,
+      "playerId": null,
+      "name": "Abdukodir Khusanov",
+      "shirt": 45,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 25474,
+      "playerId": null,
+      "name": "Antoine Semenyo",
+      "shirt": 42,
+      "pos": "M",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 14805,
+      "playerId": null,
+      "name": "Phil Foden",
+      "shirt": 47,
+      "pos": "M",
+      "posInfo": "Centre/Right Attacking Midfielder",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 99281,
+      "playerId": null,
+      "name": "Rico Lewis",
+      "shirt": 82,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 141186,
+      "playerId": null,
+      "name": "Ryan McAidoo",
+      "shirt": 56,
+      "pos": "F",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 20857,
+      "playerId": null,
+      "name": "Gerónimo Rulli",
+      "shirt": 28,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 12520,
+      "playerId": null,
+      "name": "Mateo Kovacic",
+      "shirt": 8,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 135722,
+      "playerId": null,
+      "name": "Claudio Echeverri",
+      "shirt": 30,
+      "pos": "M",
+      "posInfo": "Centre Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 71432,
+      "playerId": null,
+      "name": "Rayan Aït-Nouri",
+      "shirt": 21,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 141425,
+      "playerId": null,
+      "name": "Ayyoub Bouaddi",
+      "shirt": 32,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 134787,
+      "playerId": null,
+      "name": "Kaden Braithwaite",
+      "shirt": 61,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 302583,
+      "playerId": null,
+      "name": "Vitor Reis",
+      "shirt": 22,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     }
+    ]
+   },
+   "goals": [
+    {
+     "side": "A",
+     "person": 65970,
+     "assist": 25474,
+     "team": 11,
+     "min": 17,
+     "label": "17'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 68150,
+     "assist": 14805,
+     "team": 11,
+     "min": 54,
+     "label": "54'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 2
+    },
+    {
+     "side": "H",
+     "person": 22857,
+     "assist": null,
+     "team": 6,
+     "min": 56,
+     "label": "56'00",
+     "phase": "2",
+     "type": "O",
+     "kind": "O",
+     "hs": 1,
+     "as": 2
+    },
+    {
+     "side": "A",
+     "person": 68150,
+     "assist": 67178,
+     "team": 11,
+     "min": 59,
+     "label": "59'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 3
+    },
+    {
+     "side": "A",
+     "person": 65970,
+     "assist": 14805,
+     "team": 11,
+     "min": 84,
+     "label": "84'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 4
+    }
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 68150,
+      "team": 11,
+      "min": 33,
+      "label": "33'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 51593,
+      "team": 11,
+      "min": 55,
+      "label": "55'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 123848,
+      "team": 6,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 72265,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 35670,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 24797,
+      "team": 6,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14451,
+      "team": 6,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 337813,
+      "team": 6,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 109117,
+      "team": 6,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 54893,
+      "team": 6,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 115169,
+      "team": 6,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 50909,
+      "team": 6,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 123848,
+      "team": 6,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 12520,
+      "team": 11,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67178,
+      "team": 11,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 141186,
+      "team": 11,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68150,
+      "team": 11,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 141425,
+      "team": 11,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51593,
+      "team": 11,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 134787,
+      "team": 11,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 112948,
+      "team": 11,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 302583,
+      "team": 11,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 137371,
+      "team": 11,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+6'00"
+  },
   "FUL|CHE": {
    "fixtureId": 128932,
    "kickoff": "2026-08-24T19:00:00.000Z",
@@ -605,7 +1342,247 @@
      "hs": 2,
      "as": 3
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 51229,
+      "team": 4,
+      "min": 5,
+      "label": "05'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 99282,
+      "team": 4,
+      "min": 12,
+      "label": "12'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 14571,
+      "team": 4,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 23793,
+      "team": 34,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 6712,
+      "team": 34,
+      "min": 88,
+      "label": "88'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 63741,
+      "team": 4,
+      "min": 65,
+      "label": "65'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 99282,
+      "team": 4,
+      "min": 65,
+      "label": "65'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 70585,
+      "team": 4,
+      "min": 65,
+      "label": "65'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 119041,
+      "team": 4,
+      "min": 65,
+      "label": "65'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 75201,
+      "team": 34,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 66657,
+      "team": 34,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 121610,
+      "team": 34,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 123594,
+      "team": 34,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 14656,
+      "team": 34,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21614,
+      "team": 34,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 21998,
+      "team": 4,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68827,
+      "team": 4,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 117763,
+      "team": 34,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14624,
+      "team": 34,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 129425,
+      "team": 4,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 23968,
+      "team": 4,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 304474,
+      "team": 4,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49293,
+      "team": 4,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+5'00"
   },
   "NEW|LIV": {
    "fixtureId": 128931,
@@ -1089,7 +2066,274 @@
      "hs": 2,
      "as": 2
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 117497,
+      "team": 23,
+      "min": 25,
+      "label": "25'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 116665,
+      "team": 10,
+      "min": 30,
+      "label": "30'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 19919,
+      "team": 10,
+      "min": 30,
+      "label": "30'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 117647,
+      "team": 23,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 19888,
+      "team": 23,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 9662,
+      "team": 23,
+      "min": 79,
+      "label": "79'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 5140,
+      "team": 10,
+      "min": 90,
+      "label": "90'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 114689,
+      "team": 23,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 19888,
+      "team": 23,
+      "min": 56,
+      "label": "56'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 303043,
+      "team": 23,
+      "min": 56,
+      "label": "56'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 14446,
+      "team": 23,
+      "min": 56,
+      "label": "56'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 114590,
+      "team": 23,
+      "min": 56,
+      "label": "56'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 119386,
+      "team": 10,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 134796,
+      "team": 10,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 63633,
+      "team": 10,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 75382,
+      "team": 10,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 66133,
+      "team": 10,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133104,
+      "team": 10,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 149630,
+      "team": 23,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 117647,
+      "team": 23,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 9662,
+      "team": 23,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49259,
+      "team": 23,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 129671,
+      "team": 10,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49909,
+      "team": 10,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 5220,
+      "team": 23,
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 117497,
+      "team": 23,
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+10'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+10'00"
   },
   "BHA|AVL": {
    "fixtureId": 128929,
@@ -1573,7 +2817,274 @@
      "hs": 4,
      "as": 0
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 133679,
+      "team": 2,
+      "min": 9,
+      "label": "09'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 22542,
+      "team": 131,
+      "min": 10,
+      "label": "10'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 134333,
+      "team": 131,
+      "min": 11,
+      "label": "11'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 51423,
+      "team": 2,
+      "min": 33,
+      "label": "33'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 133679,
+      "team": 2,
+      "min": 40,
+      "label": "40'00",
+      "phase": "1",
+      "kindRaw": "R",
+      "kind": "紅牌"
+     },
+     {
+      "person": 13344,
+      "team": 2,
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 146970,
+      "team": 131,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 134333,
+      "team": 131,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 145043,
+      "team": 131,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 112739,
+      "team": 131,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 8900,
+      "team": 2,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21529,
+      "team": 2,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 107846,
+      "team": 2,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 4115,
+      "team": 2,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 334183,
+      "team": 131,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 72239,
+      "team": 131,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 136398,
+      "team": 131,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67928,
+      "team": 131,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 69196,
+      "team": 2,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51223,
+      "team": 2,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 326089,
+      "team": 2,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51423,
+      "team": 2,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 147052,
+      "team": 131,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 143240,
+      "team": 131,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 68987,
+      "team": 2,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 26408,
+      "team": 2,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+5'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+5'00"
   },
   "MCI|BOU": {
    "fixtureId": 128930,
@@ -2044,7 +3555,211 @@
      "hs": 2,
      "as": 1
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 33032,
+      "team": 127,
+      "min": 45,
+      "label": "45+1'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 14805,
+      "team": 11,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 120109,
+      "team": 127,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 76204,
+      "team": 11,
+      "min": 57,
+      "label": "57'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 99281,
+      "team": 11,
+      "min": 57,
+      "label": "57'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 68150,
+      "team": 11,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 112948,
+      "team": 11,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 12520,
+      "team": 11,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51593,
+      "team": 11,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 135304,
+      "team": 127,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21519,
+      "team": 127,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 42894,
+      "team": 127,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 10766,
+      "team": 127,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 111987,
+      "team": 127,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 33032,
+      "team": 127,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 4260,
+      "team": 11,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14805,
+      "team": 11,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 121972,
+      "team": 127,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 134234,
+      "team": 127,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+6'00"
   },
   "BRE|TOT": {
    "fixtureId": 128924,
@@ -2515,7 +4230,238 @@
      "hs": 3,
      "as": 0
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 21887,
+      "team": 21,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 23194,
+      "team": 130,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 119072,
+      "team": 21,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21887,
+      "team": 21,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 22802,
+      "team": 21,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133603,
+      "team": 21,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 128891,
+      "team": 130,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49726,
+      "team": 130,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 50460,
+      "team": 130,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133890,
+      "team": 130,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 8456,
+      "team": 21,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 127853,
+      "team": 21,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 10443,
+      "team": 21,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 24630,
+      "team": 21,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 49731,
+      "team": 130,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 108421,
+      "team": 130,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 115166,
+      "team": 130,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133460,
+      "team": 130,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 8454,
+      "team": 130,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 124052,
+      "team": 130,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 126824,
+      "team": 21,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 117596,
+      "team": 21,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+5'00"
   },
   "EVE|CRY": {
    "fixtureId": 128925,
@@ -2973,7 +4919,211 @@
      "hs": 2,
      "as": 0
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 49759,
+      "team": 6,
+      "min": 30,
+      "label": "30'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 123848,
+      "team": 6,
+      "min": 55,
+      "label": "55'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 76353,
+      "team": 6,
+      "min": 55,
+      "label": "55'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 109117,
+      "team": 6,
+      "min": 55,
+      "label": "55'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14451,
+      "team": 6,
+      "min": 55,
+      "label": "55'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 72265,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 24797,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 35670,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20874,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 115169,
+      "team": 6,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 110549,
+      "team": 6,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 126789,
+      "team": 7,
+      "min": 79,
+      "label": "79'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 143922,
+      "team": 7,
+      "min": 79,
+      "label": "79'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 23841,
+      "team": 7,
+      "min": 79,
+      "label": "79'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 25375,
+      "team": 7,
+      "min": 79,
+      "label": "79'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 49374,
+      "team": 7,
+      "min": 84,
+      "label": "84'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 118442,
+      "team": 7,
+      "min": 84,
+      "label": "84'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 133612,
+      "team": 7,
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14706,
+      "team": 7,
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+5'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+8'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+8'00"
   },
   "IPS|SUN": {
    "fixtureId": 128927,
@@ -3444,7 +5594,247 @@
      "hs": 2,
      "as": 1
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 19864,
+      "team": 29,
+      "min": 36,
+      "label": "36'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 115105,
+      "team": 29,
+      "min": 55,
+      "label": "55'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 10361,
+      "team": 29,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 118633,
+      "team": 29,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 115105,
+      "team": 29,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 4482,
+      "team": 8,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 313194,
+      "team": 8,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 51553,
+      "team": 8,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 127644,
+      "team": 8,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 66659,
+      "team": 29,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 10361,
+      "team": 29,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 52989,
+      "team": 29,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67784,
+      "team": 29,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 32715,
+      "team": 8,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 125827,
+      "team": 8,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 126111,
+      "team": 8,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 122002,
+      "team": 8,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 119614,
+      "team": 29,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 122126,
+      "team": 29,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 141026,
+      "team": 8,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 127605,
+      "team": 8,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 126110,
+      "team": 29,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 138104,
+      "team": 29,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+5'00"
   },
   "NFO|LEE": {
    "fixtureId": 128928,
@@ -3889,7 +6279,175 @@
      "hs": 0,
      "as": 1
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 10439,
+      "team": 15,
+      "min": 18,
+      "label": "18'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 9576,
+      "team": 9,
+      "min": 32,
+      "label": "32'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 304238,
+      "team": 15,
+      "min": 52,
+      "label": "52'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 3756,
+      "team": 15,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 50623,
+      "team": 15,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 33162,
+      "team": 9,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 13961,
+      "team": 9,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 76426,
+      "team": 15,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 10439,
+      "team": 15,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 20335,
+      "team": 15,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49270,
+      "team": 15,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 14897,
+      "team": 9,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 63289,
+      "team": 9,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 68219,
+      "team": 15,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 139648,
+      "team": 15,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+4'00"
   },
   "HUL|MUN": {
    "fixtureId": 128926,
@@ -4345,7 +6903,247 @@
      "hs": 2,
      "as": 0
     }
-   ]
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 146567,
+      "team": 12,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 8885,
+      "team": 41,
+      "min": 42,
+      "label": "42'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 23822,
+      "team": 41,
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 13565,
+      "team": 12,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 146567,
+      "team": 12,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 337567,
+      "team": 41,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133314,
+      "team": 41,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 10473,
+      "team": 41,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 10424,
+      "team": 41,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 66036,
+      "team": 12,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133245,
+      "team": 12,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 108936,
+      "team": 12,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 5865,
+      "team": 12,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 24811,
+      "team": 41,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 13486,
+      "team": 41,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 23822,
+      "team": 41,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 337382,
+      "team": 41,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 24252,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 33245,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 130151,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51202,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 4815,
+      "team": 41,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20081,
+      "team": 41,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+7'00"
   },
   "ARS|COV": {
    "fixtureId": 128923,
@@ -4816,439 +7614,221 @@
      "hs": 3,
      "as": 0
     }
-   ]
-  },
-  "CRY|MCI": {
-   "fixtureId": 128937,
-   "kickoff": "2026-08-28T19:00:00.000Z",
-   "status": "L",
-   "final": false,
-   "homeId": 6,
-   "awayId": 11,
-   "home": {
-    "formation": "3-4-2-1",
-    "formationRaw": "3-4-2-1",
-    "rows": [
-     [
-      13988
-     ],
-     [
-      147312,
-      50842,
-      115169
-     ],
-     [
-      123848,
-      69595,
-      49759,
-      24334
-     ],
-     [
-      109117,
-      14451
-     ],
-     [
-      35670
-     ]
-    ],
-    "xi": [
+   ],
+   "timeline": {
+    "cards": [
      {
-      "id": 13988,
-      "playerId": null,
-      "name": "Dean Henderson",
-      "shirt": 1,
-      "pos": "G",
-      "posInfo": "Goalkeeper",
-      "captain": true
+      "person": 337310,
+      "team": 5,
+      "min": 27,
+      "label": "27'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      },
      {
-      "id": 123848,
-      "playerId": null,
-      "name": "Anan Khalaili",
-      "shirt": 25,
-      "pos": "M",
-      "posInfo": "Forward",
-      "captain": false
-     },
-     {
-      "id": 69595,
-      "playerId": null,
-      "name": "Adam Wharton",
-      "shirt": 20,
-      "pos": "M",
-      "posInfo": "Central Midfielder",
-      "captain": false
-     },
-     {
-      "id": 35670,
-      "playerId": null,
-      "name": "Jørgen Strand Larsen",
-      "shirt": 22,
-      "pos": "F",
-      "posInfo": "Striker",
-      "captain": false
-     },
-     {
-      "id": 49759,
-      "playerId": null,
-      "name": "Daichi Kamada",
-      "shirt": 18,
-      "pos": "M",
-      "posInfo": "Centre Attacking Midfielder",
-      "captain": false
-     },
-     {
-      "id": 50842,
-      "playerId": null,
-      "name": "Chris Richards",
-      "shirt": 26,
-      "pos": "D",
-      "posInfo": "Centre Central Defender",
-      "captain": false
-     },
-     {
-      "id": 147312,
-      "playerId": null,
-      "name": "Jaydee Canvot",
-      "shirt": 6,
-      "pos": "D",
-      "posInfo": "Centre Central Defender",
-      "captain": false
-     },
-     {
-      "id": 24334,
-      "playerId": null,
-      "name": "Tyrick Mitchell",
-      "shirt": 3,
-      "pos": "M",
-      "posInfo": "Left Full Back",
-      "captain": false
-     },
-     {
-      "id": 14451,
-      "playerId": null,
-      "name": "Eddie Nketiah",
-      "shirt": 9,
-      "pos": "F",
-      "posInfo": "Centre Striker",
-      "captain": false
-     },
-     {
-      "id": 109117,
-      "playerId": null,
-      "name": "Yéremy Pino",
-      "shirt": 10,
-      "pos": "F",
-      "posInfo": "Right Winger",
-      "captain": false
-     },
-     {
-      "id": 115169,
-      "playerId": null,
-      "name": "Takehiro Tomiyasu",
-      "shirt": 17,
-      "pos": "D",
-      "posInfo": "Central Defender",
-      "captain": false
+      "person": 50234,
+      "team": 1,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
      {
-      "id": 50909,
-      "playerId": null,
-      "name": "Óscar Mingueza",
-      "shirt": 30,
-      "pos": "D",
-      "posInfo": "Central Defender",
-      "captain": false
+      "person": 118036,
+      "team": 5,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
      },
      {
-      "id": 76353,
-      "playerId": null,
-      "name": "Daniel Muñoz",
-      "shirt": 2,
-      "pos": "D",
-      "posInfo": "Right Full Back",
-      "captain": false
+      "person": 337310,
+      "team": 5,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      },
      {
-      "id": 37776,
-      "playerId": null,
-      "name": "Jefferson Lerma",
-      "shirt": 8,
-      "pos": "M",
-      "posInfo": "Centre Central Midfielder",
-      "captain": false
+      "person": 67407,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
      },
      {
-      "id": 72265,
-      "playerId": null,
-      "name": "Evann Guessand",
-      "shirt": 29,
-      "pos": "F",
-      "posInfo": "Striker",
-      "captain": false
+      "person": 49481,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      },
      {
-      "id": 8589,
-      "playerId": null,
-      "name": "Will Hughes",
-      "shirt": 19,
-      "pos": "M",
-      "posInfo": "Centre Central Midfielder",
-      "captain": false
+      "person": 64523,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
      },
      {
-      "id": 337813,
-      "playerId": null,
-      "name": "Zavier Gozo",
-      "shirt": 12,
-      "pos": "F",
-      "posInfo": "Right Winger",
-      "captain": false
+      "person": 15202,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      },
      {
-      "id": 20497,
-      "playerId": null,
-      "name": "Walter Benítez",
-      "shirt": 44,
-      "pos": "G",
-      "posInfo": "Goalkeeper",
-      "captain": false
+      "person": 66304,
+      "team": 5,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
      },
      {
-      "id": 54893,
-      "playerId": null,
-      "name": "Axel Disasi",
-      "shirt": 5,
-      "pos": "D",
-      "posInfo": "Centre Central Defender",
-      "captain": false
+      "person": 19694,
+      "team": 5,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      },
      {
-      "id": 24797,
-      "playerId": null,
-      "name": "Dwight McNeil",
-      "shirt": 11,
-      "pos": "F",
-      "posInfo": "Left Winger",
-      "captain": false
+      "person": 15340,
+      "team": 5,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 19925,
+      "team": 5,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 21584,
+      "team": 1,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67704,
+      "team": 1,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 19778,
+      "team": 1,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 11419,
+      "team": 1,
+      "min": 76,
+      "label": "76'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 118077,
+      "team": 1,
+      "min": 81,
+      "label": "81'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 69914,
+      "team": 1,
+      "min": 81,
+      "label": "81'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 20361,
+      "team": 5,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 74964,
+      "team": 5,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "away": {
-    "formation": "4-2-3-1",
-    "formationRaw": "4-2-3-1",
-    "rows": [
-     [
-      22857
-     ],
-     [
-      137371,
-      16431,
-      14569,
-      67178
-     ],
-     [
-      112948,
-      51593
-     ],
-     [
-      14805,
-      68150,
-      25474
-     ],
-     [
-      65970
-     ]
-    ],
-    "xi": [
-     {
-      "id": 22857,
-      "playerId": null,
-      "name": "Gianluigi Donnarumma",
-      "shirt": 1,
-      "pos": "G",
-      "posInfo": "Goalkeeper",
-      "captain": false
-     },
-     {
-      "id": 112948,
-      "playerId": null,
-      "name": "Nico O'Reilly",
-      "shirt": 33,
-      "pos": "M",
-      "posInfo": "Left/Centre Full Back",
-      "captain": false
-     },
-     {
-      "id": 51593,
-      "playerId": null,
-      "name": "Elliot Anderson",
-      "shirt": 5,
-      "pos": "M",
-      "posInfo": "Central Midfielder",
-      "captain": false
-     },
-     {
-      "id": 14569,
-      "playerId": null,
-      "name": "Marc Guéhi",
-      "shirt": 6,
-      "pos": "D",
-      "posInfo": "Centre Central Defender",
-      "captain": false
-     },
-     {
-      "id": 68150,
-      "playerId": null,
-      "name": "Rayan Cherki",
-      "shirt": 10,
-      "pos": "M",
-      "posInfo": "Attacking Midfielder",
-      "captain": false
-     },
-     {
-      "id": 67178,
-      "playerId": null,
-      "name": "Josko Gvardiol",
-      "shirt": 24,
-      "pos": "D",
-      "posInfo": "Left/Centre Central Defender",
-      "captain": false
-     },
-     {
-      "id": 65970,
-      "playerId": null,
-      "name": "Erling Haaland",
-      "shirt": 9,
-      "pos": "F",
-      "posInfo": "Centre Striker",
-      "captain": false
-     },
-     {
-      "id": 16431,
-      "playerId": null,
-      "name": "Rúben Dias",
-      "shirt": 3,
-      "pos": "D",
-      "posInfo": "Centre Central Defender",
-      "captain": true
-     },
-     {
-      "id": 137371,
-      "playerId": null,
-      "name": "Abdukodir Khusanov",
-      "shirt": 45,
-      "pos": "D",
-      "posInfo": "Central Defender",
-      "captain": false
-     },
-     {
-      "id": 25474,
-      "playerId": null,
-      "name": "Antoine Semenyo",
-      "shirt": 42,
-      "pos": "M",
-      "posInfo": "Left/Right Winger",
-      "captain": false
-     },
-     {
-      "id": 14805,
-      "playerId": null,
-      "name": "Phil Foden",
-      "shirt": 47,
-      "pos": "M",
-      "posInfo": "Centre/Right Attacking Midfielder",
-      "captain": false
-     }
-    ],
-    "subs": [
-     {
-      "id": 99281,
-      "playerId": null,
-      "name": "Rico Lewis",
-      "shirt": 82,
-      "pos": "D",
-      "posInfo": "Right Full Back",
-      "captain": false
-     },
-     {
-      "id": 141186,
-      "playerId": null,
-      "name": "Ryan McAidoo",
-      "shirt": 56,
-      "pos": "F",
-      "posInfo": "Left/Right Winger",
-      "captain": false
-     },
-     {
-      "id": 20857,
-      "playerId": null,
-      "name": "Gerónimo Rulli",
-      "shirt": 28,
-      "pos": "G",
-      "posInfo": "Goalkeeper",
-      "captain": false
-     },
-     {
-      "id": 12520,
-      "playerId": null,
-      "name": "Mateo Kovacic",
-      "shirt": 8,
-      "pos": "M",
-      "posInfo": "Centre Central Midfielder",
-      "captain": false
-     },
-     {
-      "id": 135722,
-      "playerId": null,
-      "name": "Claudio Echeverri",
-      "shirt": 30,
-      "pos": "M",
-      "posInfo": "Centre Attacking Midfielder",
-      "captain": false
-     },
-     {
-      "id": 71432,
-      "playerId": null,
-      "name": "Rayan Aït-Nouri",
-      "shirt": 21,
-      "pos": "D",
-      "posInfo": "Left Full Back",
-      "captain": false
-     },
-     {
-      "id": 141425,
-      "playerId": null,
-      "name": "Ayyoub Bouaddi",
-      "shirt": 32,
-      "pos": "M",
-      "posInfo": "Centre Central Midfielder",
-      "captain": false
-     },
-     {
-      "id": 134787,
-      "playerId": null,
-      "name": "Kaden Braithwaite",
-      "shirt": 61,
-      "pos": "D",
-      "posInfo": "Centre Central Defender",
-      "captain": false
-     },
-     {
-      "id": 302583,
-      "playerId": null,
-      "name": "Vitor Reis",
-      "shirt": 22,
-      "pos": "D",
-      "posInfo": "Central Defender",
-      "captain": false
-     }
-    ]
-   },
-   "goals": []
+   "clock": "90+5'00"
   }
  },
- "fetchedAt": "2026-08-28T19:21:25.244Z"
+ "fetchedAt": "2026-08-29T01:36:33.543Z"
 }

@@ -25,7 +25,8 @@ const has = k => process.argv.includes(`--${k}`);
 // 所以要跳到 3 才推得動 —— 檔案裡已經寫著 2 了。
 // v4:開始存進球事件(events)。
 // v5:改用「比分變了就是進球」判定,不再只認 type==='G' —— 烏龍球不是 G。
-const STORE_VERSION = 5;
+// v6:除了進球,也存牌與換人(timelineOf)。升版會重抓所有場次的陣容與事件。
+const STORE_VERSION = 6;
 
 const MAX_DETAIL = has('all') ? 400 : 14;   // 每次執行最多抓幾場詳情
 const SOON_MS = 3 * 60 * 60 * 1000;         // 開賽前 3 小時內就開始試(正式陣容約賽前 1 小時公布)
@@ -111,6 +112,49 @@ export const goalsOf = events => {
   return out;
 };
 
+/* 牌、換人與半場標記。**進球不在這裡** —— 它由 goalsOf 用「比分變了」判定,
+   比看 type === 'G' 可靠(烏龍球不是 G)。要組完整時間軸就把兩者合起來排序。
+
+   兩個刻意的設計:
+
+   1. **換人不配對「誰換誰」。** 官方的事件流**沒有任何欄位**把 ON 與 OFF 連起來,
+      而同一分鐘可以有兩組換人 —— 實測 FUL vs CHE 第 65 分鐘同一隊一次換兩人,
+      四筆事件的 time.millis 完全相同。照相鄰順序配對就是猜,而**配錯人比不配對糟得多**
+      (租借姓名那條坑講過)。所以只給「第幾分、哪一隊、誰上、誰下」,不宣稱誰替誰。
+   2. **沒見過的代碼不分類。** 目前見過的只有 Y 與 R,而且 **R 是核對過才放行的**:
+      2026-27 第 1 輪 BHA vs AVL 第 40 分有一筆 R,拿 FPL 的逐球員資料獨立核對 ——
+      FPL 說 AVL 的 Gomes 紅牌 1、上場 39 分,兩邊指的是同一個人同一件事。
+      第三種代碼出現時 kind 會是 null、原碼留在 kindRaw,測試會紅,先核對過才放行。
+      (這跟進球子類型的做法一致:已見過 G / P / O,第四種出現就擋。)
+
+   ── 一個會讓人以為資料錯的差異(拿兩邊對牌數之前一定要知道)──
+   **FPL 會把被罰下者的黃牌吞掉。** 同一場 BHA vs AVL:官方事件流有 5 張黃 + 1 張紅,
+   FPL 只有 4 張黃 + 1 張紅 —— 少的正是 Gomes 自己 9 分鐘那張(FPL 記他「黃 0 紅 1」)。
+   所以每有一個人被罰下,兩邊的黃牌數就會差 1。那不是資料錯,是兩邊的記法不同。 */
+export const CARD_KINDS = { Y: '黃牌', R: '紅牌' };
+export const SUB_DIRS = { ON: 'on', OFF: 'off' };
+
+export function timelineOf(events) {
+  const all = (Array.isArray(events) ? events : []).slice().sort((a, b) => seq(a) - seq(b));
+  const cards = [], subs = [], periods = [];
+  for (const e of all) {
+    const base = {
+      person: e.personId ?? null, team: e.teamId ?? null,
+      min: minuteOf(e.clock?.label), label: e.clock?.label ?? null, phase: e.phase ?? null,
+    };
+    if (e.type === 'B') {
+      cards.push({ ...base, kindRaw: e.description ?? null, kind: CARD_KINDS[e.description] ?? null });
+    } else if (e.type === 'S') {
+      subs.push({ ...base, dirRaw: e.description ?? null, dir: SUB_DIRS[e.description] ?? null });
+    } else if (e.type === 'PS' || e.type === 'PE') {
+      /* 半場起訖。PE 的 label 帶補時(45+3\'00),那是唯一能講出
+         「上半場踢了幾分鐘補時」的來源,而且時間軸要靠它分段。 */
+      periods.push({ type: e.type, ...base, person: undefined, team: undefined });
+    }
+  }
+  return { cards, subs, periods };
+}
+
 const sideOf = tl => ({
   formation: normaliseFormation(tl.formation?.label),
   formationRaw: tl.formation?.label ?? null,
@@ -181,9 +225,15 @@ async function main() {
     const key = `${home}|${away}`;
     const done = f.status === 'C';
     const cached = store.matches[key];
-    // 已完賽且抓過先發 → 不用再抓。進行中/未開賽 → 只要還沒拿到陣容就再試。
+    /* 已完賽且抓過先發 → 不用再抓(那筆定案了)。
+       **進行中的一律再抓** —— 原本這裡是「有陣容就跳過」,而陣容賽前一小時就有了,
+       於是整場比賽都不會再更新,進球、牌與換人要等完賽才一次補上。
+       比賽日的迴圈每 2 分鐘叫一次這支,就是為了拿這些事件;跳過等於那一步白跑。
+       進行中的場次最多 10 場,一次 10 個請求,跟迴圈本來就在打的是同一個端點。
+       未開賽 → 只要還沒拿到陣容就再試。 */
     if (cached?.final && done && !has('all')) continue;
-    if (cached && !done && cached.home?.xi?.length && cached.away?.xi?.length) continue;
+    const live = f.status === 'L';
+    if (cached && !done && !live && cached.home?.xi?.length && cached.away?.xi?.length) continue;
     const ko = f.kickoff?.millis ?? f.provisionalKickoff?.millis ?? null;
     if (!done && (ko === null || ko - now > SOON_MS)) continue;   // 離開賽還早,陣容還沒出來
     wanted.push({ f, key, home, away, ko, done });
@@ -200,6 +250,7 @@ async function main() {
       const h = byTeam.get(w.f.teams[0].team.id), a = byTeam.get(w.f.teams[1].team.id);
       if (!h || !a) { empty++; continue; }
       const goals = goalsOf(d.events);
+      const timeline = timelineOf(d.events);
       store.matches[w.key] = {
         fixtureId: w.f.id,
         kickoff: w.ko ? new Date(w.ko).toISOString() : null,
@@ -208,6 +259,10 @@ async function main() {
         homeId: w.f.teams[0].team.id, awayId: w.f.teams[1].team.id,   // 事件的 teamId 要對回主客
         home: sideOf(h), away: sideOf(a),
         goals,
+        /* 牌與換人。進球不放這裡 —— 它由 goalsOf 用「比分變了」判定,
+           比看 type === 'G' 可靠(烏龍球不是 G)。畫面上要組時間軸時把兩者合起來排序。 */
+        timeline,
+        clock: d.clock?.label ?? null,     // 官方的比賽鐘,含 45+3 這種補時寫法
       };
       got++;
       const gTxt = goals.length ? `・${goals.length} 顆進球` : '';

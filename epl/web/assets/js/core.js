@@ -1344,34 +1344,107 @@ export const DATASET_ZH = {
    (scorerTeam)。兩邊都標出來,不然讀者會以為我們把人記到錯的隊上。 */
 const GOAL_TAG = { penalty: ['十二碼', 'info'], own: ['烏龍球', 'bad'] };
 
-export function goalTimeline(goals, { home, away } = {}) {
-  const list = (goals ?? []).filter(g => g && g.min != null)
-    .slice().sort((a, b) => a.min - b.min || (a.hs + a.as) - (b.hs + b.as));
-  if (!list.length) return '';
-  return `<div class="goal-lines">${list.map(g => {
-    const tag = GOAL_TAG[g.kind];
-    const own = g.kind === 'own';
-    const scorer = g.scorerCode
-      ? `<button class="player-name-btn" type="button" data-player-code="${esc(g.scorerCode)}"
-           aria-label="查看 ${esc(g.scorer ?? '')} 球員資料">${esc(g.scorer ?? '')}</button>`
-      : esc(g.scorer ?? '不詳');
-    const assist = g.assistCode
-      ? `<button class="player-name-btn" type="button" data-player-code="${esc(g.assistCode)}"
-           aria-label="查看 ${esc(g.assist ?? '')} 球員資料">${esc(g.assist ?? '')}</button>`
-      : g.assist ? esc(g.assist) : '';
-    return `<div class="goal-line ${g.team === away ? 'away' : ''}">
-      <b class="gl-min">${esc(g.label ? g.label.replace(/'\d+$/, "'") : `${g.min}'`)}</b>
-      <span class="gl-icon">⚽</span>
-      <span>${badge(g.team)} <b>${esc(name(g.team))}</b>・${scorer}
-        ${tag ? `<span class="pill ${tag[1]} tiny">${tag[0]}</span>` : ''}
-        ${own && g.scorerTeam ? `<small>${esc(name(g.scorerTeam))} 的球員踢進自家球門,這球算給 ${esc(name(g.team))}</small>` : ''}
-        ${assist ? `<small>助攻 ${assist}</small>` : ''}</span>
-      <b class="gl-score mono">${g.hs}<span class="dim">:</span>${g.as}</b>
+/* 比賽時間軸。**一個渲染器**,不是「進球一份、牌與換人另一份」——
+   同一條時間軸畫兩次的話,改了一邊另一邊會悄悄過期(這個專案在戰術風格卡踩過)。
+   不傳 timeline 就跟以前一模一樣,只有進球。
+
+   換人**按「分鐘 + 隊伍」分組,不配對誰換誰** —— 官方事件流沒有欄位把 ON 與 OFF
+   連起來,而同一分鐘同一隊可以換兩人。配錯人比不配對糟得多。 */
+export function goalTimeline(goals, { home, away, timeline = null } = {}) {
+  const rows = (goals ?? []).filter(g => g && g.min != null)
+    .map(g => ({ t: 'goal', min: g.min, ord: 0, g }));
+
+  for (const c of timeline?.cards ?? []) {
+    if (c?.min == null) continue;
+    rows.push({ t: 'card', min: c.min, ord: 1, c });
+  }
+  /* 同一分鐘同一隊的換人收成一列。用 Map 保順序,才不會因為物件的鍵排序而跳動。 */
+  const subGroups = new Map();
+  for (const x of timeline?.subs ?? []) {
+    if (x?.min == null) continue;
+    const k = `${x.min}|${x.team ?? '?'}`;
+    if (!subGroups.has(k)) subGroups.set(k, { t: 'sub', min: x.min, ord: 2, team: x.team, on: [], off: [] });
+    const grp = subGroups.get(k);
+    (x.dir === 'off' ? grp.off : grp.on).push(x);
+  }
+  rows.push(...subGroups.values());
+
+  /* 半場標記只取 PE(時段結束)—— PS 一律是 0 與 45,沒有資訊。
+     PE 的 label 帶補時(45+3),那是唯一講得出「上半場踢了幾分鐘補時」的來源。 */
+  for (const p of timeline?.periods ?? []) {
+    if (p?.type !== 'PE' || p.min == null) continue;
+    rows.push({ t: 'period', min: p.min, ord: 3, p });
+  }
+
+  if (!rows.length) return '';
+  rows.sort((a, b) => a.min - b.min
+    || a.ord - b.ord
+    || (a.t === 'goal' && b.t === 'goal' ? (a.g.hs + a.g.as) - (b.g.hs + b.g.as) : 0));
+
+  const who = e => (e.playerCode
+    ? `<button class="player-name-btn" type="button" data-player-code="${esc(e.playerCode)}"
+         aria-label="查看 ${esc(e.player ?? '')} 球員資料">${esc(e.player ?? '')}</button>`
+    : esc(e.player ?? '不詳'));
+  const minCell = l => esc(l ? String(l).replace(/'\d+$/, "'") : '');
+
+  const renderCard = c => `<div class="goal-line ${c.team === away ? 'away' : ''}">
+      <b class="gl-min">${minCell(c.label ?? `${c.min}'`)}</b>
+      <span class="gl-icon">${c.kindRaw === 'R' ? '🟥' : c.kindRaw === 'Y' ? '🟨' : '▪'}</span>
+      <span>${c.team ? `${badge(c.team)} <b>${esc(name(c.team))}</b>・` : ''}${who(c)}
+        <span class="pill tiny ${c.kindRaw === 'R' ? 'bad' : 'warn'}">${esc(c.kind ?? c.kindRaw ?? '牌')}</span></span>
+      <b class="gl-score mono dim">—</b>
     </div>`;
+
+  const renderSub = g => `<div class="goal-line ${g.team === away ? 'away' : ''}">
+      <b class="gl-min">${minCell(g.on[0]?.label ?? g.off[0]?.label ?? `${g.min}'`)}</b>
+      <span class="gl-icon">⇄</span>
+      <span>${g.team ? `${badge(g.team)} <b>${esc(name(g.team))}</b>・` : ''}
+        ${g.on.length ? `上 ${g.on.map(who).join('、')}` : ''}${g.on.length && g.off.length ? '　' : ''}
+        ${g.off.length ? `<span class="dim">下 ${g.off.map(who).join('、')}</span>` : ''}</span>
+      <b class="gl-score mono dim">—</b>
+    </div>`;
+
+  const renderPeriod = p => `<div class="goal-line period">
+      <b class="gl-min">${minCell(p.label ?? `${p.min}'`)}</b>
+      <span class="gl-icon">⏸</span>
+      <span class="dim">${p.phase === '1' ? '上半場結束' : '全場結束'}</span>
+      <b class="gl-score mono dim"></b>
+    </div>`;
+
+  return `<div class="goal-lines">${rows.map(r => {
+    if (r.t === 'card') return renderCard(r.c);
+    if (r.t === 'sub') return renderSub(r);
+    if (r.t === 'period') return renderPeriod(r.p);
+    const g = r.g;
+    return renderGoalRow(g, { home, away });
   }).join('')}</div>
   <div class="tiny dim" style="margin-top:10px">來自英超官方比賽事件,與同一批請求一起取得,沒有額外抓取。
     進球判定看比分變化而不是事件型別 —— 烏龍球在官方資料裡不是進球事件,只認型別會漏掉。
-    子類型目前只分得出十二碼與烏龍球,官方沒有再細的分類就不硬分。</div>`;
+    子類型目前只分得出十二碼與烏龍球,官方沒有再細的分類就不硬分。
+    ${timeline ? '<br><b>換人只列「誰上、誰下」,不配對誰替誰</b> —— 官方資料沒有把兩者連起來的欄位,而同一分鐘同一隊可能換兩人,照順序配會配錯人。' : ''}</div>`;
+}
+
+// 一顆進球一列。抽出來是為了讓上面那支只管「怎麼排序與合併」,不管「怎麼畫」。
+function renderGoalRow(g, { away } = {}) {
+  const tag = GOAL_TAG[g.kind];
+  const own = g.kind === 'own';
+  const scorer = g.scorerCode
+    ? `<button class="player-name-btn" type="button" data-player-code="${esc(g.scorerCode)}"
+         aria-label="查看 ${esc(g.scorer ?? '')} 球員資料">${esc(g.scorer ?? '')}</button>`
+    : esc(g.scorer ?? '不詳');
+  const assist = g.assistCode
+    ? `<button class="player-name-btn" type="button" data-player-code="${esc(g.assistCode)}"
+         aria-label="查看 ${esc(g.assist ?? '')} 球員資料">${esc(g.assist ?? '')}</button>`
+    : g.assist ? esc(g.assist) : '';
+  return `<div class="goal-line ${g.team === away ? 'away' : ''}">
+    <b class="gl-min">${esc(g.label ? g.label.replace(/'\d+$/, "'") : `${g.min}'`)}</b>
+    <span class="gl-icon">⚽</span>
+    <span>${badge(g.team)} <b>${esc(name(g.team))}</b>・${scorer}
+      ${tag ? `<span class="pill ${tag[1]} tiny">${tag[0]}</span>` : ''}
+      ${own && g.scorerTeam ? `<small>${esc(name(g.scorerTeam))} 的球員踢進自家球門,這球算給 ${esc(name(g.team))}</small>` : ''}
+      ${assist ? `<small>助攻 ${assist}</small>` : ''}</span>
+    <b class="gl-score mono">${g.hs}<span class="dim">:</span>${g.as}</b>
+  </div>`;
 }
 
 export function fail(err) {

@@ -42,6 +42,10 @@ export function officialLineups(root) {
         side: g.side, min: g.min, label: g.label, phase: g.phase,
         kind: g.kind, person: g.person, assist: g.assist, hs: g.hs, as: g.as,
       })),
+      /* 牌、換人與半場標記。進球不在這裡(它有自己的判定方式),
+         畫面上要組完整時間軸時把兩者合起來排序。 */
+      timeline: m.timeline ?? null,
+      clock: m.clock ?? null,
     };
   }
   return { asOf: s.fetchedAt, season: s.season?.label ?? null, matches: out };
@@ -163,10 +167,45 @@ export function attachCodes(lineups, players) {
       return { ...withCodes, rows: resolveRows(withCodes) };
     };
     const H = side(home, m.home), A = side(away, m.away);
-    out[key] = { ...m, home: H, away: A, goals: namedGoals(m.goals, H, A, home, away) };
+    out[key] = { ...m, home: H, away: A,
+      goals: namedGoals(m.goals, H, A, home, away),
+      timeline: namedTimeline(m.timeline, H, A, home, away) };
   }
   return { ...lineups, matches: out,
     matchStats: { matched, missed, missedNames: missedNames.slice(0, 20), rowsOk, rowsFail } };
+}
+
+/* 牌與換人的 personId 換成名字,並且**用名單反查是哪一隊** ——
+   跟進球那裡一樣不看 teamId。這裡 teamId 其實沒有烏龍球那種語意問題,
+   但用同一套查法比較不會有人改了一邊忘了另一邊。
+
+   **換人不配對「誰換誰」。** 官方事件流沒有欄位把 ON 與 OFF 連起來,
+   而同一分鐘同一隊可以換兩人(實測 FUL vs CHE 第 65 分,四筆事件時間完全相同)。
+   照相鄰順序配對就是猜,配錯人比不配對糟得多。所以只給「第幾分、哪一隊、誰上、誰下」。
+
+   名單裡查不到的人(例如教練吃牌)保留 person 原碼、team 給 null,
+   由畫面決定要不要顯示 —— 不要因為查不到就丟掉一筆真的發生過的事。 */
+export function namedTimeline(timeline, H, A, homeCode, awayCode) {
+  if (!timeline) return null;
+  const who = new Map();
+  for (const [code, s] of [[homeCode, H], [awayCode, A]]) {
+    for (const p of [...(s.xi ?? []), ...(s.subs ?? [])]) {
+      if (p.id != null) who.set(p.id, { name: p.name, code: p.code ?? null, team: code });
+    }
+  }
+  const name = e => {
+    const w = e.person != null ? who.get(e.person) ?? null : null;
+    return {
+      min: e.min, label: e.label, phase: e.phase ?? null,
+      player: w?.name ?? null, playerCode: w?.code ?? null, team: w?.team ?? null,
+      person: e.person ?? null,          // 查不到時還原得回去
+    };
+  };
+  return {
+    cards: (timeline.cards ?? []).map(e => ({ ...name(e), kind: e.kind ?? null, kindRaw: e.kindRaw ?? null })),
+    subs: (timeline.subs ?? []).map(e => ({ ...name(e), dir: e.dir ?? null, dirRaw: e.dirRaw ?? null })),
+    periods: (timeline.periods ?? []).map(e => ({ type: e.type, min: e.min, label: e.label, phase: e.phase ?? null })),
+  };
 }
 
 /* 進球事件裡的 personId 換成看得懂的名字與我們的球員 code。
