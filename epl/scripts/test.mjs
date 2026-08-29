@@ -1876,6 +1876,44 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* ── 即時機率的校準量測(2026-08-29,只量不改模型)──
+       Brier 對照「賽前凍結」、0 分錨點與 90+ 收斂點不計、落後方專表、
+       樣本不足要明講。數學用合成資料驗到小數。 */
+    ...await (async () => {
+      const { inplayCalibration } = await import('./lib/inplay-calibration.mjs');
+      const store = { season: '2026-27', matches: {
+        'AAA|BBB': { done: true, pts: [
+          [0, 0.5, 0.3, 0.2, 0, 0],      // 賽前錨點:不計
+          [10, 0.6, 0.25, 0.15, 1, 0],   // 主隊領先
+          [80, 0.9, 0.08, 0.02, 1, 0],
+          [90, 1, 0, 0, 1, 0],           // 收斂點:不計(抄答案)
+        ] },
+        'CCC|DDD': { done: false, pts: [[0, 0.4, 0.3, 0.3, 0, 0], [10, 0.4, 0.3, 0.3, 0, 0], [20, 0.4, 0.3, 0.3, 0, 0]] },
+      } };
+      const r = inplayCalibration(store);
+      const near = (x, y) => Math.abs(x - y) < 1e-9;
+      return [
+        ['校準:未完賽不計、0 分錨點與 90 收斂點不計', r.matches === 1 && r.points === 2, ''],
+        ['校準:Brier 算得對(0.6/0.25/0.15 對主勝 → 0.245;凍結 0.38)', (() => {
+          const c = r.cells.find(x => x.band === '1-15' && x.state === 'lead');
+          return c && near(c.brier, 0.245) && near(c.brierPre, 0.38) && c.matches === 1;
+        })(), ''],
+        ['校準:落後方表(模型給 0.15、實際 0 翻盤)', (() => {
+          const t = r.trailing.find(x => x.band === '1-15');
+          return t && near(t.avgProb, 0.15) && t.comebackRate === 0 && t.n === 1;
+        })(), ''],
+        ['校準:樣本不足要明講(verdict=insufficient、門檻 30 場)',
+          r.verdict === 'insufficient' && r.minMatches === 30, ''],
+        ['校準:build 產出資料集、模型頁有量測節與不足警語', (() => {
+          const pm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-model.js'), 'utf8');
+          const b = readFileSync(join(ROOT, 'scripts', 'build.mjs'), 'utf8');
+          return /樣本還不夠下結論/.test(pm) && /凍結不動/.test(pm) && /只量不改模型/.test(pm)
+            && /inplay-calibration/.test(b)
+            && existsSync(join(ROOT, 'web', 'data', 'inplay-calibration.json'));
+        })(), ''],
+      ];
+    })(),
+
     /* ── 單場即時中樞(2026-08-29,使用者要求:每場自己一頁)──
        分析頁比賽中就是即時頁(面板+講評+輪詢),完場自動消失由賽後接手;
        實時頁的進行中卡瘦身、直達單場頁 —— 單場的家始終只有分析頁一個。 */

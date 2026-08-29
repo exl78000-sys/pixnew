@@ -33,6 +33,7 @@ import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
+import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
 import { attachProfiles } from './lib/coach-profiles.mjs';
@@ -1187,6 +1188,11 @@ async function main() {
     } else {
       await write('prob-history.json', { season: null, matches: {} });
     }
+    /* 即時機率的校準量測(只量不改模型)。從同一份累積檔算,完賽場次越多越準;
+       樣本不足時 verdict 是 insufficient,前端要把這件事打在畫面上。 */
+    const calib = inplayCalibration(store);
+    await write('inplay-calibration.json', calib);
+    if (calib.matches) console.log(`  即時校準:${calib.matches} 場完賽・${calib.points} 個時點(${calib.verdict === 'ok' ? '樣本足夠' : `樣本不足,門檻 ${calib.minMatches} 場`})`);
   }
   await write('live.json', liveOut);
   await write('h2h.json', h2h);
