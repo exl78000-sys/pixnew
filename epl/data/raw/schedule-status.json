@@ -1,0 +1,7475 @@
+{
+ "_note": "官方賽程狀態快照 + 本站自建的改期歷史(供應商不提供歷史,changes 永久累積)。產生:npm run schedule:status。",
+ "fetchedAt": "2026-08-29T10:53:08.406Z",
+ "leagues": {
+  "pl": {
+   "fetchedAt": "2026-08-29T10:53:08.406Z",
+   "count": 380,
+   "matches": [
+    {
+     "fdId": 560542,
+     "home": "ARS",
+     "away": "COV",
+     "utcDate": "2026-08-21T19:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560543,
+     "home": "HUL",
+     "away": "MUN",
+     "utcDate": "2026-08-22T11:30:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560544,
+     "home": "IPS",
+     "away": "SUN",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560545,
+     "home": "NFO",
+     "away": "LEE",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560546,
+     "home": "EVE",
+     "away": "CRY",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560547,
+     "home": "BRE",
+     "away": "TOT",
+     "utcDate": "2026-08-22T16:30:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560548,
+     "home": "MCI",
+     "away": "BOU",
+     "utcDate": "2026-08-23T13:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560549,
+     "home": "BHA",
+     "away": "AVL",
+     "utcDate": "2026-08-23T13:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560550,
+     "home": "NEW",
+     "away": "LIV",
+     "utcDate": "2026-08-23T15:30:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560551,
+     "home": "FUL",
+     "away": "CHE",
+     "utcDate": "2026-08-24T19:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 560555,
+     "home": "CRY",
+     "away": "MCI",
+     "utcDate": "2026-08-28T19:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560552,
+     "home": "LIV",
+     "away": "NFO",
+     "utcDate": "2026-08-29T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560560,
+     "home": "BOU",
+     "away": "EVE",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560561,
+     "home": "COV",
+     "away": "HUL",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560558,
+     "home": "TOT",
+     "away": "NEW",
+     "utcDate": "2026-08-29T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560554,
+     "home": "SUN",
+     "away": "FUL",
+     "utcDate": "2026-08-30T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560556,
+     "home": "CHE",
+     "away": "BHA",
+     "utcDate": "2026-08-30T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560559,
+     "home": "LEE",
+     "away": "BRE",
+     "utcDate": "2026-08-30T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560553,
+     "home": "MUN",
+     "away": "IPS",
+     "utcDate": "2026-08-30T15:30:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560557,
+     "home": "AVL",
+     "away": "ARS",
+     "utcDate": "2026-08-31T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 2
+    },
+    {
+     "fdId": 560566,
+     "home": "IPS",
+     "away": "LIV",
+     "utcDate": "2026-09-04T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560571,
+     "home": "NEW",
+     "away": "BOU",
+     "utcDate": "2026-09-05T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560562,
+     "home": "NFO",
+     "away": "TOT",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560563,
+     "home": "MCI",
+     "away": "COV",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560564,
+     "home": "BHA",
+     "away": "LEE",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560565,
+     "home": "BRE",
+     "away": "SUN",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560568,
+     "home": "FUL",
+     "away": "CRY",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560569,
+     "home": "HUL",
+     "away": "AVL",
+     "utcDate": "2026-09-05T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560567,
+     "home": "EVE",
+     "away": "MUN",
+     "utcDate": "2026-09-06T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560570,
+     "home": "ARS",
+     "away": "CHE",
+     "utcDate": "2026-09-06T15:30:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 560572,
+     "home": "CRY",
+     "away": "IPS",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560573,
+     "home": "LIV",
+     "away": "FUL",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560574,
+     "home": "AVL",
+     "away": "NFO",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560576,
+     "home": "BOU",
+     "away": "BRE",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560581,
+     "home": "CHE",
+     "away": "HUL",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560575,
+     "home": "TOT",
+     "away": "EVE",
+     "utcDate": "2026-09-12T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560577,
+     "home": "SUN",
+     "away": "ARS",
+     "utcDate": "2026-09-12T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560578,
+     "home": "COV",
+     "away": "BHA",
+     "utcDate": "2026-09-13T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560580,
+     "home": "MUN",
+     "away": "MCI",
+     "utcDate": "2026-09-13T15:30:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560579,
+     "home": "LEE",
+     "away": "NEW",
+     "utcDate": "2026-09-14T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 560591,
+     "home": "BRE",
+     "away": "CHE",
+     "utcDate": "2026-09-18T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560587,
+     "home": "TOT",
+     "away": "AVL",
+     "utcDate": "2026-09-19T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560584,
+     "home": "EVE",
+     "away": "IPS",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560585,
+     "home": "LEE",
+     "away": "CRY",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560586,
+     "home": "BHA",
+     "away": "ARS",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560588,
+     "home": "NEW",
+     "away": "HUL",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560589,
+     "home": "NFO",
+     "away": "COV",
+     "utcDate": "2026-09-19T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560582,
+     "home": "BOU",
+     "away": "LIV",
+     "utcDate": "2026-09-20T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560590,
+     "home": "MCI",
+     "away": "SUN",
+     "utcDate": "2026-09-20T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560583,
+     "home": "FUL",
+     "away": "MUN",
+     "utcDate": "2026-09-20T15:30:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560593,
+     "home": "ARS",
+     "away": "LEE",
+     "utcDate": "2026-10-10T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560592,
+     "home": "SUN",
+     "away": "BHA",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560595,
+     "home": "CHE",
+     "away": "BOU",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560599,
+     "home": "IPS",
+     "away": "FUL",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560601,
+     "home": "AVL",
+     "away": "BRE",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560600,
+     "home": "MUN",
+     "away": "TOT",
+     "utcDate": "2026-10-10T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560594,
+     "home": "HUL",
+     "away": "EVE",
+     "utcDate": "2026-10-11T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560596,
+     "home": "CRY",
+     "away": "NFO",
+     "utcDate": "2026-10-11T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560598,
+     "home": "LIV",
+     "away": "MCI",
+     "utcDate": "2026-10-11T15:30:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560597,
+     "home": "COV",
+     "away": "NEW",
+     "utcDate": "2026-10-12T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 560603,
+     "home": "EVE",
+     "away": "CHE",
+     "utcDate": "2026-10-17T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560602,
+     "home": "FUL",
+     "away": "HUL",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560610,
+     "home": "MCI",
+     "away": "IPS",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560611,
+     "home": "BRE",
+     "away": "LIV",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560607,
+     "home": "NEW",
+     "away": "AVL",
+     "utcDate": "2026-10-17T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560604,
+     "home": "BOU",
+     "away": "SUN",
+     "utcDate": "2026-10-18T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560605,
+     "home": "LEE",
+     "away": "MUN",
+     "utcDate": "2026-10-18T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560609,
+     "home": "BHA",
+     "away": "CRY",
+     "utcDate": "2026-10-18T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560608,
+     "home": "NFO",
+     "away": "ARS",
+     "utcDate": "2026-10-18T15:30:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560606,
+     "home": "TOT",
+     "away": "COV",
+     "utcDate": "2026-10-19T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 560620,
+     "home": "IPS",
+     "away": "NFO",
+     "utcDate": "2026-10-23T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560614,
+     "home": "AVL",
+     "away": "MCI",
+     "utcDate": "2026-10-24T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560612,
+     "home": "LIV",
+     "away": "BHA",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560616,
+     "home": "ARS",
+     "away": "EVE",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560618,
+     "home": "COV",
+     "away": "FUL",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560617,
+     "home": "CHE",
+     "away": "TOT",
+     "utcDate": "2026-10-24T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560613,
+     "home": "CRY",
+     "away": "NEW",
+     "utcDate": "2026-10-25T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560615,
+     "home": "MUN",
+     "away": "BOU",
+     "utcDate": "2026-10-25T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560619,
+     "home": "HUL",
+     "away": "BRE",
+     "utcDate": "2026-10-25T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560621,
+     "home": "SUN",
+     "away": "LEE",
+     "utcDate": "2026-10-25T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 560626,
+     "home": "CHE",
+     "away": "MUN",
+     "utcDate": "2026-10-31T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560623,
+     "home": "MCI",
+     "away": "BHA",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560624,
+     "home": "BOU",
+     "away": "LEE",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560625,
+     "home": "COV",
+     "away": "SUN",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560629,
+     "home": "HUL",
+     "away": "IPS",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560630,
+     "home": "BRE",
+     "away": "NFO",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560627,
+     "home": "TOT",
+     "away": "CRY",
+     "utcDate": "2026-10-31T17:30:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560628,
+     "home": "AVL",
+     "away": "FUL",
+     "utcDate": "2026-11-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560631,
+     "home": "LIV",
+     "away": "ARS",
+     "utcDate": "2026-11-01T16:30:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560622,
+     "home": "NEW",
+     "away": "EVE",
+     "utcDate": "2026-11-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 560640,
+     "home": "ARS",
+     "away": "HUL",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560641,
+     "home": "NFO",
+     "away": "MCI",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560632,
+     "home": "LEE",
+     "away": "TOT",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560633,
+     "home": "FUL",
+     "away": "NEW",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560634,
+     "home": "EVE",
+     "away": "COV",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560635,
+     "home": "CRY",
+     "away": "LIV",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560636,
+     "home": "SUN",
+     "away": "CHE",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560637,
+     "home": "IPS",
+     "away": "BOU",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560638,
+     "home": "BHA",
+     "away": "BRE",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560639,
+     "home": "MUN",
+     "away": "AVL",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 560642,
+     "home": "CHE",
+     "away": "LEE",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560643,
+     "home": "MCI",
+     "away": "FUL",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560644,
+     "home": "AVL",
+     "away": "SUN",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560645,
+     "home": "LIV",
+     "away": "MUN",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560646,
+     "home": "HUL",
+     "away": "BHA",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560647,
+     "home": "BOU",
+     "away": "NFO",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560648,
+     "home": "TOT",
+     "away": "IPS",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560649,
+     "home": "BRE",
+     "away": "EVE",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560650,
+     "home": "COV",
+     "away": "CRY",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560651,
+     "home": "NEW",
+     "away": "ARS",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 560652,
+     "home": "LEE",
+     "away": "COV",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560653,
+     "home": "IPS",
+     "away": "AVL",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560654,
+     "home": "ARS",
+     "away": "MCI",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560655,
+     "home": "MUN",
+     "away": "BRE",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560656,
+     "home": "EVE",
+     "away": "LIV",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560657,
+     "home": "FUL",
+     "away": "BOU",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560658,
+     "home": "NFO",
+     "away": "CHE",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560659,
+     "home": "BHA",
+     "away": "NEW",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560660,
+     "home": "SUN",
+     "away": "TOT",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560661,
+     "home": "CRY",
+     "away": "HUL",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 560662,
+     "home": "TOT",
+     "away": "FUL",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560663,
+     "home": "LIV",
+     "away": "SUN",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560664,
+     "home": "HUL",
+     "away": "NFO",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560665,
+     "home": "CHE",
+     "away": "CRY",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560666,
+     "home": "AVL",
+     "away": "EVE",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560667,
+     "home": "BRE",
+     "away": "ARS",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560668,
+     "home": "COV",
+     "away": "IPS",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560669,
+     "home": "MCI",
+     "away": "LEE",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560670,
+     "home": "NEW",
+     "away": "MUN",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560671,
+     "home": "BOU",
+     "away": "BHA",
+     "utcDate": "2026-12-02T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 560672,
+     "home": "TOT",
+     "away": "ARS",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560673,
+     "home": "MUN",
+     "away": "COV",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560674,
+     "home": "LEE",
+     "away": "IPS",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560675,
+     "home": "NEW",
+     "away": "SUN",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560676,
+     "home": "CHE",
+     "away": "LIV",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560677,
+     "home": "BRE",
+     "away": "MCI",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560678,
+     "home": "BOU",
+     "away": "HUL",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560679,
+     "home": "AVL",
+     "away": "CRY",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560680,
+     "home": "NFO",
+     "away": "BHA",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560681,
+     "home": "EVE",
+     "away": "FUL",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 560682,
+     "home": "SUN",
+     "away": "NFO",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560683,
+     "home": "CRY",
+     "away": "MUN",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560684,
+     "home": "HUL",
+     "away": "TOT",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560685,
+     "home": "BHA",
+     "away": "EVE",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560686,
+     "home": "IPS",
+     "away": "NEW",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560687,
+     "home": "COV",
+     "away": "AVL",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560688,
+     "home": "ARS",
+     "away": "BOU",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560689,
+     "home": "MCI",
+     "away": "CHE",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560690,
+     "home": "LIV",
+     "away": "LEE",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560691,
+     "home": "FUL",
+     "away": "BRE",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 560692,
+     "home": "LEE",
+     "away": "FUL",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560693,
+     "home": "BHA",
+     "away": "IPS",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560694,
+     "home": "NFO",
+     "away": "EVE",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560695,
+     "home": "BRE",
+     "away": "NEW",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560696,
+     "home": "MCI",
+     "away": "HUL",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560697,
+     "home": "SUN",
+     "away": "CRY",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560698,
+     "home": "BOU",
+     "away": "COV",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560699,
+     "home": "ARS",
+     "away": "MUN",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560700,
+     "home": "LIV",
+     "away": "TOT",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560701,
+     "home": "CHE",
+     "away": "AVL",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560702,
+     "home": "AVL",
+     "away": "LEE",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560703,
+     "home": "MUN",
+     "away": "NFO",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560704,
+     "home": "CRY",
+     "away": "ARS",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560705,
+     "home": "EVE",
+     "away": "SUN",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560706,
+     "home": "COV",
+     "away": "CHE",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560707,
+     "home": "NEW",
+     "away": "MCI",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560708,
+     "home": "FUL",
+     "away": "BHA",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560709,
+     "home": "TOT",
+     "away": "BOU",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560710,
+     "home": "HUL",
+     "away": "LIV",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560711,
+     "home": "IPS",
+     "away": "BRE",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 560712,
+     "home": "FUL",
+     "away": "ARS",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560713,
+     "home": "COV",
+     "away": "BRE",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560714,
+     "home": "AVL",
+     "away": "LIV",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560715,
+     "home": "NEW",
+     "away": "NFO",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560716,
+     "home": "HUL",
+     "away": "LEE",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560717,
+     "home": "MUN",
+     "away": "SUN",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560718,
+     "home": "IPS",
+     "away": "CHE",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560719,
+     "home": "TOT",
+     "away": "BHA",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560720,
+     "home": "EVE",
+     "away": "MCI",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560721,
+     "home": "CRY",
+     "away": "BOU",
+     "utcDate": "2026-12-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 560722,
+     "home": "BOU",
+     "away": "AVL",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560723,
+     "home": "BRE",
+     "away": "CRY",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560724,
+     "home": "LEE",
+     "away": "EVE",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560725,
+     "home": "ARS",
+     "away": "IPS",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560726,
+     "home": "SUN",
+     "away": "HUL",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560727,
+     "home": "LIV",
+     "away": "COV",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560728,
+     "home": "CHE",
+     "away": "NEW",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560729,
+     "home": "NFO",
+     "away": "FUL",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560730,
+     "home": "BHA",
+     "away": "MUN",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560731,
+     "home": "MCI",
+     "away": "TOT",
+     "utcDate": "2027-01-02T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 560732,
+     "home": "ARS",
+     "away": "BRE",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560733,
+     "home": "LEE",
+     "away": "MCI",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560734,
+     "home": "MUN",
+     "away": "NEW",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560735,
+     "home": "BHA",
+     "away": "BOU",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560736,
+     "home": "NFO",
+     "away": "HUL",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560737,
+     "home": "FUL",
+     "away": "TOT",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560738,
+     "home": "EVE",
+     "away": "AVL",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560739,
+     "home": "SUN",
+     "away": "LIV",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560740,
+     "home": "CRY",
+     "away": "CHE",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560741,
+     "home": "IPS",
+     "away": "COV",
+     "utcDate": "2027-01-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 560742,
+     "home": "BOU",
+     "away": "IPS",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560743,
+     "home": "MCI",
+     "away": "NFO",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560744,
+     "home": "CHE",
+     "away": "SUN",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560745,
+     "home": "BRE",
+     "away": "BHA",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560746,
+     "home": "AVL",
+     "away": "MUN",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560747,
+     "home": "TOT",
+     "away": "LEE",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560748,
+     "home": "COV",
+     "away": "EVE",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560749,
+     "home": "LIV",
+     "away": "CRY",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560750,
+     "home": "HUL",
+     "away": "ARS",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560751,
+     "home": "NEW",
+     "away": "FUL",
+     "utcDate": "2027-01-16T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 560752,
+     "home": "IPS",
+     "away": "HUL",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560753,
+     "home": "EVE",
+     "away": "BRE",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560754,
+     "home": "SUN",
+     "away": "COV",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560755,
+     "home": "NFO",
+     "away": "BOU",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560756,
+     "home": "ARS",
+     "away": "NEW",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560757,
+     "home": "LEE",
+     "away": "CHE",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560758,
+     "home": "FUL",
+     "away": "AVL",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560759,
+     "home": "MUN",
+     "away": "LIV",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560760,
+     "home": "BHA",
+     "away": "MCI",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560761,
+     "home": "CRY",
+     "away": "TOT",
+     "utcDate": "2027-01-23T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 560762,
+     "home": "TOT",
+     "away": "SUN",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560763,
+     "home": "BRE",
+     "away": "MUN",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560764,
+     "home": "NEW",
+     "away": "BHA",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560765,
+     "home": "HUL",
+     "away": "CRY",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560766,
+     "home": "COV",
+     "away": "LEE",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560767,
+     "home": "BOU",
+     "away": "FUL",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560768,
+     "home": "CHE",
+     "away": "NFO",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560769,
+     "home": "LIV",
+     "away": "EVE",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560770,
+     "home": "MCI",
+     "away": "ARS",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560771,
+     "home": "AVL",
+     "away": "IPS",
+     "utcDate": "2027-01-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 560772,
+     "home": "ARS",
+     "away": "LIV",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560773,
+     "home": "BHA",
+     "away": "HUL",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560774,
+     "home": "SUN",
+     "away": "AVL",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560775,
+     "home": "CRY",
+     "away": "COV",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560776,
+     "home": "IPS",
+     "away": "TOT",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560777,
+     "home": "EVE",
+     "away": "NEW",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560778,
+     "home": "FUL",
+     "away": "MCI",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560779,
+     "home": "LEE",
+     "away": "BOU",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560780,
+     "home": "MUN",
+     "away": "CHE",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560781,
+     "home": "NFO",
+     "away": "BRE",
+     "utcDate": "2027-02-06T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 560782,
+     "home": "EVE",
+     "away": "LEE",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560783,
+     "home": "COV",
+     "away": "LIV",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560784,
+     "home": "HUL",
+     "away": "SUN",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560785,
+     "home": "AVL",
+     "away": "BOU",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560786,
+     "home": "CRY",
+     "away": "BRE",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560787,
+     "home": "NEW",
+     "away": "CHE",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560788,
+     "home": "FUL",
+     "away": "NFO",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560789,
+     "home": "TOT",
+     "away": "MCI",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560790,
+     "home": "MUN",
+     "away": "BHA",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560791,
+     "home": "IPS",
+     "away": "ARS",
+     "utcDate": "2027-02-10T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 25
+    },
+    {
+     "fdId": 560792,
+     "home": "MCI",
+     "away": "NEW",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560793,
+     "home": "BOU",
+     "away": "CRY",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560794,
+     "home": "BRE",
+     "away": "COV",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560795,
+     "home": "CHE",
+     "away": "IPS",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560796,
+     "home": "LIV",
+     "away": "HUL",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560797,
+     "home": "ARS",
+     "away": "FUL",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560798,
+     "home": "NFO",
+     "away": "MUN",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560799,
+     "home": "BHA",
+     "away": "TOT",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560800,
+     "home": "SUN",
+     "away": "EVE",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560801,
+     "home": "LEE",
+     "away": "AVL",
+     "utcDate": "2027-02-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 26
+    },
+    {
+     "fdId": 560802,
+     "home": "CRY",
+     "away": "SUN",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560803,
+     "home": "MUN",
+     "away": "ARS",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560804,
+     "home": "IPS",
+     "away": "BHA",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560805,
+     "home": "COV",
+     "away": "BOU",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560806,
+     "home": "EVE",
+     "away": "NFO",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560807,
+     "home": "FUL",
+     "away": "LEE",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560808,
+     "home": "AVL",
+     "away": "CHE",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560809,
+     "home": "TOT",
+     "away": "LIV",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560810,
+     "home": "NEW",
+     "away": "BRE",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560811,
+     "home": "HUL",
+     "away": "MCI",
+     "utcDate": "2027-02-27T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 27
+    },
+    {
+     "fdId": 560812,
+     "home": "NFO",
+     "away": "NEW",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560813,
+     "home": "BOU",
+     "away": "TOT",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560814,
+     "home": "MCI",
+     "away": "EVE",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560815,
+     "home": "ARS",
+     "away": "CRY",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560816,
+     "home": "LEE",
+     "away": "HUL",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560817,
+     "home": "SUN",
+     "away": "MUN",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560818,
+     "home": "LIV",
+     "away": "AVL",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560819,
+     "home": "BHA",
+     "away": "FUL",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560820,
+     "home": "BRE",
+     "away": "IPS",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560821,
+     "home": "CHE",
+     "away": "COV",
+     "utcDate": "2027-03-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 28
+    },
+    {
+     "fdId": 560822,
+     "home": "LEE",
+     "away": "BHA",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560823,
+     "home": "TOT",
+     "away": "NFO",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560824,
+     "home": "CRY",
+     "away": "FUL",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560825,
+     "home": "LIV",
+     "away": "IPS",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560826,
+     "home": "COV",
+     "away": "MCI",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560827,
+     "home": "BOU",
+     "away": "NEW",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560828,
+     "home": "CHE",
+     "away": "ARS",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560829,
+     "home": "AVL",
+     "away": "HUL",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560830,
+     "home": "MUN",
+     "away": "EVE",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560831,
+     "home": "SUN",
+     "away": "BRE",
+     "utcDate": "2027-03-13T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 29
+    },
+    {
+     "fdId": 560832,
+     "home": "BRE",
+     "away": "BOU",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560833,
+     "home": "BHA",
+     "away": "COV",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560834,
+     "home": "MCI",
+     "away": "MUN",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560835,
+     "home": "IPS",
+     "away": "CRY",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560836,
+     "home": "ARS",
+     "away": "SUN",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560837,
+     "home": "FUL",
+     "away": "LIV",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560838,
+     "home": "HUL",
+     "away": "CHE",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560839,
+     "home": "NFO",
+     "away": "AVL",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560840,
+     "home": "EVE",
+     "away": "TOT",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560841,
+     "home": "NEW",
+     "away": "LEE",
+     "utcDate": "2027-03-20T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 30
+    },
+    {
+     "fdId": 560842,
+     "home": "SUN",
+     "away": "IPS",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560843,
+     "home": "LEE",
+     "away": "NFO",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560844,
+     "home": "MUN",
+     "away": "HUL",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560845,
+     "home": "CHE",
+     "away": "FUL",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560846,
+     "home": "LIV",
+     "away": "NEW",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560847,
+     "home": "COV",
+     "away": "ARS",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560848,
+     "home": "BOU",
+     "away": "MCI",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560849,
+     "home": "CRY",
+     "away": "EVE",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560850,
+     "home": "TOT",
+     "away": "BRE",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560851,
+     "home": "AVL",
+     "away": "BHA",
+     "utcDate": "2027-04-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 31
+    },
+    {
+     "fdId": 560852,
+     "home": "BHA",
+     "away": "CHE",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560853,
+     "home": "FUL",
+     "away": "SUN",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560854,
+     "home": "BRE",
+     "away": "LEE",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560855,
+     "home": "NFO",
+     "away": "LIV",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560856,
+     "home": "HUL",
+     "away": "COV",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560857,
+     "home": "ARS",
+     "away": "AVL",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560858,
+     "home": "IPS",
+     "away": "MUN",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560859,
+     "home": "MCI",
+     "away": "CRY",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560860,
+     "home": "NEW",
+     "away": "TOT",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560861,
+     "home": "EVE",
+     "away": "BOU",
+     "utcDate": "2027-04-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 32
+    },
+    {
+     "fdId": 560862,
+     "home": "CHE",
+     "away": "MCI",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560863,
+     "home": "BOU",
+     "away": "ARS",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560864,
+     "home": "TOT",
+     "away": "HUL",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560865,
+     "home": "MUN",
+     "away": "CRY",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560866,
+     "home": "EVE",
+     "away": "BHA",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560867,
+     "home": "NFO",
+     "away": "SUN",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560868,
+     "home": "NEW",
+     "away": "IPS",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560869,
+     "home": "AVL",
+     "away": "COV",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560870,
+     "home": "BRE",
+     "away": "FUL",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560871,
+     "home": "LEE",
+     "away": "LIV",
+     "utcDate": "2027-04-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 33
+    },
+    {
+     "fdId": 560872,
+     "home": "SUN",
+     "away": "NEW",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560873,
+     "home": "BHA",
+     "away": "NFO",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560874,
+     "home": "COV",
+     "away": "MUN",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560875,
+     "home": "HUL",
+     "away": "BOU",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560876,
+     "home": "MCI",
+     "away": "BRE",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560877,
+     "home": "FUL",
+     "away": "EVE",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560878,
+     "home": "LIV",
+     "away": "CHE",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560879,
+     "home": "ARS",
+     "away": "TOT",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560880,
+     "home": "CRY",
+     "away": "AVL",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560881,
+     "home": "IPS",
+     "away": "LEE",
+     "utcDate": "2027-05-01T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 34
+    },
+    {
+     "fdId": 560882,
+     "home": "MCI",
+     "away": "LIV",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560883,
+     "home": "LEE",
+     "away": "ARS",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560884,
+     "home": "FUL",
+     "away": "IPS",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560885,
+     "home": "NFO",
+     "away": "CRY",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560886,
+     "home": "BRE",
+     "away": "AVL",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560887,
+     "home": "NEW",
+     "away": "COV",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560888,
+     "home": "BHA",
+     "away": "SUN",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560889,
+     "home": "TOT",
+     "away": "CHE",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560890,
+     "home": "EVE",
+     "away": "HUL",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560891,
+     "home": "BOU",
+     "away": "MUN",
+     "utcDate": "2027-05-08T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 35
+    },
+    {
+     "fdId": 560896,
+     "home": "HUL",
+     "away": "FUL",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560897,
+     "home": "MUN",
+     "away": "LEE",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560898,
+     "home": "CRY",
+     "away": "BHA",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560899,
+     "home": "AVL",
+     "away": "NEW",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560900,
+     "home": "CHE",
+     "away": "EVE",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560901,
+     "home": "COV",
+     "away": "TOT",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560892,
+     "home": "SUN",
+     "away": "BOU",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560893,
+     "home": "LIV",
+     "away": "BRE",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560894,
+     "home": "IPS",
+     "away": "MCI",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560895,
+     "home": "ARS",
+     "away": "NFO",
+     "utcDate": "2027-05-15T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 36
+    },
+    {
+     "fdId": 560902,
+     "home": "BRE",
+     "away": "HUL",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560903,
+     "home": "NEW",
+     "away": "CRY",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560904,
+     "home": "TOT",
+     "away": "MUN",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560905,
+     "home": "LEE",
+     "away": "SUN",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560906,
+     "home": "BHA",
+     "away": "LIV",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560907,
+     "home": "NFO",
+     "away": "IPS",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560908,
+     "home": "BOU",
+     "away": "CHE",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560909,
+     "home": "FUL",
+     "away": "COV",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560910,
+     "home": "EVE",
+     "away": "ARS",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560911,
+     "home": "MCI",
+     "away": "AVL",
+     "utcDate": "2027-05-23T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 37
+    },
+    {
+     "fdId": 560912,
+     "home": "IPS",
+     "away": "EVE",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560913,
+     "home": "ARS",
+     "away": "BHA",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560914,
+     "home": "LIV",
+     "away": "BOU",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560915,
+     "home": "COV",
+     "away": "NFO",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560916,
+     "home": "AVL",
+     "away": "TOT",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560917,
+     "home": "HUL",
+     "away": "NEW",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560918,
+     "home": "MUN",
+     "away": "FUL",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560919,
+     "home": "SUN",
+     "away": "MCI",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560920,
+     "home": "CHE",
+     "away": "BRE",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    },
+    {
+     "fdId": 560921,
+     "home": "CRY",
+     "away": "LEE",
+     "utcDate": "2027-05-30T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 38
+    }
+   ]
+  },
+  "en2": {
+   "fetchedAt": "2026-08-29T10:53:08.406Z",
+   "count": 552,
+   "matches": [
+    {
+     "fdId": 561761,
+     "home": "WOL",
+     "away": "BLB",
+     "utcDate": "2026-08-14T19:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561762,
+     "home": "BOL",
+     "away": "PNE",
+     "utcDate": "2026-08-15T11:30:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561763,
+     "home": "NOR",
+     "away": "WBA",
+     "utcDate": "2026-08-15T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561764,
+     "home": "BRC",
+     "away": "MIL",
+     "utcDate": "2026-08-15T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561765,
+     "home": "MID",
+     "away": "LIN",
+     "utcDate": "2026-08-15T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561766,
+     "home": "STK",
+     "away": "SWA",
+     "utcDate": "2026-08-15T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561767,
+     "home": "CHA",
+     "away": "DER",
+     "utcDate": "2026-08-15T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561768,
+     "home": "POR",
+     "away": "QPR",
+     "utcDate": "2026-08-15T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561769,
+     "home": "SHU",
+     "away": "BIR",
+     "utcDate": "2026-08-15T16:30:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561770,
+     "home": "WAT",
+     "away": "SOU",
+     "utcDate": "2026-08-16T12:30:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561771,
+     "home": "BUR",
+     "away": "WHU",
+     "utcDate": "2026-08-16T15:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561772,
+     "home": "CAR",
+     "away": "WRE",
+     "utcDate": "2026-08-17T19:00:00Z",
+     "status": "FINISHED",
+     "matchday": 1
+    },
+    {
+     "fdId": 561773,
+     "home": "BIR",
+     "away": "BRC",
+     "utcDate": "2026-08-22T11:30:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561781,
+     "home": "LIN",
+     "away": "POR",
+     "utcDate": "2026-08-22T11:30:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561784,
+     "home": "MIL",
+     "away": "NOR",
+     "utcDate": "2026-08-22T11:30:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561774,
+     "home": "SWA",
+     "away": "SHU",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561775,
+     "home": "WHU",
+     "away": "CHA",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561777,
+     "home": "DER",
+     "away": "CAR",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561778,
+     "home": "PNE",
+     "away": "WOL",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561779,
+     "home": "WRE",
+     "away": "WAT",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561780,
+     "home": "BLB",
+     "away": "MID",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561782,
+     "home": "SOU",
+     "away": "STK",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561783,
+     "home": "QPR",
+     "away": "BOL",
+     "utcDate": "2026-08-22T14:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561776,
+     "home": "WBA",
+     "away": "BUR",
+     "utcDate": "2026-08-23T11:00:00Z",
+     "status": "FINISHED",
+     "matchday": 2
+    },
+    {
+     "fdId": 561796,
+     "home": "WRE",
+     "away": "BIR",
+     "utcDate": "2026-08-28T19:00:00Z",
+     "status": "FINISHED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561789,
+     "home": "WOL",
+     "away": "STK",
+     "utcDate": "2026-08-29T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561791,
+     "home": "DER",
+     "away": "SWA",
+     "utcDate": "2026-08-29T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561794,
+     "home": "MID",
+     "away": "WBA",
+     "utcDate": "2026-08-29T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561785,
+     "home": "NOR",
+     "away": "BUR",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561786,
+     "home": "BOL",
+     "away": "LIN",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561787,
+     "home": "BRC",
+     "away": "POR",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561788,
+     "home": "SOU",
+     "away": "MIL",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561790,
+     "home": "CHA",
+     "away": "PNE",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561792,
+     "home": "BLB",
+     "away": "QPR",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561793,
+     "home": "CAR",
+     "away": "SHU",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561795,
+     "home": "WAT",
+     "away": "WHU",
+     "utcDate": "2026-08-29T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 3
+    },
+    {
+     "fdId": 561798,
+     "home": "PNE",
+     "away": "BRC",
+     "utcDate": "2026-09-01T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561799,
+     "home": "WHU",
+     "away": "WOL",
+     "utcDate": "2026-09-01T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561800,
+     "home": "LIN",
+     "away": "BLB",
+     "utcDate": "2026-09-01T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561801,
+     "home": "SHU",
+     "away": "BOL",
+     "utcDate": "2026-09-01T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561802,
+     "home": "POR",
+     "away": "DER",
+     "utcDate": "2026-09-01T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561804,
+     "home": "SWA",
+     "away": "WAT",
+     "utcDate": "2026-09-01T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561797,
+     "home": "STK",
+     "away": "NOR",
+     "utcDate": "2026-09-01T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561803,
+     "home": "BIR",
+     "away": "SOU",
+     "utcDate": "2026-09-01T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561806,
+     "home": "MIL",
+     "away": "WRE",
+     "utcDate": "2026-09-02T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561807,
+     "home": "QPR",
+     "away": "CAR",
+     "utcDate": "2026-09-02T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561808,
+     "home": "WBA",
+     "away": "CHA",
+     "utcDate": "2026-09-02T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561805,
+     "home": "BUR",
+     "away": "MID",
+     "utcDate": "2026-09-02T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561813,
+     "home": "PNE",
+     "away": "BLB",
+     "utcDate": "2026-09-05T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561815,
+     "home": "STK",
+     "away": "CHA",
+     "utcDate": "2026-09-05T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561820,
+     "home": "LIN",
+     "away": "SOU",
+     "utcDate": "2026-09-05T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561809,
+     "home": "QPR",
+     "away": "MID",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561810,
+     "home": "SHU",
+     "away": "NOR",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561812,
+     "home": "POR",
+     "away": "CAR",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561814,
+     "home": "WBA",
+     "away": "WAT",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561816,
+     "home": "WHU",
+     "away": "DER",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561817,
+     "home": "BUR",
+     "away": "BRC",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561818,
+     "home": "MIL",
+     "away": "BOL",
+     "utcDate": "2026-09-05T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561811,
+     "home": "SWA",
+     "away": "WRE",
+     "utcDate": "2026-09-05T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561819,
+     "home": "BIR",
+     "away": "WOL",
+     "utcDate": "2026-09-06T11:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 561821,
+     "home": "BLB",
+     "away": "SHU",
+     "utcDate": "2026-09-08T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561822,
+     "home": "SOU",
+     "away": "SWA",
+     "utcDate": "2026-09-08T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561823,
+     "home": "WAT",
+     "away": "PNE",
+     "utcDate": "2026-09-08T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561824,
+     "home": "CAR",
+     "away": "STK",
+     "utcDate": "2026-09-08T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561825,
+     "home": "MID",
+     "away": "MIL",
+     "utcDate": "2026-09-08T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561828,
+     "home": "BRC",
+     "away": "LIN",
+     "utcDate": "2026-09-08T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561830,
+     "home": "WRE",
+     "away": "BUR",
+     "utcDate": "2026-09-08T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561827,
+     "home": "BOL",
+     "away": "WHU",
+     "utcDate": "2026-09-08T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561826,
+     "home": "WOL",
+     "away": "POR",
+     "utcDate": "2026-09-09T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561829,
+     "home": "DER",
+     "away": "WBA",
+     "utcDate": "2026-09-09T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561832,
+     "home": "NOR",
+     "away": "BIR",
+     "utcDate": "2026-09-09T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561831,
+     "home": "CHA",
+     "away": "QPR",
+     "utcDate": "2026-09-09T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 6
+    },
+    {
+     "fdId": 561842,
+     "home": "WHU",
+     "away": "WRE",
+     "utcDate": "2026-09-11T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561835,
+     "home": "DER",
+     "away": "BIR",
+     "utcDate": "2026-09-12T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561837,
+     "home": "BOL",
+     "away": "CAR",
+     "utcDate": "2026-09-12T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561839,
+     "home": "WBA",
+     "away": "QPR",
+     "utcDate": "2026-09-12T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561833,
+     "home": "SOU",
+     "away": "BRC",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561834,
+     "home": "PNE",
+     "away": "LIN",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561836,
+     "home": "BLB",
+     "away": "MIL",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561838,
+     "home": "CHA",
+     "away": "POR",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561840,
+     "home": "WAT",
+     "away": "STK",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561841,
+     "home": "SWA",
+     "away": "BUR",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561843,
+     "home": "MID",
+     "away": "NOR",
+     "utcDate": "2026-09-12T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561844,
+     "home": "SHU",
+     "away": "WOL",
+     "utcDate": "2026-09-13T11:00:00Z",
+     "status": "TIMED",
+     "matchday": 7
+    },
+    {
+     "fdId": 561845,
+     "home": "BRC",
+     "away": "WAT",
+     "utcDate": "2026-09-18T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561847,
+     "home": "STK",
+     "away": "SHU",
+     "utcDate": "2026-09-19T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561849,
+     "home": "MIL",
+     "away": "WHU",
+     "utcDate": "2026-09-19T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561852,
+     "home": "CAR",
+     "away": "CHA",
+     "utcDate": "2026-09-19T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561846,
+     "home": "WRE",
+     "away": "SOU",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561848,
+     "home": "BUR",
+     "away": "DER",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561853,
+     "home": "QPR",
+     "away": "PNE",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561854,
+     "home": "POR",
+     "away": "BLB",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561855,
+     "home": "BIR",
+     "away": "MID",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561856,
+     "home": "LIN",
+     "away": "SWA",
+     "utcDate": "2026-09-19T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561851,
+     "home": "WOL",
+     "away": "WBA",
+     "utcDate": "2026-09-20T11:00:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561850,
+     "home": "NOR",
+     "away": "BOL",
+     "utcDate": "2026-09-20T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 8
+    },
+    {
+     "fdId": 561862,
+     "home": "WHU",
+     "away": "QPR",
+     "utcDate": "2026-10-09T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561857,
+     "home": "WBA",
+     "away": "BIR",
+     "utcDate": "2026-10-10T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561860,
+     "home": "SWA",
+     "away": "NOR",
+     "utcDate": "2026-10-10T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561863,
+     "home": "CHA",
+     "away": "BRC",
+     "utcDate": "2026-10-10T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561858,
+     "home": "SHU",
+     "away": "LIN",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561861,
+     "home": "WAT",
+     "away": "BUR",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561864,
+     "home": "DER",
+     "away": "WRE",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561865,
+     "home": "BLB",
+     "away": "CAR",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561866,
+     "home": "BOL",
+     "away": "STK",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561867,
+     "home": "PNE",
+     "away": "MIL",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561868,
+     "home": "MID",
+     "away": "WOL",
+     "utcDate": "2026-10-10T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561859,
+     "home": "SOU",
+     "away": "POR",
+     "utcDate": "2026-10-11T11:00:00Z",
+     "status": "TIMED",
+     "matchday": 9
+    },
+    {
+     "fdId": 561869,
+     "home": "WOL",
+     "away": "BOL",
+     "utcDate": "2026-10-13T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561870,
+     "home": "WRE",
+     "away": "WBA",
+     "utcDate": "2026-10-13T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561871,
+     "home": "MIL",
+     "away": "SWA",
+     "utcDate": "2026-10-13T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561872,
+     "home": "CAR",
+     "away": "WAT",
+     "utcDate": "2026-10-13T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561873,
+     "home": "BUR",
+     "away": "CHA",
+     "utcDate": "2026-10-13T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561874,
+     "home": "BRC",
+     "away": "BLB",
+     "utcDate": "2026-10-13T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561875,
+     "home": "BIR",
+     "away": "PNE",
+     "utcDate": "2026-10-13T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561876,
+     "home": "STK",
+     "away": "MID",
+     "utcDate": "2026-10-13T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561877,
+     "home": "POR",
+     "away": "SHU",
+     "utcDate": "2026-10-14T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561879,
+     "home": "NOR",
+     "away": "SOU",
+     "utcDate": "2026-10-14T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561880,
+     "home": "QPR",
+     "away": "DER",
+     "utcDate": "2026-10-14T18:45:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561878,
+     "home": "LIN",
+     "away": "WHU",
+     "utcDate": "2026-10-14T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 10
+    },
+    {
+     "fdId": 561883,
+     "home": "BUR",
+     "away": "WOL",
+     "utcDate": "2026-10-16T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561884,
+     "home": "MIL",
+     "away": "LIN",
+     "utcDate": "2026-10-17T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561887,
+     "home": "MID",
+     "away": "CAR",
+     "utcDate": "2026-10-17T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561889,
+     "home": "WAT",
+     "away": "CHA",
+     "utcDate": "2026-10-17T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561881,
+     "home": "NOR",
+     "away": "POR",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561882,
+     "home": "SOU",
+     "away": "BOL",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561885,
+     "home": "BRC",
+     "away": "SHU",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561886,
+     "home": "BIR",
+     "away": "QPR",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561888,
+     "home": "DER",
+     "away": "STK",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561890,
+     "home": "SWA",
+     "away": "WHU",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561891,
+     "home": "WBA",
+     "away": "BLB",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561892,
+     "home": "WRE",
+     "away": "PNE",
+     "utcDate": "2026-10-17T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 11
+    },
+    {
+     "fdId": 561894,
+     "home": "BOL",
+     "away": "MID",
+     "utcDate": "2026-10-23T19:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561895,
+     "home": "SHU",
+     "away": "DER",
+     "utcDate": "2026-10-24T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561901,
+     "home": "CHA",
+     "away": "NOR",
+     "utcDate": "2026-10-24T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561904,
+     "home": "POR",
+     "away": "MIL",
+     "utcDate": "2026-10-24T11:30:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561893,
+     "home": "CAR",
+     "away": "BIR",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561896,
+     "home": "QPR",
+     "away": "SWA",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561897,
+     "home": "STK",
+     "away": "BRC",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561898,
+     "home": "PNE",
+     "away": "WBA",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561899,
+     "home": "LIN",
+     "away": "BUR",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561900,
+     "home": "WHU",
+     "away": "SOU",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561902,
+     "home": "BLB",
+     "away": "WRE",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561903,
+     "home": "WOL",
+     "away": "WAT",
+     "utcDate": "2026-10-24T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 12
+    },
+    {
+     "fdId": 561916,
+     "home": "SHU",
+     "away": "WRE",
+     "utcDate": "2026-10-30T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561908,
+     "home": "STK",
+     "away": "PNE",
+     "utcDate": "2026-10-31T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561910,
+     "home": "NOR",
+     "away": "WAT",
+     "utcDate": "2026-10-31T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561915,
+     "home": "LIN",
+     "away": "BIR",
+     "utcDate": "2026-10-31T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561905,
+     "home": "WOL",
+     "away": "CAR",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561906,
+     "home": "WHU",
+     "away": "WBA",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561907,
+     "home": "SWA",
+     "away": "BLB",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561909,
+     "home": "BOL",
+     "away": "BRC",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561911,
+     "home": "MID",
+     "away": "CHA",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561912,
+     "home": "BUR",
+     "away": "POR",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561913,
+     "home": "MIL",
+     "away": "DER",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561914,
+     "home": "SOU",
+     "away": "QPR",
+     "utcDate": "2026-10-31T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 13
+    },
+    {
+     "fdId": 561920,
+     "home": "QPR",
+     "away": "BUR",
+     "utcDate": "2026-11-03T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561921,
+     "home": "DER",
+     "away": "NOR",
+     "utcDate": "2026-11-03T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561922,
+     "home": "BLB",
+     "away": "STK",
+     "utcDate": "2026-11-03T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561924,
+     "home": "WAT",
+     "away": "LIN",
+     "utcDate": "2026-11-03T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561928,
+     "home": "CHA",
+     "away": "BOL",
+     "utcDate": "2026-11-03T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561917,
+     "home": "BIR",
+     "away": "MIL",
+     "utcDate": "2026-11-03T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561918,
+     "home": "POR",
+     "away": "SWA",
+     "utcDate": "2026-11-03T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561919,
+     "home": "PNE",
+     "away": "SHU",
+     "utcDate": "2026-11-03T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561923,
+     "home": "WBA",
+     "away": "SOU",
+     "utcDate": "2026-11-03T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561925,
+     "home": "CAR",
+     "away": "WHU",
+     "utcDate": "2026-11-04T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561927,
+     "home": "WRE",
+     "away": "MID",
+     "utcDate": "2026-11-04T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561926,
+     "home": "BRC",
+     "away": "WOL",
+     "utcDate": "2026-11-04T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 14
+    },
+    {
+     "fdId": 561932,
+     "home": "DER",
+     "away": "BOL",
+     "utcDate": "2026-11-06T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561933,
+     "home": "WRE",
+     "away": "WOL",
+     "utcDate": "2026-11-07T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561938,
+     "home": "POR",
+     "away": "STK",
+     "utcDate": "2026-11-07T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561939,
+     "home": "BRC",
+     "away": "NOR",
+     "utcDate": "2026-11-07T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561929,
+     "home": "QPR",
+     "away": "LIN",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561930,
+     "home": "CAR",
+     "away": "BUR",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561931,
+     "home": "CHA",
+     "away": "SHU",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561934,
+     "home": "WAT",
+     "away": "MID",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561935,
+     "home": "BLB",
+     "away": "WHU",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561936,
+     "home": "WBA",
+     "away": "MIL",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561937,
+     "home": "PNE",
+     "away": "SOU",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561940,
+     "home": "BIR",
+     "away": "SWA",
+     "utcDate": "2026-11-07T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 15
+    },
+    {
+     "fdId": 561941,
+     "home": "SHU",
+     "away": "WAT",
+     "utcDate": "2026-11-21T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561944,
+     "home": "SOU",
+     "away": "DER",
+     "utcDate": "2026-11-21T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561950,
+     "home": "MIL",
+     "away": "QPR",
+     "utcDate": "2026-11-21T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561942,
+     "home": "SWA",
+     "away": "WBA",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561943,
+     "home": "MID",
+     "away": "BRC",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561945,
+     "home": "BOL",
+     "away": "POR",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561946,
+     "home": "STK",
+     "away": "BIR",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561948,
+     "home": "NOR",
+     "away": "CAR",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561949,
+     "home": "LIN",
+     "away": "WRE",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561951,
+     "home": "WHU",
+     "away": "PNE",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561952,
+     "home": "WOL",
+     "away": "CHA",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561947,
+     "home": "BUR",
+     "away": "BLB",
+     "utcDate": "2026-11-22T12:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561953,
+     "home": "CAR",
+     "away": "PNE",
+     "utcDate": "2026-11-24T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561954,
+     "home": "MID",
+     "away": "SWA",
+     "utcDate": "2026-11-24T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561955,
+     "home": "POR",
+     "away": "WHU",
+     "utcDate": "2026-11-24T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561956,
+     "home": "SHU",
+     "away": "SOU",
+     "utcDate": "2026-11-24T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561958,
+     "home": "CHA",
+     "away": "LIN",
+     "utcDate": "2026-11-24T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561959,
+     "home": "BRC",
+     "away": "WRE",
+     "utcDate": "2026-11-24T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561960,
+     "home": "NOR",
+     "away": "QPR",
+     "utcDate": "2026-11-24T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561957,
+     "home": "WOL",
+     "away": "DER",
+     "utcDate": "2026-11-24T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561961,
+     "home": "WAT",
+     "away": "BLB",
+     "utcDate": "2026-11-25T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561963,
+     "home": "BOL",
+     "away": "WBA",
+     "utcDate": "2026-11-25T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561964,
+     "home": "BUR",
+     "away": "BIR",
+     "utcDate": "2026-11-25T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561962,
+     "home": "STK",
+     "away": "MIL",
+     "utcDate": "2026-11-25T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 17
+    },
+    {
+     "fdId": 561968,
+     "home": "SOU",
+     "away": "MID",
+     "utcDate": "2026-11-27T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561969,
+     "home": "BLB",
+     "away": "CHA",
+     "utcDate": "2026-11-28T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561972,
+     "home": "LIN",
+     "away": "WOL",
+     "utcDate": "2026-11-28T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561973,
+     "home": "PNE",
+     "away": "NOR",
+     "utcDate": "2026-11-28T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561965,
+     "home": "WRE",
+     "away": "POR",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561966,
+     "home": "QPR",
+     "away": "SHU",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561967,
+     "home": "MIL",
+     "away": "BUR",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561970,
+     "home": "BIR",
+     "away": "BOL",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561971,
+     "home": "DER",
+     "away": "WAT",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561974,
+     "home": "WHU",
+     "away": "STK",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561975,
+     "home": "WBA",
+     "away": "BRC",
+     "utcDate": "2026-11-28T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561976,
+     "home": "SWA",
+     "away": "CAR",
+     "utcDate": "2026-11-29T12:00:00Z",
+     "status": "TIMED",
+     "matchday": 18
+    },
+    {
+     "fdId": 561979,
+     "home": "SHU",
+     "away": "WHU",
+     "utcDate": "2026-12-04T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561977,
+     "home": "BRC",
+     "away": "SWA",
+     "utcDate": "2026-12-05T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561983,
+     "home": "BOL",
+     "away": "BLB",
+     "utcDate": "2026-12-05T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561988,
+     "home": "MID",
+     "away": "DER",
+     "utcDate": "2026-12-05T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561978,
+     "home": "CAR",
+     "away": "LIN",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561980,
+     "home": "NOR",
+     "away": "WRE",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561981,
+     "home": "CHA",
+     "away": "BIR",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561982,
+     "home": "WOL",
+     "away": "SOU",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561984,
+     "home": "WAT",
+     "away": "MIL",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561985,
+     "home": "POR",
+     "away": "WBA",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561986,
+     "home": "STK",
+     "away": "QPR",
+     "utcDate": "2026-12-05T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561987,
+     "home": "BUR",
+     "away": "PNE",
+     "utcDate": "2026-12-06T12:00:00Z",
+     "status": "TIMED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561990,
+     "home": "BLB",
+     "away": "NOR",
+     "utcDate": "2026-12-08T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561991,
+     "home": "WBA",
+     "away": "CAR",
+     "utcDate": "2026-12-08T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561992,
+     "home": "WRE",
+     "away": "CHA",
+     "utcDate": "2026-12-08T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561993,
+     "home": "MIL",
+     "away": "SHU",
+     "utcDate": "2026-12-08T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561994,
+     "home": "SWA",
+     "away": "BOL",
+     "utcDate": "2026-12-08T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561995,
+     "home": "QPR",
+     "away": "WOL",
+     "utcDate": "2026-12-08T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561996,
+     "home": "BIR",
+     "away": "WAT",
+     "utcDate": "2026-12-08T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561989,
+     "home": "WHU",
+     "away": "MID",
+     "utcDate": "2026-12-08T20:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561998,
+     "home": "PNE",
+     "away": "POR",
+     "utcDate": "2026-12-09T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561999,
+     "home": "LIN",
+     "away": "STK",
+     "utcDate": "2026-12-09T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 562000,
+     "home": "DER",
+     "away": "BRC",
+     "utcDate": "2026-12-09T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561997,
+     "home": "SOU",
+     "away": "BUR",
+     "utcDate": "2026-12-09T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 20
+    },
+    {
+     "fdId": 562006,
+     "home": "BOL",
+     "away": "WRE",
+     "utcDate": "2026-12-11T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562003,
+     "home": "PNE",
+     "away": "MID",
+     "utcDate": "2026-12-12T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562004,
+     "home": "QPR",
+     "away": "WAT",
+     "utcDate": "2026-12-12T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562005,
+     "home": "STK",
+     "away": "WBA",
+     "utcDate": "2026-12-12T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562001,
+     "home": "CHA",
+     "away": "SWA",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562002,
+     "home": "WHU",
+     "away": "BRC",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562007,
+     "home": "LIN",
+     "away": "NOR",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562008,
+     "home": "BLB",
+     "away": "DER",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562009,
+     "home": "POR",
+     "away": "BIR",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562010,
+     "home": "SHU",
+     "away": "BUR",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562011,
+     "home": "WOL",
+     "away": "MIL",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562012,
+     "home": "CAR",
+     "away": "SOU",
+     "utcDate": "2026-12-12T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562021,
+     "home": "WBA",
+     "away": "SHU",
+     "utcDate": "2026-12-18T20:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562014,
+     "home": "BRC",
+     "away": "CAR",
+     "utcDate": "2026-12-19T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562016,
+     "home": "MIL",
+     "away": "CHA",
+     "utcDate": "2026-12-19T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562022,
+     "home": "BIR",
+     "away": "WHU",
+     "utcDate": "2026-12-19T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562023,
+     "home": "SWA",
+     "away": "PNE",
+     "utcDate": "2026-12-19T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562024,
+     "home": "WAT",
+     "away": "BOL",
+     "utcDate": "2026-12-19T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562013,
+     "home": "MID",
+     "away": "POR",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562015,
+     "home": "NOR",
+     "away": "WOL",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562017,
+     "home": "BUR",
+     "away": "STK",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562018,
+     "home": "DER",
+     "away": "LIN",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562019,
+     "home": "WRE",
+     "away": "QPR",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562020,
+     "home": "SOU",
+     "away": "BLB",
+     "utcDate": "2026-12-19T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 22
+    },
+    {
+     "fdId": 562025,
+     "home": "BOL",
+     "away": "BUR",
+     "utcDate": "2026-12-26T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562026,
+     "home": "SHU",
+     "away": "MID",
+     "utcDate": "2026-12-26T12:30:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562027,
+     "home": "POR",
+     "away": "WAT",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562028,
+     "home": "BLB",
+     "away": "BIR",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562029,
+     "home": "WHU",
+     "away": "NOR",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562030,
+     "home": "WOL",
+     "away": "SWA",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562031,
+     "home": "QPR",
+     "away": "BRC",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562032,
+     "home": "STK",
+     "away": "WRE",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562033,
+     "home": "CAR",
+     "away": "MIL",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562034,
+     "home": "LIN",
+     "away": "WBA",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562035,
+     "home": "PNE",
+     "away": "DER",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562036,
+     "home": "CHA",
+     "away": "SOU",
+     "utcDate": "2026-12-26T15:00:00Z",
+     "status": "TIMED",
+     "matchday": 23
+    },
+    {
+     "fdId": 562044,
+     "home": "WRE",
+     "away": "BLB",
+     "utcDate": "2026-12-29T18:00:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562037,
+     "home": "WBA",
+     "away": "PNE",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562038,
+     "home": "DER",
+     "away": "SHU",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562039,
+     "home": "SWA",
+     "away": "QPR",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562040,
+     "home": "WAT",
+     "away": "WOL",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562042,
+     "home": "NOR",
+     "away": "CHA",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562043,
+     "home": "BUR",
+     "away": "LIN",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562045,
+     "home": "BIR",
+     "away": "CAR",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562046,
+     "home": "MID",
+     "away": "BOL",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562047,
+     "home": "BRC",
+     "away": "STK",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562048,
+     "home": "MIL",
+     "away": "POR",
+     "utcDate": "2026-12-29T19:45:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562041,
+     "home": "SOU",
+     "away": "WHU",
+     "utcDate": "2026-12-29T20:15:00Z",
+     "status": "TIMED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562049,
+     "home": "MID",
+     "away": "PNE",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562050,
+     "home": "SOU",
+     "away": "CAR",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562051,
+     "home": "WAT",
+     "away": "QPR",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562052,
+     "home": "BUR",
+     "away": "SHU",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562053,
+     "home": "DER",
+     "away": "BLB",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562054,
+     "home": "BIR",
+     "away": "POR",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562055,
+     "home": "WBA",
+     "away": "STK",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562056,
+     "home": "NOR",
+     "away": "LIN",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562057,
+     "home": "SWA",
+     "away": "CHA",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562058,
+     "home": "WRE",
+     "away": "BOL",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562059,
+     "home": "MIL",
+     "away": "WOL",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562060,
+     "home": "BRC",
+     "away": "WHU",
+     "utcDate": "2027-01-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 25
+    },
+    {
+     "fdId": 562061,
+     "home": "STK",
+     "away": "DER",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562062,
+     "home": "CHA",
+     "away": "WAT",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562063,
+     "home": "WOL",
+     "away": "BUR",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562064,
+     "home": "PNE",
+     "away": "WRE",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562065,
+     "home": "CAR",
+     "away": "MID",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562066,
+     "home": "LIN",
+     "away": "MIL",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562067,
+     "home": "POR",
+     "away": "NOR",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562068,
+     "home": "QPR",
+     "away": "BIR",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562069,
+     "home": "SHU",
+     "away": "BRC",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562070,
+     "home": "WHU",
+     "away": "SWA",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562071,
+     "home": "BOL",
+     "away": "SOU",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562072,
+     "home": "BLB",
+     "away": "WBA",
+     "utcDate": "2027-01-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
+    },
+    {
+     "fdId": 562073,
+     "home": "WRE",
+     "away": "SHU",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562074,
+     "home": "PNE",
+     "away": "STK",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562075,
+     "home": "CAR",
+     "away": "WOL",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562076,
+     "home": "QPR",
+     "away": "SOU",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562077,
+     "home": "BRC",
+     "away": "BOL",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562078,
+     "home": "DER",
+     "away": "MIL",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562079,
+     "home": "POR",
+     "away": "BUR",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562080,
+     "home": "CHA",
+     "away": "MID",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562081,
+     "home": "BIR",
+     "away": "LIN",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562082,
+     "home": "WAT",
+     "away": "NOR",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562083,
+     "home": "WBA",
+     "away": "WHU",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562084,
+     "home": "BLB",
+     "away": "SWA",
+     "utcDate": "2027-01-23T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562085,
+     "home": "BOL",
+     "away": "CHA",
+     "utcDate": "2027-01-26T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562086,
+     "home": "NOR",
+     "away": "DER",
+     "utcDate": "2027-01-26T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562087,
+     "home": "LIN",
+     "away": "WAT",
+     "utcDate": "2027-01-26T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562088,
+     "home": "SHU",
+     "away": "PNE",
+     "utcDate": "2027-01-26T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562089,
+     "home": "SOU",
+     "away": "WBA",
+     "utcDate": "2027-01-26T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562090,
+     "home": "MIL",
+     "away": "BIR",
+     "utcDate": "2027-01-26T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562091,
+     "home": "STK",
+     "away": "BLB",
+     "utcDate": "2027-01-26T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562092,
+     "home": "BUR",
+     "away": "QPR",
+     "utcDate": "2027-01-26T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562093,
+     "home": "WOL",
+     "away": "BRC",
+     "utcDate": "2027-01-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562094,
+     "home": "SWA",
+     "away": "POR",
+     "utcDate": "2027-01-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562095,
+     "home": "WHU",
+     "away": "CAR",
+     "utcDate": "2027-01-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562096,
+     "home": "MID",
+     "away": "WRE",
+     "utcDate": "2027-01-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 28
+    },
+    {
+     "fdId": 562097,
+     "home": "BUR",
+     "away": "CAR",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562098,
+     "home": "SWA",
+     "away": "BIR",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562099,
+     "home": "SOU",
+     "away": "PNE",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562100,
+     "home": "MIL",
+     "away": "WBA",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562101,
+     "home": "WOL",
+     "away": "WRE",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562102,
+     "home": "LIN",
+     "away": "QPR",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562103,
+     "home": "STK",
+     "away": "POR",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562104,
+     "home": "BOL",
+     "away": "DER",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562105,
+     "home": "WHU",
+     "away": "BLB",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562106,
+     "home": "MID",
+     "away": "WAT",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562107,
+     "home": "SHU",
+     "away": "CHA",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562108,
+     "home": "NOR",
+     "away": "BRC",
+     "utcDate": "2027-01-30T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
+    },
+    {
+     "fdId": 562109,
+     "home": "WBA",
+     "away": "SWA",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562110,
+     "home": "DER",
+     "away": "SOU",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562111,
+     "home": "WAT",
+     "away": "SHU",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562112,
+     "home": "PNE",
+     "away": "WHU",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562113,
+     "home": "POR",
+     "away": "BOL",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562114,
+     "home": "QPR",
+     "away": "MIL",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562115,
+     "home": "CHA",
+     "away": "WOL",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562116,
+     "home": "WRE",
+     "away": "LIN",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562117,
+     "home": "BLB",
+     "away": "BUR",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562118,
+     "home": "CAR",
+     "away": "NOR",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562119,
+     "home": "BIR",
+     "away": "STK",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562120,
+     "home": "BRC",
+     "away": "MID",
+     "utcDate": "2027-02-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
+    },
+    {
+     "fdId": 562121,
+     "home": "BRC",
+     "away": "SOU",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562122,
+     "home": "QPR",
+     "away": "WBA",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562123,
+     "home": "LIN",
+     "away": "PNE",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562124,
+     "home": "BIR",
+     "away": "DER",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562125,
+     "home": "NOR",
+     "away": "MID",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562126,
+     "home": "CAR",
+     "away": "BOL",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562127,
+     "home": "WOL",
+     "away": "SHU",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562128,
+     "home": "STK",
+     "away": "WAT",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562129,
+     "home": "WRE",
+     "away": "WHU",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562130,
+     "home": "BUR",
+     "away": "SWA",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562131,
+     "home": "POR",
+     "away": "CHA",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562132,
+     "home": "MIL",
+     "away": "BLB",
+     "utcDate": "2027-02-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562133,
+     "home": "BLB",
+     "away": "BRC",
+     "utcDate": "2027-02-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562134,
+     "home": "SHU",
+     "away": "POR",
+     "utcDate": "2027-02-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562135,
+     "home": "WHU",
+     "away": "LIN",
+     "utcDate": "2027-02-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562136,
+     "home": "CHA",
+     "away": "BUR",
+     "utcDate": "2027-02-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562137,
+     "home": "PNE",
+     "away": "BIR",
+     "utcDate": "2027-02-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562138,
+     "home": "WAT",
+     "away": "CAR",
+     "utcDate": "2027-02-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562139,
+     "home": "WBA",
+     "away": "WRE",
+     "utcDate": "2027-02-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562140,
+     "home": "DER",
+     "away": "QPR",
+     "utcDate": "2027-02-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562141,
+     "home": "BOL",
+     "away": "WOL",
+     "utcDate": "2027-02-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562142,
+     "home": "SWA",
+     "away": "MIL",
+     "utcDate": "2027-02-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562143,
+     "home": "SOU",
+     "away": "NOR",
+     "utcDate": "2027-02-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562144,
+     "home": "MID",
+     "away": "STK",
+     "utcDate": "2027-02-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562145,
+     "home": "SOU",
+     "away": "WRE",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562146,
+     "home": "CHA",
+     "away": "CAR",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562147,
+     "home": "SWA",
+     "away": "LIN",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562148,
+     "home": "SHU",
+     "away": "STK",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562149,
+     "home": "PNE",
+     "away": "QPR",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562150,
+     "home": "DER",
+     "away": "BUR",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562151,
+     "home": "MID",
+     "away": "BIR",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562152,
+     "home": "WAT",
+     "away": "BRC",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562153,
+     "home": "BLB",
+     "away": "POR",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562154,
+     "home": "WHU",
+     "away": "MIL",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562155,
+     "home": "BOL",
+     "away": "NOR",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562156,
+     "home": "WBA",
+     "away": "WOL",
+     "utcDate": "2027-02-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562157,
+     "home": "QPR",
+     "away": "WHU",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562158,
+     "home": "POR",
+     "away": "SOU",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562159,
+     "home": "STK",
+     "away": "BOL",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562160,
+     "home": "NOR",
+     "away": "SWA",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562161,
+     "home": "WRE",
+     "away": "DER",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562162,
+     "home": "WOL",
+     "away": "MID",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562163,
+     "home": "BRC",
+     "away": "CHA",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562164,
+     "home": "BIR",
+     "away": "WBA",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562165,
+     "home": "LIN",
+     "away": "SHU",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562166,
+     "home": "BUR",
+     "away": "WAT",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562167,
+     "home": "CAR",
+     "away": "BLB",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562168,
+     "home": "MIL",
+     "away": "PNE",
+     "utcDate": "2027-02-27T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562176,
+     "home": "MID",
+     "away": "BLB",
+     "utcDate": "2027-03-02T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562169,
+     "home": "NOR",
+     "away": "MIL",
+     "utcDate": "2027-03-02T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562170,
+     "home": "BUR",
+     "away": "WBA",
+     "utcDate": "2027-03-02T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562171,
+     "home": "WAT",
+     "away": "WRE",
+     "utcDate": "2027-03-02T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562172,
+     "home": "CHA",
+     "away": "WHU",
+     "utcDate": "2027-03-02T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562173,
+     "home": "BOL",
+     "away": "QPR",
+     "utcDate": "2027-03-02T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562174,
+     "home": "BRC",
+     "away": "BIR",
+     "utcDate": "2027-03-02T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562175,
+     "home": "CAR",
+     "away": "DER",
+     "utcDate": "2027-03-02T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562177,
+     "home": "POR",
+     "away": "LIN",
+     "utcDate": "2027-03-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562178,
+     "home": "WOL",
+     "away": "PNE",
+     "utcDate": "2027-03-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562179,
+     "home": "SHU",
+     "away": "SWA",
+     "utcDate": "2027-03-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562180,
+     "home": "STK",
+     "away": "SOU",
+     "utcDate": "2027-03-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 35
+    },
+    {
+     "fdId": 562181,
+     "home": "DER",
+     "away": "CHA",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562182,
+     "home": "BLB",
+     "away": "WOL",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562183,
+     "home": "SOU",
+     "away": "WAT",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562184,
+     "home": "WRE",
+     "away": "CAR",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562185,
+     "home": "SWA",
+     "away": "STK",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562186,
+     "home": "PNE",
+     "away": "BOL",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562187,
+     "home": "LIN",
+     "away": "MID",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562188,
+     "home": "MIL",
+     "away": "BRC",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562189,
+     "home": "QPR",
+     "away": "POR",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562190,
+     "home": "WBA",
+     "away": "NOR",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562191,
+     "home": "BIR",
+     "away": "SHU",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562192,
+     "home": "WHU",
+     "away": "BUR",
+     "utcDate": "2027-03-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 36
+    },
+    {
+     "fdId": 562193,
+     "home": "WAT",
+     "away": "DER",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562194,
+     "home": "BUR",
+     "away": "MIL",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562195,
+     "home": "POR",
+     "away": "WRE",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562196,
+     "home": "MID",
+     "away": "SOU",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562197,
+     "home": "SHU",
+     "away": "QPR",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562198,
+     "home": "BRC",
+     "away": "WBA",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562199,
+     "home": "CHA",
+     "away": "BLB",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562200,
+     "home": "STK",
+     "away": "WHU",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562201,
+     "home": "NOR",
+     "away": "PNE",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562202,
+     "home": "CAR",
+     "away": "SWA",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562203,
+     "home": "BOL",
+     "away": "BIR",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562204,
+     "home": "WOL",
+     "away": "LIN",
+     "utcDate": "2027-03-13T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 37
+    },
+    {
+     "fdId": 562205,
+     "home": "PNE",
+     "away": "BUR",
+     "utcDate": "2027-03-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562206,
+     "home": "SWA",
+     "away": "BRC",
+     "utcDate": "2027-03-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562207,
+     "home": "QPR",
+     "away": "STK",
+     "utcDate": "2027-03-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562208,
+     "home": "WBA",
+     "away": "POR",
+     "utcDate": "2027-03-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562209,
+     "home": "WRE",
+     "away": "NOR",
+     "utcDate": "2027-03-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562210,
+     "home": "LIN",
+     "away": "CAR",
+     "utcDate": "2027-03-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562211,
+     "home": "DER",
+     "away": "MID",
+     "utcDate": "2027-03-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562212,
+     "home": "SOU",
+     "away": "WOL",
+     "utcDate": "2027-03-16T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562213,
+     "home": "WHU",
+     "away": "SHU",
+     "utcDate": "2027-03-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562214,
+     "home": "MIL",
+     "away": "WAT",
+     "utcDate": "2027-03-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562215,
+     "home": "BLB",
+     "away": "BOL",
+     "utcDate": "2027-03-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562216,
+     "home": "BIR",
+     "away": "CHA",
+     "utcDate": "2027-03-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 38
+    },
+    {
+     "fdId": 562217,
+     "home": "SWA",
+     "away": "WOL",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562218,
+     "home": "MIL",
+     "away": "CAR",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562219,
+     "home": "WRE",
+     "away": "STK",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562220,
+     "home": "BRC",
+     "away": "QPR",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562221,
+     "home": "WAT",
+     "away": "POR",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562222,
+     "home": "SOU",
+     "away": "CHA",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562223,
+     "home": "BIR",
+     "away": "BLB",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562224,
+     "home": "BUR",
+     "away": "BOL",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562225,
+     "home": "MID",
+     "away": "SHU",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562226,
+     "home": "WBA",
+     "away": "LIN",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562227,
+     "home": "NOR",
+     "away": "WHU",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562228,
+     "home": "DER",
+     "away": "PNE",
+     "utcDate": "2027-03-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 39
+    },
+    {
+     "fdId": 562229,
+     "home": "STK",
+     "away": "BUR",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562230,
+     "home": "POR",
+     "away": "MID",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562231,
+     "home": "CAR",
+     "away": "BRC",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562232,
+     "home": "BOL",
+     "away": "WAT",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562233,
+     "home": "CHA",
+     "away": "MIL",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562234,
+     "home": "WHU",
+     "away": "BIR",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562235,
+     "home": "LIN",
+     "away": "DER",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562236,
+     "home": "WOL",
+     "away": "NOR",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562237,
+     "home": "SHU",
+     "away": "WBA",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562238,
+     "home": "BLB",
+     "away": "SOU",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562239,
+     "home": "QPR",
+     "away": "WRE",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562240,
+     "home": "PNE",
+     "away": "SWA",
+     "utcDate": "2027-04-03T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 40
+    },
+    {
+     "fdId": 562241,
+     "home": "LIN",
+     "away": "BRC",
+     "utcDate": "2027-04-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562242,
+     "home": "MIL",
+     "away": "MID",
+     "utcDate": "2027-04-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562243,
+     "home": "WHU",
+     "away": "BOL",
+     "utcDate": "2027-04-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562244,
+     "home": "QPR",
+     "away": "CHA",
+     "utcDate": "2027-04-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562245,
+     "home": "STK",
+     "away": "CAR",
+     "utcDate": "2027-04-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562246,
+     "home": "POR",
+     "away": "WOL",
+     "utcDate": "2027-04-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562247,
+     "home": "SWA",
+     "away": "SOU",
+     "utcDate": "2027-04-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562248,
+     "home": "BUR",
+     "away": "WRE",
+     "utcDate": "2027-04-06T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562249,
+     "home": "PNE",
+     "away": "WAT",
+     "utcDate": "2027-04-07T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562250,
+     "home": "WBA",
+     "away": "DER",
+     "utcDate": "2027-04-07T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562251,
+     "home": "BIR",
+     "away": "NOR",
+     "utcDate": "2027-04-07T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562252,
+     "home": "SHU",
+     "away": "BLB",
+     "utcDate": "2027-04-07T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 41
+    },
+    {
+     "fdId": 562253,
+     "home": "WRE",
+     "away": "SWA",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562254,
+     "home": "WOL",
+     "away": "BIR",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562255,
+     "home": "WAT",
+     "away": "WBA",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562256,
+     "home": "BLB",
+     "away": "PNE",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562257,
+     "home": "BOL",
+     "away": "MIL",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562258,
+     "home": "NOR",
+     "away": "SHU",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562259,
+     "home": "MID",
+     "away": "QPR",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562260,
+     "home": "CAR",
+     "away": "POR",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562261,
+     "home": "SOU",
+     "away": "LIN",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562262,
+     "home": "CHA",
+     "away": "STK",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562263,
+     "home": "BRC",
+     "away": "BUR",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562264,
+     "home": "DER",
+     "away": "WHU",
+     "utcDate": "2027-04-10T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 42
+    },
+    {
+     "fdId": 562265,
+     "home": "PNE",
+     "away": "CHA",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562266,
+     "home": "POR",
+     "away": "BRC",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562267,
+     "home": "BIR",
+     "away": "WRE",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562268,
+     "home": "STK",
+     "away": "WOL",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562269,
+     "home": "LIN",
+     "away": "BOL",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562270,
+     "home": "WBA",
+     "away": "MID",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562271,
+     "home": "QPR",
+     "away": "BLB",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562272,
+     "home": "WHU",
+     "away": "WAT",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562273,
+     "home": "BUR",
+     "away": "NOR",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562274,
+     "home": "MIL",
+     "away": "SOU",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562275,
+     "home": "SWA",
+     "away": "DER",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562276,
+     "home": "SHU",
+     "away": "CAR",
+     "utcDate": "2027-04-17T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 43
+    },
+    {
+     "fdId": 562277,
+     "home": "BOL",
+     "away": "SHU",
+     "utcDate": "2027-04-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562278,
+     "home": "NOR",
+     "away": "STK",
+     "utcDate": "2027-04-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562279,
+     "home": "MID",
+     "away": "BUR",
+     "utcDate": "2027-04-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562280,
+     "home": "DER",
+     "away": "POR",
+     "utcDate": "2027-04-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562281,
+     "home": "WOL",
+     "away": "WHU",
+     "utcDate": "2027-04-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562282,
+     "home": "WRE",
+     "away": "MIL",
+     "utcDate": "2027-04-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562283,
+     "home": "SOU",
+     "away": "BIR",
+     "utcDate": "2027-04-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562284,
+     "home": "CHA",
+     "away": "WBA",
+     "utcDate": "2027-04-20T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562285,
+     "home": "BRC",
+     "away": "PNE",
+     "utcDate": "2027-04-21T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562286,
+     "home": "BLB",
+     "away": "LIN",
+     "utcDate": "2027-04-21T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562287,
+     "home": "CAR",
+     "away": "QPR",
+     "utcDate": "2027-04-21T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562288,
+     "home": "WAT",
+     "away": "SWA",
+     "utcDate": "2027-04-21T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 44
+    },
+    {
+     "fdId": 562289,
+     "home": "WAT",
+     "away": "BIR",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562290,
+     "home": "MID",
+     "away": "WHU",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562291,
+     "home": "STK",
+     "away": "LIN",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562292,
+     "home": "BUR",
+     "away": "SOU",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562293,
+     "home": "BOL",
+     "away": "SWA",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562294,
+     "home": "SHU",
+     "away": "MIL",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562295,
+     "home": "WOL",
+     "away": "QPR",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562296,
+     "home": "BRC",
+     "away": "DER",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562297,
+     "home": "CHA",
+     "away": "WRE",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562298,
+     "home": "NOR",
+     "away": "BLB",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562299,
+     "home": "CAR",
+     "away": "WBA",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562300,
+     "home": "POR",
+     "away": "PNE",
+     "utcDate": "2027-04-24T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 45
+    },
+    {
+     "fdId": 562301,
+     "home": "QPR",
+     "away": "NOR",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562302,
+     "home": "WHU",
+     "away": "POR",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562303,
+     "home": "WBA",
+     "away": "BOL",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562304,
+     "home": "SOU",
+     "away": "SHU",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562305,
+     "home": "BIR",
+     "away": "BUR",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562306,
+     "home": "MIL",
+     "away": "STK",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562307,
+     "home": "WRE",
+     "away": "BRC",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562308,
+     "home": "BLB",
+     "away": "WAT",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562309,
+     "home": "LIN",
+     "away": "CHA",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562310,
+     "home": "PNE",
+     "away": "CAR",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562311,
+     "home": "DER",
+     "away": "WOL",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    },
+    {
+     "fdId": 562312,
+     "home": "SWA",
+     "away": "MID",
+     "utcDate": "2027-05-01T00:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 46
+    }
+   ]
+  }
+ },
+ "changes": []
+}
