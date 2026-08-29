@@ -322,7 +322,8 @@ export function liveMinute(m, fetchedAt) {
   const base = useOff ? offEff : fpl;
   const est = base + elapsed;
   const disp = base <= 45 && est >= 45 ? '45+' : est >= 90 ? '90+' : String(Math.floor(est));
-  return { disp, src: useOff ? `官方比賽鐘 ${m.clock}` : `FPL 分鐘 ${m.minute}`, est: elapsed >= 1 };
+  // 標籤不寫死 FPL —— 西甲的分鐘來自 SportMonks,寫 FPL 是把來源講錯
+  return { disp, src: useOff ? `官方比賽鐘 ${m.clock}` : `資料源分鐘 ${m.minute}`, est: elapsed >= 1 };
 }
 
 export function probBar(p) {
