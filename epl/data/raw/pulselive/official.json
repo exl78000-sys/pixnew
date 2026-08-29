@@ -9964,8 +9964,8 @@
   "TOT|NEW": {
    "fixtureId": 128942,
    "kickoff": "2026-08-29T16:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "homeId": 21,
    "awayId": 23,
    "home": {
@@ -10393,19 +10393,6 @@
    "goals": [
     {
      "side": "A",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "2",
-     "type": "PE",
-     "kind": null,
-     "hs": 0,
-     "as": 2
-    },
-    {
-     "side": "A",
      "person": 49259,
      "assist": 68637,
      "team": 23,
@@ -10627,12 +10614,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -10649,11 +10630,17 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+5'00"
   }
  },
- "fetchedAt": "2026-08-29T18:20:35.017Z"
+ "fetchedAt": "2026-08-29T18:25:10.169Z"
 }
