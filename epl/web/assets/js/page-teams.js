@@ -780,7 +780,7 @@ try {
         <b class="mono">${t.xgTrend.xg} / ${t.xgTrend.xga} <span class="dim tiny">${t.xgTrend.games} 場</span></b></div>` : ''}
       <div class="tiny dim" style="margin-top:8px">
         逐場統計取自 football-data.co.uk 季檔 —— 上季到本季同一套欄位,視窗跨季不換尺。
-        ${st.baseline ? '' : '<b>沒有上季英超基準</b>(升班馬),只列近況不給位移。'}
+        ${st.baseline ? '' : `<b>沒有上季${C.esc(meta.competition?.short ?? '本聯賽')}基準</b>(上季不在這個聯賽),只列近況不給位移。`}
         xG 不進這個視窗:逐場 xG 只有本季有免費來源,混進來前後就不是同一種數字。
         <b>這是資訊,不影響模型勝率</b>(跟近況五場同一個規矩)。</div>
     </div>`;

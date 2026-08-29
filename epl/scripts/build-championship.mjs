@@ -34,6 +34,7 @@ import { leagueMatches, backfillLine, europeanKickoff } from './lib/league-match
 import { competition } from './lib/canonical.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
+import { teamMatchRows, styleTrendFor } from './lib/style-trend.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
@@ -244,6 +245,28 @@ async function main() {
     }
   }
 
+  /* 近 10 場風格位移 —— 跟英超**同一份實作**(lib/style-trend.mjs)。
+     E1 季檔跟 E0 同一套欄位、同一個來源,跨季不換尺。英冠沒有 xG,
+     這批逐場實測(射門/射正/角球/牌)就是它的第一層風格資料。
+     上季不在英冠的(從英超降下來的 WOL/WHU/BUR、從英甲升上來的 BOL/CAR/LIN)
+     基準是 null —— 拿別的聯賽的數字當基準,位移會把「聯賽不同」誤讀成「打法變了」。 */
+  const styleTrendBy = new Map();
+  {
+    const csvOf = season => {
+      const p = join(ROOT, 'data', 'raw', FILL_DIR, `${season}.csv`);
+      return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf, div: 'E1' }) : new Map();
+    };
+    const lastRows = csvOf(LAST_SEASON), curRows = csvOf(CURRENT_SEASON);
+    for (const code of curCodes) {
+      const t = styleTrendFor({
+        lastRows: lastRows.get(code) ?? [], curRows: curRows.get(code) ?? [],
+        minBaseline: 40,   // 英冠一季 46 場,基準要接近整季才算數
+      });
+      if (t) styleTrendBy.set(code, t);
+    }
+    console.log(`  風格位移:近 10 場視窗 ${styleTrendBy.size} 隊(上季不在英冠的基準為 null)`);
+  }
+
   const teams = curCodes.map(code => {
     const reg = T.byCode.get(code);
     const ls = lastBy.get(code) ?? null;
@@ -265,6 +288,7 @@ async function main() {
       elo: elo.get(code)?.elo ?? null,
       sim: simBy.get(code) ?? null,
       // 這個聯賽沒有的東西一律 null,不要給 0 —— 0 看起來像「量到了,是零」
+      styleTrend: styleTrendBy.get(code) ?? null,
       squadSize: null, coach: null, tactics: null,
     };
   });
@@ -413,6 +437,8 @@ async function main() {
       '✓ 市場賠率並排比較(來源與英超西甲同一份 fixtures.csv,英冠本來就在裡面)',
       '✓ 外電:BBC 與 Guardian 的英冠 feed(兩個都實測過內容才收;'
       + 'Sky 有一個名字像英冠、實際回英超內容,不用它)。只有標題與短摘要,不翻譯',
+      '✓ 逐場實測統計(射門/射正/角球/牌,football-data.co.uk):球隊頁的近 10 場風格位移,'
+      + '跟英超同一份實作;上季不在英冠的球隊基準為 null,不拿別的聯賽當基準',
       '— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
       + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超。**這是驗證過的沒有,不是還沒做**',
       /* 這一行**不要寫死**。第一版寫「隊色與球場資料尚未取得」,交付進來之後它就變成

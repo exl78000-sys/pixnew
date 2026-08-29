@@ -301,7 +301,31 @@ const table = out('table'), results = out('results'), sim = out('sim');
   }
 }
 
-// ── 12. 外電 ──────────────────────────────────────
+// ── 12. 近 10 場風格位移(跟英超同一份實作) ──────────────
+{
+  const teams = out('teams');
+  const withTrend = teams.filter(t => t.styleTrend);
+  check('多數球隊有位移資料(兩季都在英冠的)', withTrend.length >= 16, String(withTrend.length));
+  /* 上季不在英冠的球隊 —— 從英超降下來的與從英甲升上來的 ——
+     基準必須是 null:拿別的聯賽的射門數當基準,位移會把「聯賽不同」誤讀成「打法變了」。 */
+  const crossLeague = ['WOL', 'WHU', 'BUR', 'BOL', 'CAR', 'LIN'];
+  check('上季不在英冠的球隊沒有基準(不拿別的聯賽當基準)',
+    crossLeague.every(c => {
+      const t = teams.find(x => x.code === c);
+      return !t.styleTrend || t.styleTrend.baseline === null;
+    }));
+  /* 位移是拿 E1 逐場算的 —— 抽一筆對回積分榜:兩季都在英冠的隊,
+     上季基準的場均進球 × 46 要接近積分榜的總進球(± 捨入)。 */
+  const mid = teams.find(t => t.code === 'MID');
+  if (mid?.styleTrend?.baseline) {
+    const gf46 = mid.styleTrend.baseline.gf * 46;
+    const tableGf = out('table').last.find(r => r.code === 'MID').gf;
+    check('位移的上季基準對得回積分榜(MID 進球)', Math.abs(gf46 - tableGf) < 1,
+      `${gf46.toFixed(1)} vs ${tableGf}`);
+  }
+}
+
+// ── 13. 外電 ──────────────────────────────────────
 {
   const news = out('news');
   check('外電有抓到', news.length > 0, `${news.length} 則`);
@@ -332,7 +356,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
     && !/arg\('league'\) === 'es1' \? 'es1' : 'pl'/.test(src));
 }
 
-// ── 13. 開賽時間的時區 ─────────────────────────────
+// ── 14. 開賽時間的時區 ─────────────────────────────
 {
   /* 英格蘭是 GMT/BST,不是固定 +01:00。冬季場次照抄西歐的偏移會整批早一小時。 */
   const winter = fixtures.filter(f => f.kickoff && /-(12|01|02)-/.test(f.date));
