@@ -122,6 +122,37 @@ check('西甲即時輪詢有 include fallback 與硬上限',
 /* 2026-08-29 實測 LEV|BET 踩到的兩個坑:分數列的正則連 1ST_HALF/2ND_HALF
    分段列一起收(分段不是累計,存成 1:2 而事件已 3:2);事件不按時間排,
    .at(-1) 撿到 17' 的越位當成現在分鐘。 */
+/* 進行中的 livescores 沒有陣容,sides 是空殼 —— 進球者從事件補、講評走共用的
+   liveSummaryFor。實測 payload 的事件 type 是空字串、真正的訊號在 addition 的
+   序數寫法('1st Goal');'Goal Disallowed' 不匹配序數式。 */
+{
+  const mkDetail = events => ({ home: 'RSO', away: 'ESP', score: { home: 2, away: 0 },
+    kickoff: '2026-08-29 17:00:00',
+    lineups: { RSO: { xi: [], bench: [], formation: null }, ESP: { xi: [], bench: [], formation: null } },
+    players: { RSO: [], ESP: [] }, teamStats: {}, events });
+  const mkRep = detail => buildLiveProviderReport({
+    fixture: { home: 'RSO', away: 'ESP', season: '2026-27', finished: false, played: false, fh: null, fa: null, kickoff: null },
+    detail, prediction: { home: 0.4, draw: 0.3, away: 0.3, xgHome: 1.2, xgAway: 1.0 },
+    minute: 60, nameOf: c => c });
+  const rep = mkRep(mkDetail([
+    { team: 'RSO', type: '', comments: '1st Goal', player: 'Oyarzabal', minute: 12 },
+    { team: 'RSO', type: '', comments: '2nd Goal', player: 'Oyarzabal', minute: 30 },
+    { team: 'RSO', type: '', comments: 'Goal Disallowed', player: 'X', minute: 40 },
+  ]));
+  check('西甲進行中:進球者從事件補(序數式判定、被判無效的不算)',
+    rep.sides.RSO.scorers.length === 1 && rep.sides.RSO.scorers[0].name === 'Oyarzabal'
+    && rep.sides.RSO.scorers[0].goals === 2 && rep.sides.RSO.goals === 2
+    && rep.sides.ESP.scorers.length === 0);
+  check('西甲進行中:事件數對不上比分就不掛(烏龍球隊伍語意沒驗證過)',
+    mkRep(mkDetail([{ team: 'RSO', type: '', comments: '1st Goal', player: 'A', minute: 5 }]))
+      .sides.RSO.scorers.length === 0);
+  check('西甲進行中:講評走共用 liveSummaryFor,沒有 xG/陣型資料就不長那幾句(無 null)',
+    (() => {
+      const t = (rep.liveSummary?.paragraphs ?? []).join('');
+      return rep.liveSummary?.kind === 'live' && /第 60 分鐘/.test(t) && /百分點/.test(t)
+        && !/null/.test(t) && !/實際陣型/.test(t) && !/場上 xG/.test(t);
+    })());
+}
 check('西甲勝率曲線與校準走共用件、產物存在', (() => {
   const src = readFileSync(join(ROOT, 'scripts', 'build-laliga.mjs'), 'utf8');
   try {
