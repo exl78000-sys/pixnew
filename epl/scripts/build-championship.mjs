@@ -38,8 +38,8 @@ import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } fro
 import { attachCareers } from './lib/coach-career.mjs';
 import { attachProfiles } from './lib/coach-profiles.mjs';
 import { attachScheduleStatus } from './lib/schedule-status.mjs';
-import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
-import { buildElo, eloProbs } from './lib/elo.mjs';
+import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } from './lib/poisson.mjs';
+import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildFormIndex, recentForm, formSummary, TUNED } from './lib/form.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
@@ -505,6 +505,8 @@ async function main() {
        前端是三個聯賽共用的,欄位名不一致等於每加一個聯賽就要改前端。 */
     model: {
       type: 'Dixon-Coles Poisson + Elo(取平均)',
+      /* 對戰模擬的前端參數(未捨入)—— golden 測試守著等價性 */
+      sim: { ...simParams(model), elo: ELO_PARAMS },
       homeAdvantage: round(Math.exp(model.gamma), 3), rho: model.rho, decayXi: model.xi,
       promotedPrior: model.promoted, simulationRuns: RUNS,
       /* 沒有回測就不給準度數字(鐵則二)。available:false 會讓首頁那兩個 KPI

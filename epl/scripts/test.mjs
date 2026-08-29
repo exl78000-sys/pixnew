@@ -1927,6 +1927,51 @@ async function checkDataGap() {
       ];
     })(),
 
+    ['對戰模擬:只在 PAGES/分析組、誠實界線寫在畫面上、種子可重播', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-duel.js'), 'utf8');
+      const pc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-core.js'), 'utf8');
+      const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const PAGES'));
+      return !sitePagesBlock.includes("'duel'")                     // 兩邊都放會出現兩個分頁
+        && /\['duel', '對戰模擬'\]/.test(core)
+        && core.includes("'model', 'duel'] },")                     // 分析組
+        && /不是預測的斷言/.test(pg) && /做了就是編數字/.test(pg)
+        && /跨聯賽對戰也不提供/.test(pg) && /分鐘分布未建模/.test(pg)
+        && /seededRng/.test(pc) && /mulberry32/.test(pc);           // 種子亂數,同種子重播同一場
+    })()],
+
+    /* ── 對戰模擬:前端預測核心的 golden(2026-08-30)──
+       predict-core.js 是 lib/poisson + lib/elo 的瀏覽器移植;
+       這裡拿三個聯賽**每一場未賽**的 fixtures.json 預測逐場重算比對,
+       任何一邊漂移(改了 lib 沒改移植、或反過來)都會紅。 */
+    ...await (async () => {
+      const { blendPair } = await import('../web/assets/js/predict-core.js');
+      const out = [];
+      for (const [lg, dir] of [['pl', 'web/data'], ['es1', 'web/data/leagues/es1'], ['en2', 'web/data/leagues/en2']]) {
+        const meta = JSON.parse(readFileSync(join(ROOT, dir, 'meta.json'), 'utf8'));
+        const teams = JSON.parse(readFileSync(join(ROOT, dir, 'teams.json'), 'utf8'));
+        const fixtures = JSON.parse(readFileSync(join(ROOT, dir, 'fixtures.json'), 'utf8'));
+        const eloBy = new Map(teams.map(t => [t.code, t.elo]));
+        const sim = meta.model.sim;
+        let n = 0, bad = 0, badKey = '';
+        for (const f of fixtures) {
+          if (f.played || !f.prediction) continue;
+          const p = blendPair(sim, f.home, f.away, eloBy.get(f.home), eloBy.get(f.away));
+          if (!p) continue;
+          n++;
+          const s = f.prediction;
+          const same = p.home === s.home && p.draw === s.draw && p.away === s.away
+            && p.xgHome === s.xgHome && p.xgAway === s.xgAway
+            && (!s.topScores || (p.topScores[0].s === s.topScores[0].s && p.topScores[0].p === s.topScores[0].p))
+            && (!s.elo || p.elo.home === s.elo.home);
+          if (!same) { bad++; if (!badKey) badKey = `${f.home}|${f.away}`; }
+        }
+        out.push([`模擬 golden:${lg} 前端重算 ${n} 場未賽預測全部一致`,
+          n > 50 && bad === 0, bad ? `${bad} 場不一致(首例 ${badKey})` : `只有 ${n} 場`]);
+      }
+      return out;
+    })(),
+
     /* ── 單場即時中樞(2026-08-29,使用者要求:每場自己一頁)──
        分析頁比賽中就是即時頁(面板+講評+輪詢),完場自動消失由賽後接手;
        實時頁的進行中卡瘦身、直達單場頁 —— 單場的家始終只有分析頁一個。 */
