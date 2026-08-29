@@ -847,7 +847,9 @@ try {
     })() : '';
     return `<div class="card" style="margin-top:14px">
       <div class="spread"><h3 style="margin:0">近 ${st.recent.games} 場風格位移</h3>
-        <span class="tiny dim">${C.dateFull(st.span.from)} ~ ${C.dateFull(st.span.to)}・含本季 ${st.currentSeasonGames} 場</span></div>
+        <span class="tiny dim">${C.dateFull(st.span.from)} ~ ${C.dateFull(st.span.to)}・含本季 ${st.currentSeasonGames} 場${
+          /* 剛完賽、逐場統計還沒進季檔的空窗要講 —— 不講看起來像資料壞了(使用者問過) */
+          st.pendingGames ? `・<span class="pill warn tiny" title="逐場統計主檔(football-data.co.uk 季檔)通常完賽後一兩天更新;xG 與比分不受影響">最近 ${st.pendingGames} 場統計上游未發布</span>` : ''}</span></div>
       ${radarBlock}
       ${C.table(ROWS.map(([k, label, lowerBetter]) => ({
         label, recent: st.recent[k], base: st.baseline?.[k] ?? null, d: st.delta?.[k] ?? null, lowerBetter,

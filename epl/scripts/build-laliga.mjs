@@ -471,8 +471,10 @@ async function main() {
       return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf: T.codeOf, div: 'SP1', xgLookup }) : new Map();
     };
     const trendLast = csvOf(LAST_SEASON, xgLookupFor(LAST_SEASON)), trendCur = csvOf(CURRENT_SEASON, xgLookupFor(CURRENT_SEASON));
+    const playedOf = code => curMatches.filter(m => m.played && !m.stage && (m.home === code || m.away === code)).length;
     for (const code of curCodes) {
-      const t = styleTrendFor({ lastRows: trendLast.get(code) ?? [], curRows: trendCur.get(code) ?? [] });
+      const t = styleTrendFor({ lastRows: trendLast.get(code) ?? [], curRows: trendCur.get(code) ?? [],
+        curPlayed: playedOf(code) });
       if (t) styleTrendBy.set(code, t);
     }
     attachTrendPercentiles(styleTrendBy, { ruler: seasonRuler(trendLast) });
