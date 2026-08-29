@@ -1581,6 +1581,13 @@ async function checkDataGap() {
         && /T00:00:00Z/.test(src) && /時間待定/.test(src)
         && /startCountdowns/.test(src);
     })()],
+    /* 隊徽 + 整列可點(使用者要求)。隊徽一定要從各聯賽自己的名冊拿 ——
+       隊碼跨聯賽重複(BUR),全域登錄是後蓋前;盃賽的走 cups.json 的 crests 查表。 */
+    ['總覽即將到來:隊徽從各聯賽名冊與盃賽查表拿、整列點擊進分析', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /hCrest: h\?\.crest/.test(src) && /cupCrests\[m\.home\?\.sourceId\]/.test(src)
+        && /onRow: u => \{ if \(u\.link\) location\.href = u\.link; \}/.test(src);
+    })()],
 
     /* ── 教練職涯史核對器(B 層,2026-08-29)── */
     ...await (async () => {

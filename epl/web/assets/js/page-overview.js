@@ -105,10 +105,15 @@ try {
     const inWindow = k => { const t = Date.parse(k); return t >= now - 2 * 3600000 && t <= end; };
     const rows = [];
     for (const { lg, data } of leagues) {
-      const nameOf = code => (data.teams ?? []).find(t => t.code === code)?.en ?? code;
+      /* 隊徽從**這個聯賽自己的**名冊拿,不走全域登錄 —— 隊碼跨聯賽會重複
+         (Burnley 在英超與英冠都是 BUR),全域登錄是後蓋前。 */
+      const tBy = new Map((data.teams ?? []).map(t => [t.code, t]));
       for (const f of data.fixtures) {
         if (f.played || !f.kickoff || !inWindow(f.kickoff)) continue;
-        rows.push({ kick: f.kickoff, comp: C.LEAGUES[lg].zh, home: nameOf(f.home), away: nameOf(f.away),
+        const h = tBy.get(f.home), a = tBy.get(f.away);
+        rows.push({ kick: f.kickoff, comp: C.LEAGUES[lg].zh,
+          home: h?.en ?? f.home, away: a?.en ?? f.away,
+          hCrest: h?.crest ?? null, aCrest: a?.crest ?? null,
           note: `第 ${f.round} 輪`, pending: false,
           link: C.link('analysis', { id: f.id, league: lg === 'pl' ? null : lg }) });
       }
@@ -116,12 +121,14 @@ try {
     const known = new Set(leagues.flatMap(({ data }) =>
       (data.teams ?? []).flatMap(t => [t.en, t.of].filter(Boolean).map(x => x.toLowerCase()))));
     const covered = s => s && (s.code || known.has(String(s.name ?? '').toLowerCase()));
+    const cupCrests = shared.cups?.crests ?? {};
     for (const cup of cupList) {
       const season = (cup.seasons ?? []).find(s => s.current);
       for (const r of season?.rounds ?? []) for (const m of r.matches ?? []) {
         if (m.played || !m.kickoff || !inWindow(m.kickoff)) continue;
         if (!covered(m.home) && !covered(m.away)) continue;
         rows.push({ kick: m.kickoff, comp: cup.zh ?? cup.en, home: m.home?.name ?? '?', away: m.away?.name ?? '?',
+          hCrest: cupCrests[m.home?.sourceId] ?? null, aCrest: cupCrests[m.away?.sourceId] ?? null,
           note: m.stage ?? '', pending: m.kickoff.endsWith('T00:00:00Z'), link: null });
       }
     }
@@ -158,12 +165,17 @@ try {
       render: u => (u.pending ? '<span class="dim small">—</span>' : `<span class="small">${C.countdown(u.kick)}</span>`) },
     { key: 'comp', label: '賽事', value: u => u.comp, render: u => `<span class="pill tiny">${C.esc(u.comp)}</span>` },
     { key: 'match', label: '對戰', value: u => u.home, left: true,
-      render: u => (u.link
-        ? `<a href="${u.link}" style="color:inherit">${C.esc(u.home)} <span class="dim">vs</span> ${C.esc(u.away)}</a>`
-        : `${C.esc(u.home)} <span class="dim">vs</span> ${C.esc(u.away)}`) },
+      render: u => {
+        const img = c => (c ? `<img class="crest" src="${c}" loading="lazy" width="20" height="20" style="vertical-align:middle">` : '');
+        const body = `<span style="display:inline-flex;align-items:center;gap:6px">${img(u.hCrest)}<span>${C.esc(u.home)}</span>
+          <span class="dim">vs</span> <span>${C.esc(u.away)}</span>${img(u.aCrest)}</span>`;
+        return u.link ? `<a href="${u.link}" style="color:inherit;text-decoration:none">${body}</a>` : body;
+      } },
     { key: 'note', label: '輪次', value: u => u.note, sortable: false,
       render: u => `<span class="tiny dim">${C.esc(u.note)}</span>` },
-  ], { sortKey: 'kick', desc: false })}
+  ], { sortKey: 'kick', desc: false,
+    /* 整列可點,不用瞄準文字連結(使用者要求)。盃賽場次沒有分析頁,點了不動作。 */
+    onRow: u => { if (u.link) location.href = u.link; } })}
   <div class="tiny dim" style="margin-top:8px">${cupBeyond.length ? `7 天之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}
     聯賽場次點對戰直接進賽前分析;盃賽場次沒有分析頁(模型是聯賽調的)。
     只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
