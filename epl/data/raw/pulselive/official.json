@@ -8565,8 +8565,8 @@
   "BOU|EVE": {
    "fixtureId": 128934,
    "kickoff": "2026-08-29T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "homeId": 127,
    "awayId": 7,
    "home": {
@@ -8994,19 +8994,6 @@
    "goals": [
     {
      "side": "H",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "2",
-     "type": "PE",
-     "kind": null,
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "H",
      "person": 74976,
      "assist": 33032,
      "team": 127,
@@ -9066,6 +9053,15 @@
       "team": 7,
       "min": 59,
       "label": "59'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 133612,
+      "team": 7,
+      "min": 90,
+      "label": "90+5'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -9237,12 +9233,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -9259,10 +9249,16 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+5'00"
   },
   "COV|HUL": {
    "fixtureId": 128936,
@@ -10372,5 +10368,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-29T15:53:59.780Z"
+ "fetchedAt": "2026-08-29T15:56:14.456Z"
 }
