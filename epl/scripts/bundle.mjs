@@ -13,7 +13,7 @@ const WEB = join(ROOT, 'web');
 /* 這是**第三份**頁面清單(core.js 還有 PAGES 與 SITE_PAGES)。加新頁時忘了改這裡,
    那一頁不會壞 —— 只會從單檔版靜靜消失,而分頁版一切正常。
    `npm test` 有一條守著:這份清單要涵蓋 web/ 底下的每一個 .html。 */
-const PAGES = ['overview', 'index', 'live', 'fixtures', 'analysis', 'teams', 'tactics', 'players', 'coaches', 'news', 'model', 'knowledge', 'cups', 'ucl', 'allplayers'];
+const PAGES = ['overview', 'index', 'live', 'fixtures', 'analysis', 'teams', 'tactics', 'players', 'coaches', 'news', 'model', 'knowledge', 'cups', 'ucl', 'allplayers', 'duel'];
 
 // 單檔版把所有模組併成同一個 <script type="module">:
 //   core.js 去掉 export 變成模組層宣告,再組一個 C 物件給各頁面用;
@@ -46,7 +46,7 @@ async function main() {
   /* ucl-view 是歐冠視圖(2026-08-29 併進盃賽單頁時抽出來的),page-cups 引用它。
      忘了列在這裡的話分頁版一切正常、單檔版一開盃賽頁就 renderUclView is not defined ——
      實際發生過。下面有一條守門:頁面 import 的本地模組必須都在 SHARED 裡。 */
-  const SHARED = ['fixture-list', 'sim-table', 'ucl-view'];
+  const SHARED = ['fixture-list', 'sim-table', 'ucl-view', 'predict-core'];
 
   /* 守門:掃每一頁 import 了哪些本地模組,不在 SHARED 清單就直接失敗 ——
      這種漏法測試抓不到(分頁版正常),只有 bundle 自己能守。 */

@@ -169,6 +169,21 @@ function poissonPmf(l) {
   return out;
 }
 
+/* 前端「對戰模擬」用的未捨入參數。strengthTable 那份是給人看的 3 位數,
+   exp(μ) 又根本沒輸出 —— 拿那些重算 λ 對不回站上的預測。
+   等價性由 golden 測試守著:predict-core.js 重算三個聯賽每一場未賽的預測,
+   都要跟 fixtures.json 一致。 */
+export function simParams(model) {
+  return {
+    base: Math.exp(model.mu),
+    homeAdv: Math.exp(model.gamma),
+    rho: model.rho,
+    maxGoals: MAX_GOALS,
+    teams: Object.fromEntries(model.codes.map((c, i) => [c,
+      { att: Math.exp(model.att[i]), def: Math.exp(model.def[i]) }])),
+  };
+}
+
 // 球隊強度表(給前端顯示)
 export function strengthTable(model) {
   return model.codes.map((c, i) => ({

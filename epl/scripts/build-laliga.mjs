@@ -19,8 +19,8 @@ import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './l
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
-import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
-import { buildElo, eloProbs } from './lib/elo.mjs';
+import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } from './lib/poisson.mjs';
+import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
@@ -897,6 +897,8 @@ async function main() {
     },
     model: {
       type: 'Dixon-Coles Poisson + Elo（取平均）',
+      /* 對戰模擬的前端參數(未捨入)—— golden 測試守著等價性 */
+      sim: { ...simParams(model), elo: ELO_PARAMS },
       homeAdvantage: round(Math.exp(model.gamma), 3), rho: model.rho, decayXi: model.xi,
       promotedPrior: model.promoted, simulationRuns: RUNS, backtest,
       /* 這些話會原樣印在模型頁上,所以**每一句都要跟這次 build 的實際資料一致**。

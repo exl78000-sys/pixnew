@@ -11,8 +11,8 @@ import { loadTeams } from './lib/teams.mjs';
 import { loadMatches, loadSquads } from './lib/adapters/index.mjs';
 import { competition as competitionDef, seasonLength } from './lib/canonical.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
-import { buildElo, eloProbs } from './lib/elo.mjs';
-import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
+import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
+import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } from './lib/poisson.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics, formationImpact } from './lib/tactics.mjs';
@@ -871,6 +871,8 @@ async function main() {
     sources: ATTRIBUTION,
     model: {
       type: 'Dixon-Coles Poisson + Elo(取平均)',
+      /* 對戰模擬的前端參數(未捨入)—— golden 測試守著等價性 */
+      sim: { ...simParams(model), elo: ELO_PARAMS },
       homeAdvantage: round(Math.exp(model.gamma), 3),
       rho: model.rho,
       decayXi: model.xi,

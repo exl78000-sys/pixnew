@@ -50,9 +50,14 @@ export function buildElo(matches) {
 }
 
 // 用 Elo 直接給勝負和機率(與 Poisson 互相對照)
+/* 這三個常數也輸出給前端(meta.model.sim.elo)—— 對戰模擬要在瀏覽器端
+   重現同一條 eloProbs;寫死兩份的話改了一邊另一邊悄悄過期。 */
+export const ELO_PARAMS = { homeAdv: HOME_ADV, drawBase: 0.29, drawSlope: 0.22 };
+
 export function eloProbs(rh, ra) {
-  const pHomeRaw = 1 / (1 + 10 ** ((ra - (rh + HOME_ADV)) / 400));
-  const draw = 0.29 - 0.22 * Math.abs(pHomeRaw - 0.5); // 實力越接近越容易和局
+  const pHomeRaw = 1 / (1 + 10 ** ((ra - (rh + ELO_PARAMS.homeAdv)) / 400));
+  // 實力越接近越容易和局
+  const draw = ELO_PARAMS.drawBase - ELO_PARAMS.drawSlope * Math.abs(pHomeRaw - 0.5);
   const rest = 1 - draw;
   return { home: round(pHomeRaw * rest, 4), draw: round(draw, 4), away: round((1 - pHomeRaw) * rest, 4) };
 }
