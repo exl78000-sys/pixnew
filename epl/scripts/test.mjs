@@ -1695,6 +1695,31 @@ async function checkDataGap() {
           }
           return true;
         })()],
+        /* 外國聯賽的任期風格(2026-08-29 靜態季檔回填):人工對照表 + 三道守門 */
+        ...await (async () => {
+          const { tenureStyle } = await import('./lib/coach-career.mjs');
+          const ok = tenureStyle(ROOT, { club: 'RB Leipzig', competition: 'Bundesliga', country: 'Germany',
+            from: '2022-09-08', to: '2025-03-30' });
+          const wrongCountry = tenureStyle(ROOT, { club: 'X', competition: 'Serie A', country: 'Brazil',
+            from: '2022-01-01', to: '2023-01-01' });
+          const noAlias = tenureStyle(ROOT, { club: 'Foo FC', competition: 'Bundesliga', country: 'Germany',
+            from: '2022-01-01', to: '2023-01-01' });
+          return [
+            ['外國任期:萊比錫 90 場德甲、附同期聯賽平均', ok.style?.games === 90
+              && ok.style.leagueZh === '德甲' && ok.style.leagueAvg.sf > 0, JSON.stringify(ok.reason ?? '')],
+            ['外國任期:同名聯賽 country 對不上 → 拒算(義甲 ≠ 巴甲)',
+              !wrongCountry.style && /不同名同姓|拒算/.test(wrongCountry.reason), wrongCountry.reason ?? ''],
+            ['外國任期:沒有人工對照 → 照實說,不模糊比對',
+              !noAlias.style && /人工對照/.test(noAlias.reason), noAlias.reason ?? ''],
+            /* 拼字錯/層級錯要跟涵蓋不足分開講:Ramis 的 Espanyol 被交付標成西甲,
+               實際當季在西乙 —— 新守門讓它現形,而不是偽裝成資料缺口 */
+            ['外國任期:隊不在季檔 → 講「找不到」不講「涵蓋不足」', (() => {
+              const r = tenureStyle(ROOT, { club: 'RCD Espanyol', competition: 'La Liga', country: 'Spain',
+                from: '2023-11-01', to: '2024-03-01' });
+              return !r.style && /找不到/.test(r.reason);
+            })(), ''],
+          ];
+        })(),
         ['前端:教練卡有前任期區塊,講了「球隊表現 ≠ 教練個人風格」與跨聯賽不可比', (() => {
           const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
           return /careerBlock/.test(src) && /球隊表現 ≠ 教練個人風格/.test(src)
