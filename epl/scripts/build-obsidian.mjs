@@ -37,11 +37,14 @@ const load = (lg, name) => {
 };
 
 const LEAGUES = [
-  { key: 'pl', zh: '英超', dir: '英超' },
-  { key: 'es1', zh: '西甲', dir: '西甲' },
+  { key: 'pl', zh: '英超', dir: '英超', wf: 'backtest-matches.json' },
+  /* wf 是各聯賽的走查回測逐場檔。**這裡原本是「不是英超就讀西甲的」二元判斷** ——
+     加英冠時它不會壞(隊碼跟西甲不重疊,查不到而已),只是英冠自己的 552 筆
+     賽前預測永遠掛不上 vault 的比賽筆記。同一個坑的第五處,一律走註冊表。 */
+  { key: 'es1', zh: '西甲', dir: '西甲', wf: 'backtest-laliga-matches.json' },
   /* 英冠沒有球員與教練(來源就沒有),球隊與比賽照樣做得出來。
      產生器對缺檔本來就是 load() 回 null → 該區塊不寫,所以不需要特判。 */
-  { key: 'en2', zh: '英冠', dir: '英冠' },
+  { key: 'en2', zh: '英冠', dir: '英冠', wf: 'backtest-championship-matches.json' },
 ];
 
 /* ── Markdown / YAML 小工具 ──────────────────────────────────
@@ -646,7 +649,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   /* 走查回測的預測**是**賽前預測 —— 訓練資料只到該輪開賽前,
      跟 fixtures.json 那個建置時重算的完全不是同一回事。
      所以這一份可以放心印在已完賽的場次上,而且要講清楚它是哪一種。 */
-  const wfPath = join(ROOT, 'data', lg.key === 'pl' ? 'backtest-matches.json' : 'backtest-laliga-matches.json');
+  const wfPath = join(ROOT, 'data', lg.wf);
   const walkForward = new Map();
   let walkForwardSeason = null;
   if (existsSync(wfPath)) {
@@ -706,7 +709,6 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     goalsSeason: meta.lastSeason, goalsNote: goalsFile?.note ?? null,
     builtAt: meta.builtAt, currentSeason: meta.currentSeason, lastSeason: meta.lastSeason,
     modelName: meta.model?.name ?? 'Dixon-Coles Poisson + Elo',
-    backtestSeasons: lg.key === 'pl' ? '2025-26' : null,
     sources: meta.sources, table,
   };
 

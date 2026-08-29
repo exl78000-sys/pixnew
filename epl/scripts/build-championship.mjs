@@ -30,7 +30,7 @@ import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { leagueMatches, backfillLine } from './lib/league-matches.mjs';
+import { leagueMatches, backfillLine, europeanKickoff } from './lib/league-matches.mjs';
 import { competition } from './lib/canonical.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
@@ -55,21 +55,10 @@ const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 const AS_OF = arg('as-of') ?? new Date().toISOString().slice(0, 10);
 const RUNS = Number(arg('runs') ?? 5000);
 
-const lastSunday = (year, month) => {
-  const d = new Date(Date.UTC(year, month, 0));
-  return d.getUTCDate() - d.getUTCDay();
-};
 /* 英格蘭是 Europe/London:夏令 BST(+01:00)、冬令 GMT(+00:00)。
    adapter 的預設 kickoffOf 固定補 +01:00 —— 那是給西歐用的,
-   照用的話冬季場次會整批早一小時,倒數計時與「幾點開賽」全錯。 */
-const londonKickoff = m => {
-  if (!m.time) return null;
-  const [year, month, day] = m.date.split('-').map(Number);
-  const summer = (month > 3 && month < 10)
-    || (month === 3 && day >= lastSunday(year, 3))
-    || (month === 10 && day < lastSunday(year, 10));
-  return `${m.date}T${m.time}:00${summer ? '+01:00' : '+00:00'}`;
-};
+   照用的話冬季場次會整批早一小時。DST 規則共用 lib 那一份,不自己再寫。 */
+const londonKickoff = europeanKickoff({ summer: '+01:00', winter: '+00:00' });
 
 const write = async (name, data) => {
   await writeFile(join(OUT, `${name}.json`), JSON.stringify(data));

@@ -884,7 +884,7 @@ try {
           ? `<b style="color:${settled.winner === '模型' ? 'var(--accent)' : 'var(--draw)'}">這場${settled.winner}比較準</b>。`
           : '兩邊一樣。'}
         <span class="tiny dim">單場說明不了什麼 —— 機率模型本來就會有低機率事件發生,
-        要看的是整季的平均。${mk?.available ? `整季 380 場:本站 RPS ${mk.model.rps}、市場 ${mk.market.rps}。` : ''}</span>
+        要看的是整季的平均。${mk?.available ? `整季 ${mk.games} 場:本站 RPS ${mk.model.rps}、市場 ${mk.market.rps}。` : ''}</span>
       </div>` : ''}
       <b>${level === 'agree'
         ? '模型和市場看法一致。'

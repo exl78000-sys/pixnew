@@ -132,7 +132,7 @@ try {
       <div><b class="mono">${meta.model.type}</b> — 每支球隊各有進攻強度與防守強度,加上主場優勢
         (${meta.model.homeAdvantage}× 進球)與低比分修正 ρ=${meta.model.rho};
         近期比賽權重較高(時間衰減 ξ=${meta.model.decayXi})。</div>
-      ${bt.available ? `<div>回測方式:重跑上季 38 輪,每一輪都只用「開賽前」的資料建模再預測,避免偷看未來。
+      ${bt.available ? `<div>回測方式:重跑上季 ${meta.competition?.roundsPerSeason ?? 38} 輪,每一輪都只用「開賽前」的資料建模再預測,避免偷看未來。
         採用值 RPS ${bt.rps} / LogLoss ${bt.logLoss} / 命中率 ${C.pct(bt.hitRate)};
         單獨用 Poisson 是 ${bt.models.poisson.rps}、單獨用 Elo 是 ${bt.models.elo.rps}、
         固定機率基準線是 ${bt.models.baseline.rps} —— 兩者平均最好,所以平台採用平均值。</div>`

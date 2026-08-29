@@ -14,6 +14,7 @@ import { competition } from './lib/canonical.mjs';
 import { buildGoals } from './lib/goals.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
+import { europeanKickoff } from './lib/league-matches.mjs';
 import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './lib/knowledge.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
@@ -67,21 +68,9 @@ const ageAt = (birthDate, asOf) => {
   return age >= 0 ? age : null;
 };
 
-const lastSunday = (year, month) => {
-  const d = new Date(Date.UTC(year, month, 0));
-  return d.getUTCDate() - d.getUTCDay();
-};
-
-// 西班牙本土賽事使用 Europe/Madrid。openfootball 給當地鐘面時間但不帶時區；
-// 依歐洲夏令時間規則補上 offset，避免把冬季賽事全部錯移一小時。
-const madridKickoff = m => {
-  if (!m.time) return null;
-  const [year, month, day] = m.date.split('-').map(Number);
-  const summer = (month > 3 && month < 10)
-    || (month === 3 && day >= lastSunday(year, 3))
-    || (month === 10 && day < lastSunday(year, 10));
-  return `${m.date}T${m.time}:00${summer ? '+02:00' : '+01:00'}`;
-};
+// 西班牙本土賽事使用 Europe/Madrid(夏 +02:00、冬 +01:00)。
+// DST 規則共用 lib/league-matches 那一份,不自己再寫。
+const madridKickoff = europeanKickoff({ summer: '+02:00', winter: '+01:00' });
 
 const write = async (name, data) => {
   await writeFile(join(OUT, `${name}.json`), JSON.stringify(data));

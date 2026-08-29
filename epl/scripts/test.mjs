@@ -1421,6 +1421,22 @@ async function checkDataGap() {
       return r.active === true && r.sleepSec === Math.round((110 - 75) * 60);
     })()],
 
+    /* ── 2026-08-29 全案掃描抓到的三處(都是「寫死的事實碰上第三個聯賽」)── */
+    ['vault 的走查回測檔走註冊表,不是「不是英超就讀西甲」', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'build-obsidian.mjs'), 'utf8');
+      return /join\(ROOT, 'data', lg\.wf\)/.test(src)
+        && /wf: 'backtest-championship-matches\.json'/.test(src)
+        && !/backtest-laliga-matches\.json'\s*\)/.test(src.split('const LEAGUES')[1].split('];')[1] ?? '');
+    })()],
+    ['分析頁的「整季 N 場」從回測資料來,不寫死 380', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return /整季 \$\{mk\.games\} 場/.test(src) && !/整季 380 場/.test(src);
+    })()],
+    ['首頁的「重跑上季 N 輪」從賽制來,不寫死 38(英冠是 46)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-index.js'), 'utf8');
+      return /roundsPerSeason/.test(src) && !/重跑上季 38 輪/.test(src);
+    })()],
+
     ['缺口訊息不會把資料集的內部鍵給讀者看',
       ['live', 'players', 'leaders', 'news', 'form', 'tactics', 'knowledge', 'cups']
         .every(k => /[\u4e00-\u9fff]/.test(V.DATASET_ZH?.[k] ?? ''))],

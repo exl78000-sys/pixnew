@@ -90,6 +90,26 @@ export function leagueMatches(root, season, {
   return { matches, backfill: r };
 }
 
+/* 歐洲夏令時間的開球時間。openfootball 給當地鐘面時間但不帶時區,
+   要照該國時區補上 offset,否則冬季賽事會整批錯移一小時。
+
+   歐盟與英國的夏令規則相同(三月最後一個週日起、十月最後一個週日止),
+   差別只在基準時區:西班牙 CET(+01/+02)、英格蘭 GMT(+00/+01)。
+   這一份原本在 build-laliga 與 build-championship 各有一份 ——
+   同一條規則寫兩次,哪天有人在其中一份修了邊界條件,另一份就悄悄過期。 */
+const lastSunday = (year, month) => {
+  const d = new Date(Date.UTC(year, month, 0));
+  return d.getUTCDate() - d.getUTCDay();
+};
+export const europeanKickoff = ({ summer, winter }) => m => {
+  if (!m.time) return null;
+  const [year, month, day] = m.date.split('-').map(Number);
+  const isSummer = (month > 3 && month < 10)
+    || (month === 3 && day >= lastSunday(year, 3))
+    || (month === 10 && day < lastSunday(year, 10));
+  return `${m.date}T${m.time}:00${isSummer ? summer : winter}`;
+};
+
 // 把 backfill 報告印成一行。呼叫端一律要印 —— 補比分不能靜靜發生。
 export function backfillLine(season, r) {
   if (!r) return null;
