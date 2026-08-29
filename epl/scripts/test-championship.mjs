@@ -367,5 +367,33 @@ const table = out('table'), results = out('results'), sim = out('sim');
     `${summer.length} 場、樣本 ${summer[0]?.kickoff ?? '—'}`);
 }
 
+// ── 15. 扣分處分(判決書佐證,2026-08-29)─────────────────
+{
+  /* 2025-26 照比分算 LEI 第 21 名安全、實際降級 —— 差的正是 LCFC 判決那 6 分。
+     只套有「生效賽季逐字佐證」的紀錄;附錄彙總沒有逐筆佐證的放 reference 不套。 */
+  const pd = JSON.parse(readFileSync(join(ROOT, 'data', 'manual', 'points-deductions.json'), 'utf8'));
+  check('扣分表每筆都有判決書出處與原文引句',
+    (pd.deductions ?? []).length >= 2
+    && pd.deductions.every(d => d.evidence && d.sourceFile && d.season && d.points > 0));
+  check('扣分的 PDF 原檔都在(來源要能重驗)',
+    pd.sources.every(s => existsSync(join(ROOT, s.file))));
+  const teams = out('teams');
+  const wba = teams.find(t => t.code === 'WBA');
+  check('WBA 上季積分含 −2 扣分且有標註',
+    wba?.lastSeason?.deduction === 2 && wba.lastSeason.pts === 51 && !!wba.lastSeason.deductionNote);
+  const meta = out('meta');
+  check('套用扣分後升降級對帳通過(tableCaveat 歸 null)', meta.tableCaveat === null);
+  /* applyDeductions 的性質:扣分後重排、ppg 不動(扣分不是踢出來的) */
+  const { applyDeductions } = await import('./lib/table.mjs');
+  const tbl = [
+    { code: 'AAA', pts: 52, gd: -10, gf: 40, p: 46, ppg: 1.13, pos: 1 },
+    { code: 'BBB', pts: 52, gd: -14, gf: 38, p: 46, ppg: 1.13, pos: 2 },
+  ];
+  applyDeductions(tbl, [{ team: 'AAA', points: 6, evidence: 'x' }]);
+  check('applyDeductions:扣分後重排名次、ppg 維持賽場拿分',
+    tbl[0].code === 'BBB' && tbl[1].code === 'AAA' && tbl[1].pts === 46
+    && tbl[1].ppg === 1.13 && tbl[1].deduction === 6);
+}
+
 if (process.exitCode) throw new Error('英冠自我檢查失敗');
 console.log('  英冠全部通過');

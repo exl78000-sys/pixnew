@@ -111,6 +111,27 @@ export function buildTable(matches, codes) {
   return table;
 }
 
+/* 扣分處分套用。比賽資料裡沒有扣分,英冠幾乎每季都有(財政違規等)——
+ * 2025-26 我們照比分算 LEI 第 21 名安全、實際降級,差的正是判決書裡那 6 分。
+ * 只套**有判決書證據**(生效日落在該季)的紀錄;來源、頁碼與原文引句
+ * 都在 data/manual/points-deductions.json,不是猜的數字。
+ * 套用後重排名次;ppg 維持「賽場拿分」不動 —— 扣分不是踢出來的,
+ * 混進 ppg 會污染模型端拿它做的推算。 */
+export function applyDeductions(table, deductions) {
+  if (!deductions?.length) return table;
+  const by = new Map(deductions.map(d => [d.team, d]));
+  for (const r of table) {
+    const d = by.get(r.code);
+    if (!d) continue;
+    r.pts -= d.points;
+    r.deduction = d.points;
+    r.deductionNote = d.evidence ?? null;
+  }
+  table.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.code.localeCompare(b.code));
+  table.forEach((r, i) => { r.pos = i + 1; });
+  return table;
+}
+
 function currentStreak(seq) {
   if (!seq.length) return { type: '-', len: 0 };
   const t = seq.at(-1).pts === 3 ? 'W' : seq.at(-1).pts === 1 ? 'D' : 'L';

@@ -586,7 +586,9 @@ try {
        次要的數字(場次、上季積分、降級率)壓成同一行的灰字,
        主要那個數字才有份量,不用讀者自己找。 */
     const cells = [
-      ['上季', ls ? `第 ${ls.pos} 名<span class="dim"> ${ls.pts} 分</span>` : '<span class="pill">升班馬</span>'],
+      ['上季', ls ? `第 ${ls.pos} 名<span class="dim"> ${ls.pts} 分</span>${
+        /* 扣分處分(判決書佐證):不標的話 51 分看起來像算錯 —— 賽場拿的是 53 */
+        ls.deduction ? `<span class="pill warn tiny" style="margin-left:5px" title="${C.esc(ls.deductionNote ?? '官方扣分處分')}">含扣分 −${ls.deduction}</span>` : ''}` : '<span class="pill">升班馬</span>'],
       ['期望積分', `<b>${s?.expectedPoints ?? '—'}</b>`],
       ['本季目前', cur?.p
         ? `${cur.pts} 分<span class="dim"> ${cur.p} 場</span>`
@@ -898,7 +900,8 @@ try {
     ]) : '';
     return `<div class="grid g4">
       ${kpiOf('上季名次', ls ? `第 ${ls.pos} 名` : '升班馬',
-        ls ? `${ls.pts} 分・場均 ${ls.ppg}` : `${meta.lastSeason} 未在這個聯賽`)}
+        /* 扣分要標:51 分看起來像算錯,賽場拿的是 53(判決書佐證見 title) */
+        ls ? `${ls.pts} 分${ls.deduction ? `(含扣分 −${ls.deduction})` : ''}・場均 ${ls.ppg}` : `${meta.lastSeason} 未在這個聯賽`)}
       ${kpiOf('本季目前', cur?.p ? `${cur.pts} 分` : '尚無完賽',
         cur?.p ? `${cur.p} 場・${cur.w}勝${cur.d}和${cur.l}負` : meta.currentSeason)}
       ${kpiOf('期望積分', s?.expectedPoints ?? '—',

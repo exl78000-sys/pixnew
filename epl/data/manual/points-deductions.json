@@ -1,0 +1,41 @@
+{
+  "_note": "扣分處分(人工從官方判決書逐筆核對,2026-08-29)。deductions 只收「生效賽季有判決書原文佐證」的;reference 是判決附錄裡的歷年彙總,生效賽季沒有逐筆原文佐證,只當參考事實、不套進積分榜。PDF 原檔與 sha256 在 sources,佐證原文照抄在 evidence。",
+  "verifiedAt": "2026-08-29",
+  "sources": [
+    {
+      "file": "data/manual/deductions-sources/PL-v-LCFC-commission-decision-2026-02.pdf",
+      "sha256_16": "2b75bebf31da5798",
+      "url": "https://resources.premierleague.pulselive.com/premierleague/document/2026/02/05/2ca1ca85-183e-439f-9749-60ef533dd3e1/Commission-Decision-Premier-League-v-LCFC-February-2026.pdf",
+      "note": "PL v Leicester City Commission Decision,100 頁"
+    },
+    {
+      "file": "data/manual/deductions-sources/EFL-v-WBAFC-written-reasons-2026-05-08.pdf",
+      "sha256_16": "8a89faa48593e1d5",
+      "url": "https://www.sportresolutions.com/assets/documents/2026.05.08_-_EFL_v_WBAFC_-_Written_Reasons(Redacted)SECURED_.pdf",
+      "note": "EFL v West Bromwich Albion Written Reasons,69 頁,附錄 1(第 69 頁)是 2017/18 起的英超+英冠處分彙總表"
+    }
+  ],
+  "deductions": [
+    {
+      "league": "en2",
+      "season": "2025-26",
+      "team": "LEI",
+      "points": 6,
+      "effective": "2026-02",
+      "evidence": "PL v LCFC 判決第 99 頁 §415:an immediate six-point deduction be applied to LCFC in the Championship",
+      "sourceFile": "PL-v-LCFC-commission-decision-2026-02.pdf"
+    },
+    {
+      "league": "en2",
+      "season": "2025-26",
+      "team": "WBA",
+      "points": 2,
+      "effective": "2026-04-24",
+      "evidence": "EFL v WBAFC 判決第 3 頁:a deduction of 2 points which will take effect immediately on the date of this operative decision(2026-04-24),第 15 頁 §45 確認落在 2025/26 賽季",
+      "sourceFile": "EFL-v-WBAFC-written-reasons-2026-05-08.pdf"
+    }
+  ],
+  "reference": {
+    "note": "附錄 1 的歷年彙總(生效賽季未逐筆佐證,不套用):英超 Everton I 6(FY22)、Everton II 2(FY23)、Nottingham Forest 4(FY23)、Leicester City 6(FY24);英冠 Birmingham City 9(FY18)、Sheffield Wednesday 6(FY17-18)、Derby County 9(FY18-21)、Reading 6(FY21)。要套用哪一筆,先找到該筆判決原文確認生效賽季。"
+  }
+}

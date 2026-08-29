@@ -33,7 +33,7 @@ import { fileURLToPath } from 'node:url';
 import { leagueMatches, backfillLine, europeanKickoff } from './lib/league-matches.mjs';
 import { competition } from './lib/canonical.mjs';
 import { loadTeams } from './lib/teams.mjs';
-import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
+import { buildTable, headToHead, teamRecord, applyDeductions } from './lib/table.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
 import { attachProfiles } from './lib/coach-profiles.mjs';
@@ -187,6 +187,22 @@ async function main() {
 
   const lastTable = buildTable(lastLeague, lastCodes);
   const curTable = buildTable(curLeague, curCodes);
+  /* 扣分處分:2025-26 的 LEI −6 與 WBA −2 有判決書逐字佐證(生效日落在該季)。
+     套了之後升降級對帳應該轉綠 —— 之前 LEI 照比分算第 21 名安全、實際降級,
+     差的就是這 6 分。來源與原文在 data/manual/points-deductions.json。 */
+  const deductionsFile = join(ROOT, 'data', 'manual', 'points-deductions.json');
+  let appliedDeductions = [];
+  if (existsSync(deductionsFile)) {
+    const pd = JSON.parse(readFileSync(deductionsFile, 'utf8'));
+    for (const [season, table] of [[LAST_SEASON, lastTable], [CURRENT_SEASON, curTable]]) {
+      const ded = (pd.deductions ?? []).filter(d => d.league === 'en2' && d.season === season);
+      if (ded.length) {
+        applyDeductions(table, ded);
+        appliedDeductions.push(...ded);
+        console.log(`  扣分處分:${season} 套用 ${ded.map(d => `${d.team} −${d.points}`).join('、')}(判決書佐證)`);
+      }
+    }
+  }
 
   const trainMatches = [...priorMatches, ...lastLeague, ...curPlayed];
   const model = applyPromotedPrior(fitPoisson(trainMatches, curCodes, { refDate: AS_OF }));
@@ -279,6 +295,8 @@ async function main() {
       lastSeason: ls ? {
         pos: ls.pos, p: ls.p, w: ls.w, d: ls.d, l: ls.l,
         gf: ls.gf, ga: ls.ga, gd: ls.gd, pts: ls.pts, ppg: ls.ppg,
+        // 扣分處分(判決書逐字佐證,見 data/manual/points-deductions.json)
+        deduction: ls.deduction ?? null, deductionNote: ls.deductionNote ?? null,
         form: ls.form, home: ls.home, away: ls.away,
         homeAwayGap: ls.homeAwayGap, cleanSheets: ls.cleanSheets,
         longest: ls.longest, half: ls.half, bttsPct: ls.bttsPct,
