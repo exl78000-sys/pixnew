@@ -1595,6 +1595,14 @@ async function checkDataGap() {
       return /hCrest: h\?\.crest/.test(src) && /cupCrests\[m\.home\?\.sourceId\]/.test(src)
         && /onRow: u => \{ if \(u\.link\) location\.href = u\.link; \}/.test(src);
     })()],
+    /* 使用者指定:總覽的即將賽程不列英冠(盃賽裡英冠球隊的場次照列)。
+       用集合宣告,hint 文案跟著同一個集合走,不會表拿掉了標題還寫著英冠。 */
+    ['總覽即將賽程排除英冠,hint 文案跟著同一個集合', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /UPCOMING_HIDE = new Set\(\['en2'\]\)/.test(src)
+        && /if \(UPCOMING_HIDE\.has\(lg\)\) continue;/.test(src)
+        && /leagues\.filter\(x => !UPCOMING_HIDE\.has\(x\.lg\)\)/.test(src);
+    })()],
 
     /* ── 教練職涯史核對器(B 層,2026-08-29)── */
     ...await (async () => {

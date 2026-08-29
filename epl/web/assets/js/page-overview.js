@@ -100,11 +100,16 @@ try {
        一輪有幾百場第七八九級球隊的比賽,全列進來總覽就不是總覽了。
      - 抽籤後上游常給「日期+00:00Z」占位,照印會變成「台北 08:00」的假時間 ——
        標成「時間待定」(跟球隊賽程頁同一個規則)。 */
+  // 即將賽程不列的聯賽(使用者指定)。用集合不用「是不是某一個」的二元式
+  const UPCOMING_HIDE = new Set(['en2']);
   const upcoming = (() => {
     const now = Date.now(), end = now + 7 * 86400000;
     const inWindow = k => { const t = Date.parse(k); return t >= now - 2 * 3600000 && t <= end; };
     const rows = [];
     for (const { lg, data } of leagues) {
+      /* 使用者要求:總覽的即將賽程不列英冠(一輪 12 場會蓋過主要聯賽)。
+         只影響這張表 —— 盃賽裡英冠球隊的場次照列,英冠自己的頁面不受影響。 */
+      if (UPCOMING_HIDE.has(lg)) continue;
       /* 隊徽從**這個聯賽自己的**名冊拿,不走全域登錄 —— 隊碼跨聯賽會重複
          (Burnley 在英超與英冠都是 BUR),全域登錄是後蓋前。 */
       const tBy = new Map((data.teams ?? []).map(t => [t.code, t]));
@@ -155,7 +160,7 @@ try {
   })();
 
   const upcomingBlock = `
-  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・${leagues.map(x => C.LEAGUES[x.lg].zh).join('、')} + 盃賽</span></div>
+  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・${leagues.filter(x => !UPCOMING_HIDE.has(x.lg)).map(x => C.LEAGUES[x.lg].zh).join('、')} + 盃賽</span></div>
   ${upcoming.length ? `<div class="card">${C.table(upcoming, [
     { key: 'kick', label: '開球(台北)', value: u => u.kick,
       render: u => (u.pending
