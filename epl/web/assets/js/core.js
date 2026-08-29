@@ -1038,7 +1038,7 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
 }
 
 /* ── 雷達圖 ─────────────────────────── */
-export function radar(series, { size = 300, labels = null, max = 100 } = {}) {
+export function radar(series, { size = 300, labels = null, max = 100, levels = false } = {}) {
   const axes = labels ?? series[0].values.map(v => v.label);
   const n = axes.length;
   const cx = size / 2, cy = size / 2, R = size * 0.34;
@@ -1063,10 +1063,17 @@ export function radar(series, { size = 300, labels = null, max = 100 } = {}) {
         return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${s.color}"/>`;
       }).join('');
   }).join('');
+  /* levels:把 0~100 的百分位換成 10 級分(每 10 分一級,10 最高)標在軸旁 ——
+     使用者回饋:百分位小數不好讀,級分一眼看得出高低。多層時照 series 順序
+     用 → 串起來(上季→近況),位移方向直接寫在軸上。 */
+  const levelOf = v => Math.min(10, Math.floor((v ?? 0) / 10) + 1);
   const text = axes.map((a, i) => {
     const [x, y] = pt(i, R + 26);
     const anchor = Math.abs(x - cx) < 6 ? 'middle' : x > cx ? 'start' : 'end';
-    return `<text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" fill="#a99cc4" font-size="11.5" text-anchor="${anchor}">${a}</text>`;
+    const lv = levels
+      ? ` <tspan fill="#e8e3f2" font-weight="700">${series.map(s => levelOf(s.values[i]?.value)).join('→')}</tspan>`
+      : '';
+    return `<text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" fill="#a99cc4" font-size="11.5" text-anchor="${anchor}">${a}${lv}</text>`;
   }).join('');
   const legend = series.length > 1
     ? `<div class="row small" style="justify-content:center;margin-top:4px">${series.map(s =>

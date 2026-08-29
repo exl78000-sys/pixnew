@@ -1,4 +1,4 @@
-import * as C from './core.js?v=f8b58afd';
+import * as C from './core.js?v=016fe78a';
 
 const app = document.getElementById('app');
 
@@ -772,9 +772,9 @@ try {
       const series = [];
       if (st.baselinePct) series.push({ name: '上季全季', color: '#8a7fae', values: vals(st.baselinePct) });
       series.push({ name: `近 ${st.recent.games} 場`, color: '#00ff85', dash: '6 5', values: vals(st.recentPct) });
-      return `${C.radar(series, { size: 280 })}
+      return `${C.radar(series, { size: 280, levels: true })}
         <div class="tiny dim" style="text-align:center;margin:2px 0 10px">
-          軸值為該指標在 ${st.pctPool.recent} 隊近 ${st.window} 場之間的百分位${st.baselinePct ? `;上季層跟 ${st.pctPool.baseline} 隊的上季全季比` : ''}。
+          軸旁數字為 10 級分(在 ${st.pctPool.recent} 隊近 ${st.window} 場之間的位置,10 最高)${st.baselinePct ? `,寫法是上季→近況;上季層跟 ${st.pctPool.baseline} 隊的上季全季比` : ''}。
           ↓ 的軸反向計分:越靠外代表被射門/被射正/吃牌越少。</div>`;
     })() : '';
     return `<div class="card" style="margin-top:14px">
@@ -933,15 +933,17 @@ try {
     const formations = tac.formation?.list?.slice(0, 3) ?? [];
     /* 雷達的軸兩個聯賽不一樣(英超有傳球創造、西甲有快速進攻),
        所以說明也要跟著資料走 —— 寫死其中一種,另一個聯賽的出處就是假的。 */
+    /* 級分 = 百分位每 10 分一級(10 最高)。隊數從資料算,不寫死(英超西甲剛好
+       都是 20,寫死的話下一個聯賽就在畫面上印假數字 —— page-teams 踩過)。 */
     const radarNote = meta.edition === 'basic'
-      ? `每一軸是 ${meta.lastSeason} 全聯盟 20 隊中的百分位,不是主觀評分。依據為 xG/xGA、運動戰與定位球 xG、
+      ? `每一軸是 ${meta.lastSeason} 全聯盟 ${teams.length} 隊中的位置,分成 10 級分(10 最高),不是主觀評分。依據為 xG/xGA、運動戰與定位球 xG、
          快速進攻 xG 佔比,以及半場領先保分／落後搶分;目前沒有可靠控球與壓迫資料,因此不畫這兩軸。`
-      : '數值為該指標在 20 隊中的百分位。';
+      : `軸旁數字為 10 級分:該指標在 ${teams.length} 隊中的百分位,每 10 分一級(10 最高)。`;
     return `<div class="section" style="margin-top:16px"><h2>上季數據風格</h2>
-      <span class="hint">${meta.lastSeason}・20 隊百分位</span></div>
+      <span class="hint">${meta.lastSeason}・${teams.length} 隊 10 級分</span></div>
     <div class="grid g2">
       <div class="card"><h3>風格雷達</h3>
-        ${C.radar([{ name: t.en, color: t.chartColor ?? t.colors[0], values: tac.radar }], { size: 300 })}
+        ${C.radar([{ name: t.en, color: t.chartColor ?? t.colors[0], values: tac.radar }], { size: 300, levels: true })}
         <div class="tags" style="margin-top:8px">${(tac.tags ?? []).map(x => `<span class="pill accent">${C.esc(x)}</span>`).join('')}</div>
         <div class="tiny dim" style="margin-top:8px">${radarNote}</div>
         ${radarCoverageNote(t)}

@@ -1535,6 +1535,16 @@ async function checkDataGap() {
       return /st\.recentPct/.test(pg) && /dash: '6 5'/.test(pg) && /反向計分/.test(pg)
         && /stroke-dasharray/.test(core);
     })()],
+    /* 使用者要求:百分位改 10 級分呈現。級分只是顯示層(每 10 分一級,10 最高),
+       底層還是百分位 —— 隊數與說明都要跟著資料,不寫死 20。 */
+    ['雷達軸標 10 級分:兩張雷達都開、說明講了級分、隊數不寫死', (() => {
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const calls = pg.match(/C\.radar\([^;]*?levels: true/gs) ?? [];
+      return calls.length >= 2 && /levelOf/.test(core)
+        && /Math\.min\(10, Math\.floor\(\(v \?\? 0\) \/ 10\) \+ 1\)/.test(core)
+        && /\$\{teams\.length\} 隊/.test(pg) && !/20 隊中的百分位/.test(pg);
+    })()],
     ['產物:西甲球隊也有位移資料(SP1 逐場統計)', (() => {
       const teams = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'teams.json'), 'utf8'));
       const withTrend = teams.filter(t => t.styleTrend);
