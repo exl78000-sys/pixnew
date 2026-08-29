@@ -8,6 +8,11 @@ try {
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
+  /* 租借往來:跨聯賽單一份,掛在英超目錄(cups 同一個慣例)。
+     隊碼指的是俱樂部本身,升降級不換碼,所以三個聯賽的球隊頁都能直接用
+     自己的隊碼過濾。缺了(還沒 build)就整卡不畫。 */
+  const loansAll = (await C.loadFrom('pl', ['loans']).catch(() => ({ data: {} }))).data?.loans ?? null;
+
   const code = C.qs('code');
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
@@ -1103,6 +1108,42 @@ try {
     </div>`;
   }
 
+  /* 租借往來卡。等級要跟著資料走到畫面上(CLAUDE.md):
+     「已確認」= 有獨立來源正面確認;「無矛盾」= 查得動的檢查都通過 ——
+     兩者對讀者的意義不同,不可以混成一句「有租借紀錄」。
+     沒有這一隊的紀錄就整卡不畫,不留空卡。 */
+  function loansCard(t) {
+    const recs = (loansAll?.records ?? []).filter(r => r.parentCode === t.code || r.loanCode === t.code);
+    if (!recs.length) return '';
+    const badge = v => v === 'confirmed'
+      ? '<span class="pill accent tiny">已確認</span>'
+      : '<span class="pill info tiny">無矛盾</span>';
+    const line = r => {
+      const out = r.parentCode === t.code;
+      const other = out ? r.loan : r.parent;
+      return `<div class="stat-line"><span class="small">${out ? '外借' : '借入'}・${C.esc(r.player)}
+          ${out ? '→' : '←'} ${C.esc(other ?? '?')}</span>
+        <span>${badge(r.verdict)}${r.source
+          ? ` <a class="tiny dim" href="${C.esc(r.source)}" target="_blank" rel="noopener">出處 ↗</a>` : ''}</span></div>`;
+    };
+    const seasons = [...new Set(recs.map(r => r.season))].sort().reverse();
+    const blocks = seasons.map(s => {
+      const rows = recs.filter(r => r.season === s)
+        .sort((a, b) => (a.parentCode === t.code ? 0 : 1) - (b.parentCode === t.code ? 0 : 1)
+          || a.player.localeCompare(b.player));
+      return `<h3 style="margin-top:12px">${s} <span class="dim tiny">${rows.length} 筆</span></h3>
+        <div style="display:grid;gap:2px">${rows.map(line).join('')}</div>`;
+    }).join('');
+    return `<div class="section" style="margin-top:20px"><h2>租借往來</h2>
+        <span class="hint">人工交付、逐筆核對後發布</span></div>
+      <div class="card">${blocks}
+        <div class="tiny dim" style="margin-top:10px">
+          「已確認」= 有獨立來源正面確認;「無矛盾」= 查得動的檢查(逐季聯賽成員資格、
+          出賽分鐘、目的地名單)都通過但沒有正面確認 —— 兩者可信度不同,所以分開標。
+          出處連結為交付方提供的原始來源。收件匣裡沒通過核對的紀錄不會出現在這裡。</div>
+      </div>`;
+  }
+
   function detail(t) {
     const co = coachBy.get(t.code);
     /* 這裡只放**下三場**。六場時這個區塊佔整頁高度 9.5%(量過,是頁面上第三大的卡片);
@@ -1130,6 +1171,7 @@ try {
     ${takersBlock(t.tactics)}
     ${eloBlock(t)}
     ${scheduleBlock(t)}
+    ${loansCard(t)}
     ${squadSection(t)}
     ${C.foot(meta)}`;
 
