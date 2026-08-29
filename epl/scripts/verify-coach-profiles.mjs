@@ -38,12 +38,23 @@ export function verifyProfiles(inbox, ctx) {
       continue;
     }
 
-    // 來源真偽:探測過而且死掉的網址被當成依據 → 編造
-    for (const u of rec.sources ?? []) {
-      const status = ctx.urlStatus?.[u];
-      if (status != null && status >= 400) {
-        b.convictions.push(`${tag}:來源不存在(HTTP ${status}):${u}`);
+    /* 來源真偽,分三級(第一版把 403 也定罪,會冤枉 —— 曼城、馬競官網對
+       curl 一律 403,瀏覽器開得起來;500 是站方伺服器錯,也不是不存在的證據):
+       - 404/410 = 不存在。**有 formation/style 主張、而且沒有任何一個來源活著**
+         → 主張沒有依據,定罪。第二來源死但主來源活著 → labelIssue(該修但不誆人)。
+       - 403/429/5xx = 無法驗證,記 note,不當證據用。 */
+    {
+      const statuses = (rec.sources ?? []).map(u => ({ u, s: ctx.urlStatus?.[u] ?? null }));
+      const alive = statuses.some(x => x.s === 200);
+      const dead = statuses.filter(x => x.s === 404 || x.s === 410);
+      const blocked = statuses.filter(x => x.s != null && x.s !== 200 && x.s !== 404 && x.s !== 410);
+      const hasClaim = rec.formation || (rec.style ?? []).length;
+      if (hasClaim && !alive && dead.length) {
+        b.convictions.push(`${tag}:formation/style 的來源沒有一個存在(${dead.map(x => `HTTP ${x.s}`).join('、')}) —— 主張沒有依據`);
+      } else {
+        for (const x of dead) b.labelIssues.push(`${tag}:來源失聯(HTTP ${x.s}):${x.u}`);
       }
+      for (const x of blocked) b.notes.push(`${tag}:來源無法驗證(HTTP ${x.s},站方擋機器人或伺服器錯):${x.u}`);
     }
 
     if ((rec.style ?? []).length > 3) b.convictions.push(`${tag}:風格標籤超過 3 個`);

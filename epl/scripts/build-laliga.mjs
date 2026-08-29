@@ -36,6 +36,7 @@ import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadVerifiedLoans, attachLoans } from './lib/loans.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
+import { attachProfiles } from './lib/coach-profiles.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -433,6 +434,7 @@ async function main() {
   }
   // 教練前一段任期(B 層):核對通過的職涯 + 本站季檔算的逐場風格(lib/coach-career.mjs)
   attachCareers(ROOT, coachData, 'es1');
+  attachProfiles(ROOT, coachData, 'es1');
   const coachBy = new Map(coachData.map(c => [c.team, c]));
 
   const historyByTeam = new Map(curCodes.map(code => [code, []]));

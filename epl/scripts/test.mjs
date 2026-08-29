@@ -1713,18 +1713,58 @@ async function checkDataGap() {
         controls: { pl: new Map([['ARS', { zh: '阿爾特塔', formation: '4-3-3' }]]), es1: new Map(), en2: new Map() },
         urlStatus: { 'https://dead.example/x': 404, 'https://ok.example/y': 200 },
       };
+      ctx.urlStatus['https://blocked.example/z'] = 403;
       const run = coaches => verifyProfiles({ coaches }, ctx);
-      const fabricated = run([{ league: 'pl', team: 'ARS', name: 'Mikel Arteta', zh: '阿爾特塔',
-        formation: '4-3-3', style: ['高位壓迫'], sources: ['https://dead.example/x', 'https://ok.example/y'] }]);
-      const honest = run([{ league: 'pl', team: 'ARS', name: 'Mikel Arteta', zh: '阿爾特塔',
-        formation: null, style: [], sources: ['https://ok.example/y', 'https://ok.example/y'] }]);
+      const mk = extra => ({ league: 'pl', team: 'ARS', name: 'Mikel Arteta', zh: '阿爾特塔', ...extra });
+      const fabricated = run([mk({ formation: '4-3-3', style: ['高位壓迫'],
+        sources: ['https://dead.example/x', 'https://dead.example/x'] })]);
+      const secondDead = run([mk({ formation: '4-3-3', style: ['高位壓迫'],
+        sources: ['https://ok.example/y', 'https://dead.example/x'] })]);
+      const botBlocked = run([mk({ formation: '4-3-3', style: ['高位壓迫'],
+        sources: ['https://ok.example/y', 'https://blocked.example/z'] })]);
+      const honest = run([mk({ formation: null, style: [], sources: ['https://ok.example/y', 'https://ok.example/y'] })]);
       const zhWrong = run([{ league: 'pl', team: 'ARS', name: 'Mikel Arteta', zh: '亞提達',
         formation: null, style: [], sources: ['https://ok.example/y', 'https://ok.example/y'] }]);
       return [
-        ['檔案核對:死掉的來源網址 → 編造定罪、整聯賽退', fabricated.pl.verdict === 'rejected'
-          && fabricated.pl.convictions.some(c => c.includes('來源不存在')), ''],
+        /* 政策分三級:主張的來源全死 → 定罪;第二來源死 → labelIssue(該修不誆人);
+           403/5xx 是站方擋爬蟲或伺服器錯,不當「不存在」的證據(第一版冤枉過曼城官網) */
+        ['檔案核對:主張的來源全 404 → 定罪、整聯賽退', fabricated.pl.verdict === 'rejected'
+          && fabricated.pl.convictions.some(c => c.includes('主張沒有依據')), ''],
+        ['檔案核對:主來源活著、第二來源死 → labelIssue 不定罪', secondDead.pl.verdict === 'accepted'
+          && secondDead.pl.labelIssues.some(c => c.includes('來源失聯')), JSON.stringify(secondDead.pl.convictions)],
+        ['檔案核對:403 擋爬蟲不當不存在的證據', botBlocked.pl.verdict === 'accepted', ''],
         ['檔案核對:誠實的 null + 真來源 → 通過', honest.pl.verdict === 'accepted', JSON.stringify(honest.pl.convictions)],
         ['檔案核對:對照題譯名不符 → 定罪', zhWrong.pl.verdict === 'rejected', ''],
+        /* 掛載:只補 null 不覆蓋;雙教頭聯名紀錄不收單人譯名 */
+        ...await (async () => {
+          const { attachProfiles } = await import('./lib/coach-profiles.mjs');
+          void attachProfiles;   // 掛載邏輯用純函式難注入檔案系統,改驗產物 + 原始碼守則
+          const src = readFileSync(join(ROOT, 'scripts', 'lib', 'coach-profiles.mjs'), 'utf8');
+          return [
+            ['檔案掛載:只補 null、不覆蓋既有整理、雙教頭不收單人譯名',
+              /!co\.zh && rec\.zh/.test(src) && /!co\.formation && rec\.formation/.test(src)
+              && /joint/.test(src) && /includes\('&'\)/.test(src), ''],
+          ];
+        })(),
+        ['產物:通過的檔案補進名冊(pl 換帥教練有譯名與國籍)', (() => {
+          const vPath = join(ROOT, 'data', 'coach-profiles-verified.json');
+          if (!existsSync(vPath)) return true;
+          const v = JSON.parse(readFileSync(vPath, 'utf8'));
+          for (const lg of ['pl', 'es1', 'en2']) {
+            if (v.blocks?.[lg]?.verdict !== 'accepted') continue;
+            const p = lg === 'pl' ? 'web/data/coaches.json' : `web/data/leagues/${lg}/coaches.json`;
+            const arr = JSON.parse(readFileSync(join(ROOT, ...p.split('/')), 'utf8'));
+            const coaches = arr.coaches ?? arr;
+            for (const rec of v.published.filter(r => r.league === lg)) {
+              const co = coaches.find(c => c.team === rec.team);
+              if (!co) continue;
+              if (String(co.name ?? '').includes('&')) continue;   // 雙教頭只補陣型風格
+              if (rec.zh && !co.zh) return false;
+              if (rec.nat && !co.nat) return false;
+            }
+          }
+          return true;
+        })()],
         ['檔案核對:收件匣在的話,核對產物 sha 要對得上', (() => {
           const inboxPath = join(ROOT, 'data', 'manual', 'coach-profiles.json');
           if (!existsSync(inboxPath)) return true;

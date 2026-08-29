@@ -224,9 +224,16 @@ try {
     /* 官方說換人了、但本站還沒整理他的資料 —— 這種情況要說清楚,
        絕對不能把前任的戰績掛在新教練名下。 */
     const body = c.officialMismatch
-      ? `<div class="note" style="margin-top:10px">
-          <b>本站還沒有這位教練的資料。</b>名字取自聯賽官方,但任期、戰績與戰術風格尚未整理 ——
-          不會拿前任的數字充當他的履歷。
+      ? `${/* 基本檔案(譯名/國籍/陣型/風格)由交付經來源核對後補上 —— 有就顯示,
+            戰績照舊不掛(那要依 since 切分,還沒整理)。 */''}
+        ${c.profileVerified && (c.formation || (c.style ?? []).length) ? `
+          ${c.formation ? `<div class="stat-line" style="margin-top:10px"><span class="small muted">慣用陣型</span><b class="mono">${C.esc(c.formation)}</b></div>` : ''}
+          ${(c.style ?? []).length ? `<div class="tags" style="margin-top:6px">${c.style.map(x => `<span class="pill">${C.esc(x)}</span>`).join('')}</div>` : ''}
+          <div class="tiny dim" style="margin-top:4px">基本檔案由人工交付、來源經逐一實測核對;陣型與風格取自戰術分析文章,描述的是他的慣用打法,不是本隊的實測。</div>` : ''}
+        <div class="note" style="margin-top:10px">
+          ${c.profileVerified
+            ? '<b>任內戰績尚未整理。</b>名字取自聯賽官方 —— 不會拿前任的數字充當他的履歷。'
+            : '<b>本站還沒有這位教練的資料。</b>名字取自聯賽官方,但任期、戰績與戰術風格尚未整理 —— 不會拿前任的數字充當他的履歷。'}
         </div>
         ${c.predecessor?.name ? `<div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
           <div class="tiny dim" style="margin-bottom:4px">前任 ${C.esc(c.predecessor.zh ?? c.predecessor.name)}

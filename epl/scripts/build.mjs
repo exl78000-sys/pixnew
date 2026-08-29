@@ -35,6 +35,7 @@ import { pickPair, intoBand } from './lib/colour.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
+import { attachProfiles } from './lib/coach-profiles.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
@@ -412,6 +413,7 @@ async function main() {
   /* 教練前一段任期(B 層,人工交付職涯 → 核對 → 本站自己算風格)。
      只掛核對通過(published)的;stale 時整批不掛(lib/coach-career.mjs)。 */
   attachCareers(ROOT, coaches.coaches, 'pl');
+  attachProfiles(ROOT, coaches.coaches, 'pl');
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
 
   // ── 賽程 + 預測 ───────────────────────────
