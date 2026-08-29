@@ -255,7 +255,7 @@ try {
       const feeds = [meta.liveFeed, 'data/live.json'].filter(Boolean);
       const renderLive = m => {
         const el = document.getElementById('livePanel');
-        if (el) el.innerHTML = (m && m.started && !m.finished) ? livePanelHtml(m) : '';
+        if (el) el.innerHTML = (m && m.started && !m.finished) ? livePanelHtml(m, f.colors) : '';
       };
       renderLive(findIn(data.live));
       C.pageInterval(async () => {
@@ -516,9 +516,27 @@ try {
      完場自動消失,由賽後分析接手 —— 單場的家始終只有這一頁。
      事件時間軸(進球/牌/換人)吃的是 official.json,重新整理才會更新;
      面板上的比分與機率不用重新整理。 */
-  function livePanelHtml(m) {
+  function livePanelHtml(m, colors) {
     const H = m.sides?.[m.home], A = m.sides?.[m.away];
     const ip = m.inplay;
+    /* 場上數據表:FPL 即時逐人欄位的全隊加總。開關看「有沒有任何一項動起來」——
+       實測中場時 FPL 的三個指數還是 0、防守計數已有值,只看指數會把真資料藏掉。
+       全零(剛開賽)整卡不出,零和的列(兩邊都還是 0)個別藏。 */
+    const sh = H?.stats, sa = A?.stats;
+    const act = s => s.threat + s.creativity + s.influence + s.tackles + s.recoveries + s.cbi;
+    const statRows = sh && sa && (act(sh) + act(sa) > 0) ? [
+      { label: '場上 xG', h: H.xG, a: A.xG, digits: 2, hint: '期望進球(FPL 即時)' },
+      { label: '威脅值', h: sh.threat, a: sa.threat, digits: 0, hint: 'FPL 官方進攻威脅指數' },
+      { label: '創造力', h: sh.creativity, a: sa.creativity, digits: 0, hint: 'FPL 官方創造機會指數' },
+      { label: '影響力', h: sh.influence, a: sa.influence, digits: 0, hint: 'FPL 官方比賽影響指數' },
+      { label: '搶斷', h: sh.tackles, a: sa.tackles, digits: 0 },
+      { label: '回收球權', h: sh.recoveries, a: sa.recoveries, digits: 0 },
+      { label: '解圍+攔截+封堵', h: sh.cbi, a: sa.cbi, digits: 0 },
+      { label: '門將撲救', h: H.keeper?.saves ?? 0, a: A.keeper?.saves ?? 0, digits: 0 },
+      { label: '黃牌', h: H.yellow, a: A.yellow, digits: 0, better: 'low' },
+    ].filter(r => r.label === '場上 xG' || r.better === 'low' || (r.h + r.a) > 0) : null;
+    const bestLine = side => (side?.best ?? []).filter(b => b.bps > 0).slice(0, 3)
+      .map(b => `${C.esc(b.name)} ${b.bps}`).join('、');
     return `<div class="section"><h2>即時戰況</h2>
         <span class="hint"><span class="livedot"></span> 第 ${m.minute} 分鐘・每 20 秒自動更新</span></div>
       <div class="card">
@@ -537,6 +555,12 @@ try {
           ⚽ ${[...(H?.scorers ?? []).map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`),
                ...(A?.scorers ?? []).map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`)].join('、')}</div>` : ''}
       </div>
+      ${statRows ? `<div class="card" style="margin-top:10px"><h3>場上數據 <span class="pill tiny">每 20 秒更新</span></h3>
+        ${C.versus(statRows, { home: m.home, away: m.away, colors,
+          note: '全隊加總自 FPL 的即時逐球員數據。控球率、射門次數、傳球數與角球沒有免費的即時來源,所以不顯示 —— 缺的欄位不會用估計值補。' })}
+        ${bestLine(H) || bestLine(A) ? `<div class="tiny dim" style="margin-top:8px">目前表現分(BPS)前三 ——
+          ${C.name(m.home)}:${bestLine(H) || '—'}・${C.name(m.away)}:${bestLine(A) || '—'}</div>` : ''}
+      </div>` : ''}
       ${m.liveSummary ? `<div class="card" style="margin-top:10px"><h3>${m.liveSummary.kind === 'ht' ? '中場講評' : `戰況講評 <span class="dim tiny">第 ${m.liveSummary.minute} 分鐘</span>`}
           <span class="pill tiny">自動生成</span></h3>
         <div style="display:grid;gap:8px;line-height:1.8">
