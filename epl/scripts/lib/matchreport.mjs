@@ -154,7 +154,7 @@ function notesFor(rep, zh) {
    (報告層的規矩:數字先算完,文字只能引用),規則生成、不經 LLM。
    FPL 的 minute 在中場休息停在 45 —— 43~50 這段當「中場講評」,
    其餘進行中時段是「戰況講評」。 */
-function liveSummaryFor(rep, zh) {
+export function liveSummaryFor(rep, zh) {
   if (!rep.started || rep.finished || !rep.inplay) return null;
   const H = rep.sides[rep.home], A = rep.sides[rep.away];
   const nameH = zh(rep.home), nameA = zh(rep.away);
@@ -164,12 +164,15 @@ function liveSummaryFor(rep, zh) {
 
   ps.push(`${atHT ? '上半場結束' : `第 ${rep.minute} 分鐘`},${nameH} ${rep.hs ?? 0}:${rep.as ?? 0} ${nameA}。`);
 
-  const xgd = round(H.xG - A.xG, 2);
-  if (Math.abs(xgd) >= 0.4) {
-    const better = xgd > 0 ? nameH : nameA;
-    ps.push(`場上 xG ${H.xG}:${A.xG},內容上${better}佔優。`);
-  } else {
-    ps.push(`場上 xG ${H.xG}:${A.xG},兩邊創造的機會量接近。`);
+  // 西甲的即時來源沒有場上 xG(sides.xG 是 null)—— 沒有就不講,不印 null:null
+  if (H.xG != null && A.xG != null) {
+    const xgd = round(H.xG - A.xG, 2);
+    if (Math.abs(xgd) >= 0.4) {
+      const better = xgd > 0 ? nameH : nameA;
+      ps.push(`場上 xG ${H.xG}:${A.xG},內容上${better}佔優。`);
+    } else {
+      ps.push(`場上 xG ${H.xG}:${A.xG},兩邊創造的機會量接近。`);
+    }
   }
 
   /* 場上數據句:全部從 FPL 即時合計來。開關看「有沒有任何一項動起來」——
@@ -214,7 +217,8 @@ function liveSummaryFor(rep, zh) {
     ps.push(`模型估下一球:${nameH} ${pc(ip.nextGoal.home)}、${nameA} ${pc(ip.nextGoal.away)},`
       + `剩餘時間期望再進 ${ip.xgRestHome}:${ip.xgRestAway}。`);
   }
-  if (H.shape?.source === 'official' && A.shape?.source === 'official') {
+  if (H.shape?.source === 'official' && A.shape?.source === 'official'
+    && H.shape.label && H.shape.label !== '—' && A.shape.label && A.shape.label !== '—') {
     ps.push(`實際陣型 ${H.shape.label} 對 ${A.shape.label}(官方名單)。`);
   }
   /* 收尾:當下全場表現分(BPS)領先的人 —— FPL 用它決定 bonus,等於即時的最佳球員。 */

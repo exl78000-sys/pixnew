@@ -2,6 +2,7 @@
 // 這條路徑不依賴 FPL；西甲可直接用正式陣容、球隊統計與球員評分產生賽後頁。
 import { round } from './util.mjs';
 import { inPlay } from './inplay.mjs';
+import { liveSummaryFor } from './matchreport.mjs';
 
 const pos = value => ({ G: 'GK', D: 'DEF', M: 'MID', F: 'FWD' }[value] ?? value ?? '?');
 const num = value => Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -166,6 +167,23 @@ export function buildLiveProviderReport({ fixture, detail, prediction = null, mi
     },
     advanced: detail, source: detail.source ?? 'sportmonks', demo: false,
   };
+  /* 進行中的 livescores 沒有陣容與逐人統計,sides 是空殼 —— 但事件裡有進球。
+     判進球用兩個訊號取聯集:adapter 對到型別的 'Goal',或 addition 欄的序數寫法
+     (實測 '1st Goal'…'5th Goal';'Goal Disallowed' 不匹配序數式,自然排除)。
+     **數量對得上該隊比分才掛**:烏龍球事件的隊伍語意沒驗證過,對不上寧可不標
+     (配錯人比不標糟)。牌的事件還沒在真實 payload 看過型別,不從事件推。 */
+  const evs = Array.isArray(detail.events) ? detail.events : [];
+  const isGoalEvent = e => e.type === 'Goal' || /^\d+(st|nd|rd|th) goal$/i.test(String(e.comments ?? '').trim());
+  for (const [side, scored] of [[fixture.home, hs], [fixture.away, as]]) {
+    const s = report.sides[side];
+    if (s.scorers.length || s.used > 0) continue;
+    const gs = evs.filter(e => e.team === side && isGoalEvent(e));
+    if (!gs.length || gs.length !== scored) continue;
+    const byName = new Map();
+    for (const e of gs) byName.set(e.player ?? '?', (byName.get(e.player ?? '?') ?? 0) + 1);
+    s.scorers = [...byName].map(([name, goals]) => ({ name, goals }));
+    s.goals = gs.length;
+  }
   report.notes = notesFor(report, detail, nameOf);
   if (prediction && hs != null && as != null) {
     // 即時勝率由「賽前預測 + 目前比分／分鐘」計算，不使用賽後結果重擬合。
@@ -175,6 +193,9 @@ export function buildLiveProviderReport({ fixture, detail, prediction = null, mi
       redHome: report.sides[fixture.home].red, redAway: report.sides[fixture.away].red,
     });
     report.preMatch = { home: prediction.home, draw: prediction.draw, away: prediction.away, xgHome: prediction.xgHome, xgAway: prediction.xgAway };
+    /* 講評走英超同一支 liveSummaryFor(規則生成、每句只引用算好的數字)——
+       沒有的資料(場上 xG、FPL 指數、陣型)它自己會跳過那幾句,不印 null。 */
+    report.liveSummary = liveSummaryFor(report, nameOf);
   }
   return report;
 }
