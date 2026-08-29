@@ -22,6 +22,37 @@ async function updateXLeague(q) {
   </div>` : '';
 }
 
+
+/* 核心欄位(兩個聯賽共用)。這 20 欄以前兩個渲染器各寫一份,標題與順序
+   還悄悄漂移(統一頁重構的動機就是這個);現在一份工廠、聯賽差異用參數注入:
+   - statOf:FPL 的數字在 last/current 子物件(隨季別切換),西甲攤平在最上層
+   - nameCell / teamCol:狀態徽章、跨隊標記這些聯賽特有的呈現
+   - afterId:聯賽特有欄(FPL 的出場數、西甲的 games) */
+function coreColumns({ statOf, nameCell, teamCol, afterId = [] }) {
+  const POS_ORDER = ['GK', 'DEF', 'MID', 'FWD', 'D', 'M', 'F'];
+  const n = (key, label, { fx = false, dash = false } = {}) => ({
+    key, label, num: true,
+    value: p => statOf(p)?.[key] ?? 0,
+    render: fx ? (p => C.fx(statOf(p)?.[key], 2))
+      : dash ? (p => statOf(p)?.[key] ?? '—')
+      : undefined,
+  });
+  return [
+    { key: 'name', label: '球員', value: p => p.name, left: true, render: nameCell },
+    teamCol,
+    { key: 'pos', label: '位置', value: p => POS_ORDER.indexOf(p.pos), render: p => C.esc(p.posZh ?? p.pos ?? '—') },
+    { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true, render: p => p.age ?? '—' },
+    { key: 'squadNumber', label: '背號', value: p => p.squadNumber ?? 0, num: true,
+      render: p => (p.squadNumber == null ? '—' : `${p.squadNumber}${C.numberSourceMark(p)}`) },
+    ...afterId,
+    n('minutes', '分鐘'), n('goals', '進球'), n('assists', '助攻'), n('ga', '進球參與'),
+    n('xG', 'xG', { fx: true }), n('xA', 'xA', { fx: true }), n('xGI', 'xGI', { fx: true }),
+    n('xg90', 'xG/90'), n('xa90', 'xA/90'), n('xgi90', 'xGI/90'),
+    n('shots', '射門', { dash: true }), n('keyPasses', '關鍵傳球', { dash: true }),
+    n('yellow', '黃牌', { dash: true }), n('red', '紅牌', { dash: true }),
+  ];
+}
+
 try {
   const { meta, clubs, teams, players, leaders } = await C.load('meta', 'clubs', 'teams', 'players', 'leaders');
   C.registerTeams(clubs); C.registerTeams(teams);
@@ -161,30 +192,12 @@ try {
       (!q || p.name.toLowerCase().includes(q) || p.fullName.toLowerCase().includes(q)));
     document.getElementById('count').textContent = `共 ${rows.length} 人`;
     updateXLeague(q);
-    document.getElementById('list').innerHTML = C.table(rows, [
-      { key: 'name', label: '球員', value: p => p.name, left: true,
-        render: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.playerPhoto(p, 28)} ${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}` },
-      { key: 'team', label: '球隊', value: p => C.name(p.team), render: p => C.teamCell(p.team) },
-      { key: 'pos', label: '位置', value: p => ['GK', 'DEF', 'MID', 'FWD'].indexOf(p.pos), render: p => p.posZh },
-      { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true },
-      { key: 'squadNumber', label: '背號', value: p => p.squadNumber ?? 0, num: true,
-        render: p => (p.squadNumber == null ? '—' : `${p.squadNumber}${C.numberSourceMark(p)}`) },
-      { key: 'appearances', label: '出場', value: p => mode === 'current' ? (p.appearances ?? 0) : 0, num: true, render: p => mode === 'current' ? (p.appearances ?? '—') : '—' },
-      { key: 'minutes', label: '分鐘', value: p => S().stat(p)?.minutes ?? 0, num: true },
-      { key: 'goals', label: '進球', value: p => S().stat(p)?.goals ?? 0, num: true },
-      { key: 'assists', label: '助攻', value: p => S().stat(p)?.assists ?? 0, num: true },
-      { key: 'ga', label: '進球參與', value: p => S().stat(p)?.ga ?? 0, num: true },
-      { key: 'xG', label: 'xG', value: p => S().stat(p)?.xG ?? 0, num: true, render: p => C.fx(S().stat(p)?.xG, 2) },
-      { key: 'xA', label: 'xA', value: p => S().stat(p)?.xA ?? 0, num: true, render: p => C.fx(S().stat(p)?.xA, 2) },
-      { key: 'xGI', label: 'xGI', value: p => S().stat(p)?.xGI ?? 0, num: true, render: p => C.fx(S().stat(p)?.xGI, 2) },
-      { key: 'xg90', label: 'xG/90', value: p => S().stat(p)?.xg90 ?? 0, num: true },
-      { key: 'xa90', label: 'xA/90', value: p => S().stat(p)?.xa90 ?? 0, num: true },
-      { key: 'xgi90', label: 'xGI/90', value: p => S().stat(p)?.xgi90 ?? 0, num: true },
-      { key: 'shots', label: '射門', value: p => S().stat(p)?.shots ?? 0, num: true, render: p => S().stat(p)?.shots ?? '—' },
-      { key: 'keyPasses', label: '關鍵傳球', value: p => S().stat(p)?.keyPasses ?? 0, num: true, render: p => S().stat(p)?.keyPasses ?? '—' },
-      { key: 'yellow', label: '黃牌', value: p => S().stat(p)?.yellow ?? 0, num: true, render: p => S().stat(p)?.yellow ?? '—' },
-      { key: 'red', label: '紅牌', value: p => S().stat(p)?.red ?? 0, num: true, render: p => S().stat(p)?.red ?? '—' },
-    ], { sortKey: 'minutes', desc: true, onRow: p => (cmpMode ? toggleCompare(p) : openPlayer(p)) });
+    document.getElementById('list').innerHTML = C.table(rows, coreColumns({
+      statOf: p => S().stat(p),
+      nameCell: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.playerPhoto(p, 28)} ${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}`,
+      teamCol: { key: 'team', label: '球隊', value: p => C.name(p.team), render: p => C.teamCell(p.team) },
+      afterId: [{ key: 'appearances', label: '出場', value: p => mode === 'current' ? (p.appearances ?? 0) : 0, num: true, render: p => mode === 'current' ? (p.appearances ?? '—') : '—' }],
+    }), { sortKey: 'minutes', desc: true, onRow: p => (cmpMode ? toggleCompare(p) : openPlayer(p)) });
   };
 
   renderSeasonUI();
@@ -379,31 +392,9 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
         <b class="mono">${fmt(r.value)}</b></div>`; }).join('')}${b.key === 'youth' ? ageNote() : ''}</div>`;
   };
 
-  const COLS = [
-    { key: 'name', label: '球員', left: true, get: p => `<span class="player-cell">${C.playerPhoto(playerForPhoto(p), 28)}<span>${C.esc(p.name)}</span></span>` },
-    { key: 'team', label: '球隊', left: true, get: teamCell },
-    { key: 'posZh', label: '位置', get: p => `<span class="dim">${C.esc(p.posZh)}</span>` },
-    { key: 'age', label: '年齡', num: true, get: p => p.age ?? '—' },
-    { key: 'squadNumber', label: '背號', num: true,
-      get: p => (p.squadNumber == null ? '—' : `${p.squadNumber}${C.numberSourceMark(p)}`) },
-    { key: 'games', label: '出場', num: true },
-    { key: 'minutes', label: '分鐘', num: true },
-    { key: 'goals', label: '進球', num: true },
-    { key: 'assists', label: '助攻', num: true },
-    { key: 'ga', label: '進球參與', num: true },
-    { key: 'xG', label: 'xG', num: true, d: 2 },
-    { key: 'xA', label: 'xA', num: true, d: 2 },
-    { key: 'xGI', label: 'xGI', num: true, d: 2 },
-    { key: 'xg90', label: 'xG/90', num: true, d: 2 },
-    { key: 'xa90', label: 'xA/90', num: true, d: 2 },
-    { key: 'shots', label: '射門', num: true },
-    { key: 'keyPasses', label: '關鍵傳球', num: true },
-    { key: 'xgi90', label: 'xGI/90', num: true, d: 2 },
-    { key: 'yellow', label: '黃牌', num: true },
-    { key: 'red', label: '紅牌', num: true },
-  ];
-  let sortKey = 'goals', sortDesc = true;
-
+  /* 欄位走共用工廠(coreColumns)、表格走 C.table —— 這裡以前手刻了一份
+     可排序表格,跟 C.table 重複,而且 20 個欄位跟英超那份各寫各的、
+     標題順序悄悄漂移。西甲的數字攤平在最上層 → statOf 是恆等。 */
   const filteredRows = () => {
     let rows = bySeason(season);
     if (posFilter) rows = rows.filter(p => p.pos === posFilter);
@@ -413,19 +404,14 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     return rows;
   };
   const tableHtml = () => {
-    let rows = filteredRows();
-    rows = rows.slice().sort((a, b) => {
-      const av = a[sortKey] ?? -Infinity, bv = b[sortKey] ?? -Infinity;
-      if (typeof av === 'string') return sortDesc ? String(bv).localeCompare(av) : String(av).localeCompare(String(bv));
-      return sortDesc ? bv - av : av - bv;
-    });
-    return `<div class="table-wrap"><table class="tbl players-table"><thead><tr>${COLS.map(c =>
-      `<th class="${c.num ? 'num' : ''} sortable" data-sort="${c.key}">${C.esc(c.label)}${
-        sortKey === c.key ? (sortDesc ? ' ▾' : ' ▴') : ''}</th>`).join('')}</tr></thead>
-      <tbody>${rows.map(p => `<tr class="clickable" data-player-code="${C.esc(p.id)}" tabindex="0" role="button">${COLS.map(c => `<td class="${[c.num ? 'num mono' : '', c.left ? 'left' : ''].filter(Boolean).join(' ')}">${
-        c.get ? c.get(p) : (c.num && c.d ? C.fx(p[c.key], c.d) : (p[c.key] ?? '—'))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
-      <div class="tiny dim" style="margin-top:8px">依${C.esc(COLS.find(c => c.key === sortKey)?.label ?? sortKey)}排序,共 ${rows.length} 人。
-        點欄位標題可換排序。
+    const rows = filteredRows();
+    return C.table(rows, coreColumns({
+      statOf: p => p,
+      nameCell: p => `<span class="player-cell">${C.playerPhoto(playerForPhoto(p), 28)}<span>${C.esc(p.name)}</span></span>`,
+      teamCol: { key: 'team', label: '球隊', value: p => codeName(currentTeamCode(p)), left: true, render: teamCell },
+      afterId: [{ key: 'games', label: '出場', value: p => p.games ?? 0, num: true }],
+    }), { sortKey: 'goals', desc: true, onRow: p => openUnderstatPlayer(p) })
+      + `<div class="tiny dim" style="margin-top:8px">共 ${rows.length} 人。點欄位標題可換排序。
         <span class="mono">xGI/90</span> 只在上場時間達 ${leaders.minMinutes} 分鐘時給出。</div>`;
   };
 
@@ -500,11 +486,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     ${C.foot(meta)}`;
 
     app.querySelectorAll('.season-btn').forEach(b => b.onclick = () => { season = b.dataset.season; draw(); });
-    app.querySelectorAll('th.sortable').forEach(th => th.onclick = () => {
-      const k = th.dataset.sort;
-      if (k === sortKey) sortDesc = !sortDesc; else { sortKey = k; sortDesc = true; }
-      draw();
-    });
+    // 排序由 C.table 自己處理(以前這裡掛手刻的 th 監聽,是 C.table 的重複實作)
     const q = app.querySelector('#q');
     if (q) { q.oninput = () => { query = q.value; draw(); q.focus(); }; }
     updateXLeague(query);
