@@ -1931,7 +1931,8 @@ async function checkDataGap() {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-duel.js'), 'utf8');
       const pc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-core.js'), 'utf8');
-      const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const PAGES'));
+      /* SITE_PAGES 區段切到 GROUPS 為止 —— GROUPS 在兩者之間,而它裡面有 duel 是對的 */
+      const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS'));
       return !sitePagesBlock.includes("'duel'")                     // 兩邊都放會出現兩個分頁
         && /\['duel', '對戰模擬'\]/.test(core)
         && core.includes("'model', 'duel'] },")                     // 分析組
