@@ -1,4 +1,4 @@
-import * as C from './core.js?v=4e77ec5e';
+import * as C from './core.js?v=d3c50968';
 
 /* 歐冠已併進「盃賽」單頁(2026-08-29)。這一頁保留為轉址 —— 舊連結與書籤不斷。
    內容在 ucl-view.js,由 page-cups.js 以頁內分頁載入。 */
