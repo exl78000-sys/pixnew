@@ -1804,7 +1804,9 @@ async function checkDataGap() {
         && !core.slice(core.indexOf('const PAGES')).split('const GROUPS')[0].includes("'allplayers'")  // PAGES 沒有(兩個分頁那條坑)
         && /'allplayers'/.test(bundle)                                 // 單檔版清單(靜靜消失那條坑)
         && /Object\.keys\(C\.LEAGUES\)/.test(pg)                       // 註冊表,不寫死聯賽
-        && /不可直接互比/.test(pg) && /沒有跨聯賽排行榜/.test(pg)      // 混排警語
+        && /不可直接互比/.test(pg)                                     // xG/xA 模型不同的警語
+        && /聯賽籤/.test(pg)                                           // 合併表:每列標出處
+        && /photoBy/.test(pg) && /crestBy/.test(pg)                    // 頭貼懶載入、隊徽分聯賽表(隊碼會撞)
         && /gapNote/.test(pg)                                          // 英冠缺席講原因
         && /!= null/.test(pg) && /'—'/.test(pg);                       // null 不畫成 0
     })()],
@@ -1931,11 +1933,14 @@ async function checkDataGap() {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-duel.js'), 'utf8');
       const pc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-core.js'), 'utf8');
-      /* SITE_PAGES 區段切到 GROUPS 為止 —— GROUPS 在兩者之間,而它裡面有 duel 是對的 */
+      /* 2026-08-30 搬進跨聯賽組(使用者要求放盃賽旁邊):SITE_PAGES 有、
+         PAGES 與分析組**不能有** —— 兩邊都放會出現兩個分頁 */
       const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS'));
-      return !sitePagesBlock.includes("'duel'")                     // 兩邊都放會出現兩個分頁
-        && /\['duel', '對戰模擬'\]/.test(core)
-        && core.includes("'model', 'duel'] },")                     // 分析組
+      const pagesBlock = core.slice(core.indexOf('const GROUPS'));
+      return sitePagesBlock.includes("['duel', '對戰模擬']")
+        && sitePagesBlock.indexOf("'cups'") < sitePagesBlock.indexOf("'duel'")   // 盃賽旁邊
+        && !pagesBlock.includes("'duel'")
+        && /跨聯賽/.test(pg) && /crestBy/.test(pg)                  // 頁內選聯賽、隊徽分聯賽表
         && /不是預測的斷言/.test(pg) && /做了就是編數字/.test(pg)
         && /跨聯賽對戰也不提供/.test(pg) && /分鐘分布未建模/.test(pg)
         && /seededRng/.test(pc) && /mulberry32/.test(pc)            // 種子亂數,同種子重播同一場
