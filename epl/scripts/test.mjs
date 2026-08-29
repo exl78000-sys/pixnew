@@ -1634,6 +1634,23 @@ async function checkDataGap() {
         ['職涯核對:離任日 null 只核對起始賽季,不拿未來賽季冤枉(Pereira 的 Wolves)',
           openEnd.pl.convictions.length === 0 && openEnd.pl.notes.some(n => n.includes('只核對了起始賽季')),
           JSON.stringify(openEnd.pl.convictions)],
+        /* 聯賽標錯的跨聯賽偵測:任期落在持有賽季、球隊卻不在宣稱聯賽的登錄表、
+           反而在另一個聯賽找得到 → 定罪(Mowbray 的 WBA 標成英超,實際在英冠)。
+           任期在持有賽季之外的同樣情況只記無法核對,不冤枉。 */
+        ...(() => {
+          ctx.teamCodes.en2.set('west bromwich albion', 'WBA');
+          const mk = (from, to) => run([{ league: 'en2', team: 'LIN', name: 'Chris Cohen', current: { club: 'Lincoln City' },
+            previous: [{ club: 'West Bromwich Albion', competition: 'Premier League', from, to }] }]);
+          const inHeld = mk('2025-01-17', '2025-04-21');   // pl 持有 2024-25
+          const outside = mk('2018-01-01', '2018-04-01');  // 持有賽季之外
+          return [
+            ['職涯核對:聯賽標錯(持有賽季內、隊在別的聯賽)→ 定罪',
+              inHeld.en2.verdict === 'rejected' && inHeld.en2.convictions.some(c => c.includes('從未出現在該聯賽')),
+              JSON.stringify(inHeld.en2.convictions)],
+            ['職涯核對:同樣情況但任期在持有賽季外 → 只記無法核對', outside.en2.convictions.length === 0
+              && outside.en2.notes.some(n => n.includes('無法核對')), ''],
+          ];
+        })(),
         ['職涯核對:收件匣在的話,核對產物要在而且 sha 對得上', (() => {
           const inboxPath = join(ROOT, 'data', 'manual', 'coach-careers.json');
           if (!existsSync(inboxPath)) return true;
@@ -1645,18 +1662,22 @@ async function checkDataGap() {
         /* 產物:核對通過的職涯要真的掛上教練卡。風格是本站從季檔算的 ——
            場均值要附同期聯賽平均與場次;沒有逐場來源的聯賽只列任期事實。
            斷言綁「形狀」不綁人名,重交付換人也不會歪。 */
-        ['產物:通過的前任期掛上 coaches.json,含風格或缺席原因', (() => {
+        ['產物:通過的前任期掛上各聯賽 coaches.json,含風格或缺席原因', (() => {
           const vPath = join(ROOT, 'data', 'coach-careers-verified.json');
           if (!existsSync(vPath)) return true;
           const v = JSON.parse(readFileSync(vPath, 'utf8'));
-          const pub = (v.published ?? []).filter(r => r.league === 'pl');
-          if (!pub.length) return true;
-          const coaches = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'coaches.json'), 'utf8')).coaches;
-          const withCareer = coaches.filter(c => c.career);
-          return withCareer.length === pub.length && withCareer.every(c =>
+          const okOne = c =>
             (c.career.style && c.career.style.games >= 5 && c.career.style.perGame.sf > 0
               && c.career.style.leagueAvg.sf > 0)
-            || (!c.career.style && typeof c.career.styleUnavailable === 'string' && c.career.styleUnavailable.length > 0));
+            || (!c.career.style && typeof c.career.styleUnavailable === 'string' && c.career.styleUnavailable.length > 0);
+          const files = { pl: 'web/data/coaches.json', es1: 'web/data/leagues/es1/coaches.json', en2: 'web/data/leagues/en2/coaches.json' };
+          for (const [lg, f] of Object.entries(files)) {
+            const pub = (v.published ?? []).filter(r => r.league === lg);
+            const data = JSON.parse(readFileSync(join(ROOT, ...f.split('/')), 'utf8'));
+            const withCareer = (data.coaches ?? data).filter(c => c.career);
+            if (withCareer.length !== pub.length || !withCareer.every(okOne)) return false;
+          }
+          return true;
         })()],
         ['前端:教練卡有前任期區塊,講了「球隊表現 ≠ 教練個人風格」與跨聯賽不可比', (() => {
           const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');

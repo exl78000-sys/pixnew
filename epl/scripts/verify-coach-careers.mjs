@@ -113,7 +113,20 @@ export function verifyCareers(inbox, ctx) {
       const plg = COMP_TO_LG[String(p.competition ?? '').toLowerCase()];
       if (!plg) { b.notes.push(`${tag}:${p.club}(${p.competition})不在本站涵蓋的聯賽,無法核對`); continue; }
       const code = ctx.teamCodes[plg]?.get(clubKey(p.club));
-      if (!code) { b.notes.push(`${tag}:${p.club} 對不到 ${plg} 名冊,無法核對`); continue; }
+      if (!code) {
+        /* 對不到宣稱聯賽的名冊,而任期又落在我們**持有賽果的賽季**裡:
+           該聯賽的登錄表涵蓋持有賽季出現過的每一隊 —— 不在裡面、卻在
+           另一個聯賽的登錄表裡,代表聯賽標錯了(Mowbray 的 WBA 標成英超,
+           實際在英冠)。標錯聯賽會讓風格從錯的季檔算,不能放行。 */
+        const inHeld = (ctx.seasons[plg] ?? []).some(season => overlaps(p.from, p.to ?? p.from, season));
+        const elsewhere = LEAGUES.filter(o => o !== plg && ctx.teamCodes[o]?.get(clubKey(p.club)));
+        if (inHeld && elsewhere.length) {
+          b.convictions.push(`${tag}:宣稱 ${p.club} 踢 ${p.competition},但該隊在本站持有賽季從未出現在該聯賽(名冊只在 ${elsewhere.join('/')} 找得到)`);
+        } else {
+          b.notes.push(`${tag}:${p.club} 對不到 ${plg} 名冊,無法核對`);
+        }
+        continue;
+      }
       /* 離任日是 null(開放式)的,只核對**起始**賽季 —— 拿未來賽季的成員資格
          去否定一段不知道何時結束的任期,會冤枉真紀錄(Pereira 的 Wolves 就是)。 */
       const endForCheck = p.to ?? p.from;

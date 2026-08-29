@@ -35,6 +35,7 @@ import { competition } from './lib/canonical.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
+import { attachCareers } from './lib/coach-career.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
@@ -585,6 +586,8 @@ async function main() {
         console.log(`  教練:${coachesOut.coaches.length} 隊(任期已知 ${coachesOut.coaches.filter(c => c.since).length} 隊,任內戰績已切分)`);
       }
     }
+    // 教練前一段任期(B 層):en2 批次通過核對後這裡自動掛上,被退回時是空操作
+    attachCareers(ROOT, coachesOut.coaches, 'en2');
     await write('coaches', coachesOut);
     // 球隊卡要看得到教練
     for (const t of teams) {
