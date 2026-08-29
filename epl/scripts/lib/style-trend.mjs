@@ -48,6 +48,9 @@ export function teamMatchRows(csvText, { codeOf, div = 'E0', xgLookup = null } =
         cards: num(r[pre + 'Y']) + num(r[pre + 'R']),
         gf: num(pre === 'H' ? r.FTHG : r.FTAG),
         ga: num(pre === 'H' ? r.FTAG : r.FTHG),
+        // 半場比分(比賽韌性軸用)。欄位缺 = null,不可以當 0:0
+        htgf: (r.HTHG ?? '') === '' ? null : num(pre === 'H' ? r.HTHG : r.HTAG),
+        htga: (r.HTAG ?? '') === '' ? null : num(pre === 'H' ? r.HTAG : r.HTHG),
         // 逐場 xG(Understat,已對回賽果)。缺 = null 不是 0 —— 沒有資料 ≠ 零
         ...(xgLookup ? (xgLookup(code, date) ?? { xg: null, xga: null }) : {}),
       });
@@ -69,6 +72,18 @@ export const avg = rows => {
     out.xg = round(rows.reduce((s, r) => s + r.xg, 0) / rows.length, 2);
     out.xga = round(rows.reduce((s, r) => s + r.xga, 0) / rows.length, 2);
   } else { out.xg = null; out.xga = null; }
+  /* 比賽韌性:**照抄主雷達的公式**(lib/table.mjs 的 leadHoldPct/trailRescuePct,
+     null 當 0 也是主雷達自己的處理)。視窗樣本小(10 場裡領先/落後各幾次)會抖,
+     但尺的每個視窗同樣大小,分位對比是公平的 —— 跟整個固定尺的設計同一個道理。
+     半場欄位缺任何一場 → null(整組退實測軸,不用半套)。 */
+  if (rows.every(r => r.htgf != null)) {
+    const pts = r => (r.gf > r.ga ? 3 : r.gf === r.ga ? 1 : 0);
+    const lead = rows.filter(r => r.htgf > r.htga);
+    const trail = rows.filter(r => r.htgf < r.htga);
+    const lh = lead.length ? (lead.reduce((s2, r) => s2 + pts(r), 0) / (lead.length * 3)) * 100 : null;
+    const tr = trail.length ? (trail.reduce((s2, r) => s2 + pts(r), 0) / (trail.length * 3)) * 100 : null;
+    out.resil = round(((lh ?? 0) + (tr ?? 0) * 1.5) / 2, 1);
+  } else out.resil = null;
   return out;
 };
 
@@ -111,8 +126,8 @@ export const TREND_AXES_XG = [
   ['fin', '終結效率', false, '進球−xG(每場)'],
   ['defx', '防守穩固', true, 'xGA/場(反向)'],
   ['control', '場面控制', false, '我方射門佔雙方射門比例'],
-  ['suppress', '防守壓制', true, '被射門/場(反向)'],
   ['discipline', '紀律', true, '牌/場(反向)'],
+  ['resil', '比賽韌性', false, '半場領先收分與落後搶分的加權(同主雷達公式)'],
 ];
 export const TREND_RADAR_AXES = [
   ['volume', '攻勢量能', false, '射門+角球/場'],
@@ -126,6 +141,7 @@ export const TREND_RADAR_AXES = [
 /* 場均值 → 合成軸。比率用場均相除(分子分母各自平均後相除 = 總和相除,一致)。
    分母為 0 加不了倒數那課(versus 的坑):給中性值不給 Infinity。 */
 export const styleAxesOf = a => (a ? {
+  resil: a.resil ?? null,
   atk: a.xg ?? null,
   fin: a.xg != null ? round(a.gf - a.xg, 2) : null,
   defx: a.xga ?? null,
@@ -181,7 +197,9 @@ export function attachTrendPercentiles(byCode, { ruler } = {}) {
     const rAxes = styleAxesOf(t.recent), bAxes = styleAxesOf(t.baseline);
     /* 逐隊選軸組:近況視窗的 xG 齊、(有基準的話)基準的 xG 也齊,才用 XG 組。
        半套 xG 不硬用 —— 缺一場的視窗平均會靜靜偏掉。 */
-    const useXg = rulerHasXg && rAxes.atk != null && (!bAxes || bAxes.atk != null);
+    const useXg = rulerHasXg
+      && TREND_AXES_XG.every(([f]) => rAxes[f] != null)
+      && (!bAxes || TREND_AXES_XG.every(([f]) => bAxes[f] != null));
     const axes = useXg ? TREND_AXES_XG : TREND_RADAR_AXES;
     t.axes = axes.map(([key, label, inverse, formula]) => ({ key, label, inverse, formula }));
     t.recentPct = Object.fromEntries(axes.map(([f, , inv]) => [f, pct(rAxes[f], ruler.pools[f], inv)]));

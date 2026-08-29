@@ -816,7 +816,7 @@ try {
       { key: 'control', label: '場面控制' }, { key: 'discipline', label: '紀律' },
     ]).map(a => [a.key, a.label, a.formula]);
     if (st.axesMode === 'xg') {
-      const order = ['atk', 'fin', 'defx', 'suppress', 'control', 'discipline'];
+      const order = ['atk', 'fin', 'defx', 'control', 'discipline', 'resil'];
       AXES.sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
     }
     const radarBlock = st.recentPct ? (() => {
@@ -842,7 +842,7 @@ try {
           同樣本大小對同樣本大小,10 代表比上季任何一隊的任何一段 ${st.window} 場都強。
           軸與公式:${AXES.map(([, label, formula]) => `${label}=${formula ?? ''}`).join('、')}。
           ${st.axesMode === 'xg'
-            ? '<b>進攻火力/終結效率/防守穩固與主雷達同名同義</b>(逐場 xG 取自 Understat,每場比分已對回本站賽果);傳球創造與定位球威脅仍無逐場來源,以場面控制等實測軸補位。'
+            ? '<b>進攻火力/終結效率/防守穩固/比賽韌性四軸與主雷達同名同義</b>(逐場 xG 取自 Understat、每場比分已對回本站賽果;韌性照主雷達公式,10 場裡領先/落後的樣本少、抖動大)。傳球創造與定位球威脅沒有逐場的免費來源(實測驗證過),以場面控制與紀律補位。'
             : '這一組全是逐場實測欄位 —— 逐場 xG 在這個聯賽沒有來源,跟主雷達的軸不是同一套,不可互比。'}</div>`;
     })() : '';
     return `<div class="card" style="margin-top:14px">

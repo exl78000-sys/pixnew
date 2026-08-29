@@ -1484,7 +1484,7 @@ async function checkDataGap() {
       const aaa = rows.get('AAA');
       const mk = n => Array.from({ length: n }, (_, i) => ({
         date: `2026-0${1 + Math.floor(i / 28)}-${String((i % 28) + 1).padStart(2, '0')}`,
-        sf: 10, sa: 10, stf: 4, sta: 4, cf: 5, ca: 5, cards: 2, gf: 1, ga: 1 }));
+        sf: 10, sa: 10, stf: 4, sta: 4, cf: 5, ca: 5, cards: 2, gf: 1, ga: 1, htgf: 1, htga: 0 }));
       const full = styleTrendFor({ lastRows: mk(38), curRows: mk(2) });
       const promoted = styleTrendFor({ lastRows: [], curRows: mk(6) });
       const thin = styleTrendFor({ lastRows: [], curRows: mk(3) });
