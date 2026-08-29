@@ -1793,6 +1793,21 @@ async function checkDataGap() {
       const esFullSum = esFull.reduce((n, p) => n + (p.minutes > 0 ? (p.goals ?? 0) : 0), 0);
       return coreCur === fullCur && esCore === esFullSum;
     })()],
+    /* ── 跨聯賽球員搜尋頁(2026-08-29,使用者要求:掛盃賽右邊,各聯賽自己的照舊)── */
+    ['總球員頁:只在 SITE_PAGES、聯賽從註冊表來、不混排、空欄不畫', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-allplayers.js'), 'utf8');
+      const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+      const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const PAGES'));
+      return (core.match(/'allplayers'/g) ?? []).length >= 3          // SITE_PAGES + es1/en2 open
+        && sitePagesBlock.includes("'allplayers'")
+        && !core.slice(core.indexOf('const PAGES')).split('const GROUPS')[0].includes("'allplayers'")  // PAGES 沒有(兩個分頁那條坑)
+        && /'allplayers'/.test(bundle)                                 // 單檔版清單(靜靜消失那條坑)
+        && /Object\.keys\(C\.LEAGUES\)/.test(pg)                       // 註冊表,不寫死聯賽
+        && /不可直接互比/.test(pg) && /沒有跨聯賽排行榜/.test(pg)      // 混排警語
+        && /gapNote/.test(pg)                                          // 英冠缺席講原因
+        && /!= null/.test(pg) && /'—'/.test(pg);                       // null 不畫成 0
+    })()],
     ['跨聯賽搜尋:懶載入、不合併同人、跨池警語、兩個渲染器共用一份', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
