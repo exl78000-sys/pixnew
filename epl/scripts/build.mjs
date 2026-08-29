@@ -947,6 +947,21 @@ async function main() {
     console.log('     修法:npm run loans:verify(核對結果要看過再發布)');
   } else if (loans.available) {
     console.log(`  租借紀錄:掛上 ${loanHit.attached} 筆(核對過 ${loans.records.length} 筆・退回 ${(loans.rejected ?? []).length} 筆)`);
+    /* 球隊視角的租借往來(跨聯賽單一份,掛英超目錄 —— cups 同一個慣例;
+       球隊頁三個聯賽都從這裡讀,隊碼指的是俱樂部,升降級不影響)。
+       等級要跟著資料走到畫面上;evidence 是核對器的內部輸出不進前端,
+       source(出處連結)留著 —— 本站的賣點就是查得到出處。 */
+    await write('loans.json', {
+      verifiedAt: loans.verifiedAt ?? null,
+      tally: loans.tally ?? {},
+      records: loans.records.map(r => ({
+        season: r.season, player: r.player, verdict: r.verdict,
+        parent: r.parentClub, parentCode: r.parentCode ?? null,
+        loan: r.loanClub, loanCode: r.loanCode ?? null,
+        date: r.date ?? null, datePrecision: r.datePrecision ?? null,
+        source: r.source ?? null,
+      })),
+    });
     /* 配不到球員的要印出來 —— 多半是名字寫法不同,那是可以修的。
        靜靜吞掉的話,資料明明在檔案裡卻永遠不會出現在畫面上,而且沒有人會發現。 */
     if (loanHit.unmatched.length) {

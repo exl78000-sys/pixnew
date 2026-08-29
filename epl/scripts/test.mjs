@@ -1876,6 +1876,19 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* ── 租借往來卡(2026-08-29 深夜)──
+       跨聯賽單一份掛英超目錄、等級走到畫面上、核對器內部輸出不外洩。 */
+    ['租借往來:單一份資料、等級分開標、evidence 不進前端', (() => {
+      const loans = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'loans.json'), 'utf8'));
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      return loans.records.length > 500
+        && loans.records.every(r => !('evidence' in r) && ['confirmed', 'consistent'].includes(r.verdict))
+        && !existsSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'loans.json'))   // 跨聯賽只有一份
+        && /loadFrom\('pl', \['loans'\]\)/.test(pg)
+        && /已確認/.test(pg) && /無矛盾/.test(pg) && /兩者可信度不同/.test(pg)
+        && /if \(!recs\.length\) return ''/.test(pg);   // 沒紀錄不留空卡
+    })()],
+
     /* ── 即時機率的校準量測(2026-08-29,只量不改模型)──
        Brier 對照「賽前凍結」、0 分錨點與 90+ 收斂點不計、落後方專表、
        樣本不足要明講。數學用合成資料驗到小數。 */
