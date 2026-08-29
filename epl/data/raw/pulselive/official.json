@@ -9058,7 +9058,26 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 25375,
+      "team": 7,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 23841,
+      "team": 7,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -9086,7 +9105,7 @@
      }
     ]
    },
-   "clock": "60'00"
+   "clock": "62'00"
   },
   "COV|HUL": {
    "fixtureId": 128936,
@@ -9600,6 +9619,60 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 122134,
+      "team": 5,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 74964,
+      "team": 5,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 337567,
+      "team": 41,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133314,
+      "team": 41,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 23822,
+      "team": 41,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 337382,
+      "team": 41,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -9629,8 +9702,8 @@
      }
     ]
    },
-   "clock": "58'00"
+   "clock": "60'00"
   }
  },
- "fetchedAt": "2026-08-29T15:17:51.701Z"
+ "fetchedAt": "2026-08-29T15:20:06.931Z"
 }
