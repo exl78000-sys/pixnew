@@ -1552,6 +1552,13 @@ async function checkDataGap() {
     })()],
     /* 使用者要求:百分位改 10 級分呈現。級分只是顯示層(每 10 分一級,10 最高),
        底層還是百分位 —— 隊數與說明都要跟著資料,不寫死 20。 */
+    /* 位移標籤與軸序(2026-08-29,使用者要求跟主雷達對得起來):
+       攻擊軸在上、防守在右下與下;標籤只給級分動 ≥2 的軸,±1 是雜訊不追。 */
+    ['位移雷達:軸序對齊主雷達語意、位移標籤 ≥2 級才給、無位移照實說', (() => {
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      const i = pg.indexOf("['volume', '攻勢量能'], ['convert', '進球轉化'], ['suppress', '防守壓制']");
+      return i > 0 && /Math\.abs\(x\.d\) >= 2/.test(pg) && /打法沒有明顯位移/.test(pg);
+    })()],
     ['雷達軸標 10 級分:兩張雷達都開、說明講了級分、隊數不寫死', (() => {
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');

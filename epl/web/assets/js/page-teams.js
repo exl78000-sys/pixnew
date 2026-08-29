@@ -795,14 +795,28 @@ try {
        疊上去就是編數字,所以這張自己一組軸。百分位的池在 build 端算
        (近況跟各隊近況比、上季跟各隊上季比),前端只畫。 */
     /* 合成軸(使用者回饋:裸統計軸沒有風格感)。公式在說明列出,反向已在 build 端處理 */
-    const AXES = [['volume', '攻勢量能'], ['convert', '進球轉化'], ['control', '場面控制'],
-      ['suppress', '防守壓制'], ['defend', '防線把關'], ['discipline', '紀律']];
+    /* 軸序照主雷達的語意位置排(使用者要求兩張對得起來):
+       攻擊在上、終結在右上、防守在右下與下、組織控制在左下、無形項在左上 ——
+       兩張雷達同位置的軸講同一類事,眼睛可以直接對照。 */
+    const AXES = [['volume', '攻勢量能'], ['convert', '進球轉化'], ['suppress', '防守壓制'],
+      ['defend', '防線把關'], ['control', '場面控制'], ['discipline', '紀律']];
     const radarBlock = st.recentPct ? (() => {
       const vals = pct => AXES.map(([k, label]) => ({ label, value: pct[k] }));
       const series = [];
       if (st.baselinePct) series.push({ name: '上季全季', color: '#8a7fae', values: vals(st.baselinePct) });
       series.push({ name: `近 ${st.recent.games} 場`, color: '#00ff85', dash: '6 5', values: vals(st.recentPct) });
-      return `${C.radar(series, { size: 280, levels: true })}
+      /* 位移標籤(仿主雷達下面那排風格標籤,但這排是算出來的不是人工歸類):
+         級分動 ≥2 級的軸才給 —— 1 級 = 10 個百分位,那種抖動給籤會讓讀者
+         追著雜訊跑。都沒有的話照實說「沒有明顯位移」。 */
+      const lvl = v => Math.min(10, Math.floor((v ?? 0) / 10) + 1);
+      const shifts = st.baselinePct ? AXES.map(([k, label]) => ({
+        label, d: lvl(st.recentPct[k]) - lvl(st.baselinePct[k]),
+      })).filter(x => Math.abs(x.d) >= 2) : [];
+      const shiftRow = st.baselinePct ? `<div class="tags" style="justify-content:center;margin-top:6px">
+        ${shifts.length
+          ? shifts.map(x => `<span class="pill ${x.d > 0 ? 'accent' : 'bad'}">${C.esc(x.label)} ${x.d > 0 ? '↑' : '↓'}${Math.abs(x.d)}</span>`).join('')
+          : '<span class="tiny dim">各軸級分變化都在 ±1 內 —— 打法沒有明顯位移</span>'}</div>` : '';
+      return `${C.radar(series, { size: 280, levels: true })}${shiftRow}
         <div class="tiny dim" style="text-align:center;margin:2px 0 10px">
           軸旁數字為 10 級分${st.baselinePct ? '(上季→近況)' : ''},<b>兩層同一把尺</b>:上季 ${st.pctPool.ruler} 隊(含已降級的)
           全部 ${st.window} 場滾動視窗的分布(共 ${st.pctPool.windows} 段)——
