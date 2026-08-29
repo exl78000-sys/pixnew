@@ -237,6 +237,9 @@ export function buildMatchReport({ fixture, prediction, tactics, zh, official = 
     key: fixture.key, home, away, kickoff: fixture.kickoff,
     started: fixture.started, finished: fixture.finished,
     minute: matchMinutes, hs: fixture.hs, as: fixture.as,
+    /* 官方比賽鐘(如 70'00、90+7'00)。FPL 的 minutes 是一塊一塊跳的
+       (實測停在 75 好幾分鐘),官方鐘才是分鐘顯示該用的錨。 */
+    clock: official?.clock ?? null,
     sides: {
       [home]: sideReport(lineups[home] ?? [], matchMinutes, seasonShape(home), official?.home ?? null),
       [away]: sideReport(lineups[away] ?? [], matchMinutes, seasonShape(away), official?.away ?? null),

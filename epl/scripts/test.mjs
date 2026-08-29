@@ -1826,7 +1826,7 @@ async function checkDataGap() {
         BBB: [mkP('GkB', 'GK', { influence: 5 }),
           mkP('AtkB', 'FWD', { threat: 55, creativity: 30, influence: 40, bps: 31, yellow: 1 }),
           mkP('MidB', 'MID', { threat: 10, influence: 10, yellow: 1 })],
-      } }, ...args });
+      } }, ...args, official: { clock: "70'00" } });
       return [
         ['講評:43~50 分標中場、其餘標戰況、完場不給', ht.liveSummary?.kind === 'ht'
           && mid.liveSummary?.kind === 'live' && done.liveSummary == null, ''],
@@ -1844,6 +1844,7 @@ async function checkDataGap() {
           const t = ht.liveSummary.paragraphs.join('');
           return !/威脅值/.test(t) && !/防守端/.test(t) && !/BPS/.test(t);
         })(), ''],
+        ['講評:官方比賽鐘進 feed(FPL 分鐘塊狀跳,顯示要靠它當錨)', rich.clock === "70'00" && ht.clock == null, ''],
         ['講評:sides.stats 是全隊加總且欄位齊(前端場上數據表吃這份)', (() => {
           const s = rich.sides.AAA.stats, b = rich.sides.BBB.stats;
           return s.tackles === 8 && s.recoveries === 12 && s.cbi === 10 && s.influence === 35
@@ -1870,6 +1871,9 @@ async function checkDataGap() {
         && /m\.started && !m\.finished/.test(pa) && /20000/.test(pa)
         && /場上數據/.test(pa) && /沒有免費的即時來源/.test(pa)
         && /act\(sh\) \+ act\(sa\) > 0/.test(pa)
+        /* 走鐘:分鐘顯示以 feed 抓取時刻為錨往前推,每秒更新、不跨 45/90 界線 */
+        && /function liveMinute/.test(pa) && /data-liveclock/.test(pa)
+        && /'45\+'/.test(pa) && /'90\+'/.test(pa) && /}, 1000\)/.test(pa)
         && /點開看講評、勝率曲線與場上資訊/.test(pl)
         && pl.includes(`href="\${C.link('analysis', { id: m.fixtureId })}"`);
     })()],
