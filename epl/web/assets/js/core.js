@@ -1447,6 +1447,59 @@ function renderGoalRow(g, { away } = {}) {
   </div>`;
 }
 
+/* 勝率曲線:主勝/和/客勝三條線隨比賽時間變化。
+   資料是本站模型每 2 分鐘算一次的 in-play 機率(prob-history.json),
+   **不是市場盤口** —— 說明文字由這裡固定帶著,呼叫端不用每次自己寫。
+
+   進球標記不用另外傳:每個樣本帶著當下比分,比分變了就是有人進球
+   (跟 goalsOf 的判定是同一個道理)。 */
+export function probCurve(pts, { home, away } = {}) {
+  if (!Array.isArray(pts) || pts.length < 3) return '';
+  const W = 560, H = 190, L = 34, R = 10, T = 12, B = 22;
+  const maxMin = Math.max(90, pts.at(-1)[0]);
+  const x = m => L + ((W - L - R) * m) / maxMin;
+  const y = p => T + (H - T - B) * (1 - p);
+  const path = i => pts.map((s, k) => `${k ? 'L' : 'M'}${x(s[0]).toFixed(1)},${y(s[i]).toFixed(1)}`).join('');
+
+  // 比分變化 = 進球。標在變化後那個樣本的分鐘上。
+  const goals = [];
+  for (let k = 1; k < pts.length; k++) {
+    const [min, , , , hs, as] = pts[k];
+    const [, , , , ph, pa] = pts[k - 1];
+    if (hs > ph) goals.push({ min, side: 'H', score: `${hs}-${as}` });
+    if (as > pa) goals.push({ min, side: 'A', score: `${hs}-${as}` });
+  }
+
+  const last = pts.at(-1);
+  const gridY = [0, 0.25, 0.5, 0.75, 1];
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="勝率隨比賽時間變化"
+      style="width:100%;height:auto;display:block">
+    ${gridY.map(g => `<line x1="${L}" y1="${y(g)}" x2="${W - R}" y2="${y(g)}"
+        stroke="var(--line-soft)" stroke-width="1"/>
+      <text x="${L - 5}" y="${y(g) + 3.5}" text-anchor="end" font-size="9" fill="var(--ink-3)">${g * 100}</text>`).join('')}
+    ${[15, 30, 45, 60, 75, 90].filter(m => m <= maxMin).map(m =>
+      `<text x="${x(m)}" y="${H - 7}" text-anchor="middle" font-size="9" fill="var(--ink-3)">${m}'</text>`).join('')}
+    ${goals.map(g => `<line x1="${x(g.min)}" y1="${T}" x2="${x(g.min)}" y2="${H - B}"
+        stroke="${g.side === 'H' ? 'var(--accent)' : 'var(--accent-3)'}" stroke-dasharray="2 3" stroke-width="1" opacity=".6"/>
+      <text x="${x(g.min)}" y="${T - 2}" text-anchor="middle" font-size="9">⚽</text>`).join('')}
+    <path d="${path(1)}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <path d="${path(3)}" fill="none" stroke="var(--accent-3)" stroke-width="2"/>
+    <path d="${path(2)}" fill="none" stroke="var(--ink-3)" stroke-width="1.4" stroke-dasharray="4 3"/>
+  </svg>
+  <div class="row tiny" style="gap:14px;margin-top:6px;flex-wrap:wrap">
+    <span><i style="display:inline-block;width:14px;height:3px;background:var(--accent);vertical-align:middle"></i>
+      ${esc(name(home ?? ''))} 勝 <b class="mono">${pct(last[1], 0)}</b></span>
+    <span><i style="display:inline-block;width:14px;height:3px;background:var(--ink-3);vertical-align:middle"></i>
+      和 <b class="mono">${pct(last[2], 0)}</b></span>
+    <span><i style="display:inline-block;width:14px;height:3px;background:var(--accent-3);vertical-align:middle"></i>
+      ${esc(name(away ?? ''))} 勝 <b class="mono">${pct(last[3], 0)}</b></span>
+    <span class="dim">虛線 = 進球</span>
+  </div>
+  <div class="tiny dim" style="margin-top:6px">這是<b>本站模型</b>的即時機率,不是市場盤口 ——
+    模型整季表現與跟市場的差距攤在<a href="${link('model')}">模型驗證頁</a>。
+    比賽中約每 2 分鐘一個點(${pts.length} 點);第 0 分是賽前機率。</div>`;
+}
+
 export function fail(err) {
   if (err instanceof LeagueGap) return gapScreen(err);
   document.querySelector('.wrap')?.insertAdjacentHTML('beforeend',

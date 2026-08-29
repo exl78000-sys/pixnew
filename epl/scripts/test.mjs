@@ -1437,6 +1437,43 @@ async function checkDataGap() {
       return /roundsPerSeason/.test(src) && !/重跑上季 38 輪/.test(src);
     })()],
 
+    /* ── 勝率曲線的累積器(2026-08-29 加)──
+       inPlay 每 2 分鐘算一次就丟,這裡守「存下來」那一段的行為。 */
+    ...await (async () => {
+      const { appendSamples, historyForSite } = await import('./lib/prob-history.mjs');
+      const mk = (over = {}) => ({
+        available: true, demo: false, season: '2026-27',
+        matches: [{ home: 'CRY', away: 'MCI', started: true, finished: false, hs: 0, as: 0,
+          preMatch: { home: 0.45, draw: 0.28, away: 0.27 },
+          inplay: { minute: 10, home: 0.4, draw: 0.3, away: 0.3 }, ...over }],
+      });
+      let st = appendSamples(null, mk());
+      // 快照當下的值 —— store 是原地修改的,留引用的話會被後面的呼叫改掉
+      const first = JSON.parse(JSON.stringify(st.matches['CRY|MCI'].pts));
+      st = appendSamples(st, mk({ inplay: { minute: 10, home: 0.41, draw: 0.3, away: 0.29 } }));
+      const sameMin = JSON.parse(JSON.stringify(st.matches['CRY|MCI'].pts));
+      st = appendSamples(st, mk({ inplay: { minute: 12, home: 0.38, draw: 0.3, away: 0.32 }, hs: 0, as: 1 }));
+      st = appendSamples(st, mk({ finished: true, inplay: { minute: 90, home: 0, draw: 0, away: 1 }, hs: 0, as: 1 }));
+      const done = st.matches['CRY|MCI'];
+      const after = appendSamples(st, mk({ inplay: { minute: 95, home: 0.5, draw: 0.5, away: 0 } }));
+      const demo = appendSamples(null, { ...mk(), demo: true });
+      const newSeason = appendSamples(st, { ...mk(), season: '2027-28' });
+      return [
+        ['第一個點是賽前機率(第 0 分)', first[0][0] === 0 && first[0][1] === 0.45, JSON.stringify(first[0])],
+        ['同一分鐘留最新的一點,不疊', sameMin.length === 2 && sameMin[1][1] === 0.41, String(sameMin.length)],
+        ['完賽補收斂點並封存', done.done === true && done.pts.at(-1)[0] === 90 && done.pts.at(-1)[3] === 1, ''],
+        ['封存之後不再追加(賽後重跑不會疊點)',
+          after.matches['CRY|MCI'].pts.length === done.pts.length, ''],
+        ['重播(demo)不累積', demo === null, ''],
+        ['換季就重開', newSeason.season === '2027-28' && !newSeason.matches['CRY|MCI'].done, ''],
+        ['少於 3 點的場次不進產物',
+          Object.keys(historyForSite({ season: 'x', matches: { a: { pts: [[0, 1, 0, 0, 0, 0]], done: false } } }).matches).length === 0, ''],
+      ];
+    })(),
+    ['三個聯賽都有 prob-history 產物(缺一份分析頁會 404)',
+      ['data', 'data/leagues/es1', 'data/leagues/en2'].every(d =>
+        existsSync(join(ROOT, 'web', d, 'prob-history.json'))), ''],
+
     ['缺口訊息不會把資料集的內部鍵給讀者看',
       ['live', 'players', 'leaders', 'news', 'form', 'tactics', 'knowledge', 'cups']
         .every(k => /[\u4e00-\u9fff]/.test(V.DATASET_ZH?.[k] ?? ''))],

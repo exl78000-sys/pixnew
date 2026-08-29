@@ -1,10 +1,11 @@
-import * as C from './core.js?v=64733501';
+import * as C from './core.js?v=3aa4ea35';
 
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } =
-    await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form');
+  // prob-history 的鍵帶連字號,解構拿不到,所以先收整包再取
+  const data = await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form', 'prob-history');
+  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } = data;
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
   const basic = meta.edition === 'basic';
@@ -118,7 +119,7 @@ try {
           而 fixtures.json 的 played 要等 openfootball 更新(它比官方慢好幾個小時) ——
           結果是:官方那邊早就有進球、牌與換人了,畫面上一片空白。
           所以 played 還是 false、但官方已經有事件時,把時間軸提到分頁之前直接顯示。 */''}
-    ${!f.played ? goalsCard(f, { live: true }) : ''}
+    ${!f.played ? goalsCard(f, { live: true }) + probCurveCard(f) : ''}
 
     <div class="analysis-switch" id="analysis-views" role="tablist" aria-label="分析階段">
       ${f.played ? '<button class="btn analysis-tab" type="button" role="tab" data-view="compare" aria-controls="panel-compare">綜合對比</button>' : ''}
@@ -237,6 +238,7 @@ try {
 
     ${f.played ? `<section class="analysis-panel post-report-grid" id="panel-post" role="tabpanel">
       ${goalsCard(f)}
+      ${probCurveCard(f)}
       ${expertOpinionSection(f, expertRows)}
       ${articleCard(postArt, '賽後結論', 'post')}
       ${postReport ? C.matchReportCards(C.reportWithPlayerPhotos(postReport, playerByCode))
@@ -485,6 +487,16 @@ try {
 
   /* 官方進球事件。有名單就一定有這批事件 —— 兩者來自同一個請求,
      所以這一段不需要任何額外抓取。沒有就不畫,不留空卡片。 */
+  /* 勝率曲線。資料是比賽日的迴圈每 2 分鐘累積的 in-play 機率 ——
+     沒有累積到的場次(累積器上線前踢的、或迴圈沒開)就沒有,不補造。 */
+  function probCurveCard(f) {
+    const rec = data['prob-history']?.matches?.[`${f.home}|${f.away}`];
+    if (!rec) return '';
+    return `<div class="section"><h2>勝率變化</h2>
+        <span class="hint">本站模型的即時機率・比賽中約每 2 分鐘一點</span></div>
+      <div class="card">${C.probCurve(rec.pts, { home: f.home, away: f.away })}</div>`;
+  }
+
   function goalsCard(f, { live = false } = {}) {
     const rec = official?.matches?.[`${f.home}|${f.away}`];
     const goals = rec?.goals ?? [];

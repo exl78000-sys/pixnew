@@ -1,5 +1,5 @@
-import * as C from './core.js?v=64733501';
-import { mountSimTable } from './sim-table.js?v=ae7dcb3d';
+import * as C from './core.js?v=3aa4ea35';
+import { mountSimTable } from './sim-table.js?v=c3c138d0';
 
 const app = document.getElementById('app');
 
@@ -319,6 +319,8 @@ try {
       <div style="margin:12px 0">${scoreOf(m)}</div>
       <div class="tiny dim center" style="margin-bottom:6px">實際陣型 ${H.shape.label} vs ${A.shape.label}
         ・場上 xG ${H.xG} : ${A.xG}</div>
+      ${/* 勝率曲線:迴圈每 2 分鐘累積一點,開賽初期點不夠就先不畫 */''}
+      ${m.probHistory?.length >= 3 ? `<div style="margin:10px 0">${C.probCurve(m.probHistory, { home: m.home, away: m.away })}</div>` : ''}
       ${p ? `${C.probBar(p)}
         <div class="tiny dim center" style="margin-top:6px">剩餘時間期望進球 ${p.xgRestHome} : ${p.xgRestAway}
           ・下一球 ${C.name(m.home)} ${C.pct(p.nextGoal.home, 0)} / ${C.name(m.away)} ${C.pct(p.nextGoal.away, 0)}</div>` : ''}

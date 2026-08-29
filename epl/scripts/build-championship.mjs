@@ -496,6 +496,9 @@ async function main() {
      不寫的話前端拿到 404 會走「還沒 build」那條訊息,那是錯的:
      我們 build 了,是這個聯賽沒有這種資料。 */
   await write('news', externalNews);
+  /* 勝率曲線的歷史。這個聯賽沒有逐分鐘的即時管線,所以是空的 ——
+     但**檔案要在**:分析頁三個聯賽共用,少這一份會 404 整頁炸掉(英冠踩過)。 */
+  await write('prob-history', { season: null, matches: {} });
   /* 球員、教練、進球明細:英冠**沒有免費來源**(見檔頭的實測)。
      寫空的而不是不寫,而且每一份都帶 available:false 與一句為什麼 ——
      前端要能分得出「還沒 build」與「這個聯賽沒有這種資料」,

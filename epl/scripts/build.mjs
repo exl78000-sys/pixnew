@@ -32,6 +32,7 @@ import {
 import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
+import { appendSamples, historyForSite } from './lib/prob-history.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
@@ -1063,6 +1064,29 @@ async function main() {
   await write('coaches.json', coaches);
   await write('news.json', news);
   await write('sim.json', sim);
+  /* 即時勝率的歷史。累積檔在 data/(比賽日的迴圈會 commit 它),
+     產物只給有內容的場次。live.json 的每一場也帶上自己的那條 ——
+     實時頁畫進行中的曲線就不用再多載一份。 */
+  {
+    const histPath = join(ROOT, 'data', 'live-history.json');
+    let store = existsSync(histPath) ? JSON.parse(await readFile(histPath, 'utf8')) : null;
+    store = appendSamples(store, liveOut);
+    if (store) {
+      await writeFile(histPath, JSON.stringify(store));
+      const site = historyForSite(store);
+      if (liveOut.available) {
+        for (const m of liveOut.matches) {
+          const rec = site.matches[`${m.home}|${m.away}`];
+          if (rec) m.probHistory = rec.pts;
+        }
+      }
+      await write('prob-history.json', site);
+      const n = Object.keys(site.matches).length;
+      if (n) console.log(`  勝率曲線:${n} 場有歷史(累積檔 data/live-history.json)`);
+    } else {
+      await write('prob-history.json', { season: null, matches: {} });
+    }
+  }
   await write('live.json', liveOut);
   await write('h2h.json', h2h);
   /* 調參與驗收的完整數字(npm run tune:form 產生)。

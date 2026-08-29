@@ -1130,6 +1130,9 @@ async function main() {
     matches: expertMatches,
   });
   await write('lineups', {});
+  /* 勝率曲線的歷史。這個聯賽沒有逐分鐘的即時管線,所以是空的 ——
+     但**檔案要在**:分析頁三個聯賽共用,少這一份會 404 整頁炸掉(英冠踩過)。 */
+  await write('prob-history', { season: null, matches: {} });
   await write('shapes', shapes);
   await write('official', {
     available: officialLineupCount > 0 || reportCount > 0,

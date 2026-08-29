@@ -87,12 +87,12 @@ jobs:
             npm run official  >/dev/null 2>&1 || true
 
             # 只有資料真的變了才 build + 提交 —— 沒變就不要製造空提交
-            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/; then
+            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json; then
               echo "  [$N] 無變化"
             else
               npm run build >/dev/null 2>&1 || true
               cd "$GITHUB_WORKSPACE"
-              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/web/data/ 2>/dev/null || true
+              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json epl/web/data/ 2>/dev/null || true
               if git diff --cached --quiet; then
                 echo "  [$N] 產物無變化"
               else
