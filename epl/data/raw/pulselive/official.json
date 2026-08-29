@@ -8866,7 +8866,7 @@
       "playerId": null,
       "name": "Tyrique George",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -8902,7 +8902,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      }
@@ -9068,7 +9068,7 @@
      }
     ]
    },
-   "clock": "46'00"
+   "clock": "49'00"
   },
   "COV|HUL": {
    "fixtureId": 128936,
@@ -9528,9 +9528,33 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 24811,
+      "team": 41,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 13486,
+      "team": 41,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -9542,11 +9566,17 @@
       "min": 45,
       "label": "45+3'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "47'00"
   }
  },
- "fetchedAt": "2026-08-29T15:04:19.990Z"
+ "fetchedAt": "2026-08-29T15:06:35.217Z"
 }
