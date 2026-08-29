@@ -314,23 +314,25 @@ try {
     </a>`;
   }
 
+  /* 進行中的卡瘦身(使用者回饋:多場並列時一場一大塊會亂):
+     只留分鐘、比分、勝率條、進球者;勝率曲線、陣型、下一球、講評
+     全部在單場的分析頁 —— 點卡片直達。沒有 fixtureId 的才退回抽屜。 */
   function liveCard(m) {
     const p = m.inplay;
-    const H = m.sides[m.home], A = m.sides[m.away];
-    return `<a class="card matchcard" href="#" data-match="${m.key}">
+    return `<a class="card matchcard" ${m.fixtureId
+      ? `href="${C.link('analysis', { id: m.fixtureId })}"`
+      : `href="#" data-match="${m.key}"`}>
       <div class="spread"><span class="pill bad"><span class="livedot"></span>第 ${m.minute} 分鐘</span>
         <span class="tiny dim">第 ${m.round} 輪</span></div>
       <div style="margin:12px 0">${scoreOf(m)}</div>
-      <div class="tiny dim center" style="margin-bottom:6px">實際陣型 ${H.shape.label} vs ${A.shape.label}
-        ・場上 xG ${H.xG} : ${A.xG}</div>
-      ${/* 勝率曲線:迴圈每 2 分鐘累積一點,開賽初期點不夠就先不畫 */''}
-      ${m.probHistory?.length >= 3 ? `<div style="margin:10px 0">${C.probCurve(m.probHistory, { home: m.home, away: m.away })}</div>` : ''}
-      ${p ? `${C.probBar(p)}
-        <div class="tiny dim center" style="margin-top:6px">剩餘時間期望進球 ${p.xgRestHome} : ${p.xgRestAway}
-          ・下一球 ${C.name(m.home)} ${C.pct(p.nextGoal.home, 0)} / ${C.name(m.away)} ${C.pct(p.nextGoal.away, 0)}</div>` : ''}
-      ${H.scorers.length || A.scorers.length ? `<div class="tiny" style="margin-top:8px">
-        ⚽ ${[...H.scorers.map(s => `${C.esc(s.name)}${s.goals > 1 ? ' ×' + s.goals : ''}`),
-             ...A.scorers.map(s => `${C.esc(s.name)}${s.goals > 1 ? ' ×' + s.goals : ''}`)].join('、')}</div>` : ''}
+      ${p ? C.probBar(p) : ''}
+      ${(() => {
+        const H = m.sides[m.home], A = m.sides[m.away];
+        const sc = [...H.scorers.map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`),
+                    ...A.scorers.map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`)];
+        return sc.length ? `<div class="tiny" style="margin-top:8px">⚽ ${sc.join('、')}</div>` : '';
+      })()}
+      <div class="tiny dim center" style="margin-top:8px">點開看講評、勝率曲線與場上資訊 →</div>
     </a>`;
   }
 
