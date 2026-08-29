@@ -9263,8 +9263,8 @@
   "COV|HUL": {
    "fixtureId": 128936,
    "kickoff": "2026-08-29T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "homeId": 5,
    "awayId": 41,
    "home": {
@@ -9690,19 +9690,6 @@
    "goals": [
     {
      "side": "A",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "2",
-     "type": "PE",
-     "kind": null,
-     "hs": 0,
-     "as": 1
-    },
-    {
-     "side": "A",
      "person": 23822,
      "assist": 137549,
      "team": 41,
@@ -9947,12 +9934,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -9969,10 +9950,16 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+6'00"
   },
   "TOT|NEW": {
    "fixtureId": 128942,
@@ -10368,5 +10355,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-29T15:56:14.456Z"
+ "fetchedAt": "2026-08-29T15:58:29.622Z"
 }
