@@ -7832,14 +7832,36 @@
   "LIV|NFO": {
    "fixtureId": 128939,
    "kickoff": "2026-08-29T11:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "homeId": 10,
    "awayId": 15,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      20559
+     ],
+     [
+      19919,
+      133104,
+      5140,
+      116665
+     ],
+     [
+      33231,
+      63633
+     ],
+     [
+      119386,
+      75382,
+      32894
+     ],
+     [
+      21737
+     ]
+    ],
     "xi": [
      {
       "id": 133104,
@@ -7918,7 +7940,7 @@
       "playerId": null,
       "name": "Víctor Muñoz",
       "shirt": 23,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -7927,7 +7949,7 @@
       "playerId": null,
       "name": "Cody Gakpo",
       "shirt": 18,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      },
@@ -8026,9 +8048,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      16723
+     ],
+     [
+      304238,
+      16035,
+      139648
+     ],
+     [
+      10439,
+      20335,
+      49270,
+      23811
+     ],
+     [
+      50623,
+      15259
+     ],
+     [
+      304123
+     ]
+    ],
     "xi": [
      {
       "id": 16035,
@@ -8044,7 +8088,7 @@
       "playerId": null,
       "name": "Morgan Gibbs-White",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": true
      },
@@ -8080,7 +8124,7 @@
       "playerId": null,
       "name": "Neco Williams",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -8089,7 +8133,7 @@
       "playerId": null,
       "name": "Ola Aina",
       "shirt": 34,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -8218,10 +8262,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "04'00"
   }
  },
- "fetchedAt": "2026-08-29T11:21:53.574Z"
+ "fetchedAt": "2026-08-29T11:36:18.151Z"
 }
