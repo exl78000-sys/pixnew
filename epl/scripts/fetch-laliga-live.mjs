@@ -96,20 +96,34 @@ async function main() {
     const fixture = fixtureByPair.get(`${homeCode}|${awayCode}`);
     if (!fixture) continue;
 
+    /* 比分只認 CURRENT 型的分數列。原本的正則連 1ST_HALF/2ND_HALF 分段列一起收,
+       而 find 撿到哪一列看供應商的排序 —— 實測 LEV|BET 事件已有五顆進球(3:2),
+       存下來卻是 1:2。分段列不是累計值(歐冠 et 那條坑的同款),不能混用。 */
     const scores = rows(raw.scores);
-    const currentRows = scores.filter(s => /current|2nd.?half|1st.?half/i.test(`${s.description ?? ''} ${s.type?.developer_name ?? ''}`));
+    const typeName = s => `${s.type?.developer_name ?? ''} ${s.description ?? ''}`.toUpperCase();
+    const currentRows = scores.filter(s => /\bCURRENT\b/.test(typeName(s)));
     const scoreOf = (participant, location, side) => {
-      const row = currentRows.find(s => String(s.participant_id ?? s.team_id) === String(participant?.id))
-        ?? currentRows.find(s => String(s.score?.participant ?? '').toLowerCase() === location)
-        ?? scores.find(s => String(s.participant_id ?? s.team_id) === String(participant?.id));
+      const pool = currentRows.length ? currentRows : scores;
+      const row = pool.find(s => String(s.participant_id ?? s.team_id) === String(participant?.id))
+        ?? pool.find(s => String(s.score?.participant ?? '').toLowerCase() === location);
       return num(row?.score?.goals ?? row?.goals ?? raw[`${side}_score`]);
     };
     const hs = scoreOf(home, 'home', 'home'), as = scoreOf(away, 'away', 'away');
+    /* 分鐘:事件的 minute 是全場分鐘,但**供應商不按時間排**(進球在前、換人居中、
+       VAR 墊底)—— .at(-1) 曾撿到 17' 的越位當成現在分鐘。改取所有訊號的最大值:
+       事件分鐘(含補時 extra)是「至少踢到這裡」的下界,加上比賽狀態的下限
+       (下半場至少 46'、中場 45'),再交給前端的走鐘往前推。 */
     const eventRows = rows(raw.events);
-    const eventMinute = eventRows.map(e => num(e.minute ?? e.time?.elapsed ?? e.time)).filter(Number.isFinite).at(-1) ?? 0;
+    const evMin = e => {
+      const m = num(e.minute ?? e.time?.elapsed ?? e.time);
+      const x = num(e.extra);
+      return Number.isFinite(m) ? m + (Number.isFinite(x) ? x : 0) : null;
+    };
+    const eventMinute = Math.max(0, ...eventRows.map(evMin).filter(Number.isFinite));
     const stateName = text(raw.state?.developer_name ?? raw.state?.short_name ?? raw.state?.name ?? raw.state_id);
     const finished = /finished|full.?time|after.?penalty|ft/.test(stateName) || Number(raw.state_id) === 5;
-    const minute = num(raw.minute ?? raw.state?.minute ?? eventMinute) ?? eventMinute;
+    const stateFloor = /2nd|second/i.test(stateName) ? 46 : /half.?time|ht|break/i.test(stateName) ? 45 : 0;
+    const minute = Math.max(eventMinute, stateFloor, num(raw.minute) ?? 0, num(raw.state?.minute) ?? 0);
     const detail = normaliseSportmonksMatch(raw, {
       codeOf: T.codeOf, fixture: { ...fixture, fh: hs, fa: as },
       teamCodeById: providerIdToCode, season: CURRENT_SEASON,
