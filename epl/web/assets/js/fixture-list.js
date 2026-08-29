@@ -72,8 +72,11 @@ export function mountFixtureList({
           ? `<a class="pill info tiny" href="${C.link('analysis', { id: f.id })}"
                onclick="event.stopPropagation()">${f.played ? '賽前／賽後對比' : '完整賽前分析'} →</a>` : '') },
     /* 點列直接進完整分析,不先開抽屜(使用者回饋:多一跳沒有意義)。
-       抽屜只留給沒有分析頁的場次(往季賽果、還沒有賽前分析的),那裡它就是全部內容。 */
-    ], { sortKey: 'date', desc: false, onRow: f => (hasFullAnalysis(f) ? (location.href = C.link('analysis', { id: f.id })) : openMatch(f)) });
+       **已賽的本季場次一律直達** —— 剛完場、報告還沒生成的空窗期,分析頁自己會
+       降級成賽前分頁 + 比分,不需要在這裡擋。抽屜只留給往季賽果與
+       還沒有賽前分析的未來場次,那裡它就是全部內容。 */
+    ], { sortKey: 'date', desc: false, onRow: f => ((f.season === meta.currentSeason && f.played) || hasFullAnalysis(f)
+      ? (location.href = C.link('analysis', { id: f.id })) : openMatch(f)) });
     C.startCountdowns();
   };
 

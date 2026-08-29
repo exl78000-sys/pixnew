@@ -349,7 +349,11 @@ try {
     const surprise = m.preMatch
       ? (m.hs > m.as ? m.preMatch.home : m.hs < m.as ? m.preMatch.away : m.preMatch.draw)
       : null;
-    return `<a class="card matchcard" href="#" data-match="${m.key}">
+    /* 剛完場的直達分析頁(使用者要求),抽屜只留給對不到賽程 id 的。
+       進行中的(liveCard)維持抽屜 —— 場中報告的分鐘資訊只有那裡有。 */
+    return `<a class="card matchcard" ${m.fixtureId
+      ? `href="${C.link('analysis', { id: m.fixtureId })}"`
+      : `href="#" data-match="${m.key}"`}>
       <div class="spread"><span class="row" style="gap:6px"><span class="pill">完場</span>${
           ago ? `<span class="pill accent tiny">${ago}</span>` : ''}</span>
         <span class="tiny dim">${C.kickoffLocal(m.kickoff)}・第 ${m.round} 輪</span></div>
