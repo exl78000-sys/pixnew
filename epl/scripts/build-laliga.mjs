@@ -23,6 +23,8 @@ import { fitPoisson, applyPromotedPrior, predict, strengthTable } from './lib/po
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
+import { appendSamples, historyForSite } from './lib/prob-history.mjs';
+import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
@@ -1172,9 +1174,33 @@ async function main() {
     matches: expertMatches,
   });
   await write('lineups', {});
-  /* 勝率曲線的歷史。這個聯賽沒有逐分鐘的即時管線,所以是空的 ——
-     但**檔案要在**:分析頁三個聯賽共用,少這一份會 404 整頁炸掉(英冠踩過)。 */
-  await write('prob-history', { season: null, matches: {} });
+  /* 勝率曲線與校準:跟英超同一份共用件(appendSamples / inplayCalibration,
+     聯賽無關 —— 各寫一份的話兩邊的 Brier 差 0.01 就分不出是聯賽差異還是實作差異)。
+     西甲的點來自 SportMonks 迴圈,每 3 分鐘一點;沒有比賽時 store 原樣保留。
+     檔案永遠要在:分析頁三個聯賽共用,少這一份會 404 整頁炸掉(英冠踩過)。 */
+  {
+    const histPath = join(ROOT, 'data', 'live-history-la-liga.json');
+    let store = existsSync(histPath) ? JSON.parse(await readFile(histPath, 'utf8')) : null;
+    store = appendSamples(store, liveOut);
+    if (store) {
+      await writeFile(histPath, JSON.stringify(store));
+      const site = historyForSite(store);
+      if (liveOut.available) {
+        for (const m of liveOut.matches) {
+          const rec = site.matches[`${m.home}|${m.away}`];
+          if (rec) m.probHistory = rec.pts;
+        }
+      }
+      await write('prob-history', site);
+      const n = Object.keys(site.matches).length;
+      if (n) console.log(`  勝率曲線:${n} 場有歷史(累積檔 data/live-history-la-liga.json)`);
+    } else {
+      await write('prob-history', { season: null, matches: {} });
+    }
+    const calib = inplayCalibration(store);
+    await write('inplay-calibration', calib);
+    if (calib.matches) console.log(`  即時校準:${calib.matches} 場完賽・${calib.points} 個時點(${calib.verdict === 'ok' ? '樣本足夠' : `樣本不足,門檻 ${calib.minMatches} 場`})`);
+  }
   await write('shapes', shapes);
   await write('official', {
     available: officialLineupCount > 0 || reportCount > 0,

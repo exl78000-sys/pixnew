@@ -83,8 +83,11 @@ jobs:
             else
               (cd epl && npm run laliga:build >/dev/null 2>&1) || true
               git add -f epl/data/raw/sportmonks-la-liga/live.json \
+                epl/data/live-history-la-liga.json \
                 epl/web/data/leagues/es1/live.json epl/web/data/leagues/es1/meta.json \
-                epl/web/data/leagues/es1/reports.json 2>/dev/null || true
+                epl/web/data/leagues/es1/reports.json \
+                epl/web/data/leagues/es1/prob-history.json \
+                epl/web/data/leagues/es1/inplay-calibration.json 2>/dev/null || true
               if git diff --cached --quiet; then
                 echo "  [$N] 產物無變化"
               else
@@ -94,7 +97,7 @@ jobs:
                 for try in 1 2 3; do
                   if ! git pull --rebase -q origin "$GITHUB_REF_NAME" 2>/dev/null; then
                     git rebase --abort 2>/dev/null || true
-                    git checkout --theirs -- epl/data/raw/sportmonks-la-liga/live.json 2>/dev/null || true
+                    git checkout --theirs -- epl/data/raw/sportmonks-la-liga/live.json epl/data/live-history-la-liga.json 2>/dev/null || true
                   fi
                   if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
                     PUSHED=$((PUSHED+1)); echo "  [$N] ✔ 已更新並推送"; break
