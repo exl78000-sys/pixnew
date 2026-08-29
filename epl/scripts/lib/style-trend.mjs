@@ -17,7 +17,7 @@
  * - **這是資訊,不進模型**(跟近況五場同一個規矩,鐵則二)。
  */
 import { parseCSVObjects, num } from './csv.mjs';
-import { round } from './util.mjs';
+import { round, percentile } from './util.mjs';
 
 // football-data 的日期是 dd/mm/yy(yy),轉 ISO 才能跟本站其他日期排序
 const isoDate = s => {
@@ -82,4 +82,34 @@ export function styleTrendFor({ lastRows = [], curRows = [], window = 10, minGam
     currentSeasonGames: curRows.length,
     recent, baseline, delta,
   };
+}
+
+/* 雷達軸(前端疊層用)。主雷達那六軸是 xG 系的量,近 10 場沒有逐場 xG 來源,
+ * 疊上去就是編數字 —— 所以位移雷達自己一組軸,全部用逐場真的量得到的欄位。
+ * 被射門/被射正/牌反向:雷達的慣例是「越外越好」,跟主雷達的防守穩固同一個做法。 */
+export const TREND_RADAR_AXES = [
+  ['sf', '射門', false], ['stf', '射正', false], ['cf', '角球', false],
+  ['sa', '被射門↓', true], ['sta', '被射正↓', true], ['cards', '吃牌↓', true],
+];
+
+/* 把百分位掛回每隊的 styleTrend。兩個池分開:
+ * 近 10 場跟各隊的近 10 場比、上季基準跟各隊的上季基準比 ——
+ * 各自都是「當時在聯賽裡站哪個位置」,兩層畫在同一張雷達上意義才對得齊。
+ * 池的大小(升班馬沒有基準、樣本不足的沒有近況)記在 pctPool,畫面要講。 */
+export function attachTrendPercentiles(byCode) {
+  const trends = [...byCode.values()];
+  const recentPool = Object.fromEntries(TREND_RADAR_AXES.map(([f]) => [f, trends.map(t => t.recent[f])]));
+  const withBase = trends.filter(t => t.baseline);
+  const basePool = Object.fromEntries(TREND_RADAR_AXES.map(([f]) => [f, withBase.map(t => t.baseline[f])]));
+  const pct = (v, pool, inverse) => {
+    const p = percentile(v, pool);
+    return inverse ? round(100 - p, 1) : p;
+  };
+  for (const t of trends) {
+    t.recentPct = Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(t.recent[f], recentPool[f], inv)]));
+    t.baselinePct = t.baseline
+      ? Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(t.baseline[f], basePool[f], inv)]))
+      : null;
+    t.pctPool = { recent: trends.length, baseline: withBase.length };
+  }
 }

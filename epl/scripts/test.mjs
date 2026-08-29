@@ -1476,7 +1476,7 @@ async function checkDataGap() {
 
     /* ── 近 10 場風格位移(A 層,2026-08-29 加)── */
     ...await (async () => {
-      const { styleTrendFor, teamMatchRows } = await import('./lib/style-trend.mjs');
+      const { styleTrendFor, teamMatchRows, attachTrendPercentiles } = await import('./lib/style-trend.mjs');
       const csv = 'Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HST,AST,HC,AC,HY,AY,HR,AR\n'
         + 'E0,10/08/2025,Alpha,Beta,2,1,15,8,6,3,7,2,1,2,0,0\n'
         + 'E0,17/08/2025,Beta,Alpha,0,0,10,12,2,5,4,6,3,1,1,0\n';
@@ -1497,6 +1497,24 @@ async function checkDataGap() {
         /* 升班馬拿英冠基準比會把「聯賽變強」誤讀成「打法變了」—— 基準一定是 null。 */
         ['升班馬沒有上季基準,delta 為 null', promoted && promoted.baseline === null && promoted.delta === null, ''],
         ['不足 5 場整包 null(三場的平均是雜訊)', thin === null, ''],
+        /* 疊層雷達的百分位(2026-08-29 加,使用者要求把近況跟基準畫在同一張圖)。
+           近況跟各隊近況比、上季跟各隊上季比 —— 池分開,pctPool 記大小。
+           被射門/被射正/牌反向:雷達慣例是越外越好。 */
+        ...(() => {
+          const lo = styleTrendFor({ lastRows: mk(38), curRows: mk(2) });                    // sa=10
+          const hi = styleTrendFor({ lastRows: mk(38).map(r => ({ ...r, sa: 20 })), curRows: [] }); // 被射門多
+          const noBase = styleTrendFor({ lastRows: [], curRows: mk(6) });
+          const m = new Map([['LO', lo], ['HI', hi], ['NB', noBase]]);
+          attachTrendPercentiles(m);
+          const inRange = t => Object.values(t.recentPct).every(v => v >= 0 && v <= 100);
+          return [
+            ['疊層百分位:每隊都有 recentPct 且 0~100', [...m.values()].every(t => t.recentPct && inRange(t)), ''],
+            ['被射門反向計分:被射門多的隊 saPct 較低', hi.recentPct.sa < lo.recentPct.sa,
+              `hi=${hi.recentPct.sa} lo=${lo.recentPct.sa}`],
+            ['沒有上季基準的隊 baselinePct 為 null、池大小照實記', noBase.baselinePct === null
+              && noBase.pctPool.recent === 3 && noBase.pctPool.baseline === 2, ''],
+          ];
+        })(),
       ];
     })(),
     ['產物:多數球隊有位移資料、每隊有雷達覆蓋標註', (() => {
@@ -1508,6 +1526,25 @@ async function checkDataGap() {
     ['位移卡與雷達標註都講了「不進模型」與換帥警語', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
       return /不影響模型勝率/.test(src) && /它描述的是前任的打法/.test(src);
+    })()],
+    /* 位移雷達不准疊在主雷達上:主雷達那六軸是 xG 系,近 10 場沒有逐場 xG 來源。
+       位移卡自己畫、自己一組軸(逐場可測的欄位),core.radar 用 dash 分層。 */
+    ['位移卡有疊層雷達:上季實線、近況虛線、反向軸有說明', (() => {
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      return /st\.recentPct/.test(pg) && /dash: '6 5'/.test(pg) && /反向計分/.test(pg)
+        && /stroke-dasharray/.test(core);
+    })()],
+    ['產物:西甲球隊也有位移資料(SP1 逐場統計)', (() => {
+      const teams = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'teams.json'), 'utf8'));
+      const withTrend = teams.filter(t => t.styleTrend);
+      return withTrend.length >= 15 && withTrend.every(t => t.styleTrend.recentPct);
+    })()],
+    /* 使用者回饋:點對戰要直接進分析,不要先開抽屜再點一次。
+       抽屜只留給沒有分析頁的場次(往季賽果)。 */
+    ['賽程表點列直達分析頁,沒有分析的才開抽屜', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
+      return /onRow: f => \(hasFullAnalysis\(f\) \? \(location\.href = C\.link\('analysis', \{ id: f\.id \}\)\) : openMatch\(f\)\)/.test(src);
     })()],
 
     /* ── 盃賽併頁 + 球隊完整賽程含盃賽(2026-08-29,使用者要求)── */

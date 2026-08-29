@@ -34,6 +34,7 @@ import { loadOfficialCoachStore, officialCoachesFromStore } from './lib/adapters
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadVerifiedLoans, attachLoans } from './lib/loans.mjs';
+import { teamMatchRows, styleTrendFor, attachTrendPercentiles } from './lib/style-trend.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
@@ -442,12 +443,31 @@ async function main() {
     }
   }
 
+  /* 近 10 場風格位移 —— 跟英超同一份實作(lib/style-trend.mjs)。
+     逐場統計取 football-data.co.uk 的 SP1 季檔(上季到本季同一套欄位)。
+     升班馬上季不在西甲,基準 null、只列近況。 */
+  const styleTrendBy = new Map();
+  {
+    const csvOf = season => {
+      const p = join(ROOT, 'data', 'raw', 'football-data-couk-la-liga', `${season}.csv`);
+      return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf: T.codeOf, div: 'SP1' }) : new Map();
+    };
+    const trendLast = csvOf(LAST_SEASON), trendCur = csvOf(CURRENT_SEASON);
+    for (const code of curCodes) {
+      const t = styleTrendFor({ lastRows: trendLast.get(code) ?? [], curRows: trendCur.get(code) ?? [] });
+      if (t) styleTrendBy.set(code, t);
+    }
+    attachTrendPercentiles(styleTrendBy);
+    console.log(`  風格位移:近 10 場視窗 ${styleTrendBy.size} 隊(升班馬基準為 null)`);
+  }
+
   const teams = curCodes.map(code => {
     const reg = T.byCode.get(code);
     const ls = lastBy.get(code) ?? null;
     const current = curBy.get(code) ?? null;
     return {
       ...reg,
+      styleTrend: styleTrendBy.get(code) ?? null,
       lastSeason: ls ? {
         pos: ls.pos, p: ls.p, w: ls.w, d: ls.d, l: ls.l,
         gf: ls.gf, ga: ls.ga, gd: ls.gd, pts: ls.pts, ppg: ls.ppg,

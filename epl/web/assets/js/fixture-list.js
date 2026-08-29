@@ -1,4 +1,4 @@
-import * as C from './core.js?v=5c18269b';
+import * as C from './core.js?v=f8b58afd';
 
 /* ── 賽程列表 + 單場速覽抽屜(共用模組) ─────────────────────────
    原本是獨立的 page-fixtures.js。「總覽」與「賽程與預測」合併成一頁之後,
@@ -71,7 +71,9 @@ export function mountFixtureList({
         render: f => (hasFullAnalysis(f)
           ? `<a class="pill info tiny" href="${C.link('analysis', { id: f.id })}"
                onclick="event.stopPropagation()">${f.played ? '賽前／賽後對比' : '完整賽前分析'} →</a>` : '') },
-    ], { sortKey: 'date', desc: false, onRow: openMatch });
+    /* 點列直接進完整分析,不先開抽屜(使用者回饋:多一跳沒有意義)。
+       抽屜只留給沒有分析頁的場次(往季賽果、還沒有賽前分析的),那裡它就是全部內容。 */
+    ], { sortKey: 'date', desc: false, onRow: f => (hasFullAnalysis(f) ? (location.href = C.link('analysis', { id: f.id })) : openMatch(f)) });
     C.startCountdowns();
   };
 

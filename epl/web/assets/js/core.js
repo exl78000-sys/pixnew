@@ -1055,7 +1055,9 @@ export function radar(series, { size = 300, labels = null, max = 100 } = {}) {
   }).join('');
   const shapes = series.map(s => {
     const pts = s.values.map((v, i) => pt(i, R * Math.max(0.02, (v.value ?? 0) / max)).map(x => x.toFixed(1)).join(',')).join(' ');
-    return `<polygon points="${pts}" fill="${s.color}22" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"/>` +
+    // dash 給疊層比較用(例如「近 10 場」疊在「上季」上):虛線 + 淡一點的填色,兩層都看得清
+    const dash = s.dash ? ` stroke-dasharray="${s.dash}"` : '';
+    return `<polygon points="${pts}" fill="${s.color}${s.dash ? '14' : '22'}" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"${dash}/>` +
       s.values.map((v, i) => {
         const [x, y] = pt(i, R * Math.max(0.02, (v.value ?? 0) / max));
         return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${s.color}"/>`;
