@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-29T18:32:10.472Z",
+  "fetchedAt": "2026-08-29T18:35:16.868Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-29 17:00:00",
       "started": true,
       "finished": false,
-      "minute": 77,
+      "minute": 80,
       "hs": 2,
       "as": 1,
       "sides": {
@@ -104,7 +104,7 @@
         "status": 22,
         "home": "RSO",
         "away": "ESP",
-        "fetchedAt": "2026-08-29T18:32:10.469Z",
+        "fetchedAt": "2026-08-29T18:35:16.864Z",
         "score": {
           "home": 2,
           "away": 1
@@ -225,6 +225,32 @@
             "assistId": null
           },
           {
+            "minute": 70,
+            "extra": null,
+            "label": "70'",
+            "team": "ESP",
+            "type": "",
+            "detail": null,
+            "comments": "4th Substitution",
+            "player": "Rafel Bauzà",
+            "playerId": 37716722,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 70,
+            "extra": null,
+            "label": "70'",
+            "team": "ESP",
+            "type": "",
+            "detail": null,
+            "comments": "5th Substitution",
+            "player": "Marcos Fernández",
+            "playerId": 37608472,
+            "assist": null,
+            "assistId": null
+          },
+          {
             "minute": 17,
             "extra": null,
             "label": "17'",
@@ -288,43 +314,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 77,
+        "minute": 80,
         "finished": false,
-        "remaining": 0.144,
-        "home": 0.8706,
-        "draw": 0.1184,
-        "away": 0.011,
-        "xgRestHome": 0.24,
-        "xgRestAway": 0.18,
+        "remaining": 0.111,
+        "home": 0.8935,
+        "draw": 0.0995,
+        "away": 0.007,
+        "xgRestHome": 0.19,
+        "xgRestAway": 0.14,
         "expectedFinal": {
-          "home": 2.24,
-          "away": 1.18
+          "home": 2.19,
+          "away": 1.14
         },
         "nextGoal": {
-          "home": 0.198,
-          "away": 0.144,
-          "none": 0.658
+          "home": 0.16,
+          "away": 0.116,
+          "none": 0.725
         },
         "topScores": [
           {
             "s": "2-1",
-            "p": 0.6578
+            "p": 0.7245
           },
           {
             "s": "3-1",
-            "p": 0.1596
+            "p": 0.1352
           },
           {
             "s": "2-2",
-            "p": 0.1159
+            "p": 0.0982
           },
           {
             "s": "3-2",
-            "p": 0.0281
+            "p": 0.0183
           },
           {
             "s": "4-1",
-            "p": 0.0194
+            "p": 0.0126
           }
         ]
       },
@@ -337,11 +363,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 77,
+        "minute": 80,
         "paragraphs": [
-          "第 77 分鐘,Real Sociedad 2:1 RCD Espanyol。",
-          "賽前模型 46%/25%/28%(主/和/客),目前 87%/12%/1% —— Real Sociedad勝的機率升了 41 個百分點。",
-          "模型估下一球:Real Sociedad 20%、RCD Espanyol 14%,剩餘時間期望再進 0.24:0.18。"
+          "第 80 分鐘,Real Sociedad 2:1 RCD Espanyol。",
+          "賽前模型 46%/25%/28%(主/和/客),目前 89%/10%/1% —— Real Sociedad勝的機率升了 43 個百分點。",
+          "模型估下一球:Real Sociedad 16%、RCD Espanyol 12%,剩餘時間期望再進 0.19:0.14。"
         ]
       }
     }
