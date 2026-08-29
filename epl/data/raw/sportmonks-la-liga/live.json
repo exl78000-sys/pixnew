@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-29T17:43:51.248Z",
+  "fetchedAt": "2026-08-29T17:50:14.579Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,9 +22,9 @@
       "kickoff": "2026-08-29 17:00:00",
       "started": true,
       "finished": false,
-      "minute": 43,
+      "minute": 45,
       "hs": 1,
-      "as": 0,
+      "as": 1,
       "sides": {
         "RSO": {
           "xi": [],
@@ -90,10 +90,10 @@
         "status": 2,
         "home": "RSO",
         "away": "ESP",
-        "fetchedAt": "2026-08-29T17:43:51.246Z",
+        "fetchedAt": "2026-08-29T17:50:14.575Z",
         "score": {
           "home": 1,
-          "away": 0
+          "away": 1
         },
         "teamStats": {
           "RSO": {
@@ -142,6 +142,19 @@
             "comments": "1st Goal",
             "player": "Ander Barrenetxea",
             "playerId": 27440827,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 45,
+            "extra": 1,
+            "label": "45+1'",
+            "team": "ESP",
+            "type": "",
+            "detail": "Right foot shot",
+            "comments": "2nd Goal",
+            "player": "Roberto Fernández",
+            "playerId": 37568657,
             "assist": null,
             "assistId": null
           },
@@ -209,43 +222,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 43,
+        "minute": 45,
         "finished": false,
-        "remaining": 0.522,
-        "home": 0.7505,
-        "draw": 0.1831,
-        "away": 0.0664,
-        "xgRestHome": 0.88,
-        "xgRestAway": 0.64,
+        "remaining": 0.5,
+        "home": 0.3826,
+        "draw": 0.3711,
+        "away": 0.2464,
+        "xgRestHome": 0.84,
+        "xgRestAway": 0.61,
         "expectedFinal": {
-          "home": 1.88,
-          "away": 0.64
+          "home": 1.84,
+          "away": 1.61
         },
         "nextGoal": {
-          "home": 0.452,
-          "away": 0.328,
-          "none": 0.22
+          "home": 0.443,
+          "away": 0.322,
+          "none": 0.235
         },
         "topScores": [
           {
-            "s": "1-0",
-            "p": 0.2199
-          },
-          {
-            "s": "2-0",
-            "p": 0.193
-          },
-          {
             "s": "1-1",
-            "p": 0.1401
+            "p": 0.2346
           },
           {
             "s": "2-1",
-            "p": 0.1229
+            "p": 0.197
           },
           {
-            "s": "3-0",
-            "p": 0.0846
+            "s": "1-2",
+            "p": 0.1431
+          },
+          {
+            "s": "2-2",
+            "p": 0.1202
+          },
+          {
+            "s": "3-1",
+            "p": 0.0828
           }
         ]
       },
