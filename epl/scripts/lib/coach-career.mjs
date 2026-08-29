@@ -38,6 +38,33 @@ export function loadVerifiedCareers(ROOT) {
   return { status: 'ok', published: v.published ?? [] };
 }
 
+/* 把核對通過的前任期掛上教練名冊。三個 build 共用同一份 ——
+   複製三份的話,改了一邊另外兩邊悄悄過期(CLAUDE.md 的老坑)。 */
+export function attachCareers(ROOT, coachesArr, league) {
+  const careers = loadVerifiedCareers(ROOT);
+  if (careers.status === 'stale') {
+    console.log('  ⚠ 職涯核對結果跟不上收件匣,前任期整批不掛 —— 先跑 npm run careers:verify');
+    return { status: 'stale', styled: 0, total: 0 };
+  }
+  let styled = 0, total = 0;
+  for (const rec of careers.published) {
+    if (rec.league !== league) continue;
+    const co = coachesArr.find(c => c.team === rec.team);
+    if (!co || !rec.previous?.length) continue;
+    const prev = rec.previous[0];   // 最近的一段
+    const { style, reason } = tenureStyle(ROOT, prev);
+    co.career = {
+      verified: true,
+      previous: rec.previous.map(p => ({ club: p.club, competition: p.competition, from: p.from, to: p.to })),
+      style, styleUnavailable: style ? null : reason,
+    };
+    total++;
+    if (style) styled++;
+  }
+  if (total) console.log(`  教練前任期:核對通過 ${total} 筆,其中 ${styled} 段算得出逐場風格`);
+  return { status: 'ok', styled, total };
+}
+
 /* 一段前任期 → 逐場風格。回 { style } 或 { style: null, reason }。 */
 export function tenureStyle(ROOT, prev, { minGames = 5 } = {}) {
   const cfg = CSV_LEAGUES[String(prev.competition ?? '').toLowerCase()];
