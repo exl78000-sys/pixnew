@@ -9964,14 +9964,36 @@
   "TOT|NEW": {
    "fixtureId": 128942,
    "kickoff": "2026-08-29T16:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "homeId": 21,
    "awayId": 23,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      117596,
+      76090,
+      75582,
+      10458
+     ],
+     [
+      71623,
+      22802
+     ],
+     [
+      32229,
+      119072,
+      76614
+     ],
+     [
+      76216
+     ]
+    ],
     "xi": [
      {
       "id": 75582,
@@ -9987,7 +10009,7 @@
       "playerId": null,
       "name": "Mathys Tel",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Forward",
       "captain": false
      },
@@ -10050,7 +10072,7 @@
       "playerId": null,
       "name": "Pedro Porro",
       "shirt": 23,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -10068,7 +10090,7 @@
       "playerId": null,
       "name": "Archie Gray",
       "shirt": 14,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Central Midfielder",
       "captain": false
      }
@@ -10158,9 +10180,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      68637,
+      124462,
+      49908,
+      108922
+     ],
+     [
+      67849,
+      117647
+     ],
+     [
+      49259,
+      14446,
+      14716
+     ],
+     [
+      117497
+     ]
+    ],
     "xi": [
      {
       "id": 117647,
@@ -10239,7 +10283,7 @@
       "playerId": null,
       "name": "Anthony Elanga",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -10350,10 +10394,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-08-29T16:29:43.931Z"
+ "fetchedAt": "2026-08-29T16:31:57.571Z"
 }
