@@ -1889,6 +1889,10 @@ async function checkDataGap() {
         /* 走鐘:分鐘顯示以 feed 抓取時刻為錨往前推,每秒更新、不跨 45/90 界線 */
         && /function liveMinute/.test(pa) && /data-liveclock/.test(pa)
         && /'45\+'/.test(pa) && /'90\+'/.test(pa) && /}, 1000\)/.test(pa)
+        /* 倒數/變 0 那次的兩個修法:feed 只進不退(CDN 新舊副本交替)、
+           錨取官方鐘與 FPL 分鐘的較大者(剛開賽的官方鐘快取停在 00'00) */
+        && /Date\.parse\(fetchedAt\) < Date\.parse\(cur\.fetchedAt\)/.test(pa)
+        && /offEff >= fpl/.test(pa)
         && /點開看講評、勝率曲線與場上資訊/.test(pl)
         && pl.includes(`href="\${C.link('analysis', { id: m.fixtureId })}"`);
     })()],

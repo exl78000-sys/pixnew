@@ -255,6 +255,11 @@ try {
       const feeds = [meta.liveFeed, 'data/live.json'].filter(Boolean);
       let cur = null;   // 最新一份 {m, fetchedAt},給走鐘用
       const renderLive = (m, fetchedAt) => {
+        /* feed 只進不退:raw CDN 會新舊副本交替回應,拿到較舊的那份時
+           比分、場上數據、分鐘全部會倒退(實測「分鐘倒數」就是這條)。
+           舊的一律不採用 —— 走鐘照舊從上一份的錨往前推,等下一份新的。 */
+        if (cur && m && fetchedAt && cur.fetchedAt
+          && Date.parse(fetchedAt) < Date.parse(cur.fetchedAt)) return;
         const el = document.getElementById('livePanel');
         cur = (m && m.started && !m.finished) ? { m, fetchedAt } : null;
         if (el) el.innerHTML = cur ? livePanelHtml(m, f.colors, fetchedAt) : '';
@@ -534,15 +539,20 @@ try {
   function liveMinute(m, fetchedAt) {
     const off = typeof m.clock === 'string' ? m.clock.match(/^(\d+)\s*(?:\+(\d+))?/) : null;
     const elapsed = fetchedAt ? Math.max(0, (Date.now() - Date.parse(fetchedAt)) / 60000) : 0;
-    if (off && off[2] != null) {   // 已在補時:45+X / 90+X,只推進補時的部分
-      const half = Number(off[1]);
-      return { disp: `${half}+${Number(off[2]) + Math.floor(elapsed)}`,
+    /* 錨取兩個來源的較大者。兩個都是「至少踢到這裡」的下界,單獨信哪個都出過錯:
+       官方鐘在剛開賽的快取裡還停在賽前的 00'00(實測「變 0 分鐘」就是這條),
+       FPL 分鐘則塊狀跳。 */
+    const offEff = off ? Number(off[1]) + (off[2] ? Number(off[2]) : 0) : null;
+    const fpl = m.minute ?? 0;
+    if (off && off[2] != null && offEff >= fpl) {   // 補時中且官方鐘沒落後:45+X / 90+X,只推進補時的部分
+      return { disp: `${Number(off[1])}+${Number(off[2]) + Math.floor(elapsed)}`,
         src: `官方比賽鐘 ${m.clock}`, est: elapsed >= 1 };
     }
-    const base = off ? Number(off[1]) : (m.minute ?? 0);
+    const useOff = offEff != null && offEff >= fpl;
+    const base = useOff ? offEff : fpl;
     const est = base + elapsed;
     const disp = base <= 45 && est >= 45 ? '45+' : est >= 90 ? '90+' : String(Math.floor(est));
-    return { disp, src: off ? `官方比賽鐘 ${m.clock}` : `FPL 分鐘 ${m.minute}`, est: elapsed >= 1 };
+    return { disp, src: useOff ? `官方比賽鐘 ${m.clock}` : `FPL 分鐘 ${m.minute}`, est: elapsed >= 1 };
   }
 
   function livePanelHtml(m, colors, fetchedAt) {
