@@ -8866,7 +8866,7 @@
       "playerId": null,
       "name": "Tyrique George",
       "shirt": 19,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -8902,7 +8902,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Left/Right Winger",
       "captain": false
      }
@@ -8994,6 +8994,19 @@
    "goals": [
     {
      "side": "H",
+     "person": null,
+     "assist": null,
+     "team": null,
+     "min": null,
+     "label": null,
+     "phase": "2",
+     "type": "PE",
+     "kind": null,
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
      "person": 74976,
      "assist": 33032,
      "team": 127,
@@ -9030,6 +9043,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -9040,10 +9059,16 @@
       "min": 45,
       "label": "45+3'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+3'00"
+   "clock": "46'00"
   },
   "COV|HUL": {
    "fixtureId": 128936,
@@ -9485,7 +9510,26 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 75264,
+      "team": 41,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 126614,
+      "team": 41,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PS",
@@ -9501,8 +9545,8 @@
      }
     ]
    },
-   "clock": "45+3'00"
+   "clock": "45'00"
   }
  },
- "fetchedAt": "2026-08-29T14:59:39.454Z"
+ "fetchedAt": "2026-08-29T15:04:19.990Z"
 }
