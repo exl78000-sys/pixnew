@@ -123,7 +123,21 @@ async function main() {
     const stateName = text(raw.state?.developer_name ?? raw.state?.short_name ?? raw.state?.name ?? raw.state_id);
     const finished = /finished|full.?time|after.?penalty|ft/.test(stateName) || Number(raw.state_id) === 5;
     const stateFloor = /2nd|second/i.test(stateName) ? 46 : /half.?time|ht|break/i.test(stateName) ? 45 : 0;
-    const minute = Math.max(eventMinute, stateFloor, num(raw.minute) ?? 0, num(raw.state?.minute) ?? 0);
+    /* 第三個訊號:開球時間推算(事件分鐘只到最後一筆事件,實測落後牆鐘十來分)。
+       用本站賽程的 kickoff(ISO 含時區,不用供應商那個無時區字串),
+       分段感知:上半場封頂 45、中場停 45、下半場扣 15 分鐘休息封頂 90。
+       補時長度沒有資料,到 90 就停 —— 前端走鐘會顯示 90+,不編數字。 */
+    const wallEst = (() => {
+      const ko = Date.parse(fixture.kickoff ?? '');
+      if (!Number.isFinite(ko)) return 0;
+      const el = (Date.now() - ko) / 60000;
+      if (el <= 0 || el > 200) return 0;
+      if (/half.?time|ht|break/i.test(stateName)) return 45;
+      if (/2nd|second/i.test(stateName)) return Math.min(90, Math.max(46, Math.floor(el - 15)));
+      if (/1st|first/i.test(stateName)) return Math.min(45, Math.floor(el));
+      return 0;   // 狀態認不得就不用這個訊號,交給另外兩個
+    })();
+    const minute = Math.max(eventMinute, stateFloor, wallEst, num(raw.minute) ?? 0, num(raw.state?.minute) ?? 0);
     const detail = normaliseSportmonksMatch(raw, {
       codeOf: T.codeOf, fixture: { ...fixture, fh: hs, fa: as },
       teamCodeById: providerIdToCode, season: CURRENT_SEASON,
