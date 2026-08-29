@@ -1571,6 +1571,16 @@ async function checkDataGap() {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
       return /onRow: f => \(hasFullAnalysis\(f\) \? \(location\.href = C\.link\('analysis', \{ id: f\.id \}\)\) : openMatch\(f\)\)/.test(src);
     })()],
+    /* 總覽的「即將到來」(2026-08-29,使用者要求):全部聯賽 + 盃賽合在一張表。
+       天數窗不用固定筆數(固定筆數會把一輪切一半);盃賽只列本站名冊球隊的場次
+       (足總盃資格賽一輪幾百場低級別比賽);占位的 00:00Z 標時間待定。 */
+    ['總覽有「即將到來」:7 天窗、盃賽過濾低級別、占位時間標待定、倒數會走', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /即將到來/.test(src) && /7 \* 86400000/.test(src)
+        && /covered\(m\.home\) && !covered\(m\.away\)/.test(src)
+        && /T00:00:00Z/.test(src) && /時間待定/.test(src)
+        && /startCountdowns/.test(src);
+    })()],
 
     /* ── 盃賽併頁 + 球隊完整賽程含盃賽(2026-08-29,使用者要求)── */
     ['球隊深連結預設只看未賽(「完整賽程」要的是未來)', (() => {

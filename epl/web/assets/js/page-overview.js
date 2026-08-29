@@ -93,6 +93,83 @@ try {
       </div></div>`;
   };
 
+  /* 即將到來(未來 7 天,全部聯賽 + 盃賽,使用者要求)。
+     用「天數窗」不用固定筆數 —— 固定筆數會把一輪切一半(實時戰況頁踩過那條坑)。
+     兩個誠實邊界:
+     - 盃賽只列**本站聯賽名冊裡的球隊**參與的場次。足總盃現在是資格賽,
+       一輪有幾百場第七八九級球隊的比賽,全列進來總覽就不是總覽了。
+     - 抽籤後上游常給「日期+00:00Z」占位,照印會變成「台北 08:00」的假時間 ——
+       標成「時間待定」(跟球隊賽程頁同一個規則)。 */
+  const upcoming = (() => {
+    const now = Date.now(), end = now + 7 * 86400000;
+    const inWindow = k => { const t = Date.parse(k); return t >= now - 2 * 3600000 && t <= end; };
+    const rows = [];
+    for (const { lg, data } of leagues) {
+      const nameOf = code => (data.teams ?? []).find(t => t.code === code)?.en ?? code;
+      for (const f of data.fixtures) {
+        if (f.played || !f.kickoff || !inWindow(f.kickoff)) continue;
+        rows.push({ kick: f.kickoff, comp: C.LEAGUES[lg].zh, home: nameOf(f.home), away: nameOf(f.away),
+          note: `第 ${f.round} 輪`, pending: false,
+          link: C.link('analysis', { id: f.id, league: lg === 'pl' ? null : lg }) });
+      }
+    }
+    const known = new Set(leagues.flatMap(({ data }) =>
+      (data.teams ?? []).flatMap(t => [t.en, t.of].filter(Boolean).map(x => x.toLowerCase()))));
+    const covered = s => s && (s.code || known.has(String(s.name ?? '').toLowerCase()));
+    for (const cup of cupList) {
+      const season = (cup.seasons ?? []).find(s => s.current);
+      for (const r of season?.rounds ?? []) for (const m of r.matches ?? []) {
+        if (m.played || !m.kickoff || !inWindow(m.kickoff)) continue;
+        if (!covered(m.home) && !covered(m.away)) continue;
+        rows.push({ kick: m.kickoff, comp: cup.zh ?? cup.en, home: m.home?.name ?? '?', away: m.away?.name ?? '?',
+          note: m.stage ?? '', pending: m.kickoff.endsWith('T00:00:00Z'), link: null });
+      }
+    }
+    return rows.sort((a, b) => (a.kick < b.kick ? -1 : 1));
+  })();
+
+  /* 窗外的下一批盃賽:7 天內沒有盃賽時,讀者會以為盃賽沒接上 ——
+     所以窗外的用一行摘要講(跟實時戰況頁倒數區的溢位摘要同一個做法)。 */
+  const cupBeyond = (() => {
+    const now = Date.now(), end = now + 7 * 86400000;
+    const known = new Set(leagues.flatMap(({ data }) =>
+      (data.teams ?? []).flatMap(t => [t.en, t.of].filter(Boolean).map(x => x.toLowerCase()))));
+    const covered = s => s && (s.code || known.has(String(s.name ?? '').toLowerCase()));
+    return cupList.map(cup => {
+      const season = (cup.seasons ?? []).find(s => s.current);
+      const future = (season?.rounds ?? []).flatMap(r => (r.matches ?? [])
+        .filter(m => !m.played && m.kickoff && Date.parse(m.kickoff) > end
+          && (covered(m.home) || covered(m.away)))
+        .map(m => ({ kick: m.kickoff, stage: m.stage })));
+      if (!future.length) return null;
+      const first = future.sort((a, b) => (a.kick < b.kick ? -1 : 1))[0];
+      return `${cup.zh ?? cup.en} ${first.stage ?? ''}:${C.dateFull(first.kick.slice(0, 10))} 起(${future.length} 場)`;
+    }).filter(Boolean);
+  })();
+
+  const upcomingBlock = `
+  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・${leagues.map(x => C.LEAGUES[x.lg].zh).join('、')} + 盃賽</span></div>
+  ${upcoming.length ? `<div class="card">${C.table(upcoming, [
+    { key: 'kick', label: '開球(台北)', value: u => u.kick,
+      render: u => (u.pending
+        ? `<span class="small">${C.dateFull(u.kick.slice(0, 10))} <span class="dim">・時間待定</span></span>`
+        : `<span class="small">${C.kickoffLocal(u.kick)}</span>`) },
+    { key: 'cd', label: '倒數', value: u => u.kick, sortable: false,
+      render: u => (u.pending ? '<span class="dim small">—</span>' : `<span class="small">${C.countdown(u.kick)}</span>`) },
+    { key: 'comp', label: '賽事', value: u => u.comp, render: u => `<span class="pill tiny">${C.esc(u.comp)}</span>` },
+    { key: 'match', label: '對戰', value: u => u.home, left: true,
+      render: u => (u.link
+        ? `<a href="${u.link}" style="color:inherit">${C.esc(u.home)} <span class="dim">vs</span> ${C.esc(u.away)}</a>`
+        : `${C.esc(u.home)} <span class="dim">vs</span> ${C.esc(u.away)}`) },
+    { key: 'note', label: '輪次', value: u => u.note, sortable: false,
+      render: u => `<span class="tiny dim">${C.esc(u.note)}</span>` },
+  ], { sortKey: 'kick', desc: false })}
+  <div class="tiny dim" style="margin-top:8px">${cupBeyond.length ? `7 天之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}
+    聯賽場次點對戰直接進賽前分析;盃賽場次沒有分析頁(模型是聯賽調的)。
+    只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
+  : `<div class="note">未來 7 天沒有已排定的比賽(或開球時間上游還沒公布)。
+    ${cupBeyond.length ? `之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}</div>`}`;
+
   /* 最新動態:每個聯賽各取前幾則再依日期合併。
      只取一部分是因為這是總覽 —— 完整的在各聯賽的動態頁。 */
   const news = leagues.flatMap(({ lg, data }) => (data.news ?? []).slice(0, 4)
@@ -121,6 +198,8 @@ try {
     ${kpi('已完賽', totalPlayed, '本季各聯賽合計')}
     ${kpi('盃賽', cupList.length, cupList.map(c => C.esc(c.zh ?? c.en)).join('、') || '尚未接入')}
   </div>
+
+  ${upcomingBlock}
 
   <div class="section"><h2>各聯賽</h2><span class="hint">點分頁直接進去・只列這個聯賽真的做得出來的頁</span></div>
   <div class="grid g2">${leagues.map(leagueCard).join('')}</div>
@@ -164,4 +243,5 @@ try {
 
   <footer class="foot wrap">資料來源:${sources || '見各頁'}。
     預測僅供分析參考,不構成任何投注建議。</footer>`;
+  C.startCountdowns();   // 「即將到來」的倒數要會走,不然停在載入當下慢慢變錯
 } catch (err) { C.fail(err); }
