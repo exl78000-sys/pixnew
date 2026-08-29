@@ -1886,13 +1886,21 @@ async function checkDataGap() {
         && /m\.started && !m\.finished/.test(pa) && /20000/.test(pa)
         && /場上數據/.test(pa) && /沒有免費的即時來源/.test(pa)
         && /act\(sh\) \+ act\(sa\) > 0/.test(pa)
-        /* 走鐘:分鐘顯示以 feed 抓取時刻為錨往前推,每秒更新、不跨 45/90 界線 */
-        && /function liveMinute/.test(pa) && /data-liveclock/.test(pa)
-        && /'45\+'/.test(pa) && /'90\+'/.test(pa) && /}, 1000\)/.test(pa)
-        /* 倒數/變 0 那次的兩個修法:feed 只進不退(CDN 新舊副本交替)、
-           錨取官方鐘與 FPL 分鐘的較大者(剛開賽的官方鐘快取停在 00'00) */
-        && /Date\.parse\(fetchedAt\) < Date\.parse\(cur\.fetchedAt\)/.test(pa)
-        && /offEff >= fpl/.test(pa)
+        /* 走鐘:分鐘顯示以 feed 抓取時刻為錨往前推,每秒更新、不跨 45/90 界線。
+           共用一份在 core(各寫一份的話修了分析頁、實時頁照舊凍住 —— 實際發生),
+           錨取官方鐘與 FPL 分鐘的較大者(剛開賽的官方鐘快取停在 00'00 → 變 0 那次),
+           feed 只進不退(CDN 新舊副本交替 → 倒數那次),兩頁各自有守門。 */
+        && (() => {
+          const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+          return /export function liveMinute/.test(core)
+            && /'45\+'/.test(core) && /'90\+'/.test(core) && /offEff >= fpl/.test(core)
+            && !/function liveMinute/.test(pa) && !/function liveMinute/.test(pl)   // 不准各自再寫一份
+            && /C\.liveMinute\(/.test(pa) && /C\.liveMinute\(/.test(pl)
+            && /data-liveclock/.test(pa) && /data-liveclock/.test(pl)
+            && /}, 1000\)/.test(pa) && /}, 1000\)/.test(pl)
+            && /Date\.parse\(fetchedAt\) < Date\.parse\(cur\.fetchedAt\)/.test(pa)
+            && /Date\.parse\(stamp\) < Date\.parse\(lastStamp\)/.test(pl);
+        })()
         && /點開看講評、勝率曲線與場上資訊/.test(pl)
         && pl.includes(`href="\${C.link('analysis', { id: m.fixtureId })}"`);
     })()],
