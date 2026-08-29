@@ -119,6 +119,14 @@ check('西甲即時輪詢有 include fallback 與硬上限',
   /participants;state;scores;events/.test(sportmonksLiveSource)
   && /participants;state;scores/.test(sportmonksLiveSource)
   && /MAX_REQUESTS/.test(sportmonksLiveSource));
+/* 2026-08-29 實測 LEV|BET 踩到的兩個坑:分數列的正則連 1ST_HALF/2ND_HALF
+   分段列一起收(分段不是累計,存成 1:2 而事件已 3:2);事件不按時間排,
+   .at(-1) 撿到 17' 的越位當成現在分鐘。 */
+check('西甲即時:比分只認 CURRENT 列、分鐘取全部訊號的最大值(不撿最後一筆事件)',
+  /\\bCURRENT\\b/.test(sportmonksLiveSource)
+  && /Math\.max\(0, \.\.\.eventRows\.map\(evMin\)/.test(sportmonksLiveSource)
+  && /Math\.max\(eventMinute, stateFloor/.test(sportmonksLiveSource)
+  && !/filter\(Number\.isFinite\)\.at\(-1\)/.test(sportmonksLiveSource));
 const officialSample = `<a href="/en-US/clubs/fc-barcelona/squad">Barcelona</a><a href="/en-US/clubs/fc-barcelona/squad">duplicate</a>
   <script type="application/ld+json">${JSON.stringify({
     name: 'FC Barcelona', coach: [
