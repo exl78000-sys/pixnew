@@ -794,7 +794,9 @@ try {
        軸是逐場真的量得到的欄位 —— 主雷達那六軸(xG 系)近 10 場沒有逐場來源,
        疊上去就是編數字,所以這張自己一組軸。百分位的池在 build 端算
        (近況跟各隊近況比、上季跟各隊上季比),前端只畫。 */
-    const AXES = [['sf', '射門'], ['stf', '射正'], ['cf', '角球'], ['sa', '被射門↓'], ['sta', '被射正↓'], ['cards', '吃牌↓']];
+    /* 合成軸(使用者回饋:裸統計軸沒有風格感)。公式在說明列出,反向已在 build 端處理 */
+    const AXES = [['volume', '攻勢量能'], ['convert', '進球轉化'], ['control', '場面控制'],
+      ['suppress', '防守壓制'], ['defend', '防線把關'], ['discipline', '紀律']];
     const radarBlock = st.recentPct ? (() => {
       const vals = pct => AXES.map(([k, label]) => ({ label, value: pct[k] }));
       const series = [];
@@ -802,10 +804,13 @@ try {
       series.push({ name: `近 ${st.recent.games} 場`, color: '#00ff85', dash: '6 5', values: vals(st.recentPct) });
       return `${C.radar(series, { size: 280, levels: true })}
         <div class="tiny dim" style="text-align:center;margin:2px 0 10px">
-          軸旁數字為 10 級分${st.baselinePct ? '(上季→近況)' : ''},<b>兩層同一把尺</b>:上季全季 ${st.pctPool.ruler} 隊(含已降級的)的分布 ——
-          級分變了就是這支球隊自己動了,跟別隊本季的變化無關。
-          近 ${st.recent.games} 場的平均比整季抖,貼到 1 或 10 的極端級分可能含小樣本雜訊。
-          ↓ 的軸反向計分:越靠外代表被射門/被射正/吃牌越少。</div>`;
+          軸旁數字為 10 級分${st.baselinePct ? '(上季→近況)' : ''},<b>兩層同一把尺</b>:上季 ${st.pctPool.ruler} 隊(含已降級的)
+          全部 ${st.window} 場滾動視窗的分布(共 ${st.pctPool.windows} 段)——
+          同樣本大小對同樣本大小,10 代表比上季任何一隊的任何一段 ${st.window} 場都強。
+          軸是公式透明的合成指標:攻勢量能=射門+角球、進球轉化=進球÷射門、
+          場面控制=我方射門佔雙方射門比例、防守壓制=被射門(反向)、
+          防線把關=失球÷被射門(反向)、紀律=牌(反向)。
+          逐場 xG 沒有免費來源,所以這張不用 xG —— 跟主雷達的軸不是同一套,不可互比。</div>`;
     })() : '';
     return `<div class="card" style="margin-top:14px">
       <div class="spread"><h3 style="margin:0">近 ${st.recent.games} 場風格位移</h3>

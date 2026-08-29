@@ -85,22 +85,51 @@ export function styleTrendFor({ lastRows = [], curRows = [], window = 10, minGam
 }
 
 /* 雷達軸(前端疊層用)。主雷達那六軸是 xG 系的量,近 10 場沒有逐場 xG 來源,
- * 疊上去就是編數字 —— 所以位移雷達自己一組軸,全部用逐場真的量得到的欄位。
- * 被射門/被射正/牌反向:雷達的慣例是「越外越好」,跟主雷達的防守穩固同一個做法。 */
+ * 疊上去就是編數字 —— 所以位移雷達自己一組軸,全部從逐場真的量得到的欄位**合成**
+ * (使用者回饋:裸統計軸沒有風格感)。公式透明、跟主雷達的韌性軸同一種做法
+ * (那條也是加權合成)。反向軸:雷達慣例越外越好。 */
 export const TREND_RADAR_AXES = [
-  ['sf', '射門', false], ['stf', '射正', false], ['cf', '角球', false],
-  ['sa', '被射門↓', true], ['sta', '被射正↓', true], ['cards', '吃牌↓', true],
+  ['volume', '攻勢量能', false],     // 射門+角球/場:製造攻勢的總量
+  ['convert', '進球轉化', false],    // 進球÷射門:終結把握
+  ['control', '場面控制', false],    // 我方射門÷雙方射門(TSR):比賽主導權
+  ['suppress', '防守壓制', true],    // 被射門/場(反向):讓對手出不了手
+  ['defend', '防線把關', true],      // 失球÷被射門(反向):被射也守得住
+  ['discipline', '紀律', true],      // 牌/場(反向)
 ];
 
-/* 分級尺:上季全季**全部球隊**的場均分布 —— 含降級隊(上季的聯賽就是完整的
- * 20/24 隊,尺不能只用留下來的那幾隊)。rowsByTeam 直接吃 teamMatchRows 的輸出;
- * minGames 擋掉資料不完整的隊(整季 CSV 每隊都該接近全季場次)。 */
-export function seasonRuler(rowsByTeam, { minGames = 30 } = {}) {
-  const teams = [...rowsByTeam.values()].map(avg).filter(a => a && a.games >= minGames);
-  return {
-    teams: teams.length,
-    pools: Object.fromEntries(TREND_RADAR_AXES.map(([f]) => [f, teams.map(a => a[f])])),
-  };
+/* 場均值 → 合成軸。比率用場均相除(分子分母各自平均後相除 = 總和相除,一致)。
+   分母為 0 加不了倒數那課(versus 的坑):給中性值不給 Infinity。 */
+export const styleAxesOf = a => (a ? {
+  volume: round(a.sf + a.cf, 2),
+  convert: a.sf ? round(a.gf / a.sf, 3) : 0,
+  control: (a.sf + a.sa) ? round(a.sf / (a.sf + a.sa), 3) : 0.5,
+  suppress: a.sa,
+  defend: a.sa ? round(a.ga / a.sa, 3) : 0,
+  discipline: a.cards,
+} : null);
+
+/* 分級尺:上季**全部球隊的所有 10 場滾動視窗**的分布,含降級隊。
+ *
+ * 第一版用全季平均當尺,實測散佈太窄(2025-26 英超射門/場:全季平均
+ * 9.3~15.7、10 場視窗 7.0~19.7)—— 38 場的平均把波動抹平了,拿 10 場的
+ * 高波動值去比,隨便一波熱潮就頂穿整把尺,級分 10 變得太便宜(使用者抓到:
+ * 曼城六軸幾乎全 10)。同樣本大小對同樣本大小,10 才代表
+ * 「比上季任何一隊的任何一段 10 場都強」。
+ * 基準層(全季平均)放同一把尺上讀作「這隊典型的 10 場落在哪」——
+ * 兩層同尺的性質不變,箭頭仍然只有一個意思。 */
+export function seasonRuler(rowsByTeam, { window = 10, minGames = 30 } = {}) {
+  const pools = Object.fromEntries(TREND_RADAR_AXES.map(([f]) => [f, []]));
+  let teams = 0, windows = 0;
+  for (const rows of rowsByTeam.values()) {
+    if (rows.length < minGames) continue;
+    teams++;
+    for (let i = 0; i + window <= rows.length; i++) {
+      const w = styleAxesOf(avg(rows.slice(i, i + window)));
+      for (const [f] of TREND_RADAR_AXES) pools[f].push(w[f]);
+      windows++;
+    }
+  }
+  return { teams, windows, pools };
 }
 
 /* 把級分用的百分位掛回每隊的 styleTrend。**兩層共用同一把尺**(上季全季分布):
@@ -115,10 +144,11 @@ export function attachTrendPercentiles(byCode, { ruler } = {}) {
     return inverse ? round(100 - p, 1) : p;
   };
   for (const t of byCode.values()) {
-    t.recentPct = Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(t.recent[f], ruler.pools[f], inv)]));
-    t.baselinePct = t.baseline
-      ? Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(t.baseline[f], ruler.pools[f], inv)]))
+    const rAxes = styleAxesOf(t.recent), bAxes = styleAxesOf(t.baseline);
+    t.recentPct = Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(rAxes[f], ruler.pools[f], inv)]));
+    t.baselinePct = bAxes
+      ? Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(bAxes[f], ruler.pools[f], inv)]))
       : null;
-    t.pctPool = { ruler: ruler.teams };
+    t.pctPool = { ruler: ruler.teams, windows: ruler.windows };
   }
 }

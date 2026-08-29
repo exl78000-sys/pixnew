@@ -1515,12 +1515,12 @@ async function checkDataGap() {
           return [
             ['疊層級分:每隊都有 recentPct 且 0~100、尺含降級隊', ruler.teams === 3
               && [...m.values()].every(t => t.recentPct && inRange(t)), ''],
-            ['被射門反向計分:被射門多的隊 saPct 較低', hi.recentPct.sa < lo.recentPct.sa,
-              `hi=${hi.recentPct.sa} lo=${lo.recentPct.sa}`],
+            ['防守壓制反向:被射門多的隊 suppress 級分較低', hi.recentPct.suppress < lo.recentPct.suppress,
+              `hi=${hi.recentPct.suppress} lo=${lo.recentPct.suppress}`],
             /* 兩層同一把尺:同一個值不管在哪一層,百分位必須一樣 ——
                這就是「箭頭只有一個意思」的那條性質 */
-            ['兩層同尺:近況值等於上季值時,兩層百分位相同', lo.recentPct.sa === lo.baselinePct.sa
-              && lo.recentPct.sf === lo.baselinePct.sf, ''],
+            ['兩層同尺:近況值等於上季值時,兩層百分位相同', lo.recentPct.suppress === lo.baselinePct.suppress
+              && lo.recentPct.volume === lo.baselinePct.volume, ''],
             ['沒有上季基準的隊 baselinePct 為 null、尺大小照實記', noBase.baselinePct === null
               && noBase.pctPool.ruler === 3, ''],
             ['沒有上季 CSV(尺是空的)就不給級分,前端只畫表', (() => {
@@ -1547,7 +1547,7 @@ async function checkDataGap() {
     ['位移卡有疊層雷達:上季實線、近況虛線、反向軸有說明', (() => {
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
-      return /st\.recentPct/.test(pg) && /dash: '6 5'/.test(pg) && /反向計分/.test(pg)
+      return /st\.recentPct/.test(pg) && /dash: '6 5'/.test(pg) && /反向/.test(pg)
         && /stroke-dasharray/.test(core);
     })()],
     /* 使用者要求:百分位改 10 級分呈現。級分只是顯示層(每 10 分一級,10 最高),
