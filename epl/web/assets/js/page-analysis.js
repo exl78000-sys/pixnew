@@ -1,4 +1,4 @@
-import * as C from './core.js?v=d3c50968';
+import * as C from './core.js?v=30e7c403';
 
 const app = document.getElementById('app');
 
@@ -278,7 +278,7 @@ try {
          + CDN)疊出來的。只改字,不重畫面板。 */
       C.pageInterval(() => {
         if (!cur) return;
-        const t = `第 ${liveMinute(cur.m, cur.fetchedAt).disp} 分鐘`;
+        const t = `第 ${C.liveMinute(cur.m, cur.fetchedAt).disp} 分鐘`;
         document.querySelectorAll('[data-liveclock]').forEach(n => { n.textContent = t; });
       }, 1000);
     }
@@ -531,34 +531,11 @@ try {
      完場自動消失,由賽後分析接手 —— 單場的家始終只有這一頁。
      事件時間軸(進球/牌/換人)吃的是 official.json,重新整理才會更新;
      面板上的比分與機率不用重新整理。 */
-  /* 顯示用分鐘。FPL 的 minutes 一塊一塊跳(實測停在 75 好幾分鐘不動),
-     官方鐘也只隨 feed 每 2 分鐘進來一次 —— 兩者都會「凍住」。
-     所以拿 feed 的抓取時刻當錨,之後用本機時間推進,並照實標成推算。
-     不跨越 45/90 兩道界線:中場休息多久、補時多長沒有資料,
-     越線就停在 45+ / 90+,不編一個具體數字。 */
-  function liveMinute(m, fetchedAt) {
-    const off = typeof m.clock === 'string' ? m.clock.match(/^(\d+)\s*(?:\+(\d+))?/) : null;
-    const elapsed = fetchedAt ? Math.max(0, (Date.now() - Date.parse(fetchedAt)) / 60000) : 0;
-    /* 錨取兩個來源的較大者。兩個都是「至少踢到這裡」的下界,單獨信哪個都出過錯:
-       官方鐘在剛開賽的快取裡還停在賽前的 00'00(實測「變 0 分鐘」就是這條),
-       FPL 分鐘則塊狀跳。 */
-    const offEff = off ? Number(off[1]) + (off[2] ? Number(off[2]) : 0) : null;
-    const fpl = m.minute ?? 0;
-    if (off && off[2] != null && offEff >= fpl) {   // 補時中且官方鐘沒落後:45+X / 90+X,只推進補時的部分
-      return { disp: `${Number(off[1])}+${Number(off[2]) + Math.floor(elapsed)}`,
-        src: `官方比賽鐘 ${m.clock}`, est: elapsed >= 1 };
-    }
-    const useOff = offEff != null && offEff >= fpl;
-    const base = useOff ? offEff : fpl;
-    const est = base + elapsed;
-    const disp = base <= 45 && est >= 45 ? '45+' : est >= 90 ? '90+' : String(Math.floor(est));
-    return { disp, src: useOff ? `官方比賽鐘 ${m.clock}` : `FPL 分鐘 ${m.minute}`, est: elapsed >= 1 };
-  }
-
+  /* 顯示用分鐘走 C.liveMinute(跟實時頁共用 —— 各寫一份的話修了這頁那頁照舊凍住) */
   function livePanelHtml(m, colors, fetchedAt) {
     const H = m.sides?.[m.home], A = m.sides?.[m.away];
     const ip = m.inplay;
-    const mn = liveMinute(m, fetchedAt);
+    const mn = C.liveMinute(m, fetchedAt);
     /* 場上數據表:FPL 即時逐人欄位的全隊加總。開關看「有沒有任何一項動起來」——
        實測中場時 FPL 的三個指數還是 0、防守計數已有值,只看指數會把真資料藏掉。
        全零(剛開賽)整卡不出,零和的列(兩邊都還是 0)個別藏。 */

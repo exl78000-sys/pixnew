@@ -1,5 +1,5 @@
-import * as C from './core.js?v=d3c50968';
-import { mountSimTable } from './sim-table.js?v=86321127';
+import * as C from './core.js?v=30e7c403';
+import { mountSimTable } from './sim-table.js?v=e2d55fab';
 
 const app = document.getElementById('app');
 
@@ -322,7 +322,7 @@ try {
     return `<a class="card matchcard" ${m.fixtureId
       ? `href="${C.link('analysis', { id: m.fixtureId })}"`
       : `href="#" data-match="${m.key}"`}>
-      <div class="spread"><span class="pill bad"><span class="livedot"></span>第 ${m.minute} 分鐘</span>
+      <div class="spread"><span class="pill bad"><span class="livedot"></span><span data-liveclock="${C.esc(m.key)}">第 ${C.liveMinute(m, live.fetchedAt).disp} 分鐘</span></span>
         <span class="tiny dim">第 ${m.round} 輪</span></div>
       <div style="margin:12px 0">${scoreOf(m)}</div>
       ${p ? C.probBar(p) : ''}
@@ -401,7 +401,7 @@ try {
       <div class="card">
         <div class="spread">
           <span class="small dim">${C.kickoffLocal(m.kickoff)}・第 ${m.round} 輪</span>
-          <span class="pill ${m.finished ? '' : 'bad'}">${m.finished ? '完場' : `第 ${m.minute} 分鐘`}</span>
+          <span class="pill ${m.finished ? '' : 'bad'}">${m.finished ? '完場' : `<span data-liveclock="${C.esc(m.key)}">第 ${C.liveMinute(m, live.fetchedAt).disp} 分鐘</span>`}</span>
         </div>
         <div style="margin:14px 0">${scoreOf(m)}</div>
         ${p ? `${C.probBar(p)}
@@ -454,6 +454,9 @@ try {
       const fresh = await fetchLive();
       if (!fresh) return;
       const stamp = fresh.fetchedAt ?? null;
+      /* feed 只進不退:raw CDN 會新舊副本交替回應,收了舊的那份,
+         比分與分鐘會整頁倒退(分析頁同一條規則) */
+      if (stamp && lastStamp && Date.parse(stamp) < Date.parse(lastStamp)) return;
       if (stamp !== lastStamp || fresh.available !== live.available) {
         lastStamp = stamp;
         live = fresh;
@@ -462,5 +465,12 @@ try {
     } catch { /* 靜態站沒有即時端點時會失敗,忽略即可 */ }
   }, POLL_MS);
   C.pageInterval(renderPage, REDRAW_MS);
+  /* 走鐘:卡片與抽屜的分鐘每秒往前(跟分析頁同一套 C.liveMinute),只改字不重畫 */
+  C.pageInterval(() => {
+    for (const n of document.querySelectorAll('[data-liveclock]')) {
+      const m = (live?.matches ?? []).find(x => x.key === n.dataset.liveclock);
+      if (m && m.started && !m.finished) n.textContent = `第 ${C.liveMinute(m, live.fetchedAt).disp} 分鐘`;
+    }
+  }, 1000);
 
 } catch (err) { C.fail(err); }

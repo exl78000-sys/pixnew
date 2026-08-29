@@ -296,6 +296,29 @@ export const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;',
 
 export const formRun = arr => `<span class="form-run">${(arr ?? []).map(f => `<i class="frm ${f}">${f}</i>`).join('')}</span>`;
 
+/* 顯示用比賽分鐘(分析頁與實時頁共用 —— 各寫一份的話修了一頁另一頁照舊凍住,
+   實測就是這樣發生的)。FPL 的 minutes 塊狀跳、官方鐘只隨 feed 每 2 分鐘進來,
+   所以拿 feed 抓取時刻當錨、用本機時間往前推,照實標成推算。
+   兩個防倒退/歸零的規則,都是使用者實際看到過的症狀:
+   - 錨取官方鐘與 FPL 分鐘的**較大者**:兩個都是「至少踢到這裡」的下界,
+     剛開賽的官方鐘快取還停在賽前的 00'00,單獨信它會變 0 分鐘。
+   - 不跨 45/90 界線:中場多久、補時多長沒有資料,越線停在 45+/90+。 */
+export function liveMinute(m, fetchedAt) {
+  const off = typeof m.clock === 'string' ? m.clock.match(/^(\d+)\s*(?:\+(\d+))?/) : null;
+  const elapsed = fetchedAt ? Math.max(0, (Date.now() - Date.parse(fetchedAt)) / 60000) : 0;
+  const offEff = off ? Number(off[1]) + (off[2] ? Number(off[2]) : 0) : null;
+  const fpl = m.minute ?? 0;
+  if (off && off[2] != null && offEff >= fpl) {   // 補時中且官方鐘沒落後:只推進補時的部分
+    return { disp: `${Number(off[1])}+${Number(off[2]) + Math.floor(elapsed)}`,
+      src: `官方比賽鐘 ${m.clock}`, est: elapsed >= 1 };
+  }
+  const useOff = offEff != null && offEff >= fpl;
+  const base = useOff ? offEff : fpl;
+  const est = base + elapsed;
+  const disp = base <= 45 && est >= 45 ? '45+' : est >= 90 ? '90+' : String(Math.floor(est));
+  return { disp, src: useOff ? `官方比賽鐘 ${m.clock}` : `FPL 分鐘 ${m.minute}`, est: elapsed >= 1 };
+}
+
 export function probBar(p) {
   const seg = (cls, v, label) => `<span class="${cls}" style="flex:${Math.max(0.001, v)}" title="${label} ${pct(v)}">${v >= 0.13 ? pct(v, 0) : ''}</span>`;
   return `<span class="prob">${seg('h', p.home, '主勝')}${seg('d', p.draw, '和局')}${seg('a', p.away, '客勝')}</span>`;
