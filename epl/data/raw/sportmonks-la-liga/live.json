@@ -4,29 +4,29 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-29T19:00:27.842Z",
+  "fetchedAt": "2026-08-29T19:16:00.406Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
     "total": 1,
-    "live": 0,
-    "finished": 1,
+    "live": 1,
+    "finished": 0,
     "upcoming": 0
   },
   "matches": [
     {
-      "key": "RSO|ESP",
+      "key": "SEV|ATM",
       "season": "2026-27",
-      "home": "RSO",
-      "away": "ESP",
-      "kickoff": "2026-08-29 17:00:00",
+      "home": "SEV",
+      "away": "ATM",
+      "kickoff": "2026-08-29 19:30:00",
       "started": true,
-      "finished": true,
-      "minute": 90,
-      "hs": 2,
-      "as": 1,
+      "finished": false,
+      "minute": 0,
+      "hs": 0,
+      "as": 0,
       "sides": {
-        "RSO": {
+        "SEV": {
           "xi": [],
           "bench": [],
           "offs": [],
@@ -41,28 +41,19 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 2,
+          "goals": 0,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [
-            {
-              "name": "Ander Barrenetxea",
-              "goals": 1
-            },
-            {
-              "name": "Orri Óskarsson",
-              "goals": 1
-            }
-          ],
+          "scorers": [],
           "assisters": [],
           "cards": [],
           "best": [],
           "used": 0,
           "coach": null
         },
-        "ESP": {
+        "ATM": {
           "xi": [],
           "bench": [],
           "offs": [],
@@ -77,17 +68,12 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 1,
+          "goals": 0,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [
-            {
-              "name": "Roberto Fernández",
-              "goals": 1
-            }
-          ],
+          "scorers": [],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -96,21 +82,21 @@
         }
       },
       "advanced": {
-        "key": "RSO|ESP",
+        "key": "SEV|ATM",
         "season": "2026-27",
         "source": "sportmonks",
-        "fixtureId": 19732714,
-        "kickoff": "2026-08-29 17:00:00",
-        "status": 5,
-        "home": "RSO",
-        "away": "ESP",
-        "fetchedAt": "2026-08-29T19:12:53.934Z",
+        "fixtureId": 19732713,
+        "kickoff": "2026-08-29 19:30:00",
+        "status": 1,
+        "home": "SEV",
+        "away": "ATM",
+        "fetchedAt": "2026-08-29T19:16:00.403Z",
         "score": {
-          "home": 2,
-          "away": 1
+          "home": 0,
+          "away": 0
         },
         "teamStats": {
-          "RSO": {
+          "SEV": {
             "possession": null,
             "shots": null,
             "shotsOn": null,
@@ -125,7 +111,7 @@
             "passAccuracy": null,
             "xG": null
           },
-          "ESP": {
+          "ATM": {
             "possession": null,
             "shots": null,
             "shotsOn": null,
@@ -142,281 +128,20 @@
           }
         },
         "players": {
-          "RSO": [],
-          "ESP": []
+          "SEV": [],
+          "ATM": []
         },
-        "events": [
-          {
-            "minute": 4,
-            "extra": null,
-            "label": "4'",
-            "team": "RSO",
-            "type": "",
-            "detail": "Right foot shot",
-            "comments": "1st Goal",
-            "player": "Ander Barrenetxea",
-            "playerId": 27440827,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 45,
-            "extra": null,
-            "label": "45'",
-            "team": "ESP",
-            "type": "",
-            "detail": "Right foot shot",
-            "comments": "2nd Goal",
-            "player": "Roberto Fernández",
-            "playerId": 37568657,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 61,
-            "extra": null,
-            "label": "61'",
-            "team": "RSO",
-            "type": "",
-            "detail": "Right foot shot",
-            "comments": "3rd Goal",
-            "player": "Orri Óskarsson",
-            "playerId": 34573363,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 46,
-            "extra": null,
-            "label": "46'",
-            "team": "ESP",
-            "type": "",
-            "detail": null,
-            "comments": "1st Substitution",
-            "player": "Gabriel Moscardo",
-            "playerId": 37691726,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 62,
-            "extra": null,
-            "label": "62'",
-            "team": "RSO",
-            "type": "",
-            "detail": null,
-            "comments": "2nd Substitution",
-            "player": "Yangel Herrera",
-            "playerId": 411876,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 63,
-            "extra": null,
-            "label": "63'",
-            "team": "RSO",
-            "type": "",
-            "detail": null,
-            "comments": "3rd Substitution",
-            "player": "Alex Marchal",
-            "playerId": 37719250,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 70,
-            "extra": null,
-            "label": "70'",
-            "team": "ESP",
-            "type": "",
-            "detail": null,
-            "comments": "4th Substitution",
-            "player": "Rafel Bauzà",
-            "playerId": 37716722,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 70,
-            "extra": null,
-            "label": "70'",
-            "team": "ESP",
-            "type": "",
-            "detail": null,
-            "comments": "5th Substitution",
-            "player": "Marcos Fernández",
-            "playerId": 37608472,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 78,
-            "extra": null,
-            "label": "78'",
-            "team": "RSO",
-            "type": "",
-            "detail": null,
-            "comments": "6th Substitution",
-            "player": "Gonçalo Guedes",
-            "playerId": 97692,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 78,
-            "extra": null,
-            "label": "78'",
-            "team": "RSO",
-            "type": "",
-            "detail": null,
-            "comments": "7th Substitution",
-            "player": "Takefusa Kubo",
-            "playerId": 525790,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 83,
-            "extra": null,
-            "label": "83'",
-            "team": "ESP",
-            "type": "",
-            "detail": null,
-            "comments": "8th Substitution",
-            "player": "Jofre Carreras",
-            "playerId": 30851996,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 83,
-            "extra": null,
-            "label": "83'",
-            "team": "ESP",
-            "type": "",
-            "detail": null,
-            "comments": "9th Substitution",
-            "player": "Pere Milla",
-            "playerId": 186694,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 90,
-            "extra": null,
-            "label": "90'",
-            "team": "RSO",
-            "type": "",
-            "detail": null,
-            "comments": "10th Substitution",
-            "player": "Jon Gorrotxategi",
-            "playerId": 37544115,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 17,
-            "extra": null,
-            "label": "17'",
-            "team": "RSO",
-            "type": "",
-            "detail": "Foul",
-            "comments": "1st Yellowcard",
-            "player": "Beñat Turrientes",
-            "playerId": 32819168,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 22,
-            "extra": null,
-            "label": "22'",
-            "team": "ESP",
-            "type": "",
-            "detail": "Foul",
-            "comments": "2nd Yellowcard",
-            "player": "Urko González de Zárate",
-            "playerId": 30446852,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 75,
-            "extra": null,
-            "label": "75'",
-            "team": "ESP",
-            "type": "",
-            "detail": "Foul",
-            "comments": "3rd Yellowcard",
-            "player": "Marcos Fernández",
-            "playerId": 37608472,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 82,
-            "extra": null,
-            "label": "82'",
-            "team": "ESP",
-            "type": "",
-            "detail": "Foul",
-            "comments": "4th Yellowcard",
-            "player": "Roger Hinojo",
-            "playerId": 37731254,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 88,
-            "extra": null,
-            "label": "88'",
-            "team": "ESP",
-            "type": "",
-            "detail": "Argument",
-            "comments": "5th Yellowcard",
-            "player": "Rafel Bauzà",
-            "playerId": 37716722,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 90,
-            "extra": 3,
-            "label": "90+3'",
-            "team": "RSO",
-            "type": "",
-            "detail": "Time wasting",
-            "comments": "6th Yellowcard",
-            "player": "Igor Zubeldia",
-            "playerId": 187170,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 90,
-            "extra": 4,
-            "label": "90+4'",
-            "team": "RSO",
-            "type": "",
-            "detail": "Argument",
-            "comments": "1st Redcard",
-            "player": "Pellegrino Matarazzo",
-            "playerId": null,
-            "assist": null,
-            "assistId": null
-          }
-        ],
+        "events": [],
         "lineups": {
-          "RSO": {
-            "team": "RSO",
+          "SEV": {
+            "team": "SEV",
             "formation": null,
             "xi": [],
             "bench": [],
             "coach": null
           },
-          "ESP": {
-            "team": "ESP",
+          "ATM": {
+            "team": "ATM",
             "formation": null,
             "xi": [],
             "bench": [],
@@ -444,54 +169,62 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 90,
-        "finished": true,
-        "remaining": 0,
-        "home": 1,
-        "draw": 0,
-        "away": 0,
-        "xgRestHome": 0,
-        "xgRestAway": 0,
+        "minute": 0,
+        "finished": false,
+        "remaining": 1,
+        "home": 0.3515,
+        "draw": 0.2479,
+        "away": 0.4006,
+        "xgRestHome": 1.39,
+        "xgRestAway": 1.5,
         "expectedFinal": {
-          "home": 2,
-          "away": 1
+          "home": 1.39,
+          "away": 1.5
         },
         "nextGoal": {
-          "home": 0,
-          "away": 0,
-          "none": 1
+          "home": 0.454,
+          "away": 0.49,
+          "none": 0.056
         },
         "topScores": [
           {
+            "s": "1-1",
+            "p": 0.1159
+          },
+          {
+            "s": "1-2",
+            "p": 0.0869
+          },
+          {
+            "s": "0-1",
+            "p": 0.0834
+          },
+          {
             "s": "2-1",
-            "p": 1
+            "p": 0.0806
           },
           {
-            "s": "2-2",
-            "p": 0
-          },
-          {
-            "s": "2-3",
-            "p": 0
-          },
-          {
-            "s": "2-4",
-            "p": 0
-          },
-          {
-            "s": "2-5",
-            "p": 0
+            "s": "1-0",
+            "p": 0.0773
           }
         ]
       },
       "preMatch": {
-        "home": 0.4633,
-        "draw": 0.2522,
-        "away": 0.2845,
-        "xgHome": 1.68,
-        "xgAway": 1.22
+        "home": 0.3379,
+        "draw": 0.2615,
+        "away": 0.4007,
+        "xgHome": 1.39,
+        "xgAway": 1.5
       },
-      "liveSummary": null
+      "liveSummary": {
+        "kind": "live",
+        "minute": 0,
+        "paragraphs": [
+          "第 0 分鐘,Sevilla FC 0:0 Atlético de Madrid。",
+          "賽前模型 34%/26%/40%(主/和/客),目前 35%/25%/40% —— Sevilla FC勝的機率升了 1 個百分點。",
+          "模型估下一球:Sevilla FC 45%、Atlético de Madrid 49%,剩餘時間期望再進 1.39:1.5。"
+        ]
+      }
     }
   ],
   "note": "SportMonks livescores/inplay；比分與狀態來自即時端點。速度、距離、衝刺不在方案欄位內。"
