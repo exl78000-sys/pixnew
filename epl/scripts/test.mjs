@@ -1523,7 +1523,37 @@ async function checkDataGap() {
               && lo.recentPct.volume === lo.baselinePct.volume, ''],
             ['沒有上季基準的隊 baselinePct 為 null、尺大小照實記', noBase.baselinePct === null
               && noBase.pctPool.ruler === 3, ''],
-            ['沒有上季 CSV(尺是空的)就不給級分,前端只畫表', (() => {
+            /* xG 三軸(2026-08-29):逐場 xG join 齊才用 XG 組,半套不硬用 */
+        ...(() => {
+          const mkXg = n => mk(n).map((r, i) => ({ ...r, xg: 1.5, xga: 1.2, date: r.date + '' }));
+          const full = styleTrendFor({ lastRows: mkXg(38), curRows: mkXg(2) });
+          const holey = styleTrendFor({ lastRows: mkXg(38), curRows: [...mkXg(1), { ...mk(1)[0], xg: null, xga: null }] });
+          const m2 = new Map([['XX', full], ['YY', holey]]);
+          const ruler2 = seasonRuler(new Map([['XX', mkXg(38)], ['YY', mkXg(38)]]));
+          attachTrendPercentiles(m2, { ruler: ruler2 });
+          return [
+            ['xG 視窗完整 → XG 組(前三軸與主雷達同名)', full.recent.xg === 1.5
+              && m2.get('XX').axesMode === 'xg' && m2.get('XX').axes[0].key === 'atk'
+              && m2.get('XX').axes[0].label === '進攻火力', ''],
+            ['xG 缺一場 → 整組退回實測軸,不用半套平均', holey.recent.xg === null
+              && m2.get('YY').axesMode === 'measured' && m2.get('YY').axes.some(a => a.key === 'volume'), ''],
+            ['尺記錄 xG 完整視窗數', ruler2.xgWindows === ruler2.windows && ruler2.windows > 0, ''],
+          ];
+        })(),
+        ['產物:英超與西甲的位移雷達用 XG 組、英冠維持實測組', (() => {
+          const pl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
+          const en = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'en2', 'teams.json'), 'utf8'));
+          const plXg = pl.filter(t => t.styleTrend?.axesMode === 'xg').length;
+          const enOk = en.filter(t => t.styleTrend).every(t => t.styleTrend.axesMode === 'measured');
+          return plXg >= 15 && enOk;
+        })()],
+        ['逐場 xG 快取:每隊逐場比分已對回本站賽果(rejected 空)', (() => {
+          const st = JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'understat', 'team-dates.json'), 'utf8'));
+          const last = st.seasons['2025-26'];
+          return Object.keys(last).length >= 20 && Object.values(last).every(t => t.verified)
+            && (st.rejected ?? []).length === 0;
+        })()],
+        ['沒有上季 CSV(尺是空的)就不給級分,前端只畫表', (() => {
               const solo = new Map([['X', styleTrendFor({ lastRows: [], curRows: mk(6) })]]);
               attachTrendPercentiles(solo, { ruler: seasonRuler(new Map()) });
               return solo.get('X').recentPct === undefined;
@@ -1554,10 +1584,11 @@ async function checkDataGap() {
        底層還是百分位 —— 隊數與說明都要跟著資料,不寫死 20。 */
     /* 位移標籤與軸序(2026-08-29,使用者要求跟主雷達對得起來):
        攻擊軸在上、防守在右下與下;標籤只給級分動 ≥2 的軸,±1 是雜訊不追。 */
-    ['位移雷達:軸序對齊主雷達語意、位移標籤 ≥2 級才給、無位移照實說', (() => {
+    ['位移雷達:軸組由資料決定(st.axes)、XG 組照主雷達位置重排、位移標籤 ≥2 級', (() => {
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
-      const i = pg.indexOf("['volume', '攻勢量能'], ['convert', '進球轉化'], ['suppress', '防守壓制']");
-      return i > 0 && /Math\.abs\(x\.d\) >= 2/.test(pg) && /打法沒有明顯位移/.test(pg);
+      return /st\.axes \?\?/.test(pg) && /'atk', 'fin', 'defx'/.test(pg)
+        && /Math\.abs\(x\.d\) >= 2/.test(pg) && /打法沒有明顯位移/.test(pg)
+        && /同名同義/.test(pg);
     })()],
     ['雷達軸標 10 級分:兩張雷達都開、說明講了級分、隊數不寫死', (() => {
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');

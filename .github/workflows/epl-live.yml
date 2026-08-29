@@ -181,6 +181,18 @@ jobs:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
         continue-on-error: true
 
+      # 逐場球隊 xG(Understat dates):上季驗證過就跳過,只刷新本季(每聯賽 ~20 請求)。
+      # 位移雷達的 xG 三軸靠它跟主雷達同名同義。
+      - name: 抓逐場球隊 xG(英超)
+        working-directory: epl
+        run: node scripts/fetch-team-xg.mjs --league=pl
+        continue-on-error: true
+
+      - name: 抓逐場球隊 xG(西甲)
+        working-directory: epl
+        run: node scripts/fetch-team-xg.mjs --league=es1
+        continue-on-error: true
+
       - name: 同步英超主要資料(SportMonks)
         run: npm run sportmonks:sync -- --league=pl --max-requests=65 --max-details=10
         env:
@@ -354,6 +366,8 @@ jobs:
                      epl/data/championship-teams-verified.json \
                      epl/data/live-history.json \
                      epl/data/raw/schedule-status.json \
+                     epl/data/raw/understat/team-dates.json \
+                     epl/data/raw/understat-la-liga/team-dates.json \
                      epl/data/championship-coaches-verified.json \
                      epl/data/raw/understat/ \
                      epl/data/raw/understat-la-liga/ \

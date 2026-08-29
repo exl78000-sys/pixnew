@@ -498,11 +498,25 @@ async function main() {
   const styleTrendBy = new Map();
   const xgTrendBy = new Map();
   {
-    const csvOf = season => {
-      const p = join(ROOT, 'data', 'raw', 'football-data-couk', `${season}.csv`);
-      return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf: T.codeOf }) : new Map();
+    /* 逐場 xG(Understat team-dates,已逐場對回賽果)join 進 CSV 列 ——
+       xG 三軸(進攻火力/終結效率/防守穩固)因此能跟主雷達同名同義。
+       缺 join 的列 xg=null,視窗不完整就整組退回實測軸(style-trend 決定)。 */
+    const xgStorePath = join(ROOT, 'data', 'raw', 'understat', 'team-dates.json');
+    const xgStore = existsSync(xgStorePath) ? JSON.parse(readFileSync(xgStorePath, 'utf8')) : null;
+    const xgLookupFor = season => {
+      const bucket = xgStore?.seasons?.[season];
+      if (!bucket) return null;
+      const map = new Map();
+      for (const [code, rec] of Object.entries(bucket)) {
+        for (const m of rec.matches ?? []) map.set(`${code}|${m.date}`, { xg: m.xg, xga: m.xga });
+      }
+      return (code, date) => map.get(`${code}|${date}`) ?? null;
     };
-    const lastRows = csvOf(LAST_SEASON), curRows = csvOf(CURRENT_SEASON);
+    const csvOf = (season, xgLookup) => {
+      const p = join(ROOT, 'data', 'raw', 'football-data-couk', `${season}.csv`);
+      return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf: T.codeOf, xgLookup }) : new Map();
+    };
+    const lastRows = csvOf(LAST_SEASON, xgLookupFor(LAST_SEASON)), curRows = csvOf(CURRENT_SEASON, xgLookupFor(CURRENT_SEASON));
     for (const code of curCodes) {
       const t = styleTrendFor({ lastRows: lastRows.get(code) ?? [], curRows: curRows.get(code) ?? [] });
       if (t) styleTrendBy.set(code, t);

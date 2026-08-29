@@ -30,7 +30,7 @@ const isoDate = s => {
 const FIELDS = ['sf', 'sa', 'stf', 'sta', 'cf', 'ca', 'cards', 'gf', 'ga'];
 
 /* 一份季檔 → 每隊的逐場列(主客展開)。缺射門欄位的列跳過(未來場次)。 */
-export function teamMatchRows(csvText, { codeOf, div = 'E0' } = {}) {
+export function teamMatchRows(csvText, { codeOf, div = 'E0', xgLookup = null } = {}) {
   const byTeam = new Map();
   for (const r of parseCSVObjects(csvText)) {
     if (div && r.Div !== div) continue;
@@ -48,6 +48,8 @@ export function teamMatchRows(csvText, { codeOf, div = 'E0' } = {}) {
         cards: num(r[pre + 'Y']) + num(r[pre + 'R']),
         gf: num(pre === 'H' ? r.FTHG : r.FTAG),
         ga: num(pre === 'H' ? r.FTAG : r.FTHG),
+        // 逐場 xG(Understat,已對回賽果)。缺 = null 不是 0 —— 沒有資料 ≠ 零
+        ...(xgLookup ? (xgLookup(code, date) ?? { xg: null, xga: null }) : {}),
       });
     };
     side(home, away, 'H', 'A', true);
@@ -61,6 +63,12 @@ export const avg = rows => {
   if (!rows.length) return null;
   const out = { games: rows.length };
   for (const f of FIELDS) out[f] = round(rows.reduce((s, r) => s + (r[f] ?? 0), 0) / rows.length, 2);
+  /* 逐場 xG:**全部列都有**才給平均 —— 半套視窗的 xG 平均會靜靜偏掉,
+     缺一場就整組 null,軸的選擇端據此退回實測軸。 */
+  if (rows.every(r => r.xg != null)) {
+    out.xg = round(rows.reduce((s, r) => s + r.xg, 0) / rows.length, 2);
+    out.xga = round(rows.reduce((s, r) => s + r.xga, 0) / rows.length, 2);
+  } else { out.xg = null; out.xga = null; }
   return out;
 };
 
@@ -88,18 +96,36 @@ export function styleTrendFor({ lastRows = [], curRows = [], window = 10, minGam
  * 疊上去就是編數字 —— 所以位移雷達自己一組軸,全部從逐場真的量得到的欄位**合成**
  * (使用者回饋:裸統計軸沒有風格感)。公式透明、跟主雷達的韌性軸同一種做法
  * (那條也是加權合成)。反向軸:雷達慣例越外越好。 */
+/* 兩組軸,選哪組由**資料**決定(逐場 xG 齊不齊),不是由聯賽寫死:
+ * - XG 組:前三軸跟主雷達**同名同義**(進攻火力=xG/場、終結效率=進球−xG、
+ *   防守穩固=xGA/場)—— 使用者一直要的「兩張雷達一樣」,逐場 xG 落地後
+ *   終於做得到三軸;傳球創造與定位球威脅仍然沒有逐場來源,
+ *   用場面控制/防守壓制/紀律三個實測軸補位。
+ * - 實測組:英冠(沒有 Understat)與 xG 視窗不完整的隊照舊。
+ * 第四欄是公式(畫面說明用)。 */
+export const TREND_AXES_XG = [
+  ['atk', '進攻火力', false, 'xG/場'],
+  ['fin', '終結效率', false, '進球−xG(每場)'],
+  ['defx', '防守穩固', true, 'xGA/場(反向)'],
+  ['control', '場面控制', false, '我方射門佔雙方射門比例'],
+  ['suppress', '防守壓制', true, '被射門/場(反向)'],
+  ['discipline', '紀律', true, '牌/場(反向)'],
+];
 export const TREND_RADAR_AXES = [
-  ['volume', '攻勢量能', false],     // 射門+角球/場:製造攻勢的總量
-  ['convert', '進球轉化', false],    // 進球÷射門:終結把握
-  ['control', '場面控制', false],    // 我方射門÷雙方射門(TSR):比賽主導權
-  ['suppress', '防守壓制', true],    // 被射門/場(反向):讓對手出不了手
-  ['defend', '防線把關', true],      // 失球÷被射門(反向):被射也守得住
-  ['discipline', '紀律', true],      // 牌/場(反向)
+  ['volume', '攻勢量能', false, '射門+角球/場'],
+  ['convert', '進球轉化', false, '進球÷射門'],
+  ['control', '場面控制', false, '我方射門佔雙方射門比例'],
+  ['suppress', '防守壓制', true, '被射門/場(反向)'],
+  ['defend', '防線把關', true, '失球÷被射門(反向)'],
+  ['discipline', '紀律', true, '牌/場(反向)'],
 ];
 
 /* 場均值 → 合成軸。比率用場均相除(分子分母各自平均後相除 = 總和相除,一致)。
    分母為 0 加不了倒數那課(versus 的坑):給中性值不給 Infinity。 */
 export const styleAxesOf = a => (a ? {
+  atk: a.xg ?? null,
+  fin: a.xg != null ? round(a.gf - a.xg, 2) : null,
+  defx: a.xga ?? null,
   volume: round(a.sf + a.cf, 2),
   convert: a.sf ? round(a.gf / a.sf, 3) : 0,
   control: (a.sf + a.sa) ? round(a.sf / (a.sf + a.sa), 3) : 0.5,
@@ -118,18 +144,20 @@ export const styleAxesOf = a => (a ? {
  * 基準層(全季平均)放同一把尺上讀作「這隊典型的 10 場落在哪」——
  * 兩層同尺的性質不變,箭頭仍然只有一個意思。 */
 export function seasonRuler(rowsByTeam, { window = 10, minGames = 30 } = {}) {
-  const pools = Object.fromEntries(TREND_RADAR_AXES.map(([f]) => [f, []]));
-  let teams = 0, windows = 0;
+  const ALL_KEYS = [...new Set([...TREND_RADAR_AXES, ...TREND_AXES_XG].map(([f]) => f))];
+  const pools = Object.fromEntries(ALL_KEYS.map(f => [f, []]));
+  let teams = 0, windows = 0, xgWindows = 0;
   for (const rows of rowsByTeam.values()) {
     if (rows.length < minGames) continue;
     teams++;
     for (let i = 0; i + window <= rows.length; i++) {
       const w = styleAxesOf(avg(rows.slice(i, i + window)));
-      for (const [f] of TREND_RADAR_AXES) pools[f].push(w[f]);
+      for (const f of ALL_KEYS) if (w[f] != null) pools[f].push(w[f]);
       windows++;
+      if (w.atk != null) xgWindows++;   // xG 軸的池只收逐場 xG 完整的窗
     }
   }
-  return { teams, windows, pools };
+  return { teams, windows, xgWindows, pools };
 }
 
 /* 把級分用的百分位掛回每隊的 styleTrend。**兩層共用同一把尺**(上季全季分布):
@@ -143,12 +171,21 @@ export function attachTrendPercentiles(byCode, { ruler } = {}) {
     const p = percentile(v, pool);
     return inverse ? round(100 - p, 1) : p;
   };
+  /* 尺的 xG 池要夠大才用 XG 組(池太小級分沒有意義);九成的窗有 xG 就算夠 ——
+     上季偶有一兩場 Understat 缺漏不至於整聯賽退回實測軸。 */
+  const rulerHasXg = ruler.xgWindows >= ruler.windows * 0.9;
   for (const t of byCode.values()) {
     const rAxes = styleAxesOf(t.recent), bAxes = styleAxesOf(t.baseline);
-    t.recentPct = Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(rAxes[f], ruler.pools[f], inv)]));
+    /* 逐隊選軸組:近況視窗的 xG 齊、(有基準的話)基準的 xG 也齊,才用 XG 組。
+       半套 xG 不硬用 —— 缺一場的視窗平均會靜靜偏掉。 */
+    const useXg = rulerHasXg && rAxes.atk != null && (!bAxes || bAxes.atk != null);
+    const axes = useXg ? TREND_AXES_XG : TREND_RADAR_AXES;
+    t.axes = axes.map(([key, label, inverse, formula]) => ({ key, label, inverse, formula }));
+    t.recentPct = Object.fromEntries(axes.map(([f, , inv]) => [f, pct(rAxes[f], ruler.pools[f], inv)]));
     t.baselinePct = bAxes
-      ? Object.fromEntries(TREND_RADAR_AXES.map(([f, , inv]) => [f, pct(bAxes[f], ruler.pools[f], inv)]))
+      ? Object.fromEntries(axes.map(([f, , inv]) => [f, pct(bAxes[f], ruler.pools[f], inv)]))
       : null;
-    t.pctPool = { ruler: ruler.teams, windows: ruler.windows };
+    t.pctPool = { ruler: ruler.teams, windows: ruler.windows, xgWindows: ruler.xgWindows };
+    t.axesMode = useXg ? 'xg' : 'measured';
   }
 }
