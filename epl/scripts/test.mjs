@@ -1576,7 +1576,8 @@ async function checkDataGap() {
        抽屜只留給沒有分析頁的場次(往季賽果)。 */
     ['賽程表點列直達分析頁,沒有分析的才開抽屜', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
-      return /onRow: f => \(hasFullAnalysis\(f\) \? \(location\.href = C\.link\('analysis', \{ id: f\.id \}\)\) : openMatch\(f\)\)/.test(src);
+      return /f\.season === meta\.currentSeason && f\.played\) \|\| hasFullAnalysis\(f\)/.test(src)
+        && /location\.href = C\.link\('analysis', \{ id: f\.id \}\)/.test(src);
     })()],
     /* 總覽的「即將到來」(2026-08-29,使用者要求):全部聯賽 + 盃賽合在一張表。
        天數窗不用固定筆數(固定筆數會把一輪切一半);盃賽只列本站名冊球隊的場次
