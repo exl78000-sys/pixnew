@@ -119,7 +119,7 @@ try {
           而 fixtures.json 的 played 要等 openfootball 更新(它比官方慢好幾個小時) ——
           結果是:官方那邊早就有進球、牌與換人了,畫面上一片空白。
           所以 played 還是 false、但官方已經有事件時,把時間軸提到分頁之前直接顯示。 */''}
-    ${!f.played ? goalsCard(f, { live: true }) + probCurveCard(f) : ''}
+    ${!f.played ? `<div id="livePanel"></div>` + goalsCard(f, { live: true }) + probCurveCard(f) : ''}
 
     <div class="analysis-switch" id="analysis-views" role="tablist" aria-label="分析階段">
       ${f.played ? '<button class="btn analysis-tab" type="button" role="tab" data-view="compare" aria-controls="panel-compare">綜合對比</button>' : ''}
@@ -247,6 +247,27 @@ try {
     ${C.foot(meta)}`;
 
     setupAnalysisTabs(f.played ? 'compare' : 'pre');
+
+    /* 即時面板輪詢(只在未完賽時)。feed 與實時頁同一套:
+       raw 分支檔比 Pages 新(比賽日迴圈每 2 分鐘推),失敗退回本站檔。 */
+    if (!f.played) {
+      const findIn = l => (l?.matches ?? []).find(x => x.home === f.home && x.away === f.away);
+      const feeds = [meta.liveFeed, 'data/live.json'].filter(Boolean);
+      const renderLive = m => {
+        const el = document.getElementById('livePanel');
+        if (el) el.innerHTML = (m && m.started && !m.finished) ? livePanelHtml(m) : '';
+      };
+      renderLive(findIn(data.live));
+      C.pageInterval(async () => {
+        for (const url of feeds) {
+          try {
+            const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`, { cache: 'no-store' });
+            if (res.ok) { renderLive(findIn(await res.json())); return; }
+          } catch { /* 換下一個來源 */ }
+        }
+      }, 20000);
+    }
+
     setupExpertPagers();
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
     C.startCountdowns();
@@ -489,6 +510,41 @@ try {
      所以這一段不需要任何額外抓取。沒有就不畫,不留空卡片。 */
   /* 勝率曲線。資料是比賽日的迴圈每 2 分鐘累積的 in-play 機率 ——
      沒有累積到的場次(累積器上線前踢的、或迴圈沒開)就沒有,不補造。 */
+  /* 即時面板(2026-08-29,使用者要求:每場自己一頁,實時頁多場並列會亂)。
+     比賽進行中,這一頁就是單場即時頁:比分、即時勝率、下一球、講評,
+     跟實時頁同一個 feed(比賽日迴圈每 2 分鐘推)、每 20 秒輪詢;
+     完場自動消失,由賽後分析接手 —— 單場的家始終只有這一頁。
+     事件時間軸(進球/牌/換人)吃的是 official.json,重新整理才會更新;
+     面板上的比分與機率不用重新整理。 */
+  function livePanelHtml(m) {
+    const H = m.sides?.[m.home], A = m.sides?.[m.away];
+    const ip = m.inplay;
+    return `<div class="section"><h2>即時戰況</h2>
+        <span class="hint"><span class="livedot"></span> 第 ${m.minute} 分鐘・每 20 秒自動更新</span></div>
+      <div class="card">
+        <div class="spread"><span class="pill bad"><span class="livedot"></span>第 ${m.minute} 分鐘</span>
+          <span class="tiny dim">${C.kickoffLocal(m.kickoff)}</span></div>
+        <div class="scoreline" style="margin:14px 0">
+          <div class="side">${C.badge(m.home)}<b>${C.name(m.home)}</b></div>
+          <div class="sc">${m.hs ?? '-'} : ${m.as ?? '-'}</div>
+          <div class="side away">${C.badge(m.away)}<b>${C.name(m.away)}</b></div>
+        </div>
+        ${H?.shape && A?.shape ? `<div class="tiny dim center" style="margin-bottom:6px">實際陣型 ${H.shape.label} vs ${A.shape.label}・場上 xG ${H.xG} : ${A.xG}</div>` : ''}
+        ${ip ? `${C.probBar(ip)}
+          <div class="tiny dim center" style="margin-top:6px">剩餘時間期望進球 ${ip.xgRestHome} : ${ip.xgRestAway}
+            ・下一球 ${C.name(m.home)} ${C.pct(ip.nextGoal.home, 0)} / ${C.name(m.away)} ${C.pct(ip.nextGoal.away, 0)}</div>` : ''}
+        ${(H?.scorers?.length || A?.scorers?.length) ? `<div class="tiny" style="margin-top:8px">
+          ⚽ ${[...(H?.scorers ?? []).map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`),
+               ...(A?.scorers ?? []).map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`)].join('、')}</div>` : ''}
+      </div>
+      ${m.liveSummary ? `<div class="card" style="margin-top:10px"><h3>${m.liveSummary.kind === 'ht' ? '中場講評' : `戰況講評 <span class="dim tiny">第 ${m.liveSummary.minute} 分鐘</span>`}
+          <span class="pill tiny">自動生成</span></h3>
+        <div style="display:grid;gap:8px;line-height:1.8">
+          ${m.liveSummary.paragraphs.map(t => `<p class="small" style="margin:0">${C.esc(t)}</p>`).join('')}</div>
+        <div class="tiny dim" style="margin-top:8px">每一句只引用模型與官方名單算出的數字;完場後由賽後分析接手。</div>
+      </div>` : ''}`;
+  }
+
   function probCurveCard(f) {
     const rec = data['prob-history']?.matches?.[`${f.home}|${f.away}`];
     if (!rec) return '';

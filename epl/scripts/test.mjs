@@ -1834,6 +1834,18 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* ── 單場即時中樞(2026-08-29,使用者要求:每場自己一頁)──
+       分析頁比賽中就是即時頁(面板+講評+輪詢),完場自動消失由賽後接手;
+       實時頁的進行中卡瘦身、直達單場頁 —— 單場的家始終只有分析頁一個。 */
+    ['單場即時:分析頁有即時面板與輪詢、實時頁卡片直達', (() => {
+      const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      const pl = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      return /id="livePanel"/.test(pa) && /livePanelHtml/.test(pa) && /liveSummary/.test(pa)
+        && /m\.started && !m\.finished/.test(pa) && /20000/.test(pa)
+        && /點開看講評、勝率曲線與場上資訊/.test(pl)
+        && pl.includes(`href="\${C.link('analysis', { id: m.fixtureId })}"`);
+    })()],
+
     /* ── 延賽/改期偵測(探勘缺口 G,2026-08-29)──
        狀態轉入延期集合、utcDate 變更、延期後回排定 = 改期,三種事件;
        快照 diff 以 fdId 對齊(主客組合在有附加賽的聯賽不唯一,老坑)。 */
