@@ -87,6 +87,31 @@ function checkStale(meta) {
 
    回傳 { data, absent } —— 缺了哪幾份由呼叫端決定要不要當成錯誤:
    load() 會擋下來,總覽頁只是少畫一塊。 */
+/* 跨聯賽球員搜尋(v1)。查其他聯賽的 players-core(聯集 + null 的統一層,
+   不帶照片所以輕),結果並列、各掛聯賽籤。三個刻意的決定:
+   - **不做「同一人」自動合併** —— 對錯人比對不到糟(租借姓名那條坑),
+     同名的人兩筆並列,讓讀者自己認。
+   - 只在真的搜尋時才載其他聯賽的檔(cups 1.8MB 那課),載過就快取。
+   - 沒有球員資料源的聯賽(英冠)靜靜跳過 —— 它自己的頁面會講原因。 */
+const _playersCoreCache = {};
+export async function crossLeaguePlayers(q, excludeLg) {
+  const ql = q.toLowerCase();
+  const out = [];
+  for (const lg of Object.keys(LEAGUES)) {
+    if (lg === excludeLg) continue;
+    if (!(lg in _playersCoreCache)) {
+      try {
+        const { data } = await loadFrom(lg, ['players-core']);
+        _playersCoreCache[lg] = data['players-core'] ?? null;
+      } catch { _playersCoreCache[lg] = null; }
+    }
+    for (const p of _playersCoreCache[lg] ?? []) {
+      if (p.name.toLowerCase().includes(ql) || (p.fullName ?? '').toLowerCase().includes(ql)) out.push(p);
+    }
+  }
+  return out;
+}
+
 export async function loadFrom(lg, names) {
   const out = {};
   const absent = [];

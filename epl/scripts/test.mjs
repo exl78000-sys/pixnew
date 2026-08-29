@@ -1703,6 +1703,45 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* ── 球員核心契約(跨聯賽統一層,2026-08-29)──
+       聯集 + null(沒有資料 ≠ 0)、不帶照片、兩邊鍵集合逐鍵相同。 */
+    ['球員核心:兩聯賽鍵集合相同、賽季列鍵相同', (() => {
+      const pl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'players-core.json'), 'utf8'));
+      const es = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'players-core.json'), 'utf8'));
+      const k = r => JSON.stringify(Object.keys(r).sort());
+      const sk = r => JSON.stringify(Object.keys(r.seasons.find(Boolean) ?? {}).sort());
+      const plS = pl.find(r => r.seasons.length), esS = es.find(r => r.seasons.length);
+      return pl.length > 400 && es.length > 400 && k(pl[0]) === k(es[0]) && sk(plS) === sk(esS);
+    })()],
+    ['球員核心:null 政策(西甲身價/狀態全 null、英超逐場射門 null、無照片)', (() => {
+      const pl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'players-core.json'), 'utf8'));
+      const es = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'players-core.json'), 'utf8'));
+      return es.every(r => r.price === null && r.status === null)
+        && pl.every(r => r.seasons.every(s => s.shots === null && s.keyPasses === null))
+        && pl.every(r => !('photo' in r)) && es.every(r => !('photo' in r));
+    })()],
+    /* 核心層的數字要對得回富資料 —— 統一層不是另一份事實,是同一份的映射 */
+    ['球員核心:進球總和對得回各聯賽的 players.json', (() => {
+      const plFull = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'players.json'), 'utf8'));
+      const pl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'players-core.json'), 'utf8'));
+      const meta = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'meta.json'), 'utf8'));
+      const coreCur = pl.reduce((n, r) => n + (r.seasons.find(s => s.season === meta.currentSeason)?.goals ?? 0), 0);
+      const fullCur = plFull.reduce((n, p) => n + ((p.current?.minutes > 0 ? p.current.goals : 0) ?? 0), 0);
+      const esFull = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'players.json'), 'utf8'));
+      const es = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'players-core.json'), 'utf8'));
+      const esCore = es.reduce((n, r) => n + r.seasons.reduce((m, s) => m + (s.goals ?? 0), 0), 0);
+      const esFullSum = esFull.reduce((n, p) => n + (p.minutes > 0 ? (p.goals ?? 0) : 0), 0);
+      return coreCur === fullCur && esCore === esFullSum;
+    })()],
+    ['跨聯賽搜尋:懶載入、不合併同人、跨池警語、兩個渲染器共用一份', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
+      return /crossLeaguePlayers/.test(core) && /_playersCoreCache/.test(core)
+        && (pg.match(/updateXLeague\(/g) ?? []).length >= 3
+        && /同名不代表同一人/.test(pg) && /不可直接互比/.test(pg)
+        && (pg.match(/id="xleague"/g) ?? []).length === 2;
+    })()],
+
     /* ── 教練基本檔案核對器(2026-08-29)。核心是來源真偽:
        交付的 53 個戰術來源網址實測 41 個 404 —— 編造網址的筆定罪,整聯賽退。 ── */
     ...await (async () => {
