@@ -807,8 +807,18 @@ try {
     /* 軸序照主雷達的語意位置排(使用者要求兩張對得起來):
        攻擊在上、終結在右上、防守在右下與下、組織控制在左下、無形項在左上 ——
        兩張雷達同位置的軸講同一類事,眼睛可以直接對照。 */
-    const AXES = [['volume', '攻勢量能'], ['convert', '進球轉化'], ['suppress', '防守壓制'],
-      ['defend', '防線把關'], ['control', '場面控制'], ['discipline', '紀律']];
+    /* 軸組由 build 決定(st.axes):逐場 xG 齊的隊用 XG 組 —— 前三軸跟主雷達
+       同名同義(進攻火力/終結效率/防守穩固);沒有的(英冠、或視窗缺 join)用實測組。
+       XG 組照主雷達語意位置重排:攻擊上、終結右上、防守右下。 */
+    const AXES = (st.axes ?? [
+      { key: 'volume', label: '攻勢量能' }, { key: 'convert', label: '進球轉化' },
+      { key: 'suppress', label: '防守壓制' }, { key: 'defend', label: '防線把關' },
+      { key: 'control', label: '場面控制' }, { key: 'discipline', label: '紀律' },
+    ]).map(a => [a.key, a.label, a.formula]);
+    if (st.axesMode === 'xg') {
+      const order = ['atk', 'fin', 'defx', 'suppress', 'control', 'discipline'];
+      AXES.sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
+    }
     const radarBlock = st.recentPct ? (() => {
       const vals = pct => AXES.map(([k, label]) => ({ label, value: pct[k] }));
       const series = [];
@@ -830,10 +840,10 @@ try {
           軸旁數字為 10 級分${st.baselinePct ? '(上季→近況)' : ''},<b>兩層同一把尺</b>:上季 ${st.pctPool.ruler} 隊(含已降級的)
           全部 ${st.window} 場滾動視窗的分布(共 ${st.pctPool.windows} 段)——
           同樣本大小對同樣本大小,10 代表比上季任何一隊的任何一段 ${st.window} 場都強。
-          軸是公式透明的合成指標:攻勢量能=射門+角球、進球轉化=進球÷射門、
-          場面控制=我方射門佔雙方射門比例、防守壓制=被射門(反向)、
-          防線把關=失球÷被射門(反向)、紀律=牌(反向)。
-          逐場 xG 沒有免費來源,所以這張不用 xG —— 跟主雷達的軸不是同一套,不可互比。</div>`;
+          軸與公式:${AXES.map(([, label, formula]) => `${label}=${formula ?? ''}`).join('、')}。
+          ${st.axesMode === 'xg'
+            ? '<b>進攻火力/終結效率/防守穩固與主雷達同名同義</b>(逐場 xG 取自 Understat,每場比分已對回本站賽果);傳球創造與定位球威脅仍無逐場來源,以場面控制等實測軸補位。'
+            : '這一組全是逐場實測欄位 —— 逐場 xG 在這個聯賽沒有來源,跟主雷達的軸不是同一套,不可互比。'}</div>`;
     })() : '';
     return `<div class="card" style="margin-top:14px">
       <div class="spread"><h3 style="margin:0">近 ${st.recent.games} 場風格位移</h3>
