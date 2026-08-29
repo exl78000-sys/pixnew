@@ -8565,14 +8565,36 @@
   "BOU|EVE": {
    "fixtureId": 128934,
    "kickoff": "2026-08-29T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "homeId": 127,
    "awayId": 7,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      134403
+     ],
+     [
+      3512,
+      120109,
+      51942,
+      74965
+     ],
+     [
+      74976,
+      10766
+     ],
+     [
+      134234,
+      21519,
+      14846
+     ],
+     [
+      33032
+     ]
+    ],
     "xi": [
      {
       "id": 134403,
@@ -8624,7 +8646,7 @@
       "playerId": null,
       "name": "Justin Kluivert",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -8633,7 +8655,7 @@
       "playerId": null,
       "name": "Rayan",
       "shirt": 37,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Striker",
       "captain": false
      },
@@ -8759,9 +8781,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4640
+     ],
+     [
+      128411,
+      8143,
+      66318,
+      24983
+     ],
+     [
+      134286,
+      23841
+     ],
+     [
+      118442,
+      14706,
+      31936
+     ],
+     [
+      143922
+     ]
+    ],
     "xi": [
      {
       "id": 8143,
@@ -8813,7 +8857,7 @@
       "playerId": null,
       "name": "Merlin Röhl",
       "shirt": 34,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -8822,7 +8866,7 @@
       "playerId": null,
       "name": "Tyrique George",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -8858,7 +8902,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      }
@@ -8951,21 +8995,56 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "01'00"
   },
   "COV|HUL": {
    "fixtureId": 128936,
    "kickoff": "2026-08-29T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "homeId": 5,
    "awayId": 41,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      55556
+     ],
+     [
+      75413,
+      63836,
+      114738,
+      10438
+     ],
+     [
+      337310,
+      8650
+     ],
+     [
+      74964,
+      66304,
+      20930
+     ],
+     [
+      15340
+     ]
+    ],
     "xi": [
      {
       "id": 8650,
@@ -9044,7 +9123,7 @@
       "playerId": null,
       "name": "Loum Tchaouna",
       "shirt": 18,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Forward",
       "captain": false
      },
@@ -9152,9 +9231,29 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      133314,
+      20081
+     ],
+     [
+      137549,
+      21385,
+      126614,
+      337382
+     ],
+     [
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 20081,
@@ -9215,7 +9314,7 @@
       "playerId": null,
       "name": "Mohamed Belloumi",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -9344,10 +9443,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-29T13:58:48.809Z"
+ "fetchedAt": "2026-08-29T14:01:04.568Z"
 }
