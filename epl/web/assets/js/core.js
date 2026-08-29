@@ -421,6 +421,10 @@ const SITE_PAGES = [
      它是跨聯賽的:歐冠兩邊看到同一份,英格蘭盃賽的層級標籤也涵蓋英冠球隊。
      ucl.html 保留為轉址,舊連結不斷。 */
   ['cups', '盃賽'],
+  /* 對戰模擬(2026-08-30 搬進跨聯賽組,使用者要求放盃賽旁邊):
+     頁內自己選聯賽,對戰仍限同聯賽(強度各自對聯盟平均正規化)。
+     只放這一組 —— PAGES 再放一次會出現兩個分頁。 */
+  ['duel', '對戰模擬'],
   /* 跨聯賽球員搜尋(2026-08-29)。各聯賽自己的球員頁照舊、搜本聯賽;
      這一頁一個框查全部。只放這一組 —— PAGES 再放一次會出現兩個分頁。 */
   ['allplayers', '球員搜尋'],
@@ -432,7 +436,7 @@ const SITE_PAGES = [
 
    分組不是只改名字:子分頁列只在「目前這一頁屬於這一組」時才畫出來。 */
 const GROUPS = [
-  { key: 'analysis', label: '分析', pages: ['teams', 'tactics', 'players', 'news', 'model', 'duel'] },
+  { key: 'analysis', label: '分析', pages: ['teams', 'tactics', 'players', 'news', 'model'] },
 ];
 const GROUP_OF = new Map(GROUPS.flatMap(g => g.pages.map(p => [p, g])));
 
@@ -449,8 +453,6 @@ const PAGES = [
   ['players', '球員'],
   ['news', '動態'],
   ['model', '模型驗證'],
-  /* 對戰模擬(模擬遊戲第一步,2026-08-30)。只放這裡,SITE_PAGES 不放 —— 兩邊都放會出現兩個分頁 */
-  ['duel', '對戰模擬'],
   /* 盃賽移去 SITE_PAGES(跨聯賽那一組)了 —— 兩邊都放的話導覽列會出現兩個。
      原本「西甲不顯示英格蘭盃賽」的決定由新的形式取代:單一「盃賽」入口,
      預設分頁是歐冠(西甲讀者要的),英格蘭那兩個是清楚標示的頁內分頁。 */
