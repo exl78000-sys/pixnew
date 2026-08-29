@@ -81,7 +81,26 @@ function sideReport(players, matchMinutes, seasonShape, official = null) {
     cards: players.filter(p => p.yellow || p.red).map(p => ({ name: p.name, yellow: p.yellow, red: p.red })),
     best: [...players].sort((a, b) => b.bps - a.bps).slice(0, 3).map(p => ({ name: p.name, pos: p.pos, bps: p.bps, minutes: p.minutes })),
     used: players.length,
+    /* 場上數據合計:FPL 即時逐人欄位的全隊加總。只放 FPL 真的給的 ——
+       控球率/射門次數/角球沒有免費的即時來源,缺的欄位不出現,不用估計值補。
+       威脅/創造/影響是 FPL 官方指數(小數),防守三項是動作計數。 */
+    stats: {
+      threat: round(sum(players, p => p.threat ?? 0), 0),
+      creativity: round(sum(players, p => p.creativity ?? 0), 0),
+      influence: round(sum(players, p => p.influence ?? 0), 0),
+      tackles: sum(players, p => p.tackles ?? 0),
+      recoveries: sum(players, p => p.recoveries ?? 0),
+      cbi: sum(players, p => p.cbi ?? 0),
+      topThreat: topBy(players, 'threat'),
+      topCreator: topBy(players, 'creativity'),
+    },
   };
+}
+
+/* 某個即時指數最高的球員(要真的有值才回,0 的時候回 null —— 開賽初期全是 0)。 */
+function topBy(players, key) {
+  const p = [...players].filter(x => x.minutes > 0 && x[key] > 0).sort((a, b) => b[key] - a[key])[0];
+  return p ? { name: p.name, value: round(p[key], 1) } : null;
 }
 
 function notesFor(rep, zh) {
@@ -153,6 +172,35 @@ function liveSummaryFor(rep, zh) {
     ps.push(`場上 xG ${H.xG}:${A.xG},兩邊創造的機會量接近。`);
   }
 
+  /* 場上數據句:全部從 FPL 即時合計來。開關看「有沒有任何一項動起來」——
+     實測中場時 威脅/創造/影響 三個指數還是 0、防守計數卻已經有值,
+     只看指數會把真資料一起藏掉。各句另有自己的門檻,沒到就不講。 */
+  const sh = H.stats, sa = A.stats;
+  const active = s => s.threat + s.creativity + s.influence + s.tackles + s.recoveries + s.cbi;
+  if (sh && sa && active(sh) + active(sa) > 0) {
+    if (sh.threat + sa.threat >= 30) {
+      const lead = sh.threat > sa.threat ? nameH : nameA;
+      const gap = Math.abs(sh.threat - sa.threat);
+      const tp = [sh.topThreat && { ...sh.topThreat, team: nameH }, sa.topThreat && { ...sa.topThreat, team: nameA }]
+        .filter(Boolean).sort((a, b) => b.value - a.value)[0];
+      ps.push(`進攻威脅值 ${sh.threat}:${sa.threat}`
+        + (gap >= Math.max(15, (sh.threat + sa.threat) * 0.25) ? `,攻勢的殺傷力偏向${lead}` : ',兩邊的攻勢威脅接近')
+        + (tp ? `;場上威脅最高的是 ${tp.name}(${tp.value})` : '') + '。');
+    }
+    const dh = sh.tackles + sh.recoveries + sh.cbi, da = sa.tackles + sa.recoveries + sa.cbi;
+    if (dh + da >= 30 && Math.abs(dh - da) >= (dh + da) * 0.2) {
+      const busy = dh > da ? nameH : nameA;
+      ps.push(`防守端${busy}明顯更忙:搶斷+回收+解圍 ${dh} 對 ${da} —— 防守動作多的一邊,通常就是被壓著打的一邊。`);
+    }
+    const saves = [];
+    if ((H.keeper?.saves ?? 0) >= 2) saves.push(`${H.keeper.name} ${H.keeper.saves} 次`);
+    if ((A.keeper?.saves ?? 0) >= 2) saves.push(`${A.keeper.name} ${A.keeper.saves} 次`);
+    if (saves.length) ps.push(`門將撲救:${saves.join('、')}。`);
+    const reds = [...H.cards, ...A.cards].filter(c => c.red).map(c => c.name);
+    if (reds.length) ps.push(`${reds.join('、')}已被罰下,少人的一邊要重排防線。`);
+    else if (H.yellow + A.yellow >= 3) ps.push(`場面火氣不小:雙方已累計 ${H.yellow + A.yellow} 張黃牌。`);
+  }
+
   const pm = rep.preMatch, ip = rep.inplay;
   const moves = [
     ['home', nameH + '勝'], ['draw', '和局'], ['away', nameA + '勝'],
@@ -169,6 +217,11 @@ function liveSummaryFor(rep, zh) {
   if (H.shape?.source === 'official' && A.shape?.source === 'official') {
     ps.push(`實際陣型 ${H.shape.label} 對 ${A.shape.label}(官方名單)。`);
   }
+  /* 收尾:當下全場表現分(BPS)領先的人 —— FPL 用它決定 bonus,等於即時的最佳球員。 */
+  const bestAll = [...(H.best ?? []).map(b => ({ ...b, team: nameH })),
+    ...(A.best ?? []).map(b => ({ ...b, team: nameA }))]
+    .filter(b => b.bps > 0).sort((a, b) => b.bps - a.bps)[0];
+  if (bestAll) ps.push(`目前全場表現分(BPS)最高的是 ${bestAll.name}(${bestAll.team},${bestAll.bps} 分)—— FPL 就是用這個分數決定賽後 bonus。`);
   return { kind: atHT ? 'ht' : 'live', minute: rep.minute, paragraphs: ps };
 }
 

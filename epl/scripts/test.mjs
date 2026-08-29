@@ -1816,12 +1816,38 @@ async function checkDataGap() {
       const ht = buildMatchReport({ fixture: mkFix(45), ...args });
       const mid = buildMatchReport({ fixture: mkFix(30), ...args });
       const done = buildMatchReport({ fixture: { ...mkFix(90), finished: true }, ...args });
+      /* 富數據夾具:場上數據句(威脅/防守負荷/撲救/BPS)要從 FPL 合計長出來 */
+      const mkP = (name, pos, o = {}) => ({ name, pos, code: name, starts: 1, minutes: 60,
+        xG: 0, xA: 0, goals: 0, assists: 0, yellow: 0, red: 0, saves: 0, conceded: 0, xGC: 0,
+        bps: 0, threat: 0, creativity: 0, influence: 0, tackles: 0, recoveries: 0, cbi: 0, ...o });
+      const rich = buildMatchReport({ fixture: { ...mkFix(60), lineups: {
+        AAA: [mkP('GkA', 'GK', { saves: 4, influence: 20 }),
+          mkP('DefA', 'DEF', { tackles: 8, recoveries: 12, cbi: 10, influence: 15, yellow: 1 })],
+        BBB: [mkP('GkB', 'GK', { influence: 5 }),
+          mkP('AtkB', 'FWD', { threat: 55, creativity: 30, influence: 40, bps: 31, yellow: 1 }),
+          mkP('MidB', 'MID', { threat: 10, influence: 10, yellow: 1 })],
+      } }, ...args });
       return [
         ['講評:43~50 分標中場、其餘標戰況、完場不給', ht.liveSummary?.kind === 'ht'
           && mid.liveSummary?.kind === 'live' && done.liveSummary == null, ''],
         ['講評:句子引用比分/勝率位移/下一球(全是算好的數字)', (() => {
           const t = ht.liveSummary.paragraphs.join('');
           return /上半場結束/.test(t) && /0:1/.test(t) && /百分點/.test(t) && /下一球/.test(t);
+        })(), ''],
+        ['講評:場上數據句(威脅/防守負荷/撲救/牌/BPS)從 FPL 合計長出來', (() => {
+          const t = rich.liveSummary.paragraphs.join('');
+          return /進攻威脅值 0:65/.test(t) && t.includes('AtkB(55)')
+            && /搶斷\+回收\+解圍 30 對 0/.test(t) && /GkA 4 次/.test(t)
+            && /3 張黃牌/.test(t) && t.includes('AtkB(BBB,31 分)');
+        })(), ''],
+        ['講評:指數還是 0 的比賽不長場上數據句(0:0 是雜訊不是資訊)', (() => {
+          const t = ht.liveSummary.paragraphs.join('');
+          return !/威脅值/.test(t) && !/防守端/.test(t) && !/BPS/.test(t);
+        })(), ''],
+        ['講評:sides.stats 是全隊加總且欄位齊(前端場上數據表吃這份)', (() => {
+          const s = rich.sides.AAA.stats, b = rich.sides.BBB.stats;
+          return s.tackles === 8 && s.recoveries === 12 && s.cbi === 10 && s.influence === 35
+            && b.threat === 65 && b.topThreat?.name === 'AtkB' && s.topThreat === null;
         })(), ''],
         ['講評:前端掛在實時抽屜、標自動生成', (() => {
           const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
@@ -1842,6 +1868,8 @@ async function checkDataGap() {
       const pl = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
       return /id="livePanel"/.test(pa) && /livePanelHtml/.test(pa) && /liveSummary/.test(pa)
         && /m\.started && !m\.finished/.test(pa) && /20000/.test(pa)
+        && /場上數據/.test(pa) && /沒有免費的即時來源/.test(pa)
+        && /act\(sh\) \+ act\(sa\) > 0/.test(pa)
         && /點開看講評、勝率曲線與場上資訊/.test(pl)
         && pl.includes(`href="\${C.link('analysis', { id: m.fixtureId })}"`);
     })()],
