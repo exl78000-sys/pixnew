@@ -9195,7 +9195,7 @@
      }
     ]
    },
-   "clock": "83'00"
+   "clock": "85'00"
   },
   "COV|HUL": {
    "fixtureId": 128936,
@@ -9624,7 +9624,34 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": null,
+     "assist": null,
+     "team": null,
+     "min": null,
+     "label": null,
+     "phase": "2",
+     "type": "PE",
+     "kind": null,
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 23822,
+     "assist": 137549,
+     "team": 41,
+     "min": 82,
+     "label": "82'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -9855,7 +9882,7 @@
      }
     ]
    },
-   "clock": "81'00"
+   "clock": "83'00"
   },
   "TOT|NEW": {
    "fixtureId": 128942,
@@ -10251,5 +10278,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-29T15:40:30.797Z"
+ "fetchedAt": "2026-08-29T15:42:45.268Z"
 }
