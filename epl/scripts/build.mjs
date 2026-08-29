@@ -34,6 +34,7 @@ import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
+import { loadVerifiedCareers, tenureStyle } from './lib/coach-career.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
@@ -407,6 +408,33 @@ async function main() {
   for (const c of coaches.coaches) {
     const photo = coachPhotoFor(coachPhotos, 'epl', c.team);
     if (photo?.imagePath) { c.imagePath = photo.imagePath; c.photoSource = photo.source; c.photoSourceUrl = photo.sourceUrl; }
+  }
+  /* 教練前一段任期(B 層,人工交付職涯 → 核對 → 本站自己算風格)。
+     只掛核對通過(published)的;核對結果跟不上收件匣(stale)就整批不掛並警告 ——
+     不能拿舊核對結果背書新交付。任期落在季檔涵蓋外的只列事實(style null + reason)。 */
+  {
+    const careers = loadVerifiedCareers(ROOT);
+    if (careers.status === 'stale') {
+      console.log('  ⚠ 職涯核對結果跟不上收件匣,前任期整批不掛 —— 先跑 npm run careers:verify');
+    } else {
+      let styled = 0;
+      for (const rec of careers.published) {
+        if (rec.league !== 'pl') continue;
+        const co = coaches.coaches.find(c => c.team === rec.team);
+        if (!co || !rec.previous?.length) continue;
+        const prev = rec.previous[0];   // 最近的一段
+        const { style, reason } = tenureStyle(ROOT, prev);
+        co.career = {
+          verified: true,
+          previous: rec.previous.map(p => ({ club: p.club, competition: p.competition, from: p.from, to: p.to })),
+          style, styleUnavailable: style ? null : reason,
+        };
+        if (style) styled++;
+      }
+      if (careers.published.length) {
+        console.log(`  教練前任期:核對通過 ${careers.published.length} 筆,其中 ${styled} 段算得出逐場風格`);
+      }
+    }
   }
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
 

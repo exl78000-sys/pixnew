@@ -1594,23 +1594,39 @@ async function checkDataGap() {
         teamCodes: { pl: new Map(), es1: new Map(), en2: new Map() },
         seasons: { pl: [], es1: [], en2: [] }, membership: { pl: new Map(), es1: new Map(), en2: new Map() },
       };
+      ctx.allClubNames = ['derby county', 'aston villa'];
+      /* 成員資格的小宇宙:pl 只有 2026-27 一季,而 WOL 不在裡面 —— 用來測開放式任期 */
+      ctx.teamCodes.pl = new Map([['wolverhampton wanderers', 'WOL']]);
+      ctx.seasons.pl = ['2024-25', '2026-27'];
+      ctx.membership.pl = new Map([['2024-25', new Set(['WOL'])], ['2026-27', new Set(['AVL'])]]);
       const run = coaches => verifyCareers({ coaches }, ctx);
       const wrong = run([{ league: 'pl', team: 'CHE', name: 'Xabi Alonso', current: {}, previous: [] }]);
       /* 西班牙雙姓:最後一個 token 不是姓氏的全部。第一版拿它當姓,冤枉了四筆 —— 對錯人比對不到糟。 */
       const variant = run([{ league: 'es1', team: 'RMA', name: 'José Mourinho', current: {}, previous: [] }]);
       const duo = run([{ league: 'en2', team: 'LIN', name: 'Tom Shaw', current: {}, previous: [] }]);
       const selfContra = run([{ league: 'pl', team: 'AVL', name: 'Unai Emery', firstHeadCoachJob: true,
-        current: { club: 'Aston Villa' }, previous: [], note: 'Derby 官方公告寫明那是他的第一份管理工作' }]);
+        current: { club: 'Aston Villa' }, previous: [], note: 'Derby County 官方公告寫明那是他的第一份管理工作' }]);
+      /* 「官方稱這是他的第一份工作」講的是現職、沒點名別隊 —— 不能定罪(冤枉過 Arteta) */
+      const firstOk = run([{ league: 'pl', team: 'AVL', name: 'Unai Emery', firstHeadCoachJob: true,
+        current: { club: 'Aston Villa' }, previous: [], note: '官方任命報導明確稱這是他的第一份管理工作' }]);
       const dayVsMonth = run([{ league: 'en2', team: 'LIN', name: 'Chris Cohen',
         current: { club: 'Lincoln City', from: '2026-05-29' }, previous: [] }]);
+      /* 開放式任期(to null):只核對起始賽季。拿未來賽季的成員資格去否定會冤枉真紀錄 */
+      const openEnd = run([{ league: 'pl', team: 'AVL', name: 'Unai Emery', current: { club: 'Aston Villa' },
+        previous: [{ club: 'Wolverhampton Wanderers', competition: 'Premier League', from: '2024-12-19', to: null }] }]);
       return [
         ['職涯核對:與官方名冊不同人 → 定罪', wrong.pl.verdict === 'rejected'
           && wrong.pl.convictions.some(c => c.includes('不是同一人')), ''],
         ['職涯核對:西班牙雙姓變體不冤枉(Mourinho ≠ Félix 姓)', variant.es1.convictions.length === 0
           && variant.es1.labelIssues.length === 1, JSON.stringify(variant.es1.convictions)],
         ['職涯核對:雙教頭「甲 & 乙」拆開對,單人名字配得上', duo.en2.convictions.length === 0, ''],
-        ['職涯核對:宣稱第一份工作、note 卻指向別隊 → 自我矛盾定罪', selfContra.pl.verdict === 'rejected', ''],
+        ['職涯核對:宣稱第一份工作、note 點名別隊 → 自我矛盾定罪', selfContra.pl.verdict === 'rejected', ''],
+        ['職涯核對:「第一份」指的是現職、沒點名別隊 → 不定罪(冤枉過 Arteta)',
+          firstOk.pl.convictions.length === 0, JSON.stringify(firstOk.pl.convictions)],
         ['職涯核對:本站 since 是日精度時 ±14 天容忍', dayVsMonth.en2.convictions.length === 0, ''],
+        ['職涯核對:離任日 null 只核對起始賽季,不拿未來賽季冤枉(Pereira 的 Wolves)',
+          openEnd.pl.convictions.length === 0 && openEnd.pl.notes.some(n => n.includes('只核對了起始賽季')),
+          JSON.stringify(openEnd.pl.convictions)],
         ['職涯核對:收件匣在的話,核對產物要在而且 sha 對得上', (() => {
           const inboxPath = join(ROOT, 'data', 'manual', 'coach-careers.json');
           if (!existsSync(inboxPath)) return true;
@@ -1618,6 +1634,27 @@ async function checkDataGap() {
           if (!existsSync(vPath)) return false;
           const v = JSON.parse(readFileSync(vPath, 'utf8'));
           return v.inboxSha256 === createHash('sha256').update(readFileSync(inboxPath, 'utf8')).digest('hex');
+        })()],
+        /* 產物:核對通過的職涯要真的掛上教練卡。風格是本站從季檔算的 ——
+           場均值要附同期聯賽平均與場次;沒有逐場來源的聯賽只列任期事實。
+           斷言綁「形狀」不綁人名,重交付換人也不會歪。 */
+        ['產物:通過的前任期掛上 coaches.json,含風格或缺席原因', (() => {
+          const vPath = join(ROOT, 'data', 'coach-careers-verified.json');
+          if (!existsSync(vPath)) return true;
+          const v = JSON.parse(readFileSync(vPath, 'utf8'));
+          const pub = (v.published ?? []).filter(r => r.league === 'pl');
+          if (!pub.length) return true;
+          const coaches = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'coaches.json'), 'utf8')).coaches;
+          const withCareer = coaches.filter(c => c.career);
+          return withCareer.length === pub.length && withCareer.every(c =>
+            (c.career.style && c.career.style.games >= 5 && c.career.style.perGame.sf > 0
+              && c.career.style.leagueAvg.sf > 0)
+            || (!c.career.style && typeof c.career.styleUnavailable === 'string' && c.career.styleUnavailable.length > 0));
+        })()],
+        ['前端:教練卡有前任期區塊,講了「球隊表現 ≠ 教練個人風格」與跨聯賽不可比', (() => {
+          const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+          return /careerBlock/.test(src) && /球隊表現 ≠ 教練個人風格/.test(src)
+            && /不可直接互比/.test(src) && /只列核對過的任期事實/.test(src);
         })()],
       ];
     })(),

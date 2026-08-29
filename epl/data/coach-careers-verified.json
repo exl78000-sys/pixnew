@@ -1,56 +1,556 @@
 {
- "verifiedAt": "2026-08-29T05:52:55.445Z",
- "inboxSha256": "d6fb2913377850fcd57f425b8eb0a2f7cc7446ca9147f0e6b897e59dc948fb78",
+ "verifiedAt": "2026-08-29T06:17:57.320Z",
+ "inboxSha256": "fc404610bbeafc34994d7983e83ceb00e76ef5ac7793c7ca9b5dedaea1bfba24",
  "deliveredAt": "2026-08-29",
  "preparedBy": "OpenAI Codex",
  "blocks": {
   "pl": {
-   "verdict": "rejected",
+   "verdict": "accepted",
    "records": 20,
-   "previousTenures": 2,
-   "convictions": [
-    "pl/CHE Xabi Alonso:與官方名冊的現任(Calum McFarlane)不是同一人",
-    "pl/COV Frank Lampard:宣稱現職是第一份總教練工作,note 卻把「第一份」指向別隊",
-    "pl/CRY Pierre Sage:與官方名冊的現任(Oliver Glasner)不是同一人",
-    "pl/IPS Gary O'Neil:與官方名冊的現任(Kieran McKenna)不是同一人",
-    "pl/NFO Oliver Glasner:與官方名冊的現任(Vítor Manuel de Oliveira Lopes Pereira)不是同一人"
+   "previousTenures": 23,
+   "convictions": [],
+   "labelIssues": [
+    "pl/NFO Vítor Pereira:名字寫法與本站不同(本站「Vítor Manuel de Oliveira Lopes Pereira」),視為同一人"
    ],
+   "notes": [
+    "pl/BOU Marco Rose:RB Leipzig(Bundesliga)不在本站涵蓋的聯賽,無法核對",
+    "pl/BOU Marco Rose:Borussia Dortmund(Bundesliga)不在本站涵蓋的聯賽,無法核對",
+    "pl/BHA Fabian Hürzeler:St. Pauli(2. Bundesliga)不在本站涵蓋的聯賽,無法核對",
+    "pl/CRY Oliver Glasner:Eintracht Frankfurt(Bundesliga)不在本站涵蓋的聯賽,無法核對",
+    "pl/CRY Oliver Glasner:VfL Wolfsburg(Bundesliga)不在本站涵蓋的聯賽,無法核對",
+    "pl/HUL Sergej Jakirovic:Dinamo Zagreb(Croatian Football League)不在本站涵蓋的聯賽,無法核對",
+    "pl/HUL Sergej Jakirovic:Rijeka(Croatian Football League)不在本站涵蓋的聯賽,無法核對",
+    "pl/LEE Daniel Farke:Borussia Mönchengladbach(Bundesliga)不在本站涵蓋的聯賽,無法核對",
+    "pl/NEW Matthias Jaissle:Al-Ahli(Saudi Pro League)不在本站涵蓋的聯賽,無法核對",
+    "pl/NFO Vítor Pereira:Wolverhampton Wanderers 離任日為 null,只核對了起始賽季",
+    "pl/SUN Régis Le Bris:Lorient(Ligue 1)不在本站涵蓋的聯賽,無法核對"
+   ]
+  },
+  "es1": {
+   "verdict": "accepted-empty",
+   "records": 0,
+   "previousTenures": 0,
+   "convictions": [],
    "labelIssues": [],
    "notes": []
   },
-  "es1": {
-   "verdict": "rejected",
-   "records": 20,
-   "previousTenures": 1,
-   "convictions": [
-    "es1/ELC Eder Sarabia:與官方名冊的現任(Martin Rodrigo Anselmi)不是同一人"
-   ],
-   "labelIssues": [
-    "es1/ALA Quique Sánchez Flores:名字寫法與本站不同(本站「Enrique Sánchez Flores」),視為同一人",
-    "es1/LEV Luís Castro:名字寫法與本站不同(本站「Luís Manuel Ferreira de Castro」),視為同一人",
-    "es1/MAL Juanfran Funes:名字寫法與本站不同(本站「Juan Francisco Funes Arjona」),視為同一人",
-    "es1/RAC José Alberto López:名字寫法與本站不同(本站「José Alberto López Menéndez」),視為同一人",
-    "es1/ESP Manolo González:名字寫法與本站不同(本站「José Manuel González Álvarez」),視為同一人",
-    "es1/RMA José Mourinho:名字寫法與本站不同(本站「José Mário Dos Santos Mourinho Félix」),視為同一人",
-    "es1/SEV Luis García Plaza:名字寫法與本站不同(本站「Luis García」),視為同一人"
-   ],
-   "notes": [
-    "es1/BET Manuel Pellegrini:West Ham United 對不到 pl 名冊,無法核對"
-   ]
-  },
   "en2": {
    "verdict": "accepted-empty",
-   "records": 25,
+   "records": 0,
    "previousTenures": 0,
    "convictions": [],
-   "labelIssues": [
-    "en2/LIN Chris Cohen:名字寫法與本站不同(本站「Chris Cohen & Tom Shaw」),視為同一人",
-    "en2/LIN Tom Shaw:名字寫法與本站不同(本站「Chris Cohen & Tom Shaw」),視為同一人"
-   ],
-   "notes": [
-    "控制題未過:Nuno 的 Nottingham Forest 任期(2023-12~2025-09,本站有紀錄)沒有交付"
-   ]
+   "labelIssues": [],
+   "notes": []
   }
  },
- "published": []
+ "published": [
+  {
+   "league": "pl",
+   "team": "AVL",
+   "name": "Unai Emery",
+   "current": {
+    "club": "Aston Villa",
+    "from": "2022-11-01",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://www.premierleague.com/en/news/2873762"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Villarreal",
+     "country": "Spain",
+     "competition": "La Liga",
+     "from": "2020-07-23",
+     "to": "2022-10-24",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Unai_Emery",
+      "https://villarrealcf.es/en/official-statement-unai-emery/"
+     ]
+    },
+    {
+     "club": "Arsenal",
+     "country": "England",
+     "competition": "Premier League",
+     "from": "2018-05-23",
+     "to": "2019-11-29",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Unai_Emery",
+      "https://www.premierleague.com/en/news/692748"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": ""
+  },
+  {
+   "league": "pl",
+   "team": "BOU",
+   "name": "Marco Rose",
+   "current": {
+    "club": "Bournemouth",
+    "from": null,
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://www.premierleague.com/en/news/4679012"
+    ]
+   },
+   "previous": [
+    {
+     "club": "RB Leipzig",
+     "country": "Germany",
+     "competition": "Bundesliga",
+     "from": "2022-09-08",
+     "to": "2025-03-30",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Marco_Rose",
+      "https://www.bundesliga.com/en/bundesliga/news/rb-leipzig-dismiss-head-coach-marco-rose-klopp-31514/"
+     ]
+    },
+    {
+     "club": "Borussia Dortmund",
+     "country": "Germany",
+     "competition": "Bundesliga",
+     "from": "2021-07-01",
+     "to": "2022-05-20",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Marco_Rose",
+      "https://datencenter.dfb.de/personen/marco-rose/trainer"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "現任上任日未從本站官方名冊以外的可靠公告取得，保留 null。"
+  },
+  {
+   "league": "pl",
+   "team": "BHA",
+   "name": "Fabian Hürzeler",
+   "current": {
+    "club": "Brighton & Hove Albion",
+    "from": "2024-06-15",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://www.brightonandhovealbion.com/media-article/Hurzeler%3A-I%27m-thrilled-to-be-Brighton%27s-new-head-coach"
+    ]
+   },
+   "previous": [
+    {
+     "club": "St. Pauli",
+     "country": "Germany",
+     "competition": "2. Bundesliga",
+     "from": "2022-12-23",
+     "to": "2024-06-30",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Fabian_H%C3%BCrzeler",
+      "https://datencenter.dfb.de/competitions/2-bundesliga/seasons/2022-23/teams/fc-st-pauli?datacenter_name=datencenter%3Fhistorize_title%3DTim+Siersleben+-+Spielerprofil&historize_url="
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "St. Pauli 先代理後轉正；日期以正式 head coach 任命日為準。"
+  },
+  {
+   "league": "pl",
+   "team": "COV",
+   "name": "Frank Lampard",
+   "current": {
+    "club": "Coventry City",
+    "from": "2024-11-28",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/Frank_Lampard"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Chelsea",
+     "country": "England",
+     "competition": "Premier League",
+     "from": "2019-07-04",
+     "to": "2021-01-25",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Frank_Lampard",
+      "https://www.chelseafc.com/en/news/article/statement-on-frank-lampard"
+     ]
+    },
+    {
+     "club": "Derby County",
+     "country": "England",
+     "competition": "Championship",
+     "from": "2018-05-31",
+     "to": "2019-07-04",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Frank_Lampard",
+      "https://www.dcfc.co.uk/news/2018/05/frank-lampard-joins-the-rams-as-new-manager"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": ""
+  },
+  {
+   "league": "pl",
+   "team": "CRY",
+   "name": "Oliver Glasner",
+   "current": {
+    "club": "Crystal Palace",
+    "from": null,
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/Oliver_Glasner"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Eintracht Frankfurt",
+     "country": "Germany",
+     "competition": "Bundesliga",
+     "from": "2021-07-01",
+     "to": "2023-06-30",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Oliver_Glasner",
+      "https://en.eintracht.de/news/oliver-glasner-wird-neuer-cheftrainer-133158/"
+     ]
+    },
+    {
+     "club": "VfL Wolfsburg",
+     "country": "Germany",
+     "competition": "Bundesliga",
+     "from": "2019-07-01",
+     "to": "2021-05-26",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Oliver_Glasner",
+      "https://www.vfl-wolfsburg.de/en/newsdetails/news-detail/detail/news/glasner"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "依本站官方名冊保留 Oliver Glasner；現任起始日尚未從本站之外的可靠公告取得。"
+  },
+  {
+   "league": "pl",
+   "team": "EVE",
+   "name": "David Moyes",
+   "current": {
+    "club": "Everton",
+    "from": "2025-01-11",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/David_Moyes"
+    ]
+   },
+   "previous": [
+    {
+     "club": "West Ham United",
+     "country": "England",
+     "competition": "Premier League",
+     "from": "2019-12-29",
+     "to": "2024-06-30",
+     "sources": [
+      "https://en.wikipedia.org/wiki/David_Moyes",
+      "https://www.whufc.com/en/the-club/history/managers/david-moyes"
+     ]
+    },
+    {
+     "club": "West Ham United",
+     "country": "England",
+     "competition": "Premier League",
+     "from": "2017-11-07",
+     "to": "2018-05-16",
+     "sources": [
+      "https://en.wikipedia.org/wiki/David_Moyes",
+      "https://www.whufc.com/en/the-club/history/managers/david-moyes"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "兩段 West Ham 任期分開記錄。"
+  },
+  {
+   "league": "pl",
+   "team": "HUL",
+   "name": "Sergej Jakirovic",
+   "current": {
+    "club": "Hull City",
+    "from": "2025-06-11",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/Sergej_Jakirovi%C4%87"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Dinamo Zagreb",
+     "country": "Croatia",
+     "competition": "Croatian Football League",
+     "from": "2023-08-21",
+     "to": "2024-09-19",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Sergej_Jakirovi%C4%87",
+      "https://gnkdinamo.hr/hr/vijesti/gnk-dinamo-i-sergej-jakirovic-dogovorili-sporazumni-raskid-suradnje"
+     ]
+    },
+    {
+     "club": "Rijeka",
+     "country": "Croatia",
+     "competition": "Croatian Football League",
+     "from": "2022-11-30",
+     "to": "2023-08-21",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Sergej_Jakirovi%C4%87",
+      "https://nk-rijeka.hr/sergej-jakirovic-novi-trener-hnk-rijeka/"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": ""
+  },
+  {
+   "league": "pl",
+   "team": "LEE",
+   "name": "Daniel Farke",
+   "current": {
+    "club": "Leeds United",
+    "from": "2023-07-04",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/Daniel_Farke"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Borussia Mönchengladbach",
+     "country": "Germany",
+     "competition": "Bundesliga",
+     "from": "2022-06-04",
+     "to": "2023-06-02",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Daniel_Farke",
+      "https://tv.borussia.de/detail/list/66s%3D?videoId=25442"
+     ]
+    },
+    {
+     "club": "Norwich City",
+     "country": "England",
+     "competition": "Championship",
+     "from": "2017-05-25",
+     "to": "2021-11-06",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Daniel_Farke",
+      "https://www.canaries.co.uk/content/club-statement-daniel-farke?gsid=8ec72f86-bd89-411c-81cf-1cc1a8e98264"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": ""
+  },
+  {
+   "league": "pl",
+   "team": "LIV",
+   "name": "Andoni Iraola",
+   "current": {
+    "club": "Liverpool",
+    "from": "2026-06-04",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://www.premierleague.com/en/news/4679012"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Bournemouth",
+     "country": "England",
+     "competition": "Premier League",
+     "from": "2023-06-19",
+     "to": "2026-05-30",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Andoni_Iraola",
+      "https://www.premierleague.com/en/news/3544206"
+     ]
+    },
+    {
+     "club": "Rayo Vallecano",
+     "country": "Spain",
+     "competition": "La Liga",
+     "from": "2020-08-04",
+     "to": "2023-06-16",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Andoni_Iraola",
+      "https://www.rayovallecano.es/noticias/andoni-iraola-nuevo-entrenador-del-rayo-vallecano"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": ""
+  },
+  {
+   "league": "pl",
+   "team": "MCI",
+   "name": "Enzo Maresca",
+   "current": {
+    "club": "Manchester City",
+    "from": "2026-06-29",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://www.premierleague.com/en/news/4679012"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Leicester City",
+     "country": "England",
+     "competition": "Championship",
+     "from": "2023-06-16",
+     "to": "2024-06-03",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Enzo_Maresca",
+      "https://www.lcfc.com/media-article/Enzo-Maresca-Departs-Leicester-City"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "Parma 任期本次未填：尚未取得第二個符合規則的獨立來源。"
+  },
+  {
+   "league": "pl",
+   "team": "MUN",
+   "name": "Michael Carrick",
+   "current": {
+    "club": "Manchester United",
+    "from": null,
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/Michael_Carrick"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Middlesbrough",
+     "country": "England",
+     "competition": "Championship",
+     "from": "2022-10-24",
+     "to": "2025-06",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Michael_Carrick",
+      "https://www.youtube.com/watch?v=qcUIxW-FdKQ"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "Manchester United 2021 年代理任期不列入；Middlesbrough 是第一段正式一線隊總教練任期。"
+  },
+  {
+   "league": "pl",
+   "team": "NEW",
+   "name": "Matthias Jaissle",
+   "current": {
+    "club": "Newcastle United",
+    "from": "2026-08-05",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/Matthias_Jaissle"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Al-Ahli",
+     "country": "Saudi Arabia",
+     "competition": "Saudi Pro League",
+     "from": "2023-07-28",
+     "to": "2026-08-05",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Matthias_Jaissle",
+      "https://sport.orf.at/stories/3114578/"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "RB Salzburg 任期本次未填：未取得符合規則的第二個獨立來源。"
+  },
+  {
+   "league": "pl",
+   "team": "NFO",
+   "name": "Vítor Pereira",
+   "current": {
+    "club": "Nottingham Forest",
+    "from": null,
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/V%C3%ADtor_Pereira_(football_manager)"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Wolverhampton Wanderers",
+     "country": "England",
+     "competition": "Premier League",
+     "from": "2024-12-19",
+     "to": null,
+     "sources": [
+      "https://en.wikipedia.org/wiki/V%C3%ADtor_Pereira_(football_manager)",
+      "https://www.wolves.co.uk/news/club/20241219-vitor-pereira-confirmed-as-new-head-coach/?isNative=true"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "依本站官方名冊保留 Vítor Pereira；現任起始日與 Wolves 離任日尚未完成雙來源核對。"
+  },
+  {
+   "league": "pl",
+   "team": "SUN",
+   "name": "Régis Le Bris",
+   "current": {
+    "club": "Sunderland",
+    "from": "2024-07-01",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://en.wikipedia.org/wiki/R%C3%A9gis_Le_Bris"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Lorient",
+     "country": "France",
+     "competition": "Ligue 1",
+     "from": "2022-06-27",
+     "to": null,
+     "sources": [
+      "https://en.wikipedia.org/wiki/R%C3%A9gis_Le_Bris",
+      "https://www.fclorient.bzh/le-fc-lorient-ouvre-une-nouvelle-page-de-son-histoire-regis-le-bris-nomme-entraineur/"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "Lorient 離任日未取得足夠來源，保留 null。"
+  },
+  {
+   "league": "pl",
+   "team": "TOT",
+   "name": "Roberto De Zerbi",
+   "current": {
+    "club": "Tottenham Hotspur",
+    "from": "2026-03-31",
+    "sources": [
+     "https://www.premierleague.com/en/managers/",
+     "https://www.premierleague.com/en/news/4679012"
+    ]
+   },
+   "previous": [
+    {
+     "club": "Brighton & Hove Albion",
+     "country": "England",
+     "competition": "Premier League",
+     "from": "2022-09-18",
+     "to": "2024-05-18",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Roberto_De_Zerbi",
+      "https://www.premierleague.com/en/news/4019527"
+     ]
+    }
+   ],
+   "firstHeadCoachJob": false,
+   "note": "Marseille 任期本次未填：尚未取得第二個符合規則的獨立來源。"
+  }
+ ]
 }
