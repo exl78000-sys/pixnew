@@ -57,7 +57,7 @@ export function teamMatchRows(csvText, { codeOf, div = 'E0' } = {}) {
   return byTeam;
 }
 
-const avg = rows => {
+export const avg = rows => {
   if (!rows.length) return null;
   const out = { games: rows.length };
   for (const f of FIELDS) out[f] = round(rows.reduce((s, r) => s + (r[f] ?? 0), 0) / rows.length, 2);

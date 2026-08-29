@@ -19,6 +19,10 @@ const LETTER = {
   Æ: 'AE', æ: 'ae', Œ: 'OE', œ: 'oe', ß: 'ss', ı: 'i', İ: 'I', Þ: 'Th', þ: 'th',
 };
 
+/* 隊名鍵:去掉**字尾**的 FC/AFC(法人形式)。字首的 AFC 是球隊身分的一部分,
+   保留 —— AFC Bournemouth ≠ Bournemouth FC 那條坑。職涯核對與 build 共用。 */
+export const clubKey = name => normName(name).replace(/\s+(a?fc)$/, '').trim();
+
 export const normName = s => String(s ?? '')
   .replace(/[ĐđÐðØøŁłÆæŒœßıİÞþ]/g, ch => LETTER[ch] ?? ch)
   .normalize('NFD')

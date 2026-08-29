@@ -177,6 +177,34 @@ try {
   /* 單隊的教練區塊。原本整頁的教練卡就是這一段 ——
      搬過來之後,「誰在帶這支球隊、帶多久、成績如何」跟球隊的其他資料在同一頁,
      不用先猜要去哪一頁找。 */
+  /* 教練前一段任期(B 層)。職涯由人工交付、經核對器獨立核對(現任對官方名冊、
+     任期對聯賽成員資格);逐場風格是本站自己從 football-data 季檔算的,
+     交付方不經手數據。沒有逐場來源的聯賽(德甲、沙烏地…)只列任期事實。 */
+  function careerBlock(c) {
+    const cr = c?.career;
+    if (!cr) return '';
+    const st = cr.style;
+    const ROWS = st ? [['sf', '射門/場'], ['stf', '射正/場'], ['cf', '角球/場'],
+      ['sa', '被射門/場'], ['cards', '牌/場'], ['gf', '進球/場'], ['ga', '失球/場']] : [];
+    return `<div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
+      <div class="spread"><span class="tiny dim">前一段一線隊任期</span>
+        <span class="pill tiny" title="職涯經本站核對:現任對官方名冊、任期對聯賽逐季成員資格">交付已核對</span></div>
+      ${cr.previous.map(p => `<div class="stat-line"><span class="small">${C.esc(p.club)}
+          <span class="dim tiny">${C.esc(p.competition)}</span></span>
+        <span class="small mono">${p.from ?? '?'} ~ ${p.to ?? '離任日未知'}</span></div>`).join('')}
+      ${st ? `<div class="tiny dim" style="margin:6px 0 2px">在 ${C.esc(st.club)} 的逐場風格
+          (${st.games} 場${st.clipped ? ',任期早於季檔涵蓋,只算涵蓋內' : ''};括號為同期間${C.esc(st.leagueZh)}全隊平均):</div>
+        <div class="row small" style="flex-wrap:wrap;gap:4px 14px">
+          ${ROWS.map(([k, label]) => `<span>${label} <b class="mono">${st.perGame[k]}</b>
+            <span class="dim mono tiny">(${st.leagueAvg[k]})</span></span>`).join('')}
+        </div>`
+      : `<div class="tiny dim" style="margin-top:4px">${C.esc(cr.styleUnavailable ?? '')} —— 只列核對過的任期事實,不硬造數字。</div>`}
+      <div class="tiny dim" style="margin-top:6px">球隊表現 ≠ 教練個人風格(陣容與對手都不同)${
+        /* 跨聯賽才提醒不可比 —— 任期就在本聯賽時印這句是自相矛盾 */
+        st && st.leagueZh !== (meta.competition?.short ?? '') ? `;數字是${C.esc(st.leagueZh)}的,跟本聯賽的場均不可直接互比` : ''}。</div>
+    </div>`;
+  }
+
   function coachCard(c) {
     if (!c) return '';
     const years = c.tenureDays ? (c.tenureDays / 365).toFixed(1) : null;
@@ -250,7 +278,7 @@ try {
     ].filter(Boolean).join('・');
     return `<div class="section" style="margin-top:18px"><h2>教練</h2>
       <span class="hint">${hint}</span></div>
-      <div class="card">${head}${body}</div>`;
+      <div class="card">${head}${body}${careerBlock(c)}</div>`;
   }
 
   /* ── 陣容 ──────────────────────────

@@ -1,0 +1,90 @@
+/* 教練前一段任期的逐場風格(B 層)。
+ *
+ * 資料流:核對過的職涯(coach-careers-verified.json)給「哪一隊、哪段期間」,
+ * 逐場統計從本站已有的 football-data 季檔算 —— 交付方只交任期,數據不經他手。
+ *
+ * 界線(都要跟著資料走到畫面上):
+ * - 只算本站有逐場 CSV 的聯賽(E0/E1 2023-24 起、SP1 2024-25 起)。
+ *   德甲、沙烏地等沒有的 → 回 null 帶 reason,畫面只列任期事實,不留空數字。
+ * - 離任日是 null 的任期不算(不知道切到哪天,算了就是猜)。
+ * - 任期比 CSV 涵蓋早的,截到涵蓋起點並標 clipped —— 讀者要知道這不是全任期。
+ * - 場均值旁附**同期間該聯賽全隊平均**,沒有比較基準的裸數字讀不出高低。
+ */
+import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { join } from 'node:path';
+import { teamMatchRows, avg } from './style-trend.mjs';
+import { clubKey } from './names.mjs';
+
+/* 聯賽 → 季檔位置。鍵是交付檔的 competition(小寫)。 */
+const CSV_LEAGUES = {
+  'premier league': { dir: 'football-data-couk', div: 'E0', clubsPath: 'web/data/clubs.json', zh: '英超' },
+  championship: { dir: 'football-data-couk-championship', div: 'E1', clubsPath: 'web/data/leagues/en2/clubs.json', zh: '英冠' },
+  'efl championship': { dir: 'football-data-couk-championship', div: 'E1', clubsPath: 'web/data/leagues/en2/clubs.json', zh: '英冠' },
+  'la liga': { dir: 'football-data-couk-la-liga', div: 'SP1', clubsPath: 'web/data/leagues/es1/clubs.json', zh: '西甲' },
+};
+
+const monthFloor = d => (d && /^\d{4}-\d{2}$/.test(d) ? `${d}-01` : d);
+
+/* 核對過的職涯檔。sha 對不上收件匣就回 stale —— build 拿舊核對結果背書新內容
+   的那條坑,跟租借同一道守門。 */
+export function loadVerifiedCareers(ROOT) {
+  const vPath = join(ROOT, 'data', 'coach-careers-verified.json');
+  const inboxPath = join(ROOT, 'data', 'manual', 'coach-careers.json');
+  if (!existsSync(vPath) || !existsSync(inboxPath)) return { status: 'absent', published: [] };
+  const v = JSON.parse(readFileSync(vPath, 'utf8'));
+  const sha = createHash('sha256').update(readFileSync(inboxPath, 'utf8')).digest('hex');
+  if (v.inboxSha256 !== sha) return { status: 'stale', published: [] };
+  return { status: 'ok', published: v.published ?? [] };
+}
+
+/* 一段前任期 → 逐場風格。回 { style } 或 { style: null, reason }。 */
+export function tenureStyle(ROOT, prev, { minGames = 5 } = {}) {
+  const cfg = CSV_LEAGUES[String(prev.competition ?? '').toLowerCase()];
+  if (!cfg) return { style: null, reason: `${prev.competition} 沒有本站可用的逐場資料源` };
+  if (!prev.to) return { style: null, reason: '離任日未知,無法界定要算哪些比賽' };
+
+  const clubs = JSON.parse(readFileSync(join(ROOT, cfg.clubsPath), 'utf8'));
+  const byName = new Map((clubs.clubs ?? clubs).flatMap(t =>
+    [t.en, t.of, t.zh, t.fd, t.fpl, t.understat, ...(t.alias ?? []), ...(t.cupAlias ?? [])]
+      .filter(Boolean).map(n => [clubKey(n), t])));
+  const club = byName.get(clubKey(prev.club));
+  if (!club) return { style: null, reason: `${prev.club} 對不到名冊` };
+  const codeOf = n => byName.get(clubKey(n))?.code ?? null;
+
+  const from = monthFloor(prev.from), to = monthFloor(prev.to);
+  const rows = [];
+  const leagueRows = [];
+  let clipped = false;
+  const dir = join(ROOT, 'data', 'raw', cfg.dir);
+  // 季檔逐季讀:檔名就是賽季,任期跨到哪季讀到哪季。
+  // 比賽只發生在 8 月~隔年 5 月:六月上任、八月開季不算「漏了比賽」。
+  for (let y = Number(from.slice(0, 4)) - 1; y <= Number(to.slice(0, 4)); y++) {
+    const playsInSeason = from <= `${y + 1}-05-31` && to >= `${y}-08-01`;
+    if (!playsInSeason) continue;
+    const p = join(dir, `${y}-${String((y + 1) % 100).padStart(2, '0')}.csv`);
+    if (!existsSync(p)) { clipped = true; continue; }   // 任期有比賽的賽季缺季檔 → 截段
+    const byTeam = teamMatchRows(readFileSync(p, 'utf8'), { codeOf, div: cfg.div });
+    for (const [, teamRows] of byTeam) {
+      for (const r of teamRows) {
+        if (r.date >= from && r.date <= to) leagueRows.push(r);
+      }
+    }
+    for (const r of byTeam.get(club.code) ?? []) {
+      if (r.date >= from && r.date <= to) rows.push(r);
+    }
+  }
+  if (rows.length < minGames) {
+    return { style: null, reason: `任期落在本站季檔涵蓋之外(涵蓋內只有 ${rows.length} 場)` };
+  }
+  return {
+    style: {
+      club: club.en, clubCode: club.code, leagueZh: cfg.zh,
+      games: rows.length,
+      span: { from: rows[0].date, to: rows.at(-1).date },
+      clipped,
+      perGame: avg(rows),
+      leagueAvg: avg(leagueRows),
+    },
+  };
+}
