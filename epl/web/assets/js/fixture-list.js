@@ -1,4 +1,4 @@
-import * as C from './core.js?v=3aa4ea35';
+import * as C from './core.js?v=5c18269b';
 
 /* ── 賽程列表 + 單場速覽抽屜(共用模組) ─────────────────────────
    原本是獨立的 page-fixtures.js。「總覽」與「賽程與預測」合併成一頁之後,
@@ -103,7 +103,12 @@ export function mountFixtureList({
          「看完整賽程」會只剩一場 —— 連結講的是完整賽程,給一場就是說了不算。 */
       const round = document.getElementById(selectIds.round);
       if (round) round.value = '';
+      /* 從球隊頁的「看完整賽程」進來的,要的是**未來的比賽** ——
+         狀態預設成未賽。已賽的切一下狀態就有,預設塞整季會讓下一場沉在中間。 */
+      const st = document.getElementById(selectIds.state);
+      if (st) st.value = '未賽';
       requestAnimationFrame(() => el.closest('.filters')?.scrollIntoView({ block: 'start' }));
+      appendCupFixtures(want);
     }
   }
   render();
@@ -196,6 +201,70 @@ export function mountFixtureList({
           ? '這場尚待主要資料源完成永久快取;球隊統計、正式陣容、事件、球員資料與評分未全部通過前不顯示半成品。'
           : '這場沒有逐球員的出場資料,所以沒有陣容與戰術解讀 —— 上游補上之後會自動出現。'}</div>`
         : '')}`);
+  }
+
+  /* 該球隊的盃賽場次(2026-08-29 加)。聯賽賽程表刻意不混盃賽
+     (「本季 380 場」不能突然變 500 場),所以盃賽另起一個區塊掛在表格後面。
+     資料一律取英超目錄那一份(cups 只有那裡有;ucl 各聯賽是相同複本)。
+     cups.json 有 1.8MB,**只在帶 ?team= 進來時才載**,平常的賽程表不揹這個重量。
+
+     比對用 code 優先、隊名備援 —— cups 的名冊只認英超那 27 支,
+     英冠球隊(例如 Millwall)在盃賽資料裡只有名字沒有 code。 */
+  async function appendCupFixtures(code) {
+    const host = document.getElementById('fixtureList');
+    if (!host) return;
+    const box = document.createElement('div');
+    box.id = 'teamCupFixtures';
+    host.after(box);
+    try {
+      const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl']);
+      const team = teams.find(t => t.code === code);
+      const names = new Set([team?.en, team?.of, C.name(code)].filter(Boolean).map(x => x.toLowerCase()));
+      const isMine = side => side && (side.code === code || names.has(String(side.name ?? '').toLowerCase()));
+
+      const rows = [];
+      for (const cup of shared.cups?.cups ?? []) {
+        const season = cup.seasons?.find(x => x.current);
+        for (const r of season?.rounds ?? []) {
+          for (const m of r.matches) {
+            if (m.played || (!isMine(m.home) && !isMine(m.away))) continue;
+            const home = isMine(m.home);
+            const opp = home ? m.away : m.home;
+            /* 上游抽籤後常先給「日期 + 00:00Z」的占位 —— 半夜整點 UTC 不會有球賽,
+               照印會變成「台北 08:00 開球」這種假時間。日期照給,時間標待定。 */
+            const placeholder = typeof m.kickoff === 'string' && m.kickoff.endsWith('T00:00:00Z');
+            rows.push({ comp: cup.zh, stage: r.stage,
+              kickoff: placeholder ? null : m.kickoff,
+              dateOnly: placeholder ? m.kickoff.slice(0, 10) : null,
+              home, opp: opp?.name ?? '待定' });
+          }
+        }
+      }
+      rows.sort((a, b) => String(a.kickoff ?? a.dateOnly ?? '9') < String(b.kickoff ?? b.dateOnly ?? '9') ? -1 : 1);
+
+      // 歐冠:新賽季只有抽籤時,列出抽到的對手(還沒有時間,不假裝有)
+      const drawSeason = (shared.ucl?.seasons ?? []).find(x => x.availability === 'draw-only');
+      const drawRow = drawSeason?.draw?.rows?.find(r => r.code === code);
+
+      if (!rows.length && !drawRow) { box.remove(); return; }
+      box.innerHTML = `
+        <div class="section" style="margin-top:18px"><h2>盃賽場次</h2>
+          <span class="hint">聯賽賽程表刻意不混盃賽,所以另列在這裡・<a href="${C.link('cups')}">盃賽頁 →</a></span></div>
+        <div class="card">
+          ${rows.map(r => `<div class="stat-line">
+            <span class="small"><span class="pill tiny">${C.esc(r.comp)}</span>
+              ${C.esc(r.stage)}・${r.home ? '主' : '客'} vs ${C.esc(r.opp)}</span>
+            <span class="mono small dim">${r.kickoff ? C.kickoffLocal(r.kickoff)
+              : r.dateOnly ? `${C.dateFull(r.dateOnly)}・時間待定` : '時間待定'}</span>
+          </div>`).join('')}
+          ${drawRow ? `<div class="stat-line"><span class="small"><span class="pill tiny">歐冠</span>
+              ${C.esc(drawSeason.label)} 聯賽階段・已抽籤</span>
+            <span class="tiny dim">對手:${[...(drawRow.home ?? []), ...(drawRow.away ?? [])].map(o => C.esc(o.name)).join('、')}
+              ・開球時間上游未公布</span></div>` : ''}
+          <div class="tiny dim" style="margin-top:8px">只列<b>已排定或已抽籤</b>的未賽場次。${
+            C.league() !== 'es1' ? '足總盃英超球隊要到第三輪(一月)才進場,抽籤前這裡不會有足總盃。' : ''}</div>
+        </div>`;
+    } catch { box.remove(); /* 盃賽資料載不到就不畫,不擋聯賽表 */ }
   }
 
   const id = C.qs('id');

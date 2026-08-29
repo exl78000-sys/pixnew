@@ -1510,6 +1510,31 @@ async function checkDataGap() {
       return /不影響模型勝率/.test(src) && /它描述的是前任的打法/.test(src);
     })()],
 
+    /* ── 盃賽併頁 + 球隊完整賽程含盃賽(2026-08-29,使用者要求)── */
+    ['球隊深連結預設只看未賽(「完整賽程」要的是未來)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
+      const i = src.indexOf("C.qs('team')");
+      return i > 0 && /selectIds\.state/.test(src.slice(i, i + 900))
+        && /'未賽'/.test(src.slice(i, i + 900));
+    })()],
+    ['球隊深連結附掛盃賽場次,而且只在帶 team 時才載 1.8MB 的 cups', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
+      return /appendCupFixtures\(want\)/.test(src)
+        && /loadFrom\('pl', \['cups', 'ucl'\]\)/.test(src);
+    })()],
+    /* 抽籤後上游常給「日期 + 00:00Z」占位 —— 半夜整點 UTC 不會有球賽,
+       照印會變成「台北 08:00 開球」這種假時間。 */
+    ['占位的 00:00Z 開球時間標成「時間待定」,不印假時間', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
+      return /T00:00:00Z/.test(src) && /時間待定/.test(src);
+    })()],
+    ['盃賽名冊沒有隊碼時用隊名備援(英冠球隊在盃賽資料裡沒有 code)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
+      return /side\.code === code/.test(src) && /names\.has/.test(src);
+    })()],
+    ['英冠也開放盃賽(英冠球隊本來就打足總盃與聯賽盃)',
+      V.LEAGUES.en2.open.includes('cups')],
+
     ['缺口訊息不會把資料集的內部鍵給讀者看',
       ['live', 'players', 'leaders', 'news', 'form', 'tactics', 'knowledge', 'cups']
         .every(k => /[\u4e00-\u9fff]/.test(V.DATASET_ZH?.[k] ?? ''))],
@@ -1948,7 +1973,8 @@ function checkCuratedNews() {
   /* 前端:輪次顯示順序。使用者要求「最新的在最上面、決賽在最上面」。
      盃賽那邊**要先切資格賽再倒**,順序反過來會把決賽切掉。 */
   const W = join(ROOT, 'web', 'assets', 'js');
-  const uclSrc = readFileSync(join(W, 'page-ucl.js'), 'utf8');
+  // 歐冠 2026-08-29 併進盃賽單頁:渲染在 ucl-view.js,page-ucl.js 只剩轉址
+  const uclSrc = readFileSync(join(W, 'ucl-view.js'), 'utf8');
   const cupSrc = readFileSync(join(W, 'page-cups.js'), 'utf8');
   ok(/\[\.\.\.s\.rounds\]\.reverse\(\)/.test(uclSrc), '歐冠:輪次顯示時倒過來(決賽在最上面)');
   ok(uclSrc.indexOf('<h2>淘汰賽</h2>') < uclSrc.indexOf('<h2>聯賽階段</h2>'), '歐冠:淘汰賽排在聯賽階段前面');
@@ -2119,7 +2145,7 @@ function checkUcl() {
           `歐冠 ${season.label}:陣容只收有實際出賽的球員`, `${players.length} 人`);
       }
 
-      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-ucl.js'), 'utf8');
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
       okU(/externalCrest/.test(src) && !/externalCrest[\s\S]{0,400}C\.link\(/.test(src),
         '歐冠頁對外部球隊不給連結(沒有球隊頁可以連)');
       /* 走到哪一輪現在列出 36 隊,但只有本站有球隊頁的那幾支可以點 ——
@@ -2190,12 +2216,13 @@ function checkUcl() {
       /* **登錄順序**:跨聯賽那一份要先登錄,本聯賽的後登錄。
          registerTeams 是逐欄位覆蓋,反過來的話本聯賽比較完整的那筆
          (配色、球場、chartColor)會被只帶名字與隊徽的那筆蓋掉一部分。 */
-      const src = readFileSync(join(W, 'assets', 'js', 'page-ucl.js'), 'utf8');
+      const src = readFileSync(join(W, 'assets', 'js', 'ucl-view.js'), 'utf8');
       const iShared = src.indexOf('C.registerTeams(uclTeams');
       const iLocal = src.indexOf('C.registerTeams(clubs)');
       ok(iShared > 0 && iLocal > 0 && iShared < iLocal,
         '歐冠頁先登錄跨聯賽那一份、再登錄本聯賽的');
-      ok(/'ucl-teams'/.test(src), '歐冠頁真的載了 ucl-teams');
+      ok(/'ucl-teams'/.test(readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8')),
+        '盃賽頁真的載了 ucl-teams(歐冠視圖靠它)');
     }
   }
 
@@ -2349,9 +2376,15 @@ function checkUcl() {
   const siteBlock = core.match(/const SITE_PAGES = \[([\s\S]*?)\];/)?.[1] ?? '';
   const pagesBlock = core.match(/const PAGES = \[([\s\S]*?)\];/)?.[1] ?? '';
   const stripComments = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-  ok(/'ucl'/.test(siteBlock), '歐冠在 SITE_PAGES(跨聯賽那一組,排在足球知識右邊)');
-  ok(!/'ucl'/.test(stripComments(pagesBlock)), '歐冠**不**在 PAGES(兩邊都放會出現兩個「歐冠」)');
-  ok(/open: \[[^\]]*'ucl'/.test(core), '西甲也開放歐冠(兩個聯賽的球隊都在裡面)');
+  /* 2026-08-29:歐冠+足總盃+聯賽盃併成單一「盃賽」入口(使用者要求)。
+     ucl.html 留轉址,SITE_PAGES 只掛 cups。 */
+  ok(/'cups'/.test(siteBlock) && !/'ucl'/.test(stripComments(siteBlock)),
+    '盃賽(含歐冠)在 SITE_PAGES,ucl 不再單獨掛');
+  ok(!/'ucl'/.test(stripComments(pagesBlock)) && !/\['cups'/.test(stripComments(pagesBlock)),
+    '歐冠與盃賽都不在 PAGES(兩邊都放會出現重複分頁)');
+  ok(/es1[\s\S]{0,200}open: \[[^\]]*'cups'/.test(core), '西甲開放盃賽(預設分頁是歐冠)');
+  ok(/page-ucl[\s\S]{0,400}location\.replace/.test(readFileSync(join(W, 'assets', 'js', 'page-ucl.js'), 'utf8').replace(/^/,'page-ucl ')),
+    'ucl.html 保留為轉址(舊連結不斷)');
 
   const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
   ok(/const PAGES = \[[^\]]*'ucl'/.test(bundle), '單檔版有收歐冠頁(漏了的話點進去是空白)');

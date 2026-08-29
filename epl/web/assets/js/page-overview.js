@@ -1,4 +1,4 @@
-import * as C from './core.js?v=3aa4ea35';
+import * as C from './core.js?v=5c18269b';
 
 const app = document.getElementById('app');
 
@@ -131,7 +131,7 @@ try {
   <div class="section"><h2>跨聯賽</h2><span class="hint">這幾頁不分聯賽,兩邊看到的是同一份資料</span></div>
   <div class="grid g3">
     <div class="card"><div class="spread"><h3 style="margin:0">歐冠</h3>
-      <a class="pill accent" href="${C.link('ucl')}">開啟 →</a></div>
+      <a class="pill accent" href="${C.link('cups', { cup: 'ucl' })}">開啟 →</a></div>
       <div class="tiny dim" style="margin-top:8px">${uclSeasons.length
         ? `${uclSeasons.map(s => C.esc(s.label)).join('、')} 完整・每季 36 隊`
         : '目前沒有可用的完整賽季'}</div>
@@ -139,7 +139,7 @@ try {
         歐冠有跨聯賽實力比較、兩回合制、延長與 PK 四件它沒見過的事。</div></div>
 
     <div class="card"><div class="spread"><h3 style="margin:0">英格蘭盃賽</h3>
-      <a class="pill accent" href="${C.link('cups')}">開啟 →</a></div>
+      <a class="pill accent" href="${C.link('cups', { cup: 'facup' })}">開啟 →</a></div>
       <div class="tiny dim" style="margin-top:8px">${cupList.length
         ? `${cupList.map(c => C.esc(c.zh ?? c.en)).join('、')}・共 ${cupMatches} 場`
         : '尚未接入'}</div>

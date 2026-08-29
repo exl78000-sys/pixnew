@@ -1,4 +1,5 @@
-import * as C from './core.js?v=3aa4ea35';
+import * as C from './core.js?v=5c18269b';
+import { renderUclView } from './ucl-view.js?v=ca99fb5a';
 
 const app = document.getElementById('app');
 
@@ -176,17 +177,63 @@ function runsTable(runs) {
 }
 
 try {
-  const { meta, clubs, teams, cups } = await C.load('meta', 'clubs', 'teams', 'cups');
+  /* 盃賽是**跨聯賽**的一頁(2026-08-29 起含歐冠):資料一律取英超目錄那一份
+     (歐冠在各聯賽目錄是逐位元組相同的複本,英格蘭盃賽只有英超目錄有)。
+     meta/clubs/teams 仍取目前聯賽 —— nav 與頁尾要跟著使用者所在的聯賽。 */
+  const { meta, clubs, teams } = await C.load('meta', 'clubs', 'teams');
+  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams']);
+  const cups = shared.cups;
   CUP_CRESTS = cups?.crests ?? {};
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
+  /* 三個盃賽收成同一頁的頁內分頁。網址帶 ?cup=ucl|facup|eflcup 可以直達;
+     預設歐冠(使用者指定的順序:歐冠、足總盃、聯賽盃)。 */
   const list = cups?.cups ?? [];
+  const COMPS = [
+    { key: 'ucl', zh: '歐冠' },
+    ...list.map(c => ({ key: c.key, zh: c.zh })),
+  ];
+  let comp = COMPS.some(c => c.key === C.qs('cup')) ? C.qs('cup') : 'ucl';
+
+  app.innerHTML = `
+  <div class="page-head">
+    <h1>盃賽</h1>
+    <p>歐冠、足總盃與聯賽盃收在同一頁。跟聯賽不一樣的地方都照實顯示:
+       <b>兩回合總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及各隊走到了哪一輪。
+       三個賽事都<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字。</p>
+    ${C.stampRow([
+      shared.ucl ? C.stamp('歐冠賽果', { iso: shared.ucl.retrievedAt, kind: 'daily', note: 'football-data.org + FotMob' }) : null,
+      cups ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `SportMonks・${list.map(c => c.zh).join('與')}` }) : null,
+    ])}
+  </div>
+  <div class="filters">
+    ${COMPS.map(c => `<button class="btn${c.key === comp ? ' on' : ''}" data-comp="${c.key}">${c.zh}</button>`).join('')}
+  </div>
+  <div id="compBody"></div>
+  ${C.foot(meta)}`;
+
+  const compBody = document.getElementById('compBody');
+  const renderComp = () => {
+    if (comp === 'ucl') {
+      renderUclView(compBody, { meta, clubs, teams, ucl: shared.ucl, uclTeams: shared['ucl-teams'] });
+      return;
+    }
+    renderEnglandCup(comp);
+  };
+  document.querySelectorAll('[data-comp]').forEach(b => {
+    b.onclick = () => {
+      comp = b.dataset.comp;
+      document.querySelectorAll('[data-comp]').forEach(x => x.classList.toggle('on', x === b));
+      renderComp();
+    };
+  });
+
+  function renderEnglandCup(cupKey0) {
   if (!list.length) {
-    app.innerHTML = `<div class="page-head"><h1>英格蘭盃賽</h1></div>
-      <div class="note">目前沒有盃賽資料。</div>${C.foot(meta)}`;
+    compBody.innerHTML = '<div class="note">目前沒有英格蘭盃賽資料。</div>';
   } else {
-    let cupKey = list[0].key;
+    let cupKey = cupKey0;
     // 預設看有比賽的那一季 —— 本季開打前所有場次都還沒踢,預設停在空白的一季很奇怪
     const seasonsOf = key => (list.find(c => c.key === key)?.seasons ?? []);
     const defaultSeason = key => {
@@ -196,32 +243,14 @@ try {
     let seasonLabel = defaultSeason(cupKey);
     let showQualifying = false;   // 資格賽預設收起來,但可以打開
 
-    app.innerHTML = `
-    <div class="page-head">
-      <h1>英格蘭盃賽</h1>
-      <p>足總盃與聯賽盃的逐輪賽果。盃賽跟聯賽不一樣的地方這一頁都照實顯示:
-         <b>延長賽</b>後的比分、<b>PK 大戰</b>的結果,以及每支英超球隊走到了哪一輪。</p>
-      ${C.stampRow([
-        C.stamp('盃賽賽果', { iso: cups.retrievedAt, kind: 'daily', note: `SportMonks・${list.map(c => c.zh).join('與')}` }),
-      ])}
-    </div>
+    compBody.innerHTML = `
     <div class="filters" style="align-items:end">
-      ${list.map(c => `<button class="btn${c.key === cupKey ? ' on' : ''}" data-cup="${c.key}">${c.zh}</button>`).join('')}
       <label class="small" style="display:grid;gap:5px;min-width:150px">
         <span class="muted">賽季</span><select id="season"></select></label>
       <span class="dim small" id="count"></span>
     </div>
     <div id="body"></div>
-    <div class="note info" style="margin-top:14px">
-      <b>這一頁沒有勝率預測,這是刻意的。</b>
-      本站的模型是用聯賽比賽調出來的,而盃賽有三件它沒見過的事:<b>延長賽</b>、
-      <b>PK 大戰</b>,以及<b>英超打非聯賽球隊</b>這種實力差距極大的對戰。
-      沒有在盃賽上跑過走查回測就把聯賽模型套上去,出來的機率是編的 ——
-      那正是本站第二條鐵則在擋的東西。要做就得另外驗收一套,
-      <a href="${C.link('model')}">模型驗證頁</a>寫著現有模型驗過什麼、沒驗過什麼。
-    </div>
-    <div class="note" style="margin-top:10px" id="coverage"></div>
-    ${C.foot(meta)}`;
+    <div class="note" style="margin-top:10px" id="coverage"></div>`;
 
     const render = () => {
       const cup = list.find(c => c.key === cupKey);
@@ -266,15 +295,10 @@ try {
           : ''}`;
     };
 
-    document.querySelectorAll('[data-cup]').forEach(b => {
-      b.onclick = () => {
-        cupKey = b.dataset.cup;
-        seasonLabel = defaultSeason(cupKey);
-        document.querySelectorAll('[data-cup]').forEach(x => x.classList.toggle('on', x === b));
-        render();
-      };
-    });
     document.getElementById('season').onchange = e => { seasonLabel = e.target.value; render(); };
     render();
   }
+  }
+
+  renderComp();
 } catch (err) { C.fail(err); }

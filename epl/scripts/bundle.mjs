@@ -43,10 +43,32 @@ async function main() {
      漏掉的話單檔版會在該頁拋 "mountFixtureList is not defined"。 */
   /* 相依順序:sim-table 與 fixture-list 都只引用 core,彼此無關,
      所以這裡的順序不重要;真的出現「共用模組引用共用模組」時要照相依排。 */
-  const SHARED = ['fixture-list', 'sim-table'];
+  /* ucl-view 是歐冠視圖(2026-08-29 併進盃賽單頁時抽出來的),page-cups 引用它。
+     忘了列在這裡的話分頁版一切正常、單檔版一開盃賽頁就 renderUclView is not defined ——
+     實際發生過。下面有一條守門:頁面 import 的本地模組必須都在 SHARED 裡。 */
+  const SHARED = ['fixture-list', 'sim-table', 'ucl-view'];
+
+  /* 守門:掃每一頁 import 了哪些本地模組,不在 SHARED 清單就直接失敗 ——
+     這種漏法測試抓不到(分頁版正常),只有 bundle 自己能守。 */
+  {
+    for (const p of PAGES) {
+      const src = await readFile(join(WEB, 'assets', 'js', `page-${p}.js`), 'utf8');
+      for (const m of src.matchAll(/import \{[^}]*\} from '\.\/([\w-]+)\.js/g)) {
+        if (m[1] !== 'core' && !SHARED.includes(m[1])) {
+          throw new Error(`page-${p}.js import 了 ${m[1]}.js,但它不在 bundle 的 SHARED 清單裡`);
+        }
+      }
+    }
+  }
+  /* 共用模組會攤平到頂層,跟 core 的匯出同名就是 SyntaxError ——
+     而分頁版有模組作用域,完全看不出來(ucl-view 的 teamCell 實際踩過)。 */
+  const coreNames = new Set([...coreSrc.matchAll(/export (?:function|const|class) ([A-Za-z_$][\w$]*)/g)].map(m => m[1]));
   const sharedSrc = [];
   for (const name of SHARED) {
     const src = await readFile(join(WEB, 'assets', 'js', `${name}.js`), 'utf8');
+    for (const m of src.matchAll(/^(?:export )?(?:async )?(?:function|const|let) ([A-Za-z_$][\w$]*)/gm)) {
+      if (coreNames.has(m[1])) throw new Error(`${name}.js 的頂層識別字 ${m[1]} 跟 core.js 的匯出同名,單檔版會炸`);
+    }
     sharedSrc.push(src.replace(/^import \* as C from '\.\/core\.js(\?v=[0-9a-f]+)?';\s*/m, '').replace(/^export /gm, ''));
   }
 
