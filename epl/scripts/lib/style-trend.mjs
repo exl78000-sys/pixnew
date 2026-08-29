@@ -74,7 +74,7 @@ export const avg = rows => {
 
 /* 每隊:最近 window 場(跨季) vs 上季全季基準。
    baselineRows 要是**整季**(不足 minBaseline 場就當沒有基準 —— 半套基準比沒有更糟)。 */
-export function styleTrendFor({ lastRows = [], curRows = [], window = 10, minGames = 5, minBaseline = 30 } = {}) {
+export function styleTrendFor({ lastRows = [], curRows = [], window = 10, minGames = 5, minBaseline = 30, curPlayed = null } = {}) {
   const all = [...lastRows, ...curRows];
   const recentRows = all.slice(-window);
   const recent = avg(recentRows);
@@ -88,6 +88,9 @@ export function styleTrendFor({ lastRows = [], curRows = [], window = 10, minGam
     window,
     span: { from: recentRows[0].date, to: recentRows.at(-1).date },
     currentSeasonGames: curRows.length,
+    /* 逐場統計主檔(football-data 季檔)比賽果慢一兩天 —— 已完賽但還沒進季檔的
+       場次數要標在畫面上,不然剛踢完那幾天看起來像資料壞了(使用者問過)。 */
+    pendingGames: curPlayed != null ? Math.max(0, curPlayed - curRows.length) : null,
     recent, baseline, delta,
   };
 }

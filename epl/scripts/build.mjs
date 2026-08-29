@@ -517,8 +517,10 @@ async function main() {
       return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf: T.codeOf, xgLookup }) : new Map();
     };
     const lastRows = csvOf(LAST_SEASON, xgLookupFor(LAST_SEASON)), curRows = csvOf(CURRENT_SEASON, xgLookupFor(CURRENT_SEASON));
+    const playedOf = code => fixtures.filter(f => f.played && (f.home === code || f.away === code)).length;
     for (const code of curCodes) {
-      const t = styleTrendFor({ lastRows: lastRows.get(code) ?? [], curRows: curRows.get(code) ?? [] });
+      const t = styleTrendFor({ lastRows: lastRows.get(code) ?? [], curRows: curRows.get(code) ?? [],
+        curPlayed: playedOf(code) });
       if (t) styleTrendBy.set(code, t);
     }
     // 級分的尺 = 上季全季**全部 20 隊**的分布(含降級隊),兩層同一把

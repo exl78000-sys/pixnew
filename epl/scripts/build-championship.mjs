@@ -276,10 +276,11 @@ async function main() {
       return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf, div: 'E1' }) : new Map();
     };
     const lastRows = csvOf(LAST_SEASON), curRows = csvOf(CURRENT_SEASON);
+    const playedOf = code => curLeague.filter(m => m.played && (m.home === code || m.away === code)).length;
     for (const code of curCodes) {
       const t = styleTrendFor({
         lastRows: lastRows.get(code) ?? [], curRows: curRows.get(code) ?? [],
-        minBaseline: 40,   // 英冠一季 46 場,基準要接近整季才算數
+        minBaseline: 40, curPlayed: playedOf(code),   // 英冠一季 46 場,基準要接近整季才算數
       });
       if (t) styleTrendBy.set(code, t);
     }
