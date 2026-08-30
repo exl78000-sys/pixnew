@@ -15,6 +15,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
 import { loadMatches } from './lib/adapters/openfootball.mjs';
+import { laligaMatches } from './lib/laliga-matches.mjs';
 import { normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -275,8 +276,13 @@ async function syncCurrentMatches(T, seasonStore, season) {
   const capabilityDenied = capabilityValid
     ? preferredIncludes.filter(include => capability.includes?.[include.split('.')[0]]?.available === false)
     : [];
-  const local = loadMatches({ root: ROOT, competition: CONFIG.competition, season: season.label, codeOf: T.codeOf,
-    rawDir: CONFIG.key === 'es1' ? 'openfootball-la-liga' : 'openfootball' });
+  /* 已完賽候選要跟 build 用**同一份**賽果。西甲的賽果是 openfootball + SP1
+     補比分(laligaMatches);這裡原本只讀 openfootball,SP1 補進來的場次
+     永遠不在候選裡 —— 實測 8/25~27 四場的賽後詳情因此一直 pending。 */
+  const local = CONFIG.key === 'es1'
+    ? laligaMatches(ROOT, season.label, { codeOf: T.codeOf }).matches
+    : loadMatches({ root: ROOT, competition: CONFIG.competition, season: season.label, codeOf: T.codeOf,
+      rawDir: 'openfootball' });
   const played = local.filter(x => x.played);
   const teamCodeById = new Map(Object.entries(seasonStore.teams ?? {}).map(([code, t]) => [String(t.id), code]));
   const details = { ...(previous?.matches ?? {}) };

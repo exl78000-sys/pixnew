@@ -13,6 +13,7 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadMatches } from './lib/adapters/openfootball.mjs';
+import { laligaMatches } from './lib/laliga-matches.mjs';
 import { loadTeams } from './lib/teams.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -121,10 +122,10 @@ async function save(store) {
 
 async function main() {
   const teams = loadTeams(ROOT, { file: 'teams-la-liga.json' });
-  const seasonMatches = loadMatches({
-    root: ROOT, competition: 'esp.1', season, codeOf: teams.codeOf,
-    rawDir: 'openfootball-la-liga',
-  });
+  /* 已完賽候選跟 build 同一份(openfootball + SP1 補比分)——
+     只讀 openfootball 的話,SP1 補進來的場次永遠不會被抓正式陣容
+     (sportmonks:sync 同一個坑,2026-08-30 一起修)。 */
+  const seasonMatches = laligaMatches(ROOT, season, { codeOf: teams.codeOf }).matches;
   const store = await loadStore();
   const pending = completedMatches(seasonMatches, store);
   console.log(`▶ FotMob 西甲 ${season}：已完賽 ${seasonMatches.filter(m => m.played).length} 場・永久快取 ${Object.keys(store.matches).length} 場`);
