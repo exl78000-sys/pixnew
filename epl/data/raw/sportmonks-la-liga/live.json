@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T17:56:48.467Z",
+  "fetchedAt": "2026-08-30T17:59:54.417Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,9 +22,9 @@
       "kickoff": "2026-08-30 17:30:00",
       "started": true,
       "finished": false,
-      "minute": 26,
+      "minute": 29,
       "hs": 2,
-      "as": 0,
+      "as": 1,
       "sides": {
         "DEP": {
           "xi": [],
@@ -68,12 +68,17 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 0,
+          "goals": 1,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [],
+          "scorers": [
+            {
+              "name": "Umar Sadiq",
+              "goals": 1
+            }
+          ],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -90,10 +95,10 @@
         "status": 2,
         "home": "DEP",
         "away": "VAL",
-        "fetchedAt": "2026-08-30T17:56:48.463Z",
+        "fetchedAt": "2026-08-30T17:59:54.413Z",
         "score": {
           "home": 2,
-          "away": 0
+          "away": 1
         },
         "teamStats": {
           "DEP": {
@@ -140,8 +145,8 @@
             "type": "",
             "detail": "Own Goal",
             "comments": "1st Own Goal",
-            "player": "Javi Guerra",
-            "playerId": 37571011,
+            "player": "César Tárrega",
+            "playerId": 37592231,
             "assist": null,
             "assistId": null
           },
@@ -155,6 +160,19 @@
             "comments": "1st Goal",
             "player": "Pierre-Emerick Aubameyang",
             "playerId": 31739,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 26,
+            "extra": null,
+            "label": "26'",
+            "team": "VAL",
+            "type": "",
+            "detail": "Right foot shot",
+            "comments": "2nd Goal",
+            "player": "Umar Sadiq",
+            "playerId": 130120,
             "assist": null,
             "assistId": null
           }
@@ -196,43 +214,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 26,
+        "minute": 29,
         "finished": false,
-        "remaining": 0.711,
-        "home": 0.8738,
-        "draw": 0.0939,
-        "away": 0.0323,
-        "xgRestHome": 0.73,
-        "xgRestAway": 0.87,
+        "remaining": 0.678,
+        "home": 0.6422,
+        "draw": 0.2381,
+        "away": 0.1197,
+        "xgRestHome": 0.69,
+        "xgRestAway": 0.83,
         "expectedFinal": {
-          "home": 2.73,
-          "away": 0.87
+          "home": 2.69,
+          "away": 1.83
         },
         "nextGoal": {
-          "home": 0.363,
-          "away": 0.434,
-          "none": 0.203
+          "home": 0.356,
+          "away": 0.425,
+          "none": 0.219
         },
         "topScores": [
           {
-            "s": "2-0",
-            "p": 0.2033
-          },
-          {
             "s": "2-1",
-            "p": 0.1764
-          },
-          {
-            "s": "3-0",
-            "p": 0.1475
-          },
-          {
-            "s": "3-1",
-            "p": 0.128
+            "p": 0.2191
           },
           {
             "s": "2-2",
-            "p": 0.0765
+            "p": 0.1812
+          },
+          {
+            "s": "3-1",
+            "p": 0.1515
+          },
+          {
+            "s": "3-2",
+            "p": 0.1253
+          },
+          {
+            "s": "2-3",
+            "p": 0.0749
           }
         ]
       },
@@ -245,11 +263,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 26,
+        "minute": 29,
         "paragraphs": [
-          "第 26 分鐘,Deportivo La Coruña 2:0 Valencia CF。",
-          "賽前模型 32%/28%/40%(主/和/客),目前 87%/9%/3% —— Deportivo La Coruña勝的機率升了 55 個百分點。",
-          "模型估下一球:Deportivo La Coruña 36%、Valencia CF 43%,剩餘時間期望再進 0.73:0.87。"
+          "第 29 分鐘,Deportivo La Coruña 2:1 Valencia CF。",
+          "賽前模型 32%/28%/40%(主/和/客),目前 64%/24%/12% —— Deportivo La Coruña勝的機率升了 32 個百分點。",
+          "模型估下一球:Deportivo La Coruña 36%、Valencia CF 43%,剩餘時間期望再進 0.69:0.83。"
         ]
       }
     }
