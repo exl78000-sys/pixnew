@@ -11177,7 +11177,7 @@
      }
     ]
    },
-   "clock": "60'00"
+   "clock": "62'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -11702,6 +11702,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 133890,
+      "team": 130,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 50460,
+      "team": 130,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -11731,7 +11749,7 @@
      }
     ]
    },
-   "clock": "59'00"
+   "clock": "61'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
@@ -12184,7 +12202,44 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 52989,
+      "team": 29,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67784,
+      "team": 29,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 126110,
+      "team": 29,
+      "min": 65,
+      "label": "65'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 115105,
+      "team": 29,
+      "min": 65,
+      "label": "65'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -12212,8 +12267,423 @@
      }
     ]
    },
-   "clock": "64'00"
+   "clock": "65'00"
+  },
+  "MUN|IPS": {
+   "fixtureId": 128940,
+   "kickoff": "2026-08-30T15:30:00.000Z",
+   "status": "U",
+   "final": false,
+   "homeId": 12,
+   "awayId": 8,
+   "home": {
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67910
+     ],
+     [
+      24252,
+      9566,
+      67191,
+      4608
+     ],
+     [
+      108936,
+      5865
+     ],
+     [
+      66360,
+      23396,
+      13565
+     ],
+     [
+      51202
+     ]
+    ],
+    "xi": [
+     {
+      "id": 67910,
+      "playerId": null,
+      "name": "Senne Lammens",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 9566,
+      "playerId": null,
+      "name": "Harry Maguire",
+      "shirt": 5,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 23396,
+      "playerId": null,
+      "name": "Bruno Fernandes",
+      "shirt": 8,
+      "pos": "M",
+      "posInfo": "Left/Centre/Right Attacking Midfielder",
+      "captain": true
+     },
+     {
+      "id": 5865,
+      "playerId": null,
+      "name": "Youri Tielemans",
+      "shirt": 18,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 67191,
+      "playerId": null,
+      "name": "Lisandro Martínez",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 24252,
+      "playerId": null,
+      "name": "Diogo Dalot",
+      "shirt": 2,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 13565,
+      "playerId": null,
+      "name": "Marcus Rashford",
+      "shirt": 9,
+      "pos": "M",
+      "posInfo": "Left/Centre Second Striker",
+      "captain": false
+     },
+     {
+      "id": 51202,
+      "playerId": null,
+      "name": "Matheus Cunha",
+      "shirt": 10,
+      "pos": "F",
+      "posInfo": "Left/Centre Second Striker",
+      "captain": false
+     },
+     {
+      "id": 4608,
+      "playerId": null,
+      "name": "Luke Shaw",
+      "shirt": 23,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 66360,
+      "playerId": null,
+      "name": "Bryan Mbeumo",
+      "shirt": 19,
+      "pos": "M",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 108936,
+      "playerId": null,
+      "name": "Kobbie Mainoo",
+      "shirt": 37,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 50848,
+      "playerId": null,
+      "name": "Joshua Zirkzee",
+      "shirt": 11,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 146567,
+      "playerId": null,
+      "name": "Patrick Dorgu",
+      "shirt": 13,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 133245,
+      "playerId": null,
+      "name": "Andrey Santos",
+      "shirt": 17,
+      "pos": "M",
+      "posInfo": "Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 66036,
+      "playerId": null,
+      "name": "Benjamin Sesko",
+      "shirt": 30,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 133114,
+      "playerId": null,
+      "name": "Ayden Heaven",
+      "shirt": 26,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 118591,
+      "playerId": null,
+      "name": "Leny Yoro",
+      "shirt": 15,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 130151,
+      "playerId": null,
+      "name": "Shea Lacey",
+      "shirt": 31,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 9251,
+      "playerId": null,
+      "name": "Karl Darlow",
+      "shirt": 12,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 33245,
+      "playerId": null,
+      "name": "Noussair Mazraoui",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     }
+    ]
+   },
+   "away": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 125827,
+      "playerId": null,
+      "name": "Julio Enciso",
+      "shirt": 10,
+      "pos": "M",
+      "posInfo": "Centre Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 51454,
+      "playerId": null,
+      "name": "Leif Davis",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 122002,
+      "playerId": null,
+      "name": "Daizen Maeda",
+      "shirt": 38,
+      "pos": "M",
+      "posInfo": "Left Winger",
+      "captain": false
+     },
+     {
+      "id": 49884,
+      "playerId": null,
+      "name": "Issa Diop",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 127644,
+      "playerId": null,
+      "name": "Abdul Fatawu",
+      "shirt": 7,
+      "pos": "M",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 127605,
+      "playerId": null,
+      "name": "Marcelino Núñez",
+      "shirt": 32,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 313194,
+      "playerId": null,
+      "name": "Emersonn",
+      "shirt": 19,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 49254,
+      "playerId": null,
+      "name": "Jacob Greaves",
+      "shirt": 24,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 16044,
+      "playerId": null,
+      "name": "Sasa Lukic",
+      "shirt": 23,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 15154,
+      "playerId": null,
+      "name": "Dara O'Shea",
+      "shirt": 26,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": true
+     },
+     {
+      "id": 67189,
+      "playerId": null,
+      "name": "Kjell Scherpen",
+      "shirt": 37,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 15333,
+      "playerId": null,
+      "name": "Cédric Kipré",
+      "shirt": 4,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 32715,
+      "playerId": null,
+      "name": "Jack Clarke",
+      "shirt": 47,
+      "pos": "F",
+      "posInfo": "Left Winger",
+      "captain": false
+     },
+     {
+      "id": 10491,
+      "playerId": null,
+      "name": "Darnell Furlong",
+      "shirt": 2,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 8159,
+      "playerId": null,
+      "name": "Christian Walton",
+      "shirt": 28,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 141026,
+      "playerId": null,
+      "name": "Sindre Egeli",
+      "shirt": 8,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 126111,
+      "playerId": null,
+      "name": "Abdoul Ouattara",
+      "shirt": 42,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 40161,
+      "playerId": null,
+      "name": "Exequiel Palacios",
+      "shirt": 25,
+      "pos": "M",
+      "posInfo": "Midfielder",
+      "captain": false
+     },
+     {
+      "id": 51553,
+      "playerId": null,
+      "name": "Kasey McAteer",
+      "shirt": 20,
+      "pos": "M",
+      "posInfo": "Right Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 4482,
+      "playerId": null,
+      "name": "Chuba Akpom",
+      "shirt": 29,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     }
+    ]
+   },
+   "goals": [],
+   "timeline": {
+    "cards": [],
+    "subs": [],
+    "periods": []
+   },
+   "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-30T14:20:16.080Z"
+ "fetchedAt": "2026-08-30T14:22:33.654Z"
 }
