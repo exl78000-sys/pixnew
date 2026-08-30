@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T14:59:27.427Z",
+  "fetchedAt": "2026-08-30T15:05:40.342Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-30 15:00:00",
       "started": true,
       "finished": false,
-      "minute": 0,
+      "minute": 5,
       "hs": 0,
       "as": 0,
       "sides": {
@@ -87,10 +87,10 @@
         "source": "sportmonks",
         "fixtureId": 19732715,
         "kickoff": "2026-08-30 15:00:00",
-        "status": 1,
+        "status": 2,
         "home": "RMA",
         "away": "MAL",
-        "fetchedAt": "2026-08-30T15:02:33.827Z",
+        "fetchedAt": "2026-08-30T15:05:40.338Z",
         "score": {
           "home": 0,
           "away": 0
@@ -169,43 +169,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 0,
+        "minute": 5,
         "finished": false,
-        "remaining": 1,
-        "home": 0.8504,
-        "draw": 0.1044,
-        "away": 0.0451,
-        "xgRestHome": 2.97,
-        "xgRestAway": 0.57,
+        "remaining": 0.944,
+        "home": 0.839,
+        "draw": 0.1134,
+        "away": 0.0476,
+        "xgRestHome": 2.81,
+        "xgRestAway": 0.54,
         "expectedFinal": {
-          "home": 2.97,
-          "away": 0.57
+          "home": 2.81,
+          "away": 0.54
         },
         "nextGoal": {
-          "home": 0.815,
-          "away": 0.156,
-          "none": 0.029
+          "home": 0.809,
+          "away": 0.155,
+          "none": 0.035
         },
         "topScores": [
           {
             "s": "2-0",
-            "p": 0.1294
+            "p": 0.1401
           },
           {
             "s": "3-0",
-            "p": 0.1281
-          },
-          {
-            "s": "4-0",
-            "p": 0.0951
+            "p": 0.131
           },
           {
             "s": "1-0",
-            "p": 0.0872
+            "p": 0.0999
+          },
+          {
+            "s": "4-0",
+            "p": 0.0919
           },
           {
             "s": "2-1",
-            "p": 0.0738
+            "p": 0.0754
           }
         ]
       },
@@ -218,11 +218,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 0,
+        "minute": 5,
         "paragraphs": [
-          "第 0 分鐘,Real Madrid 0:0 Málaga CF。",
-          "賽前模型 77%/16%/7%(主/和/客),目前 85%/10%/5% —— Real Madrid勝的機率升了 8 個百分點。",
-          "模型估下一球:Real Madrid 82%、Málaga CF 16%,剩餘時間期望再進 2.97:0.57。"
+          "第 5 分鐘,Real Madrid 0:0 Málaga CF。",
+          "賽前模型 77%/16%/7%(主/和/客),目前 84%/11%/5% —— Real Madrid勝的機率升了 7 個百分點。",
+          "模型估下一球:Real Madrid 81%、Málaga CF 16%,剩餘時間期望再進 2.81:0.54。"
         ]
       }
     }
