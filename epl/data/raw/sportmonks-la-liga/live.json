@@ -4,13 +4,13 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T19:17:51.119Z",
+  "fetchedAt": "2026-08-30T19:30:15.876Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
     "total": 2,
-    "live": 2,
-    "finished": 0,
+    "live": 1,
+    "finished": 1,
     "upcoming": 0
   },
   "matches": [
@@ -21,7 +21,7 @@
       "away": "VAL",
       "kickoff": "2026-08-30 17:30:00",
       "started": true,
-      "finished": false,
+      "finished": true,
       "minute": 90,
       "hs": 3,
       "as": 1,
@@ -92,10 +92,10 @@
         "source": "sportmonks",
         "fixtureId": 19732720,
         "kickoff": "2026-08-30 17:30:00",
-        "status": 22,
+        "status": 5,
         "home": "DEP",
         "away": "VAL",
-        "fetchedAt": "2026-08-30T19:27:09.746Z",
+        "fetchedAt": "2026-08-30T19:30:15.870Z",
         "score": {
           "home": 3,
           "away": 1
@@ -331,6 +331,32 @@
             "playerId": 96887,
             "assist": null,
             "assistId": null
+          },
+          {
+            "minute": 90,
+            "extra": 4,
+            "label": "90+4'",
+            "team": "DEP",
+            "type": "",
+            "detail": "Unsportsmanlike conduct",
+            "comments": "2nd Yellowcard",
+            "player": "Adrià Altimira",
+            "playerId": 33213465,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 90,
+            "extra": 4,
+            "label": "90+4'",
+            "team": "DEP",
+            "type": "",
+            "detail": null,
+            "comments": "1st Yellow/red Card",
+            "player": "Adrià Altimira",
+            "playerId": 33213465,
+            "assist": null,
+            "assistId": null
           }
         ],
         "lineups": {
@@ -371,7 +397,7 @@
       "notes": [],
       "inplay": {
         "minute": 90,
-        "finished": false,
+        "finished": true,
         "remaining": 0,
         "home": 1,
         "draw": 0,
@@ -417,15 +443,7 @@
         "xgHome": 1.02,
         "xgAway": 1.22
       },
-      "liveSummary": {
-        "kind": "live",
-        "minute": 90,
-        "paragraphs": [
-          "第 90 分鐘,Deportivo La Coruña 3:1 Valencia CF。",
-          "賽前模型 32%/28%/40%(主/和/客),目前 100%/0%/0% —— Deportivo La Coruña勝的機率升了 68 個百分點。",
-          "模型估下一球:Deportivo La Coruña 0%、Valencia CF 0%,剩餘時間期望再進 0:0。"
-        ]
-      }
+      "liveSummary": null
     },
     {
       "key": "CEL|ATH",
@@ -503,7 +521,7 @@
         "status": 1,
         "home": "CEL",
         "away": "ATH",
-        "fetchedAt": "2026-08-30T19:27:09.749Z",
+        "fetchedAt": "2026-08-30T19:30:15.873Z",
         "score": {
           "home": 0,
           "away": 0
