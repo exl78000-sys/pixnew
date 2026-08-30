@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T19:51:59.342Z",
+  "fetchedAt": "2026-08-30T19:55:05.468Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,9 +22,9 @@
       "kickoff": "2026-08-30 19:30:00",
       "started": true,
       "finished": false,
-      "minute": 21,
+      "minute": 25,
       "hs": 0,
-      "as": 1,
+      "as": 2,
       "sides": {
         "CEL": {
           "xi": [],
@@ -68,14 +68,18 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 1,
+          "goals": 2,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
           "scorers": [
             {
-              "name": "?",
+              "name": "Álex Berenguer",
+              "goals": 1
+            },
+            {
+              "name": "Robert Navarro",
               "goals": 1
             }
           ],
@@ -95,10 +99,10 @@
         "status": 2,
         "home": "CEL",
         "away": "ATH",
-        "fetchedAt": "2026-08-30T19:51:59.339Z",
+        "fetchedAt": "2026-08-30T19:55:05.465Z",
         "score": {
           "home": 0,
-          "away": 1
+          "away": 2
         },
         "teamStats": {
           "CEL": {
@@ -143,10 +147,23 @@
             "label": "20'",
             "team": "ATH",
             "type": "",
-            "detail": "Field Goal",
+            "detail": "Right foot shot",
             "comments": "1st Goal",
-            "player": null,
-            "playerId": null,
+            "player": "Álex Berenguer",
+            "playerId": 187032,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 22,
+            "extra": null,
+            "label": "22'",
+            "team": "ATH",
+            "type": "",
+            "detail": "Right foot shot",
+            "comments": "2nd Goal",
+            "player": "Robert Navarro",
+            "playerId": 21427714,
             "assist": null,
             "assistId": null
           }
@@ -188,43 +205,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 21,
+        "minute": 25,
         "finished": false,
-        "remaining": 0.767,
-        "home": 0.2339,
-        "draw": 0.2648,
-        "away": 0.5013,
-        "xgRestHome": 1.3,
-        "xgRestAway": 0.74,
+        "remaining": 0.722,
+        "home": 0.0758,
+        "draw": 0.1443,
+        "away": 0.7798,
+        "xgRestHome": 1.22,
+        "xgRestAway": 0.69,
         "expectedFinal": {
-          "home": 1.3,
-          "away": 1.74
+          "home": 1.22,
+          "away": 2.69
         },
         "nextGoal": {
-          "home": 0.554,
-          "away": 0.315,
-          "none": 0.131
+          "home": 0.544,
+          "away": 0.309,
+          "none": 0.148
         },
         "topScores": [
           {
-            "s": "1-1",
-            "p": 0.1699
-          },
-          {
-            "s": "0-1",
-            "p": 0.1311
-          },
-          {
             "s": "1-2",
-            "p": 0.125
-          },
-          {
-            "s": "2-1",
-            "p": 0.1101
+            "p": 0.18
           },
           {
             "s": "0-2",
-            "p": 0.0965
+            "p": 0.1475
+          },
+          {
+            "s": "1-3",
+            "p": 0.1248
+          },
+          {
+            "s": "2-2",
+            "p": 0.1099
+          },
+          {
+            "s": "0-3",
+            "p": 0.1023
           }
         ]
       },
@@ -237,11 +254,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 21,
+        "minute": 25,
         "paragraphs": [
-          "第 21 分鐘,Celta Vigo 0:1 Athletic Club。",
-          "賽前模型 52%/25%/24%(主/和/客),目前 23%/26%/50% —— Celta Vigo勝的機率降了 28 個百分點。",
-          "模型估下一球:Celta Vigo 55%、Athletic Club 32%,剩餘時間期望再進 1.3:0.74。"
+          "第 25 分鐘,Celta Vigo 0:2 Athletic Club。",
+          "賽前模型 52%/25%/24%(主/和/客),目前 8%/14%/78% —— Athletic Club勝的機率升了 54 個百分點。",
+          "模型估下一球:Celta Vigo 54%、Athletic Club 31%,剩餘時間期望再進 1.22:0.69。"
         ]
       }
     }
