@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T19:33:22.085Z",
+  "fetchedAt": "2026-08-30T19:36:28.165Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -95,7 +95,7 @@
         "status": 5,
         "home": "DEP",
         "away": "VAL",
-        "fetchedAt": "2026-08-30T19:33:22.080Z",
+        "fetchedAt": "2026-08-30T19:36:28.161Z",
         "score": {
           "home": 3,
           "away": 1
@@ -453,7 +453,7 @@
       "kickoff": "2026-08-30 19:30:00",
       "started": true,
       "finished": false,
-      "minute": 3,
+      "minute": 6,
       "hs": 0,
       "as": 0,
       "sides": {
@@ -521,7 +521,7 @@
         "status": 2,
         "home": "CEL",
         "away": "ATH",
-        "fetchedAt": "2026-08-30T19:33:22.082Z",
+        "fetchedAt": "2026-08-30T19:36:28.163Z",
         "score": {
           "home": 0,
           "away": 0
@@ -600,43 +600,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 3,
+        "minute": 6,
         "finished": false,
-        "remaining": 0.967,
-        "home": 0.5394,
-        "draw": 0.2468,
+        "remaining": 0.933,
+        "home": 0.5334,
+        "draw": 0.2528,
         "away": 0.2138,
-        "xgRestHome": 1.63,
-        "xgRestAway": 0.93,
+        "xgRestHome": 1.58,
+        "xgRestAway": 0.9,
         "expectedFinal": {
-          "home": 1.63,
-          "away": 0.93
+          "home": 1.58,
+          "away": 0.9
         },
         "nextGoal": {
-          "home": 0.589,
-          "away": 0.334,
-          "none": 0.077
+          "home": 0.584,
+          "away": 0.332,
+          "none": 0.084
         },
         "topScores": [
           {
             "s": "1-0",
-            "p": 0.1261
+            "p": 0.133
           },
           {
             "s": "1-1",
-            "p": 0.117
+            "p": 0.1192
           },
           {
             "s": "2-0",
-            "p": 0.103
+            "p": 0.1049
           },
           {
             "s": "2-1",
-            "p": 0.0956
+            "p": 0.094
           },
           {
             "s": "0-0",
-            "p": 0.0772
+            "p": 0.0843
           }
         ]
       },
@@ -649,11 +649,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 3,
+        "minute": 6,
         "paragraphs": [
-          "第 3 分鐘,Celta Vigo 0:0 Athletic Club。",
-          "賽前模型 52%/25%/24%(主/和/客),目前 54%/25%/21% —— Athletic Club勝的機率降了 2 個百分點。",
-          "模型估下一球:Celta Vigo 59%、Athletic Club 33%,剩餘時間期望再進 1.63:0.93。"
+          "第 6 分鐘,Celta Vigo 0:0 Athletic Club。",
+          "賽前模型 52%/25%/24%(主/和/客),目前 53%/25%/21% —— Athletic Club勝的機率降了 2 個百分點。",
+          "模型估下一球:Celta Vigo 58%、Athletic Club 33%,剩餘時間期望再進 1.58:0.9。"
         ]
       }
     }
