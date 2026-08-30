@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T18:59:11.250Z",
+  "fetchedAt": "2026-08-30T19:02:17.492Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-30 17:30:00",
       "started": true,
       "finished": false,
-      "minute": 74,
+      "minute": 77,
       "hs": 3,
       "as": 1,
       "sides": {
@@ -95,7 +95,7 @@
         "status": 22,
         "home": "DEP",
         "away": "VAL",
-        "fetchedAt": "2026-08-30T18:59:11.245Z",
+        "fetchedAt": "2026-08-30T19:02:17.488Z",
         "score": {
           "home": 3,
           "away": 1
@@ -242,12 +242,25 @@
             "assistId": null
           },
           {
-            "minute": 65,
+            "minute": 66,
             "extra": null,
-            "label": "65'",
+            "label": "66'",
             "team": "VAL",
             "type": "",
             "detail": null,
+            "comments": "5th Substitution",
+            "player": "Aliou Dieng",
+            "playerId": 751434,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 64,
+            "extra": null,
+            "label": "64'",
+            "team": "VAL",
+            "type": "",
+            "detail": "Foul",
             "comments": "1st Yellowcard",
             "player": "Mouctar Diakhaby",
             "playerId": 96887,
@@ -292,43 +305,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 74,
+        "minute": 77,
         "finished": false,
-        "remaining": 0.178,
-        "home": 0.9828,
-        "draw": 0.016,
-        "away": 0.0012,
-        "xgRestHome": 0.18,
-        "xgRestAway": 0.22,
+        "remaining": 0.144,
+        "home": 0.988,
+        "draw": 0.0113,
+        "away": 0.0007,
+        "xgRestHome": 0.15,
+        "xgRestAway": 0.18,
         "expectedFinal": {
-          "home": 3.18,
-          "away": 1.22
+          "home": 3.15,
+          "away": 1.18
         },
         "nextGoal": {
-          "home": 0.15,
-          "away": 0.179,
-          "none": 0.672
+          "home": 0.126,
+          "away": 0.151,
+          "none": 0.724
         },
         "topScores": [
           {
             "s": "3-1",
-            "p": 0.6715
+            "p": 0.7236
           },
           {
             "s": "3-2",
-            "p": 0.1456
+            "p": 0.1275
           },
           {
             "s": "4-1",
-            "p": 0.1218
+            "p": 0.1066
           },
           {
             "s": "4-2",
-            "p": 0.0264
+            "p": 0.0188
           },
           {
             "s": "3-3",
-            "p": 0.0158
+            "p": 0.0112
           }
         ]
       },
@@ -341,11 +354,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 74,
+        "minute": 77,
         "paragraphs": [
-          "第 74 分鐘,Deportivo La Coruña 3:1 Valencia CF。",
-          "賽前模型 32%/28%/40%(主/和/客),目前 98%/2%/0% —— Deportivo La Coruña勝的機率升了 66 個百分點。",
-          "模型估下一球:Deportivo La Coruña 15%、Valencia CF 18%,剩餘時間期望再進 0.18:0.22。"
+          "第 77 分鐘,Deportivo La Coruña 3:1 Valencia CF。",
+          "賽前模型 32%/28%/40%(主/和/客),目前 99%/1%/0% —— Deportivo La Coruña勝的機率升了 67 個百分點。",
+          "模型估下一球:Deportivo La Coruña 13%、Valencia CF 15%,剩餘時間期望再進 0.15:0.18。"
         ]
       }
     }
