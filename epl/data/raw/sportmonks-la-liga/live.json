@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T15:27:52.554Z",
+  "fetchedAt": "2026-08-30T15:30:58.966Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,8 +22,8 @@
       "kickoff": "2026-08-30 15:00:00",
       "started": true,
       "finished": false,
-      "minute": 27,
-      "hs": 1,
+      "minute": 30,
+      "hs": 2,
       "as": 0,
       "sides": {
         "RMA": {
@@ -41,17 +41,12 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 1,
+          "goals": 0,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [
-            {
-              "name": "Jude Bellingham",
-              "goals": 1
-            }
-          ],
+          "scorers": [],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -95,9 +90,9 @@
         "status": 2,
         "home": "RMA",
         "away": "MAL",
-        "fetchedAt": "2026-08-30T15:27:52.551Z",
+        "fetchedAt": "2026-08-30T15:30:58.962Z",
         "score": {
-          "home": 1,
+          "home": 2,
           "away": 0
         },
         "teamStats": {
@@ -151,15 +146,15 @@
             "assistId": null
           },
           {
-            "minute": 20,
+            "minute": 26,
             "extra": null,
-            "label": "20'",
+            "label": "26'",
             "team": "RMA",
             "type": "",
-            "detail": null,
-            "comments": "1st Var",
-            "player": "Pending VAR - goal",
-            "playerId": null,
+            "detail": "Header",
+            "comments": "1st Own Goal",
+            "player": "Jude Bellingham",
+            "playerId": 37255840,
             "assist": null,
             "assistId": null
           }
@@ -201,43 +196,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 27,
+        "minute": 30,
         "finished": false,
-        "remaining": 0.7,
-        "home": 0.9406,
-        "draw": 0.0495,
-        "away": 0.0099,
-        "xgRestHome": 2.08,
-        "xgRestAway": 0.4,
+        "remaining": 0.667,
+        "home": 0.9902,
+        "draw": 0.0087,
+        "away": 0.0011,
+        "xgRestHome": 1.98,
+        "xgRestAway": 0.38,
         "expectedFinal": {
-          "home": 3.08,
-          "away": 0.4
+          "home": 3.98,
+          "away": 0.38
         },
         "nextGoal": {
-          "home": 0.769,
-          "away": 0.148,
-          "none": 0.084
+          "home": 0.76,
+          "away": 0.146,
+          "none": 0.094
         },
         "topScores": [
           {
             "s": "3-0",
-            "p": 0.1816
-          },
-          {
-            "s": "2-0",
-            "p": 0.1747
+            "p": 0.1871
           },
           {
             "s": "4-0",
-            "p": 0.1258
+            "p": 0.1853
           },
           {
-            "s": "1-0",
-            "p": 0.084
+            "s": "5-0",
+            "p": 0.1223
+          },
+          {
+            "s": "2-0",
+            "p": 0.0945
           },
           {
             "s": "3-1",
-            "p": 0.0725
+            "p": 0.0711
           }
         ]
       },
@@ -250,11 +245,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 27,
+        "minute": 30,
         "paragraphs": [
-          "第 27 分鐘,Real Madrid 1:0 Málaga CF。",
-          "賽前模型 77%/16%/7%(主/和/客),目前 94%/5%/1% —— Real Madrid勝的機率升了 17 個百分點。",
-          "模型估下一球:Real Madrid 77%、Málaga CF 15%,剩餘時間期望再進 2.08:0.4。"
+          "第 30 分鐘,Real Madrid 2:0 Málaga CF。",
+          "賽前模型 77%/16%/7%(主/和/客),目前 99%/1%/0% —— Real Madrid勝的機率升了 22 個百分點。",
+          "模型估下一球:Real Madrid 76%、Málaga CF 15%,剩餘時間期望再進 1.98:0.38。"
         ]
       }
     }
