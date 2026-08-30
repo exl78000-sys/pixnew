@@ -104,6 +104,16 @@ const loanConfidence = l => (l.verdict === 'confirmed'
 
 const notes = [];        // { path, links: [] }
 const addNote = (path, body, links = []) => notes.push({ path, body, links });
+
+/* 二進位資產(隊徽/頭貼)。跟筆記走同一條寫檔流程,頂層資料夾 `_資產`
+   自動進清理範圍;檔名全域唯一(Obsidian 的 [[嵌入]] 跨資料夾用檔名解析)。 */
+const assets = [];
+const assetSeen = new Set();
+const addAsset = (path, buf) => { if (!assetSeen.has(path)) { assetSeen.add(path); assets.push({ path, buf }); } };
+const dataUriBuf = uri => {
+  const m = /^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/.exec(String(uri ?? ''));
+  return m ? { ext: m[1] === 'jpeg' ? 'jpg' : m[1], buf: Buffer.from(m[2], 'base64') } : null;
+};
 const wl = name => `[[${name}]]`;
 
 /* ── 球員:兩個聯賽正規化成同一個形狀 ────────────────────────
@@ -118,6 +128,7 @@ function collectPlayers(lg, meta) {
       age: p.age, dob: p.dateOfBirth, height: p.height, weight: p.weight,
       captain: p.captain || null, statusZh: p.statusZh, news: p.news || null,
       price: p.price, transferred: p.transferred || null, lastTeam: p.lastTeam,
+      photo: p.photo ?? null,
       loans: p.loans ?? [],
       seasons: [
         { season: meta.lastSeason, kind: '上季', stats: p.last },
@@ -143,6 +154,7 @@ function collectPlayers(lg, meta) {
       squadNumber: newest.squadNumber, age: newest.age, dob: newest.dateOfBirth,
       height: newest.height, weight: newest.weight, captain: null,
       statusZh: null, news: null, price: null,
+      photo: newest.photo ?? null,
       // 西甲是一人一季一筆,租借掛在哪一筆都算這個人的,收成一份去重
       loans: [...new Map(p.seasons.flatMap(s => s.loans ?? [])
         .map(l => [l.season + l.direction + l.loanCode, l])).values()],
@@ -189,6 +201,7 @@ function renderPlayer(p, ctx) {
     產生時間: ctx.builtAt,
   }));
   body.push(`\n# ${p.base}\n`);
+  if (p.photoEmbed) body.push(`\n${p.photoEmbed}\n`);
   if (p.display && p.display !== p.base) body.push(`> 常用稱呼:${p.display}\n`);
 
   const links = [];
@@ -293,6 +306,8 @@ function renderTeam(t, ctx) {
     名單人數: squad.length || null, 產生時間: ctx.builtAt,
   }));
   body.push(`\n# ${name}${t.zh ? `(${t.zh})` : ''}\n`);
+  const ce = ctx.crestEmbed?.(t.code);
+  if (ce) body.push(`\n${ce}\n`);
 
   const info = defTable([
     ['隊碼', t.code], ['城市', t.city], ['主場', t.venue],
@@ -651,6 +666,16 @@ for (const { lg, teams } of allPlayers) {
 for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   const clubs = clubDirectory(lg, teams);
   const teamNameOf = code => clubs.get(code)?.en ?? null;
+  /* 隊徽落成真圖檔(base64 → png),球隊筆記用 [[嵌入]] 顯示 */
+  const crestFileOf = new Map();
+  for (const t of clubs.values()) {
+    const d = dataUriBuf(t.crest);
+    if (!d) continue;
+    const f = `隊徽 ${lg.key}-${t.code}.${d.ext}`;
+    addAsset(`_資產/隊徽/${f}`, d.buf);
+    crestFileOf.set(t.code, f);
+  }
+  const crestEmbed = code => (crestFileOf.has(code) ? `![[${crestFileOf.get(code)}|72]]` : '');
   const coaches = load(lg.key, 'coaches');
   const coachList = arr(coaches?.coaches ?? coaches ?? []).filter(c => c?.name);
   const coachBy = new Map(coachList.filter(c => c?.team).map(c => [c.team, c]));
@@ -714,6 +739,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
 
   const ctx = {
     lg, teamNameOf, playersByTeam, fixturesByTeam, historyByTeam, statCols, playerGaps,
+    crestEmbed,
     coachOf: code => coachBy.get(code) ?? null,
     coachFileOf: code => { const c = coachBy.get(code); return c ? coachFileOf(c, lg) : null; },
     reportFor: m => reports[m.season + '|' + m.home + '|' + m.away] ?? null,
@@ -746,6 +772,16 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     addNote(D + '/球隊/' + teamFileByCode.get(lg.key + ':' + t.code) + '.md', body, links);
   }
   for (const p of players) {
+    /* 頭貼:英超是 base64 → 落成 jpg 檔嵌入;西甲是 SportMonks CDN 外連
+       (照實標示離線不顯示);英冠沒有球員。 */
+    const d = dataUriBuf(p.photo);
+    if (d) {
+      const f = `頭貼 ${sanitize(p.id)}.${d.ext}`;
+      addAsset(`_資產/頭貼/${f}`, d.buf);
+      p.photoEmbed = `![[${f}|110]]`;
+    } else if (/^https?:/.test(String(p.photo ?? ''))) {
+      p.photoEmbed = `![頭貼|110](${p.photo})\n> 頭貼為外部連結(SportMonks CDN),離線時不顯示。`;
+    }
     const r = renderPlayer(p, ctx);
     addNote(D + '/球員/' + p.file + '.md', r.body, r.links);
   }
@@ -1415,7 +1451,8 @@ const MINE = '我的筆記';
    只清空自己產生的聯賽資料夾。vault/我的筆記/ 是使用者手寫的,永遠不碰 ——
    產生器把它掃掉的話,那是不可逆的資料遺失,而且重跑也救不回來。 */
 mkdirSync(OUT, { recursive: true });
-const generatedDirs = new Set(notes.map(n => n.path.split('/')[0]).filter(d => d.endsWith('.md') === false));
+const generatedDirs = new Set([...notes.map(n => n.path), ...assets.map(a => a.path)]
+  .map(p => p.split('/')[0]).filter(d => d.endsWith('.md') === false));
 if (generatedDirs.has(MINE)) {
   console.error('✗ 產生器想寫進 ' + MINE + '/ —— 那是手寫筆記的資料夾,中止。');
   process.exit(1);
@@ -1428,6 +1465,11 @@ for (const n of notes) {
   const full = join(OUT, n.path);
   mkdirSync(dirname(full), { recursive: true });
   writeFileSync(full, n.body);
+}
+for (const a of assets) {
+  const full = join(OUT, a.path);
+  mkdirSync(dirname(full), { recursive: true });
+  writeFileSync(full, a.buf);
 }
 
 const mineDir = join(OUT, MINE);
