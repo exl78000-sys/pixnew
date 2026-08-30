@@ -10644,7 +10644,7 @@
   "CHE|BHA": {
    "fixtureId": 128935,
    "kickoff": "2026-08-30T13:00:00.000Z",
-   "status": "L",
+   "status": "C",
    "final": false,
    "homeId": 4,
    "awayId": 131,
@@ -11073,19 +11073,6 @@
    "goals": [
     {
      "side": "H",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "2",
-     "type": "PE",
-     "kind": null,
-     "hs": 4,
-     "as": 2
-    },
-    {
-     "side": "H",
      "person": 99282,
      "assist": null,
      "team": 4,
@@ -11161,6 +11148,19 @@
      "kind": "G",
      "hs": 4,
      "as": 2
+    },
+    {
+     "side": "A",
+     "person": 22542,
+     "assist": null,
+     "team": 131,
+     "min": 90,
+     "label": "90+6'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 4,
+     "as": 3
     }
    ],
    "timeline": {
@@ -11350,12 +11350,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -11372,16 +11366,22 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+7'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
    "kickoff": "2026-08-30T13:00:00.000Z",
    "status": "C",
-   "final": false,
+   "final": true,
    "homeId": 9,
    "awayId": 130,
    "home": {
@@ -13140,5 +13140,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-30T14:54:34.416Z"
+ "fetchedAt": "2026-08-30T14:56:51.175Z"
 }
