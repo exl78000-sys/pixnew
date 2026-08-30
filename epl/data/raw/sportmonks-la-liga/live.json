@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T17:44:24.502Z",
+  "fetchedAt": "2026-08-30T17:47:30.491Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,8 +22,8 @@
       "kickoff": "2026-08-30 17:30:00",
       "started": true,
       "finished": false,
-      "minute": 14,
-      "hs": 0,
+      "minute": 17,
+      "hs": 1,
       "as": 0,
       "sides": {
         "DEP": {
@@ -41,12 +41,17 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 0,
+          "goals": 1,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [],
+          "scorers": [
+            {
+              "name": "Ximo Navarro",
+              "goals": 1
+            }
+          ],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -90,9 +95,9 @@
         "status": 2,
         "home": "DEP",
         "away": "VAL",
-        "fetchedAt": "2026-08-30T17:44:24.499Z",
+        "fetchedAt": "2026-08-30T17:47:30.487Z",
         "score": {
-          "home": 0,
+          "home": 1,
           "away": 0
         },
         "teamStats": {
@@ -131,7 +136,21 @@
           "DEP": [],
           "VAL": []
         },
-        "events": [],
+        "events": [
+          {
+            "minute": 13,
+            "extra": null,
+            "label": "13'",
+            "team": "DEP",
+            "type": "",
+            "detail": "Header",
+            "comments": "1st Goal",
+            "player": "Ximo Navarro",
+            "playerId": 186287,
+            "assist": null,
+            "assistId": null
+          }
+        ],
         "lineups": {
           "DEP": {
             "team": "DEP",
@@ -169,43 +188,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 14,
+        "minute": 17,
         "finished": false,
-        "remaining": 0.844,
-        "home": 0.2961,
-        "draw": 0.3175,
-        "away": 0.3864,
-        "xgRestHome": 0.86,
-        "xgRestAway": 1.03,
+        "remaining": 0.811,
+        "home": 0.6186,
+        "draw": 0.2363,
+        "away": 0.1451,
+        "xgRestHome": 0.83,
+        "xgRestAway": 0.99,
         "expectedFinal": {
-          "home": 0.86,
-          "away": 1.03
+          "home": 1.83,
+          "away": 0.99
         },
         "nextGoal": {
-          "home": 0.387,
-          "away": 0.462,
-          "none": 0.151
+          "home": 0.381,
+          "away": 0.456,
+          "none": 0.163
         },
         "topScores": [
           {
-            "s": "0-1",
-            "p": 0.1554
-          },
-          {
-            "s": "0-0",
-            "p": 0.1508
+            "s": "1-0",
+            "p": 0.1625
           },
           {
             "s": "1-1",
-            "p": 0.1338
+            "p": 0.1608
           },
           {
-            "s": "1-0",
-            "p": 0.1299
+            "s": "2-0",
+            "p": 0.1345
           },
           {
-            "s": "0-2",
-            "p": 0.08
+            "s": "2-1",
+            "p": 0.1331
+          },
+          {
+            "s": "1-2",
+            "p": 0.0796
           }
         ]
       },
@@ -218,11 +237,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 14,
+        "minute": 17,
         "paragraphs": [
-          "第 14 分鐘,Deportivo La Coruña 0:0 Valencia CF。",
-          "賽前模型 32%/28%/40%(主/和/客),目前 30%/32%/39% —— 和局的機率升了 4 個百分點。",
-          "模型估下一球:Deportivo La Coruña 39%、Valencia CF 46%,剩餘時間期望再進 0.86:1.03。"
+          "第 17 分鐘,Deportivo La Coruña 1:0 Valencia CF。",
+          "賽前模型 32%/28%/40%(主/和/客),目前 62%/24%/15% —— Deportivo La Coruña勝的機率升了 30 個百分點。",
+          "模型估下一球:Deportivo La Coruña 38%、Valencia CF 46%,剩餘時間期望再進 0.83:0.99。"
         ]
       }
     }
