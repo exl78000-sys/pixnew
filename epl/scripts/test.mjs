@@ -1948,7 +1948,8 @@ async function checkDataGap() {
           return existsSync(f) && statSync(f).size < 300 * 1024;
         })
         && (pg.match(/assets\/img\/duel-/g) ?? []).length >= 5
-        && !/img src="assets\/img\/duel-[^"]*"(?![^>]*onerror)/.test(pg)
+        /* onerror 可以是字面、也可以是 \${HIDE} 樣板變數(骨架版用後者) */
+        && !/img src="assets\/img\/duel-[^"]*"(?![^>]*(?:onerror|\$\{HIDE\}))/.test(pg)
         /* 2D 跑位動畫(2026-08-30):FM 式演出。界線要打在畫面上,
            陣型走官方逐場資料、名單走 players-core、動畫用種子衍生的 rng(可重播) */
         && (() => {
