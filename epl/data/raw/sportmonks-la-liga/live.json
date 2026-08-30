@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T19:11:35.983Z",
+  "fetchedAt": "2026-08-30T19:14:42.151Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-30 17:30:00",
       "started": true,
       "finished": false,
-      "minute": 86,
+      "minute": 89,
       "hs": 3,
       "as": 1,
       "sides": {
@@ -95,7 +95,7 @@
         "status": 22,
         "home": "DEP",
         "away": "VAL",
-        "fetchedAt": "2026-08-30T19:11:35.979Z",
+        "fetchedAt": "2026-08-30T19:14:42.147Z",
         "score": {
           "home": 3,
           "away": 1
@@ -331,43 +331,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 86,
+        "minute": 89,
         "finished": false,
-        "remaining": 0.044,
-        "home": 0.9986,
-        "draw": 0.0013,
+        "remaining": 0.011,
+        "home": 0.9999,
+        "draw": 0.0001,
         "away": 0,
-        "xgRestHome": 0.05,
-        "xgRestAway": 0.05,
+        "xgRestHome": 0.01,
+        "xgRestAway": 0.01,
         "expectedFinal": {
-          "home": 3.05,
-          "away": 1.05
+          "home": 3.01,
+          "away": 1.01
         },
         "nextGoal": {
-          "home": 0.043,
-          "away": 0.052,
-          "none": 0.905
+          "home": 0.011,
+          "away": 0.013,
+          "none": 0.975
         },
         "topScores": [
           {
             "s": "3-1",
-            "p": 0.9052
+            "p": 0.9754
           },
           {
             "s": "3-2",
-            "p": 0.0491
+            "p": 0.0132
           },
           {
             "s": "4-1",
-            "p": 0.041
-          },
-          {
-            "s": "4-2",
-            "p": 0.0022
+            "p": 0.0111
           },
           {
             "s": "3-3",
-            "p": 0.0013
+            "p": 0.0001
+          },
+          {
+            "s": "4-2",
+            "p": 0.0001
           }
         ]
       },
@@ -380,11 +380,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 86,
+        "minute": 89,
         "paragraphs": [
-          "第 86 分鐘,Deportivo La Coruña 3:1 Valencia CF。",
+          "第 89 分鐘,Deportivo La Coruña 3:1 Valencia CF。",
           "賽前模型 32%/28%/40%(主/和/客),目前 100%/0%/0% —— Deportivo La Coruña勝的機率升了 68 個百分點。",
-          "模型估下一球:Deportivo La Coruña 4%、Valencia CF 5%,剩餘時間期望再進 0.05:0.05。"
+          "模型估下一球:Deportivo La Coruña 1%、Valencia CF 1%,剩餘時間期望再進 0.01:0.01。"
         ]
       }
     }
