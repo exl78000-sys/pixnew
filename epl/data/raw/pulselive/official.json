@@ -11375,12 +11375,12 @@
      }
     ]
    },
-   "clock": "90+2'00"
+   "clock": "90+4'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
    "kickoff": "2026-08-30T13:00:00.000Z",
-   "status": "L",
+   "status": "C",
    "final": false,
    "homeId": 9,
    "awayId": 130,
@@ -11808,19 +11808,6 @@
    },
    "goals": [
     {
-     "side": "H",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "2",
-     "type": "PE",
-     "kind": null,
-     "hs": 1,
-     "as": 1
-    },
-    {
      "side": "A",
      "person": 127594,
      "assist": 24369,
@@ -11872,6 +11859,15 @@
       "team": 130,
       "min": 76,
       "label": "76'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 24659,
+      "team": 130,
+      "min": 90,
+      "label": "90+3'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -12061,12 +12057,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -12083,16 +12073,22 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+2'00"
+   "clock": "90+4'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
    "kickoff": "2026-08-30T13:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "homeId": 29,
    "awayId": 34,
    "home": {
@@ -12520,19 +12516,6 @@
    "goals": [
     {
      "side": "H",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "2",
-     "type": "PE",
-     "kind": null,
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "H",
      "person": 52989,
      "assist": 126110,
      "team": 29,
@@ -12714,12 +12697,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -12736,10 +12713,16 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+3'00"
+   "clock": "90+5'00"
   },
   "MUN|IPS": {
    "fixtureId": 128940,
@@ -13157,5 +13140,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-30T14:52:17.172Z"
+ "fetchedAt": "2026-08-30T14:54:34.416Z"
 }
