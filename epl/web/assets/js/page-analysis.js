@@ -351,12 +351,16 @@ try {
     <div class="card">
       <div class="scoreline" style="margin:4px 0 10px">
         <div class="side">${C.badge(f.home, 'big')}<b>${C.teamLink(f.home)}</b></div>
-        <div class="sc" style="font-size:22px">${f.played ? `${f.fh} <span class="dim">:</span> ${f.fa}` : '未開賽'}</div>
+        <div class="sc" style="font-size:22px">${f.played ? `${f.fh} <span class="dim">:</span> ${f.fa}`
+          : f.provisional ? `${f.provisional.fh} <span class="dim">:</span> ${f.provisional.fa}` : '未開賽'}</div>
         <div class="side away">${C.badge(f.away, 'big')}<b>${C.teamLink(f.away)}</b></div>
       </div>
+      ${!f.played && f.provisional ? `<div class="center" style="margin-bottom:6px"><span class="pill warn tiny">終場・暫定</span></div>` : ''}
       <div class="center tiny dim">${f.played
         ? '這場沒有保存可驗證的賽前機率快照，因此不拿賽後重建機率冒充賽前預測。'
-        : '賽前機率請回賽程頁查看。'}</div>
+        : f.provisional
+          ? `暫定比分來自 ${C.esc(f.provisional.source)}(本站直播時顯示的同一來源);獨立賽果(openfootball/football-data)核對通過後才會進積分榜、模型與完整賽後資料。`
+          : '賽前機率請回賽程頁查看。'}</div>
     </div>
     ${!f.played ? `<div id="livePanel"></div>` : ''}
 

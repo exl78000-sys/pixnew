@@ -218,13 +218,17 @@ try {
           <div class="spread"><span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span>
             ${/* 官方狀態(football-data.org 快照)有的話直接講 —— 「早該結束 N 天」
                   對延期的比賽是錯的:那場根本沒踢,讀者會等一個永遠不會來的比分 */''}
-            ${f.officialStatus
-              ? `<span class="pill bad tiny">官方:${f.officialStatusZh}</span>`
-              : `<span class="pill warn tiny">${s.elapsed > 60 * 24
-                  ? `早該結束 ${Math.floor(s.elapsed / 60 / 24)} 天` : '賽果未取得'}</span>`}</div>
+            ${f.provisional
+              ? `<span class="pill warn tiny">終場・暫定</span>`
+              : f.officialStatus
+                ? `<span class="pill bad tiny">官方:${f.officialStatusZh}</span>`
+                : `<span class="pill warn tiny">${s.elapsed > 60 * 24
+                    ? `早該結束 ${Math.floor(s.elapsed / 60 / 24)} 天` : '賽果未取得'}</span>`}</div>
           <div class="row" style="gap:7px;margin-top:8px">${C.badge(f.home)}<b class="small">${C.name(f.home)}</b>
-            <span class="dim">vs</span>${C.badge(f.away)}<b class="small">${C.name(f.away)}</b></div>
-          <div class="tiny dim" style="margin-top:6px">賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}</div>
+            ${f.provisional ? `<b class="mono">${f.provisional.fh} : ${f.provisional.fa}</b>` : '<span class="dim">vs</span>'}${C.badge(f.away)}<b class="small">${C.name(f.away)}</b></div>
+          <div class="tiny dim" style="margin-top:6px">${f.provisional
+            ? `暫定比分(${C.esc(f.provisional.source)});待獨立賽果核對後進積分與模型`
+            : `賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}`}</div>
         </a>`).join('')}</div>` : ''}
 
     <div class="section"><h2>開賽倒數</h2><span class="hint">${countdownList.length
