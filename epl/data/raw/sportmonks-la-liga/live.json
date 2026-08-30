@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T15:34:05.406Z",
+  "fetchedAt": "2026-08-30T15:37:11.711Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-30 15:00:00",
       "started": true,
       "finished": false,
-      "minute": 34,
+      "minute": 37,
       "hs": 3,
       "as": 0,
       "sides": {
@@ -90,7 +90,7 @@
         "status": 2,
         "home": "RMA",
         "away": "MAL",
-        "fetchedAt": "2026-08-30T15:34:05.402Z",
+        "fetchedAt": "2026-08-30T15:37:11.708Z",
         "score": {
           "home": 3,
           "away": 0
@@ -164,7 +164,7 @@
             "label": "30'",
             "team": "RMA",
             "type": "",
-            "detail": "Field Goal",
+            "detail": "Right foot shot",
             "comments": "2nd Goal",
             "player": "Kylian Mbappé ",
             "playerId": 96611,
@@ -209,43 +209,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 34,
+        "minute": 37,
         "finished": false,
-        "remaining": 0.622,
-        "home": 0.9989,
-        "draw": 0.001,
+        "remaining": 0.589,
+        "home": 0.999,
+        "draw": 0.0009,
         "away": 0.0001,
-        "xgRestHome": 1.85,
-        "xgRestAway": 0.35,
+        "xgRestHome": 1.75,
+        "xgRestAway": 0.34,
         "expectedFinal": {
-          "home": 4.85,
-          "away": 0.35
+          "home": 4.75,
+          "away": 0.34
         },
         "nextGoal": {
-          "home": 0.746,
-          "away": 0.143,
-          "none": 0.111
+          "home": 0.735,
+          "away": 0.141,
+          "none": 0.124
         },
         "topScores": [
           {
             "s": "4-0",
-            "p": 0.2044
+            "p": 0.2176
           },
           {
             "s": "5-0",
-            "p": 0.1888
-          },
-          {
-            "s": "6-0",
-            "p": 0.1163
+            "p": 0.1903
           },
           {
             "s": "3-0",
-            "p": 0.1106
+            "p": 0.1244
+          },
+          {
+            "s": "6-0",
+            "p": 0.1109
           },
           {
             "s": "4-1",
-            "p": 0.0725
+            "p": 0.073
           }
         ]
       },
@@ -258,11 +258,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 34,
+        "minute": 37,
         "paragraphs": [
-          "第 34 分鐘,Real Madrid 3:0 Málaga CF。",
+          "第 37 分鐘,Real Madrid 3:0 Málaga CF。",
           "賽前模型 77%/16%/7%(主/和/客),目前 100%/0%/0% —— Real Madrid勝的機率升了 23 個百分點。",
-          "模型估下一球:Real Madrid 75%、Málaga CF 14%,剩餘時間期望再進 1.85:0.35。"
+          "模型估下一球:Real Madrid 74%、Málaga CF 14%,剩餘時間期望再進 1.75:0.34。"
         ]
       }
     }
