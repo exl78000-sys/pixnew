@@ -11082,7 +11082,7 @@
      "type": "PE",
      "kind": null,
      "hs": 3,
-     "as": 1
+     "as": 2
     },
     {
      "side": "H",
@@ -11135,6 +11135,19 @@
      "kind": "G",
      "hs": 3,
      "as": 1
+    },
+    {
+     "side": "A",
+     "person": 72371,
+     "assist": null,
+     "team": 131,
+     "min": 63,
+     "label": "63'00",
+     "phase": "2",
+     "type": "O",
+     "kind": "O",
+     "hs": 3,
+     "as": 2
     }
    ],
    "timeline": {
@@ -11177,7 +11190,7 @@
      }
     ]
    },
-   "clock": "62'00"
+   "clock": "65'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -11749,7 +11762,7 @@
      }
     ]
    },
-   "clock": "61'00"
+   "clock": "63'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
@@ -12238,6 +12251,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 75201,
+      "team": 34,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 66657,
+      "team": 34,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 14656,
+      "team": 34,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 6712,
+      "team": 34,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -12267,7 +12316,7 @@
      }
     ]
    },
-   "clock": "65'00"
+   "clock": "68'00"
   },
   "MUN|IPS": {
    "fixtureId": 128940,
@@ -12685,5 +12734,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-30T14:22:33.654Z"
+ "fetchedAt": "2026-08-30T14:24:51.087Z"
 }
