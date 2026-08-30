@@ -53,10 +53,20 @@ check('FotMob 正式先發逐場對回比分與兩隊 11 人', officialMatches.e
 }));
 check('FotMob 站位排數可供球場圖使用', officialMatches.every(([, match]) =>
   match.home.rows?.flat().length === 11 && match.away.rows?.flat().length === 11));
-check('西甲官網補齊缺漏場次並保留頭像', official.sources?.includes('laliga.com')
-  && ['DEP|ELC', 'MAL|DEP'].every(key => official.matches?.[key]?.source === 'laliga.com')
-  && ['DEP|ELC', 'MAL|DEP'].every(key => official.matches[key].home.xi.some(p => p.photo)
-    && official.matches[key].away.xi.some(p => p.photo)));
+/* 官網備援守**機制**不守特定場次:當初 DEP|ELC、MAL|DEP 是 FotMob 缺、
+   官網補的;2026-08-30 FotMob 把它們也覆蓋了,缺口消失是好事。
+   現在守:有用到官網來源的場次必須保留頭像、sources 標籤跟實際用到一致、
+   而 build 的合併程式仍具備官網補缺能力(來源掃描)。 */
+check('西甲官網備援:用到就留頭像、標籤與實際一致、補缺程式還在', (() => {
+  const viaOfficial = Object.entries(official.matches ?? {})
+    .filter(([, m]) => m.source === 'laliga.com');
+  const photosOk = viaOfficial.every(([, m]) => m.home.xi.some(p => p.photo) && m.away.xi.some(p => p.photo));
+  const labelOk = viaOfficial.length > 0
+    ? official.sources?.includes('laliga.com')
+    : !(official.sources ?? []).includes('laliga.com');
+  const buildSrc = readFileSync(join(ROOT, 'scripts', 'build-laliga.mjs'), 'utf8');
+  return photosOk && labelOk && /laliga-official/.test(buildSrc);
+})());
 check('正式陣型摘要只來自已核對場次', Object.values(shapes).some(s => s.official?.games > 0)
   && Object.values(shapes).every(s => !s.official || (s.official.formation && s.official.games > 0)));
 /* 球員表的比賽統計來自 Understat，SportMonks 只補經核對的身分欄位。
