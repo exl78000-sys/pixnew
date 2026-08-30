@@ -113,12 +113,14 @@ try {
 
     if (playTimer) clearInterval(playTimer);
     let min = 0;
+    let lastGoals = 0, flashMin = -99;   // 進球那一刻閃圖用
 
     const frame = () => {
       const done = min >= endMin;
       const seen = m.events.filter(e => e.min <= min);
       const hs = seen.filter(e => e.side === 'home').length;
       const as = seen.filter(e => e.side === 'away').length;
+      if (seen.length > lastGoals) { lastGoals = seen.length; flashMin = min; }
       const ip = inPlaySim({ lambdaHome: p.xgHome, lambdaAway: p.xgAway,
         hs, as, minute: min, finished: done });
       const line = e => `<div class="stat-line"><span class="small dim mono">${e.min}'</span>
@@ -127,14 +129,17 @@ try {
       const rows = [];
       for (const e of seen) rows.push(line(e));
       if (min >= 45) rows.splice(seen.filter(e => e.min <= 45).length, 0,
-        `<div class="tiny dim center">—— 中場 ——</div>`);
-      box.innerHTML = `
+        `<div class="tiny dim center"><img src="assets/img/duel-halftime.webp" width="26" style="vertical-align:middle" onerror="this.style.display='none'"> 中場</div>`);
+      box.innerHTML = `<div class="duel-stage">
         <div class="spread"><span class="pill ${done ? '' : 'bad'}">${done ? '完場'
           : `<span class="livedot"></span>第 ${Math.min(min, 90)}${min > 90 ? '+' : ''} 分鐘`}</span>
           <span class="tiny dim">播放速度
             <select id="dSpeed">${Object.entries({ slow: '慢', normal: '正常', fast: '快' })
               .map(([k, zh]) => `<option value="${k}"${k === speed ? ' selected' : ''}>${zh}</option>`).join('')}</select>
             ${done ? '' : '<button class="btn tiny" id="dSkip">跳到結果</button>'}</span></div>
+        ${done ? `<div class="center"><img class="duel-flash" src="assets/img/duel-fulltime.webp" width="104" alt="" onerror="this.style.display='none'"></div>`
+          : (min - flashMin <= 2 && lastGoals > 0)
+            ? `<div class="center"><img class="duel-flash" src="assets/img/duel-goal.webp" width="88" alt="" onerror="this.style.display='none'"></div>` : ''}
         <div class="scoreline" style="margin:8px 0">
           <div class="side">${crest(state.home)}<b>${C.esc(nameOf(state.home))}</b></div>
           <div class="sc">${hs} : ${as}</div>
@@ -144,10 +149,10 @@ try {
         ${done ? '' : `<div class="tiny dim center" style="margin-top:4px">剩餘期望進球 ${ip.xgRestHome} : ${ip.xgRestAway}
           ・下一球 ${C.esc(nameOf(state.home))} ${C.pct(ip.nextGoal.home, 0)} / ${C.esc(nameOf(state.away))} ${C.pct(ip.nextGoal.away, 0)}</div>`}
         ${rows.length ? `<div style="display:grid;gap:2px;margin-top:8px">${rows.join('')}</div>` : ''}
-        ${done ? `<div class="tiny dim" style="margin-top:8px">種子 ${state.seed} —— 「重播」用同一顆種子重現同一場;「模擬一場」換一顆。
+        ${done ? `<div class="tiny dim" style="margin-top:8px"><img src="assets/img/duel-dice.webp" width="22" style="vertical-align:middle" onerror="this.style.display='none'"> 種子 ${state.seed} —— 「重播」用同一顆種子重現同一場;「模擬一場」換一顆。
           比分抽自模型分布;進球分鐘均勻抽樣(分鐘分布未建模,純演出);
           進球者按${seasonUsed.length ? `${seasonUsed.join('/')} 實際進球佔比` : '實際進球佔比'}抽。
-          勝率條用跟實時頁同一顆 in-play 引擎,對著「模擬出來的比分」計算。</div>` : ''}`;
+          勝率條用跟實時頁同一顆 in-play 引擎,對著「模擬出來的比分」計算。</div>` : ''}</div>`;
       const sp = document.getElementById('dSpeed');
       if (sp) sp.onchange = e => { speed = e.target.value; restart(); };
       const sk = document.getElementById('dSkip');
@@ -196,6 +201,7 @@ try {
   app.innerHTML = `
     <h1>對戰模擬 <span class="dim">跨聯賽</span></h1>
     <p class="lede">選聯賽、選兩隊,用本站模型抽一場比賽。機率跟各聯賽賽程頁完全同源;抽出來的每一場都只是分布裡的一個樣本。</p>
+    <img class="duel-hero" src="assets/img/duel-hero.webp" alt="" onerror="this.style.display='none'">
     <div class="card">
       <div class="row" style="gap:8px;align-items:center">
         <span class="small">聯賽</span>
