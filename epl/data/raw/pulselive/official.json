@@ -10645,7 +10645,7 @@
    "fixtureId": 128935,
    "kickoff": "2026-08-30T13:00:00.000Z",
    "status": "C",
-   "final": false,
+   "final": true,
    "homeId": 4,
    "awayId": 131,
    "home": {
@@ -11151,14 +11151,14 @@
     },
     {
      "side": "A",
-     "person": 22542,
+     "person": null,
      "assist": null,
-     "team": 131,
+     "team": null,
      "min": 90,
      "label": "90+6'00",
      "phase": "2",
-     "type": "G",
-     "kind": "G",
+     "type": "PE",
+     "kind": null,
      "hs": 4,
      "as": 3
     }
@@ -11370,12 +11370,12 @@
      {
       "type": "PE",
       "min": 90,
-      "label": "90+7'00",
+      "label": "90+6'00",
       "phase": "2"
      }
     ]
    },
-   "clock": "90+7'00"
+   "clock": "90+6'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -13140,5 +13140,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-30T14:56:51.175Z"
+ "fetchedAt": "2026-08-30T14:59:07.055Z"
 }
