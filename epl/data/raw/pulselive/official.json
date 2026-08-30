@@ -11243,6 +11243,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 136398,
+      "team": 131,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 147052,
+      "team": 131,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -11272,7 +11290,7 @@
      }
     ]
    },
-   "clock": "72'00"
+   "clock": "74'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -11898,7 +11916,7 @@
      }
     ]
    },
-   "clock": "70'00"
+   "clock": "73'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
@@ -12329,7 +12347,34 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": null,
+     "assist": null,
+     "team": null,
+     "min": null,
+     "label": null,
+     "phase": "2",
+     "type": "PE",
+     "kind": null,
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
+     "person": 52989,
+     "assist": 126110,
+     "team": 29,
+     "min": 75,
+     "label": "75'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -12423,6 +12468,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 14445,
+      "team": 34,
+      "min": 77,
+      "label": "77'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 123594,
+      "team": 34,
+      "min": 77,
+      "label": "77'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -12452,7 +12515,7 @@
      }
     ]
    },
-   "clock": "75'00"
+   "clock": "77'00"
   },
   "MUN|IPS": {
    "fixtureId": 128940,
@@ -12870,5 +12933,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-30T14:31:42.505Z"
+ "fetchedAt": "2026-08-30T14:33:59.853Z"
 }
