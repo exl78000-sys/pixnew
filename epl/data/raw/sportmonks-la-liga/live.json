@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T15:21:30.427Z",
+  "fetchedAt": "2026-08-30T15:27:52.554Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,8 +22,8 @@
       "kickoff": "2026-08-30 15:00:00",
       "started": true,
       "finished": false,
-      "minute": 21,
-      "hs": 0,
+      "minute": 27,
+      "hs": 1,
       "as": 0,
       "sides": {
         "RMA": {
@@ -41,12 +41,17 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 0,
+          "goals": 1,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [],
+          "scorers": [
+            {
+              "name": "Jude Bellingham",
+              "goals": 1
+            }
+          ],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -90,9 +95,9 @@
         "status": 2,
         "home": "RMA",
         "away": "MAL",
-        "fetchedAt": "2026-08-30T15:21:30.424Z",
+        "fetchedAt": "2026-08-30T15:27:52.551Z",
         "score": {
-          "home": 0,
+          "home": 1,
           "away": 0
         },
         "teamStats": {
@@ -131,7 +136,34 @@
           "RMA": [],
           "MAL": []
         },
-        "events": [],
+        "events": [
+          {
+            "minute": 19,
+            "extra": null,
+            "label": "19'",
+            "team": "RMA",
+            "type": "",
+            "detail": "Right foot shot",
+            "comments": "1st Goal",
+            "player": "Jude Bellingham",
+            "playerId": 37255840,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 20,
+            "extra": null,
+            "label": "20'",
+            "team": "RMA",
+            "type": "",
+            "detail": null,
+            "comments": "1st Var",
+            "player": "Pending VAR - goal",
+            "playerId": null,
+            "assist": null,
+            "assistId": null
+          }
+        ],
         "lineups": {
           "RMA": {
             "team": "RMA",
@@ -169,43 +201,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 21,
+        "minute": 27,
         "finished": false,
-        "remaining": 0.767,
-        "home": 0.793,
-        "draw": 0.1509,
-        "away": 0.0561,
-        "xgRestHome": 2.28,
-        "xgRestAway": 0.44,
+        "remaining": 0.7,
+        "home": 0.9406,
+        "draw": 0.0495,
+        "away": 0.0099,
+        "xgRestHome": 2.08,
+        "xgRestAway": 0.4,
         "expectedFinal": {
-          "home": 2.28,
-          "away": 0.44
+          "home": 3.08,
+          "away": 0.4
         },
         "nextGoal": {
-          "home": 0.783,
-          "away": 0.15,
-          "none": 0.066
+          "home": 0.769,
+          "away": 0.148,
+          "none": 0.084
         },
         "topScores": [
           {
-            "s": "2-0",
-            "p": 0.1722
-          },
-          {
-            "s": "1-0",
-            "p": 0.1513
-          },
-          {
             "s": "3-0",
-            "p": 0.1307
+            "p": 0.1816
           },
           {
-            "s": "2-1",
-            "p": 0.0753
+            "s": "2-0",
+            "p": 0.1747
           },
           {
             "s": "4-0",
-            "p": 0.0744
+            "p": 0.1258
+          },
+          {
+            "s": "1-0",
+            "p": 0.084
+          },
+          {
+            "s": "3-1",
+            "p": 0.0725
           }
         ]
       },
@@ -218,11 +250,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 21,
+        "minute": 27,
         "paragraphs": [
-          "第 21 分鐘,Real Madrid 0:0 Málaga CF。",
-          "賽前模型 77%/16%/7%(主/和/客),目前 79%/15%/6% —— Real Madrid勝的機率升了 2 個百分點。",
-          "模型估下一球:Real Madrid 78%、Málaga CF 15%,剩餘時間期望再進 2.28:0.44。"
+          "第 27 分鐘,Real Madrid 1:0 Málaga CF。",
+          "賽前模型 77%/16%/7%(主/和/客),目前 94%/5%/1% —— Real Madrid勝的機率升了 17 個百分點。",
+          "模型估下一球:Real Madrid 77%、Málaga CF 15%,剩餘時間期望再進 2.08:0.4。"
         ]
       }
     }
