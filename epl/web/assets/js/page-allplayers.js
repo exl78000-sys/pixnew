@@ -99,16 +99,25 @@ try {
         },
       })),
     ];
-    const shown = ql ? hit : [...hit].sort((a, b) =>
-      (statFor(b)?.minutes ?? -1) - (statFor(a)?.minutes ?? -1)).slice(0, 80);
+    /* 未搜尋的預設視圖不能用全池分鐘排序 —— 兩聯賽輪次不同步時
+       (實測西甲多踢一輪、球員 270 分 vs 英超 180),前 80 名會被單一聯賽
+       整個填滿,看起來像「只有西甲」。改成各聯賽取前 40、按組內名次交錯,
+       首屏兩邊都在;搜尋結果照舊全量。 */
+    const shown = ql ? hit : (() => {
+      const ranked = pools.flatMap(x => [...x.rows]
+        .sort((a, b) => (statFor(b)?.minutes ?? -1) - (statFor(a)?.minutes ?? -1))
+        .slice(0, 40).map((p, i) => ({ p, rank: i })));
+      return ranked.sort((a, b) => a.rank - b.rank).map(r => r.p);
+    })();
     host.innerHTML = `
       <div class="section"><h2>全部聯賽</h2>
-        <span class="hint">${hit.length} 人${ql ? '符合' : `・未搜尋時列上場時間前 ${shown.length} 名`}
+        <span class="hint">${hit.length} 人${ql ? '符合' : `・未搜尋時各聯賽列上場時間前 40 名(交錯排列)`}
           ・賽季 <select id="pSeason">${seasons.map(s =>
             `<option value="${s}"${s === state.season ? ' selected' : ''}>${s}</option>`).join('')}</select></span></div>
       <div class="card">
         ${hit.length ? C.table(shown, cols, {
-          sortKey: ql ? null : 'minutes', desc: true,
+          /* 預設不帶排序鍵 —— 帶了會把交錯順序再排回去,西甲又霸榜;點表頭仍可排 */
+          sortKey: null, desc: true,
           onRow: p => C.go('players', { code: p.code, league: p.league }),
         }) : '<div class="note">沒有符合的球員。</div>'}
         <div class="tiny dim" style="margin-top:8px">點任何一列進該聯賽的球員詳情。
