@@ -11155,7 +11155,7 @@
      }
     ]
    },
-   "clock": "40'00"
+   "clock": "43'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -11586,7 +11586,34 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": null,
+     "assist": null,
+     "team": null,
+     "min": null,
+     "label": null,
+     "phase": "1",
+     "type": "PE",
+     "kind": null,
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 127594,
+     "assist": 24369,
+     "team": 130,
+     "min": 41,
+     "label": "41'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -11634,7 +11661,7 @@
      }
     ]
    },
-   "clock": "36'00"
+   "clock": "42'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
@@ -12097,5 +12124,5 @@
    "clock": "38'00"
   }
  },
- "fetchedAt": "2026-08-30T13:41:17.096Z"
+ "fetchedAt": "2026-08-30T13:43:34.519Z"
 }
