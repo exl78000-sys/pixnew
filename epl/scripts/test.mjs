@@ -3,7 +3,7 @@
 // 用來驗證預測引擎沒有偷看未來,而且真的比亂猜好。
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
 import { matchPerson as loanMatchPerson, yearShifted as loanYearShifted } from './verify-loans.mjs';
@@ -1941,6 +1941,14 @@ async function checkDataGap() {
         && sitePagesBlock.indexOf("'cups'") < sitePagesBlock.indexOf("'duel'")   // 盃賽旁邊
         && !pagesBlock.includes("'duel'")
         && /跨聯賽/.test(pg) && /crestBy/.test(pg)                  // 頁內選聯賽、隊徽分聯賽表
+        /* 生圖素材(2026-08-30):六張都在、各壓在 300KB 內、
+           img 全掛 onerror 隱藏 —— 單檔版沒有圖檔,要優雅降級不是破圖 */
+        && ['hero', 'pitch', 'goal', 'halftime', 'fulltime', 'dice'].every(n => {
+          const f = join(ROOT, 'web', 'assets', 'img', `duel-${n}.webp`);
+          return existsSync(f) && statSync(f).size < 300 * 1024;
+        })
+        && (pg.match(/assets\/img\/duel-/g) ?? []).length >= 5
+        && !/img src="assets\/img\/duel-[^"]*"(?![^>]*onerror)/.test(pg)
         && /不是預測的斷言/.test(pg) && /做了就是編數字/.test(pg)
         && /跨聯賽對戰也不提供/.test(pg) && /分鐘分布未建模/.test(pg)
         && /seededRng/.test(pc) && /mulberry32/.test(pc)            // 種子亂數,同種子重播同一場
