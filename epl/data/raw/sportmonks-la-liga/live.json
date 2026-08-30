@@ -4,13 +4,13 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T21:15:48.191Z",
+  "fetchedAt": "2026-08-30T21:25:06.507Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
     "total": 1,
-    "live": 1,
-    "finished": 0,
+    "live": 0,
+    "finished": 1,
     "upcoming": 0
   },
   "matches": [
@@ -21,8 +21,8 @@
       "away": "ATH",
       "kickoff": "2026-08-30 19:30:00",
       "started": true,
-      "finished": false,
-      "minute": 90,
+      "finished": true,
+      "minute": 86,
       "hs": 0,
       "as": 2,
       "sides": {
@@ -96,10 +96,10 @@
         "source": "sportmonks",
         "fixtureId": 19732721,
         "kickoff": "2026-08-30 19:30:00",
-        "status": 22,
+        "status": 5,
         "home": "CEL",
         "away": "ATH",
-        "fetchedAt": "2026-08-30T21:22:00.361Z",
+        "fetchedAt": "2026-08-30T21:25:06.501Z",
         "score": {
           "home": 0,
           "away": 2
@@ -374,8 +374,8 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 90,
-        "finished": false,
+        "minute": 86,
+        "finished": true,
         "remaining": 0,
         "home": 0,
         "draw": 0,
@@ -421,15 +421,7 @@
         "xgHome": 1.69,
         "xgAway": 0.96
       },
-      "liveSummary": {
-        "kind": "live",
-        "minute": 90,
-        "paragraphs": [
-          "第 90 分鐘,Celta Vigo 0:2 Athletic Club。",
-          "賽前模型 52%/25%/24%(主/和/客),目前 0%/0%/100% —— Athletic Club勝的機率升了 76 個百分點。",
-          "模型估下一球:Celta Vigo 0%、Athletic Club 0%,剩餘時間期望再進 0:0。"
-        ]
-      }
+      "liveSummary": null
     }
   ],
   "note": "SportMonks livescores/inplay；比分與狀態來自即時端點。速度、距離、衝刺不在方案欄位內。"
