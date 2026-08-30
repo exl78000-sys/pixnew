@@ -11081,7 +11081,7 @@
      "phase": "1",
      "type": "PE",
      "kind": null,
-     "hs": 2,
+     "hs": 3,
      "as": 0
     },
     {
@@ -11109,6 +11109,19 @@
      "kind": "G",
      "hs": 2,
      "as": 0
+    },
+    {
+     "side": "H",
+     "person": 72371,
+     "assist": 119041,
+     "team": 4,
+     "min": 32,
+     "label": "32'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 3,
+     "as": 0
     }
    ],
    "timeline": {
@@ -11129,7 +11142,7 @@
      }
     ]
    },
-   "clock": "31'00"
+   "clock": "33'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -11562,7 +11575,17 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 50460,
+      "team": 130,
+      "min": 30,
+      "label": "30'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -11579,7 +11602,7 @@
      }
     ]
    },
-   "clock": "30'00"
+   "clock": "31'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
@@ -12029,8 +12052,8 @@
      }
     ]
    },
-   "clock": "32'00"
+   "clock": "34'00"
   }
  },
- "fetchedAt": "2026-08-30T13:32:06.828Z"
+ "fetchedAt": "2026-08-30T13:34:24.409Z"
 }
