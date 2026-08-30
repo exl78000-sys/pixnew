@@ -11082,7 +11082,7 @@
      "type": "PE",
      "kind": null,
      "hs": 3,
-     "as": 0
+     "as": 1
     },
     {
      "side": "H",
@@ -11122,6 +11122,19 @@
      "kind": "G",
      "hs": 3,
      "as": 0
+    },
+    {
+     "side": "A",
+     "person": 147052,
+     "assist": null,
+     "team": 131,
+     "min": 35,
+     "label": "35'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 3,
+     "as": 1
     }
    ],
    "timeline": {
@@ -11142,7 +11155,7 @@
      }
     ]
    },
-   "clock": "33'00"
+   "clock": "35'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -11586,7 +11599,26 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 12337,
+      "team": 9,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 13796,
+      "team": 9,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -11602,7 +11634,7 @@
      }
     ]
    },
-   "clock": "31'00"
+   "clock": "36'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
@@ -12035,7 +12067,17 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 26151,
+      "team": 34,
+      "min": 35,
+      "label": "35'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -12052,8 +12094,8 @@
      }
     ]
    },
-   "clock": "34'00"
+   "clock": "36'00"
   }
  },
- "fetchedAt": "2026-08-30T13:34:24.409Z"
+ "fetchedAt": "2026-08-30T13:36:41.705Z"
 }
