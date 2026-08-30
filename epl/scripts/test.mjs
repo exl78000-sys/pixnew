@@ -1949,6 +1949,17 @@ async function checkDataGap() {
         })
         && (pg.match(/assets\/img\/duel-/g) ?? []).length >= 5
         && !/img src="assets\/img\/duel-[^"]*"(?![^>]*onerror)/.test(pg)
+        /* 2D 跑位動畫(2026-08-30):FM 式演出。界線要打在畫面上,
+           陣型走官方逐場資料、名單走 players-core、動畫用種子衍生的 rng(可重播) */
+        && (() => {
+          const an = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8');
+          const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+          return /mountDuelAnim/.test(pg) && /跑位動畫是程序化演出/.test(pg)
+            && /formationOf/.test(pg) && /pickXI/.test(pg)
+            && /程序化演出/.test(an) && /parseFormation/.test(an)
+            && /'duel-anim'/.test(bundle)                       // 單檔版 SHARED 清單
+            && /seededRng\(state\.seed \^/.test(pg);            // 動畫自己的種子流,同種子同劇本
+        })()
         && /不是預測的斷言/.test(pg) && /做了就是編數字/.test(pg)
         && /跨聯賽對戰也不提供/.test(pg) && /分鐘分布未建模/.test(pg)
         && /seededRng/.test(pc) && /mulberry32/.test(pc)            // 種子亂數,同種子重播同一場

@@ -1,5 +1,6 @@
 import * as C from './core.js?v=e90d5ce3';
 import { blendPair, sampleMatch, seededRng, inPlaySim } from './predict-core.js?v=a99cd006';
+import { mountDuelAnim, parseFormation, pickXI } from './duel-anim.js?v=670ad847';
 
 /* 對戰模擬(跨聯賽單一頁,掛盃賽旁邊 —— 2026-08-30 使用者要求不分聯賽)。
    誠實界線不變、全寫在畫面上:
@@ -95,8 +96,39 @@ try {
      勝率用跟實時頁同一顆 in-play 引擎(inPlaySim,golden 鎖等價)。
      計時器一律 C.pageInterval(裸 setInterval 是頁面切換不清那條老坑)。 */
   let playTimer = null;
+  let anim = null;
   const SPEEDS = { slow: 260, normal: 130, fast: 55 };
   let speed = 'normal';
+
+  /* 官方陣型:各聯賽 official.json 逐場資料的**最近一場**(懶載入+快取)。
+     找不到就退 es1 的 tactics.primary,再退 4-4-2 並標「推估」。 */
+  const formationCaches = new Map();
+  async function formationOf(code) {
+    const L = cur();
+    if (!formationCaches.has(L.lg)) {
+      const by = new Map();
+      try {
+        const { data } = await C.loadFrom(L.lg, ['official']);
+        const entries = Object.entries(data.official?.matches ?? {});
+        const dateOf = v => v.kickoff ?? v.date ?? '';
+        entries.sort((a, b) => (dateOf(a[1]) < dateOf(b[1]) ? -1 : 1));
+        for (const [k, v] of entries) {
+          const [h, a] = k.split('|');
+          if (v.home?.formation) by.set(h, v.home.formation);
+          if (v.away?.formation) by.set(a, v.away.formation);
+        }
+      } catch { /* 沒有官方資料的聯賽走 fallback */ }
+      formationCaches.set(L.lg, by);
+    }
+    const f = formationCaches.get(L.lg).get(code)
+      ?? L.teams.find(t => t.code === code)?.tactics?.formation?.primary ?? null;
+    return { label: f ?? '4-4-2', est: !f };
+  }
+  async function coreOf() {
+    const L = cur();
+    if (!sharesCaches.has(L.lg)) await sharesOf(L.teams[0]?.code ?? '');
+    return sharesCaches.get(L.lg) ?? [];
+  }
 
   async function runSim() {
     const box = document.getElementById('simout');
@@ -111,9 +143,49 @@ try {
     const seasonUsed = [...new Set([hshare.season, ashare.season].filter(Boolean))];
     const endMin = Math.max(90, ...m.events.map(e => e.min));
 
+    // 動畫素材:官方陣型 + 本季分鐘前 11(都是真資料;跑位本身是演出)
+    const corePool = await coreOf();
+    const [fH, fA] = [await formationOf(state.home), await formationOf(state.away)];
+    const xiOf = code => pickXI(corePool.filter(pl => pl.team === code),
+      parseFormation((code === state.home ? fH : fA).label), L.meta.currentSeason);
+
     if (playTimer) clearInterval(playTimer);
+    if (anim) { anim.destroy(); anim = null; }
     let min = 0;
-    let lastGoals = 0, flashMin = -99;   // 進球那一刻閃圖用
+    let lastGoals = 0, flashMin = -99;
+
+    // 骨架只畫一次 —— 每分鐘只更新子元素,不然 canvas 會被 innerHTML 重建砍掉
+    const HIDE = `onerror="this.style.display='none'"`;
+    box.innerHTML = `<div class="duel-stage">
+      <div class="spread"><span class="pill bad" id="dMin"></span>
+        <span class="tiny dim">播放速度
+          <select id="dSpeed">${Object.entries({ slow: '慢', normal: '正常', fast: '快' })
+            .map(([k, zh]) => `<option value="${k}"${k === speed ? ' selected' : ''}>${zh}</option>`).join('')}</select>
+          <button class="btn tiny" id="dSkip">跳到結果</button></span></div>
+      <canvas id="duelCanvas" width="920" height="600" style="width:100%;height:auto;display:block;margin:10px 0;border-radius:10px"></canvas>
+      <div class="tiny dim center" style="margin-bottom:8px">陣型 ${C.esc(fH.label)}${fH.est ? '(推估)' : ''} vs ${C.esc(fA.label)}${fA.est ? '(推估)' : ''}
+        ・名單=本季上場時間前 11 人・<b>跑位動畫是程序化演出</b>,不是跑動資料 —— 本站沒有那種來源</div>
+      <div id="dFlash" class="center"></div>
+      <div class="scoreline" style="margin:8px 0">
+        <div class="side">${crest(state.home)}<b>${C.esc(nameOf(state.home))}</b></div>
+        <div class="sc" id="dScore">0 : 0</div>
+        <div class="side away">${crest(state.away)}<b>${C.esc(nameOf(state.away))}</b></div>
+      </div>
+      <div id="dProb"></div>
+      <div class="tiny dim center" id="dNext" style="margin-top:4px"></div>
+      <div id="dEvents" style="display:grid;gap:2px;margin-top:8px"></div>
+      <div class="tiny dim" id="dFoot" style="margin-top:8px"></div>
+    </div>`;
+
+    const colorOf = code => cur().teams.find(t => t.code === code)?.colors?.[0] ?? '#00ff85';
+    let cA = colorOf(state.home), cB = colorOf(state.away);
+    if (cA.toLowerCase() === cB.toLowerCase()) cB = '#04f5ff';   // 同色撞衫就換客隊
+    anim = mountDuelAnim(document.getElementById('duelCanvas'), {
+      home: { formation: fH.label, xi: xiOf(state.home), color: cA },
+      away: { formation: fA.label, xi: xiOf(state.away), color: cB },
+      lambdaHome: p.xgHome, lambdaAway: p.xgAway,
+      rng: seededRng(state.seed ^ 0x5bd1e995),   // 動畫自己的流,同種子同劇本
+    });
 
     const frame = () => {
       const done = min >= endMin;
@@ -123,40 +195,38 @@ try {
       if (seen.length > lastGoals) { lastGoals = seen.length; flashMin = min; }
       const ip = inPlaySim({ lambdaHome: p.xgHome, lambdaAway: p.xgAway,
         hs, as, minute: min, finished: done });
+      anim?.setState({ min, done, dueSides: seen.map(e => e.side) });
+
+      document.getElementById('dMin').innerHTML = done ? '完場'
+        : `<span class="livedot"></span>第 ${Math.min(min, 90)}${min > 90 ? '+' : ''} 分鐘`;
+      document.getElementById('dMin').className = `pill ${done ? '' : 'bad'}`;
+      document.getElementById('dScore').textContent = `${hs} : ${as}`;
+      document.getElementById('dProb').innerHTML = C.probBar(ip);
+      document.getElementById('dNext').innerHTML = done ? '' :
+        `剩餘期望進球 ${ip.xgRestHome} : ${ip.xgRestAway}
+         ・下一球 ${C.esc(nameOf(state.home))} ${C.pct(ip.nextGoal.home, 0)} / ${C.esc(nameOf(state.away))} ${C.pct(ip.nextGoal.away, 0)}`;
+      document.getElementById('dFlash').innerHTML = done
+        ? `<img class="duel-flash" src="assets/img/duel-fulltime.webp" width="96" alt="" ${HIDE}>`
+        : (min - flashMin <= 2 && lastGoals > 0)
+          ? `<img class="duel-flash" src="assets/img/duel-goal.webp" width="80" alt="" ${HIDE}>` : '';
       const line = e => `<div class="stat-line"><span class="small dim mono">${e.min}'</span>
         <span class="small">⚽ ${e.side === 'home' ? C.esc(nameOf(state.home)) : C.esc(nameOf(state.away))}
           ${e.scorer ? `—— ${C.esc(e.scorer)}` : '<span class="dim">(不指名:進球佔比樣本不足)</span>'}</span></div>`;
-      const rows = [];
-      for (const e of seen) rows.push(line(e));
+      const rows = seen.map(line);
       if (min >= 45) rows.splice(seen.filter(e => e.min <= 45).length, 0,
-        `<div class="tiny dim center"><img src="assets/img/duel-halftime.webp" width="26" style="vertical-align:middle" onerror="this.style.display='none'"> 中場</div>`);
-      box.innerHTML = `<div class="duel-stage">
-        <div class="spread"><span class="pill ${done ? '' : 'bad'}">${done ? '完場'
-          : `<span class="livedot"></span>第 ${Math.min(min, 90)}${min > 90 ? '+' : ''} 分鐘`}</span>
-          <span class="tiny dim">播放速度
-            <select id="dSpeed">${Object.entries({ slow: '慢', normal: '正常', fast: '快' })
-              .map(([k, zh]) => `<option value="${k}"${k === speed ? ' selected' : ''}>${zh}</option>`).join('')}</select>
-            ${done ? '' : '<button class="btn tiny" id="dSkip">跳到結果</button>'}</span></div>
-        ${done ? `<div class="center"><img class="duel-flash" src="assets/img/duel-fulltime.webp" width="104" alt="" onerror="this.style.display='none'"></div>`
-          : (min - flashMin <= 2 && lastGoals > 0)
-            ? `<div class="center"><img class="duel-flash" src="assets/img/duel-goal.webp" width="88" alt="" onerror="this.style.display='none'"></div>` : ''}
-        <div class="scoreline" style="margin:8px 0">
-          <div class="side">${crest(state.home)}<b>${C.esc(nameOf(state.home))}</b></div>
-          <div class="sc">${hs} : ${as}</div>
-          <div class="side away">${crest(state.away)}<b>${C.esc(nameOf(state.away))}</b></div>
-        </div>
-        ${C.probBar(ip)}
-        ${done ? '' : `<div class="tiny dim center" style="margin-top:4px">剩餘期望進球 ${ip.xgRestHome} : ${ip.xgRestAway}
-          ・下一球 ${C.esc(nameOf(state.home))} ${C.pct(ip.nextGoal.home, 0)} / ${C.esc(nameOf(state.away))} ${C.pct(ip.nextGoal.away, 0)}</div>`}
-        ${rows.length ? `<div style="display:grid;gap:2px;margin-top:8px">${rows.join('')}</div>` : ''}
-        ${done ? `<div class="tiny dim" style="margin-top:8px"><img src="assets/img/duel-dice.webp" width="22" style="vertical-align:middle" onerror="this.style.display='none'"> 種子 ${state.seed} —— 「重播」用同一顆種子重現同一場;「模擬一場」換一顆。
-          比分抽自模型分布;進球分鐘均勻抽樣(分鐘分布未建模,純演出);
-          進球者按${seasonUsed.length ? `${seasonUsed.join('/')} 實際進球佔比` : '實際進球佔比'}抽。
-          勝率條用跟實時頁同一顆 in-play 引擎,對著「模擬出來的比分」計算。</div>` : ''}</div>`;
-      const sp = document.getElementById('dSpeed');
-      if (sp) sp.onchange = e => { speed = e.target.value; restart(); };
+        `<div class="tiny dim center"><img src="assets/img/duel-halftime.webp" width="24" style="vertical-align:middle" ${HIDE}> 中場</div>`);
+      document.getElementById('dEvents').innerHTML = rows.join('');
+      document.getElementById('dFoot').innerHTML = done
+        ? `<img src="assets/img/duel-dice.webp" width="20" style="vertical-align:middle" ${HIDE}> 種子 ${state.seed} —— 「重播」用同一顆種子重現同一場(含跑位劇本);「模擬一場」換一顆。
+           比分抽自模型分布;進球分鐘均勻抽樣、跑位動畫為程序化演出(都不是資料);
+           進球者按${seasonUsed.length ? `${seasonUsed.join('/')} 實際進球佔比` : '實際進球佔比'}抽。
+           勝率條用跟實時頁同一顆 in-play 引擎。` : '';
       const sk = document.getElementById('dSkip');
-      if (sk) sk.onclick = () => { min = endMin; frame(); if (playTimer) clearInterval(playTimer); };
+      if (sk) sk.style.display = done ? 'none' : '';
+    };
+    document.getElementById('dSpeed').onchange = e => { speed = e.target.value; restart(); };
+    document.getElementById('dSkip').onclick = () => {
+      min = endMin; frame(); if (playTimer) clearInterval(playTimer);
     };
     const restart = () => {
       if (playTimer) clearInterval(playTimer);

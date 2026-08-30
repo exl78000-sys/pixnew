@@ -46,7 +46,7 @@ async function main() {
   /* ucl-view 是歐冠視圖(2026-08-29 併進盃賽單頁時抽出來的),page-cups 引用它。
      忘了列在這裡的話分頁版一切正常、單檔版一開盃賽頁就 renderUclView is not defined ——
      實際發生過。下面有一條守門:頁面 import 的本地模組必須都在 SHARED 裡。 */
-  const SHARED = ['fixture-list', 'sim-table', 'ucl-view', 'predict-core'];
+  const SHARED = ['fixture-list', 'sim-table', 'ucl-view', 'predict-core', 'duel-anim'];
 
   /* 守門:掃每一頁 import 了哪些本地模組,不在 SHARED 清單就直接失敗 ——
      這種漏法測試抓不到(分頁版正常),只有 bundle 自己能守。 */
