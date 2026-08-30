@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T18:56:05.164Z",
+  "fetchedAt": "2026-08-30T18:59:11.250Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-30 17:30:00",
       "started": true,
       "finished": false,
-      "minute": 71,
+      "minute": 74,
       "hs": 3,
       "as": 1,
       "sides": {
@@ -95,7 +95,7 @@
         "status": 22,
         "home": "DEP",
         "away": "VAL",
-        "fetchedAt": "2026-08-30T18:56:05.161Z",
+        "fetchedAt": "2026-08-30T18:59:11.245Z",
         "score": {
           "home": 3,
           "away": 1
@@ -197,6 +197,19 @@
             "type": "",
             "detail": null,
             "comments": "1st Substitution",
+            "player": "Arnaut Danjuma",
+            "playerId": 26491,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 60,
+            "extra": null,
+            "label": "60'",
+            "team": "VAL",
+            "type": "",
+            "detail": null,
+            "comments": "2nd Substitution",
             "player": "Hugo Duro",
             "playerId": 6970659,
             "assist": null,
@@ -209,9 +222,35 @@
             "team": "VAL",
             "type": "",
             "detail": null,
-            "comments": "2nd Substitution",
+            "comments": "3rd Substitution",
             "player": "David Otorbi",
             "playerId": 37712456,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 64,
+            "extra": null,
+            "label": "64'",
+            "team": "DEP",
+            "type": "",
+            "detail": null,
+            "comments": "4th Substitution",
+            "player": "Teun Gijselhart",
+            "playerId": 37612033,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 65,
+            "extra": null,
+            "label": "65'",
+            "team": "VAL",
+            "type": "",
+            "detail": null,
+            "comments": "1st Yellowcard",
+            "player": "Mouctar Diakhaby",
+            "playerId": 96887,
             "assist": null,
             "assistId": null
           }
@@ -253,43 +292,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 71,
+        "minute": 74,
         "finished": false,
-        "remaining": 0.211,
-        "home": 0.977,
-        "draw": 0.0211,
-        "away": 0.0019,
-        "xgRestHome": 0.22,
-        "xgRestAway": 0.26,
+        "remaining": 0.178,
+        "home": 0.9828,
+        "draw": 0.016,
+        "away": 0.0012,
+        "xgRestHome": 0.18,
+        "xgRestAway": 0.22,
         "expectedFinal": {
-          "home": 3.22,
-          "away": 1.26
+          "home": 3.18,
+          "away": 1.22
         },
         "nextGoal": {
-          "home": 0.172,
-          "away": 0.205,
-          "none": 0.623
+          "home": 0.15,
+          "away": 0.179,
+          "none": 0.672
         },
         "topScores": [
           {
             "s": "3-1",
-            "p": 0.6232
+            "p": 0.6715
           },
           {
             "s": "3-2",
-            "p": 0.1605
+            "p": 0.1456
           },
           {
             "s": "4-1",
-            "p": 0.1342
+            "p": 0.1218
           },
           {
             "s": "4-2",
-            "p": 0.0346
+            "p": 0.0264
           },
           {
             "s": "3-3",
-            "p": 0.0207
+            "p": 0.0158
           }
         ]
       },
@@ -302,11 +341,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 71,
+        "minute": 74,
         "paragraphs": [
-          "第 71 分鐘,Deportivo La Coruña 3:1 Valencia CF。",
+          "第 74 分鐘,Deportivo La Coruña 3:1 Valencia CF。",
           "賽前模型 32%/28%/40%(主/和/客),目前 98%/2%/0% —— Deportivo La Coruña勝的機率升了 66 個百分點。",
-          "模型估下一球:Deportivo La Coruña 17%、Valencia CF 21%,剩餘時間期望再進 0.22:0.26。"
+          "模型估下一球:Deportivo La Coruña 15%、Valencia CF 18%,剩餘時間期望再進 0.18:0.22。"
         ]
       }
     }
