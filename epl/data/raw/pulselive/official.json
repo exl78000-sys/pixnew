@@ -11160,6 +11160,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 8163,
+      "team": 131,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -11216,6 +11225,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 70585,
+      "team": 4,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51229,
+      "team": 4,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -11245,7 +11272,7 @@
      }
     ]
    },
-   "clock": "69'00"
+   "clock": "72'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -11806,6 +11833,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 14807,
+      "team": 9,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 33162,
+      "team": 9,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 128891,
+      "team": 130,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49731,
+      "team": 130,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -11835,7 +11898,7 @@
      }
     ]
    },
-   "clock": "68'00"
+   "clock": "70'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
@@ -12389,7 +12452,7 @@
      }
     ]
    },
-   "clock": "72'00"
+   "clock": "75'00"
   },
   "MUN|IPS": {
    "fixtureId": 128940,
@@ -12807,5 +12870,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-08-30T14:29:25.500Z"
+ "fetchedAt": "2026-08-30T14:31:42.505Z"
 }
