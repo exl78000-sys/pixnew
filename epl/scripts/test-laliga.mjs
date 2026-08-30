@@ -175,6 +175,9 @@ check('西甲勝率曲線與校準走共用件、產物存在', (() => {
 check('西甲即時帶場中機率:賽前預測從 build 產物借(openfootball 列沒有這欄)',
   /predByPair/.test(sportmonksLiveSource)
   && /fixture\.prediction \?\? predByPair\.get/.test(sportmonksLiveSource));
+check('西甲即時:完賽終值歸檔(快照會被覆蓋,這裡留底、可當第二核對源)',
+  /finals\.json/.test(sportmonksLiveSource) && /只增不減/.test(sportmonksLiveSource)
+  && /finals\.json/.test(readFileSync(join(ROOT, '..', '.github', 'workflows', 'laliga-matchday.yml'), 'utf8')));
 check('西甲即時:比分只認 CURRENT 列、分鐘取全部訊號的最大值(不撿最後一筆事件)',
   /\\bCURRENT\\b/.test(sportmonksLiveSource)
   && /Math\.max\(0, \.\.\.eventRows\.map\(evMin\)/.test(sportmonksLiveSource)

@@ -164,6 +164,31 @@ async function main() {
     if (report) matches.push(report);
   }
 
+  /* 完賽終值歸檔。即時快照只留最新一份 —— 完賽比分被下一輪覆蓋前沒有任何
+     地方留底,而上游賽果(openfootball/SP1)慢的那幾天,這份是本站手上唯一的
+     比分(2026-08-30 週末 5 場實際發生)。追記檔只增不減,之後可以當賽果的
+     第二核對源(SportMonks × football-data 雙源)。 */
+  const FINALS = join(ROOT, 'data', 'raw', 'sportmonks-la-liga', 'finals.json');
+  {
+    const finals = (await readJson(FINALS)) ?? {
+      _note: 'SportMonks 即時端點的完賽終值歸檔(只增不減)。產生:fetch-laliga-live.mjs。用途:即時快照會被覆蓋,這裡留底;可作賽果的第二核對源。',
+      matches: {},
+    };
+    let added = 0;
+    for (const m of matches) {
+      if (!m.finished || m.hs == null || m.as == null) continue;
+      const key = `${m.season}|${m.key}`;
+      if (finals.matches[key]) continue;
+      finals.matches[key] = { hs: m.hs, as: m.as, kickoff: m.kickoff ?? null,
+        minute: m.minute ?? null, recordedAt: new Date().toISOString() };
+      added++;
+    }
+    if (added) {
+      await writeFile(FINALS, JSON.stringify(finals, null, 1));
+      console.log(`  ✔ 完賽終值歸檔 +${added} 場(累計 ${Object.keys(finals.matches).length})`);
+    }
+  }
+
   const previous = await readJson(OUT);
   const signature = list => (list ?? []).map(m => `${m.key}|${m.hs}|${m.as}|${m.minute}|${m.finished}`).sort().join('\n');
   const unchanged = previous?.available === true && signature(previous.matches) === signature(matches);

@@ -1959,6 +1959,9 @@ async function checkDataGap() {
             && /formationOf/.test(pg) && /pickXI/.test(pg)
             && /程序化演出/.test(an) && /parseFormation/.test(an)
             && /'duel-anim'/.test(bundle)                       // 單檔版 SHARED 清單
+            /* 精緻化(2026-08-30):下半場換邊、失球方中圈開球、canvas 記分板、防守收縮 */
+            && /dirOf/.test(an) && /pendingKickoff/.test(an)
+            && /記分板/.test(an) && /squeeze/.test(an)
             && /seededRng\(state\.seed \^/.test(pg);            // 動畫自己的種子流,同種子同劇本
         })()
         && /不是預測的斷言/.test(pg) && /做了就是編數字/.test(pg)

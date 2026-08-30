@@ -1,6 +1,6 @@
 import * as C from './core.js?v=e90d5ce3';
 import { blendPair, sampleMatch, seededRng, inPlaySim } from './predict-core.js?v=a99cd006';
-import { mountDuelAnim, parseFormation, pickXI } from './duel-anim.js?v=670ad847';
+import { mountDuelAnim, parseFormation, pickXI } from './duel-anim.js?v=ad191658';
 
 /* 對戰模擬(跨聯賽單一頁,掛盃賽旁邊 —— 2026-08-30 使用者要求不分聯賽)。
    誠實界線不變、全寫在畫面上:
@@ -181,6 +181,7 @@ try {
     let cA = colorOf(state.home), cB = colorOf(state.away);
     if (cA.toLowerCase() === cB.toLowerCase()) cB = '#04f5ff';   // 同色撞衫就換客隊
     anim = mountDuelAnim(document.getElementById('duelCanvas'), {
+      homeCode: state.home, awayCode: state.away,
       home: { formation: fH.label, xi: xiOf(state.home), color: cA },
       away: { formation: fA.label, xi: xiOf(state.away), color: cB },
       lambdaHome: p.xgHome, lambdaAway: p.xgAway,
@@ -195,7 +196,7 @@ try {
       if (seen.length > lastGoals) { lastGoals = seen.length; flashMin = min; }
       const ip = inPlaySim({ lambdaHome: p.xgHome, lambdaAway: p.xgAway,
         hs, as, minute: min, finished: done });
-      anim?.setState({ min, done, dueSides: seen.map(e => e.side) });
+      anim?.setState({ min, done, dueSides: seen.map(e => e.side), hs, as });
 
       document.getElementById('dMin').innerHTML = done ? '完場'
         : `<span class="livedot"></span>第 ${Math.min(min, 90)}${min > 90 ? '+' : ''} 分鐘`;
