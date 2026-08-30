@@ -10644,21 +10644,43 @@
   "CHE|BHA": {
    "fixtureId": 128935,
    "kickoff": "2026-08-30T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "homeId": 4,
    "awayId": 131,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      4245
+     ],
+     [
+      66284,
+      76104,
+      51229
+     ],
+     [
+      68827,
+      49293,
+      99282,
+      119041
+     ],
+     [
+      21998,
+      23968
+     ],
+     [
+      72371
+     ]
+    ],
     "xi": [
      {
       "id": 119041,
       "playerId": null,
       "name": "Jorrel Hato",
       "shirt": 21,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -10667,7 +10689,7 @@
       "playerId": null,
       "name": "Cole Palmer",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -10676,7 +10698,7 @@
       "playerId": null,
       "name": "Morgan Rogers",
       "shirt": 17,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -10694,7 +10716,7 @@
       "playerId": null,
       "name": "Malo Gusto",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -10730,7 +10752,7 @@
       "playerId": null,
       "name": "Pedro Neto",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -10838,16 +10860,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75709
+     ],
+     [
+      50727,
+      134632,
+      8163,
+      20505
+     ],
+     [
+      72239,
+      22542
+     ],
+     [
+      143240,
+      147052,
+      67928
+     ],
+     [
+      145043
+     ]
+    ],
     "xi": [
      {
       "id": 67928,
       "playerId": null,
       "name": "Maxim De Cuyper",
       "shirt": 29,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -11030,28 +11074,63 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "01'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
    "kickoff": "2026-08-30T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "homeId": 9,
    "awayId": 130,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      32280
+     ],
+     [
+      13796,
+      50151,
+      114504
+     ],
+     [
+      14608,
+      19731,
+      116888,
+      13515
+     ],
+     [
+      63289,
+      33162
+     ],
+     [
+      9576
+     ]
+    ],
     "xi": [
      {
       "id": 14608,
       "playerId": null,
       "name": "Jayden Bogle",
       "shirt": 2,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -11069,7 +11148,7 @@
       "playerId": null,
       "name": "James Justin",
       "shirt": 24,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Defender",
       "captain": false
      },
@@ -11114,7 +11193,7 @@
       "playerId": null,
       "name": "Brenden Aaronson",
       "shirt": 11,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Attacking Midfielder",
       "captain": false
      },
@@ -11231,16 +11310,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      14723
+     ],
+     [
+      133460,
+      20113,
+      24659,
+      24369
+     ],
+     [
+      108421,
+      23194
+     ],
+     [
+      50460,
+      49731,
+      127594
+     ],
+     [
+      124052
+     ]
+    ],
     "xi": [
      {
       "id": 50460,
       "playerId": null,
       "name": "Jaidon Anthony",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -11303,7 +11404,7 @@
       "playerId": null,
       "name": "Keane Lewis-Potter",
       "shirt": 23,
-      "pos": "F",
+      "pos": "D",
       "posInfo": "Striker",
       "captain": false
      },
@@ -11423,21 +11524,56 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
    "kickoff": "2026-08-30T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "homeId": 29,
    "awayId": 34,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75692
+     ],
+     [
+      12196,
+      51199,
+      19864,
+      63733
+     ],
+     [
+      124944,
+      12136
+     ],
+     [
+      122126,
+      138104,
+      115105
+     ],
+     [
+      67784
+     ]
+    ],
     "xi": [
      {
       "id": 138104,
@@ -11471,7 +11607,7 @@
       "playerId": null,
       "name": "Nilson Angulo",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -11516,7 +11652,7 @@
       "playerId": null,
       "name": "Trai Hume",
       "shirt": 32,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -11624,16 +11760,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4985
+     ],
+     [
+      6712,
+      26151,
+      23793,
+      14624
+     ],
+     [
+      21614,
+      4717
+     ],
+     [
+      66657,
+      128976,
+      123594
+     ],
+     [
+      119364
+     ]
+    ],
     "xi": [
      {
       "id": 4717,
       "playerId": null,
       "name": "Alex Iwobi",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Second Striker",
       "captain": false
      },
@@ -11816,10 +11974,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-08-30T13:00:01.557Z"
+ "fetchedAt": "2026-08-30T13:02:19.475Z"
 }
