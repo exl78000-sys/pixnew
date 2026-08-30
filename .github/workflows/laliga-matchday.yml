@@ -83,6 +83,7 @@ jobs:
             else
               (cd epl && npm run laliga:build >/dev/null 2>&1) || true
               git add -f epl/data/raw/sportmonks-la-liga/live.json \
+                epl/data/raw/sportmonks-la-liga/finals.json \
                 epl/data/live-history-la-liga.json \
                 epl/web/data/leagues/es1/live.json epl/web/data/leagues/es1/meta.json \
                 epl/web/data/leagues/es1/reports.json \
