@@ -175,6 +175,19 @@ check('西甲勝率曲線與校準走共用件、產物存在', (() => {
 check('西甲即時帶場中機率:賽前預測從 build 產物借(openfootball 列沒有這欄)',
   /predByPair/.test(sportmonksLiveSource)
   && /fixture\.prediction \?\? predByPair\.get/.test(sportmonksLiveSource));
+check('西甲暫定賽果:只進顯示層、正式賽果進來就消失、兩頁都標「終場・暫定」', (() => {
+  const bl = readFileSync(join(ROOT, 'scripts', 'build-laliga.mjs'), 'utf8');
+  const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+  const pl2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+  const fx = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json'), 'utf8'));
+  const pv = fx.filter(f => f.provisional);
+  return /只進顯示層/.test(bl) && /!m\.played \? finalsRaw/.test(bl)
+    && pv.every(f => !f.played && f.provisional.fh != null && /SportMonks/.test(f.provisional.source))
+    && /終場・暫定/.test(pa) && /終場・暫定/.test(pl2)
+    && /待獨立賽果核對/.test(pl2) && /獨立賽果/.test(pa);
+})());
+check('西甲即時:歸檔也掃上一份快照(完賽場次會從 inplay 端點消失)',
+  /prevSnap/.test(sportmonksLiveSource) && /最後機會/.test(sportmonksLiveSource));
 check('西甲即時:完賽終值歸檔(快照會被覆蓋,這裡留底、可當第二核對源)',
   /finals\.json/.test(sportmonksLiveSource) && /只增不減/.test(sportmonksLiveSource)
   && /finals\.json/.test(readFileSync(join(ROOT, '..', '.github', 'workflows', 'laliga-matchday.yml'), 'utf8')));

@@ -341,11 +341,21 @@ async function main() {
     console.log(`  市場賠率：${r.count} 場`);
   }
 
+  /* 暫定賽果:上游(openfootball/SP1)週末會慢一兩天,完賽的比賽在站上
+     整頁空白 —— 讀者只看到「未賽」。SportMonks 即時終值(finals.json 歸檔)
+     是本站直播時就顯示過的同一個比分,完賽後標成「暫定」繼續顯示是誠實的;
+     **只進顯示層**:積分榜、模型、賽後詳情候選照舊等獨立核對過的賽果。 */
+  const finalsRaw = existsSync(join(ROOT, 'data', 'raw', 'sportmonks-la-liga', 'finals.json'))
+    ? JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'sportmonks-la-liga', 'finals.json'), 'utf8'))
+    : { matches: {} };
   const fixtures = curMatches.map(m => {
     const p = predict(model, m.home, m.away);
     const e = eloProbs(elo.get(m.home)?.elo ?? 1500, elo.get(m.away)?.elo ?? 1500);
+    const fin = !m.played ? finalsRaw.matches?.[`${m.season}|${m.home}|${m.away}`] ?? null : null;
     return {
       ...slimMatch(m),
+      /* 只在「賽程說未賽、但即時來源已記到終場」時掛;正式賽果一進來這欄就消失 */
+      provisional: fin ? { fh: fin.hs, fa: fin.as, source: 'SportMonks 即時', recordedAt: fin.recordedAt } : null,
       kickoff: m.kickoff,
       kickoffSource: 'openfootball',
       difficulty: null,

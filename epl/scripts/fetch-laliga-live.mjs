@@ -175,7 +175,11 @@ async function main() {
       matches: {},
     };
     let added = 0;
-    for (const m of matches) {
+    /* 也掃上一份快照:完賽場次會從 inplay 端點消失(實測完賽後 ~20 分鐘就空了),
+       只收「這次抓到的」會漏掉兩輪之間完賽的場次 —— 首日就漏了整晚三場,
+       靠 git 歷史才撈回來。previous 在下面即將被覆蓋,這是最後機會。 */
+    const prevSnap = await readJson(OUT);
+    for (const m of [...(prevSnap?.matches ?? []), ...matches]) {
       if (!m.finished || m.hs == null || m.as == null) continue;
       const key = `${m.season}|${m.key}`;
       if (finals.matches[key]) continue;
