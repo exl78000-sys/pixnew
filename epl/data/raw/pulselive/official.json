@@ -11073,19 +11073,6 @@
    "goals": [
     {
      "side": "H",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "1",
-     "type": "PE",
-     "kind": null,
-     "hs": 3,
-     "as": 1
-    },
-    {
-     "side": "H",
      "person": 99282,
      "assist": null,
      "team": 4,
@@ -11142,20 +11129,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+1'00"
+   "clock": "45+3'00"
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -11589,19 +11576,6 @@
    "goals": [
     {
      "side": "A",
-     "person": null,
-     "assist": null,
-     "team": null,
-     "min": null,
-     "label": null,
-     "phase": "1",
-     "type": "PE",
-     "kind": null,
-     "hs": 0,
-     "as": 1
-    },
-    {
-     "side": "A",
      "person": 127594,
      "assist": 24369,
      "team": 130,
@@ -11648,20 +11622,20 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+4'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45+4'00"
   },
   "SUN|FUL": {
    "fixtureId": 128941,
@@ -12124,5 +12098,5 @@
    "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-08-30T13:48:10.480Z"
+ "fetchedAt": "2026-08-30T13:50:28.115Z"
 }
