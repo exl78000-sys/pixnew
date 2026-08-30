@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T16:23:45.633Z",
+  "fetchedAt": "2026-08-30T16:26:51.943Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-30 15:00:00",
       "started": true,
       "finished": false,
-      "minute": 68,
+      "minute": 71,
       "hs": 3,
       "as": 0,
       "sides": {
@@ -90,7 +90,7 @@
         "status": 22,
         "home": "RMA",
         "away": "MAL",
-        "fetchedAt": "2026-08-30T16:23:45.630Z",
+        "fetchedAt": "2026-08-30T16:26:51.940Z",
         "score": {
           "home": 3,
           "away": 0
@@ -183,6 +183,32 @@
             "playerId": 12394118,
             "assist": null,
             "assistId": null
+          },
+          {
+            "minute": 60,
+            "extra": null,
+            "label": "60'",
+            "team": "MAL",
+            "type": "",
+            "detail": null,
+            "comments": "2nd Substitution",
+            "player": "José Salinas",
+            "playerId": 37325831,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 61,
+            "extra": null,
+            "label": "61'",
+            "team": "MAL",
+            "type": "",
+            "detail": null,
+            "comments": "3rd Substitution",
+            "player": "Juan Cruz",
+            "playerId": 17177580,
+            "assist": null,
+            "assistId": null
           }
         ],
         "lineups": {
@@ -222,43 +248,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 68,
+        "minute": 71,
         "finished": false,
-        "remaining": 0.244,
-        "home": 0.9998,
-        "draw": 0.0002,
+        "remaining": 0.211,
+        "home": 0.9999,
+        "draw": 0.0001,
         "away": 0,
-        "xgRestHome": 0.73,
-        "xgRestAway": 0.14,
+        "xgRestHome": 0.63,
+        "xgRestAway": 0.12,
         "expectedFinal": {
-          "home": 3.73,
-          "away": 0.14
+          "home": 3.63,
+          "away": 0.12
         },
         "nextGoal": {
-          "home": 0.486,
-          "away": 0.093,
-          "none": 0.421
+          "home": 0.442,
+          "away": 0.085,
+          "none": 0.474
         },
         "topScores": [
           {
             "s": "3-0",
-            "p": 0.4209
+            "p": 0.4736
           },
           {
             "s": "4-0",
-            "p": 0.3056
+            "p": 0.297
           },
           {
             "s": "5-0",
-            "p": 0.1109
+            "p": 0.0931
           },
           {
             "s": "3-1",
-            "p": 0.0586
+            "p": 0.057
           },
           {
             "s": "4-1",
-            "p": 0.0426
+            "p": 0.0357
           }
         ]
       },
@@ -271,11 +297,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 68,
+        "minute": 71,
         "paragraphs": [
-          "第 68 分鐘,Real Madrid 3:0 Málaga CF。",
+          "第 71 分鐘,Real Madrid 3:0 Málaga CF。",
           "賽前模型 77%/16%/7%(主/和/客),目前 100%/0%/0% —— Real Madrid勝的機率升了 23 個百分點。",
-          "模型估下一球:Real Madrid 49%、Málaga CF 9%,剩餘時間期望再進 0.73:0.14。"
+          "模型估下一球:Real Madrid 44%、Málaga CF 9%,剩餘時間期望再進 0.63:0.12。"
         ]
       }
     }
