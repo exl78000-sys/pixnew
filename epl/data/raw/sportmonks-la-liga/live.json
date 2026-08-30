@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-30T17:47:30.491Z",
+  "fetchedAt": "2026-08-30T17:50:36.576Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,8 +22,8 @@
       "kickoff": "2026-08-30 17:30:00",
       "started": true,
       "finished": false,
-      "minute": 17,
-      "hs": 1,
+      "minute": 20,
+      "hs": 2,
       "as": 0,
       "sides": {
         "DEP": {
@@ -41,17 +41,12 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 1,
+          "goals": 0,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [
-            {
-              "name": "Ximo Navarro",
-              "goals": 1
-            }
-          ],
+          "scorers": [],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -95,9 +90,9 @@
         "status": 2,
         "home": "DEP",
         "away": "VAL",
-        "fetchedAt": "2026-08-30T17:47:30.487Z",
+        "fetchedAt": "2026-08-30T17:50:36.572Z",
         "score": {
-          "home": 1,
+          "home": 2,
           "away": 0
         },
         "teamStats": {
@@ -143,10 +138,23 @@
             "label": "13'",
             "team": "DEP",
             "type": "",
-            "detail": "Header",
+            "detail": "Own Goal",
+            "comments": "1st Own Goal",
+            "player": "Javi Guerra",
+            "playerId": 37571011,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 17,
+            "extra": null,
+            "label": "17'",
+            "team": "DEP",
+            "type": "",
+            "detail": "Field Goal",
             "comments": "1st Goal",
-            "player": "Ximo Navarro",
-            "playerId": 186287,
+            "player": "Pierre-Emerick Aubameyang",
+            "playerId": 31739,
             "assist": null,
             "assistId": null
           }
@@ -188,43 +196,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 17,
+        "minute": 20,
         "finished": false,
-        "remaining": 0.811,
-        "home": 0.6186,
-        "draw": 0.2363,
-        "away": 0.1451,
-        "xgRestHome": 0.83,
-        "xgRestAway": 0.99,
+        "remaining": 0.778,
+        "home": 0.8611,
+        "draw": 0.1006,
+        "away": 0.0384,
+        "xgRestHome": 0.79,
+        "xgRestAway": 0.95,
         "expectedFinal": {
-          "home": 1.83,
-          "away": 0.99
+          "home": 2.79,
+          "away": 0.95
         },
         "nextGoal": {
-          "home": 0.381,
-          "away": 0.456,
-          "none": 0.163
+          "home": 0.376,
+          "away": 0.449,
+          "none": 0.175
         },
         "topScores": [
           {
-            "s": "1-0",
-            "p": 0.1625
-          },
-          {
-            "s": "1-1",
-            "p": 0.1608
-          },
-          {
             "s": "2-0",
-            "p": 0.1345
+            "p": 0.1751
           },
           {
             "s": "2-1",
-            "p": 0.1331
+            "p": 0.1662
           },
           {
-            "s": "1-2",
-            "p": 0.0796
+            "s": "3-0",
+            "p": 0.1389
+          },
+          {
+            "s": "3-1",
+            "p": 0.1318
+          },
+          {
+            "s": "2-2",
+            "p": 0.0788
           }
         ]
       },
@@ -237,11 +245,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 17,
+        "minute": 20,
         "paragraphs": [
-          "第 17 分鐘,Deportivo La Coruña 1:0 Valencia CF。",
-          "賽前模型 32%/28%/40%(主/和/客),目前 62%/24%/15% —— Deportivo La Coruña勝的機率升了 30 個百分點。",
-          "模型估下一球:Deportivo La Coruña 38%、Valencia CF 46%,剩餘時間期望再進 0.83:0.99。"
+          "第 20 分鐘,Deportivo La Coruña 2:0 Valencia CF。",
+          "賽前模型 32%/28%/40%(主/和/客),目前 86%/10%/4% —— Deportivo La Coruña勝的機率升了 54 個百分點。",
+          "模型估下一球:Deportivo La Coruña 38%、Valencia CF 45%,剩餘時間期望再進 0.79:0.95。"
         ]
       }
     }
