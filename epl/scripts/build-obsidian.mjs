@@ -925,11 +925,13 @@ function buildUcl() {
 
     if (s.table?.rows?.length) {
       body.push('\n## 聯賽階段名次\n\n');
-      if (s.bands) {
+      if (s.bands?.auto && s.bands?.playoff && s.bands?.out) {
         body.push('> 1-' + s.bands.auto.to + ' 直接晉級十六強・'
           + s.bands.playoff.from + '-' + s.bands.playoff.to + ' 附加賽・'
           + s.bands.out.from + '-' + s.bands.out.to + ' 淘汰。'
           + '**名次用官方那一份** —— UEFA 的同分比較有七層,本站只排得到前兩層。\n\n');
+      } else {
+        body.push('> 尚未從實際淘汰賽參賽名單確認晉級區間，目前不預先判定各隊結局。\n\n');
       }
       body.push('| # | 球隊 | 場次 | 勝 | 和 | 負 | 進 | 失 | 積分 |\n|---|---|---|---|---|---|---|---|---|\n');
       for (const r of s.table.rows) {
@@ -1008,7 +1010,7 @@ function buildUcl() {
           + (r.leaguePos ? '第 ' + r.leaguePos + ' 名' : '—') + ' | '
           + r.lw + ' | ' + r.ld + ' | ' + r.ll + ' | ' + r.lgf + ' | ' + r.lga + ' | '
           + (r.koPlayed ? r.koPlayed + ' 場 ' + r.koWon + ' 勝' : '—') + ' | '
-          + (r.out ? r.out + (r.outTo ? ' 輸給 ' + r.outTo : '') : '奪冠') + ' |\n');
+          + (r.out ? r.out + (r.outTo ? ' 輸給 ' + r.outTo : '') : r.champion ? '奪冠' : '—') + ' |\n');
       }
       b.push('\n> 淘汰賽的「勝」含 PK 大戰勝出 —— 盃賽的晉級就是這樣算的。\n');
     }

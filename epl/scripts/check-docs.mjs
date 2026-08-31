@@ -81,9 +81,9 @@ const CHECKS = [
      **規則:只檢查以「現況」呈現的數字(現況表、「目前 N 場」),
      不要碰敘事裡描述過去事件的數字。** 後者是紀錄,不是狀態。 */
   {
-    /* 「N / 54 有隊徽」指的是**歐冠三季出現過的不重複球隊**裡有幾支拿得到隊徽,
+    /* 「N / M 有隊徽」指的是**歐冠各季出現過的不重複球隊**裡有幾支拿得到隊徽,
        不是 ucl-teams.json 的 teams 長度(那是本站登錄過的球隊,不等於在歐冠出現過)。
-       第一版就是這樣算錯的,算出 55。 */
+       新球季加入時分子、分母都可能變，所以兩邊分開核對。 */
     key: '歐冠有隊徽的球隊數',
     drifts: false,   // 只有補了隊徽或多一季才會變
 
@@ -101,7 +101,24 @@ const CHECKS = [
       }
       return [...seen.values()].filter(t => t.code || external.has(t.id)).length;
     },
-    patterns: [/(\d+) \/ 54 有隊徽/g, /變成 (\d+)\/54 有隊徽/g],
+    patterns: [/(\d+) \/ \d+ 有隊徽/g, /變成 (\d+)\/\d+ 有隊徽/g],
+  },
+  {
+    key: '歐冠出現過的不重複球隊數',
+    drifts: false,
+    actual: () => {
+      if (!has('web/data/ucl.json')) return null;
+      const u = read(join(ROOT, 'web/data/ucl.json'));
+      const ids = new Set();
+      const see = t => { if (t?.id != null) ids.add(t.id); };
+      for (const s2 of u.seasons ?? []) {
+        for (const m of s2.leagueMatches ?? []) { see(m.home); see(m.away); }
+        for (const rd of s2.rounds ?? []) for (const tie of rd.ties ?? []) for (const leg of tie.legs ?? []) { see(leg.home); see(leg.away); }
+        for (const r of s2.table?.rows ?? []) see(r);
+      }
+      return ids.size;
+    },
+    patterns: [/\d+ \/ (\d+) 有隊徽/g, /變成 \d+\/(\d+) 有隊徽/g],
   },
   {
     key: '傷停快照天數',

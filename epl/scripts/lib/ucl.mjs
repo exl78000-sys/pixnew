@@ -24,8 +24,11 @@ export function leaguePhaseTable(matches, standings) {
     return T.get(t.id);
   };
   for (const m of matches) {
+    /* 尚未開賽也要先登錄球隊身分。官方積分榜會有 36 列全零資料；
+       如果只在完賽時建立 derived，這 36 列就拿不到本站隊碼與聯賽連結。 */
+    const h = row(m.home), a = row(m.away);
     if (!m.played || !m.final) continue;
-    const h = row(m.home), a = row(m.away), [hs, as] = m.final;
+    const [hs, as] = m.final;
     h.p++; a.p++; h.gf += hs; h.ga += as; a.gf += as; a.ga += hs;
     if (hs > as) { h.w++; a.l++; h.pts += 3; } else if (hs < as) { a.w++; h.l++; a.pts += 3; } else { h.d++; a.d++; h.pts++; a.pts++; }
   }
@@ -226,7 +229,7 @@ function squadsByTeam(players, categories, root) {
   };
 }
 
-export function runsByTeam(matches, rounds, table) {
+export function runsByTeam(matches, rounds, table, champion = null) {
   /* **按球隊 id 建,不是按本站隊碼。**
 
      原本是 `if (!code) continue` —— 只算本站兩個聯賽認得的那 8~11 支,
@@ -248,7 +251,7 @@ export function runsByTeam(matches, rounds, table) {
         id: t.id, code: t.code ?? null, league: t.league ?? null, name: t.name,
         leaguePos: posOf.get(t.id) ?? null,
         lp: 0, lw: 0, ld: 0, ll: 0, lgf: 0, lga: 0, koPlayed: 0, koWon: 0,
-        best: '聯賽階段', bestOrder: -1, out: null, outTo: null,
+        best: '聯賽階段', bestOrder: -1, out: null, outTo: null, champion: false,
       };
       if (m.stage === 'LEAGUE_STAGE') {
         if (m.played && m.final) {
@@ -283,6 +286,7 @@ export function runsByTeam(matches, rounds, table) {
      不然那一格是空的,讀者分不出「止步聯賽階段」與「資料沒抓到」。 */
   for (const r of runs.values()) {
     if (r.bestOrder < 0 && r.lp > 0 && !r.out) r.out = '聯賽階段';
+    r.champion = champion?.team?.id === r.id;
   }
   /* 排序最後用 id 收尾 —— 兩個 build 各跑一次,輸出必須逐位元組相同(有測試守著)。
      只靠前三個鍵的話,同分的球隊順序會依 Map 插入順序而定,那不保證穩定。 */
@@ -303,8 +307,11 @@ export function summariseSeason(raw, codeOfTeam, normalise) {
      不連續就代表有東西不對,畫面要講出來而不是照畫。 */
   const poIds = new Set(matches.filter(m => m.stage === 'PLAYOFFS').flatMap(m => [m.home.id, m.away.id]));
   const r16Ids = new Set(matches.filter(m => m.stage === 'LAST_16').flatMap(m => [m.home.id, m.away.id]));
+  const outcomesKnown = poIds.size > 0 || r16Ids.size > 0;
   for (const r of table.rows) {
-    r.outcome = poIds.has(r.id) ? 'playoff' : r16Ids.has(r.id) ? 'auto' : 'out';
+    r.outcome = outcomesKnown
+      ? poIds.has(r.id) ? 'playoff' : r16Ids.has(r.id) ? 'auto' : 'out'
+      : null;
   }
   const bandOrder = ['auto', 'playoff', 'out'];
   const bands = {};
@@ -313,28 +320,30 @@ export function summariseSeason(raw, codeOfTeam, normalise) {
     bands[b] = pos.length ? { from: pos[0], to: pos.at(-1), count: pos.length } : null;
   }
   // 連續性:每一段的名次要剛好是 from..to 之間的每一個,而且三段要接得起來
-  const bandBroken = bandOrder.some((b, i) => {
+  const bandBroken = outcomesKnown && (bandOrder.some((b, i) => {
     const v = bands[b];
     if (!v) return table.rows.length > 0 && b !== 'out';
     if (v.to - v.from + 1 !== v.count) return true;
     const prev = bands[bandOrder[i - 1]];
     return i > 0 && prev && v.from !== prev.to + 1;
-  }) || (table.rows.length > 0 && bands.auto?.from !== 1);
+  }) || (table.rows.length > 0 && bands.auto?.from !== 1));
   const unknownDurations = [...new Set(matches.map(m => m.unknownDuration).filter(Boolean))];
+  const played = matches.filter(m => m.played).length;
+  const champion = championOf(rounds);
   return {
     label: raw.season,
     availability: raw.availability,
     message: raw.message ?? null,
     total: matches.length,
-    played: matches.filter(m => m.played).length,
+    played,
     teams: new Set(matches.flatMap(m => [m.home.id, m.away.id])).size,
     aet: matches.filter(m => m.aet === true).length,
     shootouts: matches.filter(m => m.pens).length,
-    table, rounds, bands, bandBroken,
+    table, rounds, bands, outcomesKnown, bandBroken,
     leagueRounds: [...new Set(league.map(m => m.matchday).filter(Number.isFinite))].sort((a, b) => a - b),
     leagueMatches: league,
-    champion: championOf(rounds),
-    runs: runsByTeam(matches, rounds, table),
+    champion,
+    runs: played ? runsByTeam(matches, rounds, table, champion) : [],
     advancementProblems: checkAdvancement(rounds),
     unknownDurations,
     unknownStatuses: [...new Set(matches.filter(m => !m.played).map(m => m.status).filter(Boolean))],
@@ -424,7 +433,7 @@ export async function loadUclSeasons(root, sources) {
           rounds: [], leagueRounds: [], leagueMatches: [],
           champion: null, runs: [], advancementProblems: [],
           unknownDurations: [], unknownStatuses: [],
-          bands: {}, bandBroken: false,
+          bands: {}, outcomesKnown: false, bandBroken: false,
           draw,
         });
         continue;
@@ -434,6 +443,7 @@ export async function loadUclSeasons(root, sources) {
         total: 0, played: 0, teams: 0, aet: 0, shootouts: 0,
         table: { rows: [], order: 'none', mismatches: [] }, rounds: [], leagueRounds: [], leagueMatches: [],
         champion: null, runs: [], advancementProblems: [], unknownDurations: [], unknownStatuses: [],
+        bands: {}, outcomesKnown: false, bandBroken: false,
       });
       continue;
     }

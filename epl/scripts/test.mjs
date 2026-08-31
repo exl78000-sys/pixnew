@@ -2795,9 +2795,10 @@ function checkUcl() {
       for (const season of ucl.seasons ?? []) {
         const rows = season.table?.rows ?? [];
         if (!rows.length) continue;
-        okU((season.runs ?? []).length === rows.length,
-          `歐冠 ${season.label}:走到哪一輪涵蓋全部球隊`,
-          `runs ${(season.runs ?? []).length} / 積分榜 ${rows.length}`);
+        const expectedRuns = season.played > 0 ? rows.length : 0;
+        okU((season.runs ?? []).length === expectedRuns,
+          `歐冠 ${season.label}:${season.played > 0 ? '走到哪一輪涵蓋全部球隊' : '未開賽不產生虛構戰績列'}`,
+          `runs ${(season.runs ?? []).length} / 預期 ${expectedRuns}`);
         okU((season.runs ?? []).every(r => r.id != null),
           `歐冠 ${season.label}:每一列都有球隊 id(沒有隊碼的也要在)`);
 
@@ -2904,6 +2905,7 @@ function checkUcl() {
 
   for (const s of avail) {
     const raw = JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'football-data', `ucl-${s.label}.json`), 'utf8'));
+    const completed = s.total > 0 && s.played === s.total;
 
     /* ── 一、PK 場的比分 ──────────────────────────
        原始回傳的 fullTime = regularTime + extraTime + penalties(6 場實測全部成立)。
@@ -2921,7 +2923,7 @@ function checkUcl() {
     ok(sumBad === 0, `${s.label}:上游的 fullTime 仍等於 regular+et+pk(這條變了就要重看轉換)`, `${sumBad} 處不符`);
 
     const pkMatches = s.rounds.flatMap(r => r.ties.flatMap(t => t.legs)).filter(m => m.pens);
-    ok(pkMatches.length > 0, `${s.label}:有 PK 場可以驗`);
+    if (completed) ok(pkMatches.length > 0, `${s.label}:完賽球季有 PK 場可以驗`);
     for (const m of pkMatches) {
       const rawM = raw.matches.find(x => x.id === m.id);
       const ftPair = [rawM.score.fullTime.home, rawM.score.fullTime.away];
@@ -2977,14 +2979,20 @@ function checkUcl() {
       `${s.label}:本站依賽果算的積分與官方逐隊一致`, JSON.stringify(s.table.mismatches.slice(0, 3)));
     ok(s.table.rows.length === s.teams, `${s.label}:積分榜的隊數等於參賽隊數`, `${s.table.rows.length} vs ${s.teams}`);
 
-    // 三段結局:名次連續,而且是從實際參賽推的
-    ok(s.bandBroken === false, `${s.label}:直接晉級 / 附加賽 / 淘汰三段的名次連續`, JSON.stringify(s.bands));
-    ok(s.bands.auto?.count + s.bands.playoff?.count + s.bands.out?.count === s.table.rows.length,
-      `${s.label}:三段加起來剛好是全部球隊`);
+    // 三段結局只有在淘汰賽名單實際出現後才知道；未開賽時不按規則硬猜。
+    if (s.outcomesKnown) {
+      ok(s.bandBroken === false, `${s.label}:直接晉級 / 附加賽 / 淘汰三段的名次連續`, JSON.stringify(s.bands));
+      ok(s.bands.auto?.count + s.bands.playoff?.count + s.bands.out?.count === s.table.rows.length,
+        `${s.label}:三段加起來剛好是全部球隊`);
+    } else {
+      ok(Object.values(s.bands).every(v => v === null), `${s.label}:淘汰賽名單未出現時不編造晉級區間`, JSON.stringify(s.bands));
+      ok(s.table.rows.every(r => r.outcome === null), `${s.label}:淘汰賽名單未出現時不先判定球隊結局`);
+    }
 
     // 沒見過的比分類別出現就要紅 —— 代表上游有我們沒核對過的東西
     ok(s.unknownDurations.length === 0, `${s.label}:沒有未核對的比分類別`, s.unknownDurations.join('、'));
-    ok(s.champion !== null, `${s.label}:有冠軍`);
+    ok(completed ? s.champion !== null : s.champion === null, `${s.label}:冠軍狀態符合球季是否完賽`);
+    if (s.played === 0) ok(s.runs.length === 0, `${s.label}:尚未開賽時不把任何球隊誤標成冠軍`);
   }
 
   /* ── 六、人工交付的 FotMob 檔 ──────────────────
@@ -2995,10 +3003,13 @@ function checkUcl() {
     if (!cc) { ok(false, `${s2.label}:應該要有第二來源核對結果`); continue; }
     ok(cc.teamsMatched === cc.teamsTotal, `${s2.label}:FotMob 的 36 隊全部對得上主來源`,
       `${cc.teamsMatched}/${cc.teamsTotal}`);
-    ok(cc.aligned === cc.total, `${s2.label}:${cc.total} 場的日期與主客全部對得上`, `${cc.aligned}/${cc.total}`);
-    ok(cc.problemCount === 0, `${s2.label}:兩個來源的比分 0 場不一致`,
-      cc.problems.slice(0, 3).map(p => p.text).join(' / '));
-    ok(cc.passed, `${s2.label}:第二來源核對通過`);
+    const completed = s2.total > 0 && s2.played === s2.total;
+    if (completed) {
+      ok(cc.aligned === cc.total, `${s2.label}:${cc.total} 場的日期與主客全部對得上`, `${cc.aligned}/${cc.total}`);
+      ok(cc.problemCount === 0, `${s2.label}:兩個來源的比分 0 場不一致`,
+        cc.problems.slice(0, 3).map(p => p.text).join(' / '));
+      ok(cc.passed, `${s2.label}:完賽球季的第二來源核對通過`);
+    }
     // 核對沒過就不可以採用球員榜 —— 這條守的是「不要挑一個喜歡的答案」
     ok(cc.passed || !s2.leaders, `${s2.label}:核對沒過時不採用第二來源的球員榜`);
     if (s2.leaders) {

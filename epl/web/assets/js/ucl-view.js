@@ -170,7 +170,9 @@ function runsTable(runs) {
     { key: 'out', label: '出局於', value: r => (r.out ? 1 : 0), left: true, sortable: false,
       render: r => (r.out
         ? `<span class="tiny dim">${C.esc(r.out)}${r.outTo ? ` 輸給 ${C.esc(r.outTo)}` : ''}</span>`
-        : '<span class="pill tiny" style="color:var(--win)">奪冠</span>') },
+        : r.champion
+          ? '<span class="pill tiny" style="color:var(--win)">奪冠</span>'
+          : '<span class="dim">—</span>') },
   ], {
     sortKey: 'best',
     desc: true,
@@ -350,7 +352,9 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams }) {
         <div class="section"><h2>聯賽階段</h2>
           <span class="hint">36 隊各打 8 場・名次${s.table.order === 'official' ? '取自資料源官方積分榜' : '由本站依賽果排出'}・這是最早的階段,所以排在淘汰賽下面</span></div>
         <div id="tbl"></div>
-        ${s.bandBroken ? `<div class="note" style="margin-top:8px;color:var(--loss)">
+        ${!s.outcomesKnown ? `<div class="tiny dim" style="margin-top:8px">
+          尚未從實際淘汰賽參賽名單確認晉級區間；目前不預先判定各隊結局。</div>`
+          : s.bandBroken ? `<div class="note" style="margin-top:8px;color:var(--loss)">
           ⚠ 三段結局的名次不連續 —— 賽制可能改了,或資料有問題,這張表的分段先不要當定論。</div>`
           : `<div class="tiny dim" style="margin-top:8px">
           第 ${s.bands.auto?.from}–${s.bands.auto?.to} 名直接進十六強・
