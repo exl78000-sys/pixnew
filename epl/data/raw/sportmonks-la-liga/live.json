@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-31T19:05:29.270Z",
+  "fetchedAt": "2026-08-31T19:08:36.022Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,7 +22,7 @@
       "kickoff": "2026-08-31 17:30:00",
       "started": true,
       "finished": false,
-      "minute": 80,
+      "minute": 83,
       "hs": 1,
       "as": 0,
       "sides": {
@@ -90,7 +90,7 @@
         "status": 22,
         "home": "OSA",
         "away": "GET",
-        "fetchedAt": "2026-08-31T19:05:29.266Z",
+        "fetchedAt": "2026-08-31T19:08:36.018Z",
         "score": {
           "home": 1,
           "away": 0
@@ -181,6 +181,32 @@
             "comments": "3rd Substitution",
             "player": "Alberto Risco",
             "playerId": 37750089,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 71,
+            "extra": null,
+            "label": "71'",
+            "team": "OSA",
+            "type": "",
+            "detail": null,
+            "comments": "4th Substitution",
+            "player": "Raúl García",
+            "playerId": 35281051,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 71,
+            "extra": null,
+            "label": "71'",
+            "team": "OSA",
+            "type": "",
+            "detail": null,
+            "comments": "5th Substitution",
+            "player": "Lucas Torró",
+            "playerId": 188626,
             "assist": null,
             "assistId": null
           },
@@ -326,43 +352,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 80,
+        "minute": 83,
         "finished": false,
-        "remaining": 0.111,
-        "home": 0.9441,
-        "draw": 0.0541,
-        "away": 0.0018,
-        "xgRestHome": 0.11,
-        "xgRestAway": 0.06,
+        "remaining": 0.078,
+        "home": 0.9592,
+        "draw": 0.0399,
+        "away": 0.0009,
+        "xgRestHome": 0.08,
+        "xgRestAway": 0.05,
         "expectedFinal": {
-          "home": 1.11,
-          "away": 0.06
+          "home": 1.08,
+          "away": 0.05
         },
         "nextGoal": {
-          "home": 0.105,
-          "away": 0.059,
-          "none": 0.836
+          "home": 0.075,
+          "away": 0.042,
+          "none": 0.882
         },
         "topScores": [
           {
             "s": "1-0",
-            "p": 0.8362
+            "p": 0.8823
           },
           {
             "s": "2-0",
-            "p": 0.0957
+            "p": 0.0707
           },
           {
             "s": "1-1",
-            "p": 0.0539
+            "p": 0.0398
           },
           {
             "s": "2-1",
-            "p": 0.0062
+            "p": 0.0032
           },
           {
             "s": "3-0",
-            "p": 0.0055
+            "p": 0.0028
           }
         ]
       },
@@ -375,11 +401,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 80,
+        "minute": 83,
         "paragraphs": [
-          "第 80 分鐘,CA Osasuna 1:0 Getafe CF。",
-          "賽前模型 44%/30%/25%(主/和/客),目前 94%/5%/0% —— CA Osasuna勝的機率升了 50 個百分點。",
-          "模型估下一球:CA Osasuna 11%、Getafe CF 6%,剩餘時間期望再進 0.11:0.06。"
+          "第 83 分鐘,CA Osasuna 1:0 Getafe CF。",
+          "賽前模型 44%/30%/25%(主/和/客),目前 96%/4%/0% —— CA Osasuna勝的機率升了 52 個百分點。",
+          "模型估下一球:CA Osasuna 8%、Getafe CF 4%,剩餘時間期望再進 0.08:0.05。"
         ]
       }
     }
