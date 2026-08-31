@@ -115,11 +115,19 @@ jobs:
             fi
             cd epl
 
-            # 還有比賽嗎?沒有就收工
-            if [ "$(node scripts/live-window.mjs --league=es1 | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).active))')" != "true" ]; then
+            # 還有比賽在踢嗎?沒有就收工 —— **但判斷不出來時要繼續跑**。
+            # 原本寫 `!= "true"`,於是那條管線任何一點閃失(輸出空、JSON 壞、
+            # fixtures.json 剛好被同一輪的 build 改寫到一半)都會被當成「比賽都結束了」。
+            # 2026-08-31 實測:AVL vs ARS 19:00 開球,迴圈 19:00 整收工,
+            # 整場沒有任何輪詢 —— 而 decideWindow 當下其實回的是 active:true。
+            # 只有明確收到 false 才收工;unknown 多跑一輪的成本,遠低於漏掉一場比賽。
+            ACTIVE=$(node scripts/live-window.mjs 2>/dev/null \
+              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log(JSON.parse(s).active)}catch{console.log("unknown")}})' 2>/dev/null || echo unknown)
+            if [ "$ACTIVE" = "false" ]; then
               echo "  比賽都結束了,收工(輪詢 $N 次、推送 $PUSHED 次)"
               break
             fi
+            [ "$ACTIVE" = "true" ] || echo "  [$N] ⚠ 判斷不出還有沒有比賽($ACTIVE),繼續跑"
             sleep "$POLL"
           done
           echo "◀ 結束:輪詢 $N 次、推送 $PUSHED 次"

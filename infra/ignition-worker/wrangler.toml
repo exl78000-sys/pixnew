@@ -1,0 +1,19 @@
+# Cloudflare Worker:點火器 + 看門狗
+# 部署:cd infra/ignition-worker && npx wrangler deploy
+name = "warroom-ignition"
+main = "src/worker.js"
+compatibility_date = "2026-01-01"
+
+# 每 5 分鐘一次。窗口比工作流程寬,所以就算某一次沒開火,下一次也接得上;
+# 沒有比賽時整支幾乎不做事(讀兩個靜態賽程檔就結束)。
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+REPO   = "exl78000-sys/pixnew"
+BRANCH = "claude/method-feasibility-analysis-60pwfp"
+SITE   = "https://exl78000-sys.github.io/pixnew"
+
+# 機密不寫在這裡。用指令設定(值不會進版控,也不會出現在 log):
+#   npx wrangler secret put GITHUB_TOKEN    ← fine-grained PAT,只勾這個 repo 的 Actions: Read and write
+#   npx wrangler secret put ALERT_WEBHOOK   ← 選用,Discord / Slack incoming webhook

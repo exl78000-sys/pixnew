@@ -2009,6 +2009,35 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 點火器 Worker 與比賽日迴圈的收工判斷(2026-08-31)──
+       實測 AVL vs ARS 19:00 開球、迴圈 19:00 整收工,整場零輪詢;
+       而 decideWindow 當下回的是 active:true —— 問題在外層那道
+       `!= "true"`:管線任何閃失都被當成「比賽都結束了」。 */
+    ['比賽日迴圈:判斷不出還有沒有比賽時要繼續跑,不能當成結束', (() => {
+      const wfs = ['epl-matchday.yml', 'laliga-matchday.yml']
+        .map(f => readFileSync(join(ROOT, '..', '.github', 'workflows', f), 'utf8'));
+      return wfs.every(w => /ACTIVE=\$\(node scripts\/live-window\.mjs/.test(w)
+        && /if \[ "\$ACTIVE" = "false" \]; then/.test(w)      // 只有明確 false 才收工
+        && /console\.log\("unknown"\)/.test(w)                 // 解不出來要說 unknown
+        && !/!= "true" \]; then\n\s*echo "  比賽都結束了/.test(w));
+    })()],
+    ['點火器 Worker:無狀態、窗口比工作流程寬、不複製 live-window 的判斷', (() => {
+      const root = join(ROOT, '..', 'infra', 'ignition-worker');
+      if (!existsSync(join(root, 'src', 'worker.js'))) return false;
+      const w = readFileSync(join(root, 'src', 'worker.js'), 'utf8');
+      const toml = readFileSync(join(root, 'wrangler.toml'), 'utf8');
+      const lw = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
+      const num = (src, name) => Number(new RegExp(`${name}\\s*=\\s*(\\d+)`).exec(src)?.[1]);
+      return /isBusy/.test(w)
+        && /actions\/workflows\/\$\{workflow\}\/dispatches/.test(w)
+        && /status=\$\{status\}/.test(w)                        // 冪等:先問有沒有在跑
+        && !/GITHUB_TOKEN[^\n]*console\.log/.test(w)             // 絕不把 token 印出來
+        && num(w, 'PRE_MIN') > num(lw, 'LEAD_MIN')                // 窗口要比工作流程寬
+        && num(w, 'POST_MIN') > num(lw, 'TAIL_MIN')
+        && /crons = \["\*\/5 \* \* \* \*"\]/.test(toml)
+        && !/GITHUB_TOKEN\s*=/.test(toml);                        // 機密不進版控
+    })()],
+
     /* ── 外電 RSS:先篩再切(2026-08-31)──
        max 是「這個來源最多收幾則」,不是「只看前幾則」。原本先 slice 再 filter,
        對「綜合 feed + 關鍵字」那種來源等於只拿最新 max 則去比對:
