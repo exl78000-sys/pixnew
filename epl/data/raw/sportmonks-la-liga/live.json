@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-31T17:59:01.226Z",
+  "fetchedAt": "2026-08-31T19:14:58.904Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -22,8 +22,8 @@
       "kickoff": "2026-08-31 17:30:00",
       "started": true,
       "finished": false,
-      "minute": 29,
-      "hs": 0,
+      "minute": 89,
+      "hs": 1,
       "as": 0,
       "sides": {
         "OSA": {
@@ -87,12 +87,12 @@
         "source": "sportmonks",
         "fixtureId": 19732717,
         "kickoff": "2026-08-31 17:30:00",
-        "status": 2,
+        "status": 22,
         "home": "OSA",
         "away": "GET",
-        "fetchedAt": "2026-08-31T17:59:01.221Z",
+        "fetchedAt": "2026-08-31T19:14:58.900Z",
         "score": {
-          "home": 0,
+          "home": 1,
           "away": 0
         },
         "teamStats": {
@@ -133,6 +133,110 @@
         },
         "events": [
           {
+            "minute": 45,
+            "extra": 2,
+            "label": "45+2'",
+            "team": "OSA",
+            "type": "",
+            "detail": "Left foot shot",
+            "comments": "1st Penalty",
+            "player": "Ante Budimir",
+            "playerId": 34700,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 39,
+            "extra": null,
+            "label": "39'",
+            "team": "OSA",
+            "type": "",
+            "detail": null,
+            "comments": "1st Substitution",
+            "player": "Enzo Boyomo",
+            "playerId": 28575647,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 46,
+            "extra": null,
+            "label": "46'",
+            "team": "OSA",
+            "type": "",
+            "detail": null,
+            "comments": "2nd Substitution",
+            "player": "Jonathan Dubasin",
+            "playerId": 37304119,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 65,
+            "extra": null,
+            "label": "65'",
+            "team": "GET",
+            "type": "",
+            "detail": null,
+            "comments": "3rd Substitution",
+            "player": "Alberto Risco",
+            "playerId": 37750089,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 71,
+            "extra": null,
+            "label": "71'",
+            "team": "OSA",
+            "type": "",
+            "detail": null,
+            "comments": "4th Substitution",
+            "player": "Raúl García",
+            "playerId": 35281051,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 71,
+            "extra": null,
+            "label": "71'",
+            "team": "OSA",
+            "type": "",
+            "detail": null,
+            "comments": "5th Substitution",
+            "player": "Lucas Torró",
+            "playerId": 188626,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 76,
+            "extra": null,
+            "label": "76'",
+            "team": "GET",
+            "type": "",
+            "detail": null,
+            "comments": "6th Substitution",
+            "player": "Nemanja Gudelj",
+            "playerId": 24071,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 77,
+            "extra": null,
+            "label": "77'",
+            "team": "OSA",
+            "type": "",
+            "detail": null,
+            "comments": "7th Substitution",
+            "player": "Kike Barja ",
+            "playerId": 188218,
+            "assist": null,
+            "assistId": null
+          },
+          {
             "minute": 17,
             "extra": null,
             "label": "17'",
@@ -142,6 +246,97 @@
             "comments": "1st Yellowcard",
             "player": "Jorge Herrando",
             "playerId": 16476323,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 45,
+            "extra": null,
+            "label": "45'",
+            "team": "GET",
+            "type": "",
+            "detail": "Foul",
+            "comments": "2nd Yellowcard",
+            "player": "Dakonam Djené ",
+            "playerId": 63020,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 58,
+            "extra": null,
+            "label": "58'",
+            "team": "GET",
+            "type": "",
+            "detail": "Foul",
+            "comments": "3rd Yellowcard",
+            "player": "Johan Mojica",
+            "playerId": 186437,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 60,
+            "extra": null,
+            "label": "60'",
+            "team": "GET",
+            "type": "",
+            "detail": "Persistent fouling",
+            "comments": "4th Yellowcard",
+            "player": "Enes Ünal",
+            "playerId": 26354,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 65,
+            "extra": null,
+            "label": "65'",
+            "team": "GET",
+            "type": "",
+            "detail": "Foul",
+            "comments": "5th Yellowcard",
+            "player": "Orel Mangala",
+            "playerId": 523939,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 67,
+            "extra": null,
+            "label": "67'",
+            "team": "OSA",
+            "type": "",
+            "detail": "Foul",
+            "comments": "6th Yellowcard",
+            "player": "Iker Muñoz",
+            "playerId": 37371160,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 44,
+            "extra": null,
+            "label": "44'",
+            "team": "OSA",
+            "type": "",
+            "detail": null,
+            "comments": "Penalty awarded",
+            "player": "Enes Ünal",
+            "playerId": 26354,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 52,
+            "extra": null,
+            "label": "52'",
+            "team": "GET",
+            "type": "",
+            "detail": null,
+            "comments": "Goal disallowed",
+            "player": "Enes Ünal",
+            "playerId": 26354,
             "assist": null,
             "assistId": null
           }
@@ -183,43 +378,43 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 29,
+        "minute": 89,
         "finished": false,
-        "remaining": 0.678,
-        "home": 0.3821,
-        "draw": 0.4345,
-        "away": 0.1834,
-        "xgRestHome": 0.7,
-        "xgRestAway": 0.39,
+        "remaining": 0.011,
+        "home": 0.9936,
+        "draw": 0.0063,
+        "away": 0,
+        "xgRestHome": 0.01,
+        "xgRestAway": 0.01,
         "expectedFinal": {
-          "home": 0.7,
-          "away": 0.39
+          "home": 1.01,
+          "away": 0.01
         },
         "nextGoal": {
-          "home": 0.425,
-          "away": 0.239,
-          "none": 0.336
+          "home": 0.011,
+          "away": 0.006,
+          "none": 0.982
         },
         "topScores": [
           {
-            "s": "0-0",
-            "p": 0.3358
-          },
-          {
             "s": "1-0",
-            "p": 0.2344
-          },
-          {
-            "s": "0-1",
-            "p": 0.132
-          },
-          {
-            "s": "1-1",
-            "p": 0.0922
+            "p": 0.9823
           },
           {
             "s": "2-0",
-            "p": 0.0818
+            "p": 0.0112
+          },
+          {
+            "s": "1-1",
+            "p": 0.0063
+          },
+          {
+            "s": "2-1",
+            "p": 0.0001
+          },
+          {
+            "s": "3-0",
+            "p": 0.0001
           }
         ]
       },
@@ -232,11 +427,11 @@
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 29,
+        "minute": 89,
         "paragraphs": [
-          "第 29 分鐘,CA Osasuna 0:0 Getafe CF。",
-          "賽前模型 44%/30%/25%(主/和/客),目前 38%/43%/18% —— 和局的機率升了 13 個百分點。",
-          "模型估下一球:CA Osasuna 43%、Getafe CF 24%,剩餘時間期望再進 0.7:0.39。"
+          "第 89 分鐘,CA Osasuna 1:0 Getafe CF。",
+          "賽前模型 44%/30%/25%(主/和/客),目前 99%/1%/0% —— CA Osasuna勝的機率升了 55 個百分點。",
+          "模型估下一球:CA Osasuna 1%、Getafe CF 1%,剩餘時間期望再進 0.01:0.01。"
         ]
       }
     }
