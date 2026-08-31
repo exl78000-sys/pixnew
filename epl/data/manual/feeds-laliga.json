@@ -1,17 +1,28 @@
 {
-  "_note": "西甲外電 RSS。只保存標題、短摘要、來源與原文連結，不抓整篇文章；每日最多執行一次。",
-  "_sources": {
-    "guardian": "https://www.theguardian.com/football/laligafootball/rss",
-    "bbc": "https://feeds.bbci.co.uk/sport/football/rss.xml"
+  "_note": "西甲外電 RSS。只保存標題、短摘要、來源與原文連結,不抓整篇文章;每日最多執行一次。",
+  "_warning": "**加來源之前先抓一次看標題,不要只看名字。** 下面 _rejected 那筆就是這樣擋掉的。",
+  "_rejected": {
+    "https://www.espn.com/espn/rss/soccer/news?league=esp.1": "2026-08-31 實測**不是西甲**。網址帶 league=esp.1 但那個參數沒有實際過濾:回的 20 則是「Chelsea win again」「Messi announces international retirement」「Benzema out at Al Hilal」「Liverpool land PSG's Barcola」—— 全歐綜合足球。跟 feeds.json 那筆 Sky News 綜合體育是同一種坑:**來源的名字不等於它的內容**。"
   },
+  "_spanish_pending": {
+    "_why": "下面兩筆 2026-08-31 實測**內容是對的**(真的是西甲:Corberán 的攻擊線傷兵、Getafe 的 Ángel Torres、久保建英、Florentino 給會員的信),量也大(Marca 47 則、AS 68 則)。但它們是**西班牙文**,而本站的翻譯步驟(news:translate)目前產出 0 筆 —— 沒有 ANTHROPIC_API_KEY 就會安靜跳過,加進來只會讓西甲動態頁變成一整頁西班牙文。**等翻譯確實運作再開**,不要先加。",
+    "marca": "https://e00-marca.uecdn.es/rss/futbol/primera-division.xml",
+    "as": "https://as.com/rss/futbol/primera.xml"
+  },
+  "_relevance": "2026-08-31 實測 Sky Sports 11835:20 則裡明確提到西甲球隊的約 14 則(貝林厄姆連三則、Barcelona 報價 Rodri、Real 對 Malaga),其餘是歐冠抽籤與全歐綜合。離題比例跟英冠那兩個來源同級(BBC 20/36、Guardian 12/20),**不用關鍵字黑名單去殺** —— 那會誤傷真文章。",
   "feeds": [
     {
       "name": "The Guardian La Liga",
       "url": "https://www.theguardian.com/football/laligafootball/rss"
     },
     {
+      "name": "Sky Sports 西甲",
+      "url": "https://www.skysports.com/rss/11835"
+    },
+    {
       "name": "BBC Sport Football（西甲關鍵字篩選）",
       "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+      "_note": "BBC 沒有西甲專屬 feed,只能拿綜合足球那份用關鍵字篩。這一筆長期回 0 則,原因不是 feed 壞掉:parseFeed 以前**先切再篩**,80 則裡只看最新 8 則去比對關鍵字。2026-08-31 修成先篩再切之後才收得到。",
       "keywords": [
         "la liga", "laliga", "barcelona", "real madrid", "atletico madrid",
         "sevilla", "valencia", "villarreal", "athletic bilbao", "real sociedad",
@@ -21,5 +32,5 @@
       ]
     }
   ],
-  "maxPerFeed": 8
+  "maxPerFeed": 20
 }

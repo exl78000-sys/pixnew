@@ -2009,6 +2009,32 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 外電 RSS:先篩再切(2026-08-31)──
+       max 是「這個來源最多收幾則」,不是「只看前幾則」。原本先 slice 再 filter,
+       對「綜合 feed + 關鍵字」那種來源等於只拿最新 max 則去比對:
+       西甲那筆 BBC 綜合足球 80 則裡有 2 則跟西甲有關,但程式只看前 8 則,
+       每天穩定收 0 則而且不會報錯。實測修好後西甲從 8 則變 42 則。 */
+    ...await (async () => {
+      const { parseFeed } = await import('./fetch-news.mjs');
+      const item = (n, title) => `<item><title>${title}</title>`
+        + `<description>d${n}</description><link>http://x/${n}</link>`
+        + `<pubDate>Mon, 31 Aug 2026 10:00:00 GMT</pubDate></item>`;
+      // 20 則裡只有最後一則命中關鍵字 —— 先切再篩的話會是 0
+      const xml = [...Array(19)].map((_, i) => item(i, `Premier League story ${i}`)).join('')
+        + item(99, 'Barcelona close to deal for Arsenal forward');
+      const hit = parseFeed(xml, 'probe', 8, ['barcelona']);
+      const noKw = parseFeed(xml, 'probe', 8, []);
+      return [
+        ['外電:關鍵字篩選在切之前(綜合 feed 才收得到少數命中的那幾則)',
+          hit.length === 1 && /Barcelona/.test(hit[0].title), `${hit.length} 則`],
+        ['外電:沒有關鍵字時 max 照舊是上限', noKw.length === 8, `${noKw.length} 則`],
+        ['外電:import 不會觸發抓取(有直接執行守衛)', (() => {
+          const src = readFileSync(join(ROOT, 'scripts', 'fetch-news.mjs'), 'utf8');
+          return /process\.argv\[1\] && fileURLToPath\(import\.meta\.url\) === process\.argv\[1\]/.test(src);
+        })(), ''],
+      ];
+    })(),
+
     /* ── 升班隊的上季成績(2026-08-31,使用者要求)──
        lastSeason 是空的(去年不在這個聯賽),但原聯賽的資料本站有。
        形狀必須跟 lastSeason 一樣(前端重用同一塊),而且不可互比要寫在畫面上。 */

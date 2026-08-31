@@ -67,9 +67,14 @@ function parseFeedDate(raw) {
 
 let unparsedDates = 0;
 
-function parseFeed(xml, source, max, keywords = []) {
+/* max 是「這個來源最多收幾則」,不是「只看前幾則」。
+   **切一定要在篩之後** —— 原本是先 slice 再 filter,對「綜合 feed + 關鍵字」
+   那種來源等於只用最新的 max 則去比對:西甲那筆 BBC 綜合足球有 80 則、
+   其中 2 則跟西甲有關,但程式只看前 8 則,於是每天穩定收到 0 則,
+   而且不會有任何地方報錯(2026-08-31 實測)。 */
+export function parseFeed(xml, source, max, keywords = []) {
   const blocks = xml.match(/<(item|entry)[\s\S]*?<\/(item|entry)>/gi) ?? [];
-  return blocks.slice(0, max).map((b, i) => {
+  return blocks.map((b, i) => {
     const date = pick(b, 'pubDate', 'published', 'updated', 'dc:date');
     const parsed = parseFeedDate(date);
     /* 解不出日期就用抓取當天,但要記下來報出去 ——
@@ -86,7 +91,8 @@ function parseFeed(xml, source, max, keywords = []) {
       source,
       link: linkMatch ? linkMatch[1] : pick(b, 'link'),
     };
-  }).filter(x => x.title && (!keywords.length || keywords.some(k => `${x.title} ${x.body}`.toLowerCase().includes(k.toLowerCase()))));
+  }).filter(x => x.title && (!keywords.length || keywords.some(k => `${x.title} ${x.body}`.toLowerCase().includes(k.toLowerCase()))))
+    .slice(0, max);
 }
 
 async function main() {
@@ -122,4 +128,8 @@ async function main() {
   }
 }
 
-main();
+/* 只有直接執行才跑主流程 —— parseFeed 要能被 npm test 匯入驗證,
+   沒有守衛的話光是 import 就會去抓 RSS(跟 fetch-official 同一個慣例)。 */
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  main();
+}
