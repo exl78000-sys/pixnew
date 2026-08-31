@@ -137,13 +137,13 @@ try {
       if (!live.available) {
         if (isLaLiga) return `<div class="note">西甲實時頁面已啟用賽程推算、開賽倒數與賽後分析模板；目前尚未接入西甲即時比分資料源，畫面不會把賽前預測冒充實況。<br>
           即時比分、場上陣容與勝率會在 SportMonks 即時端點完成後由此頁自動接入；目前可先點賽程或完賽場次查看完整分析。
-          <br>下方的<b>開賽倒數</b>與依時間判斷的<b>進行中</b>區塊不需要即時資料源。</div>`;
+          <br><b>開賽倒數</b>與依時間判斷的<b>進行中</b>區塊不需要即時資料源。</div>`;
         return `<div class="note">目前沒有接上即時比賽資料源,所以這一頁不會顯示場中比分 ——
           畫面不會把賽前預測冒充實況。
-          <br>下方的<b>開賽倒數</b>與依時間判斷的<b>進行中</b>區塊不需要即時資料,永遠可用。</div>`;
+          <br><b>開賽倒數</b>與依時間判斷的<b>進行中</b>區塊不需要即時資料,永遠可用。</div>`;
       }
       if (live.demo) {
-        return `<div class="note">上方的<b>進行中 / 等待賽果 / 開賽倒數</b>是依本季賽程與現在時間推算的,是真的。<br>
+        return `<div class="note"><b>開賽倒數 / 進行中 / 還沒有賽果</b>是依本季賽程與現在時間推算的,是真的。<br>
           下方<b>「已完賽」區塊</b>目前放的是${C.esc(live.sourceLabel)} —— 資料完全真實(真實出場名單、真實 xG、
           真實比分),但<b>不是本季的比賽</b>,只是用來示範賽後分析長什麼樣。<br>
           本季真正的即時比分接上之後,這一段會自動換成實況。</div>`;
@@ -192,6 +192,21 @@ try {
         : '即時來源尚未接入')}
     </div>
 
+    ${/* 開賽倒數放最上面(2026-08-31 使用者要求)。理由:這一頁最常被用來回答
+          「下一場什麼時候踢」,而它原本被壓在進行中/剛結束/還沒有賽果下面 ——
+          沒有比賽的日子要捲三個區塊才看得到,那是最常見的使用情境。 */''}
+    <div class="section"><h2>開賽倒數</h2><span class="hint">${countdownList.length
+      ? `第 ${countdownList[0].round} 輪${isCatchUp ? '補賽' : ''}・${countdownList.length} 場・`
+      : ''}依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
+    ${isCatchUp ? `<div class="note" style="margin-bottom:10px">這是第 ${countdownList[0].round} 輪的補賽 ——
+      同一輪其他場次已經踢完,這場延後到現在。</div>` : ''}
+    <div class="grid g2">${countdownList.map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
+    ${/* 沒顯示的不是藏起來:下一批幾號開始、哪一輪、幾場,都寫在這一行。
+          原本這裡寫「還有 362 場」(整季),讀者不會想到自己要找的那兩場就在裡面。 */''}
+    ${countdownRest.length ? `<div class="note" style="margin-top:10px">
+      下一批:第 ${countdownRest[0].round} 輪・${C.kickoffLocal(countdownRest[0].kickoff)} 起。
+      <a href="${C.link('index')}">看完整賽程(本季還有 ${unplayedCount} 場未賽)→</a></div>` : ''}
+
     ${inPlaySched.length ? `
       <div class="section"><h2><span class="livedot"></span>進行中</h2>
         <span class="hint">依賽程推算・${withRealData ? `${withRealData} 場已接上即時比分` : '尚未接上即時比分'}</span></div>
@@ -231,17 +246,6 @@ try {
             : `賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}`}</div>
         </a>`).join('')}</div>` : ''}
 
-    <div class="section"><h2>開賽倒數</h2><span class="hint">${countdownList.length
-      ? `第 ${countdownList[0].round} 輪${isCatchUp ? '補賽' : ''}・${countdownList.length} 場・`
-      : ''}依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
-    ${isCatchUp ? `<div class="note" style="margin-bottom:10px">這是第 ${countdownList[0].round} 輪的補賽 ——
-      同一輪其他場次已經踢完,這場延後到現在。</div>` : ''}
-    <div class="grid g2">${countdownList.map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
-    ${/* 沒顯示的不是藏起來:下一批幾號開始、哪一輪、幾場,都寫在這一行。
-          原本這裡寫「還有 362 場」(整季),讀者不會想到自己要找的那兩場就在裡面。 */''}
-    ${countdownRest.length ? `<div class="note" style="margin-top:10px">
-      下一批:第 ${countdownRest[0].round} 輪・${C.kickoffLocal(countdownRest[0].kickoff)} 起。
-      <a href="${C.link('index')}">看完整賽程(本季還有 ${unplayedCount} 場未賽)→</a></div>` : ''}
 
     ${(doneRest.length || finishedRest.length) ? `
       <div class="section"><h2>已完賽${live.demo && liveRound ? `(重播 ${live.season} 第 ${liveRound} 輪)` : ''}</h2>
