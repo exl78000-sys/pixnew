@@ -254,9 +254,10 @@ jobs:
         run: npm run season
         continue-on-error: true
 
-      # 英超官方(pulselive)的正式陣容、陣型與現任教練。
-      # 抓過的已完賽場次不會再抓,平常一次執行只打 2~3 個請求;
-      # 失敗完全無害 —— build 拿不到官方檔就自動退回角色推導。
+      # 英超官方(pulselive)的正式陣容、陣型、事件與現任教練。
+      # 已完賽場次只有在「進球數=比分、最後比分一致、每球有射手」後才停止重抓;
+      # 不完整快取會以 2m/10m/30m/2h/12h 退避重試,不會在比賽日每兩分鐘狂打。
+      # 暫時連線失敗仍使用上一份快取;後面的資料品質測試會阻止錯資料部署。
       - name: 抓官方陣容與教練(pulselive)
         run: npm run official
         continue-on-error: true

@@ -24,7 +24,7 @@ import {
   buildFormIndex, formDelta, goalForm, h2hDelta, recentForm, formSummary, adjustLambdas, TUNED,
 } from './lib/form.mjs';
 import { teamAvailability, cardWatch } from './lib/availability.mjs';
-import { goalsOf, minuteOf } from './fetch-official.mjs';
+import { finalCacheIssues, fixtureScoreOf, goalsOf, minuteOf, shouldRefreshFinal } from './fetch-official.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { GOAL_SEASONS, LAST_SEASON } from './lib/sources.mjs';
 import { teamGoals } from './lib/goals.mjs';
@@ -827,6 +827,8 @@ function checkGoalEvents() {
     { id: 391374, personId: 63741, teamId: 4, clock: { secs: 3900, label: "65'00" }, phase: '2', type: 'S', description: 'ON', time: { millis: 5000 }, score: { homeScore: 1, awayScore: 2 } },
     // 刻意亂序:後進的球放前面,驗證會被排回時間順序
     { id: 9, personId: 999, teamId: 4, clock: { secs: 5600, label: "90+4'00" }, phase: '2', type: 'G', description: 'P', time: { millis: 9000 }, score: { homeScore: 2, awayScore: 2 } },
+    // 真實事故測資:PE 的寫入時間比同比分的真正 G 早,不能讓 PE 先占走這顆球
+    { id: 8, clock: { secs: 5600, label: "90+4'00" }, phase: '2', type: 'PE', time: { millis: 8999 }, score: { homeScore: 2, awayScore: 2 } },
     { id: 183594, personId: 128976, teamId: 34, assistId: 6712, clock: { secs: 1380, label: "23'00" }, phase: '1', type: 'G', description: 'G', time: { millis: 3000 }, score: { homeScore: 1, awayScore: 1 } },
     // 烏龍球:型別不是 G,踢進自家門的是客隊球員(teamId 34),但分要算給主隊
     { id: 77, personId: 88888, teamId: 34, clock: { secs: 2600, label: "43'00" }, phase: '1', type: 'OG', description: 'O', time: { millis: 4000 }, score: { homeScore: 1, awayScore: 2 } },
@@ -844,10 +846,25 @@ function checkGoalEvents() {
     ['傷停時間算進該半場的最後一分鐘', minuteOf("90+4'00") === 90, String(minuteOf("90+4'00"))],
     ['type 與 description 原封不動保留,不自己翻譯',
       g.at(-1).kind === 'P' && g.at(-1).type === 'G', `${g.at(-1).type}/${g.at(-1).kind}`],
+    ['同比分的 PE 比 G 早寫入時,仍由真正 G 提供射手',
+      g.at(-1).person === 999 && g.at(-1).type === 'G', JSON.stringify(g.at(-1))],
     ['進球當下比分有帶出來', g[0].hs === 0 && g[0].as === 1, `${g[0].hs}-${g[0].as}`],
     ['沒有 events 也不會炸', goalsOf(undefined).length === 0, ''],
     ['沒有比分的事件不會被誤判成進球',
       goalsOf([{ type: 'G', personId: 1 }]).length === 0, ''],
+    ['完賽快取有空射手時要重抓',
+      shouldRefreshFinal({ final: true, goals: [{ person: null, hs: 1, as: 0 }] }, { home: 1, away: 0 }), ''],
+    ['完賽快取完整時不用重抓',
+      !shouldRefreshFinal({ final: true, goals: [{ person: 1, hs: 1, as: 0 }] }, { home: 1, away: 0 }), ''],
+    ['完賽重試遵守 nextRetryAt,不會在比賽日每兩分鐘狂打', (() => {
+      const cached = { final: true, goals: [{ person: null, hs: 1, as: 0 }], quality: { nextRetryAt: '2026-08-31T12:10:00.000Z' } };
+      return !shouldRefreshFinal(cached, { home: 1, away: 0 }, Date.parse('2026-08-31T12:00:00.000Z'))
+        && shouldRefreshFinal(cached, { home: 1, away: 0 }, Date.parse('2026-08-31T12:11:00.000Z'));
+    })(), ''],
+    ['比分與進球數不一致會列為品質問題',
+      finalCacheIssues({ goals: [{ person: 1, hs: 1, as: 0 }] }, { home: 2, away: 0 }).includes('goal-count-mismatch'), ''],
+    ['官方賽程的主客比分可正規化',
+      JSON.stringify(fixtureScoreOf({ teams: [{ score: 4 }, { score: { current: 3 } }] })) === '{"home":4,"away":3}', ''],
   ];
   let fail = 0;
   for (const [name, pass, detail] of cases) {

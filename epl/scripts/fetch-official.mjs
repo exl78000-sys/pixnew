@@ -6,7 +6,7 @@
 //   npm run official -- --all        重抓所有已完賽的陣容(第一次建檔用)
 //
 // 這是英超官網自己在用的後端,沒有金鑰、沒有公開文件。因此:
-//   1. 抓到就存,存過就不再抓 —— 已完賽的陣容不會再變
+//   1. 抓到就存;已完賽資料通過比分、進球數與射手檢查後才停止重抓
 //   2. 每次執行有請求上限,不會因為一次跑歪就狂打人家的伺服器
 //   3. 全部失敗也無害 —— 上層拿不到官方資料就自動退回既有的角色推導
 import { writeFile, readFile, mkdir } from 'node:fs/promises';
@@ -26,11 +26,13 @@ const has = k => process.argv.includes(`--${k}`);
 // v4:開始存進球事件(events)。
 // v5:改用「比分變了就是進球」判定,不再只認 type==='G' —— 烏龍球不是 G。
 // v6:除了進球,也存牌與換人(timelineOf)。升版會重抓所有場次的陣容與事件。
+// 完賽品質與重試資訊是可選欄位,由既有快取逐場自動補上,不需要清空整季升版。
 const STORE_VERSION = 6;
 
 const MAX_DETAIL = has('all') ? 400 : 14;   // 每次執行最多抓幾場詳情
 const SOON_MS = 3 * 60 * 60 * 1000;         // 開賽前 3 小時內就開始試(正式陣容約賽前 1 小時公布)
 const MANAGER_TTL = 24 * 60 * 60 * 1000;
+const FINAL_RETRY_DELAYS = [2, 10, 30, 120, 12 * 60].map(m => m * 60 * 1000);
 
 const j = async url => {
   const res = await fetch(url, { headers: PL_HEADERS });
@@ -69,8 +71,26 @@ export const minuteOf = label => {
   return m ? Number(m[1]) : null;
 };
 
-// 事件的先後順序。time.millis 是實際時鐘,最可靠;沒有就退回比賽進行秒數。
+// 事件的先後順序。time.millis 是官方事件寫入時間;沒有就退回比賽進行秒數。
 const seq = e => e.time?.millis ?? (Number(e.clock?.secs) || 0);
+
+/* 同一個比分可能同時掛在「進球」與「半場結束」等事件上,而 time.millis 是
+   寫入時間,不是嚴格的比賽時間。2026-08-30 CHE 4-3 BHA 就是 PE 比真正的 G
+   早幾毫秒,舊演算法因此把 PE 當成第七球,射手永久變成 null。
+
+   仍然以比分變化找球(才能涵蓋烏龍球),但同一比分要挑最像進球的事件。
+   已知非進球事件永遠不能「認領」比分變化;真的找不到進球事件時寧可留下
+   null 讓品質檢查重抓,也不能把吃牌或半場結束的人當射手。 */
+const NON_GOAL_TYPES = new Set(['B', 'S', 'PS', 'PE']);
+const goalEventRank = e => {
+  if (!e || NON_GOAL_TYPES.has(e.type)) return -1;
+  let rank = 0;
+  if (e.personId != null) rank += 4;
+  if (e.type === 'G') rank += 4;
+  if (['G', 'P', 'O'].includes(e.description)) rank += 2;
+  if (e.assistId != null) rank += 1;
+  return rank;
+};
 
 /* 怎麼判定一筆事件是進球:**比分變了就是進球**,而不是看 type === 'G'。
 
@@ -86,30 +106,82 @@ const seq = e => e.time?.millis ?? (Number(e.clock?.secs) || 0);
    拿它當得分方會把球算到錯的隊上。 */
 export const goalsOf = events => {
   const all = (Array.isArray(events) ? events : []).slice().sort((a, b) => seq(a) - seq(b));
+  const byScore = new Map();
+  for (const e of all) {
+    const hs = e.score?.homeScore, as = e.score?.awayScore;
+    if (hs == null || as == null) continue;
+    const key = `${hs}|${as}`;
+    if (!byScore.has(key)) byScore.set(key, []);
+    byScore.get(key).push(e);
+  }
   const out = [];
   let ph = 0, pa = 0;
   for (const e of all) {
     const hs = e.score?.homeScore, as = e.score?.awayScore;
     if (hs == null || as == null) continue;
     if (hs > ph || as > pa) {
+      const candidates = (byScore.get(`${hs}|${as}`) ?? [])
+        .map((event, index) => ({ event, index, rank: goalEventRank(event) }))
+        .filter(x => x.rank >= 0)
+        .sort((a, b) => b.rank - a.rank || seq(a.event) - seq(b.event) || a.index - b.index);
+      const goal = candidates[0]?.event ?? null;
+      const clock = goal?.clock ?? e.clock;
       out.push({
         side: hs > ph ? 'H' : 'A',          // 得分方,由比分差決定
-        person: e.personId ?? null,
-        assist: e.assistId ?? null,
-        team: e.teamId ?? null,             // 烏龍球時這是「踢進自家門的那一隊」
-        min: minuteOf(e.clock?.label),
-        label: e.clock?.label ?? null,
-        phase: e.phase ?? null,
+        person: goal?.personId ?? null,
+        assist: goal?.assistId ?? null,
+        team: goal?.teamId ?? null,          // 烏龍球時這是「踢進自家門的那一隊」
+        min: minuteOf(clock?.label),
+        label: clock?.label ?? null,
+        phase: goal?.phase ?? e.phase ?? null,
         // type 與 description 都原封不動存,不自己翻譯 ——
         // 烏龍球與十二碼的代碼還沒集滿,等資料累積直接統計就知道,不要現在猜。
-        type: e.type ?? null,
-        kind: e.description ?? null,
+        type: goal?.type ?? null,
+        kind: goal?.description ?? null,
         hs, as,
       });
     }
-    ph = hs; pa = as;
+    // 遲到的舊比分事件不能讓基準倒退,否則同一顆球會被算第二次。
+    ph = Math.max(ph, hs); pa = Math.max(pa, as);
   }
   return out;
+};
+
+const scoreNumber = value => {
+  const candidates = [value, value?.score, value?.current, value?.goals];
+  for (const candidate of candidates) {
+    const n = Number(candidate);
+    if (Number.isInteger(n) && n >= 0) return n;
+  }
+  return null;
+};
+
+export const fixtureScoreOf = fixture => ({
+  home: scoreNumber(fixture?.teams?.[0]?.score),
+  away: scoreNumber(fixture?.teams?.[1]?.score),
+});
+
+/* 完賽快取不是「抓到一次就一定正確」。事件會分批補齊,所以至少要同時滿足:
+   進球數等於最終比分、最後一球帶出的比分一致、每球有射手。 */
+export const finalCacheIssues = (match, expected = match?.score) => {
+  const issues = [];
+  const home = scoreNumber(expected?.home), away = scoreNumber(expected?.away);
+  const goals = Array.isArray(match?.goals) ? match.goals : [];
+  if (home == null || away == null) issues.push('missing-final-score');
+  else {
+    if (goals.length !== home + away) issues.push('goal-count-mismatch');
+    const last = goals.at(-1);
+    if (home + away > 0 && (last?.hs !== home || last?.as !== away)) issues.push('score-mismatch');
+  }
+  if (goals.some(g => g.person == null)) issues.push('missing-scorer');
+  return [...new Set(issues)];
+};
+
+export const shouldRefreshFinal = (cached, expected, now = Date.now()) => {
+  if (!cached?.final) return true;
+  if (finalCacheIssues(cached, expected).length === 0) return false;
+  const next = Date.parse(cached.quality?.nextRetryAt ?? '');
+  return !Number.isFinite(next) || next <= now;
 };
 
 /* 牌、換人與半場標記。**進球不在這裡** —— 它由 goalsOf 用「比分變了」判定,
@@ -225,18 +297,19 @@ async function main() {
     const key = `${home}|${away}`;
     const done = f.status === 'C';
     const cached = store.matches[key];
-    /* 已完賽且抓過先發 → 不用再抓(那筆定案了)。
+    const score = fixtureScoreOf(f);
+    /* 已完賽且資料完整 → 不用再抓;比分、進球數或射手不完整則依退避時間重試。
        **進行中的一律再抓** —— 原本這裡是「有陣容就跳過」,而陣容賽前一小時就有了,
        於是整場比賽都不會再更新,進球、牌與換人要等完賽才一次補上。
        比賽日的迴圈每 2 分鐘叫一次這支,就是為了拿這些事件;跳過等於那一步白跑。
        進行中的場次最多 10 場,一次 10 個請求,跟迴圈本來就在打的是同一個端點。
        未開賽 → 只要還沒拿到陣容就再試。 */
-    if (cached?.final && done && !has('all')) continue;
+    if (cached?.final && done && !has('all') && !shouldRefreshFinal(cached, score, now)) continue;
     const live = f.status === 'L';
     if (cached && !done && !live && cached.home?.xi?.length && cached.away?.xi?.length) continue;
     const ko = f.kickoff?.millis ?? f.provisionalKickoff?.millis ?? null;
     if (!done && (ko === null || ko - now > SOON_MS)) continue;   // 離開賽還早,陣容還沒出來
-    wanted.push({ f, key, home, away, ko, done });
+    wanted.push({ f, key, home, away, ko, done, score });
   }
 
   console.log(`  待抓詳情:${wanted.length} 場(本次上限 ${MAX_DETAIL})`);
@@ -251,11 +324,12 @@ async function main() {
       if (!h || !a) { empty++; continue; }
       const goals = goalsOf(d.events);
       const timeline = timelineOf(d.events);
-      store.matches[w.key] = {
+      const match = {
         fixtureId: w.f.id,
         kickoff: w.ko ? new Date(w.ko).toISOString() : null,
         status: d.status ?? w.f.status,
-        final: w.done,                                  // 已完賽 = 這筆定案,以後不用再抓
+        final: w.done,                                  // 比賽狀態已完賽;能否停止重抓另看 quality
+        score: w.score,
         homeId: w.f.teams[0].team.id, awayId: w.f.teams[1].team.id,   // 事件的 teamId 要對回主客
         home: sideOf(h), away: sideOf(a),
         goals,
@@ -264,9 +338,24 @@ async function main() {
         timeline,
         clock: d.clock?.label ?? null,     // 官方的比賽鐘,含 45+3 這種補時寫法
       };
+      if (w.done) {
+        const issues = finalCacheIssues(match, w.score);
+        const previousRetries = Number(store.matches[w.key]?.quality?.retryCount) || 0;
+        const retryCount = issues.length ? previousRetries + 1 : 0;
+        const delay = FINAL_RETRY_DELAYS[Math.min(Math.max(retryCount - 1, 0), FINAL_RETRY_DELAYS.length - 1)];
+        match.quality = {
+          complete: issues.length === 0,
+          checkedAt: new Date().toISOString(),
+          issues,
+          retryCount,
+          nextRetryAt: issues.length ? new Date(Date.now() + delay).toISOString() : null,
+        };
+      }
+      store.matches[w.key] = match;
       got++;
       const gTxt = goals.length ? `・${goals.length} 顆進球` : '';
-      console.log(`  ✔ ${w.key}  ${store.matches[w.key].home.formation ?? '?'} vs ${store.matches[w.key].away.formation ?? '?'}${gTxt}`);
+      const qTxt = match.quality?.complete === false ? `・待重試:${match.quality.issues.join(',')}` : '';
+      console.log(`  ✔ ${w.key}  ${match.home.formation ?? '?'} vs ${match.away.formation ?? '?'}${gTxt}${qTxt}`);
     } catch (e) { console.log(`  ✗ ${w.key}:${e.message}`); }
   }
 

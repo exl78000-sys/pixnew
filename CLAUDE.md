@@ -4,6 +4,10 @@
 這個時間點的狀態看 `epl/docs/接手資訊.md`,
 **接下來要做什麼看 `epl/docs/補齊規劃.md`**(唯一一份待辦,不要在別處再開一份)。
 
+**任何程式、資料流程、工作流程或架構更動都要同步寫文件。** 至少更新
+`epl/docs/變更紀錄.md`;若會影響操作、故障處理或接手判斷,也要更新對應主題文件。
+不能只改程式、靠 commit message 代替文件。
+
 **已經是三個聯賽**:英超(根目錄的資料集)、西甲(`web/data/leagues/es1/`)、
 英冠(`web/data/leagues/en2/`)。新增聯賽的做法看 `scripts/build-championship.mjs`
 與 `scripts/test-championship.mjs` —— 那是最新也最小的一份,而且它的檔頭寫了
@@ -86,6 +90,7 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 | FPL 的 `round` 是 **gameweek**,不是賽程輪次 | 改期的比賽對不上(AVL vs LIV:FPL GW25、賽程第 29 輪) | 配對用**日期優先**、輪次備援 |
 | 官方 event 的 `type` 是**代碼**不是英文字 | 用 `/goal/i` 比對 → 一顆進球都抓不到 | 型別是 `G`/`B`/`S`/`PS`/`PE` |
 | **烏龍球不是 `G` 事件** | 只認 `G` → 少算(Brighton 4-0 Aston Villa 只抓到 3 顆) | 用「**比分變了就是進球**」判定,不看型別 |
+| **完場標記比真正進球事件早寫入** | 同一個最終比分先出現在 `PE`,後出現在 `G`;只按 `time.millis` 掃會讓 `PE` 認領進球,射手變 null。CHE 4-3 BHA 的 90+6 分實際發生過 | 先用比分找進球,再於同一比分事件中排除 `B/S/PS/PE`、優先選有射手的 `G/O`。完賽快取還要驗進球數、最後比分、射手,不完整就退避重抓 |
 | 烏龍球事件的 `teamId` 語意不明確 | 實測一例是**得分方**(Lindelöf 替維拉踢進烏龍,teamId 卻是 Brighton),但樣本只有一個,不要當通則 | 別依賴 `teamId`。得分方一律由**比分差**決定,`goalsOf()` 就是這樣寫的 |
 | openfootball 的隊名寫法**跨季不同** | `Manchester United` vs `Manchester United FC` → 整季資料被 tolerant 模式吞掉 | `codeOf` 已有寬鬆比對;tolerant 模式會把跳過的隊名印出來,**要看那行輸出** |
 | FPL 的球隊 `short_name` 恰好等於本專案隊碼 | —— | 這是驗證過的,20 隊全對,可以直接用 |

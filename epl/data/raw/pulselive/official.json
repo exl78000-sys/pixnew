@@ -10646,6 +10646,10 @@
    "kickoff": "2026-08-30T13:00:00.000Z",
    "status": "C",
    "final": true,
+   "score": {
+    "home": 4,
+    "away": 3
+   },
    "homeId": 4,
    "awayId": 131,
    "home": {
@@ -11151,14 +11155,14 @@
     },
     {
      "side": "A",
-     "person": null,
+     "person": 22542,
      "assist": null,
-     "team": null,
+     "team": 131,
      "min": 90,
      "label": "90+6'00",
      "phase": "2",
-     "type": "PE",
-     "kind": null,
+     "type": "G",
+     "kind": "G",
      "hs": 4,
      "as": 3
     }
@@ -11375,7 +11379,14 @@
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-08-31T02:15:52.985Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "LEE|BRE": {
    "fixtureId": 128938,
@@ -12727,8 +12738,12 @@
   "MUN|IPS": {
    "fixtureId": 128940,
    "kickoff": "2026-08-30T15:30:00.000Z",
-   "status": "U",
-   "final": false,
+   "status": "C",
+   "final": true,
+   "score": {
+    "home": 5,
+    "away": 2
+   },
    "homeId": 12,
    "awayId": 8,
    "home": {
@@ -12745,8 +12760,8 @@
       4608
      ],
      [
-      108936,
-      5865
+      5865,
+      108936
      ],
      [
       66360,
@@ -12943,9 +12958,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67189
+     ],
+     [
+      15154,
+      49884,
+      49254,
+      51454
+     ],
+     [
+      16044,
+      127605
+     ],
+     [
+      127644,
+      125827,
+      122002
+     ],
+     [
+      313194
+     ]
+    ],
     "xi": [
      {
       "id": 125827,
@@ -13131,14 +13168,356 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 51454,
+     "assist": 127644,
+     "team": 8,
+     "min": 29,
+     "label": "29'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 23396,
+     "assist": 51202,
+     "team": 12,
+     "min": 40,
+     "label": "40'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 49254,
+     "assist": null,
+     "team": 12,
+     "min": 56,
+     "label": "56'00",
+     "phase": "2",
+     "type": "O",
+     "kind": "O",
+     "hs": 2,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 23396,
+     "assist": null,
+     "team": 12,
+     "min": 61,
+     "label": "61'00",
+     "phase": "2",
+     "type": "P",
+     "kind": "P",
+     "hs": 3,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 23396,
+     "assist": null,
+     "team": 12,
+     "min": 68,
+     "label": "68'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 4,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 66360,
+     "assist": 23396,
+     "team": 12,
+     "min": 82,
+     "label": "82'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 5,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 4482,
+     "assist": 125827,
+     "team": 8,
+     "min": 90,
+     "label": "90+1'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 5,
+     "as": 2
+    }
+   ],
    "timeline": {
-    "cards": [],
-    "subs": [],
-    "periods": []
+    "cards": [
+     {
+      "person": 16044,
+      "team": 8,
+      "min": 33,
+      "label": "33'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 127644,
+      "team": 8,
+      "min": 37,
+      "label": "37'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 49254,
+      "team": 8,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 66360,
+      "team": 12,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 4482,
+      "team": 8,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 313194,
+      "team": 8,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 40161,
+      "team": 8,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 127605,
+      "team": 8,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 126111,
+      "team": 8,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 16044,
+      "team": 8,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 10491,
+      "team": 8,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 122002,
+      "team": 8,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 33245,
+      "team": 12,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 4608,
+      "team": 12,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 118591,
+      "team": 12,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 24252,
+      "team": 12,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 146567,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 13565,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 66036,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51202,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 133245,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 108936,
+      "team": 12,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 51553,
+      "team": 8,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 127644,
+      "team": 8,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+8'00",
+      "phase": "2"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "90+8'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-08-31T02:15:51.388Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-08-30T15:28:53.201Z"
+ "fetchedAt": "2026-08-31T02:19:04.722Z"
 }
