@@ -2009,6 +2009,38 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 升班隊的上季成績(2026-08-31,使用者要求)──
+       lastSeason 是空的(去年不在這個聯賽),但原聯賽的資料本站有。
+       形狀必須跟 lastSeason 一樣(前端重用同一塊),而且不可互比要寫在畫面上。 */
+    ['升班隊上季:掛原聯賽成績、形狀與 lastSeason 相同、兩者不同時出現', (() => {
+      const teams = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
+      const alt = teams.filter(t => t.lastSeasonElsewhere);
+      if (!alt.length) return false;
+      const ref = teams.find(t => t.lastSeason)?.lastSeason ?? {};
+      return alt.every(t => !t.lastSeason && t.inLastSeason === false)
+        && alt.every(t => Object.keys(ref).every(k => k in t.lastSeasonElsewhere))
+        && alt.every(t => t.lastSeasonElsewhere.league && t.lastSeasonElsewhere.leagueKey
+          && Number.isInteger(t.lastSeasonElsewhere.pos) && t.lastSeasonElsewhere.teams > 20);
+    })()],
+    ['升班隊上季:名次是原聯賽全隊排的(不是只排缺的那幾支)', (() => {
+      const teams = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
+      const alt = teams.filter(t => t.lastSeasonElsewhere).map(t => t.lastSeasonElsewhere);
+      // 只排自己人的話名次會是 1..n;英冠 24 隊,附加賽升上來的名次一定 >3
+      return alt.length > 1 && alt.some(r => r.pos > alt.length) && alt.every(r => r.p >= 40);
+    })()],
+    ['升班隊上季:畫面標明不可互比、且說清楚模型沒拿它換算', (() => {
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      return /升班前所屬聯賽/.test(pg) && /不可跟本聯賽直接互比/.test(pg)
+        && /模型也<b>沒有<\/b>拿這些數字換算/.test(pg);
+    })()],
+    ['升班隊上季:兩個 build 共用同一支,不各寫一份', (() => {
+      const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'prev-league.mjs'), 'utf8');
+      const b = readFileSync(join(ROOT, 'scripts', 'build.mjs'), 'utf8');
+      return /previousLeagueRecords/.test(lib) && /PREV_LEAGUE_SOURCES/.test(lib)
+        && /from '\.\/lib\/prev-league\.mjs'/.test(b)
+        && /升級附加賽/.test(lib);   // 名次要跟英冠站上的一致,附加賽不能算
+    })()],
+
     /* ── 對戰模擬:前端預測核心的 golden(2026-08-30)──
        predict-core.js 是 lib/poisson + lib/elo 的瀏覽器移植;
        這裡拿三個聯賽**每一場未賽**的 fixtures.json 預測逐場重算比對,

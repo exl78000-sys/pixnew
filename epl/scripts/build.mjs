@@ -13,6 +13,7 @@ import { competition as competitionDef, seasonLength } from './lib/canonical.mjs
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } from './lib/poisson.mjs';
+import { previousLeagueRecords } from './lib/prev-league.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics, formationImpact } from './lib/tactics.mjs';
@@ -564,6 +565,18 @@ async function main() {
     });
   }
 
+  /* 升班隊的上季成績在**英冠**那邊(這裡的 lastSeason 是空的)。
+     不補的話球隊頁的上季區塊整塊空白,而資料本站其實有。
+     只算真的缺的那幾支,而且名次/積分會標明是英冠的 —— 跨聯賽不可互比。 */
+  const promotedPrev = previousLeagueRecords(ROOT, {
+    from: 'en2', season: LAST_SEASON,
+    codes: curCodes.filter(code => !lastTable.some(r => r.code === code)),
+  });
+  if (promotedPrev.size) {
+    console.log(`  升班隊上季成績:${[...promotedPrev.values()]
+      .map(r => `${r.code} ${r.league}第 ${r.pos} 名`).join('、')}`);
+  }
+
   // ── 球隊總表 ──────────────────────────────
   const teams = curCodes.map(code => {
     const reg = T.byCode.get(code);
@@ -579,6 +592,8 @@ async function main() {
         biggestWin: row.biggestWin, biggestLoss: row.biggestLoss,
       } : null,
       inLastSeason: !!row,
+      // 上一季在別的聯賽(升班隊)。有 lastSeason 的就不掛,兩者不會同時出現。
+      lastSeasonElsewhere: row ? null : (promotedPrev.get(code) ?? null),
       current: cur ? { pos: cur.pos, p: cur.p, w: cur.w, d: cur.d, l: cur.l, gf: cur.gf, ga: cur.ga, pts: cur.pts, form: cur.form } : null,
       elo: elo.get(code)?.elo ?? null,
       eloHistory: elo.get(code)?.history ?? [],

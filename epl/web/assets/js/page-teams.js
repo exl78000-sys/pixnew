@@ -932,12 +932,23 @@ try {
   /* 上季戰績剖析。lastSeason 的形狀兩個聯賽**完全一樣**(逐欄位比對過),
      所以這一整塊可以原封不動共用 —— 西甲以前只畫了其中八個數字。 */
   function lastSeasonBlock(t) {
-    const ls = t.lastSeason;
+    /* 升班隊的 lastSeason 是空的(去年不在這個聯賽),但那一季的成績本站有 ——
+       躺在原聯賽的資料裡。形狀跟 lastSeason 完全一樣(同一支 buildTable 算的),
+       所以整塊照舊重用,只換標題並把「不可互比」寫在最上面。 */
+    const alt = t.lastSeason ? null : (t.lastSeasonElsewhere ?? null);
+    const ls = t.lastSeason ?? alt;
     if (!ls) {
       return `<div class="note" style="margin-top:16px">${C.esc(t.en)} 上季不在這個聯賽,所有上季指標從缺;
         模型改用「聯盟後段先驗」估計強度,不確定性標得比較大 —— 畫面不補造上季數字。</div>`;
     }
-    return `<div class="section"><h2>上季戰績剖析</h2><span class="hint">${meta.lastSeason}</span></div>
+    return `<div class="section"><h2>上季戰績剖析</h2><span class="hint">${alt
+      ? `${C.esc(alt.season)}・<b>${C.esc(alt.league)}</b>(升班前所屬聯賽)`
+      : meta.lastSeason}</span></div>
+    ${alt ? `<div class="note" style="margin-bottom:10px">${C.esc(t.en)} 上季在<b>${C.esc(alt.league)}</b>,
+      這裡是那一季的真實成績(${alt.teams} 隊中第 ${alt.pos} 名、${alt.pts} 分)。
+      <b>名次、積分與場均數字不可跟本聯賽直接互比</b> —— 兩個聯賽的強度基準不同。
+      模型也<b>沒有</b>拿這些數字換算:升班隊在本聯賽的強度另用「聯盟後段先驗」估,
+      踢滿幾場之後才改用本季的實際表現。</div>` : ''}
     <div class="grid g2">
       <div class="card"><h3>基本戰績</h3>
         ${C.record(ls.w, ls.d, ls.l)}
