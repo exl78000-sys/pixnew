@@ -848,6 +848,26 @@ function checkGoalEvents() {
       g.at(-1).kind === 'P' && g.at(-1).type === 'G', `${g.at(-1).type}/${g.at(-1).kind}`],
     ['同比分的 PE 比 G 早寫入時,仍由真正 G 提供射手',
       g.at(-1).person === 999 && g.at(-1).type === 'G', JSON.stringify(g.at(-1))],
+    /* 收口(2026-08-31):認領資格走白名單。黑名單擋不掉沒見過的代碼 ——
+       紅牌 R 不在黑名單、又帶 personId,真正的進球事件若剛好缺 personId
+       (烏龍球實際發生過),射手就會被安到吃牌的人身上;而品質檢查抓不到,
+       因為 person 不是 null,只是錯的人。認不出是進球就留 null 讓它重抓。 */
+    ['無射手的烏龍球撞上同比分的紅牌:寧可留 null,不把吃牌的人當射手', (() => {
+      const gg = goalsOf([
+        { id: 1, type: 'OG', description: 'O', teamId: 34, clock: { label: "12'00" }, time: { millis: 1000 },
+          score: { homeScore: 1, awayScore: 0 } },                     // 烏龍球,沒有 personId
+        { id: 2, type: 'R', personId: 55555, teamId: 34, clock: { label: "20'00" }, time: { millis: 2000 },
+          score: { homeScore: 1, awayScore: 0 } },                     // 同比分下的紅牌,有 personId
+      ]);
+      return gg.length === 1 && gg[0].person === null && gg[0].side === 'H';
+    })(), ''],
+    ['白名單:沒見過的代碼不得認領進球(不給分類那條規則)', (() => {
+      const gg = goalsOf([
+        { id: 1, type: 'ZZ', personId: 4242, clock: { label: "30'00" }, time: { millis: 1000 },
+          score: { homeScore: 0, awayScore: 1 } },
+      ]);
+      return gg.length === 1 && gg[0].person === null;
+    })(), ''],
     ['進球當下比分有帶出來', g[0].hs === 0 && g[0].as === 1, `${g[0].hs}-${g[0].as}`],
     ['沒有 events 也不會炸', goalsOf(undefined).length === 0, ''],
     ['沒有比分的事件不會被誤判成進球',

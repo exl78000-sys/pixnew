@@ -81,13 +81,26 @@ const seq = e => e.time?.millis ?? (Number(e.clock?.secs) || 0);
    仍然以比分變化找球(才能涵蓋烏龍球),但同一比分要挑最像進球的事件。
    已知非進球事件永遠不能「認領」比分變化;真的找不到進球事件時寧可留下
    null 讓品質檢查重抓,也不能把吃牌或半場結束的人當射手。 */
+/* 已知的非進球型別(黑名單)與已知的進球型別(白名單)。
+   **認領資格走白名單**:黑名單擋不掉沒見過的代碼 —— 紅牌 `R` 就不在黑名單裡,
+   而它帶 personId,一旦真正的進球事件剛好缺 personId(例如某些烏龍球),
+   同一比分下的紅牌就會贏過它,射手被安到吃牌的人身上。
+   那比留 null 糟得多(「配錯人比配不到糟」),而且品質檢查抓不到 ——
+   person 不是 null,只是錯的人。
+
+   所以:認不出是進球的事件一律不得認領,寧可留 null 讓品質檢查重抓。
+   實測目前資料裡 61 顆球的型別全是 G/O/P,白名單 100% 覆蓋。 */
 const NON_GOAL_TYPES = new Set(['B', 'S', 'PS', 'PE']);
+const GOAL_TYPES = new Set(['G', 'O', 'P', 'OG']);
+const GOAL_DESCRIPTIONS = new Set(['G', 'P', 'O']);
+const looksLikeGoal = e => !!e && !NON_GOAL_TYPES.has(e.type)
+  && (GOAL_TYPES.has(e.type) || GOAL_DESCRIPTIONS.has(e.description));
 const goalEventRank = e => {
-  if (!e || NON_GOAL_TYPES.has(e.type)) return -1;
+  if (!looksLikeGoal(e)) return -1;
   let rank = 0;
   if (e.personId != null) rank += 4;
   if (e.type === 'G') rank += 4;
-  if (['G', 'P', 'O'].includes(e.description)) rank += 2;
+  if (GOAL_DESCRIPTIONS.has(e.description)) rank += 2;
   if (e.assistId != null) rank += 1;
   return rank;
 };
