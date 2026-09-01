@@ -19,6 +19,7 @@ import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './l
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
+import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } from './lib/poisson.mjs';
 import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
@@ -833,6 +834,8 @@ async function main() {
   {
     const n = attachNewsZh(ROOT, 'es1', externalNews);
     if (n) console.log(`  西甲外電譯文:${n}/${externalNews.length} 則有中文`);
+    const tagged = tagNewsTeams(externalNews, buildTeamMatchers(teams));
+    if (tagged) console.log(`  西甲外電對到球隊:${tagged}/${externalNews.length} 則`);
   }
 
   // 西甲即時快照只讀 SportMonks 本地檔；開頁與 build 都不連外。

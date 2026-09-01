@@ -2009,6 +2009,45 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 外電對到球隊(2026-09-01)──
+       RSS 外電原本完全沒有 team 欄位:實測英超 50 則裡 43 則明確提到球隊,
+       但球隊篩選、球隊頁、單場分析頁通通看不到,看起來像「比賽新聞沒抓」。 */
+    ...await (async () => {
+      const { buildTeamMatchers, tagNewsTeams } = await import('./lib/news-tag.mjs');
+      const teams = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
+      const M = buildTeamMatchers(teams);
+      const items = [
+        { title: 'Man City open talks with Chelsea over Fernandez move', body: 'Manchester City are in talks.' },
+        { title: "Who has made Troy's Premier League team of the week?", body: 'A round-up.' },
+        { title: 'Spurs and Forest agree deal', body: '' },
+        { title: '人工整理的一則', body: '', team: 'LIV' },
+        { title: 'Villarreal sign a striker', body: 'Spanish club news.' },
+      ];
+      const n = tagNewsTeams(items, M);
+      return [
+        ['外電對隊:標題主詞排第一(Man City 在前,不是先命中的 body 詞組)',
+          items[0].team === 'MCI' && items[0].teams.join() === 'MCI,CHE', JSON.stringify(items[0].teams)],
+        ['外電對隊:沒提到特定球隊的不硬掛', !items[1].team, JSON.stringify(items[1].teams ?? null)],
+        ['外電對隊:媒體慣用簡稱認得(Spurs / Forest)',
+          (items[2].teams ?? []).includes('TOT') && items[2].teams.includes('NFO'), JSON.stringify(items[2].teams)],
+        ['外電對隊:人工交付已標好的不覆蓋', items[3].team === 'LIV' && !items[3].teams, ''],
+        ['外電對隊:詞界比對,Villarreal 不會被當成 Villa', !items[4].team, JSON.stringify(items[4].teams ?? null)],
+        ['外電對隊:對到多支球隊的詞組整個丟掉(不猜)', (() => {
+          const fake = buildTeamMatchers([
+            { code: 'AAA', en: 'Same Name' }, { code: 'BBB', en: 'Same Name' }, { code: 'CCC', en: 'Unique Name' },
+          ]);
+          return fake.every(m => m.code === 'CCC');
+        })(), ''],
+        ['外電對隊:三支 build 都接上、前端篩選吃 teams 陣列', (() => {
+          const builds = ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs']
+            .map(f => readFileSync(join(ROOT, 'scripts', f), 'utf8'));
+          const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+          return builds.every(b => /tagNewsTeams\(/.test(b))
+            && /teamsOf\(n\)\.includes\(t\)/.test(pg) && /news\.flatMap\(teamsOf\)/.test(pg);
+        })(), ''],
+      ];
+    })(),
+
     /* ── 外電翻譯:三個聯賽共用一條管線(2026-09-01)──
        原本只做西甲,英超那 45 則根本沒有翻譯管線 —— 動態頁一直是英文標題,
        看起來像「翻譯壞了」,其實是沒接。 */

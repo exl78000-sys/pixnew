@@ -32,6 +32,7 @@ import { fileURLToPath } from 'node:url';
 
 import { leagueMatches, backfillLine, europeanKickoff } from './lib/league-matches.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
+import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
 import { competition } from './lib/canonical.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { buildTable, headToHead, teamRecord, applyDeductions } from './lib/table.mjs';
@@ -423,6 +424,8 @@ async function main() {
       } catch { externalNews = []; }
     }
     const zhN = attachNewsZh(ROOT, 'en2', externalNews);
+    const tagged = tagNewsTeams(externalNews, buildTeamMatchers(teams));
+    if (tagged) console.log(`  外電對到球隊:${tagged}/${externalNews.length} 則`);
     console.log(`  外電:${externalNews.length} 則${zhN ? `(${zhN} 則有中文譯文)` : ''}`);
   }
 

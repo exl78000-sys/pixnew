@@ -15,6 +15,7 @@ import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } from './lib/poisson.mjs';
 import { previousLeagueRecords } from './lib/prev-league.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
+import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics, formationImpact } from './lib/tactics.mjs';
@@ -850,6 +851,10 @@ async function main() {
   {
     const n = attachNewsZh(ROOT, 'pl', external);
     if (n) console.log(`  英超外電譯文:${n}/${external.length} 則有中文`);
+    /* RSS 外電原本完全沒有 team 欄位 —— 球隊頁與動態頁的球隊篩選都看不到它們,
+       看起來像「比賽新聞沒抓」,其實是抓了沒接上。人工交付那批已經標好的不覆蓋。 */
+    const tagged = tagNewsTeams(external, buildTeamMatchers(teams));
+    if (tagged) console.log(`  英超外電對到球隊:${tagged}/${external.length} 則`);
   }
 
 

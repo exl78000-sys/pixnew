@@ -8,7 +8,11 @@ try {
   C.nav();
 
   const cats = [...new Set(news.map(n => n.cat))];
-  const codes = [...new Set(news.map(n => n.team).filter(Boolean))].sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
+  /* 一則外電可能講到兩隊(轉會新聞很常見),所以球隊清單與篩選都要看
+     teams 陣列;team 只是「標題主詞」那一支,拿它當唯一依據的話,
+     用第二支球隊去篩就會篩不到自己明明有提到的新聞。 */
+  const teamsOf = n => (n.teams?.length ? n.teams : (n.team ? [n.team] : []));
+  const codes = [...new Set(news.flatMap(teamsOf))].sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
   const CLS = { 傷停: 'bad', 禁賽: 'bad', 轉會: 'info', 賽前: 'info', 賽程: 'warn', 數據: 'accent', 戰術: 'accent', 陣容: '', 外電: 'warn', 西甲外電: 'warn', 賽報: 'accent', 轉會外電: 'info' };
 
   /* 人工整理的外電有三件事一定要標出來,不然讀者分不出這是什麼(鐵則四):
@@ -97,7 +101,7 @@ try {
 
   const render = () => {
     const t = document.getElementById('fTeam').value;
-    const rows = news.filter(n => (!cat || n.cat === cat) && (!t || n.team === t));
+    const rows = news.filter(n => (!cat || n.cat === cat) && (!t || teamsOf(n).includes(t)));
     document.getElementById('count').textContent = `共 ${rows.length} 則`;
     document.getElementById('feed').innerHTML = rows.map(n => `
       <div class="card" style="padding:12px 14px">
