@@ -331,12 +331,17 @@ try {
         <div class="row small dim" style="justify-content:space-between;margin-top:6px"><span>主勝 ${C.pct(p.home, 0)}</span><span>和局 ${C.pct(p.draw, 0)}</span><span>客勝 ${C.pct(p.away, 0)}</span></div>
         <div class="grid g2" style="margin-top:12px"><div class="stat-line"><span class="small">預期進球</span><b class="mono">${C.fx(p.xgHome, 2)} : ${C.fx(p.xgAway, 2)}</b></div><div class="stat-line"><span class="small">雙方進球</span><b class="mono">${C.pct(p.btts, 0)}</b></div><div class="stat-line"><span class="small">大於 2.5 球</span><b class="mono">${C.pct(p.over25, 0)}</b></div><div class="stat-line"><span class="small">零封</span><b class="mono">${C.pct(p.csHome, 0)} / ${C.pct(p.csAway, 0)}</b></div></div>
         <div class="small dim" style="margin-top:10px">最可能比分：${(p.topScores ?? []).slice(0, 4).map(s => `<span class="pill">${C.esc(s.s)}・${C.pct(s.p, 0)}</span>`).join(' ')}</div>
-        ${p.grid ? `<div style="margin-top:14px">${C.scoreHeat(p.grid, f.home, f.away)}</div>` : ''}
         <div class="tiny dim" style="margin-top:8px">預測在開賽前生成；完賽後不重新收斂成 100% 或回填結果。</div>
       </div>
       <div class="section"><h2>專業市場機率</h2><span class="hint">有盤口才顯示，未把市場當資金流向</span></div>
       ${professionalMarketCard(f, p)}${f.market ? marketNote(f, p) : ''}`
       : `<div class="note info"><b>本場沒有保存可驗證的賽前機率快照。</b>已完賽場次只保留正式比分；不使用賽後重建數字冒充當時的預測。</div>`;
+    /* 比分機率分佈原本塞在「模型預測」那張卡裡面,英超是獨立一節 ——
+       這一頁的欄位順序要跟英超一致,所以拉出來自成一節。沒有 grid 就整節不畫
+       (已完賽的西甲場次沒有賽前快照,那不是缺欄位,是本來就沒有那份資料)。 */
+    const scoreGrid = p?.grid ? `
+      <div class="section" style="margin-top:18px"><h2>比分機率分佈</h2><span class="hint">顏色越亮代表越可能</span></div>
+      <div class="card">${C.scoreHeat(p.grid, f.home, f.away)}</div>` : '';
 
     app.innerHTML = `
     <div class="page-head">
@@ -370,29 +375,53 @@ try {
       <button class="btn analysis-tab" type="button" role="tab" data-view="post" aria-controls="panel-post">賽後分析</button>
     </div>` : ''}
 
+    ${/* 三個分頁的欄位順序**照英超那一份排**(2026-09-01)。以前是各排各的,
+          同一個站在兩個聯賽之間換頁會找不到同一個東西在哪。
+          做不到的欄位就不畫,不留空殼:西甲沒有 AI 賽前觀察/賽後結論(analysis
+          兩份都是 0 篇)、已完賽場次沒有賽前機率快照、official 沒有進球事件
+          (goalsCard 自己會回空字串)。 */''}
     ${f.played ? `<section class="analysis-panel" id="panel-compare" role="tabpanel">
-      <div class="section"><h2>綜合對比</h2><span class="hint">賽前背景與實際比分</span></div>
+      ${phaseFlow(f, report)}
+      <div class="section" style="margin-top:18px"><h2>球隊背景對比</h2><span class="hint">${meta.lastSeason} 整季資料</span></div>
       <div class="card">${comparison}</div>
-      <div class="note" style="margin-top:12px">這裡把賽前可用的球隊背景與最終比分放在同一頁；西甲目前沒有保存可驗證的賽前機率快照，不以賽後資料回填預測。</div>
+      <div class="note" style="margin-top:12px">英超那一頁在這裡還會比「模型與市場給實際結果的機率」——
+        西甲已完賽場次沒有保存可驗證的賽前機率快照,那一段沒有資料可比,所以不畫,
+        也不以賽後資料回填預測。</div>
     </section>` : ''}
 
     <section class="analysis-panel" id="panel-pre" role="tabpanel">
       <div class="section"><h2>賽前分析</h2><span class="hint">${meta.lastSeason} 球隊背景・不調整賽後結論</span></div>
       ${preForecast}
-      <div class="card">${comparison}</div>
-      ${recent}
+      <div class="card" style="margin-top:16px">${comparison}</div>
+      ${scoreGrid}
       ${tacticsBlock}
-      <div class="section" style="margin-top:18px"><h2>歷來交手</h2><span class="hint">${meta.h2hSeasons?.[0] ?? ''} 起的可核對紀錄</span></div>
-      <div class="card">${h2hHtml(f, rec)}</div>
-      <div class="section" style="margin-top:18px"><h2>賽前關鍵球員</h2><span class="hint">本季已取得的整季彙總</span></div>
-      <div class="grid g2">${squadCard(f.home)}${squadCard(f.away)}</div>
+      ${recent}
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card"><h3>歷來交手</h3>
+          <div class="tiny dim" style="margin:-4px 0 8px">${meta.h2hSeasons?.[0] ?? ''} 起的可核對紀錄</div>
+          ${h2hHtml(f, rec)}</div>
+        <div class="card"><h3>賽前關鍵球員</h3>
+          <div class="tiny dim" style="margin:-4px 0 8px">本季已取得的整季彙總</div>
+          <div class="grid g2">${squadCard(f.home)}${squadCard(f.away)}</div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>這份分析怎麼來的</h2>
+        <div class="small muted" style="display:grid;gap:8px">
+          <div><b>資料來源:</b>${meta.sources.map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.name}</a>`).join('、')}。
+            基準日 ${meta.asOf},建置於 ${meta.builtAt.slice(0, 16).replace('T', ' ')} UTC。</div>
+          <div><b>模型:</b>${meta.model.type}。<a href="${C.link('model')}">回測與校準結果</a>是公開的。</div>
+          <div><b>不知道的事:</b>${meta.model.caveats[0]}</div>
+        </div>
+      </div>
     </section>
 
     <section class="analysis-panel" id="panel-post" role="tabpanel">
-      <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
+      ${goalsCard(f)}
+      ${probCurveCard(f)}
+      ${opinionSections(f, expertRows)}
+      <div class="section" style="margin-top:18px"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
       ${lineupCard(lineup, f, report)}
       ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
-      ${opinionSections(f, expertRows)}
     </section>
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
@@ -860,6 +889,42 @@ try {
     </div>`;
   }
 
+  /* 「賽前 → 市場 → 賽後」的三節點時間線。英超與西甲**共用同一份** ——
+     複製一份過去的話,改了一邊另一邊會悄悄過期(CLAUDE.md 已經記過這個坑)。
+     西甲已完賽場次沒有保存賽前機率快照(實測 30/30 場都沒有),所以第一個節點
+     要容忍 prediction 不存在:照實寫「無快照」,不拿賽後數字回填一個看起來
+     像預測的值。 */
+  function phaseFlow(f, report) {
+    const p = f.prediction;
+    const market = f.market?.probs ?? null;
+    const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
+    const outcome = { home: `${C.name(f.home)}勝`, draw: '和局', away: `${C.name(f.away)}勝` }[real];
+    const fmt = value => (value == null ? '—' : C.fx(value, 2));
+    const hx = report?.sides?.[f.home]?.xG ?? null;
+    const ax = report?.sides?.[f.away]?.xG ?? null;
+    return `<div class="section"><h2>賽前 → 市場 → 賽後</h2>
+      <span class="hint">把當時的判斷與實際內容放在同一條時間線</span></div>
+    <div class="phase-flow">
+      <div class="phase-node pre">
+        <span class="phase-kicker">01・賽前模型</span>
+        <strong>${p ? `${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}` : '無快照'}</strong>
+        <small>${p ? `預期進球 ${p.xgHome} : ${p.xgAway}` : '這場沒有保存可驗證的賽前機率'}</small>
+      </div>
+      <span class="phase-arrow" aria-hidden="true">→</span>
+      <div class="phase-node market">
+        <span class="phase-kicker">02・市場共識</span>
+        <strong>${market ? `${C.pct(market.home, 0)} / ${C.pct(market.draw, 0)} / ${C.pct(market.away, 0)}` : '尚無盤口'}</strong>
+        <small>${f.market ? `${C.esc(f.market.source)}・已去水` : '等待可驗證資料'}</small>
+      </div>
+      <span class="phase-arrow" aria-hidden="true">→</span>
+      <div class="phase-node post">
+        <span class="phase-kicker">03・賽後結果</span>
+        <strong>${f.fh} : ${f.fa}</strong>
+        <small>${outcome}${report ? `・實際 xG ${fmt(hx)} : ${fmt(ax)}` : ''}</small>
+      </div>
+    </div>`;
+  }
+
   function phaseComparison(f, report) {
     const p = f.prediction;
     const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
@@ -873,27 +938,7 @@ try {
       : null;
     const fmt = value => value == null ? '—' : C.fx(value, 2);
 
-    return `<div class="section"><h2>賽前 → 市場 → 賽後</h2>
-      <span class="hint">把當時的判斷與實際內容放在同一條時間線</span></div>
-    <div class="phase-flow">
-      <div class="phase-node pre">
-        <span class="phase-kicker">01・賽前模型</span>
-        <strong>${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}</strong>
-        <small>預期進球 ${p.xgHome} : ${p.xgAway}</small>
-      </div>
-      <span class="phase-arrow" aria-hidden="true">→</span>
-      <div class="phase-node market">
-        <span class="phase-kicker">02・市場共識</span>
-        <strong>${market ? `${C.pct(market.home, 0)} / ${C.pct(market.draw, 0)} / ${C.pct(market.away, 0)}` : '尚無盤口'}</strong>
-        <small>${f.market ? `${C.esc(f.market.source)}・已去水` : '等待可驗證資料'}</small>
-      </div>
-      <span class="phase-arrow" aria-hidden="true">→</span>
-      <div class="phase-node post">
-        <span class="phase-kicker">03・賽後結果</span>
-        <strong>${f.fh} : ${f.fa}</strong>
-        <small>${outcome}${report ? `・實際 xG ${fmt(actualHomeXg)} : ${fmt(actualAwayXg)}` : ''}</small>
-      </div>
-    </div>
+    return `${phaseFlow(f, report)}
 
     <div class="grid g2 phase-summary">
       <div class="card">
