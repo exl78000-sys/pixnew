@@ -239,8 +239,7 @@ try {
     ${f.played ? `<section class="analysis-panel post-report-grid" id="panel-post" role="tabpanel">
       ${goalsCard(f)}
       ${probCurveCard(f)}
-      ${expertOpinionSection(f, expertRows)}
-      ${relatedNewsSection(f)}
+      ${opinionSections(f, expertRows)}
       ${articleCard(postArt, '賽後結論', 'post')}
       ${postReport ? C.matchReportCards(C.reportWithPlayerPhotos(postReport, playerByCode))
         : '<div class="note">這場尚未取得逐球員與實際 xG 資料，因此目前只能對照最終比分與賽前機率。</div>'}
@@ -393,8 +392,7 @@ try {
       <div class="section"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
       ${lineupCard(lineup, f, report)}
       ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
-      ${expertOpinionSection(f, expertRows)}
-      ${relatedNewsSection(f)}
+      ${opinionSections(f, expertRows)}
     </section>
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
@@ -662,7 +660,7 @@ try {
      教練里程碑的報導也會提到同樣的球隊。所以標題就寫「提到這兩隊的外電」,
      不寫「本場新聞」,並且只把「兩隊都提到 + 日期貼近開球」排前面 ——
      那是事實(兩隊都提到),不是推論(所以是本場報導)。 */
-  function relatedNewsSection(f) {
+  function relatedNewsRows(f) {
     const all = Array.isArray(data.news) ? data.news : [];
     const teamsOf = n => (n.teams?.length ? n.teams : (n.team ? [n.team] : []));
     const ko = f.kickoff ? Date.parse(f.kickoff) : NaN;
@@ -677,6 +675,10 @@ try {
       .sort((a, b) => (b.both && b.close) - (a.both && a.close) || b.both - a.both
         || String(b.n.date).localeCompare(String(a.n.date)))
       .slice(0, 6);
+    return rows;
+  }
+
+  function relatedNewsSection(f, rows, expertCount) {
     if (!rows.length) return '';
     const line = ({ n, both, close }) => {
       const url = C.safeUrl(n.link);
@@ -692,6 +694,11 @@ try {
     return `<div class="section" style="margin-top:20px"><h2>提到這兩隊的外電</h2>
         <span class="hint">依球隊名比對・不保證在講這一場</span></div>
       <div class="card">
+        ${expertCount ? '' : `<div class="tiny dim"
+          style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line-soft)">
+          <span class="pill tiny">0 筆已核對</span> 本場沒有經人工核對的具名觀點 ——
+          那一區需要具名專家、媒體、發布時間與原始連結。下面這些是<b>機器依球隊名比對</b>的外電,
+          不是專家發言,本站也不會拿它冒充。</div>`}
         <div style="display:grid;gap:6px">${rows.map(line).join('')}</div>
         <div class="tiny dim" style="margin-top:10px">這些是<b>依球隊名自動比對</b>出來的外電 ——
           轉會、傷停、教練里程碑的報導也會提到同樣的球隊,所以<b>不保證是在講這一場</b>。
@@ -700,13 +707,30 @@ try {
       </div>`;
   }
 
-  function expertOpinionSection(f, rows) {
+  /* 兩區一起決定怎麼排:專家觀點是人工核對的(嚴格、稀有),外電是機器比對的
+     (涵蓋廣、不保證在講這一場)。**專家那區空掉時不要留一張大空卡** ——
+     它是人工整理的,不會自己長:2026-09-01 實測全季只有第 1 輪那 10 場有人整理過,
+     其餘每一場讀者第一眼看到的都是那張空卡,而它正好壓在真的有內容的外電上面。
+     (「整季 N 場」這種字串不要寫進程式 —— 有一條測試在守,連註解都會命中。)
+     空的時候把那句承諾折成
+     外電卡的第一行:區別還在(而且就在讀者眼睛所在的位置),版面不再說謊。
+     兩區都空才留原本那張卡 —— 否則讀者不會知道有「人工核對觀點」這回事。 */
+  function opinionSections(f, expertRows) {
+    const news = relatedNewsRows(f);
+    return expertOpinionSection(f, expertRows, news.length > 0)
+      + relatedNewsSection(f, news, expertRows.length);
+  }
+
+  function expertOpinionSection(f, rows, hasNews) {
     const typeZh = {
       article: '文章', broadcast: '轉播', video: '影片', podcast: 'Podcast', 'press-conference': '記者會',
     };
     const categoryZh = { news: '新聞', legend: '名宿', expert: '專家' };
     const ORDER = { news: 0, legend: 1, expert: 2 };
     const list = [...rows].sort((a, b) => (ORDER[a.category] ?? 9) - (ORDER[b.category] ?? 9));
+    /* 沒有觀點、但下面有外電 —— 整區(連標題)都不畫,那句承諾由外電卡的第一行接手。
+       只 return 空的內容會留下一個沒有東西的區塊標題,比空卡更難看。 */
+    if (!list.length && hasNews) return '';
     const counts = ['news', 'legend', 'expert']
       .map(key => [categoryZh[key], list.filter(x => x.category === key).length])
       .filter(([, n]) => n > 0).map(([zh, n]) => `${zh} ${n}`).join('・');
