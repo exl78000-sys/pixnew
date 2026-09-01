@@ -1,4 +1,4 @@
-import * as C from './core.js?v=dfd16172';
+import * as C from './core.js?v=e726e6b8';
 
 /* 對戰模擬的 2D 跑位動畫(FM 式俯視火柴人)。
  *

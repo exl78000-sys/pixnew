@@ -1,6 +1,6 @@
-import * as C from './core.js?v=dfd16172';
+import * as C from './core.js?v=e726e6b8';
 import { blendPair, sampleMatch, seededRng, inPlaySim } from './predict-core.js?v=a99cd006';
-import { mountDuelAnim, parseFormation, pickXI } from './duel-anim.js?v=f78ece80';
+import { mountDuelAnim, parseFormation, pickXI } from './duel-anim.js?v=923150fd';
 
 /* 對戰模擬(跨聯賽單一頁,掛盃賽旁邊 —— 2026-08-30 使用者要求不分聯賽)。
    誠實界線不變、全寫在畫面上:

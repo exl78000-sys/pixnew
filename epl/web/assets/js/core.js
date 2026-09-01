@@ -627,10 +627,27 @@ export function startCountdowns() {
 
    fixtures 要**先依開球時間排好**。 */
 export function countdownFixtures(upcoming) {
-  const out = [];
+  // 先切成「開球順序上連續同輪」的段
+  const runs = [];
   for (const f of upcoming) {
-    if (out.length && f.round !== out.at(-1).round) break;
-    out.push(f);
+    const last = runs.at(-1);
+    if (last && last[0].round === f.round) last.push(f);
+    else runs.push([f]);
+  }
+  /* 收到哪一段為止,取決於這一段是**提前**還是**延後**(2026-09-01 修):
+     - 延後(補賽):輪次比後面那一段**小** —— 它是從更早的一輪拖過來的孤兒,
+       自成一段就對了(2025-26 第 31 輪 MCI vs CRY 晚了 53 天)。
+     - 提前:輪次比後面那一段**大** —— 它插到更早的一輪前面,**它不是下一輪**。
+       就此打住的話,真正的下一輪整輪都會掉進溢位那一行。實測西甲 2026-27:
+       第 6 輪的 RSO vs CEL 移到 9/3 開踢(同輪其餘九場在 9/16),於是 9/5~9/7
+       的第 4 輪十場全部沒有倒數卡 —— 讀者找不到明天的皇馬。
+     兩種都是「一段連續同輪」,差別只在跟後面那一段比大小,所以不需要任何
+     magic number,也不需要知道一輪有幾場。 */
+  const out = [];
+  for (let i = 0; i < runs.length; i++) {
+    out.push(...runs[i]);
+    const cur = runs[i][0].round, next = runs[i + 1]?.[0]?.round;
+    if (cur == null || next == null || cur <= next) break;
   }
   return out;
 }

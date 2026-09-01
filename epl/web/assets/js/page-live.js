@@ -1,5 +1,5 @@
-import * as C from './core.js?v=dfd16172';
-import { mountSimTable } from './sim-table.js?v=ecfbb014';
+import * as C from './core.js?v=e726e6b8';
+import { mountSimTable } from './sim-table.js?v=e221f746';
 
 const app = document.getElementById('app');
 
@@ -107,8 +107,26 @@ try {
        拿 upcoming 去講「本季還有 N 場」,西甲會顯示 11 場,而它其實還有三百多場。
        那一批也不報「這一輪幾場」—— 同一輪可能只有一部分公布了時間,報出來是假的。 */
     const unplayedCount = fixtures.filter(f => !f.played).length;
-    const isCatchUp = countdownList.length > 0 && countdownList[0].round != null
-      && countdownList[0].round < maxPlayedRound;
+    /* 這一批可能橫跨兩輪(有場次提前開踢時,見 core.countdownFixtures)。
+       標題要講的是**真正的下一輪** —— 也就是這批裡輪次最小的那個,
+       不是開球最早的那一場的輪次。拿第一場的輪次當標題的話,西甲會印
+       「第 6 輪・11 場」,而底下十一張卡裡有十張是第 4 輪。 */
+    const countdownRounds = [...new Set(countdownList.map(f => f.round).filter(r => r != null))];
+    const mainRound = countdownRounds.length ? Math.min(...countdownRounds) : null;
+    const earlyOnes = countdownList.filter(f => f.round != null && f.round > mainRound);
+    const isCatchUp = mainRound != null && mainRound < maxPlayedRound;
+    const earlyRounds = [...new Set(earlyOnes.map(f => f.round))].sort((x, y) => x - y);
+    const earlyRoundsText = `${earlyRounds.join('、')} 輪`;
+    /* 「同一輪其他場次在哪」要數**所有未賽的**,不是 upcoming ——
+       那幾場多半還沒公布開球時間(西甲是逐月公布的),不在 upcoming 裡。
+       只有日期沒有時間也照說,那比不說有用。 */
+    const earlyRest = fixtures.filter(f => !f.played && earlyRounds.includes(f.round)
+      && !countdownList.includes(f));
+    const earlyRestDates = [...new Set(earlyRest.map(f => String(f.date ?? f.kickoff ?? '').slice(0, 10)))]
+      .filter(Boolean).sort();
+    const earlyRestText = earlyRest.length
+      ? `同一輪其他 ${earlyRest.length} 場在 ${earlyRestDates.length ? earlyRestDates.map(C.dateZh).join('、') : '日期未定'}。`
+      : '';
 
     // 有真正即時資料的比賽優先用即時資料,其餘用賽程推導
     const liveCards = inPlaySched.map(({ f, s }) => ({ f, s, m: liveByKey.get(`${f.home}|${f.away}`) ?? null }));
@@ -196,10 +214,13 @@ try {
           「下一場什麼時候踢」,而它原本被壓在進行中/剛結束/還沒有賽果下面 ——
           沒有比賽的日子要捲三個區塊才看得到,那是最常見的使用情境。 */''}
     <div class="section"><h2>開賽倒數</h2><span class="hint">${countdownList.length
-      ? `第 ${countdownList[0].round} 輪${isCatchUp ? '補賽' : ''}・${countdownList.length} 場・`
+      ? `第 ${mainRound} 輪${isCatchUp ? '補賽' : ''}・${countdownList.length} 場・`
       : ''}依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
-    ${isCatchUp ? `<div class="note" style="margin-bottom:10px">這是第 ${countdownList[0].round} 輪的補賽 ——
+    ${isCatchUp ? `<div class="note" style="margin-bottom:10px">這是第 ${mainRound} 輪的補賽 ——
       同一輪其他場次已經踢完,這場延後到現在。</div>` : ''}
+    ${earlyOnes.length ? `<div class="note" style="margin-bottom:10px">其中 ${earlyOnes.length} 場是
+      <b>提前開踢的第 ${earlyRoundsText}</b> ——${earlyRestText}
+      第 ${mainRound} 輪的場次仍然全部列在下面。</div>` : ''}
     <div class="grid g2">${countdownList.map(countdownCard).join('') || '<div class="card dim">本季沒有未開賽的比賽了。</div>'}</div>
     ${/* 沒顯示的不是藏起來:下一批幾號開始、哪一輪、幾場,都寫在這一行。
           原本這裡寫「還有 362 場」(整季),讀者不會想到自己要找的那兩場就在裡面。 */''}

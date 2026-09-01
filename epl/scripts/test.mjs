@@ -1255,6 +1255,20 @@ async function checkDataGap() {
       // 第 2 輪只剩 4 場就是它全部;第 3 輪一場都不混進來(那一輪要嘛全給要嘛不給)
       return out.length === 4 && out.every(f => f.round === 2);
     })()],
+    /* 反過來的情況:**提前**開踢的場次(輪次比後面那一段大)。2026-09-01 修 ——
+       西甲 2026-27 第 6 輪的 RSO vs CEL 移到 9/3,同輪其餘九場在 9/16,
+       於是「第一段連續同輪」在它那裡就停住,9/5~9/7 的第 4 輪十場全掉進溢位那一行。
+       畫面上是「第 6 輪・1 場」加一行小字,讀者找不到明天的皇馬。 */
+    ['提前開踢的場次不會把真正的下一輪擠掉', (() => {
+      const rows = [{ id: 'early', round: 6 }, ...[...Array(10)].map((_, i) => ({ id: i, round: 4 }))];
+      const out = V.countdownFixtures(rows);
+      return out.length === 11 && out[0].id === 'early' && out.filter(f => f.round === 4).length === 10;
+    })()],
+    ['連續兩場提前開踢也照收', (() => {
+      const rows = [{ id: 'a', round: 8 }, { id: 'b', round: 6 },
+        ...[...Array(10)].map((_, i) => ({ id: i, round: 4 }))];
+      return V.countdownFixtures(rows).length === 12;
+    })()],
     ['沒有未賽場次時回空陣列', V.countdownFixtures([]).length === 0],
 
     /* ── 球隊頁的「接下來的賽程」(2026-08-28 修)──
