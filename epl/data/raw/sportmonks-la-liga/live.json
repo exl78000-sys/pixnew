@@ -4,7 +4,7 @@
   "sourceLabel": "SportMonks 西甲即時比分",
   "demo": false,
   "season": "2026-27",
-  "fetchedAt": "2026-08-31T19:14:58.904Z",
+  "fetchedAt": "2026-08-31T21:03:24.494Z",
   "include": "participants;state;scores;events",
   "leagueId": 564,
   "counts": {
@@ -15,18 +15,18 @@
   },
   "matches": [
     {
-      "key": "OSA|GET",
+      "key": "BAR|RAY",
       "season": "2026-27",
-      "home": "OSA",
-      "away": "GET",
-      "kickoff": "2026-08-31 17:30:00",
+      "home": "BAR",
+      "away": "RAY",
+      "kickoff": "2026-08-31 19:30:00",
       "started": true,
       "finished": false,
-      "minute": 89,
-      "hs": 1,
-      "as": 0,
+      "minute": 78,
+      "hs": 3,
+      "as": 2,
       "sides": {
-        "OSA": {
+        "BAR": {
           "xi": [],
           "bench": [],
           "offs": [],
@@ -53,7 +53,7 @@
           "used": 0,
           "coach": null
         },
-        "GET": {
+        "RAY": {
           "xi": [],
           "bench": [],
           "offs": [],
@@ -68,12 +68,17 @@
           "seasonShape": null,
           "xG": null,
           "xA": null,
-          "goals": 0,
+          "goals": 2,
           "assists": 0,
           "yellow": 0,
           "red": 0,
           "keeper": null,
-          "scorers": [],
+          "scorers": [
+            {
+              "name": "Sergio Camello",
+              "goals": 2
+            }
+          ],
           "assisters": [],
           "cards": [],
           "best": [],
@@ -82,21 +87,21 @@
         }
       },
       "advanced": {
-        "key": "OSA|GET",
+        "key": "BAR|RAY",
         "season": "2026-27",
         "source": "sportmonks",
-        "fixtureId": 19732717,
-        "kickoff": "2026-08-31 17:30:00",
+        "fixtureId": 19732719,
+        "kickoff": "2026-08-31 19:30:00",
         "status": 22,
-        "home": "OSA",
-        "away": "GET",
-        "fetchedAt": "2026-08-31T19:14:58.900Z",
+        "home": "BAR",
+        "away": "RAY",
+        "fetchedAt": "2026-08-31T21:03:24.490Z",
         "score": {
-          "home": 1,
-          "away": 0
+          "home": 3,
+          "away": 2
         },
         "teamStats": {
-          "OSA": {
+          "BAR": {
             "possession": null,
             "shots": null,
             "shotsOn": null,
@@ -111,7 +116,7 @@
             "passAccuracy": null,
             "xG": null
           },
-          "GET": {
+          "RAY": {
             "possession": null,
             "shots": null,
             "shotsOn": null,
@@ -128,229 +133,164 @@
           }
         },
         "players": {
-          "OSA": [],
-          "GET": []
+          "BAR": [],
+          "RAY": []
         },
         "events": [
+          {
+            "minute": 12,
+            "extra": null,
+            "label": "12'",
+            "team": "RAY",
+            "type": "",
+            "detail": "Left foot shot",
+            "comments": "1st Goal",
+            "player": "Sergio Camello",
+            "playerId": 7698443,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 19,
+            "extra": null,
+            "label": "19'",
+            "team": "BAR",
+            "type": "",
+            "detail": "Left foot shot",
+            "comments": "2nd Goal",
+            "player": "Raphinha",
+            "playerId": 160258,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 21,
+            "extra": null,
+            "label": "21'",
+            "team": "BAR",
+            "type": "",
+            "detail": "Left foot shot",
+            "comments": "3rd Goal",
+            "player": "Lamine Yamal",
+            "playerId": 37656179,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 51,
+            "extra": null,
+            "label": "51'",
+            "team": "BAR",
+            "type": "",
+            "detail": "Right foot shot",
+            "comments": "1st Own Goal",
+            "player": "Florian Lejeune",
+            "playerId": 96002,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 59,
+            "extra": null,
+            "label": "59'",
+            "team": "RAY",
+            "type": "",
+            "detail": "Header",
+            "comments": "4th Goal",
+            "player": "Sergio Camello",
+            "playerId": 7698443,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 32,
+            "extra": null,
+            "label": "32'",
+            "team": "RAY",
+            "type": "",
+            "detail": null,
+            "comments": "1st Substitution",
+            "player": "Adrià Pedrosa",
+            "playerId": 532358,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 57,
+            "extra": null,
+            "label": "57'",
+            "team": "RAY",
+            "type": "",
+            "detail": null,
+            "comments": "2nd Substitution",
+            "player": "Pedro Díaz",
+            "playerId": 445829,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 57,
+            "extra": null,
+            "label": "57'",
+            "team": "RAY",
+            "type": "",
+            "detail": null,
+            "comments": "3rd Substitution",
+            "player": "Fran Pérez",
+            "playerId": 23278664,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 64,
+            "extra": null,
+            "label": "64'",
+            "team": "BAR",
+            "type": "",
+            "detail": null,
+            "comments": "4th Substitution",
+            "player": "Fermín López",
+            "playerId": 37596363,
+            "assist": null,
+            "assistId": null
+          },
+          {
+            "minute": 64,
+            "extra": null,
+            "label": "64'",
+            "team": "BAR",
+            "type": "",
+            "detail": null,
+            "comments": "5th Substitution",
+            "player": "Rodri ",
+            "playerId": 186910,
+            "assist": null,
+            "assistId": null
+          },
           {
             "minute": 45,
             "extra": 2,
             "label": "45+2'",
-            "team": "OSA",
-            "type": "",
-            "detail": "Left foot shot",
-            "comments": "1st Penalty",
-            "player": "Ante Budimir",
-            "playerId": 34700,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 39,
-            "extra": null,
-            "label": "39'",
-            "team": "OSA",
-            "type": "",
-            "detail": null,
-            "comments": "1st Substitution",
-            "player": "Enzo Boyomo",
-            "playerId": 28575647,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 46,
-            "extra": null,
-            "label": "46'",
-            "team": "OSA",
-            "type": "",
-            "detail": null,
-            "comments": "2nd Substitution",
-            "player": "Jonathan Dubasin",
-            "playerId": 37304119,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 65,
-            "extra": null,
-            "label": "65'",
-            "team": "GET",
-            "type": "",
-            "detail": null,
-            "comments": "3rd Substitution",
-            "player": "Alberto Risco",
-            "playerId": 37750089,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 71,
-            "extra": null,
-            "label": "71'",
-            "team": "OSA",
-            "type": "",
-            "detail": null,
-            "comments": "4th Substitution",
-            "player": "Raúl García",
-            "playerId": 35281051,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 71,
-            "extra": null,
-            "label": "71'",
-            "team": "OSA",
-            "type": "",
-            "detail": null,
-            "comments": "5th Substitution",
-            "player": "Lucas Torró",
-            "playerId": 188626,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 76,
-            "extra": null,
-            "label": "76'",
-            "team": "GET",
-            "type": "",
-            "detail": null,
-            "comments": "6th Substitution",
-            "player": "Nemanja Gudelj",
-            "playerId": 24071,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 77,
-            "extra": null,
-            "label": "77'",
-            "team": "OSA",
-            "type": "",
-            "detail": null,
-            "comments": "7th Substitution",
-            "player": "Kike Barja ",
-            "playerId": 188218,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 17,
-            "extra": null,
-            "label": "17'",
-            "team": "OSA",
-            "type": "",
-            "detail": "Foul",
-            "comments": "1st Yellowcard",
-            "player": "Jorge Herrando",
-            "playerId": 16476323,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 45,
-            "extra": null,
-            "label": "45'",
-            "team": "GET",
-            "type": "",
-            "detail": "Foul",
-            "comments": "2nd Yellowcard",
-            "player": "Dakonam Djené ",
-            "playerId": 63020,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 58,
-            "extra": null,
-            "label": "58'",
-            "team": "GET",
-            "type": "",
-            "detail": "Foul",
-            "comments": "3rd Yellowcard",
-            "player": "Johan Mojica",
-            "playerId": 186437,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 60,
-            "extra": null,
-            "label": "60'",
-            "team": "GET",
-            "type": "",
-            "detail": "Persistent fouling",
-            "comments": "4th Yellowcard",
-            "player": "Enes Ünal",
-            "playerId": 26354,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 65,
-            "extra": null,
-            "label": "65'",
-            "team": "GET",
-            "type": "",
-            "detail": "Foul",
-            "comments": "5th Yellowcard",
-            "player": "Orel Mangala",
-            "playerId": 523939,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 67,
-            "extra": null,
-            "label": "67'",
-            "team": "OSA",
-            "type": "",
-            "detail": "Foul",
-            "comments": "6th Yellowcard",
-            "player": "Iker Muñoz",
-            "playerId": 37371160,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 44,
-            "extra": null,
-            "label": "44'",
-            "team": "OSA",
-            "type": "",
-            "detail": null,
-            "comments": "Penalty awarded",
-            "player": "Enes Ünal",
-            "playerId": 26354,
-            "assist": null,
-            "assistId": null
-          },
-          {
-            "minute": 52,
-            "extra": null,
-            "label": "52'",
-            "team": "GET",
+            "team": "BAR",
             "type": "",
             "detail": null,
             "comments": "Goal disallowed",
-            "player": "Enes Ünal",
-            "playerId": 26354,
+            "player": "Jules Koundé",
+            "playerId": 337394,
             "assist": null,
             "assistId": null
           }
         ],
         "lineups": {
-          "OSA": {
-            "team": "OSA",
+          "BAR": {
+            "team": "BAR",
             "formation": null,
             "xi": [],
             "bench": [],
             "coach": null
           },
-          "GET": {
-            "team": "GET",
+          "RAY": {
+            "team": "RAY",
             "formation": null,
             "xi": [],
             "bench": [],
@@ -378,60 +318,60 @@
       "demo": false,
       "notes": [],
       "inplay": {
-        "minute": 89,
+        "minute": 78,
         "finished": false,
-        "remaining": 0.011,
-        "home": 0.9936,
-        "draw": 0.0063,
-        "away": 0,
-        "xgRestHome": 0.01,
-        "xgRestAway": 0.01,
+        "remaining": 0.133,
+        "home": 0.9417,
+        "draw": 0.0559,
+        "away": 0.0024,
+        "xgRestHome": 0.34,
+        "xgRestAway": 0.08,
         "expectedFinal": {
-          "home": 1.01,
-          "away": 0.01
+          "home": 3.34,
+          "away": 2.08
         },
         "nextGoal": {
-          "home": 0.011,
-          "away": 0.006,
-          "none": 0.982
+          "home": 0.275,
+          "away": 0.069,
+          "none": 0.656
         },
         "topScores": [
           {
-            "s": "1-0",
-            "p": 0.9823
+            "s": "3-2",
+            "p": 0.6562
           },
           {
-            "s": "2-0",
-            "p": 0.0112
+            "s": "4-2",
+            "p": 0.2213
           },
           {
-            "s": "1-1",
-            "p": 0.0063
+            "s": "3-3",
+            "p": 0.0551
           },
           {
-            "s": "2-1",
-            "p": 0.0001
+            "s": "5-2",
+            "p": 0.0373
           },
           {
-            "s": "3-0",
-            "p": 0.0001
+            "s": "4-3",
+            "p": 0.0186
           }
         ]
       },
       "preMatch": {
-        "home": 0.4441,
-        "draw": 0.303,
-        "away": 0.253,
-        "xgHome": 1.03,
-        "xgAway": 0.58
+        "home": 0.717,
+        "draw": 0.1792,
+        "away": 0.1039,
+        "xgHome": 2.53,
+        "xgAway": 0.63
       },
       "liveSummary": {
         "kind": "live",
-        "minute": 89,
+        "minute": 78,
         "paragraphs": [
-          "第 89 分鐘,CA Osasuna 1:0 Getafe CF。",
-          "賽前模型 44%/30%/25%(主/和/客),目前 99%/1%/0% —— CA Osasuna勝的機率升了 55 個百分點。",
-          "模型估下一球:CA Osasuna 1%、Getafe CF 1%,剩餘時間期望再進 0.01:0.01。"
+          "第 78 分鐘,FC Barcelona 3:2 Rayo Vallecano。",
+          "賽前模型 72%/18%/10%(主/和/客),目前 94%/6%/0% —— FC Barcelona勝的機率升了 22 個百分點。",
+          "模型估下一球:FC Barcelona 28%、Rayo Vallecano 7%,剩餘時間期望再進 0.34:0.08。"
         ]
       }
     }

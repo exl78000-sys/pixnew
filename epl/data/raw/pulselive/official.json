@@ -13521,11 +13521,11 @@
   "AVL|ARS": {
    "fixtureId": 128933,
    "kickoff": "2026-08-31T19:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 2,
    "awayId": 1,
@@ -13951,27 +13951,260 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 49481,
+     "assist": 69914,
+     "team": 1,
+     "min": 59,
+     "label": "59'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
-    "cards": [],
-    "subs": [],
-    "periods": [
+    "cards": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
+      "person": 67704,
+      "team": 1,
+      "min": 29,
+      "label": "29'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      },
+     {
+      "person": 326089,
+      "team": 2,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 51423,
+      "team": 2,
+      "min": 81,
+      "label": "81'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 51223,
+      "team": 2,
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 21584,
+      "team": 1,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67704,
+      "team": 1,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 19778,
+      "team": 1,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 11419,
+      "team": 1,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 13286,
+      "team": 2,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 110526,
+      "team": 2,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 74761,
+      "team": 1,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 114564,
+      "team": 1,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 326089,
+      "team": 2,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 124907,
+      "team": 2,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 14164,
+      "team": 2,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 13344,
+      "team": 2,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 68987,
+      "team": 2,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 4115,
+      "team": 2,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 13274,
+      "team": 1,
+      "min": 79,
+      "label": "79'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 119476,
+      "team": 1,
+      "min": 79,
+      "label": "79'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 64523,
+      "team": 1,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 15202,
+      "team": 1,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
      {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+1'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+10'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "13'00"
+   "clock": "90+10'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-08-31T21:00:33.424Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-08-31T19:13:28.580Z"
+ "fetchedAt": "2026-09-01T04:03:13.760Z"
 }
