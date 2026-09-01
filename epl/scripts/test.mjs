@@ -2060,6 +2060,36 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* ── 外電譯文改走人工交付(2026-09-01,使用者決定不接 API 金鑰)── */
+    ['外電譯文:人工交付有待翻清單、核對器與流程文件', (() => {
+      const todo = readFileSync(join(ROOT, 'scripts', 'news-todo.mjs'), 'utf8');
+      const merge = readFileSync(join(ROOT, 'scripts', 'merge-news-zh.mjs'), 'utf8');
+      const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+      return existsSync(join(ROOT, 'data', 'manual', 'README-news-zh.md'))
+        && pkg.scripts['news:todo'] && pkg.scripts['news:zh']
+        && /只列\*\*還沒有譯文\*\*的/.test(todo)          // 不叫人翻第二次
+        && /人名與球隊名保留原文英文/.test(todo)             // 提示詞的界線
+        && /不要猜/.test(todo)
+        && /data', 'manual', 'news-zh\.json/.test(merge)     // 收件匣
+        && /data', 'raw', cfg\.zh/.test(merge);              // 發布到 build 讀的那一份
+    })()],
+    ['外電譯文:核對器擋掉四種結構錯誤,而且退回的逐筆印出來', (() => {
+      const m = readFileSync(join(ROOT, 'scripts', 'merge-news-zh.mjs'), 'utf8');
+      return /對不到現存外電/.test(m) && /譯文跟原文一模一樣/.test(m)
+        && /標題裡沒有中文字/.test(m) && /譯者標記無法翻譯/.test(m)
+        && /rejected\.slice\(0, 12\)/.test(m)
+        && /翻譯的正確性沒辦法自動驗/.test(m);   // 講清楚它不驗什麼
+    })()],
+    ['外電譯文:譯者身分照實標(人工 vs 機器不可混為一談)', (() => {
+      const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'news-zh.mjs'), 'utf8');
+      const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+      const ana = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return /translatedByHuman/.test(lib)
+        && /把機器翻譯講成人工翻譯是說謊/.test(lib)
+        && /translatedByHuman \? '人工翻譯' : '機器翻譯'/.test(news)
+        && /translatedByHuman \? '人工翻譯' : '機器翻譯'/.test(ana);
+    })()],
+
     /* ── 外電翻譯:三個聯賽共用一條管線(2026-09-01)──
        原本只做西甲,英超那 45 則根本沒有翻譯管線 —— 動態頁一直是英文標題,
        看起來像「翻譯壞了」,其實是沒接。 */

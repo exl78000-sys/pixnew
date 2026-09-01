@@ -74,7 +74,7 @@ try {
     <p>${meta.league === 'es1'
       ? `西甲目前顯示 The Guardian La Liga 與 BBC Sport 關鍵字篩選後的外電；每日台北時間 10:00 快取一次，只保存短摘要與原文連結，不抓全文。${
           news.some(n => n.titleZh)
-            ? '標題與摘要為<b>機器翻譯</b>,原文保留在旁邊 —— 翻譯只做語言轉換,不摘要、不補背景,數字與人名隊名照原文。'
+            ? `標題與摘要為<b>${news.some(n => n.titleZh && !n.translatedByHuman) ? '機器翻譯' : '人工翻譯'}</b>,原文保留在旁邊 —— 翻譯只做語言轉換,不摘要、不補背景,數字與人名隊名照原文。`
             : '目前顯示原文(尚未產生譯文)。'}`
       : meta.capabilities?.players === false
       ? `這一頁<b>只有外部新聞 RSS</b>:${[...new Set(news.map(n => n.source))].join('、')}。
@@ -117,7 +117,7 @@ try {
               沒有譯文時整個標記不出現 —— 不要留一個「未翻譯」的空欄位。 */''}
         ${curatedMarks(n)}
         ${n.titleZh ? `<div class="tiny dim" style="margin-top:5px">
-          <span class="pill tiny warn">機器翻譯</span>
+          <span class="pill tiny warn">${n.translatedByHuman ? '人工翻譯' : '機器翻譯'}</span>
           只翻譯不改寫,數字與人名隊名保留原文;上方灰字是原文標題,可點下方連結看全文。</div>` : ''}
         ${n.fixtureId ? `<div class="small" style="margin-top:6px"><a href="${C.link('index', { id: n.fixtureId })}">看這場的完整分析 →</a></div>` : ''}
         ${C.safeUrl(n.link) ? `<div class="small" style="margin-top:6px"><a href="${C.esc(C.safeUrl(n.link))}" target="_blank" rel="noopener">${C.esc(n.source ?? '原文')} →</a></div>` : ''}

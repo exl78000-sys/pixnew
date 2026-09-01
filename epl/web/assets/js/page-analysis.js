@@ -685,7 +685,7 @@ try {
         <span class="small" style="flex:1">
           ${both && close ? '<span class="pill tiny warn">兩隊都提到</span> ' : ''}
           ${url ? `<a href="${C.esc(url)}" target="_blank" rel="noopener">${C.esc(title)}</a>` : C.esc(title)}
-          ${n.titleZh ? '<span class="pill tiny">機器翻譯</span>' : ''}
+          ${n.titleZh ? `<span class="pill tiny">${n.translatedByHuman ? '人工翻譯' : '機器翻譯'}</span>` : ''}
           <span class="dim tiny">${C.esc(n.source ?? '本站整理')}・${C.esc(n.date ?? '')}</span>
         </span></div>`;
     };

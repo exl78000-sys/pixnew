@@ -35,7 +35,10 @@ export function attachNewsZh(ROOT, league, items) {
       if (hit?.ok && hit.title) {
         item.titleZh = hit.title;
         item.bodyZh = hit.body ?? null;
+        /* 譯者身分照實傳給前端 —— 人翻的與模型翻的,標記不一樣。
+           把機器翻譯講成人工翻譯是說謊(鐵則四),反過來只是保守。 */
         item.translatedBy = hit.model ?? 'machine';
+        item.translatedByHuman = String(hit.model ?? '').toLowerCase() === 'human';
         n++;
       }
     }

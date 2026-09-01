@@ -78,7 +78,9 @@
     "tune:congestion": "node scripts/tune-congestion.mjs",
     "news:translate": "node scripts/translate-news.mjs",
     "laliga:news:translate": "node scripts/translate-news.mjs --league=es1",
-    "en2:news:translate": "node scripts/translate-news.mjs --league=en2"
+    "en2:news:translate": "node scripts/translate-news.mjs --league=en2",
+    "news:todo": "node scripts/news-todo.mjs",
+    "news:zh": "node scripts/merge-news-zh.mjs"
   },
   "engines": {
     "node": ">=18"
