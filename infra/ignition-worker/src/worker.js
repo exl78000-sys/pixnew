@@ -94,8 +94,16 @@ async function dispatch(env, workflow, why, log, dryRun = false) {
     method: 'POST',
     body: JSON.stringify({ ref: env.BRANCH }),
   });
-  log.push(res.ok ? `✔ 派送 ${workflow}:${why}` : `✗ 派送 ${workflow} 失敗 HTTP ${res.status}`);
-  return res.ok;
+  if (res.ok) { log.push(`✔ 派送 ${workflow}:${why}`); return true; }
+  /* 派送失敗也要吵。authHealth 只驗得到**讀**的權限(它打的是唯讀端點),
+     token 若只給了 Actions: Read,一路到真的要派送才會 403 —— 而那通常
+     發生在比賽開打那一刻。同理 422 多半是 BRANCH 指到不存在的分支。 */
+  const hint = res.status === 403 ? 'token 沒有 Actions: Write(只給了 Read?)'
+    : res.status === 422 ? `分支 ${env.BRANCH} 不存在或不能派送`
+    : `HTTP ${res.status}`;
+  log.push(`✗ 派送 ${workflow} 失敗:${hint}`);
+  await alert(env, `⚠ 點火器派送 ${workflow} 失敗:${hint}(原因:${why})`, log);
+  return false;
 }
 
 async function alert(env, text, log) {
