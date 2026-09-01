@@ -2009,6 +2009,18 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    ['單場分析頁的相關外電:與已核對專家觀點分開、警語講清楚不保證是本場', (() => {
+      const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return /function relatedNewsSection/.test(pa)
+        && /提到這兩隊的外電/.test(pa)                       // 標題不寫「本場新聞」
+        && /不保證是在講這一場/.test(pa)                     // 警語
+        && /兩隊都提到/.test(pa)                             // 標的是事實(兩隊都提到),不是推論
+        && /C\.safeUrl\(n\.link\)/.test(pa)                 // 外部連結一樣要過 scheme 檢查
+        && /'prob-history', 'news'/.test(pa)                 // 有載入 news
+        // 不可以混進已核對那一區 —— 那一區的價值就在嚴格
+        && pa.indexOf('function relatedNewsSection') !== pa.indexOf('function expertOpinionSection');
+    })()],
+
     /* ── 外電對到球隊(2026-09-01)──
        RSS 外電原本完全沒有 team 欄位:實測英超 50 則裡 43 則明確提到球隊,
        但球隊篩選、球隊頁、單場分析頁通通看不到,看起來像「比賽新聞沒抓」。 */

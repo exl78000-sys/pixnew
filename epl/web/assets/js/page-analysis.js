@@ -4,7 +4,7 @@ const app = document.getElementById('app');
 
 try {
   // prob-history 的鍵帶連字號,解構拿不到,所以先收整包再取
-  const data = await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form', 'prob-history');
+  const data = await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form', 'prob-history', 'news');
   const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } = data;
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
@@ -240,6 +240,7 @@ try {
       ${goalsCard(f)}
       ${probCurveCard(f)}
       ${expertOpinionSection(f, expertRows)}
+      ${relatedNewsSection(f)}
       ${articleCard(postArt, '賽後結論', 'post')}
       ${postReport ? C.matchReportCards(C.reportWithPlayerPhotos(postReport, playerByCode))
         : '<div class="note">這場尚未取得逐球員與實際 xG 資料，因此目前只能對照最終比分與賽前機率。</div>'}
@@ -393,6 +394,7 @@ try {
       ${lineupCard(lineup, f, report)}
       ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
       ${expertOpinionSection(f, expertRows)}
+      ${relatedNewsSection(f)}
     </section>
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
@@ -653,6 +655,51 @@ try {
      一顆鈕後面常常只有一筆,分類切換的成本比它省下的翻閱多。改成合成一串直接翻,
      順序是新聞 → 名宿 → 專家,所以打開就是新聞。分類本身沒有消失,
      它在每張卡右上角的標籤上 —— 那是標示,不是篩選器。 */
+  /* 相關外電。**跟上面那一區分開** —— 那一區是人工核對過的具名專家觀點,
+     它的價值就在嚴格;把機器比對出來的外電混進去會把那條線弄糊。
+
+     這裡的每一則是**依球隊名比對**出來的,不保證在講這一場:轉會、傷停、
+     教練里程碑的報導也會提到同樣的球隊。所以標題就寫「提到這兩隊的外電」,
+     不寫「本場新聞」,並且只把「兩隊都提到 + 日期貼近開球」排前面 ——
+     那是事實(兩隊都提到),不是推論(所以是本場報導)。 */
+  function relatedNewsSection(f) {
+    const all = Array.isArray(data.news) ? data.news : [];
+    const teamsOf = n => (n.teams?.length ? n.teams : (n.team ? [n.team] : []));
+    const ko = f.kickoff ? Date.parse(f.kickoff) : NaN;
+    const near = n => {
+      const d = Date.parse(`${n.date}T12:00:00Z`);
+      return Number.isFinite(ko) && Number.isFinite(d) ? Math.abs(d - ko) <= 2 * 864e5 : false;
+    };
+    const rows = all
+      .map(n => ({ n, t: teamsOf(n) }))
+      .filter(x => x.t.includes(f.home) || x.t.includes(f.away))
+      .map(x => ({ ...x, both: x.t.includes(f.home) && x.t.includes(f.away), close: near(x.n) }))
+      .sort((a, b) => (b.both && b.close) - (a.both && a.close) || b.both - a.both
+        || String(b.n.date).localeCompare(String(a.n.date)))
+      .slice(0, 6);
+    if (!rows.length) return '';
+    const line = ({ n, both, close }) => {
+      const url = C.safeUrl(n.link);
+      const title = n.titleZh ?? n.title;
+      return `<div class="stat-line" style="align-items:flex-start">
+        <span class="small" style="flex:1">
+          ${both && close ? '<span class="pill tiny warn">兩隊都提到</span> ' : ''}
+          ${url ? `<a href="${C.esc(url)}" target="_blank" rel="noopener">${C.esc(title)}</a>` : C.esc(title)}
+          ${n.titleZh ? '<span class="pill tiny">機器翻譯</span>' : ''}
+          <span class="dim tiny">${C.esc(n.source ?? '本站整理')}・${C.esc(n.date ?? '')}</span>
+        </span></div>`;
+    };
+    return `<div class="section" style="margin-top:20px"><h2>提到這兩隊的外電</h2>
+        <span class="hint">依球隊名比對・不保證在講這一場</span></div>
+      <div class="card">
+        <div style="display:grid;gap:6px">${rows.map(line).join('')}</div>
+        <div class="tiny dim" style="margin-top:10px">這些是<b>依球隊名自動比對</b>出來的外電 ——
+          轉會、傷停、教練里程碑的報導也會提到同樣的球隊,所以<b>不保證是在講這一場</b>。
+          標「兩隊都提到」的是兩隊名字都出現、而且日期在開球前後兩天內,最可能與本場有關。
+          完整清單見<a href="${C.link('news')}">動態頁</a>(可依球隊篩選)。</div>
+      </div>`;
+  }
+
   function expertOpinionSection(f, rows) {
     const typeZh = {
       article: '文章', broadcast: '轉播', video: '影片', podcast: 'Podcast', 'press-conference': '記者會',
