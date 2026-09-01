@@ -14,6 +14,7 @@ import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } from './lib/poisson.mjs';
 import { previousLeagueRecords } from './lib/prev-league.mjs';
+import { attachNewsZh } from './lib/news-zh.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics, formationImpact } from './lib/tactics.mjs';
@@ -843,6 +844,12 @@ async function main() {
   let external = [];
   if (existsSync(externalPath)) {
     try { external = JSON.parse(await readFile(externalPath, 'utf8')); } catch { external = []; }
+  }
+  /* 譯文快取(npm run news:translate -- --league=pl 產生)。沒有就顯示原文 ——
+     前端有分辨並標明,不會留空。掛載邏輯三個聯賽共用,不各寫一份。 */
+  {
+    const n = attachNewsZh(ROOT, 'pl', external);
+    if (n) console.log(`  英超外電譯文:${n}/${external.length} 則有中文`);
   }
 
 

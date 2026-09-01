@@ -76,7 +76,9 @@
     "sportmonks:sync": "node scripts/fetch-sportmonks.mjs",
     "tune:situations": "node scripts/tune-situations.mjs",
     "tune:congestion": "node scripts/tune-congestion.mjs",
-    "news:translate": "node scripts/translate-news.mjs"
+    "news:translate": "node scripts/translate-news.mjs",
+    "laliga:news:translate": "node scripts/translate-news.mjs --league=es1",
+    "en2:news:translate": "node scripts/translate-news.mjs --league=en2"
   },
   "engines": {
     "node": ">=18"

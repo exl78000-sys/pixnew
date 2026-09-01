@@ -31,6 +31,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { leagueMatches, backfillLine, europeanKickoff } from './lib/league-matches.mjs';
+import { attachNewsZh } from './lib/news-zh.mjs';
 import { competition } from './lib/canonical.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { buildTable, headToHead, teamRecord, applyDeductions } from './lib/table.mjs';
@@ -409,7 +410,7 @@ async function main() {
      **來源是實測過才收的**:Sky 的 11663 看名字像英冠,實際回的是英超與綜合內容
      (「Gallery: New Premier League kits」),所以不用它 —— 理由記在
      data/manual/feeds-championship.json 的 _rejected。
-     沒有譯文快取:英冠沒有接翻譯,標題與摘要維持原文。 */
+     譯文由 npm run news:translate -- --league=en2 產生;沒有就維持原文。 */
   let externalNews = [];
   {
     const p = join(ROOT, 'data', 'raw', 'news-championship.json');
@@ -421,7 +422,8 @@ async function main() {
           : [];
       } catch { externalNews = []; }
     }
-    console.log(`  外電:${externalNews.length} 則`);
+    const zhN = attachNewsZh(ROOT, 'en2', externalNews);
+    console.log(`  外電:${externalNews.length} 則${zhN ? `(${zhN} 則有中文譯文)` : ''}`);
   }
 
   const meta = {

@@ -18,6 +18,7 @@ import { europeanKickoff } from './lib/league-matches.mjs';
 import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './lib/knowledge.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
+import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTable, headToHead, teamRecord } from './lib/table.mjs';
 import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } from './lib/poisson.mjs';
 import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
@@ -827,27 +828,11 @@ async function main() {
     } catch { externalNews = []; }
   }
 
-  /* 譯文快取(npm run news:translate 產生)。沒有就整批顯示原文 ——
-     前端有分辨,不會留空。譯文一律**附在原文旁邊**而不是取代它:
-     這是機器翻譯,讀者要能自己對照(鐵則四)。 */
-  const zhPath = join(ROOT, 'data', 'raw', 'news-la-liga-zh.json');
-  let translated = 0;
-  if (existsSync(zhPath)) {
-    try {
-      const zh = JSON.parse(await readFile(zhPath, 'utf8'));
-      const keyOf = item => createHash('sha1')
-        .update(`${item.title}\n${item.body ?? ''}`).digest('hex').slice(0, 16);
-      for (const item of externalNews) {
-        const hit = zh.entries?.[keyOf(item)];
-        if (hit?.ok && hit.title) {
-          item.titleZh = hit.title;
-          item.bodyZh = hit.body ?? null;
-          item.translatedBy = hit.model ?? 'machine';
-          translated++;
-        }
-      }
-      if (translated) console.log(`  西甲外電譯文:${translated}/${externalNews.length} 則有中文`);
-    } catch { /* 快取壞掉就當沒有,顯示原文 */ }
+  /* 譯文快取(npm run news:translate -- --league=es1 產生)。沒有就整批顯示原文 ——
+     前端有分辨,不會留空。掛載邏輯三個聯賽共用 lib/news-zh.mjs,不各寫一份。 */
+  {
+    const n = attachNewsZh(ROOT, 'es1', externalNews);
+    if (n) console.log(`  西甲外電譯文:${n}/${externalNews.length} 則有中文`);
   }
 
   // 西甲即時快照只讀 SportMonks 本地檔；開頁與 build 都不連外。

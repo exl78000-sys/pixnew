@@ -2009,6 +2009,32 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 外電翻譯:三個聯賽共用一條管線(2026-09-01)──
+       原本只做西甲,英超那 45 則根本沒有翻譯管線 —— 動態頁一直是英文標題,
+       看起來像「翻譯壞了」,其實是沒接。 */
+    ['外電翻譯:三聯賽共用一支腳本與一支掛載函式(不各寫一份)', (() => {
+      const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'news-zh.mjs'), 'utf8');
+      const tr = readFileSync(join(ROOT, 'scripts', 'translate-news.mjs'), 'utf8');
+      const builds = ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs']
+        .map(f => readFileSync(join(ROOT, 'scripts', f), 'utf8'));
+      const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+      return /NEWS_FILES/.test(lib) && ['pl', 'es1', 'en2'].every(k => new RegExp(`\\b${k}:`).test(lib))
+        && /--league=/.test(tr) && /NEWS_FILES\[LEAGUE\]/.test(tr)
+        && builds.every(b => /attachNewsZh\(ROOT, '(pl|es1|en2)'/.test(b))
+        && /laliga:news:translate/.test(wf) && /en2:news:translate/.test(wf)
+        && /news-zh\.json/.test(wf) && /news-championship-zh\.json/.test(wf);
+    })()],
+    ['外電翻譯:快取鍵用內容雜湊,不用 RSS 的 id(序號會位移)', (() => {
+      const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'news-zh.mjs'), 'utf8');
+      return /createHash\('sha1'\)/.test(lib) && /item\.title/.test(lib) && /序號會隨新文章進來位移/.test(lib);
+    })()],
+    ['外電翻譯:譯文附在原文旁,不取代原文(機器翻譯要能對照)', (() => {
+      const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'news-zh.mjs'), 'utf8');
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+      return /titleZh/.test(lib) && /translatedBy/.test(lib)
+        && /機器翻譯/.test(pg) && !/titleZh[^\n]*取代/.test(lib);
+    })()],
+
     /* ── 隱私與安全(2026-09-01,使用者要求:個人使用、不讓人搜到)── */
     ['不被搜尋引擎收錄:robots.txt + 每一頁 noindex + 單檔版也標', (() => {
       const robots = join(ROOT, 'web', 'robots.txt');
