@@ -57,8 +57,25 @@ GitHub 原本的 cron **不拿掉**,兩條路徑並存 —— Cloudflare 掛了�
 
 5. **驗一下**:打開 `https://warroom-ignition.<你的帳號>.workers.dev/status`。
    會回一份 JSON,列出每個聯賽現在有沒有比賽在窗口內、即時資料多新、
-   剛才做了什麼。**這個端點本身就是一次真的執行**(該派送時會派送),
-   所以它同時也是手動急救鈕。
+   GitHub 認證是否正常(`auth`)、以及它剛才判斷要做什麼。
+
+   **公開網址是唯讀的**:沒帶 `?key=` 時只報告、不派送(workers.dev 的網址
+   任何人都打得到,而這支會真的觸發 workflow)。想讓它當手動急救鈕就設一組
+   `npx wrangler secret put STATUS_KEY`,之後用 `/status?key=你設的值` 呼叫。
+   cron 走的是另一條路徑,永遠是執行模式,不受這個限制。
+
+## token 過期怎麼辦
+
+fine-grained token 有期限。到期那天如果沒有任何機制講,這支會**每次都問不到
+GitHub 的執行狀態、於是什麼都不派送** —— 靜靜地失效。所以:
+
+- `runState()` 分三態(`busy` / `idle` / `unknown`),**問不到不等於忙**;
+- 該派送而狀態是 `unknown` 時會送告警(有設 `ALERT_WEBHOOK` 的話);
+- `/status` 的 `auth` 欄位隨時看得出來(401 = token 失效、403 = 權限不足、
+  404 = repo 名稱或存取權不對)。
+
+換 token:重開一組之後 `npx wrangler secret put GITHUB_TOKEN` 貼上即可,
+不用重新部署。
 
 ## 費用
 

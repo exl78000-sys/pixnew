@@ -2028,7 +2028,12 @@ async function checkDataGap() {
       const toml = readFileSync(join(root, 'wrangler.toml'), 'utf8');
       const lw = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
       const num = (src, name) => Number(new RegExp(`${name}\\s*=\\s*(\\d+)`).exec(src)?.[1]);
-      return /isBusy/.test(w)
+      return /runState/.test(w)
+        /* 問不到 ≠ 忙:token 過期時要告警,不能靜靜地永遠不派送 */
+        && /return 'unknown'/.test(w) && /authHealth/.test(w)
+        && /token 失效/.test(w)
+        /* 公開網址唯讀:workers.dev 誰都打得到,而 /status 會真的派送 */
+        && /const dryRun = !env\.STATUS_KEY/.test(w)
         && /actions\/workflows\/\$\{workflow\}\/dispatches/.test(w)
         && /status=\$\{status\}/.test(w)                        // 冪等:先問有沒有在跑
         && !/GITHUB_TOKEN[^\n]*console\.log/.test(w)             // 絕不把 token 印出來

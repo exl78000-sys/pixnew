@@ -4,6 +4,9 @@ name = "warroom-ignition"
 main = "src/worker.js"
 compatibility_date = "2026-01-01"
 
+# 少一組公開網址。cron 不受影響 —— 它走 scheduled(),跟 HTTP 路由無關。
+preview_urls = false
+
 # 每 5 分鐘一次。窗口比工作流程寬,所以就算某一次沒開火,下一次也接得上;
 # 沒有比賽時整支幾乎不做事(讀兩個靜態賽程檔就結束)。
 [triggers]
@@ -17,3 +20,8 @@ SITE   = "https://exl78000-sys.github.io/pixnew"
 # 機密不寫在這裡。用指令設定(值不會進版控,也不會出現在 log):
 #   npx wrangler secret put GITHUB_TOKEN    ← fine-grained PAT,只勾這個 repo 的 Actions: Read and write
 #   npx wrangler secret put ALERT_WEBHOOK   ← 選用,Discord / Slack incoming webhook
+#   npx wrangler secret put STATUS_KEY      ← 選用,/status?key=… 才會真的派送
+#
+# workers.dev 網址是公開的,而 /status 會真的派送 workflow。
+# 所以**沒帶正確 STATUS_KEY 的一律唯讀**:判斷結果照樣整份回傳(診斷不打折),
+# 但不觸發任何動作。沒設 STATUS_KEY 就是永遠唯讀,cron 仍然正常執行。

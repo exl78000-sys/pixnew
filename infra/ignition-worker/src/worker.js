@@ -63,18 +63,33 @@ function gh(env, path, init = {}) {
 
 /* 已經有 job 在跑(或排隊中)就不要再派送。這是冪等性的來源 ——
    無狀態設計沒有「我剛剛派過了」的記憶,所以每次都問 GitHub。 */
-async function isBusy(env, workflow) {
+async function runState(env, workflow) {
   for (const status of ['in_progress', 'queued']) {
-    const res = await gh(env, `/actions/workflows/${workflow}/runs?status=${status}&per_page=1`);
-    if (!res.ok) return true;                 // 問不到就當作忙,寧可少派不要狂派
-    const j = await res.json();
-    if ((j.total_count ?? 0) > 0) return true;
+    let res;
+    try { res = await gh(env, `/actions/workflows/${workflow}/runs?status=${status}&per_page=1`); }
+    catch { return 'unknown'; }
+    /* **問不到不等於忙**。原本這裡回 true(當成忙),於是 token 過期或被撤銷時
+       每一次都「不重複派送」—— 看門狗永遠不動,而且沒有任何地方會講。
+       那正是這支 Worker 要消滅的故障形態,自己卻犯了。
+       分成三態:不知道就照實說不知道,由呼叫端決定要不要告警。 */
+    if (!res.ok) return 'unknown';
+    const j = await res.json().catch(() => null);
+    if (!j) return 'unknown';
+    if ((j.total_count ?? 0) > 0) return 'busy';
   }
-  return false;
+  return 'idle';
 }
 
-async function dispatch(env, workflow, why, log) {
-  if (await isBusy(env, workflow)) { log.push(`· ${workflow} 已在執行,不重複派送(${why})`); return false; }
+async function dispatch(env, workflow, why, log, dryRun = false) {
+  const state = await runState(env, workflow);
+  if (state === 'busy') { log.push(`· ${workflow} 已在執行,不重複派送(${why})`); return false; }
+  if (state === 'unknown') {
+    // 該動而動不了 —— 這種時候一定要吵,不然就是靜靜地什麼都沒做
+    log.push(`✗ 問不到 ${workflow} 的執行狀態(token 失效?),沒有派送:${why}`);
+    await alert(env, `⚠ 點火器問不到 GitHub 的執行狀態,無法派送 ${workflow}(${why})。請檢查 GITHUB_TOKEN 是否過期或權限被改。`, log);
+    return false;
+  }
+  if (dryRun) { log.push(`· [唯讀模式] 這裡本來會派送 ${workflow}:${why}`); return false; }
   const res = await gh(env, `/actions/workflows/${workflow}/dispatches`, {
     method: 'POST',
     body: JSON.stringify({ ref: env.BRANCH }),
@@ -97,7 +112,7 @@ async function alert(env, text, log) {
 }
 
 /* 一個聯賽的檢查。回傳這個聯賽的觀察結果(給 /status 用)。 */
-async function checkLeague(env, lg, log) {
+async function checkLeague(env, lg, log, dryRun = false) {
   const out = { league: lg.key, zh: lg.zh, window: false, live: 0, feedAgeMin: null, dispatched: false };
   let fixtures;
   try {
@@ -119,7 +134,7 @@ async function checkLeague(env, lg, log) {
   out.live = shouldBeLive.length;
 
   if (inWindow.length) {
-    out.dispatched = await dispatch(env, lg.workflow, `${lg.zh} ${inWindow.length} 場在窗口內`, log);
+    out.dispatched = await dispatch(env, lg.workflow, `${lg.zh} ${inWindow.length} 場在窗口內`, log, dryRun);
   }
 
   // 看門狗:現在應該有比賽在踢,那 feed 就該是新的
@@ -133,7 +148,7 @@ async function checkLeague(env, lg, log) {
         out.feedAgeMin = age === null ? null : Math.round(age);
         if (age !== null && age > STALE_MIN) {
           log.push(`· ${lg.zh} feed 已 ${Math.round(age)} 分鐘沒更新(應有 ${shouldBeLive.length} 場在踢)`);
-          await dispatch(env, lg.workflow, `${lg.zh} feed 過期 ${Math.round(age)} 分`, log);
+          await dispatch(env, lg.workflow, `${lg.zh} feed 過期 ${Math.round(age)} 分`, log, dryRun);
           if (age > ALERT_MIN) {
             await alert(env, `⚽ ${lg.zh}:有 ${shouldBeLive.length} 場在踢,但即時資料已 ${Math.round(age)} 分鐘沒更新。已自動補派送 ${lg.workflow}。`, log);
           }
@@ -146,7 +161,7 @@ async function checkLeague(env, lg, log) {
 
 /* 收工部署:當天最後一場結束一段時間後,補一次完整建置與部署。
    判斷完全無狀態 —— 拿「最後一場結束時間」跟「最後一次 epl-live 開跑時間」比。 */
-async function closingDeploy(env, results, log) {
+async function closingDeploy(env, results, log, dryRun = false) {
   try {
     const all = [];
     for (const lg of LEAGUES) {
@@ -167,24 +182,40 @@ async function closingDeploy(env, results, log) {
     const j = await res.json();
     const lastRun = j.workflow_runs?.[0]?.run_started_at;
     if (lastRun && Date.parse(lastRun) > lastEnd) return false;   // 收工後已經跑過了
-    return await dispatch(env, DEPLOY_WORKFLOW, `當天最後一場結束 ${Math.round(since)} 分鐘,補一次部署`, log);
+    return await dispatch(env, DEPLOY_WORKFLOW, `當天最後一場結束 ${Math.round(since)} 分鐘,補一次部署`, log, dryRun);
   } catch (e) { log.push(`✗ 收工部署判斷失敗:${e.message}`); return false; }
 }
 
-async function run(env) {
+/* token 還活著嗎。**沒有比賽的日子完全碰不到 GitHub API**,
+   所以 token 過期會一路潛伏到下一個比賽日才發作 —— 這裡主動戳一下,
+   讓 /status 隨時看得出來。一個唯讀請求,幾乎不花額度。 */
+async function authHealth(env) {
+  try {
+    const res = await gh(env, '/actions/workflows?per_page=1');
+    if (res.ok) return { ok: true };
+    return { ok: false, status: res.status,
+      hint: res.status === 401 ? 'token 無效或已撤銷'
+        : res.status === 403 ? '權限不足(需要 Actions: Read and write)'
+        : res.status === 404 ? 'REPO 名稱不對,或 token 沒有這個 repo 的存取權' : null };
+  } catch (e) { return { ok: false, error: e.message }; }
+}
+
+async function run(env, { dryRun = false } = {}) {
   const log = [];
   const results = [];
   if (!env.GITHUB_TOKEN || !env.REPO || !env.BRANCH || !env.SITE) {
     log.push('✗ 缺少設定(GITHUB_TOKEN / REPO / BRANCH / SITE),什麼都不做');
     return { at: new Date().toISOString(), log, results };
   }
+  const auth = await authHealth(env);
+  if (!auth.ok) log.push(`✗ GitHub 認證有問題:${auth.hint ?? auth.error ?? `HTTP ${auth.status}`}`);
   for (const lg of LEAGUES) {
-    try { results.push(await checkLeague(env, lg, log)); }
+    try { results.push(await checkLeague(env, lg, log, dryRun)); }
     catch (e) { log.push(`✗ ${lg.zh} 檢查整個失敗:${e.message}`); }
   }
-  await closingDeploy(env, results, log);
+  await closingDeploy(env, results, log, dryRun);
   if (!log.length) log.push('· 沒有比賽在窗口內,什麼都不用做');
-  return { at: new Date().toISOString(), log, results };
+  return { at: new Date().toISOString(), mode: dryRun ? '唯讀' : '執行', auth, log, results };
 }
 
 export default {
@@ -198,7 +229,12 @@ export default {
     if (url.pathname !== '/status') {
       return new Response('warroom ignition worker —— 看 /status', { status: 200 });
     }
-    const r = await run(env);
+    /* workers.dev 的網址是公開的,而這支會真的派送 workflow。
+       所以**沒帶正確 key 的一律唯讀** —— 照樣把判斷結果整份回給你看
+       (診斷價值不減),但不會觸發任何動作。cron 走的是 scheduled(),
+       不經過這裡,永遠是執行模式。 */
+    const dryRun = !env.STATUS_KEY || url.searchParams.get('key') !== env.STATUS_KEY;
+    const r = await run(env, { dryRun });
     return new Response(JSON.stringify(r, null, 2), {
       headers: { 'content-type': 'application/json; charset=utf-8' },
     });
