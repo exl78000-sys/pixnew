@@ -100,7 +100,9 @@ async function main() {
   const dataJson = JSON.stringify(data).replace(/<\/script/gi, '<\\/script');
   const datasetsJson = JSON.stringify(datasets).replace(/<\/script/gi, '<\\/script');
 
-  const html = `<title>英超戰情室</title>
+  /* 單檔版也標 noindex —— 它可能被丟到任何靜態空間上,不該被收錄。 */
+  const html = `<meta name="robots" content="noindex, nofollow">
+<title>英超戰情室</title>
 <meta name="description" content="英超比賽分析平台:球員、戰術、教練、動態與賽果預測。">
 <style>
 ${css}

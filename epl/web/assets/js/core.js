@@ -326,6 +326,19 @@ export function liveMinute(m, fetchedAt) {
   return { disp, src: useOff ? `官方比賽鐘 ${m.clock}` : `資料源分鐘 ${m.minute}`, est: elapsed >= 1 };
 }
 
+/* 外部來源的網址進 href 之前一定要過這裡。
+   esc() 擋得住「跳出屬性」,擋不住 scheme —— `javascript:alert(1)` escape 之後
+   仍然是一個合法的 href。這些網址的來源是 RSS(外部)與人工交付的收件匣,
+   都不是我們能控制的字串。只放行 http/https,其餘一律回 null 讓呼叫端不要出連結。 */
+export function safeUrl(u) {
+  const s = String(u ?? '').trim();
+  if (!s) return null;
+  try {
+    const url = new URL(s, 'https://x.invalid');
+    return (url.protocol === 'http:' || url.protocol === 'https:') ? s : null;
+  } catch { return null; }
+}
+
 export function probBar(p) {
   const seg = (cls, v, label) => `<span class="${cls}" style="flex:${Math.max(0.001, v)}" title="${label} ${pct(v)}">${v >= 0.13 ? pct(v, 0) : ''}</span>`;
   return `<span class="prob">${seg('h', p.home, '主勝')}${seg('d', p.draw, '和局')}${seg('a', p.away, '客勝')}</span>`;

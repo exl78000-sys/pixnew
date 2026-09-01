@@ -1,0 +1,5 @@
+# 這是個人用的站,不希望被搜尋引擎索引。
+# 搭配每一頁 <head> 裡的 <meta name="robots" content="noindex, nofollow">
+# —— robots.txt 只是「請不要爬」,noindex 才是「就算爬到也不要收錄」,兩個都要。
+User-agent: *
+Disallow: /

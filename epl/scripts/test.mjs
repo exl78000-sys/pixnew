@@ -2009,6 +2009,32 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 隱私與安全(2026-09-01,使用者要求:個人使用、不讓人搜到)── */
+    ['不被搜尋引擎收錄:robots.txt + 每一頁 noindex + 單檔版也標', (() => {
+      const robots = join(ROOT, 'web', 'robots.txt');
+      if (!existsSync(robots)) return false;
+      const r = readFileSync(robots, 'utf8');
+      const pages = readdirSync(join(ROOT, 'web')).filter(f => f.endsWith('.html'));
+      const allTagged = pages.every(f =>
+        /<meta name="robots" content="noindex, nofollow">/.test(readFileSync(join(ROOT, 'web', f), 'utf8')));
+      const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+      return /User-agent: \*/.test(r) && /Disallow: \//.test(r)
+        && pages.length >= 16 && allTagged
+        && /name="robots" content="noindex/.test(bundle);
+    })()],
+    ['外部網址進 href 之前一定要過 safeUrl(esc 擋不住 javascript: scheme)', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+      const teams = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      // 外部來源:RSS 的 link、人工交付的 source、Understat 的 sourceUrl
+      const risky = /href="\$\{C\.esc\((?!C\.safeUrl)[^)]*(link|source|sourceUrl)[^)]*\)\}"/;
+      return /export function safeUrl/.test(core)
+        && /url\.protocol === 'http:' \|\| url\.protocol === 'https:'/.test(core)
+        && /C\.safeUrl\(n\.link\)/.test(news)
+        && /C\.safeUrl\(r\.source\)/.test(teams)
+        && !risky.test(news) && !risky.test(teams);
+    })()],
+
     /* ── 點火器 Worker 與比賽日迴圈的收工判斷(2026-08-31)──
        實測 AVL vs ARS 19:00 開球、迴圈 19:00 整收工,整場零輪詢;
        而 decideWindow 當下回的是 active:true —— 問題在外層那道

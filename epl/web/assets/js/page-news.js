@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e90d5ce3';
+import * as C from './core.js?v=dfd16172';
 
 const app = document.getElementById('app');
 
@@ -116,7 +116,7 @@ try {
           <span class="pill tiny warn">機器翻譯</span>
           只翻譯不改寫,數字與人名隊名保留原文;上方灰字是原文標題,可點下方連結看全文。</div>` : ''}
         ${n.fixtureId ? `<div class="small" style="margin-top:6px"><a href="${C.link('index', { id: n.fixtureId })}">看這場的完整分析 →</a></div>` : ''}
-        ${n.link ? `<div class="small" style="margin-top:6px"><a href="${C.esc(n.link)}" target="_blank" rel="noopener">${C.esc(n.source ?? '原文')} →</a></div>` : ''}
+        ${C.safeUrl(n.link) ? `<div class="small" style="margin-top:6px"><a href="${C.esc(C.safeUrl(n.link))}" target="_blank" rel="noopener">${C.esc(n.source ?? '原文')} →</a></div>` : ''}
       </div>`).join('') || '<div class="note">沒有符合條件的動態。</div>';
   };
 

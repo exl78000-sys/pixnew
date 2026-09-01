@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e90d5ce3';
+import * as C from './core.js?v=dfd16172';
 
 const app = document.getElementById('app');
 
@@ -764,7 +764,7 @@ try {
       ], { sortKey: null })}
       ${sp.goalsReliable === false ? `<div class="note warn" style="margin-top:8px">此隊的供應商情境進球加總與正式比分總進球相差 1，因此進球／失球分類顯示從缺；已逐場核對的射門、xG 與 xGA 仍保留。</div>` : ''}
       <div class="tiny dim" style="margin-top:8px">
-        來源: <a href="${C.esc(sp.sourceUrl)}" target="_blank" rel="noopener">Understat</a>。
+        來源: <a href="${C.esc(C.safeUrl(sp.sourceUrl))}" target="_blank" rel="noopener">Understat</a>。
         「其他定位球」是非角球、非直接任意球的定位球;
         ${sp.goalsReliable === false ? '逐場比分已核對，但情境進球加總未通過總量核對。' : '五類進失球已跟聯賽實際比分逐隊核對。'}
       </div></div>`;
@@ -1134,8 +1134,8 @@ try {
       const other = out ? r.loan : r.parent;
       return `<div class="stat-line"><span class="small">${out ? '外借' : '借入'}・${C.esc(r.player)}
           ${out ? '→' : '←'} ${C.esc(other ?? '?')}</span>
-        <span>${badge(r.verdict)}${r.source
-          ? ` <a class="tiny dim" href="${C.esc(r.source)}" target="_blank" rel="noopener">出處 ↗</a>` : ''}</span></div>`;
+        <span>${badge(r.verdict)}${C.safeUrl(r.source)
+          ? ` <a class="tiny dim" href="${C.esc(C.safeUrl(r.source))}" target="_blank" rel="noopener">出處 ↗</a>` : ''}</span></div>`;
     };
     const seasons = [...new Set(recs.map(r => r.season))].sort().reverse();
     const blocks = seasons.map(s => {
