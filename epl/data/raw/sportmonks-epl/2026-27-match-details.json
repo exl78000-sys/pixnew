@@ -3,7 +3,7 @@
   "providerSeason": 28083,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/football/fixtures/{fixture_id}",
-  "retrievedAt": "2026-09-01T04:03:07.436Z",
+  "retrievedAt": "2026-09-01T08:59:36.599Z",
   "matches": {},
   "coverage": {
     "cached": 0,
@@ -23,43 +23,43 @@
       {
         "date": "2027-05-30",
         "codes": [
-          "SUN",
-          "MCI"
+          "MCI",
+          "SUN"
         ]
       },
       {
         "date": "2027-05-30",
         "codes": [
-          "MUN",
-          "FUL"
+          "FUL",
+          "MUN"
         ]
       },
       {
         "date": "2027-05-30",
         "codes": [
-          "LIV",
-          "BOU"
+          "BOU",
+          "LIV"
         ]
       },
       {
         "date": "2027-05-30",
         "codes": [
-          "IPS",
-          "EVE"
+          "EVE",
+          "IPS"
         ]
       },
       {
         "date": "2027-05-30",
         "codes": [
-          "HUL",
-          "NEW"
+          "NEW",
+          "HUL"
         ]
       },
       {
         "date": "2027-05-30",
         "codes": [
-          "CRY",
-          "LEE"
+          "LEE",
+          "CRY"
         ]
       },
       {
@@ -72,18 +72,16 @@
       {
         "date": "2027-05-30",
         "codes": [
-          "CHE",
-          "BRE"
+          "BRE",
+          "CHE"
         ]
       }
     ],
-    "detailAttempts": 10,
+    "detailAttempts": 0,
     "detailRejected": 0,
-    "detailFailed": 10,
-    "detailFailureReasons": {
-      "403": 10
-    },
-    "detailSkippedByBlock": 0,
+    "detailFailed": 0,
+    "detailFailureReasons": {},
+    "detailSkippedByBlock": 10,
     "capabilityChecked": false,
     "capabilityDenied": [],
     "requestedIncludes": [
