@@ -922,7 +922,14 @@ export function reportWithPlayerPhotos(m, players) {
 }
 
 /* ── 賽後 / 場中報告(實時戰況頁與賽程頁共用)──── */
-export function matchReportCards(m) {
+/* 賽後報告的七張卡。`order` 可以挑要哪幾張、以及順序 ——
+   西甲那一頁要把「完整比賽事件」提到最前面、外電與本站分析插在中間,
+   再接戰術、陣容、數據(使用者指定的順序)。
+   **不要為此複製一份出去**:複製之後改了一邊另一邊會悄悄過期(CLAUDE.md)。
+   不給 order 就是原本的順序,英超那一頁的輸出一個字都沒變。 */
+export const MATCH_REPORT_ORDER = ['tactics', 'lineups', 'compare', 'teamStats', 'players', 'events', 'best'];
+
+export function matchReportCards(m, { order = null } = {}) {
   const H = m.sides[m.home], A = m.sides[m.away];
 
   /* 一隊的陣容卡。有官方排位就照官方畫(3-4-2-1 就畫成 3-4-2-1),
@@ -969,11 +976,16 @@ export function matchReportCards(m) {
       <span class="dim tiny">${b.pos} ${b.minutes ?? '—'}'</span></span><b class="mono">${metric === 'rating' ? fx(b.rating, 1) : b.bps}</b></div>`;
   }).join('');
 
-  const advancedHtml = () => {
+  const advancedParts = () => {
     const d = m.advanced;
-    if (!d) return m.finished ? `<div class="card"><h3>完整賽後數據</h3>
+    if (!d) {
+      return {
+        teamStats: m.finished ? `<div class="card"><h3>完整賽後數據</h3>
       <div class="note info">API-Football 的球員評分、射門、傳球、對抗、防守與事件資料尚未寫入永久快取。
-      目前下方仍顯示已取得的 FPL 賽後資料；未取得的欄位不會用估算值代替。</div></div>` : '';
+      目前下方仍顯示已取得的 FPL 賽後資料；未取得的欄位不會用估算值代替。</div></div>` : '',
+        players: '', events: '',
+      };
+    }
 
     const hs = d.teamStats?.[m.home] ?? {}, as = d.teamStats?.[m.away] ?? {};
     const value = (v, suffix = '') => v === null || v === undefined ? '—' : `${v}${suffix}`;
@@ -1018,7 +1030,8 @@ export function matchReportCards(m) {
       ${e.detail ? `<small>${esc(e.detail)}</small>` : ''}${e.comments ? `<small>${esc(e.comments)}</small>` : ''}</span></div>`).join('');
 
     const sourceLabel = d.source === 'sportmonks' ? 'SportMonks' : 'API-Football';
-    return `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start">
+    return {
+      teamStats: `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start">
         <h3>完整球隊攻守數據</h3><span class="pill accent tiny">${sourceLabel}・完賽永久快取</span></div>
       <div class="row small dim" style="justify-content:space-between;margin-bottom:4px"><span>${name(m.home)}</span><span>${name(m.away)}</span></div>
       ${stat('控球率', 'possession', '%')}${stat('總射門', 'shots')}${stat('射正', 'shotsOn')}
@@ -1027,18 +1040,22 @@ export function matchReportCards(m) {
       ${stat('傳球', 'passes')}${stat('成功傳球', 'passesAccurate')}${stat('傳球成功率', 'passAccuracy', '%')}
       ${stat('期望進球 xG', 'xG')}
       <div class="tiny dim" style="margin-top:10px">速度、跑動距離、衝刺次數：此資料源不提供，因此不顯示也不推估。</div>
-    </div>
-    <div class="card"><h3>球員評分與明細</h3><div class="grid g2 advanced-players">${playerSide(m.home)}${playerSide(m.away)}</div>
-      <div class="tiny dim" style="margin-top:10px">點球員姓名可開啟球員頁；展開每列可看完整進攻、組織、防守與紀律欄位。</div></div>
-    <div class="card"><h3>完整比賽事件</h3>${timeline || '<div class="tiny dim">供應商沒有回傳事件時間軸</div>'}</div>`;
+    </div>`,
+      players: `<div class="card"><h3>球員評分與明細</h3><div class="grid g2 advanced-players">${playerSide(m.home)}${playerSide(m.away)}</div>
+      <div class="tiny dim" style="margin-top:10px">點球員姓名可開啟球員頁；展開每列可看完整進攻、組織、防守與紀律欄位。</div></div>`,
+      events: `<div class="card"><h3>完整比賽事件</h3>${timeline || '<div class="tiny dim">供應商沒有回傳事件時間軸</div>'}</div>`,
+    };
   };
 
-  return `
-    ${m.notes.length ? `<div class="card"><h3>戰術解讀</h3>
+  const adv = advancedParts();
+  const parts = {
+    tactics: m.notes.length ? `<div class="card"><h3>戰術解讀</h3>
       ${m.notes.map(n => `<div class="stat-line"><span class="small">・${esc(n.text)}</span></div>`).join('')}
-    </div>` : ''}
-
-    <div class="card"><h3>實際排出的陣容</h3>
+    </div>` : '',
+    teamStats: adv.teamStats,
+    players: adv.players,
+    events: adv.events,
+    lineups: `<div class="card"><h3>實際排出的陣容</h3>
       <div class="grid g2">
         ${sideBoard(m.home, H)}
         ${sideBoard(m.away, A)}
@@ -1051,9 +1068,8 @@ export function matchReportCards(m) {
            邊鋒會被算進中場、翼衛會被算進後衛,所以三中衛體系可能會顯示成「6-3-1」這種數字。
            官方名單一公布就會自動換成官方陣型。`}
         球場圖是<b>站位示意</b>,不是球員追蹤資料;換人時間由出場分鐘反推,標示 ≈ 者為推估值。</div>
-    </div>
-
-    <div class="card"><h3>數據對比</h3>
+    </div>`,
+    compare: `<div class="card"><h3>數據對比</h3>
       <div class="row small dim" style="justify-content:space-between;margin-bottom:4px">
         <span>${name(m.home)}</span><span>${name(m.away)}</span></div>
       ${line('進球', m.hs ?? 0, m.as ?? 0)}
@@ -1064,16 +1080,15 @@ export function matchReportCards(m) {
       ${line('使用球員', H.used, A.used)}
       ${H.keeper && A.keeper ? line('門將撲救', H.keeper.saves ?? '—', A.keeper.saves ?? '—') : ''}
       ${H.keeper?.stopped != null && A.keeper?.stopped != null ? line('門將少失球', signed(H.keeper.stopped, 2), signed(A.keeper.stopped, 2)) : ''}
-    </div>
-
-    ${advancedHtml()}
-
-    <div class="card"><h3>${m.advanced ? '本場最佳（API-Football 評分）' : '本場最佳(FPL 表現分)'}</h3>
+    </div>`,
+    best: `<div class="card"><h3>${m.advanced ? '本場最佳（API-Football 評分）' : '本場最佳(FPL 表現分)'}</h3>
       <div class="grid g2">
         <div>${bestHtml(H, m.advanced ? 'rating' : 'bps')}</div>
         <div>${bestHtml(A, m.advanced ? 'rating' : 'bps')}</div>
       </div>
-    </div>`;
+    </div>`,
+  };
+  return (order ?? MATCH_REPORT_ORDER).map(key => parts[key] ?? '').join('\n\n');
 }
 
 /* ── 可排序表格 ─────────────────────── */
