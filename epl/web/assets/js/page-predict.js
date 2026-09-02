@@ -57,6 +57,7 @@ try {
   C.nav();
 
   let store = readStore();
+  let lockTimer = null;
   const state = { lg: pools[0].lg, round: null, tab: 'pick' };
   const cur = () => pools.find(x => x.lg === state.lg);
   const recsOf = lg => (store[lg] ??= {});
@@ -122,6 +123,22 @@ try {
         ${r === state.round ? 'selected' : ''}>第 ${r} 輪</option>`).join('')}</select>
       <span class="small dim">${games.filter(f => recs[matchKey(f)]).length} / ${games.length} 場已填</span>
     </div>
+    ${(() => {
+      /* 這一輪的截止倒數 = **還沒開賽的場次裡最早的那一場**。
+         用最早的而不是「第一場」—— 這一輪可能已經踢掉幾場了。
+         已經全部開踢就不畫這一行,不要留一個永遠 00:00:00 的倒數。 */
+      const open = games.filter(f => !locked(f) && f.kickoff)
+        .sort((a, b) => Date.parse(a.kickoff) - Date.parse(b.kickoff));
+      if (!open.length) return '';
+      const undone = open.filter(f => !recs[matchKey(f)]).length;
+      return `<div class="note" style="margin-bottom:12px">
+        <b>下一場截止還有 ${C.countdown(open[0].kickoff)}</b>
+        —— ${C.esc(nameOf(open[0].home))} vs ${C.esc(nameOf(open[0].away))}。
+        這一輪還有 <b>${open.length}</b> 場可以填${undone ? `,其中 <b>${undone}</b> 場還沒填` : '(都填過了)'}。
+        <div class="tiny dim" style="margin-top:6px">倒數到 0 那一刻該場就鎖住 ——
+          這一頁開著也會自己鎖,不用重新整理。</div>
+      </div>`;
+    })()}
     ${games.map(f => matchRow(f, recs[matchKey(f)])).join('')}
     <div class="note" style="margin-top:14px">
       <b>開球時間一到就鎖。</b>賽後才填的不是預測,所以鎖住的場次不能再改,
@@ -142,14 +159,19 @@ try {
     const m = (lock ? rec?.market ?? f.market?.probs : f.market?.probs) ?? null;
     const mp = pickOf(p), kp = pickOf(m);
     const zh = { home: '主勝', draw: '和局', away: '客勝' };
-    return `<div class="card" data-match="${C.esc(key)}" style="margin-bottom:10px">
+    return `<div class="card" data-match="${C.esc(key)}"
+      ${f.kickoff ? `data-ko="${C.esc(f.kickoff)}"` : ''} style="margin-bottom:10px">
       <div class="spread" style="align-items:flex-start;gap:10px;flex-wrap:wrap">
         <div class="row" style="gap:7px;align-items:center">
           ${crest(f.home)}<b>${C.esc(nameOf(f.home))}</b>
           <span class="dim">vs</span>${crest(f.away)}<b>${C.esc(nameOf(f.away))}</b>
         </div>
         <span class="small dim">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}
-          ${lock ? `<span class="pill tiny warn">${f.played ? `終場 ${f.fh}:${f.fa}` : '已開賽・鎖定'}</span>` : ''}</span>
+          ${lock
+            ? `<span class="pill tiny warn" data-lockpill>${f.played ? `終場 ${f.fh}:${f.fa}` : '已開賽・鎖定'}</span>`
+            : f.kickoff
+              ? `<span class="pill tiny" data-deadline>截止 ${C.countdown(f.kickoff)}</span>`
+              : '<span class="pill tiny dim">開球時間未定</span>'}</span>
       </div>
 
       <div class="row small dim" style="gap:14px;margin:8px 0;flex-wrap:wrap">
@@ -263,6 +285,26 @@ try {
       const saveBtn = card.querySelector('[data-save]');
       if (saveBtn) saveBtn.onclick = () => savePick(key, card);
     });
+
+    /* 倒數與上鎖。**不整頁重畫** —— 重畫會把其他場次還沒按儲存的輸入洗掉,
+       而這個掃描每秒都在跑。所以只動剛好越過開球時間的那一張卡。 */
+    C.startCountdowns();
+    /* render() 每次切分頁、換聯賽、按儲存都會跑一次 —— 不收掉舊的,
+       秒數一久就變成十幾個掃描同時在跑(startCountdowns 自己會收,這個不會)。 */
+    if (lockTimer) clearInterval(lockTimer);
+    lockTimer = C.pageInterval(() => {
+      const now = Date.now();
+      for (const card of app.querySelectorAll('[data-ko]')) {
+        const ko = Date.parse(card.dataset.ko);
+        if (!Number.isFinite(ko) || now < ko) continue;
+        if (card.dataset.locked === '1') continue;
+        card.dataset.locked = '1';
+        card.querySelectorAll('input, [data-pick]').forEach(el => { el.disabled = true; });
+        card.querySelector('[data-save]')?.remove();
+        const dl = card.querySelector('[data-deadline]');
+        if (dl) { dl.className = 'pill tiny warn'; dl.textContent = '已開賽・鎖定'; }
+      }
+    }, 1000);
 
     const box = app.querySelector('#ioBox');
     const ex = app.querySelector('#exportBtn'), im = app.querySelector('#importBtn');

@@ -2151,6 +2151,18 @@ async function checkDataGap() {
             && readFileSync(join(ROOT, 'web', 'data', f), 'utf8').includes('warroom:predictions'))],
         ['儲存時把當下的模型與市場凍結進紀錄(不事後重算)',
           /model: P \? \{ home: P\.home/.test(page) && /market: f\.market\?\.probs/.test(page)],
+        /* 倒數與自動上鎖(2026-09-02 加)。上鎖是**就地改那一張卡**,不是整頁重畫 ——
+           掃描每秒都在跑,重畫會把其他場次還沒按儲存的輸入洗掉。 */
+        ['每一場與這一輪都有截止倒數', /C\.countdown\(f\.kickoff\)/.test(page)
+          && /下一場截止還有 \$\{C\.countdown/.test(page) && /C\.startCountdowns\(\)/.test(page)],
+        ['開賽的當下就地上鎖,不整頁重畫(會洗掉別場沒存的輸入)',
+          /card\.dataset\.locked = '1'/.test(page)
+          && /card\.querySelectorAll\('input, \[data-pick\]'\)/.test(page)
+          && !/lockTimer = C\.pageInterval\(\(\) => \{\s*render\(\)/.test(page)],
+        ['掃描的計時器每次重畫都先收掉(不然會累積成十幾個一起跑)',
+          /if \(lockTimer\) clearInterval\(lockTimer\)/.test(page)],
+        ['這一輪的截止倒數用還沒開賽裡最早的那一場,全開踢就不畫',
+          /!locked\(f\) && f\.kickoff/.test(page) && /if \(!open\.length\) return ''/.test(page)],
       ];
     })(),
 
