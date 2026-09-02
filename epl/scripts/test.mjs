@@ -2023,6 +2023,89 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 我的預測(2026-09-02 加)──────────────────────────────
+       玩家自己猜比分、賽季末跟模型與市場比。這一層會出的錯是**比較的兩邊
+       不是同一批比賽**,以及**把「沒有資料」印成 0** —— 兩種都不會拋錯,
+       畫面上看起來還很正常。所以計分抽成純函式,在這裡逐條釘死。
+       另外守一條界線:這個功能**完全不碰模型**,預測只存在使用者的瀏覽器。 */
+    ...await (async () => {
+      const ps = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'predict-score.js')));
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+      const page = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-predict.js'), 'utf8');
+      const fx = [
+        { season: 'S', home: 'A', away: 'B', played: true, fh: 2, fa: 0, kickoff: '2026-01-01T12:00:00Z' },
+        { season: 'S', home: 'C', away: 'D', played: true, fh: 1, fa: 1, kickoff: '2026-01-02T12:00:00Z' },
+        { season: 'S', home: 'E', away: 'F', played: false, kickoff: '2026-06-01T12:00:00Z' },
+      ];
+      const rec = (over = {}) => ({
+        pick: 'home', fh: 2, fa: 0, savedAt: '2026-01-01T10:00:00Z',
+        kickoff: '2026-01-01T12:00:00Z', model: { home: 0.5, draw: 0.3, away: 0.2 }, market: null, ...over,
+      });
+      // 兩場已完賽:第一場猜對(主勝)、第二場猜錯(猜主勝、實際和局);都沒有盤口
+      const noMarket = ps.scorePredictions({
+        'S|A|B': rec(),
+        'S|C|D': rec({ kickoff: '2026-01-02T12:00:00Z', savedAt: '2026-01-02T10:00:00Z' }),
+      }, fx);
+      // 同兩場,但都有盤口
+      const withMarket = ps.scorePredictions({
+        'S|A|B': rec({ market: { home: 0.6, draw: 0.25, away: 0.15 } }),
+        'S|C|D': rec({ kickoff: '2026-01-02T12:00:00Z', savedAt: '2026-01-02T10:00:00Z',
+          market: { home: 0.2, draw: 0.5, away: 0.3 } }),
+      }, fx);
+      const late = ps.scorePredictions({ 'S|A|B': rec({ savedAt: '2026-01-01T13:00:00Z' }) }, fx);
+      return [
+        ['勝負由比分推導', ps.outcomeOf(2, 0) === 'home' && ps.outcomeOf(1, 1) === 'draw'
+          && ps.outcomeOf(0, 3) === 'away'],
+        ['機率最高的那一邊就是它的選擇', ps.pickOf({ home: 0.2, draw: 0.3, away: 0.5 }) === 'away'
+          && ps.pickOf(null) === null],
+        ['RPS:押中且 100% 確定就是 0,押錯到底就是 1',
+          ps.rps({ home: 1, draw: 0, away: 0 }, 'home') === 0
+          && ps.rps({ home: 1, draw: 0, away: 0 }, 'away') === 1],
+        ['開賽後才存的不算預測', ps.isEligible(rec()) === true
+          && ps.isEligible(rec({ savedAt: '2026-01-01T13:00:00Z' })) === false],
+        ['開賽後才存的會被排除,而且照實回報筆數',
+          late.ignored === 1 && late.vsModel === null],
+        /* 這一條是實際踩到的:兩場都沒有盤口,畫面卻印「市場 0.0%」——
+           null 被當成「沒猜中」。沒有資料要顯示成沒有,不是 0
+           (docs:check 那條「0 是一個看起來很像答案的數字」的同一種錯)。 */
+        ['整批沒有盤口時,市場命中率是 null 不是 0',
+          noMarket.vsModel.n === 2 && noMarket.vsModel.you === 0.5
+          && noMarket.vsModel.market === null && noMarket.vsModel.marketRps === null],
+        /* 這一組刻意讓市場全對(第二場它押和局,而實際就是和局)、你只對一半 ——
+           三邊拿的是同一批比賽,所以差距是真的差距,不是樣本不同造成的。 */
+        ['有盤口時才算得出市場命中率,而且三邊同一批',
+          withMarket.vsAll.n === 2 && withMarket.vsAll.you === 0.5
+          && withMarket.vsAll.model === 0.5 && withMarket.vsAll.market === 1
+          && Number.isFinite(withMarket.vsAll.marketRps)],
+        ['三邊比較只算三邊都有的場次(不是拿兩批不同的比賽在比)',
+          noMarket.vsAll === null && withMarket.vsAll.n === 2],
+        ['沒踢完的預測不算分,但要報出還有幾場在等',
+          ps.scorePredictions({ 'S|E|F': rec({ kickoff: '2026-06-01T12:00:00Z',
+            savedAt: '2026-05-01T00:00:00Z' }) }, fx).pending === 1],
+        ['對不到賽程的紀錄整筆忽略(換季或改期)',
+          ps.scorePredictions({ 'S|X|Y': rec() }, fx).rows.length === 0],
+        /* 三份頁面清單少一份的話:新頁不會壞,只會從單檔版靜靜消失,
+           或導覽列上根本不出現(而多頁版一切正常)。 */
+        ['我的預測掛在跨聯賽那一組、三份清單都有',
+          /\['predict', '我的預測'\]/.test(core)
+          && core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS')).includes("'predict'")
+          && !core.slice(core.indexOf('const GROUPS')).includes("['predict'")
+          && /'duel', 'predict'\]/.test(bundle)
+          && /'predict-score'/.test(bundle)
+          && (core.match(/'duel', 'predict'\]/g) ?? []).length === 2],   // es1 與 en2 的 open
+        /* **界線**:預測不進本站資料。build 不讀它、產物裡沒有它。 */
+        ['build 完全不讀預測資料', ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs']
+          .every(f => !/predict-score|warroom:predictions/.test(
+            readFileSync(join(ROOT, 'scripts', f), 'utf8')))],
+        ['預測只存在瀏覽器,產物裡不會出現',
+          !readdirSync(join(ROOT, 'web', 'data')).some(f => f.endsWith('.json')
+            && readFileSync(join(ROOT, 'web', 'data', f), 'utf8').includes('warroom:predictions'))],
+        ['儲存時把當下的模型與市場凍結進紀錄(不事後重算)',
+          /model: P \? \{ home: P\.home/.test(page) && /market: f\.market\?\.probs/.test(page)],
+      ];
+    })(),
+
     /* ── 賽前機率不能是事後擬合的(2026-09-01 加)────────────────
        build 的模型擬合在「歷史 + 本季已完賽」上,**含這一場**。原本那組機率
        被掛到已完賽的 fixture 上、標成「賽前模型」,單場分析頁再據此下結論

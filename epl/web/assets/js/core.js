@@ -390,7 +390,7 @@ export const stampRow = items =>
 // 進來時由 LeagueGap 給一句實話,不是一個空白頁。
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
-  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['overview', 'index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'cups', 'allplayers', 'duel'] },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['overview', 'index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'cups', 'allplayers', 'duel', 'predict'] },
   /* 英冠只掛「球隊與比賽」那一層。**不是還沒做,是做不出來** ——
      英冠沒有免費的球員級資料源(Understat 只做五大聯賽、FPL 只有英超,
      兩者都實測過,見 build-championship.mjs 的檔頭),
@@ -407,7 +407,7 @@ export const LEAGUES = {
     /* 盃賽也開:英冠球隊本來就打足總盃與聯賽盃,層級標籤還是靠英冠名冊做的。
        球員搜尋(allplayers)也開 —— 它查的是**其他聯賽**的球員,跟英冠自己
        沒有球員源不衝突;頁面上會照實列出英冠缺席的原因。 */
-    open: ['overview', 'index', 'teams', 'model', 'news', 'cups', 'allplayers', 'duel'],
+    open: ['overview', 'index', 'teams', 'model', 'news', 'cups', 'allplayers', 'duel', 'predict'],
     /* 缺口頁的預設說法是「資料還在補」—— 那對英冠是**錯的**,
        它不是還在補,是沒有來源(Understat 不做英冠、FPL 只有英超,兩者都實測過)。
        說成「還在補」等於暗示以後會有,而我們知道不會。 */
@@ -438,6 +438,10 @@ const SITE_PAGES = [
      頁內自己選聯賽,對戰仍限同聯賽(強度各自對聯盟平均正規化)。
      只放這一組 —— PAGES 再放一次會出現兩個分頁。 */
   ['duel', '對戰模擬'],
+  /* 我的預測(2026-09-02):一輪一輪自己猜,賽季結束跟模型與市場比。
+     跨聯賽(頁內自己選),而且**只讀不寫** —— 預測存在使用者自己的瀏覽器,
+     不進本站資料、不回饋模型。只放這一組,PAGES 再放一次會出現兩個分頁。 */
+  ['predict', '我的預測'],
   /* 跨聯賽球員搜尋(2026-08-29)。各聯賽自己的球員頁照舊、搜本聯賽;
      這一頁一個框查全部。只放這一組 —— PAGES 再放一次會出現兩個分頁。 */
   ['allplayers', '球員搜尋'],
