@@ -1,9 +1,9 @@
 {
  "_note": "官方賽程狀態快照 + 本站自建的改期歷史(供應商不提供歷史,changes 永久累積)。產生:npm run schedule:status。",
- "fetchedAt": "2026-09-01T21:59:56.728Z",
+ "fetchedAt": "2026-09-02T02:45:57.347Z",
  "leagues": {
   "pl": {
-   "fetchedAt": "2026-09-01T21:59:56.728Z",
+   "fetchedAt": "2026-09-02T02:45:57.347Z",
    "count": 380,
    "matches": [
     {
@@ -351,14 +351,6 @@
      "matchday": 5
     },
     {
-     "fdId": 560585,
-     "home": "LEE",
-     "away": "CRY",
-     "utcDate": "2026-09-19T14:00:00Z",
-     "status": "TIMED",
-     "matchday": 5
-    },
-    {
      "fdId": 560586,
      "home": "BHA",
      "away": "ARS",
@@ -386,6 +378,14 @@
      "fdId": 560582,
      "home": "BOU",
      "away": "LIV",
+     "utcDate": "2026-09-20T13:00:00Z",
+     "status": "TIMED",
+     "matchday": 5
+    },
+    {
+     "fdId": 560585,
+     "home": "LEE",
+     "away": "CRY",
      "utcDate": "2026-09-20T13:00:00Z",
      "status": "TIMED",
      "matchday": 5
@@ -3049,7 +3049,7 @@
    ]
   },
   "en2": {
-   "fetchedAt": "2026-09-01T21:59:56.728Z",
+   "fetchedAt": "2026-09-02T02:45:57.347Z",
    "count": 552,
    "matches": [
     {
@@ -7500,6 +7500,16 @@
    "away": "POR",
    "utcDate": "2026-09-09T00:00:00Z",
    "detectedAt": "2026-09-01T04:01:32.765Z"
+  },
+  {
+   "league": "pl",
+   "kind": "rescheduled",
+   "fdId": 560585,
+   "home": "LEE",
+   "away": "CRY",
+   "from": "2026-09-19T14:00:00Z",
+   "to": "2026-09-20T13:00:00Z",
+   "detectedAt": "2026-09-02T02:45:57.347Z"
   }
  ]
 }
