@@ -2,7 +2,7 @@
 // 走查回測(walk-forward):只用「比賽日之前」的資料建模,再預測該輪比賽。
 // 用來驗證預測引擎沒有偷看未來,而且真的比亂猜好。
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
@@ -2022,6 +2022,68 @@ async function checkDataGap() {
         && /inPlaySim/.test(pg) && /跳到結果/.test(pg)
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
+
+    /* ── 跑位動畫真的跑一遍(2026-09-01 加)────────────────────
+       上面那一條是掃原始碼的字串,掃不到「演出把腳本吞掉」這種錯。
+       實際踩到的:射門門檻寫死 `holder.x > 78`,而前鋒基準 x=53.26、
+       快攻加成上限 18、抖動 2.2 —— 最遠 73.5,**門檻永遠碰不到**。
+       後果不只是沒有射門動畫:pendingGoal 清不掉,goalsPlayed 停在 0,
+       第一顆之後整場卡在快攻模式,而畫面上一切正常、測試全綠。
+       這一條把模組真的載進來跑滿 90 分鐘,斷言排幾顆就要演幾顆。 */
+    ...await (async () => {
+      const url = pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'));
+      const anim = await import(url);
+      // 假畫布:什麼方法都吃。動畫本身不讀畫布回傳值
+      const sink = new Proxy({}, { get: () => () => {} });
+      const runOnce = (seed, dueAt) => {
+        let queued = null;
+        const prevRaf = globalThis.requestAnimationFrame;
+        const prevCancel = globalThis.cancelAnimationFrame;
+        globalThis.requestAnimationFrame = cb => { queued = cb; return 1; };
+        globalThis.cancelAnimationFrame = () => { queued = null; };
+        let rs = seed >>> 0;
+        const rng = () => {
+          rs = (rs + 0x6D2B79F5) >>> 0;
+          let t = rs; t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+        const side = formation => ({ formation, color: '#0f0', xi: { GK: [], DEF: [], MID: [], FWD: [] } });
+        const api = anim.mountDuelAnim({ width: 900, height: 560, getContext: () => sink }, {
+          home: side('4-3-3'), away: side('4-4-2'),
+          homeCode: 'AAA', awayCode: 'BBB', lambdaHome: 1.8, lambdaAway: 1.1, rng,
+        });
+        const FPS = 30, SEC_PER_MIN = 60 / 90;    // 頁面把一分鐘壓成約 0.67 秒
+        let now = 0, kickoffs = 0, lastScore = 0;
+        for (let f = 0; f < 95 * FPS * SEC_PER_MIN; f++) {
+          now += 1000 / FPS;
+          const min = Math.floor(f / (FPS * SEC_PER_MIN));
+          const dueSides = dueAt.filter(([m]) => m <= min).map(([, sd]) => sd);
+          if (dueSides.length !== lastScore) { kickoffs++; lastScore = dueSides.length; }
+          api.setState({ min, done: min >= 95, dueSides, hs: 0, as: 0 });
+          queued?.(now);
+        }
+        api.destroy();
+        globalThis.requestAnimationFrame = prevRaf;
+        globalThis.cancelAnimationFrame = prevCancel;
+        return anim.__animProbe();
+      };
+      const two = [[20, 'home'], [60, 'away']];
+      const seeds = [1, 7, 42, 1234];
+      const results = seeds.map(sd => runOnce(sd, two));
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8');
+      return [
+        ['排幾顆進球就演幾顆(每個種子都要)', results.every(r => r.goalsPlayed === 2)],
+        ['演完就把 pendingGoal 清掉(不會卡在快攻模式)', results.every(r => r.pendingGoal === null)],
+        ['射門門檻用「離球門多遠」,不寫死一個 x 座標', /toGoal < BOX_X/.test(src) && !/holder\.x > 78/.test(src)],
+        ['快攻有保底收尾(演出不該吞掉模型排的進球)', /breakClock > BREAK_MAX/.test(src)],
+        ['球有飛行時間,不是每秒固定推進度', /dt \/ ball\.dur/.test(src) && !/ball\.t \+ dt \* 2\.6/.test(src)],
+        ['丟球由傳球路線決定誰攔到,不是隨機挑一個對手', /function laneCut/.test(src) && /turnover\(chooseNext\(\)\)/.test(src)],
+        ['抖動吃模擬時鐘,不吃 performance.now(牆上時間會讓同種子不同劇本)',
+          !/performance\.now\(\) \/ 1000/.test(src) && /simT \+= dt/.test(src)],
+        ['球員不會被畫到場外', results.every(r => r.inBounds)],
+      ];
+    })(),
 
     ['單場分析頁的相關外電:與已核對專家觀點分開、警語講清楚不保證是本場', (() => {
       const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
