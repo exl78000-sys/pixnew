@@ -52,6 +52,31 @@ export function appendSamples(store, liveOut, { now = Date.now() } = {}) {
   return s;
 }
 
+/* 已完賽場次的**賽前機率快照**。
+ *
+ * 這是本檔案唯一有資格回答「這場開賽前模型怎麼看」的東西 —— 第 0 分那個點
+ * 是開賽前存下來的,之後不會被覆寫(pts 只往前、done 之後不再追加)。
+ *
+ * 為什麼需要它:build 的模型擬合在「歷史 + 本季已完賽」上,**含這一場**。
+ * 拿那組機率掛到已完賽的比賽上,再標成「賽前模型」,是用看過結果的模型
+ * 冒充當時的預測 —— Elo 更是逐場更新的,那場的比分直接進了參數。
+ * 西甲與英冠的 build 從一開始就拒絕這樣做(prediction: m.played ? null : ...),
+ * 英超那一份沒有,2026-09-01 補上。
+ *
+ * 走查回測的逐場預測(backtest-matches.json)是另一個合格來源,但它只涵蓋
+ * **已經跑完的賽季**;本季一場都沒有,所以本季只能靠這份快照。
+ *
+ * 沒有快照就回不到,呼叫端要照實顯示「無快照」,不要拿事後模型補。 */
+export function preMatchSnapshots(store) {
+  const out = new Map();
+  for (const [key, rec] of Object.entries(store?.matches ?? {})) {
+    const first = rec.pts?.[0];
+    if (!first || first[0] !== 0) continue;      // 第一點不是第 0 分 = 沒接到賽前錨點
+    out.set(key, { home: first[1], draw: first[2], away: first[3] });
+  }
+  return out;
+}
+
 /* 給前端的形狀:只給有內容的場次(>= 3 個點才畫得成曲線)。 */
 export function historyForSite(store) {
   if (!store) return { season: null, matches: {} };

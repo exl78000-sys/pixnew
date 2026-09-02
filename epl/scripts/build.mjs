@@ -35,7 +35,7 @@ import {
 import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
-import { appendSamples, historyForSite } from './lib/prob-history.mjs';
+import { appendSamples, historyForSite, preMatchSnapshots } from './lib/prob-history.mjs';
 import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
@@ -199,6 +199,17 @@ async function main() {
   const btMatches = existsSync(btMatchPath) ? JSON.parse(await readFile(btMatchPath, 'utf8')) : null;
   const predByMatch = new Map();
   for (const m of btMatches?.matches ?? []) predByMatch.set(`${m.season}|${m.home}|${m.away}`, m.pred);
+
+  /* 已完賽場次的賽前機率。**不能用下面那個 model** —— 它擬合在
+     「歷史 + 本季已完賽」上,含這一場;拿它標成「賽前模型」是用看過結果的
+     模型冒充當時的預測(Elo 更是逐場更新,那場比分直接進了參數)。
+     走查回測的逐場預測只涵蓋跑完的賽季(本季 0 場),所以本季只能靠
+     開賽前存下來的那份快照。沒有就是沒有,照實留 null,由前端說「無快照」。
+     西甲與英冠的 build 從第一版就是這樣做的,英超這一份 2026-09-01 補上。 */
+  const preSnap = (() => {
+    const hp = join(ROOT, 'data', 'live-history.json');
+    return preMatchSnapshots(existsSync(hp) ? JSON.parse(readFileSync(hp, 'utf8')) : null);
+  })();
 
   const T = loadTeams(ROOT);
   for (const t of T.list) {
@@ -451,7 +462,16 @@ async function main() {
       kickoff: d?.kickoff ?? `${m.date}T${(m.time ?? '15:00')}:00+01:00`,
       kickoffSource: d?.kickoff ? 'fpl' : 'openfootball',
       difficulty: d ? { home: d.home, away: d.away } : null,
-      prediction: { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e },
+      /* prediction 這個欄位**只放真正的賽前機率**:未賽 = 目前模型;
+         已賽 = 開賽前凍結的快照(拿不到就 null)。
+         已賽場次「目前模型怎麼看」另外放 postFit,前端標清楚那不是賽前預測 ——
+         兩者混在同一個欄位就是這次要修掉的那個錯。 */
+      prediction: m.played
+        ? (preSnap.get(`${m.home}|${m.away}`)
+          ? { ...preSnap.get(`${m.home}|${m.away}`), snapshot: true } : null)
+        : { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e },
+      postFit: m.played
+        ? { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e } : null,
       market: marketBy[`${m.home}|${m.away}`] ?? null,
       // 兩隊對照圖用的配色。英超九隊主色是紅的、六隊是深藍的,直接用會撞色 ——
       // 所以每一場都算一次,兩隊同色系時自動把客隊拉開。詳見 lib/colour.mjs。

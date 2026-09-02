@@ -44,7 +44,13 @@ try {
   /* ── 單場分析 ────────────────────────────── */
   function renderMatch(f) {
     if (basic) { renderBasicMatch(f); return; }
-    const p = f.prediction;
+    /* 兩個不同的東西,以前混在同一個欄位裡:
+       - `pre` 是**真的賽前機率**:未賽 = 目前模型,已賽 = 開賽前凍結的快照,
+         拿不到就是 null。只有它有資格出現在「賽前 → 市場 → 賽後」那一節。
+       - `p` 是拿來畫「模型怎麼看」的完整那一組。已賽時它是**事後擬合**的
+         (模型擬合資料含本場結果),所以下面會標明它不是當時的預測。 */
+    const pre = f.prediction;
+    const p = f.postFit ?? f.prediction;
     const preArt = preArticleFor(f);
     const postArt = postArticleFor(f);
     const postReport = reportFor(f);
@@ -128,14 +134,22 @@ try {
     </div>
 
     ${f.played ? `<section class="analysis-panel" id="panel-compare" role="tabpanel">
-      ${phaseComparison(f, postReport)}
+      ${phaseComparison(f, postReport, pre)}
     </section>` : ''}
 
     <section class="analysis-panel" id="panel-pre" role="tabpanel">
     ${articleCard(preArt, '賽前觀察', 'pre')}
 
+    ${f.postFit ? `<div class="note warn" style="margin-top:12px"><b>這一場已經踢完,下面這組機率是「目前模型」的看法,不是當時的賽前預測。</b>
+      模型擬合的資料<b>含本場結果</b>(Elo 更是逐場更新的),所以它偏向已經發生的那個結果 ——
+      不能拿它說「模型早就看好了」。${pre
+        ? `本場真正的賽前機率(開賽前凍結的快照)是
+          <b class="mono">${C.pct(pre.home, 0)} / ${C.pct(pre.draw, 0)} / ${C.pct(pre.away, 0)}</b>,
+          在<a href="#panel-compare" data-view="compare">綜合對比</a>那一頁。`
+        : '本場<b>沒有</b>賽前機率快照 —— 開賽前沒有抓到即時樣本,那個數字就是不存在,本站不補。'}</div>` : ''}
+
     <div class="section"><h2>模型預測</h2>
-      <span class="hint">兩套方法交叉驗證</span></div>
+      <span class="hint">${f.postFit ? '目前模型・非賽前預測' : '兩套方法交叉驗證'}</span></div>
     <div class="card">
       <div class="stat-line"><span class="small">Dixon-Coles Poisson(看進失球的量)</span>
         <span class="mono small">${C.pct(p.poisson.home, 0)} / ${C.pct(p.poisson.draw, 0)} / ${C.pct(p.poisson.away, 0)}</span></div>
@@ -263,7 +277,8 @@ try {
     const lineup = official?.matches?.[`${f.home}|${f.away}`] ?? null;
     const H = teamBy.get(f.home), A = teamBy.get(f.away);
     const ht = H?.tactics, at = A?.tactics;
-    const p = f.prediction;
+    // 跟英超那一頁同一套:pre 是真的賽前機率,p 是拿來畫「模型怎麼看」的那一組
+    const p = f.postFit ?? f.prediction;
     const rec = h2h[[f.home, f.away].sort().join('|')] ?? null;
     const val = (obj, path) => path.reduce((v, key) => v?.[key], obj) ?? null;
     const comparison = C.versus([
@@ -326,8 +341,18 @@ try {
         <div class="stat-line"><span>${C.teamCell(f.away, { link: false })}</span><span class="tiny">${(at.tags ?? []).slice(0, 3).map(t => `<span class="pill info">${C.esc(t)}</span>`).join(' ')} <span class="mono dim">${C.esc(at.formation?.label ?? '—')}</span></span></div>
         <div class="tiny dim" style="margin-top:8px">雷達與定位球指標來自上季整季統計，作為賽前背景，不代表本場實際表現。</div>
       </div>` : '';
-    const preForecast = p ? `
-      <div class="section"><h2>模型預測</h2><span class="hint">Dixon-Coles Poisson + Elo 平均</span></div>
+    /* 已賽場次的這一組是**事後擬合**的(模型擬合資料含本場結果),
+       跟英超那一頁講同一句話 —— 不標的話讀者會以為是當時的預測。 */
+    const postFitNote = f.postFit ? `<div class="note warn" style="margin-top:12px">
+      <b>這一場已經踢完,下面這組機率是「目前模型」的看法,不是當時的賽前預測。</b>
+      模型擬合的資料含本場結果(Elo 更是逐場更新的),所以它偏向已經發生的那個結果。
+      ${f.prediction
+        ? `本場真正的賽前機率(開賽前凍結的快照)是
+          <b class="mono">${C.pct(f.prediction.home, 0)} / ${C.pct(f.prediction.draw, 0)} / ${C.pct(f.prediction.away, 0)}</b>,
+          在綜合對比那一頁。`
+        : '本場<b>沒有</b>賽前機率快照,那個數字就是不存在,本站不補。'}</div>` : '';
+    const preForecast = p ? `${postFitNote}
+      <div class="section"><h2>模型預測</h2><span class="hint">${f.postFit ? '目前模型・非賽前預測' : 'Dixon-Coles Poisson + Elo 平均'}</span></div>
       <div class="card">
         ${C.probBar(p)}
         <div class="row small dim" style="justify-content:space-between;margin-top:6px"><span>主勝 ${C.pct(p.home, 0)}</span><span>和局 ${C.pct(p.draw, 0)}</span><span>客勝 ${C.pct(p.away, 0)}</span></div>
@@ -406,12 +431,11 @@ try {
           兩份都是 0 篇)、已完賽場次沒有賽前機率快照、official 沒有進球事件
           (goalsCard 自己會回空字串)。 */''}
     ${f.played ? `<section class="analysis-panel" id="panel-compare" role="tabpanel">
-      ${phaseFlow(f, report)}
+      ${/* 跟英超共用同一個函式:有賽前快照就畫完整的比較,沒有它自己會說明
+             為什麼不畫 —— 兩邊各寫一份的話,改了一邊另一邊會悄悄過期。 */''}
+      ${phaseComparison(f, report, f.prediction)}
       <div class="section" style="margin-top:18px"><h2>球隊背景對比</h2><span class="hint">${meta.lastSeason} 整季資料</span></div>
       <div class="card">${comparison}</div>
-      <div class="note" style="margin-top:12px">英超那一頁在這裡還會比「模型與市場給實際結果的機率」——
-        西甲已完賽場次沒有保存可驗證的賽前機率快照,那一段沒有資料可比,所以不畫,
-        也不以賽後資料回填預測。</div>
     </section>` : ''}
 
     <section class="analysis-panel" id="panel-pre" role="tabpanel">
@@ -925,8 +949,7 @@ try {
      西甲已完賽場次沒有保存賽前機率快照(實測 30/30 場都沒有),所以第一個節點
      要容忍 prediction 不存在:照實寫「無快照」,不拿賽後數字回填一個看起來
      像預測的值。 */
-  function phaseFlow(f, report) {
-    const p = f.prediction;
+  function phaseFlow(f, report, p) {
     const market = f.market?.probs ?? null;
     const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
     const outcome = { home: `${C.name(f.home)}勝`, draw: '和局', away: `${C.name(f.away)}勝` }[real];
@@ -939,7 +962,11 @@ try {
       <div class="phase-node pre">
         <span class="phase-kicker">01・賽前模型</span>
         <strong>${p ? `${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}` : '無快照'}</strong>
-        <small>${p ? `預期進球 ${p.xgHome} : ${p.xgAway}` : '這場沒有保存可驗證的賽前機率'}</small>
+        ${/* 快照只有 1X2(它是即時機率曲線的第 0 分點),沒有賽前 xG ——
+             印 `預期進球 undefined : undefined` 比不印糟得多 */''}
+        <small>${p
+          ? (p.snapshot ? '開賽前凍結的機率快照' : `預期進球 ${p.xgHome} : ${p.xgAway}`)
+          : '開賽前沒有抓到樣本,這個數字不存在'}</small>
       </div>
       <span class="phase-arrow" aria-hidden="true">→</span>
       <div class="phase-node market">
@@ -956,20 +983,35 @@ try {
     </div>`;
   }
 
-  function phaseComparison(f, report) {
-    const p = f.prediction;
+  /* 「賽前 → 市場 → 賽後」。**`p` 只接受真正的賽前機率**(未賽時的模型輸出,
+     或已賽場次開賽前凍結的快照);拿不到就是 null,整節照實說「無快照」。
+
+     以前這裡吃 `f.prediction`,而 build 把「擬合資料含本場結果」的模型輸出
+     也放進那個欄位 —— 於是這一頁用看過結果的模型算出「模型賽前最看好的就是
+     這個結果」、還拿它跟市場比誰準。那不是編數字,是把數字標錯,而結論是
+     從錯的標籤長出來的。2026-09-01 拆成 prediction / postFit 兩個欄位。 */
+  function phaseComparison(f, report, p) {
     const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
     const outcome = { home: `${C.name(f.home)}勝`, draw: '和局', away: `${C.name(f.away)}勝` }[real];
-    const pick = [['home', p.home], ['draw', p.draw], ['away', p.away]].sort((a, b) => b[1] - a[1])[0];
+    const pick = p ? [['home', p.home], ['draw', p.draw], ['away', p.away]].sort((a, b) => b[1] - a[1])[0] : null;
     const market = f.market?.probs ?? null;
     const actualHomeXg = report?.sides?.[f.home]?.xG ?? null;
     const actualAwayXg = report?.sides?.[f.away]?.xG ?? null;
-    const marketVerdict = market
+    const marketVerdict = market && p
       ? (market[real] > p[real] ? '市場' : market[real] < p[real] ? '本站模型' : '兩邊相同')
       : null;
     const fmt = value => value == null ? '—' : C.fx(value, 2);
 
-    return `${phaseFlow(f, report)}
+    /* 沒有賽前機率就**不要有這兩張卡** —— 它們整張都是拿賽前機率做的推論
+       (「模型賽前最看好的就是這個結果」、「誰給實際結果的機率較高」)。
+       用事後擬合的數字去回答那兩個問題,答案一定偏向已經發生的結果。 */
+    if (!p) return `${phaseFlow(f, report, p)}
+      <div class="note" style="margin-top:12px">這一場<b>沒有賽前機率快照</b>,
+        所以不做「模型賽前有多看好這個結果」與「模型 vs 市場誰比較準」的比較 ——
+        那兩個問題都要有當時的數字才答得了。快照從開賽前的即時樣本來,
+        本站是這一季才開始存的,之前的場次補不回來。</div>`;
+
+    return `${phaseFlow(f, report, p)}
 
     <div class="grid g2 phase-summary">
       <div class="card">
@@ -982,12 +1024,16 @@ try {
           ${marketVerdict ? `${marketVerdict}給實際結果的機率較高。` : '這場沒有市場盤口可比較。'}</div>
         <div class="tiny dim" style="margin-top:8px">單場只能對答案，不能據此判定整套模型優劣；長期表現仍要看模型頁的 RPS 回測。</div>
       </div>
+      ${/* 四個 xG 全是空的時候整張卡不畫 —— 只剩兩個進球數的話,
+             標題講的三件事有兩件沒有內容(西甲快照沒有賽前 xG,
+             賽後報告也可能沒有實際 xG)。 */''}
+      ${p.xgHome == null && p.xgAway == null && actualHomeXg == null && actualAwayXg == null ? '' : `
       <div class="card">
         <h3>預期、場面與比分</h3>
-        <div class="pre-post-row"><span>${C.name(f.home)}</span><b class="mono">${p.xgHome}</b><i>賽前 xG</i><b class="mono">${fmt(actualHomeXg)}</b><i>實際 xG</i><b class="mono accent-text">${f.fh}</b><i>進球</i></div>
-        <div class="pre-post-row"><span>${C.name(f.away)}</span><b class="mono">${p.xgAway}</b><i>賽前 xG</i><b class="mono">${fmt(actualAwayXg)}</b><i>實際 xG</i><b class="mono accent-text">${f.fa}</b><i>進球</i></div>
+        <div class="pre-post-row"><span>${C.name(f.home)}</span><b class="mono">${fmt(p.xgHome)}</b><i>賽前 xG</i><b class="mono">${fmt(actualHomeXg)}</b><i>實際 xG</i><b class="mono accent-text">${f.fh}</b><i>進球</i></div>
+        <div class="pre-post-row"><span>${C.name(f.away)}</span><b class="mono">${fmt(p.xgAway)}</b><i>賽前 xG</i><b class="mono">${fmt(actualAwayXg)}</b><i>實際 xG</i><b class="mono accent-text">${f.fa}</b><i>進球</i></div>
         <div class="tiny dim" style="margin-top:10px">賽前 xG 是模型對整場進球量的預估；實際 xG 是比賽中射門品質的累積，兩者概念不同但可用來檢查預測與場面是否同向。</div>
-      </div>
+      </div>`}
     </div>
 
     <div class="section"><h2>三向機率並排</h2><span class="hint">同一尺度比較本站與市場</span></div>

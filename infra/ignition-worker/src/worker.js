@@ -197,26 +197,64 @@ async function closingDeploy(env, results, log, dryRun = false) {
 /* token 還活著嗎。**沒有比賽的日子完全碰不到 GitHub API**,
    所以 token 過期會一路潛伏到下一個比賽日才發作 —— 這裡主動戳一下,
    讓 /status 隨時看得出來。一個唯讀請求,幾乎不花額度。 */
-async function authHealth(env) {
+/* 派送權限的**零副作用**探針。
+ *
+ * 原本 authHealth 只打唯讀端點 —— 那證明得了「讀」,證明不了「寫」。
+ * token 若只給了 Actions: Read,一路要到比賽開打那一刻真的要派送才會 403,
+ * 而那時沒有人在看。這正是這支 Worker 要消滅的故障形態。
+ *
+ * 探法:對派送端點送一個**不可能存在的 ref**。GitHub 先檢查權限再驗 ref,
+ * 所以 422「No ref found」= 有寫權限,403 = 沒有。實測過(2026-09-02):
+ * 422 而且**沒有排出任何 run**,不會誤觸一次建置。
+ *
+ * 每 5 分鐘打一次太吵,所以整點後那一格才驗(每小時約一次);
+ * /status 帶 key 時強制驗一次,人要查的時候不必等。 */
+const PROBE_REF = '__warroom_auth_probe_does_not_exist__';
+
+async function writeProbe(env) {
+  try {
+    const res = await gh(env, `/actions/workflows/${DEPLOY_WORKFLOW}/dispatches`, {
+      method: 'POST', body: JSON.stringify({ ref: PROBE_REF }),
+    });
+    if (res.status === 422) return { write: true };
+    if (res.status === 403) return { write: false, hint: 'token 沒有 Actions: Write(只給了 Read?)' };
+    if (res.status === 404) return { write: false, hint: 'REPO 或 workflow 名稱不對,或 token 沒有存取權' };
+    if (res.ok) return { write: true, hint: `探針竟然被接受了(HTTP ${res.status})—— ref 名稱可能真的存在,請改掉 PROBE_REF` };
+    return { write: null, hint: `未預期的 HTTP ${res.status}` };
+  } catch (e) { return { write: null, hint: e.message }; }
+}
+
+async function authHealth(env, { probeWrite = false } = {}) {
   try {
     const res = await gh(env, '/actions/workflows?per_page=1');
-    if (res.ok) return { ok: true };
-    return { ok: false, status: res.status,
-      hint: res.status === 401 ? 'token 無效或已撤銷'
-        : res.status === 403 ? '權限不足(需要 Actions: Read and write)'
-        : res.status === 404 ? 'REPO 名稱不對,或 token 沒有這個 repo 的存取權' : null };
+    if (!res.ok) {
+      return { ok: false, status: res.status,
+        hint: res.status === 401 ? 'token 無效或已撤銷'
+          : res.status === 403 ? '權限不足(需要 Actions: Read and write)'
+          : res.status === 404 ? 'REPO 名稱不對,或 token 沒有這個 repo 的存取權' : null };
+    }
+    if (!probeWrite) return { ok: true };
+    const w = await writeProbe(env);
+    return { ok: w.write !== false, read: true, ...w };
   } catch (e) { return { ok: false, error: e.message }; }
 }
 
-async function run(env, { dryRun = false } = {}) {
+async function run(env, { dryRun = false, probeAuth = false } = {}) {
   const log = [];
   const results = [];
   if (!env.GITHUB_TOKEN || !env.REPO || !env.BRANCH || !env.SITE) {
     log.push('✗ 缺少設定(GITHUB_TOKEN / REPO / BRANCH / SITE),什麼都不做');
     return { at: new Date().toISOString(), log, results };
   }
-  const auth = await authHealth(env);
+  /* 寫權限每小時驗一次(整點後那一格)。人手動查 /status 時強制驗 ——
+     要等最多一小時才知道自己有沒有派工權限,等於沒有這個檢查。 */
+  const probeWrite = probeAuth || new Date().getUTCMinutes() < 5;
+  const auth = await authHealth(env, { probeWrite });
   if (!auth.ok) log.push(`✗ GitHub 認證有問題:${auth.hint ?? auth.error ?? `HTTP ${auth.status}`}`);
+  if (auth.write === false) {
+    // 這是「該動的時候動不了」,而且要到比賽開打那一刻才會發作 —— 現在就吵
+    await alert(env, `⚠ 點火器的 GITHUB_TOKEN 沒有派工權限:${auth.hint}。比賽日不會進場。`, log);
+  }
   for (const lg of LEAGUES) {
     try { results.push(await checkLeague(env, lg, log, dryRun)); }
     catch (e) { log.push(`✗ ${lg.zh} 檢查整個失敗:${e.message}`); }
@@ -242,7 +280,9 @@ export default {
        (診斷價值不減),但不會觸發任何動作。cron 走的是 scheduled(),
        不經過這裡,永遠是執行模式。 */
     const dryRun = !env.STATUS_KEY || url.searchParams.get('key') !== env.STATUS_KEY;
-    const r = await run(env, { dryRun });
+    /* 派工權限的探針是唯讀的(不存在的 ref,GitHub 回 422、不排任何 run),
+       所以它不受 dryRun 限制 —— 人打開 /status 就是要知道這件事。 */
+    const r = await run(env, { dryRun, probeAuth: true });
     return new Response(JSON.stringify(r, null, 2), {
       headers: { 'content-type': 'application/json; charset=utf-8' },
     });
