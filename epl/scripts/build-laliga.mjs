@@ -25,7 +25,7 @@ import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } fro
 import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
-import { appendSamples, historyForSite } from './lib/prob-history.mjs';
+import { appendSamples, historyForSite, preMatchSnapshots } from './lib/prob-history.mjs';
 import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import { upcomingOdds } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
@@ -350,6 +350,13 @@ async function main() {
   const finalsRaw = existsSync(join(ROOT, 'data', 'raw', 'sportmonks-la-liga', 'finals.json'))
     ? JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'sportmonks-la-liga', 'finals.json'), 'utf8'))
     : { matches: {} };
+  /* 已完賽場次的賽前機率快照(跟英超同一份 lib,理由寫在那裡)。
+     第一版只能顯示「無快照」,是因為當時沒有去讀這份累積檔 —— 它其實有,
+     開賽前存下來的第 0 分那個點就是。 */
+  const preSnap = (() => {
+    const hp = join(ROOT, 'data', 'live-history-la-liga.json');
+    return preMatchSnapshots(existsSync(hp) ? JSON.parse(readFileSync(hp, 'utf8')) : null);
+  })();
   const fixtures = curMatches.map(m => {
     const p = predict(model, m.home, m.away);
     const e = eloProbs(elo.get(m.home)?.elo ?? 1500, elo.get(m.away)?.elo ?? 1500);
@@ -361,9 +368,13 @@ async function main() {
       kickoff: m.kickoff,
       kickoffSource: 'openfootball',
       difficulty: null,
-      // 第一版沒有逐場賽前快照。已完賽後才用結果重擬合出的機率不能冒充賽前預測，
-      // 因此已完賽場次只顯示比分；未賽場次才發布目前模型機率。
-      prediction: m.played ? null : {
+      /* 已完賽後才用結果重擬合出的機率不能冒充賽前預測。已賽場次改讀
+         開賽前凍結的快照(prob-history 的第 0 分點),沒有就照實 null。
+         「目前模型怎麼看」另外放 postFit,前端會標清楚那不是賽前預測。 */
+      prediction: m.played
+        ? (preSnap.get(`${m.home}|${m.away}`)
+          ? { ...preSnap.get(`${m.home}|${m.away}`), snapshot: true } : null)
+        : {
         ...p,
         home: round((p.home + e.home) / 2, 4),
         draw: round((p.draw + e.draw) / 2, 4),
@@ -371,6 +382,15 @@ async function main() {
         poisson: { home: p.home, draw: p.draw, away: p.away },
         elo: e,
       },
+      // 已賽場次「目前模型怎麼看」—— 是背景資訊,不是賽前預測,前端會標明
+      postFit: m.played ? {
+        ...p,
+        home: round((p.home + e.home) / 2, 4),
+        draw: round((p.draw + e.draw) / 2, 4),
+        away: round((p.away + e.away) / 2, 4),
+        poisson: { home: p.home, draw: p.draw, away: p.away },
+        elo: e,
+      } : null,
       market: marketBy[`${m.home}|${m.away}`] ?? null,
       colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),
     };

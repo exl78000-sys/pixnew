@@ -41,7 +41,12 @@ check('未賽場次預測三向機率加總約等於 1', fixtures.filter(f => !f
   const p = f.prediction;
   return p && Math.abs(p.home + p.draw + p.away - 1) < 0.002;
 }));
-check('已完賽場次不拿重擬合機率冒充賽前預測', fixtures.filter(f => f.played).every(f => f.prediction === null));
+/* 2026-09-01:已完賽場次現在可以有賽前機率 —— 但**只能是開賽前凍結的快照**
+   (prob-history 的第 0 分點)。事後重擬合的那一組放 postFit,不是 prediction。 */
+check('已完賽場次不拿重擬合機率冒充賽前預測',
+  fixtures.filter(f => f.played).every(f => f.prediction === null || f.prediction.snapshot === true));
+check('已完賽場次的快照只有 1X2,不會混進賽前 xG',
+  fixtures.filter(f => f.played && f.prediction).every(f => f.prediction.xgHome === undefined));
 const officialMatches = Object.entries(official.matches ?? {});
 check('逐場正式先發已轉成本站資料格式', official.available === true && officialMatches.length > 0
   && official.sources?.includes('fotmob/enetpulse'));

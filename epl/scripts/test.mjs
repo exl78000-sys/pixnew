@@ -2023,6 +2023,49 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 賽前機率不能是事後擬合的(2026-09-01 加)────────────────
+       build 的模型擬合在「歷史 + 本季已完賽」上,**含這一場**。原本那組機率
+       被掛到已完賽的 fixture 上、標成「賽前模型」,單場分析頁再據此下結論
+       (「模型賽前最看好的就是這個結果」、「模型 vs 市場誰比較準」)——
+       用看過結果的模型回答那兩個問題,答案一定偏向已經發生的結果。
+       Elo 尤其直接:那場的比分就進了參數。
+       現在 prediction 只放真正的賽前機率(未賽 = 目前模型,已賽 = 開賽前
+       凍結的快照,拿不到就 null),事後擬合那組另外放 postFit。 */
+    ...await (async () => {
+      const { preMatchSnapshots } = await import('./lib/prob-history.mjs');
+      const leagues = [['英超', ''], ['西甲', 'leagues/es1/'], ['英冠', 'leagues/en2/']];
+      const rows = leagues.map(([zh, dir]) => {
+        const fx = JSON.parse(readFileSync(join(ROOT, 'web', 'data', dir, 'fixtures.json'), 'utf8'));
+        const played = fx.filter(f => f.played);
+        return { zh, fx, played };
+      });
+      const snap = preMatchSnapshots({ matches: {
+        ok: { pts: [[0, 0.5, 0.3, 0.2], [7, 0.6, 0.25, 0.15]] },
+        noAnchor: { pts: [[7, 0.6, 0.25, 0.15]] },       // 第一點不是第 0 分 = 沒接到賽前錨點
+        empty: { pts: [] },
+      } });
+      const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return [
+        ['已完賽場次的 prediction 一定是「開賽前凍結的快照」,不是事後擬合',
+          rows.every(r => r.played.every(f => !f.prediction || f.prediction.snapshot === true))],
+        ['快照只有 1X2(它是即時曲線的第 0 分點),不會混進賽前 xG',
+          rows.every(r => r.played.every(f => !f.prediction || f.prediction.xgHome === undefined))],
+        ['未賽場次的 prediction 是完整那一組,而且沒有 postFit',
+          rows.every(r => r.fx.filter(f => !f.played && f.prediction)
+            .every(f => f.prediction.snapshot !== true && !f.postFit))],
+        ['postFit 只出現在已完賽場次', rows.every(r => r.fx.every(f => !f.postFit || f.played))],
+        ['preMatchSnapshots 只收第一點是第 0 分的場次',
+          snap.size === 1 && snap.has('ok') && !snap.has('noAnchor')],
+        ['沒有賽前快照時,那兩張推論卡整個不畫(不能拿事後數字回答)',
+          /if \(!p\) return `\$\{phaseFlow\(f, report, p\)\}/.test(pa)],
+        ['賽前分頁對已完賽場次要標明那不是當時的預測',
+          /不是當時的賽前預測/.test(pa) && /f\.postFit \? '目前模型・非賽前預測'/.test(pa)],
+        ['兩個聯賽的綜合對比走同一個 phaseComparison(不各寫一份)',
+          (pa.match(/\$\{phaseComparison\(f, /g) ?? []).length === 2
+            && (pa.match(/function phaseComparison/g) ?? []).length === 1],
+      ];
+    })(),
+
     /* ── 跑位動畫真的跑一遍(2026-09-01 加)────────────────────
        上面那一條是掃原始碼的字串,掃不到「演出把腳本吞掉」這種錯。
        實際踩到的:射門門檻寫死 `holder.x > 78`,而前鋒基準 x=53.26、
