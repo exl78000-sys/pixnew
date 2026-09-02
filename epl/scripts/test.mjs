@@ -9,7 +9,7 @@ import { loadTeams } from './lib/teams.mjs';
 import { matchPerson as loanMatchPerson, yearShifted as loanYearShifted } from './verify-loans.mjs';
 import { normName, matchOne as nameMatchOne } from './lib/names.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
-import { COMPETITION } from './lib/sources.mjs';
+import { COMPETITION, CURRENT_SEASON } from './lib/sources.mjs';
 import { fitPoisson, applyPromotedPrior, predict } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { round } from './lib/util.mjs';
@@ -2022,6 +2022,54 @@ async function checkDataGap() {
         && /inPlaySim/.test(pg) && /跳到結果/.test(pg)
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
+
+    /* ── 已完賽場次的市場盤口(2026-09-02 加)────────────────────
+       `fixtures.csv` 只涵蓋未來幾天,比賽踢完就從那個檔掉出去 —— 於是
+       「模型 vs 市場」的對照會隨時間**憑空消失**。實測那天:三個聯賽 86 場
+       已完賽全部拿得到收盤賠率,而畫面上只有 32 場(英超 10/20、西甲 10/30、
+       英冠 12/36),資料一直躺在 repo 的賽季檔裡。 */
+    ...await (async () => {
+      const { seasonMarket } = await import('./lib/odds.mjs');
+      const rows = [
+        ['英超', '', 'football-data-couk', 'E0'],
+        ['西甲', 'leagues/es1/', 'football-data-couk-la-liga', 'SP1'],
+        ['英冠', 'leagues/en2/', 'football-data-couk-championship', 'E1'],
+      ].map(([zh, dir, raw, div]) => {
+        const csv = join(ROOT, 'data', 'raw', raw, `${CURRENT_SEASON}.csv`);
+        const fx = JSON.parse(readFileSync(join(ROOT, 'web', 'data', dir, 'fixtures.json'), 'utf8'));
+        const teams = JSON.parse(readFileSync(join(ROOT, 'web', 'data', dir, 'teams.json'), 'utf8'));
+        const codes = new Set(teams.map(t => t.code));
+        const codeOf = n => null;   // 用內建對照表就好,這裡只要解得出多少場
+        const sm = existsSync(csv) ? seasonMarket(readFileSync(csv, 'utf8'), { codeOf, div }) : { byMatch: {} };
+        return { zh, fx, sm, codes };
+      });
+      /* 撞鍵(英冠季末附加賽由聯賽裡的四隊互打)兩場都不採用 ——
+         挑一個當答案就是在兩個對不上的來源裡選一個喜歡的。 */
+      const dupCsv = 'Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,AvgCH,AvgCD,AvgCA\n'
+        + 'E1,01/05/2026,Leeds,Hull,1,0,2,3.4,3.8\n'
+        + 'E1,15/05/2026,Leeds,Hull,2,3,2.1,3.3,3.6\n'
+        + 'E1,02/05/2026,Burnley,Leeds,0,0,2.5,3.2,3\n';
+      const dup = seasonMarket(dupCsv, { codeOf: () => null, div: 'E1' });
+      const buildSrc = ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs']
+        .map(f => readFileSync(join(ROOT, 'scripts', f), 'utf8'));
+      return [
+        ['賽季檔撞鍵時兩場都不採用,而且回報是哪一組',
+          dup.dupes.includes('LEE|HUL') && !('LEE|HUL' in dup.byMatch) && ('BUR|LEE' in dup.byMatch)],
+        ['三支 build 都讀本季賽季檔的盤口',
+          buildSrc.every(src => /seasonMarket\(/.test(src) && /seasonMarketBy/.test(src))],
+        ['已完賽場次優先用賽季檔(收盤),未賽才用 fixtures.csv(開盤)',
+          buildSrc.every(src => /m\.played\s*\n?\s*\?\s*seasonMarketBy/.test(src.replace(/\s+/g, ' ')
+            .replace(/m\.played \? seasonMarketBy/, 'm.played\n? seasonMarketBy')))],
+        ...rows.map(r => [`${r.zh}:賽季檔解得出來的已完賽場次,產物裡都要掛上市場`,
+          Object.keys(r.sm.byMatch).every(k => {
+            const [h, a] = k.split('|');
+            const f = r.fx.find(x => x.home === h && x.away === a && x.played);
+            return !f || !!f.market;      // 對不到賽程的不管(隊名對照另有守門)
+          })]),
+        ['已完賽場次的盤口用的是收盤價', rows.every(r => r.fx.filter(f => f.played && f.market)
+          .every(f => /收盤/.test(f.market.source)))],
+      ];
+    })(),
 
     /* ── 我的預測(2026-09-02 加)──────────────────────────────
        玩家自己猜比分、賽季末跟模型與市場比。這一層會出的錯是**比較的兩邊

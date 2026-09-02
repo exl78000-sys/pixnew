@@ -44,7 +44,7 @@ import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } fro
 import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildFormIndex, recentForm, formSummary, TUNED } from './lib/form.mjs';
-import { upcomingOdds } from './lib/odds.mjs';
+import { upcomingOdds, seasonMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { round } from './lib/util.mjs';
 
@@ -215,12 +215,26 @@ async function main() {
   /* 市場賠率。fixtures.csv 是**全歐洲一份**,`npm run odds` 早就下載了 ——
      英冠(Div=E1)本來就在裡面,重抓一次是白費請求。 */
   let marketBy = {};
+  let seasonMarketBy = {};
   const futureOdds = join(ROOT, 'data', 'raw', 'football-data-couk', 'fixtures.csv');
   if (existsSync(futureOdds)) {
     const r = upcomingOdds(readFileSync(futureOdds, 'utf8'), { codeOf, div: 'E1' });
     marketBy = r.byMatch;
     if (r.unmatched?.length) console.log(`  ⚠ 英冠賠率隊名未對上:${r.unmatched.join('、')}`);
     console.log(`  市場賠率:${r.count} 場`);
+  }
+  /* 已完賽場次改讀**賽季檔**:`fixtures.csv` 只涵蓋未來幾天,比賽踢完就掉出去,
+     於是「模型 vs 市場」的對照會隨時間憑空消失(2026-09-02 實測:三個聯賽
+     86 場已完賽都拿得到收盤賠率,畫面上卻只有 32 場)。賽季檔給的還是**收盤**
+     賠率,比開盤更準。未賽場次仍然只有 fixtures.csv 有。 */
+  {
+    const sp = join(ROOT, 'data', 'raw', 'football-data-couk-championship', `${CURRENT_SEASON}.csv`);
+    if (existsSync(sp)) {
+      const r = seasonMarket(readFileSync(sp, 'utf8'), { codeOf: codeOf, div: 'E1' });
+      seasonMarketBy = r.byMatch;
+      console.log(`  市場賠率(本季已完賽):${r.count} 場`
+        + (r.dupes.length ? `・鍵重複不採用:${r.dupes.join('、')}` : ''));
+    }
   }
 
   const fixtures = curMatches.map(m => {
@@ -240,7 +254,11 @@ async function main() {
         poisson: { home: p.home, draw: p.draw, away: p.away },
         elo: e,
       },
-      market: marketBy[`${m.home}|${m.away}`] ?? null,
+      /* 已賽用賽季檔(收盤、涵蓋整季),未賽用 fixtures.csv(開盤、只有未來幾天)。
+         兩邊都沒有就是 null —— 沒有盤口是常態,不要編一個。 */
+      market: (m.played
+        ? seasonMarketBy[`${m.home}|${m.away}`] ?? marketBy[`${m.home}|${m.away}`]
+        : marketBy[`${m.home}|${m.away}`] ?? seasonMarketBy[`${m.home}|${m.away}`]) ?? null,
       colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),
     };
   });
