@@ -127,3 +127,35 @@ export function upcomingOdds(text, { codeOf, div = 'E0' } = {}) {
 }
 
 const round4 = n => Math.round(n * 1e4) / 1e4;
+
+/* 已完賽場次的市場機率(football-data.co.uk 的**賽季檔**)。
+ *
+ * 為什麼需要它:`upcomingOdds` 讀的 `fixtures.csv` 只涵蓋**未來幾天**,
+ * 比賽一踢完就從那個檔掉出去 —— 於是站上「模型 vs 市場」的對照會隨時間
+ * **憑空消失**:2026-09-02 實測,英超 20 場已完賽只有 10 場還掛得到市場、
+ * 西甲 30 場只有 10 場、英冠 36 場只有 12 場,而三個聯賽的賽季檔裡
+ * **每一場都有收盤賠率**(86 場拿得到,畫面上只有 32 場)。
+ *
+ * 而且賽季檔給的是**收盤**賠率,比 fixtures.csv 的開盤更準
+ * (`ODDS_COLS` 本來就把收盤排在前面)。
+ *
+ * 鍵是「主隊|客隊」。**有附加賽的聯賽這個鍵不唯一**(英冠季末升級附加賽由
+ * 聯賽裡的四隊互打,CLAUDE.md 有一整條在講)—— 賽季檔通常只收聯賽場次,
+ * 但撞到就整組跳過並回報,不挑一個當答案。
+ */
+export function seasonMarket(text, { codeOf, div = 'E0' } = {}) {
+  const { matches, unmatched } = parseOddsCsv(text, { codeOf, div });
+  const byMatch = {};
+  const dupes = [];
+  for (const m of matches) {
+    const key = `${m.home}|${m.away}`;
+    if (key in byMatch) { dupes.push(key); continue; }
+    byMatch[key] = {
+      date: m.date,
+      probs: { home: round4(m.probs.home), draw: round4(m.probs.draw), away: round4(m.probs.away) },
+      overround: round4(m.overround), source: m.source, decimals: m.decimals,
+    };
+  }
+  for (const key of dupes) delete byMatch[key];   // 撞鍵的兩場都不採用
+  return { byMatch, count: Object.keys(byMatch).length, unmatched, dupes };
+}
