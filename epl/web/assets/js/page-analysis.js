@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e726e6b8';
+import * as C from './core.js?v=b8f871c3';
 
 const app = document.getElementById('app');
 
@@ -257,6 +257,8 @@ try {
 
   function renderBasicMatch(f) {
     const report = reportFor(f);
+    // 賽後那七張卡現在分四段畫,頭貼只投影一次就好(每段各投影一次是白做工)
+    const rep = report ? C.reportWithPlayerPhotos(report, playerByCode) : null;
     const expertRows = expertsFor(f);
     const lineup = official?.matches?.[`${f.home}|${f.away}`] ?? null;
     const H = teamBy.get(f.home), A = teamBy.get(f.away);
@@ -339,6 +341,29 @@ try {
     /* 比分機率分佈原本塞在「模型預測」那張卡裡面,英超是獨立一節 ——
        這一頁的欄位順序要跟英超一致,所以拉出來自成一節。沒有 grid 就整節不畫
        (已完賽的西甲場次沒有賽前快照,那不是缺欄位,是本來就沒有那份資料)。 */
+    /* 賽後分頁的六段(比分在頁首,不在分頁裡)。使用者指定的順序:
+         比分 → 進球/事件 → 外電 → 本站分析 → 戰術 → 陣容 → 數據
+       每一段的標題**只有內容非空才畫** —— 標題單獨站在那裡等於告訴讀者
+       「這裡壞了」,而實際上是這一場沒有那份資料(鐵則三)。
+       賽後報告那七張卡由 core 的 order 參數挑,不複製一份出來排。 */
+    const part = (keys, head, hint) => {
+      const html = rep ? C.matchReportCards(rep, { order: keys }).trim() : '';
+      return html ? `<div class="section" style="margin-top:18px"><h2>${head}</h2>
+        <span class="hint">${hint}</span></div>${html}` : '';
+    };
+    const lineupBoards = [lineupCard(lineup, f, report),
+      rep ? C.matchReportCards(rep, { order: ['lineups'] }).trim() : ''].filter(Boolean).join('\n');
+    const post = {
+      // goalsCard 是英超官方事件那一份,西甲目前沒有 —— 它自己會回空字串
+      events: `${goalsCard(f)}${part(['events'], '進球與比賽事件', '供應商回傳的完整事件時間軸')}`,
+      ours: probCurveCard(f),
+      tactics: part(['tactics'], '戰術', '由本場已核對數據自動生成,不是人寫的評論'),
+      lineups: lineupBoards ? `<div class="section" style="margin-top:18px"><h2>陣容</h2>
+        <span class="hint">正式先發、陣型與站位</span></div>${lineupBoards}` : '',
+      stats: rep ? part(['compare', 'teamStats', 'players', 'best'], '數據', '球隊統計與球員評分')
+        : `<div class="section" style="margin-top:18px"><h2>數據</h2>
+          <span class="hint">球隊統計與球員評分</span></div>${missingReportCard()}`,
+    };
     const scoreGrid = p?.grid ? `
       <div class="section" style="margin-top:18px"><h2>比分機率分佈</h2><span class="hint">顏色越亮代表越可能</span></div>
       <div class="card">${C.scoreHeat(p.grid, f.home, f.away)}</div>` : '';
@@ -415,13 +440,17 @@ try {
       </div>
     </section>
 
+    ${/* 賽後分頁的順序是使用者指定的:比分 → 進球/事件 → 外電 → 本站分析 →
+          戰術 → 陣容 → 數據。比分在頁首(分頁上方那張大卡),其餘依序在這裡。
+          賽後報告那七張卡本來是綁死一串的,現在由 core 的 order 參數挑 ——
+          不複製一份出來排,那樣改了一邊另一邊會悄悄過期。 */''}
     <section class="analysis-panel" id="panel-post" role="tabpanel">
-      ${goalsCard(f)}
-      ${probCurveCard(f)}
+      ${post.events}
       ${opinionSections(f, expertRows)}
-      <div class="section" style="margin-top:18px"><h2>完整賽後分析</h2><span class="hint">球隊統計、正式陣容、事件與球員評分</span></div>
-      ${lineupCard(lineup, f, report)}
-      ${report ? C.matchReportCards(C.reportWithPlayerPhotos(report, playerByCode)) : missingReportCard()}
+      ${post.ours}
+      ${post.tactics}
+      ${post.lineups}
+      ${post.stats}
     </section>
     ${C.foot(meta)}`;
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
@@ -486,8 +515,10 @@ try {
     const boundary = source === 'laliga.com'
       ? '西甲官網未提供第三方球員評分與座標；球場分行依官網陣型及先發順序呈現，不把推估評分或站位寫入資料。'
       : '本卡是已核對的完賽正式先發、陣型、位置與評分；目前來源沒有球員頭貼，完整球隊統計、事件與替補細節由下方 SportMonks 賽後報告卡提供，不用估算值補上。';
-    return `<div class="section"><h2>本場正式先發</h2>
-      <span class="hint">${sourceName(source)}・${C.dateFull(match.date)}・${sourceHint(source)}</span></div>
+    /* 標題是 h3 不是 h2 —— 它現在掛在賽後分頁的「陣容」那一節底下,
+       跟「實際排出的陣容」是同一層。用 h2 的話會出現兩個並排的大標。 */
+    return `<h3 style="margin:14px 0 4px">本場正式先發</h3>
+      <div class="tiny dim" style="margin-bottom:8px">${sourceName(source)}・${C.dateFull(match.date)}・${sourceHint(source)}</div>
       <div class="grid g2">${board(match.home, f.home)}${board(match.away, f.away, true)}</div>
       <div class="note" style="margin-top:10px"><b>資料界線：</b>${boundary}
         ${coverage.photos ? '本場頭像直接使用官方圖片網址。' : ''}</div>`;
