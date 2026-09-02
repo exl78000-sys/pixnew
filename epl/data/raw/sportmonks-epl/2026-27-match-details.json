@@ -3,21 +3,21 @@
   "providerSeason": 28083,
   "source": "SportMonks",
   "sourceUrl": "https://api.sportmonks.com/v3/football/fixtures/{fixture_id}",
-  "retrievedAt": "2026-09-02T04:11:30.497Z",
+  "retrievedAt": "2026-09-02T13:23:43.120Z",
   "matches": {},
   "coverage": {
     "cached": 0,
     "fetchedThisRun": 0,
-    "localPlayed": 10,
+    "localPlayed": 20,
     "providerFixtures": 380,
-    "candidates": 10,
+    "candidates": 20,
     "fixturesWithParticipants": 380,
     "fixturesWithMappedTeams": 380,
-    "fixturesWithLocalPair": 20,
-    "fixturesWithLocalDate": 10,
+    "fixturesWithLocalPair": 40,
+    "fixturesWithLocalDate": 20,
     "localDateRange": [
       "2026-08-21",
-      "2026-08-24"
+      "2026-08-31"
     ],
     "providerSamples": [
       {
@@ -77,13 +77,11 @@
         ]
       }
     ],
-    "detailAttempts": 10,
+    "detailAttempts": 0,
     "detailRejected": 0,
-    "detailFailed": 10,
-    "detailFailureReasons": {
-      "403": 10
-    },
-    "detailSkippedByBlock": 0,
+    "detailFailed": 0,
+    "detailFailureReasons": {},
+    "detailSkippedByBlock": 20,
     "capabilityChecked": false,
     "capabilityDenied": [],
     "requestedIncludes": [
