@@ -23,6 +23,8 @@ const PASS_SPEED = 17, SHOT_SPEED = 27;   // 球速(公尺/秒)—— 球不再�
 const LANE_R = 3.4;               // 「站在傳球路線上」的判定半徑(公尺)
 const BOX_X = 16.5;               // 禁區深度,射門區由它推
 const BREAK_MAX = 6;              // 快攻演出的上限秒數(超時強制收尾,見下)
+const AVOID_R = 4.6;              // 球員進入這個距離才需要繞行(公尺)
+const AVOID_MAX = 4.2;            // 避讓只改演出目標,不把球員推到別處(公尺)
 
 // 陣型字串 → 各排人數。認不得就退 4-4-2(呼叫端標「推估」)
 export function parseFormation(label) {
@@ -65,6 +67,41 @@ export function pickXI(corePlayers, rows, season) {
     while (xi[b].length < need[b] && spare.length) xi[b].push(spare.shift().name);
   }
   return xi;
+}
+
+/*
+ * 球員彼此接近時沿切線繞行，而不是把人硬推開。這是純幾何的目標偏移:
+ * 不讀比分、不讀 λ、也不改 holder 或進球排程，所以避讓只能改畫面路線。
+ * pairIndex 讓同一對球員選到同一側的切線，避免兩人互相閃到相反方向。
+ */
+export function avoidanceOf(player, target, players, pairIndex) {
+  const tx = target.x - player.x;
+  const ty = target.y - player.y;
+  let ax = 0, ay = 0;
+  const indexOf = p => {
+    const i = players.indexOf(p);
+    return i < 0 ? 0 : i;
+  };
+  const i = pairIndex ?? indexOf(player);
+  for (const other of players) {
+    if (other === player) continue;
+    const dx = other.x - player.x;
+    const dy = other.y - player.y;
+    const d = Math.hypot(dx, dy);
+    if (!Number.isFinite(d) || d >= AVOID_R) continue;
+    const closing = tx * dx + ty * dy;
+    if (closing <= 0 && d > 2.2) continue;
+    const j = indexOf(other);
+    const weight = Math.max(0, (AVOID_R - d) / AVOID_R);
+    // 對兩人使用同一個世界方向的切線，才能並肩繞過，而非相撞後分開。
+    const side = i < j ? 1 : -1;
+    ax += (-dy / Math.max(d, 0.001)) * side * weight;
+    ay += (dx / Math.max(d, 0.001)) * side * weight;
+  }
+  const mag = Math.hypot(ax, ay);
+  if (!mag) return { x: 0, y: 0 };
+  const scale = Math.min(AVOID_MAX, mag * AVOID_MAX);
+  return { x: (ax / mag) * scale, y: (ay / mag) * scale };
 }
 
 /* 測試用的內部狀態出口(唯讀快照,外面改不到東西)。
@@ -290,12 +327,13 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
 
     for (const p of players) {
       const a = aim(p);
+      const avoid = avoidanceOf(p, a, players);
       // 抖動只是別讓點看起來焊死;持球者不抖(他要對得上球)
       const jx = p === holder ? 0 : Math.sin(simT * 0.9 + p.ph) * 1.4;
       const jy = p === holder ? 0 : Math.cos(simT * 0.7 + p.ph) * 1.6;
       const k = Math.min(1, dt * (p === holder || p === presser ? 3.2 : 2.2));
-      p.x += ((a.x + jx) - p.x) * k;
-      p.y += ((a.y + jy) - p.y) * k;
+      p.x += ((a.x + avoid.x + jx) - p.x) * k;
+      p.y += ((a.y + avoid.y + jy) - p.y) * k;
       p.x = Math.max(1, Math.min(FW - 1, p.x));
       p.y = Math.max(1.5, Math.min(FH - 1.5, p.y));
     }
@@ -349,12 +387,19 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   probe = () => ({
     goalsPlayed, pendingGoal, half, min: st.min,
     inBounds: players.every(p => p.x >= 0 && p.x <= FW && p.y >= 0 && p.y <= FH),
+    minSeparation: players.reduce((best, p, i) => players.slice(i + 1)
+      .reduce((inner, q) => Math.min(inner, Math.hypot(p.x - q.x, p.y - q.y)), best), Infinity),
   });
 
   let raf = null, last = performance.now(), alive = true;
   const loop = now => {
     if (!alive) return;
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    /* 夾住負值。瀏覽器不會給比 mount 時還早的 rAF 時戳,但無畫布的測試台會
+       (它自己從 0 開始餵 now),於是第一格的 dt 變成負的 —— 位置往目標的
+       **反方向**跳一下,而跳多遠取決於行程已經跑多久。
+       實測:同一個種子,單獨跑 node scripts/test.mjs 全綠、npm test 就紅,
+       因為後者讓 test.mjs 晚了幾百毫秒起步。負的 frame delta 本來就沒有意義。 */
+    const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
     if (!st.done) step(dt);
     draw();
     raf = requestAnimationFrame(loop);

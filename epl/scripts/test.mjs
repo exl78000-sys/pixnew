@@ -2097,7 +2097,14 @@ async function checkDataGap() {
           homeCode: 'AAA', awayCode: 'BBB', lambdaHome: 1.8, lambdaAway: 1.1, rng,
         });
         const FPS = 30, SEC_PER_MIN = 60 / 90;    // 頁面把一分鐘壓成約 0.67 秒
-        let now = 0, kickoffs = 0, lastScore = 0;
+        /* 合成時鐘要從**現在**起算。從 0 起算的話第一格 now 比 mount 當下的
+           performance.now() 還小,dt 變負值 —— 而負多少取決於行程跑了多久,
+           於是同一個種子在 node 單跑與 npm test 裡結果不同(實測踩過)。 */
+        let now = performance.now(), kickoffs = 0, lastScore = 0;
+        /* **逐格量,不要只看最後一格。** `__animProbe()` 是呼叫當下的快照;
+           跑完才叫一次的話,「整場都沒有疊在一起」這句話一格都沒驗到 ——
+           實測那樣的斷言在最小間距 0.11m(全場)的情況下照樣全綠。 */
+        let minSep = Infinity, crowded = 0, frames = 0;
         for (let f = 0; f < 95 * FPS * SEC_PER_MIN; f++) {
           now += 1000 / FPS;
           const min = Math.floor(f / (FPS * SEC_PER_MIN));
@@ -2105,11 +2112,16 @@ async function checkDataGap() {
           if (dueSides.length !== lastScore) { kickoffs++; lastScore = dueSides.length; }
           api.setState({ min, done: min >= 95, dueSides, hs: 0, as: 0 });
           queued?.(now);
+          const sep = anim.__animProbe().minSeparation;
+          minSep = Math.min(minSep, sep);
+          if (sep < 1.2) crowded++;
+          frames++;
         }
+        const out = anim.__animProbe();
         api.destroy();
         globalThis.requestAnimationFrame = prevRaf;
         globalThis.cancelAnimationFrame = prevCancel;
-        return anim.__animProbe();
+        return { ...out, minSep, crowdPct: (crowded / frames) * 100 };
       };
       const two = [[20, 'home'], [60, 'away']];
       const seeds = [1, 7, 42, 1234];
@@ -2122,6 +2134,39 @@ async function checkDataGap() {
         ['快攻有保底收尾(演出不該吞掉模型排的進球)', /breakClock > BREAK_MAX/.test(src)],
         ['球有飛行時間,不是每秒固定推進度', /dt \/ ball\.dur/.test(src) && !/ball\.t \+ dt \* 2\.6/.test(src)],
         ['丟球由傳球路線決定誰攔到,不是隨機挑一個對手', /function laneCut/.test(src) && /turnover\(chooseNext\(\)\)/.test(src)],
+        /* 避讓的真正防線在這四條**純函式**斷言上:它們是精確值,沒有門檻。
+           跑完整場那條只能當毛胚(見下面) —— 有避讓與沒避讓的壅擠比例
+           實測是 5.1~12.9% 對 7.6~22.7%(各 24 個種子),兩個分佈重疊,
+           **單一門檻分不開**。所以行為要在函式層釘死,不要靠跑一場的數字。 */
+        ['擋路的人在正前方時,偏移垂直於連線(沿切線繞,不是往後退)', (() => {
+          const p = { x: 0, y: 0 }, q = { x: 2, y: 0 };
+          const v = anim.avoidanceOf(p, { x: 5, y: 0 }, [p, q], 0);
+          return Math.abs(v.y) > 0 && Math.abs(v.x) < 1e-9;
+        })()],
+        ['迎面而來的兩人偏向同一個世界方向(並肩錯身,不是互相閃到對面)', (() => {
+          const p = { x: 0, y: 0 }, q = { x: 2, y: 0 };
+          const a = anim.avoidanceOf(p, { x: 5, y: 0 }, [p, q]);
+          const b = anim.avoidanceOf(q, { x: -3, y: 0 }, [p, q]);
+          return Math.sign(a.y) !== 0 && Math.sign(a.y) === Math.sign(b.y);
+        })()],
+        ['離得夠遠就完全不閃(避讓不是常態偏移)', (() => {
+          const p = { x: 0, y: 0 }, q = { x: 5, y: 0 };   // 5 > AVOID_R
+          const v = anim.avoidanceOf(p, { x: 20, y: 0 }, [p, q]);
+          return v.x === 0 && v.y === 0;
+        })()],
+        ['背對著走就不閃(只繞正在擋路的人)', (() => {
+          const p = { x: 0, y: 0 }, q = { x: -3, y: 0 };  // 在身後,而且不算太近
+          const v = anim.avoidanceOf(p, { x: 5, y: 0 }, [p, q]);
+          return v.x === 0 && v.y === 0;
+        })()],
+        /* 跑完整場的那條:守的是「整個崩掉」,不是「避讓有沒有生效」。
+           門檻 20% 取在無避讓的中位數(11.9%)與最大值(22.7%)之間 ——
+           它抓得到「避讓被整個拿掉又剛好遇上壞種子」,抓不到「效果變差一點」。
+           那條界線就是分不開的,寫在這裡免得下一個人以為它守得更多。
+           實測有避讓:24 個種子 5.1~12.9%,這四個種子最大 9.3%。 */
+        ['整場不會有一半時間疊在一起(毛胚防線,不是避讓生效的證明)',
+          results.every(r => r.crowdPct < 20)],
+        ['球員從頭到尾沒有完全重合', results.every(r => r.minSep > 0)],
         ['抖動吃模擬時鐘,不吃 performance.now(牆上時間會讓同種子不同劇本)',
           !/performance\.now\(\) \/ 1000/.test(src) && /simT \+= dt/.test(src)],
         ['球員不會被畫到場外', results.every(r => r.inBounds)],
