@@ -125,11 +125,32 @@ async function main() {
     console.log('   performance:', JSON.stringify(starters[0].performance ?? null).slice(0, 200));
   }
   sample('content.playerStats', c.playerStats, 0);
+  /* 逐人統計的內部形狀 —— canonical detail 的 `players` 要的是
+     minutes / rating / goals / assists / shots / passes / duels / cards。
+     不知道 stats 怎麼包就寫不出對映,而猜欄位名是本站踩過最多次的坑。 */
+  const oneId = Object.keys(c.playerStats ?? {})[0];
+  const one = c.playerStats?.[oneId];
+  if (one) {
+    console.log(`\n   逐人統計樣本(${one.name}):stats 是 ${Array.isArray(one.stats) ? one.stats.length + ' 組陣列' : typeof one.stats}`);
+    const groups = Array.isArray(one.stats) ? one.stats : Object.values(one.stats ?? {});
+    groups.slice(0, 3).forEach(g => {
+      console.log(`     ・${g?.title ?? g?.key ?? '?'} → ${cut(g?.stats)}`);
+      const inner = g?.stats ?? {};
+      Object.entries(inner).slice(0, 8).forEach(([k, v]) => console.log(`         ${k.padEnd(24)} ${JSON.stringify(v).slice(0, 90)}`));
+    });
+  }
   const ev = c.matchFacts?.events;
   sample('matchFacts.events', ev, 0);
+  console.log('\n   eventTypes(全部):', JSON.stringify(ev?.eventTypes));
   if (Array.isArray(ev?.events)) {
-    console.log('\n   事件前 4 筆:');
-    ev.events.slice(0, 4).forEach(e => console.log(`     ${JSON.stringify(e).slice(0, 170)}`));
+    const byType = {};
+    for (const e of ev.events) byType[e.type] = (byType[e.type] ?? 0) + 1;
+    console.log('   事件型別分佈:', JSON.stringify(byType));
+    // 每一種型別各印一筆 —— 進球與換人的欄位名是對映的關鍵
+    for (const t of Object.keys(byType)) {
+      const e = ev.events.find(x => x.type === t);
+      console.log(`     [${t}] ${JSON.stringify(e).slice(0, 260)}`);
+    }
   }
 
   console.log(`\n本次共 ${requests} 個請求。這支不寫任何檔案。`);
