@@ -2363,6 +2363,29 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* ── fitPoisson 的擬合目標(2026-09-04)── 帶 tfh/tfa 才改變擬合;沒帶跟原本一個位元都不差(golden 另守) */
+    ...(() => {
+      const codes = ['A', 'B', 'C'];
+      const mk = (h, a, fh, fa, extra = {}) => ({ played: true, home: h, away: a, fh, fa, date: '2025-09-01', ...extra });
+      const base = [mk('A', 'B', 3, 0), mk('B', 'C', 1, 1), mk('C', 'A', 0, 2), mk('A', 'C', 2, 1), mk('B', 'A', 0, 1), mk('C', 'B', 1, 0)];
+      const opt = { refDate: '2025-09-02', iters: 300 };
+      const m0 = fitPoisson(base, codes, opt);
+      const m1 = fitPoisson(base.map(m => ({ ...m, tfh: m.fh, tfa: m.fa })), codes, opt);
+      const m2 = fitPoisson(base.map(m => ({ ...m, tfh: m.fh * 0.5 + 0.9, tfa: m.fa * 0.5 + 0.9 })), codes, opt);
+      const same = (x, y) => x.att.every((v, i) => v === y.att[i]) && x.def.every((v, i) => v === y.def[i]) && x.mu === y.mu;
+      return [
+        ['擬合目標等於進球時,結果跟不帶目標一個位元都不差', same(m0, m1)],
+        ['擬合目標不同時攻守強度真的跟著變', !same(m0, m2)],
+        /* ρ 讀真實進球(tau 的 0/1 判斷只對整數有意義);但它挑的是在擬合出來的 λ 下最好的值,λ 變了 ρ 可以變,
+           所以驗的是原始碼:fitRho 裡比的是 m.fh / m.fa,不是擬合目標 */
+        ['ρ 的擬合讀真實進球,不讀擬合目標', (() => {
+          const src = readFileSync(join(ROOT, 'scripts', 'lib', 'poisson.mjs'), 'utf8');
+          const body = src.slice(src.indexOf('function fitRho'), src.indexOf('export function lambdas'));
+          return /tau\(m\.fh, m\.fa/.test(body) && !/\byh\b|\bya\b|tfh|tfa/.test(body);
+        })()],
+      ];
+    })(),
+
     /* ── 逐場統計(FotMob)接進真實管線(2026-09-03)────────────────
        產物 matchstats.json 的每一場比分要等於 results.json(獨立來源);控球相加 100;
        彙總要對得回逐場重算;本季賽後報告掛的 advanced 來源標 fotmob 且 coverage 照實

@@ -89,13 +89,16 @@ async function main() {
     : { _note: '逐場球隊 xG(Understat getTeamData 的 dates)。產生:node scripts/fetch-team-xg.mjs。每隊每季進球總和已對回本站賽果,對不上整隊該季不收。', seasons: {}, rejected: [] };
   store.rejected = [];
 
-  for (const season of [P.lastSeason, P.currentSeason]) {
+  /* --seasons=2023-24,2024-25:往季(模型訓練用的歷史)。2026-09-04 為了「用 xG 擬合強度」的回測加的:
+     走查回測要調參季與驗收季分開,xG 只有上季的話沒得驗。往季跟上季一樣視為歷史:驗證過就不重抓。 */
+  const extra = (arg('seasons') ?? '').split(',').map(x => x.trim()).filter(Boolean);
+  for (const season of [...extra, P.lastSeason, P.currentSeason]) {
     const year = season.slice(0, 4);
     const codes = codesOf(season);
     if (!codes.length) { console.log(`  ${season}:本站還沒有這季的賽果,跳過`); continue; }
     store.seasons[season] ??= {};
     const bucket = store.seasons[season];
-    const isLast = season === P.lastSeason;
+    const isLast = season !== P.currentSeason;   // 往季與上季都是歷史
     for (const code of codes) {
       // 上季驗證過就不重抓(歷史不會變);本季每次刷新
       if (isLast && !FORCE && bucket[code]?.verified) continue;
