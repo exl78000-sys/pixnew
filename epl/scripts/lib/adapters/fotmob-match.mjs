@@ -70,12 +70,17 @@ const TEAM_STAT_KEYS = {
   total_shots: 'shots',
   ShotsOnTarget: 'shotsOn',
   ShotsOffTarget: 'shotsOff',
-  blocked_shots: 'blockedShots',
+  /* 下面這幾個是**第一次跑完之後才確定的**。我原本照直覺寫成 `offsides`、
+     `saves`、`blocked_shots`,全部對不上 —— 抓取器把對映不到的 key 印出來
+     才看到真正的名字。大小寫與命名風格在同一份 payload 裡並不一致
+     (`Offsides` 大寫、`keeper_saves` 加了前綴、tackles 是 i18n 字串)。 */
+  shot_blocks: 'blockedShots',
   corners: 'corners',
-  offsides: 'offsides',
+  Offsides: 'offsides',
   fouls: 'fouls',
-  saves: 'saves',
-  accurate_passes: 'passes',              // fractionWithPercentage:value=成功、total=嘗試
+  keeper_saves: 'saves',
+  passes: 'passes',                       // 傳球嘗試
+  accurate_passes: 'passesAccurate',      // 傳球成功
   expected_goals: 'xG',
 };
 
@@ -90,12 +95,6 @@ export function fotmobTeamStats(raw) {
       const field = TEAM_STAT_KEYS[row.key];
       if (!field) { if (row.key) unmapped.add(row.key); continue; }
       const [h, a] = row.stats;
-      if (field === 'passes') {
-        // 成功/嘗試 兩個數字都在同一列:value 是成功、total 是嘗試
-        home.passesAccurate = numOrNull(h); away.passesAccurate = numOrNull(a);
-        home.passes = numOrNull(row.total?.[0] ?? null); away.passes = numOrNull(row.total?.[1] ?? null);
-        continue;
-      }
       home[field] = numOrNull(h); away[field] = numOrNull(a);
     }
   }
@@ -121,16 +120,22 @@ function flatPlayerStats(entry) {
   return out;
 }
 
-const v = (s, key) => numOrNull(s[key]?.value);
-const t = (s, key) => numOrNull(s[key]?.total);
+/* 用過的球員統計 key 都登記起來,沒登記的由 `unmappedPlayerStats` 回報。
+   球隊統計那邊已經證明「照直覺猜名字」會錯一半(offsides/saves/blocked_shots
+   三個全錯),逐人這一層同樣不要猜 —— 讓它自己講還差什麼。 */
+const USED_PLAYER_KEYS = new Set();
+const v = (s, key) => { USED_PLAYER_KEYS.add(key); return numOrNull(s[key]?.value); };
+const t = (s, key) => { USED_PLAYER_KEYS.add(key); return numOrNull(s[key]?.total); };
 
 export function fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode }) {
   const out = { [homeCode]: [], [awayCode]: [] };
+  const seen = new Set();
   for (const entry of Object.values(raw?.content?.playerStats ?? {})) {
     const code = Number(entry?.teamId) === Number(homeId) ? homeCode
       : Number(entry?.teamId) === Number(awayId) ? awayCode : null;
     if (!code) continue;
     const s = flatPlayerStats(entry);
+    for (const k of Object.keys(s)) seen.add(k);
     out[code].push({
       providerId: entry.id ?? null,
       name: entry.name ?? '',
@@ -166,6 +171,7 @@ export function fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode }) {
       xA: v(s, 'expected_assists'),
     });
   }
+  out.__unmapped = [...seen].filter(k => !USED_PLAYER_KEYS.has(k));
   return out;
 }
 
@@ -254,7 +260,10 @@ export function normaliseFotmobMatch(raw, { fixture, season = null } = {}) {
   const awayId = raw?.general?.awayTeam?.id ?? raw?.content?.lineup?.awayTeam?.id ?? null;
 
   const stats = fotmobTeamStats(raw);
-  const players = fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode });
+  const playersRaw = fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode });
+  const unmappedPlayerStats = playersRaw.__unmapped ?? [];
+  delete playersRaw.__unmapped;
+  const players = playersRaw;
   const events = fotmobEvents(raw, { homeCode, awayCode });
   attachCards(players, events);
 
@@ -293,8 +302,9 @@ export function normaliseFotmobMatch(raw, { fixture, season = null } = {}) {
       lineups: hasLineups,
       tracking: false, speed: false, distance: false, sprints: false,
     },
-    // 對映不到的球隊統計 key —— 不猜,回報出來讓下一次補對照表
+    // 對映不到的 key —— 不猜,回報出來讓下一次補對照表
     unmappedStats: stats.unmapped,
+    unmappedPlayerStats,
     unavailable: ['speed', 'distance', 'sprints'],
   };
 }

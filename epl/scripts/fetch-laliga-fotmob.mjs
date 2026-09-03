@@ -87,6 +87,7 @@ async function main() {
   await mkdir(DIR, { recursive: true });
   let ok = 0, rejected = 0;
   const unmappedAll = new Set();
+  const unmappedPlayers = new Set();
   for (const f of pending.slice(0, limit)) {
     const key = `${f.home}|${f.away}`;
     const { json, error } = await getMatch(byKey.get(key).matchId);
@@ -100,6 +101,7 @@ async function main() {
       rejected++; continue;
     }
     for (const k of detail.unmappedStats ?? []) unmappedAll.add(k);
+    for (const k of detail.unmappedPlayerStats ?? []) unmappedPlayers.add(k);
     store.matches[key] = detail;
     ok++;
     console.log(`  ✔ ${key} ${f.fh}:${f.fa}`
@@ -119,6 +121,9 @@ async function main() {
   if (unmappedAll.size) {
     console.log(`  ⚠ 這些球隊統計 key 還沒有對照(顯示成「—」):${[...unmappedAll].join('、')}`);
     console.log('    要用的話把它們加進 lib/adapters/fotmob-match.mjs 的 TEAM_STAT_KEYS。');
+  }
+  if (unmappedPlayers.size) {
+    console.log(`  ⚠ 這些**逐人**統計 key 還沒有用到:${[...unmappedPlayers].join('、')}`);
   }
 }
 
