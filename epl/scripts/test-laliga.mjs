@@ -13,6 +13,7 @@ import { officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
 import { verifyTranslation } from './lib/report/translate.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { backfillScores } from './lib/laliga-matches.mjs';
+import { normaliseFotmobMatch, ADAPTER_VERSION, fotmobPos } from './lib/adapters/fotmob-match.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
@@ -47,6 +48,134 @@ check('已完賽場次不拿重擬合機率冒充賽前預測',
   fixtures.filter(f => f.played).every(f => f.prediction === null || f.prediction.snapshot === true));
 check('已完賽場次的快照只有 1X2,不會混進賽前 xG',
   fixtures.filter(f => f.played && f.prediction).every(f => f.prediction.xgHome === undefined));
+/* ── FotMob 賽後轉換(2026-09-03 加)────────────────────────────
+   SportMonks 方案取消後的接手來源。用**合成 payload** 測,不依賴快取狀態 ——
+   欄位形狀是探測出來的真東西(見 adapter 檔頭),這裡守的是轉換不要走樣。
+
+   會出的錯都不會拋例外:欄位名猜錯 → 那一欄靜靜是 null;grid 給 null →
+   十一個人被畫成一條線(Number('') === 0);烏龍球掛到踢進的人身上 → 配錯人。 */
+const fmRaw = {
+  general: { matchId: '1', matchTimeUTCDate: '2026-08-15T17:30:00.000Z',
+    homeTeam: { id: 100, name: 'H' }, awayTeam: { id: 200, name: 'A' } },
+  header: { status: { finished: true, started: true, scoreStr: '2 - 1' } },
+  content: {
+    stats: { Periods: { All: { stats: [{ title: 'Top stats', stats: [
+      { title: 'x', key: 'shots', stats: [null, null], type: 'title' },     // 分隔列,要跳過
+      { key: 'BallPossesion', stats: [52, 48], type: 'text' },
+      { key: 'total_shots', stats: [18, 6], type: 'text' },
+      { key: 'Offsides', stats: [4, 1], type: 'text' },
+      { key: 'keeper_saves', stats: [2, 7], type: 'text' },
+      { key: 'shot_blocks', stats: [2, 3], type: 'text' },
+      { key: 'expected_goals', stats: ['1.93', '0.24'], type: 'text' },
+      { key: 'some_new_key_we_have_not_seen', stats: [1, 2], type: 'text' },
+    ] }] } } },
+    lineup: {
+      homeTeam: { id: 100, formation: '4-4-2', coach: { name: 'C' },
+        starters: [...Array(11)].map((_, i) => ({
+          id: 1000 + i, name: `H${i}`, shirtNumber: String(i + 1),
+          positionId: i === 0 ? 11 : i < 5 ? 35 : i < 9 ? 75 : 105,
+          performance: { rating: 7 + i / 10 },
+          verticalLayout: { x: i * 0.1, y: i === 0 ? 0.1 : i < 5 ? 0.35 : i < 9 ? 0.6 : 0.85 },
+        })), subs: [{ id: 1100, name: 'HS', shirtNumber: '20', positionId: 75 }] },
+      awayTeam: { id: 200, formation: '4-3-3', coach: { name: 'D' },
+        starters: [...Array(11)].map((_, i) => ({
+          id: 2000 + i, name: `A${i}`, shirtNumber: String(i + 1),
+          positionId: i === 0 ? 11 : i < 5 ? 35 : i < 9 ? 75 : 105,
+          performance: { rating: 6 + i / 10 },
+          verticalLayout: { x: i * 0.1, y: i === 0 ? 0.1 : i < 5 ? 0.35 : i < 9 ? 0.6 : 0.85 },
+        })), subs: [] },
+    },
+    playerStats: {
+      1001: { id: 1001, name: 'H1', teamId: 100, isGoalkeeper: false, shirtNumber: '2', positionId: 35,
+        stats: [{ title: 'Top', stats: {
+          'FotMob rating': { key: 'rating_title', stat: { value: 7.1 } },
+          'Minutes played': { key: 'minutes_played', stat: { value: 90 } },
+          Goals: { key: 'goals', stat: { value: 1 } },
+          Assists: { key: 'assists', stat: { value: 0 } },
+          Offsides: { key: 'Offsides', stat: { value: 2 } },
+          'Shots on target': { key: 'ShotsOnTarget', stat: { value: 3 } },
+          'Shots off target': { key: 'ShotsOffTarget', stat: { value: 1 } },
+          'Blocked shots': { key: 'blocked_shots', stat: { value: 1 } },
+          'Duels won': { key: 'duel_won', stat: { value: 4 } },
+          'Duels lost': { key: 'duel_lost', stat: { value: 2 } },
+          Tackles: { key: 'matchstats.headers.tackles', stat: { value: 5 } },
+        } }] },
+    },
+    matchFacts: { events: { events: [
+      { type: 'Goal', time: 20, isHome: true, player: { id: 1001, name: 'H1' } },
+      // 烏龍球:踢進的人是客隊,得分方是主隊,而且**不掛射手**
+      { type: 'Goal', time: 40, isHome: false, ownGoal: true, player: { id: 2001, name: 'A1' } },
+      { type: 'Goal', time: 60, isHome: false, player: { id: 2002, name: 'A2' } },
+      { type: 'Card', time: 70, isHome: true, card: 'Yellow', player: { id: 1001, name: 'H1' } },
+      { type: 'Half', time: 45 }, { type: 'Comment', time: 12, isHome: true },
+    ] } },
+  },
+};
+const fmFixture = { season: '2026-27', home: 'ALA', away: 'GET', played: true, fh: 2, fa: 1, kickoff: null };
+const fmDetail = normaliseFotmobMatch(fmRaw, { fixture: fmFixture });
+const fmHome = fmDetail.teamStats.ALA, fmP = fmDetail.players.ALA[0];
+const fmGoals = fmDetail.events.filter(e => e.type === 'Goal');
+check('FotMob:球隊統計用實測過的 key(Offsides 大寫、keeper_saves、shot_blocks)',
+  fmHome.possession === 52 && fmHome.shots === 18 && fmHome.offsides === 4
+  && fmHome.saves === 2 && fmHome.blockedShots === 2 && fmHome.xG === 1.93);
+check('FotMob:沒見過的 key 不猜,回報出來',
+  fmDetail.unmappedStats.includes('some_new_key_we_have_not_seen'));
+check('FotMob:分隔列(type=title)不會被當成數據', fmHome.shots === 18);
+check('FotMob:逐人沒有「總射門」,由射正+射偏+被封阻相加',
+  fmP.shots.on === 3 && fmP.shots.total === 5);
+check('FotMob:對抗總數是 won+lost 自己加', fmP.duels.won === 4 && fmP.duels.total === 6);
+check('FotMob:Tackles 的 key 是 i18n 字串,不是 tackles', fmP.tackles.total === 5);
+check('FotMob:越位用大寫 Offsides', fmP.offsides === 2);
+check('FotMob:牌從事件補回球員身上(playerStats 沒有牌)', fmP.cards.yellow === 1);
+check('FotMob:烏龍球算給對面、而且不掛射手(配錯人比不配對糟)', (() => {
+  const og = fmGoals.find(e => e.detail === 'Own Goal');
+  return og && og.team === 'ALA' && og.player === null && og.playerId === null;
+})());
+check('FotMob:進球方由 isHome 決定,兩隊各自對得上比分',
+  fmGoals.filter(e => e.team === 'ALA').length === 2 && fmGoals.filter(e => e.team === 'GET').length === 1);
+check('FotMob:半場與文字評論不進時間軸',
+  fmDetail.events.every(e => ['Goal', 'Card', 'subst'].includes(e.type)));
+/* grid 一定要是真的值:rowsOf 是 Number(grid ?? '') 而 Number('') === 0,
+   給 null 的話十一個人會被畫成一條線,而且不會有任何地方報錯。 */
+check('FotMob:先發有真正的站位 grid(不是 null)', (() => {
+  const xi = fmDetail.lineups.ALA.xi;
+  const rows = new Set(xi.map(p => String(p.grid ?? '').split(':')[0]));
+  return xi.every(p => /^\d+:\d+$/.test(String(p.grid))) && rows.size === 4;
+})());
+check('FotMob:轉出來的 detail 過得了賽後報告的守門', (() => {
+  const report = buildProviderMatchReport({ fixture: fmFixture, detail: fmDetail, nameOf: c => c });
+  return !!report && report.sides.ALA.shape.label === '4-4-2'
+    && (report.sides.ALA.rows ?? []).length === 4        // 不是一條線
+    && report.sides.ALA.xG === 1.93;
+})());
+check('FotMob:比分對不上就不發布(既有守門仍然生效)',
+  buildProviderMatchReport({ fixture: { ...fmFixture, fh: 5 }, detail: fmDetail, nameOf: c => c }) === null);
+check('FotMob:位置代碼是單字母 G/D/M/F(canonical 契約)',
+  fotmobPos(11) === 'G' && fotmobPos(35) === 'D' && fotmobPos(75) === 'M' && fotmobPos(105) === 'F');
+/* 快取存的是轉換後的結果 —— 對映表改了舊資料不會跟著變,所以版本要記在每一筆上。 */
+{
+  const cachePath = join(ROOT, 'data', 'raw', 'fotmob-la-liga', '2026-27-match-details.json');
+  const cache = existsSync(cachePath) ? JSON.parse(readFileSync(cachePath, 'utf8')) : { matches: {} };
+  const rows = Object.entries(cache.matches ?? {});
+  /* **版本數字會隨 CI 慢慢收斂,所以只回報不當紅線**(docs:check 那條
+     「會漂移的只回報、人為改動才擋」的同一個分界)。舊快取是加這個欄位之前
+     寫的,抓取器會自己把它們列入重抓 —— 紅在這裡只會變成沒有人看的紅。
+     當紅線的是**機制**:抓取器必須真的比對版本。 */
+  const fresh = rows.filter(([, d]) => d.adapterVersion === ADAPTER_VERSION).length;
+  console.log(`  · FotMob 快取:${fresh}/${rows.length} 場是最新對映表 v${ADAPTER_VERSION}`
+    + `${fresh < rows.length ? '(其餘會由抓取器自動重抓)' : ''}`);
+  check('FotMob:對映表改版時抓取器會自動重抓(不靠人記得 --force)', (() => {
+    const src = readFileSync(join(ROOT, 'scripts', 'fetch-laliga-fotmob.mjs'), 'utf8');
+    return /adapterVersion \?\? 0\) !== ADAPTER_VERSION/.test(src)
+      && /adapterVersion: ADAPTER_VERSION/.test(src);
+  })());
+  check('FotMob 快取:比分一律跟本站賽程一致(對不上的不該被收進來)',
+    rows.every(([key, d]) => {
+      const f = fixtures.find(x => `${x.home}|${x.away}` === key);
+      return !f || (d.score.home === f.fh && d.score.away === f.fa);
+    }), `${rows.length} 場`);
+}
+
 const officialMatches = Object.entries(official.matches ?? {});
 check('逐場正式先發已轉成本站資料格式', official.available === true && officialMatches.length > 0
   && official.sources?.includes('fotmob/enetpulse'));
