@@ -1,4 +1,4 @@
-import * as C from './core.js?v=9dd1d118';
+import * as C from './core.js?v=41590241';
 
 const app = document.getElementById('app');
 
@@ -92,6 +92,9 @@ try {
     ['supersubs', '板凳奇兵', '先發率(越低越常替補上場)', v => C.fx(v, 2)],
   ];
 
+  /* 帶 ?code= 就直接整頁畫該球員,不先畫列表 —— 列表的表格有延後綁定的排序處理,#app 被換掉之後會找不到節點而丟錯 */
+  if (C.qs('code') && byCode.has(String(C.qs('code')))) { openPlayer(byCode.get(String(C.qs('code')))); throw new Error('skip'); }   // 模組頂層不能 return;skip 是這個檔既有的「到此為止」慣例
+
   app.innerHTML = `
   <div class="page-head">
     <h1>球員</h1>
@@ -160,7 +163,7 @@ try {
               ${p.transferred ? `<span class="tiny dim">→ ${C.name(p.team)}</span>` : ''}</span>
             <b class="mono small">${fmt(p.value)}</b></div>`).join('') || '<div class="dim small">本季尚無資料</div>'}
       </div>`).join('');
-    document.querySelectorAll('[data-p]').forEach(el => { el.onclick = () => openPlayer(byCode.get(el.dataset.p)); });
+    document.querySelectorAll('[data-p]').forEach(el => { el.onclick = () => C.go('players', { code: el.dataset.p }); });
   }
 
   document.querySelectorAll('[data-season]').forEach(b => {
@@ -197,7 +200,7 @@ try {
       nameCell: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.playerPhoto(p, 28)} ${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}`,
       teamCol: { key: 'team', label: '球隊', value: p => C.name(p.team), render: p => C.teamCell(p.team) },
       afterId: [{ key: 'appearances', label: '出場', value: p => mode === 'current' ? (p.appearances ?? 0) : 0, num: true, render: p => mode === 'current' ? (p.appearances ?? '—') : '—' }],
-    }), { sortKey: 'minutes', desc: true, onRow: p => (cmpMode ? toggleCompare(p) : openPlayer(p)) });
+    }), { sortKey: 'minutes', desc: true, onRow: p => (cmpMode ? toggleCompare(p) : C.go('players', { code: p.code })) });
   };
 
   renderSeasonUI();
@@ -210,8 +213,7 @@ try {
 
   // 從賽後陣容、即時戰況或外部連結帶入 ?code= 時，直接開該球員詳情；
   // 不要求使用者先在 599 人清單裡重新搜尋一次。
-  const requestedPlayer = C.qs('code') ? byCode.get(String(C.qs('code'))) : null;
-  if (requestedPlayer) openPlayer(requestedPlayer);
+  if (C.qs('code')) app.insertAdjacentHTML('afterbegin', `<div class="note">找不到球員代碼 ${C.esc(String(C.qs('code')))} —— 可能是別的聯賽的球員,或已不在本季名單。</div>`);
 
   function toggleCompare(p) {
     compare = compare.includes(p.code) ? compare.filter(c => c !== p.code) : [...compare, p.code].slice(-2);
@@ -287,7 +289,8 @@ try {
           先發率 = 先發次數 ÷(出場分鐘/90),1.0 代表上場就是先發。</div></div>` : '';
     };
 
-    C.drawer(`${C.playerPhoto(p)} ${C.esc(p.name)}`, `
+    /* 完整頁,不是抽屜(2026-09-04,使用者要求):整頁換成這個球員,上方留回列表與回球隊的路 */
+    playerPage(`${C.playerPhoto(p, 56)} ${C.esc(p.fullName ?? p.name)}`, `${t.en}・${p.posZh}`, `
       <div class="card">
         <div class="spread">
           <div><div style="font-size:19px;font-weight:800">${C.esc(p.fullName)}</div>
@@ -346,10 +349,20 @@ try {
       <div><a href="${C.link('teams', { code: p.team })}">看 ${t.en} 的完整剖析 →</a></div>`);
   }
 
-  const pc = C.qs('code');
-  if (pc && byCode.has(pc)) openPlayer(byCode.get(pc));
-
 } catch (err) { if (err.message !== 'skip') C.fail(err); }
+
+/* 球員的完整頁:把 #app 換成這個球員。抽屜版 2026-09-04 移除 —— 簡版跟完整版差不多,留兩份就會分岔。 */
+function playerPage(title, sub, body) {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="page-head">
+      <div class="row small" style="gap:12px;margin-bottom:6px"><a href="${C.link('players')}">← 球員列表</a></div>
+      <h1 class="row" style="gap:10px;align-items:center">${title}</h1>
+      <p>${sub}</p>
+    </div>
+    <div class="player-page">${body}</div>`;
+  window.scrollTo(0, 0);
+}
 
 /* ── 西甲球員頁(Understat + SportMonks)────────
    Understat 給整季彙總，SportMonks 補身分欄位；版面與英超統一，
@@ -437,7 +450,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       nameCell: p => `<span class="player-cell">${C.playerPhoto(playerForPhoto(p), 28)}<span>${C.esc(p.name)}</span></span>`,
       teamCol: { key: 'team', label: '球隊', value: p => codeName(currentTeamCode(p)), left: true, render: teamCell },
       afterId: [{ key: 'games', label: '出場', value: p => p.games ?? 0, num: true }],
-    }), { sortKey: 'goals', desc: true, onRow: p => openUnderstatPlayer(p) })
+    }), { sortKey: 'goals', desc: true, onRow: p => C.go('players', { code: p.id }) })
       + `<div class="tiny dim" style="margin-top:8px">共 ${rows.length} 人。點欄位標題可換排序。
         <span class="mono">xGI/90</span> 只在上場時間達 ${leaders.minMinutes} 分鐘時給出。</div>`;
   };
@@ -529,7 +542,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       if (!el || !app.contains(el)) return;
       event.preventDefault();
       const p = byId.get(String(el.dataset.playerCode));
-      if (p) openUnderstatPlayer(p);
+      if (p) C.go('players', { code: p.id });
     };
     app.querySelectorAll('[data-player-code]').forEach(el => {
       el.onclick = activatePlayer;
@@ -568,7 +581,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     const radar = p.radar ? `<div class="card"><h3>能力雷達 <span class="dim tiny">${C.esc(season)}</span></h3>
       ${C.radar([{ name: p.name, color: C.team(primaryCode).colors?.[0] ?? '#00ff85', values: p.radar }], { size: 300 })}
       <div class="tiny dim center">與同季、同位置且達 ${leaders.minMinutes} 分鐘門檻的西甲球員相比</div></div>` : '';
-    C.drawer(`${C.playerPhoto(photoPlayer, 34)} ${C.esc(p.name)}`, `
+    playerPage(`${C.playerPhoto(photoPlayer, 56)} ${C.esc(p.name)}`, `${teamLabel}・資料來源 Understat + SportMonks`, `
       <div class="card"><div class="spread"><div>
         <div style="font-size:19px;font-weight:800">${C.esc(p.name)}</div>
         <div class="small muted">${teamLabel}・資料來源 Understat + SportMonks</div>
@@ -586,7 +599,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   const requestedPlayer = requestedId
     ? players.find(p => String(p.id) === String(requestedId))
     : null;
-  if (requestedPlayer) season = requestedPlayer.season;
+  /* 帶 ?code= 就直接整頁畫該球員、不畫列表(列表表格的延後綁定會在 #app 被換掉後丟錯) */
+  if (requestedPlayer) { season = requestedPlayer.season; openUnderstatPlayer(requestedPlayer); return; }
   draw();
-  if (requestedPlayer) openUnderstatPlayer(requestedPlayer);
 }

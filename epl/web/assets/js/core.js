@@ -722,106 +722,18 @@ export function drawer(title, html) {
   drawerEl.scrollTop = 0;
 }
 
-/* ── 共用球員詳情 ───────────────────── */
-// 球員頁、賽後分析與實時戰況共用同一份內容，避免三個頁面各自長出不同版本。
-export function openPlayerDrawer(p, { meta, mode = 'current' } = {}) {
-  if (!p) return;
-  const t = team(p.team);
-  const currentSeason = meta?.currentSeason ?? '本季';
-  const lastSeason = meta?.lastSeason ?? '上季';
-  const pctLine = (label, v, raw) => `
-    <div style="margin-bottom:7px"><div class="row small" style="justify-content:space-between">
-      <span class="muted">${label}</span><span class="mono">${raw ?? '—'}${v === null ? '' : ` <span class="dim">(${v} 分位)</span>`}</span></div>
-    ${bar(v ?? 0, 100, v >= 80 ? '' : v >= 50 ? 'alt' : 'hot')}</div>`;
-  const line = (l, v) => `<div class="stat-line"><span class="small muted">${l}</span><b class="mono">${v}</b></div>`;
-  const roleCard = st => {
-    if (!st) return '';
-    const rows = [
-      st.dreamteam > 0 ? line('入選官方單週最佳陣容', `${st.dreamteam} 次`) : '',
-      st.startRate !== null && st.startRate !== undefined
-        ? line('先發率', `${fx(st.startRate, 2)}${st.startRate >= 0.95 ? ' (幾乎場場先發)' : st.startRate < 0.8 ? ' (常從板凳上場)' : ''}`) : '',
-    ].filter(Boolean);
-    return rows.length ? `<div class="card"><h3>角色與高光</h3>${rows.join('')}
-      <div class="tiny dim" style="margin-top:8px">最佳陣容是每輪選出的單週最佳 11 人，計數不是平均 ——
-        它抓的是「打出過幾次亮眼表現」，跟上面的 per-90 平均值互補。
-        先發率 = 先發次數 ÷(出場分鐘/90)，1.0 代表上場就是先發。</div></div>` : '';
-  };
-
-  drawer(`${playerPhoto(p)} ${esc(p.name)}`, `
-    <div class="card">
-      <div class="spread">
-        <div><div style="font-size:19px;font-weight:800">${esc(p.fullName)}</div>
-          <div class="small muted">${p.posZh}・${p.age ?? '?'} 歲・${esc(t.en)}
-            ${p.squadNumber ? `・背號 ${p.squadNumber}${numberSourceMark(p)}` : ''}・£${fx(p.price, 1)}m</div></div>
-        ${p.status !== 'a' ? `<span class="pill bad">${esc(p.statusZh)}</span>` : '<span class="pill accent">可出賽</span>'}
-      </div>
-      ${p.news ? `<div class="note" style="margin-top:10px">${esc(p.news)}</div>` : ''}
-      ${p.transferred ? `<div class="note info" style="margin-top:10px">上季效力 ${name(p.lastTeam)}，本季已加盟 ${esc(t.en)}；下方數據為在原隊的表現。</div>` : ''}
-      ${p.isNewFace ? '<div class="note info" style="margin-top:10px">上季沒有英超出場紀錄(新援、新秀或長期缺陣)，沒有可比較的數據。</div>' : ''}
-    </div>
-
-    ${(() => {
-      const useCurrent = mode === 'current' && p.radarCurrent && p.qualifiedCurrent;
-      const radarValues = useCurrent ? p.radarCurrent : (p.qualified ? p.radar : null);
-      if (!radarValues) return '';
-      return `<div class="card"><h3>能力雷達 <span class="dim tiny">${useCurrent ? `本季 ${currentSeason}` : `上季 ${lastSeason}`}</span></h3>
-        ${radar([{ name: p.name, color: t.colors?.[0] ?? '#00ff85', values: radarValues }], { size: 300 })}
-        <div class="tiny dim center">與同位置、出場達門檻的球員相比的百分位</div>
-        <div style="margin-top:12px">${radarValues.map(r => pctLine(r.label, r.value, r.raw)).join('')}</div>
-      </div>`;
-    })()}
-
-    ${roleCard(mode === 'current' ? p.current : p.last)}
-
-    ${p.current ? `<div class="card"><h3>本季至今(${currentSeason})
-        <span class="dim tiny">${p.appearances} 場</span></h3>
-      ${line('出場 / 先發', `${p.current.minutes} 分鐘 / ${p.current.starts} 場`)}
-      ${line('進球 / 助攻', `${p.current.goals} / ${p.current.assists}`)}
-      ${line('期望進球 xG / 助攻 xA', `${p.current.xG} / ${p.current.xA}`)}
-      ${line('每 90 分鐘進球參與 xGI', p.current.xgi90)}
-      ${line('防守貢獻 / 90', p.current.defCon90)}
-      ${line('FPL 得分', p.current.points)}
-    </div>` : `<div class="note info">本季 ${currentSeason} 尚無出場數據。</div>`}
-
-    ${p.last ? `<div class="card"><h3>上季完整賽季(${lastSeason})</h3>
-      ${line('出場 / 先發', `${p.last.minutes} 分鐘 / ${p.last.starts} 場`)}
-      ${line('進球 / 助攻', `${p.last.goals} / ${p.last.assists}`)}
-      ${line('期望進球 xG / 助攻 xA', `${p.last.xG} / ${p.last.xA}`)}
-      ${line('終結超出期望', signed(p.last.finishing, 2))}
-      ${line('每 90 分鐘進球參與 xGI', p.last.xgi90)}
-      ${p.pos === 'GK' ? line('撲救 / 90・少失球', `${p.last.saves90} ・ ${signed(p.last.shotStop, 1)}`) : ''}
-      ${line('防守貢獻 / 90', p.last.defCon90)}
-      ${line('搶斷 / 解圍攔截 / 回收(每 90)', `${p.last.tackles90} / ${p.last.cbi90} / ${p.last.recoveries90}`)}
-      ${line('零封率', `${p.last.csRate}%`)}
-      ${line('黃紅牌加權', p.last.cards)}
-      ${line('FPL 總得分', p.last.points)}
-    </div>` : ''}
-
-    ${p.setPieces?.pen || p.setPieces?.fk || p.setPieces?.corner ? `<div class="card"><h3>定位球順位</h3>
-      ${p.setPieces.pen ? line('十二碼', `第 ${p.setPieces.pen} 順位`) : ''}
-      ${p.setPieces.fk ? line('直接自由球', `第 ${p.setPieces.fk} 順位`) : ''}
-      ${p.setPieces.corner ? line('角球 / 間接球', `第 ${p.setPieces.corner} 順位`) : ''}
-    </div>` : ''}
-    <div><a href="${link('players', { code: p.code })}">在球員頁開啟完整資料 →</a></div>
-    <div style="margin-top:8px"><a href="${link('teams', { code: p.team })}">看 ${esc(t.en)} 的完整剖析 →</a></div>`);
-}
-
-// resolvePlayer 可以回傳球員或 Promise；實時頁因此可在第一次點擊時才載入大型球員檔。
-export function bindPlayerLinks(root, resolvePlayer, options = {}) {
+/* 球員連結:點任何帶 data-player-code 的東西 → 直接進球員的完整頁(players.html?code=…)。
+   2026-09-04 之前是開半邊抽屜(簡版詳情),使用者要求只留完整頁 —— 兩份內容差不多,兩份就會分岔。
+   resolvePlayer 參數留著不用(呼叫端還在傳),頁面自己會找人。 */
+export function bindPlayerLinks(root, resolvePlayer = null, options = {}) {   // eslint-disable-line no-unused-vars
   if (!root) return;
   if (root.__playerLinkClick) root.removeEventListener('click', root.__playerLinkClick);
   if (root.__playerLinkKeydown) root.removeEventListener('keydown', root.__playerLinkKeydown);
 
-  const activate = async trigger => {
+  const activate = trigger => {
     const code = trigger?.dataset?.playerCode;
     if (!code) return;
-    trigger.setAttribute('aria-busy', 'true');
-    try {
-      const p = await resolvePlayer(code);
-      if (p) openPlayerDrawer(p, typeof options === 'function' ? options() : options);
-    } finally {
-      trigger.removeAttribute('aria-busy');
-    }
+    go('players', { code });
   };
   root.__playerLinkClick = event => {
     const trigger = event.target.closest?.('[data-player-code]');
