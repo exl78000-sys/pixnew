@@ -146,8 +146,16 @@ export function fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode }) {
       rating: v(s, 'rating_title'),
       captain: entry.isCaptain === true,
       substitute: false,
-      offsides: v(s, 'offsides'),
-      shots: { total: v(s, 'total_shots'), on: v(s, 'shots_on_target') },
+      offsides: v(s, 'Offsides'),
+      /* 逐人**沒有**「總射門」這個 key —— 只有射正/射偏/被封阻三個。
+         三個都在才相加,缺一個就留空:湊不齊的和是錯的數,不是估計值。 */
+      shots: {
+        total: (() => {
+          const on = v(s, 'ShotsOnTarget'), off = v(s, 'ShotsOffTarget'), blk = v(s, 'blocked_shots');
+          return [on, off, blk].every(x => x !== null) ? on + off + blk : null;
+        })(),
+        on: v(s, 'ShotsOnTarget'),
+      },
       goals: {
         total: v(s, 'goals'), conceded: v(s, 'goals_conceded'),
         assists: v(s, 'assists'), saves: v(s, 'saves'),
@@ -159,7 +167,11 @@ export function fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode }) {
         blocks: v(s, 'shot_blocks'),
         interceptions: v(s, 'interceptions'),
       },
-      duels: { total: t(s, 'duels_won'), won: v(s, 'duels_won') },
+      // 對抗:贏與輸是兩個 key,總數要自己加(同樣缺一個就留空)
+      duels: (() => {
+        const won = v(s, 'duel_won'), lost = v(s, 'duel_lost');
+        return { total: won !== null && lost !== null ? won + lost : null, won };
+      })(),
       dribbles: { attempts: t(s, 'dribbles_succeeded'), success: v(s, 'dribbles_succeeded') },
       fouls: { drawn: v(s, 'was_fouled'), committed: v(s, 'fouls') },
       cards: { yellow: null, red: null },        // 牌從事件推,playerStats 沒有
@@ -237,12 +249,35 @@ function attachCards(players, events) {
   }
 }
 
+/* 站位 → `grid`("排:位",跟 SportMonks 同一個格式)。
+   **一定要給真的值**:`rowsOf` 的實作是 `Number(player.grid ?? '')`,
+   而 `Number('') === 0` —— 給 null 的話 11 個人會全部落進「第 0 排」,
+   球場圖畫成一條線,而且不會有任何地方報錯。
+   (又一次「0 是一個看起來很像答案的數字」。) */
+function gridOf(starters) {
+  const ys = [...new Set(starters.map(p => Number(p.verticalLayout?.y)).filter(Number.isFinite))].sort((a, b) => a - b);
+  if (!ys.length) return new Map();
+  const out = new Map();
+  for (const y of ys) {
+    const row = ys.indexOf(y) + 1;
+    starters.filter(p => Number(p.verticalLayout?.y) === y)
+      .sort((a, b) => Number(a.verticalLayout?.x ?? 0) - Number(b.verticalLayout?.x ?? 0))
+      .forEach((p, i) => out.set(p.id, `${row}:${i + 1}`));
+  }
+  return out;
+}
+
 const sideLineup = (side, code) => ({
   formation: side?.formation ?? null,
-  xi: (side?.starters ?? []).map(p => ({
-    providerId: p.id ?? null, name: p.name ?? '',
-    shirt: numOrNull(p.shirtNumber), pos: fotmobPos(p.positionId), grid: null,
-  })),
+  xi: (() => {
+    const starters = side?.starters ?? [];
+    const grid = gridOf(starters);
+    return starters.map(p => ({
+      providerId: p.id ?? null, name: p.name ?? '',
+      shirt: numOrNull(p.shirtNumber), pos: fotmobPos(p.positionId),
+      grid: grid.get(p.id) ?? null,
+    }));
+  })(),
   bench: (side?.subs ?? side?.substitutes ?? []).map(p => ({
     providerId: p.id ?? null, name: p.name ?? '',
     shirt: numOrNull(p.shirtNumber), pos: fotmobPos(p.positionId), grid: null,

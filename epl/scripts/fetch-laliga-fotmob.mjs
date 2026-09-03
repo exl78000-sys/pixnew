@@ -33,6 +33,10 @@ const DAILY_LIMIT = 15;
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
 const limit = Math.max(0, Number(arg('limit') ?? DEFAULT_LIMIT));
 const dryRun = process.argv.includes('--dry-run');
+/* 快取存的是**轉換後**的 detail(不是原始 payload —— 一場約 200 KB,整季會到
+   七十幾 MB)。所以對映表改了之後,舊快取不會跟著變,要用 --force 重抓。
+   對映表穩定之後這件事就很少發生;會這樣設計是因為體積差兩個數量級。 */
+const force = process.argv.includes('--force');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const read = async p => { try { return JSON.parse(await readFile(p, 'utf8')); } catch { return null; } };
@@ -73,7 +77,7 @@ async function main() {
      而且那份的隊碼對照已經核對過。 */
   const byKey = new Map(Object.entries(lineups.matches ?? {}));
   const pending = fixtures.filter(f => f.played
-    && !store.matches[`${f.home}|${f.away}`]
+    && (force || !store.matches[`${f.home}|${f.away}`])
     && byKey.get(`${f.home}|${f.away}`)?.matchId);
 
   console.log(`  已完賽 ${fixtures.filter(f => f.played).length} 場・快取 ${Object.keys(store.matches).length} 場`

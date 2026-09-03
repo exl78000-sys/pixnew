@@ -19,7 +19,12 @@ function shapeOf(formation) {
 function rowsOf(players) {
   const rows = new Map();
   for (const player of players) {
-    const [row] = String(player.grid ?? '').split(':').map(Number);
+    /* `Number('') === 0` —— 沒有 grid 的話這裡會把整隊算成「第 0 排」,
+       球場圖畫成一條線而且不報錯(2026-09-03 接 FotMob 時實測踩到)。
+       空字串與 null 一律當成沒有站位資料,整份回 null 讓呼叫端退回。 */
+    const raw = String(player.grid ?? '').trim();
+    if (!raw) return null;
+    const [row] = raw.split(':').map(Number);
     if (!Number.isFinite(row)) return null;
     if (!rows.has(row)) rows.set(row, []);
     rows.get(row).push(player);
