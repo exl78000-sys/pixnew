@@ -1847,13 +1847,16 @@ async function checkDataGap() {
     /* ── 跨聯賽球員搜尋頁(2026-08-29,使用者要求:掛盃賽右邊,各聯賽自己的照舊)── */
     ['總球員頁:只在 SITE_PAGES、聯賽從註冊表來、不混排、空欄不畫', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
-      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-allplayers.js'), 'utf8');
+      /* 2026-09-03 併進「探索」單頁:內容搬到 allplayers-view.js,
+         page-allplayers.js 只剩轉址。導覽列由 explore 那一格承載。 */
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'allplayers-view.js'), 'utf8');
+      const redirect = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-allplayers.js'), 'utf8');
       const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
       const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const PAGES'));
-      return (core.match(/'allplayers'/g) ?? []).length >= 3          // SITE_PAGES + es1/en2 open
-        && sitePagesBlock.includes("'allplayers'")
-        && !core.slice(core.indexOf('const PAGES')).split('const GROUPS')[0].includes("'allplayers'")  // PAGES 沒有(兩個分頁那條坑)
-        && /'allplayers'/.test(bundle)                                 // 單檔版清單(靜靜消失那條坑)
+      return sitePagesBlock.includes("'explore'")                      // 導覽列上是 explore,不是三格
+        && !sitePagesBlock.includes("['allplayers'")                   // 舊的那一格已經拿掉
+        && /location\.replace/.test(redirect)                          // 舊網址保留轉址(書籤不斷)
+        && /'allplayers-view'/.test(bundle)                            // 單檔版清單(靜靜消失那條坑)
         && /Object\.keys\(C\.LEAGUES\)/.test(pg)                       // 註冊表,不寫死聯賽
         && /不可直接互比/.test(pg)                                     // xG/xA 模型不同的警語
         && /聯賽籤/.test(pg)                                           // 合併表:每列標出處
@@ -1982,14 +1985,17 @@ async function checkDataGap() {
 
     ['對戰模擬:只在 PAGES/分析組、誠實界線寫在畫面上、種子可重播', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
-      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-duel.js'), 'utf8');
+      /* 2026-09-03 併進「探索」單頁(足球知識 / 對戰模擬 / 球員搜尋 三個頁內分頁)。
+         內容搬到 duel-view.js,page-duel.js 只剩轉址;導覽列上是 explore 那一格。 */
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-view.js'), 'utf8');
       const pc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-core.js'), 'utf8');
-      /* 2026-08-30 搬進跨聯賽組(使用者要求放盃賽旁邊):SITE_PAGES 有、
-         PAGES 與分析組**不能有** —— 兩邊都放會出現兩個分頁 */
+      const explore = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8');
       const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS'));
       const pagesBlock = core.slice(core.indexOf('const GROUPS'));
-      return sitePagesBlock.includes("['duel', '對戰模擬']")
-        && sitePagesBlock.indexOf("'cups'") < sitePagesBlock.indexOf("'duel'")   // 盃賽旁邊
+      return sitePagesBlock.includes("['explore', '探索']")
+        && sitePagesBlock.indexOf("'cups'") < sitePagesBlock.indexOf("'explore'")   // 盃賽旁邊
+        && !sitePagesBlock.includes("['duel'")                        // 舊的三格都拿掉了
+        && /renderDuel/.test(explore) && /clearPageTimers/.test(explore)  // 換分頁要收計時器
         && !pagesBlock.includes("'duel'")
         && /跨聯賽/.test(pg) && /crestBy/.test(pg)                  // 頁內選聯賽、隊徽分聯賽表
         /* 生圖素材(2026-08-30):六張都在、各壓在 300KB 內、
@@ -2022,6 +2028,37 @@ async function checkDataGap() {
         && /inPlaySim/.test(pg) && /跳到結果/.test(pg)
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
+
+    /* ── 探索單頁(2026-09-03 加)──────────────────────────────
+       足球知識 / 對戰模擬 / 球員搜尋併成一頁三個分頁。做法照歐冠併進盃賽:
+       內容抽成 view 模組,舊網址保留轉址。 */
+    ...(() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const ex = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8');
+      const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+      const site = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS'));
+      const olds = ['knowledge', 'duel', 'allplayers'];
+      return [
+        ['三個舊分頁不再各佔導覽列一格',
+          olds.every(k => !site.includes(`['${k}',`)) && site.includes("['explore', '探索']")],
+        ['三個舊網址都保留轉址(書籤與外連不斷)',
+          olds.every(k => /location\.replace/.test(
+            readFileSync(join(ROOT, 'web', 'assets', 'js', `page-${k}.js`), 'utf8')))],
+        ['三個 view 模組都進了單檔版的共用清單(忘了改的話會從單檔版靜靜消失)',
+          olds.every(k => bundle.includes(`'${k}-view'`)) && bundle.includes("'explore'")],
+        /* 那三個模組原本是整頁的主人(app.innerHTML = ...),直接讓它們寫進
+           這一頁的 #app 會把分頁列一起蓋掉,所以要給內層容器。 */
+        ['每個 view 拿到的是內層容器,不是整頁的 #app',
+          /const body = document\.getElementById\('exploreBody'\)/.test(ex)
+          && /v\.render\(body\)/.test(ex)],
+        /* 對戰模擬有 rAF 迴圈與 pageInterval;不收的話換到別的分頁它還在背景跑
+           (單檔版的 hash 路由踩過同一個坑)。 */
+        ['換分頁前會收掉上一頁的計時器', /C\.clearPageTimers\(\)/.test(ex)],
+        ['網址跟著分頁走,但用 replaceState(上一頁要回到上一個頁面)',
+          /searchParams\.set\('view'/.test(ex) && /history\.replaceState/.test(ex)
+          && !/history\.pushState/.test(ex)],
+      ];
+    })(),
 
     /* ── 手機版面(2026-09-03 加)──────────────────────────────
        測試看不到 DOM,所以這裡守的是**結構與規則**;實際版面是用 375px 的
@@ -2174,9 +2211,9 @@ async function checkDataGap() {
           /\['predict', '我的預測'\]/.test(core)
           && core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS')).includes("'predict'")
           && !core.slice(core.indexOf('const GROUPS')).includes("['predict'")
-          && /'duel', 'predict'\]/.test(bundle)
+          && /'explore', 'predict'\]/.test(bundle)
           && /'predict-score'/.test(bundle)
-          && (core.match(/'duel', 'predict'\]/g) ?? []).length === 2],   // es1 與 en2 的 open
+          && (core.match(/'explore', 'predict'\]/g) ?? []).length === 2],   // es1 與 en2 的 open
         /* **界線**:預測不進本站資料。build 不讀它、產物裡沒有它。 */
         ['build 完全不讀預測資料', ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs']
           .every(f => !/predict-score|warroom:predictions/.test(

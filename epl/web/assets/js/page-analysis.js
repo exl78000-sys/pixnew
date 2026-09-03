@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e2cd8ffc';
+import * as C from './core.js?v=55c7c82e';
 
 const app = document.getElementById('app');
 
@@ -237,15 +237,16 @@ try {
 
     <div class="card" style="margin-top:16px">
       <h2>這份分析怎麼來的</h2>
-      <div class="small muted" style="display:grid;gap:8px">
-        <div><b>數字先算完,文字才生成。</b>勝率、期望進球、戰術指標全部由統計模型算出,
-          寫成文章的那一步只能引用這些已經算好的數字 ——
-          任何一個數字對不上,整篇就會被退回改用制式模板,不會登出去。</div>
-        <div><b>資料來源:</b>${meta.sources.map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.name}</a>`).join('、')}。
-          基準日 ${meta.asOf},建置於 ${meta.builtAt.slice(0, 16).replace('T', ' ')} UTC。</div>
-        <div><b>模型:</b>${meta.model.type}。<a href="${C.link('model')}">回測與校準結果</a>是公開的,
-          包含模型錯得最離譜的那幾場。</div>
+      ${/* 2026-09-03 精簡(使用者:網頁上解釋文字過多)。
+           **界線留著、方法論拿掉** —— 「文章的數字對不上就退回模板」那一段
+           是做法不是界線,它屬於模型頁;這裡只留讀者當下需要知道的:
+           來源、模型是什麼、以及它不知道什麼。 */''}
+      <div class="small muted" style="display:grid;gap:6px">
+        <div><b>模型:</b>${meta.model.type} ・
+          <a href="${C.link('model')}">回測與校準</a></div>
         <div><b>不知道的事:</b>${meta.model.caveats[0]}</div>
+        <div class="tiny dim">來源:${meta.sources.map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.name}</a>`).join('、')}
+          ・基準日 ${meta.asOf}</div>
       </div>
     </div>
     </section>
@@ -1022,7 +1023,7 @@ try {
         </div>
         <div class="small muted">實際發生<b>${outcome}</b>。模型賽前最看好${pick[0] === real ? '的就是這個結果' : '的不是這個結果'}；
           ${marketVerdict ? `${marketVerdict}給實際結果的機率較高。` : '這場沒有市場盤口可比較。'}</div>
-        <div class="tiny dim" style="margin-top:8px">單場只能對答案，不能據此判定整套模型優劣；長期表現仍要看模型頁的 RPS 回測。</div>
+        <div class="tiny dim" style="margin-top:8px">單場只能對答案,判不了模型好壞 —— 看<a href="${C.link('model')}">回測</a>。</div>
       </div>
       ${/* 四個 xG 全是空的時候整張卡不畫 —— 只剩兩個進球數的話,
              標題講的三件事有兩件沒有內容(西甲快照沒有賽前 xG,
@@ -1032,7 +1033,7 @@ try {
         <h3>預期、場面與比分</h3>
         <div class="pre-post-row"><span>${C.name(f.home)}</span><b class="mono">${fmt(p.xgHome)}</b><i>賽前 xG</i><b class="mono">${fmt(actualHomeXg)}</b><i>實際 xG</i><b class="mono accent-text">${f.fh}</b><i>進球</i></div>
         <div class="pre-post-row"><span>${C.name(f.away)}</span><b class="mono">${fmt(p.xgAway)}</b><i>賽前 xG</i><b class="mono">${fmt(actualAwayXg)}</b><i>實際 xG</i><b class="mono accent-text">${f.fa}</b><i>進球</i></div>
-        <div class="tiny dim" style="margin-top:10px">賽前 xG 是模型對整場進球量的預估；實際 xG 是比賽中射門品質的累積，兩者概念不同但可用來檢查預測與場面是否同向。</div>
+        <div class="tiny dim" style="margin-top:10px">賽前 xG 是預估的進球量,實際 xG 是射門品質的累積 —— 概念不同,同向與否可以互相檢查。</div>
       </div>`}
     </div>
 
@@ -1216,14 +1217,11 @@ try {
           : '模型和市場明顯分歧 —— 這種時候通常是市場對。'}</b>
       最大的差距在<b>${biggest[1]}</b>:本站 ${C.pct(p[biggest[0]], 0)}、市場 ${C.pct(m[biggest[0]], 0)}
       (相差 ${(maxGap * 100).toFixed(1)} 個百分點)。
+      ${/* 2026-09-03 精簡:留下「不要預設是市場錯了」這個判讀提醒(那是界線),
+           去水錢的算法與模型看不到什麼搬去模型頁。 */''}
       <div class="tiny dim" style="margin-top:6px">
-        盤口看得到傷停、輪換、轉會與士氣,本站的模型只吃比賽結果與 FPL 統計 —— 那些都看不到。
-        ${mk?.available
-          ? `整季回測下來,本站 RPS ${mk.model.rps}、市場 ${mk.market.rps} ——
-             差距很小,但<b>市場仍略勝一籌</b>。所以兩邊不同時,不要預設是市場錯了。`
-          : '所以兩邊不同時,不要預設是市場錯了。'}
-        市場機率是把十進位賠率取倒數、再按比例去掉莊家水錢(本場 ${(f.market.overround * 100).toFixed(1)}%)算出來的,
-        不是任何人的主觀判斷。
+        兩邊不同時<b>不要預設是市場錯了</b> —— 盤口看得到傷停與輪換,本站模型看不到。${mk?.available
+          ? `整季回測:本站 RPS ${mk.model.rps}、市場 ${mk.market.rps}。` : ''}
       </div>
     </div>`;
   }
@@ -1265,19 +1263,14 @@ try {
           digits: 1, unit: '%', better: 'low', hint: '離隊者上季佔比' },
       ], {
         home: f.home, away: f.away, colors: f.colors,
-        note: `<b>這五列的數字沒有進預測模型。</b>近期狀況與交手紀錄都做過走查回測 ——
-          挑係數只用一個賽季,驗收用另一個完全沒參與挑選的賽季,結果最好的一組只贏基準
-          RPS 0.00013,而成對比較的標準誤是 0.00025,改善連一個標準誤都不到。
-          再把特徵拿去跟模型的殘差求相關,760 場全部落在 ±0.07 以內、沒有一個顯著。
-          <a href="${C.link('model')}">驗證細節在模型頁</a>。
-          <br><b>那三個百分比是什麼:</b>「傷停」兩列是目前確定不能上場的球員,
-          在${av(f.home).baseline === 'current' ? '本季' : '上季'}合計吃掉了球隊多少比例的上場時間與進攻產出;
-          用時間當權重是因為教練讓誰上場久誰就是主力,不必我們自己發明球員評分。
-          「夏天換血幅度」則是已經轉隊或外借出去的球員 —— 他們不算這場的傷兵
-          (位置多半已有新援補上),但走掉多少戰力本身就是賽前該知道的事。
+        /* 2026-09-03 精簡:界線(沒進模型、會低估)留著,回測數字與「為什麼用
+           上場時間當權重」搬去模型頁 —— 那是方法論,不是讀這一場需要的資訊。 */
+        note: `<b>這五列沒有進預測模型</b>,只是賽前參考(<a href="${C.link('model')}">為什麼</a>)。
+          傷停兩列算的是<b>確定不能上場</b>的球員佔球隊${av(f.home).baseline === 'current' ? '本季' : '上季'}上場時間與進攻產出的比例;
+          「夏天換血幅度」是已轉隊或外借的人。
           ${av(f.home).noBaseline + av(f.away).noBaseline > 0
-            ? `<br><b>會低估:</b>兩隊合計有 ${av(f.home).noBaseline + av(f.away).noBaseline}
-               名球員沒有參考賽季的數據(多半是剛加盟的新援),他們缺陣算不進上面的比例。` : ''}`,
+            ? `<br><b>會低估:</b>兩隊合計 ${av(f.home).noBaseline + av(f.away).noBaseline}
+               名球員沒有參考賽季數據(多半是新援),缺陣算不進上面的比例。` : ''}`,
       })}
     </div>
 

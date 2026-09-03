@@ -390,7 +390,7 @@ export const stampRow = items =>
 // 進來時由 LeagueGap 給一句實話,不是一個空白頁。
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
-  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['overview', 'index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'cups', 'allplayers', 'duel', 'predict'] },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['overview', 'index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'cups', 'allplayers', 'duel', 'explore', 'predict'] },
   /* 英冠只掛「球隊與比賽」那一層。**不是還沒做,是做不出來** ——
      英冠沒有免費的球員級資料源(Understat 只做五大聯賽、FPL 只有英超,
      兩者都實測過,見 build-championship.mjs 的檔頭),
@@ -407,7 +407,7 @@ export const LEAGUES = {
     /* 盃賽也開:英冠球隊本來就打足總盃與聯賽盃,層級標籤還是靠英冠名冊做的。
        球員搜尋(allplayers)也開 —— 它查的是**其他聯賽**的球員,跟英冠自己
        沒有球員源不衝突;頁面上會照實列出英冠缺席的原因。 */
-    open: ['overview', 'index', 'teams', 'model', 'news', 'cups', 'allplayers', 'duel', 'predict'],
+    open: ['overview', 'index', 'teams', 'model', 'news', 'cups', 'allplayers', 'duel', 'explore', 'predict'],
     /* 缺口頁的預設說法是「資料還在補」—— 那對英冠是**錯的**,
        它不是還在補,是沒有來源(Understat 不做英冠、FPL 只有英超,兩者都實測過)。
        說成「還在補」等於暗示以後會有,而我們知道不會。 */
@@ -429,22 +429,21 @@ const SITE_PAGES = [
      不屬於任何一個聯賽。**只放在這一組**:同一頁兩邊都放的話,
      導覽列會出現兩個一樣的分頁(左邊一個右邊一個),而且不會有任何地方報錯。 */
   ['overview', '總覽'],
-  ['knowledge', '足球知識'],
+
   /* 盃賽(歐冠 + 足總盃 + 聯賽盃)收成一頁、三個頁內分頁 —— 2026-08-29 併的。
      它是跨聯賽的:歐冠兩邊看到同一份,英格蘭盃賽的層級標籤也涵蓋英冠球隊。
      ucl.html 保留為轉址,舊連結不斷。 */
   ['cups', '盃賽'],
-  /* 對戰模擬(2026-08-30 搬進跨聯賽組,使用者要求放盃賽旁邊):
-     頁內自己選聯賽,對戰仍限同聯賽(強度各自對聯盟平均正規化)。
-     只放這一組 —— PAGES 再放一次會出現兩個分頁。 */
-  ['duel', '對戰模擬'],
+  /* 探索(2026-09-03):足球知識、對戰模擬、球員搜尋收成一頁的三個頁內分頁。
+     這三個都是跨聯賽的,原本各佔導覽列一格 —— 加上總覽、盃賽、我的預測,
+     跨聯賽那一組就有六格,手機上那一列本來就要橫向捲,六格等於永遠只看得到一半。
+     舊的 knowledge/duel/allplayers 三個網址保留為轉址。 */
+  ['explore', '探索'],
   /* 我的預測(2026-09-02):一輪一輪自己猜,賽季結束跟模型與市場比。
      跨聯賽(頁內自己選),而且**只讀不寫** —— 預測存在使用者自己的瀏覽器,
      不進本站資料、不回饋模型。只放這一組,PAGES 再放一次會出現兩個分頁。 */
   ['predict', '我的預測'],
-  /* 跨聯賽球員搜尋(2026-08-29)。各聯賽自己的球員頁照舊、搜本聯賽;
-     這一頁一個框查全部。只放這一組 —— PAGES 再放一次會出現兩個分頁。 */
-  ['allplayers', '球員搜尋'],
+
 ];
 
 /* 第二層:五個「看資料」的頁面收成一組。頂層列九個分頁的時候,
@@ -1552,10 +1551,11 @@ export function goalTimeline(goals, { home, away, timeline = null } = {}) {
     const g = r.g;
     return renderGoalRow(g, { home, away });
   }).join('')}</div>
-  <div class="tiny dim" style="margin-top:10px">來自英超官方比賽事件,與同一批請求一起取得,沒有額外抓取。
-    進球判定看比分變化而不是事件型別 —— 烏龍球在官方資料裡不是進球事件,只認型別會漏掉。
-    子類型目前只分得出十二碼與烏龍球,官方沒有再細的分類就不硬分。
-    ${timeline ? '<br><b>換人只列「誰上、誰下」,不配對誰替誰</b> —— 官方資料沒有把兩者連起來的欄位,而同一分鐘同一隊可能換兩人,照順序配會配錯人。' : ''}</div>`;
+  ${/* 2026-09-03 精簡:抓取方式與進球判定的實作細節拿掉(那是我們怎麼做,
+       不是讀者看這場需要知道的);**留下兩條會影響判讀的界線** ——
+       子類型只到十二碼與烏龍球、換人不配對誰替誰。 */''}
+  <div class="tiny dim" style="margin-top:10px">官方比賽事件。子類型只分得出十二碼與烏龍球。
+    ${timeline ? '換人<b>只列誰上誰下、不配對誰替誰</b> —— 官方資料沒有把兩者連起來的欄位。' : ''}</div>`;
 }
 
 // 一顆進球一列。抽出來是為了讓上面那支只管「怎麼排序與合併」,不管「怎麼畫」。
