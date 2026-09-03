@@ -46,8 +46,9 @@ check('未賽場次預測三向機率加總約等於 1', fixtures.filter(f => !f
    (prob-history 的第 0 分點)。事後重擬合的那一組放 postFit,不是 prediction。 */
 check('已完賽場次不拿重擬合機率冒充賽前預測',
   fixtures.filter(f => f.played).every(f => f.prediction === null || f.prediction.snapshot === true));
-check('已完賽場次的快照只有 1X2,不會混進賽前 xG',
-  fixtures.filter(f => f.played && f.prediction).every(f => f.prediction.xgHome === undefined));
+/* 2026-09-03 起快照可以帶開賽前凍結的 xG(prob-history 的錨點);沒存就是 null,不是賽後重算的數字。 */
+check('已完賽場次的賽前 xG 只以凍結快照的形式出現(沒存就 null)',
+  fixtures.filter(f => f.played && f.prediction).every(f => f.prediction.snapshot === true && (f.prediction.xgHome == null || Number.isFinite(f.prediction.xgHome))));
 /* ── FotMob 賽後轉換(2026-09-03 加)────────────────────────────
    SportMonks 方案取消後的接手來源。用**合成 payload** 測,不依賴快取狀態 ——
    欄位形狀是探測出來的真東西(見 adapter 檔頭),這裡守的是轉換不要走樣。
