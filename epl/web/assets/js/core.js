@@ -529,14 +529,26 @@ export function nav() {
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
       <a class="brand" href="${link('index')}"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
+      ${/* 兩組分頁包在同一個容器裡。桌機是 `display: contents`(等於沒有這一層,
+           版面完全不變);**手機上它變成單一條橫向捲動列** —— 原本兩組各佔一行,
+           加上品牌那行,導覽列在 375px 下是 245px 而且 sticky,等於整個瀏覽過程
+           永遠有 30% 的螢幕是導覽。 */''}
+      <div class="tabwrap">
       ${site.length ? `<nav class="tabs site">${site.map(tab).join('')}</nav><span class="nav-sep"></span>` : ''}
       ${/* 分頁靠右,跟切換鈕排在同一側;左邊留給品牌與跨聯賽的足球知識。 */''}
       <nav class="tabs main">${top.join('')}</nav>
+      </div>
       ${/* 切換鈕固定在最右邊。原本排在品牌後面,位置會隨著分頁數量左右浮動 ——
            換聯賽是最常按的東西之一,它應該永遠在同一個地方。 */''}
       <div class="league-switch" aria-label="切換聯賽">${Object.entries(LEAGUES).map(([k, v]) =>
         `<a href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div>
     </div>${sub}</header>`);
+
+  /* 手機上兩組分頁併成一條橫向捲動列,而作用中的那一個可能在可視範圍外 ——
+     **看不到自己在哪一頁**比要多捲一下糟得多。這裡把它捲進視野。
+     `block: 'nearest'` 是必要的:預設會連垂直方向一起捲,整頁會跳。 */
+  document.querySelector('.tabwrap')?.querySelector('a.on')
+    ?.scrollIntoView({ inline: 'center', block: 'nearest' });
 }
 
 export function foot(meta) {

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=fe58cbcb';
+import * as C from './core.js?v=e2cd8ffc';
 import { blendPair, sampleMatch, seededRng, inPlaySim } from './predict-core.js?v=a99cd006';
 import { mountDuelAnim, parseFormation, pickXI } from './duel-anim.js?v=29f89687';
 

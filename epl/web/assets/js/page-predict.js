@@ -181,14 +181,17 @@ try {
           <b>${zh[kp]}</b>` : '<span class="dim">尚無盤口</span>'}</span>
       </div>
 
-      <div class="row" style="gap:8px;align-items:center;flex-wrap:wrap">
+      ${/* 手機上這一列會折行,而預設的折法會把「客勝」跟另外兩個勝負鈕拆到不同行
+           (變成 主勝/和局 一行、客勝 跟原因擠在下一行)—— 三個是同一組選項,
+           拆開之後看起來像兩件事。用 predict-row 讓比分與勝負各自成組。 */''}
+      <div class="row predict-row" style="gap:8px;align-items:center;flex-wrap:wrap">
         <input class="btn mono" type="number" min="0" max="20" style="width:62px" data-fh
           value="${rec?.fh ?? ''}" ${lock ? 'disabled' : ''} aria-label="主隊進球">
         <span class="dim">:</span>
         <input class="btn mono" type="number" min="0" max="20" style="width:62px" data-fa
           value="${rec?.fa ?? ''}" ${lock ? 'disabled' : ''} aria-label="客隊進球">
-        ${OUTCOMES.map(o => `<button class="btn tiny ${rec?.pick === o ? 'accent' : ''}" type="button"
-          data-pick="${o}" ${lock ? 'disabled' : ''}>${zh[o]}</button>`).join('')}
+        <span class="pick-group">${OUTCOMES.map(o => `<button class="btn tiny ${rec?.pick === o ? 'accent' : ''}" type="button"
+          data-pick="${o}" ${lock ? 'disabled' : ''}>${zh[o]}</button>`).join('')}</span>
         <input class="btn" type="text" data-note placeholder="原因(選填)" style="flex:1;min-width:180px"
           value="${C.esc(rec?.note ?? '')}" ${lock ? 'disabled' : ''}>
         ${lock ? '' : '<button class="btn accent" type="button" data-save>儲存</button>'}
