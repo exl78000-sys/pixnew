@@ -1,7 +1,7 @@
-import * as C from './core.js?v=0';
-import { renderKnowledge } from './knowledge-view.js?v=0';
-import { renderAllPlayers } from './allplayers-view.js?v=0';
-import { renderDuel } from './duel-view.js?v=0';
+import * as C from './core.js?v=55c7c82e';
+import { renderKnowledge } from './knowledge-view.js?v=fed4ca01';
+import { renderAllPlayers } from './allplayers-view.js?v=8dc1b091';
+import { renderGame } from './game-view.js?v=74296627';
 
 /* 探索(2026-09-03)。足球知識、對戰模擬、球員搜尋收成一頁,三個頁內分頁。
  *
@@ -25,7 +25,8 @@ import { renderDuel } from './duel-view.js?v=0';
 
 const VIEWS = [
   { key: 'knowledge', zh: '足球知識', render: renderKnowledge },
-  { key: 'duel', zh: '對戰模擬', render: renderDuel },
+  /* 模擬遊玩(2026-09-03)取代了對戰模擬;view 鍵留 duel,舊書籤不斷 */
+  { key: 'duel', zh: '模擬遊玩', render: renderGame },
   { key: 'allplayers', zh: '球員搜尋', render: renderAllPlayers },
 ];
 

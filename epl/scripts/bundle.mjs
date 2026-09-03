@@ -47,8 +47,10 @@ async function main() {
      忘了列在這裡的話分頁版一切正常、單檔版一開盃賽頁就 renderUclView is not defined ——
      實際發生過。下面有一條守門:頁面 import 的本地模組必須都在 SHARED 裡。 */
   const SHARED = ['fixture-list', 'sim-table', 'ucl-view', 'predict-core', 'duel-anim', 'predict-score',
-  /* 探索頁的三個內容模組(併頁時抽出來的,做法同 ucl-view) */
-  'knowledge-view', 'allplayers-view', 'duel-view'];
+  /* 探索頁的三個內容模組(併頁時抽出來的,做法同 ucl-view)。
+     模擬遊玩(2026-09-03)取代了對戰模擬:game-engine 是引擎、game-view 是版面,
+     game-view import game-engine,所以引擎要排前面(共用模組引用共用模組,照相依排)。 */
+  'knowledge-view', 'allplayers-view', 'game-engine', 'game-view'];
 
   /* 守門:掃每一頁 import 了哪些本地模組,不在 SHARED 清單就直接失敗 ——
      這種漏法測試抓不到(分頁版正常),只有 bundle 自己能守。 */
@@ -71,7 +73,15 @@ async function main() {
     for (const m of src.matchAll(/^(?:export )?(?:async )?(?:function|const|let) ([A-Za-z_$][\w$]*)/gm)) {
       if (coreNames.has(m[1])) throw new Error(`${name}.js 的頂層識別字 ${m[1]} 跟 core.js 的匯出同名,單檔版會炸`);
     }
-    sharedSrc.push(src.replace(/^import \* as C from '\.\/core\.js(\?v=[0-9a-f]+)?';\s*/m, '').replace(/^export /gm, ''));
+    /* 共用模組之間的具名 import 也要拆(game-view import predict-core / duel-anim / game-engine)。
+       原本只拆 `import * as C`,具名的留著 → 單檔版一開就是
+       「Identifier 'blendPair' has already been declared」(攤平後的函式跟 import 撞名)。
+       2026-09-03 實測:對戰模擬併進探索頁之後單檔版的那一頁其實一直是壞的
+       (duel-view 有同樣的 import),只是分頁版正常、沒有人用單檔版開那一頁。 */
+    sharedSrc.push(src
+      .replace(/^import \* as C from '\.\/core\.js(\?v=[0-9a-f]+)?';\s*/m, '')
+      .replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js(\?v=[0-9a-f]+)?';\s*/gm, '')
+      .replace(/^export /gm, ''));
   }
 
   const pageSrc = {};
@@ -85,6 +95,13 @@ async function main() {
   const dataFiles = (await readdir(join(WEB, 'data'))).filter(f => f.endsWith('.json'));
   const data = {};
   for (const f of dataFiles) data[f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(WEB, 'data', f), 'utf8'));
+  /* 模擬遊玩的側寫住在 web/data/game/(獨立管線的產物),鍵用 'game/pl' ——
+     跟分頁版 loadFrom('pl', ['game/pl']) 組出來的路徑一致。漏了的話單檔版一開模擬遊玩就「載入失敗」。 */
+  try {
+    for (const f of (await readdir(join(WEB, 'data', 'game'))).filter(f => f.endsWith('.json'))) {
+      data[`game/${f.replace(/\.json$/, '')}`] = JSON.parse(await readFile(join(WEB, 'data', 'game', f), 'utf8'));
+    }
+  } catch { /* 沒跑過 game:build 時單檔版就沒有這一頁的資料,頁面會照實講 */ }
   const datasets = { pl: data };
   const leaguesDir = join(WEB, 'data', 'leagues');
   try {
@@ -102,8 +119,11 @@ async function main() {
   const dataJson = JSON.stringify(data).replace(/<\/script/gi, '<\\/script');
   const datasetsJson = JSON.stringify(datasets).replace(/<\/script/gi, '<\\/script');
 
-  /* 單檔版也標 noindex —— 它可能被丟到任何靜態空間上,不該被收錄。 */
-  const html = `<meta name="robots" content="noindex, nofollow">
+  /* 單檔版也標 noindex —— 它可能被丟到任何靜態空間上,不該被收錄。
+     charset 一定要有:沒有的話,任何不帶 charset 標頭的靜態伺服器(python -m http.server 就是)
+     會把整頁中文讀成亂碼;雙擊開檔靠瀏覽器猜,猜錯也是亂碼。2026-09-03 實測補上。 */
+  const html = `<!doctype html><meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
 <title>英超戰情室</title>
 <meta name="description" content="英超比賽分析平台:球員、戰術、教練、動態與賽果預測。">
 <style>
@@ -145,6 +165,10 @@ addEventListener('hashchange', route);
 route();
 </script>`;
 
+  /* 守門:攤平之後不可以再有任何 import 行 —— 有就是上面那種撞名或找不到模組,
+     而分頁版完全看不出來。 */
+  const leftover = html.match(/^\s*import [^\n]*/gm);
+  if (leftover) throw new Error(`單檔版裡還有沒拆掉的 import:${leftover.slice(0, 3).join(' | ')}`);
   await mkdir(join(ROOT, 'dist'), { recursive: true });
   const out = join(ROOT, 'dist', 'warroom.html');
   await writeFile(out, html);

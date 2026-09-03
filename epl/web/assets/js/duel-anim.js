@@ -17,6 +17,11 @@
  * 而本站三個聯賽都沒有跑動與逐球資料 —— 示意圖比擬真更誠實(鐵則四)。
  */
 
+/* 2026-09-03(模擬遊玩):動畫從「自己編戲」變成「照劇本演」。引擎(game-engine.js)產的事件
+ * 由 `perform(e)` 進來:換人(圓點改名)、紅牌(圓點退場)、黃牌(閃一下)、射門不進(演一段推進
+ * 再射偏/被撲/被封)、角球(球擺到角旗、主罰者持球)。進球仍走 setState 的 dueSides(排幾顆演幾顆,
+ * 那條測試守著)。控球由 `possHome`(引擎抽的目標)決定,沒給才退回 λ 的份額。
+ * 誰拿球、往哪跑仍然是演出 —— 這一層只保證畫面跟面板講的是同一件事(場上幾個人、誰在場上)。 */
 const FW = 105, FH = 68;          // 球場座標(公尺),畫布再縮放
 const PASS_MIN = 0.55, PASS_MAX = 1.15;   // 傳球間隔(秒)
 const PASS_SPEED = 17, SHOT_SPEED = 27;   // 球速(公尺/秒)—— 球不再瞬移
@@ -110,7 +115,7 @@ export function avoidanceOf(player, target, players, pairIndex) {
 let probe = () => null;
 export const __animProbe = () => probe();
 
-export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = '', lambdaHome, lambdaAway, rng }) {
+export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = '', lambdaHome, lambdaAway, rng, possHome = null }) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const pad = 26;
@@ -123,15 +128,20 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     const names = spec.xi ?? { GK: [], DEF: [], MID: [], FWD: [] };
     const used = { GK: 0, DEF: 0, MID: 0, FWD: 0 };
     return slots.map(s => {
-      const name = names[s.role]?.[used[s.role]++] ?? null;
+      const idx = used[s.role]++;
+      const name = names[s.role]?.[idx] ?? null;
+      const shirt = spec.shirts?.[s.role]?.[idx] ?? null;
       const bx = side === 'home' ? s.x : FW - s.x;   // 上半場的基準;下半場鏡射(真足球會換邊)
-      return { side, role: s.role, name,
+      return { side, role: s.role, name, shirt, off: false, flash: 0,
         bx0: bx, by: s.y, x: bx, y: s.y,
         ph: rng() * Math.PI * 2, color: spec.color };
     });
   };
   const players = [...mkTeam('home', home), ...mkTeam('away', away)];
-  const shareHome = lambdaHome / (lambdaHome + lambdaAway || 1);
+  let shareHome = possHome ?? lambdaHome / (lambdaHome + lambdaAway || 1);
+  const active = () => players.filter(p => !p.off);   // 被罰下的人不在場上
+  let pendingShot = null;            // {side, outcome} 射門不進的演出
+  let cornerFlag = null;             // 角球:球在角旗,主罰者持球
 
   // 戲的狀態
   let st = { min: 0, done: false, hs: 0, as: 0 };
@@ -167,7 +177,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     const dx = to.x - from.x, dy = to.y - from.y;
     const len2 = dx * dx + dy * dy || 1;
     let best = null;
-    for (const o of players) {
+    for (const o of active()) {
       if (o.side === side || o.role === 'GK') continue;
       const u = Math.max(0.08, Math.min(0.92, ((o.x - from.x) * dx + (o.y - from.y) * dy) / len2));
       const px = from.x + dx * u, py = from.y + dy * u;
@@ -179,7 +189,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
 
   /* 中圈開球:球回中點、開球方中場持球、雙方回基準站位 */
   function kickoff(side) {
-    const mids = players.filter(p => p.side === side && p.role === 'MID');
+    const mids = active().filter(p => p.side === side && p.role === 'MID');
     holder = mids.sort((a, b) => Math.abs(a.by - FH / 2) - Math.abs(b.by - FH / 2))[0]
       ?? players.find(p => p.side === side) ?? players[0];
     ball.from = null; ball.x = FW / 2; ball.y = FH / 2; ball.t = 1;
@@ -188,10 +198,10 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   kickoff('home');
 
   function chooseNext() {
-    const mates = players.filter(p => p.side === holder.side && p !== holder && p.role !== 'GK');
+    const mates = active().filter(p => p.side === holder.side && p !== holder && p.role !== 'GK');
     const dir = dirOf(holder.side);
-    // 前傳偏好:越靠對方球門權重越高;快攻(pendingGoal)時強制找最前面的
-    const w = p => Math.max(0.05, 1 + dir * (p.x - holder.x) / 30) * (pendingGoal ? (p.role === 'FWD' ? 4 : 1) : 1);
+    // 前傳偏好:越靠對方球門權重越高;快攻(pendingGoal / pendingShot)時強制找最前面的
+    const w = p => Math.max(0.05, 1 + dir * (p.x - holder.x) / 30) * ((pendingGoal || pendingShot) ? (p.role === 'FWD' ? 4 : 1) : 1);
     let tot = mates.reduce((a, p) => a + w(p), 0), r = rng() * tot;
     for (const p of mates) { r -= w(p); if (r <= 0) return p; }
     return mates[mates.length - 1];
@@ -206,7 +216,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       holder = cut.o;
       launch(cut.x, cut.y, PASS_SPEED);
     } else {
-      const opp = players.filter(p => p.side !== holder.side && p.role !== 'GK');
+      const opp = active().filter(p => p.side !== holder.side && p.role !== 'GK');
       const near = target
         ? opp.reduce((a, b) => (Math.hypot(b.x - target.x, b.y - target.y)
           < Math.hypot(a.x - target.x, a.y - target.y) ? b : a), opp[0])
@@ -227,6 +237,30 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     pendingGoal = null; push = 0; breakClock = 0;
     pendingKickoff = scorer === 'home' ? 'away' : 'home';   // 失球方開球
   }
+
+  /* 射門不進:球往球門飛,結果決定它停在哪 —— 被撲出到門將手上、射偏出底線、被封阻到最近的防守者、
+     中柱彈回。演完由防守方(門將或封阻者)持球,不開球。 */
+  function shootMiss(outcome) {
+    const dir = dirOf(holder.side), side = holder.side, gx = goalX(side);
+    const gk = active().find(p => p.side !== side && p.role === 'GK');
+    const flash = { side, outcome, t: 1.4 };
+    if (outcome === 'blocked') {
+      const cut = laneCut(ball, { x: gx, y: FH / 2 }, side);
+      holder = cut?.o ?? gk ?? holder;
+      launch(cut ? cut.x : gx - dir * 12, cut ? cut.y : FH / 2, SHOT_SPEED);
+    } else if (outcome === 'saved') {
+      holder = gk ?? holder;
+      launch(gx - dir * 3, FH / 2 + (rng() - 0.5) * 5, SHOT_SPEED);
+    } else if (outcome === 'post') {
+      holder = gk ?? holder;
+      launch(gx - dir * 1, FH / 2 + (rng() < 0.5 ? -3.7 : 3.7), SHOT_SPEED);
+    } else {
+      holder = gk ?? holder;
+      launch(gx, FH / 2 + (rng() < 0.5 ? -1 : 1) * (5 + rng() * 6), SHOT_SPEED);
+    }
+    lastShot = flash; pendingShot = null; push = 0; breakClock = 0;
+  }
+  let lastShot = null;               // 剛射門的提示(畫面上閃一行字)
 
   /* 無球跑位。原本除了持球者以外全部待在基準點附近漂 —— 那是站著看,
      不是踢球。這裡按角色分工,全部是幾何,**不影響比分**(進球仍由模型排程)。 */
@@ -251,8 +285,13 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
          碰不到 —— 原本前鋒基準 x=53.26、快攻加成上限 18、抖動 2.2,最遠
          73.5,而門檻寫死 78,所以腳本進球一次都演不出來(實測整場 0 次),
          pendingGoal 還會永遠清不掉、把模擬卡在快攻模式。 */
-      if (pendingGoal && p.side === pendingGoal.side && p.role === 'FWD') {
+      const rush = pendingGoal ?? pendingShot;
+      if (rush && p.side === rush.side && p.role === 'FWD') {
         return { x: goalX(p.side) - dir * (BOX_X - 2), y: FH / 2 + (p.by - FH / 2) * 0.5 };
+      }
+      // 角球:進攻方湧進禁區,主罰者(持球)留在角旗
+      if (cornerFlag && p.side === cornerFlag.side && p.role !== 'GK') {
+        return { x: goalX(p.side) - dir * (6 + rng() * 6), y: FH / 2 + (p.by - FH / 2) * 0.35 };
       }
       return { x, y };
     }
@@ -279,12 +318,24 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       return;
     }
     simT += dt;
-    if (pendingGoal) breakClock += dt;
+    if (pendingGoal || pendingShot) breakClock += dt;
+    if (lastShot && (lastShot.t -= dt) <= 0) lastShot = null;
+    for (const p of players) if (p.flash > 0) p.flash -= dt;
     passClock -= dt;
     if (passClock <= 0) {
       passClock = PASS_MIN + rng() * (PASS_MAX - PASS_MIN);
       const share = holder.side === 'home' ? shareHome : 1 - shareHome;
-      if (pendingGoal && holder.side === pendingGoal.side) {
+      if (cornerFlag) cornerFlag = null;          // 角球開出去之後就是一般傳球
+      if (pendingShot && !pendingGoal && holder.side === pendingShot.side) {
+        // 射門不進的演出:跟快攻一樣推進,到禁區就射,超時保底
+        const toGoal = Math.abs(goalX(holder.side) - holder.x);
+        if ((holder.role === 'FWD' && toGoal < BOX_X + 6) || breakClock > BREAK_MAX) { shootMiss(pendingShot.outcome); return; }
+        const nxt = chooseNext();
+        launch(nxt.x, nxt.y, PASS_SPEED);
+        holder = nxt; push = Math.min(18, push + 4);
+      } else if (pendingShot && !pendingGoal) {
+        turnover(); holder = active().find(p => p.side === pendingShot.side && p.role === 'MID') ?? holder;
+      } else if (pendingGoal && holder.side === pendingGoal.side) {
         // 快攻:前鋒推進到射門區就射。門檻用「離球門多遠」,不寫死一個 x
         const toGoal = Math.abs(goalX(holder.side) - holder.x);
         /* 保底:快攻演到 BREAK_MAX 秒還沒射就直接射。腳本進球是模型排的,
@@ -294,7 +345,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
         launch(nxt.x, nxt.y, PASS_SPEED);
         holder = nxt; push = Math.min(18, push + 4);
       } else if (pendingGoal) {
-        turnover(); holder = players.find(p => p.side === pendingGoal.side && p.role === 'MID') ?? holder;
+        turnover(); holder = active().find(p => p.side === pendingGoal.side && p.role === 'MID') ?? holder;
       } else if (rng() > share * 0.55 + 0.45) {
         turnover(chooseNext());
       } else {
@@ -314,7 +365,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     const defSide = holder.side === 'home' ? 'away' : 'home';
     presser = null; runner = null;
     let bestPress = Infinity, bestRun = Infinity;
-    for (const p of players) {
+    for (const p of active()) {
       if (p.role === 'GK') continue;
       if (p.side === defSide) {
         const d = Math.hypot(p.x - ball.x, p.y - ball.y);
@@ -325,9 +376,9 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       }
     }
 
-    for (const p of players) {
+    for (const p of active()) {
       const a = aim(p);
-      const avoid = avoidanceOf(p, a, players);
+      const avoid = avoidanceOf(p, a, active());
       // 抖動只是別讓點看起來焊死;持球者不抖(他要對得上球)
       const jx = p === holder ? 0 : Math.sin(simT * 0.9 + p.ph) * 1.4;
       const jy = p === holder ? 0 : Math.cos(simT * 0.7 + p.ph) * 1.6;
@@ -349,7 +400,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     ctx.beginPath(); ctx.moveTo(sx(FW / 2), sy(0)); ctx.lineTo(sx(FW / 2), sy(FH)); ctx.stroke();
     ctx.beginPath(); ctx.arc(sx(FW / 2), sy(FH / 2), (9.15 / FW) * (W - pad * 2), 0, 7); ctx.stroke();
 
-    for (const p of players) {
+    for (const p of active()) {
       const r = p.role === 'GK' ? 7 : 8;
       ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), r, 0, 7);
       ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = p === holder ? 18 : 8;
@@ -357,6 +408,20 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       ctx.lineWidth = p === holder ? 2.4 : 1.2;
       ctx.strokeStyle = p === holder ? '#ffffff' : 'rgba(255,255,255,.55)';
       ctx.stroke();
+      // 換人 / 拿牌的提示圈(黃牌黃、換人綠),1.5 秒淡出
+      if (p.flash > 0) {
+        ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), r + 5, 0, 7);
+        ctx.strokeStyle = p.flashColor ?? '#ffd400'; ctx.lineWidth = 2; ctx.globalAlpha = Math.min(1, p.flash); ctx.stroke(); ctx.globalAlpha = 1;
+      }
+      if (p.shirt != null) {
+        ctx.font = 'bold 9px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = '#0b0710';
+        ctx.fillText(String(p.shirt), sx(p.x), sy(p.y) + 3);
+      }
+    }
+    if (lastShot) {
+      ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,.85)';
+      const zh = { saved: '被撲出', blocked: '被封阻', off: '射偏', post: '中柱' }[lastShot.outcome] ?? '射門';
+      ctx.fillText(zh, sx(lastShot.side === 'home' ? (dirOf('home') === 1 ? FW - 20 : 20) : (dirOf('away') === 1 ? FW - 20 : 20)), sy(FH / 2) - 30);
     }
     // 持球者名字(有真名才顯示)
     if (holder.name) {
@@ -408,12 +473,37 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
 
   return {
     /* 每個比賽分鐘由頁面呼叫:進球數落後於已到分鐘的事件 → 排一段快攻演出 */
-    setState({ min, done, dueSides, hs, as }) {
+    setState({ min, done, dueSides, hs, as, possHome: ph }) {
       st.min = min; st.done = done;
+      if (ph != null) shareHome = ph;
       if (hs != null) st.hs = hs;
       if (as != null) st.as = as;
       if (!pendingGoal && Array.isArray(dueSides) && goalsPlayed < dueSides.length) {
         pendingGoal = { side: dueSides[goalsPlayed] };
+      }
+    },
+    /* 引擎的事件 → 演出。進球不走這裡(dueSides 那條路);找不到對應的人就什麼都不做 ——
+       演出對不上劇本時寧可不演,不要演錯人。 */
+    perform(e) {
+      const byName = (side, name) => active().find(p => p.side === side && p.name === name);
+      if (e.type === 'sub') {
+        const p = byName(e.side, e.offName);
+        if (p) { p.name = e.onName; p.shirt = e.onShirt ?? null; p.flash = 1.5; p.flashColor = '#00ff85'; }
+      } else if (e.type === 'card' && e.card === 'red') {
+        const p = byName(e.side, e.playerName);
+        if (p) { p.off = true; if (holder === p) turnover(); }
+      } else if (e.type === 'card') {
+        const p = byName(e.side, e.playerName);
+        if (p) { p.flash = 1.5; p.flashColor = '#ffd400'; }
+      } else if (e.type === 'shot' && !pendingGoal && !pendingShot) {
+        pendingShot = { side: e.side, outcome: e.outcome }; breakClock = 0;
+      } else if (e.type === 'corner' && !pendingGoal && !pendingShot) {
+        const side = e.side, dir = dirOf(side);
+        const taker = byName(side, e.playerName) ?? active().find(p => p.side === side && p.role === 'MID') ?? holder;
+        const y = rng() < 0.5 ? 1 : FH - 1;
+        taker.x = goalX(side) - dir * 0.5; taker.y = y;
+        holder = taker; ball.from = null; ball.x = taker.x; ball.y = y; ball.t = 1;
+        cornerFlag = { side }; passClock = 1.3; push = 14;
       }
     },
     destroy() { alive = false; if (raf) cancelAnimationFrame(raf); },

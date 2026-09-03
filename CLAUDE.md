@@ -192,6 +192,12 @@ bundle 的清單要涵蓋 `web/` 底下每一個 `.html`。
 `laliga-matches.mjs` 與 `backtest-laliga.mjs` 現在都只是薄包裝。
 抽完要驗**產物逐欄位不變**(西甲回測除了 `ranAt` 之外完全相同,實際比對過)。
 
+**模擬遊玩是獨立管線(2026-09-03,使用者的決定)。** `scripts/game/` 與 `web/assets/js/game-*.js`
+只讀真實管線的產物與 raw、只寫 `web/data/game/`;真實管線**不可以** import 它們(宿主 `page-explore.js` 除外)。
+它算的機率是遊戲模型,不是本站預測 —— 唯一的錨是「沒有改動時 λ 等於站上的 λ」。`npm test` 有四條守著。
+它抓的 FotMob 英超逐場資料(`data/raw/fotmob-epl/`)有控球、逐射門 xG、事件與名單,
+順便看到 **FotMob 有跑動與衝刺欄位** —— 本檔多處寫的「跑動沒有免費來源」要重探之後再改。
+
 **`build` 一定是最後一個。** `stamp-assets` 掛在 `npm run build` 最後,
 會把資產戳寫進**每一個**聯賽的 `meta.json`;任何一個聯賽的 build 排在它後面,
 那個聯賽的戳就會被重寫掉,`npm test` 的「meta 記的戳跟實際檔案一致」會紅。

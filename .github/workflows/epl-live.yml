@@ -263,6 +263,13 @@ jobs:
         run: npm run laliga:fotmob-postmatch
         continue-on-error: true
 
+      # 模擬遊玩(2026-09-03)的英超逐場資料:控球率、逐射門 xG、事件、名單。
+      # 只給 scripts/game/ 讀(獨立管線);永久快取、比分核對過才收,每次最多 40 場。
+      # 2025-26 全季已在本機回填(380 場),這裡只做本季增量。
+      - name: 抓英超逐場資料(FotMob,模擬遊玩)
+        run: npm run game:fetch
+        continue-on-error: true
+
       - name: 抓本季逐輪球員資料
         run: npm run season
         continue-on-error: true

@@ -4,8 +4,25 @@
     {
       "name": "warroom",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "serve", "--prefix", "epl"],
+      "runtimeArgs": [
+        "run",
+        "serve",
+        "--prefix",
+        "epl"
+      ],
       "port": 5173
+    },
+    {
+      "name": "warroom-dist",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5174",
+        "-d",
+        "epl/dist"
+      ],
+      "port": 5174
     }
   ]
 }
