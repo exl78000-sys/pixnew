@@ -1,5 +1,5 @@
-import * as C from './core.js?v=e2cd8ffc';
-import { mountFixtureList } from './fixture-list.js?v=edae939d';
+import * as C from './core.js?v=55c7c82e';
+import { mountFixtureList } from './fixture-list.js?v=b990f8ef';
 
 const app = document.getElementById('app');
 
@@ -66,10 +66,12 @@ try {
     <div class="card">
       <h2>接下來的比賽</h2>
       <div id="next"></div>
-      <div style="margin-top:10px"><a href="#allFixtures">往下看完整賽程與預測 →</a>
-        ${/* 以前是「西甲一律不給實時戰況連結」。西甲的即時比分已經接上了
-              (meta.live.available = true),所以改成看有沒有來源。 */''}
-        ${meta.live?.available ? `・<a href="${C.link('live')}">實時戰況</a>` : ''}</div>
+      ${/* 「往下看完整賽程與預測」那個錨點連結拿掉了(2026-09-03,使用者要求):
+            完整賽程就在同一頁再往下捲一點,連結省不了多少事。
+            實時戰況是**跨頁**的,那個留著 —— 以前是「西甲一律不給」,
+            改成看有沒有即時來源(meta.live.available)。 */''}
+      ${meta.live?.available
+        ? `<div style="margin-top:10px"><a href="${C.link('live')}">實時戰況 →</a></div>` : ''}
     </div>
     <div class="card">
       <h2>最新動態</h2>

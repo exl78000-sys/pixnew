@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e2cd8ffc';
+import * as C from './core.js?v=55c7c82e';
 
 const app = document.getElementById('app');
 
@@ -83,8 +83,10 @@ try {
          而${C.LEAGUES[C.league()]?.zh ?? '這個聯賽'}沒有免費的來源(實測過)。
          來源自己歸錯類的項目會混進來(例如英超的轉會快訊),我們<b>不用關鍵字去殺</b> ——
          那會誤傷真文章。`
-      : '三種來源:<b>傷停與轉會</b>來自 FPL 官方欄位(含更新日期,是真的即時資料); <b>賽前看點</b>由預測模型自動生成;<b>數據 / 戰術 / 陣容</b>則是從上季 380 場比賽跑出來的敘事。外部新聞 RSS 可由 <span class="mono">scripts/fetch-news.mjs</span> 更新。'}
-      ${news.some(n => n.curated) ? '<br><b>賽報 / 外電 / 轉會外電</b>是<b>人工整理</b>的外電摘要,每一則都帶原文連結;摘要裡引用的比分<b>每次建置都會拿本站賽果重新核對</b>,對不上的整則不出。轉會項目會標明是<b>已確認</b>還是<b>媒體報導</b>。' : ''}</p>
+      /* 2026-09-03 精簡:每一則卡片本身就標著它是哪一類,頁首不必再把三類各解釋
+         一遍;`fetch-news.mjs` 更是給維護者看的,不該出現在畫面上。 */
+      : '每一則都標著來源:<b>FPL 官方欄位</b>、<b>預測模型</b>,或上季 380 場跑出來的敘事。'}
+      ${news.some(n => n.curated) ? '<br>人工整理的外電都帶原文連結;<b>摘要裡的比分每次建置都拿本站賽果重新核對,對不上的整則不出。</b>' : ''}</p>
     ${coverageNote()}
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算；本機同步後再手動發布' }),
