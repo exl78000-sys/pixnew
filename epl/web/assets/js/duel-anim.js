@@ -25,7 +25,17 @@
  * 誰拿球、往哪跑仍然是演出 —— 這一層只保證畫面跟面板講的是同一件事(場上幾個人、誰在場上)。 */
 const FW = 105, FH = 68;          // 球場座標(公尺),畫布再縮放
 const PASS_MIN = 0.55, PASS_MAX = 1.15;   // 傳球間隔(秒)
-const PASS_SPEED = 17, SHOT_SPEED = 27;   // 球速(公尺/秒)—— 球不再瞬移
+const PASS_SPEED = 17, SHOT_SPEED = 27;   // 球速上限(公尺/秒);傳球的初速依距離算,到腳邊剩 ARRIVE_SPEED
+/* 球的物理(2026-09-03,使用者要求「球不是一直在腳下」):
+   球是獨立物體,有速度、有摩擦;持球者只是「該去控球的人」。停球把球往前推一步、盤帶每隔一小段把球撥出去再追、
+   被搶時球彈開、射門偏了滾出底線變球門球、傳出邊線變界外球、守方解圍出底線才是角球。
+   摩擦是地面球 FRICTION、空中球 AIR;數值是「看起來像」,不是量測值 —— 這一層全是演出。 */
+const FRICTION = 5.5, AIR = 1.2;         // 減速(公尺/秒²)
+const ARRIVE_SPEED = 4;                 // 傳球到接球者腳邊時剩多少速度
+const CONTROL_R = 1.4;                  // 控到球的距離
+const TOUCH_AHEAD = [1.0, 1.8];         // 停球往前推多遠
+const DRIBBLE_EVERY = [0.5, 0.9], DRIBBLE_PUSH = [2.0, 3.5];   // 盤帶:多久撥一次、撥多遠
+const GOAL_HALF = 3.66;                 // 球門半寬
 const LANE_R = 3.4;               // 「站在傳球路線上」的判定半徑(公尺)
 const BOX_X = 16.5;               // 禁區深度,射門區由它推
 const BREAK_MAX = 6;              // 快攻演出的上限秒數(超時強制收尾,見下)
@@ -179,6 +189,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   const active = () => players.filter(p => !p.off);   // 被罰下的人不在場上
   let pendingShot = null;            // {side, outcome} 射門不進的演出
   let cornerFlag = null;             // 角球:球在角旗,主罰者持球
+  const queue = [];                  // 演出忙著時(快攻、射門、角球)進來的射門 / 角球事件排隊,空檔再演
 
   // 戲的狀態
   let st = { min: 0, done: false, hs: 0, as: 0 };
@@ -191,19 +202,35 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   const goalX = side => (dirOf(side) === 1 ? FW : 0);        // 這一隊要攻的球門
   const ownGoalX = side => (dirOf(side) === 1 ? 0 : FW);
   let holder = players.find(p => p.side === 'home' && p.role === 'MID') ?? players[0];
-  const ball = { x: FW / 2, y: FH / 2, tx: 0, ty: 0, t: 1, from: null, dur: 0.3 };
+  /* held:球在持球者腳下;不然就是自由球(飛行 / 滾動 / 靜止),holder 是要去控它的人。
+     lastSide:最後碰球的是哪一隊 —— 出界時決定是界外球 / 球門球 / 角球。 */
+  const ball = { x: FW / 2, y: FH / 2, vx: 0, vy: 0, held: true, lastSide: 'home', loft: 0, inNet: false, cut: null, dribble: 0.6, noCatch: false };
+  /* noCatch:這顆球注定要出界(射偏、解圍出底線、傳歪出邊線),出界前誰都不准把它控回來 ——
+     不然解圍的人站在球邊,下一格就把球又控住,角球永遠演不出來(實測兩次角球計數 0)。 */
+  const counts = { throwIns: 0, goalKicks: 0, corners: 0, tackles: 0 };   // 演出的出界統計(給測試與畫面)
   let passClock = 0.9, celebrate = 0, push = 0;   // push:控球方整條線往前壓的量
   let simT = 0;                     // 模擬時鐘。抖動不要吃 performance.now(),
                                     // 那是牆上時間,會讓「同種子同劇本」這句話不成立
   let presser = null, runner = null;   // 上搶的人、前插支援的中場(每格重算)
   let breakClock = 0;               // 快攻演出已經演多久
 
-  /* 球有速度了。原本是「t 每秒 +2.6」,等於距離越遠飛越快、近距離瞬移;
-     有了飛行時間才談得上「傳球路線上有沒有人」。 */
-  function launch(tx, ty, speed) {
-    ball.from = { x: ball.x, y: ball.y };
-    ball.tx = tx; ball.ty = ty; ball.t = 0;
-    ball.dur = Math.max(0.1, Math.hypot(tx - ball.x, ty - ball.y) / speed);
+  /* 踢球:從球現在的位置朝 (tx,ty) 給一個初速。傳球的初速依距離算,讓球到目標點時剩 ARRIVE_SPEED
+     (v0² = v1² + 2·a·d);射門與解圍直接給速度。loft > 0 是空中球(摩擦小、畫大一點)。 */
+  function kick(tx, ty, { speed = null, loft = 0, by = holder } = {}) {
+    const dx = tx - ball.x, dy = ty - ball.y, d = Math.max(0.3, Math.hypot(dx, dy));
+    /* 初速一律用**地面**摩擦算(保守):loft 會隨時間衰減回地面球,用空中摩擦算的話長距離的球會停在目標前
+       (實測第二顆角球的解圍在底線前 1.6 m 停住,角球演不出來)。 */
+    const v = speed ?? Math.min(PASS_SPEED, Math.sqrt(ARRIVE_SPEED ** 2 + 2 * FRICTION * d));
+    ball.vx = (dx / d) * v; ball.vy = (dy / d) * v;
+    ball.held = false; ball.loft = loft; ball.cut = null; ball.inNet = false; ball.noCatch = false;
+    if (by) ball.lastSide = by.side;
+  }
+  const speedOf = () => Math.hypot(ball.vx, ball.vy);
+  /* 傳給隊友:提前量 = 接球者現在的位置再往前一點(他會迎上去) */
+  function passTo(p) {
+    const dir = dirOf(holder.side);
+    kick(p.x + dir * 1.5, p.y);
+    holder = p;
   }
 
   /* 傳球路線上離球最近的對手,連同「在哪裡被切斷」。
@@ -229,7 +256,8 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     const mids = active().filter(p => p.side === side && p.role === 'MID');
     holder = mids.sort((a, b) => Math.abs(a.by - FH / 2) - Math.abs(b.by - FH / 2))[0]
       ?? players.find(p => p.side === side) ?? players[0];
-    ball.from = null; ball.x = FW / 2; ball.y = FH / 2; ball.t = 1;
+    ball.x = FW / 2; ball.y = FH / 2; ball.vx = 0; ball.vy = 0; ball.held = true; ball.loft = 0; ball.inNet = false; ball.cut = null;
+    ball.lastSide = side;
     push = 0; passClock = 0.9; breakClock = 0;
   }
   kickoff('home');
@@ -249,17 +277,44 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
      沒有人才退回「最靠近接應點的人把球贏走」。機率完全沒變(見 laneCut)。 */
   function turnover(target) {
     const cut = target ? laneCut(ball, target, holder.side) : null;
+    const opp = active().filter(p => p.side !== holder.side && p.role !== 'GK');
+    /* 靠邊線的傳球一部分直接踢出邊線 → 界外球給對方(球權還是換了,跟模型的判定一致)。
+       放在所有分支之前:路線上幾乎永遠有人(10 個對手),放在最後那個分支根本走不到(實測整場 0 次界外球)。 */
+    /* 條件看的是**球**離邊線多近(不是目標點):初速依距離算、到目標點剩 4 m/s,所以目標擺在線外 2 m
+       球一定會滾過線;固定速度從場中央踢的話滾 15 m 就停了(實測整場 0 次界外球,追軌跡才發現)。 */
+    if (target && Math.min(ball.y, FH - ball.y) < 20 && rng() < 0.3) {
+      kick(ball.x + (rng() - 0.5) * 10 + dirOf(holder.side) * 6, ball.y < FH / 2 ? -2 : FH + 2);
+      ball.noCatch = true; counts.passOuts = (counts.passOuts ?? 0) + 1;
+      holder = opp.reduce((a, b) => (Math.hypot(b.x - target.x, b.y - target.y) < Math.hypot(a.x - target.x, a.y - target.y) ? b : a), opp[0]);
+      push = 0; return;
+    }
     if (cut && cut.d < LANE_R * 2.2) {
+      // 傳球被切斷:球照樣踢向目標,攔截者在路線上把它收下
+      kick(target.x, target.y);
+      ball.cut = { x: cut.x, y: cut.y };
       holder = cut.o;
-      launch(cut.x, cut.y, PASS_SPEED);
+    } else if (presser && Math.hypot(presser.x - holder.x, presser.y - holder.y) < 4.0) {
+      // 被搶:球從腳下彈開(離開上搶者的方向再隨機轉一點),上搶的人去追
+      const ang = Math.atan2(holder.y - presser.y, holder.x - presser.x) + (rng() - 0.5) * 1.6;
+      ball.vx = Math.cos(ang) * (5 + rng() * 4); ball.vy = Math.sin(ang) * (5 + rng() * 4);
+      ball.held = false; ball.loft = 0; ball.cut = null; ball.lastSide = holder.side;
+      counts.tackles++;
+      holder = presser;
     } else {
-      const opp = active().filter(p => p.side !== holder.side && p.role !== 'GK');
       const near = target
         ? opp.reduce((a, b) => (Math.hypot(b.x - target.x, b.y - target.y)
           < Math.hypot(a.x - target.x, a.y - target.y) ? b : a), opp[0])
         : opp[Math.floor(rng() * opp.length)];
-      holder = near ?? opp[0];
-      launch(holder.x, holder.y, PASS_SPEED);
+      // 傳歪了:靠邊線的話有一定比例直接踢出邊線 → 界外球(給對方);其餘踢到對手腳邊
+      const nearLine = target && Math.min(target.y, FH - target.y) < 12;
+      if (nearLine && rng() < 0.35) {
+        kick(target.x + (rng() - 0.5) * 6, target.y < FH / 2 ? -2 : FH + 2);
+        ball.noCatch = true;
+        holder = near ?? opp[0];
+      } else {
+        if (near) kick(near.x, near.y);
+        holder = near ?? opp[0];
+      }
     }
     push = 0;
   }
@@ -269,7 +324,8 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   function shoot() {
     const dir = dirOf(holder.side);
     const scorer = holder.side;
-    launch(dir === 1 ? FW - 1 : 1, FH / 2 + (rng() - 0.5) * 6, SHOT_SPEED);
+    kick(dir === 1 ? FW + 2 : -2, FH / 2 + (rng() - 0.5) * 5, { speed: SHOT_SPEED, loft: 0.6 });
+    ball.inNet = true;                 // 進網:過線之後停在網裡,門將不撿
     celebrate = 1.6; goalsPlayed++;
     pendingGoal = null; push = 0; breakClock = 0;
     pendingKickoff = scorer === 'home' ? 'away' : 'home';   // 失球方開球
@@ -282,18 +338,25 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     const gk = active().find(p => p.side !== side && p.role === 'GK');
     const flash = { side, outcome, t: 1.4 };
     if (outcome === 'blocked') {
+      // 被封阻:球打在封阻者身上彈開,封阻者收下
       const cut = laneCut(ball, { x: gx, y: FH / 2 }, side);
+      kick(cut ? cut.x : gx - dir * 12, cut ? cut.y : FH / 2, { speed: SHOT_SPEED });
+      ball.cut = cut ? { x: cut.x, y: cut.y, bounce: true } : null;
       holder = cut?.o ?? gk ?? holder;
-      launch(cut ? cut.x : gx - dir * 12, cut ? cut.y : FH / 2, SHOT_SPEED);
     } else if (outcome === 'saved') {
+      // 被撲出:球飛向門將,門將接住(門將不受控球速度上限限制)
+      kick(gx - dir * 3, FH / 2 + (rng() - 0.5) * 5, { speed: SHOT_SPEED, loft: 0.5 });
       holder = gk ?? holder;
-      launch(gx - dir * 3, FH / 2 + (rng() - 0.5) * 5, SHOT_SPEED);
     } else if (outcome === 'post') {
+      // 中柱:飛到門柱點就反彈,變自由球,離最近的人去撿
+      kick(gx, FH / 2 + (rng() < 0.5 ? -GOAL_HALF : GOAL_HALF), { speed: SHOT_SPEED, loft: 0.4 });
+      ball.cut = { x: gx - dir * 0.5, y: ball.vy > 0 ? FH / 2 + GOAL_HALF : FH / 2 - GOAL_HALF, post: true };
       holder = gk ?? holder;
-      launch(gx - dir * 1, FH / 2 + (rng() < 0.5 ? -3.7 : 3.7), SHOT_SPEED);
     } else {
+      // 射偏:球飛過底線(球門外側),物理層會判成球門球
+      kick(gx + dir * 3, FH / 2 + (rng() < 0.5 ? -1 : 1) * (GOAL_HALF + 2 + rng() * 8), { speed: SHOT_SPEED, loft: 0.6 });
+      ball.noCatch = true;
       holder = gk ?? holder;
-      launch(gx, FH / 2 + (rng() < 0.5 ? -1 : 1) * (5 + rng() * 6), SHOT_SPEED);
     }
     lastShot = flash; pendingShot = null; push = 0; breakClock = 0;
   }
@@ -353,25 +416,35 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     if (half === 1 && st.min >= 46) { half = 2; celebrate = 1.0; kickoff('away'); return; }
     if (celebrate > 0) {
       celebrate -= dt;
+      physics(dt);                     // 射門要飛進網,不是凍在半路
       if (celebrate <= 0 && pendingKickoff) { kickoff(pendingKickoff); pendingKickoff = null; }
       return;
     }
     simT += dt;
+    drainQueue();
     if (pendingGoal || pendingShot) breakClock += dt;
     if (lastShot && (lastShot.t -= dt) <= 0) lastShot = null;
     for (const p of players) if (p.flash > 0) p.flash -= dt;
-    passClock -= dt;
-    if (passClock <= 0) {
+    if (ball.held) passClock -= dt;              // 球不在腳下就不做傳球決定(先把球控住)
+    if (passClock <= 0 && ball.held) {
       passClock = PASS_MIN + rng() * (PASS_MAX - PASS_MIN);
       const share = holder.side === 'home' ? shareHome : 1 - shareHome;
-      if (cornerFlag) cornerFlag = null;          // 角球開出去之後就是一般傳球
+      if (cornerFlag) {
+        // 角球開出:空中球吊進禁區,禁區裡的隊友接
+        const side = holder.side, dir = dirOf(side);
+        const inBox = active().filter(p => p.side === side && p !== holder && p.role !== 'GK')
+          .sort((a, b) => Math.abs(goalX(side) - a.x) - Math.abs(goalX(side) - b.x));
+        const target = inBox[Math.floor(rng() * Math.min(3, inBox.length))] ?? chooseNext();
+        kick(goalX(side) - dir * (6 + rng() * 5), FH / 2 + (rng() - 0.5) * 12, { speed: 19, loft: 1 });
+        holder = target; cornerFlag = null; push = 12;
+        return;
+      }
       if (pendingShot && !pendingGoal && holder.side === pendingShot.side) {
         // 射門不進的演出:跟快攻一樣推進,到禁區就射,超時保底
         const toGoal = Math.abs(goalX(holder.side) - holder.x);
         if ((holder.role === 'FWD' && toGoal < BOX_X + 6) || breakClock > BREAK_MAX) { shootMiss(pendingShot.outcome); return; }
         const nxt = chooseNext();
-        launch(nxt.x, nxt.y, PASS_SPEED);
-        holder = nxt; push = Math.min(18, push + 4);
+        passTo(nxt); push = Math.min(18, push + 4);
       } else if (pendingShot && !pendingGoal) {
         turnover(); holder = active().find(p => p.side === pendingShot.side && p.role === 'MID') ?? holder;
       } else if (pendingGoal && holder.side === pendingGoal.side) {
@@ -381,23 +454,17 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
            演出不該有辦法把它吞掉 —— 上一版就是被一個碰不到的門檻吞掉的。 */
         if ((holder.role === 'FWD' && toGoal < BOX_X + 6) || breakClock > BREAK_MAX) { shoot(); return; }
         const nxt = chooseNext();
-        launch(nxt.x, nxt.y, PASS_SPEED);
-        holder = nxt; push = Math.min(18, push + 4);
+        passTo(nxt); push = Math.min(18, push + 4);
       } else if (pendingGoal) {
         turnover(); holder = active().find(p => p.side === pendingGoal.side && p.role === 'MID') ?? holder;
       } else if (rng() > share * 0.55 + 0.45) {
         turnover(chooseNext());
       } else {
         const nxt = chooseNext();
-        launch(nxt.x, nxt.y, PASS_SPEED);
-        holder = nxt; push = Math.min(12, push + (rng() < 0.6 ? 2 : -3));
+        passTo(nxt); push = Math.min(12, push + (rng() < 0.6 ? 2 : -3));
       }
     }
-    ball.t = Math.min(1, ball.t + dt / ball.dur);
-    if (ball.from && ball.t < 1) {
-      ball.x = ball.from.x + (ball.tx - ball.from.x) * ball.t;
-      ball.y = ball.from.y + (ball.ty - ball.from.y) * ball.t;
-    } else { ball.from = null; ball.x = holder.x; ball.y = holder.y; }
+    physics(dt);
 
     /* 每格重算兩個角色:誰上搶(防守方離球最近的非門將)、誰前插
        (控球方離球縱向最近的中場)。 */
@@ -416,6 +483,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     }
 
     scheduleRuns(dt);
+    for (const p of active()) { p.px = p.x; p.py = p.y; }
     for (const p of active()) {
       const a = aim(p);
       const avoid = avoidanceOf(p, a, active());
@@ -430,6 +498,98 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       p.y = Math.max(1.5, Math.min(FH - 1.5, p.y));
     }
     separate();
+  }
+
+  /* 球的物理與出界(2026-09-03)。每格:自由球依速度前進、摩擦減速;持球者到球邊就控住(停球往前推一步);
+     持球時盤帶每隔一段把球撥出去再追。出界:邊線 → 界外球(最後碰球的對方擲);底線 → 進球(門內且射門中)、
+     球門球(攻方最後碰)、角球(守方最後碰)。角球的計數只給畫面,引擎的角球統計是資料,兩者分開。 */
+  function physics(dt) {
+    if (ball.held && holder) {
+      // 球在腳下:貼著持球者往前一點;盤帶時定時撥出去
+      const dir = dirOf(holder.side);
+      ball.x = holder.x + dir * 0.7; ball.y = holder.y;
+      ball.dribble -= dt;
+      const moving = Math.hypot(holder.x - (holder.px ?? holder.x), holder.y - (holder.py ?? holder.y)) / Math.max(dt, 1e-3);
+      if (ball.dribble <= 0 && moving > 1.2 && !cornerFlag) {
+        const ang = Math.atan2(holder.y - (holder.py ?? holder.y), holder.x - (holder.px ?? holder.x));
+        const d = DRIBBLE_PUSH[0] + rng() * (DRIBBLE_PUSH[1] - DRIBBLE_PUSH[0]);
+        kick(ball.x + Math.cos(ang) * d, ball.y + Math.sin(ang) * d);
+        ball.dribble = DRIBBLE_EVERY[0] + rng() * (DRIBBLE_EVERY[1] - DRIBBLE_EVERY[0]);
+      }
+      return;
+    }
+    // 自由球:前進與摩擦
+    const v = speedOf();
+    if (v > 0) {
+      const a = ball.loft > 0 ? AIR : FRICTION;
+      const nv = Math.max(0, v - a * dt);
+      ball.x += (ball.vx / v) * nv * dt; ball.y += (ball.vy / v) * nv * dt;
+      ball.vx = (ball.vx / v) * nv; ball.vy = (ball.vy / v) * nv;
+      if (ball.loft > 0) ball.loft = Math.max(0, ball.loft - dt * 0.6);
+    }
+    if (ball.noCatch && v <= 0.05) ball.noCatch = false;   // 保險:滾不到界外就讓人撿
+    // 中柱:到門柱點就反彈
+    if (ball.cut?.post && Math.hypot(ball.x - ball.cut.x, ball.y - ball.cut.y) < 1.2) {
+      ball.vx = -ball.vx * 0.35; ball.vy = (rng() - 0.5) * 8; ball.loft = 0; ball.cut = null;
+      const side = holder.side;   // 守方(門將那隊)最近的人去撿
+      holder = active().filter(p => p.side === side).reduce((a, b) => (Math.hypot(b.x - ball.x, b.y - ball.y) < Math.hypot(a.x - ball.x, a.y - ball.y) ? b : a));
+      return;
+    }
+    if (ball.inNet) {
+      if (ball.x < -1.5 || ball.x > FW + 1.5) { ball.vx = 0; ball.vy = 0; ball.x = Math.max(-1.5, Math.min(FW + 1.5, ball.x)); }
+      return;
+    }
+    // 出界
+    if (ball.y < 0 || ball.y > FH) return throwIn();
+    if (ball.x < 0 || ball.x > FW) return byline();
+    // 控球:該去控球的人到了就控住(門將接球不受速度限制),停球往前推一步
+    if (!ball.noCatch && holder && Math.hypot(holder.x - ball.x, holder.y - ball.y) < CONTROL_R && (v < 16 || holder.role === 'GK')) {
+      const dir = dirOf(holder.side);
+      const push = ball.cut?.bounce ? 0 : TOUCH_AHEAD[0] + rng() * (TOUCH_AHEAD[1] - TOUCH_AHEAD[0]);
+      ball.x = holder.x + dir * push; ball.y = holder.y + (rng() - 0.5) * 0.8;
+      ball.vx = 0; ball.vy = 0; ball.held = true; ball.loft = 0; ball.cut = null; ball.lastSide = holder.side;
+      ball.dribble = DRIBBLE_EVERY[0];
+    }
+  }
+  function throwIn() {
+    const y = ball.y < 0 ? 0.2 : FH - 0.2;
+    const x = Math.max(1, Math.min(FW - 1, ball.x));
+    const side = ball.lastSide === 'home' ? 'away' : 'home';
+    ball.x = x; ball.y = y; ball.vx = 0; ball.vy = 0; ball.loft = 0; ball.cut = null; ball.held = false; ball.noCatch = false;
+    holder = nearestOf(side, x, y);
+    counts.throwIns++; passClock = 0.8; push = 0;
+  }
+  function byline() {
+    const endX = ball.x < 0 ? 0 : FW;
+    const defending = [H_SIDE, A_SIDE].find(sd => ownGoalX(sd) === endX);   // 這條底線是誰家的
+    const attacking = defending === 'home' ? 'away' : 'home';
+    ball.vx = 0; ball.vy = 0; ball.loft = 0; ball.cut = null; ball.held = false; ball.noCatch = false;
+    if (ball.lastSide === defending) {
+      // 守方最後碰到 → 角球
+      counts.corners++;
+      cornerSetup(attacking, ball.y < FH / 2 ? 0.5 : FH - 0.5);
+    } else {
+      // 攻方最後碰到 → 球門球:門將把球放在小禁區前
+      counts.goalKicks++;
+      const dir = dirOf(defending);
+      ball.x = endX + dir * 5.5; ball.y = FH / 2 + (rng() < 0.5 ? -8 : 8);
+      holder = active().find(p => p.side === defending && p.role === 'GK') ?? nearestOf(defending, ball.x, ball.y);
+      passClock = 1.2; push = 0;
+    }
+  }
+  const H_SIDE = 'home', A_SIDE = 'away';
+  const nearestOf = (side, x, y) => active().filter(p => p.side === side && p.role !== 'GK')
+    .reduce((a, b) => (Math.hypot(b.x - x, b.y - y) < Math.hypot(a.x - x, a.y - y) ? b : a));
+  function cornerSetup(side, y) {
+    ball.x = goalX(side) === FW ? FW - 0.3 : 0.3; ball.y = y;
+    ball.vx = 0; ball.vy = 0; ball.held = false; ball.loft = 0; ball.cut = null;
+    holder = cornerTaker(side);
+    cornerFlag = { side }; passClock = 1.4; push = 14;
+  }
+  let cornerTakerName = null;        // 引擎給的主罰者(perform 時記下),沒有就挑離角旗最近的中場
+  function cornerTaker(side) {
+    const byName = cornerTakerName ? active().find(p => p.side === side && p.name === cornerTakerName) : null;
+    return byName ?? nearestOf(side, ball.x, ball.y);
   }
 
   /* 無球跑動的排程(2026-09-03)。每個攻方非持球員每秒以 RUN_RATE × 節奏 × 個人勤勞度的機率起跑,
@@ -484,6 +644,14 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       }
     }
     for (const p of list) { p.x = Math.max(1, Math.min(FW - 1, p.x)); p.y = Math.max(1.5, Math.min(FH - 1.5, p.y)); }
+    /* 夾回邊界之後可能又疊在一起(角旗、底線角落):沿邊界方向錯開,不再往界外推 */
+    for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+      const p = list[i], q = list[j];
+      if (Math.hypot(q.x - p.x, q.y - p.y) >= MIN_SEP * 0.75) continue;
+      const onX = p.x <= 1 || p.x >= FW - 1, onY = p.y <= 1.5 || p.y >= FH - 1.5;
+      if (onX) q.y = Math.max(1.5, Math.min(FH - 1.5, q.y + (q.y >= p.y ? MIN_SEP : -MIN_SEP)));
+      else if (onY) q.x = Math.max(1, Math.min(FW - 1, q.x + (q.x >= p.x ? MIN_SEP : -MIN_SEP)));
+    }
   }
 
   function draw() {
@@ -526,7 +694,9 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       ctx.fillText(holder.name, sx(holder.x), sy(holder.y) - 13);
     }
     // 球
-    ctx.beginPath(); ctx.arc(sx(ball.x), sy(ball.y), 4.4, 0, 7);
+    const br = 4.4 + ball.loft * 3;
+    if (ball.loft > 0) { ctx.beginPath(); ctx.ellipse(sx(ball.x) + 3, sy(ball.y) + 4 + ball.loft * 6, 4, 2, 0, 0, 7); ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fill(); }
+    ctx.beginPath(); ctx.arc(sx(ball.x), sy(ball.y), br, 0, 7);
     ctx.fillStyle = '#fff'; ctx.shadowColor = '#00ff85'; ctx.shadowBlur = 14; ctx.fill(); ctx.shadowBlur = 0;
 
     // 記分板(截圖/錄影時畫面裡要有資訊)。下半場換邊後隊伍色塊跟著換側
@@ -548,20 +718,27 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   probe = () => ({
     goalsPlayed, pendingGoal, half, min: st.min,
     running: active().filter(p => p.run).length, sprinting: active().filter(p => p.run?.sprint).length,
+    ball: { x: ball.x, y: ball.y, held: ball.held, speed: speedOf(), loft: ball.loft }, holderSide: holder?.side ?? null, counts: { ...counts }, cornerFlag: !!cornerFlag,
     inBounds: players.every(p => p.x >= 0 && p.x <= FW && p.y >= 0 && p.y <= FH),
     minSeparation: players.reduce((best, p, i) => players.slice(i + 1)
       .reduce((inner, q) => Math.min(inner, Math.hypot(p.x - q.x, p.y - q.y)), best), Infinity),
   });
 
-  let raf = null, last = performance.now(), alive = true;
+  let raf = null, last = null, alive = true;
   const loop = now => {
     if (!alive) return;
+    /* 第一格只記時間、不推進:mount 到第一格之間的牆上時間會混進 dt,之後每個「rng() > 機率 × dt」的比較都跟著飄,
+       同種子在測試台跑兩次結果不同(實測角球演出來的次數不一樣)。從第二格起 dt 完全來自 rAF 的時戳。 */
+    if (last == null) { last = now; draw(); raf = requestAnimationFrame(loop); return; }
     /* 夾住負值。瀏覽器不會給比 mount 時還早的 rAF 時戳,但無畫布的測試台會
        (它自己從 0 開始餵 now),於是第一格的 dt 變成負的 —— 位置往目標的
        **反方向**跳一下,而跳多遠取決於行程已經跑多久。
        實測:同一個種子,單獨跑 node scripts/test.mjs 全綠、npm test 就紅,
        因為後者讓 test.mjs 晚了幾百毫秒起步。負的 frame delta 本來就沒有意義。 */
-    const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+    /* dt 量化到整數毫秒:這個模擬對 dt 的浮點尾數敏感(每格都有「rng() > 機率 × dt」的比較),
+       合成時鐘 33.333… 的尾數只要不同,同種子就走出不同的路(實測 4 種起始時戳 3 種軌跡)。
+       整數毫秒之後同種子同時鐘一定同劇本;瀏覽器的 rAF 本來就是整數毫秒等級的抖動。 */
+    const dt = Math.min(0.05, Math.max(0, Math.round(now - last) / 1000)); last = now;
     if (!st.done) step(dt);
     draw();
     raf = requestAnimationFrame(loop);
@@ -592,17 +769,37 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       } else if (e.type === 'card') {
         const p = byName(e.side, e.playerName);
         if (p) { p.flash = 1.5; p.flashColor = '#ffd400'; }
-      } else if (e.type === 'shot' && !pendingGoal && !pendingShot) {
-        pendingShot = { side: e.side, outcome: e.outcome }; breakClock = 0;
-      } else if (e.type === 'corner' && !pendingGoal && !pendingShot) {
-        const side = e.side, dir = dirOf(side);
-        const taker = byName(side, e.playerName) ?? active().find(p => p.side === side && p.role === 'MID') ?? holder;
-        const y = rng() < 0.5 ? 1 : FH - 1;
-        taker.x = goalX(side) - dir * 0.5; taker.y = y;
-        holder = taker; ball.from = null; ball.x = taker.x; ball.y = y; ball.t = 1;
-        cornerFlag = { side }; passClock = 1.3; push = 14;
+      } else if (e.type === 'shot' || e.type === 'corner') {
+        queue.push(e);
+        drainQueue();
       }
     },
     destroy() { alive = false; if (raf) cancelAnimationFrame(raf); },
   };
+
+  /* 排隊的事件:沒有快攻 / 射門 / 角球在演時才拿下一個。丟掉的話「引擎排了兩顆角球、畫面只演一顆」(測試抓到)。 */
+  function drainQueue() {
+    while (queue.length && !pendingGoal && !pendingShot && !cornerFlag && celebrate <= 0) {
+      const e = queue.shift();
+      if (e.type === 'shot') {
+        pendingShot = { side: e.side, outcome: e.outcome }; breakClock = 0;
+      } else if (e.type === 'corner') {
+        /* 引擎排了一顆角球:演「守方解圍出底線」—— 球到守方後衛腳下,他把球踢過自家底線(門外側),
+           物理層判成角球、把球擺到角旗;主罰者用引擎給的名字。角球從哪來畫面上就講得通。 */
+        const side = e.side, def = side === 'home' ? 'away' : 'home', dir = dirOf(side);
+        const gx = goalX(side);
+        const clearer = nearestOf(def, gx - dir * 10, FH / 2);
+        cornerTakerName = e.playerName ?? null;
+        ball.x = clearer.x; ball.y = clearer.y; ball.held = false; ball.loft = 0.3; ball.cut = null;
+        /* 目標點在底線外、但 y 留在場內且在球門外側 —— 第一版把 y 放到邊線外(-2),球斜著飛先碰到邊線,
+           就變成界外球而不是角球(測試抓到)。 */
+        const ty = Math.max(3, Math.min(FH - 3, clearer.y < FH / 2
+          ? Math.min(clearer.y, FH / 2 - GOAL_HALF - 2) : Math.max(clearer.y, FH / 2 + GOAL_HALF + 2)));
+        // 不給固定速度:依距離算、到線外 2 m 還剩 4 m/s,離多遠都滾得過線(上限 PASS_SPEED,25 m 內夠用)
+        kick(gx + dir * 3, ty, { loft: 0.4, by: clearer });
+        ball.lastSide = def; ball.noCatch = true;
+        holder = clearer;             // 沒人去搶它,它自己滾出去
+      }
+    }
+  }
 }

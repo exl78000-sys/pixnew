@@ -13,7 +13,6 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { teamMatchRows } from '../../lib/style-trend.mjs';
 import { loadTeams } from '../../lib/teams.mjs';
-import { matchOne } from '../../lib/names.mjs';
 
 const r2 = n => Math.round(n * 100) / 100;
 const r3 = n => Math.round(n * 1000) / 1000;
@@ -66,6 +65,8 @@ function compactPlayer(p) {
     yellow: (p.last?.yellow ?? 0) + (p.current?.yellow ?? 0),
     red: (p.last?.red ?? 0) + (p.current?.red ?? 0),
     ability: a,
+    ...(p.tracking?.heat ? { heat: { cx: p.tracking.heat.cx, cy: p.tracking.heat.cy, spread: p.tracking.heat.spread, games: p.tracking.heat.games, touches: p.tracking.heat.touches } } : {}),
+    ...(p.tracking?.distancePerGame != null ? { run: { distancePerGame: p.tracking.distancePerGame, topSpeed: p.tracking.topSpeed ?? null, games: p.tracking.games } } : {}),
   };
 }
 
@@ -160,7 +161,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
      - zones:該隊左/中/右進攻佔比的平均(供應商算的)
      - 逐人:熱區質心 / 離散度(觸球位置,兩隊都正規化成向右進攻,門將質心 x≈12 驗過)、場均跑動、最高速度。
        FotMob 用全名,FPL 用簡稱,配對走 lib/names.mjs 的 matchOne(姓氏 + 名字首字母,配不出唯一就不掛)。 */
-  const tempoBy = new Map(), zonesBy = new Map(), heatBy = new Map(), runBy = new Map();
+  const tempoBy = new Map(), zonesBy = new Map();
   for (const m of fm) {
     for (const [code, idx] of [[m.home, 0], [m.away, 1]]) {
       const ph = m.physical?.team;
@@ -175,19 +176,6 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
         t.games++; t.left += z.left; t.center += z.center; t.right += z.right;
         zonesBy.set(code, t);
       }
-    }
-    for (const p of m.heat?.players ?? []) {
-      const k = `${p.team}|${p.name}`;
-      const h = heatBy.get(k) ?? { team: p.team, name: p.name, games: 0, touches: 0, sx: 0, sy: 0, ss: 0 };
-      h.games++; h.touches += p.n; h.sx += p.cx * p.n; h.sy += p.cy * p.n; h.ss += p.spread * p.n;
-      heatBy.set(k, h);
-    }
-    for (const p of m.physical?.players ?? []) {
-      const k = `${p.team}|${p.name}`;
-      const r = runBy.get(k) ?? { team: p.team, name: p.name, games: 0, distance: 0, topSpeed: null };
-      if (p.distance != null) { r.games++; r.distance += p.distance; }
-      if (p.topSpeed != null) r.topSpeed = Math.max(r.topSpeed ?? 0, p.topSpeed);
-      runBy.set(k, r);
     }
   }
   const subsOn = fm.flatMap(m => m.events.filter(e => e.type === 'subst'));
@@ -251,24 +239,8 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     const formations = [...new Set([lf?.formation, lu?.shape, ...used.map(u => u.formation)].filter(Boolean))];
     const sp = t.tactics?.setPieces ?? {};
     const teamShots = shotsAll.filter(s => s.team === code);
-    /* 逐人熱區與跑動掛到名單上:FotMob 全名 → 名單的 fullName;配不出唯一的不掛(配錯人比不掛糟) */
-    const cands = squad.filter(p => p.fullName);
-    /* matchOne 配不到時的最後一道:FotMob 的姓氏剛好等於 FPL 的簡稱(「David Raya」↔「Raya」),
-       而且隊裡只有一個人叫那個簡稱才算;「Gabriel」那種名字當簡稱的不會走到這裡(它是名不是姓)。 */
-    const byWeb = name => {
-      const last = String(name).trim().split(/\s+/).at(-1)?.toLowerCase();
-      const hits = squad.filter(p => p.name.toLowerCase() === last);
-      return hits.length === 1 ? hits[0] : null;
-    };
-    const find = name => matchOne(cands, name, { nameOf: c => c.fullName }) ?? byWeb(name);
-    for (const h of [...heatBy.values()].filter(h => h.team === code)) {
-      const p = find(h.name);
-      if (p && h.touches) p.heat = { cx: r2(h.sx / h.touches), cy: r2(h.sy / h.touches), spread: r2(h.ss / h.touches), games: h.games, touches: h.touches };
-    }
-    for (const r of [...runBy.values()].filter(r => r.team === code)) {
-      const p = find(r.name);
-      if (p && r.games) p.run = { distancePerGame: Math.round(r.distance / r.games), topSpeed: r.topSpeed == null ? null : r2(r.topSpeed), games: r.games };
-    }
+    /* 逐人熱區與跑動:直接讀球員主檔的 tracking(build.mjs 用 lib/matchstats.mjs 的 attachPlayerTracking 掛的),
+       這裡不再自己配對 —— 兩份配對邏輯一定會分岔(CLAUDE.md 的老坑)。 */
     const tp = tempoBy.get(code), zn = zonesBy.get(code);
     teamsOut[code] = {
       /* 叫 pace 不叫 tempo —— tempo 是既有的半場進球那一組,同名會被後面那個蓋掉(實際踩到) */
@@ -301,7 +273,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       rates: `football-data.co.uk 逐場 CSV(${last}${existsSync(join(csvDir, `${cur}.csv`)) ? ` + ${cur}` : ''}),隊-場 ${leagueRates.teamGames} 列`,
       possession: `FotMob matchDetails(data/raw/fotmob-epl),${fm.length} 場;官網 /stats/match 抽核 20 場全部在 ±2 內`,
       shots: `FotMob shotmap,${shotsAll.length} 次射門(逐射門 xG 與情境)`,
-      tempo: `FotMob 追蹤資料(跑動距離 / 衝刺),${[...tempoBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場;熱區 ${heatBy.size} 人-隊、三路進攻 ${[...zonesBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場`,
+      tempo: `FotMob 追蹤資料(跑動距離 / 衝刺),${[...tempoBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場;熱區與逐人跑動見球員主檔的 tracking、三路進攻 ${[...zonesBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場`,
       ability: 'FPL per-90(players.json 的 last / current),450 分鐘以上才用',
       cards: 'FPL 逐季黃紅牌 + CSV 逐場牌數',
       subs: `FotMob 換人事件 ${subsOn.length} 次;被換下位置來自 official.json(${offN} 次)`,

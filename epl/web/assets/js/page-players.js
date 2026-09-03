@@ -240,6 +240,32 @@ try {
         <b class="mono">${b.last ? C.fx(b.last[k], d) : '—'}</b></div>`).join('')}</div>`;
   };
 
+  /* 跑動、最高速度與觸球熱區(FotMob 追蹤資料,2026-09-03 接進來)。不是每場都有,場數另記;
+     熱區是 6×4 格的觸球位置計數,正規化成向右進攻(自家球門在左)。沒有資料整張不畫。 */
+  function trackingCard(p, t) {
+    const tr = p.tracking;
+    if (!tr || (tr.distancePerGame == null && !tr.heat)) return '';
+    const line = (l, v) => `<div class="stat-line"><span class="small muted">${l}</span><b class="mono">${v}</b></div>`;
+    const heat = tr.heat?.grid?.length === 24 ? (() => {
+      const W = 240, H = 156, gx = 6, gy = 4, mx = Math.max(1, ...tr.heat.grid);
+      const cells = tr.heat.grid.map((v, i) => {
+        const cx = i % gx, cy = Math.floor(i / gx);
+        return `<rect x="${(cx * W / gx).toFixed(1)}" y="${(cy * H / gy).toFixed(1)}" width="${(W / gx).toFixed(1)}" height="${(H / gy).toFixed(1)}" fill="${t.colors?.[0] ?? '#00ff85'}" fill-opacity="${(0.08 + 0.85 * v / mx).toFixed(2)}"><title>${v} 次觸球</title></rect>`;
+      }).join('');
+      return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;border-radius:8px;background:#0a1018;margin-top:8px">
+        <rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" fill="none" stroke="var(--line)"/>
+        ${cells}<line x1="${W / 2}" y1="0" x2="${W / 2}" y2="${H}" stroke="rgba(255,255,255,.35)"/>
+        <circle cx="${(tr.heat.cx / 105 * W).toFixed(1)}" cy="${(tr.heat.cy / 68 * H).toFixed(1)}" r="5" fill="#fff"/></svg>
+        <div class="tiny dim">自家球門在左、攻向右;白點是 ${tr.heat.touches} 次觸球的質心(${tr.heat.games} 場)。</div>`;
+    })() : '';
+    return `<div class="card"><h3>跑動與熱區 <span class="dim tiny">FotMob 追蹤資料</span></h3>
+      ${tr.distancePerGame != null ? line('場均跑動', `${(tr.distancePerGame / 1000).toFixed(1)} km <span class="dim">・${tr.games} 場</span>`) : ''}
+      ${tr.topSpeed != null ? line('最高速度', `${tr.topSpeed.toFixed(1)} km/h`) : ''}
+      ${heat}
+      <div class="tiny dim" style="margin-top:8px">供應商的追蹤資料,不是每場都有(2025-26 起);本站只搬運不推估。跟上面 FPL 的 per-90 是不同來源。</div>
+    </div>`;
+  }
+
   function openPlayer(p) {
     const t = C.team(p.team);
     const pctLine = (label, v, raw) => `
@@ -286,6 +312,7 @@ try {
       })()}
 
       ${roleCard(mode === 'current' ? p.current : p.last)}
+      ${trackingCard(p, t)}
 
       ${p.current ? `<div class="card"><h3>本季至今(${leaders.seasons.current})
           <span class="dim tiny">${p.appearances} 場</span></h3>

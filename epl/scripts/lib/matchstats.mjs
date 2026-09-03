@@ -14,6 +14,7 @@
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { matchOne } from './names.mjs';
 
 const r2 = n => Math.round(n * 100) / 100;
 const r3 = n => Math.round(n * 1000) / 1000;
@@ -48,6 +49,7 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
         events: m.events ?? [], lineups: m.lineups ?? null,
         /* 跑動 / 衝刺(2026-09-03 重探後加):供應商的追蹤資料,不是每場都有(2025-26 有 282/380,缺的集中在 11 座主場);沒有就是 null,不是 0 */
         physical: m.physical ?? null,
+        heat: m.heat ?? null, zones: m.zones ?? null,
         shotmapComplete: shotGoals === truth[0] + truth[1],
       };
     }
@@ -85,12 +87,28 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
       e.games++; e.distance += p.distance ?? 0; e.topSpeed = Math.max(e.topSpeed ?? 0, p.topSpeed ?? 0) || e.topSpeed; e.shirt ??= p.shirt;
       byPlayer.set(p.name, e);
     }
+    /* 逐人觸球熱區(FotMob heatmap,6×4 格 + 質心;兩隊都正規化成向右進攻)。按供應商全名彙總,
+       掛到球員身上由 attachPlayerTracking 做(那裡才有名單)。 */
+    const heatBy = new Map();
+    for (const m of mine) for (const p of m.heat?.players ?? []) {
+      if (p.team !== code) continue;
+      const h = heatBy.get(p.name) ?? { name: p.name, shirt: p.shirt ?? null, games: 0, touches: 0, sx: 0, sy: 0, ss: 0, grid: null };
+      h.games++; h.touches += p.n; h.sx += p.cx * p.n; h.sy += p.cy * p.n; h.ss += p.spread * p.n;
+      const g = String(p.grid ?? '').split(',').map(Number);
+      if (g.length && g.every(Number.isFinite)) h.grid = h.grid ? h.grid.map((v, i) => v + (g[i] ?? 0)) : g;
+      heatBy.set(p.name, h);
+    }
+    const heat = [...heatBy.values()].filter(h => h.touches > 0).map(h => ({
+      name: h.name, shirt: h.shirt, games: h.games, touches: h.touches,
+      cx: r2(h.sx / h.touches), cy: r2(h.sy / h.touches), spread: r2(h.ss / h.touches), grid: h.grid ?? null,
+    }));
     const physical = phys.length ? {
       games: phys.length,
       distancePerGame: Math.round(mean(phys.map(m => m.physical.team.distance[physSide(m)]))),
       sprintDistancePerGame: Math.round(mean(phys.map(m => m.physical.team.sprintDistance[physSide(m)]).filter(Number.isFinite))),
       sprintsPerGame: r2(mean(phys.map(m => m.physical.team.sprints[physSide(m)]).filter(Number.isFinite))),
-      players: [...byPlayer.values()].filter(p => p.games >= 3)
+      /* 1 場就列(games 另記,畫面自己標):遊戲的跑動加權 1 場也比沒有好;要「穩」的人看 games */
+      players: [...byPlayer.values()].filter(p => p.games >= 1)
         .map(p => ({ name: p.name, shirt: p.shirt, games: p.games, distancePerGame: Math.round(p.distance / p.games), topSpeed: p.topSpeed == null ? null : r2(p.topSpeed) }))
         .sort((a, b) => b.distancePerGame - a.distancePerGame),
     } : null;
@@ -98,6 +116,7 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
       code, seasons: [...new Set(mine.map(m => m.season))].sort(), games: mine.length,
       home: venue(true), away: venue(false),
       ...(physical ? { physical } : {}),
+      ...(heat.length ? { heat, heatGrid: { x: 6, y: 4 } } : {}),
       situations: Object.fromEntries(Object.entries(bySit).map(([k, v]) => [k, { shots: v.shots, goals: v.goals, share: r3(v.shots / Math.max(1, shots.length)), xgPerShot: r3(v.xg / Math.max(1, v.shots)) }])),
       shotSample: shots.length,
     };
@@ -130,4 +149,38 @@ export function toCanonicalDetail(m) {
       sprints: !!m.physical?.team?.sprints?.some(v => v != null),
       speed: !!m.physical?.players?.some(p => p.topSpeed != null) },
   };
+}
+
+
+/* 把逐隊的逐人跑動與熱區掛到球員主檔(players.json)上。FotMob 用全名,FPL 用簡稱:
+   先走 lib/names.mjs 的 matchOne(姓氏 + 名字首字母,配不出唯一就 null),再一道「姓氏 = 簡稱且隊裡唯一」的退路
+   (「David Raya」↔「Raya」)。配不到就不掛 —— 配錯人比不掛糟。回傳配對統計給 build 印出來。
+   模擬遊玩的側寫(scripts/game/lib/profile.mjs)也走這一個函式,不要再抄一份。 */
+export function attachPlayerTracking(players, stats, { teamOf = p => p.team } = {}) {
+  let matched = 0, total = 0;
+  const byTeam = new Map();
+  for (const p of players) { const t = teamOf(p); if (!t) continue; if (!byTeam.has(t)) byTeam.set(t, []); byTeam.get(t).push(p); }
+  for (const [code, t] of Object.entries(stats?.teams ?? {})) {
+    const squad = byTeam.get(code) ?? [];
+    const cands = squad.filter(p => p.fullName);
+    const byWeb = name => {
+      const last = String(name).trim().split(/\s+/).at(-1)?.toLowerCase();
+      const hits = squad.filter(p => String(p.name ?? '').toLowerCase() === last);
+      return hits.length === 1 ? hits[0] : null;
+    };
+    const find = name => matchOne(cands, name, { nameOf: c => c.fullName }) ?? byWeb(name);
+    for (const r of t.physical?.players ?? []) {
+      total++;
+      const p = find(r.name);
+      if (!p) continue;
+      matched++;
+      p.tracking = { ...(p.tracking ?? {}), distancePerGame: r.distancePerGame, topSpeed: r.topSpeed ?? null, games: r.games };
+    }
+    for (const h of t.heat ?? []) {
+      const p = find(h.name);
+      if (!p) continue;
+      p.tracking = { ...(p.tracking ?? {}), heat: { cx: h.cx, cy: h.cy, spread: h.spread, games: h.games, touches: h.touches, grid: h.grid, gridX: 6, gridY: 4 } };
+    }
+  }
+  return { matched, total };
 }

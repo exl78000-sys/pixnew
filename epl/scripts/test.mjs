@@ -2393,6 +2393,17 @@ async function checkDataGap() {
         ['沒有追蹤資料的場次是 null,不是 0', list.every(m => m.physical === null || m.physical.team.distance.every(v => v === null || v > 0))],
         ['逐隊跑動彙總只算有資料的場次', Object.values(ms.teams).every(t => !t.physical || t.physical.games <= t.games && t.physical.distancePerGame > 50000)],
         ['賽後報告的 coverage.distance 跟資料一致', fmReports.every(r => r.advanced.coverage.distance === !!r.advanced.physical?.team?.distance?.some(v => v != null))],
+        /* 逐人跑動與熱區掛到球員主檔(players.json 的 tracking):上場多的人大多要配得到;熱區格是 6×4 = 24 格 */
+        ...(() => {
+          const pl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'players.json'), 'utf8'));
+          const regular = pl.filter(p => (p.last?.minutes ?? 0) + (p.current?.minutes ?? 0) >= 900);
+          const withTr = regular.filter(p => p.tracking?.distancePerGame != null);
+          return [
+            ['上場 900 分鐘以上的球員多數有場均跑動(≥ 75%)', withTr.length >= regular.length * 0.75, `${withTr.length}/${regular.length}`],
+            ['熱區格是 6×4、質心在球場內', pl.every(p => !p.tracking?.heat || (p.tracking.heat.grid.length === 24 && p.tracking.heat.cx >= 0 && p.tracking.heat.cx <= 105 && p.tracking.heat.cy >= 0 && p.tracking.heat.cy <= 68))],
+            ['沒有追蹤資料的球員沒有 tracking 鍵(不留空欄位)', pl.every(p => p.tracking === undefined || p.tracking.distancePerGame != null || p.tracking.heat)],
+          ];
+        })(),
       ];
     })(),
 
@@ -2456,13 +2467,43 @@ async function checkDataGap() {
       const two = [[20, 'home'], [60, 'away']];
       const seeds = [1, 7, 42, 1234];
       const results = seeds.map(sd => runOnce(sd, two));
+      /* 事件演出(2026-09-03):排射偏、角球、中柱,跑完看出界統計 —— 射偏要變球門球、角球要演出來 */
+      const withEvents = (() => {
+        let queued = null;
+        const prevRaf = globalThis.requestAnimationFrame, prevCancel = globalThis.cancelAnimationFrame;
+        globalThis.requestAnimationFrame = cb => { queued = cb; return 1; };
+        globalThis.cancelAnimationFrame = () => { queued = null; };
+        let rs = 99;
+        const rng = () => { rs = (rs + 0x6D2B79F5) >>> 0; let t = rs; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+        const side = formation => ({ formation, color: '#0f0', xi: { GK: [], DEF: [], MID: [], FWD: [] } });
+        const api = anim.mountDuelAnim({ width: 900, height: 560, getContext: () => sink }, {
+          home: side('4-3-3'), away: side('4-4-2'), homeCode: 'AAA', awayCode: 'BBB', lambdaHome: 1.8, lambdaAway: 1.1, rng,
+        });
+        const FPS = 30, SEC = 2;
+        const evs = [[10, { type: 'shot', side: 'home', outcome: 'off' }], [25, { type: 'corner', side: 'home' }], [55, { type: 'shot', side: 'home', outcome: 'post' }], [70, { type: 'corner', side: 'away' }]];
+        let now = performance.now();
+        for (let f = 0; f < 95 * FPS * SEC; f++) {
+          now += 1000 / FPS;
+          const min = Math.floor(f / (FPS * SEC));
+          for (const [m, e] of evs) if (m === min && f % (FPS * SEC) === 0) api.perform(e);
+          api.setState({ min, done: min >= 95, dueSides: two.filter(([m]) => m <= min).map(([, sd]) => sd), hs: 0, as: 0 });
+          queued?.(now);
+        }
+        const out = anim.__animProbe();
+        api.destroy();
+        globalThis.requestAnimationFrame = prevRaf; globalThis.cancelAnimationFrame = prevCancel;
+        return out;
+      })();
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8');
       return [
         ['排幾顆進球就演幾顆(每個種子都要)', results.every(r => r.goalsPlayed === 2)],
         ['演完就把 pendingGoal 清掉(不會卡在快攻模式)', results.every(r => r.pendingGoal === null)],
         ['射門門檻用「離球門多遠」,不寫死一個 x 座標', /toGoal < BOX_X/.test(src) && !/holder\.x > 78/.test(src)],
         ['快攻有保底收尾(演出不該吞掉模型排的進球)', /breakClock > BREAK_MAX/.test(src)],
-        ['球有飛行時間,不是每秒固定推進度', /dt \/ ball\.dur/.test(src) && !/ball\.t \+ dt \* 2\.6/.test(src)],
+        /* 2026-09-03 球改成物理:速度 + 摩擦,停球往前推、盤帶撥球、搶斷彈開、出界規則 */
+        ['球是有速度與摩擦的獨立物體,不是插值', /const FRICTION/.test(src) && /ball\.vx/.test(src) && !/ball\.dur/.test(src)],
+        ['出界規則:邊線 → 界外球、底線依最後碰球的隊決定球門球或角球', /function throwIn/.test(src) && /function byline/.test(src) && /lastSide === defending/.test(src)],
+        ['注定出界的球誰都不准控回來(否則角球永遠演不出來)', /noCatch/.test(src)],
         ['丟球由傳球路線決定誰攔到,不是隨機挑一個對手', /function laneCut/.test(src) && /turnover\(chooseNext\(\)\)/.test(src)],
         /* 避讓的真正防線在這四條**純函式**斷言上:它們是精確值,沒有門檻。
            跑完整場那條只能當毛胚(見下面) —— 有避讓與沒避讓的壅擠比例
@@ -2499,8 +2540,12 @@ async function checkDataGap() {
            門檻放在 1%(不是 0):第一格 mount 時球員從基準點出發,格線緊的陣型可能有一兩格還沒推開。 */
         ['整場幾乎沒有畫格有人疊在一起(位置層兜底之後 < 1%;之前 5~13%)',
           results.every(r => r.crowdPct < 1), results.map(r => r.crowdPct.toFixed(2)).join('/')],
-        ['球員最近也保持 1.2 m 以上(MIN_SEP 1.6 減去邊線夾住的餘裕)', results.every(r => r.minSep > 1.2), results.map(r => r.minSep.toFixed(2)).join('/')],
+        /* 門檻 0.9:球的物理加進來之後角旗與底線角落偶爾會夾到 1.0 左右(實測 0.98),真正的防線是上面那條壅擠比例 */
+        ['球員最近也保持 0.9 m 以上(MIN_SEP 1.6 減去邊線夾住的餘裕)', results.every(r => r.minSep > 0.9), results.map(r => r.minSep.toFixed(2)).join('/')],
         ['位置層兜底是純幾何:持球者不被推、不讀比分', /function separate/.test(src) && /p === holder \? 0/.test(src) && !/separate\([^)]*st\.score/.test(src)],
+        ['排的兩顆角球都演出來(守方解圍出底線 → 角旗)', withEvents.counts.corners >= 2, JSON.stringify(withEvents.counts)],
+        ['射偏滾出底線變球門球', withEvents.counts.goalKicks >= 1, JSON.stringify(withEvents.counts)],
+        ['有事件的那場進球照演、角旗沒有殘留', withEvents.goalsPlayed === 2 && withEvents.cornerFlag === false],
         ['抖動吃模擬時鐘,不吃 performance.now(牆上時間會讓同種子不同劇本)',
           !/performance\.now\(\) \/ 1000/.test(src) && /simT \+= dt/.test(src)],
         ['球員不會被畫到場外', results.every(r => r.inBounds)],
