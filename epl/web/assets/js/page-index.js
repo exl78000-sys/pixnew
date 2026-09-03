@@ -5,8 +5,10 @@ const app = document.getElementById('app');
 
 try {
   /* 預測積分榜移到實時戰況頁了,所以這一頁不再需要 sim.json —— 少載一份。 */
-  const { meta, teams, fixtures, news, table, clubs, reports, results, analysis } =
-    await C.load('meta', 'teams', 'fixtures', 'news', 'table', 'clubs', 'reports', 'results', 'analysis');
+  /* `table` 拿掉了(2026-09-03):上季戰績搬到球隊頁之後,這一頁沒有任何地方
+     用到它 —— 留著就是每次進首頁多下載一份用不到的資料集。 */
+  const { meta, teams, fixtures, news, clubs, reports, results, analysis } =
+    await C.load('meta', 'teams', 'fixtures', 'news', 'clubs', 'reports', 'results', 'analysis');
   C.registerTeams(clubs);
   C.registerTeams(teams);
   C.nav();
@@ -125,9 +127,8 @@ try {
       </div>`}</div>
     </div>` : ''}
 
-  <div class="section"><h2>上季最終戰績</h2><span class="hint">${meta.lastSeason}・所有進階指標的基準</span></div>
-  <div id="lastTable"></div>
-
+  ${/* 「上季最終戰績」2026-09-03 搬到球隊頁(使用者要求)——
+       它講的是每一隊上季怎麼樣,而首頁已經有本季積分榜與賽程。 */''}
   <div class="card" style="margin-top:20px">
     <h2>模型是怎麼算的</h2>
     <div class="small muted" style="display:grid;gap:6px">
@@ -179,21 +180,6 @@ try {
   /* 賽程表(共用模組,原 page-fixtures.js) */
   mountFixtureList({ meta, teams, fixtures, results, reports, analysis });
 
-  /* 上季積分榜 */
-  document.getElementById('lastTable').innerHTML = C.table(table.last, [
-    { key: 'pos', label: '#', value: r => r.pos, num: true },
-    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
-    { key: 'p', label: '賽', value: r => r.p, num: true },
-    { key: 'w', label: '勝', value: r => r.w, num: true },
-    { key: 'd', label: '和', value: r => r.d, num: true },
-    { key: 'l', label: '負', value: r => r.l, num: true },
-    { key: 'gf', label: '進', value: r => r.gf, num: true },
-    { key: 'ga', label: '失', value: r => r.ga, num: true },
-    { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
-    { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
-    { key: 'homeAwayGap', label: '主客差', value: r => r.homeAwayGap, num: true,
-      title: '主場場均勝點 − 客場場均勝點', render: r => C.signed(r.homeAwayGap, 2) },
-    { key: 'form', label: '末段狀態', value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
-  ], { sortKey: 'pts', desc: true, onRow: r => { C.go('teams', { code: r.code }); } });
+  /* 上季積分榜搬到球隊頁了(2026-09-03)—— 這裡不再渲染。 */
 
 } catch (err) { C.fail(err); }

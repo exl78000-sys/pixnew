@@ -3,8 +3,8 @@ import * as C from './core.js?v=55c7c82e';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, players, fixtures, coaches, goals, h2h, form } =
-    await C.load('meta', 'clubs', 'teams', 'players', 'fixtures', 'coaches', 'goals', 'h2h', 'form');
+  const { meta, clubs, teams, players, fixtures, coaches, goals, h2h, form, table } =
+    await C.load('meta', 'clubs', 'teams', 'players', 'fixtures', 'coaches', 'goals', 'h2h', 'form', 'table');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -407,9 +407,37 @@ try {
     </div>
     <div class="grid g3">${teams.map(card).join('')}</div>
 
+    ${lastSeasonTable()}
     ${coachNotes()}
     ${coachRankSection()}
     ${C.foot(meta)}`;
+  }
+
+  /* 上季最終戰績。**2026-09-03 從首頁搬過來**(使用者要求)——
+     它是一張「每一隊上季怎麼樣」的表,而球隊頁就是在講球隊;首頁已經有本季
+     積分榜與賽程,兩張大表疊在同一頁只是把首頁拉長。
+     欄位、排序與「點一列進該隊」的行為原封不動搬過來,沒有重新設計。
+     沒有這份資料就整段不畫(英冠的 table 產物有 last,西甲也有;真的缺就不留空殼)。 */
+  function lastSeasonTable() {
+    const rows = table?.last ?? [];
+    if (!rows.length) return '';
+    return `<div class="section" style="margin-top:22px"><h2>上季最終戰績</h2>
+        <span class="hint">${meta.lastSeason}・所有進階指標的基準</span></div>
+      ${C.table(rows, [
+        { key: 'pos', label: '#', value: r => r.pos, num: true },
+        { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+        { key: 'p', label: '賽', value: r => r.p, num: true },
+        { key: 'w', label: '勝', value: r => r.w, num: true },
+        { key: 'd', label: '和', value: r => r.d, num: true },
+        { key: 'l', label: '負', value: r => r.l, num: true },
+        { key: 'gf', label: '進', value: r => r.gf, num: true },
+        { key: 'ga', label: '失', value: r => r.ga, num: true },
+        { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
+        { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
+        { key: 'homeAwayGap', label: '主客差', value: r => r.homeAwayGap, num: true,
+          title: '主場場均勝點 − 客場場均勝點', render: r => C.signed(r.homeAwayGap, 2) },
+        { key: 'form', label: '末段狀態', value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
+      ], { sortKey: 'pts', desc: true, onRow: r => { C.go('teams', { code: r.code }); } })}`;
   }
 
   /* 教練資料的誠實層:哪些是官方每天核對的、哪些還是人工整理會過期的。

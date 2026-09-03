@@ -2029,6 +2029,22 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 上季最終戰績搬家(2026-09-03 加)────────────────────── */
+    ...(() => {
+      const idx = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-index.js'), 'utf8');
+      const tm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      return [
+        ['上季最終戰績在球隊頁,不在首頁',
+          /<h2>上季最終戰績<\/h2>/.test(tm) && !/<h2>上季最終戰績<\/h2>/.test(idx)],
+        ['球隊頁有載入 table 資料集(忘了加的話整段靜靜不畫)',
+          /'form', 'table'\)/.test(tm) && /form, table \} =/.test(tm)],
+        /* 搬走之後首頁沒有任何地方用到 table —— 留在 load 清單裡就是每次進首頁
+           多下載一份用不到的資料集。 */
+        ['首頁不再下載用不到的 table 資料集', !/'table'/.test(idx)],
+        ['沒有那份資料就整段不畫,不留空殼', /if \(!rows\.length\) return ''/.test(tm)],
+      ];
+    })(),
+
     /* ── 探索單頁(2026-09-03 加)──────────────────────────────
        足球知識 / 對戰模擬 / 球員搜尋併成一頁三個分頁。做法照歐冠併進盃賽:
        內容抽成 view 模組,舊網址保留轉址。 */
