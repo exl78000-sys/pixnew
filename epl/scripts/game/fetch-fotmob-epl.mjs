@@ -22,6 +22,7 @@
  *   npm run game:fetch                                   # 本季增量(預設 40 場)
  *   npm run game:fetch -- --verify=20                    # 拿官網端點核對 20 場控球
  *   npm run game:fetch -- --refresh --limit=30              # 萃取多了欄位時把本季重抓一次(不 +1 版本)
+ *   2026-09-03 起一場兩個請求(詳情 + 逐人熱區圖),--limit 是請求數,場數是它的一半。
  *   npm run game:fetch -- --dry-run
  */
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -38,7 +39,7 @@ const LEAGUE_ID = 47;             // 英超在 FotMob 的 leagueId(probe-possess
 const DIR = join(ROOT, 'data', 'raw', 'fotmob-epl');
 export const EXTRACT_VERSION = 1;
 
-const HARD_LIMIT = 400;           // 一次執行的請求硬上限(回填一季 380 場用)
+const HARD_LIMIT = 800;           // 一次執行的請求硬上限:一場兩個請求(詳情 + 熱區圖),回填一季 380 場要 760
 const DEFAULT_LIMIT = 40;
 const INTERVAL_MS = 600;
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
@@ -150,6 +151,9 @@ function extract(raw, fixture) {
     events, shots, momentum,
     lineups: { [homeCode]: side(lu.homeTeam, homeCode), [awayCode]: side(lu.awayTeam, awayCode) },
     physical: physicalOf(raw, sideOf),
+    /* 三路進攻佔比(左/中/右,全場與上下半場;探測 2026-09-03):供應商算的,本站只搬運。 */
+    zones: raw?.content?.attackingZones ?? null,
+    heatmapUrl: raw?.content?.heatmapUrl ?? null,
     /* shotmap 的進球數跟比分對不上就標出來 —— 不丟整場(控球還是對的),但用射門資料
        的人要知道那一場的射門不完整。 */
     checks: { shotmapGoals: shotGoals, shotmapComplete: shotGoals === fixture.fh + fixture.fa },
@@ -177,6 +181,42 @@ async function pulseFixturesFor(season, teams) {
     if (list.length < 100) break;
   }
   return out;
+}
+
+/* 逐人活動熱區(2026-09-03 探到):另一個端點,回每人一串 <circle cx cy> 的觸球位置(105×68 場地座標)。
+   存的是**12×8 格的計數**加質心,不存逐點 —— 逐點一季約 5 MB,格子 1/3;動畫要的是「這個人平常在哪一區」,
+   格子夠用。座標系跟 shotmap 一樣(x 往對方球門)。主客各自對回隊碼要靠 playerId 對 lineup 的 id。 */
+const GRID_X = 6, GRID_Y = 4;   // 6×4 就夠:動畫要的是質心、離散度與大致區域;12×8 一季 14 MB
+function heatOf(json, raw, sideOf) {
+  const players = json?.players;
+  if (!players || typeof players !== 'object') return null;
+  /* 熱區的鍵是 **Opta id**(p168144 那種),不是名單裡的 FotMob 球員 id(Raya 是 562727)——
+     實測對不上一個。playerStats 每筆同時有 id、optaId、teamId,用它對照;沒有 optaId 的退回 FotMob id。 */
+  const idTeam = new Map();
+  for (const e of Object.values(raw?.content?.playerStats ?? {})) {
+    const who = { team: sideOf(e.teamId), name: e.name ?? '' };
+    if (e.optaId != null) idTeam.set(String(e.optaId), who);
+    if (e.id != null && !idTeam.has(String(e.id))) idTeam.set(String(e.id), who);
+  }
+  const out = [];
+  for (const [key, svg] of Object.entries(players)) {
+    const id = key.replace(/^p/, '');
+    const who = idTeam.get(id);
+    if (!who || typeof svg !== 'string') continue;
+    const pts = [...svg.matchAll(/cx="([\d.]+)" cy="([\d.]+)"/g)].map(m => [Number(m[1]), Number(m[2])]).filter(([x, y]) => Number.isFinite(x) && Number.isFinite(y));
+    if (!pts.length) continue;
+    const grid = new Array(GRID_X * GRID_Y).fill(0);
+    let sx = 0, sy = 0;
+    for (const [x, y] of pts) {
+      const gx = Math.min(GRID_X - 1, Math.max(0, Math.floor(x / 105 * GRID_X))), gy = Math.min(GRID_Y - 1, Math.max(0, Math.floor(y / 68 * GRID_Y)));
+      grid[gy * GRID_X + gx]++; sx += x; sy += y;
+    }
+    const cx = sx / pts.length, cy = sy / pts.length;
+    const sd = Math.sqrt(pts.reduce((a, [x, y]) => a + (x - cx) ** 2 + (y - cy) ** 2, 0) / pts.length);
+    // grid 存成逗號字串:陣列在縮排 JSON 裡一格一行,一場 61 KB、整季 24 MB;字串是 1/3
+    out.push({ team: who.team, name: who.name, n: pts.length, cx: round(cx, 1), cy: round(cy, 1), spread: round(sd, 1), grid: grid.join(',') });
+  }
+  return out.length ? { gridX: GRID_X, gridY: GRID_Y, players: out } : null;
 }
 
 async function verify(store, results, n, teams) {
@@ -232,7 +272,7 @@ async function main() {
     if (unknown.length) console.log(`  ⚠ 對不上名冊的 FotMob 隊名:${unknown.join('、')}`);
     console.log(`  FotMob 賽程 ${byPair.size} 場可對照`);
     let ok = 0, rejected = 0;
-    for (const f of pending.slice(0, limit - 1)) {
+    for (const f of pending.slice(0, Math.floor((limit - 1) / 2))) {   // 一場兩個請求
       const key = `${f.home}|${f.away}`;
       const remote = byPair.get(key);
       const note = reason => { store.attempts[key] = { at: new Date().toISOString(), reason, matchId: remote?.matchId ?? null }; rejected++; console.log(`  ⚠ ${f.date} ${key}:${reason}`); };
@@ -243,6 +283,14 @@ async function main() {
       if (!r.json) { note(r.error); continue; }
       const rec = extract(r.json, f);
       rec.matchId = remote.matchId;
+      /* 熱區圖:第二個請求。抓不到不擋整場(控球那些照收),heat 留 null 並記原因。 */
+      rec.heat = null;
+      if (rec.heatmapUrl) {
+        const h = await get(`${BASE}${rec.heatmapUrl}`, { referer: `${BASE}/` });
+        if (h.json) rec.heat = heatOf(h.json, r.json, teamId => (Number(teamId) === Number(r.json?.general?.homeTeam?.id) ? f.home : Number(teamId) === Number(r.json?.general?.awayTeam?.id) ? f.away : null));
+        else rec.heatError = h.error;
+      }
+      delete rec.heatmapUrl;
       if (!rec.providerScore || rec.providerScore[0] !== f.fh || rec.providerScore[1] !== f.fa) {
         note(`比分不符(FotMob ${rec.providerScore?.join('-') ?? '?'},本站 ${f.fh}-${f.fa})`); continue;
       }

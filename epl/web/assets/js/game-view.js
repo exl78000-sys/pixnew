@@ -1,6 +1,6 @@
 import * as C from './core.js?v=9dd1d118';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
-import { mountDuelAnim } from './duel-anim.js?v=d95d9320';
+import { mountDuelAnim } from './duel-anim.js?v=43fe3848';
 import { createMatch, defaultSetup } from './game-engine.js?v=b48e4aa3';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -12,7 +12,10 @@ import { createMatch, defaultSetup } from './game-engine.js?v=b48e4aa3';
  * 只開英超 —— 明確清單 GAME_LEAGUES,不用「不是某聯賽就開」的二元式(league() 那條坑)。 */
 export const GAME_LEAGUES = ['pl'];
 
-const SPEEDS = { slow: 320, normal: 160, fast: 60 };
+/* 每個比賽分鐘播多少毫秒。原本 normal 是 160 ms(整場 14 秒),一分鐘只夠演一次傳球,看起來像快轉;
+   2026-09-03 改成預設 2 秒(整場約 3 分鐘),另給「真實時間」(1 分鐘 = 1 分鐘)。 */
+const SPEEDS = { real: 60000, slow: 3000, normal: 2000, fast: 500 };
+const SPEED_ZH = { real: '真實時間', slow: '慢', normal: '正常', fast: '快' };
 const NOTABLE = new Set(['goal', 'card', 'sub', 'half', 'full']);
 const SIT_ZH = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快攻', FreeKick: '任意球', SetPiece: '定位球', ThrowInSetPiece: '界外球', IndividualPlay: '個人突破', Penalty: '十二碼', OwnGoal: '烏龍球' };
 const OUT_ZH = { saved: '被撲出', blocked: '被封阻', off: '射偏', post: '中柱' };
@@ -146,7 +149,7 @@ export async function renderGame(app) {
           <span class="pill bad" id="gMin"></span>
           <span class="tiny dim row" style="gap:6px">
             <button class="btn tiny" id="gPause">暫停</button>
-            速度 <select id="gSpeed">${Object.entries({ slow: '慢', normal: '正常', fast: '快' }).map(([k, z]) => `<option value="${k}"${k === state.speed ? ' selected' : ''}>${z}</option>`).join('')}</select>
+            速度 <select id="gSpeed">${Object.entries(SPEED_ZH).map(([k, z]) => `<option value="${k}"${k === state.speed ? ' selected' : ''}>${z}</option>`).join('')}</select>
             <label><input type="checkbox" id="gHl"${state.highlights ? ' checked' : ''}> 精華</label>
             <button class="btn tiny" id="gSkip">跳到結果</button>
           </span>
@@ -180,10 +183,12 @@ export async function renderGame(app) {
         return { xi: out, shirts };
       };
       const hN = xiNames('home'), aN = xiNames('away');
+      /* 動畫的真資料:逐人熱區質心 / 離散度、場均跑動、最高速度、細分角色;球隊的跑動節奏與三路進攻佔比 */
+      const metaOf = side => { const sq = squadOf(side), out = {}; for (const c of setupOf(side).xi) { const p = sq.get(c); out[p.name] = { role: p.role, heat: p.heat ?? null, run: p.run ?? null }; } return out; };
       anim = mountDuelAnim(document.getElementById('gCanvas'), {
         homeCode: state.home, awayCode: state.away,
-        home: { formation: setupOf('home').formation, xi: hN.xi, shirts: hN.shirts, color: cA },
-        away: { formation: setupOf('away').formation, xi: aN.xi, shirts: aN.shirts, color: cB },
+        home: { formation: setupOf('home').formation, xi: hN.xi, shirts: hN.shirts, color: cA, meta: metaOf('home'), pace: profile.teams[state.home].pace ?? null, zones: profile.teams[state.home].zones ?? null },
+        away: { formation: setupOf('away').formation, xi: aN.xi, shirts: aN.shirts, color: cB, meta: metaOf('away'), pace: profile.teams[state.away].pace ?? null, zones: profile.teams[state.away].zones ?? null },
         lambdaHome: p.xgHome, lambdaAway: p.xgAway, rng: seededRng(state.seed ^ 0x5bd1e995),
         possHome: match.possTarget != null ? match.possTarget / 100 : null,
       });
@@ -366,7 +371,8 @@ export async function renderGame(app) {
         <b>真資料</b>:名單、背號、角色、陣型選項、主罰順序、球員能力(FPL per-90)與牌數、兩隊各項事件率、控球分布、射門情境與 xG/射門(${profile.league_.shotMinutes.n} 次射門)。
         <b>抽樣</b>:控球目標、射門 / 角球 / 犯規 / 牌 / 換人的次數與分鐘、進球分鐘(${profile.league_.goalMinutes.n} 顆)。
         <b>遊戲規則</b>:能力係數 a(校準點估計 ${profile.calibration?.a ?? '—'} ± ${profile.calibration?.se ?? '—'},${profile.calibration?.significant ? '顯著' : '跟 0 分不開'};防守側借用同值)、紅牌 0.72/1.30(站上實時頁同組)、牌與射手的加權方式。
-        <b>演出</b>:跑位、傳球、丟球的畫面。<b>沒有</b>:體能、球員屬性、賽中受傷、一對一、教練決策。
+        <b>演出</b>:跑位、傳球、丟球的畫面 —— 但節奏錨在真資料:兩隊每分鐘跑動量與衝刺次數(FotMob 追蹤資料)、
+        逐人場均跑動與最高速度、站位參考逐人觸球熱區質心、進攻偏向參考三路進攻佔比。軌跡本身仍是演出。<b>沒有</b>:體能、球員屬性、賽中受傷、一對一、教練決策。
         <b>跟真實管線的關係只有一條</b>:沒有任何改動時 λ 等於站上預測;任何操作不寫回資料,也不影響站上任何一頁。</div>
       ${C.foot(data.meta)}`;
     renderControls();

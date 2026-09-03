@@ -94,6 +94,17 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
     check('控球率的官網核對全部在容差內', cur.verification && cur.verification.checked >= 10 && cur.verification.agree === cur.verification.checked,
       cur.verification ? `${cur.verification.agree}/${cur.verification.checked}` : '沒有 verification');
     check('抽樣類的來源說明有 n', ['rates', 'possession', 'shots', 'subs'].every(k => /\d/.test(g.sources[k] ?? '')));
+
+    /* 動畫的節奏資料(2026-09-03):跑動節奏、三路進攻、逐人熱區與跑動。不是每場都有追蹤資料,
+       所以看的是「大多數」而不是全部;熱區質心要落在球場內,門將不該有熱區驅動(引擎那邊排除),
+       三路佔比相加要是 1。 */
+    const xiAll = teams.flatMap(t => t.xi.map(c => t.squad.find(p => p.code === c)));
+    check('每隊都有跑動節奏(pace),每分鐘跑動距離在 800–1600 m 之間', teams.every(t => t.pace && t.pace.distancePerMin > 800 && t.pace.distancePerMin < 1600), teams.filter(t => !t.pace).map(t => t.code).join('、'));
+    check('每隊都有三路進攻佔比且相加 = 1', teams.every(t => t.zones && Math.abs(t.zones.left + t.zones.center + t.zones.right - 1) < 0.02));
+    check('先發球員多數有觸球熱區(≥ 80%),質心在球場內', xiAll.filter(p => p.heat).length >= xiAll.length * 0.8 && xiAll.every(p => !p.heat || (p.heat.cx >= 0 && p.heat.cx <= 105 && p.heat.cy >= 0 && p.heat.cy <= 68)), `${xiAll.filter(p => p.heat).length}/${xiAll.length}`);
+    /* 下限不設 3 km:替補上場幾分鐘的人場均本來就低(實測有),上限 14 km 抓的是單位錯(公尺當公里之類) */
+    check('先發球員多數有場均跑動(≥ 80%),數字在 0–14 km', xiAll.filter(p => p.run).length >= xiAll.length * 0.8 && xiAll.every(p => !p.run || (p.run.distancePerGame > 0 && p.run.distancePerGame < 14000)), `${xiAll.filter(p => p.run).length}/${xiAll.length}`);
+    check('門將的熱區質心在自家半場(座標方向:兩隊都向右進攻)', xiAll.filter(p => p.pos === 'GK' && p.heat).every(p => p.heat.cx < 30));
   }
 }
 
