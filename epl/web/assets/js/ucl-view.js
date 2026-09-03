@@ -133,6 +133,47 @@ const OUTCOME = {
   out: { label: '止步聯賽階段', tone: 'loss' },
 };
 
+/* 聯賽階段的**賽程**(2026-09-03 加)。
+ *
+ * 這一季的 144 場一直都在資料裡(`leagueMatches`,開球時間 31 種、matchday 1~8),
+ * 但這一頁只畫了一張全 0 的積分榜 —— **抓到了卻沒接上**,跟外電那次一樣。
+ * 而頁首還寫著「上游還沒有開球時間與輪次」,那句話現在是假的(已改)。
+ *
+ * 只畫**一個輪次**:144 場全列出來要捲很久,而讀者要看的是「下一批什麼時候踢」。
+ * 預設停在**還沒踢完的最小輪次**(不是「下一場的輪次」—— 有場次提前開踢時,
+ * 下一場可能屬於更後面的一輪,倒數那條坑的同一個形狀)。
+ */
+function leagueFixtures(season) {
+  const all = season.leagueMatches ?? [];
+  if (!all.length) return '';
+  const rounds = [...new Set(all.map(m => m.matchday).filter(r => r != null))].sort((a, b) => a - b);
+  if (!rounds.length) return '';
+  const open = all.filter(m => !m.played && m.matchday != null).map(m => m.matchday);
+  const cur = open.length ? Math.min(...open) : rounds.at(-1);
+  const games = all.filter(m => m.matchday === cur)
+    .sort((a, b) => String(a.kickoff ?? '').localeCompare(String(b.kickoff ?? '')));
+  const undecided = all.filter(m => !m.played).length;
+
+  const row = m => `<div class="stat-line tie-leg">
+      <span class="tiny dim leg-when">${m.kickoff ? C.kickoffLocal(m.kickoff) : '時間待定'}</span>
+      <span class="leg-home">${uclTeamCell(m.home, { align: 'right' })}</span>
+      <span class="leg-score">${m.played && m.final
+        ? `<b class="mono">${m.final[0]} : ${m.final[1]}</b>`
+        : (m.kickoff ? C.countdown(m.kickoff) : '<span class="dim">vs</span>')}</span>
+      <span class="leg-away">${uclTeamCell(m.away)}</span>
+      <span class="tiny dim leg-ko">${m.played ? '完場' : ''}</span>
+    </div>`;
+
+  return `<div class="section" style="margin-top:18px"><h2>聯賽階段賽程</h2>
+      <span class="hint">第 ${cur} 輪・${games.length} 場${
+        rounds.length > 1 ? `(共 ${rounds.length} 輪,本季還有 ${undecided} 場未賽)` : ''}</span></div>
+    <div class="card">${games.map(row).join('')}
+      <div class="tiny dim" style="margin-top:10px">只列**還沒踢完的最小輪次**那一輪 ——
+        整季 ${all.length} 場全列出來要捲很久,而這裡要回答的是「下一批什麼時候踢」。
+        <b>沒有勝率預測</b>:模型是用聯賽調的,沒在盃賽上驗收過。</div>
+    </div>`;
+}
+
 function leagueTable(season) {
   const rows = season.table.rows;
   if (!rows.length) return '';
@@ -293,8 +334,8 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams }) {
     <div style="margin-bottom:12px">
       <p class="small muted">歐洲冠軍聯賽的聯賽階段積分榜、淘汰賽結果與球員榜。跟聯賽不一樣的地方這一頁都照實顯示:
         <b>兩回合的總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及本站兩個聯賽的球隊各自走到了哪一輪。
-        已完賽的兩季是<b>兩個獨立來源逐場核對過</b>的;還沒開賽的那一季只呈現<b>抽籤結果</b>,
-        因為上游還沒有開球時間與輪次。</p>
+        已完賽的兩季是<b>兩個獨立來源逐場核對過</b>的;進行中的那一季只有一個來源,
+        沒得交叉核對。</p>
       ${C.stampRow([
         C.stamp('歐冠賽果', { iso: ucl.retrievedAt, kind: 'daily',
           note: 'football-data.org(賽果與官方積分榜)+ FotMob(球員榜與 2026-27 抽籤)' }),
@@ -354,6 +395,7 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams }) {
           <div class="spread"><h3 style="margin:0">${C.esc(r.zh)}</h3>
             <span class="dim tiny">${r.ties.length} 組・${r.played}/${r.total} 場</span></div>
           ${[...r.ties].reverse().map(tieCard).join('')}</div>`).join('')}
+        ${leagueFixtures(s)}
         <div class="section"><h2>聯賽階段</h2>
           <span class="hint">36 隊各打 8 場・名次${s.table.order === 'official' ? '取自資料源官方積分榜' : '由本站依賽果排出'}・這是最早的階段,所以排在淘汰賽下面</span></div>
         <div id="tbl"></div>
@@ -372,6 +414,9 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams }) {
       const runsEl = app.querySelector('#runs');
       if (runsEl) runsEl.innerHTML = runsTable(s.runs);
       app.querySelector('#tbl').innerHTML = leagueTable(s);
+      /* 賽程表裡的倒數要走起來。`startCountdowns` 自己會收掉上一個計時器,
+         所以換賽季重畫時再叫一次是安全的(不會疊出兩個)。 */
+      C.startCountdowns();
 
       const unknown = s.teamsTotal - s.teamsKnown;
       cov.innerHTML = `
