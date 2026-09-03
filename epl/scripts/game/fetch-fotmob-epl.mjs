@@ -21,6 +21,7 @@
  *   npm run game:fetch -- --season=2025-26 --limit=400   # 回填整季
  *   npm run game:fetch                                   # 本季增量(預設 40 場)
  *   npm run game:fetch -- --verify=20                    # 拿官網端點核對 20 場控球
+ *   npm run game:fetch -- --refresh --limit=30              # 萃取多了欄位時把本季重抓一次(不 +1 版本)
  *   npm run game:fetch -- --dry-run
  */
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -44,6 +45,7 @@ const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').sli
 const dryRun = process.argv.includes('--dry-run');
 const limit = Math.min(HARD_LIMIT, Math.max(0, Number(arg('limit') ?? DEFAULT_LIMIT)));
 const verifyN = Number(arg('verify') ?? 0);
+const refresh = process.argv.includes('--refresh');   // 已快取的也重抓(萃取多了欄位、但不想 +1 版本重抓整季時用)
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const read = async p => { try { return JSON.parse(await readFile(p, 'utf8')); } catch { return null; } };
 const round = (n, d = 3) => (Number.isFinite(Number(n)) ? Math.round(Number(n) * 10 ** d) / 10 ** d : null);
@@ -95,6 +97,26 @@ function possessionByPeriod(raw) {
   };
   return { all: pick(per.All), h1: pick(per.FirstHalf), h2: pick(per.SecondHalf) };
 }
+/* 跑動 / 衝刺(2026-09-03 重探後加):球隊層 physical_metrics_* 與逐人 performance.totalDistanceCovered / topSpeed。
+   實測:2026-27 每場都有;2025-26 有 282/380(缺的集中在 11 座主場,不是時間點);2024-25 沒有。
+   萃取版本不 +1(2024-25 以前重抓也是 null),兩季各用 --refresh 重抓一次。沒有值一律 null,不是 0。 */
+function physicalOf(raw, sideOf) {
+  const rows = (raw?.content?.stats?.Periods?.All?.stats ?? []).flatMap(g => g?.stats ?? []);
+  const pick = key => { const r = rows.find(x => x?.key === key); return Array.isArray(r?.stats) ? r.stats.map(numOrNull) : [null, null]; };
+  const team = { distance: pick('physical_metrics_distance_covered'), sprintDistance: pick('physical_metrics_sprinting'), sprints: pick('physical_metrics_number_of_sprints'),
+    walking: pick('physical_metrics_walking'), running: pick('physical_metrics_running') };
+  const players = [];
+  for (const k of ['homeTeam', 'awayTeam']) {
+    const side = raw?.content?.lineup?.[k];
+    for (const p of [...(side?.starters ?? []), ...(side?.subs ?? [])]) {
+      const d = numOrNull(p.performance?.totalDistanceCovered), v = numOrNull(p.performance?.topSpeed);
+      if (d == null && v == null) continue;
+      players.push({ team: sideOf(side?.id), name: p.name ?? '', shirt: numOrNull(p.shirtNumber), distance: d, topSpeed: v, rating: numOrNull(p.performance?.rating) });
+    }
+  }
+  const has = team.distance.some(v => v != null) || players.length > 0;
+  return has ? { team, players } : null;
+}
 function extract(raw, fixture) {
   const homeCode = fixture.home, awayCode = fixture.away;
   const homeId = raw?.general?.homeTeam?.id, awayId = raw?.general?.awayTeam?.id;
@@ -127,6 +149,7 @@ function extract(raw, fixture) {
     possession: possessionByPeriod(raw),
     events, shots, momentum,
     lineups: { [homeCode]: side(lu.homeTeam, homeCode), [awayCode]: side(lu.awayTeam, awayCode) },
+    physical: physicalOf(raw, sideOf),
     /* shotmap 的進球數跟比分對不上就標出來 —— 不丟整場(控球還是對的),但用射門資料
        的人要知道那一場的射門不完整。 */
     checks: { shotmapGoals: shotGoals, shotmapComplete: shotGoals === fixture.fh + fixture.fa },
@@ -195,7 +218,7 @@ async function main() {
   const store = (await read(STORE)) ?? { season, source: 'fotmob', extractVersion: EXTRACT_VERSION, matches: {}, attempts: {} };
   store.matches ??= {}; store.attempts ??= {};
   const stale = k => store.matches[k]?.extractVersion !== EXTRACT_VERSION;
-  const pending = played.filter(f => !store.matches[`${f.home}|${f.away}`] || stale(`${f.home}|${f.away}`))
+  const pending = played.filter(f => refresh || !store.matches[`${f.home}|${f.away}`] || stale(`${f.home}|${f.away}`))
     .sort((a, b) => a.date.localeCompare(b.date));
   console.log(`\n▶ FotMob 英超 ${season}:已完賽 ${played.length} 場・快取 ${Object.keys(store.matches).length} 場・待補 ${pending.length} 場・本次上限 ${limit}`);
 

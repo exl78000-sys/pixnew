@@ -398,6 +398,14 @@ function renderTeam(t, ctx) {
     body.push(`| 射門 / 被射門 | ${v(tms.home.shotsFor)} / ${v(tms.home.shotsAgainst)} | ${v(tms.away.shotsFor)} / ${v(tms.away.shotsAgainst)} |\n`);
     body.push(`| xG / xGA | ${v(tms.home.xgFor)} / ${v(tms.home.xgAgainst)} | ${v(tms.away.xgFor)} / ${v(tms.away.xgAgainst)} |\n`);
     body.push(`| 角球 | ${v(tms.home.cornersFor)} | ${v(tms.away.cornersFor)} |\n| 犯規 | ${v(tms.home.foulsFor)} | ${v(tms.away.foulsFor)} |\n`);
+    if (tms.physical) {
+      const ph = tms.physical;
+      body.push(`\n### 跑動與速度(${ph.games} 場有追蹤資料)\n\n| 跑動 / 場 | 衝刺距離 / 場 | 衝刺次數 / 場 |\n|---|---|---|\n| ${(ph.distancePerGame / 1000).toFixed(1)} km | ${ph.sprintDistancePerGame} m | ${ph.sprintsPerGame} |\n`);
+      if (ph.players.length) {
+        body.push(`\n| 球員 | 場 | 跑動 / 場 | 最高速度 |\n|---|---|---|---|\n`);
+        for (const p of ph.players.slice(0, 15)) body.push(`| ${p.shirt ?? ''} ${p.name} | ${p.games} | ${(p.distancePerGame / 1000).toFixed(1)} km | ${p.topSpeed == null ? '—' : p.topSpeed.toFixed(1) + ' km/h'} |\n`);
+      }
+    }
     const sits = Object.entries(tms.situations ?? {}).sort((a, b) => b[1].shots - a[1].shots);
     if (sits.length) {
       body.push(`\n### 射門情境(${tms.shotSample} 次)\n\n| 情境 | 射門 | 進球 | 份額 | xG/射門 |\n|---|---|---|---|---|\n`);
@@ -527,7 +535,17 @@ function renderMatch(f, ctx) {
         if (hs[k] == null && as[k] == null) continue;
         body.push(`| ${label} | ${v(hs[k])} | ${v(as[k])} |\n`);
       }
-      const goals = ms.shots.filter(s => s.type === 'Goal');
+      if (ms.physical?.team?.distance?.some(x => x != null)) {
+        const km = x => (x == null ? '—' : (x / 1000).toFixed(1) + ' km');
+        body.push(`| 跑動距離 | ${km(ms.physical.team.distance[0])} | ${km(ms.physical.team.distance[1])} |\n`);
+        body.push(`| 衝刺距離 | ${v(ms.physical.team.sprintDistance?.[0])} m | ${v(ms.physical.team.sprintDistance?.[1])} m |\n`);
+        body.push(`| 衝刺次數 | ${v(ms.physical.team.sprints?.[0])} | ${v(ms.physical.team.sprints?.[1])} |\n`);
+        const pl = [...(ms.physical.players ?? [])].sort((a, b) => (b.distance ?? 0) - (a.distance ?? 0));
+        if (pl.length) {
+          body.push(`\n### 逐人跑動(${pl.length} 人)\n\n| 球隊 | 球員 | 跑動 | 最高速度 |\n|---|---|---|---|\n`);
+          for (const p of pl) body.push(`| ${p.team} | ${p.shirt ?? ''} ${p.name} | ${km(p.distance)} | ${p.topSpeed == null ? '—' : p.topSpeed.toFixed(1) + ' km/h'} |\n`);
+        }
+      }
       if (ms.shots.length) {
         body.push(`\n### 射門(${ms.shots.length} 次${ms.shotmapComplete ? '' : ',進球數跟比分對不上,清單不完整'})\n\n| 分鐘 | 球隊 | 球員 | 情境 | xG | 結果 |\n|---|---|---|---|---|---|\n`);
         for (const s of ms.shots) body.push(`| ${s.min}${s.extra ? '+' + s.extra : ''} | ${s.team} | ${s.player ?? ''} | ${SIT[s.situation] ?? s.situation ?? ''} | ${s.xg == null ? '' : s.xg.toFixed(2)} | ${s.type === 'Goal' ? '**進球**' : s.type ?? ''} |\n`);

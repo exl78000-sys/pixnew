@@ -46,6 +46,8 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
         key, season, date: m.date, home: m.home, away: m.away, score: [...truth], matchId: m.matchId,
         possession: m.possession, teamStats: m.teamStats, shots: m.shots ?? [], momentum: m.momentum ?? [],
         events: m.events ?? [], lineups: m.lineups ?? null,
+        /* 跑動 / 衝刺(2026-09-03 重探後加):供應商的追蹤資料,不是每場都有(2025-26 有 282/380,缺的集中在 11 座主場);沒有就是 null,不是 0 */
+        physical: m.physical ?? null,
         shotmapComplete: shotGoals === truth[0] + truth[1],
       };
     }
@@ -73,9 +75,29 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
     const shots = mine.filter(m => m.shotmapComplete).flatMap(m => m.shots.filter(s => s.team === code));
     const bySit = {};
     for (const s of shots) { const k = s.situation ?? 'Unknown'; bySit[k] ??= { shots: 0, goals: 0, xg: 0 }; bySit[k].shots++; bySit[k].goals += s.type === 'Goal' ? 1 : 0; bySit[k].xg += s.xg ?? 0; }
+    /* 跑動與衝刺:只算有資料的場次(n 另記);逐人取每場均值與最高速度,3 場以上才列。 */
+    const phys = mine.filter(m => m.physical?.team?.distance?.some(v => v != null));
+    const physSide = m => (m.home === code ? 0 : 1);
+    const byPlayer = new Map();
+    for (const m of phys) for (const p of m.physical.players ?? []) {
+      if (p.team !== code) continue;
+      const e = byPlayer.get(p.name) ?? { name: p.name, shirt: p.shirt, games: 0, distance: 0, topSpeed: null };
+      e.games++; e.distance += p.distance ?? 0; e.topSpeed = Math.max(e.topSpeed ?? 0, p.topSpeed ?? 0) || e.topSpeed; e.shirt ??= p.shirt;
+      byPlayer.set(p.name, e);
+    }
+    const physical = phys.length ? {
+      games: phys.length,
+      distancePerGame: Math.round(mean(phys.map(m => m.physical.team.distance[physSide(m)]))),
+      sprintDistancePerGame: Math.round(mean(phys.map(m => m.physical.team.sprintDistance[physSide(m)]).filter(Number.isFinite))),
+      sprintsPerGame: r2(mean(phys.map(m => m.physical.team.sprints[physSide(m)]).filter(Number.isFinite))),
+      players: [...byPlayer.values()].filter(p => p.games >= 3)
+        .map(p => ({ name: p.name, shirt: p.shirt, games: p.games, distancePerGame: Math.round(p.distance / p.games), topSpeed: p.topSpeed == null ? null : r2(p.topSpeed) }))
+        .sort((a, b) => b.distancePerGame - a.distancePerGame),
+    } : null;
     out.teams[code] = {
       code, seasons: [...new Set(mine.map(m => m.season))].sort(), games: mine.length,
       home: venue(true), away: venue(false),
+      ...(physical ? { physical } : {}),
       situations: Object.fromEntries(Object.entries(bySit).map(([k, v]) => [k, { shots: v.shots, goals: v.goals, share: r3(v.shots / Math.max(1, shots.length)), xgPerShot: r3(v.xg / Math.max(1, v.shots)) }])),
       shotSample: shots.length,
     };
@@ -100,7 +122,12 @@ export function toCanonicalDetail(m) {
       minute: e.minute, extra: e.extra, label: `${e.minute}'${e.extra ? `+${e.extra}` : ''}`, team: e.team, type: e.type,
       detail: e.detail, comments: null, player: e.player ?? null, playerId: null, assist: null, assistId: null })),
     lineups, possession: m.possession, momentum: m.momentum, shots: m.shots, shotmapComplete: m.shotmapComplete,
+    physical: m.physical ?? null,
     coverage: { teamStatistics: true, playerStatistics: false, ratings: false, events: true, lineups: Object.keys(lineups).length === 2,
-      tracking: false, speed: false, distance: false, sprints: false },
+      tracking: false,
+      /* 跑動距離 / 衝刺 / 最高速度:這場有值才 true。供應商沒給的場次整組 null,那幾場照實 false。 */
+      distance: !!m.physical?.team?.distance?.some(v => v != null),
+      sprints: !!m.physical?.team?.sprints?.some(v => v != null),
+      speed: !!m.physical?.players?.some(p => p.topSpeed != null) },
   };
 }

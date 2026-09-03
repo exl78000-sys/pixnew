@@ -228,7 +228,7 @@ npm run build
 npm run laliga:build
 ```
 
-金鑰只存在 Node 執行環境，不會寫入 JSON 或前端。API-Football 不提供速度、跑動距離與衝刺資料，
+金鑰只存在 Node 執行環境，不會寫入 JSON 或前端。API-Football 不提供速度、跑動距離與衝刺資料（英超那幾項現在由 FotMob 的逐場統計供應，2025-26 起、但不是每場都有），
 介面會明確標示不可用，不會由其他欄位估算。
 
 ### 一次發布(GitHub Actions)

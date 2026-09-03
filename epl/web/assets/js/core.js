@@ -1096,7 +1096,19 @@ export function matchReportCards(m, { order = null } = {}) {
       ${stat('傳球', 'passes')}${stat('成功傳球', 'passesAccurate')}${stat('傳球成功率', 'passAccuracy', '%')}
       ${stat('期望進球 xG', 'xG')}
       ${d.possession?.h1 ? line('上半場控球', value(d.possession.h1[0], '%'), value(d.possession.h1[1], '%')) + line('下半場控球', value(d.possession.h2?.[0], '%'), value(d.possession.h2?.[1], '%')) : ''}
-      <div class="tiny dim" style="margin-top:10px">${d.source === 'fotmob' ? '控球率已用英超官網後端的統計端點抽核(見資料界線)。' : ''}速度、跑動距離、衝刺次數:目前不顯示也不推估。</div>
+      ${(() => {
+        /* 跑動 / 衝刺(FotMob 追蹤資料,不是每場都有)。沒有的場次一行都不畫,並在下面講清楚是「這場沒有」。 */
+        const ph = d.physical?.team;
+        if (!ph?.distance?.some(v => v != null)) return '';
+        const km = v => (v == null ? '—' : `${(v / 1000).toFixed(1)} km`);
+        const top = code => [...(d.physical.players ?? [])].filter(p => p.team === code).sort((a, b) => (b.distance ?? 0) - (a.distance ?? 0)).slice(0, 3)
+          .map(p => `${esc(p.name)} ${km(p.distance)}`).join('、');
+        const fast = code => [...(d.physical.players ?? [])].filter(p => p.team === code && p.topSpeed != null).sort((a, b) => b.topSpeed - a.topSpeed)[0];
+        return `${line('跑動距離', km(ph.distance[0]), km(ph.distance[1]))}${line('衝刺距離', ph.sprintDistance?.[0] == null ? '—' : `${ph.sprintDistance[0]} m`, ph.sprintDistance?.[1] == null ? '—' : `${ph.sprintDistance[1]} m`)}${line('衝刺次數', value(ph.sprints?.[0]), value(ph.sprints?.[1]))}
+          <div class="tiny" style="margin-top:6px">跑最多:${top(m.home) || '—'}<span class="dim"> ／ </span>${top(m.away) || '—'}</div>
+          ${fast(m.home) || fast(m.away) ? `<div class="tiny">最高速度:${fast(m.home) ? `${esc(fast(m.home).name)} ${fast(m.home).topSpeed.toFixed(1)} km/h` : '—'}<span class="dim"> ／ </span>${fast(m.away) ? `${esc(fast(m.away).name)} ${fast(m.away).topSpeed.toFixed(1)} km/h` : '—'}</div>` : ''}`;
+      })()}
+      <div class="tiny dim" style="margin-top:10px">${d.source === 'fotmob' ? '控球率已用英超官網後端的統計端點抽核(見資料界線)。' : ''}${d.coverage?.distance ? '跑動距離、衝刺與最高速度是供應商的追蹤資料,本站只搬運;不是每場都有(2025-26 有 282/380 場)。' : '這場沒有跑動距離、衝刺與速度資料(供應商不是每場都給,2025-26 缺 97 場,集中在 11 座主場),不推估。'}</div>
     </div>`,
       /* 沒有逐人資料(FotMob 精簡萃取)就整張不畫 —— 一張「供應商沒有這隊的球員資料」的卡沒有資訊量 */
       players: hasPlayers ? `<div class="card"><h3>球員評分與明細</h3><div class="grid g2 advanced-players">${playerSide(m.home)}${playerSide(m.away)}</div>

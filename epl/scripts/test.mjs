@@ -2378,6 +2378,11 @@ async function checkDataGap() {
         ['teams.json 掛的 matchStats 跟產物一致,沒資料的隊不留空鍵', teamsJson.every(t => (t.matchStats ? t.matchStats.games === ms.teams[t.code]?.games : !ms.teams[t.code]?.games))],
         ['本季賽後報告掛上 FotMob 的 advanced(有球隊統計與事件、沒有逐人評分)', fmReports.length > 0 && fmReports.every(r => r.advanced.coverage.playerStatistics === false && r.advanced.coverage.ratings === false && r.advanced.teamStats[r.home]?.possession != null && Array.isArray(r.advanced.events)), String(fmReports.length)],
         ['shotmap 進球數對不上比分的場次有標記', list.every(m => m.shotmapComplete === (m.shots.filter(s => s.type === 'Goal').length === m.score[0] + m.score[1]))],
+        /* 跑動 / 衝刺:供應商不是每場都給(2025-26 有 282/380)。本季每場都要有;沒有的場次是 null 不是 0;彙總只算有資料的場次。 */
+        ['本季每場都有跑動距離(FotMob 追蹤資料)', list.filter(m => m.season === ms.seasons.at(-1)).every(m => m.physical?.team?.distance?.every(v => Number.isFinite(v) && v > 50000))],
+        ['沒有追蹤資料的場次是 null,不是 0', list.every(m => m.physical === null || m.physical.team.distance.every(v => v === null || v > 0))],
+        ['逐隊跑動彙總只算有資料的場次', Object.values(ms.teams).every(t => !t.physical || t.physical.games <= t.games && t.physical.distancePerGame > 50000)],
+        ['賽後報告的 coverage.distance 跟資料一致', fmReports.every(r => r.advanced.coverage.distance === !!r.advanced.physical?.team?.distance?.some(v => v != null))],
       ];
     })(),
 

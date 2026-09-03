@@ -96,8 +96,11 @@ export async function runEngineChecks(mod, root) {
   // 5. 紅牌:λ 有效值乘 RED 常數(跟 inPlaySim 同組)
   {
     let found = null;
+    /* 關掉自動換人(subs: [])—— 換人本來就會改 Q,紅牌前先換過人的話 ratioAtt ≠ 1 是設計,
+       不是重複扣。CI 上第一個出紅牌的種子剛好紅牌前換過人,這條就紅了(2026-09-03),
+       而本機的第一個種子沒換過,所以本機綠。要驗的是「紅牌本身不動 Q」,就把另一個會動 Q 的東西關掉。 */
     for (let seed = 1; seed <= 600 && !found; seed++) {
-      const m = mod.createMatch({ profile, home: 'ARS', away: 'LIV', pred, seed });
+      const m = mod.createMatch({ profile, home: 'ARS', away: 'LIV', pred, seed, setup: { home: { subs: [] }, away: { subs: [] } } });
       while (!m.state().finished) {
         const evs = m.tick();
         if (evs.some(e => e.type === 'card' && e.card === 'red')) { found = { m, seed }; break; }
@@ -111,7 +114,7 @@ export async function runEngineChecks(mod, root) {
       out.push(['紅牌後:被罰隊 λ 有效值 = λ × 0.72,對手 × 1.30(與 inPlaySim 同組)',
         Math.abs(side.lambdaEff - Math.round(side.lambda * R.RED_OWN * 100) / 100) <= 0.011 && Math.abs(other.lambdaEff - Math.round(other.lambda * R.RED_OPP * 100) / 100) <= 0.011,
         `seed ${found.seed}:${side.lambda}→${side.lambdaEff}、${other.lambda}→${other.lambdaEff}`]);
-      out.push(['紅牌後場上剩 10 人且 Q 不重複扣', side.onPitch.length === 10 && side.ratioAtt === 1]);
+      out.push(['紅牌後場上人數 = 11 − 紅牌,且 Q 不因紅牌而變(沒換人時 ratio = 1)', side.onPitch.length === 11 - side.red && side.ratioAtt === 1 && side.ratioDef === 1, `seed ${found.seed}:${side.onPitch.length} 人、紅 ${side.red}、ratioAtt ${side.ratioAtt}`]);
     }
   }
 

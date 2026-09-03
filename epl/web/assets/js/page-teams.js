@@ -1,4 +1,4 @@
-import * as C from './core.js?v=16256887';
+import * as C from './core.js?v=9dd1d118';
 
 const app = document.getElementById('app');
 
@@ -1087,6 +1087,12 @@ try {
       ${lineOf('xG / xGA', `${v(s.xgFor)} / ${v(s.xgAgainst)}`)}
       ${lineOf('角球', v(s.cornersFor))}${lineOf('犯規', v(s.foulsFor))}</div>`;
     const sits = Object.entries(ms.situations ?? {}).sort((a, b) => b[1].shots - a[1].shots).slice(0, 6);
+    const ph = ms.physical;
+    const physCard = ph ? `<div class="card" style="margin-top:14px"><h3>跑動與速度(${ph.games} 場有追蹤資料)</h3>
+      <div class="grid g2"><div>${lineOf('跑動距離 / 場', `${(ph.distancePerGame / 1000).toFixed(1)} km`)}${lineOf('衝刺距離 / 場', `${ph.sprintDistancePerGame} m`)}${lineOf('衝刺次數 / 場', v(ph.sprintsPerGame))}</div>
+      <div><div class="tiny dim">跑最多(場均,3 場以上)</div>${ph.players.slice(0, 5).map(p => lineOf(`${p.shirt ?? '–'} ${C.esc(p.name)}`, `${(p.distancePerGame / 1000).toFixed(1)} km <span class="dim">・${p.games} 場</span>`)).join('')}
+        <div class="tiny dim" style="margin-top:6px">最高速度</div>${[...ph.players].filter(p => p.topSpeed != null).sort((a, b) => b.topSpeed - a.topSpeed).slice(0, 3).map(p => lineOf(C.esc(p.name), `${p.topSpeed.toFixed(1)} km/h`)).join('')}</div></div>
+      <div class="tiny dim" style="margin-top:8px">FotMob 的追蹤資料,不是每場都有(2025-26 缺 97 場,集中在 11 座主場),所以場數比上面少;本站只搬運不推估。</div></div>` : '';
     return `<div class="section" style="margin-top:16px"><h2>逐場統計</h2>
       <span class="hint">FotMob・${ms.seasons.join(' + ')}・${ms.games} 場・控球率經官網端點抽核</span></div>
     <div class="grid g2">
@@ -1095,7 +1101,7 @@ try {
       <div class="card"><h3>射門情境(${ms.shotSample} 次)</h3>
         ${sits.map(([k, x]) => lineOf(SIT[k] ?? k, `${(x.share * 100).toFixed(0)}% <span class="dim">・${x.goals} 球・xG/射門 ${x.xgPerShot}</span>`)).join('')}
         <div class="tiny dim" style="margin-top:8px">逐射門的情境與 xG 由供應商標記;只用 shotmap 進球數對得上比分的場次。跟「上季數據風格」的 Understat 整季分類是兩個來源,數字不會完全一樣。</div></div>
-    </div>`;
+    </div>${physCard}`;
   }
 
   // 定位球主罰順位:只有英超的來源有順位欄位,沒有就整塊不出現
