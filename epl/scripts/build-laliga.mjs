@@ -880,11 +880,29 @@ async function main() {
   // 沒有快照或快照損壞時，保留賽程推算 fallback，不把空資料宣告成即時。
   const liveCachePath = join(ROOT, 'data', 'raw', 'sportmonks-la-liga', 'live.json');
   let liveOut = { available: false, note: '西甲即時比分尚未接入；實時頁面目前以賽程推算進行中與開賽倒數，並保留賽前預測。' };
+  /* 快照**要夠新**才算「有即時資料源」。
+     2026-09-03 實測踩到:SportMonks 方案停掉之後抓取步驟安靜略過,
+     而這裡照樣把 54 小時前的快照宣告成 `available: true`、
+     標籤還寫「SportMonks 西甲即時比分」—— 站上等於在說一句假話,
+     而且沒有任何地方會紅(抓取那步是 continue-on-error)。
+
+     門檻取 6 小時:比賽日的輪詢是每 3 分鐘一次,連續 6 小時沒更新就不是
+     「剛好卡在兩次之間」,而是這條線斷了。非比賽日本來就不抓,那時回
+     `available: false` 也是對的 —— 那一天本來就沒有即時資料,而實時頁的
+     開賽倒數與依時間推算的進行中區塊不需要它。 */
+  const LIVE_STALE_H = 6;
   if (existsSync(liveCachePath)) {
     try {
       const cachedLive = JSON.parse(await readFile(liveCachePath, 'utf8'));
+      const ageH = (Date.now() - Date.parse(cachedLive?.fetchedAt ?? 0)) / 3600000;
       if (cachedLive?.source === 'sportmonks' && Array.isArray(cachedLive.matches)) {
-        liveOut = cachedLive;
+        if (Number.isFinite(ageH) && ageH <= LIVE_STALE_H) liveOut = cachedLive;
+        else {
+          liveOut = { available: false,
+            note: `西甲即時比分目前沒有可用的資料源(上一次抓到是 ${Math.round(ageH)} 小時前)。`
+              + '實時頁面以賽程推算進行中與開賽倒數,並保留賽前預測 —— 那兩段不需要即時資料源。' };
+          console.log(`  ⚠ 西甲即時快照已 ${Math.round(ageH)} 小時沒更新,不宣告為可用`);
+        }
       }
     } catch { /* 損壞快照不阻塞其他西甲資料 */ }
   }
