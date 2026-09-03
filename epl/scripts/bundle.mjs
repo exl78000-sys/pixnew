@@ -92,7 +92,10 @@ async function main() {
       .replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js(\?v=[0-9a-f]+)?';\s*/gm, '');
   }
 
-  const dataFiles = (await readdir(join(WEB, 'data'))).filter(f => f.endsWith('.json'));
+  /* matchstats.json(4 MB)不進單檔版:沒有任何頁面直接載它 —— 單場用 reports.json 的 advanced、
+     球隊頁用 teams.json 的 matchStats,它是給 Obsidian vault 與逐場查詢用的。打進去只會讓單檔版多 9 MB。 */
+  const SKIP_DATASETS = new Set(['matchstats']);
+  const dataFiles = (await readdir(join(WEB, 'data'))).filter(f => f.endsWith('.json') && !SKIP_DATASETS.has(f.replace(/\.json$/, '')));
   const data = {};
   for (const f of dataFiles) data[f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(WEB, 'data', f), 'utf8'));
   /* 模擬遊玩的側寫住在 web/data/game/(獨立管線的產物),鍵用 'game/pl' ——

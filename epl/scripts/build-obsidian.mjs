@@ -388,6 +388,24 @@ function renderTeam(t, ctx) {
     if (ctx.goalsNote) body.push(`\n> ${ctx.goalsNote}\n`);
   }
 
+  const tms = ctx.teamMatchStatsFor?.(t.code);
+  if (tms?.games) {
+    const SIT = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快攻', FreeKick: '任意球', SetPiece: '定位球', ThrowInSetPiece: '界外球', IndividualPlay: '個人突破', Penalty: '十二碼' };
+    const v = x => (x == null ? '—' : x);
+    body.push(`\n## 逐場統計(FotMob,${tms.seasons.join(' + ')},${tms.games} 場)\n\n`);
+    body.push(`| | 主場(${tms.home.games}) | 客場(${tms.away.games}) |\n|---|---|---|\n`);
+    body.push(`| 控球 % | ${v(tms.home.possession.mean)} ±${v(tms.home.possession.sd)} | ${v(tms.away.possession.mean)} ±${v(tms.away.possession.sd)} |\n`);
+    body.push(`| 射門 / 被射門 | ${v(tms.home.shotsFor)} / ${v(tms.home.shotsAgainst)} | ${v(tms.away.shotsFor)} / ${v(tms.away.shotsAgainst)} |\n`);
+    body.push(`| xG / xGA | ${v(tms.home.xgFor)} / ${v(tms.home.xgAgainst)} | ${v(tms.away.xgFor)} / ${v(tms.away.xgAgainst)} |\n`);
+    body.push(`| 角球 | ${v(tms.home.cornersFor)} | ${v(tms.away.cornersFor)} |\n| 犯規 | ${v(tms.home.foulsFor)} | ${v(tms.away.foulsFor)} |\n`);
+    const sits = Object.entries(tms.situations ?? {}).sort((a, b) => b[1].shots - a[1].shots);
+    if (sits.length) {
+      body.push(`\n### 射門情境(${tms.shotSample} 次)\n\n| 情境 | 射門 | 進球 | 份額 | xG/射門 |\n|---|---|---|---|---|\n`);
+      for (const [k, x] of sits) body.push(`| ${SIT[k] ?? k} | ${x.shots} | ${x.goals} | ${(x.share * 100).toFixed(0)}% | ${x.xgPerShot} |\n`);
+    }
+    body.push(`\n> 逐場資料直接取自 FotMob 的球隊統計與 shotmap;± 是各場控球率的標準差。跟「進球明細」與 Understat 的整季分類是不同來源。\n`);
+  }
+
   if (squad.length) {
     body.push(`\n## 名單(${squad.length} 人)\n\n`);
     const byPos = new Map();
@@ -494,6 +512,38 @@ function renderMatch(f, ctx) {
         body.push('\n');
       }
       if (rep.source) body.push(`> 賽後資料來源:${rep.source}\n`);
+    }
+
+    const ms = ctx.matchStatsFor(f);
+    if (ms) {
+      const SIT = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快攻', FreeKick: '任意球', SetPiece: '定位球', ThrowInSetPiece: '界外球', IndividualPlay: '個人突破', Penalty: '十二碼' };
+      const v = x => (x == null ? '—' : x);
+      const hs = ms.teamStats[f.home] ?? {}, as = ms.teamStats[f.away] ?? {};
+      body.push(`\n## 逐場統計(FotMob)\n\n`);
+      body.push(`| | ${H} | ${A} |\n|---|---|---|\n`);
+      body.push(`| 控球 % | ${ms.possession.all[0]} | ${ms.possession.all[1]} |\n`);
+      if (ms.possession.h1) body.push(`| 上半場控球 % | ${ms.possession.h1[0]} | ${ms.possession.h1[1]} |\n| 下半場控球 % | ${v(ms.possession.h2?.[0])} | ${v(ms.possession.h2?.[1])} |\n`);
+      for (const [label, k] of [['射門', 'shots'], ['射正', 'shotsOn'], ['被封阻', 'blockedShots'], ['xG', 'xG'], ['角球', 'corners'], ['越位', 'offsides'], ['犯規', 'fouls'], ['撲救', 'saves'], ['傳球', 'passes']]) {
+        if (hs[k] == null && as[k] == null) continue;
+        body.push(`| ${label} | ${v(hs[k])} | ${v(as[k])} |\n`);
+      }
+      const goals = ms.shots.filter(s => s.type === 'Goal');
+      if (ms.shots.length) {
+        body.push(`\n### 射門(${ms.shots.length} 次${ms.shotmapComplete ? '' : ',進球數跟比分對不上,清單不完整'})\n\n| 分鐘 | 球隊 | 球員 | 情境 | xG | 結果 |\n|---|---|---|---|---|---|\n`);
+        for (const s of ms.shots) body.push(`| ${s.min}${s.extra ? '+' + s.extra : ''} | ${s.team} | ${s.player ?? ''} | ${SIT[s.situation] ?? s.situation ?? ''} | ${s.xg == null ? '' : s.xg.toFixed(2)} | ${s.type === 'Goal' ? '**進球**' : s.type ?? ''} |\n`);
+      }
+      if (ms.events.length) {
+        body.push(`\n### 事件\n\n`);
+        for (const e of ms.events) body.push(`- ${e.minute}${e.extra ? '+' + e.extra : ''}' ${e.team} ${e.detail}${e.player ? `:${e.player}` : ''}\n`);
+      }
+      if (ms.momentum?.length) {
+        const pts = ms.momentum.filter(x => Array.isArray(x));
+        body.push(`\n### 動能(每分鐘,正=${H})\n\n\`${pts.map(([, val]) => val).join(' ')}\`\n`);
+      }
+      const ver = ctx.matchStatsVerification?.[f.season];
+      body.push(`\n> 來源:FotMob matchDetails(比分已對回本站賽果)。`
+        + (ver ? `控球率經英超官網後端抽核 ${ver.agree}/${ver.checked} 場在 ±${ver.tolerance} 內。` : '這一季的控球率未經第二來源抽核。')
+        + `逐射門 xG 與情境是供應商標記,本站只搬運。\n`);
     }
   } else if (f.prediction) {
     const p = f.prediction;
@@ -685,6 +735,9 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   const reportsFile = load(lg.key, 'reports');
   const reports = reportsFile?.reports ?? {};
   const goalsFile = load(lg.key, 'goals');
+  /* 逐場統計(FotMob,2026-09-03):控球、球隊統計、逐射門 xG、事件。英超才有;沒有檔就整段不寫。
+     使用者指定 Obsidian vault 是這批資料的「資料庫」,所以比賽筆記與球隊筆記都要寫進去。 */
+  const matchStats = load(lg.key, 'matchstats');
   /* 走查回測的預測**是**賽前預測 —— 訓練資料只到該輪開賽前,
      跟 fixtures.json 那個建置時重算的完全不是同一回事。
      所以這一份可以放心印在已完賽的場次上,而且要講清楚它是哪一種。 */
@@ -747,6 +800,9 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     walkForwardSeason: walkForwardSeason,
     goalsFor: code => goalsFile?.data?.[meta.lastSeason]?.teams?.[code] ?? null,
     goalsSeason: meta.lastSeason, goalsNote: goalsFile?.note ?? null,
+    matchStatsFor: m => matchStats?.matches?.[m.season + '|' + m.home + '|' + m.away] ?? null,
+    teamMatchStatsFor: code => matchStats?.teams?.[code] ?? null,
+    matchStatsVerification: matchStats?.verification ?? null,
     /* 租借往來:跨聯賽單一份,掛英超目錄(cups 慣例)—— 三個聯賽的球隊筆記都從這裡讀 */
     loansFor: (() => {
       const all = arr(load('pl', 'loans')?.records ?? []);

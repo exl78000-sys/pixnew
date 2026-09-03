@@ -134,13 +134,37 @@ function extract(raw, fixture) {
   };
 }
 
-async function verify(store, results, n) {
-  /* 獨立來源:官網後端的 /stats/match/{fixtureId}。fixtureId 只有本季在 pulselive 快取裡。 */
+/* 往季的 fixtureId 不在 pulselive 快取裡:打官網的賽季清單找到該季,再拉整季賽程(pageSize 100,4 頁)。
+   隊伍對照用官方 club.abbr(= 本站隊碼,CLAUDE.md 驗過)。這一段只在 --verify 且非本季時跑,約 5 個請求。 */
+async function pulseFixturesFor(season, teams) {
+  const r = await get(`${PL_API}/competitions/1/compseasons?pageSize=30`, PL_HEADERS);
+  const want = `${season.slice(0, 4)}/${season.slice(5, 7)}`;
+  const cs = (r.json?.content ?? []).find(c => String(c.label ?? '').includes(want));
+  if (!cs) { console.log(`  ⚠ 官網賽季清單找不到 ${want}`); return []; }
+  const out = [];
+  for (let page = 0; page < 5; page++) {
+    const f = await get(`${PL_API}/fixtures?comps=1&compSeasons=${cs.id}&pageSize=100&page=${page}&sort=asc&statuses=C`, PL_HEADERS);
+    const list = f.json?.content ?? [];
+    for (const fx of list) {
+      const [h, a] = fx.teams ?? [];
+      const code = t => teams.codeOf(t?.team?.club?.abbr) ?? teams.codeOf(t?.team?.name) ?? null;
+      const home = code(h), away = code(a);
+      if (home && away && fx.id) out.push({ key: `${home}|${away}`, fixtureId: fx.id, homeId: h.team?.id, awayId: a.team?.id });
+    }
+    if (list.length < 100) break;
+  }
+  return out;
+}
+
+async function verify(store, results, n, teams) {
+  /* 獨立來源:官網後端的 /stats/match/{fixtureId}。本季的 fixtureId 在 pulselive 快取裡,往季另外拉。 */
   const pulse = await read(join(ROOT, 'data', 'raw', 'pulselive', 'official.json'));
   const teamsById = pulse?.teams ?? {};
-  const candidates = Object.values(pulse?.matches ?? {})
+  let all = Object.values(pulse?.matches ?? {})
     .filter(m => m.fixtureId && m.homeId && m.awayId)
-    .map(m => ({ key: `${teamsById[m.homeId]}|${teamsById[m.awayId]}`, fixtureId: m.fixtureId, homeId: m.homeId, awayId: m.awayId }))
+    .map(m => ({ key: `${teamsById[m.homeId]}|${teamsById[m.awayId]}`, fixtureId: m.fixtureId, homeId: m.homeId, awayId: m.awayId }));
+  if (pulse?.season && pulse.season !== store.season) all = await pulseFixturesFor(store.season, teams);
+  const candidates = all
     .filter(c => store.matches[c.key] && !(store.verification?.items ?? []).some(x => x.key === c.key));
   console.log(`\n▶ 用官網端點核對控球率:候選 ${candidates.length} 場,本次最多 ${n} 場`);
   const items = store.verification?.items ?? [];
@@ -175,7 +199,7 @@ async function main() {
     .sort((a, b) => a.date.localeCompare(b.date));
   console.log(`\n▶ FotMob 英超 ${season}:已完賽 ${played.length} 場・快取 ${Object.keys(store.matches).length} 場・待補 ${pending.length} 場・本次上限 ${limit}`);
 
-  if (verifyN > 0) { await verify(store, results, verifyN); }
+  if (verifyN > 0) { await verify(store, results, verifyN, teams); }
   else if (pending.length && limit > 0) {
     if (dryRun) { pending.slice(0, limit).forEach(f => console.log(`  · ${f.date} ${f.home}–${f.away}`)); return; }
     const league = await get(`${BASE}/api/data/leagues?id=${LEAGUE_ID}&ccode3=GBR&season=${encodeURIComponent(fotmobSeason(season))}`,

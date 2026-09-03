@@ -1,4 +1,4 @@
-import * as C from './core.js?v=55c7c82e';
+import * as C from './core.js?v=16256887';
 
 const app = document.getElementById('app');
 
@@ -1073,6 +1073,31 @@ try {
     </div>`;
   }
 
+  /* 逐場統計(FotMob,2026-09-03 接進來):控球分布、每場射門與 xG、射門情境。
+     跟上面的「上季數據風格」是不同來源(那邊是 Understat 整季分類 + FPL),所以獨立一塊、各標各的來源。
+     沒有這份資料的聯賽或球隊整塊不出現。 */
+  function matchStatsBlock(t) {
+    const ms = t.matchStats;
+    if (!ms?.games) return '';
+    const SIT = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快攻', FreeKick: '任意球', SetPiece: '定位球', ThrowInSetPiece: '界外球', IndividualPlay: '個人突破', Penalty: '十二碼' };
+    const v = (x, suf = '') => (x == null ? '—' : `${x}${suf}`);
+    const venue = (label, s) => `<div><div class="tiny dim">${label}(${s.games} 場)</div>
+      ${lineOf('控球', `${v(s.possession.mean, '%')} <span class="dim">±${v(s.possession.sd)}</span>`)}
+      ${lineOf('射門 / 被射門', `${v(s.shotsFor)} / ${v(s.shotsAgainst)}`)}
+      ${lineOf('xG / xGA', `${v(s.xgFor)} / ${v(s.xgAgainst)}`)}
+      ${lineOf('角球', v(s.cornersFor))}${lineOf('犯規', v(s.foulsFor))}</div>`;
+    const sits = Object.entries(ms.situations ?? {}).sort((a, b) => b[1].shots - a[1].shots).slice(0, 6);
+    return `<div class="section" style="margin-top:16px"><h2>逐場統計</h2>
+      <span class="hint">FotMob・${ms.seasons.join(' + ')}・${ms.games} 場・控球率經官網端點抽核</span></div>
+    <div class="grid g2">
+      <div class="card"><h3>主客場均值</h3><div class="grid g2">${venue('主場', ms.home)}${venue('客場', ms.away)}</div>
+        <div class="tiny dim" style="margin-top:8px">每場的數字直接取自供應商的球隊統計;± 是各場控球率的標準差,不是估計誤差。</div></div>
+      <div class="card"><h3>射門情境(${ms.shotSample} 次)</h3>
+        ${sits.map(([k, x]) => lineOf(SIT[k] ?? k, `${(x.share * 100).toFixed(0)}% <span class="dim">・${x.goals} 球・xG/射門 ${x.xgPerShot}</span>`)).join('')}
+        <div class="tiny dim" style="margin-top:8px">逐射門的情境與 xG 由供應商標記;只用 shotmap 進球數對得上比分的場次。跟「上季數據風格」的 Understat 整季分類是兩個來源,數字不會完全一樣。</div></div>
+    </div>`;
+  }
+
   // 定位球主罰順位:只有英超的來源有順位欄位,沒有就整塊不出現
   function takersBlock(tac) {
     const tk = tac?.setPieces?.takers;
@@ -1208,6 +1233,7 @@ try {
     ${styleTrendCard(t)}
     ${goalSituationCard(t.tactics)}
     ${takersBlock(t.tactics)}
+    ${matchStatsBlock(t)}
     ${eloBlock(t)}
     ${scheduleBlock(t)}
     ${loansCard(t)}

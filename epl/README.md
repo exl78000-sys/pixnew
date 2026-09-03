@@ -120,6 +120,7 @@ npm run crests    # 27 隊隊徽 → 縮圖 → 內嵌成 data URI
 | [football-data.org](https://www.football-data.org/) | **歐冠** 2024-25 與 2025-26 的逐場賽果與官方積分榜 | 免費方案(10 requests/分) |
 | openfootball / football.json(en.2~en.4) | 英冠／英甲／英乙的球隊名單,用來標示盃賽對手的層級 | Public Domain |
 | FotMob(人工交付) | 歐冠球員榜與 2026-27 抽籤結果;英超與西甲的逐球進球明細、背號與頭貼 | 交付檔放 `data/manual/`,**一律用另一個來源逐場核對過才採用** |
+| FotMob(matchDetails) | **英超逐場統計**:控球(全場與上下半場)、球隊統計、逐射門 xG 與情境、逐分鐘動能、事件、名單(2025-26 起 400 場) | 網站公開資料端點;比分逐場對回本站賽果,控球率以英超官網後端抽核(兩季各 20 場全過) |
 | [SportMonks](https://www.sportmonks.com/) | 英格蘭盃賽(足總盃 / 聯賽盃)逐場賽果;英超與西甲的球員欄位與賽後資料 | 付費方案 |
 | `data/manual/teams.json` | 27 隊英文名/中文名、綽號、球場、代表色、跨來源隊名對照 | 人工維護 |
 | `data/manual/teams-la-liga.json` | 西甲兩季涉及的球隊名稱、代表色與跨來源隊名對照 | 人工維護 |

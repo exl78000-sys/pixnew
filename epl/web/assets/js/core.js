@@ -942,7 +942,9 @@ export function reportWithPlayerPhotos(m, players) {
    再接戰術、陣容、數據(使用者指定的順序)。
    **不要為此複製一份出去**:複製之後改了一邊另一邊會悄悄過期(CLAUDE.md)。
    不給 order 就是原本的順序,英超那一頁的輸出一個字都沒變。 */
-export const MATCH_REPORT_ORDER = ['tactics', 'lineups', 'compare', 'teamStats', 'players', 'events', 'best'];
+/* momentum 與 shotmap 是 2026-09-03 加的(FotMob 逐場資料接進真實管線):沒有那兩份資料時卡片回空字串,
+   順序表列著也不會畫出空卡。 */
+export const MATCH_REPORT_ORDER = ['tactics', 'lineups', 'compare', 'teamStats', 'momentum', 'shotmap', 'players', 'events', 'best'];
 
 export function matchReportCards(m, { order = null } = {}) {
   const H = m.sides[m.home], A = m.sides[m.away];
@@ -996,9 +998,9 @@ export function matchReportCards(m, { order = null } = {}) {
     if (!d) {
       return {
         teamStats: m.finished ? `<div class="card"><h3>完整賽後數據</h3>
-      <div class="note info">API-Football 的球員評分、射門、傳球、對抗、防守與事件資料尚未寫入永久快取。
+      <div class="note info">這場的球隊統計、事件與逐射門資料尚未寫入永久快取。
       目前下方仍顯示已取得的 FPL 賽後資料；未取得的欄位不會用估算值代替。</div></div>` : '',
-        players: '', events: '',
+        players: '', events: '', momentum: '', shotmap: '',
       };
     }
 
@@ -1044,7 +1046,46 @@ export function matchReportCards(m, { order = null } = {}) {
       ${e.assist ? `<small>相關球員：${esc(e.assist)}</small>` : ''}
       ${e.detail ? `<small>${esc(e.detail)}</small>` : ''}${e.comments ? `<small>${esc(e.comments)}</small>` : ''}</span></div>`).join('');
 
-    const sourceLabel = d.source === 'sportmonks' ? 'SportMonks' : 'API-Football';
+    const sourceLabel = d.source === 'sportmonks' ? 'SportMonks' : d.source === 'fotmob' ? 'FotMob' : 'API-Football';
+    const hasPlayers = Object.values(d.players ?? {}).some(list => list?.length);
+    /* 逐分鐘動能(FotMob):正值主隊、負值客隊,每分鐘一格。這是供應商算的指標,不是本站算的。 */
+    const momentumHtml = () => {
+      const pts = (d.momentum ?? []).filter(x => Array.isArray(x) && x.length === 2);
+      if (!pts.length) return '';
+      const W = 560, Hh = 90, mid = Hh / 2, mx = Math.max(1, ...pts.map(([, v]) => Math.abs(v)));
+      const bars = pts.map(([min, v]) => {
+        const h = (Math.abs(v) / mx) * (mid - 4), x = (min / 95) * W;
+        return `<rect x="${x.toFixed(1)}" y="${(v >= 0 ? mid - h : mid).toFixed(1)}" width="${(W / 95 - 1).toFixed(1)}" height="${h.toFixed(1)}" fill="${v >= 0 ? 'var(--win, #00ff85)' : 'var(--loss, #ff4d6d)'}" opacity=".85"><title>${min}' ${v > 0 ? name(m.home) : name(m.away)} ${Math.abs(v)}</title></rect>`;
+      }).join('');
+      return `<div class="card"><div class="row" style="justify-content:space-between"><h3>比賽動能</h3><span class="pill accent tiny">${sourceLabel}</span></div>
+        <div class="row small dim" style="justify-content:space-between"><span>▲ ${name(m.home)}</span><span>▼ ${name(m.away)}</span></div>
+        <svg viewBox="0 0 ${W} ${Hh}" width="100%" style="display:block;margin:6px 0"><line x1="0" y1="${mid}" x2="${W}" y2="${mid}" stroke="var(--line)"/><line x1="${(45 / 95 * W).toFixed(1)}" y1="0" x2="${(45 / 95 * W).toFixed(1)}" y2="${Hh}" stroke="var(--line)" stroke-dasharray="3 3"/>${bars}</svg>
+        <div class="tiny dim">供應商的逐分鐘動能指標(正=主隊壓迫、負=客隊),本站只搬運不重算。虛線是中場。</div></div>`;
+    };
+    /* 射門圖(FotMob shotmap):半場圖,兩隊各攻一邊;圓的大小是 xG、實心是進球。座標是供應商的 0–100 場地座標。 */
+    const shotmapHtml = () => {
+      const shots = (d.shots ?? []).filter(s => Number.isFinite(s.x) && Number.isFinite(s.y));
+      if (!shots.length) return '';
+      const W = 560, Hh = 360;
+      const colour = code => team(code).chartColor ?? team(code).colors?.[0] ?? '#00ff85';
+      const dot = s => {
+        const isHome = s.team === m.home;
+        /* 供應商座標:x 是離自家球門的距離(0–105?)—— 實測 x≈90 在對方禁區,所以主隊畫右半、客隊鏡射到左半 */
+        const px = isHome ? (s.x / 105) * W : W - (s.x / 105) * W;
+        const py = (s.y / 68) * Hh;
+        const r = 3 + Math.sqrt(Math.max(0, s.xg ?? 0)) * 16;
+        const goal = s.type === 'Goal';
+        return `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${r.toFixed(1)}" fill="${colour(s.team)}" fill-opacity="${goal ? 0.95 : 0.3}" stroke="${goal ? '#fff' : colour(s.team)}" stroke-width="${goal ? 2 : 1}"><title>${s.min}' ${esc(s.player ?? '')} xG ${(s.xg ?? 0).toFixed(2)}${goal ? ' ⚽' : ` ${s.type ?? ''}`}</title></circle>`;
+      };
+      const box = (x0, w) => `<rect x="${x0}" y="${((68 / 2 - 20.16) / 68 * Hh).toFixed(1)}" width="${w}" height="${(40.32 / 68 * Hh).toFixed(1)}" fill="none" stroke="var(--line)"/>`;
+      const sum = code => { const mine = shots.filter(s => s.team === code); return `${mine.length} 射門・xG ${mine.reduce((a, s) => a + (s.xg ?? 0), 0).toFixed(2)}`; };
+      return `<div class="card"><div class="row" style="justify-content:space-between"><h3>射門圖</h3><span class="pill accent tiny">${sourceLabel}・逐射門 xG</span></div>
+        <div class="row small dim" style="justify-content:space-between"><span>${name(m.home)} → 攻右・${sum(m.home)}</span><span>${sum(m.away)}・攻左 ← ${name(m.away)}</span></div>
+        <svg viewBox="0 0 ${W} ${Hh}" width="100%" style="display:block;margin:6px 0;background:#0a1018;border-radius:8px">
+          <rect x="1" y="1" width="${W - 2}" height="${Hh - 2}" fill="none" stroke="var(--line)"/><line x1="${W / 2}" y1="0" x2="${W / 2}" y2="${Hh}" stroke="var(--line)"/>
+          ${box(1, (16.5 / 105 * W).toFixed(1))}${box((W - 16.5 / 105 * W).toFixed(1), (16.5 / 105 * W).toFixed(1))}${shots.map(dot).join('')}</svg>
+        <div class="tiny dim">圓的大小是該次射門的 xG,實心是進球;把游標移到圓上看分鐘、射手與 xG。${d.shotmapComplete === false ? '<b>這場 shotmap 的進球數跟比分對不上,射門清單不完整。</b>' : ''}</div></div>`;
+    };
     return {
       teamStats: `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start">
         <h3>完整球隊攻守數據</h3><span class="pill accent tiny">${sourceLabel}・完賽永久快取</span></div>
@@ -1054,11 +1095,14 @@ export function matchReportCards(m, { order = null } = {}) {
       ${stat('越位', 'offsides')}${stat('犯規', 'fouls')}${stat('門將撲救', 'saves')}
       ${stat('傳球', 'passes')}${stat('成功傳球', 'passesAccurate')}${stat('傳球成功率', 'passAccuracy', '%')}
       ${stat('期望進球 xG', 'xG')}
-      <div class="tiny dim" style="margin-top:10px">速度、跑動距離、衝刺次數：此資料源不提供，因此不顯示也不推估。</div>
+      ${d.possession?.h1 ? line('上半場控球', value(d.possession.h1[0], '%'), value(d.possession.h1[1], '%')) + line('下半場控球', value(d.possession.h2?.[0], '%'), value(d.possession.h2?.[1], '%')) : ''}
+      <div class="tiny dim" style="margin-top:10px">${d.source === 'fotmob' ? '控球率已用英超官網後端的統計端點抽核(見資料界線)。' : ''}速度、跑動距離、衝刺次數:目前不顯示也不推估。</div>
     </div>`,
-      players: `<div class="card"><h3>球員評分與明細</h3><div class="grid g2 advanced-players">${playerSide(m.home)}${playerSide(m.away)}</div>
-      <div class="tiny dim" style="margin-top:10px">點球員姓名可開啟球員頁；展開每列可看完整進攻、組織、防守與紀律欄位。</div></div>`,
+      /* 沒有逐人資料(FotMob 精簡萃取)就整張不畫 —— 一張「供應商沒有這隊的球員資料」的卡沒有資訊量 */
+      players: hasPlayers ? `<div class="card"><h3>球員評分與明細</h3><div class="grid g2 advanced-players">${playerSide(m.home)}${playerSide(m.away)}</div>
+      <div class="tiny dim" style="margin-top:10px">點球員姓名可開啟球員頁；展開每列可看完整進攻、組織、防守與紀律欄位。</div></div>` : '',
       events: `<div class="card"><h3>完整比賽事件</h3>${timeline || '<div class="tiny dim">供應商沒有回傳事件時間軸</div>'}</div>`,
+      momentum: momentumHtml(), shotmap: shotmapHtml(),
     };
   };
 
@@ -1070,13 +1114,15 @@ export function matchReportCards(m, { order = null } = {}) {
     teamStats: adv.teamStats,
     players: adv.players,
     events: adv.events,
+    momentum: adv.momentum ?? '',
+    shotmap: adv.shotmap ?? '',
     lineups: `<div class="card"><h3>實際排出的陣容</h3>
       <div class="grid g2">
         ${sideBoard(m.home, H)}
         ${sideBoard(m.away, A)}
       </div>
       <div class="tiny dim" style="margin-top:10px">${H.shape.source === 'official' || A.shape.source === 'official'
-        ? m.advanced
+        ? m.advanced && m.advanced.source !== 'fotmob'
           ? `標<span class="pill accent tiny">正式</span>的陣型與每一排球員，來自 ${m.advanced.source === 'sportmonks' ? 'SportMonks' : 'API-Football'} 的完賽名單，球場圖依供應商格線排列。`
           : `標<span class="pill accent tiny">官方</span>的陣型與每一排的人,都是<b>英超官方公布的正式名單</b>,球場圖照那個排位畫。`
         : `陣型是依 FPL 的位置分類統計先發人數 —— 它只分門將/後衛/中場/前鋒四類,
@@ -1096,12 +1142,15 @@ export function matchReportCards(m, { order = null } = {}) {
       ${H.keeper && A.keeper ? line('門將撲救', H.keeper.saves ?? '—', A.keeper.saves ?? '—') : ''}
       ${H.keeper?.stopped != null && A.keeper?.stopped != null ? line('門將少失球', signed(H.keeper.stopped, 2), signed(A.keeper.stopped, 2)) : ''}
     </div>`,
-    best: `<div class="card"><h3>${m.advanced ? '本場最佳（API-Football 評分）' : '本場最佳(FPL 表現分)'}</h3>
+    best: (() => {
+      const rated = m.advanced?.coverage?.ratings === true && H.best?.some(b => b.rating != null);
+      return `<div class="card"><h3>${rated ? '本場最佳(供應商評分)' : '本場最佳(FPL 表現分)'}</h3>
       <div class="grid g2">
-        <div>${bestHtml(H, m.advanced ? 'rating' : 'bps')}</div>
-        <div>${bestHtml(A, m.advanced ? 'rating' : 'bps')}</div>
+        <div>${bestHtml(H, rated ? 'rating' : 'bps')}</div>
+        <div>${bestHtml(A, rated ? 'rating' : 'bps')}</div>
       </div>
-    </div>`,
+    </div>`;
+    })(),
   };
   return (order ?? MATCH_REPORT_ORDER).map(key => parts[key] ?? '').join('\n\n');
 }

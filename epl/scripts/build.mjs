@@ -49,6 +49,7 @@ import { buildGoals } from './lib/goals.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { numberProfile, traditionVsData, formationFromLineups } from './lib/knowledge.mjs';
 import { round } from './lib/util.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
@@ -97,7 +98,10 @@ function attachAdvancedCodes(detail, report) {
     playerCode: e.playerId == null ? null : idToCode.get(`${e.team}|${e.playerId}`) ?? null,
     assistCode: e.assistId == null ? null : idToCode.get(`${e.team}|${e.assistId}`) ?? null,
   }));
-  return { ...detail, source: detail.source === 'sportmonks' ? 'sportmonks' : 'API-Football', players, events };
+  /* 來源標籤照抄 detail 的值(sportmonks / fotmob),只有沒標的才當 API-Football ——
+     原本寫成「不是 SportMonks 就是 API-Football」,FotMob 接進來後畫面把它標成 API-Football(2026-09-03 踩到)。 */
+  const source = detail.source === 'sportmonks' ? 'sportmonks' : detail.source === 'fotmob' ? 'fotmob' : 'API-Football';
+  return { ...detail, source, players, events };
 }
 
 const write = async (name, data) => {
@@ -170,12 +174,19 @@ async function main() {
     try { sportmonksAdvancedStore = JSON.parse(await readFile(sportmonksAdvancedPath, 'utf8')); }
     catch { console.log('  ⚠ SportMonks 英超賽後快取損壞,本次略過進階資料'); }
   }
+  /* FotMob 逐場統計(2026-09-03 接進來):SportMonks 與 API-Football 對英超本季都是 0 場,
+     這一份是目前唯一真的有內容的賽後來源(球隊統計、控球、逐射門 xG、事件;沒有逐人評分)。
+     順位排最後 —— 有逐人資料的來源出現時它們優先。賽果載入之後才填(要拿本站賽果核比分)。 */
+  let fotmobStats = { matches: {}, teams: {}, count: 0 };
   const advancedFor = (season, key) => {
     if (season !== CURRENT_SEASON) return null;
-    // 主要來源優先；若 SportMonks 尚未完成該場，再退回 API-Football。
-    return sportmonksAdvancedStore.season === season
+    // 主要來源優先；若 SportMonks 尚未完成該場，再退回 API-Football,最後 FotMob。
+    const provider = sportmonksAdvancedStore.season === season
       ? sportmonksAdvancedStore.matches?.[key] ?? advancedStore.matches?.[key] ?? null
       : advancedStore.season === season ? advancedStore.matches?.[key] ?? null : null;
+    if (provider) return provider;
+    const fm = fotmobStats.matches[`${season}|${key}`];
+    return fm ? toCanonicalDetail(fm) : null;
   };
 
   // 隊徽(npm run crests 產生,已內嵌為 data URI)直接掛到球隊登錄上,
@@ -225,6 +236,12 @@ async function main() {
   const history = HISTORY_SEASONS.flatMap(s => bySeason.get(s));
   const lastMatches = bySeason.get(LAST_SEASON);
   const curMatches = bySeason.get(CURRENT_SEASON);
+  fotmobStats = loadFotmobMatchStats(ROOT, { results: [...history, ...curMatches] });
+  if (fotmobStats.count) {
+    const ver = Object.entries(fotmobStats.verification).map(([sn, v]) => `${sn} ${v ? `${v.agree}/${v.checked} 抽核通過` : '未抽核'}`).join('、');
+    console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})・退回 ${fotmobStats.rejected.length} 場・控球率 ${ver}`);
+    for (const r of fotmobStats.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
+  }
   const curCodes = [...new Set(curMatches.flatMap(m => [m.home, m.away]))].sort();
   const lastCodes = [...new Set(lastMatches.flatMap(m => [m.home, m.away]))].sort();
 
@@ -981,7 +998,19 @@ async function main() {
     ai: aiSummary,
   });
   await write('clubs.json', T.list); // 27 隊完整名稱登錄(含已降級球隊,顯示歷史資料用)
+  /* 逐隊的逐場統計彙總(FotMob)掛到球隊上;沒有資料的球隊**不加這個鍵**(不留空欄位)。 */
+  for (const t of teams) {
+    const ms = fotmobStats.teams[t.code];
+    if (ms?.games) t.matchStats = ms;
+  }
   await write('teams.json', teams);
+  /* 逐場統計的完整產物:給 Obsidian vault(使用者指定它是這批資料的資料庫)與任何要逐場查的人。
+     頁面不直接載這一份 —— 單場用 reports.json 的 advanced,球隊頁用 teams.json 的 matchStats。 */
+  await write('matchstats.json', {
+    source: fotmobStats.source, note: '英超逐場統計(FotMob):控球(全場與上下半場)、球隊統計、逐射門 xG 與情境、逐分鐘動能、事件、名單。比分已逐場對回本站賽果;控球率以英超官網後端抽核。',
+    seasons: fotmobStats.seasons, count: fotmobStats.count, rejected: fotmobStats.rejected, verification: fotmobStats.verification,
+    teams: fotmobStats.teams, matches: fotmobStats.matches,
+  });
   /* 官方賽程狀態(延期/取消,football-data.org 快照)。只標註有事的場次,
      沒事不加欄位;快照太舊(>3 天)就不掛 —— 拿舊狀態講今天的事會誤導。 */
   {

@@ -2353,6 +2353,34 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* ── 逐場統計(FotMob)接進真實管線(2026-09-03)────────────────
+       產物 matchstats.json 的每一場比分要等於 results.json(獨立來源);控球相加 100;
+       彙總要對得回逐場重算;本季賽後報告掛的 advanced 來源標 fotmob 且 coverage 照實
+       (沒有逐人評分)。 */
+    ...(() => {
+      const msPath = join(ROOT, 'web', 'data', 'matchstats.json');
+      if (!existsSync(msPath)) return [['matchstats.json 存在(先跑 npm run build)', false]];
+      const ms = JSON.parse(readFileSync(msPath, 'utf8'));
+      const results = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'results.json'), 'utf8'));
+      const score = new Map(results.map(r => [`${r.season}|${r.home}|${r.away}`, [r.fh, r.fa]]));
+      const list = Object.values(ms.matches);
+      const teamsJson = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
+      const reports = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'reports.json'), 'utf8')).reports;
+      const fmReports = Object.values(reports).filter(r => r.advanced?.source === 'fotmob');
+      const mci = list.filter(m => m.home === 'MCI').map(m => m.possession.all[0]);
+      const mean = Math.round((mci.reduce((a, b) => a + b, 0) / mci.length) * 100) / 100;
+      return [
+        ['逐場統計至少涵蓋上季整季(≥ 380 場)', list.length >= 380, String(list.length)],
+        ['每一場比分等於本站賽果(獨立來源)', list.every(m => { const t = score.get(m.key); return t && t[0] === m.score[0] && t[1] === m.score[1]; })],
+        ['每一場兩隊控球相加 = 100', list.every(m => m.possession.all[0] + m.possession.all[1] === 100)],
+        ['控球率有第二來源的抽核紀錄且全部通過', Object.values(ms.verification).some(v => v && v.checked >= 10 && v.agree === v.checked)],
+        ['逐隊彙總對得回逐場重算(MCI 主場控球均值)', ms.teams.MCI.home.possession.mean === mean && ms.teams.MCI.home.games === mci.length, `${ms.teams.MCI.home.possession.mean} vs ${mean}`],
+        ['teams.json 掛的 matchStats 跟產物一致,沒資料的隊不留空鍵', teamsJson.every(t => (t.matchStats ? t.matchStats.games === ms.teams[t.code]?.games : !ms.teams[t.code]?.games))],
+        ['本季賽後報告掛上 FotMob 的 advanced(有球隊統計與事件、沒有逐人評分)', fmReports.length > 0 && fmReports.every(r => r.advanced.coverage.playerStatistics === false && r.advanced.coverage.ratings === false && r.advanced.teamStats[r.home]?.possession != null && Array.isArray(r.advanced.events)), String(fmReports.length)],
+        ['shotmap 進球數對不上比分的場次有標記', list.every(m => m.shotmapComplete === (m.shots.filter(s => s.type === 'Goal').length === m.score[0] + m.score[1]))],
+      ];
+    })(),
+
     /* ── 跑位動畫真的跑一遍(2026-09-01 加)────────────────────
        上面那一條是掃原始碼的字串,掃不到「演出把腳本吞掉」這種錯。
        實際踩到的:射門門檻寫死 `holder.x > 78`,而前鋒基準 x=53.26、
