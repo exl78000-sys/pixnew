@@ -78,6 +78,27 @@ a:hover { text-decoration: underline; }
 .league-switch a { color:var(--ink-3); padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; text-decoration:none; }
 .league-switch a.on { color:#0b0710; background:var(--accent); }
 nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.pick-group { display: contents; }
+
+/* 盃賽/歐冠的對戰列。欄寬本來是 inline style,手機上覆寫不了 —— 見 ucl-view.js。 */
+.stat-line.tie-leg { gap: 10px; align-items: center; }
+.stat-line.tie-leg .leg-when { min-width: 78px; }
+.stat-line.tie-leg .leg-home { flex: 1; text-align: right; min-width: 0; }
+.stat-line.tie-leg .leg-score { min-width: 128px; text-align: center; }
+.stat-line.tie-leg .leg-away { flex: 1; min-width: 0; }
+/* 格子本身 min-width:0 只是「允許縮」,裡面的隊名連結還是照自己的寬度撐出去 ——
+   實測盃賽頁 88 個元素超出右緣就是這個。要它真的縮就得允許截斷。 */
+.stat-line.tie-leg .leg-home > *, .stat-line.tie-leg .leg-away > * { min-width: 0; max-width: 100%; }
+/* `uclTeamCell` 是 inline-flex(隊徽 + 名字),ellipsis 加在它身上不會生效 ——
+   要截斷的是裡面那個文字節點,所以規則要下到它的子元素上。 */
+.stat-line.tie-leg .leg-home a, .stat-line.tie-leg .leg-away a { overflow: hidden; }
+.stat-line.tie-leg .leg-home a > span, .stat-line.tie-leg .leg-away a > span {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+.stat-line.tie-leg .leg-ko { min-width: 96px; text-align: right; }
+/* 桌機上這一層不存在(display:contents),版面跟沒有它時完全一樣;
+   手機上它變成兩組分頁共用的那一條橫向捲動列。 */
+.tabwrap { display: contents; }
 /* 跨聯賽的那一組(足球知識)排最左,用一條細線跟聯賽分頁隔開 */
 .nav-sep { width: 1px; align-self: stretch; min-height: 22px; background: var(--line); }
 /* 分頁靠右,跟切換鈕排同一側;左邊留給品牌與足球知識 */
@@ -103,6 +124,64 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
   /* 換行之後上下兩組本來就分開了,豎線反而變成一條沒有意義的裝飾 */
   .nav-sep { display: none; }
   .subbar .inner { padding: 6px 14px; }
+
+  /* 導覽列在手機上原本會折成三到四行,整片 **245px 而且是 sticky** ——
+     等於 812px 的螢幕永遠有 30% 是導覽,捲到哪裡都跟著。
+     改成每一組各自一行、橫向捲動:高度降到 ~130px,可視內容多兩成。
+     不用「收合成漢堡選單」是因為那要多一次點擊才看得到自己在哪一頁,
+     而這個站的分頁本來就是主要的動線。 */
+  .topbar .inner { padding: 8px 14px; gap: 10px; row-gap: 8px; }
+  /* 兩組分頁併成同一條捲動列:分開捲的話讀者要學兩個捲動區,而且多佔一行。 */
+  .tabwrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 100%;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;              /* Firefox */
+    /* 右緣淡出,提示「還有」—— 沒有捲軸的話讀者不會知道右邊還有分頁 */
+    mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+  }
+  .tabwrap::-webkit-scrollbar { display: none; }
+  nav.tabs { flex-wrap: nowrap; flex: 0 0 auto; }
+  nav.tabs.main { margin-left: 0; }
+  nav.tabs > a { flex: 0 0 auto; }
+  /* 併成一條之後,兩組之間需要那條豎線才分得出來 */
+  .nav-sep { display: block; flex: 0 0 auto; min-height: 20px; }
+
+  /* 「我的預測」的填答列:三個勝負鈕是同一組選項,折行時不可以被拆開。
+     比分兩格 + 冒號也一樣。原因欄與儲存鈕各自占滿剩下的寬度。 */
+  .predict-row .pick-group { display: flex; gap: 6px; flex: 0 0 auto; }
+  .predict-row [data-note] { flex: 1 1 100%; min-width: 0; }
+  .predict-row [data-save] { flex: 0 0 auto; }
+
+  /* 對戰列改成兩行:上面「第幾回合 + 開球時間」,下面「主隊 比分 客隊」。
+     三個固定欄寬加起來 302px,在 375px 上剩不到 40px 給兩個隊名 ——
+     擠不下的話整列會撐到 475px,而**整頁跟著橫向捲動**。 */
+  /* 對戰列改成明確的兩列格線。用 flex-wrap 的話沒有辦法指定「在這裡換行」——
+     實測五個格子仍然擠在同一行,隊名被壓到 10px(等於只剩隊徽看得到),
+     而且被裁掉的文字仍然把 scrollWidth 撐到 433。
+     格線是:第一列「第幾回合 + 開球時間」,第二列「主隊 比分 客隊」。 */
+  .stat-line.tie-leg {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas: "when when ko" "home score away";
+    row-gap: 4px; column-gap: 8px; align-items: center;
+  }
+  /* 區塊標題本來是 `h2 + 說明` 併一行(nowrap)。手機上說明文字很長,
+     h2 被壓到 36px —— 中文會變成一個字一行的直排。改成標題自己一行。 */
+  .section { flex-wrap: wrap; }
+  .section > h2, .section > h3 { flex: 1 1 100%; }
+
+  .stat-line.tie-leg .leg-when { grid-area: when; min-width: 0; }
+  .stat-line.tie-leg .leg-ko { grid-area: ko; min-width: 0; text-align: right; }
+  .stat-line.tie-leg .leg-home { grid-area: home; text-align: left; }
+  .stat-line.tie-leg .leg-score { grid-area: score; min-width: 0; }
+  .stat-line.tie-leg .leg-away { grid-area: away; text-align: right; }
+  /* 觸控目標:原本 36px,低於一般建議的 44。單行之後高度省下來了,補回去 */
+  nav.tabs > a { min-height: 40px; display: flex; align-items: center; }
 }
 nav.tabs a {
   color: var(--ink-2); padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600;

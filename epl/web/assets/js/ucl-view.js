@@ -1,4 +1,4 @@
-import * as C from './core.js?v=fe58cbcb';
+import * as C from './core.js?v=e2cd8ffc';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -86,13 +86,18 @@ function tieCard(tie) {
     tie.decidedBy === 'penalties' ? `PK ${tie.pens ? tie.pens.join('-') : ''} 分勝負` : '',
     tie.aet && tie.decidedBy !== 'penalties' ? '延長賽分勝負' : '',
   ].filter(Boolean).join('・');
+  /* 這一列的欄寬本來寫在 inline style 裡(78 / 128 / 96 三個 min-width)。
+     那三個加起來 302px,在 375px 的手機上剩不到 40px 給兩個隊名 —— 而隊名有
+     自己的最小寬度,擠不下就把整列撐到 475px,**整頁跟著橫向捲動**
+     (2026-09-03 實測:盃賽頁 docW 567 vs 視窗 375,45 列都這樣)。
+     改用 class,寬度放進 CSS,手機上才有地方覆寫成「兩行」。 */
   const legs = tie.legs.map((m, i) => `
-    <div class="stat-line" style="gap:10px;align-items:center">
-      <span class="tiny dim" style="min-width:78px">${legLabel(m, i, tie.twoLegged)}</span>
-      <span style="flex:1;text-align:right">${uclTeamCell(m.home, { align: 'right' })}</span>
-      <span style="min-width:128px;text-align:center">${scoreCell(m)}</span>
-      <span style="flex:1">${uclTeamCell(m.away)}</span>
-      <span class="tiny dim" style="min-width:96px;text-align:right">${m.played ? KO(m) : ''}</span>
+    <div class="stat-line tie-leg">
+      <span class="tiny dim leg-when">${legLabel(m, i, tie.twoLegged)}</span>
+      <span class="leg-home">${uclTeamCell(m.home, { align: 'right' })}</span>
+      <span class="leg-score">${scoreCell(m)}</span>
+      <span class="leg-away">${uclTeamCell(m.away)}</span>
+      <span class="tiny dim leg-ko">${m.played ? KO(m) : ''}</span>
     </div>`).join('');
   return `<div class="card" style="margin-top:10px">
     <div class="spread" style="gap:10px;align-items:center">

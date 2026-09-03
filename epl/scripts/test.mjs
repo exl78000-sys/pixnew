@@ -2023,6 +2023,41 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 手機版面(2026-09-03 加)──────────────────────────────
+       測試看不到 DOM,所以這裡守的是**結構與規則**;實際版面是用 375px 的
+       瀏覽器量出來的(導覽列 245 → 132px、盃賽頁 docW 567 → 375)。 */
+    ...(() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
+      const ucl = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
+      const mobile = css.slice(css.indexOf('@media (max-width: 700px)'));
+      return [
+        /* 手機上兩組分頁本來各佔一行,加品牌那行是 245px **而且 sticky** ——
+           812px 的螢幕永遠有 30% 是導覽,捲到哪都跟著。 */
+        ['兩組分頁包在同一個 tabwrap 裡(手機併成一條捲動列)',
+          /<div class="tabwrap">/.test(core) && /\.tabwrap \{ display: contents; \}/.test(css)],
+        ['桌機上 tabwrap 等於不存在(display:contents),版面不受影響',
+          /\.tabwrap \{ display: contents; \}/.test(css)],
+        ['手機上 tabwrap 是可橫向捲動的單行',
+          /\.tabwrap \{[\s\S]*?overflow-x: auto/.test(mobile) && /nav\.tabs \{ flex-wrap: nowrap/.test(mobile)],
+        /* 併成一條之後作用中的分頁可能在可視範圍外 —— 看不到自己在哪一頁,
+           比要多捲一下糟得多。block:'nearest' 是必要的,不然整頁會跳。 */
+        ['作用中的分頁會捲進視野,而且不會連垂直方向一起捲',
+          /a\.on'\)\s*\?\.scrollIntoView\(\{ inline: 'center', block: 'nearest' \}\)/.test(core)],
+        /* 盃賽/歐冠的對戰列原本把欄寬寫在 inline style(78+128+96=302),
+           375px 上只剩不到 40px 給兩個隊名,整列撐到 475、整頁橫向捲動。 */
+        ['對戰列的欄寬用 class 不用 inline style(手機才覆寫得掉)',
+          /class="stat-line tie-leg"/.test(ucl) && !/min-width:78px/.test(ucl)
+          && /leg-when|leg-score|leg-ko/.test(ucl)],
+        /* `.stat-line` 也是單一 class,同權重時靠源順序決勝 —— 實測踩到:
+           手機規則寫了 display:grid,但計算出來仍然是 flex。 */
+        ['對戰列的手機規則權重高過 .stat-line(不能只靠源順序)',
+          /\.stat-line\.tie-leg \{\s*display: grid/.test(mobile)],
+        ['隊名截斷的規則下在文字節點上(inline-flex 的 ellipsis 對自己無效)',
+          /\.stat-line\.tie-leg \.leg-home a > span/.test(css)],
+      ];
+    })(),
+
     /* ── 已完賽場次的市場盤口(2026-09-02 加)────────────────────
        `fixtures.csv` 只涵蓋未來幾天,比賽踢完就從那個檔掉出去 —— 於是
        「模型 vs 市場」的對照會隨時間**憑空消失**。實測那天:三個聯賽 86 場
