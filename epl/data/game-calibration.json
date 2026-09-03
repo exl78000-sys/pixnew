@@ -1,0 +1,23 @@
+{
+  "ranAt": "2026-09-03T09:14:30.506Z",
+  "season": "2025-26",
+  "priorSeason": "2024-25",
+  "method": "前半季調(1–19 輪)、後半季驗(20–38 輪);Poisson 對數概似,格點 0.05",
+  "a": 0.75,
+  "se": 0.47,
+  "train": {
+    "n": 378,
+    "llGainVs0": 1.341,
+    "llGainVs1": 0.126
+  },
+  "valid": {
+    "n": 380,
+    "llGainVs0": 1.232,
+    "llGainVs1": 0.277,
+    "llAt1Vs0": 0.955
+  },
+  "coverage": 0.685,
+  "qSpread": 0.096,
+  "significant": false,
+  "note": "進攻側係數。防守側沒有前一季的逐人防守 per-90(2024-25 的 FPL 快照沒有 defensive_contribution),校不了,引擎借用同一個值並標為遊戲規則。"
+}

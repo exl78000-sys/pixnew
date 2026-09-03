@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "fetch": "node scripts/fetch.mjs",
-    "build": "node scripts/build.mjs && node scripts/stamp-assets.mjs",
+    "build": "node scripts/build.mjs && node scripts/game/build-game.mjs && node scripts/stamp-assets.mjs",
     "stamp": "node scripts/stamp-assets.mjs",
     "all": "node scripts/fetch.mjs --force && node scripts/build.mjs",
     "serve": "node scripts/serve.mjs",
@@ -82,7 +82,11 @@
     "news:todo": "node scripts/news-todo.mjs",
     "news:zh": "node scripts/merge-news-zh.mjs",
     "probe:laliga-postmatch": "node scripts/probe-laliga-postmatch.mjs",
-    "laliga:fotmob-postmatch": "node scripts/fetch-laliga-fotmob.mjs"
+    "laliga:fotmob-postmatch": "node scripts/fetch-laliga-fotmob.mjs",
+    "game:build": "node scripts/game/build-game.mjs",
+    "game:fetch": "node scripts/game/fetch-fotmob-epl.mjs",
+    "game:test": "node scripts/game/test-game.mjs",
+    "probe:possession": "node scripts/probe-possession.mjs"
   },
   "engines": {
     "node": ">=18"

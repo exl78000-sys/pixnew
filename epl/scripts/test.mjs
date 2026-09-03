@@ -1983,11 +1983,11 @@ async function checkDataGap() {
       ];
     })(),
 
-    ['對戰模擬:只在 PAGES/分析組、誠實界線寫在畫面上、種子可重播', (() => {
+    ['模擬遊玩(取代對戰模擬):只掛探索頁、誠實界線寫在畫面上、種子可重播、只開英超', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
-      /* 2026-09-03 併進「探索」單頁(足球知識 / 對戰模擬 / 球員搜尋 三個頁內分頁)。
-         內容搬到 duel-view.js,page-duel.js 只剩轉址;導覽列上是 explore 那一格。 */
-      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-view.js'), 'utf8');
+      /* 2026-09-03 對戰模擬重製成「模擬遊玩」(獨立管線,見 scripts/game/ 與 game-*.js)。
+         內容在 game-view.js;view 鍵留 duel,舊書籤不斷。 */
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8');
       const pc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-core.js'), 'utf8');
       const explore = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8');
       const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS'));
@@ -1995,39 +1995,33 @@ async function checkDataGap() {
       return sitePagesBlock.includes("['explore', '探索']")
         && sitePagesBlock.indexOf("'cups'") < sitePagesBlock.indexOf("'explore'")   // 盃賽旁邊
         && !sitePagesBlock.includes("['duel'")                        // 舊的三格都拿掉了
-        && /renderDuel/.test(explore) && /clearPageTimers/.test(explore)  // 換分頁要收計時器
+        && /renderGame/.test(explore) && /clearPageTimers/.test(explore)  // 換分頁要收計時器
         && !pagesBlock.includes("'duel'")
-        && /跨聯賽/.test(pg) && /crestBy/.test(pg)                  // 頁內選聯賽、隊徽分聯賽表
+        && !existsSync(join(ROOT, 'web', 'assets', 'js', 'duel-view.js'))   // 舊 view 已移除,不留兩份
+        /* 只開英超:明確清單,不是「不是某聯賽就開」的二元式 */
+        && /GAME_LEAGUES = \['pl'\]/.test(pg) && /GAME_LEAGUES\.includes\(lg\)/.test(pg)
         /* 生圖素材(2026-08-30):各壓在 300KB 內、img 全掛 onerror 隱藏 ——
-           單檔版沒有圖檔,要優雅降級不是破圖。
-           **hero 那張 2026-09-03 拿掉了**(使用者要求):它是純裝飾、佔滿一個
-           螢幕寬,而下面就是真正要看的球場動畫。留下的四張是**狀態指示**
-           (進球、中場、完場、骰子),跟著比賽在動,不是背景。 */
+           單檔版沒有圖檔,要優雅降級不是破圖。hero 那張 2026-09-03 拿掉了。 */
         && !existsSync(join(ROOT, 'web', 'assets', 'img', 'duel-hero.webp'))
-        && !/duel-hero/.test(pg)
         && ['pitch', 'goal', 'halftime', 'fulltime', 'dice'].every(n => {
           const f = join(ROOT, 'web', 'assets', 'img', `duel-${n}.webp`);
           return existsSync(f) && statSync(f).size < 300 * 1024;
         })
-        && (pg.match(/assets\/img\/duel-/g) ?? []).length >= 4
-        /* onerror 可以是字面、也可以是 \${HIDE} 樣板變數(骨架版用後者) */
         && !/img src="assets\/img\/duel-[^"]*"(?![^>]*(?:onerror|\$\{HIDE\}))/.test(pg)
-        /* 2D 跑位動畫(2026-08-30):FM 式演出。界線要打在畫面上,
-           陣型走官方逐場資料、名單走 players-core、動畫用種子衍生的 rng(可重播) */
+        /* 2D 跑位動畫:FM 式演出。界線要打在畫面上;動畫用種子衍生的 rng(可重播) */
         && (() => {
           const an = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8');
           const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
-          return /mountDuelAnim/.test(pg) && /跑位動畫是程序化演出/.test(pg)
-            && /formationOf/.test(pg) && /pickXI/.test(pg)
+          return /mountDuelAnim/.test(pg) && /程序化演出/.test(pg)
             && /程序化演出/.test(an) && /parseFormation/.test(an)
-            && /'duel-anim'/.test(bundle)                       // 單檔版 SHARED 清單
-            /* 精緻化(2026-08-30):下半場換邊、失球方中圈開球、canvas 記分板、防守收縮 */
+            && /'duel-anim'/.test(bundle) && /'game-engine'/.test(bundle) && /'game-view'/.test(bundle)
             && /dirOf/.test(an) && /pendingKickoff/.test(an)
             && /記分板/.test(an) && /squeeze/.test(an)
-            && /seededRng\(state\.seed \^/.test(pg);            // 動畫自己的種子流,同種子同劇本
+            && /seededRng\(state\.seed \^/.test(pg);
         })()
-        && /不是預測的斷言/.test(pg) && /做了就是編數字/.test(pg)
-        && /跨聯賽對戰也不提供/.test(pg) && /分鐘分布未建模/.test(pg)
+        /* 誠實界線:遊戲不是預測、沒有 Dixon-Coles、哪些是真的那張圖例 */
+        && /不是本站預測/.test(pg) && /沒有 Dixon-Coles 修正/.test(pg) && /這張圖哪些是真的/.test(pg)
+        && /createMatch/.test(pg) && /inPlaySim/.test(pg)
         && /seededRng/.test(pc) && /mulberry32/.test(pc)            // 種子亂數,同種子重播同一場
         /* 播放模式:in-play 引擎共用、計時器走 pageInterval(裸 setInterval 是老坑) */
         && /inPlaySim/.test(pg) && /跳到結果/.test(pg)
@@ -2097,8 +2091,9 @@ async function checkDataGap() {
         ['三個舊網址都保留轉址(書籤與外連不斷)',
           olds.every(k => /location\.replace/.test(
             readFileSync(join(ROOT, 'web', 'assets', 'js', `page-${k}.js`), 'utf8')))],
+        /* 對戰模擬 2026-09-03 重製成模擬遊玩,view 模組叫 game-view */
         ['三個 view 模組都進了單檔版的共用清單(忘了改的話會從單檔版靜靜消失)',
-          olds.every(k => bundle.includes(`'${k}-view'`)) && bundle.includes("'explore'")],
+          ['knowledge-view', 'game-view', 'allplayers-view'].every(k => bundle.includes(`'${k}'`)) && bundle.includes("'explore'")],
         /* 那三個模組原本是整頁的主人(app.innerHTML = ...),直接讓它們寫進
            這一頁的 #app 會把分頁列一起蓋掉,所以要給內層容器。 */
         ['每個 view 拿到的是內層容器,不是整頁的 #app',
