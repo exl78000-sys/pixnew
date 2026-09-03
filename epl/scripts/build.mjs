@@ -49,7 +49,7 @@ import { buildGoals } from './lib/goals.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { numberProfile, traditionVsData, formationFromLineups } from './lib/knowledge.mjs';
 import { round } from './lib/util.mjs';
-import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking } from './lib/matchstats.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
@@ -1065,6 +1065,12 @@ async function main() {
         + loanHit.unmatched.slice(0, 5).map(r => r.player).join('、')
         + (loanHit.unmatched.length > 5 ? ' …' : ''));
     }
+  }
+  /* 逐人跑動、最高速度、觸球熱區(FotMob 追蹤資料)掛到球員主檔。配對走 lib/matchstats.mjs 的
+     attachPlayerTracking(matchOne + 簡稱退路);配不到的印出來,靜靜吞掉的話畫面上永遠看不到。 */
+  {
+    const hit = attachPlayerTracking(players, fotmobStats);
+    if (hit.total) console.log(`  逐人跑動與熱區:${hit.matched}/${hit.total} 位配到球員主檔`);
   }
   await write('players.json', players.map(p => ({
     // 照片採「補齊」策略：既有官方／手動快取保持不動，缺圖才使用 SportMonks。

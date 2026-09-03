@@ -1107,7 +1107,8 @@ try {
           進攻 <span class="mono" style="color:var(--accent)">${sh.attacking.label}</span>・
           防守 <span class="mono" style="color:var(--accent-3)">${sh.defending.label}</span>` : ''}
           </div>` : '<div class="tiny dim" style="margin-bottom:8px">升班馬,英超樣本不足以推導標準陣型</div>'}
-        ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85', officialRows, reverseRows })}
+        ${/* playerLinks:名字變成按鈕,點了開球員資料 —— 賽後那張球場圖本來就有,賽前這張漏了(使用者 2026-09-03 反映) */''}
+        ${C.pitch(list, { photos: true, color: C.team(code).colors?.[0] ?? '#00ff85', officialRows, reverseRows, playerLinks: true })}
       </div>`;
     };
 

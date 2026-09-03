@@ -128,6 +128,7 @@ function collectPlayers(lg, meta) {
       age: p.age, dob: p.dateOfBirth, height: p.height, weight: p.weight,
       captain: p.captain || null, statusZh: p.statusZh, news: p.news || null,
       price: p.price, transferred: p.transferred || null, lastTeam: p.lastTeam,
+      tracking: p.tracking ?? null,   // 逐人跑動與熱區(FotMob),沒有就 null,renderPlayer 整節不寫
       photo: p.photo ?? null,
       loans: p.loans ?? [],
       seasons: [
@@ -203,6 +204,18 @@ function renderPlayer(p, ctx) {
   body.push(`\n# ${p.base}\n`);
   if (p.photoEmbed) body.push(`\n${p.photoEmbed}\n`);
   if (p.display && p.display !== p.base) body.push(`> 常用稱呼:${p.display}\n`);
+  if (p.tracking && (p.tracking.distancePerGame != null || p.tracking.heat)) {
+    const tr = p.tracking;
+    body.push(`\n## 跑動與熱區(FotMob 追蹤資料)\n\n`);
+    if (tr.distancePerGame != null) body.push(`- 場均跑動 ${(tr.distancePerGame / 1000).toFixed(1)} km(${tr.games} 場)\n`);
+    if (tr.topSpeed != null) body.push(`- 最高速度 ${tr.topSpeed.toFixed(1)} km/h\n`);
+    if (tr.heat) body.push(`- 觸球質心 (${tr.heat.cx}, ${tr.heat.cy}),離散度 ${tr.heat.spread},${tr.heat.touches} 次觸球 / ${tr.heat.games} 場(座標 105×68,自家球門在左)\n`);
+    if (tr.heat?.grid?.length === 24) {
+      body.push(`\n6×4 觸球格(左=自家半場):\n\n`);
+      for (let r = 0; r < 4; r++) body.push(`| ${tr.heat.grid.slice(r * 6, r * 6 + 6).join(' | ')} |\n${r === 0 ? '|---|---|---|---|---|---|\n' : ''}`);
+    }
+    body.push(`\n> 不是每場都有追蹤資料,場數另記;本站只搬運不推估。\n`);
+  }
 
   const links = [];
   if (teamName) { links.push(teamName); }
