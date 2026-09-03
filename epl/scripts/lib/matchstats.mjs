@@ -206,3 +206,59 @@ export function attachPlayerTracking(players, stats, { teamOf = p => p.team } = 
   }
   return { matched, total };
 }
+
+
+/* 球員逐場紀錄(2026-09-04):每人每場一列 —— 分鐘、評分、進球、助攻、射門、射正、關鍵傳球、逐射門 xG 合計、
+   跑動距離、最高速度、對手、主客、比分。全部來自 FotMob 逐場快取(逐人統計、shotmap、追蹤資料),
+   配對用跟 attachPlayerTracking 同一套(matchOne + 簡稱退路)。回 { code → [rows] },另存產物,
+   球員完整頁進去才載(668 人 × 幾十場,不該塞進 players.json)。 */
+export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
+  const byTeam = new Map();
+  for (const p of players) { const t = teamOf(p); if (!t) continue; if (!byTeam.has(t)) byTeam.set(t, []); byTeam.get(t).push(p); }
+  const finderFor = code => {
+    const squad = byTeam.get(code) ?? [];
+    const cands = squad.filter(p => p.fullName);
+    const cache = new Map();
+    const byWeb = name => {
+      const last = String(name).trim().split(/\s+/).at(-1)?.toLowerCase();
+      const hits = squad.filter(p => String(p.name ?? '').toLowerCase() === last);
+      return hits.length === 1 ? hits[0] : null;
+    };
+    return name => {
+      if (!cache.has(name)) cache.set(name, matchOne(cands, name, { nameOf: c => c.fullName }) ?? byWeb(name));
+      return cache.get(name);
+    };
+  };
+  const finders = new Map();
+  const find = (code, name) => { if (!finders.has(code)) finders.set(code, finderFor(code)); return finders.get(code)(name); };
+  const logs = {};
+  let rows = 0, unmatched = 0;
+  for (const m of Object.values(stats?.matches ?? {}).sort((a, b) => a.date.localeCompare(b.date))) {
+    if (!m.players) continue;
+    const xgBy = new Map();
+    for (const s of m.shots ?? []) { if (!s.player) continue; const k = `${s.team}|${s.player}`; xgBy.set(k, (xgBy.get(k) ?? 0) + (s.xg ?? 0)); }
+    const physBy = new Map((m.physical?.players ?? []).map(p => [`${p.team}|${p.name}`, p]));
+    for (const [code, list] of Object.entries(m.players)) {
+      const opp = code === m.home ? m.away : m.home;
+      const isHome = code === m.home;
+      for (const p of list) {
+        if (!(p.minutes > 0)) continue;
+        const who = find(code, p.name);
+        if (!who) { unmatched++; continue; }
+        const ph = physBy.get(`${code}|${p.name}`);
+        const xg = xgBy.get(`${code}|${p.name}`);
+        (logs[who.code] ??= []).push({
+          season: m.season, date: m.date, key: m.key, team: code, opp, home: isHome,
+          score: isHome ? `${m.score[0]}-${m.score[1]}` : `${m.score[1]}-${m.score[0]}`,
+          result: m.score[0] === m.score[1] ? 'D' : (isHome === (m.score[0] > m.score[1]) ? 'W' : 'L'),
+          min: p.minutes, rating: p.rating ?? null, goals: p.goals?.total ?? null, assists: p.goals?.assists ?? null,
+          shots: p.shots?.total ?? null, shotsOn: p.shots?.on ?? null, keyPasses: p.passes?.key ?? null,
+          xg: xg == null ? null : r2(xg), distance: ph?.distance ?? null, topSpeed: ph?.topSpeed == null ? null : r2(ph.topSpeed),
+          sub: p.substitute === true,
+        });
+        rows++;
+      }
+    }
+  }
+  return { logs, rows, unmatched, players: Object.keys(logs).length };
+}

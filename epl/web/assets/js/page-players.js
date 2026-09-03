@@ -347,13 +347,13 @@ try {
         ${p.setPieces.fk ? line('直接自由球', `第 ${p.setPieces.fk} 順位`) : ''}
         ${p.setPieces.corner ? line('角球 / 間接球', `第 ${p.setPieces.corner} 順位`) : ''}
       </div>` : ''}
-      <div><a href="${C.link('teams', { code: p.team })}">看 ${t.en} 的完整剖析 →</a></div>`);
+      <div><a href="${C.link('teams', { code: p.team })}">看 ${t.en} 的完整剖析 →</a></div>`, { code: p.code, league: 'pl' });
   }
 
 } catch (err) { if (err.message !== 'skip') C.fail(err); }
 
 /* 球員的完整頁:把 #app 換成這個球員。抽屜版 2026-09-04 移除 —— 簡版跟完整版差不多,留兩份就會分岔。 */
-function playerPage(title, sub, body) {
+function playerPage(title, sub, body, { code = null, league = 'pl' } = {}) {
   const app = document.getElementById('app');
   app.innerHTML = `
     <div class="page-head">
@@ -361,8 +361,40 @@ function playerPage(title, sub, body) {
       <h1 class="row" style="gap:10px;align-items:center">${title}</h1>
       <p>${sub}</p>
     </div>
-    <div class="player-page">${body}</div>`;
+    <div class="player-page">${body}<div id="playerLog"></div></div>`;
   window.scrollTo(0, 0);
+  if (code) matchLogCard(code, league);
+}
+
+/* 逐場紀錄(2026-09-04):進完整頁才載 player-logs.json(668 人 × 幾十場,不塞進 players.json)。
+   每列全部來自 FotMob 逐場快取:分鐘、評分、進球、助攻、射門、關鍵傳球、逐射門 xG 合計、跑動;
+   沒有那一場資料的欄位印「—」,不推估。沒有這個人的紀錄整張不畫。 */
+async function matchLogCard(code, league) {
+  const host = document.getElementById('playerLog');
+  if (!host) return;
+  let rows = null;
+  try { const { data } = await C.loadFrom(league, ['player-logs']); rows = data['player-logs']?.logs?.[String(code)] ?? null; } catch { rows = null; }
+  if (!rows?.length) return;
+  const v = (x, d = 0) => (x == null ? '—' : d ? C.fx(x, d) : x);
+  const list = [...rows].sort((a, b) => b.date.localeCompare(a.date));
+  const sum = k => list.reduce((a, r) => a + (r[k] ?? 0), 0);
+  host.innerHTML = `<div class="card"><h3>逐場紀錄 <span class="dim tiny">FotMob・${list.length} 場</span></h3>
+    <div class="row small dim" style="gap:12px;margin-bottom:6px"><span>進球 ${sum('goals')}</span><span>助攻 ${sum('assists')}</span><span>射門 ${sum('shots')}</span><span>xG ${C.fx(sum('xg'), 2)}</span></div>
+    <div style="overflow-x:auto">${C.table(list, [
+      { key: 'date', label: '日期', value: r => r.date, left: true },
+      { key: 'opp', label: '對手', value: r => `${r.home ? '主' : '客'} ${C.name(r.opp)}`, sortValue: r => r.opp, left: true },
+      { key: 'score', label: '比分', value: r => `<span class="pill tiny ${r.result === 'W' ? 'accent' : r.result === 'L' ? 'bad' : ''}">${r.score}</span>`, sortValue: r => r.result },
+      { key: 'min', label: "分'", value: r => `${r.min}${r.sub ? '<span class="dim">↑</span>' : ''}`, sortValue: r => r.min, num: true },
+      { key: 'rating', label: '評分', value: r => v(r.rating, 1), sortValue: r => r.rating ?? -1, num: true },
+      { key: 'goals', label: '球', value: r => v(r.goals), sortValue: r => r.goals ?? -1, num: true },
+      { key: 'assists', label: '助', value: r => v(r.assists), sortValue: r => r.assists ?? -1, num: true },
+      { key: 'shots', label: '射門/正', value: r => `${v(r.shots)}/${v(r.shotsOn)}`, sortValue: r => r.shots ?? -1, num: true },
+      { key: 'keyPasses', label: '關鍵傳球', value: r => v(r.keyPasses), sortValue: r => r.keyPasses ?? -1, num: true },
+      { key: 'xg', label: 'xG', value: r => v(r.xg, 2), sortValue: r => r.xg ?? -1, num: true },
+      { key: 'distance', label: '跑動 km', value: r => (r.distance == null ? '—' : (r.distance / 1000).toFixed(1)), sortValue: r => r.distance ?? -1, num: true },
+    ], { sortKey: 'date', desc: true })}</div>
+    <div class="tiny dim" style="margin-top:8px">↑ = 替補上場。xG 是該場逐射門 xG 合計(供應商標記);跑動是追蹤資料,不是每場都有。點欄位標題可換排序。</div>
+  </div>`;
 }
 
 /* ── 西甲球員頁(Understat + SportMonks)────────

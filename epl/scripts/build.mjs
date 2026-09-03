@@ -49,7 +49,7 @@ import { buildGoals } from './lib/goals.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { numberProfile, traditionVsData, formationFromLineups } from './lib/knowledge.mjs';
 import { round } from './lib/util.mjs';
-import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking } from './lib/matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
@@ -1071,6 +1071,12 @@ async function main() {
   {
     const hit = attachPlayerTracking(players, fotmobStats);
     if (hit.total) console.log(`  逐人跑動與熱區:${hit.matched}/${hit.total} 位配到球員主檔`);
+    /* 球員逐場紀錄:獨立產物,球員完整頁進去才載。配不到的人次印出來(靜靜吞掉畫面上永遠看不到)。 */
+    const logs = buildPlayerLogs(players, fotmobStats);
+    await write('player-logs.json', { source: 'FotMob 逐人統計 + shotmap + 追蹤資料', seasons: fotmobStats.seasons,
+      note: '每人每場一列;xg 是該場逐射門 xG 合計、distance 是追蹤資料(不是每場都有);只收有配到本站球員代碼的人。',
+      players: logs.players, rows: logs.rows, logs: logs.logs });
+    console.log(`  球員逐場紀錄:${logs.players} 人・${logs.rows} 人-場・配不到 ${logs.unmatched} 人-場`);
   }
   await write('players.json', players.map(p => ({
     // 照片採「補齊」策略：既有官方／手動快取保持不動，缺圖才使用 SportMonks。

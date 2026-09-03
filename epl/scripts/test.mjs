@@ -2428,6 +2428,19 @@ async function checkDataGap() {
             ['熱區格是 6×4、質心在球場內', pl.every(p => !p.tracking?.heat || (p.tracking.heat.grid.length === 24 && p.tracking.heat.cx >= 0 && p.tracking.heat.cx <= 105 && p.tracking.heat.cy >= 0 && p.tracking.heat.cy <= 68))],
             ['沒有追蹤資料的球員沒有 tracking 鍵(不留空欄位)', pl.every(p => p.tracking === undefined || p.tracking.distancePerGame != null || p.tracking.heat || p.tracking.rating)],
             ['上場 900 分鐘以上的球員多數有 FotMob 平均評分(≥ 75%)', regular.filter(p => p.tracking?.rating).length >= regular.length * 0.75, `${regular.filter(p => p.tracking?.rating).length}/${regular.length}`],
+            /* 逐場紀錄(2026-09-04):每列對得回 matchstats 的那一場;每人每場最多一列;上場多的人多數有紀錄 */
+            ...(() => {
+              const lg = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'player-logs.json'), 'utf8'));
+              const all = Object.entries(lg.logs).flatMap(([code, rows]) => rows.map(r => ({ ...r, code })));
+              const dup = new Set(); let dupCount = 0;
+              for (const r of all) { const k = `${r.code}|${r.key}`; if (dup.has(k)) dupCount++; dup.add(k); }
+              return [
+                ['逐場紀錄每列都對得回逐場統計的那一場(key 已含賽季)', all.every(r => ms.matches[r.key])],
+                ['每人每場最多一列', dupCount === 0, String(dupCount)],
+                ['上場 900 分鐘以上的球員多數有逐場紀錄(≥ 75%)', regular.filter(p => lg.logs[String(p.code)]?.length).length >= regular.length * 0.75, `${regular.filter(p => lg.logs[String(p.code)]?.length).length}/${regular.length}`],
+                ['逐場紀錄的分鐘與評分合理(0 < 分鐘 ≤ 120,評分 3–10 或 null)', all.every(r => r.min > 0 && r.min <= 120 && (r.rating == null || (r.rating >= 3 && r.rating <= 10)))],
+              ];
+            })(),
           ];
         })(),
       ];
