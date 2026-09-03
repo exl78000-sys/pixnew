@@ -44,57 +44,96 @@ async function get(url) {
   return j;
 }
 
-// 本站賽後報告實際用到的東西 —— 探測要回答的就是「這幾樣有沒有」
-const NEEDED = {
-  '球隊統計(控球/射門/角球…)': j => j?.content?.stats ?? j?.content?.matchFacts?.stats ?? null,
-  '球員評分': j => j?.content?.lineup?.homeTeam?.starters?.[0]?.performance ?? null,
-  '先發與陣型': j => j?.content?.lineup?.homeTeam?.formation ?? null,
-  '事件時間軸': j => j?.content?.matchFacts?.events ?? null,
-  '最終比分': j => j?.header?.status?.scoreStr ?? null,
-};
+/* 本站賽後報告吃的是一個 **canonical detail**(SportMonks 與 API-Football 各有一個
+   adapter 轉成它),欄位是:
+     home / away / score / kickoff / teamStats / players / events / lineups / coverage
+   所以這支要挖的不是「有沒有」,是「**在哪個鍵、長什麼形狀**」——
+   照名字猜欄位是這個專案踩過最多次的坑。
+   輸出刻意只印鍵與一兩筆樣本,不倒整包(log 會被擠掉)。 */
 
-const keysOf = v => (v == null ? null
-  : Array.isArray(v) ? `[${v.length}] ${v.length ? Object.keys(v[0] ?? {}).slice(0, 10).join(',') : ''}`
-    : typeof v === 'object' ? Object.keys(v).slice(0, 14).join(',') : String(v).slice(0, 60));
+const cut = (v, n = 3) => {
+  if (v == null) return 'null';
+  if (Array.isArray(v)) return `[${v.length}]`;
+  if (typeof v === 'object') return `{${Object.keys(v).slice(0, n * 5).join(',')}}`;
+  return JSON.stringify(v).slice(0, 70);
+};
+const sample = (label, v, depth = 1) => {
+  console.log(`\n── ${label} ── ${Array.isArray(v) ? v.length + ' 筆' : typeof v}`);
+  if (v == null) { console.log('   (null)'); return; }
+  if (Array.isArray(v)) {
+    v.slice(0, 2).forEach((x, i) => console.log(`   [${i}] ${cut(x)}`));
+    if (v[0] && typeof v[0] === 'object') {
+      for (const [k, val] of Object.entries(v[0]).slice(0, 14)) console.log(`        ${k.padEnd(20)} ${cut(val)}`);
+    }
+    return;
+  }
+  for (const [k, val] of Object.entries(v).slice(0, 16)) {
+    console.log(`   ${k.padEnd(22)} ${cut(val)}`);
+    if (depth > 0 && val && typeof val === 'object' && !Array.isArray(val)) {
+      for (const [k2, v2] of Object.entries(val).slice(0, 8)) console.log(`        ${k2.padEnd(18)} ${cut(v2)}`);
+    }
+  }
+};
 
 async function main() {
   console.log('\n▶ 西甲賽後資料的替代來源探測(FotMob,最多 3 個請求)\n');
 
-  /* 挑一場已完賽的西甲比賽:直接用本站已經快取的 FotMob 場次 ID,
-     不再多打一次聯賽賽程(省一個請求,而且那份本來就是核對過的)。 */
   const cachePath = join(ROOT, 'data', 'raw', 'fotmob-la-liga', '2026-27-lineups.json');
-  if (!existsSync(cachePath)) {
-    console.log('✗ 找不到 FotMob 西甲快取,無法挑場次。先跑 npm run laliga:lineups。');
-    return;
-  }
+  if (!existsSync(cachePath)) { console.log('✗ 找不到 FotMob 西甲快取。先跑 npm run laliga:lineups。'); return; }
   const cache = JSON.parse(readFileSync(cachePath, 'utf8'));
-  const entries = Object.entries(cache.matches ?? cache ?? {});
-  const withId = entries.filter(([, m]) => m?.matchId);
-  if (!withId.length) { console.log('✗ 快取裡沒有 matchId,不知道要探哪一場。'); return; }
-  const [key, sample] = withId[0];
-  console.log(`樣本場次:${key}(matchId ${sample.matchId})\n`);
+  const withId = Object.entries(cache.matches ?? cache ?? {}).filter(([, m]) => m?.matchId);
+  if (!withId.length) { console.log('✗ 快取裡沒有 matchId。'); return; }
+  const [key, s0] = withId[0];
+  console.log(`樣本場次:${key}(matchId ${s0.matchId})`);
 
-  let detail;
-  try {
-    detail = await get(`https://www.fotmob.com/api/data/matchDetails?matchId=${sample.matchId}`);
-  } catch (e) {
-    console.log(`✗ matchDetails 抓不到:${e.message}`);
-    console.log('  → 端點可能改了。改端點之前不要斷言「FotMob 拿不到」,先確認網址。');
-    return;
+  let d;
+  try { d = await get(`https://www.fotmob.com/api/data/matchDetails?matchId=${s0.matchId}`); }
+  catch (e) { console.log(`✗ matchDetails 抓不到:${e.message}\n  → 端點可能改了,先確認網址再下結論。`); return; }
+
+  const c = d.content ?? {};
+  console.log('\ncontent 的鍵:', Object.keys(c).join(', '));
+
+  sample('general(隊伍與 ID)', {
+    matchId: d.general?.matchId, leagueId: d.general?.leagueId, matchTimeUTC: d.general?.matchTimeUTC,
+    matchTimeUTCDate: d.general?.matchTimeUTCDate,
+    homeTeam: d.general?.homeTeam, awayTeam: d.general?.awayTeam,
+  });
+  sample('header.status(比分與狀態)', d.header?.status);
+  sample('content.stats(球隊統計)', c.stats);
+  const periods = c.stats?.Periods ?? c.stats?.periods;
+  if (periods) {
+    sample('stats.Periods 的鍵', periods, 0);
+    const all = periods.All ?? periods.all ?? Object.values(periods)[0];
+    sample('stats.Periods.All', all, 0);
+    const groups = all?.stats ?? all;
+    if (Array.isArray(groups)) {
+      console.log(`\n   統計分組 ${groups.length} 組:`);
+      groups.slice(0, 3).forEach(g => {
+        console.log(`     ・${g.title ?? g.key ?? '?'} → ${cut(g.stats)}`);
+        (g.stats ?? []).slice(0, 4).forEach(st => console.log(`         ${JSON.stringify(st).slice(0, 130)}`));
+      });
+    }
+  }
+  const lu = c.lineup ?? {};
+  sample('content.lineup 的鍵', lu, 0);
+  const ht = lu.homeTeam ?? lu.lineup?.[0];
+  sample('lineup.homeTeam', ht, 0);
+  const starters = ht?.starters ?? ht?.players?.flat?.();
+  if (starters?.length) {
+    console.log('\n   先發第一人的完整鍵:');
+    for (const [k, v] of Object.entries(starters[0]).slice(0, 22)) console.log(`     ${k.padEnd(22)} ${cut(v)}`);
+    console.log('   performance:', JSON.stringify(starters[0].performance ?? null).slice(0, 200));
+  }
+  sample('content.playerStats', c.playerStats, 0);
+  const ev = c.matchFacts?.events;
+  sample('matchFacts.events', ev, 0);
+  if (Array.isArray(ev?.events)) {
+    console.log('\n   事件前 4 筆:');
+    ev.events.slice(0, 4).forEach(e => console.log(`     ${JSON.stringify(e).slice(0, 170)}`));
   }
 
-  console.log('回傳的頂層鍵:', Object.keys(detail).join(', '));
-  console.log('content 的鍵 :', Object.keys(detail.content ?? {}).join(', '), '\n');
-  let ok = 0;
-  for (const [label, pick] of Object.entries(NEEDED)) {
-    let v = null;
-    try { v = pick(detail); } catch { v = null; }
-    if (v != null) ok++;
-    console.log(`  ${v != null ? '✔' : '✘'} ${label.padEnd(22)} ${v != null ? keysOf(v) : '(這條路徑取不到 —— 可能是欄位名不同,不代表沒有)'}`);
-  }
-  console.log(`\n${ok}/${Object.keys(NEEDED).length} 項在預期的路徑上取得到。`);
-  console.log('取不到的那幾項,把上面「content 的鍵」拿去對 —— 欄位名不同跟資料不存在是兩件事。');
   console.log(`\n本次共 ${requests} 個請求。這支不寫任何檔案。`);
+  console.log('對照本站 canonical detail 需要的:home/away/score/kickoff/teamStats/players/events/lineups');
 }
 
 main().catch(e => { console.error(`✗ ${e.message}`); process.exit(1); });
