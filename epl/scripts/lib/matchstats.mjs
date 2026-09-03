@@ -30,6 +30,9 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
   for (const f of readdirSync(dir).filter(x => /-game-details\.json$/.test(x)).sort()) {
     const store = JSON.parse(readFileSync(join(dir, f), 'utf8'));
     const season = store.season;
+    /* 逐人統計另存一檔(2026-09-04):評分、射門、傳球、對抗、防守。沒有那個檔就沒有逐人,coverage 照實標。 */
+    const pf = join(dir, f.replace(/-game-details\.json$/, '-player-stats.json'));
+    const pstore = existsSync(pf) ? JSON.parse(readFileSync(pf, 'utf8')) : { matches: {} };
     out.seasons.push(season);
     out.verification[season] = store.verification
       ? { checked: store.verification.checked, agree: store.verification.agree, tolerance: store.verification.tolerance, source: store.verification.source }
@@ -50,6 +53,7 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
         /* 跑動 / 衝刺(2026-09-03 重探後加):供應商的追蹤資料,不是每場都有(2025-26 有 282/380,缺的集中在 11 座主場);沒有就是 null,不是 0 */
         physical: m.physical ?? null,
         heat: m.heat ?? null, zones: m.zones ?? null,
+        players: pstore.matches?.[`${m.home}|${m.away}`]?.players ?? null,
         shotmapComplete: shotGoals === truth[0] + truth[1],
       };
     }
@@ -98,6 +102,15 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
       if (g.length && g.every(Number.isFinite)) h.grid = h.grid ? h.grid.map((v, i) => v + (g[i] ?? 0)) : g;
       heatBy.set(p.name, h);
     }
+    /* 逐人評分彙總(FotMob 評分,只算有評分的場次;替補沒上場的沒有評分) */
+    const rateBy = new Map();
+    for (const m of mine) for (const p of m.players?.[code] ?? []) {
+      if (p.rating == null) continue;
+      const r = rateBy.get(p.name) ?? { name: p.name, shirt: p.shirt ?? null, games: 0, sum: 0, minutes: 0 };
+      r.games++; r.sum += p.rating; r.minutes += p.minutes ?? 0;
+      rateBy.set(p.name, r);
+    }
+    const ratings = [...rateBy.values()].map(r => ({ name: r.name, shirt: r.shirt, games: r.games, avg: r2(r.sum / r.games), minutes: r.minutes }));
     const heat = [...heatBy.values()].filter(h => h.touches > 0).map(h => ({
       name: h.name, shirt: h.shirt, games: h.games, touches: h.touches,
       cx: r2(h.sx / h.touches), cy: r2(h.sy / h.touches), spread: r2(h.ss / h.touches), grid: h.grid ?? null,
@@ -117,6 +130,7 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
       home: venue(true), away: venue(false),
       ...(physical ? { physical } : {}),
       ...(heat.length ? { heat, heatGrid: { x: 6, y: 4 } } : {}),
+      ...(ratings.length ? { ratings } : {}),
       situations: Object.fromEntries(Object.entries(bySit).map(([k, v]) => [k, { shots: v.shots, goals: v.goals, share: r3(v.shots / Math.max(1, shots.length)), xgPerShot: r3(v.xg / Math.max(1, v.shots)) }])),
       shotSample: shots.length,
     };
@@ -137,12 +151,15 @@ export function toCanonicalDetail(m) {
   return {
     key: `${m.home}|${m.away}`, season: m.season, source: 'fotmob', fixtureId: m.matchId ?? null, kickoff: null,
     home: m.home, away: m.away, score: { home: m.score[0], away: m.score[1] },
-    teamStats: m.teamStats, players: {}, events: m.events.map(e => ({
+    teamStats: m.teamStats, players: m.players ?? {}, events: m.events.map(e => ({
       minute: e.minute, extra: e.extra, label: `${e.minute}'${e.extra ? `+${e.extra}` : ''}`, team: e.team, type: e.type,
       detail: e.detail, comments: null, player: e.player ?? null, playerId: null, assist: null, assistId: null })),
     lineups, possession: m.possession, momentum: m.momentum, shots: m.shots, shotmapComplete: m.shotmapComplete,
     physical: m.physical ?? null,
-    coverage: { teamStatistics: true, playerStatistics: false, ratings: false, events: true, lineups: Object.keys(lineups).length === 2,
+    coverage: { teamStatistics: true,
+      playerStatistics: !!m.players && Object.values(m.players).some(l => l?.length),
+      ratings: !!m.players && Object.values(m.players).some(l => l?.some(p => p.rating != null)),
+      events: true, lineups: Object.keys(lineups).length === 2,
       tracking: false,
       /* 跑動距離 / 衝刺 / 最高速度:這場有值才 true。供應商沒給的場次整組 null,那幾場照實 false。 */
       distance: !!m.physical?.team?.distance?.some(v => v != null),
@@ -180,6 +197,11 @@ export function attachPlayerTracking(players, stats, { teamOf = p => p.team } = 
       const p = find(h.name);
       if (!p) continue;
       p.tracking = { ...(p.tracking ?? {}), heat: { cx: h.cx, cy: h.cy, spread: h.spread, games: h.games, touches: h.touches, grid: h.grid, gridX: 6, gridY: 4 } };
+    }
+    for (const r of t.ratings ?? []) {
+      const p = find(r.name);
+      if (!p) continue;
+      p.tracking = { ...(p.tracking ?? {}), rating: { avg: r.avg, games: r.games } };
     }
   }
   return { matched, total };

@@ -204,11 +204,12 @@ function renderPlayer(p, ctx) {
   body.push(`\n# ${p.base}\n`);
   if (p.photoEmbed) body.push(`\n${p.photoEmbed}\n`);
   if (p.display && p.display !== p.base) body.push(`> 常用稱呼:${p.display}\n`);
-  if (p.tracking && (p.tracking.distancePerGame != null || p.tracking.heat)) {
+  if (p.tracking && (p.tracking.distancePerGame != null || p.tracking.heat || p.tracking.rating)) {
     const tr = p.tracking;
-    body.push(`\n## 跑動與熱區(FotMob 追蹤資料)\n\n`);
+    body.push(`\n## 跑動、熱區與評分(FotMob)\n\n`);
     if (tr.distancePerGame != null) body.push(`- 場均跑動 ${(tr.distancePerGame / 1000).toFixed(1)} km(${tr.games} 場)\n`);
     if (tr.topSpeed != null) body.push(`- 最高速度 ${tr.topSpeed.toFixed(1)} km/h\n`);
+    if (tr.rating) body.push(`- FotMob 平均評分 ${tr.rating.avg.toFixed(2)}(${tr.rating.games} 場有評分)\n`);
     if (tr.heat) body.push(`- 觸球質心 (${tr.heat.cx}, ${tr.heat.cy}),離散度 ${tr.heat.spread},${tr.heat.touches} 次觸球 / ${tr.heat.games} 場(座標 105×68,自家球門在左)\n`);
     if (tr.heat?.grid?.length === 24) {
       body.push(`\n6×4 觸球格(左=自家半場):\n\n`);
@@ -562,6 +563,14 @@ function renderMatch(f, ctx) {
       if (ms.shots.length) {
         body.push(`\n### 射門(${ms.shots.length} 次${ms.shotmapComplete ? '' : ',進球數跟比分對不上,清單不完整'})\n\n| 分鐘 | 球隊 | 球員 | 情境 | xG | 結果 |\n|---|---|---|---|---|---|\n`);
         for (const s of ms.shots) body.push(`| ${s.min}${s.extra ? '+' + s.extra : ''} | ${s.team} | ${s.player ?? ''} | ${SIT[s.situation] ?? s.situation ?? ''} | ${s.xg == null ? '' : s.xg.toFixed(2)} | ${s.type === 'Goal' ? '**進球**' : s.type ?? ''} |\n`);
+      }
+      if (ms.players) {
+        for (const [code, list] of Object.entries(ms.players)) {
+          const rated = list.filter(p => p.minutes != null && p.minutes > 0).sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
+          if (!rated.length) continue;
+          body.push(`\n### ${ctx.teamNameOf(code) ?? code} 逐人(${rated.length} 人)\n\n| 球員 | 分鐘 | 評分 | 射門/射正 | 傳球/關鍵 | 對抗勝/總 | 鏟球 | 抄截 |\n|---|---|---|---|---|---|---|---|\n`);
+          for (const p of rated) body.push(`| ${p.shirt ?? ''} ${p.name} | ${p.minutes} | ${p.rating == null ? '—' : p.rating.toFixed(2)} | ${v(p.shots?.total)}/${v(p.shots?.on)} | ${v(p.passes?.total)}/${v(p.passes?.key)} | ${v(p.duels?.won)}/${v(p.duels?.total)} | ${v(p.tackles?.total)} | ${v(p.tackles?.interceptions)} |\n`);
+        }
       }
       if (ms.events.length) {
         body.push(`\n### 事件\n\n`);

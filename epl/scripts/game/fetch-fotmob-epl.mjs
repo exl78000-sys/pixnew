@@ -29,7 +29,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from '../lib/teams.mjs';
-import { fotmobTeamStats, fotmobEvents, fotmobPos } from '../lib/adapters/fotmob-match.mjs';
+import { fotmobTeamStats, fotmobEvents, fotmobPos, fotmobPlayers } from '../lib/adapters/fotmob-match.mjs';
 import { API as PL_API, PL_HEADERS } from '../lib/pulselive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -255,6 +255,11 @@ async function main() {
   const played = results.filter(r => r.season === season && r.played && r.date <= new Date().toISOString().slice(0, 10));
   await mkdir(DIR, { recursive: true });
   const STORE = join(DIR, `${season}-game-details.json`);
+  /* 逐人統計(評分、射門、傳球、對抗、防守)另存一檔:一季約 4 MB,跟主檔分開,主檔才不會每季十幾 MB。
+     用西甲那個轉換器的 fotmobPlayers(canonical 逐人物件),賽後報告的「球員評分與明細」卡直接吃。 */
+  const PSTORE = join(DIR, `${season}-player-stats.json`);
+  const pstore = (await read(PSTORE)) ?? { season, source: 'fotmob', matches: {} };
+  pstore.matches ??= {};
   const store = (await read(STORE)) ?? { season, source: 'fotmob', extractVersion: EXTRACT_VERSION, matches: {}, attempts: {} };
   store.matches ??= {}; store.attempts ??= {};
   const stale = k => store.matches[k]?.extractVersion !== EXTRACT_VERSION;
@@ -283,9 +288,17 @@ async function main() {
       if (!r.json) { note(r.error); continue; }
       const rec = extract(r.json, f);
       rec.matchId = remote.matchId;
-      /* 熱區圖:第二個請求。抓不到不擋整場(控球那些照收),heat 留 null 並記原因。 */
-      rec.heat = null;
-      if (rec.heatmapUrl) {
+      /* 逐人統計 → 另一個檔。隊碼對照走 general 的 teamId */
+      {
+        const homeId = r.json?.general?.homeTeam?.id, awayId = r.json?.general?.awayTeam?.id;
+        const pl = fotmobPlayers(r.json, { homeId, awayId, homeCode: f.home, awayCode: f.away });
+        const unmapped = pl.__unmapped ?? []; delete pl.__unmapped;
+        pstore.matches[key] = { key, season, date: f.date, players: pl, unmapped };
+      }
+      /* 熱區圖:第二個請求。抓不到不擋整場(控球那些照收),heat 留 null 並記原因。
+         已經有熱區的場次(--refresh 重抓時)直接沿用,不再多打一個請求。 */
+      rec.heat = store.matches[key]?.heat ?? null;
+      if (rec.heatmapUrl && !rec.heat) {
         const h = await get(`${BASE}${rec.heatmapUrl}`, { referer: `${BASE}/` });
         if (h.json) rec.heat = heatOf(h.json, r.json, teamId => (Number(teamId) === Number(r.json?.general?.homeTeam?.id) ? f.home : Number(teamId) === Number(r.json?.general?.awayTeam?.id) ? f.away : null));
         else rec.heatError = h.error;
@@ -296,7 +309,7 @@ async function main() {
       }
       if (rec.possession.all?.some(v => v === null)) { note('沒有控球率欄位'); continue; }
       store.matches[key] = rec; delete store.attempts[key]; ok++;
-      if (ok % 20 === 0) { await writeFile(STORE, JSON.stringify(store, null, 1)); console.log(`  … 已收 ${ok} 場(中途存檔)`); }
+      if (ok % 20 === 0) { await writeFile(STORE, JSON.stringify(store, null, 1)); await writeFile(PSTORE, JSON.stringify(pstore)); console.log(`  … 已收 ${ok} 場(中途存檔)`); }
     }
     console.log(`✔ 新增 ${ok} 場・退回 ${rejected} 場`);
   } else console.log('  沒有待補場次。');
@@ -304,9 +317,11 @@ async function main() {
   store.updatedAt = new Date().toISOString();
   store.extractVersion = EXTRACT_VERSION;
   await writeFile(STORE, JSON.stringify(store, null, 1));
+  pstore.updatedAt = store.updatedAt;
+  await writeFile(PSTORE, JSON.stringify(pstore));
   const n = Object.keys(store.matches).length;
   const incomplete = Object.values(store.matches).filter(m => !m.checks?.shotmapComplete).length;
-  console.log(`  快取共 ${n} 場・shotmap 進球數對不上比分 ${incomplete} 場・本次請求 ${used}/${HARD_LIMIT}`
+  console.log(`  快取共 ${n} 場・逐人統計 ${Object.keys(pstore.matches).length} 場・shotmap 進球數對不上比分 ${incomplete} 場・本次請求 ${used}/${HARD_LIMIT}`
     + (store.verification ? `・官網核對 ${store.verification.agree}/${store.verification.checked} 場在 ±${store.verification.tolerance} 以內` : ''));
 }
 main().catch(e => { console.error(e); process.exit(1); });

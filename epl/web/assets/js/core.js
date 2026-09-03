@@ -1067,11 +1067,19 @@ export function matchReportCards(m, { order = null } = {}) {
       ${H.keeper?.stopped != null && A.keeper?.stopped != null ? line('門將少失球', signed(H.keeper.stopped, 2), signed(A.keeper.stopped, 2)) : ''}
     </div>`,
     best: (() => {
-      const rated = m.advanced?.coverage?.ratings === true && H.best?.some(b => b.rating != null);
-      return `<div class="card"><h3>${rated ? '本場最佳(供應商評分)' : '本場最佳(FPL 表現分)'}</h3>
+      /* 有供應商逐人評分(FotMob / SportMonks)就用它排前三;沒有才退回 FPL 表現分(BPS)。
+         2026-09-04 起英超的 advanced 帶逐人評分,但 sides.best 是 FPL 那套算的,兩份要分開挑。 */
+      const d = m.advanced;
+      const rated = d?.coverage?.ratings === true && Object.values(d.players ?? {}).some(l => l?.some(p => p.rating != null));
+      const topBy = code => [...(d?.players?.[code] ?? [])].filter(p => p.rating != null && (p.minutes ?? 0) > 0)
+        .sort((a, b) => b.rating - a.rating).slice(0, 3)
+        .map(p => `<div class="stat-line"><span class="small">${playerButton(p)}
+          <span class="dim tiny">${esc(p.pos && p.pos !== '?' ? p.pos : '')} ${p.minutes ?? '—'}'</span></span><b class="pill ${p.rating >= 7.5 ? 'accent' : 'info'} mono">${fx(p.rating, 1)}</b></div>`).join('');
+      const src = d?.source === 'sportmonks' ? 'SportMonks' : d?.source === 'fotmob' ? 'FotMob' : 'API-Football';
+      return `<div class="card"><h3>${rated ? `本場最佳(${src} 評分)` : '本場最佳(FPL 表現分)'}</h3>
       <div class="grid g2">
-        <div>${bestHtml(H, rated ? 'rating' : 'bps')}</div>
-        <div>${bestHtml(A, rated ? 'rating' : 'bps')}</div>
+        <div>${rated ? topBy(m.home) : bestHtml(H, 'bps')}</div>
+        <div>${rated ? topBy(m.away) : bestHtml(A, 'bps')}</div>
       </div>
     </div>`;
     })(),

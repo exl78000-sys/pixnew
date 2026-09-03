@@ -2409,7 +2409,9 @@ async function checkDataGap() {
         ['控球率有第二來源的抽核紀錄且全部通過', Object.values(ms.verification).some(v => v && v.checked >= 10 && v.agree === v.checked)],
         ['逐隊彙總對得回逐場重算(MCI 主場控球均值)', ms.teams.MCI.home.possession.mean === mean && ms.teams.MCI.home.games === mci.length, `${ms.teams.MCI.home.possession.mean} vs ${mean}`],
         ['teams.json 掛的 matchStats 跟產物一致,沒資料的隊不留空鍵', teamsJson.every(t => (t.matchStats ? t.matchStats.games === ms.teams[t.code]?.games : !ms.teams[t.code]?.games))],
-        ['本季賽後報告掛上 FotMob 的 advanced(有球隊統計與事件、沒有逐人評分)', fmReports.length > 0 && fmReports.every(r => r.advanced.coverage.playerStatistics === false && r.advanced.coverage.ratings === false && r.advanced.teamStats[r.home]?.possession != null && Array.isArray(r.advanced.events)), String(fmReports.length)],
+        /* 2026-09-04 起逐人統計與評分也進來了:coverage 照實標 true,每隊至少 14 人(11 先發 + 上場替補),評分要有 */
+        ['本季賽後報告掛上 FotMob 的 advanced(球隊統計、事件、逐人統計與評分)', fmReports.length > 0 && fmReports.every(r => r.advanced.coverage.playerStatistics === true && r.advanced.coverage.ratings === true && r.advanced.teamStats[r.home]?.possession != null && Array.isArray(r.advanced.events) && (r.advanced.players?.[r.home]?.length ?? 0) >= 14 && r.advanced.players[r.home].some(p => p.rating != null)), String(fmReports.length)],
+        ['賽後報告的逐人統計對到本站球員代碼(每隊至少 8 人有 code)', fmReports.every(r => [r.home, r.away].every(c => (r.advanced.players?.[c] ?? []).filter(p => p.code).length >= 8)), fmReports.map(r => [r.home, r.away].map(c => (r.advanced.players?.[c] ?? []).filter(p => p.code).length).join('/')).slice(0, 4).join(' ')],
         ['shotmap 進球數對不上比分的場次有標記', list.every(m => m.shotmapComplete === (m.shots.filter(s => s.type === 'Goal').length === m.score[0] + m.score[1]))],
         /* 跑動 / 衝刺:供應商不是每場都給(2025-26 有 282/380)。本季每場都要有;沒有的場次是 null 不是 0;彙總只算有資料的場次。 */
         ['本季每場都有跑動距離(FotMob 追蹤資料)', list.filter(m => m.season === ms.seasons.at(-1)).every(m => m.physical?.team?.distance?.every(v => Number.isFinite(v) && v > 50000))],
@@ -2424,7 +2426,8 @@ async function checkDataGap() {
           return [
             ['上場 900 分鐘以上的球員多數有場均跑動(≥ 75%)', withTr.length >= regular.length * 0.75, `${withTr.length}/${regular.length}`],
             ['熱區格是 6×4、質心在球場內', pl.every(p => !p.tracking?.heat || (p.tracking.heat.grid.length === 24 && p.tracking.heat.cx >= 0 && p.tracking.heat.cx <= 105 && p.tracking.heat.cy >= 0 && p.tracking.heat.cy <= 68))],
-            ['沒有追蹤資料的球員沒有 tracking 鍵(不留空欄位)', pl.every(p => p.tracking === undefined || p.tracking.distancePerGame != null || p.tracking.heat)],
+            ['沒有追蹤資料的球員沒有 tracking 鍵(不留空欄位)', pl.every(p => p.tracking === undefined || p.tracking.distancePerGame != null || p.tracking.heat || p.tracking.rating)],
+            ['上場 900 分鐘以上的球員多數有 FotMob 平均評分(≥ 75%)', regular.filter(p => p.tracking?.rating).length >= regular.length * 0.75, `${regular.filter(p => p.tracking?.rating).length}/${regular.length}`],
           ];
         })(),
       ];

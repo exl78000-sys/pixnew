@@ -1,4 +1,4 @@
-import * as C from './core.js?v=41590241';
+import * as C from './core.js?v=6ce2cd6c';
 
 const app = document.getElementById('app');
 
@@ -246,7 +246,7 @@ try {
      熱區是 6×4 格的觸球位置計數,正規化成向右進攻(自家球門在左)。沒有資料整張不畫。 */
   function trackingCard(p, t) {
     const tr = p.tracking;
-    if (!tr || (tr.distancePerGame == null && !tr.heat)) return '';
+    if (!tr || (tr.distancePerGame == null && !tr.heat && !tr.rating)) return '';
     const line = (l, v) => `<div class="stat-line"><span class="small muted">${l}</span><b class="mono">${v}</b></div>`;
     const heat = tr.heat?.grid?.length === 24 ? (() => {
       const W = 240, H = 156, gx = 6, gy = 4, mx = Math.max(1, ...tr.heat.grid);
@@ -260,9 +260,10 @@ try {
         <circle cx="${(tr.heat.cx / 105 * W).toFixed(1)}" cy="${(tr.heat.cy / 68 * H).toFixed(1)}" r="5" fill="#fff"/></svg>
         <div class="tiny dim">自家球門在左、攻向右;白點是 ${tr.heat.touches} 次觸球的質心(${tr.heat.games} 場)。</div>`;
     })() : '';
-    return `<div class="card"><h3>跑動與熱區 <span class="dim tiny">FotMob 追蹤資料</span></h3>
+    return `<div class="card"><h3>跑動、熱區與評分 <span class="dim tiny">FotMob</span></h3>
       ${tr.distancePerGame != null ? line('場均跑動', `${(tr.distancePerGame / 1000).toFixed(1)} km <span class="dim">・${tr.games} 場</span>`) : ''}
       ${tr.topSpeed != null ? line('最高速度', `${tr.topSpeed.toFixed(1)} km/h`) : ''}
+      ${tr.rating ? line('平均評分', `${tr.rating.avg.toFixed(2)} <span class="dim">・${tr.rating.games} 場・FotMob</span>`) : ''}
       ${heat}
       <div class="tiny dim" style="margin-top:8px">供應商的追蹤資料,不是每場都有(2025-26 起);本站只搬運不推估。跟上面 FPL 的 per-90 是不同來源。</div>
     </div>`;
