@@ -2484,9 +2484,13 @@ async function checkDataGap() {
            它抓得到「避讓被整個拿掉又剛好遇上壞種子」,抓不到「效果變差一點」。
            那條界線就是分不開的,寫在這裡免得下一個人以為它守得更多。
            實測有避讓:24 個種子 5.1~12.9%,這四個種子最大 9.3%。 */
-        ['整場不會有一半時間疊在一起(毛胚防線,不是避讓生效的證明)',
-          results.every(r => r.crowdPct < 20)],
-        ['球員從頭到尾沒有完全重合', results.every(r => r.minSep > 0)],
+        /* 2026-09-03 位置層兜底(`separate()`)之後這兩條從毛胚變成真防線:
+           24 個種子實測壅擠畫格全部 0%、全場最小間距中位數 1.59 m(之前 0.11 m)。
+           門檻放在 1%(不是 0):第一格 mount 時球員從基準點出發,格線緊的陣型可能有一兩格還沒推開。 */
+        ['整場幾乎沒有畫格有人疊在一起(位置層兜底之後 < 1%;之前 5~13%)',
+          results.every(r => r.crowdPct < 1), results.map(r => r.crowdPct.toFixed(2)).join('/')],
+        ['球員最近也保持 1.2 m 以上(MIN_SEP 1.6 減去邊線夾住的餘裕)', results.every(r => r.minSep > 1.2), results.map(r => r.minSep.toFixed(2)).join('/')],
+        ['位置層兜底是純幾何:持球者不被推、不讀比分', /function separate/.test(src) && /p === holder \? 0/.test(src) && !/separate\([^)]*st\.score/.test(src)],
         ['抖動吃模擬時鐘,不吃 performance.now(牆上時間會讓同種子不同劇本)',
           !/performance\.now\(\) \/ 1000/.test(src) && /simT \+= dt/.test(src)],
         ['球員不會被畫到場外', results.every(r => r.inBounds)],

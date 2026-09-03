@@ -31,6 +31,7 @@ const BOX_X = 16.5;               // 禁區深度,射門區由它推
 const BREAK_MAX = 6;              // 快攻演出的上限秒數(超時強制收尾,見下)
 const AVOID_R = 4.6;              // 球員進入這個距離才需要繞行(公尺)
 const AVOID_MAX = 4.2;            // 避讓只改演出目標,不把球員推到別處(公尺)
+const MIN_SEP = 1.6;              // 位置層兜底:兩個人不會比這更近(公尺;圓點半徑約 0.9 m)
 
 // 陣型字串 → 各排人數。認不得就退 4-4-2(呼叫端標「推估」)
 export function parseFormation(label) {
@@ -389,6 +390,32 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       p.x = Math.max(1, Math.min(FW - 1, p.x));
       p.y = Math.max(1.5, Math.min(FH - 1.5, p.y));
     }
+    separate();
+  }
+
+  /* 位置層的間距兜底(2026-09-03)。切線繞行只改「目標點」,而每格只走 k≈0.1,兩人目標交叉時還是會穿過去
+     (09-02 實測:全場最小間距中位數 0.11 m、5~13% 的畫格有人疊著)。這裡在積分**之後**把太近的兩個人沿連線推開:
+     繞行決定路線、這一步保證不重疊,兩者不衝突。持球者不動(他要對得上球),對方被推開全額;
+     其餘兩人各推一半。純幾何,不讀比分、不改 holder,所以跟腳本進球無關。跑兩輪就夠 —— 一輪推開的兩人
+     可能撞到第三個,第二輪收掉大部分。 */
+  function separate() {
+    const list = active();
+    for (let round = 0; round < 2; round++) {
+      for (let i = 0; i < list.length; i++) {
+        for (let j = i + 1; j < list.length; j++) {
+          const p = list[i], q = list[j];
+          let dx = q.x - p.x, dy = q.y - p.y;
+          let d = Math.hypot(dx, dy);
+          if (d >= MIN_SEP) continue;
+          if (d < 1e-6) { dx = 1; dy = 0; d = 1e-6; }   // 完全重合:挑一個方向推開
+          const need = (MIN_SEP - d) / d;
+          const wp = p === holder ? 0 : q === holder ? 1 : 0.5;
+          p.x -= dx * need * wp; p.y -= dy * need * wp;
+          q.x += dx * need * (1 - wp); q.y += dy * need * (1 - wp);
+        }
+      }
+    }
+    for (const p of list) { p.x = Math.max(1, Math.min(FW - 1, p.x)); p.y = Math.max(1.5, Math.min(FH - 1.5, p.y)); }
   }
 
   function draw() {
