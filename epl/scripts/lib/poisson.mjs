@@ -16,13 +16,17 @@ function tau(x, y, l, m, rho) {
   return 1;
 }
 
+/* 擬合目標(2026-09-04):預設用進球 fh/fa。比賽物件帶 tfh/tfa 時,攻守強度改對 tfh/tfa 擬合
+   (例如 xG,或 xG 與進球的混合)—— Poisson 的梯度 (y − λ) 對非整數 y 一樣成立。
+   ρ(低比分修正)仍用真實進球:tau 的 0/1 判斷只對整數有意義。
+   沒帶 tfh 的呼叫端行為一個位元都不變(golden 守著)。 */
 export function fitPoisson(matches, codes, { refDate, xi = 0.0035, iters = 3000, lr = 0.06 } = {}) {
   const games = matches.filter(m => m.played && codes.includes(m.home) && codes.includes(m.away))
-    .map(m => ({ ...m, w: decay(m.date, refDate, xi) }));
+    .map(m => ({ ...m, w: decay(m.date, refDate, xi), yh: m.tfh ?? m.fh, ya: m.tfa ?? m.fa }));
   const idx = new Map(codes.map((c, i) => [c, i]));
   const n = codes.length;
   const att = new Float64Array(n), def = new Float64Array(n);
-  const totalGoals = games.reduce((a, m) => a + (m.fh + m.fa) * m.w, 0);
+  const totalGoals = games.reduce((a, m) => a + (m.yh + m.ya) * m.w, 0);
   const totalW = games.reduce((a, m) => a + m.w, 0) || 1;
   let mu = Math.log(Math.max(0.2, totalGoals / (2 * totalW)));
   let gamma = 0.25;
@@ -35,7 +39,7 @@ export function fitPoisson(matches, codes, { refDate, xi = 0.0035, iters = 3000,
       const h = idx.get(m.home), a = idx.get(m.away);
       const lh = Math.exp(mu + att[h] + def[a] + gamma);
       const la = Math.exp(mu + att[a] + def[h]);
-      const rh = m.w * (m.fh - lh), ra = m.w * (m.fa - la);
+      const rh = m.w * (m.yh - lh), ra = m.w * (m.ya - la);
       gAtt[h] += rh; gAtt[a] += ra;
       gDef[a] += rh; gDef[h] += ra;
       gGamma += rh; gMu += rh + ra;
