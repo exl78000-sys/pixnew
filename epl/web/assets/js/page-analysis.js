@@ -963,10 +963,12 @@ try {
       <div class="phase-node pre">
         <span class="phase-kicker">01・賽前模型</span>
         <strong>${p ? `${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}` : '無快照'}</strong>
-        ${/* 快照只有 1X2(它是即時機率曲線的第 0 分點),沒有賽前 xG ——
-             印 `預期進球 undefined : undefined` 比不印糟得多 */''}
+        ${/* 快照原本只有 1X2(即時機率曲線的第 0 分點);2026-09-03 起錨點連賽前 xG 一起凍結,
+             之前的場次沒有 —— 印 `預期進球 undefined : undefined` 比不印糟得多,所以分開講 */''}
         <small>${p
-          ? (p.snapshot ? '開賽前凍結的機率快照' : `預期進球 ${p.xgHome} : ${p.xgAway}`)
+          ? (p.snapshot
+            ? (p.xgHome != null ? `開賽前凍結的快照・預期進球 ${p.xgHome} : ${p.xgAway}` : '開賽前凍結的機率快照(那時還沒存 xG)')
+            : `預期進球 ${p.xgHome} : ${p.xgAway}`)
           : '開賽前沒有抓到樣本,這個數字不存在'}</small>
       </div>
       <span class="phase-arrow" aria-hidden="true">→</span>

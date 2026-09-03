@@ -1513,8 +1513,15 @@ async function checkDataGap() {
       const after = appendSamples(st, mk({ inplay: { minute: 95, home: 0.5, draw: 0.5, away: 0 } }));
       const demo = appendSamples(null, { ...mk(), demo: true });
       const newSeason = appendSamples(st, { ...mk(), season: '2027-28' });
+      /* 賽前 xG 跟錨點同一刻凍結;沒有 xG 的舊錨點回 null,不是 0(2026-09-03) */
+      const { preMatchSnapshots } = await import('./lib/prob-history.mjs');
+      const withXg = appendSamples(null, mk({ preMatch: { home: 0.45, draw: 0.28, away: 0.27, xgHome: 1.73, xgAway: 1.02 } }));
+      const snapXg = preMatchSnapshots(withXg).get('CRY|MCI');
+      const snapNo = preMatchSnapshots(st).get('CRY|MCI');
       return [
         ['第一個點是賽前機率(第 0 分)', first[0][0] === 0 && first[0][1] === 0.45, JSON.stringify(first[0])],
+        ['賽前 xG 跟錨點同一刻凍結,快照帶出來', snapXg?.xgHome === 1.73 && snapXg?.xgAway === 1.02, JSON.stringify(snapXg)],
+        ['沒存 xG 的舊錨點回 null,不是 0', !!snapNo && snapNo.xgHome === null && snapNo.xgAway === null, JSON.stringify(snapNo)],
         ['同一分鐘留最新的一點,不疊', sameMin.length === 2 && sameMin[1][1] === 0.41, String(sameMin.length)],
         ['完賽補收斂點並封存', done.done === true && done.pts.at(-1)[0] === 90 && done.pts.at(-1)[3] === 1, ''],
         ['封存之後不再追加(賽後重跑不會疊點)',

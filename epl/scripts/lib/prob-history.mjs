@@ -35,6 +35,11 @@ export function appendSamples(store, liveOut, { now = Date.now() } = {}) {
     // 賽前錨點:曲線的第 0 分是模型的賽前機率
     if (!rec.pts.length && m.preMatch) {
       rec.pts.push([0, m.preMatch.home, m.preMatch.draw, m.preMatch.away, 0, 0]);
+      /* 賽前 xG(2026-09-03 補):跟 1X2 同一刻凍結。只對**之後**的比賽有效 —— 之前的場次沒存,
+         就是沒有,呼叫端顯示「—」,不拿賽後重算的 λ 回填。 */
+      if (Number.isFinite(m.preMatch.xgHome) && Number.isFinite(m.preMatch.xgAway)) {
+        rec.pre = { xgHome: round(m.preMatch.xgHome, 2), xgAway: round(m.preMatch.xgAway, 2) };
+      }
     }
 
     const p = m.inplay;
@@ -72,7 +77,7 @@ export function preMatchSnapshots(store) {
   for (const [key, rec] of Object.entries(store?.matches ?? {})) {
     const first = rec.pts?.[0];
     if (!first || first[0] !== 0) continue;      // 第一點不是第 0 分 = 沒接到賽前錨點
-    out.set(key, { home: first[1], draw: first[2], away: first[3] });
+    out.set(key, { home: first[1], draw: first[2], away: first[3], xgHome: rec.pre?.xgHome ?? null, xgAway: rec.pre?.xgAway ?? null });
   }
   return out;
 }
