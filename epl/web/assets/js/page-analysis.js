@@ -138,6 +138,9 @@ try {
     </section>` : ''}
 
     <section class="analysis-panel" id="panel-pre" role="tabpanel">
+    ${/* 未賽的場次:外電與專家觀點放賽前分頁(2026-09-03)。賽前才是外電最有用的時候
+         (轉會、傷停、教練談話),原本只掛在已完賽面板裡。已完賽的照舊在賽後分頁,不重複畫。 */''}
+    ${!f.played ? opinionSections(f, expertRows) : ''}
     ${articleCard(preArt, '賽前觀察', 'pre')}
 
     ${f.postFit ? `<div class="note warn" style="margin-top:12px"><b>這一場已經踢完,下面這組機率是「目前模型」的看法,不是當時的賽前預測。</b>
@@ -441,6 +444,8 @@ try {
 
     <section class="analysis-panel" id="panel-pre" role="tabpanel">
       <div class="section"><h2>賽前分析</h2><span class="hint">${meta.lastSeason} 球隊背景・不調整賽後結論</span></div>
+      ${/* 未賽場次的外電與專家觀點(同英超那一頁的做法,2026-09-03) */''}
+      ${!f.played ? opinionSections(f, expertRows) : ''}
       ${preForecast}
       <div class="card" style="margin-top:16px">${comparison}</div>
       ${scoreGrid}
