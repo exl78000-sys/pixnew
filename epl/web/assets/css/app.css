@@ -668,7 +668,6 @@ input:focus-visible, tbody tr.clickable:focus-visible {
 }
 
 /* ── 對戰模擬的素材(2026-08-30,生圖素材接入)── */
-.duel-hero { width: 100%; border-radius: 12px; display: block; margin: 4px 0 14px; }
 .duel-stage { background: #0a0812 url('../img/duel-pitch.webp') center / cover no-repeat;
   border-radius: 12px; padding: 14px; }
 .duel-flash { animation: duelPop .9s ease-out; filter: drop-shadow(0 0 18px #00ff8555); }

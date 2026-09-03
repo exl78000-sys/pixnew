@@ -112,6 +112,10 @@ export function scorePredictions(records, fixtures) {
     rows,
     pending: rows.filter(r => !r.actual).length,
     ignored: rows.filter(r => !r.eligible).length,
+    /* 你自己的成績,不跟任何人比。**歐冠用得到**:盃賽沒有勝率預測
+       (模型是用聯賽調的,沒在盃賽上驗收過 —— 鐵則二),所以那裡沒有對手。
+       沒有這一欄的話,歐冠的預測踢完之後畫面上什麼都不會出現。 */
+    solo: tally(scored),
     // 你與模型都有的場次(模型每場都有,所以這通常等於全部已完賽的預測)
     vsModel: tally(scored.filter(r => r.modelPick)),
     // 三邊都有的場次 —— 市場盤口不是每場都抓得到

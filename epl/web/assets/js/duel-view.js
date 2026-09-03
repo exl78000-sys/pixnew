@@ -275,7 +275,10 @@ export async function renderDuel(app) {
     app.innerHTML = `
       <h1>對戰模擬 <span class="dim">跨聯賽</span></h1>
       <p class="lede">選聯賽、選兩隊,用本站模型抽一場比賽。機率跟各聯賽賽程頁完全同源;抽出來的每一場都只是分布裡的一個樣本。</p>
-      <img class="duel-hero" src="assets/img/duel-hero.webp" alt="" onerror="this.style.display='none'">
+      ${/* 頁首那張橫幅拿掉了(2026-09-03,使用者要求)。它是純裝飾:
+           115 KB、佔滿一整個螢幕寬,而下面就是真正要看的球場動畫。
+           其他四張小圖(進球、中場、完場、骰子)留著 —— 它們是**狀態指示**,
+           跟著比賽在動,不是背景。 */''}
       <div class="card">
         <div class="row" style="gap:8px;align-items:center">
           <span class="small">聯賽</span>
