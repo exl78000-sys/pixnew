@@ -32,6 +32,16 @@ const BREAK_MAX = 6;              // 快攻演出的上限秒數(超時強制收
 const AVOID_R = 4.6;              // 球員進入這個距離才需要繞行(公尺)
 const AVOID_MAX = 4.2;            // 避讓只改演出目標,不把球員推到別處(公尺)
 const MIN_SEP = 1.6;              // 位置層兜底:兩個人不會比這更近(公尺;圓點半徑約 0.9 m)
+/* 跑動節奏(2026-09-03,錨在 FotMob 追蹤資料):
+   - LEAGUE_DIST_PER_MIN:英超一隊每分鐘跑動距離的聯盟均值,約 110 km / 95 分;球隊的 pace.distancePerMin 除以它
+     就是「這隊比平均勤多少」,拿去縮放無球跑動的頻率與幅度。逐人再乘 run.distancePerGame 對隊均的比值。
+   - 衝刺:每隊每分鐘的衝刺次數(pace.sprintsPerMin,聯盟約 1.1)決定多常出現爆發跑;速度上限按逐人 topSpeed。
+   軌跡仍是演出 —— 資料給的是「量」與「在哪一區」,不是誰在哪一秒站哪。 */
+const LEAGUE_DIST_PER_MIN = 1160;
+const LEAGUE_SPRINTS_PER_MIN = 1.1;
+const RUN_RATE = 0.14;            // 每個攻方非持球員每秒起跑的基準機率(× 節奏 × 個人勤勞度)。實測 0.06 只有 0.55 人同時在跑(球權換手就取消),0.14 約 1.1 人(兩個種子實測 1.03、1.13)
+const RUN_SECONDS = [2.2, 3.6];   // 一次跑動持續多久(秒)
+const SPRINT_SPEED = 2.4, RUN_SPEED = 1.5;   // 相對一般移動的速度倍率
 
 // 陣型字串 → 各排人數。認不得就退 4-4-2(呼叫端標「推估」)
 export function parseFormation(label) {
@@ -129,16 +139,41 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     const slots = slotsOf(rows);
     const names = spec.xi ?? { GK: [], DEF: [], MID: [], FWD: [] };
     const used = { GK: 0, DEF: 0, MID: 0, FWD: 0 };
+    const meta = spec.meta ?? {};               // name → { role, heat, run }
+    const pace = spec.pace ?? null;
+    const paceFactor = pace?.distancePerMin ? Math.max(0.7, Math.min(1.4, pace.distancePerMin / LEAGUE_DIST_PER_MIN)) : 1;
+    const teamDist = (() => {
+      const ds = Object.values(meta).map(m => m?.run?.distancePerGame).filter(Number.isFinite);
+      return ds.length ? ds.reduce((a, b) => a + b, 0) / ds.length : null;
+    })();
     return slots.map(s => {
       const idx = used[s.role]++;
       const name = names[s.role]?.[idx] ?? null;
       const shirt = spec.shirts?.[s.role]?.[idx] ?? null;
-      const bx = side === 'home' ? s.x : FW - s.x;   // 上半場的基準;下半場鏡射(真足球會換邊)
-      return { side, role: s.role, name, shirt, off: false, flash: 0,
-        bx0: bx, by: s.y, x: bx, y: s.y,
+      const m = name ? meta[name] ?? null : null;
+      /* 基準點:陣型格與**真實觸球熱區質心**各一半(熱區是兩隊都向右進攻的座標,客隊鏡射 x)。
+         全用熱區的話陣型會糊掉(邊後衛的質心常在中場),全用陣型格又跟這個人平常站哪無關 —— 各一半。
+         離散度決定他平常活動範圍多大(抖動與跑動幅度)。 */
+      let bx = side === 'home' ? s.x : FW - s.x;   // 上半場的基準;下半場鏡射(真足球會換邊)
+      let by = s.y;
+      if (m?.heat && s.role !== 'GK') {
+        const hx = side === 'home' ? m.heat.cx : FW - m.heat.cx;
+        bx = bx * 0.5 + hx * 0.5; by = by * 0.5 + m.heat.cy * 0.5;
+      }
+      const spreadK = m?.heat?.spread ? Math.max(0.6, Math.min(1.6, m.heat.spread / 25)) : 1;
+      const act = (m?.run?.distancePerGame && teamDist) ? Math.max(0.7, Math.min(1.3, m.run.distancePerGame / teamDist)) : 1;
+      const topSpeed = m?.run?.topSpeed ?? null;
+      return { side, role: s.role, sub: m?.role ?? null, name, shirt, off: false, flash: 0,
+        bx0: bx, by, x: bx, y: by,
+        spreadK, act: act * paceFactor, topSpeed, run: null,
         ph: rng() * Math.PI * 2, color: spec.color };
     });
   };
+  const paceOf = side => (side === 'home' ? home : away).pace ?? null;
+  const zonesOf = side => (side === 'home' ? home : away).zones ?? null;
+  /* 三路偏向:該隊右路佔比減左路佔比(0~1),乘 12 m 當攻方整體往那一側偏的量。座標跟熱區同一套(x 鏡射、y 不翻),
+     所以「右」在畫面上是 y 大的那一側,兩隊一致。 */
+  const flankShift = side => { const z = zonesOf(side); return z ? (z.right - z.left) * 12 : 0; };
   const players = [...mkTeam('home', home), ...mkTeam('away', away)];
   let shareHome = possHome ?? lambdaHome / (lambdaHome + lambdaAway || 1);
   const active = () => players.filter(p => !p.off);   // 被罰下的人不在場上
@@ -275,13 +310,15 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     if (p.role === 'GK') return { x: ownGoalX(p.side) + dir * 4.5, y: FH / 2 + (ball.y - FH / 2) * 0.35 };
 
     if (attacking) {
+      // 正在跑動的人直奔跑動目標(pendingGoal 的前鋒衝刺優先,見下)
+      if (p.run && !((pendingGoal ?? pendingShot) && p.role === 'FWD')) return { x: p.run.tx, y: p.run.ty };
       // 球推進到對方半場多深(0~1)——整條線往前壓多少由它決定,不是固定值
       const adv = Math.min(1, Math.max(0, (dir * (ball.x - FW / 2)) / (FW / 2) * 0.5 + 0.5));
       const ADV = { DEF: 8, MID: 15, FWD: 24 }[p.role] ?? 10;
       let x = bx + dir * ADV * adv + push * dir * 0.4;
-      // 邊路拉寬:離中線遠的人再往邊線站,把場地撐開
+      // 邊路拉寬:離中線遠的人再往邊線站,把場地撐開;整體再往該隊慣用的那一側偏(三路進攻佔比)
       const wide = Math.abs(p.by - FH / 2) > FH / 5;
-      const y = p.by + (wide ? Math.sign(p.by - FH / 2) * 4.2 * adv : 0);
+      const y = p.by + (wide ? Math.sign(p.by - FH / 2) * 4.2 * adv : 0) + flankShift(p.side) * adv * (p.role === 'DEF' ? 0.3 : 0.6);
       if (p === runner) x += dir * 9;              // 一名中場前插支援
       /* 快攻演出:進球方的前鋒直接跑到禁區線。沒有這一段的話射門門檻永遠
          碰不到 —— 原本前鋒基準 x=53.26、快攻加成上限 18、抖動 2.2,最遠
@@ -378,19 +415,50 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       }
     }
 
+    scheduleRuns(dt);
     for (const p of active()) {
       const a = aim(p);
       const avoid = avoidanceOf(p, a, active());
-      // 抖動只是別讓點看起來焊死;持球者不抖(他要對得上球)
-      const jx = p === holder ? 0 : Math.sin(simT * 0.9 + p.ph) * 1.4;
-      const jy = p === holder ? 0 : Math.cos(simT * 0.7 + p.ph) * 1.6;
-      const k = Math.min(1, dt * (p === holder || p === presser ? 3.2 : 2.2));
+      // 抖動只是別讓點看起來焊死;持球者不抖(他要對得上球)。幅度依熱區離散度
+      const jx = p === holder ? 0 : Math.sin(simT * 0.9 + p.ph) * 1.4 * p.spreadK;
+      const jy = p === holder ? 0 : Math.cos(simT * 0.7 + p.ph) * 1.6 * p.spreadK;
+      const speed = p.run ? (p.run.sprint ? SPRINT_SPEED : RUN_SPEED) : 1;
+      const k = Math.min(1, dt * (p === holder || p === presser ? 3.2 : 2.2) * speed * (p.run ? 1 : p.act));
       p.x += ((a.x + avoid.x + jx) - p.x) * k;
       p.y += ((a.y + avoid.y + jy) - p.y) * k;
       p.x = Math.max(1, Math.min(FW - 1, p.x));
       p.y = Math.max(1.5, Math.min(FH - 1.5, p.y));
     }
     separate();
+  }
+
+  /* 無球跑動的排程(2026-09-03)。每個攻方非持球員每秒以 RUN_RATE × 節奏 × 個人勤勞度的機率起跑,
+     跑動類型按細分角色(FB 套邊、W 內切、CM/AM 前插、ST 拉邊接應、CB 不跑),持續 2~4 秒;
+     衝刺的比例由該隊每分鐘衝刺次數決定,衝刺時速度倍率更高。跑完回到一般站位。 */
+  function scheduleRuns(dt) {
+    const pace = paceOf(holder.side);
+    const sprintsPerMin = pace?.sprintsPerMin ?? LEAGUE_SPRINTS_PER_MIN;
+    const sprintShare = Math.max(0.15, Math.min(0.6, sprintsPerMin / LEAGUE_SPRINTS_PER_MIN * 0.3));
+    for (const p of active()) {
+      if (p.run) {
+        p.run.t -= dt;
+        if (p.run.t <= 0 || p.side !== holder.side) p.run = null;
+        continue;
+      }
+      if (p.side !== holder.side || p === holder || p.role === 'GK') continue;
+      if (rng() > RUN_RATE * p.act * dt) continue;
+      const dir = dirOf(p.side), toEdge = Math.sign(p.y - FH / 2) || 1;
+      const role = p.sub ?? p.role;
+      let tx, ty;
+      if (role === 'FB') { tx = p.x + dir * 18; ty = FH / 2 + toEdge * (FH / 2 - 6); }            // 套邊
+      else if (role === 'W') { tx = p.x + dir * 10; ty = FH / 2 + toEdge * 8; }                     // 內切
+      else if (role === 'CM' || role === 'AM' || role === 'DM' || p.role === 'MID') { tx = p.x + dir * 14; ty = p.y + (rng() < 0.5 ? -6 : 6); }   // 前插
+      else if (role === 'ST' || p.role === 'FWD') { tx = p.x + dir * 4; ty = FH / 2 + toEdge * 14; }   // 拉邊接應
+      else continue;                                                                               // CB 不跑
+      const sprint = rng() < sprintShare;
+      p.run = { tx: Math.max(2, Math.min(FW - 2, tx)), ty: Math.max(2, Math.min(FH - 2, ty)),
+        t: RUN_SECONDS[0] + rng() * (RUN_SECONDS[1] - RUN_SECONDS[0]), sprint };
+    }
   }
 
   /* 位置層的間距兜底(2026-09-03)。切線繞行只改「目標點」,而每格只走 k≈0.1,兩人目標交叉時還是會穿過去
@@ -479,6 +547,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
 
   probe = () => ({
     goalsPlayed, pendingGoal, half, min: st.min,
+    running: active().filter(p => p.run).length, sprinting: active().filter(p => p.run?.sprint).length,
     inBounds: players.every(p => p.x >= 0 && p.x <= FW && p.y >= 0 && p.y <= FH),
     minSeparation: players.reduce((best, p, i) => players.slice(i + 1)
       .reduce((inner, q) => Math.min(inner, Math.hypot(p.x - q.x, p.y - q.y)), best), Infinity),
