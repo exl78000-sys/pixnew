@@ -2342,8 +2342,11 @@ async function checkDataGap() {
       return [
         ['已完賽場次的 prediction 一定是「開賽前凍結的快照」,不是事後擬合',
           rows.every(r => r.played.every(f => !f.prediction || f.prediction.snapshot === true))],
-        ['快照只有 1X2(它是即時曲線的第 0 分點),不會混進賽前 xG',
-          rows.every(r => r.played.every(f => !f.prediction || f.prediction.xgHome === undefined))],
+        /* 2026-09-03 起錨點連賽前 xG 一起凍結,所以快照**可以**帶 xG —— 但只能跟 snapshot:true 一起出現
+           (那是開賽前凍結的),沒存的場次是 null,不可以是賽後重算的數字(postFit 那一組另放)。 */
+        ['已完賽場次的賽前 xG 只會以凍結快照的形式出現(沒存就 null,不拿 postFit 冒充)',
+          rows.every(r => r.played.every(f => !f.prediction
+            || (f.prediction.snapshot === true && (f.prediction.xgHome == null || Number.isFinite(f.prediction.xgHome)))))],
         ['未賽場次的 prediction 是完整那一組,而且沒有 postFit',
           rows.every(r => r.fx.filter(f => !f.played && f.prediction)
             .every(f => f.prediction.snapshot !== true && !f.postFit))],
