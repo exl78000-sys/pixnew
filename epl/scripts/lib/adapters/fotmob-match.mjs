@@ -19,6 +19,11 @@
  * 而得分的是對面。球隊計數要算、射手不指名 —— 配錯人比不配對糟。
  */
 
+/* 對映表的版本。**改了欄位對映就要 +1** —— 快取存的是轉換後的 detail,
+   舊資料不會自己跟著變。抓取器比對版本,不同就重抓那幾場(受每次請求上限
+   節制,不會一次全打)。沒有這個的話得記得手動 --force,而「記得」不是機制。 */
+export const ADAPTER_VERSION = 2;
+
 const numOrNull = v => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : null);
 
 /* FotMob 的 positionId → 本站四類。原本住在 build-laliga.mjs,
