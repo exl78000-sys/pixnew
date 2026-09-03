@@ -256,6 +256,13 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         continue-on-error: true
 
+      # 西甲賽後的**主要來源**(2026-09-03 起):SportMonks 方案取消後由 FotMob 接手。
+      # 完賽資料不會變 → 永久快取、抓過就跳過;單線、間隔 400ms、每次最多 15 個請求。
+      # 比分要跟本站賽程(已與獨立來源核對)一致才收,對不上整場不收。
+      - name: 補抓西甲完整賽後資料(FotMob)
+        run: npm run laliga:fotmob-postmatch
+        continue-on-error: true
+
       - name: 抓本季逐輪球員資料
         run: npm run season
         continue-on-error: true

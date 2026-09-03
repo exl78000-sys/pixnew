@@ -26,6 +26,7 @@ import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { appendSamples, historyForSite, preMatchSnapshots } from './lib/prob-history.mjs';
+import { fotmobPos, fotmobPlayer, fotmobRows, normaliseFotmobMatch } from './lib/adapters/fotmob-match.mjs';
 import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import { upcomingOdds, seasonMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
@@ -104,34 +105,9 @@ const sumRows = rows => ({
 
 // FotMob 的垂直球場座標可還原成「門將 → 後防 → 中場 → 前場」的排位。
 // 不把 positionId 直接暴露給前端；只在 canonical 轉換這一層做最小映射。
-const fotmobPos = id => {
-  const n = Number(id);
-  if (n === 11) return 'G';
-  if (n >= 30 && n < 50) return 'D';
-  if (n >= 70 && n < 100) return 'M';
-  if (n >= 100) return 'F';
-  return '?';
-};
 
-const fotmobPlayer = p => ({
-  providerId: p.providerId ?? null, name: p.name ?? '', number: p.shirt ?? null,
-  pos: fotmobPos(p.positionId), rating: p.rating ?? null, photo: null,
-  verticalLayout: p.verticalLayout ?? null,
-});
-
-function fotmobRows(players) {
-  const groups = new Map();
-  for (const p of players) {
-    const y = Number(p.verticalLayout?.y);
-    const key = Number.isFinite(y) ? y.toFixed(3) : `pos-${fotmobPos(p.positionId)}`;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(fotmobPlayer(p));
-  }
-  const rows = [...groups.entries()]
-    .sort(([a], [b]) => Number.isFinite(Number(a)) && Number.isFinite(Number(b)) ? Number(a) - Number(b) : a.localeCompare(b))
-    .map(([, row]) => row.sort((a, b) => Number(a.verticalLayout?.x ?? 0) - Number(b.verticalLayout?.x ?? 0)));
-  return rows.length > 1 && rows.flat().length === 11 ? rows : null;
-}
+/* fotmobPos / fotmobPlayer / fotmobRows 搬到 lib/adapters/fotmob-match.mjs —— 
+   賽後報告的 adapter 也要用同一份,留兩份的話改了一邊另一邊會悄悄過期。 */
 
 function canonicalFotmobOfficial(record) {
   const side = raw => {
@@ -635,6 +611,27 @@ async function main() {
       }
       console.log(`  SportMonks 西甲賽後快取：${Object.keys(sm.matches ?? {}).length} 場・可發布 ${Object.keys(reports).length} 場（含既有來源）`);
     } catch { console.log('  ⚠ SportMonks 賽後快取損壞,本次略過'); }
+  }
+  /* FotMob 接手(2026-09-03):SportMonks 方案取消之後,新完賽的場次由它供。
+     **排在 SportMonks 之後、而且只補它沒有的場次** —— 既有的 30 場維持原來的
+     來源,不要因為換供應商就把已經核對過的資料重寫一遍。
+     detail 已經在 adapter 裡轉成同一份 canonical 契約,所以這裡用的是
+     同一個 buildProviderMatchReport(它自己還會再核對一次比分)。 */
+  const fotmobDetailPath = join(ROOT, 'data', 'raw', 'fotmob-la-liga', `${CURRENT_SEASON}-match-details.json`);
+  if (existsSync(fotmobDetailPath)) {
+    try {
+      const fm = JSON.parse(await readFile(fotmobDetailPath, 'utf8'));
+      let added = 0;
+      for (const [pair, detail] of Object.entries(fm.matches ?? {})) {
+        if (reports[`${CURRENT_SEASON}|${pair}`]) continue;      // 已有主要來源就不覆蓋
+        const fixture = fixtureByPair.get(pair);
+        const report = buildProviderMatchReport({
+          fixture, detail, nameOf: code => T.byCode.get(code)?.en ?? code,
+        });
+        if (report) { reports[`${CURRENT_SEASON}|${pair}`] = report; added++; }
+      }
+      console.log(`  FotMob 西甲賽後快取:${Object.keys(fm.matches ?? {}).length} 場・補上 ${added} 場`);
+    } catch { console.log('  ⚠ FotMob 賽後快取損壞,本次略過'); }
   }
   const reportCount = Object.keys(reports).length;
   /* 「這一季拿不到」只能在**主要來源一場都發不出來**的時候講。

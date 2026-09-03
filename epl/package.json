@@ -81,7 +81,8 @@
     "en2:news:translate": "node scripts/translate-news.mjs --league=en2",
     "news:todo": "node scripts/news-todo.mjs",
     "news:zh": "node scripts/merge-news-zh.mjs",
-    "probe:laliga-postmatch": "node scripts/probe-laliga-postmatch.mjs"
+    "probe:laliga-postmatch": "node scripts/probe-laliga-postmatch.mjs",
+    "laliga:fotmob-postmatch": "node scripts/fetch-laliga-fotmob.mjs"
   },
   "engines": {
     "node": ">=18"
