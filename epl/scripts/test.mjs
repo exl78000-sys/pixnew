@@ -2034,6 +2034,38 @@ async function checkDataGap() {
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
+    /* ── 歐冠賽程表(2026-09-03 加)──────────────────────────
+       144 場一直都在 `leagueMatches` 裡(開球時間 31 種、matchday 1~8),
+       但盃賽頁只畫了一張全 0 的積分榜 —— **抓到了卻沒接上**,跟外電那次一樣。
+       而且頁首還寫著「上游還沒有開球時間與輪次」,那句話已經是假的。 */
+    ...(() => {
+      const uv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
+      const ucl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'ucl.json'), 'utf8'));
+      const cur = (ucl.seasons ?? []).find(x => (x.played ?? 0) < (x.total ?? 0));
+      const games = cur?.leagueMatches ?? [];
+      return [
+        ['歐冠賽程表有畫出來,而且帶倒數',
+          /function leagueFixtures/.test(uv) && /C\.countdown\(m\.kickoff\)/.test(uv)
+          && /C\.startCountdowns\(\)/.test(uv)],
+        /* 「下一場的輪次」在有場次提前開踢時會指到更後面的一輪 —— 倒數那條坑。 */
+        ['只列還沒踢完的**最小**輪次,不是下一場的輪次',
+          /Math\.min\(\.\.\.open\)/.test(uv)],
+        /* 掃的是**頁首那段介紹**,不是整個檔案 —— `drawView` 裡也有同一句話,
+           但那條路徑只在「上游真的只給了抽籤」時走(availability === 'draw-only'),
+           在那個狀態下那句話是對的。整份掃會把還沒發生的狀態一起判死。 */
+        ['頁首不再說「上游還沒有開球時間與輪次」(那句話已經不成立)', (() => {
+          const i = uv.indexOf('<p class="small muted">');
+          const intro = uv.slice(i, uv.indexOf('</p>', i));
+          return i > 0 && !/開球時間與輪次/.test(intro) && /沒得交叉核對/.test(intro);
+        })()],
+        ['進行中那一季的賽程確實有開球時間與輪次(不是佔位值)',
+          games.length === 0 || (games.every(m => m.kickoff && m.matchday != null)
+            && new Set(games.map(m => m.kickoff)).size > 1),
+          games.length ? `${games.length} 場・${new Set(games.map(m => m.kickoff)).size} 種開球時間` : '(沒有進行中的賽季)'],
+        ['盃賽沒有勝率預測這件事寫在賽程表上', /沒有勝率預測/.test(uv)],
+      ];
+    })(),
+
     /* ── 上季最終戰績搬家(2026-09-03 加)────────────────────── */
     ...(() => {
       const idx = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-index.js'), 'utf8');
