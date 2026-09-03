@@ -18,7 +18,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normaliseFotmobMatch } from './lib/adapters/fotmob-match.mjs';
+import { normaliseFotmobMatch, ADAPTER_VERSION } from './lib/adapters/fotmob-match.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = 'https://www.fotmob.com';
@@ -76,9 +76,16 @@ async function main() {
      matchId 從既有的陣容快取來 —— 不另外打一次聯賽賽程,省一個請求,
      而且那份的隊碼對照已經核對過。 */
   const byKey = new Map(Object.entries(lineups.matches ?? {}));
-  const pending = fixtures.filter(f => f.played
-    && (force || !store.matches[`${f.home}|${f.away}`])
-    && byKey.get(`${f.home}|${f.away}`)?.matchId);
+  /* 重抓的條件有三種:沒抓過、`--force`、**或對映表版本變了**。
+     第三種是自動的 —— 快取存的是轉換後的結果,對映修好之後舊資料不會跟著變,
+     而「記得手動 --force」不是機制。受每次請求上限節制,不會一次全打。 */
+  const stale = key => (store.matches[key]?.adapterVersion ?? 0) !== ADAPTER_VERSION;
+  const pending = fixtures.filter(f => {
+    const key = `${f.home}|${f.away}`;
+    return f.played && byKey.get(key)?.matchId && (force || !store.matches[key] || stale(key));
+  });
+  const restale = pending.filter(f => store.matches[`${f.home}|${f.away}`]).length;
+  if (restale) console.log(`  · 其中 ${restale} 場是對映表改版(v${ADAPTER_VERSION})要重抓的`);
 
   console.log(`  已完賽 ${fixtures.filter(f => f.played).length} 場・快取 ${Object.keys(store.matches).length} 場`
     + `・待補 ${pending.length} 場・本次上限 ${Math.min(limit, DAILY_LIMIT)}`);
@@ -106,7 +113,7 @@ async function main() {
     }
     for (const k of detail.unmappedStats ?? []) unmappedAll.add(k);
     for (const k of detail.unmappedPlayerStats ?? []) unmappedPlayers.add(k);
-    store.matches[key] = detail;
+    store.matches[key] = { ...detail, adapterVersion: ADAPTER_VERSION };
     ok++;
     console.log(`  ✔ ${key} ${f.fh}:${f.fa}`
       + `・陣容 ${detail.coverage.lineups ? '✔' : '✘'}`
