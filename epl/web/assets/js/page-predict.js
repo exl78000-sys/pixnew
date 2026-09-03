@@ -39,9 +39,53 @@ function writeStore(obj) {
   catch { return false; }
 }
 
+/* 開放預測的賽事(2026-09-03 使用者指定:英超、西甲、歐冠)。
+   **寫成明確的清單,不要用「不是英冠就開放」那種二元式** —— 那種寫法在只有
+   幾個聯賽時看起來完全正確,加第四個就會靜靜地把它也放進來(CLAUDE.md 記過
+   `league()` 那條坑)。英冠沒開是使用者的決定,不是技術限制。 */
+const OPEN_LEAGUES = ['pl', 'es1'];
+
+/* 歐冠**沒有勝率預測**:模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字
+   (鐵則二,盃賽頁本來就是這樣寫的)。所以那裡的每一場 prediction 與 market
+   都是 null,計分只算你自己的命中率 —— 畫面上要把原因講出來,
+   不然看起來像資料壞了。 */
+async function uclPool() {
+  try {
+    const { data } = await C.loadFrom('pl', ['ucl', 'ucl-teams']);
+    const seasons = data.ucl?.seasons ?? [];
+    // 還有場次沒踢完的那一季;全部踢完就取最新的一季(賽季之間的空窗)
+    const cur = seasons.find(x => (x.played ?? 0) < (x.total ?? 0)) ?? seasons[0];
+    const games = cur?.leagueMatches ?? [];
+    if (!games.length) return null;
+    const T = data['ucl-teams'] ?? {};
+    const nameBy = new Map(), crestBy = new Map();
+    for (const t of T.teams ?? []) { nameBy.set(`c:${t.code}`, t.zh ?? t.en); crestBy.set(`c:${t.code}`, t.crest ?? null); }
+    for (const t of T.external ?? []) { nameBy.set(`u:${t.id}`, t.en); crestBy.set(`u:${t.id}`, t.crest ?? null); }
+    /* 隊伍的識別碼:本站認得的用隊碼,認不得的用來源方的 team id。
+       **不能用隊名當鍵** —— 名字的拼法會隨上游改,改了就對不回舊紀錄。 */
+    const idOf = side => (side?.code ? `c:${side.code}` : `u:${side?.id}`);
+    return {
+      lg: 'ucl', zh: '歐冠', meta: null, noModel: true,
+      fixtures: games.map(m => ({
+        season: cur.label,
+        home: idOf(m.home), away: idOf(m.away),
+        played: !!m.played,
+        fh: m.final?.[0] ?? null, fa: m.final?.[1] ?? null,
+        kickoff: m.kickoff ?? null, date: String(m.kickoff ?? '').slice(0, 10),
+        round: m.matchday ?? null,
+        prediction: null, market: null,
+      })),
+      nameBy: new Map([...nameBy].map(([k, v]) => [k, v])),
+      crestBy,
+      fallbackName: new Map(games.flatMap(m => [
+        [idOf(m.home), m.home?.name ?? ''], [idOf(m.away), m.away?.name ?? ''],
+      ])),
+    };
+  } catch { return null; }
+}
+
 try {
-  const lgs = Object.keys(C.LEAGUES);
-  const loaded = await Promise.all(lgs.map(async lg => {
+  const loaded = await Promise.all(OPEN_LEAGUES.map(async lg => {
     try {
       const { data } = await C.loadFrom(lg, ['meta', 'fixtures', 'teams']);
       if (!Array.isArray(data.fixtures)) return null;
@@ -52,6 +96,7 @@ try {
       };
     } catch { return null; }
   }));
+  loaded.push(await uclPool());
   const pools = loaded.filter(Boolean);
   if (!pools.length) throw new Error('沒有任何聯賽的賽程');
   C.nav();
@@ -61,7 +106,7 @@ try {
   const state = { lg: pools[0].lg, round: null, tab: 'pick' };
   const cur = () => pools.find(x => x.lg === state.lg);
   const recsOf = lg => (store[lg] ??= {});
-  const nameOf = code => cur().nameBy.get(code) ?? code;
+  const nameOf = code => cur().nameBy.get(code) ?? cur().fallbackName?.get(code) ?? code;
   const crest = code => {
     const c = cur().crestBy.get(code);
     return c ? `<img class="crest" src="${c}" alt="" width="22" height="22" onerror='${HIDE}'>` : '';
@@ -108,7 +153,7 @@ try {
     </div>
 
     ${state.tab === 'pick' ? pickPanel(L, recs) : tablePanel(L, scored)}
-    ${C.foot(L.meta)}`;
+    ${L.meta ? C.foot(L.meta) : ''}`;
     bind();
   }
 
@@ -139,6 +184,11 @@ try {
           這一頁開著也會自己鎖,不用重新整理。</div>
       </div>`;
     })()}
+    ${L.noModel ? `<div class="note info" style="margin-bottom:12px">
+      <b>這個賽事沒有本站的勝率預測,也沒有盤口。</b>模型是用聯賽調的,
+      <b>沒有在盃賽上驗收過</b> —— 延長賽、PK、實力差距極大的對戰都是它沒見過的,
+      套上去就是編數字。所以這裡只記錄你自己的預測與命中率,不跟任何人比。
+    </div>` : ''}
     ${games.map(f => matchRow(f, recs[matchKey(f)])).join('')}
     <div class="note" style="margin-top:14px">
       <b>開球時間一到就鎖。</b>賽後才填的不是預測,所以鎖住的場次不能再改,
@@ -174,7 +224,9 @@ try {
               : '<span class="pill tiny dim">開球時間未定</span>'}</span>
       </div>
 
-      <div class="row small dim" style="gap:14px;margin:8px 0;flex-wrap:wrap">
+      ${/* 歐冠整個賽事都沒有模型與盤口(原因寫在上面那張說明卡),
+           每一列再印一次「模型 — ・市場 尚無盤口」只是重複的噪音。 */''}
+      <div class="row small dim" style="gap:14px;margin:8px 0;flex-wrap:wrap${cur().noModel ? ';display:none' : ''}">
         <span>模型 ${p ? `${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}
           <b class="accent-text">${zh[mp]}</b>` : '—'}</span>
         <span>市場 ${m ? `${C.pct(m.home, 0)} / ${C.pct(m.draw, 0)} / ${C.pct(m.away, 0)}
@@ -218,8 +270,10 @@ try {
       </div>` : '';
     return `
     <div style="margin-top:14px"></div>
-    ${s.vsModel ? '' : '<div class="note">這個聯賽還沒有已完賽的預測。到「這一輪」填幾場,踢完就會出現成績。</div>'}
-    ${line('你 vs 模型', s.vsModel)}
+    ${s.solo ? '' : '<div class="note">這個賽事還沒有已完賽的預測。到「這一輪」填幾場,踢完就會出現成績。</div>'}
+    ${/* 沒有對手的賽事(歐冠)只給你自己的命中率 —— 沒有這一段的話,
+         那裡的預測踢完之後畫面上什麼都不會出現。 */''}
+    ${s.vsModel ? line('你 vs 模型', s.vsModel) : line('你的命中率(這個賽事沒有模型可比)', s.solo)}
     ${s.vsAll && s.vsAll.n !== s.vsModel?.n ? line('你 vs 模型 vs 市場(只算三邊都有的場次)', s.vsAll) : ''}
     ${s.exact ? `<div class="card" style="margin-bottom:10px"><div class="spread"><h3>比分完全猜中</h3>
       <span class="pill tiny">${s.exact.n} 場有填比分</span></div>

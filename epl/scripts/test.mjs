@@ -1998,13 +1998,18 @@ async function checkDataGap() {
         && /renderDuel/.test(explore) && /clearPageTimers/.test(explore)  // 換分頁要收計時器
         && !pagesBlock.includes("'duel'")
         && /跨聯賽/.test(pg) && /crestBy/.test(pg)                  // 頁內選聯賽、隊徽分聯賽表
-        /* 生圖素材(2026-08-30):六張都在、各壓在 300KB 內、
-           img 全掛 onerror 隱藏 —— 單檔版沒有圖檔,要優雅降級不是破圖 */
-        && ['hero', 'pitch', 'goal', 'halftime', 'fulltime', 'dice'].every(n => {
+        /* 生圖素材(2026-08-30):各壓在 300KB 內、img 全掛 onerror 隱藏 ——
+           單檔版沒有圖檔,要優雅降級不是破圖。
+           **hero 那張 2026-09-03 拿掉了**(使用者要求):它是純裝飾、佔滿一個
+           螢幕寬,而下面就是真正要看的球場動畫。留下的四張是**狀態指示**
+           (進球、中場、完場、骰子),跟著比賽在動,不是背景。 */
+        && !existsSync(join(ROOT, 'web', 'assets', 'img', 'duel-hero.webp'))
+        && !/duel-hero/.test(pg)
+        && ['pitch', 'goal', 'halftime', 'fulltime', 'dice'].every(n => {
           const f = join(ROOT, 'web', 'assets', 'img', `duel-${n}.webp`);
           return existsSync(f) && statSync(f).size < 300 * 1024;
         })
-        && (pg.match(/assets\/img\/duel-/g) ?? []).length >= 5
+        && (pg.match(/assets\/img\/duel-/g) ?? []).length >= 4
         /* onerror 可以是字面、也可以是 \${HIDE} 樣板變數(骨架版用後者) */
         && !/img src="assets\/img\/duel-[^"]*"(?![^>]*(?:onerror|\$\{HIDE\}))/.test(pg)
         /* 2D 跑位動畫(2026-08-30):FM 式演出。界線要打在畫面上,
@@ -2237,6 +2242,30 @@ async function checkDataGap() {
         ['預測只存在瀏覽器,產物裡不會出現',
           !readdirSync(join(ROOT, 'web', 'data')).some(f => f.endsWith('.json')
             && readFileSync(join(ROOT, 'web', 'data', f), 'utf8').includes('warroom:predictions'))],
+        /* 開放範圍(2026-09-03 使用者指定:英超、西甲、歐冠)。
+           **必須是明確清單** —— 「不是英冠就開放」那種二元式在只有幾個聯賽時
+           看起來完全正確,加第四個就會靜靜把它放進來(`league()` 那條坑)。 */
+        ['只開放指定的賽事,而且是明確清單不是二元式',
+          /const OPEN_LEAGUES = \['pl', 'es1'\]/.test(page)
+          && /uclPool\(\)/.test(page)
+          && !/Object\.keys\(C\.LEAGUES\)/.test(page)],
+        /* 盃賽沒有勝率預測(模型用聯賽調的,沒在盃賽上驗收過 —— 鐵則二)。
+           那不是資料壞了,畫面要把原因講出來。 */
+        ['歐冠沒有模型與盤口,而且把原因寫在畫面上',
+          /noModel: true/.test(page) && /prediction: null, market: null/.test(page)
+          && /沒有在盃賽上驗收過/.test(page)],
+        ['歐冠的隊伍識別碼用隊碼或來源 id,不用隊名(名字拼法會變)',
+          /const idOf = side => \(side\?\.code \? `c:\$\{side\.code\}` : `u:\$\{side\?\.id\}`\)/.test(page)],
+        ['沒有對手的賽事仍要算得出你自己的命中率', (() => {
+          const fx2 = [{ season: 'S', home: 'A', away: 'B', played: true, fh: 2, fa: 0,
+            kickoff: '2026-01-01T12:00:00Z' }];
+          const out = ps.scorePredictions({ 'S|A|B': { pick: 'home', fh: 2, fa: 0,
+            savedAt: '2026-01-01T10:00:00Z', kickoff: '2026-01-01T12:00:00Z',
+            model: null, market: null } }, fx2);
+          // 沒有模型 → vsModel 是 null,但 solo 要算得出來(不然畫面全空)
+          return out.vsModel === null && out.solo?.n === 1 && out.solo.you === 1
+            && out.solo.model === null && out.solo.market === null;
+        })()],
         ['儲存時把當下的模型與市場凍結進紀錄(不事後重算)',
           /model: P \? \{ home: P\.home/.test(page) && /market: f\.market\?\.probs/.test(page)],
         /* 倒數與自動上鎖(2026-09-02 加)。上鎖是**就地改那一張卡**,不是整頁重畫 ——
