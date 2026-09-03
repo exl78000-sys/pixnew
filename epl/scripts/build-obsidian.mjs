@@ -129,6 +129,7 @@ function collectPlayers(lg, meta) {
       captain: p.captain || null, statusZh: p.statusZh, news: p.news || null,
       price: p.price, transferred: p.transferred || null, lastTeam: p.lastTeam,
       tracking: p.tracking ?? null,   // 逐人跑動與熱區(FotMob),沒有就 null,renderPlayer 整節不寫
+      code: p.code,                   // 逐場紀錄用 code 查 player-logs
       photo: p.photo ?? null,
       loans: p.loans ?? [],
       seasons: [
@@ -217,8 +218,21 @@ function renderPlayer(p, ctx) {
     }
     body.push(`\n> 不是每場都有追蹤資料,場數另記;本站只搬運不推估。\n`);
   }
+  /* links 在下面才宣告(球隊、名單那些),這裡先收進 logOppLinks,宣告 links 時併進去 —— 直接 push 會 TDZ 炸掉(踩到) */
+  const logOppLinks = [];
+  const logs = p.code != null ? ctx.logsFor?.(p.code) : null;
+  if (logs?.length) {
+    const v = x => (x == null ? '—' : x);
+    body.push(`\n## 逐場紀錄(FotMob,${logs.length} 場)\n\n| 日期 | 對手 | 比分 | 分鐘 | 評分 | 球 | 助 | 射門/正 | 關鍵傳球 | xG | 跑動 km |\n|---|---|---|---|---|---|---|---|---|---|---|\n`);
+    for (const r of [...logs].sort((a, b) => b.date.localeCompare(a.date))) {
+      const opp = ctx.teamNameOf(r.opp);
+      if (opp) logOppLinks.push(opp);
+      body.push(`| ${r.date} | ${r.home ? '主' : '客'} ${opp ? wl(opp) : r.opp} | ${r.score} | ${r.min}${r.sub ? '↑' : ''} | ${r.rating == null ? '—' : r.rating.toFixed(1)} | ${v(r.goals)} | ${v(r.assists)} | ${v(r.shots)}/${v(r.shotsOn)} | ${v(r.keyPasses)} | ${r.xg == null ? '—' : r.xg.toFixed(2)} | ${r.distance == null ? '—' : (r.distance / 1000).toFixed(1)} |\n`);
+    }
+    body.push(`\n> ↑ = 替補上場。xG 是該場逐射門 xG 合計;跑動是追蹤資料,不是每場都有。\n`);
+  }
 
-  const links = [];
+  const links = [...logOppLinks];
   if (teamName) { links.push(teamName); }
   const teamCell = teamName ? wl(teamName)
     : (p.teamCode ? `${p.teamCode} —— 本季不在${ctx.lg.zh},沒有球隊筆記` : null);
@@ -778,6 +792,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   /* 逐場統計(FotMob,2026-09-03):控球、球隊統計、逐射門 xG、事件。英超才有;沒有檔就整段不寫。
      使用者指定 Obsidian vault 是這批資料的「資料庫」,所以比賽筆記與球隊筆記都要寫進去。 */
   const matchStats = load(lg.key, 'matchstats');
+  const playerLogs = load(lg.key, 'player-logs');
   /* 走查回測的預測**是**賽前預測 —— 訓練資料只到該輪開賽前,
      跟 fixtures.json 那個建置時重算的完全不是同一回事。
      所以這一份可以放心印在已完賽的場次上,而且要講清楚它是哪一種。 */
@@ -841,6 +856,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     goalsFor: code => goalsFile?.data?.[meta.lastSeason]?.teams?.[code] ?? null,
     goalsSeason: meta.lastSeason, goalsNote: goalsFile?.note ?? null,
     matchStatsFor: m => matchStats?.matches?.[m.season + '|' + m.home + '|' + m.away] ?? null,
+    logsFor: code => playerLogs?.logs?.[String(code)] ?? null,
     teamMatchStatsFor: code => matchStats?.teams?.[code] ?? null,
     matchStatsVerification: matchStats?.verification ?? null,
     /* 租借往來:跨聯賽單一份,掛英超目錄(cups 慣例)—— 三個聯賽的球隊筆記都從這裡讀 */
