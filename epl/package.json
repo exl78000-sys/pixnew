@@ -80,7 +80,8 @@
     "laliga:news:translate": "node scripts/translate-news.mjs --league=es1",
     "en2:news:translate": "node scripts/translate-news.mjs --league=en2",
     "news:todo": "node scripts/news-todo.mjs",
-    "news:zh": "node scripts/merge-news-zh.mjs"
+    "news:zh": "node scripts/merge-news-zh.mjs",
+    "probe:laliga-postmatch": "node scripts/probe-laliga-postmatch.mjs"
   },
   "engines": {
     "node": ">=18"

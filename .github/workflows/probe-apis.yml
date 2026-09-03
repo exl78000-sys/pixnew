@@ -129,3 +129,10 @@ jobs:
               '| 本季', JSON.stringify(j.competition.currentSeason),
               '| 回報賽季數', j.competition.seasons.length);
             for (const [k,v] of Object.entries(j.seasons)) console.log(JSON.stringify({season:k, ...v}));" || echo '(無)'
+
+      # SportMonks 方案 2026-09-03 取消後,探 FotMob 能不能接手西甲賽後資料。
+      # 唯讀、最多 3 個請求、不寫任何快取。
+      - name: 探測西甲賽後資料的替代來源(FotMob)
+        working-directory: epl
+        run: npm run probe:laliga-postmatch
+        continue-on-error: true
