@@ -260,7 +260,8 @@ try {
                看起來像壞掉,實際是我們沒有這些資料(鐵則三)。
                反過來,currentSeasonRecord(本季、外部交付並核對過)兩個聯賽都有,
                但這張卡以前一行都沒顯示。 */
-            c.currentSeasonRecord?.p ? [`${c.currentSeasonRecord.season ?? meta.currentSeason} 任內`, rec(c.currentSeasonRecord)] : null,
+            /* tenureUnknown(西甲):任期不知道,那是球隊本季戰績、視為整季在任 —— 標籤要講,不然讀者以為是任內 */
+            c.currentSeasonRecord?.p ? [`${c.currentSeasonRecord.season ?? meta.currentSeason}${c.currentSeasonRecord.tenureUnknown ? '(任期未知,視為整季在任)' : ' 任內'}`, rec(c.currentSeasonRecord)] : null,
             c.seasonRecord?.p ? [`${meta.lastSeason} 任內`, rec(c.seasonRecord)] : null,
             c.allRecord?.p ? ['近三季任內', rec(c.allRecord)] : null,
             c.caretaker === true ? ['身分', '<span class="pill warn tiny">看守教練</span>'] : null,

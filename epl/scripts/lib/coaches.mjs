@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { round } from './util.mjs';
 
 // 用任期區間切分比賽,算出每位教練的實際戰績
-function recordFor(matches, code, from, to) {
+export function recordFor(matches, code, from, to) {
   const rec = { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 };
   for (const m of matches) {
     if (!m.played || (m.home !== code && m.away !== code)) continue;

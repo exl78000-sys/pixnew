@@ -33,6 +33,7 @@ import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
 import { loadFotmobMatchStats, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
+import { recordFor } from './lib/coaches.mjs';
 import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
 import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage, playerPosition as sportmonksPlayerPosition } from './lib/adapters/sportmonks.mjs';
@@ -438,25 +439,23 @@ async function main() {
     const fmGoalsAll = fotmobGoals(ROOT);
     const gv = fmGoalsAll ? verifyGoals('es1', fmGoalsAll, ourPlayed) : { newer: [] };
     const cv = verifyCoachRecords('es1', fmCoaches, ourPlayed, gv.newer);
-    for (const { coach } of cv.agree) {
-      const target = coachBy0.get(coach.team);
-      /* 掛在 currentSeasonRecord,**不是 seasonRecord** —— 這是本季的戰績。
-         英超那邊 seasonRecord 是「上季完整 38 場」、currentSeasonRecord 是本季,
-         兩個聯賽用同一組欄位名前端才能共用一張表;
-         以前西甲把本季塞進 seasonRecord,合併時就會拿本季 1 場去跟英超上季 38 場排在一起。 */
-      if (target) target.currentSeasonRecord = { season: CURRENT_SEASON, ...coach.seasonRecord };
-    }
+    /* 2026-09-04 起交付檔只當交叉核對,不當來源:那份是 2026-08 交付的,戰績停在交付當下,
+       之後每一輪都對不上(實測 0/19),等於永遠不採用。本季戰績本站自己從賽果算得出來,
+       但**教練任期未知**(上游 since 全 null),所以算的是「球隊本季戰績、視為整季在任」,旗標與畫面都要講。 */
     coachRecordSource = {
       source: fmCoaches.source, retrievedAt: fmCoaches.retrievedAt,
       verified: cv.agree.length, differ: cv.differ.length, noRecord: cv.noRecord.length,
-      // 上游比我們新的場次要講出來 —— 那是「我們的賽果還沒更新」不是「資料錯」
       aheadMatches: gv.newer.map(x => x.key),
-      note: 'FotMob 交付的教練本季戰績,已用本站 openfootball 賽果逐欄位核對;'
-        + '對不上的整隊不採用。接任日期上游沒有,維持未知。',
+      note: '本季戰績由本站賽果計算(教練任期未知,視為整季在任);FotMob 交付檔只作交叉核對,'
+        + `這次 ${cv.agree.length} 隊一致、${cv.differ.length} 隊不一致(交付檔停在交付當下,場次落後)。接任日期上游沒有,維持未知。`,
     };
-    console.log(`  教練戰績(FotMob):核對通過 ${cv.agree.length} 隊`
-      + (cv.differ.length ? `・對不上 ${cv.differ.length} 隊(不採用)` : '')
-      + (gv.newer.length ? `・上游多 ${gv.newer.length} 場(已計入核對)` : ''));
+    console.log(`  教練戰績:本站賽果計算・FotMob 交付檔交叉核對 ${cv.agree.length} 隊一致`
+      + (cv.differ.length ? `・${cv.differ.length} 隊不一致(交付檔落後,不採用)` : '')
+      + (gv.newer.length ? `・上游多 ${gv.newer.length} 場` : ''));
+  }
+  for (const c of coachData) {
+    const r = recordFor(curPlayed, c.team);
+    if (r.p) c.currentSeasonRecord = { season: CURRENT_SEASON, tenureUnknown: true, ...r };
   }
   const coachPhotos = loadCoachPhotos(ROOT);
   for (const c of coachData) {

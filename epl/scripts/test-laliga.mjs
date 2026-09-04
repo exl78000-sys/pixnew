@@ -639,5 +639,16 @@ check('摘要漏掉大部分數字 → 擋下',
   }
 }
 
+/* 教練本季戰績(2026-09-04):本站賽果算的,場數要等於該隊本季已賽場數,並標 tenureUnknown */
+{
+  const co = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'coaches.json'), 'utf8'));
+  const list = co.coaches ?? co;
+  const fx = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json'), 'utf8'));
+  const playedOf = code => fx.filter(f => f.played && (f.home === code || f.away === code)).length;
+  const withRec = list.filter(c => c.currentSeasonRecord?.p);
+  check('教練本季戰績由本站賽果計算,場數等於該隊本季已賽場數', withRec.length > 0 && withRec.every(c => c.currentSeasonRecord.p === playedOf(c.team)), `${withRec.length} 隊`);
+  check('教練任期未知的戰績有標 tenureUnknown', withRec.every(c => c.currentSeasonRecord.tenureUnknown === true));
+}
+
 if (process.exitCode) throw new Error('西甲球隊數據第二版自我檢查失敗');
 console.log('  西甲球隊數據第二版全部通過');
