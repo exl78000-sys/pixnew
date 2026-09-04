@@ -48726,8 +48726,1577 @@
      }
     ]
    }
+  },
+  "RSO|CEL": {
+   "key": "RSO|CEL",
+   "season": "2026-27",
+   "date": "2026-09-03",
+   "matchId": "5868070",
+   "home": "RSO",
+   "away": "CEL",
+   "score": [
+    0,
+    0
+   ],
+   "providerScore": [
+    0,
+    0
+   ],
+   "teamStats": {
+    "RSO": {
+     "possession": 51,
+     "shots": 16,
+     "shotsOn": 5,
+     "shotsOff": 3,
+     "blockedShots": 2,
+     "corners": 11,
+     "offsides": 2,
+     "fouls": 15,
+     "saves": 2,
+     "passes": 526,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.05
+    },
+    "CEL": {
+     "possession": 49,
+     "shots": 7,
+     "shotsOn": 2,
+     "shotsOff": 3,
+     "blockedShots": 8,
+     "corners": 3,
+     "offsides": 1,
+     "fouls": 11,
+     "saves": 5,
+     "passes": 522,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.43
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     51,
+     49
+    ],
+    "h1": [
+     62,
+     38
+    ],
+    "h2": [
+     41,
+     59
+    ]
+   },
+   "events": [
+    {
+     "minute": 22,
+     "extra": null,
+     "team": "RSO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Yangel Herrera"
+    },
+    {
+     "minute": 52,
+     "extra": null,
+     "team": "CEL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Yoel Lago"
+    },
+    {
+     "minute": 57,
+     "extra": null,
+     "team": "CEL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Marcos Alonso"
+    },
+    {
+     "minute": 61,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jon Gorrotxategi"
+    },
+    {
+     "minute": 61,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Luka Sucic"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pablo Durán"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Iago Aspas"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Couhaib Driouech"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Álex Marchal"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gonçalo Guedes"
+    },
+    {
+     "minute": 79,
+     "extra": null,
+     "team": "CEL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Couhaib Driouech"
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "team": "RSO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Luka Sucic"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Javi Rodríguez"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Javi Galán"
+    },
+    {
+     "minute": 88,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Carlos Soler"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "RSO",
+     "player": "Orri Óskarsson",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 22.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "CEL",
+     "player": "Ilaix Moriba",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.5,
+     "y": 33.6,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "RSO",
+     "player": "Jon Martín",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.061,
+     "xgot": 0.565,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 32.7,
+     "foot": "Header"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "RSO",
+     "player": "Beñat Turrientes",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0.073,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 25.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "RSO",
+     "player": "Mikel Oyarzabal",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.15,
+     "xgot": 0.092,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.9,
+     "y": 46,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "RSO",
+     "player": "Takefusa Kubo",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.485,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 36.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "RSO",
+     "player": "Yangel Herrera",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0.193,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.8,
+     "y": 23.6,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "CEL",
+     "player": "Javi Rueda",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88,
+     "y": 25.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "CEL",
+     "player": "Ilaix Moriba",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.3,
+     "y": 42.1,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "RSO",
+     "player": "Beñat Turrientes",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0.117,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.3,
+     "y": 32.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "RSO",
+     "player": "Ander Barrenetxea",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.3,
+     "y": 29.2,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "CEL",
+     "player": "Andrés Antañón",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.15,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 36.1,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "RSO",
+     "player": "Mikel Oyarzabal",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81,
+     "y": 49.8,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "CEL",
+     "player": "Álvaro Núñez",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.005,
+     "xgot": 0.031,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77,
+     "y": 23.5,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "RSO",
+     "player": "Luka Sucic",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 38.6,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "CEL",
+     "player": "Iago Aspas",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.113,
+     "xgot": 0.082,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 31.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "CEL",
+     "player": "Iago Aspas",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 20.8,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "RSO",
+     "player": "Gonçalo Guedes",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82,
+     "y": 22.3,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "RSO",
+     "player": "Jon Aramburu",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.027,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 30.1,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "RSO",
+     "player": "Álex Marchal",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79,
+     "y": 39.9,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "RSO",
+     "player": "Gonçalo Guedes",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.009,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.3,
+     "y": 43.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "RSO",
+     "player": "Álex Marchal",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.7,
+     "y": 40.6,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "RSO",
+     "player": "Luka Sucic",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.009,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.9,
+     "y": 41.9,
+     "foot": "LeftFoot"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     4,
+     16
+    ],
+    [
+     5,
+     33
+    ],
+    [
+     6,
+     71
+    ],
+    [
+     7,
+     60
+    ],
+    [
+     8,
+     65
+    ],
+    [
+     9,
+     19
+    ],
+    [
+     10,
+     14
+    ],
+    [
+     11,
+     24
+    ],
+    [
+     12,
+     60
+    ],
+    [
+     13,
+     60
+    ],
+    [
+     14,
+     33
+    ],
+    [
+     15,
+     0
+    ],
+    [
+     16,
+     0
+    ],
+    [
+     17,
+     38
+    ],
+    [
+     18,
+     49
+    ],
+    [
+     19,
+     76
+    ],
+    [
+     20,
+     38
+    ],
+    [
+     21,
+     54
+    ],
+    [
+     22,
+     27
+    ],
+    [
+     23,
+     -5
+    ],
+    [
+     24,
+     -27
+    ],
+    [
+     25,
+     -27
+    ],
+    [
+     26,
+     -5
+    ],
+    [
+     27,
+     -5
+    ],
+    [
+     28,
+     0
+    ],
+    [
+     29,
+     33
+    ],
+    [
+     30,
+     60
+    ],
+    [
+     31,
+     65
+    ],
+    [
+     32,
+     49
+    ],
+    [
+     33,
+     11
+    ],
+    [
+     34,
+     5
+    ],
+    [
+     35,
+     8
+    ],
+    [
+     36,
+     30
+    ],
+    [
+     37,
+     -11
+    ],
+    [
+     38,
+     -35
+    ],
+    [
+     39,
+     -57
+    ],
+    [
+     40,
+     -38
+    ],
+    [
+     41,
+     -38
+    ],
+    [
+     42,
+     -27
+    ],
+    [
+     43,
+     0
+    ],
+    [
+     44,
+     22
+    ],
+    [
+     45,
+     38
+    ],
+    [
+     45.5,
+     54
+    ],
+    [
+     46,
+     11
+    ],
+    [
+     47,
+     14
+    ],
+    [
+     48,
+     14
+    ],
+    [
+     49,
+     -57
+    ],
+    [
+     50,
+     -73
+    ],
+    [
+     51,
+     -100
+    ],
+    [
+     52,
+     -100
+    ],
+    [
+     53,
+     -100
+    ],
+    [
+     54,
+     -3
+    ],
+    [
+     55,
+     -8
+    ],
+    [
+     56,
+     -19
+    ],
+    [
+     57,
+     -22
+    ],
+    [
+     58,
+     -16
+    ],
+    [
+     59,
+     -5
+    ],
+    [
+     60,
+     0
+    ],
+    [
+     61,
+     0
+    ],
+    [
+     62,
+     -11
+    ],
+    [
+     63,
+     -11
+    ],
+    [
+     64,
+     -38
+    ],
+    [
+     65,
+     -60
+    ],
+    [
+     66,
+     -43
+    ],
+    [
+     67,
+     -27
+    ],
+    [
+     68,
+     -14
+    ],
+    [
+     69,
+     -35
+    ],
+    [
+     70,
+     -43
+    ],
+    [
+     71,
+     -52
+    ],
+    [
+     72,
+     -62
+    ],
+    [
+     73,
+     -87
+    ],
+    [
+     74,
+     -100
+    ],
+    [
+     75,
+     -98
+    ],
+    [
+     76,
+     -16
+    ],
+    [
+     77,
+     43
+    ],
+    [
+     78,
+     49
+    ],
+    [
+     79,
+     11
+    ],
+    [
+     80,
+     -49
+    ],
+    [
+     81,
+     -54
+    ],
+    [
+     82,
+     -76
+    ],
+    [
+     83,
+     -22
+    ],
+    [
+     84,
+     -49
+    ],
+    [
+     85,
+     -16
+    ],
+    [
+     86,
+     0
+    ],
+    [
+     87,
+     0
+    ],
+    [
+     88,
+     -11
+    ],
+    [
+     89,
+     0
+    ],
+    [
+     90,
+     33
+    ],
+    [
+     90.5,
+     7
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "RSO": {
+     "team": "RSO",
+     "formation": "4-2-3-1",
+     "coach": "Pellegrino Matarazzo",
+     "xi": [
+      {
+       "name": "Alex Remiro",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Jon Aramburu",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Jon Martín",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Igor Zubeldia",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Sergio Gómez",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Yangel Herrera",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Beñat Turrientes",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Takefusa Kubo",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Mikel Oyarzabal",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Ander Barrenetxea",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Orri Óskarsson",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jon Gorrotxategi",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Luka Sucic",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Álex Marchal",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Gonçalo Guedes",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Carlos Soler",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Unai Marrero",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Aihen Muñoz",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Héctor Fort",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Luken Beitia",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Mamadou Sarr",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Arsen Zakharyan",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Job Ochieng",
+       "shirt": 12,
+       "pos": "?"
+      }
+     ]
+    },
+    "CEL": {
+     "team": "CEL",
+     "formation": "3-4-3",
+     "coach": "Claudio Giráldez",
+     "xi": [
+      {
+       "name": "Ionut Radu",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Álvaro Núñez",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Yoel Lago",
+       "shirt": 18,
+       "pos": "D"
+      },
+      {
+       "name": "Marcos Alonso",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Javi Rueda",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Miguel Román",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Ilaix Moriba",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Sergio Carreira",
+       "shirt": 5,
+       "pos": "M"
+      },
+      {
+       "name": "Andrés Antañón",
+       "shirt": 28,
+       "pos": "F"
+      },
+      {
+       "name": "Ferrán Jutglà",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Williot Swedberg",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Iago Aspas",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo Durán",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Couhaib Driouech",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Javi Galán",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Javi Rodríguez",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Altay Bayindir",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Abdoulaye Faye",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Carl Starfelt",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Burcio",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Jones El-Abdellaoui",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Álvarez",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo González",
+       "shirt": 16,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 29,
+      "center": 23,
+      "right": 48
+     },
+     "firstHalf": {
+      "left": 30,
+      "center": 22,
+      "right": 48
+     },
+     "secondHalf": {
+      "left": 28,
+      "center": 24,
+      "right": 48
+     }
+    },
+    "away": {
+     "total": {
+      "left": 39,
+      "center": 19,
+      "right": 42
+     },
+     "firstHalf": {
+      "left": 42,
+      "center": 24,
+      "right": 34
+     },
+     "secondHalf": {
+      "left": 38,
+      "center": 16,
+      "right": 46
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 0,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-04T17:40:53.329Z",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "CEL",
+      "name": "Ilaix Moriba",
+      "n": 71,
+      "cx": 51,
+      "cy": 32.4,
+      "spread": 25.3,
+      "grid": "2,2,5,1,0,0,2,3,11,11,6,0,0,4,2,5,7,0,2,1,0,3,4,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Ionut Radu",
+      "n": 53,
+      "cx": 7.9,
+      "cy": 35.5,
+      "spread": 9.4,
+      "grid": "1,0,0,0,0,0,14,0,0,0,0,0,35,1,0,0,0,0,1,1,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Sergio Gómez",
+      "n": 109,
+      "cx": 47.7,
+      "cy": 16.1,
+      "spread": 33.1,
+      "grid": "10,23,16,14,6,2,6,4,5,8,2,0,0,0,0,1,1,1,0,0,0,0,2,8"
+     },
+     {
+      "team": "CEL",
+      "name": "Javi Rueda",
+      "n": 74,
+      "cx": 54.9,
+      "cy": 59.4,
+      "spread": 31.4,
+      "grid": "0,0,0,0,0,0,3,0,0,0,0,0,3,1,0,1,1,1,7,12,6,7,24,8"
+     },
+     {
+      "team": "RSO",
+      "name": "Jon Martín",
+      "n": 97,
+      "cx": 39.6,
+      "cy": 37.9,
+      "spread": 28.6,
+      "grid": "2,3,4,2,0,0,5,12,6,6,0,1,3,4,9,11,0,3,8,6,4,4,4,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Andrés Antañón",
+      "n": 26,
+      "cx": 50.8,
+      "cy": 47,
+      "spread": 28.2,
+      "grid": "0,0,0,0,0,0,1,0,0,0,2,1,0,6,1,1,2,0,0,4,2,1,4,1"
+     },
+     {
+      "team": "RSO",
+      "name": "Yangel Herrera",
+      "n": 61,
+      "cx": 53.3,
+      "cy": 35.2,
+      "spread": 25.9,
+      "grid": "0,3,4,2,2,1,1,2,5,4,1,0,1,4,5,7,2,1,0,1,3,6,6,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Williot Swedberg",
+      "n": 34,
+      "cx": 60.9,
+      "cy": 14.1,
+      "spread": 27.6,
+      "grid": "0,4,3,7,8,2,2,1,0,0,3,1,0,0,2,0,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Takefusa Kubo",
+      "n": 36,
+      "cx": 73.3,
+      "cy": 55.2,
+      "spread": 24.8,
+      "grid": "0,0,0,0,0,0,0,1,0,0,1,1,0,1,1,0,3,1,0,3,1,4,9,10"
+     },
+     {
+      "team": "RSO",
+      "name": "Orri Óskarsson",
+      "n": 23,
+      "cx": 64.3,
+      "cy": 27.1,
+      "spread": 28.2,
+      "grid": "0,0,2,0,3,1,0,1,2,1,2,2,0,0,4,0,1,2,0,0,2,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Mikel Oyarzabal",
+      "n": 56,
+      "cx": 66.4,
+      "cy": 42.1,
+      "spread": 29.9,
+      "grid": "0,1,1,0,4,3,0,0,1,1,4,2,0,0,4,5,4,2,0,4,6,3,8,3"
+     },
+     {
+      "team": "CEL",
+      "name": "Miguel Román",
+      "n": 53,
+      "cx": 55.2,
+      "cy": 44,
+      "spread": 29.6,
+      "grid": "0,1,0,1,1,2,1,1,3,1,0,0,1,3,3,5,8,0,3,3,4,4,7,1"
+     },
+     {
+      "team": "CEL",
+      "name": "Ferrán Jutglà",
+      "n": 37,
+      "cx": 68.1,
+      "cy": 20.9,
+      "spread": 25.9,
+      "grid": "0,1,4,5,4,2,0,0,4,2,7,3,0,0,0,1,1,0,0,0,0,2,1,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Jon Aramburu",
+      "n": 102,
+      "cx": 55.7,
+      "cy": 58.3,
+      "spread": 26.9,
+      "grid": "0,0,0,0,0,1,1,0,0,0,1,0,3,1,1,2,6,1,4,15,19,14,26,7"
+     },
+     {
+      "team": "RSO",
+      "name": "Alex Remiro",
+      "n": 57,
+      "cx": 12.7,
+      "cy": 32,
+      "spread": 12.5,
+      "grid": "1,2,0,0,0,0,18,7,1,0,0,0,20,7,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Igor Zubeldia",
+      "n": 74,
+      "cx": 40.5,
+      "cy": 40.6,
+      "spread": 24.7,
+      "grid": "1,6,0,2,0,0,3,6,3,1,0,0,2,6,10,13,0,0,2,6,5,7,1,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Marcos Alonso",
+      "n": 107,
+      "cx": 42.1,
+      "cy": 18.3,
+      "spread": 25.8,
+      "grid": "4,16,6,17,10,1,9,10,8,13,2,0,8,0,3,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Sergio Carreira",
+      "n": 93,
+      "cx": 51.4,
+      "cy": 15.7,
+      "spread": 30.6,
+      "grid": "7,15,10,13,18,2,1,1,3,3,8,0,1,4,0,0,0,1,2,0,0,2,2,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Beñat Turrientes",
+      "n": 69,
+      "cx": 49.7,
+      "cy": 32.7,
+      "spread": 29,
+      "grid": "0,1,8,3,2,0,3,8,4,4,1,0,2,5,2,4,10,1,0,2,1,4,2,2"
+     },
+     {
+      "team": "RSO",
+      "name": "Ander Barrenetxea",
+      "n": 48,
+      "cx": 62.3,
+      "cy": 14.4,
+      "spread": 29.1,
+      "grid": "2,4,10,5,6,7,1,1,1,0,4,2,0,0,0,2,1,1,0,0,0,0,1,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Yoel Lago",
+      "n": 72,
+      "cx": 40.1,
+      "cy": 41.3,
+      "spread": 24.2,
+      "grid": "1,0,0,1,0,0,3,7,3,2,1,0,8,12,5,13,0,1,0,2,3,8,2,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Álvaro Núñez",
+      "n": 93,
+      "cx": 48.7,
+      "cy": 54.5,
+      "spread": 24.1,
+      "grid": "0,0,0,0,0,0,2,2,2,0,0,0,0,5,1,7,3,0,8,10,12,28,11,2"
+     },
+     {
+      "team": "RSO",
+      "name": "Jon Gorrotxategi",
+      "n": 22,
+      "cx": 43.7,
+      "cy": 32.9,
+      "spread": 25.5,
+      "grid": "0,1,0,1,0,0,2,2,3,3,0,0,2,2,1,4,0,0,0,0,0,0,1,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Luka Sucic",
+      "n": 21,
+      "cx": 58.1,
+      "cy": 36.5,
+      "spread": 25.3,
+      "grid": "0,0,0,0,1,0,0,1,1,2,4,0,0,1,1,5,2,0,1,2,0,0,0,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Iago Aspas",
+      "n": 31,
+      "cx": 68.3,
+      "cy": 51,
+      "spread": 20,
+      "grid": "0,0,0,0,0,0,0,0,1,0,1,0,0,2,1,0,5,3,0,1,1,5,11,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Pablo Durán",
+      "n": 29,
+      "cx": 66.2,
+      "cy": 26.4,
+      "spread": 30.2,
+      "grid": "0,1,2,1,4,2,0,2,0,2,1,2,0,1,4,0,5,0,0,0,0,0,1,1"
+     },
+     {
+      "team": "CEL",
+      "name": "Couhaib Driouech",
+      "n": 37,
+      "cx": 65,
+      "cy": 11.2,
+      "spread": 29.4,
+      "grid": "2,3,1,5,12,5,0,4,0,0,3,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Gonçalo Guedes",
+      "n": 15,
+      "cx": 67.7,
+      "cy": 29.2,
+      "spread": 27.8,
+      "grid": "0,0,2,1,2,0,0,0,0,1,1,2,0,0,0,1,3,0,0,2,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Álex Marchal",
+      "n": 19,
+      "cx": 62.6,
+      "cy": 17.9,
+      "spread": 31.5,
+      "grid": "0,4,2,1,1,3,0,0,2,0,2,2,0,0,0,0,0,0,0,0,0,0,2,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Javi Rodríguez",
+      "n": 4,
+      "cx": 42.8,
+      "cy": 54,
+      "spread": 21,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,1,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Javi Galán",
+      "n": 12,
+      "cx": 41.7,
+      "cy": 9.2,
+      "spread": 31.3,
+      "grid": "2,3,3,0,0,2,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Carlos Soler",
+      "n": 8,
+      "cx": 79.7,
+      "cy": 17.4,
+      "spread": 27.3,
+      "grid": "0,0,0,1,0,3,0,0,0,2,0,0,0,0,1,0,0,1,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-04T02:25:37.902Z"
+ "updatedAt": "2026-09-04T17:40:54.210Z"
 }
