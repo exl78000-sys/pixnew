@@ -1,4 +1,4 @@
-import * as C from './core.js?v=be9d8572';
+import * as C from './core.js?v=3751e6a2';
 
 const app = document.getElementById('app');
 
@@ -44,7 +44,8 @@ try {
   /* 這一頁的分頁清單。只列這個聯賽真的開放的頁 —— open 是 null 代表全開(英超)。 */
   const openPages = lg => ['index', 'live', 'teams', 'tactics', 'players', 'news', 'model']
     .filter(p => !C.closedPage(lg, p));
-  const pageLink = (page, lg) => (lg === 'pl' ? C.link(page) : C.link(page, { league: lg }));
+  /* 一律明講聯賽。寫成「pl 就不給」會在站在西甲時被 link() 繼承成 es1(踩過) */
+  const pageLink = (page, lg) => C.link(page, { league: lg });
 
   const leagueCard = ({ lg, data }) => {
     const L = C.LEAGUES[lg];
@@ -120,7 +121,7 @@ try {
           home: h?.en ?? f.home, away: a?.en ?? f.away,
           hCrest: h?.crest ?? null, aCrest: a?.crest ?? null,
           note: `第 ${f.round} 輪`, pending: false,
-          link: C.link('analysis', { id: f.id, league: lg === 'pl' ? null : lg }) });
+          link: C.link('analysis', { id: f.id, league: lg }) });
       }
     }
     const known = new Set(leagues.flatMap(({ data }) =>

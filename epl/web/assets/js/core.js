@@ -189,9 +189,17 @@ export function league() {
   return v && Object.hasOwn(LEAGUES, v) ? v : 'pl';
 }
 
+/* league 三種寫法,意思不一樣:
+   - 沒給:繼承目前聯賽(站內連結的預設)。
+   - 明確給 'pl':就是英超,**不繼承**;網址不帶 league(pl 是預設值,保持乾淨)。
+   - 明確給別的聯賽:照給。
+   踩過的坑(2026-09-05):總覽頁把英超寫成 `league: null`,想表達「英超」,但 null 在這裡
+   等於「沒給」→ 站在西甲時繼承成 es1 → 英超場次 id 拿去西甲賽程找,進去是另一場比賽。 */
 export function link(page, params = {}) {
   const values = { ...params };
+  const explicitPl = values.league === 'pl';
   if (values.league == null && league() !== 'pl') values.league = league();
+  if (explicitPl) delete values.league;
   const q = new URLSearchParams(Object.entries(values).filter(([, v]) => v != null)).toString();
   return BUNDLE ? `#${page}${q ? '?' + q : ''}` : `${page}.html${q ? '?' + q : ''}`;
 }

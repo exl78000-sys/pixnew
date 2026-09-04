@@ -327,6 +327,9 @@ async function main() {
   console.log('\n▶ 兩隊對照條長自我檢查');
   const barFail = await checkBars();
 
+  console.log('\n▶ 跨聯賽連結自我檢查');
+  const linkFail = await checkLinks();
+
   console.log('\n▶ 資料缺口判斷自我檢查');
   const gapFail = await checkDataGap();
 
@@ -374,7 +377,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || teamFail || gapFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1104,6 +1107,33 @@ function checkTeamNames(T) {
    core.js 是給瀏覽器用的,模組載入時會綁一個 keydown。這裡補一個最小的
    document 樁就能在 Node 裡載入真正的元件 —— 抄一份到測試裡是沒有意義的,
    抄本不會跟著壞。 */
+/* 跨聯賽連結:站在西甲時,總覽頁連到英超的場次必須真的是英超。
+   link() 對 league 的三種寫法(沒給／明確 pl／明確別的)意思不同,這裡把三種都釘住。
+   location 在 Node 裡沒有,補一個只有 search 的樁 —— league() 只讀這個。 */
+async function checkLinks() {
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const at = search => { globalThis.location = { search, hash: '' }; };
+  const cases = [];
+  at('?league=es1');
+  cases.push(['站在西甲,沒給 league 就繼承 es1', V.link('teams') === 'teams.html?league=es1', V.link('teams')]);
+  cases.push(['站在西甲,明確給 pl 就是英超,網址不帶 league', V.link('analysis', { id: 'x', league: 'pl' }) === 'analysis.html?id=x', V.link('analysis', { id: 'x', league: 'pl' })]);
+  cases.push(['站在西甲,明確給 en2 照給', V.link('teams', { league: 'en2' }) === 'teams.html?league=en2', V.link('teams', { league: 'en2' })]);
+  at('');
+  cases.push(['站在英超,明確給 pl 也不帶 league', V.link('index', { league: 'pl' }) === 'index.html', V.link('index', { league: 'pl' })]);
+  cases.push(['站在英超,沒給 league 就是英超', V.link('index') === 'index.html', V.link('index')]);
+  delete globalThis.location;
+  // 總覽頁不准再用「pl 就不給」那種寫法
+  const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+  cases.push(['總覽頁的連結一律明講聯賽', !/lg === 'pl' \? (null|C\.link)/.test(src), '']);
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
 async function checkBars() {
   globalThis.document ??= { addEventListener() {} };
   const V = await import('../web/assets/js/core.js');
