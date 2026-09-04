@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6ce2cd6c';
+import * as C from './core.js?v=be9d8572';
 
 /* ── 賽程列表 + 單場速覽抽屜(共用模組) ─────────────────────────
    原本是獨立的 page-fixtures.js。「總覽」與「賽程與預測」合併成一頁之後,
@@ -46,7 +46,7 @@ export function mountFixtureList({
       { key: 'home', label: '主隊', value: f => C.name(f.home), render: f => C.teamCell(f.home) },
       { key: 'score', label: '比分 / 預期', value: f => (f.played ? f.fh - f.fa : 0), sortable: false,
         render: f => f.played
-          ? `<b class="mono" style="font-size:14px">${f.fh} - ${f.fa}</b>`
+          ? `<b class="mono" style="font-size:14px">${f.fh} - ${f.fa}</b>${f.scoreProvisional ? ' <span class="pill warn tiny" title="FotMob 的比分;社群賽果檔還沒到,到了會逐場核對">暫定</span>' : ''}`
           : `<span class="mono dim">${f.prediction.xgHome} : ${f.prediction.xgAway}</span>` },
       { key: 'away', label: '客隊', value: f => C.name(f.away), render: f => C.teamCell(f.away) },
       { key: 'prob', label: isCurrent ? '主 / 和 / 客' : '賽前機率', value: f => f.prediction?.home ?? 0, sortable: false,
@@ -164,6 +164,7 @@ export function mountFixtureList({
         <div class="spread"><span class="small dim">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}・${f.season}・第 ${f.round} 輪
           ${f.kickoff && !f.played ? `・開賽倒數 ${C.countdown(f.kickoff)}` : ''}
           ${f.kickoff && f.date < meta.asOf && !f.played ? '<span class="pill warn tiny">賽果待更新</span>' : ''}</span>
+          ${f.scoreProvisional ? '<span class="pill warn tiny" title="FotMob 的比分;社群賽果檔還沒到,到了會逐場核對">暫定</span>' : ''}
           <span class="pill ${f.played ? '' : 'info'}">${f.played ? '完場' : '未開賽'}</span></div>
         ${f.played ? `<div class="scoreline" style="margin:14px 0">
             <div class="side">${C.badge(f.home)}<b>${C.name(f.home)}</b></div>

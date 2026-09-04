@@ -1020,7 +1020,7 @@ export function matchReportCards(m, { order = null } = {}) {
           <div class="tiny" style="margin-top:6px">跑最多:${top(m.home) || '—'}<span class="dim"> ／ </span>${top(m.away) || '—'}</div>
           ${fast(m.home) || fast(m.away) ? `<div class="tiny">最高速度:${fast(m.home) ? `${esc(fast(m.home).name)} ${fast(m.home).topSpeed.toFixed(1)} km/h` : '—'}<span class="dim"> ／ </span>${fast(m.away) ? `${esc(fast(m.away).name)} ${fast(m.away).topSpeed.toFixed(1)} km/h` : '—'}</div>` : ''}`;
       })()}
-      <div class="tiny dim" style="margin-top:10px">${d.source === 'fotmob' ? '控球率已用英超官網後端的統計端點抽核(見資料界線)。' : ''}${d.coverage?.distance ? '跑動距離、衝刺與最高速度是供應商的追蹤資料,本站只搬運;不是每場都有(2025-26 有 282/380 場)。' : '這場沒有跑動距離、衝刺與速度資料(供應商不是每場都給,2025-26 缺 97 場,集中在 11 座主場),不推估。'}</div>
+      <div class="tiny dim" style="margin-top:10px">${d.possessionVerified ? '控球率已用英超官網後端的統計端點抽核(見資料界線)。' : d.source === 'fotmob' ? '控球率是供應商的數字,這個聯賽沒有第二來源可抽核。' : ''}${d.coverage?.distance ? '跑動距離、衝刺與最高速度是供應商的追蹤資料,本站只搬運;不是每場都有(2025-26 有 282/380 場)。' : '這場沒有跑動距離、衝刺與速度資料(供應商不是每場都給,2025-26 缺 97 場,集中在 11 座主場),不推估。'}</div>
     </div>`,
       /* 沒有逐人資料(FotMob 精簡萃取)就整張不畫 —— 一張「供應商沒有這隊的球員資料」的卡沒有資訊量 */
       players: hasPlayers ? `<div class="card"><h3>球員評分與明細</h3><div class="grid g2 advanced-players">${playerSide(m.home)}${playerSide(m.away)}</div>

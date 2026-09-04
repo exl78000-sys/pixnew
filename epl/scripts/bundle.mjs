@@ -113,7 +113,10 @@ async function main() {
       const dir = join(leaguesDir, ent.name);
       const files = (await readdir(dir)).filter(f => f.endsWith('.json'));
       datasets[ent.name] = {};
-      for (const f of files) datasets[ent.name][f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(dir, f), 'utf8'));
+      for (const f of files) {
+        if (SKIP_DATASETS.has(f.replace(/\.json$/, ''))) continue;   // 各聯賽的 matchstats 一樣不進單檔版
+        datasets[ent.name][f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(dir, f), 'utf8'));
+      }
     }
   } catch { /* 沒有額外聯賽時維持只有英超 */ }
   const meta = data.meta;

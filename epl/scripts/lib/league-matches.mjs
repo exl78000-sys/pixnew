@@ -72,8 +72,44 @@ export function backfillScores(matches, csvText, codeOf, { div = 'SP1' } = {}) {
 }
 
 /* 某一季的賽果。fill=false 可以拿到「純 openfootball」的版本(測試用)。 */
+/* 第三來源(2026-09-04):FotMob 的聯賽賽程端點(`fetch-fotmob-scores.mjs`,一個聯賽一個請求)。
+   社群靜態檔(openfootball、football-data.co.uk)更新慢好幾天,西甲 9/3、英冠 9/1–9/2 的比賽到 9/4 還是「未賽」。
+   FotMob 完賽的場次在社群檔到之前先補上,標 `scoreProvisional`;兩邊都有的場次要一致 —— 對不上就整份不採用
+   (跟 football-data 那條同一個規矩),而且印出來。只補**該賽季**(scores.json 是本季)。 */
+export function fotmobBackfill(matches, scores, { season } = {}) {
+  if (!scores?.matches?.length || (season && scores.season !== season)) return null;
+  const byKey = new Map(matches.filter(m => !m.stage).map(m => [`${m.home}|${m.away}`, m]));
+  const dup = matches.filter(m => !m.stage).length !== byKey.size;
+  if (dup) return { duplicateKeys: true, filled: 0, checked: 0, mismatches: [] };
+  const mismatches = [];
+  let checked = 0;
+  const fills = [];
+  for (const f of scores.matches) {
+    if (!f.finished || !f.score || f.cancelled) continue;
+    const m = byKey.get(`${f.home}|${f.away}`);
+    if (!m) continue;
+    if (m.played && m.fh != null) {
+      checked++;
+      if (m.fh !== f.score[0] || m.fa !== f.score[1]) mismatches.push({ key: `${f.home}|${f.away}`, ours: [m.fh, m.fa], theirs: f.score });
+    } else if (!m.played) fills.push([m, f]);
+  }
+  if (mismatches.length) return { duplicateKeys: false, filled: 0, checked, mismatches };
+  for (const [m, f] of fills) {
+    m.played = true; m.fh = f.score[0]; m.fa = f.score[1];
+    m.scoreSource = 'fotmob'; m.scoreProvisional = true;   // 不叫 provisional:西甲賽程物件那個名字已經是「未賽但即時來源記到終場」的物件
+    if (!m.kickoff && f.utcTime) m.kickoff = f.utcTime;
+  }
+  return { duplicateKeys: false, filled: fills.length, checked, mismatches: [], fetchedAt: scores.fetchedAt };
+}
+export function fotmobBackfillLine(season, r) {
+  if (!r) return null;
+  if (r.duplicateKeys) return `  ⚠ ${season} 主客組合有重複,FotMob 賽果不補`;
+  if (r.mismatches.length) return `  ⚠ ${season} FotMob 賽果與主來源有 ${r.mismatches.length} 場不符,整份不採用(${r.mismatches.slice(0, 3).map(m => `${m.key} ${m.ours.join('-')}≠${m.theirs.join('-')}`).join('、')})`;
+  return r.filled ? `  ${season}:主來源缺 ${r.filled} 場賽果,由 FotMob 暫定補上(${r.checked} 場重疊逐場核對一致;抓取 ${String(r.fetchedAt ?? '').slice(0, 16)}Z)` : null;
+}
+
 export function leagueMatches(root, season, {
-  codeOf, kickoffOf, competition, rawDir, fillDir, div, fill = true, stageOf = null,
+  codeOf, kickoffOf, competition, rawDir, fillDir, div, fill = true, stageOf = null, fotmobDir = null,
 } = {}) {
   const matches = loadMatches({
     root, competition, season, codeOf, rawDir, ...(kickoffOf ? { kickoffOf } : {}),
@@ -83,11 +119,21 @@ export function leagueMatches(root, season, {
      附加賽照樣參與配對,主客組合撞鍵 —— 每季 5 場假警報。
      順序本身就是這個 bug,所以標記收進這裡。 */
   if (stageOf) for (const m of matches) { const st = stageOf(m); if (st) m.stage = st; }
-  if (!fill || !fillDir) return { matches, backfill: null };
-  const csv = join(root, 'data', 'raw', fillDir, `${season}.csv`);
-  if (!existsSync(csv)) return { matches, backfill: null };
-  const r = backfillScores(matches, readFileSync(csv, 'utf8'), codeOf, { div });
-  return { matches, backfill: r };
+  /* 順序:openfootball(主)→ football-data.co.uk(備援,逐場核對)→ FotMob(暫定,逐場核對)。
+     後面的只補前面沒有的,不覆蓋。 */
+  let backfill = null;
+  if (fill && fillDir) {
+    const csv = join(root, 'data', 'raw', fillDir, `${season}.csv`);
+    if (existsSync(csv)) backfill = backfillScores(matches, readFileSync(csv, 'utf8'), codeOf, { div });
+  }
+  let fotmob = null;
+  if (fill && fotmobDir) {
+    const sp = join(root, 'data', 'raw', fotmobDir, 'scores.json');
+    if (existsSync(sp)) {
+      try { fotmob = fotmobBackfill(matches, JSON.parse(readFileSync(sp, 'utf8')), { season }); } catch { fotmob = null; }
+    }
+  }
+  return { matches, backfill, fotmob };
 }
 
 /* 歐洲夏令時間的開球時間。openfootball 給當地鐘面時間但不帶時區,

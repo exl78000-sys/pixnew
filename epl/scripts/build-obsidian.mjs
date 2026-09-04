@@ -152,6 +152,7 @@ function collectPlayers(lg, meta) {
     const newest = p.seasons.slice().sort((a, b) => String(b.season).localeCompare(String(a.season)))[0];
     return {
       id: `es1:${p.id}`, base: newest.fullName || newest.name, display: newest.name,
+      code: newest.code ?? String(p.id), tracking: newest.tracking ?? null,   // 逐場紀錄與跑動/熱區/評分(FotMob),跟英超分支一樣
       teamCode: (newest.teamCodes || [])[0] ?? null, pos: newest.pos, posZh: newest.posZh,
       squadNumber: newest.squadNumber, age: newest.age, dob: newest.dateOfBirth,
       height: newest.height, weight: newest.weight, captain: null,

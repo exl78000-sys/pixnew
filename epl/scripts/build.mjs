@@ -186,7 +186,7 @@ async function main() {
       : advancedStore.season === season ? advancedStore.matches?.[key] ?? null : null;
     if (provider) return provider;
     const fm = fotmobStats.matches[`${season}|${key}`];
-    return fm ? toCanonicalDetail(fm) : null;
+    return fm ? toCanonicalDetail(fm, { verified: !!fotmobStats.verification?.[season]?.agree }) : null;
   };
 
   // 隊徽(npm run crests 產生,已內嵌為 data URI)直接掛到球隊登錄上,

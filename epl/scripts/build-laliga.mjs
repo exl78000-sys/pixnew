@@ -14,7 +14,7 @@ import { competition } from './lib/canonical.mjs';
 import { buildGoals } from './lib/goals.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
-import { europeanKickoff } from './lib/league-matches.mjs';
+import { europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
 import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './lib/knowledge.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
@@ -31,7 +31,8 @@ import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import { upcomingOdds, seasonMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
-import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
+import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
+import { loadFotmobMatchStats, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
 import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage, playerPosition as sportmonksPlayerPosition } from './lib/adapters/sportmonks.mjs';
@@ -93,6 +94,7 @@ const slimMatch = m => {
   };
   if (m.hh !== null) { out.hh = m.hh; out.ha = m.ha; }
   if (m.kickoff) out.kickoff = m.kickoff;
+  if (m.scoreProvisional) { out.scoreProvisional = true; out.scoreSource = m.scoreSource ?? 'fotmob'; }   // FotMob 暫定賽果(社群檔還沒到);provisional 這個名字西甲另有用途
   return out;
 };
 
@@ -259,8 +261,10 @@ async function main() {
      回測與線上模型必須吃同一份賽果,不然頁面上的準度講的是另一批比賽。 */
   const backfills = [];   // 補過比分的賽季要寫進畫面上的資料說明,不能只印在 log
   const load = season => {
-    const { matches, backfill } = laligaMatches(ROOT, season, { codeOf: T.codeOf, kickoffOf: madridKickoff });
+    const { matches, backfill, fotmob } = laligaMatches(ROOT, season, { codeOf: T.codeOf, kickoffOf: madridKickoff });
     const line = backfillLine(season, backfill);
+    const fmLine = fotmobBackfillLine(season, fotmob);
+    if (fmLine) console.log(fmLine);
     if (line) console.log(line);
     if (backfill?.filled) backfills.push({ season, ...backfill });
     return matches;
@@ -586,6 +590,13 @@ async function main() {
       scorerOverride: { source: override.source, sourceUrl: override.sourceUrl },
     };
   };
+  /* 逐場統計(FotMob,2026-09-04 接進西甲)要在賽後報告之前載:報告補欄位、球隊彙總、球員追蹤都用它。
+     跟英超同一個讀取器;西甲沒有官網端點可抽核控球,產物照實標未抽核。 */
+  const fotmobStats = loadFotmobMatchStats(ROOT, { results: [...lastMatches, ...curPlayed], rawDir: 'fotmob-la-liga' });
+  if (fotmobStats.count) {
+    console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})・退回 ${fotmobStats.rejected.length} 場・控球率未經第二來源抽核`);
+    for (const r of fotmobStats.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
+  }
   const reports = {};
   for (const [pair, detail] of Object.entries(postMatchStore.matches ?? {})) {
     const fixture = fixtureByPair.get(pair);
@@ -632,6 +643,15 @@ async function main() {
       }
       console.log(`  FotMob 西甲賽後快取:${Object.keys(fm.matches ?? {}).length} 場・補上 ${added} 場`);
     } catch { console.log('  ⚠ FotMob 賽後快取損壞,本次略過'); }
+  }
+  /* 賽後報告補 FotMob 逐場統計的欄位(動能、射門圖、上下半場控球、跑動):既有的 detail 來自賽後快取
+     (SportMonks / FotMob 完整版),那份沒有這些;逐場快取有就掛上,卡片自己會畫。 */
+  for (const [k, rep] of Object.entries(reports)) {
+    const ms = fotmobStats.matches?.[k];
+    if (!ms || !rep.advanced) continue;
+    rep.advanced = { ...rep.advanced, momentum: ms.momentum, shots: ms.shots, shotmapComplete: ms.shotmapComplete,
+      possession: ms.possession, physical: ms.physical ?? null, possessionVerified: false,
+      coverage: { ...rep.advanced.coverage, distance: !!ms.physical?.team?.distance?.some(v => v != null), sprints: !!ms.physical?.team?.sprints?.some(v => v != null), speed: !!ms.physical?.players?.some(p => p.topSpeed != null) } };
   }
   const reportCount = Object.keys(reports).length;
   /* 「這一季拿不到」只能在**主要來源一場都發不出來**的時候講。
@@ -903,6 +923,38 @@ async function main() {
       }
     } catch { /* 損壞快照不阻塞其他西甲資料 */ }
   }
+  /* FotMob 比分(2026-09-04):SportMonks 停了之後西甲沒有即時來源。`fetch-fotmob-scores.mjs` 每個聯賽一個請求
+     回整季狀態與比分,比賽日 workflow 每 15 分鐘打一次(使用者:十分鐘更新一次可以接受)。
+     這裡只在 SportMonks 那份不可用時用它:今天有開踢或已完賽的場次做成即時快照(比分、分鐘;沒有事件與陣容,
+     coverage 照實標 false)。同樣的新鮮度門檻:抓取超過 6 小時就不宣告可用。 */
+  if (!liveOut.available) {
+    const sp = join(ROOT, 'data', 'raw', 'fotmob-la-liga', 'scores.json');
+    if (existsSync(sp)) {
+      try {
+        const sc = JSON.parse(await readFile(sp, 'utf8'));
+        const ageH = (Date.now() - Date.parse(sc.fetchedAt ?? 0)) / 3600000;
+        if (sc.season === CURRENT_SEASON && Number.isFinite(ageH) && ageH <= LIVE_STALE_H) {
+          const today = sc.fetchedAt.slice(0, 10);
+          const todays = sc.matches.filter(m => m.date === today && (m.started || m.finished) && !m.cancelled);
+          const minuteOf = m => { const mm = /^(\d+)/.exec(String(m.liveTime ?? '')); return m.finished ? 90 : mm ? Number(mm[1]) : 0; };
+          const matches = todays.map(m => {
+            const fixture = fixtureByPair.get(`${m.home}|${m.away}`);
+            if (!fixture) return null;
+            const detail = { key: `${m.home}|${m.away}`, season: CURRENT_SEASON, source: 'fotmob', kickoff: m.utcTime,
+              home: m.home, away: m.away, score: m.score ? { home: m.score[0], away: m.score[1] } : { home: null, away: null },
+              teamStats: {}, players: {}, events: [], lineups: {},
+              coverage: { teamStatistics: false, playerStatistics: false, ratings: false, events: false, lineups: false } };
+            return buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code });
+          }).filter(Boolean);
+          liveOut = { available: true, source: 'fotmob', sourceLabel: 'FotMob 比分(比賽日約每 15 分鐘)', demo: false,
+            season: CURRENT_SEASON, fetchedAt: sc.fetchedAt,
+            counts: { total: matches.length, live: todays.filter(m => m.started && !m.finished).length, finished: todays.filter(m => m.finished).length, upcoming: 0 },
+            matches, note: '只有比分與分鐘,沒有事件、陣容與統計;完賽後的完整資料由賽後快取供應。' };
+          console.log(`  西甲即時比分:FotMob 快照 ${Math.round(ageH * 60)} 分鐘前・今天 ${matches.length} 場(進行中 ${liveOut.counts.live})`);
+        }
+      } catch (e) { console.log(`  ⚠ FotMob 比分快照讀不了:${e.message}`); }
+    }
+  }
 
   const meta = {
     builtAt: new Date().toISOString(), asOf: AS_OF,
@@ -1021,7 +1073,14 @@ async function main() {
   meta.curatedNews = curatedCoverage;
   await write('meta', meta);
   await write('clubs', T.list);
+  /* 逐場統計(FotMob,2026-09-04 接進西甲):控球、球隊統計、逐射門 xG、動能、跑動、熱區、逐人統計。
+     跟英超同一個讀取器;西甲沒有官網端點可抽核控球,產物照實標未抽核。 */
+  for (const t of teams) { const ms = fotmobStats.teams[t.code]; if (ms?.games) t.matchStats = ms; }
   await write('teams', teams);
+  if (fotmobStats.count) {
+    await write('matchstats', { source: fotmobStats.source, note: '西甲逐場統計(FotMob):控球、球隊統計、逐射門 xG、動能、事件、名單、跑動、熱區、逐人統計。比分已逐場對回本站賽果;控球率沒有第二來源可抽核。',
+      seasons: fotmobStats.seasons, count: fotmobStats.count, rejected: fotmobStats.rejected, verification: fotmobStats.verification, teams: fotmobStats.teams, matches: fotmobStats.matches });
+  }
   await write('fixtures', fixtures);
   await write('table', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
   await write('sim', sim);
@@ -1108,6 +1167,15 @@ async function main() {
         + loanHit.unmatched.slice(0, 5).map(r => r.player).join('、')
         + (loanHit.unmatched.length > 5 ? ' …' : ''));
     }
+  }
+  if (fotmobStats.count) {
+    const hit = attachPlayerTracking(playersOut, fotmobStats);
+    if (hit.total) console.log(`  逐人跑動與熱區:${hit.matched}/${hit.total} 位配到球員主檔`);
+    const logs = buildPlayerLogs(playersOut, fotmobStats);
+    await write('player-logs', { source: 'FotMob 逐人統計 + shotmap + 追蹤資料', seasons: fotmobStats.seasons,
+      note: '每人每場一列;xg 是該場逐射門 xG 合計、distance 是追蹤資料(不是每場都有);只收有配到本站球員代碼的人。',
+      players: logs.players, rows: logs.rows, logs: logs.logs });
+    console.log(`  球員逐場紀錄:${logs.players} 人・${logs.rows} 人-場・配不到 ${logs.unmatched} 人-場`);
   }
   await write('players', playersOut);
   // 跨聯賽統一層(lib/player-core.mjs):聯集 + null(西甲沒有身價與傷停 → null 不是 0)

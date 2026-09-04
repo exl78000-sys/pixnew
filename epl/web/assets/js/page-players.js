@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6ce2cd6c';
+import * as C from './core.js?v=be9d8572';
 
 const app = document.getElementById('app');
 
@@ -242,33 +242,6 @@ try {
         <b class="mono">${b.last ? C.fx(b.last[k], d) : '—'}</b></div>`).join('')}</div>`;
   };
 
-  /* 跑動、最高速度與觸球熱區(FotMob 追蹤資料,2026-09-03 接進來)。不是每場都有,場數另記;
-     熱區是 6×4 格的觸球位置計數,正規化成向右進攻(自家球門在左)。沒有資料整張不畫。 */
-  function trackingCard(p, t) {
-    const tr = p.tracking;
-    if (!tr || (tr.distancePerGame == null && !tr.heat && !tr.rating)) return '';
-    const line = (l, v) => `<div class="stat-line"><span class="small muted">${l}</span><b class="mono">${v}</b></div>`;
-    const heat = tr.heat?.grid?.length === 24 ? (() => {
-      const W = 240, H = 156, gx = 6, gy = 4, mx = Math.max(1, ...tr.heat.grid);
-      const cells = tr.heat.grid.map((v, i) => {
-        const cx = i % gx, cy = Math.floor(i / gx);
-        return `<rect x="${(cx * W / gx).toFixed(1)}" y="${(cy * H / gy).toFixed(1)}" width="${(W / gx).toFixed(1)}" height="${(H / gy).toFixed(1)}" fill="${t.colors?.[0] ?? '#00ff85'}" fill-opacity="${(0.08 + 0.85 * v / mx).toFixed(2)}"><title>${v} 次觸球</title></rect>`;
-      }).join('');
-      return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;border-radius:8px;background:#0a1018;margin-top:8px">
-        <rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" fill="none" stroke="var(--line)"/>
-        ${cells}<line x1="${W / 2}" y1="0" x2="${W / 2}" y2="${H}" stroke="rgba(255,255,255,.35)"/>
-        <circle cx="${(tr.heat.cx / 105 * W).toFixed(1)}" cy="${(tr.heat.cy / 68 * H).toFixed(1)}" r="5" fill="#fff"/></svg>
-        <div class="tiny dim">自家球門在左、攻向右;白點是 ${tr.heat.touches} 次觸球的質心(${tr.heat.games} 場)。</div>`;
-    })() : '';
-    return `<div class="card"><h3>跑動、熱區與評分 <span class="dim tiny">FotMob</span></h3>
-      ${tr.distancePerGame != null ? line('場均跑動', `${(tr.distancePerGame / 1000).toFixed(1)} km <span class="dim">・${tr.games} 場</span>`) : ''}
-      ${tr.topSpeed != null ? line('最高速度', `${tr.topSpeed.toFixed(1)} km/h`) : ''}
-      ${tr.rating ? line('平均評分', `${tr.rating.avg.toFixed(2)} <span class="dim">・${tr.rating.games} 場・FotMob</span>`) : ''}
-      ${heat}
-      <div class="tiny dim" style="margin-top:8px">供應商的追蹤資料,不是每場都有(2025-26 起);本站只搬運不推估。跟上面 FPL 的 per-90 是不同來源。</div>
-    </div>`;
-  }
-
   function openPlayer(p) {
     const t = C.team(p.team);
     const pctLine = (label, v, raw) => `
@@ -351,6 +324,34 @@ try {
   }
 
 } catch (err) { if (err.message !== 'skip') C.fail(err); }
+
+/* 跑動、最高速度與觸球熱區(FotMob 追蹤資料,2026-09-03 接進來)。不是每場都有,場數另記;
+   熱區是 6×4 格的觸球位置計數,正規化成向右進攻(自家球門在左)。沒有資料整張不畫。 */
+function trackingCard(p, t) {
+  const tr = p.tracking;
+  if (!tr || (tr.distancePerGame == null && !tr.heat && !tr.rating)) return '';
+  const line = (l, v) => `<div class="stat-line"><span class="small muted">${l}</span><b class="mono">${v}</b></div>`;
+  const heat = tr.heat?.grid?.length === 24 ? (() => {
+    const W = 240, H = 156, gx = 6, gy = 4, mx = Math.max(1, ...tr.heat.grid);
+    const cells = tr.heat.grid.map((v, i) => {
+      const cx = i % gx, cy = Math.floor(i / gx);
+      return `<rect x="${(cx * W / gx).toFixed(1)}" y="${(cy * H / gy).toFixed(1)}" width="${(W / gx).toFixed(1)}" height="${(H / gy).toFixed(1)}" fill="${t.colors?.[0] ?? '#00ff85'}" fill-opacity="${(0.08 + 0.85 * v / mx).toFixed(2)}"><title>${v} 次觸球</title></rect>`;
+    }).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;border-radius:8px;background:#0a1018;margin-top:8px">
+      <rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" fill="none" stroke="var(--line)"/>
+      ${cells}<line x1="${W / 2}" y1="0" x2="${W / 2}" y2="${H}" stroke="rgba(255,255,255,.35)"/>
+      <circle cx="${(tr.heat.cx / 105 * W).toFixed(1)}" cy="${(tr.heat.cy / 68 * H).toFixed(1)}" r="5" fill="#fff"/></svg>
+      <div class="tiny dim">自家球門在左、攻向右;白點是 ${tr.heat.touches} 次觸球的質心(${tr.heat.games} 場)。</div>`;
+  })() : '';
+  return `<div class="card"><h3>跑動、熱區與評分 <span class="dim tiny">FotMob</span></h3>
+    ${tr.distancePerGame != null ? line('場均跑動', `${(tr.distancePerGame / 1000).toFixed(1)} km <span class="dim">・${tr.games} 場</span>`) : ''}
+    ${tr.topSpeed != null ? line('最高速度', `${tr.topSpeed.toFixed(1)} km/h`) : ''}
+    ${tr.rating ? line('平均評分', `${tr.rating.avg.toFixed(2)} <span class="dim">・${tr.rating.games} 場・FotMob</span>`) : ''}
+    ${heat}
+    <div class="tiny dim" style="margin-top:8px">供應商的追蹤資料,不是每場都有(2025-26 起);本站只搬運不推估。跟上面 FPL 的 per-90 是不同來源。</div>
+  </div>`;
+}
+
 
 /* 球員的完整頁:把 #app 換成這個球員。抽屜版 2026-09-04 移除 —— 簡版跟完整版差不多,留兩份就會分岔。 */
 function playerPage(title, sub, body, { code = null, league = 'pl' } = {}) {
@@ -623,8 +624,9 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       <div class="card"><h3>表現數據</h3>${performance}</div>
       <div class="card"><h3>進階數據</h3>${advanced}<div class="tiny dim" style="margin-top:8px">西甲目前沒有可靠的逐球員防守與門將統計，該欄位不以其他數字代替。</div></div>
       ${radar}
+      ${trackingCard(p, C.team(primaryCode))}
       <div class="tiny dim">球員編號 ${C.esc(p.id)}・原始生日保留於本地資料作追溯，介面統一顯示年齡。</div>
-      <div style="margin-top:10px">${primaryCode ? `<a href="${C.link('teams', { code: primaryCode })}">查看球隊完整剖析 →</a>` : ''}</div>`);
+      <div style="margin-top:10px">${primaryCode ? `<a href="${C.link('teams', { code: primaryCode })}">查看球隊完整剖析 →</a>` : ''}</div>`, { code: p.code ?? p.id, league: 'es1' });
   }
   // 西甲球員頁也支援和英超相同的 ?code= 深連結。若指定球員屬於另一季，
   // 先切到該球員的資料季，再開詳細面板，避免連結落到空的預設季。

@@ -33,16 +33,25 @@ import { fotmobTeamStats, fotmobEvents, fotmobPos, fotmobPlayers } from '../lib/
 import { API as PL_API, PL_HEADERS } from '../lib/pulselive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
 const BASE = 'https://www.fotmob.com';
 const UA = 'pl-war-room/1.0 (football analysis side project)';
-const LEAGUE_ID = 47;             // 英超在 FotMob 的 leagueId(probe-possession 實測)
-const DIR = join(ROOT, 'data', 'raw', 'fotmob-epl');
+/* 兩聯賽共用(2026-09-04 加西甲):leagueId 是 probe 實測(英超 47、西甲 87),ccode3 影響 FotMob 回哪個地區的賽程。
+   西甲的 raw 跟既有的 fotmob-la-liga(正式先發、賽後 detail)放同一個資料夾,檔名不撞。
+   官網抽核只有英超有(pulselive);西甲沒有第二來源,產物照實標「未抽核」。 */
+const LEAGUES = {
+  pl: { id: 47, ccode3: 'GBR', dir: 'fotmob-epl', teamFile: 'teams.json', results: ['web', 'data', 'results.json'], verify: true },
+  es1: { id: 87, ccode3: 'ESP', dir: 'fotmob-la-liga', teamFile: 'teams-la-liga.json', results: ['web', 'data', 'leagues', 'es1', 'results.json'], verify: false },
+};
+const LG = LEAGUES[arg('league') ?? 'pl'];
+if (!LG) { console.error(`未知聯賽 ${arg('league')};只有 ${Object.keys(LEAGUES).join('、')}`); process.exit(1); }
+const LEAGUE_ID = LG.id;
+const DIR = join(ROOT, 'data', 'raw', LG.dir);
 export const EXTRACT_VERSION = 1;
 
 const HARD_LIMIT = 800;           // 一次執行的請求硬上限:一場兩個請求(詳情 + 熱區圖),回填一季 380 場要 760
 const DEFAULT_LIMIT = 40;
 const INTERVAL_MS = 600;
-const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
 const dryRun = process.argv.includes('--dry-run');
 const limit = Math.min(HARD_LIMIT, Math.max(0, Number(arg('limit') ?? DEFAULT_LIMIT)));
 const verifyN = Number(arg('verify') ?? 0);
@@ -247,9 +256,9 @@ async function verify(store, results, n, teams) {
 }
 
 async function main() {
-  const teams = loadTeams(ROOT);
-  const results = await read(join(ROOT, 'web', 'data', 'results.json'));
-  if (!Array.isArray(results)) { console.log('✗ 讀不到 web/data/results.json(先跑 npm run build)'); return; }
+  const teams = loadTeams(ROOT, { file: LG.teamFile });
+  const results = await read(join(ROOT, ...LG.results));
+  if (!Array.isArray(results)) { console.log(`✗ 讀不到 ${LG.results.join('/')}(先跑 build)`); return; }
   const seasons = seasonsOf(results);
   const season = arg('season') ?? seasons[seasons.length - 1];
   const played = results.filter(r => r.season === season && r.played && r.date <= new Date().toISOString().slice(0, 10));
@@ -265,12 +274,13 @@ async function main() {
   const stale = k => store.matches[k]?.extractVersion !== EXTRACT_VERSION;
   const pending = played.filter(f => refresh || !store.matches[`${f.home}|${f.away}`] || stale(`${f.home}|${f.away}`))
     .sort((a, b) => a.date.localeCompare(b.date));
-  console.log(`\n▶ FotMob 英超 ${season}:已完賽 ${played.length} 場・快取 ${Object.keys(store.matches).length} 場・待補 ${pending.length} 場・本次上限 ${limit}`);
+  console.log(`\n▶ FotMob ${arg('league') ?? 'pl'} ${season}:已完賽 ${played.length} 場・快取 ${Object.keys(store.matches).length} 場・待補 ${pending.length} 場・本次上限 ${limit}`);
 
-  if (verifyN > 0) { await verify(store, results, verifyN, teams); }
+  if (verifyN > 0 && !LG.verify) console.log('  這個聯賽沒有官網端點可抽核控球率,略過 --verify');
+  if (verifyN > 0 && LG.verify) { await verify(store, results, verifyN, teams); }
   else if (pending.length && limit > 0) {
     if (dryRun) { pending.slice(0, limit).forEach(f => console.log(`  · ${f.date} ${f.home}–${f.away}`)); return; }
-    const league = await get(`${BASE}/api/data/leagues?id=${LEAGUE_ID}&ccode3=GBR&season=${encodeURIComponent(fotmobSeason(season))}`,
+    const league = await get(`${BASE}/api/data/leagues?id=${LEAGUE_ID}&ccode3=${LG.ccode3}&season=${encodeURIComponent(fotmobSeason(season))}`,
       { referer: `${BASE}/` });
     if (!league.json) { console.log(`✗ 聯賽賽程抓不到:${league.error}`); return; }
     const { byPair, unknown } = indexFixtures(league.json, teams.codeOf);

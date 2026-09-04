@@ -16,5 +16,6 @@ export function laligaMatches(root, season, { codeOf, kickoffOf, fill = true } =
   return leagueMatches(root, season, {
     codeOf, kickoffOf, fill,
     competition: COMPETITION, rawDir: RAW_DIR, fillDir: FILL_DIR, div: 'SP1',
+    fotmobDir: 'fotmob-la-liga',   // 第三來源:FotMob 賽果(暫定,逐場核對),2026-09-04
   });
 }
