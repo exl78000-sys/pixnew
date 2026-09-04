@@ -34,6 +34,7 @@ import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
 import { loadFotmobMatchStats, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { recordFor } from './lib/coaches.mjs';
+import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { percentile, round } from './lib/util.mjs';
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES } from './lib/adapters/understat-players.mjs';
 import { loadSquadStore, loadCoachDetails, coachesFromSquadStore, enrichPlayers, coverage as sportmonksCoverage, playerPosition as sportmonksPlayerPosition } from './lib/adapters/sportmonks.mjs';
@@ -1275,8 +1276,54 @@ async function main() {
           + '備援來源 API-Football 的方案不含本賽季,補不了這個缺口。開頁不呼叫 API。'
         : '每場成功取得球隊統計、球員評分、事件與正式陣容後永久快取；SportMonks 優先，API-Football 僅補缺口；開頁不呼叫 API。',
   });
-  await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 } });
-  // analysis.html 共用同一組載入契約。西甲沒有這些模組時寫出明確空資料，避免 404。
+  /* ── 分析文章(2026-09-04 起西甲也有)──
+     跟英超同一層(lib/report):feature bundle → 模板(沒有 API key 就是這版)→ 數字驗證。
+     差在輸入:賽前的球隊側寫是 Understat 的(沒有平均站位),賽後 xG 用 FotMob 逐射門加總、
+     陣型是供應商公布的正式陣型 —— bundle 帶 league / provenance / xgSource / shapeSource,模板照它講。 */
+  {
+    const cache = await new ReportCache(ROOT, 'reports-es1.json').load();
+    const usedHashes = new Set();
+    const aiPre = {}, aiPost = {};
+    const seasonLabel = `${CURRENT_SEASON} 賽季`;
+    const league = { key: 'es1', zh: '西甲' };
+    const teamFull = code => teams.find(t => t.code === code) ?? T.byCode?.get(code) ?? { code, en: code, zh: code };
+    const tacBy = new Map(teamProfiles.map(t => [t.code, t]));
+    const upcoming = fixtures.filter(f => !f.played && f.prediction)
+      .sort((a, b) => (String(a.kickoff ?? a.date) < String(b.kickoff ?? b.date) ? -1 : 1)).slice(0, 20);
+    for (const f of upcoming) {
+      const bundle = preMatchBundle({
+        fixture: f, home: teamFull(f.home), away: teamFull(f.away),
+        h2h: h2h[[f.home, f.away].sort().join('|')] ?? null,
+        tacticsHome: tacBy.get(f.home), tacticsAway: tacBy.get(f.away),
+        asOf: AS_OF, seasonLabel, league,
+        provenance: { source: 'openfootball 賽果 + Understat 球隊統計', model: 'Dixon-Coles Poisson 與 Elo 平均' },
+      });
+      const rep = await generateReport(bundle, { cache });
+      usedHashes.add(rep.hash);
+      aiPre[`${f.home}|${f.away}`] = rep;
+    }
+    for (const [key, r] of Object.entries(reports)) {
+      const bundle = postMatchBundle({
+        // 賽前機率只認開賽前凍結的快照;沒有就不寫那一段
+        report: { ...r, preMatch: preSnap.get(`${r.home}|${r.away}`) ?? null },
+        home: teamFull(r.home), away: teamFull(r.away), asOf: AS_OF, seasonLabel, league,
+        provenance: { source: 'SportMonks 賽後統計 + FotMob 逐射門 xG', model: '陣型為供應商公布的正式陣型,換人時間由出場分鐘反推' },
+      });
+      const rep = await generateReport(bundle, { cache });
+      usedHashes.add(rep.hash);
+      aiPost[key] = rep;
+    }
+    const kept = await cache.save(usedHashes);
+    const all = [...Object.values(aiPre), ...Object.values(aiPost)];
+    await write('analysis', {
+      enabled: llmEnabled(), pre: aiPre, post: aiPost,
+      counts: { pre: Object.keys(aiPre).length, post: Object.keys(aiPost).length },
+      llmWritten: all.filter(x => x.source === 'llm').length, cacheHits: cache.hits, cacheEntries: kept,
+    });
+    console.log(`  分析文章:賽前 ${Object.keys(aiPre).length} 篇・賽後 ${Object.keys(aiPost).length} 篇`
+      + `(賽後 xG 來自 FotMob 逐射門 ${all.filter(x => x.kind === 'post' && /FotMob/.test(x.caveat ?? '')).length} 篇)`
+      + (llmEnabled() ? `,LLM 潤稿 ${all.filter(x => x.source === 'llm').length} 篇` : '(模板版)'));
+  }
   await write('tactics', teamProfiles);
   // 真人觀點共用同一份人工核對來源，但西甲輸出只能留下西甲賽事鍵，
   // 避免英超觀點因為兩聯賽共用前端而被誤掛到西甲頁面。

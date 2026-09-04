@@ -431,8 +431,8 @@ try {
 
     ${/* 三個分頁的欄位順序**照英超那一份排**(2026-09-01)。以前是各排各的,
           同一個站在兩個聯賽之間換頁會找不到同一個東西在哪。
-          做不到的欄位就不畫,不留空殼:西甲沒有 AI 賽前觀察/賽後結論(analysis
-          兩份都是 0 篇)、已完賽場次沒有賽前機率快照、official 沒有進球事件
+          做不到的欄位就不畫,不留空殼:西甲的本站文章 2026-09-04 起有了(賽前 20 場、
+          賽後每一場有報告的),沒有的場次 articleCard 自己回空字串;official 沒有進球事件
           (goalsCard 自己會回空字串)。 */''}
     ${f.played ? `<section class="analysis-panel" id="panel-compare" role="tabpanel">
       ${/* 跟英超共用同一個函式:有賽前快照就畫完整的比較,沒有它自己會說明
@@ -446,6 +446,8 @@ try {
       <div class="section"><h2>賽前分析</h2><span class="hint">${meta.lastSeason} 球隊背景・不調整賽後結論</span></div>
       ${/* 未賽場次的外電與專家觀點(同英超那一頁的做法,2026-09-03) */''}
       ${!f.played ? opinionSections(f, expertRows) : ''}
+      ${/* 本站文章(2026-09-04 起西甲也有):跟英超同一個 articleCard、同一個位置 */''}
+      ${articleCard(preArticleFor(f), '賽前觀察', 'pre')}
       ${preForecast}
       <div class="card" style="margin-top:16px">${comparison}</div>
       ${scoreGrid}
@@ -477,6 +479,7 @@ try {
     <section class="analysis-panel" id="panel-post" role="tabpanel">
       ${post.events}
       ${opinionSections(f, expertRows)}
+      ${articleCard(postArticleFor(f), '賽後結論', 'post')}
       ${post.ours}
       ${post.tactics}
       ${post.lineups}

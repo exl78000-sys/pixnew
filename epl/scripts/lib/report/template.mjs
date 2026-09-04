@@ -50,13 +50,14 @@ export function preMatchTemplate(bundle) {
         : `,但整季比期望少進 ${Math.abs(fin)} 球,機會轉化是弱點`;
     return `${name} 每 90 分鐘期望進球 ${t(m, `${key}.xg90`)}、期望失球 ${t(m, `${key}.xga90`)}${finText}。`;
   };
+  const shapeWord = bundle.shape.kind === 'mostUsed' ? '上季最常用的陣型是' : '的平均站位是';
   const shape = [
-    bundle.shape.home ? `${H} 的平均站位是 ${bundle.shape.home}` : null,
+    bundle.shape.home ? `${H} ${shapeWord} ${bundle.shape.home}` : null,
     bundle.shape.away ? `${A} 是 ${bundle.shape.away}` : null,
   ].filter(Boolean).join(',');
   const prof = [line('home', H), line('away', A)].filter(Boolean).join('');
   const missing = (bundle.noHistory ?? []).length
-    ? `${bundle.noHistory.join('、')}沒有上季英超的資料可比 —— 升班馬套用的是「聯盟後段先驗」,` +
+    ? `${bundle.noHistory.join('、')}沒有上季${bundle.league?.zh ?? '英超'}的資料可比 —— 升班馬套用的是「聯盟後段先驗」,` +
       `所以上面的機率對這隊而言不確定性更大。`
     : '';
   if (prof || shape || missing) paras.push(joinZh([prof, shape ? `${shape}。` : '', missing]));
@@ -83,23 +84,37 @@ export function postMatchTemplate(bundle) {
   const m = F(bundle);
   const H = bundle.home.en, A = bundle.away.en;
   const hs = v(m, 'score.home'), as = v(m, 'score.away');
+  const hasXg = !!(m['xg.home'] && m['xg.away']);
   const xgh = v(m, 'xg.home'), xga = v(m, 'xg.away');
   const paras = [];
 
   const verdict = hs > as ? `${H} 拿下這場` : hs < as ? `${A} 客場帶走三分` : '兩隊踢成平手';
+  /* 場面那一句:有 xG 講 xG;沒有(西甲供應商不給逐人 xG、FotMob shotmap 又不完整時)
+     就講控球與射門 —— 講得出來的才講,沒有就只剩比分。 */
+  const scene = hasXg ? ` 期望進球是 ${t(m, 'xg.home')} 比 ${t(m, 'xg.away')}。`
+    : m['poss.home'] ? ` 控球 ${t(m, 'poss.home')} 比 ${t(m, 'poss.away')}` +
+      (m['shots.home'] ? `,射門 ${t(m, 'shots.home')} 比 ${t(m, 'shots.away')}` : '') + '。'
+      : '';
   paras.push(`${verdict},比分 ${t(m, 'score.home')} 比 ${t(m, 'score.away')}` +
-    (bundle.finished ? '' : `(進行到第 ${t(m, 'minute')} 分鐘)`) + '。' +
-    ` 期望進球是 ${t(m, 'xg.home')} 比 ${t(m, 'xg.away')}。`);
+    (bundle.finished ? '' : `(進行到第 ${t(m, 'minute')} 分鐘)`) + '。' + scene);
 
   // 比分與內容一致嗎
-  const gd = hs - as, xgd = xgh - xga;
-  if (Math.abs(xgd) >= 0.6 && Math.sign(xgd) !== Math.sign(gd) && gd !== 0) {
-    paras.push(`這是一場結果與內容不一致的比賽:贏的一方在期望進球上其實落後。` +
-      `換句話說,同樣的踢法再打一次,結果很可能不一樣 —— 這場的三分含金量要打折。`);
-  } else if (Math.abs(xgd) >= 1.2) {
-    paras.push(`期望進球差距 ${t(m, 'xg.gap')} 球,場面一面倒,比分與內容一致,這是實力的體現而不是運氣。`);
-  } else {
-    paras.push(`期望進球接近,雙方創造機會的量級相當,勝負落在把握度與門將表現上。`);
+  const gd = hs - as;
+  if (hasXg) {
+    const xgd = xgh - xga;
+    if (Math.abs(xgd) >= 0.6 && Math.sign(xgd) !== Math.sign(gd) && gd !== 0) {
+      paras.push(`這是一場結果與內容不一致的比賽:贏的一方在期望進球上其實落後。` +
+        `換句話說,同樣的踢法再打一次,結果很可能不一樣 —— 這場的三分含金量要打折。`);
+    } else if (Math.abs(xgd) >= 1.2) {
+      paras.push(`期望進球差距 ${t(m, 'xg.gap')} 球,場面一面倒,比分與內容一致,這是實力的體現而不是運氣。`);
+    } else {
+      paras.push(`期望進球接近,雙方創造機會的量級相當,勝負落在把握度與門將表現上。`);
+    }
+    if (bundle.xgSource === 'fotmob') paras.push(`這裡的期望進球是 FotMob 逐射門 xG 的加總,逐射門的進球數與比分已核對過。`);
+  } else if (m['shotsOn.home'] && m['shotsOn.away']) {
+    const d = v(m, 'shotsOn.home') - v(m, 'shotsOn.away');
+    paras.push(`本場沒有逐射門期望進球可比,只能看量:射正 ${t(m, 'shotsOn.home')} 比 ${t(m, 'shotsOn.away')}。` +
+      (Math.abs(d) >= 3 ? ' 射正差距明顯,有效攻門集中在一邊。' : ' 兩隊的有效攻門量級相當。'));
   }
 
   // 賽前預測對照 —— 誠實面對模型錯得多離譜
@@ -111,10 +126,13 @@ export function postMatchTemplate(bundle) {
       : `模型賽前給這個結果 ${t(m, actual)},與實際發生的結果方向一致。`);
   }
 
-  // 陣型
-  paras.push(`陣容上,${H} 先發 ${t(m, 'home.shapeDef')} 名後衛、${t(m, 'home.shapeMid')} 名中場、${t(m, 'home.shapeFwd')} 名前鋒;` +
-    `${A} 是 ${t(m, 'away.shapeDef')}-${t(m, 'away.shapeMid')}-${t(m, 'away.shapeFwd')}。` +
-    `這是由每位球員的實際登錄位置推導的,不是賽前公布的陣型圖。`);
+  // 陣型:英超由登錄位置推導,西甲是供應商公布的正式陣型 —— 兩句話不能混
+  if (m['home.shapeDef'] && m['away.shapeDef']) {
+    paras.push(`陣容上,${H} 先發 ${t(m, 'home.shapeDef')} 名後衛、${t(m, 'home.shapeMid')} 名中場、${t(m, 'home.shapeFwd')} 名前鋒;` +
+      `${A} 是 ${t(m, 'away.shapeDef')}-${t(m, 'away.shapeMid')}-${t(m, 'away.shapeFwd')}。` +
+      (bundle.shapeSource === 'official' ? '這是公布的正式陣型,不是由出場位置推導的。'
+        : '這是由每位球員的實際登錄位置推導的,不是賽前公布的陣型圖。'));
+  }
 
   // 誰決定了比賽
   const sc = [
@@ -145,4 +163,10 @@ export const templateFor = bundle =>
 export const CAVEAT = {
   pre: '以上每個數字都由統計模型算出,不是評論員的印象。模型只看比賽結果與球員統計,不含轉會、傷停與賽程密度的人工調整。',
   post: '本文所有數字來自官方統計與本站模型,沒有經過人工調整;陣型由實際出場位置推導,不是賽前公布的陣型圖。',
+  postOfficial: '本文所有數字來自供應商賽後統計與本站模型,沒有經過人工調整;陣型是公布的正式陣型。',
 };
+
+/* 免責說明要跟 bundle 講的一致:陣型是推導的還是公布的、xG 是誰算的 */
+export const caveatFor = bundle => bundle.kind === 'pre' ? CAVEAT.pre
+  : (bundle.shapeSource === 'official' ? CAVEAT.postOfficial : CAVEAT.post)
+    + (bundle.xgSource === 'fotmob' ? ' 期望進球為 FotMob 逐射門 xG 加總。' : '');

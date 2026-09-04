@@ -26,8 +26,9 @@ export function bundleHash(bundle) {
 }
 
 export class ReportCache {
-  constructor(root) {
-    this.file = join(root, 'data', 'cache', 'reports.json');
+  // 每個聯賽一份檔:save() 會把這次沒用到的 hash 清掉,共用一份的話英超 build 會把西甲的快取清光
+  constructor(root, file = 'reports.json') {
+    this.file = join(root, 'data', 'cache', file);
     this.map = new Map();
     this.hits = 0;
     this.misses = 0;
