@@ -14644,6 +14644,19 @@
      "person": 21737,
      "assist": 32894,
      "team": 10,
+     "min": 6,
+     "label": "06'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 21737,
+     "assist": 32894,
+     "team": 10,
      "min": 9,
      "label": "09'00",
      "phase": "1",
@@ -14677,21 +14690,21 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+3'00"
   }
  },
- "fetchedAt": "2026-09-04T19:47:12.670Z"
+ "fetchedAt": "2026-09-04T19:51:56.768Z"
 }
