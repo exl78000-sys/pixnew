@@ -1,9 +1,9 @@
 {
  "_note": "官方賽程狀態快照 + 本站自建的改期歷史(供應商不提供歷史,changes 永久累積)。產生:npm run schedule:status。",
- "fetchedAt": "2026-09-04T04:33:42.830Z",
+ "fetchedAt": "2026-09-04T09:07:03.613Z",
  "leagues": {
   "pl": {
-   "fetchedAt": "2026-09-04T04:33:42.830Z",
+   "fetchedAt": "2026-09-04T09:07:03.613Z",
    "count": 380,
    "matches": [
     {
@@ -3049,7 +3049,7 @@
    ]
   },
   "en2": {
-   "fetchedAt": "2026-09-04T04:33:42.830Z",
+   "fetchedAt": "2026-09-04T09:07:03.613Z",
    "count": 552,
    "matches": [
     {
@@ -3585,7 +3585,7 @@
      "home": "WOL",
      "away": "POR",
      "utcDate": "2026-09-09T00:00:00Z",
-     "status": "POSTPONED",
+     "status": "2026-09-16 17:45:00Z",
      "matchday": 6
     },
     {
@@ -7530,6 +7530,16 @@
    "from": "2026-11-01T14:00:00Z",
    "to": "2026-10-31T20:00:00Z",
    "detectedAt": "2026-09-02T13:39:46.332Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 561826,
+   "home": "WOL",
+   "away": "POR",
+   "from": "2026-09-09T00:00:00Z",
+   "to": "2026-09-09T00:00:00Z",
+   "detectedAt": "2026-09-04T09:07:03.613Z"
   }
  ]
 }
