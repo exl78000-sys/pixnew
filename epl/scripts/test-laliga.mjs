@@ -10,6 +10,7 @@ import { normalisePlayerForSite } from './lib/adapters/understat-players.mjs';
 import { coachesFromSquadStore, enrichPlayers, loadSquadStore, coverage as sportmonksCoverage, normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
 import { parseClubSlugs, parseOfficialCoach, parseOfficialCoachPayload } from './fetch-laliga-official-coaches.mjs';
 import { officialCoachesFromStore } from './lib/adapters/laliga-official.mjs';
+import { preMatchBundle, postMatchBundle, templateFor, verify } from './lib/report/index.mjs';
 import { verifyTranslation } from './lib/report/translate.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { backfillScores } from './lib/laliga-matches.mjs';
@@ -637,6 +638,34 @@ check('摘要漏掉大部分數字 → 擋下',
     const ageH = (Date.now() - Date.parse(sc.fetchedAt)) / 3600000;
     if (ageH < 24) check('FotMob 已完賽的場次本站沒有一場還是「未賽」', fx.filter(f => f.season === sc.season && !f.played && fin.has(`${f.home}|${f.away}`)).length === 0);
   }
+}
+
+/* 分析文章(2026-09-04):西甲跟英超同一層。守的是「數字有沒有被編造」與「兩個聯賽的差異有沒有講出來」 */
+{
+  const D = join(ROOT, 'web', 'data', 'leagues', 'es1');
+  const rd = f => JSON.parse(readFileSync(join(D, f), 'utf8'));
+  const an = rd('analysis.json'), fixtures = rd('fixtures.json'), teams = rd('teams.json'), h2h = rd('h2h.json'), tactics = rd('tactics.json'), reports = rd('reports.json');
+  const byCode = new Map(teams.map(t => [t.code, t]));
+  const tacBy = new Map(tactics.map(t => [t.code, t]));
+  const league = { key: 'es1', zh: '西甲' };
+  const pre = fixtures.filter(f => !f.played && f.prediction).slice(0, 20).map(f => preMatchBundle({
+    fixture: f, home: byCode.get(f.home), away: byCode.get(f.away), h2h: h2h[[f.home, f.away].sort().join('|')] ?? null,
+    tacticsHome: tacBy.get(f.home), tacticsAway: tacBy.get(f.away), asOf: 'test', seasonLabel: 'test', league,
+  }));
+  const post = Object.values(reports.reports).map(r => postMatchBundle({
+    report: r, home: byCode.get(r.home) ?? { en: r.home, zh: r.home }, away: byCode.get(r.away) ?? { en: r.away, zh: r.away },
+    asOf: 'test', seasonLabel: 'test', league,
+  }));
+  const bad = [...pre, ...post].filter(b => !verify(templateFor(b).paragraphs.join('\n'), b.facts).ok);
+  check('西甲分析文章:賽前有文章', Object.keys(an.pre).length > 0, `${Object.keys(an.pre).length} 篇`);
+  check('西甲分析文章:賽後篇數等於賽後報告數', Object.keys(an.post).length === reports.count, `${Object.keys(an.post).length} / ${reports.count}`);
+  check('西甲分析文章:模板每篇通過數字驗證', bad.length === 0, bad.slice(0, 3).map(b => `${b.key}:${verify(templateFor(b).paragraphs.join('\n'), b.facts).reason}`).join(' / '));
+  check('西甲分析文章:每篇 verified 且段落非空', [...Object.values(an.pre), ...Object.values(an.post)].every(a => a.verified && a.paragraphs?.length > 0));
+  check('西甲賽後 bundle 的 xG 來自 FotMob 逐射門(供應商沒給逐人 xG)', post.length > 0 && post.every(b => b.xgSource === 'fotmob'), `${post.filter(b => b.xgSource === 'fotmob').length} / ${post.length}`);
+  check('西甲賽後陣型是供應商正式陣型,模板照這樣講', post.every(b => b.shapeSource === 'official') && Object.values(an.post).every(a => /正式陣型/.test(a.paragraphs.join('')) && /正式陣型/.test(a.caveat)));
+  check('西甲賽前文章不會講「上季英超」', Object.values(an.pre).every(a => !/上季英超/.test(a.paragraphs.join(''))));
+  check('西甲賽前的陣型講「最常用」不講「平均站位」(Understat 給的是使用分鐘)', Object.values(an.pre).every(a => !/平均站位/.test(a.paragraphs.join(''))) && pre.every(b => b.shape.kind === 'mostUsed'));
+  check('西甲文章的資料出處不寫 FPL', [...Object.values(an.pre), ...Object.values(an.post)].every(a => !/FPL/.test(a.caveat ?? '') && !/FPL/.test(a.paragraphs.join(''))));
 }
 
 /* 教練本季戰績(2026-09-04):本站賽果算的,場數要等於該隊本季已賽場數,並標 tenureUnknown */

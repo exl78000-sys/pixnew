@@ -1,10 +1,10 @@
 import { preMatchBundle, postMatchBundle } from './features.mjs';
-import { templateFor, CAVEAT } from './template.mjs';
+import { templateFor, CAVEAT, caveatFor } from './template.mjs';
 import { verify } from './verify.mjs';
 import { callLLM, llmEnabled } from './llm.mjs';
 import { bundleHash, ReportCache } from './cache.mjs';
 
-export { preMatchBundle, postMatchBundle, templateFor, CAVEAT, verify, bundleHash, ReportCache, llmEnabled };
+export { preMatchBundle, postMatchBundle, templateFor, CAVEAT, caveatFor, verify, bundleHash, ReportCache, llmEnabled };
 
 /* 一篇報告的生產流程:
  *
@@ -29,7 +29,7 @@ export async function generateReport(bundle, { cache = null, env = process.env, 
   const tpl = templateFor(bundle);
   const fallback = {
     hash, kind: bundle.kind, key: bundle.key,
-    title: tpl.title, paragraphs: tpl.paragraphs, caveat: CAVEAT[bundle.kind],
+    title: tpl.title, paragraphs: tpl.paragraphs, caveat: caveatFor(bundle),
     source: 'template', verified: true, note: null,
   };
 
@@ -53,7 +53,7 @@ export async function generateReport(bundle, { cache = null, env = process.env, 
     hash, kind: bundle.kind, key: bundle.key,
     title: tpl.title,
     paragraphs: out.text.split(/\n{1,}/).map(s => s.trim()).filter(Boolean),
-    caveat: CAVEAT[bundle.kind],
+    caveat: caveatFor(bundle),
     source: 'llm', model: out.model, verified: true, note: null,
   };
   cache?.set(hash, rec);
