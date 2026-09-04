@@ -31,6 +31,7 @@ permissions:
   contents: write      # 把抓到的即時資料提交回 repo
   pages: write
   id-token: write
+  issues: write     # CI 紅了開 Issue 通知(2026-09-04)
 
 concurrency:
   group: epl-live
@@ -499,3 +500,40 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # CI 紅了要有人知道(2026-09-04,使用者選的第 5 項)。之前三次部署紅了兩次,都是沒有人看 Actions 頁才拖到下一輪才發現。
+  # 失敗 → 開一個 ci-failure 標籤的 Issue(已有就留言,不重複開),寫哪一步紅、連到那次執行;
+  # 之後成功 → 在那個 Issue 留言「已恢復」並關掉。GitHub 會照你的通知設定寄 Issue 通知。
+  notify:
+    needs: [build, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+        with:
+          script: |
+            const failed = ['failure', 'cancelled'].includes(process.env.BUILD_RESULT)
+              || process.env.DEPLOY_RESULT === 'failure';
+            const { owner, repo } = context.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const open = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'ci-failure', per_page: 5 });
+            const existing = open.data[0] ?? null;
+            if (!failed) {
+              if (existing) {
+                await github.rest.issues.createComment({ owner, repo, issue_number: existing.number, body: `已恢復:${runUrl} 成功。` });
+                await github.rest.issues.update({ owner, repo, issue_number: existing.number, state: 'closed' });
+              }
+              return;
+            }
+            // 哪幾步紅:從這次執行的 jobs 讀,不用猜
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({ owner, repo, run_id: context.runId, per_page: 50 });
+            const bad = [];
+            for (const j of jobs.data.jobs) for (const st of j.steps ?? []) if (st.conclusion === 'failure') bad.push(`${j.name} → ${st.name}`);
+            const title = `CI 紅了:${bad[0] ?? (process.env.BUILD_RESULT === 'failure' ? 'build' : 'deploy')}`;
+            const body = [`執行:${runUrl}`, `分支:${context.ref}`, `失敗的步驟:`, ...bad.map(b => `- ${b}`),
+              '', '這個 Issue 由 epl-live.yml 的 notify job 自動開;下一次成功會自動關。'].join('\n');
+            if (existing) await github.rest.issues.createComment({ owner, repo, issue_number: existing.number, body: `又紅了:\n${body}` });
+            else await github.rest.issues.create({ owner, repo, title, body, labels: ['ci-failure'] });

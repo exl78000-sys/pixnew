@@ -2728,6 +2728,12 @@ async function checkDataGap() {
        實測 AVL vs ARS 19:00 開球、迴圈 19:00 整收工,整場零輪詢;
        而 decideWindow 當下回的是 active:true —— 問題在外層那道
        `!= "true"`:管線任何閃失都被當成「比賽都結束了」。 */
+    /* CI 紅了要通知(2026-09-04):失敗開 ci-failure Issue、成功關掉;permissions 要有 issues: write */
+    ['部署 workflow 失敗會開 Issue、成功會關(notify job)', (() => {
+      const w = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+      return /^  notify:\n    needs: \[build, deploy\]\n    if: always\(\)/m.test(w) && /issues: write/.test(w)
+        && /labels: \['ci-failure'\]/.test(w) && /state: 'closed'/.test(w) && /listJobsForWorkflowRun/.test(w);
+    })()],
     ['比賽日迴圈:判斷不出還有沒有比賽時要繼續跑,不能當成結束', (() => {
       const wfs = ['epl-matchday.yml', 'laliga-matchday.yml']
         .map(f => readFileSync(join(ROOT, '..', '.github', 'workflows', f), 'utf8'));
