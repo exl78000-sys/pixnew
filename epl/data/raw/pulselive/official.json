@@ -14208,8 +14208,8 @@
   "IPS|LIV": {
    "fixtureId": 128949,
    "kickoff": "2026-09-04T19:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 2
@@ -14644,6 +14644,19 @@
      "person": 21737,
      "assist": 32894,
      "team": 10,
+     "min": 6,
+     "label": "06'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 21737,
+     "assist": 32894,
+     "team": 10,
      "min": 9,
      "label": "09'00",
      "phase": "1",
@@ -14840,12 +14853,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -14862,11 +14869,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-04T20:56:35.254Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-09-04T20:51:51.895Z"
+ "fetchedAt": "2026-09-04T20:56:35.254Z"
 }
