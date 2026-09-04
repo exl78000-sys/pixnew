@@ -964,7 +964,9 @@ export function matchReportCards(m, { order = null } = {}) {
       <b class="mono event-minute">${esc(e.label || '—')}</b><span class="event-icon">${eventIcon(e.type)}</span>
       <span><b>${eventType(e.type)}</b>${e.team ? `・${esc(name(e.team))}` : ''}${e.player ? `・${eventPlayer(e)}` : ''}
       ${e.assist ? `<small>相關球員：${esc(e.assist)}</small>` : ''}
-      ${e.detail ? `<small>${esc(e.detail)}</small>` : ''}${e.comments ? `<small>${esc(e.comments)}</small>` : ''}</span></div>`).join('');
+      ${/* FotMob 烏龍球:team 已翻成得分方,踢進去的人在 ownGoalBy 那一隊 —— 兩邊都寫,讀者才不會以為是得分方自己的球員 */''}
+      ${e.ownGoal ? `<small>烏龍球${e.ownGoalBy ? `・${esc(name(e.ownGoalBy))} 球員踢進自家球門` : ''}</small>`
+        : e.detail ? `<small>${esc(e.detail)}</small>` : ''}${e.comments ? `<small>${esc(e.comments)}</small>` : ''}</span></div>`).join('');
 
     const sourceLabel = d.source === 'sportmonks' ? 'SportMonks' : d.source === 'fotmob' ? 'FotMob' : 'API-Football';
     const hasPlayers = Object.values(d.players ?? {}).some(list => list?.length);

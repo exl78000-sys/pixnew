@@ -271,6 +271,14 @@ jobs:
         run: npm run game:fetch
         continue-on-error: true
 
+      # 西甲與英冠的逐場資料走同一支抓取器(2026-09-05 補上英冠;西甲之前只在本機回填過,CI 一直沒有增量)。
+      # 進真實管線的 matchstats / reports,不進模擬遊玩。
+      - name: 抓西甲與英冠逐場資料(FotMob)
+        run: |
+          npm run game:fetch -- --league=es1 || true
+          npm run game:fetch -- --league=en2 || true
+        continue-on-error: true
+
       # 賽果與比分(FotMob 賽程端點,一個聯賽一個請求,2026-09-04):西甲與英冠的社群賽果檔慢好幾天,
       # 這裡先補暫定賽果;比賽日的高頻更新在 laliga-matchday.yml。
       - name: 抓三聯賽賽果與比分(FotMob)

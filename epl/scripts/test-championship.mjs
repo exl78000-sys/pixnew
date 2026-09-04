@@ -395,6 +395,36 @@ const table = out('table'), results = out('results'), sim = out('sim');
     && tbl[1].ppg === 1.13 && tbl[1].deduction === 6);
 }
 
+/* FotMob 逐場統計與賽後報告(2026-09-05):英冠的比賽層。守的是「收進來的每一場比分都對得回本站賽果」
+   與「報告的形狀跟西甲同一份 lib 產的一樣」;控球率沒有第二來源,verified 必須是 false、不能假裝抽核過。 */
+{
+  const D = join(ROOT, 'web', 'data', 'leagues', 'en2');
+  const rd = f => JSON.parse(readFileSync(join(D, f), 'utf8'));
+  const fx = rd('fixtures.json'), rep = rd('reports.json'), teams = rd('teams.json');
+  const msPath = join(D, 'matchstats.json');
+  check('英冠有 matchstats.json(FotMob 逐場統計)', existsSync(msPath));
+  if (existsSync(msPath)) {
+    const ms = rd('matchstats.json');
+    const byKey = new Map([...fx].filter(f => f.played).map(f => [`${f.season}|${f.home}|${f.away}`, f]));
+    const cur = Object.values(ms.matches).filter(m => byKey.has(m.key));
+    check('逐場統計:本季每一場的比分等於本站賽果', cur.length > 0 && cur.every(m => { const f = byKey.get(m.key); return m.score[0] === f.fh && m.score[1] === f.fa; }), `${cur.length} 場`);
+    check('逐場統計:每場控球率相加 100', Object.values(ms.matches).every(m => m.possession.all[0] + m.possession.all[1] === 100));
+    check('逐場統計:控球率沒有第二來源,verified 是 false', Object.values(ms.teams).every(t => t.verified === false));
+    check('每支英冠球隊都掛了逐場統計', teams.every(t => t.matchStats?.games > 0), `${teams.filter(t => t.matchStats?.games > 0).length} / ${teams.length}`);
+    const played = fx.filter(f => f.played);
+    const withStats = played.filter(f => ms.matches[`${f.season}|${f.home}|${f.away}`]);
+    check('賽後報告:有逐場資料的本季場次每一場都有報告', rep.count === withStats.length && withStats.every(f => rep.reports[`${f.season}|${f.home}|${f.away}`]), `${rep.count} / ${withStats.length}`);
+    check('賽後報告:來源 fotmob、blocked 是 null(不能再說沒有資料源)', rep.count > 0 && rep.source === 'fotmob' && rep.blocked === null);
+    const all = Object.values(rep.reports);
+    check('賽後報告:比分等於賽果、雙方先發 11 人、有正式陣型', all.every(r => { const f = byKey.get(r.key.includes('|') && r.season ? `${r.season}|${r.home}|${r.away}` : r.key); const H = r.sides[r.home], A = r.sides[r.away]; return f && r.hs === f.fh && r.as === f.fa && H.xi.length === 11 && A.xi.length === 11 && H.shape.label !== '—' && A.shape.label !== '—'; }));
+    /* 烏龍球沒有射手,不會進 sides.goals;所以是「射手進球 + 烏龍球 = 比分」。事件的 team 已在 canonical 翻成得分方 */
+    const ogOf = (r, side) => r.advanced.events.filter(e => e.ownGoal && e.team === side).length;
+    check('賽後報告:射手進球加烏龍球等於比分(兩隊各自)', all.every(r => r.sides[r.home].goals + ogOf(r, r.home) === r.hs && r.sides[r.away].goals + ogOf(r, r.away) === r.as));
+    check('賽後報告:事件裡的進球逐隊對回比分(烏龍球已翻成得分方)', all.every(r => ['home', 'away'].every(k => r.advanced.events.filter(e => e.type === 'Goal' && e.team === r[k]).length === (k === 'home' ? r.hs : r.as))));
+    check('賽後報告:advanced 五種 coverage 齊全、有逐射門與控球', all.every(r => { const c = r.advanced.coverage; return c.teamStatistics && c.playerStatistics && c.ratings && c.events && c.lineups && Array.isArray(r.advanced.shots) && Array.isArray(r.advanced.possession?.all); }));
+  }
+}
+
 /* FotMob 暫定賽果(2026-09-04):社群檔還沒到的場次先用 FotMob 比分補上,標 scoreProvisional;
    只能在本季、一定是 played、來源標 fotmob;而且 build 的規矩是「跟主來源有一場不符就整份不採用」,
    所以只要有暫定賽果存在,就代表重疊的場次全部核對一致。 */

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=3751e6a2';
+import * as C from './core.js?v=660e256d';
 
 const app = document.getElementById('app');
 
@@ -8,7 +8,10 @@ try {
   const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } = data;
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
-  const basic = meta.edition === 'basic';
+  /* 完整版(renderMatch)吃的是英超才有的東西:FPL 球員欄位、傷停、預估先發、官方事件。
+     以前用 `edition === 'basic'` 判斷,英冠沒有 edition → 走了英超那條路 → 已完賽場次一律炸在
+     `p.xgHome`(英冠沒有賽前快照也沒有 postFit)。「不是西甲」不等於「是英超」,照註冊表問。 */
+  const basic = C.league() !== 'pl';
 
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const tacBy = new Map(tactics.map(t => [t.code, t]));
