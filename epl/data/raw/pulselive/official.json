@@ -14208,7 +14208,7 @@
   "IPS|LIV": {
    "fixtureId": 128949,
    "kickoff": "2026-09-04T19:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -14217,16 +14217,38 @@
    "homeId": 8,
    "awayId": 10,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67189
+     ],
+     [
+      15154,
+      49884,
+      49254,
+      51454
+     ],
+     [
+      16044,
+      40161
+     ],
+     [
+      127644,
+      125827,
+      122002
+     ],
+     [
+      313194
+     ]
+    ],
     "xi": [
      {
       "id": 127644,
       "playerId": null,
       "name": "Abdul Fatawu",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -14289,7 +14311,7 @@
       "playerId": null,
       "name": "Daizen Maeda",
       "shirt": 38,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -14406,9 +14428,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      20559
+     ],
+     [
+      66133,
+      133104,
+      5140,
+      116665
+     ],
+     [
+      63633,
+      33231
+     ],
+     [
+      32894,
+      75382,
+      119386
+     ],
+     [
+      21737
+     ]
+    ],
     "xi": [
      {
       "id": 116665,
@@ -14424,7 +14468,7 @@
       "playerId": null,
       "name": "Víctor Muñoz",
       "shirt": 23,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -14480,7 +14524,7 @@
       "shirt": 4,
       "pos": "D",
       "posInfo": "Centre Central Defender",
-      "captain": false
+      "captain": true
      },
      {
       "id": 133104,
@@ -14505,7 +14549,7 @@
       "playerId": null,
       "name": "Cody Gakpo",
       "shirt": 18,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      }
@@ -14598,10 +14642,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "01'00"
   }
  },
- "fetchedAt": "2026-09-04T18:58:54.020Z"
+ "fetchedAt": "2026-09-04T19:01:10.774Z"
 }
