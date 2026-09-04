@@ -153,9 +153,15 @@ export function toCanonicalDetail(m, { verified = false } = {}) {
   return {
     key: `${m.home}|${m.away}`, season: m.season, source: 'fotmob', fixtureId: m.matchId ?? null, kickoff: null,
     home: m.home, away: m.away, score: { home: m.score[0], away: m.score[1] },
-    teamStats: m.teamStats, players: m.players ?? {}, events: m.events.map(e => ({
-      minute: e.minute, extra: e.extra, label: `${e.minute}'${e.extra ? `+${e.extra}` : ''}`, team: e.team, type: e.type,
-      detail: e.detail, comments: null, player: e.player ?? null, playerId: null, assist: null, assistId: null })),
+    teamStats: m.teamStats, players: m.players ?? {}, events: m.events.map(e => {
+      /* FotMob 烏龍球事件的 team 是**踢進自家球門那個人的隊**,得分算對手。
+         拿三聯賽全部 FotMob 資料驗過(2026-09-05):有烏龍球的 85 場,翻轉後逐隊進球數 85 場全對回比分,
+         不翻轉 0 場對得上。canonical 的 team 語意是「得分方」(goalEvidence 照這個數),所以這裡翻。 */
+      const own = e.type === 'Goal' && e.detail === 'Own Goal';
+      const team = own ? (e.team === m.home ? m.away : m.home) : e.team;
+      return { minute: e.minute, extra: e.extra, label: `${e.minute}'${e.extra ? `+${e.extra}` : ''}`, team, type: e.type,
+        detail: e.detail, comments: null, player: e.player ?? null, playerId: null, assist: null, assistId: null, ...(own ? { ownGoal: true, ownGoalBy: e.team } : {}) };
+    }),
     lineups, possession: m.possession, momentum: m.momentum, shots: m.shots, shotmapComplete: m.shotmapComplete,
     physical: m.physical ?? null, possessionVerified: !!verified,
     coverage: { teamStatistics: true,

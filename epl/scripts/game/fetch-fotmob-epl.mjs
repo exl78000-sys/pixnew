@@ -42,6 +42,8 @@ const UA = 'pl-war-room/1.0 (football analysis side project)';
 const LEAGUES = {
   pl: { id: 47, ccode3: 'GBR', dir: 'fotmob-epl', teamFile: 'teams.json', results: ['web', 'data', 'results.json'], verify: true },
   es1: { id: 87, ccode3: 'ESP', dir: 'fotmob-la-liga', teamFile: 'teams-la-liga.json', results: ['web', 'data', 'leagues', 'es1', 'results.json'], verify: false },
+  // 英冠(2026-09-05):同一支抓取器,只是聯賽 id 48;pulselive 只有英超,所以 verify false
+  en2: { id: 48, ccode3: 'GBR', dir: 'fotmob-championship', teamFile: 'teams-championship.json', results: ['web', 'data', 'leagues', 'en2', 'results.json'], verify: false },
 };
 const LG = LEAGUES[arg('league') ?? 'pl'];
 if (!LG) { console.error(`未知聯賽 ${arg('league')};只有 ${Object.keys(LEAGUES).join('、')}`); process.exit(1); }

@@ -10,7 +10,10 @@
  * `getTeamData/{英冠球隊}/2025` 一律 404。**那是驗證過的否定,不是猜的**
  * (對照組跑得出資料,所以不是我端點打錯)。
  *
- * 所以這個聯賽做得出來的是「球隊與比賽」那一層,做不出來的是球員、xG、陣容。
+ * 所以這個聯賽做得出來的是「球隊與比賽」那一層。**整季的球員層**(逐輪出賽、整季 xG、傷停)仍然沒有;
+ * 但**比賽層**從 2026-09-05 起有了:FotMob 的逐場資料(聯賽 id 48,跟英超西甲同一支抓取器)
+ * 給控球、球隊統計、逐射門 xG、事件、正式名單與逐人評分,比分逐場對回本站賽果才收。
+ * 於是賽後報告(reports.json)與球隊頁的逐場統計英冠也有 —— 不是「做不到」,是以前沒有去接。
  * 導覽列只掛做得出來的頁(core.js 的 LEAGUES.en2.open),
  * 其餘的頁網址仍然進得來,由 LeagueGap 講一句實話 —— 不是給一個空白頁。
  *
@@ -31,7 +34,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { leagueMatches, backfillLine, europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
-import { buildLiveProviderReport } from './lib/postmatch-report.mjs';
+import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
 import { competition } from './lib/canonical.mjs';
@@ -259,6 +263,15 @@ async function main() {
         poisson: { home: p.home, draw: p.draw, away: p.away },
         elo: e,
       },
+      // 已賽場次「目前模型怎麼看」—— 跟西甲同一個欄位,前端標明那不是賽前預測(2026-09-05 補,之前英冠沒有)
+      postFit: m.played ? {
+        ...p,
+        home: round((p.home + e.home) / 2, 4),
+        draw: round((p.draw + e.draw) / 2, 4),
+        away: round((p.away + e.away) / 2, 4),
+        poisson: { home: p.home, draw: p.draw, away: p.away },
+        elo: e,
+      } : null,
       /* 已賽用賽季檔(收盤、涵蓋整季),未賽用 fixtures.csv(開盤、只有未來幾天)。
          兩邊都沒有就是 null —— 沒有盤口是常態,不要編一個。 */
       market: (m.played
@@ -311,6 +324,14 @@ async function main() {
     }
     attachTrendPercentiles(styleTrendBy, { ruler: seasonRuler(lastRows, { minGames: 40 }) });
     console.log(`  風格位移:近 10 場視窗 ${styleTrendBy.size} 隊(上季不在英冠的基準為 null)`);
+  }
+
+  /* 逐場統計(FotMob,2026-09-05):跟西甲同一份 lib。比分逐場對回本站賽果、控球率相加要是 100,
+     不符的整場退回並印出來。英冠沒有第二來源可抽核控球率,verified 會是 false,畫面照這個講。 */
+  const fotmobStats = loadFotmobMatchStats(ROOT, { results: [...lastMatches, ...curMatches].filter(m => m.played), rawDir: 'fotmob-championship' });
+  if (fotmobStats.count) {
+    console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})・退回 ${fotmobStats.rejected.length} 場・控球率未經第二來源抽核`);
+    for (const r of fotmobStats.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
   }
 
   const teams = curCodes.map(code => {
@@ -566,6 +587,7 @@ async function main() {
   };
 
   console.log('寫入英冠資料集:');
+  for (const t of teams) { const ms = fotmobStats.teams[t.code]; if (ms?.games) t.matchStats = ms; }
   await write('meta', meta);
   await write('clubs', T.list);
   await write('teams', teams);
@@ -726,12 +748,34 @@ async function main() {
 
      blocked 這個欄位有明確語意(整季拿不到,CLAUDE.md 有一整條在講):
      英冠是**根本沒有這個資料源**,不是方案不含本季,所以照實寫原因。 */
+  /* 賽後報告(2026-09-05):FotMob 的逐場資料轉成 canonical detail,走跟西甲同一個 buildProviderMatchReport
+     (它自己會再核對一次比分、要求五種 coverage 齊全)。以前這裡是空殼加 blocked:'no-source' ——
+     那句「沒有接賽後資料源」現在不成立了,blocked 要回 null。 */
+  const reports = {};
+  const nameOf = code => T.byCode.get(code)?.en ?? code;
+  for (const f of fixtures) {
+    if (!f.played) continue;
+    const ms = fotmobStats.matches?.[`${f.season}|${f.home}|${f.away}`];
+    if (!ms) continue;
+    const report = buildProviderMatchReport({ fixture: f, detail: toCanonicalDetail(ms, { verified: false }), nameOf });
+    if (report) reports[`${f.season}|${f.home}|${f.away}`] = report;
+  }
+  const reportCount = Object.keys(reports).length;
+  const pendingCount = fixtures.filter(f => f.played && f.season === CURRENT_SEASON && !reports[`${f.season}|${f.home}|${f.away}`]).length;
+  if (reportCount) console.log(`  英冠賽後報告:${reportCount} 場(FotMob)・本季還沒抓到 ${pendingCount} 場`);
   await write('reports', {
-    seasons: [], count: 0, reports: {}, source: null, pending: [],
-    blocked: { reason: 'no-source', message: '英冠沒有接賽後資料源(本站的 SportMonks / API-Football 方案不含英冠)。', at: new Date().toISOString() },
+    seasons: reportCount ? [...new Set(Object.values(reports).map(r => r.season))].sort() : [], count: reportCount, reports,
+    source: reportCount ? 'fotmob' : null, pending: pendingCount,
+    blocked: reportCount ? null : { reason: 'not-fetched', message: '英冠的 FotMob 逐場資料還沒抓(npm run game:fetch -- --league=en2)。', at: new Date().toISOString() },
     backupBlocked: null,
-    note: '英冠沒有賽後球隊統計、正式陣容與球員評分。',
+    note: reportCount
+      ? '英冠賽後資料來自 FotMob 逐場端點:球隊統計、逐射門 xG、事件、正式名單與逐人評分;比分逐場對回本站賽果才收。沒有第二來源可抽核控球率。'
+      : '英冠的 FotMob 逐場資料還沒抓。',
   });
+  if (fotmobStats.count) {
+    await write('matchstats', { source: fotmobStats.source, note: '英冠逐場統計(FotMob):控球、球隊統計、逐射門 xG、動能、事件、名單、跑動、逐人統計。比分已逐場對回本站賽果;控球率沒有第二來源可抽核。',
+      seasons: fotmobStats.seasons, count: fotmobStats.count, rejected: fotmobStats.rejected, verification: fotmobStats.verification, teams: fotmobStats.teams, matches: fotmobStats.matches });
+  }
   await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 } });
 
   console.log(`\n✔ 英冠:${teams.length} 隊、${fixtures.length} 場賽程、隊徽 ${crestCount}/${T.list.length}`);
