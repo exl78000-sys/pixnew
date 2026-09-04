@@ -22,8 +22,8 @@ const mean = xs => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null
 const sd = xs => { if (xs.length < 2) return null; const m = mean(xs); return Math.sqrt(xs.reduce((a, x) => a + (x - m) ** 2, 0) / (xs.length - 1)); };
 const dist = xs => ({ mean: xs.length ? r2(mean(xs)) : null, sd: xs.length >= 2 ? r2(sd(xs)) : null, n: xs.length });
 
-export function loadFotmobMatchStats(root, { results = [] } = {}) {
-  const dir = join(root, 'data', 'raw', 'fotmob-epl');
+export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl' } = {}) {
+  const dir = join(root, 'data', 'raw', rawDir);
   const out = { source: 'FotMob matchDetails', seasons: [], count: 0, rejected: [], verification: {}, matches: {}, teams: {} };
   if (!existsSync(dir)) return out;
   const scoreOf = new Map(results.filter(r => r.played).map(r => [`${r.season}|${r.home}|${r.away}`, [r.fh, r.fa]]));
@@ -127,6 +127,8 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
     } : null;
     out.teams[code] = {
       code, seasons: [...new Set(mine.map(m => m.season))].sort(), games: mine.length,
+      /* 控球率有沒有經第二來源抽核(英超有官網端點;西甲沒有)—— 畫面上的那句話照這個旗標講 */
+      verified: Object.values(out.verification).some(v => v && v.checked > 0 && v.agree === v.checked),
       home: venue(true), away: venue(false),
       ...(physical ? { physical } : {}),
       ...(heat.length ? { heat, heatGrid: { x: 6, y: 4 } } : {}),
@@ -141,7 +143,7 @@ export function loadFotmobMatchStats(root, { results = [] } = {}) {
 /* 一場 → 賽後報告的 canonical detail(`buildProviderMatchReport` / `attachAdvancedCodes` 吃的那一種)。
    FotMob 的精簡萃取沒有逐人統計與評分,所以 coverage 照實標:teamStatistics / events / lineups 有,
    playerStatistics / ratings 沒有 —— 前端據此不畫球員評分卡、本場最佳退回 FPL 表現分。 */
-export function toCanonicalDetail(m) {
+export function toCanonicalDetail(m, { verified = false } = {}) {
   const lineups = {};
   for (const [code, l] of Object.entries(m.lineups ?? {})) {
     lineups[code] = { formation: l.formation ?? null, coach: l.coach ?? null, team: code, rows: null,
@@ -155,7 +157,7 @@ export function toCanonicalDetail(m) {
       minute: e.minute, extra: e.extra, label: `${e.minute}'${e.extra ? `+${e.extra}` : ''}`, team: e.team, type: e.type,
       detail: e.detail, comments: null, player: e.player ?? null, playerId: null, assist: null, assistId: null })),
     lineups, possession: m.possession, momentum: m.momentum, shots: m.shots, shotmapComplete: m.shotmapComplete,
-    physical: m.physical ?? null,
+    physical: m.physical ?? null, possessionVerified: !!verified,
     coverage: { teamStatistics: true,
       playerStatistics: !!m.players && Object.values(m.players).some(l => l?.length),
       ratings: !!m.players && Object.values(m.players).some(l => l?.some(p => p.rating != null)),

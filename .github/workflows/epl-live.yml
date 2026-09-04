@@ -270,6 +270,15 @@ jobs:
         run: npm run game:fetch
         continue-on-error: true
 
+      # 賽果與比分(FotMob 賽程端點,一個聯賽一個請求,2026-09-04):西甲與英冠的社群賽果檔慢好幾天,
+      # 這裡先補暫定賽果;比賽日的高頻更新在 laliga-matchday.yml。
+      - name: 抓三聯賽賽果與比分(FotMob)
+        run: |
+          npm run scores:fetch -- --league=pl || true
+          npm run scores:fetch -- --league=es1 || true
+          npm run scores:fetch -- --league=en2 || true
+        continue-on-error: true
+
       - name: 抓本季逐輪球員資料
         run: npm run season
         continue-on-error: true

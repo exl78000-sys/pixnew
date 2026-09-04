@@ -106,6 +106,8 @@ const LEAGUES = {
     fixtures: ['web', 'data', 'leagues', 'es1', 'fixtures.json'],
     live: ['data', 'raw', 'sportmonks-la-liga', 'live.json'],
   },
+  /* 英冠(2026-09-04):比分來源是 FotMob 賽程端點,沒有 FPL 形狀的 live.json,進場與否純用開賽時間推 */
+  en2: { fixtures: ['web', 'data', 'leagues', 'en2', 'fixtures.json'], live: null },
 };
 
 export function liveWindow(now = Date.now(), league = 'pl') {
@@ -116,8 +118,8 @@ export function liveWindow(now = Date.now(), league = 'pl') {
   const fixtures = JSON.parse(readFileSync(fx, 'utf8'));
 
   let live = null;
-  const rawLive = join(ROOT, ...cfg.live);
-  if (existsSync(rawLive)) {
+  const rawLive = cfg.live ? join(ROOT, ...cfg.live) : null;
+  if (rawLive && existsSync(rawLive)) {
     try { live = JSON.parse(readFileSync(rawLive, 'utf8')); } catch { /* 檔壞了就退回用開賽時間推 */ }
   }
   return decideWindow({ now, fixtures, live });

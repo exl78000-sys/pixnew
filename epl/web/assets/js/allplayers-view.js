@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6ce2cd6c';
+import * as C from './core.js?v=be9d8572';
 
 /* 跨聯賽球員搜尋(總球員頁)。2026-08-30 改成**合併單表**(使用者要求),
    加隊徽與頭貼。設計決定,都是踩過的坑或明寫的界線:

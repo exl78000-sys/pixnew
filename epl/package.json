@@ -87,7 +87,8 @@
     "game:fetch": "node scripts/game/fetch-fotmob-epl.mjs",
     "game:test": "node scripts/game/test-game.mjs",
     "probe:possession": "node scripts/probe-possession.mjs",
-    "tune:xg": "node scripts/tune-xg.mjs"
+    "tune:xg": "node scripts/tune-xg.mjs",
+    "scores:fetch": "node scripts/fetch-fotmob-scores.mjs"
   },
   "engines": {
     "node": ">=18"

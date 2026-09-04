@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6ce2cd6c';
+import * as C from './core.js?v=be9d8572';
 
 const app = document.getElementById('app');
 
@@ -1094,7 +1094,7 @@ try {
         <div class="tiny dim" style="margin-top:6px">最高速度</div>${[...ph.players].filter(p => p.topSpeed != null).sort((a, b) => b.topSpeed - a.topSpeed).slice(0, 3).map(p => lineOf(C.esc(p.name), `${p.topSpeed.toFixed(1)} km/h`)).join('')}</div></div>
       <div class="tiny dim" style="margin-top:8px">FotMob 的追蹤資料,不是每場都有(2025-26 缺 97 場,集中在 11 座主場),所以場數比上面少;本站只搬運不推估。</div></div>` : '';
     return `<div class="section" style="margin-top:16px"><h2>逐場統計</h2>
-      <span class="hint">FotMob・${ms.seasons.join(' + ')}・${ms.games} 場・控球率經官網端點抽核</span></div>
+      <span class="hint">FotMob・${ms.seasons.join(' + ')}・${ms.games} 場・${ms.verified ? '控球率經官網端點抽核' : '控球率未經第二來源抽核'}</span></div>
     <div class="grid g2">
       <div class="card"><h3>主客場均值</h3><div class="grid g2">${venue('主場', ms.home)}${venue('客場', ms.away)}</div>
         <div class="tiny dim" style="margin-top:8px">每場的數字直接取自供應商的球隊統計;± 是各場控球率的標準差,不是估計誤差。</div></div>

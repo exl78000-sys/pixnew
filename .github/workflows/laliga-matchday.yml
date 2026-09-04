@@ -1,4 +1,4 @@
-name: 西甲戰情室 即時比分
+name: 西甲與英冠 即時比分
 
 on:
   workflow_dispatch:
@@ -35,9 +35,21 @@ jobs:
           node-version: '22'
 
       # 沒有比賽就不要打 API。這支原本沒有這道守衛,排程一開就是不分晝夜每次都抓。
+      # 西甲或英冠任一個有比賽就進場(2026-09-04 起英冠也走這條,比分來源是 FotMob 賽程端點)
       - name: 現在該不該進場?
         id: win
-        run: node scripts/live-window.mjs --league=es1 --github
+        run: |
+          node scripts/live-window.mjs --league=es1 > /tmp/w-es1.json
+          node scripts/live-window.mjs --league=en2 > /tmp/w-en2.json
+          node -e '
+            const fs = require("fs");
+            const a = JSON.parse(fs.readFileSync("/tmp/w-es1.json", "utf8")), b = JSON.parse(fs.readFileSync("/tmp/w-en2.json", "utf8"));
+            const active = a.active || b.active;
+            const sleep = active ? 0 : Math.max(0, Math.min(a.sleepSec ?? 0, b.sleepSec ?? 0));
+            const reason = `es1:${a.reason} | en2:${b.reason}`;
+            console.log(JSON.stringify({ active, sleep, reason }));
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `active=${active}\nsleep=${sleep}\nreason=${reason}\n`);
+          '
 
       - name: 沒比賽就結束
         if: steps.win.outputs.active != 'true'
@@ -46,8 +58,7 @@ jobs:
       # 迴圈:進場一次就撐完整個比賽時段(跟 epl-matchday 同一個道理)。
       # 之前是單發式,每次 cron 抓一發就走 —— 而 cron 在壅塞時段整批不開火,
       # 一斷就是整場比賽零覆蓋。改成迴圈後 cron 只要成功點火一次就夠。
-      # SportMonks 請求量:只在進場窗口內、每 3 分鐘至多 2 個請求(≈40/小時),
-      # 沒比賽時一個請求都不會發。
+      # FotMob 請求量:只在進場窗口內、每 3 分鐘 2 個請求(兩個聯賽各一),沒比賽時一個都不發。
       - name: 輪詢更新(每 3 分鐘)
         if: steps.win.outputs.active == 'true'
         env:
@@ -73,22 +84,22 @@ jobs:
           N=0; PUSHED=0
           while [ "$(date +%s)" -lt "$END" ]; do
             N=$((N+1))
-            npm run laliga:live -- --max-requests=2 >/dev/null 2>&1 || true
+            # FotMob 賽程端點:一個聯賽一個請求(SportMonks 停了之後的來源,2026-09-04)
+            npm run scores:fetch -- --league=es1 >/dev/null 2>&1 || true
+            npm run scores:fetch -- --league=en2 >/dev/null 2>&1 || true
 
             cd "$GITHUB_WORKSPACE"
             # git diff 不會把未追蹤檔視為變化;首次成功抓到的快照必須照樣建置並回寫
-            if git diff --quiet -- epl/data/raw/sportmonks-la-liga/live.json \
-              && git ls-files --error-unmatch epl/data/raw/sportmonks-la-liga/live.json >/dev/null 2>&1; then
+            if git diff --quiet -- epl/data/raw/fotmob-la-liga/scores.json epl/data/raw/fotmob-championship/scores.json \
+              && git ls-files --error-unmatch epl/data/raw/fotmob-la-liga/scores.json >/dev/null 2>&1; then
               echo "  [$N] 無變化"
             else
               (cd epl && npm run laliga:build >/dev/null 2>&1) || true
-              git add -f epl/data/raw/sportmonks-la-liga/live.json \
+              (cd epl && npm run en2:build >/dev/null 2>&1) || true
+              git add -f epl/data/raw/fotmob-la-liga/scores.json epl/data/raw/fotmob-championship/scores.json \
                 epl/data/raw/sportmonks-la-liga/finals.json \
                 epl/data/live-history-la-liga.json \
-                epl/web/data/leagues/es1/live.json epl/web/data/leagues/es1/meta.json \
-                epl/web/data/leagues/es1/reports.json \
-                epl/web/data/leagues/es1/prob-history.json \
-                epl/web/data/leagues/es1/inplay-calibration.json 2>/dev/null || true
+                epl/web/data/leagues/es1 epl/web/data/leagues/en2 2>/dev/null || true
               if git diff --cached --quiet; then
                 echo "  [$N] 產物無變化"
               else
@@ -98,7 +109,7 @@ jobs:
                 for try in 1 2 3; do
                   if ! git pull --rebase -q origin "$GITHUB_REF_NAME" 2>/dev/null; then
                     git rebase --abort 2>/dev/null || true
-                    git checkout --theirs -- epl/data/raw/sportmonks-la-liga/live.json epl/data/live-history-la-liga.json 2>/dev/null || true
+                    git checkout --theirs -- epl/data/raw/fotmob-la-liga/scores.json epl/data/raw/fotmob-championship/scores.json epl/data/live-history-la-liga.json 2>/dev/null || true
                   fi
                   if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
                     PUSHED=$((PUSHED+1)); echo "  [$N] ✔ 已更新並推送"; break
@@ -121,8 +132,9 @@ jobs:
             # 2026-08-31 實測:AVL vs ARS 19:00 開球,迴圈 19:00 整收工,
             # 整場沒有任何輪詢 —— 而 decideWindow 當下其實回的是 active:true。
             # 只有明確收到 false 才收工;unknown 多跑一輪的成本,遠低於漏掉一場比賽。
-            ACTIVE=$(node scripts/live-window.mjs 2>/dev/null \
-              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log(JSON.parse(s).active)}catch{console.log("unknown")}})' 2>/dev/null || echo unknown)
+            # **要帶 --league**:原本沒帶,預設看的是英超的窗口(踩到);兩聯賽任一個還在踢就繼續
+            ACTIVE=$(node scripts/live-window.mjs --league=es1 2>/dev/null \
+              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const a=JSON.parse(s);const b=JSON.parse(require("child_process").execSync("node scripts/live-window.mjs --league=en2",{stdio:["ignore","pipe","ignore"]}).toString());console.log((a.active||b.active)?"true":"false")}catch{console.log("unknown")}})' 2>/dev/null || echo unknown)
             if [ "$ACTIVE" = "false" ]; then
               echo "  比賽都結束了,收工(輪詢 $N 次、推送 $PUSHED 次)"
               break

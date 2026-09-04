@@ -30,7 +30,8 @@ import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { leagueMatches, backfillLine, europeanKickoff } from './lib/league-matches.mjs';
+import { leagueMatches, backfillLine, europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
+import { buildLiveProviderReport } from './lib/postmatch-report.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
 import { competition } from './lib/canonical.mjs';
@@ -78,6 +79,7 @@ const slimMatch = m => {
   };
   if (m.hh !== null) { out.hh = m.hh; out.ha = m.ha; }
   if (m.kickoff) out.kickoff = m.kickoff;
+  if (m.scoreProvisional) { out.scoreProvisional = true; out.scoreSource = m.scoreSource ?? 'fotmob'; }   // FotMob 暫定賽果(社群檔還沒到);provisional 這個名字西甲另有用途
   if (m.stage) out.stage = m.stage;
   if (m.scoreSource) out.scoreSource = m.scoreSource;
   return out;
@@ -144,9 +146,10 @@ async function main() {
 
   const backfills = [];
   const load = season => {
-    const { matches, backfill } = leagueMatches(ROOT, season, {
+    const { matches, backfill, fotmob } = leagueMatches(ROOT, season, {
       codeOf, kickoffOf: londonKickoff,
       competition: COMPETITION, rawDir: RAW_DIR, fillDir: FILL_DIR, div: 'E1',
+      fotmobDir: 'fotmob-championship',   // 第三來源:FotMob 賽果(暫定,逐場核對),2026-09-04
       /* 升級附加賽不是聯賽比賽:場地中立、單場定生死,而且只有四隊打。
          算進積分榜會多算分,進 Poisson 訓練會把季末四強的額外樣本混進主客場參數。
          **而且它跟聯賽撞「主客組合」這個鍵**,所以要在補比分之前就標出來。
@@ -155,6 +158,8 @@ async function main() {
     });
     const line = backfillLine(season, backfill);
     if (line) console.log(line);
+    const fmLine = fotmobBackfillLine(season, fotmob);
+    if (fmLine) console.log(fmLine);
     if (backfill?.filled) backfills.push({ season, ...backfill });
     return matches;
   };
@@ -677,15 +682,44 @@ async function main() {
     available: false, season: CURRENT_SEASON, source: null, sources: [], matches: {},
     note: '英冠沒有接正式先發名單來源。',
   });
-  await write('live', {
+  /* 英冠即時比分(2026-09-04):FotMob 賽程端點,比賽日約每 15 分鐘一次(laliga-matchday.yml 一起跑)。
+     只有比分與分鐘;抓取超過 6 小時就不宣告可用(跟西甲同一條新鮮度規矩)。
+     **live.matches 是陣列,official/experts 的 matches 是物件** —— 以 es1 的產物為準。 */
+  let liveOut = {
     available: false, source: null, sourceLabel: null, demo: false,
-    season: CURRENT_SEASON, fetchedAt: null, counts: { live: 0, today: 0 },
-    /* **live.matches 是陣列,official/experts 的 matches 是物件。**
-       同一個名字兩種型別,照著別的檔案抄很容易抄反 —— 寫成 {} 的話
-       單場分析頁在 `(live?.matches ?? []).find(...)` 直接拋錯。以 es1 的產物為準。 */
-    matches: [],
-    note: '英冠沒有接即時比分來源;比分依 openfootball 與 football-data.co.uk 的更新節奏落地。',
-  });
+    season: CURRENT_SEASON, fetchedAt: null, counts: { live: 0, today: 0 }, matches: [],
+    note: '英冠即時比分來自 FotMob 的賽程端點,只在比賽日更新;沒有比賽的日子這裡就是空的。',
+  };
+  {
+    const sp = join(ROOT, 'data', 'raw', 'fotmob-championship', 'scores.json');
+    if (existsSync(sp)) {
+      try {
+        const sc = JSON.parse(readFileSync(sp, 'utf8'));
+        const ageH = (Date.now() - Date.parse(sc.fetchedAt ?? 0)) / 3600000;
+        if (sc.season === CURRENT_SEASON && Number.isFinite(ageH) && ageH <= 6) {
+          const today = sc.fetchedAt.slice(0, 10);
+          const todays = sc.matches.filter(m => m.date === today && (m.started || m.finished) && !m.cancelled);
+          const byPair = new Map(fixtures.map(f => [`${f.home}|${f.away}`, f]));
+          const minuteOf = m => { const mm = /^(\d+)/.exec(String(m.liveTime ?? '')); return m.finished ? 90 : mm ? Number(mm[1]) : 0; };
+          const matches = todays.map(m => {
+            const fixture = byPair.get(`${m.home}|${m.away}`);
+            if (!fixture) return null;
+            const detail = { key: `${m.home}|${m.away}`, season: CURRENT_SEASON, source: 'fotmob', kickoff: m.utcTime,
+              home: m.home, away: m.away, score: m.score ? { home: m.score[0], away: m.score[1] } : { home: null, away: null },
+              teamStats: {}, players: {}, events: [], lineups: {},
+              coverage: { teamStatistics: false, playerStatistics: false, ratings: false, events: false, lineups: false } };
+            return buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code });
+          }).filter(Boolean);
+          liveOut = { available: true, source: 'fotmob', sourceLabel: 'FotMob 比分(比賽日約每 15 分鐘)', demo: false,
+            season: CURRENT_SEASON, fetchedAt: sc.fetchedAt,
+            counts: { total: matches.length, live: todays.filter(m => m.started && !m.finished).length, finished: todays.filter(m => m.finished).length, upcoming: 0, today: matches.length },
+            matches, note: '只有比分與分鐘,沒有事件、陣容與統計。' };
+          console.log(`  英冠即時比分:FotMob 快照 ${Math.round(ageH * 60)} 分鐘前・今天 ${matches.length} 場(進行中 ${liveOut.counts.live})`);
+        }
+      } catch (e) { console.log(`  ⚠ FotMob 比分快照讀不了:${e.message}`); }
+    }
+  }
+  await write('live', liveOut);
   /* reports 的形狀要跟另外兩個聯賽一樣(seasons / count / reports 是個以
      「賽季|主|客」為鍵的物件)。第一版自己編了 {pre,post},
      fixture-list 去讀 reports.reports[key] 就炸了 —— 又一次自己取名字的代價。

@@ -395,5 +395,24 @@ const table = out('table'), results = out('results'), sim = out('sim');
     && tbl[1].ppg === 1.13 && tbl[1].deduction === 6);
 }
 
+/* FotMob 暫定賽果(2026-09-04):社群檔還沒到的場次先用 FotMob 比分補上,標 scoreProvisional;
+   只能在本季、一定是 played、來源標 fotmob;而且 build 的規矩是「跟主來源有一場不符就整份不採用」,
+   所以只要有暫定賽果存在,就代表重疊的場次全部核對一致。 */
+{
+  const fx = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'en2', 'fixtures.json'), 'utf8'));
+  const prov = fx.filter(f => f.scoreProvisional);
+  check('暫定賽果只出現在已完賽場次、來源標 fotmob', prov.every(f => f.played && f.fh != null && f.scoreSource === 'fotmob'), String(prov.length));
+  const sp = join(ROOT, 'data', 'raw', 'fotmob-championship', 'scores.json');
+  if (existsSync(sp)) {
+    const sc = JSON.parse(readFileSync(sp, 'utf8'));
+    const fin = new Map(sc.matches.filter(m => m.finished && m.score).map(m => [`${m.home}|${m.away}`, m.score]));
+    const cur = fx.filter(f => f.season === sc.season && f.played && fin.has(`${f.home}|${f.away}`));
+    check('本季已完賽場次的比分跟 FotMob 逐場一致(兩個獨立來源)', cur.every(f => { const s = fin.get(`${f.home}|${f.away}`); return s[0] === f.fh && s[1] === f.fa; }), `${cur.length} 場`);
+    /* 抓得夠新的話,FotMob 已完賽而本站還「未賽」的場次不該存在(那就是第三來源沒接上) */
+    const ageH = (Date.now() - Date.parse(sc.fetchedAt)) / 3600000;
+    if (ageH < 24) check('FotMob 已完賽的場次本站沒有一場還是「未賽」', fx.filter(f => f.season === sc.season && !f.played && fin.has(`${f.home}|${f.away}`)).length === 0);
+  }
+}
+
 if (process.exitCode) throw new Error('英冠自我檢查失敗');
 console.log('  英冠全部通過');
