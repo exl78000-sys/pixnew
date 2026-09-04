@@ -50295,8 +50295,1728 @@
      }
     ]
    }
+  },
+  "BET|RMA": {
+   "key": "BET|RMA",
+   "season": "2026-27",
+   "date": "2026-09-04",
+   "matchId": "5868043",
+   "home": "BET",
+   "away": "RMA",
+   "score": [
+    1,
+    0
+   ],
+   "providerScore": [
+    1,
+    0
+   ],
+   "teamStats": {
+    "BET": {
+     "possession": 42,
+     "shots": 10,
+     "shotsOn": 5,
+     "shotsOff": 2,
+     "blockedShots": 5,
+     "corners": 6,
+     "offsides": 1,
+     "fouls": 11,
+     "saves": 6,
+     "passes": 412,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.96
+    },
+    "RMA": {
+     "possession": 58,
+     "shots": 20,
+     "shotsOn": 8,
+     "shotsOff": 9,
+     "blockedShots": 3,
+     "corners": 10,
+     "offsides": 2,
+     "fouls": 13,
+     "saves": 4,
+     "passes": 586,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.16
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     42,
+     58
+    ],
+    "h1": [
+     44,
+     56
+    ],
+    "h2": [
+     39,
+     61
+    ]
+   },
+   "events": [
+    {
+     "minute": 39,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Marc Bartra"
+    },
+    {
+     "minute": 45,
+     "extra": 3,
+     "team": "RMA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Arda Güler"
+    },
+    {
+     "minute": 55,
+     "extra": null,
+     "team": "RMA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ibrahima Konaté"
+    },
+    {
+     "minute": 55,
+     "extra": null,
+     "team": "RMA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "José Mourinho"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Álvaro Fidalgo"
+    },
+    {
+     "minute": 62,
+     "extra": null,
+     "team": "RMA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Eduardo Camavinga"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "RMA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bernardo Silva"
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "BET",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Facundo Bernal"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "RMA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Trent Alexander-Arnold"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "RMA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Yan Diomande"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nelson Deossa"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Troy Parrott"
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rodrigo Riquelme"
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Troy Parrott"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "RMA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Carlos Espí"
+    },
+    {
+     "minute": 83,
+     "extra": null,
+     "team": "BET",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Marc Roca"
+    },
+    {
+     "minute": 88,
+     "extra": 0,
+     "team": "RMA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alvaro Carreras"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "BET",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Natan"
+    },
+    {
+     "minute": 90,
+     "extra": 9,
+     "team": "RMA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Vinícius Júnior"
+    }
+   ],
+   "shots": [
+    {
+     "min": 5,
+     "extra": null,
+     "team": "RMA",
+     "player": "Jude Bellingham",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 40.3,
+     "foot": "Header"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0.026,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.2,
+     "y": 41.7,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "RMA",
+     "player": "Vinícius Júnior",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.095,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97,
+     "y": 30.3,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "RMA",
+     "player": "Dean Huijsen",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.298,
+     "xgot": 0.283,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 35.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "RMA",
+     "player": "Arda Güler",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.007,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.9,
+     "y": 35.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "RMA",
+     "player": "Vinícius Júnior",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.1,
+     "y": 49.1,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "RMA",
+     "player": "Federico Valverde",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.5,
+     "y": 26.7,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "RMA",
+     "player": "Vinícius Júnior",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.148,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.5,
+     "y": 42.8,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 17.1,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "BET",
+     "player": "Juan Hernández",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.5,
+     "y": 22.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "RMA",
+     "player": "Kylian Mbappé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.127,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.7,
+     "y": 35.1,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 19.5,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "RMA",
+     "player": "Vinícius Júnior",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.493,
+     "xgot": 0.436,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.2,
+     "y": 30.2,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "RMA",
+     "player": "Arda Güler",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.6,
+     "y": 25.5,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "RMA",
+     "player": "Kylian Mbappé",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.365,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 32.4,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "RMA",
+     "player": "Kylian Mbappé",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.442,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 39.7,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "RMA",
+     "player": "Jude Bellingham",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.041,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 47.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "RMA",
+     "player": "Jude Bellingham",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.047,
+     "xgot": 0.509,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 33.6,
+     "foot": "Header"
+    },
+    {
+     "min": 45,
+     "extra": 4,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 47.2,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 45,
+     "extra": 6,
+     "team": "RMA",
+     "player": "Dean Huijsen",
+     "type": "Post",
+     "situation": "FromCorner",
+     "xg": 0.102,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 35.1,
+     "foot": "Header"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "RMA",
+     "player": "Kylian Mbappé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78,
+     "y": 46.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.8,
+     "y": 24.4,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "RMA",
+     "player": "Kylian Mbappé",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.18,
+     "xgot": 0.473,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 40.3,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "BET",
+     "player": "Nelson Deossa",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.03,
+     "xgot": 0.029,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 32.3,
+     "foot": "Header"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "BET",
+     "player": "Troy Parrott",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.785,
+     "xgot": 0.793,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.6,
+     "y": 32.2,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "RMA",
+     "player": "Kylian Mbappé",
+     "type": "Post",
+     "situation": "FromCorner",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 17.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "BET",
+     "player": "Nelson Deossa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0.038,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.5,
+     "y": 26.5,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 90,
+     "extra": 4,
+     "team": "RMA",
+     "player": "Kylian Mbappé",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.759,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 90,
+     "extra": 6,
+     "team": "RMA",
+     "player": "Carlos Espí",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.067,
+     "xgot": 0.21,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 37.7,
+     "foot": "Header"
+    },
+    {
+     "min": 90,
+     "extra": 8,
+     "team": "BET",
+     "player": "Marc Bartra",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.011,
+     "xgot": 0.052,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 45.4,
+     "y": 34.7,
+     "foot": "RightFoot"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     -5
+    ],
+    [
+     4,
+     -16
+    ],
+    [
+     5,
+     -30
+    ],
+    [
+     6,
+     -14
+    ],
+    [
+     7,
+     -8
+    ],
+    [
+     8,
+     -33
+    ],
+    [
+     9,
+     -54
+    ],
+    [
+     10,
+     -54
+    ],
+    [
+     11,
+     -35
+    ],
+    [
+     12,
+     -62
+    ],
+    [
+     13,
+     -100
+    ],
+    [
+     14,
+     -87
+    ],
+    [
+     15,
+     -90
+    ],
+    [
+     16,
+     -57
+    ],
+    [
+     17,
+     -14
+    ],
+    [
+     18,
+     30
+    ],
+    [
+     19,
+     52
+    ],
+    [
+     20,
+     52
+    ],
+    [
+     21,
+     76
+    ],
+    [
+     22,
+     57
+    ],
+    [
+     23,
+     -3
+    ],
+    [
+     24,
+     -79
+    ],
+    [
+     25,
+     -38
+    ],
+    [
+     26,
+     14
+    ],
+    [
+     27,
+     73
+    ],
+    [
+     28,
+     24
+    ],
+    [
+     29,
+     -5
+    ],
+    [
+     30,
+     -16
+    ],
+    [
+     31,
+     5
+    ],
+    [
+     32,
+     5
+    ],
+    [
+     33,
+     -100
+    ],
+    [
+     34,
+     -100
+    ],
+    [
+     35,
+     -100
+    ],
+    [
+     36,
+     -43
+    ],
+    [
+     37,
+     -27
+    ],
+    [
+     38,
+     -5
+    ],
+    [
+     39,
+     5
+    ],
+    [
+     40,
+     -11
+    ],
+    [
+     41,
+     -22
+    ],
+    [
+     42,
+     -54
+    ],
+    [
+     43,
+     -87
+    ],
+    [
+     44,
+     -100
+    ],
+    [
+     45,
+     -100
+    ],
+    [
+     45.5,
+     -53
+    ],
+    [
+     46,
+     -27
+    ],
+    [
+     47,
+     -60
+    ],
+    [
+     48,
+     -65
+    ],
+    [
+     49,
+     -54
+    ],
+    [
+     50,
+     -16
+    ],
+    [
+     51,
+     -11
+    ],
+    [
+     52,
+     16
+    ],
+    [
+     53,
+     5
+    ],
+    [
+     54,
+     27
+    ],
+    [
+     55,
+     22
+    ],
+    [
+     56,
+     5
+    ],
+    [
+     57,
+     -27
+    ],
+    [
+     58,
+     -57
+    ],
+    [
+     59,
+     -24
+    ],
+    [
+     60,
+     -24
+    ],
+    [
+     61,
+     -22
+    ],
+    [
+     62,
+     -24
+    ],
+    [
+     63,
+     14
+    ],
+    [
+     64,
+     35
+    ],
+    [
+     65,
+     22
+    ],
+    [
+     66,
+     -11
+    ],
+    [
+     67,
+     -27
+    ],
+    [
+     68,
+     -76
+    ],
+    [
+     69,
+     -65
+    ],
+    [
+     70,
+     -43
+    ],
+    [
+     71,
+     -5
+    ],
+    [
+     72,
+     -43
+    ],
+    [
+     73,
+     -49
+    ],
+    [
+     74,
+     -33
+    ],
+    [
+     75,
+     0
+    ],
+    [
+     76,
+     -22
+    ],
+    [
+     77,
+     -11
+    ],
+    [
+     78,
+     -27
+    ],
+    [
+     79,
+     5
+    ],
+    [
+     80,
+     41
+    ],
+    [
+     81,
+     57
+    ],
+    [
+     82,
+     35
+    ],
+    [
+     83,
+     -22
+    ],
+    [
+     84,
+     -38
+    ],
+    [
+     85,
+     -62
+    ],
+    [
+     86,
+     -84
+    ],
+    [
+     87,
+     -79
+    ],
+    [
+     88,
+     -43
+    ],
+    [
+     89,
+     -11
+    ],
+    [
+     90,
+     -8
+    ],
+    [
+     90.5,
+     -39
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BET": {
+     "team": "BET",
+     "formation": "4-2-3-1",
+     "coach": "Manuel Pellegrini",
+     "xi": [
+      {
+       "name": "Álvaro Vallés",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Héctor Bellerín",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Diego Llorente",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Natan",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Fran García",
+       "shirt": 11,
+       "pos": "D"
+      },
+      {
+       "name": "Facundo Bernal",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Marc Roca",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Antony",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Isco",
+       "shirt": 22,
+       "pos": "M"
+      },
+      {
+       "name": "Pablo Fornals",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Juan Hernández",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Marc Bartra",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Álvaro Fidalgo",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Nelson Deossa",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Troy Parrott",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Riquelme",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Alvaro de Pablo",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Manu González",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Ángel Ortiz",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Júnior Firpo",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Valentín Gómez",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Losada",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "José Antonio Morante",
+       "shirt": 27,
+       "pos": "?"
+      }
+     ]
+    },
+    "RMA": {
+     "team": "RMA",
+     "formation": "4-2-3-1",
+     "coach": "José Mourinho",
+     "xi": [
+      {
+       "name": "Thibaut Courtois",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Denzel Dumfries",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Ibrahima Konaté",
+       "shirt": 16,
+       "pos": "D"
+      },
+      {
+       "name": "Dean Huijsen",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Marc Cucurella",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Federico Valverde",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Eduardo Camavinga",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Arda Güler",
+       "shirt": 15,
+       "pos": "M"
+      },
+      {
+       "name": "Jude Bellingham",
+       "shirt": 5,
+       "pos": "M"
+      },
+      {
+       "name": "Vinícius Júnior",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Kylian Mbappé",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Bernardo Silva",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Trent Alexander-Arnold",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Yan Diomande",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Carlos Espí",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Alvaro Carreras",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Andriy Lunin",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Javi Navarro",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Antonio Rüdiger",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Mario Rivas",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Jorge Cestero",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Sergio Martínez",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Brahim Díaz",
+       "shirt": 21,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 42,
+      "center": 20,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 40,
+      "center": 18,
+      "right": 42
+     },
+     "secondHalf": {
+      "left": 45,
+      "center": 21,
+      "right": 34
+     }
+    },
+    "away": {
+     "total": {
+      "left": 49,
+      "center": 27,
+      "right": 24
+     },
+     "firstHalf": {
+      "left": 46,
+      "center": 28,
+      "right": 26
+     },
+     "secondHalf": {
+      "left": 52,
+      "center": 26,
+      "right": 22
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-04T21:28:48.146Z",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "BET",
+      "name": "Juan Hernández",
+      "n": 28,
+      "cx": 59.5,
+      "cy": 43.3,
+      "spread": 30.5,
+      "grid": "1,0,2,0,0,1,0,0,0,4,0,1,0,0,1,3,1,2,0,3,4,1,3,1"
+     },
+     {
+      "team": "BET",
+      "name": "Isco",
+      "n": 46,
+      "cx": 61.2,
+      "cy": 27.3,
+      "spread": 28.2,
+      "grid": "0,0,8,10,2,0,1,0,3,2,5,0,0,1,3,2,0,0,0,0,1,1,2,5"
+     },
+     {
+      "team": "BET",
+      "name": "Marc Roca",
+      "n": 85,
+      "cx": 41.4,
+      "cy": 25.9,
+      "spread": 24.1,
+      "grid": "2,8,11,11,1,0,4,7,7,6,1,0,1,6,7,7,0,1,1,4,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Fran García",
+      "n": 55,
+      "cx": 50.6,
+      "cy": 10.1,
+      "spread": 27.9,
+      "grid": "3,13,6,11,6,4,3,2,0,0,6,0,1,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Pablo Fornals",
+      "n": 77,
+      "cx": 58.3,
+      "cy": 20,
+      "spread": 30,
+      "grid": "1,4,11,10,8,8,1,6,4,3,3,1,0,2,3,2,3,1,0,1,2,1,1,1"
+     },
+     {
+      "team": "RMA",
+      "name": "Federico Valverde",
+      "n": 74,
+      "cx": 49.5,
+      "cy": 39.1,
+      "spread": 25,
+      "grid": "0,0,2,5,0,0,2,1,6,8,2,0,1,6,9,8,5,0,2,2,8,4,3,0"
+     },
+     {
+      "team": "RMA",
+      "name": "Thibaut Courtois",
+      "n": 48,
+      "cx": 12.8,
+      "cy": 34.9,
+      "spread": 10.7,
+      "grid": "0,0,0,0,0,0,13,6,0,0,0,0,17,12,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RMA",
+      "name": "Ibrahima Konaté",
+      "n": 102,
+      "cx": 38.8,
+      "cy": 45.2,
+      "spread": 21.6,
+      "grid": "0,0,2,1,0,0,2,0,2,3,0,1,7,16,25,13,0,1,5,10,10,3,0,1"
+     },
+     {
+      "team": "RMA",
+      "name": "Dean Huijsen",
+      "n": 112,
+      "cx": 44,
+      "cy": 21.5,
+      "spread": 20.3,
+      "grid": "1,6,8,22,1,0,7,21,23,11,0,2,1,3,5,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RMA",
+      "name": "Jude Bellingham",
+      "n": 73,
+      "cx": 64.1,
+      "cy": 22.8,
+      "spread": 23.3,
+      "grid": "0,0,3,9,7,3,1,4,8,14,7,6,0,0,5,1,1,2,0,0,0,1,1,0"
+     },
+     {
+      "team": "RMA",
+      "name": "Arda Güler",
+      "n": 69,
+      "cx": 66.8,
+      "cy": 41.8,
+      "spread": 29.7,
+      "grid": "0,0,0,2,1,6,0,0,2,4,7,0,2,4,3,3,5,2,0,1,4,12,9,2"
+     },
+     {
+      "team": "RMA",
+      "name": "Denzel Dumfries",
+      "n": 37,
+      "cx": 60.9,
+      "cy": 60.2,
+      "spread": 30.1,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,2,1,0,0,1,1,2,5,2,10,6,7"
+     },
+     {
+      "team": "RMA",
+      "name": "Eduardo Camavinga",
+      "n": 62,
+      "cx": 46.2,
+      "cy": 32.2,
+      "spread": 24.5,
+      "grid": "1,0,2,6,3,0,4,3,6,4,2,0,3,2,12,7,2,0,0,3,1,0,1,0"
+     },
+     {
+      "team": "RMA",
+      "name": "Marc Cucurella",
+      "n": 84,
+      "cx": 55.4,
+      "cy": 10.5,
+      "spread": 23.7,
+      "grid": "3,8,17,22,13,6,3,2,4,2,3,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RMA",
+      "name": "Vinícius Júnior",
+      "n": 73,
+      "cx": 79.9,
+      "cy": 11.8,
+      "spread": 21.2,
+      "grid": "0,4,1,7,25,15,0,2,0,0,4,13,0,0,0,0,0,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Héctor Bellerín",
+      "n": 84,
+      "cx": 44.4,
+      "cy": 58,
+      "spread": 29.8,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,5,3,5,5,1,1,12,19,9,8,4,12"
+     },
+     {
+      "team": "BET",
+      "name": "Natan",
+      "n": 43,
+      "cx": 28.4,
+      "cy": 20.1,
+      "spread": 23.2,
+      "grid": "5,6,2,1,2,0,10,6,4,4,0,0,3,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Facundo Bernal",
+      "n": 49,
+      "cx": 43.6,
+      "cy": 40.4,
+      "spread": 27.2,
+      "grid": "0,1,0,2,1,0,0,0,8,3,1,0,6,2,5,4,3,0,4,2,2,3,2,0"
+     },
+     {
+      "team": "BET",
+      "name": "Diego Llorente",
+      "n": 22,
+      "cx": 25.4,
+      "cy": 45.2,
+      "spread": 18.7,
+      "grid": "0,0,0,0,0,0,0,2,0,1,0,0,6,5,2,0,0,0,2,2,1,1,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Antony",
+      "n": 56,
+      "cx": 57.4,
+      "cy": 57.2,
+      "spread": 30.4,
+      "grid": "0,0,0,0,0,0,0,0,1,0,2,0,0,1,0,1,3,4,8,6,8,7,11,4"
+     },
+     {
+      "team": "RMA",
+      "name": "Kylian Mbappé",
+      "n": 68,
+      "cx": 75.5,
+      "cy": 27.2,
+      "spread": 26.2,
+      "grid": "0,0,5,4,5,5,0,2,3,5,9,11,0,0,2,3,1,9,0,0,1,0,1,2"
+     },
+     {
+      "team": "BET",
+      "name": "Álvaro Vallés",
+      "n": 49,
+      "cx": 8.7,
+      "cy": 33.1,
+      "spread": 8.9,
+      "grid": "1,0,0,0,0,0,19,3,0,0,0,0,23,2,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Marc Bartra",
+      "n": 34,
+      "cx": 22.5,
+      "cy": 47.9,
+      "spread": 24,
+      "grid": "0,0,0,0,0,0,0,0,1,0,0,1,11,5,4,0,1,0,8,1,1,1,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Álvaro Fidalgo",
+      "n": 20,
+      "cx": 52.3,
+      "cy": 26.4,
+      "spread": 29.3,
+      "grid": "1,0,3,2,1,0,0,2,2,1,2,1,0,1,0,0,0,0,0,1,2,0,0,1"
+     },
+     {
+      "team": "RMA",
+      "name": "Bernardo Silva",
+      "n": 23,
+      "cx": 57,
+      "cy": 34.4,
+      "spread": 16,
+      "grid": "0,0,0,1,0,0,0,0,3,9,1,0,0,1,2,2,1,0,0,0,1,2,0,0"
+     },
+     {
+      "team": "RMA",
+      "name": "Yan Diomande",
+      "n": 16,
+      "cx": 64.7,
+      "cy": 57.9,
+      "spread": 23.1,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,1,6,5,2"
+     },
+     {
+      "team": "RMA",
+      "name": "Trent Alexander-Arnold",
+      "n": 25,
+      "cx": 62.6,
+      "cy": 41.9,
+      "spread": 32,
+      "grid": "0,0,1,1,0,3,0,0,0,1,0,0,0,1,1,2,2,0,1,0,4,5,2,1"
+     },
+     {
+      "team": "BET",
+      "name": "Troy Parrott",
+      "n": 12,
+      "cx": 55.5,
+      "cy": 30.1,
+      "spread": 34.4,
+      "grid": "0,1,2,0,1,1,0,0,0,0,0,0,1,0,0,1,1,1,0,1,1,1,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Nelson Deossa",
+      "n": 19,
+      "cx": 53.9,
+      "cy": 46.8,
+      "spread": 30.3,
+      "grid": "0,0,0,0,0,0,0,0,0,1,0,0,2,2,1,1,2,2,0,1,3,2,0,2"
+     },
+     {
+      "team": "BET",
+      "name": "Rodrigo Riquelme",
+      "n": 9,
+      "cx": 63,
+      "cy": 31.9,
+      "spread": 38.6,
+      "grid": "0,3,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,2,0,0,0,1,0,1"
+     },
+     {
+      "team": "RMA",
+      "name": "Carlos Espí",
+      "n": 3,
+      "cx": 95.8,
+      "cy": 35.7,
+      "spread": 9.6,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "RMA",
+      "name": "Alvaro Carreras",
+      "n": 10,
+      "cx": 47.5,
+      "cy": 9.9,
+      "spread": 16.8,
+      "grid": "0,3,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-04T17:40:54.210Z"
+ "updatedAt": "2026-09-04T21:28:48.810Z"
 }
