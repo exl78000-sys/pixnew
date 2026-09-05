@@ -33,7 +33,7 @@ import {
   preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled,
 } from './lib/report/index.mjs';
 import { parseCSVObjects, num } from './lib/csv.mjs';
-import { upcomingOdds, seasonMarket } from './lib/odds.mjs';
+import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { appendSamples, historyForSite, preMatchSnapshots } from './lib/prob-history.mjs';
 import { inplayCalibration } from './lib/inplay-calibration.mjs';
@@ -505,9 +505,7 @@ async function main() {
         ? { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e } : null,
       /* 已賽用賽季檔(收盤、涵蓋整季),未賽用 fixtures.csv(開盤、只有未來幾天)。
          兩邊都沒有就是 null —— 沒有盤口是常態,不要編一個。 */
-      market: (m.played
-        ? seasonMarketBy[`${m.home}|${m.away}`] ?? marketBy[`${m.home}|${m.away}`]
-        : marketBy[`${m.home}|${m.away}`] ?? seasonMarketBy[`${m.home}|${m.away}`]) ?? null,
+      market: pickMarket({ played: m.played, key: `${m.home}|${m.away}`, seasonBy: seasonMarketBy, upcomingBy: marketBy }),
       // 兩隊對照圖用的配色。英超九隊主色是紅的、六隊是深藍的,直接用會撞色 ——
       // 所以每一場都算一次,兩隊同色系時自動把客隊拉開。詳見 lib/colour.mjs。
       colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),

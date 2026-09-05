@@ -143,6 +143,21 @@ const round4 = n => Math.round(n * 1e4) / 1e4;
  * 聯賽裡的四隊互打,CLAUDE.md 有一整條在講)—— 賽季檔通常只收聯賽場次,
  * 但撞到就整組跳過並回報,不挑一個當答案。
  */
+/* 一場該掛哪一組盤口 —— 三支 build 共用,不各寫一份。
+   已賽:賽季檔的收盤價;賽季檔還沒更新到這場(football-data.co.uk 是隔天甚至隔幾天才補)時,
+   退回 fixtures.csv 的開盤價,但**要講明是開盤、收盤未到**(鐵則四),而且是可辨識的旗標,
+   不是只靠字串。未賽:只有 fixtures.csv 有;賽季檔偶爾也會先有(改期補踢),當備援。
+   2026-09-05 踩過:IPS vs LIV 剛踢完、賽季檔還沒有它,測試「已完賽一律收盤價」紅掉,
+   deploy 整個被擋 12 小時,兩個聯賽的賽果都上不了站 —— 上游時差不能當 CI 紅線。 */
+export function pickMarket({ played, key, seasonBy = {}, upcomingBy = {} }) {
+  if (played) {
+    if (seasonBy[key]) return seasonBy[key];
+    const open = upcomingBy[key];
+    return open ? { ...open, closingPending: true, source: `${open.source}(收盤價未到,賽季檔還沒更新到這場)` } : null;
+  }
+  return upcomingBy[key] ?? seasonBy[key] ?? null;
+}
+
 export function seasonMarket(text, { codeOf, div = 'E0' } = {}) {
   const { matches, unmatched } = parseOddsCsv(text, { codeOf, div });
   const byMatch = {};

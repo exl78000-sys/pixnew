@@ -28,7 +28,7 @@ import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib
 import { appendSamples, historyForSite, preMatchSnapshots } from './lib/prob-history.mjs';
 import { fotmobPos, fotmobPlayer, fotmobRows, normaliseFotmobMatch } from './lib/adapters/fotmob-match.mjs';
 import { inplayCalibration } from './lib/inplay-calibration.mjs';
-import { upcomingOdds, seasonMarket } from './lib/odds.mjs';
+import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
@@ -389,9 +389,7 @@ async function main() {
       } : null,
       /* 已賽用賽季檔(收盤、涵蓋整季),未賽用 fixtures.csv(開盤、只有未來幾天)。
          兩邊都沒有就是 null —— 沒有盤口是常態,不要編一個。 */
-      market: (m.played
-        ? seasonMarketBy[`${m.home}|${m.away}`] ?? marketBy[`${m.home}|${m.away}`]
-        : marketBy[`${m.home}|${m.away}`] ?? seasonMarketBy[`${m.home}|${m.away}`]) ?? null,
+      market: pickMarket({ played: m.played, key: `${m.home}|${m.away}`, seasonBy: seasonMarketBy, upcomingBy: marketBy }),
       colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),
     };
   });

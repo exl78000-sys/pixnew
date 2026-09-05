@@ -49,7 +49,7 @@ import { fitPoisson, applyPromotedPrior, predict, strengthTable, simParams } fro
 import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildFormIndex, recentForm, formSummary, TUNED } from './lib/form.mjs';
-import { upcomingOdds, seasonMarket } from './lib/odds.mjs';
+import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { round } from './lib/util.mjs';
 
@@ -274,9 +274,7 @@ async function main() {
       } : null,
       /* 已賽用賽季檔(收盤、涵蓋整季),未賽用 fixtures.csv(開盤、只有未來幾天)。
          兩邊都沒有就是 null —— 沒有盤口是常態,不要編一個。 */
-      market: (m.played
-        ? seasonMarketBy[`${m.home}|${m.away}`] ?? marketBy[`${m.home}|${m.away}`]
-        : marketBy[`${m.home}|${m.away}`] ?? seasonMarketBy[`${m.home}|${m.away}`]) ?? null,
+      market: pickMarket({ played: m.played, key: `${m.home}|${m.away}`, seasonBy: seasonMarketBy, upcomingBy: marketBy }),
       colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),
     };
   });

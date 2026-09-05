@@ -18,7 +18,7 @@ import {
   preMatchBundle, postMatchBundle, templateFor, verify, generateReport, ReportCache,
 } from './lib/report/index.mjs';
 import { attachCodes } from './lib/adapters/pulselive.mjs';
-import { oddsIndex, devig, parseOddsCsv, FD_NAMES } from './lib/odds.mjs';
+import { oddsIndex, devig, parseOddsCsv, FD_NAMES, pickMarket } from './lib/odds.mjs';
 import { pickPair, oklch, contrast, deltaE, THRESHOLDS } from './lib/colour.mjs';
 import {
   buildFormIndex, formDelta, goalForm, h2hDelta, recentForm, formSummary, adjustLambdas, TUNED,
@@ -2214,17 +2214,27 @@ async function checkDataGap() {
           dup.dupes.includes('LEE|HUL') && !('LEE|HUL' in dup.byMatch) && ('BUR|LEE' in dup.byMatch)],
         ['三支 build 都讀本季賽季檔的盤口',
           buildSrc.every(src => /seasonMarket\(/.test(src) && /seasonMarketBy/.test(src))],
-        ['已完賽場次優先用賽季檔(收盤),未賽才用 fixtures.csv(開盤)',
-          buildSrc.every(src => /m\.played\s*\n?\s*\?\s*seasonMarketBy/.test(src.replace(/\s+/g, ' ')
-            .replace(/m\.played \? seasonMarketBy/, 'm.played\n? seasonMarketBy')))],
+        ['三支 build 都走共用的 pickMarket(已賽收盤優先、未到就標開盤)',
+          buildSrc.every(src => /pickMarket\(\{ played: m\.played/.test(src) && !/m\.played\s*\?\s*seasonMarketBy/.test(src))],
+        /* 上游時差:剛踢完、賽季檔還沒更新到這場時,只能掛開盤價,但要標 closingPending 並在來源講明。
+           2026-09-05 這條原本寫成「已完賽一律收盤」,IPS vs LIV 踢完就紅、deploy 被擋 12 小時。 */
+        ['pickMarket:已賽有收盤用收盤;沒有就用開盤並標 closingPending',
+          (() => {
+            const closing = { source: 'Pinnacle 收盤', probs: {} }, open = { source: '市場平均開盤', probs: {} };
+            const a = pickMarket({ played: true, key: 'A|B', seasonBy: { 'A|B': closing }, upcomingBy: { 'A|B': open } });
+            const b = pickMarket({ played: true, key: 'A|B', seasonBy: {}, upcomingBy: { 'A|B': open } });
+            const c = pickMarket({ played: false, key: 'A|B', seasonBy: { 'A|B': closing }, upcomingBy: { 'A|B': open } });
+            return a === closing && b.closingPending === true && /收盤價未到/.test(b.source) && c === open
+              && pickMarket({ played: true, key: 'X|Y' }) === null;
+          })()],
         ...rows.map(r => [`${r.zh}:賽季檔解得出來的已完賽場次,產物裡都要掛上市場`,
           Object.keys(r.sm.byMatch).every(k => {
             const [h, a] = k.split('|');
             const f = r.fx.find(x => x.home === h && x.away === a && x.played);
             return !f || !!f.market;      // 對不到賽程的不管(隊名對照另有守門)
           })]),
-        ['已完賽場次的盤口用的是收盤價', rows.every(r => r.fx.filter(f => f.played && f.market)
-          .every(f => /收盤/.test(f.market.source)))],
+        ['已完賽場次的盤口是收盤價,或明標「收盤價未到」', rows.every(r => r.fx.filter(f => f.played && f.market)
+          .every(f => (/收盤/.test(f.market.source) && !f.market.closingPending) || (f.market.closingPending === true && /收盤價未到/.test(f.market.source))))],
       ];
     })(),
 
