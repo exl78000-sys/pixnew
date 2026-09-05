@@ -16318,7 +16318,7 @@
      }
     ]
    },
-   "clock": "90'00"
+   "clock": "90+3'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -17003,8 +17003,8 @@
   "FUL|CRY": {
    "fixtureId": 128947,
    "kickoff": "2026-09-05T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 3
@@ -17436,6 +17436,58 @@
    "goals": [
     {
      "side": "H",
+     "person": 128976,
+     "assist": null,
+     "team": 34,
+     "min": 11,
+     "label": "11'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 24334,
+     "assist": 14451,
+     "team": 6,
+     "min": 35,
+     "label": "35'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 123594,
+     "assist": null,
+     "team": 34,
+     "min": 42,
+     "label": "42'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 24334,
+     "assist": null,
+     "team": 6,
+     "min": 54,
+     "label": "54'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 2
+    },
+    {
+     "side": "A",
      "person": 13491,
      "assist": 49759,
      "team": 6,
@@ -17634,12 +17686,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -17656,10 +17702,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-05T15:58:58.100Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -19392,5 +19451,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-05T15:56:44.745Z"
+ "fetchedAt": "2026-09-05T15:58:58.650Z"
 }
