@@ -15322,32 +15322,6 @@
    },
    "goals": [
     {
-     "side": "A",
-     "person": 14846,
-     "assist": null,
-     "team": 127,
-     "min": 9,
-     "label": "09'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 0,
-     "as": 1
-    },
-    {
-     "side": "A",
-     "person": 124462,
-     "assist": null,
-     "team": 127,
-     "min": 35,
-     "label": "35'00",
-     "phase": "1",
-     "type": "O",
-     "kind": "O",
-     "hs": 0,
-     "as": 2
-    },
-    {
      "side": "H",
      "person": 14716,
      "assist": 108922,
@@ -15376,6 +15350,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -15386,11 +15366,17 @@
       "min": 45,
       "label": "45+3'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+3'00"
+   "clock": "45'00"
   }
  },
- "fetchedAt": "2026-09-05T12:32:23.835Z"
+ "fetchedAt": "2026-09-05T12:34:41.008Z"
 }
