@@ -15652,7 +15652,7 @@
   "BRE|SUN": {
    "fixtureId": 128944,
    "kickoff": "2026-09-05T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -15661,9 +15661,31 @@
    "homeId": 130,
    "awayId": 29,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      14723
+     ],
+     [
+      133460,
+      20113,
+      24659,
+      24369
+     ],
+     [
+      108421,
+      23194
+     ],
+     [
+      133890,
+      49731,
+      127594
+     ],
+     [
+      124052
+     ]
+    ],
     "xi": [
      {
       "id": 49731,
@@ -15679,7 +15701,7 @@
       "playerId": null,
       "name": "Dango Ouattara",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -15760,7 +15782,7 @@
       "playerId": null,
       "name": "Keane Lewis-Potter",
       "shirt": 23,
-      "pos": "F",
+      "pos": "D",
       "posInfo": "Striker",
       "captain": false
      }
@@ -15850,9 +15872,29 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      75692
+     ],
+     [
+      12196,
+      51199,
+      19864,
+      25892,
+      63733
+     ],
+     [
+      115105,
+      124944,
+      12136,
+      138104
+     ],
+     [
+      67784
+     ]
+    ],
     "xi": [
      {
       "id": 12196,
@@ -15931,7 +15973,7 @@
       "playerId": null,
       "name": "Nilson Angulo",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -16042,14 +16084,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
    "kickoff": "2026-09-05T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -16058,9 +16113,31 @@
    "homeId": 131,
    "awayId": 9,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75709
+     ],
+     [
+      50727,
+      134632,
+      8163,
+      20505
+     ],
+     [
+      22542,
+      134333
+     ],
+     [
+      143240,
+      147052,
+      67928
+     ],
+     [
+      145043
+     ]
+    ],
     "xi": [
      {
       "id": 8163,
@@ -16112,7 +16189,7 @@
       "playerId": null,
       "name": "Maxim De Cuyper",
       "shirt": 29,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -16247,9 +16324,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      32280
+     ],
+     [
+      13515,
+      12337,
+      114504
+     ],
+     [
+      14608,
+      19731,
+      126426,
+      75543
+     ],
+     [
+      116888,
+      33162
+     ],
+     [
+      9576
+     ]
+    ],
     "xi": [
      {
       "id": 32280,
@@ -16266,7 +16365,7 @@
       "name": "James Justin",
       "shirt": 24,
       "pos": "D",
-      "posInfo": "Defender",
+      "posInfo": "Right Full Back",
       "captain": false
      },
      {
@@ -16274,7 +16373,7 @@
       "playerId": null,
       "name": "Anton Stach",
       "shirt": 18,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Defensive Midfielder",
       "captain": false
      },
@@ -16283,7 +16382,7 @@
       "playerId": null,
       "name": "Jayden Bogle",
       "shirt": 2,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -16311,7 +16410,7 @@
       "name": "Ao Tanaka",
       "shirt": 22,
       "pos": "M",
-      "posInfo": "Midfielder",
+      "posInfo": "Centre Central Midfielder",
       "captain": false
      },
      {
@@ -16328,7 +16427,7 @@
       "playerId": null,
       "name": "Gabriel Gudmundsson",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -16439,9 +16538,22 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "03'00"
   },
   "FUL|CRY": {
    "fixtureId": 128947,
@@ -16673,9 +16785,9 @@
       13988
      ],
      [
-      147312,
+      50842,
       54893,
-      50842
+      147312
      ],
      [
       123848,
@@ -16895,12 +17007,12 @@
      }
     ]
    },
-   "clock": "00'00"
+   "clock": "03'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
    "kickoff": "2026-09-05T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -16909,16 +17021,38 @@
    "homeId": 11,
    "awayId": 5,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      137371,
+      16431,
+      14569,
+      67178
+     ],
+     [
+      51593,
+      63741
+     ],
+     [
+      25474,
+      68150,
+      31936
+     ],
+     [
+      65970
+     ]
+    ],
     "xi": [
      {
       "id": 25474,
       "playerId": null,
       "name": "Antoine Semenyo",
       "shirt": 42,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -16945,7 +17079,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -16968,21 +17102,21 @@
       "captain": false
      },
      {
+      "id": 63741,
+      "playerId": null,
+      "name": "Enzo Fernández",
+      "shirt": 17,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
       "id": 67178,
       "playerId": null,
       "name": "Josko Gvardiol",
       "shirt": 24,
       "pos": "D",
       "posInfo": "Left/Centre Central Defender",
-      "captain": false
-     },
-     {
-      "id": 112948,
-      "playerId": null,
-      "name": "Nico O'Reilly",
-      "shirt": 33,
-      "pos": "D",
-      "posInfo": "Left/Centre Full Back",
       "captain": false
      },
      {
@@ -17051,15 +17185,6 @@
       "captain": false
      },
      {
-      "id": 63741,
-      "playerId": null,
-      "name": "Enzo Fernández",
-      "shirt": 17,
-      "pos": "M",
-      "posInfo": "Centre Central Midfielder",
-      "captain": false
-     },
-     {
       "id": 76204,
       "playerId": null,
       "name": "Matheus Nunes",
@@ -17094,13 +17219,44 @@
       "pos": "M",
       "posInfo": "Centre Central Midfielder",
       "captain": false
+     },
+     {
+      "id": 148119,
+      "playerId": null,
+      "name": "Floyd Samba",
+      "shirt": 75,
+      "pos": "M",
+      "posInfo": "Midfielder",
+      "captain": false
      }
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      55556
+     ],
+     [
+      63836,
+      114738,
+      22043
+     ],
+     [
+      75413,
+      108612,
+      8650,
+      10438
+     ],
+     [
+      66304,
+      20930
+     ],
+     [
+      15340
+     ]
+    ],
     "xi": [
      {
       "id": 15340,
@@ -17125,7 +17281,7 @@
       "playerId": null,
       "name": "Jay Dasilva",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -17134,7 +17290,7 @@
       "playerId": null,
       "name": "Jack Rudoni",
       "shirt": 5,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -17170,7 +17326,7 @@
       "playerId": null,
       "name": "Ephron Mason-Clark",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Left/Right Attacking Midfielder",
       "captain": false
      },
@@ -17197,7 +17353,7 @@
       "playerId": null,
       "name": "Milan van Ewijk",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      }
@@ -17290,7 +17446,20 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
@@ -17324,8 +17493,8 @@
       23811
      ],
      [
-      15259,
-      50623
+      50623,
+      15259
      ],
      [
       51813
@@ -17746,8 +17915,8 @@
      }
     ]
    },
-   "clock": "01'00"
+   "clock": "03'00"
   }
  },
- "fetchedAt": "2026-09-05T14:01:17.887Z"
+ "fetchedAt": "2026-09-05T14:03:35.394Z"
 }
