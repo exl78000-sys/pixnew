@@ -16122,9 +16122,69 @@
       "phase": "1",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 115166,
+      "team": 130,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133460,
+      "team": 130,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 128891,
+      "team": 130,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 108421,
+      "team": 130,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 50460,
+      "team": 130,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 133890,
+      "team": 130,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -16136,10 +16196,16 @@
       "min": 45,
       "label": "45+9'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+9'00"
+   "clock": "45'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -16645,7 +16711,7 @@
      }
     ]
    },
-   "clock": "50'00"
+   "clock": "52'00"
   },
   "FUL|CRY": {
    "fixtureId": 128947,
@@ -17144,7 +17210,7 @@
      }
     ]
    },
-   "clock": "48'00"
+   "clock": "49'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -17634,7 +17700,7 @@
      }
     ]
    },
-   "clock": "50'00"
+   "clock": "53'00"
   },
   "NFO|TOT": {
    "fixtureId": 128952,
@@ -18080,6 +18146,15 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 16035,
+      "team": 15,
+      "min": 52,
+      "label": "52'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [],
@@ -18110,8 +18185,8 @@
      }
     ]
    },
-   "clock": "51'00"
+   "clock": "54'00"
   }
  },
- "fetchedAt": "2026-09-05T15:08:59.449Z"
+ "fetchedAt": "2026-09-05T15:11:15.303Z"
 }
