@@ -1,9 +1,9 @@
 {
  "_note": "官方賽程狀態快照 + 本站自建的改期歷史(供應商不提供歷史,changes 永久累積)。產生:npm run schedule:status。",
- "fetchedAt": "2026-09-04T21:27:17.731Z",
+ "fetchedAt": "2026-09-05T03:24:57.208Z",
  "leagues": {
   "pl": {
-   "fetchedAt": "2026-09-04T21:27:17.731Z",
+   "fetchedAt": "2026-09-05T03:24:57.208Z",
    "count": 380,
    "matches": [
     {
@@ -91,7 +91,7 @@
      "home": "CRY",
      "away": "MCI",
      "utcDate": "2026-08-28T19:00:00Z",
-     "status": "2026-08-28 18:00:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -99,7 +99,7 @@
      "home": "LIV",
      "away": "NFO",
      "utcDate": "2026-08-29T11:30:00Z",
-     "status": "2026-08-29 10:30:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -107,7 +107,7 @@
      "home": "BOU",
      "away": "EVE",
      "utcDate": "2026-08-29T14:00:00Z",
-     "status": "2026-08-29 13:00:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -115,7 +115,7 @@
      "home": "COV",
      "away": "HUL",
      "utcDate": "2026-08-29T14:00:00Z",
-     "status": "2026-08-29 13:00:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -123,7 +123,7 @@
      "home": "TOT",
      "away": "NEW",
      "utcDate": "2026-08-29T16:30:00Z",
-     "status": "2026-08-29 15:30:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -131,7 +131,7 @@
      "home": "SUN",
      "away": "FUL",
      "utcDate": "2026-08-30T13:00:00Z",
-     "status": "2026-08-30 12:00:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -139,7 +139,7 @@
      "home": "CHE",
      "away": "BHA",
      "utcDate": "2026-08-30T13:00:00Z",
-     "status": "2026-08-30 12:00:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -147,7 +147,7 @@
      "home": "LEE",
      "away": "BRE",
      "utcDate": "2026-08-30T13:00:00Z",
-     "status": "2026-08-30 12:00:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -155,7 +155,7 @@
      "home": "MUN",
      "away": "IPS",
      "utcDate": "2026-08-30T15:30:00Z",
-     "status": "2026-08-30 14:30:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -163,7 +163,7 @@
      "home": "AVL",
      "away": "ARS",
      "utcDate": "2026-08-31T19:00:00Z",
-     "status": "2026-08-31 18:00:00Z",
+     "status": "FINISHED",
      "matchday": 2
     },
     {
@@ -179,7 +179,7 @@
      "home": "NEW",
      "away": "BOU",
      "utcDate": "2026-09-05T11:30:00Z",
-     "status": "2026-09-05 10:30:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -187,7 +187,7 @@
      "home": "NFO",
      "away": "TOT",
      "utcDate": "2026-09-05T14:00:00Z",
-     "status": "2026-09-05 13:00:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -195,7 +195,7 @@
      "home": "MCI",
      "away": "COV",
      "utcDate": "2026-09-05T14:00:00Z",
-     "status": "2026-09-05 13:00:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -203,7 +203,7 @@
      "home": "BHA",
      "away": "LEE",
      "utcDate": "2026-09-05T14:00:00Z",
-     "status": "2026-09-05 13:00:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -211,7 +211,7 @@
      "home": "BRE",
      "away": "SUN",
      "utcDate": "2026-09-05T14:00:00Z",
-     "status": "2026-09-05 13:00:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -219,7 +219,7 @@
      "home": "FUL",
      "away": "CRY",
      "utcDate": "2026-09-05T14:00:00Z",
-     "status": "2026-09-05 13:00:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -227,7 +227,7 @@
      "home": "HUL",
      "away": "AVL",
      "utcDate": "2026-09-05T16:30:00Z",
-     "status": "2026-09-05 15:30:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -235,7 +235,7 @@
      "home": "EVE",
      "away": "MUN",
      "utcDate": "2026-09-06T13:00:00Z",
-     "status": "2026-09-06 12:00:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -243,7 +243,7 @@
      "home": "ARS",
      "away": "CHE",
      "utcDate": "2026-09-06T15:30:00Z",
-     "status": "2026-09-06 14:30:00Z",
+     "status": "TIMED",
      "matchday": 3
     },
     {
@@ -251,7 +251,7 @@
      "home": "CRY",
      "away": "IPS",
      "utcDate": "2026-09-12T14:00:00Z",
-     "status": "2026-09-12 13:00:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -259,7 +259,7 @@
      "home": "LIV",
      "away": "FUL",
      "utcDate": "2026-09-12T14:00:00Z",
-     "status": "2026-09-12 13:00:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -267,7 +267,7 @@
      "home": "AVL",
      "away": "NFO",
      "utcDate": "2026-09-12T14:00:00Z",
-     "status": "2026-09-12 13:00:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -275,7 +275,7 @@
      "home": "BOU",
      "away": "BRE",
      "utcDate": "2026-09-12T14:00:00Z",
-     "status": "2026-09-12 13:00:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -283,7 +283,7 @@
      "home": "CHE",
      "away": "HUL",
      "utcDate": "2026-09-12T14:00:00Z",
-     "status": "2026-09-12 13:00:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -291,7 +291,7 @@
      "home": "TOT",
      "away": "EVE",
      "utcDate": "2026-09-12T16:30:00Z",
-     "status": "2026-09-12 15:30:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -299,7 +299,7 @@
      "home": "SUN",
      "away": "ARS",
      "utcDate": "2026-09-12T19:00:00Z",
-     "status": "2026-09-12 18:00:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -307,7 +307,7 @@
      "home": "COV",
      "away": "BHA",
      "utcDate": "2026-09-13T13:00:00Z",
-     "status": "2026-09-13 12:00:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -315,7 +315,7 @@
      "home": "MUN",
      "away": "MCI",
      "utcDate": "2026-09-13T15:30:00Z",
-     "status": "2026-09-13 14:30:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -323,7 +323,7 @@
      "home": "LEE",
      "away": "NEW",
      "utcDate": "2026-09-14T19:00:00Z",
-     "status": "2026-09-14 18:00:00Z",
+     "status": "TIMED",
      "matchday": 4
     },
     {
@@ -331,7 +331,7 @@
      "home": "BRE",
      "away": "CHE",
      "utcDate": "2026-09-18T19:00:00Z",
-     "status": "2026-09-18 18:00:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -339,7 +339,7 @@
      "home": "TOT",
      "away": "AVL",
      "utcDate": "2026-09-19T11:30:00Z",
-     "status": "2026-09-19 10:30:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -347,7 +347,7 @@
      "home": "EVE",
      "away": "IPS",
      "utcDate": "2026-09-19T14:00:00Z",
-     "status": "2026-09-19 13:00:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -355,7 +355,7 @@
      "home": "BHA",
      "away": "ARS",
      "utcDate": "2026-09-19T14:00:00Z",
-     "status": "2026-09-19 13:00:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -363,7 +363,7 @@
      "home": "NEW",
      "away": "HUL",
      "utcDate": "2026-09-19T14:00:00Z",
-     "status": "2026-09-19 13:00:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -371,7 +371,7 @@
      "home": "NFO",
      "away": "COV",
      "utcDate": "2026-09-19T16:30:00Z",
-     "status": "2026-09-19 15:30:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -379,7 +379,7 @@
      "home": "BOU",
      "away": "LIV",
      "utcDate": "2026-09-20T13:00:00Z",
-     "status": "2026-09-20 12:00:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -387,7 +387,7 @@
      "home": "LEE",
      "away": "CRY",
      "utcDate": "2026-09-20T13:00:00Z",
-     "status": "2026-09-20 12:00:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -395,7 +395,7 @@
      "home": "MCI",
      "away": "SUN",
      "utcDate": "2026-09-20T13:00:00Z",
-     "status": "2026-09-20 12:00:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -403,7 +403,7 @@
      "home": "FUL",
      "away": "MUN",
      "utcDate": "2026-09-20T15:30:00Z",
-     "status": "2026-09-20 14:30:00Z",
+     "status": "TIMED",
      "matchday": 5
     },
     {
@@ -411,7 +411,7 @@
      "home": "ARS",
      "away": "LEE",
      "utcDate": "2026-10-10T11:30:00Z",
-     "status": "2026-10-10 10:30:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -419,7 +419,7 @@
      "home": "SUN",
      "away": "BHA",
      "utcDate": "2026-10-10T14:00:00Z",
-     "status": "2026-10-10 13:00:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -427,7 +427,7 @@
      "home": "CHE",
      "away": "BOU",
      "utcDate": "2026-10-10T14:00:00Z",
-     "status": "2026-10-10 13:00:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -435,7 +435,7 @@
      "home": "IPS",
      "away": "FUL",
      "utcDate": "2026-10-10T14:00:00Z",
-     "status": "2026-10-10 13:00:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -443,7 +443,7 @@
      "home": "AVL",
      "away": "BRE",
      "utcDate": "2026-10-10T14:00:00Z",
-     "status": "2026-10-10 13:00:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -451,7 +451,7 @@
      "home": "MUN",
      "away": "TOT",
      "utcDate": "2026-10-10T16:30:00Z",
-     "status": "2026-10-10 15:30:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -459,7 +459,7 @@
      "home": "HUL",
      "away": "EVE",
      "utcDate": "2026-10-11T13:00:00Z",
-     "status": "2026-10-11 12:00:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -467,7 +467,7 @@
      "home": "CRY",
      "away": "NFO",
      "utcDate": "2026-10-11T13:00:00Z",
-     "status": "2026-10-11 12:00:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -475,7 +475,7 @@
      "home": "LIV",
      "away": "MCI",
      "utcDate": "2026-10-11T15:30:00Z",
-     "status": "2026-10-11 14:30:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -483,7 +483,7 @@
      "home": "COV",
      "away": "NEW",
      "utcDate": "2026-10-12T19:00:00Z",
-     "status": "2026-10-12 18:00:00Z",
+     "status": "TIMED",
      "matchday": 6
     },
     {
@@ -491,7 +491,7 @@
      "home": "EVE",
      "away": "CHE",
      "utcDate": "2026-10-17T11:30:00Z",
-     "status": "2026-10-17 10:30:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -499,7 +499,7 @@
      "home": "FUL",
      "away": "HUL",
      "utcDate": "2026-10-17T14:00:00Z",
-     "status": "2026-10-17 13:00:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -507,7 +507,7 @@
      "home": "MCI",
      "away": "IPS",
      "utcDate": "2026-10-17T14:00:00Z",
-     "status": "2026-10-17 13:00:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -515,7 +515,7 @@
      "home": "BRE",
      "away": "LIV",
      "utcDate": "2026-10-17T14:00:00Z",
-     "status": "2026-10-17 13:00:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -523,7 +523,7 @@
      "home": "NEW",
      "away": "AVL",
      "utcDate": "2026-10-17T16:30:00Z",
-     "status": "2026-10-17 15:30:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -531,7 +531,7 @@
      "home": "BOU",
      "away": "SUN",
      "utcDate": "2026-10-18T13:00:00Z",
-     "status": "2026-10-18 12:00:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -539,7 +539,7 @@
      "home": "LEE",
      "away": "MUN",
      "utcDate": "2026-10-18T13:00:00Z",
-     "status": "2026-10-18 12:00:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -547,7 +547,7 @@
      "home": "BHA",
      "away": "CRY",
      "utcDate": "2026-10-18T13:00:00Z",
-     "status": "2026-10-18 12:00:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -555,7 +555,7 @@
      "home": "NFO",
      "away": "ARS",
      "utcDate": "2026-10-18T15:30:00Z",
-     "status": "2026-10-18 14:30:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -563,7 +563,7 @@
      "home": "TOT",
      "away": "COV",
      "utcDate": "2026-10-19T19:00:00Z",
-     "status": "2026-10-19 18:00:00Z",
+     "status": "TIMED",
      "matchday": 7
     },
     {
@@ -571,7 +571,7 @@
      "home": "IPS",
      "away": "NFO",
      "utcDate": "2026-10-23T19:00:00Z",
-     "status": "2026-10-23 18:00:00Z",
+     "status": "TIMED",
      "matchday": 8
     },
     {
@@ -579,7 +579,7 @@
      "home": "AVL",
      "away": "MCI",
      "utcDate": "2026-10-24T11:30:00Z",
-     "status": "2026-10-24 10:30:00Z",
+     "status": "TIMED",
      "matchday": 8
     },
     {
@@ -587,7 +587,7 @@
      "home": "ARS",
      "away": "EVE",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "2026-10-24 13:00:00Z",
+     "status": "TIMED",
      "matchday": 8
     },
     {
@@ -595,7 +595,7 @@
      "home": "COV",
      "away": "FUL",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "2026-10-24 13:00:00Z",
+     "status": "TIMED",
      "matchday": 8
     },
     {
@@ -603,7 +603,7 @@
      "home": "CHE",
      "away": "TOT",
      "utcDate": "2026-10-24T16:30:00Z",
-     "status": "2026-10-24 15:30:00Z",
+     "status": "TIMED",
      "matchday": 8
     },
     {
@@ -3049,7 +3049,7 @@
    ]
   },
   "en2": {
-   "fetchedAt": "2026-09-04T21:27:17.731Z",
+   "fetchedAt": "2026-09-05T03:24:57.208Z",
    "count": 552,
    "matches": [
     {
@@ -3585,7 +3585,7 @@
      "home": "WOL",
      "away": "POR",
      "utcDate": "2026-09-09T00:00:00Z",
-     "status": "2026-09-16 17:45:00Z",
+     "status": "POSTPONED",
      "matchday": 6
     },
     {
@@ -7540,6 +7540,15 @@
    "from": "2026-09-09T00:00:00Z",
    "to": "2026-09-09T00:00:00Z",
    "detectedAt": "2026-09-04T09:07:03.613Z"
+  },
+  {
+   "league": "en2",
+   "kind": "postponed",
+   "fdId": 561826,
+   "home": "WOL",
+   "away": "POR",
+   "utcDate": "2026-09-09T00:00:00Z",
+   "detectedAt": "2026-09-05T03:24:57.208Z"
   }
  ]
 }
