@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { backfillScores } from './lib/league-matches.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
+import { preMatchBundle, postMatchBundle, templateFor, verify } from './lib/report/index.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEASONS = ['2023-24', '2024-25', '2025-26', '2026-27'];
@@ -442,6 +443,30 @@ const table = out('table'), results = out('results'), sim = out('sim');
     const ageH = (Date.now() - Date.parse(sc.fetchedAt)) / 3600000;
     if (ageH < 24) check('FotMob 已完賽的場次本站沒有一場還是「未賽」', fx.filter(f => f.season === sc.season && !f.played && fin.has(`${f.home}|${f.away}`)).length === 0);
   }
+}
+
+/* 分析文章(2026-09-05):跟另外兩個聯賽同一層。英冠沒有球隊側寫,賽前文章不准出現「升班馬」那句(那是沒側寫,不是升班馬) */
+{
+  const an = out('analysis'), fixtures = out('fixtures'), teams = out('teams'), h2h = out('h2h'), reports = out('reports');
+  const byCode = new Map(teams.map(t => [t.code, t]));
+  const league = { key: 'en2', zh: '英冠' };
+  const pre = fixtures.filter(f => !f.played && f.prediction).slice(0, 20).map(f => preMatchBundle({
+    fixture: f, home: byCode.get(f.home), away: byCode.get(f.away), h2h: h2h[[f.home, f.away].sort().join('|')] ?? null,
+    tacticsHome: null, tacticsAway: null, hasProfiles: false, asOf: 'test', seasonLabel: 'test', league,
+  }));
+  const post = Object.values(reports.reports).map(r => postMatchBundle({
+    report: { ...r, preMatch: null }, home: byCode.get(r.home) ?? { en: r.home, zh: r.home }, away: byCode.get(r.away) ?? { en: r.away, zh: r.away },
+    asOf: 'test', seasonLabel: 'test', league,
+  }));
+  const bad = [...pre, ...post].filter(b => !verify(templateFor(b).paragraphs.join('\n'), b.facts).ok);
+  check('英冠分析文章:賽前有文章', Object.keys(an.pre).length > 0, `${Object.keys(an.pre).length} 篇`);
+  check('英冠分析文章:賽後篇數等於賽後報告數', Object.keys(an.post).length === reports.count, `${Object.keys(an.post).length} / ${reports.count}`);
+  check('英冠分析文章:模板每篇通過數字驗證', bad.length === 0, bad.slice(0, 3).map(b => `${b.key}:${verify(templateFor(b).paragraphs.join('\n'), b.facts).reason}`).join(' / '));
+  check('英冠賽前文章不講「升班馬 / 聯盟後段先驗」(沒側寫不是升班馬)', Object.values(an.pre).every(a => !/升班馬|後段先驗|沒有上季/.test(a.paragraphs.join(''))));
+  /* 剛升上來 / 剛降下來的隊在英冠沒有上季摘要,那一段照實不講;兩隊都有上季 half 的場次才要求 */
+  const hasHalf = code => byCode.get(code)?.lastSeason?.half?.leadHoldPct != null;
+  check('英冠賽前文章有守成率那一段(兩隊都有上季 half 時)', pre.length > 0 && pre.every(b => !(hasHalf(b.home.code) && hasHalf(b.away.code)) || (b.facts.some(f => f.id === 'home.leadHold') && b.facts.some(f => f.id === 'away.leadHold'))));
+  check('英冠賽後文章講正式陣型、不講 FPL / 英超', Object.values(an.post).every(a => /正式陣型/.test(a.caveat) && !/FPL|英超/.test(a.paragraphs.join('') + a.caveat)));
 }
 
 if (process.exitCode) throw new Error('英冠自我檢查失敗');

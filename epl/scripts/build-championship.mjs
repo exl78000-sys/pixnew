@@ -50,6 +50,7 @@ import { buildElo, eloProbs, ELO_PARAMS } from './lib/elo.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { buildFormIndex, recentForm, formSummary, TUNED } from './lib/form.mjs';
 import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
+import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { round } from './lib/util.mjs';
 
@@ -774,7 +775,49 @@ async function main() {
     await write('matchstats', { source: fotmobStats.source, note: '英冠逐場統計(FotMob):控球、球隊統計、逐射門 xG、動能、事件、名單、跑動、逐人統計。比分已逐場對回本站賽果;控球率沒有第二來源可抽核。',
       seasons: fotmobStats.seasons, count: fotmobStats.count, rejected: fotmobStats.rejected, verification: fotmobStats.verification, teams: fotmobStats.teams, matches: fotmobStats.matches });
   }
-  await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 } });
+  /* ── 分析文章(2026-09-05 起英冠也有)──
+     同一層 lib/report。英冠沒有球隊側寫(hasProfiles false,不講升班馬那句)、沒有賽前機率快照(不寫賽前對照);
+     賽前講機率、兩個模型是否同調、上季守成率;賽後材料來自 FotMob 賽後報告(球隊 xG、正式陣型、射手、門將)。 */
+  {
+    const cache = await new ReportCache(ROOT, 'reports-en2.json').load();
+    const usedHashes = new Set();
+    const aiPre = {}, aiPost = {};
+    const seasonLabel = `${CURRENT_SEASON} 賽季`;
+    const league = { key: 'en2', zh: '英冠' };
+    const teamFull = code => teams.find(t => t.code === code) ?? T.byCode.get(code) ?? { code, en: code, zh: code };
+    const upcoming = fixtures.filter(f => !f.played && f.prediction)
+      .sort((a, b) => (String(a.kickoff ?? a.date) < String(b.kickoff ?? b.date) ? -1 : 1)).slice(0, 20);
+    for (const f of upcoming) {
+      const bundle = preMatchBundle({
+        fixture: f, home: teamFull(f.home), away: teamFull(f.away),
+        h2h: h2h[[f.home, f.away].sort().join('|')] ?? null,
+        tacticsHome: null, tacticsAway: null, hasProfiles: false,
+        asOf: AS_OF, seasonLabel, league,
+        provenance: { source: 'openfootball 與 football-data.co.uk 賽果', model: 'Dixon-Coles Poisson 與 Elo 平均' },
+      });
+      const rep = await generateReport(bundle, { cache });
+      usedHashes.add(rep.hash);
+      aiPre[`${f.home}|${f.away}`] = rep;
+    }
+    for (const [key, r] of Object.entries(reports)) {
+      const bundle = postMatchBundle({
+        report: { ...r, preMatch: null },   // 英冠沒有賽前機率快照,不寫賽前對照
+        home: teamFull(r.home), away: teamFull(r.away), asOf: AS_OF, seasonLabel, league,
+        provenance: { source: 'FotMob 賽後統計(球隊統計、逐射門 xG、正式名單、評分)', model: '陣型為公布的正式陣型,換人時間由出場分鐘反推' },
+      });
+      const rep = await generateReport(bundle, { cache });
+      usedHashes.add(rep.hash);
+      aiPost[key] = rep;
+    }
+    const kept = await cache.save(usedHashes);
+    const all = [...Object.values(aiPre), ...Object.values(aiPost)];
+    await write('analysis', {
+      enabled: llmEnabled(), pre: aiPre, post: aiPost,
+      counts: { pre: Object.keys(aiPre).length, post: Object.keys(aiPost).length },
+      llmWritten: all.filter(x => x.source === 'llm').length, cacheHits: cache.hits, cacheEntries: kept,
+    });
+    console.log(`  分析文章:賽前 ${Object.keys(aiPre).length} 篇・賽後 ${Object.keys(aiPost).length} 篇` + (llmEnabled() ? '' : '(模板版)'));
+  }
 
   console.log(`\n✔ 英冠:${teams.length} 隊、${fixtures.length} 場賽程、隊徽 ${crestCount}/${T.list.length}`);
 }
