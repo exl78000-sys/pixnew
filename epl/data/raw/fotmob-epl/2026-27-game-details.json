@@ -37893,10 +37893,1801 @@
      }
     ]
    }
+  },
+  "IPS|LIV": {
+   "key": "IPS|LIV",
+   "season": "2026-27",
+   "date": "2026-09-04",
+   "matchId": "5795441",
+   "home": "IPS",
+   "away": "LIV",
+   "score": [
+    0,
+    2
+   ],
+   "providerScore": [
+    0,
+    2
+   ],
+   "teamStats": {
+    "IPS": {
+     "possession": 45,
+     "shots": 14,
+     "shotsOn": 5,
+     "shotsOff": 5,
+     "blockedShots": 2,
+     "corners": 4,
+     "offsides": 5,
+     "fouls": 6,
+     "saves": 5,
+     "passes": 428,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.75
+    },
+    "LIV": {
+     "possession": 55,
+     "shots": 10,
+     "shotsOn": 7,
+     "shotsOff": 1,
+     "blockedShots": 3,
+     "corners": 3,
+     "offsides": 4,
+     "fouls": 13,
+     "saves": 5,
+     "passes": 531,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.69
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_walking",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     45,
+     55
+    ],
+    "h1": [
+     42,
+     58
+    ],
+    "h2": [
+     48,
+     52
+    ]
+   },
+   "events": [
+    {
+     "minute": 6,
+     "extra": null,
+     "team": "LIV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Alexander Isak"
+    },
+    {
+     "minute": 9,
+     "extra": null,
+     "team": "LIV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Alexander Isak"
+    },
+    {
+     "minute": 10,
+     "extra": null,
+     "team": "LIV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Alexis Mac Allister"
+    },
+    {
+     "minute": 41,
+     "extra": null,
+     "team": "IPS",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Julio Enciso"
+    },
+    {
+     "minute": 52,
+     "extra": null,
+     "team": "LIV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jérémy Jacquet"
+    },
+    {
+     "minute": 57,
+     "extra": null,
+     "team": "LIV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Milos Kerkez"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "LIV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ryan Gravenberch"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "LIV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bradley Barcola"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "IPS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jack Clarke"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "IPS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Zian Flemming"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "IPS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Abdoul Ouattara"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "IPS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kasey McAteer"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "LIV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Trey Nyoni"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "LIV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lewis Koumas"
+    }
+   ],
+   "shots": [
+    {
+     "min": 6,
+     "extra": null,
+     "team": "LIV",
+     "player": "Alexander Isak",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.096,
+     "xgot": 0.12,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93,
+     "y": 23.3,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "LIV",
+     "player": "Alexander Isak",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.114,
+     "xgot": 0.19,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 46,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "IPS",
+     "player": "Abdul Fatawu",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 18.8,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "IPS",
+     "player": "Julio Enciso",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 33.3,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "IPS",
+     "player": "Julio Enciso",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0.402,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.5,
+     "y": 41.1,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "LIV",
+     "player": "Dominik Szoboszlai",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0.677,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 38.6,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "LIV",
+     "player": "Dominik Szoboszlai",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.06,
+     "xgot": 0.542,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86,
+     "y": 30.3,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "IPS",
+     "player": "Emersonn",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.216,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 37.7,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "IPS",
+     "player": "Julio Enciso",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 21.1,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "IPS",
+     "player": "Leif Davis",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.114,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 41.1,
+     "foot": "Header"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "LIV",
+     "player": "Alexis Mac Allister",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 35.1,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "IPS",
+     "player": "Daizen Maeda",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.042,
+     "xgot": 0.075,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 46.7,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "IPS",
+     "player": "Julio Enciso",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 44.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "LIV",
+     "player": "Dominik Szoboszlai",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.011,
+     "xgot": 0.043,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.2,
+     "y": 17.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "LIV",
+     "player": "Florian Wirtz",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.023,
+     "xgot": 0.333,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.6,
+     "y": 37.7,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "LIV",
+     "player": "Florian Wirtz",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.155,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.2,
+     "y": 29.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "LIV",
+     "player": "Alexis Mac Allister",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.043,
+     "xgot": 0.039,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 29.5,
+     "foot": "Header"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "IPS",
+     "player": "Abdul Fatawu",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.9,
+     "y": 16.4,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "IPS",
+     "player": "Julio Enciso",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.062,
+     "xgot": 0.148,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.5,
+     "y": 42.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "IPS",
+     "player": "Zian Flemming",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0.01,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 50.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "LIV",
+     "player": "Cody Gakpo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.064,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 28.5,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "IPS",
+     "player": "Jack Clarke",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 40.6,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 90,
+     "extra": 4,
+     "team": "IPS",
+     "player": "Kasey McAteer",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.047,
+     "xgot": 0.129,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.5,
+     "y": 28.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "IPS",
+     "player": "Julio Enciso",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.057,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.1,
+     "y": 39.2,
+     "foot": "RightFoot"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -16
+    ],
+    [
+     2,
+     -49
+    ],
+    [
+     3,
+     -98
+    ],
+    [
+     4,
+     -87
+    ],
+    [
+     5,
+     -49
+    ],
+    [
+     6,
+     -5
+    ],
+    [
+     7,
+     0
+    ],
+    [
+     8,
+     -16
+    ],
+    [
+     9,
+     -43
+    ],
+    [
+     10,
+     -43
+    ],
+    [
+     11,
+     -24
+    ],
+    [
+     12,
+     35
+    ],
+    [
+     13,
+     33
+    ],
+    [
+     14,
+     24
+    ],
+    [
+     15,
+     8
+    ],
+    [
+     16,
+     11
+    ],
+    [
+     17,
+     16
+    ],
+    [
+     18,
+     5
+    ],
+    [
+     19,
+     5
+    ],
+    [
+     20,
+     -11
+    ],
+    [
+     21,
+     -22
+    ],
+    [
+     22,
+     -22
+    ],
+    [
+     23,
+     -33
+    ],
+    [
+     24,
+     -38
+    ],
+    [
+     25,
+     -43
+    ],
+    [
+     26,
+     100
+    ],
+    [
+     27,
+     100
+    ],
+    [
+     28,
+     92
+    ],
+    [
+     29,
+     0
+    ],
+    [
+     30,
+     65
+    ],
+    [
+     31,
+     65
+    ],
+    [
+     32,
+     27
+    ],
+    [
+     33,
+     -43
+    ],
+    [
+     34,
+     -16
+    ],
+    [
+     35,
+     30
+    ],
+    [
+     36,
+     35
+    ],
+    [
+     37,
+     49
+    ],
+    [
+     38,
+     19
+    ],
+    [
+     39,
+     -8
+    ],
+    [
+     40,
+     -49
+    ],
+    [
+     41,
+     -65
+    ],
+    [
+     42,
+     -35
+    ],
+    [
+     43,
+     -8
+    ],
+    [
+     44,
+     -3
+    ],
+    [
+     45,
+     60
+    ],
+    [
+     45.5,
+     54
+    ],
+    [
+     46,
+     -16
+    ],
+    [
+     47,
+     -35
+    ],
+    [
+     48,
+     -49
+    ],
+    [
+     49,
+     -27
+    ],
+    [
+     50,
+     -8
+    ],
+    [
+     51,
+     -11
+    ],
+    [
+     52,
+     -16
+    ],
+    [
+     53,
+     -16
+    ],
+    [
+     54,
+     16
+    ],
+    [
+     55,
+     14
+    ],
+    [
+     56,
+     8
+    ],
+    [
+     57,
+     -3
+    ],
+    [
+     58,
+     -54
+    ],
+    [
+     59,
+     -71
+    ],
+    [
+     60,
+     -65
+    ],
+    [
+     61,
+     -22
+    ],
+    [
+     62,
+     -16
+    ],
+    [
+     63,
+     -22
+    ],
+    [
+     64,
+     -11
+    ],
+    [
+     65,
+     11
+    ],
+    [
+     66,
+     5
+    ],
+    [
+     67,
+     0
+    ],
+    [
+     68,
+     -5
+    ],
+    [
+     69,
+     -5
+    ],
+    [
+     70,
+     0
+    ],
+    [
+     71,
+     -3
+    ],
+    [
+     72,
+     -35
+    ],
+    [
+     73,
+     -35
+    ],
+    [
+     74,
+     -30
+    ],
+    [
+     75,
+     19
+    ],
+    [
+     76,
+     33
+    ],
+    [
+     77,
+     -24
+    ],
+    [
+     78,
+     -33
+    ],
+    [
+     79,
+     -46
+    ],
+    [
+     80,
+     3
+    ],
+    [
+     81,
+     16
+    ],
+    [
+     82,
+     16
+    ],
+    [
+     83,
+     22
+    ],
+    [
+     84,
+     0
+    ],
+    [
+     85,
+     22
+    ],
+    [
+     86,
+     62
+    ],
+    [
+     87,
+     79
+    ],
+    [
+     88,
+     62
+    ],
+    [
+     89,
+     27
+    ],
+    [
+     90,
+     0
+    ],
+    [
+     90.5,
+     40
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "IPS": {
+     "team": "IPS",
+     "formation": "4-2-3-1",
+     "coach": "Gary O'Neil",
+     "xi": [
+      {
+       "name": "Kjell Scherpen",
+       "shirt": 37,
+       "pos": "G"
+      },
+      {
+       "name": "Dara O'Shea",
+       "shirt": 26,
+       "pos": "D"
+      },
+      {
+       "name": "Issa Diop",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Jacob Greaves",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Leif Davis",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Sasa Lukic",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Exequiel Palacios",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Abdul Fatawu",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Julio Enciso",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Daizen Maeda",
+       "shirt": 38,
+       "pos": "M"
+      },
+      {
+       "name": "Emersonn",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jack Clarke",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Zian Flemming",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Abdoul Ouattara",
+       "shirt": 42,
+       "pos": "?"
+      },
+      {
+       "name": "Kasey McAteer",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Christian Walton",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Cédric Kipré",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Darnell Furlong",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Florentino",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Marcelino Núñez",
+       "shirt": 32,
+       "pos": "?"
+      }
+     ]
+    },
+    "LIV": {
+     "team": "LIV",
+     "formation": "4-2-3-1",
+     "coach": "Andoni Iraola",
+     "xi": [
+      {
+       "name": "Alisson Becker",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Ronald Araujo",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Jérémy Jacquet",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Virgil van Dijk",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Milos Kerkez",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Dominik Szoboszlai",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Alexis Mac Allister",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Víctor Muñoz",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Florian Wirtz",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Cody Gakpo",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Alexander Isak",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Ryan Gravenberch",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Bradley Barcola",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Trey Nyoni",
+       "shirt": 42,
+       "pos": "?"
+      },
+      {
+       "name": "Lewis Koumas",
+       "shirt": 67,
+       "pos": "?"
+      },
+      {
+       "name": "Giorgi Mamardashvili",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Jeremie Frimpong",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Konstantinos Tsimikas",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Wataru Endo",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Rio Ngumoha",
+       "shirt": 73,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      116566,
+      113932
+     ],
+     "sprintDistance": [
+      3259,
+      2799
+     ],
+     "sprints": [
+      153,
+      136
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      null,
+      null
+     ]
+    },
+    "players": [
+     {
+      "team": "IPS",
+      "name": "Kjell Scherpen",
+      "shirt": 37,
+      "distance": 5474,
+      "topSpeed": 23.399999618530273,
+      "rating": 6.5
+     },
+     {
+      "team": "IPS",
+      "name": "Dara O'Shea",
+      "shirt": 26,
+      "distance": 10687,
+      "topSpeed": 30.899999618530273,
+      "rating": 6.5
+     },
+     {
+      "team": "IPS",
+      "name": "Issa Diop",
+      "shirt": 6,
+      "distance": 9852,
+      "topSpeed": 30.899999618530273,
+      "rating": 6.8
+     },
+     {
+      "team": "IPS",
+      "name": "Jacob Greaves",
+      "shirt": 24,
+      "distance": 10453,
+      "topSpeed": 32.20000076293945,
+      "rating": 6.4
+     },
+     {
+      "team": "IPS",
+      "name": "Leif Davis",
+      "shirt": 3,
+      "distance": 11065,
+      "topSpeed": 33.599998474121094,
+      "rating": 6.5
+     },
+     {
+      "team": "IPS",
+      "name": "Sasa Lukic",
+      "shirt": 23,
+      "distance": 11493,
+      "topSpeed": 29,
+      "rating": 6.3
+     },
+     {
+      "team": "IPS",
+      "name": "Exequiel Palacios",
+      "shirt": 25,
+      "distance": 10078,
+      "topSpeed": 29.299999237060547,
+      "rating": 7.7
+     },
+     {
+      "team": "IPS",
+      "name": "Abdul Fatawu",
+      "shirt": 7,
+      "distance": 8431,
+      "topSpeed": 33.29999923706055,
+      "rating": 6.8
+     },
+     {
+      "team": "IPS",
+      "name": "Julio Enciso",
+      "shirt": 10,
+      "distance": 11079,
+      "topSpeed": 32,
+      "rating": 6.6
+     },
+     {
+      "team": "IPS",
+      "name": "Daizen Maeda",
+      "shirt": 38,
+      "distance": 8539,
+      "topSpeed": 32.29999923706055,
+      "rating": 5.9
+     },
+     {
+      "team": "IPS",
+      "name": "Emersonn",
+      "shirt": 19,
+      "distance": 7903,
+      "topSpeed": 32.29999923706055,
+      "rating": 6
+     },
+     {
+      "team": "IPS",
+      "name": "Jack Clarke",
+      "shirt": 47,
+      "distance": 3578,
+      "topSpeed": 31.200000762939453,
+      "rating": 6.1
+     },
+     {
+      "team": "IPS",
+      "name": "Zian Flemming",
+      "shirt": 9,
+      "distance": 3229,
+      "topSpeed": 30.600000381469727,
+      "rating": 6.2
+     },
+     {
+      "team": "IPS",
+      "name": "Abdoul Ouattara",
+      "shirt": 42,
+      "distance": 2386,
+      "topSpeed": 29.200000762939453,
+      "rating": 6.4
+     },
+     {
+      "team": "IPS",
+      "name": "Kasey McAteer",
+      "shirt": 20,
+      "distance": 2311,
+      "topSpeed": 29.399999618530273,
+      "rating": 6.1
+     },
+     {
+      "team": "LIV",
+      "name": "Alisson Becker",
+      "shirt": 1,
+      "distance": 5678,
+      "topSpeed": 24.399999618530273,
+      "rating": 8.2
+     },
+     {
+      "team": "LIV",
+      "name": "Ronald Araujo",
+      "shirt": 33,
+      "distance": 10398,
+      "topSpeed": 32.20000076293945,
+      "rating": 7.7
+     },
+     {
+      "team": "LIV",
+      "name": "Jérémy Jacquet",
+      "shirt": 5,
+      "distance": 10299,
+      "topSpeed": 31.899999618530273,
+      "rating": 7.5
+     },
+     {
+      "team": "LIV",
+      "name": "Virgil van Dijk",
+      "shirt": 4,
+      "distance": 9212,
+      "topSpeed": 30,
+      "rating": 7.8
+     },
+     {
+      "team": "LIV",
+      "name": "Milos Kerkez",
+      "shirt": 6,
+      "distance": 10687,
+      "topSpeed": 33.599998474121094,
+      "rating": 6.8
+     },
+     {
+      "team": "LIV",
+      "name": "Dominik Szoboszlai",
+      "shirt": 8,
+      "distance": 11376,
+      "topSpeed": 32.79999923706055,
+      "rating": 7.6
+     },
+     {
+      "team": "LIV",
+      "name": "Alexis Mac Allister",
+      "shirt": 10,
+      "distance": 10104,
+      "topSpeed": 31.299999237060547,
+      "rating": 7.4
+     },
+     {
+      "team": "LIV",
+      "name": "Víctor Muñoz",
+      "shirt": 23,
+      "distance": 7438,
+      "topSpeed": 34.79999923706055,
+      "rating": 6.8
+     },
+     {
+      "team": "LIV",
+      "name": "Florian Wirtz",
+      "shirt": 7,
+      "distance": 11788,
+      "topSpeed": 30.299999237060547,
+      "rating": 7.3
+     },
+     {
+      "team": "LIV",
+      "name": "Cody Gakpo",
+      "shirt": 18,
+      "distance": 10278,
+      "topSpeed": 29.5,
+      "rating": 9
+     },
+     {
+      "team": "LIV",
+      "name": "Alexander Isak",
+      "shirt": 9,
+      "distance": 7136,
+      "topSpeed": 30.700000762939453,
+      "rating": 8.8
+     },
+     {
+      "team": "LIV",
+      "name": "Ryan Gravenberch",
+      "shirt": 38,
+      "distance": 3729,
+      "topSpeed": 26.899999618530273,
+      "rating": 6.3
+     },
+     {
+      "team": "LIV",
+      "name": "Bradley Barcola",
+      "shirt": 29,
+      "distance": 3345,
+      "topSpeed": 35.900001525878906,
+      "rating": 6.4
+     },
+     {
+      "team": "LIV",
+      "name": "Trey Nyoni",
+      "shirt": 42,
+      "distance": 1670,
+      "topSpeed": 27.100000381469727,
+      "rating": null
+     },
+     {
+      "team": "LIV",
+      "name": "Lewis Koumas",
+      "shirt": 67,
+      "distance": 787,
+      "topSpeed": 28.899999618530273,
+      "rating": null
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 43,
+      "center": 25,
+      "right": 32
+     },
+     "firstHalf": {
+      "left": 44,
+      "center": 22,
+      "right": 34
+     },
+     "secondHalf": {
+      "left": 43,
+      "center": 27,
+      "right": 30
+     }
+    },
+    "away": {
+     "total": {
+      "left": 41,
+      "center": 28,
+      "right": 31
+     },
+     "firstHalf": {
+      "left": 44,
+      "center": 28,
+      "right": 28
+     },
+     "secondHalf": {
+      "left": 37,
+      "center": 28,
+      "right": 35
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-05T07:50:25.408Z",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "LIV",
+      "name": "Florian Wirtz",
+      "n": 87,
+      "cx": 67.2,
+      "cy": 27.6,
+      "spread": 24.3,
+      "grid": "0,1,1,16,11,2,0,2,4,6,14,4,0,1,1,5,4,2,0,2,2,3,5,1"
+     },
+     {
+      "team": "LIV",
+      "name": "Virgil van Dijk",
+      "n": 107,
+      "cx": 39.4,
+      "cy": 18.7,
+      "spread": 16.6,
+      "grid": "6,13,17,7,0,1,4,17,27,10,1,0,0,1,1,1,0,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Dara O'Shea",
+      "n": 64,
+      "cx": 44.2,
+      "cy": 56.7,
+      "spread": 26.6,
+      "grid": "0,0,0,0,1,0,0,0,0,0,0,2,2,7,1,0,0,2,4,15,12,14,3,1"
+     },
+     {
+      "team": "IPS",
+      "name": "Julio Enciso",
+      "n": 66,
+      "cx": 58.8,
+      "cy": 39.6,
+      "spread": 23.1,
+      "grid": "0,0,0,1,4,1,0,1,5,5,5,0,0,2,10,9,7,1,0,3,3,7,2,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Dominik Szoboszlai",
+      "n": 91,
+      "cx": 52.8,
+      "cy": 42.3,
+      "spread": 29.1,
+      "grid": "0,2,0,2,2,1,2,3,7,6,4,1,1,3,4,5,12,0,4,9,7,11,3,2"
+     },
+     {
+      "team": "LIV",
+      "name": "Víctor Muñoz",
+      "n": 47,
+      "cx": 69,
+      "cy": 53.6,
+      "spread": 25.1,
+      "grid": "0,0,0,0,1,1,0,0,0,0,2,0,1,1,0,1,3,2,0,2,7,8,13,5"
+     },
+     {
+      "team": "LIV",
+      "name": "Ronald Araujo",
+      "n": 72,
+      "cx": 43.1,
+      "cy": 56.4,
+      "spread": 25.9,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,9,5,2,3,1,0,3,13,11,17,4,4"
+     },
+     {
+      "team": "LIV",
+      "name": "Cody Gakpo",
+      "n": 65,
+      "cx": 60.1,
+      "cy": 20.3,
+      "spread": 26.8,
+      "grid": "2,1,7,16,8,2,2,0,2,3,7,2,1,1,1,6,0,2,0,0,1,0,1,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Alexis Mac Allister",
+      "n": 66,
+      "cx": 53.5,
+      "cy": 23.8,
+      "spread": 21.7,
+      "grid": "0,3,9,7,4,0,2,2,9,7,6,0,0,1,5,7,2,1,0,0,0,1,0,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Alexander Isak",
+      "n": 32,
+      "cx": 69.6,
+      "cy": 29.3,
+      "spread": 27.7,
+      "grid": "0,0,1,3,5,4,0,0,0,2,3,1,1,0,1,2,4,1,0,3,0,1,0,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Milos Kerkez",
+      "n": 62,
+      "cx": 53.1,
+      "cy": 6.2,
+      "spread": 20.2,
+      "grid": "2,11,18,19,8,3,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Jérémy Jacquet",
+      "n": 99,
+      "cx": 39.1,
+      "cy": 42.5,
+      "spread": 22.7,
+      "grid": "0,1,0,0,0,0,2,8,0,1,0,1,12,16,19,22,1,1,2,5,3,3,2,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Leif Davis",
+      "n": 65,
+      "cx": 52.9,
+      "cy": 10,
+      "spread": 32.5,
+      "grid": "8,9,10,8,8,6,3,1,3,1,0,7,0,0,0,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Issa Diop",
+      "n": 74,
+      "cx": 30.2,
+      "cy": 41.8,
+      "spread": 21.8,
+      "grid": "0,1,0,0,0,0,3,6,5,0,3,0,10,20,6,5,0,0,6,6,0,3,0,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Alisson Becker",
+      "n": 70,
+      "cx": 10.8,
+      "cy": 32.1,
+      "spread": 10.7,
+      "grid": "1,1,0,0,0,0,28,7,0,0,0,0,29,3,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Daizen Maeda",
+      "n": 25,
+      "cx": 48.6,
+      "cy": 16.7,
+      "spread": 26.9,
+      "grid": "1,4,4,3,1,1,1,1,0,1,2,1,0,2,2,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Emersonn",
+      "n": 25,
+      "cx": 58.3,
+      "cy": 27,
+      "spread": 35.1,
+      "grid": "1,1,1,1,2,2,1,4,4,0,1,2,0,0,1,0,0,0,0,0,1,1,0,2"
+     },
+     {
+      "team": "IPS",
+      "name": "Jacob Greaves",
+      "n": 67,
+      "cx": 40.3,
+      "cy": 17.4,
+      "spread": 26.7,
+      "grid": "4,7,7,4,8,2,8,17,3,2,1,0,0,2,0,0,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Abdul Fatawu",
+      "n": 48,
+      "cx": 56.4,
+      "cy": 55.1,
+      "spread": 28.8,
+      "grid": "0,0,0,0,1,0,0,0,1,0,0,0,1,3,3,1,2,1,4,3,7,9,5,7"
+     },
+     {
+      "team": "IPS",
+      "name": "Exequiel Palacios",
+      "n": 74,
+      "cx": 46.4,
+      "cy": 33.7,
+      "spread": 25.4,
+      "grid": "1,2,3,7,1,0,2,8,3,5,2,0,2,5,7,8,3,0,0,5,4,5,0,1"
+     },
+     {
+      "team": "IPS",
+      "name": "Kjell Scherpen",
+      "n": 50,
+      "cx": 10.7,
+      "cy": 35.2,
+      "spread": 12.1,
+      "grid": "0,0,1,0,0,0,15,2,0,0,0,0,24,5,0,0,0,0,3,0,0,0,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Sasa Lukic",
+      "n": 82,
+      "cx": 48,
+      "cy": 35.1,
+      "spread": 25.7,
+      "grid": "1,0,0,4,2,3,1,5,9,9,3,0,1,11,9,7,1,0,0,3,10,2,1,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Ryan Gravenberch",
+      "n": 20,
+      "cx": 43.3,
+      "cy": 42.8,
+      "spread": 22.9,
+      "grid": "0,0,1,0,1,0,0,1,0,2,0,0,2,2,2,3,0,0,0,3,0,3,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Zian Flemming",
+      "n": 9,
+      "cx": 75.6,
+      "cy": 17.1,
+      "spread": 15.8,
+      "grid": "0,0,0,1,2,2,0,0,0,2,1,0,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Jack Clarke",
+      "n": 27,
+      "cx": 64.6,
+      "cy": 22.3,
+      "spread": 22,
+      "grid": "0,0,0,6,5,0,0,0,5,1,5,1,0,1,1,0,1,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Bradley Barcola",
+      "n": 13,
+      "cx": 58.4,
+      "cy": 10.5,
+      "spread": 21.9,
+      "grid": "0,1,5,4,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Abdoul Ouattara",
+      "n": 29,
+      "cx": 51.2,
+      "cy": 25.9,
+      "spread": 24.8,
+      "grid": "0,0,2,1,4,0,1,4,6,1,2,0,0,2,1,3,1,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "IPS",
+      "name": "Kasey McAteer",
+      "n": 6,
+      "cx": 67.5,
+      "cy": 45.7,
+      "spread": 17.5,
+      "grid": "0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,3,0,0,0,0,0,1,0"
+     },
+     {
+      "team": "LIV",
+      "name": "Trey Nyoni",
+      "n": 5,
+      "cx": 35.7,
+      "cy": 46.2,
+      "spread": 17.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,1,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-03T18:20:04.743Z",
+ "updatedAt": "2026-09-05T07:50:26.135Z",
  "verification": {
   "source": "pulselive /stats/match possession_percentage",
   "tolerance": 2,
