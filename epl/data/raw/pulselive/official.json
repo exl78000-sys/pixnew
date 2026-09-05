@@ -16606,6 +16606,15 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 67928,
+      "team": 131,
+      "min": 49,
+      "label": "49'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [],
@@ -16636,7 +16645,7 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "50'00"
   },
   "FUL|CRY": {
    "fixtureId": 128947,
@@ -17074,32 +17083,6 @@
    "goals": [
     {
      "side": "H",
-     "person": 128976,
-     "assist": null,
-     "team": 34,
-     "min": 11,
-     "label": "11'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "A",
-     "person": 24334,
-     "assist": 14451,
-     "team": 6,
-     "min": 35,
-     "label": "35'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
-     "as": 1
-    },
-    {
-     "side": "H",
      "person": 123594,
      "assist": null,
      "team": 34,
@@ -17114,8 +17097,33 @@
    ],
    "timeline": {
     "cards": [],
-    "subs": [],
+    "subs": [
+     {
+      "person": 35670,
+      "team": 6,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14451,
+      "team": 6,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -17127,10 +17135,16 @@
       "min": 45,
       "label": "45+5'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+5'00"
+   "clock": "48'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -17620,7 +17634,7 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "50'00"
   },
   "NFO|TOT": {
    "fixtureId": 128952,
@@ -18096,8 +18110,8 @@
      }
     ]
    },
-   "clock": "47'00"
+   "clock": "51'00"
   }
  },
- "fetchedAt": "2026-09-05T15:04:18.250Z"
+ "fetchedAt": "2026-09-05T15:08:59.449Z"
 }
