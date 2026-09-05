@@ -16446,7 +16446,7 @@
   "FUL|CRY": {
    "fixtureId": 128947,
    "kickoff": "2026-09-05T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -16455,9 +16455,31 @@
    "homeId": 34,
    "awayId": 6,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4985
+     ],
+     [
+      6712,
+      26151,
+      23793,
+      14624
+     ],
+     [
+      75201,
+      4717
+     ],
+     [
+      66657,
+      128976,
+      123594
+     ],
+     [
+      119364
+     ]
+    ],
     "xi": [
      {
       "id": 23793,
@@ -16536,7 +16558,7 @@
       "playerId": null,
       "name": "Alex Iwobi",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Second Striker",
       "captain": false
      },
@@ -16644,9 +16666,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      13988
+     ],
+     [
+      147312,
+      54893,
+      50842
+     ],
+     [
+      123848,
+      69595,
+      67779,
+      24334
+     ],
+     [
+      109117,
+      49759
+     ],
+     [
+      14451
+     ]
+    ],
     "xi": [
      {
       "id": 50842,
@@ -16689,7 +16733,7 @@
       "playerId": null,
       "name": "Tyrick Mitchell",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -16698,7 +16742,7 @@
       "playerId": null,
       "name": "Daichi Kamada",
       "shirt": 18,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Attacking Midfielder",
       "captain": false
      },
@@ -16707,7 +16751,7 @@
       "playerId": null,
       "name": "Anan Khalaili",
       "shirt": 25,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -16725,7 +16769,7 @@
       "playerId": null,
       "name": "Yéremy Pino",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -16836,7 +16880,20 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
@@ -17240,7 +17297,7 @@
   "NFO|TOT": {
    "fixtureId": 128952,
    "kickoff": "2026-09-05T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -17249,9 +17306,31 @@
    "homeId": 15,
    "awayId": 21,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      16723
+     ],
+     [
+      304238,
+      16035,
+      139648
+     ],
+     [
+      10439,
+      20335,
+      49270,
+      23811
+     ],
+     [
+      15259,
+      50623
+     ],
+     [
+      51813
+     ]
+    ],
     "xi": [
      {
       "id": 139648,
@@ -17276,7 +17355,7 @@
       "playerId": null,
       "name": "Ola Aina",
       "shirt": 34,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -17285,7 +17364,7 @@
       "playerId": null,
       "name": "Neco Williams",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -17330,7 +17409,7 @@
       "playerId": null,
       "name": "Morgan Gibbs-White",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": true
      },
@@ -17438,9 +17517,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      32229,
+      76090,
+      75582,
+      126824
+     ],
+     [
+      22802,
+      71623
+     ],
+     [
+      126943,
+      21887,
+      76614
+     ],
+     [
+      76216
+     ]
+    ],
     "xi": [
      {
       "id": 126824,
@@ -17474,7 +17575,7 @@
       "playerId": null,
       "name": "Sávio",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -17510,7 +17611,7 @@
       "playerId": null,
       "name": "Mathys Tel",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Forward",
       "captain": false
      },
@@ -17630,10 +17731,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "01'00"
   }
  },
- "fetchedAt": "2026-09-05T13:59:01.696Z"
+ "fetchedAt": "2026-09-05T14:01:17.887Z"
 }
