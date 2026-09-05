@@ -28,7 +28,9 @@ const fact = (id, label, value, text = null) => ({
    文案裡「上季英超」「FPL 官方統計」這種聯賽事實不能寫死 —— 寫死就是在西甲頁面上講英超的話。 */
 const PL = { key: 'pl', zh: '英超' };
 
-export function preMatchBundle({ fixture, home, away, h2h, tacticsHome, tacticsAway, asOf, seasonLabel, league = PL, provenance = null }) {
+/* hasProfiles:這個聯賽有沒有球隊側寫這種東西。英冠沒有(Understat 不涵蓋),沒側寫不是升班馬,
+   noHistory 那句「升班馬套用聯盟後段先驗」在那裡是假話。 */
+export function preMatchBundle({ fixture, home, away, h2h, tacticsHome, tacticsAway, asOf, seasonLabel, league = PL, provenance = null, hasProfiles = true }) {
   const p = fixture.prediction;
   const facts = [];
   const F = (...a) => { facts.push(fact(...a)); return facts.at(-1); };
@@ -76,13 +78,14 @@ export function preMatchBundle({ fixture, home, away, h2h, tacticsHome, tacticsA
       F(`${key}.xga90`, `${t.en} 每 90 分鐘期望失球`, oneDp(tac.defence.xGA90));
       F(`${key}.finishing`, `${t.en} 整季比期望多進的球數`, round(tac.attack.finishing, 1));
       if (tac.defence.cleanSheets != null) F(`${key}.cleanSheets`, `${t.en} 上季零封場次`, tac.defence.cleanSheets);
-      /* 守成率:英超側寫自己算好在 resilience;西甲的在球隊上季摘要的 half 裡(同一個定義:半場領先後拿下 / 落後後翻盤) */
-      const res = tac.resilience ?? (t.lastSeason?.half?.leadHoldPct != null
-        ? { leadHoldPct: t.lastSeason.half.leadHoldPct, trailRescuePct: t.lastSeason.half.trailRescuePct } : null);
-      if (res) {
-        F(`${key}.leadHold`, `${t.en} 領先守成率`, oneDp(res.leadHoldPct), `${oneDp(res.leadHoldPct)}%`);
-        F(`${key}.trailRescue`, `${t.en} 落後翻盤率`, oneDp(res.trailRescuePct), `${oneDp(res.trailRescuePct)}%`);
-      }
+    } else if (last?.cleanSheets != null) F(`${key}.cleanSheets`, `${t.en} 上季零封場次`, last.cleanSheets);
+    /* 守成率:英超側寫自己算好在 resilience;西甲與英冠的在球隊上季摘要的 half 裡
+       (同一個定義:半場領先後拿下 / 落後後翻盤)—— 沒有側寫的聯賽也講得出這一段 */
+    const res = tac?.resilience ?? (last?.half?.leadHoldPct != null
+      ? { leadHoldPct: last.half.leadHoldPct, trailRescuePct: last.half.trailRescuePct } : null);
+    if (res && res.leadHoldPct != null && res.trailRescuePct != null) {
+      F(`${key}.leadHold`, `${t.en} 領先守成率`, oneDp(res.leadHoldPct), `${oneDp(res.leadHoldPct)}%`);
+      F(`${key}.trailRescue`, `${t.en} 落後翻盤率`, oneDp(res.trailRescuePct), `${oneDp(res.trailRescuePct)}%`);
     }
   };
   side(home, 'home', tacticsHome);
@@ -115,10 +118,10 @@ export function preMatchBundle({ fixture, home, away, h2h, tacticsHome, tacticsA
       kind: (tacticsHome ?? tacticsAway)?.formation?.def != null ? 'average' : 'mostUsed',
     },
     // 升班馬沒有上季英超統計。與其讓文章默默少講一邊,不如明講為什麼。
-    noHistory: [
+    noHistory: hasProfiles ? [
       tacticsHome ? null : home.en,
       tacticsAway ? null : away.en,
-    ].filter(Boolean),
+    ].filter(Boolean) : [],
     league,
     facts,
     provenance: {
