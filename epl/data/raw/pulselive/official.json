@@ -16099,7 +16099,7 @@
      }
     ]
    },
-   "clock": "04'00"
+   "clock": "13'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -16324,8 +16324,8 @@
     ]
    },
    "away": {
-    "formation": "3-4-2-1",
-    "formationRaw": "3-4-2-1",
+    "formation": "3-5-2",
+    "formationRaw": "3-5-2",
     "rows": [
      [
       32280
@@ -16337,16 +16337,14 @@
      ],
      [
       14608,
+      116888,
       19731,
       126426,
       75543
      ],
      [
-      116888,
+      9576,
       33162
-     ],
-     [
-      9576
      ]
     ],
     "xi": [
@@ -16373,7 +16371,7 @@
       "playerId": null,
       "name": "Anton Stach",
       "shirt": 18,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Defensive Midfielder",
       "captain": false
      },
@@ -16536,7 +16534,17 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 14608,
+      "team": 9,
+      "min": 6,
+      "label": "06'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -16553,7 +16561,7 @@
      }
     ]
    },
-   "clock": "05'00"
+   "clock": "12'00"
   },
   "FUL|CRY": {
    "fixtureId": 128947,
@@ -16561,7 +16569,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 34,
@@ -16988,7 +16996,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 49759,
+     "assist": null,
+     "team": 6,
+     "min": 14,
+     "label": "14'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
@@ -17007,7 +17029,7 @@
      }
     ]
    },
-   "clock": "05'00"
+   "clock": "14'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -17034,8 +17056,8 @@
       67178
      ],
      [
-      51593,
-      63741
+      63741,
+      51593
      ],
      [
       25474,
@@ -17239,8 +17261,8 @@
       55556
      ],
      [
-      63836,
       114738,
+      63836,
       22043
      ],
      [
@@ -17461,7 +17483,7 @@
      }
     ]
    },
-   "clock": "02'00"
+   "clock": "12'00"
   },
   "NFO|TOT": {
    "fixtureId": 128952,
@@ -17915,8 +17937,8 @@
      }
     ]
    },
-   "clock": "05'00"
+   "clock": "14'00"
   }
  },
- "fetchedAt": "2026-09-05T14:05:52.559Z"
+ "fetchedAt": "2026-09-05T14:14:21.401Z"
 }
