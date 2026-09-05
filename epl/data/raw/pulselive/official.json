@@ -15872,24 +15872,26 @@
     ]
    },
    "away": {
-    "formation": "5-4-1",
-    "formationRaw": "5-4-1",
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
     "rows": [
      [
       75692
      ],
      [
-      12196,
       51199,
       19864,
       25892,
       63733
      ],
      [
-      115105,
       124944,
-      12136,
-      138104
+      12136
+     ],
+     [
+      12196,
+      138104,
+      115105
      ],
      [
       67784
@@ -15901,7 +15903,7 @@
       "playerId": null,
       "name": "Thomas Meunier",
       "shirt": 12,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -16093,7 +16095,26 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 129096,
+      "team": 130,
+      "min": 17,
+      "label": "17'00",
+      "phase": "1",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 24659,
+      "team": 130,
+      "min": 17,
+      "label": "17'00",
+      "phase": "1",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -16109,7 +16130,7 @@
      }
     ]
    },
-   "clock": "15'00"
+   "clock": "17'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -16546,7 +16567,7 @@
     {
      "side": "A",
      "person": 14608,
-     "assist": null,
+     "assist": 126426,
      "team": 9,
      "min": 15,
      "label": "15'00",
@@ -16585,7 +16606,7 @@
      }
     ]
    },
-   "clock": "15'00"
+   "clock": "18'00"
   },
   "FUL|CRY": {
    "fixtureId": 128947,
@@ -17053,7 +17074,7 @@
      }
     ]
    },
-   "clock": "16'00"
+   "clock": "18'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -17507,7 +17528,7 @@
      }
     ]
    },
-   "clock": "13'00"
+   "clock": "18'00"
   },
   "NFO|TOT": {
    "fixtureId": 128952,
@@ -17961,8 +17982,8 @@
      }
     ]
    },
-   "clock": "16'00"
+   "clock": "18'00"
   }
  },
- "fetchedAt": "2026-09-05T14:16:36.882Z"
+ "fetchedAt": "2026-09-05T14:18:52.471Z"
 }
