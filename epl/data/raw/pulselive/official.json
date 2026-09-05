@@ -16139,7 +16139,7 @@
      }
     ]
    },
-   "clock": "45+1'00"
+   "clock": "45+4'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -17062,6 +17062,32 @@
    "goals": [
     {
      "side": "H",
+     "person": 128976,
+     "assist": null,
+     "team": 34,
+     "min": 11,
+     "label": "11'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 24334,
+     "assist": 14451,
+     "team": 6,
+     "min": 35,
+     "label": "35'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
      "person": 123594,
      "assist": null,
      "team": 34,
@@ -17079,20 +17105,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+5'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+1'00"
+   "clock": "45+5'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -18037,5 +18063,5 @@
    "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-05T14:48:29.931Z"
+ "fetchedAt": "2026-09-05T14:50:45.256Z"
 }
