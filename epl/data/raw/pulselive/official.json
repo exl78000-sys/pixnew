@@ -16139,7 +16139,7 @@
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+1'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -16611,20 +16611,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+2'00"
   },
   "FUL|CRY": {
    "fixtureId": 128947,
@@ -17092,7 +17092,7 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+1'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -17557,20 +17557,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+2'00"
   },
   "NFO|TOT": {
    "fixtureId": 128952,
@@ -18007,25 +18007,35 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 126824,
+      "team": 21,
+      "min": 45,
+      "label": "45+1'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
      {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+1'00"
+   "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-05T14:46:14.385Z"
+ "fetchedAt": "2026-09-05T14:48:29.931Z"
 }
