@@ -16130,7 +16130,7 @@
      }
     ]
    },
-   "clock": "23'00"
+   "clock": "27'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -16606,7 +16606,7 @@
      }
     ]
    },
-   "clock": "22'00"
+   "clock": "27'00"
   },
   "FUL|CRY": {
    "fixtureId": 128947,
@@ -17074,7 +17074,7 @@
      }
     ]
    },
-   "clock": "23'00"
+   "clock": "27'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -17082,7 +17082,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 11,
@@ -17509,7 +17509,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 65970,
+     "assist": 25474,
+     "team": 11,
+     "min": 26,
+     "label": "26'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -17538,7 +17552,7 @@
      }
     ]
    },
-   "clock": "21'00"
+   "clock": "26'00"
   },
   "NFO|TOT": {
    "fixtureId": 128952,
@@ -17992,8 +18006,8 @@
      }
     ]
    },
-   "clock": "23'00"
+   "clock": "28'00"
   }
  },
- "fetchedAt": "2026-09-05T14:23:33.054Z"
+ "fetchedAt": "2026-09-05T14:28:00.147Z"
 }
