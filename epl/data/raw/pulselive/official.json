@@ -15656,7 +15656,7 @@
    "final": false,
    "score": {
     "home": 1,
-    "away": 0
+    "away": 1
    },
    "homeId": 130,
    "awayId": 29,
@@ -16085,16 +16085,16 @@
    "goals": [
     {
      "side": "H",
-     "person": 23194,
+     "person": 138104,
      "assist": null,
-     "team": 130,
-     "min": 57,
-     "label": "57'00",
+     "team": 29,
+     "min": 82,
+     "label": "82'00",
      "phase": "2",
-     "type": "G",
-     "kind": "G",
+     "type": "P",
+     "kind": "P",
      "hs": 1,
-     "as": 0
+     "as": 1
     }
    ],
    "timeline": {
@@ -16291,7 +16291,7 @@
      }
     ]
    },
-   "clock": "77'00"
+   "clock": "82'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -16776,6 +16776,24 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 13961,
+      "team": 9,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 146676,
+      "team": 131,
+      "min": 88,
+      "label": "88'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -16915,7 +16933,7 @@
      }
     ]
    },
-   "clock": "84'00"
+   "clock": "89'00"
   },
   "FUL|CRY": {
    "fixtureId": 128947,
@@ -17493,6 +17511,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 117763,
+      "team": 34,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 4717,
+      "team": 34,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -17522,7 +17558,7 @@
      }
     ]
    },
-   "clock": "80'00"
+   "clock": "86'00"
   },
   "MCI|COV": {
    "fixtureId": 128950,
@@ -18092,6 +18128,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 20361,
+      "team": 5,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 10438,
+      "team": 5,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 141186,
+      "team": 11,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 31936,
+      "team": 11,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -18121,7 +18193,7 @@
      }
     ]
    },
-   "clock": "82'00"
+   "clock": "89'00"
   },
   "NFO|TOT": {
    "fixtureId": 128952,
@@ -18740,6 +18812,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 123299,
+      "team": 15,
+      "min": 90,
+      "label": "90'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 139648,
+      "team": 15,
+      "min": 90,
+      "label": "90'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -18769,7 +18859,7 @@
      }
     ]
    },
-   "clock": "85'00"
+   "clock": "90'00"
   },
   "HUL|AVL": {
    "fixtureId": 128948,
@@ -19169,5 +19259,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-05T15:43:03.642Z"
+ "fetchedAt": "2026-09-05T15:47:45.014Z"
 }
