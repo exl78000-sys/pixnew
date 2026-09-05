@@ -14890,7 +14890,7 @@
   "NEW|BOU": {
    "fixtureId": 128951,
    "kickoff": "2026-09-05T11:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -14899,9 +14899,31 @@
    "homeId": 23,
    "awayId": 127,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      68637,
+      124462,
+      49908,
+      108922
+     ],
+     [
+      67849,
+      117647
+     ],
+     [
+      49259,
+      14446,
+      14716
+     ],
+     [
+      117497
+     ]
+    ],
     "xi": [
      {
       "id": 114689,
@@ -14944,7 +14966,7 @@
       "playerId": null,
       "name": "Anthony Elanga",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -15088,16 +15110,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      134403
+     ],
+     [
+      3512,
+      51942,
+      120109,
+      74965
+     ],
+     [
+      42894,
+      74976
+     ],
+     [
+      134234,
+      21519,
+      14846
+     ],
+     [
+      33032
+     ]
+    ],
     "xi": [
      {
       "id": 21519,
       "playerId": null,
       "name": "Justin Kluivert",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -15169,7 +15213,7 @@
       "playerId": null,
       "name": "Rayan",
       "shirt": 37,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Striker",
       "captain": false
      },
@@ -15280,10 +15324,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "03'00"
   }
  },
- "fetchedAt": "2026-09-05T11:30:09.107Z"
+ "fetchedAt": "2026-09-05T11:32:26.184Z"
 }
