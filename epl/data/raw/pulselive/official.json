@@ -14890,8 +14890,8 @@
   "NEW|BOU": {
    "fixtureId": 128951,
    "kickoff": "2026-09-05T11:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 2
@@ -15322,6 +15322,45 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 14846,
+     "assist": null,
+     "team": 127,
+     "min": 9,
+     "label": "09'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 124462,
+     "assist": null,
+     "team": 127,
+     "min": 35,
+     "label": "35'00",
+     "phase": "1",
+     "type": "O",
+     "kind": "O",
+     "hs": 0,
+     "as": 2
+    },
+    {
+     "side": "H",
+     "person": 14716,
+     "assist": 108922,
+     "team": 23,
+     "min": 37,
+     "label": "37'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 2
+    },
+    {
      "side": "H",
      "person": 19888,
      "assist": null,
@@ -15554,15 +15593,27 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 15572,
+      "team": 127,
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 74976,
+      "team": 127,
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -15580,10 +15631,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-05T13:31:47.665Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "BRE|SUN": {
    "fixtureId": 128944,
@@ -17571,5 +17635,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-05T13:27:05.758Z"
+ "fetchedAt": "2026-09-05T13:31:47.998Z"
 }
