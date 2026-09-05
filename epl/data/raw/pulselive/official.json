@@ -16126,20 +16126,20 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+9'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+6'00"
+   "clock": "45+9'00"
   },
   "BHA|LEE": {
    "fixtureId": 128945,
@@ -16741,7 +16741,7 @@
       "playerId": null,
       "name": "Alex Iwobi",
       "shirt": 17,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Left/Centre/Right Second Striker",
       "captain": false
      },
@@ -16916,7 +16916,7 @@
       "playerId": null,
       "name": "Tyrick Mitchell",
       "shirt": 3,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -16925,7 +16925,7 @@
       "playerId": null,
       "name": "Daichi Kamada",
       "shirt": 18,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Attacking Midfielder",
       "captain": false
      },
@@ -16934,7 +16934,7 @@
       "playerId": null,
       "name": "Anan Khalaili",
       "shirt": 25,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -16952,7 +16952,7 @@
       "playerId": null,
       "name": "Yéremy Pino",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -18063,5 +18063,5 @@
    "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-05T14:53:01.079Z"
+ "fetchedAt": "2026-09-05T14:55:16.440Z"
 }
