@@ -19076,7 +19076,7 @@
   "HUL|AVL": {
    "fixtureId": 128948,
    "kickoff": "2026-09-05T16:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -19085,9 +19085,29 @@
    "homeId": 41,
    "awayId": 2,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      133314,
+      20081
+     ],
+     [
+      137549,
+      21385,
+      75264,
+      337382
+     ],
+     [
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 13486,
@@ -19184,7 +19204,7 @@
       "playerId": null,
       "name": "Mohamed Belloumi",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      }
@@ -19274,9 +19294,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      125556
+     ],
+     [
+      13344,
+      5066,
+      8900,
+      51223
+     ],
+     [
+      25067,
+      4115
+     ],
+     [
+      51423,
+      26408,
+      124907
+     ],
+     [
+      110526
+     ]
+    ],
     "xi": [
      {
       "id": 124907,
@@ -19466,10 +19508,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "08'00"
   }
  },
- "fetchedAt": "2026-09-05T16:30:09.382Z"
+ "fetchedAt": "2026-09-05T16:41:16.895Z"
 }
