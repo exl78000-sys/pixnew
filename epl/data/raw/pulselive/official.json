@@ -19076,8 +19076,8 @@
   "HUL|AVL": {
    "fixtureId": 128948,
    "kickoff": "2026-09-05T16:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 0
@@ -19710,12 +19710,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -19732,11 +19726,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+1'00"
+   "clock": "90+4'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-05T18:22:46.769Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-09-05T18:20:35.117Z"
+ "fetchedAt": "2026-09-05T18:22:46.769Z"
 }
