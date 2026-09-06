@@ -20375,6 +20375,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 33245,
+      "team": 12,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 4608,
+      "team": 12,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -20404,7 +20422,7 @@
      }
     ]
    },
-   "clock": "90'00"
+   "clock": "90+2'00"
   },
   "ARS|CHE": {
    "fixtureId": 128943,
@@ -20804,5 +20822,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-06T14:50:59.495Z"
+ "fetchedAt": "2026-09-06T14:53:14.704Z"
 }
