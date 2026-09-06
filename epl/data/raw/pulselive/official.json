@@ -20473,8 +20473,8 @@
   "ARS|CHE": {
    "fixtureId": 128943,
    "kickoff": "2026-09-06T15:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 1
@@ -20905,6 +20905,32 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 23968,
+     "assist": 119041,
+     "team": 4,
+     "min": 2,
+     "label": "02'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 20810,
+     "assist": 15202,
+     "team": 1,
+     "min": 25,
+     "label": "25'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 11419,
      "assist": 67704,
@@ -20961,6 +20987,15 @@
       "team": 4,
       "min": 83,
       "label": "83'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 19778,
+      "team": 1,
+      "min": 90,
+      "label": "90+5'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -21132,12 +21167,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -21154,11 +21183,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-06T17:31:09.745Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-09-06T17:28:58.060Z"
+ "fetchedAt": "2026-09-06T17:31:09.745Z"
 }
