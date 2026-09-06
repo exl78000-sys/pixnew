@@ -20473,7 +20473,7 @@
   "ARS|CHE": {
    "fixtureId": 128943,
    "kickoff": "2026-09-06T15:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -20482,9 +20482,31 @@
    "homeId": 1,
    "awayId": 4,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      7975
+     ],
+     [
+      14548,
+      13274,
+      50234,
+      69914
+     ],
+     [
+      15202,
+      114564
+     ],
+     [
+      49481,
+      11419,
+      67704
+     ],
+     [
+      20810
+     ]
+    ],
     "xi": [
      {
       "id": 13274,
@@ -20518,7 +20540,7 @@
       "playerId": null,
       "name": "Myles Lewis-Skelly",
       "shirt": 49,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -20527,7 +20549,7 @@
       "playerId": null,
       "name": "Bukayo Saka",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -20563,7 +20585,7 @@
       "playerId": null,
       "name": "Christos Tzolis",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -20671,9 +20693,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      4245
+     ],
+     [
+      66284,
+      76104,
+      125075
+     ],
+     [
+      21998,
+      14571,
+      99282,
+      119041
+     ],
+     [
+      49293,
+      23968
+     ],
+     [
+      72371
+     ]
+    ],
     "xi": [
      {
       "id": 4245,
@@ -20689,7 +20733,7 @@
       "playerId": null,
       "name": "Jorrel Hato",
       "shirt": 21,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -20725,7 +20769,7 @@
       "playerId": null,
       "name": "Morgan Rogers",
       "shirt": 17,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -20734,7 +20778,7 @@
       "playerId": null,
       "name": "Reece James",
       "shirt": 24,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": true
      },
@@ -20752,7 +20796,7 @@
       "playerId": null,
       "name": "Pedro Neto",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -20761,7 +20805,7 @@
       "playerId": null,
       "name": "Cole Palmer",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -20863,10 +20907,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-06T15:29:20.756Z"
+ "fetchedAt": "2026-09-06T15:31:35.975Z"
 }
