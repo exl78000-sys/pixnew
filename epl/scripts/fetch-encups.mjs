@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-/* 抓英格蘭盃賽(足總盃 / 聯賽盃)的逐場賽果。
+/* 【已退役,2026-09-07】SportMonks 9/3 退訂,盃賽改由 fetch-fotmob-cups.mjs 抓(FotMob)。
+ * 這支與它的 adapter(lib/adapters/sportmonks-cups.mjs)留著當紀錄,也因為
+ * data/raw/sportmonks-cups 那份舊快取還在當獨立來源核對用。npm script 已拿掉,不會再被工作流呼叫。
+ *
+ * 抓英格蘭盃賽(足總盃 / 聯賽盃)的逐場賽果。
  *
  * 來源:SportMonks。方案實測授權 FA Cup(24)與 Carabao Cup(27) ——
  * 這兩個 id 是從 /my/leagues 的授權清單讀出來的,不是查文件猜的。

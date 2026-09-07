@@ -60,17 +60,9 @@ export const KNOWN_STATES = new Set([
  * loose 會中、exact 不中的名字一律記進 nearMisses 由人核對,不自動採用 ——
  * 少對到一支只是少一個隊徽,對錯一支是在講一件假的事。
  */
-const exactKey = name => String(name ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
-
-export function buildCupTeamIndex(teams) {
-  const index = new Map();
-  for (const t of teams) {
-    for (const n of [t.en, t.of, t.fpl, ...(t.alias ?? []), ...(t.cupAlias ?? [])]) {
-      if (n) index.set(exactKey(n), t.code);
-    }
-  }
-  return name => index.get(exactKey(name)) ?? null;
-}
+// 嚴格索引改成跟 FotMob 那版共用同一份(2026-09-07 退役後留著當紀錄;兩份會悄悄分岔)
+import { buildCupTeamIndex } from './fotmob-cups.mjs';
+export { buildCupTeamIndex };
 
 const num = v => (Number.isFinite(Number(v)) ? Number(v) : null);
 

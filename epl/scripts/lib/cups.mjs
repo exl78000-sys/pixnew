@@ -25,7 +25,7 @@ export function groupByStage(matches) {
       total: list.length,
       played: list.filter(m => m.played).length,
       aet: list.filter(m => m.aet === true).length,
-      shootouts: list.filter(m => m.pens).length,
+      shootouts: list.filter(m => m.pens || m.state === 'FT_PEN').length,
       /* 這一輪有沒有本站認得的球隊。足總盃從第九級一路打上來 ——
          2025-26 整季 871 場、745 支球隊,英超球隊要到第三輪才進場。
          全部平鋪的話,讀者要滑過幾百場沒聽過的球隊才看得到第一場英超比賽。
@@ -52,6 +52,10 @@ export function winnerOf(m) {
     if (m.pens[0] === m.pens[1]) return null;
     return m.pens[0] > m.pens[1] ? 'home' : 'away';
   }
+  /* FotMob 的賽程端點沒有 PK 比數,勝方另外從單場詳情補(pensWinner);
+     補不到的 PK 場 → null(不知道),不拿平手比分去猜。 */
+  if (m.pensWinner === 'home' || m.pensWinner === 'away') return m.pensWinner;
+  if (m.state === 'FT_PEN') return null;
   if (!m.final) return null;
   if (m.final[0] === m.final[1]) return null;
   return m.final[0] > m.final[1] ? 'home' : 'away';
@@ -136,16 +140,21 @@ export function summariseSeason(season) {
     total: (season.matches ?? []).length,
     played: (season.matches ?? []).filter(m => m.played).length,
     aet: (season.matches ?? []).filter(m => m.aet === true).length,
-    shootouts: (season.matches ?? []).filter(m => m.pens).length,
+    shootouts: (season.matches ?? []).filter(m => m.pens || m.state === 'FT_PEN').length,
+    // PK 場次裡勝方還沒補到的(單場詳情還沒抓到):畫面要講「勝方待查」,不是「平手」
+    pensPending: (season.matches ?? []).filter(m => m.state === 'FT_PEN' && !m.pens && !m.pensWinner).length,
     // 涵蓋率要標:一百多支球隊裡本站只認得英超那 20 支
     teamsTotal: new Set((season.matches ?? []).flatMap(m => [m.home?.name, m.away?.name]).filter(Boolean)).size,
     teamsKnown: new Set((season.matches ?? []).flatMap(m => [m.home?.code, m.away?.code]).filter(Boolean)).size,
     rounds,
     runs: runsByTeam(rounds),
     champion: championOf(rounds),
-    unknownDescriptions: season.unknownDescriptions ?? [],
-    unknownStates: season.unknownStates ?? [],
+    // 沒見過的完賽狀態(FotMob 的 reason);SportMonks 時代叫 unknownDescriptions,那份已退役
+    unknownReasons: season.unknownReasons ?? [],
     nearMisses: season.nearMisses ?? [],
-    aetCheck: season.aetCheck ?? null,
+    sourceSeason: season.sourceSeason ?? null,
+    retrievedAt: season.retrievedAt ?? null,
+    // 跟 SportMonks 舊快取逐場核對的結果(鐵則五)—— 帶到畫面,讓讀者知道哪些場次有第二個來源
+    crossCheck: season.crossCheck ?? null,
   };
 }

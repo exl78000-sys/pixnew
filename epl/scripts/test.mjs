@@ -32,7 +32,7 @@ import { teamGoals } from './lib/goals.mjs';
 import { walkForward, rps, outcome, logLoss, pairedDiff } from './lib/backtest.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { numberProfile, traditionVsData, formationUsage, formationFromLineups } from './lib/knowledge.mjs';
-import { normaliseCupFixture, buildCupTeamIndex, KNOWN_SCORE_DESCRIPTIONS, KNOWN_STATES } from './lib/adapters/sportmonks-cups.mjs';
+import { normaliseFotmobCupMatch, buildCupTeamIndex, KNOWN_REASONS, stageOf, fotmobSeason, crossCheckWithSportmonks, parseCupDetail, withCupDetails } from './lib/adapters/fotmob-cups.mjs';
 import { groupByStage, winnerOf, runsByTeam, championOf } from './lib/cups.mjs';
 import { teamRecord } from './lib/table.mjs';
 import { loadExpertOpinions, validateExpertOpinions } from './lib/experts.mjs';
@@ -4326,7 +4326,7 @@ function checkCups() {
   };
 
   /* 一、嚴格比對:AFC Liverpool 不可以對成 Liverpool。
-     這不是假想 —— 上游真的兩支都有(id 8 與 id 19711),
+     這不是假想 —— 上游真的兩支都有(SportMonks 時代 id 8 與 id 19711;FotMob 一樣兩支都在),
      而寬鬆比對會把它們塌成同一支。 */
   const teams = JSON.parse(readFileSync(join(ROOT, 'data', 'manual', 'teams.json'), 'utf8')).teams;
   const strict = buildCupTeamIndex(teams);
@@ -4335,186 +4335,191 @@ function checkCups() {
   ok(strict('AFC Bournemouth') === 'BOU', '嚴格比對:AFC Bournemouth → BOU');
   ok(strict('Bournemouth FC') === null, '嚴格比對:Bournemouth FC 不對應到任何隊');
   ok(strict('  liverpool  ') === 'LIV', '嚴格比對仍然吃得下大小寫與前後空白');
-
-  // 二、延長與 PK:一場 1-1 打到 PK 5-4 的比賽,三層比分都要留著
   const codeOf = strict;
-  const shootout = normaliseCupFixture({
-    id: 1, stage: { name: 'Final' }, starting_at: '2026-05-16 16:30:00',
-    state: { state: 'FT_PEN' }, result_info: 'Home won after penalties.',
-    participants: [
-      { id: 8, name: 'Liverpool', meta: { location: 'home' } },
-      { id: 52, name: 'AFC Bournemouth', meta: { location: 'away' } },
-    ],
-    scores: [
-      { participant_id: 8, description: '1ST_HALF', score: { goals: 0 } },
-      { participant_id: 52, description: '1ST_HALF', score: { goals: 1 } },
-      { participant_id: 8, description: '2ND_HALF', score: { goals: 1 } },
-      { participant_id: 52, description: '2ND_HALF', score: { goals: 1 } },
-      { participant_id: 8, description: 'ET', score: { goals: 1 } },
-      { participant_id: 52, description: 'ET', score: { goals: 1 } },
-      { participant_id: 8, description: 'CURRENT', score: { goals: 1 } },
-      { participant_id: 52, description: 'CURRENT', score: { goals: 1 } },
-      { participant_id: 8, description: 'PENALTY_SHOOTOUT', score: { goals: 5 } },
-      { participant_id: 52, description: 'PENALTY_SHOOTOUT', score: { goals: 4 } },
-    ],
-  }, { codeOf });
-  ok(JSON.stringify(shootout.ht) === '[0,1]', 'PK 場:半場比分留著');
-  ok(JSON.stringify(shootout.final) === '[1,1]', 'PK 場:最終比分是 1-1 而不是 5-4');
-  ok(JSON.stringify(shootout.pens) === '[5,4]', 'PK 場:PK 比分獨立保留');
-  ok(shootout.aet === true, 'PK 場:有 ET 比分 → 判定為延長賽');
-  ok(shootout.ft90Suspect === false, 'PK 場:90 分比分沒有被誤判成不可信');
-  ok(winnerOf(shootout) === 'home', 'PK 場:勝方由 PK 決定,不是由 1-1 決定');
-  ok(shootout.home.code === 'LIV' && shootout.away.code === 'BOU', 'PK 場:兩隊都對得到隊碼');
 
-  /* participant_id 對主客不能靠陣列順序 —— 這裡故意把客隊放前面 */
-  const reversed = normaliseCupFixture({
-    id: 2, stage: { name: 'Round 3' }, state: { state: 'FT' },
-    participants: [
-      { id: 52, name: 'AFC Bournemouth', meta: { location: 'away' } },
-      { id: 8, name: 'Liverpool', meta: { location: 'home' } },
-    ],
-    scores: [
-      { participant_id: 52, description: 'CURRENT', score: { goals: 0 } },
-      { participant_id: 8, description: 'CURRENT', score: { goals: 3 } },
-    ],
-  }, { codeOf });
-  ok(JSON.stringify(reversed.final) === '[3,0]', '主客由 meta.location 決定,不是陣列順序');
-
+  /* 二、FotMob 的形狀(2026-09-07 探測實測的欄位,run 34143104759):
+     scoreStr 是最終比分、reason.short 只有 FT / AET / Pen、PK 比數與勝方不在賽程端點。
+     三層比分不能被壓成一個數字:PK 場的最終比分是平手比分,勝方另外補。 */
+  const fm = (over = {}, status = {}) => ({
+    round: '3', roundName: 3, pageUrl: '/matches/x#1', id: '1',
+    home: { name: 'Liverpool', shortName: 'Liverpool', id: '8650' },
+    away: { name: 'AFC Bournemouth', shortName: 'Bournemouth', id: '8678' },
+    status: { utcTime: '2026-01-10T15:00:00Z', timezone: '', finished: true, started: true, cancelled: false, awarded: false,
+      scoreStr: '1 - 1', reason: { short: 'Pen', long: 'After penalties' }, ...status },
+    ...over,
+  });
+  const pen = normaliseFotmobCupMatch(fm(), { codeOf });
+  ok(pen.played === true && JSON.stringify(pen.final) === '[1,1]', 'PK 場:最終比分是平手比分 1-1,不是 PK 比數');
+  ok(pen.pens === null && pen.pensWinner === null, 'PK 場:賽程端點沒有 PK 比數與勝方 → 都是 null,不猜');
+  ok(pen.state === 'FT_PEN' && pen.stateKnown === true, 'PK 場:state 是 FT_PEN');
+  ok(winnerOf(pen) === null, 'PK 場沒補到勝方 → winnerOf 回 null(不拿平手比分猜)');
+  ok(pen.aet === null, 'PK 場:打沒打延長不知道(足總盃延長後 PK、聯賽盃直接 PK 是規則不是資料)→ null');
+  ok(pen.home.code === 'LIV' && pen.away.code === 'BOU' && pen.home.sourceId === '8650', '兩隊對得到隊碼,sourceId 是 FotMob 的 id(字串)');
+  ok(/teamlogo\/8678\.png$/.test(pen.away.imageUrl), '隊徽網址照 FotMob 的 teamlogo 規則(抓圖時再驗 PNG)');
+  ok(pen.ht === null && pen.ft90 === null && pen.et === null, '這個端點沒有半場/90 分/延長分段比分 → 都是 null,不留假值');
+  const penWith = normaliseFotmobCupMatch(fm(), { codeOf, details: { pens: [4, 2] } });
+  ok(JSON.stringify(penWith.pens) === '[4,2]' && penWith.pensWinner === 'home' && winnerOf(penWith) === 'home',
+    '單場詳情補到 PK 比數 → pens 與勝方都有,勝方由 PK 決定');
+  const penWinnerOnly = normaliseFotmobCupMatch(fm(), { codeOf, details: { pensWinner: 'away' } });
+  ok(penWinnerOnly.pens === null && penWinnerOnly.pensWinner === 'away' && winnerOf(penWinnerOnly) === 'away',
+    '只補到勝方沒有比數 → pensWinner 有、pens 仍 null');
+  const penIgnored = normaliseFotmobCupMatch(fm({}, { scoreStr: '2 - 0', reason: { short: 'FT' } }), { codeOf, details: { pens: [4, 2] } });
+  ok(penIgnored.pens === null && penIgnored.pensWinner === null, '不是 PK 場的話,詳情裡的 PK 欄位不會被掛上去');
+  const aet = normaliseFotmobCupMatch(fm({}, { scoreStr: '2 - 1', reason: { short: 'AET', long: 'After extra time' } }), { codeOf });
+  ok(aet.aet === true && aet.state === 'AET' && JSON.stringify(aet.final) === '[2,1]' && winnerOf(aet) === 'home',
+    'AET:延長賽 true,比分是延長後的,勝方由比分決定');
+  const ft = normaliseFotmobCupMatch(fm({}, { scoreStr: '0 - 3', reason: { short: 'FT', long: 'Full-Time' } }), { codeOf });
+  ok(ft.aet === false && ft.state === 'FT' && winnerOf(ft) === 'away', 'FT:沒延長,勝方由比分決定');
   // 三、未賽場次:不能被算成「踢了但沒贏」
-  const pending = normaliseCupFixture({
-    id: 3, stage: { name: 'Round 4' }, starting_at: '2026-09-08 00:00:00',
-    state: { state: 'NS' },
-    participants: [
-      { id: 8, name: 'Liverpool', meta: { location: 'home' } },
-      { id: 6, name: 'Tottenham Hotspur', meta: { location: 'away' } },
-    ],
-    scores: [],
-  }, { codeOf });
-  ok(pending.played === false, '未賽場次 played 為 false');
-  ok(pending.final === null, '未賽場次沒有比分,不是 0-0');
-  ok(pending.aet === null, '未賽場次的延長賽是 null(不知道),不是 false');
+  const ns = normaliseFotmobCupMatch(fm({}, { finished: false, started: false, scoreStr: undefined, reason: undefined, awarded: undefined }), { codeOf });
+  ok(ns.played === false && ns.final === null && ns.aet === null && ns.state === 'NS', '未賽:played false、比分 null(不是 0-0)、延長 null');
+  const live = normaliseFotmobCupMatch(fm({}, { finished: false, started: true, scoreStr: '1 - 0', reason: undefined }), { codeOf });
+  ok(live.played === false && live.state === 'LIVE' && JSON.stringify(live.liveScore) === '[1,0]' && live.final === null,
+    '進行中:不算已賽,比分放 liveScore 不放 final');
+  const cancelled = normaliseFotmobCupMatch(fm({}, { finished: false, started: false, cancelled: true, scoreStr: undefined, reason: undefined }), { codeOf });
+  ok(cancelled.played === false && cancelled.state === 'CANCELLED', '取消:played false、state CANCELLED');
+  // 四、沒見過的 reason 不給語意,而且要報出來
+  const weird = normaliseFotmobCupMatch(fm({}, { scoreStr: '2 - 0', reason: { short: 'Abd', long: 'Abandoned' } }), { codeOf });
+  ok(weird.unknownReasons.includes('Abd') && weird.stateKnown === false, '沒見過的 reason 會被記錄、標成未知');
+  ok(weird.aet === null && weird.pens === null && weird.pensWinner === null, '沒見過的 reason 不給延長/PK 的語意');
+  ok(weird.played === true && JSON.stringify(weird.final) === '[2,0]', '但最終比分是上游明講的(finished + scoreStr),照收');
+  for (const r of ['FT', 'AET', 'Pen']) ok(KNOWN_REASONS.has(r), `reason 白名單含 ${r}`);
+  ok(KNOWN_REASONS.size === 3, 'reason 白名單只有實抓見過的三個(新的要核對過才加)');
+  // 輪次名:數字印成 Round N(格式),字串照抄(不自己取名),都沒有就 null
+  ok(stageOf({ roundName: 3, round: '3' }) === 'Round 3', '輪次:數字 → "Round N"');
+  ok(stageOf({ roundName: 'Quarter-Finals', round: '1/4' }) === 'Quarter-Finals', '輪次:字串照抄,不自己取名');
+  ok(stageOf({ round: '5' }) === 'Round 5' && stageOf({}) === null, '輪次:只有 round 數字字串也吃;都沒有 → null(前端歸「未分輪」)');
+  ok(fotmobSeason('2026-27') === '2026/2027', '賽季寫法換算 2026-27 → 2026/2027');
 
-  /* 上游的 90 分比分會壞。實抓遇到 Port Vale 6-1 的 90 分配上 5-1 的最終比分 ——
-     最終比分比 90 分還低,不可能。那場 state 是 FT(沒打延長),
-     所以第一版「CURRENT ≠ 2ND_HALF 就是延長賽」的推導會**假陽性**。
-     現在只認 ET 比分與 state=AET,壞掉的 90 分比分直接捨棄那一欄。 */
-  const badNinety = normaliseCupFixture({
-    id: 5, stage: { name: 'Round 1' }, state: { state: 'FT' },
-    participants: [
-      { id: 8, name: 'Liverpool', meta: { location: 'home' } },
-      { id: 52, name: 'AFC Bournemouth', meta: { location: 'away' } },
-    ],
-    scores: [
-      { participant_id: 8, description: '2ND_HALF', score: { goals: 6 } },
-      { participant_id: 52, description: '2ND_HALF', score: { goals: 1 } },
-      { participant_id: 8, description: 'CURRENT', score: { goals: 5 } },
-      { participant_id: 52, description: 'CURRENT', score: { goals: 1 } },
-    ],
-  }, { codeOf });
-  ok(badNinety.aet === false, '90 分比分壞掉 + state 是 FT → 不判成延長賽');
-  ok(badNinety.ft90Suspect === true, '90 分比分對不上會被標成不可信');
-  ok(badNinety.ft90 === null, '不可信的 90 分比分不輸出,畫面上不會顯示錯的數字');
-  ok(JSON.stringify(badNinety.final) === '[5,1]', '最終比分不受影響');
+  /* 單場詳情(matchDetails):第二輪探測(run 34144192458)三場真實比賽驗過的位置 ——
+     PK 比數在 header.status.reason.penalties、輸家隊名在 whoLostOnPenalties、有沒有打延長看 halfs.firstExtraHalfStarted。
+     實測 QPR 1-1 Millwall(聯賽盃 2026-27 R1):penalties [0,2]、輸家 QPR、firstExtraHalfStarted ""(聯賽盃直接 PK)。 */
+  const detailPen = { header: { teams: [{ name: 'Queens Park Rangers', id: 10172, score: 1 }, { name: 'Millwall', id: 10004, score: 1 }],
+    status: { finished: true, scoreStr: '1 - 1', reason: { short: 'Pen', long: 'Pen 0 - 2', penalties: [0, 2] },
+      whoLostOnPenalties: 'Queens Park Rangers', halfs: { firstExtraHalfStarted: '', secondExtraHalfStarted: '' } } } };
+  const pd = parseCupDetail(detailPen);
+  ok(JSON.stringify(pd.pens) === '[0,2]' && pd.pensWinner === 'away' && pd.extraTime === false && pd.homeId === '10172' && pd.awayId === '10004',
+    '單場詳情:PK 比數、輸家、有沒有延長、隊 id 都讀到(QPR 1-1 Millwall PK 0-2,沒延長)', JSON.stringify(pd));
+  ok(JSON.stringify(pd.score) === '[1,1]', '單場詳情:最終比分從 header.teams[].score 讀,給呼叫端核對用');
+  const detailAet = { header: { teams: [{ name: 'Buxton', id: 161824, score: 2 }, { name: 'Chatham Town', id: 282368, score: 1 }],
+    status: { reason: { short: 'AET', long: 'After extra time' }, whoLostOnPenalties: null, halfs: { firstExtraHalfStarted: '01.11.2025 18:02:17' } } } };
+  const ad = parseCupDetail(detailAet);
+  ok(ad.pens === null && ad.pensWinner === null && ad.extraTime === true, '單場詳情:AET 場沒有 PK 欄位、延長 true(Buxton 2-1 Chatham)');
+  const conflict = parseCupDetail({ header: { teams: [{ name: 'A', id: 1, score: 1 }, { name: 'B', id: 2, score: 1 }],
+    status: { reason: { short: 'Pen', penalties: [4, 3] }, whoLostOnPenalties: 'A', halfs: { firstExtraHalfStarted: 'x' } } } });
+  ok(conflict.conflict === true && conflict.pensWinner === null, '單場詳情:PK 比數說主隊贏、輸家欄卻寫主隊 → conflict,不挑一個當答案');
+  const loserOnly = parseCupDetail({ header: { teams: [{ name: 'A', id: 1, score: 0 }, { name: 'B', id: 2, score: 0 }],
+    status: { reason: { short: 'Pen' }, whoLostOnPenalties: 'B', halfs: {} } } });
+  ok(loserOnly.pens === null && loserOnly.pensWinner === 'home' && loserOnly.extraTime === null, '單場詳情:只有輸家沒有比數 → 勝方有、比數 null;halfs 沒那個鍵 → 延長不知道');
+  ok(parseCupDetail({}) === null && parseCupDetail({ header: { status: {}, teams: [{}] } }) === null, '單場詳情:沒有 header.status 或不是兩隊 → null');
+  const penFull = withCupDetails(pen, { pens: [0, 2], pensWinner: 'away', extraTime: false });
+  ok(JSON.stringify(penFull.pens) === '[0,2]' && penFull.pensWinner === 'away' && penFull.aet === false && winnerOf(penFull) === 'away',
+    '掛上詳情:比數、勝方、延長 false(聯賽盃直接 PK)都進場次');
+  ok(withCupDetails(ft, { pens: [4, 2] }) === ft, '掛上詳情:不是 PK 場就原樣回傳');
+  ok(pen.pens === null, '掛上詳情是純函式,原本的場次沒被改');
 
-  // state 是 AET 但上游沒給 ET 比分 → 仍然算延長賽(兩個訊號任一成立即可)
-  const aetByState = normaliseCupFixture({
-    id: 6, stage: { name: 'Round 4' }, state: { state: 'AET' },
-    participants: [
-      { id: 8, name: 'Liverpool', meta: { location: 'home' } },
-      { id: 52, name: 'AFC Bournemouth', meta: { location: 'away' } },
-    ],
-    scores: [
-      { participant_id: 8, description: 'CURRENT', score: { goals: 2 } },
-      { participant_id: 52, description: 'CURRENT', score: { goals: 1 } },
-    ],
-  }, { codeOf });
-  ok(aetByState.aet === true, 'state 是 AET → 判定為延長賽(即使沒有 ET 比分)');
-  const runs = runsByTeam(groupByStage([reversed, pending]));
+  // 五、晉級表(FotMob 形狀)
+  const r3 = normaliseFotmobCupMatch(fm({ id: '2' }, { scoreStr: '3 - 0', reason: { short: 'FT' } }), { codeOf });
+  const r4 = normaliseFotmobCupMatch(fm({ id: '3', roundName: 4, round: '4', away: { name: 'Tottenham Hotspur', shortName: 'Spurs', id: '8586' } },
+    { utcTime: '2026-02-14T15:00:00Z', finished: false, started: false, scoreStr: undefined, reason: undefined, awarded: undefined }), { codeOf });
+  const runs = runsByTeam(groupByStage([r3, r4]));
   const liv = runs.find(r => r.code === 'LIV');
-  ok(liv.played === 1, '晉級表:已賽只算 1 場', `實際 ${liv.played}`);
-  ok(liv.wins === 1, '晉級表:勝場 1');
-  ok(liv.nextStage === 'Round 4', '晉級表:未賽的那場記成「下一場」而不是輸掉');
-  ok(liv.out === null, '晉級表:沒有輸過就不標出局');
+  ok(liv.played === 1 && liv.wins === 1, '晉級表:已賽只算 1 場、勝 1', `${liv.played}/${liv.wins}`);
+  ok(liv.nextStage === 'Round 4' && liv.out === null, '晉級表:未賽的那場記成「下一場」而不是輸掉');
   const tot = runs.find(r => r.code === 'TOT');
   ok(tot?.played === 0 && tot?.nextStage === 'Round 4', '晉級表:只有未賽場次的球隊 played 是 0');
+  const runsPen = runsByTeam(groupByStage([pen]));
+  ok(runsPen.find(r => r.code === 'LIV')?.wins === 0 && runsPen.find(r => r.code === 'LIV')?.out === null,
+    '晉級表:PK 勝方還沒補到的場次,兩隊都不算贏也不算出局');
 
   // 輪次排序用開球時間,不是名稱對照表
   const rounds = groupByStage([
     { stage: 'Final', kickoff: '2026-05-16T16:30:00Z', played: true, final: [1, 0] },
     { stage: 'Round 1', kickoff: '2025-08-13T18:45:00Z', played: true, final: [2, 1] },
-    { stage: 'Semi-finals', kickoff: '2026-04-26T17:15:00Z', played: true, final: [3, 0] },
+    { stage: 'Semi-Finals', kickoff: '2026-04-26T17:15:00Z', played: true, final: [3, 0] },
   ]);
-  ok(rounds.map(r => r.stage).join(' → ') === 'Round 1 → Semi-finals → Final',
+  ok(rounds.map(r => r.stage).join(' → ') === 'Round 1 → Semi-Finals → Final',
     '輪次依開球時間排序', rounds.map(r => r.stage).join(' → '));
+  ok(groupByStage([pen, penWith]).at(0).shootouts === 2, '分輪統計:PK 場次數也算沒補到比數的那些(看 state)');
 
   // 冠軍:最後一輪只有一場而且分得出勝負才給
-  const champ = championOf(groupByStage([shootout]));
-  ok(champ?.team?.code === 'LIV', '冠軍由最後一輪的單場決定(且 PK 也算數)');
+  const champ = championOf(groupByStage([penWith]));
+  ok(champ?.team?.code === 'LIV', '冠軍由最後一輪的單場決定(PK 補到比數也算數)');
+  ok(championOf(groupByStage([pen])) === null, 'PK 決賽勝方還沒補到 → 不給冠軍(不猜)');
   const noChamp = championOf(groupByStage([
     { stage: 'Semi-finals', kickoff: '2026-04-26T17:15:00Z', played: true, final: [1, 1] },
     { stage: 'Semi-finals', kickoff: '2026-04-27T16:30:00Z', played: true, final: [2, 0] },
   ]));
   ok(noChamp === null, '最後一輪不只一場 → 不給冠軍');
 
-  // 四、白名單:實抓才出現的 ET 系列必須在裡面,否則整批延長賽會被當成不明類別
-  for (const d of ['CURRENT', '1ST_HALF', '2ND_HALF', 'PENALTY_SHOOTOUT', 'ET', 'ET_1ST_HALF', 'ET_2ND_HALF']) {
-    ok(KNOWN_SCORE_DESCRIPTIONS.has(d), `比分類別白名單含 ${d}`);
-  }
-  for (const st of ['FT', 'FT_PEN', 'AET', 'CANCELLED', 'ABANDONED']) {
-    ok(KNOWN_STATES.has(st), `狀態碼白名單含 ${st}`);
-  }
-  const weird = normaliseCupFixture({
-    id: 4, stage: { name: 'Round 1' }, state: { state: 'SOMETHING_NEW' },
-    participants: [
-      { id: 8, name: 'Liverpool', meta: { location: 'home' } },
-      { id: 52, name: 'AFC Bournemouth', meta: { location: 'away' } },
-    ],
-    scores: [
-      { participant_id: 8, description: 'GOLDEN_GOAL', score: { goals: 1 } },
-      { participant_id: 52, description: 'GOLDEN_GOAL', score: { goals: 0 } },
-    ],
-  }, { codeOf });
-  ok(weird.unknownDescriptions.includes('GOLDEN_GOAL'), '沒見過的比分類別會被記錄下來');
-  ok(weird.stateKnown === false, '沒見過的狀態碼會被標成未知');
-  ok(weird.final === null, '沒見過的類別不給語意,不會被當成最終比分');
+  /* 六、跟 SportMonks 舊快取逐場核對(鐵則五)。
+     隊名寫法兩邊不完全一樣(Chelmsford ↔ Chelmsford City),靠 token 重疊對上;
+     但 AFC Liverpool 絕不能對到 Liverpool —— 對不上要算「無法核對」,不是「不一致」也不是對錯人。 */
+  const sm = (h, a, kickoff, final, pens = null) => ({ home: { name: h }, away: { name: a }, kickoff, final, pens, played: final != null });
+  const cc = crossCheckWithSportmonks([
+    normaliseFotmobCupMatch(fm({ id: 'a', home: { name: 'Chelmsford', id: '1' }, away: { name: 'Braintree Town', id: '2' } }, { utcTime: '2025-11-01T15:00:00Z', scoreStr: '4 - 1', reason: { short: 'FT' } }), { codeOf }),
+    normaliseFotmobCupMatch(fm({ id: 'b', home: { name: 'Salford City', id: '3' }, away: { name: 'Lincoln City', id: '4' } }, { utcTime: '2025-11-01T15:00:00Z', scoreStr: '1 - 1', reason: { short: 'Pen' } }), { codeOf }),
+    normaliseFotmobCupMatch(fm({ id: 'c', home: { name: 'Luton Town', id: '5' }, away: { name: 'Forest Green Rovers', id: '6' } }, { utcTime: '2025-10-31T19:30:00Z', scoreStr: '4 - 3', reason: { short: 'FT' } }), { codeOf }),
+    normaliseFotmobCupMatch(fm({ id: 'd', home: { name: 'AFC Liverpool', id: '7' }, away: { name: 'Marine', id: '8' } }, { utcTime: '2025-08-02T14:00:00Z', scoreStr: '0 - 1', reason: { short: 'FT' } }), { codeOf }),
+    normaliseFotmobCupMatch(fm({ id: 'e', home: { name: 'Grimsby Town', id: '9' }, away: { name: 'Manchester United', id: '10' } }, { utcTime: '2025-08-27T19:00:00Z', finished: false, started: false, scoreStr: undefined, reason: undefined }), { codeOf }),
+  ], [
+    sm('Chelmsford City', 'Braintree Town', '2025-11-01T15:00:00Z', [4, 1]),
+    sm('Salford City', 'Lincoln City', '2025-11-01T15:00:00Z', [1, 1], [4, 2]),
+    sm('Luton Town', 'Forest Green Rovers', '2025-10-31T19:30:00Z', [3, 3]),
+    sm('Liverpool', 'Marine', '2025-08-02T14:00:00Z', [0, 1]),
+    sm('Grimsby Town', 'Manchester United', '2025-08-27T19:00:00Z', [2, 2], [12, 11]),
+  ]);
+  ok(cc.matched === 4 && cc.loose === 1, '核對:名字鍵相同的直接對上;Chelmsford ↔ Chelmsford City 靠 token 重疊對上(算 loose)', `${cc.matched}/${cc.loose}`);
+  ok(cc.agree === 2, '核對:比分一致且 PK 有無一致的算 agree;一邊還沒踢完的不比', String(cc.agree));
+  ok(cc.disagree.length === 1 && cc.disagree[0].id === 'c', '核對:比分不同的記成不一致', JSON.stringify(cc.disagree));
+  ok(cc.unverified === 1, '核對:AFC Liverpool 不會對到 Liverpool(字首 AFC 是球隊身分)→ 無法核對,不是對錯人', String(cc.unverified));
+  const ccPens = crossCheckWithSportmonks([normaliseFotmobCupMatch(fm({ id: 'f' }, { scoreStr: '1 - 1', reason: { short: 'FT' } }), { codeOf })],
+    [sm('Liverpool', 'AFC Bournemouth', '2026-01-10T15:00:00Z', [1, 1], [5, 4])]);
+  ok(ccPens.disagree.length === 1, '核對:一邊有 PK 一邊沒有 → 不一致(比分相同也不算一致)');
+  const ccDay = crossCheckWithSportmonks([normaliseFotmobCupMatch(fm({ id: 'g' }, { utcTime: '2026-01-11T00:30:00Z', scoreStr: '2 - 0', reason: { short: 'FT' } }), { codeOf })],
+    [sm('Liverpool', 'AFC Bournemouth', '2026-01-10T23:30:00Z', [2, 0])]);
+  ok(ccDay.matched === 1 && ccDay.agree === 1, '核對:跨日邊界(±1 天)也對得上');
 
   // 產物:cups.json 若存在,逐項對回原始快取
   const cupsPath = join(ROOT, 'web', 'data', 'cups.json');
   if (!existsSync(cupsPath)) {
-    console.log('  · 尚未產生 cups.json(需要 SPORTMONKS_TOKEN 跑 npm run encups),跳過產物檢查');
+    console.log('  · 尚未產生 cups.json(先跑 npm run cups:fetch 再 build),跳過產物檢查');
     return fail;
   }
   const cups = JSON.parse(readFileSync(cupsPath, 'utf8'));
+  ok(cups.source === 'FotMob', '產物:來源標成 FotMob(SportMonks 已退訂)', String(cups.source));
   ok(cups.cups?.length >= 1, `產物:至少一個盃賽`, `${cups.cups?.length} 個`);
   for (const cup of cups.cups ?? []) {
-    const raw = JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'sportmonks-cups', `${cup.key}.json`), 'utf8'));
+    const rawPath = join(ROOT, 'data', 'raw', 'fotmob-cups', `${cup.key}.json`);
+    ok(existsSync(rawPath), `產物:${cup.zh} 有 FotMob 原始快取`);
+    if (!existsSync(rawPath)) continue;
+    const raw = JSON.parse(readFileSync(rawPath, 'utf8'));
     for (const season of cup.seasons ?? []) {
       const rawSeason = raw.seasons.find(s => s.label === season.label);
+      ok(!!rawSeason, `產物:${cup.zh} ${season.label} 在原始快取裡`);
+      if (!rawSeason) continue;
       const rounded = season.rounds.reduce((a, r) => a + r.total, 0);
       ok(rounded === rawSeason.matches.length,
         `產物:${cup.zh} ${season.label} 分輪之後場次沒有增減`,
         `${rounded} vs ${rawSeason.matches.length}`);
       ok(season.total === rawSeason.matches.length, `產物:${cup.zh} ${season.label} 總場次對得回原始快取`);
-      /* 本站球隊還沒進場的賽季:整季都算資格賽,而且預設只顯示最新一輪。
-         **findIndex 找不到回的是 -1 不是 0** —— 原本 `firstKnown > 0 ? … : 0`
-         把 -1 當成 0,於是「整季都還沒有本站球隊」被當成「第一輪就有」,
-         資格賽既不收起來也沒有說明,足總盃 2026-27 一進頁就是 533 場
-         第九級的比賽攤在眼前。這幾條守著那個判斷。 */
+      // 鐵則五:跟 SportMonks 舊快取有不一致的賽季,build 不該發布
+      ok(!(season.crossCheck?.disagree?.length), `產物:${cup.zh} ${season.label} 跟 SportMonks 舊快取沒有不一致`,
+        `${season.crossCheck?.disagree?.length ?? 0} 場`);
+      /* 本站球隊還沒進場的賽季:整季都收起來,而且預設只顯示最新一輪。
+         **findIndex 找不到回的是 -1 不是 0** —— 原本 `firstKnown > 0 ? … : 0` 把 -1 當成 0(踩過)。 */
       if (season.firstKnownRound < 0) {
         ok(season.noKnownYet === true, `產物:${cup.zh} ${season.label} 標記成「本站球隊還沒進場」`);
         ok(season.qualifyingRounds === season.rounds.length,
-          `產物:${cup.zh} ${season.label} 整季都算資格賽`,
-          `${season.qualifyingRounds} vs ${season.rounds.length}`);
-        ok(season.qualifyingMatches === season.total,
-          `產物:${cup.zh} ${season.label} 資格賽場次等於整季場次`);
+          `產物:${cup.zh} ${season.label} 整季都收起來`, `${season.qualifyingRounds} vs ${season.rounds.length}`);
       } else {
         ok(season.noKnownYet !== true, `產物:${cup.zh} ${season.label} 有本站球隊,不算「還沒進場」`);
       }
-
-      // 沒見過的類別如果真的出現,這裡要紅 —— 代表上游有我們沒核對過的東西
-      ok(!season.unknownDescriptions?.length,
-        `產物:${cup.zh} ${season.label} 沒有未核對的比分類別`,
-        (season.unknownDescriptions ?? []).join('、') || '無');
+      // 沒見過的 reason 如果真的出現,這裡要紅 —— 代表上游有我們沒核對過的東西
+      ok(!season.unknownReasons?.length, `產物:${cup.zh} ${season.label} 沒有未核對的完賽狀態`,
+        (season.unknownReasons ?? []).join('、') || '無');
+      // PK 勝方補到幾場只回報不擋:單場詳情是分批抓的,抓完之前畫面標「勝方待查」
+      if (season.pensPending) console.log(`  · ${cup.zh} ${season.label}:${season.pensPending} 場 PK 的勝方還沒補到(分批抓,不擋)`);
     }
   }
   return fail;

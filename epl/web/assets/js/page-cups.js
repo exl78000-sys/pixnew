@@ -56,11 +56,20 @@ function scoreCell(m) {
   if (!m.played) return `<span class="dim small mono">${KO(m)}</span>`;
   const f = m.final ?? [null, null];
   const bits = [`<b class="mono" style="font-size:14px">${f[0]} - ${f[1]}</b>`];
-  if (m.aet === true && m.ft90) {
-    bits.push(`<span class="pill tiny" title="90 分鐘結束時 ${m.ft90[0]}-${m.ft90[1]},延長賽後 ${f[0]}-${f[1]}">延長</span>`);
+  if (m.aet === true) {
+    // 90 分鐘比分只有舊來源(SportMonks)才有;沒有就只標「延長」,不編一個
+    bits.push(`<span class="pill tiny" title="${m.ft90 ? `90 分鐘結束時 ${m.ft90[0]}-${m.ft90[1]},` : ''}延長賽後 ${f[0]}-${f[1]}">延長</span>`);
   }
   if (m.pens) {
     bits.push(`<span class="pill accent tiny" title="PK 大戰">PK ${m.pens[0]}-${m.pens[1]}</span>`);
+  } else if (m.state === 'FT_PEN') {
+    /* FotMob 的賽程端點只說「PK 後結束」,比數與勝方另從單場詳情補。
+       補到勝方就標出來;沒補到就寫「勝方待查」—— 不拿平手比分猜(鐵則四)。 */
+    const w = m.pensWinner === 'home' ? m.home : m.pensWinner === 'away' ? m.away : null;
+    const wName = w ? (w.code ? C.name(w.code) : (w.shortName ?? w.name ?? '')) : '';
+    bits.push(w
+      ? `<span class="pill accent tiny" title="PK 大戰,${C.esc(w.name ?? '')} 勝出(比數上游沒給)">PK・${C.esc(wName)} 勝</span>`
+      : '<span class="pill tiny warn" title="上游只說 PK 後結束,比數與勝方還沒補到">PK 勝方待查</span>');
   }
   return `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">${bits.join('')}</span>`;
 }
@@ -68,6 +77,9 @@ function scoreCell(m) {
 const winner = m => {
   if (!m.played) return null;
   if (m.pens) return m.pens[0] === m.pens[1] ? null : (m.pens[0] > m.pens[1] ? 'home' : 'away');
+  // FotMob 的賽程端點沒有 PK 比數,勝方另從單場詳情補;補不到就是不知道,不拿平手比分猜
+  if (m.pensWinner === 'home' || m.pensWinner === 'away') return m.pensWinner;
+  if (m.state === 'FT_PEN') return null;
   if (!m.final || m.final[0] === m.final[1]) return null;
   return m.final[0] > m.final[1] ? 'home' : 'away';
 };
@@ -112,20 +124,18 @@ function qualifyingToggle(season) {
   if (!season.qualifyingRounds) return '';
   if (season.noKnownYet) {
     return `<div class="note" style="margin-top:12px">
-      <b>這一季本站的球隊還沒進場。</b>足總盃從低級別聯賽一路打上來,英超球隊要到<b>第三輪</b>才加入;
-      目前打完的 ${season.qualifyingRounds} 輪(共 ${season.qualifyingMatches} 場)<b>全部是資格賽</b>。
-      這些場次<b>有抓到、也沒有刪掉</b>,只是預設只顯示最新一輪 ——
-      全部攤開是幾百場第九級的比賽,滑不完也不是讀者要看的。
+      <b>這一季本站的球隊還沒進場。</b>英超球隊要到後面的輪次才加入(足總盃是<b>第三輪</b>);
+      目前有的 ${season.qualifyingRounds} 輪(共 ${season.qualifyingMatches} 場)都是聯賽級別較低的球隊在踢。
+      這些場次<b>有抓到、也沒有刪掉</b>,只是預設只顯示最新一輪。
       <button class="btn tiny" id="toggleQual" style="margin-left:8px">${
         season.__showQual ? '只看最新一輪' : `展開全部 ${season.qualifyingRounds} 輪`}</button>
     </div>`;
   }
   return `<div class="note" style="margin-top:12px">
-    <b>前 ${season.qualifyingRounds} 輪是資格賽</b>(共 ${season.qualifyingMatches} 場)——
-    足總盃從低級別聯賽一路打上來,英超球隊要到後面的輪次才進場。
-    這些場次<b>有抓到、也沒有刪掉</b>,只是預設收起來。
+    <b>前 ${season.qualifyingRounds} 輪還沒有英超球隊</b>(共 ${season.qualifyingMatches} 場)——
+    英超球隊要到後面的輪次才進場。這些場次<b>有抓到、也沒有刪掉</b>,只是預設收起來。
     <button class="btn tiny" id="toggleQual" style="margin-left:8px">${
-      season.__showQual ? '收起資格賽' : '展開資格賽'}</button>
+      season.__showQual ? '收起前面的輪次' : '展開前面的輪次'}</button>
   </div>`;
 }
 
@@ -138,7 +148,8 @@ function championCard(champ, cupName, seasonLabel) {
      所以下面把勝方的進球放前面,另外把主客場照實寫出來。 */
   const w = winner(m);
   const score = m.final ? (w === 'away' ? `${m.final[1]}-${m.final[0]}` : `${m.final[0]}-${m.final[1]}`) : '';
-  const pens = m.pens ? (w === 'away' ? `${m.pens[1]}-${m.pens[0]}` : `${m.pens[0]}-${m.pens[1]}`) : null;
+  const pens = m.pens ? (w === 'away' ? `${m.pens[1]}-${m.pens[0]}` : `${m.pens[0]}-${m.pens[1]}`)
+    : (m.state === 'FT_PEN' ? '大戰勝出(比數上游沒給)' : null);
   return `<div class="note ok" style="margin-top:12px">
     <b>${seasonLabel} ${cupName}冠軍:${C.esc(champ.team?.name ?? '')}</b>
     ${champ.team?.code ? C.badge(champ.team.code) : ''}
@@ -205,7 +216,7 @@ try {
        三個賽事都<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字。</p>
     ${C.stampRow([
       shared.ucl ? C.stamp('歐冠賽果', { iso: shared.ucl.retrievedAt, kind: 'daily', note: 'football-data.org + FotMob' }) : null,
-      cups ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `SportMonks・${list.map(c => c.zh).join('與')}` }) : null,
+      cups ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `${cups.source ?? 'FotMob'}・${list.map(c => c.zh).join('與')}` }) : null,
     ])}
   </div>
   <div class="filters">
@@ -270,7 +281,15 @@ try {
       }
       document.getElementById('count').textContent =
         `${season.total} 場・已完賽 ${season.played}・延長 ${season.aet}・PK ${season.shootouts}`;
+      /* 本季上游還沒發布(足總盃正賽 11 月才開打,FotMob 到那時才有 2026-27):要講,不然讀者以為沒更新 */
+      const missing = (cup.missingSeasons ?? []).find(x => (x?.label ?? x) === meta.currentSeason);
+      const missingNote = missing && !seasons.some(s => s.label === meta.currentSeason)
+        ? `<div class="note" style="margin-top:10px"><b>${C.esc(meta.currentSeason)} 本季還沒有資料:</b>${C.esc(missing.reason ?? '上游還沒發布')}。${
+            cup.key === 'facup' ? '足總盃第一輪(正賽)在 11 月,英超球隊第三輪(1 月)才進場;之前的資格賽不在來源裡。' : ''
+          }下面顯示的是最近有資料的一季。</div>`
+        : '';
       document.getElementById('body').innerHTML = `
+        ${missingNote}
         ${championCard(season.champion, cup.zh, season.label)}
         ${season.runs.length ? `<div class="section"><h2>英超球隊走到哪一輪</h2>
           <span class="hint">只列本站認得的球隊・共 ${season.runs.length} 支</span></div>
@@ -287,14 +306,27 @@ try {
       if (qualBtn) qualBtn.onclick = () => { showQualifying = !showQualifying; render(); };
 
       const unknownTeams = season.teamsTotal - season.teamsKnown;
+      /* 鐵則五寫在畫面上:哪些場次有第二個來源核對過、哪些只有一份。
+         SportMonks 快取停在 2026-09-02(退訂),所以之後的場次只有 FotMob。 */
+      const cc = season.crossCheck;
+      const ccText = cc
+        ? (cc.matched
+          ? `跟 SportMonks 的舊快取(停在 2026-09-02)逐場核對:對得上 ${cc.matched} 場,其中已完賽的 ${cc.agree} 場比分全部一致${
+              cc.unverified ? `;${cc.unverified} 場隊名寫法對不上、無法核對` : ''}。之後的場次<b>只有 FotMob 一個來源</b>。`
+          : '這一季沒有第二個來源可以核對(SportMonks 的舊快取沒有這一季),只有 FotMob 一份。')
+        : '';
       document.getElementById('coverage').innerHTML = `
         <b>球隊涵蓋率:${season.teamsKnown} / ${season.teamsTotal} 支有本站資料。</b>
-        盃賽從低級別聯賽一路打上來,這一季有 ${unknownTeams} 支球隊本站沒有 ——
-        它們照樣出現在賽程裡,但<b>只有名字,沒有隊徽也點不進去</b>。
+        這一季有 ${unknownTeams} 支球隊本站沒有 —— 它們照樣出現在賽程裡,但<b>只有名字或隊徽,點不進去</b>。
         不替它們編一個隊碼或找一張像的隊徽,那會讓讀者以為本站有它們的資料。
-        ${season.unknownDescriptions?.length
-          ? `<div style="margin-top:6px;color:var(--loss)">⚠ 上游出現沒見過的比分類別:
-             ${season.unknownDescriptions.map(C.esc).join('、')} —— 這些場次的比分可能不完整,已記錄待核對。</div>`
+        <div class="small" style="margin-top:6px"><b>來源與涵蓋:</b>FotMob 的盃賽端點,<b>只有正賽</b>
+          (足總盃從第一輪起;第九級打起的資格賽不在來源裡,不是還沒抓)。${ccText}</div>
+        ${season.pensPending
+          ? `<div class="small" style="margin-top:6px">⚠ ${season.pensPending} 場 PK 大戰的比數與勝方還沒補到(要另抓單場詳情),先標「勝方待查」。</div>`
+          : ''}
+        ${season.unknownReasons?.length
+          ? `<div style="margin-top:6px;color:var(--loss)">⚠ 上游出現沒見過的完賽狀態:
+             ${season.unknownReasons.map(C.esc).join('、')} —— 這些場次沒有延長/PK 的判定,已記錄待核對。</div>`
           : ''}`;
     };
 

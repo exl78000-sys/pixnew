@@ -1138,26 +1138,36 @@ async function main() {
     ? { available: true, asOf: offLineups.asOf, season: offLineups.season, matches: offLineups.matches,
         managers: offManagers?.managers ?? {}, managersAsOf: offManagers?.asOf ?? null }
     : { available: false, matches: {}, managers: {} });
-  /* 英格蘭盃賽(足總盃 / 聯賽盃)。來源與聯賽完全不同(SportMonks,不是 FPL/openfootball),
+  /* 英格蘭盃賽(足總盃 / 聯賽盃)。來源與聯賽完全不同(FotMob 的盃賽端點;SportMonks 2026-09-03 退訂,
+     那份快取留在 data/raw/sportmonks-cups 當獨立來源核對用),
      所以**獨立一份產物、獨立一頁**,不混進 fixtures.json ——
      混進去的話「本季 380 場」這個數字會突然變成 500 多場,而那不是聯賽場次。
      沒抓到就整份不出現,前端整頁換成空狀態(不留空欄位)。 */
   {
-    const cupsDir = join(ROOT, 'data', 'raw', 'sportmonks-cups');
+    const cupsDir = join(ROOT, 'data', 'raw', 'fotmob-cups');
     const files = ['facup', 'eflcup'];
     const cups = [];
     for (const key of files) {
       const f = join(cupsDir, `${key}.json`);
       if (!existsSync(f)) continue;
       const raw = JSON.parse(await readFile(f, 'utf8'));
+      /* 鐵則五:跟 SportMonks 舊快取逐場核對,一場比分不符整季不發布(比照西甲賽果補比分那條)。
+         對不上(無法核對)的不算不符 —— 那是「沒有第二個來源」,畫面另外講。 */
+      const publishable = (raw.seasons ?? []).filter(s => {
+        const bad = s.crossCheck?.disagree?.length ?? 0;
+        if (bad) console.log(`  ⚠ ${raw.zh} ${s.label}:跟 SportMonks 快取有 ${bad} 場不一致,這一季不發布:`
+          + s.crossCheck.disagree.slice(0, 3).map(d => `${d.home} v ${d.away} ${d.date} FotMob ${d.fotmob} / SM ${d.sportmonks}`).join(';'));
+        return !bad;
+      });
       cups.push({
         key: raw.key, zh: raw.zh, en: raw.en,
         retrievedAt: raw.retrievedAt,
         missingSeasons: raw.missingSeasons ?? [],
-        seasons: (raw.seasons ?? []).map(summariseSeason),
+        coverage: raw.coverage ?? null,
+        seasons: publishable.map(summariseSeason),
       });
     }
-    /* 盃賽對手的隊徽。**用 SportMonks 的 team id 掛,不用隊名比對** ——
+    /* 盃賽對手的隊徽。**用 FotMob 的 team id 掛,不用隊名比對** ——
        盃賽有 745 支球隊,隊名寬鬆比對會對錯人(AFC Liverpool 那個坑)。
        本站認得的球隊走 crests.json(前端 C.badge 自己會處理),
        這裡只補**認不得的那些對手**:有隊徽就顯示真的隊徽,沒有就維持只給名字。
@@ -1223,12 +1233,14 @@ async function main() {
         console.log(`  盃賽對手隊徽:${Object.keys(cupCrests).length} 隊有圖(蓋到 ${hit} 個球隊格)`
           + `・${miss} 個格子沒有圖・表大小 ${kb.toFixed(0)} KB`);
       } else {
-        console.log('  盃賽對手隊徽:還沒有 crests-cups.json(需要跑 npm run encups 後再跑 npm run cup-crests)');
+        console.log('  盃賽對手隊徽:還沒有 crests-cups.json(需要跑 npm run cups:fetch 後再跑 npm run cup-crests)');
       }
     }
     if (cups.length) {
       await write('cups.json', {
-        source: 'SportMonks',
+        source: 'FotMob',
+        note: '足總盃與聯賽盃的賽程與賽果來自 FotMob 的盃賽端點,只涵蓋正賽(足總盃從第一輪起;第九級打起的資格賽不在來源裡)。'
+          + 'PK 大戰的比數與勝方另從單場詳情補,補不到的標「勝方待查」。2026-09-02 以前的場次逐場對過 SportMonks 的舊快取,之後只有一個來源。',
         // 對手隊徽查表:sourceId → data URI。**一支球隊只存一份**,不要掛在每一場上
         crests: cupCrests,
         retrievedAt: cups.map(c => c.retrievedAt).sort().at(-1) ?? null,
@@ -1242,7 +1254,7 @@ async function main() {
         }
       }
     } else {
-      console.log('  英格蘭盃賽:沒有快取(需要 SPORTMONKS_TOKEN 跑 npm run encups),本次不產出 cups.json');
+      console.log('  英格蘭盃賽:沒有快取(先跑 npm run cups:fetch),本次不產出 cups.json');
     }
   }
   /* 歐冠。**跨聯賽**:英超與西甲兩邊的頁面看到的是同一份,
