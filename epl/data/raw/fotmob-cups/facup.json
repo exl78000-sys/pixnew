@@ -5,7 +5,7 @@
  "leagueId": 132,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-09-07T17:15:05.550Z",
+ "retrievedAt": "2026-09-07T17:26:55.963Z",
  "availableSeasons": [
   "2025/2026",
   "2024/2025",
@@ -3412,9 +3412,12 @@
       2,
       2
      ],
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
+     "pens": [
+      5,
+      6
+     ],
+     "pensWinner": "away",
+     "aet": true,
      "liveScore": null,
      "state": "FT_PEN",
      "stateKnown": true,
@@ -3944,9 +3947,12 @@
       1,
       1
      ],
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
+     "pens": [
+      2,
+      4
+     ],
+     "pensWinner": "away",
+     "aet": true,
      "liveScore": null,
      "state": "FT_PEN",
      "stateKnown": true,
@@ -4476,9 +4482,12 @@
       2,
       2
      ],
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
+     "pens": [
+      5,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": true,
      "liveScore": null,
      "state": "FT_PEN",
      "stateKnown": true,
@@ -4628,9 +4637,12 @@
       2,
       2
      ],
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
+     "pens": [
+      2,
+      4
+     ],
+     "pensWinner": "away",
+     "aet": true,
      "liveScore": null,
      "state": "FT_PEN",
      "stateKnown": true,
@@ -4856,6 +4868,16 @@
      "source": "FotMob matchDetails",
      "retrievedAt": "2026-09-07T17:15:05.550Z"
     },
+    "5089911": {
+     "pens": [
+      5,
+      6
+     ],
+     "pensWinner": "away",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:26:55.963Z"
+    },
     "5089914": {
      "pens": [
       4,
@@ -4885,6 +4907,36 @@
      "extraTime": true,
      "source": "FotMob matchDetails",
      "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5135177": {
+     "pens": [
+      2,
+      4
+     ],
+     "pensWinner": "away",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:26:55.963Z"
+    },
+    "5186385": {
+     "pens": [
+      5,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:26:55.963Z"
+    },
+    "5231346": {
+     "pens": [
+      2,
+      4
+     ],
+     "pensWinner": "away",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:26:55.963Z"
     }
    },
    "unknownReasons": [],
