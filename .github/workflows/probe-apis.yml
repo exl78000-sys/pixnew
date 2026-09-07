@@ -6,16 +6,40 @@
 # 設定金鑰:repo → Settings → Secrets and variables → Actions → New repository secret
 #   API_FOOTBALL_KEY    api-sports.io 的金鑰
 #   FOOTBALL_DATA_TOKEN football-data.org 的 token
-#   SPORTMONKS_TOKEN    SportMonks Football API token
 # 兩個都是選用的,沒設就會顯示「略過」,不會讓流程失敗。
+# SportMonks 2026-09-03 退訂,那幾步已拿掉(腳本留著當紀錄:probe-sportmonks*.mjs)。
+#
+# 兩個 job:`latest` 是最新要判讀的那一支(每次加新探測就換成它),`all` 是歷來全部。
+# 勾 quick 就只跑 latest —— 全部跑一次要十幾分鐘,而且前面任何一步紅了後面的就看不到。
 
 name: 資料源探測
 
 on:
   workflow_dispatch:
+    inputs:
+      quick:
+        description: '只跑最新的探測(FotMob 英格蘭盃賽),略過其他'
+        type: boolean
+        default: false
 
 jobs:
-  probe:
+  latest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+
+      # SportMonks 退訂後足總盃/聯賽盃沒有來源。站上已在用 FotMob 的聯賽端點(47/87/48),
+      # 抓 logo 時實證 132/133 的名字是 FA Cup / EFL Cup —— 這一步看盃賽在同一個端點回什麼形狀
+      # (輪次名、PK/延長、隊 id、隊徽網址),並拿倉庫裡 SportMonks 的舊快取逐場核對。
+      # 唯讀、最多 9 個請求、不寫任何快取。
+      - name: 探測 FotMob 英格蘭盃賽(足總盃 132 / 聯賽盃 133)
+        working-directory: epl
+        run: npm run probe:fotmob-cups
+
+  all:
+    if: ${{ github.event.inputs.quick != 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -57,14 +81,12 @@ jobs:
       # 英格蘭盃賽:docs 上「英國盃賽不在免費方案裡」那句是對 football-data.org 說的,
       # 但沒有人去看 openfootball 自己的 England 倉庫(那裡有 facup.txt / eflcup.txt)。
       # 這一步把兩邊都實際打一次,順便讓 football-data.org 的賽事清單有紀錄。
+      # (SportMonks 那一段沒有 token 會自己略過。)
       - name: 探測英格蘭盃賽資料源
         working-directory: epl
         run: npm run probe:encups
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
-          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
-          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
 
       # 歐冠:football-data.org 的 token 授權清單裡有 CL,但免費方案常常只開放
       # 目前那一季 —— 要分得開 403(方案不給)、404(路徑錯)、200+0 場(還沒開打)。
@@ -93,36 +115,14 @@ jobs:
         working-directory: epl
         run: npm run probe:laliga-lineups
 
-      # SportMonks：先驗證方案／聯賽／賽季，再用已完賽場次探測完整欄位；最多 12 次請求，不寫正式資料。
-      - name: 探測 SportMonks 西甲完整欄位
-        working-directory: epl
-        run: npm run probe:sportmonks
-        env:
-          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
-          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
-
-      # 方案授權了哪些賽事(名稱,不只個數)+ 用名稱搜尋兩個英格蘭盃賽。
-      # 以前只記「5 個聯賽」,那個數字回答不了「盃賽在不在方案裡」。
-      - name: 探測 SportMonks 方案授權的賽事
-        working-directory: epl
-        run: npm run sportmonks:capabilities
-        env:
-          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
-          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
-
       # log 只看得到尾端,所以這裡只印真正要判讀的那一段。
-      # 上一輪用 `head -200` 把整份 JSON 倒出來,結果最重要的 sportmonks
-      # 那一節正好被截掉 —— 印太多跟沒印一樣。
+      # 上一輪用 `head -200` 把整份 JSON 倒出來,結果最重要的那一節正好被截掉 —— 印太多跟沒印一樣。
       - name: 印出探測結果
         working-directory: epl
         run: |
           echo '── football-data.org 授權的賽事 ──'
           node -e "const j=require('./data/raw/probes/en-cups.json');const f=j.footballData??{};console.log('HTTP',f.status,'・',f.count,'個・英格蘭盃賽:',JSON.stringify(f.englishCups??[]))" || echo '(無)'
-          echo '── SportMonks 盃賽結構 ──'
-          node -e "console.log(JSON.stringify(require('./data/raw/probes/en-cups.json').sportmonks,null,1))" || echo '(無)'
-          echo '── 歐冠(這一輪的重點)──'
+          echo '── 歐冠 ──'
           # 不要整份倒出來:competition.seasons 有四十幾季,會把結論擠出 log 尾端
           node -e "const j=require('./data/raw/probes/ucl.json');
             console.log('competition HTTP', j.competition.status, '|', j.competition.name,
