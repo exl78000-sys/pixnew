@@ -50,6 +50,10 @@ try {
        這一頁只顯示屬於本聯賽 + 歐冠的那些。
        只印檔案庫總數的話,「共 14 則」旁邊卻只有 5 張卡片 —— 讀者會以為壞了。 */
     const here = news.filter(n => n.curated).length;
+    /* 尾端:最後一次整理之後到建置日這一段。只講中間的斷檔不夠 ——
+       2026-09-07 實測檔案庫停在 8/28,頁面卻說「沒有斷檔」,10 天沒收看不出來。
+       逾不逾期拿每批整理涵蓋的天數當節奏,不寫死。 */
+    const t = c.trailingGap;
     return `<div class="note small" style="margin-top:8px">
       <b>人工整理外電的涵蓋範圍</b>:本頁 ${here} 則(檔案庫累計 ${c.stories} 則,含另一個聯賽的),
       ${c.deliveries} 次整理,累計 ${c.days} 天。
@@ -57,7 +61,13 @@ try {
       ${c.gaps.length
         ? `<b style="color:var(--draw)">中間有 ${c.gaps.length} 段沒有人整理</b>:${c.gaps.map(fmt).join('、')} ——
            那幾天不是沒有新聞,是本站沒有收;不要當成「這段期間沒事發生」。`
-        : '這段期間沒有斷檔。'}
+        : '涵蓋的區間內沒有斷檔。'}
+      ${t ? (t.overdue
+        ? `<b style="color:var(--draw)">最後一次整理到 ${C.dateFull(c.to)},之後 ${t.days} 天沒有人整理</b>
+           (到本站建置日 ${C.dateFull(t.to)};每批整理涵蓋約 ${t.cadence} 天,已經超過)——
+           那幾天不是沒有新聞,是本站還沒收到。`
+        : `最後一次整理到 ${C.dateFull(c.to)},之後 ${t.days} 天的還沒收到(每批整理涵蓋約 ${t.cadence} 天,還在節奏內)。`)
+        : ''}
       ${c.keepDays ? `舊的保留 ${c.keepDays} 天,之後自動淘汰。` : ''}
     </div>`;
   };

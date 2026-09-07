@@ -1052,7 +1052,7 @@ async function main() {
     const other = loadTeams(ROOT);
     const fx = [...lastMatches, ...curPlayed];
     const r = await loadCurated({
-      root: ROOT, league: 'es1',
+      root: ROOT, league: 'es1', asOf: AS_OF,
       codeOf: n => T.codeOf(n) ?? other.codeOf(n) ?? null,
       fixturesOf: comp => (comp === 'es1' ? fx : null),
       fs: { existsSync, readFile, join },
