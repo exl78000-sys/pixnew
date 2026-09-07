@@ -1442,6 +1442,11 @@ async function checkDataGap() {
         const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
         return /'competitions'/.test(src) && /C\.registerCompetitions\(/.test(src);
       }))()],
+    /* 「賽事」欄的內容是圖 + 字的 flex 排版,一定靠左顯示;表頭若照預設靠右,標題就飄到另一端
+       (使用者要求靠左,2026-09-07)。table() 只對隊伍欄自動判斷,賽事欄要自己標 left。 */
+    ['總覽與搜尋球員的「賽事」欄靠左', (() =>
+      [['page-overview.js', /label: '賽事'[^\n]*left: true/], ['allplayers-view.js', /label: '賽事'[^\n]*left: true/]]
+        .every(([f, re]) => re.test(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8'))))()],
     ['總覽只連得進去的頁才給連結', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /C\.closedPage\(/.test(src);

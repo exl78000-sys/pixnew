@@ -83,6 +83,7 @@
     "news:todo": "node scripts/news-todo.mjs",
     "news:zh": "node scripts/merge-news-zh.mjs",
     "probe:laliga-postmatch": "node scripts/probe-laliga-postmatch.mjs",
+    "probe:fotmob-cups": "node scripts/probe-fotmob-cups.mjs",
     "laliga:fotmob-postmatch": "node scripts/fetch-laliga-fotmob.mjs",
     "game:build": "node scripts/game/build-game.mjs",
     "game:fetch": "node scripts/game/fetch-fotmob-epl.mjs",
