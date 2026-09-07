@@ -1,0 +1,4917 @@
+{
+ "key": "facup",
+ "zh": "足總盃",
+ "en": "FA Cup",
+ "leagueId": 132,
+ "schemaVersion": 1,
+ "source": "FotMob",
+ "retrievedAt": "2026-09-07T17:15:05.550Z",
+ "availableSeasons": [
+  "2025/2026",
+  "2024/2025",
+  "2023/2024",
+  "2022/2023",
+  "2021/2022",
+  "2020/2021",
+  "2019/2020",
+  "2018/2019",
+  "2017/2018",
+  "2016/2017",
+  "2015/2016",
+  "2014/2015",
+  "2013/2014",
+  "2012/2013",
+  "2011/2012",
+  "2010/2011"
+ ],
+ "missingSeasons": [
+  {
+   "label": "2026-27",
+   "reason": "上游還沒發布這一季(端點目前最新是 2025/2026)"
+  }
+ ],
+ "coverage": {
+  "note": "只有正賽(足總盃從 Round 1 起、聯賽盃從 Round 1 起);第九級打起的資格賽與 preliminary round 不在來源裡。",
+  "verifiedAgainst": "SportMonks 舊快取(抓到 2026-09-02T12:07:02.527Z 為止)"
+ },
+ "seasons": [
+  {
+   "label": "2025-26",
+   "sourceSeason": "2025/2026",
+   "current": false,
+   "retrievedAt": "2026-09-07T17:15:05.550Z",
+   "matches": [
+    {
+     "id": "5010617",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-10-31T19:30:00Z",
+     "home": {
+      "name": "Luton Town",
+      "shortName": "Luton",
+      "code": "LUT",
+      "sourceId": "8346",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8346.png"
+     },
+     "away": {
+      "name": "Forest Green Rovers",
+      "shortName": "Forest Green",
+      "code": null,
+      "sourceId": "9828",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9828.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/luton-town-vs-forest-green-rovers/2qc2xx#5010617",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010635",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T12:00:00Z",
+     "home": {
+      "name": "Chelmsford",
+      "shortName": "Chelmsford",
+      "code": null,
+      "sourceId": "45724",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/45724.png"
+     },
+     "away": {
+      "name": "Braintree Town",
+      "shortName": "Braintree Town",
+      "code": null,
+      "sourceId": "5763",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/5763.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/braintree-town-vs-chelmsford/lx5sdv#5010635",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010648",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "AFC Wimbledon",
+      "shortName": "Wimbledon",
+      "code": null,
+      "sourceId": "158319",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/158319.png"
+     },
+     "away": {
+      "name": "Gateshead FC",
+      "shortName": "Gateshead FC",
+      "code": null,
+      "sourceId": "6189",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6189.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/gateshead-fc-vs-afc-wimbledon/67sbmyr#5010648",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010624",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Barnsley",
+      "shortName": "Barnsley",
+      "code": null,
+      "sourceId": "8283",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8283.png"
+     },
+     "away": {
+      "name": "York City",
+      "shortName": "York City",
+      "code": null,
+      "sourceId": "9916",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9916.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/barnsley-vs-york-city/2qltu8#5010624",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010646",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Blackpool",
+      "shortName": "Blackpool",
+      "code": null,
+      "sourceId": "8483",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8483.png"
+     },
+     "away": {
+      "name": "Scunthorpe United",
+      "shortName": "Scunthorpe",
+      "code": null,
+      "sourceId": "8412",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8412.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/scunthorpe-united-vs-blackpool/2czcwz#5010646",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010634",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Bolton Wanderers",
+      "shortName": "Bolton",
+      "code": null,
+      "sourceId": "8559",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8559.png"
+     },
+     "away": {
+      "name": "Huddersfield Town",
+      "shortName": "Huddersfield",
+      "code": null,
+      "sourceId": "9796",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9796.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/bolton-wanderers-vs-huddersfield-town/2saxte#5010634",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010632",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Boreham Wood",
+      "shortName": "Boreham Wood",
+      "code": null,
+      "sourceId": "2488",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/2488.png"
+     },
+     "away": {
+      "name": "Crawley Town",
+      "shortName": "Crawley",
+      "code": null,
+      "sourceId": "8647",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8647.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/boreham-wood-vs-crawley-town/10x1xj#5010632",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010626",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Bromley",
+      "shortName": "Bromley",
+      "code": null,
+      "sourceId": "45729",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/45729.png"
+     },
+     "away": {
+      "name": "Bristol Rovers",
+      "shortName": "Bristol Rovers",
+      "code": null,
+      "sourceId": "10104",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10104.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/bristol-rovers-vs-bromley/ps142u#5010626",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010644",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Burton Albion",
+      "shortName": "Burton",
+      "code": null,
+      "sourceId": "9792",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9792.png"
+     },
+     "away": {
+      "name": "St Albans",
+      "shortName": "St Albans",
+      "code": null,
+      "sourceId": "10174",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10174.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      6,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/burton-albion-vs-st-albans/3aok01#5010644",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010643",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Buxton",
+      "shortName": "Buxton",
+      "code": null,
+      "sourceId": "161824",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/161824.png"
+     },
+     "away": {
+      "name": "Chatham Town",
+      "shortName": "Chatham Town",
+      "code": null,
+      "sourceId": "282368",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/282368.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/buxton-vs-chatham-town/19bjwosw#5010643",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010647",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Cambridge United",
+      "shortName": "Cambridge",
+      "code": null,
+      "sourceId": "9834",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9834.png"
+     },
+     "away": {
+      "name": "Chester FC",
+      "shortName": "Chester FC",
+      "code": null,
+      "sourceId": "9797",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9797.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/chester-fc-vs-cambridge-united/36qe8i#5010647",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010623",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Cheltenham Town",
+      "shortName": "Cheltenham",
+      "code": null,
+      "sourceId": "8680",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8680.png"
+     },
+     "away": {
+      "name": "Bradford City",
+      "shortName": "Bradford",
+      "code": null,
+      "sourceId": "8484",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8484.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/bradford-city-vs-cheltenham-town/2fpjue#5010623",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010619",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Colchester United",
+      "shortName": "Colchester",
+      "code": null,
+      "sourceId": "8416",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8416.png"
+     },
+     "away": {
+      "name": "Milton Keynes Dons",
+      "shortName": "MK Dons",
+      "code": null,
+      "sourceId": "8645",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8645.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/colchester-united-vs-milton-keynes-dons/2enrr8#5010619",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010629",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Crewe Alexandra",
+      "shortName": "Crewe",
+      "code": null,
+      "sourceId": "9784",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9784.png"
+     },
+     "away": {
+      "name": "Doncaster Rovers",
+      "shortName": "Doncaster",
+      "code": null,
+      "sourceId": "9903",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9903.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/crewe-alexandra-vs-doncaster-rovers/37dzrv#5010629",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010638",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "FC Halifax Town",
+      "shortName": "FC Halifax Town",
+      "code": null,
+      "sourceId": "10195",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10195.png"
+     },
+     "away": {
+      "name": "Exeter City",
+      "shortName": "Exeter",
+      "code": null,
+      "sourceId": "9833",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9833.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/exeter-city-vs-fc-halifax-town/3bf4pb#5010638",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010651",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Fleetwood Town",
+      "shortName": "Fleetwood",
+      "code": null,
+      "sourceId": "45723",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/45723.png"
+     },
+     "away": {
+      "name": "Barnet",
+      "shortName": "Barnet",
+      "code": null,
+      "sourceId": "8175",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8175.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/barnet-vs-fleetwood-town/o0st46#5010651",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010642",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Grimsby Town",
+      "shortName": "Grimsby",
+      "code": null,
+      "sourceId": "10005",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10005.png"
+     },
+     "away": {
+      "name": "Ebbsfleet United",
+      "shortName": "Ebbsfleet United",
+      "code": null,
+      "sourceId": "9794",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9794.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/ebbsfleet-united-vs-grimsby-town/38pdx2#5010642",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010654",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Macclesfield FC",
+      "shortName": "Macclesfield",
+      "code": null,
+      "sourceId": "8599",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8599.png"
+     },
+     "away": {
+      "name": "AFC Totton",
+      "shortName": "AFC Totton",
+      "code": null,
+      "sourceId": "275027",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/275027.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      6,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/macclesfield-fc-vs-afc-totton/ih7556m#5010654",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010649",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Mansfield Town",
+      "shortName": "Mansfield",
+      "code": null,
+      "sourceId": "9818",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9818.png"
+     },
+     "away": {
+      "name": "Harrogate Town",
+      "shortName": "Harrogate Town",
+      "code": null,
+      "sourceId": "7946",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/7946.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/harrogate-town-vs-mansfield-town/2ly650#5010649",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010622",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Newport County",
+      "shortName": "Newport",
+      "code": null,
+      "sourceId": "10262",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10262.png"
+     },
+     "away": {
+      "name": "Gillingham",
+      "shortName": "Gillingham",
+      "code": null,
+      "sourceId": "10173",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10173.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      2
+     ],
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/gillingham-vs-newport-county/3gbmr8#5010622",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010628",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Oldham Athletic",
+      "shortName": "Oldham",
+      "code": null,
+      "sourceId": "9785",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9785.png"
+     },
+     "away": {
+      "name": "Northampton Town",
+      "shortName": "Northampton",
+      "code": null,
+      "sourceId": "8651",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8651.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/northampton-town-vs-oldham-athletic/2t6vk3#5010628",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010627",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Peterborough United",
+      "shortName": "Peterborough",
+      "code": null,
+      "sourceId": "8677",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8677.png"
+     },
+     "away": {
+      "name": "Cardiff City",
+      "shortName": "Cardiff",
+      "code": null,
+      "sourceId": "8344",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8344.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/cardiff-city-vs-peterborough-united/2e95t4#5010627",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010625",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Reading",
+      "shortName": "Reading",
+      "code": null,
+      "sourceId": "9798",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9798.png"
+     },
+     "away": {
+      "name": "Carlisle United",
+      "shortName": "Carlisle",
+      "code": null,
+      "sourceId": "10196",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10196.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/reading-vs-carlisle-united/3b0jol#5010625",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010641",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Rotherham United",
+      "shortName": "Rotherham",
+      "code": null,
+      "sourceId": "8119",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8119.png"
+     },
+     "away": {
+      "name": "Swindon Town",
+      "shortName": "Swindon",
+      "code": null,
+      "sourceId": "9795",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9795.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/rotherham-united-vs-swindon-town/2njivm#5010641",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010616",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Salford City",
+      "shortName": "Salford",
+      "code": null,
+      "sourceId": "282326",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/282326.png"
+     },
+     "away": {
+      "name": "Lincoln City",
+      "shortName": "Lincoln",
+      "code": null,
+      "sourceId": "8430",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8430.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      1
+     ],
+     "pens": [
+      4,
+      2
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/lincoln-city-vs-salford-city/jf29xi0#5010616",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010639",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Slough Town",
+      "shortName": "Slough Town",
+      "code": null,
+      "sourceId": "6432",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6432.png"
+     },
+     "away": {
+      "name": "Altrincham",
+      "shortName": "Altrincham",
+      "code": null,
+      "sourceId": "9915",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9915.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/slough-town-vs-altrincham/27k5sl#5010639",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010636",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Spennymoor Town FC",
+      "shortName": "Spennymoor Town FC",
+      "code": null,
+      "sourceId": "557101",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/557101.png"
+     },
+     "away": {
+      "name": "Barrow",
+      "shortName": "Barrow",
+      "code": null,
+      "sourceId": "6350",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6350.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/barrow-vs-spennymoor-town-fc/20x8zg48#5010636",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010631",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Stevenage",
+      "shortName": "Stevenage",
+      "code": null,
+      "sourceId": "10253",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10253.png"
+     },
+     "away": {
+      "name": "Chesterfield",
+      "shortName": "Chesterfield",
+      "code": null,
+      "sourceId": "9786",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9786.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/chesterfield-vs-stevenage/3bjupi#5010631",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010633",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Sutton United",
+      "shortName": "Sutton United",
+      "code": null,
+      "sourceId": "158316",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/158316.png"
+     },
+     "away": {
+      "name": "AFC Telford United",
+      "shortName": "AFC Telford United",
+      "code": null,
+      "sourceId": "6315",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6315.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/afc-telford-united-vs-sutton-united/684dhz3#5010633",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010620",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Tranmere Rovers",
+      "shortName": "Tranmere",
+      "code": null,
+      "sourceId": "8313",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8313.png"
+     },
+     "away": {
+      "name": "Stockport County",
+      "shortName": "Stockport County",
+      "code": null,
+      "sourceId": "10007",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10007.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/tranmere-rovers-vs-stockport-county/2rx5fl#5010620",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010640",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Wealdstone",
+      "shortName": "Wealdstone",
+      "code": null,
+      "sourceId": "161812",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/161812.png"
+     },
+     "away": {
+      "name": "Southend United",
+      "shortName": "Southend",
+      "code": null,
+      "sourceId": "8652",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8652.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/southend-united-vs-wealdstone/6oa8n24#5010640",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010615",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Weston Super Mare",
+      "shortName": "Weston Super Mare",
+      "code": null,
+      "sourceId": "6314",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6314.png"
+     },
+     "away": {
+      "name": "Aldershot Town",
+      "shortName": "Aldershot Town",
+      "code": null,
+      "sourceId": "8465",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8465.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/weston-super-mare-vs-aldershot-town/1t12rf#5010615",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010621",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Wigan Athletic",
+      "shortName": "Wigan",
+      "code": null,
+      "sourceId": "8528",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8528.png"
+     },
+     "away": {
+      "name": "Hemel Hempstead",
+      "shortName": "Hemel Hempstead",
+      "code": null,
+      "sourceId": "161831",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/161831.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      1
+     ],
+     "pens": [
+      5,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/wigan-athletic-vs-hemel-hempstead/6nzl4fo#5010621",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010637",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T15:00:00Z",
+     "home": {
+      "name": "Wycombe Wanderers",
+      "shortName": "Wycombe",
+      "code": null,
+      "sourceId": "8676",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8676.png"
+     },
+     "away": {
+      "name": "Plymouth Argyle",
+      "shortName": "Plymouth",
+      "code": null,
+      "sourceId": "8401",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8401.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/plymouth-argyle-vs-wycombe-wanderers/2etmij#5010637",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010645",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-01T17:30:00Z",
+     "home": {
+      "name": "Brackley Town",
+      "shortName": "Brackley Town",
+      "code": null,
+      "sourceId": "158321",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/158321.png"
+     },
+     "away": {
+      "name": "Notts County",
+      "shortName": "Notts County",
+      "code": null,
+      "sourceId": "9819",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9819.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      2
+     ],
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/notts-county-vs-brackley-town/6hrzh1l#5010645",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010650",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-02T12:00:00Z",
+     "home": {
+      "name": "South Shields",
+      "shortName": "South Shields",
+      "code": null,
+      "sourceId": "865163",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/865163.png"
+     },
+     "away": {
+      "name": "Shrewsbury Town",
+      "shortName": "Shrewsbury",
+      "code": null,
+      "sourceId": "9896",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9896.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/shrewsbury-town-vs-south-shields/4vvvok46#5010650",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010653",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-02T14:15:00Z",
+     "home": {
+      "name": "Eastleigh",
+      "shortName": "Eastleigh",
+      "code": null,
+      "sourceId": "161803",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/161803.png"
+     },
+     "away": {
+      "name": "Walsall",
+      "shortName": "Walsall",
+      "code": null,
+      "sourceId": "10006",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10006.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/walsall-vs-eastleigh/6s3dgos#5010653",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010652",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-02T15:00:00Z",
+     "home": {
+      "name": "Port Vale",
+      "shortName": "Port Vale",
+      "code": null,
+      "sourceId": "9799",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9799.png"
+     },
+     "away": {
+      "name": "Maldon & Tiptree",
+      "shortName": "Maldon & Tiptree",
+      "code": null,
+      "sourceId": "282501",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/282501.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      5,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/port-vale-vs-maldon-tiptree/jmi9ldh#5010652",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010618",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-02T17:15:00Z",
+     "home": {
+      "name": "Gainsborough",
+      "shortName": "Gainsborough",
+      "code": null,
+      "sourceId": "6450",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6450.png"
+     },
+     "away": {
+      "name": "Accrington Stanley",
+      "shortName": "Accrington",
+      "code": null,
+      "sourceId": "8671",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8671.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/gainsborough-vs-accrington-stanley/1w2o6w#5010618",
+     "unknownReasons": []
+    },
+    {
+     "id": "5010630",
+     "stage": "Round 1",
+     "roundKey": "1",
+     "kickoff": "2025-11-03T19:30:00Z",
+     "home": {
+      "name": "Tamworth",
+      "shortName": "Tamworth",
+      "code": null,
+      "sourceId": "10254",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10254.png"
+     },
+     "away": {
+      "name": "Leyton Orient",
+      "shortName": "Leyton Orient",
+      "code": null,
+      "sourceId": "8351",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8351.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/leyton-orient-vs-tamworth/2v1xm2#5010630",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040472",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-05T19:30:00Z",
+     "home": {
+      "name": "Salford City",
+      "shortName": "Salford",
+      "code": null,
+      "sourceId": "282326",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/282326.png"
+     },
+     "away": {
+      "name": "Leyton Orient",
+      "shortName": "Leyton Orient",
+      "code": null,
+      "sourceId": "8351",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8351.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/leyton-orient-vs-salford-city/jeolo9i#5040472",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040320",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Accrington Stanley",
+      "shortName": "Accrington",
+      "code": null,
+      "sourceId": "8671",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8671.png"
+     },
+     "away": {
+      "name": "Mansfield Town",
+      "shortName": "Mansfield",
+      "code": null,
+      "sourceId": "9818",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9818.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      2
+     ],
+     "pens": [
+      1,
+      3
+     ],
+     "pensWinner": "away",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/accrington-stanley-vs-mansfield-town/2trumn#5040320",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040314",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Chelmsford",
+      "shortName": "Chelmsford",
+      "code": null,
+      "sourceId": "45724",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/45724.png"
+     },
+     "away": {
+      "name": "Weston Super Mare",
+      "shortName": "Weston Super Mare",
+      "code": null,
+      "sourceId": "6314",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6314.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/weston-super-mare-vs-chelmsford/me542n#5040314",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040326",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Cheltenham Town",
+      "shortName": "Cheltenham",
+      "code": null,
+      "sourceId": "8680",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8680.png"
+     },
+     "away": {
+      "name": "Buxton",
+      "shortName": "Buxton",
+      "code": null,
+      "sourceId": "161824",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/161824.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      6,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/cheltenham-town-vs-buxton/6oeasy4#5040326",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040325",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Exeter City",
+      "shortName": "Exeter",
+      "code": null,
+      "sourceId": "9833",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9833.png"
+     },
+     "away": {
+      "name": "Wycombe Wanderers",
+      "shortName": "Wycombe",
+      "code": null,
+      "sourceId": "8676",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8676.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/wycombe-wanderers-vs-exeter-city/2tzs4k#5040325",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040319",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Fleetwood Town",
+      "shortName": "Fleetwood",
+      "code": null,
+      "sourceId": "45723",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/45723.png"
+     },
+     "away": {
+      "name": "Luton Town",
+      "shortName": "Luton",
+      "code": "LUT",
+      "sourceId": "8346",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8346.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      2
+     ],
+     "pens": [
+      4,
+      2
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/luton-town-vs-fleetwood-town/o6ao4x#5040319",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040311",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Grimsby Town",
+      "shortName": "Grimsby",
+      "code": null,
+      "sourceId": "10005",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10005.png"
+     },
+     "away": {
+      "name": "Wealdstone",
+      "shortName": "Wealdstone",
+      "code": null,
+      "sourceId": "161812",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/161812.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/grimsby-town-vs-wealdstone/6s46x9t#5040311",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040317",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Milton Keynes Dons",
+      "shortName": "MK Dons",
+      "code": null,
+      "sourceId": "8645",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8645.png"
+     },
+     "away": {
+      "name": "Oldham Athletic",
+      "shortName": "Oldham",
+      "code": null,
+      "sourceId": "9785",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9785.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/milton-keynes-dons-vs-oldham-athletic/2t4i7u#5040317",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040315",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Peterborough United",
+      "shortName": "Peterborough",
+      "code": null,
+      "sourceId": "8677",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8677.png"
+     },
+     "away": {
+      "name": "Barnsley",
+      "shortName": "Barnsley",
+      "code": null,
+      "sourceId": "8283",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8283.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/barnsley-vs-peterborough-united/2dmy2t#5040315",
+     "unknownReasons": []
+    },
+    {
+     "id": "5041960",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Port Vale",
+      "shortName": "Port Vale",
+      "code": null,
+      "sourceId": "9799",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9799.png"
+     },
+     "away": {
+      "name": "Bristol Rovers",
+      "shortName": "Bristol Rovers",
+      "code": null,
+      "sourceId": "10104",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10104.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/port-vale-vs-bristol-rovers/39xmxz#5041960",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040321",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Stockport County",
+      "shortName": "Stockport County",
+      "code": null,
+      "sourceId": "10007",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10007.png"
+     },
+     "away": {
+      "name": "Cambridge United",
+      "shortName": "Cambridge",
+      "code": null,
+      "sourceId": "9834",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9834.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      0
+     ],
+     "pens": [
+      4,
+      5
+     ],
+     "pensWinner": "away",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/cambridge-united-vs-stockport-county/3978a3#5040321",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040313",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Swindon Town",
+      "shortName": "Swindon",
+      "code": null,
+      "sourceId": "9795",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9795.png"
+     },
+     "away": {
+      "name": "Bolton Wanderers",
+      "shortName": "Bolton",
+      "code": null,
+      "sourceId": "8559",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8559.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/bolton-wanderers-vs-swindon-town/2sajni#5040313",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040318",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T15:00:00Z",
+     "home": {
+      "name": "Wigan Athletic",
+      "shortName": "Wigan",
+      "code": null,
+      "sourceId": "8528",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8528.png"
+     },
+     "away": {
+      "name": "Barrow",
+      "shortName": "Barrow",
+      "code": null,
+      "sourceId": "6350",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6350.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      2
+     ],
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/barrow-vs-wigan-athletic/1twjkx#5040318",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040312",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T17:15:00Z",
+     "home": {
+      "name": "Sutton United",
+      "shortName": "Sutton United",
+      "code": null,
+      "sourceId": "158316",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/158316.png"
+     },
+     "away": {
+      "name": "Shrewsbury Town",
+      "shortName": "Shrewsbury",
+      "code": null,
+      "sourceId": "9896",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9896.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/shrewsbury-town-vs-sutton-united/6hz708q#5040312",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040327",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-06T19:30:00Z",
+     "home": {
+      "name": "Chesterfield",
+      "shortName": "Chesterfield",
+      "code": null,
+      "sourceId": "9786",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9786.png"
+     },
+     "away": {
+      "name": "Doncaster Rovers",
+      "shortName": "Doncaster",
+      "code": null,
+      "sourceId": "9903",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9903.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/chesterfield-vs-doncaster-rovers/37eu5o#5040327",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040310",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-07T12:30:00Z",
+     "home": {
+      "name": "Slough Town",
+      "shortName": "Slough Town",
+      "code": null,
+      "sourceId": "6432",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6432.png"
+     },
+     "away": {
+      "name": "Macclesfield FC",
+      "shortName": "Macclesfield",
+      "code": null,
+      "sourceId": "8599",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8599.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/slough-town-vs-macclesfield-fc/1v9l5n#5040310",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040316",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-07T14:30:00Z",
+     "home": {
+      "name": "Boreham Wood",
+      "shortName": "Boreham Wood",
+      "code": null,
+      "sourceId": "2488",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/2488.png"
+     },
+     "away": {
+      "name": "Newport County",
+      "shortName": "Newport",
+      "code": null,
+      "sourceId": "10262",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10262.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/boreham-wood-vs-newport-county/1cebup#5040316",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040324",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-07T15:30:00Z",
+     "home": {
+      "name": "Gateshead FC",
+      "shortName": "Gateshead FC",
+      "code": null,
+      "sourceId": "6189",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6189.png"
+     },
+     "away": {
+      "name": "Walsall",
+      "shortName": "Walsall",
+      "code": null,
+      "sourceId": "10006",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10006.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/gateshead-fc-vs-walsall/2632j7#5040324",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040323",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-07T17:30:00Z",
+     "home": {
+      "name": "Blackpool",
+      "shortName": "Blackpool",
+      "code": null,
+      "sourceId": "8483",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8483.png"
+     },
+     "away": {
+      "name": "Carlisle United",
+      "shortName": "Carlisle",
+      "code": null,
+      "sourceId": "10196",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10196.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/blackpool-vs-carlisle-united/2vvi6f#5040323",
+     "unknownReasons": []
+    },
+    {
+     "id": "5040322",
+     "stage": "Round 2",
+     "roundKey": "2",
+     "kickoff": "2025-12-08T19:30:00Z",
+     "home": {
+      "name": "Brackley Town",
+      "shortName": "Brackley Town",
+      "code": null,
+      "sourceId": "158321",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/158321.png"
+     },
+     "away": {
+      "name": "Burton Albion",
+      "shortName": "Burton",
+      "code": null,
+      "sourceId": "9792",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9792.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/burton-albion-vs-brackley-town/6hpa6dl#5040322",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089916",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-09T19:30:00Z",
+     "home": {
+      "name": "Milton Keynes Dons",
+      "shortName": "MK Dons",
+      "code": null,
+      "sourceId": "8645",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8645.png"
+     },
+     "away": {
+      "name": "Oxford United",
+      "shortName": "Oxford Utd",
+      "code": null,
+      "sourceId": "8653",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8653.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      1
+     ],
+     "pens": [
+      3,
+      4
+     ],
+     "pensWinner": "away",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/milton-keynes-dons-vs-oxford-united/2h31h4#5089916",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089896",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-09T19:30:00Z",
+     "home": {
+      "name": "Port Vale",
+      "shortName": "Port Vale",
+      "code": null,
+      "sourceId": "9799",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9799.png"
+     },
+     "away": {
+      "name": "Fleetwood Town",
+      "shortName": "Fleetwood",
+      "code": null,
+      "sourceId": "45723",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/45723.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/port-vale-vs-fleetwood-town/php7cq#5089896",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089897",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-09T19:30:00Z",
+     "home": {
+      "name": "Preston North End",
+      "shortName": "Preston",
+      "code": null,
+      "sourceId": "8411",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8411.png"
+     },
+     "away": {
+      "name": "Wigan Athletic",
+      "shortName": "Wigan",
+      "code": null,
+      "sourceId": "8528",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8528.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/preston-north-end-vs-wigan-athletic/2dfbb6#5089897",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089899",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-09T19:30:00Z",
+     "home": {
+      "name": "Wrexham",
+      "shortName": "Wrexham",
+      "code": null,
+      "sourceId": "9841",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9841.png"
+     },
+     "away": {
+      "name": "Nottingham Forest",
+      "shortName": "Nottm Forest",
+      "code": "NFO",
+      "sourceId": "10203",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10203.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      3
+     ],
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/wrexham-vs-nottingham-forest/3bm02n#5089899",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089917",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T12:15:00Z",
+     "home": {
+      "name": "Cheltenham Town",
+      "shortName": "Cheltenham",
+      "code": null,
+      "sourceId": "8680",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8680.png"
+     },
+     "away": {
+      "name": "Leicester City",
+      "shortName": "Leicester",
+      "code": "LEI",
+      "sourceId": "8197",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8197.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/leicester-city-vs-cheltenham-town/2csuj7#5089917",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089905",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T12:15:00Z",
+     "home": {
+      "name": "Everton",
+      "shortName": "Everton",
+      "code": "EVE",
+      "sourceId": "8668",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8668.png"
+     },
+     "away": {
+      "name": "Sunderland",
+      "shortName": "Sunderland",
+      "code": "SUN",
+      "sourceId": "8472",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8472.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      1
+     ],
+     "pens": [
+      0,
+      3
+     ],
+     "pensWinner": "away",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/sunderland-vs-everton/2fgq72#5089905",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089921",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T12:15:00Z",
+     "home": {
+      "name": "Macclesfield FC",
+      "shortName": "Macclesfield",
+      "code": null,
+      "sourceId": "8599",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8599.png"
+     },
+     "away": {
+      "name": "Crystal Palace",
+      "shortName": "Crystal Palace",
+      "code": "CRY",
+      "sourceId": "9826",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9826.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/macclesfield-fc-vs-crystal-palace/2t2j5j#5089921",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089893",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T12:15:00Z",
+     "home": {
+      "name": "Wolverhampton Wanderers",
+      "shortName": "Wolves",
+      "code": "WOL",
+      "sourceId": "8602",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8602.png"
+     },
+     "away": {
+      "name": "Shrewsbury Town",
+      "shortName": "Shrewsbury",
+      "code": null,
+      "sourceId": "9896",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9896.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      6,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/wolverhampton-wanderers-vs-shrewsbury-town/2tvf4b#5089893",
+     "unknownReasons": []
+    },
+    {
+     "id": "5090063",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Boreham Wood",
+      "shortName": "Boreham Wood",
+      "code": null,
+      "sourceId": "2488",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/2488.png"
+     },
+     "away": {
+      "name": "Burton Albion",
+      "shortName": "Burton",
+      "code": null,
+      "sourceId": "9792",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9792.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      5
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/boreham-wood-vs-burton-albion/18weos#5090063",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089907",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Burnley",
+      "shortName": "Burnley",
+      "code": "BUR",
+      "sourceId": "8191",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8191.png"
+     },
+     "away": {
+      "name": "Millwall",
+      "shortName": "Millwall",
+      "code": null,
+      "sourceId": "10004",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10004.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      5,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/burnley-vs-millwall/2qk8cd#5089907",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089894",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Doncaster Rovers",
+      "shortName": "Doncaster",
+      "code": null,
+      "sourceId": "9903",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9903.png"
+     },
+     "away": {
+      "name": "Southampton",
+      "shortName": "Southampton",
+      "code": "SOU",
+      "sourceId": "8466",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8466.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/southampton-vs-doncaster-rovers/2sgg9c#5089894",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089904",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Fulham",
+      "shortName": "Fulham",
+      "code": "FUL",
+      "sourceId": "9879",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9879.png"
+     },
+     "away": {
+      "name": "Middlesbrough",
+      "shortName": "Middlesbrough",
+      "code": null,
+      "sourceId": "8549",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8549.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/middlesbrough-vs-fulham/2t3pul#5089904",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089898",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Ipswich Town",
+      "shortName": "Ipswich",
+      "code": "IPS",
+      "sourceId": "9902",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9902.png"
+     },
+     "away": {
+      "name": "Blackpool",
+      "shortName": "Blackpool",
+      "code": null,
+      "sourceId": "8483",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8483.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/blackpool-vs-ipswich-town/2smr53#5089898",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089901",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Manchester City",
+      "shortName": "Man City",
+      "code": "MCI",
+      "sourceId": "8456",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png"
+     },
+     "away": {
+      "name": "Exeter City",
+      "shortName": "Exeter",
+      "code": null,
+      "sourceId": "9833",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9833.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      10,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/manchester-city-vs-exeter-city/2rl0r6#5089901",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089915",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Newcastle United",
+      "shortName": "Newcastle",
+      "code": "NEW",
+      "sourceId": "10261",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10261.png"
+     },
+     "away": {
+      "name": "AFC Bournemouth",
+      "shortName": "Bournemouth",
+      "code": "BOU",
+      "sourceId": "8678",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8678.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      3
+     ],
+     "pens": [
+      7,
+      6
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/afc-bournemouth-vs-newcastle-united/2ysbu8#5089915",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089903",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Sheffield Wednesday",
+      "shortName": "Sheff Wed",
+      "code": null,
+      "sourceId": "10163",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10163.png"
+     },
+     "away": {
+      "name": "Brentford",
+      "shortName": "Brentford",
+      "code": "BRE",
+      "sourceId": "9937",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9937.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/brentford-vs-sheffield-wednesday/3ca3h7#5089903",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089920",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T15:00:00Z",
+     "home": {
+      "name": "Stoke City",
+      "shortName": "Stoke",
+      "code": null,
+      "sourceId": "10194",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10194.png"
+     },
+     "away": {
+      "name": "Coventry City",
+      "shortName": "Coventry",
+      "code": "COV",
+      "sourceId": "8669",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8669.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/coventry-city-vs-stoke-city/2xxjet#5089920",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089919",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T17:45:00Z",
+     "home": {
+      "name": "Bristol City",
+      "shortName": "Bristol City",
+      "code": null,
+      "sourceId": "8427",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8427.png"
+     },
+     "away": {
+      "name": "Watford",
+      "shortName": "Watford",
+      "code": null,
+      "sourceId": "9817",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9817.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      5,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/bristol-city-vs-watford/2r3egz#5089919",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089918",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T17:45:00Z",
+     "home": {
+      "name": "Cambridge United",
+      "shortName": "Cambridge",
+      "code": null,
+      "sourceId": "9834",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9834.png"
+     },
+     "away": {
+      "name": "Birmingham City",
+      "shortName": "Birmingham",
+      "code": null,
+      "sourceId": "8658",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8658.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/birmingham-city-vs-cambridge-united/2tt1g0#5089918",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089913",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T17:45:00Z",
+     "home": {
+      "name": "Grimsby Town",
+      "shortName": "Grimsby",
+      "code": null,
+      "sourceId": "10005",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10005.png"
+     },
+     "away": {
+      "name": "Weston Super Mare",
+      "shortName": "Weston Super Mare",
+      "code": null,
+      "sourceId": "6314",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/6314.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/weston-super-mare-vs-grimsby-town/27aa4q#5089913",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089895",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T17:45:00Z",
+     "home": {
+      "name": "Tottenham Hotspur",
+      "shortName": "Tottenham",
+      "code": "TOT",
+      "sourceId": "8586",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8586.png"
+     },
+     "away": {
+      "name": "Aston Villa",
+      "shortName": "Aston Villa",
+      "code": "AVL",
+      "sourceId": "10252",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10252.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/tottenham-hotspur-vs-aston-villa/2xnfpj#5089895",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089900",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-10T20:00:00Z",
+     "home": {
+      "name": "Charlton Athletic",
+      "shortName": "Charlton",
+      "code": null,
+      "sourceId": "8451",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8451.png"
+     },
+     "away": {
+      "name": "Chelsea",
+      "shortName": "Chelsea",
+      "code": "CHE",
+      "sourceId": "8455",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      5
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/charlton-athletic-vs-chelsea/2d3cce#5089900",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089910",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-11T12:00:00Z",
+     "home": {
+      "name": "Derby County",
+      "shortName": "Derby",
+      "code": null,
+      "sourceId": "10170",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10170.png"
+     },
+     "away": {
+      "name": "Leeds United",
+      "shortName": "Leeds",
+      "code": "LEE",
+      "sourceId": "8463",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8463.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/leeds-united-vs-derby-county/2vd3z0#5089910",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089909",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-11T14:00:00Z",
+     "home": {
+      "name": "Portsmouth",
+      "shortName": "Portsmouth",
+      "code": null,
+      "sourceId": "8462",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8462.png"
+     },
+     "away": {
+      "name": "Arsenal",
+      "shortName": "Arsenal",
+      "code": "ARS",
+      "sourceId": "9825",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      4
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/portsmouth-vs-arsenal/2rk8ix#5089909",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089914",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-11T14:30:00Z",
+     "home": {
+      "name": "Hull City",
+      "shortName": "Hull",
+      "code": "HUL",
+      "sourceId": "8667",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8667.png"
+     },
+     "away": {
+      "name": "Blackburn Rovers",
+      "shortName": "Blackburn",
+      "code": null,
+      "sourceId": "8655",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8655.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      0
+     ],
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": true,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/blackburn-rovers-vs-hull-city/2hby1u#5089914",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089908",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-11T14:30:00Z",
+     "home": {
+      "name": "Norwich City",
+      "shortName": "Norwich",
+      "code": null,
+      "sourceId": "9850",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9850.png"
+     },
+     "away": {
+      "name": "Walsall",
+      "shortName": "Walsall",
+      "code": null,
+      "sourceId": "10006",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10006.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      5,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/norwich-city-vs-walsall/39dm0y#5089908",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089923",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-11T14:30:00Z",
+     "home": {
+      "name": "Sheffield United",
+      "shortName": "Sheff Utd",
+      "code": "SHU",
+      "sourceId": "8657",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8657.png"
+     },
+     "away": {
+      "name": "Mansfield Town",
+      "shortName": "Mansfield",
+      "code": null,
+      "sourceId": "9818",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9818.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      4
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/sheffield-united-vs-mansfield-town/2tmaz0#5089923",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089911",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-11T14:30:00Z",
+     "home": {
+      "name": "Swansea City",
+      "shortName": "Swansea",
+      "code": null,
+      "sourceId": "10003",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10003.png"
+     },
+     "away": {
+      "name": "West Bromwich Albion",
+      "shortName": "West Brom",
+      "code": null,
+      "sourceId": "8659",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8659.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": null,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/west-bromwich-albion-vs-swansea-city/2vopeg#5089911",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089902",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-11T14:30:00Z",
+     "home": {
+      "name": "West Ham United",
+      "shortName": "West Ham",
+      "code": "WHU",
+      "sourceId": "8654",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8654.png"
+     },
+     "away": {
+      "name": "Queens Park Rangers",
+      "shortName": "QPR",
+      "code": null,
+      "sourceId": "10172",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10172.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/west-ham-united-vs-queens-park-rangers/2xildx#5089902",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089922",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-11T16:30:00Z",
+     "home": {
+      "name": "Manchester United",
+      "shortName": "Man United",
+      "code": "MUN",
+      "sourceId": "10260",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10260.png"
+     },
+     "away": {
+      "name": "Brighton & Hove Albion",
+      "shortName": "Brighton",
+      "code": "BHA",
+      "sourceId": "10204",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10204.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/brighton-hove-albion-vs-manchester-united/3goccs#5089922",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089906",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-12T19:45:00Z",
+     "home": {
+      "name": "Liverpool",
+      "shortName": "Liverpool",
+      "code": "LIV",
+      "sourceId": "8650",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8650.png"
+     },
+     "away": {
+      "name": "Barnsley",
+      "shortName": "Barnsley",
+      "code": null,
+      "sourceId": "8283",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8283.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/barnsley-vs-liverpool/2dd4zt#5089906",
+     "unknownReasons": []
+    },
+    {
+     "id": "5089912",
+     "stage": "Round 3",
+     "roundKey": "3",
+     "kickoff": "2026-01-20T19:45:00Z",
+     "home": {
+      "name": "Salford City",
+      "shortName": "Salford",
+      "code": null,
+      "sourceId": "282326",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/282326.png"
+     },
+     "away": {
+      "name": "Swindon Town",
+      "shortName": "Swindon",
+      "code": null,
+      "sourceId": "9795",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9795.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/swindon-town-vs-salford-city/jln4hzc#5089912",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135167",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-13T19:45:00Z",
+     "home": {
+      "name": "Hull City",
+      "shortName": "Hull",
+      "code": "HUL",
+      "sourceId": "8667",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8667.png"
+     },
+     "away": {
+      "name": "Chelsea",
+      "shortName": "Chelsea",
+      "code": "CHE",
+      "sourceId": "8455",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      4
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/chelsea-vs-hull-city/2fa49a#5135167",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135165",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-13T19:45:00Z",
+     "home": {
+      "name": "Wrexham",
+      "shortName": "Wrexham",
+      "code": null,
+      "sourceId": "9841",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9841.png"
+     },
+     "away": {
+      "name": "Ipswich Town",
+      "shortName": "Ipswich",
+      "code": "IPS",
+      "sourceId": "9902",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9902.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/wrexham-vs-ipswich-town/381noe#5135165",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135169",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-14T12:15:00Z",
+     "home": {
+      "name": "Burton Albion",
+      "shortName": "Burton",
+      "code": null,
+      "sourceId": "9792",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9792.png"
+     },
+     "away": {
+      "name": "West Ham United",
+      "shortName": "West Ham",
+      "code": "WHU",
+      "sourceId": "8654",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8654.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/west-ham-united-vs-burton-albion/2tatux#5135169",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135170",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-14T15:00:00Z",
+     "home": {
+      "name": "Burnley",
+      "shortName": "Burnley",
+      "code": "BUR",
+      "sourceId": "8191",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8191.png"
+     },
+     "away": {
+      "name": "Mansfield Town",
+      "shortName": "Mansfield",
+      "code": null,
+      "sourceId": "9818",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9818.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/burnley-vs-mansfield-town/2ok3jz#5135170",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135175",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-14T15:00:00Z",
+     "home": {
+      "name": "Manchester City",
+      "shortName": "Man City",
+      "code": "MCI",
+      "sourceId": "8456",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png"
+     },
+     "away": {
+      "name": "Salford City",
+      "shortName": "Salford",
+      "code": null,
+      "sourceId": "282326",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/282326.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/manchester-city-vs-salford-city/jf6ryux#5135175",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135171",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-14T15:00:00Z",
+     "home": {
+      "name": "Norwich City",
+      "shortName": "Norwich",
+      "code": null,
+      "sourceId": "9850",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9850.png"
+     },
+     "away": {
+      "name": "West Bromwich Albion",
+      "shortName": "West Brom",
+      "code": null,
+      "sourceId": "8659",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8659.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/west-bromwich-albion-vs-norwich-city/2tzs51#5135171",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135164",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-14T15:00:00Z",
+     "home": {
+      "name": "Southampton",
+      "shortName": "Southampton",
+      "code": "SOU",
+      "sourceId": "8466",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8466.png"
+     },
+     "away": {
+      "name": "Leicester City",
+      "shortName": "Leicester",
+      "code": "LEI",
+      "sourceId": "8197",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8197.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/leicester-city-vs-southampton/2anx5y#5135164",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135174",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-14T17:45:00Z",
+     "home": {
+      "name": "Aston Villa",
+      "shortName": "Aston Villa",
+      "code": "AVL",
+      "sourceId": "10252",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10252.png"
+     },
+     "away": {
+      "name": "Newcastle United",
+      "shortName": "Newcastle",
+      "code": "NEW",
+      "sourceId": "10261",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10261.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/aston-villa-vs-newcastle-united/3h9v0m#5135174",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135162",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-14T20:00:00Z",
+     "home": {
+      "name": "Liverpool",
+      "shortName": "Liverpool",
+      "code": "LIV",
+      "sourceId": "8650",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8650.png"
+     },
+     "away": {
+      "name": "Brighton & Hove Albion",
+      "shortName": "Brighton",
+      "code": "BHA",
+      "sourceId": "10204",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10204.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/liverpool-vs-brighton-hove-albion/2xtwfj#5135162",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135177",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-15T12:00:00Z",
+     "home": {
+      "name": "Birmingham City",
+      "shortName": "Birmingham",
+      "code": null,
+      "sourceId": "8658",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8658.png"
+     },
+     "away": {
+      "name": "Leeds United",
+      "shortName": "Leeds",
+      "code": "LEE",
+      "sourceId": "8463",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8463.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": null,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/leeds-united-vs-birmingham-city/2f9r1f#5135177",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135173",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-15T13:30:00Z",
+     "home": {
+      "name": "Grimsby Town",
+      "shortName": "Grimsby",
+      "code": null,
+      "sourceId": "10005",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10005.png"
+     },
+     "away": {
+      "name": "Wolverhampton Wanderers",
+      "shortName": "Wolves",
+      "code": "WOL",
+      "sourceId": "8602",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8602.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/wolverhampton-wanderers-vs-grimsby-town/2v2qiq#5135173",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135163",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-15T14:00:00Z",
+     "home": {
+      "name": "Oxford United",
+      "shortName": "Oxford Utd",
+      "code": null,
+      "sourceId": "8653",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8653.png"
+     },
+     "away": {
+      "name": "Sunderland",
+      "shortName": "Sunderland",
+      "code": "SUN",
+      "sourceId": "8472",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8472.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/sunderland-vs-oxford-united/2fb7vw#5135163",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135161",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-15T14:00:00Z",
+     "home": {
+      "name": "Stoke City",
+      "shortName": "Stoke",
+      "code": null,
+      "sourceId": "10194",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10194.png"
+     },
+     "away": {
+      "name": "Fulham",
+      "shortName": "Fulham",
+      "code": "FUL",
+      "sourceId": "9879",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9879.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/fulham-vs-stoke-city/3bygyc#5135161",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135166",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-15T16:30:00Z",
+     "home": {
+      "name": "Arsenal",
+      "shortName": "Arsenal",
+      "code": "ARS",
+      "sourceId": "9825",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png"
+     },
+     "away": {
+      "name": "Wigan Athletic",
+      "shortName": "Wigan",
+      "code": null,
+      "sourceId": "8528",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8528.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/wigan-athletic-vs-arsenal/2sa5ii#5135166",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135176",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-02-16T19:30:00Z",
+     "home": {
+      "name": "Macclesfield FC",
+      "shortName": "Macclesfield",
+      "code": null,
+      "sourceId": "8599",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8599.png"
+     },
+     "away": {
+      "name": "Brentford",
+      "shortName": "Brentford",
+      "code": "BRE",
+      "sourceId": "9937",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9937.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/macclesfield-fc-vs-brentford/2uai3p#5135176",
+     "unknownReasons": []
+    },
+    {
+     "id": "5135172",
+     "stage": "Round 4",
+     "roundKey": "4",
+     "kickoff": "2026-03-03T19:45:00Z",
+     "home": {
+      "name": "Port Vale",
+      "shortName": "Port Vale",
+      "code": null,
+      "sourceId": "9799",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9799.png"
+     },
+     "away": {
+      "name": "Bristol City",
+      "shortName": "Bristol City",
+      "code": null,
+      "sourceId": "8427",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8427.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/bristol-city-vs-port-vale/2qwd6q#5135172",
+     "unknownReasons": []
+    },
+    {
+     "id": "5186383",
+     "stage": "Round 5",
+     "roundKey": "5",
+     "kickoff": "2026-03-06T20:00:00Z",
+     "home": {
+      "name": "Wolverhampton Wanderers",
+      "shortName": "Wolves",
+      "code": "WOL",
+      "sourceId": "8602",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8602.png"
+     },
+     "away": {
+      "name": "Liverpool",
+      "shortName": "Liverpool",
+      "code": "LIV",
+      "sourceId": "8650",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8650.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/wolverhampton-wanderers-vs-liverpool/2gm0as#5186383",
+     "unknownReasons": []
+    },
+    {
+     "id": "5186382",
+     "stage": "Round 5",
+     "roundKey": "5",
+     "kickoff": "2026-03-07T12:15:00Z",
+     "home": {
+      "name": "Mansfield Town",
+      "shortName": "Mansfield",
+      "code": null,
+      "sourceId": "9818",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9818.png"
+     },
+     "away": {
+      "name": "Arsenal",
+      "shortName": "Arsenal",
+      "code": "ARS",
+      "sourceId": "9825",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/mansfield-town-vs-arsenal/36vg23#5186382",
+     "unknownReasons": []
+    },
+    {
+     "id": "5186384",
+     "stage": "Round 5",
+     "roundKey": "5",
+     "kickoff": "2026-03-07T17:45:00Z",
+     "home": {
+      "name": "Wrexham",
+      "shortName": "Wrexham",
+      "code": null,
+      "sourceId": "9841",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9841.png"
+     },
+     "away": {
+      "name": "Chelsea",
+      "shortName": "Chelsea",
+      "code": "CHE",
+      "sourceId": "8455",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      4
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
+     "stateKnown": true,
+     "reason": "AET",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/chelsea-vs-wrexham/2rnrkd#5186384",
+     "unknownReasons": []
+    },
+    {
+     "id": "5186380",
+     "stage": "Round 5",
+     "roundKey": "5",
+     "kickoff": "2026-03-07T20:00:00Z",
+     "home": {
+      "name": "Newcastle United",
+      "shortName": "Newcastle",
+      "code": "NEW",
+      "sourceId": "10261",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10261.png"
+     },
+     "away": {
+      "name": "Manchester City",
+      "shortName": "Man City",
+      "code": "MCI",
+      "sourceId": "8456",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      3
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/manchester-city-vs-newcastle-united/2waqez#5186380",
+     "unknownReasons": []
+    },
+    {
+     "id": "5186378",
+     "stage": "Round 5",
+     "roundKey": "5",
+     "kickoff": "2026-03-08T12:00:00Z",
+     "home": {
+      "name": "Fulham",
+      "shortName": "Fulham",
+      "code": "FUL",
+      "sourceId": "9879",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9879.png"
+     },
+     "away": {
+      "name": "Southampton",
+      "shortName": "Southampton",
+      "code": "SOU",
+      "sourceId": "8466",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8466.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/southampton-vs-fulham/2s70ac#5186378",
+     "unknownReasons": []
+    },
+    {
+     "id": "5186379",
+     "stage": "Round 5",
+     "roundKey": "5",
+     "kickoff": "2026-03-08T13:30:00Z",
+     "home": {
+      "name": "Port Vale",
+      "shortName": "Port Vale",
+      "code": null,
+      "sourceId": "9799",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9799.png"
+     },
+     "away": {
+      "name": "Sunderland",
+      "shortName": "Sunderland",
+      "code": "SUN",
+      "sourceId": "8472",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8472.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/sunderland-vs-port-vale/2rdytz#5186379",
+     "unknownReasons": []
+    },
+    {
+     "id": "5186381",
+     "stage": "Round 5",
+     "roundKey": "5",
+     "kickoff": "2026-03-08T16:30:00Z",
+     "home": {
+      "name": "Leeds United",
+      "shortName": "Leeds",
+      "code": "LEE",
+      "sourceId": "8463",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8463.png"
+     },
+     "away": {
+      "name": "Norwich City",
+      "shortName": "Norwich",
+      "code": null,
+      "sourceId": "9850",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9850.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      3,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/leeds-united-vs-norwich-city/2rufon#5186381",
+     "unknownReasons": []
+    },
+    {
+     "id": "5186385",
+     "stage": "Round 5",
+     "roundKey": "5",
+     "kickoff": "2026-03-09T19:30:00Z",
+     "home": {
+      "name": "West Ham United",
+      "shortName": "West Ham",
+      "code": "WHU",
+      "sourceId": "8654",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8654.png"
+     },
+     "away": {
+      "name": "Brentford",
+      "shortName": "Brentford",
+      "code": "BRE",
+      "sourceId": "9937",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9937.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": null,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/west-ham-united-vs-brentford/2uwdxd#5186385",
+     "unknownReasons": []
+    },
+    {
+     "id": "5231047",
+     "stage": "Quarter-Finals",
+     "roundKey": "1/4",
+     "kickoff": "2026-04-04T11:45:00Z",
+     "home": {
+      "name": "Manchester City",
+      "shortName": "Man City",
+      "code": "MCI",
+      "sourceId": "8456",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png"
+     },
+     "away": {
+      "name": "Liverpool",
+      "shortName": "Liverpool",
+      "code": "LIV",
+      "sourceId": "8650",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8650.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      4,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/manchester-city-vs-liverpool/2f48yd#5231047",
+     "unknownReasons": []
+    },
+    {
+     "id": "5231046",
+     "stage": "Quarter-Finals",
+     "roundKey": "1/4",
+     "kickoff": "2026-04-04T16:15:00Z",
+     "home": {
+      "name": "Chelsea",
+      "shortName": "Chelsea",
+      "code": "CHE",
+      "sourceId": "8455",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png"
+     },
+     "away": {
+      "name": "Port Vale",
+      "shortName": "Port Vale",
+      "code": null,
+      "sourceId": "9799",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9799.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      7,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/chelsea-vs-port-vale/2r7b9s#5231046",
+     "unknownReasons": []
+    },
+    {
+     "id": "5231045",
+     "stage": "Quarter-Finals",
+     "roundKey": "1/4",
+     "kickoff": "2026-04-04T19:00:00Z",
+     "home": {
+      "name": "Southampton",
+      "shortName": "Southampton",
+      "code": "SOU",
+      "sourceId": "8466",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8466.png"
+     },
+     "away": {
+      "name": "Arsenal",
+      "shortName": "Arsenal",
+      "code": "ARS",
+      "sourceId": "9825",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/southampton-vs-arsenal/2rlsz3#5231045",
+     "unknownReasons": []
+    },
+    {
+     "id": "5231346",
+     "stage": "Quarter-Finals",
+     "roundKey": "1/4",
+     "kickoff": "2026-04-05T15:30:00Z",
+     "home": {
+      "name": "West Ham United",
+      "shortName": "West Ham",
+      "code": "WHU",
+      "sourceId": "8654",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8654.png"
+     },
+     "away": {
+      "name": "Leeds United",
+      "shortName": "Leeds",
+      "code": "LEE",
+      "sourceId": "8463",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8463.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      2
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": null,
+     "liveScore": null,
+     "state": "FT_PEN",
+     "stateKnown": true,
+     "reason": "Pen",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/leeds-united-vs-west-ham-united/2f8a75#5231346",
+     "unknownReasons": []
+    },
+    {
+     "id": "5293793",
+     "stage": "Semi-Finals",
+     "roundKey": "1/2",
+     "kickoff": "2026-04-25T16:15:00Z",
+     "home": {
+      "name": "Manchester City",
+      "shortName": "Man City",
+      "code": "MCI",
+      "sourceId": "8456",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png"
+     },
+     "away": {
+      "name": "Southampton",
+      "shortName": "Southampton",
+      "code": "SOU",
+      "sourceId": "8466",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8466.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      2,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/manchester-city-vs-southampton/2d9569#5293793",
+     "unknownReasons": []
+    },
+    {
+     "id": "5293794",
+     "stage": "Semi-Finals",
+     "roundKey": "1/2",
+     "kickoff": "2026-04-26T14:00:00Z",
+     "home": {
+      "name": "Chelsea",
+      "shortName": "Chelsea",
+      "code": "CHE",
+      "sourceId": "8455",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png"
+     },
+     "away": {
+      "name": "Leeds United",
+      "shortName": "Leeds",
+      "code": "LEE",
+      "sourceId": "8463",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8463.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      1,
+      0
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/chelsea-vs-leeds-united/2d7oy4#5293794",
+     "unknownReasons": []
+    },
+    {
+     "id": "5315746",
+     "stage": "Final",
+     "roundKey": "final",
+     "kickoff": "2026-05-16T14:00:00Z",
+     "home": {
+      "name": "Chelsea",
+      "shortName": "Chelsea",
+      "code": "CHE",
+      "sourceId": "8455",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png"
+     },
+     "away": {
+      "name": "Manchester City",
+      "shortName": "Man City",
+      "code": "MCI",
+      "sourceId": "8456",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png"
+     },
+     "ht": null,
+     "ft90": null,
+     "et": null,
+     "final": [
+      0,
+      1
+     ],
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
+     "stateKnown": true,
+     "reason": "FT",
+     "awarded": false,
+     "played": true,
+     "pageUrl": "/matches/chelsea-vs-manchester-city/2d55kw#5315746",
+     "unknownReasons": []
+    }
+   ],
+   "details": {
+    "5010616": {
+     "pens": [
+      4,
+      2
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5010621": {
+     "pens": [
+      5,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5010622": {
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5010645": {
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5040318": {
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5040319": {
+     "pens": [
+      4,
+      2
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5040320": {
+     "pens": [
+      1,
+      3
+     ],
+     "pensWinner": "away",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5040321": {
+     "pens": [
+      4,
+      5
+     ],
+     "pensWinner": "away",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5089899": {
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5089905": {
+     "pens": [
+      0,
+      3
+     ],
+     "pensWinner": "away",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5089914": {
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5089915": {
+     "pens": [
+      7,
+      6
+     ],
+     "pensWinner": "home",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "5089916": {
+     "pens": [
+      3,
+      4
+     ],
+     "pensWinner": "away",
+     "extraTime": true,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-07T17:15:05.550Z"
+    }
+   },
+   "unknownReasons": [],
+   "nearMisses": [],
+   "finished": true,
+   "total": 123,
+   "crossCheck": {
+    "against": "SportMonks",
+    "smRetrievedAt": "2026-09-02T12:07:02.527Z",
+    "smMatches": 871,
+    "compared": 123,
+    "matched": 122,
+    "agree": 122,
+    "disagree": [],
+    "pensMismatch": [
+     {
+      "id": "5010622",
+      "date": "2025-11-01",
+      "home": "Newport County",
+      "away": "Gillingham",
+      "fotmob": "2-2 pens",
+      "sportmonks": "2-2"
+     }
+    ],
+    "unverified": 1,
+    "loose": 5
+   }
+  }
+ ]
+}
