@@ -196,7 +196,8 @@ try {
         : `<span class="small">${C.kickoffLocal(u.kick)}</span>`) },
     { key: 'cd', label: '倒數', value: u => u.kick, sortable: false,
       render: u => (u.pending ? '<span class="dim small">—</span>' : `<span class="small">${C.countdown(u.kick)}</span>`) },
-    { key: 'comp', label: '賽事', value: u => u.comp, render: u => C.compBadge(u.compKey, { label: u.comp }) },
+    // 靠左:內容是「圖 + 字」的 flex 排版,跟對戰欄同一邊(使用者要求,2026-09-07)
+    { key: 'comp', label: '賽事', value: u => u.comp, left: true, render: u => C.compBadge(u.compKey, { label: u.comp }) },
     { key: 'match', label: '對戰', value: u => u.home, left: true,
       render: u => {
         const img = c => (c ? `<img class="crest" src="${c}" loading="lazy" width="20" height="20" style="vertical-align:middle">` : '');

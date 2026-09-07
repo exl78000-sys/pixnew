@@ -83,7 +83,7 @@ export async function renderAllPlayers(app) {
         : all;
       const has = key => hit.some(p => statFor(p)?.[key] != null);
       const cols = [
-        { key: 'lg', label: '賽事', num: false, value: p => p.league,
+        { key: 'lg', label: '賽事', num: false, left: true, value: p => p.league,
           render: p => `<span class="comp-cell">${C.compBadge(p.league, { label: true })}${
             inUcl.has(`${p.league}|${p.team}`) ? C.compBadge('ucl') : ''}</span>` },
         { key: 'name', label: '球員', num: false, left: true, value: p => p.name,
