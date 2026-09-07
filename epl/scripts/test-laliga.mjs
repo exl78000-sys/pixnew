@@ -299,6 +299,16 @@ check('西甲即時輪詢有 include fallback 與硬上限',
         && !/null/.test(t) && !/實際陣型/.test(t) && !/場上 xG/.test(t);
     })());
 }
+{
+  // 產物:即時快照的每一場都要帶 fixtureId 與 round(2026-09-07 使用者點進行中的比賽進不去分析頁)
+  const lp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'live.json');
+  if (existsSync(lp)) {
+    const lv = JSON.parse(readFileSync(lp, 'utf8'));
+    const ms = lv.available && !lv.demo ? (lv.matches ?? []) : [];
+    const missing = ms.filter(m => m.fixtureId == null || m.round == null).map(m => m.key);
+    check(`西甲即時快照 ${ms.length} 場都帶 fixtureId 與 round(${missing.join('、') || '無缺'})`, missing.length === 0);
+  }
+}
 check('西甲勝率曲線與校準走共用件、產物存在', (() => {
   const src = readFileSync(join(ROOT, 'scripts', 'build-laliga.mjs'), 'utf8');
   try {

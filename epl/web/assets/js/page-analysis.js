@@ -413,12 +413,12 @@ try {
     <div class="card">
       <div class="scoreline" style="margin:4px 0 10px">
         <div class="side">${C.badge(f.home, 'big')}<b>${C.teamLink(f.home)}</b></div>
-        <div class="sc" style="font-size:22px">${f.played ? `${f.fh} <span class="dim">:</span> ${f.fa}`
+        <div class="sc" id="headScore" style="font-size:22px">${f.played ? `${f.fh} <span class="dim">:</span> ${f.fa}`
           : f.provisional ? `${f.provisional.fh} <span class="dim">:</span> ${f.provisional.fa}` : '未開賽'}</div>
         <div class="side away">${C.badge(f.away, 'big')}<b>${C.teamLink(f.away)}</b></div>
       </div>
       ${!f.played && f.provisional ? `<div class="center" style="margin-bottom:6px"><span class="pill warn tiny">終場・暫定</span></div>` : ''}
-      <div class="center tiny dim">${f.played
+      <div class="center tiny dim" id="headNote">${f.played
         ? '這場沒有保存可驗證的賽前機率快照，因此不拿賽後重建機率冒充賽前預測。'
         : f.provisional
           ? `暫定比分來自 ${C.esc(f.provisional.source)}(本站直播時顯示的同一來源);獨立賽果(openfootball/football-data)核對通過後才會進積分榜、模型與完整賽後資料。`
@@ -619,6 +619,13 @@ try {
       const el = document.getElementById('livePanel');
       cur = (m && m.started && !m.finished) ? { m, fetchedAt } : null;
       if (el) el.innerHTML = cur ? livePanelHtml(m, f.colors, fetchedAt) : '';
+      /* 頁首那張比分卡也要跟著走:賽程還沒把它記成 played 時它印「未開賽」,而下面的即時面板已經在第 26 分鐘 ——
+         同一頁自己跟自己矛盾(使用者 2026-09-07 看到的)。有 id 的分支才動(西甲);英超的頁首另有自己的處理。 */
+      const hs = document.getElementById('headScore'), hn = document.getElementById('headNote');
+      if (cur && hs && m.hs != null && m.as != null) {
+        hs.innerHTML = `${m.hs} <span class="dim">:</span> ${m.as}`;
+        if (hn) hn.innerHTML = '<span class="pill bad tiny"><span class="livedot"></span>進行中</span> 比分來自即時快照;完賽後獨立賽果核對通過才會進積分榜與模型。';
+      }
     };
     renderLive(findIn(data.live), data.live?.fetchedAt);
     C.pageInterval(async () => {

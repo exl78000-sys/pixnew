@@ -1447,6 +1447,20 @@ async function checkDataGap() {
     ['總覽與搜尋球員的「賽事」欄靠左', (() =>
       [['page-overview.js', /label: '賽事'[^\n]*left: true/], ['allplayers-view.js', /label: '賽事'[^\n]*left: true/]]
         .every(([f, re]) => re.test(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8'))))()],
+    /* 使用者 2026-09-07:西甲進行中的比賽點不進分析頁、總覽已開賽的要顯示比數。
+       根因是西甲 live.json 沒帶 fixtureId / round(英超那份有),實時頁的卡片退回 href="#"。
+       三處守著:build 產物帶 fixtureId、實時頁有對回賽程的保險、總覽載 live 並印比數。 */
+    ['西甲與英冠的即時快照帶 fixtureId 與 round(跟英超同約定)', (() =>
+      ['build-laliga.mjs', 'build-championship.mjs'].every(f =>
+        /fixtureId: fixture\.id \?\? null, round: fixture\.round \?\? null/.test(readFileSync(join(ROOT, 'scripts', f), 'utf8'))))()],
+    ['實時戰況頁:產物沒帶 fixtureId 的用賽程對回來(不是退回 href="#")', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      return /fxByPair/.test(src) && /m\.fixtureId == null\) m\.fixtureId = fx\.id/.test(src);
+    })()],
+    ['總覽:載每個聯賽的 live,已開賽的場次印比數與分鐘(沒有快照才寫「等待資料」)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /LEAGUE_SETS = \[[^\]]*'live'/.test(src) && /u\.live\.hs/.test(src) && /C\.liveMinute\(m, lv\.fetchedAt\)/.test(src) && /C\.countdown\(u\.kick\)/.test(src);
+    })()],
     ['總覽只連得進去的頁才給連結', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /C\.closedPage\(/.test(src);
