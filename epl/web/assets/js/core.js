@@ -251,6 +251,33 @@ const luminance = hex => {
   const [r, g, b] = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
+/* 賽事標記(英超/西甲/英冠/歐冠/足總盃/聯賽盃)。
+   站上沒有賽事的圖像資產 —— 隊徽有、賽事沒有;官方 logo 又是商標。
+   所以用**站內自己的色塊 + 縮寫**當圖像,跟沒有隊徽時的 .badge 同一套語言,
+   讀者掃一眼就分得出是哪個賽事。之後真的有圖(例如 SportMonks 的 league image)
+   就接 `logo` 欄位,compBadge 會優先畫圖;沒有圖不留空,色塊本身就是設計(鐵則三)。
+   **鍵跟 LEAGUES 與盃賽的 key 一致**,加聯賽或盃賽時這裡也要加一筆 —— 漏掉的那一個
+   不會壞,只會靜靜沒有圖像,所以 npm test 有一條守著。 */
+export const COMPETITIONS = {
+  pl:     { zh: '英超',   short: 'PL',  bg: '#7c3aed', fg: '#fff' },
+  es1:    { zh: '西甲',   short: 'LL',  bg: '#f26522', fg: '#fff' },
+  en2:    { zh: '英冠',   short: 'CH',  bg: '#2563eb', fg: '#fff' },
+  ucl:    { zh: '歐冠',   short: 'UCL', bg: '#1e3a8a', fg: '#fff' },
+  facup:  { zh: '足總盃', short: 'FA',  bg: '#c8102e', fg: '#fff' },
+  eflcup: { zh: '聯賽盃', short: 'EFL', bg: '#0d9488', fg: '#fff' },
+};
+/* label: true → 色塊後面接中文名;給字串 → 接那個字串;不給 → 只有色塊。
+   沒登記的鍵**不編一個色塊**:有 label 就退回原本的文字 pill,沒有就空字串。 */
+export function compBadge(key, { label = null, size = '' } = {}) {
+  const c = COMPETITIONS[key];
+  if (!c) return label ? `<span class="pill tiny">${esc(String(label === true ? key : label))}</span>` : '';
+  const mark = c.logo
+    ? `<img class="comp-badge ${size}" src="${c.logo}" alt="${esc(c.zh)}" title="${esc(c.zh)}" width="22" height="22" loading="lazy">`
+    : `<span class="comp-badge ${size}${c.short.length > 2 ? ' n3' : ''}" style="background:${c.bg};color:${c.fg}"
+        title="${esc(c.zh)}" aria-label="${esc(c.zh)}">${c.short}</span>`;
+  const text = label === true ? c.zh : label;
+  return text ? `<span class="comp-cell">${mark}<span>${esc(text)}</span></span>` : mark;
+}
 export function badge(code, size = '') {
   const t = team(code);
   // 有隊徽就用隊徽(已內嵌為 data URI);沒有才退回配色方塊

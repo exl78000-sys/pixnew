@@ -1,5 +1,5 @@
-import * as C from './core.js?v=660e256d';
-import { renderUclView } from './ucl-view.js?v=8a697e5f';
+import * as C from './core.js?v=b69f3323';
+import { renderUclView } from './ucl-view.js?v=8351bd24';
 
 const app = document.getElementById('app');
 
@@ -208,7 +208,8 @@ try {
     ])}
   </div>
   <div class="filters">
-    ${COMPS.map(c => `<button class="btn${c.key === comp ? ' on' : ''}" data-comp="${c.key}">${c.zh}</button>`).join('')}
+    ${COMPS.map(c => `<button class="btn${c.key === comp ? ' on' : ''}" data-comp="${c.key}"
+      style="display:inline-flex;align-items:center;gap:6px">${C.compBadge(c.key)}${c.zh}</button>`).join('')}
   </div>
   <div id="compBody"></div>
   ${C.foot(meta)}`;
@@ -234,11 +235,12 @@ try {
     compBody.innerHTML = '<div class="note">目前沒有英格蘭盃賽資料。</div>';
   } else {
     let cupKey = cupKey0;
-    // 預設看有比賽的那一季 —— 本季開打前所有場次都還沒踢,預設停在空白的一季很奇怪
+    /* 預設停在**本季**(使用者要求;歐冠那一頁同一條規則)。
+       以前是「第一個有踢過比賽的賽季」—— 本季還沒開打就會跳到上一季,像是資料沒更新。 */
     const seasonsOf = key => (list.find(c => c.key === key)?.seasons ?? []);
     const defaultSeason = key => {
       const ss = seasonsOf(key);
-      return (ss.find(s => s.played > 0) ?? ss[0])?.label ?? null;
+      return (ss.find(s => s.current) ?? ss[0])?.label ?? null;
     };
     let seasonLabel = defaultSeason(cupKey);
     let showQualifying = false;   // 資格賽預設收起來,但可以打開
