@@ -61,10 +61,7 @@ jobs:
       # FotMob 請求量:只在進場窗口內、每 3 分鐘 2 個請求(兩個聯賽各一),沒比賽時一個都不發。
       - name: 輪詢更新(每 3 分鐘)
         if: steps.win.outputs.active == 'true'
-        env:
-          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
-          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+        # 迴圈只打 FotMob(scores:fetch);SportMonks 2026-09-03 退訂,env 已拿掉
         run: |
           set -u
           cd "$GITHUB_WORKSPACE"

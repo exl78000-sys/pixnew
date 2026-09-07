@@ -109,43 +109,21 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         continue-on-error: true
 
-      # SportMonks 西甲欄位與已完賽資料同步；有快取且未超過 7 天就不重抓。
-      # 沒有 Secret 時安全略過，不影響其他資料建置。
-      - name: 探測西甲 SportMonks 方案能力
-        run: npm run sportmonks:capabilities -- --league=es1
-        env:
-          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
-          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
-        continue-on-error: true
+      # SportMonks 2026-09-03 退訂:西甲名單補充、方案探測、英超主要資料同步三步都拿掉了(2026-09-07)。
+      # 那些快取(data/raw/sportmonks-*)留在倉庫,build 照舊讀得到已經抓到的;新場次由 FotMob 供應。
 
-      - name: 補齊西甲球員欄位(SportMonks)
-        # 兩季名單、現任教練與本季完賽詳情共約 90 次；保留 160 次餘額，
-        # 確保同步器不會在抓完名單／教練後因舊上限而跳過賽後統計。
-        run: npm run sportmonks:sync -- --league=es1 --max-requests=160 --max-details=20 --max-coach-details=20
-        env:
-          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
-          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
-        continue-on-error: true
-
-      # LaLiga 官方 staff 頁每日核對現任教練；24 小時內使用快取，SportMonks 只補官方缺頁。
+      # LaLiga 官方 staff 頁每日核對現任教練;24 小時內使用快取。
       - name: 核對西甲官方教練
         run: npm run laliga:official-coaches
         continue-on-error: true
 
-      # SportMonks 是英超的主要球員／賽後資料來源；FPL 與 API-Football 只作
-      # 統計鏡像或備援。同步器會依 token 實際可用賽季動態找 season id。
-      # 英格蘭盃賽(足總盃 / 聯賽盃)。season id 當場解析,不寫死 ——
-      # 每季都會換一組,寫死的話明年會安靜地抓到去年的資料。
-      # 單線、間隔 350ms、硬上限 40 個請求;快取 12 小時內不重抓。
-      - name: 抓英格蘭盃賽賽果
+      # 英格蘭盃賽(足總盃 / 聯賽盃):FotMob 的盃賽端點(2026-09-07 起;之前是 SportMonks,退訂)。
+      # 一季一個請求(本季 3 小時內不重抓、上季 7 天),PK 場的比數與勝方另抓單場詳情、每次最多 10 場、
+      # 抓過永久快取。抓回來先跟 SportMonks 的舊快取逐場核對,一場不符整季不發布(build 那邊擋)。
+      - name: 抓英格蘭盃賽賽程與賽果(FotMob)
         working-directory: epl
-        run: npm run encups
-        env:
-          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
-          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
+        run: npm run cups:fetch
+        continue-on-error: true
 
       # 歐冠。football-data.org 免費方案限 10 req/分,所以一季一個請求、間隔 7 秒。
       # 2026-27 目前回 404(還沒建立,九月中才開打)—— 那不是「拿不到」,
@@ -158,9 +136,9 @@ jobs:
         run: npm run tiers
         continue-on-error: true
 
-      # 盃賽對手的隊徽。網址是 encups 順手留下來的(零額外 API 請求),
-      # 這一步只是把圖抓下來縮圖內嵌。單線、間隔 200ms、每次上限 120 張、
-      # 已抓過的略過,所以穩定之後每次執行幾乎不發請求。
+      # 盃賽對手的隊徽。網址由 cups:fetch 依 FotMob 的 team id 組出來(零額外 API 請求),
+      # 這一步只是把圖抓下來驗 PNG、縮圖內嵌。單線、間隔 200ms、每次上限 120 張、
+      # 已抓過的略過,所以穩定之後每次執行幾乎不發請求。來源換成 FotMob 後舊表整份重來(id 不同家)。
       - name: 抓盃賽對手隊徽
         working-directory: epl
         run: npm run cup-crests
@@ -208,15 +186,6 @@ jobs:
       - name: 抓逐場球隊 xG(西甲)
         working-directory: epl
         run: node scripts/fetch-team-xg.mjs --league=es1
-        continue-on-error: true
-
-      - name: 同步英超主要資料(SportMonks)
-        run: npm run sportmonks:sync -- --league=pl --max-requests=65 --max-details=10
-        env:
-          SPORTMONKS_TOKEN: ${{ secrets.SPORTMONKS_TOKEN }}
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}
-          SPORTMONKS_API_KEY: ${{ secrets.SPORTMONKS_API_KEY }}
-          SPORTMONKS_EPL_LEAGUE_ID: 8
         continue-on-error: true
 
       # 人工交付的頭貼「指定網址」在這一步生效。單線、每次上限 5 人，
@@ -428,6 +397,7 @@ jobs:
                      epl/data/raw/sportmonks-la-liga/ \
                      epl/data/raw/sportmonks-epl/ \
                      epl/data/raw/sportmonks-cups/ \
+                     epl/data/raw/fotmob-cups/ \
                      epl/data/raw/football-data/ \
                      epl/data/raw/probes/ \
                      epl/data/raw/api-football/ \

@@ -59,7 +59,7 @@
     "probe:events": "node scripts/probe-events.mjs",
     "probe:encups": "node scripts/probe-encups.mjs",
     "probe:ucl": "node scripts/probe-ucl.mjs",
-    "encups": "node scripts/fetch-encups.mjs",
+    "cups:fetch": "node scripts/fetch-fotmob-cups.mjs",
     "ucl": "node scripts/fetch-ucl.mjs",
     "cup-crests": "node scripts/fetch-cup-crests.mjs",
     "competition-logos": "node scripts/fetch-competition-logos.mjs",
