@@ -254,7 +254,7 @@ const luminance = hex => {
 /* 賽事標記(英超/西甲/英冠/歐冠/足總盃/聯賽盃)。
    站上沒有賽事的圖像資產 —— 隊徽有、賽事沒有;官方 logo 又是商標。
    所以用**站內自己的色塊 + 縮寫**當圖像,跟沒有隊徽時的 .badge 同一套語言,
-   讀者掃一眼就分得出是哪個賽事。之後真的有圖(例如 SportMonks 的 league image)
+   讀者掃一眼就分得出是哪個賽事。之後真的有圖(runner 從 football-data.org 的 emblem 抓,見 fetch-competition-logos.mjs)
    就接 `logo` 欄位,compBadge 會優先畫圖;沒有圖不留空,色塊本身就是設計(鐵則三)。
    **鍵跟 LEAGUES 與盃賽的 key 一致**,加聯賽或盃賽時這裡也要加一筆 —— 漏掉的那一個
    不會壞,只會靜靜沒有圖像,所以 npm test 有一條守著。 */
@@ -268,11 +268,20 @@ export const COMPETITIONS = {
 };
 /* label: true → 色塊後面接中文名;給字串 → 接那個字串;不給 → 只有色塊。
    沒登記的鍵**不編一個色塊**:有 label 就退回原本的文字 pill,沒有就空字串。 */
+/* 把 competitions.json 的 logo 掛上去。只掛已登記的鍵 —— 沒登記的賽事不會因為有一張圖
+   就長出一個項目(那等於前端自己編了一個賽事)。頁面載入 'competitions' 之後呼叫一次。 */
+export function registerCompetitions(data) {
+  for (const [key, uri] of Object.entries(data?.logos ?? {})) {
+    if (COMPETITIONS[key] && typeof uri === 'string' && uri.startsWith('data:image/')) COMPETITIONS[key].logo = uri;
+  }
+  return COMPETITIONS;
+}
 export function compBadge(key, { label = null, size = '' } = {}) {
   const c = COMPETITIONS[key];
   if (!c) return label ? `<span class="pill tiny">${esc(String(label === true ? key : label))}</span>` : '';
+  const px = size === 'lg' ? 30 : 22;
   const mark = c.logo
-    ? `<img class="comp-badge ${size}" src="${c.logo}" alt="${esc(c.zh)}" title="${esc(c.zh)}" width="22" height="22" loading="lazy">`
+    ? `<img class="comp-badge logo ${size}" src="${c.logo}" alt="${esc(c.zh)}" title="${esc(c.zh)}" width="${px}" height="${px}" loading="lazy">`
     : `<span class="comp-badge ${size}${c.short.length > 2 ? ' n3' : ''}" style="background:${c.bg};color:${c.fg}"
         title="${esc(c.zh)}" aria-label="${esc(c.zh)}">${c.short}</span>`;
   const text = label === true ? c.zh : label;

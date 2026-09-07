@@ -1419,6 +1419,29 @@ async function checkDataGap() {
         && V.compBadge('nope') === '' && /class="pill tiny"/.test(V.compBadge('nope', { label: '未知' }))
         && /comp-badge/.test(V.compBadge('pl')) && /英超/.test(V.compBadge('pl', { label: true }));
     })()],
+    /* 真圖:competitions.json 一定要在(沒抓到就 logos 空,前端退回色塊,檔案不在會 404);
+       registerCompetitions 只掛已登記的鍵,不會因為有一張圖就長出一個賽事。 */
+    ['competitions.json 存在;有 logo 就是 PNG data URI、鍵都在 COMPETITIONS 裡', (() => {
+      const p = join(ROOT, 'web', 'data', 'competitions.json');
+      if (!existsSync(p)) return false;
+      const c = JSON.parse(readFileSync(p, 'utf8'));
+      const keys = Object.keys(c.logos ?? {});
+      return typeof c.note === 'string' && (keys.length ? true : /尚未抓/.test(c.note))
+        && keys.every(k => k in (V.COMPETITIONS ?? {}) && /^data:image\/png;base64,/.test(c.logos[k]));
+    })()],
+    ['registerCompetitions:已登記的鍵掛上 logo 後 compBadge 畫圖;沒登記的鍵不會被創出來', (() => {
+      const before = Object.keys(V.COMPETITIONS).length;
+      V.registerCompetitions({ logos: { en2: 'data:image/png;base64,AAAA', nope: 'data:image/png;base64,AAAA', pl: 'not-a-data-uri' } });
+      const okImg = /<img[^>]+class="comp-badge logo/.test(V.compBadge('en2'));
+      const plStillSpan = /<span class="comp-badge/.test(V.compBadge('pl'));
+      delete V.COMPETITIONS.en2.logo;
+      return okImg && plStillSpan && Object.keys(V.COMPETITIONS).length === before;
+    })()],
+    ['總覽、盃賽、搜尋球員都載 competitions 並註冊 logo', (() =>
+      ['page-overview.js', 'page-cups.js', 'allplayers-view.js'].every(f => {
+        const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+        return /'competitions'/.test(src) && /C\.registerCompetitions\(/.test(src);
+      }))()],
     ['總覽只連得進去的頁才給連結', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /C\.closedPage\(/.test(src);

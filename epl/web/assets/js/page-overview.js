@@ -1,4 +1,4 @@
-import * as C from './core.js?v=b69f3323';
+import * as C from './core.js?v=af40c359';
 
 const app = document.getElementById('app');
 
@@ -27,7 +27,8 @@ try {
   const skipped = loaded.filter(x => !x.data.meta || !x.data.fixtures);
 
   // 跨聯賽的資料集掛在英超目錄下(它們本來就是跨聯賽的一份)
-  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams']);
+  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams', 'competitions']);
+  C.registerCompetitions(shared.competitions);   // 有真圖就用真圖,沒有就退回色塊
   C.nav();
 
   const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div>

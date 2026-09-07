@@ -1,4 +1,4 @@
-import * as C from './core.js?v=b69f3323';
+import * as C from './core.js?v=af40c359';
 
 /* 跨聯賽球員搜尋(總球員頁)。2026-08-30 改成**合併單表**(使用者要求),
    加隊徽與頭貼。設計決定,都是踩過的坑或明寫的界線:
@@ -42,7 +42,8 @@ export async function renderAllPlayers(app) {
        會把上季踢過、本季沒進的也標上。沒有歐冠資料就不標,不猜。 */
     let inUcl = new Set();
     try {
-      const { data } = await C.loadFrom('pl', ['ucl-teams']);
+      const { data } = await C.loadFrom('pl', ['ucl-teams', 'competitions']);
+      C.registerCompetitions(data.competitions);   // 賽事欄的圖像:有真圖就用真圖
       const cur = data['ucl-teams']?.currentSeason;
       inUcl = new Set((data['ucl-teams']?.teams ?? [])
         .filter(t => cur && (t.seasons ?? []).includes(cur))

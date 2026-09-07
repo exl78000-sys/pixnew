@@ -28,6 +28,7 @@ import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { lookupTier, nearMisses } from './lib/adapters/england-tiers.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
+import { loadCompetitionLogos } from './lib/competitions.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
 import {
   preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled,
@@ -1283,6 +1284,14 @@ async function main() {
     } else {
       console.log('  歐冠:沒有快取(需要 FOOTBALL_DATA_TOKEN 跑 npm run ucl),本次不產出 ucl.json');
     }
+  }
+  /* 賽事 logo(英超/西甲/英冠/歐冠/足總盃/聯賽盃)。跨聯賽一份,放這裡,
+     總覽、盃賽、探索頁都從 'pl' 載。還沒抓到(要 runner 跑 npm run competition-logos)
+     就給空的 logos,前端退回色塊 —— 檔案一定要在,不然頁面會 404。 */
+  {
+    const comp = await loadCompetitionLogos(ROOT, { readFile, existsSync, join });
+    await write('competitions.json', comp);
+    console.log(`  賽事 logo:${Object.keys(comp.logos).length}/6 張${comp.retrievedAt ? `(${comp.retrievedAt.slice(0, 10)} 抓的)` : '(尚未抓取,前端用色塊)'}`);
   }
   await write('coaches.json', coaches);
   await write('news.json', news);

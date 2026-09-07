@@ -267,6 +267,9 @@ td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .comp-badge.lg { width: 30px; height: 30px; border-radius: 8px; font-size: 12px; }
 .comp-badge.lg.n3 { font-size: 10px; }
 .comp-cell { display: inline-flex; align-items: center; gap: 6px; }
+/* 真圖版:logo 多半是彩色圖在透明底,直接放深色底上會糊成一團(歐冠深藍那種),
+   墊一片近白的小圓角底 —— 深色介面放品牌 logo 的常見做法 */
+.comp-badge.logo { background: #f4f4f6; border-color: #ffffff2e; padding: 2px; box-sizing: border-box; }
 .team-cell { display: flex; align-items: center; gap: 9px; }
 .team-cell .nm { font-weight: 600; }
 
