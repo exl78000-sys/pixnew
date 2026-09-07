@@ -426,10 +426,18 @@ jobs:
             # 把整次部署弄掉:回寫紅 → build job 失敗 → deploy 被跳過)。
             # 重試 + rebase(失敗要 abort);三次不行就放棄回寫但**不擋部署** ——
             # 這批資料下一輪重抓得回來,部署沒出去才是使用者看得到的損失。
+            # rebase 衝突幾乎都在比賽日迴圈也在寫的比分快照(fotmob-*/scores.json):
+            # 迴圈剛推的那份比我們的新,所以衝突檔一律留遠端那份(rebase 時 --ours 就是上游),
+            # 其餘(盃賽快取、隊徽、PK 詳情…)照舊 continue。以前是整個 abort → 非 fast-forward →
+            # 三次都撞 → 整批原始快取沒回倉庫、下一輪全部重抓(2026-09-07 實際發生)。
             PUSHED=0
             for try in 1 2 3; do
               if ! git pull --rebase -q origin "${GITHUB_REF_NAME}" 2>/dev/null; then
-                git rebase --abort 2>/dev/null || true
+                git diff --name-only --diff-filter=U | xargs -r git checkout --ours -- 2>/dev/null || true
+                git add -A 2>/dev/null || true
+                GIT_EDITOR=true git rebase --continue >/dev/null 2>&1 \
+                  || git rebase --skip >/dev/null 2>&1 \
+                  || git rebase --abort 2>/dev/null || true
               fi
               if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
                 PUSHED=1; echo "已回寫即時資料(第 $try 次)"; break

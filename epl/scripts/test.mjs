@@ -4475,7 +4475,9 @@ function checkCups() {
   ok(cc.unverified === 1, '核對:AFC Liverpool 不會對到 Liverpool(字首 AFC 是球隊身分)→ 無法核對,不是對錯人', String(cc.unverified));
   const ccPens = crossCheckWithSportmonks([normaliseFotmobCupMatch(fm({ id: 'f' }, { scoreStr: '1 - 1', reason: { short: 'FT' } }), { codeOf })],
     [sm('Liverpool', 'AFC Bournemouth', '2026-01-10T15:00:00Z', [1, 1], [5, 4])]);
-  ok(ccPens.disagree.length === 1, '核對:一邊有 PK 一邊沒有 → 不一致(比分相同也不算一致)');
+  ok(ccPens.disagree.length === 0 && ccPens.pensMismatch.length === 1 && ccPens.agree === 1,
+    '核對:比分相同但一邊有 PK 一邊沒有 → 記成 pensMismatch 不擋(SM 的 PK 列實測會缺:Newport 2-2 Gillingham),比分才是紅線',
+    `disagree ${ccPens.disagree.length} / pensMismatch ${ccPens.pensMismatch.length}`);
   const ccDay = crossCheckWithSportmonks([normaliseFotmobCupMatch(fm({ id: 'g' }, { utcTime: '2026-01-11T00:30:00Z', scoreStr: '2 - 0', reason: { short: 'FT' } }), { codeOf })],
     [sm('Liverpool', 'AFC Bournemouth', '2026-01-10T23:30:00Z', [2, 0])]);
   ok(ccDay.matched === 1 && ccDay.agree === 1, '核對:跨日邊界(±1 天)也對得上');
