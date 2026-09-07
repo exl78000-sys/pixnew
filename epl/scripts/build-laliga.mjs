@@ -942,7 +942,10 @@ async function main() {
               home: m.home, away: m.away, score: m.score ? { home: m.score[0], away: m.score[1] } : { home: null, away: null },
               teamStats: {}, players: {}, events: [], lineups: {},
               coverage: { teamStatistics: false, playerStatistics: false, ratings: false, events: false, lineups: false } };
-            return buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code });
+            const rep = buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code });
+            /* fixtureId 與 round 是跟前端的約定(英超的 live.json 有帶):實時頁的進行中卡片靠 fixtureId 直達分析頁,
+               沒有就退回 href="#" 的抽屜 —— 使用者 2026-09-07 點西甲進行中的比賽進不去,就是這裡漏了。 */
+            return rep ? { ...rep, fixtureId: fixture.id ?? null, round: fixture.round ?? null } : rep;
           }).filter(Boolean);
           liveOut = { available: true, source: 'fotmob', sourceLabel: 'FotMob 比分(比賽日約每 15 分鐘)', demo: false,
             season: CURRENT_SEASON, fetchedAt: sc.fetchedAt,

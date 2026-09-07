@@ -15,7 +15,7 @@ const app = document.getElementById('app');
       要講的是「這個聯賽沒有免費的球員資料源」。0 是一個看起來很像答案的數字。 */
 
 try {
-  const LEAGUE_SETS = ['meta', 'teams', 'fixtures', 'news'];
+  const LEAGUE_SETS = ['meta', 'teams', 'fixtures', 'news', 'live'];
   const entries = Object.keys(C.LEAGUES);
   const loaded = await Promise.all(entries.map(async lg => {
     const { data, absent } = await C.loadFrom(lg, LEAGUE_SETS);
@@ -115,13 +115,22 @@ try {
       /* 隊徽從**這個聯賽自己的**名冊拿,不走全域登錄 —— 隊碼跨聯賽會重複
          (Burnley 在英超與英冠都是 BUR),全域登錄是後蓋前。 */
       const tBy = new Map((data.teams ?? []).map(t => [t.code, t]));
+      /* 已開賽的顯示比數(使用者要求,2026-09-07):從這個聯賽的即時快照(live.json)對主客鍵。
+         重播模式是別季的比賽,不對;沒有快照就維持「已開賽・等待資料」—— 不拿賽前預測冒充比分。 */
+      const lv = data.live;
+      const liveBy = new Map((lv?.available && !lv.demo ? lv.matches ?? [] : []).map(m => [`${m.home}|${m.away}`, m]));
       for (const f of data.fixtures) {
         if (f.played || !f.kickoff || !inWindow(f.kickoff)) continue;
         const h = tBy.get(f.home), a = tBy.get(f.away);
+        const m = liveBy.get(`${f.home}|${f.away}`);
+        const live = m && (m.started || m.finished)
+          ? { hs: m.hs ?? null, as: m.as ?? null, finished: m.finished === true,
+              minute: m.finished ? null : C.liveMinute(m, lv.fetchedAt).disp }
+          : null;
         rows.push({ kick: f.kickoff, comp: C.LEAGUES[lg].zh, compKey: lg,
           home: h?.en ?? f.home, away: a?.en ?? f.away,
           hCrest: h?.crest ?? null, aCrest: a?.crest ?? null,
-          note: `第 ${f.round} 輪`, pending: false,
+          note: `第 ${f.round} 輪`, pending: false, live,
           link: C.link('analysis', { id: f.id, league: lg }) });
       }
     }
@@ -195,7 +204,16 @@ try {
         ? `<span class="small">${C.dateFull(u.kick.slice(0, 10))} <span class="dim">・時間待定</span></span>`
         : `<span class="small">${C.kickoffLocal(u.kick)}</span>`) },
     { key: 'cd', label: '倒數', value: u => u.kick, sortable: false,
-      render: u => (u.pending ? '<span class="dim small">—</span>' : `<span class="small">${C.countdown(u.kick)}</span>`) },
+      render: u => {
+        if (u.pending) return '<span class="dim small">—</span>';
+        if (!u.live) return `<span class="small">${C.countdown(u.kick)}</span>`;
+        // 已開賽:比數 + 分鐘(有即時快照才會有;分鐘從快照時間往前推,跟實時戰況頁同一個 liveMinute)
+        const sc = u.live.hs != null && u.live.as != null ? `<b class="mono" style="font-size:14px">${u.live.hs} : ${u.live.as}</b>` : '';
+        return u.live.finished
+          ? `<span class="small" style="display:inline-flex;align-items:center;gap:6px"><span class="pill tiny">完場</span>${sc}</span>`
+          : `<span class="small" style="display:inline-flex;align-items:center;gap:6px"><span class="pill bad tiny"><span class="livedot"></span>${
+              u.live.minute != null ? `第 ${u.live.minute} 分鐘` : '進行中'}</span>${sc}</span>`;
+      } },
     // 靠左:內容是「圖 + 字」的 flex 排版,跟對戰欄同一邊(使用者要求,2026-09-07)
     { key: 'comp', label: '賽事', value: u => u.comp, left: true, render: u => C.compBadge(u.compKey, { label: u.comp }) },
     { key: 'match', label: '對戰', value: u => u.home, left: true,

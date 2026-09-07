@@ -31,6 +31,17 @@ try {
   function renderPage() {
     const scrollY = window.scrollY;
     const matches = live.available ? live.matches : [];
+    /* 產物沒帶 fixtureId / round 的(西甲的 FotMob 比分快照第一版就沒帶),用賽程對回來:
+       同一季同主客只有一場。對不到的才退回抽屜(href="#")。重播模式是別季的比賽,不對。 */
+    if (!live.demo) {
+      const fxByPair = new Map(fixtures.map(f => [`${f.home}|${f.away}`, f]));
+      for (const m of matches) {
+        const fx = fxByPair.get(`${m.home}|${m.away}`);
+        if (!fx) continue;
+        if (m.fixtureId == null) m.fixtureId = fx.id;
+        if (m.round == null) m.round = fx.round;
+      }
+    }
     const liveByKey = new Map(matches.filter(m => !live.demo).map(m => [`${m.home}|${m.away}`, m]));
     const done = matches.filter(m => m.finished);
     // SportMonks livescores 沒有比賽時不一定帶輪次；不要把 undefined 顯示給使用者。
