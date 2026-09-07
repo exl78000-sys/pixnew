@@ -144,8 +144,11 @@ export function normaliseFotmobCupMatch(m, { codeOf, details = null }) {
  *   a. 名字鍵完全相同(字尾 FC/AFC 去掉、字首 AFC 不動 —— 那是球隊身分,CLAUDE.md 那條坑)
  *   b. a 不中時,同日 ±1 的候選裡兩隊都是「同一支球隊的不同寫法」(只差 City/Town/FC/United 這種通用字)且唯一
  * 對不上的算「無法核對」(unverified),**不是**「不一致」—— 那兩個結論差很多。
- * 比的是:最終比分、有沒有 PK(SM 的 pens 有值 ⇔ FotMob reason 是 Pen)。不比延長:
- * SM 的 ET 分段在聯賽盃有 5 場疑似假的(規則上聯賽盃前幾輪不打延長),不拿它當標準。 */
+ * 比的是最終比分 —— 這才是紅線(disagree)。「有沒有 PK」只記成 pensMismatch,不擋:
+ * 第一次真抓就撞到 SportMonks 的 PK 列會缺 —— Newport County 2-2 Gillingham(足總盃 2025-26 R1)SM 記成
+ * 延長後 2-2、沒有 PENALTY_SHOOTOUT 列,而 FotMob 賽程說 Pen、單場詳情有整輪 10 球的 PK(4-3)。
+ * 那是舊快取缺資料,不是 FotMob 錯;拿它當紅線會把整季 123 場擋掉(實際發生過:run 34145087061)。
+ * 也不比延長:SM 的 ET 分段在聯賽盃有 5 場疑似假的(規則上聯賽盃前幾輪不打延長)。 */
 export const nameKey = s => String(s ?? '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
   .replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim()
   .replace(/\s+(fc|afc)$/, '').replace(/\s+/g, ' ');
@@ -175,7 +178,7 @@ export function crossCheckWithSportmonks(fmMatches, smMatches) {
     if (!byDate.has(d)) byDate.set(d, []);
     byDate.get(d).push(m);
   }
-  const out = { compared: 0, matched: 0, agree: 0, disagree: [], unverified: 0, loose: 0 };
+  const out = { compared: 0, matched: 0, agree: 0, disagree: [], pensMismatch: [], unverified: 0, loose: 0 };
   for (const f of fmMatches ?? []) {
     const d = dayOf(f.kickoff);
     if (!d || !f.home?.name || !f.away?.name) continue;
@@ -194,12 +197,14 @@ export function crossCheckWithSportmonks(fmMatches, smMatches) {
     const sameScore = f.final && hit.final && f.final[0] === hit.final[0] && f.final[1] === hit.final[1];
     const smPens = Array.isArray(hit.pens);
     const fmPens = f.reason === 'Pen';
-    if (sameScore && smPens === fmPens) { out.agree++; continue; }
-    out.disagree.push({
+    const row = {
       id: f.id, date: d, home: f.home.name, away: f.away.name,
       fotmob: `${f.final?.join('-') ?? '?'}${fmPens ? ' pens' : ''}`,
       sportmonks: `${hit.final?.join('-') ?? '?'}${smPens ? ` pens ${hit.pens.join('-')}` : ''}`,
-    });
+    };
+    if (!sameScore) { out.disagree.push(row); continue; }
+    if (smPens !== fmPens) out.pensMismatch.push(row);   // 記下來給人看,不擋(見上面 Newport 那場)
+    out.agree++;
   }
   return out;
 }

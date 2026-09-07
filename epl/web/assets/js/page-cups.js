@@ -274,7 +274,9 @@ try {
         >${s.label}${s.current ? '(本季)' : ''}</option>`).join('');
       const season = seasons.find(s => s.label === seasonLabel) ?? seasons[0];
       if (!season) {
-        document.getElementById('body').innerHTML = '<div class="note">這個盃賽目前沒有可顯示的賽季。</div>';
+        const miss = (cup.missingSeasons ?? []).map(x => `${C.esc(x?.label ?? x)}:${C.esc(x?.reason ?? '上游還沒發布')}`);
+        document.getElementById('body').innerHTML = `<div class="note">這個盃賽目前沒有可顯示的賽季。${
+          miss.length ? `<div class="small" style="margin-top:6px">${miss.join(';')}</div>` : ''}</div>`;
         document.getElementById('count').textContent = '';
         document.getElementById('coverage').innerHTML = '';
         return;
@@ -312,7 +314,8 @@ try {
       const ccText = cc
         ? (cc.matched
           ? `跟 SportMonks 的舊快取(停在 2026-09-02)逐場核對:對得上 ${cc.matched} 場,其中已完賽的 ${cc.agree} 場比分全部一致${
-              cc.unverified ? `;${cc.unverified} 場隊名寫法對不上、無法核對` : ''}。之後的場次<b>只有 FotMob 一個來源</b>。`
+              cc.unverified ? `;${cc.unverified} 場隊名寫法對不上、無法核對` : ''}${
+              cc.pensMismatch?.length ? `;${cc.pensMismatch.length} 場「有沒有踢 PK」兩邊講法不同(舊快取的 PK 列會缺,以 FotMob 單場詳情為準)` : ''}。之後的場次<b>只有 FotMob 一個來源</b>。`
           : '這一季沒有第二個來源可以核對(SportMonks 的舊快取沒有這一季),只有 FotMob 一份。')
         : '';
       document.getElementById('coverage').innerHTML = `
