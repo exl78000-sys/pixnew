@@ -426,22 +426,35 @@ jobs:
             # 把整次部署弄掉:回寫紅 → build job 失敗 → deploy 被跳過)。
             # 重試 + rebase(失敗要 abort);三次不行就放棄回寫但**不擋部署** ——
             # 這批資料下一輪重抓得回來,部署沒出去才是使用者看得到的損失。
-            # rebase 衝突幾乎都在比賽日迴圈也在寫的比分快照(fotmob-*/scores.json):
-            # 迴圈剛推的那份比我們的新,所以衝突檔一律留遠端那份(rebase 時 --ours 就是上游),
-            # 其餘(盃賽快取、隊徽、PK 詳情…)照舊 continue。以前是整個 abort → 非 fast-forward →
-            # 三次都撞 → 整批原始快取沒回倉庫、下一輪全部重抓(2026-09-07 實際發生)。
+            # 回寫要在**獨立的 worktree** 裡 rebase 再 push。runner 的主工作樹此時滿是 build 剛寫的產物
+            # (沒 add 的),`git pull --rebase` 會直接拒絕(「You have unstaged changes」)—— 以前只有遠端沒動時
+            # 裸 push 才會成功,比賽日迴圈每 3 分鐘推一次的時段一律撞三次放棄(2026-09-07 兩次部署都這樣,
+            # 整批原始快取沒回倉庫、下一輪全部重抓)。worktree 是乾淨的 checkout,rebase 得動;主工作樹一個檔
+            # 都不碰(後面的 npm test / bundle / deploy 還要用它)。rebase 衝突幾乎都在迴圈也在寫的比分快照,
+            # 迴圈剛推的那份比我們的新,所以衝突檔一律留遠端那份(rebase 時 --ours 就是上游),其餘照舊。
+            # 拋棄式倉庫演練過:髒主樹 + 遠端已前進 + 同一檔衝突,遠端保有迴圈的比分、我們的檔案也進去了。
+            writeback() {
+              local WB="$RUNNER_TEMP/writeback"
+              git fetch -q origin "${GITHUB_REF_NAME}" 2>/dev/null || true
+              rm -rf "$WB"; git worktree prune 2>/dev/null || true
+              git worktree add -q --detach "$WB" HEAD 2>/dev/null || return 1
+              local ok=0
+              ( cd "$WB" || exit 1
+                if ! git rebase -q "origin/${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+                  git diff --name-only --diff-filter=U | xargs -r git checkout --ours -- 2>/dev/null || true
+                  git add -A 2>/dev/null || true
+                  GIT_EDITOR=true git rebase --continue >/dev/null 2>&1 \
+                    || git rebase --skip >/dev/null 2>&1 \
+                    || { git rebase --abort 2>/dev/null || true; exit 1; }
+                fi
+                git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null
+              ) && ok=1
+              git worktree remove --force "$WB" 2>/dev/null || true
+              [ "$ok" = "1" ]
+            }
             PUSHED=0
             for try in 1 2 3; do
-              if ! git pull --rebase -q origin "${GITHUB_REF_NAME}" 2>/dev/null; then
-                git diff --name-only --diff-filter=U | xargs -r git checkout --ours -- 2>/dev/null || true
-                git add -A 2>/dev/null || true
-                GIT_EDITOR=true git rebase --continue >/dev/null 2>&1 \
-                  || git rebase --skip >/dev/null 2>&1 \
-                  || git rebase --abort 2>/dev/null || true
-              fi
-              if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
-                PUSHED=1; echo "已回寫即時資料(第 $try 次)"; break
-              fi
+              if writeback; then PUSHED=1; echo "已回寫即時資料(第 $try 次)"; break; fi
               sleep 4
             done
             [ "$PUSHED" = "1" ] || echo "⚠ 回寫連撞三次(比賽日迴圈在推),放棄這一批 —— 不擋部署"
