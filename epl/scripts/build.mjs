@@ -925,7 +925,7 @@ async function main() {
   {
     const other = loadTeams(ROOT, { file: 'teams-la-liga.json' });
     const r = await loadCurated({
-      root: ROOT, league: 'pl',
+      root: ROOT, league: 'pl', asOf: AS_OF,
       codeOf: n => T.codeOf(n) ?? other.codeOf(n) ?? null,
       fixturesOf: comp => (comp === 'pl' ? fixtures : null),
       fs: { existsSync, readFile, join },

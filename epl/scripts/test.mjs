@@ -3613,6 +3613,22 @@ function checkCuratedNews() {
       '中間沒交付的那 17 天會被算成斷檔', JSON.stringify(cov2.gaps));
     ok(cov2.days === 18, '累計天數只算真的有收的那幾天,不是頭尾相減', String(cov2.days));
 
+    /* 尾端斷檔:最後一次交付到基準日之間。第一版沒算這段 —— 2026-09-07 實測檔案庫停在 8/28,
+       頁面卻印「這段期間沒有斷檔」,10 天沒收看不出來。
+       m4 的三次交付涵蓋 7、7、4 天,節奏 = 7;尾端空的天數**超過** 7 才算逾期,剛好 7 不算。 */
+    ok(coverageOf(m4.archive).trailingGap === null, '不給基準日就不算尾端(沒有「今天」無從算起)');
+    ok(coverageOf(m4.archive, { asOf: '2026-02-04' }).trailingGap === null, '基準日就是最後一天 → 沒有尾端斷檔');
+    ok(coverageOf(m4.archive, { asOf: '2026-02-03' }).trailingGap === null, '基準日在最後一天之前 → 沒有尾端斷檔');
+    const t2 = coverageOf(m4.archive, { asOf: '2026-02-06' }).trailingGap;
+    ok(t2 && t2.from === '2026-02-05' && t2.to === '2026-02-06' && t2.days === 2 && t2.cadence === 7 && !t2.overdue,
+      '基準日之後 2 天:算出尾端 2 天、節奏 7、還在節奏內', JSON.stringify(t2));
+    ok(coverageOf(m4.archive, { asOf: '2026-02-11' }).trailingGap.overdue === false,
+      '尾端剛好等於節奏(7 天)不算逾期');
+    const t3 = coverageOf(m4.archive, { asOf: '2026-02-12' }).trailingGap;
+    ok(t3 && t3.days === 8 && t3.overdue === true, '尾端超過節奏(8 > 7)才算逾期', JSON.stringify(t3));
+    const t4 = coverageOf(m4.archive, { asOf: '2026-02-20' }).trailingGap;
+    ok(t4 && t4.days === 16 && t4.overdue, '16 天沒交付 → 逾期', JSON.stringify(t4));
+
     /* 淘汰:交付紀錄要一起淘汰,不然涵蓋範圍會宣稱收了一段其實已經刪掉的日子。
        跨過界線的那一次,from 要夾到界線上。 */
     const pr = pruneArchive(m4.archive, { asOf: '2026-02-05', keepDays: 25 });
@@ -3647,15 +3663,25 @@ function checkCuratedNews() {
     for (const [lg, mp] of [['pl', join(ROOT, 'web', 'data', 'meta.json')],
       ['es1', join(ROOT, 'web', 'data', 'leagues', 'es1', 'meta.json')]]) {
       if (!existsSync(mp)) continue;
-      const c = JSON.parse(readFileSync(mp, 'utf8')).curatedNews;
+      const meta = JSON.parse(readFileSync(mp, 'utf8'));
+      const c = meta.curatedNews;
       ok(c && c.days === real.days && c.from === real.from && c.to === real.to,
         `${lg}:meta 講的涵蓋範圍跟檔案庫算出來的一致`,
         c ? `${c.from}~${c.to} ${c.days}天` : '(沒有)');
       ok(c && c.gaps.length === real.gaps.length, `${lg}:斷檔數目一致`);
+      /* 尾端那一段要用 build 的基準日算 —— 畫面上「之後 N 天沒有人整理」講的是到建置日為止,
+         不是到讀者打開頁面那一刻(靜態站沒有「現在」)。 */
+      const want = coverageOf(arc, { asOf: meta.asOf }).trailingGap;
+      const got = c?.trailingGap ?? null;
+      ok((want === null && got === null) || (want && got && want.days === got.days && want.overdue === got.overdue),
+        `${lg}:meta 帶的尾端斷檔跟用建置日算出來的一致`,
+        `meta ${JSON.stringify(got)} vs 算 ${JSON.stringify(want)}`);
     }
     const newsSrc = readFileSync(join(W, 'page-news.js'), 'utf8');
     ok(/meta\.curatedNews/.test(newsSrc) && /斷檔|沒有人整理/.test(newsSrc),
       '動態頁真的把涵蓋範圍與斷檔印出來(鐵則四)');
+    ok(/trailingGap/.test(newsSrc) && /還沒收到/.test(newsSrc),
+      '動態頁也把尾端斷檔印出來(最後一次整理之後沒收的那幾天)');
   }
   return fail;
 }

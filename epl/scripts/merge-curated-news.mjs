@@ -78,11 +78,16 @@ async function main() {
       + `、${pruned.droppedDeliveries} 次交付紀錄`);
   }
 
-  const cov = coverageOf(pruned.archive);
+  const cov = coverageOf(pruned.archive, { asOf: AS_OF });
   console.log(`\n  檔案庫:${cov.stories} 則,涵蓋 ${cov.days} 天`);
   for (const r of cov.ranges) console.log(`    ${r.from} ~ ${r.to}`);
   // 斷檔要印出來 —— 「8/1~8/28」看起來像連續 28 天,實際可能只有兩個週末
   for (const g of cov.gaps) console.log(`    ⚠ 斷檔 ${g.from} ~ ${g.to}(這幾天沒有人整理)`);
+  if (cov.trailingGap) {
+    const t = cov.trailingGap;
+    console.log(`    ${t.overdue ? '⚠' : '·'} 最後一次整理到 ${cov.to},之後 ${t.days} 天沒有交付`
+      + `${t.overdue ? `(超過每批約 ${t.cadence} 天的節奏,該來的沒來)` : '(還在節奏內)'}`);
+  }
 
   const after = JSON.stringify(pruned.archive, null, 2) + '\n';
   if (before === JSON.stringify(pruned.archive)) {

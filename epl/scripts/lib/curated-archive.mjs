@@ -37,6 +37,8 @@ export const addDays = (iso, n) => {
   if (!Number.isFinite(t)) return null;
   return new Date(t + n * DAY).toISOString().slice(0, 10);
 };
+// 含頭尾的天數(8/22 ~ 8/28 = 7 天)
+const span = (a, b) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / DAY) + 1;
 
 /* 比對「內容有沒有變」用的正規化字串。
    firstSeen / lastSeen 是檔案庫自己加的,不算內容 —— 拿它們去比的話,
@@ -164,8 +166,15 @@ export function pruneArchive(archive, { asOf, keepDays = 180 } = {}) {
 }
 
 /* 涵蓋範圍:把交付的 window 合成連續區間,並把中間的斷檔算出來。
-   相鄰(下一段的 from 就是上一段 to 的隔天)算連續 —— 那中間沒有漏掉任何一天。 */
-export function coverageOf(archive) {
+   相鄰(下一段的 from 就是上一段 to 的隔天)算連續 —— 那中間沒有漏掉任何一天。
+
+   **尾端也要算。** 第一版只算區間與區間之間的斷檔,2026-09-07 實測:檔案庫停在 8/28,
+   頁面卻印著「這段期間沒有斷檔」—— 10 天沒收的事實從畫面上完全看不出來,
+   正是這個功能當初要防的那句「不要當成這段期間沒事發生」。
+   給 asOf(通常是 build 的基準日)就算最後一次交付到那天的空檔。
+   「逾期」的門檻不寫死:交付是一批一批來的,每批涵蓋的天數就是它的節奏,
+   尾端空的天數超過那個節奏才算「該來的沒來」。 */
+export function coverageOf(archive, { asOf = null } = {}) {
   const wins = (archive.deliveries ?? [])
     .filter(d => isDate(d.from) && isDate(d.to) && d.from <= d.to)
     .map(d => ({ from: d.from, to: d.to }))
@@ -180,17 +189,28 @@ export function coverageOf(archive) {
   for (let i = 1; i < ranges.length; i++) {
     gaps.push({ from: addDays(ranges[i - 1].to, 1), to: addDays(ranges[i].from, -1) });
   }
-  const days = ranges.reduce((n, r) =>
-    n + Math.round((Date.parse(`${r.to}T00:00:00Z`) - Date.parse(`${r.from}T00:00:00Z`)) / DAY) + 1, 0);
+  const days = ranges.reduce((n, r) => n + span(r.from, r.to), 0);
+
+  let trailingGap = null;
+  const last = ranges[ranges.length - 1];
+  const ref = dayOf(asOf);
+  if (last && isDate(ref) && ref > last.to) {
+    const cadence = Math.max(...wins.map(w => span(w.from, w.to)));
+    const from = addDays(last.to, 1);
+    const gapDays = span(from, ref);
+    trailingGap = { from, to: ref, days: gapDays, cadence, overdue: gapDays > cadence };
+  }
+
   return {
     ranges, gaps, days,
     from: ranges[0]?.from ?? null,
-    to: ranges[ranges.length - 1]?.to ?? null,
+    to: last?.to ?? null,
     deliveries: (archive.deliveries ?? []).length,
     stories: (archive.stories ?? []).length,
     // 保留天數由合併腳本寫進檔案庫。畫面上寫死一個數字的話,
     // 改了 --keep-days 之後畫面就會說謊
     keepDays: archive.keepDays ?? null,
+    trailingGap,
   };
 }
 
@@ -210,18 +230,18 @@ export function overlay(archiveStories, inboxStories) {
 
 /* 收件匣還沒併進檔案庫時,涵蓋範圍也要把它算進去 ——
    不然畫面會說「收到 8/21」但清單裡已經有 8/28 的新聞。 */
-export function coverageWith(archive, delivery) {
-  if (!delivery?.ok) return coverageOf(archive);
+export function coverageWith(archive, delivery, opts = {}) {
+  if (!delivery?.ok) return coverageOf(archive, opts);
   const key = deliveryKey(delivery);
   const known = (archive.deliveries ?? []).some(d => deliveryKey(d) === key);
-  if (known) return coverageOf(archive);
+  if (known) return coverageOf(archive, opts);
   return coverageOf({
     ...archive,
     deliveries: [...(archive.deliveries ?? []), {
       source: delivery.source, retrievedAt: delivery.retrievedAt,
       from: delivery.from, to: delivery.to, stories: delivery.stories.length,
     }],
-  });
+  }, opts);
 }
 
 /* build 端的單一入口。**英超與西甲共用這一個函式**(CLAUDE.md 的規矩:
@@ -229,7 +249,7 @@ export function coverageWith(archive, delivery) {
 
    讀檔案庫 → 疊上收件匣 → 比分核對 → 篩這個聯賽,並算出誠實的涵蓋範圍。
    log 用回傳的方式給呼叫端印,函式本身不碰 stdout(這樣測試不用攔輸出)。 */
-export async function loadCurated({ root, league, codeOf, fixturesOf, fs }) {
+export async function loadCurated({ root, league, codeOf, fixturesOf, fs, asOf = null }) {
   const { existsSync, readFile, join } = fs;
   const inboxPath = join(root, 'data', 'manual', 'news-curated.json');
   const archivePath = join(root, 'data', 'manual', 'news-curated-archive.json');
@@ -252,7 +272,7 @@ export async function loadCurated({ root, league, codeOf, fixturesOf, fs }) {
   const { toFeedItems, forLeague } = await import('./adapters/curated-news.mjs');
   const out = toFeedItems(stories, { codeOf, fixturesOf });
   const items = forLeague(out.items, league);
-  const coverage = coverageWith(archive, delivery);
+  const coverage = coverageWith(archive, delivery, { asOf });
 
   const v = items.filter(i => i.scoreCheck === 'verified').length;
   const u = items.filter(i => i.scoreCheck === 'unverified').length;
@@ -262,6 +282,11 @@ export async function loadCurated({ root, league, codeOf, fixturesOf, fs }) {
     + `涵蓋 ${coverage.from ?? '—'} ~ ${coverage.to ?? '—'} 共 ${coverage.days} 天`
     + (coverage.gaps.length ? `,中間有 ${coverage.gaps.length} 段沒有整理` : ''));
   for (const g of coverage.gaps) lines.push(`  ⚠ 斷檔 ${g.from} ~ ${g.to}`);
+  if (coverage.trailingGap) {
+    const t = coverage.trailingGap;
+    lines.push(`  ${t.overdue ? '⚠' : '·'} 最後一次整理到 ${coverage.to},之後 ${t.days} 天沒有交付(到基準日 ${t.to}`
+      + `${t.overdue ? `,超過每批約 ${t.cadence} 天的節奏` : ''})`);
+  }
   for (const r of out.rejected) lines.push(`⚠ 退回 ${r.id}:${r.detail.join(' / ')}`);
   if (out.unknownStatus.length) lines.push(`⚠ 沒見過的 status:${out.unknownStatus.join('、')}`);
 
