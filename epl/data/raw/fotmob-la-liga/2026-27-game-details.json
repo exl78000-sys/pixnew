@@ -64835,8 +64835,1795 @@
      }
     ]
    }
+  },
+  "ELC|RSO": {
+   "key": "ELC|RSO",
+   "season": "2026-27",
+   "date": "2026-09-07",
+   "matchId": "5868044",
+   "home": "ELC",
+   "away": "RSO",
+   "score": [
+    2,
+    3
+   ],
+   "providerScore": [
+    2,
+    3
+   ],
+   "teamStats": {
+    "ELC": {
+     "possession": 58,
+     "shots": 20,
+     "shotsOn": 10,
+     "shotsOff": 8,
+     "blockedShots": 2,
+     "corners": 6,
+     "offsides": 2,
+     "fouls": 9,
+     "saves": 3,
+     "passes": 494,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.47
+    },
+    "RSO": {
+     "possession": 42,
+     "shots": 13,
+     "shotsOn": 6,
+     "shotsOff": 5,
+     "blockedShots": 2,
+     "corners": 7,
+     "offsides": 1,
+     "fouls": 8,
+     "saves": 8,
+     "passes": 361,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.58
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     58,
+     42
+    ],
+    "h1": [
+     56,
+     44
+    ],
+    "h2": [
+     62,
+     38
+    ]
+   },
+   "events": [
+    {
+     "minute": 9,
+     "extra": null,
+     "team": "RSO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jon Aramburu"
+    },
+    {
+     "minute": 11,
+     "extra": null,
+     "team": "RSO",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Job Ochieng"
+    },
+    {
+     "minute": 31,
+     "extra": null,
+     "team": "RSO",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Yangel Herrera"
+    },
+    {
+     "minute": 43,
+     "extra": null,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Tete Morente"
+    },
+    {
+     "minute": 55,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Thomas Lemar"
+    },
+    {
+     "minute": 55,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Abiel Osorio"
+    },
+    {
+     "minute": 57,
+     "extra": null,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Abiel Osorio"
+    },
+    {
+     "minute": 58,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Álex Marchal"
+    },
+    {
+     "minute": 58,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jon Martín"
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "RSO",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Jon Martín"
+    },
+    {
+     "minute": 67,
+     "extra": null,
+     "team": "ELC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Thomas Lemar"
+    },
+    {
+     "minute": 68,
+     "extra": null,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Germán Valera"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jon Gorrotxategi"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jon Pacheco"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lucas Cepeda"
+    },
+    {
+     "minute": 74,
+     "extra": null,
+     "team": "ELC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Fer Niño"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "RSO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Héctor Fort"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Josan"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Roy Revivo"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "RSO",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Luka Sučić"
+    },
+    {
+     "minute": 90,
+     "extra": 7,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Thomas Lemar"
+    }
+   ],
+   "shots": [
+    {
+     "min": 1,
+     "extra": null,
+     "team": "RSO",
+     "player": "Gonçalo Guedes",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.6,
+     "y": 46.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "RSO",
+     "player": "Yangel Herrera",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.008,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.8,
+     "y": 22.6,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "RSO",
+     "player": "Job Ochieng",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.079,
+     "xgot": 0.293,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.3,
+     "y": 24.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "RSO",
+     "player": "Luka Sucic",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0.066,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.6,
+     "y": 16.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "RSO",
+     "player": "Luka Sucic",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.9,
+     "y": 27.4,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "ELC",
+     "player": "Facundo Buonanotte",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0.127,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79,
+     "y": 25.5,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ELC",
+     "player": "Ezequiel Ponce",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.11,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.7,
+     "y": 29.7,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "ELC",
+     "player": "Germán Valera",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.3,
+     "y": 51,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "RSO",
+     "player": "Yangel Herrera",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.041,
+     "xgot": 0.26,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 22.7,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "ELC",
+     "player": "Facundo Buonanotte",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 30.2,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "RSO",
+     "player": "Luka Sucic",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.057,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 39.7,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "RSO",
+     "player": "Jon Aramburu",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.022,
+     "xgot": 0.017,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.3,
+     "y": 37.1,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "RSO",
+     "player": "Yangel Herrera",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.9,
+     "y": 42.6,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "ELC",
+     "player": "Abiel Osorio",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.087,
+     "xgot": 0.293,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.1,
+     "y": 44.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "ELC",
+     "player": "Thomas Lemar",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 45.4,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "ELC",
+     "player": "Thomas Lemar",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82,
+     "y": 43,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "RSO",
+     "player": "Job Ochieng",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 51.6,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "ELC",
+     "player": "Thomas Lemar",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0.046,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.8,
+     "y": 36.3,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "ELC",
+     "player": "Lucas Cepeda",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0.046,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73.3,
+     "y": 34.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "ELC",
+     "player": "Pedro Bigas",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0.028,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77,
+     "y": 36.9,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "ELC",
+     "player": "Tete Morente",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.4,
+     "y": 21.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "ELC",
+     "player": "Fer Niño",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.865,
+     "xgot": 0.994,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.8,
+     "y": 36.4,
+     "foot": "OtherBodyParts"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "ELC",
+     "player": "Fer Niño",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0.262,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 42.5,
+     "foot": "Header"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "ELC",
+     "player": "Víctor Chust",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.251,
+     "xgot": 0.075,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 33.6,
+     "foot": "Header"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "ELC",
+     "player": "Abiel Osorio",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.35,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.6,
+     "y": 37.8,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "ELC",
+     "player": "Lucas Cepeda",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.021,
+     "xgot": 0.042,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.8,
+     "y": 17.4,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "ELC",
+     "player": "Abiel Osorio",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.122,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.9,
+     "y": 35.8,
+     "foot": "Header"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "RSO",
+     "player": "Job Ochieng",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.1,
+     "y": 30.3,
+     "foot": "Header"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "ELC",
+     "player": "Fer Niño",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.077,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 33.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "RSO",
+     "player": "Luka Sucic",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.124,
+     "xgot": 0.682,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 36.6,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "ELC",
+     "player": "Fer Niño",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.118,
+     "xgot": 0.519,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 33.2,
+     "foot": "Header"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "ELC",
+     "player": "Roy Revivo",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.173,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.2,
+     "y": 40.6,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 90,
+     "extra": 4,
+     "team": "RSO",
+     "player": "Job Ochieng",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.051,
+     "xgot": 0.088,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 20.1,
+     "foot": "RightFoot"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -22
+    ],
+    [
+     2,
+     -22
+    ],
+    [
+     3,
+     -27
+    ],
+    [
+     4,
+     43
+    ],
+    [
+     5,
+     33
+    ],
+    [
+     6,
+     43
+    ],
+    [
+     7,
+     0
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     9,
+     5
+    ],
+    [
+     10,
+     -16
+    ],
+    [
+     11,
+     -24
+    ],
+    [
+     12,
+     -11
+    ],
+    [
+     13,
+     -27
+    ],
+    [
+     14,
+     -38
+    ],
+    [
+     15,
+     -57
+    ],
+    [
+     16,
+     -14
+    ],
+    [
+     17,
+     16
+    ],
+    [
+     18,
+     11
+    ],
+    [
+     19,
+     11
+    ],
+    [
+     20,
+     22
+    ],
+    [
+     21,
+     38
+    ],
+    [
+     22,
+     5
+    ],
+    [
+     23,
+     -49
+    ],
+    [
+     24,
+     -14
+    ],
+    [
+     25,
+     5
+    ],
+    [
+     26,
+     60
+    ],
+    [
+     27,
+     27
+    ],
+    [
+     28,
+     30
+    ],
+    [
+     29,
+     19
+    ],
+    [
+     30,
+     38
+    ],
+    [
+     31,
+     33
+    ],
+    [
+     32,
+     22
+    ],
+    [
+     33,
+     8
+    ],
+    [
+     34,
+     14
+    ],
+    [
+     35,
+     8
+    ],
+    [
+     36,
+     -5
+    ],
+    [
+     37,
+     5
+    ],
+    [
+     38,
+     14
+    ],
+    [
+     39,
+     19
+    ],
+    [
+     40,
+     24
+    ],
+    [
+     41,
+     -27
+    ],
+    [
+     42,
+     -33
+    ],
+    [
+     43,
+     -60
+    ],
+    [
+     44,
+     -16
+    ],
+    [
+     45,
+     -11
+    ],
+    [
+     45.5,
+     0
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -27
+    ],
+    [
+     48,
+     -60
+    ],
+    [
+     49,
+     -57
+    ],
+    [
+     50,
+     49
+    ],
+    [
+     51,
+     54
+    ],
+    [
+     52,
+     27
+    ],
+    [
+     53,
+     -79
+    ],
+    [
+     54,
+     -41
+    ],
+    [
+     55,
+     -22
+    ],
+    [
+     56,
+     38
+    ],
+    [
+     57,
+     62
+    ],
+    [
+     58,
+     68
+    ],
+    [
+     59,
+     38
+    ],
+    [
+     60,
+     22
+    ],
+    [
+     61,
+     16
+    ],
+    [
+     62,
+     14
+    ],
+    [
+     63,
+     -5
+    ],
+    [
+     64,
+     0
+    ],
+    [
+     65,
+     0
+    ],
+    [
+     66,
+     0
+    ],
+    [
+     67,
+     5
+    ],
+    [
+     68,
+     5
+    ],
+    [
+     69,
+     5
+    ],
+    [
+     70,
+     0
+    ],
+    [
+     71,
+     5
+    ],
+    [
+     72,
+     11
+    ],
+    [
+     73,
+     5
+    ],
+    [
+     74,
+     24
+    ],
+    [
+     75,
+     24
+    ],
+    [
+     76,
+     76
+    ],
+    [
+     77,
+     68
+    ],
+    [
+     78,
+     68
+    ],
+    [
+     79,
+     33
+    ],
+    [
+     80,
+     60
+    ],
+    [
+     81,
+     54
+    ],
+    [
+     82,
+     54
+    ],
+    [
+     83,
+     33
+    ],
+    [
+     84,
+     100
+    ],
+    [
+     85,
+     100
+    ],
+    [
+     86,
+     100
+    ],
+    [
+     87,
+     33
+    ],
+    [
+     88,
+     -19
+    ],
+    [
+     89,
+     11
+    ],
+    [
+     90,
+     -27
+    ],
+    [
+     90.5,
+     40
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "ELC": {
+     "team": "ELC",
+     "formation": "3-5-2",
+     "coach": "Martín Anselmi",
+     "xi": [
+      {
+       "name": "Matías Dituro",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Buba Sangaré",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Víctor Chust",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Pedro Bigas",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Tete Morente",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Facundo Buonanotte",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Javi Morcillo",
+       "shirt": 47,
+       "pos": "M"
+      },
+      {
+       "name": "Gonzalo Villar",
+       "shirt": 12,
+       "pos": "M"
+      },
+      {
+       "name": "Germán Valera",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Ezequiel Ponce",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Fer Niño",
+       "shirt": 14,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Thomas Lemar",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Abiel Osorio",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Cepeda",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Roy Revivo",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Josan",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Alejandro Iturbe",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Matia Barzić",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Rubén Sánchez",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Ali Houary",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Federico Redondo",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Marc Aguado",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Martim Neto",
+       "shirt": 16,
+       "pos": "?"
+      }
+     ]
+    },
+    "RSO": {
+     "team": "RSO",
+     "formation": "4-4-2",
+     "coach": "Pellegrino Matarazzo",
+     "xi": [
+      {
+       "name": "Unai Marrero",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Jon Aramburu",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Igor Zubeldia",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Mamadou Sarr",
+       "shirt": 19,
+       "pos": "D"
+      },
+      {
+       "name": "Sergio Gómez",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Job Ochieng",
+       "shirt": 12,
+       "pos": "M"
+      },
+      {
+       "name": "Yangel Herrera",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Carlos Soler",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Gonçalo Guedes",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Luka Sučić",
+       "shirt": 24,
+       "pos": "F"
+      },
+      {
+       "name": "Mikel Oyarzabal",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jon Martín",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Álex Marchal",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Jon Pacheco",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Jon Gorrotxategi",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Héctor Fort",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Alex Remiro",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Aihen Muñoz",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Beñat Turrientes",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Ander Barrenetxea",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Arsen Zakharyan",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Orri Óskarsson",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Takefusa Kubo",
+       "shirt": 14,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 37,
+      "center": 24,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 27,
+      "center": 23,
+      "right": 50
+     },
+     "secondHalf": {
+      "left": 44,
+      "center": 25,
+      "right": 31
+     }
+    },
+    "away": {
+     "total": {
+      "left": 20,
+      "center": 20,
+      "right": 60
+     },
+     "firstHalf": {
+      "left": 30,
+      "center": 13,
+      "right": 57
+     },
+     "secondHalf": {
+      "left": 11,
+      "center": 27,
+      "right": 62
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 5,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-07T21:58:51.942Z",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "ELC",
+      "name": "Ezequiel Ponce",
+      "n": 20,
+      "cx": 61.9,
+      "cy": 28.8,
+      "spread": 25.5,
+      "grid": "0,1,0,1,0,2,0,0,3,3,1,1,1,0,0,6,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Javi Morcillo",
+      "n": 60,
+      "cx": 48.3,
+      "cy": 32.5,
+      "spread": 24.8,
+      "grid": "3,0,4,4,1,0,1,6,9,2,1,0,1,2,7,6,3,0,0,0,0,9,1,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Pedro Bigas",
+      "n": 84,
+      "cx": 38.6,
+      "cy": 26.6,
+      "spread": 25.8,
+      "grid": "9,5,6,3,0,0,3,11,9,7,2,0,4,7,2,9,1,1,0,0,3,2,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Gonzalo Villar",
+      "n": 65,
+      "cx": 51.8,
+      "cy": 18.3,
+      "spread": 27.1,
+      "grid": "2,7,17,8,4,1,1,3,3,4,2,3,1,1,2,1,1,0,0,1,0,0,2,1"
+     },
+     {
+      "team": "RSO",
+      "name": "Mamadou Sarr",
+      "n": 42,
+      "cx": 34.4,
+      "cy": 28.3,
+      "spread": 22.8,
+      "grid": "0,2,3,2,0,0,5,5,14,1,0,0,0,0,4,0,0,0,3,1,2,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Mikel Oyarzabal",
+      "n": 33,
+      "cx": 61.7,
+      "cy": 31.9,
+      "spread": 25.8,
+      "grid": "0,1,3,3,2,0,0,0,4,2,2,1,0,0,2,4,1,1,0,0,3,0,3,1"
+     },
+     {
+      "team": "RSO",
+      "name": "Yangel Herrera",
+      "n": 49,
+      "cx": 52.7,
+      "cy": 43.1,
+      "spread": 21.5,
+      "grid": "0,0,1,1,0,0,0,4,6,1,0,1,0,0,12,4,2,1,0,2,2,9,3,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Matías Dituro",
+      "n": 62,
+      "cx": 13.7,
+      "cy": 33.2,
+      "spread": 9.2,
+      "grid": "0,1,0,0,0,0,18,10,0,0,0,0,24,9,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Job Ochieng",
+      "n": 57,
+      "cx": 66.1,
+      "cy": 48,
+      "spread": 32.9,
+      "grid": "0,3,0,0,1,1,0,0,3,1,0,0,1,1,2,1,3,9,1,4,5,6,4,11"
+     },
+     {
+      "team": "RSO",
+      "name": "Gonçalo Guedes",
+      "n": 34,
+      "cx": 59.7,
+      "cy": 26.7,
+      "spread": 30.6,
+      "grid": "2,1,4,0,3,1,0,3,4,2,0,2,0,0,1,2,3,2,0,0,0,1,2,1"
+     },
+     {
+      "team": "ELC",
+      "name": "Tete Morente",
+      "n": 70,
+      "cx": 70.5,
+      "cy": 46.9,
+      "spread": 33.8,
+      "grid": "0,1,0,1,6,7,0,0,1,0,0,1,2,1,1,1,2,3,3,1,6,7,17,9"
+     },
+     {
+      "team": "ELC",
+      "name": "Fer Niño",
+      "n": 48,
+      "cx": 67.6,
+      "cy": 25.1,
+      "spread": 28.4,
+      "grid": "0,3,7,3,2,3,1,0,2,4,5,4,0,2,0,0,5,5,0,0,0,1,0,1"
+     },
+     {
+      "team": "RSO",
+      "name": "Sergio Gómez",
+      "n": 83,
+      "cx": 40.9,
+      "cy": 14.4,
+      "spread": 29.5,
+      "grid": "13,12,19,14,1,1,3,5,6,3,0,0,1,0,0,0,0,0,0,0,0,0,0,5"
+     },
+     {
+      "team": "RSO",
+      "name": "Igor Zubeldia",
+      "n": 55,
+      "cx": 34.9,
+      "cy": 46.3,
+      "spread": 20.8,
+      "grid": "0,0,0,0,0,1,2,2,1,0,0,0,5,10,15,0,0,0,5,1,9,3,1,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Luka Sučić",
+      "n": 62,
+      "cx": 62.5,
+      "cy": 44.3,
+      "spread": 24.7,
+      "grid": "0,0,0,0,0,0,3,2,1,4,5,2,0,0,6,10,2,0,0,0,3,14,5,5"
+     },
+     {
+      "team": "ELC",
+      "name": "Víctor Chust",
+      "n": 105,
+      "cx": 44.8,
+      "cy": 31.3,
+      "spread": 25.3,
+      "grid": "0,6,7,2,8,1,2,14,7,4,6,0,4,11,9,8,1,1,0,4,6,4,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Buba Sangaré",
+      "n": 43,
+      "cx": 57,
+      "cy": 51.3,
+      "spread": 28.7,
+      "grid": "0,1,1,0,0,0,1,2,0,0,0,0,1,3,3,2,3,2,0,3,4,7,6,4"
+     },
+     {
+      "team": "ELC",
+      "name": "Germán Valera",
+      "n": 60,
+      "cx": 58,
+      "cy": 9.6,
+      "spread": 31.1,
+      "grid": "5,6,8,15,11,6,2,2,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,2"
+     },
+     {
+      "team": "RSO",
+      "name": "Carlos Soler",
+      "n": 61,
+      "cx": 49.8,
+      "cy": 30,
+      "spread": 32.8,
+      "grid": "3,4,3,3,0,1,2,6,14,4,0,0,1,4,3,0,1,0,0,0,0,2,4,6"
+     },
+     {
+      "team": "RSO",
+      "name": "Unai Marrero",
+      "n": 66,
+      "cx": 8.1,
+      "cy": 35.6,
+      "spread": 8.6,
+      "grid": "0,0,0,0,0,0,22,1,0,0,0,0,37,4,0,0,0,0,2,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Jon Aramburu",
+      "n": 76,
+      "cx": 46.8,
+      "cy": 56.6,
+      "spread": 28.5,
+      "grid": "0,0,0,0,0,0,2,0,0,0,2,0,6,3,2,1,1,0,6,5,21,14,5,8"
+     },
+     {
+      "team": "ELC",
+      "name": "Facundo Buonanotte",
+      "n": 55,
+      "cx": 62.2,
+      "cy": 47.2,
+      "spread": 25.2,
+      "grid": "0,2,1,0,0,0,0,0,1,3,0,0,1,3,6,6,6,2,0,0,4,7,8,5"
+     },
+     {
+      "team": "ELC",
+      "name": "Thomas Lemar",
+      "n": 49,
+      "cx": 65.6,
+      "cy": 17.7,
+      "spread": 30.4,
+      "grid": "3,5,2,4,9,6,0,0,4,4,6,1,0,0,0,0,1,1,0,0,0,0,1,2"
+     },
+     {
+      "team": "ELC",
+      "name": "Abiel Osorio",
+      "n": 14,
+      "cx": 80.1,
+      "cy": 30.7,
+      "spread": 22.6,
+      "grid": "0,0,0,0,0,1,0,0,1,0,2,5,0,0,2,1,1,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Jon Martín",
+      "n": 4,
+      "cx": 31.7,
+      "cy": 23,
+      "spread": 15.1,
+      "grid": "0,1,0,0,0,0,0,0,2,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Álex Marchal",
+      "n": 9,
+      "cx": 55.6,
+      "cy": 54.4,
+      "spread": 21.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,0,0,1,0,1,1,3,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Lucas Cepeda",
+      "n": 37,
+      "cx": 65.8,
+      "cy": 50.4,
+      "spread": 18.7,
+      "grid": "0,0,0,0,0,0,0,1,0,0,4,0,0,0,2,4,4,1,0,2,2,7,10,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Jon Pacheco",
+      "n": 9,
+      "cx": 17.4,
+      "cy": 26.3,
+      "spread": 14.8,
+      "grid": "0,1,1,0,0,0,5,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Jon Gorrotxategi",
+      "n": 11,
+      "cx": 48,
+      "cy": 51.5,
+      "spread": 33.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,1,0,0,1,1,1,0,2"
+     },
+     {
+      "team": "ELC",
+      "name": "Josan",
+      "n": 11,
+      "cx": 85.1,
+      "cy": 61,
+      "spread": 18.6,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,6"
+     },
+     {
+      "team": "ELC",
+      "name": "Roy Revivo",
+      "n": 24,
+      "cx": 60.8,
+      "cy": 9.7,
+      "spread": 37.6,
+      "grid": "5,0,2,1,8,5,2,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RSO",
+      "name": "Héctor Fort",
+      "n": 8,
+      "cx": 41.2,
+      "cy": 62.9,
+      "spread": 36.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,3,1,0,1,0,2"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-07T19:28:50.629Z"
+ "updatedAt": "2026-09-07T21:58:52.597Z"
 }
