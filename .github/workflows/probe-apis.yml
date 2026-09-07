@@ -36,7 +36,7 @@ jobs:
       # 唯讀、最多 9 個請求、不寫任何快取。
       - name: 探測 FotMob 英格蘭盃賽(足總盃 132 / 聯賽盃 133)
         working-directory: epl
-        run: npm run probe:fotmob-cups
+        run: npm run probe:fotmob-cups -- --only=details
 
   all:
     if: ${{ github.event.inputs.quick != 'true' }}

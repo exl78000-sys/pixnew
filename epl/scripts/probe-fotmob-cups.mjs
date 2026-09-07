@@ -27,7 +27,17 @@ const UA = 'pl-war-room/1.0 (football analysis side project)';
 const BROWSER_UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36';
 const BASE = 'https://www.fotmob.com/api/data/leagues';
 const LOGO = id => `https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png`;
-const MAX_REQUESTS = 9;
+const MAX_REQUESTS = 12;
+const ONLY = process.argv.find(a => a.startsWith('--only='))?.split('=')[1] ?? null;   // details:只探單場詳情
+const DETAILS = 'https://www.fotmob.com/api/data/matchDetails?matchId=';
+/* 第一輪(2026-09-07 run 34143104759)實測:賽程端點的 status 只有 scoreStr(最終比分,PK 場是平手比分)
+   與 reason(FT / AET / Pen),**沒有 PK 比數、也沒有誰贏了 PK**。而盃賽頁的冠軍卡與晉級路徑都靠這個。
+   所以第二輪看單場詳情裡有沒有:三場都是第一輪核對過的真實場次(id 是端點回的,不是猜的)。 */
+const DETAIL_SAMPLES = [
+  { id: '5010622', why: '足總盃 2025-26 R1 Newport 2-2 Gillingham,PK(SM:延長後 2-2,PK 待查)' },
+  { id: '5840303', why: '聯賽盃 2026-27 R1 QPR 1-1 Millwall,PK 0-2(SM)' },
+  { id: '5010643', why: '足總盃 2025-26 R1 Buxton 2-1 Chatham,AET(SM:90 分 1-1)' },
+];
 const CUPS = [
   { key: 'facup', zh: '足總盃', id: 132, expect: /fa cup/i },
   { key: 'eflcup', zh: '聯賽盃', id: 133, expect: /carabao|league cup|efl cup/i },
@@ -195,8 +205,48 @@ async function probeSeason(cup, season, body, label) {
   return all;
 }
 
+/* 單場詳情:不假設欄位在哪 —— 把 header 整個印出來,再深搜鍵名含 pen / shootout / aet / extra / ft / regular 的路徑。 */
+function deepFind(obj, re, path = '', depth = 0, out = []) {
+  if (!obj || typeof obj !== 'object' || depth > 7 || out.length > 60) return out;
+  for (const [k, v] of Object.entries(obj)) {
+    const p = path ? `${path}.${k}` : k;
+    if (re.test(k)) out.push(`${p} = ${JSON.stringify(v)?.slice(0, 240)}`);
+    if (v && typeof v === 'object') deepFind(v, re, p, depth + 1, out);
+  }
+  return out;
+}
+async function probeDetails() {
+  console.log(`\n── 單場詳情(PK 比數與勝方在不在裡面)──`);
+  for (const s of DETAIL_SAMPLES) {
+    try {
+      const d = await get(`${DETAILS}${s.id}`, { headers: apiHeaders });
+      console.log(`  ▷ ${s.id}:${s.why}`);
+      console.log(`    頂層鍵:${Object.keys(d).join(', ')}`);
+      console.log(`    header 鍵:${Object.keys(d.header ?? {}).join(', ')}`);
+      console.log(`    header.status:${JSON.stringify(d.header?.status)}`);
+      console.log(`    header.teams:${JSON.stringify(d.header?.teams)?.slice(0, 600)}`);
+      console.log(`    general 鍵:${Object.keys(d.general ?? {}).join(', ')}`);
+      console.log(`    content 鍵:${Object.keys(d.content ?? {}).join(', ')}`);
+      console.log(`    content.matchFacts 鍵:${Object.keys(d.content?.matchFacts ?? {}).join(', ')}`);
+      console.log(`    content.matchFacts.events 鍵:${Object.keys(d.content?.matchFacts?.events ?? {}).join(', ')}`);
+      const hits = deepFind({ header: d.header, general: d.general, matchFacts: d.content?.matchFacts }, /pen|shoot|aet|extra|ft|regular|aggreg|winner/i);
+      console.log(`    鍵名含 pen/shoot/aet/extra/ft/regular/aggreg/winner 的路徑(${hits.length}):`);
+      for (const h of hits) console.log(`      ${h}`);
+      // 事件裡型別的分布:PK 大戰的每一球通常是獨立事件
+      const evs = d.content?.matchFacts?.events?.events ?? [];
+      if (Array.isArray(evs) && evs.length) {
+        console.log(`    events.events:${evs.length} 筆・type 分布:${distribution(evs.map(e => e.type))}`);
+        const pk = evs.filter(e => /pen|shoot/i.test(JSON.stringify(e).slice(0, 400)) && !/type":"Goal"/.test(JSON.stringify(e)));
+        for (const e of pk.slice(0, 3)) console.log(`      例:${JSON.stringify(e).slice(0, 400)}`);
+        const last = evs[evs.length - 1]; console.log(`      最後一筆:${JSON.stringify(last).slice(0, 400)}`);
+      }
+    } catch (e) { console.log(`  ✗ ${s.id}:${e.message}`); }
+  }
+}
+
 async function main() {
-  console.log(`▶ FotMob 英格蘭盃賽探測(最多 ${MAX_REQUESTS} 個請求)`);
+  console.log(`▶ FotMob 英格蘭盃賽探測(最多 ${MAX_REQUESTS} 個請求${ONLY ? `,只跑 ${ONLY}` : ''})`);
+  if (ONLY === 'details') { await probeDetails(); console.log(`\n✔ 探測結束(${requests}/${MAX_REQUESTS} 個請求)`); return; }
   const logoCandidates = [];
   for (const cup of CUPS) {
     let selected = null;
@@ -247,6 +297,7 @@ async function main() {
       console.log(`  ${c.name}(id ${c.id}):HTTP ${res.status}・${res.headers.get('content-type')}・${buf.length} bytes・${png ? '是 PNG' : '不是 PNG'}`);
     } catch (e) { console.log(`  ${c.name}(id ${c.id}):✗ ${e.message}`); }
   }
+  await probeDetails();
   console.log(`\n✔ 探測結束(${requests}/${MAX_REQUESTS} 個請求)`);
 }
 
