@@ -444,6 +444,8 @@ jobs:
                      epl/data/congestion-tuning.json 2>/dev/null || true
           git add -f epl/data/manual/photos.json epl/data/manual/crests-cups.json epl/data/manual/team-tiers.json 2>/dev/null || true
           git add -f epl/data/manual/competition-logos.json 2>/dev/null || true
+          # 產物也回寫:這條工作流的回寫清單沒有 web/data,倉庫裡那份會停在第一次提交的 0 張版
+          git add -f epl/web/data/competitions.json 2>/dev/null || true
           git add -f epl/data/manual/news-curated-archive.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "資料沒有變化,不提交"
