@@ -908,7 +908,10 @@ function checkGoalEvents() {
    2. **沒見過的代碼不分類。** 目前見過 Y 與 R;R 是拿 FPL 逐球員資料獨立核對過的
       (BHA vs AVL 第 40 分,FPL 說 AVL 的 Gomes 紅牌 1、上場 39 分)。
       第三種出現時 kind 是 null、原碼留在 kindRaw。
-   3. **隊伍用名單反查,不看 teamId** —— 跟進球那裡同一套。 */
+   3. **隊伍用名單反查,不看 teamId** —— 跟進球那裡同一套。
+   4. **沒有 personId 的事件留著、team 給 null,不當成錯。** 上游對教練/板凳人員吃牌
+      不給 personId(2026-09-05 NEW vs BOU 71'),反查無從查起;
+      只有「有 person 卻查不到」才是本站的 bug。 */
 async function checkTimeline() {
   const { timelineOf } = await import('./fetch-official.mjs');
   const { namedTimeline } = await import('../scripts/lib/adapters/pulselive.mjs');
@@ -925,6 +928,9 @@ async function checkTimeline() {
     { type: 'S', clock: { label: "65'00", secs: 3900 }, phase: '2', personId: 4, teamId: 100, description: 'ON' },
     { type: 'S', clock: { label: "65'00", secs: 3900 }, phase: '2', personId: 5, teamId: 100, description: 'OFF' },
     { type: 'B', clock: { label: "70'00", secs: 4200 }, phase: '2', personId: 9, teamId: 200, description: 'ZZ' },
+    /* 沒有 personId 的牌 —— 上游對教練/板凳人員吃牌就是這樣寫(NEW vs BOU 71',2026-09-05 實際發生)。
+       要留著、不能丟;反查不到隊伍就是 null。 */
+    { type: 'B', clock: { label: "71'00", secs: 4260 }, phase: '2', teamId: 100, description: 'Y' },
     { type: 'PE', clock: { label: "90+5'00", secs: 5700 }, phase: '2' },
   ];
   const t = timelineOf(events);
@@ -934,7 +940,7 @@ async function checkTimeline() {
   const n = namedTimeline(t, H, A, 'HOM', 'AWY');
 
   const cases = [
-    ['牌抓得到', t.cards.length === 3, String(t.cards.length)],
+    ['牌抓得到', t.cards.length === 4, String(t.cards.length)],
     ['換人抓得到', t.subs.length === 4, String(t.subs.length)],
     ['半場標記只有 PS/PE 四筆', t.periods.length === 4, String(t.periods.length)],
     ['黃牌與紅牌都分類得出來',
@@ -955,20 +961,40 @@ async function checkTimeline() {
       && n.subs.filter(x => x.dir === 'off').length === 2, ''],
     ['沒有 events 也不會炸', timelineOf(undefined).cards.length === 0, ''],
     ['沒有 timeline 時 namedTimeline 回 null', namedTimeline(null, H, A, 'HOM', 'AWY') === null, ''],
+    /* 2026-09-05 deploy 被擋兩天的教訓:轉換器的註解從 08-29 就寫著「教練吃牌 → 留著、team null」,
+       但沒有測試守它,而資料層的斷言又要求每一筆都查得到隊伍 —— 同一筆提交裡自相矛盾,
+       一週後第一張板凳牌出現就炸。這一條把註解裡那句話變成有測試守的。 */
+    ['沒有 personId 的牌要留著,team 是 null 不是丟掉',
+      n.cards[3]?.person === null && n.cards[3]?.team === null && n.cards[3]?.kind === '黃牌',
+      JSON.stringify(n.cards[3] ?? null)],
   ];
 
   /* 正式資料裡出現沒見過的代碼就要紅 —— 先核對過才放行(跟進球子類型同一套規矩)。 */
   const off = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'official.json'), 'utf8'));
   const unknownCards = new Set(), unknownDirs = new Set();
-  let cardN = 0, subN = 0, noTeam = 0;
-  for (const m of Object.values(off.matches ?? {})) {
-    for (const c of m.timeline?.cards ?? []) { cardN++; if (!c.kind) unknownCards.add(c.kindRaw); if (!c.team) noTeam++; }
-    for (const x of m.timeline?.subs ?? []) { subN++; if (!x.dir) unknownDirs.add(x.dirRaw); if (!x.team) noTeam++; }
+  /* 「查不到隊伍」要分兩種,結論完全不同:
+       有 person 卻查不到 → 名單或反查壞了,是本站的 bug,要紅
+       根本沒有 person   → 上游對教練/板凳人員吃牌就是不給 personId,反查無從查起;
+                           照 namedTimeline 的設計留著、team 給 null,前端印「不詳」。
+     2026-09-05 NEW vs BOU 71' 的黃牌是第二種,舊斷言把它當第一種,deploy 因此被擋了兩天、
+     手動重跑 4 次都一樣 —— 重抓也沒用,上游回的就是同一筆。 */
+  let cardN = 0, subN = 0, personless = 0;
+  const unresolved = [];
+  for (const [key, m] of Object.entries(off.matches ?? {})) {
+    for (const c of m.timeline?.cards ?? []) {
+      cardN++; if (!c.kind) unknownCards.add(c.kindRaw);
+      if (!c.team) { if (c.person == null) personless++; else unresolved.push(`${key} ${c.label} person ${c.person}`); }
+    }
+    for (const x of m.timeline?.subs ?? []) {
+      subN++; if (!x.dir) unknownDirs.add(x.dirRaw);
+      if (!x.team) { if (x.person == null) personless++; else unresolved.push(`${key} ${x.label} person ${x.person}`); }
+    }
   }
+  if (personless) console.log(`  · 沒有 personId 的牌/換人 ${personless} 筆(上游沒給人,照規矩留著、隊伍為 null)`);
   cases.push(
     ['正式資料裡沒有沒見過的牌代碼', unknownCards.size === 0, [...unknownCards].join('、')],
     ['正式資料裡沒有沒見過的換人代碼', unknownDirs.size === 0, [...unknownDirs].join('、')],
-    ['正式資料的事件都查得到隊伍', noTeam === 0, `${noTeam} 筆查不到`],
+    ['正式資料裡有 person 的事件都查得到隊伍', unresolved.length === 0, unresolved.join(' / ')],
     ['產物裡真的有牌與換人', cardN > 0 && subN > 0, `牌 ${cardN}・換人 ${subN}`],
   );
 
