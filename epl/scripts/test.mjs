@@ -1410,6 +1410,15 @@ async function checkDataGap() {
     })()],
     /* 英冠沒有球員頁,給連結等於把讀者送去缺口頁 —— 判斷走 closedPage,
        不要在總覽頁再列一次哪個聯賽有哪些頁。 */
+    /* 賽事色塊的註冊表要涵蓋每一個聯賽與三個盃賽 —— 漏掉的那一個不會壞,只會靜靜沒有圖像。
+       沒登記的鍵不編色塊:有文字就退回原本的 pill,沒有就空字串。 */
+    ['COMPETITIONS 涵蓋每個聯賽與三個盃賽;compBadge 對沒登記的鍵不編圖像', (() => {
+      const keys = Object.keys(V.COMPETITIONS ?? {});
+      return Object.keys(V.LEAGUES).every(lg => keys.includes(lg))
+        && ['ucl', 'facup', 'eflcup'].every(k => keys.includes(k))
+        && V.compBadge('nope') === '' && /class="pill tiny"/.test(V.compBadge('nope', { label: '未知' }))
+        && /comp-badge/.test(V.compBadge('pl')) && /英超/.test(V.compBadge('pl', { label: true }));
+    })()],
     ['總覽只連得進去的頁才給連結', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /C\.closedPage\(/.test(src);
@@ -1752,6 +1761,13 @@ async function checkDataGap() {
       return /UPCOMING_HIDE = new Set\(\['en2'\]\)/.test(src)
         && /if \(UPCOMING_HIDE\.has\(lg\)\) continue;/.test(src)
         && /leagues\.filter\(x => !UPCOMING_HIDE\.has\(x\.lg\)\)/.test(src);
+    })()],
+    /* 賽事圖像(使用者要求):即將到來的每一列用 compBadge 標賽事,而且歐冠也在表裡 ——
+       以前只列英格蘭盃賽,歐冠週的比賽在總覽上看不到。 */
+    ['總覽即將到來:賽事用 compBadge 標、歐冠聯賽階段也列進來', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      return /C\.compBadge\(u\.compKey/.test(src) && /compKey: 'ucl'/.test(src)
+        && /uclSeason\?\.leagueMatches/.test(src) && /'ucl-teams'/.test(src);
     })()],
 
     /* ── 教練職涯史核對器(B 層,2026-08-29)── */
@@ -3822,6 +3838,38 @@ function checkUcl() {
         '歐冠頁先登錄跨聯賽那一份、再登錄本聯賽的');
       ok(/'ucl-teams'/.test(readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8')),
         '盃賽頁真的載了 ucl-teams(歐冠視圖靠它)');
+
+      /* 本季旗標與逐季名單。搜尋球員頁要標「本季在歐冠」,靠這兩個欄位;
+         沒有它們就只能拿三季合起來的名單標,會把上季踢過、本季沒進的也標上。 */
+      const cur = (ucl.seasons ?? []).filter(s => s.current);
+      ok(cur.length === 1 && cur[0].label === ucl.seasons[0].label,
+        'ucl.json 恰好一季標 current,而且是最新的那一季', cur.map(s => s.label).join('、'));
+      ok(at.currentSeason === cur[0]?.label, 'ucl-teams 的 currentSeason 跟 ucl.json 一致', String(at.currentSeason));
+      ok(at.teams.every(t => Array.isArray(t.seasons) && t.seasons.length), '每一隊都記了出現在哪幾季');
+      const codesInCur = new Set();
+      (function walk(v) {
+        if (Array.isArray(v)) { v.forEach(walk); return; }
+        if (!v || typeof v !== 'object') return;
+        if (typeof v.code === 'string' && v.code) codesInCur.add(v.code);
+        Object.values(v).forEach(walk);
+      })(cur[0] ?? {});
+      const inCur = at.teams.filter(t => t.seasons.includes(at.currentSeason)).map(t => t.code);
+      ok(inCur.every(c => codesInCur.has(c)) && [...codesInCur].every(c => inCur.includes(c)),
+        '「本季在歐冠」的名單跟本季資料裡出現的隊碼完全一致(不多不少)',
+        `名單 ${inCur.length}・資料 ${codesInCur.size}`);
+
+      /* 預設賽季 = 本季(使用者要求)。舊規則「第一個有踢過比賽的賽季」在本季開打前會跳到上一季 ——
+         點進歐冠先看到去年的冠軍,像是資料沒更新。兩個視圖同一條規則,而且舊規則不能回來。 */
+      const uclViewSrc = readFileSync(join(W, 'assets', 'js', 'ucl-view.js'), 'utf8');
+      const cupsSrc = readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8');
+      ok(/seasons\.find\(s => s\.current\)/.test(uclViewSrc) && !/find\(s => s\.played > 0\)/.test(uclViewSrc),
+        '歐冠視圖預設停在本季,不再用「有踢過比賽」當規則');
+      ok(/ss\.find\(s => s\.current\)/.test(cupsSrc) && !/find\(s => s\.played > 0\)/.test(cupsSrc),
+        '英格蘭盃賽預設停在本季,同一條規則');
+      ok(/C\.compBadge\(c\.key\)/.test(cupsSrc), '盃賽分頁按鈕帶賽事色塊');
+      const apSrc = readFileSync(join(W, 'assets', 'js', 'allplayers-view.js'), 'utf8');
+      ok(/C\.compBadge\(p\.league, \{ label: true \}\)/.test(apSrc) && /inUcl\.has\(/.test(apSrc) && /currentSeason/.test(apSrc),
+        '搜尋球員:每列帶聯賽色塊,本季在歐冠的球隊多一個歐冠色塊');
     }
   }
 

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=660e256d';
+import * as C from './core.js?v=b69f3323';
 
 /* 跨聯賽球員搜尋(總球員頁)。2026-08-30 改成**合併單表**(使用者要求),
    加隊徽與頭貼。設計決定,都是踩過的坑或明寫的界線:
@@ -37,6 +37,17 @@ export async function renderAllPlayers(app) {
     const pools = loaded.filter(x => Array.isArray(x.rows) && x.rows.length);
     const missing = lgs.filter(lg => !pools.some(x => x.lg === lg));
     const crestOf = (lg, code) => pools.find(x => x.lg === lg)?.crestBy.get(code) ?? null;
+    /* 本季在歐冠的球隊,標在球員列上(使用者要求「例如 英超 西甲 歐冠」)。
+       只標**本季**有參賽的 —— ucl-teams 帶每一隊出現在哪幾季;拿三季合起來的名單標,
+       會把上季踢過、本季沒進的也標上。沒有歐冠資料就不標,不猜。 */
+    let inUcl = new Set();
+    try {
+      const { data } = await C.loadFrom('pl', ['ucl-teams']);
+      const cur = data['ucl-teams']?.currentSeason;
+      inUcl = new Set((data['ucl-teams']?.teams ?? [])
+        .filter(t => cur && (t.seasons ?? []).includes(cur))
+        .map(t => `${t.league}|${t.code}`));
+    } catch { /* 跨聯賽那份不在就不標 */ }
   
     // 合併池:players-core 每列本來就帶 league 欄位
     const all = pools.flatMap(x => x.rows);
@@ -71,8 +82,9 @@ export async function renderAllPlayers(app) {
         : all;
       const has = key => hit.some(p => statFor(p)?.[key] != null);
       const cols = [
-        { key: 'lg', label: '聯賽', num: false, value: p => p.league,
-          render: p => `<span class="pill tiny">${C.esc(C.LEAGUES[p.league]?.zh ?? p.league)}</span>` },
+        { key: 'lg', label: '賽事', num: false, value: p => p.league,
+          render: p => `<span class="comp-cell">${C.compBadge(p.league, { label: true })}${
+            inUcl.has(`${p.league}|${p.team}`) ? C.compBadge('ucl') : ''}</span>` },
         { key: 'name', label: '球員', num: false, left: true, value: p => p.name,
           render: p => {
             const ph = photoBy.get(`${p.league}|${p.code}`);

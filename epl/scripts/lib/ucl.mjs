@@ -479,6 +479,10 @@ export async function loadUclSeasons(root, sources) {
     }
     seasons.push(s);
   }
+  /* 「本季」= 清單裡最新的那一季(檔名倒序,seasons[0] 最新)。明標成旗標,
+     前端才不用靠「清單是倒序的」這種隱含約定;英格蘭盃賽的 season 本來就有 current,
+     兩邊同一個形狀。盃賽頁預設停在本季就是看這個。 */
+  if (seasons.length) seasons[0].current = true;
   return {
     source: 'football-data.org',
     competition: 'UEFA Champions League',
@@ -520,13 +524,21 @@ export async function uclTeamAssets(root, ucl) {
   /* 把整份 ucl 走一遍收 code,而不是列舉「走勢表、積分榜、淘汰賽、抽籤」四個地方 ——
      列舉的話,以後多一個區塊就會有一批球隊靜靜地少掉名字與隊徽。 */
   const codes = new Set();
-  const walk = v => {
-    if (Array.isArray(v)) { for (const x of v) walk(x); return; }
+  const seasonsOf = new Map();   // code → 出現在哪幾季
+  const walk = (v, label = null) => {
+    if (Array.isArray(v)) { for (const x of v) walk(x, label); return; }
     if (!v || typeof v !== 'object') return;
-    if (typeof v.code === 'string' && v.code) codes.add(v.code);
-    for (const x of Object.values(v)) walk(x);
+    if (typeof v.code === 'string' && v.code) {
+      codes.add(v.code);
+      if (label) { if (!seasonsOf.has(v.code)) seasonsOf.set(v.code, new Set()); seasonsOf.get(v.code).add(label); }
+    }
+    for (const x of Object.values(v)) walk(x, label);
   };
-  walk(ucl);
+  /* 逐季走一遍,才記得住「這一隊哪幾季在歐冠」—— 搜尋球員頁要標「本季在歐冠」,
+     拿三季合起來的名單去標,會把上季踢過、本季沒進的也標上。 */
+  for (const s of ucl?.seasons ?? []) walk(s, s.label);
+  walk(ucl);   // 賽季之外的地方(例如 teamCodeConflicts)照舊也收
+  const currentSeason = (ucl?.seasons ?? []).find(s => s.current)?.label ?? ucl?.seasons?.[0]?.label ?? null;
 
   const sources = [
     { league: 'pl', teams: 'teams.json', crests: 'crests.json' },
@@ -543,6 +555,7 @@ export async function uclTeamAssets(root, ucl) {
         code: t.code, league: src.league, en: t.en, zh: t.zh,
         colors: t.colors ?? null,
         crest: crests[t.code] ?? null,
+        seasons: [...(seasonsOf.get(t.code) ?? [])].sort().reverse(),
       });
     }
   }
@@ -571,6 +584,7 @@ export async function uclTeamAssets(root, ucl) {
     note: '歐冠頁專用:本站兩個聯賽認得的球隊的名字與隊徽。跨聯賽一份,英超與西甲的內容相同。',
     codesInUcl: codes.size,
     known: rows.length,
+    currentSeason,
     teams: rows,
     /* 認不得的球隊的隊徽,key 是 football-data 的 team id。
        有隊徽不代表有球隊頁 —— 前端只畫圖,不給連結。 */

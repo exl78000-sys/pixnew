@@ -1,5 +1,5 @@
-import * as C from './core.js?v=660e256d';
-import { mountFixtureList } from './fixture-list.js?v=ca5138f2';
+import * as C from './core.js?v=b69f3323';
+import { mountFixtureList } from './fixture-list.js?v=dd81a5fc';
 
 const app = document.getElementById('app');
 

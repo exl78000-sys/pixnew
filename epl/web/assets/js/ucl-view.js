@@ -1,4 +1,4 @@
-import * as C from './core.js?v=660e256d';
+import * as C from './core.js?v=b69f3323';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -328,7 +328,10 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams }) {
     app.innerHTML = `<div class="note">目前沒有歐冠資料。</div>`;
   } else {
     // 預設看最新一季**有比賽**的那一季 —— 停在一片空白的未來賽季很奇怪
-    let label = (seasons.find(s => s.played > 0) ?? seasons[0]).label;
+    /* 預設停在**本季**(使用者要求)。以前是「第一個有踢過比賽的賽季」——
+       本季開打前 played 是 0,就跳到上一季;但本季早就有整份賽程與倒數可看,
+       點進來卻先看到去年的冠軍,像是資料沒更新。current 由 lib/ucl.mjs 標在最新一季。 */
+    let label = (seasons.find(s => s.current) ?? seasons[0]).label;
 
     app.innerHTML = `
     <div style="margin-bottom:12px">

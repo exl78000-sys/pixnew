@@ -254,6 +254,19 @@ td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
   border: 1px solid #ffffff26;
 }
 .badge.lg { width: 42px; height: 42px; border-radius: 11px; font-size: 14px; }
+
+/* ── 賽事色塊(英超/西甲/歐冠/盃賽)──────
+   站上沒有賽事的圖像資產;色塊 + 縮寫就是它的圖像,跟隊徽的退路同一套語言 */
+.comp-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 6px; font-size: 9.5px; font-weight: 800;
+  font-family: var(--mono); letter-spacing: -.2px; flex: none; color: #fff;
+  border: 1px solid #ffffff2e; vertical-align: middle; object-fit: contain;
+}
+.comp-badge.n3 { font-size: 8px; letter-spacing: -.4px; }
+.comp-badge.lg { width: 30px; height: 30px; border-radius: 8px; font-size: 12px; }
+.comp-badge.lg.n3 { font-size: 10px; }
+.comp-cell { display: inline-flex; align-items: center; gap: 6px; }
 .team-cell { display: flex; align-items: center; gap: 9px; }
 .team-cell .nm { font-weight: 600; }
 

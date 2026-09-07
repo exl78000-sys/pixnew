@@ -1,4 +1,4 @@
-import * as C from './core.js?v=660e256d';
+import * as C from './core.js?v=b69f3323';
 
 const app = document.getElementById('app');
 
@@ -27,7 +27,7 @@ try {
   const skipped = loaded.filter(x => !x.data.meta || !x.data.fixtures);
 
   // 跨聯賽的資料集掛在英超目錄下(它們本來就是跨聯賽的一份)
-  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl']);
+  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams']);
   C.nav();
 
   const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div>
@@ -66,7 +66,7 @@ try {
 
     return `<div class="card">
       <div class="spread">
-        <div><h2 style="margin:0">${C.esc(L.zh)}</h2>
+        <div><h2 style="margin:0;display:flex;align-items:center;gap:8px">${C.compBadge(lg, { size: 'lg' })}${C.esc(L.zh)}</h2>
           <div class="tiny dim" style="margin-top:3px">${C.esc(m.currentSeason)}・基準日 ${C.esc(m.asOf)}</div></div>
         <span class="pill accent">${m.counts?.teams ?? '—'} 隊</span>
       </div>
@@ -117,7 +117,7 @@ try {
       for (const f of data.fixtures) {
         if (f.played || !f.kickoff || !inWindow(f.kickoff)) continue;
         const h = tBy.get(f.home), a = tBy.get(f.away);
-        rows.push({ kick: f.kickoff, comp: C.LEAGUES[lg].zh,
+        rows.push({ kick: f.kickoff, comp: C.LEAGUES[lg].zh, compKey: lg,
           home: h?.en ?? f.home, away: a?.en ?? f.away,
           hCrest: h?.crest ?? null, aCrest: a?.crest ?? null,
           note: `第 ${f.round} 輪`, pending: false,
@@ -133,10 +133,26 @@ try {
       for (const r of season?.rounds ?? []) for (const m of r.matches ?? []) {
         if (m.played || !m.kickoff || !inWindow(m.kickoff)) continue;
         if (!covered(m.home) && !covered(m.away)) continue;
-        rows.push({ kick: m.kickoff, comp: cup.zh ?? cup.en, home: m.home?.name ?? '?', away: m.away?.name ?? '?',
+        rows.push({ kick: m.kickoff, comp: cup.zh ?? cup.en, compKey: cup.key, home: m.home?.name ?? '?', away: m.away?.name ?? '?',
           hCrest: cupCrests[m.home?.sourceId] ?? null, aCrest: cupCrests[m.away?.sourceId] ?? null,
           note: m.stage ?? '', pending: m.kickoff.endsWith('T00:00:00Z'), link: null });
       }
+    }
+    /* 歐冠聯賽階段。資料早就在 ucl.json 裡(開球時間齊全、有 matchday),
+       這張表以前只列英格蘭盃賽 —— 歐冠週的比賽在總覽上看不到。
+       跟盃賽同一條規則:只列本站認得至少一邊的場次。對手的隊徽走 ucl-teams 的 external 查表
+       (有圖不等於有球隊頁,所以一樣沒有連結)。 */
+    const uclSeason = (shared.ucl?.seasons ?? []).find(s => s.current);
+    const uclKnown = new Map((shared['ucl-teams']?.teams ?? []).map(t => [t.code, t]));
+    const uclExternal = new Map((shared['ucl-teams']?.external ?? []).map(t => [t.id, t.crest]));
+    const uclCrest = side => (side?.code ? uclKnown.get(side.code)?.crest : uclExternal.get(side?.id)) ?? null;
+    for (const m of uclSeason?.leagueMatches ?? []) {
+      if (m.played || !m.kickoff || !inWindow(m.kickoff)) continue;
+      if (!m.home?.code && !m.away?.code) continue;
+      rows.push({ kick: m.kickoff, comp: '歐冠', compKey: 'ucl',
+        home: m.home?.name ?? '?', away: m.away?.name ?? '?',
+        hCrest: uclCrest(m.home), aCrest: uclCrest(m.away),
+        note: m.matchday ? `聯賽階段第 ${m.matchday} 輪` : (m.stage ?? ''), pending: false, link: null });
     }
     return rows.sort((a, b) => (a.kick < b.kick ? -1 : 1));
   })();
@@ -148,7 +164,7 @@ try {
     const known = new Set(leagues.flatMap(({ data }) =>
       (data.teams ?? []).flatMap(t => [t.en, t.of].filter(Boolean).map(x => x.toLowerCase()))));
     const covered = s => s && (s.code || known.has(String(s.name ?? '').toLowerCase()));
-    return cupList.map(cup => {
+    const out = cupList.map(cup => {
       const season = (cup.seasons ?? []).find(s => s.current);
       const future = (season?.rounds ?? []).flatMap(r => (r.matches ?? [])
         .filter(m => !m.played && m.kickoff && Date.parse(m.kickoff) > end
@@ -158,10 +174,20 @@ try {
       const first = future.sort((a, b) => (a.kick < b.kick ? -1 : 1))[0];
       return `${cup.zh ?? cup.en} ${first.stage ?? ''}:${C.dateFull(first.kick.slice(0, 10))} 起(${future.length} 場)`;
     }).filter(Boolean);
+    // 歐冠也一樣:7 天內沒有歐冠時,用一行講下一批是聯賽階段第幾輪、幾號起
+    const uclSeason = (shared.ucl?.seasons ?? []).find(s => s.current);
+    const uclFuture = (uclSeason?.leagueMatches ?? [])
+      .filter(m => !m.played && m.kickoff && Date.parse(m.kickoff) > end && (m.home?.code || m.away?.code))
+      .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
+    if (uclFuture.length) {
+      const f = uclFuture[0];
+      out.push(`歐冠 聯賽階段第 ${f.matchday ?? '?'} 輪:${C.dateFull(f.kickoff.slice(0, 10))} 起(本站球隊 ${uclFuture.length} 場)`);
+    }
+    return out;
   })();
 
   const upcomingBlock = `
-  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・${leagues.filter(x => !UPCOMING_HIDE.has(x.lg)).map(x => C.LEAGUES[x.lg].zh).join('、')} + 盃賽</span></div>
+  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・${leagues.filter(x => !UPCOMING_HIDE.has(x.lg)).map(x => C.LEAGUES[x.lg].zh).join('、')} + 歐冠、盃賽</span></div>
   ${upcoming.length ? `<div class="card">${C.table(upcoming, [
     { key: 'kick', label: '開球(台北)', value: u => u.kick,
       render: u => (u.pending
@@ -169,7 +195,7 @@ try {
         : `<span class="small">${C.kickoffLocal(u.kick)}</span>`) },
     { key: 'cd', label: '倒數', value: u => u.kick, sortable: false,
       render: u => (u.pending ? '<span class="dim small">—</span>' : `<span class="small">${C.countdown(u.kick)}</span>`) },
-    { key: 'comp', label: '賽事', value: u => u.comp, render: u => `<span class="pill tiny">${C.esc(u.comp)}</span>` },
+    { key: 'comp', label: '賽事', value: u => u.comp, render: u => C.compBadge(u.compKey, { label: u.comp }) },
     { key: 'match', label: '對戰', value: u => u.home, left: true,
       render: u => {
         const img = c => (c ? `<img class="crest" src="${c}" loading="lazy" width="20" height="20" style="vertical-align:middle">` : '');
@@ -183,7 +209,7 @@ try {
     /* 整列可點,不用瞄準文字連結(使用者要求)。盃賽場次沒有分析頁,點了不動作。 */
     onRow: u => { if (u.link) location.href = u.link; } })}
   <div class="tiny dim" style="margin-top:8px">${cupBeyond.length ? `7 天之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}
-    聯賽場次點對戰直接進賽前分析;盃賽場次沒有分析頁(模型是聯賽調的)。
+    聯賽場次點對戰直接進賽前分析;歐冠與盃賽場次沒有分析頁(模型是聯賽調的)。
     只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
   : `<div class="note">未來 7 天沒有已排定的比賽(或開球時間上游還沒公布)。
     ${cupBeyond.length ? `之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}</div>`}`;
@@ -227,7 +253,7 @@ try {
 
   <div class="section"><h2>跨聯賽</h2><span class="hint">這幾頁不分聯賽,兩邊看到的是同一份資料</span></div>
   <div class="grid g3">
-    <div class="card"><div class="spread"><h3 style="margin:0">歐冠</h3>
+    <div class="card"><div class="spread"><h3 style="margin:0;display:flex;align-items:center;gap:7px">${C.compBadge('ucl')}歐冠</h3>
       <a class="pill accent" href="${C.link('cups', { cup: 'ucl' })}">開啟 →</a></div>
       <div class="tiny dim" style="margin-top:8px">${uclSeasons.length
         ? `${uclSeasons.map(s => C.esc(s.label)).join('、')} 完整・每季 36 隊`
@@ -235,7 +261,7 @@ try {
       <div class="tiny dim" style="margin-top:6px">沒有勝率預測 —— 現有模型是用聯賽比賽調的,
         歐冠有跨聯賽實力比較、兩回合制、延長與 PK 四件它沒見過的事。</div></div>
 
-    <div class="card"><div class="spread"><h3 style="margin:0">英格蘭盃賽</h3>
+    <div class="card"><div class="spread"><h3 style="margin:0;display:flex;align-items:center;gap:7px">${C.compBadge('facup')}${C.compBadge('eflcup')}英格蘭盃賽</h3>
       <a class="pill accent" href="${C.link('cups', { cup: 'facup' })}">開啟 →</a></div>
       <div class="tiny dim" style="margin-top:8px">${cupList.length
         ? `${cupList.map(c => C.esc(c.zh ?? c.en)).join('、')}・共 ${cupMatches} 場`
