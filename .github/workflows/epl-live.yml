@@ -416,6 +416,10 @@ jobs:
           git add -f epl/data/manual/competition-logos.json 2>/dev/null || true
           # 產物也回寫:這條工作流的回寫清單沒有 web/data,倉庫裡那份會停在第一次提交的 0 張版
           git add -f epl/web/data/competitions.json 2>/dev/null || true
+          # 盃賽比分的快速通道:前端走 raw 讀**倉庫**那份,所以部署時也要把它回寫 ——
+          # 只靠比賽日迴圈回寫的話,那份會比部署上去的 cups.json 舊(前端有時間戳守著,
+          # 但那時就退回「不覆蓋」= 這條通道等於沒有)。
+          git add -f epl/web/data/cups-live.json 2>/dev/null || true
           git add -f epl/data/manual/news-curated-archive.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "資料沒有變化,不提交"

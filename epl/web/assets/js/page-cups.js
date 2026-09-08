@@ -1,5 +1,5 @@
-import * as C from './core.js?v=af40c359';
-import { renderUclView } from './ucl-view.js?v=310468fc';
+import * as C from './core.js?v=2105010b';
+import { renderUclView } from './ucl-view.js?v=c6be9a89';
 
 const app = document.getElementById('app');
 
@@ -203,6 +203,9 @@ try {
   C.registerCompetitions(shared.competitions);   // 分頁按鈕的賽事圖像:有真圖就用真圖
   const cups = shared.cups;
   CUP_CRESTS = cups?.crests ?? {};
+  /* 比賽中的比分不在 cups.json 裡(它要等下一次部署),在 cups-live.json 那份小檔。
+     載入時先覆蓋一次 —— 比賽中開頁的人立刻看到比分,不用等部署。 */
+  C.applyCupsLive(cups, await C.fetchCupsLive(cups));
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -346,4 +349,15 @@ try {
   }
 
   renderComp();
+
+  /* 有場次在踢就繼續拿(每 60 秒;聯賽比分那邊是 20 秒,盃賽的上游本來就只有 3 分鐘的節奏,
+     拿太密只是白費請求)。比分沒變就不重畫 —— 重畫會把讀者展開的輪次收回去。
+     用 C.pageInterval,換頁時會自己清掉(裸 setInterval 會讓舊頁面 60 秒後覆蓋 #app)。 */
+  if (C.cupsHaveLive(cups)) {
+    C.pageInterval(async () => {
+      const fresh = await C.fetchCupsLive(cups);
+      if (!fresh) return;
+      if (C.applyCupsLive(cups, fresh) > 0) renderComp();
+    }, 60000);
+  }
 } catch (err) { C.fail(err); }
