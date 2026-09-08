@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-09-08T20:52:39.601Z",
+ "retrievedAt": "2026-09-08T20:54:56.020Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-09-08T20:50:21.810Z",
+   "retrievedAt": "2026-09-08T20:54:56.020Z",
    "matches": [
     {
      "id": "5840307",
@@ -2448,19 +2448,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       0,
       1
      ],
-     "state": "LIVE",
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/millwall-vs-newcastle-united/3e9hbm#6099336",
      "unknownReasons": []
     },
