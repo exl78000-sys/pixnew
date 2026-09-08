@@ -1143,6 +1143,7 @@ async function main() {
      所以**獨立一份產物、獨立一頁**,不混進 fixtures.json ——
      混進去的話「本季 380 場」這個數字會突然變成 500 多場,而那不是聯賽場次。
      沒抓到就整份不出現,前端整頁換成空狀態(不留空欄位)。 */
+  const BUILT_AT = new Date().toISOString();
   {
     const cupsDir = join(ROOT, 'data', 'raw', 'fotmob-cups');
     const files = ['facup', 'eflcup'];
@@ -1239,6 +1240,12 @@ async function main() {
     if (cups.length) {
       await write('cups.json', {
         source: 'FotMob',
+        builtAt: BUILT_AT,
+        /* 比分快速通道的網址放在**這裡**不是 meta:cups.json 是跨聯賽的一份(三個聯賽的盃賽頁都讀它),
+           而 meta 是各聯賽自己的 —— 放 meta 的話站在西甲就拿不到,只能退回讀部署後的舊檔。 */
+        liveFeed: (process.env.GITHUB_REPOSITORY && process.env.GITHUB_REF_NAME)
+          ? `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${process.env.GITHUB_REF_NAME}/epl/web/data/cups-live.json`
+          : null,
         note: '足總盃與聯賽盃的賽程與賽果來自 FotMob 的盃賽端點,只涵蓋正賽(足總盃從第一輪起;第九級打起的資格賽不在來源裡)。'
           + 'PK 大戰的比數與勝方另從單場詳情補,補不到的標「勝方待查」。2026-09-02 以前的場次逐場對過 SportMonks 的舊快取,之後只有一個來源。',
         // 對手隊徽查表:sourceId → data URI。**一支球隊只存一份**,不要掛在每一場上
@@ -1246,6 +1253,32 @@ async function main() {
         retrievedAt: cups.map(c => c.retrievedAt).sort().at(-1) ?? null,
         cups,
       });
+      /* 盃賽的「比賽中快速通道」(2026-09-08)。
+
+         cups.json 有 1.8 MB,而且前端只從**部署後的站台**讀 —— 比賽日迴圈每 3 分鐘把新比分
+         推回 repo,畫面卻要等下一次部署(最多 12 小時)才看得到。live.json 早就有這條路
+         (meta.liveFeed 直接讀 raw.githubusercontent.com),盃賽照抄:另外寫一份**只有比分的小檔**,
+         前端載完 cups.json 後用它覆蓋。整季兩個盃賽約 200 場 × 幾十位元組,幾十 KB 而已。 */
+      const liveRows = [];
+      for (const c of cups) for (const s of c.seasons) {
+        if (!s.current) continue;
+        for (const r of s.rounds ?? []) for (const m of r.matches ?? []) {
+          liveRows.push({ id: m.id, cup: c.key, state: m.state, played: m.played,
+            liveScore: m.liveScore ?? null, final: m.final ?? null,
+            pens: m.pens ?? null, pensWinner: m.pensWinner ?? null, aet: m.aet ?? null });
+        }
+      }
+      await write('cups-live.json', {
+        note: '盃賽的比分快速通道:比賽日迴圈每 3 分鐘更新,前端讀 raw 直接看得到,不用等部署。只有比分,其餘看 cups.json。',
+        /* 兩個檔都寫同一個 builtAt,前端才比得出新舊。**這是必要的**:小檔走 raw(讀倉庫那份),
+           而倉庫那份可能比部署上去的 cups.json 舊(例如上一次比賽日迴圈是昨晚、今天早上又部署過)——
+           不比就會拿昨晚的「進行中 1-0」蓋掉今天的「終場 2-1」。 */
+        builtAt: BUILT_AT,
+        fetchedAt: new Date().toISOString(),
+        season: liveRows.length ? cups.flatMap(c => c.seasons).find(s => s.current)?.label ?? null : null,
+        matches: liveRows,
+      });
+      console.log(`  盃賽比分快速通道:本季 ${liveRows.length} 場(進行中 ${liveRows.filter(m => m.state === 'LIVE').length})`);
       for (const c of cups) {
         for (const s of c.seasons) {
           console.log(`  ${c.zh} ${s.label}:${s.total} 場・已完賽 ${s.played}`

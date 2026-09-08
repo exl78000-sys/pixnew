@@ -1,4 +1,4 @@
-import * as C from './core.js?v=af40c359';
+import * as C from './core.js?v=2105010b';
 
 const app = document.getElementById('app');
 
@@ -34,6 +34,9 @@ try {
   const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div>
     <div class="value">${value}</div><div class="sub">${sub}</div></div>`;
 
+  /* 盃賽的比分在 cups-live.json 那份小檔(cups.json 要等下一次部署),載入時覆蓋一次。
+     這一頁的表是一次算完的,不做輪詢 —— 要看比賽中的變化到盃賽頁,那一頁每 60 秒會自己更新。 */
+  C.applyCupsLive(shared.cups, await C.fetchCupsLive(shared.cups));
   const cupList = Object.values(shared.cups?.cups ?? {});
   const cupMatches = cupList.reduce((n, c) => n
     + (c.seasons ?? []).reduce((m, s) => m + (s.total ?? 0), 0), 0);

@@ -1461,6 +1461,46 @@ async function checkDataGap() {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /LEAGUE_SETS = \[[^\]]*'live'/.test(src) && /u\.live\.hs/.test(src) && /C\.liveMinute\(m, lv\.fetchedAt\)/.test(src) && /C\.countdown\(u\.kick\)/.test(src);
     })()],
+    /* 盃賽比分的快速通道(2026-09-08)。
+
+       比賽日迴圈每 3 分鐘把新比分推回 repo,但**畫面讀的是部署後的站台** ——
+       cups.json 有 1.8 MB、只在部署時重建,所以比分要等最多 12 小時才看得到。
+       live.json 早就有這條路(meta.liveFeed 直接讀 raw),盃賽照抄:另寫一份只有比分的小檔。
+       網址放在 cups.json 自己身上而不是 meta —— cups.json 是跨聯賽的一份,
+       放 meta 的話站在西甲就拿不到(實測過:那時只能退回讀部署後的舊檔)。 */
+    ['盃賽有比分快速通道:小檔存在、比 cups.json 小得多、網址在 cups.json 上', (() => {
+      const cp = join(ROOT, 'web', 'data', 'cups.json'), lp = join(ROOT, 'web', 'data', 'cups-live.json');
+      if (!existsSync(cp)) return true;                       // 還沒 build 出盃賽就不判
+      if (!existsSync(lp)) { console.log('      cups-live.json 不存在'); return false; }
+      const cups = JSON.parse(readFileSync(cp, 'utf8')), live = JSON.parse(readFileSync(lp, 'utf8'));
+      const bigger = statSync(cp).size, smaller = statSync(lp).size;
+      const hasFeedField = 'liveFeed' in cups;
+      const ids = new Set(live.matches.map(m => String(m.id)));
+      // 小檔涵蓋本季每一場(覆蓋是照 id 對的,漏一場那一場就永遠停在部署時的比分)
+      const current = (cups.cups ?? []).flatMap(c => (c.seasons ?? []).filter(s => s.current))
+        .flatMap(s => (s.rounds ?? []).flatMap(r => r.matches ?? []));
+      const missing = current.filter(m => !ids.has(String(m.id))).length;
+      if (!hasFeedField) console.log('      cups.json 沒有 liveFeed 欄位');
+      if (missing) console.log(`      小檔漏了本季 ${missing} 場`);
+      if (smaller > bigger / 4) console.log(`      小檔沒有小多少:${smaller} vs ${bigger}`);
+      /* 兩個檔要有**同一個** builtAt:前端靠它擋「小檔比 cups.json 舊」的情況 ——
+         小檔走 raw(讀倉庫那份),倉庫那份可能比部署上去的舊,不擋就會拿昨晚的
+         「進行中 1-0」蓋掉今天的「終場 2-1」,而畫面看起來完全正常。 */
+      const sameStamp = !!cups.builtAt && cups.builtAt === live.builtAt;
+      if (!sameStamp) console.log(`      builtAt 對不起來:${cups.builtAt} vs ${live.builtAt}`);
+      return hasFeedField && missing === 0 && smaller < bigger / 4 && sameStamp;
+    })()],
+    ['盃賽頁與總覽都走共用的覆蓋函式,而且盃賽頁用 pageInterval 輪詢(不是裸 setInterval)', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const cups = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');
+      const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      // 覆蓋前要比時間戳(舊的不覆蓋)
+      if (!/t\(live\.builtAt\) < t\(cups\.builtAt\)/.test(core)) { console.log('      applyCupsLive 沒有擋舊檔'); return false; }
+      return /export function applyCupsLive/.test(core) && /export async function fetchCupsLive/.test(core)
+        && [cups, ov].every(s => /C\.applyCupsLive\(/.test(s) && /C\.fetchCupsLive\(/.test(s))
+        && /C\.pageInterval\(async \(\) => \{[\s\S]{0,200}fetchCupsLive/.test(cups)
+        && !/setInterval\(/.test(cups);
+    })()],
     /* 三聯賽的產物欄位契約(2026-09-08)。
 
        這一節守的是同一類坑的**第三次**:「產物的欄位名是跟前端的約定」。

@@ -276,6 +276,54 @@ export function registerCompetitions(data) {
   }
   return COMPETITIONS;
 }
+/* 盃賽比分的快速通道(2026-09-08)。
+
+   cups.json 有 1.8 MB,而且只從部署後的站台讀 —— 比賽日迴圈每 3 分鐘把新比分推回 repo,
+   畫面卻要等下一次部署(最多 12 小時)。所以 build 另外寫一份只有比分的小檔(cups-live.json,約 10 KB),
+   前端載完 cups.json 之後用它覆蓋。跟 live.json 同一條路:先讀 raw(資料一進 repo 就看得到),
+   raw 不通或本機開啟時退回站上那份。
+
+   **只覆蓋比分相關的欄位**,不動隊伍、輪次、隊徽 —— 那些不會在比賽中改變。 */
+export async function fetchCupsLive(cups) {
+  // 網址在 cups.json 自己身上(跨聯賽的一份),不是各聯賽的 meta
+  const feeds = [cups?.liveFeed, 'data/cups-live.json'].filter(Boolean);
+  for (const url of feeds) {
+    try {
+      const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`, { cache: 'no-store' });
+      if (res.ok) return await res.json();
+    } catch { /* 換下一個來源 */ }
+  }
+  return null;
+}
+
+export function applyCupsLive(cups, live) {
+  const rows = new Map((live?.matches ?? []).map(m => [String(m.id), m]));
+  if (!rows.size) return 0;
+  /* **小檔比 cups.json 舊就不覆蓋。** 小檔走 raw(讀倉庫那份),而倉庫那份可能比部署上去的
+     cups.json 舊 —— 上一次比賽日迴圈是昨晚、今天早上又部署過,就是這種情況。
+     不比的話會拿昨晚的「進行中 1-0」蓋掉今天的「終場 2-1」,而畫面看起來完全正常。 */
+  const t = s => Date.parse(s ?? '');
+  if (Number.isFinite(t(cups?.builtAt)) && Number.isFinite(t(live?.builtAt)) && t(live.builtAt) < t(cups.builtAt)) return 0;
+  let changed = 0;
+  for (const cup of cups?.cups ?? []) for (const s of cup.seasons ?? []) {
+    if (!s.current) continue;
+    for (const r of s.rounds ?? []) for (const m of r.matches ?? []) {
+      const row = rows.get(String(m.id));
+      if (!row) continue;
+      // 比分沒變就不算一次更新 —— 呼叫端用它決定要不要重畫
+      const before = JSON.stringify([m.state, m.played, m.liveScore, m.final, m.pens, m.pensWinner]);
+      m.state = row.state; m.played = row.played; m.liveScore = row.liveScore;
+      m.final = row.final; m.pens = row.pens; m.pensWinner = row.pensWinner; m.aet = row.aet;
+      if (JSON.stringify([m.state, m.played, m.liveScore, m.final, m.pens, m.pensWinner]) !== before) changed++;
+    }
+  }
+  return changed;
+}
+
+// 盃賽現在有沒有場次在踢(決定要不要繼續輪詢)
+export const cupsHaveLive = cups => (cups?.cups ?? []).some(c => (c.seasons ?? []).some(s =>
+  s.current && (s.rounds ?? []).some(r => (r.matches ?? []).some(m => m.state === 'LIVE'))));
+
 export function compBadge(key, { label = null, size = '' } = {}) {
   const c = COMPETITIONS[key];
   if (!c) return label ? `<span class="pill tiny">${esc(String(label === true ? key : label))}</span>` : '';
