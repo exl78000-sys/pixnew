@@ -595,6 +595,30 @@ async function main() {
     console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})・退回 ${fotmobStats.rejected.length} 場・控球率未經第二來源抽核`);
     for (const r of fotmobStats.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
   }
+  /* **一個聯賽一種 xG 算法。**
+
+     FotMob 有兩條路都會給球隊層的 xG(逐場資料的球隊統計、單場詳情的球隊統計),
+     而本站另外有一份逐射門 xG 的加總。兩者不完全一樣:逐場比對本季 41 場,36 場幾乎相同、
+     5 場差到 0.37(LEV|BET 2.76 vs 3.13)。
+
+     西甲既有的場次走「逐射門加總」(主要來源 SportMonks 根本沒給 xG),文章也是那樣說明的
+     (「逐射門的進球數與比分已核對過」)。所以只要那一場的射門圖完整(進球數對得回比分),
+     就把供應商那個數拿掉,讓報告層一律走逐射門 —— 同一頁兩種算法而且只對其中一種說明出處,
+     是這個站最不該有的東西。射門圖不完整時保留供應商的數字(那時逐射門加總本來就不可信)。
+
+     **兩條 FotMob 路都要做。** 只做逐場資料那條的話,單場詳情補進來的場次仍然走供應商 ——
+     2026-09-08 部署時就是這樣紅的(33/41),而本機因為那批還沒抓到所以看不出來。 */
+  const shotXgReady = key => {
+    const ms = fotmobStats.matches?.[key];
+    return !!ms?.shots?.length && ms.shotmapComplete !== false;
+  };
+  const dropSupplierXg = (detail, key) => {
+    if (!detail || !shotXgReady(key)) return detail;
+    const teamStats = Object.fromEntries(Object.entries(detail.teamStats ?? {})
+      .map(([code, t]) => [code, t && 'xG' in t ? { ...t, xG: null } : t]));
+    return { ...detail, teamStats };
+  };
+
   const reports = {};
   for (const [pair, detail] of Object.entries(postMatchStore.matches ?? {})) {
     const fixture = fixtureByPair.get(pair);
@@ -635,7 +659,8 @@ async function main() {
         if (reports[`${CURRENT_SEASON}|${pair}`]) continue;      // 已有主要來源就不覆蓋
         const fixture = fixtureByPair.get(pair);
         const report = buildProviderMatchReport({
-          fixture, detail, nameOf: code => T.byCode.get(code)?.en ?? code,
+          fixture, detail: dropSupplierXg(detail, `${CURRENT_SEASON}|${pair}`),
+          nameOf: code => T.byCode.get(code)?.en ?? code,
         });
         if (report) { reports[`${CURRENT_SEASON}|${pair}`] = report; added++; }
       }
@@ -661,18 +686,8 @@ async function main() {
       const ms = fotmobStats.matches?.[key];
       if (!ms) continue;
       const fixture = fixtureByPair.get(`${f.home}|${f.away}`);
-      const detail = toCanonicalDetail(ms, { verified: false });
-      /* **一個聯賽一種 xG 算法。** 逐場資料同時給了球隊統計的 xG 與逐射門 xG,兩者不完全一樣
-         (2026-09-08 逐場比對 41 場:36 場幾乎相同,5 場差到 0.37,例如 LEV|BET 2.76 vs 3.13)。
-         西甲既有的 30 場走「逐射門加總」(SportMonks 沒給 xG),文章裡也是那樣說明的
-         (「逐射門的進球數與比分已核對過」);這 11 場若改用球隊統計,同一頁就會有兩種算法而且沒人講。
-         射門圖完整(進球數對得回比分)時就把球隊統計那個數拿掉,讓報告層走跟另外 30 場同一條。
-         射門圖不完整時保留球隊統計的 xG —— 那時候逐射門加總本來就不可信。 */
-      if (detail.shotmapComplete !== false && detail.shots?.length) {
-        for (const t of Object.values(detail.teamStats ?? {})) { if (t && 'xG' in t) t.xG = null; }
-      }
       const report = buildProviderMatchReport({
-        fixture, detail,
+        fixture, detail: dropSupplierXg(toCanonicalDetail(ms, { verified: false }), key),
         nameOf: code => T.byCode.get(code)?.en ?? code,
       });
       if (report) { reports[key] = report; added++; }
