@@ -267,9 +267,9 @@ td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .comp-badge.lg { width: 30px; height: 30px; border-radius: 8px; font-size: 12px; }
 .comp-badge.lg.n3 { font-size: 10px; }
 .comp-cell { display: inline-flex; align-items: center; gap: 6px; }
-/* 真圖版:第一版墊近白底(怕歐冠深藍那種糊掉),使用者要深色 —— 改墊比面板略亮一階的深底,
-   邊框提亮一點讓它在卡片上仍看得出是一個小方塊(2026-09-07) */
-.comp-badge.logo { background: #1c1429; border-color: #ffffff3a; padding: 2px; box-sizing: border-box; }
+/* 真圖版:白底、**不加邊框**(使用者 2026-09-08 定案)。深底那版歐冠的深藍 logo 整個看不見;
+   色塊版的邊框是給純色方塊用的,logo 有白底就夠分得出來,再框一圈反而髒 */
+.comp-badge.logo { background: #fff; border: 0; padding: 2px; box-sizing: border-box; }
 .team-cell { display: flex; align-items: center; gap: 9px; }
 .team-cell .nm { font-weight: 600; }
 
