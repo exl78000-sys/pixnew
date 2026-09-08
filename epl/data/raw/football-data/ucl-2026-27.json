@@ -3,7 +3,7 @@
   "competition": "CL",
   "season": "2026-27",
   "seasonParam": "2026",
-  "retrievedAt": "2026-09-08T02:10:07.215Z",
+  "retrievedAt": "2026-09-08T16:11:37.467Z",
   "schemaVersion": 2,
   "availability": "available",
   "status": 200,
@@ -502,11 +502,11 @@
       },
       "id": 575323,
       "utcDate": "2026-09-08T16:45:00Z",
-      "status": "TIMED",
+      "status": "SCHEDULED",
       "matchday": 1,
       "stage": "LEAGUE_STAGE",
       "group": null,
-      "lastUpdated": "2026-09-08T01:32:00Z",
+      "lastUpdated": "2026-09-08T15:11:44Z",
       "homeTeam": {
         "id": 851,
         "name": "Club Brugge KV",
@@ -536,7 +536,14 @@
       "odds": {
         "msg": "Activate Odds-Package in User-Panel to retrieve odds."
       },
-      "referees": []
+      "referees": [
+        {
+          "id": 31823,
+          "name": "Sandro Schärer",
+          "type": "REFEREE",
+          "nationality": "Switzerland"
+        }
+      ]
     },
     {
       "area": {
@@ -561,11 +568,11 @@
       },
       "id": 575324,
       "utcDate": "2026-09-08T16:45:00Z",
-      "status": "TIMED",
+      "status": "SCHEDULED",
       "matchday": 1,
       "stage": "LEAGUE_STAGE",
       "group": null,
-      "lastUpdated": "2026-09-08T01:32:00Z",
+      "lastUpdated": "2026-09-08T15:11:44Z",
       "homeTeam": {
         "id": 1899,
         "name": "PAE AEK",
@@ -595,7 +602,14 @@
       "odds": {
         "msg": "Activate Odds-Package in User-Panel to retrieve odds."
       },
-      "referees": []
+      "referees": [
+        {
+          "id": 37629,
+          "name": "Luís Godinho",
+          "type": "REFEREE",
+          "nationality": "Portugal"
+        }
+      ]
     },
     {
       "area": {
