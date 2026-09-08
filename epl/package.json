@@ -60,6 +60,7 @@
     "probe:encups": "node scripts/probe-encups.mjs",
     "probe:ucl": "node scripts/probe-ucl.mjs",
     "cups:fetch": "node scripts/fetch-fotmob-cups.mjs",
+    "cups:live": "node scripts/fetch-fotmob-cups.mjs --live",
     "ucl": "node scripts/fetch-ucl.mjs",
     "cup-crests": "node scripts/fetch-cup-crests.mjs",
     "competition-logos": "node scripts/fetch-competition-logos.mjs",

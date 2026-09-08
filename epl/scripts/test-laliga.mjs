@@ -300,6 +300,24 @@ check('西甲即時輪詢有 include fallback 與硬上限',
     })());
 }
 {
+  /* 產物:**已完賽而且逐場資料有的場次,都要有賽後報告**(2026-09-08)。
+     這一條守的是「抓到了卻沒接上」:賽後報告本來只吃 match-details,而寫那份的抓取器要從
+     手動跑的陣容快取拿 matchId,於是 9/3 SportMonks 退訂後新場次一場都沒有,整季停在 30/41。
+     逐場資料(game:fetch,每次部署都跑)41/41 場都在 —— 資料一直都有,只是沒有接上。 */
+  const rp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'reports.json');
+  const fp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json');
+  const gp = join(ROOT, 'data', 'raw', 'fotmob-la-liga', '2026-27-game-details.json');
+  if (existsSync(rp) && existsSync(fp) && existsSync(gp)) {
+    const reports = JSON.parse(readFileSync(rp, 'utf8')).reports ?? {};
+    const fixtures = JSON.parse(readFileSync(fp, 'utf8'));
+    const details = JSON.parse(readFileSync(gp, 'utf8')).matches ?? {};
+    const have = new Set(Object.values(details).filter(m => m.season === '2026-27').map(m => `${m.season}|${m.home}|${m.away}`));
+    const missing = fixtures.filter(f => f.played && have.has(`2026-27|${f.home}|${f.away}`))
+      .filter(f => !reports[`2026-27|${f.home}|${f.away}`]).map(f => `${f.home}-${f.away}`);
+    check(`已完賽且逐場資料有的西甲場次都有賽後報告(缺 ${missing.length}:${missing.slice(0, 5).join('、') || '無'})`, missing.length === 0);
+  }
+}
+{
   // 產物:即時快照的每一場都要帶 fixtureId 與 round(2026-09-07 使用者點進行中的比賽進不去分析頁)
   const lp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'live.json');
   if (existsSync(lp)) {

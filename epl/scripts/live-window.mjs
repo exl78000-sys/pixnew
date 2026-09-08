@@ -14,7 +14,7 @@
 //   1. 現在有沒有比賽進行中?          → 立刻開始輪詢
 //   2. 下一場多久後開賽?              → 還早就不進場;快到了就先睡到開賽前再輪詢
 //   3. 都沒有?                        → 直接結束,不浪費(使用者要的「沒比賽就不用頻繁」)
-import { readFileSync, existsSync, appendFileSync } from 'node:fs';
+import { readFileSync, existsSync, appendFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,6 +40,14 @@ const MAX_WAIT_MIN = 180;
    輪詢間隔是 2 分鐘,10 分鐘的門檻夠寬鬆;抓取連續失敗超過這個時間,
    就退回用開賽時間推 —— 那會讓迴圈撐到 TAIL_MIN,比中途退場好。 */
 const FEED_FRESH_MIN = 10;
+
+/* 一場比賽的「現在該盯著它」時間窗。抽出來是因為盃賽的抓取器也要問同一個問題 ——
+   兩邊各寫一份的話,改了一邊另一邊會悄悄用舊門檻(CLAUDE.md 那條坑)。 */
+export const inMatchWindow = (now, kickoffIso) => {
+  const ko = Date.parse(kickoffIso ?? '');
+  if (!Number.isFinite(ko)) return false;
+  return now >= ko - LEAD_MIN * 60000 && now <= ko + TAIL_MIN * 60000;
+};
 
 /* 純判斷,不碰檔案 —— 測試看不到 DOM 也讀不到 workflow,
    這一段的邏輯要能被 npm test 直接餵資料驗。 */
@@ -110,6 +118,38 @@ const LEAGUES = {
   en2: { fixtures: ['web', 'data', 'leagues', 'en2', 'fixtures.json'], live: null },
 };
 
+/* 英格蘭盃賽的場次也算「有比賽在踢」(2026-09-08)。
+
+   聯賽盃之夜 16 場、8 支英超球隊,而那些場次**不在英超賽程裡** —— 進場判斷只看 fixtures.json 的話,
+   比賽日工作流根本不會進場,盃賽比分要等 12 小時一次的部署才會動。
+
+   **讀的是 raw 不是產物。** `web/data/cups.json` 只在部署時重建、不進版控,倉庫裡那份還停在
+   換來源之前(SportMonks 時代的欄位);而比賽日工作流在 checkout 之後、build 之前就要問這個問題,
+   拿到的就是那份舊的。`data/raw/fotmob-cups/` 兩條工作流都會回寫,永遠是最新的。
+
+   只收**本站認得的球隊**(有隊碼)的場次:足總盃夏天從第九級打起,一輪好幾百場,
+   全收的話整個夏天每天都會進場,違背使用者「沒比賽就不用頻繁」那條。 */
+export function cupFixtures(root = ROOT) {
+  const dir = join(root, 'data', 'raw', 'fotmob-cups');
+  if (!existsSync(dir)) return [];
+  const out = [];
+  for (const f of readdirSync(dir).filter(x => x.endsWith('.json'))) {
+    let raw;
+    try { raw = JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { continue; }
+    for (const season of raw.seasons ?? []) {
+      if (!season.current) continue;
+      for (const m of season.matches ?? []) {
+        if (!m.kickoff || !(m.home?.code || m.away?.code)) continue;
+        out.push({ kickoff: m.kickoff, played: m.played === true,
+          // reason 會印 home|away,沒給就變成「undefined|undefined」,log 看不出是哪一場
+          home: m.home?.code ?? m.home?.shortName ?? m.home?.name ?? '?',
+          away: m.away?.code ?? m.away?.shortName ?? m.away?.name ?? '?' });
+      }
+    }
+  }
+  return out;
+}
+
 export function liveWindow(now = Date.now(), league = 'pl') {
   const cfg = LEAGUES[league];
   if (!cfg) return { active: false, reason: `不認得的聯賽:${league}`, sleepSec: 0 };
@@ -122,7 +162,16 @@ export function liveWindow(now = Date.now(), league = 'pl') {
   if (rawLive && existsSync(rawLive)) {
     try { live = JSON.parse(readFileSync(rawLive, 'utf8')); } catch { /* 檔壞了就退回用開賽時間推 */ }
   }
-  return decideWindow({ now, fixtures, live });
+  /* 盃賽掛在英超那一條(cups.json 是跨聯賽的一份,放英超目錄)。
+     **盃賽只走「用開賽時間推」那一半** —— live feed 是 FPL 的英超專用形狀,盃賽不在裡面,
+     所以 feed 說「現在 0 場在踢」時不能拿它否定盃賽場次。兩邊任一說要進場就進場。 */
+  const byFeed = decideWindow({ now, fixtures, live });
+  if (league !== 'pl') return byFeed;
+  if (byFeed.active) return byFeed;
+  const byFixtures = decideWindow({ now, fixtures: [...fixtures, ...cupFixtures()], live: null });
+  if (byFixtures.active) return byFixtures;
+  // 都不進場:回報比較早的那個喚醒時間
+  return (byFixtures.sleepSec || Infinity) <= (byFeed.sleepSec || Infinity) ? byFixtures : byFeed;
 }
 
 /* 只有被直接執行時才印 —— npm test 要 import decideWindow 來驗,

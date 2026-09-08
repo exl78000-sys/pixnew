@@ -89,14 +89,18 @@ jobs:
             N=$((N+1))
             npm run live      >/dev/null 2>&1 || true
             npm run official  >/dev/null 2>&1 || true
+            # 英格蘭盃賽(2026-09-08):--live 自己守門 —— 本季沒有「本站球隊」的場次在比賽窗內
+            # 就一個請求都不發。有的話 TTL 3 分鐘,所以這個 2 分鐘的迴圈實際約每 3 分鐘一個請求。
+            # 進場判斷(live-window)也已經把盃賽場次算進去,不然聯賽盃之夜根本不會進場。
+            npm run cups:live >/dev/null 2>&1 || true
 
             # 只有資料真的變了才 build + 提交 —— 沒變就不要製造空提交
-            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json; then
+            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json epl/data/raw/fotmob-cups/; then
               echo "  [$N] 無變化"
             else
               npm run build >/dev/null 2>&1 || true
               cd "$GITHUB_WORKSPACE"
-              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json epl/web/data/ 2>/dev/null || true
+              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json epl/data/raw/fotmob-cups/ epl/web/data/ 2>/dev/null || true
               if git diff --cached --quiet; then
                 echo "  [$N] 產物無變化"
               else

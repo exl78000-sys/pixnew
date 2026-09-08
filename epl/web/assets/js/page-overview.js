@@ -143,9 +143,13 @@ try {
       for (const r of season?.rounds ?? []) for (const m of r.matches ?? []) {
         if (m.played || !m.kickoff || !inWindow(m.kickoff)) continue;
         if (!covered(m.home) && !covered(m.away)) continue;
+        /* 盃賽沒有獨立的 live.json:比分就在 cups.json 的場次上(state LIVE + liveScore),
+           比賽日迴圈每 3 分鐘更新一次。分鐘數上游沒給,所以只寫「進行中」不編一個分鐘。 */
+        const live = m.state === 'LIVE' && Array.isArray(m.liveScore)
+          ? { hs: m.liveScore[0], as: m.liveScore[1], finished: false, minute: null } : null;
         rows.push({ kick: m.kickoff, comp: cup.zh ?? cup.en, compKey: cup.key, home: m.home?.name ?? '?', away: m.away?.name ?? '?',
           hCrest: cupCrests[m.home?.sourceId] ?? null, aCrest: cupCrests[m.away?.sourceId] ?? null,
-          note: m.stage ?? '', pending: m.kickoff.endsWith('T00:00:00Z'), link: null });
+          note: m.stage ?? '', pending: m.kickoff.endsWith('T00:00:00Z'), live, link: null });
       }
     }
     /* 歐冠聯賽階段。資料早就在 ucl.json 裡(開球時間齊全、有 matchday),

@@ -1461,6 +1461,84 @@ async function checkDataGap() {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /LEAGUE_SETS = \[[^\]]*'live'/.test(src) && /u\.live\.hs/.test(src) && /C\.liveMinute\(m, lv\.fetchedAt\)/.test(src) && /C\.countdown\(u\.kick\)/.test(src);
     })()],
+    /* 三聯賽的產物欄位契約(2026-09-08)。
+
+       這一節守的是同一類坑的**第三次**:「產物的欄位名是跟前端的約定」。
+       en2 那次是自己給 meta 取名字(同一輪犯四次);es1 那次是即時快照少了 fixtureId
+       (實時頁的卡片退回 href="#",使用者點進行中的比賽進不去)。兩次都是**一個聯賽有、
+       另一個沒有**,而且不會拋錯、測試也不會紅 —— 只有畫面上少一塊。
+
+       做法跟 test-championship 那一節一樣:逐欄位比對,差異要嘛不存在、要嘛在下面
+       這張「已知而且解釋得出來」的表裡。新增欄位只加給一個聯賽時,這條會紅 ——
+       那正是要有人來決定「另一個聯賽要不要也給」的時候。 */
+    ['三聯賽的 fixtures 欄位一致(差異都要在已知清單裡)', (() => {
+      const load = p => (existsSync(join(ROOT, 'web', 'data', ...p)) ? JSON.parse(readFileSync(join(ROOT, 'web', 'data', ...p), 'utf8')) : null);
+      const sets = { pl: load(['fixtures.json']), es1: load(['leagues', 'es1', 'fixtures.json']), en2: load(['leagues', 'en2', 'fixtures.json']) };
+      /* 已知而且解釋得出來的差異:
+         time —— 英超的 FPL 鏡像給的當地開球時間字串,另兩個聯賽的來源沒有這個欄位;
+                 前端一律讀 kickoff(ISO),time 只有英超自己的舊版面在用。
+         provisional —— 西甲賽程物件上的「未賽但即時來源已記到終場」;英超走官方 FPL,沒有這回事。
+         scoreSource / scoreProvisional —— 西甲與英冠的主來源(社群靜態檔)慢好幾天,所以有一條
+                 「獨立來源核對後補比分」的路(lib/league-matches),補進來的場次要標出處與「暫定」。
+                 英超走官方 FPL,比分當天就有,沒有這條路 —— 不是漏給,是它不需要。 */
+      const KNOWN = { time: ['pl'], provisional: ['es1'], scoreSource: ['es1', 'en2'], scoreProvisional: ['es1', 'en2'] };
+      const fieldsOf = rows => new Set((rows ?? []).flatMap(r => Object.keys(r)));
+      const have = Object.fromEntries(Object.entries(sets).filter(([, v]) => Array.isArray(v)).map(([k, v]) => [k, fieldsOf(v)]));
+      const leagues = Object.keys(have);
+      if (leagues.length < 2) return true;                       // 還沒 build 出來就不判
+      const all = new Set(leagues.flatMap(k => [...have[k]]));
+      const problems = [];
+      for (const field of all) {
+        const missing = leagues.filter(k => !have[k].has(field));
+        if (!missing.length) continue;
+        const only = leagues.filter(k => have[k].has(field));
+        const allowed = KNOWN[field];
+        if (allowed && only.every(k => allowed.includes(k))) continue;
+        problems.push(`${field}(只有 ${only.join('/')} 有)`);
+      }
+      if (problems.length) console.log(`      欄位差異:${problems.join('、')}`);
+      return problems.length === 0;
+    })()],
+    /* 盃賽比賽日(2026-09-08):今晚聯賽盃第三輪 16 場、8 支英超隊,而那些場次**不在英超賽程裡** ——
+       進場判斷只看 fixtures.json 的話,比賽日工作流根本不會進場,盃賽比分要等 12 小時一次的部署。
+       三處守著:進場判斷把盃賽算進去、抓取器的 --live 自己守門、畫面印進行中的比分。 */
+    ['進場判斷把本季盃賽場次算進去(只收本站認得的球隊)', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
+      return /export function cupFixtures/.test(src) && /m\.home\?\.code \|\| m\.away\?\.code/.test(src)
+        // 盃賽只走「用開賽時間推」那一半:feed 是英超專用形狀,不能拿它否定盃賽場次
+        && /\[\.\.\.fixtures, \.\.\.cupFixtures\(\)\], live: null/.test(src)
+        // 讀 raw 不是產物:cups.json 不進版控,倉庫那份在 build 之前是舊的
+        && /'data', 'raw', 'fotmob-cups'/.test(src);
+    })()],
+    ['盃賽抓取器的 --live 自己守門:比賽窗外一個請求都不發', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'fetch-fotmob-cups.mjs'), 'utf8');
+      return /import \{ inMatchWindow \}/.test(src) && /不發請求/.test(src) && /TTL_LIVE_MS/.test(src);
+    })()],
+    ['比賽日迴圈會抓盃賽,而且盃賽的 raw 有進提交清單', (() => {
+      const y = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-matchday.yml'), 'utf8');
+      return /npm run cups:live/.test(y) && /git add -f[^\n]*fotmob-cups/.test(y) && /diff --quiet[^\n]*fotmob-cups/.test(y);
+    })()],
+    ['盃賽頁與總覽都印進行中的比分(state LIVE + liveScore),不編分鐘', (() =>
+      ['page-cups.js', 'page-overview.js'].every(f => {
+        const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+        return /state === 'LIVE'/.test(src) && /liveScore/.test(src);
+      }))()],
+    /* 一場比賽的時間窗只能有一份(進場判斷與盃賽抓取器都要問) */
+    ['比賽時間窗抽成共用的 inMatchWindow,盃賽抓取器不自己寫一份', (() => {
+      const w = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
+      const c = readFileSync(join(ROOT, 'scripts', 'fetch-fotmob-cups.mjs'), 'utf8');
+      return /export const inMatchWindow/.test(w) && !/LEAD_MIN|TAIL_MIN/.test(c);
+    })()],
+    /* 西甲賽後報告的鏈(2026-09-08):match-details 那條要從手動跑的陣容快取拿 matchId,
+       所以 9/3 SportMonks 退訂後新場次一場都沒有。改成逐場資料也能當來源、抓取器也讀逐場資料。 */
+    ['西甲賽後報告吃得到逐場資料(game:fetch 那條,跟英冠同一個 toCanonicalDetail)', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'build-laliga.mjs'), 'utf8');
+      return /toCanonicalDetail/.test(src) && /fotmobStats\.matches\?\.\[key\]/.test(src);
+    })()],
+    ['西甲賽後抓取器的 matchId 改讀逐場資料,不再依賴手動跑的陣容快取', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'fetch-laliga-fotmob.mjs'), 'utf8');
+      return /GAME_DETAILS/.test(src) && /game-details\.json/.test(src);
+    })()],
     ['總覽只連得進去的頁才給連結', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /C\.closedPage\(/.test(src);

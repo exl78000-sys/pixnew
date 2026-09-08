@@ -32,7 +32,7 @@ import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
-import { loadFotmobMatchStats, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { recordFor } from './lib/coaches.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { percentile, round } from './lib/util.mjs';
@@ -641,6 +641,43 @@ async function main() {
       }
       console.log(`  FotMob 西甲賽後快取:${Object.keys(fm.matches ?? {}).length} 場・補上 ${added} 場`);
     } catch { console.log('  ⚠ FotMob 賽後快取損壞,本次略過'); }
+  }
+  /* 第四個來源:**逐場資料**(game:fetch 抓的 `{季}-game-details.json`)。英冠一直是走這條,西甲補上。
+
+     為什麼要有這條(2026-09-08 實測):上面那個 `{季}-match-details.json` 由 `laliga:fotmob-postmatch` 寫,
+     而它要從 **FotMob 陣容快取**(`{季}-lineups.json`)拿 matchId —— 那份快取靠 `laliga:lineups` 手動跑,
+     **從來沒有進過 epl-live.yml**(本機優先模式的遺物),停在 8/30 的 20 場。SportMonks 還在時看不出來,
+     9/3 退訂後新完賽的場次就沒有來源了:9/7 Getafe 1-1 Celta 踢完 8 小時、三次部署都沒有賽後報告,
+     整季停在 30/41。而 `game:fetch --league=es1` 每次部署都在跑,逐場資料 41/41 場都有 matchId、名單、
+     事件、球隊統計與逐射門 —— 資料一直都在,只是沒有接上。
+
+     一樣走 `buildProviderMatchReport`(它自己會再核對一次比分、要求 coverage 齊全),
+     **只補前面三個來源沒有的場次**;`toCanonicalDetail` 是英冠與英超共用的那一份,不另寫一份。 */
+  {
+    let added = 0;
+    for (const f of curPlayed) {
+      const key = `${CURRENT_SEASON}|${f.home}|${f.away}`;
+      if (reports[key]) continue;
+      const ms = fotmobStats.matches?.[key];
+      if (!ms) continue;
+      const fixture = fixtureByPair.get(`${f.home}|${f.away}`);
+      const detail = toCanonicalDetail(ms, { verified: false });
+      /* **一個聯賽一種 xG 算法。** 逐場資料同時給了球隊統計的 xG 與逐射門 xG,兩者不完全一樣
+         (2026-09-08 逐場比對 41 場:36 場幾乎相同,5 場差到 0.37,例如 LEV|BET 2.76 vs 3.13)。
+         西甲既有的 30 場走「逐射門加總」(SportMonks 沒給 xG),文章裡也是那樣說明的
+         (「逐射門的進球數與比分已核對過」);這 11 場若改用球隊統計,同一頁就會有兩種算法而且沒人講。
+         射門圖完整(進球數對得回比分)時就把球隊統計那個數拿掉,讓報告層走跟另外 30 場同一條。
+         射門圖不完整時保留球隊統計的 xG —— 那時候逐射門加總本來就不可信。 */
+      if (detail.shotmapComplete !== false && detail.shots?.length) {
+        for (const t of Object.values(detail.teamStats ?? {})) { if (t && 'xG' in t) t.xG = null; }
+      }
+      const report = buildProviderMatchReport({
+        fixture, detail,
+        nameOf: code => T.byCode.get(code)?.en ?? code,
+      });
+      if (report) { reports[key] = report; added++; }
+    }
+    if (added) console.log(`  FotMob 逐場資料補賽後報告:${added} 場(前面三個來源沒有的)`);
   }
   /* 賽後報告補 FotMob 逐場統計的欄位(動能、射門圖、上下半場控球、跑動):既有的 detail 來自賽後快取
      (SportMonks / FotMob 完整版),那份沒有這些;逐場快取有就掛上,卡片自己會畫。 */

@@ -18,14 +18,20 @@
  * 5. 隊名只做嚴格比對;寬鬆會中、嚴格不中的印成 nearMisses 給人核對(cupAlias),不自動採用。
  * 6. 抓不到就保留上一份快取,不洗掉。
  *
+ * **`--live`(比賽日迴圈用,2026-09-08)**:只看本季、TTL 縮到 3 分鐘,而且**自己先守門** ——
+ * 本季沒有任何「本站認得的球隊」的場次在比賽窗內就一個請求都不發、直接結束。
+ * 沒有這道守門的話,比賽日迴圈每 2 分鐘叫一次 = 每小時 30 個請求,而且非盃賽日也在打。
+ *
  *   npm run cups:fetch
  *   npm run cups:fetch -- --force --max-details=20
+ *   npm run cups:fetch -- --live            # 比賽窗內才抓,只抓本季
  */
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
+import { inMatchWindow } from './live-window.mjs';
 import {
   FOTMOB_CUPS, fotmobSeason, buildCupTeamIndex, normaliseFotmobCupMatch, withCupDetails,
   parseCupDetail, crossCheckWithSportmonks,
@@ -38,10 +44,13 @@ const BASE = 'https://www.fotmob.com';
 const UA = 'pl-war-room/1.0 (football analysis side project)';
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
 const FORCE = process.argv.includes('--force');
-const MAX_DETAILS = Number(arg('max-details') ?? 24);
+const LIVE = process.argv.includes('--live');
+const MAX_DETAILS = Number(arg('max-details') ?? (LIVE ? 4 : 24));
 const MAX_REQUESTS = 4 + MAX_DETAILS;
 const GAP = 800;
 const TTL_CURRENT_MS = 3 * 3600000;
+// 比賽中的節奏:迴圈每 2 分鐘叫一次,3 分鐘的 TTL 讓實際請求約每 3 分鐘一個(跟聯賽比分同一個節奏)
+const TTL_LIVE_MS = 3 * 60000;
 const TTL_PAST_MS = 7 * 86400000;
 // 版本不同就整份重抓(修了轉換邏輯而快取還在 TTL 內 → 修了等於沒修,encups 踩過)
 const SCHEMA_VERSION = 1;
@@ -74,7 +83,26 @@ const prevSeasonOf = label => { const y = Number(label.slice(0, 4)) - 1; return 
 async function main() {
   const meta = await readJson(join(ROOT, 'web', 'data', 'meta.json'));
   const CURRENT = meta?.currentSeason ?? '2026-27';
-  const WANT = [CURRENT, prevSeasonOf(CURRENT)];
+  const WANT = LIVE ? [CURRENT] : [CURRENT, prevSeasonOf(CURRENT)];
+
+  /* --live 的守門:本季有沒有「本站認得的球隊」的場次在比賽窗內。
+     用既有的快取判斷 —— 賽程是幾小時前抓的,開球時間不會變。 */
+  if (LIVE) {
+    const now = Date.now();
+    const hits = [];
+    for (const cup of FOTMOB_CUPS) {
+      const raw = await readJson(join(OUT, `${cup.key}.json`));
+      for (const s of raw?.seasons ?? []) {
+        if (s.label !== CURRENT) continue;
+        for (const m of s.matches ?? []) {
+          if (!(m.home?.code || m.away?.code)) continue;
+          if (inMatchWindow(now, m.kickoff)) hits.push(`${cup.zh} ${m.home?.name} v ${m.away?.name}`);
+        }
+      }
+    }
+    if (!hits.length) { console.log('· 盃賽:本季沒有場次在比賽窗內,不發請求'); return; }
+    console.log(`▶ 盃賽比賽窗內 ${hits.length} 場:${hits.slice(0, 3).join('、')}${hits.length > 3 ? '…' : ''}`);
+  }
   console.log(`▶ 英格蘭盃賽(FotMob):賽季 ${WANT.join('、')}・最多 ${MAX_REQUESTS} 個請求(其中單場詳情 ${MAX_DETAILS})`);
 
   const { list, codeOf: looseCodeOf } = loadTeams(ROOT);
@@ -96,7 +124,7 @@ async function main() {
 
     for (const label of WANT) {
       const old = cached.get(label);
-      const ttl = label === CURRENT ? TTL_CURRENT_MS : TTL_PAST_MS;
+      const ttl = LIVE ? TTL_LIVE_MS : (label === CURRENT ? TTL_CURRENT_MS : TTL_PAST_MS);
       const age = old?.retrievedAt ? Date.now() - Date.parse(old.retrievedAt) : Infinity;
       let season = null;
 

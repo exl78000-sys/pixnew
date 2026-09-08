@@ -53,6 +53,13 @@ function teamCell(t, { align = 'left' } = {}) {
    90 分鐘比分只有在打過延長時才另外顯示 —— 沒打延長時它跟最終比分一樣,
    印兩次只是噪音。 */
 function scoreCell(m) {
+  /* 進行中(2026-09-08):比賽日迴圈每 3 分鐘更新一次 cups.json,比分在場次的 liveScore 上。
+     上游沒給分鐘數,所以只標「進行中」—— 不從開球時間推一個分鐘冒充上游資料。 */
+  if (!m.played && m.state === 'LIVE' && Array.isArray(m.liveScore)) {
+    return `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span class="pill bad tiny"><span class="livedot"></span>進行中</span>
+      <b class="mono" style="font-size:14px">${m.liveScore[0]} - ${m.liveScore[1]}</b></span>`;
+  }
   if (!m.played) return `<span class="dim small mono">${KO(m)}</span>`;
   const f = m.final ?? [null, null];
   const bits = [`<b class="mono" style="font-size:14px">${f[0]} - ${f[1]}</b>`];

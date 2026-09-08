@@ -26,6 +26,12 @@ const UA = 'pl-war-room/1.0 (football analysis side project)';
 const DIR = join(ROOT, 'data', 'raw', 'fotmob-la-liga');
 const SEASON = '2026-27';
 const STORE = join(DIR, `${SEASON}-match-details.json`);
+/* matchId 從**逐場資料**(game:fetch 每次部署都在抓)拿,不是從陣容快取。
+   原本讀 `{季}-lineups.json`,而那份靠 `laliga:lineups` 手動跑、**從來沒進過工作流**,
+   停在 2026-08-30 的 20 場 —— 於是這支每次部署都「待補 0 場」,新完賽的一場都抓不到
+   (2026-09-08 實測:9/7 那場踢完 8 小時、三次部署,西甲賽後停在 30/41)。
+   兩份都在同一個資料夾、都有 matchId 與同一組隊碼鍵,換過來就不再依賴手動步驟。 */
+const GAME_DETAILS = join(DIR, `${SEASON}-game-details.json`);
 const LINEUPS = join(DIR, `${SEASON}-lineups.json`);
 
 const DEFAULT_LIMIT = 6;
@@ -64,9 +70,12 @@ async function getMatch(matchId) {
 async function main() {
   console.log('\n▶ 西甲賽後資料(FotMob)');
   const fixtures = await read(join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json'));
+  /* 逐場資料優先(每次部署都在更新);沒有的話才退回陣容快取(舊的手動那份,留著當備援)。
+     兩份的鍵都是「主隊碼|客隊碼」,值裡都有 matchId。 */
+  const details = await read(GAME_DETAILS);
   const lineups = await read(LINEUPS);
-  if (!Array.isArray(fixtures) || !lineups) {
-    console.log('  ✗ 缺賽程或 FotMob 陣容快取(先跑 npm run laliga:lineups)');
+  if (!Array.isArray(fixtures) || (!details && !lineups)) {
+    console.log('  ✗ 缺賽程或 FotMob 逐場資料(先跑 npm run game:fetch -- --league=es1)');
     return;
   }
   const store = (await read(STORE)) ?? { season: SEASON, source: 'fotmob', matches: {} };
@@ -75,7 +84,14 @@ async function main() {
   /* 候選:已完賽、快取裡還沒有、而且**陣容快取裡有 matchId**。
      matchId 從既有的陣容快取來 —— 不另外打一次聯賽賽程,省一個請求,
      而且那份的隊碼對照已經核對過。 */
-  const byKey = new Map(Object.entries(lineups.matches ?? {}));
+  const byKey = new Map(Object.entries(lineups?.matches ?? {}));
+  /* 逐場資料的鍵是「賽季|主|客」,這裡要的是「主|客」;只收本季而且真的有 matchId 的。
+     已經在 byKey 裡的不覆蓋(陣容快取那份的 matchId 是核對過比分才寫的)。 */
+  for (const m of Object.values(details?.matches ?? {})) {
+    if (m.season !== SEASON || !m.matchId) continue;
+    const key = `${m.home}|${m.away}`;
+    if (!byKey.has(key)) byKey.set(key, { matchId: String(m.matchId) });
+  }
   /* 重抓的條件有三種:沒抓過、`--force`、**或對映表版本變了**。
      第三種是自動的 —— 快取存的是轉換後的結果,對映修好之後舊資料不會跟著變,
      而「記得手動 --force」不是機制。受每次請求上限節制,不會一次全打。 */
