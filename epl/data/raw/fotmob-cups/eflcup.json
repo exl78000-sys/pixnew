@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-09-09T19:02:55.815Z",
+ "retrievedAt": "2026-09-09T19:05:13.295Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-09-09T19:00:36.856Z",
+   "retrievedAt": "2026-09-09T19:05:13.295Z",
    "matches": [
     {
      "id": "5840307",
@@ -2492,12 +2492,14 @@
      "aet": null,
      "liveScore": null,
      "state": "NS",
-     "stateKnown": true,
-     "reason": null,
+     "stateKnown": false,
+     "reason": "",
      "awarded": false,
      "played": false,
      "pageUrl": "/matches/chelsea-vs-leeds-united/2d7oy4#6099342",
-     "unknownReasons": []
+     "unknownReasons": [
+      ""
+     ]
     },
     {
      "id": "6099341",
@@ -2962,7 +2964,9 @@
      "retrievedAt": "2026-09-07T17:15:05.550Z"
     }
    },
-   "unknownReasons": [],
+   "unknownReasons": [
+    ""
+   ],
    "nearMisses": [],
    "finished": false,
    "total": 74,
