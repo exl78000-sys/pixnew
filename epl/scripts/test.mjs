@@ -4290,12 +4290,29 @@ function checkUcl() {
   const ucl = JSON.parse(readFileSync(uclPath, 'utf8'));
 
   /* 兩個聯賽必須是**同一份**。歐冠是跨聯賽的賽事,兩邊看到不一樣的東西
-     代表有人複製了一份轉換邏輯過去,那份遲早會漂移。 */
+     代表有人複製了一份轉換邏輯過去,那份遲早會漂移。
+
+     **但 `retrievedAt` 要排除。** 那不是資料,是「上游那份快取是什麼時候抓的」;
+     而這兩個檔由**兩條不同的工作流**寫(epl-live 與 laliga-matchday),
+     比賽夜兩邊會交錯推送,於是同一份資料的兩個複本帶著差幾分鐘的時間戳 ——
+     實測 2026-09-09 比賽夜:pl 17:51:06、es1 17:41:54,**其餘 538,455 位元組完全相同**。
+     那不是「各算一份」,是兩條流各自寫入的時間不同。
+
+     這跟 cups.json / cups-live.json 那次是同一課:**紅線只放在資料上,不要放在時間戳上**
+     —— 放在時間戳上的話,比賽夜每次都紅,而紅久了就沒有人看(比不檢查更糟)。 */
   const esPath = join(W, 'data', 'leagues', 'es1', 'ucl.json');
   if (existsSync(esPath)) {
-    ok(JSON.stringify(ucl) === readFileSync(esPath, 'utf8').trim()
-      || JSON.stringify(ucl) === JSON.stringify(JSON.parse(readFileSync(esPath, 'utf8'))),
-      '英超與西甲的 ucl.json 完全相同(同一份資料,不是各算一份)');
+    const strip = o => { const { retrievedAt, ...rest } = o; return JSON.stringify(rest); };
+    const es = JSON.parse(readFileSync(esPath, 'utf8'));
+    ok(strip(ucl) === strip(es),
+      '英超與西甲的 ucl.json 除了 retrievedAt 之外完全相同(同一份資料,不是各算一份)',
+      strip(ucl) === strip(es) ? '' : `pl ${JSON.stringify(ucl).length} vs es1 ${JSON.stringify(es).length} 位元組`);
+    /* 時間戳雖然不當紅線,差太多仍然要講 —— 那代表其中一條流很久沒跑了。
+       只回報不擋(跟 docs:check 的 drifts 同一個分法)。 */
+    const gap = Math.abs(Date.parse(ucl.retrievedAt ?? 0) - Date.parse(es.retrievedAt ?? 0)) / 60000;
+    if (Number.isFinite(gap) && gap > 60) {
+      console.log(`  · 兩份 ucl.json 的 retrievedAt 差 ${Math.round(gap)} 分鐘(只回報不擋;超過一天代表某條流沒在跑)`);
+    }
   }
 
   ok(ucl.teamCodeConflicts?.length === 0, '沒有兩支歐冠球隊對到同一個隊碼',
