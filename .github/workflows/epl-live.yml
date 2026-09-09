@@ -177,6 +177,16 @@ jobs:
         working-directory: epl
         continue-on-error: true
         run: npm run ucl:leagues
+
+      # openfootball 沒有的另外十六個聯賽(比/挪/土/蘇/希/亞/塞/克/哈/丹/賽/奧/烏/斯/捷/瑞)。
+      # 2026-09-09 探測證實 FotMob 全部都有,缺的 21 支球隊一支都不缺 ——
+      # 之前對不上是**譯名不同**(SK Slavia Praha 在 FotMob 叫 Slavia Prague),不是資料沒有。
+      # 對照走人工表,不用寬鬆比對:希臘 Olympiacos 與賽普勒斯 Olympiakos Nicosia 會撞。
+      # 每次最多 20 個請求,歷史分幾次部署補齊、補完之後每次 16 個。
+      - name: 抓歐冠缺的那十六個聯賽(跨聯賽評分用)
+        working-directory: epl
+        continue-on-error: true
+        run: npm run ucl:fotmob-leagues
       - name: 抓官方賽程狀態
         working-directory: epl
         run: npm run schedule:status
@@ -416,6 +426,8 @@ jobs:
                      epl/data/backtest-laliga.json epl/data/backtest-laliga-matches.json \
                      epl/data/raw/openfootball-championship/ \
                      epl/data/raw/football-data-couk-championship/ \
+                     epl/data/raw/openfootball-ucl/ \
+                     epl/data/raw/fotmob-ucl-leagues/ \
                      epl/data/backtest-championship.json epl/data/backtest-championship-matches.json \
                      epl/data/form-tuning.json epl/data/availability-history.json \
                      epl/data/situation-tuning.json epl/data/situation-tuning-es1.json \

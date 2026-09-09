@@ -46,6 +46,16 @@ jobs:
         working-directory: epl
         run: npm run probe:photo-cdn
 
+      # 階段 C 的跨聯賽 Elo 現在涵蓋 25/36 隊,本季 76 場沒有預測 —— 因為那 11 支球隊的
+      # 聯賽 openfootball 沒有(tr/be/at/no/ua/sk/cz/gr/az 逐一試過全部 404)。
+      # 但「openfootball 沒有」不等於「拿不到」,那是鐵則三那條坑。這一步問 FotMob
+      # 有沒有那些聯賽,而且**隊名對不對得上** —— 第二個才是難的:football-data 給的是
+      # `FK Shakhtar Donetsk` 這種正式全名,對不上的話有聯賽也接不起來。
+      # 唯讀、最多 17 個請求、不寫任何快取。近似命中會單獨列出來讓人逐筆看。
+      - name: 探測歐冠缺的那些聯賽 FotMob 有沒有(以及隊名對不對得上)
+        working-directory: epl
+        run: npm run probe:ucl-coverage
+
   all:
     if: ${{ github.event.inputs.quick != 'true' }}
     runs-on: ubuntu-latest

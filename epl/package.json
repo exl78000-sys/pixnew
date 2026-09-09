@@ -65,6 +65,8 @@
     "ucl:live": "node scripts/fetch-ucl.mjs --live",
     "ucl:leagues": "node scripts/fetch-ucl-leagues.mjs",
     "probe:photo-cdn": "node scripts/probe-photo-cdn.mjs",
+    "probe:ucl-coverage": "node scripts/probe-ucl-coverage.mjs",
+    "ucl:fotmob-leagues": "node scripts/fetch-ucl-fotmob-leagues.mjs",
     "cup-crests": "node scripts/fetch-cup-crests.mjs",
     "competition-logos": "node scripts/fetch-competition-logos.mjs",
     "tiers": "node scripts/fetch-tiers.mjs",
