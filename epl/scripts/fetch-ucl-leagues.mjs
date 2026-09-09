@@ -21,6 +21,8 @@ import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// 聯賽清單只有一份,在 lib 那邊 —— 抓取器與計算端各寫一份的話,加聯賽時一定會漏掉一邊
+import { UCL_LEAGUES } from './lib/ucl-standings.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = 'https://raw.githubusercontent.com/openfootball/football.json/master';
@@ -28,13 +30,7 @@ const OUT = join(ROOT, 'data', 'raw', 'openfootball-ucl');
 const FORCE = process.argv.includes('--force');
 const TTL_HOURS = 6;
 
-/* 只收「歐冠有球隊、而且 openfootball 有這一份」的聯賽。
-   key 用本站的短代碼,file 是 openfootball 的檔名。 */
-export const UCL_LEAGUES = [
-  { key: 'de1', file: 'de.1', zh: '德甲', en: 'Bundesliga' },
-  { key: 'it1', file: 'it.1', zh: '義甲', en: 'Serie A' },
-  { key: 'fr1', file: 'fr.1', zh: '法甲', en: 'Ligue 1' },
-];
+
 
 /* 要抓哪一季:跟著歐冠的**本季**走,不要寫死年份。
    歐冠還沒抓到的話就不做 —— 沒有歐冠就沒有人要用這份資料。 */
