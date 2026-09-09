@@ -26,6 +26,7 @@ import { officialFormations, officialLineups, officialManagers, attachCodes } fr
 import { summariseSeason } from './lib/cups.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
+import { uclElo } from './lib/ucl-elo.mjs';
 import { lookupTier, nearMisses } from './lib/adapters/england-tiers.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
@@ -1314,6 +1315,18 @@ async function main() {
           + (standings.unmatched.length ? `(${standings.unmatched.join('、')})` : ''));
       } else {
         console.log('  歐冠對比用的聯賽積分榜:沒有快取(需要 npm run ucl:leagues),這次不產出');
+      }
+      /* 跨聯賽 Elo 與歐冠賽前預測。同樣是**跨聯賽一份**、逐位元組相同,裡面沒有時間戳。
+         回測沒通過的話 fixtures 是空的 —— 沒有證據就不給預測(鐵則二)。 */
+      const uclModel = uclElo(ROOT, ucl);
+      if (uclModel) {
+        await write('ucl-elo.json', uclModel);
+        const m = uclModel.model;
+        console.log(`  歐冠跨聯賽評分:池 ${uclModel.pool.matches} 場(橋 ${uclModel.pool.bridges})・${uclModel.coverage.ratedTeams}/${uclModel.coverage.totalTeams} 隊有評分`
+          + (m ? `・回測 ${m.n} 場 RPS ${m.rps} vs 基準 ${m.baseline}(改善 ${m.improvement} ± ${m.se},${m.passes ? '通過' : '沒通過'})` : '・回測樣本不足')
+          + `・給預測 ${uclModel.fixtures.length} 場`);
+      } else {
+        console.log('  歐冠跨聯賽評分:資料不足,這次不產出');
       }
       console.log(`  歐冠球隊名字與隊徽(跨聯賽一份):${assets.known}/${assets.codesInUcl} 個隊碼認得`
         + `・有隊徽 ${assets.teams.filter(t => t.crest).length}`);

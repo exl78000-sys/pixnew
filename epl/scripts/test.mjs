@@ -12,6 +12,7 @@ import { loadMatches } from './lib/adapters/index.mjs';
 import { COMPETITION, CURRENT_SEASON } from './lib/sources.mjs';
 import { fitPoisson, applyPromotedPrior, predict } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
+import { uclSeasonMatches } from './lib/ucl-elo.mjs';
 import { round } from './lib/util.mjs';
 import { inPlay } from './lib/inplay.mjs';
 import {
@@ -1308,12 +1309,22 @@ async function checkUclCompare() {
       return /import \{ UCL_LEAGUES \} from '\.\/lib\/ucl-standings\.mjs'/.test(f)
         && !/UCL_LEAGUES = \[/.test(f);
     })()],
-    /* **這一條是這張表的重點**:歐冠沒有勝率預測,所以對比裡一個模型輸出都不能有。
-       Elo / 實力值 / 勝率任何一個進來,讀者就會拿兩把不同的尺相減。 */
+    /* **這一條是這張表的重點,階段 C 之後仍然成立**:這張表是「兩個聯賽各自的
+       原始數字」,一個模型輸出都不能有。名次、場均這些在兩個聯賽之間本來就不可比,
+       混一個 Elo 或勝率進來,讀者就會連帶以為旁邊的名次也是同一把尺。
+       勝率預測有了(階段 C),但它是**另外一塊**、有自己的出處說明。 */
     ['對比裡沒有任何模型輸出(Elo / 實力 / 勝率)',
       !rows.some(r => /elo|實力|勝率|預測|xG/i.test(r.label))],
-    ['界線有寫在畫面上:不是同一把尺、沒有勝率預測',
-      /不是同一把尺/.test(view) && /這裡沒有勝率預測/.test(view)],
+    ['界線有寫在畫面上:表格不是同一把尺、表裡沒有模型輸出',
+      /不是同一把尺/.test(view) && /這張表裡一個模型輸出都沒有/.test(view)],
+    /* 勝率是另外一塊,而且要帶著出處與樣本界線(鐵則四)。
+       沒有這一條的話,哪天有人把機率條搬進表格裡,上面那條還是綠的。 */
+    ['勝率預測是獨立的一塊,而且帶著回測數字與樣本界線',
+      /function predictionBlock/.test(view) && /賽前勝率/.test(view)
+        && /回測/.test(view) && /樣本只有兩季多/.test(view)],
+    /* 沒有評分的球隊要講得出為什麼沒有預測,不是靜靜少一塊(鐵則三 + 鐵則四) */
+    ['沒有預測的場次講得出原因(那些聯賽本站沒有賽果來源)',
+      /不給預測/.test(view) && /算不出跨聯賽評分/.test(view)],
     ['樣本太小要講(球季剛開始時場均數字還會大幅變動)', /樣本很小/.test(view)],
     /* 兩隊都要有資料才給按鈕 —— 一欄空著就是留一個永遠空白的欄位(鐵則三)。
        階段 B 之後「有資料」多了一種來源(只有積分榜的三個聯賽),條件見下面那條。 */
@@ -4335,6 +4346,107 @@ function checkUcl() {
       console.log(`  · 歐冠本季可做賽前對比的場次:${bothU} / ${msU.length}`
         + `(掛回 ${st.matched} 隊・${st.leagues.length} 個聯賽以外的 ${st.unmatched.length} 隊沒有,只回報)`);
     }
+  }
+
+  /* ── HTML 字串裡不可以有 Markdown 的 ** ──
+     本專案的**註解**大量用 `**強調**`,那是寫作風格、沒問題。
+     但同樣的寫法掉進 innerHTML 的樣板字串裡,前端**沒有任何 Markdown 處理器** ——
+     畫面上就直接印出兩顆星號。不拋錯、不影響功能,而 npm test 看不到版面,
+     所以它可以在站上待很久沒有人發現(跟 `[object Object]` 那條同一類)。
+     2026-09-09 實測抓到 5 處,其中 3 處是既有的(盃賽輪次說明、總覽的共識層說明、
+     歐冠賽程說明),2 處是同一輪自己寫的。 */
+  {
+    /* 先把註解拿掉再找 —— 不然整份都是誤報。
+       `**` 也是次方運算子,所以只認「星號後面緊接著非空白非數字」的那種。 */
+    const stripComments = src => src
+      .replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
+      .replace(/(^|[^:])\/\/[^\n]*/g, (m, p) => p + ' '.repeat(m.length - p.length));
+    const hits = [];
+    for (const f of readdirSync(join(W, 'assets', 'js')).filter(x => x.endsWith('.js'))) {
+      const clean = stripComments(readFileSync(join(W, 'assets', 'js', f), 'utf8'));
+      for (const m of (clean.match(/\*\*[^*\n\d\s][^*\n]{0,60}\*\*/g) ?? [])) hits.push(`${f}: ${m}`);
+    }
+    ok(hits.length === 0, '前端的 HTML 字串裡沒有 Markdown 的 **(前端沒有 Markdown 處理器,會直接印出星號)',
+      hits.slice(0, 6).join(' / '));
+  }
+
+  /* ── 跨聯賽 Elo 與歐冠賽前預測(2026-09-09 階段 C)──
+     做法是把八個聯賽的域內賽果 + 歐冠場次餵進**同一個 Elo 池**,歐冠場次就是橋。
+     這一組守三件事:證據還在(回測通過才給預測)、界線還在(沒評分就不給)、
+     以及**橋沒有靜靜變少**(第一版只讀 leagueMatches,淘汰賽那 45 場/季掉了,
+     橋從 219 掉到 152、回測從通過變成不通過,而且完全不報錯)。 */
+  {
+    const ap = join(W, 'data', 'ucl-elo.json');
+    const bp = join(W, 'data', 'leagues', 'es1', 'ucl-elo.json');
+    if (!existsSync(ap)) {
+      console.log('  · 沒有 ucl-elo.json(需要 npm run ucl:leagues + build),這一節略過');
+    } else {
+      ok(existsSync(bp), '兩個聯賽都產出了 ucl-elo.json');
+      ok(readFileSync(ap, 'utf8') === readFileSync(bp, 'utf8'),
+        '英超與西甲的 ucl-elo.json 逐位元組相同(跨聯賽只能有一份)');
+      const m = JSON.parse(readFileSync(ap, 'utf8'));
+      ok(!JSON.stringify(m).includes('builtAt') && !JSON.stringify(m).includes('retrievedAt'),
+        'ucl-elo.json 裡沒有時間戳(不然兩個 build 永遠不會相同)');
+
+      /* **鐵則二:沒有回測證據就不給預測。** 這一條是整個階段 C 的守門 ——
+         拿掉它的話,哪天池子縮水、改善掉到雜訊裡,畫面照樣印勝率。 */
+      ok(m.fixtures.length === 0 || m.model?.passes === true,
+        '有預測就代表回測通過(改善 > 2 倍成對標準誤)',
+        `fixtures=${m.fixtures.length} passes=${m.model?.passes} 改善=${m.model?.improvement}±${m.model?.se}`);
+      if (m.model) {
+        ok(m.model.rps < m.model.baseline, '回測 RPS 低於基準線',
+          `${m.model.rps} vs ${m.model.baseline}`);
+        ok(m.model.improvement > 2 * m.model.se === m.model.passes,
+          'passes 就是「改善 > 2SE」本身,不是另外一個判斷');
+        /* 兩季各自都要贏。只看合計的話,一季大贏一季小輸也會過 —— 
+           而那代表模型只在某一季的條件下有效。本季場次太少不算。 */
+        const full = m.model.perSeason.filter(x => x.n >= 50);
+        ok(full.length >= 2, '至少兩季有足夠樣本可以分開看', JSON.stringify(m.model.perSeason));
+        ok(full.every(x => x.rps < x.baseline), '每一個完整賽季各自看也都贏過基準線',
+          full.map(x => `${x.season} ${x.rps}/${x.baseline}`).join('、'));
+      }
+
+      /* **橋不可以靜靜變少。** 兩季完整的歐冠各 189 場,扣掉 PK 場與
+         沒有評分的球隊之後,實測 219 場。低於 200 就是有東西掉了 —— 
+         最可能的原因是又只讀了 leagueMatches(聯賽階段)而漏掉淘汰賽。 */
+      ok(m.pool.bridges >= 200, '歐冠橋的場次沒有掉(淘汰賽也收進來了)', `bridges=${m.pool.bridges}`);
+      ok(m.pool.leagues.length === 8, '池子裡是八個聯賽',
+        m.pool.leagues.map(l => `${l.key}:${l.played}`).join(' '));
+      ok(m.pool.leagues.every(l => l.played > 500),
+        '每個聯賽都有夠多的賽果(少於 500 場代表某一季的快取沒抓到)',
+        m.pool.leagues.map(l => `${l.key}:${l.played}`).join(' '));
+
+      /* **鐵則三:沒有評分就不給預測,不給一個猜的數字。** */
+      const rated = new Set(Object.keys(m.ratings));
+      const bad = m.fixtures.filter(f => !rated.has(String(f.home)) || !rated.has(String(f.away)));
+      ok(bad.length === 0, '每一場預測的兩隊都有跨聯賽評分', `${bad.length} 場沒有`);
+      ok(m.fixtures.every(f => Math.abs(f.p[0] + f.p[1] + f.p[2] - 1) < 0.01),
+        '每一場的三個機率加起來是 1');
+      ok(m.coverage.ratedTeams < m.coverage.totalTeams,
+        '有球隊沒有評分,而且照實記著(openfootball 不涵蓋那些聯賽)',
+        `${m.coverage.ratedTeams}/${m.coverage.totalTeams}`);
+      ok(m.coverage.unrated.length > 0, '沒有評分的球隊名單留著(畫面要講得出為什麼沒有預測)');
+
+      /* 已經踢過的場次不給預測 —— 那不是預測,是回顧 */
+      const done = new Set(uclSeasonMatches((ucl.seasons ?? []).find(x => x.current) ?? {})
+        .filter(x => x.played).map(x => x.id));
+      ok(m.fixtures.every(f => !done.has(f.id)), '已完賽的場次沒有預測');
+    }
+  }
+
+  /* ── 兩個沒有通過回測的修正,不要再加回來 ──
+     逐聯賽 Elo 補正與機率銳化都試過:一季調、另一季驗收,分別只有
+     0.0009 ± 0.0079 與 0.0030 ± 0.0021,而且參數本身跨季互相矛盾。
+     兩個都是「直覺上應該有用」的典型。理由寫在 lib/ucl-elo.mjs 的檔頭,
+     這一條守著那段說明不會在重構時被清掉 —— 沒有它,下一個人會再做一次。 */
+  {
+    const src = readFileSync(join(ROOT, 'scripts', 'lib', 'ucl-elo.mjs'), 'utf8');
+    ok(/逐聯賽的 Elo 補正/.test(src) && /0\.0009/.test(src),
+      'ucl-elo.mjs 檔頭記著「逐聯賽補正沒有通過」與實測數字');
+    ok(/機率銳化/.test(src) && /0\.0030/.test(src),
+      'ucl-elo.mjs 檔頭記著「機率銳化沒有通過」與實測數字');
+    ok(!/leagueOffset|OFFSET_BY_LEAGUE|sharpen/i.test(src),
+      'ucl-elo.mjs 沒有偷偷把補正加回來');
   }
 
   /* ── 歐冠頁的名字與隊徽是跨聯賽的一份 ──

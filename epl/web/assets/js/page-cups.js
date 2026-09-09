@@ -1,5 +1,5 @@
 import * as C from './core.js?v=cddf3c48';
-import { renderUclView } from './ucl-view.js?v=eff2856d';
+import { renderUclView } from './ucl-view.js?v=c3b26dcd';
 
 const app = document.getElementById('app');
 
@@ -184,7 +184,7 @@ function runsTable(runs) {
   return C.table(runs, [
     { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
     { key: 'stage', label: '打到哪一輪', value: r => r.lastPlayedOrder, num: true,
-      title: '最後一場**已完賽**比賽所在的輪次',
+      title: '最後一場已完賽比賽所在的輪次',
       render: r => `<span class="mono small">${C.esc(r.lastPlayedStage ?? '尚未出賽')}</span>` },
     { key: 'played', label: '已賽', value: r => r.played, num: true },
     { key: 'wins', label: '勝場', value: r => r.wins, num: true,
@@ -199,7 +199,7 @@ try {
      (歐冠在各聯賽目錄是逐位元組相同的複本,英格蘭盃賽只有英超目錄有)。
      meta/clubs/teams 仍取目前聯賽 —— nav 與頁尾要跟著使用者所在的聯賽。 */
   const { meta, clubs, teams } = await C.load('meta', 'clubs', 'teams');
-  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams', 'ucl-standings', 'competitions']);
+  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams', 'ucl-standings', 'ucl-elo', 'competitions']);
   C.registerCompetitions(shared.competitions);   // 分頁按鈕的賽事圖像:有真圖就用真圖
   const cups = shared.cups;
   CUP_CRESTS = cups?.crests ?? {};
@@ -254,7 +254,7 @@ try {
   const renderComp = () => {
     if (comp === 'ucl') {
       renderUclView(compBody, { meta, clubs, teams, ucl: shared.ucl, uclTeams: shared['ucl-teams'],
-        uclStandings: shared['ucl-standings'] });
+        uclStandings: shared['ucl-standings'], uclElo: shared['ucl-elo'] });
       return;
     }
     renderEnglandCup(comp);
