@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0af1da92';
+import * as C from './core.js?v=2e0e1ba0';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -143,6 +143,62 @@ const OUTCOME = {
  * 預設停在**還沒踢完的最小輪次**(不是「下一場的輪次」—— 有場次提前開踢時,
  * 下一場可能屬於更後面的一輪,倒數那條坑的同一個形狀)。
  */
+/* 賽前對比(2026-09-09,使用者要求的階段 A)。
+
+   **只有兩隊都在本站資料裡的場次才有。** 本季 36 隊裡本站認得 10 支,
+   144 場聯賽階段比賽裡兩隊都認得的只有 8 場(6%)—— 其餘至少有一隊本站完全沒有資料,
+   對比是兩欄的東西,一欄空著就是留一個永遠空白的欄位(鐵則三)。
+
+   **仍然沒有勝率預測。** 這裡放的全部是各自聯賽算出來的原始事實,
+   一個模型輸出都沒有(理由見 core.js 的 uclCompareRows)。
+
+   資料**延遲載入**:兩個聯賽的 table.json 各約 100 KB,而整頁只有一兩場用得到 ——
+   開頁就抓等於每個讀者都付這筆錢。C.loadFrom 自己有快取,同一頁第二次展開不會再抓。 */
+const tableCache = new Map();          // 聯賽 → table.current(以隊碼索引)
+/* **不要叫 leagueTable** —— 這個檔下面已經有一個同名的積分榜渲染器,
+   兩個 function 宣告會讓後面那個蓋掉前面那個,而且不拋錯:
+   賽前對比會拿著聯賽代碼去跑積分榜渲染器。加名字之前先 grep 同名的那條坑。 */
+async function standingsOf(lg) {
+  if (!tableCache.has(lg)) {
+    const { data } = await C.loadFrom(lg, ['table']);
+    const rows = data?.table?.current ?? [];
+    tableCache.set(lg, new Map(rows.map(r => [r.code, r])));
+  }
+  return tableCache.get(lg);
+}
+
+/* 這一場能不能做對比。條件寫成一個函式是因為畫按鈕與真的去算兩個地方都要問 —— 
+   兩邊各寫一份的話,會出現「按鈕在但點了沒東西」。 */
+const comparable = m => !m?.played && registered(m?.home?.code) && registered(m?.away?.code)
+  && !!m.home.league && !!m.away.league;
+
+async function renderCompare(slot, m) {
+  slot.innerHTML = '<div class="tiny dim">載入兩隊的聯賽數據中…</div>';
+  try {
+    const [H, A] = await Promise.all([standingsOf(m.home.league), standingsOf(m.away.league)]);
+    const h = H.get(m.home.code), a = A.get(m.away.code);
+    if (!h || !a) { slot.innerHTML = '<div class="tiny dim">這兩隊本季的聯賽數據還沒產生,暫時做不出對比。</div>'; return; }
+    const lgName = c => C.LEAGUES[c]?.zh ?? c;
+    // 樣本太小要講:球季剛開始時三場的場均進球跟整季不是同一件事(鐵則四)
+    const thin = Math.min(h.p ?? 0, a.p ?? 0) < 5;
+    slot.innerHTML = `
+      <div class="row small dim" style="justify-content:space-between;margin:2px 0 6px">
+        <span>${C.esc(C.name(m.home.code))}・${C.esc(lgName(m.home.league))} ${h.p} 場</span>
+        <span>${C.esc(C.name(m.away.code))}・${C.esc(lgName(m.away.league))} ${a.p} 場</span>
+      </div>
+      ${C.versus(C.uclCompareRows(h, a), {
+        home: C.name(m.home.code), away: C.name(m.away.code),
+        colors: { home: C.team(m.home.code).chartColor, away: C.team(m.away.code).chartColor },
+      })}
+      <div class="note" style="margin-top:10px"><b>這是兩個聯賽各自的數字,不是同一把尺。</b>
+        ${C.esc(lgName(m.home.league))}的第 ${h.pos} 名跟${C.esc(lgName(m.away.league))}的第 ${a.pos} 名
+        不是同一件事,兩邊的對手強度也不同。<b>這裡沒有勝率預測</b> —— 理由見本頁下方那則說明。
+        ${thin ? '<br><b>而且樣本很小</b>:兩隊本季各只踢了幾場,場均數字還會大幅變動。' : ''}</div>`;
+  } catch (e) {
+    slot.innerHTML = `<div class="tiny dim">聯賽數據讀不到(${C.esc(e.message)})。</div>`;
+  }
+}
+
 function leagueFixtures(season) {
   const all = season.leagueMatches ?? [];
   if (!all.length) return '';
@@ -161,8 +217,11 @@ function leagueFixtures(season) {
         ? `<b class="mono">${m.final[0]} : ${m.final[1]}</b>`
         : (m.kickoff ? C.countdown(m.kickoff) : '<span class="dim">vs</span>')}</span>
       <span class="leg-away">${uclTeamCell(m.away)}</span>
-      <span class="tiny dim leg-ko">${m.played ? '完場' : ''}</span>
-    </div>`;
+      <span class="tiny dim leg-ko">${m.played ? '完場' : ''}${comparable(m)
+        ? `<button class="btn tiny" type="button" data-cmp="${C.esc(m.id ?? `${m.home.code}|${m.away.code}`)}"
+             style="margin-left:6px">賽前對比</button>` : ''}</span>
+    </div>${comparable(m)
+      ? `<div class="ucl-cmp" data-cmp-slot="${C.esc(m.id ?? `${m.home.code}|${m.away.code}`)}" hidden></div>` : ''}`;
 
   return `<div class="section" style="margin-top:18px"><h2>聯賽階段賽程</h2>
       <span class="hint">第 ${cur} 輪・${games.length} 場${
@@ -170,7 +229,12 @@ function leagueFixtures(season) {
     <div class="card">${games.map(row).join('')}
       <div class="tiny dim" style="margin-top:10px">只列**還沒踢完的最小輪次**那一輪 ——
         整季 ${all.length} 場全列出來要捲很久,而這裡要回答的是「下一批什麼時候踢」。
-        <b>沒有勝率預測</b>:模型是用聯賽調的,沒在盃賽上驗收過。</div>
+        <b>沒有勝率預測</b>:模型是用聯賽調的,沒在盃賽上驗收過。
+        ${(() => {
+          const n = all.filter(comparable).length;
+          return n ? `<b>兩隊都在本站資料裡的場次</b>(整季 ${n} 場)有「賽前對比」可以展開 ——
+            那是兩個聯賽各自的現況並排,<b>不是預測</b>。` : '';
+        })()}</div>
     </div>`;
 }
 
@@ -359,6 +423,22 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams }) {
     </div>
     <div class="note" style="margin-top:10px" id="uclCoverage"></div>`;
 
+    /* 目前這一季「可以做對比」的場次,render 時重建。委派監聽只綁一次(見 render 裡的說明)。 */
+    let cmpMatches = new Map();
+    const bodyEl = app.querySelector('#uclBody');
+    bodyEl?.addEventListener('click', async e => {
+      const btn = e.target.closest?.('[data-cmp]');
+      if (!btn) return;
+      const key = btn.dataset.cmp;
+      const slot = bodyEl.querySelector(`[data-cmp-slot="${CSS.escape(key)}"]`);
+      const m = cmpMatches.get(key);
+      if (!slot || !m) return;
+      slot.hidden = !slot.hidden;
+      btn.textContent = slot.hidden ? '賽前對比' : '收起對比';
+      // 只在第一次展開時才去抓 —— 收起再展開不用重畫
+      if (!slot.hidden && !slot.dataset.done) { slot.dataset.done = '1'; await renderCompare(slot, m); }
+    });
+
     const render = () => {
       const s = seasons.find(x => x.label === label) ?? seasons[0];
       const body = app.querySelector('#uclBody');
@@ -420,6 +500,13 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams }) {
       /* 賽程表裡的倒數要走起來。`startCountdowns` 自己會收掉上一個計時器,
          所以換賽季重畫時再叫一次是安全的(不會疊出兩個)。 */
       C.startCountdowns();
+
+      /* 賽前對比的展開鈕。**監聽掛在 #uclBody 這個容器上,不掛在按鈕上** ——
+         換賽季會把 body.innerHTML 整個換掉,掛在按鈕上的監聽會跟著沒了,
+         而容器本身活著,所以委派只要綁一次(這裡每次 render 都重綁會疊)。
+         用 el.hidden 切換,不用 style.display。 */
+      cmpMatches = new Map((s.leagueMatches ?? []).filter(comparable)
+        .map(m => [String(m.id ?? `${m.home.code}|${m.away.code}`), m]));
 
       const unknown = s.teamsTotal - s.teamsKnown;
       cov.innerHTML = `
