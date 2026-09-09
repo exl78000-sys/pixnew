@@ -1,4 +1,4 @@
-import * as C from './core.js?v=29aae0b0';
+import * as C from './core.js?v=babcae32';
 
 const app = document.getElementById('app');
 
@@ -34,9 +34,14 @@ try {
   const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div>
     <div class="value">${value}</div><div class="sub">${sub}</div></div>`;
 
-  /* 盃賽的比分在 cups-live.json 那份小檔(cups.json 要等下一次部署),載入時覆蓋一次。
-     這一頁的表是一次算完的,不做輪詢 —— 要看比賽中的變化到盃賽頁,那一頁每 60 秒會自己更新。 */
-  C.applyCupsLive(shared.cups, await C.fetchCupsLive(shared.cups));
+  /* 盃賽的比分在 cups-live.json 那份小檔(cups.json 要等下一次部署)。
+     這一頁的表是一次算完的,不做輪詢 —— 要看比賽中的變化到盃賽頁,那一頁每 60 秒會自己更新。
+
+     **這裡的 await 也拿掉了**(跟盃賽頁同一個原因):小檔的第一順位是跨網域的 raw,
+     連不通時實測 12.9 秒才 fallback,而整頁的第一次繪製都在等它。改成畫完再覆蓋、有變才重畫。 */
+  const overlayCupsLive = async () => {
+    if (C.applyCupsLive(shared.cups, await C.fetchCupsLive(shared.cups)) > 0) render();
+  };
   const cupList = Object.values(shared.cups?.cups ?? {});
   const cupMatches = cupList.reduce((n, c) => n
     + (c.seasons ?? []).reduce((m, s) => m + (s.total ?? 0), 0), 0);
@@ -252,6 +257,7 @@ try {
     .map(s => `<a href="${C.esc(s.url)}" target="_blank" rel="noopener">${C.esc(s.name)}</a>`)
     .join('、');
 
+  const render = () => {
   app.innerHTML = `
   <div class="page-head">
     <h1>總覽</h1>
@@ -315,4 +321,8 @@ try {
   <footer class="foot wrap">資料來源:${sources || '見各頁'}。
     預測僅供分析參考,不構成任何投注建議。</footer>`;
   C.startCountdowns();   // 「即將到來」的倒數要會走,不然停在載入當下慢慢變錯
+  };
+
+  render();
+  overlayCupsLive();     // 畫完才去拿盃賽的即時比分,有變才重畫
 } catch (err) { C.fail(err); }

@@ -633,6 +633,14 @@ input:focus-visible, tbody tr.clickable:focus-visible {
   border-radius: 50%; object-fit: cover; flex: none; vertical-align: middle;
   background: #1a1420; border: 1px solid var(--line);
 }
+/* 「頭貼 + 名字」的小卡(比賽事件、本場最佳)。inline-flex 讓它在文字流裡
+   跟著名字走,gap 撐開間距 —— 用 margin 的話,沒頭貼的那幾筆會多出一段空白。
+   vertical-align 是給 .goal-line 的 baseline 對齊用的:不設的話,有頭貼的那幾列
+   會比只有名字的那幾列低半個字。 */
+.player-chip { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; min-width: 0; }
+.player-chip .pphoto.chip { flex: none; }
+.player-chip .player-name-btn { min-width: 0; }
+
 /* 沒有頭貼時退回隊徽,但外框尺寸要跟有頭貼時一致,行高才不會跳動 */
 .pphoto.fallback { display: inline-flex; align-items: center; justify-content: center; border: none; background: none; }
 .pphoto.fallback .crest, .pphoto.fallback .badge { width: 78%; height: 78%; }

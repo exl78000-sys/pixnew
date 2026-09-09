@@ -336,6 +336,9 @@ async function main() {
   console.log('\n▶ 盃賽頁預設分頁自我檢查');
   const cupDefaultFail = await checkCupDefault();
 
+  console.log('\n▶ 球員頭貼小卡自我檢查');
+  const chipFail = await checkPlayerChip();
+
   console.log('\n▶ 官方進球事件解析自我檢查');
   const goalFail = checkGoalEvents();
 
@@ -380,7 +383,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || chipFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1227,6 +1230,73 @@ async function checkCupDefault() {
   return fail;
 }
 
+/* 比賽事件與本場最佳的球員頭貼(core.js 的 playerChip,2026-09-09 使用者要求)。
+
+   這一塊最容易出的錯不是「畫不出來」,是**畫錯人或畫出空白格**:
+   頭貼查表用 code,而三個聯賽的 id 體系不一樣(英超站內 code、西甲 FotMob id、英冠沒有球員層)。
+   所以測試守的是「沒有的時候長什麼樣」跟「有的時候接的是哪一個 code」,不是「一定有」。 */
+async function checkPlayerChip() {
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  V.registerTeams([{ code: 'ARS', en: 'Arsenal', colors: ['#EF0107'] }]);
+  V.registerPlayerPhotos([['c1', 'data:image/png;base64,AAA']]);
+  V.registerPlayerPhotos(new Map([['c2', { photo: 'data:image/png;base64,BBB' }]]));
+
+  const withPhoto = V.playerChip({ name: 'Saka', code: 'c1', team: 'ARS' });
+  const noPhoto = V.playerChip({ name: 'Rice', code: 'c9', team: 'ARS' });
+  const crest = V.playerChip({ name: 'Rice', code: 'c9', team: 'ARS' }, { fallback: 'crest' });
+  const noCode = V.playerChip({ name: '不詳' });
+  const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+
+  /* 英超官方事件的 playerCode 就是站內 code —— 頭貼會不會出現全看這件事。
+     **只回報不擋**:上游先出現一位球員檔還沒有的新援是正常的,拿它當紅線就是
+     「上游時差寫成 CI 紅線」那條坑。 */
+  let coverage = '(沒有官方事件資料)';
+  const offPath = join(ROOT, 'web', 'data', 'official.json');
+  const plPath = join(ROOT, 'web', 'data', 'players.json');
+  if (existsSync(offPath) && existsSync(plPath)) {
+    const off = JSON.parse(readFileSync(offPath, 'utf8'));
+    const raw = JSON.parse(readFileSync(plPath, 'utf8'));
+    const codes = new Set((raw.players ?? raw).map(p => String(p.code)));
+    const evCodes = Object.values(off.matches ?? {}).flatMap(m => [
+      ...(m.goals ?? []).flatMap(g => [g.scorerCode, g.assistCode]),
+      ...(m.timeline?.cards ?? []).map(c => c.playerCode),
+      ...(m.timeline?.subs ?? []).map(x => x.playerCode),
+    ]).filter(Boolean).map(String);
+    const hit = evCodes.filter(c => codes.has(c)).length;
+    coverage = `${hit} / ${evCodes.length}`;
+    console.log(`  · 英超官方事件的 playerCode 在球員檔找得到:${coverage}(只回報,不擋)`);
+  }
+
+  const cases = [
+    ['有頭貼就畫頭貼', /<img class="pphoto chip"/.test(withPhoto) && withPhoto.includes('base64,AAA')],
+    ['registerPlayerPhotos 也吃 Map 與球員物件', V.photoFor('c2') === 'data:image/png;base64,BBB'],
+    /* 比賽事件那一列本來就有隊徽 —— 沒頭貼時再補一個,同一個徽章會在同一列印兩次 */
+    ['沒頭貼而且不補位時,只有名字(不留空格子、也不重複印隊徽)',
+      !/pphoto/.test(noPhoto) && noPhoto.includes('Rice')],
+    ['本場最佳那張卡沒頭貼時退回隊徽(那張卡沒有別的地方標隊伍)',
+      /pphoto chip fallback/.test(crest) && /class="badge/.test(crest)],
+    ['沒有 code 的人不給點擊按鈕(點了也查不到球員頁)',
+      !/player-name-btn/.test(noCode) && noCode.includes('不詳')],
+    ['有 code 的人保留點擊按鈕(頭貼不能把球員抽屜弄丟)',
+      /data-player-code="c1"/.test(withPhoto)],
+    /* 五個渲染點共用同一個小卡。各寫一份的話,改了一邊另一邊會悄悄過期 */
+    ['進球、助攻、牌、換人、本場最佳都走同一個 playerChip',
+      (core.match(/playerChip\(/g) ?? []).length >= 6
+      && !/const scorer = g\.scorerCode/.test(core) && !/const who = e => \(e\.playerCode/.test(core)],
+    /* FotMob 的 comments 有時是 { localizedKey, defaultText };直接 esc 會印 [object Object] */
+    ['供應商事件的 comments 是物件時取 defaultText,不直接 esc',
+      /const eventText = /.test(core) && !/esc\(e\.comments\)/.test(core)],
+  ];
+
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
 async function checkBars() {
   globalThis.document ??= { addEventListener() {} };
   const V = await import('../web/assets/js/core.js');
@@ -1564,6 +1634,27 @@ async function checkDataGap() {
       if (!notStale) console.log(`      小檔比 cups.json 舊(這條通道會被前端擋掉):${live.builtAt} < ${cups.builtAt}`);
       return hasFeedField && missing === 0 && smaller < bigger / 4 && notStale;
     })()],
+    /* 小檔的第一順位是跨網域的 raw。連不通時瀏覽器不會馬上放棄 —— 實測
+       ERR_CONNECTION_RESET 花了 **12.9 秒**才回來,而第一版把它 await 在第一次繪製之前,
+       所以那 13 秒畫面上只有「載入資料中…」,**而且不報錯**,看起來就像頁面壞掉。
+       兩條都要守:抓取本身有逾時、畫面不等它。 */
+    ['盃賽小檔的抓取有逾時(連不通時不要拖著整頁)', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const fn = core.slice(core.indexOf('export async function fetchCupsLive'));
+      return /AbortSignal\.timeout\(/.test(fn.slice(0, 900));
+    })()],
+    /* 兩頁都是直線腳本,所以「原始碼裡誰先出現」就是「誰先執行」。
+       第一版把覆蓋 await 在繪製之前,這一條就是釘住那個順序。
+       (只驗「有沒有 await」不行 —— 覆蓋本來就要 await,差別在它在繪製的前面還是後面。) */
+    ['盃賽頁與總覽都是「先畫再覆蓋」:繪製的呼叫在覆蓋之前', (() =>
+      [['page-cups.js', '\n  renderComp();', 'overlayLive();'],
+       ['page-overview.js', '\n  render();', 'overlayCupsLive();']].every(([f, draw, overlay]) => {
+        const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+        const a = src.indexOf(draw), b = src.indexOf(overlay);
+        if (a < 0 || b < 0) { console.log(`      ${f}:找不到 ${a < 0 ? draw.trim() : overlay}`); return false; }
+        if (a > b) console.log(`      ${f}:覆蓋跑在繪製前面`);
+        return a < b;
+      }))()],
     ['盃賽頁與總覽都走共用的覆蓋函式,而且盃賽頁用 pageInterval 輪詢(不是裸 setInterval)', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const cups = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');

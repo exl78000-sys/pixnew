@@ -1,5 +1,5 @@
-import * as C from './core.js?v=29aae0b0';
-import { renderUclView } from './ucl-view.js?v=b90fdd7a';
+import * as C from './core.js?v=babcae32';
+import { renderUclView } from './ucl-view.js?v=21aed1c1';
 
 const app = document.getElementById('app');
 
@@ -204,8 +204,15 @@ try {
   const cups = shared.cups;
   CUP_CRESTS = cups?.crests ?? {};
   /* 比賽中的比分不在 cups.json 裡(它要等下一次部署),在 cups-live.json 那份小檔。
-     載入時先覆蓋一次 —— 比賽中開頁的人立刻看到比分,不用等部署。 */
-  C.applyCupsLive(cups, await C.fetchCupsLive(cups));
+
+     **不要 await 在這裡。** 第一版寫成 `applyCupsLive(cups, await fetchCupsLive(cups))`,
+     於是整頁的第一次繪製要等那個跨網域請求 —— 實測連不通時花 12.9 秒才 fallback,
+     這 13 秒畫面上只有「載入資料中…」,而且**不會報錯**,看起來就像頁面壞了。
+     改成:先畫,拿到再覆蓋(跟下面那個 60 秒輪詢走同一條路)。 */
+  const overlayLive = async () => {
+    const fresh = await C.fetchCupsLive(cups);
+    if (C.applyCupsLive(cups, fresh) > 0) renderComp();
+  };
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
@@ -356,6 +363,8 @@ try {
   }
 
   renderComp();
+  // 畫完才去拿即時比分:拿到而且有變才重畫(見上面 overlayLive 的說明)
+  overlayLive();
 
   /* 有場次在踢就繼續拿(每 60 秒;聯賽比分那邊是 20 秒,盃賽的上游本來就只有 3 分鐘的節奏,
      拿太密只是白費請求)。比分沒變就不重畫 —— 重畫會把讀者展開的輪次收回去。

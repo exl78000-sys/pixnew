@@ -1,4 +1,4 @@
-import * as C from './core.js?v=29aae0b0';
+import * as C from './core.js?v=babcae32';
 
 const app = document.getElementById('app');
 
@@ -31,6 +31,9 @@ try {
   const photoByCode = new Map(playerEntries.map(([code, x]) => [code, x.photo ?? null]));
   const playerByCode = new Map(playerEntries);
   const photoOf = code => photoByCode.get(code) ?? null;
+  /* 比賽事件與本場最佳的頭貼走 core.js 的註冊表(那幾塊在 core.js 裡,沒辦法用 photoOf)。
+     兩份是同一批資料,只是一份用傳的、一份用註冊的。 */
+  C.registerPlayerPhotos(photoByCode);
 
   // 網址可以用 ?id=(跟賽程頁一致)或 ?home=&away=(人看得懂,可以直接手打)
   const id = C.qs('id');

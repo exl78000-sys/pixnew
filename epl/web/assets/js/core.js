@@ -289,9 +289,14 @@ export async function fetchCupsLive(cups) {
   const feeds = [cups?.liveFeed, 'data/cups-live.json'].filter(Boolean);
   for (const url of feeds) {
     try {
-      const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`, { cache: 'no-store' });
+      /* **一定要有逾時。** 第一順位是 raw.githubusercontent.com(跨網域),
+         連不通時瀏覽器不會馬上放棄 —— 實測 ERR_CONNECTION_RESET 花了 **12.9 秒**才回來,
+         而在那之前備援那一條根本輪不到。比分覆蓋等超過幾秒就沒有意義了,
+         等下去只會讓後面的路一起卡住。 */
+      const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`,
+        { cache: 'no-store', signal: AbortSignal.timeout(4000) });
       if (res.ok) return await res.json();
-    } catch { /* 換下一個來源 */ }
+    } catch { /* 逾時或連不通都一樣:換下一個來源 */ }
   }
   return null;
 }
@@ -412,6 +417,46 @@ export function playerPhoto(player, size = 34) {
       loading="lazy" style="${box}">`;
   }
   return `<span class="pphoto fallback" style="${box}" title="${alt}">${badge(player.team)}</span>`;
+}
+
+/* 依球員 code 查頭貼。**用註冊表而不是把 photoOf 一路傳下去** ——
+   比賽事件與表現那幾塊在 core.js 裡,呼叫點有分析頁、實時戰況頁與首頁賽程卡三處,
+   每一處都加一個參數的話,漏掉的那一處會靜靜沒有頭貼而畫面完全正常(跟隊伍註冊表同一個道理)。
+
+   **沒註冊就是沒頭貼,不是壞掉。** 實時戰況頁刻意不載球員檔(3 MB,那是它的決定),
+   英冠根本沒有球員層 —— 那兩種情況下小卡只印名字,版面不留空位。 */
+let PLAYER_PHOTOS = new Map();
+export function registerPlayerPhotos(list) {
+  const entries = list instanceof Map ? [...list.entries()]
+    : (list ?? []).map(x => Array.isArray(x) ? x : [x?.code, x?.photo]);
+  for (const [code, val] of entries) {
+    if (code == null) continue;
+    // 傳整個球員物件也接受 —— 呼叫端手上常常就是球員清單
+    const photo = typeof val === 'string' ? val : val?.photo ?? null;
+    if (photo) PLAYER_PHOTOS.set(String(code), photo);
+  }
+}
+export const photoFor = code => (code == null ? null : PLAYER_PHOTOS.get(String(code)) ?? null);
+
+/* 「頭貼 + 可點的名字」一份。比賽事件、本場最佳、供應商事件三處共用 ——
+   各寫一份的話,改了一邊另一邊會悄悄過期。
+
+   `fallback`:沒頭貼時要不要用隊徽補位。**比賽事件那幾列不要**(那一列本來就有隊徽,
+   補一個等於同一個徽章印兩次);**本場最佳要**(那張卡沒有別的地方標隊伍)。 */
+export function playerChip(p, { size = 20, fallback = 'none' } = {}) {
+  const nm = esc(p?.name ?? p?.player ?? '不詳');
+  const code = p?.code ?? p?.playerCode ?? null;
+  const label = code != null
+    ? `<button class="player-name-btn" type="button" data-player-code="${esc(code)}"
+         aria-label="查看 ${nm} 球員資料">${nm}</button>`
+    : nm;
+  const photo = p?.photo ?? photoFor(code);
+  const box = `width:${size}px;height:${size}px`;
+  const pic = photo
+    ? `<img class="pphoto chip" src="${esc(photo)}" alt="" loading="lazy" style="${box}">`
+    : fallback === 'crest' && p?.team
+      ? `<span class="pphoto chip fallback" style="${box}">${badge(p.team)}</span>` : '';
+  return `<span class="player-chip">${pic}${label}</span>`;
 }
 
 export function teamCell(code, { link: withLink = true, label: custom = null } = {}) {
@@ -1049,9 +1094,11 @@ export function matchReportCards(m, { order = null } = {}) {
   const playerButton = p => p?.code
     ? `<button class="player-name-btn" type="button" data-player-code="${esc(p.code)}" aria-label="查看 ${esc(p.name)} 球員資料">${esc(p.name)}</button>`
     : esc(p?.name);
-  const bestHtml = (s, metric = 'bps') => s.best.map(b => {
+  /* 隊碼要用傳的:s 是 sides[code] 的內容,它自己不帶自己的 code,
+     而沒頭貼時要退回隊徽(這張卡沒有別的地方標隊伍)。 */
+  const bestHtml = (s, metric = 'bps', code = null) => s.best.map(b => {
     const p = [...s.xi, ...s.bench].find(x => x.name === b.name) ?? b;
-    return `<div class="stat-line"><span class="small">${playerButton(p)}
+    return `<div class="stat-line"><span class="small">${playerChip({ ...p, team: p.team ?? code }, { size: 24, fallback: 'crest' })}
       <span class="dim tiny">${b.pos} ${b.minutes ?? '—'}'</span></span><b class="mono">${metric === 'rating' ? fx(b.rating, 1) : b.bps}</b></div>`;
   }).join('');
 
@@ -1099,16 +1146,21 @@ export function matchReportCards(m, { order = null } = {}) {
     };
     const eventIcon = type => ({ Goal: '⚽', Card: '▰', subst: '↔', Var: 'VAR' }[type] ?? '•');
     const eventType = type => ({ Goal: '進球', Card: '牌', subst: '換人', Var: 'VAR' }[type] ?? type ?? '事件');
-    const eventPlayer = e => e.playerCode
-      ? `<button class="player-name-btn" type="button" data-player-code="${esc(e.playerCode)}">${esc(e.player)}</button>`
-      : esc(e.player ?? '');
+    // 跟官方時間軸同一個小卡;這一列也已經有隊名,所以一樣不補隊徽
+    const eventPlayer = e => playerChip({ name: e.player, code: e.playerCode, team: e.team }, { size: 20 });
+    /* FotMob 的 comments 有時候是 `{ localizedKey, defaultText }` 而不是字串,
+       直接 esc() 會在畫面上印「**[object Object]**」—— 三個聯賽合計 57 列(2026-09-09 數的),
+       每一列都是牌事件的原因(Dangerous play 之類)。**不拋錯,只是印垃圾**,
+       而 npm test 看不到版面,所以它在站上待了一段時間沒有人發現。
+       物件取 defaultText;取不到就整個不印 —— 寧可少一句,也不要印一句沒有意義的。 */
+    const eventText = v => (v == null ? '' : typeof v === 'object' ? (v.defaultText ?? '') : String(v));
     const timeline = (d.events ?? []).map(e => `<div class="match-event ${e.team === m.away ? 'away' : ''}">
       <b class="mono event-minute">${esc(e.label || '—')}</b><span class="event-icon">${eventIcon(e.type)}</span>
       <span><b>${eventType(e.type)}</b>${e.team ? `・${esc(name(e.team))}` : ''}${e.player ? `・${eventPlayer(e)}` : ''}
       ${e.assist ? `<small>相關球員：${esc(e.assist)}</small>` : ''}
       ${/* FotMob 烏龍球:team 已翻成得分方,踢進去的人在 ownGoalBy 那一隊 —— 兩邊都寫,讀者才不會以為是得分方自己的球員 */''}
       ${e.ownGoal ? `<small>烏龍球${e.ownGoalBy ? `・${esc(name(e.ownGoalBy))} 球員踢進自家球門` : ''}</small>`
-        : e.detail ? `<small>${esc(e.detail)}</small>` : ''}${e.comments ? `<small>${esc(e.comments)}</small>` : ''}</span></div>`).join('');
+        : eventText(e.detail) ? `<small>${esc(eventText(e.detail))}</small>` : ''}${eventText(e.comments) ? `<small>${esc(eventText(e.comments))}</small>` : ''}</span></div>`).join('');
 
     const sourceLabel = d.source === 'sportmonks' ? 'SportMonks' : d.source === 'fotmob' ? 'FotMob' : 'API-Football';
     const hasPlayers = Object.values(d.players ?? {}).some(list => list?.length);
@@ -1225,13 +1277,13 @@ export function matchReportCards(m, { order = null } = {}) {
       const rated = d?.coverage?.ratings === true && Object.values(d.players ?? {}).some(l => l?.some(p => p.rating != null));
       const topBy = code => [...(d?.players?.[code] ?? [])].filter(p => p.rating != null && (p.minutes ?? 0) > 0)
         .sort((a, b) => b.rating - a.rating).slice(0, 3)
-        .map(p => `<div class="stat-line"><span class="small">${playerButton(p)}
+        .map(p => `<div class="stat-line"><span class="small">${playerChip({ ...p, team: p.team ?? code }, { size: 24, fallback: 'crest' })}
           <span class="dim tiny">${esc(p.pos && p.pos !== '?' ? p.pos : '')} ${p.minutes ?? '—'}'</span></span><b class="pill ${p.rating >= 7.5 ? 'accent' : 'info'} mono">${fx(p.rating, 1)}</b></div>`).join('');
       const src = d?.source === 'sportmonks' ? 'SportMonks' : d?.source === 'fotmob' ? 'FotMob' : 'API-Football';
       return `<div class="card"><h3>${rated ? `本場最佳(${src} 評分)` : '本場最佳(FPL 表現分)'}</h3>
       <div class="grid g2">
-        <div>${rated ? topBy(m.home) : bestHtml(H, 'bps')}</div>
-        <div>${rated ? topBy(m.away) : bestHtml(A, 'bps')}</div>
+        <div>${rated ? topBy(m.home) : bestHtml(H, 'bps', m.home)}</div>
+        <div>${rated ? topBy(m.away) : bestHtml(A, 'bps', m.away)}</div>
       </div>
     </div>`;
     })(),
@@ -1647,10 +1699,9 @@ export function goalTimeline(goals, { home, away, timeline = null } = {}) {
     || a.ord - b.ord
     || (a.t === 'goal' && b.t === 'goal' ? (a.g.hs + a.g.as) - (b.g.hs + b.g.as) : 0));
 
-  const who = e => (e.playerCode
-    ? `<button class="player-name-btn" type="button" data-player-code="${esc(e.playerCode)}"
-         aria-label="查看 ${esc(e.player ?? '')} 球員資料">${esc(e.player ?? '')}</button>`
-    : esc(e.player ?? '不詳'));
+  /* 牌與換人的人名帶頭貼。**這一列本來就有隊徽,所以不補位** ——
+     沒頭貼時只印名字,補一個隊徽等於同一個徽章在同一列印兩次。 */
+  const who = e => playerChip({ name: e.player, code: e.playerCode, team: e.team }, { size: 20 });
   const minCell = l => esc(l ? String(l).replace(/'\d+$/, "'") : '');
 
   const renderCard = c => `<div class="goal-line ${c.team === away ? 'away' : ''}">
@@ -1695,14 +1746,11 @@ export function goalTimeline(goals, { home, away, timeline = null } = {}) {
 function renderGoalRow(g, { away } = {}) {
   const tag = GOAL_TAG[g.kind];
   const own = g.kind === 'own';
-  const scorer = g.scorerCode
-    ? `<button class="player-name-btn" type="button" data-player-code="${esc(g.scorerCode)}"
-         aria-label="查看 ${esc(g.scorer ?? '')} 球員資料">${esc(g.scorer ?? '')}</button>`
-    : esc(g.scorer ?? '不詳');
-  const assist = g.assistCode
-    ? `<button class="player-name-btn" type="button" data-player-code="${esc(g.assistCode)}"
-         aria-label="查看 ${esc(g.assist ?? '')} 球員資料">${esc(g.assist ?? '')}</button>`
-    : g.assist ? esc(g.assist) : '';
+  /* 射手的頭貼比助攻大一點:那一列的主角是他。烏龍球的 team 是得分方,
+     踢進去的人在 scorerTeam —— 頭貼查的是**人**(code),不受這個影響。 */
+  const scorer = playerChip({ name: g.scorer, code: g.scorerCode, team: g.scorerTeam ?? g.team }, { size: 22 });
+  const assist = (g.assist || g.assistCode)
+    ? playerChip({ name: g.assist, code: g.assistCode, team: g.team }, { size: 18 }) : '';
   return `<div class="goal-line ${g.team === away ? 'away' : ''}">
     <b class="gl-min">${esc(g.label ? g.label.replace(/'\d+$/, "'") : `${g.min}'`)}</b>
     <span class="gl-icon">⚽</span>
