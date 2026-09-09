@@ -26,10 +26,19 @@ import { join } from 'node:path';
 import { loadMatches } from './adapters/openfootball.mjs';
 import { buildTable } from './table.mjs';
 
+/* **這是唯一一份清單。** 抓取器 import 這一份,不自己再寫一份 ——
+   兩份的話加聯賽時一定會漏掉其中一邊:抓了卻不算、或算了卻沒抓,
+   而畫面上只會少幾場對比,不會報錯(「修好一份、忘了另一份複本」那條坑)。
+
+   `file` 是 openfootball 的檔名。**只收 openfootball 真的有的** ——
+   2026-09-09 實測:tr / be / at / no / ua / sk / cz / gr / az 全部 404,
+   所以剩下那 11 支歐冠球隊沒有積分榜,也就沒有對比。這是資料的界線,不是還沒做。 */
 export const UCL_LEAGUES = [
-  { key: 'de1', zh: '德甲', en: 'Bundesliga' },
-  { key: 'it1', zh: '義甲', en: 'Serie A' },
-  { key: 'fr1', zh: '法甲', en: 'Ligue 1' },
+  { key: 'de1', file: 'de.1', zh: '德甲', en: 'Bundesliga' },
+  { key: 'it1', file: 'it.1', zh: '義甲', en: 'Serie A' },
+  { key: 'fr1', file: 'fr.1', zh: '法甲', en: 'Ligue 1' },
+  { key: 'nl1', file: 'nl.1', zh: '荷甲', en: 'Eredivisie' },
+  { key: 'pt1', file: 'pt.1', zh: '葡超', en: 'Primeira Liga' },
 ];
 
 /* 產物只留對比會用到的欄位。整份 buildTable 的 row 有半場分段、逐場序列、

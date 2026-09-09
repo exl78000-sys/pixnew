@@ -1300,6 +1300,14 @@ async function checkUclCompare() {
       return /from '\.\/adapters\/openfootball\.mjs'/.test(lib) && /from '\.\/table\.mjs'/.test(lib)
         && !/score\.ft/.test(lib);
     })()],
+    /* 聯賽清單只能有一份。抓取器與計算端各寫一份的話,加聯賽時一定會漏掉一邊 ——
+       抓了卻不算、或算了卻沒抓,而畫面上只會少幾場對比,不會報錯。
+       (第一版真的寫了兩份,加荷葡時才發現。) */
+    ['聯賽清單只有一份:抓取器 import lib 的,不自己再寫一份', (() => {
+      const f = readFileSync(join(ROOT, 'scripts', 'fetch-ucl-leagues.mjs'), 'utf8');
+      return /import \{ UCL_LEAGUES \} from '\.\/lib\/ucl-standings\.mjs'/.test(f)
+        && !/UCL_LEAGUES = \[/.test(f);
+    })()],
     /* **這一條是這張表的重點**:歐冠沒有勝率預測,所以對比裡一個模型輸出都不能有。
        Elo / 實力值 / 勝率任何一個進來,讀者就會拿兩把不同的尺相減。 */
     ['對比裡沒有任何模型輸出(Elo / 實力 / 勝率)',
@@ -4325,7 +4333,7 @@ function checkUcl() {
       const bothU = msU.filter(m => (m.home?.code || st.byTeamId?.[String(m.home?.id)])
         && (m.away?.code || st.byTeamId?.[String(m.away?.id)])).length;
       console.log(`  · 歐冠本季可做賽前對比的場次:${bothU} / ${msU.length}`
-        + `(掛回 ${st.matched} 隊・這三個聯賽以外的 ${st.unmatched.length} 隊沒有,只回報)`);
+        + `(掛回 ${st.matched} 隊・${st.leagues.length} 個聯賽以外的 ${st.unmatched.length} 隊沒有,只回報)`);
     }
   }
 
