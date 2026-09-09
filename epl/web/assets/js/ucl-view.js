@@ -1,4 +1,4 @@
-import * as C from './core.js?v=2e0e1ba0';
+import * as C from './core.js?v=cddf3c48';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -168,30 +168,55 @@ async function standingsOf(lg) {
 }
 
 /* 這一場能不能做對比。條件寫成一個函式是因為畫按鈕與真的去算兩個地方都要問 —— 
-   兩邊各寫一份的話,會出現「按鈕在但點了沒東西」。 */
-const comparable = m => !m?.played && registered(m?.home?.code) && registered(m?.away?.code)
-  && !!m.home.league && !!m.away.league;
+   兩邊各寫一份的話,會出現「按鈕在但點了沒東西」。
+
+   **兩種來源都算數**:本站聯賽(英超/西甲,有隊碼、有球隊頁),
+   以及只有積分榜的那三個(德甲/義甲/法甲,沒有隊碼也沒有球隊頁)。
+   加上後者之後本季從 8 場變成 48 場 —— 那正是做這一步的理由。 */
+let standings = null;                                    // ucl-standings.json(呼叫端傳進來)
+const statsFor = t => {
+  if (!t) return null;
+  if (registered(t.code) && t.league) return { kind: 'site', league: t.league, code: t.code };
+  const row = standings?.byTeamId?.[String(t.id)];
+  return row ? { kind: 'table', league: row.league, row } : null;
+};
+const comparable = m => !m?.played && !!statsFor(m?.home) && !!statsFor(m?.away);
+
+/* 對比裡要顯示的隊名與顏色。**本站沒有的球隊沒有 C.name / C.team** ——
+   直接叫 C.name(undefined) 會拿到一個看起來像壞掉的東西,所以走上游給的名字,
+   顏色退回中性色(不替它們挑一個「看起來像」的隊色,那是編出來的)。 */
+const cmpName = t => (registered(t?.code) ? C.name(t.code) : (t?.name ?? '?'));
+const cmpColor = t => (registered(t?.code) ? C.team(t.code).chartColor : null);
+
+/* 一隊的本季聯賽數據。本站聯賽要去抓 table.json(延遲載入),
+   只有積分榜的那三個已經在 ucl-standings.json 裡,不用再抓。 */
+async function rowFor(t) {
+  const src = statsFor(t);
+  if (!src) return null;
+  if (src.kind === 'table') return src.row;
+  return (await standingsOf(src.league)).get(src.code) ?? null;
+}
 
 async function renderCompare(slot, m) {
   slot.innerHTML = '<div class="tiny dim">載入兩隊的聯賽數據中…</div>';
   try {
-    const [H, A] = await Promise.all([standingsOf(m.home.league), standingsOf(m.away.league)]);
-    const h = H.get(m.home.code), a = A.get(m.away.code);
+    const [h, a] = await Promise.all([rowFor(m.home), rowFor(m.away)]);
     if (!h || !a) { slot.innerHTML = '<div class="tiny dim">這兩隊本季的聯賽數據還沒產生,暫時做不出對比。</div>'; return; }
-    const lgName = c => C.LEAGUES[c]?.zh ?? c;
+    const lgName = c => C.LEAGUES[c]?.zh
+      ?? (standings?.leagues ?? []).find(l => l.key === c)?.zh ?? c;
     // 樣本太小要講:球季剛開始時三場的場均進球跟整季不是同一件事(鐵則四)
     const thin = Math.min(h.p ?? 0, a.p ?? 0) < 5;
     slot.innerHTML = `
       <div class="row small dim" style="justify-content:space-between;margin:2px 0 6px">
-        <span>${C.esc(C.name(m.home.code))}・${C.esc(lgName(m.home.league))} ${h.p} 場</span>
-        <span>${C.esc(C.name(m.away.code))}・${C.esc(lgName(m.away.league))} ${a.p} 場</span>
+        <span>${C.esc(cmpName(m.home))}・${C.esc(lgName(statsFor(m.home).league))} ${h.p} 場</span>
+        <span>${C.esc(cmpName(m.away))}・${C.esc(lgName(statsFor(m.away).league))} ${a.p} 場</span>
       </div>
       ${C.versus(C.uclCompareRows(h, a), {
-        home: C.name(m.home.code), away: C.name(m.away.code),
-        colors: { home: C.team(m.home.code).chartColor, away: C.team(m.away.code).chartColor },
+        home: cmpName(m.home), away: cmpName(m.away),
+        colors: { home: cmpColor(m.home), away: cmpColor(m.away) },
       })}
       <div class="note" style="margin-top:10px"><b>這是兩個聯賽各自的數字,不是同一把尺。</b>
-        ${C.esc(lgName(m.home.league))}的第 ${h.pos} 名跟${C.esc(lgName(m.away.league))}的第 ${a.pos} 名
+        ${C.esc(lgName(statsFor(m.home).league))}的第 ${h.pos} 名跟${C.esc(lgName(statsFor(m.away).league))}的第 ${a.pos} 名
         不是同一件事,兩邊的對手強度也不同。<b>這裡沒有勝率預測</b> —— 理由見本頁下方那則說明。
         ${thin ? '<br><b>而且樣本很小</b>:兩隊本季各只踢了幾場,場均數字還會大幅變動。' : ''}</div>`;
   } catch (e) {
@@ -380,7 +405,8 @@ function unavailableNote(season) {
 /* 歐冠視圖。原本是獨立的 page-ucl.js,2026-08-29 併進「盃賽」單頁
    (歐冠/足總盃/聯賽盃三個頁內分頁)—— 這裡只負責畫進 container,
    nav、page-head 與 foot 由盃賽頁統一管。ucl.html 保留為轉址,舊連結不斷。 */
-export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams }) {
+export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null }) {
+  standings = uclStandings;
   /* **先登錄跨聯賽那一份,再登錄本聯賽的。** registerTeams 是逐欄位覆蓋,
      順序反過來的話,本聯賽比較完整的那筆(配色、球場、chartColor)
      會被只帶名字與隊徽的那筆蓋掉一部分。 */

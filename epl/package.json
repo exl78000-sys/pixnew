@@ -63,6 +63,7 @@
     "cups:live": "node scripts/fetch-fotmob-cups.mjs --live",
     "ucl": "node scripts/fetch-ucl.mjs",
     "ucl:live": "node scripts/fetch-ucl.mjs --live",
+    "ucl:leagues": "node scripts/fetch-ucl-leagues.mjs",
     "probe:photo-cdn": "node scripts/probe-photo-cdn.mjs",
     "cup-crests": "node scripts/fetch-cup-crests.mjs",
     "competition-logos": "node scripts/fetch-competition-logos.mjs",
