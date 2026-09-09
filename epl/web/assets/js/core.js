@@ -2034,6 +2034,36 @@ export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = f
    因為「名次」和「失球」是越低越好,用顏色表示好壞會跟隊伍顏色打架。
    配色由 build 時算好(見 scripts/lib/colour.mjs):兩隊同色系時會自動拉開,
    702 種對戰組合都通過色盲分離、一般視覺分離與對比檢查。 */
+/* 歐冠的「賽前對比」要比哪幾項(2026-09-09,使用者要求的階段 A)。
+
+   **這不是預測,是兩邊各自的現況並排。** 歐冠沒有勝率預測,原因寫在歐冠頁上:
+   本站的模型是用聯賽調的,而且英超的 Elo 與西甲的 Elo 是**各自訓練**出來的,
+   兩個 1650 不是同一把尺,直接相減就是編數字(鐵則二)。
+
+   所以這裡只放**各自聯賽裡算出來的原始事實**:名次、場均得分、每場進失球、
+   主客場、零封率。**一個模型輸出都不放** —— Elo、實力值、勝率一律不進這張表,
+   放進去讀者就會拿兩把不同的尺相減,而那正是這一頁刻意不做的事。
+
+   `pos` 直接讀欄位,不用陣列索引 —— 產物剛好是照積分排的,但那是巧合不是約定。
+
+   抽成純函式是為了測得到:測試看不到 DOM,留在 view 裡就只能用正則掃原始碼。 */
+export function uclCompareRows(h, a) {
+  if (!h || !a) return [];
+  const rate = (n, p) => (p > 0 ? n / p : null);
+  return [
+    { label: '聯賽名次', h: h.pos, a: a.pos, digits: 0, better: 'low', hint: '各自聯賽裡的名次' },
+    { label: '場均得分', h: h.ppg, a: a.ppg, digits: 2, better: 'high' },
+    { label: '每場進球', h: h.avgGF, a: a.avgGF, digits: 2, better: 'high' },
+    { label: '每場失球', h: h.avgGA, a: a.avgGA, digits: 2, better: 'low' },
+    /* 這一場是誰主誰客是已知的,所以比的是**會實際發生的那一半**:
+       主隊的主場成績 vs 客隊的客場成績。比兩邊的全場平均會把主客場優勢洗掉。 */
+    { label: '主場 / 客場 場均得分', h: h.home?.ppg, a: a.away?.ppg, digits: 2, better: 'high',
+      hint: '主隊只算主場、客隊只算客場' },
+    { label: '零封場次比例', h: rate(h.cleanSheets, h.p), a: rate(a.cleanSheets, a.p),
+      digits: 0, unit: '%', better: 'high' },
+  ].map(r => (r.unit === '%' ? { ...r, h: r.h == null ? null : r.h * 100, a: r.a == null ? null : r.a * 100 } : r));
+}
+
 export function versus(rows, { home, away, colors, note = null } = {}) {
   const cH = colors?.home ?? '#00ff85', cA = colors?.away ?? '#04f5ff';
   const swatch = c => `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;

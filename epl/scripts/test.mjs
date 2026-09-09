@@ -339,6 +339,9 @@ async function main() {
   console.log('\n▶ 球員頭貼小卡自我檢查');
   const chipFail = await checkPlayerChip();
 
+  console.log('\n▶ 歐冠賽前對比自我檢查');
+  const uclCmpFail = await checkUclCompare();
+
   console.log('\n▶ 官方進球事件解析自我檢查');
   const goalFail = checkGoalEvents();
 
@@ -383,7 +386,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || chipFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1235,6 +1238,70 @@ async function checkCupDefault() {
    這一塊最容易出的錯不是「畫不出來」,是**畫錯人或畫出空白格**:
    頭貼查表用 code,而三個聯賽的 id 體系不一樣(英超站內 code、西甲 FotMob id、英冠沒有球員層)。
    所以測試守的是「沒有的時候長什麼樣」跟「有的時候接的是哪一個 code」,不是「一定有」。 */
+/* 歐冠的賽前對比(2026-09-09,使用者要求的階段 A)。
+
+   這一塊最容易犯的錯不是畫不出來,是**畫出一個看起來像預測的東西**:
+   歐冠沒有勝率預測,理由是英超與西甲的模型各自訓練、兩把尺不能相減(鐵則二)。
+   所以測試守的是「這張表裡不准有模型輸出」與「該有的界線有沒有講」。 */
+async function checkUclCompare() {
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
+  const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+  const h = { pos: 2, p: 10, ppg: 2.1, avgGF: 2.3, avgGA: 0.9, cleanSheets: 5, home: { ppg: 2.4 }, away: { ppg: 1.8 } };
+  const a = { pos: 5, p: 10, ppg: 1.7, avgGF: 1.6, avgGA: 1.2, cleanSheets: 3, home: { ppg: 2.0 }, away: { ppg: 1.4 } };
+  const rows = V.uclCompareRows(h, a);
+  const by = l => rows.find(r => r.label === l);
+
+  /* 本季實際有幾場「兩隊都在本站資料裡」—— 只回報,不擋(涵蓋率會隨抽籤與升降級變動) */
+  const uclPath = join(ROOT, 'web', 'data', 'ucl.json');
+  if (existsSync(uclPath)) {
+    const u = JSON.parse(readFileSync(uclPath, 'utf8'));
+    const cur = (u.seasons ?? []).find(s => s.current);
+    const ms = cur?.leagueMatches ?? [];
+    const both = ms.filter(m => m.home?.code && m.away?.code).length;
+    console.log(`  · 歐冠本季兩隊都在本站資料裡的場次:${both} / ${ms.length}(有賽前對比的就是這些,只回報)`);
+  }
+
+  const cases = [
+    ['名次是「越低越好」(不然第 5 名的條會比第 2 名長)', by('聯賽名次')?.better === 'low'],
+    ['每場失球是「越低越好」', by('每場失球')?.better === 'low'],
+    /* 主客場那一列比的是**會實際發生的那一半**:比兩邊的全場平均會把主客場優勢洗掉 */
+    ['主客場那一列:主隊取主場、客隊取客場',
+      by('主場 / 客場 場均得分')?.h === h.home.ppg && by('主場 / 客場 場均得分')?.a === a.away.ppg],
+    ['零封換算成百分比(不是場數)',
+      by('零封場次比例')?.h === 50 && by('零封場次比例')?.unit === '%'],
+    ['沒踢過的隊不會被除以零', (() => {
+      const r = V.uclCompareRows({ ...h, p: 0, cleanSheets: 0 }, a);
+      return r.find(x => x.label === '零封場次比例')?.h === null;
+    })()],
+    /* **這一條是這張表的重點**:歐冠沒有勝率預測,所以對比裡一個模型輸出都不能有。
+       Elo / 實力值 / 勝率任何一個進來,讀者就會拿兩把不同的尺相減。 */
+    ['對比裡沒有任何模型輸出(Elo / 實力 / 勝率)',
+      !rows.some(r => /elo|實力|勝率|預測|xG/i.test(r.label))],
+    ['界線有寫在畫面上:不是同一把尺、沒有勝率預測',
+      /不是同一把尺/.test(view) && /這裡沒有勝率預測/.test(view)],
+    ['樣本太小要講(球季剛開始時場均數字還會大幅變動)', /樣本很小/.test(view)],
+    /* 兩隊都認得才給按鈕 —— 一欄空著就是留一個永遠空白的欄位(鐵則三) */
+    ['只有兩隊都在本站資料裡才給對比按鈕',
+      /const comparable = m =>[^;]*registered\(m\?\.home\?\.code\)[^;]*registered\(m\?\.away\?\.code\)/.test(view)],
+    /* 兩個聯賽的 table.json 各約 100 KB,而整頁只有一兩場用得到 */
+    ['聯賽積分榜是展開時才載入,不是開頁就抓',
+      /slot\.dataset\.done/.test(view) && /await renderCompare/.test(view)],
+    /* 這個檔下面已經有一個 leagueTable(積分榜渲染器);同名會靜靜蓋掉,不拋錯 */
+    ['資料載入器沒有跟積分榜渲染器撞名',
+      /async function standingsOf\(/.test(view) && !/async function leagueTable\(/.test(view)],
+    ['對比的欄位選擇抽在 core.js(測試看不到 DOM)', /export function uclCompareRows/.test(core)],
+  ];
+
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
 async function checkPlayerChip() {
   globalThis.document ??= { addEventListener() {} };
   const V = await import('../web/assets/js/core.js');
