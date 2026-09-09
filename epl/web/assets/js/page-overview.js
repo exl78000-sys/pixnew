@@ -305,7 +305,7 @@ try {
     <div class="card"><div class="spread"><h3 style="margin:0">足球知識</h3>
       <a class="pill accent" href="${C.link('knowledge')}">開啟 →</a></div>
       <div class="tiny dim" style="margin-top:8px">陣型、背號與位置分工。</div>
-      <div class="tiny dim" style="margin-top:6px">共識層與本站算出來的實際分佈**分開標示** ——
+      <div class="tiny dim" style="margin-top:6px">共識層與本站算出來的實際分佈<b>分開標示</b> ——
         哪一段是足球常識、哪一段是這個站的數字,不混在一起。</div></div>
   </div>
 

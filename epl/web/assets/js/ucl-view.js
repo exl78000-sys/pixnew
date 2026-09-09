@@ -11,7 +11,12 @@ import * as C from './core.js?v=cddf3c48';
    2. **一季 36 隊,本站只認得其中 8~11 支。** 認不得的只給名字,
       不掛隊徽也不給連結(鐵則三)。涵蓋率直接寫在畫面上。
 
-   3. **沒有預測。** 現有模型是用聯賽比賽調的,沒有在歐冠上驗收過 ——
+   3. **預測有,但只給有評分的場次(2026-09-09 階段 C)。** 做法是把八個聯賽的賽果
+      與歐冠場次餵進**同一個 Elo 池**,歐冠場次就是把各聯賽接起來的橋;走查回測
+      219 場 RPS 0.2227、基準線 0.2376(改善 0.0149 ± 0.0061,通過)。
+      **兩隊都要有評分才給** —— openfootball 不涵蓋的聯賽(比利時、土耳其、蘇格蘭…)
+      那些球隊沒有評分,那些場次一場都不給。詳見 `lib/ucl-elo.mjs` 的檔頭,
+      裡面也寫了兩個**量過而沒有通過**的修正,不要再加回來。舊版這裡寫著 ——
       跨聯賽實力差距、兩回合制、延長與 PK 都是它沒見過的。沒有回測證據就不上(鐵則二)。
 
    4. **比分有三層**:90 分鐘、延長後、PK。而且上游的 fullTime 在 PK 場
@@ -174,6 +179,12 @@ async function standingsOf(lg) {
    以及只有積分榜的那三個(德甲/義甲/法甲,沒有隊碼也沒有球隊頁)。
    加上後者之後本季從 8 場變成 48 場 —— 那正是做這一步的理由。 */
 let standings = null;                                    // ucl-standings.json(呼叫端傳進來)
+let model = null;                                        // ucl-elo.json(呼叫端傳進來)
+
+/* 這一場有沒有預測。**兩隊都要有跨聯賽評分**,而且回測要通過 ——
+   build 端已經守過一次(沒通過就不產 fixtures),前端再問一次是因為
+   「按鈕在但點了沒東西」比沒有按鈕糟。 */
+const predOf = m => (model?.fixtures ?? []).find(f => f.id === m?.id) ?? null;
 const statsFor = t => {
   if (!t) return null;
   if (registered(t.code) && t.league) return { kind: 'site', league: t.league, code: t.code };
@@ -197,6 +208,35 @@ async function rowFor(t) {
   return (await standingsOf(src.league)).get(src.code) ?? null;
 }
 
+/* 勝率預測。**跟上面那張事實表是兩件事**,所以分開放、各自講各自的出處:
+   表格是「兩個聯賽各自的原始數字」,這一塊是「同一把尺上的跨聯賽評分」。
+   混在一起的話讀者會以為表格裡的名次也是可比的,而那正是這一頁一直在講不可比的東西。
+
+   沒有預測的場次**整塊不印**,不印一句「暫無預測」—— 但本頁下方的說明會講清楚
+   哪些球隊沒有評分、為什麼(鐵則三與鐵則四)。 */
+function predictionBlock(m) {
+  const f = predOf(m);
+  if (!f) return '';
+  const md = model?.model;
+  const [h, d, a] = f.p;
+  return `<div class="card" style="margin:2px 0 12px;padding:10px 12px">
+      <div class="row small" style="justify-content:space-between;margin-bottom:6px">
+        <b>賽前勝率</b>
+        <span class="tiny dim">跨聯賽 Elo・回測 ${md ? `${md.n} 場 RPS ${md.rps}(基準 ${md.baseline})` : '—'}</span>
+      </div>
+      ${C.probBar({ home: h, draw: d, away: a })}
+      <div class="row tiny dim" style="justify-content:space-between;margin-top:4px">
+        <span>${C.esc(cmpName(m.home))} ${(h * 100).toFixed(0)}%</span>
+        <span>和 ${(d * 100).toFixed(0)}%</span>
+        <span>${C.esc(cmpName(m.away))} ${(a * 100).toFixed(0)}%</span>
+      </div>
+      <div class="tiny dim" style="margin-top:8px">把八個聯賽的賽果與歐冠場次餵進<b>同一個評分池</b>算出來的 ——
+        歐冠場次就是把各聯賽接起來的橋。用的是本站聯賽預測那一套 Elo,<b>沒有為歐冠調過任何係數</b>。
+        ${md ? `走查回測 ${md.n} 場:模型 ${md.rps}、基準線 ${md.baseline},改善 ${md.improvement} ± ${md.se}。` : ''}
+        <b>樣本只有兩季多</b>,而且能回測的都是兩隊都有評分的場次 —— 比整體偏向大聯賽的對戰。</div>
+    </div>`;
+}
+
 async function renderCompare(slot, m) {
   slot.innerHTML = '<div class="tiny dim">載入兩隊的聯賽數據中…</div>';
   try {
@@ -211,13 +251,15 @@ async function renderCompare(slot, m) {
         <span>${C.esc(cmpName(m.home))}・${C.esc(lgName(statsFor(m.home).league))} ${h.p} 場</span>
         <span>${C.esc(cmpName(m.away))}・${C.esc(lgName(statsFor(m.away).league))} ${a.p} 場</span>
       </div>
+      ${predictionBlock(m)}
       ${C.versus(C.uclCompareRows(h, a), {
         home: cmpName(m.home), away: cmpName(m.away),
         colors: { home: cmpColor(m.home), away: cmpColor(m.away) },
       })}
-      <div class="note" style="margin-top:10px"><b>這是兩個聯賽各自的數字,不是同一把尺。</b>
+      <div class="note" style="margin-top:10px"><b>上面這張表是兩個聯賽各自的數字,不是同一把尺。</b>
         ${C.esc(lgName(statsFor(m.home).league))}的第 ${h.pos} 名跟${C.esc(lgName(statsFor(m.away).league))}的第 ${a.pos} 名
-        不是同一件事,兩邊的對手強度也不同。<b>這裡沒有勝率預測</b> —— 理由見本頁下方那則說明。
+        不是同一件事,兩邊的對手強度也不同 —— 所以<b>這張表裡一個模型輸出都沒有</b>。
+        勝率是另外算的(上面那一塊),用的是把八個聯賽接起來的同一把尺。
         ${thin ? '<br><b>而且樣本很小</b>:兩隊本季各只踢了幾場,場均數字還會大幅變動。' : ''}</div>`;
   } catch (e) {
     slot.innerHTML = `<div class="tiny dim">聯賽數據讀不到(${C.esc(e.message)})。</div>`;
@@ -252,13 +294,18 @@ function leagueFixtures(season) {
       <span class="hint">第 ${cur} 輪・${games.length} 場${
         rounds.length > 1 ? `(共 ${rounds.length} 輪,本季還有 ${undecided} 場未賽)` : ''}</span></div>
     <div class="card">${games.map(row).join('')}
-      <div class="tiny dim" style="margin-top:10px">只列**還沒踢完的最小輪次**那一輪 ——
+      <div class="tiny dim" style="margin-top:10px">只列<b>還沒踢完的最小輪次</b>那一輪 ——
         整季 ${all.length} 場全列出來要捲很久,而這裡要回答的是「下一批什麼時候踢」。
-        <b>沒有勝率預測</b>:模型是用聯賽調的,沒在盃賽上驗收過。
         ${(() => {
           const n = all.filter(comparable).length;
-          return n ? `<b>兩隊都在本站資料裡的場次</b>(整季 ${n} 場)有「賽前對比」可以展開 ——
-            那是兩個聯賽各自的現況並排,<b>不是預測</b>。` : '';
+          const np = (model?.fixtures ?? []).length;
+          const unrated = model?.coverage?.unrated ?? [];
+          if (!n) return '';
+          return `<b>兩隊都在本站資料裡的場次</b>(整季 ${n} 場)可以展開「賽前對比」——
+            兩個聯賽各自的現況並排${np ? `,加上一組<b>勝率預測</b>(整季 ${np} 場未賽的有)` : ''}。
+            ${unrated.length ? `其餘場次<b>不給預測</b>:${C.esc(unrated.slice(0, 3).map(u => u.name).join('、'))}
+              等${unrated.length} 支球隊所屬的聯賽本站沒有賽果來源,算不出跨聯賽評分 ——
+              那是資料的界線,不是還沒做。` : ''}`;
         })()}</div>
     </div>`;
 }
@@ -279,7 +326,7 @@ function leagueTable(season) {
     { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => `${r.gd > 0 ? '+' : ''}${r.gd}` },
     { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
     { key: 'outcome', label: '結局', value: r => ['auto', 'playoff', 'out'].indexOf(r.outcome), left: true,
-      title: '**不是照名次推的**,是看這一隊實際上出現在附加賽還是直接出現在十六強',
+      title: '不是照名次推的,是看這一隊實際上出現在附加賽還是直接出現在十六強',
       render: r => {
         const o = OUTCOME[r.outcome] ?? { label: '—', tone: '' };
         return `<span class="pill tiny"${o.tone ? ` style="color:var(--${o.tone})"` : ''}>${o.label}</span>`;
@@ -405,8 +452,9 @@ function unavailableNote(season) {
 /* 歐冠視圖。原本是獨立的 page-ucl.js,2026-08-29 併進「盃賽」單頁
    (歐冠/足總盃/聯賽盃三個頁內分頁)—— 這裡只負責畫進 container,
    nav、page-head 與 foot 由盃賽頁統一管。ucl.html 保留為轉址,舊連結不斷。 */
-export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null }) {
+export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null, uclElo = null }) {
   standings = uclStandings;
+  model = uclElo;
   /* **先登錄跨聯賽那一份,再登錄本聯賽的。** registerTeams 是逐欄位覆蓋,
      順序反過來的話,本聯賽比較完整的那筆(配色、球場、chartColor)
      會被只帶名字與隊徽的那筆蓋掉一部分。 */
