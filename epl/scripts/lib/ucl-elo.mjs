@@ -70,6 +70,31 @@ import { UCL_LEAGUES } from './ucl-standings.mjs';
    再往前只換到 0.002,不值得為它多存四份快取。 */
 export const POOL_START = '2023-24';
 
+/* **十六個 FotMob 聯賽的域內賽果目前不進評分池。** 這不是「還沒接」,是量過之後的決定。
+ *
+ * 2026-09-09 分三次量到的:
+ *
+ *   八個 openfootball 聯賽          池 9,225 場  25/36 隊  改善 0.0149 ± 0.0061(2.4 SE)通過
+ *   + 十六個聯賽的**本季**          池 10,780    34/36     改善 0.0265 ± 0.0058(4.6 SE)通過
+ *   + 十六個聯賽的**四季完整歷史**  池 19,972    35/36     改善 0.0063 ± 0.0033(1.9 SE)**沒通過**
+ *
+ * 也就是說**補上完整歷史反而讓模型變差**(RPS 0.2107 → 0.2306)。原因看得出來:
+ * 這些聯賽多半是頂重的(Celtic、Galatasaray、Salzburg、Slavia 在國內幾乎橫掃),
+ * 歷史越長,它們靠痛宰國內對手累積的 Elo 越高,而 381 場橋根本不夠把它壓回來 ——
+ * 跟階段 C 一開始在葡超/荷甲看到的是同一個病,只是這次有十六個聯賽一起放大。
+ *
+ * 「逐聯賽補正」已經試過而且**沒有通過**(一季調、另一季驗收只有 0.0009 ± 0.0079,
+ * 兩季的參數還互相矛盾),所以沒有經過驗收的修正可以用。
+ *
+ * **只用本季那一版看起來最好,但那個 4.6 SE 是在「資料剛好補到一半」時量到的**,
+ * 不是設計出來的配置 —— 拿它當結論就是挑一個好看的數字,那正是鐵則二在防的事。
+ * 所以退回**唯一從頭到尾都通過的配置**:八個聯賽。這些球隊因此沒有評分、
+ * 那些場次不給預測(鐵則三),而畫面上講得出為什麼。
+ *
+ * 要打開的話,先做「限制歷史深度」的正式驗收:一季調、另一季驗收,
+ * 而且改善要大過 2 倍成對標準誤。抓下來的快取與人工對照表都留著,隨時可以測。 */
+export const FOTMOB_IN_POOL = false;
+
 /* 池子裡的八個聯賽。前三個是本站的聯賽(用它們原本的快取,不重抓),
    後五個是為歐冠抓的。**這份清單不要另外複製一份** —— 後五個直接取 UCL_LEAGUES。 */
 export const POOL_LEAGUES = [
@@ -170,7 +195,7 @@ export function poolMatches(root, ucl) {
 
   /* openfootball 沒有的那十六個(FotMob)。抓取器自己驗過賽季與對照表,
      這裡只讀落地的快取 —— 沒抓到的聯賽就是沒有,不影響其他聯賽。 */
-  const fm = fotmobLeagueMap(root);
+  const fm = FOTMOB_IN_POOL ? fotmobLeagueMap(root) : { leagues: [], byFullName: fotmobLeagueMap(root).byFullName };
   /* 對照表裡有、卻**一份快取都沒有**的聯賽要報出來。
      不報的話它只是安靜地從 perLeague 消失,而畫面上只是少幾支球隊的預測 ——
      實際踩過:挪威與哈薩克是春秋制,賽季字串不同,第一次抓一份都沒落地而完全沒有跡象。 */
@@ -351,9 +376,21 @@ export function uclElo(root, ucl) {
     coverage: {
       ratedTeams: rated.size, totalTeams: teamsTotal,
       bothRated, totalMatches: total,
-      /* 沒有評分的球隊來自 openfootball 不涵蓋的聯賽。這是資料的界線,不是還沒做 —— 
-         清單留著,讓畫面講得出「為什麼這一場沒有預測」。 */
-      unrated: pool.unrated.slice(0, 30),
+      /* 沒有評分的球隊,**從本季的球隊算起,不是只從已完賽的橋**。
+         橋只掃已完賽的場次,所以還沒踢過的球隊不會出現在裡面 ——
+         實測 2026-09-09:35/36 隊有評分(還缺 1 隊),而清單卻是空的,
+         於是畫面講不出「為什麼這一場沒有預測」。清單是給讀者看的,
+         要涵蓋的是**本季所有沒有評分的球隊**,不是「曾經踢過而掛不上的」。 */
+      unrated: (() => {
+        const seen = new Map();
+        for (const m of seasonMatches) for (const side of ['home', 'away']) {
+          const c = m[side];
+          if (!c?.id || ratings[String(c.id)]) continue;
+          seen.set(c.name ?? c.fullName, (seen.get(c.name ?? c.fullName) ?? 0) + 1);
+        }
+        return [...seen].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+          .slice(0, 30).map(([name, n]) => ({ name, n }));
+      })(),
     },
   };
 }

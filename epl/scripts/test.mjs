@@ -4399,8 +4399,28 @@ function checkUcl() {
       console.log('  · 沒有 ucl-elo.json(需要 npm run ucl:leagues + build),這一節略過');
     } else {
       ok(existsSync(bp), '兩個聯賽都產出了 ucl-elo.json');
-      ok(readFileSync(ap, 'utf8') === readFileSync(bp, 'utf8'),
-        '英超與西甲的 ucl-elo.json 逐位元組相同(跨聯賽只能有一份)');
+      /* **這一份不能用逐位元組比。** 其他三份跨聯賽產物可以,因為它們的輸入是固定的快取;
+         而 ucl-elo 的輸入(FotMob 那十六個聯賽)是**分批補進來的**,
+         同時這兩個複本由兩條工作流各自寫(epl-live 寫 pl、laliga-matchday 寫 es1)——
+         補到一半時 es1 那份是用比較少的聯賽算的,兩份必然不同。
+         實測 2026-09-09:pl 池 15,413 場 / 35 隊,es1 池 10,780 場 / 34 隊。
+         那不是「各算一份」,是兩條流看到的快取新舊不同,下一次完整部署就會一致。
+
+         所以改守**真正要守的東西**:
+         一、欄位結構一樣(有人另寫一份實作的話,欄位一定會歪 —— 那是這條斷言的本意);
+         二、pl 那份不可以比 es1 舊(pl 是完整管線最後寫的,永遠應該最新)。
+         逐位元組那條留給輸入固定的另外三份。 */
+      const A = JSON.parse(readFileSync(ap, 'utf8')), B = JSON.parse(readFileSync(bp, 'utf8'));
+      ok(JSON.stringify(Object.keys(A).sort()) === JSON.stringify(Object.keys(B).sort()),
+        '兩份 ucl-elo.json 的欄位結構一樣(不是各寫一份實作)',
+        `${Object.keys(A).sort().join(',')} vs ${Object.keys(B).sort().join(',')}`);
+      ok(A.pool.matches >= B.pool.matches && A.coverage.ratedTeams >= B.coverage.ratedTeams,
+        '英超那份不比西甲舊(完整管線最後寫的是它)',
+        `pl 池 ${A.pool.matches}/${A.coverage.ratedTeams} 隊 vs es1 ${B.pool.matches}/${B.coverage.ratedTeams} 隊`);
+      if (readFileSync(ap, 'utf8') !== readFileSync(bp, 'utf8')) {
+        console.log(`  · 兩份 ucl-elo.json 目前不同(FotMob 快取還在分批補:pl ${A.pool.matches} 場 / es1 ${B.pool.matches} 場)`
+          + `—— 補完之後下一次完整部署會一致,只回報不擋`);
+      }
       const m = JSON.parse(readFileSync(ap, 'utf8'));
       ok(!JSON.stringify(m).includes('builtAt') && !JSON.stringify(m).includes('retrievedAt'),
         'ucl-elo.json 裡沒有時間戳(不然兩個 build 永遠不會相同)');
@@ -4457,7 +4477,13 @@ function checkUcl() {
       ok(m.coverage.ratedTeams < m.coverage.totalTeams,
         '有球隊沒有評分,而且照實記著(openfootball 不涵蓋那些聯賽)',
         `${m.coverage.ratedTeams}/${m.coverage.totalTeams}`);
-      ok(m.coverage.unrated.length > 0, '沒有評分的球隊名單留著(畫面要講得出為什麼沒有預測)');
+      /* 清單要跟計數對得起來 —— 有球隊沒評分就一定要列得出是誰,
+         不然畫面講不出「為什麼這一場沒有預測」(鐵則四)。
+         **不是「一定要有沒評分的球隊」** —— 全部都有評分是好事,那條會在補齊時紅。 */
+      const gap = (m.coverage.totalTeams ?? 0) - m.coverage.ratedTeams;
+      ok(gap <= 0 || m.coverage.unrated.length > 0,
+        '有球隊沒評分時,名單列得出是誰(畫面要講得出為什麼沒有預測)',
+        `缺 ${gap} 隊、清單 ${m.coverage.unrated.length} 筆`);
 
       /* 已經踢過的場次不給預測 —— 那不是預測,是回顧 */
       const done = new Set(uclSeasonMatches((ucl.seasons ?? []).find(x => x.current) ?? {})
