@@ -324,6 +324,64 @@ export function applyCupsLive(cups, live) {
 export const cupsHaveLive = cups => (cups?.cups ?? []).some(c => (c.seasons ?? []).some(s =>
   s.current && (s.rounds ?? []).some(r => (r.matches ?? []).some(m => m.state === 'LIVE'))));
 
+/* 盃賽頁預設停在哪一個賽事(2026-09-09)。
+
+   原本寫死歐冠。結果 9/8 聯賽盃之夜的隔天早上,讀者打開盃賽頁看到的是歐冠那一頁 ——
+   而歐冠昨晚那六場當時還在「已開賽・等待資料」,聯賽盃第三輪的五個終場比分則躺在
+   第二個分頁後面。使用者的回報就是「目前沒有盃賽賽果」。
+
+   **第一版寫成「離現在最近的一場比賽」,實測沒有用**:昨晚歐冠與聯賽盃都有 19:00 UTC
+   開球的場次,兩邊差距一模一樣(7.67 小時),平手退回第一個 = 歐冠 = 原樣。
+   改成問一個更貼近讀者的問題:**哪一邊現在真的有東西可看?**
+
+     1. 有場次進行中的優先
+     2. 其次比「最後一場已完賽的比賽」誰比較晚 —— 昨晚的例子裡聯賽盃五場都 played,
+        歐冠六場的賽果還沒抓到(played 全 false),所以聯賽盃勝出,正好是該顯示的那一個
+     3. 都沒踢過就比誰的下一場比較快開賽(球季剛開始時)
+     4. 完全平手保留傳入順序的第一個 —— 呼叫端把歐冠放第一個(使用者指定的分頁順序)
+
+   一樣**沒有任何時間門檻**:不用「最近 N 小時內」那種寫法,N 選多少都會在某個時間點錯。
+
+   收集用遞迴,認的是「帶 kickoff 字串的物件」:歐冠的場次在 leagueMatches[] 與
+   rounds[].ties[].legs[],英格蘭盃賽在 rounds[].matches[],三種巢狀不一樣。
+   進行中兩家寫法也不同(盃賽 state='LIVE'、歐冠 status='IN_PLAY'/'PAUSED'),兩種都認。 */
+export function matchMoments(node, out = []) {
+  if (!node || typeof node !== 'object') return out;
+  if (Array.isArray(node)) { for (const x of node) matchMoments(x, out); return out; }
+  const t = typeof node.kickoff === 'string' ? Date.parse(node.kickoff) : NaN;
+  if (Number.isFinite(t)) {
+    out.push({ t, played: node.played === true,
+      live: node.state === 'LIVE' || node.status === 'IN_PLAY' || node.status === 'PAUSED' });
+  }
+  for (const v of Object.values(node)) if (v && typeof v === 'object') matchMoments(v, out);
+  return out;
+}
+
+export function defaultCup(now, entries) {
+  const rank = node => {
+    const ms = matchMoments(node);
+    if (!ms.length) return null;
+    const done = ms.filter(m => m.played).map(m => m.t);
+    const next = ms.filter(m => !m.played && m.t >= now).map(m => m.t);
+    return {
+      live: ms.some(m => m.live) ? 1 : 0,
+      lastDone: done.length ? Math.max(...done) : -Infinity,
+      nextUp: next.length ? Math.min(...next) : Infinity,
+    };
+  };
+  let best = null;
+  for (const e of entries) {
+    const r = rank(e.node);
+    if (!r) continue;
+    if (!best || r.live > best.r.live
+      || (r.live === best.r.live && r.lastDone > best.r.lastDone)
+      || (r.live === best.r.live && r.lastDone === best.r.lastDone && r.nextUp < best.r.nextUp)) {
+      best = { key: e.key, r };
+    }
+  }
+  return best?.key ?? entries[0]?.key ?? null;
+}
+
 export function compBadge(key, { label = null, size = '' } = {}) {
   const c = COMPETITIONS[key];
   if (!c) return label ? `<span class="pill tiny">${esc(String(label === true ? key : label))}</span>` : '';

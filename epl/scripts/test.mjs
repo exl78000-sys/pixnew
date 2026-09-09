@@ -333,6 +333,9 @@ async function main() {
   console.log('\n▶ 資料缺口判斷自我檢查');
   const gapFail = await checkDataGap();
 
+  console.log('\n▶ 盃賽頁預設分頁自我檢查');
+  const cupDefaultFail = await checkCupDefault();
+
   console.log('\n▶ 官方進球事件解析自我檢查');
   const goalFail = checkGoalEvents();
 
@@ -377,7 +380,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1160,6 +1163,70 @@ async function checkLinks() {
   return fail;
 }
 
+/* 盃賽頁預設停在哪一個賽事(core.js 的 defaultCup)。
+
+   使用者的回報是「目前沒有盃賽賽果」—— 而聯賽盃第三輪的五個終場比分其實都在,
+   只是這一頁寫死開在歐冠,而歐冠昨晚那六場當時還沒抓到賽果。
+
+   **第一版改成「離現在最近的一場比賽」,實測沒有用**:兩個賽事昨晚都有 19:00 UTC
+   的場次,差距一模一樣,平手退回第一個 = 歐冠 = 原樣。所以這裡把那個平手case
+   釘死 —— 只驗「最後結果是 eflcup」的話,第一版也會過。 */
+async function checkCupDefault() {
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const at = iso => Date.parse(iso);
+  // 昨晚的真實形狀:兩邊都有 19:00 開球,但只有聯賽盃那邊 played
+  const ucl = { leagueMatches: [
+    { kickoff: '2026-09-08T16:45:00Z', played: false, status: 'SCHEDULED' },
+    { kickoff: '2026-09-08T19:00:00Z', played: false, status: 'SCHEDULED' },
+    { kickoff: '2026-09-09T16:45:00Z', played: false, status: 'SCHEDULED' },
+  ] };
+  const efl = { rounds: [{ matches: [
+    { kickoff: '2026-09-08T18:45:00Z', played: true, state: 'FT' },
+    { kickoff: '2026-09-08T19:00:00Z', played: true, state: 'FT' },
+  ] }] };
+  const ents = (u = ucl, e = efl) => [{ key: 'ucl', node: u }, { key: 'eflcup', node: e }];
+  const morningAfter = at('2026-09-09T02:40:00Z');
+
+  const cases = [
+    ['聯賽盃之夜的隔天早上,預設停在聯賽盃(有賽果的那一個)',
+      V.defaultCup(morningAfter, ents()) === 'eflcup', V.defaultCup(morningAfter, ents())],
+    /* 這一條是第一版會紅的那一條:兩邊最近的一場都是 9/8 19:00,「離現在最近」分不出來 */
+    ['兩邊最近的一場開球時間相同時,仍然分得出誰有賽果',
+      Math.min(...V.matchMoments(ucl).map(m => Math.abs(morningAfter - m.t)))
+        === Math.min(...V.matchMoments(efl).map(m => Math.abs(morningAfter - m.t)))],
+    ['歐冠的賽果落地之後,平手就回到歐冠(使用者指定的分頁順序)',
+      V.defaultCup(at('2026-09-09T06:00:00Z'), ents(
+        { leagueMatches: ucl.leagueMatches.map(m => m.kickoff.startsWith('2026-09-08')
+          ? { ...m, played: true, status: 'FINISHED' } : m) })) === 'ucl'],
+    ['有場次進行中的賽事最優先(兩家的旗標寫法不同,都要認)',
+      V.defaultCup(morningAfter, ents(
+        { leagueMatches: [{ kickoff: '2026-09-09T02:00:00Z', played: false, status: 'IN_PLAY' }] })) === 'ucl'],
+    ['都還沒踢過就比誰的下一場比較快開賽',
+      V.defaultCup(at('2026-09-01T00:00:00Z'), [
+        { key: 'ucl', node: { leagueMatches: [{ kickoff: '2026-09-30T19:00:00Z', played: false }] } },
+        { key: 'eflcup', node: { rounds: [{ matches: [{ kickoff: '2026-09-02T19:00:00Z', played: false }] }] } },
+      ]) === 'eflcup'],
+    /* 足總盃 2026-27 要等十一月才發布,本季那一格是空的 —— 空的不能被選中,
+       也不能讓整個判斷回傳 null(那會讓分頁一個都沒選上) */
+    ['沒有本季資料的賽事不會被選中',
+      V.defaultCup(morningAfter, [{ key: 'facup', node: undefined }, { key: 'eflcup', node: efl }]) === 'eflcup'],
+    ['三個都沒有資料時退回第一個,不回 null',
+      V.defaultCup(morningAfter, [{ key: 'ucl', node: null }, { key: 'facup', node: undefined }]) === 'ucl'],
+    /* rounds 上有 firstKickoff / lastKickoff,收集時不能把它們當成場次 */
+    ['收集場次只認鍵名剛好是 kickoff 的,不誤收 firstKickoff / lastKickoff',
+      V.matchMoments({ rounds: [{ firstKickoff: '2026-01-01T00:00:00Z', lastKickoff: '2026-01-02T00:00:00Z',
+        matches: [{ kickoff: '2026-01-01T12:00:00Z', played: true }] }] }).length === 1],
+  ];
+
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
 async function checkBars() {
   globalThis.document ??= { addEventListener() {} };
   const V = await import('../web/assets/js/core.js');
@@ -1546,7 +1613,7 @@ async function checkDataGap() {
       const src = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
       return /export function cupFixtures/.test(src) && /m\.home\?\.code \|\| m\.away\?\.code/.test(src)
         // 盃賽只走「用開賽時間推」那一半:feed 是英超專用形狀,不能拿它否定盃賽場次
-        && /\[\.\.\.fixtures, \.\.\.cupFixtures\(\)\], live: null/.test(src)
+        && /\[\.\.\.fixtures, \.\.\.cupFixtures\(\), \.\.\.uclFixtures\(\)\], live: null/.test(src)
         // 讀 raw 不是產物:cups.json 不進版控,倉庫那份在 build 之前是舊的
         && /'data', 'raw', 'fotmob-cups'/.test(src);
     })()],
@@ -1564,10 +1631,37 @@ async function checkDataGap() {
         return /state === 'LIVE'/.test(src) && /liveScore/.test(src);
       }))()],
     /* 一場比賽的時間窗只能有一份(進場判斷與盃賽抓取器都要問) */
-    ['比賽時間窗抽成共用的 inMatchWindow,盃賽抓取器不自己寫一份', (() => {
+    ['比賽時間窗抽成共用的 inMatchWindow,盃賽與歐冠抓取器都不自己寫一份', (() => {
       const w = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
-      const c = readFileSync(join(ROOT, 'scripts', 'fetch-fotmob-cups.mjs'), 'utf8');
-      return /export const inMatchWindow/.test(w) && !/LEAD_MIN|TAIL_MIN/.test(c);
+      return /export const inMatchWindow/.test(w)
+        && ['fetch-fotmob-cups.mjs', 'fetch-ucl.mjs'].every(f => {
+          const c = readFileSync(join(ROOT, 'scripts', f), 'utf8');
+          return /import \{ inMatchWindow \}/.test(c) && !/LEAD_MIN|TAIL_MIN/.test(c);
+        });
+    })()],
+    /* 歐冠比賽日(2026-09-09):9/8 那六場 21:00 踢完,而 `npm run ucl` 只掛在 12 小時一次的
+       部署上 —— raw 最後抓的時間是 16:11(六場都還 SCHEDULED),下一次 04:09,
+       於是盃賽頁的預設分頁整整七小時印「已開賽・等待資料」。跟盃賽同三處守著。 */
+    ['進場判斷把歐冠場次也算進去(讀 raw、只認 available 的賽季)', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
+      return /export function uclFixtures/.test(src)
+        && /'data', 'raw', 'football-data'/.test(src)
+        // 拿不到的賽季會落一份 matches: [] 的空殼,收進來只是雜訊
+        && /availability !== 'available'/.test(src);
+    })()],
+    ['歐冠抓取器的 --live 自己守門,而且比賽中不會把整季清空', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'fetch-ucl.mjs'), 'utf8');
+      return /不發任何請求/.test(src)
+        // 2 分鐘一輪的迴圈裡,一次暫時性的 403/404 會把 144 場寫成 []
+        && /if \(LIVE\) continue;/.test(src)
+        // 積分榜不重抓,但要把上一份帶過去 —— 寫成 null 名次會掉回我們自己排的
+        && /standings = prev\?\.standings/.test(src);
+    })()],
+    ['比賽日迴圈會抓歐冠,而且歐冠的 raw 有進提交清單', (() => {
+      const y = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-matchday.yml'), 'utf8');
+      return /npm run ucl:live/.test(y)
+        && /git add -f[^\n]*raw\/football-data\//.test(y)
+        && /diff --quiet[^\n]*raw\/football-data\//.test(y);
     })()],
     /* 西甲賽後報告的鏈(2026-09-08):match-details 那條要從手動跑的陣容快取拿 matchId,
        所以 9/3 SportMonks 退訂後新場次一場都沒有。改成逐場資料也能當來源、抓取器也讀逐場資料。 */

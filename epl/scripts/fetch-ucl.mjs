@@ -26,20 +26,31 @@
  *
  *   npm run ucl            三季(缺的那季會照實記成 notPublished)
  *   npm run ucl -- --force 忽略快取重抓
+ *   npm run ucl -- --live  比賽日迴圈用:只抓有場次在比賽窗內的那一季,TTL 3 分鐘
+ *
+ * --live 是 2026-09-09 加的。原本這一支只掛在 12 小時一次的部署上,於是 9/8 的六場
+ * 21:00 踢完之後,盃賽頁的預設分頁整整七小時印「已開賽・等待資料」—— raw 最後抓的
+ * 時間是 16:11,那時六場都還是 SCHEDULED。--live 自己守門:沒有場次在比賽窗內就
+ * **一個請求都不發**,所以非歐冠夜的成本是零。
  */
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// 比賽窗跟 live-window 共用一份 —— 各寫一份的話,改了一邊另一邊會悄悄用舊門檻
+import { inMatchWindow } from './live-window.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'data', 'raw', 'football-data');
 const TOKEN = process.env.FOOTBALL_DATA_TOKEN;
 const BASE = 'https://api.football-data.org/v4';
 const FORCE = process.argv.includes('--force');
+const LIVE = process.argv.includes('--live');
 const GAP = 7000;            // 免費方案 10 req/分,留餘裕
-const MAX_REQUESTS = 6;
-const TTL_HOURS = 12;
+/* 比賽中只抓賽果、只抓一季,所以一個請求就夠(官方積分榜在 --live 不抓,見下面)。
+   迴圈是 2 分鐘一輪,TTL 3 分鐘 → 實際約每 3 分鐘一個請求,離 10 req/分的上限很遠。 */
+const MAX_REQUESTS = LIVE ? 1 : 6;
+const TTL_HOURS = LIVE ? 3 / 60 : 12;
 const SCHEMA_VERSION = 2;   // 2:多抓官方積分榜(聯賽階段的名次不要用我們自己的同分比較規則)
 
 /* 本站一律用 "2024-25" 這種寫法;football-data.org 的 season 參數是起始年。
@@ -122,7 +133,28 @@ async function main() {
   }
   await mkdir(OUT, { recursive: true });
 
-  for (const s of SEASONS) {
+  /* --live 的守門。**用已經落地的那一份賽程判斷要不要去抓**,所以非歐冠夜是零請求。
+     三季都掃是刻意的:不在這裡寫死「哪一季是本季」—— 過去賽季不可能有場次落在
+     比賽窗內,自然就被排除掉(跟 live-window 的 uclFixtures 同一個道理)。 */
+  let seasons = SEASONS;
+  if (LIVE) {
+    const now = Date.now();
+    const picked = [];
+    for (const s of SEASONS) {
+      const prev = await readStore(join(OUT, `ucl-${s.label}.json`));
+      if (prev?.availability !== 'available') continue;
+      const inWin = (prev.matches ?? []).filter(m => inMatchWindow(now, m.utcDate)).length;
+      if (inWin) picked.push({ ...s, inWin });
+    }
+    if (!picked.length) {
+      console.log('歐冠 --live:沒有場次在比賽窗內,不發任何請求。');
+      return;
+    }
+    seasons = picked;
+    console.log(`歐冠 --live:${picked.map(x => `${x.label} ${x.inWin} 場在窗內`).join('、')}`);
+  }
+
+  for (const s of seasons) {
     const file = join(OUT, `ucl-${s.label}.json`);
     const prev = await readStore(file);
     if (!stale(prev)) {
@@ -152,6 +184,11 @@ async function main() {
 
     if (availability !== 'available') {
       console.log(`  歐冠 ${s.label}:HTTP ${r.status}・${availability}${r.message ? `(${r.message})` : ''}`);
+      /* **--live 一律不寫。** 這個分支會把 matches 寫成 [];在 12 小時一次的部署裡
+         那是對的(下一次就修正回來),但在 2 分鐘一輪的迴圈裡,一次暫時性的 403/404
+         就會把整季 144 場清空、而且可能剛好被下一次 build 讀到 —— 比賽中畫面整個消失。
+         比賽進行中拿不到就維持上一份,下一次再試。 */
+      if (LIVE) continue;
       // 拿不到也要落盤 —— 沒有這一步的話,build 看不到任何線索,
       // 只能在畫面上留一塊空白,而讀者會以為是壞掉
       await writeAtomic(file, {
@@ -170,7 +207,12 @@ async function main() {
        名次直接關係到 1-8 / 9-24 / 25-36 三個分界,猜錯就是把晉級講錯,
        所以名次以官方那份為準,自己算的那份只拿來對帳(鐵則五)。 */
     let standings = null;
-    try {
+    /* --live 不抓積分榜:比賽踢到一半的名次沒有意義,而且那是第二個請求。
+       但**要把上一份帶過去** —— 寫成 null 的話,名次會從官方那份掉回我們自己排的,
+       而聯賽階段 36 隊的同分比較規則我們排不出來(見上面),畫面上的晉級分界會變。 */
+    if (LIVE) {
+      standings = prev?.standings ?? null;
+    } else try {
       const st = await get(`/competitions/CL/standings?season=${s.season}`);
       const total = (st.body?.standings ?? []).find(x => x.type === 'TOTAL');
       if (st.status === 200 && total) {
@@ -185,13 +227,18 @@ async function main() {
       }
     } catch (e) { console.log(`    ⚠ 官方積分榜:${e.message}`); }
 
-    const d = describe(matches);
-    console.log(`  歐冠 ${s.label}:${matches.length} 場`
+    const d = LIVE ? null : describe(matches);
+    if (LIVE) console.log(`  歐冠 ${s.label}:${matches.length} 場`
+      + `・完賽 ${matches.filter(m => m.status === 'FINISHED').length}`
+      + `・進行中 ${matches.filter(m => m.status === 'IN_PLAY' || m.status === 'PAUSED').length}`);
+    else console.log(`  歐冠 ${s.label}:${matches.length} 場`
       + `(完賽 ${matches.filter(m => m.status === 'FINISHED').length})`
       + `・階段 ${Object.entries(d.stages).map(([k, v]) => `${k}×${v}`).join('、')}`);
-    console.log(`    score 欄位:${d.scoreKeys.join('、')}`);
-    console.log(`    duration:${JSON.stringify(d.durations)}`);
-    for (const x of d.samples) console.log(`    樣本 ${x.stage} ${x.home} vs ${x.away} → ${JSON.stringify(x.score)}`);
+    if (d) {
+      console.log(`    score 欄位:${d.scoreKeys.join('、')}`);
+      console.log(`    duration:${JSON.stringify(d.durations)}`);
+      for (const x of d.samples) console.log(`    樣本 ${x.stage} ${x.home} vs ${x.away} → ${JSON.stringify(x.score)}`);
+    }
 
     await writeAtomic(file, {
       source: 'football-data.org', competition: 'CL',

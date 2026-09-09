@@ -150,6 +150,35 @@ export function cupFixtures(root = ROOT) {
   return out;
 }
 
+/* 歐冠的場次也算「有比賽在踢」(2026-09-09)。
+
+   跟盃賽同一個理由,而且更明顯:歐冠場次不在任何一個聯賽的 fixtures.json 裡,
+   而 `npm run ucl` 原本只掛在 12 小時一次的部署上 —— 2026-09-08 那六場 21:00 踢完,
+   raw 最後抓的時間是 16:11(六場都還是 SCHEDULED),下一次抓是隔天 04:09,
+   於是盃賽頁的**預設分頁**整整七小時印「已開賽・等待資料」。那晚迴圈其實有進場,
+   但它進場是因為聯賽盃 —— 只是進去之後沒有人去抓歐冠。
+
+   讀 raw 的理由跟 cupFixtures 一樣:產物要等 build,而這個判斷跑在 build 之前。
+   三季全收沒有壞處 —— 過去賽季的場次 minsSince 早就超過 TAIL_MIN,decideWindow
+   兩邊都不會收(既不算進行中,也不進 upcoming),所以不必在這裡寫死「哪一季是本季」。 */
+export function uclFixtures(root = ROOT) {
+  const dir = join(root, 'data', 'raw', 'football-data');
+  if (!existsSync(dir)) return [];
+  const out = [];
+  for (const f of readdirSync(dir).filter(x => x.startsWith('ucl-') && x.endsWith('.json'))) {
+    let raw;
+    try { raw = JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { continue; }
+    if (raw.availability !== 'available') continue;
+    for (const m of raw.matches ?? []) {
+      if (!m.utcDate) continue;
+      out.push({ kickoff: m.utcDate, played: m.status === 'FINISHED',
+        home: m.homeTeam?.shortName ?? m.homeTeam?.name ?? '?',
+        away: m.awayTeam?.shortName ?? m.awayTeam?.name ?? '?' });
+    }
+  }
+  return out;
+}
+
 export function liveWindow(now = Date.now(), league = 'pl') {
   const cfg = LEAGUES[league];
   if (!cfg) return { active: false, reason: `不認得的聯賽:${league}`, sleepSec: 0 };
@@ -162,13 +191,13 @@ export function liveWindow(now = Date.now(), league = 'pl') {
   if (rawLive && existsSync(rawLive)) {
     try { live = JSON.parse(readFileSync(rawLive, 'utf8')); } catch { /* 檔壞了就退回用開賽時間推 */ }
   }
-  /* 盃賽掛在英超那一條(cups.json 是跨聯賽的一份,放英超目錄)。
-     **盃賽只走「用開賽時間推」那一半** —— live feed 是 FPL 的英超專用形狀,盃賽不在裡面,
-     所以 feed 說「現在 0 場在踢」時不能拿它否定盃賽場次。兩邊任一說要進場就進場。 */
+  /* 盃賽與歐冠掛在英超那一條(cups.json 與 ucl.json 都是跨聯賽的一份,放英超目錄)。
+     **兩者都只走「用開賽時間推」那一半** —— live feed 是 FPL 的英超專用形狀,它們不在裡面,
+     所以 feed 說「現在 0 場在踢」時不能拿它否定這些場次。兩邊任一說要進場就進場。 */
   const byFeed = decideWindow({ now, fixtures, live });
   if (league !== 'pl') return byFeed;
   if (byFeed.active) return byFeed;
-  const byFixtures = decideWindow({ now, fixtures: [...fixtures, ...cupFixtures()], live: null });
+  const byFixtures = decideWindow({ now, fixtures: [...fixtures, ...cupFixtures(), ...uclFixtures()], live: null });
   if (byFixtures.active) return byFixtures;
   // 都不進場:回報比較早的那個喚醒時間
   return (byFixtures.sleepSec || Infinity) <= (byFeed.sleepSec || Infinity) ? byFixtures : byFeed;

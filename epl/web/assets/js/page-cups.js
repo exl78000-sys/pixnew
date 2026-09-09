@@ -1,5 +1,5 @@
-import * as C from './core.js?v=2105010b';
-import { renderUclView } from './ucl-view.js?v=c6be9a89';
+import * as C from './core.js?v=29aae0b0';
+import { renderUclView } from './ucl-view.js?v=b90fdd7a';
 
 const app = document.getElementById('app');
 
@@ -209,14 +209,21 @@ try {
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
-  /* 三個盃賽收成同一頁的頁內分頁。網址帶 ?cup=ucl|facup|eflcup 可以直達;
-     預設歐冠(使用者指定的順序:歐冠、足總盃、聯賽盃)。 */
+  /* 三個盃賽收成同一頁的頁內分頁。網址帶 ?cup=ucl|facup|eflcup 可以直達。
+     **分頁順序**照使用者指定的:歐冠、足總盃、聯賽盃。
+     **預設停在哪一個**則看資料:離現在最近的一場比賽屬於哪個賽事(C.defaultCup 有完整說明)——
+     寫死歐冠的話,聯賽盃之夜的隔天早上打開這一頁會看到歐冠的「等待資料」,
+     而昨晚的五個終場比分在第二個分頁後面,讀者會以為站上沒有盃賽賽果。 */
   const list = cups?.cups ?? [];
   const COMPS = [
     { key: 'ucl', zh: '歐冠' },
     ...list.map(c => ({ key: c.key, zh: c.zh })),
   ];
-  let comp = COMPS.some(c => c.key === C.qs('cup')) ? C.qs('cup') : 'ucl';
+  let comp = COMPS.some(c => c.key === C.qs('cup')) ? C.qs('cup')
+    : C.defaultCup(Date.now(), [
+      { key: 'ucl', node: (shared.ucl?.seasons ?? []).find(s => s.current) },
+      ...list.map(c => ({ key: c.key, node: (c.seasons ?? []).find(s => s.current) })),
+    ]) ?? 'ucl';
 
   app.innerHTML = `
   <div class="page-head">
