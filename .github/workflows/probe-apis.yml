@@ -38,6 +38,14 @@ jobs:
         working-directory: epl
         run: npm run probe:fotmob-cups -- --only=details
 
+      # SportMonks 的 **API** 2026-09-03 退訂了,而西甲球員檔的頭貼是
+      # `cdn.sportmonks.com` 的**靜態圖片網址**(英超是內嵌 base64,不受影響)。
+      # 「API 停了」跟「圖片 CDN 停了」是兩件事 —— 沙箱連不到外網,所以在這裡問。
+      # 只發 12 個 HEAD,而且這些網址本來就印在已部署的西甲球員頁上。
+      - name: 探測球員頭貼的 CDN 還供不供圖(退訂之後)
+        working-directory: epl
+        run: npm run probe:photo-cdn
+
   all:
     if: ${{ github.event.inputs.quick != 'true' }}
     runs-on: ubuntu-latest
