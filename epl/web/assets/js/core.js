@@ -413,8 +413,9 @@ export function playerPhoto(player, size = 34) {
   // 有圖沒圖都必須佔一樣的空間,否則同一張表裡行高會忽高忽低
   const box = `width:${size}px;height:${size}px`;
   if (player.photo) {
+    // data-team 是給「圖載不出來」那條退路用的(見下面的 error 監聽)
     return `<img class="pphoto" src="${player.photo}" alt="${alt}" title="${alt}"
-      loading="lazy" style="${box}">`;
+      ${player.team ? `data-team="${esc(player.team)}"` : ''} loading="lazy" style="${box}">`;
   }
   return `<span class="pphoto fallback" style="${box}" title="${alt}">${badge(player.team)}</span>`;
 }
@@ -450,10 +451,14 @@ export function playerChip(p, { size = 20, fallback = 'none' } = {}) {
     ? `<button class="player-name-btn" type="button" data-player-code="${esc(code)}"
          aria-label="查看 ${nm} 球員資料">${nm}</button>`
     : nm;
-  const photo = p?.photo ?? photoFor(code);
+  /* **點擊的身分與查頭貼的鍵是兩件事,不能混。** 西甲的事件只有 FotMob 的 `playerId`,
+     拿它當 `data-player-code` 的話,點下去會找一個站內不存在的球員 —— 現在是純文字(不可點),
+     那是對的。所以頭貼另外走 photoKey,`code` 維持原樣。 */
+  const photo = p?.photo ?? photoFor(code) ?? photoFor(p?.photoKey);
   const box = `width:${size}px;height:${size}px`;
   const pic = photo
-    ? `<img class="pphoto chip" src="${esc(photo)}" alt="" loading="lazy" style="${box}">`
+    ? `<img class="pphoto chip" src="${esc(photo)}" alt="" loading="lazy" style="${box}"
+        ${fallback === 'crest' && p?.team ? `data-team="${esc(p.team)}"` : ''}>`
     : fallback === 'crest' && p?.team
       ? `<span class="pphoto chip fallback" style="${box}">${badge(p.team)}</span>` : '';
   return `<span class="player-chip">${pic}${label}</span>`;
@@ -896,6 +901,27 @@ const closeDrawer = () => {
 // Esc 只綁一次。綁在重建抽屜的分支裡的話,每換一次頁就多一個監聽器,
 // 而且舊的那個關的是已經被移除的節點 —— 越積越多又都沒作用。
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+/* 頭貼載不出來時的退路(2026-09-09)。
+
+   西甲的頭貼是**遠端網址**(SportMonks CDN),不是內嵌的 base64 —— 圖被下架、CDN 不通、
+   讀者的網路擋掉,任何一種都會在畫面上留一個破圖框。**破圖框比沒有圖糟**:
+   讀者會以為站壞了,而這一頁其他地方都好好的。
+
+   用 capture 階段監聽:`error` 事件**不會冒泡**,只有 capture 抓得到。
+   一條涵蓋全站所有 `.pphoto`(包含球員頁本來就有的那些)。
+   有 data-team 的退回隊徽(尺寸不變、行高不跳);沒有的整個拿掉 —— 比賽事件那幾列本來就有隊徽。 */
+document.addEventListener('error', e => {
+  const img = e.target;
+  if (!(img instanceof HTMLImageElement) || !img.classList?.contains('pphoto')) return;
+  const code = img.dataset.team;
+  if (!code) { img.remove(); return; }
+  const span = document.createElement('span');
+  span.className = `pphoto${img.classList.contains('chip') ? ' chip' : ''} fallback`;
+  span.style.cssText = img.style.cssText;
+  span.innerHTML = badge(code);
+  img.replaceWith(span);
+}, true);
+
 
 export function drawer(title, html) {
   // 換頁後舊節點會被移除,這裡要偵測並重建,否則抽屜開不起來
@@ -947,6 +973,44 @@ export function bindPlayerLinks(root, resolvePlayer = null, options = {}) {   //
   root.addEventListener('keydown', root.__playerLinkKeydown);
 }
 
+/* 西甲的頭貼要靠「當季 + 隊碼 + 背號」才接得起來(2026-09-09)。
+
+   **為什麼不能直接用 id**:西甲的賽後報告來自 FotMob,球員用 FotMob id(如 592412);
+   站內的球員檔是 Understat code + SportMonks id。兩邊**沒有任何共同的 id**,
+   而球員檔裡確實有 727 張頭貼 —— 拿不到不是因為沒有圖,是因為沒有對照表。
+
+   **背號是可以當鍵的,姓名不行。** 同一隊同一季的背號是唯一的(實測當季 427 人裡
+   381 組唯一、只有 1 組撞號);而姓名配對這個站已經出過事(Gustavo Nunes 配到 Matheus Nunes)。
+   所以:**背號當鍵、姓名當守門**。實測 1,426 筆對得到,其中 **10 筆姓名對不起來** ——
+   那 10 筆是季中背號換人(`Diego Rico(OSA #15)` 會拿到 `Raul Moro` 的臉),一律不採用。
+
+   球員檔含兩季,所以要先收斂到當季 —— 不收斂的話撞號會從 1 組變成 265 組。 */
+const photoNameTokens = s => String(s ?? '')
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  .split(/[^a-z]+/).filter(x => x.length > 2);
+
+export function shirtPhotoIndex(players) {
+  const list = Array.isArray(players) ? players : [];
+  const seasons = [...new Set(list.map(p => p?.season).filter(Boolean))].sort();
+  const cur = seasons.at(-1);
+  const byShirt = new Map();
+  for (const p of list) {
+    if (!cur || p?.season !== cur || p?.squadNumber == null || !p?.team || !p?.photo) continue;
+    const k = `${p.team}|${p.squadNumber}`;
+    byShirt.set(k, byShirt.has(k) ? null : p);   // 撞號的整組作廢,不挑一個
+  }
+  return byShirt;
+}
+
+export function photoByShirt(index, { team, shirt, name } = {}) {
+  if (!index || team == null || shirt == null) return null;
+  const hit = index.get(`${team}|${shirt}`);
+  if (!hit?.photo) return null;
+  // 姓名只當守門:對不起來就當作沒查到(季中背號換人)
+  const a = photoNameTokens(name), b = photoNameTokens(hit.name);
+  return a.some(x => b.includes(x)) ? hit.photo : null;
+}
+
 // 賽後報告為了壓小資料檔沒有重複儲存 base64 頭貼；開頁時再依 code 與球員庫合併。
 export function reportWithPlayerPhotos(m, players) {
   if (!m?.sides) return m;
@@ -954,14 +1018,24 @@ export function reportWithPlayerPhotos(m, players) {
     ...(p?.code != null ? [[String(p.code), p]] : []),
     ...(p?.sportmonksId != null ? [[String(p.sportmonksId), p]] : []),
   ]));
-  const decorate = p => {
+  /* 背號索引只在傳進來的是「原始球員清單」時建得起來(需要 season / squadNumber / team)。
+     傳 Map 進來的呼叫端拿不到這一條 —— 那是英超,它本來就用 code 對得到。 */
+  const byShirt = shirtPhotoIndex(Array.isArray(players) ? players : []);
+  const decorate = (p, teamCode = null) => {
     if (!p) return p;
     // 賽後報告保留供應商 providerId；球員主檔則同時有 Understat code
     // 與 SportMonks sportmonksId。兩者都能找到時，統一回傳網站內部 code，
     // 讓頭貼與 data-player-code 點擊都能回到同一個球員詳情。
     const full = p.code != null ? byCode.get(String(p.code))
       : p.providerId != null ? byCode.get(String(p.providerId)) : null;
-    return { ...p, code: p.code ?? full?.code ?? null, photo: p.photo ?? full?.photo ?? null };
+    // id 對不到時才走背號(西甲);英超走不到這裡,它的 code 本來就對得到
+    const photo = p.photo ?? full?.photo
+      ?? photoByShirt(byShirt, { team: p.team ?? teamCode, shirt: p.shirt, name: p.name });
+    /* **把接到的頭貼註冊起來。** 事件時間軸只有 `playerId`(沒有 shirt、也沒有 code),
+       而 playerId 就是這裡的 providerId —— 實測 719 筆有 id 的事件裡 717 筆對得到名單。
+       不註冊的話,同一場比賽的評分表有頭貼、事件卻沒有,而且看不出為什麼。 */
+    if (photo && p.providerId != null) registerPlayerPhotos([[String(p.providerId), photo]]);
+    return { ...p, code: p.code ?? full?.code ?? null, photo: photo ?? null };
   };
   // 防線：即使使用者的 reports.json 仍是修正前的快取，也不准把一隊失球數
   // 複製成每位球員的 ⚽。事件兩隊合計能對回終場比分時，事件是唯一的射手來源；
@@ -1009,11 +1083,13 @@ export function reportWithPlayerPhotos(m, players) {
     };
   };
   const safeSides = Object.fromEntries(Object.entries(m.sides).map(([code, source]) => [code, reconcileSide(code, source)]));
-  const side = s => ({
+  /* **不要寫 `.map(decorate)`** —— map 會把 index 當成第二個參數傳進去,
+     而第二個參數是隊碼。隊碼是背號索引的一半,拿到 0/1/2 就永遠查不到。 */
+  const side = (s, code = null) => ({
     ...s,
-    xi: (s.xi ?? []).map(decorate),
-    bench: (s.bench ?? []).map(decorate),
-    rows: s.rows?.map(row => row.map(decorate)) ?? null,
+    xi: (s.xi ?? []).map(p => decorate(p, code)),
+    bench: (s.bench ?? []).map(p => decorate(p, code)),
+    rows: s.rows?.map(row => row.map(p => decorate(p, code))) ?? null,
   });
   // 賽後陣容卡的 `sides` 是已對過終場比分／事件的發布層；細項表原始
   // `advanced.players` 可能來自較舊的供應商快取。用發布層覆寫位置、進球、
@@ -1027,7 +1103,7 @@ export function reportWithPlayerPhotos(m, players) {
       teamCode, list.map(p => {
         const published = publishedPlayer.get(String(p.providerId));
         return {
-          ...decorate(p), team: teamCode,
+          ...decorate(p, teamCode), team: teamCode,
           ...(published ? {
             pos: published.pos,
             goals: { ...(p.goals ?? {}), total: published.goals, assists: published.assists },
@@ -1038,7 +1114,7 @@ export function reportWithPlayerPhotos(m, players) {
   } : null;
   return {
     ...m,
-    sides: Object.fromEntries(Object.entries(safeSides).map(([code, s]) => [code, side(s)])),
+    sides: Object.fromEntries(Object.entries(safeSides).map(([code, s]) => [code, side(s, code)])),
     ...(advanced ? { advanced } : {}),
   };
 }
@@ -1147,7 +1223,7 @@ export function matchReportCards(m, { order = null } = {}) {
     const eventIcon = type => ({ Goal: '⚽', Card: '▰', subst: '↔', Var: 'VAR' }[type] ?? '•');
     const eventType = type => ({ Goal: '進球', Card: '牌', subst: '換人', Var: 'VAR' }[type] ?? type ?? '事件');
     // 跟官方時間軸同一個小卡;這一列也已經有隊名,所以一樣不補隊徽
-    const eventPlayer = e => playerChip({ name: e.player, code: e.playerCode, team: e.team }, { size: 20 });
+    const eventPlayer = e => playerChip({ name: e.player, code: e.playerCode, photoKey: e.playerId, team: e.team }, { size: 20 });
     /* FotMob 的 comments 有時候是 `{ localizedKey, defaultText }` 而不是字串,
        直接 esc() 會在畫面上印「**[object Object]**」—— 三個聯賽合計 57 列(2026-09-09 數的),
        每一列都是牌事件的原因(Dangerous play 之類)。**不拋錯,只是印垃圾**,
@@ -1277,7 +1353,7 @@ export function matchReportCards(m, { order = null } = {}) {
       const rated = d?.coverage?.ratings === true && Object.values(d.players ?? {}).some(l => l?.some(p => p.rating != null));
       const topBy = code => [...(d?.players?.[code] ?? [])].filter(p => p.rating != null && (p.minutes ?? 0) > 0)
         .sort((a, b) => b.rating - a.rating).slice(0, 3)
-        .map(p => `<div class="stat-line"><span class="small">${playerChip({ ...p, team: p.team ?? code }, { size: 24, fallback: 'crest' })}
+        .map(p => `<div class="stat-line"><span class="small">${playerChip({ ...p, team: p.team ?? code, photoKey: p.providerId }, { size: 24, fallback: 'crest' })}
           <span class="dim tiny">${esc(p.pos && p.pos !== '?' ? p.pos : '')} ${p.minutes ?? '—'}'</span></span><b class="pill ${p.rating >= 7.5 ? 'accent' : 'info'} mono">${fx(p.rating, 1)}</b></div>`).join('');
       const src = d?.source === 'sportmonks' ? 'SportMonks' : d?.source === 'fotmob' ? 'FotMob' : 'API-Football';
       return `<div class="card"><h3>${rated ? `本場最佳(${src} 評分)` : '本場最佳(FPL 表現分)'}</h3>

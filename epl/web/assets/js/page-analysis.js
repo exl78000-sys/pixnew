@@ -1,4 +1,4 @@
-import * as C from './core.js?v=babcae32';
+import * as C from './core.js?v=0af1da92';
 
 const app = document.getElementById('app');
 
@@ -265,7 +265,7 @@ try {
       ${probCurveCard(f)}
       ${opinionSections(f, expertRows)}
       ${articleCard(postArt, '賽後結論', 'post')}
-      ${postReport ? C.matchReportCards(C.reportWithPlayerPhotos(postReport, playerByCode))
+      ${postReport ? C.matchReportCards(C.reportWithPlayerPhotos(postReport, players))
         : '<div class="note">這場尚未取得逐球員與實際 xG 資料，因此目前只能對照最終比分與賽前機率。</div>'}
     </section>` : ''}
     ${C.foot(meta)}`;
@@ -282,7 +282,7 @@ try {
   function renderBasicMatch(f) {
     const report = reportFor(f);
     // 賽後那七張卡現在分四段畫,頭貼只投影一次就好(每段各投影一次是白做工)
-    const rep = report ? C.reportWithPlayerPhotos(report, playerByCode) : null;
+    const rep = report ? C.reportWithPlayerPhotos(report, players) : null;
     const expertRows = expertsFor(f);
     const lineup = official?.matches?.[`${f.home}|${f.away}`] ?? null;
     const H = teamBy.get(f.home), A = teamBy.get(f.away);

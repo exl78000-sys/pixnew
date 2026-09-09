@@ -1268,8 +1268,57 @@ async function checkPlayerChip() {
     console.log(`  · 英超官方事件的 playerCode 在球員檔找得到:${coverage}(只回報,不擋)`);
   }
 
+  /* 西甲走的是背號那一條。同樣只回報 —— 覆蓋率會隨球員檔與背號更新而變動,
+     拿它當紅線就是「把會隨資料變動的數字當 CI 紅線」那條坑。 */
+  const esPlayers = join(ROOT, 'web', 'data', 'leagues', 'es1', 'players.json');
+  const esReports = join(ROOT, 'web', 'data', 'leagues', 'es1', 'reports.json');
+  if (existsSync(esPlayers) && existsSync(esReports)) {
+    const raw = JSON.parse(readFileSync(esPlayers, 'utf8'));
+    const ix = V.shirtPhotoIndex(raw.players ?? raw);
+    const reps = JSON.parse(readFileSync(esReports, 'utf8'));
+    let tot = 0, got = 0;
+    for (const m of Object.values(reps.reports ?? {})) {
+      for (const [code, list] of Object.entries(m.advanced?.players ?? {})) {
+        for (const pl of list) {
+          tot++;
+          if (V.photoByShirt(ix, { team: code, shirt: pl.shirt, name: pl.name })) got++;
+        }
+      }
+    }
+    console.log(`  · 西甲賽後名單靠背號接到頭貼:${got} / ${tot}(只回報,不擋)`);
+  }
+
+  /* 西甲的頭貼靠「當季 + 隊碼 + 背號」接(FotMob id 與站內 code 之間沒有對照表)。
+     這幾條守的是**那一條接法本身**,不需要網路。 */
+  const roster = [
+    { season: '2026-27', team: 'OSA', squadNumber: 15, name: 'Raul Moro', photo: 'p-moro' },
+    { season: '2026-27', team: 'OSA', squadNumber: 9, name: 'Ante Budimir', photo: 'p-budimir' },
+    { season: '2026-27', team: 'RAC', squadNumber: 8, name: 'André Almeida', photo: 'p-almeida' },
+    { season: '2026-27', team: 'RAC', squadNumber: 8, name: '撞號的另一個人', photo: 'p-x' },
+    { season: '2025-26', team: 'OSA', squadNumber: 15, name: '上一季的 15 號', photo: 'p-old' },
+    { season: '2026-27', team: 'OSA', squadNumber: 7, name: '沒有頭貼的人' },
+  ];
+  const idx = V.shirtPhotoIndex(roster);
+  const byShirt = (team, shirt, name) => V.photoByShirt(idx, { team, shirt, name });
+
   const cases = [
     ['有頭貼就畫頭貼', /<img class="pphoto chip"/.test(withPhoto) && withPhoto.includes('base64,AAA')],
+    ['背號接得到當季的人', byShirt('OSA', 9, 'Ante Budimir') === 'p-budimir'],
+    /* 球員檔含兩季。不收斂到當季的話,撞號會從 1 組變成 265 組(實測) */
+    ['只收當季 —— 上一季的同號不會被拿來用', byShirt('OSA', 15, '上一季的 15 號') === null],
+    ['撞號的整組作廢,不挑一個', byShirt('RAC', 8, 'André Almeida') === null],
+    /* 這一條是真實案例:季中背號換人,不擋的話 Diego Rico 會拿到 Raul Moro 的臉。
+       實測 1,426 筆對得到的裡面有 10 筆是這種 —— **對錯人比對不到糟得多** */
+    ['姓名對不起來就當作沒查到(季中背號換人)', byShirt('OSA', 15, 'Diego Rico') === null],
+    ['姓名對得起來才給', byShirt('OSA', 15, 'Raul Moro') === 'p-moro'],
+    ['沒有頭貼的人不算對到', byShirt('OSA', 7, '沒有頭貼的人') === null],
+    /* 點擊的身分與查頭貼的鍵是兩件事:西甲事件只有 FotMob id,拿它當 data-player-code
+       會連到一個站內不存在的球員 */
+    ['photoKey 只用來查頭貼,不會變成可點的身分', (() => {
+      V.registerPlayerPhotos([['fm-999', 'data:image/png;base64,CCC']]);
+      const c = V.playerChip({ name: 'Lemar', photoKey: 'fm-999', team: 'ARS' });
+      return c.includes('base64,CCC') && !/player-name-btn|data-player-code/.test(c);
+    })()],
     ['registerPlayerPhotos 也吃 Map 與球員物件', V.photoFor('c2') === 'data:image/png;base64,BBB'],
     /* 比賽事件那一列本來就有隊徽 —— 沒頭貼時再補一個,同一個徽章會在同一列印兩次 */
     ['沒頭貼而且不補位時,只有名字(不留空格子、也不重複印隊徽)',
