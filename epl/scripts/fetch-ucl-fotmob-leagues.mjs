@@ -36,7 +36,13 @@ const FORCE = process.argv.includes('--force');
 const MAX_REQUESTS = 20;
 const TTL_HOURS = 6;
 
-const fotmobSeason = s => { const y = Number(s.slice(0, 4)); return `${y}/${y + 1}`; };
+/* 賽季字串。**不是每個聯賽都是秋春制** —— 挪威超與哈薩克超是春秋制(三月開打、
+   年底結束),FotMob 的賽季字串是曆年 `2026`,不是 `2026/2027`。
+   不分的話那兩個聯賽一份都抓不到,而且只是安靜地少兩個目錄、不報錯。 */
+const fotmobSeason = (label, lg) => {
+  const y = Number(label.slice(0, 4));
+  return lg?.calendarYear ? String(y) : `${y}/${y + 1}`;
+};
 
 const seasonsFrom = (start, current) => {
   const y0 = Number(start.slice(0, 4)), y1 = Number(current.slice(0, 4));
@@ -87,7 +93,7 @@ async function main() {
     if (reqs >= MAX_REQUESTS) continue;
 
     await mkdir(dir, { recursive: true });
-    const url = `${BASE}/api/data/leagues?id=${lg.fotmobId}&ccode3=${lg.ccode3}&season=${encodeURIComponent(fotmobSeason(season))}`;
+    const url = `${BASE}/api/data/leagues?id=${lg.fotmobId}&ccode3=${lg.ccode3}&season=${encodeURIComponent(fotmobSeason(season, lg))}`;
     let j;
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(25000),
@@ -102,7 +108,7 @@ async function main() {
     /* 驗一:回來的是不是我要的那一季。盃賽上實測過帶 season 會回最新那季 ——
        不驗就把上季存成本季,而且畫面完全正常。 */
     const got = j.details?.selectedSeason ?? null;
-    const want = fotmobSeason(season);
+    const want = fotmobSeason(season, lg);
     if (got && String(got) !== want) {
       console.log(`  ✗ ${lg.zh} ${season}:要 ${want}、回的是 ${got} —— 不覆蓋既有快取`);
       refused++; continue;

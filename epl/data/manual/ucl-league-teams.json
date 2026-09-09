@@ -10,17 +10,23 @@
     "所以逐筆寫死,而且每一筆都要標 league —— 只有隊名沒有聯賽的話撞名還是會發生。"
   ],
   "_source": "隊名字串取自 npm run probe:ucl-coverage 的實際輸出(2026-09-09 runner 上跑的),不是憑印象寫的",
+  "_calendarYear": [
+    "挪威超與哈薩克超是**春秋制**(三月開打、年底結束),賽季字串是曆年 `2026`,不是 `2026/2027`。",
+    "第一次抓的時候沒分,那兩個聯賽的本季一份都沒落地 —— 而且**只是安靜地少兩個目錄**,不報錯。",
+    "證據不是憑印象:同一份探測裡,九月時挪威已完賽 152/240、哈薩克 190/240,",
+    "而秋春制的那些只有 20~54 —— 進度本身就說明了它們的賽季早就開打。"
+  ],
   "_schema": "fullName 是 football-data 的正式全名(ucl.json 的 clubs[].fullName);league 是本表 leagues 的 key;fotmob 是 FotMob 該聯賽賽程裡的隊名,逐字元相同",
   "leagues": [
     { "key": "be1", "zh": "比利時甲", "en": "First Division A", "fotmobId": 40, "ccode3": "BEL" },
-    { "key": "no1", "zh": "挪威超", "en": "Eliteserien", "fotmobId": 59, "ccode3": "NOR" },
+    { "key": "no1", "zh": "挪威超", "en": "Eliteserien", "fotmobId": 59, "ccode3": "NOR", "calendarYear": true },
     { "key": "tr1", "zh": "土超", "en": "Süper Lig", "fotmobId": 71, "ccode3": "TUR" },
     { "key": "sco1", "zh": "蘇超", "en": "Premiership", "fotmobId": 64, "ccode3": "SCO" },
     { "key": "gr1", "zh": "希臘超", "en": "Super League 1", "fotmobId": 135, "ccode3": "GRE" },
     { "key": "az1", "zh": "亞塞拜然超", "en": "Premier League", "fotmobId": 262, "ccode3": "AZE" },
     { "key": "rs1", "zh": "塞爾維亞超", "en": "Super Liga", "fotmobId": 182, "ccode3": "SRB" },
     { "key": "hr1", "zh": "克羅埃西亞甲", "en": "HNL", "fotmobId": 252, "ccode3": "CRO" },
-    { "key": "kz1", "zh": "哈薩克超", "en": "Premier League", "fotmobId": 225, "ccode3": "KAZ" },
+    { "key": "kz1", "zh": "哈薩克超", "en": "Premier League", "fotmobId": 225, "ccode3": "KAZ", "calendarYear": true },
     { "key": "dk1", "zh": "丹麥超", "en": "Superligaen", "fotmobId": 46, "ccode3": "DEN" },
     { "key": "cy1", "zh": "賽普勒斯甲", "en": "1. Division", "fotmobId": 136, "ccode3": "CYP" },
     { "key": "at1", "zh": "奧地利甲", "en": "Bundesliga", "fotmobId": 38, "ccode3": "AUT" },
