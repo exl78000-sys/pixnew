@@ -4410,11 +4410,26 @@ function checkUcl() {
          沒有評分的球隊之後,實測 219 場。低於 200 就是有東西掉了 —— 
          最可能的原因是又只讀了 leagueMatches(聯賽階段)而漏掉淘汰賽。 */
       ok(m.pool.bridges >= 200, '歐冠橋的場次沒有掉(淘汰賽也收進來了)', `bridges=${m.pool.bridges}`);
-      ok(m.pool.leagues.length === 8, '池子裡是八個聯賽',
-        m.pool.leagues.map(l => `${l.key}:${l.played}`).join(' '));
-      ok(m.pool.leagues.every(l => l.played > 500),
-        '每個聯賽都有夠多的賽果(少於 500 場代表某一季的快取沒抓到)',
-        m.pool.leagues.map(l => `${l.key}:${l.played}`).join(' '));
+      /* 池子分兩層,兩層的紅線不一樣:
+         **核心八個**(openfootball)是骨幹,四季齊全、每個都該有幾百場 —— 少了就是快取沒抓到;
+         **FotMob 那十六個**是分批補的(每次部署最多 20 個請求),所以場次會由少變多,
+         拿場次當紅線會在補完之前一直紅,而紅久了就沒有人看(那條坑本站踩過)。 */
+      const CORE = ['pl', 'es1', 'en2', 'de1', 'it1', 'fr1', 'nl1', 'pt1'];
+      const core = m.pool.leagues.filter(l => CORE.includes(l.key));
+      ok(core.length === 8, '核心八個聯賽都在池子裡',
+        core.map(l => l.key).join(' '));
+      ok(core.every(l => l.played > 500),
+        '核心八個聯賽每個都有夠多的賽果(少於 500 場代表某一季的快取沒抓到)',
+        core.map(l => `${l.key}:${l.played}`).join(' '));
+      ok(m.pool.leagues.every(l => l.played > 0),
+        '池子裡沒有「有目錄卻一場都沒有」的聯賽',
+        m.pool.leagues.filter(l => !l.played).map(l => l.key).join(' '));
+      /* 一份快取都沒有的聯賽**只回報不擋** —— 補完之前本來就會有。
+         但要印出來,不然它只是安靜地從清單消失(挪威/哈薩克春秋制那次)。 */
+      console.log(`  · 跨聯賽評分:${m.pool.leagues.length} 個聯賽在池子裡`
+        + `・還沒有快取的 ${m.pool.missingLeagues.length}`
+        + (m.pool.missingLeagues.length ? `(${m.pool.missingLeagues.join('、')})` : '')
+        + `(分批補,只回報不擋)`);
 
       /* **鐵則三:沒有評分就不給預測,不給一個猜的數字。** */
       const rated = new Set(Object.keys(m.ratings));

@@ -15,10 +15,20 @@
  *
  * 走查回測:每一場只用該場**之前**的比賽算評分,再預測。
  *
- *   池化 Elo          RPS 0.2227
- *   基準線(這批比賽的實際 H/D/A 分佈)RPS 0.2376  ← 對基準線有利,故意的
- *   改善 0.0149,大過成對標準誤的兩倍 → 通過
- *   兩季各自看也都贏(2024-25、2025-26),不是靠某一季
+ *   首次驗收(2026-09-09,只有 openfootball 那八個聯賽,25/36 隊有評分):
+ *     池化 Elo 0.2227 / 基準線 0.2376,改善 0.0149 ± 0.0061(2.4 SE)→ 通過
+ *   接上 FotMob 那十六個聯賽之後(34/36 隊):
+ *     0.2107 / 0.2371,改善 0.0265 ± 0.0058(4.6 SE),回測樣本 219 → 350 場
+ *
+ * 基準線用**這批比賽自己的** H/D/A 分佈 —— 那對基準線有利(它偷看了答案),
+ * 贏過它才算數。兩季各自看也都贏,不是靠某一季。
+ *
+ * **上面是當時的量測紀錄,不是現況。** 現況每次 build 都會重算並寫進
+ * `web/data/ucl-elo.json` 的 `model`,畫面上顯示的是那一份 ——
+ * 不要把這裡的數字當成現在的值,也不要為了對齊而回頭改它們。
+ *
+ * 涵蓋率提高之後 RPS 反而下降是預期內的:新加的場次含大量「強隊對弱隊」,
+ * 比原本那批(只有大聯賽互打)好預測。**這代表原本那個數字偏悲觀,不是模型變好了。**
  *
  * ## 量過而**沒有通過**的兩個修正 —— 不要再加回來
  *
@@ -36,14 +46,18 @@
  *
  * ## 界線(鐵則三)
  *
- * openfootball 只涵蓋八個聯賽,所以歐冠 36 隊裡有一批**沒有評分**:
- * 比利時、挪威、土耳其、蘇格蘭、希臘、瑞士、克羅埃西亞、烏克蘭、捷克、
- * 奧地利、斯洛伐克、塞爾維亞、賽普勒斯、丹麥、哈薩克、亞塞拜然。
- * **那些場次不給預測**,不是給一個猜的數字。
- * 實測:已完賽 384 場裡兩隊都有評分的 222 場(57.8%);
- * 掛不回的 21 個隊名**全部**來自沒有涵蓋的聯賽,一個都不是隊名寫法對不上。
+ * openfootball 只涵蓋八個聯賽。**另外十六個走 FotMob**(2026-09-09 探測證實全部都有),
+ * 對照走人工表 `data/manual/ucl-league-teams.json` —— **不用寬鬆比對**:
+ * 探測的隊名清單證實希臘 `Olympiacos` 與賽普勒斯 `Olympiakos Nicosia`、
+ * 希臘 `AEK Athens` 與賽普勒斯 `AEK Larnaca` 會撞,自動比對會靜靜挑一個。
+ *
+ * 這十六個聯賽的球隊身分**帶聯賽前綴**(`fmId`),既有八個維持裸隊名 ——
+ * 理由見 `fmId` 那一段。
+ *
+ * **對不上的仍然不給預測**,不是給一個猜的數字(鐵則三)。
+ * 哪些聯賽一份快取都沒有會記在產物的 `pool.missingLeagues`,空陣列才是正常。
  */
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadMatches } from './adapters/openfootball.mjs';
 import { buildElo, eloProbs } from './elo.mjs';
@@ -64,6 +78,26 @@ export const POOL_LEAGUES = [
   { key: 'en2', zh: '英冠', dir: 'openfootball-championship' },
   ...UCL_LEAGUES.map(l => ({ key: l.key, zh: l.zh, dir: join('openfootball-ucl', l.key) })),
 ];
+
+/* openfootball 沒有的那十六個聯賽走 FotMob,對照表是**人工的**
+   (`data/manual/ucl-league-teams.json`)。不用寬鬆比對:探測的隊名清單證實
+   希臘 `Olympiacos` 與賽普勒斯 `Olympiakos Nicosia`、希臘 `AEK Athens` 與
+   賽普勒斯 `AEK Larnaca` 正規化之後都會撞,自動比對會靜靜挑一個。 */
+export function fotmobLeagueMap(root) {
+  const p = join(root, 'data', 'manual', 'ucl-league-teams.json');
+  if (!existsSync(p)) return { leagues: [], byFullName: new Map() };
+  const j = JSON.parse(readFileSync(p, 'utf8'));
+  return { leagues: j.leagues ?? [], byFullName: new Map((j.teams ?? []).map(t => [t.fullName, t])) };
+}
+
+/* 這十六個聯賽的球隊身分**加上聯賽前綴**。
+   理由是撞名:探測實際看到 `Olympiacos`(希臘)與 `Olympiakos Nicosia`(賽普勒斯)、
+   `Slovan Bratislava`(斯洛伐克)與 `Slovan Liberec`(捷克)。加前綴之後
+   兩支不同的球隊不可能共用一個評分,連「正規化之後剛好一樣」的風險都沒有。
+
+   既有八個聯賽維持裸隊名 —— 那是**刻意的**:英超與英冠共用隊名,
+   升降級時球隊帶著評分換池,那是我們要的橋。這十六個一國只有一級,沒有那種移動。 */
+const fmId = (lgKey, name) => `${lgKey}:${name}`;
 
 const seasonsFrom = (start, current) => {
   const y0 = Number(start.slice(0, 4)), y1 = Number(current.slice(0, 4));
@@ -134,6 +168,44 @@ export function poolMatches(root, ucl) {
     perLeague.push({ key: lg.key, zh: lg.zh, played: got, total: seen });
   }
 
+  /* openfootball 沒有的那十六個(FotMob)。抓取器自己驗過賽季與對照表,
+     這裡只讀落地的快取 —— 沒抓到的聯賽就是沒有,不影響其他聯賽。 */
+  const fm = fotmobLeagueMap(root);
+  /* 對照表裡有、卻**一份快取都沒有**的聯賽要報出來。
+     不報的話它只是安靜地從 perLeague 消失,而畫面上只是少幾支球隊的預測 ——
+     實際踩過:挪威與哈薩克是春秋制,賽季字串不同,第一次抓一份都沒落地而完全沒有跡象。 */
+  const fmMissing = [];
+  for (const lg of fm.leagues) {
+    let got = 0, seen = 0;
+    for (const season of seasons) {
+      const file = join(root, 'data', 'raw', 'fotmob-ucl-leagues', lg.key, `${season}.json`);
+      if (!existsSync(file)) continue;
+      let j; try { j = JSON.parse(readFileSync(file, 'utf8')); } catch { continue; }
+      for (const m of (j.matches ?? [])) {
+        if (!m.home || !m.away) continue;
+        const h = fmId(lg.key, m.home), a = fmId(lg.key, m.away);
+        leagueOf.set(h, lg.key); leagueOf.set(a, lg.key); seen += 1;
+        if (!m.finished || !Array.isArray(m.score) || m.score.length !== 2) continue;
+        matches.push({ season, date: m.date, home: h, away: a, fh: m.score[0], fa: m.score[1], played: true, comp: lg.key });
+        got += 1;
+      }
+    }
+    if (seen) perLeague.push({ key: lg.key, zh: lg.zh, played: got, total: seen });
+    else fmMissing.push(lg.zh);
+  }
+
+  /* 歐冠球隊 → 池子裡的身分。兩條路:
+     一、八個 openfootball 聯賽:`fullName` 精確命中隊名(本來就一字不差)。
+     二、十六個 FotMob 聯賽:走**人工對照表**,身分帶聯賽前綴。
+     兩條都對不上就是沒有評分 —— 不猜(鐵則三)。 */
+  const idOf = fullName => {
+    if (leagueOf.has(fullName)) return fullName;
+    const t = fm.byFullName.get(fullName);
+    if (!t) return null;
+    const id = fmId(t.league, t.fotmob);
+    return leagueOf.has(id) ? id : null;
+  };
+
   // 歐冠:跨聯賽的橋。掛不回聯賽賽果的球隊整場不收(鐵則三)
   let bridges = 0;
   const unrated = new Map();
@@ -141,15 +213,15 @@ export function poolMatches(root, ucl) {
     for (const raw of uclSeasonMatches(s)) {
       const m = uclPoolMatch(raw, s.label);
       if (!m) continue;
-      const h = leagueOf.has(m.home), a = leagueOf.has(m.away);
+      const h = idOf(m.home), a = idOf(m.away);
       if (!h) unrated.set(raw.home?.name ?? m.home, (unrated.get(raw.home?.name ?? m.home) ?? 0) + 1);
       if (!a) unrated.set(raw.away?.name ?? m.away, (unrated.get(raw.away?.name ?? m.away) ?? 0) + 1);
       if (!h || !a) continue;
-      matches.push(m); bridges += 1;
+      matches.push({ ...m, home: h, away: a }); bridges += 1;
     }
   }
   matches.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-  return { matches, leagueOf, perLeague, bridges, seasons,
+  return { matches, leagueOf, perLeague, bridges, seasons, idOf, fmMissing,
     unrated: [...unrated].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([name, n]) => ({ name, n })) };
 }
 
@@ -237,9 +309,12 @@ export function uclElo(root, ucl) {
   for (const m of seasonMatches) {
     for (const side of ['home', 'away']) {
       const c = m[side]; if (!c?.id || ratings[String(c.id)]) continue;
-      const r = elo.get(c.fullName);
+      /* 走跟橋**同一個** idOf —— 各寫一份的話,某個聯賽在橋那邊接得起來、
+         在掛評分這邊接不起來,而畫面上只是少幾場預測,不會報錯。 */
+      const id = pool.idOf(c.fullName);
+      const r = id ? elo.get(id) : null;
       if (!r) continue;
-      ratings[String(c.id)] = { elo: round(r.elo, 1), league: pool.leagueOf.get(c.fullName) ?? null, name: c.name ?? c.fullName };
+      ratings[String(c.id)] = { elo: round(r.elo, 1), league: pool.leagueOf.get(id) ?? null, name: c.name ?? c.fullName };
       rated.add(String(c.id));
     }
   }
@@ -266,7 +341,10 @@ export function uclElo(root, ucl) {
     source: 'openfootball + football-data.org',
     poolStart: POOL_START,
     seasons: pool.seasons,
-    pool: { matches: pool.matches.length, bridges: pool.bridges, teams: elo.size, leagues: pool.perLeague },
+    pool: { matches: pool.matches.length, bridges: pool.bridges, teams: elo.size, leagues: pool.perLeague,
+      /* 對照表裡有、卻一份快取都沒有的聯賽。空陣列才是正常 —— 有東西代表抓取那邊有問題,
+         而症狀只會是「少幾支球隊的預測」,不會報錯。 */
+      missingLeagues: pool.fmMissing },
     model: bt,
     ratings,
     fixtures,
