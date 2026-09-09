@@ -1550,12 +1550,19 @@ async function checkDataGap() {
       if (!hasFeedField) console.log('      cups.json 沒有 liveFeed 欄位');
       if (missing) console.log(`      小檔漏了本季 ${missing} 場`);
       if (smaller > bigger / 4) console.log(`      小檔沒有小多少:${smaller} vs ${bigger}`);
-      /* 兩個檔要有**同一個** builtAt:前端靠它擋「小檔比 cups.json 舊」的情況 ——
-         小檔走 raw(讀倉庫那份),倉庫那份可能比部署上去的舊,不擋就會拿昨晚的
-         「進行中 1-0」蓋掉今天的「終場 2-1」,而畫面看起來完全正常。 */
-      const sameStamp = !!cups.builtAt && cups.builtAt === live.builtAt;
-      if (!sameStamp) console.log(`      builtAt 對不起來:${cups.builtAt} vs ${live.builtAt}`);
-      return hasFeedField && missing === 0 && smaller < bigger / 4 && sameStamp;
+      /* 小檔**不可以比 cups.json 舊**。前端靠 builtAt 擋「拿昨晚的『進行中 1-0』蓋掉
+         今天的『終場 2-1』」,而擋下去就等於這條通道沒有作用。
+
+         **第一版寫成「兩個 builtAt 必須相同」,而那條在倉庫裡撐不過一次部署**
+         (2026-09-09 紅出來):`epl-live.yml` 的回寫清單有 cups-live.json、**沒有** cups.json
+         (那份 1 MB,故意不回寫),所以每次部署完倉庫裡的小檔就比 cups.json 新。
+         部署上去的那一份兩者當然同一次建置 —— 但這裡讀的是倉庫,不是部署產物。
+         斷言只能守「在倉庫這個狀態下必須成立」的事:小檔比較新是正常的,比較舊才是壞的。 */
+      const t = x => Date.parse(x ?? '');
+      const notStale = Number.isFinite(t(cups.builtAt)) && Number.isFinite(t(live.builtAt))
+        && t(live.builtAt) >= t(cups.builtAt);
+      if (!notStale) console.log(`      小檔比 cups.json 舊(這條通道會被前端擋掉):${live.builtAt} < ${cups.builtAt}`);
+      return hasFeedField && missing === 0 && smaller < bigger / 4 && notStale;
     })()],
     ['盃賽頁與總覽都走共用的覆蓋函式,而且盃賽頁用 pageInterval 輪詢(不是裸 setInterval)', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
