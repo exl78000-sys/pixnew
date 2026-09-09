@@ -62,6 +62,7 @@
     "cups:fetch": "node scripts/fetch-fotmob-cups.mjs",
     "cups:live": "node scripts/fetch-fotmob-cups.mjs --live",
     "ucl": "node scripts/fetch-ucl.mjs",
+    "ucl:live": "node scripts/fetch-ucl.mjs --live",
     "cup-crests": "node scripts/fetch-cup-crests.mjs",
     "competition-logos": "node scripts/fetch-competition-logos.mjs",
     "tiers": "node scripts/fetch-tiers.mjs",
