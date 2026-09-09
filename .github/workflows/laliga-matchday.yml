@@ -93,6 +93,12 @@ jobs:
             else
               (cd epl && npm run laliga:build >/dev/null 2>&1) || true
               (cd epl && npm run en2:build >/dev/null 2>&1) || true
+              # 這兩支只跑聯賽 build,不跑 `build` —— 而資產戳是 `build` 最後的 stamp-assets
+              # 寫進**每個**聯賽 meta.json 的。少了這一步,倉庫裡 es1 與 en2 的 meta 從比賽夜
+              # 到下一次部署之間都沒有戳,`npm test` 的「meta 記的戳跟實際檔案一致」在那段時間的
+              # 任何一個 checkout 上都會紅。CI 剛好每次都在 build 之後才測,所以一直沒被看見。
+              # stamp 只讀內容雜湊,HTML 與 JS 已經是戳過的就不會被動到(實測 0 檔案 0 頁)。
+              (cd epl && npm run stamp >/dev/null 2>&1) || true
               git add -f epl/data/raw/fotmob-la-liga/scores.json epl/data/raw/fotmob-championship/scores.json \
                 epl/data/raw/sportmonks-la-liga/finals.json \
                 epl/data/live-history-la-liga.json \

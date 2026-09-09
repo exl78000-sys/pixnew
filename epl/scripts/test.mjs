@@ -3571,7 +3571,9 @@ function checkAssetStamps() {
      所以同一次瀏覽裡可能一頁新、一頁舊。對不上就重載一次(core.js 的 checkStale)。
      這幾條守著 meta 裡的戳跟實際檔案對得起來 —— 對不上的話,
      每一次開頁都會白白重載一次。 */
-  for (const f of ['meta.json', join('leagues', 'es1', 'meta.json')]) {
+  /* 英冠是後來加的,一開始漏在這個清單外 —— 於是它的 meta 少了戳三個月沒有人知道
+     (2026-09-09 才由西甲那兩條紅出來)。新增聯賽時這裡要跟著加。 */
+  for (const f of ['meta.json', join('leagues', 'es1', 'meta.json'), join('leagues', 'en2', 'meta.json')]) {
     const path = join(W, 'data', f);
     if (!existsSync(path)) continue;
     const m = JSON.parse(readFileSync(path, 'utf8'));
