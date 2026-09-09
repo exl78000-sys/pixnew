@@ -123,6 +123,10 @@ async function main() {
     const names = [...new Set(ms.flatMap(m => [m.home?.name, m.away?.name]).filter(Boolean))];
     console.log(`  ${zh}(${cc}):${pick.name} id=${pick.id} → ${ms.length} 場・已完賽 ${done}・${names.length} 隊`
       + (cands.length > 1 ? `(另有 ${cands.length - 1} 個候選:${cands.slice(1, 4).map(c => c.name).join('、')})` : ''));
+    /* **整隊名單一定要印出來。** 對不上的多半不是「沒有這支球隊」而是譯名不同
+       (`Slavia Praha` vs `Slavia Prague`、`Olympiakos` vs `Olympiacos`),
+       而對照表只能照著真實隊名建 —— 憑印象寫一個「應該是這樣」的對照就是編資料。 */
+    console.log(`      ${names.sort().join(' | ')}`);
     for (const n of names) {
       if (!found.has(norm(n))) found.set(norm(n), { league: `${zh}/${pick.name}`, raw: n });
       const l = loose(n);
