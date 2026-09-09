@@ -2050,15 +2050,21 @@ export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = f
 export function uclCompareRows(h, a) {
   if (!h || !a) return [];
   const rate = (n, p) => (p > 0 ? n / p : null);
+  /* **一場都還沒踢的時候,場均是「沒有」不是 0。** 積分榜的 ppg / avgGF 在 p=0 時給 0,
+     照著印出來會變成「這一隊主場場均得分 0.00」—— 讀者會讀成「主場很爛」,
+     而事實是**還沒踢過主場**。球季剛開始時這一定會遇到:實測 2026-27 第 1 輪,
+     Como 1907 還沒踢過主場、RB Leipzig 還沒踢過客場,那一列印出 0.00 vs 0.00。
+     這是「0 是一個看起來很像答案的數字」那條坑,`versus` 對 null 會印「—」。 */
+  const per = (v, p) => (p > 0 ? v : null);
   return [
     { label: '聯賽名次', h: h.pos, a: a.pos, digits: 0, better: 'low', hint: '各自聯賽裡的名次' },
-    { label: '場均得分', h: h.ppg, a: a.ppg, digits: 2, better: 'high' },
-    { label: '每場進球', h: h.avgGF, a: a.avgGF, digits: 2, better: 'high' },
-    { label: '每場失球', h: h.avgGA, a: a.avgGA, digits: 2, better: 'low' },
+    { label: '場均得分', h: per(h.ppg, h.p), a: per(a.ppg, a.p), digits: 2, better: 'high' },
+    { label: '每場進球', h: per(h.avgGF, h.p), a: per(a.avgGF, a.p), digits: 2, better: 'high' },
+    { label: '每場失球', h: per(h.avgGA, h.p), a: per(a.avgGA, a.p), digits: 2, better: 'low' },
     /* 這一場是誰主誰客是已知的,所以比的是**會實際發生的那一半**:
        主隊的主場成績 vs 客隊的客場成績。比兩邊的全場平均會把主客場優勢洗掉。 */
-    { label: '主場 / 客場 場均得分', h: h.home?.ppg, a: a.away?.ppg, digits: 2, better: 'high',
-      hint: '主隊只算主場、客隊只算客場' },
+    { label: '主場 / 客場 場均得分', h: per(h.home?.ppg, h.home?.p), a: per(a.away?.ppg, a.away?.p),
+      digits: 2, better: 'high', hint: '主隊只算主場、客隊只算客場' },
     { label: '零封場次比例', h: rate(h.cleanSheets, h.p), a: rate(a.cleanSheets, a.p),
       digits: 0, unit: '%', better: 'high' },
   ].map(r => (r.unit === '%' ? { ...r, h: r.h == null ? null : r.h * 100, a: r.a == null ? null : r.a * 100 } : r));

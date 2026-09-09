@@ -17,6 +17,7 @@ import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
 import { europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
 import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './lib/knowledge.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
+import { uclStandings } from './lib/ucl-standings.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
@@ -1184,6 +1185,9 @@ async function main() {
       await write('ucl', ucl);
       // 說明見 build.mjs 的同一段;這一份跟英超產出的必須逐位元組相同
       await write('ucl-teams', await uclTeamAssets(ROOT, ucl));
+      // 跟 build.mjs 呼叫同一個函式,產出必須逐位元組相同(npm test 有一條守著)
+      const uclStand = uclStandings(ROOT, ucl);
+      if (uclStand) await write('ucl-standings', uclStand);
       const avail = ucl.seasons.filter(x => x.availability === 'available');
       console.log(`  歐冠:${avail.length} 季可用(${avail.map(x => x.label).join('、')})`);
     }

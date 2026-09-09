@@ -25,6 +25,7 @@ import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
 import { summariseSeason } from './lib/cups.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
+import { uclStandings } from './lib/ucl-standings.mjs';
 import { lookupTier, nearMisses } from './lib/adapters/england-tiers.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
@@ -1303,6 +1304,17 @@ async function main() {
          隊徽也只出現一半。內容與 build-laliga 產出的必須逐位元組相同。 */
       const assets = await uclTeamAssets(ROOT, ucl);
       await write('ucl-teams.json', assets);
+      /* 歐冠賽前對比要用的三個聯賽積分榜(德甲/義甲/法甲)。跟 ucl-teams 一樣是**跨聯賽一份**,
+         兩個 build 各產一次、內容必須逐位元組相同 —— 所以裡面刻意沒有時間戳。 */
+      const standings = uclStandings(ROOT, ucl);
+      if (standings) {
+        await write('ucl-standings.json', standings);
+        console.log(`  歐冠對比用的聯賽積分榜:${standings.leagues.map(l => `${l.zh} ${l.played}/${l.total}`).join('、')}`
+          + `・掛回歐冠球隊 ${standings.matched} 隊・對不上 ${standings.unmatched.length} 隊`
+          + (standings.unmatched.length ? `(${standings.unmatched.join('、')})` : ''));
+      } else {
+        console.log('  歐冠對比用的聯賽積分榜:沒有快取(需要 npm run ucl:leagues),這次不產出');
+      }
       console.log(`  歐冠球隊名字與隊徽(跨聯賽一份):${assets.known}/${assets.codesInUcl} 個隊碼認得`
         + `・有隊徽 ${assets.teams.filter(t => t.crest).length}`);
       for (const s of ucl.seasons) {

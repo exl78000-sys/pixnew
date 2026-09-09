@@ -1248,8 +1248,10 @@ async function checkUclCompare() {
   const V = await import('../web/assets/js/core.js');
   const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
   const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
-  const h = { pos: 2, p: 10, ppg: 2.1, avgGF: 2.3, avgGA: 0.9, cleanSheets: 5, home: { ppg: 2.4 }, away: { ppg: 1.8 } };
-  const a = { pos: 5, p: 10, ppg: 1.7, avgGF: 1.6, avgGA: 1.2, cleanSheets: 3, home: { ppg: 2.0 }, away: { ppg: 1.4 } };
+  const h = { pos: 2, p: 10, ppg: 2.1, avgGF: 2.3, avgGA: 0.9, cleanSheets: 5,
+    home: { p: 5, ppg: 2.4 }, away: { p: 5, ppg: 1.8 } };
+  const a = { pos: 5, p: 10, ppg: 1.7, avgGF: 1.6, avgGA: 1.2, cleanSheets: 3,
+    home: { p: 5, ppg: 2.0 }, away: { p: 5, ppg: 1.4 } };
   const rows = V.uclCompareRows(h, a);
   const by = l => rows.find(r => r.label === l);
 
@@ -1275,6 +1277,29 @@ async function checkUclCompare() {
       const r = V.uclCompareRows({ ...h, p: 0, cleanSheets: 0 }, a);
       return r.find(x => x.label === '零封場次比例')?.h === null;
     })()],
+    /* 積分榜的 ppg 在 0 場時給 0,照著印會變成「主場場均得分 0.00」——
+       讀者讀成「主場很爛」,而事實是還沒踢過主場。實測 2026-27 第 1 輪就遇到
+       (Como 1907 還沒踢過主場)。這是「0 是一個看起來很像答案的數字」那條坑。 */
+    ['還沒踢過主場的隊,那一列是「沒有」不是 0', (() => {
+      const r = V.uclCompareRows({ ...h, home: { p: 0, ppg: 0 } }, a);
+      return r.find(x => x.label === '主場 / 客場 場均得分')?.h === null;
+    })()],
+    ['真的踢過而拿 0 分的,照實印 0(跟「還沒踢過」要分得出來)', (() => {
+      const r = V.uclCompareRows({ ...h, home: { p: 1, ppg: 0 } }, a);
+      return r.find(x => x.label === '主場 / 客場 場均得分')?.h === 0;
+    })()],
+    /* 階段 B:只有積分榜的三個聯賽也算「有資料」,不然加了等於沒加 */
+    ['兩種來源都算數:本站聯賽的隊碼,或只有積分榜的 byTeamId',
+      /const statsFor = t =>/.test(view) && /standings\?\.byTeamId/.test(view)
+      && /const comparable = m => !m\?\.played && !!statsFor\(m\?\.home\) && !!statsFor\(m\?\.away\)/.test(view)],
+    ['只有積分榜的球隊不給球隊頁連結(連過去是空頁)',
+      /registered\(t\?\.code\) \? C\.name\(t\.code\) : \(t\?\.name/.test(view)],
+    /* 解析與計算都用共用函式:openfootball 的比分有兩種格式,自己數會數錯 */
+    ['積分榜走共用的 adapter 與 buildTable,不自己解析比分', (() => {
+      const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'ucl-standings.mjs'), 'utf8');
+      return /from '\.\/adapters\/openfootball\.mjs'/.test(lib) && /from '\.\/table\.mjs'/.test(lib)
+        && !/score\.ft/.test(lib);
+    })()],
     /* **這一條是這張表的重點**:歐冠沒有勝率預測,所以對比裡一個模型輸出都不能有。
        Elo / 實力值 / 勝率任何一個進來,讀者就會拿兩把不同的尺相減。 */
     ['對比裡沒有任何模型輸出(Elo / 實力 / 勝率)',
@@ -1282,9 +1307,8 @@ async function checkUclCompare() {
     ['界線有寫在畫面上:不是同一把尺、沒有勝率預測',
       /不是同一把尺/.test(view) && /這裡沒有勝率預測/.test(view)],
     ['樣本太小要講(球季剛開始時場均數字還會大幅變動)', /樣本很小/.test(view)],
-    /* 兩隊都認得才給按鈕 —— 一欄空著就是留一個永遠空白的欄位(鐵則三) */
-    ['只有兩隊都在本站資料裡才給對比按鈕',
-      /const comparable = m =>[^;]*registered\(m\?\.home\?\.code\)[^;]*registered\(m\?\.away\?\.code\)/.test(view)],
+    /* 兩隊都要有資料才給按鈕 —— 一欄空著就是留一個永遠空白的欄位(鐵則三)。
+       階段 B 之後「有資料」多了一種來源(只有積分榜的三個聯賽),條件見下面那條。 */
     /* 兩個聯賽的 table.json 各約 100 KB,而整頁只有一兩場用得到 */
     ['聯賽積分榜是展開時才載入,不是開頁就抓',
       /slot\.dataset\.done/.test(view) && /await renderCompare/.test(view)],
@@ -4257,6 +4281,53 @@ function checkUcl() {
 
   ok(ucl.teamCodeConflicts?.length === 0, '沒有兩支歐冠球隊對到同一個隊碼',
     JSON.stringify(ucl.teamCodeConflicts ?? []));
+
+  /* ── 歐冠對比用的三個聯賽積分榜(德甲/義甲/法甲,2026-09-09 階段 B)──
+     **不是接了三個新聯賽**:只抓賽果、只算積分榜、只給歐冠那一頁用,
+     導覽列不掛、球隊也點不進去。這一組守著它別漂成「看起來像有那三個聯賽」。 */
+  {
+    const ap = join(W, 'data', 'ucl-standings.json');
+    const bp = join(W, 'data', 'leagues', 'es1', 'ucl-standings.json');
+    if (!existsSync(ap)) {
+      console.log('  · 沒有 ucl-standings.json(需要 npm run ucl:leagues),這一節略過');
+    } else {
+      ok(existsSync(bp), '兩個聯賽都產出了 ucl-standings.json');
+      ok(readFileSync(ap, 'utf8') === readFileSync(bp, 'utf8'),
+        '英超與西甲的 ucl-standings.json 逐位元組相同(跨聯賽只能有一份)');
+      const st = JSON.parse(readFileSync(ap, 'utf8'));
+      /* 逐位元組相同的前提是裡面**沒有時間戳** —— 兩個 build 跑在不同秒數 */
+      ok(!JSON.stringify(st).includes('builtAt') && !JSON.stringify(st).includes('retrievedAt'),
+        'ucl-standings.json 裡沒有時間戳(不然兩個 build 永遠不會相同)');
+      ok(st.source === 'openfootball', '積分榜來源是 openfootball(跟三個聯賽同一個來源、同一個 adapter)', st.source);
+
+      /* 掛回歐冠球隊只認**精確的 fullName**。模糊比對會靜靜對錯球隊 ——
+         這個站在盃賽頁踩過兩次(AFC Liverpool / Bournemouth FC)。 */
+      const curU = (ucl.seasons ?? []).find(x => x.current);
+      const byId = new Map();
+      const walkU = v => {
+        if (Array.isArray(v)) { for (const x of v) walkU(x); return; }
+        if (!v || typeof v !== 'object') return;
+        if (v.id != null && typeof v.fullName === 'string') byId.set(String(v.id), v);
+        for (const x of Object.values(v)) walkU(x);
+      };
+      walkU(curU);
+      const wrong = Object.entries(st.byTeamId ?? {})
+        .filter(([id, r]) => byId.get(id)?.fullName !== r.name)
+        .map(([id, r]) => `${byId.get(id)?.fullName ?? id} != ${r.name}`);
+      ok(wrong.length === 0, '每一筆都是 fullName 精確命中(沒有模糊比對)', wrong.slice(0, 3).join('、'));
+      ok(Object.values(st.byTeamId ?? {}).every(r => !r.code),
+        '只有積分榜的球隊不帶本站隊碼(帶了就會有人拿去連結,而連過去是空頁)');
+      /* p=0 時場均是「沒有」不是 0 —— 前端靠 home.p / away.p 分辨,所以那個欄位要留著 */
+      ok(Object.values(st.byTeamId ?? {}).every(r => r.home?.p != null && r.away?.p != null),
+        '主客場都留著場次數(場均在 0 場時是 0,跟「還沒踢過」是兩件事)');
+
+      const msU = curU?.leagueMatches ?? [];
+      const bothU = msU.filter(m => (m.home?.code || st.byTeamId?.[String(m.home?.id)])
+        && (m.away?.code || st.byTeamId?.[String(m.away?.id)])).length;
+      console.log(`  · 歐冠本季可做賽前對比的場次:${bothU} / ${msU.length}`
+        + `(掛回 ${st.matched} 隊・這三個聯賽以外的 ${st.unmatched.length} 隊沒有,只回報)`);
+    }
+  }
 
   /* ── 歐冠頁的名字與隊徽是跨聯賽的一份 ──
      以前名字與隊徽是查「目前這個聯賽的 clubs.json」,而兩份 clubs 的隊碼

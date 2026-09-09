@@ -169,6 +169,14 @@ jobs:
         continue-on-error: true
 
       # 官方賽程狀態(延期/取消)+ 本站自建改期歷史。同一個 token、每次 2 個請求。
+
+      # 歐冠賽前對比要用的三個聯賽積分榜(德甲/義甲/法甲)。**不是接三個新聯賽** ——
+      # 只抓賽果、只算積分榜、只給歐冠那一頁用,導覽列不掛、球隊也點不進去。
+      # 排在抓歐冠之後:它要看 ucl.json 才知道本季是哪一季。靜態檔、三個請求。
+      - name: 抓歐冠球隊所屬聯賽的賽果(對比用)
+        working-directory: epl
+        continue-on-error: true
+        run: npm run ucl:leagues
       - name: 抓官方賽程狀態
         working-directory: epl
         run: npm run schedule:status

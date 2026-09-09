@@ -9,7 +9,12 @@
 不能只改程式、靠 commit message 代替文件。
 
 **已經是三個聯賽**:英超(根目錄的資料集)、西甲(`web/data/leagues/es1/`)、
-英冠(`web/data/leagues/en2/`)。新增聯賽的做法看 `scripts/build-championship.mjs`
+英冠(`web/data/leagues/en2/`)。
+
+**德甲 / 義甲 / 法甲不算「第四五六個聯賽」。** 2026-09-09 加的只有它們的**積分榜**
+(`web/data/ucl-standings.json`,3 KB),而且只給歐冠那一頁的賽前對比用 ——
+沒有球員層、沒有 xG、沒有預測,**導覽列不掛、球隊點不進去**。
+要把它們做成完整聯賽是另一件事,照 `build-championship.mjs` 那條路走。新增聯賽的做法看 `scripts/build-championship.mjs`
 與 `scripts/test-championship.mjs` —— 那是最新也最小的一份,而且它的檔頭寫了
 「這個聯賽做不到什麼、為什麼」,那一段比程式本身重要。
 
