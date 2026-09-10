@@ -240,7 +240,8 @@ function predictionBlock(m) {
       <div class="tiny dim" style="margin-top:8px">把八個聯賽的賽果與歐冠場次餵進<b>同一個評分池</b>算出來的 ——
         歐冠場次就是把各聯賽接起來的橋。用的是本站聯賽預測那一套 Elo,<b>沒有為歐冠調過任何係數</b>。
         ${md ? `走查回測 ${md.n} 場:模型 ${md.rps}、基準線 ${md.baseline},改善 ${md.improvement} ± ${md.se}。` : ''}
-        <b>樣本只有兩季多</b>,而且能回測的都是兩隊都有評分的場次 —— 比整體偏向大聯賽的對戰。</div>
+        <b>樣本只有兩季多</b>,而且能回測的都是兩隊都有評分的場次 —— 比整體偏向大聯賽的對戰。
+        完整的驗證、涵蓋率與界線在<a href="${C.link('model')}">模型驗證頁</a>。</div>
     </div>`;
 }
 

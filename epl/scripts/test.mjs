@@ -3324,11 +3324,47 @@ async function checkDataGap() {
        實測 AVL vs ARS 19:00 開球、迴圈 19:00 整收工,整場零輪詢;
        而 decideWindow 當下回的是 active:true —— 問題在外層那道
        `!= "true"`:管線任何閃失都被當成「比賽都結束了」。 */
-    /* CI 紅了要通知(2026-09-04):失敗開 ci-failure Issue、成功關掉;permissions 要有 issues: write */
-    ['部署 workflow 失敗會開 Issue、成功會關(notify job)', (() => {
-      const w = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
-      return /^  notify:\n    needs: \[build, deploy\]\n    if: always\(\)/m.test(w) && /issues: write/.test(w)
-        && /labels: \['ci-failure'\]/.test(w) && /state: 'closed'/.test(w) && /listJobsForWorkflowRun/.test(w);
+    /* CI 紅了要通知(2026-09-04 建立、2026-09-10 抽成可重用):
+       失敗開 Issue、成功關掉。抽出來的理由是**另外三支排程 workflow 原本一聲都不吭** ——
+       比賽日迴圈、西甲即時、每日外電紅了沒有人會知道,而它們都是無人看顧的排程。
+       複製三份的話改一份另外三份會悄悄過期(姓名配對那條坑),所以邏輯只有一份。 */
+    ['CI 失敗通知:邏輯只有一份(notify-ci.yml),失敗開 Issue、成功關', (() => {
+      const w = readFileSync(join(ROOT, '..', '.github', 'workflows', 'notify-ci.yml'), 'utf8');
+      return /workflow_call/.test(w) && /issues: write/.test(w) && /actions: read/.test(w)
+        && /issues\.create\(/.test(w) && /state: 'closed'/.test(w)
+        /* 標籤要**帶呼叫端的識別字** —— 幾支共用一個 ci-failure 的話,
+           一支還紅著、另一支跑成功就會把它關掉。 */
+        && /`ci:\$\{key\}`/.test(w)
+        /* 判定只看呼叫端傳進來的 needs 結論;讀逐步結果是加分項,
+           失敗了不可以把整個通知帶走(CI 紅了反而更沒有人知道)。 */
+        && /JSON\.parse\(process\.env\.RESULTS/.test(w) && /catch \(e\)/.test(w);
+    })()],
+    ['四支排程 workflow 都接上失敗通知,而且 needs 涵蓋自己的每一個 job', (() => {
+      const WFS = ['epl-live.yml', 'epl-matchday.yml', 'laliga-matchday.yml', 'laliga-news-daily.yml'];
+      return WFS.every(f => {
+        const w = readFileSync(join(ROOT, '..', '.github', 'workflows', f), 'utf8');
+        if (!/^  notify:$/m.test(w)) return false;
+        if (!/uses: \.\/\.github\/workflows\/notify-ci\.yml/.test(w)) return false;
+        if (!/if: always\(\)/.test(w)) return false;
+        // 判定要用呼叫端自己的 needs 結論,不是讓被呼叫的那支去猜
+        if (!/results: \$\{\{ toJSON\(needs\) \}\}/.test(w)) return false;
+        /* **needs 要列齊** —— 漏掉一個 job 的話那個 job 紅了不會有人知道,
+           而畫面上(Actions 頁)看起來一切正常。 */
+        /* **只掃 `jobs:` 底下** —— `on:` 底下的 `workflow_dispatch:` / `schedule:`
+           縮排一模一樣,整份掃會把它們也當成 job,然後這條永遠紅。 */
+        const body = w.slice(w.indexOf('\njobs:\n'));
+        const jobs = [...body.matchAll(/^  ([a-z][a-z0-9_-]*):$/gm)].map(m => m[1]).filter(j => j !== 'notify');
+        const needs = (/^  notify:[\s\S]*?needs: \[([^\]]*)\]/m.exec(w) ?? [])[1] ?? '';
+        const listed = needs.split(',').map(x => x.trim()).filter(Boolean);
+        return jobs.every(j => listed.includes(j));
+      });
+    })()],
+    /* 抽出來就不可以留舊的複本。留著的話兩份會分岔,而分岔的症狀是
+       「有一支 workflow 的通知行為跟別人不一樣」—— 沒有人會發現。 */
+    ['沒有第二份通知邏輯(其他 workflow 不自己開 Issue)', (() => {
+      const dir = join(ROOT, '..', '.github', 'workflows');
+      const others = readdirSync(dir).filter(f => f.endsWith('.yml') && f !== 'notify-ci.yml');
+      return others.every(f => !/issues\.create\(|listJobsForWorkflowRun/.test(readFileSync(join(dir, f), 'utf8')));
     })()],
     ['比賽日迴圈:判斷不出還有沒有比賽時要繼續跑,不能當成結束', (() => {
       const wfs = ['epl-matchday.yml', 'laliga-matchday.yml']
@@ -4547,6 +4583,42 @@ function checkUcl() {
       const done = new Set(uclSeasonMatches((ucl.seasons ?? []).find(x => x.current) ?? {})
         .filter(x => x.played).map(x => x.id));
       ok(m.fixtures.every(f => !done.has(f.id)), '已完賽的場次沒有預測');
+
+      /* ── 產物要把「事實」講清楚,不要留給前端自己推 ──
+         模型頁要講「哪些聯賽只註冊球隊、不收賽果」。從 `played === 0` 反推的話,
+         模式一換(例如改收 N 季)推法就靜靜過期,而畫面完全正常。 */
+      ok(m.pool.leagues.every(l => typeof l.results === 'boolean'),
+        '每個聯賽都標了 results(域內賽果有沒有進池子)',
+        m.pool.leagues.filter(l => typeof l.results !== 'boolean').map(l => l.key).join(' ') || '全部都有');
+      ok(m.pool.leagues.some(l => l.results === false),
+        'bridge 模式下有聯賽是「只註冊、不收賽果」',
+        `${m.pool.leagues.filter(l => l.results === false).length} 個`);
+      ok(m.pool.fotmobMode === 'bridge', '產物記著現行的池子組態', String(m.pool.fotmobMode));
+
+      /* 「沒有評分」有兩種,意義完全不同,而**前端分不出來**:
+         `unmapped` 是對照表接不上(本站的 bug,要修),
+         `no-bridge` 是接得上但還沒踢過歐冠(等比賽就好)。
+         沒有這個欄位的話,畫面只能二選一講,講錯就是誤導讀者。 */
+      ok(m.coverage.unrated.every(x => x.reason === 'unmapped' || x.reason === 'no-bridge'),
+        '沒有評分的球隊都標了原因(對照表接不上 vs 還沒踢過歐冠)',
+        m.coverage.unrated.map(x => `${x.name}:${x.reason}`).join('、') || '(沒有)');
+      /* `unmapped` 是**本站的問題**,只回報不擋 —— 擋的話新球隊進歐冠就會紅,
+         而那時候要修的是對照表,不是這條測試。 */
+      const unmapped = m.coverage.unrated.filter(x => x.reason === 'unmapped');
+      if (unmapped.length) {
+        console.log(`  · 跨聯賽對照表接不上 ${unmapped.length} 支球隊`
+          + `(${unmapped.map(x => x.name).join('、')})——要補 data/manual/ucl-league-teams.json`);
+      }
+
+      /* ── 量測紀錄跟著產物走,前端不要自己抄一份 ──
+         `rejected` 與 `poolTrials` 是**紀錄**(當時量的),模型頁直接讀。
+         前端另抄一份的話,改了 lib 這邊那邊會悄悄過期 —— 姓名配對那條坑同一個道理。 */
+      ok((m.rejected ?? []).length >= 2 && m.rejected.every(r => r.gain != null && r.se != null && r.why),
+        '產物帶著「測過沒通過的修正」與它們的數字(給模型頁讀)',
+        (m.rejected ?? []).map(r => `${r.name} ${r.gain}±${r.se}`).join('、'));
+      ok((m.poolTrials ?? []).length >= 3 && m.poolTrials.some(t => t.passes === false),
+        '產物帶著「收不收域內賽果」的三次量測(含沒通過的那一次)',
+        (m.poolTrials ?? []).map(t => `${t.gain}±${t.se}${t.passes ? '' : '(沒過)'}`).join('、'));
     }
   }
 
@@ -4574,6 +4646,35 @@ function checkUcl() {
     ok(/FOTMOB_MODE = 'bridge'/.test(src),
       '十六個聯賽維持「只註冊、不收域內賽果」(驗收通過的那個配置)',
       (/FOTMOB_MODE = '([^']+)'/.exec(src) ?? [])[1]);
+  }
+
+  /* ── 模型頁要講得出歐冠那個模型 ──
+     站上有**兩個**模型(域內 + 跨聯賽),而模型頁一度只講域內那一個 ——
+     歐冠頁掛著上百場預測,讀者在唯一該講出處的那一頁一個字都查不到。
+     而且最後一句還寫死著「本站目前只做聯賽」,那句在階段 C 之後就是假的。
+     這一組守著:講了、資料從產物來、而且三個聯賽都看得到。 */
+  {
+    const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-model.js'), 'utf8');
+    ok(/跨聯賽評分|歐冠/.test(src), '模型頁講到歐冠那個模型');
+    /* **一律從 pl 讀**:這是跨聯賽的產物,英冠沒有自己的一份。
+       寫成 C.league() 的話整節會從英冠的模型頁靜靜消失(不報錯)。 */
+    ok(/loadFrom\('pl', \['ucl-elo'\]\)/.test(src),
+      '模型頁的 ucl-elo 從 pl 讀(英冠沒有自己的一份,寫 C.league() 會靜靜消失)');
+    /* 數字一個都不准寫死在前端 —— 產物已經帶著它們了(rejected / poolTrials / model)。
+       抄一份的話改了 lib/ucl-elo.mjs 這邊會悄悄過期,而畫面完全正常。 */
+    const hard = ['0.0009', '0.0030', '0.0063', '0.0149', '0.0265', '0.0285', '0.2082', '0.2368', '0.2349']
+      .filter(n => src.includes(n));
+    ok(hard.length === 0, '模型頁沒有把跨聯賽模型的數字寫死(全部從產物讀)', hard.join(' '));
+    /* **要掃的是進畫面的字串,不是註解** —— 這一段的註解本來就在講那句話,
+       不剝掉的話這條測試永遠紅,而紅的原因跟它想守的事一點關係都沒有。
+       (`**強調**` 那條掃描器踩過同一個坑,所以那邊也是先剝再掃。) */
+    const clean = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    ok(!/本站目前只做聯賽/.test(clean),
+      '模型頁不再寫「本站目前只做聯賽」(跨聯賽評分上線之後那句是假的)');
+
+    /* 歐冠頁要接得到模型頁 —— 有預測而查不到出處,正是這個站唯一不該出現的狀況。 */
+    const uv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
+    ok(/link\('model'\)/.test(uv), '歐冠的勝率區塊連得到模型驗證頁');
   }
 
   /* ── 歐冠頁的名字與隊徽是跨聯賽的一份 ──

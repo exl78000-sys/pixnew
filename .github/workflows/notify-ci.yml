@@ -1,0 +1,120 @@
+# CI 紅了要**主動通知** —— 抽成可重用的 workflow(2026-09-10)
+#
+# 為什麼是「抽出來」而不是「每支各寫一份」:
+# 這段邏輯原本只有 `epl-live.yml` 有,另外三支排程 workflow 失敗時**一聲都不吭**。
+# 直接複製三份的話,改了一份另外三份會悄悄過期 —— 本專案在姓名配對上踩過那個坑
+# (`verify-loans.mjs` 與 `lib/loans.mjs` 各一份,修好一份、實際掛到球員身上的
+# 那一份仍在對錯人)。所以連 `epl-live.yml` 自己也改成呼叫這一份,倉庫裡只有一份。
+#
+# **為什麼不掛在 `probe-apis.yml` 上:** 那支是 workflow_dispatch 的手動探測,
+# 失敗本來就是它要回答的問題,而人就在旁邊看 log。替它開 Issue 只會製造雜訊,
+# 而「紅久了就沒有人看」比不檢查更糟(那條坑寫在 CLAUDE.md 的 docs:check 那一列)。
+#
+# ## 判定與細節分兩條路,而且**不互相依賴**
+#
+# 判定紅不紅一律看呼叫端傳進來的 `results`(`toJSON(needs)`)—— 那是 GitHub
+# 自己算的 job 結論,不會錯。是**哪一步**紅的則去讀這次執行的 jobs:可重用
+# workflow 跟呼叫端**共用同一個 run id**,所以 `context.runId` 就是呼叫端那次執行。
+#
+# 讀 jobs 這一段是「講得更清楚」的加分項,失敗了不可以把整個通知帶走 ——
+# CI 紅了反而更沒有人知道,那是最糟的結果。所以它包在 try 裡,判定完全不看它。
+#
+# ## 標籤為什麼帶 workflow 名字
+#
+# 幾支 workflow 共用一個 `ci-failure` 標籤的話會**互相關掉對方的 Issue**:
+# 比賽日那支還紅著,外電那支跑成功就把它關了。所以每支自己一個 `ci:<key>`,
+# `ci-failure` 留著給人一次看完全部。
+name: CI 失敗通知
+
+on:
+  workflow_call:
+    inputs:
+      key:
+        description: '這支 workflow 的識別字。標籤用 ci:<key>,每支各自開關自己的 Issue'
+        required: true
+        type: string
+      results:
+        description: '呼叫端的 needs context(填 ${{ toJSON(needs) }})。判定紅不紅只看這個'
+        required: true
+        type: string
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      actions: read      # 讀這次執行的 jobs(要知道是哪一步紅的)
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          KEY: ${{ inputs.key }}
+          RESULTS: ${{ inputs.results }}
+        with:
+          script: |
+            const key = process.env.KEY;
+            const { owner, repo } = context.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const labels = ['ci-failure', `ci:${key}`];
+
+            /* 判定只看呼叫端的 needs 結論。`skipped` 不算失敗 ——
+               例如 Pages 沒開時 deploy 會被跳過,那不是紅。 */
+            let results = {};
+            try { results = JSON.parse(process.env.RESULTS || '{}'); } catch { results = {}; }
+            const outcomes = Object.entries(results).map(([job, v]) => [job, v?.result]);
+            const failed = outcomes.some(([, r]) => r === 'failure' || r === 'cancelled');
+
+            /* 哪一步紅的:加分項,拿不到就只講 job 層的結論。 */
+            let bad = [];
+            if (failed) {
+              try {
+                const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun,
+                  { owner, repo, run_id: context.runId, per_page: 100 });
+                for (const j of jobs) {
+                  if (j.name.includes('notify')) continue;                    // 自己不算
+                  const steps = (j.steps ?? []).filter(st => st.conclusion === 'failure');
+                  for (const st of steps) bad.push(`${j.name} → ${st.name}`);
+                  /* 步驟層沒有 failure、整個 job 卻是紅的:逾時、runner 掛掉、被取消。
+                     那些不會落在任何一個 step 上,不補這一句就會印出「失敗的步驟:」然後空白。 */
+                  if (!steps.length && ['failure', 'cancelled'].includes(j.conclusion)) {
+                    bad.push(`${j.name} → 整個 job ${j.conclusion}`);
+                  }
+                }
+              } catch (e) {
+                core.warning(`讀不到這次執行的逐步結果(${e.message}),只報 job 層的結論`);
+              }
+              if (!bad.length) {
+                bad = outcomes.filter(([, r]) => r === 'failure' || r === 'cancelled')
+                  .map(([job, r]) => `${job} → ${r}`);
+              }
+            }
+
+            const open = await github.rest.issues.listForRepo(
+              { owner, repo, state: 'open', labels: labels.join(','), per_page: 5 });
+            const existing = open.data[0] ?? null;
+
+            if (!failed) {
+              if (existing) {
+                await github.rest.issues.createComment({ owner, repo, issue_number: existing.number,
+                  body: `已恢復:${runUrl} 成功。` });
+                await github.rest.issues.update({ owner, repo, issue_number: existing.number, state: 'closed' });
+              }
+              return;
+            }
+
+            const body = [
+              `執行:${runUrl}`,
+              `分支:${context.ref}`,
+              '',
+              '失敗的:',
+              ...bad.map(b => `- ${b}`),
+              '',
+              `這個 Issue 由 \`notify-ci.yml\` 自動開(呼叫端 \`${key}\`);下一次成功會自動關。`,
+            ].join('\n');
+
+            if (existing) {
+              await github.rest.issues.createComment({ owner, repo, issue_number: existing.number,
+                body: `又紅了:\n${body}` });
+            } else {
+              await github.rest.issues.create({ owner, repo, title: `CI 紅了(${key}):${bad[0] ?? '未知'}`,
+                body, labels });
+            }

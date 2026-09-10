@@ -151,3 +151,16 @@ jobs:
             sleep "$POLL"
           done
           echo "◀ 結束:輪詢 $N 次、推送 $PUSHED 次"
+
+  # 失敗要**主動說** —— 這一支原本紅了完全沒有聲音,而它是排程跑的,
+  # 沒有人守在旁邊看 log。邏輯在 `notify-ci.yml`(一份,不複製)。
+  notify:
+    needs: [poll]
+    if: always()
+    permissions:
+      issues: write
+      actions: read
+    uses: ./.github/workflows/notify-ci.yml
+    with:
+      key: epl-matchday
+      results: ${{ toJSON(needs) }}
