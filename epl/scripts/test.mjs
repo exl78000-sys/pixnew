@@ -4381,6 +4381,42 @@ function checkUcl() {
     }
   }
 
+  /* ── caveats 是純文字,而且兩個渲染路徑要一致 ──
+     `model.caveats` 被兩個地方畫:首頁與模型頁。以前首頁**直接插入**、模型頁走 `esc()`,
+     同一句話在兩頁的意義不一樣 —— 寫 `<b>` 的話一頁粗體、另一頁印出 `<b>`。
+     而實際上兩頁都在印星號:英冠那條寫了 `**強調**`,而前端沒有 Markdown 處理器
+     (跟「註解裡的 Markdown 掉進 HTML 字串」同一條坑,只是這次在**資料**裡,
+     所以掃原始碼的那條測試看不到它)。
+
+     契約定成**純文字**,兩邊都 esc()。這樣寫 caveat 的人不必知道它會被畫在哪裡。 */
+  {
+    const files = [['pl', join(W, 'data', 'meta.json')],
+      ['es1', join(W, 'data', 'leagues', 'es1', 'meta.json')],
+      ['en2', join(W, 'data', 'leagues', 'en2', 'meta.json')]];
+    const bad = [];
+    for (const [lg, p] of files) {
+      if (!existsSync(p)) continue;
+      /* **掃整份 meta,不是只掃 caveats。** 第一版只掃 caveats,漏了 `intro` 與
+         `boundaries` —— 而英冠那兩個欄位裡就各有一句 `**強調**`,在首頁上印出星號。
+         這些欄位都是 build 寫給畫面的文案,同一條契約要一起守。 */
+      const walk = (v, path) => {
+        if (typeof v === 'string') {
+          if (/\*\*/.test(v)) bad.push(`${lg}.${path}: 有 **(前端沒有 Markdown 處理器)`);
+          if (/<[a-z/][a-z]*>/i.test(v)) bad.push(`${lg}.${path}: 有 HTML 標籤(有的畫面會 esc,印出原字)`);
+          return;
+        }
+        if (Array.isArray(v)) { v.forEach((x, i) => walk(x, `${path}[${i}]`)); return; }
+        if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) walk(x, path ? `${path}.${k}` : k);
+      };
+      walk(JSON.parse(readFileSync(p, 'utf8')), '');
+    }
+    ok(bad.length === 0, 'meta 裡給畫面看的文案全是純文字(沒有 ** 也沒有 HTML 標籤)',
+      bad.slice(0, 4).join(' / '));
+    const idx = readFileSync(join(W, 'assets', 'js', 'page-index.js'), 'utf8');
+    ok(/caveats\.map\(c => `<div class="dim">・\$\{C\.esc\(c\)\}/.test(idx),
+      '首頁畫 caveats 走 esc()(跟模型頁同一個處理,契約才只有一條)');
+  }
+
   /* ── HTML 字串裡不可以有 Markdown 的 ** ──
      本專案的**註解**大量用 `**強調**`,那是寫作風格、沒問題。
      但同樣的寫法掉進 innerHTML 的樣板字串裡,前端**沒有任何 Markdown 處理器** ——

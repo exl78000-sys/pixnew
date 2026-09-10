@@ -140,7 +140,11 @@ try {
         單獨用 Poisson 是 ${bt.models.poisson.rps}、單獨用 Elo 是 ${bt.models.elo.rps}、
         固定機率基準線是 ${bt.models.baseline.rps} —— 兩者平均最好,所以平台採用平均值。</div>`
         : '<div class="dim">這個聯賽還沒有走查回測結果,所以這一頁不給準度數字 —— 給了就是假的。</div>'}
-      ${meta.model.caveats.map(c => `<div class="dim">・${c}</div>`).join('')}
+      ${/* caveats **一律當純文字**。以前這裡直接插入、而模型頁走 esc(),
+            兩個渲染路徑對同一份資料的處理不一樣 —— 於是同一句話在一頁是粗體、
+            在另一頁印出 <b>。實際結果是兩邊都在印星號(英冠那條寫了 `**強調**`,
+            而前端沒有 Markdown 處理器)。統一走 esc(),契約就只有一條:純文字。 */''}
+      ${meta.model.caveats.map(c => `<div class="dim">・${C.esc(c)}</div>`).join('')}
     </div>
   </div>
   ${C.foot(meta)}`;

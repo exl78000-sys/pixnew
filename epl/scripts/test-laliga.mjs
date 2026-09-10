@@ -664,7 +664,23 @@ check('摘要漏掉大部分數字 → 擋下',
     check('本季已完賽場次的比分跟 FotMob 逐場一致(兩個獨立來源)', cur.every(f => { const s = fin.get(`${f.home}|${f.away}`); return s[0] === f.fh && s[1] === f.fa; }), `${cur.length} 場`);
     /* 抓得夠新的話,FotMob 已完賽而本站還「未賽」的場次不該存在(那就是第三來源沒接上) */
     const ageH = (Date.now() - Date.parse(sc.fetchedAt)) / 3600000;
-    if (ageH < 24) check('FotMob 已完賽的場次本站沒有一場還是「未賽」', fx.filter(f => f.season === sc.season && !f.played && fin.has(`${f.home}|${f.away}`)).length === 0);
+    /* **拒收是設計行為,不是 bug** —— 兩個補比分來源的規矩都是「一場對不上就整份不採用」,
+       而拒收之後那些 FotMob 已完賽的場次就會留在「未賽」。守在這上面的話,
+       **一場上游爭議會擋掉整站部署** —— 那正是「上游時差寫成 CI 紅線」那條坑。
+       所以先看 build 有沒有記下拒收:有就只回報(畫面也講),沒有才是真的紅線
+       (那代表補比分該做而沒做,是本站的 bug)。 */
+    const refused = (() => {
+      const mp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'meta.json');
+      if (!existsSync(mp)) return [];
+      try { return JSON.parse(readFileSync(mp, 'utf8')).model?.scoreCheck?.refused ?? []; } catch { return []; }
+    })();
+    const stillOpen = fx.filter(f => f.season === sc.season && !f.played && fin.has(`${f.home}|${f.away}`));
+    if (ageH < 24 && !refused.length) {
+      check('FotMob 已完賽的場次本站沒有一場還是「未賽」', stillOpen.length === 0, `${stillOpen.length} 場`);
+    } else if (refused.length) {
+      console.log(`  · 補比分依設計拒收(${refused.map(r => `${r.season} ${r.source} ${r.count} 場不符`).join('、')})`
+        + `,所以有 ${stillOpen.length} 場已完賽的還顯示未賽 —— 只回報不擋,畫面上有講`);
+    }
   }
 }
 

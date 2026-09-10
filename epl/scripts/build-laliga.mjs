@@ -264,6 +264,11 @@ async function main() {
   /* 賽果統一走 laligaMatches:它會在主來源缺比分時用**已核對過的**備援來源補上。
      回測與線上模型必須吃同一份賽果,不然頁面上的準度講的是另一批比賽。 */
   const backfills = [];   // 補過比分的賽季要寫進畫面上的資料說明,不能只印在 log
+  /* 被**拒收**的補比分同樣要留下來 —— 說明見 build-championship.mjs 的同一段。
+     簡單講:兩個補比分來源都是「一場對不上就整份不採用」,那是對的;
+     但拒收之後什麼都沒留下,讀者看到踢完的比賽還寫「未賽」而畫面不解釋,
+     測試也分不出「依設計拒收」與「補比分壞了」。 */
+  const scoreRefusals = [];
   const load = season => {
     const { matches, backfill, fotmob } = laligaMatches(ROOT, season, { codeOf: T.codeOf, kickoffOf: madridKickoff });
     const line = backfillLine(season, backfill);
@@ -271,6 +276,13 @@ async function main() {
     if (fmLine) console.log(fmLine);
     if (line) console.log(line);
     if (backfill?.filled) backfills.push({ season, ...backfill });
+    for (const [src, r] of [['football-data.co.uk', backfill], ['FotMob', fotmob]]) {
+      if (r?.mismatches?.length) {
+        scoreRefusals.push({ season, source: src, count: r.mismatches.length, sample: r.mismatches.slice(0, 5) });
+      } else if (r?.duplicateKeys) {
+        scoreRefusals.push({ season, source: src, duplicateKeys: true, count: 0, sample: [] });
+      }
+    }
     return matches;
   };
   const lastMatches = load(LAST_SEASON);
@@ -1065,6 +1077,8 @@ async function main() {
            把兩季的總場數拿去跟一季的 380 比,而且只有 2024-25 缺,2023-24 是完整的。
            改成逐季報,而且只報真的有缺的那幾季。
          - 「尚未把西甲接進走查回測管線」—— 已經接了(RPS 0.2031)。改成看產物。 */
+      /* 給測試讀的結構化欄位;空陣列 = 兩個補比分來源都沒有被拒收 */
+      scoreCheck: { refused: scoreRefusals },
       caveats: [
         `西甲模型使用 ${fullSeasons.join('、')} 完整賽季與 ${CURRENT_SEASON} 已完賽資料,樣本少於英超版。`,
         ...(() => {
@@ -1077,6 +1091,13 @@ async function main() {
            讀者有權知道哪幾場的比分不是主來源給的,以及我們憑什麼相信它。 */
         ...backfills.map(b => `${b.season} 有 ${b.filled} 場的比分主來源(openfootball)沒有,`
           + `改用 football-data.co.uk;兩邊重疊的 ${b.checked} 場逐場核對完全一致才採用。`),
+        /* 拒收要講在畫面上,不然讀者只會看到踢完的比賽還寫著「未賽」。 */
+        ...scoreRefusals.map(r => r.duplicateKeys
+          ? `${r.season} 的主客組合有重複,${r.source} 的補比分整份不採用。`
+          : `${r.season} 的 ${r.source} 賽果與主來源有 ${r.count} 場對不上(${
+              r.sample.slice(0, 2).map(m => `${m.key} ${m.ours.join('-')}≠${m.theirs.join('-')}`).join('、')}),`
+            + `整份不採用 —— 兩個來源對不上時挑一個用等於自己選答案。`
+            + `所以有些已經踢完的比賽這裡還是「未賽」,要等主來源更新。`),
         backtest.available
           ? `走查回測 ${backtest.season} ${backtest.games} 場:RPS ${backtest.rps}、基準線 ${backtest.baselineRps}`
             + `${backtest.vsBaseline ? `,差距 ${backtest.vsBaseline.ratio} 個標準誤` : ''}。`

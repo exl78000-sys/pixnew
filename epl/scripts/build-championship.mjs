@@ -150,6 +150,13 @@ async function main() {
   const crestCount = crestBy.size;
 
   const backfills = [];
+  /* **被拒收的補比分也要記下來。** 兩個補比分來源(football-data.co.uk 與 FotMob)
+     的規矩都是「有一場對不上就整份不採用」—— 那是對的(挑著用等於在兩個
+     對不上的來源裡選一個喜歡的答案)。但拒收之後**什麼都沒留下**:
+       · 讀者看到那些已完賽的場次還顯示「未賽」,而畫面上沒有任何說明(鐵則四)
+       · 測試分不出「依設計拒收」與「補比分壞了」,於是一場上游爭議會擋掉整站部署
+     所以拒收要進產物,讓兩邊都講得出話。 */
+  const scoreRefusals = [];
   const load = season => {
     const { matches, backfill, fotmob } = leagueMatches(ROOT, season, {
       codeOf, kickoffOf: londonKickoff,
@@ -166,6 +173,14 @@ async function main() {
     const fmLine = fotmobBackfillLine(season, fotmob);
     if (fmLine) console.log(fmLine);
     if (backfill?.filled) backfills.push({ season, ...backfill });
+    for (const [src, r] of [['football-data.co.uk', backfill], ['FotMob', fotmob]]) {
+      if (r?.mismatches?.length) {
+        scoreRefusals.push({ season, source: src, count: r.mismatches.length,
+          sample: r.mismatches.slice(0, 5) });
+      } else if (r?.duplicateKeys) {
+        scoreRefusals.push({ season, source: src, duplicateKeys: true, count: 0, sample: [] });
+      }
+    }
     return matches;
   };
   const leagueOnly = ms => ms.filter(m => !m.stage);
@@ -447,6 +462,15 @@ async function main() {
   const backfillNotes = backfills.map(b =>
     `${b.season} 有 ${b.filled} 場的比分主來源(openfootball)沒有,改用 football-data.co.uk;`
     + `兩邊重疊的 ${b.checked} 場逐場核對完全一致才採用。`);
+  /* 拒收要**講在畫面上**:不然讀者只會看到已經踢完的比賽還寫著「未賽」。 */
+  for (const r of scoreRefusals) {
+    backfillNotes.push(r.duplicateKeys
+      ? `${r.season} 的主客組合有重複,${r.source} 的補比分整份不採用。`
+      : `${r.season} 的 ${r.source} 賽果與主來源有 ${r.count} 場對不上(${
+          r.sample.slice(0, 2).map(m => `${m.key} ${m.ours.join('-')}≠${m.theirs.join('-')}`).join('、')}),`
+        + `整份不採用 —— 兩個來源對不上時挑一個用等於自己選答案。`
+        + `所以有些已經踢完的比賽這裡還是「未賽」,要等主來源更新。`);
+  }
 
   /* 外電。只讀每日快取,開頁不抓外部網站(跟另外兩個聯賽一樣)。
      這裡再做一次最小欄位驗證,壞掉或沒有連結的 RSS 項目不進前端。
@@ -500,7 +524,7 @@ async function main() {
        讀者看到「英冠」會預期跟英超一樣的東西,不講清楚就是靠沉默誤導。 */
     intro: `把 ${fullSeasons.join('、')} 與本季 ${CURRENT_SEASON} 的每一場英冠比賽跑成模型,`
       + '做出積分預測、單場勝負機率與賽季模擬,並跟市場賠率並排比較。'
-      + '**這個聯賽只做到球隊與比賽這一層** —— 沒有球員數據、沒有 xG、沒有陣容與傷停,'
+      + '這個聯賽只做到球隊與比賽這一層 —— 沒有球員數據、沒有 xG、沒有陣容與傷停,'
       + '因為英冠沒有免費的球員級資料源(下方「目前資料界線」有實測細節)。',
     boundaries: [
       '✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬(前 2 直升、3~6 附加賽、後 3 降級)',
@@ -511,7 +535,7 @@ async function main() {
       '✓ 逐場實測統計(射門/射正/角球/牌,football-data.co.uk):球隊頁的近 10 場風格位移,'
       + '跟英超同一份實作;上季不在英冠的球隊基準為 null,不拿別的聯賽當基準',
       '— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
-      + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超。**這是驗證過的沒有,不是還沒做**',
+      + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超。這是驗證過的沒有,不是還沒做',
       /* 這一行**不要寫死**。第一版寫「隊色與球場資料尚未取得」,交付進來之後它就變成
          畫面上的一句假話 —— 而畫面說謊比缺一格嚴重。改成跟著資料走。 */
       ...(delivered.size
@@ -560,12 +584,15 @@ async function main() {
       /* 沒有回測就不給準度數字(鐵則二)。available:false 會讓首頁那兩個 KPI
          顯示「—」與「尚未回測」,而不是空白或 0 —— 0 看起來像一個很好的分數。 */
       backtest,
+      /* 給測試讀的結構化欄位(不要叫它去 regex caveats 那段散文)。
+         空陣列 = 兩個補比分來源都沒有被拒收。 */
+      scoreCheck: { refused: scoreRefusals },
       caveats: [
         `英冠模型使用 ${fullSeasons.join('、')} 完整賽季與 ${CURRENT_SEASON} 已完賽資料。`,
         ...backfillNotes,
         '升級附加賽不進模型也不進積分榜(中立場地、只有四隊打),但保留在賽果裡。',
         /* 這一段是這個聯賽最重要的一句實話:少了什麼要講在畫面上,不是只寫在程式註解裡。 */
-        '**不含球員、傷停、xG 與陣容** —— 英冠沒有免費的球員級資料源'
+        '這個聯賽不含球員、傷停、xG 與陣容 —— 英冠沒有免費的球員級資料源'
         + '(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過),'
         + '所以這個聯賽只做得出球隊與比賽那一層。',
         '升班馬沒有上一季英冠樣本,套用聯盟後段先驗並提高模擬不確定性。',
