@@ -60,8 +60,13 @@ jobs:
             const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
             const labels = ['ci-failure', `ci:${key}`];
 
-            /* 判定只看呼叫端的 needs 結論。`skipped` 不算失敗 ——
-               例如 Pages 沒開時 deploy 會被跳過,那不是紅。 */
+            /* 判定只看呼叫端的 needs 結論。三種各自的理由:
+                 `skipped`   不算紅 —— 例如 Pages 沒開時 deploy 會被跳過
+                 `failure`   算紅
+                 `cancelled` **算紅**,而且是刻意的:6 小時上限、runner 掛掉都是這個結論,
+                             漏掉就是靜靜失敗。代價是**人手動取消長迴圈也會開一張** ——
+                             可以接受,因為 Issue 內文會直接寫 `cancelled` 而不是 failure,
+                             看一眼就知道是自己按的。 */
             let results = {};
             try { results = JSON.parse(process.env.RESULTS || '{}'); } catch { results = {}; }
             const outcomes = Object.entries(results).map(([job, v]) => [job, v?.result]);
