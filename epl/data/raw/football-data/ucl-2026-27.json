@@ -3,7 +3,7 @@
   "competition": "CL",
   "season": "2026-27",
   "seasonParam": "2026",
-  "retrievedAt": "2026-09-10T17:36:49.164Z",
+  "retrievedAt": "2026-09-10T17:41:18.359Z",
   "schemaVersion": 2,
   "availability": "available",
   "status": 200,
@@ -1294,11 +1294,11 @@
       },
       "id": 575335,
       "utcDate": "2026-09-10T16:45:00Z",
-      "status": "IN_PLAY",
+      "status": "PAUSED",
       "matchday": 1,
       "stage": "LEAGUE_STAGE",
       "group": null,
-      "lastUpdated": "2026-09-10T17:35:44Z",
+      "lastUpdated": "2026-09-10T17:37:52Z",
       "homeTeam": {
         "id": 613,
         "name": "Fenerbahçe SK",
@@ -1321,8 +1321,8 @@
           "away": 1
         },
         "halfTime": {
-          "home": null,
-          "away": null
+          "home": 0,
+          "away": 1
         }
       },
       "odds": {
@@ -1360,11 +1360,11 @@
       },
       "id": 575336,
       "utcDate": "2026-09-10T16:45:00Z",
-      "status": "IN_PLAY",
+      "status": "PAUSED",
       "matchday": 1,
       "stage": "LEAGUE_STAGE",
       "group": null,
-      "lastUpdated": "2026-09-10T17:35:44Z",
+      "lastUpdated": "2026-09-10T17:38:56Z",
       "homeTeam": {
         "id": 674,
         "name": "PSV",
@@ -1380,15 +1380,15 @@
         "crest": "https://crests.football-data.org/1887.png"
       },
       "score": {
-        "winner": "DRAW",
+        "winner": "AWAY_TEAM",
         "duration": "REGULAR",
         "fullTime": {
           "home": 0,
-          "away": 0
+          "away": 1
         },
         "halfTime": {
-          "home": null,
-          "away": null
+          "home": 0,
+          "away": 1
         }
       },
       "odds": {
