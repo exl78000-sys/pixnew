@@ -193,6 +193,13 @@ const statsFor = t => {
 };
 const comparable = m => !m?.played && !!statsFor(m?.home) && !!statsFor(m?.away);
 
+/* 展開鈕的條件是「有東西可看」,**不等於「有對比可看」**。
+   階段 C 之後預測涵蓋 116 場、而對比只有 61 場(對比要兩隊都在 ucl-standings 裡,
+   那份只涵蓋 openfootball 那五個聯賽)—— 用 comparable 當展開條件的話,
+   **55 場有預測卻沒有按鈕**,讀者根本看不到。這是「按鈕在但點了沒東西」的反面:
+   東西在但沒有按鈕,而且一樣不會報錯。 */
+const expandable = m => !m?.played && (comparable(m) || !!predOf(m));
+
 /* 對比裡要顯示的隊名與顏色。**本站沒有的球隊沒有 C.name / C.team** ——
    直接叫 C.name(undefined) 會拿到一個看起來像壞掉的東西,所以走上游給的名字,
    顏色退回中性色(不替它們挑一個「看起來像」的隊色,那是編出來的)。 */
@@ -241,7 +248,18 @@ async function renderCompare(slot, m) {
   slot.innerHTML = '<div class="tiny dim">載入兩隊的聯賽數據中…</div>';
   try {
     const [h, a] = await Promise.all([rowFor(m.home), rowFor(m.away)]);
-    if (!h || !a) { slot.innerHTML = '<div class="tiny dim">這兩隊本季的聯賽數據還沒產生,暫時做不出對比。</div>'; return; }
+    /* 對比拿不到**不代表沒有預測** —— 兩者的資料來源不同:
+       對比要兩隊都在 ucl-standings(只有 openfootball 那五個聯賽),
+       預測只要兩隊都有跨聯賽評分。所以這裡不能直接 return,
+       不然那 55 場的預測會被這一行吃掉。 */
+    if (!h || !a) {
+      const only = predictionBlock(m);
+      slot.innerHTML = only
+        ? `${only}<div class="tiny dim">這兩隊之中至少一隊本站沒有聯賽現況可以並排
+             (它們的聯賽只用來辨識球隊、不收域內賽果),所以只有勝率、沒有下面那張對照表。</div>`
+        : '<div class="tiny dim">這兩隊本季的聯賽數據還沒產生,暫時做不出對比。</div>';
+      return;
+    }
     const lgName = c => C.LEAGUES[c]?.zh
       ?? (standings?.leagues ?? []).find(l => l.key === c)?.zh ?? c;
     // 樣本太小要講:球季剛開始時三場的場均進球跟整季不是同一件事(鐵則四)
@@ -284,10 +302,10 @@ function leagueFixtures(season) {
         ? `<b class="mono">${m.final[0]} : ${m.final[1]}</b>`
         : (m.kickoff ? C.countdown(m.kickoff) : '<span class="dim">vs</span>')}</span>
       <span class="leg-away">${uclTeamCell(m.away)}</span>
-      <span class="tiny dim leg-ko">${m.played ? '完場' : ''}${comparable(m)
+      <span class="tiny dim leg-ko">${m.played ? '完場' : ''}${expandable(m)
         ? `<button class="btn tiny" type="button" data-cmp="${C.esc(m.id ?? `${m.home.code}|${m.away.code}`)}"
-             style="margin-left:6px">賽前對比</button>` : ''}</span>
-    </div>${comparable(m)
+             style="margin-left:6px">${comparable(m) ? '賽前對比' : '賽前勝率'}</button>` : ''}</span>
+    </div>${expandable(m)
       ? `<div class="ucl-cmp" data-cmp-slot="${C.esc(m.id ?? `${m.home.code}|${m.away.code}`)}" hidden></div>` : ''}`;
 
   return `<div class="section" style="margin-top:18px"><h2>聯賽階段賽程</h2>
@@ -300,12 +318,17 @@ function leagueFixtures(season) {
           const n = all.filter(comparable).length;
           const np = (model?.fixtures ?? []).length;
           const unrated = model?.coverage?.unrated ?? [];
-          if (!n) return '';
-          return `<b>兩隊都在本站資料裡的場次</b>(整季 ${n} 場)可以展開「賽前對比」——
-            兩個聯賽各自的現況並排${np ? `,加上一組<b>勝率預測</b>(整季 ${np} 場未賽的有)` : ''}。
-            ${unrated.length ? `其餘場次<b>不給預測</b>:${C.esc(unrated.slice(0, 3).map(u => u.name).join('、'))}
-              等${unrated.length} 支球隊所屬的聯賽本站沒有賽果來源,算不出跨聯賽評分 ——
-              那是資料的界線,不是還沒做。` : ''}`;
+          if (!n && !np) return '';
+          /* **兩個數字不一樣,要分開講。** 對比要兩隊都在 ucl-standings 裡(只有五個聯賽),
+             預測只要兩隊都有跨聯賽評分 —— 所以預測的場次比對比多。
+             混成一句的話,讀者會以為某一邊壞了。 */
+          return `整季 <b>${np} 場</b>未賽的有<b>勝率預測</b>,
+            其中 <b>${n} 場</b>兩隊的聯賽現況本站都有,可以再並排一張對照表
+            (那張表是兩個聯賽各自的原始數字,<b>不是同一把尺</b>)。
+            ${unrated.length ? `其餘場次<b>不給預測</b>:${C.esc(unrated.map(u => u.name).join('、'))}
+              ${unrated.length > 1 ? '這幾隊' : '這一隊'}<b>還沒踢過本季歐冠</b>,而它們所屬的聯賽本站只用來
+              辨識球隊、不收域內賽果(收了反而讓模型變差,量過)——
+              所以評分只能從歐冠場次累積,一場都還沒踢就還沒有評分。踢過就會有。` : ''}`;
         })()}</div>
     </div>`;
 }
@@ -579,7 +602,9 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
          換賽季會把 body.innerHTML 整個換掉,掛在按鈕上的監聽會跟著沒了,
          而容器本身活著,所以委派只要綁一次(這裡每次 render 都重綁會疊)。
          用 el.hidden 切換,不用 style.display。 */
-      cmpMatches = new Map((s.leagueMatches ?? []).filter(comparable)
+      /* **條件要跟畫按鈕的那一個一樣**(expandable,不是 comparable)——
+         不一樣的話會出現「按鈕在但點了沒東西」,而且不會報錯。 */
+      cmpMatches = new Map((s.leagueMatches ?? []).filter(expandable)
         .map(m => [String(m.id ?? `${m.home.code}|${m.away.code}`), m]));
 
       const unknown = s.teamsTotal - s.teamsKnown;

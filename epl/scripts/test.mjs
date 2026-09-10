@@ -1323,8 +1323,11 @@ async function checkUclCompare() {
       /function predictionBlock/.test(view) && /賽前勝率/.test(view)
         && /回測/.test(view) && /樣本只有兩季多/.test(view)],
     /* 沒有評分的球隊要講得出為什麼沒有預測,不是靜靜少一塊(鐵則三 + 鐵則四) */
-    ['沒有預測的場次講得出原因(那些聯賽本站沒有賽果來源)',
-      /不給預測/.test(view) && /算不出跨聯賽評分/.test(view)],
+    /* 原因**變了**就要跟著改:以前是「本站沒有它們的賽果來源」,
+       現在資料抓到了,但域內賽果收了會讓模型變差(量過),所以只用來辨識球隊 ——
+       於是沒踢過歐冠的隊就還沒有評分。講舊理由等於在畫面上講一件不成立的事。 */
+    ['沒有預測的場次講得出原因(還沒踢過歐冠,所以還沒有評分)',
+      /不給預測/.test(view) && /還沒踢過本季歐冠/.test(view) && /踢過就會有/.test(view)],
     ['樣本太小要講(球季剛開始時場均數字還會大幅變動)', /樣本很小/.test(view)],
     /* 兩隊都要有資料才給按鈕 —— 一欄空著就是留一個永遠空白的欄位(鐵則三)。
        階段 B 之後「有資料」多了一種來源(只有積分榜的三個聯賽),條件見下面那條。 */
@@ -4471,9 +4474,15 @@ function checkUcl() {
       ok(core.every(l => l.played > 500),
         '核心八個聯賽每個都有夠多的賽果(少於 500 場代表某一季的快取沒抓到)',
         core.map(l => `${l.key}:${l.played}`).join(' '));
-      ok(m.pool.leagues.every(l => l.played > 0),
-        '池子裡沒有「有目錄卻一場都沒有」的聯賽',
-        m.pool.leagues.filter(l => !l.played).map(l => l.key).join(' '));
+      /* **十六個 FotMob 聯賽的 played 是 0,那是刻意的**(FOTMOB_MODE='bridge':
+         只註冊球隊、不收域內賽果)。所以「每個聯賽都要有比賽」只能套在核心八個上。
+         它們真正要守的是**球隊有被註冊** —— 沒註冊的話橋收不進來,
+         而症狀只是少幾支球隊的預測,不會報錯。 */
+      ok(core.every(l => l.played > 0), '核心八個聯賽都有比賽進池子',
+        core.filter(l => !l.played).map(l => l.key).join(' '));
+      ok(m.pool.leagues.length > core.length,
+        '十六個 FotMob 聯賽有註冊進來(即使不收域內賽果)',
+        `${m.pool.leagues.length} 個聯賽`);
       /* 一份快取都沒有的聯賽**只回報不擋** —— 補完之前本來就會有。
          但要印出來,不然它只是安靜地從清單消失(挪威/哈薩克春秋制那次)。 */
       console.log(`  · 跨聯賽評分:${m.pool.leagues.length} 個聯賽在池子裡`
@@ -4516,8 +4525,19 @@ function checkUcl() {
       'ucl-elo.mjs 檔頭記著「逐聯賽補正沒有通過」與實測數字');
     ok(/機率銳化/.test(src) && /0\.0030/.test(src),
       'ucl-elo.mjs 檔頭記著「機率銳化沒有通過」與實測數字');
+    /* 十六個聯賽的域內賽果**收了會變差**,這是量過的(0.2114 vs 收四季的 0.2349)。
+       沒有這一條的話,下一個人看到「快取都抓了卻沒用」會很自然地把它打開。 */
+    ok(/域內收全部四季/.test(src) && /0\.2349/.test(src),
+      'ucl-elo.mjs 檔頭記著「收域內賽果會變差」與五種配置的實測表');
+    ok(/成對比較是關鍵/.test(src),
+      'ucl-elo.mjs 檔頭講明成對比較(不同配置能預測的場次不同,直接比平均會高估)');
     ok(!/leagueOffset|OFFSET_BY_LEAGUE|sharpen/i.test(src),
       'ucl-elo.mjs 沒有偷偷把補正加回來');
+    /* 配置只能是驗收通過的那一個。改成收域內賽果要先重跑驗收 —— 
+       這一條擋的是「順手打開看看」,不是擋改動本身。 */
+    ok(/FOTMOB_MODE = 'bridge'/.test(src),
+      '十六個聯賽維持「只註冊、不收域內賽果」(驗收通過的那個配置)',
+      (/FOTMOB_MODE = '([^']+)'/.exec(src) ?? [])[1]);
   }
 
   /* ── 歐冠頁的名字與隊徽是跨聯賽的一份 ──

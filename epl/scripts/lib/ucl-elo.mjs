@@ -70,7 +70,7 @@ import { UCL_LEAGUES } from './ucl-standings.mjs';
    再往前只換到 0.002,不值得為它多存四份快取。 */
 export const POOL_START = '2023-24';
 
-/* **十六個 FotMob 聯賽的域內賽果目前不進評分池。** 這不是「還沒接」,是量過之後的決定。
+/* **十六個 FotMob 聯賽只用來辨識球隊,域內賽果不進評分池。** 量過之後的決定,不是還沒接。
  *
  * 2026-09-09 分三次量到的:
  *
@@ -86,14 +86,33 @@ export const POOL_START = '2023-24';
  * 「逐聯賽補正」已經試過而且**沒有通過**(一季調、另一季驗收只有 0.0009 ± 0.0079,
  * 兩季的參數還互相矛盾),所以沒有經過驗收的修正可以用。
  *
- * **只用本季那一版看起來最好,但那個 4.6 SE 是在「資料剛好補到一半」時量到的**,
- * 不是設計出來的配置 —— 拿它當結論就是挑一個好看的數字,那正是鐵則二在防的事。
- * 所以退回**唯一從頭到尾都通過的配置**:八個聯賽。這些球隊因此沒有評分、
- * 那些場次不給預測(鐵則三),而畫面上講得出為什麼。
+ * ## 2026-09-10 的正式驗收:五種配置,一季調、另一季驗收
  *
- * 要打開的話,先做「限制歷史深度」的正式驗收:一季調、另一季驗收,
- * 而且改善要大過 2 倍成對標準誤。抓下來的快取與人工對照表都留著,隨時可以測。 */
-export const FOTMOB_IN_POOL = false;
+ * 快取補齊(64/64)之後把「要不要收、收幾季」做成參數正式測了一輪:
+ *
+ *   配置                        2024-25(調參)  2025-26(驗收)  回測場次
+ *   完全不進                        0.2255          0.2181        222
+ *   **只註冊球隊、不收域內賽果**      **0.2064**      **0.2114**    370   ← 挑中
+ *   域內只收本季                    0.2064          0.2150        371
+ *   域內收最近兩季                  0.2075          0.2298        378
+ *   域內收全部四季                  0.2277          0.2349        386
+ *
+ * 驗收季拿它跟「完全不進」在**同一批場次**上成對比(104 場共同場次):
+ * 改善 0.0026 ± 0.0012(2.1 SE)→ 通過。反方向(用 2025-26 挑)**挑中同一個配置**。
+ *
+ * **成對比較是關鍵**:不同配置能預測的場次不同,直接比兩邊的平均會把
+ * 「多預測了幾場好預測的比賽」算成模型變好 —— 這一版的 0.2181 → 0.2114
+ * 大部分就是那樣來的,真正的準度增益只有 0.0026。**主要的收穫是涵蓋率,不是準度。**
+ *
+ * 為什麼是這個配置:這些聯賽多半頂重(Celtic、Galatasaray、Salzburg 在國內幾乎橫掃),
+ * 收了域內賽果就讓它們靠痛宰弱隊刷分,而橋不夠把它壓回來 —— 那正是收四季會變差的原因。
+ * 只註冊不收賽果的話,它們的評分**只由歐冠場次決定**,起始值是當時全池平均 − 75,
+ * 頂重聯賽刷不出分。
+ *
+ * **代價要講清楚(鐵則三與四)**:一場歐冠都還沒踢的球隊**沒有評分**,
+ * 因為沒有橋。季初會有幾隊是這樣(2026-09-10:Fenerbahçe、Sabah FK),
+ * 踢過就會有。畫面上要講的是這個原因,不是「本站沒有它們的賽果來源」—— 那句已經不對了。 */
+export const FOTMOB_MODE = 'bridge';
 
 /* 池子裡的八個聯賽。前三個是本站的聯賽(用它們原本的快取,不重抓),
    後五個是為歐冠抓的。**這份清單不要另外複製一份** —— 後五個直接取 UCL_LEAGUES。 */
@@ -167,7 +186,7 @@ const uclPoolMatch = (m, season) => {
 /* 整池的比賽。隊名就是身分 —— 這八個聯賽裡本站只有三個有隊碼,
    而歐冠那一份給的是 football-data 的 fullName,兩邊唯一共通的鍵就是隊名。
    對照**只用精確比對**:模糊比對會靜靜對錯球隊(本站在盃賽頁踩過兩次)。 */
-export function poolMatches(root, ucl) {
+export function poolMatches(root, ucl, { fotmob = FOTMOB_MODE } = {}) {
   const current = (ucl?.seasons ?? []).find(s => s.current)?.label ?? null;
   if (!current) return null;
   const seasons = seasonsFrom(POOL_START, current);
@@ -195,7 +214,18 @@ export function poolMatches(root, ucl) {
 
   /* openfootball 沒有的那十六個(FotMob)。抓取器自己驗過賽季與對照表,
      這裡只讀落地的快取 —— 沒抓到的聯賽就是沒有,不影響其他聯賽。 */
-  const fm = FOTMOB_IN_POOL ? fotmobLeagueMap(root) : { leagues: [], byFullName: fotmobLeagueMap(root).byFullName };
+  /* `fotmob` 決定這十六個聯賽怎麼進池子。**註冊球隊**與**收它們的域內賽果**
+     是兩件可以分開的事,所以有 'off' 之外的選項:
+       'off'    完全不進 —— 球隊沒有身分,連歐冠那幾場橋都收不進來
+       'bridge' 只註冊球隊、**不收域內賽果** —— 評分只由歐冠場次決定,
+                起始值是當時全池平均 − 75。頂重聯賽刷不出分,因為根本沒有域內比賽
+       N        收最近 N 季的域內賽果(Infinity = 全部)
+     哪一個好不是用想的,見檔頭那組實測。 */
+  const fmAll = fotmobLeagueMap(root);
+  const fm = fotmob === 'off' ? { leagues: [], byFullName: fmAll.byFullName } : fmAll;
+  const fmSeasons = typeof fotmob === 'number'
+    ? new Set(seasons.slice(Math.max(0, seasons.length - fotmob)))
+    : null;
   /* 對照表裡有、卻**一份快取都沒有**的聯賽要報出來。
      不報的話它只是安靜地從 perLeague 消失,而畫面上只是少幾支球隊的預測 ——
      實際踩過:挪威與哈薩克是春秋制,賽季字串不同,第一次抓一份都沒落地而完全沒有跡象。 */
@@ -206,10 +236,13 @@ export function poolMatches(root, ucl) {
       const file = join(root, 'data', 'raw', 'fotmob-ucl-leagues', lg.key, `${season}.json`);
       if (!existsSync(file)) continue;
       let j; try { j = JSON.parse(readFileSync(file, 'utf8')); } catch { continue; }
+      /* 註冊一律做(不然橋收不進來),收不收賽果才看 fotmob */
+      const takeResults = fotmob === 'bridge' ? false : (fmSeasons ? fmSeasons.has(season) : true);
       for (const m of (j.matches ?? [])) {
         if (!m.home || !m.away) continue;
         const h = fmId(lg.key, m.home), a = fmId(lg.key, m.away);
         leagueOf.set(h, lg.key); leagueOf.set(a, lg.key); seen += 1;
+        if (!takeResults) continue;
         if (!m.finished || !Array.isArray(m.score) || m.score.length !== 2) continue;
         matches.push({ season, date: m.date, home: h, away: a, fh: m.score[0], fa: m.score[1], played: true, comp: lg.key });
         got += 1;
