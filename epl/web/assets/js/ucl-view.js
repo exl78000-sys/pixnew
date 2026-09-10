@@ -607,6 +607,17 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
           ⚠ 本站依賽果算出的積分榜與資料源官方那份對不上:
           ${s.table.mismatches.map(x => C.esc(`${x.team} 的${x.field}(我們 ${x.ours}、官方 ${x.official})`)).join('、')}
           —— 顯示的是官方那份。</div>` : ''}
+        ${/* **上游時差要講出來(鐵則四)。** 資料源同一份 payload 裡,比賽結果先更新、
+             官方積分榜晚幾小時 —— 比賽夜看這張表會看到「剛贏球的隊還是 0 分」,
+             而那不是我們算錯,也不是他們錯,是這一格還沒算進去。
+             不講的話讀者只會看到一張自己跟賽果矛盾的表。 */''}
+        ${(s.table.pending ?? []).length ? `<div style="margin-top:6px;color:var(--draw)">
+          ⚠ <b>資料源的官方積分榜還沒把最新場次算進去</b>(${s.table.pending.length} 隊):
+          ${C.esc(s.table.pending.slice(0, 4).map(x => `${x.team}(本站 ${x.ours} 場、官方 ${x.official} 場)`).join('、'))}${
+            s.table.pending.length > 4 ? ' 等' : ''}。
+          <b>名次與積分顯示的是官方那份</b>,所以剛踢完的比賽還沒反映上去 ——
+          上面的賽程區才是最新的賽果。這是資料源自己的時差(比賽結果先更新、積分榜晚幾小時),
+          下一次抓取就會補上。</div>` : ''}
         ${ucl.teamCodeConflicts?.length ? `<div style="margin-top:6px;color:var(--loss)">
           ⚠ 有隊名對到同一個隊碼,已整組不對應:
           ${ucl.teamCodeConflicts.map(c => C.esc(c.conflicts.map(x => `${x.code}=${x.teams.join('/')}`).join('、'))).join('、')}</div>` : ''}`;

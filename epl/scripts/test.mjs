@@ -4304,9 +4304,22 @@ function checkUcl() {
   if (existsSync(esPath)) {
     const strip = o => { const { retrievedAt, ...rest } = o; return JSON.stringify(rest); };
     const es = JSON.parse(readFileSync(esPath, 'utf8'));
-    ok(strip(ucl) === strip(es),
-      '英超與西甲的 ucl.json 除了 retrievedAt 之外完全相同(同一份資料,不是各算一份)',
-      strip(ucl) === strip(es) ? '' : `pl ${JSON.stringify(ucl).length} vs es1 ${JSON.stringify(es).length} 位元組`);
+    /* 排除 retrievedAt 之後仍然可能不同 —— 因為這兩個檔由**兩條工作流**各自寫
+       (epl-live 寫 pl、laliga-matchday 寫 es1),比賽夜中間有新賽果落地時,
+       晚寫的那份會多幾場。實測 2026-09-10:pl 540,694 vs es1 539,235 位元組。
+       那不是「各算一份」,是兩條流看到的上游快取新舊不同,下一次完整部署就一致。
+       所以守的是**真正要守的東西**:結構一樣(有人另寫一份實作的話欄位會歪)、
+       而且 pl 不比 es1 舊(完整管線最後寫的是它)。逐位元組留給輸入固定的產物。 */
+    const sameShape = JSON.stringify(Object.keys(ucl).sort()) === JSON.stringify(Object.keys(es).sort());
+    ok(sameShape, '兩份 ucl.json 的欄位結構一樣(不是各寫一份實作)',
+      `${Object.keys(ucl).sort().join(',')} vs ${Object.keys(es).sort().join(',')}`);
+    const playedOf = j => ((j.seasons ?? []).find(x => x.current)?.leagueMatches ?? []).filter(m => m.played).length;
+    ok(playedOf(ucl) >= playedOf(es), '英超那份的已完賽場次不比西甲少(完整管線最後寫的是它)',
+      `pl ${playedOf(ucl)} 場 vs es1 ${playedOf(es)} 場`);
+    if (strip(ucl) !== strip(es)) {
+      console.log(`  · 兩份 ucl.json 目前不同(兩條工作流寫入時間不同:pl ${playedOf(ucl)} 場完賽 / es1 ${playedOf(es)} 場)`
+        + ` —— 下一次完整部署會一致,只回報不擋`);
+    }
     /* 時間戳雖然不當紅線,差太多仍然要講 —— 那代表其中一條流很久沒跑了。
        只回報不擋(跟 docs:check 的 drifts 同一個分法)。 */
     const gap = Math.abs(Date.parse(ucl.retrievedAt ?? 0) - Date.parse(es.retrievedAt ?? 0)) / 60000;
@@ -4667,8 +4680,20 @@ function checkUcl() {
 
     /* ── 四、積分榜 ───────────────────────────── */
     ok(s.table.order === 'official', `${s.label}:名次取自官方積分榜,不是本站排的`, s.table.order);
+    /* **場次數一樣卻積分對不上**才是紅線 —— 那代表有人算錯。
+       場次數不同的是上游時差(`matches` 先更新、`standings` 晚幾小時),
+       記在 `pending` 裡只回報不擋:實測 2026-09-10 比賽夜,比賽區 12 場完賽而
+       積分榜只算了 6 場,剛贏球的 Barça 官方還是 0 分 —— 拿它比會報成「積分不符」,
+       而那不是不一致,是兩邊涵蓋的比賽不同批。守在這上面會擋住整晚的部署
+       (「已完賽場次一律收盤價」那次的同一課)。 */
     ok(s.table.mismatches.length === 0,
-      `${s.label}:本站依賽果算的積分與官方逐隊一致`, JSON.stringify(s.table.mismatches.slice(0, 3)));
+      `${s.label}:場次數一致的球隊,積分與進失球跟官方逐隊相同`,
+      JSON.stringify(s.table.mismatches.slice(0, 3)));
+    if ((s.table.pending ?? []).length) {
+      console.log(`  · ${s.label}:官方積分榜還沒算進 ${s.table.pending.length} 隊的最新場次`
+        + `(${s.table.pending.slice(0, 3).map(x => `${x.team} 本站 ${x.ours} 場/官方 ${x.official} 場`).join('、')})`
+        + ` —— 上游時差,只回報不擋`);
+    }
     ok(s.table.rows.length === s.teams, `${s.label}:積分榜的隊數等於參賽隊數`, `${s.table.rows.length} vs ${s.teams}`);
 
     // 三段結局只有在淘汰賽名單實際出現後才知道；未開賽時不按規則硬猜。

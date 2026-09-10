@@ -35,17 +35,33 @@ export function leaguePhaseTable(matches, standings) {
   const derived = [...T.values()].map(r => ({ ...r, gd: r.gf - r.ga }));
 
   /* 官方那份對得上就用官方的名次,並逐隊核對積分與進失球(鐵則五)。
-     對不上的隊列出來讓畫面講出來 —— 靜靜選一個等於自己挑答案。 */
+     對不上的隊列出來讓畫面講出來 —— 靜靜選一個等於自己挑答案。
+
+     **但先分清楚「不一致」與「還沒算進去」。** 上游同一份 payload 裡,
+     `matches` 與 `standings` **不是同時更新的**:比賽結果先進來,積分榜晚幾小時。
+     實測 2026-09-10 02:xx:比賽區已有 12 場完賽,積分榜只算了 6 場,
+     於是剛贏球的 Barça 在官方榜上還是 0 分 0 進球 —— 拿它跟本站算的 3 分比,
+     會報成「積分不符」,而那不是不一致,是**兩邊涵蓋的比賽根本不同批**。
+
+     所以:場次數不同的隊記成 `pending`(只回報、畫面講),
+     **只有場次數一樣卻積分/進失球對不上才是 `mismatches`** —— 那才是真的有人算錯。
+     這跟「已完賽場次一律收盤價」那次是同一課:上游時差不是本站的錯,
+     寫成 CI 紅線就會在比賽夜擋住整晚的部署。 */
   const mismatches = [];
+  const pending = [];
   let rows, order = 'derived';
   if (Array.isArray(standings) && standings.length) {
     const byId = new Map(derived.map(r => [r.id, r]));
     rows = standings.map(s => {
       const d = byId.get(s.teamId);
       if (d) {
-        for (const [k, mine, theirs] of [['積分', d.pts, s.points], ['進球', d.gf, s.goalsFor],
-          ['失球', d.ga, s.goalsAgainst], ['場次', d.p, s.playedGames]]) {
-          if (mine !== theirs) mismatches.push({ team: s.teamName, field: k, ours: mine, official: theirs });
+        if (d.p !== s.playedGames) {
+          pending.push({ team: s.teamName, ours: d.p, official: s.playedGames });
+        } else {
+          for (const [k, mine, theirs] of [['積分', d.pts, s.points], ['進球', d.gf, s.goalsFor],
+            ['失球', d.ga, s.goalsAgainst]]) {
+            if (mine !== theirs) mismatches.push({ team: s.teamName, field: k, ours: mine, official: theirs });
+          }
         }
       }
       return {
@@ -60,7 +76,7 @@ export function leaguePhaseTable(matches, standings) {
       .sort((x, y) => y.pts - x.pts || y.gd - x.gd || y.gf - x.gf || String(x.name).localeCompare(String(y.name)))
       .map((r, i) => ({ position: i + 1, ...r }));
   }
-  return { rows, order, mismatches };
+  return { rows, order, mismatches, pending };
 }
 
 /* 兩回合配對。用「這一輪裡的兩隊組合」當鍵 —— 主客會對調,所以鍵要排序過。
@@ -429,7 +445,7 @@ export async function loadUclSeasons(root, sources) {
           total: fm.matches.length, played: 0, teams: draw.rows.length,
           aet: 0, shootouts: 0,
           teamsKnown: idx.matched, teamsTotal: idx.total,
-          table: { rows: [], order: 'none', mismatches: [] },
+          table: { rows: [], order: 'none', mismatches: [], pending: [] },
           rounds: [], leagueRounds: [], leagueMatches: [],
           champion: null, runs: [], advancementProblems: [],
           unknownDurations: [], unknownStatuses: [],
@@ -441,7 +457,7 @@ export async function loadUclSeasons(root, sources) {
       seasons.push({
         label: raw.season, availability: raw.availability, message: raw.message ?? null,
         total: 0, played: 0, teams: 0, aet: 0, shootouts: 0,
-        table: { rows: [], order: 'none', mismatches: [] }, rounds: [], leagueRounds: [], leagueMatches: [],
+        table: { rows: [], order: 'none', mismatches: [], pending: [] }, rounds: [], leagueRounds: [], leagueMatches: [],
         champion: null, runs: [], advancementProblems: [], unknownDurations: [], unknownStatuses: [],
         bands: {}, outcomesKnown: false, bandBroken: false,
       });
