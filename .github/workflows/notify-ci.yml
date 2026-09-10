@@ -34,7 +34,11 @@ on:
         required: true
         type: string
       results:
-        description: '呼叫端的 needs context(填 ${{ toJSON(needs) }})。判定紅不紅只看這個'
+        # **描述字串裡不能寫 GitHub 的運算式語法** —— 它會被當成要求值的運算式,
+        # 而 `needs` 在 workflow_call 的 inputs 這一層根本不存在 → **整份 workflow
+        # parse 失敗、連跑都跑不起來**(實測:呼叫端手動觸發直接被拒,錯誤指到這一行)。
+        # 症狀不是「通知壞掉」而是「整支 workflow 消失」,所以這裡只用文字描述。
+        description: '呼叫端的 needs context。呼叫時傳 toJSON(needs);判定紅不紅只看這個'
         required: true
         type: string
 

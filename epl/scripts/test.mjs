@@ -3337,7 +3337,12 @@ async function checkDataGap() {
         && /`ci:\$\{key\}`/.test(w)
         /* 判定只看呼叫端傳進來的 needs 結論;讀逐步結果是加分項,
            失敗了不可以把整個通知帶走(CI 紅了反而更沒有人知道)。 */
-        && /JSON\.parse\(process\.env\.RESULTS/.test(w) && /catch \(e\)/.test(w);
+        && /JSON\.parse\(process\.env\.RESULTS/.test(w) && /catch \(e\)/.test(w)
+        /* **inputs 的 description 裡不能出現 GitHub 的運算式語法。**
+           它會被當成要求值的運算式,而 `needs` 在 workflow_call 的 inputs 這一層
+           不存在 → 整份 workflow parse 失敗、連跑都跑不起來。症狀不是「通知壞掉」
+           而是「整支 workflow 消失」——實測手動觸發直接被拒,錯誤指到那一行。 */
+        && !w.split('\n').filter(l => /^\s*description:/.test(l)).some(l => l.includes('${' + '{'));
     })()],
     ['四支排程 workflow 都接上失敗通知,而且 needs 涵蓋自己的每一個 job', (() => {
       const WFS = ['epl-live.yml', 'epl-matchday.yml', 'laliga-matchday.yml', 'laliga-news-daily.yml'];
