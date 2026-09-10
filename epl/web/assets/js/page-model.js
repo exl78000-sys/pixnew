@@ -69,6 +69,12 @@ try {
   const calib = (await C.loadFrom(C.league(), ['inplay-calibration']).catch(() => ({ data: {} })))
     .data?.['inplay-calibration'] ?? null;
 
+  /* 歐冠的跨聯賽評分。**一律從 pl 讀**(跟 page-cups.js 同一個做法):
+     這是跨聯賽的產物,三個聯賽的模型頁要看到同一份 ——
+     讀 `C.league()` 的話英冠沒有這個檔,整節會從英冠的模型頁靜靜消失。 */
+  const uclModel = (await C.loadFrom('pl', ['ucl-elo']).catch(() => ({ data: {} })))
+    .data?.['ucl-elo'] ?? null;
+
   const kpi = (l, v, sub) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub}</div></div>`;
   const better = ((M.baseline.rps - M.blend.rps) / M.baseline.rps) * 100;
 
@@ -154,6 +160,174 @@ try {
         <th class="num">實際翻盤率</th><th class="num">樣本</th></tr></thead>
       <tbody>${trailRows}</tbody></table></div>
     <div class="tiny dim" style="margin-top:8px">${C.esc(calib.note)}</div>
+  </div>`;
+  }
+
+  /* ── 第二個模型:歐冠的跨聯賽評分 ────────────────────
+     這一頁以前從頭到尾只講域內那一個,而站上其實有**兩個**模型 ——
+     歐冠頁掛著上百場預測,讀者在這裡一個字都查不到它憑什麼,
+     而「每個數字都查得到出處」正是這個站唯一的賣點。
+     順帶修掉最後一段寫死的「本站目前只做聯賽」,那句在階段 C 之後就是假的。
+
+     所有數字都從產物讀,一個都不在這裡寫死 —— 包含「量過沒通過」那兩個修正
+     (`rejected`)。前端自己寫一份的話,改了 `lib/ucl-elo.mjs` 這邊會悄悄過期。 */
+  function uclSection() {
+    const u = uclModel;
+    if (!u?.model) return '';
+    const m = u.model;
+    const cov = u.coverage ?? {};
+    const pool = u.pool ?? {};
+    const leagues = pool.leagues ?? [];
+    /* 「只註冊球隊、不收域內賽果」的聯賽由產物的 `results` 欄位決定,
+       **不要**從 `played === 0` 反推 —— 模式換了推法就靜靜過期。 */
+    const bridgeOnly = leagues.filter(l => l.results === false);
+    const withResults = leagues.filter(l => l.results !== false);
+    const ratio = m.se > 0 ? m.improvement / m.se : null;
+    const [bh, bd, ba] = m.baselineRates ?? [];
+    const preds = (u.fixtures ?? []).length;
+
+    const seasonRows = (m.perSeason ?? []).map(x => {
+      const gain = x.baseline - x.rps;
+      return `<tr>
+        <td>${C.esc(x.season)}</td>
+        <td class="num mono">${x.rps}</td>
+        <td class="num mono">${x.baseline}</td>
+        <td class="num mono ${gain > 0 ? 'accent-text' : ''}">${gain > 0 ? '+' : ''}${gain.toFixed(4)}</td>
+        <td class="num dim">${x.n} 場</td></tr>`;
+    }).join('');
+
+    /* 三次歷史量測 + 現行配置。最後一列的數字是**現況**(每次 build 重算),
+       前三列是紀錄 —— 畫面上要分得出來,不然讀者會以為四列都是同一時間量的。 */
+    const trialRows = (u.poolTrials ?? []).map(t => `<tr>
+      <td>${C.esc(t.name)}</td>
+      <td class="num mono dim">${Number(t.pool).toLocaleString()}</td>
+      <td class="num mono dim">${C.esc(t.coverage)}</td>
+      <td class="num mono">${t.gain.toFixed(4)} ± ${t.se.toFixed(4)}
+        <span class="dim">(${t.se > 0 ? (t.gain / t.se).toFixed(1) : '—'} SE)</span></td>
+      <td><span class="pill tiny ${t.passes ? 'accent' : ''}">${t.passes ? '通過' : '沒通過'}</span></td></tr>`).join('')
+      + ((u.poolTrials ?? []).length ? `<tr>
+      <td><b>現行:只註冊球隊、不收它們的賽果</b></td>
+      <td class="num mono">${Number(pool.matches).toLocaleString()}</td>
+      <td class="num mono">${cov.ratedTeams}/${cov.totalTeams}</td>
+      <td class="num mono">${m.improvement.toFixed(4)} ± ${m.se.toFixed(4)}
+        <span class="dim">(${ratio == null ? '—' : ratio.toFixed(1)} SE)</span></td>
+      <td><span class="pill tiny ${m.passes ? 'accent' : 'bad'}">${m.passes ? '通過' : '沒通過'}</span></td></tr>` : '');
+
+    const rejRows = (u.rejected ?? []).map(r => `<tr>
+      <td>${C.esc(r.name)}</td>
+      <td class="num mono">${r.gain > 0 ? '+' : ''}${r.gain.toFixed(4)}</td>
+      <td class="num mono">±${r.se.toFixed(4)}</td>
+      <td class="num mono">${r.se > 0 ? (r.gain / r.se).toFixed(1) : '—'} SE</td>
+      <td><span class="pill tiny">沒通過</span></td></tr>`).join('');
+
+    // 沒有評分的兩種原因意義完全不同,分開講(產物已經分好了)
+    const noBridge = (cov.unrated ?? []).filter(x => x.reason === 'no-bridge');
+    const unmapped = (cov.unrated ?? []).filter(x => x.reason !== 'no-bridge');
+    const nameList = xs => xs.map(x => `<b>${C.esc(x.name)}</b>(${x.n} 場)`).join('、');
+
+    return `
+  <div class="section" style="margin-top:20px"><h2>第二個模型:歐冠的跨聯賽評分</h2>
+    <span class="hint">跟上面那個不是同一個模型</span></div>
+  <div class="card">
+    <div class="small muted" style="display:grid;gap:8px">
+      <div>這一頁到這裡為止講的都是<b>域內</b>模型 —— 這個聯賽自己的 Poisson 加 Elo。
+        歐冠是另一個問題:各聯賽的 Elo 是<b>封閉池</b>,
+        某支英超球隊的 1650 跟某支葡超球隊的 1610 不在同一把尺上,直接比就是編數字。</div>
+      <div>做法是<b>單一評分池</b>:${withResults.length} 個聯賽的域內賽果與歐冠場次
+        按日期全部餵進<b>同一個</b> Elo,歐冠場次就是把各池接起來的<b>橋</b>
+        (英超與英冠之間另外有天然的橋 —— 升降級讓球隊帶著評分換池)。
+        所以這裡<b>沒有新模型、也沒有新參數</b>:用的就是上面那套 Elo,
+        一個係數都沒有為歐冠調過。</div>
+      <div class="dim">評分池:${Number(pool.matches).toLocaleString()} 場、${pool.teams} 支球隊、
+        ${leagues.length} 個聯賽,其中 ${pool.bridges} 場是歐冠的橋;從 ${C.esc(String(u.poolStart))} 起算。</div>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-top:14px">
+    ${kpi('RPS', m.rps, `基準線 ${m.baseline}`)}
+    ${kpi('贏過基準線', m.improvement.toFixed(4), ratio == null ? '—' : `± ${m.se.toFixed(4)}・${ratio.toFixed(1)} 倍標準誤`)}
+    ${kpi('驗收場次', m.n, '走查回測・只用該場之前的比賽')}
+    ${kpi('本季涵蓋', `${cov.ratedTeams} / ${cov.totalTeams} 隊`, `${preds} 場有預測`)}
+  </div>
+
+  <div class="note ${m.passes ? 'info' : 'warn'}" style="margin-top:10px">
+    ${m.passes
+      ? `<b>改善 ${m.improvement.toFixed(4)},是它自己標準誤的 ${ratio.toFixed(1)} 倍。</b>
+         超過兩倍才給預測 —— 沒過的話一場都不給,而不是給一個沒有證據的數字。`
+      : '<b>改善沒有大過兩倍標準誤,所以本站目前一場歐冠預測都不給。</b>'}
+    基準線用的是<b>這批比賽自己的</b>主/和/客分佈(${C.pct(bh, 1)} / ${C.pct(bd, 1)} / ${C.pct(ba, 1)})——
+    那對基準線有利,因為它偷看了答案;贏過它才算數。
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>逐季拆開</h3>
+    <p class="small muted">整體贏了,可能只是靠其中一季。拆開來看每一季有沒有各自贏過<b>自己那一季</b>的基準線。</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>賽季</th><th class="num">模型 RPS</th><th class="num">基準線</th>
+        <th class="num">贏多少</th><th class="num">場次</th></tr></thead>
+      <tbody>${seasonRows}</tbody></table></div>
+    <div class="tiny dim" style="margin-top:8px">RPS 越低越好,「贏多少」是基準線減模型。
+      各季的場次差很多,場次少的那幾季波動本來就大 —— 那幾列先當觀察,不當結論。</div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>涵蓋到哪裡,以及為什麼有些場次沒有預測</h3>
+    <div class="small muted" style="display:grid;gap:8px">
+      <div>本季 ${cov.totalMatches} 場裡,${cov.bothRated} 場兩隊都有評分;
+        其中還沒踢的 ${preds} 場才有預測。
+        <b>只要一隊沒有評分,整場就不給</b> —— 留一個半套的預測比不給更糟。</div>
+      ${bridgeOnly.length ? `<div>池子裡的 ${leagues.length} 個聯賽有 ${bridgeOnly.length} 個
+        <b>只用來辨識球隊、不收它們的域內賽果</b>(${bridgeOnly.map(l => C.esc(l.zh)).join('、')}),
+        所以這些球隊的評分完全由歐冠場次決定。那不是偷懶,是量出來的 —— 下一節有三次量測的數字。</div>` : ''}
+      ${noBridge.length ? `<div>${nameList(noBridge)}目前沒有評分,因為它們從
+        ${C.esc(String(u.poolStart))} 以來<b>一場歐冠都還沒踢過</b>,池子裡沒有它們的比賽。
+        踢完第一場就會有評分 —— 這個不用修任何東西,等比賽而已。</div>` : ''}
+      ${unmapped.length ? `<div class="accent-text">${nameList(unmapped)}<b>對照表接不上</b>,
+        那是本站的問題,不是等比賽就會好的。</div>` : ''}
+      <div class="dim">跨聯賽的球隊對照走的是<b>人工表</b>,不用寬鬆比對 ——
+        希臘的 Olympiacos 與賽普勒斯的 Olympiakos Nicosia、希臘的 AEK Athens 與賽普勒斯的 AEK Larnaca
+        正規化之後會撞,自動比對會靜靜挑一個,而畫面上完全看不出來。</div>
+    </div>
+  </div>
+
+  ${trialRows ? `<div class="card" style="margin-top:14px">
+    <h3>為什麼那些聯賽的賽果不收</h3>
+    <p class="small muted">直覺會說「資料越多越準」。這裡量了三次,答案是<b>不一定</b> ——
+      把那十六個聯賽的完整歷史收進來,模型<b>變差</b>到通不過驗收。</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>配置</th><th class="num">池</th><th class="num">涵蓋</th>
+        <th class="num">改善 ± 標準誤</th><th>結果</th></tr></thead>
+      <tbody>${trialRows}</tbody></table></div>
+    <div class="small muted" style="display:grid;gap:8px;margin-top:12px">
+      ${(u.poolTrials ?? []).filter(t => t.note).map(t => `<div><b>${C.esc(t.name)}:</b>${C.esc(t.note)}</div>`).join('')}
+      <div class="dim">前三列是當時的量測紀錄,不會再變;最後一列是<b>現行配置</b>,每次資料更新都重算。
+        現行這一版把那十六個聯賽<b>只拿來辨識球隊</b>:球隊進得了池子(不然歐冠那幾場橋收不進來),
+        但它們的域內賽果一場都不收。</div>
+    </div>
+  </div>` : ''}
+
+  ${rejRows ? `<div class="card" style="margin-top:14px">
+    <h3>這個模型測過、但沒有加進去的兩個修正</h3>
+    <p class="small muted">兩個都是「直覺上應該有用」的典型。都用<b>一季調參、另一季驗收</b>,
+      改善要大過兩倍標準誤才算數 —— 兩個都沒過,所以都沒有加。</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>修正</th><th class="num">驗收季的改善</th><th class="num">標準誤</th>
+        <th class="num">倍數</th><th>結果</th></tr></thead>
+      <tbody>${rejRows}</tbody></table></div>
+    <div class="small muted" style="display:grid;gap:8px;margin-top:12px">
+      ${(u.rejected ?? []).map(r => `<div><b>${C.esc(r.name)}:</b>${C.esc(r.why)}</div>`).join('')}
+    </div>
+  </div>` : ''}
+
+  <div class="card" style="margin-top:14px">
+    <h3>這個模型不知道的事</h3>
+    <div class="small muted" style="display:grid;gap:6px">
+      <div>・<b>不預測淘汰賽的加時與 PK</b>,也不做兩回合的合計 —— 給的是單場的主/和/客。</div>
+      <div>・沒有為歐冠調過主場優勢,用的是域內那一個。客場遠征的距離與時差不在模型裡。</div>
+      <div>・能回測的都是<b>兩隊都有評分</b>的場次,那批比整體更偏向大聯賽的對戰 ——
+        整體準度可能比這裡的數字樂觀。</div>
+      <div>・樣本只有 ${(m.perSeason ?? []).length} 季。域內模型一季就有幾百場,這裡整個池子的橋只有 ${pool.bridges} 場。</div>
+    </div>
   </div>`;
   }
 
@@ -475,6 +649,8 @@ try {
 
   ${inplayCalibSection()}
 
+  ${uclSection()}
+
   <div class="card" style="margin-top:20px">
     <h2>這個模型不知道的事</h2>
     <div class="small muted" style="display:grid;gap:6px">
@@ -483,7 +659,8 @@ try {
             重覆的那句刪掉;盃賽那句改成不綁聯賽。 */''}
       ${meta.model.caveats.map(c => `<div>・${C.esc(c)}</div>`).join('')}
       <div>・不含天氣與裁判。</div>
-      <div>・盃賽與洲際賽事需要不同的模型(加時賽、PK、兩回合、跨聯賽比較),本站目前只做聯賽。</div>
+      <div>・這一段講的是<b>域內</b>模型。歐冠的跨聯賽評分是另一個模型,上面有它自己的驗證與界線;
+        盃賽的加時、PK 與兩回合合計則是兩個模型都不做的。</div>
     </div>
   </div>
   ${C.foot(meta)}`;

@@ -75,3 +75,16 @@ jobs:
             git commit -m "chore(news): 更新三聯賽每日外電快取"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
+
+  # 失敗要**主動說** —— 這一支原本紅了完全沒有聲音,而它是排程跑的,
+  # 沒有人守在旁邊看 log。邏輯在 `notify-ci.yml`(一份,不複製)。
+  notify:
+    needs: [fetch]
+    if: always()
+    permissions:
+      issues: write
+      actions: read
+    uses: ./.github/workflows/notify-ci.yml
+    with:
+      key: laliga-news-daily
+      results: ${{ toJSON(needs) }}

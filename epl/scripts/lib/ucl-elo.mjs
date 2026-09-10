@@ -114,6 +114,37 @@ export const POOL_START = '2023-24';
  * 踢過就會有。畫面上要講的是這個原因,不是「本站沒有它們的賽果來源」—— 那句已經不對了。 */
 export const FOTMOB_MODE = 'bridge';
 
+/* 量過而**沒有通過**的兩個修正 —— 檔頭那一段有完整理由,這裡是給畫面用的同一份。
+
+   這是**紀錄**(當時量出來的值),不是每次 build 重算的,所以寫成常數。
+   為什麼不讓前端自己寫死:模型頁與這裡各一份的話,改了一邊另一邊會悄悄過期,
+   而畫面完全正常 —— 本專案在姓名配對上已經栽過同一種。 */
+/* 「這十六個聯賽的域內賽果要不要收」量過的三個配置 —— 同樣是**紀錄**,不是重算。
+   完整過程見 `docs/變更紀錄.md` 2026-09-09 那一節。現行的 'bridge' 不在這三個裡面,
+   它的數字每次 build 重算(產物的 `model`),畫面上要把兩者分清楚:
+   **這三列是當時量的,最後一列是現在的。** */
+export const POOL_TRIALS = [
+  { name: '只收八個 openfootball 聯賽', pool: 9225, coverage: '25/36', gain: 0.0149, se: 0.0061, passes: true },
+  { name: '＋十六個聯賽的本季賽果', pool: 10780, coverage: '34/36', gain: 0.0265, se: 0.0058, passes: true,
+    note: '看起來最好,但那是資料剛好補到一半時量到的,不是設計出來的配置 —— 拿它當結論就是挑一個好看的數字' },
+  { name: '＋十六個聯賽的四季完整歷史', pool: 19972, coverage: '35/36', gain: 0.0063, se: 0.0033, passes: false,
+    note: 'RPS 從 0.2107 掉到 0.2306。這些聯賽多半頂重(Celtic、Galatasaray、Salzburg、Slavia 在國內幾乎橫掃),歷史越長它們靠痛宰國內對手累積的 Elo 越高,而三百多場橋不夠把它壓回來' },
+];
+
+export const REJECTED = [
+  {
+    name: '逐聯賽的 Elo 補正',
+    tuned: '2024-25', holdout: '2025-26', gain: 0.0009, se: 0.0079,
+    why: '動機看起來很硬:診斷顯示葡超被高估 0.34 分/場、英超被低估 0.34。但帶上標準誤之後只有英超到 2.4 SE,'
+      + '而測了七個聯賽,純靠運氣就有 0.28 的機率至少一個超過 2SE。兩季調出來的補正還互相矛盾(荷甲 +5 vs −181)。',
+  },
+  {
+    name: '機率銳化(把實力差乘上 k)',
+    tuned: '2024-25', holdout: '2025-26', gain: 0.0030, se: 0.0021,
+    why: '校準表看起來太保守,像是可以再自信一點。但驗收只有 1.4 SE,而且 k 自己就不穩(一季調出 1.30、另一季 1.85)。',
+  },
+];
+
 /* 池子裡的八個聯賽。前三個是本站的聯賽(用它們原本的快取,不重抓),
    後五個是為歐冠抓的。**這份清單不要另外複製一份** —— 後五個直接取 UCL_LEAGUES。 */
 export const POOL_LEAGUES = [
@@ -209,7 +240,7 @@ export function poolMatches(root, ucl, { fotmob = FOTMOB_MODE } = {}) {
         got += 1;
       }
     }
-    perLeague.push({ key: lg.key, zh: lg.zh, played: got, total: seen });
+    perLeague.push({ key: lg.key, zh: lg.zh, played: got, total: seen, results: true });
   }
 
   /* openfootball 沒有的那十六個(FotMob)。抓取器自己驗過賽季與對照表,
@@ -248,7 +279,9 @@ export function poolMatches(root, ucl, { fotmob = FOTMOB_MODE } = {}) {
         got += 1;
       }
     }
-    if (seen) perLeague.push({ key: lg.key, zh: lg.zh, played: got, total: seen });
+    /* `results` 是**寫給前端的事實**,不是讓它從 `played === 0` 自己推 ——
+       模式換了(例如改收 N 季域內賽果)推法就靜靜過期,而畫面完全正常。 */
+    if (seen) perLeague.push({ key: lg.key, zh: lg.zh, played: got, total: seen, results: fotmob !== 'bridge' });
     else fmMissing.push(lg.zh);
   }
 
@@ -279,7 +312,7 @@ export function poolMatches(root, ucl, { fotmob = FOTMOB_MODE } = {}) {
     }
   }
   matches.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-  return { matches, leagueOf, perLeague, bridges, seasons, idOf, fmMissing,
+  return { matches, leagueOf, perLeague, bridges, seasons, idOf, fmMissing, fotmobMode: fotmob,
     unrated: [...unrated].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([name, n]) => ({ name, n })) };
 }
 
@@ -400,10 +433,13 @@ export function uclElo(root, ucl) {
     poolStart: POOL_START,
     seasons: pool.seasons,
     pool: { matches: pool.matches.length, bridges: pool.bridges, teams: elo.size, leagues: pool.perLeague,
+      fotmobMode: pool.fotmobMode,
       /* 對照表裡有、卻一份快取都沒有的聯賽。空陣列才是正常 —— 有東西代表抓取那邊有問題,
          而症狀只會是「少幾支球隊的預測」,不會報錯。 */
       missingLeagues: pool.fmMissing },
     model: bt,
+    rejected: REJECTED,
+    poolTrials: POOL_TRIALS,
     ratings,
     fixtures,
     coverage: {
@@ -419,10 +455,18 @@ export function uclElo(root, ucl) {
         for (const m of seasonMatches) for (const side of ['home', 'away']) {
           const c = m[side];
           if (!c?.id || ratings[String(c.id)]) continue;
-          seen.set(c.name ?? c.fullName, (seen.get(c.name ?? c.fullName) ?? 0) + 1);
+          const key = c.name ?? c.fullName;
+          /* 「沒有評分」有兩種,對讀者的意義完全不同,而**前端分辨不出來**:
+               `unmapped`  對照表接不上 —— 那是本站的 bug,要去修對照表
+               `no-bridge` 接得上、但這支球隊在池子裡一場都還沒踢過
+                           (bridge 模式下這十六個聯賽的評分只由歐冠場次決定)
+                           —— 踢完第一場就會有,不用修任何東西
+             在這裡就分好,畫面才講得出「為什麼這一場沒有預測」。 */
+          const reason = pool.idOf(c.fullName) ? 'no-bridge' : 'unmapped';
+          seen.set(key, { n: (seen.get(key)?.n ?? 0) + 1, reason });
         }
-        return [...seen].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-          .slice(0, 30).map(([name, n]) => ({ name, n }));
+        return [...seen].sort((a, b) => b[1].n - a[1].n || a[0].localeCompare(b[0]))
+          .slice(0, 30).map(([name, v]) => ({ name, n: v.n, reason: v.reason }));
       })(),
     },
   };
