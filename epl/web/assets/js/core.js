@@ -912,7 +912,16 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(
    有 data-team 的退回隊徽(尺寸不變、行高不跳);沒有的整個拿掉 —— 比賽事件那幾列本來就有隊徽。 */
 document.addEventListener('error', e => {
   const img = e.target;
-  if (!(img instanceof HTMLImageElement) || !img.classList?.contains('pphoto')) return;
+  if (!(img instanceof HTMLImageElement)) return;
+  /* 教練頭貼是 Wikimedia 的遠端網址,同一個問題:載不到就留一個破圖框。
+     退回「姓名首字的圓框」—— 跟本來就沒有照片時畫的是同一個東西,讀者分不出差別。 */
+  if (img.classList?.contains('coach-photo')) {
+    const span = document.createElement('span');
+    span.className = 'coach-avatar'; span.setAttribute('aria-hidden', 'true');
+    span.textContent = (img.alt || '教').slice(0, 1);
+    img.replaceWith(span); return;
+  }
+  if (!img.classList?.contains('pphoto')) return;
   const code = img.dataset.team;
   if (!code) { img.remove(); return; }
   const span = document.createElement('span');

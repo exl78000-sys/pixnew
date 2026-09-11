@@ -1,5 +1,5 @@
-import * as C from './core.js?v=cddf3c48';
-import { renderUclView } from './ucl-view.js?v=b735ac4f';
+import * as C from './core.js?v=462a040e';
+import { renderUclView } from './ucl-view.js?v=af741c24';
 
 const app = document.getElementById('app');
 
@@ -95,10 +95,13 @@ function roundCard(round) {
   const rows = round.matches.map(m => {
     const w = winner(m);
     const strong = side => (w === side ? 'font-weight:700' : w ? 'opacity:.62' : '');
-    return `<div class="stat-line" style="gap:10px;align-items:center">
-      <span style="flex:1;text-align:right;${strong('home')}">${teamCell(m.home, { align: 'right' })}</span>
-      <span style="min-width:132px;text-align:center">${scoreCell(m)}</span>
-      <span style="flex:1;${strong('away')}">${teamCell(m.away)}</span>
+    /* 欄寬走 .tie-leg 那組 CSS(跟歐冠對戰列同一份),不寫 inline style ——
+       inline 的 min-width 在手機上覆寫不了,而隊名格沒有縮小規則就照自己的寬度撐出去:
+       實測 2026-09-11 足總盃 400px 視窗 108 列溢出、聯賽盃 74 列。 */
+    return `<div class="stat-line tie-leg">
+      <span class="leg-home" style="${strong('home')}">${teamCell(m.home, { align: 'right' })}</span>
+      <span class="leg-score">${scoreCell(m)}</span>
+      <span class="leg-away" style="${strong('away')}">${teamCell(m.away)}</span>
     </div>`;
   }).join('');
   const marks = [

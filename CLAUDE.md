@@ -178,6 +178,8 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 | **把「目標達成」寫成 CI 紅線** | 歐冠涵蓋的斷言寫成 `ratedTeams < totalTeams`(**一定要有球隊沒評分**)。9/10 頁面上寫「Fenerbahçe 與 Sabah FK 踢完第一場就會有評分」,**一個晚上就成真**(34/36 → 36/36、預測 116 → 126 場)—— 然後 `npm test` 紅在「補齊了」。而它**下面那一段註解本來就在警告這件事**,寫註解時看著上一行卻沒改 | 守的要是**計數自己不矛盾**(評分數 ≤ 球隊數),涵蓋率印成一行只回報不擋。凡是寫「等某某補齊」的斷言,一律先問:**補齊的那一天,這條會變成什麼?** 發現它的方法不是讀程式,是現實把預測兌現了而斷言擋在那裡 |
 | **可重用 workflow 的 `inputs.description` 裡寫了運算式語法 → 整支 workflow 消失** | 拿 `description: '…(填 ${{ toJSON(needs) }})…'` 當說明,GitHub 把它當成**要求值的運算式**,而 `needs` 在 `workflow_call` 的 inputs 這一層根本不存在 → **整份 parse 失敗**。症狀不是「通知壞掉」而是**四支 workflow 全部跑不起來**:手動觸發直接被拒、排程不會開火。本機 YAML 語法檢查全過、`npm test` 全綠 —— 擋它的是 GitHub 自己的運算式層 | 描述只寫純文字。而唯一能發現它的方法是**改完真的去按一次觸發** —— 跟「改前端一定要真的開來看」同一條:本機驗證看不到的那一層,一定要去那一層驗一次 |
 | **幾支 workflow 共用一個通知標籤,會互相關掉對方的 Issue** | 把 `epl-live.yml` 的 notify 抽成可重用的給四支用,第一版沿用單一 `ci-failure` 標籤 —— 比賽日那支還紅著,每日外電那支跑成功就把它的 Issue 關了,而 Actions 頁看起來一切正常 | 標籤帶呼叫端識別字(`ci-failure` + `ci:<key>`),要一次看全部就篩前者。另外兩條:判定只看呼叫端傳進來的 `toJSON(needs)`(GitHub 自己算的),「哪一步紅的」那段包在 `try` 裡 —— **它把整個通知帶走的話,CI 紅了反而更沒有人知道**;手動觸發的探測 workflow **刻意不掛**,失敗本來就是它要回答的問題,開 Issue 只是雜訊 |
+| **grid item 的 `min-width:auto` 被撐開,而修在錯的那一層** | 球員頁在 400px 視窗 body 橫捲到 718:逐場紀錄表(min-content 約 700)把整條 grid 欄撐到 703,於是**每一張卡片**都 704 寬,連最上面只有名字那張也是。第一版把 `min-width:0` 寫在 `.player-page > .card` 上 —— 沒效,因為撐開它的是 `#playerLog`,一個沒有 class 的 div | 量 `grid-template-columns` 的算出值,不要猜是哪張卡片;規則下在 `> *`。逐場表本來就包在 overflow-x:auto 裡,但那只在**外層肯縮**時才有用 |
+| **掃描把兩種假象當成 bug** | 全站掃描第一版報 allplayers 破圖 37 張、es1 球員頁 console 錯誤 30 次。追下去:32 張是 `loading="lazy"` 在首屏外**還沒開始載**(`complete=true`、`naturalWidth=0`,跟破圖一模一樣);console 錯誤全是 `ERR_TUNNEL_CONNECTION_FAILED` —— 沙箱擋外部圖片,正式站不會 | 破圖只數視窗內的;外部資源載不到另外計,不混進 pageerror。**量測工具自己也會騙人,第一次的數字要追到原因再信** |
 
 ---
 
@@ -293,6 +295,8 @@ build → laliga:build,跑完 `npm run local:sync` 再跑 `npm test` 就會紅�
 **改前端一定要真的開來看。** 測試檢查不到版面 —— 用 Playwright 截圖
 (`/opt/pw-browsers/chromium` 已裝好),分頁模式與單檔模式都要看。
 分頁模式(`npm run serve`,port 5173)才是 GitHub Pages 實際部署的那個。
+`npm run sweep` 會把每一頁 × 三聯賽 × 兩個寬度開一遍、只印有異狀的(2026-09-11 起);
+改完前端跑它,比人手開 57 頁可靠。讀結果前先看腳本檔頭那兩個假象。
 
 ---
 

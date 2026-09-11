@@ -1,4 +1,4 @@
-import * as C from './core.js?v=cddf3c48';
+import * as C from './core.js?v=462a040e';
 
 /* 跨聯賽球員搜尋(總球員頁)。2026-08-30 改成**合併單表**(使用者要求),
    加隊徽與頭貼。設計決定,都是踩過的坑或明寫的界線:
@@ -26,10 +26,16 @@ export async function renderAllPlayers(app) {
   try {
     C.nav();
     const lgs = Object.keys(C.LEAGUES);
+    /* 沒有開球員頁的聯賽(英冠)本來就沒有 players-core,不去打一個註定 404 的請求 ——
+       它會進 missing 那一段用 gapNote 講實話,結果一樣,只是少一行 console 錯誤。 */
+    const hasPlayers = lg => !C.LEAGUES[lg]?.open || C.LEAGUES[lg].open.includes('players');
     const loaded = await Promise.all(lgs.map(async lg => {
+      if (!hasPlayers(lg)) return { lg, rows: null, crestBy: new Map() };
       try {
         const { data } = await C.loadFrom(lg, ['players-core', 'clubs']);
         const clubs = (data.clubs?.clubs ?? data.clubs ?? []);
+        // 破圖退路(core.js 的 error 監聽)靠 badge(code) 畫隊徽,隊要先登錄進去
+        C.registerTeams(clubs);
         return { lg, rows: data['players-core'] ?? null,
           crestBy: new Map(clubs.map(c => [c.code, c.crest ?? null])) };
       } catch { return { lg, rows: null, crestBy: new Map() }; }
@@ -89,8 +95,10 @@ export async function renderAllPlayers(app) {
         { key: 'name', label: '球員', num: false, left: true, value: p => p.name,
           render: p => {
             const ph = photoBy.get(`${p.league}|${p.code}`);
-            return `<span class="team-cell">${ph ? `<img src="${ph}" alt="" width="24" height="24"
-                style="border-radius:50%;object-fit:cover" loading="lazy">` : ''}
+            /* 一定要掛 pphoto + data-team:西甲的頭貼是遠端網址,載不到時 core.js 的
+               監聽器只認這個 class —— 沒掛的話破圖框就留在畫面上(實測 2026-09-11 掃到)。 */
+            return `<span class="team-cell">${ph ? `<img class="pphoto chip" data-team="${C.esc(p.team)}" src="${ph}" alt="" width="24" height="24"
+                style="border-radius:50%;object-fit:cover;width:24px;height:24px" loading="lazy">` : ''}
               <span>${C.esc(p.name)}${p.fullName && p.fullName !== p.name
                 ? ` <span class="dim tiny">${C.esc(p.fullName)}</span>` : ''}</span></span>`;
           } },

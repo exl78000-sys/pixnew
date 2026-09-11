@@ -10,6 +10,7 @@
     "stamp": "node scripts/stamp-assets.mjs",
     "all": "node scripts/fetch.mjs --force && node scripts/build.mjs",
     "serve": "node scripts/serve.mjs",
+    "sweep": "node scripts/sweep-pages.mjs",
     "test": "node scripts/test-all.mjs",
     "docs:check": "node scripts/check-docs.mjs",
     "news": "node scripts/fetch-news.mjs",

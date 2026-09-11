@@ -2731,8 +2731,11 @@ async function checkDataGap() {
            手機規則寫了 display:grid,但計算出來仍然是 flex。 */
         ['對戰列的手機規則權重高過 .stat-line(不能只靠源順序)',
           /\.stat-line\.tie-leg \{\s*display: grid/.test(mobile)],
-        ['隊名截斷的規則下在文字節點上(inline-flex 的 ellipsis 對自己無效)',
-          /\.stat-line\.tie-leg \.leg-home a > span/.test(css)],
+        /* 2026-09-11 放寬:英格蘭盃賽裡本站認不得的球隊是 span 不是 a,原本只寫 `a > span`
+           的話那些格子照自己的寬度撐出去(足總盃 400px 視窗 108 列溢出)。
+           層級標籤 .pill 不截,截的只有隊名那個 span。 */
+        ['隊名截斷的規則下在文字節點上,而且不限連結(inline-flex 的 ellipsis 對自己無效)',
+          /\.stat-line\.tie-leg \.leg-home > \* > span:not\(\.pill\)/.test(css)],
       ];
     })(),
 
