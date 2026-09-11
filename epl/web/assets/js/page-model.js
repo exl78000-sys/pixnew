@@ -1,4 +1,4 @@
-import * as C from './core.js?v=cddf3c48';
+import * as C from './core.js?v=462a040e';
 
 const app = document.getElementById('app');
 
@@ -66,8 +66,9 @@ try {
   const M = bt.models;
   /* 即時機率的校準量測(build 從 live-history 算好)。沒有這一份的聯賽
      (西甲/英冠沒有 in-play feed)整節不畫 —— loadFrom 的 absent 語意剛好。 */
-  const calib = (await C.loadFrom(C.league(), ['inplay-calibration']).catch(() => ({ data: {} })))
-    .data?.['inplay-calibration'] ?? null;
+  const calib = meta.capabilities?.live === false ? null   // 英冠沒有 in-play feed,不打一個註定 404 的請求
+    : (await C.loadFrom(C.league(), ['inplay-calibration']).catch(() => ({ data: {} })))
+      .data?.['inplay-calibration'] ?? null;
 
   /* 歐冠的跨聯賽評分。**一律從 pl 讀**(跟 page-cups.js 同一個做法):
      這是跨聯賽的產物,三個聯賽的模型頁要看到同一份 ——

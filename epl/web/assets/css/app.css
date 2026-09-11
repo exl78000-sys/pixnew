@@ -91,8 +91,11 @@ nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
 .stat-line.tie-leg .leg-home > *, .stat-line.tie-leg .leg-away > * { min-width: 0; max-width: 100%; }
 /* `uclTeamCell` 是 inline-flex(隊徽 + 名字),ellipsis 加在它身上不會生效 ——
    要截斷的是裡面那個文字節點,所以規則要下到它的子元素上。 */
-.stat-line.tie-leg .leg-home a, .stat-line.tie-leg .leg-away a { overflow: hidden; }
-.stat-line.tie-leg .leg-home a > span, .stat-line.tie-leg .leg-away a > span {
+/* 英格蘭盃賽的對戰列(2026-09-11 併進同一組規則):本站認不得的球隊是 span 不是 a,
+   原本只寫 `a` 的話那些格子仍然照自己的寬度撐出去 —— 足總盃在 400px 視窗 108 列溢出。
+   層級標籤(.pill)不截斷,截的是隊名那個 span。 */
+.stat-line.tie-leg .leg-home > *, .stat-line.tie-leg .leg-away > * { overflow: hidden; }
+.stat-line.tie-leg .leg-home > * > span:not(.pill), .stat-line.tie-leg .leg-away > * > span:not(.pill) {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
 }
 .stat-line.tie-leg .leg-ko { min-width: 96px; text-align: right; }
@@ -717,5 +720,12 @@ input:focus-visible, tbody tr.clickable:focus-visible {
 @media (max-width: 700px) { .game-main { grid-template-columns: 1fr; } }
 
 /* 球員完整頁(2026-09-04 取代抽屜):卡片直排、寬度收在可讀範圍 */
-.player-page { display: grid; gap: 12px; max-width: 820px; }
+/* **grid item 的 min-width 預設是 auto**:任何一張卡片裡有東西撐不下(逐場紀錄表的
+   min-content 約 700px),整條 grid 欄就跟著變 700,於是**每一張卡片**在手機上都溢出,
+   連最上面只有名字的那張也是。實測 2026-09-11:400px 視窗、卡片 718px、body 橫向捲動。
+   逐場表本來就包在 overflow-x:auto 裡 —— 但那只在卡片自己肯縮的時候才有用。 */
+.player-page { display: grid; gap: 12px; max-width: 820px; min-width: 0; }
+/* 要下在 `> *` 不是 `> .card`:逐場紀錄掛在 #playerLog(一個沒有 class 的 div)底下,
+   第一版只給 .card 加 min-width:0,結果欄寬仍然是 703px —— 撐開它的正是那個沒被涵蓋的 div。 */
+.player-page > * { min-width: 0; }
 .player-page > .card { margin: 0; }
