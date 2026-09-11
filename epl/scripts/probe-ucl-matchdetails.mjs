@@ -34,7 +34,12 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'pl-war-room/1.0 (football analysis side project)';
-const ALL_LEAGUES = 'https://www.fotmob.com/api/allLeagues';
+/* **路徑是 `/api/data/allLeagues`,不是 `/api/allLeagues`。**
+   第一次跑我自己另外寫了後者 → HTTP 404,而同一份 log 裡既有的
+   `probe-ucl-coverage.mjs` 正在成功呼叫前者(收到 569 筆)。
+   跟 Understat 那條坑一模一樣:**斷言拿不到之前,先確認自己試的是不是對的端點**
+   —— 而這次對的那一個就在隔壁檔案裡。抄現成的,不要自己重寫網址。 */
+const ALL_LEAGUES = 'https://www.fotmob.com/api/data/allLeagues';
 const LEAGUE = 'https://www.fotmob.com/api/data/leagues';
 const DETAILS = 'https://www.fotmob.com/api/data/matchDetails?matchId=';
 const MAX_REQUESTS = 8;
@@ -104,10 +109,14 @@ async function main() {
   let dir;
   try { dir = await get(ALL_LEAGUES); }
   catch (e) { console.log(`✗ allLeagues 拿不到:${e.message}`); process.exit(0); }
-  const hits = findLeagues(dir, WANT, NOT_WANT);
-  console.log(`目錄裡名字含 "Champions League" 的(已排除女子/青年/其他洲):${hits.length} 個`);
-  for (const h of hits) console.log(`   id=${h.id}  ${h.name}${h.ccode ? `  (${h.ccode})` : ''}`);
-  const ucl = hits.find(h => /uefa/i.test(h.name)) ?? hits[0];
+  /* **先把全部候選印出來再挑。** 只印挑完的那一個,挑錯時 log 看起來完全正常
+     ——「nearMisses 那份清單不是裝飾」同一個道理。 */
+  const raw = findLeagues(dir, WANT, null);
+  console.log(`目錄裡名字含 "Champions League" 的:${raw.length} 個`);
+  for (const h of raw) console.log(`   id=${h.id}  ${h.name}${h.ccode ? `  (${h.ccode})` : ''}`);
+  const hits = raw.filter(h => !NOT_WANT.test(h.name));
+  const ucl = hits.find(h => /uefa/i.test(h.name)) ?? hits.find(h => h.ccode === 'INT') ?? hits[0];
+  console.log(`排除女子/青年/其他洲之後剩 ${hits.length} 個`);
   if (!ucl) { console.log('✗ 目錄裡找不到歐冠 —— 名字的寫法可能不同,把上面那份清單擴大再看一次'); process.exit(0); }
   console.log(`\n→ 採用 id=${ucl.id}(${ucl.name})\n`);
 
