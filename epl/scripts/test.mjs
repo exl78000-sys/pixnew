@@ -4573,9 +4573,18 @@ function checkUcl() {
       ok(bad.length === 0, '每一場預測的兩隊都有跨聯賽評分', `${bad.length} 場沒有`);
       ok(m.fixtures.every(f => Math.abs(f.p[0] + f.p[1] + f.p[2] - 1) < 0.01),
         '每一場的三個機率加起來是 1');
-      ok(m.coverage.ratedTeams < m.coverage.totalTeams,
-        '有球隊沒有評分,而且照實記著(openfootball 不涵蓋那些聯賽)',
+      /* 涵蓋率**只回報不擋**。這一條原本寫成 `ratedTeams < totalTeams`
+         ——「一定要有球隊沒評分」—— 於是 2026-09-11 涵蓋補到 36/36 的那一刻它就紅了
+         (Fenerbahçe 與 Sabah FK 踢完歐冠第一場,bridge 模式下評分就長出來,
+         正是產物 `reason: 'no-bridge'` 預告的事)。**把「目標達成」寫成紅線**,
+         跟 CLAUDE.md 那條「會隨資料變動的數字不要當 CI 紅線」是同一個錯;
+         更難堪的是下面那一段註解本來就在警告這件事,而它上面這一條沒跟著改。
+         真正該守的是**計數自己不矛盾**:評分數不可能超過球隊數。 */
+      ok(m.coverage.totalTeams > 0 && m.coverage.ratedTeams <= m.coverage.totalTeams,
+        '跨聯賽評分的涵蓋率記得下來,而且計數不矛盾',
         `${m.coverage.ratedTeams}/${m.coverage.totalTeams}`);
+      console.log(`  · 歐冠本季涵蓋:${m.coverage.ratedTeams}/${m.coverage.totalTeams} 隊有評分`
+        + `・${m.fixtures.length} 場有預測(會隨球隊踢完第一場而補齊,只回報不擋)`);
       /* 清單要跟計數對得起來 —— 有球隊沒評分就一定要列得出是誰,
          不然畫面講不出「為什麼這一場沒有預測」(鐵則四)。
          **不是「一定要有沒評分的球隊」** —— 全部都有評分是好事,那條會在補齊時紅。 */

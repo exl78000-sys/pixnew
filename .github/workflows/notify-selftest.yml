@@ -1,0 +1,58 @@
+# 通知鏈的自我測試(2026-09-11)—— 只給手動觸發,**故意失敗**
+#
+# 為什麼要有這一支:`notify-ci.yml` 的「沒失敗 → 不開 Issue」那條路徑,
+# 每次部署成功都在驗;但**「失敗 → 開 Issue」與「恢復 → 關掉」這兩條沒有人在驗** ——
+# 而它們正是這整套東西存在的理由。要驗就得讓 CI 真的紅一次,
+# 而那不可以拿真實管線去做(會擋部署、會讓站上停更)。所以獨立一支。
+#
+# 它也是**給未來的人的體檢工具**:GitHub 的通知設定、Watch 狀態、token 權限
+# 都會隨時間變,而它們失效的症狀是「什麼都沒發生」—— 靜靜的。
+# 懷疑「CI 紅了到底會不會通知我」的時候,跑這一支,兩分鐘給你答案。
+#
+# 怎麼用:
+#   1. Actions → 通知鏈自我測試 → Run workflow → outcome 選 `fail`
+#      → 應該開一張標題 `CI 紅了(selftest):…` 的 Issue,而且你會收到通知
+#   2. 同一支再跑一次,outcome 選 `success`
+#      → 那張 Issue 應該被留言「已恢復」並自動關掉
+#
+# **它不碰任何資料、不 build、不部署、不推送。** 唯一的副作用是那張 Issue。
+name: 通知鏈自我測試
+
+on:
+  workflow_dispatch:
+    inputs:
+      outcome:
+        description: 'fail = 故意失敗(應該開 Issue);success = 正常結束(應該關掉那張 Issue)'
+        required: true
+        default: fail
+        type: choice
+        options: [fail, success]
+
+# 這一支跟任何排程都不共用 concurrency group —— 不可以卡到比賽日的迴圈
+concurrency:
+  group: notify-selftest
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      # 步驟名字會原封不動出現在 Issue 標題裡,所以寫得讓人一眼知道這是演習
+      - name: 這是通知鏈的演習,不是真的壞掉
+        run: |
+          if [ "${{ inputs.outcome }}" = "fail" ]; then
+            echo "刻意以非零結束碼離開,驗證失敗通知會不會送到。"
+            exit 1
+          fi
+          echo "正常結束 —— 這一輪是要驗「恢復之後 Issue 會不會自動關掉」。"
+
+  notify:
+    needs: [probe]
+    if: always()
+    permissions:
+      issues: write
+      actions: read
+    uses: ./.github/workflows/notify-ci.yml
+    with:
+      key: selftest
+      results: ${{ toJSON(needs) }}
