@@ -110610,8 +110610,1614 @@
      }
     ]
    }
+  },
+  "WHU|WRE": {
+   "key": "WHU|WRE",
+   "season": "2026-27",
+   "date": "2026-09-11",
+   "matchId": "5836837",
+   "home": "WHU",
+   "away": "WRE",
+   "score": [
+    6,
+    0
+   ],
+   "providerScore": [
+    6,
+    0
+   ],
+   "teamStats": {
+    "WHU": {
+     "possession": 53,
+     "shots": 19,
+     "shotsOn": 9,
+     "shotsOff": 8,
+     "blockedShots": 6,
+     "corners": 3,
+     "offsides": 0,
+     "fouls": 10,
+     "saves": 0,
+     "passes": 569,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.51
+    },
+    "WRE": {
+     "possession": 47,
+     "shots": 8,
+     "shotsOn": 1,
+     "shotsOff": 2,
+     "blockedShots": 2,
+     "corners": 6,
+     "offsides": 1,
+     "fouls": 7,
+     "saves": 3,
+     "passes": 492,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.39
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     53,
+     47
+    ],
+    "h1": [
+     55,
+     45
+    ],
+    "h2": [
+     51,
+     49
+    ]
+   },
+   "events": [
+    {
+     "minute": 28,
+     "extra": null,
+     "team": "WHU",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Jarrod Bowen"
+    },
+    {
+     "minute": 30,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kyle Walker-Peters"
+    },
+    {
+     "minute": 37,
+     "extra": null,
+     "team": "WHU",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Joël Piroe"
+    },
+    {
+     "minute": 48,
+     "extra": null,
+     "team": "WHU",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Konstantinos Mavropanos"
+    },
+    {
+     "minute": 63,
+     "extra": null,
+     "team": "WHU",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Valentín Castellanos"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "WRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Issa Kaboré"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "WRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kieffer Moore"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "WRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matthew James"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "WRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dominic Hyam"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Oliver Scarles"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mohamadou Kanté"
+    },
+    {
+     "minute": 76,
+     "extra": null,
+     "team": "WHU",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Mohamadou Kanté"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joshua Ajala"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lewis Orford"
+    },
+    {
+     "minute": 82,
+     "extra": null,
+     "team": "WHU",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Manor Solomon"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "WHU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Oliver Scarles"
+    }
+   ],
+   "shots": [
+    {
+     "min": 8,
+     "extra": null,
+     "team": "WHU",
+     "player": "Valentín Castellanos",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.141,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 37.7,
+     "foot": "Header"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.026,
+     "xgot": 0.138,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.3,
+     "y": 19,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "WHU",
+     "player": "Konstantinos Mavropanos",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.178,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.5,
+     "y": 34,
+     "foot": "Header"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "WRE",
+     "player": "Ben Whiteman",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 45.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 45.7,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "WRE",
+     "player": "Daniel Imray",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.4,
+     "y": 20.6,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "WHU",
+     "player": "Valentín Castellanos",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.041,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.9,
+     "y": 25.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "WHU",
+     "player": "Joël Piroe",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 38.2,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.309,
+     "xgot": 0.959,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.4,
+     "y": 35.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "WRE",
+     "player": "Daniel Imray",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 25.4,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "WRE",
+     "player": "Ben Whiteman",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.065,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88.1,
+     "y": 39.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "WRE",
+     "player": "George Dobson",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.143,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 33.5,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "WHU",
+     "player": "Joël Piroe",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.209,
+     "xgot": 0.681,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 35.1,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "WHU",
+     "player": "Valentín Castellanos",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.055,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.4,
+     "y": 37.1,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "WHU",
+     "player": "Manor Solomon",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.275,
+     "xgot": 0.215,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 25,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "WHU",
+     "player": "Konstantinos Mavropanos",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.457,
+     "xgot": 0.344,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 37.2,
+     "foot": "Header"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "WHU",
+     "player": "Valentín Castellanos",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.8,
+     "y": 27.9,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.6,
+     "y": 22.1,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "WHU",
+     "player": "Valentín Castellanos",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.149,
+     "xgot": 0.864,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90,
+     "y": 28.1,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "WHU",
+     "player": "Valentín Castellanos",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.041,
+     "xgot": 0.168,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.9,
+     "y": 34.2,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "WHU",
+     "player": "Mohamadou Kanté",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.259,
+     "xgot": 0.795,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 47.6,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "WHU",
+     "player": "Manor Solomon",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.12,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 41.4,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "WHU",
+     "player": "Manor Solomon",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.037,
+     "xgot": 0.018,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 34,
+     "foot": "LeftFoot"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "WRE",
+     "player": "Ben Whiteman",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80,
+     "y": 34.8,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "WHU",
+     "player": "Lewis Orford",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.5,
+     "y": 44.5,
+     "foot": "RightFoot"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "WRE",
+     "player": "Dominic Hyam",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.006,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.5,
+     "y": 46.2,
+     "foot": "Header"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "WRE",
+     "player": "Callum O'Hare",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.082,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 35.4,
+     "foot": "LeftFoot"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     -8
+    ],
+    [
+     4,
+     -11
+    ],
+    [
+     5,
+     -30
+    ],
+    [
+     6,
+     -16
+    ],
+    [
+     7,
+     3
+    ],
+    [
+     8,
+     90
+    ],
+    [
+     9,
+     98
+    ],
+    [
+     10,
+     81
+    ],
+    [
+     11,
+     38
+    ],
+    [
+     12,
+     49
+    ],
+    [
+     13,
+     100
+    ],
+    [
+     14,
+     60
+    ],
+    [
+     15,
+     60
+    ],
+    [
+     16,
+     0
+    ],
+    [
+     17,
+     -3
+    ],
+    [
+     18,
+     -30
+    ],
+    [
+     19,
+     -38
+    ],
+    [
+     20,
+     -5
+    ],
+    [
+     21,
+     5
+    ],
+    [
+     22,
+     19
+    ],
+    [
+     23,
+     22
+    ],
+    [
+     24,
+     27
+    ],
+    [
+     25,
+     24
+    ],
+    [
+     26,
+     52
+    ],
+    [
+     27,
+     41
+    ],
+    [
+     28,
+     100
+    ],
+    [
+     29,
+     71
+    ],
+    [
+     30,
+     49
+    ],
+    [
+     31,
+     -27
+    ],
+    [
+     32,
+     -16
+    ],
+    [
+     33,
+     -11
+    ],
+    [
+     34,
+     -11
+    ],
+    [
+     35,
+     -71
+    ],
+    [
+     36,
+     -49
+    ],
+    [
+     37,
+     14
+    ],
+    [
+     38,
+     68
+    ],
+    [
+     39,
+     68
+    ],
+    [
+     40,
+     16
+    ],
+    [
+     41,
+     16
+    ],
+    [
+     42,
+     16
+    ],
+    [
+     43,
+     0
+    ],
+    [
+     44,
+     27
+    ],
+    [
+     45,
+     0
+    ],
+    [
+     45.5,
+     -11
+    ],
+    [
+     46,
+     -14
+    ],
+    [
+     47,
+     14
+    ],
+    [
+     48,
+     73
+    ],
+    [
+     49,
+     98
+    ],
+    [
+     50,
+     81
+    ],
+    [
+     51,
+     33
+    ],
+    [
+     52,
+     27
+    ],
+    [
+     53,
+     -8
+    ],
+    [
+     54,
+     -24
+    ],
+    [
+     55,
+     -8
+    ],
+    [
+     56,
+     43
+    ],
+    [
+     57,
+     65
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     -22
+    ],
+    [
+     60,
+     -43
+    ],
+    [
+     61,
+     -33
+    ],
+    [
+     62,
+     -81
+    ],
+    [
+     63,
+     -22
+    ],
+    [
+     64,
+     -11
+    ],
+    [
+     65,
+     54
+    ],
+    [
+     66,
+     11
+    ],
+    [
+     67,
+     16
+    ],
+    [
+     68,
+     11
+    ],
+    [
+     69,
+     -11
+    ],
+    [
+     70,
+     -11
+    ],
+    [
+     71,
+     -16
+    ],
+    [
+     72,
+     -11
+    ],
+    [
+     73,
+     -11
+    ],
+    [
+     74,
+     5
+    ],
+    [
+     75,
+     11
+    ],
+    [
+     76,
+     27
+    ],
+    [
+     77,
+     16
+    ],
+    [
+     78,
+     14
+    ],
+    [
+     79,
+     -14
+    ],
+    [
+     80,
+     33
+    ],
+    [
+     81,
+     35
+    ],
+    [
+     82,
+     73
+    ],
+    [
+     83,
+     27
+    ],
+    [
+     84,
+     16
+    ],
+    [
+     85,
+     -16
+    ],
+    [
+     86,
+     -11
+    ],
+    [
+     87,
+     19
+    ],
+    [
+     88,
+     0
+    ],
+    [
+     89,
+     -30
+    ],
+    [
+     90,
+     -38
+    ],
+    [
+     90.5,
+     4
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "WHU": {
+     "team": "WHU",
+     "formation": "4-4-2",
+     "coach": "Nuno Espírito Santo",
+     "xi": [
+      {
+       "name": "Mads Hermansen",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Joël Veltman",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Konstantinos Mavropanos",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Morato",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Max Kilman",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Jarrod Bowen",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Divine Mukasa",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Arne Engels",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Manor Solomon",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Joël Piroe",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Valentín Castellanos",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Kyle Walker-Peters",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Oliver Scarles",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Mohamadou Kanté",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Joshua Ajala",
+       "shirt": 66,
+       "pos": "?"
+      },
+      {
+       "name": "Lewis Orford",
+       "shirt": 61,
+       "pos": "?"
+      },
+      {
+       "name": "Finlay Herrick",
+       "shirt": 49,
+       "pos": "?"
+      },
+      {
+       "name": "Airidas Golambeckis",
+       "shirt": 58,
+       "pos": "?"
+      },
+      {
+       "name": "Edvin Austbø",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo",
+       "shirt": 19,
+       "pos": "?"
+      }
+     ]
+    },
+    "WRE": {
+     "team": "WRE",
+     "formation": "3-4-2-1",
+     "coach": "Phil Parkinson",
+     "xi": [
+      {
+       "name": "Anthony Patterson",
+       "shirt": 22,
+       "pos": "G"
+      },
+      {
+       "name": "Zak Vyner",
+       "shirt": 26,
+       "pos": "D"
+      },
+      {
+       "name": "Joe Worrall",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Callum Doyle",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Daniel Imray",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "George Dobson",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Ben Whiteman",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Jacques Ekomié",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Callum O'Hare",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Lewis O'Brien",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Sam Smith",
+       "shirt": 28,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Dominic Hyam",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Issa Kaboré",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Matthew James",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Kieffer Moore",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Danny Ward",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Aaron James",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Josh Windass",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Nathan Broadhead",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Ryan Longman",
+       "shirt": 47,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 38,
+      "center": 24,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 40,
+      "center": 19,
+      "right": 41
+     },
+     "secondHalf": {
+      "left": 36,
+      "center": 30,
+      "right": 34
+     }
+    },
+    "away": {
+     "total": {
+      "left": 43,
+      "center": 20,
+      "right": 37
+     },
+     "firstHalf": {
+      "left": 46,
+      "center": 20,
+      "right": 34
+     },
+     "secondHalf": {
+      "left": 40,
+      "center": 21,
+      "right": 39
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 6,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-11T21:29:27.993Z",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "WRE",
+      "name": "Callum O'Hare",
+      "n": 59,
+      "cx": 62.6,
+      "cy": 41.3,
+      "spread": 26.4,
+      "grid": "0,0,2,1,2,3,0,1,3,3,6,2,0,0,1,7,1,1,0,4,8,5,8,1"
+     },
+     {
+      "team": "WRE",
+      "name": "Callum Doyle",
+      "n": 84,
+      "cx": 44.6,
+      "cy": 16.2,
+      "spread": 29.1,
+      "grid": "2,13,15,8,8,4,6,6,5,5,0,4,3,2,1,0,0,0,0,1,1,0,0,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Mads Hermansen",
+      "n": 50,
+      "cx": 10.3,
+      "cy": 37.2,
+      "spread": 9.8,
+      "grid": "0,0,0,0,0,0,12,1,0,0,0,0,29,6,0,0,0,0,1,1,0,0,0,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Max Kilman",
+      "n": 116,
+      "cx": 28.1,
+      "cy": 23.7,
+      "spread": 18.3,
+      "grid": "6,15,6,0,0,0,19,28,21,5,0,0,7,3,2,2,0,1,1,0,0,0,0,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Konstantinos Mavropanos",
+      "n": 96,
+      "cx": 34.2,
+      "cy": 48.2,
+      "spread": 19.7,
+      "grid": "0,0,0,0,0,0,0,1,4,0,0,1,9,22,18,4,0,1,9,11,12,4,0,0"
+     },
+     {
+      "team": "WRE",
+      "name": "Joe Worrall",
+      "n": 53,
+      "cx": 38.4,
+      "cy": 38.3,
+      "spread": 24.1,
+      "grid": "0,0,1,2,1,0,1,7,2,3,0,2,3,12,6,4,0,0,1,4,3,1,0,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Joël Piroe",
+      "n": 36,
+      "cx": 65.2,
+      "cy": 37.3,
+      "spread": 26.1,
+      "grid": "0,0,1,2,3,1,0,0,2,3,1,3,1,0,1,4,3,0,0,1,2,5,3,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Arne Engels",
+      "n": 71,
+      "cx": 47.4,
+      "cy": 25.1,
+      "spread": 24.9,
+      "grid": "0,6,6,13,0,2,0,4,12,5,1,0,2,3,9,4,0,1,0,1,0,1,1,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Divine Mukasa",
+      "n": 88,
+      "cx": 44.8,
+      "cy": 32.5,
+      "spread": 25.3,
+      "grid": "2,2,11,3,2,0,2,5,11,7,3,0,4,5,7,6,0,0,0,6,3,7,2,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Morato",
+      "n": 50,
+      "cx": 41,
+      "cy": 7.7,
+      "spread": 26.2,
+      "grid": "7,18,8,4,5,5,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Joël Veltman",
+      "n": 27,
+      "cx": 45.2,
+      "cy": 60.7,
+      "spread": 24.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,2,10,3,6,3,1"
+     },
+     {
+      "team": "WHU",
+      "name": "Manor Solomon",
+      "n": 73,
+      "cx": 61.6,
+      "cy": 17.5,
+      "spread": 27.5,
+      "grid": "2,3,14,14,12,3,0,1,2,5,1,5,0,1,0,1,1,2,0,2,1,1,2,0"
+     },
+     {
+      "team": "WRE",
+      "name": "Zak Vyner",
+      "n": 80,
+      "cx": 44.3,
+      "cy": 57.1,
+      "spread": 25.6,
+      "grid": "0,0,0,0,0,0,1,0,1,0,0,2,6,3,2,0,1,1,5,14,20,16,7,1"
+     },
+     {
+      "team": "WRE",
+      "name": "Daniel Imray",
+      "n": 46,
+      "cx": 68.2,
+      "cy": 61.4,
+      "spread": 26.8,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,6,5,2,18,10"
+     },
+     {
+      "team": "WRE",
+      "name": "George Dobson",
+      "n": 72,
+      "cx": 53.2,
+      "cy": 44.6,
+      "spread": 26.7,
+      "grid": "0,0,0,0,0,2,1,4,2,7,1,0,0,5,9,9,0,2,1,4,11,7,4,3"
+     },
+     {
+      "team": "WRE",
+      "name": "Ben Whiteman",
+      "n": 80,
+      "cx": 52.3,
+      "cy": 27.9,
+      "spread": 21.8,
+      "grid": "0,3,8,5,3,0,0,8,9,15,6,1,0,2,8,4,3,0,0,3,0,0,2,0"
+     },
+     {
+      "team": "WRE",
+      "name": "Lewis O'Brien",
+      "n": 54,
+      "cx": 61.1,
+      "cy": 14.7,
+      "spread": 23.3,
+      "grid": "1,1,15,9,7,5,0,0,2,3,3,1,0,0,2,4,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WRE",
+      "name": "Jacques Ekomié",
+      "n": 50,
+      "cx": 59.3,
+      "cy": 9.9,
+      "spread": 26,
+      "grid": "1,5,14,8,9,6,0,0,1,3,0,2,0,0,0,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Jarrod Bowen",
+      "n": 51,
+      "cx": 62.9,
+      "cy": 51.2,
+      "spread": 28.9,
+      "grid": "0,0,0,0,3,0,0,0,1,1,1,3,0,0,3,0,3,2,4,1,6,17,4,2"
+     },
+     {
+      "team": "WHU",
+      "name": "Valentín Castellanos",
+      "n": 61,
+      "cx": 60.3,
+      "cy": 29.8,
+      "spread": 25.7,
+      "grid": "0,0,7,6,4,0,2,0,5,7,4,3,2,0,2,5,5,1,0,1,1,2,3,1"
+     },
+     {
+      "team": "WRE",
+      "name": "Anthony Patterson",
+      "n": 48,
+      "cx": 11.3,
+      "cy": 32.6,
+      "spread": 9.8,
+      "grid": "1,0,0,0,0,0,23,4,0,0,0,0,16,4,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WRE",
+      "name": "Sam Smith",
+      "n": 18,
+      "cx": 69.5,
+      "cy": 31.2,
+      "spread": 20.4,
+      "grid": "0,0,0,3,2,0,0,0,1,1,1,0,0,0,0,3,3,1,0,0,1,0,2,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Kyle Walker-Peters",
+      "n": 56,
+      "cx": 52.8,
+      "cy": 56.2,
+      "spread": 25.5,
+      "grid": "0,0,0,0,0,0,1,0,0,1,0,0,2,0,0,2,4,2,4,7,8,17,6,2"
+     },
+     {
+      "team": "WRE",
+      "name": "Dominic Hyam",
+      "n": 24,
+      "cx": 40.3,
+      "cy": 41.2,
+      "spread": 24.3,
+      "grid": "0,0,0,0,0,0,0,2,1,0,0,3,0,8,6,0,0,0,0,2,2,0,0,0"
+     },
+     {
+      "team": "WRE",
+      "name": "Matthew James",
+      "n": 37,
+      "cx": 51.2,
+      "cy": 34,
+      "spread": 26.1,
+      "grid": "0,0,3,5,0,0,1,2,3,6,0,0,0,2,2,3,0,0,0,3,3,1,1,2"
+     },
+     {
+      "team": "WRE",
+      "name": "Issa Kaboré",
+      "n": 17,
+      "cx": 48.5,
+      "cy": 59.1,
+      "spread": 23.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,4,3,5,2,1"
+     },
+     {
+      "team": "WHU",
+      "name": "Oliver Scarles",
+      "n": 19,
+      "cx": 37.3,
+      "cy": 15.4,
+      "spread": 30.2,
+      "grid": "2,4,6,0,2,0,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,2,0"
+     },
+     {
+      "team": "WRE",
+      "name": "Kieffer Moore",
+      "n": 15,
+      "cx": 66.4,
+      "cy": 22.3,
+      "spread": 25.1,
+      "grid": "0,0,0,7,1,0,0,0,1,0,0,1,0,0,0,3,0,1,0,0,0,1,0,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Mohamadou Kanté",
+      "n": 21,
+      "cx": 45.9,
+      "cy": 36.4,
+      "spread": 21.5,
+      "grid": "0,0,0,1,0,0,1,1,7,1,0,1,1,0,2,1,0,0,0,0,4,1,0,0"
+     },
+     {
+      "team": "WHU",
+      "name": "Joshua Ajala",
+      "n": 7,
+      "cx": 46.7,
+      "cy": 51.8,
+      "spread": 32.3,
+      "grid": "0,0,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,1,0,1,0,1,1"
+     },
+     {
+      "team": "WHU",
+      "name": "Lewis Orford",
+      "n": 22,
+      "cx": 50.3,
+      "cy": 29.5,
+      "spread": 20.2,
+      "grid": "0,0,1,0,0,0,1,3,5,3,3,0,0,2,1,2,0,0,0,0,0,0,1,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-11T17:59:49.347Z"
+ "updatedAt": "2026-09-11T21:29:28.717Z"
 }
