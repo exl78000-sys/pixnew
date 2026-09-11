@@ -38,6 +38,16 @@ jobs:
         working-directory: epl
         run: npm run probe:fotmob-cups -- --only=details
 
+      # 2026-09-11,使用者問「歐冠沒有賽完紀錄可以看?」—— 現在踢完只剩比分,
+      # 因為 ucl.json 來自 football-data.org 的賽事端點(賽果 + 積分榜)。
+      # 但三個聯賽的賽後報告就是 FotMob 逐場詳情給的,盃賽也已經走同一條路,
+      # 所以先問「歐冠在同一組端點回什麼」,不憑印象寫 adapter。
+      # 唯讀、最多 8 個請求(目錄 1 + 賽程 1 + 單場 3),不寫任何快取。
+      # 聯賽 id **走 allLeagues 目錄用名字找,不是猜的**。
+      - name: 探測歐冠逐場詳情(FotMob)
+        working-directory: epl
+        run: npm run probe:ucl-details
+
       # SportMonks 的 **API** 2026-09-03 退訂了,而西甲球員檔的頭貼是
       # `cdn.sportmonks.com` 的**靜態圖片網址**(英超是內嵌 base64,不受影響)。
       # 「API 停了」跟「圖片 CDN 停了」是兩件事 —— 沙箱連不到外網,所以在這裡問。
