@@ -21204,7 +21204,7 @@
   "AVL|NFO": {
    "fixtureId": 128953,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -21213,9 +21213,31 @@
    "homeId": 2,
    "awayId": 15,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      125556
+     ],
+     [
+      14164,
+      5066,
+      21529,
+      51223
+     ],
+     [
+      25067,
+      4115
+     ],
+     [
+      51423,
+      26408,
+      124907
+     ],
+     [
+      110526
+     ]
+    ],
     "xi": [
      {
       "id": 125556,
@@ -21402,16 +21424,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      16723
+     ],
+     [
+      10439,
+      123299,
+      139648
+     ],
+     [
+      76353,
+      20335,
+      49270,
+      23811
+     ],
+     [
+      50623,
+      15259
+     ],
+     [
+      51813
+     ]
+    ],
     "xi": [
      {
       "id": 15259,
       "playerId": null,
       "name": "Morgan Gibbs-White",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": true
      },
@@ -21420,7 +21464,7 @@
       "playerId": null,
       "name": "Daniel Muñoz",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -21483,7 +21527,7 @@
       "playerId": null,
       "name": "Neco Williams",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -21594,7 +21638,20 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
@@ -22048,12 +22105,12 @@
      }
     ]
    },
-   "clock": "00'00"
+   "clock": "03'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -22062,16 +22119,38 @@
    "homeId": 4,
    "awayId": 41,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      4245
+     ],
+     [
+      66284,
+      51229,
+      119041
+     ],
+     [
+      21998,
+      14571,
+      99282,
+      68827
+     ],
+     [
+      49293,
+      23968
+     ],
+     [
+      72371
+     ]
+    ],
     "xi": [
      {
       "id": 21998,
       "playerId": null,
       "name": "Pedro Neto",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -22107,7 +22186,7 @@
       "playerId": null,
       "name": "Morgan Rogers",
       "shirt": 17,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -22116,7 +22195,7 @@
       "playerId": null,
       "name": "Malo Gusto",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -22134,7 +22213,7 @@
       "playerId": null,
       "name": "Reece James",
       "shirt": 24,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": true
      },
@@ -22143,7 +22222,7 @@
       "playerId": null,
       "name": "Cole Palmer",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -22251,9 +22330,29 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      133314,
+      20081
+     ],
+     [
+      137549,
+      8885,
+      21385,
+      337382
+     ],
+     [
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 337382,
@@ -22269,7 +22368,7 @@
       "playerId": null,
       "name": "Mohamed Belloumi",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -22443,14 +22542,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -22459,9 +22571,31 @@
    "homeId": 6,
    "awayId": 8,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      20497
+     ],
+     [
+      50842,
+      54893,
+      304106
+     ],
+     [
+      123848,
+      67779,
+      69595,
+      24334
+     ],
+     [
+      49759,
+      109117
+     ],
+     [
+      35670
+     ]
+    ],
     "xi": [
      {
       "id": 35670,
@@ -22504,7 +22638,7 @@
       "playerId": null,
       "name": "Anan Khalaili",
       "shirt": 25,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -22513,7 +22647,7 @@
       "playerId": null,
       "name": "Yéremy Pino",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -22522,7 +22656,7 @@
       "playerId": null,
       "name": "Tyrick Mitchell",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -22558,7 +22692,7 @@
       "playerId": null,
       "name": "Daichi Kamada",
       "shirt": 18,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Attacking Midfielder",
       "captain": false
      }
@@ -22648,9 +22782,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67189
+     ],
+     [
+      15154,
+      49884,
+      49254,
+      51454
+     ],
+     [
+      16044,
+      40161
+     ],
+     [
+      127644,
+      125827,
+      32715
+     ],
+     [
+      313194
+     ]
+    ],
     "xi": [
      {
       "id": 49254,
@@ -22677,7 +22833,7 @@
       "shirt": 26,
       "pos": "D",
       "posInfo": "Centre Central Defender",
-      "captain": false
+      "captain": true
      },
      {
       "id": 49884,
@@ -22693,7 +22849,7 @@
       "playerId": null,
       "name": "Abdul Fatawu",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -22729,7 +22885,7 @@
       "playerId": null,
       "name": "Jack Clarke",
       "shirt": 47,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -22840,14 +22996,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -22856,9 +23025,31 @@
    "homeId": 10,
    "awayId": 34,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      20559
+     ],
+     [
+      66133,
+      133104,
+      5140,
+      16006
+     ],
+     [
+      33231,
+      49909
+     ],
+     [
+      119386,
+      75382,
+      68840
+     ],
+     [
+      21737
+     ]
+    ],
     "xi": [
      {
       "id": 66133,
@@ -22937,7 +23128,7 @@
       "playerId": null,
       "name": "Bradley Barcola",
       "shirt": 29,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -22946,7 +23137,7 @@
       "playerId": null,
       "name": "Víctor Muñoz",
       "shirt": 23,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -23045,9 +23236,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4985
+     ],
+     [
+      6712,
+      68651,
+      23793,
+      14624
+     ],
+     [
+      21614,
+      75201
+     ],
+     [
+      66657,
+      128976,
+      4717
+     ],
+     [
+      119364
+     ]
+    ],
     "xi": [
      {
       "id": 23793,
@@ -23117,7 +23330,7 @@
       "playerId": null,
       "name": "Alex Iwobi",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Second Striker",
       "captain": false
      },
@@ -23237,10 +23450,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "03'00"
   }
  },
- "fetchedAt": "2026-09-12T14:00:41.638Z"
+ "fetchedAt": "2026-09-12T14:03:00.509Z"
 }
