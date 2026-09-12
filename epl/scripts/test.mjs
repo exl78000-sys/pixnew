@@ -4155,6 +4155,12 @@ function checkAssetStamps() {
   ok(/import \{ mountSimTable \} from '\.\/sim-table\.js(\?v=[0-9a-f]{8})?';/.test(liveSrc),
     'page-live.js 有 import 共用的預測積分榜');
   ok(liveSrc.includes("mountSimTable('simTable'"), 'page-live.js 有呼叫它');
+  /* 區塊順序(兩次使用者要求,不衝突):進行中 → 開賽倒數 → 剛結束。
+     進行中那一區沒有比賽在踢時不存在,所以沒有比賽的日子開賽倒數仍是最上面(2026-08-31 的要求);
+     有比賽在踢時它在倒數前面(2026-09-12 的要求)。掃的是樣板字串的順序,直線樣板的順序就是畫面順序。 */
+  ok(liveSrc.indexOf('<h2><span class="livedot"></span>進行中</h2>') < liveSrc.indexOf('<h2>開賽倒數</h2>')
+    && liveSrc.indexOf('<h2>開賽倒數</h2>') < liveSrc.indexOf('<h2>剛結束</h2>'),
+    '實時戰況頁:進行中在開賽倒數前面、開賽倒數在剛結束前面');
 
   /* 首頁只留賽程,兩張積分榜都在實時戰況頁 ——
      這兩條是在守「不要又搬回來」:同一份資料兩個地方畫,

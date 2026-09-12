@@ -221,9 +221,23 @@ try {
         : '即時來源尚未接入')}
     </div>
 
-    ${/* 開賽倒數放最上面(2026-08-31 使用者要求)。理由:這一頁最常被用來回答
-          「下一場什麼時候踢」,而它原本被壓在進行中/剛結束/還沒有賽果下面 ——
-          沒有比賽的日子要捲三個區塊才看得到,那是最常見的使用情境。 */''}
+    ${/* 進行中放最上面(2026-09-12 使用者要求:「進行中比賽要在最前面,比倒數前面」)。
+          這一區沒有比賽在踢時根本不存在,開賽倒數就自然是最上面 ——
+          2026-08-31 那次要求「開賽倒數放最上面」講的是沒有比賽的日子(最常見的情境),
+          兩個要求並不衝突:有比賽在踢時讀者要的是比分,不是倒數。 */''}
+    ${inPlaySched.length ? `
+      <div class="section"><h2><span class="livedot"></span>進行中</h2>
+        <span class="hint">依賽程推算・${withRealData ? `${withRealData} 場已接上即時比分` : '尚未接上即時比分'}</span></div>
+      ${!withRealData ? `<div class="note" style="margin-bottom:10px">
+        這 ${inPlaySched.length} 場<b>依賽程現在正在進行</b>,但目前沒有接上即時資料源,所以看不到比分。<br>
+        ${isLaLiga
+          ? '西甲即時端點尚未接入；目前只顯示賽前預測與開賽時間。'
+          : '接上即時來源之後,這一頁會自動更新真實比分、場上陣容與即時勝率。'}</div>` : ''}
+      <div class="grid g2">${liveCards.map(x => x.m ? liveCard(x.m) : schedCard(x)).join('')}</div>` : ''}
+
+    ${/* 開賽倒數緊接在進行中之後(2026-08-31 使用者要求放最上面;2026-09-12 改成進行中優先)。
+          理由:這一頁最常被用來回答「下一場什麼時候踢」,而它原本被壓在剛結束/還沒有賽果下面 ——
+          沒有比賽的日子要捲三個區塊才看得到。 */''}
     <div class="section"><h2>開賽倒數</h2><span class="hint">${countdownList.length
       ? `第 ${mainRound} 輪${isCatchUp ? '補賽' : ''}・${countdownList.length} 場・`
       : ''}依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
@@ -238,16 +252,6 @@ try {
     ${countdownRest.length ? `<div class="note" style="margin-top:10px">
       下一批:第 ${countdownRest[0].round} 輪・${C.kickoffLocal(countdownRest[0].kickoff)} 起。
       <a href="${C.link('index')}">看完整賽程(本季還有 ${unplayedCount} 場未賽)→</a></div>` : ''}
-
-    ${inPlaySched.length ? `
-      <div class="section"><h2><span class="livedot"></span>進行中</h2>
-        <span class="hint">依賽程推算・${withRealData ? `${withRealData} 場已接上即時比分` : '尚未接上即時比分'}</span></div>
-      ${!withRealData ? `<div class="note" style="margin-bottom:10px">
-        這 ${inPlaySched.length} 場<b>依賽程現在正在進行</b>,但目前沒有接上即時資料源,所以看不到比分。<br>
-        ${isLaLiga
-          ? '西甲即時端點尚未接入；目前只顯示賽前預測與開賽時間。'
-          : '接上即時來源之後,這一頁會自動更新真實比分、場上陣容與即時勝率。'}</div>` : ''}
-      <div class="grid g2">${liveCards.map(x => x.m ? liveCard(x.m) : schedCard(x)).join('')}</div>` : ''}
 
     ${recentCards.length ? `
       <div class="section"><h2>剛結束</h2>
