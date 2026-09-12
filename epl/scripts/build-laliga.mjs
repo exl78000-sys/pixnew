@@ -19,6 +19,7 @@ import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './l
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
 import { uclElo } from './lib/ucl-elo.mjs';
+import { uclDetails, writeUclDetails } from './lib/ucl-details.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
@@ -1213,6 +1214,10 @@ async function main() {
       // 同上:跟 build.mjs 呼叫同一個函式,產出必須逐位元組相同
       const uclModel = uclElo(ROOT, ucl);
       if (uclModel) await write('ucl-elo', uclModel);
+      // 歐冠賽後報告:同上,跟 build.mjs 呼叫同一個函式;索引 + 逐場檔(說明見 lib/ucl-details.mjs 檔頭)
+      const det = uclDetails(ROOT, ucl);
+      await write('ucl-details', det.index);
+      writeUclDetails(OUT, det);
       const avail = ucl.seasons.filter(x => x.availability === 'available');
       console.log(`  歐冠:${avail.length} 季可用(${avail.map(x => x.label).join('、')})`);
     }

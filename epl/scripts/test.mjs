@@ -382,6 +382,9 @@ async function main() {
   console.log('\n▶ 歐冠');
   const uclFail = checkUcl();
 
+  console.log('\n▶ 歐冠賽後報告');
+  const uclDetailFail = await checkUclDetails();
+
   console.log('\n▶ 租借紀錄(人工交付,必須核對過才發布)');
   const loanFail = checkLoans();
 
@@ -390,7 +393,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1392,7 +1395,7 @@ async function checkUclCompare() {
        階段 B 之後「有資料」多了一種來源(只有積分榜的三個聯賽),條件見下面那條。 */
     /* 兩個聯賽的 table.json 各約 100 KB,而整頁只有一兩場用得到 */
     ['聯賽積分榜是展開時才載入,不是開頁就抓',
-      /slot\.dataset\.done/.test(view) && /await renderCompare/.test(view)],
+      /slot\.dataset\.done/.test(view) && /await \(kind === 'post' \? renderPostMatch\(slot, m\) : renderCompare\(slot, m\)\)/.test(view)],
     /* 這個檔下面已經有一個 leagueTable(積分榜渲染器);同名會靜靜蓋掉,不拋錯 */
     ['資料載入器沒有跟積分榜渲染器撞名',
       /async function standingsOf\(/.test(view) && !/async function leagueTable\(/.test(view)],
@@ -4320,6 +4323,191 @@ function checkCuratedNews() {
       '動態頁真的把涵蓋範圍與斷檔印出來(鐵則四)');
     ok(/trailingGap/.test(newsSrc) && /還沒收到/.test(newsSrc),
       '動態頁也把尾端斷檔印出來(最後一次整理之後沒收的那幾天)');
+  }
+  return fail;
+}
+
+/* ── 歐冠賽後報告(2026-09-12)──
+   三件事要釘住:
+   一、**隊伍的橋**:FotMob id ↔ football-data id 用 bridgeTeams(互為第一名),而且要跟人工核過的
+       ucl-team-ids.json 一致。離線拿 FotMob 人工交付檔(跟賽程端點同一家、同樣的隊名)對 ucl.json 驗。
+   二、**產物**:索引 + 逐場檔;每一場的比分要等於 ucl.json 的 final(獨立來源);xG 一種算法(逐射門加總,
+       射門圖完整才給);拒收與不完整要進產物;兩個聯賽的索引結構一樣。
+   三、**入口**:已完賽且有報告的場次要有鈕(「東西在但沒有按鈕」那條坑的第二次),而且查表條件跟畫鈕一致。
+   沒有 raw 時(沙箱抓不到 FotMob)產物是 count 0 的索引 —— 結構照樣驗,數量只回報。 */
+async function checkUclDetails() {
+  let fail = 0;
+  const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
+  const W = join(ROOT, 'web');
+  const uclPath = join(W, 'data', 'ucl.json');
+  if (!existsSync(uclPath)) { console.log('  (沒有 ucl.json,略過)'); return 0; }
+  const ucl = JSON.parse(readFileSync(uclPath, 'utf8'));
+  const { uclResultsOf, uclDetails, UCL_RAW_DIR } = await import('./lib/ucl-details.mjs');
+  const { bridgeTeams } = await import('./lib/adapters/fotmob-ucl.mjs');
+
+  // ── 一、results 的形狀(抓取器與讀取器共用)──
+  {
+    const season = {
+      label: '2099-00', availability: 'available',
+      leagueMatches: [
+        { id: 1, kickoff: '2099-09-08T19:00:00Z', stage: 'LEAGUE_STAGE', matchday: 1, played: true,
+          home: { id: 11, name: 'A', fullName: 'A FC', code: 'AAA', league: 'pl' }, away: { id: 22, name: 'B', fullName: 'B SK', code: null, league: null }, final: [2, 1], pens: null },
+        { id: 2, kickoff: '2099-10-01T19:00:00Z', stage: 'LEAGUE_STAGE', matchday: 2, played: false,
+          home: { id: 22, name: 'B', fullName: 'B SK' }, away: { id: 11, name: 'A', fullName: 'A FC' }, final: null, pens: null },
+      ],
+      rounds: [{ stage: 'FINAL', ties: [{ legs: [
+        { id: 3, kickoff: '2100-05-30T19:00:00Z', stage: 'FINAL', matchday: 1, played: true,
+          home: { id: 11, name: 'A', fullName: 'A FC' }, away: { id: 22, name: 'B', fullName: 'B SK' }, final: [1, 1], et: [0, 0], pens: [4, 3] },
+      ] }] }],
+    };
+    const rs = uclResultsOf(season);
+    ok(rs.length === 3, 'results 同時收聯賽階段與淘汰賽(走整份,不列舉區塊)', `${rs.length} 場`);
+    const r = rs.find(x => x.id === 1);
+    ok(r && r.home === '11' && r.away === '22' && typeof r.home === 'string', '隊伍身分是 football-data id 字串', JSON.stringify(r));
+    ok(r && r.fh === 2 && r.fa === 1 && r.played === true && r.date === '2099-09-08' && r.season === '2099-00', 'fh / fa / played / date / season 跟 results.json 同形');
+    ok(r && r.homeCode === 'AAA' && r.awayCode === null && r.homeName === 'A' && r.awayFullName === 'B SK', '隊碼(有的才有)、名字與全名都帶出來');
+    ok(rs.find(x => x.id === 2)?.played === false, '未賽的場次 played false、比分 null');
+    const f = rs.find(x => x.id === 3);
+    ok(f && f.fh === 1 && f.fa === 1 && Array.isArray(f.pens), 'PK 場:比分讀 final(延長後平手),pens 另帶 —— 跟 FotMob 的 scoreStr 同一個語意');
+    ok(uclResultsOf({ label: 'x', availability: 'draw-only', leagueMatches: [] }).length === 0, '只抽籤的賽季不產 results');
+  }
+
+  // ── 一、橋:FotMob 人工交付檔 ↔ ucl.json 的隊名,36/36 而且跟人工對照表一致 ──
+  {
+    const cur = (ucl.seasons ?? []).find(s => s.current && s.availability === 'available');
+    const fmPath = cur ? join(ROOT, 'data', 'manual', `fotmob-ucl-${cur.label}.json`) : null;
+    const idsPath = join(ROOT, 'data', 'manual', 'ucl-team-ids.json');
+    if (!cur || !fmPath || !existsSync(fmPath)) {
+      console.log('  · 本季沒有 FotMob 人工交付檔,橋的離線驗證略過(線上那條在抓取器的 log 裡)');
+    } else {
+      const fm = JSON.parse(readFileSync(fmPath, 'utf8'));
+      const fmT = new Map(), fdT = new Map();
+      for (const m of fm.matches ?? []) for (const s of ['home', 'away']) if (m[s]?.id != null) fmT.set(String(m[s].id), [m[s].name, m[s].shortName].filter(Boolean));
+      for (const r of uclResultsOf(cur)) { fdT.set(r.home, [r.homeFullName, r.homeName].filter(Boolean)); fdT.set(r.away, [r.awayFullName, r.awayName].filter(Boolean)); }
+      const { map, unmatched } = bridgeTeams(fmT, fdT);
+      ok(fmT.size === fdT.size && map.size === fmT.size && unmatched.length === 0,
+        `歐冠隊伍橋:FotMob ${fmT.size} 隊全部過得了橋(互為第一名)`, `配上 ${map.size}、過不了 ${unmatched.map(u => u.fotmob).join('、')}`);
+      const uniq = new Set(map.values());
+      ok(uniq.size === map.size, '橋是一對一(沒有兩支 FotMob 隊對到同一支 fd 隊)');
+      if (existsSync(idsPath)) {
+        const ids = JSON.parse(readFileSync(idsPath, 'utf8'));
+        const overlap = (ids.teams ?? []).filter(t => map.has(String(t.fotmobId)));
+        const bad = overlap.filter(t => String(map.get(String(t.fotmobId))) !== String(t.fdId));
+        ok(overlap.length > 0 && bad.length === 0, `橋跟人工核過的 ucl-team-ids.json 一致(有交集 ${overlap.length} 隊)`,
+          bad.map(t => `${t.fotmobName}:橋 ${map.get(String(t.fotmobId))} / 人工 ${t.fdId}`).join('、'));
+      }
+    }
+  }
+
+  // ── 抓取器:ucl 參數組、橋、不抓熱區、賽季守門、退回退避 ──
+  {
+    const src = readFileSync(join(ROOT, 'scripts', 'game', 'fetch-fotmob-epl.mjs'), 'utf8');
+    ok(/ucl:\s*\{\s*id:\s*42,\s*ccode3:\s*null/.test(src), '抓取器有 ucl 參數組:id 42(allLeagues 目錄查到的)、不帶 ccode3');
+    ok(/heat:\s*false/.test(src) && /LG\.heat !== false && rec\.heatmapUrl/.test(src), '歐冠不抓熱區圖(一場一個請求),而且是參數決定的');
+    ok(/import \{ bridgeTeams \} from '\.\.\/lib\/adapters\/fotmob-ucl\.mjs'/.test(src) && /ucl-team-ids\.json/.test(src),
+      '橋用 adapters/fotmob-ucl.mjs 的 bridgeTeams,而且拿人工對照表當守門');
+    ok(/import \{ uclResultsOf, UCL_RAW_DIR \} from '\.\.\/lib\/ucl-details\.mjs'/.test(src), '賽果形狀跟 build 讀 raw 的是同一份(uclResultsOf)');
+    ok(/selectedSeason/.test(src) && /不是要的/.test(src), '賽程端點的 selectedSeason 要驗(帶 season 參數會回最新那季)');
+    ok(/RETRY_MS/.test(src) && /recentlyTried/.test(src), '退回過的場次有退避(比賽日迴圈每 2 分鐘叫一次)');
+    ok(!/ccode3=\$\{LG\.ccode3\}&/.test(src), 'ccode3 沒有就不帶(以前寫死在網址裡)');
+  }
+
+  // ── 二、產物 ──
+  const idxPath = join(W, 'data', 'ucl-details.json');
+  const esIdxPath = join(W, 'data', 'leagues', 'es1', 'ucl-details.json');
+  ok(existsSync(idxPath), 'ucl-details.json(索引)一定要在 —— 前端從 pl 載它,404 會讓整個盃賽頁載入失敗');
+  if (existsSync(idxPath)) {
+    const idx = JSON.parse(readFileSync(idxPath, 'utf8'));
+    ok(idx.xg === 'shotmap' && typeof idx.xgNote === 'string', 'xG 只有一種算法:逐射門加總(索引講明)');
+    ok(Array.isArray(idx.rejected) && Array.isArray(idx.incomplete), '拒收與不完整進產物(依設計不採用之後要留下紀錄)');
+    ok(!JSON.stringify(idx).includes('builtAt'), '索引裡沒有 build 時間戳(兩個 build 要寫出同一份)');
+    const byId = new Map();
+    for (const m of uclSeasonMatches(ucl)) byId.set(String(m.id), m);
+    const reports = Object.entries(idx.reports ?? {});
+    let scoreOk = 0, fileOk = 0, xgOk = 0, keyOk = 0;
+    for (const [id, r] of reports) {
+      const m = byId.get(id);
+      if (m && m.played && Array.isArray(m.final) && m.final[0] === r.score[0] && m.final[1] === r.score[1]
+        && String(m.home.id) === r.home && String(m.away.id) === r.away) scoreOk++;
+      const fp = join(W, 'data', 'ucl-details', r.season, `${id}.json`);
+      if (!existsSync(fp)) continue;
+      const rep = JSON.parse(readFileSync(fp, 'utf8'));
+      fileOk++;
+      if (rep.home === r.home && rep.away === r.away && rep.sides?.[r.home] && rep.sides?.[r.away] && rep.names?.[r.home] && rep.hs === r.score[0] && rep.as === r.score[1]) keyOk++;
+      const shots = rep.advanced?.shots ?? [];
+      const sum = code => Math.round(shots.filter(s => s.team === code).reduce((a, s) => a + (Number(s.xg) || 0), 0) * 100) / 100;
+      const hx = rep.advanced?.teamStats?.[r.home]?.xG, ax = rep.advanced?.teamStats?.[r.away]?.xG;
+      if (rep.shotmapComplete ? (hx === sum(r.home) && ax === sum(r.away) && rep.sides[r.home].xG === hx) : (hx === null && ax === null)) xgOk++;
+    }
+    console.log(`  · 歐冠賽後報告:索引 ${reports.length} 場・raw 快取 ${idx.cached ?? 0} 場・拒收 ${idx.rejected.length}・不完整 ${idx.incomplete.length}`
+      + (reports.length ? '' : '(沙箱抓不到 FotMob;第一批要等 CI 跑過 game:fetch --league=ucl)'));
+    ok(scoreOk === reports.length, '每一場報告的比分與主客都等於 ucl.json 那一場(football-data.org,獨立來源)', `${scoreOk}/${reports.length}`);
+    ok(fileOk === reports.length, '索引裡每一場都有逐場檔', `${fileOk}/${reports.length}`);
+    ok(keyOk === fileOk, '逐場檔的 home / away / sides / names 用同一組 fd id 鍵、比分跟索引一致', `${keyOk}/${fileOk}`);
+    ok(xgOk === fileOk, 'xG:射門圖完整 → 兩隊都是逐射門加總(sides 與 teamStats 同一個數);不完整 → 兩隊都是 null', `${xgOk}/${fileOk}`);
+    for (const r of idx.rejected) ok(typeof r.key === 'string' && typeof r.reason === 'string', `拒收紀錄有 key 與 reason:${r.key}`);
+    const uclStore = join(ROOT, 'data', 'raw', UCL_RAW_DIR);
+    if (existsSync(uclStore)) {
+      /* raw 在的時候,能進報告的場次數要對得上:快取 − 拒收 − 不完整 = 報告。對不上代表有一場靜靜掉了 */
+      ok(idx.cached - idx.rejected.length - idx.incomplete.length === idx.count,
+        'raw 快取的每一場都有去處(報告 / 拒收 / 不完整),沒有靜靜掉隊的', `${idx.cached} − ${idx.rejected.length} − ${idx.incomplete.length} ≠ ${idx.count}`);
+    }
+    // 兩個聯賽的複本:結構一樣;內容不同只回報(兩條工作流寫入時間不同,跟 ucl.json 同一個規矩)
+    ok(existsSync(esIdxPath), '西甲目錄也有 ucl-details.json(跨聯賽一份,兩個 build 各呼叫一次)');
+    if (existsSync(esIdxPath)) {
+      const es = JSON.parse(readFileSync(esIdxPath, 'utf8'));
+      ok(JSON.stringify(Object.keys(idx).sort()) === JSON.stringify(Object.keys(es).sort()), '兩份索引的欄位結構一樣(不是各寫一份實作)');
+      ok((idx.count ?? 0) >= (es.count ?? 0), '英超那份的報告數不比西甲少(完整管線最後寫的是它)', `pl ${idx.count} vs es1 ${es.count}`);
+      if (readFileSync(idxPath, 'utf8') !== readFileSync(esIdxPath, 'utf8')) console.log('  · 兩份索引目前不同(兩條工作流寫入時間不同),只回報不擋');
+      // 逐場檔:es1 有的每一場 pl 也要有
+      const esDir = join(W, 'data', 'leagues', 'es1', 'ucl-details');
+      let missing = 0;
+      if (existsSync(esDir)) for (const season of readdirSync(esDir)) for (const f of readdirSync(join(esDir, season))) {
+        if (!existsSync(join(W, 'data', 'ucl-details', season, f))) missing++;
+      }
+      ok(missing === 0, '西甲目錄有的逐場檔,英超目錄都有', `${missing} 個只有 es1 有`);
+    }
+    // lib 自己跑一次要跟寫出來的索引一致(build 沒有另外加工)
+    const again = uclDetails(ROOT, ucl);
+    ok(JSON.stringify(again.index) === JSON.stringify(idx) || JSON.stringify({ ...again.index, retrievedAt: null }) === JSON.stringify({ ...idx, retrievedAt: null }),
+      'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
+  }
+
+  // ── 三、入口與前端 ──
+  {
+    const view = readFileSync(join(W, 'assets', 'js', 'ucl-view.js'), 'utf8');
+    const cups = readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8');
+    const strip = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    ok(/const expandable = m => \(m\?\.played \? !!detailOf\(m\) : \(comparable\(m\) \|\| !!predOf\(m\)\)\)/.test(view),
+      '展開鈕的條件:已完賽看有沒有報告、未賽看有沒有對比或預測 —— 不再是 `!m.played && …`');
+    ok(!/!m\?\.played && \(comparable/.test(strip(view)), '舊的 `!m.played && (comparable…)` 條件已經不在程式裡(註解不算)');
+    ok(/cmpMatches = new Map\(allMatchesOf\(s\)\.filter\(expandable\)/.test(view), '點擊查表涵蓋聯賽階段 + 淘汰賽,而且用同一個 expandable');
+    ok(/expandBtn\(m\)/.test(view) && (view.match(/\$\{expandBtn\(m\)\}/g) ?? []).length >= 2 && (view.match(/\$\{expandSlot\(m\)\}/g) ?? []).length >= 2,
+      '聯賽階段賽程列與淘汰賽回合列都用同一份 expandBtn / expandSlot');
+    ok(/kind === 'post' \? renderPostMatch\(slot, m\) : renderCompare\(slot, m\)/.test(view), '點開時依種類分流:賽後報告 / 賽前對比');
+    ok(/C\.matchReportCards\(rep, \{ order: POST_ORDER \}\)/.test(view), '賽後區塊沿用 core.js 的 matchReportCards(三個聯賽的單場頁同一套)');
+    ok(/C\.loadFrom\('pl', \[name\]\)/.test(view) && /ucl-details\/\$\{idx\.season\}\/\$\{m\.id\}/.test(view), '逐場報告懶載入(一場一檔,從 pl 目錄)');
+    ok(/C\.registerTeams\(\[entry\(m\.home, 0\), entry\(m\.away, 1\)\]\)/.test(view) && /NEUTRAL/.test(view),
+      '畫之前把兩隊(fd id)登錄進隊伍註冊表;本站沒有的球隊用中性色,不編隊色');
+    ok(/details\?\.xgNote/.test(view), '面板上 xG 的說明從索引讀,不在前端寫死');
+    ok(!/這一頁沒有勝率預測/.test(strip(view)), '歐冠頁不再寫「這一頁沒有勝率預測」(階段 C 之後就是假的)');
+    ok(/'ucl-details'/.test(cups) && /uclDetails: shared\['ucl-details'\]/.test(cups), '盃賽頁載入索引並傳給 ucl-view');
+    // core.js 陣容卡那句話要看報告是哪條路建的(m.source),不能看 advanced 是誰
+    const core = readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8');
+    ok(/\? m\.source\s*\n?\s*\? `標<span class="pill accent tiny">正式<\/span>的陣型與每一排球員,來自 \$\{\{ sportmonks/.test(core),
+      '陣容卡的來源文案看 m.source(供應商路徑)—— 英冠與西甲的 FotMob 場次以前印著「英超官方公布的正式名單」');
+    ok(!/m\.advanced && m\.advanced\.source !== 'fotmob'/.test(strip(core)), '舊的 advanced.source 判斷已拿掉');
+  }
+
+  // ── 工作流 ──
+  {
+    const live = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+    const md = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-matchday.yml'), 'utf8');
+    ok(/npm run game:fetch -- --league=ucl/.test(live) && /epl\/data\/raw\/fotmob-ucl\//.test(live), '部署工作流抓歐冠逐場資料,而且 raw 在回寫清單裡');
+    ok(/npm run game:fetch -- --league=ucl --limit=20/.test(md) && (md.match(/epl\/data\/raw\/fotmob-ucl\//g) ?? []).length >= 2,
+      '比賽日迴圈也抓(踢完就補),raw 在「有沒有變」與 git add 兩份清單裡');
+    const gi = live.indexOf('npm run game:fetch -- --league=ucl'), ui = live.indexOf('run: npm run ucl');
+    ok(ui > 0 && gi > ui, '部署工作流裡歐冠逐場抓取排在 npm run ucl(football-data 賽果)之後 —— 它的輸入是 ucl.json');
   }
   return fail;
 }

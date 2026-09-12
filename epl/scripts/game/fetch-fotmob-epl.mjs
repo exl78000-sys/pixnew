@@ -16,12 +16,15 @@
  * - 存的是**精簡萃取**不是原始 payload(一場原始約 200 KB;西甲那份轉換後仍 69 KB/場,
  *   380 場會到 26 MB)。這裡只留遊戲要的:球隊統計、上下半場控球、事件、射門、動能、名單。
  *   萃取規則改了就 +1 `EXTRACT_VERSION`,舊快取會被重抓(受上限節制)。
- * - 這份 raw 只給 `scripts/game/` 讀。真實管線目前不用它;將來要用也是另一件事。
+ * - 這份 raw 原本只給 `scripts/game/` 讀;2026-09-03 使用者決定把這批真資料接進真實管線
+ *   (`lib/matchstats.mjs` 讀它產 matchstats / 賽後報告 / 球隊彙總),西甲、英冠(09-05)與歐冠(09-12)
+ *   都走同一支。**真實管線讀的是 raw 檔,不 import 這裡**(模擬遊玩仍是獨立管線)。
  *
  *   npm run game:fetch -- --season=2025-26 --limit=400   # 回填整季
  *   npm run game:fetch                                   # 本季增量(預設 40 場)
  *   npm run game:fetch -- --verify=20                    # 拿官網端點核對 20 場控球
  *   npm run game:fetch -- --refresh --limit=30              # 萃取多了欄位時把本季重抓一次(不 +1 版本)
+ *   npm run game:fetch -- --league=ucl                   # 歐冠(賽果來自 ucl.json,不抓熱區圖,一場一個請求)
  *   2026-09-03 起一場兩個請求(詳情 + 逐人熱區圖),--limit 是請求數,場數是它的一半。
  *   npm run game:fetch -- --dry-run
  */
@@ -30,6 +33,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from '../lib/teams.mjs';
 import { fotmobTeamStats, fotmobEvents, fotmobPos, fotmobPlayers } from '../lib/adapters/fotmob-match.mjs';
+import { bridgeTeams } from '../lib/adapters/fotmob-ucl.mjs';
+import { uclResultsOf, UCL_RAW_DIR } from '../lib/ucl-details.mjs';
 import { API as PL_API, PL_HEADERS } from '../lib/pulselive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -44,6 +49,15 @@ const LEAGUES = {
   es1: { id: 87, ccode3: 'ESP', dir: 'fotmob-la-liga', teamFile: 'teams-la-liga.json', results: ['web', 'data', 'leagues', 'es1', 'results.json'], verify: false },
   // 英冠(2026-09-05):同一支抓取器,只是聯賽 id 48;pulselive 只有英超,所以 verify false
   en2: { id: 48, ccode3: 'GBR', dir: 'fotmob-championship', teamFile: 'teams-championship.json', results: ['web', 'data', 'leagues', 'en2', 'results.json'], verify: false },
+  /* 歐冠(2026-09-12):同一支抓取器,三個不同點 ——
+     ① 聯賽 id 42 是 `probe-ucl-matchdetails.mjs` 走 FotMob 的 allLeagues 目錄用名字找到的,不是猜的;
+        ccode3 不帶(國際賽事沒有國家)。
+     ② 賽果來源是 `web/data/ucl.json`(football-data.org,獨立供應商),不是 results.json;
+        隊伍身分是 football-data 的 team id 字串(36 隊裡本站只有 8~11 支有隊碼,不替其餘造一個)。
+     ③ FotMob id ↔ fd id 的橋用 `lib/adapters/fotmob-ucl.mjs` 的 bridgeTeams(互為第一名才配),
+        而且要跟人工核過的 `ucl-team-ids.json` 一致(有交集的那幾隊);不一致的那隊整隊不抓。
+     不抓熱區圖(那是模擬遊玩用的,歐冠沒有遊戲),所以一場一個請求。 */
+  ucl: { id: 42, ccode3: null, dir: UCL_RAW_DIR, teamFile: null, results: null, ucl: ['web', 'data', 'ucl.json'], verify: false, heat: false },
 };
 const LG = LEAGUES[arg('league') ?? 'pl'];
 if (!LG) { console.error(`未知聯賽 ${arg('league')};只有 ${Object.keys(LEAGUES).join('、')}`); process.exit(1); }
@@ -54,6 +68,10 @@ export const EXTRACT_VERSION = 1;
 const HARD_LIMIT = 800;           // 一次執行的請求硬上限:一場兩個請求(詳情 + 熱區圖),回填一季 380 場要 760
 const DEFAULT_LIMIT = 40;
 const INTERVAL_MS = 600;
+/* 退回過的場次 30 分鐘內不再試。比賽日迴圈每 2 分鐘叫一次這支(歐冠之夜),沒有這條的話
+   「FotMob 標未完賽」或「比分不符」的那一場會每 2 分鐘燒兩個請求,5 小時 300 個。 */
+const RETRY_MS = 30 * 60 * 1000;
+const PER_MATCH = LG.heat === false ? 1 : 2;   // 一場幾個請求:詳情(+ 熱區圖)
 const dryRun = process.argv.includes('--dry-run');
 const limit = Math.min(HARD_LIMIT, Math.max(0, Number(arg('limit') ?? DEFAULT_LIMIT)));
 const verifyN = Number(arg('verify') ?? 0);
@@ -84,12 +102,15 @@ async function get(url, headers = {}) {
 function seasonsOf(results) { return [...new Set(results.map(r => r.season))].sort(); }
 const fotmobSeason = s => { const y = Number(s.slice(0, 4)); return `${y}/${y + 1}`; };
 
-/* FotMob 聯賽賽程 → 「主|客」→ matchId。隊名走名冊的寬鬆對照(AFC Bournemouth 那類)。
+const allMatchesOf = json => json?.fixtures?.allMatches ?? json?.matches?.allMatches ?? [];
+
+/* FotMob 聯賽賽程 → 「主|客」→ matchId。`keyOf(隊物件)` 決定隊伍身分:三個聯賽是隊名走名冊的寬鬆對照
+   (AFC Bournemouth 那類),歐冠是 FotMob id 過橋換成 football-data id。
    對不上的隊名印出來 —— tolerant 模式靜靜吞掉整隊是本站踩過的坑。 */
-function indexFixtures(json, codeOf) {
+function indexFixtures(json, keyOf) {
   const byPair = new Map(), unknown = new Set();
-  for (const item of json?.fixtures?.allMatches ?? json?.matches?.allMatches ?? []) {
-    const home = codeOf(item.home?.name), away = codeOf(item.away?.name);
+  for (const item of allMatchesOf(json)) {
+    const home = keyOf(item.home), away = keyOf(item.away);
     if (!home) unknown.add(item.home?.name);
     if (!away) unknown.add(item.away?.name);
     if (!home || !away || !item.id) continue;
@@ -97,6 +118,39 @@ function indexFixtures(json, codeOf) {
       finished: item.status?.finished === true, scoreStr: item.status?.scoreStr ?? null });
   }
   return { byPair, unknown: [...unknown] };
+}
+
+/* 歐冠的橋:FotMob 賽程裡的隊(id → 名字)↔ ucl.json 裡的隊(fd id → 全名 + 簡稱)。
+   bridgeTeams 只採「互為第一名」的組合;再拿人工核過的 ucl-team-ids.json 當守門 ——
+   有交集的隊兩邊必須一致,不一致的整隊拿掉(寧可少抓一隊,也不要把 A 隊的比賽存成 B 隊的)。
+   離線驗過:2026-27 的 36 隊全配上,而且跟人工表有交集的 17 隊全部一致(npm test 有一條守著)。 */
+async function uclBridge(leagueJson, results) {
+  const fm = new Map(), fd = new Map();
+  for (const item of allMatchesOf(leagueJson)) for (const s of ['home', 'away']) {
+    if (item[s]?.id != null) fm.set(String(item[s].id), [item[s].name, item[s].shortName].filter(Boolean));
+  }
+  for (const r of results) { fd.set(r.home, [r.homeFullName, r.homeName].filter(Boolean)); fd.set(r.away, [r.awayFullName, r.awayName].filter(Boolean)); }
+  const { map, unmatched } = bridgeTeams(fm, fd);
+  const manual = await read(join(ROOT, 'data', 'manual', 'ucl-team-ids.json'));
+  const conflicts = [];
+  let agreed = 0;
+  for (const t of manual?.teams ?? []) {
+    const got = map.get(String(t.fotmobId));
+    if (got == null) continue;
+    if (String(got) === String(t.fdId)) agreed++;
+    else { conflicts.push({ fotmob: t.fotmobName, bridged: fd.get(String(got))?.[0], manual: t.fdName }); map.delete(String(t.fotmobId)); }
+  }
+  const bridge = {};
+  for (const [fid, fdid] of map) bridge[fid] = { fdId: String(fdid), fotmob: fm.get(fid)?.[0] ?? null, fd: fd.get(String(fdid))?.[0] ?? null };
+  return { keyOf: t => map.get(String(t?.id)) ?? null, bridge, unmatched, conflicts, agreed, teams: fm.size, fdTeams: fd.size };
+}
+
+/* 歐冠的「賽果」:ucl.json 裡可用賽季的所有場次(聯賽階段 + 淘汰賽),形狀跟 results.json 一樣。
+   轉換在 lib/ucl-details.mjs(build 那邊讀 raw 也用同一份,兩邊才對得起來)。 */
+async function uclResults() {
+  const ucl = await read(join(ROOT, ...LG.ucl));
+  const seasons = (ucl?.seasons ?? []).filter(s => s.availability === 'available');
+  return seasons.length ? seasons.flatMap(uclResultsOf) : null;
 }
 
 /* 精簡萃取。欄位全部是探測看過的(probe-possession 2026-09-03,ARS 3-0 COV),
@@ -258,9 +312,9 @@ async function verify(store, results, n, teams) {
 }
 
 async function main() {
-  const teams = loadTeams(ROOT, { file: LG.teamFile });
-  const results = await read(join(ROOT, ...LG.results));
-  if (!Array.isArray(results)) { console.log(`✗ 讀不到 ${LG.results.join('/')}(先跑 build)`); return; }
+  const teams = LG.teamFile ? loadTeams(ROOT, { file: LG.teamFile }) : null;
+  const results = LG.results ? await read(join(ROOT, ...LG.results)) : await uclResults();
+  if (!Array.isArray(results)) { console.log(`✗ 讀不到 ${(LG.results ?? LG.ucl).join('/')}(先跑 build)`); return; }
   const seasons = seasonsOf(results);
   const season = arg('season') ?? seasons[seasons.length - 1];
   const played = results.filter(r => r.season === season && r.played && r.date <= new Date().toISOString().slice(0, 10));
@@ -274,25 +328,46 @@ async function main() {
   const store = (await read(STORE)) ?? { season, source: 'fotmob', extractVersion: EXTRACT_VERSION, matches: {}, attempts: {} };
   store.matches ??= {}; store.attempts ??= {};
   const stale = k => store.matches[k]?.extractVersion !== EXTRACT_VERSION;
-  const pending = played.filter(f => refresh || !store.matches[`${f.home}|${f.away}`] || stale(`${f.home}|${f.away}`))
+  const recentlyTried = k => { const at = Date.parse(store.attempts[k]?.at ?? ''); return Number.isFinite(at) && Date.now() - at < RETRY_MS; };
+  const wanted = played.filter(f => refresh || !store.matches[`${f.home}|${f.away}`] || stale(`${f.home}|${f.away}`));
+  const pending = wanted.filter(f => refresh || !recentlyTried(`${f.home}|${f.away}`))
     .sort((a, b) => a.date.localeCompare(b.date));
-  console.log(`\n▶ FotMob ${arg('league') ?? 'pl'} ${season}:已完賽 ${played.length} 場・快取 ${Object.keys(store.matches).length} 場・待補 ${pending.length} 場・本次上限 ${limit}`);
+  const label = f => LG.results ? `${f.home}–${f.away}` : `${f.homeName ?? f.home}–${f.awayName ?? f.away}`;
+  console.log(`\n▶ FotMob ${arg('league') ?? 'pl'} ${season}:已完賽 ${played.length} 場・快取 ${Object.keys(store.matches).length} 場・待補 ${pending.length} 場`
+    + (wanted.length > pending.length ? `(另 ${wanted.length - pending.length} 場 30 分鐘內退回過,先不重試)` : '') + `・本次上限 ${limit}`);
 
   if (verifyN > 0 && !LG.verify) console.log('  這個聯賽沒有官網端點可抽核控球率,略過 --verify');
   if (verifyN > 0 && LG.verify) { await verify(store, results, verifyN, teams); }
   else if (pending.length && limit > 0) {
-    if (dryRun) { pending.slice(0, limit).forEach(f => console.log(`  · ${f.date} ${f.home}–${f.away}`)); return; }
-    const league = await get(`${BASE}/api/data/leagues?id=${LEAGUE_ID}&ccode3=${LG.ccode3}&season=${encodeURIComponent(fotmobSeason(season))}`,
+    if (dryRun) { pending.slice(0, limit).forEach(f => console.log(`  · ${f.date} ${label(f)}`)); return; }
+    const league = await get(`${BASE}/api/data/leagues?id=${LEAGUE_ID}${LG.ccode3 ? `&ccode3=${LG.ccode3}` : ''}&season=${encodeURIComponent(fotmobSeason(season))}`,
       { referer: `${BASE}/` });
     if (!league.json) { console.log(`✗ 聯賽賽程抓不到:${league.error}`); return; }
-    const { byPair, unknown } = indexFixtures(league.json, teams.codeOf);
+    /* 帶 season 參數的賽程端點在上游還沒建那一季時會回「最新那季」(盃賽那條坑)——
+       不驗就把上季的比賽存成本季。只在端點有講它回了哪一季時驗;格式不認得就印出來、照常走。 */
+    const selected = league.json?.details?.selectedSeason ?? null;
+    if (typeof selected === 'string' && /^\d{4}\/\d{4}$/.test(selected) && selected !== fotmobSeason(season)) {
+      console.log(`✗ 賽程端點回的是 ${selected},不是要的 ${fotmobSeason(season)}(上游還沒建這一季),這次不抓`); return;
+    }
+    if (selected && selected !== fotmobSeason(season)) console.log(`  · 端點的 selectedSeason 是「${selected}」(格式不認得,照常走)`);
+    let keyOf = t => teams.codeOf(t?.name);
+    if (!LG.results) {
+      const b = await uclBridge(league.json, results);
+      console.log(`  歐冠隊伍橋:FotMob ${b.teams} 隊 ↔ football-data ${b.fdTeams} 隊,配上 ${Object.keys(b.bridge).length} 隊`
+        + `・人工對照表有交集 ${b.agreed + b.conflicts.length} 隊、一致 ${b.agreed}`);
+      if (b.unmatched.length) console.log(`  ⚠ 過不了橋的 FotMob 隊:${b.unmatched.map(u => `${u.fotmob}(最像 ${u.best ?? '—'} ${u.score})`).join('、')}`);
+      if (b.conflicts.length) console.log(`  ⚠ 橋跟人工對照表不一致,整隊不抓:${b.conflicts.map(c => `${c.fotmob}:橋 ${c.bridged} / 人工 ${c.manual}`).join('、')}`);
+      store.bridge = b.bridge;
+      keyOf = b.keyOf;
+    }
+    const { byPair, unknown } = indexFixtures(league.json, keyOf);
     if (unknown.length) console.log(`  ⚠ 對不上名冊的 FotMob 隊名:${unknown.join('、')}`);
     console.log(`  FotMob 賽程 ${byPair.size} 場可對照`);
     let ok = 0, rejected = 0;
-    for (const f of pending.slice(0, Math.floor((limit - 1) / 2))) {   // 一場兩個請求
+    for (const f of pending.slice(0, Math.floor((limit - 1) / PER_MATCH))) {   // 一場 PER_MATCH 個請求
       const key = `${f.home}|${f.away}`;
       const remote = byPair.get(key);
-      const note = reason => { store.attempts[key] = { at: new Date().toISOString(), reason, matchId: remote?.matchId ?? null }; rejected++; console.log(`  ⚠ ${f.date} ${key}:${reason}`); };
+      const note = reason => { store.attempts[key] = { at: new Date().toISOString(), reason, matchId: remote?.matchId ?? null, label: label(f) }; rejected++; console.log(`  ⚠ ${f.date} ${label(f)}:${reason}`); };
       if (!remote) { note('FotMob 賽程找不到對應場次'); continue; }
       if (remote.date && remote.date !== f.date) { note(`日期不一致(FotMob ${remote.date})`); continue; }
       if (!remote.finished) { note('FotMob 標未完賽'); continue; }
@@ -300,6 +375,10 @@ async function main() {
       if (!r.json) { note(r.error); continue; }
       const rec = extract(r.json, f);
       rec.matchId = remote.matchId;
+      /* 歐冠:隊伍身分是 fd id 字串,人讀 raw 看不出是誰,把名字與 football-data 的比賽 id 一起存。
+         讀取器(loadFotmobMatchStats)只挑它認得的欄位,多這兩個不影響三個聯賽。 */
+      if (f.id != null) rec.fdMatchId = f.id;
+      if (f.homeName || f.awayName) rec.names = { [f.home]: f.homeName ?? null, [f.away]: f.awayName ?? null };
       /* 逐人統計 → 另一個檔。隊碼對照走 general 的 teamId */
       {
         const homeId = r.json?.general?.homeTeam?.id, awayId = r.json?.general?.awayTeam?.id;
@@ -310,7 +389,7 @@ async function main() {
       /* 熱區圖:第二個請求。抓不到不擋整場(控球那些照收),heat 留 null 並記原因。
          已經有熱區的場次(--refresh 重抓時)直接沿用,不再多打一個請求。 */
       rec.heat = store.matches[key]?.heat ?? null;
-      if (rec.heatmapUrl && !rec.heat) {
+      if (LG.heat !== false && rec.heatmapUrl && !rec.heat) {
         const h = await get(`${BASE}${rec.heatmapUrl}`, { referer: `${BASE}/` });
         if (h.json) rec.heat = heatOf(h.json, r.json, teamId => (Number(teamId) === Number(r.json?.general?.homeTeam?.id) ? f.home : Number(teamId) === Number(r.json?.general?.awayTeam?.id) ? f.away : null));
         else rec.heatError = h.error;

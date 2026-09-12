@@ -729,3 +729,8 @@ input:focus-visible, tbody tr.clickable:focus-visible {
    第一版只給 .card 加 min-width:0,結果欄寬仍然是 703px —— 撐開它的正是那個沒被涵蓋的 div。 */
 .player-page > * { min-width: 0; }
 .player-page > .card { margin: 0; }
+
+/* 歐冠賽程列底下的展開槽(賽前對比 / 賽後報告)。賽後報告會塞進好幾張 .card,
+   跟外層那張卡之間要有一點呼吸空間,不然看起來像一整片沒有分段的表。 */
+.ucl-cmp { margin: 4px 0 14px; }
+.ucl-cmp > .card { margin-top: 10px; }

@@ -98,14 +98,18 @@ jobs:
             # 於是盃賽頁的**預設分頁**整整七小時印「已開賽・等待資料」。那晚迴圈其實有進場,
             # 只是進場的理由是聯賽盃、進去之後沒有人去抓歐冠。
             npm run ucl:live  >/dev/null 2>&1 || true
+            # 歐冠賽後報告(2026-09-12):踢完的場次立刻補 FotMob 逐場詳情,不等 12 小時一次的部署。
+            # 自己守門:ucl.json 沒有新完賽就一個請求都不發;退回過的 30 分鐘內不重試。
+            # 吃的是上一輪 build 出來的 ucl.json,所以報告比終場晚一輪(約 2 分鐘)。
+            npm run game:fetch -- --league=ucl --limit=20 >/dev/null 2>&1 || true
 
             # 只有資料真的變了才 build + 提交 —— 沒變就不要製造空提交
-            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json epl/data/raw/fotmob-cups/ epl/data/raw/football-data/; then
+            if git -C "$GITHUB_WORKSPACE" diff --quiet -- epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json epl/data/raw/fotmob-cups/ epl/data/raw/football-data/ epl/data/raw/fotmob-ucl/; then
               echo "  [$N] 無變化"
             else
               npm run build >/dev/null 2>&1 || true
               cd "$GITHUB_WORKSPACE"
-              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json epl/data/raw/fotmob-cups/ epl/data/raw/football-data/ epl/web/data/ 2>/dev/null || true
+              git add -f epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json epl/data/raw/fotmob-cups/ epl/data/raw/football-data/ epl/data/raw/fotmob-ucl/ epl/web/data/ 2>/dev/null || true
               if git diff --cached --quiet; then
                 echo "  [$N] 產物無變化"
               else
