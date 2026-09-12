@@ -1,5 +1,5 @@
-import * as C from './core.js?v=03eb6306';
-import { mountSimTable } from './sim-table.js?v=c8f549ca';
+import * as C from './core.js?v=6f8ba957';
+import { mountSimTable } from './sim-table.js?v=16127847';
 
 const app = document.getElementById('app');
 

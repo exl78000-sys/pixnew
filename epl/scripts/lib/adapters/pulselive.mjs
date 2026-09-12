@@ -7,6 +7,7 @@
 // 這一支只負責讀檔與轉成上層要的形狀。抓不到就回 null,上層自動退回推導。
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { CARD_KINDS, CARD_SENDS_OFF, SUB_DIRS } from '../../fetch-official.mjs';
 
 export const id = 'pulselive';
 export const label = '英超官方(pulselive)';
@@ -202,8 +203,18 @@ export function namedTimeline(timeline, H, A, homeCode, awayCode) {
     };
   };
   return {
-    cards: (timeline.cards ?? []).map(e => ({ ...name(e), kind: e.kind ?? null, kindRaw: e.kindRaw ?? null })),
-    subs: (timeline.subs ?? []).map(e => ({ ...name(e), dir: e.dir ?? null, dirRaw: e.dirRaw ?? null })),
+    /* 分類**以原碼為準、在 build 時重算**(2026-09-12)。
+       快取裡存的是抓取當下的分類,而分類表是會長的:`YR`(兩黃罰下)出現在 SUN vs ARS 90+6,
+       當時表裡沒有它,於是快取寫下 `kind: null`。核對過之後把 YR 加進表 —— 但快取不會自己重算,
+       沙箱也重抓不到。所以這裡一律拿 `kindRaw` 再查一次表:新代碼核對放行後,**舊快取自動跟上**。
+       查不到的仍然是 null(那是白名單的重點,測試會紅)。 */
+    cards: (timeline.cards ?? []).map(e => ({
+      ...name(e),
+      kind: CARD_KINDS[e.kindRaw] ?? e.kind ?? null,
+      kindRaw: e.kindRaw ?? null,
+      sendsOff: CARD_SENDS_OFF.has(e.kindRaw),     // 這張牌讓他下場了嗎(紅牌與兩黃)
+    })),
+    subs: (timeline.subs ?? []).map(e => ({ ...name(e), dir: SUB_DIRS[e.dirRaw] ?? e.dir ?? null, dirRaw: e.dirRaw ?? null })),
     periods: (timeline.periods ?? []).map(e => ({ type: e.type, min: e.min, label: e.label, phase: e.phase ?? null })),
   };
 }

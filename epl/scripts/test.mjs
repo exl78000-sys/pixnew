@@ -1011,6 +1011,43 @@ async function checkTimeline() {
   }
   if (personless) console.log(`  · 沒有 personId 的牌/換人 ${personless} 筆(上游沒給人,照規矩留著、隊伍為 null)`);
   cases.push(
+    /* YR(兩黃罰下)是 2026-09-12 出現的第三種代碼,核對過才放行的 ——
+       SUN vs ARS 90+6' 那筆,**同一個人 28' 已經吃過一張 Y**;獨立核對用 FPL 的記法差異:
+       官方這一隊 5 張 Y + 1 張 YR、FPL 4 張黃 + 1 張紅,差的正好是被罰下那人的黃牌。
+       這兩條守著它別再退回「沒見過」,也守著分類是在 build 時重算的(舊快取才跟得上)。 */
+    /* 補時的排序(2026-09-12,改換人排版時看畫面才發現的既有 bug)。
+       官方把補時全部記成第 90 分,補時第幾分只在 label 裡 —— 照 min 排,
+       90+7 的進球會排在 90+1 的黃牌前面。實測 SUN vs ARS 就是這樣。 */
+    ['時間軸用補時後的實際分鐘排序(90+7 要排在 90+1 後面)', (() => {
+      const core2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      if (!/const absMin = \(label, min\) =>/.test(core2)) { console.log('      core.js 沒有 absMin'); return false; }
+      // 分組鍵也要用它,不然 90+1 與 90+7 的換人會被當成同一次
+      return /t: 'goal', min: absMin\(g\.label, g\.min\)/.test(core2)
+        && /t: 'card', min: absMin\(c\.label, c\.min\)/.test(core2)
+        && /absMin\(x\.label, x\.min\)\}\|\$\{x\.team/.test(core2);
+    })()],
+    ['換人排版是上下兩行、綠上紅下,而且仍然不宣稱誰替誰', (() => {
+      const core2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
+      return /class="sub-row on"/.test(core2) && /class="sub-row off"/.test(core2)
+        && /\.sub-row\.on \.sub-arrow \{ color: var\(--win\)/.test(css)
+        && /\.sub-row\.off \.sub-arrow \{ color: var\(--loss\)/.test(css)
+        && /不配對誰替誰/.test(core2);
+    })()],
+    ['YR(兩黃罰下)已核對放行,而且標成會離場', (() => {
+      const yr = Object.values(off.matches ?? {}).flatMap(m => m.timeline?.cards ?? []).filter(c => c.kindRaw === 'YR');
+      if (!yr.length) return true;                       // 還沒出現過就不強求
+      return yr.every(c => c.kind === '兩黃罰下' && c.sendsOff === true);
+    })()],
+    ['牌的分類在 build 時依原碼重算(新代碼放行後,舊快取自動跟上)', (() => {
+      const ad = readFileSync(join(ROOT, 'scripts', 'lib', 'adapters', 'pulselive.mjs'), 'utf8');
+      return /kind: CARD_KINDS\[e\.kindRaw\]/.test(ad) && /sendsOff: CARD_SENDS_OFF\.has\(e\.kindRaw\)/.test(ad);
+    })()],
+    ['時間軸用產物的 sendsOff 決定紅牌圖示,不在前端列代碼', (() => {
+      const core2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      return /const sentOff = c => \(c\.sendsOff \?\? c\.kindRaw === 'R'\)/.test(core2)
+        && !/c\.kindRaw === 'R' \? '🟥'/.test(core2);
+    })()],
     ['正式資料裡沒有沒見過的牌代碼', unknownCards.size === 0, [...unknownCards].join('、')],
     ['正式資料裡沒有沒見過的換人代碼', unknownDirs.size === 0, [...unknownDirs].join('、')],
     ['正式資料裡有 person 的事件都查得到隊伍', unresolved.length === 0, unresolved.join(' / ')],
@@ -1790,6 +1827,32 @@ async function checkDataGap() {
        於是開賽 115 分鐘後場次從 inplay 掉進 awaiting,而那一區當時完全不讀 live.json:
        **比分就在同一頁的資料裡,畫面上卻消失了。**
        修法是讓夠新的即時快照決定 phase,而且 awaiting 的卡片也要印快照比分。 */
+    /* 同一個空窗的第二處:**單場分析頁**(2026-09-12,使用者第二次回報:
+       「比賽完後只剩賽前分析?比賽中資訊在哪?」)。
+       即時面板原本寫 `m.started && !m.finished`,所以 FPL 一翻 finished 就把整塊清掉 ——
+       而那時 `f.played` 還是 false(社群賽果檔以天為單位),所以賽後分頁也不存在。
+       重現過:那段空窗裡整頁只有「賽前分析」一個分頁,大字是**賽前預期進球**,
+       比分一個字都沒有,而 live.json 裡就有 0:2。 */
+    ['單場頁:完場不清空即時面板(踢完到賽果落地之間,那是唯一有比分的地方)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return /const shown = m && m\.started \? m : null;/.test(src)
+        && /cur = \(shown && !shown\.finished\) \? \{ m, fetchedAt \} : null;/.test(src)
+        && /innerHTML = shown \? livePanelHtml/.test(src)
+        && !/cur = \(m && m\.started && !m\.finished\)/.test(src);
+    })()],
+    ['單場頁:終場版講得出出處與抓取時間,而且不印沒有意義的即時勝率', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return /const done = m\.finished === true;/.test(src)
+        && /\$\{ip && !done \?/.test(src)                       // 完場不畫即時勝率(剩餘 0、下一球 0%)
+        && /C\.ageText\(fetchedAt\)/.test(src)                   // 幾分鐘前抓的
+        && /終場戰況/.test(src);
+    })()],
+    ['單場頁:兩套版面的頁首都有 id,快照才補得進去(而且不會一邊終場一邊「開賽後 N 小時」)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      const ids = src.match(/id="headScore"/g) ?? [];
+      return ids.length === 2 && (src.match(/id="headNote"/g) ?? []).length === 2
+        && /id="headPhase"/.test(src) && /ph\.textContent = shown\.finished/.test(src);
+    })()],
     ['即時快照說完場,就算賽程還沒記成 played 也算完賽', (() => {
       const now = Date.parse('2026-09-12T16:00:00Z');
       const f = { kickoff: '2026-09-12T14:00:00Z', played: false };

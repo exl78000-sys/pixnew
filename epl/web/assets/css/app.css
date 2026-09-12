@@ -589,6 +589,19 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
 .goal-line .gl-score { font-variant-numeric: tabular-nums; color: var(--ink-2); }
 .goal-line small { display: block; color: var(--ink-3); margin-top: 3px; }
 
+/* 換人那一列:進場一行、退場一行(2026-09-12,使用者要求參考 FotMob)。
+   原本四個名字擠成一行文字「上 A 、 B 下 C 、 D」,兩人以上就難讀。
+   **箭頭帶顏色**才是這個排版的重點:一眼看得出誰上誰下,不必讀字。
+   仍然不配對誰替誰 —— 同一分鐘換兩人就是兩個名字並排(官方資料沒有配對欄位)。 */
+.goal-line.sub-line { align-items: start; }
+.gl-subs { display: grid; gap: 4px; min-width: 0; }
+.gl-subs .sub-team { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-2); }
+.gl-subs .sub-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.gl-subs .sub-arrow { font-size: 10px; line-height: 1; width: 12px; text-align: center; flex: none; }
+.gl-subs .sub-row.on .sub-arrow { color: var(--win); }
+.gl-subs .sub-row.off .sub-arrow { color: var(--loss); }
+.gl-subs .sub-row.off { color: var(--ink-3); }
+
 .note {
   border-left: 3px solid var(--draw); background: #ffb0200f; padding: 9px 13px;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12.5px; color: var(--ink-2);
