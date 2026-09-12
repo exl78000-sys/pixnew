@@ -21207,7 +21207,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 1
    },
    "homeId": 2,
@@ -21636,16 +21636,16 @@
    },
    "goals": [
     {
-     "side": "A",
-     "person": 51813,
-     "assist": 139648,
-     "team": 15,
-     "min": 46,
-     "label": "46'00",
+     "side": "H",
+     "person": 326089,
+     "assist": 51423,
+     "team": 2,
+     "min": 74,
+     "label": "74'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 0,
+     "hs": 1,
      "as": 1
     }
    ],
@@ -21683,6 +21683,15 @@
       "team": 15,
       "min": 56,
       "label": "56'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 51813,
+      "team": 15,
+      "min": 75,
+      "label": "75'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -21778,6 +21787,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 304123,
+      "team": 15,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 50623,
+      "team": 15,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -21807,7 +21834,7 @@
      }
     ]
    },
-   "clock": "73'00"
+   "clock": "75'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -22359,6 +22386,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 133460,
+      "team": 130,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 115166,
+      "team": 130,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -22388,7 +22433,7 @@
      }
     ]
    },
-   "clock": "68'00"
+   "clock": "73'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -23003,7 +23048,7 @@
      }
     ]
    },
-   "clock": "72'00"
+   "clock": "76'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -23593,7 +23638,7 @@
      }
     ]
    },
-   "clock": "70'00"
+   "clock": "73'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -24240,7 +24285,7 @@
      }
     ]
    },
-   "clock": "78'00"
+   "clock": "79'00"
   },
   "TOT|EVE": {
    "fixtureId": 128962,
@@ -24640,5 +24685,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T15:33:56.270Z"
+ "fetchedAt": "2026-09-12T15:36:14.883Z"
 }
