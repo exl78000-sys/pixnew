@@ -21834,7 +21834,7 @@
      }
     ]
    },
-   "clock": "75'00"
+   "clock": "77'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -22433,7 +22433,7 @@
      }
     ]
    },
-   "clock": "73'00"
+   "clock": "76'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -23019,6 +23019,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 3452,
+      "team": 4,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68827,
+      "team": 4,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -23048,7 +23066,7 @@
      }
     ]
    },
-   "clock": "76'00"
+   "clock": "79'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -23486,15 +23504,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 51454,
-     "assist": 313194,
-     "team": 8,
-     "min": 45,
-     "label": "45'00",
-     "phase": "1",
+     "person": 35670,
+     "assist": 49759,
+     "team": 6,
+     "min": 75,
+     "label": "75'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 1,
+     "hs": 2,
      "as": 2
     }
    ],
@@ -23638,7 +23656,7 @@
      }
     ]
    },
-   "clock": "73'00"
+   "clock": "75'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -24285,7 +24303,7 @@
      }
     ]
    },
-   "clock": "79'00"
+   "clock": "81'00"
   },
   "TOT|EVE": {
    "fixtureId": 128962,
@@ -24685,5 +24703,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T15:36:14.883Z"
+ "fetchedAt": "2026-09-12T15:38:33.525Z"
 }
