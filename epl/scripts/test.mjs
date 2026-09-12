@@ -2714,7 +2714,8 @@ async function checkDataGap() {
           games.length === 0 || (games.every(m => m.kickoff && m.matchday != null)
             && new Set(games.map(m => m.kickoff)).size > 1),
           games.length ? `${games.length} 場・${new Set(games.map(m => m.kickoff)).size} 種開球時間` : '(沒有進行中的賽季)'],
-        ['盃賽沒有勝率預測這件事寫在賽程表上', /沒有勝率預測/.test(uv)],
+        // 以前這條是 /沒有勝率預測/ —— 階段 C 之後只靠一段註解在撐,守的東西早就不成立
+        ['賽程表講清楚勝率只給兩隊都有跨聯賽評分的場次', /勝率只給兩隊都有跨聯賽評分的場次/.test(uv)],
       ];
     })(),
 
@@ -2947,11 +2948,16 @@ async function checkDataGap() {
           /const OPEN_LEAGUES = \['pl', 'es1'\]/.test(page)
           && /uclPool\(\)/.test(page)
           && !/Object\.keys\(C\.LEAGUES\)/.test(page)],
-        /* 盃賽沒有勝率預測(模型用聯賽調的,沒在盃賽上驗收過 —— 鐵則二)。
-           那不是資料壞了,畫面要把原因講出來。 */
-        ['歐冠沒有模型與盤口,而且把原因寫在畫面上',
-          /noModel: true/.test(page) && /prediction: null, market: null/.test(page)
-          && /沒有在盃賽上驗收過/.test(page)],
+        /* 歐冠**只有部分場次**有模型(兩隊都有跨聯賽評分才有,ucl-elo.json 的 fixtures),
+           而且沒有盤口。第一版寫成 noModel: true、prediction 全 null —— 階段 C 之後那是假的,
+           而說明卡還印著「這個賽事沒有本站的勝率預測」(「只有一個」那句寫死在畫面上,第三次)。 */
+        ['歐冠的預測從 ucl-elo 逐場讀(有就給、沒有就 null),沒有盤口,說明卡的場數從資料來',
+          /'ucl-elo'/.test(page) && /predBy\.get\(m\.id\)/.test(page) && /prediction: predOf\(m\), market: null/.test(page)
+          && /noMarket: true/.test(page) && !/noModel: true/.test(page) && /modelCover/.test(page) && /c\.has === c\.total/.test(page)
+          && !/這個賽事沒有本站的勝率預測,也沒有盤口/.test(page)],
+        ['歐冠的總表分「只算模型有預測的場次」與「全部」兩張,場數一樣時只印一張',
+          /你 vs 模型\(只算模型有預測的場次\)/.test(page) && /你的命中率\(全部已完賽的預測\)/.test(page)
+          && /s\.solo\.n !== s\.vsModel\.n/.test(page)],
         ['歐冠的隊伍識別碼用隊碼或來源 id,不用隊名(名字拼法會變)',
           /const idOf = side => \(side\?\.code \? `c:\$\{side\.code\}` : `u:\$\{side\?\.id\}`\)/.test(page)],
         ['沒有對手的賽事仍要算得出你自己的命中率', (() => {
@@ -4554,6 +4560,27 @@ async function checkUclDetails() {
     ok(/'ucl-details'/.test(cups) && /uclDetails: shared\['ucl-details'\]/.test(cups), '盃賽頁載入索引並傳給 ucl-view');
     // core.js 陣容卡那句話要看報告是哪條路建的(m.source),不能看 advanced 是誰
     const core = readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8');
+    ok(!/本站只做英超與西甲/.test(strip(view)), '歐冠頁的涵蓋率那段不再寫「本站只做英超與西甲」(英冠也是本站的聯賽)');
+    /* 「只有一個」那句寫死在畫面上,第三次:盃賽頁**頁首**寫著「三個賽事都沒有勝率預測」,
+       而同一頁的歐冠分頁掛著上百場勝率。歐冠那句改成從 ucl-elo 的場數來;
+       字面那句只准留在「一場預測都沒有」的分支裡(回測沒過時它是真的)。 */
+    ok(/\$\{uclPred\s*\?/.test(cups) && /:\s*`三個賽事都<b>沒有勝率預測<\/b>/.test(cups)
+      && (strip(cups).match(/三個賽事都<b>沒有勝率預測/g) ?? []).length === 1,
+      '盃賽頁頁首的「沒有勝率預測」只在歐冠一場預測都沒有時才印,有預測時印場數(從 ucl-elo 讀)');
+    // 頁尾署名:跨聯賽的頁要講自己的來源,不是目前聯賽的 meta.sources(那是英超的 FPL、pulselive)
+    ok(/export function foot\(meta, \{ sources = null \} = \{\}\)/.test(core) && /C\.foot\(meta, \{ sources: cupSources \}\)/.test(cups),
+      '盃賽頁的頁尾來源從產物的 sources 讀(core.foot 接受覆蓋清單)');
+    const srcOf = f => { try { return JSON.parse(readFileSync(join(W, 'data', f), 'utf8')).sources; } catch { return null; } };
+    const wellFormed = list => Array.isArray(list) && list.length > 0 && list.every(s => s.name && /^https:\/\//.test(s.url) && s.use);
+    ok(['ucl.json', 'cups.json', 'ucl-elo.json', 'ucl-standings.json'].every(f => wellFormed(srcOf(f))),
+      '四份盃賽/歐冠產物都帶 sources(name / url / use)');
+    ok(['football-data.org', 'FotMob'].every(n => (srcOf('ucl.json') ?? []).some(s => s.name === n))
+      && (srcOf('cups.json') ?? []).some(s => s.name === 'FotMob'),
+      'ucl.json 署名 football-data.org 與 FotMob;cups.json 署名 FotMob');
+    const ov = readFileSync(join(W, 'assets', 'js', 'page-overview.js'), 'utf8');
+    ok(/link: C\.link\('cups', \{ cup: 'ucl' \}\)/.test(ov) && /link: C\.link\('cups', \{ cup: cup\.key \}\)/.test(ov)
+      && !/沒有分析頁\(模型是聯賽調的\)/.test(strip(ov)),
+      '總覽的歐冠與盃賽場次點列會開盃賽頁的對應分頁,說明不再寫「沒有分析頁(模型是聯賽調的)」');
     ok(/\? m\.source\s*\n?\s*\? `標<span class="pill accent tiny">正式<\/span>的陣型與每一排球員,來自 \$\{\{ sportmonks/.test(core),
       '陣容卡的來源文案看 m.source(供應商路徑)—— 英冠與西甲的 FotMob 場次以前印著「英超官方公布的正式名單」');
     ok(!/m\.advanced && m\.advanced\.source !== 'fotmob'/.test(strip(core)), '舊的 advanced.source 判斷已拿掉');

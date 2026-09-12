@@ -430,6 +430,12 @@ export function uclElo(root, ucl) {
   return {
     note: '跨聯賽 Elo:八個聯賽的域內賽果加上歐冠場次餵進同一個評分池,歐冠場次就是把各聯賽接起來的橋。用的是本站域內預測那一套 Elo,沒有為歐冠調過任何係數。',
     source: 'openfootball + football-data.org',
+    // 頁尾署名(形狀同 meta.sources)。池子的三種來源都要列,不然讀者查不到 FotMob 是哪來的
+    sources: [
+      { name: 'openfootball / football.json', url: 'https://github.com/openfootball/football.json', use: '評分池:openfootball 涵蓋的聯賽的域內賽果', license: 'Public Domain' },
+      { name: 'FotMob', url: 'https://www.fotmob.com/', use: '評分池:openfootball 沒有涵蓋的那些聯賽的域內賽果(賽程端點)', license: '公開端點,低頻率快取' },
+      { name: 'football-data.org', url: 'https://www.football-data.org/', use: '評分池:歐冠場次(把各聯賽接起來的橋)', license: '免費方案,低頻率快取' },
+    ],
     poolStart: POOL_START,
     seasons: pool.seasons,
     pool: { matches: pool.matches.length, bridges: pool.bridges, teams: elo.size, leagues: pool.perLeague,

@@ -45,18 +45,25 @@ function writeStore(obj) {
    `league()` 那條坑)。英冠沒開是使用者的決定,不是技術限制。 */
 const OPEN_LEAGUES = ['pl', 'es1'];
 
-/* 歐冠**沒有勝率預測**:模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字
-   (鐵則二,盃賽頁本來就是這樣寫的)。所以那裡的每一場 prediction 與 market
-   都是 null,計分只算你自己的命中率 —— 畫面上要把原因講出來,
-   不然看起來像資料壞了。 */
+/* 歐冠的勝率**只有部分場次有**:階段 C(2026-09-09)的跨聯賽 Elo 只給兩隊都有評分的場次
+   (ucl-elo.json 的 fixtures;回測通過驗收才有,沒通過就一場都沒有)。第一版把整個賽事寫成
+   noModel、prediction 全 null —— 階段 C 之後那是假的,而說明卡還印著「沒有本站的勝率預測」
+   (「只有一個」那句寫死在畫面上,第三次)。現在有就給、沒有就 null;盤口則整個賽事都沒有
+   (noMarket)。兩件事畫面上都要講出來,不然看起來像資料壞了。 */
 async function uclPool() {
   try {
     const { data } = await C.loadFrom('pl', ['ucl', 'ucl-teams']);
+    // 模型是另一份產物;讀不到就當「沒有模型」,不要讓整個歐冠從這一頁消失
+    const elo = await C.loadFrom('pl', ['ucl-elo']).then(r => r.data['ucl-elo']).catch(() => null);
     const seasons = data.ucl?.seasons ?? [];
     // 還有場次沒踢完的那一季;全部踢完就取最新的一季(賽季之間的空窗)
     const cur = seasons.find(x => (x.played ?? 0) < (x.total ?? 0)) ?? seasons[0];
     const games = cur?.leagueMatches ?? [];
     if (!games.length) return null;
+    /* 逐場的 1X2 機率,鍵是 football-data 的場次 id(跟 ucl-view 的 predOf 同一把鍵)。
+       `p` 是 [主, 和, 客] 三個數,轉成聯賽 fixtures.prediction 那個形狀,計分那層才不用分兩種 */
+    const predBy = new Map((elo?.fixtures ?? []).map(f => [f.id, f.p]));
+    const predOf = m => { const p = predBy.get(m.id); return Array.isArray(p) ? { home: p[0], draw: p[1], away: p[2] } : null; };
     const T = data['ucl-teams'] ?? {};
     const nameBy = new Map(), crestBy = new Map();
     for (const t of T.teams ?? []) { nameBy.set(`c:${t.code}`, t.zh ?? t.en); crestBy.set(`c:${t.code}`, t.crest ?? null); }
@@ -65,7 +72,9 @@ async function uclPool() {
        **不能用隊名當鍵** —— 名字的拼法會隨上游改,改了就對不回舊紀錄。 */
     const idOf = side => (side?.code ? `c:${side.code}` : `u:${side?.id}`);
     return {
-      lg: 'ucl', zh: '歐冠', meta: null, noModel: true,
+      lg: 'ucl', zh: '歐冠', meta: null, noMarket: true,
+      /* 只數**還沒踢的**:模型只給未賽的場次,拿全季場數當分母會把踢完的 18 場講成「沒有評分」 */
+      modelCover: (() => { const un = games.filter(m => !m.played); return { has: un.filter(m => predBy.has(m.id)).length, total: un.length }; })(),
       fixtures: games.map(m => ({
         season: cur.label,
         home: idOf(m.home), away: idOf(m.away),
@@ -73,7 +82,7 @@ async function uclPool() {
         fh: m.final?.[0] ?? null, fa: m.final?.[1] ?? null,
         kickoff: m.kickoff ?? null, date: String(m.kickoff ?? '').slice(0, 10),
         round: m.matchday ?? null,
-        prediction: null, market: null,
+        prediction: predOf(m), market: null,
       })),
       nameBy: new Map([...nameBy].map(([k, v]) => [k, v])),
       crestBy,
@@ -184,11 +193,20 @@ try {
           這一頁開著也會自己鎖,不用重新整理。</div>
       </div>`;
     })()}
-    ${L.noModel ? `<div class="note info" style="margin-bottom:12px">
-      <b>這個賽事沒有本站的勝率預測,也沒有盤口。</b>模型是用聯賽調的,
-      <b>沒有在盃賽上驗收過</b> —— 延長賽、PK、實力差距極大的對戰都是它沒見過的,
-      套上去就是編數字。所以這裡只記錄你自己的預測與命中率,不跟任何人比。
-    </div>` : ''}
+    ${/* 三種狀態都要講得出來:全部都有 / 部分 / 一場都沒有(回測沒過)。數字從 modelCover 來,只數還沒踢的場次。 */''}
+    ${L.noMarket ? (() => {
+      const c = L.modelCover ?? { has: 0, total: 0 };
+      const where = '那是階段 C 的跨聯賽 Elo,回測與界線寫在模型驗證頁的歐冠那一節';
+      const body = !c.has
+        ? `<b>這個賽事目前沒有本站的勝率預測,也沒有盤口。</b>跨聯賽模型要回測通過驗收才給預測
+          (這一季沒有通過,原因在模型驗證頁的歐冠那一節),所以這裡只記錄你自己的預測與命中率,不跟任何人比。`
+        : c.has === c.total
+          ? `<b>歐冠還沒踢的 ${c.total} 場都有本站的勝率</b>(兩隊都有跨聯賽評分才有,目前剩下的場次兩隊都有;${where})。
+            <b>歐冠沒有盤口</b>,所以沒有「市場」可比。`
+          : `<b>歐冠只有部分場次有本站的勝率:</b>兩隊都有跨聯賽評分的場次才有(還沒踢的 ${c.has} / ${c.total} 場;${where}),
+            其餘場次只記你自己的預測與命中率,列上會寫明,不是資料壞了。<b>歐冠沒有盤口</b>,所以沒有「市場」可比。`;
+      return `<div class="note info" style="margin-bottom:12px">${body}</div>`;
+    })() : ''}
     ${games.map(f => matchRow(f, recs[matchKey(f)])).join('')}
     <div class="note" style="margin-top:14px">
       <b>開球時間一到就鎖。</b>賽後才填的不是預測,所以鎖住的場次不能再改,
@@ -224,13 +242,17 @@ try {
               : '<span class="pill tiny dim">開球時間未定</span>'}</span>
       </div>
 
-      ${/* 歐冠整個賽事都沒有模型與盤口(原因寫在上面那張說明卡),
-           每一列再印一次「模型 — ・市場 尚無盤口」只是重複的噪音。 */''}
-      <div class="row small dim" style="gap:14px;margin:8px 0;flex-wrap:wrap${cur().noModel ? ';display:none' : ''}">
+      ${/* 歐冠沒有盤口(整個賽事都沒有),每一列再印「市場 尚無盤口」只是重複的噪音,那一格整個不印;
+           模型則是**逐場**的:兩隊都有跨聯賽評分才有,沒有的要講是為什麼,不然看起來像資料壞了。
+           鎖住的場次讀的是紀錄裡凍結的那份,舊紀錄(模型接上之前存的)沒有模型是正常的,不要講成「沒有評分」。 */''}
+      <div class="row small dim" style="gap:14px;margin:8px 0;flex-wrap:wrap">
         <span>模型 ${p ? `${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}
-          <b class="accent-text">${zh[mp]}</b>` : '—'}</span>
-        <span>市場 ${m ? `${C.pct(m.home, 0)} / ${C.pct(m.draw, 0)} / ${C.pct(m.away, 0)}
-          <b>${zh[kp]}</b>` : '<span class="dim">尚無盤口</span>'}</span>
+          <b class="accent-text">${zh[mp]}</b>`
+          : cur().noMarket
+            ? (lock ? '<span class="dim">這一場的紀錄裡沒有模型</span>' : '<span class="dim">這一場沒有(有一隊還沒有跨聯賽評分)</span>')
+            : '—'}</span>
+        ${cur().noMarket ? '' : `<span>市場 ${m ? `${C.pct(m.home, 0)} / ${C.pct(m.draw, 0)} / ${C.pct(m.away, 0)}
+          <b>${zh[kp]}</b>` : '<span class="dim">尚無盤口</span>'}</span>`}
       </div>
 
       ${/* 手機上這一列會折行,而預設的折法會把「客勝」跟另外兩個勝負鈕拆到不同行
@@ -273,7 +295,11 @@ try {
     ${s.solo ? '' : '<div class="note">這個賽事還沒有已完賽的預測。到「這一輪」填幾場,踢完就會出現成績。</div>'}
     ${/* 沒有對手的賽事(歐冠)只給你自己的命中率 —— 沒有這一段的話,
          那裡的預測踢完之後畫面上什麼都不會出現。 */''}
-    ${s.vsModel ? line('你 vs 模型', s.vsModel) : line('你的命中率(這個賽事沒有模型可比)', s.solo)}
+    ${/* 歐冠的模型只涵蓋一部分場次:「你 vs 模型」只算兩邊都有的(比較一律在同一批場次上做),
+         另外再印一張「全部」—— 兩張的場數不同時才印第二張,一樣的話是重複。 */''}
+    ${s.vsModel ? line(s.solo && s.solo.n !== s.vsModel.n ? '你 vs 模型(只算模型有預測的場次)' : '你 vs 模型', s.vsModel)
+      : line('你的命中率(這個賽事沒有模型可比)', s.solo)}
+    ${s.vsModel && s.solo && s.solo.n !== s.vsModel.n ? line('你的命中率(全部已完賽的預測)', s.solo) : ''}
     ${s.vsAll && s.vsAll.n !== s.vsModel?.n ? line('你 vs 模型 vs 市場(只算三邊都有的場次)', s.vsAll) : ''}
     ${s.exact ? `<div class="card" style="margin-bottom:10px"><div class="spread"><h3>比分完全猜中</h3>
       <span class="pill tiny">${s.exact.n} 場有填比分</span></div>

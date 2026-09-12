@@ -792,10 +792,14 @@ export function nav() {
     ?.scrollIntoView({ inline: 'center', block: 'nearest' });
 }
 
-export function foot(meta) {
+/* sources 給跨聯賽的頁(盃賽)用:那一頁的資料不是目前聯賽的 meta.sources 給的,
+   印英超的來源等於署錯名。有給就整份換掉,沒給就照聯賽的。
+   `use` 放在 title,滑過去看得到這個來源供了什麼(鐵則:每個數字都查得到出處)。 */
+export function foot(meta, { sources = null } = {}) {
+  const list = sources?.length ? sources : meta.sources;
   return `<footer class="foot wrap">
     資料建置於 ${meta.builtAt.slice(0, 16).replace('T', ' ')} UTC・基準日 ${meta.asOf}・
-    來源:${meta.sources.map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.name}</a>`).join('、')}<br>
+    來源:${list.map(s => `<a href="${s.url}" target="_blank" rel="noopener"${s.use ? ` title="${esc(s.use)}"` : ''}>${esc(s.name)}</a>`).join('、')}<br>
     模型:${meta.model.type}${meta.model.backtest.available
       ? `(回測 RPS ${meta.model.backtest.rps},優於基準線 ${meta.model.backtest.baselineRps})` : '(尚未回測)'}。
     預測僅供分析參考,不構成任何投注建議。
@@ -2098,8 +2102,9 @@ export function pitch(xi, { w = 300, color = '#00ff85', label = null, photos = f
    702 種對戰組合都通過色盲分離、一般視覺分離與對比檢查。 */
 /* 歐冠的「賽前對比」要比哪幾項(2026-09-09,使用者要求的階段 A)。
 
-   **這不是預測,是兩邊各自的現況並排。** 歐冠沒有勝率預測,原因寫在歐冠頁上:
-   本站的模型是用聯賽調的,而且英超的 Elo 與西甲的 Elo 是**各自訓練**出來的,
+   **這不是預測,是兩邊各自的現況並排。** 歐冠的勝率是另一層(階段 C 的跨聯賽 Elo,
+   只給兩隊都有跨聯賽評分的場次),這張表刻意不碰它,原因:
+   本站的域內模型是用聯賽調的,而且英超的 Elo 與西甲的 Elo 是**各自訓練**出來的,
    兩個 1650 不是同一把尺,直接相減就是編數字(鐵則二)。
 
    所以這裡只放**各自聯賽裡算出來的原始事實**:名次、場均得分、每場進失球、

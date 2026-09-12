@@ -2,6 +2,13 @@
    這裡只做「資料本來就有的整理」—— 分輪、排序、算晉級路徑。
    不推論、不補值、不預測(盃賽沒有經過驗收的模型,見 docs/補齊規劃.md)。 */
 
+/* 頁尾署名用的來源清單(形狀同英超的 meta.sources)。SportMonks 已退訂(2026-09-03),
+   舊快取只拿來逐場核對 2026-09-02 以前的場次,所以照實寫「舊快取」而不是當成現役來源。 */
+export const CUPS_ATTRIBUTION = [
+  { name: 'FotMob', url: 'https://www.fotmob.com/', use: '足總盃與聯賽盃的賽程、比分、延長賽與 PK(只有正賽)', license: '公開端點,低頻率快取' },
+  { name: 'SportMonks(舊快取)', url: 'https://www.sportmonks.com/football-api/', use: '2026-09-02 以前盃賽場次的第二來源,只用來逐場核對比分(已退訂,不再更新)', license: '訂閱期間的快取' },
+];
+
 /* 輪次排序。SportMonks 的 stage 名稱沒有固定的數字順序,
    而且不同盃賽用詞不一樣(Round of 16 / 半準決賽 / Final)。
    **不要維護一張名稱→序號的對照表** —— 上游改個字就會全錯,
