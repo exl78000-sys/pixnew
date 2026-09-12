@@ -58,6 +58,8 @@ GitHub 原本的 cron **不拿掉**,兩條路徑並存 —— Cloudflare 掛了�
 5. **驗一下**:打開 `https://warroom-ignition.<你的帳號>.workers.dev/status`。
    會回一份 JSON,列出每個聯賽現在有沒有比賽在窗口內、即時資料多新、
    GitHub 認證是否正常(`auth`)、以及它剛才判斷要做什麼。
+   網址在 dashboard 的 warroom-ignition → Settings → Domains & Routes 那一列 `workers.dev`;
+   **根網址只會回一行「看 /status」**,要自己在後面補上 `/status`(2026-09-12 使用者實際卡在這裡)。
 
    **公開網址是唯讀的**:沒帶 `?key=` 時只報告、不派送(workers.dev 的網址
    任何人都打得到,而這支會真的觸發 workflow)。想讓它當手動急救鈕就設一組
@@ -121,7 +123,8 @@ fine-grained token 的到期日**問得到**:GitHub 每個 API 回應都帶
 
 **改了 `src/worker.js` 就要重新部署**:`npx wrangler deploy`;沒有電腦的話,
 Cloudflare dashboard → Workers & Pages → warroom-ignition → Edit code,把整份 `src/worker.js`
-貼進去 Deploy 也一樣(這支只有一個檔、沒有 build 步驟)。
+(從倉庫根目錄算是 `infra/ignition-worker/src/worker.js` —— 在 GitHub 上從根目錄找 `src/` 會 404,
+2026-09-12 實際發生過)貼進去 Deploy 也一樣(這支只有一個檔、沒有 build 步驟)。
 
 ## 費用
 
