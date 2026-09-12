@@ -24896,8 +24896,8 @@
   "TOT|EVE": {
    "fixtureId": 128962,
    "kickoff": "2026-09-12T16:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 0
@@ -25505,12 +25505,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -25527,10 +25521,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+3'00"
+   "clock": "90+3'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-12T18:25:31.507Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "SUN|ARS": {
    "fixtureId": 128961,
@@ -25930,5 +25937,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T18:23:18.577Z"
+ "fetchedAt": "2026-09-12T18:25:31.507Z"
 }
