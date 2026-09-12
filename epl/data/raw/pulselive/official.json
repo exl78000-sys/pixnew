@@ -25332,21 +25332,21 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+1'00"
+   "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-12T17:17:12.445Z"
+ "fetchedAt": "2026-09-12T17:19:29.634Z"
 }
