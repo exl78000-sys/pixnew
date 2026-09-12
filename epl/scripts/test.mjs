@@ -4396,6 +4396,23 @@ async function checkUclDetails() {
     ok(r && r.home === '11' && r.away === '22' && typeof r.home === 'string', '隊伍身分是 football-data id 字串', JSON.stringify(r));
     ok(r && r.fh === 2 && r.fa === 1 && r.played === true && r.date === '2099-09-08' && r.season === '2099-00', 'fh / fa / played / date / season 跟 results.json 同形');
     ok(r && r.homeCode === 'AAA' && r.awayCode === null && r.homeName === 'A' && r.awayFullName === 'B SK', '隊碼(有的才有)、名字與全名都帶出來');
+    ok(r && r.pair === '11|22|2099-09-08', '配對鍵帶日期(主|客|日期)—— 同一組主客同一季會出現兩次(聯賽階段 + 淘汰賽)');
+    {
+      // 同一組主客兩場(聯賽階段 + 淘汰賽):鍵不能撞。2025-26 實際有 7 組,第一版用「主|客」當鍵,第二場被當成已快取跳過
+      const twice = { ...season, rounds: [{ stage: 'LAST_16', ties: [{ legs: [
+        { id: 9, kickoff: '2100-03-01T20:00:00Z', stage: 'LAST_16', matchday: 1, played: true,
+          home: { id: 11, name: 'A', fullName: 'A FC' }, away: { id: 22, name: 'B', fullName: 'B SK' }, final: [0, 2] } ] }] }] };
+      const keys = uclResultsOf(twice).map(x => `${x.season}|${x.pair}`);
+      ok(new Set(keys).size === keys.length && keys.length === 3, '同一組主客兩場的鍵不撞', keys.join(' , '));
+    }
+    const { isShootoutShot, pairOf } = await import('./lib/matchstats.mjs');
+    ok(isShootoutShot({ period: 'PenaltyShootout', min: 120, situation: 'Penalty' })
+      && isShootoutShot({ min: 120, situation: 'Penalty' }, { pens: true }) && isShootoutShot({ min: 122, situation: 'Penalty' }, { pens: true })
+      && !isShootoutShot({ min: 120, situation: 'Penalty' }) && !isShootoutShot({ min: 122, situation: 'RegularPlay' }, { pens: true })
+      && !isShootoutShot({ min: 95, situation: 'Penalty' }, { pens: true }),
+      'PK 大戰的十二碼:period 是 PenaltyShootout,或(舊 raw)這一場有踢 PK 而且分鐘 ≥ 120 的 Penalty;沒踢 PK 的場次不排');
+    ok(pairOf({ home: 'ARS', away: 'CHE' }) === 'ARS|CHE' && pairOf({ home: '57', away: '78', pair: '57|78|2026-02-17' }) === '57|78|2026-02-17',
+      'pairOf:三個聯賽退回主|客,歐冠用帶日期的 pair');
     ok(rs.find(x => x.id === 2)?.played === false, '未賽的場次 played false、比分 null');
     const f = rs.find(x => x.id === 3);
     ok(f && f.fh === 1 && f.fa === 1 && Array.isArray(f.pens), 'PK 場:比分讀 final(延長後平手),pens 另帶 —— 跟 FotMob 的 scoreStr 同一個語意');
@@ -4439,6 +4456,11 @@ async function checkUclDetails() {
     ok(/import \{ uclResultsOf, UCL_RAW_DIR \} from '\.\.\/lib\/ucl-details\.mjs'/.test(src), '賽果形狀跟 build 讀 raw 的是同一份(uclResultsOf)');
     ok(/selectedSeason/.test(src) && /不是要的/.test(src), '賽程端點的 selectedSeason 要驗(帶 season 參數會回最新那季)');
     ok(/RETRY_MS/.test(src) && /recentlyTried/.test(src), '退回過的場次有退避(比賽日迴圈每 2 分鐘叫一次)');
+    ok(/import \{ pairOf, isShootoutShot \} from '\.\.\/lib\/matchstats\.mjs'/.test(src) && /store\.matches\[pairOf\(f\)\]/.test(src)
+      && /const key = pairOf\(f\);/.test(src) && /byPair\.get\(`\$\{f\.home\}\|\$\{f\.away\}`\)/.test(src),
+      '抓取器的快取鍵走 pairOf(歐冠帶日期),FotMob 賽程的查表仍是主|客');
+    ok(/舊鍵改成/.test(src) && /if \(m\.pair\) continue;/.test(src), '舊格式(主|客)的歐冠紀錄在載入時就地改鍵');
+    ok(/period: s\.period \?\? null/.test(src) && /s\.type === 'Goal' && !isShootoutShot\(s, \{ pens: !!fixture\.pens \}\)/.test(src), '射門存 period,射門圖完整性不算 PK 大戰的球(有踢 PK 的場次才排)');
     ok(!/ccode3=\$\{LG\.ccode3\}&/.test(src), 'ccode3 沒有就不帶(以前寫死在網址裡)');
   }
 
@@ -4465,7 +4487,8 @@ async function checkUclDetails() {
       const rep = JSON.parse(readFileSync(fp, 'utf8'));
       fileOk++;
       if (rep.home === r.home && rep.away === r.away && rep.sides?.[r.home] && rep.sides?.[r.away] && rep.names?.[r.home] && rep.hs === r.score[0] && rep.as === r.score[1]) keyOk++;
-      const shots = rep.advanced?.shots ?? [];
+      // 互射十二碼不算(跟產物同一條規則,pens 在報告上)
+      const shots = (rep.advanced?.shots ?? []).filter(x => !(x.period === 'PenaltyShootout' || (x.period == null && rep.pens === true && Number(x.min) >= 120 && x.situation === 'Penalty')));
       const sum = code => Math.round(shots.filter(s => s.team === code).reduce((a, s) => a + (Number(s.xg) || 0), 0) * 100) / 100;
       const hx = rep.advanced?.teamStats?.[r.home]?.xG, ax = rep.advanced?.teamStats?.[r.away]?.xG;
       if (rep.shotmapComplete ? (hx === sum(r.home) && ax === sum(r.away) && rep.sides[r.home].xG === hx) : (hx === null && ax === null)) xgOk++;
@@ -4490,13 +4513,13 @@ async function checkUclDetails() {
       ok(JSON.stringify(Object.keys(idx).sort()) === JSON.stringify(Object.keys(es).sort()), '兩份索引的欄位結構一樣(不是各寫一份實作)');
       ok((idx.count ?? 0) >= (es.count ?? 0), '英超那份的報告數不比西甲少(完整管線最後寫的是它)', `pl ${idx.count} vs es1 ${es.count}`);
       if (readFileSync(idxPath, 'utf8') !== readFileSync(esIdxPath, 'utf8')) console.log('  · 兩份索引目前不同(兩條工作流寫入時間不同),只回報不擋');
-      // 逐場檔:es1 有的每一場 pl 也要有
+      /* 逐場檔只放英超目錄:前端一律從 pl 載(renderPostMatch),es1 那份 26 MB 沒有任何人讀。
+         索引仍然兩邊各一份(跨聯賽的產物要同一個函式產出)。 */
       const esDir = join(W, 'data', 'leagues', 'es1', 'ucl-details');
-      let missing = 0;
-      if (existsSync(esDir)) for (const season of readdirSync(esDir)) for (const f of readdirSync(join(esDir, season))) {
-        if (!existsSync(join(W, 'data', 'ucl-details', season, f))) missing++;
-      }
-      ok(missing === 0, '西甲目錄有的逐場檔,英超目錄都有', `${missing} 個只有 es1 有`);
+      const esFiles = existsSync(esDir) ? readdirSync(esDir).flatMap(sd => readdirSync(join(esDir, sd)).filter(f => /^\d+\.json$/.test(f))) : [];
+      ok(esFiles.length === 0, '西甲目錄不放逐場檔(前端一律從 pl 載,那份沒有人讀)', `${esFiles.length} 個`);
+      const view2 = readFileSync(join(W, 'assets', 'js', 'ucl-view.js'), 'utf8');
+      ok(/C\.loadFrom\('pl', \[name\]\)/.test(view2), '逐場檔一律從 pl 目錄載');
     }
     // lib 自己跑一次要跟寫出來的索引一致(build 沒有另外加工)
     const again = uclDetails(ROOT, ucl);

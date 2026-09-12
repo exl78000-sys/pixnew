@@ -27,7 +27,8 @@
  *   `ucl-details.json`                 索引:哪幾場有報告、比分、xG、拒收與不完整的清單(幾 KB)
  *   `ucl-details/{季}/{fd 比賽 id}.json` 逐場報告(一場約 60 KB),前端點開才載 —— 一季 144 + 45 場
  *                                      全塞進一個檔會到 10 MB,盃賽頁每個讀者都要付這筆錢。
- * 兩個 build(英超、西甲)各呼叫一次同一個函式寫進各自的目錄;跟 ucl.json 同一個規矩。
+ * 兩個 build(英超、西甲)各呼叫一次同一個函式;索引兩邊各一份(跟 ucl.json 同一個規矩),
+ * 逐場檔只寫英超目錄 —— 前端一律從 pl 載,es1 那份(三季 26 MB)沒有人讀。
  *
  * 拒收與不完整**要進產物**(`rejected` / `incomplete`):依設計不採用之後什麼都不留的話,
  * 讀者看到踢完的比賽沒有報告而畫面不解釋,測試也分不出「依設計拒收」與「管線壞了」。
@@ -35,7 +36,7 @@
 import { existsSync, readFileSync, readdirSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { uclSeasonMatches } from './ucl-elo.mjs';
-import { loadFotmobMatchStats, toCanonicalDetail } from './matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, isShootoutShot } from './matchstats.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
 
 export const UCL_RAW_DIR = 'fotmob-ucl';
@@ -57,6 +58,9 @@ export function uclResultsOf(season) {
     date: String(m.kickoff ?? '').slice(0, 10), kickoff: m.kickoff ?? null,
     stage: m.stage ?? null, matchday: m.matchday ?? null,
     home: String(m.home.id), away: String(m.away.id),
+    /* 配對鍵帶日期:同一組主客在同一季會出現兩次(聯賽階段 + 淘汰賽,2025-26 有 7 組),
+       「主|客」當鍵第二場會靜靜蓋掉第一場。兩隊不可能同一天踢兩次,所以主|客|日期唯一。 */
+    pair: `${m.home.id}|${m.away.id}|${String(m.kickoff ?? '').slice(0, 10)}`,
     homeName: m.home.name ?? m.home.fullName, awayName: m.away.name ?? m.away.fullName,
     homeFullName: m.home.fullName, awayFullName: m.away.fullName,
     homeCode: m.home.code ?? null, awayCode: m.away.code ?? null,
@@ -70,10 +74,12 @@ export function uclResultsOf(season) {
 /* xG 一種算法(見檔頭第 2 點):射門圖完整才給逐射門加總,否則 null。供應商的球隊 xG 不用。 */
 function withShotXg(detail, ms) {
   const ready = ms.shotmapComplete === true && Array.isArray(ms.shots) && ms.shots.length > 0;
-  const sum = code => r2(ms.shots.filter(s => s.team === code).reduce((a, s) => a + (Number(s.xg) || 0), 0));
+  // PK 大戰的十二碼不算射門(見 matchstats.mjs 的 isShootoutShot)
+  const sum = code => r2(ms.shots.filter(s => s.team === code && !isShootoutShot(s, { pens: ms.pens })).reduce((a, s) => a + (Number(s.xg) || 0), 0));
   const teamStats = Object.fromEntries(Object.entries(detail.teamStats ?? {})
     .map(([code, t]) => [code, { ...(t ?? {}), xG: ready ? sum(code) : null }]));
-  return { ...detail, teamStats, xgSource: ready ? 'shotmap' : null };
+  // pens 帶到 detail 與報告:前端的射門圖要靠它排除互射的十二碼(舊 raw 沒有 period)
+  return { ...detail, teamStats, xgSource: ready ? 'shotmap' : null, pens: ms.pens === true };
 }
 
 const coverageGap = detail => Object.entries(detail?.coverage ?? {})
@@ -125,7 +131,7 @@ export function uclDetails(root, ucl) {
     let n = 0;
     for (const r of rows) {
       if (!r.played) continue;
-      const key = `${r.season}|${r.home}|${r.away}`;
+      const key = `${r.season}|${r.pair}`;
       const ms = stats.matches[key];
       if (!ms) continue;                       // 還沒抓到,或已被 loadFotmobMatchStats 退回(在 rejected 裡)
       const detail = { ...withShotXg(toCanonicalDetail(ms), ms), kickoff: r.kickoff };
@@ -143,6 +149,7 @@ export function uclDetails(root, ucl) {
       report.codes = { [r.home]: r.homeCode, [r.away]: r.awayCode };
       report.leagues = { [r.home]: r.homeLeague, [r.away]: r.awayLeague };
       report.shotmapComplete = ms.shotmapComplete === true;
+      report.pens = ms.pens === true;
       files.set(`${season.label}/${r.id}.json`, report);
       index.reports[String(r.id)] = {
         season: season.label, date: r.date, stage: r.stage, matchday: r.matchday,

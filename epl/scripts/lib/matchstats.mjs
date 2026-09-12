@@ -22,11 +22,26 @@ const mean = xs => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null
 const sd = xs => { if (xs.length < 2) return null; const m = mean(xs); return Math.sqrt(xs.reduce((a, x) => a + (x - m) ** 2, 0) / (xs.length - 1)); };
 const dist = xs => ({ mean: xs.length ? r2(mean(xs)) : null, sd: xs.length >= 2 ? r2(sd(xs)) : null, n: xs.length });
 
+/* 一場比賽在 raw 與 results 裡的配對鍵。三個聯賽是「主|客」;歐冠**不行**:同一組主客在同一季會出現兩次
+   (聯賽階段 + 淘汰賽,2025-26 有 7 組),「主|客」當鍵第二場會靜靜蓋掉第一場 —— 這是英冠附加賽那條坑在歐冠的版本。
+   所以歐冠的 results 與 raw 都帶 `pair`(主|客|日期),有就用它,沒有退回「主|客」(三個聯賽的 raw 不變)。 */
+export const pairOf = m => m.pair ?? `${m.home}|${m.away}`;
+
+/* PK 大戰的射門要排除。FotMob 的 shotmap 把互射十二碼也列進去(2025-26 歐冠決賽:7 球 Penalty,分鐘 122~130;
+   2024-25 Atleti vs Real Madrid:8 球,分鐘 **120**~127),照算會把 1-1 的比賽數成 9 顆進球、射門圖判定不完整、
+   xG 多算七次。互射的假分鐘從 120 或更後面起跳,而正規延長賽的最後一分鐘也是 120 —— 光看分鐘分不開,
+   所以要知道**這一場有沒有踢 PK**(results 的 pens):有踢 PK 的場次,分鐘 ≥ 120 的 Penalty 一律當互射;
+   沒踢 PK 的場次沒有互射可排。period(PenaltyShootout)是新抓的 raw 才可能有,有就以它為準。 */
+export const isShootoutShot = (s, { pens = false } = {}) => s?.period === 'PenaltyShootout'
+  || (s?.period == null && !!pens && Number(s?.min) >= 120 && s?.situation === 'Penalty');
+
 export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl' } = {}) {
   const dir = join(root, 'data', 'raw', rawDir);
   const out = { source: 'FotMob matchDetails', seasons: [], count: 0, rejected: [], verification: {}, matches: {}, teams: {} };
   if (!existsSync(dir)) return out;
-  const scoreOf = new Map(results.filter(r => r.played).map(r => [`${r.season}|${r.home}|${r.away}`, [r.fh, r.fa]]));
+  const scoreOf = new Map(results.filter(r => r.played).map(r => [`${r.season}|${pairOf(r)}`, [r.fh, r.fa]]));
+  // 有沒有踢 PK(歐冠 results 有 pens;三個聯賽沒有 → 一律 false)
+  const pensOf = new Map(results.filter(r => r.played).map(r => [`${r.season}|${pairOf(r)}`, !!(Array.isArray(r.pens) && r.pens.length)]));
   for (const f of readdirSync(dir).filter(x => /-game-details\.json$/.test(x)).sort()) {
     const store = JSON.parse(readFileSync(join(dir, f), 'utf8'));
     const season = store.season;
@@ -38,22 +53,24 @@ export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl'
       ? { checked: store.verification.checked, agree: store.verification.agree, tolerance: store.verification.tolerance, source: store.verification.source }
       : null;
     for (const m of Object.values(store.matches ?? {})) {
-      const key = `${season}|${m.home}|${m.away}`;
+      const key = `${season}|${pairOf(m)}`;
       const truth = scoreOf.get(key);
       if (!truth) { out.rejected.push({ key, reason: '本站賽果沒有這場(或未完賽)' }); continue; }
       if (truth[0] !== m.score?.[0] || truth[1] !== m.score?.[1] || m.providerScore?.[0] !== truth[0] || m.providerScore?.[1] !== truth[1]) {
         out.rejected.push({ key, reason: `比分不符(本站 ${truth.join('-')},FotMob ${m.providerScore?.join('-')})` }); continue;
       }
       if (!m.possession?.all || m.possession.all[0] + m.possession.all[1] !== 100) { out.rejected.push({ key, reason: '控球率缺或相加不是 100' }); continue; }
-      const shotGoals = (m.shots ?? []).filter(s => s.type === 'Goal').length;
+      const pens = pensOf.get(key) === true;
+      const shotGoals = (m.shots ?? []).filter(s => s.type === 'Goal' && !isShootoutShot(s, { pens })).length;
       out.matches[key] = {
         key, season, date: m.date, home: m.home, away: m.away, score: [...truth], matchId: m.matchId,
+        ...(m.pair ? { pair: m.pair } : {}), pens,
         possession: m.possession, teamStats: m.teamStats, shots: m.shots ?? [], momentum: m.momentum ?? [],
         events: m.events ?? [], lineups: m.lineups ?? null,
         /* 跑動 / 衝刺(2026-09-03 重探後加):供應商的追蹤資料,不是每場都有(2025-26 有 282/380,缺的集中在 11 座主場);沒有就是 null,不是 0 */
         physical: m.physical ?? null,
         heat: m.heat ?? null, zones: m.zones ?? null,
-        players: pstore.matches?.[`${m.home}|${m.away}`]?.players ?? null,
+        players: pstore.matches?.[pairOf(m)]?.players ?? null,
         shotmapComplete: shotGoals === truth[0] + truth[1],
       };
     }

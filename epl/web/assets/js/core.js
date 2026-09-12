@@ -1307,7 +1307,13 @@ export function matchReportCards(m, { order = null } = {}) {
     };
     /* 射門圖(FotMob shotmap):半場圖,兩隊各攻一邊;圓的大小是 xG、實心是進球。座標是供應商的 0–100 場地座標。 */
     const shotmapHtml = () => {
-      const shots = (d.shots ?? []).filter(s => Number.isFinite(s.x) && Number.isFinite(s.y));
+      /* PK 大戰的十二碼也在 FotMob 的 shotmap 裡(歐冠決賽:7 球、分鐘 122~130;Atleti vs Real 從 120 起跳),
+         畫上去會像多了七次射門、xG 多算七次。跟 lib/matchstats.mjs 的 isShootoutShot 同一條規則:period 是
+         PenaltyShootout,或(舊 raw 沒有 period)**這一場有踢 PK**(d.pens)而且分鐘 ≥ 120 的 Penalty。 */
+      const shootout = s => s.period === 'PenaltyShootout' || (s.period == null && d.pens === true && Number(s.min) >= 120 && s.situation === 'Penalty');
+      const allShots = (d.shots ?? []).filter(s => Number.isFinite(s.x) && Number.isFinite(s.y));
+      const shots = allShots.filter(s => !shootout(s));
+      const pens = allShots.length - shots.length;
       if (!shots.length) return '';
       const W = 560, Hh = 360;
       const colour = code => team(code).chartColor ?? team(code).colors?.[0] ?? '#00ff85';
@@ -1327,7 +1333,7 @@ export function matchReportCards(m, { order = null } = {}) {
         <svg viewBox="0 0 ${W} ${Hh}" width="100%" style="display:block;margin:6px 0;background:#0a1018;border-radius:8px">
           <rect x="1" y="1" width="${W - 2}" height="${Hh - 2}" fill="none" stroke="var(--line)"/><line x1="${W / 2}" y1="0" x2="${W / 2}" y2="${Hh}" stroke="var(--line)"/>
           ${box(1, (16.5 / 105 * W).toFixed(1))}${box((W - 16.5 / 105 * W).toFixed(1), (16.5 / 105 * W).toFixed(1))}${shots.map(dot).join('')}</svg>
-        <div class="tiny dim">圓的大小是該次射門的 xG,實心是進球;把游標移到圓上看分鐘、射手與 xG。${d.shotmapComplete === false ? '<b>這場 shotmap 的進球數跟比分對不上,射門清單不完整。</b>' : ''}</div></div>`;
+        <div class="tiny dim">圓的大小是該次射門的 xG,實心是進球;把游標移到圓上看分鐘、射手與 xG。${pens ? `PK 大戰的 ${pens} 球不在圖上、也不算進 xG。` : ''}${d.shotmapComplete === false ? '<b>這場 shotmap 的進球數跟比分對不上,射門清單不完整。</b>' : ''}</div></div>`;
     };
     return {
       teamStats: `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start">
