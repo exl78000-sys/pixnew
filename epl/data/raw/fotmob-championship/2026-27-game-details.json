@@ -112216,8 +112216,4880 @@
      }
     ]
    }
+  },
+  "DER|BIR": {
+   "key": "DER|BIR",
+   "season": "2026-27",
+   "date": "2026-09-12",
+   "matchId": "5836829",
+   "home": "DER",
+   "away": "BIR",
+   "score": [
+    1,
+    2
+   ],
+   "providerScore": [
+    1,
+    2
+   ],
+   "teamStats": {
+    "DER": {
+     "possession": 59,
+     "shots": 18,
+     "shotsOn": 4,
+     "shotsOff": 7,
+     "blockedShots": 3,
+     "corners": 10,
+     "offsides": 4,
+     "fouls": 8,
+     "saves": 6,
+     "passes": 382,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.01
+    },
+    "BIR": {
+     "possession": 41,
+     "shots": 18,
+     "shotsOn": 9,
+     "shotsOff": 7,
+     "blockedShots": 9,
+     "corners": 4,
+     "offsides": 1,
+     "fouls": 12,
+     "saves": 1,
+     "passes": 276,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.05
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     59,
+     41
+    ],
+    "h1": [
+     56,
+     44
+    ],
+    "h2": [
+     62,
+     38
+    ]
+   },
+   "events": [
+    {
+     "minute": 19,
+     "extra": null,
+     "team": "DER",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Mohammed Fuseini"
+    },
+    {
+     "minute": 21,
+     "extra": null,
+     "team": "BIR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Alexander Cochrane"
+    },
+    {
+     "minute": 40,
+     "extra": null,
+     "team": "DER",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Bobby Clark"
+    },
+    {
+     "minute": 42,
+     "extra": null,
+     "team": "BIR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Carlos Vicente"
+    },
+    {
+     "minute": 44,
+     "extra": null,
+     "team": "BIR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "August Priske"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "DER",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Oscar Fraulo"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "BIR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Seung-Ho Paik"
+    },
+    {
+     "minute": 63,
+     "extra": null,
+     "team": "BIR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Seung-Ho Paik"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "BIR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ethan Laird"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "BIR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Luis Vázquez"
+    },
+    {
+     "minute": 85,
+     "extra": 0,
+     "team": "DER",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ryan Hedges"
+    },
+    {
+     "minute": 85,
+     "extra": 0,
+     "team": "DER",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Corey Blackett-Taylor"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "BIR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Carlos Vicente"
+    },
+    {
+     "minute": 90,
+     "extra": 5,
+     "team": "DER",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lars-Jørgen Salvesen"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "BIR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kristoffer Lund Hansen"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "BIR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dael Fry"
+    }
+   ],
+   "shots": [
+    {
+     "min": 11,
+     "extra": null,
+     "team": "BIR",
+     "player": "August Priske",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.171,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.8,
+     "y": 31.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "BIR",
+     "player": "Christoph Klarer",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.046,
+     "xgot": 0.03,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 34.5,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "DER",
+     "player": "Eiran Cashin",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.9,
+     "y": 38.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "DER",
+     "player": "Bobby Clark",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.008,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.3,
+     "y": 56.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "DER",
+     "player": "Joe Ward",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.6,
+     "y": 20.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "BIR",
+     "player": "Carlos Vicente",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 49.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "BIR",
+     "player": "Jay Stansfield",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.145,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.4,
+     "y": 29.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "BIR",
+     "player": "August Priske",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.077,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 33.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "BIR",
+     "player": "Tomoki Iwata",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.098,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.6,
+     "y": 33.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "DER",
+     "player": "Bobby Clark",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.097,
+     "xgot": 0.144,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.1,
+     "y": 43.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "BIR",
+     "player": "Carlos Vicente",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.148,
+     "xgot": 0.476,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.9,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "DER",
+     "player": "Carlton Morris",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 30.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "DER",
+     "player": "Mohammed Fuseini",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.029,
+     "xgot": 0.435,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 20.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "DER",
+     "player": "Sammie Szmodics",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81,
+     "y": 41.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "DER",
+     "player": "Eiran Cashin",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 29.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "BIR",
+     "player": "August Priske",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.081,
+     "xgot": 0.325,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 33.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "BIR",
+     "player": "Carlos Vicente",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 17,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "BIR",
+     "player": "Alexander Cochrane",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0.036,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 72,
+     "y": 34.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "BIR",
+     "player": "Seung-Ho Paik",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.945,
+     "xgot": 0.994,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 104.3,
+     "y": 32.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "DER",
+     "player": "Sammie Szmodics",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.9,
+     "y": 32.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "DER",
+     "player": "Oscar Fraulo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.9,
+     "y": 47.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "DER",
+     "player": "Bobby Clark",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 24.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "BIR",
+     "player": "Jay Stansfield",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.4,
+     "y": 23.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "BIR",
+     "player": "Jay Stansfield",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.4,
+     "y": 24.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "BIR",
+     "player": "Carlos Vicente",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.318,
+     "xgot": 0.45,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.6,
+     "y": 30.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "BIR",
+     "player": "Jay Stansfield",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.094,
+     "xgot": 0.421,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 28.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "BIR",
+     "player": "Carlos Vicente",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.01,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73,
+     "y": 33.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "BIR",
+     "player": "Ethan Laird",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.081,
+     "xgot": 0.212,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 24.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "BIR",
+     "player": "Luis Vázquez",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.747,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.1,
+     "y": 37,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "DER",
+     "player": "Oscar Fraulo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.4,
+     "y": 47.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 7,
+     "team": "DER",
+     "player": "Sammie Szmodics",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.124,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 34.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 7,
+     "team": "DER",
+     "player": "Sammie Szmodics",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.7,
+     "y": 44.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 12,
+     "team": "DER",
+     "player": "Sammie Szmodics",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.159,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 28.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 13,
+     "team": "DER",
+     "player": "Carlton Morris",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.126,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 27.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 13,
+     "team": "DER",
+     "player": "Sammie Szmodics",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.061,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 24,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 15,
+     "team": "DER",
+     "player": "Corey Blackett-Taylor",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 46.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -11
+    ],
+    [
+     2,
+     -11
+    ],
+    [
+     3,
+     19
+    ],
+    [
+     4,
+     35
+    ],
+    [
+     5,
+     30
+    ],
+    [
+     6,
+     5
+    ],
+    [
+     7,
+     0
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     9,
+     5
+    ],
+    [
+     10,
+     -3
+    ],
+    [
+     11,
+     -62
+    ],
+    [
+     12,
+     -60
+    ],
+    [
+     13,
+     -52
+    ],
+    [
+     14,
+     8
+    ],
+    [
+     15,
+     5
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     17,
+     11
+    ],
+    [
+     18,
+     8
+    ],
+    [
+     19,
+     3
+    ],
+    [
+     20,
+     -22
+    ],
+    [
+     21,
+     -24
+    ],
+    [
+     22,
+     0
+    ],
+    [
+     23,
+     43
+    ],
+    [
+     24,
+     60
+    ],
+    [
+     25,
+     57
+    ],
+    [
+     26,
+     60
+    ],
+    [
+     27,
+     38
+    ],
+    [
+     28,
+     22
+    ],
+    [
+     29,
+     -38
+    ],
+    [
+     30,
+     -33
+    ],
+    [
+     31,
+     -27
+    ],
+    [
+     32,
+     0
+    ],
+    [
+     33,
+     -11
+    ],
+    [
+     34,
+     -33
+    ],
+    [
+     35,
+     -22
+    ],
+    [
+     36,
+     0
+    ],
+    [
+     37,
+     33
+    ],
+    [
+     38,
+     54
+    ],
+    [
+     39,
+     54
+    ],
+    [
+     40,
+     43
+    ],
+    [
+     41,
+     16
+    ],
+    [
+     42,
+     -54
+    ],
+    [
+     43,
+     -60
+    ],
+    [
+     44,
+     -43
+    ],
+    [
+     45,
+     38
+    ],
+    [
+     45.5,
+     74
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -5
+    ],
+    [
+     48,
+     -5
+    ],
+    [
+     49,
+     -5
+    ],
+    [
+     50,
+     0
+    ],
+    [
+     51,
+     0
+    ],
+    [
+     52,
+     0
+    ],
+    [
+     53,
+     0
+    ],
+    [
+     54,
+     0
+    ],
+    [
+     55,
+     0
+    ],
+    [
+     56,
+     0
+    ],
+    [
+     57,
+     3
+    ],
+    [
+     58,
+     24
+    ],
+    [
+     59,
+     60
+    ],
+    [
+     60,
+     62
+    ],
+    [
+     61,
+     46
+    ],
+    [
+     62,
+     -22
+    ],
+    [
+     63,
+     -100
+    ],
+    [
+     64,
+     -100
+    ],
+    [
+     65,
+     -87
+    ],
+    [
+     66,
+     5
+    ],
+    [
+     67,
+     -3
+    ],
+    [
+     68,
+     -8
+    ],
+    [
+     69,
+     41
+    ],
+    [
+     70,
+     60
+    ],
+    [
+     71,
+     100
+    ],
+    [
+     72,
+     68
+    ],
+    [
+     73,
+     81
+    ],
+    [
+     74,
+     52
+    ],
+    [
+     75,
+     57
+    ],
+    [
+     76,
+     30
+    ],
+    [
+     77,
+     24
+    ],
+    [
+     78,
+     19
+    ],
+    [
+     79,
+     8
+    ],
+    [
+     80,
+     -14
+    ],
+    [
+     81,
+     -24
+    ],
+    [
+     82,
+     -5
+    ],
+    [
+     83,
+     -71
+    ],
+    [
+     84,
+     -98
+    ],
+    [
+     85,
+     -100
+    ],
+    [
+     86,
+     -30
+    ],
+    [
+     87,
+     -3
+    ],
+    [
+     88,
+     -11
+    ],
+    [
+     89,
+     -54
+    ],
+    [
+     90,
+     -49
+    ],
+    [
+     90.5,
+     36
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "DER": {
+     "team": "DER",
+     "formation": "4-2-3-1",
+     "coach": "John Eustace",
+     "xi": [
+      {
+       "name": "Jacob Widell Zetterström",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Joe Ward",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Sondre Klingen Langås",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Eiran Cashin",
+       "shirt": 44,
+       "pos": "D"
+      },
+      {
+       "name": "Charlie Taylor",
+       "shirt": 18,
+       "pos": "D"
+      },
+      {
+       "name": "Bobby Clark",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "David Ozoh",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Mohammed Fuseini",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Sammie Szmodics",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Henrik Meister",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Carlton Morris",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Oscar Fraulo",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Corey Blackett-Taylor",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Ryan Hedges",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Lars-Jørgen Salvesen",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Josh Vickers",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Dion Sanderson",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Max Johnston",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Ryan Nyambe",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Alex Mowatt",
+       "shirt": 20,
+       "pos": "?"
+      }
+     ]
+    },
+    "BIR": {
+     "team": "BIR",
+     "formation": "4-2-3-1",
+     "coach": "Chris Davies",
+     "xi": [
+      {
+       "name": "James Beadle",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Bright Osayi-Samuel",
+       "shirt": 26,
+       "pos": "D"
+      },
+      {
+       "name": "Phil Neumann",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Christoph Klarer",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Alexander Cochrane",
+       "shirt": 20,
+       "pos": "D"
+      },
+      {
+       "name": "Tomoki Iwata",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Jhon Solís",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Carlos Vicente",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Jay Stansfield",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Liam Millar",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "August Priske",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Seung-Ho Paik",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Ethan Laird",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Luis Vázquez",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Dael Fry",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Kristoffer Lund Hansen",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Ryan Allsop",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Lee Buchanan",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Kanya Fujimoto",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Marvin Ducksch",
+       "shirt": 33,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 46,
+      "center": 22,
+      "right": 32
+     },
+     "firstHalf": {
+      "left": 58,
+      "center": 22,
+      "right": 20
+     },
+     "secondHalf": {
+      "left": 35,
+      "center": 22,
+      "right": 43
+     }
+    },
+    "away": {
+     "total": {
+      "left": 24,
+      "center": 28,
+      "right": 48
+     },
+     "firstHalf": {
+      "left": 24,
+      "center": 31,
+      "right": 45
+     },
+     "secondHalf": {
+      "left": 24,
+      "center": 26,
+      "right": 50
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-12T13:40:57.110Z",
+   "fdMatchId": "2026-27-70",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "BIR",
+      "name": "Liam Millar",
+      "n": 32,
+      "cx": 52.6,
+      "cy": 21.7,
+      "spread": 31.7,
+      "grid": "3,1,3,2,6,1,0,0,2,1,1,1,0,3,6,0,0,0,0,0,1,0,1,0"
+     },
+     {
+      "team": "BIR",
+      "name": "James Beadle",
+      "n": 45,
+      "cx": 11,
+      "cy": 36.8,
+      "spread": 13,
+      "grid": "0,0,0,0,0,0,11,3,1,0,0,0,22,5,0,0,0,0,1,2,0,0,0,0"
+     },
+     {
+      "team": "BIR",
+      "name": "Carlos Vicente",
+      "n": 59,
+      "cx": 47.4,
+      "cy": 47.5,
+      "spread": 34.4,
+      "grid": "1,2,1,2,0,0,3,0,2,0,2,1,4,0,0,0,3,4,5,9,7,5,6,2"
+     },
+     {
+      "team": "DER",
+      "name": "Charlie Taylor",
+      "n": 59,
+      "cx": 47.8,
+      "cy": 8.6,
+      "spread": 27.9,
+      "grid": "10,7,10,9,13,2,2,0,1,2,1,0,0,0,1,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BIR",
+      "name": "August Priske",
+      "n": 42,
+      "cx": 66.7,
+      "cy": 49.5,
+      "spread": 25.4,
+      "grid": "0,0,1,0,1,0,0,0,0,0,1,0,0,0,4,7,3,3,0,2,4,5,7,4"
+     },
+     {
+      "team": "DER",
+      "name": "Carlton Morris",
+      "n": 59,
+      "cx": 69.9,
+      "cy": 25.7,
+      "spread": 31.2,
+      "grid": "0,0,1,10,5,5,3,0,3,2,5,7,3,0,0,0,2,8,0,0,0,4,0,1"
+     },
+     {
+      "team": "BIR",
+      "name": "Jhon Solís",
+      "n": 42,
+      "cx": 40.5,
+      "cy": 31.9,
+      "spread": 28.7,
+      "grid": "2,4,4,1,1,0,4,3,1,0,1,0,1,4,4,4,1,2,0,2,1,2,0,0"
+     },
+     {
+      "team": "DER",
+      "name": "David Ozoh",
+      "n": 36,
+      "cx": 49.5,
+      "cy": 25.7,
+      "spread": 27.6,
+      "grid": "3,1,1,4,2,0,4,0,3,6,4,0,0,1,2,3,0,0,0,0,0,2,0,0"
+     },
+     {
+      "team": "BIR",
+      "name": "Phil Neumann",
+      "n": 47,
+      "cx": 37.2,
+      "cy": 48.9,
+      "spread": 31.2,
+      "grid": "0,0,0,0,0,0,4,0,1,1,0,0,7,6,3,0,0,3,3,7,7,0,1,4"
+     },
+     {
+      "team": "BIR",
+      "name": "Bright Osayi-Samuel",
+      "n": 78,
+      "cx": 40.2,
+      "cy": 59,
+      "spread": 23,
+      "grid": "0,0,0,0,0,0,0,1,0,0,0,0,4,2,4,1,2,0,8,18,19,12,6,1"
+     },
+     {
+      "team": "BIR",
+      "name": "Alexander Cochrane",
+      "n": 59,
+      "cx": 39.1,
+      "cy": 16.6,
+      "spread": 30.5,
+      "grid": "6,9,9,6,3,2,10,6,0,2,1,0,1,0,0,1,0,1,0,0,0,0,1,1"
+     },
+     {
+      "team": "DER",
+      "name": "Henrik Meister",
+      "n": 33,
+      "cx": 75.6,
+      "cy": 10.2,
+      "spread": 18.6,
+      "grid": "0,0,2,10,10,5,0,0,0,0,2,3,0,0,0,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "DER",
+      "name": "Sammie Szmodics",
+      "n": 64,
+      "cx": 65.2,
+      "cy": 26.1,
+      "spread": 27.8,
+      "grid": "2,0,7,7,7,3,0,3,3,4,4,3,0,0,2,5,7,2,0,0,1,0,2,2"
+     },
+     {
+      "team": "DER",
+      "name": "Eiran Cashin",
+      "n": 95,
+      "cx": 40.7,
+      "cy": 20.3,
+      "spread": 25.1,
+      "grid": "1,13,11,10,3,0,12,12,12,8,2,3,3,1,0,1,1,1,0,0,1,0,0,0"
+     },
+     {
+      "team": "DER",
+      "name": "Sondre Klingen Langås",
+      "n": 76,
+      "cx": 42.9,
+      "cy": 38.9,
+      "spread": 27.9,
+      "grid": "1,3,3,0,1,0,6,7,4,2,0,2,5,2,7,6,1,2,2,3,7,9,2,1"
+     },
+     {
+      "team": "DER",
+      "name": "Joe Ward",
+      "n": 100,
+      "cx": 64.5,
+      "cy": 49,
+      "spread": 32.7,
+      "grid": "0,0,0,0,1,8,0,3,3,3,1,0,3,1,6,8,1,2,0,5,10,17,13,15"
+     },
+     {
+      "team": "DER",
+      "name": "Mohammed Fuseini",
+      "n": 50,
+      "cx": 68.4,
+      "cy": 37.9,
+      "spread": 32.9,
+      "grid": "1,0,3,2,5,4,0,1,1,2,1,2,0,1,1,1,1,2,0,2,6,3,5,6"
+     },
+     {
+      "team": "DER",
+      "name": "Bobby Clark",
+      "n": 73,
+      "cx": 65.1,
+      "cy": 40.2,
+      "spread": 27.2,
+      "grid": "0,1,0,2,6,1,0,0,5,7,6,1,1,2,2,4,4,3,0,1,6,10,5,6"
+     },
+     {
+      "team": "BIR",
+      "name": "Christoph Klarer",
+      "n": 54,
+      "cx": 33.2,
+      "cy": 26.9,
+      "spread": 29.1,
+      "grid": "1,5,4,2,2,0,12,4,3,0,2,3,9,4,2,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "BIR",
+      "name": "Tomoki Iwata",
+      "n": 68,
+      "cx": 44.6,
+      "cy": 46.4,
+      "spread": 22.3,
+      "grid": "0,0,0,0,0,0,3,3,4,3,1,0,3,10,4,5,3,0,0,3,14,11,1,0"
+     },
+     {
+      "team": "BIR",
+      "name": "Jay Stansfield",
+      "n": 31,
+      "cx": 62.2,
+      "cy": 37.5,
+      "spread": 34.4,
+      "grid": "0,2,0,2,1,0,3,0,0,0,1,0,0,0,5,2,2,6,0,1,1,1,2,2"
+     },
+     {
+      "team": "DER",
+      "name": "Jacob Widell Zetterström",
+      "n": 44,
+      "cx": 13.7,
+      "cy": 32.2,
+      "spread": 13.6,
+      "grid": "0,2,1,0,0,0,20,6,1,0,0,0,10,3,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "DER",
+      "name": "Oscar Fraulo",
+      "n": 19,
+      "cx": 69.8,
+      "cy": 30.3,
+      "spread": 31.9,
+      "grid": "0,0,1,3,0,0,0,2,2,0,3,1,0,0,0,0,2,0,0,0,0,0,1,4"
+     },
+     {
+      "team": "BIR",
+      "name": "Seung-Ho Paik",
+      "n": 26,
+      "cx": 58.2,
+      "cy": 32.5,
+      "spread": 37.8,
+      "grid": "0,0,0,2,2,3,2,2,0,0,0,0,2,3,0,2,1,2,0,0,0,4,0,1"
+     },
+     {
+      "team": "BIR",
+      "name": "Luis Vázquez",
+      "n": 16,
+      "cx": 68.2,
+      "cy": 37.7,
+      "spread": 29.2,
+      "grid": "0,0,0,1,0,2,0,2,1,0,0,2,0,0,1,1,3,0,0,0,1,0,1,1"
+     },
+     {
+      "team": "BIR",
+      "name": "Ethan Laird",
+      "n": 25,
+      "cx": 32.3,
+      "cy": 56.3,
+      "spread": 32.9,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,4,1,0,0,0,1,8,4,1,2,2,2"
+     },
+     {
+      "team": "DER",
+      "name": "Ryan Hedges",
+      "n": 20,
+      "cx": 56.9,
+      "cy": 24.5,
+      "spread": 25.6,
+      "grid": "0,1,4,3,1,1,0,0,2,0,0,1,0,1,2,3,0,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "DER",
+      "name": "Corey Blackett-Taylor",
+      "n": 15,
+      "cx": 69.2,
+      "cy": 11.5,
+      "spread": 35.3,
+      "grid": "3,0,0,2,1,5,0,0,0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BIR",
+      "name": "Dael Fry",
+      "n": 9,
+      "cx": 12.6,
+      "cy": 39.8,
+      "spread": 8.8,
+      "grid": "0,0,0,0,0,0,0,1,0,0,0,0,7,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BIR",
+      "name": "Kristoffer Lund Hansen",
+      "n": 3,
+      "cx": 40.2,
+      "cy": 13,
+      "spread": 28,
+      "grid": "0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "DER",
+      "name": "Lars-Jørgen Salvesen",
+      "n": 2,
+      "cx": 98.7,
+      "cy": 19.2,
+      "spread": 9.3,
+      "grid": "0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
+  },
+  "BOL|CAR": {
+   "key": "BOL|CAR",
+   "season": "2026-27",
+   "date": "2026-09-12",
+   "matchId": "5836827",
+   "home": "BOL",
+   "away": "CAR",
+   "score": [
+    1,
+    0
+   ],
+   "providerScore": [
+    1,
+    0
+   ],
+   "teamStats": {
+    "BOL": {
+     "possession": 41,
+     "shots": 7,
+     "shotsOn": 5,
+     "shotsOff": 1,
+     "blockedShots": 5,
+     "corners": 2,
+     "offsides": 3,
+     "fouls": 16,
+     "saves": 10,
+     "passes": 339,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.42
+    },
+    "CAR": {
+     "possession": 59,
+     "shots": 17,
+     "shotsOn": 10,
+     "shotsOff": 2,
+     "blockedShots": 1,
+     "corners": 10,
+     "offsides": 7,
+     "fouls": 13,
+     "saves": 4,
+     "passes": 483,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.82
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     41,
+     59
+    ],
+    "h1": [
+     46,
+     54
+    ],
+    "h2": [
+     35,
+     65
+    ]
+   },
+   "events": [
+    {
+     "minute": 31,
+     "extra": null,
+     "team": "BOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ben Davies"
+    },
+    {
+     "minute": 32,
+     "extra": null,
+     "team": "BOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kyliane Dong"
+    },
+    {
+     "minute": 37,
+     "extra": null,
+     "team": "BOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Samuel Iling-Junior"
+    },
+    {
+     "minute": 42,
+     "extra": null,
+     "team": "CAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Joel Colwill"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Thierry Gale"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Thelonius Bair"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "CAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Perry Ng"
+    },
+    {
+     "minute": 59,
+     "extra": 0,
+     "team": "CAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "David Turnbull"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Atsuki Ito"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "CAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Cian Ashford"
+    },
+    {
+     "minute": 75,
+     "extra": 0,
+     "team": "CAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Callum Robinson"
+    },
+    {
+     "minute": 75,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jayden Nelson"
+    },
+    {
+     "minute": 78,
+     "extra": null,
+     "team": "BOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jayden Nelson"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ryan Hardie"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "BOL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Thierry Gale"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "BOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Thierry Gale"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "CAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Calum Scanlon"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "CAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ronan Kpakio"
+    }
+   ],
+   "shots": [
+    {
+     "min": 6,
+     "extra": null,
+     "team": "CAR",
+     "player": "Yousef Salech",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.113,
+     "xgot": 0.033,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.4,
+     "y": 41.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "CAR",
+     "player": "Chris Willock",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.141,
+     "xgot": 0.288,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 40.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "CAR",
+     "player": "Joel Colwill",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97,
+     "y": 26,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "CAR",
+     "player": "Joel Colwill",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.082,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 23.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "CAR",
+     "player": "Yousef Salech",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.136,
+     "xgot": 0.323,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.8,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "CAR",
+     "player": "Yousef Salech",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.131,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 29.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "CAR",
+     "player": "Krystian Bielik",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.292,
+     "xgot": 0.212,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.3,
+     "y": 36.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "CAR",
+     "player": "Alex Robertson",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0.018,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79,
+     "y": 36.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "BOL",
+     "player": "Kyliane Dong",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.061,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 45.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "BOL",
+     "player": "Samuel Iling-Junior",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0.061,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.3,
+     "y": 26.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "BOL",
+     "player": "Rúben Rodrigues",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0.067,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.6,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "BOL",
+     "player": "Samuel Iling-Junior",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0.049,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.3,
+     "y": 26.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "CAR",
+     "player": "Chris Willock",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 44.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "CAR",
+     "player": "Chris Willock",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 45.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "CAR",
+     "player": "Yousef Salech",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.251,
+     "xgot": 0.181,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.8,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "CAR",
+     "player": "Ollie Tanner",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.051,
+     "xgot": 0.07,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99,
+     "y": 18,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "BOL",
+     "player": "Josh Sheehan",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.035,
+     "xgot": 0.034,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 54.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "CAR",
+     "player": "Jack Moylan",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.222,
+     "xgot": 0.107,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.9,
+     "y": 30.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "CAR",
+     "player": "Cian Ashford",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0.102,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.9,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "CAR",
+     "player": "Ollie Tanner",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.7,
+     "y": 19.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "BOL",
+     "player": "Max Conway",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.124,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 43.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "BOL",
+     "player": "Thierry Gale",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0.156,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 26.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "CAR",
+     "player": "Ollie Tanner",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.3,
+     "y": 19.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 4,
+     "team": "CAR",
+     "player": "Callum Robinson",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.129,
+     "xgot": 0.549,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -11
+    ],
+    [
+     2,
+     -11
+    ],
+    [
+     3,
+     -16
+    ],
+    [
+     4,
+     -22
+    ],
+    [
+     5,
+     -33
+    ],
+    [
+     6,
+     -87
+    ],
+    [
+     7,
+     -84
+    ],
+    [
+     8,
+     -79
+    ],
+    [
+     9,
+     -19
+    ],
+    [
+     10,
+     -24
+    ],
+    [
+     11,
+     -46
+    ],
+    [
+     12,
+     -100
+    ],
+    [
+     13,
+     -100
+    ],
+    [
+     14,
+     -100
+    ],
+    [
+     15,
+     -100
+    ],
+    [
+     16,
+     -19
+    ],
+    [
+     17,
+     -5
+    ],
+    [
+     18,
+     -35
+    ],
+    [
+     19,
+     -24
+    ],
+    [
+     20,
+     -16
+    ],
+    [
+     21,
+     0
+    ],
+    [
+     22,
+     -5
+    ],
+    [
+     23,
+     -14
+    ],
+    [
+     24,
+     -3
+    ],
+    [
+     25,
+     -8
+    ],
+    [
+     26,
+     -11
+    ],
+    [
+     27,
+     5
+    ],
+    [
+     28,
+     38
+    ],
+    [
+     29,
+     38
+    ],
+    [
+     30,
+     38
+    ],
+    [
+     31,
+     11
+    ],
+    [
+     32,
+     22
+    ],
+    [
+     33,
+     5
+    ],
+    [
+     34,
+     22
+    ],
+    [
+     35,
+     16
+    ],
+    [
+     36,
+     22
+    ],
+    [
+     37,
+     11
+    ],
+    [
+     38,
+     0
+    ],
+    [
+     39,
+     3
+    ],
+    [
+     40,
+     3
+    ],
+    [
+     41,
+     27
+    ],
+    [
+     42,
+     24
+    ],
+    [
+     43,
+     30
+    ],
+    [
+     44,
+     16
+    ],
+    [
+     45,
+     33
+    ],
+    [
+     45.5,
+     5
+    ],
+    [
+     46,
+     22
+    ],
+    [
+     47,
+     22
+    ],
+    [
+     48,
+     43
+    ],
+    [
+     49,
+     22
+    ],
+    [
+     50,
+     -38
+    ],
+    [
+     51,
+     -60
+    ],
+    [
+     52,
+     -71
+    ],
+    [
+     53,
+     -33
+    ],
+    [
+     54,
+     -49
+    ],
+    [
+     55,
+     -60
+    ],
+    [
+     56,
+     -27
+    ],
+    [
+     57,
+     -16
+    ],
+    [
+     58,
+     -11
+    ],
+    [
+     59,
+     -22
+    ],
+    [
+     60,
+     -16
+    ],
+    [
+     61,
+     -5
+    ],
+    [
+     62,
+     -11
+    ],
+    [
+     63,
+     -5
+    ],
+    [
+     64,
+     0
+    ],
+    [
+     65,
+     -3
+    ],
+    [
+     66,
+     -81
+    ],
+    [
+     67,
+     -81
+    ],
+    [
+     68,
+     -84
+    ],
+    [
+     69,
+     5
+    ],
+    [
+     70,
+     5
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     72,
+     -27
+    ],
+    [
+     73,
+     -95
+    ],
+    [
+     74,
+     -84
+    ],
+    [
+     75,
+     -68
+    ],
+    [
+     76,
+     0
+    ],
+    [
+     77,
+     11
+    ],
+    [
+     78,
+     -5
+    ],
+    [
+     79,
+     -38
+    ],
+    [
+     80,
+     -60
+    ],
+    [
+     81,
+     -79
+    ],
+    [
+     82,
+     -46
+    ],
+    [
+     83,
+     -30
+    ],
+    [
+     84,
+     -5
+    ],
+    [
+     85,
+     5
+    ],
+    [
+     86,
+     5
+    ],
+    [
+     87,
+     33
+    ],
+    [
+     88,
+     -16
+    ],
+    [
+     89,
+     -16
+    ],
+    [
+     90,
+     3
+    ],
+    [
+     90.5,
+     -11
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BOL": {
+     "team": "BOL",
+     "formation": "4-2-3-1",
+     "coach": "Steven Schumacher",
+     "xi": [
+      {
+       "name": "Gavin Bazunu",
+       "shirt": 31,
+       "pos": "G"
+      },
+      {
+       "name": "Gaizka Larrazabal",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Eoin Toal",
+       "shirt": 18,
+       "pos": "D"
+      },
+      {
+       "name": "Ben Davies",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Max Conway",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Josh Sheehan",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Ethan Erhahon",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Samuel Iling-Junior",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Rúben Rodrigues",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Kyliane Dong",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Sam Dalby",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Thelonius Bair",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Thierry Gale",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Atsuki Ito",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Jayden Nelson",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Ryan Hardie",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Jack Bonham",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Akin Famewo",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "John McAtee",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Xavier Simons",
+       "shirt": 4,
+       "pos": "?"
+      }
+     ]
+    },
+    "CAR": {
+     "team": "CAR",
+     "formation": "4-2-3-1",
+     "coach": "Brian Barry-Murphy",
+     "xi": [
+      {
+       "name": "Nathan Trott",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Perry Ng",
+       "shirt": 38,
+       "pos": "D"
+      },
+      {
+       "name": "Krystian Bielik",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Gabriel Osho",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Joel Bagan",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Alex Robertson",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Joel Colwill",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Ollie Tanner",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Jack Moylan",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Chris Willock",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Yousef Salech",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "David Turnbull",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Cian Ashford",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Callum Robinson",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Calum Scanlon",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Ronan Kpakio",
+       "shirt": 44,
+       "pos": "?"
+      },
+      {
+       "name": "Harry Tyrer",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Matthew Turner",
+       "shirt": 41,
+       "pos": "?"
+      },
+      {
+       "name": "Paul Moreno",
+       "shirt": 43,
+       "pos": "?"
+      },
+      {
+       "name": "Rob Tankiewicz",
+       "shirt": 33,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 42,
+      "center": 31,
+      "right": 27
+     },
+     "firstHalf": {
+      "left": 42,
+      "center": 37,
+      "right": 21
+     },
+     "secondHalf": {
+      "left": 42,
+      "center": 25,
+      "right": 33
+     }
+    },
+    "away": {
+     "total": {
+      "left": 34,
+      "center": 26,
+      "right": 40
+     },
+     "firstHalf": {
+      "left": 33,
+      "center": 30,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 35,
+      "center": 23,
+      "right": 42
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-12T13:40:58.962Z",
+   "fdMatchId": "2026-27-71",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "CAR",
+      "name": "Jack Moylan",
+      "n": 47,
+      "cx": 68.4,
+      "cy": 31.1,
+      "spread": 30.2,
+      "grid": "0,0,4,1,5,2,0,1,2,5,2,3,0,3,1,0,4,6,0,3,0,0,3,2"
+     },
+     {
+      "team": "CAR",
+      "name": "Gabriel Osho",
+      "n": 94,
+      "cx": 39.5,
+      "cy": 20.5,
+      "spread": 17.7,
+      "grid": "1,12,22,6,2,0,2,17,11,10,0,0,3,2,5,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Krystian Bielik",
+      "n": 120,
+      "cx": 37.6,
+      "cy": 44.9,
+      "spread": 20.8,
+      "grid": "0,6,1,0,0,0,2,4,5,1,0,2,3,26,15,13,1,0,4,10,19,8,0,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Max Conway",
+      "n": 92,
+      "cx": 38.8,
+      "cy": 10,
+      "spread": 25.9,
+      "grid": "13,15,22,10,11,1,7,9,0,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Joel Colwill",
+      "n": 35,
+      "cx": 55.3,
+      "cy": 37.2,
+      "spread": 28.4,
+      "grid": "0,2,1,0,0,0,0,3,4,5,2,0,1,1,1,1,2,3,0,1,2,2,4,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Ethan Erhahon",
+      "n": 58,
+      "cx": 43.8,
+      "cy": 23.4,
+      "spread": 23.8,
+      "grid": "2,5,9,4,3,0,2,6,3,4,2,1,1,3,8,4,0,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Sam Dalby",
+      "n": 28,
+      "cx": 57.5,
+      "cy": 36.3,
+      "spread": 30.5,
+      "grid": "0,0,1,0,2,1,3,0,0,2,3,0,0,0,1,5,3,0,0,2,1,4,0,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Perry Ng",
+      "n": 69,
+      "cx": 49.2,
+      "cy": 58.1,
+      "spread": 25.2,
+      "grid": "0,0,0,1,0,0,0,0,0,0,1,0,2,3,4,2,2,1,6,9,12,15,11,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Ollie Tanner",
+      "n": 71,
+      "cx": 66.6,
+      "cy": 57.7,
+      "spread": 27.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,2,1,0,0,4,10,3,4,12,14,10,11"
+     },
+     {
+      "team": "CAR",
+      "name": "Alex Robertson",
+      "n": 76,
+      "cx": 49.5,
+      "cy": 32.4,
+      "spread": 26.5,
+      "grid": "0,0,1,2,5,3,1,7,8,9,2,0,4,4,15,8,3,0,1,1,0,1,1,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Yousef Salech",
+      "n": 32,
+      "cx": 78.2,
+      "cy": 41.1,
+      "spread": 22.4,
+      "grid": "0,0,0,0,0,0,0,1,0,1,2,3,0,0,3,2,8,7,0,0,0,2,2,1"
+     },
+     {
+      "team": "BOL",
+      "name": "Gavin Bazunu",
+      "n": 76,
+      "cx": 9.3,
+      "cy": 33.5,
+      "spread": 10.7,
+      "grid": "3,1,0,0,0,0,27,2,0,0,0,0,35,6,0,0,0,0,0,2,0,0,0,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Kyliane Dong",
+      "n": 38,
+      "cx": 64.2,
+      "cy": 22,
+      "spread": 30.6,
+      "grid": "0,2,5,4,4,5,1,2,2,0,2,3,0,0,0,0,0,1,0,0,1,3,2,1"
+     },
+     {
+      "team": "BOL",
+      "name": "Ben Davies",
+      "n": 47,
+      "cx": 29.2,
+      "cy": 21,
+      "spread": 19.3,
+      "grid": "1,13,0,2,0,0,7,11,5,5,0,0,2,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Rúben Rodrigues",
+      "n": 44,
+      "cx": 60.6,
+      "cy": 30.2,
+      "spread": 26.5,
+      "grid": "0,2,1,3,2,1,2,1,5,3,7,0,0,0,1,6,6,1,0,0,2,0,0,1"
+     },
+     {
+      "team": "BOL",
+      "name": "Samuel Iling-Junior",
+      "n": 26,
+      "cx": 56.9,
+      "cy": 44.8,
+      "spread": 24.5,
+      "grid": "0,0,0,1,0,0,0,0,0,0,0,0,0,0,7,6,2,3,2,1,0,2,2,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Chris Willock",
+      "n": 34,
+      "cx": 74,
+      "cy": 12.1,
+      "spread": 20.5,
+      "grid": "0,1,1,5,10,6,0,2,1,3,2,3,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Joel Bagan",
+      "n": 89,
+      "cx": 58,
+      "cy": 15.5,
+      "spread": 31.1,
+      "grid": "1,8,15,18,21,2,3,6,3,0,1,1,0,0,0,0,0,1,0,0,1,1,0,7"
+     },
+     {
+      "team": "CAR",
+      "name": "Nathan Trott",
+      "n": 84,
+      "cx": 16.7,
+      "cy": 33.3,
+      "spread": 12.5,
+      "grid": "0,1,0,0,0,0,23,17,1,0,0,0,30,11,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Gaizka Larrazabal",
+      "n": 47,
+      "cx": 39.2,
+      "cy": 57.4,
+      "spread": 26.6,
+      "grid": "0,0,0,0,0,0,1,0,0,0,0,0,3,1,1,2,0,0,5,12,9,7,4,2"
+     },
+     {
+      "team": "BOL",
+      "name": "Eoin Toal",
+      "n": 61,
+      "cx": 27,
+      "cy": 44.3,
+      "spread": 20.4,
+      "grid": "0,2,0,0,0,0,2,2,2,1,0,0,7,19,5,3,0,1,11,3,2,1,0,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Josh Sheehan",
+      "n": 66,
+      "cx": 43.9,
+      "cy": 35,
+      "spread": 24.1,
+      "grid": "0,2,4,4,2,0,2,5,6,6,1,0,3,3,13,3,0,0,1,3,2,2,3,1"
+     },
+     {
+      "team": "BOL",
+      "name": "Thelonius Bair",
+      "n": 20,
+      "cx": 67.7,
+      "cy": 38.9,
+      "spread": 23.9,
+      "grid": "0,0,1,1,0,1,0,0,2,0,1,1,0,0,1,3,2,0,0,0,0,3,4,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Thierry Gale",
+      "n": 24,
+      "cx": 64.1,
+      "cy": 25.2,
+      "spread": 27.9,
+      "grid": "0,4,0,2,2,1,0,0,3,2,1,2,0,0,0,0,2,1,0,0,0,3,1,0"
+     },
+     {
+      "team": "CAR",
+      "name": "David Turnbull",
+      "n": 23,
+      "cx": 53.5,
+      "cy": 23.2,
+      "spread": 23.7,
+      "grid": "0,4,1,3,3,0,0,3,0,5,0,0,0,0,0,1,0,0,0,0,0,2,1,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Atsuki Ito",
+      "n": 12,
+      "cx": 54,
+      "cy": 18.2,
+      "spread": 32.2,
+      "grid": "0,1,0,2,2,1,2,0,2,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Jayden Nelson",
+      "n": 17,
+      "cx": 54.7,
+      "cy": 15.8,
+      "spread": 27.4,
+      "grid": "2,2,3,2,4,0,0,0,0,0,1,0,0,0,0,3,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Callum Robinson",
+      "n": 8,
+      "cx": 78.4,
+      "cy": 27.2,
+      "spread": 18,
+      "grid": "0,0,1,0,0,0,0,0,0,2,2,1,0,0,0,0,0,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Cian Ashford",
+      "n": 12,
+      "cx": 60.9,
+      "cy": 55.4,
+      "spread": 30.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,0,4,1,1,3,0"
+     },
+     {
+      "team": "BOL",
+      "name": "Ryan Hardie",
+      "n": 5,
+      "cx": 58.9,
+      "cy": 41.6,
+      "spread": 10.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,1,0,0,0,2,2,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CAR",
+      "name": "Ronan Kpakio",
+      "n": 5,
+      "cx": 42,
+      "cy": 60.3,
+      "spread": 35.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,0,1,0,1"
+     },
+     {
+      "team": "CAR",
+      "name": "Calum Scanlon",
+      "n": 4,
+      "cx": 55.5,
+      "cy": 10.1,
+      "spread": 26.1,
+      "grid": "0,0,2,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
+  },
+  "WBA|QPR": {
+   "key": "WBA|QPR",
+   "season": "2026-27",
+   "date": "2026-09-12",
+   "matchId": "5836836",
+   "home": "WBA",
+   "away": "QPR",
+   "score": [
+    1,
+    1
+   ],
+   "providerScore": [
+    1,
+    1
+   ],
+   "teamStats": {
+    "WBA": {
+     "possession": 63,
+     "shots": 12,
+     "shotsOn": 5,
+     "shotsOff": 6,
+     "blockedShots": 0,
+     "corners": 5,
+     "offsides": 0,
+     "fouls": 11,
+     "saves": 3,
+     "passes": 624,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.29
+    },
+    "QPR": {
+     "possession": 37,
+     "shots": 4,
+     "shotsOn": 3,
+     "shotsOff": 1,
+     "blockedShots": 1,
+     "corners": 3,
+     "offsides": 1,
+     "fouls": 14,
+     "saves": 4,
+     "passes": 365,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.77
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     63,
+     37
+    ],
+    "h1": [
+     71,
+     29
+    ],
+    "h2": [
+     53,
+     47
+    ]
+   },
+   "events": [
+    {
+     "minute": 35,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Leon Scarlett"
+    },
+    {
+     "minute": 38,
+     "extra": null,
+     "team": "WBA",
+     "type": "Goal",
+     "detail": "Own Goal",
+     "player": null
+    },
+    {
+     "minute": 41,
+     "extra": null,
+     "team": "WBA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Callum Styles"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Glen Kamara"
+    },
+    {
+     "minute": 51,
+     "extra": null,
+     "team": "QPR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Glen Kamara"
+    },
+    {
+     "minute": 63,
+     "extra": null,
+     "team": "QPR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jake Clarke-Salter"
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "QPR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jonathan Varane"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kareem Tunde"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kealey Adamson"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jimmy-Jay Morgan"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Barney Stewart"
+    },
+    {
+     "minute": 75,
+     "extra": 0,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ousmane Diakité"
+    },
+    {
+     "minute": 80,
+     "extra": null,
+     "team": "QPR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Rumarn Burrell"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Koki Saito"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alfie Lloyd"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "George Campbell"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "WBA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ousmane Diakité"
+    }
+   ],
+   "shots": [
+    {
+     "min": 6,
+     "extra": null,
+     "team": "WBA",
+     "player": "Rabby Nzingoula",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 26.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "WBA",
+     "player": "Aune Selland Heggebø",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.591,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.7,
+     "y": 34.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "QPR",
+     "player": "Rumarn Burrell",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.582,
+     "xgot": 0.561,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 30.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "WBA",
+     "player": "Chris Mepham",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": true,
+     "x": 6.4,
+     "y": 37.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "WBA",
+     "player": "Callum Styles",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0.652,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.5,
+     "y": 24.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "WBA",
+     "player": "Isaac Price",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.036,
+     "xgot": 0.178,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.5,
+     "y": 50.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "WBA",
+     "player": "Jayson Molumby",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.078,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "QPR",
+     "player": "Kwame Poku",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.128,
+     "xgot": 0.215,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 32,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "WBA",
+     "player": "Chris Mepham",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.126,
+     "xgot": 0.469,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 33,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "QPR",
+     "player": "Kwame Poku",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.4,
+     "y": 21.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "WBA",
+     "player": "Callum Styles",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.042,
+     "xgot": 0.028,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 12.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "QPR",
+     "player": "Rumarn Burrell",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.026,
+     "xgot": 0.376,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 30.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "WBA",
+     "player": "Isaac Price",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.5,
+     "y": 29,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "WBA",
+     "player": "Chris Mepham",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 104,
+     "y": 42.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "WBA",
+     "player": "Ousmane Diakité",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.123,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 34.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "WBA",
+     "player": "Jimmy-Jay Morgan",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.147,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 32.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "WBA",
+     "player": "Jayson Molumby",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0.043,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.7,
+     "y": 49.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     24
+    ],
+    [
+     3,
+     14
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     43
+    ],
+    [
+     7,
+     33
+    ],
+    [
+     8,
+     33
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     10,
+     22
+    ],
+    [
+     11,
+     -16
+    ],
+    [
+     12,
+     -33
+    ],
+    [
+     13,
+     -16
+    ],
+    [
+     14,
+     27
+    ],
+    [
+     15,
+     60
+    ],
+    [
+     16,
+     60
+    ],
+    [
+     17,
+     38
+    ],
+    [
+     18,
+     38
+    ],
+    [
+     19,
+     27
+    ],
+    [
+     20,
+     49
+    ],
+    [
+     21,
+     49
+    ],
+    [
+     22,
+     30
+    ],
+    [
+     23,
+     19
+    ],
+    [
+     24,
+     -8
+    ],
+    [
+     25,
+     16
+    ],
+    [
+     26,
+     27
+    ],
+    [
+     27,
+     43
+    ],
+    [
+     28,
+     49
+    ],
+    [
+     29,
+     49
+    ],
+    [
+     30,
+     38
+    ],
+    [
+     31,
+     16
+    ],
+    [
+     32,
+     5
+    ],
+    [
+     33,
+     0
+    ],
+    [
+     34,
+     100
+    ],
+    [
+     35,
+     100
+    ],
+    [
+     36,
+     100
+    ],
+    [
+     37,
+     76
+    ],
+    [
+     38,
+     -60
+    ],
+    [
+     39,
+     -76
+    ],
+    [
+     40,
+     -100
+    ],
+    [
+     41,
+     43
+    ],
+    [
+     42,
+     27
+    ],
+    [
+     43,
+     -5
+    ],
+    [
+     44,
+     -24
+    ],
+    [
+     45,
+     -24
+    ],
+    [
+     45.5,
+     28
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     0
+    ],
+    [
+     48,
+     5
+    ],
+    [
+     49,
+     16
+    ],
+    [
+     50,
+     11
+    ],
+    [
+     51,
+     5
+    ],
+    [
+     52,
+     0
+    ],
+    [
+     53,
+     5
+    ],
+    [
+     54,
+     5
+    ],
+    [
+     55,
+     -11
+    ],
+    [
+     56,
+     0
+    ],
+    [
+     57,
+     65
+    ],
+    [
+     58,
+     71
+    ],
+    [
+     59,
+     81
+    ],
+    [
+     60,
+     16
+    ],
+    [
+     61,
+     16
+    ],
+    [
+     62,
+     5
+    ],
+    [
+     63,
+     -35
+    ],
+    [
+     64,
+     41
+    ],
+    [
+     65,
+     3
+    ],
+    [
+     66,
+     43
+    ],
+    [
+     67,
+     -22
+    ],
+    [
+     68,
+     -5
+    ],
+    [
+     69,
+     -60
+    ],
+    [
+     70,
+     -87
+    ],
+    [
+     71,
+     -76
+    ],
+    [
+     72,
+     -27
+    ],
+    [
+     73,
+     -11
+    ],
+    [
+     74,
+     -14
+    ],
+    [
+     75,
+     -19
+    ],
+    [
+     76,
+     -14
+    ],
+    [
+     77,
+     11
+    ],
+    [
+     78,
+     33
+    ],
+    [
+     79,
+     33
+    ],
+    [
+     80,
+     71
+    ],
+    [
+     81,
+     65
+    ],
+    [
+     82,
+     65
+    ],
+    [
+     83,
+     22
+    ],
+    [
+     84,
+     -5
+    ],
+    [
+     85,
+     5
+    ],
+    [
+     86,
+     -16
+    ],
+    [
+     87,
+     33
+    ],
+    [
+     88,
+     79
+    ],
+    [
+     89,
+     100
+    ],
+    [
+     90,
+     95
+    ],
+    [
+     90.5,
+     70
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "WBA": {
+     "team": "WBA",
+     "formation": "4-3-2-1",
+     "coach": "James Morrison",
+     "xi": [
+      {
+       "name": "Max O'Leary",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Callum Styles",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Nathaniel Phillips",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Chris Mepham",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Conor Townsend",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Rabby Nzingoula",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Jayson Molumby",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Toby Collyer",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Isaac Price",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Felix Horn Myhre",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Aune Selland Heggebø",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Kareem Tunde",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Jimmy-Jay Morgan",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Barney Stewart",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Ousmane Diakité",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "George Campbell",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Matt Ingram",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Alfie Maughan",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Harry Whitwell",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Matthew Crowther",
+       "shirt": 35,
+       "pos": "?"
+      }
+     ]
+    },
+    "QPR": {
+     "team": "QPR",
+     "formation": "4-2-3-1",
+     "coach": "Julien Stéphan",
+     "xi": [
+      {
+       "name": "Pierce Charles",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Amadou Salif Mbengue",
+       "shirt": 27,
+       "pos": "D"
+      },
+      {
+       "name": "Ronnie Edwards",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Jake Clarke-Salter",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Dennis Cirkin",
+       "shirt": 19,
+       "pos": "D"
+      },
+      {
+       "name": "Nicolas Madsen",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Jonathan Varane",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Kwame Poku",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Harvey Vale",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Paul Smyth",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Rumarn Burrell",
+       "shirt": 16,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Leon Scarlett",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Glen Kamara",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Kealey Adamson",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Koki Saito",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Alfie Lloyd",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Calum Ward",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Liam Morrison",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Isak Alemayehu Mulugeta",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Justin Obikwu",
+       "shirt": 25,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 49,
+      "center": 23,
+      "right": 28
+     },
+     "firstHalf": {
+      "left": 47,
+      "center": 22,
+      "right": 31
+     },
+     "secondHalf": {
+      "left": 53,
+      "center": 23,
+      "right": 24
+     }
+    },
+    "away": {
+     "total": {
+      "left": 51,
+      "center": 21,
+      "right": 28
+     },
+     "firstHalf": {
+      "left": 51,
+      "center": 22,
+      "right": 27
+     },
+     "secondHalf": {
+      "left": 51,
+      "center": 21,
+      "right": 28
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-12T13:41:00.702Z",
+   "fdMatchId": "2026-27-72",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "WBA",
+      "name": "Isaac Price",
+      "n": 107,
+      "cx": 69.1,
+      "cy": 11.9,
+      "spread": 21.9,
+      "grid": "0,2,13,26,23,17,1,0,7,4,6,3,0,0,1,2,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Max O'Leary",
+      "n": 36,
+      "cx": 10.9,
+      "cy": 36.6,
+      "spread": 9.6,
+      "grid": "0,0,0,0,0,0,11,1,0,0,0,0,17,6,0,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Paul Smyth",
+      "n": 24,
+      "cx": 46.7,
+      "cy": 7,
+      "spread": 24.3,
+      "grid": "2,7,5,2,5,0,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Nathaniel Phillips",
+      "n": 117,
+      "cx": 39.7,
+      "cy": 46.3,
+      "spread": 22,
+      "grid": "0,2,0,1,2,0,0,5,5,2,0,0,4,16,22,5,4,0,5,19,15,8,1,1"
+     },
+     {
+      "team": "WBA",
+      "name": "Callum Styles",
+      "n": 94,
+      "cx": 57.1,
+      "cy": 57.8,
+      "spread": 25.6,
+      "grid": "0,0,0,0,0,0,0,0,1,0,3,0,0,2,2,1,7,0,6,10,22,16,18,6"
+     },
+     {
+      "team": "WBA",
+      "name": "Jayson Molumby",
+      "n": 79,
+      "cx": 54.6,
+      "cy": 38.1,
+      "spread": 25.6,
+      "grid": "1,0,2,1,2,2,1,4,4,5,6,3,1,6,11,5,3,0,0,1,12,5,3,1"
+     },
+     {
+      "team": "WBA",
+      "name": "Chris Mepham",
+      "n": 138,
+      "cx": 44.8,
+      "cy": 23.4,
+      "spread": 19,
+      "grid": "0,11,17,7,1,0,4,12,49,18,1,1,1,0,7,5,0,2,0,0,2,0,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Kwame Poku",
+      "n": 32,
+      "cx": 53.9,
+      "cy": 54.3,
+      "spread": 24.1,
+      "grid": "0,0,0,0,0,0,0,1,0,0,0,0,1,1,2,3,4,1,1,5,2,8,2,1"
+     },
+     {
+      "team": "WBA",
+      "name": "Conor Townsend",
+      "n": 109,
+      "cx": 60.6,
+      "cy": 9.2,
+      "spread": 23.5,
+      "grid": "1,17,22,23,21,12,0,0,2,4,3,3,0,0,0,0,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Toby Collyer",
+      "n": 56,
+      "cx": 57.6,
+      "cy": 28.8,
+      "spread": 22.2,
+      "grid": "0,1,7,7,2,1,0,1,5,9,1,0,1,0,5,9,2,0,0,0,0,2,3,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Felix Horn Myhre",
+      "n": 41,
+      "cx": 70.6,
+      "cy": 21.8,
+      "spread": 19.9,
+      "grid": "0,0,2,8,5,2,0,0,1,7,10,0,0,0,1,0,1,1,0,0,1,0,1,1"
+     },
+     {
+      "team": "QPR",
+      "name": "Harvey Vale",
+      "n": 35,
+      "cx": 58,
+      "cy": 47.2,
+      "spread": 29.5,
+      "grid": "0,0,0,0,0,1,0,1,1,0,0,1,1,3,7,5,1,2,0,2,2,3,1,4"
+     },
+     {
+      "team": "QPR",
+      "name": "Dennis Cirkin",
+      "n": 74,
+      "cx": 48.3,
+      "cy": 8.9,
+      "spread": 29.6,
+      "grid": "10,10,12,15,5,10,4,2,2,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Aune Selland Heggebø",
+      "n": 17,
+      "cx": 65.7,
+      "cy": 47.6,
+      "spread": 26.5,
+      "grid": "0,0,0,0,0,0,0,0,1,2,1,1,0,2,0,1,0,0,0,0,2,2,2,3"
+     },
+     {
+      "team": "QPR",
+      "name": "Jake Clarke-Salter",
+      "n": 68,
+      "cx": 36.4,
+      "cy": 17.4,
+      "spread": 20.7,
+      "grid": "5,14,6,4,0,0,3,8,16,6,2,0,2,0,1,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Pierce Charles",
+      "n": 76,
+      "cx": 12.6,
+      "cy": 35.5,
+      "spread": 12.7,
+      "grid": "1,0,0,0,0,0,21,12,0,0,0,0,31,8,1,0,0,0,2,0,0,0,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Ronnie Edwards",
+      "n": 77,
+      "cx": 29.9,
+      "cy": 45.9,
+      "spread": 20.3,
+      "grid": "0,2,0,0,0,1,0,6,2,0,0,0,13,10,15,3,0,0,6,11,5,3,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Nicolas Madsen",
+      "n": 24,
+      "cx": 44.5,
+      "cy": 35.5,
+      "spread": 23.8,
+      "grid": "0,0,0,0,1,0,1,1,4,4,1,0,1,4,1,3,0,0,1,1,1,0,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Jonathan Varane",
+      "n": 48,
+      "cx": 44.2,
+      "cy": 30,
+      "spread": 28.4,
+      "grid": "2,0,3,2,4,1,1,3,4,7,0,0,0,9,1,5,0,0,2,1,1,1,1,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Rabby Nzingoula",
+      "n": 62,
+      "cx": 58.3,
+      "cy": 54.4,
+      "spread": 25.6,
+      "grid": "0,0,0,0,1,0,1,0,1,1,2,1,0,3,3,4,2,0,2,4,13,10,9,5"
+     },
+     {
+      "team": "QPR",
+      "name": "Amadou Salif Mbengue",
+      "n": 63,
+      "cx": 40.5,
+      "cy": 59.2,
+      "spread": 22.4,
+      "grid": "0,0,0,0,0,0,0,0,1,0,0,0,2,2,5,0,0,0,9,11,15,15,1,2"
+     },
+     {
+      "team": "QPR",
+      "name": "Rumarn Burrell",
+      "n": 31,
+      "cx": 63.3,
+      "cy": 34.5,
+      "spread": 30.1,
+      "grid": "0,0,1,5,2,0,0,1,2,0,2,0,1,0,1,2,3,4,0,2,0,3,2,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Leon Scarlett",
+      "n": 25,
+      "cx": 54.5,
+      "cy": 13.6,
+      "spread": 29.2,
+      "grid": "2,2,2,2,7,1,0,2,4,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Glen Kamara",
+      "n": 45,
+      "cx": 54.9,
+      "cy": 19.3,
+      "spread": 27.3,
+      "grid": "0,3,5,11,5,1,0,3,1,5,1,1,2,1,0,2,0,1,0,2,0,0,0,1"
+     },
+     {
+      "team": "WBA",
+      "name": "Kareem Tunde",
+      "n": 15,
+      "cx": 48,
+      "cy": 53.8,
+      "spread": 31.9,
+      "grid": "0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,2,2,0,3,1,1,2,1,1"
+     },
+     {
+      "team": "QPR",
+      "name": "Kealey Adamson",
+      "n": 13,
+      "cx": 53.3,
+      "cy": 15.2,
+      "spread": 31.9,
+      "grid": "0,1,0,3,3,1,1,0,0,0,1,0,1,2,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Jimmy-Jay Morgan",
+      "n": 12,
+      "cx": 67.1,
+      "cy": 25.4,
+      "spread": 25.3,
+      "grid": "0,0,2,0,3,0,0,0,2,1,1,0,0,0,0,0,0,1,0,0,0,0,2,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Ousmane Diakité",
+      "n": 15,
+      "cx": 68.2,
+      "cy": 30.4,
+      "spread": 23.5,
+      "grid": "0,0,0,1,1,0,0,0,4,0,3,2,0,1,0,0,3,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WBA",
+      "name": "Barney Stewart",
+      "n": 9,
+      "cx": 54.8,
+      "cy": 41.4,
+      "spread": 33.8,
+      "grid": "0,0,0,0,1,0,0,0,2,0,0,1,1,0,0,0,0,1,0,0,3,0,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Alfie Lloyd",
+      "n": 6,
+      "cx": 69.3,
+      "cy": 32.1,
+      "spread": 18.3,
+      "grid": "0,0,0,0,0,0,0,0,1,0,3,1,0,0,0,0,0,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "QPR",
+      "name": "Koki Saito",
+      "n": 4,
+      "cx": 58.3,
+      "cy": 16.9,
+      "spread": 26.8,
+      "grid": "0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "WBA",
+      "name": "George Campbell",
+      "n": 3,
+      "cx": 41.2,
+      "cy": 21.9,
+      "spread": 16.6,
+      "grid": "0,0,0,0,0,0,0,2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-12T13:21:00.049Z"
+ "updatedAt": "2026-09-12T13:41:01.644Z"
 }
