@@ -25546,7 +25546,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 1
+    "away": 2
    },
    "homeId": 29,
    "awayId": 1,
@@ -25985,6 +25985,19 @@
      "kind": "G",
      "hs": 0,
      "as": 1
+    },
+    {
+     "side": "A",
+     "person": 49481,
+     "assist": null,
+     "team": 1,
+     "min": 90,
+     "label": "90+7'00",
+     "phase": "2",
+     "type": "P",
+     "kind": "P",
+     "hs": 0,
+     "as": 2
     }
    ],
    "timeline": {
@@ -26060,6 +26073,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 63733,
+      "team": 29,
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2",
+      "kindRaw": "YR",
+      "kind": null
      }
     ],
     "subs": [
@@ -26217,8 +26239,8 @@
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+7'00"
   }
  },
- "fetchedAt": "2026-09-12T20:53:17.356Z"
+ "fetchedAt": "2026-09-12T20:55:30.266Z"
 }
