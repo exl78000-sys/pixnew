@@ -22600,8 +22600,8 @@
   "CHE|HUL": {
    "fixtureId": 128955,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 2
@@ -23031,6 +23031,45 @@
    "goals": [
     {
      "side": "H",
+     "person": 23968,
+     "assist": 72371,
+     "team": 4,
+     "min": 7,
+     "label": "07'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 137549,
+     "assist": 20081,
+     "team": 41,
+     "min": 28,
+     "label": "28'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 137549,
+     "assist": 8107,
+     "team": 41,
+     "min": 34,
+     "label": "34'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 2
+    },
+    {
+     "side": "H",
      "person": 72371,
      "assist": 49293,
      "team": 4,
@@ -23302,12 +23341,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -23324,10 +23357,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-12T15:59:18.608Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -25098,5 +25144,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T15:57:01.626Z"
+ "fetchedAt": "2026-09-12T15:59:18.608Z"
 }
