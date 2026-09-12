@@ -1919,23 +1919,61 @@ async function checkDataGap() {
        ERR_CONNECTION_RESET 花了 **12.9 秒**才回來,而第一版把它 await 在第一次繪製之前,
        所以那 13 秒畫面上只有「載入資料中…」,**而且不報錯**,看起來就像頁面壞掉。
        兩條都要守:抓取本身有逾時、畫面不等它。 */
-    ['盃賽小檔的抓取有逾時(連不通時不要拖著整頁)', (() => {
+    ['即時 feed 的抓取全站一份(C.fetchFeed)而且有逾時;盃賽小檔走同一份', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
-      const fn = core.slice(core.indexOf('export async function fetchCupsLive'));
-      return /AbortSignal\.timeout\(/.test(fn.slice(0, 900));
+      const a = core.indexOf('export async function fetchCupsLive'), b = core.indexOf('export async function fetchFeed');
+      if (a < 0 || b < 0) { console.log('      core.js 少了 fetchCupsLive 或 fetchFeed'); return false; }
+      // 逾時要在共用那份裡;盃賽那份只准是薄包裝(自己再寫一份 fetch 迴圈就會漏掉逾時,第一版就是這樣)
+      return /AbortSignal\.timeout\(/.test(core.slice(b, b + 900)) && /return fetchFeed\(/.test(core.slice(a, b))
+        && !/await fetch\(/.test(core.slice(a, b));
     })()],
     /* 兩頁都是直線腳本,所以「原始碼裡誰先出現」就是「誰先執行」。
        第一版把覆蓋 await 在繪製之前,這一條就是釘住那個順序。
        (只驗「有沒有 await」不行 —— 覆蓋本來就要 await,差別在它在繪製的前面還是後面。) */
-    ['盃賽頁與總覽都是「先畫再覆蓋」:繪製的呼叫在覆蓋之前', (() =>
+    ['盃賽頁、總覽、實時頁與單場面板都是「先畫再覆蓋」:繪製的呼叫在覆蓋之前', (() =>
       [['page-cups.js', '\n  renderComp();', 'overlayLive();'],
-       ['page-overview.js', '\n  render();', 'overlayCupsLive();']].every(([f, draw, overlay]) => {
+       ['page-overview.js', '\n  render();', 'overlayCupsLive();'],
+       ['page-overview.js', '\n  render();', 'overlayLeagueLive()'],
+       ['page-live.js', '\n  renderPage();', 'overlayLive();'],
+       ['page-analysis.js', 'renderLive(findIn(data.live), data.live?.fetchedAt);', 'overlayLive();']].every(([f, draw, overlay]) => {
         const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
         const a = src.indexOf(draw), b = src.indexOf(overlay);
         if (a < 0 || b < 0) { console.log(`      ${f}:找不到 ${a < 0 ? draw.trim() : overlay}`); return false; }
         if (a > b) console.log(`      ${f}:覆蓋跑在繪製前面`);
         return a < b;
       }))()],
+    /* 重新整理後比分退回部署快照(2026-09-12,使用者在比賽中回報)。
+       第一次畫面讀的是 Pages 上那份 live.json(部署當下的快照),而輪詢的第一次在 20 秒後 ——
+       頭 20 秒比分退回部署時的狀態,離部署越久退得越多。修法是畫完立刻覆蓋一次再交給輪詢;
+       這一條釘住那個序列(直線腳本的原始碼順序就是執行順序)。 */
+    ['實時頁與單場面板畫完立刻覆蓋一次、再交給輪詢(重新整理不會退回部署快照 20 秒)', (() =>
+      [['page-live.js', 'overlayLive();\n  C.pageInterval(overlayLive, POLL_MS);'],
+       ['page-analysis.js', 'overlayLive();\n    C.pageInterval(overlayLive, 20000);']].every(([f, seq]) => {
+        const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+        if (!src.includes(seq)) console.log(`      ${f}:找不到「先覆蓋一次再輪詢」的序列`);
+        return src.includes(seq);
+      }))()],
+    /* 三個地方各寫一份 fetch 迴圈,只有盃賽那份有逾時;分析頁第一版的退路還寫死英超的路徑。
+       抓取與路徑都收進 core,這裡守「沒有人自己再寫一份」。 */
+    ['三頁的即時 feed 都走共用的 C.fetchFeed 與 C.liveFeeds,沒有自己再寫 fetch 迴圈或拼路徑', (() => {
+      const bad = [];
+      for (const f of ['page-live.js', 'page-analysis.js', 'page-overview.js']) {
+        const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+        if (!/C\.fetchFeed\(/.test(src) || !/C\.liveFeeds\(/.test(src)) bad.push(`${f}:沒用共用函式`);
+        if (/await fetch\(/.test(src)) bad.push(`${f}:自己寫了 fetch`);
+        if (/data\/leagues\/\$\{[^}]+\}\/live\.json/.test(src) || /'data\/live\.json'/.test(src)) bad.push(`${f}:自己拼 live.json 路徑`);
+      }
+      for (const b of bad) console.log(`      ${b}`);
+      return bad.length === 0;
+    })()],
+    /* 總覽的「即將到來」原本是算一次的字串常數:盃賽小檔覆蓋後 render() 畫的還是舊字串,
+       盃賽的即時比分在這一頁從來沒出現過(接聯賽的即時比分時才發現)。表要在 render() 裡重算。 */
+    ['總覽的「即將到來」在 render() 裡重算,覆蓋才進得了畫面(不是算一次的字串常數)', (() => {
+      const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      const r = ov.indexOf('const render = () => {');
+      return r >= 0 && !/const upcomingBlock\b/.test(ov) && ov.slice(r).includes('${upcomingHtml()}')
+        && /const upcomingHtml = \(\) => \{ const upcoming = buildUpcoming\(\)/.test(ov);
+    })()],
     ['盃賽頁與總覽都走共用的覆蓋函式,而且盃賽頁用 pageInterval 輪詢(不是裸 setInterval)', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const cups = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');

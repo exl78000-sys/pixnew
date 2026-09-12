@@ -1,4 +1,4 @@
-import * as C from './core.js?v=7201efbe';
+import * as C from './core.js?v=f9001a4c';
 
 const app = document.getElementById('app');
 
@@ -610,8 +610,7 @@ try {
   function mountLivePanel(f) {
     if (f.played) return;
     const findIn = l => (l?.matches ?? []).find(x => x.home === f.home && x.away === f.away);
-    const lgPath = C.league() === 'pl' ? 'data/live.json' : `data/leagues/${C.league()}/live.json`;
-    const feeds = [meta.liveFeed, lgPath].filter(Boolean);
+    const feeds = C.liveFeeds(meta);   // raw 優先、退路是**自己聯賽**的 live.json;路徑規則在 core,不在這裡拼
     let cur = null;   // 最新一份 {m, fetchedAt},給走鐘用
     const renderLive = (m, fetchedAt) => {
       /* feed 只進不退:raw CDN 會新舊副本交替回應,拿到較舊的那份時
@@ -631,14 +630,15 @@ try {
       }
     };
     renderLive(findIn(data.live), data.live?.fetchedAt);
-    C.pageInterval(async () => {
-      for (const url of feeds) {
-        try {
-          const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`, { cache: 'no-store' });
-          if (res.ok) { const j = await res.json(); renderLive(findIn(j), j.fetchedAt); return; }
-        } catch { /* 換下一個來源 */ }
-      }
-    }, 20000);
+    /* 先畫再覆蓋(2026-09-12):data.live 是 Pages 上那份 —— 部署當下的快照。
+       只靠 20 秒後的第一次輪詢,重新整理的頭 20 秒比分會退回部署時的狀態(使用者回報的)。
+       畫完立刻拿一次;抓取走共用的 C.fetchFeed(raw 優先、有逾時、失敗退回站上那份)。 */
+    const overlayLive = async () => {
+      const j = await C.fetchFeed(feeds);
+      if (j) renderLive(findIn(j), j.fetchedAt);
+    };
+    overlayLive();
+    C.pageInterval(overlayLive, 20000);
     /* 走鐘:面板 20 秒才重畫一次,分鐘顯示在兩次之間自己往前走 ——
        「一直停在 75 分」就是這條鏈(FPL 分鐘塊狀跳 + 迴圈高頻 + CDN)疊出來的。
        只改字,不重畫面板。 */
