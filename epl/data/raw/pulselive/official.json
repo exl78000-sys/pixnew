@@ -21204,8 +21204,8 @@
   "AVL|NFO": {
    "fixtureId": 128953,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 2
@@ -21636,7 +21636,33 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 51813,
+     "assist": 139648,
+     "team": 15,
+     "min": 46,
+     "label": "46'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
+     "person": 326089,
+     "assist": 51423,
+     "team": 2,
+     "min": 74,
+     "label": "74'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "A",
      "person": 304123,
      "assist": 15259,
      "team": 15,
@@ -21701,6 +21727,15 @@
       "team": 15,
       "min": 80,
       "label": "80'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 8900,
+      "team": 2,
+      "min": 90,
+      "label": "90+5'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -21872,12 +21907,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -21894,16 +21923,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+5'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-12T16:01:35.415Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "BOU|BRE": {
    "fixtureId": 128954,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 2
@@ -22334,7 +22376,46 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 127594,
+     "assist": 128891,
+     "team": 130,
+     "min": 34,
+     "label": "34'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
+     "person": 21519,
+     "assist": null,
+     "team": 127,
+     "min": 38,
+     "label": "38'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 14846,
+     "assist": 33032,
+     "team": 127,
+     "min": 52,
+     "label": "52'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    },
+    {
+     "side": "A",
      "person": 127594,
      "assist": null,
      "team": 130,
@@ -22570,12 +22651,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -22592,10 +22667,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+3'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-12T16:01:35.901Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -23378,8 +23466,8 @@
   "CRY|IPS": {
    "fixtureId": 128957,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 3
@@ -23811,6 +23899,58 @@
    "goals": [
     {
      "side": "H",
+     "person": 123848,
+     "assist": 49759,
+     "team": 6,
+     "min": 14,
+     "label": "14'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 313194,
+     "assist": 51454,
+     "team": 8,
+     "min": 23,
+     "label": "23'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 51454,
+     "assist": 313194,
+     "team": 8,
+     "min": 45,
+     "label": "45'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 2
+    },
+    {
+     "side": "H",
+     "person": 35670,
+     "assist": 49759,
+     "team": 6,
+     "min": 75,
+     "label": "75'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 2
+    },
+    {
+     "side": "A",
      "person": 75735,
      "assist": null,
      "team": 8,
@@ -24055,12 +24195,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -24077,10 +24211,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-12T16:01:36.372Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -25144,5 +25291,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T15:59:18.608Z"
+ "fetchedAt": "2026-09-12T16:01:36.746Z"
 }
