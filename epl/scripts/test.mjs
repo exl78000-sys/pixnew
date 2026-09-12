@@ -4341,6 +4341,34 @@ function checkAssetStamps() {
   ok(core.includes('checkStale'), 'core.js 有版本對不上時的自我修復');
   ok(core.includes('sessionStorage'), '重載有 sessionStorage 記號,不會無限重載');
 
+  /* basic 分支退場(2026-09-12,使用者同意的方向)。
+
+     `meta.edition === 'basic'` 問的是「是不是西甲」,而英冠沒有 edition ——
+     這個二元式已經害過三次:分析頁整頁載入失敗、賽程表的難度欄整季 552 列全是「—」、
+     市場賠率有 81 場卻不顯示。CLAUDE.md 那條坑的標準解法是**問資料有沒有那個欄位**。
+     這一條守著不要長回來。掃之前要先剝註解 —— 講這件事的註解本身就寫著那個字串,
+     不剝的話這條永遠紅,而紅的原因跟它要守的事無關(「測試掃原始碼,而自己的註解就是誤報來源」)。 */
+  {
+    const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    const jsDir = join(W, 'assets', 'js');
+    const offenders = readdirSync(jsDir).filter(f => f.endsWith('.js'))
+      .filter(f => /edition\s*[!=]==\s*'basic'/.test(strip(readFileSync(join(jsDir, f), 'utf8'))));
+    if (offenders.length) console.log(`      還在用 edition === 'basic' 分岔:${offenders.join('、')}`);
+    ok(offenders.length === 0, "前端沒有任何地方用 edition === 'basic' 分岔(要問資料有沒有那個欄位)");
+    const tac = readFileSync(join(jsDir, 'page-tactics.js'), 'utf8');
+    ok(/const hasRoleData = tactics\.some\(t => t\.squad\)/.test(tac) && /if \(!hasRoleData\)/.test(tac),
+      '戰術頁的兩套版面由 tactics 的形狀決定(有沒有 squad),不是聯賽代碼,也不靠 404 去探');
+    // 這裡也要剝註解:講這件事的註解本身就寫著「目前資料界線」,不剝就自己誤報(第二次了)
+    const idx = strip(readFileSync(join(jsDir, 'page-index.js'), 'utf8'));
+    ok(!/目前資料界線[\s\S]{0,400}目前資料界線/.test(idx),
+      '「目前資料界線」只有一條渲染路徑(西甲那張寫死的已經搬進 build 的 meta.boundaries)');
+    for (const [lg, dir] of [['es1', join('data', 'leagues', 'es1')], ['en2', join('data', 'leagues', 'en2')]]) {
+      const m = JSON.parse(readFileSync(join(W, dir, 'meta.json'), 'utf8'));
+      ok(Array.isArray(m.boundaries) && m.boundaries.length > 0 && typeof m.intro === 'string' && m.intro.length > 10,
+        `${lg} 的文案與資料界線由自己的 build 寫進 meta(intro + boundaries ${m.boundaries?.length ?? 0} 行)`);
+    }
+  }
+
   /* 剛結束的比賽留在最上面三天。這三條守的是兩件會靜靜出錯的事:
 
      一、**同一場出現兩次。** 頁尾的「已完賽」區如果還吃 done / finishedSchedule,
