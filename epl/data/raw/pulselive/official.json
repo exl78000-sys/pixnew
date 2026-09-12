@@ -25542,7 +25542,7 @@
   "SUN|ARS": {
    "fixtureId": 128961,
    "kickoff": "2026-09-12T19:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -25551,9 +25551,31 @@
    "homeId": 29,
    "awayId": 1,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75692
+     ],
+     [
+      51199,
+      25892,
+      19864,
+      63733
+     ],
+     [
+      12136,
+      124944
+     ],
+     [
+      12196,
+      138104,
+      115105
+     ],
+     [
+      67784
+     ]
+    ],
     "xi": [
      {
       "id": 75692,
@@ -25605,7 +25627,7 @@
       "playerId": null,
       "name": "Thomas Meunier",
       "shirt": 12,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -25632,7 +25654,7 @@
       "playerId": null,
       "name": "Nilson Angulo",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -25740,9 +25762,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      7975
+     ],
+     [
+      14548,
+      13274,
+      50234,
+      69914
+     ],
+     [
+      15202,
+      114564
+     ],
+     [
+      49481,
+      11419,
+      67704
+     ],
+     [
+      20810
+     ]
+    ],
     "xi": [
      {
       "id": 69914,
@@ -25776,7 +25820,7 @@
       "playerId": null,
       "name": "Christos Tzolis",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -25812,7 +25856,7 @@
       "playerId": null,
       "name": "Myles Lewis-Skelly",
       "shirt": 49,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -25821,7 +25865,7 @@
       "playerId": null,
       "name": "Bukayo Saka",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -25932,10 +25976,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T18:58:27.220Z"
+ "fetchedAt": "2026-09-12T19:00:39.228Z"
 }
