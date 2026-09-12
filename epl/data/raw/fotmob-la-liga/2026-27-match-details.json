@@ -157954,11 +157954,3619 @@
     "sprints"
    ],
    "adapterVersion": 2
+  },
+  "ATH|ELC": {
+   "key": "ATH|ELC",
+   "season": "2026-27",
+   "source": "fotmob",
+   "fixtureId": "5868051",
+   "kickoff": "2026-09-12T16:30:00.000Z",
+   "status": "finished",
+   "home": "ATH",
+   "away": "ELC",
+   "fetchedAt": "2026-09-12T21:29:39.425Z",
+   "score": {
+    "home": 1,
+    "away": 1
+   },
+   "teamStats": {
+    "ATH": {
+     "possession": 67,
+     "shots": 19,
+     "shotsOn": 3,
+     "shotsOff": 13,
+     "blockedShots": 0,
+     "corners": 7,
+     "offsides": 4,
+     "fouls": 11,
+     "saves": 0,
+     "passes": 613,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.42
+    },
+    "ELC": {
+     "possession": 33,
+     "shots": 3,
+     "shotsOn": 1,
+     "shotsOff": 2,
+     "blockedShots": 3,
+     "corners": 1,
+     "offsides": 2,
+     "fouls": 12,
+     "saves": 2,
+     "passes": 318,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.84
+    }
+   },
+   "players": {
+    "ATH": [
+     {
+      "providerId": 80295,
+      "name": "Yuri Berchiche",
+      "photo": null,
+      "shirt": 17,
+      "pos": "D",
+      "minutes": 90,
+      "rating": 7.86,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": 4,
+       "on": 0
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 82,
+       "key": 1,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 2,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 6,
+       "won": 4
+      },
+      "dribbles": {
+       "attempts": 1,
+       "success": 0
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": 1,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 77,
+      "touches": 107,
+      "recoveries": 9,
+      "clearances": 1,
+      "xA": 0.05
+     },
+     {
+      "providerId": 282462,
+      "name": "Íñigo Ruíz de Galarreta",
+      "photo": null,
+      "shirt": 16,
+      "pos": "?",
+      "minutes": 65,
+      "rating": 6.83,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": 0
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 44,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 1
+      },
+      "duels": {
+       "total": 7,
+       "won": 4
+      },
+      "dribbles": {
+       "attempts": 3,
+       "success": 1
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 35,
+      "touches": 56,
+      "recoveries": 4,
+      "clearances": 0,
+      "xA": 0.03
+     },
+     {
+      "providerId": 411617,
+      "name": "Aymeric Laporte",
+      "photo": null,
+      "shirt": 14,
+      "pos": "D",
+      "minutes": 90,
+      "rating": 7.2,
+      "captain": false,
+      "substitute": false,
+      "offsides": 1,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 118,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 6,
+       "won": 3
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 111,
+      "touches": 121,
+      "recoveries": 7,
+      "clearances": 0,
+      "xA": 0.03
+     },
+     {
+      "providerId": 574629,
+      "name": "Alex Berenguer",
+      "photo": null,
+      "shirt": 7,
+      "pos": "?",
+      "minutes": 18,
+      "rating": 7.04,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 1,
+       "saves": null
+      },
+      "passes": {
+       "total": 8,
+       "key": 2,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 2,
+       "won": 1
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": 1,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": 1,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 7,
+      "touches": 14,
+      "recoveries": 0,
+      "clearances": 0,
+      "xA": 0.18
+     },
+     {
+      "providerId": 604105,
+      "name": "Iñaki Williams",
+      "photo": null,
+      "shirt": 9,
+      "pos": "F",
+      "minutes": 81,
+      "rating": 7.6,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": 4,
+       "on": 1
+      },
+      "goals": {
+       "total": 1,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 7,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 1,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 7,
+       "won": 3
+      },
+      "dribbles": {
+       "attempts": 3,
+       "success": 1
+      },
+      "fouls": {
+       "drawn": 1,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 1,
+      "touches": 24,
+      "recoveries": 1,
+      "clearances": 1,
+      "xA": null
+     },
+     {
+      "providerId": 639450,
+      "name": "Yeray Álvarez",
+      "photo": null,
+      "shirt": 5,
+      "pos": "D",
+      "minutes": 90,
+      "rating": 7.29,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 109,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 3,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 10,
+       "won": 6
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": 1,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 101,
+      "touches": 117,
+      "recoveries": 5,
+      "clearances": 1,
+      "xA": 0.01
+     },
+     {
+      "providerId": 660625,
+      "name": "Unai Simón",
+      "photo": null,
+      "shirt": 1,
+      "pos": "G",
+      "minutes": 90,
+      "rating": 6.33,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": 1,
+       "assists": null,
+       "saves": 0
+      },
+      "passes": {
+       "total": 32,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": null,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 28,
+      "touches": 42,
+      "recoveries": 9,
+      "clearances": 1,
+      "xA": null
+     },
+     {
+      "providerId": 950545,
+      "name": "Oihan Sancet",
+      "photo": null,
+      "shirt": 8,
+      "pos": "M",
+      "minutes": 90,
+      "rating": 7.03,
+      "captain": false,
+      "substitute": false,
+      "offsides": 1,
+      "shots": {
+       "total": null,
+       "on": 0
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 30,
+       "key": 3,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 8,
+       "won": 2
+      },
+      "dribbles": {
+       "attempts": 3,
+       "success": 0
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 27,
+      "touches": 46,
+      "recoveries": 2,
+      "clearances": 0,
+      "xA": 1
+     },
+     {
+      "providerId": 1011117,
+      "name": "Robert Navarro",
+      "photo": null,
+      "shirt": 23,
+      "pos": "M",
+      "minutes": 72,
+      "rating": 7.65,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": 0
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 22,
+       "key": 4,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 3
+      },
+      "duels": {
+       "total": 7,
+       "won": 1
+      },
+      "dribbles": {
+       "attempts": 4,
+       "success": 1
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 19,
+      "touches": 43,
+      "recoveries": 3,
+      "clearances": 0,
+      "xA": 0.11
+     },
+     {
+      "providerId": 1037537,
+      "name": "Jesús Areso",
+      "photo": null,
+      "shirt": 12,
+      "pos": "D",
+      "minutes": 65,
+      "rating": 6.31,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 31,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 3,
+       "blocks": 0,
+       "interceptions": 3
+      },
+      "duels": {
+       "total": 7,
+       "won": 3
+      },
+      "dribbles": {
+       "attempts": 1,
+       "success": 0
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 25,
+      "touches": 53,
+      "recoveries": 1,
+      "clearances": 0,
+      "xA": 0.02
+     },
+     {
+      "providerId": 1191407,
+      "name": "Aitor Paredes",
+      "photo": null,
+      "shirt": 4,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1202110,
+      "name": "Nico Williams",
+      "photo": null,
+      "shirt": 10,
+      "pos": "M",
+      "minutes": 90,
+      "rating": 7.33,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": 1
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 41,
+       "key": 4,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 1,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 8,
+       "won": 1
+      },
+      "dribbles": {
+       "attempts": 5,
+       "success": 0
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 34,
+      "touches": 66,
+      "recoveries": 3,
+      "clearances": 0,
+      "xA": 1.04
+     },
+     {
+      "providerId": 1203614,
+      "name": "Nico Serrano",
+      "photo": null,
+      "shirt": 22,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1229176,
+      "name": "Beñat Prados",
+      "photo": null,
+      "shirt": 6,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1327006,
+      "name": "Johaneko Louisjean",
+      "photo": null,
+      "shirt": 31,
+      "pos": "?",
+      "minutes": 25,
+      "rating": 6.48,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 15,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 1,
+       "blocks": 0,
+       "interceptions": 1
+      },
+      "duels": {
+       "total": null,
+       "won": 1
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 15,
+      "touches": 21,
+      "recoveries": 1,
+      "clearances": 0,
+      "xA": null
+     },
+     {
+      "providerId": 1355668,
+      "name": "Álvaro Djaló",
+      "photo": null,
+      "shirt": 25,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1401997,
+      "name": "Álex Padilla",
+      "photo": null,
+      "shirt": 13,
+      "pos": "G",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1425173,
+      "name": "Beñat Gerenabarrena",
+      "photo": null,
+      "shirt": 24,
+      "pos": "?",
+      "minutes": 90,
+      "rating": 6.53,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 47,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 1,
+       "blocks": 0,
+       "interceptions": 1
+      },
+      "duels": {
+       "total": 10,
+       "won": 3
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": 1,
+       "committed": 4
+      },
+      "cards": {
+       "yellow": 1,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 40,
+      "touches": 56,
+      "recoveries": 4,
+      "clearances": 0,
+      "xA": 0.02
+     },
+     {
+      "providerId": 1425206,
+      "name": "Maroan Sannadi",
+      "photo": null,
+      "shirt": 21,
+      "pos": "?",
+      "minutes": 9,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": 2,
+      "shots": {
+       "total": null,
+       "on": 1
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 1,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 0,
+      "touches": 3,
+      "recoveries": 0,
+      "clearances": 0,
+      "xA": null
+     },
+     {
+      "providerId": 1425769,
+      "name": "Alejandro Rego",
+      "photo": null,
+      "shirt": 20,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1427819,
+      "name": "Hugo Rincón",
+      "photo": null,
+      "shirt": 15,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1553099,
+      "name": "Mikel Jauregizar",
+      "photo": null,
+      "shirt": 18,
+      "pos": "?",
+      "minutes": 25,
+      "rating": 6.62,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 26,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 1,
+       "blocks": 0,
+       "interceptions": 1
+      },
+      "duels": {
+       "total": null,
+       "won": 4
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 22,
+      "touches": 30,
+      "recoveries": 1,
+      "clearances": 0,
+      "xA": 0.01
+     },
+     {
+      "providerId": 1817320,
+      "name": "Iker Monreal",
+      "photo": null,
+      "shirt": 30,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     }
+    ],
+    "ELC": [
+     {
+      "providerId": 291635,
+      "name": "Pedro Bigas",
+      "photo": null,
+      "shirt": 6,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 468931,
+      "name": "Thomas Lemar",
+      "photo": null,
+      "shirt": 18,
+      "pos": "?",
+      "minutes": 21,
+      "rating": 5.96,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 10,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 2
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 8,
+      "touches": 14,
+      "recoveries": 0,
+      "clearances": 1,
+      "xA": 0.01
+     },
+     {
+      "providerId": 493216,
+      "name": "Ezequiel Ponce",
+      "photo": null,
+      "shirt": 9,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 592412,
+      "name": "Matías Dituro",
+      "photo": null,
+      "shirt": 1,
+      "pos": "G",
+      "minutes": 90,
+      "rating": 6.75,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": 1,
+       "assists": null,
+       "saves": 2
+      },
+      "passes": {
+       "total": 46,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": null,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 26,
+      "touches": 51,
+      "recoveries": 6,
+      "clearances": 1,
+      "xA": null
+     },
+     {
+      "providerId": 623982,
+      "name": "Josan",
+      "photo": null,
+      "shirt": 17,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 654091,
+      "name": "Grady Diangana",
+      "photo": null,
+      "shirt": 19,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 801213,
+      "name": "Tete Morente",
+      "photo": null,
+      "shirt": 20,
+      "pos": "M",
+      "minutes": 76,
+      "rating": 6.6,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 18,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 1,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 9,
+       "won": 4
+      },
+      "dribbles": {
+       "attempts": 6,
+       "success": 2
+      },
+      "fouls": {
+       "drawn": 1,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 13,
+      "touches": 31,
+      "recoveries": 5,
+      "clearances": 0,
+      "xA": 0.01
+     },
+     {
+      "providerId": 881773,
+      "name": "Gonzalo Villar",
+      "photo": null,
+      "shirt": 12,
+      "pos": "M",
+      "minutes": 83,
+      "rating": 7.5,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 38,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 2,
+       "blocks": 0,
+       "interceptions": 1
+      },
+      "duels": {
+       "total": 8,
+       "won": 7
+      },
+      "dribbles": {
+       "attempts": 3,
+       "success": 3
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 33,
+      "touches": 52,
+      "recoveries": 8,
+      "clearances": 1,
+      "xA": 0.04
+     },
+     {
+      "providerId": 1102708,
+      "name": "Germán Valera",
+      "photo": null,
+      "shirt": 11,
+      "pos": "M",
+      "minutes": 82,
+      "rating": 6.6,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 17,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 2
+      },
+      "duels": {
+       "total": 6,
+       "won": 2
+      },
+      "dribbles": {
+       "attempts": 2,
+       "success": 0
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 15,
+      "touches": 33,
+      "recoveries": 3,
+      "clearances": 0,
+      "xA": 0.02
+     },
+     {
+      "providerId": 1127224,
+      "name": "Fer Niño",
+      "photo": null,
+      "shirt": 14,
+      "pos": "F",
+      "minutes": 69,
+      "rating": 6.54,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 19,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 2,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 15,
+       "won": 7
+      },
+      "dribbles": {
+       "attempts": 1,
+       "success": 1
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 2
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 12,
+      "touches": 30,
+      "recoveries": 1,
+      "clearances": 3,
+      "xA": null
+     },
+     {
+      "providerId": 1192393,
+      "name": "Víctor Chust",
+      "photo": null,
+      "shirt": 23,
+      "pos": "D",
+      "minutes": 90,
+      "rating": 6.59,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": 0
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 41,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 1,
+       "interceptions": 1
+      },
+      "duels": {
+       "total": 2,
+       "won": 1
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 33,
+      "touches": 50,
+      "recoveries": 3,
+      "clearances": 2,
+      "xA": null
+     },
+     {
+      "providerId": 1226189,
+      "name": "Martim Neto",
+      "photo": null,
+      "shirt": 16,
+      "pos": "?",
+      "minutes": 7,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 4,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 2,
+       "won": 1
+      },
+      "dribbles": {
+       "attempts": 1,
+       "success": 1
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 3,
+      "touches": 6,
+      "recoveries": 1,
+      "clearances": 0,
+      "xA": 0.01
+     },
+     {
+      "providerId": 1277343,
+      "name": "Federico Redondo",
+      "photo": null,
+      "shirt": 5,
+      "pos": "D",
+      "minutes": 90,
+      "rating": 7.77,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 40,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 6,
+       "blocks": 0,
+       "interceptions": 4
+      },
+      "duels": {
+       "total": 10,
+       "won": 8
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": 1,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 39,
+      "touches": 62,
+      "recoveries": 7,
+      "clearances": 4,
+      "xA": null
+     },
+     {
+      "providerId": 1280756,
+      "name": "Lucas Cepeda",
+      "photo": null,
+      "shirt": 21,
+      "pos": "?",
+      "minutes": 8,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": 1,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 3,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 1,
+      "touches": 4,
+      "recoveries": 0,
+      "clearances": 0,
+      "xA": null
+     },
+     {
+      "providerId": 1311126,
+      "name": "Alejandro Iturbe",
+      "photo": null,
+      "shirt": 13,
+      "pos": "G",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1330035,
+      "name": "Rubén Sánchez",
+      "photo": null,
+      "shirt": 22,
+      "pos": "?",
+      "minutes": 14,
+      "rating": 6.03,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": 0
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 2,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": 1,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 2,
+      "touches": 9,
+      "recoveries": 1,
+      "clearances": 1,
+      "xA": null
+     },
+     {
+      "providerId": 1336566,
+      "name": "Facundo Buonanotte",
+      "photo": null,
+      "shirt": 10,
+      "pos": "M",
+      "minutes": 69,
+      "rating": 7.57,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": 1
+      },
+      "goals": {
+       "total": 1,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 14,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 2,
+       "blocks": 2,
+       "interceptions": 1
+      },
+      "duels": {
+       "total": 6,
+       "won": 2
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 8,
+      "touches": 28,
+      "recoveries": 2,
+      "clearances": 1,
+      "xA": null
+     },
+     {
+      "providerId": 1337914,
+      "name": "Roy Revivo",
+      "photo": null,
+      "shirt": 3,
+      "pos": "D",
+      "minutes": 90,
+      "rating": 7.41,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 30,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 1,
+       "blocks": 0,
+       "interceptions": 1
+      },
+      "duels": {
+       "total": 8,
+       "won": 7
+      },
+      "dribbles": {
+       "attempts": 1,
+       "success": 1
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 23,
+      "touches": 47,
+      "recoveries": 2,
+      "clearances": 7,
+      "xA": null
+     },
+     {
+      "providerId": 1343195,
+      "name": "Abiel Osorio",
+      "photo": null,
+      "shirt": 24,
+      "pos": "?",
+      "minutes": 21,
+      "rating": 6,
+      "captain": false,
+      "substitute": false,
+      "offsides": 1,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 1,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 0,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": 5,
+       "won": 2
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": 2,
+       "committed": 2
+      },
+      "cards": {
+       "yellow": 1,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 1,
+      "touches": 5,
+      "recoveries": 1,
+      "clearances": 0,
+      "xA": null
+     },
+     {
+      "providerId": 1392232,
+      "name": "Marc Aguado",
+      "photo": null,
+      "shirt": 8,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1583872,
+      "name": "Buba Sangaré",
+      "photo": null,
+      "shirt": 2,
+      "pos": "D",
+      "minutes": 90,
+      "rating": 6.9,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 15,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 2,
+       "blocks": 0,
+       "interceptions": 0
+      },
+      "duels": {
+       "total": null,
+       "won": 3
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 0
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 11,
+      "touches": 34,
+      "recoveries": 0,
+      "clearances": 7,
+      "xA": 0.01
+     },
+     {
+      "providerId": 1670276,
+      "name": "Matia Barzić",
+      "photo": null,
+      "shirt": 26,
+      "pos": "?",
+      "minutes": null,
+      "rating": null,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": null,
+       "conceded": null,
+       "assists": null,
+       "saves": null
+      },
+      "passes": {
+       "total": null,
+       "key": null,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": null,
+       "blocks": null,
+       "interceptions": null
+      },
+      "duels": {
+       "total": null,
+       "won": null
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": null
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": null,
+      "touches": null,
+      "recoveries": null,
+      "clearances": null,
+      "xA": null
+     },
+     {
+      "providerId": 1732412,
+      "name": "Javi Morcillo",
+      "photo": null,
+      "shirt": 47,
+      "pos": "M",
+      "minutes": 90,
+      "rating": 7.06,
+      "captain": false,
+      "substitute": false,
+      "offsides": null,
+      "shots": {
+       "total": null,
+       "on": null
+      },
+      "goals": {
+       "total": 0,
+       "conceded": null,
+       "assists": 0,
+       "saves": null
+      },
+      "passes": {
+       "total": 20,
+       "key": 0,
+       "accuracy": null
+      },
+      "tackles": {
+       "total": 4,
+       "blocks": 0,
+       "interceptions": 2
+      },
+      "duels": {
+       "total": 6,
+       "won": 4
+      },
+      "dribbles": {
+       "attempts": null,
+       "success": null
+      },
+      "fouls": {
+       "drawn": null,
+       "committed": 1
+      },
+      "cards": {
+       "yellow": null,
+       "red": null
+      },
+      "penalty": {
+       "saved": null
+      },
+      "accuratePasses": 19,
+      "touches": 33,
+      "recoveries": 5,
+      "clearances": 2,
+      "xA": null
+     }
+    ]
+   },
+   "events": [
+    {
+     "minute": 50,
+     "extra": null,
+     "label": "50'",
+     "team": "ELC",
+     "type": "Goal",
+     "detail": "Penalty",
+     "comments": "Penalty",
+     "player": "Facundo Buonanotte",
+     "playerId": 1336566,
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 56,
+     "extra": null,
+     "label": "56'",
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "comments": {
+      "localizedKey": "card_desc_foul",
+      "defaultText": "Foul"
+     },
+     "player": "Federico Redondo",
+     "playerId": 1277343,
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "label": "65'",
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Johaneko Louisjean",
+     "playerId": "1327006",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "label": "65'",
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Mikel Jauregizar",
+     "playerId": "1553099",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "label": "69'",
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Abiel Osorio",
+     "playerId": "1343195",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "label": "69'",
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Thomas Lemar",
+     "playerId": "468931",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "label": "72'",
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Alex Berenguer",
+     "playerId": "574629",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 75,
+     "extra": null,
+     "label": "75'",
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "comments": null,
+     "player": "Abiel Osorio",
+     "playerId": 1343195,
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "label": "76'",
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Rubén Sánchez",
+     "playerId": "1330035",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 79,
+     "extra": null,
+     "label": "79'",
+     "team": "ATH",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "comments": null,
+     "player": "Iñaki Williams",
+     "playerId": 604105,
+     "assist": "assist by Alex Berenguer",
+     "assistId": null
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "label": "81'",
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Maroan Sannadi",
+     "playerId": "1425206",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "label": "81'",
+     "team": "ATH",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "comments": null,
+     "player": "Alex Berenguer",
+     "playerId": 574629,
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "label": "81'",
+     "team": "ATH",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "comments": null,
+     "player": "Beñat Gerenabarrena",
+     "playerId": 1425173,
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "label": "82'",
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Lucas Cepeda",
+     "playerId": "1280756",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "label": "83'",
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "comments": null,
+     "player": "Martim Neto",
+     "playerId": "1226189",
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "label": "90'+6",
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "comments": {
+      "localizedKey": "card_desc_foul",
+      "defaultText": "Foul"
+     },
+     "player": "Rubén Sánchez",
+     "playerId": 1330035,
+     "assist": null,
+     "assistId": null
+    },
+    {
+     "minute": 90,
+     "extra": 7,
+     "label": "90'+7",
+     "team": "ATH",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "comments": null,
+     "player": "Yuri Berchiche",
+     "playerId": 80295,
+     "assist": null,
+     "assistId": null
+    }
+   ],
+   "lineups": {
+    "ATH": {
+     "formation": "4-2-3-1",
+     "xi": [
+      {
+       "providerId": 660625,
+       "name": "Unai Simón",
+       "shirt": 1,
+       "pos": "G",
+       "grid": "1:1"
+      },
+      {
+       "providerId": 1037537,
+       "name": "Jesús Areso",
+       "shirt": 12,
+       "pos": "D",
+       "grid": "2:1"
+      },
+      {
+       "providerId": 639450,
+       "name": "Yeray Álvarez",
+       "shirt": 5,
+       "pos": "D",
+       "grid": "2:2"
+      },
+      {
+       "providerId": 411617,
+       "name": "Aymeric Laporte",
+       "shirt": 14,
+       "pos": "D",
+       "grid": "2:3"
+      },
+      {
+       "providerId": 80295,
+       "name": "Yuri Berchiche",
+       "shirt": 17,
+       "pos": "D",
+       "grid": "2:4"
+      },
+      {
+       "providerId": 282462,
+       "name": "Íñigo Ruíz de Galarreta",
+       "shirt": 16,
+       "pos": "?",
+       "grid": "3:1"
+      },
+      {
+       "providerId": 1425173,
+       "name": "Beñat Gerenabarrena",
+       "shirt": 24,
+       "pos": "?",
+       "grid": "3:2"
+      },
+      {
+       "providerId": 1011117,
+       "name": "Robert Navarro",
+       "shirt": 23,
+       "pos": "M",
+       "grid": "4:1"
+      },
+      {
+       "providerId": 950545,
+       "name": "Oihan Sancet",
+       "shirt": 8,
+       "pos": "M",
+       "grid": "4:2"
+      },
+      {
+       "providerId": 1202110,
+       "name": "Nico Williams",
+       "shirt": 10,
+       "pos": "M",
+       "grid": "4:3"
+      },
+      {
+       "providerId": 604105,
+       "name": "Iñaki Williams",
+       "shirt": 9,
+       "pos": "F",
+       "grid": "5:1"
+      }
+     ],
+     "bench": [
+      {
+       "providerId": 1327006,
+       "name": "Johaneko Louisjean",
+       "shirt": 31,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1553099,
+       "name": "Mikel Jauregizar",
+       "shirt": 18,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 574629,
+       "name": "Alex Berenguer",
+       "shirt": 7,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1425206,
+       "name": "Maroan Sannadi",
+       "shirt": 21,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1401997,
+       "name": "Álex Padilla",
+       "shirt": 13,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1191407,
+       "name": "Aitor Paredes",
+       "shirt": 4,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1427819,
+       "name": "Hugo Rincón",
+       "shirt": 15,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1817320,
+       "name": "Iker Monreal",
+       "shirt": 30,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1425769,
+       "name": "Alejandro Rego",
+       "shirt": 20,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1355668,
+       "name": "Álvaro Djaló",
+       "shirt": 25,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1229176,
+       "name": "Beñat Prados",
+       "shirt": 6,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1203614,
+       "name": "Nico Serrano",
+       "shirt": 22,
+       "pos": "?",
+       "grid": null
+      }
+     ],
+     "rows": [
+      [
+       {
+        "providerId": 660625,
+        "name": "Unai Simón",
+        "number": "1",
+        "pos": "G",
+        "rating": 6.3,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.5,
+         "y": 0.1,
+         "height": 0.192,
+         "width": 1
+        }
+       }
+      ],
+      [
+       {
+        "providerId": 1037537,
+        "name": "Jesús Areso",
+        "number": "12",
+        "pos": "D",
+        "rating": 6.3,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.125,
+         "y": 0.292,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 639450,
+        "name": "Yeray Álvarez",
+        "number": "5",
+        "pos": "D",
+        "rating": 7.3,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.375,
+         "y": 0.292,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 411617,
+        "name": "Aymeric Laporte",
+        "number": "14",
+        "pos": "D",
+        "rating": 7.2,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.625,
+         "y": 0.292,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 80295,
+        "name": "Yuri Berchiche",
+        "number": "17",
+        "pos": "D",
+        "rating": 7.9,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.875,
+         "y": 0.292,
+         "height": 0.192,
+         "width": 0.25
+        }
+       }
+      ],
+      [
+       {
+        "providerId": 282462,
+        "name": "Íñigo Ruíz de Galarreta",
+        "number": "16",
+        "pos": "?",
+        "rating": 6.8,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.3,
+         "y": 0.485,
+         "height": 0.192,
+         "width": 0.4
+        }
+       },
+       {
+        "providerId": 1425173,
+        "name": "Beñat Gerenabarrena",
+        "number": "24",
+        "pos": "?",
+        "rating": 6.5,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.7,
+         "y": 0.485,
+         "height": 0.192,
+         "width": 0.4
+        }
+       }
+      ],
+      [
+       {
+        "providerId": 1011117,
+        "name": "Robert Navarro",
+        "number": "23",
+        "pos": "M",
+        "rating": 7.7,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.162,
+         "y": 0.678,
+         "height": 0.192,
+         "width": 0.325
+        }
+       },
+       {
+        "providerId": 950545,
+        "name": "Oihan Sancet",
+        "number": "8",
+        "pos": "M",
+        "rating": 7,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.5,
+         "y": 0.678,
+         "height": 0.192,
+         "width": 0.337
+        }
+       },
+       {
+        "providerId": 1202110,
+        "name": "Nico Williams",
+        "number": "10",
+        "pos": "M",
+        "rating": 7.3,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.837,
+         "y": 0.678,
+         "height": 0.192,
+         "width": 0.325
+        }
+       }
+      ],
+      [
+       {
+        "providerId": 604105,
+        "name": "Iñaki Williams",
+        "number": "9",
+        "pos": "F",
+        "rating": 7.6,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.5,
+         "y": 0.87,
+         "height": 0.192,
+         "width": 1
+        }
+       }
+      ]
+     ],
+     "coach": "Edin Terzić",
+     "team": "ATH"
+    },
+    "ELC": {
+     "formation": "4-4-1-1",
+     "xi": [
+      {
+       "providerId": 592412,
+       "name": "Matías Dituro",
+       "shirt": 1,
+       "pos": "G",
+       "grid": "1:1"
+      },
+      {
+       "providerId": 1583872,
+       "name": "Buba Sangaré",
+       "shirt": 2,
+       "pos": "D",
+       "grid": "2:1"
+      },
+      {
+       "providerId": 1277343,
+       "name": "Federico Redondo",
+       "shirt": 5,
+       "pos": "D",
+       "grid": "2:2"
+      },
+      {
+       "providerId": 1192393,
+       "name": "Víctor Chust",
+       "shirt": 23,
+       "pos": "D",
+       "grid": "2:3"
+      },
+      {
+       "providerId": 1337914,
+       "name": "Roy Revivo",
+       "shirt": 3,
+       "pos": "D",
+       "grid": "2:4"
+      },
+      {
+       "providerId": 801213,
+       "name": "Tete Morente",
+       "shirt": 20,
+       "pos": "M",
+       "grid": "3:1"
+      },
+      {
+       "providerId": 1732412,
+       "name": "Javi Morcillo",
+       "shirt": 47,
+       "pos": "M",
+       "grid": "3:2"
+      },
+      {
+       "providerId": 881773,
+       "name": "Gonzalo Villar",
+       "shirt": 12,
+       "pos": "M",
+       "grid": "3:3"
+      },
+      {
+       "providerId": 1102708,
+       "name": "Germán Valera",
+       "shirt": 11,
+       "pos": "M",
+       "grid": "3:4"
+      },
+      {
+       "providerId": 1336566,
+       "name": "Facundo Buonanotte",
+       "shirt": 10,
+       "pos": "M",
+       "grid": "4:1"
+      },
+      {
+       "providerId": 1127224,
+       "name": "Fer Niño",
+       "shirt": 14,
+       "pos": "F",
+       "grid": "5:1"
+      }
+     ],
+     "bench": [
+      {
+       "providerId": 468931,
+       "name": "Thomas Lemar",
+       "shirt": 18,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1343195,
+       "name": "Abiel Osorio",
+       "shirt": 24,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1330035,
+       "name": "Rubén Sánchez",
+       "shirt": 22,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1280756,
+       "name": "Lucas Cepeda",
+       "shirt": 21,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1226189,
+       "name": "Martim Neto",
+       "shirt": 16,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1311126,
+       "name": "Alejandro Iturbe",
+       "shirt": 13,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1670276,
+       "name": "Matia Barzić",
+       "shirt": 26,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 291635,
+       "name": "Pedro Bigas",
+       "shirt": 6,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 654091,
+       "name": "Grady Diangana",
+       "shirt": 19,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 1392232,
+       "name": "Marc Aguado",
+       "shirt": 8,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 493216,
+       "name": "Ezequiel Ponce",
+       "shirt": 9,
+       "pos": "?",
+       "grid": null
+      },
+      {
+       "providerId": 623982,
+       "name": "Josan",
+       "shirt": 17,
+       "pos": "?",
+       "grid": null
+      }
+     ],
+     "rows": [
+      [
+       {
+        "providerId": 592412,
+        "name": "Matías Dituro",
+        "number": "1",
+        "pos": "G",
+        "rating": 6.8,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.5,
+         "y": 0.1,
+         "height": 0.192,
+         "width": 1
+        }
+       }
+      ],
+      [
+       {
+        "providerId": 1583872,
+        "name": "Buba Sangaré",
+        "number": "2",
+        "pos": "D",
+        "rating": 6.9,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.125,
+         "y": 0.292,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 1277343,
+        "name": "Federico Redondo",
+        "number": "5",
+        "pos": "D",
+        "rating": 7.8,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.375,
+         "y": 0.292,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 1192393,
+        "name": "Víctor Chust",
+        "number": "23",
+        "pos": "D",
+        "rating": 6.6,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.625,
+         "y": 0.292,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 1337914,
+        "name": "Roy Revivo",
+        "number": "3",
+        "pos": "D",
+        "rating": 7.4,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.875,
+         "y": 0.292,
+         "height": 0.192,
+         "width": 0.25
+        }
+       }
+      ],
+      [
+       {
+        "providerId": 801213,
+        "name": "Tete Morente",
+        "number": "20",
+        "pos": "M",
+        "rating": 6.6,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.125,
+         "y": 0.485,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 1732412,
+        "name": "Javi Morcillo",
+        "number": "47",
+        "pos": "M",
+        "rating": 7.1,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.375,
+         "y": 0.485,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 881773,
+        "name": "Gonzalo Villar",
+        "number": "12",
+        "pos": "M",
+        "rating": 7.5,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.625,
+         "y": 0.485,
+         "height": 0.192,
+         "width": 0.25
+        }
+       },
+       {
+        "providerId": 1102708,
+        "name": "Germán Valera",
+        "number": "11",
+        "pos": "M",
+        "rating": 6.6,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.875,
+         "y": 0.485,
+         "height": 0.192,
+         "width": 0.25
+        }
+       }
+      ],
+      [
+       {
+        "providerId": 1336566,
+        "name": "Facundo Buonanotte",
+        "number": "10",
+        "pos": "M",
+        "rating": 7.6,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.5,
+         "y": 0.678,
+         "height": 0.192,
+         "width": 1
+        }
+       }
+      ],
+      [
+       {
+        "providerId": 1127224,
+        "name": "Fer Niño",
+        "number": "14",
+        "pos": "F",
+        "rating": 6.5,
+        "photo": null,
+        "verticalLayout": {
+         "x": 0.5,
+         "y": 0.87,
+         "height": 0.192,
+         "width": 1
+        }
+       }
+      ]
+     ],
+     "coach": "Martín Anselmi",
+     "team": "ELC"
+    }
+   },
+   "coverage": {
+    "teamStatistics": true,
+    "playerStatistics": true,
+    "ratings": true,
+    "events": true,
+    "lineups": true,
+    "tracking": false,
+    "speed": false,
+    "distance": false,
+    "sprints": false
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "unmappedPlayerStats": [
+    "expected_goals",
+    "expected_goals_on_target_variant",
+    "xg_and_xa",
+    "total_shots",
+    "shot_accuracy",
+    "defensive_actions",
+    "touches_opp_box",
+    "passes_into_final_third",
+    "accurate_crosses",
+    "long_balls_accurate",
+    "corners",
+    "dispossessed",
+    "expected_goals_non_penalty",
+    "headed_clearance",
+    "dribbled_past",
+    "ground_duels_won",
+    "aerials_won",
+    "big_chance_created_team_title",
+    "expected_goals_on_target_faced",
+    "goals_prevented",
+    "keeper_diving_save",
+    "saves_inside_box",
+    "keeper_sweeper",
+    "punches",
+    "player_throws",
+    "keeper_high_claim",
+    "big_chance_missed_title",
+    "shots_woodwork",
+    "conceded_penalties",
+    "penalties_won"
+   ],
+   "unavailable": [
+    "speed",
+    "distance",
+    "sprints"
+   ],
+   "adapterVersion": 2
   }
  },
- "retrievedAt": "2026-09-12T18:59:17.125Z",
+ "retrievedAt": "2026-09-12T21:29:39.425Z",
  "coverage": {
-  "cached": 44,
+  "cached": 45,
   "fetchedThisRun": 1,
   "rejected": 0
  }

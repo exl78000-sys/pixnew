@@ -68094,10 +68094,1832 @@
      }
     ]
    }
+  },
+  "SUN|ARS": {
+   "key": "SUN|ARS",
+   "season": "2026-27",
+   "date": "2026-09-12",
+   "matchId": "5795453",
+   "home": "SUN",
+   "away": "ARS",
+   "score": [
+    0,
+    2
+   ],
+   "providerScore": [
+    0,
+    2
+   ],
+   "teamStats": {
+    "SUN": {
+     "possession": 42,
+     "shots": 12,
+     "shotsOn": 3,
+     "shotsOff": 5,
+     "blockedShots": 2,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 18,
+     "saves": 3,
+     "passes": 282,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.64
+    },
+    "ARS": {
+     "possession": 58,
+     "shots": 11,
+     "shotsOn": 5,
+     "shotsOff": 4,
+     "blockedShots": 5,
+     "corners": 2,
+     "offsides": 2,
+     "fouls": 11,
+     "saves": 2,
+     "passes": 388,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.97
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_walking",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     42,
+     58
+    ],
+    "h1": [
+     33,
+     67
+    ],
+    "h2": [
+     53,
+     47
+    ]
+   },
+   "events": [
+    {
+     "minute": 28,
+     "extra": null,
+     "team": "SUN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Reinildo"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "ARS",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Mikel Arteta"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jurriën Timber"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bruno Guimarães"
+    },
+    {
+     "minute": 58,
+     "extra": null,
+     "team": "ARS",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Bruno Guimarães"
+    },
+    {
+     "minute": 66,
+     "extra": null,
+     "team": "SUN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Daniel Ballard"
+    },
+    {
+     "minute": 69,
+     "extra": null,
+     "team": "SUN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Granit Xhaka"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "SUN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Wilson Isidor"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "SUN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Malick Fofana"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Eberechi Eze"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Martín Zubimendi"
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "team": "SUN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Brian Brobbey"
+    },
+    {
+     "minute": 85,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mikel Merino"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "ARS",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Gabriel"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "SUN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Nordi Mukiele"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "ARS",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kai Havertz"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "SUN",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Reinildo"
+    },
+    {
+     "minute": 90,
+     "extra": 7,
+     "team": "ARS",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Bukayo Saka"
+    }
+   ],
+   "shots": [
+    {
+     "min": 6,
+     "extra": null,
+     "team": "SUN",
+     "player": "Enzo Le Fée",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 42.6,
+     "y": 19.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "ARS",
+     "player": "Riccardo Calafiori",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.1,
+     "y": 35.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "ARS",
+     "player": "Bukayo Saka",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.51,
+     "xgot": 0.287,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 30.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "SUN",
+     "player": "Daniel Ballard",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100,
+     "y": 25.1,
+     "foot": "OtherBodyParts",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "ARS",
+     "player": "Gabriel",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.3,
+     "y": 42.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.2,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 41,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.119,
+     "xgot": 0.613,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.2,
+     "y": 37.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "SUN",
+     "player": "Nordi Mukiele",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.7,
+     "y": 20.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "SUN",
+     "player": "Thomas Meunier",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.057,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.1,
+     "y": 26.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "SUN",
+     "player": "Enzo Le Fée",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.9,
+     "y": 22,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "SUN",
+     "player": "Thomas Meunier",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 20.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "SUN",
+     "player": "Noah Sadiki",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83,
+     "y": 41.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "SUN",
+     "player": "Enzo Le Fée",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.918,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "ARS",
+     "player": "Bruno Guimarães",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.037,
+     "xgot": 0.302,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.1,
+     "y": 35.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "SUN",
+     "player": "Thomas Meunier",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.076,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90,
+     "y": 24.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "ARS",
+     "player": "Bukayo Saka",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.6,
+     "y": 31.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "ARS",
+     "player": "Bukayo Saka",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.117,
+     "xgot": 0.082,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 24.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.8,
+     "y": 41.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "ARS",
+     "player": "Bruno Guimarães",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.1,
+     "y": 49.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "SUN",
+     "player": "Nordi Mukiele",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.141,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.6,
+     "y": 37.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "SUN",
+     "player": "Nordi Mukiele",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.107,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.9,
+     "y": 33.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "SUN",
+     "player": "Nordi Mukiele",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.335,
+     "xgot": 0.768,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.5,
+     "y": 37.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 7,
+     "team": "ARS",
+     "player": "Bukayo Saka",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.788,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     -16
+    ],
+    [
+     3,
+     -33
+    ],
+    [
+     4,
+     -38
+    ],
+    [
+     5,
+     -38
+    ],
+    [
+     6,
+     -41
+    ],
+    [
+     7,
+     -100
+    ],
+    [
+     8,
+     -100
+    ],
+    [
+     9,
+     -90
+    ],
+    [
+     10,
+     -19
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     12,
+     -11
+    ],
+    [
+     13,
+     -71
+    ],
+    [
+     14,
+     -71
+    ],
+    [
+     15,
+     -71
+    ],
+    [
+     16,
+     0
+    ],
+    [
+     17,
+     5
+    ],
+    [
+     18,
+     5
+    ],
+    [
+     19,
+     -16
+    ],
+    [
+     20,
+     -19
+    ],
+    [
+     21,
+     -24
+    ],
+    [
+     22,
+     -24
+    ],
+    [
+     23,
+     -16
+    ],
+    [
+     24,
+     0
+    ],
+    [
+     25,
+     5
+    ],
+    [
+     26,
+     0
+    ],
+    [
+     27,
+     -5
+    ],
+    [
+     28,
+     0
+    ],
+    [
+     29,
+     0
+    ],
+    [
+     30,
+     -5
+    ],
+    [
+     31,
+     -49
+    ],
+    [
+     32,
+     -43
+    ],
+    [
+     33,
+     -87
+    ],
+    [
+     34,
+     -43
+    ],
+    [
+     35,
+     -43
+    ],
+    [
+     36,
+     30
+    ],
+    [
+     37,
+     30
+    ],
+    [
+     38,
+     19
+    ],
+    [
+     39,
+     16
+    ],
+    [
+     40,
+     71
+    ],
+    [
+     41,
+     81
+    ],
+    [
+     42,
+     81
+    ],
+    [
+     43,
+     27
+    ],
+    [
+     44,
+     27
+    ],
+    [
+     45,
+     0
+    ],
+    [
+     45.5,
+     -76
+    ],
+    [
+     46,
+     11
+    ],
+    [
+     47,
+     5
+    ],
+    [
+     48,
+     33
+    ],
+    [
+     49,
+     27
+    ],
+    [
+     50,
+     33
+    ],
+    [
+     51,
+     5
+    ],
+    [
+     52,
+     0
+    ],
+    [
+     53,
+     -16
+    ],
+    [
+     54,
+     100
+    ],
+    [
+     55,
+     100
+    ],
+    [
+     56,
+     100
+    ],
+    [
+     57,
+     0
+    ],
+    [
+     58,
+     -41
+    ],
+    [
+     59,
+     -41
+    ],
+    [
+     60,
+     -41
+    ],
+    [
+     61,
+     0
+    ],
+    [
+     62,
+     -27
+    ],
+    [
+     63,
+     -24
+    ],
+    [
+     64,
+     -8
+    ],
+    [
+     65,
+     19
+    ],
+    [
+     66,
+     16
+    ],
+    [
+     67,
+     -5
+    ],
+    [
+     68,
+     0
+    ],
+    [
+     69,
+     0
+    ],
+    [
+     70,
+     11
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     72,
+     -5
+    ],
+    [
+     73,
+     -11
+    ],
+    [
+     74,
+     -27
+    ],
+    [
+     75,
+     -98
+    ],
+    [
+     76,
+     33
+    ],
+    [
+     77,
+     49
+    ],
+    [
+     78,
+     100
+    ],
+    [
+     79,
+     24
+    ],
+    [
+     80,
+     35
+    ],
+    [
+     81,
+     35
+    ],
+    [
+     82,
+     22
+    ],
+    [
+     83,
+     22
+    ],
+    [
+     84,
+     100
+    ],
+    [
+     85,
+     84
+    ],
+    [
+     86,
+     73
+    ],
+    [
+     87,
+     -8
+    ],
+    [
+     88,
+     0
+    ],
+    [
+     89,
+     16
+    ],
+    [
+     90,
+     24
+    ],
+    [
+     90.5,
+     1
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "SUN": {
+     "team": "SUN",
+     "formation": "4-2-3-1",
+     "coach": "Régis Le Bris",
+     "xi": [
+      {
+       "name": "Robin Roefs",
+       "shirt": 22,
+       "pos": "G"
+      },
+      {
+       "name": "Nordi Mukiele",
+       "shirt": 20,
+       "pos": "D"
+      },
+      {
+       "name": "Kevin Danso",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Daniel Ballard",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Reinildo",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Granit Xhaka",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Noah Sadiki",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Thomas Meunier",
+       "shirt": 12,
+       "pos": "M"
+      },
+      {
+       "name": "Enzo Le Fée",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Nilson Angulo",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Brian Brobbey",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Wilson Isidor",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Malick Fofana",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Melker Ellborg",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Luke O'Nien",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Omar Alderete",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Trai Hume",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Chris Rigg",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Dayann Méthalie",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Chemsdine Talbi",
+       "shirt": 7,
+       "pos": "?"
+      }
+     ]
+    },
+    "ARS": {
+     "team": "ARS",
+     "formation": "4-2-3-1",
+     "coach": "Mikel Arteta",
+     "xi": [
+      {
+       "name": "David Raya",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Ben White",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Ezri Konsa",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Gabriel",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Riccardo Calafiori",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Declan Rice",
+       "shirt": 41,
+       "pos": "?"
+      },
+      {
+       "name": "Myles Lewis-Skelly",
+       "shirt": 49,
+       "pos": "?"
+      },
+      {
+       "name": "Bukayo Saka",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Martin Ødegaard",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Christos Tzolis",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Kai Havertz",
+       "shirt": 29,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jurriën Timber",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Bruno Guimarães",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Eberechi Eze",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Martín Zubimendi",
+       "shirt": 36,
+       "pos": "?"
+      },
+      {
+       "name": "Mikel Merino",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Kepa Arrizabalaga",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Piero Hincapié",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Noni Madueke",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Viktor Gyökeres",
+       "shirt": 14,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      114414,
+      117394
+     ],
+     "sprintDistance": [
+      2311,
+      2296
+     ],
+     "sprints": [
+      104,
+      97
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      null,
+      null
+     ]
+    },
+    "players": [
+     {
+      "team": "SUN",
+      "name": "Robin Roefs",
+      "shirt": 22,
+      "distance": 6819,
+      "topSpeed": 26.700000762939453,
+      "rating": 6.7
+     },
+     {
+      "team": "SUN",
+      "name": "Nordi Mukiele",
+      "shirt": 20,
+      "distance": 11087,
+      "topSpeed": 6674.7001953125,
+      "rating": 6.6
+     },
+     {
+      "team": "SUN",
+      "name": "Kevin Danso",
+      "shirt": 4,
+      "distance": 11104,
+      "topSpeed": 7409.2998046875,
+      "rating": 6.3
+     },
+     {
+      "team": "SUN",
+      "name": "Daniel Ballard",
+      "shirt": 5,
+      "distance": 10428,
+      "topSpeed": 6220.7001953125,
+      "rating": 7.2
+     },
+     {
+      "team": "SUN",
+      "name": "Reinildo",
+      "shirt": 17,
+      "distance": 9487,
+      "topSpeed": 149.3000030517578,
+      "rating": 5.6
+     },
+     {
+      "team": "SUN",
+      "name": "Granit Xhaka",
+      "shirt": 34,
+      "distance": 11398,
+      "topSpeed": 7332.60009765625,
+      "rating": 7.5
+     },
+     {
+      "team": "SUN",
+      "name": "Noah Sadiki",
+      "shirt": 27,
+      "distance": 11508,
+      "topSpeed": 2122.5,
+      "rating": 6.6
+     },
+     {
+      "team": "SUN",
+      "name": "Thomas Meunier",
+      "shirt": 12,
+      "distance": 9818,
+      "topSpeed": 4772.10009765625,
+      "rating": 6.4
+     },
+     {
+      "team": "SUN",
+      "name": "Enzo Le Fée",
+      "shirt": 28,
+      "distance": 11143,
+      "topSpeed": 717.2999877929688,
+      "rating": 6
+     },
+     {
+      "team": "SUN",
+      "name": "Nilson Angulo",
+      "shirt": 10,
+      "distance": 8022,
+      "topSpeed": 9900.7998046875,
+      "rating": 5.8
+     },
+     {
+      "team": "SUN",
+      "name": "Brian Brobbey",
+      "shirt": 9,
+      "distance": 8456,
+      "topSpeed": 8556.2998046875,
+      "rating": 5.9
+     },
+     {
+      "team": "SUN",
+      "name": "Wilson Isidor",
+      "shirt": 18,
+      "distance": 3020,
+      "topSpeed": 146.1999969482422,
+      "rating": 5.7
+     },
+     {
+      "team": "SUN",
+      "name": "Malick Fofana",
+      "shirt": 39,
+      "distance": 2119,
+      "topSpeed": 963.0999755859375,
+      "rating": 5.6
+     },
+     {
+      "team": "ARS",
+      "name": "David Raya",
+      "shirt": 1,
+      "distance": 7351,
+      "topSpeed": 7393.60009765625,
+      "rating": 9
+     },
+     {
+      "team": "ARS",
+      "name": "Ben White",
+      "shirt": 4,
+      "distance": 5253,
+      "topSpeed": 29.5,
+      "rating": 6.5
+     },
+     {
+      "team": "ARS",
+      "name": "Ezri Konsa",
+      "shirt": 15,
+      "distance": 9498,
+      "topSpeed": 148.60000610351562,
+      "rating": 7.4
+     },
+     {
+      "team": "ARS",
+      "name": "Gabriel",
+      "shirt": 6,
+      "distance": 10477,
+      "topSpeed": 4911.10009765625,
+      "rating": 8
+     },
+     {
+      "team": "ARS",
+      "name": "Riccardo Calafiori",
+      "shirt": 33,
+      "distance": 11197,
+      "topSpeed": 144.10000610351562,
+      "rating": 6.9
+     },
+     {
+      "team": "ARS",
+      "name": "Declan Rice",
+      "shirt": 41,
+      "distance": 9488,
+      "topSpeed": 3953.39990234375,
+      "rating": 8.3
+     },
+     {
+      "team": "ARS",
+      "name": "Myles Lewis-Skelly",
+      "shirt": 49,
+      "distance": 5303,
+      "topSpeed": 29.299999237060547,
+      "rating": 6
+     },
+     {
+      "team": "ARS",
+      "name": "Bukayo Saka",
+      "shirt": 7,
+      "distance": 10520,
+      "topSpeed": 2688,
+      "rating": 8.6
+     },
+     {
+      "team": "ARS",
+      "name": "Martin Ødegaard",
+      "shirt": 8,
+      "distance": 10415,
+      "topSpeed": 4813.2998046875,
+      "rating": 8
+     },
+     {
+      "team": "ARS",
+      "name": "Christos Tzolis",
+      "shirt": 17,
+      "distance": 9104,
+      "topSpeed": 967.2000122070312,
+      "rating": 6.7
+     },
+     {
+      "team": "ARS",
+      "name": "Kai Havertz",
+      "shirt": 29,
+      "distance": 11686,
+      "topSpeed": 4767.60009765625,
+      "rating": 6.8
+     },
+     {
+      "team": "ARS",
+      "name": "Jurriën Timber",
+      "shirt": 12,
+      "distance": 5282,
+      "topSpeed": 4463.5,
+      "rating": 6.6
+     },
+     {
+      "team": "ARS",
+      "name": "Bruno Guimarães",
+      "shirt": 39,
+      "distance": 6598,
+      "topSpeed": 5136.39990234375,
+      "rating": 7.7
+     },
+     {
+      "team": "ARS",
+      "name": "Eberechi Eze",
+      "shirt": 10,
+      "distance": 1769,
+      "topSpeed": 27.700000762939453,
+      "rating": null
+     },
+     {
+      "team": "ARS",
+      "name": "Martín Zubimendi",
+      "shirt": 36,
+      "distance": 1800,
+      "topSpeed": 919.2999877929688,
+      "rating": null
+     },
+     {
+      "team": "ARS",
+      "name": "Mikel Merino",
+      "shirt": 23,
+      "distance": 1646,
+      "topSpeed": 24.399999618530273,
+      "rating": null
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 32,
+      "center": 30,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 34,
+      "center": 23,
+      "right": 43
+     },
+     "secondHalf": {
+      "left": 32,
+      "center": 33,
+      "right": 35
+     }
+    },
+    "away": {
+     "total": {
+      "left": 28,
+      "center": 26,
+      "right": 46
+     },
+     "firstHalf": {
+      "left": 27,
+      "center": 21,
+      "right": 52
+     },
+     "secondHalf": {
+      "left": 30,
+      "center": 32,
+      "right": 38
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-12T21:29:41.868Z",
+   "fdMatchId": "2026-27-36",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "ARS",
+      "name": "Myles Lewis-Skelly",
+      "n": 39,
+      "cx": 52.7,
+      "cy": 34.6,
+      "spread": 18.6,
+      "grid": "0,0,1,0,0,0,1,2,6,9,2,0,0,1,5,7,1,0,0,0,1,3,0,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Martin Ødegaard",
+      "n": 58,
+      "cx": 61.6,
+      "cy": 42.5,
+      "spread": 25.6,
+      "grid": "0,2,1,2,0,0,0,2,2,4,4,1,0,0,6,6,5,0,0,2,5,2,11,3"
+     },
+     {
+      "team": "ARS",
+      "name": "Christos Tzolis",
+      "n": 41,
+      "cx": 66.2,
+      "cy": 15.8,
+      "spread": 24.3,
+      "grid": "0,2,4,8,10,5,0,0,4,1,1,1,0,1,2,1,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "ARS",
+      "name": "Riccardo Calafiori",
+      "n": 47,
+      "cx": 48.3,
+      "cy": 13.4,
+      "spread": 29.2,
+      "grid": "6,8,6,7,3,2,1,3,3,2,2,3,0,0,0,0,0,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "SUN",
+      "name": "Granit Xhaka",
+      "n": 89,
+      "cx": 49,
+      "cy": 35.5,
+      "spread": 30,
+      "grid": "0,3,4,1,2,2,7,6,10,6,1,1,1,5,10,10,2,0,0,5,3,4,2,4"
+     },
+     {
+      "team": "SUN",
+      "name": "Brian Brobbey",
+      "n": 39,
+      "cx": 70.5,
+      "cy": 25.2,
+      "spread": 24.6,
+      "grid": "0,0,1,1,5,4,0,0,6,5,4,4,0,0,2,1,0,5,0,0,1,0,0,0"
+     },
+     {
+      "team": "SUN",
+      "name": "Nordi Mukiele",
+      "n": 60,
+      "cx": 56.4,
+      "cy": 54.5,
+      "spread": 30.3,
+      "grid": "0,0,0,0,0,0,0,2,2,0,0,4,1,1,4,2,3,1,5,5,8,8,10,4"
+     },
+     {
+      "team": "SUN",
+      "name": "Enzo Le Fée",
+      "n": 27,
+      "cx": 65.6,
+      "cy": 34.5,
+      "spread": 30.8,
+      "grid": "0,1,1,2,1,1,0,3,2,0,1,1,0,0,1,0,5,2,0,0,1,2,2,1"
+     },
+     {
+      "team": "SUN",
+      "name": "Thomas Meunier",
+      "n": 37,
+      "cx": 54.6,
+      "cy": 54.2,
+      "spread": 32.6,
+      "grid": "0,0,0,0,0,0,0,2,0,0,0,0,1,0,1,1,3,5,4,4,6,1,8,1"
+     },
+     {
+      "team": "ARS",
+      "name": "Gabriel",
+      "n": 77,
+      "cx": 30.3,
+      "cy": 24.3,
+      "spread": 23.6,
+      "grid": "5,9,4,2,3,0,18,9,8,6,1,0,3,5,2,0,0,0,0,1,0,1,0,0"
+     },
+     {
+      "team": "ARS",
+      "name": "David Raya",
+      "n": 64,
+      "cx": 14.1,
+      "cy": 35.6,
+      "spread": 15.2,
+      "grid": "0,0,1,0,0,0,22,3,1,0,0,0,29,2,1,1,0,0,0,2,1,1,0,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Ezri Konsa",
+      "n": 46,
+      "cx": 31.8,
+      "cy": 48.5,
+      "spread": 18.1,
+      "grid": "0,0,0,0,0,0,0,0,2,0,0,0,7,9,8,1,0,0,5,5,8,1,0,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Declan Rice",
+      "n": 81,
+      "cx": 45.8,
+      "cy": 40.3,
+      "spread": 26,
+      "grid": "0,4,2,0,1,1,3,5,2,5,2,0,3,7,10,8,1,0,1,4,4,15,3,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Ben White",
+      "n": 31,
+      "cx": 59.6,
+      "cy": 59.6,
+      "spread": 27.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,2,0,2,1,3,6,2,8,4"
+     },
+     {
+      "team": "SUN",
+      "name": "Robin Roefs",
+      "n": 45,
+      "cx": 12.7,
+      "cy": 32.1,
+      "spread": 14.1,
+      "grid": "0,3,0,0,0,0,16,6,1,0,0,0,15,3,0,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "SUN",
+      "name": "Kevin Danso",
+      "n": 54,
+      "cx": 42.2,
+      "cy": 43.9,
+      "spread": 32.6,
+      "grid": "0,0,1,2,1,0,1,0,2,1,1,0,11,3,7,5,2,2,4,4,2,0,3,2"
+     },
+     {
+      "team": "ARS",
+      "name": "Kai Havertz",
+      "n": 48,
+      "cx": 72.6,
+      "cy": 35.5,
+      "spread": 31.5,
+      "grid": "0,0,1,2,4,7,1,0,0,1,2,6,1,0,0,5,1,0,0,0,0,9,6,2"
+     },
+     {
+      "team": "SUN",
+      "name": "Reinildo",
+      "n": 52,
+      "cx": 37,
+      "cy": 9.2,
+      "spread": 21.2,
+      "grid": "8,12,11,7,3,0,2,3,2,3,0,0,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Bukayo Saka",
+      "n": 58,
+      "cx": 64,
+      "cy": 52.2,
+      "spread": 28.8,
+      "grid": "0,0,0,0,0,0,1,0,0,1,1,0,2,0,3,5,5,7,3,1,7,10,4,8"
+     },
+     {
+      "team": "SUN",
+      "name": "Noah Sadiki",
+      "n": 39,
+      "cx": 46.1,
+      "cy": 25.2,
+      "spread": 26.3,
+      "grid": "0,8,5,1,0,1,1,1,8,1,2,0,3,0,1,3,1,0,0,0,0,1,1,1"
+     },
+     {
+      "team": "SUN",
+      "name": "Nilson Angulo",
+      "n": 24,
+      "cx": 62.3,
+      "cy": 8.6,
+      "spread": 21.9,
+      "grid": "1,1,3,9,4,3,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "SUN",
+      "name": "Daniel Ballard",
+      "n": 66,
+      "cx": 45.4,
+      "cy": 24,
+      "spread": 28.6,
+      "grid": "3,6,5,2,0,0,4,13,10,4,4,2,0,1,2,3,0,5,0,0,0,0,2,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Bruno Guimarães",
+      "n": 24,
+      "cx": 49.5,
+      "cy": 30.6,
+      "spread": 24,
+      "grid": "0,1,1,1,0,0,0,3,4,2,2,1,0,3,3,1,1,0,0,0,0,0,1,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Jurriën Timber",
+      "n": 24,
+      "cx": 51.3,
+      "cy": 54.8,
+      "spread": 24.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,2,2,0,1,6,2,5,3,1"
+     },
+     {
+      "team": "SUN",
+      "name": "Wilson Isidor",
+      "n": 11,
+      "cx": 65.1,
+      "cy": 44.5,
+      "spread": 19.9,
+      "grid": "0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,5,0,0,0,0,0,0,3,0"
+     },
+     {
+      "team": "SUN",
+      "name": "Malick Fofana",
+      "n": 10,
+      "cx": 82.3,
+      "cy": 10.6,
+      "spread": 14.7,
+      "grid": "0,0,0,2,4,2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Martín Zubimendi",
+      "n": 11,
+      "cx": 39.1,
+      "cy": 43.2,
+      "spread": 29.4,
+      "grid": "0,0,1,0,0,0,0,1,2,0,0,0,0,0,0,1,0,0,2,1,0,3,0,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Mikel Merino",
+      "n": 9,
+      "cx": 53.9,
+      "cy": 41.5,
+      "spread": 24.3,
+      "grid": "0,0,0,0,0,0,0,0,3,0,1,0,0,0,0,0,1,0,0,1,1,2,0,0"
+     },
+     {
+      "team": "ARS",
+      "name": "Eberechi Eze",
+      "n": 3,
+      "cx": 62.6,
+      "cy": 29.5,
+      "spread": 28.2,
+      "grid": "0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-12T18:59:20.073Z",
+ "updatedAt": "2026-09-12T21:29:42.495Z",
  "verification": {
   "source": "pulselive /stats/match possession_percentage",
   "tolerance": 2,
