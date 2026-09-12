@@ -208,7 +208,15 @@ try {
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 
-  if (meta.edition === 'basic') {
+  /* 兩套版面的分界原本是 `meta.edition === 'basic'`(「是不是西甲」)。
+
+     它真正的分界是**這個聯賽的 tactics 是哪一種**:英超那份由 FPL 的逐場球員位置推出來,
+     每一隊帶 `squad`(人力配置),而且另外產 `formation.json`(陣型與成績的相關)與
+     `shapes.json`(攻守分型);西甲那份來自 Understat 的球隊統計,沒有 squad,
+     但有 `formation.list`(官方陣型佔比)。所以問已經載進來的資料就夠了 ——
+     **不要去 fetch 那兩份檔來判斷**:西甲每次都會多打一個 404(第一版就是這樣,sweep 抓到)。 */
+  const hasRoleData = tactics.some(t => t.squad);
+  if (!hasRoleData) {
     renderLaLigaTactics({ meta, teams, tactics });
   } else {
     const { formation, shapes } = await C.load('formation', 'shapes');

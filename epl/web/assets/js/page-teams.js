@@ -303,8 +303,16 @@ try {
      「這個聯賽有哪些欄位」是一份欄位表(squadColumns)——
      這兩個本來就該分聯賽;真正共用的是外框、排序、點一列跳球員頁。
      照抄英超那張表過去會多出身價、防守貢獻、傷停三整欄的「—」(鐵則三)。 */
+  /* 這兩個 adapter 原本用 `meta.edition === 'basic'` 分岔,而那問的是「是不是西甲」。
+     它們真正要問的是**這份球員資料長什麼樣**:英超一人一列、帶 `team` 與 `last`/`current`;
+     西甲是一人一季一列、要靠隊名反查隊碼。改成看欄位在不在,
+     新聯賽只要產物長得像其中一種就會自己走對邊(英冠沒有球員資料,兩邊都不會跑到)。 */
+  /* **挑只有一邊有的欄位。** 第一版用 `p.team !== undefined` —— 而西甲的球員檔**也有** team,
+     於是西甲走了英超那條路,球隊頁在 `p.price.toFixed(1)` 整頁炸掉(npm run sweep 抓到的)。
+     真正的形狀差別是「上季 / 本季拆成子物件」:英超有 last / current,西甲是一人一季一列。 */
+  const plShape = players.some(p => p.last || p.current);
   function squadRows(t) {
-    if (meta.edition !== 'basic') return players.filter(p => p.team === t.code);
+    if (plShape) return players.filter(p => p.team === t.code);
     return players.filter(p => p.season === meta.lastSeason
       && (p.teams ?? []).some(name => (clubs.concat(teams).find(x =>
         x.code === p.sportmonksTeam || x.en === name || x.understat === name
@@ -316,7 +324,7 @@ try {
       key: 'name', label: '球員', value: p => p.name,
       render: p => `${C.esc(p.name)}${p.squadNumber ? ` <span class="dim tiny">#${p.squadNumber}${C.numberSourceMark(p)}</span>` : ''}${extra(p)}`,
     });
-    if (meta.edition === 'basic') {
+    if (!plShape) {
       return [
         nameCell(p => (p.multiTeam ? ' <span class="pill warn tiny" title="上季效力過兩隊,數字是兩隊合計">跨隊</span>' : '')),
         { key: 'pos', label: '位置', value: p => ['GK', 'D', 'M', 'F'].indexOf(p.pos), render: p => p.posZh },
@@ -348,7 +356,8 @@ try {
   function squadSection(t) {
     const rows = squadRows(t);
     if (!rows.length) return '';
-    const out = meta.edition === 'basic' ? [] : rows.filter(p => p.news && p.status !== 'a');
+    // 有傷停/異動欄位才提示(西甲沒有 news 欄位,英冠沒有球員資料)
+    const out = rows.filter(p => p.news && p.status !== 'a');
     return `<div class="section" style="margin-top:20px"><h2>陣容</h2>
       <span class="hint">${rows.length} 人・數據為 ${meta.lastSeason} 的表現</span></div>
     ${out.length ? `<div class="note" style="margin-bottom:10px">傷停/異動 ${out.length} 人:
@@ -386,11 +395,9 @@ try {
         這個聯賽沒有球員級資料源,所以沒有陣容、xG 與風格標籤 ——
         詳情頁有的是戰績、近期表現、主客場差異與歷來交手。`;
     }
-    if (meta.edition === 'basic') {
-      return `${meta.currentSeason} 的 ${n} 支球隊。除戰績、近期表現與模型模擬外,
-        回歸球隊另有 ${meta.lastSeason} 真實 xG、射門、陣型與進球情境;
-        球員與教練資料已由可用來源接入,傷停目前沒有可靠來源。`;
-    }
+    /* 各聯賽自己的文案由自己的 build 寫(meta.teamsIntro)—— 原本西甲那一段寫死在這裡,
+       靠 `edition === 'basic'` 選,而那是「是不是西甲」的二元式。 */
+    if (meta.teamsIntro) return `${meta.currentSeason} 的 ${n} 支球隊。${meta.teamsIntro}`;
     return `${meta.currentSeason} 的 ${n} 支球隊。卡片上的期望積分來自 ${runs} 次賽季模擬,
       風格標籤則是從上季的每一場比賽與每一位球員的數據推出來的。點進去看完整剖析。`;
   }
@@ -1051,10 +1058,12 @@ try {
        所以說明也要跟著資料走 —— 寫死其中一種,另一個聯賽的出處就是假的。 */
     /* 級分 = 百分位每 10 分一級(10 最高)。隊數從資料算,不寫死(英超西甲剛好
        都是 20,寫死的話下一個聯賽就在畫面上印假數字 —— page-teams 踩過)。 */
-    const radarNote = meta.edition === 'basic'
-      ? `每一軸是 ${meta.lastSeason} 全聯盟 ${teams.length} 隊中的位置,分成 10 級分(10 最高),不是主觀評分。依據為 xG/xGA、運動戰與定位球 xG、
-         快速進攻 xG 佔比,以及半場領先保分／落後搶分;目前沒有可靠控球與壓迫資料,因此不畫這兩軸。`
-      : `軸旁數字為 10 級分:該指標在 ${teams.length} 隊中的百分位,每 10 分一級(10 最高)。`;
+    /* 說明要跟著**實際畫出來的軸**走,不是跟著聯賽走(原本用 edition 選,
+       第三個聯賽進來時會拿到另一個聯賽的出處說明 —— 那是編數字的鄰居:編出處)。 */
+    const axes = (tac.radar ?? []).map(x => x.label);
+    const radarNote = `軸旁數字為 10 級分:該指標在 ${meta.lastSeason} 全聯盟 ${teams.length} 隊中的百分位,每 10 分一級(10 最高),不是主觀評分。`
+      + (axes.length ? `這一隊畫的是 ${axes.map(C.esc).join('、')}。` : '')
+      + '控球與壓迫沒有可靠來源,所以不畫這兩軸。';
     return `<div class="section" style="margin-top:16px"><h2>上季數據風格</h2>
       <span class="hint">${meta.lastSeason}・${teams.length} 隊 10 級分</span></div>
     <div class="grid g2">
