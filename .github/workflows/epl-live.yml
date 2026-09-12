@@ -547,8 +547,38 @@ jobs:
   # 通知邏輯抽到 `notify-ci.yml`(2026-09-10)—— 原本只有這一支有,
   # 另外三支排程 workflow 失敗時一聲都不吭。複製三份的話改一份另外三份會悄悄過期,
   # 所以連這一支自己也改成呼叫同一份。
+  # 點火器的心跳看門狗(2026-09-12)。Worker 每天派送一次 ignition-alert.yml(到期提醒 + 心跳);
+  # 兩天沒有那一支的執行紀錄,代表 Worker 死了(PAT 過期沒人理、Cloudflare 帳號出事…)——
+  # 而那正是「靜靜退回 best-effort」的那種故障,只有從外面看得出來。
+  # 這個 job 紅了會走同一條通知(notify 的 needs 有列它),但**不擋部署**(跟 build / deploy 無關)。
+  # Worker 還沒部署心跳版之前(一次紀錄都沒有)不算死,印一行就過 —— 不然這條會先紅在「還沒開始」。
+  ignition-watch:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - name: 點火器兩天沒有心跳(Cloudflare Worker 可能死了,或 PAT 已過期)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            let runs;
+            try {
+              ({ data: { workflow_runs: runs } } = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id: 'ignition-alert.yml', per_page: 1 }));
+            } catch (e) {
+              // workflow 檔還沒進預設分支或問不到:不是點火器的錯,印出來就好
+              core.info(`問不到 ignition-alert.yml 的執行紀錄(${e.message}),這次不判斷`);
+              return;
+            }
+            if (!runs.length) { core.info('點火器還沒派送過每日回報(心跳版還沒部署?),先不判斷'); return; }
+            const last = Date.parse(runs[0].created_at);
+            const hours = Math.round((Date.now() - last) / 3600000);
+            core.info(`最後一次心跳:${runs[0].created_at}(${hours} 小時前)`);
+            if (hours > 48) core.setFailed(`點火器 ${hours} 小時沒有心跳(每天該有一次)。看 Cloudflare 的 warroom-ignition Worker 與 /status。`);
+
   notify:
-    needs: [build, deploy]
+    needs: [build, deploy, ignition-watch]
     if: always()
     permissions:
       issues: write

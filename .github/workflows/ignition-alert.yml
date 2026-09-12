@@ -1,0 +1,63 @@
+# 點火器的每日回報(2026-09-12)—— 由 Cloudflare Worker 派送,不是排程
+#
+# 為什麼要有這一支:點火器用的 fine-grained PAT 有到期日,到期之後排程**靜靜**退回
+# best-effort,沒有任何地方會報錯(補齊規劃裡掛了兩週的「點火器 PAT 到期日記下來」)。
+# Worker 自己知道到期日(GitHub 每個 API 回應都帶 `github-authentication-token-expiration`
+# 標頭),但它只能寫 Worker log 或打 ALERT_WEBHOOK —— 而 webhook 沒設。
+# 它**有**的權限是派送 workflow。所以讓它每天派送這一支一次,帶著到期狀態:
+#   outcome=ok   → notify-ci 把之前開的 Issue 關掉(如果有)
+#   outcome=fail → notify-ci 開一張 `CI 紅了(ignition):…` 的 Issue,你會收到 email
+# 已經驗過的那條通知鏈(Issue → email)因此也涵蓋了點火器。
+#
+# 順帶得到一個**心跳**:Actions 頁每天都該有這一支的一次執行;兩天沒有就代表 Worker 死了
+# (PAT 過期沒人理、Cloudflare 帳號出事…),`epl-live.yml` 的 ignition-watch 會替它開 Issue。
+#
+# 它不碰任何資料、不 build、不部署、不推送。唯一的副作用是那張 Issue。
+name: 點火器每日回報
+
+on:
+  workflow_dispatch:
+    inputs:
+      outcome:
+        description: 'ok = 一切正常;fail = PAT 快到期或認證異常(會開 Issue)'
+        required: true
+        default: ok
+        type: choice
+        options: [ok, fail]
+      detail:
+        description: '點火器帶來的說明(到期日、剩幾天、哪裡有問題)'
+        required: false
+        default: ''
+
+concurrency:
+  group: ignition-alert
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      # 步驟名字會原封不動出現在 Issue 標題裡
+      - name: 點火器回報:PAT 到期或認證異常(看 log 裡的說明)
+        env:
+          OUTCOME: ${{ inputs.outcome }}
+          DETAIL: ${{ inputs.detail }}
+        run: |
+          echo "點火器說:${DETAIL:-（沒有附說明）}"
+          if [ "$OUTCOME" = "fail" ]; then
+            echo "→ 要處理:GitHub → Settings → Developer settings → Fine-grained tokens 重開一組(只勾這個 repo 的 Actions: Read and write),"
+            echo "  然後 Cloudflare dashboard → Workers → warroom-ignition → Settings → Variables 換掉 GITHUB_TOKEN(或 npx wrangler secret put GITHUB_TOKEN)。"
+            exit 1
+          fi
+          echo "→ 正常。"
+
+  notify:
+    needs: [report]
+    if: always()
+    permissions:
+      issues: write
+      actions: read
+    uses: ./.github/workflows/notify-ci.yml
+    with:
+      key: ignition
+      results: ${{ toJSON(needs) }}

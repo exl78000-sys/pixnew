@@ -3468,6 +3468,36 @@ async function checkDataGap() {
         && /crons = \["\*\/5 \* \* \* \*"\]/.test(toml)
         && !/GITHUB_TOKEN\s*=/.test(toml);                        // 機密不進版控
     })()],
+    /* ── 點火器的 PAT 到期提醒 + 每日心跳(2026-09-12)──
+       到期之後 Worker 派不動任何東西,所以提醒一定在到期前;吵的管道是派送 ignition-alert.yml
+       → notify-ci 開 Issue(已驗過的那條 Issue → email 鏈)。心跳版還沒部署前,看門狗不能先紅。 */
+    ['點火器 Worker:讀到期標頭、剩不到兩週就吵、每天派送一次回報(inputs 帶 outcome 與說明)', (() => {
+      const w = readFileSync(join(ROOT, '..', 'infra', 'ignition-worker', 'src', 'worker.js'), 'utf8');
+      return /github-authentication-token-expiration/.test(w)
+        && /EXPIRY_WARN_DAYS\s*=\s*\d+/.test(w) && /daysLeft/.test(w)
+        && /HEARTBEAT_WORKFLOW = 'ignition-alert\.yml'/.test(w)
+        && /\{ outcome: bad \? 'fail' : 'ok', detail \}/.test(w)
+        && /\.\.\.\(inputs \? \{ inputs \} : \{\}\)/.test(w)            // 派送要帶 inputs
+        && /await heartbeat\(env, auth, log, dryRun\)/.test(w)             // /status 沒帶 key 不派
+        && !/expiresAt[^\n]*console\.log/.test(w);
+    })()],
+    ['ignition-alert.yml:手動派送、outcome 不是 ok 就紅、走 notify-ci(key ignition)、description 沒有運算式', (() => {
+      const y = readFileSync(join(ROOT, '..', '.github', 'workflows', 'ignition-alert.yml'), 'utf8');
+      return /workflow_dispatch:/.test(y) && /options: \[ok, fail\]/.test(y)
+        && /if \[ "\$OUTCOME" = "fail" \]; then[\s\S]*exit 1/.test(y)
+        && /uses: \.\/\.github\/workflows\/notify-ci\.yml/.test(y) && /key: ignition/.test(y)
+        && /results: \$\{\{ toJSON\(needs\) \}\}/.test(y)
+        && !y.split('\n').filter(l => /^\s*description:/.test(l)).some(l => l.includes('${' + '{'));
+    })()],
+    ['epl-live.yml:點火器心跳看門狗獨立成 job、不擋部署、沒有心跳紀錄時不判斷、兩天沒心跳才紅', (() => {
+      const y = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+      const deployNeeds = /^  deploy:\n    needs: build$/m.test(y);   // deploy 只等 build,看門狗紅了照樣部署
+      return /^  ignition-watch:$/m.test(y) && deployNeeds
+        && /workflow_id: 'ignition-alert\.yml'/.test(y)
+        && /if \(!runs\.length\) \{ core\.info\(/.test(y)
+        && /hours > 48\) core\.setFailed/.test(y)
+        && /needs: \[build, deploy, ignition-watch\]/.test(y);
+    })()],
 
     /* ── 外電 RSS:先篩再切(2026-08-31)──
        max 是「這個來源最多收幾則」,不是「只看前幾則」。原本先 slice 再 filter,
@@ -4420,6 +4450,7 @@ async function checkUclDetails() {
     const idx = JSON.parse(readFileSync(idxPath, 'utf8'));
     ok(idx.xg === 'shotmap' && typeof idx.xgNote === 'string', 'xG 只有一種算法:逐射門加總(索引講明)');
     ok(Array.isArray(idx.rejected) && Array.isArray(idx.incomplete), '拒收與不完整進產物(依設計不採用之後要留下紀錄)');
+    ok(Array.isArray(idx.attempts) && idx.attempts.every(a => typeof a.key === 'string' && 'reason' in a), '抓取器層退回的場次(attempts)也進產物,而且有 key 與 reason —— 不然畫面只能把永遠抓不到的講成「還沒抓到」');
     ok(!JSON.stringify(idx).includes('builtAt'), '索引裡沒有 build 時間戳(兩個 build 要寫出同一份)');
     const byId = new Map();
     for (const m of uclSeasonMatches(ucl)) byId.set(String(m.id), m);
@@ -4490,6 +4521,7 @@ async function checkUclDetails() {
     ok(/C\.registerTeams\(\[entry\(m\.home, 0\), entry\(m\.away, 1\)\]\)/.test(view) && /NEUTRAL/.test(view),
       '畫之前把兩隊(fd id)登錄進隊伍註冊表;本站沒有的球隊用中性色,不編隊色');
     ok(/details\?\.xgNote/.test(view), '面板上 xG 的說明從索引讀,不在前端寫死');
+    ok(/mine\(details\.attempts\)/.test(view) && /抓取器退回的/.test(view), '涵蓋率那段把缺的場次分成拒收 / 不完整 / 抓取器退回 / 還沒抓到四種講');
     ok(!/這一頁沒有勝率預測/.test(strip(view)), '歐冠頁不再寫「這一頁沒有勝率預測」(階段 C 之後就是假的)');
     ok(/'ucl-details'/.test(cups) && /uclDetails: shared\['ucl-details'\]/.test(cups), '盃賽頁載入索引並傳給 ucl-view');
     // core.js 陣容卡那句話要看報告是哪條路建的(m.source),不能看 advanced 是誰

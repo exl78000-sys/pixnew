@@ -352,7 +352,8 @@ async function main() {
     if (selected && selected !== fotmobSeason(season)) console.log(`  · 端點的 selectedSeason 是「${selected}」(格式不認得,照常走)`);
     let keyOf = t => teams.codeOf(t?.name);
     if (!LG.results) {
-      const b = await uclBridge(league.json, results);
+      // 橋只拿**這一季**的 36 隊去配(results 有三季 54 隊;多出來的候選只會讓互為第一名更難成立)
+      const b = await uclBridge(league.json, results.filter(r => r.season === season));
       console.log(`  歐冠隊伍橋:FotMob ${b.teams} 隊 ↔ football-data ${b.fdTeams} 隊,配上 ${Object.keys(b.bridge).length} 隊`
         + `・人工對照表有交集 ${b.agreed + b.conflicts.length} 隊、一致 ${b.agreed}`);
       if (b.unmatched.length) console.log(`  ⚠ 過不了橋的 FotMob 隊:${b.unmatched.map(u => `${u.fotmob}(最像 ${u.best ?? '—'} ${u.score})`).join('、')}`);
