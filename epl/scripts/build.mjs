@@ -27,7 +27,7 @@ import { summariseSeason, CUPS_ATTRIBUTION } from './lib/cups.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
 import { uclElo } from './lib/ucl-elo.mjs';
-import { uclDetails, writeUclDetails } from './lib/ucl-details.mjs';
+import { uclDetails, writeUclDetails, uclScoreContext } from './lib/ucl-details.mjs';
 import { lookupTier, nearMisses } from './lib/adapters/england-tiers.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
@@ -925,13 +925,18 @@ async function main() {
      讀的是**檔案庫疊上收件匣**,不是單一份交付檔 ——
      交付檔一份只涵蓋一週,直接讀它的話下一次交付會把上一週整批蓋掉。
      這個函式英超與西甲共用一份定義(lib/curated-archive.mjs)。 */
-  let curatedNews = [], curatedCoverage = null;
+  let curatedNews = [], curatedCoverage = null, uclData = null;
   {
     const other = loadTeams(ROOT, { file: 'teams-la-liga.json' });
+    /* 歐冠在這裡就載進來:整理外電裡的歐冠比分要對回本站賽果(鐵則五)。
+       下面歐冠那一段用同一份,不載第二次。 */
+    uclData = await loadUclSeasons(ROOT, [{ league: 'pl', codeOf: T.codeOf }, { league: 'es1', codeOf: other.codeOf }]);
+    const uclCtx = uclScoreContext(uclData);
     const r = await loadCurated({
       root: ROOT, league: 'pl', asOf: AS_OF,
       codeOf: n => T.codeOf(n) ?? other.codeOf(n) ?? null,
-      fixturesOf: comp => (comp === 'pl' ? fixtures : null),
+      codeOfFor: comp => (comp === 'ucl' ? uclCtx.codeOf : null),
+      fixturesOf: comp => (comp === 'pl' ? fixtures : comp === 'ucl' ? uclCtx.fixtures : null),
       fs: { existsSync, readFile, join },
     });
     curatedNews = r.items; curatedCoverage = r.coverage;
@@ -1298,8 +1303,7 @@ async function main() {
      所以載入與整理收在 lib/ucl.mjs,兩邊各呼叫一次(build-laliga 也呼叫同一個)。
      隊碼對照同時吃英超與西甲兩份名單 —— 歐冠裡兩邊的球隊都有。 */
   {
-    const es = loadTeams(ROOT, { file: 'teams-la-liga.json' });
-    const ucl = await loadUclSeasons(ROOT, [{ league: 'pl', codeOf: T.codeOf }, { league: 'es1', codeOf: es.codeOf }]);
+    const ucl = uclData;   // 已在整理外電那一段載入(歐冠比分核對要用同一份),不載第二次
     if (ucl) {
       await write('ucl.json', ucl);
       /* 歐冠頁的名字與隊徽走這一份跨聯賽的檔,不查目前聯賽的 clubs ——

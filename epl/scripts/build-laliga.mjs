@@ -19,7 +19,7 @@ import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './l
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
 import { uclElo } from './lib/ucl-elo.mjs';
-import { uclDetails, writeUclDetails } from './lib/ucl-details.mjs';
+import { uclDetails, writeUclDetails, uclScoreContext } from './lib/ucl-details.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
@@ -1126,14 +1126,18 @@ async function main() {
 
   /* 人工整理的外電摘要。說明見 build.mjs 的同一段 ——
      讀的是**檔案庫疊上收件匣**,函式跟英超共用一份定義。 */
-  let curatedNews = [], curatedCoverage = null;
+  let curatedNews = [], curatedCoverage = null, uclData = null;
   {
     const other = loadTeams(ROOT);
     const fx = [...lastMatches, ...curPlayed];
+    // 歐冠在這裡就載進來(說明見 build.mjs 的同一段);下面歐冠那一段用同一份
+    uclData = await loadUclSeasons(ROOT, [{ league: 'pl', codeOf: other.codeOf }, { league: 'es1', codeOf: T.codeOf }]);
+    const uclCtx = uclScoreContext(uclData);
     const r = await loadCurated({
       root: ROOT, league: 'es1', asOf: AS_OF,
       codeOf: n => T.codeOf(n) ?? other.codeOf(n) ?? null,
-      fixturesOf: comp => (comp === 'es1' ? fx : null),
+      codeOfFor: comp => (comp === 'ucl' ? uclCtx.codeOf : null),
+      fixturesOf: comp => (comp === 'es1' ? fx : comp === 'ucl' ? uclCtx.fixtures : null),
       fs: { existsSync, readFile, join },
     });
     curatedNews = r.items; curatedCoverage = r.coverage;
@@ -1202,8 +1206,7 @@ async function main() {
      這裡只是再呼叫一次寫進 es1 的目錄(前端的資料是按聯賽分目錄放的)。
      複製一份轉換邏輯過來的話,改了一邊另一邊會悄悄過期。 */
   {
-    const pl = loadTeams(ROOT);
-    const ucl = await loadUclSeasons(ROOT, [{ league: 'pl', codeOf: pl.codeOf }, { league: 'es1', codeOf: T.codeOf }]);
+    const ucl = uclData;   // 已在整理外電那一段載入,同一份
     if (ucl) {
       await write('ucl', ucl);
       // 說明見 build.mjs 的同一段;這一份跟英超產出的必須逐位元組相同

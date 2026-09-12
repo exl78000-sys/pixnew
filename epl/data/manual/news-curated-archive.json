@@ -1,6 +1,6 @@
 {
   "note": "人工整理外電的檔案庫。由 scripts/merge-curated-news.mjs 從 data/manual/news-curated.json(每次交付的收件匣)合併而來,不要手動編輯。",
-  "updatedAt": "2026-08-28T06:54:25.796Z",
+  "updatedAt": "2026-09-12T14:05:06.774Z",
   "keepDays": 180,
   "deliveries": [
     {
@@ -9,9 +9,756 @@
       "from": "2026-08-22",
       "to": "2026-08-28",
       "stories": 14
+    },
+    {
+      "source": "AI 整理(搜尋摘要 + 本站 RSS)",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "retrievedAt": "2026-09-12T21:50:00+08:00",
+      "from": "2026-08-29",
+      "to": "2026-09-12",
+      "stories": 29
     }
   ],
   "stories": [
+    {
+      "id": "es1-transfer-news-20260912-gordon-barcelona",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "transfer-news",
+      "date": "2026-09-12",
+      "title": "取代 Rashford 加盟,Gordon 在 Barcelona 證明身價",
+      "body": "BBC Sport:Anthony Gordon 以 7,000 萬英鎊轉投 Barcelona 曾遭質疑,但這位英格蘭邊鋒已在這支火力兇猛的球隊證明自己的價值。",
+      "status": "completed-transfer-follow-up",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cgk5n3xpkv2o",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260912-dias-city-signings",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-12",
+      "title": "Dias:Man City 的新援渴望勝利,全隊認同 Maresca",
+      "body": "Manchester City 新任隊長 Ruben Dias 表示,今夏引進的新援「渴望勝利」,全隊都「認同」新任主帥 Enzo Maresca 的理念(BBC Sport)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cy5zp9llp3ro",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "es1-news-20260911-mourinho-boos",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "球迷噓聲後,Mourinho 把 Mbappé 與 Vinícius 比作果樹",
+      "body": "Real Madrid 主帥 José Mourinho 表示,Kylian Mbappé 與 Vinícius Júnior 本週遭球迷噓聲,是因為球迷「想從他們身上要更多」(BBC Sport)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cly41qwpg4do",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260911-alonso-joao-pedro",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Alonso:Joao Pedro 風格像 Benzema,水準可比 Haaland",
+      "body": "Chelsea 主帥 Xabi Alonso 說,前鋒 Joao Pedro 的風格與他昔日 Real Madrid 隊友 Karim Benzema 相似,水準足以與 Man City 的 Erling Haaland 相提並論(BBC Sport、Sky Sports)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c1j4z1ry29jo",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260911-arteta-travel-plans",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Arteta:我在季前故意打亂行程,讓球員習慣出狀況",
+      "body": "Mikel Arteta 表示,Arsenal 對週中歐冠航班延誤早有準備,因為他在季前刻意打亂了球隊的訓練與行程安排,讓球員習慣客場旅途上的困難(BBC Sport、Sky Sports)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c5y48zdxv0ko",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260911-hall-newcastle-2031",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Lewis Hall 與 Newcastle 續約至 2031 年",
+      "body": "Newcastle United 後衛 Lewis Hall 與球會簽下新約,合約至 2031 年(BBC Sport)。",
+      "status": "completed-transfer-follow-up",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ce9e3d5exp8o",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260911-hull-fine-chants",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Hull 因歧視性口號被罰 3 萬英鎊,三名球迷遭禁",
+      "body": "Hull City 因 2 月足總盃不敵 Chelsea 那場比賽的歧視性口號被罰款 30,000 英鎊,球會並對三名球迷發出入場禁令(BBC Sport)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c624l1v9853o",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260911-leeds-farke-contract",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Leeds 希望 Farke 長期留任,雙方談新約",
+      "body": "Leeds United 執行董事 Robbie Evans 表示,球會與主帥 Daniel Farke 在商談新約一事上「看法一致」(BBC Sport)。",
+      "status": "reported-saga",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cd08728rz0xo",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260911-man-utd-touting-bans",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Man Utd 黃牛票調查後封鎖 685 個球迷帳號",
+      "body": "Manchester United 在一項黃牛票調查後封鎖了 685 個球迷帳號(Sky Sports 報導為 685 名季票持有人遭禁),並堅稱無辜的球迷沒有受到處罰(BBC Sport)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c1j4zydzk2zo",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260911-manchester-derby-preview",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "第 199 場曼徹斯特德比週日在 Old Trafford:Maresca 談賽程、Merson 說是「關鍵一役」",
+      "body": "英超官方列出第 4 輪的十個關鍵問題,包括曼徹斯特德比會不會成為 Carrick 與 Maresca 的賽季定義之戰。Man City 主帥 Enzo Maresca 說球隊「必須適應」賽程安排,他的球隊在德比前比 Manchester United 多兩天休息(BBC Sport)。Paul Merson 在 Sky Sports 專欄裡說,Tottenham、Man City 與 Man Utd 本週末都面臨具決定性的比賽。Guardian 指出這是第 199 場曼徹斯特德比。",
+      "source": "Premier League 官方 / BBC Sport / Sky Sports",
+      "link": "https://www.premierleague.com/en/news/4713492/ten-key-questions-for-matchweek-4s-fixtures",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260911-spurs-winless-start",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "三輪零勝零進球:Spurs 該多擔心?",
+      "body": "Sky Sports 指出,大手筆花錢的 Tottenham 開季三場一勝未得、一球未進。夏季新援 Matheus Fernandes 受訪時說,主帥 De Zerbi 是他加盟的關鍵,他深信自己加入的是一支即將爭奪錦標的球隊。",
+      "source": "Sky Sports",
+      "link": "https://www.skysports.com/football/news/11661/13583499/how-concerned-should-big-spending-tottenham-be-after-winless-and-goalless-start-to-premier-league-season",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-transfer-news-20260911-richarlison-vasco",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "transfer-news",
+      "date": "2026-09-11",
+      "title": "Richarlison 轉投 Vasco da Gama 的交易告吹",
+      "body": "BBC Sport 報導,Tottenham 前鋒 Richarlison 原擬轉投巴西的 Vasco da Gama,交易告吹,這位巴西球員的去向仍不明朗;Sky Sports 則報導雙方未能談妥條件。",
+      "status": "reported-saga",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cr50q58vqggo",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260910-arteta-contract",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-10",
+      "title": "報導:Arsenal 接近敲定 Arteta 新約",
+      "body": "BBC Sport 報導,據信 Mikel Arteta 即將與英超冠軍 Arsenal 敲定新合約;Sky Sports 的 Arsenal 動態則引述 Arteta 說他致力於「打造世界最佳球會」。截至報導時尚未正式宣布。",
+      "status": "reported-saga",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cgrvq2xp8dwo",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "ucl-match-review-20260910-matchday-1",
+      "competition": "ucl",
+      "competitionName": "歐冠",
+      "type": "match-review",
+      "date": "2026-09-10",
+      "title": "歐冠聯賽階段第 1 輪:Real Madrid 2-1 Inter,Bayern 與 Man United 大勝",
+      "body": "2026/27 歐冠聯賽階段 9 月 8 日至 10 日開打。UEFA 官方綜合:John McGinn 攻入本季歐冠的第一球,Aston Villa 客場 3-2 擊敗 Club Brugge;Kylian Mbappé 為 Real Madrid 打開 2-1 擊敗 Inter 的勝利之門;Bayern 5-0 Bodø/Glimt、Manchester United 4-0 Sabah,義大利新軍 Como 4-1 擊敗 Leipzig 令人矚目,Lens 則在 90 分鐘時仍 1-2 落後的情況下逆轉 Slavia Praha 3-2。其餘結果:Porto 0-2 Man City、Dortmund 3-2 Villarreal、Lille 2-3 Betis、AEK 1-0 LASK、Barcelona 5-1 Feyenoord、Stuttgart 3-1 Viking、Liverpool 2-1 Atlético、PSG 6-1 Slovan Bratislava、Sporting 3-1 Galatasaray、Napoli 0-1 Arsenal、Fenerbahçe 1-1 Roma、PSV 1-1 Shakhtar。",
+      "matches": [
+        {
+          "home": "Club Brugge",
+          "away": "Aston Villa",
+          "score": "2-3"
+        },
+        {
+          "home": "PAE AEK",
+          "away": "LASK",
+          "score": "1-0"
+        },
+        {
+          "home": "Real Madrid",
+          "away": "Inter",
+          "score": "2-1"
+        },
+        {
+          "home": "Porto",
+          "away": "Man City",
+          "score": "0-2"
+        },
+        {
+          "home": "Dortmund",
+          "away": "Villarreal",
+          "score": "3-2"
+        },
+        {
+          "home": "Lille",
+          "away": "Real Betis",
+          "score": "2-3"
+        },
+        {
+          "home": "Barça",
+          "away": "Feyenoord",
+          "score": "5-1"
+        },
+        {
+          "home": "Stuttgart",
+          "away": "Viking",
+          "score": "3-1"
+        },
+        {
+          "home": "Liverpool",
+          "away": "Atleti",
+          "score": "2-1"
+        },
+        {
+          "home": "PSG",
+          "away": "Sl. Bratislava",
+          "score": "6-1"
+        },
+        {
+          "home": "Napoli",
+          "away": "Arsenal",
+          "score": "0-1"
+        },
+        {
+          "home": "Sporting CP",
+          "away": "Galatasaray",
+          "score": "3-1"
+        },
+        {
+          "home": "Fenerbahçe",
+          "away": "Roma",
+          "score": "1-1"
+        },
+        {
+          "home": "PSV",
+          "away": "Shaktar",
+          "score": "1-1"
+        },
+        {
+          "home": "Bayern",
+          "away": "Bodø/Glimt",
+          "score": "5-0"
+        },
+        {
+          "home": "Man United",
+          "away": "Sabah FK",
+          "score": "4-0"
+        },
+        {
+          "home": "Como 1907",
+          "away": "RB Leipzig",
+          "score": "4-1"
+        },
+        {
+          "home": "Slavia Praha",
+          "away": "RC Lens",
+          "score": "2-3"
+        }
+      ],
+      "status": "official-overview",
+      "source": "UEFA 官方",
+      "link": "https://www.uefa.com/uefachampionsleague/news/02a9-218b8c00ab1e-0e070e496ca8-1000--champions-league-matchday-1-highlights-and-round-up-real-mad/",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260909-mac-allister-contract",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-09",
+      "title": "Mac Allister 公開談合約,Liverpool 球迷意見分歧",
+      "body": "BBC Sport 報導,Alexis Mac Allister 公開談及自己在 Liverpool 的合約,引發球迷意見分歧;有人認為他「說得很好」,BBC 評論員 Pat Nevin 也表達了看法。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c3v4379d4ylo",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260908-ballon-dor-shortlist",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-08",
+      "title": "金球獎入圍名單公布:Kane、Rice、Bellingham 入圍,Ronaldo 落選",
+      "body": "2026 年金球獎入圍名單公布,Harry Kane、Declan Rice、Jude Bellingham 在列,Cristiano Ronaldo 不在名單上(Sky Sports)。Guardian 指出,英格蘭頂級聯賽的前鋒在 16 名入圍的攻擊球員中代表偏少,反映上季定位球纏鬥的風格,但 2026-27 賽季看來已光明許多。",
+      "source": "Sky Sports / The Guardian",
+      "link": "https://www.skysports.com/football/news/11835/13582892/ballon-dor-2026-harry-kane-declan-rice-jude-bellingham-among-nominees-but-no-cristiano-ronaldo",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-news-20260908-gambling-sponsors",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-08",
+      "title": "若禁止無牌博彩公司,半數英超球會恐失去豐厚贊助",
+      "body": "Guardian 報導,英超 20 家球會中有一半與無牌博彩公司有贊助或廣告合約;若英國政府禁止這類公司,十家球會明年可能損失數千萬英鎊。Ladbrokes 的母公司則點出首相身為 Everton 球迷的立場。",
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/08/premier-league-clubs-sponsorship-advertising-deals-unlicensed-gambling-companies-uk-government",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "es1-news-20260907-aubameyang-deportivo",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "news",
+      "date": "2026-09-07",
+      "title": "Aubameyang 重現當年勇,改頭換面的「Super Dépor」風光重返西甲",
+      "body": "Guardian 專文:Pierre-Emerick Aubameyang 為 Deportivo A Coruña 送出兩次助攻並攻入致勝球,締造一項球會紀錄、並瞄準另一項。",
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/07/pierre-emerick-aubameyang-deportivo-a-coruna-la-liga",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "es1-news-20260907-mbappe-ballon-dor",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "news",
+      "date": "2026-09-07",
+      "title": "「我今夏創造了歷史」:Mbappé 看好自己奪金球獎",
+      "body": "Real Madrid 與法國前鋒 Kylian Mbappé 認為金球獎應該由他奪得(Sky Sports 影片)。",
+      "source": "Sky Sports",
+      "link": "https://www.skysports.com/watch/video/13582857/kylian-mbappe-backs-himself-to-win-the-ballon-dor",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "es1-match-review-20260906-valencia-barcelona",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-09-06",
+      "title": "Lamine Yamal 梅開二度,Barcelona 客場 5-0 大破 Valencia 保持全勝",
+      "body": "Guardian 的歐洲足壇綜合:Lamine Yamal 兩度破門,Barcelona 週日以 5-0 大破 Valencia,保持開季全勝。",
+      "matches": [
+        {
+          "home": "Valencia CF",
+          "away": "FC Barcelona",
+          "score": "0-5"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/06/european-football-lamine-yamal-double-barcelona-valencia-juventus-milan",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-match-review-20260906-arsenal-chelsea",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-09-06",
+      "title": "Ødegaard 致勝球,Arsenal 逆轉擊敗 Chelsea 2-1",
+      "body": "本季英超第一場重量級對決,Arsenal 在 Chelsea 先開紀錄後逆轉,以 2-1 取勝:Kai Havertz 先進球,再助攻 Martin Ødegaard 攻入致勝球。Arteta 賽後稱這是「出色的表現」,並說球隊還能達到更高的高度;Alonso 則說 Chelsea 必須「更緊密」。",
+      "matches": [
+        {
+          "home": "Arsenal",
+          "away": "Chelsea",
+          "score": "2-1"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/06/arsenal-chelsea-premier-league-match-report",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-match-review-20260906-everton-man-utd",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-09-06",
+      "title": "Maitland-Niles 終場前驚天一擊,Everton 2-2 逼和 Manchester United",
+      "body": "在轉會市場多事的一週結束時,Everton 在對 Manchester United 幾乎已無望的比賽最後一刻,靠 Maitland-Niles 的一記驚天遠射搶回 1 分,終場 2-2。Guardian 形容 Moyes 的球隊靠不服輸的態度撐住,而且帶著一股憤慨。",
+      "matches": [
+        {
+          "home": "Everton",
+          "away": "Man Utd",
+          "score": "2-2"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/06/everton-manchester-united-premier-league-match-report",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-match-review-20260905-city-coventry-palace-fulham",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-09-05",
+      "title": "Haaland 攻入球會生涯第 300 球,Man City 1-0 小勝 Coventry;Crystal Palace 3-2 客勝 Fulham",
+      "body": "Guardian 的週六即時戰況:Erling Haaland 攻入他的第 300 個球會進球,Man City 以 1-0 擊敗 Coventry;Crystal Palace 的左翼衛在 Craven Cottage 出盡風頭,以 3-2 擊敗 Fulham。本週從 Everton 加盟的 Iliman Ndiaye 為 City 先發,Phil Foden 未先發。",
+      "matches": [
+        {
+          "home": "Man City",
+          "away": "Coventry City",
+          "score": "1-0"
+        },
+        {
+          "home": "Fulham",
+          "away": "Crystal Palace",
+          "score": "2-3"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/live/2026/sep/05/premier-league-manchester-city-coventry-nottingham-forest-v-tottenham-efl-clockwatch-live",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-match-review-20260905-hull-aston-villa",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-09-05",
+      "title": "Hull 逼平 Aston Villa,開季三場不敗、連續三場零封",
+      "body": "Hull City 主場 0-0 逼和攻擊乏力的 Aston Villa,延續本季開季不敗,也是連續第三場零封。Guardian 寫道,才踢三場,英超對 Hull 球迷來說已是一趟精彩的旅程,開幕日曾在這裡讓 Manchester United 難堪。",
+      "matches": [
+        {
+          "home": "Hull City",
+          "away": "Aston Villa",
+          "score": "0-0"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/05/hull-city-aston-villa-premier-league-match-report",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "es1-match-review-20260904-betis-real-madrid",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-09-04",
+      "title": "Betis 1-0 Real Madrid:Parrott 建功,Mbappé 補時射失十二碼",
+      "body": "Real Madrid 在西甲的完美開局週五告終。愛爾蘭前鋒 Troy Parrott 第 81 分鐘替補進球,是他夏天從 AZ Alkmaar 加盟後的首球;補時第 4 分鐘 Vinícius Júnior 在禁區被犯規獲得十二碼,Kylian Mbappé 主罰被 Betis 門將 Álvaro Valles 撲出,中止了他在 Real Madrid 連續七次射進十二碼的紀錄。Real Madrid 另有 Carlos Espí 的一球經 VAR 判定越位在先。這是 Mourinho 回歸後的首場敗仗(ESPN、Guardian、Sky Sports 精華)。",
+      "matches": [
+        {
+          "home": "Real Betis",
+          "away": "Real Madrid",
+          "score": "1-0"
+        }
+      ],
+      "source": "ESPN / The Guardian",
+      "link": "https://www.espn.com/soccer/report/_/gameId/401882894",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "es1-match-review-20260901-barcelona-rayo",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-09-01",
+      "title": "Barcelona 5-2 輕取 Rayo,西班牙的目光仍在 Julián Álvarez 身上",
+      "body": "Guardian 報導,Barcelona 以 5-2 擊敗 Rayo Vallecano;Hansi Flick 樂於歡迎 Gabriel Jesus 加盟,但 Julián Álvarez 仍是終極目標。",
+      "matches": [
+        {
+          "home": "FC Barcelona",
+          "away": "Rayo Vallecano",
+          "score": "5-2"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/01/barcelona-la-liga-rayo-vallecano-atletico-julian-alvarez",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-transfer-news-20260901-deadline-day",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "transfer-news",
+      "date": "2026-09-01",
+      "title": "夏季轉會窗關閉:英超創史上最高支出,Enzo Fernández 轉投 Man City",
+      "body": "英超 2026 夏季轉會窗於 9 月 1 日 23:00(英國時間)關閉。英超官方與 Sky Sports 的整理:英超球會本窗的支出創下歷史新高;Enzo Fernández 從 Chelsea 轉投 Manchester City,成為今夏第四位以 1 億英鎊以上加盟英超球會的球員,前三位是 Morgan Rogers(Aston Villa 轉 Chelsea)、Bradley Barcola(Paris Saint-Germain 轉 Liverpool)與 Elliot Anderson(Nott'm Forest 轉 Man City)。City 也在最後關頭從 Everton 簽下 Iliman Ndiaye;Newcastle 簽下 Matías Fernández-Pardo,Aston Villa 簽下 Ibrahim Mbaye;Sunderland 在一場涉及兩架私人飛機、球員數度改變主意的截止日風波後,完成從 Lyon 簽下 Malick Fofana。Sky Sports 估計 City 支出 4.4 億英鎊、賣出 3.15 億;Chelsea 支出 3.42 億、賣出更多。",
+      "status": "completed-transfer-follow-up",
+      "source": "Premier League 官方 / Sky Sports",
+      "link": "https://www.premierleague.com/en/news/4705808/the-wrap-what-happened-on-transfer-deadline-day",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "pl-match-review-20260831-matchweek-2-results",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-08-31",
+      "title": "英超第 2 輪賽果:Man City 客場 4-1 大勝 Crystal Palace,Chelsea 4-3 力克 Brighton",
+      "body": "第 2 輪十場結果(英超官方賽果頁):Crystal Palace 1-4 Man City;Liverpool 2-2 Nott'm Forest;Bournemouth 1-1 Everton;Coventry City 0-1 Hull City;Tottenham 0-2 Newcastle;Sunderland 1-0 Fulham;Chelsea 4-3 Brighton;Leeds United 1-1 Brentford;Man Utd 5-2 Ipswich Town;Aston Villa 0-1 Arsenal。",
+      "matches": [
+        {
+          "home": "Crystal Palace",
+          "away": "Man City",
+          "score": "1-4"
+        },
+        {
+          "home": "Liverpool",
+          "away": "Nott'm Forest",
+          "score": "2-2"
+        },
+        {
+          "home": "Bournemouth",
+          "away": "Everton",
+          "score": "1-1"
+        },
+        {
+          "home": "Coventry City",
+          "away": "Hull City",
+          "score": "0-1"
+        },
+        {
+          "home": "Tottenham",
+          "away": "Newcastle",
+          "score": "0-2"
+        },
+        {
+          "home": "Sunderland",
+          "away": "Fulham",
+          "score": "1-0"
+        },
+        {
+          "home": "Chelsea",
+          "away": "Brighton",
+          "score": "4-3"
+        },
+        {
+          "home": "Leeds United",
+          "away": "Brentford",
+          "score": "1-1"
+        },
+        {
+          "home": "Man Utd",
+          "away": "Ipswich Town",
+          "score": "5-2"
+        },
+        {
+          "home": "Aston Villa",
+          "away": "Arsenal",
+          "score": "0-1"
+        }
+      ],
+      "status": "official-overview",
+      "source": "Premier League 官方",
+      "link": "https://www.premierleague.com/en/matches/premier-league/2026-27/matchweek-2",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
+    {
+      "id": "es1-match-review-20260830-real-madrid-malaga",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-08-30",
+      "title": "Bellingham 開球門,Real Madrid 4-0 大勝升班馬 Málaga",
+      "body": "升班馬 Málaga 在 Bernabéu 以 0-4 落敗;Jude Bellingham 攻入首開紀錄的一球,Real Madrid 保持開季全勝(Guardian 歐洲足壇綜合、Sky Sports 精華)。",
+      "matches": [
+        {
+          "home": "Real Madrid",
+          "away": "Málaga CF",
+          "score": "4-0"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/aug/30/european-football-real-madrid-malaga-napoli-como-inter",
+      "curator": {
+        "kind": "ai",
+        "model": "claude-fable-5-1",
+        "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+      },
+      "firstSeen": "2026-09-12",
+      "lastSeen": "2026-09-12"
+    },
     {
       "id": "laliga-transfer-20260828-fran-garcia",
       "competition": "es1",

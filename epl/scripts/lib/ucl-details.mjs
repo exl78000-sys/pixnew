@@ -89,6 +89,32 @@ const coverageGap = detail => Object.entries(detail?.coverage ?? {})
 /* 主函式。回傳 `{ index, files }`:index 是小索引(寫成 ucl-details.json),files 是逐場報告
    (Map:相對路徑 → 報告物件),由 writeUclDetails 落地。裡面**沒有 build 時間戳** —— 兩個 build
    要寫出同一份;retrievedAt 是 raw 的抓取時間,兩邊讀同一個檔所以一樣。 */
+/* 整理外電裡的歐冠比分要能對回本站賽果(鐵則五)。第一批的歐冠附加賽本站沒有資料,標「無法核對」是對的;
+   聯賽階段本站有,就要真的核對。回傳 checkScores 要的兩樣東西:賽果清單(隊伍用 football-data id 當「隊碼」)
+   與把隊名解析成 id 的函式 —— name / fullName / shortName 都認,去重音、不分大小寫、只留字母數字
+   (交付檔寫「Barça」「Atleti」「Man United」都對得到)。 */
+export function uclScoreContext(ucl) {
+  const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  const byName = new Map();
+  const fixtures = [];
+  for (const season of (ucl?.seasons ?? []).filter(s => s.availability === 'available')) {
+    for (const m of uclSeasonMatches(season)) {
+      for (const side of [m.home, m.away]) {
+        for (const n of [side?.name, side?.fullName, side?.shortName]) {
+          const k = norm(n);
+          if (k && !byName.has(k)) byName.set(k, String(side.id));
+        }
+      }
+      fixtures.push({
+        date: String(m.kickoff ?? '').slice(0, 10), home: String(m.home.id), away: String(m.away.id),
+        fh: Array.isArray(m.final) ? m.final[0] : null, fa: Array.isArray(m.final) ? m.final[1] : null,
+        played: m.played === true && Array.isArray(m.final),
+      });
+    }
+  }
+  return { fixtures, codeOf: n => byName.get(norm(n)) ?? null };
+}
+
 export function uclDetails(root, ucl) {
   const seasons = (ucl?.seasons ?? []).filter(s => s.availability === 'available');
   const results = seasons.flatMap(uclResultsOf);

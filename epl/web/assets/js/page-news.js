@@ -25,18 +25,24 @@ try {
      三、**傳聞不是已確認的交易。** 來源檔自己帶 status,那個區別要一路傳到畫面上。 */
   const CHECK = {
     verified: { cls: 'ok', text: '比分已與本站賽果逐場核對' },
-    unverified: { cls: 'warn', text: '本站沒有這一輪的資料,比分無法核對' },
+    unverified: { cls: 'warn', text: '比分沒有跟本站賽果核對過(本站沒有那個賽事或那一輪的賽果)' },
     none: null,
   };
+  /* 誰整理的要照實標(2026-09-12 第二批起有 AI 整理的):交付檔帶 curator.kind === 'ai' 的,
+     標「AI 整理摘要」並講清楚它只讀了搜尋結果的摘要與 RSS,沒有讀全文 ——
+     把 AI 整理講成人工整理是說謊,反過來只是保守(跟譯文那一層 human / 模型名的規矩一樣)。 */
   const curatedMarks = n => {
     if (!n.curated) return '';
     const c = CHECK[n.scoreCheck] ?? null;
+    const ai = n.curator?.kind === 'ai';
     return `<div class="tiny dim" style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-      <span class="pill tiny">人工整理摘要</span>
+      <span class="pill tiny${ai ? ' warn' : ''}">${ai ? 'AI 整理摘要' : '人工整理摘要'}</span>
       ${n.competition === 'ucl' ? '<span class="pill tiny accent">歐冠</span>' : ''}
       ${c ? `<span class="pill tiny ${c.cls}">${c.text}</span>` : ''}
       ${n.statusLabel ? `<span class="pill tiny ${n.statusTone ?? ''}">${C.esc(n.statusLabel)}</span>` : ''}
-      <span>中文摘要為人工整理,<b>不是機器翻譯、也不是原文照抄</b>;完整內容以原文為準。</span>
+      <span>${ai
+        ? `中文摘要由 AI(${C.esc(n.curator?.model ?? '模型')})整理自搜尋結果的摘要與本站抓到的 RSS 標題與摘要,<b>沒有讀全文</b>;完整內容以原文為準。`
+        : '中文摘要為人工整理,<b>不是機器翻譯、也不是原文照抄</b>;完整內容以原文為準。'}</span>
     </div>`;
   };
   /* 人工整理外電是**一次一批交付**的,不是每天都有人整理。
@@ -55,7 +61,7 @@ try {
        逾不逾期拿每批整理涵蓋的天數當節奏,不寫死。 */
     const t = c.trailingGap;
     return `<div class="note small" style="margin-top:8px">
-      <b>人工整理外電的涵蓋範圍</b>:本頁 ${here} 則(檔案庫累計 ${c.stories} 則,含另一個聯賽的),
+      <b>整理外電的涵蓋範圍</b>(人工或 AI 整理,每一則各自有標):本頁 ${here} 則(檔案庫累計 ${c.stories} 則,含另一個聯賽的),
       ${c.deliveries} 次整理,累計 ${c.days} 天。
       ${c.ranges.map(fmt).join('、')}。
       ${c.gaps.length
@@ -96,7 +102,7 @@ try {
       /* 2026-09-03 精簡:每一則卡片本身就標著它是哪一類,頁首不必再把三類各解釋
          一遍;`fetch-news.mjs` 更是給維護者看的,不該出現在畫面上。 */
       : '每一則都標著來源:<b>FPL 官方欄位</b>、<b>預測模型</b>,或上季 380 場跑出來的敘事。'}
-      ${news.some(n => n.curated) ? '<br>人工整理的外電都帶原文連結;<b>摘要裡的比分每次建置都拿本站賽果重新核對,對不上的整則不出。</b>' : ''}</p>
+      ${news.some(n => n.curated) ? '<br>整理外電(人工或 AI 整理,每一則有標)都帶原文連結;<b>摘要裡的比分每次建置都拿本站賽果重新核對,對不上的整則不出。</b>' : ''}</p>
     ${coverageNote()}
     ${C.stampRow([
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算；本機同步後再手動發布' }),

@@ -1,209 +1,549 @@
 {
-  "source": "Web research",
-  "retrievedAt": "2026-08-28T00:00:00+08:00",
+  "source": "AI 整理(搜尋摘要 + 本站 RSS)",
+  "curator": {
+    "kind": "ai",
+    "model": "claude-fable-5-1",
+    "method": "只依搜尋結果的摘要與本站每日抓到的 RSS 標題/摘要整理,沒有讀全文;比分由建置時對回本站賽果"
+  },
+  "retrievedAt": "2026-09-12T21:50:00+08:00",
   "window": {
-    "from": "2026-08-22",
-    "to": "2026-08-28",
+    "from": "2026-08-29",
+    "to": "2026-09-12",
     "timezone": "Asia/Taipei"
   },
-  "note": "只收錄發表日或更新日在指定區間內、可開啟原文連結的項目；新聞摘要為整理後的繁體中文，不取代原文。轉會傳聞與已確認交易分開標示。",
+  "note": "第二批,由 AI 助手在沙箱裡整理:能搜尋、不能開網頁,每一則只根據搜尋結果的摘要與本站 RSS 抓到的標題與摘要寫,附原文連結。BBC 與 Guardian 擋爬蟲,那兩家只用 RSS 已抓到的部分。9/12 當天的比賽整理時還在進行,賽果不在這一批。轉會傳聞與已確認交易分開標示。",
   "stories": [
     {
-      "id": "pl-match-review-20260823-sunday-wrap",
+      "id": "pl-match-review-20260906-arsenal-chelsea",
       "competition": "pl",
       "competitionName": "英超",
       "type": "match-review",
-      "date": "2026-08-23",
-      "title": "英超首個週日：曼城逆轉、利物浦補時扳平、Brighton 大勝",
-      "body": "Premier League 官方回顧指出，曼城在新帥 Enzo Maresca 上任首戰以 2-1 逆轉 Bournemouth；利物浦靠 Dominik Szoboszlai 第九分鐘補時點球，在 Newcastle 主場 2-2 逼和；Brighton 則前 31 分鐘連進四球，以 4-0 擊敗十人 Aston Villa。",
+      "date": "2026-09-06",
+      "title": "Ødegaard 致勝球,Arsenal 逆轉擊敗 Chelsea 2-1",
+      "body": "本季英超第一場重量級對決,Arsenal 在 Chelsea 先開紀錄後逆轉,以 2-1 取勝:Kai Havertz 先進球,再助攻 Martin Ødegaard 攻入致勝球。Arteta 賽後稱這是「出色的表現」,並說球隊還能達到更高的高度;Alonso 則說 Chelsea 必須「更緊密」。",
       "matches": [
-        { "home": "Manchester City", "away": "Bournemouth", "score": "2-1" },
-        { "home": "Newcastle United", "away": "Liverpool", "score": "2-2" },
-        { "home": "Brighton", "away": "Aston Villa", "score": "4-0" }
+        {
+          "home": "Arsenal",
+          "away": "Chelsea",
+          "score": "2-1"
+        }
       ],
-      "source": "Premier League",
-      "link": "https://www.premierleague.com/en/news/4695734/sunday-wrap-stoppage-time-drama-for-man-city-and-liverpool/",
-      "verified": true
-    },
-    {
-      "id": "laliga-match-review-20260822-espanyol-real-madrid",
-      "competition": "es1",
-      "competitionName": "西甲",
-      "type": "match-review",
-      "date": "2026-08-22",
-      "title": "皇馬客場 2-1 擊敗 Espanyol",
-      "body": "LaLiga 官方比賽頁記錄，Real Madrid 在 2026/27 西甲第 2 輪以 2-1 擊敗 Espanyol；Bellingham 第 9 分鐘先開紀錄，Cala 第 30 分鐘為主隊追平，C. Espí 第 90 分鐘攻入致勝球。",
-      "matches": [
-        { "home": "Espanyol", "away": "Real Madrid", "score": "1-2" }
-      ],
-      "source": "LALIGA",
-      "link": "https://www.laliga.com/en-GB/match/temporada-2026-2027-laliga-ea-sports-rcd-espanyol-de-barcelona-real-madrid-2",
-      "verified": true
-    },
-    {
-      "id": "laliga-match-review-20260827-barcelona-athletic",
-      "competition": "es1",
-      "competitionName": "西甲",
-      "type": "match-review",
-      "date": "2026-08-27",
-      "title": "Barcelona 2-0 Athletic：Rodri 完成主場首秀",
-      "body": "AS 的賽事直播與賽後整理顯示，Barcelona 以 2-0 擊敗 Athletic，Raphinha 第 36 分鐘、Fermín 第 81 分鐘進球；Rodri 在加盟後正式迎來 Barcelona 主場首秀。",
-      "matches": [
-        { "home": "Barcelona", "away": "Athletic Club", "score": "2-0" }
-      ],
-      "source": "AS",
-      "link": "https://as.com/futbol/primera/rodri-a-escena-f202608-n/",
-      "verified": true
-    },
-    {
-      "id": "laliga-news-20260822-referee-controversies",
-      "competition": "es1",
-      "competitionName": "西甲",
-      "type": "news",
-      "date": "2026-08-22",
-      "title": "西甲第 2 輪裁判爭議整理",
-      "body": "AS 邀請裁判分析員 Iturralde González 檢視第 2 輪的點球、紅牌與爭議判決，並以本季 CTA 新參數逐一說明判定。此篇屬判例與裁判評論，不等同於聯賽官方紀律裁決。",
-      "source": "AS",
-      "link": "https://as.com/futbol/primera/las-polemicas-de-la-jornada-2-de-laliga-ea-sports-todos-los-penaltis-expulsiones-y-jugadas-controvertidas-f202608-n/",
-      "verified": true
-    },
-    {
-      "id": "laliga-news-20260827-mbappe",
-      "competition": "es1",
-      "competitionName": "西甲",
-      "type": "news",
-      "date": "2026-08-27",
-      "title": "Mbappé 對 Real Sociedad 上演帽子戲法",
-      "body": "AS 報導，Mbappé 在 Bernabéu 對 Real Sociedad 的比賽完成帽子戲法，文章將其解讀為新賽季爭奪連續第三座 Pichichi 的強勢開局。",
-      "matches": [
-        { "home": "Real Madrid", "away": "Real Sociedad", "score": "4-1" }
-      ],
-      "source": "AS",
-      "link": "https://as.com/futbol/primera/mbappe-en-modo-mundial-f202608-n/",
-      "verified": true
-    },
-    {
-      "id": "ucl-match-review-20260826-playoffs",
-      "competition": "ucl",
-      "competitionName": "歐冠",
-      "type": "match-review",
-      "date": "2026-08-26",
-      "title": "歐冠附加賽次回合：Fenerbahçe、AEK、Viking、Slovan 晉級",
-      "body": "UEFA 官方賽後整理：Fenerbahçe 以總比分 3-2 淘汰 Lyon；Viking 以 5-3 淘汰 GNK Dinamo；AEK Athens 以 4-0 淘汰 Levski Sofia；Slovan Bratislava 加時 2-1、總比分 3-2 淘汰 Celje。至此 2026/27 歐冠聯賽階段 36 隊名單確定。",
-      "matches": [
-        { "home": "Lyon", "away": "Fenerbahçe", "score": "1-2", "aggregate": "2-3" },
-        { "home": "Viking", "away": "GNK Dinamo", "score": "3-1", "aggregate": "5-3" },
-        { "home": "AEK Athens", "away": "Levski Sofia", "score": "4-0", "aggregate": "4-0" },
-        { "home": "Celje", "away": "Slovan Bratislava", "score": "1-2 aet", "aggregate": "2-3" }
-      ],
-      "source": "UEFA",
-      "link": "https://www.uefa.com/uefachampionsleague/news/02a8-216f6e7c7e3c-fa74783c353d-1000--champions-league-play-off-second-leg-highlights-and-roun/",
-      "verified": true
-    },
-    {
-      "id": "ucl-news-20260827-draw",
-      "competition": "ucl",
-      "competitionName": "歐冠",
-      "type": "news",
-      "date": "2026-08-27",
-      "title": "歐冠聯賽階段抽籤完成：36 隊確定 8 個對手",
-      "body": "UEFA 公布 2026/27 歐冠聯賽階段抽籤結果。每隊取得 8 個對手；西甲代表包括 Atlético、Barcelona、Real Betis、Real Madrid、Villarreal，英超代表包括 Arsenal、Aston Villa、Liverpool、Manchester City、Manchester United。",
-      "source": "UEFA",
-      "link": "https://www.uefa.com/uefachampionsleague/news/02a8-216cd740d41f-fd3b45ac4a0f-1000--uefa-champions-league-league-phase-draw-all-36-teams-learn-their/",
-      "verified": true
-    },
-    {
-      "id": "ucl-news-20260827-registration",
-      "competition": "ucl",
-      "competitionName": "歐冠",
-      "type": "news",
-      "date": "2026-08-27",
-      "title": "歐冠名單登錄規則與期限公布",
-      "body": "UEFA 說明，聯賽階段 List A 的提交期限為 2026 年 9 月 2 日 23:59 CET；List A 上限仍為 25 人，並須符合 8 名本土培訓球員配額。國內轉會窗即使較晚關閉，球會仍須先符合 UEFA 名單期限。",
-      "source": "UEFA",
-      "link": "https://www.uefa.com/uefachampionsleague/news/02a8-216c54c7cf25-c163bc643149-1000--uefa-champions-league-league-phase-player-lists-registration/",
-      "verified": true
-    },
-    {
-      "id": "pl-transfer-20260827-window-overview",
-      "competition": "pl",
-      "competitionName": "英超",
-      "type": "transfer-news",
-      "date": "2026-08-27",
-      "title": "英超各隊夏季轉會窗重點交易整理",
-      "body": "英超官方逐隊整理夏窗主要進出：Arsenal 的重點引援包括 Bruno Guimarães、Ezri Konsa、Christos Tzolis；Manchester City 進入換血期；Manchester United 以 Youri Tielemans、Andrey Santos 等人補強中場；Liverpool 則有 Mohamed Salah 離隊、Curtis Jones 轉往 Inter 等重大變化。",
-      "source": "Premier League",
-      "link": "https://www.premierleague.com/en/news/4681361/every-premier-league-clubs-biggest-deals-in-summer-transfer-window/",
-      "verified": true,
-      "status": "official-overview"
-    },
-    {
-      "id": "laliga-transfer-20260824-julian-alvarez",
-      "competition": "es1",
-      "competitionName": "西甲",
-      "type": "transfer-news",
-      "date": "2026-08-24",
-      "title": "Julián Álvarez 與 Atlético 的轉會僵局持續",
-      "body": "The Guardian 的 Sid Lowe 報導，Julián Álvarez 在 Atlético 與 Barcelona 的轉會傳聞中處於尷尬位置；文章提到他在對 Villarreal 的比賽後成為焦點。這是媒體報導與轉會動態，不代表已完成轉會。",
       "source": "The Guardian",
-      "link": "https://www.theguardian.com/football/2026/aug/24/julian-alvarez-walks-alone-at-atletico-madrid-barcelona-transfer-saga-la-liga",
-      "verified": true,
-      "status": "reported-saga"
+      "link": "https://www.theguardian.com/football/2026/sep/06/arsenal-chelsea-premier-league-match-report"
     },
     {
-      "id": "laliga-transfer-20260826-market-live",
-      "competition": "es1",
-      "competitionName": "西甲",
-      "type": "transfer-news",
-      "date": "2026-08-26",
-      "title": "西甲轉會市場直播：Driouech、Saliba、Baleba 等動態",
-      "body": "AS 的轉會市場直播更新包括：Celta 官方確認 Driouech 簽約四季；Villarreal 的 Saliba 加盟消息；以及 Carlos Baleba 官方轉投 Manchester United。頁面也混合已確認交易與媒體傳聞，使用時需依條目狀態區分。",
-      "source": "AS",
-      "link": "https://as.com/futbol/primera/mercado-de-fichajes-en-directo-rumores-altas-y-bajas-de-laliga-premier-serie-a-f202608-d-24/",
-      "verified": true,
-      "status": "mixed-official-and-reported"
-    },
-    {
-      "id": "laliga-transfer-20260827-atletico",
-      "competition": "es1",
-      "competitionName": "西甲",
-      "type": "transfer-news",
-      "date": "2026-08-27",
-      "title": "Atlético 進入市場最後階段：尋找前鋒與邊路球員",
-      "body": "AS 報導，距離 9 月 1 日關窗前，Atlético 仍希望增加兩名球員並處理四名離隊人選；報導列出的優先位置是前鋒與邊路，並提到 Osimhen、Nicolas Jackson、Nico González、Matías Fernández-Pardo 等名字。這些屬市場報導，非全部已確認交易。",
-      "source": "AS",
-      "link": "https://as.com/futbol/primera/el-reto-de-mateu-en-seis-dias-f202608-n/",
-      "verified": true,
-      "status": "reported-targets"
-    },
-    {
-      "id": "laliga-transfer-20260828-fran-garcia",
-      "competition": "es1",
-      "competitionName": "西甲",
-      "type": "transfer-news",
-      "date": "2026-08-28",
-      "title": "Fran García 在 Betis 的早期表現受到關注",
-      "body": "AS 報導，Betis 以 400 萬歐元取得 Fran García 50% 權益；他在對 Valencia 的比賽送出助攻並帶來制勝球，文章以其進攻貢獻評估這筆交易的早期回報。",
+      "id": "pl-match-review-20260906-everton-man-utd",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-09-06",
+      "title": "Maitland-Niles 終場前驚天一擊,Everton 2-2 逼和 Manchester United",
+      "body": "在轉會市場多事的一週結束時,Everton 在對 Manchester United 幾乎已無望的比賽最後一刻,靠 Maitland-Niles 的一記驚天遠射搶回 1 分,終場 2-2。Guardian 形容 Moyes 的球隊靠不服輸的態度撐住,而且帶著一股憤慨。",
       "matches": [
-        { "home": "Valencia", "away": "Real Betis", "score": "0-1" }
+        {
+          "home": "Everton",
+          "away": "Man Utd",
+          "score": "2-2"
+        }
       ],
-      "source": "AS",
-      "link": "https://as.com/futbol/primera/fran-garcia-ya-sale-barato-f202608-n/",
-      "verified": true,
-      "status": "completed-transfer-follow-up"
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/06/everton-manchester-united-premier-league-match-report"
     },
     {
-      "id": "laliga-transfer-20260823-real-madrid-market",
+      "id": "pl-match-review-20260905-hull-aston-villa",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-09-05",
+      "title": "Hull 逼平 Aston Villa,開季三場不敗、連續三場零封",
+      "body": "Hull City 主場 0-0 逼和攻擊乏力的 Aston Villa,延續本季開季不敗,也是連續第三場零封。Guardian 寫道,才踢三場,英超對 Hull 球迷來說已是一趟精彩的旅程,開幕日曾在這裡讓 Manchester United 難堪。",
+      "matches": [
+        {
+          "home": "Hull City",
+          "away": "Aston Villa",
+          "score": "0-0"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/05/hull-city-aston-villa-premier-league-match-report"
+    },
+    {
+      "id": "pl-match-review-20260905-city-coventry-palace-fulham",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-09-05",
+      "title": "Haaland 攻入球會生涯第 300 球,Man City 1-0 小勝 Coventry;Crystal Palace 3-2 客勝 Fulham",
+      "body": "Guardian 的週六即時戰況:Erling Haaland 攻入他的第 300 個球會進球,Man City 以 1-0 擊敗 Coventry;Crystal Palace 的左翼衛在 Craven Cottage 出盡風頭,以 3-2 擊敗 Fulham。本週從 Everton 加盟的 Iliman Ndiaye 為 City 先發,Phil Foden 未先發。",
+      "matches": [
+        {
+          "home": "Man City",
+          "away": "Coventry City",
+          "score": "1-0"
+        },
+        {
+          "home": "Fulham",
+          "away": "Crystal Palace",
+          "score": "2-3"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/live/2026/sep/05/premier-league-manchester-city-coventry-nottingham-forest-v-tottenham-efl-clockwatch-live"
+    },
+    {
+      "id": "pl-match-review-20260831-matchweek-2-results",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "match-review",
+      "date": "2026-08-31",
+      "title": "英超第 2 輪賽果:Man City 客場 4-1 大勝 Crystal Palace,Chelsea 4-3 力克 Brighton",
+      "body": "第 2 輪十場結果(英超官方賽果頁):Crystal Palace 1-4 Man City;Liverpool 2-2 Nott'm Forest;Bournemouth 1-1 Everton;Coventry City 0-1 Hull City;Tottenham 0-2 Newcastle;Sunderland 1-0 Fulham;Chelsea 4-3 Brighton;Leeds United 1-1 Brentford;Man Utd 5-2 Ipswich Town;Aston Villa 0-1 Arsenal。",
+      "matches": [
+        {
+          "home": "Crystal Palace",
+          "away": "Man City",
+          "score": "1-4"
+        },
+        {
+          "home": "Liverpool",
+          "away": "Nott'm Forest",
+          "score": "2-2"
+        },
+        {
+          "home": "Bournemouth",
+          "away": "Everton",
+          "score": "1-1"
+        },
+        {
+          "home": "Coventry City",
+          "away": "Hull City",
+          "score": "0-1"
+        },
+        {
+          "home": "Tottenham",
+          "away": "Newcastle",
+          "score": "0-2"
+        },
+        {
+          "home": "Sunderland",
+          "away": "Fulham",
+          "score": "1-0"
+        },
+        {
+          "home": "Chelsea",
+          "away": "Brighton",
+          "score": "4-3"
+        },
+        {
+          "home": "Leeds United",
+          "away": "Brentford",
+          "score": "1-1"
+        },
+        {
+          "home": "Man Utd",
+          "away": "Ipswich Town",
+          "score": "5-2"
+        },
+        {
+          "home": "Aston Villa",
+          "away": "Arsenal",
+          "score": "0-1"
+        }
+      ],
+      "status": "official-overview",
+      "source": "Premier League 官方",
+      "link": "https://www.premierleague.com/en/matches/premier-league/2026-27/matchweek-2"
+    },
+    {
+      "id": "pl-transfer-news-20260901-deadline-day",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "transfer-news",
+      "date": "2026-09-01",
+      "title": "夏季轉會窗關閉:英超創史上最高支出,Enzo Fernández 轉投 Man City",
+      "body": "英超 2026 夏季轉會窗於 9 月 1 日 23:00(英國時間)關閉。英超官方與 Sky Sports 的整理:英超球會本窗的支出創下歷史新高;Enzo Fernández 從 Chelsea 轉投 Manchester City,成為今夏第四位以 1 億英鎊以上加盟英超球會的球員,前三位是 Morgan Rogers(Aston Villa 轉 Chelsea)、Bradley Barcola(Paris Saint-Germain 轉 Liverpool)與 Elliot Anderson(Nott'm Forest 轉 Man City)。City 也在最後關頭從 Everton 簽下 Iliman Ndiaye;Newcastle 簽下 Matías Fernández-Pardo,Aston Villa 簽下 Ibrahim Mbaye;Sunderland 在一場涉及兩架私人飛機、球員數度改變主意的截止日風波後,完成從 Lyon 簽下 Malick Fofana。Sky Sports 估計 City 支出 4.4 億英鎊、賣出 3.15 億;Chelsea 支出 3.42 億、賣出更多。",
+      "status": "completed-transfer-follow-up",
+      "source": "Premier League 官方 / Sky Sports",
+      "link": "https://www.premierleague.com/en/news/4705808/the-wrap-what-happened-on-transfer-deadline-day"
+    },
+    {
+      "id": "pl-news-20260908-gambling-sponsors",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-08",
+      "title": "若禁止無牌博彩公司,半數英超球會恐失去豐厚贊助",
+      "body": "Guardian 報導,英超 20 家球會中有一半與無牌博彩公司有贊助或廣告合約;若英國政府禁止這類公司,十家球會明年可能損失數千萬英鎊。Ladbrokes 的母公司則點出首相身為 Everton 球迷的立場。",
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/08/premier-league-clubs-sponsorship-advertising-deals-unlicensed-gambling-companies-uk-government"
+    },
+    {
+      "id": "pl-news-20260909-mac-allister-contract",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-09",
+      "title": "Mac Allister 公開談合約,Liverpool 球迷意見分歧",
+      "body": "BBC Sport 報導,Alexis Mac Allister 公開談及自己在 Liverpool 的合約,引發球迷意見分歧;有人認為他「說得很好」,BBC 評論員 Pat Nevin 也表達了看法。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c3v4379d4ylo"
+    },
+    {
+      "id": "pl-news-20260910-arteta-contract",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-10",
+      "title": "報導:Arsenal 接近敲定 Arteta 新約",
+      "body": "BBC Sport 報導,據信 Mikel Arteta 即將與英超冠軍 Arsenal 敲定新合約;Sky Sports 的 Arsenal 動態則引述 Arteta 說他致力於「打造世界最佳球會」。截至報導時尚未正式宣布。",
+      "status": "reported-saga",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cgrvq2xp8dwo"
+    },
+    {
+      "id": "pl-news-20260911-hall-newcastle-2031",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Lewis Hall 與 Newcastle 續約至 2031 年",
+      "body": "Newcastle United 後衛 Lewis Hall 與球會簽下新約,合約至 2031 年(BBC Sport)。",
+      "status": "completed-transfer-follow-up",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/ce9e3d5exp8o"
+    },
+    {
+      "id": "pl-transfer-news-20260911-richarlison-vasco",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "transfer-news",
+      "date": "2026-09-11",
+      "title": "Richarlison 轉投 Vasco da Gama 的交易告吹",
+      "body": "BBC Sport 報導,Tottenham 前鋒 Richarlison 原擬轉投巴西的 Vasco da Gama,交易告吹,這位巴西球員的去向仍不明朗;Sky Sports 則報導雙方未能談妥條件。",
+      "status": "reported-saga",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cr50q58vqggo"
+    },
+    {
+      "id": "pl-news-20260911-man-utd-touting-bans",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Man Utd 黃牛票調查後封鎖 685 個球迷帳號",
+      "body": "Manchester United 在一項黃牛票調查後封鎖了 685 個球迷帳號(Sky Sports 報導為 685 名季票持有人遭禁),並堅稱無辜的球迷沒有受到處罰(BBC Sport)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c1j4zydzk2zo"
+    },
+    {
+      "id": "pl-news-20260911-hull-fine-chants",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Hull 因歧視性口號被罰 3 萬英鎊,三名球迷遭禁",
+      "body": "Hull City 因 2 月足總盃不敵 Chelsea 那場比賽的歧視性口號被罰款 30,000 英鎊,球會並對三名球迷發出入場禁令(BBC Sport)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c624l1v9853o"
+    },
+    {
+      "id": "pl-news-20260911-manchester-derby-preview",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "第 199 場曼徹斯特德比週日在 Old Trafford:Maresca 談賽程、Merson 說是「關鍵一役」",
+      "body": "英超官方列出第 4 輪的十個關鍵問題,包括曼徹斯特德比會不會成為 Carrick 與 Maresca 的賽季定義之戰。Man City 主帥 Enzo Maresca 說球隊「必須適應」賽程安排,他的球隊在德比前比 Manchester United 多兩天休息(BBC Sport)。Paul Merson 在 Sky Sports 專欄裡說,Tottenham、Man City 與 Man Utd 本週末都面臨具決定性的比賽。Guardian 指出這是第 199 場曼徹斯特德比。",
+      "source": "Premier League 官方 / BBC Sport / Sky Sports",
+      "link": "https://www.premierleague.com/en/news/4713492/ten-key-questions-for-matchweek-4s-fixtures"
+    },
+    {
+      "id": "pl-news-20260911-spurs-winless-start",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "三輪零勝零進球:Spurs 該多擔心?",
+      "body": "Sky Sports 指出,大手筆花錢的 Tottenham 開季三場一勝未得、一球未進。夏季新援 Matheus Fernandes 受訪時說,主帥 De Zerbi 是他加盟的關鍵,他深信自己加入的是一支即將爭奪錦標的球隊。",
+      "source": "Sky Sports",
+      "link": "https://www.skysports.com/football/news/11661/13583499/how-concerned-should-big-spending-tottenham-be-after-winless-and-goalless-start-to-premier-league-season"
+    },
+    {
+      "id": "pl-news-20260911-arteta-travel-plans",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Arteta:我在季前故意打亂行程,讓球員習慣出狀況",
+      "body": "Mikel Arteta 表示,Arsenal 對週中歐冠航班延誤早有準備,因為他在季前刻意打亂了球隊的訓練與行程安排,讓球員習慣客場旅途上的困難(BBC Sport、Sky Sports)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c5y48zdxv0ko"
+    },
+    {
+      "id": "pl-news-20260911-leeds-farke-contract",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Leeds 希望 Farke 長期留任,雙方談新約",
+      "body": "Leeds United 執行董事 Robbie Evans 表示,球會與主帥 Daniel Farke 在商談新約一事上「看法一致」(BBC Sport)。",
+      "status": "reported-saga",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cd08728rz0xo"
+    },
+    {
+      "id": "pl-news-20260911-alonso-joao-pedro",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "Alonso:Joao Pedro 風格像 Benzema,水準可比 Haaland",
+      "body": "Chelsea 主帥 Xabi Alonso 說,前鋒 Joao Pedro 的風格與他昔日 Real Madrid 隊友 Karim Benzema 相似,水準足以與 Man City 的 Erling Haaland 相提並論(BBC Sport、Sky Sports)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c1j4z1ry29jo"
+    },
+    {
+      "id": "pl-news-20260912-dias-city-signings",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-12",
+      "title": "Dias:Man City 的新援渴望勝利,全隊認同 Maresca",
+      "body": "Manchester City 新任隊長 Ruben Dias 表示,今夏引進的新援「渴望勝利」,全隊都「認同」新任主帥 Enzo Maresca 的理念(BBC Sport)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cy5zp9llp3ro"
+    },
+    {
+      "id": "pl-news-20260908-ballon-dor-shortlist",
+      "competition": "pl",
+      "competitionName": "英超",
+      "type": "news",
+      "date": "2026-09-08",
+      "title": "金球獎入圍名單公布:Kane、Rice、Bellingham 入圍,Ronaldo 落選",
+      "body": "2026 年金球獎入圍名單公布,Harry Kane、Declan Rice、Jude Bellingham 在列,Cristiano Ronaldo 不在名單上(Sky Sports)。Guardian 指出,英格蘭頂級聯賽的前鋒在 16 名入圍的攻擊球員中代表偏少,反映上季定位球纏鬥的風格,但 2026-27 賽季看來已光明許多。",
+      "source": "Sky Sports / The Guardian",
+      "link": "https://www.skysports.com/football/news/11835/13582892/ballon-dor-2026-harry-kane-declan-rice-jude-bellingham-among-nominees-but-no-cristiano-ronaldo"
+    },
+    {
+      "id": "es1-match-review-20260904-betis-real-madrid",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-09-04",
+      "title": "Betis 1-0 Real Madrid:Parrott 建功,Mbappé 補時射失十二碼",
+      "body": "Real Madrid 在西甲的完美開局週五告終。愛爾蘭前鋒 Troy Parrott 第 81 分鐘替補進球,是他夏天從 AZ Alkmaar 加盟後的首球;補時第 4 分鐘 Vinícius Júnior 在禁區被犯規獲得十二碼,Kylian Mbappé 主罰被 Betis 門將 Álvaro Valles 撲出,中止了他在 Real Madrid 連續七次射進十二碼的紀錄。Real Madrid 另有 Carlos Espí 的一球經 VAR 判定越位在先。這是 Mourinho 回歸後的首場敗仗(ESPN、Guardian、Sky Sports 精華)。",
+      "matches": [
+        {
+          "home": "Real Betis",
+          "away": "Real Madrid",
+          "score": "1-0"
+        }
+      ],
+      "source": "ESPN / The Guardian",
+      "link": "https://www.espn.com/soccer/report/_/gameId/401882894"
+    },
+    {
+      "id": "es1-match-review-20260906-valencia-barcelona",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-09-06",
+      "title": "Lamine Yamal 梅開二度,Barcelona 客場 5-0 大破 Valencia 保持全勝",
+      "body": "Guardian 的歐洲足壇綜合:Lamine Yamal 兩度破門,Barcelona 週日以 5-0 大破 Valencia,保持開季全勝。",
+      "matches": [
+        {
+          "home": "Valencia CF",
+          "away": "FC Barcelona",
+          "score": "0-5"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/06/european-football-lamine-yamal-double-barcelona-valencia-juventus-milan"
+    },
+    {
+      "id": "es1-match-review-20260830-real-madrid-malaga",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-08-30",
+      "title": "Bellingham 開球門,Real Madrid 4-0 大勝升班馬 Málaga",
+      "body": "升班馬 Málaga 在 Bernabéu 以 0-4 落敗;Jude Bellingham 攻入首開紀錄的一球,Real Madrid 保持開季全勝(Guardian 歐洲足壇綜合、Sky Sports 精華)。",
+      "matches": [
+        {
+          "home": "Real Madrid",
+          "away": "Málaga CF",
+          "score": "4-0"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/aug/30/european-football-real-madrid-malaga-napoli-como-inter"
+    },
+    {
+      "id": "es1-match-review-20260901-barcelona-rayo",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "match-review",
+      "date": "2026-09-01",
+      "title": "Barcelona 5-2 輕取 Rayo,西班牙的目光仍在 Julián Álvarez 身上",
+      "body": "Guardian 報導,Barcelona 以 5-2 擊敗 Rayo Vallecano;Hansi Flick 樂於歡迎 Gabriel Jesus 加盟,但 Julián Álvarez 仍是終極目標。",
+      "matches": [
+        {
+          "home": "FC Barcelona",
+          "away": "Rayo Vallecano",
+          "score": "5-2"
+        }
+      ],
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/01/barcelona-la-liga-rayo-vallecano-atletico-julian-alvarez"
+    },
+    {
+      "id": "es1-news-20260907-aubameyang-deportivo",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "news",
+      "date": "2026-09-07",
+      "title": "Aubameyang 重現當年勇,改頭換面的「Super Dépor」風光重返西甲",
+      "body": "Guardian 專文:Pierre-Emerick Aubameyang 為 Deportivo A Coruña 送出兩次助攻並攻入致勝球,締造一項球會紀錄、並瞄準另一項。",
+      "source": "The Guardian",
+      "link": "https://www.theguardian.com/football/2026/sep/07/pierre-emerick-aubameyang-deportivo-a-coruna-la-liga"
+    },
+    {
+      "id": "es1-news-20260911-mourinho-boos",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "news",
+      "date": "2026-09-11",
+      "title": "球迷噓聲後,Mourinho 把 Mbappé 與 Vinícius 比作果樹",
+      "body": "Real Madrid 主帥 José Mourinho 表示,Kylian Mbappé 與 Vinícius Júnior 本週遭球迷噓聲,是因為球迷「想從他們身上要更多」(BBC Sport)。",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cly41qwpg4do"
+    },
+    {
+      "id": "es1-news-20260907-mbappe-ballon-dor",
+      "competition": "es1",
+      "competitionName": "西甲",
+      "type": "news",
+      "date": "2026-09-07",
+      "title": "「我今夏創造了歷史」:Mbappé 看好自己奪金球獎",
+      "body": "Real Madrid 與法國前鋒 Kylian Mbappé 認為金球獎應該由他奪得(Sky Sports 影片)。",
+      "source": "Sky Sports",
+      "link": "https://www.skysports.com/watch/video/13582857/kylian-mbappe-backs-himself-to-win-the-ballon-dor"
+    },
+    {
+      "id": "es1-transfer-news-20260912-gordon-barcelona",
       "competition": "es1",
       "competitionName": "西甲",
       "type": "transfer-news",
-      "date": "2026-08-23",
-      "title": "Real Madrid 對關窗前市場保持觀望",
-      "body": "AS 報導，Real Madrid 目前沒有主動尋找新援，但會留意意外離隊可能，也保留替代方案；文中指出球會認為主要補強工作已完成。",
-      "source": "AS",
-      "link": "https://as.com/futbol/primera/el-real-madrid-preparado-para-la-recta-final-del-mercado-f202608-n/?outputType=amp",
-      "verified": true,
-      "status": "club-market-analysis"
+      "date": "2026-09-12",
+      "title": "取代 Rashford 加盟,Gordon 在 Barcelona 證明身價",
+      "body": "BBC Sport:Anthony Gordon 以 7,000 萬英鎊轉投 Barcelona 曾遭質疑,但這位英格蘭邊鋒已在這支火力兇猛的球隊證明自己的價值。",
+      "status": "completed-transfer-follow-up",
+      "source": "BBC Sport",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cgk5n3xpkv2o"
+    },
+    {
+      "id": "ucl-match-review-20260910-matchday-1",
+      "competition": "ucl",
+      "competitionName": "歐冠",
+      "type": "match-review",
+      "date": "2026-09-10",
+      "title": "歐冠聯賽階段第 1 輪:Real Madrid 2-1 Inter,Bayern 與 Man United 大勝",
+      "body": "2026/27 歐冠聯賽階段 9 月 8 日至 10 日開打。UEFA 官方綜合:John McGinn 攻入本季歐冠的第一球,Aston Villa 客場 3-2 擊敗 Club Brugge;Kylian Mbappé 為 Real Madrid 打開 2-1 擊敗 Inter 的勝利之門;Bayern 5-0 Bodø/Glimt、Manchester United 4-0 Sabah,義大利新軍 Como 4-1 擊敗 Leipzig 令人矚目,Lens 則在 90 分鐘時仍 1-2 落後的情況下逆轉 Slavia Praha 3-2。其餘結果:Porto 0-2 Man City、Dortmund 3-2 Villarreal、Lille 2-3 Betis、AEK 1-0 LASK、Barcelona 5-1 Feyenoord、Stuttgart 3-1 Viking、Liverpool 2-1 Atlético、PSG 6-1 Slovan Bratislava、Sporting 3-1 Galatasaray、Napoli 0-1 Arsenal、Fenerbahçe 1-1 Roma、PSV 1-1 Shakhtar。",
+      "matches": [
+        {
+          "home": "Club Brugge",
+          "away": "Aston Villa",
+          "score": "2-3"
+        },
+        {
+          "home": "PAE AEK",
+          "away": "LASK",
+          "score": "1-0"
+        },
+        {
+          "home": "Real Madrid",
+          "away": "Inter",
+          "score": "2-1"
+        },
+        {
+          "home": "Porto",
+          "away": "Man City",
+          "score": "0-2"
+        },
+        {
+          "home": "Dortmund",
+          "away": "Villarreal",
+          "score": "3-2"
+        },
+        {
+          "home": "Lille",
+          "away": "Real Betis",
+          "score": "2-3"
+        },
+        {
+          "home": "Barça",
+          "away": "Feyenoord",
+          "score": "5-1"
+        },
+        {
+          "home": "Stuttgart",
+          "away": "Viking",
+          "score": "3-1"
+        },
+        {
+          "home": "Liverpool",
+          "away": "Atleti",
+          "score": "2-1"
+        },
+        {
+          "home": "PSG",
+          "away": "Sl. Bratislava",
+          "score": "6-1"
+        },
+        {
+          "home": "Napoli",
+          "away": "Arsenal",
+          "score": "0-1"
+        },
+        {
+          "home": "Sporting CP",
+          "away": "Galatasaray",
+          "score": "3-1"
+        },
+        {
+          "home": "Fenerbahçe",
+          "away": "Roma",
+          "score": "1-1"
+        },
+        {
+          "home": "PSV",
+          "away": "Shaktar",
+          "score": "1-1"
+        },
+        {
+          "home": "Bayern",
+          "away": "Bodø/Glimt",
+          "score": "5-0"
+        },
+        {
+          "home": "Man United",
+          "away": "Sabah FK",
+          "score": "4-0"
+        },
+        {
+          "home": "Como 1907",
+          "away": "RB Leipzig",
+          "score": "4-1"
+        },
+        {
+          "home": "Slavia Praha",
+          "away": "RC Lens",
+          "score": "2-3"
+        }
+      ],
+      "status": "official-overview",
+      "source": "UEFA 官方",
+      "link": "https://www.uefa.com/uefachampionsleague/news/02a9-218b8c00ab1e-0e070e496ca8-1000--champions-league-matchday-1-highlights-and-round-up-real-mad/"
     }
   ]
 }
