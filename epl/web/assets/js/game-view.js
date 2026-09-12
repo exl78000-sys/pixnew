@@ -1,6 +1,6 @@
-import * as C from './core.js?v=f9001a4c';
+import * as C from './core.js?v=03eb6306';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
-import { mountDuelAnim } from './duel-anim.js?v=2dc9a3a6';
+import { mountDuelAnim } from './duel-anim.js?v=e875c736';
 import { createMatch, defaultSetup } from './game-engine.js?v=b48e4aa3';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -371,8 +371,11 @@ export async function renderGame(app) {
         <b>真資料</b>:名單、背號、角色、陣型選項、主罰順序、球員能力(FPL per-90)與牌數、兩隊各項事件率、控球分布、射門情境與 xG/射門(${profile.league_.shotMinutes.n} 次射門)。
         <b>抽樣</b>:控球目標、射門 / 角球 / 犯規 / 牌 / 換人的次數與分鐘、進球分鐘(${profile.league_.goalMinutes.n} 顆)。
         <b>遊戲規則</b>:能力係數 a(校準點估計 ${profile.calibration?.a ?? '—'} ± ${profile.calibration?.se ?? '—'},${profile.calibration?.significant ? '顯著' : '跟 0 分不開'};防守側借用同值)、紅牌 0.72/1.30(站上實時頁同組)、牌與射手的加權方式。
-        <b>演出</b>:跑位、傳球、丟球的畫面 —— 但節奏錨在真資料:兩隊每分鐘跑動量與衝刺次數(FotMob 追蹤資料)、
-        逐人場均跑動與最高速度、站位參考逐人觸球熱區質心、進攻偏向參考三路進攻佔比。軌跡本身仍是演出。<b>沒有</b>:體能、球員屬性、賽中受傷、一對一、教練決策。
+        <b>演出</b>:跑位、傳球、丟球的畫面 —— 但跑動是有物理的:每個人有速度、加速度有上限,
+        <b>最高速度就是他自己的真資料</b>(FotMob 逐人最高速度),站位參考逐人觸球熱區質心、進攻偏向參考三路進攻佔比。
+        跑動量校準過:<b>播放速度選「即時」時</b>,每人每比賽分鐘約 110 公尺,對照 FotMob 這兩隊的真實值(每隊每分鐘 ÷ 11)。
+        <b>壓縮播放(正常 / 快)時比賽時鐘比畫面快</b> —— 畫面上的人仍是真人速度,但一個比賽分鐘之內演不完一分鐘的球,
+        那時的跑動量不等於真實。軌跡本身一律是演出。<b>沒有</b>:體能、球員屬性、賽中受傷、一對一、教練決策。
         <b>跟真實管線的關係只有一條</b>:沒有任何改動時 λ 等於站上預測;任何操作不寫回資料,也不影響站上任何一頁。</div>
       ${C.foot(data.meta)}`;
     renderControls();

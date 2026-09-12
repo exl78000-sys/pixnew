@@ -1783,6 +1783,50 @@ async function checkDataGap() {
       return /const unplayedCount = fixtures\.filter\(f => !f\.played\)\.length/.test(src)
         && /本季還有 \$\{unplayedCount\} 場未賽/.test(src);
     })()],
+    /* ── 踢完了卻寫「還沒有賽果」(2026-09-12,使用者在比賽剛結束時回報)────────
+       「比賽途中其實就有資料,有比分結果,結束卻歸零、寫沒賽果」。
+       原因:`scheduleState` 只看賽程時間與 `fixture.played`,而那兩個都落後 ——
+       `played` 等社群賽果檔(天為單位)、FPL 的 `finished` 等加分算完(實測晚二十幾分鐘)。
+       於是開賽 115 分鐘後場次從 inplay 掉進 awaiting,而那一區當時完全不讀 live.json:
+       **比分就在同一頁的資料裡,畫面上卻消失了。**
+       修法是讓夠新的即時快照決定 phase,而且 awaiting 的卡片也要印快照比分。 */
+    ['即時快照說完場,就算賽程還沒記成 played 也算完賽', (() => {
+      const now = Date.parse('2026-09-12T16:00:00Z');
+      const f = { kickoff: '2026-09-12T14:00:00Z', played: false };
+      const s2 = V.scheduleState(f, now, { started: true, finished: true, hs: 1, as: 0 });
+      return s2.phase === 'finished' && s2.fromLive === true;
+    })()],
+    ['快照說還在踢就還在踢 —— 不受 115 分鐘的推算限制(FPL 的 finished 比完場晚)', (() => {
+      const now = Date.parse('2026-09-12T16:05:00Z');     // 開賽後 125 分鐘
+      const f = { kickoff: '2026-09-12T14:00:00Z', played: false };
+      return V.scheduleState(f, now, { started: true, finished: false }).phase === 'inplay'
+        && V.scheduleState(f, now, null).phase === 'awaiting';   // 沒有快照時行為不變
+    })()],
+    ['快照太舊就不採用(靜態站上的 live.json 可能是上次部署那份)', (() => {
+      const now = Date.parse('2026-09-12T16:00:00Z');
+      const mins = m => new Date(now - m * 60000).toISOString();
+      return V.feedFresh({ fetchedAt: mins(5) }, now) === true
+        && V.feedFresh({ fetchedAt: mins(40) }, now) === false
+        && V.feedFresh({}, now) === false && V.feedFresh(null, now) === false;
+    })()],
+    ['實時頁:快照夠新才拿來定 phase,而且重播模式不採用', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      return /const fresh = C\.feedFresh\(live, now\) && !live\.demo/.test(src)
+        && /C\.scheduleState\(f, now, fresh \? liveByKey\.get/.test(src);
+    })()],
+    ['實時頁:「還沒有賽果」的卡片會印快照比分,而且不跟「剛結束」重複', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      const i = src.indexOf('<h2>還沒有賽果</h2>');
+      if (i < 0) { console.log('      找不到「還沒有賽果」那一區'); return false; }
+      const blk = src.slice(i, i + 2600);
+      return /lscore \? `<b class="mono">\$\{lscore\.hs\}/.test(blk)      // 有比分就印
+        && /即時快照的比分/.test(blk)                                        // 而且講出處(鐵則四)
+        && /!recentIds\.has\(x\.f\.id\)/.test(src);                       // 不跟剛結束重複
+    })()],
+    ['實時頁:「剛結束」收快照說完場的場次(賽程的 played 還沒跟上)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      return /const liveDone = fx =>/.test(src) && /if \(!fx\.played && !liveDone\(fx\)\) return false;/.test(src);
+    })()],
     ['沒有開球時間的場次確實不會進倒數(三個聯賽都有這種場次)', (() => {
       const has = ['data', 'data/leagues/es1', 'data/leagues/en2'].map(d => {
         const f = JSON.parse(readFileSync(join(ROOT, 'web', d, 'fixtures.json'), 'utf8'));
@@ -3309,6 +3353,82 @@ async function checkDataGap() {
         ['出界規則:邊線 → 界外球、底線依最後碰球的隊決定球門球或角球', /function throwIn/.test(src) && /function byline/.test(src) && /lastSide === defending/.test(src)],
         ['注定出界的球誰都不准控回來(否則角球永遠演不出來)', /noCatch/.test(src)],
         ['丟球由傳球路線決定誰攔到,不是隨機挑一個對手', /function laneCut/.test(src) && /turnover\(chooseNext\(\)\)/.test(src)],
+        /* ── 跑動的運動模型(2026-09-12,使用者回報「動作跑動還不真實」)────────
+           舊版是「位置每格往目標插值一個固定比例」,速度跟離目標的距離成正比,**沒有上限**。
+           量出來:尖峰 160 ~ 482 m/s(577 ~ 1735 km/h)、全隊均速 5.6 ~ 6.1 m/s 整場不變
+           —— 畫面上二十二個人永遠在衝刺。改成速度 + 加速度上限,最高速度用 FotMob 逐人真資料。
+           這四條守的是「像人在跑」的可量測部分;插值那條守著不要改回去。 */
+        ['沒有人超過自己的最高速度(逐人 topSpeed 真的當上限,不是倍率)',
+          results.every(r => r.motion.players.every(p => p.vmax <= p.vtop + 0.05))],
+        ['尖峰速度在人類範圍(舊版的插值追目標會飆到 160~482 m/s)', (() => {
+          const peak = Math.max(...results.flatMap(r => r.motion.players.map(p => p.vmax)));
+          if (!(peak > 5 && peak < 12)) console.log(`      尖峰 ${peak.toFixed(1)} m/s`);
+          return peak > 5 && peak < 12;
+        })()],
+        ['全隊均速接近真實比賽(約 1.9 m/s;舊版是 5.6~6.1,整場都在衝)', (() => {
+          const mean = results.map(r => {
+            const on = r.motion.players.filter(p => !p.off && p.role !== 'GK');
+            return on.reduce((a, p) => a + p.dist / r.motion.secs, 0) / on.length;
+          });
+          const avg = mean.reduce((a, b) => a + b, 0) / mean.length;
+          if (!(avg > 1.3 && avg < 2.5)) console.log(`      均速 ${avg.toFixed(2)} m/s(各種子 ${mean.map(x => x.toFixed(2)).join('、')})`);
+          return avg > 1.3 && avg < 2.5;
+        })()],
+        ['速度分段的時間形狀像比賽:走路帶過半、衝刺帶是少數', (() => {
+          const t = [0, 0, 0, 0];
+          for (const r of results) for (const p of r.motion.players) for (let b = 0; b < 4; b++) t[b] += p.bandT[b];
+          const tt = t.reduce((a, b) => a + b, 0);
+          const pct = t.map(x => (x / tt) * 100);
+          if (!(pct[0] > 50 && pct[3] < 5)) console.log(`      分段 ${pct.map(x => x.toFixed(0) + '%').join('/')}`);
+          return pct[0] > 50 && pct[3] < 5;
+        })()],
+        ['位置不是直接往目標插值(那不是運動模型,而且沒有速度上限)',
+          /p\.vx \+= /.test(src) && /p\.x \+= p\.vx \* dt/.test(src)
+          && !/p\.x \+= \(\(a\.x/.test(src) && /const ACCEL = /.test(src)],
+        ['衝刺的定義跟 FotMob 一樣(要持續,不是每次跨過門檻)', /SPRINT_HOLD/.test(src) && /p\.sprintT/.test(src)],
+        ['間距兜底單格的推擠量有上限(一格推 1.6 m 是跳躍,不是走路)', /PUSH_MAX/.test(src)],
+        ['畫面看得出方向與快慢(朝向、拖影、步態相位)', /faceAng/.test(src) && /p\.stride \+=/.test(src) && /ctx\.ellipse\(cx, cy/.test(src)],
+        /* 跑動量的**真資料對照**:拿 game/pl.json 的 ARS 與 MCI 真的跑一場,
+           均速要對得回 FotMob 的 `pace.distancePerMin / 11 / 60`。
+           這一條是整組裡唯一有外部對照組的 —— 上面那幾條只證明「像人」,這一條證明「像這兩隊」。 */
+        ...(() => {
+          const gp = join(ROOT, 'web', 'data', 'game', 'pl.json');
+          if (!existsSync(gp)) return [['跑動量對回 FotMob(缺 game/pl.json,略過)', true]];
+          const game = JSON.parse(readFileSync(gp, 'utf8'));
+          const mk = code => {
+            const t = game.teams[code];
+            const meta = {}, xi = { GK: [], DEF: [], MID: [], FWD: [] }, shirts = { GK: [], DEF: [], MID: [], FWD: [] };
+            const by = new Map(t.squad.map(x => [x.code, x]));
+            for (const c of t.xi) { const x = by.get(c); if (!x) continue; (xi[x.pos] ?? xi.MID).push(x.name); (shirts[x.pos] ?? shirts.MID).push(x.shirt); meta[x.name] = { role: x.roleLow, heat: x.heat, run: x.run }; }
+            return { formation: t.formation, color: '#0f0', xi, shirts, meta, pace: t.pace, zones: t.zones };
+          };
+          let queued = null;
+          const prevRaf = globalThis.requestAnimationFrame, prevCancel = globalThis.cancelAnimationFrame;
+          globalThis.requestAnimationFrame = cb => { queued = cb; return 1; };
+          globalThis.cancelAnimationFrame = () => { queued = null; };
+          let rs = 42;
+          const rng = () => { rs = (rs + 0x6D2B79F5) >>> 0; let t = rs; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+          const api = anim.mountDuelAnim({ width: 900, height: 560, getContext: () => sink }, {
+            home: mk('ARS'), away: mk('MCI'), homeCode: 'ARS', awayCode: 'MCI', lambdaHome: 1.8, lambdaAway: 1.3, rng });
+          const FPS = 30, SPM = 2;
+          let now = performance.now();
+          for (let f = 0; f < 95 * FPS * SPM; f++) {
+            now += 1000 / FPS;
+            const min = Math.floor(f / (FPS * SPM));
+            api.setState({ min, done: min >= 95, dueSides: [], hs: 0, as: 0 });
+            queued?.(now);
+          }
+          const m = anim.__animProbe().motion;
+          api.destroy();
+          globalThis.requestAnimationFrame = prevRaf; globalThis.cancelAnimationFrame = prevCancel;
+          const on = m.players.slice(0, 11).filter(p => !p.off && p.role !== 'GK');
+          const mps = on.reduce((a, p) => a + p.dist / m.secs, 0) / on.length;
+          // 即時播放是一比賽分鐘 60 秒,所以 m/s × 60 就是「每人每比賽分鐘跑多少公尺」
+          const perMin = mps * 60, target = game.teams.ARS.pace.distancePerMin / 11;
+          const off = Math.abs(perMin - target) / target;
+          console.log(`      ARS 跑動:畫面 ${perMin.toFixed(0)} m/min・FotMob ${target.toFixed(0)} m/min(差 ${(off * 100).toFixed(0)}%)`);
+          return [['跑動量對回 FotMob 的 pace.distancePerMin(即時播放,差 < 20%)', off < 0.20]];
+        })(),
         /* 避讓的真正防線在這四條**純函式**斷言上:它們是精確值,沒有門檻。
            跑完整場那條只能當毛胚(見下面) —— 有避讓與沒避讓的壅擠比例
            實測是 5.1~12.9% 對 7.6~22.7%(各 24 個種子),兩個分佈重疊,

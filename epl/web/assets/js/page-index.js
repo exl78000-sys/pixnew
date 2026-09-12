@@ -1,5 +1,5 @@
-import * as C from './core.js?v=f9001a4c';
-import { mountFixtureList } from './fixture-list.js?v=8f24f9f7';
+import * as C from './core.js?v=03eb6306';
+import { mountFixtureList } from './fixture-list.js?v=bd68231c';
 
 const app = document.getElementById('app');
 
@@ -14,19 +14,17 @@ try {
   C.nav();
 
   const played = fixtures.filter(f => f.played);
-  const basic = meta.edition === 'basic';
 
   const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
   const nextRound = upcoming[0]?.round ?? null;
   const injuries = news.filter(n => n.cat === '傷停' || n.cat === '禁賽');
   const bt = meta.model.backtest ?? { available: false };
-  /* 頁首那段話原本是「西甲 or 英超」二選一寫死在這裡。加第三個聯賽時它就撞上了 ——
-     英冠沒有球員、沒有 xG,套用西甲那段會宣稱一堆本站根本沒有的東西。
-     新聯賽一律由自己的 build 寫進 meta.intro;兩個舊聯賽的文案先留在這裡,
-     是為了不去動它們既有的產物。 */
-  const intro = meta.intro ?? (basic
-    ? `使用 ${meta.lastSeason} 完整賽果與 ${meta.currentSeason} 已完賽資料，產生積分榜、單場機率與賽季模擬；回歸球隊另有上季 xG、射門、實際陣型與進球情境。完賽後資料會一次性永久快取；球員與教練資料已接入，傷停仍無可靠來源${meta.live?.available ? '，即時比分也已接入' : ''}。`
-    : `把 ${meta.historySeasons?.join('、') ?? '過往賽季'} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`);
+  /* 頁首那段話原本是「西甲 or 英超」二選一寫死在這裡(`edition === 'basic'`)。
+     加第三個聯賽時它就撞上了:英冠沒有 edition → 走英超那句 → 宣稱一堆本站沒有的東西。
+     現在**每個聯賽的文案由自己的 build 寫**(meta.intro),這裡只剩英超那一句 ——
+     英超的產物還沒有 intro 欄位,所以留著當預設;哪天補上,這一行也可以拿掉。 */
+  const intro = meta.intro
+    ?? `把 ${meta.historySeasons?.join('、') ?? '過往賽季'} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`;
 
   /* ── 賽程表(原 page-fixtures.js)── */
   const pastSeasons = [...new Set(results.map(m => m.season))].filter(x => x !== meta.currentSeason).sort().reverse();
@@ -57,7 +55,10 @@ try {
     ${kpi('模型準度', bt.available ? bt.rps : '—',
       bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : '這個聯賽還沒有回測結果')}
     ${kpi('命中率', bt.available ? C.pct(bt.hitRate, 1) : '—', bt.available ? `${bt.season} ${bt.games} 場走查回測` : '尚未回測')}
-    ${basic || meta.players?.available === false
+    ${/* 第四格:有傷停資料才講傷停,沒有就講資料範圍。
+          原本問的是「是不是西甲」,現在問**這個聯賽有沒有傷停來源** ——
+          英超的產物沒有 capabilities 欄位,所以 undefined 會落到傷停那一支(正確)。 */''}
+    ${meta.capabilities?.injuries === false || meta.players?.available === false
       ? kpi('資料範圍', `${(meta.historySeasons?.length ?? 1) + 1} 季`, `${meta.lastSeason} 完整・${meta.currentSeason} 進行中`)
       : meta.live?.demo === false && meta.live?.counts?.live > 0
       ? kpi('進行中', `${meta.live.counts.live} 場`, `第 ${meta.live.round} 輪・點上方實時戰況`)
@@ -101,30 +102,16 @@ try {
   </div>
   <div id="fixtureList"></div>
 
-  ${/* 「目前資料界線」。西甲那張卡片會插入 reports.count 之類的即時值,所以留在這裡;
-        其餘聯賽由自己的 build 把每一行寫進 meta.boundaries —— 這一頁不該知道
-        哪個聯賽有什麼,那正是加英冠時撞到的問題。 */''}
-  ${!basic && meta.boundaries?.length ? `<div class="card" style="margin-top:20px">
+  ${/* 「目前資料界線」**只有一條路**(2026-09-12)。原本是兩張卡片:西甲那張整段寫死在這裡
+        (連 reports.count 都在前端算),其他聯賽讀 meta.boundaries。所以同一塊內容有兩份,
+        而且前端得知道「哪個聯賽有什麼」—— 那正是加英冠時撞到的問題(英冠沒有 edition,
+        兩張卡片都不出現過)。西甲的每一行已經搬進 build-laliga.mjs 的 meta.boundaries,
+        跟英冠同一個做法。這裡只負責畫,一行都不知道是哪個聯賽。 */''}
+  ${meta.boundaries?.length ? `<div class="card" style="margin-top:20px">
       <h2>目前資料界線</h2>
       <div class="small muted" style="display:grid;gap:8px">
-        ${meta.boundaries.map(x => `<div${x.startsWith('—') ? ' class="dim"' : ''}>${x}</div>`).join('')}
+        ${meta.boundaries.map(x => `<div${x.startsWith('—') ? ' class="dim"' : ''}>${C.esc(x)}</div>`).join('')}
       </div>
-    </div>` : ''}
-  ${basic ? `<div class="card" style="margin-top:20px">
-      <h2>目前資料界線</h2>
-      <div>${`<div class="small muted" style="display:grid;gap:8px">
-        <div>✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬</div>
-        <div>✓ 上季球隊 xG/xGA、射門、實際陣型、五種進球情境與風格百分位</div>
-        <div>✓ 完賽後完整資料永久快取 ${reports.count ?? 0}/${played.length} 場（球隊統計、正式陣容、事件與球員評分）</div>
-        <div>— 球員與教練資料已接入；傷停${meta.capabilities?.injuries ? '已接入' : '尚無可靠來源'}；即時比分${meta.live?.available ? '已接入' : '仍以賽程推算'}</div>
-        ${/* 這一行本來寫死「只使用一個完整賽季，尚無獨立留出賽季可做可靠回測」——
-              補上 2024-25 並接進回測管線之後兩句都不成立了。改成跟著產物走。 */''}
-        <div class="dim">模型訓練用了 ${meta.historySeasons?.join('、') ?? '過往賽季'};
-          ${bt.available
-            ? `走查回測 ${bt.season} ${bt.games} 場,RPS ${bt.rps}(基準線 ${bt.baselineRps})——
-               <a href="${C.link('model')}">看驗證過程</a>。`
-            : '尚未跑走查回測,所以這一頁不給準度數字。'}</div>
-      </div>`}</div>
     </div>` : ''}
 
   ${/* 「上季最終戰績」2026-09-03 搬到球隊頁(使用者要求)——

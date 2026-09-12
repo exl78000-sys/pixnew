@@ -1,4 +1,4 @@
-import * as C from './core.js?v=f9001a4c';
+import * as C from './core.js?v=03eb6306';
 
 /* ── 賽程列表 + 單場速覽抽屜(共用模組) ─────────────────────────
    原本是獨立的 page-fixtures.js。「總覽」與「賽程與預測」合併成一頁之後,
@@ -13,8 +13,13 @@ export function mountFixtureList({
   listId = 'fixtureList', countId = 'fxCount',
   selectIds = { season: 'fSeason', round: 'fRound', team: 'fTeam', state: 'fState' },
 }) {
-  const basic = meta.edition === 'basic';
+  /* 這裡原本有一個 `basic = meta.edition === 'basic'` 旗標,四個地方用它分岔 ——
+     而它問的是「是不是西甲」。英冠沒有 edition,於是走了英超那條路:
+     難度欄整季 552 列全是「—」(永遠空白的欄位,鐵則三),而市場賠率明明有 81 場卻不顯示。
+     現在每一處都問**資料有沒有那個欄位**。 */
   const teamBy = new Map(teams.map(t => [t.code, t]));
+  // 難度是 FPL 特有的欄位(英超 380/380、西甲與英冠 0)。沒有就不要立一整欄「—」
+  const hasDifficulty = fixtures.some(f => f.difficulty);
   const bySeason = season => season === meta.currentSeason
     ? fixtures
     : results.filter(m => m.season === season).map(m => ({ ...m, kickoff: null }));
@@ -66,7 +71,7 @@ export function mountFixtureList({
         } },
       { key: 'over', label: '大 2.5', value: f => f.prediction?.over25 ?? 0, num: true, fold: 3,
         render: f => (f.prediction ? C.pct(f.prediction.over25, 0) : '—') },
-      ...(basic ? [] : [{ key: 'diff', label: '難度', value: f => (f.difficulty ? f.difficulty.home + f.difficulty.away : 0), num: true, fold: 4,
+      ...(!hasDifficulty ? [] : [{ key: 'diff', label: '難度', value: f => (f.difficulty ? f.difficulty.home + f.difficulty.away : 0), num: true, fold: 4,
         title: 'FPL 官方賽程難度(主/客,1~5)',
         render: f => f.difficulty ? `<span class="small dim">${f.difficulty.home} / ${f.difficulty.away}</span>` : '—' }]),
       { key: 'article', label: '分析', value: () => 0, sortable: false,
@@ -126,11 +131,14 @@ export function mountFixtureList({
      以前這裡各複製了一份,而且是比較差的版本(戰術雷達寫死綠藍兩色、
      數據對比沒有隊色對照條、傷停用字串比對而不是傷停模組)。
      一份資料兩個地方畫,改了一邊另一邊就會悄悄過期 —— 所以只留一份。 */
-  function basicTeamComparison(f) {
-    if (!basic) return '';
+  /* 抽屜裡的兩隊對比。條件從「是不是西甲」改成**這一場有沒有更完整的地方可看**:
+     有賽前 / 賽後分析頁的場次不重複畫(上面已經給了直達連結),沒有的才在抽屜裡給對比。
+     三個聯賽都適用 —— 英冠的球隊沒有 tactics(xg: false),兩邊都沒有就什麼都不畫。 */
+  function teamComparison(f) {
+    if (hasFullAnalysis(f)) return '';
     const h = teamBy.get(f.home), a = teamBy.get(f.away);
     const ht = h?.tactics, at = a?.tactics;
-    if (!ht && !at) return `<div class="note">兩隊都是本季升班馬，${meta.lastSeason} 沒有西甲球隊樣本，因此不製作風格對比。</div>`;
+    if (!ht && !at) return '';
     const val = (obj, path) => path.reduce((v, key) => v?.[key], obj) ?? null;
     const rows = [
       { label: 'Elo', h: h?.elo ?? null, a: a?.elo ?? null, digits: 0 },
@@ -175,7 +183,8 @@ export function mountFixtureList({
             <div class="side away">${C.badge(f.away)}<b>${C.name(f.away)}</b></div>
           </div>` : ''}
         ${p ? `<div style="margin:12px 0">${C.probBar(p)}</div>` : '<div class="dim small">這場沒有留下賽前預測。</div>'}
-        ${basic && f.market ? `<div class="note info" style="margin-top:10px">
+        ${/* 市場賠率:有就顯示。原本綁在 edition 上,所以英超 40 場、英冠 81 場有資料卻都不印 */''}
+        ${f.market ? `<div class="note info" style="margin-top:10px">
           <b>專業市場去水機率</b>：主勝 ${C.pct(f.market.probs.home)}、和局 ${C.pct(f.market.probs.draw)}、客勝 ${C.pct(f.market.probs.away)}；
           十進位賠率 ${f.market.decimals.home} / ${f.market.decimals.draw} / ${f.market.decimals.away}，水錢 ${C.pct(f.market.overround)}。
           <span class="dim">${f.market.source}，這是市場定價共識，不代表實際資金流向。</span>
@@ -203,12 +212,13 @@ export function mountFixtureList({
           <span class="tiny dim">${f.played ? '賽前模型、市場共識、實際 xG、陣容與賽後解讀都能並排查看' : '陣容、戰術對比、歷來交手、近況與傷停都在那一頁'}</span>${full}</div>` : ''}
       </div>
 
-      ${basicTeamComparison(f)}
+      ${teamComparison(f)}
 
+      ${/* 沒有賽後報告時的那一句。原本兩個版本靠 edition 選,而英超那句
+             (「沒有逐球員的出場資料」)是**我們沒有驗證過的原因** —— 拿不到報告可能是
+             上游還沒發、也可能是完整性檢查沒過。改成一句三個聯賽都成立的實話。 */''}
       ${rep ? C.matchReportCards(rep) : (f.played
-        ? `<div class="note">${basic
-          ? '這場尚待主要資料源完成永久快取;球隊統計、正式陣容、事件、球員資料與評分未全部通過前不顯示半成品。'
-          : '這場沒有逐球員的出場資料,所以沒有陣容與戰術解讀 —— 上游補上之後會自動出現。'}</div>`
+        ? '<div class="note">這場的完整賽後資料還沒到齊 —— 球隊統計、正式陣容、事件與球員評分要全部通過核對才會顯示,不放半成品。上游補上之後會自動出現。</div>'
         : '')}`);
   }
 

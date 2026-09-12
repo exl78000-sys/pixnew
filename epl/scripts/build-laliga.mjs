@@ -1027,6 +1027,31 @@ async function main() {
   const meta = {
     builtAt: new Date().toISOString(), asOf: AS_OF,
     league: 'es1', edition: 'basic',
+    /* intro 與 boundaries 從前端搬進來(2026-09-12)。
+
+       原本這兩段話寫死在 `page-index.js` 與 `page-teams.js` 的 `edition === 'basic'` 分支裡,
+       而那個旗標是「是不是西甲」的二元式 —— 英冠沒有 edition,於是走了英超那條路。
+       這是 CLAUDE.md 那條坑(「前端把聯賽的事實寫死」)的解法:**文案由各聯賽的 build 寫**,
+       前端只負責畫。英冠一開始就是這樣做的(build-championship.mjs),西甲現在跟上。
+
+       每一句都要跟這次 build 的實際資料一致,所以會動的數字全部內插,不寫死。 */
+    intro: `使用 ${LAST_SEASON} 完整賽果與 ${CURRENT_SEASON} 已完賽資料,產生積分榜、單場機率與賽季模擬;`
+      + `回歸球隊另有上季 xG、射門、實際陣型與進球情境。完賽後資料會一次性永久快取;`
+      + `球員與教練資料已接入,傷停仍無可靠來源${liveOut.available === true ? ',即時比分也已接入' : ''}。`,
+    // 球隊列表頁的開場白(同一個道理:哪個聯賽有什麼,前端不該知道)
+    teamsIntro: `卡片上的期望積分來自賽季模擬。除戰績、近期表現與模型模擬外,`
+      + `回歸球隊另有 ${LAST_SEASON} 真實 xG、射門、實際陣型與進球情境;`
+      + `球員與教練資料已由可用來源接入,傷停目前沒有可靠來源。`,
+    boundaries: [
+      '✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬',
+      '✓ 上季球隊 xG/xGA、射門、實際陣型、五種進球情境與風格百分位',
+      `✓ 完賽後完整資料永久快取 ${reportCount}/${curPlayed.length} 場(球隊統計、正式陣容、事件與球員評分)`,
+      `— 球員與教練資料已接入;傷停尚無可靠來源;即時比分${liveOut.available === true ? '已接入' : '仍以賽程推算'}`,
+      `— 模型訓練用了 ${[...priorSeasons.map(x => x.season), LAST_SEASON].join('、')};`
+      + (backtest.available
+        ? `走查回測 ${backtest.season} ${backtest.games} 場,RPS ${backtest.rps}(基準線 ${backtest.baselineRps})`
+        : '這個聯賽還沒有回測結果,所以不給準度數字'),
+    ],
     schema: {
       version: 2,
       players: {
