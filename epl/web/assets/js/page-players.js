@@ -1,4 +1,4 @@
-import * as C from './core.js?v=aec8c394';
+import * as C from './core.js?v=7201efbe';
 
 const app = document.getElementById('app');
 
@@ -30,8 +30,12 @@ async function updateXLeague(q) {
    - afterId:聯賽特有欄(FPL 的出場數、西甲的 games) */
 function coreColumns({ statOf, nameCell, teamCol, afterId = [] }) {
   const POS_ORDER = ['GK', 'DEF', 'MID', 'FWD', 'D', 'M', 'F'];
-  const n = (key, label, { fx = false, dash = false } = {}) => ({
-    key, label, num: true,
+  /* fold:視窗放不下時收欄的優先序(數字越大越先收;規則在 core.js 的 foldPlan)。
+     收的都是算得出來或次要的:背號、年齡、紅黃牌、進球參與(= 進球 + 助攻)、xGI(= xG + xA)、xGI/90。
+     球員、球隊、位置、出場、分鐘、進球、助攻、xG、xA、射門、關鍵傳球留著 —— 1200px 視窗量過:
+     英超要收 3 欄、西甲(隊名長)要收 6 欄才塞得下;視窗夠寬(英超約 1330px 以上)一欄都不收。 */
+  const n = (key, label, { fx = false, dash = false, fold = 0 } = {}) => ({
+    key, label, num: true, ...(fold ? { fold } : {}),
     value: p => statOf(p)?.[key] ?? 0,
     render: fx ? (p => C.fx(statOf(p)?.[key], 2))
       : dash ? (p => statOf(p)?.[key] ?? '—')
@@ -41,15 +45,15 @@ function coreColumns({ statOf, nameCell, teamCol, afterId = [] }) {
     { key: 'name', label: '球員', value: p => p.name, left: true, render: nameCell },
     teamCol,
     { key: 'pos', label: '位置', value: p => POS_ORDER.indexOf(p.pos), render: p => C.esc(p.posZh ?? p.pos ?? '—') },
-    { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true, render: p => p.age ?? '—' },
-    { key: 'squadNumber', label: '背號', value: p => p.squadNumber ?? 0, num: true,
+    { key: 'age', label: '年齡', fold: 6, value: p => p.age ?? 0, num: true, render: p => p.age ?? '—' },
+    { key: 'squadNumber', label: '背號', fold: 7, value: p => p.squadNumber ?? 0, num: true,
       render: p => (p.squadNumber == null ? '—' : `${p.squadNumber}${C.numberSourceMark(p)}`) },
     ...afterId,
-    n('minutes', '分鐘'), n('goals', '進球'), n('assists', '助攻'), n('ga', '進球參與'),
-    n('xG', 'xG', { fx: true }), n('xA', 'xA', { fx: true }), n('xGI', 'xGI', { fx: true }),
-    n('xg90', 'xG/90'), n('xa90', 'xA/90'), n('xgi90', 'xGI/90'),
+    n('minutes', '分鐘'), n('goals', '進球'), n('assists', '助攻'), n('ga', '進球參與', { fold: 3 }),
+    n('xG', 'xG', { fx: true }), n('xA', 'xA', { fx: true }), n('xGI', 'xGI', { fx: true, fold: 2 }),
+    n('xg90', 'xG/90'), n('xa90', 'xA/90'), n('xgi90', 'xGI/90', { fold: 1 }),
     n('shots', '射門', { dash: true }), n('keyPasses', '關鍵傳球', { dash: true }),
-    n('yellow', '黃牌', { dash: true }), n('red', '紅牌', { dash: true }),
+    n('yellow', '黃牌', { dash: true, fold: 4 }), n('red', '紅牌', { dash: true, fold: 5 }),
   ];
 }
 

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=aec8c394';
+import * as C from './core.js?v=7201efbe';
 
 /* ── 賽程列表 + 單場速覽抽屜(共用模組) ─────────────────────────
    原本是獨立的 page-fixtures.js。「總覽」與「賽程與預測」合併成一頁之後,
@@ -35,10 +35,13 @@ export function mountFixtureList({
     const withReport = rows.filter(f => reportFor(f)).length;
     document.getElementById(countId).textContent =
       `共 ${rows.length} 場${withReport ? `・其中 ${withReport} 場有完整賽後分析` : ''}`;
+    /* fold:視窗放不下時收欄的優先序(數字越大越先收;規則在 core.js 的 foldPlan)。
+       難度與大 2.5 是附加資訊、模型命中只有已完賽的列才有內容、倒數在開賽時間旁邊 ——
+       球隊、比分與機率條永遠不收。1200px 視窗量過:英冠的隊名最長,要收到模型那一欄才塞得下。 */
     document.getElementById(listId).innerHTML = C.table(rows, [
       { key: 'date', label: isCurrent ? '開賽時間' : '日期', value: f => f.kickoff ?? f.date,
         render: f => `<span class="small">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</span>` },
-      { key: 'cd', label: isCurrent ? '倒數' : '狀態', value: f => f.kickoff ?? '', sortable: false,
+      { key: 'cd', label: isCurrent ? '倒數' : '狀態', value: f => f.kickoff ?? '', sortable: false, fold: 1,
         render: f => (f.played
           ? (reportFor(f) ? '<span class="pill accent tiny">有賽後分析</span>' : '<span class="dim small">完場</span>')
           : (f.kickoff ? `<span class="small">${C.countdown(f.kickoff)}</span>` : '<span class="dim small">時間待定</span>')) },
@@ -51,7 +54,7 @@ export function mountFixtureList({
       { key: 'away', label: '客隊', value: f => C.name(f.away), render: f => C.teamCell(f.away) },
       { key: 'prob', label: isCurrent ? '主 / 和 / 客' : '賽前機率', value: f => f.prediction?.home ?? 0, sortable: false,
         render: f => (f.prediction ? C.probBar(f.prediction) : '<span class="dim small">—</span>') },
-      { key: 'hit', label: '模型', value: f => hitScore(f), sortable: false, title: '賽前機率最高的結果是否命中',
+      { key: 'hit', label: '模型', value: f => hitScore(f), sortable: false, fold: 2, title: '賽前機率最高的結果是否命中',
         render: f => {
           if (!f.played || !f.prediction) return '—';
           const p = f.prediction, act = f.fh > f.fa ? 'home' : f.fh < f.fa ? 'draw2' : 'draw';
@@ -61,9 +64,9 @@ export function mountFixtureList({
             ? `<span class="pill accent tiny">命中 ${C.pct(p[real], 0)}</span>`
             : `<span class="pill tiny">失準 ${C.pct(p[real], 0)}</span>`;
         } },
-      { key: 'over', label: '大 2.5', value: f => f.prediction?.over25 ?? 0, num: true,
+      { key: 'over', label: '大 2.5', value: f => f.prediction?.over25 ?? 0, num: true, fold: 3,
         render: f => (f.prediction ? C.pct(f.prediction.over25, 0) : '—') },
-      ...(basic ? [] : [{ key: 'diff', label: '難度', value: f => (f.difficulty ? f.difficulty.home + f.difficulty.away : 0), num: true,
+      ...(basic ? [] : [{ key: 'diff', label: '難度', value: f => (f.difficulty ? f.difficulty.home + f.difficulty.away : 0), num: true, fold: 4,
         title: 'FPL 官方賽程難度(主/客,1~5)',
         render: f => f.difficulty ? `<span class="small dim">${f.difficulty.home} / ${f.difficulty.away}</span>` : '—' }]),
       { key: 'article', label: '分析', value: () => 0, sortable: false,

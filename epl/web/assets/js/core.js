@@ -1438,9 +1438,73 @@ export function matchReportCards(m, { order = null } = {}) {
    既有呼叫端的行為完全不變。
    會需要它是因為歐冠的球隊表現在列出全部 36 隊,但本站只有其中 8~11 支有球隊頁;
    其餘的套上 clickable 會看起來能點卻沒有地方去(鐵則三:不要做出壞掉的樣子)。 */
+/* 折疊式欄位(2026-09-12,使用者選的做法)。欄位標了 fold(數字越大越先收)的,
+   視窗放不下時依序收起,直到表格塞得進容器;收起的欄名列在表格上方,點一個就把那一欄放回來,
+   「展開全部」則回到橫向捲動。**哪幾欄可以收由呼叫端標,收幾欄由量出來的寬度決定** ——
+   不在前端寫死「1200px 收三欄」那種數字:視窗寬度、字型、球隊名長短都會讓它失準
+   (英冠的隊名就比英超長 80px)。決策抽成純函式讓 npm test 測得到,DOM 那一層只負責量與套用。
+   widths 是各欄量到的自然寬度、total 是表格的自然寬度(相加只是估的,真的排版差幾個 px
+   由呼叫端再補收一欄)。keep 是讀者點回來的欄,跳過不收 —— 那是他明講要看的。 */
+export function foldPlan({ cols, widths, available, total = null, keep = new Set() }) {
+  const hide = [];
+  let w = total ?? Object.values(widths).reduce((a, b) => a + b, 0);
+  if (w <= available) return hide;
+  const foldable = cols.filter(c => c.fold).sort((a, b) => b.fold - a.fold);
+  for (const c of foldable) {
+    if (w <= available) break;
+    if (keep.has(c.key)) continue;
+    hide.push(c.key);
+    w -= widths[c.key] ?? 0;
+  }
+  return hide;
+}
+
 export function table(rows, cols, { sortKey = null, desc = true, onRow = null, rowClickable = null, limit = null } = {}) {
   const id = `t${Math.random().toString(36).slice(2, 8)}`;
   let state = { key: sortKey, desc };
+  const foldable = cols.filter(c => c.fold).sort((a, b) => b.fold - a.fold);
+  const keep = new Set();      // 讀者點回來的欄
+  let expanded = false;        // 讀者按了「展開全部」:不收,表格橫向捲動
+  let lastW = null;
+
+  /* 量寬度、套 foldPlan、畫上方那一列。每次 render 之後跑一次(重排序會重畫整張表),
+     容器寬度變了再跑一次(下面的 ResizeObserver)。 */
+  const fit = () => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const wrap = el.querySelector('.table-wrap'), tbl = wrap.querySelector('table'), bar = el.querySelector('.table-fold');
+    const setHidden = keys => tbl.querySelectorAll('[data-k]').forEach(c => c.classList.toggle('fold-hidden', keys.has(c.dataset.k)));
+    setHidden(new Set());                                   // 先全部放出來再量,量到的才是自然寬度
+    let hidden = new Set();
+    /* clientWidth 是 0 代表容器還沒顯示(收合的分頁、display:none 的區塊),那時量到的全是假的,
+       什麼都不收 —— 等它顯示出來 ResizeObserver 會再叫一次 */
+    if (foldable.length && !expanded && wrap.clientWidth > 0 && tbl.scrollWidth > wrap.clientWidth + 1) {
+      const widths = Object.fromEntries([...tbl.querySelectorAll('thead th')].map(th => [th.dataset.k, th.offsetWidth]));
+      hidden = new Set(foldPlan({ cols, widths, available: wrap.clientWidth, total: tbl.scrollWidth, keep }));
+      setHidden(hidden);
+      // 相加是估的,真的排版可能差幾個 px:還是放不下就再收下一欄
+      for (const c of foldable) {
+        if (tbl.scrollWidth <= wrap.clientWidth + 1) break;
+        if (hidden.has(c.key) || keep.has(c.key)) continue;
+        hidden.add(c.key); setHidden(hidden);
+      }
+    }
+    const labelOf = k => cols.find(c => c.key === k)?.label ?? k;
+    if (hidden.size) {
+      bar.hidden = false;
+      bar.innerHTML = `<span>視窗放不下,先收起 ${hidden.size} 欄(點欄名放回來):</span>`
+        + [...hidden].map(k => `<button class="btn tiny" type="button" data-unfold="${esc(k)}">${labelOf(k)}</button>`).join('')
+        + `<button class="btn tiny" type="button" data-expand>展開全部</button>`
+        + (state.key && hidden.has(state.key) ? `<span class="dim">目前依「${labelOf(state.key)}」排序</span>` : '');
+    } else if (expanded) {
+      bar.hidden = false;
+      bar.innerHTML = `<span>已展開全部欄位,表格可橫向捲動。</span><button class="btn tiny" type="button" data-collapse>收起放不下的欄</button>`;
+    } else { bar.hidden = true; bar.innerHTML = ''; }
+    bar.querySelectorAll('[data-unfold]').forEach(b => { b.onclick = () => { keep.add(b.dataset.unfold); fit(); }; });
+    const ex = bar.querySelector('[data-expand]'); if (ex) ex.onclick = () => { expanded = true; fit(); };
+    const co = bar.querySelector('[data-collapse]'); if (co) co.onclick = () => { expanded = false; keep.clear(); fit(); };
+    lastW = wrap.clientWidth;
+  };
 
   const render = () => {
     let data = [...rows];
@@ -1465,7 +1529,7 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
       `<th class="${cls(c, c.sortable === false ? '' : 'sortable') + (state.key === c.key ? ' sorted' : '')}" data-k="${c.key}" title="${c.title ?? ''}">${c.label}${state.key === c.key ? (state.desc ? ' ▾' : ' ▴') : ''}</th>`).join('');
     const body = data.map((r, i) =>
       `<tr class="${onRow && (!rowClickable || rowClickable(r)) ? 'clickable' : ''}" data-i="${rows.indexOf(r)}">${cols.map(c =>
-        `<td class="${cls(c)}">${cellHtml(c, r, i)}</td>`).join('')}</tr>`).join('');
+        `<td class="${cls(c)}" data-k="${c.key}">${cellHtml(c, r, i)}</td>`).join('')}</tr>`).join('');
     const el = document.getElementById(id);
     el.querySelector('table').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
     el.querySelectorAll('th.sortable').forEach(th => {
@@ -1482,10 +1546,29 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
         tr.onclick = () => onRow(row);
       });
     }
+    fit();
   };
 
-  queueMicrotask(render);
-  return `<div class="table-wrap" id="${id}"><table></table></div>`;
+  queueMicrotask(() => {
+    render();
+    /* 兩種情況要重算(讀者的「展開全部」與點回來的欄都保留):
+       1. 容器寬度變了(視窗縮放)。
+       2. **表格自己變寬了** —— 第一次 fit 跑在字型與隊徽載入之前,量到的表格比最後窄幾個 px,
+          於是「只差 5px 放不下」的那種沒有被收(英超首頁賽程表 1200px 實測:1163 對 1158,一欄都沒收)。
+          這條只在「還有欄可以收」時才重算,不然收無可收的手機寬度會無限重跑:
+          fit 自己會讓表格先變寬再變窄,觀察器一定會被叫,用這個條件停住。 */
+    const box = document.getElementById(id);
+    const wrap = box?.querySelector('.table-wrap'), tbl = wrap?.querySelector('table');
+    if (!wrap || !foldable.length || typeof ResizeObserver !== 'function') return;
+    const canFoldMore = () => foldable.some(c => !keep.has(c.key)
+      && !tbl.querySelector(`th[data-k="${c.key}"]`)?.classList.contains('fold-hidden'));
+    const ro = new ResizeObserver(() => {
+      if (wrap.clientWidth !== lastW) { fit(); return; }
+      if (!expanded && tbl.scrollWidth > wrap.clientWidth + 1 && canFoldMore()) fit();
+    });
+    ro.observe(wrap); ro.observe(tbl);
+  });
+  return `<div class="table-box" id="${id}"><div class="table-fold small dim" hidden></div><div class="table-wrap"><table></table></div></div>`;
 }
 
 /* ── 雷達圖 ─────────────────────────── */
