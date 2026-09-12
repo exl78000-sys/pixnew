@@ -22636,32 +22636,6 @@
    "goals": [
     {
      "side": "H",
-     "person": 23968,
-     "assist": 72371,
-     "team": 4,
-     "min": 7,
-     "label": "07'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "A",
-     "person": 137549,
-     "assist": 20081,
-     "team": 41,
-     "min": 28,
-     "label": "28'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
-     "as": 1
-    },
-    {
-     "side": "A",
      "person": 137549,
      "assist": 8107,
      "team": 41,
@@ -22686,7 +22660,26 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 70585,
+      "team": 4,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 119041,
+      "team": 4,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PS",
@@ -22702,7 +22695,7 @@
      }
     ]
    },
-   "clock": "45+3'00"
+   "clock": "45'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -23694,6 +23687,12 @@
     ],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -23704,11 +23703,17 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "47'00"
   }
  },
- "fetchedAt": "2026-09-12T15:01:22.763Z"
+ "fetchedAt": "2026-09-12T15:03:41.651Z"
 }
