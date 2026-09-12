@@ -21762,7 +21762,7 @@
      }
     ]
    },
-   "clock": "52'00"
+   "clock": "56'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -21770,7 +21770,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 1
    },
    "homeId": 127,
@@ -22200,15 +22200,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 21519,
-     "assist": null,
+     "person": 14846,
+     "assist": 33032,
      "team": 127,
-     "min": 38,
-     "label": "38'00",
-     "phase": "1",
+     "min": 52,
+     "label": "52'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 1,
+     "hs": 2,
      "as": 1
     }
    ],
@@ -22261,7 +22261,7 @@
      }
     ]
    },
-   "clock": "48'00"
+   "clock": "55'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -22786,7 +22786,7 @@
      }
     ]
    },
-   "clock": "52'00"
+   "clock": "57'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -23304,7 +23304,7 @@
      }
     ]
    },
-   "clock": "48'00"
+   "clock": "55'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -23760,6 +23760,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 63633,
+      "team": 10,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49909,
+      "team": 10,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 32894,
+      "team": 10,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 119386,
+      "team": 10,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -23789,8 +23825,8 @@
      }
     ]
    },
-   "clock": "56'00"
+   "clock": "61'00"
   }
  },
- "fetchedAt": "2026-09-12T15:12:57.097Z"
+ "fetchedAt": "2026-09-12T15:17:45.457Z"
 }
