@@ -77,6 +77,7 @@ const dryRun = process.argv.includes('--dry-run');
 const limit = Math.min(HARD_LIMIT, Math.max(0, Number(arg('limit') ?? DEFAULT_LIMIT)));
 const verifyN = Number(arg('verify') ?? 0);
 const refresh = process.argv.includes('--refresh');   // 已快取的也重抓(萃取多了欄位、但不想 +1 版本重抓整季時用)
+const retryNow = process.argv.includes('--retry');    // 不理 30 分鐘的退避(手動回填時人已經決定現在就試)
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const read = async p => { try { return JSON.parse(await readFile(p, 'utf8')); } catch { return null; } };
 const round = (n, d = 3) => (Number.isFinite(Number(n)) ? Math.round(Number(n) * 10 ** d) / 10 ** d : null);
@@ -115,10 +116,21 @@ function indexFixtures(json, keyOf) {
     if (!home) unknown.add(item.home?.name);
     if (!away) unknown.add(item.away?.name);
     if (!home || !away || !item.id) continue;
-    byPair.set(`${home}|${away}`, { matchId: String(item.id), date: String(item.status?.utcTime ?? '').slice(0, 10),
+    /* 同一組主客一季可能兩場(歐冠聯賽階段 + 淘汰賽),所以一個鍵放一串,查的時候用日期挑。
+       第一版一個鍵一場(後寫的蓋掉先寫的):Arsenal vs Atlético 聯賽階段那場拿到的是五月淘汰賽的 matchId,
+       日期核對擋下來 → 13 場全部「日期不一致」,而它們就在賽程裡。 */
+    const k = `${home}|${away}`;
+    if (!byPair.has(k)) byPair.set(k, []);
+    byPair.get(k).push({ matchId: String(item.id), date: String(item.status?.utcTime ?? '').slice(0, 10),
       finished: item.status?.finished === true, scoreStr: item.status?.scoreStr ?? null });
   }
   return { byPair, unknown: [...unknown] };
+}
+/* 這一場在 FotMob 賽程裡是哪一筆:同一組主客只有一筆就是它(日期核對在呼叫端),有多筆就要日期完全一致。 */
+function remoteOf(byPair, f) {
+  const cands = byPair.get(`${f.home}|${f.away}`) ?? [];
+  if (cands.length <= 1) return cands[0] ?? null;
+  return cands.find(c => c.date === f.date) ?? { missing: `同一組主客有 ${cands.length} 場(${cands.map(c => c.date).join('、')}),沒有一場是 ${f.date}` };
 }
 
 /* 歐冠的橋:FotMob 賽程裡的隊(id → 名字)↔ ucl.json 裡的隊(fd id → 全名 + 簡稱)。
@@ -344,11 +356,11 @@ async function main() {
   const stale = k => store.matches[k]?.extractVersion !== EXTRACT_VERSION;
   const recentlyTried = k => { const at = Date.parse(store.attempts[k]?.at ?? ''); return Number.isFinite(at) && Date.now() - at < RETRY_MS; };
   const wanted = played.filter(f => refresh || !store.matches[pairOf(f)] || stale(pairOf(f)));
-  const pending = wanted.filter(f => refresh || !recentlyTried(pairOf(f)))
+  const pending = wanted.filter(f => refresh || retryNow || !recentlyTried(pairOf(f)))
     .sort((a, b) => a.date.localeCompare(b.date));
   const label = f => LG.results ? `${f.home}–${f.away}` : `${f.homeName ?? f.home}–${f.awayName ?? f.away}`;
   console.log(`\n▶ FotMob ${arg('league') ?? 'pl'} ${season}:已完賽 ${played.length} 場・快取 ${Object.keys(store.matches).length} 場・待補 ${pending.length} 場`
-    + (wanted.length > pending.length ? `(另 ${wanted.length - pending.length} 場 30 分鐘內退回過,先不重試)` : '') + `・本次上限 ${limit}`);
+    + (wanted.length > pending.length ? `(另 ${wanted.length - pending.length} 場 30 分鐘內退回過,先不重試;--retry 可略過)` : '') + `・本次上限 ${limit}`);
 
   if (verifyN > 0 && !LG.verify) console.log('  這個聯賽沒有官網端點可抽核控球率,略過 --verify');
   if (verifyN > 0 && LG.verify) { await verify(store, results, verifyN, teams); }
@@ -381,9 +393,10 @@ async function main() {
     let ok = 0, rejected = 0;
     for (const f of pending.slice(0, Math.floor((limit - 1) / PER_MATCH))) {   // 一場 PER_MATCH 個請求
       const key = pairOf(f);
-      const remote = byPair.get(`${f.home}|${f.away}`);
+      const remote = remoteOf(byPair, f);
       const note = reason => { store.attempts[key] = { at: new Date().toISOString(), reason, matchId: remote?.matchId ?? null, label: label(f) }; rejected++; console.log(`  ⚠ ${f.date} ${label(f)}:${reason}`); };
       if (!remote) { note('FotMob 賽程找不到對應場次'); continue; }
+      if (remote.missing) { note(`FotMob 賽程找不到對應場次:${remote.missing}`); continue; }
       if (remote.date && remote.date !== f.date) { note(`日期不一致(FotMob ${remote.date})`); continue; }
       if (!remote.finished) { note('FotMob 標未完賽'); continue; }
       const r = await get(`${BASE}/api/data/matchDetails?matchId=${remote.matchId}`, { referer: `${BASE}/` });

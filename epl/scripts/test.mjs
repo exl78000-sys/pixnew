@@ -4460,6 +4460,11 @@ async function checkUclDetails() {
       && /const key = pairOf\(f\);/.test(src) && /byPair\.get\(`\$\{f\.home\}\|\$\{f\.away\}`\)/.test(src),
       '抓取器的快取鍵走 pairOf(歐冠帶日期),FotMob 賽程的查表仍是主|客');
     ok(/舊鍵改成/.test(src) && /if \(m\.pair\) continue;/.test(src), '舊格式(主|客)的歐冠紀錄在載入時就地改鍵');
+    ok(/byPair\.get\(k\)\.push\(/.test(src) && /cands\.find\(c => c\.date === f\.date\)/.test(src) && /remote\.missing/.test(src),
+      'FotMob 賽程的查表一個鍵放一串,同一組主客多場時用日期挑(第一版後寫的蓋掉先寫的,13 場全部「日期不一致」)');
+    ok(/const retryNow = process\.argv\.includes\('--retry'\)/.test(src) && /refresh \|\| retryNow \|\| !recentlyTried/.test(src)
+      && /--retry/.test(readFileSync(join(ROOT, '..', '.github', 'workflows', 'ucl-backfill.yml'), 'utf8')),
+      '手動回填帶 --retry,不理 30 分鐘的退避');
     ok(/period: s\.period \?\? null/.test(src) && /s\.type === 'Goal' && !isShootoutShot\(s, \{ pens: !!fixture\.pens \}\)/.test(src), '射門存 period,射門圖完整性不算 PK 大戰的球(有踢 PK 的場次才排)');
     ok(!/ccode3=\$\{LG\.ccode3\}&/.test(src), 'ccode3 沒有就不帶(以前寫死在網址裡)');
   }
