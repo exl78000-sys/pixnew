@@ -69795,8 +69795,1500 @@
      }
     ]
    }
+  },
+  "OSA|ESP": {
+   "key": "OSA|ESP",
+   "season": "2026-27",
+   "date": "2026-09-12",
+   "matchId": "5868055",
+   "home": "OSA",
+   "away": "ESP",
+   "score": [
+    0,
+    2
+   ],
+   "providerScore": [
+    0,
+    2
+   ],
+   "teamStats": {
+    "OSA": {
+     "possession": 61,
+     "shots": 11,
+     "shotsOn": 4,
+     "shotsOff": 5,
+     "blockedShots": 2,
+     "corners": 3,
+     "offsides": 0,
+     "fouls": 10,
+     "saves": 1,
+     "passes": 493,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.87
+    },
+    "ESP": {
+     "possession": 39,
+     "shots": 6,
+     "shotsOn": 3,
+     "shotsOff": 1,
+     "blockedShots": 1,
+     "corners": 4,
+     "offsides": 0,
+     "fouls": 24,
+     "saves": 4,
+     "passes": 321,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.42
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     61,
+     39
+    ],
+    "h1": [
+     56,
+     44
+    ],
+    "h2": [
+     64,
+     36
+    ]
+   },
+   "events": [
+    {
+     "minute": 3,
+     "extra": null,
+     "team": "ESP",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Roberto Fernández"
+    },
+    {
+     "minute": 17,
+     "extra": null,
+     "team": "ESP",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Roberto Fernández"
+    },
+    {
+     "minute": 31,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Enrique Barja"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jon Moncayola"
+    },
+    {
+     "minute": 40,
+     "extra": null,
+     "team": "ESP",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Clemens Riedel"
+    },
+    {
+     "minute": 45,
+     "extra": null,
+     "team": "ESP",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Omar El Hilali"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Abel Bretones"
+    },
+    {
+     "minute": 59,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Asier Osambela"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Raúl Moro"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jonathan Dubasin"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "ESP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Álex Calatrava"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "ESP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gabriel Moscardo"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Romain Del Castillo"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "ESP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pere Milla"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "ESP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bryan Zaragoza"
+    },
+    {
+     "minute": 87,
+     "extra": null,
+     "team": "ESP",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Roger Hinojo"
+    },
+    {
+     "minute": 89,
+     "extra": 0,
+     "team": "ESP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Vanja Drkušić"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "ESP",
+     "player": "Roberto Fernández",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.418,
+     "xgot": 0.34,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.8,
+     "y": 33.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 5,
+     "extra": null,
+     "team": "OSA",
+     "player": "Ante Budimir",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.13,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 31.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "OSA",
+     "player": "Rubén Garcia",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 27,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl García",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.105,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 36.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "ESP",
+     "player": "Roberto Fernández",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.881,
+     "xgot": 0.994,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.9,
+     "y": 35.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ESP",
+     "player": "Marcos Fernández",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0.012,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.9,
+     "y": 24,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "OSA",
+     "player": "Iker Muñoz",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.121,
+     "xgot": 0.378,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 35.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl García",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.1,
+     "y": 42.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "ESP",
+     "player": "Marcos Fernández",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.6,
+     "y": 10,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "ESP",
+     "player": "Edu Expósito",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.3,
+     "y": 39.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "OSA",
+     "player": "Rubén Garcia",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.012,
+     "xgot": 0.068,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73,
+     "y": 30.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl Moro",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.9,
+     "y": 37.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl Moro",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.156,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 37,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "OSA",
+     "player": "Jonathan Dubasin",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 34.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "ESP",
+     "player": "Pere Milla",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.9,
+     "y": 22.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "OSA",
+     "player": "Jonathan Dubasin",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.148,
+     "xgot": 0.192,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.1,
+     "y": 33.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl Moro",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.051,
+     "xgot": 0.016,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.1,
+     "y": 45.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     8
+    ],
+    [
+     3,
+     -68
+    ],
+    [
+     4,
+     -84
+    ],
+    [
+     5,
+     -65
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     7,
+     49
+    ],
+    [
+     8,
+     27
+    ],
+    [
+     9,
+     27
+    ],
+    [
+     10,
+     5
+    ],
+    [
+     11,
+     41
+    ],
+    [
+     12,
+     30
+    ],
+    [
+     13,
+     30
+    ],
+    [
+     14,
+     -90
+    ],
+    [
+     15,
+     -68
+    ],
+    [
+     16,
+     -57
+    ],
+    [
+     17,
+     -100
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     19,
+     -3
+    ],
+    [
+     20,
+     100
+    ],
+    [
+     21,
+     -30
+    ],
+    [
+     22,
+     43
+    ],
+    [
+     23,
+     41
+    ],
+    [
+     24,
+     54
+    ],
+    [
+     25,
+     -5
+    ],
+    [
+     26,
+     19
+    ],
+    [
+     27,
+     35
+    ],
+    [
+     28,
+     27
+    ],
+    [
+     29,
+     35
+    ],
+    [
+     30,
+     8
+    ],
+    [
+     31,
+     -3
+    ],
+    [
+     32,
+     -8
+    ],
+    [
+     33,
+     14
+    ],
+    [
+     34,
+     19
+    ],
+    [
+     35,
+     24
+    ],
+    [
+     36,
+     14
+    ],
+    [
+     37,
+     -54
+    ],
+    [
+     38,
+     -73
+    ],
+    [
+     39,
+     -73
+    ],
+    [
+     40,
+     -3
+    ],
+    [
+     41,
+     8
+    ],
+    [
+     42,
+     8
+    ],
+    [
+     43,
+     -22
+    ],
+    [
+     44,
+     -14
+    ],
+    [
+     45,
+     41
+    ],
+    [
+     45.5,
+     64
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -5
+    ],
+    [
+     48,
+     0
+    ],
+    [
+     49,
+     16
+    ],
+    [
+     50,
+     22
+    ],
+    [
+     51,
+     -33
+    ],
+    [
+     52,
+     -33
+    ],
+    [
+     53,
+     -27
+    ],
+    [
+     54,
+     22
+    ],
+    [
+     55,
+     5
+    ],
+    [
+     56,
+     -22
+    ],
+    [
+     57,
+     -14
+    ],
+    [
+     58,
+     -14
+    ],
+    [
+     59,
+     8
+    ],
+    [
+     60,
+     14
+    ],
+    [
+     61,
+     24
+    ],
+    [
+     62,
+     52
+    ],
+    [
+     63,
+     60
+    ],
+    [
+     64,
+     60
+    ],
+    [
+     65,
+     -54
+    ],
+    [
+     66,
+     -60
+    ],
+    [
+     67,
+     -65
+    ],
+    [
+     68,
+     0
+    ],
+    [
+     69,
+     0
+    ],
+    [
+     70,
+     22
+    ],
+    [
+     71,
+     43
+    ],
+    [
+     72,
+     16
+    ],
+    [
+     73,
+     -11
+    ],
+    [
+     74,
+     11
+    ],
+    [
+     75,
+     43
+    ],
+    [
+     76,
+     60
+    ],
+    [
+     77,
+     38
+    ],
+    [
+     78,
+     22
+    ],
+    [
+     79,
+     -16
+    ],
+    [
+     80,
+     -16
+    ],
+    [
+     81,
+     -60
+    ],
+    [
+     82,
+     -38
+    ],
+    [
+     83,
+     -38
+    ],
+    [
+     84,
+     11
+    ],
+    [
+     85,
+     60
+    ],
+    [
+     86,
+     71
+    ],
+    [
+     87,
+     73
+    ],
+    [
+     88,
+     24
+    ],
+    [
+     89,
+     -14
+    ],
+    [
+     90,
+     0
+    ],
+    [
+     90.5,
+     14
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "OSA": {
+     "team": "OSA",
+     "formation": "4-2-3-1",
+     "coach": "Luis Ramis",
+     "xi": [
+      {
+       "name": "Sergio Herrera",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Iñigo Arguibide",
+       "shirt": 27,
+       "pos": "D"
+      },
+      {
+       "name": "Rockson Yeboah",
+       "shirt": 48,
+       "pos": "D"
+      },
+      {
+       "name": "Alejandro Catena",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Diego Rico",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Jon Moncayola",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Muñoz",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Rubén Garcia",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Raúl García",
+       "shirt": 9,
+       "pos": "M"
+      },
+      {
+       "name": "Enrique Barja",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Ante Budimir",
+       "shirt": 17,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Abel Bretones",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Asier Osambela",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Jonathan Dubasin",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Raúl Moro",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Romain Del Castillo",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Aitor Fernández",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Rafa Fernández",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Flavien Boyomo",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Unai Santos",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Torró",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Mauro Echegoyen",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Asier Bonel",
+       "shirt": 30,
+       "pos": "?"
+      }
+     ]
+    },
+    "ESP": {
+     "team": "ESP",
+     "formation": "4-2-3-1",
+     "coach": "Manolo González",
+     "xi": [
+      {
+       "name": "Marko Dmitrović",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Omar El Hilali",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Clemens Riedel",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Leandro Cabrera",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Roger Hinojo",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Edu Expósito",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Urko González",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Marcos Fernández",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Javi Hernández",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Tyrhys Dolan",
+       "shirt": 24,
+       "pos": "M"
+      },
+      {
+       "name": "Roberto Fernández",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Gabriel Moscardo",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Álex Calatrava",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Pere Milla",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Bryan Zaragoza",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Vanja Drkušić",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Ángel Fortuno",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "José Ángel",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Quilindschy Hartman",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Unai Núñez",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Jofre Carreras",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Pol Lozano",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Rafel Bauzà",
+       "shirt": 26,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 41,
+      "center": 24,
+      "right": 35
+     },
+     "firstHalf": {
+      "left": 39,
+      "center": 24,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 43,
+      "center": 23,
+      "right": 34
+     }
+    },
+    "away": {
+     "total": {
+      "left": 36,
+      "center": 32,
+      "right": 32
+     },
+     "firstHalf": {
+      "left": 40,
+      "center": 28,
+      "right": 32
+     },
+     "secondHalf": {
+      "left": 30,
+      "center": 38,
+      "right": 32
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-12T16:24:21.786Z",
+   "fdMatchId": "2026-27-43",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "OSA",
+      "name": "Rubén Garcia",
+      "n": 45,
+      "cx": 64,
+      "cy": 50.3,
+      "spread": 29.7,
+      "grid": "0,0,0,1,3,0,0,1,0,1,0,0,0,1,1,5,1,2,2,3,5,5,6,8"
+     },
+     {
+      "team": "OSA",
+      "name": "Iker Muñoz",
+      "n": 92,
+      "cx": 53.8,
+      "cy": 29.4,
+      "spread": 27.6,
+      "grid": "0,3,5,9,5,0,2,2,13,12,4,3,6,5,2,8,3,0,0,1,1,4,0,4"
+     },
+     {
+      "team": "OSA",
+      "name": "Alejandro Catena",
+      "n": 106,
+      "cx": 37.6,
+      "cy": 26.2,
+      "spread": 21.6,
+      "grid": "0,9,11,7,0,0,10,19,14,6,2,0,2,9,11,0,0,2,0,1,2,1,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Clemens Riedel",
+      "n": 71,
+      "cx": 28.1,
+      "cy": 46.9,
+      "spread": 18.5,
+      "grid": "0,0,0,0,0,0,1,0,2,2,0,0,12,15,14,0,0,0,9,7,6,3,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Ante Budimir",
+      "n": 41,
+      "cx": 73.6,
+      "cy": 35.7,
+      "spread": 27.2,
+      "grid": "0,0,0,0,5,1,1,0,1,3,1,7,1,1,2,2,4,5,0,0,0,4,1,2"
+     },
+     {
+      "team": "ESP",
+      "name": "Omar El Hilali",
+      "n": 76,
+      "cx": 41.2,
+      "cy": 56.7,
+      "spread": 29.2,
+      "grid": "0,0,0,2,0,0,0,0,0,0,0,0,10,2,1,5,0,0,7,19,9,10,6,5"
+     },
+     {
+      "team": "OSA",
+      "name": "Diego Rico",
+      "n": 45,
+      "cx": 49.5,
+      "cy": 9.5,
+      "spread": 23,
+      "grid": "3,6,9,14,6,1,1,2,2,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Marko Dmitrović",
+      "n": 68,
+      "cx": 8.4,
+      "cy": 32.8,
+      "spread": 9.8,
+      "grid": "0,1,0,0,0,0,29,4,0,0,0,0,32,1,0,0,0,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Leandro Cabrera",
+      "n": 68,
+      "cx": 26.5,
+      "cy": 24.2,
+      "spread": 22.8,
+      "grid": "4,5,4,0,2,0,19,16,6,0,1,1,4,2,3,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Roger Hinojo",
+      "n": 75,
+      "cx": 38.8,
+      "cy": 10.5,
+      "spread": 22.4,
+      "grid": "11,19,16,16,3,1,2,1,2,2,0,0,0,0,0,0,0,0,0,0,2,0,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Javi Hernández",
+      "n": 59,
+      "cx": 49.8,
+      "cy": 38.7,
+      "spread": 34.6,
+      "grid": "0,1,4,0,3,5,0,0,4,6,0,2,2,2,1,2,2,0,6,7,8,2,1,1"
+     },
+     {
+      "team": "ESP",
+      "name": "Urko González",
+      "n": 45,
+      "cx": 38.4,
+      "cy": 30.2,
+      "spread": 22.9,
+      "grid": "4,2,3,2,0,0,3,0,10,1,0,0,2,3,5,6,0,0,0,0,2,2,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Roberto Fernández",
+      "n": 29,
+      "cx": 69.4,
+      "cy": 37,
+      "spread": 30.5,
+      "grid": "1,0,0,2,2,0,1,0,0,3,1,1,0,0,1,0,1,5,0,1,0,4,4,2"
+     },
+     {
+      "team": "OSA",
+      "name": "Jon Moncayola",
+      "n": 81,
+      "cx": 58.1,
+      "cy": 35.9,
+      "spread": 27.6,
+      "grid": "0,1,0,8,3,3,0,3,7,10,2,0,0,2,6,13,3,1,2,4,3,3,4,3"
+     },
+     {
+      "team": "ESP",
+      "name": "Tyrhys Dolan",
+      "n": 35,
+      "cx": 53,
+      "cy": 20.2,
+      "spread": 37,
+      "grid": "5,3,2,5,2,5,1,2,0,0,2,2,0,0,0,0,0,1,0,3,2,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Iñigo Arguibide",
+      "n": 46,
+      "cx": 57.3,
+      "cy": 61.1,
+      "spread": 29.5,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,4,8,5,11,7,9"
+     },
+     {
+      "team": "OSA",
+      "name": "Sergio Herrera",
+      "n": 42,
+      "cx": 11.6,
+      "cy": 33.4,
+      "spread": 12.8,
+      "grid": "2,1,0,0,0,0,15,4,0,0,0,0,18,1,0,0,0,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Edu Expósito",
+      "n": 63,
+      "cx": 59.6,
+      "cy": 39.9,
+      "spread": 28.3,
+      "grid": "0,2,0,1,1,1,1,2,5,4,7,0,1,2,1,14,1,1,1,3,4,3,4,4"
+     },
+     {
+      "team": "ESP",
+      "name": "Marcos Fernández",
+      "n": 29,
+      "cx": 63.4,
+      "cy": 40.2,
+      "spread": 23.6,
+      "grid": "0,0,0,1,0,1,0,1,0,3,3,1,0,1,1,4,4,0,0,0,5,0,3,1"
+     },
+     {
+      "team": "OSA",
+      "name": "Enrique Barja",
+      "n": 33,
+      "cx": 66.4,
+      "cy": 13.4,
+      "spread": 26.9,
+      "grid": "0,3,2,4,7,6,1,1,3,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Raúl García",
+      "n": 25,
+      "cx": 75.4,
+      "cy": 19.7,
+      "spread": 20.1,
+      "grid": "0,0,3,1,7,2,0,0,0,1,4,4,0,0,0,1,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Rockson Yeboah",
+      "n": 88,
+      "cx": 39.9,
+      "cy": 45.6,
+      "spread": 22.4,
+      "grid": "1,0,0,3,0,1,0,2,3,0,0,0,8,9,26,4,2,1,6,5,9,8,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Abel Bretones",
+      "n": 57,
+      "cx": 61.2,
+      "cy": 8.8,
+      "spread": 22.1,
+      "grid": "0,8,13,9,14,6,0,1,0,1,4,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Asier Osambela",
+      "n": 48,
+      "cx": 58.4,
+      "cy": 52.5,
+      "spread": 24.3,
+      "grid": "0,0,2,1,0,0,0,0,0,1,0,1,0,0,0,4,4,0,1,5,10,11,7,1"
+     },
+     {
+      "team": "OSA",
+      "name": "Jonathan Dubasin",
+      "n": 31,
+      "cx": 66,
+      "cy": 43.1,
+      "spread": 31.1,
+      "grid": "0,0,0,1,2,0,2,0,1,0,4,1,0,0,0,0,1,2,0,2,0,9,5,1"
+     },
+     {
+      "team": "OSA",
+      "name": "Raúl Moro",
+      "n": 27,
+      "cx": 83.4,
+      "cy": 15.4,
+      "spread": 16.3,
+      "grid": "0,0,1,1,6,7,0,0,0,1,8,3,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Gabriel Moscardo",
+      "n": 14,
+      "cx": 46.2,
+      "cy": 35,
+      "spread": 26.7,
+      "grid": "0,1,0,0,0,0,1,2,1,1,0,0,0,2,1,1,0,2,0,0,2,0,0,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Álex Calatrava",
+      "n": 15,
+      "cx": 59.4,
+      "cy": 31.5,
+      "spread": 34.3,
+      "grid": "0,0,0,1,2,3,0,0,1,2,0,0,0,1,0,0,0,0,0,3,1,1,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Romain Del Castillo",
+      "n": 14,
+      "cx": 75.8,
+      "cy": 47.6,
+      "spread": 21.2,
+      "grid": "0,0,0,0,2,0,0,0,0,0,2,0,0,0,0,0,1,0,0,0,0,1,8,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Pere Milla",
+      "n": 11,
+      "cx": 60.4,
+      "cy": 47.4,
+      "spread": 28.1,
+      "grid": "0,0,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,2,0,3,0,2,1,0"
+     },
+     {
+      "team": "ESP",
+      "name": "Bryan Zaragoza",
+      "n": 6,
+      "cx": 67.4,
+      "cy": 9.9,
+      "spread": 25.5,
+      "grid": "0,0,3,1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-12T16:08:56.869Z"
+ "updatedAt": "2026-09-12T16:24:22.486Z"
 }
