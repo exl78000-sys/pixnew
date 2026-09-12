@@ -362,6 +362,48 @@ export function matchMoments(node, out = []) {
   return out;
 }
 
+/* 歐冠聯賽階段預設停在哪一輪(2026-09-12)。
+
+   使用者的回報是「完全看不到小組賽比完的比分」—— 第 1 輪 18 場 9/10 踢完,
+   原本的規則是「還沒踢完的最小輪次」,於是頁面直接跳到第 2 輪(10/13),
+   而且沒有輪次切換鈕:18 個終場比分就從畫面上消失了。這是「東西在但沒有按鈕」
+   那一族。
+
+   規則跟 defaultCup 同一套精神,**沒有時間門檻**:
+     1. 有場次進行中的那一輪
+     2. 否則,離現在最近的那一輪 —— 比的是「最後一場完賽距今」與「下一場開賽距今」
+        兩者中較小的那個
+     3. 平手時**有賽果的那一輪贏**(結果比倒數有資訊),再平手取較小的輪次
+   9/12 這一天:第 1 輪距今 2 天、第 2 輪 31 天 → 第 1 輪;10/12 反過來 → 第 2 輪。
+   `matches` 是 leagueMatches[](要有 matchday);算不出來回 null,呼叫端自己退路。 */
+export function defaultMatchday(now, matches) {
+  const byMd = new Map();
+  for (const m of matches ?? []) {
+    if (m?.matchday == null) continue;
+    if (!byMd.has(m.matchday)) byMd.set(m.matchday, []);
+    byMd.get(m.matchday).push(m);
+  }
+  let best = null;
+  for (const [md, list] of byMd) {
+    const ms = matchMoments(list);
+    if (!ms.length) continue;
+    const done = ms.filter(m => m.played).map(m => m.t);
+    const next = ms.filter(m => !m.played && m.t >= now).map(m => m.t);
+    const live = ms.some(m => m.live) ? 1 : 0;
+    const sinceDone = done.length ? now - Math.max(...done) : Infinity;
+    const untilNext = next.length ? Math.min(...next) - now : Infinity;
+    const dist = Math.min(sinceDone, untilNext);
+    if (!Number.isFinite(dist) && !live) continue;
+    // 距離相同時「有賽果」那邊贏:sinceDone <= untilNext 代表最近的那一刻是已完賽
+    const r = { md, live, dist, doneWins: sinceDone <= untilNext ? 1 : 0 };
+    if (!best || r.live > best.live
+      || (r.live === best.live && r.dist < best.dist)
+      || (r.live === best.live && r.dist === best.dist && r.doneWins > best.doneWins)
+      || (r.live === best.live && r.dist === best.dist && r.doneWins === best.doneWins && r.md < best.md)) best = r;
+  }
+  return best?.md ?? null;
+}
+
 export function defaultCup(now, entries) {
   const rank = node => {
     const ms = matchMoments(node);

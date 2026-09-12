@@ -1,4 +1,4 @@
-import * as C from './core.js?v=462a040e';
+import * as C from './core.js?v=5316fb6a';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -285,15 +285,27 @@ async function renderCompare(slot, m) {
   }
 }
 
+/* 讀者選了哪一輪(null = 交給 defaultMatchday)。換賽季時歸零 —— 上一季選的第 7 輪
+   套到本季只是誤導。 */
+let pickedMatchday = null;
+
 function leagueFixtures(season) {
   const all = season.leagueMatches ?? [];
   if (!all.length) return '';
   const rounds = [...new Set(all.map(m => m.matchday).filter(r => r != null))].sort((a, b) => a - b);
   if (!rounds.length) return '';
-  const open = all.filter(m => !m.played && m.matchday != null).map(m => m.matchday);
-  const cur = open.length ? Math.min(...open) : rounds.at(-1);
+  /* 預設輪次交給 core.js 的 defaultMatchday(離現在最近的一輪;進行中優先;平手時有賽果的贏)。
+     原本寫的是「還沒踢完的最小輪次」—— 第 1 輪 9/10 踢完,頁面就跳到 10/13 的第 2 輪,
+     18 個終場比分從畫面上消失,使用者 9/12 回報「完全看不到比完的比分」。
+     而且原本**沒有輪次切換鈕**:不管預設停在哪,別的輪次都看不到。 */
+  const cur = (pickedMatchday != null && rounds.includes(pickedMatchday)) ? pickedMatchday
+    : (C.defaultMatchday(Date.now(), all) ?? rounds.at(-1));
   const games = all.filter(m => m.matchday === cur)
     .sort((a, b) => String(a.kickoff ?? '').localeCompare(String(b.kickoff ?? '')));
+  const playedIn = md => all.filter(m => m.matchday === md && m.played).length;
+  const totalIn = md => all.filter(m => m.matchday === md).length;
+  const pills = rounds.map(r => `<button class="btn tiny${r === cur ? ' on' : ''}" type="button" data-md="${r}"
+      title="第 ${r} 輪・已完賽 ${playedIn(r)} / ${totalIn(r)} 場">第 ${r} 輪${playedIn(r) === totalIn(r) ? ' ✓' : ''}</button>`).join('');
   const undecided = all.filter(m => !m.played).length;
 
   const row = m => `<div class="stat-line tie-leg">
@@ -310,11 +322,12 @@ function leagueFixtures(season) {
       ? `<div class="ucl-cmp" data-cmp-slot="${C.esc(m.id ?? `${m.home.code}|${m.away.code}`)}" hidden></div>` : ''}`;
 
   return `<div class="section" style="margin-top:18px"><h2>聯賽階段賽程</h2>
-      <span class="hint">第 ${cur} 輪・${games.length} 場${
+      <span class="hint">第 ${cur} 輪・${games.length} 場・已完賽 ${playedIn(cur)}${
         rounds.length > 1 ? `(共 ${rounds.length} 輪,本季還有 ${undecided} 場未賽)` : ''}</span></div>
+    <div class="filters" style="margin-bottom:10px">${pills}</div>
     <div class="card">${games.map(row).join('')}
-      <div class="tiny dim" style="margin-top:10px">只列<b>還沒踢完的最小輪次</b>那一輪 ——
-        整季 ${all.length} 場全列出來要捲很久,而這裡要回答的是「下一批什麼時候踢」。
+      <div class="tiny dim" style="margin-top:10px">一次只列一輪 —— 預設停在<b>離現在最近的那一輪</b>
+        (剛踢完的,或即將開踢的;有場次進行中就停在那一輪),其他輪次用上面的按鈕切換。
         ${(() => {
           const n = all.filter(comparable).length;
           const np = (model?.fixtures ?? []).length;
@@ -524,6 +537,14 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
     /* 目前這一季「可以做對比」的場次,render 時重建。委派監聽只綁一次(見 render 裡的說明)。 */
     let cmpMatches = new Map();
     const bodyEl = app.querySelector('#uclBody');
+    /* 輪次切換也走委派(理由同下:換賽季會把 body 整個換掉)。設定之後重畫整個 body ——
+       leagueFixtures 讀 pickedMatchday,倒數與展開鈕的查表都在 render 裡重建,不用另外處理。 */
+    bodyEl?.addEventListener('click', e => {
+      const md = e.target.closest?.('[data-md]');
+      if (!md) return;
+      pickedMatchday = Number(md.dataset.md);
+      render();
+    });
     bodyEl?.addEventListener('click', async e => {
       const btn = e.target.closest?.('[data-cmp]');
       if (!btn) return;
@@ -652,6 +673,7 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
     app.querySelectorAll('[data-season]').forEach(b => {
       b.onclick = () => {
         label = b.dataset.season;
+        pickedMatchday = null;   // 上一季選的輪次不帶到這一季
         app.querySelectorAll('[data-season]').forEach(x => x.classList.toggle('on', x === b));
         render();
       };

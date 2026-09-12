@@ -337,6 +337,9 @@ async function main() {
   console.log('\n▶ 盃賽頁預設分頁自我檢查');
   const cupDefaultFail = await checkCupDefault();
 
+  console.log('\n▶ 歐冠預設輪次自我檢查');
+  const matchdayFail = await checkMatchdayDefault();
+
   console.log('\n▶ 球員頭貼小卡自我檢查');
   const chipFail = await checkPlayerChip();
 
@@ -387,7 +390,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1229,6 +1232,62 @@ async function checkCupDefault() {
   let fail = 0;
   for (const [name, pass, detail] of cases) {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* 歐冠聯賽階段預設停在哪一輪(core.js 的 defaultMatchday,2026-09-12)。
+
+   使用者的回報是「完全看不到小組賽比完的比分」:第 1 輪 18 場 9/10 踢完,
+   原本的規則「還沒踢完的最小輪次」把頁面直接跳到 10/13 的第 2 輪,而且沒有切換鈕。
+   跟 defaultCup 那一課一樣,**平手 case 要單獨釘**:只驗「9/12 回第 1 輪」的話,
+   一個寫成「離最近的一場最近」而不管有沒有賽果的版本也會過。 */
+async function checkMatchdayDefault() {
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const at = iso => Date.parse(iso);
+  const md1 = [
+    { matchday: 1, kickoff: '2026-09-08T16:45:00Z', played: true, status: 'FINISHED' },
+    { matchday: 1, kickoff: '2026-09-10T19:00:00Z', played: true, status: 'FINISHED' },
+  ];
+  const md2 = [
+    { matchday: 2, kickoff: '2026-10-13T16:45:00Z', played: false, status: 'TIMED' },
+    { matchday: 2, kickoff: '2026-10-14T19:00:00Z', played: false, status: 'TIMED' },
+  ];
+  const all = [...md1, ...md2];
+  const cases = [
+    ['第 1 輪剛踢完兩天、第 2 輪一個月後:停在第 1 輪(讀者要看的是剛踢完的比分)',
+      V.defaultMatchday(at('2026-09-12T02:00:00Z'), all) === 1, V.defaultMatchday(at('2026-09-12T02:00:00Z'), all)],
+    ['第 2 輪開踢前一天:停在第 2 輪',
+      V.defaultMatchday(at('2026-10-12T12:00:00Z'), all) === 2, V.defaultMatchday(at('2026-10-12T12:00:00Z'), all)],
+    /* 平手:最後一場完賽距今 = 下一場開賽距今。有賽果的那一輪要贏 —— 這一條就是釘平手的 */
+    ['最後一場完賽與下一場開賽離現在一樣遠時,有賽果的那一輪贏',
+      V.defaultMatchday(at('2026-09-26T19:00:00Z'), [
+        { matchday: 1, kickoff: '2026-09-20T19:00:00Z', played: true },
+        { matchday: 2, kickoff: '2026-10-02T19:00:00Z', played: false },
+      ]) === 1],
+    ['有場次進行中的那一輪最優先(即使另一輪剛踢完)',
+      V.defaultMatchday(at('2026-10-13T17:30:00Z'), [
+        ...md1, { matchday: 2, kickoff: '2026-10-13T16:45:00Z', played: false, status: 'IN_PLAY' },
+      ]) === 2],
+    ['整季都還沒踢:停在最先開踢的那一輪', V.defaultMatchday(at('2026-09-01T00:00:00Z'), md2) === 2],
+    ['整季都踢完了:停在最後踢完的那一輪',
+      V.defaultMatchday(at('2027-06-01T00:00:00Z'), all.map(m => ({ ...m, played: true, status: 'FINISHED' }))) === 2],
+    ['沒有任何開球時間就回 null,讓呼叫端自己退路',
+      V.defaultMatchday(at('2026-09-12T00:00:00Z'), [{ matchday: 1, played: false }]) === null],
+    ['空陣列回 null', V.defaultMatchday(at('2026-09-12T00:00:00Z'), []) === null],
+  ];
+  /* 畫面那一端:每一輪都要有入口,而且舊規則不准留著 */
+  const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
+  cases.push(
+    ['歐冠賽程區走 core.js 的 defaultMatchday(不自己再寫一套規則)', /C\.defaultMatchday\(/.test(src)],
+    ['每一輪都有切換鈕(data-md)—— 東西在但沒有按鈕那一族', /data-md=/.test(src) && /\[data-md\]/.test(src)],
+    ['舊規則「還沒踢完的最小輪次」已經拿掉', !/Math\.min\(\.\.\.open\)/.test(src)],
+  );
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || detail === undefined ? '' : ` —— 得到 ${detail}`}`);
     if (!pass) fail++;
   }
   return fail;
@@ -2634,9 +2693,12 @@ async function checkDataGap() {
         ['歐冠賽程表有畫出來,而且帶倒數',
           /function leagueFixtures/.test(uv) && /C\.countdown\(m\.kickoff\)/.test(uv)
           && /C\.startCountdowns\(\)/.test(uv)],
-        /* 「下一場的輪次」在有場次提前開踢時會指到更後面的一輪 —— 倒數那條坑。 */
-        ['只列還沒踢完的**最小**輪次,不是下一場的輪次',
-          /Math\.min\(\.\.\.open\)/.test(uv)],
+        /* 2026-09-12 改規則:原本守的是「還沒踢完的最小輪次」,而那條規則讓第 1 輪踢完後
+           18 個比分從畫面上消失(頁面跳到一個月後的第 2 輪、又沒有切換鈕)。
+           現在預設由 core.js 的 defaultMatchday 決定(離現在最近;進行中優先;平手時有賽果的贏),
+           規則本身在 checkMatchdayDefault 那一節逐條驗,這裡只守「畫面走的是那一份」。 */
+        ['預設輪次走 core.js 的 defaultMatchday,而且每一輪都有切換鈕',
+          /C\.defaultMatchday\(/.test(uv) && /data-md=/.test(uv)],
         /* 掃的是**頁首那段介紹**,不是整個檔案 —— `drawView` 裡也有同一句話,
            但那條路徑只在「上游真的只給了抽籤」時走(availability === 'draw-only'),
            在那個狀態下那句話是對的。整份掃會把還沒發生的狀態一起判死。 */
