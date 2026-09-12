@@ -21637,7 +21637,26 @@
    "goals": [],
    "timeline": {
     "cards": [],
-    "subs": [],
+    "subs": [
+     {
+      "person": 8900,
+      "team": 2,
+      "min": 25,
+      "label": "25'00",
+      "phase": "1",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21529,
+      "team": 2,
+      "min": 25,
+      "label": "25'00",
+      "phase": "1",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -21653,7 +21672,7 @@
      }
     ]
    },
-   "clock": "23'00"
+   "clock": "26'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -22107,7 +22126,7 @@
      }
     ]
    },
-   "clock": "24'00"
+   "clock": "25'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -22583,7 +22602,7 @@
      }
     ]
    },
-   "clock": "23'00"
+   "clock": "26'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -22592,7 +22611,7 @@
    "final": false,
    "score": {
     "home": 1,
-    "away": 0
+    "away": 1
    },
    "homeId": 6,
    "awayId": 8,
@@ -23051,7 +23070,7 @@
      }
     ]
    },
-   "clock": "23'00"
+   "clock": "24'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -23505,8 +23524,8 @@
      }
     ]
    },
-   "clock": "24'00"
+   "clock": "26'00"
   }
  },
- "fetchedAt": "2026-09-12T14:24:20.357Z"
+ "fetchedAt": "2026-09-12T14:26:39.583Z"
 }
