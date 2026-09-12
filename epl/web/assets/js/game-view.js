@@ -1,4 +1,4 @@
-import * as C from './core.js?v=aec8c394';
+import * as C from './core.js?v=7201efbe';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountDuelAnim } from './duel-anim.js?v=2dc9a3a6';
 import { createMatch, defaultSetup } from './game-engine.js?v=b48e4aa3';

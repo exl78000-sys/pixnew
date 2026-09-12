@@ -340,6 +340,9 @@ async function main() {
   console.log('\n▶ 歐冠預設輪次自我檢查');
   const matchdayFail = await checkMatchdayDefault();
 
+  console.log('\n▶ 折疊式表格自我檢查');
+  const foldFail = await checkFoldPlan();
+
   console.log('\n▶ 球員頭貼小卡自我檢查');
   const chipFail = await checkPlayerChip();
 
@@ -393,7 +396,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1287,6 +1290,60 @@ async function checkMatchdayDefault() {
     ['歐冠賽程區走 core.js 的 defaultMatchday(不自己再寫一套規則)', /C\.defaultMatchday\(/.test(src)],
     ['每一輪都有切換鈕(data-md)—— 東西在但沒有按鈕那一族', /data-md=/.test(src) && /\[data-md\]/.test(src)],
     ['舊規則「還沒踢完的最小輪次」已經拿掉', !/Math\.min\(\.\.\.open\)/.test(src)],
+  );
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || detail === undefined ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* 折疊式表格(2026-09-12,使用者選的做法):視窗放不下時依優先序收欄。
+   決策是純函式 foldPlan(量寬度那一層在 DOM,測不到),這裡守規則本身;
+   再用正則守「兩張會放不下的表真的標了 fold」與「元件真的有收欄那條路」。
+   寬度用 1200px 視窗實際量到的數字(英超球員總表)。 */
+async function checkFoldPlan() {
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const cols = [
+    { key: 'name' }, { key: 'team' }, { key: 'age', fold: 6 }, { key: 'num', fold: 7 },
+    { key: 'goals' }, { key: 'ga', fold: 3 }, { key: 'xgi', fold: 2 }, { key: 'xgi90', fold: 1 },
+    { key: 'yellow', fold: 4 }, { key: 'red', fold: 5 },
+  ];
+  const widths = { name: 190, team: 145, age: 45, num: 45, goals: 45, ga: 70, xgi: 52, xgi90: 66, yellow: 45, red: 45 };
+  const total = Object.values(widths).reduce((a, b) => a + b, 0);   // 748
+  const plan = (available, keep) => V.foldPlan({ cols, widths, available, total, keep: new Set(keep ?? []) });
+  const cases = [
+    ['放得下就一欄都不收', plan(800).length === 0],
+    ['差 98px:先收背號、年齡,還差 8px 再收紅牌,塞得下就停', JSON.stringify(plan(650)) === JSON.stringify(['num', 'age', 'red']),
+      JSON.stringify(plan(650))],
+    ['讀者點回來的欄(keep)跳過,改收下一欄', JSON.stringify(plan(650, ['age'])) === JSON.stringify(['num', 'red', 'yellow']),
+      JSON.stringify(plan(650, ['age']))],
+    ['沒標 fold 的欄永遠不收:再窄也只收那七欄', plan(100).length === 7 && !plan(100).some(k => ['name', 'team', 'goals'].includes(k))],
+    ['收的順序照 fold 由大到小,不照欄位順序',
+      JSON.stringify(plan(100)) === JSON.stringify(['num', 'age', 'red', 'yellow', 'ga', 'xgi', 'xgi90']), JSON.stringify(plan(100))],
+    ['沒給 total 就把各欄相加當表格寬度', V.foldPlan({ cols, widths, available: 700 }).length === 2],
+  ];
+  const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+  const players = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
+  const fl = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
+  const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
+  cases.push(
+    ['表格元件量寬度後套 foldPlan,而且每一格都帶 data-k(收欄靠它找格子)',
+      /foldPlan\(\{ cols, widths, available: wrap\.clientWidth/.test(core) && /<td class="\$\{cls\(c\)\}" data-k="\$\{c\.key\}">/.test(core)],
+    ['收起的欄名列在表格上方、點一個放回來;「展開全部」與「收起」都有',
+      /data-unfold=/.test(core) && /data-expand/.test(core) && /data-collapse/.test(core)],
+    ['容器寬度變了會重算(ResizeObserver);容器還沒顯示(寬度 0)時不亂收',
+      /ResizeObserver/.test(core) && /wrap\.clientWidth > 0/.test(core)],
+    ['球員總表七欄標了 fold(背號、年齡、紅牌、黃牌、進球參與、xGI、xGI/90)',
+      /'squadNumber'[^\n]*fold: 7/.test(players) && /'age'[^\n]*fold: 6/.test(players) && /'red'[^\n]*fold: 5/.test(players)
+      && /'yellow'[^\n]*fold: 4/.test(players) && /'ga'[^\n]*fold: 3/.test(players) && /'xGI'[^\n]*fold: 2/.test(players)
+      && /'xgi90'[^\n]*fold: 1/.test(players)],
+    ['賽程表四欄標了 fold(難度、大 2.5、模型、倒數);球隊與比分不收',
+      /'diff'[^\n]*fold: 4/.test(fl) && /'over'[^\n]*fold: 3/.test(fl) && /'hit'[^\n]*fold: 2/.test(fl) && /'cd'[^\n]*fold: 1/.test(fl)
+      && !/'home'[^\n]*fold:/.test(fl) && !/'score'[^\n]*fold:/.test(fl)],
+    ['CSS 有 fold-hidden 與折疊列的樣式', /\.fold-hidden \{ display: none/.test(css) && /\.table-fold/.test(css)],
   );
   let fail = 0;
   for (const [name, pass, detail] of cases) {

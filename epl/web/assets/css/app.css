@@ -218,6 +218,12 @@ nav.tabs a.on { color: #0b0710; background: var(--accent); border-color: var(--a
 
 /* ── 表格 ───────────────────────────── */
 .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+/* 折疊式欄位(2026-09-12,使用者選的做法):視窗放不下時,標了 fold 的欄依優先序收起,
+   收起的欄名列在表格上方,點一個就放回那一欄;「展開全部」回到橫向捲動。
+   收哪幾欄由呼叫端標、收幾欄由量出來的寬度決定,規則在 core.js 的 foldPlan。 */
+.table-box .table-fold { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin: 0 0 8px; }
+.table-box .table-fold button.btn.tiny { padding: 2px 8px; font-size: 11.5px; }
+.table-box th.fold-hidden, .table-box td.fold-hidden { display: none; }
 table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 thead th {
   position: sticky; top: 0; background: #150e20; color: var(--ink-3);
