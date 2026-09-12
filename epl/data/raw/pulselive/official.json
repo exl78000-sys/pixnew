@@ -24896,7 +24896,7 @@
   "TOT|EVE": {
    "fixtureId": 128962,
    "kickoff": "2026-09-12T16:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -24905,9 +24905,31 @@
    "homeId": 21,
    "awayId": 7,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      117596,
+      76090,
+      75582,
+      10458
+     ],
+     [
+      22802,
+      71623
+     ],
+     [
+      126943,
+      119072,
+      76216
+     ],
+     [
+      10443
+     ]
+    ],
     "xi": [
      {
       "id": 123998,
@@ -24941,7 +24963,7 @@
       "playerId": null,
       "name": "Omar Marmoush",
       "shirt": 22,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Striker",
       "captain": false
      },
@@ -24986,7 +25008,7 @@
       "playerId": null,
       "name": "Archie Gray",
       "shirt": 14,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Central Midfielder",
       "captain": false
      },
@@ -24995,7 +25017,7 @@
       "playerId": null,
       "name": "Sávio",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -25094,16 +25116,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4640
+     ],
+     [
+      10428,
+      8143,
+      66318,
+      24983
+     ],
+     [
+      134286,
+      23841
+     ],
+     [
+      49374,
+      14706,
+      118442
+     ],
+     [
+      143922
+     ]
+    ],
     "xi": [
      {
       "id": 10428,
       "playerId": null,
       "name": "Ainsley Maitland-Niles",
       "shirt": 2,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre/Right Wing Back",
       "captain": false
      },
@@ -25130,7 +25174,7 @@
       "playerId": null,
       "name": "Tyrique George",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -25139,7 +25183,7 @@
       "playerId": null,
       "name": "Brennan Johnson",
       "shirt": 22,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -25286,10 +25330,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T16:29:10.532Z"
+ "fetchedAt": "2026-09-12T16:31:27.621Z"
 }
