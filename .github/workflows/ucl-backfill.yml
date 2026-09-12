@@ -38,7 +38,8 @@ jobs:
 
       - name: 抓歐冠往季逐場資料(FotMob)
         working-directory: epl
-        run: npm run game:fetch -- --league=ucl --season=${{ inputs.season }} --limit=${{ inputs.limit }}
+        # --retry:不理抓取器 30 分鐘的退避 —— 人按下去就是要現在試(退回過的原因在 log 與索引的 attempts 裡)
+        run: npm run game:fetch -- --league=ucl --season=${{ inputs.season }} --limit=${{ inputs.limit }} --retry
 
       - name: 回寫 raw
         run: |
