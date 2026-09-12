@@ -21654,6 +21654,15 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 139648,
+      "team": 15,
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -21691,7 +21700,7 @@
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45+4'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -22142,7 +22151,26 @@
     }
    ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 124052,
+      "team": 130,
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 14846,
+      "team": 127,
+      "min": 45,
+      "label": "45+4'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -22159,7 +22187,7 @@
      }
     ]
    },
-   "clock": "43'00"
+   "clock": "45+5'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -22595,6 +22623,32 @@
    "goals": [
     {
      "side": "H",
+     "person": 23968,
+     "assist": 72371,
+     "team": 4,
+     "min": 7,
+     "label": "07'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 137549,
+     "assist": 20081,
+     "team": 41,
+     "min": 28,
+     "label": "28'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "A",
      "person": 137549,
      "assist": 8107,
      "team": 41,
@@ -22622,20 +22676,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45+3'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -23141,7 +23195,7 @@
      }
     ]
    },
-   "clock": "45+1'00"
+   "clock": "45+2'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -23598,5 +23652,5 @@
    "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-12T14:47:29.398Z"
+ "fetchedAt": "2026-09-12T14:49:48.129Z"
 }
