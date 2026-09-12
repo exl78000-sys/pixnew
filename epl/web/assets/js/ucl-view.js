@@ -1,4 +1,4 @@
-import * as C from './core.js?v=5316fb6a';
+import * as C from './core.js?v=5dd7db10';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -102,8 +102,8 @@ function tieCard(tie) {
       <span class="leg-home">${uclTeamCell(m.home, { align: 'right' })}</span>
       <span class="leg-score">${scoreCell(m)}</span>
       <span class="leg-away">${uclTeamCell(m.away)}</span>
-      <span class="tiny dim leg-ko">${m.played ? KO(m) : ''}</span>
-    </div>`).join('');
+      <span class="tiny dim leg-ko">${m.played ? KO(m) : ''}${expandBtn(m)}</span>
+    </div>${expandSlot(m)}`).join('');
   return `<div class="card" style="margin-top:10px">
     <div class="spread" style="gap:10px;align-items:center">
       <span style="flex:1;text-align:right">${uclTeamCell(A, { align: 'right', strong: winA })}</span>
@@ -198,7 +198,28 @@ const comparable = m => !m?.played && !!statsFor(m?.home) && !!statsFor(m?.away)
    那份只涵蓋 openfootball 那五個聯賽)—— 用 comparable 當展開條件的話,
    **55 場有預測卻沒有按鈕**,讀者根本看不到。這是「按鈕在但點了沒東西」的反面:
    東西在但沒有按鈕,而且一樣不會報錯。 */
-const expandable = m => !m?.played && (comparable(m) || !!predOf(m));
+/* 賽後報告的索引(ucl-details.json,呼叫端傳進來)。逐場報告另外一檔一場,點開才載。 */
+let details = null;
+const detailOf = m => (m?.id != null ? details?.reports?.[String(m.id)] : null) ?? null;
+
+/* 2026-09-12 第二次踩「東西在但沒有按鈕」:這裡原本是 `!m.played && …`,於是已完賽的場次
+   **永遠沒有按鈕** —— 而賽後報告接上之後,18 場的報告就在索引裡,讀者一場都點不開。
+   規則只有一條:有東西可看就給鈕。已完賽看有沒有報告,未賽看有沒有對比或預測。 */
+const expandable = m => (m?.played ? !!detailOf(m) : (comparable(m) || !!predOf(m)));
+const expandKind = m => (m?.played ? 'post' : comparable(m) ? 'compare' : 'pred');
+const OPEN_LABEL = { post: '賽後報告', compare: '賽前對比', pred: '賽前勝率' };
+const CLOSE_LABEL = { post: '收起報告', compare: '收起對比', pred: '收起' };
+const expandKey = m => C.esc(String(m.id ?? `${m.home?.code}|${m.away?.code}`));
+/* 展開鈕與展開槽。**兩個地方都要用同一份**(聯賽階段的賽程列、淘汰賽的每一回合),
+   各寫一份的話淘汰賽那邊會少掉某一種鈕而且不報錯。 */
+const expandBtn = m => (expandable(m)
+  ? `<button class="btn tiny" type="button" data-cmp="${expandKey(m)}" data-kind="${expandKind(m)}"
+       style="margin-left:6px">${OPEN_LABEL[expandKind(m)]}</button>` : '');
+const expandSlot = m => (expandable(m)
+  ? `<div class="ucl-cmp" data-cmp-slot="${expandKey(m)}" hidden></div>` : '');
+/* 一季的全部場次:聯賽階段 + 淘汰賽每一回合。展開鈕的查表要涵蓋兩邊 ——
+   只收 leagueMatches 的話,淘汰賽的鈕會「按鈕在但點了沒東西」。 */
+const allMatchesOf = s => [...(s?.leagueMatches ?? []), ...(s?.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))];
 
 /* 對比裡要顯示的隊名與顏色。**本站沒有的球隊沒有 C.name / C.team** ——
    直接叫 C.name(undefined) 會拿到一個看起來像壞掉的東西,所以走上游給的名字,
@@ -285,6 +306,54 @@ async function renderCompare(slot, m) {
   }
 }
 
+/* 賽後報告。逐場報告一檔一場(`ucl-details/{季}/{id}.json`),點開才載 —— 一季 189 場塞成一個檔
+   會到 10 MB,每個讀者都要付。報告的 home / away 是 football-data 的 team id 字串(36 隊裡本站只有
+   8~11 支有隊碼),所以畫之前先把這兩隊登錄進 C 的隊伍註冊表:名字、隊徽(有的話)、圖上用的顏色。
+   **本站沒有的球隊用中性色**,不替它們挑一個「看起來像」的隊色;兩邊各一個中性色是為了射門圖與
+   動能圖分得出主客,不是隊色,畫面上講出來。
+   卡片全部沿用 core.js 的 matchReportCards(三個聯賽的單場頁同一套),不另畫一份。 */
+const NEUTRAL = ['#a8b2c7', '#d9a648'];
+function registerSides(m) {
+  const entry = (t, i) => {
+    const site = registered(t?.code) ? C.team(t.code) : null;
+    const crest = site?.crest ?? externalCrest.get(t?.id) ?? null;
+    return {
+      code: String(t.id), en: cmpName(t), zh: cmpName(t),
+      colors: site?.colors ?? [NEUTRAL[i], NEUTRAL[i]],
+      chartColor: site?.chartColor ?? site?.colors?.[0] ?? NEUTRAL[i],
+      ...(crest ? { crest } : {}),
+    };
+  };
+  C.registerTeams([entry(m.home, 0), entry(m.away, 1)]);
+}
+const POST_ORDER = ['compare', 'tactics', 'events', 'shotmap', 'momentum', 'lineups', 'teamStats', 'players', 'best'];
+async function renderPostMatch(slot, m) {
+  const idx = detailOf(m);
+  if (!idx) { slot.innerHTML = '<div class="tiny dim">這一場沒有賽後報告。</div>'; return; }
+  slot.innerHTML = '<div class="tiny dim">載入賽後報告中…</div>';
+  const name = `ucl-details/${idx.season}/${m.id}`;
+  try {
+    const { data, absent } = await C.loadFrom('pl', [name]);
+    const rep = data[name];
+    if (!rep) {
+      slot.innerHTML = absent.length
+        ? '<div class="tiny dim">單檔版沒有打包逐場賽後報告(一季會到 10 MB);分頁版才有。</div>'
+        : '<div class="tiny dim">這一場的報告讀不到。</div>';
+      return;
+    }
+    registerSides(m);
+    const neutral = !registered(m.home?.code) || !registered(m.away?.code);
+    slot.innerHTML = `
+      <div class="tiny dim" style="margin:2px 0 8px">賽後資料來自 <b>FotMob 的逐場詳情</b>(球隊統計、事件、正式名單、逐人評分、逐射門 xG),
+        比分已跟 football-data.org 的賽果核對。xG 是${C.esc(details?.xgNote ?? '逐射門 xG 加總')}${
+          rep.shotmapComplete === false ? ' —— <b>這一場射門圖不完整,所以沒有 xG</b>' : ''}。
+        控球率是供應商的數字,歐冠沒有第二來源可抽核。${neutral ? '本站沒有的球隊在球場圖與射門圖上用<b>中性色</b>,不是隊色。' : ''}</div>
+      ${C.matchReportCards(rep, { order: POST_ORDER })}`;
+  } catch (e) {
+    slot.innerHTML = `<div class="tiny dim">賽後報告讀不到(${C.esc(e.message)})。</div>`;
+  }
+}
+
 /* 讀者選了哪一輪(null = 交給 defaultMatchday)。換賽季時歸零 —— 上一季選的第 7 輪
    套到本季只是誤導。 */
 let pickedMatchday = null;
@@ -315,11 +384,8 @@ function leagueFixtures(season) {
         ? `<b class="mono">${m.final[0]} : ${m.final[1]}</b>`
         : (m.kickoff ? C.countdown(m.kickoff) : '<span class="dim">vs</span>')}</span>
       <span class="leg-away">${uclTeamCell(m.away)}</span>
-      <span class="tiny dim leg-ko">${m.played ? '完場' : ''}${expandable(m)
-        ? `<button class="btn tiny" type="button" data-cmp="${C.esc(m.id ?? `${m.home.code}|${m.away.code}`)}"
-             style="margin-left:6px">${comparable(m) ? '賽前對比' : '賽前勝率'}</button>` : ''}</span>
-    </div>${expandable(m)
-      ? `<div class="ucl-cmp" data-cmp-slot="${C.esc(m.id ?? `${m.home.code}|${m.away.code}`)}" hidden></div>` : ''}`;
+      <span class="tiny dim leg-ko">${m.played ? '完場' : ''}${expandBtn(m)}</span>
+    </div>${expandSlot(m)}`;
 
   return `<div class="section" style="margin-top:18px"><h2>聯賽階段賽程</h2>
       <span class="hint">第 ${cur} 輪・${games.length} 場・已完賽 ${playedIn(cur)}${
@@ -489,9 +555,10 @@ function unavailableNote(season) {
 /* 歐冠視圖。原本是獨立的 page-ucl.js,2026-08-29 併進「盃賽」單頁
    (歐冠/足總盃/聯賽盃三個頁內分頁)—— 這裡只負責畫進 container,
    nav、page-head 與 foot 由盃賽頁統一管。ucl.html 保留為轉址,舊連結不斷。 */
-export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null, uclElo = null }) {
+export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null, uclElo = null, uclDetails = null }) {
   standings = uclStandings;
   model = uclElo;
+  details = uclDetails;
   /* **先登錄跨聯賽那一份,再登錄本聯賽的。** registerTeams 是逐欄位覆蓋,
      順序反過來的話,本聯賽比較完整的那筆(配色、球場、chartColor)
      會被只帶名字與隊徽的那筆蓋掉一部分。 */
@@ -525,12 +592,17 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
       <span class="dim small" id="uclCount"></span>
     </div>
     <div id="uclBody"></div>
+    ${/* 這一段以前寫著「這一頁沒有勝率預測,這是刻意的」—— 階段 C(2026-09-09)之後就是假的:
+          兩隊都有跨聯賽評分的場次有賽前勝率。「加了一個能力之後要回頭問:有哪一頁還在講我們沒有它」,
+          這一頁自己就在講。數字不寫死,全部從產物讀。 */''}
     <div class="note info" style="margin-top:14px">
-      <b>這一頁沒有勝率預測,這是刻意的。</b>
-      本站的模型是用<b>聯賽</b>比賽調出來的,而歐冠有四件它沒見過的事:跨聯賽的實力比較、
-      <b>兩回合制</b>、<b>延長賽</b>與 <b>PK 大戰</b>。沒有在歐冠上跑過走查回測就把聯賽模型套上去,
-      出來的機率是編的 —— 那正是本站第二條鐵則在擋的東西。
-      <a href="${C.link('model')}">模型驗證頁</a>寫著現有模型驗過什麼、沒驗過什麼。
+      <b>勝率只給兩隊都有跨聯賽評分的場次</b>${model?.model ? `(本季 ${(model.fixtures ?? []).length} 場)` : ''},
+      用的是把八個聯賽的賽果與歐冠場次餵進同一個評分池的 Elo,走查回測通過才上
+      ${model?.model ? `(${model.model.n} 場,改善 ${model.model.improvement} ± ${model.model.se})` : ''}。
+      沒有評分的球隊(它們的聯賽本站不收賽果)那些場次<b>一場都不給</b>,不拿聯賽模型硬套 ——
+      歐冠的<b>兩回合制</b>、<b>延長賽</b>與 <b>PK 大戰</b>模型也沒見過。
+      已完賽的場次點「賽後報告」看球隊統計、事件、名單、逐人評分與射門圖${details?.count ? `(目前 ${details.count} 場)` : ''}。
+      <a href="${C.link('model')}">模型驗證頁</a>寫著驗過什麼、沒驗過什麼。
     </div>
     <div class="note" style="margin-top:10px" id="uclCoverage"></div>`;
 
@@ -553,9 +625,13 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
       const m = cmpMatches.get(key);
       if (!slot || !m) return;
       slot.hidden = !slot.hidden;
-      btn.textContent = slot.hidden ? '賽前對比' : '收起對比';
+      const kind = btn.dataset.kind ?? expandKind(m);
+      btn.textContent = slot.hidden ? OPEN_LABEL[kind] : CLOSE_LABEL[kind];
       // 只在第一次展開時才去抓 —— 收起再展開不用重畫
-      if (!slot.hidden && !slot.dataset.done) { slot.dataset.done = '1'; await renderCompare(slot, m); }
+      if (!slot.hidden && !slot.dataset.done) {
+        slot.dataset.done = '1';
+        await (kind === 'post' ? renderPostMatch(slot, m) : renderCompare(slot, m));
+      }
     });
 
     const render = () => {
@@ -577,7 +653,9 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
         cov.innerHTML = '';
         return;
       }
-      count.textContent = `${s.total} 場・完賽 ${s.played}・${s.teams} 隊・延長 ${s.aet}・PK ${s.shootouts}`;
+      const detSeason = details?.seasons?.[s.label] ?? null;
+      count.textContent = `${s.total} 場・完賽 ${s.played}・${s.teams} 隊・延長 ${s.aet}・PK ${s.shootouts}`
+        + (detSeason ? `・賽後報告 ${detSeason.reports} 場` : '');
       body.innerHTML = `
         ${championCard(s.champion, s.label)}
         ${s.advancementProblems.length ? `<div class="note" style="margin-top:12px;color:var(--loss)">
@@ -626,7 +704,7 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
          用 el.hidden 切換,不用 style.display。 */
       /* **條件要跟畫按鈕的那一個一樣**(expandable,不是 comparable)——
          不一樣的話會出現「按鈕在但點了沒東西」,而且不會報錯。 */
-      cmpMatches = new Map((s.leagueMatches ?? []).filter(expandable)
+      cmpMatches = new Map(allMatchesOf(s).filter(expandable)
         .map(m => [String(m.id ?? `${m.home.code}|${m.away.code}`), m]));
 
       const unknown = s.teamsTotal - s.teamsKnown;
@@ -639,6 +717,16 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
           另一個聯賽的球隊(例如在英超頁看到的皇馬)有連結、但沒有隊徽 ——
           隊徽是按聯賽打包的,這一頁只端得出目前這個聯賽那一份。點進去會切到對的聯賽。
         </div>
+        ${/* 賽後報告的涵蓋率(鐵則四):有幾場、缺幾場、為什麼缺,全部從索引讀。
+             「還沒抓到」跟「拒收」是兩句不同的話 —— 拒收代表兩個來源的比分對不上,那一場整場不採用。 */''}
+        ${detSeason ? `<div style="margin-top:6px">
+          <b>賽後報告:${detSeason.reports} / ${detSeason.played} 場已完賽有</b>(FotMob 逐場詳情,比分跟 football-data.org 核對過才收)。
+          ${detSeason.reports < detSeason.played ? `其餘 ${detSeason.played - detSeason.reports} 場${
+            (details.rejected ?? []).some(r => r.key.startsWith(`${s.label}|`)) || (details.incomplete ?? []).some(r => r.key.startsWith(`${s.label}|`))
+              ? `之中:兩個來源比分對不上而<b>整場不採用</b>的 ${(details.rejected ?? []).filter(r => r.key.startsWith(`${s.label}|`)).length} 場、供應商資料不完整的 ${(details.incomplete ?? []).filter(r => r.key.startsWith(`${s.label}|`)).length} 場,剩下的是還沒抓到(每次部署補最多 39 場,比賽日迴圈踢完就補)`
+              : '還沒抓到 —— 每次部署補最多 39 場,比賽日迴圈踢完就補'}。` : ''}
+          ${details.retrievedAt ? `<span class="dim tiny">最後抓取 ${C.esc(String(details.retrievedAt).slice(0, 16).replace('T', ' '))} UTC</span>` : ''}
+        </div>` : ''}
         ${s.crossCheck ? `<div style="margin-top:6px">
           ${s.crossCheck.passed
             ? `<b style="color:var(--win)">✔ 兩個獨立來源逐場核對通過。</b>

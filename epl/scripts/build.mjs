@@ -27,6 +27,7 @@ import { summariseSeason } from './lib/cups.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
 import { uclElo } from './lib/ucl-elo.mjs';
+import { uclDetails, writeUclDetails } from './lib/ucl-details.mjs';
 import { lookupTier, nearMisses } from './lib/adapters/england-tiers.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
@@ -1328,6 +1329,16 @@ async function main() {
       } else {
         console.log('  歐冠跨聯賽評分:資料不足,這次不產出');
       }
+      /* 歐冠賽後報告(2026-09-12):FotMob 逐場詳情 → 跟三個聯賽同一份 MatchReport 契約。
+         跨聯賽一份、兩個 build 各呼叫一次同一個函式(lib/ucl-details.mjs)。索引檔一定要寫 ——
+         前端從 'pl' 載它,404 會讓整個盃賽頁載入失敗;沒有 raw 時就是一份 count 0 的索引。 */
+      const det = uclDetails(ROOT, ucl);
+      await write('ucl-details.json', det.index);
+      const dw = writeUclDetails(OUT, det);
+      console.log(`  歐冠賽後報告:${det.index.count} 場有報告(逐場檔 ${dw.files} 個、${dw.kb} KB)・raw 快取 ${det.index.cached} 場`
+        + `・退回 ${det.index.rejected.length}・不完整 ${det.index.incomplete.length}`);
+      for (const r of det.index.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
+      for (const r of det.index.incomplete.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}(${r.missing.join('、')})`);
       console.log(`  歐冠球隊名字與隊徽(跨聯賽一份):${assets.known}/${assets.codesInUcl} 個隊碼認得`
         + `・有隊徽 ${assets.teams.filter(t => t.crest).length}`);
       for (const s of ucl.seasons) {

@@ -1376,9 +1376,14 @@ export function matchReportCards(m, { order = null } = {}) {
         ${sideBoard(m.home, H)}
         ${sideBoard(m.away, A)}
       </div>
+      ${/* 這句話要看**報告是哪條路建的**(m.source),不是看 advanced 是哪家供應商。
+           供應商路徑(buildProviderMatchReport:西甲、英冠、歐冠)的名單來自那家供應商;
+           英超那條(FPL + pulselive)的名單才是英超官方的,而它的 advanced 也可能是 FotMob ——
+           原本用 advanced.source 判斷,於是英冠與西甲的 FotMob 場次都印著「英超官方公布的正式名單」,
+           畫面完全正常。這是「前端把聯賽的事實寫死」那條坑:寫死的不是數字,是「這是英超」。 */''}
       <div class="tiny dim" style="margin-top:10px">${H.shape.source === 'official' || A.shape.source === 'official'
-        ? m.advanced && m.advanced.source !== 'fotmob'
-          ? `標<span class="pill accent tiny">正式</span>的陣型與每一排球員，來自 ${m.advanced.source === 'sportmonks' ? 'SportMonks' : 'API-Football'} 的完賽名單，球場圖依供應商格線排列。`
+        ? m.source
+          ? `標<span class="pill accent tiny">正式</span>的陣型與每一排球員,來自 ${{ sportmonks: 'SportMonks', fotmob: 'FotMob', 'api-football': 'API-Football' }[m.source] ?? m.source} 的完賽名單,球場圖依供應商的排位畫。`
           : `標<span class="pill accent tiny">官方</span>的陣型與每一排的人,都是<b>英超官方公布的正式名單</b>,球場圖照那個排位畫。`
         : `陣型是依 FPL 的位置分類統計先發人數 —— 它只分門將/後衛/中場/前鋒四類,
            邊鋒會被算進中場、翼衛會被算進後衛,所以三中衛體系可能會顯示成「6-3-1」這種數字。
