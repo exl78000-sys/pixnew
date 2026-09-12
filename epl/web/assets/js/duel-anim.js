@@ -49,9 +49,51 @@ const MIN_SEP = 1.6;              // 位置層兜底:兩個人不會比這更近
    軌跡仍是演出 —— 資料給的是「量」與「在哪一區」,不是誰在哪一秒站哪。 */
 const LEAGUE_DIST_PER_MIN = 1160;
 const LEAGUE_SPRINTS_PER_MIN = 1.1;
-const RUN_RATE = 0.14;            // 每個攻方非持球員每秒起跑的基準機率(× 節奏 × 個人勤勞度)。實測 0.06 只有 0.55 人同時在跑(球權換手就取消),0.14 約 1.1 人(兩個種子實測 1.03、1.13)
+const RUN_RATE = 0.12;            // 每個攻方非持球員每秒起跑的基準機率(× 節奏 × 個人勤勞度)。0.14 是插值時代校準的(約 1.1 人同時在跑);改速度模型之後一次跑動要花時間加速,所以連同下面三個速度一起重新校準成 0.12(見 SPEED_WALK 上面那段)
 const RUN_SECONDS = [2.2, 3.6];   // 一次跑動持續多久(秒)
-const SPRINT_SPEED = 2.4, RUN_SPEED = 1.5;   // 相對一般移動的速度倍率
+
+/* 跑動的運動模型(2026-09-12,使用者回報「動作跑動還不真實」)。
+
+   **舊版不是運動模型**,是「位置每格往目標插值一個固定比例」:
+   `p.x += (target - p.x) * k`,k ≈ dt × 2.2。速度因此跟「離目標多遠」成正比 ——
+   遠的人瞬移、近的人蠕動,而且**完全沒有速度上限**。
+   實測(measure-run,ARS vs MCI 種子 42):尖峰 160 ~ 482 m/s(577 ~ 1735 km/h),
+   全隊均速 5.6 ~ 6.1 m/s(20 km/h)而且三種播放速度下都一樣 —— 畫面上每個人整場都在衝刺,
+   這就是「跑動不真實」的來源。逐人 topSpeed 當時只當成倍率,沒有真的當上限。
+
+   現在每個人有速度向量 (vx, vy):目標速度朝目標點、大小依狀態(走 / 慢跑 / 跑 / 衝刺),
+   **上限是他自己的最高速度**(FotMob 逐人 topSpeed,km/h → m/s);現在的速度每格只能改變
+   ACCEL × dt(煞車用 DECEL,比起步快),所以轉向要時間、停下要距離。
+   接近目標時用 v² = 2·a·d 收速度,不然會繞著目標點打轉。
+
+   數值來源:人類短跑加速度約 6 ~ 8 m/s²、煞車比起步快;走 / 慢跑 / 跑的速度是常見的
+   比賽分段(walk < 2、jog 2 ~ 4、run 4 ~ 5.5、sprint > 5.5 m/s)。
+   最高速度是真資料,其餘是「看起來像」——**均速有對照組**:每比賽分鐘的跑動距離要對得回
+   `pace.distancePerMin`(見檔尾 calibration 註與 `npm test` 那一節)。 */
+const ACCEL = 6.5, DECEL = 9.0;              // 加速 / 煞車上限(m/s²)
+const SPEED_WALK = 0.88, SPEED_JOG = 2.5, SPEED_RUN = 5.2;   // 走 / 慢跑 / 跑(m/s)
+const TOP_SPEED_KMH = 31.5;                  // 沒有逐人 topSpeed 時的預設(km/h,英超中位數附近)
+const ARRIVE_R = 0.35;                       // 離目標這麼近就算到了(m)
+const FAR_JOG = 9, FAR_RUN = 17;             // 離目標多遠開始慢跑 / 跑回位(m)
+const STRIDE_PER_M = 1.15;                   // 每公尺的步頻相位(畫面上的擺動,不是量測值)
+const PUSH_MAX = 0.55;                       // 間距兜底單格最多推多遠(m)
+const SPRINT_MS = 7.0;                       // 衝刺門檻(m/s)= 25.2 km/h,FotMob 的定義
+const SPRINT_HOLD = 1.0;                     // 持續這麼久才算一次衝刺(秒)
+/* 這四個數字(走 / 慢跑 / 回位門檻)與 RUN_RATE 是**校準出來的**,不是挑好看的。
+
+   對照組三個,全部來自 FotMob 的真資料(ARS,每人每比賽分鐘;即時播放 = 一分鐘 60 秒):
+     跑動距離 `pace.distancePerMin / 11` ≈ 114 m、衝刺距離 `sprintDistPerMin / 11` ≈ 2.2 m、
+     衝刺次數 `sprintsPerMin / 11` ≈ 0.10 次。
+   實測(ARS vs MCI,種子 42 / 7 / 1234 平均,scripts 外的量測腳本見變更紀錄):
+     | 參數(走/慢跑/門檻/起跑率) | 跑動 | 衝刺距離 | 衝刺次數 | 走·慢跑·跑·衝的時間佔比 |
+     | 1.10 / 2.8 / 8-16 / 0.14 | 130 | 3.0 | — | 63/24/12/1 |
+     | 0.85 / 2.4 / 9-16 / 0.10 | 107 | 1.9 | 0.15 | 70/20/9/0 |
+     | **0.88 / 2.5 / 9-17 / 0.12** | **113** | **2.5** | **0.12** | **68/22/10/0** |
+   最後一組三個對照組都落在真資料附近,而且時間佔比接近真實比賽(走 ~70%、慢跑 ~20%、跑 ~7%、衝刺 ~2%)。
+
+   **一個誠實界線**:只有「即時」那一檔的絕對值對得上。播放速度壓縮時(預設一分鐘 2 秒),
+   比賽時鐘比畫面上的足球跑得快 —— 動畫仍然是真人速度,但一分鐘之內演不完一分鐘的球。
+   頁面上要講這件事,不要讓讀者以為壓縮播放時的跑動量也是真的。 */
 
 // 陣型字串 → 各排人數。認不得就退 4-4-2(呼叫端標「推估」)
 export function parseFormation(label) {
@@ -176,6 +218,16 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       return { side, role: s.role, sub: m?.role ?? null, name, shirt, off: false, flash: 0,
         bx0: bx, by, x: bx, y: by,
         spreadK, act: act * paceFactor, topSpeed, run: null,
+        /* dist / vmax 是**量出來的**,不是設定值:跑動量與尖峰速度要能對回 FotMob 的
+           `pace.distancePerMin` 與逐人 `run.topSpeed`,不然「節奏錨在真資料」這句話沒有人驗過。 */
+        dist: 0, vmax: 0,
+        /* 速度分段的時間與距離(<2 走、2~4 慢跑、4~7 跑、>7 衝刺 m/s)。
+           分界 7.0 m/s = 25.2 km/h 是 FotMob 的衝刺門檻 —— 用它才對得回 `pace.sprintDistPerMin`
+           與 `pace.sprintsPerMin` 這兩個真資料。sprints 數的是「進入衝刺帶幾次」。 */
+        bandT: [0, 0, 0, 0], bandD: [0, 0, 0, 0], sprints: 0, sprintT: 0,
+        vx: 0, vy: 0, stride: rng() * Math.PI * 2,
+        // 他自己的最高速度(m/s)。FotMob 的 topSpeed 是 km/h;沒有資料的用聯盟中位數附近
+        vtop: (topSpeed ?? TOP_SPEED_KMH) / 3.6,
         ph: rng() * Math.PI * 2, color: spec.color };
     });
   };
@@ -413,7 +465,14 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
 
   function step(dt) {
     // 下半場換邊:45 分過後第一次進 step 就鏡射,加一小段停頓當中場
-    if (half === 1 && st.min >= 46) { half = 2; celebrate = 1.0; kickoff('away'); return; }
+    if (half === 1 && st.min >= 46) {
+      half = 2; celebrate = 1.0;
+      /* 換邊是**場景切換**,不是一段跑動:把每個人鏡射過去、速度歸零。
+         不鏡射的話所有人的目標點瞬間跳到對面,於是 22 個人一起橫越球場十秒 ——
+         而那十秒會被算成跑動距離(舊版的尖峰速度就有一部分是這個)。warped 讓這一格不計。 */
+      for (const p of players) { p.x = FW - p.x; p.px = p.x; p.vx = 0; p.vy = 0; }
+      kickoff('away'); return;
+    }
     if (celebrate > 0) {
       celebrate -= dt;
       physics(dt);                     // 射門要飛進網,不是凍在半路
@@ -490,12 +549,40 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       // 抖動只是別讓點看起來焊死;持球者不抖(他要對得上球)。幅度依熱區離散度
       const jx = p === holder ? 0 : Math.sin(simT * 0.9 + p.ph) * 1.4 * p.spreadK;
       const jy = p === holder ? 0 : Math.cos(simT * 0.7 + p.ph) * 1.6 * p.spreadK;
-      const speed = p.run ? (p.run.sprint ? SPRINT_SPEED : RUN_SPEED) : 1;
-      const k = Math.min(1, dt * (p === holder || p === presser ? 3.2 : 2.2) * speed * (p.run ? 1 : p.act));
-      p.x += ((a.x + avoid.x + jx) - p.x) * k;
-      p.y += ((a.y + avoid.y + jy) - p.y) * k;
-      p.x = Math.max(1, Math.min(FW - 1, p.x));
-      p.y = Math.max(1.5, Math.min(FH - 1.5, p.y));
+      const tx = a.x + avoid.x + jx, ty = a.y + avoid.y + jy;
+      const dx = tx - p.x, dy = ty - p.y, d = Math.hypot(dx, dy);
+      /* 目標速度:方向朝目標,大小 = min(這個狀態該跑多快, 煞得住的速度)。
+         後面那一項是 v² = 2·a·d —— 少了它會繞著目標點來回過衝(而過衝的距離
+         會被算進跑動量,均速就假了)。 */
+      const want = Math.min(speedCap(p, d), Math.sqrt(2 * DECEL * Math.max(0, d - ARRIVE_R)));
+      const wx = d > 1e-3 ? (dx / d) * want : 0, wy = d > 1e-3 ? (dy / d) * want : 0;
+      // 速度每格只能改變這麼多 → 起步、煞車、轉向都要時間(舊版是位置直接插值,沒有這一層)
+      const cur = Math.hypot(p.vx, p.vy);
+      const ddx = wx - p.vx, ddy = wy - p.vy, dd = Math.hypot(ddx, ddy);
+      const rate = (want > cur ? ACCEL : DECEL) * dt;
+      if (dd > rate && dd > 1e-6) { p.vx += (ddx / dd) * rate; p.vy += (ddy / dd) * rate; }
+      else { p.vx = wx; p.vy = wy; }
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      // 撞到邊界:那個方向的速度歸零,不要貼著邊線滑
+      if (p.x < 1) { p.x = 1; p.vx = Math.max(0, p.vx); }
+      if (p.x > FW - 1) { p.x = FW - 1; p.vx = Math.min(0, p.vx); }
+      if (p.y < 1.5) { p.y = 1.5; p.vy = Math.max(0, p.vy); }
+      if (p.y > FH - 1.5) { p.y = FH - 1.5; p.vy = Math.min(0, p.vy); }
+      /* 跑動量就量這裡:**速度積出來的位移**。
+         不要在 separate() 之後用前後位置相減 —— 那一步是幾何約束(把疊在一起的人推開),
+         推開不是跑步,而它一格可以推 1.6 m,除以 dt 就是 48 m/s,尖峰整個假掉(實測 52.42)。 */
+      const sp = Math.hypot(p.vx, p.vy);
+      p.dist += sp * dt;
+      p.vmax = Math.max(p.vmax, sp);
+      const band = sp < 2 ? 0 : sp < 4 ? 1 : sp < SPRINT_MS ? 2 : 3;
+      p.bandT[band] += dt; p.bandD[band] += sp * dt;
+      /* 一次衝刺要**持續** SPRINT_HOLD 秒才算一次 —— FotMob 的 `sprintsPerMin` 數的是持續的衝刺,
+         而「每次跨過門檻就算一次」會把加速過程中的瞬間也算進去(實測那樣數出來多 2~5 倍)。
+         定義不一樣的兩個數字擺在一起比,得到的結論是假的。 */
+      if (band === 3) { const was = p.sprintT; p.sprintT += dt; if (was < SPRINT_HOLD && p.sprintT >= SPRINT_HOLD) p.sprints++; }
+      else p.sprintT = 0;
+      // 步頻相位跟著**走過的距離**推進,所以走的人幾乎不擺、衝刺的人擺很快(畫面用)
+      p.stride += sp * dt * STRIDE_PER_M * Math.PI;
     }
     separate();
   }
@@ -621,6 +708,23 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     }
   }
 
+  /* 這個人現在該跑多快(m/s)。上限一律是他自己的最高速度(真資料)。
+
+     為什麼「沒事的時候是走」:真實球員全場均速約 1.9 m/s,大部分時間在走與慢跑 ——
+     整場都慢跑的話均速會落在 3 m/s 上下,畫面就是二十二個人一直小跑步(舊版更糟,是一直衝刺)。
+     離基準點越遠跑越快(要回位),這也是真的:跑動量大多發生在攻守轉換。 */
+  function speedCap(p, d) {
+    if (p.role === 'GK') return Math.min(p.vtop, SPEED_JOG);
+    if (p.run) return p.run.sprint ? p.vtop : Math.min(p.vtop, SPEED_RUN);
+    if (p === holder) return Math.min(p.vtop, ball.held ? SPEED_RUN * 0.8 : SPEED_RUN);   // 帶球比追球慢
+    if (p === presser) return Math.min(p.vtop, SPEED_RUN);
+    if (p === runner) return Math.min(p.vtop, SPEED_JOG * 1.2);
+    const idle = SPEED_WALK * (0.75 + 0.5 * p.act);        // 個人勤勞度(逐人場均跑動 / 隊均)
+    if (d > FAR_RUN) return Math.min(p.vtop, SPEED_RUN * 0.85);
+    if (d > FAR_JOG) return Math.min(p.vtop, SPEED_JOG);
+    return idle;
+  }
+
   /* 位置層的間距兜底(2026-09-03)。切線繞行只改「目標點」,而每格只走 k≈0.1,兩人目標交叉時還是會穿過去
      (09-02 實測:全場最小間距中位數 0.11 m、5~13% 的畫格有人疊著)。這裡在積分**之後**把太近的兩個人沿連線推開:
      繞行決定路線、這一步保證不重疊,兩者不衝突。持球者不動(他要對得上球),對方被推開全額;
@@ -628,6 +732,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
      可能撞到第三個,第二輪收掉大部分。 */
   function separate() {
     const list = active();
+    for (const p of list) { p.sx0 = p.x; p.sy0 = p.y; }
     for (let round = 0; round < 2; round++) {
       for (let i = 0; i < list.length; i++) {
         for (let j = i + 1; j < list.length; j++) {
@@ -642,6 +747,13 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
           q.x += dx * need * (1 - wp); q.y += dy * need * (1 - wp);
         }
       }
+    }
+    /* 單格的修正量設上限(2026-09-12):一格最多推 PUSH_MAX,沒推完下一格繼續。
+       沒有上限的話一格可以推 1.6 m —— 畫面上是一個跳躍(30 fps 下約 13 px),
+       而它跟「跑」完全無關。有上限之後看起來是推擠,而且收斂只慢一兩格。 */
+    for (const p of list) {
+      const mx = p.x - p.sx0, my = p.y - p.sy0, m = Math.hypot(mx, my);
+      if (m > PUSH_MAX) { p.x = p.sx0 + (mx / m) * PUSH_MAX; p.y = p.sy0 + (my / m) * PUSH_MAX; }
     }
     for (const p of list) { p.x = Math.max(1, Math.min(FW - 1, p.x)); p.y = Math.max(1.5, Math.min(FH - 1.5, p.y)); }
     /* 夾回邊界之後可能又疊在一起(角旗、底線角落):沿邊界方向錯開,不再往界外推 */
@@ -664,9 +776,32 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     ctx.beginPath(); ctx.moveTo(sx(FW / 2), sy(0)); ctx.lineTo(sx(FW / 2), sy(FH)); ctx.stroke();
     ctx.beginPath(); ctx.arc(sx(FW / 2), sy(FH / 2), (9.15 / FW) * (W - pad * 2), 0, 7); ctx.stroke();
 
+    /* 畫人(2026-09-12 改):圓點有**朝向、拖影與步態**。
+       使用者回報「動作跑動還不真實」—— 一半是運動模型(見檔頭 ACCEL 那段),
+       另一半是畫面:一個沒有方向的圓點無論快慢都長一樣,看不出他在跑還是在站。
+       三樣都只讀速度向量,沒有任何新資料:
+       - 朝向:身體沿前進方向拉長一點(速度越快越明顯),站著不動時維持上一次的朝向
+       - 拖影:跑起來才出現,長度與亮度依速度 —— 一眼看得出誰在衝
+       - 步態:垂直前進方向的小幅擺動,相位跟著**走過的距離**推進(見 p.stride),
+         所以走的人幾乎不擺、衝刺的人擺得快。這是演出,不是量測值 */
     for (const p of active()) {
       const r = p.role === 'GK' ? 7 : 8;
-      ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), r, 0, 7);
+      const sp = Math.hypot(p.vx, p.vy);
+      if (sp > 0.15) p.faceAng = Math.atan2(p.vy, p.vx);
+      const ang = p.faceAng ?? (p.side === 'home' ? 0 : Math.PI);
+      const fast = Math.min(1, sp / SPEED_RUN);
+      // 拖影:只有跑起來才畫(慢跑以下不畫,不然整場都是尾巴)
+      if (sp > SPEED_JOG) {
+        const back = Math.min(0.18, 0.10 + fast * 0.08);
+        ctx.beginPath(); ctx.moveTo(sx(p.x - p.vx * back), sy(p.y - p.vy * back)); ctx.lineTo(sx(p.x), sy(p.y));
+        ctx.strokeStyle = p.color; ctx.globalAlpha = 0.15 + fast * 0.35; ctx.lineWidth = r * 1.15; ctx.lineCap = 'round';
+        ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1.2; ctx.lineCap = 'butt';
+      }
+      // 步態擺動:垂直前進方向,幅度依速度(公尺)
+      const sway = Math.sin(p.stride) * 0.55 * fast;
+      const dx = -Math.sin(ang) * sway, dy = Math.cos(ang) * sway;
+      const cx = sx(p.x + dx), cy = sy(p.y + dy);
+      ctx.beginPath(); ctx.ellipse(cx, cy, r * (1 + 0.22 * fast), r * (1 - 0.14 * fast), ang, 0, 7);
       ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = p === holder ? 18 : 8;
       ctx.fill(); ctx.shadowBlur = 0;
       ctx.lineWidth = p === holder ? 2.4 : 1.2;
@@ -674,12 +809,12 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       ctx.stroke();
       // 換人 / 拿牌的提示圈(黃牌黃、換人綠),1.5 秒淡出
       if (p.flash > 0) {
-        ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), r + 5, 0, 7);
+        ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, 7);
         ctx.strokeStyle = p.flashColor ?? '#ffd400'; ctx.lineWidth = 2; ctx.globalAlpha = Math.min(1, p.flash); ctx.stroke(); ctx.globalAlpha = 1;
       }
       if (p.shirt != null) {
         ctx.font = 'bold 9px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = '#0b0710';
-        ctx.fillText(String(p.shirt), sx(p.x), sy(p.y) + 3);
+        ctx.fillText(String(p.shirt), cx, cy + 3);
       }
     }
     if (lastShot) {
@@ -720,6 +855,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     running: active().filter(p => p.run).length, sprinting: active().filter(p => p.run?.sprint).length,
     ball: { x: ball.x, y: ball.y, held: ball.held, speed: speedOf(), loft: ball.loft }, holderSide: holder?.side ?? null, counts: { ...counts }, cornerFlag: !!cornerFlag,
     inBounds: players.every(p => p.x >= 0 && p.x <= FW && p.y >= 0 && p.y <= FH),
+    motion: { secs: simT, players: players.map(p => ({ role: p.role, off: p.off, dist: p.dist, vmax: p.vmax, act: p.act, topSpeed: p.topSpeed, vtop: p.vtop, bandT: [...p.bandT], bandD: [...p.bandD], sprints: p.sprints, x: p.x, y: p.y, bx: p.bx0, by: p.by })) },
     minSeparation: players.reduce((best, p, i) => players.slice(i + 1)
       .reduce((inner, q) => Math.min(inner, Math.hypot(p.x - q.x, p.y - q.y)), best), Infinity),
   });
