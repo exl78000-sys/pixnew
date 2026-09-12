@@ -21672,7 +21672,7 @@
      }
     ]
    },
-   "clock": "32'00"
+   "clock": "35'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -21681,7 +21681,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 127,
    "awayId": 130,
@@ -22107,7 +22107,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 127594,
+     "assist": 128891,
+     "team": 130,
+     "min": 34,
+     "label": "34'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
@@ -22126,7 +22140,7 @@
      }
     ]
    },
-   "clock": "33'00"
+   "clock": "36'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -22135,7 +22149,7 @@
    "final": false,
    "score": {
     "home": 1,
-    "away": 1
+    "away": 2
    },
    "homeId": 4,
    "awayId": 41,
@@ -22563,15 +22577,15 @@
     {
      "side": "H",
      "person": 137549,
-     "assist": 20081,
+     "assist": 8107,
      "team": 41,
-     "min": 28,
-     "label": "28'00",
+     "min": 34,
+     "label": "34'00",
      "phase": "1",
      "type": "G",
      "kind": "G",
      "hs": 1,
-     "as": 1
+     "as": 2
     }
    ],
    "timeline": {
@@ -22602,7 +22616,7 @@
      }
     ]
    },
-   "clock": "33'00"
+   "clock": "35'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -23053,7 +23067,17 @@
     }
    ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 54893,
+      "team": 6,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "kindRaw": "R",
+      "kind": "紅牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -23070,7 +23094,7 @@
      }
     ]
    },
-   "clock": "31'00"
+   "clock": "34'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -23524,8 +23548,8 @@
      }
     ]
    },
-   "clock": "33'00"
+   "clock": "35'00"
   }
  },
- "fetchedAt": "2026-09-12T14:33:35.812Z"
+ "fetchedAt": "2026-09-12T14:35:54.921Z"
 }
