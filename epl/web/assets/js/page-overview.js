@@ -1,4 +1,4 @@
-import * as C from './core.js?v=7201efbe';
+import * as C from './core.js?v=f9001a4c';
 
 const app = document.getElementById('app');
 
@@ -35,12 +35,26 @@ try {
     <div class="value">${value}</div><div class="sub">${sub}</div></div>`;
 
   /* 盃賽的比分在 cups-live.json 那份小檔(cups.json 要等下一次部署)。
-     這一頁的表是一次算完的,不做輪詢 —— 要看比賽中的變化到盃賽頁,那一頁每 60 秒會自己更新。
 
      **這裡的 await 也拿掉了**(跟盃賽頁同一個原因):小檔的第一順位是跨網域的 raw,
-     連不通時實測 12.9 秒才 fallback,而整頁的第一次繪製都在等它。改成畫完再覆蓋、有變才重畫。 */
+     連不通時實測 12.9 秒才 fallback,而整頁的第一次繪製都在等它。改成畫完再覆蓋、有變才重畫。
+     「即將到來」那張表要在 render() 裡重算(upcomingHtml),覆蓋才進得了畫面 ——
+     第一版把表算成一個字串常數,覆蓋後 render() 畫的還是舊字串,盃賽的即時比分在這一頁從來沒出現過。 */
   const overlayCupsLive = async () => {
     if (C.applyCupsLive(shared.cups, await C.fetchCupsLive(shared.cups)) > 0) render();
+  };
+  /* 聯賽的即時比分(2026-09-12,使用者回報「重新整理後比分退回去」):
+     data.live 是 Pages 上那份 —— 部署當下的快照,離部署越久越舊。畫完立刻去拿 raw 那份,
+     比較新才收(只進不退:raw CDN 會新舊副本交替回應),有變才重畫。英冠不列在這張表,就不抓。 */
+  const overlayLeagueLive = async () => {
+    let changed = 0;
+    const t = s => Date.parse(s ?? '') || 0;
+    await Promise.all(leagues.filter(x => !UPCOMING_HIDE.has(x.lg)).map(async ({ lg, data }) => {
+      const fresh = await C.fetchFeed(C.liveFeeds(data.meta, lg));
+      if (!fresh?.fetchedAt || t(fresh.fetchedAt) <= t(data.live?.fetchedAt)) return;
+      data.live = fresh; changed++;
+    }));
+    if (changed) render();
   };
   const cupList = Object.values(shared.cups?.cups ?? {});
   const cupMatches = cupList.reduce((n, c) => n
@@ -112,7 +126,7 @@ try {
        標成「時間待定」(跟球隊賽程頁同一個規則)。 */
   // 即將賽程不列的聯賽(使用者指定)。用集合不用「是不是某一個」的二元式
   const UPCOMING_HIDE = new Set(['en2']);
-  const upcoming = (() => {
+  const buildUpcoming = () => {
     const now = Date.now(), end = now + 7 * 86400000;
     const inWindow = k => { const t = Date.parse(k); return t >= now - 2 * 3600000 && t <= end; };
     const rows = [];
@@ -177,7 +191,7 @@ try {
         note: m.matchday ? `聯賽階段第 ${m.matchday} 輪` : (m.stage ?? ''), pending: false, link: C.link('cups', { cup: 'ucl' }) });
     }
     return rows.sort((a, b) => (a.kick < b.kick ? -1 : 1));
-  })();
+  };
 
   /* 窗外的下一批盃賽:7 天內沒有盃賽時,讀者會以為盃賽沒接上 ——
      所以窗外的用一行摘要講(跟實時戰況頁倒數區的溢位摘要同一個做法)。 */
@@ -208,7 +222,8 @@ try {
     return out;
   })();
 
-  const upcomingBlock = `
+  // 每次 render() 重算:覆蓋(盃賽小檔、聯賽 raw feed)改的是資料,表要跟著資料重畫
+  const upcomingHtml = () => { const upcoming = buildUpcoming(); return `
   <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・${leagues.filter(x => !UPCOMING_HIDE.has(x.lg)).map(x => C.LEAGUES[x.lg].zh).join('、')} + 歐冠、盃賽</span></div>
   ${upcoming.length ? `<div class="card">${C.table(upcoming, [
     { key: 'kick', label: '開球(台北)', value: u => u.kick,
@@ -245,7 +260,7 @@ try {
     聯賽場次點對戰直接進賽前分析;歐冠與盃賽場次開盃賽頁的對應分頁(歐冠的賽前對比、勝率與賽後報告在那裡展開)。
     只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
   : `<div class="note">未來 7 天沒有已排定的比賽(或開球時間上游還沒公布)。
-    ${cupBeyond.length ? `之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}</div>`}`;
+    ${cupBeyond.length ? `之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}</div>`}`; };
 
   /* 最新動態:每個聯賽各取前幾則再依日期合併。
      只取一部分是因為這是總覽 —— 完整的在各聯賽的動態頁。 */
@@ -259,6 +274,7 @@ try {
     .join('、');
 
   const render = () => {
+  const scrollY = window.scrollY;   // 覆蓋後重畫不要把讀者捲回頂端(跟實時頁同一招)
   app.innerHTML = `
   <div class="page-head">
     <h1>總覽</h1>
@@ -277,7 +293,7 @@ try {
     ${kpi('盃賽', cupList.length, cupList.map(c => C.esc(c.zh ?? c.en)).join('、') || '尚未接入')}
   </div>
 
-  ${upcomingBlock}
+  ${upcomingHtml()}
 
   <div class="section"><h2>各聯賽</h2><span class="hint">點分頁直接進去・只列這個聯賽真的做得出來的頁</span></div>
   <div class="grid g2">${leagues.map(leagueCard).join('')}</div>
@@ -322,8 +338,17 @@ try {
   <footer class="foot wrap">資料來源:${sources || '見各頁'}。
     預測僅供分析參考,不構成任何投注建議。</footer>`;
   C.startCountdowns();   // 「即將到來」的倒數要會走,不然停在載入當下慢慢變錯
+  window.scrollTo(0, scrollY);
   };
 
   render();
   overlayCupsLive();     // 畫完才去拿盃賽的即時比分,有變才重畫
+  overlayLeagueLive().then(() => {
+    /* 有比賽在踢就每 60 秒再拿一次(盃賽頁同一個節奏;聯賽的迴圈本來就是 2 分鐘推一次),
+       沒有比賽在踢的日子不輪詢 —— 這一頁不是實時頁。
+       要不要輪詢看覆蓋**之後**的狀態:部署快照可能還在開賽前,而 raw 那份已經在踢了。 */
+    const anyLive = leagues.some(({ data }) => (data.live?.matches ?? []).some(m => m.started && !m.finished))
+      || C.cupsHaveLive(shared.cups);
+    if (anyLive) C.pageInterval(async () => { await overlayLeagueLive(); await overlayCupsLive(); }, 60000);
+  });
 } catch (err) { C.fail(err); }

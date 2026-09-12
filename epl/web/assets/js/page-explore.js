@@ -1,7 +1,7 @@
-import * as C from './core.js?v=7201efbe';
-import { renderKnowledge } from './knowledge-view.js?v=e91b6305';
-import { renderAllPlayers } from './allplayers-view.js?v=5bb41005';
-import { renderGame } from './game-view.js?v=c7a5c7e0';
+import * as C from './core.js?v=f9001a4c';
+import { renderKnowledge } from './knowledge-view.js?v=ab814c74';
+import { renderAllPlayers } from './allplayers-view.js?v=25d08af2';
+import { renderGame } from './game-view.js?v=c90226ff';
 
 /* 探索(2026-09-03)。足球知識、對戰模擬、球員搜尋收成一頁,三個頁內分頁。
  *

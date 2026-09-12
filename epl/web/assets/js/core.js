@@ -112,6 +112,9 @@ export async function crossLeaguePlayers(q, excludeLg) {
   return out;
 }
 
+// 各聯賽資料檔在站上的路徑(英超是預設聯賽,放根目錄;其他聯賽在 leagues/ 底下)
+export const dataPath = (lg, name) => (lg === 'pl' ? `data/${name}.json` : `data/leagues/${lg}/${name}.json`);
+
 export async function loadFrom(lg, names) {
   const out = {};
   const absent = [];
@@ -125,7 +128,7 @@ export async function loadFrom(lg, names) {
       return;
     }
     const key = `${lg}:${n}`;
-    const path = lg === 'pl' ? `data/${n}.json` : `data/leagues/${lg}/${n}.json`;
+    const path = dataPath(lg, n);
     if (!cache.has(key)) cache.set(key, fetch(path).then(r => {
       // 英超是預設聯賽,它的資料集少一份就真的是沒 build,維持原本的開發者訊息。
       // 其他聯賽的 404 是「還沒補到這裡」,交給呼叫端判斷該說哪一句。
@@ -286,20 +289,33 @@ export function registerCompetitions(data) {
    **只覆蓋比分相關的欄位**,不動隊伍、輪次、隊徽 —— 那些不會在比賽中改變。 */
 export async function fetchCupsLive(cups) {
   // 網址在 cups.json 自己身上(跨聯賽的一份),不是各聯賽的 meta
-  const feeds = [cups?.liveFeed, 'data/cups-live.json'].filter(Boolean);
-  for (const url of feeds) {
+  return fetchFeed([cups?.liveFeed, 'data/cups-live.json']);
+}
+
+/* 即時 feed 的抓取,全站一份(2026-09-12)。
+
+   之前實時戰況頁、單場分析頁、盃賽各寫一份 fetch 迴圈,而只有盃賽那份有逾時。
+   第一順位一律是 raw.githubusercontent.com(跨網域;資料一進 repo 就看得到,不用等部署),
+   **而且一定要有逾時**:連不通時瀏覽器不會馬上放棄 —— 實測 ERR_CONNECTION_RESET 花了 12.9 秒
+   才回來,而在那之前備援那一條根本輪不到。比分覆蓋等超過幾秒就沒有意義了。
+   失敗(逾時、連不通、非 2xx)就換下一個來源;全部失敗回 null,呼叫端維持原畫面。
+   `?t=` 是給 raw 的 CDN 與瀏覽器快取用的:同一個網址每 20 秒要拿到不同內容。 */
+export async function fetchFeed(urls, { timeoutMs = 4000 } = {}) {
+  for (const url of urls) {
+    if (!url) continue;
     try {
-      /* **一定要有逾時。** 第一順位是 raw.githubusercontent.com(跨網域),
-         連不通時瀏覽器不會馬上放棄 —— 實測 ERR_CONNECTION_RESET 花了 **12.9 秒**才回來,
-         而在那之前備援那一條根本輪不到。比分覆蓋等超過幾秒就沒有意義了,
-         等下去只會讓後面的路一起卡住。 */
       const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`,
-        { cache: 'no-store', signal: AbortSignal.timeout(4000) });
+        { cache: 'no-store', signal: AbortSignal.timeout(timeoutMs) });
       if (res.ok) return await res.json();
     } catch { /* 逾時或連不通都一樣:換下一個來源 */ }
   }
   return null;
 }
+
+/* 某個聯賽的即時 feed 網址,依序:raw 那份(meta.liveFeed,只有在 Actions 建置時才有)、
+   站上自己的那份(退路;本機開啟時只有這一條)。三頁都從這裡拿,不要各自拼路徑 ——
+   分析頁第一版把退路寫死成英超的 live.json,西甲站在那一頁拿到的是英超的比分。 */
+export const liveFeeds = (meta, lg = league()) => [meta?.liveFeed, dataPath(lg, 'live')].filter(Boolean);
 
 export function applyCupsLive(cups, live) {
   const rows = new Map((live?.matches ?? []).map(m => [String(m.id), m]));

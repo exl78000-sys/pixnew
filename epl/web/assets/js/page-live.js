@@ -1,5 +1,5 @@
-import * as C from './core.js?v=7201efbe';
-import { mountSimTable } from './sim-table.js?v=7d9fa5ed';
+import * as C from './core.js?v=f9001a4c';
+import { mountSimTable } from './sim-table.js?v=46960825';
 
 const app = document.getElementById('app');
 
@@ -408,7 +408,9 @@ try {
           ago ? `<span class="pill accent tiny">${ago}</span>` : ''}</span>
         <span class="tiny dim">${C.kickoffLocal(m.kickoff)}・第 ${m.round} 輪</span></div>
       <div style="margin:12px 0">${scoreOf(m)}</div>
-      <div class="tiny dim center">陣型 ${H.shape.label} vs ${A.shape.label}・xG ${H.xG} : ${A.xG}
+      <div class="tiny dim center">陣型 ${H.shape.label} vs ${A.shape.label}${
+        /* 西甲的比分快照沒有 xG,印出來是「xG null : null」(sweep 抓到的);沒有就整段不印 */
+        H.xG != null && A.xG != null ? `・xG ${H.xG} : ${A.xG}` : ''}
         ${surprise !== null ? `・賽前模型給這結果 ${C.pct(surprise, 0)}` : ''}</div>
       ${m.notes.length ? `<div class="small muted" style="margin-top:8px">${C.esc(m.notes[0].text)}</div>` : ''}
     </a>`;
@@ -478,24 +480,13 @@ try {
   // 就算完全沒有即時資料源,也要定期重畫,比賽才會自己從「倒數」變成「進行中」。
   const POLL_MS = 20000, REDRAW_MS = 30000;
   let lastStamp = live.fetchedAt ?? null;
-  /* 取回最新的 live.json。
-     優先走 raw.githubusercontent.com —— 比賽日的輪詢每 2 分鐘就把資料推回 repo,
-     那裡拿得到的比 Pages 上的新(Pages 要等下一次部署)。
-     raw 掛掉、或本機開啟時,退回讀本站自己的 data/live.json。 */
-  const feeds = [meta.liveFeed, 'data/live.json'].filter(Boolean);
-  const fetchLive = async () => {
-    for (const url of feeds) {
-      try {
-        const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`, { cache: 'no-store' });
-        if (res.ok) return await res.json();
-      } catch { /* 換下一個來源 */ }
-    }
-    return null;
-  };
-
-  C.pageInterval(async () => {
+  /* 取回最新的 live.json:走共用的 C.fetchFeed(raw 優先、有逾時、失敗退回站上那份)。
+     raw.githubusercontent.com 那份比 Pages 上的新 —— 比賽日的輪詢每 2 分鐘就把資料推回 repo,
+     Pages 要等下一次部署。 */
+  const feeds = C.liveFeeds(meta);
+  const overlayLive = async () => {
     try {
-      const fresh = await fetchLive();
+      const fresh = await C.fetchFeed(feeds);
       if (!fresh) return;
       const stamp = fresh.fetchedAt ?? null;
       /* feed 只進不退:raw CDN 會新舊副本交替回應,收了舊的那份,
@@ -507,7 +498,13 @@ try {
         renderPage();
       }
     } catch { /* 靜態站沒有即時端點時會失敗,忽略即可 */ }
-  }, POLL_MS);
+  };
+  /* 先畫再覆蓋(2026-09-12,使用者回報「重新整理後比分退回去」)。
+     第一次畫面用的是 Pages 上那份 live.json —— 部署當下的快照,離部署越久越舊(實測差二十幾分鐘);
+     而輪詢的第一次在 20 秒後,所以重新整理的頭 20 秒比分退回部署時的狀態。
+     畫完立刻拿一次 raw 那份覆蓋,不等第一個 tick;抓取有逾時,raw 慢也不卡畫面。 */
+  overlayLive();
+  C.pageInterval(overlayLive, POLL_MS);
   C.pageInterval(renderPage, REDRAW_MS);
   /* 走鐘:卡片與抽屜的分鐘每秒往前(跟分析頁同一套 C.liveMinute),只改字不重畫 */
   C.pageInterval(() => {
