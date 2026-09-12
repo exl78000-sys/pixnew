@@ -21645,6 +21645,15 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 110526,
+      "team": 2,
+      "min": 45,
+      "label": "45'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -21682,7 +21691,7 @@
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+2'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -22626,7 +22635,7 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+2'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -22635,7 +22644,7 @@
    "final": false,
    "score": {
     "home": 1,
-    "away": 1
+    "away": 2
    },
    "homeId": 6,
    "awayId": 8,
@@ -23064,16 +23073,16 @@
    "goals": [
     {
      "side": "H",
-     "person": 313194,
-     "assist": 51454,
+     "person": 51454,
+     "assist": 313194,
      "team": 8,
-     "min": 23,
-     "label": "23'00",
+     "min": 45,
+     "label": "45'00",
      "phase": "1",
      "type": "G",
      "kind": "G",
      "hs": 1,
-     "as": 1
+     "as": 2
     }
    ],
    "timeline": {
@@ -23132,7 +23141,7 @@
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+1'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -23573,21 +23582,21 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-12T14:45:10.763Z"
+ "fetchedAt": "2026-09-12T14:47:29.398Z"
 }
