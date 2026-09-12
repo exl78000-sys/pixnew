@@ -48,7 +48,10 @@ export const KNOWN_STATUS = {
      unverified  本站沒有這個賽事/這一輪的資料 → 無法核對(不是錯)
      conflict    對不上 → 這一則不可以出
      none        這一則沒有引用比分 */
-export function checkScores(story, { fixturesOf, codeOf }) {
+export function checkScores(story, { fixturesOf, codeOf, codeOfFor = null }) {
+  /* 歐冠的隊伍身分是 football-data id,不是本站隊碼 —— 隊名解析要用另一把(codeOfFor 依賽事給),
+     沒給就用聯賽那一把。第一批的歐冠場次本站沒有資料所以「無法核對」;聯賽階段本站有,就要真的核對(鐵則五)。 */
+  const resolve = codeOfFor?.(story.competition) ?? codeOf;
   const games = story.matches ?? [];
   if (!games.length) return { state: 'none', detail: [] };
   const list = fixturesOf(story.competition);
@@ -78,7 +81,7 @@ export function checkScores(story, { fixturesOf, codeOf }) {
   const detail = [];
   let conflict = false, checked = 0;
   for (const g of games) {
-    const hc = codeOf(g.home), ac = codeOf(g.away);
+    const hc = resolve(g.home), ac = resolve(g.away);
     if (!hc || !ac) { detail.push(`隊名對不上:${g.home} / ${g.away}`); continue; }
     const m = pick(hc, ac, story.date);
     if (!m) { detail.push(`賽程裡沒有 ${hc} vs ${ac}(報導日期 ${story.date} 前後 ${WINDOW_DAYS} 天內)`); continue; }
@@ -119,6 +122,10 @@ export function toFeedItems(stories, ctx) {
       link: s.link,
       // 這三個欄位是這一類專屬的,前端靠它們把出處講清楚
       curated: true,
+      /* 誰整理的(交付檔的 curator,readDelivery 蓋到每一則上):人整理的沒有這欄;
+         AI 整理的要帶 kind: 'ai' 與模型名,前端據此標「AI 整理摘要」而不是「人工整理摘要」——
+         把 AI 整理講成人工整理是說謊(鐵則四),跟譯文那一層 human / 模型名的規矩一樣 */
+      curator: s.curator ?? null,
       competition: s.competition,
       competitionName: s.competitionName,
       scoreCheck: check.state,

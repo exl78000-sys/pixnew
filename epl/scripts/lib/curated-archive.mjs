@@ -78,13 +78,18 @@ export function readDelivery(raw) {
   const outside = isDate(w.from) && isDate(w.to)
     ? stories.filter(s => s.date < w.from || s.date > w.to).map(s => s.id)
     : [];
+  /* 交付檔層級的 curator(誰整理的)蓋到每一則上,之後不管走檔案庫還是收件匣覆蓋,
+     每一則都自己帶著「這是人整理的還是 AI 整理的」—— 前端靠它標記(鐵則四)。 */
+  const curator = raw?.curator ?? null;
+  const stamped = curator ? stories.map(s => ({ ...s, curator: s.curator ?? curator })) : stories;
   return {
     ok: isDate(w.from) && isDate(w.to),
     source: raw?.source ?? null,
+    curator,
     retrievedAt: raw?.retrievedAt ?? null,
     from: w.from ?? null,
     to: w.to ?? null,
-    stories,
+    stories: stamped,
     problems,
     outside,
   };
@@ -118,6 +123,7 @@ export function mergeDelivery(archive, delivery, { now = new Date().toISOString(
   if (!known) {
     deliveries.push({
       source: delivery.source,
+      ...(delivery.curator ? { curator: delivery.curator } : {}),
       retrievedAt: delivery.retrievedAt,
       from: delivery.from,
       to: delivery.to,
@@ -249,7 +255,7 @@ export function coverageWith(archive, delivery, opts = {}) {
 
    讀檔案庫 → 疊上收件匣 → 比分核對 → 篩這個聯賽,並算出誠實的涵蓋範圍。
    log 用回傳的方式給呼叫端印,函式本身不碰 stdout(這樣測試不用攔輸出)。 */
-export async function loadCurated({ root, league, codeOf, fixturesOf, fs, asOf = null }) {
+export async function loadCurated({ root, league, codeOf, fixturesOf, fs, asOf = null, codeOfFor = null }) {
   const { existsSync, readFile, join } = fs;
   const inboxPath = join(root, 'data', 'manual', 'news-curated.json');
   const archivePath = join(root, 'data', 'manual', 'news-curated-archive.json');
@@ -270,13 +276,13 @@ export async function loadCurated({ root, league, codeOf, fixturesOf, fs, asOf =
   if (!stories.length) return { items: [], coverage: null, lines, rejected: [], unknownStatus: [] };
 
   const { toFeedItems, forLeague } = await import('./adapters/curated-news.mjs');
-  const out = toFeedItems(stories, { codeOf, fixturesOf });
+  const out = toFeedItems(stories, { codeOf, fixturesOf, codeOfFor });
   const items = forLeague(out.items, league);
   const coverage = coverageWith(archive, delivery, { asOf });
 
   const v = items.filter(i => i.scoreCheck === 'verified').length;
   const u = items.filter(i => i.scoreCheck === 'unverified').length;
-  lines.push(`人工整理外電:${items.length} 則(比分已核對 ${v}・無法核對 ${u}`
+  lines.push(`整理外電(人工或 AI,每則有標):${items.length} 則(比分已核對 ${v}・無法核對 ${u}`
     + `・因比分不符退回 ${out.rejected.length})`);
   lines.push(`  檔案庫 ${archive.stories?.length ?? 0} 則、${coverage.deliveries} 次交付,`
     + `涵蓋 ${coverage.from ?? '—'} ~ ${coverage.to ?? '—'} 共 ${coverage.days} 天`

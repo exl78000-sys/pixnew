@@ -4284,6 +4284,37 @@ function checkCuratedNews() {
   ok(Object.keys(KNOWN_STATUS).length >= 5, 'status 對照表有涵蓋傳聞與已確認兩類');
   ok((raw.stories ?? []).every(x => /^https:\/\//.test(x.link ?? '')), '來源檔每一則都有 https 連結');
 
+  /* ── 誰整理的要照實標(2026-09-12 第二批起有 AI 整理的)──
+     交付檔層級的 curator 要蓋到每一則上、一路傳到動態流的項目,前端據此標「AI 整理摘要」。
+     歐冠的比分也要真的核對:隊伍身分是 football-data id,所以 checkScores 可以依賽事換一把隊名解析。 */
+  {
+    const d = readDelivery({ source: 'AI', curator: { kind: 'ai', model: 'm' },
+      window: { from: '2026-01-01', to: '2026-01-07' },
+      stories: [{ id: 'x', date: '2026-01-02', title: 'x' }, { id: 'y', date: '2026-01-03', title: 'y', curator: { kind: 'human' } }] });
+    ok(d.curator?.kind === 'ai' && d.stories[0].curator?.model === 'm' && d.stories[1].curator?.kind === 'human',
+      '交付檔的 curator 蓋到每一則上,一則自己有的不被蓋掉');
+    const fed = toFeedItems(d.stories, { codeOf: () => null, fixturesOf: () => null }).items;
+    ok(fed[0].curator?.kind === 'ai' && fed[1].curator?.kind === 'human', 'curator 一路傳到動態流的項目');
+    const m = mergeDelivery(emptyArchive(), d, { now: '2026-01-08T00:00:00Z' });
+    ok(m.archive.deliveries[0].curator?.kind === 'ai' && m.archive.stories.every(s => s.curator), '檔案庫的交付紀錄與每一則都記著 curator');
+    const st = { competition: 'ucl', date: '2026-09-09', matches: [{ home: 'Barça', away: 'Feyenoord', score: '5-1' }] };
+    const uclCtx = { fixtures: [{ date: '2026-09-09', home: '81', away: '675', fh: 5, fa: 1, played: true }],
+      codeOf: n => ({ 'barça': '81', 'feyenoord': '675' })[String(n).toLowerCase()] ?? null };
+    ok(checkScores(st, { codeOf: () => null, fixturesOf: c => (c === 'ucl' ? uclCtx.fixtures : null), codeOfFor: c => (c === 'ucl' ? uclCtx.codeOf : null) }).state === 'verified',
+      '歐冠的比分用自己那一把隊名解析(football-data id)核對得到');
+    const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+    ok(/curator\?\.kind === 'ai'/.test(news) && /AI 整理摘要/.test(news) && /沒有讀全文/.test(news),
+      '前端:AI 整理的標「AI 整理摘要」並講清楚沒有讀全文;人整理的照舊');
+    for (const [lg, path] of [['pl', join(ROOT, 'web', 'data', 'news.json')], ['es1', join(ROOT, 'web', 'data', 'leagues', 'es1', 'news.json')]]) {
+      if (!existsSync(path)) continue;
+      const cur = JSON.parse(readFileSync(path, 'utf8')).filter(x => x.curated);
+      ok(cur.every(x => x.curator == null || (x.curator.kind && (x.curator.kind !== 'ai' || x.curator.model))),
+        `${lg}:每一則的 curator 不是沒有,就是有 kind(AI 的還要有模型名)`);
+      const uclVerified = cur.filter(x => x.competition === 'ucl' && x.scoreCheck === 'verified');
+      ok(uclVerified.length > 0, `${lg}:歐冠聯賽階段的整理外電,比分真的對回本站賽果了`, String(uclVerified.length));
+    }
+  }
+
   /* 前端:輪次顯示順序。使用者要求「最新的在最上面、決賽在最上面」。
      盃賽那邊**要先切資格賽再倒**,順序反過來會把決賽切掉。 */
   const W = join(ROOT, 'web', 'assets', 'js');
