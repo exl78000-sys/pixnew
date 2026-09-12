@@ -3389,6 +3389,14 @@ async function checkDataGap() {
         && /rejected\.slice\(0, 12\)/.test(m)
         && /翻譯的正確性沒辦法自動驗/.test(m);   // 講清楚它不驗什麼
     })()],
+    /* 同一篇外電同時在兩個聯賽的 feed 裡(BBC 的西甲關鍵字篩選常跟英超重疊):譯文要寫進**每一份**有它的快取。
+       第一版一個 key 只記一個聯賽(後讀的蓋掉先讀的),另一邊靜靜留著英文 —— 2026-09-12 實測 45 則交付、45 則核對通過、
+       畫面上 43 則有中文,而核對器回報「收下 80、退回 0」。 */
+    ['外電譯文:同一篇出現在幾個聯賽就寫進幾份快取', (() => {
+      const m = readFileSync(join(ROOT, 'scripts', 'merge-news-zh.mjs'), 'utf8');
+      return /origin\.get\(k\)\.push\(\{ league: lg, item: it \}\)/.test(m)
+        && /for \(const s of srcs\) \(accepted\[s\.league\] \?\?= \{\}\)\[key\] = entry/.test(m);
+    })()],
     ['外電譯文:譯者身分照實標(人工 vs 機器不可混為一談)', (() => {
       const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'news-zh.mjs'), 'utf8');
       const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');

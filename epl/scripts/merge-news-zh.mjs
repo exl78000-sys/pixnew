@@ -42,10 +42,16 @@ function main() {
 
   /* 先把三個聯賽的原文全部索引起來 —— 一份交付檔可以同時涵蓋多個聯賽,
      key 是內容雜湊,不會混淆。 */
-  const origin = new Map();     // key → { league, item }
+  /* key → [{ league, item }, …]。**同一篇外電可能同時在兩個聯賽的 feed 裡**(BBC 的西甲關鍵字篩選
+     常跟英超重疊):第一版一個 key 只記一個聯賽(後讀的蓋掉先讀的),譯文只寫進其中一份快取,
+     另一個聯賽的那一則就靜靜留著英文 —— 2026-09-12 實測 45 則英超交付、45 則核對通過、畫面上 43 則有中文。 */
+  const origin = new Map();
   for (const [lg, cfg] of Object.entries(NEWS_FILES)) {
     for (const it of read(join(ROOT, 'data', 'raw', cfg.raw)) ?? []) {
-      if (it?.title) origin.set(newsKeyOf(it), { league: lg, item: it });
+      if (!it?.title) continue;
+      const k = newsKeyOf(it);
+      if (!origin.has(k)) origin.set(k, []);
+      origin.get(k).push({ league: lg, item: it });
     }
   }
 
@@ -53,16 +59,18 @@ function main() {
   const rejected = [];
   for (const key of keys) {
     const e = entries[key] ?? {};
-    const src = origin.get(key);
-    if (!src) { rejected.push([key, '對不到現存外電(清單可能過期了)']); continue; }
+    const srcs = origin.get(key);
+    if (!srcs) { rejected.push([key, '對不到現存外電(清單可能過期了)']); continue; }
+    const src = srcs[0];
     if (e.ok === false || !String(e.title ?? '').trim()) { rejected.push([key, '譯者標記無法翻譯或標題是空的']); continue; }
     if (String(e.title).trim() === String(src.item.title).trim()) { rejected.push([key, '譯文跟原文一模一樣(沒翻)']); continue; }
     if (!hasCJK(e.title)) { rejected.push([key, '標題裡沒有中文字'] ); continue; }
-    (accepted[src.league] ??= {})[key] = {
+    const entry = {
       ok: true, title: String(e.title).trim(),
       body: String(e.body ?? '').trim() || null,
       model: by, at: new Date().toISOString(),
     };
+    for (const s of srcs) (accepted[s.league] ??= {})[key] = entry;   // 出現在幾個聯賽就寫進幾份快取
   }
 
   let wrote = 0;
