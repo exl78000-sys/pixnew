@@ -1790,6 +1790,32 @@ async function checkDataGap() {
        於是開賽 115 分鐘後場次從 inplay 掉進 awaiting,而那一區當時完全不讀 live.json:
        **比分就在同一頁的資料裡,畫面上卻消失了。**
        修法是讓夠新的即時快照決定 phase,而且 awaiting 的卡片也要印快照比分。 */
+    /* 同一個空窗的第二處:**單場分析頁**(2026-09-12,使用者第二次回報:
+       「比賽完後只剩賽前分析?比賽中資訊在哪?」)。
+       即時面板原本寫 `m.started && !m.finished`,所以 FPL 一翻 finished 就把整塊清掉 ——
+       而那時 `f.played` 還是 false(社群賽果檔以天為單位),所以賽後分頁也不存在。
+       重現過:那段空窗裡整頁只有「賽前分析」一個分頁,大字是**賽前預期進球**,
+       比分一個字都沒有,而 live.json 裡就有 0:2。 */
+    ['單場頁:完場不清空即時面板(踢完到賽果落地之間,那是唯一有比分的地方)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return /const shown = m && m\.started \? m : null;/.test(src)
+        && /cur = \(shown && !shown\.finished\) \? \{ m, fetchedAt \} : null;/.test(src)
+        && /innerHTML = shown \? livePanelHtml/.test(src)
+        && !/cur = \(m && m\.started && !m\.finished\)/.test(src);
+    })()],
+    ['單場頁:終場版講得出出處與抓取時間,而且不印沒有意義的即時勝率', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return /const done = m\.finished === true;/.test(src)
+        && /\$\{ip && !done \?/.test(src)                       // 完場不畫即時勝率(剩餘 0、下一球 0%)
+        && /C\.ageText\(fetchedAt\)/.test(src)                   // 幾分鐘前抓的
+        && /終場戰況/.test(src);
+    })()],
+    ['單場頁:兩套版面的頁首都有 id,快照才補得進去(而且不會一邊終場一邊「開賽後 N 小時」)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      const ids = src.match(/id="headScore"/g) ?? [];
+      return ids.length === 2 && (src.match(/id="headNote"/g) ?? []).length === 2
+        && /id="headPhase"/.test(src) && /ph\.textContent = shown\.finished/.test(src);
+    })()],
     ['即時快照說完場,就算賽程還沒記成 played 也算完賽', (() => {
       const now = Date.parse('2026-09-12T16:00:00Z');
       const f = { kickoff: '2026-09-12T14:00:00Z', played: false };

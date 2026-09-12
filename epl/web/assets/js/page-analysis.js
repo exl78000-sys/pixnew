@@ -94,12 +94,15 @@ try {
     <div class="card">
       <div class="scoreline" style="margin:4px 0 14px">
         <div class="side">${C.badge(f.home, 'big')}<b>${C.teamLink(f.home)}</b></div>
-        <div class="sc" style="font-size:20px">${f.played
+        ${/* 有 id 才補得進去:賽程還沒把這場記成 played 時(社群賽果檔以天為單位),
+              大字會是**賽前預期進球**,而比賽已經踢完了 —— 使用者回報的
+              「比賽完後只剩賽前分析」就是這個畫面。即時快照回來時由 renderLive 蓋掉。 */''}
+        <div class="sc" id="headScore" style="font-size:20px">${f.played
           ? `${f.fh} <span class="dim">:</span> ${f.fa}`
           : `${p.xgHome} <span class="dim">:</span> ${p.xgAway}`}</div>
         <div class="side away">${C.badge(f.away, 'big')}<b>${C.teamLink(f.away)}</b></div>
       </div>
-      <div class="center small dim" style="margin-bottom:10px">${f.played
+      <div class="center small dim" id="headNote" style="margin-bottom:10px">${f.played
         ? `最終比分・賽前模型預期 ${p.xgHome} : ${p.xgAway}` : '模型預期進球'}</div>
       ${C.probBar(p)}
       <div class="row small dim" style="justify-content:space-between;margin-top:6px">
@@ -115,7 +118,7 @@ try {
             : `<span class="pill tiny">模型失準・給${ZH[real]} ${C.pct(p[real], 0)}</span>`;
         })() : state.phase === 'upcoming'
           ? `開賽倒數 ${C.countdown(f.kickoff)}`
-          : `<span class="pill warn tiny">${C.elapsedText(state.elapsed)}</span>`}</span>
+          : `<span class="pill warn tiny" id="headPhase">${C.elapsedText(state.elapsed)}</span>`}</span>
         ${/* 實時戰況這一頁不是每個聯賽都有(英冠沒有接即時來源)。
               沒有的聯賽照樣給連結的話,讀者點過去只會撞上缺口頁 ——
               那不是誠實,那是把人送去死路。用 C.closedPage 判斷,不寫死聯賽代碼。 */''}
@@ -619,14 +622,27 @@ try {
       if (cur && m && fetchedAt && cur.fetchedAt
         && Date.parse(fetchedAt) < Date.parse(cur.fetchedAt)) return;
       const el = document.getElementById('livePanel');
-      cur = (m && m.started && !m.finished) ? { m, fetchedAt } : null;
-      if (el) el.innerHTML = cur ? livePanelHtml(m, f.colors, fetchedAt) : '';
+      /* **完場不要把面板清掉**(2026-09-12,使用者:「比賽完後只剩賽前分析,比賽中資訊在哪?」)。
+         原本寫 `m.started && !m.finished`,所以 FPL 一翻 finished,整塊比分、場上數據、
+         陣型、講評就從畫面上消失 —— 而賽後報告要等下一次部署(最久 12 小時),
+         這段空窗裡讀者看到的是一頁賽前分析,連比分都沒有。
+         有開踢就有東西可講:進行中畫即時版、完場畫終場版,官方賽果到了才由賽後分頁接手。 */
+      const shown = m && m.started ? m : null;
+      cur = (shown && !shown.finished) ? { m, fetchedAt } : null;   // 走鐘只在進行中
+      if (el) el.innerHTML = shown ? livePanelHtml(shown, f.colors, fetchedAt) : '';
       /* 頁首那張比分卡也要跟著走:賽程還沒把它記成 played 時它印「未開賽」,而下面的即時面板已經在第 26 分鐘 ——
          同一頁自己跟自己矛盾(使用者 2026-09-07 看到的)。有 id 的分支才動(西甲);英超的頁首另有自己的處理。 */
       const hs = document.getElementById('headScore'), hn = document.getElementById('headNote');
-      if (cur && hs && m.hs != null && m.as != null) {
-        hs.innerHTML = `${m.hs} <span class="dim">:</span> ${m.as}`;
-        if (hn) hn.innerHTML = '<span class="pill bad tiny"><span class="livedot"></span>進行中</span> 比分來自即時快照;完賽後獨立賽果核對通過才會進積分榜與模型。';
+      if (shown && hs && shown.hs != null && shown.as != null) {
+        hs.innerHTML = `${shown.hs} <span class="dim">:</span> ${shown.as}`;
+        if (hn) {
+          const ph = document.getElementById('headPhase');
+          // 同一頁不可以一邊寫「終場」一邊寫「開賽後 2 小時」(使用者看過這種自相矛盾)
+          if (ph) ph.textContent = shown.finished ? '終場(即時快照)' : C.elapsedText(Math.floor((Date.now() - Date.parse(shown.kickoff)) / 60000));
+          hn.innerHTML = shown.finished
+            ? `<span class="pill warn tiny">終場・即時快照</span> 官方賽果還沒到(來源以天為單位更新),所以這場還沒進積分榜與模型;完整賽後報告會在下一次部署出現。`
+            : '<span class="pill bad tiny"><span class="livedot"></span>進行中</span> 比分來自即時快照;完賽後獨立賽果核對通過才會進積分榜與模型。';
+        }
       }
     };
     renderLive(findIn(data.live), data.live?.fetchedAt);
@@ -672,12 +688,21 @@ try {
     ].filter(r => r.label === '場上 xG' || r.better === 'low' || (r.h + r.a) > 0) : null;
     const bestLine = side => (side?.best ?? []).filter(b => b.bps > 0).slice(0, 3)
       .map(b => `${C.esc(b.name)} ${b.bps}`).join('、');
-    return `<div class="section"><h2>即時戰況</h2>
-        <span class="hint"><span class="livedot"></span> <span data-liveclock>第 ${mn.disp} 分鐘</span>・每 20 秒自動更新</span></div>
+    /* 完場版與進行中版共用這一份:差別只在時間怎麼講、要不要即時勝率。
+       各寫一份的話,改了一邊另一邊會悄悄過期(本專案最常見的那種過期)。 */
+    const done = m.finished === true;
+    return `<div class="section"><h2>${done ? '終場戰況' : '即時戰況'}</h2>
+        <span class="hint">${done
+          ? '比分與場上數據來自即時快照・官方賽果與完整賽後報告還沒到'
+          : `<span class="livedot"></span> <span data-liveclock>第 ${mn.disp} 分鐘</span>・每 20 秒自動更新`}</span></div>
       <div class="card">
-        <div class="spread"><span class="pill bad"><span class="livedot"></span><span data-liveclock>第 ${mn.disp} 分鐘</span></span>
+        <div class="spread">${done
+          ? '<span class="pill warn">終場</span>'
+          : `<span class="pill bad"><span class="livedot"></span><span data-liveclock>第 ${mn.disp} 分鐘</span></span>`}
           <span class="tiny dim">${C.kickoffLocal(m.kickoff)}</span></div>
-        <div class="tiny dim" style="margin-top:4px">${mn.src}・分鐘由抓取後的實際時間推進(推算;中場與補時長度沒有資料,顯示停在 45+/90+)</div>
+        <div class="tiny dim" style="margin-top:4px">${done
+          ? `${C.esc(data.live?.sourceLabel ?? data.live?.source ?? '即時來源')}・${C.ageText(fetchedAt)}抓的。獨立賽果核對通過後才會進積分榜與模型,球隊統計、正式陣容與球員評分會在下一次部署出現。`
+          : `${mn.src}・分鐘由抓取後的實際時間推進(推算;中場與補時長度沒有資料,顯示停在 45+/90+)`}</div>
         <div class="scoreline" style="margin:14px 0">
           <div class="side">${C.badge(m.home)}<b>${C.name(m.home)}</b></div>
           <div class="sc">${m.hs ?? '-'} : ${m.as ?? '-'}</div>
@@ -692,14 +717,16 @@ try {
             xgOk ? `場上 xG ${H.xG} : ${A.xG}` : ''].filter(Boolean);
           return bits.length ? `<div class="tiny dim center" style="margin-bottom:6px">${bits.join('・')}</div>` : '';
         })()}
-        ${ip ? `${C.probBar(ip)}
+        ${/* 完場之後即時勝率沒有意義(剩餘時間 0、下一球 0%),印出來是一行雜訊。
+              賽前機率在上面那張卡已經有了,這裡不重複。 */''}
+        ${ip && !done ? `${C.probBar(ip)}
           <div class="tiny dim center" style="margin-top:6px">剩餘時間期望進球 ${ip.xgRestHome} : ${ip.xgRestAway}
             ・下一球 ${C.name(m.home)} ${C.pct(ip.nextGoal.home, 0)} / ${C.name(m.away)} ${C.pct(ip.nextGoal.away, 0)}</div>` : ''}
         ${(H?.scorers?.length || A?.scorers?.length) ? `<div class="tiny" style="margin-top:8px">
           ⚽ ${[...(H?.scorers ?? []).map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`),
                ...(A?.scorers ?? []).map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`)].join('、')}</div>` : ''}
       </div>
-      ${statRows ? `<div class="card" style="margin-top:10px"><h3>場上數據 <span class="pill tiny">每 20 秒更新</span></h3>
+      ${statRows ? `<div class="card" style="margin-top:10px"><h3>場上數據 <span class="pill tiny">${done ? '終場' : '每 20 秒更新'}</span></h3>
         ${C.versus(statRows, { home: m.home, away: m.away, colors,
           note: '全隊加總自 FPL 的即時逐球員數據。控球率、射門次數、傳球數與角球沒有免費的即時來源,所以不顯示 —— 缺的欄位不會用估計值補。' })}
         ${bestLine(H) || bestLine(A) ? `<div class="tiny dim" style="margin-top:8px">目前表現分(BPS)前三 ——
