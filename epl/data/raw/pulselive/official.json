@@ -21695,6 +21695,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 49270,
+      "team": 15,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -21805,6 +21814,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 108816,
+      "team": 15,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49270,
+      "team": 15,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -21834,7 +21861,7 @@
      }
     ]
    },
-   "clock": "80'00"
+   "clock": "82'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -22433,7 +22460,7 @@
      }
     ]
    },
-   "clock": "77'00"
+   "clock": "80'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -23064,6 +23091,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 108919,
+      "team": 41,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 13486,
+      "team": 41,
+      "min": 82,
+      "label": "82'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -23093,7 +23138,7 @@
      }
     ]
    },
-   "clock": "82'00"
+   "clock": "84'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -23737,7 +23782,7 @@
      }
     ]
    },
-   "clock": "78'00"
+   "clock": "80'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -24394,7 +24439,7 @@
      }
     ]
    },
-   "clock": "84'00"
+   "clock": "86'00"
   },
   "TOT|EVE": {
    "fixtureId": 128962,
@@ -24794,5 +24839,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T15:40:52.219Z"
+ "fetchedAt": "2026-09-12T15:43:10.940Z"
 }
