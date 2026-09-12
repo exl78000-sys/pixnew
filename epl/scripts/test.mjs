@@ -1011,6 +1011,43 @@ async function checkTimeline() {
   }
   if (personless) console.log(`  · 沒有 personId 的牌/換人 ${personless} 筆(上游沒給人,照規矩留著、隊伍為 null)`);
   cases.push(
+    /* YR(兩黃罰下)是 2026-09-12 出現的第三種代碼,核對過才放行的 ——
+       SUN vs ARS 90+6' 那筆,**同一個人 28' 已經吃過一張 Y**;獨立核對用 FPL 的記法差異:
+       官方這一隊 5 張 Y + 1 張 YR、FPL 4 張黃 + 1 張紅,差的正好是被罰下那人的黃牌。
+       這兩條守著它別再退回「沒見過」,也守著分類是在 build 時重算的(舊快取才跟得上)。 */
+    /* 補時的排序(2026-09-12,改換人排版時看畫面才發現的既有 bug)。
+       官方把補時全部記成第 90 分,補時第幾分只在 label 裡 —— 照 min 排,
+       90+7 的進球會排在 90+1 的黃牌前面。實測 SUN vs ARS 就是這樣。 */
+    ['時間軸用補時後的實際分鐘排序(90+7 要排在 90+1 後面)', (() => {
+      const core2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      if (!/const absMin = \(label, min\) =>/.test(core2)) { console.log('      core.js 沒有 absMin'); return false; }
+      // 分組鍵也要用它,不然 90+1 與 90+7 的換人會被當成同一次
+      return /t: 'goal', min: absMin\(g\.label, g\.min\)/.test(core2)
+        && /t: 'card', min: absMin\(c\.label, c\.min\)/.test(core2)
+        && /absMin\(x\.label, x\.min\)\}\|\$\{x\.team/.test(core2);
+    })()],
+    ['換人排版是上下兩行、綠上紅下,而且仍然不宣稱誰替誰', (() => {
+      const core2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
+      return /class="sub-row on"/.test(core2) && /class="sub-row off"/.test(core2)
+        && /\.sub-row\.on \.sub-arrow \{ color: var\(--win\)/.test(css)
+        && /\.sub-row\.off \.sub-arrow \{ color: var\(--loss\)/.test(css)
+        && /不配對誰替誰/.test(core2);
+    })()],
+    ['YR(兩黃罰下)已核對放行,而且標成會離場', (() => {
+      const yr = Object.values(off.matches ?? {}).flatMap(m => m.timeline?.cards ?? []).filter(c => c.kindRaw === 'YR');
+      if (!yr.length) return true;                       // 還沒出現過就不強求
+      return yr.every(c => c.kind === '兩黃罰下' && c.sendsOff === true);
+    })()],
+    ['牌的分類在 build 時依原碼重算(新代碼放行後,舊快取自動跟上)', (() => {
+      const ad = readFileSync(join(ROOT, 'scripts', 'lib', 'adapters', 'pulselive.mjs'), 'utf8');
+      return /kind: CARD_KINDS\[e\.kindRaw\]/.test(ad) && /sendsOff: CARD_SENDS_OFF\.has\(e\.kindRaw\)/.test(ad);
+    })()],
+    ['時間軸用產物的 sendsOff 決定紅牌圖示,不在前端列代碼', (() => {
+      const core2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      return /const sentOff = c => \(c\.sendsOff \?\? c\.kindRaw === 'R'\)/.test(core2)
+        && !/c\.kindRaw === 'R' \? '🟥'/.test(core2);
+    })()],
     ['正式資料裡沒有沒見過的牌代碼', unknownCards.size === 0, [...unknownCards].join('、')],
     ['正式資料裡沒有沒見過的換人代碼', unknownDirs.size === 0, [...unknownDirs].join('、')],
     ['正式資料裡有 person 的事件都查得到隊伍', unresolved.length === 0, unresolved.join(' / ')],

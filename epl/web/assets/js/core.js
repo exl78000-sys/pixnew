@@ -1932,20 +1932,31 @@ const GOAL_TAG = { penalty: ['十二碼', 'info'], own: ['烏龍球', 'bad'] };
 
    換人**按「分鐘 + 隊伍」分組,不配對誰換誰** —— 官方事件流沒有欄位把 ON 與 OFF
    連起來,而同一分鐘同一隊可以換兩人。配錯人比不配對糟得多。 */
+/* 排序要用**補時後的實際分鐘**,不是 `min`(2026-09-12 看畫面才發現的)。
+   官方把補時全部記成第 90 分,補時幾分只在 label 裡(`90+7'00`)。
+   照 min 排的話 90+7 的進球會跑到 90+1 的黃牌**前面** —— 實測 SUN vs ARS 就是這樣:
+   Saka 90+7 的十二碼排在三張 90+1/90+3 的牌上面,時間軸自己不按時間。
+   解析不出來就退回 min(不要因為 label 缺了就整條時間軸亂掉)。 */
+const absMin = (label, min) => {
+  const m = /^(\d+)(?:\+(\d+))?/.exec(String(label ?? ''));
+  return m ? Number(m[1]) + Number(m[2] ?? 0) : (min ?? 0);
+};
+
 export function goalTimeline(goals, { home, away, timeline = null } = {}) {
   const rows = (goals ?? []).filter(g => g && g.min != null)
-    .map(g => ({ t: 'goal', min: g.min, ord: 0, g }));
+    .map(g => ({ t: 'goal', min: absMin(g.label, g.min), ord: 0, g }));
 
   for (const c of timeline?.cards ?? []) {
     if (c?.min == null) continue;
-    rows.push({ t: 'card', min: c.min, ord: 1, c });
+    rows.push({ t: 'card', min: absMin(c.label, c.min), ord: 1, c });
   }
   /* 同一分鐘同一隊的換人收成一列。用 Map 保順序,才不會因為物件的鍵排序而跳動。 */
   const subGroups = new Map();
   for (const x of timeline?.subs ?? []) {
     if (x?.min == null) continue;
-    const k = `${x.min}|${x.team ?? '?'}`;
-    if (!subGroups.has(k)) subGroups.set(k, { t: 'sub', min: x.min, ord: 2, team: x.team, on: [], off: [] });
+    // 分組也要用補時後的分鐘:90+1 與 90+7 的換人是兩次,不是同一次(min 都是 90)
+    const k = `${absMin(x.label, x.min)}|${x.team ?? '?'}`;
+    if (!subGroups.has(k)) subGroups.set(k, { t: 'sub', min: absMin(x.label, x.min), ord: 2, team: x.team, on: [], off: [] });
     const grp = subGroups.get(k);
     (x.dir === 'off' ? grp.off : grp.on).push(x);
   }
@@ -1955,7 +1966,7 @@ export function goalTimeline(goals, { home, away, timeline = null } = {}) {
      PE 的 label 帶補時(45+3),那是唯一講得出「上半場踢了幾分鐘補時」的來源。 */
   for (const p of timeline?.periods ?? []) {
     if (p?.type !== 'PE' || p.min == null) continue;
-    rows.push({ t: 'period', min: p.min, ord: 3, p });
+    rows.push({ t: 'period', min: absMin(p.label, p.min), ord: 3, p });
   }
 
   if (!rows.length) return '';
@@ -1968,20 +1979,39 @@ export function goalTimeline(goals, { home, away, timeline = null } = {}) {
   const who = e => playerChip({ name: e.player, code: e.playerCode, team: e.team }, { size: 20 });
   const minCell = l => esc(l ? String(l).replace(/'\d+$/, "'") : '');
 
+  /* 罰不罰下由**產物**講(`sendsOff`,build 時依代碼表算),不要在前端列代碼:
+     原本寫死 `kindRaw === 'R'`,所以 2026-09-12 出現的 `YR`(兩黃罰下)會畫成一個小方塊 ▪、
+     用黃牌的顏色 —— 而那個人是被罰下的。舊產物沒有 sendsOff,退回認 R。 */
+  const sentOff = c => (c.sendsOff ?? c.kindRaw === 'R');
   const renderCard = c => `<div class="goal-line ${c.team === away ? 'away' : ''}">
       <b class="gl-min">${minCell(c.label ?? `${c.min}'`)}</b>
-      <span class="gl-icon">${c.kindRaw === 'R' ? '🟥' : c.kindRaw === 'Y' ? '🟨' : '▪'}</span>
+      <span class="gl-icon">${sentOff(c) ? '🟥' : c.kindRaw === 'Y' ? '🟨' : '▪'}</span>
       <span>${c.team ? `${badge(c.team)} <b>${esc(name(c.team))}</b>・` : ''}${who(c)}
-        <span class="pill tiny ${c.kindRaw === 'R' ? 'bad' : 'warn'}">${esc(c.kind ?? c.kindRaw ?? '牌')}</span></span>
+        <span class="pill tiny ${sentOff(c) ? 'bad' : 'warn'}">${esc(c.kind ?? c.kindRaw ?? '牌')}</span></span>
       <b class="gl-score mono dim">—</b>
     </div>`;
 
-  const renderSub = g => `<div class="goal-line ${g.team === away ? 'away' : ''}">
+  /* 換人的排版(2026-09-12,使用者:「換人事欄有點亂,參考 FotMob 呈現」)。
+
+     原本是一行文字:「上 A 、 B 下 C 、 D」—— 名字與方向擠在一起,讀者要自己斷句,
+     兩個人以上時尤其難讀(實測 ARS 45 分鐘一次換兩人就是這個樣子)。
+
+     改成 FotMob 那種**上下兩行、綠上紅下**:進場一行、退場一行,箭頭帶顏色,
+     名字用既有的頭貼 chip。**但仍然不配對誰替誰** —— 官方事件流沒有把 ON 與 OFF
+     連起來的欄位,FotMob 是它自己有配對資料才畫成一組。我們照分鐘與隊伍分組,
+     同一分鐘換兩人就是兩個名字並排,不暗示誰對誰(配錯人比不配對糟得多)。 */
+  const renderSub = g => `<div class="goal-line sub-line ${g.team === away ? 'away' : ''}">
       <b class="gl-min">${minCell(g.on[0]?.label ?? g.off[0]?.label ?? `${g.min}'`)}</b>
       <span class="gl-icon">⇄</span>
-      <span>${g.team ? `${badge(g.team)} <b>${esc(name(g.team))}</b>・` : ''}
-        ${g.on.length ? `上 ${g.on.map(who).join('、')}` : ''}${g.on.length && g.off.length ? '　' : ''}
-        ${g.off.length ? `<span class="dim">下 ${g.off.map(who).join('、')}</span>` : ''}</span>
+      <span class="gl-subs">
+        ${g.team ? `<span class="sub-team">${badge(g.team)} <b>${esc(name(g.team))}</b></span>` : ''}
+        ${/* **一個人一行、各自帶箭頭。** 第一版是「一個方向一行、名字並排」,
+             400px 下換行之後第二個名字就跟箭頭分家了 —— 讀者看不出他是上還是下
+             (實測 ARS 45 分鐘換兩人正是這個畫面)。每人一行就不會有這個問題,
+             而 FotMob 也是一行一個人。 */''}
+        ${g.on.map(x => `<span class="sub-row on"><span class="sub-arrow">▲</span>${who(x)}</span>`).join('')}
+        ${g.off.map(x => `<span class="sub-row off"><span class="sub-arrow">▼</span>${who(x)}</span>`).join('')}
+      </span>
       <b class="gl-score mono dim">—</b>
     </div>`;
 
