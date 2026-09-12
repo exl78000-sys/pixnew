@@ -21208,7 +21208,7 @@
    "final": false,
    "score": {
     "home": 1,
-    "away": 1
+    "away": 2
    },
    "homeId": 2,
    "awayId": 15,
@@ -21637,16 +21637,16 @@
    "goals": [
     {
      "side": "H",
-     "person": 326089,
-     "assist": 51423,
-     "team": 2,
-     "min": 74,
-     "label": "74'00",
+     "person": 304123,
+     "assist": 15259,
+     "team": 15,
+     "min": 88,
+     "label": "88'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
      "hs": 1,
-     "as": 1
+     "as": 2
     }
    ],
    "timeline": {
@@ -21879,7 +21879,7 @@
      }
     ]
    },
-   "clock": "86'00"
+   "clock": "89'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -22357,6 +22357,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 10766,
+      "team": 127,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -22532,7 +22541,7 @@
      }
     ]
    },
-   "clock": "84'00"
+   "clock": "87'00"
   },
   "CHE|HUL": {
    "fixtureId": 128955,
@@ -23255,7 +23264,7 @@
      }
     ]
    },
-   "clock": "89'00"
+   "clock": "90+1'00"
   },
   "CRY|IPS": {
    "fixtureId": 128957,
@@ -23888,6 +23897,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 337813,
+      "team": 6,
+      "min": 84,
+      "label": "84'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 35670,
+      "team": 6,
+      "min": 84,
+      "label": "84'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -23917,7 +23944,7 @@
      }
     ]
    },
-   "clock": "84'00"
+   "clock": "87'00"
   },
   "LIV|FUL": {
    "fixtureId": 128959,
@@ -24574,7 +24601,7 @@
      }
     ]
    },
-   "clock": "90+1'00"
+   "clock": "90+3'00"
   },
   "TOT|EVE": {
    "fixtureId": 128962,
@@ -24974,5 +25001,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T15:47:48.586Z"
+ "fetchedAt": "2026-09-12T15:50:06.813Z"
 }
