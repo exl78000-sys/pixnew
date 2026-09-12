@@ -101,6 +101,28 @@ GitHub 先檢查權限再驗 ref,所以
 換 token:重開一組之後 `npx wrangler secret put GITHUB_TOKEN` 貼上即可,
 不用重新部署。
 
+### 到期提醒 + 每日心跳(2026-09-12 補)
+
+fine-grained token 的到期日**問得到**:GitHub 每個 API 回應都帶
+`github-authentication-token-expiration` 標頭。所以現在:
+
+- `/status` 的 `auth` 多了 `expiresAt` 與 `daysLeft`;
+- 剩不到 **14 天**(`EXPIRY_WARN_DAYS`)每次 cron 都送告警(有設 webhook 的話);
+- **每天 08:00 UTC(台北 16:00)那一格派送一次 `ignition-alert.yml`**,帶著
+  `outcome`(ok / fail)與說明。那支 workflow 走 `notify-ci`:fail 就開一張
+  `CI 紅了(ignition):…` 的 Issue(你會收到 email),ok 就把它關掉。
+  這支 Worker 沒有開 Issue 的權限,但它**有**派工權限 —— 借已經驗過的那條通知鏈用。
+- 順帶得到心跳:Actions 頁每天都該有「點火器每日回報」一次執行。`epl-live.yml`
+  的 `ignition-watch` job 兩天沒看到就開 Issue —— 那是 Worker 整個死掉(PAT 過期沒人理、
+  Cloudflare 帳號出事)時唯一會講話的地方,因為 Worker 自己已經講不了了。
+
+到期**之後**派不動任何東西,所以提醒一定在到期前;classic token 沒有到期標頭,
+`/status` 會照實說「不明」,這條提醒幫不上忙(請用 fine-grained)。
+
+**改了 `src/worker.js` 就要重新部署**:`npx wrangler deploy`;沒有電腦的話,
+Cloudflare dashboard → Workers & Pages → warroom-ignition → Edit code,把整份 `src/worker.js`
+貼進去 Deploy 也一樣(這支只有一個檔、沒有 build 步驟)。
+
 ## 費用
 
 免費方案綽綽有餘:每天約 288 次 cron 執行(免費上限 10 萬次請求/天),

@@ -38,6 +38,14 @@ const LIVE_POST_MIN = 115;    // 「現在應該正在踢」的範圍(看門狗�
 const STALE_MIN = 6;          // feed 超過這麼久沒更新就是不對(迴圈正常 2~3 分鐘一次)
 const ALERT_MIN = 15;         // 超過這麼久才告警 —— 6 分鐘可能只是剛好卡在兩次之間
 const DEPLOY_AFTER_MIN = 30;  // 當天最後一場結束多久之後補一次部署
+/* PAT 到期提醒(2026-09-12)。fine-grained token 到期之後這支會靜靜失效 —— 每一次都問不到 GitHub,
+   什麼都不派送,而沒有任何地方會講(補齊規劃掛了兩週的那一條)。GitHub 每個 API 回應都帶
+   `github-authentication-token-expiration` 標頭,所以到期日是**問得到的**;剩不到 EXPIRY_WARN_DAYS
+   就吵。吵的管道:webhook(沒設就沒有)+ **派送 ignition-alert.yml**(這支有的權限就是派工),
+   由那支去開 Issue、走已經驗過的 Issue → email 通知鏈。到期**之後**就派不動了,所以提醒一定要在到期前。 */
+const EXPIRY_WARN_DAYS = 14;
+const HEARTBEAT_WORKFLOW = 'ignition-alert.yml';
+const HEARTBEAT_HOUR_UTC = 8;   // 每天 08:00 UTC(台北 16:00)那一格派一次回報,有問題開 Issue、沒問題關 Issue;順便當心跳
 
 const nowMs = () => Date.now();
 const mins = ms => ms / 60000;
@@ -80,7 +88,7 @@ async function runState(env, workflow) {
   return 'idle';
 }
 
-async function dispatch(env, workflow, why, log, dryRun = false) {
+async function dispatch(env, workflow, why, log, dryRun = false, inputs = null) {
   const state = await runState(env, workflow);
   if (state === 'busy') { log.push(`· ${workflow} 已在執行,不重複派送(${why})`); return false; }
   if (state === 'unknown') {
@@ -92,7 +100,7 @@ async function dispatch(env, workflow, why, log, dryRun = false) {
   if (dryRun) { log.push(`· [唯讀模式] 這裡本來會派送 ${workflow}:${why}`); return false; }
   const res = await gh(env, `/actions/workflows/${workflow}/dispatches`, {
     method: 'POST',
-    body: JSON.stringify({ ref: env.BRANCH }),
+    body: JSON.stringify({ ref: env.BRANCH, ...(inputs ? { inputs } : {}) }),
   });
   if (res.ok) { log.push(`✔ 派送 ${workflow}:${why}`); return true; }
   /* 派送失敗也要吵。authHealth 只驗得到**讀**的權限(它打的是唯讀端點),
@@ -224,6 +232,16 @@ async function writeProbe(env) {
   } catch (e) { return { write: null, hint: e.message }; }
 }
 
+/* 到期日從回應標頭讀:fine-grained PAT 每個回應都帶 `github-authentication-token-expiration`
+   (格式像 `2026-11-22 18:23:20 UTC`);classic token 沒有這個標頭,那就是「不明」,照實回報。 */
+function expiryOf(res) {
+  const raw = res.headers.get('github-authentication-token-expiration');
+  if (!raw) return { expiresAt: null, daysLeft: null };
+  const t = Date.parse(raw.replace(' UTC', 'Z').replace(' ', 'T'));
+  if (!Number.isFinite(t)) return { expiresAt: raw, daysLeft: null };
+  return { expiresAt: new Date(t).toISOString(), daysLeft: Math.round((t - nowMs()) / 86400000 * 10) / 10 };
+}
+
 async function authHealth(env, { probeWrite = false } = {}) {
   try {
     const res = await gh(env, '/actions/workflows?per_page=1');
@@ -233,10 +251,29 @@ async function authHealth(env, { probeWrite = false } = {}) {
           : res.status === 403 ? '權限不足(需要 Actions: Read and write)'
           : res.status === 404 ? 'REPO 名稱不對,或 token 沒有這個 repo 的存取權' : null };
     }
-    if (!probeWrite) return { ok: true };
+    const exp = expiryOf(res);
+    if (!probeWrite) return { ok: true, ...exp };
     const w = await writeProbe(env);
-    return { ok: w.write !== false, read: true, ...w };
+    return { ok: w.write !== false, read: true, ...exp, ...w };
   } catch (e) { return { ok: false, error: e.message }; }
+}
+
+/* 每天一次的回報 + 心跳。無狀態:只看「現在是不是那一格」(HEARTBEAT_HOUR_UTC 整點後 5 分鐘內,
+   cron 每 5 分鐘一次所以剛好一次),人打 /status 時不做(那會變成每按一次派一次)。
+   outcome=fail 的條件:認證壞掉、沒有派工權限、或 PAT 剩不到 EXPIRY_WARN_DAYS。
+   到期日不明(classic token)算 ok,但說明裡講清楚 —— 不明不是壞,只是這條提醒幫不上忙。 */
+async function heartbeat(env, auth, log, dryRun) {
+  const d = new Date();
+  const slot = d.getUTCHours() === HEARTBEAT_HOUR_UTC && d.getUTCMinutes() < 5;
+  const expiring = auth.daysLeft != null && auth.daysLeft <= EXPIRY_WARN_DAYS;
+  const bad = !auth.ok || auth.write === false || expiring;
+  const detail = !auth.ok ? `GitHub 認證有問題:${auth.hint ?? auth.error ?? `HTTP ${auth.status}`}`
+    : auth.write === false ? `GITHUB_TOKEN 沒有派工權限:${auth.hint}`
+    : auth.expiresAt ? `GITHUB_TOKEN 到期日 ${auth.expiresAt.slice(0, 10)},剩 ${auth.daysLeft} 天${expiring ? ' —— 快到期了,請換一組' : ''}`
+    : 'GITHUB_TOKEN 的到期日不明(classic token 沒有到期標頭?),這條提醒幫不上忙';
+  if (expiring) await alert(env, `⚠ 點火器的 GITHUB_TOKEN ${detail}。到期後排程會靜靜退回 best-effort。`, log);
+  if (!slot) return;
+  await dispatch(env, HEARTBEAT_WORKFLOW, `每日回報:${detail}`, log, dryRun, { outcome: bad ? 'fail' : 'ok', detail });
 }
 
 async function run(env, { dryRun = false, probeAuth = false } = {}) {
@@ -255,6 +292,8 @@ async function run(env, { dryRun = false, probeAuth = false } = {}) {
     // 這是「該動的時候動不了」,而且要到比賽開打那一刻才會發作 —— 現在就吵
     await alert(env, `⚠ 點火器的 GITHUB_TOKEN 沒有派工權限:${auth.hint}。比賽日不會進場。`, log);
   }
+  // 到期提醒與每日心跳(見 heartbeat 的說明)。dryRun(/status 沒帶 key)不派送
+  try { await heartbeat(env, auth, log, dryRun); } catch (e) { log.push(`✗ 每日回報失敗:${e.message}`); }
   for (const lg of LEAGUES) {
     try { results.push(await checkLeague(env, lg, log, dryRun)); }
     catch (e) { log.push(`✗ ${lg.zh} 檢查整個失敗:${e.message}`); }

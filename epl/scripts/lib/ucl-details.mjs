@@ -90,12 +90,19 @@ export function uclDetails(root, ucl) {
 
   const rawDir = join(root, 'data', 'raw', UCL_RAW_DIR);
   let retrievedAt = null, cached = 0;
+  /* 抓取器退回的場次(store.attempts:FotMob 標未完賽、比分不符、賽程找不到…)也要進產物 ——
+     它們不在 store.matches 裡,所以 loadFotmobMatchStats 的 rejected 看不到它們;不帶出來的話
+     畫面只能講「還沒抓到」,而其中一種(比分不符)是永遠抓不到的。 */
+  const attempts = [];
   if (existsSync(rawDir)) {
     for (const f of readdirSync(rawDir).filter(x => /-game-details\.json$/.test(x))) {
       try {
         const store = JSON.parse(readFileSync(join(rawDir, f), 'utf8'));
         cached += Object.keys(store.matches ?? {}).length;
         if (store.updatedAt && (!retrievedAt || store.updatedAt > retrievedAt)) retrievedAt = store.updatedAt;
+        for (const [pair, a] of Object.entries(store.attempts ?? {})) {
+          attempts.push({ key: `${store.season}|${pair}`, label: a.label ?? pair, reason: a.reason ?? null, at: a.at ?? null });
+        }
       } catch { /* 壞掉的快取當成沒有;rejected 那邊不會有它,count 對不上就看得出來 */ }
     }
   }
@@ -105,6 +112,8 @@ export function uclDetails(root, ucl) {
     /* 前端的說明文字照這兩個欄位講,不要在前端寫死 */
     xg: 'shotmap', xgNote: '逐射門 xG 加總;只在射門圖的進球數對得回比分時給,否則留空',
     count: 0, cached, seasons: {}, reports: {}, incomplete: [], rejected: stats.rejected,
+    /* 抓取器層退回的(見上面);跟 rejected(讀取器層)分開列,兩層的原因不同 */
+    attempts,
   };
   const files = new Map();
 

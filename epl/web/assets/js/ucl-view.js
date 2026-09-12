@@ -721,10 +721,22 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
              「還沒抓到」跟「拒收」是兩句不同的話 —— 拒收代表兩個來源的比分對不上,那一場整場不採用。 */''}
         ${detSeason ? `<div style="margin-top:6px">
           <b>賽後報告:${detSeason.reports} / ${detSeason.played} 場已完賽有</b>(FotMob 逐場詳情,比分跟 football-data.org 核對過才收)。
-          ${detSeason.reports < detSeason.played ? `其餘 ${detSeason.played - detSeason.reports} 場${
-            (details.rejected ?? []).some(r => r.key.startsWith(`${s.label}|`)) || (details.incomplete ?? []).some(r => r.key.startsWith(`${s.label}|`))
-              ? `之中:兩個來源比分對不上而<b>整場不採用</b>的 ${(details.rejected ?? []).filter(r => r.key.startsWith(`${s.label}|`)).length} 場、供應商資料不完整的 ${(details.incomplete ?? []).filter(r => r.key.startsWith(`${s.label}|`)).length} 場,剩下的是還沒抓到(每次部署補最多 39 場,比賽日迴圈踢完就補)`
-              : '還沒抓到 —— 每次部署補最多 39 場,比賽日迴圈踢完就補'}。` : ''}
+          ${(() => {
+            /* 缺的場次分三種,各有各的原因,一句「還沒抓到」會把永遠抓不到的講成還在等:
+               rejected(讀取器:兩個來源比分對不上)、incomplete(供應商缺欄位)、attempts(抓取器退回:
+               FotMob 標未完賽 / 賽程找不到 / 比分不符,30 分鐘後會再試)。 */
+            const mine = list => (list ?? []).filter(r => String(r.key).startsWith(`${s.label}|`));
+            const rej = mine(details.rejected), inc = mine(details.incomplete), att = mine(details.attempts);
+            const missing = detSeason.played - detSeason.reports;
+            if (missing <= 0) return '';
+            const parts = [];
+            if (rej.length) parts.push(`兩個來源比分對不上而<b>整場不採用</b>的 ${rej.length} 場`);
+            if (inc.length) parts.push(`供應商資料不完整的 ${inc.length} 場`);
+            if (att.length) parts.push(`抓取器退回的 ${att.length} 場(${C.esc([...new Set(att.map(a => a.reason))].slice(0, 3).join('、'))};退回過的 30 分鐘後再試)`);
+            const rest = missing - rej.length - inc.length - att.length;
+            if (rest > 0) parts.push(`${rest} 場還沒抓到(每次部署補最多 39 場,比賽日迴圈踢完就補;往季要手動回填)`);
+            return `其餘 ${missing} 場:${parts.join('、')}。`;
+          })()}
           ${details.retrievedAt ? `<span class="dim tiny">最後抓取 ${C.esc(String(details.retrievedAt).slice(0, 16).replace('T', ' '))} UTC</span>` : ''}
         </div>` : ''}
         ${/* 第二來源分兩種(kind):抽籤檔只核配對(賽季前交付,沒有日期與比分);有比分的檔才逐場核對。

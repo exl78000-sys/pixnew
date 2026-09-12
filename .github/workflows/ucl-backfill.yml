@@ -1,0 +1,64 @@
+name: 歐冠往季賽後資料回填(手動)
+
+# 歐冠賽後報告(2026-09-12 接線)本季會自動累積(部署與比賽日迴圈都抓),
+# **往季不自動回填** —— 2024-25 與 2025-26 各 189 場,一場一個請求,是使用者的決定。
+# 2026-09-12 使用者決定回填,所以有這一支:手動觸發、一次一季、抓完把 raw 回寫進倉庫。
+# 沙箱連不到 FotMob,只能在 runner 上跑;抓取器自己守門(比分對回 ucl.json 才收、
+# 橋跟人工對照表一致才用、退回過的 30 分鐘內不重試)。
+# 沒有掛 notify:這是手動的一次性工作,失敗就看 log,開 Issue 只是雜訊(跟 probe-apis 同一個理由)。
+on:
+  workflow_dispatch:
+    inputs:
+      season:
+        description: '賽季標籤,例如 2025-26(要在 ucl.json 裡而且可用)'
+        required: true
+        default: '2025-26'
+      limit:
+        description: '本次請求上限;一場一個請求,整季 189 場一次 200 就補完'
+        required: false
+        default: '200'
+
+concurrency:
+  group: ucl-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 抓歐冠往季逐場資料(FotMob)
+        working-directory: epl
+        run: npm run game:fetch -- --league=ucl --season=${{ inputs.season }} --limit=${{ inputs.limit }}
+
+      - name: 回寫 raw
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f epl/data/raw/fotmob-ucl/
+          if git diff --cached --quiet; then
+            echo "raw 沒有變化,不提交"
+            exit 0
+          fi
+          git commit -q -m "chore(epl): 歐冠 ${{ inputs.season }} 往季賽後資料回填 [skip ci]"
+          # 同一條分支還有部署與比賽日迴圈在推;rebase 失敗就 abort 重來,最多三次
+          for try in 1 2 3; do
+            if git pull -q --rebase origin "$GITHUB_REF_NAME"; then
+              if git push -q origin "HEAD:$GITHUB_REF_NAME"; then echo "已回寫(第 $try 次)"; exit 0; fi
+            else
+              git rebase --abort 2>/dev/null || true
+            fi
+            sleep 5
+          done
+          echo "✗ 回寫連撞三次,這次的 raw 沒有進倉庫 —— 重跑一次就好(抓過的已經在 runner 上,但沒回寫就會重抓)"
+          exit 1
