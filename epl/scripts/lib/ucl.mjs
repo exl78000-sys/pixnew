@@ -3,7 +3,7 @@
    不推論、不補值、不預測(歐冠沒有經過驗收的模型,理由見下方 build 產出的 note)。 */
 
 import { KO_ORDER, STAGE_ZH, winnerOfMatch, buildUclTeamIndex, normaliseUclMatch as _n } from './adapters/football-data-ucl.mjs';
-import { crossCheck, checkDraw, drawIsSane, buildLeaders } from './adapters/fotmob-ucl.mjs';
+import { crossCheck, crossCheckDraw, isDrawFile, checkDraw, drawIsSane, buildLeaders } from './adapters/fotmob-ucl.mjs';
 /* squadsByTeam 要讀落地的 id 對照表。這一支只在 Node 跑,靜態 import 就好 —— 
    檔案其他地方用函式內動態 import 是既有風格,不要為了統一而改動它們。 */
 import { readFileSync as readFileSyncFn, existsSync as existsSyncFn } from 'node:fs';
@@ -474,15 +474,21 @@ export async function loadUclSeasons(root, sources) {
        核對通過才採用 FotMob 的球員榜;沒通過就整份不用,並把問題留在資料裡
        讓畫面講出來,不要靜靜挑一個來顯示。 */
     if (fm && Array.isArray(fm.matches)) {
-      const cc = crossCheck(fm.matches, raw.matches);
+      /* 核對的層級要跟第二來源**有什麼**一致(2026-09-12):賽季前的抽籤檔只有配對,
+         日期是佔位值、沒有比分 —— 拿逐場核對去核它,本季整季 138 處紅字,而資料其實沒有問題。
+         抽籤檔走 crossCheckDraw(只核配對與主客方向),有比分的檔才走逐場核對。 */
+      const draw = isDrawFile(fm.matches);
+      const cc = draw ? crossCheckDraw(fm.matches, raw.matches) : crossCheck(fm.matches, raw.matches);
       s.crossCheck = {
+        kind: draw ? 'draw' : 'scores',
         source: fm.source ?? 'FotMob', retrievedAt: fm.retrievedAt ?? null,
         teamsMatched: cc.teamsMatched, teamsTotal: cc.teamsTotal,
-        aligned: cc.aligned, total: cc.total,
+        aligned: cc.aligned, total: cc.total, ...(draw ? { extra: cc.extra } : {}),
         problems: cc.problems.slice(0, 20), problemCount: cc.problems.length,
-        passed: cc.problems.length === 0 && cc.aligned === cc.total,
+        passed: cc.problems.length === 0 && cc.aligned === cc.total && !(cc.extra > 0),
       };
-      if (s.crossCheck.passed && Array.isArray(fm.players) && fm.players.length) {
+      // 抽籤檔沒有比分可核,不能替球員榜背書(它也沒有球員):只有逐場核對通過才採用
+      if (!draw && s.crossCheck.passed && Array.isArray(fm.players) && fm.players.length) {
         s.leaders = buildLeaders(fm.players);
         s.leaderPool = fm.players.length;
         /* 逐隊陣容。走的是**同一份、同一道核對**的資料 ——

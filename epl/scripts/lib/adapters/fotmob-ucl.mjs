@@ -94,6 +94,42 @@ export function bridgeTeams(fotmobTeams, fdTeams) {
   return { map, unmatched };
 }
 
+/* 抽籤檔的核對(2026-09-12)。賽季前交付的 FotMob 檔只有「誰對誰、誰主誰客」——
+   2026-27 的 144 場 kickoffUtc 全是同一個佔位值、沒有比分、沒有完賽。拿下面那個逐場
+   (日期 + 主客 + 比分)的 crossCheck 去核它,日期永遠對不上:整季 138 處「對照來源沒有這一場」,
+   畫面上一整季紅字「第二來源核對沒過」。那不是資料有問題,是**拿錯尺**:核對的層級要跟第二來源
+   **有什麼**一致。這裡只核對配對(主客方向也要一致),日期與比分不在這裡核 ——
+   賽果那一層的第二來源是 FotMob 的逐場詳情(lib/ucl-details.mjs 逐場核對比分)。
+   抽籤檔沒有比分可核,所以它**永遠不能替球員榜背書**(它也沒有球員);呼叫端要守這一條。 */
+export const isDrawFile = matches => Array.isArray(matches) && matches.length > 0
+  && matches.every(m => m?.status?.finished !== true && m?.status?.score == null);
+
+export function crossCheckDraw(fmMatches, fdMatches) {
+  const fmTeams = new Map(), fdTeams = new Map();
+  for (const m of fmMatches) for (const s of ['home', 'away']) fmTeams.set(m[s].id, [m[s].name, m[s].shortName].filter(Boolean));
+  for (const m of fdMatches) for (const s of ['homeTeam', 'awayTeam']) fdTeams.set(m[s].id, [m[s].name, m[s].shortName].filter(Boolean));
+  const { map, unmatched } = bridgeTeams(fmTeams, fdTeams);
+  // 抽籤檔只有聯賽階段;主來源到了淘汰賽會多出附加賽與淘汰賽的場次,那些不算「抽籤檔少了」
+  const fdLeague = fdMatches.filter(m => m.stage == null || m.stage === 'LEAGUE_STAGE');
+  const fdPairs = new Set(fdLeague.map(m => `${m.homeTeam.id}|${m.awayTeam.id}`));
+  let aligned = 0;
+  const problems = [];
+  const fmPairs = new Set();
+  for (const m of fmMatches) {
+    const h = map.get(m.home.id), a = map.get(m.away.id);
+    if (h == null || a == null) { problems.push({ kind: 'team', text: `${m.home.name} vs ${m.away.name} 隊名對不上` }); continue; }
+    fmPairs.add(`${h}|${a}`);
+    if (fdPairs.has(`${h}|${a}`)) { aligned++; continue; }
+    // 主客顛倒要單獨報 —— 那是「方向錯」,跟「找不到這一組」是兩件事
+    const flip = fdPairs.has(`${a}|${h}`);
+    problems.push({ kind: flip ? 'orientation' : 'missing',
+      text: `${m.home.name} vs ${m.away.name}${flip ? '(主客相反)' : '(對照來源沒有這一組對戰)'}` });
+  }
+  // 反向:主來源有、抽籤檔沒有的對戰也要報 —— 少一場跟多一場都是不一致
+  const extra = fdLeague.filter(m => !fmPairs.has(`${m.homeTeam.id}|${m.awayTeam.id}`)).length;
+  return { teamsMatched: map.size, teamsTotal: fmTeams.size, unmatched, aligned, total: fmMatches.length, extra, problems };
+}
+
 /* 逐場核對。回傳的東西要能讓畫面講實話,所以連「對了幾場」都帶出去。
    任何一場比分或主客對不上,採用與否交給呼叫端決定 —— 這裡不自己吞掉。 */
 export function crossCheck(fmMatches, fdMatches) {

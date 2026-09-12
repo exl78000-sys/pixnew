@@ -4499,6 +4499,38 @@ async function checkUclDetails() {
     ok(!/m\.advanced && m\.advanced\.source !== 'fotmob'/.test(strip(core)), '舊的 advanced.source 判斷已拿掉');
   }
 
+  // ── 第二來源的核對層級:抽籤檔只核配對(2026-09-12)──
+  {
+    const { crossCheckDraw, isDrawFile } = await import('./lib/adapters/fotmob-ucl.mjs');
+    const fm = (h, a, extra = {}) => ({ matchId: `${h}-${a}`, date: '2099-09-08', kickoffUtc: '2099-09-08T19:00:00Z',
+      home: { id: h, name: `Team ${h}`, shortName: `T${h}` }, away: { id: a, name: `Team ${a}`, shortName: `T${a}` },
+      status: { finished: false, started: false, scoreStr: null, score: null, ...extra } });
+    const fd = (h, a, stage = 'LEAGUE_STAGE') => ({ utcDate: '2099-10-01T19:00:00Z', stage,
+      homeTeam: { id: h * 10, name: `Team ${h} FC`, shortName: `Team ${h}` }, awayTeam: { id: a * 10, name: `Team ${a} FC`, shortName: `Team ${a}` } });
+    ok(isDrawFile([fm(1, 2), fm(3, 4)]), '沒有完賽、沒有比分的檔判定為抽籤檔');
+    ok(!isDrawFile([fm(1, 2, { finished: true, score: { home: 1, away: 0 } })]), '有比分的檔不是抽籤檔(走逐場核對)');
+    ok(!isDrawFile([]), '空檔不是抽籤檔');
+    const good = crossCheckDraw([fm(1, 2), fm(3, 4)], [fd(1, 2), fd(3, 4)]);
+    ok(good.aligned === 2 && good.problems.length === 0 && good.extra === 0 && good.teamsMatched === 4, '配對與主客方向都一致 → 全對、沒有多出來的', JSON.stringify(good));
+    const flip = crossCheckDraw([fm(1, 2), fm(4, 3)], [fd(1, 2), fd(3, 4)]);
+    ok(flip.aligned === 1 && flip.problems.length === 1 && flip.problems[0].kind === 'orientation', '主客相反要單獨報成 orientation(不是找不到)', JSON.stringify(flip.problems));
+    const miss = crossCheckDraw([fm(1, 2), fm(1, 3)], [fd(1, 2), fd(3, 4)]);
+    ok(miss.problems.some(p => p.kind === 'missing') && miss.extra === 1, '對照來源沒有的對戰報 missing;主來源多出來的計入 extra', JSON.stringify(miss));
+    const ko = crossCheckDraw([fm(1, 2)], [fd(1, 2), fd(2, 1, 'LAST_16')]);
+    ok(ko.extra === 0 && ko.aligned === 1, '主來源的淘汰賽場次不算「抽籤檔少了」(抽籤檔只有聯賽階段)');
+    // 產物:抽籤檔的那一季 kind 是 draw、而且永遠不替球員榜背書
+    for (const sn of ucl.seasons ?? []) {
+      if (!sn.crossCheck) continue;
+      ok(['draw', 'scores'].includes(sn.crossCheck.kind), `${sn.label}:第二來源核對有 kind`, sn.crossCheck.kind);
+      if (sn.crossCheck.kind === 'draw') {
+        ok(!sn.leaders && !sn.squads, `${sn.label}:抽籤檔不替球員榜背書`);
+        console.log(`  · ${sn.label}:第二來源是抽籤檔,配對 ${sn.crossCheck.aligned}/${sn.crossCheck.total}、主來源多出 ${sn.crossCheck.extra ?? 0}、${sn.crossCheck.passed ? '通過' : `沒過(${sn.crossCheck.problemCount} 處)`}(只回報)`);
+      }
+    }
+    const view = readFileSync(join(W, 'assets', 'js', 'ucl-view.js'), 'utf8');
+    ok(/s\.crossCheck\.kind === 'draw'/.test(view) && /抽籤對照通過/.test(view), '歐冠頁把抽籤檔的核對講成「抽籤對照」,不再印成逐場核對沒過');
+  }
+
   // ── 工作流 ──
   {
     const live = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
