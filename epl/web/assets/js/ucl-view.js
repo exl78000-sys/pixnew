@@ -727,8 +727,21 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
               : '還沒抓到 —— 每次部署補最多 39 場,比賽日迴圈踢完就補'}。` : ''}
           ${details.retrievedAt ? `<span class="dim tiny">最後抓取 ${C.esc(String(details.retrievedAt).slice(0, 16).replace('T', ' '))} UTC</span>` : ''}
         </div>` : ''}
+        ${/* 第二來源分兩種(kind):抽籤檔只核配對(賽季前交付,沒有日期與比分);有比分的檔才逐場核對。
+             以前不分,本季整季印著「核對沒過(138 處)」—— 講的是真話,但讀者會以為賽果有問題。 */''}
         ${s.crossCheck ? `<div style="margin-top:6px">
-          ${s.crossCheck.passed
+          ${s.crossCheck.kind === 'draw'
+            ? (s.crossCheck.passed
+              ? `<b style="color:var(--win)">✔ 抽籤對照通過。</b>
+                 這一季的第二來源是賽季前的 ${C.esc(s.crossCheck.source)} 抽籤檔,只有「誰對誰、誰主誰客」——
+                 沒有日期也沒有比分,所以只核對那一層:隊名 ${s.crossCheck.teamsMatched}/${s.crossCheck.teamsTotal} 對上、
+                 <b>${s.crossCheck.aligned}/${s.crossCheck.total} 組對戰與主客方向完全一致</b>。
+                 賽果那一層的第二來源是 FotMob 的逐場詳情(上面「賽後報告」那段:比分逐場核對過才收)。`
+              : `<b style="color:var(--loss)">⚠ 抽籤對照沒過(${s.crossCheck.problemCount + (s.crossCheck.extra ?? 0)} 處)。</b>
+                 ${s.crossCheck.problems.slice(0, 3).map(p => C.esc(p.text)).join('、')}${
+                   s.crossCheck.extra ? `、主來源多出 ${s.crossCheck.extra} 組抽籤檔沒有的對戰` : ''}
+                 —— 畫面顯示的是主來源(football-data.org)。`)
+            : s.crossCheck.passed
             ? `<b style="color:var(--win)">✔ 兩個獨立來源逐場核對通過。</b>
                ${C.esc(s.crossCheck.source)} 的同一季資料與本站主來源比對:
                隊名 ${s.crossCheck.teamsMatched}/${s.crossCheck.teamsTotal} 對上、

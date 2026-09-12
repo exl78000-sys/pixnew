@@ -1356,8 +1356,8 @@ async function main() {
         if (s.advancementProblems.length) console.log(`  ⚠ 歐冠 ${s.label} 晉級核對有問題:`, s.advancementProblems);
         if (s.table.mismatches.length) console.log(`  ⚠ 歐冠 ${s.label} 積分榜與官方對不上:`, s.table.mismatches);
         if (s.crossCheck) {
-          console.log(`    第二來源核對(${s.crossCheck.source}):隊名 ${s.crossCheck.teamsMatched}/${s.crossCheck.teamsTotal}`
-            + `・逐場 ${s.crossCheck.aligned}/${s.crossCheck.total}・問題 ${s.crossCheck.problemCount}`
+          console.log(`    第二來源核對(${s.crossCheck.source}${s.crossCheck.kind === 'draw' ? ',抽籤檔' : ''}):隊名 ${s.crossCheck.teamsMatched}/${s.crossCheck.teamsTotal}`
+            + `・${s.crossCheck.kind === 'draw' ? '配對' : '逐場'} ${s.crossCheck.aligned}/${s.crossCheck.total}・問題 ${s.crossCheck.problemCount}`
             + ` → ${s.crossCheck.passed ? '通過' : '未通過,球員榜不採用'}`);
           if (!s.crossCheck.passed) console.log('     ', s.crossCheck.problems.slice(0, 5));
         }
