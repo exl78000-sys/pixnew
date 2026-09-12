@@ -21601,7 +21601,7 @@
   "BOU|BRE": {
    "fixtureId": 128954,
    "kickoff": "2026-09-12T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -21610,9 +21610,31 @@
    "homeId": 127,
    "awayId": 130,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      134403
+     ],
+     [
+      3512,
+      51942,
+      120109,
+      74965
+     ],
+     [
+      74976,
+      42894
+     ],
+     [
+      134234,
+      21519,
+      14846
+     ],
+     [
+      33032
+     ]
+    ],
     "xi": [
      {
       "id": 33032,
@@ -21628,7 +21650,7 @@
       "playerId": null,
       "name": "Rayan",
       "shirt": 37,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Striker",
       "captain": false
      },
@@ -21637,7 +21659,7 @@
       "playerId": null,
       "name": "Justin Kluivert",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -21799,9 +21821,29 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-3-3",
+    "formationRaw": "4-3-3",
+    "rows": [
+     [
+      14723
+     ],
+     [
+      115166,
+      20113,
+      129096,
+      24369
+     ],
+     [
+      108421,
+      128891,
+      23194
+     ],
+     [
+      50460,
+      124052,
+      127594
+     ]
+    ],
     "xi": [
      {
       "id": 14723,
@@ -21817,7 +21859,7 @@
       "playerId": null,
       "name": "Keane Lewis-Potter",
       "shirt": 23,
-      "pos": "F",
+      "pos": "D",
       "posInfo": "Striker",
       "captain": false
      },
@@ -21864,7 +21906,7 @@
       "shirt": 44,
       "pos": "D",
       "posInfo": "Centre Central Defender",
-      "captain": true
+      "captain": false
      },
      {
       "id": 20113,
@@ -21882,7 +21924,7 @@
       "shirt": 27,
       "pos": "M",
       "posInfo": "Centre Defensive Midfielder",
-      "captain": false
+      "captain": true
      },
      {
       "id": 128891,
@@ -21898,7 +21940,7 @@
       "playerId": null,
       "name": "Kevin Schade",
       "shirt": 7,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Left/Right Winger",
       "captain": false
      }
@@ -21991,7 +22033,20 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
@@ -23187,5 +23242,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-12T13:58:24.787Z"
+ "fetchedAt": "2026-09-12T14:00:41.638Z"
 }
