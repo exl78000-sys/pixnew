@@ -935,11 +935,34 @@ export function countdownFixtures(upcoming) {
 // 所以顯示時要講清楚,不能假裝知道現在是第幾分鐘。
 export const MATCH_WINDOW_MIN = 115;   // 90 分鐘 + 中場 15 + 傷停,寬估
 
-export function scheduleState(fixture, now = Date.now()) {
+/* 即時快照夠新才可以拿它蓋掉賽程推算(2026-09-12)。
+   靜態站上的 live.json 可能是幾小時前那次部署的,拿它說「現在正在踢」就是假話。
+   這條跟 `live-window.mjs` 的「信 feed 的前提是它夠新」是同一個道理,只是在前端。 */
+export const FEED_FRESH_MIN = 15;
+export const feedFresh = (live, now = Date.now()) => {
+  const t = Date.parse(live?.fetchedAt ?? '');
+  return Number.isFinite(t) && now - t < FEED_FRESH_MIN * 60000;
+};
+
+/* 第三個參數 m 是**這一場的即時快照**(夠新的時候才給,見 feedFresh)。
+
+   2026-09-12 使用者回報:「比賽途中其實就有資料,有比分結果,結束卻歸零、寫沒賽果」。
+   原因是這個函式只看賽程時間與 `fixture.played`:
+     - `played` 要等社群賽果檔(openfootball / football-data.co.uk),那是**天**為單位
+     - FPL 的 `finished` 要等加分算完,實測完場後還會 `started && !finished` 二十幾分鐘
+   所以比賽踢完 115 分鐘之後,場次從 inplay 掉進 awaiting(「還沒有賽果」),
+   而那一區的卡片只讀 `provisional` 與官方狀態 —— **live.json 裡的比分就在同一頁上,沒有被畫出來**。
+   讀者看到的就是比分消失、還被告知「本站還沒拿到比分」。
+
+   快照知道的比兩邊都新,所以它說完場就是完場、它說還在踢就還在踢(不受 115 分鐘限制:
+   真有延長到 120 分以上的情況,而快照是實況)。`fromLive` 讓畫面講得出比分的出處(鐵則四)。 */
+export function scheduleState(fixture, now = Date.now(), m = null) {
   if (!fixture.kickoff) return { phase: fixture.played ? 'finished' : 'unknown' };
   const t = new Date(fixture.kickoff).getTime();
   const elapsed = Math.floor((now - t) / 60000);
   if (fixture.played) return { phase: 'finished', elapsed };
+  if (m?.finished) return { phase: 'finished', elapsed, fromLive: true };
+  if (m?.started) return { phase: 'inplay', elapsed, fromLive: true };
   if (elapsed < 0) return { phase: 'upcoming', elapsed };
   if (elapsed < MATCH_WINDOW_MIN) return { phase: 'inplay', elapsed };
   return { phase: 'awaiting', elapsed };   // 時間上早該結束,但還沒拿到賽果

@@ -1783,6 +1783,50 @@ async function checkDataGap() {
       return /const unplayedCount = fixtures\.filter\(f => !f\.played\)\.length/.test(src)
         && /本季還有 \$\{unplayedCount\} 場未賽/.test(src);
     })()],
+    /* ── 踢完了卻寫「還沒有賽果」(2026-09-12,使用者在比賽剛結束時回報)────────
+       「比賽途中其實就有資料,有比分結果,結束卻歸零、寫沒賽果」。
+       原因:`scheduleState` 只看賽程時間與 `fixture.played`,而那兩個都落後 ——
+       `played` 等社群賽果檔(天為單位)、FPL 的 `finished` 等加分算完(實測晚二十幾分鐘)。
+       於是開賽 115 分鐘後場次從 inplay 掉進 awaiting,而那一區當時完全不讀 live.json:
+       **比分就在同一頁的資料裡,畫面上卻消失了。**
+       修法是讓夠新的即時快照決定 phase,而且 awaiting 的卡片也要印快照比分。 */
+    ['即時快照說完場,就算賽程還沒記成 played 也算完賽', (() => {
+      const now = Date.parse('2026-09-12T16:00:00Z');
+      const f = { kickoff: '2026-09-12T14:00:00Z', played: false };
+      const s2 = V.scheduleState(f, now, { started: true, finished: true, hs: 1, as: 0 });
+      return s2.phase === 'finished' && s2.fromLive === true;
+    })()],
+    ['快照說還在踢就還在踢 —— 不受 115 分鐘的推算限制(FPL 的 finished 比完場晚)', (() => {
+      const now = Date.parse('2026-09-12T16:05:00Z');     // 開賽後 125 分鐘
+      const f = { kickoff: '2026-09-12T14:00:00Z', played: false };
+      return V.scheduleState(f, now, { started: true, finished: false }).phase === 'inplay'
+        && V.scheduleState(f, now, null).phase === 'awaiting';   // 沒有快照時行為不變
+    })()],
+    ['快照太舊就不採用(靜態站上的 live.json 可能是上次部署那份)', (() => {
+      const now = Date.parse('2026-09-12T16:00:00Z');
+      const mins = m => new Date(now - m * 60000).toISOString();
+      return V.feedFresh({ fetchedAt: mins(5) }, now) === true
+        && V.feedFresh({ fetchedAt: mins(40) }, now) === false
+        && V.feedFresh({}, now) === false && V.feedFresh(null, now) === false;
+    })()],
+    ['實時頁:快照夠新才拿來定 phase,而且重播模式不採用', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      return /const fresh = C\.feedFresh\(live, now\) && !live\.demo/.test(src)
+        && /C\.scheduleState\(f, now, fresh \? liveByKey\.get/.test(src);
+    })()],
+    ['實時頁:「還沒有賽果」的卡片會印快照比分,而且不跟「剛結束」重複', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      const i = src.indexOf('<h2>還沒有賽果</h2>');
+      if (i < 0) { console.log('      找不到「還沒有賽果」那一區'); return false; }
+      const blk = src.slice(i, i + 2600);
+      return /lscore \? `<b class="mono">\$\{lscore\.hs\}/.test(blk)      // 有比分就印
+        && /即時快照的比分/.test(blk)                                        // 而且講出處(鐵則四)
+        && /!recentIds\.has\(x\.f\.id\)/.test(src);                       // 不跟剛結束重複
+    })()],
+    ['實時頁:「剛結束」收快照說完場的場次(賽程的 played 還沒跟上)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      return /const liveDone = fx =>/.test(src) && /if \(!fx\.played && !liveDone\(fx\)\) return false;/.test(src);
+    })()],
     ['沒有開球時間的場次確實不會進倒數(三個聯賽都有這種場次)', (() => {
       const has = ['data', 'data/leagues/es1', 'data/leagues/en2'].map(d => {
         const f = JSON.parse(readFileSync(join(ROOT, 'web', d, 'fixtures.json'), 'utf8'));

@@ -1,5 +1,5 @@
-import * as C from './core.js?v=f9001a4c';
-import { renderUclView } from './ucl-view.js?v=2dcec698';
+import * as C from './core.js?v=03eb6306';
+import { renderUclView } from './ucl-view.js?v=d4afb9b2';
 
 const app = document.getElementById('app');
 

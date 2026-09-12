@@ -1,5 +1,5 @@
-import * as C from './core.js?v=f9001a4c';
-import { mountSimTable } from './sim-table.js?v=46960825';
+import * as C from './core.js?v=03eb6306';
+import { mountSimTable } from './sim-table.js?v=c8f549ca';
 
 const app = document.getElementById('app');
 
@@ -61,8 +61,18 @@ try {
        core 的那一個,不在這裡另寫一份 —— 兩份會各自漂移。 */
     const RECENT_MS = 3 * 24 * 3600 * 1000;
     const endedAt = fx => (fx.kickoff ? Date.parse(fx.kickoff) + C.MATCH_WINDOW_MIN * 60000 : NaN);
+    /* 「剛結束」的判定不能只看 `fx.played`(2026-09-12 使用者回報:
+       「比賽途中其實就有資料,有比分結果,結束卻歸零、寫沒賽果」)。
+       `played` 要等社群賽果檔(天為單位),所以比賽踢完的那幾個小時裡它還是 false ——
+       場次因此既不在「剛結束」、也不在「進行中」,掉進「還沒有賽果」,
+       而那一區當時不讀 live.json,於是**比分就在同一頁的資料裡,畫面上卻消失了**。
+       即時快照說完場、而且有比分的,一樣算剛結束。 */
+    const liveDone = fx => {
+      const m = liveByKey.get(`${fx.home}|${fx.away}`);
+      return m?.finished && m.hs != null && m.as != null ? m : null;
+    };
     const recentFinished = fixtures.filter(fx => {
-      if (!fx.played) return false;
+      if (!fx.played && !liveDone(fx)) return false;
       const e = endedAt(fx);
       // e 比 now 大(資料源比賽程先給比分)也算剛結束 —— 那是「更新」,不是「還沒發生」
       return Number.isFinite(e) && now - e < RECENT_MS;
@@ -89,14 +99,22 @@ try {
       return m && m.finished ? finishedCard(m, ago) : finishedFixtureCard(fx, ago);
     });
 
-    // 就算沒有即時資料源,光靠賽程也知道現在有哪幾場正在踢 —— 這一段永遠可用
-    const phased = fixtures.map(f => ({ f, s: C.scheduleState(f, now) }));
+    /* 就算沒有即時資料源,光靠賽程也知道現在有哪幾場正在踢 —— 這一段永遠可用。
+       而快照**夠新**的時候它比賽程準:FPL 的 finished 比完場晚二十幾分鐘才寫,
+       在那之前這一場仍該留在「進行中」並且顯示比分(不受 115 分鐘的推算限制)。
+       快照太舊(靜態站上可能是上次部署那份)就完全不採用,免得畫面說一場舊比賽正在踢。 */
+    const fresh = C.feedFresh(live, now) && !live.demo;
+    const phased = fixtures.map(f => ({
+      f, s: C.scheduleState(f, now, fresh ? liveByKey.get(`${f.home}|${f.away}`) ?? null : null),
+    }));
     const inPlaySched = phased.filter(x => x.s.phase === 'inplay').sort((a, b) => (a.f.kickoff < b.f.kickoff ? -1 : 1));
     /* 「還沒有賽果」那一區的上限。一輪有幾場是**聯賽決定的**(英超西甲 20 隊 → 10 場、
        英冠 24 隊 → 12 場),不可以寫死一個數字(CLAUDE.md 那條「前端把聯賽的事實寫死」)。
        開賽倒數不用這個數 —— 它按「同一輪連到哪就到哪」自己收斂。 */
     const perRound = Math.max(1, Math.floor((meta.competition?.teams ?? 20) / 2));
-    const awaiting = phased.filter(x => x.s.phase === 'awaiting' && !x.f.played)
+    /* 已經在「剛結束」的不要再出現一次(實測:快照過期時,同一場會同時出現在兩區)。
+       快照說完場就進剛結束(那是真的終場比分),phase 卻因為快照過期而回 awaiting —— 兩邊都收就重複。 */
+    const awaiting = phased.filter(x => x.s.phase === 'awaiting' && !x.f.played && !recentIds.has(x.f.id))
       .sort((a, b) => (a.f.kickoff > b.f.kickoff ? -1 : 1)).slice(0, perRound);
     const upcoming = phased.filter(x => x.s.phase === 'upcoming').map(x => x.f)
       .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
@@ -264,23 +282,36 @@ try {
             分不出是哪一種,所以兩種都講,並且把「早該結束多久」給讀者自己判斷。
             一季有 2~7 場改期(英超 2023-24 六次、英冠 2025-26 七次),這個空窗一定會出現。 */''}
       <div class="section"><h2>還沒有賽果</h2><span class="hint">時間上早該結束,但本站還沒拿到比分 —— 有官方狀態的直接標;沒有的可能是資料源還沒更新,也可能延賽了</span></div>
-      <div class="grid g3">${awaiting.map(({ f, s }) => `
+      ${/* 這一區的卡片也要讀即時快照(2026-09-12)。快照太舊時上面的 phase 不採用它,
+            但「它抓到的那個比分」仍然是我們手上唯一的比分 —— 印出來並講清楚是幾點抓的,
+            比寫「賽果未取得」誠實得多(鐵則四:不確定性寫在畫面上,不是把資料藏起來)。 */''}
+      <div class="grid g3">${awaiting.map(({ f, s }) => {
+        const lm = live.demo ? null : liveByKey.get(`${f.home}|${f.away}`);
+        const lscore = lm && lm.hs != null && lm.as != null ? lm : null;
+        return `
         <a class="card matchcard" href="${C.link('analysis', { id: f.id })}" style="padding:12px 14px">
           <div class="spread"><span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span>
             ${/* 官方狀態(football-data.org 快照)有的話直接講 —— 「早該結束 N 天」
                   對延期的比賽是錯的:那場根本沒踢,讀者會等一個永遠不會來的比分 */''}
             ${f.provisional
               ? `<span class="pill warn tiny">終場・暫定</span>`
-              : f.officialStatus
-                ? `<span class="pill bad tiny">官方:${f.officialStatusZh}</span>`
-                : `<span class="pill warn tiny">${s.elapsed > 60 * 24
-                    ? `早該結束 ${Math.floor(s.elapsed / 60 / 24)} 天` : '賽果未取得'}</span>`}</div>
+              : lscore
+                ? `<span class="pill warn tiny">${lscore.finished ? '終場・即時快照' : '即時快照'}</span>`
+                : f.officialStatus
+                  ? `<span class="pill bad tiny">官方:${f.officialStatusZh}</span>`
+                  : `<span class="pill warn tiny">${s.elapsed > 60 * 24
+                      ? `早該結束 ${Math.floor(s.elapsed / 60 / 24)} 天` : '賽果未取得'}</span>`}</div>
           <div class="row" style="gap:7px;margin-top:8px">${C.badge(f.home)}<b class="small">${C.name(f.home)}</b>
-            ${f.provisional ? `<b class="mono">${f.provisional.fh} : ${f.provisional.fa}</b>` : '<span class="dim">vs</span>'}${C.badge(f.away)}<b class="small">${C.name(f.away)}</b></div>
+            ${f.provisional ? `<b class="mono">${f.provisional.fh} : ${f.provisional.fa}</b>`
+              : lscore ? `<b class="mono">${lscore.hs} : ${lscore.as}</b>`
+              : '<span class="dim">vs</span>'}${C.badge(f.away)}<b class="small">${C.name(f.away)}</b></div>
           <div class="tiny dim" style="margin-top:6px">${f.provisional
             ? `暫定比分(${C.esc(f.provisional.source)});待獨立賽果核對後進積分與模型`
-            : `賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}`}</div>
-        </a>`).join('')}</div>` : ''}
+            : lscore
+              ? `即時快照的比分(${C.esc(live.sourceLabel ?? live.source ?? '即時來源')},${C.ageText(live.fetchedAt, now)}抓的);官方賽果還沒到,不進積分與模型`
+              : `賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}`}</div>
+        </a>`;
+      }).join('')}</div>` : ''}
 
 
     ${(doneRest.length || finishedRest.length) ? `
