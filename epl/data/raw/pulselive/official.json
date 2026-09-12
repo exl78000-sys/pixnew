@@ -21667,6 +21667,24 @@
     ],
     "subs": [
      {
+      "person": 13286,
+      "team": 2,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 110526,
+      "team": 2,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
       "person": 8900,
       "team": 2,
       "min": 25,
@@ -21700,7 +21718,7 @@
      }
     ]
    },
-   "clock": "45+5'00"
+   "clock": "45'00"
   },
   "BOU|BRE": {
    "fixtureId": 128954,
@@ -22682,6 +22700,12 @@
     ],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -22692,6 +22716,12 @@
       "min": 45,
       "label": "45+3'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
@@ -23712,8 +23742,8 @@
      }
     ]
    },
-   "clock": "47'00"
+   "clock": "49'00"
   }
  },
- "fetchedAt": "2026-09-12T15:03:41.651Z"
+ "fetchedAt": "2026-09-12T15:06:00.308Z"
 }
