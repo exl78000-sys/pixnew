@@ -1,4 +1,4 @@
-import * as C from './core.js?v=43ee2afb';
+import * as C from './core.js?v=aec8c394';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -710,7 +710,7 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
       const unknown = s.teamsTotal - s.teamsKnown;
       cov.innerHTML = `
         <b>球隊涵蓋率:${s.teamsKnown} / ${s.teamsTotal} 支有本站資料。</b>
-        歐冠有全歐洲的球隊,本站只做英超與西甲 —— 這一季有 ${unknown} 支球隊本站沒有,
+        歐冠有全歐洲的球隊,而本站有球隊頁的只有英超、西甲與英冠的球隊 —— 這一季有 ${unknown} 支球隊本站沒有,
         它們照樣出現在賽程與積分榜裡,但<b>只有名字,沒有隊徽也點不進去</b>。
         不替它們編一個隊碼或找一張像的隊徽,那會讓讀者以為本站有它們的資料。
         <div style="margin-top:6px" class="tiny dim">

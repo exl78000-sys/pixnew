@@ -9,6 +9,15 @@ import { crossCheck, crossCheckDraw, isDrawFile, checkDraw, drawIsSane, buildLea
 import { readFileSync as readFileSyncFn, existsSync as existsSyncFn } from 'node:fs';
 import { join as joinPath } from 'node:path';
 
+/* 頁尾署名用的來源清單(跟英超 meta.sources 同一個形狀:name / url / use / license)。
+   放在這裡而不是 build.mjs,因為 ucl.json 由兩支 build 各寫一份、要逐位元組相同。
+   盃賽頁以前印的是**目前聯賽**的 meta.sources(FPL、pulselive 那些),而那一頁一個英超數字都沒有 ——
+   讀者查不到 football-data.org 與 FotMob 是從哪裡來的(2026-09-12 補)。 */
+export const UCL_ATTRIBUTION = [
+  { name: 'football-data.org', url: 'https://www.football-data.org/', use: '歐冠賽程、賽果、積分榜與球隊名單(主來源)', license: '免費方案,低頻率快取' },
+  { name: 'FotMob', url: 'https://www.fotmob.com/', use: '歐冠逐場詳情(賽後報告:控球、逐射門 xG、事件、正式名單與評分)與賽季前抽籤檔;賽果的第二來源', license: '公開端點,低頻率快取' },
+];
+
 const conflictsOf = idx => (idx.conflicts?.length ? true : false);
 
 const key = (a, b) => [a, b].sort((x, y) => x - y).join('-');
@@ -507,6 +516,7 @@ export async function loadUclSeasons(root, sources) {
   if (seasons.length) seasons[0].current = true;
   return {
     source: 'football-data.org',
+    sources: UCL_ATTRIBUTION,
     competition: 'UEFA Champions League',
     retrievedAt,
     teamCodeConflicts: conflicts,

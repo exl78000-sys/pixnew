@@ -23,7 +23,7 @@ import { projectXI } from './lib/lineup.mjs';
 import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, standardShape } from './lib/roles.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
-import { summariseSeason } from './lib/cups.mjs';
+import { summariseSeason, CUPS_ATTRIBUTION } from './lib/cups.mjs';
 import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
 import { uclElo } from './lib/ucl-elo.mjs';
@@ -1243,6 +1243,7 @@ async function main() {
     if (cups.length) {
       await write('cups.json', {
         source: 'FotMob',
+        sources: CUPS_ATTRIBUTION,
         builtAt: BUILT_AT,
         /* 比分快速通道的網址放在**這裡**不是 meta:cups.json 是跨聯賽的一份(三個聯賽的盃賽頁都讀它),
            而 meta 是各聯賽自己的 —— 放 meta 的話站在西甲就拿不到,只能退回讀部署後的舊檔。 */

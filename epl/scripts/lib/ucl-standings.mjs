@@ -108,6 +108,7 @@ export function uclStandings(root, ucl) {
   return {
     note: '歐冠球隊所屬聯賽的積分榜,只用於歐冠的賽前對比 —— 沒有球員層、沒有預測,球隊也沒有本站的球隊頁。',
     source: 'openfootball',
+    sources: [{ name: 'openfootball / football.json', url: 'https://github.com/openfootball/football.json', use: '歐冠球隊所屬聯賽的積分榜,只給賽前對比用', license: 'Public Domain' }],
     season,
     leagues,
     byTeamId,

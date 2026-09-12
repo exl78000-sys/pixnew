@@ -1,5 +1,5 @@
-import * as C from './core.js?v=43ee2afb';
-import { renderUclView } from './ucl-view.js?v=28e10b18';
+import * as C from './core.js?v=aec8c394';
+import { renderUclView } from './ucl-view.js?v=3f433791';
 
 const app = document.getElementById('app');
 
@@ -236,12 +236,33 @@ try {
       ...list.map(c => ({ key: c.key, node: (c.seasons ?? []).find(s => s.current) })),
     ]) ?? 'ucl';
 
+  /* 頁首那句「有沒有勝率預測」從 ucl-elo 的場數來 —— 第一版寫死「三個賽事都沒有」,
+     階段 C 之後歐冠分頁下面就掛著上百場勝率,而頁首還在否認(「只有一個」那句寫死在畫面上,第三次)。
+     回測沒通過時 fixtures 是空的,那句否定才會印,而那時它是真的。 */
+  const uclPred = (shared['ucl-elo']?.fixtures ?? []).length;
+  /* 頁尾的來源要講**這一頁**的資料是誰給的:歐冠(football-data.org + FotMob)、英格蘭盃賽(FotMob + 舊快取)、
+     跨聯賽評分與各聯賽積分榜(openfootball + …)。沿用目前聯賽的 meta.sources 會印出 FPL、pulselive 那些英超的來源,
+     而這一頁一個英超數字都沒有 —— 讀者查不到 FotMob 是從哪裡來的。清單從各產物的 sources 讀,同名的併成一筆。 */
+  const cupSources = (() => {
+    const seen = new Map();
+    for (const s of [...(shared.ucl?.sources ?? []), ...(cups?.sources ?? []),
+      ...(shared['ucl-elo']?.sources ?? []), ...(shared['ucl-standings']?.sources ?? [])]) {
+      if (!s?.name) continue;
+      const hit = seen.get(s.name);
+      if (!hit) seen.set(s.name, { ...s });
+      else if (s.use && !hit.use.includes(s.use)) hit.use += `;${s.use}`;
+    }
+    return [...seen.values()];
+  })();
+
   app.innerHTML = `
   <div class="page-head">
     <h1>盃賽</h1>
     <p>歐冠、足總盃與聯賽盃收在同一頁。跟聯賽不一樣的地方都照實顯示:
        <b>兩回合總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及各隊走到了哪一輪。
-       三個賽事都<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字。</p>
+       ${uclPred
+         ? `歐冠兩隊都有跨聯賽評分的場次有<b>賽前勝率</b>(本季 ${uclPred} 場,回測與界線在模型驗證頁);足總盃與聯賽盃<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在國內盃賽上驗收過,套上去就是編數字。`
+         : `三個賽事都<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字。`}</p>
     ${C.stampRow([
       shared.ucl ? C.stamp('歐冠賽果', { iso: shared.ucl.retrievedAt, kind: 'daily', note: 'football-data.org + FotMob' }) : null,
       cups ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `${cups.source ?? 'FotMob'}・${list.map(c => c.zh).join('與')}` }) : null,
@@ -252,7 +273,7 @@ try {
       style="display:inline-flex;align-items:center;gap:6px">${C.compBadge(c.key)}${c.zh}</button>`).join('')}
   </div>
   <div id="compBody"></div>
-  ${C.foot(meta)}`;
+  ${C.foot(meta, { sources: cupSources })}`;
 
   const compBody = document.getElementById('compBody');
   const renderComp = () => {
