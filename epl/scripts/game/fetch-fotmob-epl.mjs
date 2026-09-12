@@ -33,6 +33,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from '../lib/teams.mjs';
 import { fotmobTeamStats, fotmobEvents, fotmobPos, fotmobPlayers } from '../lib/adapters/fotmob-match.mjs';
+import { pairOf, isShootoutShot } from '../lib/matchstats.mjs';
 import { bridgeTeams } from '../lib/adapters/fotmob-ucl.mjs';
 import { uclResultsOf, UCL_RAW_DIR } from '../lib/ucl-details.mjs';
 import { API as PL_API, PL_HEADERS } from '../lib/pulselive.mjs';
@@ -196,6 +197,7 @@ function extract(raw, fixture) {
     type: s.eventType ?? null, situation: s.situation ?? null, xg: round(s.expectedGoals), xgot: round(s.expectedGoalsOnTarget),
     onTarget: s.isOnTarget === true, blocked: s.isBlocked === true, inBox: s.isFromInsideBox === true,
     ownGoal: s.isOwnGoal === true, x: round(s.x, 1), y: round(s.y, 1), foot: s.shotType ?? null,
+    period: s.period ?? null,   // PK 大戰的十二碼也在 shotmap 裡(歐冠決賽實測),要靠這個(或分鐘 > 120)排除
   }));
   const momentum = (raw?.content?.momentum?.main?.data ?? []).map(d => [numOrNull(d.minute), numOrNull(d.value)]);
   const side = (s, code) => ({
@@ -207,9 +209,9 @@ function extract(raw, fixture) {
   const scoreStr = String(raw?.header?.status?.scoreStr ?? '').trim();
   const m = /^(\d+)\s*-\s*(\d+)$/.exec(scoreStr);
   const providerScore = m ? [Number(m[1]), Number(m[2])] : null;
-  const shotGoals = shots.filter(s => s.type === 'Goal').length;
+  const shotGoals = shots.filter(s => s.type === 'Goal' && !isShootoutShot(s, { pens: !!fixture.pens })).length;   // 有踢 PK 的場次才有互射可排
   return {
-    key: `${homeCode}|${awayCode}`, season: fixture.season, date: fixture.date, matchId: null,
+    key: pairOf(fixture), ...(fixture.pair ? { pair: fixture.pair } : {}), season: fixture.season, date: fixture.date, matchId: null,
     home: homeCode, away: awayCode, score: [fixture.fh, fixture.fa], providerScore,
     teamStats: { [homeCode]: stats.home, [awayCode]: stats.away }, unmappedStats: stats.unmapped,
     possession: possessionByPeriod(raw),
@@ -327,10 +329,22 @@ async function main() {
   pstore.matches ??= {};
   const store = (await read(STORE)) ?? { season, source: 'fotmob', extractVersion: EXTRACT_VERSION, matches: {}, attempts: {} };
   store.matches ??= {}; store.attempts ??= {};
+  /* 歐冠的鍵是「主|客|日期」(pair),第一版是「主|客」—— 同一組主客在同一季出現兩次時第二場被當成已快取而跳過
+     (2025-26 有 7 組)。舊格式的紀錄在這裡就地改鍵(紀錄裡有 date),被跳過的那 7 場下面自然變成待補。 */
+  if (!LG.results) {
+    for (const [k, m] of Object.entries(store.matches)) {
+      if (m.pair) continue;
+      const pair = `${m.home}|${m.away}|${m.date}`;
+      delete store.matches[k];
+      store.matches[pair] = { ...m, key: pair, pair };
+      if (pstore.matches[k]) { pstore.matches[pair] = { ...pstore.matches[k], key: pair }; delete pstore.matches[k]; }
+      console.log(`  · 舊鍵改成 ${pair}`);
+    }
+  }
   const stale = k => store.matches[k]?.extractVersion !== EXTRACT_VERSION;
   const recentlyTried = k => { const at = Date.parse(store.attempts[k]?.at ?? ''); return Number.isFinite(at) && Date.now() - at < RETRY_MS; };
-  const wanted = played.filter(f => refresh || !store.matches[`${f.home}|${f.away}`] || stale(`${f.home}|${f.away}`));
-  const pending = wanted.filter(f => refresh || !recentlyTried(`${f.home}|${f.away}`))
+  const wanted = played.filter(f => refresh || !store.matches[pairOf(f)] || stale(pairOf(f)));
+  const pending = wanted.filter(f => refresh || !recentlyTried(pairOf(f)))
     .sort((a, b) => a.date.localeCompare(b.date));
   const label = f => LG.results ? `${f.home}–${f.away}` : `${f.homeName ?? f.home}–${f.awayName ?? f.away}`;
   console.log(`\n▶ FotMob ${arg('league') ?? 'pl'} ${season}:已完賽 ${played.length} 場・快取 ${Object.keys(store.matches).length} 場・待補 ${pending.length} 場`
@@ -366,8 +380,8 @@ async function main() {
     console.log(`  FotMob 賽程 ${byPair.size} 場可對照`);
     let ok = 0, rejected = 0;
     for (const f of pending.slice(0, Math.floor((limit - 1) / PER_MATCH))) {   // 一場 PER_MATCH 個請求
-      const key = `${f.home}|${f.away}`;
-      const remote = byPair.get(key);
+      const key = pairOf(f);
+      const remote = byPair.get(`${f.home}|${f.away}`);
       const note = reason => { store.attempts[key] = { at: new Date().toISOString(), reason, matchId: remote?.matchId ?? null, label: label(f) }; rejected++; console.log(`  ⚠ ${f.date} ${label(f)}:${reason}`); };
       if (!remote) { note('FotMob 賽程找不到對應場次'); continue; }
       if (remote.date && remote.date !== f.date) { note(`日期不一致(FotMob ${remote.date})`); continue; }

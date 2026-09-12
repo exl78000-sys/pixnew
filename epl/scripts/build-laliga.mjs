@@ -1217,7 +1217,9 @@ async function main() {
       // 歐冠賽後報告:同上,跟 build.mjs 呼叫同一個函式;索引 + 逐場檔(說明見 lib/ucl-details.mjs 檔頭)
       const det = uclDetails(ROOT, ucl);
       await write('ucl-details', det.index);
-      writeUclDetails(OUT, det);
+      /* 逐場檔**不寫進 es1**:前端一律從 pl 載(ucl-view 的 renderPostMatch),這裡那份 26 MB(383 場)沒有人讀。
+         傳空的 files 只是把以前寫過的清掉。索引仍兩邊各一份 —— 跨聯賽的產物要同一個函式產出。 */
+      writeUclDetails(OUT, { files: new Map() });
       const avail = ucl.seasons.filter(x => x.availability === 'available');
       console.log(`  歐冠:${avail.length} 季可用(${avail.map(x => x.label).join('、')})`);
     }
