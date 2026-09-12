@@ -23672,7 +23672,26 @@
    "goals": [],
    "timeline": {
     "cards": [],
-    "subs": [],
+    "subs": [
+     {
+      "person": 116665,
+      "team": 10,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 16006,
+      "team": 10,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PS",
@@ -23688,8 +23707,8 @@
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45'00"
   }
  },
- "fetchedAt": "2026-09-12T14:59:04.175Z"
+ "fetchedAt": "2026-09-12T15:01:22.763Z"
 }
