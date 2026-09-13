@@ -53,7 +53,12 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f epl/data/raw/fotmob-facup/ epl/data/raw/fotmob-eflcup/ 2>/dev/null || true
+          # **一個 git add 兩個路徑,其中一個不存在 → 整個 add 什麼都沒加**,而 `|| true`
+          # 把錯誤吞掉、步驟還報成功。第一次跑就是這樣:抓到 64 場、0 退回,回寫卻說
+          # 「raw 沒有變化」(第一次跑只會有其中一個盃賽的目錄)。所以逐個判斷存不存在。
+          for d in fotmob-facup fotmob-eflcup; do
+            if [ -d "epl/data/raw/$d" ]; then git add -f "epl/data/raw/$d/"; fi
+          done
           if git diff --cached --quiet; then
             echo "raw 沒有變化,不提交"
             exit 0
