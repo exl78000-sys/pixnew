@@ -26963,8 +26963,8 @@
   "MUN|MCI": {
    "fixtureId": 128960,
    "kickoff": "2026-09-13T15:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 1
@@ -27532,12 +27532,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -27554,11 +27548,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-13T17:27:51.480Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-09-13T17:25:33.829Z"
+ "fetchedAt": "2026-09-13T17:27:51.480Z"
 }
