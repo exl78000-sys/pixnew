@@ -9,8 +9,12 @@
 # 兩個都是選用的,沒設就會顯示「略過」,不會讓流程失敗。
 # SportMonks 2026-09-03 退訂,那幾步已拿掉(腳本留著當紀錄:probe-sportmonks*.mjs)。
 #
-# 兩個 job:`latest` 是最新要判讀的那一支(每次加新探測就換成它),`all` 是歷來全部。
+# 兩個 job:`latest` 是最新要判讀的那幾支,`all` 是歷來全部。
 # 勾 quick 就只跑 latest —— 全部跑一次要十幾分鐘,而且前面任何一步紅了後面的就看不到。
+#
+# **新加的探測排在 latest 的最後一步。** 讀結果的方法是抓 job log 的**尾端**
+# (整份 log 幾百行,而下載連結在沙箱被 egress 擋掉),排在前面的話它的輸出會被
+# 後面那幾步擠出視窗 —— 2026-09-13 實際踩到:新探測成功跑完,但看不到它印了什麼。
 
 name: 資料源探測
 
@@ -29,17 +33,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
-
-      # 2026-09-13:歐冠單場頁做完之後,盃賽是唯一還沒有單場頁的賽事 —— 原因不是前端,
-      # 是沒有逐場詳情。前兩輪只看了 header 的 PK 欄位,**沒看 content 裡有沒有
-      # stats / shotmap / lineup / playerStats**(「沒看過」不等於「沒有」)。
-      # 取樣重點是**分級**:足總盃第一輪是第三、四級球隊互打,FotMob 對低級別未必有
-      # 射門圖與逐人評分。只抓到一場就宣布能做是錯的 —— 結論可能是
-      # 「盃賽的哪一些場次做得到」,而那必須在畫面上講(鐵則三、四)。
-      # 場次取自倉庫裡的盃賽快取(id 是抓取器在用的那些),唯讀、4 個請求。
-      - name: 探測盃賽逐場詳情有沒有賽後報告那幾塊
-        working-directory: epl
-        run: npm run probe:fotmob-cups -- --only=report
 
       # SportMonks 退訂後足總盃/聯賽盃沒有來源。站上已在用 FotMob 的聯賽端點(47/87/48),
       # 抓 logo 時實證 132/133 的名字是 FA Cup / EFL Cup —— 這一步看盃賽在同一個端點回什麼形狀
@@ -76,6 +69,17 @@ jobs:
       - name: 探測歐冠缺的那些聯賽 FotMob 有沒有(以及隊名對不對得上)
         working-directory: epl
         run: npm run probe:ucl-coverage
+
+      # 2026-09-13:歐冠單場頁做完之後,盃賽是唯一還沒有單場頁的賽事 —— 原因不是前端,
+      # 是沒有逐場詳情。前兩輪只看了 header 的 PK 欄位,**沒看 content 裡有沒有
+      # stats / shotmap / lineup / playerStats**(「沒看過」不等於「沒有」)。
+      # 取樣重點是**分級**:足總盃第一輪是第三、四級球隊互打,FotMob 對低級別未必有
+      # 射門圖與逐人評分。只抓到一場就宣布能做是錯的 —— 結論可能是
+      # 「盃賽的哪一些場次做得到」,而那必須在畫面上講(鐵則三、四)。
+      # 場次取自倉庫裡的盃賽快取(id 是抓取器在用的那些),唯讀、4 個請求。
+      - name: 探測盃賽逐場詳情有沒有賽後報告那幾塊
+        working-directory: epl
+        run: npm run probe:fotmob-cups -- --only=report
 
   all:
     if: ${{ github.event.inputs.quick != 'true' }}
