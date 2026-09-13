@@ -12,13 +12,19 @@ let CUP_CRESTS = {};
       不掛隊徽也不給連結 —— 不編一個假的身分(鐵則三)。涵蓋率直接標在畫面上。
    2. **沒有預測。** 盃賽要另一套模型(延長、PK、實力差距極大的對戰),
       現有的 Dixon-Coles 沒有在盃賽上驗收過。沒有回測證據就不上(鐵則二),
-      所以這一頁只有賽果,而且要講清楚為什麼沒有預測。
+      所以這一頁**沒有預測**,而且要講清楚為什麼 —— 但 2026-09-13 起**有賽後報告**了
+      (FotMob 逐場詳情,單場頁 `cup-match.html`),所以不要再寫「這一頁只有賽果」。
    3. **比分有三層**:90 分鐘、延長後、PK。只顯示最終比分會把
       「1-1 PK 5-4」講成「1-1」—— 那不是少一個欄位,是把冠軍講錯。 */
 
 const KO = m => (m.kickoff ? C.kickoffLocal(m.kickoff) : '待定');
 
 // 認得的球隊給隊徽與連結,認不得的只給名字。這個分岔是整頁最常出現的東西
+/* 哪幾場有賽後報告(cup-details.json 的索引)。按鈕的條件是「**有東西可看**」——
+   不是「已完賽」:已完賽但還沒抓到詳情的場次給按鈕,點進去是一句「沒有報告」,
+   那就是「按鈕在但點了沒東西」(歐冠那條坑的反面)。 */
+let CUP_REPORTS = {};
+
 function teamCell(t, { align = 'left' } = {}) {
   if (!t) return '<span class="dim small">待定</span>';
   const name = C.esc(t.name ?? '');
@@ -98,10 +104,16 @@ function roundCard(round) {
     /* 欄寬走 .tie-leg 那組 CSS(跟歐冠對戰列同一份),不寫 inline style ——
        inline 的 min-width 在手機上覆寫不了,而隊名格沒有縮小規則就照自己的寬度撐出去:
        實測 2026-09-11 足總盃 400px 視窗 108 列溢出、聯賽盃 74 列。 */
+    /* 有報告就給單場頁的入口。2026-09-13 之前盃賽一場都沒有詳情,所以清單裡沒有任何入口;
+       現在有了就要有按鈕 —— 「東西在但沒有按鈕」本站已經踩過三次。 */
+    const open = CUP_REPORTS[String(m.id)]
+      ? `<a class="btn tiny" href="${C.link('cup-match', { id: m.id })}" title="賽後報告:球隊統計、事件、名單、逐人評分與射門圖">賽後 →</a>`
+      : '';
     return `<div class="stat-line tie-leg">
       <span class="leg-home" style="${strong('home')}">${teamCell(m.home, { align: 'right' })}</span>
       <span class="leg-score">${scoreCell(m)}</span>
       <span class="leg-away" style="${strong('away')}">${teamCell(m.away)}</span>
+      ${open ? `<span class="tiny dim leg-ko">${open}</span>` : ''}
     </div>`;
   }).join('');
   const marks = [
@@ -203,10 +215,15 @@ try {
      meta/clubs/teams 仍取目前聯賽 —— nav 與頁尾要跟著使用者所在的聯賽。 */
   const { meta, clubs, teams } = await C.load('meta', 'clubs', 'teams');
   /* ucl-details 是賽後報告的**索引**(幾 KB);逐場報告點開才載(ucl-view 的 renderPostMatch)。 */
-  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams', 'ucl-standings', 'ucl-elo', 'ucl-details', 'competitions']);
+  const { data: shared } = await C.loadFrom('pl', ['cups', 'cup-details', 'ucl', 'ucl-teams', 'ucl-standings', 'ucl-elo', 'ucl-details', 'competitions']);
   C.registerCompetitions(shared.competitions);   // 分頁按鈕的賽事圖像:有真圖就用真圖
   const cups = shared.cups;
   CUP_CRESTS = cups?.crests ?? {};
+  /* 盃賽賽後報告的**索引**(幾 KB):只用來決定「這一場有沒有報告可看」。
+     逐場報告在單場頁點開才載 —— 報告一份約 60 KB,清單裡展開就是歐冠那條坑
+     (一份報告比整份清單還長)。 */
+  CUP_REPORTS = shared['cup-details']?.reports ?? {};
+  const cupReportCount = shared['cup-details']?.count ?? 0;
   /* 比賽中的比分不在 cups.json 裡(它要等下一次部署),在 cups-live.json 那份小檔。
 
      **不要 await 在這裡。** 第一版寫成 `applyCupsLive(cups, await fetchCupsLive(cups))`,
@@ -262,7 +279,9 @@ try {
        <b>兩回合總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及各隊走到了哪一輪。
        ${uclPred
          ? `歐冠兩隊都有跨聯賽評分的場次有<b>賽前勝率</b>(本季 ${uclPred} 場,回測與界線在模型驗證頁);足總盃與聯賽盃<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在國內盃賽上驗收過,套上去就是編數字。`
-         : `三個賽事都<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字。`}</p>
+         : `三個賽事都<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字。`}
+       ${cupReportCount ? `英格蘭盃賽現在有 <b>${cupReportCount} 場賽後報告</b>(球隊統計、事件、正式名單、逐人評分與逐射門 xG),
+         在清單裡按「賽後 →」打開;還沒抓到詳情的場次沒有按鈕。` : ''}</p>
     ${C.stampRow([
       shared.ucl ? C.stamp('歐冠賽果', { iso: shared.ucl.retrievedAt, kind: 'daily', note: 'football-data.org + FotMob' }) : null,
       cups ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `${cups.source ?? 'FotMob'}・${list.map(c => c.zh).join('與')}` }) : null,

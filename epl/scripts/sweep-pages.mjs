@@ -47,7 +47,7 @@ const pages = readdirSync(WEB).filter(f => f.endsWith('.html')).map(f => f.repla
 const SITE = new Set(['overview', 'knowledge', 'allplayers', 'explore', 'cups', 'ucl']);
 /* 一定要帶參數才有內容的頁:不帶就照設計顯示「找不到這一場」,而那會被報成「#app 幾乎空的」。
    它們由下面帶著真實 id 另外掃。 */
-const NEEDS_ID = new Set(['ucl-match']);
+const NEEDS_ID = new Set(['ucl-match', 'cup-match']);
 
 /* 深連結樣本:從資料檔取,不寫死。拿不到就跳過那一種(英冠沒有球員)。 */
 function samples(lg) {
@@ -79,6 +79,16 @@ for (const p of pages) if (SITE.has(p) && !NEEDS_ID.has(p)) targets.push({ lg: '
   const all = [...(cur?.leagueMatches ?? []), ...(cur?.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))];
   const done = all.find(m => m.played), up = all.find(m => !m.played);
   for (const m of [done, up]) if (m?.id != null) targets.push({ lg: 'pl', page: `ucl-match?id=${m.id}`, url: url('ucl-match', 'pl', `id=${m.id}`) });
+}
+/* 盃賽單場頁(2026-09-13)同理要帶 id。取兩種:兩隊都有本站隊碼的、兩隊都沒有的
+   (後者走中性色與盃賽隊徽查表那條路,最容易壞的就是它)。 */
+{
+  const p2 = join(WEB, 'data', 'cup-details.json');
+  const idx = existsSync(p2) ? JSON.parse(readFileSync(p2, 'utf8')) : null;
+  const rows = Object.entries(idx?.reports ?? {});
+  const both = rows.find(([, r]) => !/^fm/.test(r.home) && !/^fm/.test(r.away));
+  const low = rows.find(([, r]) => /^fm/.test(r.home) && /^fm/.test(r.away));
+  for (const hit of [both, low]) if (hit) targets.push({ lg: 'pl', page: `cup-match?id=${hit[0]}`, url: url('cup-match', 'pl', `id=${hit[0]}`) });
 }
 for (const c of ['ucl', 'facup', 'eflcup']) targets.push({ lg: 'pl', page: `cups?cup=${c}`, url: url('cups', 'pl', `cup=${c}`) });
 // 從別的聯賽進跨聯賽頁(link() 繼承聯賽那條坑)

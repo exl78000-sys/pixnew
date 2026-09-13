@@ -4962,6 +4962,111 @@ async function checkUclDetails() {
       'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
   }
 
+  /* ── 盃賽賽後報告(2026-09-13)────────────────────────────────
+     探測確認拿得到之後接線。這一節守四件跟歐冠不一樣的事(見 lib/cup-details.mjs 檔頭):
+     身分(隊碼或 fm{FotMob id})、比分核對**不是獨立來源**、配對鍵是比賽 id、PK 互射要排掉。 */
+  {
+    const { cupResultsOf, cupDetails, readCupStore, cupTeamId, FOTMOB_CUP_DETAILS } = await import('./lib/cup-details.mjs');
+    const idxPath = join(W, 'data', 'cup-details.json');
+    ok(existsSync(idxPath), 'cup-details.json(索引)一定要在 —— 前端從 pl 載它,404 會讓整個盃賽頁載入失敗');
+    const idx = existsSync(idxPath) ? JSON.parse(readFileSync(idxPath, 'utf8')) : null;
+    if (idx) {
+      /* 鐵則五的誠實話要在**產物**裡,不是前端寫死:盃賽的賽果本身就是 FotMob,
+         所以比分核對是同一家供應商的一致性檢查。混成一句「已核對」就是抬高了它的份量。 */
+      ok(idx.scoreCheck?.independent === false && typeof idx.scoreCheck?.note === 'string' && idx.scoreCheck.note.length > 20,
+        '索引講明「比分核對不是獨立來源」並說出為什麼(盃賽賽果也來自 FotMob)');
+      ok(idx.xg === 'shotmap' && typeof idx.xgNote === 'string', 'xG 只有一種算法(逐射門加總),說明在產物裡');
+
+      const reports = Object.entries(idx.reports ?? {});
+      let fileOk = 0, keyOk = 0, xgOk = 0, scoreOk = 0, pensOk = 0;
+      const cupsJson = JSON.parse(readFileSync(join(W, 'data', 'cups.json'), 'utf8'));
+      const byId = new Map();
+      for (const c of cupsJson.cups ?? []) for (const ss of c.seasons ?? []) for (const r of ss.rounds ?? []) for (const m of r.matches ?? []) byId.set(String(m.id), { cup: c.key, season: ss.label, m });
+      for (const [id, r] of reports) {
+        const src = byId.get(String(id));
+        // 索引的比分、賽季與盃賽要對回 cups.json 那一場(抓錯場次就會在這裡露出來)
+        if (src && src.cup === r.cup && src.season === r.season
+          && Array.isArray(src.m.final) && src.m.final[0] === r.score[0] && src.m.final[1] === r.score[1]) scoreOk++;
+        const fp = join(W, 'data', 'cup-details', r.cup, r.season, `${id}.json`);
+        if (!existsSync(fp)) continue;
+        fileOk++;
+        const rep = JSON.parse(readFileSync(fp, 'utf8'));
+        const ids = Object.keys(rep.names ?? {});
+        // 身分:報告的 home / away 一定在 names 裡(前端用名字畫、用 id 查)
+        if (ids.includes(rep.home) && ids.includes(rep.away) && ids.length === 2
+          && rep.hs === r.score[0] && rep.as === r.score[1]) keyOk++;
+        // xG:射門圖完整才有;不完整時兩隊都必須是 null(不退回供應商的球隊 xG 湊數)
+        const xs = [rep.actual?.xGHome ?? null, rep.actual?.xGAway ?? null];
+        if (rep.shotmapComplete === true ? xs.every(v => v != null) : xs.every(v => v == null)) xgOk++;
+        // PK 場:比數要帶到報告(畫面要印「PK 4:2」,不是只印平手比分)
+        if (!src?.m?.pens?.length || (Array.isArray(rep.pens) && rep.pens.length === 2)) pensOk++;
+      }
+      console.log(`  · 盃賽賽後報告:索引 ${reports.length} 場・raw 快取 ${idx.cached ?? 0} 場・拒收 ${idx.rejected.length}・不完整 ${idx.incomplete.length}`
+        + (reports.length ? '' : '(沙箱抓不到 FotMob;第一批要等 cup-backfill 或部署跑過)'));
+      ok(scoreOk === reports.length, '每一場報告的比分、賽季與盃賽都等於 cups.json 那一場', `${scoreOk}/${reports.length}`);
+      ok(fileOk === reports.length, '索引裡每一場都有逐場檔', `${fileOk}/${reports.length}`);
+      ok(keyOk === fileOk, '逐場檔的 home / away 都在 names 裡,而且比分跟索引一致', `${keyOk}/${fileOk}`);
+      ok(xgOk === fileOk, 'xG:射門圖完整 → 有值;不完整 → null(一個聯賽一種算法)', `${xgOk}/${fileOk}`);
+      ok(pensOk === fileOk, 'PK 場的比數有帶到報告(只印平手比分會把晉級講錯)', `${pensOk}/${fileOk}`);
+      // 有 raw 的時候,每一場都要有去處:快取 − 拒收 − 不完整 = 報告
+      if ((idx.cached ?? 0) > 0) {
+        ok(idx.cached - idx.rejected.length - idx.incomplete.length === idx.count,
+          'raw 快取的每一場都有去處(報告 / 拒收 / 不完整),沒有靜靜掉隊的',
+          `${idx.cached} − ${idx.rejected.length} − ${idx.incomplete.length} ≠ ${idx.count}`);
+      }
+      // lib 自己跑一次要跟寫出來的索引一致(build 沒有另外加工)
+      const again = cupDetails(ROOT).index;
+      ok(JSON.stringify(again) === JSON.stringify(idx), 'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
+    }
+
+    /* 配對鍵:**比賽 id**,不是「主|客」。盃賽有重賽,同一季同一組主客可能踢兩次 ——
+       英冠附加賽與歐冠那兩條坑的盃賽版。唯一性在這裡真的數一次。 */
+    for (const cup of FOTMOB_CUP_DETAILS) {
+      const store = readCupStore(ROOT, cup.key);
+      if (!store) continue;
+      const rows = cupResultsOf(store);
+      const pairIsId = rows.every(r => r.pair === r.id && r.pair === String(r.matchId));
+      const keys = rows.map(r => `${r.season}|${r.pair}`);
+      ok(pairIsId, `${cup.zh} 的配對鍵就是比賽 id(盃賽有重賽,主|客 不唯一)`);
+      ok(new Set(keys).size === keys.length, `${cup.zh} 的鍵沒有重複`, `${keys.length - new Set(keys).size} 組撞鍵`);
+      // 身分:有隊碼用隊碼,沒有就 fm{id} —— 不替第三、四級球隊編一個隊碼(鐵則三)
+      const ids = new Set(rows.flatMap(r => [r.home, r.away]));
+      ok([...ids].every(x => /^[A-Z]{3}$/.test(x) || /^fm\d+$/.test(x)),
+        `${cup.zh} 的隊伍身分只有兩種形狀(隊碼 或 fm+FotMob id)`);
+      const pairSame = rows.filter(r => r.homeCode && r.awayCode).length;
+      if (rows.length) console.log(`  · ${cup.zh}:${rows.length} 場・已完賽 ${rows.filter(r => r.played).length}`
+        + `・兩隊都有隊碼 ${pairSame} 場・用 fm id 的隊 ${[...ids].filter(x => x.startsWith('fm')).length} 支`);
+    }
+    ok(typeof cupTeamId({ code: 'CHE' }) === 'string' && cupTeamId({ code: 'CHE' }) === 'CHE'
+      && cupTeamId({ sourceId: 8351 }) === 'fm8351' && cupTeamId({}) === null,
+      'cupTeamId:有隊碼用隊碼、沒有就 fm+id、兩者都沒有回 null');
+
+    // 抓取器跟 build 共用同一個 results 轉換(各寫一份 → 鍵對不上 → 「抓了卻沒有報告」)
+    const fetcher = readFileSync(join(ROOT, 'scripts', 'game', 'fetch-fotmob-epl.mjs'), 'utf8');
+    ok(/import \{ cupResultsOf, readCupStore \} from '\.\.\/lib\/cup-details\.mjs'/.test(fetcher),
+      '抓取器的盃賽賽果走 lib/cup-details 的 cupResultsOf(跟 build 同一份)');
+    ok(/facup: \{ id: 132/.test(fetcher) && /eflcup: \{ id: 133/.test(fetcher),
+      '盃賽是同一支抓取器的第五、六組參數(不另寫一支)');
+    ok(/const byPair = LG\.cup \? null : await leagueIndex/.test(fetcher),
+      '盃賽不打賽程端點(matchId 在賽程快取裡就有,少一個請求也少一次隊名對照的風險)');
+
+    // 前端:入口條件是「有報告」,報告卡片用共用的那一份,而且不自己長出「賽前分析」
+    const strip2 = x => x.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    const cupsSrc = readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8');
+    const cmSrc = readFileSync(join(W, 'assets', 'js', 'page-cup-match.js'), 'utf8');
+    ok(/CUP_REPORTS\[String\(m\.id\)\]/.test(cupsSrc) && /C\.link\('cup-match', \{ id: m\.id \}\)/.test(cupsSrc),
+      '清單裡的「賽後 →」只在索引有這一場時出現(按鈕的條件是有東西可看)');
+    ok(!/只有賽果/.test(strip2(cupsSrc)), '盃賽頁不再寫「這一頁只有賽果」(2026-09-13 起有賽後報告)');
+    ok(/C\.matchReportCards\(rep, \{ order: POST_ORDER \}\)/.test(cmSrc),
+      '盃賽單場頁用 core.js 的 matchReportCards(不自己畫一份報告)');
+    ok(/details\?\.xgNote/.test(cmSrc) && /scoreCheck\?\.independent === false/.test(cmSrc),
+      'xG 的說明與「核對不是獨立來源」那句都從產物讀,不在前端寫死');
+    ok(!/賽前/.test(strip2(cmSrc).replace(/賽前[^。]*沒有|沒有[^。]*賽前/g, '')),
+      '盃賽單場頁沒有賽前勝率區塊(盃賽沒有通過回測的模型,憑空給就是編數字)');
+    ok(/C\.loadFrom\('pl', \[name\]\)/.test(cmSrc) && /cup-details\/\$\{idx\.cup\}\/\$\{idx\.season\}\/\$\{id\}/.test(cmSrc),
+      '逐場報告懶載入(一場一檔,從 pl 目錄)');
+  }
+
   // ── 三、入口與前端 ──
   {
     const view = readFileSync(join(W, 'assets', 'js', 'ucl-view.js'), 'utf8');
@@ -5008,8 +5113,9 @@ async function checkUclDetails() {
       && (srcOf('cups.json') ?? []).some(s => s.name === 'FotMob'),
       'ucl.json 署名 football-data.org 與 FotMob;cups.json 署名 FotMob');
     const ov = readFileSync(join(W, 'assets', 'js', 'page-overview.js'), 'utf8');
-    /* 2026-09-13:歐冠有單場頁之後,總覽的歐冠場次直接連過去(跟聯賽場次連分析頁同一件事);
-       盃賽仍然開盃賽頁的分頁 —— 那兩個賽事還沒有單場頁。id 缺了才退回盃賽頁。 */
+    /* 2026-09-13:歐冠有單場頁之後,總覽的歐冠場次直接連過去(跟聯賽場次連分析頁同一件事)。
+       盃賽仍然開盃賽頁的分頁 —— **不是因為盃賽沒有單場頁**(同日也做了),
+       是因為這張表只列還沒踢的場次,而單場頁是賽後報告。id 缺了才退回盃賽頁。 */
     ok(/link: m\.id != null \? C\.link\('ucl-match', \{ id: m\.id \}\) : C\.link\('cups', \{ cup: 'ucl' \}\)/.test(ov)
       && /link: C\.link\('cups', \{ cup: cup\.key \}\)/.test(ov)
       && !/沒有分析頁\(模型是聯賽調的\)/.test(strip(ov)),

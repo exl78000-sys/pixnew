@@ -256,8 +256,10 @@ try {
     { key: 'note', label: '輪次', value: u => u.note, sortable: false,
       render: u => `<span class="tiny dim">${C.esc(u.note)}</span>` },
   ], { sortKey: 'kick', desc: false,
-    /* 整列可點,不用瞄準文字連結(使用者要求)。盃賽與歐冠場次沒有獨立的分析頁,
-       歐冠有自己的單場頁(2026-09-13),盃賽場次仍然開盃賽頁的對應分頁 —— 那兩個賽事還沒有單場頁。 */
+    /* 整列可點,不用瞄準文字連結(使用者要求)。歐冠場次連自己的單場頁(2026-09-13)。
+       **盃賽場次開盃賽頁的對應分頁** —— 不是因為盃賽沒有單場頁(同日也做了 `cup-match.html`),
+       是因為這張表只列**還沒踢的**場次(上面的 `if (m.played) continue`),
+       而單場頁是賽後報告,還沒踢的場次點進去沒有東西可看。 */
     onRow: u => { if (u.link) location.href = u.link; } })}
   <div class="tiny dim" style="margin-top:8px">${cupBeyond.length ? `7 天之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}
     聯賽場次點對戰直接進賽前分析,歐冠場次進歐冠單場頁(賽前對比、勝率與賽後報告都在那一頁);盃賽場次開盃賽頁的對應分頁。
