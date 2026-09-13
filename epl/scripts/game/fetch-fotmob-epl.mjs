@@ -36,6 +36,7 @@ import { fotmobTeamStats, fotmobEvents, fotmobPos, fotmobPlayers } from '../lib/
 import { pairOf, isShootoutShot } from '../lib/matchstats.mjs';
 import { bridgeTeams } from '../lib/adapters/fotmob-ucl.mjs';
 import { uclResultsOf, UCL_RAW_DIR } from '../lib/ucl-details.mjs';
+import { cupResultsOf, readCupStore } from '../lib/cup-details.mjs';
 import { API as PL_API, PL_HEADERS } from '../lib/pulselive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -59,6 +60,16 @@ const LEAGUES = {
         而且要跟人工核過的 `ucl-team-ids.json` 一致(有交集的那幾隊);不一致的那隊整隊不抓。
      不抓熱區圖(那是模擬遊玩用的,歐冠沒有遊戲),所以一場一個請求。 */
   ucl: { id: 42, ccode3: null, dir: UCL_RAW_DIR, teamFile: null, results: null, ucl: ['web', 'data', 'ucl.json'], verify: false, heat: false },
+  /* 英格蘭盃賽(2026-09-13):同一支抓取器,跟前五組的差別有三個 ——
+     ① **不打賽程端點。** 賽程與賽果來自倉庫裡的 `data/raw/fotmob-cups/{盃賽}.json`
+        (`cups:fetch` 每次部署都在更新),而那份每一場本來就帶 FotMob 的比賽 id ——
+        所以不必再打一次賽程端點去查 matchId,也不必做隊名對照。
+        「抓取器的輸入靠一個沒進工作流的手動步驟」那條坑:這裡的輸入是排程會更新的東西。
+     ② 隊伍身分是「隊碼,沒有隊碼就 fm{FotMob id}」(`cupTeamId`),盃賽的對手一半不在本站三個聯賽裡。
+     ③ 配對鍵是**比賽 id** —— 盃賽有重賽,同一季同一組主客可能踢兩次。
+     不抓熱區圖(模擬遊玩只做英超),所以一場一個請求。 */
+  facup: { id: 132, ccode3: 'GBR', dir: 'fotmob-facup', teamFile: null, results: null, cup: 'facup', verify: false, heat: false },
+  eflcup: { id: 133, ccode3: 'GBR', dir: 'fotmob-eflcup', teamFile: null, results: null, cup: 'eflcup', verify: false, heat: false },
 };
 const LG = LEAGUES[arg('league') ?? 'pl'];
 if (!LG) { console.error(`未知聯賽 ${arg('league')};只有 ${Object.keys(LEAGUES).join('、')}`); process.exit(1); }
@@ -156,6 +167,14 @@ async function uclBridge(leagueJson, results) {
   const bridge = {};
   for (const [fid, fdid] of map) bridge[fid] = { fdId: String(fdid), fotmob: fm.get(fid)?.[0] ?? null, fd: fd.get(String(fdid))?.[0] ?? null };
   return { keyOf: t => map.get(String(t?.id)) ?? null, bridge, unmatched, conflicts, agreed, teams: fm.size, fdTeams: fd.size };
+}
+
+/* 盃賽的「賽果」:倉庫裡的盃賽快取(FotMob 賽程端點抓的那份)。轉換在 lib/cup-details.mjs ——
+   **build 那邊讀 raw 用的是同一個函式**,所以兩邊算出來的配對鍵一定一樣。
+   各寫一份的話鍵會對不上,而症狀是「抓了卻沒有報告」,一個錯都不報。 */
+async function cupResults() {
+  const store = readCupStore(ROOT, LG.cup);
+  return store ? cupResultsOf(store) : null;
 }
 
 /* 歐冠的「賽果」:ucl.json 裡可用賽季的所有場次(聯賽階段 + 淘汰賽),形狀跟 results.json 一樣。
@@ -327,8 +346,11 @@ async function verify(store, results, n, teams) {
 
 async function main() {
   const teams = LG.teamFile ? loadTeams(ROOT, { file: LG.teamFile }) : null;
-  const results = LG.results ? await read(join(ROOT, ...LG.results)) : await uclResults();
-  if (!Array.isArray(results)) { console.log(`✗ 讀不到 ${(LG.results ?? LG.ucl).join('/')}(先跑 build)`); return; }
+  const results = LG.results ? await read(join(ROOT, ...LG.results)) : LG.cup ? await cupResults() : await uclResults();
+  if (!Array.isArray(results)) {
+    console.log(`✗ 讀不到 ${LG.cup ? `data/raw/fotmob-cups/${LG.cup}.json(先跑 cups:fetch)` : (LG.results ?? LG.ucl).join('/')}`);
+    return;
+  }
   const seasons = seasonsOf(results);
   const season = arg('season') ?? seasons[seasons.length - 1];
   const played = results.filter(r => r.season === season && r.played && r.date <= new Date().toISOString().slice(0, 10));
@@ -343,7 +365,7 @@ async function main() {
   store.matches ??= {}; store.attempts ??= {};
   /* 歐冠的鍵是「主|客|日期」(pair),第一版是「主|客」—— 同一組主客在同一季出現兩次時第二場被當成已快取而跳過
      (2025-26 有 7 組)。舊格式的紀錄在這裡就地改鍵(紀錄裡有 date),被跳過的那 7 場下面自然變成待補。 */
-  if (!LG.results) {
+  if (LG.ucl) {
     for (const [k, m] of Object.entries(store.matches)) {
       if (m.pair) continue;
       const pair = `${m.home}|${m.away}|${m.date}`;
@@ -366,6 +388,26 @@ async function main() {
   if (verifyN > 0 && LG.verify) { await verify(store, results, verifyN, teams); }
   else if (pending.length && limit > 0) {
     if (dryRun) { pending.slice(0, limit).forEach(f => console.log(`  · ${f.date} ${label(f)}`)); return; }
+    /* 盃賽:matchId 已經在 results 裡(賽程快取帶的),所以**整段賽程端點跳過** ——
+       少一個請求,也少一次「帶 season 參數回最新那季」與隊名對照的風險(兩條都踩過)。 */
+    const byPair = LG.cup ? null : await leagueIndex(results, season, store, teams);
+    if (!LG.cup && !byPair) return;
+    await fetchPending(pending, { byPair, store, pstore, season, label, teams, STORE, PSTORE });
+  } else console.log('  沒有待補場次。');
+
+  store.updatedAt = new Date().toISOString();
+  store.extractVersion = EXTRACT_VERSION;
+  await writeFile(STORE, JSON.stringify(store, null, 1));
+  pstore.updatedAt = store.updatedAt;
+  await writeFile(PSTORE, JSON.stringify(pstore));
+  const n = Object.keys(store.matches).length;
+  const incomplete = Object.values(store.matches).filter(m => !m.checks?.shotmapComplete).length;
+  console.log(`  快取共 ${n} 場・逐人統計 ${Object.keys(pstore.matches).length} 場・shotmap 進球數對不上比分 ${incomplete} 場・本次請求 ${used}/${HARD_LIMIT}`
+    + (store.verification ? `・官網核對 ${store.verification.agree}/${store.verification.checked} 場在 ±${store.verification.tolerance} 以內` : ''));
+}
+
+/* 賽程端點 → 「主|客」查表(三個聯賽 + 歐冠)。抽成函式只是為了讓盃賽那條路整段跳過。 */
+async function leagueIndex(results, season, store, teams) {
     const league = await get(`${BASE}/api/data/leagues?id=${LEAGUE_ID}${LG.ccode3 ? `&ccode3=${LG.ccode3}` : ''}&season=${encodeURIComponent(fotmobSeason(season))}`,
       { referer: `${BASE}/` });
     if (!league.json) { console.log(`✗ 聯賽賽程抓不到:${league.error}`); return; }
@@ -390,10 +432,17 @@ async function main() {
     const { byPair, unknown } = indexFixtures(league.json, keyOf);
     if (unknown.length) console.log(`  ⚠ 對不上名冊的 FotMob 隊名:${unknown.join('、')}`);
     console.log(`  FotMob 賽程 ${byPair.size} 場可對照`);
+    return byPair;
+}
+
+/* 逐場抓取。`byPair` 是 null 時走盃賽那條:matchId 直接用 results 帶的那個
+   (賽程快取裡就有),所以不必查表、也不必核對日期與隊名 —— 少一層猜。 */
+async function fetchPending(pending, { byPair, store, pstore, season, label, teams, STORE, PSTORE }) {
     let ok = 0, rejected = 0;
     for (const f of pending.slice(0, Math.floor((limit - 1) / PER_MATCH))) {   // 一場 PER_MATCH 個請求
       const key = pairOf(f);
-      const remote = remoteOf(byPair, f);
+      const remote = byPair ? remoteOf(byPair, f)
+        : (f.matchId ? { matchId: String(f.matchId), date: f.date, finished: true } : null);
       const note = reason => { store.attempts[key] = { at: new Date().toISOString(), reason, matchId: remote?.matchId ?? null, label: label(f) }; rejected++; console.log(`  ⚠ ${f.date} ${label(f)}:${reason}`); };
       if (!remote) { note('FotMob 賽程找不到對應場次'); continue; }
       if (remote.missing) { note(`FotMob 賽程找不到對應場次:${remote.missing}`); continue; }
@@ -431,16 +480,5 @@ async function main() {
       if (ok % 20 === 0) { await writeFile(STORE, JSON.stringify(store, null, 1)); await writeFile(PSTORE, JSON.stringify(pstore)); console.log(`  … 已收 ${ok} 場(中途存檔)`); }
     }
     console.log(`✔ 新增 ${ok} 場・退回 ${rejected} 場`);
-  } else console.log('  沒有待補場次。');
-
-  store.updatedAt = new Date().toISOString();
-  store.extractVersion = EXTRACT_VERSION;
-  await writeFile(STORE, JSON.stringify(store, null, 1));
-  pstore.updatedAt = store.updatedAt;
-  await writeFile(PSTORE, JSON.stringify(pstore));
-  const n = Object.keys(store.matches).length;
-  const incomplete = Object.values(store.matches).filter(m => !m.checks?.shotmapComplete).length;
-  console.log(`  快取共 ${n} 場・逐人統計 ${Object.keys(pstore.matches).length} 場・shotmap 進球數對不上比分 ${incomplete} 場・本次請求 ${used}/${HARD_LIMIT}`
-    + (store.verification ? `・官網核對 ${store.verification.agree}/${store.verification.checked} 場在 ±${store.verification.tolerance} 以內` : ''));
 }
 main().catch(e => { console.error(e); process.exit(1); });

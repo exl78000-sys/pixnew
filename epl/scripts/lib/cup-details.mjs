@@ -1,0 +1,241 @@
+/* 英格蘭盃賽(足總盃、聯賽盃)的賽後報告:FotMob 逐場詳情 → 站上同一份 MatchReport 契約。
+ *
+ * 為什麼有這一支(2026-09-13):歐冠單場頁做完之後,盃賽是唯一還沒有單場頁的賽事 ——
+ * 而原因不是前端,是**沒有逐場詳情**。前兩輪探測(9/07、9/08)只看了 `header.status`
+ * 的 PK 比數與勝方,沒看 `content` 裡有什麼。`probe-fotmob-cups.mjs --only=report`
+ * (2026-09-13)補完那一問,四場跨三個分級全部有 `stats` / `shotmap` / `lineup` /
+ * `matchFacts.events` / `playerStats`,射門圖四場全完整(進球數對得回比分)。
+ *
+ * 接法全部沿用,不另寫一套(跟歐冠 `lib/ucl-details.mjs` 同一條路):
+ *   抓取  `scripts/game/fetch-fotmob-epl.mjs --league=facup|eflcup`(同一支抓取器多兩組參數)
+ *   讀取  `lib/matchstats.mjs` 的 loadFotmobMatchStats
+ *   轉換  `toCanonicalDetail`(烏龍球 team 語意那條坑它已經處理)
+ *   報告  `lib/postmatch-report.mjs` 的 buildProviderMatchReport
+ *
+ * 跟歐冠不同的有四件事,都在這裡處理:
+ *
+ *   1. **隊伍身分是「隊碼,沒有隊碼就 `fm{FotMob id}`」。** 盃賽的對手一半不在本站的三個聯賽裡
+ *      (足總盃第一輪是第三、四級球隊互打),替它們編一個隊碼等於造一個身分(鐵則三)。
+ *      `cups.json` 本來就是這樣畫的(有 code 用隊徽與連結,沒有就用名字 + `crests[sourceId]`),
+ *      所以這裡沿用同一個規矩,名字另外帶(`names`)。
+ *
+ *   2. **比分核對不是獨立來源。** `cups.json` 的賽果本身就是 FotMob 的賽程端點,
+ *      所以「逐場詳情的比分對回本站賽果」在盃賽是**同一家供應商的一致性檢查**,
+ *      不是鐵則五的獨立核對 —— 它擋得住「抓錯場次」,擋不住「供應商自己記錯」。
+ *      這件事要寫進產物(`scoreCheck.independent: false`)讓畫面講得出來,
+ *      不可以跟三個聯賽(openfootball / football-data 對照)混成一句「已核對」。
+ *      2026-09-02 以前的場次倉庫裡有 SportMonks 舊快取可以當獨立來源,之後沒有。
+ *
+ *   3. **配對鍵是比賽 id,不是「主|客」,也不是「主|客|日期」。** 盃賽有重賽,
+ *      而且同一季可能同一組主客踢兩次(英冠附加賽與歐冠那兩條坑的盃賽版);
+ *      而 `cups.json` 每一場本來就帶 FotMob 的比賽 id,那是唯一的 —— 直接用它最安全。
+ *      附帶的好處:抓取器不必再打一次賽程端點去查 matchId(cups 的快取裡就有)。
+ *
+ *   4. **PK 大戰的互射十二碼要排掉。** 盃賽的 PK 比三個聯賽多得多,而 FotMob 的射門圖
+ *      把互射也列進去(歐冠決賽那條坑)。探測確認每一顆射門都有 `period`,
+ *      PK 那場 46 顆裡 8 顆是 `PenaltyShootout` —— 所以 `isShootoutShot` 用 period 就分得開,
+ *      不必退回「分鐘 ≥ 120」那條推路。`pens` 要帶到 detail 與報告給前端的射門圖用。
+ *
+ * 產物分兩層(跟歐冠同一個規矩:索引小、逐場大):
+ *   `cup-details.json`                     索引:哪幾場有報告、比分、xG、拒收與不完整的清單
+ *   `cup-details/{盃賽}/{季}/{比賽 id}.json` 逐場報告(一場約 60 KB),前端點開才載
+ * 只寫英超目錄 —— `cups.json` 就是跨聯賽一份放在 pl(三個聯賽的盃賽頁都從 pl 載),這份照它。
+ *
+ * 拒收與不完整**要進產物**(`rejected` / `incomplete` / `attempts`):依設計不採用之後
+ * 什麼都不留的話,讀者看到踢完的比賽沒有報告而畫面不解釋,測試也分不出
+ * 「依設計拒收」與「管線壞了」。
+ */
+import { existsSync, readFileSync, readdirSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { loadFotmobMatchStats, toCanonicalDetail, isShootoutShot } from './matchstats.mjs';
+import { buildProviderMatchReport } from './postmatch-report.mjs';
+
+/* 兩個盃賽:key 要跟 `cups.json` 的 `cups[].key` 一樣(前端用它查),
+   FotMob 的聯賽 id 是抓賽事 logo 時實證過的(132 = FA Cup、133 = EFL Cup)。 */
+export const FOTMOB_CUP_DETAILS = [
+  { key: 'facup', zh: '足總盃', id: 132, rawDir: 'fotmob-facup' },
+  { key: 'eflcup', zh: '聯賽盃', id: 133, rawDir: 'fotmob-eflcup' },
+];
+export const CUP_DETAILS_DIR = 'cup-details';
+export const CUPS_RAW_DIR = 'fotmob-cups';
+
+const r2 = n => Math.round(n * 100) / 100;
+
+/* 隊伍身分:有隊碼用隊碼,沒有就 `fm{FotMob id}`。**一個函式決定**,抓取器與 build 都叫它 ——
+   兩邊各寫一份的話,raw 的鍵跟讀取時算出來的鍵會對不上,而症狀是「抓了卻沒有報告」。 */
+export const cupTeamId = side => (side?.code ? String(side.code)
+  : side?.sourceId != null ? `fm${side.sourceId}` : null);
+
+/* 一個盃賽的快取 → results 形狀(跟三個聯賽的 results.json 同形:season / date / home / away / fh / fa / played)。
+   比分只讀 `final`(分段欄位不是累計值,本站在歐冠決賽上踩過);PK 收場的 final 是延長後的平手比分,
+   跟 FotMob 詳情的 scoreStr 同一個語意(探測過),所以比分核對照常做。 */
+export function cupResultsOf(store) {
+  const out = [];
+  for (const s of store?.seasons ?? []) {
+    for (const m of s.matches ?? []) {
+      const home = cupTeamId(m.home), away = cupTeamId(m.away);
+      const date = String(m.kickoff ?? '').slice(0, 10);
+      if (!home || !away || !m.id || !date) continue;
+      out.push({
+        id: String(m.id), matchId: String(m.id), season: s.label,
+        date, kickoff: m.kickoff ?? null,
+        stage: m.stage ?? null, roundKey: m.roundKey ?? null,
+        home, away,
+        // 鍵就是比賽 id(見檔頭第 3 點):盃賽有重賽,主|客 不唯一
+        pair: String(m.id),
+        homeName: m.home?.name ?? m.home?.shortName ?? home,
+        awayName: m.away?.name ?? m.away?.shortName ?? away,
+        homeCode: m.home?.code ?? null, awayCode: m.away?.code ?? null,
+        homeSourceId: m.home?.sourceId ?? null, awaySourceId: m.away?.sourceId ?? null,
+        fh: Array.isArray(m.final) ? m.final[0] : null,
+        fa: Array.isArray(m.final) ? m.final[1] : null,
+        played: m.played === true && Array.isArray(m.final),
+        pens: Array.isArray(m.pens) && m.pens.length ? m.pens : null,
+        aet: m.aet === true,
+      });
+    }
+  }
+  return out;
+}
+
+export function readCupStore(root, key) {
+  const p = join(root, 'data', 'raw', CUPS_RAW_DIR, `${key}.json`);
+  if (!existsSync(p)) return null;
+  try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; }
+}
+
+/* xG 一種算法(跟歐冠同一條):射門圖完整才給逐射門加總,否則 null。供應商的球隊 xG 不拿來湊。 */
+function withShotXg(detail, ms) {
+  const ready = ms.shotmapComplete === true && Array.isArray(ms.shots) && ms.shots.length > 0;
+  const sum = code => r2(ms.shots
+    .filter(s => s.team === code && !isShootoutShot(s, { pens: ms.pens }))
+    .reduce((a, s) => a + (Number(s.xg) || 0), 0));
+  const teamStats = Object.fromEntries(Object.entries(detail.teamStats ?? {})
+    .map(([code, t]) => [code, { ...(t ?? {}), xG: ready ? sum(code) : null }]));
+  return { ...detail, teamStats, xgSource: ready ? 'shotmap' : null, pens: ms.pens === true };
+}
+
+const coverageGap = detail => Object.entries(detail?.coverage ?? {})
+  .filter(([k, v]) => ['teamStatistics', 'playerStatistics', 'ratings', 'events', 'lineups'].includes(k) && !v)
+  .map(([k]) => k);
+
+/* 抓取器層退回的場次(FotMob 標未完賽、比分不符…)。它們不在 store.matches 裡,
+   所以讀取器的 rejected 看不到 —— 不帶出來的話畫面只能講「還沒抓到」,
+   而其中一種(比分不符)是永遠抓不到的。 */
+function attemptsOf(root, rawDir) {
+  const dir = join(root, 'data', 'raw', rawDir);
+  const out = [];
+  let retrievedAt = null, cached = 0;
+  if (!existsSync(dir)) return { attempts: out, retrievedAt, cached };
+  for (const f of readdirSync(dir).filter(x => /-game-details\.json$/.test(x))) {
+    try {
+      const store = JSON.parse(readFileSync(join(dir, f), 'utf8'));
+      cached += Object.keys(store.matches ?? {}).length;
+      if (store.updatedAt && (!retrievedAt || store.updatedAt > retrievedAt)) retrievedAt = store.updatedAt;
+      for (const [pair, a] of Object.entries(store.attempts ?? {})) {
+        out.push({ key: `${store.season}|${pair}`, label: a.label ?? pair, reason: a.reason ?? null, at: a.at ?? null });
+      }
+    } catch { /* 壞掉的快取當成沒有;count 對不上就看得出來 */ }
+  }
+  return { attempts: out, retrievedAt, cached };
+}
+
+/* 主函式。回傳 `{ index, files }`:index 寫成 `cup-details.json`,
+   files 是 Map(相對路徑 → 報告物件),由 writeCupDetails 落地。
+   裡面沒有 build 時間戳 —— retrievedAt 來自 raw,這樣同一份 raw 產出的索引逐位元組相同。 */
+export function cupDetails(root) {
+  const index = {
+    source: 'FotMob matchDetails',
+    xg: 'shotmap',
+    xgNote: '逐射門 xG 加總;只在射門圖的進球數對得回比分時給,否則留空',
+    /* 鐵則五的誠實話:盃賽的賽果本身就是 FotMob,所以比分核對只是同一家供應商的一致性檢查。
+       畫面要照這個欄位講,不要跟三個聯賽的獨立核對混成一句「已核對」。 */
+    scoreCheck: {
+      independent: false,
+      note: '盃賽的賽程與賽果也來自 FotMob,所以逐場詳情的比分核對是同一家供應商的一致性檢查'
+        + '(擋得住抓錯場次,擋不住供應商自己記錯)。2026-09-02 以前的場次另有 SportMonks 舊快取逐場對過。',
+    },
+    retrievedAt: null, count: 0, cached: 0,
+    cups: {}, reports: {}, incomplete: [], rejected: [], attempts: [], missing: [],
+  };
+  const files = new Map();
+
+  for (const cup of FOTMOB_CUP_DETAILS) {
+    const store = readCupStore(root, cup.key);
+    if (!store) { index.missing.push({ cup: cup.key, reason: '倉庫沒有這個盃賽的賽程快取(先跑 cups:fetch)' }); continue; }
+    const results = cupResultsOf(store);
+    const stats = loadFotmobMatchStats(root, { results, rawDir: cup.rawDir });
+    const { attempts, retrievedAt, cached } = attemptsOf(root, cup.rawDir);
+    index.cached += cached;
+    if (retrievedAt && (!index.retrievedAt || retrievedAt > index.retrievedAt)) index.retrievedAt = retrievedAt;
+    for (const a of attempts) index.attempts.push({ cup: cup.key, ...a });
+    for (const r of stats.rejected) index.rejected.push({ cup: cup.key, ...r });
+
+    const seasons = {};
+    for (const r of results) {
+      if (!r.played) continue;
+      (seasons[r.season] ??= { played: 0, reports: 0 }).played++;
+      const key = `${r.season}|${r.pair}`;
+      const ms = stats.matches[key];
+      if (!ms) continue;                      // 還沒抓到,或已被讀取器退回(在 rejected 裡)
+      const names = { [r.home]: r.homeName, [r.away]: r.awayName };
+      const detail = { ...withShotXg(toCanonicalDetail(ms), ms), kickoff: r.kickoff };
+      const report = buildProviderMatchReport({
+        fixture: { season: r.season, home: r.home, away: r.away, fh: r.fh, fa: r.fa, played: true, kickoff: r.kickoff },
+        detail, nameOf: id => names[id] ?? String(id),
+      });
+      if (!report) {
+        index.incomplete.push({ cup: cup.key, id: r.id, key, missing: coverageGap(detail),
+          reason: coverageGap(detail).length ? '供應商這場缺了一部分資料' : '比分或主客對不上' });
+        continue;
+      }
+      report.id = r.id; report.cup = cup.key; report.stage = r.stage; report.roundKey = r.roundKey;
+      report.names = names;
+      report.codes = { [r.home]: r.homeCode, [r.away]: r.awayCode };
+      report.sourceIds = { [r.home]: r.homeSourceId, [r.away]: r.awaySourceId };
+      report.shotmapComplete = ms.shotmapComplete === true;
+      report.pens = r.pens;          // 比數本身(畫面要印「PK 4-2」),不是布林
+      report.aet = r.aet === true;
+      files.set(`${cup.key}/${r.season}/${r.id}.json`, report);
+      index.reports[String(r.id)] = {
+        cup: cup.key, season: r.season, date: r.date, stage: r.stage,
+        home: r.home, away: r.away, score: [r.fh, r.fa],
+        pens: r.pens, aet: r.aet === true,
+        xG: [report.actual?.xGHome ?? null, report.actual?.xGAway ?? null],
+        shotmapComplete: ms.shotmapComplete === true,
+      };
+      seasons[r.season].reports++;
+      index.count++;
+    }
+    index.cups[cup.key] = { zh: cup.zh, leagueId: cup.id, seasons };
+  }
+  return { index, files };
+}
+
+/* 逐場報告落地:**先清掉再寫**,報告被退回時舊檔才不會留在站上。
+   只碰自己寫的那幾層(`{盃賽}/{季}/{數字}.json`)—— 目錄是產物專用的,
+   但還是不要 rm 一個可能有別人東西的地方(vault 那條規矩)。 */
+export function writeCupDetails(outDir, { files }) {
+  const dir = join(outDir, CUP_DETAILS_DIR);
+  if (existsSync(dir)) {
+    for (const cup of readdirSync(dir)) {
+      if (!FOTMOB_CUP_DETAILS.some(c => c.key === cup)) continue;   // 不是我們寫的就不碰
+      const cd = join(dir, cup);
+      for (const season of readdirSync(cd)) {
+        if (!/^\d{4}-\d{2}$/.test(season)) continue;
+        const sd = join(cd, season);
+        for (const f of readdirSync(sd)) if (/^\d+\.json$/.test(f)) rmSync(join(sd, f));
+        if (!readdirSync(sd).length) rmSync(sd, { recursive: true });
+      }
+    }
+  }
+  let bytes = 0;
+  for (const [rel, report] of files) {
+    const full = join(dir, rel);
+    mkdirSync(join(full, '..'), { recursive: true });
+    const str = JSON.stringify(report);
+    writeFileSync(full, str);
+    bytes += str.length;
+  }
+  return { files: files.size, kb: Math.round(bytes / 1024) };
+}

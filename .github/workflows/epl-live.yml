@@ -277,6 +277,10 @@ jobs:
           # 歐冠(2026-09-12):賽果來自 ucl.json(上面那步剛抓的 football-data),隊伍身分是 fd id。
           # 一場一個請求(不抓熱區圖),預設上限 40 → 每次最多 39 場;一輪 18 場,一次部署就補完。
           npm run game:fetch -- --league=ucl || true
+          # 盃賽(2026-09-13):matchId 來自上面 cups:fetch 剛更新的賽程快取,所以**不打賽程端點**、
+          # 一場一個請求。往季與本季已完賽的那一大批用 cup-backfill.yml 手動補,這裡只做增量。
+          npm run game:fetch -- --league=eflcup || true
+          npm run game:fetch -- --league=facup || true
         continue-on-error: true
 
       # 賽果與比分(FotMob 賽程端點,一個聯賽一個請求,2026-09-04):西甲與英冠的社群賽果檔慢好幾天,
@@ -419,6 +423,7 @@ jobs:
                      epl/data/raw/sportmonks-epl/ \
                      epl/data/raw/sportmonks-cups/ \
                      epl/data/raw/fotmob-cups/ \
+                     epl/data/raw/fotmob-facup/ epl/data/raw/fotmob-eflcup/ \
                      epl/data/raw/football-data/ \
                      epl/data/raw/probes/ \
                      epl/data/raw/api-football/ \
