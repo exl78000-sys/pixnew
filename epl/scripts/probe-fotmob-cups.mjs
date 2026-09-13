@@ -21,6 +21,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { flatPlayerStats } from './lib/adapters/fotmob-match.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'pl-war-room/1.0 (football analysis side project)';
@@ -334,22 +335,18 @@ async function probeReport() {
       console.log(`    一顆射門的鍵:${keyProfile(shots.slice(0, 3))}`);
     }
     if (psList.length) {
-      /* 評分**不在** `entry.rating` —— 站上的 adapter 是走 `flatPlayerStats(entry)` 再取
-         `rating_title`(`lib/adapters/fotmob-match.mjs`)。第一版我照直覺看 `p.rating`
-         與 `p.ratingProps`,四場全部印「有評分 0 人」,而那是我找錯欄位,不是上游沒有。
-         所以這裡不猜路徑:把一筆裡所有鍵名含 rating 的路徑印出來,再數有幾個人真的有值。 */
-      const paths = deepFind(psList[0], /rating/i).slice(0, 6);
-      const ratingValue = (o) => {
-        const hits = deepFind(o, /^rating(_title)?$/i);
-        for (const h of hits) {
-          const val = h.split(' = ')[1];
-          if (val && val !== 'null' && val !== '{}') return val;
-        }
-        return null;
-      };
-      const rated = psList.filter(x => ratingValue(x) != null).length;
-      console.log(`    逐人:${psList.length} 人、其中有評分 ${rated} 人`);
-      for (const h of paths) console.log(`      鍵名含 rating:${h}`);
+      /* 評分**不在** `entry.rating`,也不是任何一個鍵名 —— 它在
+         `entry.stats[].stats[].{key:'rating_title', stat:{value}}`,
+         也就是某個 `key` 欄位的**值**。我在這裡連錯兩次:
+         第一版看 `p.rating` / `p.ratingProps`,第二版改成深搜「鍵名含 rating」,
+         **兩次都印「有評分 0 人」**,而上游其實給了。
+         第三版不自己攤:直接 import 站上 adapter 的 `flatPlayerStats` ——
+         探測問的就是「管線讀得到什麼」,用同一份程式才問得準。 */
+      const flat = psList.map(x => flatPlayerStats(x));
+      const rated = flat.filter(f => f.rating_title?.value != null).length;
+      const mins = flat.filter(f => f.minutes_played?.value != null).length;
+      console.log(`    逐人:${psList.length} 人、有評分 ${rated} 人、有出場分鐘 ${mins} 人`);
+      console.log(`      攤平後的 key(前 12):${Object.keys(flat[0] ?? {}).slice(0, 12).join(' ') || '(一個都沒有)'}`);
     }
     if (c.lineup) {
       const lu = c.lineup;

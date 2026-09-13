@@ -35,10 +35,17 @@ const situation = (s, goalsReliable = true) => s ? {
 
 // Understat 的 SetPiece 是「非角球、非直接任意球」的其他定位球,
 // 所以站內的非十二碼定位球 = FromCorner + SetPiece + DirectFreekick。
-export function setPieceProfile(raw, games, { takers, defenderGoals = 0, teamGoals = 0 } = {}) {
+/* defenderGoals 的預設值是 **null,不是 0**(2026-09-13 修)。
+   原本預設 0,而西甲的 build 沒有這份資料(它沒有球員層的逐球位置)——
+   於是 20 隊全部輸出「後衛進球 0、佔比 0%」,合併戰術頁之後那一欄就印了 20 個 0%,
+   看起來像「西甲後衛整季一球都沒進」。那是編出來的數字(鐵則一),
+   而且正是本站記過的那條坑:**0 是一個看起來很像答案的數字**。
+   沒傳就是沒有,前端的欄位判斷(`!= null`)會讓那一欄整個不出現。 */
+export function setPieceProfile(raw, games, { takers, defenderGoals = null, teamGoals = 0 } = {}) {
   const proxy = {
     defenderGoals,
-    defenderGoalShare: round(teamGoals ? (defenderGoals / teamGoals) * 100 : 0, 1),
+    defenderGoalShare: defenderGoals == null || !teamGoals
+      ? null : round((defenderGoals / teamGoals) * 100, 1),
   };
   if (!raw?.validation?.ok || !raw.nonPenaltySetPiece || !games) {
     return { available: false, takers, ...proxy };

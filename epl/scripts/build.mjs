@@ -980,6 +980,23 @@ async function main() {
       currentSeasonRounds: leaders.currentRounds,
       currentSeasonPlayers: currentTotals.size,
     },
+    /* 戰術頁的文案與它還要讀哪幾份產物。**由 build 寫,前端不要寫死**(2026-09-13):
+       那一頁原本是兩套版面,頁首那段話、xG 的出處、各隊頁有什麼都寫在前端的分支裡 ——
+       合併成一套之後,這些「哪個聯賽有什麼」的事實只有 build 知道。
+       跟 meta.intro / meta.boundaries 同一個做法,而且會動的數字一律內插。
+
+       datasets 是「這個聯賽的戰術頁還要讀哪幾份」。前端靠它決定發幾個請求 ——
+       上一版為了判斷走哪套版面去 fetch 再看 404,西甲每次進這一頁就多打兩個
+       (`npm run sweep` 抓到的)。寫的人知道自己寫了什麼,就不必讓讀者付這筆錢。 */
+    tacticsPage: {
+      intro: `這一頁不談印象,只談上季 ${LAST_SEASON} 的 ${lastMatches.length} 場比賽留下的痕跡:`
+        + '每支球隊實際把人力放在哪裡、機會創造得多好、領先之後守不守得住、進球集中在上半場還是下半場。'
+        + '所有指標都能對回原始賽果與球員數據。',
+      boundaries: [],
+      xgNote: 'xG 來自球員層級的期望進球加總,xGA 取自門將的期望失球。',
+      teamHint: '風格雷達、人員配置、定位球順位與教練都在各隊自己的頁面',
+      datasets: ['shapes', 'formation'],
+    },
     competition: competitionDef(COMPETITION),
     coachDataAsOf: coaches.asOf,
     live: liveOut.available

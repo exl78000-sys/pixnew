@@ -798,7 +798,7 @@ try {
         { key: 'against', label: '失球', value: r => r.against.goals ?? -1, num: true, render: r => r.against.goals ?? '—' },
         { key: 'xga', label: 'xGA', value: r => r.against.xG, num: true, render: r => C.fx(r.against.xG, 2) },
       ], { sortKey: null })}
-      ${sp.goalsReliable === false ? `<div class="note warn" style="margin-top:8px">此隊的供應商情境進球加總與正式比分總進球相差 1，因此進球／失球分類顯示從缺；已逐場核對的射門、xG 與 xGA 仍保留。</div>` : ''}
+      ${sp.goalsReliable === false ? `<div class="note warn" style="margin-top:8px">此隊的供應商情境進球加總與正式比分的總進球對不上，因此進球／失球分類顯示從缺；已逐場核對的射門、xG 與 xGA 仍保留。</div>` : ''}
       <div class="tiny dim" style="margin-top:8px">
         來源: <a href="${C.esc(C.safeUrl(sp.sourceUrl))}" target="_blank" rel="noopener">Understat</a>。
         「其他定位球」是非角球、非直接任意球的定位球;
@@ -1041,7 +1041,12 @@ try {
       d.overperform != null ? ['門將守住的期望失球', C.signed(d.overperform, 1)] : null,
       a.fastXGShare != null ? ['快速進攻 xG 佔比', `${a.fastXGShare}%`] : null,
       a.boxShotShare != null ? ['禁區內射門佔比', `${a.boxShotShare}%`] : null,
-      sp.available ? ['非十二碼定位球 進 / 失', `${sp.goals} / ${sp.conceded}`] : null,
+      /* 進球數可能是 null:情境分類加總對不回整季總進球時產物刻意不給(`goalsReliable === false`)。
+         直接內插就印出「null / null」—— 西甲 VIL 與 OVI 實際長這樣。
+         同一頁上面那張「進球來源」卡早就寫了 `?? '—'`,這裡漏了,所以只有這一格會壞。
+         **同一份資料兩個渲染路徑,一個處理 null 一個沒處理**,是本站記過的那條坑。 */
+      sp.available ? ['非十二碼定位球 進 / 失', sp.goals == null || sp.conceded == null
+        ? '—(分類對不回總進球)' : `${sp.goals} / ${sp.conceded}`] : null,
       sp.available ? ['定位球 xG / 場', sp.xG90] : null,
       sp.available ? ['定位球 xGA / 場', sp.xGA90] : null,
       !sp.available && sp.defenderGoalShare != null ? ['後場球員進球佔比(代理)', `${sp.defenderGoalShare}%`] : null,
