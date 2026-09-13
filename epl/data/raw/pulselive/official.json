@@ -27415,8 +27415,33 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 31936,
+      "team": 11,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68150,
+      "team": 11,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -27428,11 +27453,17 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "46'00"
   }
  },
- "fetchedAt": "2026-09-13T16:32:14.281Z"
+ "fetchedAt": "2026-09-13T16:34:29.890Z"
 }
