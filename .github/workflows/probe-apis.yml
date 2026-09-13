@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
     inputs:
       quick:
-        description: '只跑最新的探測(FotMob 英格蘭盃賽),略過其他'
+        description: '只跑最新的探測(盃賽逐場詳情有沒有賽後報告),略過其他'
         type: boolean
         default: false
 
@@ -29,6 +29,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
+
+      # 2026-09-13:歐冠單場頁做完之後,盃賽是唯一還沒有單場頁的賽事 —— 原因不是前端,
+      # 是沒有逐場詳情。前兩輪只看了 header 的 PK 欄位,**沒看 content 裡有沒有
+      # stats / shotmap / lineup / playerStats**(「沒看過」不等於「沒有」)。
+      # 取樣重點是**分級**:足總盃第一輪是第三、四級球隊互打,FotMob 對低級別未必有
+      # 射門圖與逐人評分。只抓到一場就宣布能做是錯的 —— 結論可能是
+      # 「盃賽的哪一些場次做得到」,而那必須在畫面上講(鐵則三、四)。
+      # 場次取自倉庫裡的盃賽快取(id 是抓取器在用的那些),唯讀、4 個請求。
+      - name: 探測盃賽逐場詳情有沒有賽後報告那幾塊
+        working-directory: epl
+        run: npm run probe:fotmob-cups -- --only=report
 
       # SportMonks 退訂後足總盃/聯賽盃沒有來源。站上已在用 FotMob 的聯賽端點(47/87/48),
       # 抓 logo 時實證 132/133 的名字是 FA Cup / EFL Cup —— 這一步看盃賽在同一個端點回什麼形狀
