@@ -28,6 +28,7 @@ import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
 import { uclElo } from './lib/ucl-elo.mjs';
 import { uclDetails, writeUclDetails, uclScoreContext } from './lib/ucl-details.mjs';
+import { cupDetails, writeCupDetails } from './lib/cup-details.mjs';
 import { lookupTier, nearMisses } from './lib/adapters/england-tiers.mjs';
 import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/news.mjs';
 import { loadCurated } from './lib/curated-archive.mjs';
@@ -1305,6 +1306,20 @@ async function main() {
         matches: liveRows,
       });
       console.log(`  盃賽比分快速通道:本季 ${liveRows.length} 場(進行中 ${liveRows.filter(m => m.state === 'LIVE').length})`);
+      /* 盃賽賽後報告(2026-09-13):FotMob 逐場詳情 → 跟三個聯賽與歐冠同一份 MatchReport 契約。
+         索引檔一定要寫 —— 前端從 'pl' 載它(跟 cups.json 同一個規矩),404 會讓盃賽頁整頁載入失敗;
+         還沒有 raw 的時候就是一份 count 0 的索引,畫面照實說「還沒抓到」。 */
+      const cdet = cupDetails(ROOT);
+      await write('cup-details.json', cdet.index);
+      const cw = writeCupDetails(OUT, cdet);
+      console.log(`  盃賽賽後報告:${cdet.index.count} 場有報告(逐場檔 ${cw.files} 個、${cw.kb} KB)・raw 快取 ${cdet.index.cached} 場`
+        + `・退回 ${cdet.index.rejected.length}・不完整 ${cdet.index.incomplete.length}・抓取器退回 ${cdet.index.attempts.length}`);
+      for (const [key, c] of Object.entries(cdet.index.cups)) {
+        const rows = Object.entries(c.seasons).map(([s, v]) => `${s} ${v.reports}/${v.played}`).join('・');
+        console.log(`    ${c.zh}:${rows || '(沒有已完賽場次)'}`);
+      }
+      for (const r of cdet.index.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
+      for (const r of cdet.index.incomplete.slice(0, 5)) console.log(`    ⚠ ${r.cup} ${r.id}:${r.reason}(${r.missing.join('、')})`);
       for (const c of cups) {
         for (const s of c.seasons) {
           console.log(`  ${c.zh} ${s.label}:${s.total} 場・已完賽 ${s.played}`
