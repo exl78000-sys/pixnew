@@ -27404,26 +27404,35 @@
       "phase": "1",
       "kindRaw": "R",
       "kind": "紅牌"
+     },
+     {
+      "person": null,
+      "team": 11,
+      "min": 45,
+      "label": "45+1'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-13T16:16:25.213Z"
+ "fetchedAt": "2026-09-13T16:18:41.042Z"
 }
