@@ -26255,7 +26255,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 1
+    "away": 2
    },
    "homeId": 5,
    "awayId": 131,
@@ -26697,7 +26697,17 @@
     }
    ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 15340,
+      "team": 5,
+      "min": 53,
+      "label": "53'00",
+      "phase": "2",
+      "kindRaw": "R",
+      "kind": "紅牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -26726,8 +26736,8 @@
      }
     ]
    },
-   "clock": "51'00"
+   "clock": "53'00"
   }
  },
- "fetchedAt": "2026-09-13T14:09:46.982Z"
+ "fetchedAt": "2026-09-13T14:12:03.096Z"
 }
