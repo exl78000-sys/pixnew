@@ -71974,10 +71974,1699 @@
      }
     ]
    }
+  },
+  "MUN|MCI": {
+   "key": "MUN|MCI",
+   "season": "2026-27",
+   "date": "2026-09-13",
+   "matchId": "5795452",
+   "home": "MUN",
+   "away": "MCI",
+   "score": [
+    0,
+    1
+   ],
+   "providerScore": [
+    0,
+    1
+   ],
+   "teamStats": {
+    "MUN": {
+     "possession": 55,
+     "shots": 16,
+     "shotsOn": 3,
+     "shotsOff": 9,
+     "blockedShots": 3,
+     "corners": 6,
+     "offsides": 4,
+     "fouls": 17,
+     "saves": 1,
+     "passes": 472,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.95
+    },
+    "MCI": {
+     "possession": 45,
+     "shots": 6,
+     "shotsOn": 2,
+     "shotsOff": 1,
+     "blockedShots": 4,
+     "corners": 7,
+     "offsides": 1,
+     "fouls": 10,
+     "saves": 3,
+     "passes": 395,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.99
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_walking",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     55,
+     45
+    ],
+    "h1": [
+     49,
+     51
+    ],
+    "h2": [
+     62,
+     38
+    ]
+   },
+   "events": [
+    {
+     "minute": 23,
+     "extra": null,
+     "team": "MCI",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Phil Foden"
+    },
+    {
+     "minute": 45,
+     "extra": 2,
+     "team": "MCI",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Enzo Maresca"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "MCI",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Iliman Ndiaye"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "MCI",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Erling Haaland"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "MUN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Benjamin Šeško"
+    },
+    {
+     "minute": 79,
+     "extra": null,
+     "team": "MCI",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Joško Gvardiol"
+    },
+    {
+     "minute": 80,
+     "extra": null,
+     "team": "MCI",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Enzo Fernández"
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "team": "MUN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Harry Maguire"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "MCI",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nico O'Reilly"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "MUN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joshua Zirkzee"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "MCI",
+     "player": "Enzo Fernández",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.052,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.5,
+     "y": 38.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "MUN",
+     "player": "Lisandro Martínez",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.028,
+     "xgot": 0.01,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.8,
+     "y": 45.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "MUN",
+     "player": "Matheus Cunha",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.5,
+     "y": 18.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "MUN",
+     "player": "Marcus Rashford",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 43.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "MCI",
+     "player": "Rayan Cherki",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.1,
+     "y": 35.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "MUN",
+     "player": "Harry Maguire",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.2,
+     "y": 16.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "MUN",
+     "player": "Marcus Rashford",
+     "type": "Post",
+     "situation": "FreeKick",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.5,
+     "y": 37.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "MUN",
+     "player": "Diogo Dalot",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 32.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "MUN",
+     "player": "Kobbie Mainoo",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.5,
+     "y": 39.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "MUN",
+     "player": "Marcus Rashford",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.047,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.4,
+     "y": 46.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "MUN",
+     "player": "Bryan Mbeumo",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 18.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "MUN",
+     "player": "Matheus Cunha",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 21,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "MCI",
+     "player": "Erling Haaland",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.442,
+     "xgot": 0.749,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.6,
+     "y": 29.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "MCI",
+     "player": "Enzo Fernández",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.134,
+     "xgot": 0.192,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 35.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "MUN",
+     "player": "Bruno Fernandes",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.028,
+     "xgot": 0.044,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 17.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "MUN",
+     "player": "Benjamin Šeško",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.9,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "MUN",
+     "player": "Bryan Mbeumo",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.055,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 30.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "MCI",
+     "player": "Erling Haaland",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.31,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.4,
+     "y": 35.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "MCI",
+     "player": "Joško Gvardiol",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.8,
+     "y": 39.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "MUN",
+     "player": "Matheus Cunha",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.5,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "MUN",
+     "player": "Harry Maguire",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.061,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 36.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "MUN",
+     "player": "Bryan Mbeumo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.412,
+     "xgot": 0.225,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 28.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     -16
+    ],
+    [
+     3,
+     -27
+    ],
+    [
+     4,
+     -38
+    ],
+    [
+     5,
+     -38
+    ],
+    [
+     6,
+     -27
+    ],
+    [
+     7,
+     -19
+    ],
+    [
+     8,
+     3
+    ],
+    [
+     9,
+     5
+    ],
+    [
+     10,
+     0
+    ],
+    [
+     11,
+     0
+    ],
+    [
+     12,
+     8
+    ],
+    [
+     13,
+     11
+    ],
+    [
+     14,
+     -27
+    ],
+    [
+     15,
+     -38
+    ],
+    [
+     16,
+     -27
+    ],
+    [
+     17,
+     14
+    ],
+    [
+     18,
+     22
+    ],
+    [
+     19,
+     43
+    ],
+    [
+     20,
+     52
+    ],
+    [
+     21,
+     60
+    ],
+    [
+     22,
+     33
+    ],
+    [
+     23,
+     22
+    ],
+    [
+     24,
+     5
+    ],
+    [
+     25,
+     -5
+    ],
+    [
+     26,
+     -33
+    ],
+    [
+     27,
+     -33
+    ],
+    [
+     28,
+     -27
+    ],
+    [
+     29,
+     22
+    ],
+    [
+     30,
+     30
+    ],
+    [
+     31,
+     57
+    ],
+    [
+     32,
+     62
+    ],
+    [
+     33,
+     81
+    ],
+    [
+     34,
+     46
+    ],
+    [
+     35,
+     24
+    ],
+    [
+     36,
+     -19
+    ],
+    [
+     37,
+     43
+    ],
+    [
+     38,
+     49
+    ],
+    [
+     39,
+     60
+    ],
+    [
+     40,
+     16
+    ],
+    [
+     41,
+     16
+    ],
+    [
+     42,
+     54
+    ],
+    [
+     43,
+     33
+    ],
+    [
+     44,
+     43
+    ],
+    [
+     45,
+     16
+    ],
+    [
+     45.5,
+     -8
+    ],
+    [
+     46,
+     16
+    ],
+    [
+     47,
+     16
+    ],
+    [
+     48,
+     14
+    ],
+    [
+     49,
+     -3
+    ],
+    [
+     50,
+     -11
+    ],
+    [
+     51,
+     24
+    ],
+    [
+     52,
+     41
+    ],
+    [
+     53,
+     76
+    ],
+    [
+     54,
+     60
+    ],
+    [
+     55,
+     46
+    ],
+    [
+     56,
+     41
+    ],
+    [
+     57,
+     24
+    ],
+    [
+     58,
+     11
+    ],
+    [
+     59,
+     11
+    ],
+    [
+     60,
+     -100
+    ],
+    [
+     61,
+     -100
+    ],
+    [
+     62,
+     -100
+    ],
+    [
+     63,
+     0
+    ],
+    [
+     64,
+     16
+    ],
+    [
+     65,
+     22
+    ],
+    [
+     66,
+     22
+    ],
+    [
+     67,
+     16
+    ],
+    [
+     68,
+     11
+    ],
+    [
+     69,
+     33
+    ],
+    [
+     70,
+     41
+    ],
+    [
+     71,
+     41
+    ],
+    [
+     72,
+     41
+    ],
+    [
+     73,
+     65
+    ],
+    [
+     74,
+     71
+    ],
+    [
+     75,
+     38
+    ],
+    [
+     76,
+     0
+    ],
+    [
+     77,
+     -14
+    ],
+    [
+     78,
+     -8
+    ],
+    [
+     79,
+     -30
+    ],
+    [
+     80,
+     -22
+    ],
+    [
+     81,
+     -16
+    ],
+    [
+     82,
+     22
+    ],
+    [
+     83,
+     5
+    ],
+    [
+     84,
+     3
+    ],
+    [
+     85,
+     3
+    ],
+    [
+     86,
+     90
+    ],
+    [
+     87,
+     92
+    ],
+    [
+     88,
+     98
+    ],
+    [
+     89,
+     5
+    ],
+    [
+     90,
+     33
+    ],
+    [
+     90.5,
+     39
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "MUN": {
+     "team": "MUN",
+     "formation": "4-2-3-1",
+     "coach": "Michael Carrick",
+     "xi": [
+      {
+       "name": "Senne Lammens",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Diogo Dalot",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Harry Maguire",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Lisandro Martínez",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Patrick Dorgu",
+       "shirt": 13,
+       "pos": "D"
+      },
+      {
+       "name": "Youri Tielemans",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Kobbie Mainoo",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Bryan Mbeumo",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Bruno Fernandes",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Marcus Rashford",
+       "shirt": 9,
+       "pos": "M"
+      },
+      {
+       "name": "Matheus Cunha",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Benjamin Šeško",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Joshua Zirkzee",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Karl Darlow",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Ayden Heaven",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Leny Yoro",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Noussair Mazraoui",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Andrey Santos",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Mason Mount",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Shea Lacey",
+       "shirt": 31,
+       "pos": "?"
+      }
+     ]
+    },
+    "MCI": {
+     "team": "MCI",
+     "formation": "4-1-4-1",
+     "coach": "Enzo Maresca",
+     "xi": [
+      {
+       "name": "Gianluigi Donnarumma",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Matheus Nunes",
+       "shirt": 27,
+       "pos": "D"
+      },
+      {
+       "name": "Marc Guéhi",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Rúben Dias",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Joško Gvardiol",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Elliot Anderson",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Phil Foden",
+       "shirt": 47,
+       "pos": "M"
+      },
+      {
+       "name": "Rayan Cherki",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Enzo Fernández",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Antoine Semenyo",
+       "shirt": 42,
+       "pos": "M"
+      },
+      {
+       "name": "Erling Haaland",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Iliman Ndiaye",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Nico O'Reilly",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Gerónimo Rulli",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Abdukodir Khusanov",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Rico Lewis",
+       "shirt": 82,
+       "pos": "?"
+      },
+      {
+       "name": "Vitor Reis",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Ayyoub Bouaddi",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Mateo Kovačić",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Allan",
+       "shirt": 37,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      113150,
+      107948
+     ],
+     "sprintDistance": [
+      1791,
+      1638
+     ],
+     "sprints": [
+      80,
+      77
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      null,
+      null
+     ]
+    },
+    "players": [
+     {
+      "team": "MUN",
+      "name": "Senne Lammens",
+      "shirt": 1,
+      "distance": 6079,
+      "topSpeed": 3416.39990234375,
+      "rating": 6.5
+     },
+     {
+      "team": "MUN",
+      "name": "Diogo Dalot",
+      "shirt": 2,
+      "distance": 10564,
+      "topSpeed": 2394,
+      "rating": 7
+     },
+     {
+      "team": "MUN",
+      "name": "Harry Maguire",
+      "shirt": 5,
+      "distance": 9908,
+      "topSpeed": 3619.5,
+      "rating": 7
+     },
+     {
+      "team": "MUN",
+      "name": "Lisandro Martínez",
+      "shirt": 6,
+      "distance": 9802,
+      "topSpeed": 3032.699951171875,
+      "rating": 7.2
+     },
+     {
+      "team": "MUN",
+      "name": "Patrick Dorgu",
+      "shirt": 13,
+      "distance": 11607,
+      "topSpeed": 3533.10009765625,
+      "rating": 7.3
+     },
+     {
+      "team": "MUN",
+      "name": "Youri Tielemans",
+      "shirt": 18,
+      "distance": 8613,
+      "topSpeed": 2896.60009765625,
+      "rating": 6.9
+     },
+     {
+      "team": "MUN",
+      "name": "Kobbie Mainoo",
+      "shirt": 37,
+      "distance": 11167,
+      "topSpeed": 2961.39990234375,
+      "rating": 7.9
+     },
+     {
+      "team": "MUN",
+      "name": "Bryan Mbeumo",
+      "shirt": 19,
+      "distance": 10712,
+      "topSpeed": 2373.699951171875,
+      "rating": 6.2
+     },
+     {
+      "team": "MUN",
+      "name": "Bruno Fernandes",
+      "shirt": 8,
+      "distance": 11030,
+      "topSpeed": 5418.10009765625,
+      "rating": 6.9
+     },
+     {
+      "team": "MUN",
+      "name": "Marcus Rashford",
+      "shirt": 9,
+      "distance": 8987,
+      "topSpeed": 2031.199951171875,
+      "rating": 6.9
+     },
+     {
+      "team": "MUN",
+      "name": "Matheus Cunha",
+      "shirt": 10,
+      "distance": 10140,
+      "topSpeed": 3517.199951171875,
+      "rating": 6.4
+     },
+     {
+      "team": "MUN",
+      "name": "Benjamin Šeško",
+      "shirt": 30,
+      "distance": 2997,
+      "topSpeed": 35.099998474121094,
+      "rating": 6.4
+     },
+     {
+      "team": "MUN",
+      "name": "Joshua Zirkzee",
+      "shirt": 11,
+      "distance": 1538,
+      "topSpeed": 33.79999923706055,
+      "rating": null
+     },
+     {
+      "team": "MCI",
+      "name": "Gianluigi Donnarumma",
+      "shirt": 1,
+      "distance": 5576,
+      "topSpeed": 6958.2001953125,
+      "rating": 7.8
+     },
+     {
+      "team": "MCI",
+      "name": "Matheus Nunes",
+      "shirt": 27,
+      "distance": 10364,
+      "topSpeed": 3528.89990234375,
+      "rating": 8.1
+     },
+     {
+      "team": "MCI",
+      "name": "Marc Guéhi",
+      "shirt": 6,
+      "distance": 10032,
+      "topSpeed": 1839.9000244140625,
+      "rating": 7.2
+     },
+     {
+      "team": "MCI",
+      "name": "Rúben Dias",
+      "shirt": 3,
+      "distance": 11214,
+      "topSpeed": 5735.60009765625,
+      "rating": 7.1
+     },
+     {
+      "team": "MCI",
+      "name": "Joško Gvardiol",
+      "shirt": 24,
+      "distance": 10737,
+      "topSpeed": 5156.5,
+      "rating": 7.7
+     },
+     {
+      "team": "MCI",
+      "name": "Elliot Anderson",
+      "shirt": 5,
+      "distance": 11859,
+      "topSpeed": 3321.5,
+      "rating": 7.4
+     },
+     {
+      "team": "MCI",
+      "name": "Phil Foden",
+      "shirt": 47,
+      "distance": 3062,
+      "topSpeed": 33.099998474121094,
+      "rating": 4.7
+     },
+     {
+      "team": "MCI",
+      "name": "Rayan Cherki",
+      "shirt": 10,
+      "distance": 5503,
+      "topSpeed": 1856.800048828125,
+      "rating": 6.3
+     },
+     {
+      "team": "MCI",
+      "name": "Enzo Fernández",
+      "shirt": 17,
+      "distance": 10245,
+      "topSpeed": 4146.7998046875,
+      "rating": 7.4
+     },
+     {
+      "team": "MCI",
+      "name": "Antoine Semenyo",
+      "shirt": 42,
+      "distance": 10402,
+      "topSpeed": 4018.10009765625,
+      "rating": 6.6
+     },
+     {
+      "team": "MCI",
+      "name": "Erling Haaland",
+      "shirt": 9,
+      "distance": 10877,
+      "topSpeed": 4305.60009765625,
+      "rating": 8.1
+     },
+     {
+      "team": "MCI",
+      "name": "Iliman Ndiaye",
+      "shirt": 7,
+      "distance": 6176,
+      "topSpeed": 1661.800048828125,
+      "rating": 6.7
+     },
+     {
+      "team": "MCI",
+      "name": "Nico O'Reilly",
+      "shirt": 33,
+      "distance": 1896,
+      "topSpeed": 28.100000381469727,
+      "rating": null
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 40,
+      "center": 29,
+      "right": 31
+     },
+     "firstHalf": {
+      "left": 41,
+      "center": 26,
+      "right": 33
+     },
+     "secondHalf": {
+      "left": 39,
+      "center": 33,
+      "right": 28
+     }
+    },
+    "away": {
+     "total": {
+      "left": 32,
+      "center": 30,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 41,
+      "center": 27,
+      "right": 32
+     },
+     "secondHalf": {
+      "left": 22,
+      "center": 33,
+      "right": 45
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-13T17:59:07.196Z",
+   "fdMatchId": "2026-27-38",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "MUN",
+      "name": "Bruno Fernandes",
+      "n": 75,
+      "cx": 61.2,
+      "cy": 35.7,
+      "spread": 28.9,
+      "grid": "0,3,0,4,6,2,1,1,4,3,9,0,0,5,5,5,9,0,1,0,5,3,7,2"
+     },
+     {
+      "team": "MUN",
+      "name": "Senne Lammens",
+      "n": 25,
+      "cx": 10.9,
+      "cy": 36,
+      "spread": 9.6,
+      "grid": "0,0,0,0,0,0,6,4,0,0,0,0,13,2,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Elliot Anderson",
+      "n": 86,
+      "cx": 49.3,
+      "cy": 35.8,
+      "spread": 30.6,
+      "grid": "0,1,5,3,2,5,3,5,9,5,1,1,4,10,3,6,3,0,0,6,3,8,1,2"
+     },
+     {
+      "team": "MUN",
+      "name": "Lisandro Martínez",
+      "n": 84,
+      "cx": 43.6,
+      "cy": 23.6,
+      "spread": 23.4,
+      "grid": "2,5,3,5,3,0,5,11,15,18,7,0,4,1,4,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Marc Guéhi",
+      "n": 71,
+      "cx": 29.8,
+      "cy": 46.8,
+      "spread": 19.4,
+      "grid": "0,0,0,0,0,0,2,2,0,0,0,1,13,18,12,3,0,0,4,8,4,4,0,0"
+     },
+     {
+      "team": "MUN",
+      "name": "Patrick Dorgu",
+      "n": 80,
+      "cx": 59.6,
+      "cy": 10,
+      "spread": 28.2,
+      "grid": "2,7,8,23,18,10,3,1,2,0,1,2,2,0,0,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Rúben Dias",
+      "n": 65,
+      "cx": 30.2,
+      "cy": 25.4,
+      "spread": 24.7,
+      "grid": "6,7,2,0,0,0,8,11,13,2,0,3,5,3,3,2,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Joško Gvardiol",
+      "n": 62,
+      "cx": 41.9,
+      "cy": 12.9,
+      "spread": 27.8,
+      "grid": "4,11,16,10,1,5,4,2,1,1,1,1,4,0,0,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Antoine Semenyo",
+      "n": 52,
+      "cx": 63.6,
+      "cy": 15.3,
+      "spread": 28.7,
+      "grid": "3,3,10,9,12,5,0,1,0,0,3,1,0,0,0,1,0,1,0,0,0,1,0,2"
+     },
+     {
+      "team": "MUN",
+      "name": "Diogo Dalot",
+      "n": 74,
+      "cx": 51.3,
+      "cy": 57.5,
+      "spread": 27.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,4,6,2,0,4,1,3,10,13,10,17,4"
+     },
+     {
+      "team": "MUN",
+      "name": "Youri Tielemans",
+      "n": 60,
+      "cx": 54.4,
+      "cy": 43.8,
+      "spread": 23.7,
+      "grid": "0,1,0,0,0,0,2,2,1,0,4,0,1,6,11,11,6,0,0,1,3,6,3,2"
+     },
+     {
+      "team": "MUN",
+      "name": "Harry Maguire",
+      "n": 86,
+      "cx": 47.6,
+      "cy": 43.2,
+      "spread": 26.8,
+      "grid": "0,0,0,0,1,0,3,3,2,3,0,7,7,8,16,13,0,1,0,3,13,3,2,1"
+     },
+     {
+      "team": "MUN",
+      "name": "Bryan Mbeumo",
+      "n": 55,
+      "cx": 67.8,
+      "cy": 50.8,
+      "spread": 27.6,
+      "grid": "0,0,0,0,0,1,1,0,0,0,3,1,1,1,3,2,5,4,1,3,4,10,11,4"
+     },
+     {
+      "team": "MCI",
+      "name": "Enzo Fernández",
+      "n": 68,
+      "cx": 56.1,
+      "cy": 29.8,
+      "spread": 29,
+      "grid": "0,2,6,5,3,0,3,8,1,7,4,6,0,3,2,5,3,0,1,2,1,1,4,1"
+     },
+     {
+      "team": "MCI",
+      "name": "Rayan Cherki",
+      "n": 36,
+      "cx": 58.8,
+      "cy": 51.8,
+      "spread": 26.3,
+      "grid": "0,0,0,0,0,0,0,0,0,1,2,0,0,1,4,5,3,1,3,1,5,6,1,3"
+     },
+     {
+      "team": "MCI",
+      "name": "Phil Foden",
+      "n": 15,
+      "cx": 64.5,
+      "cy": 48.3,
+      "spread": 27.9,
+      "grid": "0,0,0,0,0,1,0,0,0,0,0,0,0,0,2,2,3,2,0,2,1,1,1,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Matheus Nunes",
+      "n": 74,
+      "cx": 33.4,
+      "cy": 56.7,
+      "spread": 23.6,
+      "grid": "0,0,0,0,0,0,1,0,0,0,1,0,8,3,0,1,0,0,12,22,10,14,1,1"
+     },
+     {
+      "team": "MUN",
+      "name": "Matheus Cunha",
+      "n": 49,
+      "cx": 69.1,
+      "cy": 29.2,
+      "spread": 24.8,
+      "grid": "0,0,3,2,7,1,0,1,7,2,10,1,0,0,1,3,4,2,0,0,1,1,1,2"
+     },
+     {
+      "team": "MUN",
+      "name": "Marcus Rashford",
+      "n": 62,
+      "cx": 75.6,
+      "cy": 17.7,
+      "spread": 24.7,
+      "grid": "0,0,5,5,14,9,0,0,2,7,7,8,1,0,0,0,0,0,0,0,1,1,1,1"
+     },
+     {
+      "team": "MUN",
+      "name": "Kobbie Mainoo",
+      "n": 97,
+      "cx": 53.7,
+      "cy": 27.4,
+      "spread": 24,
+      "grid": "1,3,6,3,4,0,1,9,9,17,17,0,4,2,5,7,4,0,0,2,1,1,1,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Gianluigi Donnarumma",
+      "n": 60,
+      "cx": 9.6,
+      "cy": 35,
+      "spread": 10.6,
+      "grid": "1,0,0,0,0,0,30,3,0,0,0,0,21,2,0,0,0,0,1,2,0,0,0,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Erling Haaland",
+      "n": 37,
+      "cx": 61.1,
+      "cy": 34.2,
+      "spread": 22.2,
+      "grid": "0,1,0,1,1,0,1,1,4,4,5,1,0,0,2,9,2,1,0,0,0,2,2,0"
+     },
+     {
+      "team": "MCI",
+      "name": "Iliman Ndiaye",
+      "n": 47,
+      "cx": 49.9,
+      "cy": 52.4,
+      "spread": 29.1,
+      "grid": "0,0,0,0,0,0,0,1,0,2,1,1,2,4,3,2,0,0,3,7,5,6,7,3"
+     },
+     {
+      "team": "MUN",
+      "name": "Benjamin Šeško",
+      "n": 10,
+      "cx": 72.3,
+      "cy": 42.3,
+      "spread": 20.3,
+      "grid": "0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,0,2,0,0,1,0,1,1"
+     },
+     {
+      "team": "MCI",
+      "name": "Nico O'Reilly",
+      "n": 7,
+      "cx": 53.5,
+      "cy": 27.9,
+      "spread": 29.5,
+      "grid": "0,1,0,0,0,1,0,2,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "MUN",
+      "name": "Joshua Zirkzee",
+      "n": 11,
+      "cx": 64.2,
+      "cy": 26.2,
+      "spread": 25.1,
+      "grid": "0,0,0,2,0,0,1,1,0,0,5,0,0,0,0,1,0,0,0,0,0,0,1,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-13T16:44:15.051Z",
+ "updatedAt": "2026-09-13T17:59:07.902Z",
  "verification": {
   "source": "pulselive /stats/match possession_percentage",
   "tolerance": 2,
