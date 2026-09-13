@@ -1018,6 +1018,28 @@ async function checkTimeline() {
     /* 補時的排序(2026-09-12,改換人排版時看畫面才發現的既有 bug)。
        官方把補時全部記成第 90 分,補時第幾分只在 label 裡 —— 照 min 排,
        90+7 的進球會排在 90+1 的黃牌前面。實測 SUN vs ARS 就是這樣。 */
+    /* 歐冠單場頁(2026-09-13,使用者:「歐冠沒有賽前賽後完整頁?現在用折疊打開會頁面太長」)。
+       量過:聯賽階段一輪 18 場,清單本身 5,460px;展開一場 +6,033px(一份報告比整份清單還長),
+       展開四場 28,559px。內容沒錯,錯的是位置 —— 搬到 `ucl-match.html?id=…`。
+       這三條守著:清單裡不再展開、單場頁不自己重畫報告、入口從清單與總覽都連得到。 */
+    ['歐冠清單裡不再內嵌展開,按鈕是連到單場頁的連結', (() => {
+      const v = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
+      return /C\.link\('ucl-match', \{ id: m\.id \}\)/.test(v)
+        && !/data-cmp-slot/.test(v) && !/data-cmp=/.test(v);
+    })()],
+    ['歐冠單場頁用的是 ucl-view 既有的那兩個繪製函式,不自己再寫一份', (() => {
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-ucl-match.js'), 'utf8');
+      const v = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
+      return /renderUclPost\(slot, match\)/.test(pg) && /renderUclCompare\(slot, match\)/.test(pg)
+        && /export const renderUclPost/.test(v) && /export const initUcl|export function initUcl/.test(v)
+        // 共用模組不可以用 `export { a as b }`:單檔版把 export 剝掉之後那是語法錯誤
+        && !/^export \{/m.test(v);
+    })()],
+    ['歐冠單場頁的入口:清單與總覽都連得到,而且 id 從資料來', (() => {
+      const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+      return /C\.link\('ucl-match', \{ id: m\.id \}\)/.test(ov) && /'ucl-match'/.test(bundle);
+    })()],
     ['時間軸用補時後的實際分鐘排序(90+7 要排在 90+1 後面)', (() => {
       const core2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       if (!/const absMin = \(label, min\) =>/.test(core2)) { console.log('      core.js 沒有 absMin'); return false; }
@@ -1487,9 +1509,11 @@ async function checkUclCompare() {
     ['樣本太小要講(球季剛開始時場均數字還會大幅變動)', /樣本很小/.test(view)],
     /* 兩隊都要有資料才給按鈕 —— 一欄空著就是留一個永遠空白的欄位(鐵則三)。
        階段 B 之後「有資料」多了一種來源(只有積分榜的三個聯賽),條件見下面那條。 */
-    /* 兩個聯賽的 table.json 各約 100 KB,而整頁只有一兩場用得到 */
-    ['聯賽積分榜是展開時才載入,不是開頁就抓',
-      /slot\.dataset\.done/.test(view) && /await \(kind === 'post' \? renderPostMatch\(slot, m\) : renderCompare\(slot, m\)\)/.test(view)],
+    /* 兩個聯賽的 table.json 各約 100 KB,而整頁只有一兩場用得到。
+       2026-09-13 展開搬到單場頁之後,這件事更徹底:盃賽頁**完全不會**載到它,
+       只有讀者真的點進某一場才載。這一條守「載入還是在 renderCompare 裡面,不是在畫清單時」。 */
+    ['聯賽積分榜只在畫對比時才載入(清單頁完全不抓)',
+      /async function standingsOf\(/.test(view) && /await C\.loadFrom\(/.test(view.slice(view.indexOf('async function renderCompare')))],
     /* 這個檔下面已經有一個 leagueTable(積分榜渲染器);同名會靜靜蓋掉,不拋錯 */
     ['資料載入器沒有跟積分榜渲染器撞名',
       /async function standingsOf\(/.test(view) && !/async function leagueTable\(/.test(view)],
@@ -4897,10 +4921,16 @@ async function checkUclDetails() {
     ok(/const expandable = m => \(m\?\.played \? !!detailOf\(m\) : \(comparable\(m\) \|\| !!predOf\(m\)\)\)/.test(view),
       '展開鈕的條件:已完賽看有沒有報告、未賽看有沒有對比或預測 —— 不再是 `!m.played && …`');
     ok(!/!m\?\.played && \(comparable/.test(strip(view)), '舊的 `!m.played && (comparable…)` 條件已經不在程式裡(註解不算)');
-    ok(/cmpMatches = new Map\(allMatchesOf\(s\)\.filter\(expandable\)/.test(view), '點擊查表涵蓋聯賽階段 + 淘汰賽,而且用同一個 expandable');
-    ok(/expandBtn\(m\)/.test(view) && (view.match(/\$\{expandBtn\(m\)\}/g) ?? []).length >= 2 && (view.match(/\$\{expandSlot\(m\)\}/g) ?? []).length >= 2,
-      '聯賽階段賽程列與淘汰賽回合列都用同一份 expandBtn / expandSlot');
-    ok(/kind === 'post' \? renderPostMatch\(slot, m\) : renderCompare\(slot, m\)/.test(view), '點開時依種類分流:賽後報告 / 賽前對比');
+    /* 2026-09-13:清單裡不再展開,按鈕變成連到單場頁的連結(量過:展開四場 31.7 個螢幕)。
+       單場頁在**所有賽季的聯賽階段 + 淘汰賽**裡用 id 找場次 —— 只找聯賽階段的話,
+       淘汰賽那些會變成「連結在但點進去說找不到」。 */
+    ok(/const uclAllMatches = s => allMatchesOf\(s\)/.test(view)
+      && /uclAllMatches\(s\)\.find\(m => String\(m\.id\) === String\(id\)\)/.test(readFileSync(join(W, 'assets', 'js', 'page-ucl-match.js'), 'utf8')),
+      '單場頁用 id 在聯賽階段 + 淘汰賽裡找(兩邊都涵蓋)');
+    ok((view.match(/\$\{expandBtn\(m\)\}/g) ?? []).length >= 2,
+      '聯賽階段賽程列與淘汰賽回合列都用同一份 expandBtn(各寫一份的話淘汰賽會少掉某一種鈕)');
+    ok(/kind === 'post'\) await renderUclPost\(slot, match\)/.test(readFileSync(join(W, 'assets', 'js', 'page-ucl-match.js'), 'utf8')),
+      '單場頁依種類分流:賽後報告 / 賽前對比');
     ok(/C\.matchReportCards\(rep, \{ order: POST_ORDER \}\)/.test(view), '賽後區塊沿用 core.js 的 matchReportCards(三個聯賽的單場頁同一套)');
     ok(/C\.loadFrom\('pl', \[name\]\)/.test(view) && /ucl-details\/\$\{idx\.season\}\/\$\{m\.id\}/.test(view), '逐場報告懶載入(一場一檔,從 pl 目錄)');
     ok(/C\.registerTeams\(\[entry\(m\.home, 0\), entry\(m\.away, 1\)\]\)/.test(view) && /NEUTRAL/.test(view),
@@ -4929,9 +4959,12 @@ async function checkUclDetails() {
       && (srcOf('cups.json') ?? []).some(s => s.name === 'FotMob'),
       'ucl.json 署名 football-data.org 與 FotMob;cups.json 署名 FotMob');
     const ov = readFileSync(join(W, 'assets', 'js', 'page-overview.js'), 'utf8');
-    ok(/link: C\.link\('cups', \{ cup: 'ucl' \}\)/.test(ov) && /link: C\.link\('cups', \{ cup: cup\.key \}\)/.test(ov)
+    /* 2026-09-13:歐冠有單場頁之後,總覽的歐冠場次直接連過去(跟聯賽場次連分析頁同一件事);
+       盃賽仍然開盃賽頁的分頁 —— 那兩個賽事還沒有單場頁。id 缺了才退回盃賽頁。 */
+    ok(/link: m\.id != null \? C\.link\('ucl-match', \{ id: m\.id \}\) : C\.link\('cups', \{ cup: 'ucl' \}\)/.test(ov)
+      && /link: C\.link\('cups', \{ cup: cup\.key \}\)/.test(ov)
       && !/沒有分析頁\(模型是聯賽調的\)/.test(strip(ov)),
-      '總覽的歐冠與盃賽場次點列會開盃賽頁的對應分頁,說明不再寫「沒有分析頁(模型是聯賽調的)」');
+      '總覽:歐冠場次連單場頁、盃賽場次開盃賽頁的分頁,說明不再寫「沒有分析頁(模型是聯賽調的)」');
     ok(/\? m\.source\s*\n?\s*\? `標<span class="pill accent tiny">正式<\/span>的陣型與每一排球員,來自 \$\{\{ sportmonks/.test(core),
       '陣容卡的來源文案看 m.source(供應商路徑)—— 英冠與西甲的 FotMob 場次以前印著「英超官方公布的正式名單」');
     ok(!/m\.advanced && m\.advanced\.source !== 'fotmob'/.test(strip(core)), '舊的 advanced.source 判斷已拿掉');

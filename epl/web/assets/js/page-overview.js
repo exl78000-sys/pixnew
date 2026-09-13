@@ -188,7 +188,10 @@ try {
       rows.push({ kick: m.kickoff, comp: '歐冠', compKey: 'ucl',
         home: m.home?.name ?? '?', away: m.away?.name ?? '?',
         hCrest: uclCrest(m.home), aCrest: uclCrest(m.away),
-        note: m.matchday ? `聯賽階段第 ${m.matchday} 輪` : (m.stage ?? ''), pending: false, link: C.link('cups', { cup: 'ucl' }) });
+        /* 歐冠場次連**單場頁**(2026-09-13 起有了),跟聯賽場次連分析頁是同一件事;
+           以前只能連到盃賽頁的分頁,讀者還要自己在 18 場裡找。 */
+        note: m.matchday ? `聯賽階段第 ${m.matchday} 輪` : (m.stage ?? ''), pending: false,
+        link: m.id != null ? C.link('ucl-match', { id: m.id }) : C.link('cups', { cup: 'ucl' }) });
     }
     return rows.sort((a, b) => (a.kick < b.kick ? -1 : 1));
   };
@@ -254,10 +257,10 @@ try {
       render: u => `<span class="tiny dim">${C.esc(u.note)}</span>` },
   ], { sortKey: 'kick', desc: false,
     /* 整列可點,不用瞄準文字連結(使用者要求)。盃賽與歐冠場次沒有獨立的分析頁,
-       開的是盃賽頁的對應分頁 —— 歐冠的賽前對比、勝率與賽後報告都在那裡展開(「東西在但沒有入口」那條坑)。 */
+       歐冠有自己的單場頁(2026-09-13),盃賽場次仍然開盃賽頁的對應分頁 —— 那兩個賽事還沒有單場頁。 */
     onRow: u => { if (u.link) location.href = u.link; } })}
   <div class="tiny dim" style="margin-top:8px">${cupBeyond.length ? `7 天之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}
-    聯賽場次點對戰直接進賽前分析;歐冠與盃賽場次開盃賽頁的對應分頁(歐冠的賽前對比、勝率與賽後報告在那裡展開)。
+    聯賽場次點對戰直接進賽前分析,歐冠場次進歐冠單場頁(賽前對比、勝率與賽後報告都在那一頁);盃賽場次開盃賽頁的對應分頁。
     只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
   : `<div class="note">未來 7 天沒有已排定的比賽(或開球時間上游還沒公布)。
     ${cupBeyond.length ? `之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}</div>`}`; };
