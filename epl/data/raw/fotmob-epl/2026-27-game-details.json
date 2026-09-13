@@ -69916,10 +69916,2068 @@
      }
     ]
    }
+  },
+  "COV|BHA": {
+   "key": "COV|BHA",
+   "season": "2026-27",
+   "date": "2026-09-13",
+   "matchId": "5795448",
+   "home": "COV",
+   "away": "BHA",
+   "score": [
+    0,
+    5
+   ],
+   "providerScore": [
+    0,
+    5
+   ],
+   "teamStats": {
+    "COV": {
+     "possession": 31,
+     "shots": 14,
+     "shotsOn": 6,
+     "shotsOff": 6,
+     "blockedShots": 5,
+     "corners": 5,
+     "offsides": 2,
+     "fouls": 9,
+     "saves": 2,
+     "passes": 246,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.39
+    },
+    "BHA": {
+     "possession": 69,
+     "shots": 22,
+     "shotsOn": 7,
+     "shotsOff": 10,
+     "blockedShots": 2,
+     "corners": 3,
+     "offsides": 2,
+     "fouls": 15,
+     "saves": 6,
+     "passes": 570,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.69
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_walking",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     31,
+     69
+    ],
+    "h1": [
+     33,
+     67
+    ],
+    "h2": [
+     29,
+     71
+    ]
+   },
+   "events": [
+    {
+     "minute": 35,
+     "extra": null,
+     "team": "BHA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Charalampos Kostoulas"
+    },
+    {
+     "minute": 51,
+     "extra": null,
+     "team": "BHA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Malick Junior Yalcouyé"
+    },
+    {
+     "minute": 53,
+     "extra": null,
+     "team": "COV",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Taiwo Awoniyi"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sidiki Cherif"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "BHA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Chema Andrés"
+    },
+    {
+     "minute": 70,
+     "extra": null,
+     "team": "BHA",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Pascal Groß"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Brandon Thomas-Asante"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Caleb Yirenkyi"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "BHA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ibrahim Osman"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "BHA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pascal Struijk"
+    },
+    {
+     "minute": 83,
+     "extra": null,
+     "team": "BHA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Lewis Dunk"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Victor Torp"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "BHA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matthew O'Riley"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "BHA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Costinha"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "BHA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Yasin Ayari"
+    }
+   ],
+   "shots": [
+    {
+     "min": 6,
+     "extra": null,
+     "team": "BHA",
+     "player": "Diego Gómez",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.104,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 24.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "BHA",
+     "player": "Yasin Ayari",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 46.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "BHA",
+     "player": "Charalampos Kostoulas",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 35.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "BHA",
+     "player": "Olivier Boscagli",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 46.5,
+     "y": 32,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BHA",
+     "player": "Malick Junior Yalcouyé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 31.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BHA",
+     "player": "Charalampos Kostoulas",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.208,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 25.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "BHA",
+     "player": "Malick Junior Yalcouyé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.183,
+     "xgot": 0.256,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 40.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "COV",
+     "player": "Taiwo Awoniyi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.1,
+     "y": 43.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "COV",
+     "player": "Ephron Mason-Clark",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.104,
+     "xgot": 0.14,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 37.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "COV",
+     "player": "Jack Rudoni",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 38.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "COV",
+     "player": "Jack Rudoni",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.293,
+     "xgot": 0.953,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.2,
+     "y": 29.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "COV",
+     "player": "Bobby Thomas",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.187,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 39.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "COV",
+     "player": "Frank Onyeka",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.033,
+     "xgot": 0.096,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.5,
+     "y": 23.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "COV",
+     "player": "Bobby Thomas",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 32.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "BHA",
+     "player": "Charalampos Kostoulas",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.131,
+     "xgot": 0.531,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 23.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "BHA",
+     "player": "Pascal Groß",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.5,
+     "y": 41.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "COV",
+     "player": "Ephron Mason-Clark",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.24,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 37.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "COV",
+     "player": "Ethan Pinnock",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 38.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "COV",
+     "player": "Matt Grimes",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 32.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "BHA",
+     "player": "Luka Vušković",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.073,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.9,
+     "y": 33,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "BHA",
+     "player": "Diego Gómez",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 21.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "BHA",
+     "player": "Luka Vušković",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 43.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "COV",
+     "player": "Ephron Mason-Clark",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.158,
+     "xgot": 0.214,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 36.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "BHA",
+     "player": "Malick Junior Yalcouyé",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.314,
+     "xgot": 0.457,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.8,
+     "y": 42.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "BHA",
+     "player": "Pascal Groß",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.768,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "BHA",
+     "player": "Chema Andrés",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.196,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 56,
+     "y": 22.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "COV",
+     "player": "Brandon Thomas-Asante",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.17,
+     "xgot": 0.321,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 26.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "BHA",
+     "player": "Ibrahim Osman",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 47.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "BHA",
+     "player": "Yasin Ayari",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.144,
+     "xgot": 0.185,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 33.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "COV",
+     "player": "Bobby Thomas",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 39.3,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "BHA",
+     "player": "Lewis Dunk",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0.435,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.6,
+     "y": 30.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "BHA",
+     "player": "Ibrahim Osman",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.1,
+     "y": 47.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "BHA",
+     "player": "Maxim De Cuyper",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.7,
+     "y": 31.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "BHA",
+     "player": "Yasin Ayari",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 35.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "COV",
+     "player": "Brandon Thomas-Asante",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0.231,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.7,
+     "y": 25.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 4,
+     "team": "BHA",
+     "player": "Yasin Ayari",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.105,
+     "xgot": 0.778,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.2,
+     "y": 37.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -11
+    ],
+    [
+     2,
+     -16
+    ],
+    [
+     3,
+     -16
+    ],
+    [
+     4,
+     0
+    ],
+    [
+     5,
+     0
+    ],
+    [
+     6,
+     -16
+    ],
+    [
+     7,
+     -38
+    ],
+    [
+     8,
+     -65
+    ],
+    [
+     9,
+     -68
+    ],
+    [
+     10,
+     -52
+    ],
+    [
+     11,
+     -43
+    ],
+    [
+     12,
+     -41
+    ],
+    [
+     13,
+     -35
+    ],
+    [
+     14,
+     16
+    ],
+    [
+     15,
+     33
+    ],
+    [
+     16,
+     -43
+    ],
+    [
+     17,
+     -100
+    ],
+    [
+     18,
+     -100
+    ],
+    [
+     19,
+     -100
+    ],
+    [
+     20,
+     -98
+    ],
+    [
+     21,
+     -16
+    ],
+    [
+     22,
+     22
+    ],
+    [
+     23,
+     46
+    ],
+    [
+     24,
+     35
+    ],
+    [
+     25,
+     24
+    ],
+    [
+     26,
+     0
+    ],
+    [
+     27,
+     100
+    ],
+    [
+     28,
+     100
+    ],
+    [
+     29,
+     100
+    ],
+    [
+     30,
+     19
+    ],
+    [
+     31,
+     16
+    ],
+    [
+     32,
+     11
+    ],
+    [
+     33,
+     30
+    ],
+    [
+     34,
+     22
+    ],
+    [
+     35,
+     -49
+    ],
+    [
+     36,
+     -68
+    ],
+    [
+     37,
+     -100
+    ],
+    [
+     38,
+     98
+    ],
+    [
+     39,
+     98
+    ],
+    [
+     40,
+     100
+    ],
+    [
+     41,
+     43
+    ],
+    [
+     42,
+     43
+    ],
+    [
+     43,
+     38
+    ],
+    [
+     44,
+     -11
+    ],
+    [
+     45,
+     -11
+    ],
+    [
+     45.5,
+     -8
+    ],
+    [
+     46,
+     38
+    ],
+    [
+     47,
+     90
+    ],
+    [
+     48,
+     95
+    ],
+    [
+     49,
+     81
+    ],
+    [
+     50,
+     22
+    ],
+    [
+     51,
+     -11
+    ],
+    [
+     52,
+     -30
+    ],
+    [
+     53,
+     -22
+    ],
+    [
+     54,
+     0
+    ],
+    [
+     55,
+     -43
+    ],
+    [
+     56,
+     -43
+    ],
+    [
+     57,
+     -60
+    ],
+    [
+     58,
+     -43
+    ],
+    [
+     59,
+     -43
+    ],
+    [
+     60,
+     -14
+    ],
+    [
+     61,
+     -8
+    ],
+    [
+     62,
+     -3
+    ],
+    [
+     63,
+     -11
+    ],
+    [
+     64,
+     22
+    ],
+    [
+     65,
+     30
+    ],
+    [
+     66,
+     27
+    ],
+    [
+     67,
+     14
+    ],
+    [
+     68,
+     -46
+    ],
+    [
+     69,
+     -43
+    ],
+    [
+     70,
+     -46
+    ],
+    [
+     71,
+     5
+    ],
+    [
+     72,
+     5
+    ],
+    [
+     73,
+     5
+    ],
+    [
+     74,
+     27
+    ],
+    [
+     75,
+     35
+    ],
+    [
+     76,
+     35
+    ],
+    [
+     77,
+     14
+    ],
+    [
+     78,
+     65
+    ],
+    [
+     79,
+     54
+    ],
+    [
+     80,
+     11
+    ],
+    [
+     81,
+     -65
+    ],
+    [
+     82,
+     -11
+    ],
+    [
+     83,
+     5
+    ],
+    [
+     84,
+     22
+    ],
+    [
+     85,
+     -38
+    ],
+    [
+     86,
+     -5
+    ],
+    [
+     87,
+     5
+    ],
+    [
+     88,
+     11
+    ],
+    [
+     89,
+     0
+    ],
+    [
+     90,
+     -22
+    ],
+    [
+     90.5,
+     -19
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "COV": {
+     "team": "COV",
+     "formation": "3-4-3",
+     "coach": "Frank Lampard",
+     "xi": [
+      {
+       "name": "Carl Rushworth",
+       "shirt": 19,
+       "pos": "G"
+      },
+      {
+       "name": "Aurèle Amenda",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Bobby Thomas",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Ethan Pinnock",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Milan van Ewijk",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Frank Onyeka",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Matt Grimes",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Jay Dasilva",
+       "shirt": 3,
+       "pos": "M"
+      },
+      {
+       "name": "Jack Rudoni",
+       "shirt": 5,
+       "pos": "F"
+      },
+      {
+       "name": "Taiwo Awoniyi",
+       "shirt": 14,
+       "pos": "F"
+      },
+      {
+       "name": "Ephron Mason-Clark",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Sidiki Cherif",
+       "shirt": 49,
+       "pos": "?"
+      },
+      {
+       "name": "Caleb Yirenkyi",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Brandon Thomas-Asante",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Victor Torp",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel Bentley",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Stephen Mfuni",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Gustavo Hamer",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Loum Tchaouna",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Tatsuhiro Sakamoto",
+       "shirt": 7,
+       "pos": "?"
+      }
+     ]
+    },
+    "BHA": {
+     "team": "BHA",
+     "formation": "4-2-3-1",
+     "coach": "Fabian Hürzeler",
+     "xi": [
+      {
+       "name": "Bart Verbruggen",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Ferdi Kadıoğlu",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Luka Vušković",
+       "shirt": 44,
+       "pos": "D"
+      },
+      {
+       "name": "Lewis Dunk",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Olivier Boscagli",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Pascal Groß",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Yasin Ayari",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Diego Gómez",
+       "shirt": 25,
+       "pos": "M"
+      },
+      {
+       "name": "Malick Junior Yalcouyé",
+       "shirt": 35,
+       "pos": "M"
+      },
+      {
+       "name": "Maxim De Cuyper",
+       "shirt": 29,
+       "pos": "M"
+      },
+      {
+       "name": "Charalampos Kostoulas",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Chema Andrés",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Pascal Struijk",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Ibrahim Osman",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Costinha",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Matthew O'Riley",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Jason Steele",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Jaouen Hadjam",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Younes Ibrahim",
+       "shirt": 59,
+       "pos": "?"
+      },
+      {
+       "name": "Promise David",
+       "shirt": 12,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      102869,
+      112625
+     ],
+     "sprintDistance": [
+      1256,
+      1761
+     ],
+     "sprints": [
+      57,
+      75
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      null,
+      null
+     ]
+    },
+    "players": [
+     {
+      "team": "COV",
+      "name": "Carl Rushworth",
+      "shirt": 19,
+      "distance": 5954,
+      "topSpeed": 6728.89990234375,
+      "rating": 4.9
+     },
+     {
+      "team": "COV",
+      "name": "Aurèle Amenda",
+      "shirt": 24,
+      "distance": 9737,
+      "topSpeed": 716.5,
+      "rating": 5.4
+     },
+     {
+      "team": "COV",
+      "name": "Bobby Thomas",
+      "shirt": 4,
+      "distance": 9672,
+      "topSpeed": 2161.39990234375,
+      "rating": 5.1
+     },
+     {
+      "team": "COV",
+      "name": "Ethan Pinnock",
+      "shirt": 2,
+      "distance": 9378,
+      "topSpeed": 29.799999237060547,
+      "rating": 5.2
+     },
+     {
+      "team": "COV",
+      "name": "Milan van Ewijk",
+      "shirt": 27,
+      "distance": 9118,
+      "topSpeed": 6424.89990234375,
+      "rating": 6.4
+     },
+     {
+      "team": "COV",
+      "name": "Frank Onyeka",
+      "shirt": 16,
+      "distance": 8154,
+      "topSpeed": 4268.5,
+      "rating": 6.6
+     },
+     {
+      "team": "COV",
+      "name": "Matt Grimes",
+      "shirt": 6,
+      "distance": 9363,
+      "topSpeed": 515.9000244140625,
+      "rating": 6.1
+     },
+     {
+      "team": "COV",
+      "name": "Jay Dasilva",
+      "shirt": 3,
+      "distance": 9467,
+      "topSpeed": 3045,
+      "rating": 5.7
+     },
+     {
+      "team": "COV",
+      "name": "Jack Rudoni",
+      "shirt": 5,
+      "distance": 9066,
+      "topSpeed": 6424.2001953125,
+      "rating": 6.7
+     },
+     {
+      "team": "COV",
+      "name": "Taiwo Awoniyi",
+      "shirt": 14,
+      "distance": 5032,
+      "topSpeed": 681.9000244140625,
+      "rating": 5.2
+     },
+     {
+      "team": "COV",
+      "name": "Ephron Mason-Clark",
+      "shirt": 10,
+      "distance": 6097,
+      "topSpeed": 2409.39990234375,
+      "rating": 6.2
+     },
+     {
+      "team": "COV",
+      "name": "Sidiki Cherif",
+      "shirt": 49,
+      "distance": 4339,
+      "topSpeed": 6725.2001953125,
+      "rating": 6.1
+     },
+     {
+      "team": "COV",
+      "name": "Caleb Yirenkyi",
+      "shirt": 8,
+      "distance": 2874,
+      "topSpeed": 27.399999618530273,
+      "rating": 6.1
+     },
+     {
+      "team": "COV",
+      "name": "Brandon Thomas-Asante",
+      "shirt": 23,
+      "distance": 2887,
+      "topSpeed": 2470.60009765625,
+      "rating": 6
+     },
+     {
+      "team": "COV",
+      "name": "Victor Torp",
+      "shirt": 29,
+      "distance": 1723,
+      "topSpeed": 28.100000381469727,
+      "rating": null
+     },
+     {
+      "team": "BHA",
+      "name": "Bart Verbruggen",
+      "shirt": 1,
+      "distance": 5359,
+      "topSpeed": 4540.39990234375,
+      "rating": 9.2
+     },
+     {
+      "team": "BHA",
+      "name": "Ferdi Kadıoğlu",
+      "shirt": 24,
+      "distance": 10648,
+      "topSpeed": 8440.7001953125,
+      "rating": 7.1
+     },
+     {
+      "team": "BHA",
+      "name": "Luka Vušković",
+      "shirt": 44,
+      "distance": 7878,
+      "topSpeed": 8928.099609375,
+      "rating": 7.4
+     },
+     {
+      "team": "BHA",
+      "name": "Lewis Dunk",
+      "shirt": 5,
+      "distance": 9660,
+      "topSpeed": 4961,
+      "rating": 8.1
+     },
+     {
+      "team": "BHA",
+      "name": "Olivier Boscagli",
+      "shirt": 21,
+      "distance": 8316,
+      "topSpeed": 1555.699951171875,
+      "rating": 7.6
+     },
+     {
+      "team": "BHA",
+      "name": "Yasin Ayari",
+      "shirt": 26,
+      "distance": 10303,
+      "topSpeed": 695.2999877929688,
+      "rating": 8.3
+     },
+     {
+      "team": "BHA",
+      "name": "Diego Gómez",
+      "shirt": 25,
+      "distance": 8906,
+      "topSpeed": 2368.39990234375,
+      "rating": 6.8
+     },
+     {
+      "team": "BHA",
+      "name": "Malick Junior Yalcouyé",
+      "shirt": 35,
+      "distance": 7907,
+      "topSpeed": 119.80000305175781,
+      "rating": 7.9
+     },
+     {
+      "team": "BHA",
+      "name": "Maxim De Cuyper",
+      "shirt": 29,
+      "distance": 10856,
+      "topSpeed": 5813.89990234375,
+      "rating": 8.4
+     },
+     {
+      "team": "BHA",
+      "name": "Charalampos Kostoulas",
+      "shirt": 19,
+      "distance": 9955,
+      "topSpeed": 5757.39990234375,
+      "rating": 8.2
+     },
+     {
+      "team": "BHA",
+      "name": "Chema Andrés",
+      "shirt": 14,
+      "distance": 3718,
+      "topSpeed": 2419.5,
+      "rating": 7
+     },
+     {
+      "team": "BHA",
+      "name": "Pascal Struijk",
+      "shirt": 4,
+      "distance": 2030,
+      "topSpeed": 2309.199951171875,
+      "rating": 6.3
+     },
+     {
+      "team": "BHA",
+      "name": "Ibrahim Osman",
+      "shirt": 15,
+      "distance": 2307,
+      "topSpeed": 5954.39990234375,
+      "rating": 6.1
+     },
+     {
+      "team": "BHA",
+      "name": "Costinha",
+      "shirt": 20,
+      "distance": 1521,
+      "topSpeed": 28.100000381469727,
+      "rating": null
+     },
+     {
+      "team": "BHA",
+      "name": "Matthew O'Riley",
+      "shirt": 33,
+      "distance": 1820,
+      "topSpeed": 3991.800048828125,
+      "rating": null
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 30,
+      "center": 35,
+      "right": 35
+     },
+     "firstHalf": {
+      "left": 31,
+      "center": 35,
+      "right": 34
+     },
+     "secondHalf": {
+      "left": 30,
+      "center": 34,
+      "right": 36
+     }
+    },
+    "away": {
+     "total": {
+      "left": 40,
+      "center": 32,
+      "right": 28
+     },
+     "firstHalf": {
+      "left": 34,
+      "center": 38,
+      "right": 28
+     },
+     "secondHalf": {
+      "left": 45,
+      "center": 28,
+      "right": 27
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 5,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-13T15:29:27.541Z",
+   "fdMatchId": "2026-27-37",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "BHA",
+      "name": "Pascal Groß",
+      "n": 123,
+      "cx": 57.4,
+      "cy": 35.8,
+      "spread": 26.3,
+      "grid": "0,0,4,5,5,3,1,1,20,10,8,0,0,4,13,9,7,1,0,7,4,8,12,1"
+     },
+     {
+      "team": "BHA",
+      "name": "Bart Verbruggen",
+      "n": 50,
+      "cx": 9.6,
+      "cy": 33.9,
+      "spread": 10.3,
+      "grid": "1,0,0,0,0,0,22,2,0,0,0,0,19,5,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Ephron Mason-Clark",
+      "n": 33,
+      "cx": 60.8,
+      "cy": 16.7,
+      "spread": 32.1,
+      "grid": "0,5,4,5,3,2,1,3,0,2,2,5,0,0,0,0,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "BHA",
+      "name": "Diego Gómez",
+      "n": 43,
+      "cx": 62.3,
+      "cy": 49.3,
+      "spread": 28,
+      "grid": "0,0,1,0,0,0,1,0,0,0,2,0,3,1,3,2,7,3,0,2,1,8,7,2"
+     },
+     {
+      "team": "BHA",
+      "name": "Ferdi Kadıoğlu",
+      "n": 51,
+      "cx": 61.1,
+      "cy": 54.3,
+      "spread": 25,
+      "grid": "0,0,0,0,0,0,2,0,1,0,1,0,0,1,2,2,4,0,1,3,6,10,15,3"
+     },
+     {
+      "team": "BHA",
+      "name": "Charalampos Kostoulas",
+      "n": 39,
+      "cx": 66.8,
+      "cy": 35.4,
+      "spread": 31.6,
+      "grid": "0,3,1,0,1,0,1,2,0,0,7,4,1,0,3,1,2,5,0,0,3,0,4,1"
+     },
+     {
+      "team": "COV",
+      "name": "Frank Onyeka",
+      "n": 41,
+      "cx": 51,
+      "cy": 39.1,
+      "spread": 30.5,
+      "grid": "1,1,0,2,0,2,0,0,1,4,0,1,4,6,6,2,2,2,0,1,0,3,3,0"
+     },
+     {
+      "team": "COV",
+      "name": "Ethan Pinnock",
+      "n": 37,
+      "cx": 43.8,
+      "cy": 17.3,
+      "spread": 26,
+      "grid": "0,3,5,8,1,1,5,6,4,1,0,2,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Luka Vušković",
+      "n": 84,
+      "cx": 41.2,
+      "cy": 45.1,
+      "spread": 24.3,
+      "grid": "0,0,0,0,0,0,0,4,4,0,0,1,12,10,15,12,1,3,2,6,6,5,3,0"
+     },
+     {
+      "team": "COV",
+      "name": "Jay Dasilva",
+      "n": 31,
+      "cx": 56,
+      "cy": 12,
+      "spread": 27.4,
+      "grid": "2,1,0,12,2,1,4,0,0,3,6,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Bobby Thomas",
+      "n": 53,
+      "cx": 49.2,
+      "cy": 33.6,
+      "spread": 34.4,
+      "grid": "1,0,1,0,0,0,6,1,6,1,2,7,3,6,7,1,3,5,0,2,1,0,0,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Malick Junior Yalcouyé",
+      "n": 39,
+      "cx": 66.5,
+      "cy": 24.8,
+      "spread": 28.5,
+      "grid": "0,3,2,4,4,2,0,2,1,2,3,5,0,1,3,1,2,3,0,0,0,0,1,0"
+     },
+     {
+      "team": "COV",
+      "name": "Carl Rushworth",
+      "n": 68,
+      "cx": 14.3,
+      "cy": 35,
+      "spread": 14.6,
+      "grid": "4,1,0,0,0,0,15,7,2,0,0,0,27,8,1,0,0,0,1,1,1,0,0,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Yasin Ayari",
+      "n": 69,
+      "cx": 53.6,
+      "cy": 32,
+      "spread": 23,
+      "grid": "0,2,2,3,1,0,0,4,6,12,9,0,3,2,12,2,5,1,0,0,1,4,0,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Olivier Boscagli",
+      "n": 83,
+      "cx": 51.6,
+      "cy": 14.4,
+      "spread": 27.5,
+      "grid": "1,13,10,14,14,5,3,5,4,3,1,1,1,3,4,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Milan van Ewijk",
+      "n": 57,
+      "cx": 48.6,
+      "cy": 54,
+      "spread": 33.4,
+      "grid": "0,0,0,0,0,3,1,0,2,0,0,0,4,1,1,1,0,1,9,5,9,9,8,3"
+     },
+     {
+      "team": "BHA",
+      "name": "Lewis Dunk",
+      "n": 114,
+      "cx": 41,
+      "cy": 26.2,
+      "spread": 23.2,
+      "grid": "4,12,9,5,4,0,7,11,15,17,1,0,3,6,5,9,3,0,1,0,1,1,0,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Maxim De Cuyper",
+      "n": 68,
+      "cx": 59.3,
+      "cy": 12,
+      "spread": 28,
+      "grid": "4,7,8,21,11,6,1,0,2,3,1,0,0,0,0,0,1,0,0,0,0,0,0,3"
+     },
+     {
+      "team": "COV",
+      "name": "Jack Rudoni",
+      "n": 47,
+      "cx": 67.6,
+      "cy": 45.2,
+      "spread": 33.7,
+      "grid": "0,1,0,0,2,4,1,2,0,1,0,3,0,2,0,3,3,2,1,2,5,5,6,4"
+     },
+     {
+      "team": "COV",
+      "name": "Aurèle Amenda",
+      "n": 46,
+      "cx": 44.3,
+      "cy": 49.7,
+      "spread": 30.9,
+      "grid": "0,0,0,0,0,0,3,0,0,0,0,2,5,4,2,1,3,2,1,9,5,7,2,0"
+     },
+     {
+      "team": "COV",
+      "name": "Taiwo Awoniyi",
+      "n": 21,
+      "cx": 71.2,
+      "cy": 37.2,
+      "spread": 25.4,
+      "grid": "0,0,0,0,0,0,0,0,1,6,0,4,0,1,1,1,0,2,0,0,0,0,4,1"
+     },
+     {
+      "team": "COV",
+      "name": "Matt Grimes",
+      "n": 33,
+      "cx": 53.1,
+      "cy": 34.8,
+      "spread": 26.2,
+      "grid": "0,0,0,2,1,0,2,2,5,3,1,0,1,0,4,3,5,0,0,0,0,3,0,1"
+     },
+     {
+      "team": "COV",
+      "name": "Sidiki Cherif",
+      "n": 14,
+      "cx": 55.1,
+      "cy": 48.3,
+      "spread": 18.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,5,0,0,0,0,3,0,3,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Chema Andrés",
+      "n": 31,
+      "cx": 49,
+      "cy": 29.1,
+      "spread": 22.3,
+      "grid": "0,2,5,0,0,0,0,0,2,6,1,0,2,2,4,6,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Brandon Thomas-Asante",
+      "n": 8,
+      "cx": 79.9,
+      "cy": 49.7,
+      "spread": 25.6,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,2,0,0,1,1,2,0"
+     },
+     {
+      "team": "COV",
+      "name": "Caleb Yirenkyi",
+      "n": 10,
+      "cx": 57.4,
+      "cy": 33.9,
+      "spread": 19.2,
+      "grid": "0,0,1,0,0,0,0,0,2,0,2,0,0,1,0,1,1,0,0,0,0,2,0,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Pascal Struijk",
+      "n": 26,
+      "cx": 40.7,
+      "cy": 24.4,
+      "spread": 19.1,
+      "grid": "1,3,2,1,0,0,1,5,5,4,0,0,0,1,1,1,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Ibrahim Osman",
+      "n": 14,
+      "cx": 70.4,
+      "cy": 9.4,
+      "spread": 28.6,
+      "grid": "0,3,0,2,3,3,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Victor Torp",
+      "n": 5,
+      "cx": 59.8,
+      "cy": 43.1,
+      "spread": 19.5,
+      "grid": "0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,2,0,0,0,0,0,0,2,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Costinha",
+      "n": 12,
+      "cx": 45.5,
+      "cy": 57.2,
+      "spread": 29,
+      "grid": "0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,1,3,2,0"
+     },
+     {
+      "team": "BHA",
+      "name": "Matthew O'Riley",
+      "n": 3,
+      "cx": 77.1,
+      "cy": 51.2,
+      "spread": 1.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-13T14:29:24.234Z",
+ "updatedAt": "2026-09-13T15:29:28.192Z",
  "verification": {
   "source": "pulselive /stats/match possession_percentage",
   "tolerance": 2,
