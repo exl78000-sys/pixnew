@@ -21,6 +21,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { flatPlayerStats } from './lib/adapters/fotmob-match.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'pl-war-room/1.0 (football analysis side project)';
@@ -28,7 +29,8 @@ const BROWSER_UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, l
 const BASE = 'https://www.fotmob.com/api/data/leagues';
 const LOGO = id => `https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png`;
 const MAX_REQUESTS = 12;
-const ONLY = process.argv.find(a => a.startsWith('--only='))?.split('=')[1] ?? null;   // details:只探單場詳情
+const MAX_REPORT_SAMPLES = 4;   // report 模式:分級三檔 + 一場 PK 大戰
+const ONLY = process.argv.find(a => a.startsWith('--only='))?.split('=')[1] ?? null;   // details:只探 PK 欄位;report:只探賽後報告那幾塊
 const DETAILS = 'https://www.fotmob.com/api/data/matchDetails?matchId=';
 /* 第一輪(2026-09-07 run 34143104759)實測:賽程端點的 status 只有 scoreStr(最終比分,PK 場是平手比分)
    與 reason(FT / AET / Pen),**沒有 PK 比數、也沒有誰贏了 PK**。而盃賽頁的冠軍卡與晉級路徑都靠這個。
@@ -244,9 +246,122 @@ async function probeDetails() {
   }
 }
 
+/* ── --only=report:盃賽有沒有「賽後報告」那幾塊 ──────────────────────
+ *
+ * 為什麼要多這一輪(2026-09-13):歐冠單場頁做完之後,盃賽是唯一還沒有單場頁的賽事 ——
+ * 而原因不是前端,是**沒有逐場詳情**。第一輪(9/07)與第二輪只問了 PK 比數與勝方,
+ * 看的是 `header.status`,**完全沒看 `content` 裡有沒有 stats / shotmap / lineup / playerStats**。
+ * 「沒看過」不等於「沒有」(Understat 那條坑),所以問清楚再決定要不要接。
+ *
+ * 取樣的重點是**分級**,不是場次多:足總盃第一輪是第三、四級球隊互打,FotMob 對低級別
+ * 賽事未必有射門圖與逐人評分。如果報告只在「有英超隊」的場次拿得到,那結論就不是
+ * 「盃賽做不做」而是「盃賽的哪些場次做得到」—— 而那必須在畫面上講(鐵則三、四),
+ * 不是留一排空欄位。所以一場都抓到就宣布可以做,是錯的。
+ *
+ * 場次取自**倉庫裡的盃賽快取**(`data/raw/fotmob-cups/*.json`):id 是抓取器實際在用的那些,
+ * 不用猜、也不用多花一個請求去拿賽程。比分也在快取裡,拿來當射門圖完整性的對照
+ * (同一家供應商,所以這是一致性檢查,不是鐵則五的獨立核對 —— 真要核對在接的時候用 openfootball)。
+ */
+function loadCupCache(key) {
+  const p = join(ROOT, 'data', 'raw', 'fotmob-cups', `${key}.json`);
+  if (!existsSync(p)) return null;
+  return JSON.parse(readFileSync(p, 'utf8'));
+}
+/* 分級:本站的隊碼就是現成的分級器 —— 有 code 表示它在英超或英冠的名冊裡,
+   null 表示更低級別(抓取器刻意不寬鬆比對,AFC Liverpool 那條坑)。 */
+const tierOf = m => (m.home?.code ? 1 : 0) + (m.away?.code ? 1 : 0);
+const TIER_LABEL = { 2: '兩隊都是英超/英冠', 1: '一隊英超/英冠、一隊更低級別', 0: '兩隊都是更低級別' };
+
+function reportSamples() {
+  const pool = [];
+  for (const cup of CUPS) {
+    const cache = loadCupCache(cup.key);
+    if (!cache) { console.log(`  (倉庫沒有 ${cup.zh} 的快取,這個盃賽不取樣)`); continue; }
+    for (const s of cache.seasons ?? []) {
+      for (const m of s.matches ?? []) {
+        if (!m.played || !m.id) continue;
+        pool.push({ ...m, cup: cup.zh, season: s.label, tier: tierOf(m) });
+      }
+    }
+  }
+  // 每一級取最近的一場:最近的才代表「以後抓到的會長什麼樣」
+  pool.sort((a, b) => String(b.kickoff).localeCompare(String(a.kickoff)));
+  const out = [];
+  for (const tier of [2, 1, 0]) {
+    const hit = pool.find(m => m.tier === tier);
+    if (hit) out.push(hit);
+    else console.log(`  (快取裡沒有「${TIER_LABEL[tier]}」的已完賽場次)`);
+  }
+  // PK 大戰的場次額外取一場:盃賽 PK 多,而射門圖會把互射的十二碼也列進去(那條坑)
+  const pk = pool.find(m => Array.isArray(m.pens) && m.pens.length === 2 && !out.some(o => o.id === m.id));
+  if (pk) out.push({ ...pk, why: 'PK 大戰:射門圖會不會把互射的十二碼也列進去' });
+  return out.slice(0, MAX_REPORT_SAMPLES);
+}
+
+async function probeReport() {
+  console.log(`\n── 盃賽逐場詳情有沒有賽後報告那幾塊(取樣重點是分級,不是場次多)──`);
+  const samples = reportSamples();
+  if (!samples.length) { console.log('  ✗ 取不到樣本'); return; }
+  for (const s of samples) {
+    const score = Array.isArray(s.final) ? s.final.join('-') : '?';
+    console.log(`\n  ▷ ${s.cup} ${s.season} ${s.stage}:${s.home?.name} ${score} ${s.away?.name}`
+      + `(matchId=${s.id}・${TIER_LABEL[s.tier]}${s.pens ? `・PK ${s.pens.join('-')}` : ''}${s.why ? `・${s.why}` : ''})`);
+    let d;
+    try { d = await get(`${DETAILS}${s.id}`, { headers: apiHeaders }); }
+    catch (e) { console.log(`    ✗ ${e.message}`); continue; }
+    const c = d?.content ?? {};
+    const shots = c.shotmap?.shots ?? (Array.isArray(c.shotmap) ? c.shotmap : null);
+    const ps = c.playerStats ?? null;
+    const psList = ps && typeof ps === 'object' ? Object.values(ps) : [];
+    const has = v => (Array.isArray(v) ? (v.length ? `有(${v.length})` : '空陣列') : v ? '有' : '沒有');
+    console.log(`    content 鍵:${Object.keys(c).join(', ') || '(空)'}`);
+    console.log(`    stats=${has(c.stats?.Periods ?? c.stats)}  shotmap=${has(shots)}  lineup=${has(c.lineup)}`
+      + `  events=${has(c.matchFacts?.events?.events)}  playerStats=${has(psList)}`);
+    /* 射門圖的完整性就是採不採用 xG 的分界(「同一個聯賽兩種 xG 算法」那條坑):
+       進球數對得回比分才收逐射門加總,對不上寧可 xG 給 null。 */
+    if (Array.isArray(shots) && shots.length) {
+      const periods = distribution(shots.map(x => x.period ?? null));
+      const pens = Array.isArray(s.pens) && s.pens.length === 2;
+      const shootout = shots.filter(x => String(x.period ?? '') === 'PenaltyShootout');
+      const real = shots.filter(x => !shootout.includes(x));
+      const goals = real.filter(x => x.isOwnGoal || /goal/i.test(String(x.eventType ?? ''))).length;
+      const xg = real.reduce((n, x) => n + (Number(x.expectedGoals) || 0), 0);
+      const want = Array.isArray(s.final) ? s.final[0] + s.final[1] : null;
+      console.log(`    逐射門:${shots.length} 次(其中 period=PenaltyShootout ${shootout.length} 次)`
+        + `・正規+延長 ${real.length} 次、xG 合計 ${xg.toFixed(2)}、標為進球 ${goals} 次`
+        + `・比分合計 ${want ?? '?'} → ${want === goals ? '完整' : '不完整'}`);
+      console.log(`    period 欄位:${periods}`);
+      if (pens && !shootout.length) console.log(`    ⚠ 這場有 PK 大戰,但沒有一顆射門標 period=PenaltyShootout —— 要用分鐘+pens 退路(那條坑)`);
+      console.log(`    一顆射門的鍵:${keyProfile(shots.slice(0, 3))}`);
+    }
+    if (psList.length) {
+      /* 評分**不在** `entry.rating`,也不是任何一個鍵名 —— 它在
+         `entry.stats[].stats[].{key:'rating_title', stat:{value}}`,
+         也就是某個 `key` 欄位的**值**。我在這裡連錯兩次:
+         第一版看 `p.rating` / `p.ratingProps`,第二版改成深搜「鍵名含 rating」,
+         **兩次都印「有評分 0 人」**,而上游其實給了。
+         第三版不自己攤:直接 import 站上 adapter 的 `flatPlayerStats` ——
+         探測問的就是「管線讀得到什麼」,用同一份程式才問得準。 */
+      const flat = psList.map(x => flatPlayerStats(x));
+      const rated = flat.filter(f => f.rating_title?.value != null).length;
+      const mins = flat.filter(f => f.minutes_played?.value != null).length;
+      console.log(`    逐人:${psList.length} 人、有評分 ${rated} 人、有出場分鐘 ${mins} 人`);
+      console.log(`      攤平後的 key(前 12):${Object.keys(flat[0] ?? {}).slice(0, 12).join(' ') || '(一個都沒有)'}`);
+    }
+    if (c.lineup) {
+      const lu = c.lineup;
+      const sides = [lu.homeTeam ?? lu.teams?.[0], lu.awayTeam ?? lu.teams?.[1]].filter(Boolean);
+      console.log(`    名單:lineup 鍵=${Object.keys(lu).join(', ')}`
+        + `・confirmed=${JSON.stringify(lu.lineupConfirmed ?? lu.confirmed ?? null)}`
+        + `・兩邊陣型=${sides.map(t => t?.formation ?? '?').join(' / ')}`);
+    }
+  }
+}
+
 async function main() {
   console.log(`▶ FotMob 英格蘭盃賽探測(最多 ${MAX_REQUESTS} 個請求${ONLY ? `,只跑 ${ONLY}` : ''})`);
   if (ONLY === 'details') { await probeDetails(); console.log(`\n✔ 探測結束(${requests}/${MAX_REQUESTS} 個請求)`); return; }
+  if (ONLY === 'report') { await probeReport(); console.log(`\n✔ 探測結束(${requests}/${MAX_REQUESTS} 個請求)`); return; }
   const logoCandidates = [];
   for (const cup of CUPS) {
     let selected = null;

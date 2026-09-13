@@ -1052,6 +1052,22 @@ async function main() {
         ? `走查回測 ${backtest.season} ${backtest.games} 場,RPS ${backtest.rps}(基準線 ${backtest.baselineRps})`
         : '這個聯賽還沒有回測結果,所以不給準度數字'),
     ],
+    /* 戰術頁的文案與它還要讀哪幾份產物 —— 欄位名跟英超那份一模一樣(照抄,不自己取名)。
+       西甲這一頁以前整頁另寫一套,所以頁首那段話寫在前端;合併成一套版面之後
+       由這裡寫。datasets 不含 formation:西甲沒有 formation.json(那是 FPL 的人力
+       配置與積分的相關分析),列進去的話前端每次都會白打一個 404。 */
+    tacticsPage: {
+      intro: `${LAST_SEASON} 完整賽季的整隊統計:實際使用過的陣型比例、攻守 xG、定位球與比賽節奏,`
+        + `加上 ${CURRENT_SEASON} 逐場正式名單累積出來的官方陣型。`,
+      boundaries: [
+        'Understat 給的是整隊整季的陣型使用比例(單位是出場分鐘),不是逐場先發。',
+        `官方陣型來自 ${CURRENT_SEASON} 已核對比分的正式名單(單位是場次);場次少的時候不能當整季常態。`,
+        '沒有球員層的逐場位置,所以不做人力配置與攻守分型那兩種推導 —— 不是還沒做,是沒有那份資料。',
+      ],
+      xgNote: 'xG 與 xGA 來自 Understat 的整隊整季統計,不是球員層級加總。',
+      teamHint: '風格雷達、實際使用陣型與教練都在各隊自己的頁面',
+      datasets: ['shapes'],
+    },
     schema: {
       version: 2,
       players: {

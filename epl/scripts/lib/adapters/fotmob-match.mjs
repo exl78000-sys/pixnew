@@ -114,7 +114,12 @@ export function fotmobTeamStats(raw) {
 /* 逐人統計。stats 是四組(Top stats / Attack / Defense / Duels),
    每組是 { 顯示標題: { key, stat: { value, total?, type } } }。
    攤平成 key → {value,total} 再對映 —— 用 key 不用標題(標題會隨語言變)。 */
-function flatPlayerStats(entry) {
+/* 匯出給探測用(2026-09-13):盃賽探測想問「有沒有球員評分」,
+   而評分不在 `entry.rating` —— 它在 `entry.stats[].stats[].{key:'rating_title', stat:{value}}`。
+   探測自己再攤一次的話,兩邊會不一致:第一版我找 `p.rating`、第二版找鍵名含 rating 的路徑,
+   **兩次都印「有評分 0 人」**,而 rating_title 是某個 `key` 欄位的**值**,不是鍵名。
+   所以探測直接 import 這一份,不要再寫一份。 */
+export function flatPlayerStats(entry) {
   const out = {};
   for (const group of entry?.stats ?? []) {
     for (const item of Object.values(group?.stats ?? {})) {

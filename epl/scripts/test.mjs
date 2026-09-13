@@ -4442,9 +4442,58 @@ function checkAssetStamps() {
       .filter(f => /edition\s*[!=]==\s*'basic'/.test(strip(readFileSync(join(jsDir, f), 'utf8'))));
     if (offenders.length) console.log(`      還在用 edition === 'basic' 分岔:${offenders.join('、')}`);
     ok(offenders.length === 0, "前端沒有任何地方用 edition === 'basic' 分岔(要問資料有沒有那個欄位)");
-    const tac = readFileSync(join(jsDir, 'page-tactics.js'), 'utf8');
-    ok(/const hasRoleData = tactics\.some\(t => t\.squad\)/.test(tac) && /if \(!hasRoleData\)/.test(tac),
-      '戰術頁的兩套版面由 tactics 的形狀決定(有沒有 squad),不是聯賽代碼,也不靠 404 去探');
+    /* 戰術頁合併成一套版面(2026-09-13,basic 分支退場第二步)。
+
+       分界線一路退:`edition === 'basic'`(是不是西甲)→ `tactics.some(t => t.squad)`
+       (資料是哪一種)→ 現在沒有分界線。兩套版面的代價不是多寫一次,是**看不見的漏掉**:
+       西甲的 shapes.json 裡 20 隊都有官方先發陣型,而舊的西甲分支從頭到尾沒讀它 ——
+       資料躺在倉庫裡、畫面上一個字都沒有。這幾條守著不要長回第二套版面。 */
+    const tacSrc = readFileSync(join(jsDir, 'page-tactics.js'), 'utf8');
+    const tac = strip(tacSrc);
+    ok(!/renderLaLigaTactics/.test(tac) && !/hasRoleData/.test(tac),
+      '戰術頁只有一套版面(沒有 renderLaLigaTactics,也沒有「資料是哪一種」的二元分岔)');
+    ok((tacSrc.match(/app\.innerHTML = /g) ?? []).length === 1,
+      '戰術頁只組一次版面 —— 兩個 app.innerHTML 就是兩套版面又長回來了');
+    /* 要讀哪幾份產物由 build 宣告。寫死 C.load('formation') 的話西甲每次進這一頁
+       就多打一個 404(上一版就是這樣,`npm run sweep` 抓到的)。 */
+    ok(/C\.load\(\.\.\.\(page\.datasets \?\? \[\]\)\)/.test(tac),
+      '戰術頁額外要讀的產物由 meta.tacticsPage.datasets 宣告,不是前端寫死再看 404');
+    for (const [lg, dir] of [['pl', 'data'], ['es1', join('data', 'leagues', 'es1')]]) {
+      const m = JSON.parse(readFileSync(join(W, dir, 'meta.json'), 'utf8'));
+      const tp = m.tacticsPage ?? {};
+      ok(typeof tp.intro === 'string' && tp.intro.length > 10 && typeof tp.xgNote === 'string'
+        && typeof tp.teamHint === 'string' && Array.isArray(tp.datasets),
+        `${lg} 的戰術頁文案與產物清單由 build 寫(intro / xgNote / teamHint / datasets)`);
+      const missing = (tp.datasets ?? []).filter(n => !existsSync(join(W, dir, `${n}.json`)));
+      ok(missing.length === 0,
+        `${lg} 宣告的戰術頁產物都真的存在(列了不存在的就是每次多打一個 404)`, missing.join('、'));
+    }
+    /* 排序哨兵不可以印在畫面上。`value: x ?? -1` 配 `num: true` 直接收尾(沒有 render),
+       表格就把 -1 印出來 —— 畫面上「角球進球 -1」,而它看起來完全像一個真數字。
+       實測:西甲 VIL 與 OVI 的進球情境分類對不回整季總進球(產物依設計給 null),
+       於是三欄印 -1、一欄印「null / null」。`npm run sweep` 只抓到後者 ——
+       它掃字面的 null,-1 它看不出來,所以這一條用原始碼守。 */
+    ok(!/\?\? -1,\s*num: true\s*\}/.test(tac),
+      '戰術頁沒有「用了排序哨兵卻沒給 render」的欄位(那會在畫面上印 -1)');
+    ok(/const cell = \(v, fmt/.test(tac),
+      '戰術頁有一層 cell() 把沒有值的格子印成「—」,而且說得出為什麼');
+    /* 同一份資料兩個渲染路徑,一個處理 null 一個沒處理 —— 球隊頁的「進球來源」卡
+       早就寫了 `?? '—'`,而「上季數據風格」那一列漏了,所以只有那一格印 null / null。 */
+    const teamsSrc2 = strip(readFileSync(join(jsDir, 'page-teams.js'), 'utf8'));
+    ok(/sp\.goals == null \|\| sp\.conceded == null/.test(teamsSrc2) && /sp\.goals \?\? '—'/.test(teamsSrc2),
+      '球隊頁兩條渲染路徑都處理定位球進失球的 null(分類對不回總進球時產物刻意給 null)');
+    ok(!/相差 1/.test(teamsSrc2),
+      '球隊頁不寫死「相差 1」—— 產物只給 goalsReliable 這個布林,差幾球它沒說');
+
+    /* 「沒有這份資料」不可以輸出 0。後衛進球西甲沒有來源,而 setPieceProfile 原本
+       預設 0 → 20 隊全印「0%」,看起來像整季後衛一球都沒進(鐵則一,而且是本站
+       記過的「0 是一個看起來很像答案的數字」)。要嘛有非零值,要嘛整欄 null。 */
+    for (const [lg, dir] of [['pl', 'data'], ['es1', join('data', 'leagues', 'es1')]]) {
+      const rows = JSON.parse(readFileSync(join(W, dir, 'tactics.json'), 'utf8'));
+      const vals = rows.map(t => t.setPieces?.defenderGoals);
+      const allZero = vals.length > 0 && vals.every(v => v === 0);
+      ok(!allZero, `${lg} 的後衛進球不是「沒資料卻填 0」(沒有來源時要給 null,欄位才會整個不出現)`);
+    }
     // 這裡也要剝註解:講這件事的註解本身就寫著「目前資料界線」,不剝就自己誤報(第二次了)
     const idx = strip(readFileSync(join(jsDir, 'page-index.js'), 'utf8'));
     ok(!/目前資料界線[\s\S]{0,400}目前資料界線/.test(idx),
