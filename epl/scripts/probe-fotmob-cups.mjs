@@ -334,8 +334,22 @@ async function probeReport() {
       console.log(`    一顆射門的鍵:${keyProfile(shots.slice(0, 3))}`);
     }
     if (psList.length) {
-      const rated = psList.filter(p => p?.rating?.num != null || p?.ratingProps?.num != null || p?.rating != null).length;
+      /* 評分**不在** `entry.rating` —— 站上的 adapter 是走 `flatPlayerStats(entry)` 再取
+         `rating_title`(`lib/adapters/fotmob-match.mjs`)。第一版我照直覺看 `p.rating`
+         與 `p.ratingProps`,四場全部印「有評分 0 人」,而那是我找錯欄位,不是上游沒有。
+         所以這裡不猜路徑:把一筆裡所有鍵名含 rating 的路徑印出來,再數有幾個人真的有值。 */
+      const paths = deepFind(psList[0], /rating/i).slice(0, 6);
+      const ratingValue = (o) => {
+        const hits = deepFind(o, /^rating(_title)?$/i);
+        for (const h of hits) {
+          const val = h.split(' = ')[1];
+          if (val && val !== 'null' && val !== '{}') return val;
+        }
+        return null;
+      };
+      const rated = psList.filter(x => ratingValue(x) != null).length;
       console.log(`    逐人:${psList.length} 人、其中有評分 ${rated} 人`);
+      for (const h of paths) console.log(`      鍵名含 rating:${h}`);
     }
     if (c.lineup) {
       const lu = c.lineup;
