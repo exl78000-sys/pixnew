@@ -208,15 +208,19 @@ const detailOf = m => (m?.id != null ? details?.reports?.[String(m.id)] : null) 
 const expandable = m => (m?.played ? !!detailOf(m) : (comparable(m) || !!predOf(m)));
 const expandKind = m => (m?.played ? 'post' : comparable(m) ? 'compare' : 'pred');
 const OPEN_LABEL = { post: '賽後報告', compare: '賽前對比', pred: '賽前勝率' };
-const CLOSE_LABEL = { post: '收起報告', compare: '收起對比', pred: '收起' };
-const expandKey = m => C.esc(String(m.id ?? `${m.home?.code}|${m.away?.code}`));
-/* 展開鈕與展開槽。**兩個地方都要用同一份**(聯賽階段的賽程列、淘汰賽的每一回合),
+/* **連到單場頁,不在清單裡展開**(2026-09-13,使用者:「用折疊打開會頁面太長」)。
+
+   量過:聯賽階段一輪 18 場,沒展開的清單就有 5,460px(6.1 個螢幕);展開一場 +6,033px
+   —— 一份報告比整份清單還長;展開四場 28,559px(31.7 個螢幕)。內容沒有錯,錯的是位置。
+   現在按鈕是連結,內容在 `ucl-match.html?id=…`(那一頁呼叫的是**同樣那兩個函式**)。
+
+   **兩個地方都要用同一份**(聯賽階段的賽程列、淘汰賽的每一回合),
    各寫一份的話淘汰賽那邊會少掉某一種鈕而且不報錯。 */
 const expandBtn = m => (expandable(m)
-  ? `<button class="btn tiny" type="button" data-cmp="${expandKey(m)}" data-kind="${expandKind(m)}"
-       style="margin-left:6px">${OPEN_LABEL[expandKind(m)]}</button>` : '');
-const expandSlot = m => (expandable(m)
-  ? `<div class="ucl-cmp" data-cmp-slot="${expandKey(m)}" hidden></div>` : '');
+  ? `<a class="btn tiny" href="${C.link('ucl-match', { id: m.id })}"
+       style="margin-left:6px">${OPEN_LABEL[expandKind(m)]} →</a>` : '');
+// 清單裡不再有展開槽 —— 內容搬到單場頁(留空字串讓兩處的樣板不用改)
+const expandSlot = () => '';
 /* 一季的全部場次:聯賽階段 + 淘汰賽每一回合。展開鈕的查表要涵蓋兩邊 ——
    只收 leagueMatches 的話,淘汰賽的鈕會「按鈕在但點了沒東西」。 */
 const allMatchesOf = s => [...(s?.leagueMatches ?? []), ...(s?.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))];
@@ -555,7 +559,9 @@ function unavailableNote(season) {
 /* 歐冠視圖。原本是獨立的 page-ucl.js,2026-08-29 併進「盃賽」單頁
    (歐冠/足總盃/聯賽盃三個頁內分頁)—— 這裡只負責畫進 container,
    nav、page-head 與 foot 由盃賽頁統一管。ucl.html 保留為轉址,舊連結不斷。 */
-export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null, uclElo = null, uclDetails = null }) {
+/* 共用狀態的初始化。**盃賽頁與單場頁都要跑這一段** —— 各寫一份的話,
+   單場頁會少掉某一個來源而且不報錯(例如 standings 沒設 → 賽前對比整塊靜靜消失)。 */
+export function initUcl({ clubs, teams, uclTeams, uclStandings = null, uclElo = null, uclDetails = null }) {
   standings = uclStandings;
   model = uclElo;
   details = uclDetails;
@@ -564,6 +570,24 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
      會被只帶名字與隊徽的那筆蓋掉一部分。 */
   C.registerTeams(uclTeams?.teams ?? []); C.registerTeams(clubs); C.registerTeams(teams);
   externalCrest = new Map((uclTeams?.external ?? []).map(t => [t.id, t.crest]));
+}
+
+/* 單場頁要用的三樣:這一場能不能展開、展開要畫哪一種、以及兩個繪製函式。
+   單場頁自己再寫一份判斷的話,會跟盃賽頁的按鈕條件分岔(「按鈕在但點了沒東西」的親戚)。 */
+/* **不要用 `export { a as b }` 的形式。** 單檔版的打包是把共用模組的 `export ` 字首剝掉再攤平,
+   剝完會剩下 `{ expandable as uclExpandable };` —— 那是語法錯誤,整個單檔版一開就掛
+   (而分頁版完全正常)。一律寫成 `export const`。 */
+/* 單場頁的頁首要先把兩隊登錄進註冊表,否則隊徽會印成 football-data 的數字 id ——
+   盃賽頁看不到這個問題,因為那裡的登錄在 renderPostMatch 裡面、而頁首是清單的一部分。 */
+export const uclRegisterSides = m => registerSides(m);
+export const uclExpandable = m => expandable(m);
+export const uclExpandKind = m => expandKind(m);
+export const uclAllMatches = s => allMatchesOf(s);
+export const renderUclCompare = (el, m) => renderCompare(el, m);
+export const renderUclPost = (el, m) => renderPostMatch(el, m);
+
+export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null, uclElo = null, uclDetails = null }) {
+  initUcl({ clubs, teams, uclTeams, uclStandings, uclElo, uclDetails });
 
   const seasons = ucl?.seasons ?? [];
   if (!seasons.length) {
@@ -606,8 +630,6 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
     </div>
     <div class="note" style="margin-top:10px" id="uclCoverage"></div>`;
 
-    /* 目前這一季「可以做對比」的場次,render 時重建。委派監聽只綁一次(見 render 裡的說明)。 */
-    let cmpMatches = new Map();
     const bodyEl = app.querySelector('#uclBody');
     /* 輪次切換也走委派(理由同下:換賽季會把 body 整個換掉)。設定之後重畫整個 body ——
        leagueFixtures 讀 pickedMatchday,倒數與展開鈕的查表都在 render 裡重建,不用另外處理。 */
@@ -616,22 +638,6 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
       if (!md) return;
       pickedMatchday = Number(md.dataset.md);
       render();
-    });
-    bodyEl?.addEventListener('click', async e => {
-      const btn = e.target.closest?.('[data-cmp]');
-      if (!btn) return;
-      const key = btn.dataset.cmp;
-      const slot = bodyEl.querySelector(`[data-cmp-slot="${CSS.escape(key)}"]`);
-      const m = cmpMatches.get(key);
-      if (!slot || !m) return;
-      slot.hidden = !slot.hidden;
-      const kind = btn.dataset.kind ?? expandKind(m);
-      btn.textContent = slot.hidden ? OPEN_LABEL[kind] : CLOSE_LABEL[kind];
-      // 只在第一次展開時才去抓 —— 收起再展開不用重畫
-      if (!slot.hidden && !slot.dataset.done) {
-        slot.dataset.done = '1';
-        await (kind === 'post' ? renderPostMatch(slot, m) : renderCompare(slot, m));
-      }
     });
 
     const render = () => {
@@ -702,11 +708,6 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
          換賽季會把 body.innerHTML 整個換掉,掛在按鈕上的監聽會跟著沒了,
          而容器本身活著,所以委派只要綁一次(這裡每次 render 都重綁會疊)。
          用 el.hidden 切換,不用 style.display。 */
-      /* **條件要跟畫按鈕的那一個一樣**(expandable,不是 comparable)——
-         不一樣的話會出現「按鈕在但點了沒東西」,而且不會報錯。 */
-      cmpMatches = new Map(allMatchesOf(s).filter(expandable)
-        .map(m => [String(m.id ?? `${m.home.code}|${m.away.code}`), m]));
-
       const unknown = s.teamsTotal - s.teamsKnown;
       cov.innerHTML = `
         <b>球隊涵蓋率:${s.teamsKnown} / ${s.teamsTotal} 支有本站資料。</b>

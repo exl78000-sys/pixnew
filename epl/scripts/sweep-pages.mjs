@@ -45,6 +45,9 @@ const url = (page, lg, extra = '') => {
 const pages = readdirSync(WEB).filter(f => f.endsWith('.html')).map(f => f.replace(/\.html$/, ''));
 // 跨聯賽那幾頁只在 pl 開一次就夠(內容跟聯賽無關);其餘每個聯賽都開
 const SITE = new Set(['overview', 'knowledge', 'allplayers', 'explore', 'cups', 'ucl']);
+/* 一定要帶參數才有內容的頁:不帶就照設計顯示「找不到這一場」,而那會被報成「#app 幾乎空的」。
+   它們由下面帶著真實 id 另外掃。 */
+const NEEDS_ID = new Set(['ucl-match']);
 
 /* 深連結樣本:從資料檔取,不寫死。拿不到就跳過那一種(英冠沒有球員)。 */
 function samples(lg) {
@@ -64,10 +67,19 @@ function samples(lg) {
 
 const targets = [];
 for (const lg of Object.keys(LEAGUES)) {
-  for (const p of pages) if (!SITE.has(p)) targets.push({ lg, page: p, url: url(p, lg) });
+  for (const p of pages) if (!SITE.has(p) && !NEEDS_ID.has(p)) targets.push({ lg, page: p, url: url(p, lg) });
   for (const [p, q] of samples(lg)) targets.push({ lg, page: `${p}?${q}`, url: url(p, lg, q) });
 }
-for (const p of pages) if (SITE.has(p)) targets.push({ lg: 'pl', page: p, url: url(p, 'pl') });
+for (const p of pages) if (SITE.has(p) && !NEEDS_ID.has(p)) targets.push({ lg: 'pl', page: p, url: url(p, 'pl') });
+/* 歐冠單場頁一定要帶 id —— 不帶的話它照設計顯示「找不到這一場」,
+   而掃描會把那一頁報成「#app 幾乎空的」。兩種都掃:已完賽(賽後報告)與未賽(賽前對比)。 */
+{
+  const ucl = existsSync(join(WEB, 'data', 'ucl.json')) ? JSON.parse(readFileSync(join(WEB, 'data', 'ucl.json'), 'utf8')) : null;
+  const cur = (ucl?.seasons ?? []).find(s2 => s2.current) ?? (ucl?.seasons ?? [])[0];
+  const all = [...(cur?.leagueMatches ?? []), ...(cur?.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))];
+  const done = all.find(m => m.played), up = all.find(m => !m.played);
+  for (const m of [done, up]) if (m?.id != null) targets.push({ lg: 'pl', page: `ucl-match?id=${m.id}`, url: url('ucl-match', 'pl', `id=${m.id}`) });
+}
 for (const c of ['ucl', 'facup', 'eflcup']) targets.push({ lg: 'pl', page: `cups?cup=${c}`, url: url('cups', 'pl', `cup=${c}`) });
 // 從別的聯賽進跨聯賽頁(link() 繼承聯賽那條坑)
 for (const lg of ['es1', 'en2']) for (const p of ['overview', 'cups']) targets.push({ lg, page: p, url: url(p, lg) });
