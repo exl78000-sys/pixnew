@@ -71,7 +71,12 @@ export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl'
         physical: m.physical ?? null,
         heat: m.heat ?? null, zones: m.zones ?? null,
         players: pstore.matches?.[pairOf(m)]?.players ?? null,
-        shotmapComplete: shotGoals === truth[0] + truth[1],
+        /* **空的射門圖不算「完整」。** 0-0 收場的場次,沒有任何射門時 `shotGoals === 0 === 比分合計`
+           也成立 —— 於是索引會說「射門圖完整」,畫面就不印「這一場沒有 xG」那句,
+           而實際上一顆射門都沒有。實測:足總盃 2025-26 第二輪 5040321(0-0、PK 4-5)就是這樣,
+           shotmapComplete=true 而 xG 是 null,兩個欄位自己矛盾。
+           「完整」的前提是**有這份資料**,所以要求至少一顆射門。 */
+        shotmapComplete: (m.shots ?? []).length > 0 && shotGoals === truth[0] + truth[1],
       };
     }
   }

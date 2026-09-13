@@ -5019,6 +5019,52 @@ async function checkUclDetails() {
       ok(JSON.stringify(again) === JSON.stringify(idx), 'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
     }
 
+    /* 報告的最低要求:盃賽三塊,聯賽與歐冠仍然五塊。
+       足總盃前兩輪有 42 場上游只缺逐人那兩塊 —— 照五塊的契約會把有的四塊也丟掉,
+       而那是「鐵則三被反過來用」:不要留空欄位,不等於把有的欄位也扔了。 */
+    {
+      const rep = readFileSync(join(ROOT, 'scripts', 'lib', 'postmatch-report.mjs'), 'utf8');
+      ok(/export const FULL_COVERAGE = \['teamStatistics', 'playerStatistics', 'ratings', 'events', 'lineups'\]/.test(rep)
+        && /require: need = FULL_COVERAGE/.test(rep),
+        '報告的最低要求可以由呼叫端給,預設仍是五塊(聯賽與歐冠的契約沒有變)');
+      const cupLib = readFileSync(join(ROOT, 'scripts', 'lib', 'cup-details.mjs'), 'utf8');
+      ok(/const CUP_REQUIRED = \['teamStatistics', 'events', 'lineups'\]/.test(cupLib)
+        && /require: CUP_REQUIRED/.test(cupLib),
+        '盃賽放寬到三塊(球隊統計 + 事件 + 名單),缺的那幾塊另外記');
+      const idx2 = existsSync(idxPath) ? JSON.parse(readFileSync(idxPath, 'utf8')) : null;
+      const partials = Object.entries(idx2?.reports ?? {}).filter(([, r]) => r.partial);
+      if (partials.length) {
+        // 缺塊的報告:索引與逐場檔都要記著缺了什麼,而且三塊必要的都在
+        let okPartial = 0;
+        for (const [id, r] of partials) {
+          const f = JSON.parse(readFileSync(join(W, 'data', 'cup-details', r.cup, r.season, `${id}.json`), 'utf8'));
+          const cov = f.advanced?.coverage ?? {};
+          if (Array.isArray(f.partial) && f.partial.length === r.partial.length
+            && cov.teamStatistics && cov.events && cov.lineups) okPartial++;
+        }
+        ok(okPartial === partials.length,
+          '缺塊的報告:partial 記在索引與逐場檔,而且三塊必要的資料都在', `${okPartial}/${partials.length}`);
+        console.log(`  · 缺塊的報告 ${partials.length} 場(全部只缺逐人那兩塊);畫面印「上游這一場沒有…」`);
+      }
+      const cm = readFileSync(join(W, 'assets', 'js', 'page-cup-match.js'), 'utf8');
+      ok(/rep\.partial \?\? \[\]/.test(cm), '單場頁把缺了哪幾塊印出來(不是讓讀者自己發現少了卡)');
+      ok(/details\?\.rejected \?\? \[\]/.test(cm),
+        '讀取器退回的場次也認得出來 —— 「還沒抓到」會再來,「上游沒有」不會,兩種不能混');
+    }
+
+    /* 一張只有標題的空卡比不畫更糟(鐵則三)。那 36 場既沒有供應商評分、
+       也沒有 FPL 表現分(FPL 只涵蓋英超聯賽),本場最佳就畫成一行字。 */
+    {
+      const core2 = readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8');
+      ok(/if \(!rated && !fplBest\) return '';/.test(core2),
+        '本場最佳:沒有評分也沒有 FPL 表現分時整張卡不畫');
+      const ms = readFileSync(join(ROOT, 'scripts', 'lib', 'matchstats.mjs'), 'utf8');
+      /* 空的射門圖不算完整:0-0 又沒有任何射門時 `0 === 0` 也成立,
+         於是索引說「完整」、畫面不印警語,而 xG 仍然是 null —— 兩個欄位自己矛盾。 */
+      ok(/shotmapComplete: \(m\.shots \?\? \[\]\)\.length > 0 && shotGoals === truth\[0\] \+ truth\[1\]/.test(ms),
+        '射門圖「完整」的前提是有射門(空的射門圖在 0-0 場次會假性通過)');
+    }
+
     /* 配對鍵:**比賽 id**,不是「主|客」。盃賽有重賽,同一季同一組主客可能踢兩次 ——
        英冠附加賽與歐冠那兩條坑的盃賽版。唯一性在這裡真的數一次。 */
     for (const cup of FOTMOB_CUP_DETAILS) {

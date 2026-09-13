@@ -1461,6 +1461,12 @@ export function matchReportCards(m, { order = null } = {}) {
         .map(p => `<div class="stat-line"><span class="small">${playerChip({ ...p, team: p.team ?? code, photoKey: p.providerId }, { size: 24, fallback: 'crest' })}
           <span class="dim tiny">${esc(p.pos && p.pos !== '?' ? p.pos : '')} ${p.minutes ?? '—'}'</span></span><b class="pill ${p.rating >= 7.5 ? 'accent' : 'info'} mono">${fx(p.rating, 1)}</b></div>`).join('');
       const src = d?.source === 'sportmonks' ? 'SportMonks' : d?.source === 'fotmob' ? 'FotMob' : 'API-Football';
+      /* 沒有評分、也沒有 FPL 表現分的話這張卡只剩標題 —— **整張不要畫**(鐵則三)。
+         實測:足總盃第一輪那 36 場上游沒有逐人資料(英甲對英乙那種場次),而 FPL 只涵蓋英超聯賽,
+         所以兩邊都空 → 畫面上出現一張只有「本場最佳(FPL 表現分)」一行字的卡。
+         一張永遠空白的卡比不畫更糟,讀者會以為壞了。 */
+      const fplBest = !rated && (bestHtml(H, 'bps', m.home) || bestHtml(A, 'bps', m.away));
+      if (!rated && !fplBest) return '';
       return `<div class="card"><h3>${rated ? `本場最佳(${src} 評分)` : '本場最佳(FPL 表現分)'}</h3>
       <div class="grid g2">
         <div>${rated ? topBy(m.home) : bestHtml(H, 'bps', m.home)}</div>

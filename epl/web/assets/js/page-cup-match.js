@@ -9,7 +9,7 @@
    這一頁**只有賽後**,沒有賽前勝率 —— 盃賽沒有本站的模型:
    對手一半是第三、四級球隊,本站沒有它們的賽果,評不出強度(鐵則二:沒有回測證據就不給預測)。
    所以不要在這裡長出一個「賽前分析」分頁,那會是憑空的數字。 */
-import * as C from './core.js?v=6f8ba957';
+import * as C from './core.js?v=8ad00ce3';
 
 const app = document.getElementById('app');
 
@@ -117,9 +117,14 @@ try {
       /* 為什麼沒有報告要講得出來,分得出三種:依設計拒收、供應商缺資料、還沒抓到。
          「什麼都不留」的話讀者看到踢完的比賽沒有內容而畫面不解釋(cups 撤銷那條坑)。 */
       const inc = (details?.incomplete ?? []).find(x => String(x.id) === String(id));
-      const why = inc ? `供應商這一場缺了一部分資料(${C.esc((inc.missing ?? []).join('、') || inc.reason)})`
-        : (m?.played ?? false) ? '這一場的逐場詳情還沒抓到(每次部署會補,一場一個請求)'
-          : '這一場還沒踢完';
+      /* 讀取器層退回的也要認得出來(鍵是「賽季|比賽 id」)。不認的話那 6 場會被講成
+         「還沒抓到」—— 而它們抓到了,是上游沒有控球率所以本站不收。
+         「還沒抓到」會再來,「上游沒有」不會,兩種對讀者的意思完全不同。 */
+      const rej = (details?.rejected ?? []).find(x => String(x.key ?? '').endsWith(`|${id}`));
+      const why = inc ? `供應商這一場缺了必要的資料(${C.esc(inc.reason || (inc.missing ?? []).join('、'))})`
+        : rej ? `本站沒有收這一場的詳情:${C.esc(rej.reason ?? '核對沒過')}`
+          : (m?.played ?? false) ? '這一場的逐場詳情還沒抓到(每次部署會補,一場一個請求)'
+            : '這一場還沒踢完';
       slot.innerHTML = `<div class="note">這一場沒有賽後報告 —— ${why}。</div>`;
     } else {
       slot.innerHTML = '<div class="tiny dim">載入賽後報告中…</div>';
@@ -143,7 +148,9 @@ try {
             ${details?.scoreCheck?.independent === false
               ? `<b>比分核對不是獨立來源</b>:${C.esc(details.scoreCheck.note ?? '')}`
               : '比分已跟獨立來源核對。'}
-            ${neutral ? '本站沒有資料的球隊在球場圖與射門圖上用<b>中性色</b>,不是隊色。' : ''}</div>
+            ${neutral ? '本站沒有資料的球隊在球場圖與射門圖上用<b>中性色</b>,不是隊色。' : ''}
+            ${(rep.partial ?? []).length ? `<b>上游這一場沒有${(rep.partial ?? []).map(x => C.esc(x.zh)).join('與')}</b>
+              —— 足總盃前幾輪的低級別場次常見,所以下面沒有那幾張卡。球隊統計、射門圖、事件與正式名單不受影響。` : ''}</div>
           ${C.matchReportCards(rep, { order: POST_ORDER })}`;
       }
     }

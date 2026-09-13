@@ -135,10 +135,20 @@ function notesFor(report, detail, nameOf) {
   return notes;
 }
 
-export function buildProviderMatchReport({ fixture, detail, nameOf = code => code, positionByProviderId = new Map() } = {}) {
+/* 一份報告至少要有哪幾塊。預設是五塊全要(三個聯賽與歐冠的契約,不要改)。
+
+   **盃賽要放寬到三塊**,而且那是資料逼出來的,不是偷懶:足總盃 2025-26 的 123 場裡有 42 場
+   上游**只缺 playerStatistics 與 ratings**(全部在第一、二輪,英甲對英乙那種場次)——
+   球隊統計、逐射門 xG、事件與正式名單全都在。為了缺的那兩塊把有的四塊整份丟掉,
+   等於讓 42 場踢過的比賽在畫面上什麼都沒有。
+   鐵則三說的是「不要留永遠空白的欄位」,不是「有一塊缺就把其他塊也扔了」——
+   缺的那幾塊由呼叫端記在 `partial` 上,畫面要講出來(鐵則四)。 */
+export const FULL_COVERAGE = ['teamStatistics', 'playerStatistics', 'ratings', 'events', 'lineups'];
+
+export function buildProviderMatchReport({ fixture, detail, nameOf = code => code, positionByProviderId = new Map(), require: need = FULL_COVERAGE } = {}) {
   if (!fixture?.played || !detail || fixture.home !== detail.home || fixture.away !== detail.away) return null;
   if (detail.score?.home !== fixture.fh || detail.score?.away !== fixture.fa) return null;
-  if (!detail.coverage?.teamStatistics || !detail.coverage?.playerStatistics || !detail.coverage?.ratings || !detail.coverage?.events || !detail.coverage?.lineups) return null;
+  if (need.some(k => !detail.coverage?.[k])) return null;
   const report = {
     key: `${fixture.home}|${fixture.away}`, season: fixture.season,
     home: fixture.home, away: fixture.away, kickoff: detail.kickoff ?? fixture.kickoff ?? null,

@@ -48,7 +48,7 @@
 import { existsSync, readFileSync, readdirSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadFotmobMatchStats, toCanonicalDetail, isShootoutShot } from './matchstats.mjs';
-import { buildProviderMatchReport } from './postmatch-report.mjs';
+import { buildProviderMatchReport, FULL_COVERAGE } from './postmatch-report.mjs';
 
 /* 兩個盃賽:key 要跟 `cups.json` 的 `cups[].key` 一樣(前端用它查),
    FotMob 的聯賽 id 是抓賽事 logo 時實證過的(132 = FA Cup、133 = EFL Cup)。 */
@@ -69,13 +69,20 @@ export const cupTeamId = side => (side?.code ? String(side.code)
 /* 一個盃賽的快取 → results 形狀(跟三個聯賽的 results.json 同形:season / date / home / away / fh / fa / played)。
    比分只讀 `final`(分段欄位不是累計值,本站在歐冠決賽上踩過);PK 收場的 final 是延長後的平手比分,
    跟 FotMob 詳情的 scoreStr 同一個語意(探測過),所以比分核對照常做。 */
-export function cupResultsOf(store) {
+export function cupResultsOf(store, skipped = null) {
   const out = [];
   for (const s of store?.seasons ?? []) {
     for (const m of s.matches ?? []) {
       const home = cupTeamId(m.home), away = cupTeamId(m.away);
       const date = String(m.kickoff ?? '').slice(0, 10);
-      if (!home || !away || !m.id || !date) continue;
+      /* 算不出身分或沒有日期的場次會在這裡被丟掉 —— 目前一場都沒有(288 場全部算得出來),
+         但盃賽的抽籤會有「對手待定」,而**靜靜丟掉**就會讓「已完賽 N 場、報告 M 場」
+         中間那個差額沒有人解釋得出來。所以呼叫端可以給一個陣列把它們收走。 */
+      if (!home || !away || !m.id || !date) {
+        if (skipped) skipped.push({ id: m.id ?? null, season: s.label,
+          reason: !date ? '沒有開球日期' : !m.id ? '沒有比賽 id' : '算不出隊伍身分(沒有隊碼也沒有 FotMob id)' });
+        continue;
+      }
       out.push({
         id: String(m.id), matchId: String(m.id), season: s.label,
         date, kickoff: m.kickoff ?? null,
@@ -115,9 +122,13 @@ function withShotXg(detail, ms) {
   return { ...detail, teamStats, xgSource: ready ? 'shotmap' : null, pens: ms.pens === true };
 }
 
-const coverageGap = detail => Object.entries(detail?.coverage ?? {})
-  .filter(([k, v]) => ['teamStatistics', 'playerStatistics', 'ratings', 'events', 'lineups'].includes(k) && !v)
-  .map(([k]) => k);
+const coverageGap = detail => FULL_COVERAGE.filter(k => !detail?.coverage?.[k]);
+
+/* 盃賽的最低要求是這三塊。缺 playerStatistics / ratings 仍然出報告,缺的記在 `partial` 上。
+   **為什麼不是五塊**:足總盃第一、二輪有 42 場上游只缺逐人那兩塊(英甲對英乙那種場次),
+   球隊統計、射門圖、事件與名單全都在 —— 丟掉等於讓 42 場踢過的比賽什麼都沒有。 */
+const CUP_REQUIRED = ['teamStatistics', 'events', 'lineups'];
+const ZH_BLOCK = { playerStatistics: '逐人統計', ratings: '逐人評分', teamStatistics: '球隊統計', events: '事件', lineups: '正式名單' };
 
 /* 抓取器層退回的場次(FotMob 標未完賽、比分不符…)。它們不在 store.matches 裡,
    所以讀取器的 rejected 看不到 —— 不帶出來的話畫面只能講「還沒抓到」,
@@ -157,13 +168,17 @@ export function cupDetails(root) {
     },
     retrievedAt: null, count: 0, cached: 0,
     cups: {}, reports: {}, incomplete: [], rejected: [], attempts: [], missing: [],
+    /* 連 results 那一層都進不去的場次(身分或日期算不出來)。目前是空的,
+       但不收著的話那種場次會從「已完賽 N 場」的分母裡靜靜消失。 */
+    skipped: [],
   };
   const files = new Map();
 
   for (const cup of FOTMOB_CUP_DETAILS) {
     const store = readCupStore(root, cup.key);
     if (!store) { index.missing.push({ cup: cup.key, reason: '倉庫沒有這個盃賽的賽程快取(先跑 cups:fetch)' }); continue; }
-    const results = cupResultsOf(store);
+    const skipped = [];
+    const results = cupResultsOf(store, skipped);
     const stats = loadFotmobMatchStats(root, { results, rawDir: cup.rawDir });
     const { attempts, retrievedAt, cached } = attemptsOf(root, cup.rawDir);
     index.cached += cached;
@@ -182,13 +197,19 @@ export function cupDetails(root) {
       const detail = { ...withShotXg(toCanonicalDetail(ms), ms), kickoff: r.kickoff };
       const report = buildProviderMatchReport({
         fixture: { season: r.season, home: r.home, away: r.away, fh: r.fh, fa: r.fa, played: true, kickoff: r.kickoff },
-        detail, nameOf: id => names[id] ?? String(id),
+        detail, nameOf: id => names[id] ?? String(id), require: CUP_REQUIRED,
       });
       if (!report) {
-        index.incomplete.push({ cup: cup.key, id: r.id, key, missing: coverageGap(detail),
-          reason: coverageGap(detail).length ? '供應商這場缺了一部分資料' : '比分或主客對不上' });
+        const gap = coverageGap(detail);
+        const core = CUP_REQUIRED.filter(k => !detail?.coverage?.[k]);
+        index.incomplete.push({ cup: cup.key, id: r.id, key, missing: gap,
+          reason: core.length ? `供應商這場缺了必要的資料(${core.map(k => ZH_BLOCK[k] ?? k).join('、')})` : '比分或主客對不上' });
         continue;
       }
+      /* 缺了哪幾塊(非必要的那幾塊)要帶到報告與索引 —— 畫面照它講,
+         不是讓讀者自己發現「怎麼沒有球員評分卡」。 */
+      const partial = coverageGap(detail);
+      if (partial.length) report.partial = partial.map(k => ({ key: k, zh: ZH_BLOCK[k] ?? k }));
       report.id = r.id; report.cup = cup.key; report.stage = r.stage; report.roundKey = r.roundKey;
       report.names = names;
       report.codes = { [r.home]: r.homeCode, [r.away]: r.awayCode };
@@ -203,11 +224,13 @@ export function cupDetails(root) {
         pens: r.pens, aet: r.aet === true,
         xG: [report.actual?.xGHome ?? null, report.actual?.xGAway ?? null],
         shotmapComplete: ms.shotmapComplete === true,
+        partial: report.partial ?? null,
       };
       seasons[r.season].reports++;
       index.count++;
     }
     index.cups[cup.key] = { zh: cup.zh, leagueId: cup.id, seasons };
+    for (const x of skipped) index.skipped.push({ cup: cup.key, ...x });
   }
   return { index, files };
 }
