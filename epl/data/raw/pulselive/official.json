@@ -26963,7 +26963,7 @@
   "MUN|MCI": {
    "fixtureId": 128960,
    "kickoff": "2026-09-13T15:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -26972,9 +26972,31 @@
    "homeId": 12,
    "awayId": 11,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67910
+     ],
+     [
+      24252,
+      9566,
+      67191,
+      146567
+     ],
+     [
+      5865,
+      108936
+     ],
+     [
+      66360,
+      23396,
+      13565
+     ],
+     [
+      51202
+     ]
+    ],
     "xi": [
      {
       "id": 108936,
@@ -27044,7 +27066,7 @@
       "playerId": null,
       "name": "Bryan Mbeumo",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -27053,7 +27075,7 @@
       "playerId": null,
       "name": "Marcus Rashford",
       "shirt": 9,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre Second Striker",
       "captain": false
      },
@@ -27161,9 +27183,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      76204,
+      14569,
+      16431,
+      67178
+     ],
+     [
+      63741,
+      51593
+     ],
+     [
+      14805,
+      68150,
+      25474
+     ],
+     [
+      65970
+     ]
+    ],
     "xi": [
      {
       "id": 51593,
@@ -27206,7 +27250,7 @@
       "playerId": null,
       "name": "Matheus Nunes",
       "shirt": 27,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -27242,7 +27286,7 @@
       "playerId": null,
       "name": "Antoine Semenyo",
       "shirt": 42,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -27353,10 +27397,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "03'00"
   }
  },
- "fetchedAt": "2026-09-13T15:31:04.959Z"
+ "fetchedAt": "2026-09-13T15:33:22.475Z"
 }
