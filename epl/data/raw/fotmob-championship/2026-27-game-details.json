@@ -128497,8 +128497,1545 @@
      }
     ]
    }
+  },
+  "SHU|WOL": {
+   "key": "SHU|WOL",
+   "season": "2026-27",
+   "date": "2026-09-13",
+   "matchId": "5836832",
+   "home": "SHU",
+   "away": "WOL",
+   "score": [
+    0,
+    1
+   ],
+   "providerScore": [
+    0,
+    1
+   ],
+   "teamStats": {
+    "SHU": {
+     "possession": 37,
+     "shots": 6,
+     "shotsOn": 2,
+     "shotsOff": 3,
+     "blockedShots": 5,
+     "corners": 0,
+     "offsides": 5,
+     "fouls": 12,
+     "saves": 2,
+     "passes": 286,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.63
+    },
+    "WOL": {
+     "possession": 63,
+     "shots": 16,
+     "shotsOn": 3,
+     "shotsOff": 8,
+     "blockedShots": 1,
+     "corners": 9,
+     "offsides": 2,
+     "fouls": 15,
+     "saves": 2,
+     "passes": 494,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.71
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     37,
+     63
+    ],
+    "h1": [
+     38,
+     62
+    ],
+    "h2": [
+     35,
+     65
+    ]
+   },
+   "events": [
+    {
+     "minute": 2,
+     "extra": null,
+     "team": "SHU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Sam McCallum"
+    },
+    {
+     "minute": 17,
+     "extra": null,
+     "team": "WOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ladislav Krejcí"
+    },
+    {
+     "minute": 48,
+     "extra": null,
+     "team": "SHU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Japhet Tanganga"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Raul Jiménez"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jordan James"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "SHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jordan Ayew"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "SHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Thomas Cannon"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tommy Doyle"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kieran Trippier"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Toti Gomes"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "SHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matt Doherty"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "SHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joe Rothwell"
+    },
+    {
+     "minute": 85,
+     "extra": 0,
+     "team": "SHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rhys Norrington-Davies"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "WOL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Raul Jiménez"
+    }
+   ],
+   "shots": [
+    {
+     "min": 5,
+     "extra": null,
+     "team": "SHU",
+     "player": "Hamza Choudhury",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 25.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "WOL",
+     "player": "Fer López",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.114,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 33.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "SHU",
+     "player": "Japhet Tanganga",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.034,
+     "xgot": 0.208,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 35.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "WOL",
+     "player": "Marshall Munetsi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.14,
+     "xgot": 0.598,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 31.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "WOL",
+     "player": "Rodrigo Gomes",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.081,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.5,
+     "y": 22,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "WOL",
+     "player": "Marshall Munetsi",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.9,
+     "y": 39,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "WOL",
+     "player": "Marshall Munetsi",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.227,
+     "xgot": 0.637,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 36.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "SHU",
+     "player": "Sydie Peck",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.043,
+     "xgot": 0.025,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.6,
+     "y": 41.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "WOL",
+     "player": "Mateus Mané",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 44.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "WOL",
+     "player": "Nasser Djiga",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.218,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 34.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "WOL",
+     "player": "Hugo Bueno",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.8,
+     "y": 45.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "SHU",
+     "player": "Jordan Ayew",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 17.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "SHU",
+     "player": "Patrick Bamford",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.144,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101,
+     "y": 29.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "SHU",
+     "player": "Thomas Cannon",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.349,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 33.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "WOL",
+     "player": "Jordan James",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 32.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "WOL",
+     "player": "Raul Jiménez",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 41.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "WOL",
+     "player": "Mateus Mané",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.051,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.8,
+     "y": 38.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "WOL",
+     "player": "Raul Jiménez",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.076,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 30.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "WOL",
+     "player": "Tommy Doyle",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.061,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.5,
+     "y": 39.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "WOL",
+     "player": "Jordan James",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 30.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "WOL",
+     "player": "Tommy Doyle",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.213,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.4,
+     "y": 32.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "WOL",
+     "player": "Raul Jiménez",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.209,
+     "xgot": 0.901,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.9,
+     "y": 40.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     27
+    ],
+    [
+     2,
+     27
+    ],
+    [
+     3,
+     22
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     22
+    ],
+    [
+     6,
+     38
+    ],
+    [
+     7,
+     5
+    ],
+    [
+     8,
+     -46
+    ],
+    [
+     9,
+     -57
+    ],
+    [
+     10,
+     -35
+    ],
+    [
+     11,
+     60
+    ],
+    [
+     12,
+     49
+    ],
+    [
+     13,
+     57
+    ],
+    [
+     14,
+     -3
+    ],
+    [
+     15,
+     -100
+    ],
+    [
+     16,
+     -100
+    ],
+    [
+     17,
+     -100
+    ],
+    [
+     18,
+     14
+    ],
+    [
+     19,
+     -19
+    ],
+    [
+     20,
+     -3
+    ],
+    [
+     21,
+     -38
+    ],
+    [
+     22,
+     38
+    ],
+    [
+     23,
+     33
+    ],
+    [
+     24,
+     92
+    ],
+    [
+     25,
+     46
+    ],
+    [
+     26,
+     62
+    ],
+    [
+     27,
+     -8
+    ],
+    [
+     28,
+     -35
+    ],
+    [
+     29,
+     -43
+    ],
+    [
+     30,
+     -41
+    ],
+    [
+     31,
+     -16
+    ],
+    [
+     32,
+     -3
+    ],
+    [
+     33,
+     60
+    ],
+    [
+     34,
+     65
+    ],
+    [
+     35,
+     49
+    ],
+    [
+     36,
+     0
+    ],
+    [
+     37,
+     -11
+    ],
+    [
+     38,
+     -11
+    ],
+    [
+     39,
+     0
+    ],
+    [
+     40,
+     -16
+    ],
+    [
+     41,
+     -27
+    ],
+    [
+     42,
+     -38
+    ],
+    [
+     43,
+     -24
+    ],
+    [
+     44,
+     -19
+    ],
+    [
+     45,
+     -24
+    ],
+    [
+     45.5,
+     -11
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     47,
+     35
+    ],
+    [
+     48,
+     33
+    ],
+    [
+     49,
+     35
+    ],
+    [
+     50,
+     5
+    ],
+    [
+     51,
+     8
+    ],
+    [
+     52,
+     -16
+    ],
+    [
+     53,
+     -100
+    ],
+    [
+     54,
+     -100
+    ],
+    [
+     55,
+     -100
+    ],
+    [
+     56,
+     -14
+    ],
+    [
+     57,
+     -3
+    ],
+    [
+     58,
+     11
+    ],
+    [
+     59,
+     8
+    ],
+    [
+     60,
+     8
+    ],
+    [
+     61,
+     8
+    ],
+    [
+     62,
+     5
+    ],
+    [
+     63,
+     38
+    ],
+    [
+     64,
+     38
+    ],
+    [
+     65,
+     38
+    ],
+    [
+     66,
+     3
+    ],
+    [
+     67,
+     19
+    ],
+    [
+     68,
+     98
+    ],
+    [
+     69,
+     95
+    ],
+    [
+     70,
+     79
+    ],
+    [
+     71,
+     -22
+    ],
+    [
+     72,
+     33
+    ],
+    [
+     73,
+     16
+    ],
+    [
+     74,
+     52
+    ],
+    [
+     75,
+     3
+    ],
+    [
+     76,
+     -24
+    ],
+    [
+     77,
+     -38
+    ],
+    [
+     78,
+     -33
+    ],
+    [
+     79,
+     -14
+    ],
+    [
+     80,
+     -52
+    ],
+    [
+     81,
+     -100
+    ],
+    [
+     82,
+     -98
+    ],
+    [
+     83,
+     -60
+    ],
+    [
+     84,
+     -5
+    ],
+    [
+     85,
+     0
+    ],
+    [
+     86,
+     -24
+    ],
+    [
+     87,
+     -24
+    ],
+    [
+     88,
+     -35
+    ],
+    [
+     89,
+     -100
+    ],
+    [
+     90,
+     -100
+    ],
+    [
+     90.5,
+     -10
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "SHU": {
+     "team": "SHU",
+     "formation": "3-5-2",
+     "coach": "Chris Wilder",
+     "xi": [
+      {
+       "name": "Michael Cooper",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Japhet Tanganga",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Mark McGuinness",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Liam Kitching",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Hamza Choudhury",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Ollie Arblaster",
+       "shirt": 4,
+       "pos": "M"
+      },
+      {
+       "name": "Kalvin Phillips",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Sydie Peck",
+       "shirt": 42,
+       "pos": "M"
+      },
+      {
+       "name": "Sam McCallum",
+       "shirt": 3,
+       "pos": "M"
+      },
+      {
+       "name": "Patrick Bamford",
+       "shirt": 45,
+       "pos": "F"
+      },
+      {
+       "name": "Ben Brereton",
+       "shirt": 22,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jordan Ayew",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Thomas Cannon",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Matt Doherty",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Joe Rothwell",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Rhys Norrington-Davies",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Adam Davies",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Jamie Shackleton",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Jaïro Riedewald",
+       "shirt": 44,
+       "pos": "?"
+      },
+      {
+       "name": "Romelle Donovan",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    },
+    "WOL": {
+     "team": "WOL",
+     "formation": "4-2-3-1",
+     "coach": "César Peixoto",
+     "xi": [
+      {
+       "name": "José Sá",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Jackson Tchatchoua",
+       "shirt": 38,
+       "pos": "D"
+      },
+      {
+       "name": "Nasser Djiga",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Ladislav Krejcí",
+       "shirt": 37,
+       "pos": "D"
+      },
+      {
+       "name": "Hugo Bueno",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "André",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Marshall Munetsi",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Gomes",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Fer López",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Mateus Mané",
+       "shirt": 36,
+       "pos": "M"
+      },
+      {
+       "name": "Adam Armstrong",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jordan James",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Raul Jiménez",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Kieran Trippier",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Toti Gomes",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Tommy Doyle",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "João Virgínia",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Ghislain Konan",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Boubacar Traoré",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Sean Neave",
+       "shirt": 14,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 48,
+      "center": 27,
+      "right": 25
+     },
+     "firstHalf": {
+      "left": 54,
+      "center": 27,
+      "right": 19
+     },
+     "secondHalf": {
+      "left": 41,
+      "center": 28,
+      "right": 31
+     }
+    },
+    "away": {
+     "total": {
+      "left": 35,
+      "center": 29,
+      "right": 36
+     },
+     "firstHalf": {
+      "left": 33,
+      "center": 25,
+      "right": 42
+     },
+     "secondHalf": {
+      "left": 37,
+      "center": 32,
+      "right": 31
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-13T14:29:29.073Z",
+   "fdMatchId": "2026-27-80",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "SHU",
+      "name": "Kalvin Phillips",
+      "n": 32,
+      "cx": 48.3,
+      "cy": 25.8,
+      "spread": 24.3,
+      "grid": "0,0,1,5,2,0,0,4,7,6,0,0,2,0,1,1,0,0,0,1,0,0,2,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Michael Cooper",
+      "n": 58,
+      "cx": 14.1,
+      "cy": 34,
+      "spread": 15,
+      "grid": "0,1,0,0,0,0,26,6,1,0,0,0,17,1,2,0,0,0,0,1,3,0,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Sam McCallum",
+      "n": 54,
+      "cx": 63.3,
+      "cy": 11.8,
+      "spread": 27.8,
+      "grid": "4,2,6,12,11,6,2,0,0,4,3,3,0,0,0,0,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "WOL",
+      "name": "Jackson Tchatchoua",
+      "n": 63,
+      "cx": 40,
+      "cy": 60.3,
+      "spread": 23.4,
+      "grid": "0,0,0,0,0,0,1,0,0,0,0,0,3,2,2,0,0,0,4,22,13,9,4,3"
+     },
+     {
+      "team": "WOL",
+      "name": "Mateus Mané",
+      "n": 58,
+      "cx": 70.8,
+      "cy": 20.1,
+      "spread": 30.1,
+      "grid": "0,2,4,7,4,11,2,2,3,7,6,4,0,0,0,1,0,0,0,0,0,0,1,4"
+     },
+     {
+      "team": "SHU",
+      "name": "Japhet Tanganga",
+      "n": 52,
+      "cx": 43.6,
+      "cy": 40.2,
+      "spread": 30.7,
+      "grid": "0,0,0,1,0,0,3,0,4,4,0,5,11,3,7,5,2,0,0,1,3,1,2,0"
+     },
+     {
+      "team": "WOL",
+      "name": "Hugo Bueno",
+      "n": 92,
+      "cx": 51.3,
+      "cy": 11.6,
+      "spread": 28,
+      "grid": "6,18,15,16,9,7,1,3,5,1,5,1,0,1,1,0,0,1,0,0,0,1,0,1"
+     },
+     {
+      "team": "WOL",
+      "name": "Ladislav Krejcí",
+      "n": 107,
+      "cx": 34.2,
+      "cy": 21.3,
+      "spread": 21.2,
+      "grid": "8,8,11,5,1,0,15,19,21,10,2,0,2,2,0,0,1,0,2,0,0,0,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Liam Kitching",
+      "n": 57,
+      "cx": 47,
+      "cy": 17.6,
+      "spread": 29.8,
+      "grid": "0,9,11,5,2,5,6,2,4,3,1,1,3,0,2,1,0,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Ollie Arblaster",
+      "n": 38,
+      "cx": 59.8,
+      "cy": 40.6,
+      "spread": 32.9,
+      "grid": "2,0,0,0,1,0,0,1,2,6,2,0,3,1,1,4,4,0,1,0,0,1,5,4"
+     },
+     {
+      "team": "WOL",
+      "name": "André",
+      "n": 86,
+      "cx": 47.9,
+      "cy": 39.3,
+      "spread": 23.8,
+      "grid": "0,1,3,1,1,0,0,4,5,8,4,2,3,6,12,12,6,0,0,11,6,1,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Hamza Choudhury",
+      "n": 53,
+      "cx": 44.3,
+      "cy": 53.4,
+      "spread": 30.6,
+      "grid": "2,0,1,0,0,0,0,0,1,1,0,0,3,5,2,3,2,1,7,8,1,6,8,2"
+     },
+     {
+      "team": "WOL",
+      "name": "Fer López",
+      "n": 43,
+      "cx": 52.4,
+      "cy": 51.4,
+      "spread": 24.5,
+      "grid": "0,1,0,0,0,0,0,1,0,0,0,0,0,1,2,5,4,2,3,5,4,13,0,2"
+     },
+     {
+      "team": "SHU",
+      "name": "Patrick Bamford",
+      "n": 36,
+      "cx": 63.8,
+      "cy": 28.1,
+      "spread": 24.9,
+      "grid": "0,0,0,5,2,0,1,0,7,5,5,2,1,0,0,1,1,4,0,1,0,1,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Ben Brereton",
+      "n": 32,
+      "cx": 69.3,
+      "cy": 15.2,
+      "spread": 22.7,
+      "grid": "1,0,0,5,7,3,0,2,2,2,7,2,0,0,0,0,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Sydie Peck",
+      "n": 66,
+      "cx": 60,
+      "cy": 34.6,
+      "spread": 29.7,
+      "grid": "0,0,0,7,5,3,1,0,3,10,6,0,4,1,2,1,7,0,0,6,2,4,3,1"
+     },
+     {
+      "team": "WOL",
+      "name": "Marshall Munetsi",
+      "n": 30,
+      "cx": 57.6,
+      "cy": 26.9,
+      "spread": 31.2,
+      "grid": "0,0,0,0,4,2,0,4,4,2,1,4,2,1,5,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "WOL",
+      "name": "Adam Armstrong",
+      "n": 30,
+      "cx": 61.2,
+      "cy": 38.6,
+      "spread": 31.6,
+      "grid": "0,0,1,0,0,0,0,2,0,1,1,3,2,4,4,2,4,3,0,0,0,0,3,0"
+     },
+     {
+      "team": "WOL",
+      "name": "Rodrigo Gomes",
+      "n": 39,
+      "cx": 65.4,
+      "cy": 55.9,
+      "spread": 27.1,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,3,5,2,4,5,3,4,7"
+     },
+     {
+      "team": "WOL",
+      "name": "Nasser Djiga",
+      "n": 82,
+      "cx": 32.3,
+      "cy": 46.2,
+      "spread": 18.9,
+      "grid": "0,0,0,0,0,0,3,0,2,1,0,1,7,18,21,5,0,0,7,8,8,1,0,0"
+     },
+     {
+      "team": "WOL",
+      "name": "José Sá",
+      "n": 54,
+      "cx": 11.7,
+      "cy": 35.2,
+      "spread": 9.7,
+      "grid": "0,0,0,0,0,0,16,4,1,0,0,0,32,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Mark McGuinness",
+      "n": 45,
+      "cx": 40.2,
+      "cy": 33.2,
+      "spread": 27.3,
+      "grid": "0,0,2,0,0,0,6,6,7,3,0,1,4,4,3,3,2,3,0,0,0,1,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Thomas Cannon",
+      "n": 11,
+      "cx": 77.7,
+      "cy": 27.7,
+      "spread": 28.8,
+      "grid": "0,0,0,2,0,1,1,0,0,0,3,0,0,0,0,0,0,4,0,0,0,0,0,0"
+     },
+     {
+      "team": "WOL",
+      "name": "Jordan James",
+      "n": 18,
+      "cx": 63.6,
+      "cy": 20.1,
+      "spread": 28.9,
+      "grid": "1,3,1,2,2,0,0,0,2,1,1,2,0,0,0,0,0,3,0,0,0,0,0,0"
+     },
+     {
+      "team": "WOL",
+      "name": "Raul Jiménez",
+      "n": 25,
+      "cx": 54,
+      "cy": 44.8,
+      "spread": 32.9,
+      "grid": "0,0,1,0,0,0,2,0,0,0,2,2,2,2,3,0,1,1,0,1,0,5,2,1"
+     },
+     {
+      "team": "SHU",
+      "name": "Jordan Ayew",
+      "n": 22,
+      "cx": 56.6,
+      "cy": 40.7,
+      "spread": 30.5,
+      "grid": "0,0,0,0,2,1,0,2,1,0,1,0,0,2,2,2,1,1,0,2,2,0,2,1"
+     },
+     {
+      "team": "WOL",
+      "name": "Toti Gomes",
+      "n": 25,
+      "cx": 41.2,
+      "cy": 41,
+      "spread": 19.3,
+      "grid": "0,0,1,0,0,0,0,0,2,2,0,0,2,6,5,4,1,0,1,0,0,1,0,0"
+     },
+     {
+      "team": "WOL",
+      "name": "Tommy Doyle",
+      "n": 23,
+      "cx": 58.8,
+      "cy": 40.5,
+      "spread": 30.1,
+      "grid": "0,0,0,0,1,1,1,0,3,0,0,2,0,1,2,3,2,1,1,0,3,0,2,0"
+     },
+     {
+      "team": "WOL",
+      "name": "Kieran Trippier",
+      "n": 28,
+      "cx": 54.9,
+      "cy": 54.9,
+      "spread": 32.8,
+      "grid": "0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,2,1,3,3,5,5,4,2"
+     },
+     {
+      "team": "SHU",
+      "name": "Matt Doherty",
+      "n": 9,
+      "cx": 44.4,
+      "cy": 46.4,
+      "spread": 34.6,
+      "grid": "0,0,0,0,0,0,2,0,0,0,0,0,1,1,0,2,0,0,0,0,0,1,0,2"
+     },
+     {
+      "team": "SHU",
+      "name": "Rhys Norrington-Davies",
+      "n": 13,
+      "cx": 56.2,
+      "cy": 16.8,
+      "spread": 40.8,
+      "grid": "0,0,0,0,3,4,4,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "SHU",
+      "name": "Joe Rothwell",
+      "n": 3,
+      "cx": 78.7,
+      "cy": 45,
+      "spread": 9,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,1,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-13T08:16:09.519Z"
+ "updatedAt": "2026-09-13T14:29:29.741Z"
 }
