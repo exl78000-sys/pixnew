@@ -26251,7 +26251,7 @@
   "COV|BHA": {
    "fixtureId": 128956,
    "kickoff": "2026-09-13T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -26260,16 +26260,38 @@
    "homeId": 5,
    "awayId": 131,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      55556
+     ],
+     [
+      114738,
+      63836,
+      22043
+     ],
+     [
+      75413,
+      108612,
+      8650,
+      10438
+     ],
+     [
+      66304,
+      20930
+     ],
+     [
+      15340
+     ]
+    ],
     "xi": [
      {
       "id": 75413,
       "playerId": null,
       "name": "Milan van Ewijk",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -26287,7 +26309,7 @@
       "playerId": null,
       "name": "Jack Rudoni",
       "shirt": 5,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -26314,7 +26336,7 @@
       "playerId": null,
       "name": "Ephron Mason-Clark",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Left/Right Attacking Midfielder",
       "captain": false
      },
@@ -26332,7 +26354,7 @@
       "playerId": null,
       "name": "Jay Dasilva",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -26449,9 +26471,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75709
+     ],
+     [
+      50727,
+      134632,
+      8163,
+      20505
+     ],
+     [
+      22542,
+      134333
+     ],
+     [
+      143240,
+      147052,
+      67928
+     ],
+     [
+      145043
+     ]
+    ],
     "xi": [
      {
       "id": 22542,
@@ -26548,7 +26592,7 @@
       "playerId": null,
       "name": "Maxim De Cuyper",
       "shirt": 29,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      }
@@ -26641,10 +26685,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "01'00"
   }
  },
- "fetchedAt": "2026-09-13T12:59:27.443Z"
+ "fetchedAt": "2026-09-13T13:01:43.050Z"
 }
