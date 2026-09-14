@@ -46,11 +46,18 @@ async function main() {
   /* ucl-view 是歐冠視圖(2026-08-29 併進盃賽單頁時抽出來的),page-cups 引用它。
      忘了列在這裡的話分頁版一切正常、單檔版一開盃賽頁就 renderUclView is not defined ——
      實際發生過。下面有一條守門:頁面 import 的本地模組必須都在 SHARED 裡。 */
-  const SHARED = ['fixture-list', 'sim-table', 'ucl-view', 'predict-core', 'duel-anim', 'predict-score',
+  const SHARED = [
+  /* 關注球隊(2026-09-14)。`follow` 是儲存層、`follow-view` 是「我的球隊」那個分頁的版面。
+     **follow 要排在最前面** —— 賽程表、積分榜、實時戰況、動態、盃賽都 import 它
+     (共用模組引用共用模組,照相依排)。 */
+  'follow', 'fixture-list', 'sim-table', 'ucl-view', 'predict-core', 'duel-anim', 'predict-score',
   /* 探索頁的三個內容模組(併頁時抽出來的,做法同 ucl-view)。
      模擬遊玩(2026-09-03)取代了對戰模擬:game-engine 是引擎、game-view 是版面,
      game-view import game-engine,所以引擎要排前面(共用模組引用共用模組,照相依排)。 */
-  'knowledge-view', 'allplayers-view', 'game-engine', 'game-view'];
+  'knowledge-view', 'allplayers-view', 'game-engine', 'game-view',
+  /* 「我的」那一頁的兩個分頁(2026-09-14 併頁時抽出來的)。
+     predict-view 引用 predict-score,所以排在它後面。 */
+  'follow-view', 'predict-view'];
 
   /* 守門:掃每一頁 import 了哪些本地模組,不在 SHARED 清單就直接失敗 ——
      這種漏法測試抓不到(分頁版正常),只有 bundle 自己能守。 */

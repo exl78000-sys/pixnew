@@ -1,4 +1,5 @@
-import * as C from './core.js?v=d6cbb077';
+import * as C from './core.js?v=155f0c5e';
+import { followedIn } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
 
@@ -8,6 +9,8 @@ try {
   C.nav();
 
   const cats = [...new Set(news.map(n => n.cat))];
+  /* 關注的球隊(這個聯賽的)。隊碼跨聯賽重複,所以一定要帶聯賽。 */
+  const mine = followedIn(C.league());
   /* 一則外電可能講到兩隊(轉會新聞很常見),所以球隊清單與篩選都要看
      teams 陣列;team 只是「標題主詞」那一支,拿它當唯一依據的話,
      用第二支球隊去篩就會篩不到自己明明有提到的新聞。 */
@@ -112,16 +115,18 @@ try {
     <button class="btn on" data-c="">全部</button>
     ${cats.map(c => `<button class="btn" data-c="${c}">${c}</button>`).join('')}
     <select id="fTeam"><option value="">所有球隊</option>${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
+    ${/* 只看我的球隊(2026-09-14)。**沒有關注任何球隊時整個開關不出現** ——
+         一個點了什麼都不會發生的開關,讀者會以為壞了。 */''}
+    ${mine.size ? `<label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer">
+      <input type="checkbox" id="fMine"> 只看我的球隊(${mine.size} 支)</label>` : ''}
     <span class="dim small" id="count"></span>
   </div>
   <div id="feed" class="grid" style="gap:10px"></div>
   ${C.foot(meta)}`;
 
-  const render = () => {
-    const t = document.getElementById('fTeam').value;
-    const rows = news.filter(n => (!cat || n.cat === cat) && (!t || teamsOf(n).includes(t)));
-    document.getElementById('count').textContent = `共 ${rows.length} 則`;
-    document.getElementById('feed').innerHTML = rows.map(n => `
+  /* 一則動態畫成一張卡。「只看我的球隊」的兩區共用它 —— 抄一份的話,
+     改了譯文標記或核對標記,另一區會悄悄過期。 */
+  const card = n => `
       <div class="card" style="padding:12px 14px">
         <div class="row" style="gap:8px">
           <span class="pill ${CLS[n.cat] ?? ''}">${n.cat}</span>
@@ -139,7 +144,30 @@ try {
           只翻譯不改寫,數字與人名隊名保留原文;上方灰字是原文標題,可點下方連結看全文。</div>` : ''}
         ${n.fixtureId ? `<div class="small" style="margin-top:6px"><a href="${C.link('index', { id: n.fixtureId })}">看這場的完整分析 →</a></div>` : ''}
         ${C.safeUrl(n.link) ? `<div class="small" style="margin-top:6px"><a href="${C.esc(C.safeUrl(n.link))}" target="_blank" rel="noopener">${C.esc(n.source ?? '原文')} →</a></div>` : ''}
-      </div>`).join('') || '<div class="note">沒有符合條件的動態。</div>';
+      </div>`;
+
+  const render = () => {
+    const t = document.getElementById('fTeam').value;
+    const onlyMine = document.getElementById('fMine')?.checked ?? false;
+    const base = news.filter(n => (!cat || n.cat === cat) && (!t || teamsOf(n).includes(t)));
+    /* 「只看我的球隊」只能靠**產物裡的球隊標記**(n.team / n.teams)。
+       而外電有一部分**根本沒有標記**(RSS 標題沒帶隊名,本站不猜)——
+       這一頁 151 則裡有 33 則是這樣。
+       那幾則不可以靜靜藏起來:讀者會漏掉自己的隊的新聞,而畫面上看不出來少了東西。
+       所以分兩區,第二區把「為什麼在這裡」寫清楚(鐵則四)。
+       **不要改成用隊名關鍵字去撈** —— United / City 這種字會把 Leeds、Sheffield、
+       Newcastle 混在一起,本站在租借姓名與盃賽隊名上已經踩過兩次
+       「對錯人比對不到糟得多」。 */
+    const mineRows = onlyMine ? base.filter(n => teamsOf(n).some(c => mine.has(c))) : base;
+    const untagged = onlyMine ? base.filter(n => teamsOf(n).length === 0) : [];
+    document.getElementById('count').textContent = onlyMine
+      ? `你的球隊 ${mineRows.length} 則・另有 ${untagged.length} 則沒有球隊標記`
+      : `共 ${mineRows.length} 則`;
+    document.getElementById('feed').innerHTML =
+      (mineRows.map(card).join('') || '<div class="note">沒有符合條件的動態。</div>')
+      + (untagged.length ? `<div class="note" style="margin-top:6px">
+          下面 ${untagged.length} 則<b>沒有球隊標記</b> —— 多半是綜合外電,標題裡沒有本站認得的隊名。
+          它們可能也跟你的球隊有關,所以照樣列出來,不藏起來。</div>${untagged.map(card).join('')}` : '');
   };
 
   document.querySelectorAll('[data-c]').forEach(b => {
@@ -150,6 +178,8 @@ try {
     };
   });
   document.getElementById('fTeam').onchange = render;
+  const mineBox = document.getElementById('fMine');
+  if (mineBox) mineBox.onchange = render;
   render();
 
 } catch (err) { C.fail(err); }

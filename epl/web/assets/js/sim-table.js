@@ -1,4 +1,5 @@
-import * as C from './core.js?v=d6cbb077';
+import * as C from './core.js?v=155f0c5e';
+import { followedIn, followStar, bindFollowStars } from './follow.js?v=02130043';
 
 /* ── 本季預測積分榜(共用模組) ─────────────────────────
    兩個地方在畫同一張表:積分與賽程頁,以及實時戰況頁
@@ -17,10 +18,14 @@ export function mountSimTable(mountId, { sim, teams, table, meta, note = true })
   const curBy = new Map((table?.current ?? []).map(r => [r.code, r]));
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const played = (table?.current ?? []).reduce((a, r) => a + (r.p ?? 0), 0) / 2;
+  /* 關注的球隊(這個聯賽的)。**要帶聯賽** —— 隊碼跨聯賽重複(BUR 在英超與英冠都有)。 */
+  const lg = C.league();
+  const mine = followedIn(lg);
 
   el.innerHTML = C.table(sim, [
     { key: 'pos', label: '#', value: r => r.expectedPos, render: (r, i) => i + 1, sortable: false, num: true },
-    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+    { key: 'team', label: '球隊', value: r => C.name(r.code), left: true,
+      render: r => `${followStar(lg, r.code)}${C.teamCell(r.code)}` },
     { key: 'earned', label: '本季實得', value: r => (curBy.get(r.code)?.pts ?? 0), num: true,
       title: '已經踢完的比賽拿到的分數,這部分不是預測',
       render: r => { const c = curBy.get(r.code);
@@ -53,7 +58,14 @@ export function mountSimTable(mountId, { sim, teams, table, meta, note = true })
         return t?.lastSeason ? `第 ${t.lastSeason.pos} 名` : '<span class="pill">升班馬</span>'; } },
     { key: 'elo', label: 'Elo', value: r => teamBy.get(r.code)?.elo ?? 0, num: true,
       render: r => C.fx(teamBy.get(r.code)?.elo, 0) },
-  ], { sortKey: 'expectedPoints', desc: true, onRow: r => { C.go('teams', { code: r.code }); } });
+  ], { sortKey: 'expectedPoints', desc: true,
+    /* 關注的球隊**只標色,不改順序** —— 這張表的順序是名次,
+       把關注的搬到最上面會讓第 14 名出現在第一列,讀者會以為排錯了。 */
+    rowClass: r => (mine.has(r.code) ? 'followed' : ''),
+    onRow: r => { C.go('teams', { code: r.code }); } });
+  /* 星號的點擊不要冒泡成「進球隊頁」;點完就地重畫這張表,底色才會跟著亮起來。 */
+  el.addEventListener('click', e => { if (e.target.closest('[data-follow]')) e.stopPropagation(); }, true);
+  bindFollowStars(el, () => mountSimTable(mountId, { sim, teams, table, meta, note }));
 
   if (!note) return;
   el.insertAdjacentHTML('afterend', `<div class="note info" style="margin-top:10px">

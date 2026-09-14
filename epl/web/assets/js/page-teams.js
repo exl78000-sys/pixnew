@@ -1,4 +1,5 @@
-import * as C from './core.js?v=d6cbb077';
+import * as C from './core.js?v=155f0c5e';
+import { followStar, bindFollowStars } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
 
@@ -952,7 +953,11 @@ try {
       .filter(Boolean).join('・');
     return `<div class="page-head">
       <div class="row" style="gap:14px">${C.badge(t.code, 'xl')}
-        <div><h1 style="margin:0">${C.esc(t.en)}<span class="dim" style="font-size:15px;font-weight:400"> ${C.esc(t.zh)}${t.nickname ? `・${C.esc(t.nickname)}` : ''}</span></h1>
+        <div><h1 style="margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap">${C.esc(t.en)}<span class="dim" style="font-size:15px;font-weight:400"> ${C.esc(t.zh)}${t.nickname ? `・${C.esc(t.nickname)}` : ''}</span>
+          ${/* 關注的主要入口:看一支球隊的時候按下去最自然。
+               **要帶目前聯賽** —— 隊碼跨聯賽重複(BUR 在英超與英冠都有),
+               只存隊碼的話關注英冠的 Burnley 會標到英超那一支身上。 */ ''}
+          ${followStar(C.league(), t.code, { label: true })}</h1>
           <p class="small">${sub}</p></div></div>
       <div class="row small" style="margin-top:6px"><a href="${C.link('teams')}">← 回球隊列表</a></div>
     </div>`;
@@ -1296,4 +1301,8 @@ try {
   } else {
     overview();
   }
+  /* 星號的點擊走委派,綁在 #app 上一次就好 —— 綁在按鈕上的話,
+     表格重畫(排序、換分頁)之後那顆星就沒有反應了。
+     這一頁**不重畫**:按鈕自己會換成 ★,整頁重畫只會把捲動位置跳掉。 */
+  bindFollowStars(app);
 } catch (err) { C.fail(err); }

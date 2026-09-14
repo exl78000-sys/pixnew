@@ -723,7 +723,10 @@ const SITE_PAGES = [
   /* 我的預測(2026-09-02):一輪一輪自己猜,賽季結束跟模型與市場比。
      跨聯賽(頁內自己選),而且**只讀不寫** —— 預測存在使用者自己的瀏覽器,
      不進本站資料、不回饋模型。只放這一組,PAGES 再放一次會出現兩個分頁。 */
-  ['predict', '我的預測'],
+  /* 2026-09-14 起這一頁有兩個分頁(我的球隊、我的預測),所以標籤改成「我的」——
+     **不是多加一格**:跨聯賽這一組已經四格,手機那一列本來就要橫向捲。
+     兩個分頁的共通點是「存在你自己瀏覽器裡、build 不讀、不回饋進模型」。 */
+  ['predict', '我的'],
 
 ];
 
@@ -1527,7 +1530,10 @@ export function foldPlan({ cols, widths, available, total = null, keep = new Set
   return hide;
 }
 
-export function table(rows, cols, { sortKey = null, desc = true, onRow = null, rowClickable = null, limit = null } = {}) {
+/* `rowClass(列)` 讓呼叫端給某幾列加 class(2026-09-14 為了關注球隊加的)。
+   為什麼不讓呼叫端自己在某一欄的 render 裡加標記:**那只會標到一格**,
+   而「這一列是我的球隊」要整列看得出來。重排序之後也要跟著走,所以在 render 裡算。 */
+export function table(rows, cols, { sortKey = null, desc = true, onRow = null, rowClickable = null, limit = null, rowClass = null } = {}) {
   const id = `t${Math.random().toString(36).slice(2, 8)}`;
   let state = { key: sortKey, desc };
   const foldable = cols.filter(c => c.fold).sort((a, b) => b.fold - a.fold);
@@ -1596,7 +1602,8 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
     const head = cols.map(c =>
       `<th class="${cls(c, c.sortable === false ? '' : 'sortable') + (state.key === c.key ? ' sorted' : '')}" data-k="${c.key}" title="${c.title ?? ''}">${c.label}${state.key === c.key ? (state.desc ? ' ▾' : ' ▴') : ''}</th>`).join('');
     const body = data.map((r, i) =>
-      `<tr class="${onRow && (!rowClickable || rowClickable(r)) ? 'clickable' : ''}" data-i="${rows.indexOf(r)}">${cols.map(c =>
+      `<tr class="${[onRow && (!rowClickable || rowClickable(r)) ? 'clickable' : '',
+        rowClass ? (rowClass(r) ?? '') : ''].filter(Boolean).join(' ')}" data-i="${rows.indexOf(r)}">${cols.map(c =>
         `<td class="${cls(c)}" data-k="${c.key}">${cellHtml(c, r, i)}</td>`).join('')}</tr>`).join('');
     const el = document.getElementById(id);
     el.querySelector('table').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
