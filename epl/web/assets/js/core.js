@@ -534,6 +534,29 @@ export function teamLink(code, { label: custom = null } = {}) {
   return `<a href="${link('teams', { code })}" style="color:inherit;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px">${esc(custom ?? name(code))}</a>`;
 }
 
+/* ── 盃賽的球隊身分(跨聯賽)────────────────────
+   **不能靠「目前站在哪個聯賽」的名冊。** 盃賽頁三個聯賽都看得到,而 registerTeams 註冊的是
+   目前聯賽那一份:站在西甲打開聯賽盃,27 支英格蘭球隊一支都沒註冊 —— team() 回的是樁,
+   於是 badge() 退回灰色代碼方塊、name() 印出三個字母,而同一張表裡第九級的 Fleetwood Town
+   有真隊徽與全名(實測 es1 74 個代碼方塊、en2 36 個)。總覽的盃賽列是同一個根因的另一面:
+   它只查 crests 查表,而那份**刻意只收本站沒有隊碼的球隊**,所以有隊碼的兩邊反而一張都沒有。
+   單場頁更糟:site.colors 拿到樁的 ['#444','#888'],兩隊在球場圖與射門圖上是同一個灰。
+
+   一律走這裡:英超目錄的 clubs.json 是本站的**英格蘭球會名冊**(盃賽出現的 27 支有隊碼球隊
+   全在、隊徽齊全),盃賽 crests 查表補上本站沒有隊碼的那些。兩者都不退回隊碼 ——
+   讀者看到的永遠是一支看得出來是誰的球隊。
+
+   **刻意不 registerTeams**:隊碼跨聯賽會重複(Burnley 在英超與英冠都是 BUR),
+   全域登錄是後蓋前,把英超那份註冊進去會蓋掉目前聯賽的同碼球隊。所以回一張表、就地查。 */
+export async function cupClubs() {
+  const { data } = await loadFrom('pl', ['clubs']);
+  return new Map((data.clubs ?? []).map(t => [t.code, t]));
+}
+export const cupCrest = (side, { clubs, crests } = {}) =>
+  (side?.code ? clubs?.get(side.code)?.crest : null) ?? crests?.[side?.sourceId] ?? null;
+export const cupName = (side, { clubs } = {}) =>
+  (side?.code ? clubs?.get(side.code)?.en : null) ?? side?.name ?? side?.code ?? '?';
+
 /* 背號的來源標記。
    FPL 快照缺的那幾個是後來補的,補的來源可信度不一樣:
    官方名單是英超自己公布的,不用特別說;FotMob 那幾筆只有單一來源、

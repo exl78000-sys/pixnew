@@ -1,10 +1,12 @@
-import * as C from './core.js?v=8ad00ce3';
-import { renderUclView } from './ucl-view.js?v=cdf11109';
+import * as C from './core.js?v=d6cbb077';
+import { renderUclView } from './ucl-view.js?v=a1a8fdc8';
 
 const app = document.getElementById('app');
 
-// 盃賽對手的隊徽查表(sourceId → data URI),載入資料後填入
-let CUP_CRESTS = {};
+/* 盃賽的球隊身分(隊徽與隊名)。載入資料後填入,查法一律走 core.js 的 cupCrest / cupName。
+   **不要改回 C.badge(t.code) / C.name(t.code)** —— 那兩個查的是「目前聯賽」的名冊,
+   站在西甲時 27 支英格蘭球隊一支都查不到,整張表變成灰色三字母代碼(實測 74 個)。 */
+let CUP_IDENT = { clubs: new Map(), crests: {} };
 
 /* 盃賽頁。三件事跟聯賽頁不一樣,而且都會影響怎麼寫:
 
@@ -27,7 +29,7 @@ let CUP_REPORTS = {};
 
 function teamCell(t, { align = 'left' } = {}) {
   if (!t) return '<span class="dim small">待定</span>';
-  const name = C.esc(t.name ?? '');
+  const name = C.esc(C.cupName(t, CUP_IDENT));
   /* 本站認不得的球隊:**有隊徽就畫隊徽,但仍然沒有連結**。
      隊徽是那支球隊真實的徽章(上游給的),畫出來不是編身分;
      但本站沒有它的資料,所以點不進去 —— 這兩件事要分開,
@@ -42,16 +44,24 @@ function teamCell(t, { align = 'left' } = {}) {
           >${t.tier}${t.tierSeason ? `·${t.tierSeason.slice(2)}` : ''}</span>`
       : '';
     // 隊徽在 cups.json 的查表裡(一支球隊一份),不是掛在每一個球隊格上
-    const img = CUP_CRESTS[t.sourceId]
-      ? `<img class="crest" src="${CUP_CRESTS[t.sourceId]}" alt="${name}" title="${name}" loading="lazy" width="26" height="26">`
+    const crest = C.cupCrest(t, CUP_IDENT);
+    const img = crest
+      ? `<img class="crest" src="${crest}" alt="${name}" title="${name}" loading="lazy" width="26" height="26">`
       : '';
     if (!img && !tier) return `<span class="small" style="text-align:${align}">${name}</span>`;
     return `<span class="small" style="display:inline-flex;align-items:center;gap:5px;text-align:${align};flex-direction:${
       align === 'right' ? 'row-reverse' : 'row'}">${img}<span>${name}</span>${tier}</span>`;
   }
+  /* 本站認得的球隊:隊徽也走同一條查法。**這裡以前寫 C.badge(t.code)**,
+     而 badge 查的是目前聯賽的名冊 —— 站在西甲時整排變成灰色代碼方塊,
+     旁邊第九級的球隊反而有真隊徽。查不到才退回 badge(它自己會退到配色方塊)。 */
+  const crest = C.cupCrest(t, CUP_IDENT);
+  const mark = crest
+    ? `<img class="crest" src="${crest}" alt="${name}" title="${name}" loading="lazy" width="26" height="26">`
+    : C.badge(t.code);
   return `<a class="small" href="${C.link('teams', { code: t.code })}"
     style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;flex-direction:${align === 'right' ? 'row-reverse' : 'row'}"
-    >${C.badge(t.code)}<span>${C.name(t.code)}</span></a>`;
+    >${mark}<span>${name}</span></a>`;
 }
 
 /* 比分。規則:
@@ -79,7 +89,7 @@ function scoreCell(m) {
     /* FotMob 的賽程端點只說「PK 後結束」,比數與勝方另從單場詳情補。
        補到勝方就標出來;沒補到就寫「勝方待查」—— 不拿平手比分猜(鐵則四)。 */
     const w = m.pensWinner === 'home' ? m.home : m.pensWinner === 'away' ? m.away : null;
-    const wName = w ? (w.code ? C.name(w.code) : (w.shortName ?? w.name ?? '')) : '';
+    const wName = w ? (w.shortName ?? C.cupName(w, CUP_IDENT)) : '';
     bits.push(w
       ? `<span class="pill accent tiny" title="PK 大戰,${C.esc(w.name ?? '')} 勝出(比數上游沒給)">PK・${C.esc(wName)} 勝</span>`
       : '<span class="pill tiny warn" title="上游只說 PK 後結束,比數與勝方還沒補到">PK 勝方待查</span>');
@@ -173,8 +183,9 @@ function championCard(champ, cupName, seasonLabel) {
   const pens = m.pens ? (w === 'away' ? `${m.pens[1]}-${m.pens[0]}` : `${m.pens[0]}-${m.pens[1]}`)
     : (m.state === 'FT_PEN' ? '大戰勝出(比數上游沒給)' : null);
   return `<div class="note ok" style="margin-top:12px">
-    <b>${seasonLabel} ${cupName}冠軍:${C.esc(champ.team?.name ?? '')}</b>
-    ${champ.team?.code ? C.badge(champ.team.code) : ''}
+    <b>${seasonLabel} ${cupName}冠軍:${C.esc(C.cupName(champ.team, CUP_IDENT))}</b>
+    ${(() => { const c = C.cupCrest(champ.team, CUP_IDENT);
+      return c ? `<img class="crest" src="${c}" alt="" loading="lazy" width="26" height="26">` : ''; })()}
     <div class="small" style="margin-top:4px">${C.esc(champ.stage)}・
       ${score} 擊敗 ${C.esc(champ.runnerUp?.name ?? '')}${
         m.aet === true ? '(延長賽)' : ''}${pens ? `,PK ${pens}` : ''}
@@ -182,7 +193,11 @@ function championCard(champ, cupName, seasonLabel) {
   </div>`;
 }
 
-/* 英超球隊走到哪一輪。認不得的球隊不進這張表 —— 它們沒有本站身分,列了也點不進去。
+/* 本站認得的球隊走到哪一輪。認不得的球隊不進這張表 —— 它們沒有本站身分,列了也點不進去。
+   **標題以前寫「英超球隊」,那是假的**:這張表收的是「有本站隊碼」的球隊,
+   而本站認得三個聯賽 —— 實際列出來的 27 支裡有 Hull City、Leeds、Coventry、
+   Sheffield United 這些英冠球隊,旁邊還寫著「共 27 支」(英超只有 20 支)。
+   跟「前端把聯賽的事實寫死」同一類:寫死的不是數字,是「這些是英超球隊」這種宣稱。
    「場次」只算**已完賽**的。第一版把已排定但還沒踢的也算進去,
    於是利物浦一場還沒開打的第三輪比賽被顯示成「1 場 0 勝」——
    讀者會以為他們踢過而且沒贏。未賽不是 0 勝,是還沒發生。 */
@@ -197,7 +212,10 @@ function runsTable(runs) {
     return '<span class="dim small">—</span>';
   };
   return C.table(runs, [
-    { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+    /* 隊名與隊徽走盃賽那條查法,**不是 C.teamCell / C.name** —— 那兩個查目前聯賽的名冊,
+       站在西甲時這張表整排是灰色三字母代碼,而旁邊的狀態欄印著對手的全名。 */
+    { key: 'team', label: '球隊', value: r => C.cupName(r, CUP_IDENT),
+      render: r => teamCell({ code: r.code, name: r.name, sourceId: r.sourceId }) },
     { key: 'stage', label: '打到哪一輪', value: r => r.lastPlayedOrder, num: true,
       title: '最後一場已完賽比賽所在的輪次',
       render: r => `<span class="mono small">${C.esc(r.lastPlayedStage ?? '尚未出賽')}</span>` },
@@ -218,7 +236,10 @@ try {
   const { data: shared } = await C.loadFrom('pl', ['cups', 'cup-details', 'ucl', 'ucl-teams', 'ucl-standings', 'ucl-elo', 'ucl-details', 'competitions']);
   C.registerCompetitions(shared.competitions);   // 分頁按鈕的賽事圖像:有真圖就用真圖
   const cups = shared.cups;
-  CUP_CRESTS = cups?.crests ?? {};
+  /* 球隊身分:英超目錄的 clubs.json(本站的英格蘭球會名冊)+ 盃賽 crests 查表。
+     **clubs 一定要從 pl 載,不是目前聯賽** —— 盃賽是跨聯賽的一頁,
+     用目前聯賽的名冊等於「站在哪裡決定我認得誰」(core.js 的 cupClubs 有完整說明)。 */
+  CUP_IDENT = { clubs: await C.cupClubs(), crests: cups?.crests ?? {} };
   /* 盃賽賽後報告的**索引**(幾 KB):只用來決定「這一場有沒有報告可看」。
      逐場報告在單場頁點開才載 —— 報告一份約 60 KB,清單裡展開就是歐冠那條坑
      (一份報告比整份清單還長)。 */
@@ -362,8 +383,8 @@ try {
       document.getElementById('body').innerHTML = `
         ${missingNote}
         ${championCard(season.champion, cup.zh, season.label)}
-        ${season.runs.length ? `<div class="section"><h2>英超球隊走到哪一輪</h2>
-          <span class="hint">只列本站認得的球隊・共 ${season.runs.length} 支</span></div>
+        ${season.runs.length ? `<div class="section"><h2>本站認得的球隊走到哪一輪</h2>
+          <span class="hint">有本站球隊頁的才列・共 ${season.runs.length} 支・其餘球隊本站沒有資料,點不進去</span></div>
           <div id="runs"></div>` : ''}
         ${qualifyingToggle({ ...season, __showQual: showQualifying })}
         <div class="section"><h2>逐輪賽果</h2>

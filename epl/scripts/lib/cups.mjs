@@ -78,8 +78,13 @@ export function runsByTeam(rounds) {
       for (const side of ['home', 'away']) {
         const code = m[side]?.code;
         if (!code) continue;
+        /* name / sourceId 跟著 code 一起帶出去:這張表在前端要畫隊徽與隊名,
+           而盃賽是跨聯賽的一頁 —— 只給 code 的話前端只能查「目前聯賽」的名冊,
+           站在西甲就整排變成三個字母(core.js 的 cupClubs 有完整說明)。
+           帶著上游的名字與 id,身分查不到本站那一份時還有得退。 */
         const cur = runs.get(code) ?? {
-          code, played: 0, wins: 0,
+          code, name: m[side]?.name ?? null, sourceId: m[side]?.sourceId ?? null,
+          played: 0, wins: 0,
           lastPlayedStage: null, lastPlayedOrder: -1,
           out: null, outTo: null, nextStage: null, nextKickoff: null, nextOpp: null,
         };
