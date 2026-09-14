@@ -27569,8 +27569,8 @@
   "LEE|NEW": {
    "fixtureId": 128958,
    "kickoff": "2026-09-14T19:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 4,
     "away": 1
@@ -28000,6 +28000,58 @@
    "goals": [
     {
      "side": "H",
+     "person": 117647,
+     "assist": null,
+     "team": 9,
+     "min": 32,
+     "label": "32'00",
+     "phase": "1",
+     "type": "O",
+     "kind": "O",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
+     "person": 14608,
+     "assist": 9576,
+     "team": 9,
+     "min": 34,
+     "label": "34'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 0
+    },
+    {
+     "side": "H",
+     "person": 9576,
+     "assist": 114504,
+     "team": 9,
+     "min": 45,
+     "label": "45+1'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 3,
+     "as": 0
+    },
+    {
+     "side": "H",
+     "person": 33162,
+     "assist": null,
+     "team": 9,
+     "min": 59,
+     "label": "59'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 4,
+     "as": 0
+    },
+    {
+     "side": "A",
      "person": 302900,
      "assist": 49495,
      "team": 23,
@@ -28244,12 +28296,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -28266,11 +28312,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+2'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-14T20:55:25.859Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-09-14T20:53:09.387Z"
+ "fetchedAt": "2026-09-14T20:55:25.859Z"
 }
