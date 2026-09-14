@@ -379,6 +379,9 @@ async function main() {
   console.log('\n▶ 英格蘭盃賽');
   const cupFail = checkCups();
 
+  console.log('\n▶ 關注球隊');
+  const followFail = await checkFollow();
+
   console.log('\n▶ 盃賽的球隊身分(跨聯賽)');
   const cupIdFail = await checkCupIdentity();
 
@@ -399,7 +402,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -3129,7 +3132,12 @@ async function checkDataGap() {
       const ps = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'predict-score.js')));
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
-      const page = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-predict.js'), 'utf8');
+      /* 2026-09-14:「我的預測」變成「我的」那一頁的第二個分頁,內容搬進 predict-view.js
+         (page-predict.js 只剩分頁與容器)。下面這些掃原始碼的斷言要跟著搬 ——
+         不搬的話它們掃的是一個 70 行的主機檔,**每一條都會紅**,
+         而紅的原因跟它們想守的事一點關係都沒有。 */
+      const page = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-view.js'), 'utf8')
+        + readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-predict.js'), 'utf8');
       const fx = [
         { season: 'S', home: 'A', away: 'B', played: true, fh: 2, fa: 0, kickoff: '2026-01-01T12:00:00Z' },
         { season: 'S', home: 'C', away: 'D', played: true, fh: 1, fa: 1, kickoff: '2026-01-02T12:00:00Z' },
@@ -3184,8 +3192,10 @@ async function checkDataGap() {
           ps.scorePredictions({ 'S|X|Y': rec() }, fx).rows.length === 0],
         /* 三份頁面清單少一份的話:新頁不會壞,只會從單檔版靜靜消失,
            或導覽列上根本不出現(而多頁版一切正常)。 */
-        ['我的預測掛在跨聯賽那一組、三份清單都有',
-          /\['predict', '我的預測'\]/.test(core)
+        /* 2026-09-14:標籤改成「我的」(那一頁有兩個分頁:我的球隊、我的預測)。
+           **頁面鍵仍是 `predict`** —— 改鍵的話三份清單、舊網址與書籤全部要跟著動。 */
+        ['我的(球隊 + 預測)掛在跨聯賽那一組、三份清單都有',
+          /\['predict', '我的'\]/.test(core)
           && core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS')).includes("'predict'")
           && !core.slice(core.indexOf('const GROUPS')).includes("['predict'")
           && /'explore', 'predict'\]/.test(bundle)
@@ -4419,8 +4429,21 @@ function checkAssetStamps() {
   ];
   const stale = [];
   let refs = 0;
+  /* **`?v=` 後面一定是 8 位十六進位。** 這一條是 2026-09-14 補的:
+     新加 import 時手寫了 `?v=0` 當佔位符,而 `stamp-assets` 是用**字面** `'./x.js'`
+     去比對再加戳的 —— 帶了假戳就永遠命中不了,那一行的戳永遠是 0。
+     而上面那條只掃「長度剛好 8 位」的戳,假戳它**看不到**(下面三個轉址頁
+     就是這樣帶著 `?v=0` 待了很久:core.js 換版時它們載到的是快取的舊版)。 */
+  const fake = [];
   for (const { dir, f } of refFiles) {
     const text = readFileSync(join(dir, f), 'utf8');
+    /* **先把註解剝掉再掃。** 註解裡在講這條規則就會提到 `?v=` 的各種寫法,
+       不剝的話這一條永遠紅,而紅的原因跟它想守的事一點關係都沒有
+       (「測試掃原始碼,而自己的註解就是誤報來源」)。 */
+    const bare = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+    for (const m of bare.matchAll(/([\w-]+\.(?:js|css))\?v=([^'"\s>]*)/g)) {
+      if (!/^[0-9a-f]{8}$/.test(m[2])) fake.push(`${f} → ${m[1]}?v=${m[2]}`);
+    }
     for (const m of text.matchAll(/([\w-]+\.(?:js|css))\?v=([0-9a-f]{8})/g)) {
       const [, target, stamp] = m;
       const path = target.endsWith('.css') ? join(W, 'assets', 'css', target) : join(jsDir, target);
@@ -4433,6 +4456,8 @@ function checkAssetStamps() {
   }
   ok(stale.length === 0, `${refs} 筆資產引用的戳都對得回檔案內容`,
     stale.slice(0, 4).join('、') || '無');
+  ok(fake.length === 0, '沒有假戳(?v= 後面一定是 8 位十六進位,不然 stamp 永遠命中不了)',
+    fake.slice(0, 4).join('、') || '無');
 
   /* meta.json 要記著這次建置的戳,前端才有辦法知道「我現在跑的是不是最新那一版」。
      使用者實際遇到的症狀:在導覽列點來點去,有時候跳成上一版的排版 ——
@@ -6240,6 +6265,136 @@ function checkLoans() {
 
    三條都不拋錯、`npm test` 也看不到版面,所以守在這裡:資料查得到、程式走同一條查法、
    沒有人再退回目前聯賽的名冊。 */
+
+/* ── 關注球隊(2026-09-14,使用者要求的新功能)────────────────────
+   這一層會出的錯全部**不會拋錯**:標到另一支球隊、把「查不到」印成「沒有」、
+   單檔版整份死掉、資產戳沒換。所以逐條釘在這裡。 */
+async function checkFollow() {
+  let fail = 0;
+  const ok = (cond, label, extra = '') => {
+    if (!cond) fail++;
+    console.log(`  ${cond ? '✔' : '✗'} ${label}${extra ? ` (${extra})` : ''}`);
+  };
+  const src = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+  const strip = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  /* 一、儲存層。**存的是 (聯賽, 隊碼) 配對** —— 隊碼跨聯賽重複
+     (BUR 在英超與英冠都有,Leeds / Ipswich / Leicester 同理)。
+     只存隊碼的話,關注英冠的 Burnley 會在英超的積分榜上標到另一支球隊,
+     而畫面看起來完全正常。 */
+  const store = new Map();
+  globalThis.localStorage ??= {
+    getItem: k => (store.has(k) ? store.get(k) : null),
+    setItem: (k, v) => store.set(k, String(v)),
+    removeItem: k => store.delete(k),
+  };
+  globalThis.document ??= { addEventListener() {} };
+  const F = await import('../web/assets/js/follow.js');
+
+  F.writeFollows([{ lg: 'pl', code: 'BUR' }]);
+  ok(F.isFollowed('pl', 'BUR') && !F.isFollowed('en2', 'BUR'),
+    '同一個隊碼在不同聯賽是兩筆(BUR:英超有、英冠沒有)');
+  ok(F.followedIn('pl').has('BUR') && !F.followedIn('en2').has('BUR'),
+    'followedIn 只回這個聯賽的');
+  ok(F.followedAnywhere().has('BUR'), 'followedAnywhere 不分聯賽(盃賽用)');
+
+  const t1 = F.toggleFollow('pl', 'BUR');
+  ok(t1.on === false && t1.saved === true && F.followCount() === 0, '再切一次就取消');
+  F.toggleFollow('es1', 'BAR'); F.toggleFollow('es1', 'BAR'); F.toggleFollow('es1', 'BAR');
+  ok(F.followCount() === 1, '切換是開關不是累加', `${F.followCount()}`);
+
+  // 壞資料不可以讓整頁掛掉:讀出來一律是乾淨的陣列
+  store.set('warroom:follow:v1', '{壞掉的 json');
+  ok(Array.isArray(F.readFollows()) && F.readFollows().length === 0, '壞掉的 JSON 讀成空陣列,不拋錯');
+  store.set('warroom:follow:v1', JSON.stringify({ v: 1, teams: [{ lg: 'pl' }, { code: 'ARS' }, { lg: 'pl', code: 'ARS' }, { lg: 'pl', code: 'ARS' }] }));
+  ok(F.readFollows().length === 1, '缺欄位的丟掉、重複的只留一筆', JSON.stringify(F.readFollows()));
+
+  /* 寫不進去要**回報失敗**,不能靜靜當成功 —— 無痕視窗會直接拋例外,
+     而使用者會以為自己關注成功了,下一頁卻什麼都沒有。 */
+  const realSet = globalThis.localStorage.setItem;
+  globalThis.localStorage.setItem = () => { throw new Error('QuotaExceeded'); };
+  ok(F.writeFollows([{ lg: 'pl', code: 'ARS' }]) === false, '存不進去時 writeFollows 回 false');
+  ok(F.toggleFollow('pl', 'ARS').saved === false, 'toggleFollow 也把存不進去傳出來');
+  globalThis.localStorage.setItem = realSet;
+
+  /* 二、單檔版。共用模組一律 `export const` / `export function` ——
+     打包是把 `export ` 字首剝掉再攤平,`export { a as b }` 剝完是語法錯誤,
+     整份單檔版會死掉,**而分頁版完全正常**(2026-09-13 踩過)。 */
+  for (const f of ['follow.js', 'follow-view.js', 'predict-view.js']) {
+    ok(!/^export \{/m.test(src(f)), `${f} 沒有 export { } 的寫法(單檔版會死)`);
+  }
+  const bundleSrc = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+  for (const m of ['follow', 'follow-view', 'predict-view']) {
+    ok(new RegExp(`'${m}'`).test(bundleSrc), `bundle 的 SHARED 有 ${m}`);
+  }
+  /* 相依順序:共用模組引用共用模組時,被引用的要排前面(攤平之後就是宣告順序)。 */
+  const order = n => bundleSrc.indexOf(`'${n}'`);
+  ok(order('follow') < order('fixture-list') && order('follow') < order('follow-view'),
+    'follow 排在引用它的模組前面');
+  ok(order('predict-score') < order('predict-view'), 'predict-score 排在 predict-view 前面');
+
+  /* 三、六個消費端都走共用的那一份。自己再寫一份 localStorage 讀取的話,
+     鍵改了、形狀改了就會有一個地方悄悄過期(姓名配對那條坑的形狀)。 */
+  for (const f of ['page-teams.js', 'page-index.js', 'page-live.js', 'page-news.js',
+    'sim-table.js', 'fixture-list.js', 'page-cups.js', 'follow-view.js', 'predict-view.js']) {
+    ok(/from '\.\/follow\.js/.test(src(f)), `${f} 從 follow.js 拿關注狀態`);
+  }
+  const others = ['page-teams.js', 'page-index.js', 'page-live.js', 'page-news.js', 'sim-table.js',
+    'fixture-list.js', 'page-cups.js', 'follow-view.js', 'predict-view.js']
+    .filter(f => /warroom:follow/.test(strip(src(f))));
+  ok(others.length === 0, '沒有人自己再讀一次 localStorage 的鍵', others.join('、'));
+
+  /* 四、**聯賽頁一律帶聯賽,只有盃賽頁可以不分聯賽。**
+     盃賽裡的 BUR 就是 Burnley 這間俱樂部,他今年在哪一級無關;
+     但聯賽頁用 followedAnywhere 的話,關注英冠的 Burnley 會標到英超那一支身上。 */
+  const anywhereUsers = ['page-teams.js', 'page-index.js', 'page-live.js', 'page-news.js',
+    'sim-table.js', 'fixture-list.js', 'follow-view.js', 'predict-view.js']
+    .filter(f => /followedAnywhere/.test(strip(src(f))));
+  ok(anywhereUsers.length === 0, '只有盃賽頁用不分聯賽的查法', anywhereUsers.join('、'));
+  ok(/followedAnywhere/.test(strip(src('page-cups.js'))), '盃賽頁用不分聯賽的查法(那裡隊碼就是俱樂部)');
+
+  /* 五、**積分榜只標色,不改順序。** 那張表的順序就是名次,
+     把關注的搬到最上面會讓第 14 名出現在第一列,讀者會以為排錯了。 */
+  const sim = strip(src('sim-table.js'));
+  ok(/rowClass: r => \(mine\.has\(r\.code\) \? 'followed' : ''\)/.test(sim),
+    '積分榜用 rowClass 標色');
+  ok(!/sort\([^)]*mine\.has/.test(sim), '積分榜沒有依關注重排序');
+  ok(/rowClass/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8')),
+    'core.js 的 table 支援 rowClass(六個表共用一份)');
+
+  /* 六、動態的「只看我的球隊」**不可以把沒有球隊標記的那些藏起來**。
+     這一頁的外電有一部分標題裡沒有本站認得的隊名,產物就沒有 team 欄位;
+     藏起來的話讀者會漏掉自己的隊的新聞,而畫面上看不出少了東西(鐵則四)。
+     **也不准改成用隊名關鍵字去撈** —— United / City 會把 Leeds、Sheffield、
+     Newcastle 混在一起(「對錯人比對不到糟得多」)。 */
+  const newsSrc = strip(src('page-news.js'));
+  ok(/untagged/.test(newsSrc), '動態把沒有球隊標記的收成一區');
+  ok(/teamsOf\(n\)\.length === 0/.test(newsSrc), '「沒有標記」看的是產物的欄位,不是關鍵字比對');
+
+  /* 七、**「沒有傷停來源」與「沒有人受傷」是兩件事。**
+     西甲有球員層但沒有傷停來源(capabilities.injuries === false,
+     players-core 的 status 全是 null)—— 只看陣列長度的話會印
+     「目前沒有傷停或停賽回報」,而那是假的(「0 是一個看起來很像答案的數字」)。 */
+  const fv = strip(src('follow-view.js'));
+  ok(/capabilities\?\.injuries !== false/.test(fv), '傷停那一區看 capabilities.injuries,不是看陣列長度');
+  ok(/capabilities\?\.players === false/.test(fv), '沒有球員層的聯賽另外講(兩種原因分得開)');
+  // 產物真的是這樣:西甲 status 全 null、英超有非 a 的
+  for (const [lg, p, expect] of [['pl', 'web/data/players-core.json', true],
+    ['es1', 'web/data/leagues/es1/players-core.json', false]]) {
+    const path = join(ROOT, ...p.split('/'));
+    if (!existsSync(path)) continue;
+    const arr = JSON.parse(readFileSync(path, 'utf8'));
+    const has = arr.some(x => x.status && x.status !== 'a');
+    ok(has === expect, `${lg} 的球員狀態欄位${expect ? '有內容' : '全是 null(所以不能印「沒有傷停」)'}`);
+  }
+
+  /* 八、匯出/匯入與「存在這台瀏覽器」那句話要在畫面上(鐵則四) */
+  ok(/FOLLOW_STORAGE_NOTE/.test(src('follow-view.js')) && /換一台裝置/.test(src('follow.js')),
+    '「換一台裝置就看不到」寫在畫面上');
+  ok(/fvExport/.test(fv) && /fvImport/.test(fv), '有匯出與匯入');
+  return fail;
+}
+
 async function checkCupIdentity() {
   let fail = 0;
   const ok = (cond, label, extra = '') => {

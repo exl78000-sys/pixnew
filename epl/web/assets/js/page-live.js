@@ -1,5 +1,6 @@
-import * as C from './core.js?v=d6cbb077';
-import { mountSimTable } from './sim-table.js?v=a1ade31e';
+import * as C from './core.js?v=155f0c5e';
+import { followedIn } from './follow.js?v=02130043';
+import { mountSimTable } from './sim-table.js?v=9ffd0e60';
 
 const app = document.getElementById('app');
 
@@ -107,7 +108,17 @@ try {
     const phased = fixtures.map(f => ({
       f, s: C.scheduleState(f, now, fresh ? liveByKey.get(`${f.home}|${f.away}`) ?? null : null),
     }));
-    const inPlaySched = phased.filter(x => x.s.phase === 'inplay').sort((a, b) => (a.f.kickoff < b.f.kickoff ? -1 : 1));
+    /* 關注的球隊(這個聯賽的)。**只管這個聯賽** —— 這一頁本來就是單一聯賽的,
+       你在別的聯賽關注的隊在「我的球隊」那一頁看(使用者的決定,2026-09-14)。 */
+    const mine = followedIn(C.league());
+    const isMine = f => mine.has(f.home) || mine.has(f.away);
+    /* 進行中:關注的球隊排最前面,其餘照開球時間。**只有這一區重排** ——
+       開賽倒數那一區的順序是「開球順序上第一段連續同輪」算出來的(core.js 的
+       countdownFixtures),插隊會讓「這一輪幾點開始」整個看不出來。 */
+    const inPlaySched = phased.filter(x => x.s.phase === 'inplay')
+      .sort((a, b) => (isMine(a.f) !== isMine(b.f) ? (isMine(a.f) ? -1 : 1)
+        : (a.f.kickoff < b.f.kickoff ? -1 : 1)));
+    const pinned = inPlaySched.filter(x => isMine(x.f)).length;
     /* 「還沒有賽果」那一區的上限。一輪有幾場是**聯賽決定的**(英超西甲 20 隊 → 10 場、
        英冠 24 隊 → 12 場),不可以寫死一個數字(CLAUDE.md 那條「前端把聯賽的事實寫死」)。
        開賽倒數不用這個數 —— 它按「同一輪連到哪就到哪」自己收斂。 */
@@ -245,7 +256,9 @@ try {
           兩個要求並不衝突:有比賽在踢時讀者要的是比分,不是倒數。 */''}
     ${inPlaySched.length ? `
       <div class="section"><h2><span class="livedot"></span>進行中</h2>
-        <span class="hint">依賽程推算・${withRealData ? `${withRealData} 場已接上即時比分` : '尚未接上即時比分'}</span></div>
+        <span class="hint">依賽程推算・${withRealData ? `${withRealData} 場已接上即時比分` : '尚未接上即時比分'}${
+          /* 有插隊就講出來 —— 不講的話讀者看到的是一個他解釋不了的順序 */
+          pinned ? `・<b>你關注的 ${pinned} 場排在最前面</b>` : ''}</span></div>
       ${!withRealData ? `<div class="note" style="margin-bottom:10px">
         這 ${inPlaySched.length} 場<b>依賽程現在正在進行</b>,但目前沒有接上即時資料源,所以看不到比分。<br>
         ${isLaLiga

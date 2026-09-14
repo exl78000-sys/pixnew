@@ -1,5 +1,6 @@
-import * as C from './core.js?v=d6cbb077';
-import { mountFixtureList } from './fixture-list.js?v=d3448fd0';
+import * as C from './core.js?v=155f0c5e';
+import { mountFixtureList } from './fixture-list.js?v=21c38ca2';
+import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
 
@@ -34,6 +35,46 @@ try {
   const nextRoundNo = fixtures.find(f => !f.played && f.date >= meta.asOf)?.round ?? rounds[0];
 
   const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;
+
+  /* ── 你的球隊(2026-09-14)──────────────────
+     關注的那幾支收成一張卡,釘在賽程表上方。**積分榜的順序一個字都不動** ——
+     那張表的順序就是名次,把關注的搬上去會讓第 14 名出現在第一列(標記在 sim-table 做,只標色)。
+     一支都沒關注時整張卡不畫:空卡片比沒有卡片更讓人以為壞了(鐵則三)。 */
+  function myTeamsCard() {
+    const mine = followedIn(C.league());
+    if (!mine.size) return '';
+    const rows = teams.filter(t => mine.has(t.code));
+    if (!rows.length) return '';
+    const nextOf = code => {
+      const un = fixtures.filter(f => !f.played && (f.home === code || f.away === code));
+      if (!un.length) return null;
+      // 排序用開球時間,沒有時間的排最後(上游是逐月公布的,不能拿它當篩選條件)
+      const key = f => f.kickoff ?? `${f.date ?? '9999-99-99'}T99:99`;
+      return un.sort((a, b) => String(key(a)).localeCompare(String(key(b))))[0];
+    };
+    return `<div class="card" style="margin-top:16px">
+      <div class="spread"><h2 style="margin:0">你的球隊</h2>
+        <a class="small" href="${C.link('predict', { view: 'teams' })}">我的球隊 →</a></div>
+      <div style="display:grid;gap:8px;margin-top:10px">
+        ${rows.map(t => {
+          const c = t.current, f = nextOf(t.code);
+          const home = f ? f.home === t.code : null;
+          const opp = f ? (home ? f.away : f.home) : null;
+          return `<div class="stat-line">
+            <span class="small" style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">
+              ${followStar(C.league(), t.code)}${C.teamCell(t.code)}
+              ${c ? `<span class="dim">第 ${c.pos} 名・${c.pts} 分</span>${C.formRun(c.form)}` : ''}</span>
+            <span class="tiny" style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">
+              ${f ? `<span class="dim">下一場</span><span class="pill tiny">${home ? '主' : '客'}</span>
+                    ${C.badge(opp)} ${C.esc(C.name(opp))}
+                    ${f.kickoff ? `<span class="cd" data-kickoff="${f.kickoff}"></span>` : '<span class="dim">時間待定</span>'}
+                    <a href="${C.link('analysis', { id: f.id })}">分析 →</a>`
+                : '<span class="dim">賽程上沒有還沒踢的場次</span>'}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
 
   app.innerHTML = `
   <div class="page-head">
@@ -82,6 +123,8 @@ try {
       <div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>
     </div>
   </div>
+
+  <div id="myTeams">${myTeamsCard()}</div>
 
   ${/* 賽程表原本是獨立的一頁。分成兩頁的話,讀者看完積分榜想看下一輪對誰,
         要再點一次而且整頁重載;而兩頁的頁首、時效標籤、模型說明本來就講同一件事,
@@ -170,6 +213,13 @@ try {
 
   /* 賽程表(共用模組,原 page-fixtures.js) */
   mountFixtureList({ meta, teams, fixtures, results, reports, analysis });
+
+  /* 取消關注時這張卡要跟著變(可能整張消失),所以只重畫這一塊 ——
+     整頁重畫會把賽程表的篩選與捲動位置一起丟掉。倒數計時重新起算。 */
+  bindFollowStars(document.getElementById('myTeams'), () => {
+    document.getElementById('myTeams').innerHTML = myTeamsCard();
+    C.startCountdowns();
+  });
 
   /* 上季積分榜搬到球隊頁了(2026-09-03)—— 這裡不再渲染。 */
 

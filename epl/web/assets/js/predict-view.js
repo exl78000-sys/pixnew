@@ -1,0 +1,455 @@
+import * as C from './core.js?v=155f0c5e';
+import { followedIn } from './follow.js?v=02130043';
+import { scorePredictions, outcomeOf, pickOf, matchKey, OUTCOMES } from './predict-score.js?v=99e36287';
+
+/* 我的預測(跨聯賽單一頁,掛對戰模擬旁邊)。
+ *
+ * 一輪一輪自己猜比分與勝負、寫下理由,賽季跑完看自己跟模型、跟市場誰準。
+ *
+ * 四條界線,每一條都寫在畫面上:
+ *
+ * 1. **完全不碰模型。** 預測只存在你自己的瀏覽器(localStorage),build 不讀、
+ *    產物裡沒有、也不會回饋進任何機率。模型機率是獨立的,這一頁只是拿它當對手。
+ * 2. **開賽就鎖。** 開球時間一到,那一場的輸入變唯讀 —— 賽後才填的不是預測,
+ *    是回顧。計分那一層還有第二道守門(`isEligible`),匯入別人的檔案也擋得住。
+ * 3. **模型與市場的機率在你按下儲存的當下就凍結進紀錄。** 不是事後重算的:
+ *    build 的模型擬合含已完賽的比賽,重算等於讓模型看過答案再猜
+ *    (這個專案為了同一件事修過一次,見 prediction / postFit)。
+ * 4. **比較一律在同一批場次上做。** 市場盤口不是每場都抓得到,所以總表分成
+ *    「你 vs 模型」與「你 vs 模型 vs 市場」兩組,各自標明樣本數。
+ *
+ * 資料放哪:localStorage 是**這台裝置這個瀏覽器**的東西 —— 清掉網站資料就沒了,
+ * 換一台也看不到。所以頁面上有匯出/匯入,而且把這件事講清楚,不要讓人以為
+ * 它存在雲端。
+ */
+
+
+/* 2026-09-14:這一頁變成「我的」的第二個分頁(第一個是「我的球隊」),
+   所以內容抽成 render 函式 —— 做法同 ucl-view / knowledge-view / 探索頁那三個。
+   `app` 從模組層的 const 改成**主機給的容器**:直接寫 `#app` 會把分頁列一起蓋掉
+   (探索頁併三個 view 時踩過的同一件事)。 */
+let app = null;
+const STORE_KEY = 'warroom:predictions:v1';
+const HIDE = 'this.style.display="none"';
+
+/* localStorage 在無痕視窗、關閉網站資料、或某些嵌入情境會直接拋例外
+   (不是回 null)。整頁不能因此掛掉 —— 讀不到就當成沒有紀錄,寫不進去要講。 */
+function readStore() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+function writeStore(obj) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(obj)); return true; }
+  catch { return false; }
+}
+
+/* 開放預測的賽事(2026-09-03 使用者指定:英超、西甲、歐冠)。
+   **寫成明確的清單,不要用「不是英冠就開放」那種二元式** —— 那種寫法在只有
+   幾個聯賽時看起來完全正確,加第四個就會靜靜地把它也放進來(CLAUDE.md 記過
+   `league()` 那條坑)。英冠沒開是使用者的決定,不是技術限制。 */
+const OPEN_LEAGUES = ['pl', 'es1'];
+
+/* 歐冠的勝率**只有部分場次有**:階段 C(2026-09-09)的跨聯賽 Elo 只給兩隊都有評分的場次
+   (ucl-elo.json 的 fixtures;回測通過驗收才有,沒通過就一場都沒有)。第一版把整個賽事寫成
+   noModel、prediction 全 null —— 階段 C 之後那是假的,而說明卡還印著「沒有本站的勝率預測」
+   (「只有一個」那句寫死在畫面上,第三次)。現在有就給、沒有就 null;盤口則整個賽事都沒有
+   (noMarket)。兩件事畫面上都要講出來,不然看起來像資料壞了。 */
+async function uclPool() {
+  try {
+    const { data } = await C.loadFrom('pl', ['ucl', 'ucl-teams']);
+    // 模型是另一份產物;讀不到就當「沒有模型」,不要讓整個歐冠從這一頁消失
+    const elo = await C.loadFrom('pl', ['ucl-elo']).then(r => r.data['ucl-elo']).catch(() => null);
+    const seasons = data.ucl?.seasons ?? [];
+    // 還有場次沒踢完的那一季;全部踢完就取最新的一季(賽季之間的空窗)
+    const cur = seasons.find(x => (x.played ?? 0) < (x.total ?? 0)) ?? seasons[0];
+    const games = cur?.leagueMatches ?? [];
+    if (!games.length) return null;
+    /* 逐場的 1X2 機率,鍵是 football-data 的場次 id(跟 ucl-view 的 predOf 同一把鍵)。
+       `p` 是 [主, 和, 客] 三個數,轉成聯賽 fixtures.prediction 那個形狀,計分那層才不用分兩種 */
+    const predBy = new Map((elo?.fixtures ?? []).map(f => [f.id, f.p]));
+    const predOf = m => { const p = predBy.get(m.id); return Array.isArray(p) ? { home: p[0], draw: p[1], away: p[2] } : null; };
+    const T = data['ucl-teams'] ?? {};
+    const nameBy = new Map(), crestBy = new Map();
+    for (const t of T.teams ?? []) { nameBy.set(`c:${t.code}`, t.zh ?? t.en); crestBy.set(`c:${t.code}`, t.crest ?? null); }
+    for (const t of T.external ?? []) { nameBy.set(`u:${t.id}`, t.en); crestBy.set(`u:${t.id}`, t.crest ?? null); }
+    /* 隊伍的識別碼:本站認得的用隊碼,認不得的用來源方的 team id。
+       **不能用隊名當鍵** —— 名字的拼法會隨上游改,改了就對不回舊紀錄。 */
+    const idOf = side => (side?.code ? `c:${side.code}` : `u:${side?.id}`);
+    return {
+      lg: 'ucl', zh: '歐冠', meta: null, noMarket: true,
+      /* 只數**還沒踢的**:模型只給未賽的場次,拿全季場數當分母會把踢完的 18 場講成「沒有評分」 */
+      modelCover: (() => { const un = games.filter(m => !m.played); return { has: un.filter(m => predBy.has(m.id)).length, total: un.length }; })(),
+      fixtures: games.map(m => ({
+        season: cur.label,
+        home: idOf(m.home), away: idOf(m.away),
+        played: !!m.played,
+        fh: m.final?.[0] ?? null, fa: m.final?.[1] ?? null,
+        kickoff: m.kickoff ?? null, date: String(m.kickoff ?? '').slice(0, 10),
+        round: m.matchday ?? null,
+        prediction: predOf(m), market: null,
+      })),
+      nameBy: new Map([...nameBy].map(([k, v]) => [k, v])),
+      crestBy,
+      fallbackName: new Map(games.flatMap(m => [
+        [idOf(m.home), m.home?.name ?? ''], [idOf(m.away), m.away?.name ?? ''],
+      ])),
+    };
+  } catch { return null; }
+}
+
+
+export async function renderPredict(host) {
+  app = host;
+  try {
+    const loaded = await Promise.all(OPEN_LEAGUES.map(async lg => {
+      try {
+        const { data } = await C.loadFrom(lg, ['meta', 'fixtures', 'teams']);
+        if (!Array.isArray(data.fixtures)) return null;
+        return {
+          lg, zh: C.LEAGUES[lg].zh, meta: data.meta, fixtures: data.fixtures,
+          nameBy: new Map((data.teams ?? []).map(t => [t.code, t.zh ?? t.en ?? t.code])),
+          crestBy: new Map((data.teams ?? []).map(t => [t.code, t.crest ?? null])),
+        };
+      } catch { return null; }
+    }));
+    loaded.push(await uclPool());
+    const pools = loaded.filter(Boolean);
+    if (!pools.length) throw new Error('沒有任何聯賽的賽程');
+
+    let store = readStore();
+    let lockTimer = null;
+    const state = { lg: pools[0].lg, round: null, tab: 'pick' };
+    const cur = () => pools.find(x => x.lg === state.lg);
+    const recsOf = lg => (store[lg] ??= {});
+    const nameOf = code => cur().nameBy.get(code) ?? cur().fallbackName?.get(code) ?? code;
+  /* 關注的球隊(2026-09-14)。**歐冠那個池子的鍵是 `c:XXX` / `u:123`,不是隊碼** ——
+     所以先把前綴剝掉再比。純標記不是按鈕:這張卡是拿來填預測的,
+     多一個可點的星號只會誤觸。 */
+  const star = id => {
+    const code = String(id ?? '').startsWith('c:') ? String(id).slice(2) : String(id ?? '');
+    return followedIn(state.lg === 'ucl' ? 'pl' : state.lg).has(code)
+      || (state.lg === 'ucl' && followedIn('es1').has(code))
+      ? '<span class="followstar on" title="你關注的球隊" aria-label="你關注的球隊">★</span>' : '';
+  };
+    const crest = code => {
+      const c = cur().crestBy.get(code);
+      return c ? `<img class="crest" src="${c}" alt="" width="22" height="22" onerror='${HIDE}'>` : '';
+    };
+
+    /* 預設輪次 = 「還沒踢完的最小輪次」。用最小的而不是「下一場的輪次」——
+       有場次提前開踢時,下一場可能屬於更後面的一輪(倒數那條坑的同一個形狀)。 */
+    function defaultRound(L) {
+      const open = L.fixtures.filter(f => !f.played && f.round != null).map(f => f.round);
+      if (open.length) return Math.min(...open);
+      const all = L.fixtures.filter(f => f.round != null).map(f => f.round);
+      return all.length ? Math.max(...all) : null;
+    }
+    function roundsOf(L) {
+      return [...new Set(L.fixtures.map(f => f.round).filter(r => r != null))].sort((a, b) => a - b);
+    }
+
+    const locked = f => {
+      const ko = f.kickoff ? Date.parse(f.kickoff) : NaN;
+      // 沒有開球時間的場次只能用「已完賽」判斷 —— 上游是逐月公布時間的
+      return f.played || (Number.isFinite(ko) && Date.now() >= ko);
+    };
+
+    function render() {
+      const L = cur();
+      if (state.round == null) state.round = defaultRound(L);
+      const recs = recsOf(state.lg);
+      const scored = scorePredictions(recs, L.fixtures);
+      app.innerHTML = `
+      <div class="page-head">
+        <h1>我的預測</h1>
+        <p>一輪一輪自己猜,賽季結束看你跟模型、跟市場誰準。
+          <b>預測只存在這台裝置的瀏覽器裡</b>,不上傳、不進本站資料,也<b>不會影響模型機率</b>。</p>
+      </div>
+
+      <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        ${pools.map(p => `<button class="btn ${p.lg === state.lg ? 'accent' : ''}" type="button"
+          data-lg="${C.esc(p.lg)}">${C.esc(p.zh)}</button>`).join('')}
+      </div>
+
+      <div class="analysis-switch" role="tablist" aria-label="模式">
+        <button class="btn analysis-tab ${state.tab === 'pick' ? 'on' : ''}" type="button" data-tab="pick">這一輪</button>
+        <button class="btn analysis-tab ${state.tab === 'table' ? 'on' : ''}" type="button" data-tab="table">成績</button>
+      </div>
+
+      ${state.tab === 'pick' ? pickPanel(L, recs) : tablePanel(L, scored)}
+      ${L.meta ? C.foot(L.meta) : ''}`;
+      bind();
+    }
+
+    function pickPanel(L, recs) {
+      const rounds = roundsOf(L);
+      const games = L.fixtures.filter(f => f.round === state.round)
+        .sort((a, b) => String(a.kickoff ?? a.date ?? '').localeCompare(String(b.kickoff ?? b.date ?? '')));
+      return `
+      <div class="row" style="gap:8px;align-items:center;margin:14px 0">
+        <label class="small dim">輪次</label>
+        <select id="roundSel" class="btn">${rounds.map(r => `<option value="${r}"
+          ${r === state.round ? 'selected' : ''}>第 ${r} 輪</option>`).join('')}</select>
+        <span class="small dim">${games.filter(f => recs[matchKey(f)]).length} / ${games.length} 場已填</span>
+      </div>
+      ${(() => {
+        /* 這一輪的截止倒數 = **還沒開賽的場次裡最早的那一場**。
+           用最早的而不是「第一場」—— 這一輪可能已經踢掉幾場了。
+           已經全部開踢就不畫這一行,不要留一個永遠 00:00:00 的倒數。 */
+        const open = games.filter(f => !locked(f) && f.kickoff)
+          .sort((a, b) => Date.parse(a.kickoff) - Date.parse(b.kickoff));
+        if (!open.length) return '';
+        const undone = open.filter(f => !recs[matchKey(f)]).length;
+        return `<div class="note" style="margin-bottom:12px">
+          <b>下一場截止還有 ${C.countdown(open[0].kickoff)}</b>
+          —— ${C.esc(nameOf(open[0].home))} vs ${C.esc(nameOf(open[0].away))}。
+          這一輪還有 <b>${open.length}</b> 場可以填${undone ? `,其中 <b>${undone}</b> 場還沒填` : '(都填過了)'}。
+          <div class="tiny dim" style="margin-top:6px">倒數到 0 那一刻該場就鎖住 ——
+            這一頁開著也會自己鎖,不用重新整理。</div>
+        </div>`;
+      })()}
+      ${/* 三種狀態都要講得出來:全部都有 / 部分 / 一場都沒有(回測沒過)。數字從 modelCover 來,只數還沒踢的場次。 */''}
+      ${L.noMarket ? (() => {
+        const c = L.modelCover ?? { has: 0, total: 0 };
+        const where = '那是階段 C 的跨聯賽 Elo,回測與界線寫在模型驗證頁的歐冠那一節';
+        const body = !c.has
+          ? `<b>這個賽事目前沒有本站的勝率預測,也沒有盤口。</b>跨聯賽模型要回測通過驗收才給預測
+            (這一季沒有通過,原因在模型驗證頁的歐冠那一節),所以這裡只記錄你自己的預測與命中率,不跟任何人比。`
+          : c.has === c.total
+            ? `<b>歐冠還沒踢的 ${c.total} 場都有本站的勝率</b>(兩隊都有跨聯賽評分才有,目前剩下的場次兩隊都有;${where})。
+              <b>歐冠沒有盤口</b>,所以沒有「市場」可比。`
+            : `<b>歐冠只有部分場次有本站的勝率:</b>兩隊都有跨聯賽評分的場次才有(還沒踢的 ${c.has} / ${c.total} 場;${where}),
+              其餘場次只記你自己的預測與命中率,列上會寫明,不是資料壞了。<b>歐冠沒有盤口</b>,所以沒有「市場」可比。`;
+        return `<div class="note info" style="margin-bottom:12px">${body}</div>`;
+      })() : ''}
+      ${games.map(f => matchRow(f, recs[matchKey(f)])).join('')}
+      <div class="note" style="margin-top:14px">
+        <b>開球時間一到就鎖。</b>賽後才填的不是預測,所以鎖住的場次不能再改,
+        計分也會把「開賽後才存的紀錄」排除掉。沒有公布開球時間的場次以「是否已完賽」判斷。
+        <div class="tiny dim" style="margin-top:6px">按下儲存時,會把<b>當下</b>的模型機率與市場盤口一起存進這筆紀錄
+          —— 之後不重算,因為賽後重算的模型已經看過結果了。</div>
+      </div>`;
+    }
+
+    function matchRow(f, rec) {
+      const key = matchKey(f);
+      const lock = locked(f);
+      /* 鎖住的場次顯示**紀錄裡凍結的那一份** —— 那才是你當時比對的對象,
+         也是計分用的。已完賽場次的 `f.prediction` 可能是 null(沒有賽前快照),
+         顯示成「—」會讓人以為那筆紀錄沒有對手。還能改的場次顯示現在的模型,
+         因為你正要拿它來決定怎麼填。 */
+      const p = (lock ? rec?.model ?? f.prediction : f.prediction) ?? null;
+      const m = (lock ? rec?.market ?? f.market?.probs : f.market?.probs) ?? null;
+      const mp = pickOf(p), kp = pickOf(m);
+      const zh = { home: '主勝', draw: '和局', away: '客勝' };
+      return `<div class="card" data-match="${C.esc(key)}"
+        ${f.kickoff ? `data-ko="${C.esc(f.kickoff)}"` : ''} style="margin-bottom:10px">
+        <div class="spread" style="align-items:flex-start;gap:10px;flex-wrap:wrap">
+          <div class="row" style="gap:7px;align-items:center">
+            ${star(f.home)}${crest(f.home)}<b>${C.esc(nameOf(f.home))}</b>
+            <span class="dim">vs</span>${star(f.away)}${crest(f.away)}<b>${C.esc(nameOf(f.away))}</b>
+          </div>
+          <span class="small dim">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}
+            ${lock
+              ? `<span class="pill tiny warn" data-lockpill>${f.played ? `終場 ${f.fh}:${f.fa}` : '已開賽・鎖定'}</span>`
+              : f.kickoff
+                ? `<span class="pill tiny" data-deadline>截止 ${C.countdown(f.kickoff)}</span>`
+                : '<span class="pill tiny dim">開球時間未定</span>'}</span>
+        </div>
+
+        ${/* 歐冠沒有盤口(整個賽事都沒有),每一列再印「市場 尚無盤口」只是重複的噪音,那一格整個不印;
+             模型則是**逐場**的:兩隊都有跨聯賽評分才有,沒有的要講是為什麼,不然看起來像資料壞了。
+             鎖住的場次讀的是紀錄裡凍結的那份,舊紀錄(模型接上之前存的)沒有模型是正常的,不要講成「沒有評分」。 */''}
+        <div class="row small dim" style="gap:14px;margin:8px 0;flex-wrap:wrap">
+          <span>模型 ${p ? `${C.pct(p.home, 0)} / ${C.pct(p.draw, 0)} / ${C.pct(p.away, 0)}
+            <b class="accent-text">${zh[mp]}</b>`
+            : cur().noMarket
+              ? (lock ? '<span class="dim">這一場的紀錄裡沒有模型</span>' : '<span class="dim">這一場沒有(有一隊還沒有跨聯賽評分)</span>')
+              : '—'}</span>
+          ${cur().noMarket ? '' : `<span>市場 ${m ? `${C.pct(m.home, 0)} / ${C.pct(m.draw, 0)} / ${C.pct(m.away, 0)}
+            <b>${zh[kp]}</b>` : '<span class="dim">尚無盤口</span>'}</span>`}
+        </div>
+
+        ${/* 手機上這一列會折行,而預設的折法會把「客勝」跟另外兩個勝負鈕拆到不同行
+             (變成 主勝/和局 一行、客勝 跟原因擠在下一行)—— 三個是同一組選項,
+             拆開之後看起來像兩件事。用 predict-row 讓比分與勝負各自成組。 */''}
+        <div class="row predict-row" style="gap:8px;align-items:center;flex-wrap:wrap">
+          <input class="btn mono" type="number" min="0" max="20" style="width:62px" data-fh
+            value="${rec?.fh ?? ''}" ${lock ? 'disabled' : ''} aria-label="主隊進球">
+          <span class="dim">:</span>
+          <input class="btn mono" type="number" min="0" max="20" style="width:62px" data-fa
+            value="${rec?.fa ?? ''}" ${lock ? 'disabled' : ''} aria-label="客隊進球">
+          <span class="pick-group">${OUTCOMES.map(o => `<button class="btn tiny ${rec?.pick === o ? 'accent' : ''}" type="button"
+            data-pick="${o}" ${lock ? 'disabled' : ''}>${zh[o]}</button>`).join('')}</span>
+          <input class="btn" type="text" data-note placeholder="原因(選填)" style="flex:1;min-width:180px"
+            value="${C.esc(rec?.note ?? '')}" ${lock ? 'disabled' : ''}>
+          ${lock ? '' : '<button class="btn accent" type="button" data-save>儲存</button>'}
+        </div>
+        ${rec ? `<div class="tiny dim" style="margin-top:7px">已存於 ${C.kickoffLocal(rec.savedAt)}
+          ${rec.market ? '・含當時盤口' : '・當時沒有盤口'}
+          ${rec.note ? `<br>理由:${C.esc(rec.note)}` : ''}</div>` : ''}
+      </div>`;
+    }
+
+    function tablePanel(L, s) {
+      const zh = { home: '主勝', draw: '和局', away: '客勝' };
+      const line = (label, t) => t ? `<div class="card" style="margin-bottom:10px">
+          <div class="spread"><h3>${label}</h3><span class="pill tiny">${t.n} 場</span></div>
+          <div class="stat-line"><span class="small"><b>你</b></span><b class="mono accent-text">${C.pct(t.you, 1)}</b></div>
+          ${t.model != null ? `<div class="stat-line"><span class="small">模型最看好的那一邊</span><b class="mono">${C.pct(t.model, 1)}</b></div>` : ''}
+          ${t.market != null
+            ? `<div class="stat-line"><span class="small">市場最看好的那一邊</span><b class="mono">${C.pct(t.market, 1)}</b></div>`
+            : '<div class="stat-line"><span class="small dim">市場最看好的那一邊</span><span class="tiny dim">這批比賽沒有盤口,不是 0%</span></div>'}
+          <div class="tiny dim" style="margin-top:8px">RPS(越低越好):你 ${C.fx(t.youRps, 4)}
+            ${t.modelRps != null ? `・模型 ${C.fx(t.modelRps, 4)}` : ''}${t.marketRps != null ? `・市場 ${C.fx(t.marketRps, 4)}` : ''}
+            —— <b>你的預測被當成 100% 押一邊</b>來算(你給的是斷言、它們給的是機率),
+            所以這個指標對你不利,看命中率比較公平。</div>
+        </div>` : '';
+      return `
+      <div style="margin-top:14px"></div>
+      ${s.solo ? '' : '<div class="note">這個賽事還沒有已完賽的預測。到「這一輪」填幾場,踢完就會出現成績。</div>'}
+      ${/* 沒有對手的賽事(歐冠)只給你自己的命中率 —— 沒有這一段的話,
+           那裡的預測踢完之後畫面上什麼都不會出現。 */''}
+      ${/* 歐冠的模型只涵蓋一部分場次:「你 vs 模型」只算兩邊都有的(比較一律在同一批場次上做),
+           另外再印一張「全部」—— 兩張的場數不同時才印第二張,一樣的話是重複。 */''}
+      ${s.vsModel ? line(s.solo && s.solo.n !== s.vsModel.n ? '你 vs 模型(只算模型有預測的場次)' : '你 vs 模型', s.vsModel)
+        : line('你的命中率(這個賽事沒有模型可比)', s.solo)}
+      ${s.vsModel && s.solo && s.solo.n !== s.vsModel.n ? line('你的命中率(全部已完賽的預測)', s.solo) : ''}
+      ${s.vsAll && s.vsAll.n !== s.vsModel?.n ? line('你 vs 模型 vs 市場(只算三邊都有的場次)', s.vsAll) : ''}
+      ${s.exact ? `<div class="card" style="margin-bottom:10px"><div class="spread"><h3>比分完全猜中</h3>
+        <span class="pill tiny">${s.exact.n} 場有填比分</span></div>
+        <div class="stat-line"><span class="small">猜中場次</span>
+          <b class="mono accent-text">${s.exact.hit} / ${s.exact.n}(${C.pct(s.exact.hit / s.exact.n, 1)})</b></div></div>` : ''}
+      ${s.pending ? `<div class="note info">還有 ${s.pending} 場已填但沒踢完,踢完會自動算進去。</div>` : ''}
+      ${s.ignored ? `<div class="note warn">有 ${s.ignored} 筆是<b>開賽後才存的</b>,不列入計分 —— 那不是預測。</div>` : ''}
+
+      ${s.rows.filter(r => r.actual).length ? `<div class="section" style="margin-top:18px"><h2>逐場明細</h2>
+        <span class="hint">新到舊</span></div>
+        <div class="card"><div style="display:grid;gap:8px">
+        ${[...s.rows].filter(r => r.actual).reverse().map(r => `<div class="stat-line" style="align-items:flex-start">
+          <span class="small" style="flex:1">
+            ${C.esc(nameOf(r.fixture.home))} <b class="mono">${r.fixture.fh}:${r.fixture.fa}</b> ${C.esc(nameOf(r.fixture.away))}
+            <span class="dim tiny">・第 ${r.fixture.round} 輪</span>
+            <br><span class="tiny">你 ${zh[r.rec.pick]}${r.rec.fh != null ? ` ${r.rec.fh}:${r.rec.fa}` : ''}
+              <span class="${r.youHit ? 'accent-text' : 'dim'}">${r.youHit ? '✔' : '✘'}</span>
+              ・模型 ${r.modelPick ? zh[r.modelPick] : '—'}
+              <span class="${r.modelHit ? 'accent-text' : 'dim'}">${r.modelHit ? '✔' : '✘'}</span>
+              ${r.marketPick ? `・市場 ${zh[r.marketPick]}
+                <span class="${r.marketHit ? 'accent-text' : 'dim'}">${r.marketHit ? '✔' : '✘'}</span>` : '・市場 —'}
+              ${r.eligible ? '' : '<span class="pill tiny warn">開賽後才存,不計分</span>'}</span>
+            ${r.rec.note ? `<br><span class="tiny dim">理由:${C.esc(r.rec.note)}</span>` : ''}
+          </span></div>`).join('')}
+        </div></div>` : ''}
+
+      <div class="section" style="margin-top:18px"><h2>備份</h2>
+        <span class="hint">換裝置或清瀏覽器資料前記得匯出</span></div>
+      <div class="card">
+        <div class="row" style="gap:8px;flex-wrap:wrap">
+          <button class="btn" type="button" id="exportBtn">匯出 JSON</button>
+          <button class="btn" type="button" id="importBtn">匯入 JSON</button>
+        </div>
+        <textarea id="ioBox" class="btn" style="width:100%;min-height:90px;margin-top:10px;display:none"
+          placeholder="把匯出的 JSON 貼在這裡,再按一次「匯入 JSON」"></textarea>
+        <div class="tiny dim" style="margin-top:8px"><b>這些預測只存在這台裝置的這個瀏覽器裡。</b>
+          清掉網站資料、換瀏覽器或換裝置都看不到 —— 本站沒有帳號、沒有後端,也不會把它們上傳。
+          單檔版(warroom.html)是另一個來源,兩邊的紀錄不共用。</div>
+      </div>`;
+    }
+
+    function bind() {
+      app.querySelectorAll('[data-lg]').forEach(b => b.onclick = () => {
+        state.lg = b.dataset.lg; state.round = null; render();
+      });
+      app.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); });
+      const sel = app.querySelector('#roundSel');
+      if (sel) sel.onchange = () => { state.round = Number(sel.value); render(); };
+
+      app.querySelectorAll('[data-match]').forEach(card => {
+        const key = card.dataset.match;
+        const fh = card.querySelector('[data-fh]'), fa = card.querySelector('[data-fa]');
+        const pickBtns = [...card.querySelectorAll('[data-pick]')];
+        /* 填了比分就把勝負推導出來 —— 兩個欄位講的是同一件事,
+           讓使用者自己保持一致是把矛盾的可能留給他。仍然可以只選勝負不填比分。 */
+        const syncPick = () => {
+          if (fh.value === '' || fa.value === '') return;
+          const o = outcomeOf(Number(fh.value), Number(fa.value));
+          pickBtns.forEach(b => b.classList.toggle('accent', b.dataset.pick === o));
+        };
+        fh?.addEventListener('input', syncPick);
+        fa?.addEventListener('input', syncPick);
+        pickBtns.forEach(b => b.onclick = () => {
+          pickBtns.forEach(x => x.classList.toggle('accent', x === b));
+        });
+        const saveBtn = card.querySelector('[data-save]');
+        if (saveBtn) saveBtn.onclick = () => savePick(key, card);
+      });
+
+      /* 倒數與上鎖。**不整頁重畫** —— 重畫會把其他場次還沒按儲存的輸入洗掉,
+         而這個掃描每秒都在跑。所以只動剛好越過開球時間的那一張卡。 */
+      C.startCountdowns();
+      /* render() 每次切分頁、換聯賽、按儲存都會跑一次 —— 不收掉舊的,
+         秒數一久就變成十幾個掃描同時在跑(startCountdowns 自己會收,這個不會)。 */
+      if (lockTimer) clearInterval(lockTimer);
+      lockTimer = C.pageInterval(() => {
+        const now = Date.now();
+        for (const card of app.querySelectorAll('[data-ko]')) {
+          const ko = Date.parse(card.dataset.ko);
+          if (!Number.isFinite(ko) || now < ko) continue;
+          if (card.dataset.locked === '1') continue;
+          card.dataset.locked = '1';
+          card.querySelectorAll('input, [data-pick]').forEach(el => { el.disabled = true; });
+          card.querySelector('[data-save]')?.remove();
+          const dl = card.querySelector('[data-deadline]');
+          if (dl) { dl.className = 'pill tiny warn'; dl.textContent = '已開賽・鎖定'; }
+        }
+      }, 1000);
+
+      const box = app.querySelector('#ioBox');
+      const ex = app.querySelector('#exportBtn'), im = app.querySelector('#importBtn');
+      if (ex) ex.onclick = () => { box.style.display = 'block'; box.value = JSON.stringify(store, null, 1); box.select(); };
+      if (im) im.onclick = () => {
+        if (box.style.display === 'none') { box.style.display = 'block'; box.value = ''; box.focus(); return; }
+        try {
+          const next = JSON.parse(box.value);
+          if (!next || typeof next !== 'object') throw new Error('不是物件');
+          store = next;
+          if (!writeStore(store)) throw new Error('這個瀏覽器不讓本站存資料');
+          render();
+        } catch (e) { alert(`匯入失敗:${e.message}`); }
+      };
+    }
+
+    function savePick(key, card) {
+      const L = cur();
+      const f = L.fixtures.find(x => matchKey(x) === key);
+      if (!f || locked(f)) { render(); return; }      // 邊填邊開賽:存之前再確認一次
+      const fh = card.querySelector('[data-fh]').value;
+      const fa = card.querySelector('[data-fa]').value;
+      const marked = card.querySelector('[data-pick].accent');
+      const pick = marked?.dataset.pick
+        ?? (fh !== '' && fa !== '' ? outcomeOf(Number(fh), Number(fa)) : null);
+      if (!pick) { alert('選一個結果(主勝/和局/客勝),或把比分填完。'); return; }
+      const P = f.prediction;
+      recsOf(state.lg)[key] = {
+        fh: fh === '' ? null : Number(fh),
+        fa: fa === '' ? null : Number(fa),
+        pick,
+        note: card.querySelector('[data-note]').value.trim(),
+        savedAt: new Date().toISOString(),
+        kickoff: f.kickoff ?? null,
+        round: f.round ?? null,
+        // 凍結當下的兩份機率。只留 1X2 —— 計分要的就是這三個數
+        model: P ? { home: P.home, draw: P.draw, away: P.away } : null,
+        market: f.market?.probs ? { ...f.market.probs } : null,
+      };
+      if (!writeStore(store)) alert('存不進去 —— 這個瀏覽器擋掉了本站的資料儲存(無痕視窗?)。');
+      render();
+    }
+
+    render();
+  } catch (e) {
+    app.innerHTML = `<div class="note warn">載入失敗:${C.esc(e.message)}</div>`;
+  }
+}

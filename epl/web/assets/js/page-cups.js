@@ -1,5 +1,6 @@
-import * as C from './core.js?v=d6cbb077';
-import { renderUclView } from './ucl-view.js?v=a1a8fdc8';
+import * as C from './core.js?v=155f0c5e';
+import { followedAnywhere } from './follow.js?v=02130043';
+import { renderUclView } from './ucl-view.js?v=14ed0a89';
 
 const app = document.getElementById('app');
 
@@ -27,9 +28,16 @@ const KO = m => (m.kickoff ? C.kickoffLocal(m.kickoff) : '待定');
    那就是「按鈕在但點了沒東西」(歐冠那條坑的反面)。 */
 let CUP_REPORTS = {};
 
+/* 關注的球隊(不分聯賽 —— 盃賽裡的 BUR 就是 Burnley,他今年在哪一級無關)。
+   在模組層取一次:一輪一百多場、每場兩隊,每一格都讀 localStorage 太浪費。
+   這裡的 ★ 是**純標記不是按鈕** —— 這一格點下去是進球隊頁,再塞一個切換會誤觸。 */
+let CUP_FOLLOWED = new Set();
+
 function teamCell(t, { align = 'left' } = {}) {
   if (!t) return '<span class="dim small">待定</span>';
   const name = C.esc(C.cupName(t, CUP_IDENT));
+  const star = t.code && CUP_FOLLOWED.has(t.code)
+    ? '<span class="followstar on" title="你關注的球隊" aria-label="你關注的球隊">★</span>' : '';
   /* 本站認不得的球隊:**有隊徽就畫隊徽,但仍然沒有連結**。
      隊徽是那支球隊真實的徽章(上游給的),畫出來不是編身分;
      但本站沒有它的資料,所以點不進去 —— 這兩件事要分開,
@@ -50,7 +58,7 @@ function teamCell(t, { align = 'left' } = {}) {
       : '';
     if (!img && !tier) return `<span class="small" style="text-align:${align}">${name}</span>`;
     return `<span class="small" style="display:inline-flex;align-items:center;gap:5px;text-align:${align};flex-direction:${
-      align === 'right' ? 'row-reverse' : 'row'}">${img}<span>${name}</span>${tier}</span>`;
+      align === 'right' ? 'row-reverse' : 'row'}">${img}<span>${name}</span>${tier}${star}</span>`;
   }
   /* 本站認得的球隊:隊徽也走同一條查法。**這裡以前寫 C.badge(t.code)**,
      而 badge 查的是目前聯賽的名冊 —— 站在西甲時整排變成灰色代碼方塊,
@@ -61,7 +69,7 @@ function teamCell(t, { align = 'left' } = {}) {
     : C.badge(t.code);
   return `<a class="small" href="${C.link('teams', { code: t.code })}"
     style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;flex-direction:${align === 'right' ? 'row-reverse' : 'row'}"
-    >${mark}<span>${name}</span></a>`;
+    >${mark}<span>${name}</span>${star}</a>`;
 }
 
 /* 比分。規則:
@@ -240,6 +248,7 @@ try {
      **clubs 一定要從 pl 載,不是目前聯賽** —— 盃賽是跨聯賽的一頁,
      用目前聯賽的名冊等於「站在哪裡決定我認得誰」(core.js 的 cupClubs 有完整說明)。 */
   CUP_IDENT = { clubs: await C.cupClubs(), crests: cups?.crests ?? {} };
+  CUP_FOLLOWED = followedAnywhere();
   /* 盃賽賽後報告的**索引**(幾 KB):只用來決定「這一場有沒有報告可看」。
      逐場報告在單場頁點開才載 —— 報告一份約 60 KB,清單裡展開就是歐冠那條坑
      (一份報告比整份清單還長)。 */

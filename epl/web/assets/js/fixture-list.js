@@ -1,4 +1,5 @@
-import * as C from './core.js?v=d6cbb077';
+import * as C from './core.js?v=155f0c5e';
+import { followedIn } from './follow.js?v=02130043';
 
 // 有英格蘭盃賽(足總盃/聯賽盃)的聯賽。用集合不用「是不是某一個」的二元式
 const ENGLISH_CUPS = new Set(['pl', 'en2']);
@@ -43,9 +44,14 @@ export function mountFixtureList({
     const withReport = rows.filter(f => reportFor(f)).length;
     document.getElementById(countId).textContent =
       `共 ${rows.length} 場${withReport ? `・其中 ${withReport} 場有完整賽後分析` : ''}`;
+    /* 關注的球隊(這個聯賽的)。**在這裡取一次,不要每一列都讀 localStorage** ——
+       一輪 10 場 × 兩隊就是 20 次同步讀取。★ 只在關注的那一隊旁邊出現:
+       每一列都掛一顆空星的話,整張表看起來都在閃,而重點標記的意義就是「只有少數」。 */
     /* fold:視窗放不下時收欄的優先序(數字越大越先收;規則在 core.js 的 foldPlan)。
        難度與大 2.5 是附加資訊、模型命中只有已完賽的列才有內容、倒數在開賽時間旁邊 ——
        球隊、比分與機率條永遠不收。1200px 視窗量過:英冠的隊名最長,要收到模型那一欄才塞得下。 */
+    const mine = followedIn(C.league());
+    const star = code => (mine.has(code) ? '<span class="followstar on" title="你關注的球隊" aria-label="你關注的球隊">★</span>' : '');
     document.getElementById(listId).innerHTML = C.table(rows, [
       { key: 'date', label: isCurrent ? '開賽時間' : '日期', value: f => f.kickoff ?? f.date,
         render: f => `<span class="small">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</span>` },
@@ -54,12 +60,12 @@ export function mountFixtureList({
           ? (reportFor(f) ? '<span class="pill accent tiny">有賽後分析</span>' : '<span class="dim small">完場</span>')
           : (f.kickoff ? `<span class="small">${C.countdown(f.kickoff)}</span>` : '<span class="dim small">時間待定</span>')) },
       { key: 'round', label: '輪', value: f => f.round, num: true },
-      { key: 'home', label: '主隊', value: f => C.name(f.home), render: f => C.teamCell(f.home) },
+      { key: 'home', label: '主隊', value: f => C.name(f.home), render: f => `${star(f.home)}${C.teamCell(f.home)}` },
       { key: 'score', label: '比分 / 預期', value: f => (f.played ? f.fh - f.fa : 0), sortable: false,
         render: f => f.played
           ? `<b class="mono" style="font-size:14px">${f.fh} - ${f.fa}</b>${f.scoreProvisional ? ' <span class="pill warn tiny" title="FotMob 的比分;社群賽果檔還沒到,到了會逐場核對">暫定</span>' : ''}`
           : `<span class="mono dim">${f.prediction.xgHome} : ${f.prediction.xgAway}</span>` },
-      { key: 'away', label: '客隊', value: f => C.name(f.away), render: f => C.teamCell(f.away) },
+      { key: 'away', label: '客隊', value: f => C.name(f.away), render: f => `${star(f.away)}${C.teamCell(f.away)}` },
       { key: 'prob', label: isCurrent ? '主 / 和 / 客' : '賽前機率', value: f => f.prediction?.home ?? 0, sortable: false,
         render: f => (f.prediction ? C.probBar(f.prediction) : '<span class="dim small">—</span>') },
       { key: 'hit', label: '模型', value: f => hitScore(f), sortable: false, fold: 2, title: '賽前機率最高的結果是否命中',
@@ -86,7 +92,12 @@ export function mountFixtureList({
        **已賽的本季場次一律直達** —— 剛完場、報告還沒生成的空窗期,分析頁自己會
        降級成賽前分頁 + 比分,不需要在這裡擋。抽屜只留給往季賽果與
        還沒有賽前分析的未來場次,那裡它就是全部內容。 */
-    ], { sortKey: 'date', desc: false, onRow: f => ((f.season === meta.currentSeason && f.played) || hasFullAnalysis(f)
+    ], { sortKey: 'date', desc: false,
+      /* 關注的球隊的場次標一列底色 + 主客隊名旁邊的 ★(2026-09-14)。
+         **順序不動** —— 這張表預設照開賽時間排,搬動的話「下一輪什麼時候踢」就看不出來了;
+         而且讀者本來就會用上面的球隊篩選器只看一支隊。 */
+      rowClass: f => (mine.has(f.home) || mine.has(f.away) ? 'followed' : ''),
+      onRow: f => ((f.season === meta.currentSeason && f.played) || hasFullAnalysis(f)
       ? (location.href = C.link('analysis', { id: f.id })) : openMatch(f)) });
     C.startCountdowns();
   };

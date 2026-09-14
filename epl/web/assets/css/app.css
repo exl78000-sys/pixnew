@@ -364,6 +364,34 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
 .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 12px 0 14px; }
 .filters label { font-size: 12px; color: var(--ink-3); }
 
+/* ── 關注球隊(2026-09-14)─────────────────
+   星號在六個地方出現(球隊頁、積分榜、賽程表、實時戰況、盃賽、我的球隊),
+   所以只有這一份樣式 —— 各頁自己寫的話會慢慢長成六種大小。
+   **未關注時要看得見但不搶戲**:它在每一列的旁邊,亮起來的話整張表都在閃。 */
+.followstar {
+  background: none; border: 0; padding: 0 2px; line-height: 1;
+  font-size: 15px; color: var(--ink-3); flex: none;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+/* 只有按鈕才是可以點的。賽程表裡那顆 ★ 是純標記(整列點下去要進分析頁),
+   給它 pointer 的話讀者會以為點得動。 */
+button.followstar { cursor: pointer; }
+button.followstar:hover { color: var(--accent); }
+.followstar.on { color: #ffc531; }
+/* 存不進去(無痕視窗)時的狀態 —— 點了沒有用要看得出來 */
+.followstar.warn { color: var(--loss); }
+.followstar:focus-visible { outline: 2px solid #00ff8555; outline-offset: 2px; border-radius: 4px; }
+.followstar .tiny { font-size: 11px; }
+
+/* 被關注的那一列。**只加底色與左邊一條**,不改順序 ——
+   積分榜的順序就是名次,把關注的搬到最上面會讓第 14 名出現在第一列。 */
+tbody tr.followed td { background: #ffc5310f; }
+tbody tr.followed td:first-child { box-shadow: inset 2px 0 0 #ffc531; }
+
+.followcard { margin-top: 12px; }
+.pickteam { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px 3px 4px;
+  border: 1px solid var(--line); border-radius: 999px; }
+
 /* ── 單場分析:賽前 / 賽後 / 綜合 ─────────── */
 .analysis-switch {
   position: sticky; top: 61px; z-index: 15; display: flex; gap: 7px; flex-wrap: wrap;
