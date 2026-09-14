@@ -187,15 +187,37 @@ export async function main() {
     }
     await sleep(200);
   }
-  const deduped = [...new Map(coaches.map(row => [row.team, row])).values()];
+  const fresh = [...new Map(coaches.map(row => [row.team, row])).values()];
+
+  /* **這一輪抓失敗的球隊,保留上一輪的那一筆。**
+     原本是整份覆寫:一個球隊頁 404,那位教練就從名冊上整個消失
+     —— 2026-09-14 的 CI 就是這樣(19/20 頁),而西甲少一位教練會讓
+     「核對通過的前任期都掛上了嗎」那條斷言紅掉,看起來像 build 壞了,
+     實際上只是上游一頁沒回。這跟上面那條「目錄解析不到 15 隊就保留舊快取」
+     是同一個判斷,只是要做在**逐隊**這一層。
+
+     界線:只在真的有失敗時保留(沒失敗代表那支球隊真的不在名單上了),
+     而且只保留還在本季名冊裡的球隊。保留的那一筆標 `stale` 與原本的抓取時間,
+     下游才講得出「這一筆不是今天核對的」(鐵則四)。 */
+  const freshTeams = new Set(fresh.map(row => row.team));
+  const inSeason = new Set(teams.list.map(t => t.code));
+  const kept = Object.keys(attempts).length === 0 ? [] : (store.coaches ?? [])
+    .filter(row => row?.team && !freshTeams.has(row.team) && inSeason.has(row.team))
+    .map(row => ({ ...row, stale: true, staleSince: row.staleSince ?? store.retrievedAt ?? null }));
+  if (kept.length) {
+    console.log(`  · 保留上一輪的 ${kept.length} 筆(這一輪那幾頁沒回):${kept.map(r => r.team).join('、')}`);
+  }
+  const deduped = [...fresh, ...kept];
   const next = {
     version: 1, source: 'laliga.com', season: SEASON, retrievedAt: new Date().toISOString(),
     sourceUrl: DIRECTORY_URL, coaches: deduped, attempts,
-    coverage: { pages: slugs.length, coaches: deduped.length, errors: Object.keys(attempts).length },
+    coverage: { pages: slugs.length, coaches: deduped.length, fresh: fresh.length, kept: kept.length,
+      errors: Object.keys(attempts).length },
   };
   await mkdir(dirname(STORE_FILE), { recursive: true });
   await writeFile(STORE_FILE, JSON.stringify(next, null, 1));
-  console.log(`✔ LaLiga 官方教練核對完成：${deduped.length}/${slugs.length} 頁`);
+  console.log(`✔ LaLiga 官方教練核對完成：${fresh.length}/${slugs.length} 頁${
+    kept.length ? `(另保留上一輪 ${kept.length} 筆,合計 ${deduped.length})` : ''}`);
   console.log(`  檔案：${STORE_FILE}`);
   return next;
 }

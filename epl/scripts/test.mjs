@@ -2651,7 +2651,17 @@ async function checkDataGap() {
         })()],
         /* 產物:核對通過的職涯要真的掛上教練卡。風格是本站從季檔算的 ——
            場均值要附同期聯賽平均與場次;沒有逐場來源的聯賽只列任期事實。
-           斷言綁「形狀」不綁人名,重交付換人也不會歪。 */
+           斷言綁「形狀」不綁人名,重交付換人也不會歪。
+
+           **守的是「名冊上有這一隊,就一定要掛上」,不是「published 有幾筆就要掛幾筆」。**
+           原本比的是總數,於是 2026-09-14 的 CI 紅在一件跟 build 無關的事上:
+           LaLiga 官方教練那一步 19/20 頁(一頁 404),名冊少一位教練 →
+           掛上 16 筆對 published 17 筆 → 整個部署被擋。掛不上的原因是
+           **那一隊今天不在名冊上**,不是本站把它弄丟了。
+           (抓取器那一頭也修了:這一輪失敗的球隊保留上一輪那一筆。兩邊都要,
+           因為保留只在「上一輪抓到過」時有用。)
+           所以拆成三件事:名冊上有的必須掛上(紅線)、掛上的形狀要對(紅線)、
+           名冊上沒有的只印一行(上游缺口)。 */
         ['產物:通過的前任期掛上各聯賽 coaches.json,含風格或缺席原因', (() => {
           const vPath = join(ROOT, 'data', 'coach-careers-verified.json');
           if (!existsSync(vPath)) return true;
@@ -2661,11 +2671,25 @@ async function checkDataGap() {
               && c.career.style.leagueAvg.sf > 0)
             || (!c.career.style && typeof c.career.styleUnavailable === 'string' && c.career.styleUnavailable.length > 0);
           const files = { pl: 'web/data/coaches.json', es1: 'web/data/leagues/es1/coaches.json', en2: 'web/data/leagues/en2/coaches.json' };
+          const absent = [];
           for (const [lg, f] of Object.entries(files)) {
-            const pub = (v.published ?? []).filter(r => r.league === lg);
+            // 掛得上的條件跟 attachCareers 一樣:同一個隊碼、而且真的有前任期
+            const pub = (v.published ?? []).filter(r => r.league === lg && r.previous?.length);
             const data = JSON.parse(readFileSync(join(ROOT, ...f.split('/')), 'utf8'));
-            const withCareer = (data.coaches ?? data).filter(c => c.career);
-            if (withCareer.length !== pub.length || !withCareer.every(okOne)) return false;
+            const arr = data.coaches ?? data;
+            const byTeam = new Map(arr.map(c => [c.team, c]));
+            const withCareer = arr.filter(c => c.career);
+            if (!withCareer.every(okOne)) return false;
+            for (const rec of pub) {
+              const co = byTeam.get(rec.team);
+              if (!co) { absent.push(`${lg}/${rec.team}`); continue; }   // 名冊上沒這一隊 → 上游缺口
+              if (!co.career) return false;                              // 名冊上有卻沒掛 → 本站的 bug
+            }
+            // 掛上的不可以多於 published(多出來的代表掛了沒核對過的)
+            if (withCareer.length > pub.length) return false;
+          }
+          if (absent.length) {
+            console.log(`  · 教練名冊上暫時沒有這幾隊,前任期掛不上(上游缺口,不擋):${absent.join('、')}`);
           }
           return true;
         })()],
