@@ -22,8 +22,15 @@ try {
      跨教練的比較(場均勝點排行)留在總覽頁,那裡本來就是「20 隊一起看」。 */
   const CONF = { high: ['accent', '長期在任'], medium: ['warn', '需留意異動'], low: ['bad', '可信度低'], unknown: ['bad', '待確認'] };
   const confPill = c => {
-    // 官方核對過就別再顯示「需留意異動」—— 那個標籤問的問題已經有答案了
-    if (coaches.officialAsOf && c.officialName) {
+    /* 官方核對過就別再顯示「需留意異動」—— 那個標籤問的問題已經有答案了。
+       **這一筆若是上一輪保留下來的**(最近一次抓取時官方那一頁沒回),
+       就不能拿這一輪的核對時間替它背書 —— 標出它上次核對到的日期(鐵則四)。 */
+    if (coaches.officialAsOf && (c.officialName || c.stale)) {
+      if (c.stale) {
+        const when = String(c.staleSince ?? '').slice(0, 10);
+        return `<span class="pill warn tiny" title="最近一次抓取時,聯賽官方這一隊的頁面沒有回應,所以這裡顯示的是上一次核對到的結果">官方核對${
+          when ? ` ${C.esc(when)}` : '(日期不詳)'}</span>`;
+      }
       return '<span class="pill accent tiny" title="聯賽官方登記的現任教練">官方確認在任</span>';
     }
     /* 人工交付並過核對器的(英冠)。沒有這個分支的話,c.confidence 是 undefined,
@@ -479,6 +486,17 @@ try {
            <div class="tiny dim" style="margin-top:6px">這幾位的任期、戰績與戰術風格本站還沒整理,
              球隊頁上只會看到前任的資料並標明是前任 —— 不會拿舊數字充當新教練的履歷。</div>`
         : `${cur.length} 隊的現任教練都和官方一致。`}
+      ${(() => {
+        /* **保留下來的那幾筆要講。** 抓取器遇到官方某一隊的頁面沒回應時,
+           會留著上一輪那一筆(一頁 404 不該讓一位教練從名冊上消失),
+           但上面那句「每次更新都跟官方核對」對那幾筆就不成立 —— 不講的話,
+           畫面用今天的核對時間替一筆沒有重新核對的資料背書(鐵則四)。 */
+        const kept = cur.filter(c => c.stale);
+        if (!kept.length) return '';
+        return `<div class="tiny dim" style="margin-top:6px">其中 <b>${kept.length} 隊</b>(${
+          kept.map(c => C.esc(C.name(c.team))).join('、')})這一次官方的頁面沒有回應,
+          顯示的是<b>上一次核對到的結果</b>,不是今天重新確認過的。</div>`;
+      })()}
     </div>`;
 
     /* 官方只給名字,其餘欄位是人工整理的,會過期 —— 這件事一定要講。
