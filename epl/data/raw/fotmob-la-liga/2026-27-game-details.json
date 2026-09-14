@@ -81269,8 +81269,1899 @@
      }
     ]
    }
+  },
+  "VIL|BET": {
+   "key": "VIL|BET",
+   "season": "2026-27",
+   "date": "2026-09-14",
+   "matchId": "5868060",
+   "home": "VIL",
+   "away": "BET",
+   "score": [
+    1,
+    2
+   ],
+   "providerScore": [
+    1,
+    2
+   ],
+   "teamStats": {
+    "VIL": {
+     "possession": 62,
+     "shots": 14,
+     "shotsOn": 8,
+     "shotsOff": 4,
+     "blockedShots": 11,
+     "corners": 7,
+     "offsides": 5,
+     "fouls": 7,
+     "saves": 10,
+     "passes": 623,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.89
+    },
+    "BET": {
+     "possession": 38,
+     "shots": 26,
+     "shotsOn": 12,
+     "shotsOff": 3,
+     "blockedShots": 2,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 8,
+     "saves": 7,
+     "passes": 378,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.52
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     62,
+     38
+    ],
+    "h1": [
+     59,
+     41
+    ],
+    "h2": [
+     64,
+     36
+    ]
+   },
+   "events": [
+    {
+     "minute": 29,
+     "extra": null,
+     "team": "VIL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Gerard Moreno"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Juan Hernández"
+    },
+    {
+     "minute": 43,
+     "extra": null,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Natan"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nathan Saliba"
+    },
+    {
+     "minute": 55,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alberto Moleiro"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dani Ceballos"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tani Oluwaseyi"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nelson Deossa"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Antony"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alex Freeman"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ayoze Pérez"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Facundo Bernal"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Giovani Lo Celso"
+    },
+    {
+     "minute": 84,
+     "extra": null,
+     "team": "VIL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Renato Veiga"
+    }
+   ],
+   "shots": [
+    {
+     "min": 8,
+     "extra": null,
+     "team": "VIL",
+     "player": "Nicolas Pépé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.1,
+     "y": 15.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "BET",
+     "player": "Héctor Bellerín",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 23.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "BET",
+     "player": "Héctor Bellerín",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.028,
+     "xgot": 0.281,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 26.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "VIL",
+     "player": "Santi Comesaña",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.568,
+     "xgot": 0.744,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.9,
+     "y": 36.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "VIL",
+     "player": "Georges Mikautadze",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.241,
+     "xgot": 0.426,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 36.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "BET",
+     "player": "Pablo Fornals",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.117,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 33.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BET",
+     "player": "Abdessamad Ezzalzouli",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81,
+     "y": 42.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "VIL",
+     "player": "Carlos Romero",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 45.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "VIL",
+     "player": "Georges Mikautadze",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.023,
+     "xgot": 0.124,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.8,
+     "y": 46.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "VIL",
+     "player": "Gerard Moreno",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.501,
+     "xgot": 0.703,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 36.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "BET",
+     "player": "Juan Hernández",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.09,
+     "xgot": 0.308,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 38.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "BET",
+     "player": "Pablo Fornals",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.3,
+     "y": 48.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "BET",
+     "player": "Pablo Fornals",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 19,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "VIL",
+     "player": "Nicolas Pépé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.084,
+     "xgot": 0.476,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 25,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "VIL",
+     "player": "Tajon Buchanan",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0.173,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.5,
+     "y": 52.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "BET",
+     "player": "Abdessamad Ezzalzouli",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0.04,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97,
+     "y": 48.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "BET",
+     "player": "Juan Hernández",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.852,
+     "xgot": 0.994,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 34.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.5,
+     "y": 29,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "BET",
+     "player": "Rodrigo Riquelme",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.094,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 31.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83,
+     "y": 47.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "BET",
+     "player": "Natan",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.214,
+     "xgot": 0.575,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 35.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "BET",
+     "player": "Abdessamad Ezzalzouli",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 30.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "VIL",
+     "player": "Tajon Buchanan",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 92,
+     "y": 55.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "BET",
+     "player": "Rodrigo Riquelme",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 18,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "BET",
+     "player": "Juan Hernández",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.474,
+     "xgot": 0.387,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 36.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "VIL",
+     "player": "Alberto Moleiro",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 45.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "VIL",
+     "player": "Georges Mikautadze",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0.031,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 49,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0.323,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 39.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "BET",
+     "player": "Nelson Deossa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.116,
+     "xgot": 0.127,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.6,
+     "y": 22.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.423,
+     "xgot": 0.197,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 25.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 19.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "BET",
+     "player": "Juan Hernández",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.24,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.1,
+     "y": 34.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "VIL",
+     "player": "Alberto Moleiro",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.1,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 28.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "VIL",
+     "player": "Georges Mikautadze",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.29,
+     "xgot": 0.308,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 39,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "VIL",
+     "player": "Tani Oluwaseyi",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.4,
+     "y": 30.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "BET",
+     "player": "Nelson Deossa",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.093,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.1,
+     "y": 47.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "BET",
+     "player": "Nelson Deossa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0.067,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.6,
+     "y": 20.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0.108,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.9,
+     "y": 16.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "BET",
+     "player": "Héctor Bellerín",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.354,
+     "xgot": 0.253,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.1,
+     "y": 24.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -5
+    ],
+    [
+     2,
+     -5
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     4,
+     16
+    ],
+    [
+     5,
+     27
+    ],
+    [
+     6,
+     22
+    ],
+    [
+     7,
+     -5
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     10,
+     22
+    ],
+    [
+     11,
+     100
+    ],
+    [
+     12,
+     100
+    ],
+    [
+     13,
+     100
+    ],
+    [
+     14,
+     -16
+    ],
+    [
+     15,
+     -33
+    ],
+    [
+     16,
+     -3
+    ],
+    [
+     17,
+     -57
+    ],
+    [
+     18,
+     -41
+    ],
+    [
+     19,
+     -35
+    ],
+    [
+     20,
+     19
+    ],
+    [
+     21,
+     11
+    ],
+    [
+     22,
+     5
+    ],
+    [
+     23,
+     -3
+    ],
+    [
+     24,
+     -19
+    ],
+    [
+     25,
+     5
+    ],
+    [
+     26,
+     -24
+    ],
+    [
+     27,
+     -14
+    ],
+    [
+     28,
+     -22
+    ],
+    [
+     29,
+     100
+    ],
+    [
+     30,
+     90
+    ],
+    [
+     31,
+     71
+    ],
+    [
+     32,
+     -54
+    ],
+    [
+     33,
+     -19
+    ],
+    [
+     34,
+     -27
+    ],
+    [
+     35,
+     -43
+    ],
+    [
+     36,
+     -27
+    ],
+    [
+     37,
+     -24
+    ],
+    [
+     38,
+     -30
+    ],
+    [
+     39,
+     -46
+    ],
+    [
+     40,
+     -43
+    ],
+    [
+     41,
+     -24
+    ],
+    [
+     42,
+     -14
+    ],
+    [
+     43,
+     -22
+    ],
+    [
+     44,
+     3
+    ],
+    [
+     45,
+     46
+    ],
+    [
+     45.5,
+     45
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     47,
+     38
+    ],
+    [
+     48,
+     24
+    ],
+    [
+     49,
+     14
+    ],
+    [
+     50,
+     -5
+    ],
+    [
+     51,
+     30
+    ],
+    [
+     52,
+     49
+    ],
+    [
+     53,
+     14
+    ],
+    [
+     54,
+     -14
+    ],
+    [
+     55,
+     -16
+    ],
+    [
+     56,
+     -100
+    ],
+    [
+     57,
+     -100
+    ],
+    [
+     58,
+     -100
+    ],
+    [
+     59,
+     16
+    ],
+    [
+     60,
+     22
+    ],
+    [
+     61,
+     11
+    ],
+    [
+     62,
+     38
+    ],
+    [
+     63,
+     33
+    ],
+    [
+     64,
+     49
+    ],
+    [
+     65,
+     54
+    ],
+    [
+     66,
+     49
+    ],
+    [
+     67,
+     41
+    ],
+    [
+     68,
+     -84
+    ],
+    [
+     69,
+     -95
+    ],
+    [
+     70,
+     -100
+    ],
+    [
+     71,
+     -33
+    ],
+    [
+     72,
+     -27
+    ],
+    [
+     73,
+     -5
+    ],
+    [
+     74,
+     8
+    ],
+    [
+     75,
+     30
+    ],
+    [
+     76,
+     41
+    ],
+    [
+     77,
+     -27
+    ],
+    [
+     78,
+     -81
+    ],
+    [
+     79,
+     0
+    ],
+    [
+     80,
+     43
+    ],
+    [
+     81,
+     92
+    ],
+    [
+     82,
+     11
+    ],
+    [
+     83,
+     27
+    ],
+    [
+     84,
+     16
+    ],
+    [
+     85,
+     -5
+    ],
+    [
+     86,
+     -33
+    ],
+    [
+     87,
+     -43
+    ],
+    [
+     88,
+     -49
+    ],
+    [
+     89,
+     -16
+    ],
+    [
+     90,
+     5
+    ],
+    [
+     90.5,
+     23
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "VIL": {
+     "team": "VIL",
+     "formation": "4-4-2",
+     "coach": "Inigo Pérez",
+     "xi": [
+      {
+       "name": "Péter Gulácsi",
+       "shirt": 25,
+       "pos": "G"
+      },
+      {
+       "name": "Santiago Mouriño",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Pau Navarro",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Renato Veiga",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "Carlos Romero",
+       "shirt": 20,
+       "pos": "D"
+      },
+      {
+       "name": "Nicolas Pépé",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Pape Gueye",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Santi Comesaña",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Tajon Buchanan",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Gerard Moreno",
+       "shirt": 7,
+       "pos": "F"
+      },
+      {
+       "name": "Georges Mikautadze",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Nathan Saliba",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Alberto Moleiro",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Tani Oluwaseyi",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Alex Freeman",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Ayoze Pérez",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Luíz Júnior",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Rubén Gómez",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Logan Costa",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Sergi Cardona",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Alassane Diatta",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Carlos Maciá",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Ilias Akhomach",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    },
+    "BET": {
+     "team": "BET",
+     "formation": "4-2-3-1",
+     "coach": "Manuel Pellegrini",
+     "xi": [
+      {
+       "name": "Álvaro Vallés",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Héctor Bellerín",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Marc Bartra",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Natan",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Fran García",
+       "shirt": 11,
+       "pos": "D"
+      },
+      {
+       "name": "Pablo Fornals",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Marc Roca",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Riquelme",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Isco",
+       "shirt": 22,
+       "pos": "M"
+      },
+      {
+       "name": "Abdessamad Ezzalzouli",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Juan Hernández",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Dani Ceballos",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Nelson Deossa",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Antony",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Facundo Bernal",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Giovani Lo Celso",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Manu González",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Ángel Ortiz",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Júnior Firpo",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Valentín Gómez",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Álvaro Fidalgo",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Losada",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Troy Parrott",
+       "shirt": 19,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 33,
+      "center": 28,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 35,
+      "center": 20,
+      "right": 45
+     },
+     "secondHalf": {
+      "left": 31,
+      "center": 34,
+      "right": 35
+     }
+    },
+    "away": {
+     "total": {
+      "left": 40,
+      "center": 26,
+      "right": 34
+     },
+     "firstHalf": {
+      "left": 48,
+      "center": 28,
+      "right": 24
+     },
+     "secondHalf": {
+      "left": 29,
+      "center": 24,
+      "right": 47
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-14T23:28:14.441Z",
+   "fdMatchId": "2026-27-50",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "BET",
+      "name": "Isco",
+      "n": 44,
+      "cx": 65.2,
+      "cy": 25.4,
+      "spread": 29.7,
+      "grid": "2,2,2,8,4,2,0,2,2,1,3,1,0,0,0,2,8,1,0,0,1,1,1,1"
+     },
+     {
+      "team": "BET",
+      "name": "Marc Roca",
+      "n": 75,
+      "cx": 43.6,
+      "cy": 30.5,
+      "spread": 23,
+      "grid": "0,5,7,6,0,0,3,7,8,3,2,0,2,7,9,8,1,0,0,2,2,1,2,0"
+     },
+     {
+      "team": "BET",
+      "name": "Natan",
+      "n": 71,
+      "cx": 23.6,
+      "cy": 22.2,
+      "spread": 19.3,
+      "grid": "8,6,4,0,0,0,16,21,6,3,0,1,4,2,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Fran García",
+      "n": 70,
+      "cx": 43.7,
+      "cy": 9,
+      "spread": 27.7,
+      "grid": "9,18,13,9,7,6,4,2,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Abdessamad Ezzalzouli",
+      "n": 46,
+      "cx": 62.8,
+      "cy": 11.4,
+      "spread": 24.1,
+      "grid": "0,3,7,14,4,5,0,3,2,2,1,3,0,0,0,0,1,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Santiago Mouriño",
+      "n": 75,
+      "cx": 48.7,
+      "cy": 58.3,
+      "spread": 23.8,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,3,2,2,4,1,0,8,6,17,18,13,1"
+     },
+     {
+      "team": "VIL",
+      "name": "Péter Gulácsi",
+      "n": 49,
+      "cx": 9.1,
+      "cy": 36.1,
+      "spread": 10.5,
+      "grid": "0,0,0,0,0,0,16,1,1,0,0,0,25,4,0,0,0,0,0,2,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Pape Gueye",
+      "n": 63,
+      "cx": 49.3,
+      "cy": 39.9,
+      "spread": 23.7,
+      "grid": "0,1,2,2,2,0,1,2,10,1,3,0,2,7,3,8,2,0,1,1,2,13,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Renato Veiga",
+      "n": 115,
+      "cx": 38.6,
+      "cy": 27.3,
+      "spread": 22.5,
+      "grid": "1,5,4,3,1,1,10,27,22,16,1,2,5,7,6,2,0,1,0,0,1,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Pau Navarro",
+      "n": 105,
+      "cx": 39.4,
+      "cy": 45.1,
+      "spread": 18.5,
+      "grid": "0,1,0,0,0,0,1,1,1,4,0,0,7,24,27,14,1,0,2,8,8,5,1,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Santi Comesaña",
+      "n": 102,
+      "cx": 50.4,
+      "cy": 23.9,
+      "spread": 24.4,
+      "grid": "3,10,14,7,4,0,1,8,11,12,5,1,3,2,2,11,4,2,0,0,0,0,2,0"
+     },
+     {
+      "team": "BET",
+      "name": "Pablo Fornals",
+      "n": 61,
+      "cx": 57.2,
+      "cy": 30.1,
+      "spread": 30.5,
+      "grid": "2,1,6,4,1,3,0,6,2,6,3,0,0,7,1,3,2,4,0,0,1,6,0,3"
+     },
+     {
+      "team": "BET",
+      "name": "Marc Bartra",
+      "n": 44,
+      "cx": 34.1,
+      "cy": 46.6,
+      "spread": 21.9,
+      "grid": "0,0,0,0,0,0,3,0,1,1,1,0,4,11,7,3,0,0,4,1,5,2,1,0"
+     },
+     {
+      "team": "BET",
+      "name": "Héctor Bellerín",
+      "n": 58,
+      "cx": 50.8,
+      "cy": 54.6,
+      "spread": 33.3,
+      "grid": "0,0,0,0,0,0,0,0,1,2,0,0,7,5,1,1,1,4,4,9,4,6,4,9"
+     },
+     {
+      "team": "BET",
+      "name": "Rodrigo Riquelme",
+      "n": 31,
+      "cx": 59.8,
+      "cy": 52.4,
+      "spread": 35,
+      "grid": "0,1,0,0,0,0,1,0,0,0,0,1,1,3,0,1,1,4,2,2,4,2,3,5"
+     },
+     {
+      "team": "VIL",
+      "name": "Carlos Romero",
+      "n": 85,
+      "cx": 54,
+      "cy": 13,
+      "spread": 26,
+      "grid": "3,5,14,25,7,5,6,3,1,5,3,4,0,1,3,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Gerard Moreno",
+      "n": 40,
+      "cx": 68.8,
+      "cy": 47.2,
+      "spread": 25,
+      "grid": "0,0,0,1,0,0,0,0,1,3,2,2,0,1,4,2,4,1,1,0,2,4,7,5"
+     },
+     {
+      "team": "VIL",
+      "name": "Tajon Buchanan",
+      "n": 39,
+      "cx": 72.3,
+      "cy": 18.3,
+      "spread": 36.2,
+      "grid": "4,0,2,2,5,11,1,0,1,2,3,2,0,0,0,0,0,1,0,0,0,2,1,2"
+     },
+     {
+      "team": "BET",
+      "name": "Álvaro Vallés",
+      "n": 64,
+      "cx": 8.7,
+      "cy": 31.9,
+      "spread": 10.1,
+      "grid": "2,3,0,0,0,0,29,2,0,0,0,0,25,3,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Georges Mikautadze",
+      "n": 62,
+      "cx": 72,
+      "cy": 30.3,
+      "spread": 27.3,
+      "grid": "0,0,1,2,2,6,0,2,1,7,11,9,0,0,0,4,8,0,3,1,0,3,2,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Nicolas Pépé",
+      "n": 57,
+      "cx": 69.8,
+      "cy": 54.4,
+      "spread": 26.9,
+      "grid": "0,0,0,0,0,2,1,0,0,0,0,0,0,5,1,2,1,2,2,0,1,11,18,11"
+     },
+     {
+      "team": "BET",
+      "name": "Juan Hernández",
+      "n": 49,
+      "cx": 64.8,
+      "cy": 33.7,
+      "spread": 28.8,
+      "grid": "0,2,2,7,1,0,0,1,1,3,1,8,0,1,5,3,4,0,0,0,3,4,1,2"
+     },
+     {
+      "team": "VIL",
+      "name": "Nathan Saliba",
+      "n": 46,
+      "cx": 55.7,
+      "cy": 40.3,
+      "spread": 22.2,
+      "grid": "0,0,0,0,1,0,0,0,6,3,6,0,1,3,5,3,7,0,0,3,2,3,3,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Alberto Moleiro",
+      "n": 37,
+      "cx": 71.6,
+      "cy": 21.7,
+      "spread": 21.9,
+      "grid": "0,1,1,2,7,3,0,1,2,4,11,0,0,0,0,2,0,2,0,0,0,0,0,1"
+     },
+     {
+      "team": "BET",
+      "name": "Dani Ceballos",
+      "n": 35,
+      "cx": 39.9,
+      "cy": 30,
+      "spread": 20.5,
+      "grid": "0,1,2,1,0,0,0,8,5,1,3,0,1,8,3,2,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Tani Oluwaseyi",
+      "n": 24,
+      "cx": 71.4,
+      "cy": 49.2,
+      "spread": 28.1,
+      "grid": "0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,6,6,3,0,1,2,3,1"
+     },
+     {
+      "team": "BET",
+      "name": "Antony",
+      "n": 23,
+      "cx": 70.6,
+      "cy": 56.3,
+      "spread": 24.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,1,0,2,1,0,0,3,0,0,3,4,6,3"
+     },
+     {
+      "team": "BET",
+      "name": "Nelson Deossa",
+      "n": 26,
+      "cx": 67,
+      "cy": 36.3,
+      "spread": 29.3,
+      "grid": "0,0,1,1,3,0,0,0,4,1,0,2,0,0,3,0,3,1,0,0,1,2,2,2"
+     },
+     {
+      "team": "VIL",
+      "name": "Alex Freeman",
+      "n": 25,
+      "cx": 57.1,
+      "cy": 56.2,
+      "spread": 24.9,
+      "grid": "0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,2,0,1,5,0,5,7,1"
+     },
+     {
+      "team": "VIL",
+      "name": "Ayoze Pérez",
+      "n": 10,
+      "cx": 70.9,
+      "cy": 30.7,
+      "spread": 11.4,
+      "grid": "0,0,0,0,0,0,0,0,0,2,4,0,0,0,0,1,2,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Giovani Lo Celso",
+      "n": 9,
+      "cx": 39.1,
+      "cy": 15.4,
+      "spread": 19.9,
+      "grid": "0,4,0,0,1,0,0,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Facundo Bernal",
+      "n": 1,
+      "cx": 35.2,
+      "cy": 49.5,
+      "spread": 0,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-14T17:54:56.481Z"
+ "updatedAt": "2026-09-14T23:28:15.107Z"
 }

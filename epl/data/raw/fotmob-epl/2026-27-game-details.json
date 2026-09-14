@@ -73663,10 +73663,1907 @@
      }
     ]
    }
+  },
+  "LEE|NEW": {
+   "key": "LEE|NEW",
+   "season": "2026-27",
+   "date": "2026-09-14",
+   "matchId": "5795450",
+   "home": "LEE",
+   "away": "NEW",
+   "score": [
+    4,
+    1
+   ],
+   "providerScore": [
+    4,
+    1
+   ],
+   "teamStats": {
+    "LEE": {
+     "possession": 51,
+     "shots": 15,
+     "shotsOn": 6,
+     "shotsOff": 4,
+     "blockedShots": 0,
+     "corners": 5,
+     "offsides": 2,
+     "fouls": 8,
+     "saves": 4,
+     "passes": 429,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.91
+    },
+    "NEW": {
+     "possession": 49,
+     "shots": 7,
+     "shotsOn": 5,
+     "shotsOff": 2,
+     "blockedShots": 3,
+     "corners": 5,
+     "offsides": 3,
+     "fouls": 13,
+     "saves": 3,
+     "passes": 418,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.85
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "blocked_shots",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "possession": {
+    "all": [
+     51,
+     49
+    ],
+    "h1": [
+     58,
+     42
+    ],
+    "h2": [
+     43,
+     57
+    ]
+   },
+   "events": [
+    {
+     "minute": 19,
+     "extra": 0,
+     "team": "NEW",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sean Steur"
+    },
+    {
+     "minute": 32,
+     "extra": null,
+     "team": "NEW",
+     "type": "Goal",
+     "detail": "Own Goal",
+     "player": null
+    },
+    {
+     "minute": 34,
+     "extra": null,
+     "team": "LEE",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Jayden Bogle"
+    },
+    {
+     "minute": 44,
+     "extra": null,
+     "team": "LEE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Dominic Calvert-Lewin"
+    },
+    {
+     "minute": 45,
+     "extra": 1,
+     "team": "LEE",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Dominic Calvert-Lewin"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "NEW",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jacob Murphy"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "NEW",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bazoumana Touré"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "NEW",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joseph Willock"
+    },
+    {
+     "minute": 58,
+     "extra": 0,
+     "team": "NEW",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Valentino Livramento"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "LEE",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Noah Okafor"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "LEE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Brenden Aaronson"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "LEE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Melvin Bard"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "LEE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Harry Wilson"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "LEE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lukas Nmecha"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "NEW",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Aladji Bamba"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "LEE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Daniel James"
+    },
+    {
+     "minute": 88,
+     "extra": 0,
+     "team": "LEE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sean Longstaff"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "NEW",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Bazoumana Touré"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "NEW",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Valentino Livramento"
+    }
+   ],
+   "shots": [
+    {
+     "min": 11,
+     "extra": null,
+     "team": "LEE",
+     "player": "Ethan Ampadu",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.069,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 37,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "LEE",
+     "player": "Jayden Bogle",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.224,
+     "xgot": 0.193,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 30.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "LEE",
+     "player": "Jayden Bogle",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.014,
+     "xgot": 0.045,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 18.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "LEE",
+     "player": "Nico Elvedi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.077,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 21.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "LEE",
+     "player": "Noah Okafor",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.2,
+     "y": 51.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "NEW",
+     "player": "Lewis Miley",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": true,
+     "x": 14.2,
+     "y": 31.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "LEE",
+     "player": "Ao Tanaka",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.064,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 34.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "LEE",
+     "player": "Jayden Bogle",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.112,
+     "xgot": 0.776,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 33.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "LEE",
+     "player": "Dominic Calvert-Lewin",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.088,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 32.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "LEE",
+     "player": "Dominic Calvert-Lewin",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.465,
+     "xgot": 0.456,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 37.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "LEE",
+     "player": "Dominic Calvert-Lewin",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 35.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "NEW",
+     "player": "Harvey Barnes",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.259,
+     "xgot": 0.491,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 40.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "LEE",
+     "player": "Dominic Calvert-Lewin",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.199,
+     "xgot": 0.709,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 40.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "NEW",
+     "player": "Lewis Hall",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0.024,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 49.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "LEE",
+     "player": "Anton Stach",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.428,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 25.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "LEE",
+     "player": "Noah Okafor",
+     "type": "Goal",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.055,
+     "xgot": 0.501,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 45.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "NEW",
+     "player": "Harvey Barnes",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0.024,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 46.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "NEW",
+     "player": "Yoane Wissa",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.134,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.4,
+     "y": 34.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "NEW",
+     "player": "Joseph Willock",
+     "type": "Post",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.11,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.4,
+     "y": 41.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "NEW",
+     "player": "Joseph Willock",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0.045,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.6,
+     "y": 50,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "LEE",
+     "player": "Daniel James",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.3,
+     "y": 42.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "NEW",
+     "player": "Bazoumana Touré",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.285,
+     "xgot": 0.535,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.4,
+     "y": 37.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "LEE",
+     "player": "Daniel James",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 41.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     76
+    ],
+    [
+     2,
+     73
+    ],
+    [
+     3,
+     68
+    ],
+    [
+     4,
+     -3
+    ],
+    [
+     5,
+     22
+    ],
+    [
+     6,
+     27
+    ],
+    [
+     7,
+     27
+    ],
+    [
+     8,
+     0
+    ],
+    [
+     9,
+     5
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     54
+    ],
+    [
+     12,
+     49
+    ],
+    [
+     13,
+     33
+    ],
+    [
+     14,
+     100
+    ],
+    [
+     15,
+     100
+    ],
+    [
+     16,
+     100
+    ],
+    [
+     17,
+     -22
+    ],
+    [
+     18,
+     -33
+    ],
+    [
+     19,
+     -16
+    ],
+    [
+     20,
+     -11
+    ],
+    [
+     21,
+     -5
+    ],
+    [
+     22,
+     -5
+    ],
+    [
+     23,
+     -22
+    ],
+    [
+     24,
+     -11
+    ],
+    [
+     25,
+     5
+    ],
+    [
+     26,
+     65
+    ],
+    [
+     27,
+     100
+    ],
+    [
+     28,
+     95
+    ],
+    [
+     29,
+     46
+    ],
+    [
+     30,
+     5
+    ],
+    [
+     31,
+     3
+    ],
+    [
+     32,
+     30
+    ],
+    [
+     33,
+     30
+    ],
+    [
+     34,
+     100
+    ],
+    [
+     35,
+     81
+    ],
+    [
+     36,
+     87
+    ],
+    [
+     37,
+     14
+    ],
+    [
+     38,
+     73
+    ],
+    [
+     39,
+     62
+    ],
+    [
+     40,
+     81
+    ],
+    [
+     41,
+     -22
+    ],
+    [
+     42,
+     -16
+    ],
+    [
+     43,
+     -43
+    ],
+    [
+     44,
+     0
+    ],
+    [
+     45,
+     5
+    ],
+    [
+     45.5,
+     37
+    ],
+    [
+     46,
+     49
+    ],
+    [
+     47,
+     22
+    ],
+    [
+     48,
+     16
+    ],
+    [
+     49,
+     -33
+    ],
+    [
+     50,
+     0
+    ],
+    [
+     51,
+     16
+    ],
+    [
+     52,
+     16
+    ],
+    [
+     53,
+     -16
+    ],
+    [
+     54,
+     -33
+    ],
+    [
+     55,
+     5
+    ],
+    [
+     56,
+     11
+    ],
+    [
+     57,
+     22
+    ],
+    [
+     58,
+     -5
+    ],
+    [
+     59,
+     16
+    ],
+    [
+     60,
+     -14
+    ],
+    [
+     61,
+     -24
+    ],
+    [
+     62,
+     -14
+    ],
+    [
+     63,
+     16
+    ],
+    [
+     64,
+     -27
+    ],
+    [
+     65,
+     -49
+    ],
+    [
+     66,
+     -54
+    ],
+    [
+     67,
+     -22
+    ],
+    [
+     68,
+     -27
+    ],
+    [
+     69,
+     -49
+    ],
+    [
+     70,
+     -38
+    ],
+    [
+     71,
+     -38
+    ],
+    [
+     72,
+     -41
+    ],
+    [
+     73,
+     -46
+    ],
+    [
+     74,
+     -35
+    ],
+    [
+     75,
+     -16
+    ],
+    [
+     76,
+     -11
+    ],
+    [
+     77,
+     -16
+    ],
+    [
+     78,
+     -11
+    ],
+    [
+     79,
+     -11
+    ],
+    [
+     80,
+     5
+    ],
+    [
+     81,
+     11
+    ],
+    [
+     82,
+     11
+    ],
+    [
+     83,
+     5
+    ],
+    [
+     84,
+     -3
+    ],
+    [
+     85,
+     8
+    ],
+    [
+     86,
+     -3
+    ],
+    [
+     87,
+     0
+    ],
+    [
+     88,
+     -11
+    ],
+    [
+     89,
+     0
+    ],
+    [
+     90,
+     -54
+    ],
+    [
+     90.5,
+     1
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "LEE": {
+     "team": "LEE",
+     "formation": "3-5-2",
+     "coach": "Daniel Farke",
+     "xi": [
+      {
+       "name": "James Trafford",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "James Justin",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Nico Elvedi",
+       "shirt": 30,
+       "pos": "D"
+      },
+      {
+       "name": "Tarik Muharemović",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Jayden Bogle",
+       "shirt": 2,
+       "pos": "M"
+      },
+      {
+       "name": "Anton Stach",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Ethan Ampadu",
+       "shirt": 4,
+       "pos": "M"
+      },
+      {
+       "name": "Ao Tanaka",
+       "shirt": 22,
+       "pos": "M"
+      },
+      {
+       "name": "Gabriel Gudmundsson",
+       "shirt": 3,
+       "pos": "M"
+      },
+      {
+       "name": "Dominic Calvert-Lewin",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Noah Okafor",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Melvin Bard",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Brenden Aaronson",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Harry Wilson",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Lukas Nmecha",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel James",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Sean Longstaff",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Michael Zetterer",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Jaka Bijol",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Jean-Mattéo Bahoya",
+       "shirt": 23,
+       "pos": "?"
+      }
+     ]
+    },
+    "NEW": {
+     "team": "NEW",
+     "formation": "4-2-3-1",
+     "coach": "Matthias Jaissle",
+     "xi": [
+      {
+       "name": "Lukás Hornícek",
+       "shirt": 21,
+       "pos": "G"
+      },
+      {
+       "name": "Amar Dedić",
+       "shirt": 37,
+       "pos": "D"
+      },
+      {
+       "name": "Malick Thiaw",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "Sven Botman",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Lewis Hall",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Lewis Miley",
+       "shirt": 67,
+       "pos": "?"
+      },
+      {
+       "name": "Nico González",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Jacob Murphy",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Matias Fernandez-Pardo",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Harvey Barnes",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Yoane Wissa",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Sean Steur",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Joseph Willock",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Bazoumana Touré",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Valentino Livramento",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Aladji Bamba",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Nick Pope",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Fabian Schär",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Mason Miley",
+       "shirt": 76,
+       "pos": "?"
+      },
+      {
+       "name": "Jacob Ramsey",
+       "shirt": 41,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      117847,
+      115624
+     ],
+     "sprintDistance": [
+      2569,
+      2405
+     ],
+     "sprints": [
+      126,
+      120
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      22727,
+      23439
+     ]
+    },
+    "players": [
+     {
+      "team": "LEE",
+      "name": "James Trafford",
+      "shirt": 1,
+      "distance": 5573,
+      "topSpeed": 24.799999237060547,
+      "rating": 7.6
+     },
+     {
+      "team": "LEE",
+      "name": "James Justin",
+      "shirt": 24,
+      "distance": 10927,
+      "topSpeed": 33.20000076293945,
+      "rating": 7.3
+     },
+     {
+      "team": "LEE",
+      "name": "Nico Elvedi",
+      "shirt": 30,
+      "distance": 9844,
+      "topSpeed": 30.799999237060547,
+      "rating": 6.8
+     },
+     {
+      "team": "LEE",
+      "name": "Tarik Muharemović",
+      "shirt": 5,
+      "distance": 10808,
+      "topSpeed": 30.700000762939453,
+      "rating": 8.2
+     },
+     {
+      "team": "LEE",
+      "name": "Jayden Bogle",
+      "shirt": 2,
+      "distance": 10049,
+      "topSpeed": 32,
+      "rating": 7.9
+     },
+     {
+      "team": "LEE",
+      "name": "Anton Stach",
+      "shirt": 18,
+      "distance": 11671,
+      "topSpeed": 28.799999237060547,
+      "rating": 7.9
+     },
+     {
+      "team": "LEE",
+      "name": "Ethan Ampadu",
+      "shirt": 4,
+      "distance": 11646,
+      "topSpeed": 30.399999618530273,
+      "rating": 7.3
+     },
+     {
+      "team": "LEE",
+      "name": "Ao Tanaka",
+      "shirt": 22,
+      "distance": 8924,
+      "topSpeed": 30.600000381469727,
+      "rating": 7.3
+     },
+     {
+      "team": "LEE",
+      "name": "Gabriel Gudmundsson",
+      "shirt": 3,
+      "distance": 8770,
+      "topSpeed": 34,
+      "rating": 7
+     },
+     {
+      "team": "LEE",
+      "name": "Dominic Calvert-Lewin",
+      "shirt": 9,
+      "distance": 9539,
+      "topSpeed": 29.399999618530273,
+      "rating": 8.6
+     },
+     {
+      "team": "LEE",
+      "name": "Noah Okafor",
+      "shirt": 19,
+      "distance": 7859,
+      "topSpeed": 31.899999618530273,
+      "rating": 8
+     },
+     {
+      "team": "LEE",
+      "name": "Melvin Bard",
+      "shirt": 26,
+      "distance": 2508,
+      "topSpeed": 32.70000076293945,
+      "rating": 6.5
+     },
+     {
+      "team": "LEE",
+      "name": "Brenden Aaronson",
+      "shirt": 11,
+      "distance": 2829,
+      "topSpeed": 33.599998474121094,
+      "rating": 6.1
+     },
+     {
+      "team": "LEE",
+      "name": "Harry Wilson",
+      "shirt": 10,
+      "distance": 2601,
+      "topSpeed": 27.799999237060547,
+      "rating": 6.3
+     },
+     {
+      "team": "LEE",
+      "name": "Lukas Nmecha",
+      "shirt": 14,
+      "distance": 1843,
+      "topSpeed": 30.600000381469727,
+      "rating": 6.1
+     },
+     {
+      "team": "LEE",
+      "name": "Daniel James",
+      "shirt": 7,
+      "distance": 1553,
+      "topSpeed": 32.20000076293945,
+      "rating": null
+     },
+     {
+      "team": "LEE",
+      "name": "Sean Longstaff",
+      "shirt": 8,
+      "distance": 894,
+      "topSpeed": 26.5,
+      "rating": null
+     },
+     {
+      "team": "NEW",
+      "name": "Lukás Hornícek",
+      "shirt": 21,
+      "distance": 6070,
+      "topSpeed": 21.200000762939453,
+      "rating": 6.1
+     },
+     {
+      "team": "NEW",
+      "name": "Amar Dedić",
+      "shirt": 37,
+      "distance": 6231,
+      "topSpeed": 31.600000381469727,
+      "rating": 5.5
+     },
+     {
+      "team": "NEW",
+      "name": "Malick Thiaw",
+      "shirt": 12,
+      "distance": 9810,
+      "topSpeed": 27.700000762939453,
+      "rating": 5.5
+     },
+     {
+      "team": "NEW",
+      "name": "Sven Botman",
+      "shirt": 4,
+      "distance": 9977,
+      "topSpeed": 26.299999237060547,
+      "rating": 5.8
+     },
+     {
+      "team": "NEW",
+      "name": "Lewis Hall",
+      "shirt": 3,
+      "distance": 10815,
+      "topSpeed": 32.900001525878906,
+      "rating": 6.1
+     },
+     {
+      "team": "NEW",
+      "name": "Lewis Miley",
+      "shirt": 67,
+      "distance": 10854,
+      "topSpeed": 27.299999237060547,
+      "rating": 5.3
+     },
+     {
+      "team": "NEW",
+      "name": "Nico González",
+      "shirt": 6,
+      "distance": 2387,
+      "topSpeed": 28.100000381469727,
+      "rating": 5.8
+     },
+     {
+      "team": "NEW",
+      "name": "Jacob Murphy",
+      "shirt": 23,
+      "distance": 7375,
+      "topSpeed": 31.700000762939453,
+      "rating": 6.2
+     },
+     {
+      "team": "NEW",
+      "name": "Matias Fernandez-Pardo",
+      "shirt": 20,
+      "distance": 6875,
+      "topSpeed": 35.099998474121094,
+      "rating": 6.4
+     },
+     {
+      "team": "NEW",
+      "name": "Harvey Barnes",
+      "shirt": 11,
+      "distance": 10649,
+      "topSpeed": 31.5,
+      "rating": 6.9
+     },
+     {
+      "team": "NEW",
+      "name": "Yoane Wissa",
+      "shirt": 9,
+      "distance": 10056,
+      "topSpeed": 30.399999618530273,
+      "rating": 6.3
+     },
+     {
+      "team": "NEW",
+      "name": "Sean Steur",
+      "shirt": 14,
+      "distance": 9536,
+      "topSpeed": 28.200000762939453,
+      "rating": 5.8
+     },
+     {
+      "team": "NEW",
+      "name": "Joseph Willock",
+      "shirt": 28,
+      "distance": 4590,
+      "topSpeed": 30.100000381469727,
+      "rating": 7.1
+     },
+     {
+      "team": "NEW",
+      "name": "Bazoumana Touré",
+      "shirt": 17,
+      "distance": 4105,
+      "topSpeed": 32.20000076293945,
+      "rating": 7.6
+     },
+     {
+      "team": "NEW",
+      "name": "Valentino Livramento",
+      "shirt": 2,
+      "distance": 4507,
+      "topSpeed": 33,
+      "rating": 6.6
+     },
+     {
+      "team": "NEW",
+      "name": "Aladji Bamba",
+      "shirt": 8,
+      "distance": 1778,
+      "topSpeed": 31.299999237060547,
+      "rating": 5.9
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 39,
+      "center": 36,
+      "right": 25
+     },
+     "firstHalf": {
+      "left": 38,
+      "center": 36,
+      "right": 26
+     },
+     "secondHalf": {
+      "left": 41,
+      "center": 36,
+      "right": 23
+     }
+    },
+    "away": {
+     "total": {
+      "left": 45,
+      "center": 24,
+      "right": 31
+     },
+     "firstHalf": {
+      "left": 39,
+      "center": 23,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 48,
+      "center": 24,
+      "right": 28
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 5,
+    "shotmapComplete": true
+   },
+   "extractVersion": 1,
+   "fetchedAt": "2026-09-14T23:28:11.807Z",
+   "fdMatchId": "2026-27-39",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "LEE",
+      "name": "Ao Tanaka",
+      "n": 57,
+      "cx": 49.9,
+      "cy": 26.4,
+      "spread": 25.7,
+      "grid": "2,6,4,3,2,0,1,5,5,12,1,0,1,2,2,4,2,0,0,0,1,2,1,1"
+     },
+     {
+      "team": "LEE",
+      "name": "James Trafford",
+      "n": 73,
+      "cx": 13.5,
+      "cy": 32.6,
+      "spread": 16,
+      "grid": "5,0,0,0,0,1,29,5,0,0,0,0,18,12,1,0,0,0,2,0,0,0,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Lewis Miley",
+      "n": 70,
+      "cx": 45.8,
+      "cy": 42.1,
+      "spread": 24.5,
+      "grid": "0,0,1,0,1,1,0,5,4,2,3,0,3,7,12,7,6,0,3,2,9,2,2,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Ethan Ampadu",
+      "n": 76,
+      "cx": 50.2,
+      "cy": 31.2,
+      "spread": 27.5,
+      "grid": "1,3,3,3,2,2,1,6,9,10,5,0,0,8,12,2,1,1,2,1,0,0,1,3"
+     },
+     {
+      "team": "LEE",
+      "name": "Jayden Bogle",
+      "n": 50,
+      "cx": 59.4,
+      "cy": 53.4,
+      "spread": 29.8,
+      "grid": "1,0,0,0,0,0,0,0,0,0,0,3,1,0,1,5,3,4,4,3,6,10,9,0"
+     },
+     {
+      "team": "LEE",
+      "name": "James Justin",
+      "n": 65,
+      "cx": 44.6,
+      "cy": 52.9,
+      "spread": 27.5,
+      "grid": "0,0,0,0,0,0,2,0,1,2,2,0,2,3,7,1,2,3,8,10,11,7,4,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Anton Stach",
+      "n": 62,
+      "cx": 63.9,
+      "cy": 32.1,
+      "spread": 31,
+      "grid": "1,0,0,6,6,3,1,3,3,5,2,1,0,2,2,7,1,5,0,3,0,6,1,4"
+     },
+     {
+      "team": "NEW",
+      "name": "Sven Botman",
+      "n": 84,
+      "cx": 27.2,
+      "cy": 23.8,
+      "spread": 19.8,
+      "grid": "5,8,3,2,0,0,14,23,11,3,0,1,6,2,6,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Amar Dedić",
+      "n": 51,
+      "cx": 44.1,
+      "cy": 54.7,
+      "spread": 28,
+      "grid": "0,0,0,0,1,1,1,0,0,0,1,0,5,3,2,1,0,0,1,11,12,4,6,2"
+     },
+     {
+      "team": "NEW",
+      "name": "Matias Fernandez-Pardo",
+      "n": 19,
+      "cx": 65.9,
+      "cy": 18,
+      "spread": 24.6,
+      "grid": "0,2,0,1,4,5,0,1,2,3,0,0,0,0,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Lukás Hornícek",
+      "n": 39,
+      "cx": 9,
+      "cy": 34,
+      "spread": 9.4,
+      "grid": "0,0,0,0,0,0,15,2,0,0,0,0,20,1,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Nico Elvedi",
+      "n": 78,
+      "cx": 36.6,
+      "cy": 45.3,
+      "spread": 24.5,
+      "grid": "0,1,0,0,0,0,3,2,4,2,0,0,5,19,12,4,0,3,5,10,4,0,2,2"
+     },
+     {
+      "team": "LEE",
+      "name": "Noah Okafor",
+      "n": 43,
+      "cx": 65.8,
+      "cy": 11.6,
+      "spread": 23.9,
+      "grid": "2,2,5,6,15,4,0,1,1,1,3,3,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Malick Thiaw",
+      "n": 64,
+      "cx": 34.5,
+      "cy": 48.8,
+      "spread": 21.3,
+      "grid": "0,0,0,0,0,0,0,2,0,1,0,0,6,12,10,3,2,0,8,6,7,6,1,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Gabriel Gudmundsson",
+      "n": 57,
+      "cx": 48.7,
+      "cy": 10.1,
+      "spread": 28.5,
+      "grid": "9,7,3,18,6,2,1,1,2,2,0,2,0,1,0,1,1,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Yoane Wissa",
+      "n": 48,
+      "cx": 65.4,
+      "cy": 41.1,
+      "spread": 26.6,
+      "grid": "0,0,0,0,0,0,0,0,1,7,2,3,1,3,6,9,1,5,0,0,1,1,3,5"
+     },
+     {
+      "team": "LEE",
+      "name": "Tarik Muharemović",
+      "n": 88,
+      "cx": 35.1,
+      "cy": 22.2,
+      "spread": 22,
+      "grid": "3,15,8,1,1,0,7,20,19,2,0,2,4,1,3,0,0,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Jacob Murphy",
+      "n": 35,
+      "cx": 59.4,
+      "cy": 54.6,
+      "spread": 32.5,
+      "grid": "1,0,0,0,0,1,2,0,0,0,0,0,0,0,1,0,2,1,0,1,13,3,3,7"
+     },
+     {
+      "team": "NEW",
+      "name": "Harvey Barnes",
+      "n": 41,
+      "cx": 70.8,
+      "cy": 30.8,
+      "spread": 30.6,
+      "grid": "0,0,1,5,5,2,1,0,1,1,4,3,2,0,1,1,2,3,0,0,2,1,4,2"
+     },
+     {
+      "team": "NEW",
+      "name": "Nico González",
+      "n": 11,
+      "cx": 47.3,
+      "cy": 39.8,
+      "spread": 23.4,
+      "grid": "0,0,1,1,0,0,0,1,1,0,0,0,0,1,2,0,0,0,0,0,1,2,1,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Lewis Hall",
+      "n": 93,
+      "cx": 52.2,
+      "cy": 10.6,
+      "spread": 27.3,
+      "grid": "3,10,24,21,14,4,3,2,4,1,2,0,2,0,0,0,0,0,0,0,0,0,0,3"
+     },
+     {
+      "team": "LEE",
+      "name": "Dominic Calvert-Lewin",
+      "n": 35,
+      "cx": 69.2,
+      "cy": 32.3,
+      "spread": 26.8,
+      "grid": "0,3,0,1,1,0,0,0,1,4,5,6,0,1,0,2,2,3,0,0,2,4,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Sean Steur",
+      "n": 68,
+      "cx": 50.5,
+      "cy": 23,
+      "spread": 23,
+      "grid": "0,5,2,13,3,1,3,6,10,12,2,0,0,2,3,1,2,0,0,1,0,0,2,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Bazoumana Touré",
+      "n": 31,
+      "cx": 67.4,
+      "cy": 18.1,
+      "spread": 33.2,
+      "grid": "0,1,0,7,3,10,0,0,1,2,1,1,0,0,0,0,0,0,1,4,0,0,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Valentino Livramento",
+      "n": 28,
+      "cx": 50.9,
+      "cy": 53.6,
+      "spread": 31,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,5,0,2,2,2,0,3,2,3"
+     },
+     {
+      "team": "NEW",
+      "name": "Joseph Willock",
+      "n": 25,
+      "cx": 69.2,
+      "cy": 24.4,
+      "spread": 22.5,
+      "grid": "0,0,0,4,4,0,0,0,0,1,6,2,1,0,2,2,2,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Brenden Aaronson",
+      "n": 11,
+      "cx": 63.4,
+      "cy": 18.9,
+      "spread": 24.6,
+      "grid": "0,0,3,0,1,0,0,0,2,0,2,2,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Harry Wilson",
+      "n": 10,
+      "cx": 63.8,
+      "cy": 44.7,
+      "spread": 32.4,
+      "grid": "0,0,0,0,1,1,0,0,0,0,0,0,1,0,1,0,1,0,0,0,1,2,2,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Melvin Bard",
+      "n": 15,
+      "cx": 50,
+      "cy": 10.1,
+      "spread": 20.3,
+      "grid": "0,3,2,3,2,0,1,0,3,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NEW",
+      "name": "Aladji Bamba",
+      "n": 12,
+      "cx": 52.1,
+      "cy": 42.1,
+      "spread": 17.9,
+      "grid": "0,0,0,0,0,0,0,0,1,2,0,0,0,2,0,5,0,0,0,0,0,2,0,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Lukas Nmecha",
+      "n": 6,
+      "cx": 67.1,
+      "cy": 20.4,
+      "spread": 18.8,
+      "grid": "0,0,0,0,2,1,0,0,0,2,0,0,0,0,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Daniel James",
+      "n": 10,
+      "cx": 61.5,
+      "cy": 47.5,
+      "spread": 26.6,
+      "grid": "0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1,0,0,0,2,2,1,1,0"
+     },
+     {
+      "team": "LEE",
+      "name": "Sean Longstaff",
+      "n": 3,
+      "cx": 47.3,
+      "cy": 30,
+      "spread": 12,
+      "grid": "0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-14T17:54:56.267Z",
+ "updatedAt": "2026-09-14T23:28:12.472Z",
  "verification": {
   "source": "pulselive /stats/match possession_percentage",
   "tolerance": 2,
