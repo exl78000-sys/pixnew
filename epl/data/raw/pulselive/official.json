@@ -27572,7 +27572,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 9,
@@ -27997,7 +27997,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 117647,
+     "assist": null,
+     "team": 9,
+     "min": 32,
+     "label": "32'00",
+     "phase": "1",
+     "type": "O",
+     "kind": "O",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [
@@ -28035,8 +28049,8 @@
      }
     ]
    },
-   "clock": "30'00"
+   "clock": "34'00"
   }
  },
- "fetchedAt": "2026-09-14T19:31:14.615Z"
+ "fetchedAt": "2026-09-14T19:33:31.141Z"
 }
