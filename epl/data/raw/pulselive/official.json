@@ -27569,7 +27569,7 @@
   "LEE|NEW": {
    "fixtureId": 128958,
    "kickoff": "2026-09-14T19:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -27578,9 +27578,29 @@
    "homeId": 9,
    "awayId": 23,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-5-2",
+    "formationRaw": "3-5-2",
+    "rows": [
+     [
+      32280
+     ],
+     [
+      13515,
+      12337,
+      114504
+     ],
+     [
+      14608,
+      116888,
+      19731,
+      126426,
+      75543
+     ],
+     [
+      9576,
+      33162
+     ]
+    ],
     "xi": [
      {
       "id": 12337,
@@ -27614,7 +27634,7 @@
       "playerId": null,
       "name": "Jayden Bogle",
       "shirt": 2,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -27641,7 +27661,7 @@
       "playerId": null,
       "name": "Gabriel Gudmundsson",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -27767,9 +27787,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      68637,
+      124462,
+      49908,
+      108922
+     ],
+     [
+      117647,
+      67849
+     ],
+     [
+      9662,
+      135108,
+      14716
+     ],
+     [
+      117497
+     ]
+    ],
     "xi": [
      {
       "id": 124462,
@@ -27785,7 +27827,7 @@
       "playerId": null,
       "name": "Matias Fernandez-Pardo",
       "shirt": 20,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Striker",
       "captain": false
      },
@@ -27959,10 +28001,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "01'00"
   }
  },
- "fetchedAt": "2026-09-14T18:59:28.873Z"
+ "fetchedAt": "2026-09-14T19:01:44.830Z"
 }
