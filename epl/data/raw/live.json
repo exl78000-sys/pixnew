@@ -8109,7 +8109,7 @@
    "away": "NEW",
    "kickoff": "2026-09-14T19:00:00Z",
    "started": true,
-   "finished": false,
+   "finished": true,
    "minutes": 90,
    "hs": 4,
    "as": 1,
@@ -8516,9 +8516,9 @@
       "threat": 0,
       "ict": 0,
       "tackles": 0,
-      "recoveries": 0,
+      "recoveries": 1,
       "cbi": 0,
-      "defCon": 0,
+      "defCon": 1,
       "points": 1
      },
      {
@@ -8744,15 +8744,15 @@
       "xA": 0.01,
       "xGC": 0.13,
       "bonus": 0,
-      "bps": 8,
+      "bps": 10,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
       "ict": 0,
-      "tackles": 1,
+      "tackles": 2,
       "recoveries": 3,
       "cbi": 1,
-      "defCon": 2,
+      "defCon": 3,
       "points": 3
      },
      {
@@ -8770,7 +8770,7 @@
       "conceded": 4,
       "cleanSheets": 0,
       "xG": 0.28,
-      "xA": 0.35,
+      "xA": 0.32,
       "xGC": 1.91,
       "bonus": 0,
       "bps": 10,
@@ -9078,5 +9078,5 @@
    }
   }
  ],
- "fetchedAt": "2026-09-14T20:55:23.448Z"
+ "fetchedAt": "2026-09-14T20:57:39.839Z"
 }
