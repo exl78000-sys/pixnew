@@ -9,7 +9,7 @@
    這一頁**只有賽後**,沒有賽前勝率 —— 盃賽沒有本站的模型:
    對手一半是第三、四級球隊,本站沒有它們的賽果,評不出強度(鐵則二:沒有回測證據就不給預測)。
    所以不要在這裡長出一個「賽前分析」分頁,那會是憑空的數字。 */
-import * as C from './core.js?v=8ad00ce3';
+import * as C from './core.js?v=d6cbb077';
 
 const app = document.getElementById('app');
 
@@ -22,13 +22,20 @@ const POST_ORDER = ['compare', 'tactics', 'events', 'shotmap', 'momentum', 'line
 /* 報告裡的隊伍身分是 `cupTeamId` 算出來的(隊碼,沒有隊碼就 fm{FotMob id})。
    所以畫面要先把兩邊登錄成「本站認得的隊」:有隊碼的沿用站上的顏色與隊徽,
    沒有的用名字 + 盃賽隊徽查表(cups.json 的 crests)+ 中性色。
-   **先登錄再畫頁首** —— 反過來的話隊徽會印成上游的數字 id(歐冠單場頁踩過)。 */
-function registerSides(rep, crests) {
+   **先登錄再畫頁首** —— 反過來的話隊徽會印成上游的數字 id(歐冠單場頁踩過)。
+
+   **有隊碼的那一邊要查英超目錄的 clubs.json,不是目前聯賽的名冊。**
+   第一版寫 `C.team(code)`,而 team() 查不到時回的是**樁**(不是 null):
+   站在西甲看一場足總盃,兩支英格蘭球隊都拿到樁的 ['#444','#888'] ——
+   隊徽沒有、而且球場圖與射門圖上兩隊是同一個灰,分不出誰是誰。
+   所以這裡吃 ident(core.js 的 cupClubs + cups 的 crests),樁一律不採用。 */
+function registerSides(rep, ident) {
   const ids = Object.keys(rep.names ?? {});
   C.registerTeams(ids.map((id, i) => {
     const code = rep.codes?.[id] ?? null;
-    const site = code ? C.team(code) : null;
-    const crest = site?.crest ?? crests?.[rep.sourceIds?.[id]] ?? null;
+    const side = { code, sourceId: rep.sourceIds?.[id], name: rep.names?.[id] };
+    const site = code ? ident.clubs?.get(code) ?? null : null;
+    const crest = C.cupCrest(side, ident);
     const name = rep.names?.[id] ?? id;
     return {
       code: id,
@@ -136,7 +143,7 @@ try {
           ? '<div class="tiny dim">單檔版沒有打包逐場賽後報告(整季會到幾十 MB);分頁版才有。</div>'
           : '<div class="tiny dim">這一場的報告讀不到。</div>';
       } else {
-        registerSides(rep, cups?.crests);
+        registerSides(rep, { clubs: await C.cupClubs(), crests: cups?.crests ?? {} });
         const ids = Object.keys(rep.names ?? {});
         const neutral = ids.some(x => !rep.codes?.[x]);
         document.getElementById('cmHome').innerHTML = `${C.badge(ids[0] ?? '')} <b>${C.esc(homeName)}</b>`;

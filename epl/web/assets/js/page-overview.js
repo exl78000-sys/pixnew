@@ -1,4 +1,4 @@
-import * as C from './core.js?v=8ad00ce3';
+import * as C from './core.js?v=d6cbb077';
 
 const app = document.getElementById('app');
 
@@ -28,6 +28,12 @@ try {
 
   // 跨聯賽的資料集掛在英超目錄下(它們本來就是跨聯賽的一份)
   const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams', 'competitions']);
+  /* 盃賽的球隊身分(隊徽/隊名)。**跨聯賽的一頁不能靠目前聯賽的名冊** ——
+     而這一頁連目前聯賽的名冊都不是問題:cups.json 的 crests 查表**刻意只收本站沒有隊碼的球隊**,
+     所以有隊碼的那些(英超 + 英冠 27 支)在這張「即將到來」的表上**一張隊徽都沒有**,
+     旁邊第九級的球隊反而有 —— 而歐冠那幾列早就做對了(uclCrest 會先看 code)。
+     核心說明在 core.js 的 cupClubs。 */
+  const cupIdent = { clubs: await C.cupClubs(), crests: shared.cups?.crests ?? {} };
   C.registerCompetitions(shared.competitions);   // 有真圖就用真圖,沒有就退回色塊
   C.nav();
 
@@ -159,7 +165,6 @@ try {
     const known = new Set(leagues.flatMap(({ data }) =>
       (data.teams ?? []).flatMap(t => [t.en, t.of].filter(Boolean).map(x => x.toLowerCase()))));
     const covered = s => s && (s.code || known.has(String(s.name ?? '').toLowerCase()));
-    const cupCrests = shared.cups?.crests ?? {};
     for (const cup of cupList) {
       const season = (cup.seasons ?? []).find(s => s.current);
       for (const r of season?.rounds ?? []) for (const m of r.matches ?? []) {
@@ -169,8 +174,9 @@ try {
            比賽日迴圈每 3 分鐘更新一次。分鐘數上游沒給,所以只寫「進行中」不編一個分鐘。 */
         const live = m.state === 'LIVE' && Array.isArray(m.liveScore)
           ? { hs: m.liveScore[0], as: m.liveScore[1], finished: false, minute: null } : null;
-        rows.push({ kick: m.kickoff, comp: cup.zh ?? cup.en, compKey: cup.key, home: m.home?.name ?? '?', away: m.away?.name ?? '?',
-          hCrest: cupCrests[m.home?.sourceId] ?? null, aCrest: cupCrests[m.away?.sourceId] ?? null,
+        rows.push({ kick: m.kickoff, comp: cup.zh ?? cup.en, compKey: cup.key,
+          home: C.cupName(m.home, cupIdent), away: C.cupName(m.away, cupIdent),
+          hCrest: C.cupCrest(m.home, cupIdent), aCrest: C.cupCrest(m.away, cupIdent),
           note: m.stage ?? '', pending: m.kickoff.endsWith('T00:00:00Z'), live, link: C.link('cups', { cup: cup.key }) });
       }
     }

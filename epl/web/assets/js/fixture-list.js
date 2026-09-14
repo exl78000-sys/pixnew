@@ -1,4 +1,7 @@
-import * as C from './core.js?v=8ad00ce3';
+import * as C from './core.js?v=d6cbb077';
+
+// 有英格蘭盃賽(足總盃/聯賽盃)的聯賽。用集合不用「是不是某一個」的二元式
+const ENGLISH_CUPS = new Set(['pl', 'en2']);
 
 /* ── 賽程列表 + 單場速覽抽屜(共用模組) ─────────────────────────
    原本是獨立的 page-fixtures.js。「總覽」與「賽程與預測」合併成一頁之後,
@@ -281,7 +284,11 @@ export function mountFixtureList({
             <span class="tiny dim">對手:${[...(drawRow.home ?? []), ...(drawRow.away ?? [])].map(o => C.esc(o.name)).join('、')}
               ・開球時間上游未公布</span></div>` : ''}
           <div class="tiny dim" style="margin-top:8px">只列<b>已排定或已抽籤</b>的未賽場次。${
-            C.league() !== 'es1' ? '足總盃英超球隊要到第三輪(一月)才進場,抽籤前這裡不會有足總盃。' : ''}</div>
+            /* **不要寫成 `!== 'es1'`。** 那是「不是西甲就是英超」的二元式(CLAUDE.md 那一整條坑),
+               而這句話裡還寫著「英超球隊」—— 站在英冠看一支英冠球隊的頁面,畫面上會告訴他
+               這是英超球隊的事。足總盃是英格蘭的盃賽,頂兩級都在第三輪進場,所以用集合判斷、
+               句子也不指定某一級。 */
+            ENGLISH_CUPS.has(C.league()) ? '足總盃的英超與英冠球隊要到第三輪(一月)才進場,抽籤前這裡不會有足總盃。' : ''}</div>
         </div>`;
     } catch { box.remove(); /* 盃賽資料載不到就不畫,不擋聯賽表 */ }
   }

@@ -379,6 +379,9 @@ async function main() {
   console.log('\n▶ 英格蘭盃賽');
   const cupFail = checkCups();
 
+  console.log('\n▶ 盃賽的球隊身分(跨聯賽)');
+  const cupIdFail = await checkCupIdentity();
+
   console.log('\n▶ 人工整理外電');
   const curatedFail = checkCuratedNews();
 
@@ -396,7 +399,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -2549,11 +2552,15 @@ async function checkDataGap() {
         && /T00:00:00Z/.test(src) && /時間待定/.test(src)
         && /startCountdowns/.test(src);
     })()],
-    /* 隊徽 + 整列可點(使用者要求)。隊徽一定要從各聯賽自己的名冊拿 ——
-       隊碼跨聯賽重複(BUR),全域登錄是後蓋前;盃賽的走 cups.json 的 crests 查表。 */
-    ['總覽即將到來:隊徽從各聯賽名冊與盃賽查表拿、整列點擊進分析', (() => {
+    /* 隊徽 + 整列可點(使用者要求)。**聯賽**的隊徽從各聯賽自己的名冊拿 ——
+       隊碼跨聯賽重複(BUR),全域登錄是後蓋前。
+       **盃賽那幾列不一樣**:這一條以前釘 `cupCrests[m.home?.sourceId]`,而那張查表
+       刻意只收本站沒有隊碼的球隊 —— 於是英超與英冠球隊的盃賽場次在這張表上
+       **一張隊徽都沒有**,旁邊第九級的球隊反而有,而且一個錯都不報。
+       (歐冠那幾列早就做對了:uclCrest 先看 code 再看 external。)改走共用的 C.cupCrest。 */
+    ['總覽即將到來:聯賽隊徽走各聯賽名冊、盃賽走共用的 cupCrest、整列點擊進分析', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
-      return /hCrest: h\?\.crest/.test(src) && /cupCrests\[m\.home\?\.sourceId\]/.test(src)
+      return /hCrest: h\?\.crest/.test(src) && /hCrest: C\.cupCrest\(m\.home, cupIdent\)/.test(src)
         && /onRow: u => \{ if \(u\.link\) location\.href = u\.link; \}/.test(src);
     })()],
     /* 使用者指定:總覽的即將賽程不列英冠(盃賽裡英冠球隊的場次照列)。
@@ -4374,6 +4381,35 @@ function checkAssetStamps() {
   });
   ok(missed.length === 0, `${pages.length} 頁全部打上版本戳`, missed.join('、'));
 
+  /* **每一個戳都要對得回它指的那個檔案,不是只有 core.js 與 app.css。**
+     這一條是 2026-09-14 補的,起因是我自己漏跑一次 `npm run stamp`:
+     改完 `fixture-list.js` 之後直接 `npm test`,**全綠** —— 因為上面只驗了 core 與 css 兩個,
+     而 analysis.html 指的 `page-analysis.js?v=7571c417` 已經對不上檔案內容了。
+     那正是這整套機制要防的那個症狀:**meta.json 是新的、JS 是舊的**,
+     頁尾顯示最新建置時間而版面是上一版。只驗兩個檔案的守門,守不住第三個。
+     掃的是實際寫在檔案裡的每一筆引用(HTML 的 script/link + JS 之間的 import)。 */
+  const jsDir = join(W, 'assets', 'js');
+  const refFiles = [
+    ...pages.map(f => ({ dir: W, f })),
+    ...readdirSync(jsDir).filter(f => f.endsWith('.js')).map(f => ({ dir: jsDir, f })),
+  ];
+  const stale = [];
+  let refs = 0;
+  for (const { dir, f } of refFiles) {
+    const text = readFileSync(join(dir, f), 'utf8');
+    for (const m of text.matchAll(/([\w-]+\.(?:js|css))\?v=([0-9a-f]{8})/g)) {
+      const [, target, stamp] = m;
+      const path = target.endsWith('.css') ? join(W, 'assets', 'css', target) : join(jsDir, target);
+      if (!existsSync(path)) { stale.push(`${f} → ${target}(檔案不存在)`); continue; }
+      refs++;
+      // CSS 的雜湊算的是「拿掉戳之後」的內容(JS 的戳是寫進檔案裡的,所以連戳一起算)
+      const body = target.endsWith('.css') ? stripV(readFileSync(path, 'utf8')) : readFileSync(path, 'utf8');
+      if (shortHash(body) !== stamp) stale.push(`${f} → ${target}?v=${stamp} 實際 ${shortHash(body)}`);
+    }
+  }
+  ok(stale.length === 0, `${refs} 筆資產引用的戳都對得回檔案內容`,
+    stale.slice(0, 4).join('、') || '無');
+
   /* meta.json 要記著這次建置的戳,前端才有辦法知道「我現在跑的是不是最新那一版」。
      使用者實際遇到的症狀:在導覽列點來點去,有時候跳成上一版的排版 ——
      GitHub Pages 給 HTML 的快取是十分鐘而且每個檔案各自計時,
@@ -5945,7 +5981,11 @@ function checkUcl() {
           ['home', 'away'].some(side => m[side]?.code && lookup[m[side]?.sourceId])))));
       ok(!withCrestButCoded, '盃賽對手隊徽:只補本站沒有的球隊,不覆蓋本站自己那份');
       const cupSrc3 = readFileSync(join(W, 'assets', 'js', 'page-cups.js'), 'utf8');
-      ok(/CUP_CRESTS\[t\.sourceId\]/.test(cupSrc3), '盃賽頁:隊徽用 sourceId 查表');
+      /* **這一條以前釘的是 `CUP_CRESTS[t.sourceId]`,而那正是 bug 的一半。**
+         那張查表刻意只收本站沒有隊碼的球隊,所以「只查它」等於有隊碼的一支都查不到;
+         有隊碼的那一半當時走 C.badge(code),而 badge 查的是**目前聯賽**的名冊 ——
+         站在西甲整排變成灰色三字母代碼。現在兩半都走 C.cupCrest(見「盃賽的球隊身分」那一節)。 */
+      ok(/C\.cupCrest\(t, CUP_IDENT\)/.test(cupSrc3), '盃賽頁:隊徽走共用的 cupCrest(有無隊碼同一條)');
       ok(!/t\.crest/.test(cupSrc3), '盃賽頁:不再讀每場夾帶的隊徽');
     }
   }
@@ -6159,6 +6199,106 @@ function checkLoans() {
     { player: 'B', parentClub: 'X', loanClub: 'Y', date: '2025-01-10' },
   ]);
   ok(shiftedFixture.size === 2, '年份平移偵測:月日相同、差整數年的兩筆會被標記', `標記 ${shiftedFixture.size} 筆`);
+  return fail;
+}
+
+
+/* ── 盃賽的球隊身分是跨聯賽的(2026-09-14)──────────────────────────
+   使用者只寫了四個字:「聯賽杯 球隊隊徽」。量出來的是:**站在西甲打開聯賽盃,
+   27 支英格蘭球隊一支都沒有隊徽** —— 整排是灰色三字母代碼方塊(es1 74 個、en2 36 個),
+   而同一張表裡第九級的 Fleetwood Town 有真隊徽與全名。
+
+   根因不是資料缺,是**三個消費端都拿「目前站在哪個聯賽」的名冊查身分**:
+     · 盃賽頁    C.badge(code) / C.name(code) → team() 查不到回的是樁 → 灰方塊 + 三字母
+     · 總覽      只查 cups.json 的 crests,而那份**刻意只收本站沒有隊碼的球隊**
+                 → 有隊碼的那些在「即將到來」一張隊徽都沒有(歐冠那幾列早就做對了)
+     · 單場頁    site.colors 拿到樁的 ['#444','#888'] → 兩隊在球場圖與射門圖上同一個灰
+
+   三條都不拋錯、`npm test` 也看不到版面,所以守在這裡:資料查得到、程式走同一條查法、
+   沒有人再退回目前聯賽的名冊。 */
+async function checkCupIdentity() {
+  let fail = 0;
+  const ok = (cond, label, extra = '') => {
+    if (!cond) fail++;
+    console.log(`  ${cond ? '✔' : '✗'} ${label}${extra ? ` (${extra})` : ''}`);
+  };
+  const cupsPath = join(ROOT, 'web', 'data', 'cups.json');
+  if (!existsSync(cupsPath)) { console.log('  · 還沒 build 出盃賽,略過'); return 0; }
+  const cups = JSON.parse(readFileSync(cupsPath, 'utf8'));
+  const clubs = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'clubs.json'), 'utf8'));
+  const byCode = new Map(clubs.map(t => [t.code, t]));
+  const crests = cups.crests ?? {};
+
+  /* 一、資料面:每一支出現在盃賽裡的球隊都查得出隊徽。
+     有隊碼的走英超目錄的 clubs.json(本站的英格蘭球會名冊),沒有的走 cups.json 的 crests。
+     **兩條路都不准退回隊碼** —— 退回隊碼就是畫面上那個灰方塊。 */
+  const sides = new Map();
+  for (const cup of cups.cups ?? []) {
+    for (const s of cup.seasons ?? []) for (const r of s.rounds ?? []) for (const m of r.matches ?? []) {
+      for (const k of ['home', 'away']) if (m[k]) sides.set(String(m[k].sourceId ?? m[k].name), m[k]);
+    }
+  }
+  const all = [...sides.values()];
+  const noCrest = all.filter(t => !(t.code ? byCode.get(t.code)?.crest : null) && !crests[t.sourceId]);
+  ok(noCrest.length === 0, `盃賽出現的 ${all.length} 支球隊都查得到隊徽`,
+    noCrest.slice(0, 5).map(t => `${t.name}#${t.sourceId}`).join('、') || '無');
+  const coded = all.filter(t => t.code);
+  const codedMiss = coded.filter(t => !byCode.has(t.code));
+  ok(codedMiss.length === 0, `有隊碼的 ${coded.length} 支都在英超目錄的 clubs.json 裡`,
+    codedMiss.map(t => t.code).join(' ') || '無');
+
+  /* 二、「走到哪一輪」那張表的每一列都要帶得出身分。
+     第一版只給 code,前端只能查目前聯賽的名冊 —— 這就是灰方塊那一排。 */
+  const runs = (cups.cups ?? []).flatMap(c => (c.seasons ?? []).flatMap(s => s.runs ?? []));
+  ok(runs.length > 0 && runs.every(r => r.name && r.sourceId),
+    `runs 每一列都帶 name 與 sourceId(共 ${runs.length} 列)`,
+    runs.filter(r => !r.name || !r.sourceId).slice(0, 3).map(r => r.code).join(' ') || '無');
+
+  /* 三、程式面:三個消費端都走 core.js 的同一條查法。
+     抄一份過去的話,改了一邊另一邊會悄悄過期 —— 這一輪三個檔案犯的是同一個錯。 */
+  const src = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+  const core = src('core.js');
+  ok(/export async function cupClubs\(/.test(core) && /export const cupCrest =/.test(core) && /export const cupName =/.test(core),
+    'core.js 有共用的 cupClubs / cupCrest / cupName');
+  for (const f of ['page-cups.js', 'page-cup-match.js', 'page-overview.js']) {
+    ok(/C\.cupClubs\(\)/.test(src(f)), `${f} 的盃賽身分從英超目錄載(C.cupClubs)`);
+  }
+  /* 四、沒有人再退回目前聯賽的名冊。
+     盃賽頁的球隊格與「走到哪一輪」那張表都不准再用 C.name / C.teamCell ——
+     它們查的是 team() 的全域登錄,而那份是**目前聯賽**註冊進去的。
+     註解裡會提到這兩個名字(上面那段就在講),所以先把註解剝掉再掃。 */
+  const strip = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+  const cupsSrc = strip(src('page-cups.js'));
+  ok(!/C\.name\(/.test(cupsSrc) && !/C\.teamCell\(/.test(cupsSrc),
+    '盃賽頁不再用 C.name / C.teamCell 查球隊身分');
+  ok(!/cupCrests\[/.test(strip(src('page-overview.js'))),
+    '總覽的盃賽列不再直接查 crests 表(有隊碼的那些查不到)');
+  ok(!/C\.team\(code\)/.test(strip(src('page-cup-match.js'))),
+    '單場頁不再拿 C.team(code) 當身分(查不到時回的是樁,兩隊會同一個灰)');
+  /* 五、標題不准宣稱「英超球隊」。這張表收的是「有本站隊碼」的球隊,
+     實際列出來的 27 支裡有 Hull City、Leeds、Coventry 這些英冠球隊,
+     而旁邊就寫著「共 27 支」(英超只有 20 支)。 */
+  ok(!/英超球隊走到哪一輪/.test(strip(src('page-cups.js'))),
+    '「走到哪一輪」的標題不宣稱這些是英超球隊');
+  /* 六、球隊賽程頁那句足總盃說明不准用「不是西甲就是英超」的二元式 */
+  ok(!/C\.league\(\) !== 'es1'/.test(strip(src('fixture-list.js'))),
+    '球隊頁的足總盃說明用集合判斷,不是 !== es1 的二元式');
+
+  /* 七、查法本身:直接載 core.js 跑三種情況。
+     **最關鍵的是第三種** —— 有隊碼但名冊裡查不到時要退回上游全名,不是退回隊碼。 */
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const ident = { clubs: new Map([['ARS', { code: 'ARS', en: 'Arsenal', crest: 'data:site' }]]),
+    crests: { 8650: 'data:cup' } };
+  ok(V.cupCrest({ code: 'ARS', sourceId: '9999' }, ident) === 'data:site', '有隊碼:用本站的隊徽');
+  ok(V.cupCrest({ code: null, sourceId: '8650' }, ident) === 'data:cup', '沒隊碼:用盃賽查表的隊徽');
+  ok(V.cupCrest({ code: 'XXX', sourceId: '8650' }, ident) === 'data:cup',
+    '有隊碼但名冊沒有:退回盃賽查表,不是回 null');
+  ok(V.cupName({ code: 'ARS', name: 'Arsenal FC' }, ident) === 'Arsenal', '有隊碼:用本站的隊名');
+  ok(V.cupName({ code: null, name: 'Fleetwood Town' }, ident) === 'Fleetwood Town', '沒隊碼:用上游的全名');
+  ok(V.cupName({ code: 'XXX', name: 'Some Town' }, ident) === 'Some Town',
+    '有隊碼但名冊沒有:退回上游全名,**不是退回隊碼**');
+  ok(V.cupName({ code: 'XXX' }, ident) === 'XXX', '連上游名字都沒有才退回隊碼(最後一步)');
   return fail;
 }
 
