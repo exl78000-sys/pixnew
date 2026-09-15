@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-09-15T20:36:22.164Z",
+ "retrievedAt": "2026-09-15T20:38:42.512Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-09-15T20:34:00.947Z",
+   "retrievedAt": "2026-09-15T20:38:42.512Z",
    "matches": [
     {
      "id": "5840307",
@@ -2524,19 +2524,22 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       3,
       3
      ],
-     "state": "LIVE",
+     "pens": [
+      7,
+      6
+     ],
+     "pensWinner": "home",
+     "aet": false,
+     "liveScore": null,
+     "state": "FT_PEN",
      "stateKnown": true,
-     "reason": null,
+     "reason": "Pen",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/barnsley-vs-peterborough-united/2dmy2t#6099341",
      "unknownReasons": []
     },
@@ -2978,6 +2981,16 @@
      "extraTime": false,
      "source": "FotMob matchDetails",
      "retrievedAt": "2026-09-07T17:15:05.550Z"
+    },
+    "6099341": {
+     "pens": [
+      7,
+      6
+     ],
+     "pensWinner": "home",
+     "extraTime": false,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-09-15T20:38:42.512Z"
     }
    },
    "unknownReasons": [],
