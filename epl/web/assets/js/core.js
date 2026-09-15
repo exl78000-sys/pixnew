@@ -270,6 +270,12 @@ export const COMPETITIONS = {
   es1:    { zh: '西甲',   short: 'LL',  bg: '#f26522', fg: '#fff' },
   en2:    { zh: '英冠',   short: 'CH',  bg: '#2563eb', fg: '#fff' },
   de1:    { zh: '德甲',   short: 'BL',  bg: '#d20515', fg: '#fff' },
+  /* 義甲與法甲(2026-09-15)。色票取各聯賽官方識別色,而且要跟同一排的其他賽事分得開:
+     義甲深藍 #0b1f4b 跟歐冠的 #1e3a8a 差得夠遠、法甲深靛 #091c3e 也是。
+     `npm test` 有一條守著「COMPETITIONS 涵蓋每個聯賽」—— 漏掉的那一個不會壞,
+     只會靜靜退回縮寫色塊,而且只有跟別頁並排才看得出來。 */
+  it1:    { zh: '義甲',   short: 'SA',  bg: '#0b1f4b', fg: '#fff' },
+  fr1:    { zh: '法甲',   short: 'L1',  bg: '#091c3e', fg: '#dae025' },
   ucl:    { zh: '歐冠',   short: 'UCL', bg: '#1e3a8a', fg: '#fff' },
   facup:  { zh: '足總盃', short: 'FA',  bg: '#c8102e', fg: '#fff' },
   eflcup: { zh: '聯賽盃', short: 'EFL', bg: '#0d9488', fg: '#fff' },
@@ -734,6 +740,23 @@ export const LEAGUES = {
     open: ['overview', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
     gapNote: '德甲目前做到球隊、比賽與球員那一層,還沒有的是陣容、傷停與即時比分 —— '
       + '球員層走 Understat(它涵蓋五大聯賽),所以剩下這幾頁是還沒做,不是做不出來。',
+  },
+  /* 義甲與法甲(2026-09-15 加的第五、六個聯賽)。三層的來源都在 runner 上實測過
+     (probe-new-leagues.mjs):openfootball + football-data.co.uk I1/F1、
+     Understat `Serie_A` / `Ligue_1`、FotMob 聯賽 id 55 / 53。
+     **它們缺的跟英冠缺的不是同一種** —— 跟德甲一樣是「還沒抓」,不是「沒有來源」。
+     open 清單照德甲那一份:戰術與實時沒有,不掛上去;盃賽也不掛(那一頁的兩個賽事是英格蘭的)。 */
+  it1: {
+    zh: '義甲', brand: '義甲戰情室', en: 'SERIE A WAR ROOM',
+    open: ['overview', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
+    gapNote: '義甲目前做到球隊那一層,球員層與賽後報告的來源都已經實測過(Understat Serie_A、'
+      + 'FotMob 聯賽 id 55),只是那兩家開發沙箱連不到,要在排程上抓 —— 所以是還沒抓,不是做不出來。',
+  },
+  fr1: {
+    zh: '法甲', brand: '法甲戰情室', en: 'LIGUE 1 WAR ROOM',
+    open: ['overview', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
+    gapNote: '法甲目前做到球隊那一層,球員層與賽後報告的來源都已經實測過(Understat Ligue_1、'
+      + 'FotMob 聯賽 id 53),只是那兩家開發沙箱連不到,要在排程上抓 —— 所以是還沒抓,不是做不出來。',
   },
 };
 

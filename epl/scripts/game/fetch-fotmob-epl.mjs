@@ -62,6 +62,14 @@ const LEAGUES = {
      取樣兩場確認逐場詳情五塊齊全(stats / shotmap / lineup / events / playerStats)。
      pulselive 只有英超,所以 verify false。 */
   de1: { id: 54, ccode3: 'GER', dir: 'fotmob-bundesliga', teamFile: 'teams-bundesliga.json', results: ['web', 'data', 'leagues', 'de1', 'results.json'], verify: false },
+  /* 義甲與法甲(2026-09-15)。id 55 / 53 是 `probe-new-leagues.mjs` 證明出來的:
+     從 allLeagues 找 ccode、再拿那個 id 抓一季賽程**逐隊比對 openfootball**
+     (義甲 20 隊對上 19、法甲 18 隊對上 15,剩下的是上游短名,兩邊剩下的名字一樣多)。
+     **不可以照名字挑**:義大利有 Serie B(86)與女足 Serie A(10178),而巴西也有 Serie A;
+     法國有 Ligue 2(110)與 Première Ligue Féminine(9677)。挑錯照樣回得出 20 / 18 隊
+     與完整的逐場資料,畫面不報錯、只是整個聯賽是錯的(德甲那次差點挑到奧地利甲)。 */
+  it1: { id: 55, ccode3: 'ITA', dir: 'fotmob-serie-a', teamFile: 'teams-serie-a.json', results: ['web', 'data', 'leagues', 'it1', 'results.json'], verify: false },
+  fr1: { id: 53, ccode3: 'FRA', dir: 'fotmob-ligue-1', teamFile: 'teams-ligue-1.json', results: ['web', 'data', 'leagues', 'fr1', 'results.json'], verify: false },
   /* 歐冠(2026-09-12):同一支抓取器,三個不同點 ——
      ① 聯賽 id 42 是 `probe-ucl-matchdetails.mjs` 走 FotMob 的 allLeagues 目錄用名字找到的,不是猜的;
         ccode3 不帶(國際賽事沒有國家)。
