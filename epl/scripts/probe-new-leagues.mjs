@@ -178,12 +178,20 @@ async function main() {
     const cand = leagues.filter(x => String(x.cc).toUpperCase() === L.ccode);
     console.log(`  ${L.ccode} 的候選 ${cand.length} 個:`);
     for (const c of cand.slice(0, 12)) console.log(`      id=${String(c.id).padStart(5)}  ${c.name}`);
-    let fmId = null, fmNames = [];
+    let fmId = null, fmNames = [], fmMatches = [];
+    /* null = 這一輪沒驗到(不是「沒有」)。兩者在結論行要分得出來。 */
+    let blocks = null;
     if (cand.length) {
       const pick = cand[0];
       console.log(`\n  先拿 id=${pick.id}(${pick.name})去驗 —— **清單第一個不是答案,下一段才是**`);
       const fx = await get(`${FM}/api/data/leagues?id=${pick.id}&ccode3=${L.ccode}&season=${encodeURIComponent(L.season.slice(0, 4) + '/' + (Number(L.season.slice(0, 4)) + 1))}`);
-      const matches = fx?.matches?.allMatches ?? fx?.fixtures?.allMatches ?? [];
+      /* 上游把賽程放在兩個可能的位置,所以**只在這裡讀一次**、存起來給下一節用。
+         第一版第 3 節自己又讀了一次、而且只寫 `matches.allMatches`(漏了 fixtures 那條退路)
+         → `done` 是空的 → 整節一個字都沒印,而結論行照樣印兩個 ✔。
+         「同一份 payload 兩個地方各讀一次、讀法還不一樣」是本站踩過的老坑,
+         這次的症狀是**安靜地什麼都沒驗**,比報錯更難發現。 */
+      fmMatches = fx?.matches?.allMatches ?? fx?.fixtures?.allMatches ?? [];
+      const matches = fmMatches;
       console.log(`  賽程 ${matches.length} 場・聯賽名 ${fx?.details?.name ?? '?'}`
         + `・國家 ${fx?.details?.country ?? '?'}・賽季 ${fx?.details?.selectedSeason ?? '?'}`);
       fmNames = [...new Set(matches.flatMap(m => [m.home?.name, m.away?.name]).filter(Boolean))];
@@ -228,26 +236,34 @@ async function main() {
 
     if (fmId) {
       line(`${L.zh} 3. 逐場詳情有沒有賽後報告要的五塊(德甲有不代表這裡有)`);
-      const fx = await get(`${FM}/api/data/leagues?id=${fmId}&ccode3=${L.ccode}&season=${encodeURIComponent(L.season.slice(0, 4) + '/' + (Number(L.season.slice(0, 4)) + 1))}`);
-      const done = (fx?.matches?.allMatches ?? []).filter(m => m.status?.finished && m.id).slice(0, 1);
+      const done = fmMatches.filter(m => m.status?.finished && m.id).slice(0, 1);
+      /* **取樣不到要講**。靜靜跳過的話,結論行會印一個看起來很完整的 ✔,
+         而這一節其實什麼都沒驗 —— 那正是第一版發生的事。 */
+      if (!done.length) console.log(`  ✗ 這一季 ${fmMatches.length} 場裡取樣不到已完賽的場次,`
+        + `**五塊這一題這一輪沒有答案**(不要當成「有」)`);
       for (const m of done) {
         const d = await get(`${FM}/api/data/matchDetails?matchId=${m.id}`);
         if (!d) continue;
         const c = d.content ?? {};
         const has = k => (k in c) && c[k] != null;
         console.log(`  ${m.home?.name} ${m.status?.scoreStr ?? ''} ${m.away?.name}`);
-        console.log(`    stats ${has('stats')}・shotmap ${has('shotmap')}・lineup ${has('lineup')}`
-          + `・events ${!!(d.header?.events ?? c.matchFacts?.events)}・playerStats ${has('playerStats') || !!c.playerStats}`);
+        const five = { stats: has('stats'), shotmap: has('shotmap'), lineup: has('lineup'),
+          events: !!(d.header?.events ?? c.matchFacts?.events), playerStats: has('playerStats') || !!c.playerStats };
+        console.log(`  ${m.home?.name} ${m.status?.scoreStr ?? ''} ${m.away?.name}`);
+        console.log(`    stats ${five.stats}・shotmap ${five.shotmap}・lineup ${five.lineup}`
+          + `・events ${five.events}・playerStats ${five.playerStats}`);
+        blocks = Object.values(five).every(Boolean) ? 'ok' : Object.entries(five).filter(([, v]) => !v).map(([k]) => k).join('/');
       }
     }
-    verdict.push({ zh: L.zh, usSlug, fmId, ofTeams: ofNames.length });
+    verdict.push({ zh: L.zh, usSlug, fmId, ofTeams: ofNames.length, blocks });
   }
 
   console.log(`\n${'═'.repeat(72)}\n結論`);
   for (const v of verdict) {
     console.log(`  ${v.zh}:openfootball ${v.ofTeams} 隊`
       + `・Understat ${v.usSlug ? `代號 "${v.usSlug}" ✔` : '✗ 沒問出來'}`
-      + `・FotMob ${v.fmId ? `id ${v.fmId} ✔(隊數吻合 + 逐隊比對)` : '✗ 沒證明出來'}`);
+      + `・FotMob ${v.fmId ? `id ${v.fmId} ✔(隊數吻合 + 逐隊比對)` : '✗ 沒證明出來'}`
+      + `・逐場五塊 ${v.blocks === 'ok' ? '✔ 齊全' : v.blocks == null ? '？這一輪沒驗到(不等於沒有)' : `⚠ 缺 ${v.blocks}`}`);
   }
   console.log(`\n共用掉 ${used} 個請求。`);
   console.log('**只有兩欄都 ✔ 的聯賽才照德甲那條路做三層;有一欄 ✗ 就只做做得出來的那幾層,');
