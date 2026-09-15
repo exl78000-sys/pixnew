@@ -122,6 +122,14 @@ check('FotMob:球隊統計用實測過的 key(Offsides 大寫、keeper_saves、s
   && fmHome.saves === 2 && fmHome.blockedShots === 2 && fmHome.xG === 1.93);
 check('FotMob:沒見過的 key 不猜,回報出來',
   fmDetail.unmappedStats.includes('some_new_key_we_have_not_seen'));
+/* 階段 C(2026-09-15):對照表以外的 key 除了回報名字,**值也存下來**(extra),鍵照上游 slug;"123 (85%)" 這種字串取數字、百分比另存 */
+{
+  const { fotmobTeamStats } = await import('./lib/adapters/fotmob-match.mjs');
+  const ts = fotmobTeamStats(fmRaw);
+  check('FotMob:對照表以外的 key 值存進 extra(主客各一份,鍵照上游)', ts.extra?.home?.some_new_key_we_have_not_seen === 1 && ts.extra?.away?.some_new_key_we_have_not_seen === 2);
+  const ts2 = fotmobTeamStats({ content: { stats: { Periods: { All: { stats: [{ stats: [{ key: 'accurate_passes_x', stats: ['412 (87%)', '300 (80%)'], type: 'text' }, { key: 'weird', stats: ['n/a', null], type: 'text' }] }] } } } } });
+  check('FotMob:「數字 (百分比)」的字串取數字、百分比另存 _pct;解不出來就 null 不猜', ts2.extra.home.accurate_passes_x === 412 && ts2.extra.home.accurate_passes_x_pct === 87 && ts2.extra.away.accurate_passes_x_pct === 80 && ts2.extra.home.weird === null);
+}
 check('FotMob:分隔列(type=title)不會被當成數據', fmHome.shots === 18);
 check('FotMob:逐人沒有「總射門」,由射正+射偏+被封阻相加',
   fmP.shots.on === 3 && fmP.shots.total === 5);

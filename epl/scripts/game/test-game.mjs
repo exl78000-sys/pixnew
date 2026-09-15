@@ -127,6 +127,29 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
       const r = g.teams.ARS.rates; const w = (k) => (r.home.games * r.home[k] + r.away.games * r.away[k]) / (r.home.games + r.away.games);
       return Math.abs(g.teams.ARS.style.mentality.value - (w('sf') - w('sa'))) < 0.01 && g.teams.ARS.style.mentality.n === r.home.games + r.away.games;
     })(), String(g.teams.ARS.style.mentality.value));
+    /* 階段 C(2026-09-15):對照表以外的球隊統計。回填之前 raw 沒有 teamExtra,這幾條只印「尚未回填」不擋;
+       有了之後要能對回獨立來源:黃牌對 football-data.co.uk 的逐場牌數(完全不同的供應商)、禁區內外射門相加 = 射門、
+       blocked_shots 對同一份 payload 的 shot_blocks。抄截 / 攔截 / 對抗沒有第二來源,只能講清楚。 */
+    {
+      const withExtra = fm.filter(m => m.teamExtra && Object.values(m.teamExtra).some(t => Object.keys(t).length));
+      if (!withExtra.length) console.log('  · teamExtra 尚未回填(跑 game-backfill.yml 之後這幾條才會驗)');
+      else {
+        check('teamExtra:禁區內外射門相加 = 射門(每一場、每一隊)', withExtra.every(m => Object.entries(m.teamExtra).every(([c, x]) => x.shots_inside_box == null || x.shots_outside_box == null || m.teamStats[c].shots == null || x.shots_inside_box + x.shots_outside_box === m.teamStats[c].shots)), `${withExtra.length} 場`);
+        check('teamExtra:blocked_shots 對回同一份 payload 的 shot_blocks', withExtra.every(m => Object.entries(m.teamExtra).every(([c, x]) => x.blocked_shots == null || m.teamStats[c].blockedShots == null || x.blocked_shots === m.teamStats[c].blockedShots)));
+        const csvRows = [g.lastSeason, g.currentSeason].filter(s2 => existsSync(csv(s2))).flatMap(s2 => [...teamMatchRows(readFileSync(csv(s2), 'utf8'), { codeOf: T.codeOf }).entries()].flatMap(([code, rows2]) => rows2.map(r => ({ code, ...r }))));
+        /* CSV 的逐場列只有 cards(黃 + 紅合計),所以比的是 yellow_cards + red_cards */
+        let cmp = 0, agree = 0;
+        for (const m of withExtra) for (const [c, x] of Object.entries(m.teamExtra)) {
+          if (x.yellow_cards == null) continue;
+          const r = csvRows.find(q => q.code === c && q.date === m.date);
+          if (!r || !Number.isFinite(r.cards)) continue;
+          cmp++; if (r.cards === x.yellow_cards + (x.red_cards ?? 0)) agree++;
+        }
+        check('teamExtra:牌數對回 football-data.co.uk 逐場牌數(獨立來源,≥ 95% 一致)', cmp === 0 || agree / cmp >= 0.95, `${agree}/${cmp}`);
+        const withStyle = teams.filter(t => t.style.pressing.proxy === false);
+        console.log(`  · 壓迫換成直接指標的球隊 ${withStyle.length}/20(涵蓋要到一半場次)`);
+      }
+    }
     check('傳球數對回 raw 快取重算(ARS 主場)', (() => {
       const rows = fm.filter(m => m.home === 'ARS' && m.teamStats?.ARS);
       if (!rows.length) return g.teams.ARS.play.home == null;
