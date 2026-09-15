@@ -46,6 +46,10 @@ const LEAGUES = [
      形狀跟英超 / 西甲都不一樣,所以 collectPlayers 有自己的一支。
      產生器對缺檔本來就是 load() 回 null → 該區塊不寫,所以缺的東西不需要特判。 */
   { key: 'en2', zh: '英冠', dir: '英冠', wf: 'backtest-championship-matches.json' },
+  /* 德甲(2026-09-15):目前只有球隊與比賽那一層,**沒有球員檔** ——
+     產生器對缺檔本來就是 load() 回 null → 該區塊不寫,所以不需要為它特判,
+     筆記裡就只會有球隊與比賽。球員層接上來之後這裡一個字都不用改。 */
+  { key: 'de1', zh: '德甲', dir: '德甲', wf: 'backtest-bundesliga-matches.json' },
 ];
 
 /* ── Markdown / YAML 小工具 ──────────────────────────────────
@@ -1048,7 +1052,18 @@ function buildUcl() {
     for (const rd of s.rounds ?? []) for (const tie of rd.ties ?? []) for (const leg of tie.legs ?? []) { see(leg.home); see(leg.away); }
     for (const r of s.table?.rows ?? []) see(r);
   }
-  for (const e of externals.values()) uclExternalFile.set(e.id, sanitize(e.name));
+  /* 歐冠的「本站認不得的球隊」筆記,檔名也可能撞上聯賽那一邊 ——
+     加德甲時實際撞了:RB Leipzig 在歐冠是外部球隊(那一層的身分來自 football-data,
+     還沒接德甲的隊碼),而德甲名冊現在有它 → `德甲/球隊/RB Leipzig.md` 與
+     `歐冠/球隊/RB Leipzig.md` 同名,Obsidian 的 [[連結]] 會指到其中一個而不報錯。
+     聯賽那一邊先用掉名字(它有完整的球隊頁),歐冠這一邊加後綴。
+     **這是暫時的**:等德甲的隊徽交付、把它加進 `loadUclSeasons` 的身分來源之後,
+     這些球隊就不再是「外部」,這裡自然不會再撞。 */
+  const leagueFiles = new Set(teamFileByCode.values());
+  for (const e of externals.values()) {
+    const base = sanitize(e.name);
+    uclExternalFile.set(e.id, leagueFiles.has(base) ? base + '(歐冠)' : base);
+  }
   uclExternalCount = externals.size;
 
   /* 這些球隊在站上原本只有名字、隊徽與比賽清單。但同一份資料裡本來就有
@@ -1242,14 +1257,17 @@ function buildUcl() {
       ? '- **連隊徽都沒有**:FotMob 三季檔案裡都沒有這一支,而本站不從別處找來源不明的圖補\n'
       : '- 隊徽有(FotMob,人工交付並核對過);但本站仍然沒有這支球隊的聯賽資料\n');
     b.push('- 來源:' + u.source + '(賽果)\n');
-    addNote(D + '/球隊/' + sanitize(e.name) + '.md', b.join(''), eLinks);
-    mocLinks.push(sanitize(e.name));
+    /* 檔名走 uclExternalFile —— 撞到聯賽那一邊時它已經加了後綴。
+       這裡自己再算一次 sanitize(e.name) 的話,連結指到 A、檔案寫成 B,
+       而守門只會說「連結指不到任何筆記」,不會說是誰算錯的。 */
+    addNote(D + '/球隊/' + uclExternalFile.get(e.id) + '.md', b.join(''), eLinks);
+    mocLinks.push(uclExternalFile.get(e.id));
     count++;
   }
 
   mocBody.push('\n## 本站沒有聯賽資料的球隊(' + externals.size + ' 支)\n\n');
   mocBody.push([...externals.values()].sort((a, b) => a.id - b.id)
-    .map(e => wl(sanitize(e.name))).join(' · ') + '\n');
+    .map(e => wl(uclExternalFile.get(e.id))).join(' · ') + '\n');
 
   mocBody.push('\n## 資料界線\n\n- 來源:' + u.source + '\n');
   mocBody.push('- **不做勝率預測** —— 見任一賽季筆記的說明\n');

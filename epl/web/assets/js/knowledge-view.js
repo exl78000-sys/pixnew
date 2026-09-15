@@ -1,4 +1,4 @@
-import * as C from './core.js?v=deaac0d6';
+import * as C from './core.js?v=e7d5f805';
 
 
 /* 足球知識頁。

@@ -37,7 +37,11 @@ let chromium = null;
 for (const p of PW) { try { ({ chromium } = await import(p)); break; } catch { /* 試下一個 */ } }
 if (!chromium) { console.log('✗ 找不到 playwright(沙箱在 /opt/node22 底下;本機 npm i -g playwright)'); process.exit(0); }
 
-const LEAGUES = { pl: '', es1: 'league=es1', en2: 'league=en2' };
+/* 聯賽清單掃 `web/data/leagues/` —— 寫死的話新聯賽會**靜默不被掃到**,
+   而這支腳本存在的理由正是「畫面上的錯測試看不到」。 */
+const LEAGUES = { pl: '', ...Object.fromEntries(
+  readdirSync(join(WEB, 'data', 'leagues'), { withFileTypes: true })
+    .filter(e => e.isDirectory()).map(e => [e.name, `league=${e.name}`])) };
 const url = (page, lg, extra = '') => {
   const q = [LEAGUES[lg], extra].filter(Boolean).join('&');
   return `${BASE}/${page}.html${q ? '?' + q : ''}`;
@@ -92,7 +96,7 @@ for (const p of pages) if (SITE.has(p) && !NEEDS_ID.has(p)) targets.push({ lg: '
 }
 for (const c of ['ucl', 'facup', 'eflcup']) targets.push({ lg: 'pl', page: `cups?cup=${c}`, url: url('cups', 'pl', `cup=${c}`) });
 // 從別的聯賽進跨聯賽頁(link() 繼承聯賽那條坑)
-for (const lg of ['es1', 'en2']) for (const p of ['overview', 'cups']) targets.push({ lg, page: p, url: url(p, lg) });
+for (const lg of Object.keys(LEAGUES).filter(k => k !== 'pl')) for (const p of ['overview', 'cups']) targets.push({ lg, page: p, url: url(p, lg) });
 const picked = ONLY ? targets.filter(t => t.page.includes(ONLY)) : targets;
 
 /* 會進畫面的垃圾。`null` 只在單獨成詞時算(中文文案裡不會自然出現這個詞)。 */

@@ -9,8 +9,8 @@
    這一頁**不重畫任何報告** —— 賽前對比與賽後報告都是 ucl-view.js 既有的那兩個函式,
    盃賽頁與這一頁呼叫同一份(各寫一份的話,改了一邊另一邊會悄悄過期,本專案最常見的那種過期)。
    共用狀態(standings / elo / details / 隊伍註冊)走同一個 initUcl。 */
-import * as C from './core.js?v=deaac0d6';
-import { initUcl, uclAllMatches, uclExpandable, uclExpandKind, uclRegisterSides, renderUclCompare, renderUclPost } from './ucl-view.js?v=1cb9f56a';
+import * as C from './core.js?v=e7d5f805';
+import { initUcl, uclAllMatches, uclExpandable, uclExpandKind, uclRegisterSides, renderUclCompare, renderUclPost } from './ucl-view.js?v=512b4f3c';
 
 const app = document.getElementById('app');
 

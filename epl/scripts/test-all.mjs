@@ -35,6 +35,10 @@ const STEPS = [
   /* 英冠同理:backtest-championship 產生的數字是 test-championship 要驗的,順序不能反。 */
   ['scripts/backtest-championship.mjs', []],
   ['scripts/test-championship.mjs', []],
+  /* 德甲(2026-09-15 加的第四個聯賽)同理:backtest-bundesliga 產生的數字是
+     test-bundesliga 要驗的,順序不能反。 */
+  ['scripts/backtest-bundesliga.mjs', []],
+  ['scripts/test-bundesliga.mjs', []],
   /* 模擬遊玩(2026-09-03):獨立管線的守門 + 側寫對回來源 + 引擎不變量。
      排在英冠之後、文件檢查之前 —— 它只讀產物,不產生別的測試要驗的數字。 */
   ['scripts/game/test-game.mjs', []],

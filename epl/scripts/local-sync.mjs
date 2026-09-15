@@ -36,6 +36,11 @@ try {
   await run('scripts/fetch-news.mjs', ['--league=en2']);
   await run('scripts/backtest-championship.mjs');
   await run('scripts/build-championship.mjs');
+  /* 德甲(第四個聯賽)。跟上面兩個同樣的規矩:回測在 build 之前、build 在
+     `scripts/build.mjs` 之前 —— 資產戳是最後那一支寫的,任何聯賽排在它後面
+     那個聯賽的戳就會被重寫掉。 */
+  await run('scripts/backtest-bundesliga.mjs');
+  await run('scripts/build-bundesliga.mjs');
   console.log('▶ 建立英超資料集');
   await run('scripts/build.mjs');
   /* vault 是本機資產(gitignore),所以在本機流程重建,不放 CI ——

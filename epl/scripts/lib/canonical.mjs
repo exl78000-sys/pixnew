@@ -38,6 +38,16 @@ export const COMPETITIONS = {
     extraTime: false, penalties: false, twoLegged: false,
     crossLeague: false, crossTier: false,
   },
+  /* 德甲(2026-09-15 加)。18 隊 × 34 輪 = 306 場,沒有附加賽 ——
+     德甲的升降級附加賽是「德甲第 16 名 vs 德乙第 3 名」,**跨聯賽**,
+     所以它不在這份 de.1 的賽程裡(英冠的附加賽是聯賽內四隊互打,那是另一回事)。 */
+  'ger.1': {
+    code: 'ger.1', name: 'Bundesliga', zh: '德國足球甲級聯賽', short: '德甲',
+    country: 'GER', type: 'league',
+    teams: 18, roundsPerSeason: 34,
+    extraTime: false, penalties: false, twoLegged: false,
+    crossLeague: false, crossTier: false,
+  },
   // 之後要加的(規劃已寫好,尚未實作):
   // 'uefa.cl': { type:'europe', extraTime:true, penalties:true, twoLegged:true, crossLeague:true }
   // 'eng.fa' : { type:'cup',    extraTime:true, penalties:true, twoLegged:false, crossTier:true }

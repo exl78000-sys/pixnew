@@ -1925,12 +1925,16 @@ async function checkDataGap() {
       return /const liveDone = fx =>/.test(src) && /if \(!fx\.played && !liveDone\(fx\)\) return false;/.test(src);
     })()],
     ['沒有開球時間的場次確實不會進倒數(三個聯賽都有這種場次)', (() => {
-      const has = ['data', 'data/leagues/es1', 'data/leagues/en2'].map(d => {
+      /* 上游是**逐月**公布開球時間的,所以「有日期沒時間」的場次一定存在。
+         清單掃目錄,加聯賽時不必回來改(資產戳那條的同一個教訓)。 */
+      const dirs = readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => `data/leagues/${e.name}`);
+      const has = dirs.map(d => {
         const f = JSON.parse(readFileSync(join(ROOT, 'web', d, 'fixtures.json'), 'utf8'));
         return f.some(x => !x.kickoff && !x.played);
       });
-      // 英超目前全有時間,另外兩個聯賽一定有沒時間的 —— 這條是在守「這件事真的存在」
-      return has[1] && has[2];
+      // 英超目前全有時間,其餘聯賽一定有沒時間的 —— 這條是在守「這件事真的存在」
+      return has.length >= 3 && has.every(Boolean);
     })()],
     ['賽程表讀得到 ?team=,而且會把輪次篩選一起放開', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
@@ -2136,9 +2140,14 @@ async function checkDataGap() {
        做法跟 test-championship 那一節一樣:逐欄位比對,差異要嘛不存在、要嘛在下面
        這張「已知而且解釋得出來」的表裡。新增欄位只加給一個聯賽時,這條會紅 ——
        那正是要有人來決定「另一個聯賽要不要也給」的時候。 */
-    ['三聯賽的 fixtures 欄位一致(差異都要在已知清單裡)', (() => {
+    ['各聯賽的 fixtures 欄位一致(差異都要在已知清單裡)', (() => {
       const load = p => (existsSync(join(ROOT, 'web', 'data', ...p)) ? JSON.parse(readFileSync(join(ROOT, 'web', 'data', ...p), 'utf8')) : null);
-      const sets = { pl: load(['fixtures.json']), es1: load(['leagues', 'es1', 'fixtures.json']), en2: load(['leagues', 'en2', 'fixtures.json']) };
+      /* 聯賽清單掃目錄 —— 寫死的話新聯賽會**靜靜不被比對**,而這一節存在的理由
+         正是「一個聯賽有、另一個沒有」不會有任何地方報錯。 */
+      const sets = { pl: load(['fixtures.json']) };
+      for (const e of readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })) {
+        if (e.isDirectory()) sets[e.name] = load(['leagues', e.name, 'fixtures.json']);
+      }
       /* 已知而且解釋得出來的差異:
          time —— 英超的 FPL 鏡像給的當地開球時間字串,另兩個聯賽的來源沒有這個欄位;
                  前端一律讀 kickoff(ISO),time 只有英超自己的舊版面在用。
@@ -2409,9 +2418,10 @@ async function checkDataGap() {
           Object.keys(historyForSite({ season: 'x', matches: { a: { pts: [[0, 1, 0, 0, 0, 0]], done: false } } }).matches).length === 0, ''],
       ];
     })(),
-    ['三個聯賽都有 prob-history 產物(缺一份分析頁會 404)',
-      ['data', 'data/leagues/es1', 'data/leagues/en2'].every(d =>
-        existsSync(join(ROOT, 'web', d, 'prob-history.json'))), ''],
+    ['每個聯賽都有 prob-history 產物(缺一份分析頁會 404)',
+      ['data', ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => `data/leagues/${e.name}`)]
+        .every(d => existsSync(join(ROOT, 'web', d, 'prob-history.json'))), ''],
 
     /* ── 近 10 場風格位移(A 層,2026-08-29 加)── */
     ...await (async () => {
@@ -3159,6 +3169,7 @@ async function checkDataGap() {
       const uclId = x => (x?.code ? `c:${x.code}` : `u:${x?.id}`);
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+      const LG = (await import('../web/assets/js/core.js')).LEAGUES;
       /* 2026-09-14:「我的預測」變成「我的」那一頁的第二個分頁,內容搬進 predict-view.js
          (page-predict.js 只剩分頁與容器)。下面這些掃原始碼的斷言要跟著搬 ——
          不搬的話它們掃的是一個 70 行的主機檔,**每一條都會紅**,
@@ -3227,9 +3238,14 @@ async function checkDataGap() {
           && !core.slice(core.indexOf('const GROUPS')).includes("['predict'")
           && /'explore', 'predict'\]/.test(bundle)
           && /'predict-score'/.test(bundle)
-          && (core.match(/'explore', 'predict'\]/g) ?? []).length === 2],   // es1 與 en2 的 open
+          /* **不要數出現次數**(第一版寫 `.length === 2`,加德甲就紅在「多了一個」)——
+             那是「把目標達成寫成 CI 紅線」的近親。它想守的其實是
+             「每一個聯賽的導覽列都掛得到這一頁」,所以逐個聯賽問註冊表。 */
+          && Object.values(LG).length >= 3
+          /* 沒有 open 清單 = 全部開放(英超就是這樣),不是「沒掛」。 */
+          && Object.values(LG).every(l => l.open == null || l.open.includes('predict'))],
         /* **界線**:預測不進本站資料。build 不讀它、產物裡沒有它。 */
-        ['build 完全不讀預測資料', ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs']
+        ['build 完全不讀預測資料', ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs', 'build-bundesliga.mjs']
           .every(f => !/predict-score|warroom:predictions/.test(
             readFileSync(join(ROOT, 'scripts', f), 'utf8')))],
         ['預測只存在瀏覽器,產物裡不會出現',
@@ -4554,8 +4570,13 @@ function checkAssetStamps() {
      這幾條守著 meta 裡的戳跟實際檔案對得起來 —— 對不上的話,
      每一次開頁都會白白重載一次。 */
   /* 英冠是後來加的,一開始漏在這個清單外 —— 於是它的 meta 少了戳三個月沒有人知道
-     (2026-09-09 才由西甲那兩條紅出來)。新增聯賽時這裡要跟著加。 */
-  for (const f of ['meta.json', join('leagues', 'es1', 'meta.json'), join('leagues', 'en2', 'meta.json')]) {
+     (2026-09-09 才由西甲那兩條紅出來)。所以清單**不再用手寫的** ——
+     跟 stamp-assets.mjs 一樣掃 leagues/ 目錄,加第四個聯賽(德甲)時不必記得回來改這裡。
+     手寫清單的代價已經付過一次,不要再付第二次。 */
+  const metaTargets = ['meta.json', ...readdirSync(join(W, 'data', 'leagues'), { withFileTypes: true })
+    .filter(e => e.isDirectory()).map(e => join('leagues', e.name, 'meta.json'))];
+  ok(metaTargets.length >= 4, `資產戳的 meta 清單涵蓋每一個聯賽`, `${metaTargets.length} 份`);
+  for (const f of metaTargets) {
     const path = join(W, 'data', f);
     if (!existsSync(path)) continue;
     const m = JSON.parse(readFileSync(path, 'utf8'));

@@ -99,6 +99,10 @@ export async function crossLeaguePlayers(q, excludeLg) {
   const out = [];
   for (const lg of Object.keys(LEAGUES)) {
     if (lg === excludeLg) continue;
+    /* 沒有開球員頁的聯賽(英冠之前、德甲現在)根本沒有 players-core —— 跟
+       allplayers-view 用**同一個**判斷,不去打一個註定 404 的請求。
+       try/catch 接得住,但每次搜尋都留一行 console 錯誤。 */
+    if (LEAGUES[lg]?.open && !LEAGUES[lg].open.includes('players')) continue;
     if (!(lg in _playersCoreCache)) {
       try {
         const { data } = await loadFrom(lg, ['players-core']);
@@ -265,6 +269,7 @@ export const COMPETITIONS = {
   pl:     { zh: '英超',   short: 'PL',  bg: '#7c3aed', fg: '#fff' },
   es1:    { zh: '西甲',   short: 'LL',  bg: '#f26522', fg: '#fff' },
   en2:    { zh: '英冠',   short: 'CH',  bg: '#2563eb', fg: '#fff' },
+  de1:    { zh: '德甲',   short: 'BL',  bg: '#d20515', fg: '#fff' },
   ucl:    { zh: '歐冠',   short: 'UCL', bg: '#1e3a8a', fg: '#fff' },
   facup:  { zh: '足總盃', short: 'FA',  bg: '#c8102e', fg: '#fff' },
   eflcup: { zh: '聯賽盃', short: 'EFL', bg: '#0d9488', fg: '#fff' },
@@ -712,6 +717,19 @@ export const LEAGUES = {
     gapNote: '英冠沒有「整季」的球員級免費資料源 —— Understat 不涵蓋這個聯賽、FPL 只有英超,兩者都實測過。'
       + '球員頁畫得出來,因為那一層是拿逐場統計累加的;這幾頁要的東西(球員 xG 模型、傷停、即時比分)沒有來源,'
       + '不是還在補,是做不出來。',
+  },
+  /* 德甲(2026-09-15 加的第四個聯賽)。目前只做「球隊與比賽」那一層 ——
+     賽程、賽果、積分榜、近況、交手、單場機率、賽季模擬、走查回測(RPS 0.1966 對基準線 0.2337)。
+     **它缺的東西跟英冠缺的不是同一種**:英冠是「Understat 不涵蓋這個聯賽」(永遠不會有),
+     德甲是五大聯賽之一、Understat 有它,只是還沒接 —— 所以缺口頁要說「還沒接」,不是「做不到」。
+     盃賽頁不掛:那一頁的兩個英格蘭盃賽跟德甲無關,而歐冠分頁的球隊身分走 football-data,
+     德甲球隊在那裡本來就看得到 —— 為了一個分頁把兩個不相干的分頁也掛上去是雜訊。
+     球員搜尋(allplayers)掛:它查的是**其他聯賽**的球員,跟德甲自己還沒有球員層不衝突。 */
+  de1: {
+    zh: '德甲', brand: '德甲戰情室', en: 'BUNDESLIGA WAR ROOM',
+    open: ['overview', 'index', 'teams', 'model', 'allplayers', 'duel', 'explore', 'predict'],
+    gapNote: '德甲目前只做到球隊與比賽那一層,球員數據、xG、陣容與傷停還沒接 —— '
+      + '德甲是 Understat 有涵蓋的五大聯賽之一,所以這幾頁是還沒做,不是做不出來。',
   },
 };
 

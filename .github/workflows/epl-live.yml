@@ -70,6 +70,14 @@ jobs:
         run: npm run en2:fetch
         continue-on-error: true
 
+      # 德甲(2026-09-15 加的第四個聯賽):openfootball 的 de.1 與 football-data.co.uk 的 D1。
+      # **這一步在 runner 上才拿得到完整的第二來源** —— 開發沙箱的出口代理不放行
+      # football-data.co.uk(實測 CONNECT 403),所以倉庫裡本季與上季的 D1 只能由這裡補。
+      # 沒補到也不擋:build 會把「哪幾季有第二來源」照實寫進 meta.sourceCoverage,畫面照它講。
+      - name: 抓德甲四季賽程、賽果與逐場統計
+        run: npm run de1:fetch
+        continue-on-error: true
+
       # 西甲球員整季數據(Understat)。一季一個請求,兩季共兩個 ——
       # API-Football 的 Free 方案不含這兩季,這是實測後改走的路。
       # 上季已完結,有檔就跳過;只有本季會每次重抓。
@@ -363,6 +371,15 @@ jobs:
       - name: 建立英冠資料集
         run: npm run en2:build
 
+      # 德甲走查回測 —— 跟上面兩個聯賽同一支實作(lib/backtest-runner.mjs),
+      # 零 fetch 的本地計算,所以失敗不容忍。
+      - name: 德甲走查回測(模型準度)
+        run: npm run de1:backtest
+
+      # 德甲也要排在英超 build 之前,理由跟英冠那一步一模一樣(資產戳)。
+      - name: 建立德甲資料集
+        run: npm run de1:build
+
       # 近況/交手特徵的調參與驗收。三個賽季都已完結,數字很穩定 ——
       # 跑它是為了讓模型頁上「測過但沒進模型」那一段的數字永遠是現跑的,而不是寫死的。
       - name: 特徵驗證(調參賽季挑係數、驗收賽季驗收)
@@ -437,6 +454,9 @@ jobs:
                      epl/data/raw/openfootball-ucl/ \
                      epl/data/raw/fotmob-ucl-leagues/ \
                      epl/data/backtest-championship.json epl/data/backtest-championship-matches.json \
+                     epl/data/raw/openfootball-bundesliga/ \
+                     epl/data/raw/football-data-couk-bundesliga/ \
+                     epl/data/backtest-bundesliga.json epl/data/backtest-bundesliga-matches.json \
                      epl/data/form-tuning.json epl/data/availability-history.json \
                      epl/data/situation-tuning.json epl/data/situation-tuning-es1.json \
                      epl/data/congestion-tuning.json 2>/dev/null || true
