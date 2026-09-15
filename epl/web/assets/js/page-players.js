@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e7d5f805';
+import * as C from './core.js?v=f4adf252';
 
 const app = document.getElementById('app');
 
@@ -443,6 +443,15 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   const codeName = c => C.name(codeOf(c));
   const codesOf = p => (p.teams ?? []).map(codeOf);
   // 跨隊球員的整季數字仍是兩隊合計，但畫面只掛目前球隊，避免隊名與欄位拉開；
+  /* **來源那一句不可以寫死。** 西甲是 Understat + SportMonks(後者補身分欄位),
+     德甲**只有 Understat** —— 照抄就會在德甲的球員頁上印一個這個聯賽根本沒用的來源。
+     由資料判斷:`leaders.sportmonks` 有東西才提 SportMonks。
+     (「同一句文案寫死『這是英超』」那條坑的同一種:寫死的不是聯賽名,是資料來源。) */
+  const hasSm = Object.keys(leaders.sportmonks ?? {}).length > 0;
+  const SRC = hasSm ? 'Understat + SportMonks' : 'Understat';
+  const SRC_LONG = hasSm
+    ? 'Understat 整季統計 + SportMonks 球員名單欄位（均為本地快取,開頁不連外）。'
+    : 'Understat 整季統計（本地快取,開頁不連外）。這個聯賽沒有身分欄位的補充來源,所以沒有背號、頭貼與出生日期。';
   // SportMonks 有核對結果時優先使用它，否則退回來源最後一隊。
   const currentTeamCode = p => codeOf(p.sportmonksTeam ?? p.teams?.at(-1));
   const teamCell = p => `${C.teamCell(currentTeamCode(p), {
@@ -570,7 +579,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
           所以標記出來,不硬掛到其中一隊 —— 掛錯的話那個隊的數字就是假的。</div>
         <div><b>終結超出期望</b>用非十二碼進球減 npxG。十二碼的 xG 是固定值,
           混進來只會反映罰球次數,不反映終結能力。</div>
-        <div><b>來源:</b>Understat 整季統計 + SportMonks 球員名單欄位（均為本地快取,開頁不連外）。${C.esc(leaders.note)}</div>
+        <div><b>來源:</b>${SRC_LONG}${C.esc(leaders.note)}</div>
       </div>
     </div>
     ${C.foot(meta)}`;
@@ -631,10 +640,10 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     const radar = p.radar ? `<div class="card"><h3>能力雷達 <span class="dim tiny">${C.esc(season)}</span></h3>
       ${C.radar([{ name: p.name, color: C.team(primaryCode).colors?.[0] ?? '#00ff85', values: p.radar }], { size: 300 })}
       <div class="tiny dim center">與同季、同位置且達 ${leaders.minMinutes} 分鐘門檻的西甲球員相比</div></div>` : '';
-    playerPage(`${C.playerPhoto(photoPlayer, 56)} ${C.esc(p.name)}`, `${teamLabel}・資料來源 Understat + SportMonks`, `
+    playerPage(`${C.playerPhoto(photoPlayer, 56)} ${C.esc(p.name)}`, `${teamLabel}・資料來源 ${SRC}`, `
       <div class="card"><div class="spread"><div>
         <div style="font-size:19px;font-weight:800">${C.esc(p.name)}</div>
-        <div class="small muted">${teamLabel}・資料來源 Understat + SportMonks</div>
+        <div class="small muted">${teamLabel}・資料來源 ${SRC}</div>
       </div><span class="pill info">${C.esc(p.season)}</span></div></div>
       <div class="card"><h3>基本資料</h3>${info}</div>
       <div class="card"><h3>表現數據</h3>${performance}</div>
