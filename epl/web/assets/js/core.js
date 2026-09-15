@@ -378,6 +378,21 @@ export function matchMoments(node, out = []) {
   return out;
 }
 
+/* 一季歐冠的**全部**場次:聯賽階段(`leagueMatches[]`)+ 淘汰賽(`rounds[].ties[].legs[]`)。
+
+   收在這裡而不是各頁自己列舉,因為列舉區塊是 CLAUDE.md 記過的坑:
+   「只讀了資料的其中一個區塊,而少掉的那些剛好是最有資訊的」——
+   跨聯賽評分的橋第一版就是只讀 leagueMatches,少掉 45 場淘汰賽,
+   回測從通過變成沒通過,而畫面完全正常。
+
+   這一條在**九月看不出來**:本季 rounds 是 0(淘汰賽二月才有),
+   所以只讀 leagueMatches 的四個地方今天跟這個函式結果一樣。
+   二月之後才會靜靜少掉淘汰賽那幾場 —— 不報錯、測不出來、畫面正常。 */
+export const uclSeasonMatches = s => [
+  ...(s?.leagueMatches ?? []),
+  ...(s?.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? [])),
+];
+
 /* 歐冠聯賽階段預設停在哪一輪(2026-09-12)。
 
    使用者的回報是「完全看不到小組賽比完的比分」—— 第 1 輪 18 場 9/10 踢完,

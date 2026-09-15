@@ -2575,11 +2575,17 @@ async function checkDataGap() {
         && /leagues\.filter\(x => !UPCOMING_HIDE\.has\(x\.lg\)\)/.test(src);
     })()],
     /* 賽事圖像(使用者要求):即將到來的每一列用 compBadge 標賽事,而且歐冠也在表裡 ——
-       以前只列英格蘭盃賽,歐冠週的比賽在總覽上看不到。 */
-    ['總覽即將到來:賽事用 compBadge 標、歐冠聯賽階段也列進來', (() => {
+       以前只列英格蘭盃賽,歐冠週的比賽在總覽上看不到。
+
+       **2026-09-15 改掉這一條原本釘的東西**:它釘的是 `uclSeason?.leagueMatches`,
+       而那正是 bug —— 淘汰賽的場次在 `rounds[].ties[].legs[]`,只讀聯賽階段的話
+       二月起十六強不會出現在這張表,而九月測不出來(本季 rounds 是 0)。
+       現在釘共用的 `C.uclSeasonMatches`。舊斷言釘著 bug 本身這件事本站踩過
+       (盃賽隊徽那次),所以在這裡寫明,不要看到「測試紅了」就把寫法改回去。 */
+    ['總覽即將到來:賽事用 compBadge 標、歐冠(含淘汰賽)也列進來', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /C\.compBadge\(u\.compKey/.test(src) && /compKey: 'ucl'/.test(src)
-        && /uclSeason\?\.leagueMatches/.test(src) && /'ucl-teams'/.test(src);
+        && /C\.uclSeasonMatches\(uclSeason\)/.test(src) && /'ucl-teams'/.test(src);
     })()],
 
     /* ── 教練職涯史核對器(B 層,2026-08-29)── */
@@ -5099,9 +5105,17 @@ async function checkUclDetails() {
           'raw 快取的每一場都有去處(報告 / 拒收 / 不完整),沒有靜靜掉隊的',
           `${idx.cached} − ${idx.rejected.length} − ${idx.incomplete.length} ≠ ${idx.count}`);
       }
-      // lib 自己跑一次要跟寫出來的索引一致(build 沒有另外加工)
+      /* lib 自己跑一次要跟寫出來的索引一致(build 沒有另外加工)。
+
+         **比對時把 `retrievedAt` 拿掉**(2026-09-15,跟隔壁歐冠那一條同一個寫法):
+         它是「raw 上一次抓到的時間」,抓取器每跑一次就會變。排程的資料更新 commit
+         帶 `[skip ci]`,所以 raw 已經更新、產物還沒重建的狀態是**常態** ——
+         嚴格比對在那個狀態下必紅,而紅的原因跟這條想守的事(build 有沒有另外加工)
+         一點關係都沒有。CLAUDE.md 記過兩次同一件事:紅線只放在**資料**上,
+         時間戳不當紅線(ucl.json 兩份複本那條、上游時差那條)。 */
       const again = cupDetails(ROOT).index;
-      ok(JSON.stringify(again) === JSON.stringify(idx), 'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
+      ok(JSON.stringify({ ...again, retrievedAt: null }) === JSON.stringify({ ...idx, retrievedAt: null }),
+        'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
     }
 
     /* 報告的最低要求:盃賽三塊,聯賽與歐冠仍然五塊。
@@ -6430,6 +6444,54 @@ async function checkFollow() {
   ok(/FOLLOW_STORAGE_NOTE/.test(src('follow-view.js')) && /換一台裝置/.test(src('follow.js')),
     '「換一台裝置就看不到」寫在畫面上');
   ok(/fvExport/.test(fvSrc) && /fvImport/.test(fvSrc), '有匯出與匯入');
+
+  /* 十一、**主客用位置,不用符號**(使用者的決定,2026-09-15):主隊在左、客隊在右。
+     驗的是**順序**不是字串:兩區各寫一套符號(藥丸 / vs / @)本來就要讀者記兩種,
+     而位置化之後唯一會出錯的是「誰在左邊」—— 那是邏輯,掃原始碼守不住。 */
+  {
+    const base = { oppCode: 'XOP', compBadge: '', prob: null, kickoff: null, date: '2026-10-10' };
+    const me = { code: 'XME', name: 'Me FC' };
+    const atHome = FV.matchLine({ ...base, home: true }, me);
+    const away = FV.matchLine({ ...base, home: false }, me);
+    // 退回的色塊隊徽長成 `>代碼</span>`,拿它定位才不會比到 title 裡那一份
+    ok(atHome.indexOf('>XME<') < atHome.indexOf('>XOP<'), '我方是主隊時,我方畫在左邊');
+    ok(away.indexOf('>XOP<') < away.indexOf('>XME<'), '我方是客隊時,主隊(對手)畫在左邊');
+    ok(!/class="pill tiny">[主客]</.test(atHome + away), '沒有「主 / 客」藥丸');
+    ok(!/>vs<|>@</.test(atHome + away), '沒有 vs / @ 符號');
+  }
+  ok(!/'vs' : '@'/.test(fvSrc), '最近賽果也不用 vs / @');
+  ok(/C\.badge\(f\.home\)[\s\S]{0,160}C\.badge\(f\.away\)/.test(fvSrc),
+    '最近賽果的隊徽是主隊在左、客隊在右');
+  ok(/\$\{f\.fh\}-\$\{f\.fa\}/.test(fvSrc), '比分照主客順序(主隊進球在前),不是「我方在前」');
+  ok((fvSrc.match(/左邊主隊/g) ?? []).length >= 2, '兩個區塊的抬頭都講了約定(接下來、最近賽果)');
+
+  /* 十二、**歐冠要走整份,不列舉區塊。** 淘汰賽的場次在 `rounds[].ties[].legs[]`,
+     跟聯賽階段不同層。這條在九月**看不出來**(本季 rounds 是 0,二月才有),
+     所以只能守寫法 + 用**有淘汰賽的那一季**驗函式本身。
+     CLAUDE.md 那條坑(跨聯賽評分的橋只讀 leagueMatches、少 45 場)就是同一個。 */
+  {
+    const CORE = await import('../web/assets/js/core.js');
+    const uclPath = join(ROOT, 'web', 'data', 'ucl.json');
+    if (existsSync(uclPath)) {
+      const ucl = JSON.parse(readFileSync(uclPath, 'utf8'));
+      const past = (ucl.seasons ?? []).find(x => (x.rounds ?? []).length);
+      if (past) {
+        const legs = (past.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []));
+        const got = CORE.uclSeasonMatches(past);
+        ok(legs.length > 0 && got.length === (past.leagueMatches?.length ?? 0) + legs.length,
+          `一季歐冠收得到聯賽階段 + 淘汰賽(${past.leagueMatches?.length ?? 0} + ${legs.length})`,
+          `收到 ${got.length}`);
+      } else { console.log('  · 沒有帶淘汰賽的賽季可驗,略過'); }
+    }
+    for (const f of ['follow-view.js', 'page-overview.js']) {
+      const t = strip(src(f));
+      ok(/C\.uclSeasonMatches\(/.test(t), `${f} 用共用的那一份收歐冠場次`);
+      ok(!/leagueMatches/.test(t), `${f} 沒有自己只讀 leagueMatches(淘汰賽會靜靜掉隊)`);
+    }
+    // 輪次說明要看 stage:淘汰賽的 legs 也有 matchday(1 / 2 = 首 / 次回合)
+    ok(/LEAGUE_STAGE/.test(strip(src('page-overview.js'))),
+      '總覽的輪次說明分得出聯賽階段與淘汰賽(不然十六強會標成「聯賽階段第 1 輪」)');
+  }
   return fail;
 }
 

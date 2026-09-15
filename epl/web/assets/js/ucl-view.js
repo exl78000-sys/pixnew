@@ -1,4 +1,4 @@
-import * as C from './core.js?v=155f0c5e';
+import * as C from './core.js?v=0398a1b2';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -222,8 +222,10 @@ const expandBtn = m => (expandable(m)
 // 清單裡不再有展開槽 —— 內容搬到單場頁(留空字串讓兩處的樣板不用改)
 const expandSlot = () => '';
 /* 一季的全部場次:聯賽階段 + 淘汰賽每一回合。展開鈕的查表要涵蓋兩邊 ——
-   只收 leagueMatches 的話,淘汰賽的鈕會「按鈕在但點了沒東西」。 */
-const allMatchesOf = s => [...(s?.leagueMatches ?? []), ...(s?.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))];
+   只收 leagueMatches 的話,淘汰賽的鈕會「按鈕在但點了沒東西」。
+   **收在 core**(2026-09-15):這一頁做對了,而總覽、我的球隊那幾頁各自只讀
+   leagueMatches —— 同一件事寫四份,對的那一份不會去修正錯的那三份。 */
+const allMatchesOf = s => C.uclSeasonMatches(s);
 
 /* 對比裡要顯示的隊名與顏色。**本站沒有的球隊沒有 C.name / C.team** ——
    直接叫 C.name(undefined) 會拿到一個看起來像壞掉的東西,所以走上游給的名字,

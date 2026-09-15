@@ -19,7 +19,7 @@
 
    3. **關注名單存在瀏覽器這件事要寫在畫面上**,而且給匯出/匯入 ——
       不要讓人以為它存在雲端(鐵則四,跟「我的預測」同一套)。 */
-import * as C from './core.js?v=155f0c5e';
+import * as C from './core.js?v=0398a1b2';
 /* **具名 import 要寫在同一行。** 單檔版的打包是用單行正則把 import 拆掉的,
    跨行的話拆不掉 → 攤平之後還留著一個 import 陳述句 → 整份單檔版死掉。
    bundle.mjs 的守門會擋下來(「單檔版裡還有沒拆掉的 import」),不會靜靜過關。 */
@@ -62,27 +62,45 @@ export function nextLeagueMatches(fixtures, code, n = NEXT_N) {
     .slice(0, n);
 }
 
-/* 一場比賽畫成一行。`comp` 是賽事標籤,`prob` 有才畫(盃賽沒有預測)。 */
-function matchLine(m) {
+/* 一隊畫成一格。三條路:**本站認得的**用站上那份隊徽;**本站不認得但上游有圖的**
+   (歐冠的 Lille、盃賽的低級別球隊)用上游那張;都沒有才只印名字。
+   只寫前兩條的話,同一排裡有些格子有隊徽、有些是光禿禿的文字,看起來像壞掉。
+   `nameless` 給自家那一格用:卡片抬頭已經寫著是誰了,每一行再印一次只是把列撐長。 */
+function sideHtml(s, { nameless = false } = {}) {
+  if (s.code) return nameless ? C.badge(s.code) : `${C.badge(s.code)} ${fvEsc(C.name(s.code))}`;
+  if (s.crest) {
+    return `<img class="crest" src="${s.crest}" alt="" loading="lazy" width="22" height="22"
+      onerror='this.style.display="none"'> ${fvEsc(s.name ?? '')}`;
+  }
+  return fvEsc(s.name ?? '待定');
+}
+
+/* 一場比賽畫成一行。`comp` 是賽事標籤,`prob` 有才畫(盃賽沒有預測)。
+
+   **主客用位置講,不放「主 / 客」藥丸**(使用者的決定,2026-09-15):
+   主隊在左、客隊在右,跟賽果那一區同一套。原本每一行前面掛一個「主」或「客」字,
+   讀者要先讀那個字才知道誰在哪邊,而位置本身就講得完 —— 而且兩區各用一套寫法
+   (這裡是藥丸、賽果那裡是 vs / @)本來就要讀者記兩種。
+   約定寫在區塊抬頭的「左邊主隊」,不是每一行重複一次。 */
+export function matchLine(m, me) {
   const when = m.kickoff ? `<span class="cd" data-kickoff="${m.kickoff}"></span>
     <span class="tiny dim">${C.kickoffLocal(m.kickoff)}</span>`
     : `<span class="tiny dim">${C.dateFull(m.date ?? '')}・時間待定</span>`;
-  const side = m.home ? '主' : '客';
   const prob = m.prob
     ? `<span class="tiny">勝 <b>${C.pct(m.prob.win, 0)}</b>・和 ${C.pct(m.prob.draw, 0)}・負 ${C.pct(m.prob.lose, 0)}</span>`
     : `<span class="tiny dim" title="${fvEsc(m.noProbWhy ?? '')}">沒有勝率</span>`;
-  /* 對手的隊徽三條路:**本站認得的**用站上那份;**本站不認得但上游有圖的**
-     (歐冠的 Lille、盃賽的低級別球隊)用上游那張;都沒有才只印名字。
-     只寫前兩條的話,同一排裡有些格子有隊徽、有些是光禿禿的文字,看起來像壞掉。 */
-  const opp = m.oppCode
-    ? `${C.badge(m.oppCode)} ${fvEsc(C.name(m.oppCode))}`
-    : m.oppCrest
-      ? `<img class="crest" src="${m.oppCrest}" alt="" loading="lazy" width="22" height="22"
-           onerror='this.style.display="none"'> ${fvEsc(m.oppName ?? '')}`
-      : fvEsc(m.oppName ?? '待定');
-  return `<div class="stat-line">
+  const mine = { code: me.code, name: me.name };
+  const opp = { code: m.oppCode, crest: m.oppCrest, name: m.oppName };
+  const [L, R] = m.home ? [mine, opp] : [opp, mine];
+  const nameOf = x => (x.code ? C.name(x.code) : (x.name ?? '待定'));
+  /* 一隊一格,格子內 `nowrap`:窄螢幕實測過,不鎖的話換行會切在隊徽與隊名之間 ——
+     400px 上出現過「隊徽在上一行、Leeds United 在下一行」,看起來像兩件事。
+     破折號跟著左邊那一格走,行尾才不會掉一個沒有對象的符號。 */
+  const cell = (x, dash = '') => `<span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap">${
+    sideHtml(x, { nameless: x === mine })}${dash}</span>`;
+  return `<div class="stat-line fixline" title="${fvEsc(`${nameOf(L)}(主)對 ${nameOf(R)}(客)`)}">
     <span class="small" style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">
-      ${m.compBadge ?? ''}<span class="pill tiny">${side}</span>${opp}
+      ${m.compBadge ?? ''}${cell(L, '<span class="dim tiny">－</span>')}${cell(R)}
       ${m.link ? `<a class="tiny" href="${m.link}">分析 →</a>` : ''}</span>
     <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap">${prob}${when}</span>
   </div>`;
@@ -139,20 +157,25 @@ function teamCard(pool, code, extraFixtures) {
       ${cur.form?.length ? C.formRun(cur.form) : ''}
     </div>` : '<div class="tiny dim" style="margin-top:8px">本季還沒有積分資料</div>'}
 
-    <div class="section" style="margin-top:12px"><h3 style="margin:0;font-size:14px">接下來</h3></div>
-    ${nextAll.length ? nextAll.map(matchLine).join('')
+    <div class="section" style="margin-top:12px"><h3 style="margin:0;font-size:14px">接下來</h3>
+      <span class="hint">左邊主隊、右邊客隊</span></div>
+    ${nextAll.length ? nextAll.map(m => matchLine(m, { code: t.code, name: t.en })).join('')
       : '<div class="tiny dim">賽程上沒有還沒踢的場次。</div>'}
 
-    ${rec.length ? `<div class="section" style="margin-top:12px"><h3 style="margin:0;font-size:14px">最近賽果</h3></div>
-      <div class="row" style="gap:8px;flex-wrap:wrap">${rec.map(f => {
+    ${rec.length ? `<div class="section" style="margin-top:12px"><h3 style="margin:0;font-size:14px">最近賽果</h3>
+      <span class="hint">左邊主隊、右邊客隊</span></div>
+      <div class="row" style="gap:16px;flex-wrap:wrap">${rec.map(f => {
         const home = f.home === code;
         const my = home ? f.fh : f.fa, their = home ? f.fa : f.fh;
         const res = my > their ? 'W' : my < their ? 'L' : 'D';
-        const opp = home ? f.away : f.home;
+        /* **比分照主客順序印**(使用者的決定,2026-09-15):主隊隊徽、主隊進球-客隊進球、
+           客隊隊徽。原本是「我方比分 + vs / @ + 對手」—— 那要讀者先解讀一個符號,
+           而位置本身就講得完。W / L / D 留著:那是**我方的結果**,不是主客符號,
+           位置化之後反而更需要它(比分不再是「我方在前」)。 */
         return `<a class="small" href="${C.link('analysis', { id: f.id, league: pool.lg })}"
+          title="${fvEsc(`${C.name(f.home)}(主)${f.fh}-${f.fa} ${C.name(f.away)}(客)`)}"
           style="display:inline-flex;align-items:center;gap:5px;text-decoration:none">
-          <i class="frm ${res}">${res}</i><span class="mono">${my}-${their}</span>
-          <span class="dim">${home ? 'vs' : '@'}</span>${C.badge(opp)}</a>`;
+          <i class="frm ${res}">${res}</i>${C.badge(f.home)}<span class="mono">${f.fh}-${f.fa}</span>${C.badge(f.away)}</a>`;
       }).join('')}</div>` : ''}
 
     ${outList === null
@@ -370,7 +393,10 @@ export async function renderFollowTeams(host) {
     const uclExternal = new Map((data['ucl-teams']?.external ?? []).map(t => [t.id, t.crest]));
     const uclCrest = side => (side?.code ? uclKnown.get(side.code)?.crest : uclExternal.get(side?.id)) ?? null;
     const uclSeason = (data.ucl?.seasons ?? []).find(s => s.current);
-    for (const m of uclSeason?.leagueMatches ?? []) {
+    /* **走整份**(2026-09-15):淘汰賽的場次在 `rounds[].ties[].legs[]`,
+       只讀 leagueMatches 的話二月起每一場淘汰賽都會從「接下來」靜靜掉隊 ——
+       本季 rounds 現在是 0,所以今天看不出差別,而那正是它危險的地方。 */
+    for (const m of C.uclSeasonMatches(uclSeason)) {
       if (m.played) continue;
       for (const side of ['home', 'away']) {
         const code = m[side]?.code;

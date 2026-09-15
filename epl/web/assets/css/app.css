@@ -389,6 +389,11 @@ tbody tr.followed td { background: #ffc5310f; }
 tbody tr.followed td:first-child { box-shadow: inset 2px 0 0 #ffc531; }
 
 .followcard { margin-top: 12px; }
+/* 「接下來」那一列:窄螢幕讓「比賽」與「機率 / 時間」各佔一行。
+   `.stat-line` 本身是 space-between 而且**不換行**,兩格只會各自縮 ——
+   400px 實測的結果是隊徽留在上一行、隊名掉到下一行,看起來像兩件事。
+   允許整列換行,兩邊各自完整;桌機放得下時版面完全不變。 */
+.stat-line.fixline { flex-wrap: wrap; }
 .pickteam { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px 3px 4px;
   border: 1px solid var(--line); border-radius: 999px; }
 

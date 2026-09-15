@@ -1,4 +1,4 @@
-import * as C from './core.js?v=155f0c5e';
+import * as C from './core.js?v=0398a1b2';
 
 const app = document.getElementById('app');
 
@@ -132,6 +132,16 @@ try {
        標成「時間待定」(跟球隊賽程頁同一個規則)。 */
   // 即將賽程不列的聯賽(使用者指定)。用集合不用「是不是某一個」的二元式
   const UPCOMING_HIDE = new Set(['en2']);
+  /* 歐冠場次的輪次說明。**淘汰賽的 legs 也有 matchday(1 / 2 = 首 / 次回合)** ——
+     照 `m.matchday ? '聯賽階段第 N 輪'` 寫的話,二月的十六強首回合會被標成
+     「聯賽階段第 1 輪」,而畫面完全正常。輪次中文用產物裡的 `rounds[].zh`,
+     不在前端另外抄一份對照表(抄的那一份改了上游不會跟著變)。 */
+  const uclNote = (m, season) => {
+    if (!m.stage || m.stage === 'LEAGUE_STAGE') return m.matchday ? `聯賽階段第 ${m.matchday} 輪` : '';
+    const zh = (season?.rounds ?? []).find(r => r.stage === m.stage)?.zh ?? m.stage;
+    return m.matchday ? `${zh} ${m.matchday === 1 ? '首' : '次'}回合` : zh;
+  };
+
   const buildUpcoming = () => {
     const now = Date.now(), end = now + 7 * 86400000;
     const inWindow = k => { const t = Date.parse(k); return t >= now - 2 * 3600000 && t <= end; };
@@ -188,7 +198,8 @@ try {
     const uclKnown = new Map((shared['ucl-teams']?.teams ?? []).map(t => [t.code, t]));
     const uclExternal = new Map((shared['ucl-teams']?.external ?? []).map(t => [t.id, t.crest]));
     const uclCrest = side => (side?.code ? uclKnown.get(side.code)?.crest : uclExternal.get(side?.id)) ?? null;
-    for (const m of uclSeason?.leagueMatches ?? []) {
+    // 走整份(聯賽階段 + 淘汰賽);只讀 leagueMatches 的話二月起淘汰賽不會出現在這張表
+    for (const m of C.uclSeasonMatches(uclSeason)) {
       if (m.played || !m.kickoff || !inWindow(m.kickoff)) continue;
       if (!m.home?.code && !m.away?.code) continue;
       rows.push({ kick: m.kickoff, comp: '歐冠', compKey: 'ucl',
@@ -196,7 +207,7 @@ try {
         hCrest: uclCrest(m.home), aCrest: uclCrest(m.away),
         /* 歐冠場次連**單場頁**(2026-09-13 起有了),跟聯賽場次連分析頁是同一件事;
            以前只能連到盃賽頁的分頁,讀者還要自己在 18 場裡找。 */
-        note: m.matchday ? `聯賽階段第 ${m.matchday} 輪` : (m.stage ?? ''), pending: false,
+        note: uclNote(m, uclSeason), pending: false,
         link: m.id != null ? C.link('ucl-match', { id: m.id }) : C.link('cups', { cup: 'ucl' }) });
     }
     return rows.sort((a, b) => (a.kick < b.kick ? -1 : 1));
@@ -221,12 +232,12 @@ try {
     }).filter(Boolean);
     // 歐冠也一樣:7 天內沒有歐冠時,用一行講下一批是聯賽階段第幾輪、幾號起
     const uclSeason = (shared.ucl?.seasons ?? []).find(s => s.current);
-    const uclFuture = (uclSeason?.leagueMatches ?? [])
+    const uclFuture = C.uclSeasonMatches(uclSeason)
       .filter(m => !m.played && m.kickoff && Date.parse(m.kickoff) > end && (m.home?.code || m.away?.code))
       .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
     if (uclFuture.length) {
       const f = uclFuture[0];
-      out.push(`歐冠 聯賽階段第 ${f.matchday ?? '?'} 輪:${C.dateFull(f.kickoff.slice(0, 10))} 起(本站球隊 ${uclFuture.length} 場)`);
+      out.push(`歐冠 ${uclNote(f, uclSeason)}:${C.dateFull(f.kickoff.slice(0, 10))} 起(本站球隊 ${uclFuture.length} 場)`);
     }
     return out;
   })();
