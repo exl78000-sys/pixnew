@@ -1,6 +1,6 @@
 import * as C from './core.js?v=0398a1b2';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
-import { mountDuelAnim } from './duel-anim.js?v=e875c736';
+import { mountDuelAnim } from './duel-anim.js?v=11d67b29';
 import { createMatch, defaultSetup } from './game-engine.js?v=b48e4aa3';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
