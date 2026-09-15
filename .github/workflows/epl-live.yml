@@ -85,6 +85,15 @@ jobs:
         run: npm run laliga:players
         continue-on-error: true
 
+      # 德甲球員整季數據(Understat)。一季一個請求,兩季共兩個 ——
+      # 跟西甲同一支實作(lib/understat-players.mjs),只有聯賽代號與名冊不同。
+      # **這一步只能在 runner 上跑**:開發沙箱的出口代理不放行 understat.com(CONNECT 403),
+      # 所以德甲的球員層是「還沒抓」不是「拿不到」,跟英冠那種永遠不會有的完全不同。
+      # 代號 Bundesliga 與上游的隊名短寫都是 probe-understat-bundesliga.mjs 實測出來的。
+      - name: 抓德甲球員整季數據(Understat)
+        run: npm run de1:players
+        continue-on-error: true
+
       # 歷史賽季的 Understat 進球情境。這是為了測「上一季的定位球/運動戰強弱
       # 對下一季有沒有預測力」—— 情境是整季彙總,拿本季彙總預測本季比賽是偷看未來,
       # 只能用上一季當先驗。所以調參季 2024-25 要 2023-24 的、驗收季 2025-26 要 2024-25 的。
@@ -434,6 +443,7 @@ jobs:
                      epl/data/championship-coaches-verified.json \
                      epl/data/raw/understat/ \
                      epl/data/raw/understat-la-liga/ \
+                     epl/data/raw/understat-bundesliga/ \
                      epl/data/raw/fotmob-la-liga/ \
                      epl/data/raw/fotmob-epl/ epl/data/raw/fotmob-championship/ epl/data/raw/fotmob-ucl/ \
                      epl/data/raw/sportmonks-la-liga/ \

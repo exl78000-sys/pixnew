@@ -108,14 +108,29 @@ export async function fetchUnderstatPlayers({
 
     /* 隊名要對得上我們的隊碼,對不上的**列出來**不要靜靜吞掉 ——
        CLAUDE.md 記著的坑:被 tolerant 模式吞掉之後整季資料消失,而畫面上看不出來。 */
+    /* **季中轉隊的人,`team_title` 是用逗號串起來的兩隊**(`Augsburg,Mainz 05`)——
+       德甲探測時才看見,回頭一查西甲 2025-26 也有 11 筆、2026-27 有 2 筆,
+       而那幾筆一直是 `code: null`:資訊本來就在上游,只是被丟掉了。
+       這裡拆開存進 `codes`,**但 `code` 仍然留 null** —— Understat 給的是整季合計,
+       把它掛給其中一隊就是把另一隊的產出算到這一隊頭上(那是編數字)。
+       下游要用的話自己決定怎麼呈現,至少它現在知道「這個人這季待過哪幾隊」。 */
     const unmatched = new Map();
     const players = rows.map(r => {
-      const code = T.codeOf(r.team_title);
-      if (!code) unmatched.set(r.team_title, (unmatched.get(r.team_title) ?? 0) + 1);
-      return { ...r, code: code ?? null };
+      const parts = String(r.team_title ?? '').split(',').map(x => x.trim()).filter(Boolean);
+      const codes = parts.map(n => T.codeOf(n));
+      const multi = parts.length > 1;
+      // 對不上要逐一列出來:整個字串列出來會讓「其中一隊的 alias 缺了」看起來像轉隊
+      parts.forEach((n, i) => { if (!codes[i]) unmatched.set(n, (unmatched.get(n) ?? 0) + 1); });
+      return {
+        ...r,
+        code: multi ? null : (codes[0] ?? null),
+        ...(multi ? { codes, teams: parts } : {}),
+      };
     });
     const matched = players.filter(p => p.code).length;
-    console.log(`  ${players.length} 名球員・隊名對上 ${matched} 筆`);
+    const multiClub = players.filter(p => p.codes).length;
+    console.log(`  ${players.length} 名球員・隊名對上 ${matched} 筆`
+      + (multiClub ? `・季中轉隊 ${multiClub} 筆(整季合計不掛給任一隊)` : ''));
     if (unmatched.size) {
       console.log(`  ⚠ 對不上隊名(要補進 data/manual/${teamFile} 的 alias):`);
       for (const [name, n] of [...unmatched].sort((a, b) => b[1] - a[1])) console.log(`      ${name}(${n} 人)`);
@@ -131,12 +146,12 @@ export async function fetchUnderstatPlayers({
       sourceUrl: URL_,
       note: note ?? `POST league=${league}&season=YYYY，整季一個請求。無背號、無頭貼、無傷停、無出生日期。`,
       retrievedAt: new Date().toISOString(),
-      count: players.length, matched,
+      count: players.length, matched, multiClub,
       unmatchedTeams: Object.fromEntries(unmatched),
       players,
     }, null, 2) + '\n');
     console.log(`  ✔ ${file(season)}`);
-    summary.push({ season, count: players.length, matched });
+    summary.push({ season, count: players.length, matched, multiClub, unmatched: unmatched.size });
   }
   console.log(`\n共用掉 ${requests} 個請求。`);
   return { requests, seasons: summary };

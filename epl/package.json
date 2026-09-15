@@ -102,6 +102,7 @@
     "de1:fetch": "node scripts/fetch-bundesliga.mjs",
     "de1:build": "node scripts/build-bundesliga.mjs",
     "de1:backtest": "node scripts/backtest-bundesliga.mjs",
+    "de1:players": "node scripts/fetch-bundesliga-players.mjs",
     "probe:understat-de1": "node scripts/probe-understat-bundesliga.mjs"
   },
   "engines": {
