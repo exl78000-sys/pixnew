@@ -5756,6 +5756,42 @@ function checkUcl() {
       hits.slice(0, 6).join(' / '));
   }
 
+  /* ── 聯賽名不准寫死在共用版面裡(2026-09-15)──
+     單場分析頁的頁首印著 `西甲 ${f.season}・第 N 輪`,而那一段是「不是英超」的
+     那條分支 —— 所以**英冠與德甲的每一個單場頁都寫著「西甲」**,而畫面其他地方
+     完全正常、一個錯都不報。這是「前端把聯賽的事實寫死」的第四種:
+     寫死的既不是數字、也不是「我們只做 X」、也不是「這一批是誰」,是**聯賽自己的名字**。
+
+     掃之前一定要剝註解 —— 講這件事的註解(包括這一段)本身就寫著那幾個聯賽名,
+     不剝的話這條測試會永遠紅在自己身上(「測試掃原始碼,而自己的註解就是誤報來源」)。
+     只掃**樣板字串裡**的聯賽名:`C.LEAGUES[...].zh` 那種從註冊表讀的寫法不會被掃到。 */
+  {
+    const stripComments = src => src
+      .replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
+      .replace(/(^|[^:])\/\/[^\n]*/g, (m, p) => p + ' '.repeat(m.length - p.length));
+    /* 共用版面 = 三個以上聯賽都會走到的那幾支。core.js 例外:註冊表本身在那裡。 */
+    const SHARED = ['page-analysis.js', 'page-teams.js', 'page-players.js', 'page-index.js', 'page-tactics.js'];
+    const NAMES = ['英超', '西甲', '英冠', '德甲'];
+    const hits = [];
+    for (const f of SHARED) {
+      const p = join(W, 'assets', 'js', f);
+      if (!existsSync(p)) continue;
+      const clean = stripComments(readFileSync(p, 'utf8'));
+      /* 判準是「聯賽名後面緊接著一個插值」—— 那一定是在組畫面上的句子。
+         一般字串(例如比較用的 `lg === 'es1'`)不會長這樣,所以不在此列。
+         **不要再加「這一行要有反引號」那道條件**:樣板字串是跨行的,
+         出事的那一行(`<p>西甲 ${f.season}…`)上面一個反引號都沒有 ——
+         第一版就是這樣寫的,於是把 bug 原樣貼回去它照樣是綠的。 */
+      for (const line of clean.split('\n')) {
+        for (const n of NAMES) {
+          if (new RegExp(`${n}\\s*\\$\\{`).test(line)) hits.push(`${f}: ${line.trim().slice(0, 70)}`);
+        }
+      }
+    }
+    ok(hits.length === 0, '共用版面的樣板字串沒有寫死聯賽名(要從 LEAGUES 註冊表讀)',
+      hits.slice(0, 4).join(' / '));
+  }
+
   /* ── 跨聯賽 Elo 與歐冠賽前預測(2026-09-09 階段 C)──
      做法是把八個聯賽的域內賽果 + 歐冠場次餵進**同一個 Elo 池**,歐冠場次就是橋。
      這一組守三件事:證據還在(回測通過才給預測)、界線還在(沒評分就不給)、

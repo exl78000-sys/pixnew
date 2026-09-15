@@ -8,6 +8,7 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
+import { competition } from './lib/canonical.mjs';
 import { decodePNG, resizeRGBA, encodePNG } from './lib/png.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -29,6 +30,7 @@ const PROFILES = {
   },
   es1: {
     teamFile: 'teams-la-liga.json', outFile: 'crests-la-liga.json',
+    competition: 'esp.1', label: '西甲',
     currentRaw: join(ROOT, 'data', 'raw', 'openfootball-la-liga', '2026-27.json'),
     folders: [
       'logos/Spain - LaLiga',
@@ -50,6 +52,20 @@ const PROFILES = {
         url: 'https://r2.thesportsdb.com/images/media/team/badge/yuwqus1447590681.png',
       },
     },
+  },
+  /* 德甲(2026-09-15)。football-logos 的資料夾名是**試出來的**,不是猜的:
+     `Germany - Bundesliga` 回 200、`Germany - 1. Bundesliga` 與 `Germany - Bundesliga 1` 都 404。
+     英冠不需要自己的檔(英格蘭球隊跟英超、盃賽那兩份重疊),德國隊一支都不重疊,所以自己一份。
+     歷史目錄放 2025-26:名冊含升降級球隊,降下去的那幾支要去當季的目錄找。 */
+  de1: {
+    teamFile: 'teams-bundesliga.json', outFile: 'crests-bundesliga.json',
+    competition: 'ger.1', label: '德甲',
+    currentRaw: join(ROOT, 'data', 'raw', 'openfootball-bundesliga', '2026-27.json'),
+    folders: [
+      'logos/Germany - Bundesliga',
+      'history/2025-26/Germany - Bundesliga',
+      'history/2024-25/Germany - Bundesliga',
+    ],
   },
 };
 const PROFILE = PROFILES[LEAGUE];
@@ -106,7 +122,13 @@ async function main() {
       }
     }
     selected = T.list.filter(t => currentCodes.has(t.code));
-    if (selected.length !== 20) throw new Error(`西甲當季隊數應為 20，實際 ${selected.length}`);
+    /* 隊數從**賽事註冊表**來,不要寫死。原本這裡是 `!== 20` 加一句「西甲當季隊數應為 20」——
+       西甲跟英超剛好都是 20,所以三年沒事;德甲 18 隊一跑就炸,而錯誤訊息還說是西甲。
+       這是「前端把聯賽的事實寫死」那條坑的腳本版:數字一律從資料算。 */
+    const want = competition(PROFILE.competition)?.teams ?? null;
+    if (want && selected.length !== want) {
+      throw new Error(`${PROFILE.label ?? LEAGUE} 當季隊數應為 ${want},實際 ${selected.length}`);
+    }
   }
   const existing = !force && existsSync(OUT) ? JSON.parse(await readFile(OUT, 'utf8')) : { crests: {} };
   const crests = { ...(existing.crests ?? {}) };

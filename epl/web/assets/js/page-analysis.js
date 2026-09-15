@@ -74,6 +74,10 @@ try {
         <span class="small muted">${label}</span><b class="mono" ${mark('a')}>${C.fx(av, d)}</b></div>`;
     };
 
+    /* 頁首的聯賽名一律從註冊表讀。**這裡原本寫死「西甲」** —— 而這條分支是
+       「不是英超」的那一條,所以英冠與德甲的每一個單場頁都印著「西甲 2026-27」,
+       而畫面其他地方完全正常。這是「前端把聯賽的事實寫死」的又一次,
+       只是寫死的既不是數字也不是能力,是**聯賽自己的名字**。 */
     app.innerHTML = `
     <div class="page-head">
       <a class="small dim" href="${C.link('index')}">← 回積分與賽程</a>
@@ -410,7 +414,7 @@ try {
     <div class="page-head">
       <a class="small dim" href="${C.link('index')}">← 回積分與賽程</a>
       <h1 style="margin-top:6px">${C.teamLink(f.home)} <span class="dim">vs</span> ${C.teamLink(f.away)}</h1>
-      <p>西甲 ${f.season}・第 ${f.round} 輪・${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</p>
+      <p>${C.LEAGUES[C.league()]?.zh ?? ''} ${f.season}・第 ${f.round} 輪・${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</p>
       ${C.stampRow([
         C.stamp('正式比分', { iso: meta.builtAt, kind: 'daily' }),
         report ? C.stamp('完整賽後資料', { iso: report.advanced?.fetchedAt, kind: 'season', note: '完賽後抓取一次並永久快取' }) : null,

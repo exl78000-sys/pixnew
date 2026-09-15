@@ -232,6 +232,18 @@ const table = out('table'), results = out('results'), sim = out('sim');
   check('隊徽還沒交付時是 null,不放一個灰底佔位圖', teams.every(t => t.crest === null || typeof t.crest === 'string'));
   check('counts.crests 對得回實際有隊徽的隊數',
     meta.counts.crests === teams.filter(t => t.crest).length);
+  /* 界線那一句原本把隊徽寫死在「還沒有」的清單裡。抓到之後它必須自己改口 ——
+     這是「加了能力之後要回頭問:有哪一頁還在講我們沒有它?」的 build 版。 */
+  check('隊徽抓齊之後界線不再說「還沒有…隊徽」',
+    meta.counts.crests !== teams.length
+      || !(meta.boundaries ?? []).some(x => /^—/.test(x) && /隊徽/.test(x)));
+  /* counts 的每一個數字都要對得回產物。**寫死的 0 就是在畫面上編數字** ——
+     球員頁的標題直接印 counts.players,它停在 0 的時候那一頁寫著「0 名註冊球員」
+     而下面列著 856 人。所以這裡逐個對,不是只對 crests。 */
+  check('counts.players 對得回 players.json 的筆數',
+    meta.counts.players === out('players').length, `${meta.counts.players}`);
+  check('counts.matchReports 對得回 reports.json 的場數',
+    meta.counts.matchReports === out('reports').count, `${meta.counts.matchReports}`);
   check('資料界線有講出球員層的狀態', (meta.boundaries ?? []).some(x => /球員/.test(x)));
 }
 

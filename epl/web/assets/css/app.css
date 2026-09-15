@@ -255,6 +255,14 @@ td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .crest.lg { width: 44px; height: 44px; }
 .crest.xl { width: 64px; height: 64px; }
 
+/* 球隊卡頁首(隊徽 + 隊名那一列)。`.row` 是 flex-wrap: wrap,而 flex 的
+   **換行優先於收縮** —— 名字那一塊的 max-content 寬度一超過剩下的空間,整塊就
+   掉到下一行,隊徽被單獨留在上面,卡片比鄰居高一截。給 flex-basis: 0 之後那一塊
+   的「理想寬度」是 0,永遠湊得下,文字改在自己裡面折行。
+   實測(1280px):英超 1 張、英冠 10 張、德甲 1 張原本是斷開的 —— 英冠副標多了
+   球場名所以最嚴重。這不是德甲的問題,是四個聯賽共有的,只是德甲的長隊名讓它現形。 */
+a.card > .row > .crest + div { flex: 1 1 0; min-width: 0; }
+
 /* ── 隊徽色塊(沒有隊徽時的退路)────── */
 .badge {
   display: inline-flex; align-items: center; justify-content: center;
