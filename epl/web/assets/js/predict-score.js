@@ -44,7 +44,21 @@ export function rps(probs, actual) {
 
 const certain = pick => (pick ? Object.fromEntries(OUTCOMES.map(k => [k, k === pick ? 1 : 0])) : null);
 
-export const matchKey = f => `${f.season}|${f.home}|${f.away}`;
+/* 一筆紀錄的鍵。**這個字串存在使用者的瀏覽器裡**(localStorage 的物件鍵),
+   所以它的格式是一份**已經發布的契約** —— 改掉既有場次的鍵,等於把人家填過的
+   預測全部變成對不到的孤兒(`scorePredictions` 直接 `continue`,而畫面上那張卡
+   會變回空白,一個錯都不報)。
+
+   `keySuffix` 是**加法**:沒有它的場次鍵一個字元都不變,有它的才多一段。
+   目前只有歐冠的淘汰賽會給(值是 stage)—— 因為「主隊|客隊」在歐冠一季會撞:
+   同一組對戰可以在聯賽階段踢一次、淘汰賽再踢一次,而且主客方向相同。
+   實測 2025-26 撞 7 組、2024-25 撞 6 組(Arsenal vs Atlético 聯賽階段 + 四強……),
+   撞到的話兩場比賽共用一筆預測。**帶上 stage 之後兩季都是 0 組。**
+   CLAUDE.md 為了同一件事記過兩次(英冠附加賽、歐冠逐場抓取器的快取鍵)。
+
+   以後開放有附加賽的聯賽(英冠)時照同一條:**只給非聯賽場次 keySuffix**,
+   聯賽場次的鍵維持原樣。 */
+export const matchKey = f => `${f.season}|${f.home}|${f.away}${f.keySuffix ? `|${f.keySuffix}` : ''}`;
 
 /* 一筆紀錄能不能算分。**開賽後才存的不算** —— 那不是預測,是回顧。
    頁面本來就在開賽時鎖住輸入,這裡是第二道:匯入別人的檔案也擋得住。 */

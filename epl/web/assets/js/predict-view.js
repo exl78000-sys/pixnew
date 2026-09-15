@@ -1,6 +1,6 @@
 import * as C from './core.js?v=0398a1b2';
 import { followedIn } from './follow.js?v=02130043';
-import { scorePredictions, outcomeOf, pickOf, matchKey, OUTCOMES } from './predict-score.js?v=99e36287';
+import { scorePredictions, outcomeOf, pickOf, matchKey, OUTCOMES } from './predict-score.js?v=3cc21f65';
 
 /* 我的預測(跨聯賽單一頁,掛對戰模擬旁邊)。
  *
@@ -51,6 +51,44 @@ function writeStore(obj) {
    `league()` 那條坑)。英冠沒開是使用者的決定,不是技術限制。 */
 const OPEN_LEAGUES = ['pl', 'es1'];
 
+/* 歐冠的「輪次」。聯賽階段有 `matchday`(1~8),**淘汰賽沒有** ——
+   它只有 `stage`(PLAYOFFS / LAST_16 / …),而 legs 的 `matchday` 是
+   **首 / 次回合**(1 / 2),不是輪次。照 matchday 當輪次的話,十六強首回合
+   會跟聯賽階段第 1 輪混進同一輪,而畫面完全正常。
+
+   做法:淘汰賽接在聯賽階段後面編號(8 → 9、10、…),**順序照產物的
+   `rounds[]`**(`lib/ucl.mjs` 已經照 KO_ORDER 排好)——
+   前端不要自己再抄一份階段順序表,抄的那一份改了上游不會跟著變。
+
+   編出來的數字**只拿來排序與比對,不印在畫面上**(那是排序哨兵那條坑):
+   每一輪的中文一律走 `zh`,聯賽階段那幾輪也在裡面(「聯賽階段第 N 輪」),
+   所以歐冠的下拉選單一個字都不是前端硬編的。 */
+export function uclRoundIndex(season) {
+  const games = C.uclSeasonMatches(season);
+  const isLeague = m => !m?.stage || m.stage === 'LEAGUE_STAGE';
+  const mds = [...new Set(games.filter(m => isLeague(m) && m.matchday != null).map(m => m.matchday))]
+    .sort((a, b) => a - b);
+  const maxMd = mds.length ? mds[mds.length - 1] : 0;
+  const stages = (season?.rounds ?? []).map(r => r.stage);
+  const zh = new Map(mds.map(md => [md, `聯賽階段第 ${md} 輪`]));
+  (season?.rounds ?? []).forEach((r, i) => zh.set(maxMd + 1 + i, r.zh ?? r.stage));
+  const roundOf = m => {
+    if (isLeague(m)) return m?.matchday ?? null;
+    const i = stages.indexOf(m.stage);
+    return i < 0 ? null : maxMd + 1 + i;
+  };
+  /* 兩回合制的那幾輪,一輪裡有 16 場(8 組 × 2)。**哪一回合要講出來** ——
+     同一組對戰的兩場只差在主客與日期,不標的話讀者要自己比日期。
+
+     **只認 1 與 2,其他一律不標。** 單場決勝的決賽 `matchday` 上游兩季寫法不同:
+     2025-26 是 `null`、2024-25 是 `0` —— 寫成「null 才不標」的話,
+     2024-25 決賽會印出「第 0 回合」。跟本站對進球子代碼的規矩同一條:
+     **沒見過的值一律不給分類**,不要順手推一個看起來合理的名字。 */
+  const legOf = m => (isLeague(m) ? null
+    : m?.matchday === 1 ? '首回合' : m?.matchday === 2 ? '次回合' : null);
+  return { roundOf, zh, legOf };
+}
+
 /* 歐冠的勝率**只有部分場次有**:階段 C(2026-09-09)的跨聯賽 Elo 只給兩隊都有評分的場次
    (ucl-elo.json 的 fixtures;回測通過驗收才有,沒通過就一場都沒有)。第一版把整個賽事寫成
    noModel、prediction 全 null —— 階段 C 之後那是假的,而說明卡還印著「沒有本站的勝率預測」
@@ -64,8 +102,12 @@ async function uclPool() {
     const seasons = data.ucl?.seasons ?? [];
     // 還有場次沒踢完的那一季;全部踢完就取最新的一季(賽季之間的空窗)
     const cur = seasons.find(x => (x.played ?? 0) < (x.total ?? 0)) ?? seasons[0];
-    const games = cur?.leagueMatches ?? [];
+    /* **走整份**(2026-09-15):淘汰賽的場次在 `rounds[].ties[].legs[]`,
+       不在 `leagueMatches`。只讀後者的話,二月起的附加賽到決賽 45 場
+       在這一頁一場都填不到 —— 而本季 rounds 還是 0,所以「今天看起來完全正常」。 */
+    const games = C.uclSeasonMatches(cur);
     if (!games.length) return null;
+    const { roundOf, zh: roundZh, legOf } = uclRoundIndex(cur);
     /* 逐場的 1X2 機率,鍵是 football-data 的場次 id(跟 ucl-view 的 predOf 同一把鍵)。
        `p` 是 [主, 和, 客] 三個數,轉成聯賽 fixtures.prediction 那個形狀,計分那層才不用分兩種 */
     const predBy = new Map((elo?.fixtures ?? []).map(f => [f.id, f.p]));
@@ -78,7 +120,7 @@ async function uclPool() {
        **不能用隊名當鍵** —— 名字的拼法會隨上游改,改了就對不回舊紀錄。 */
     const idOf = side => (side?.code ? `c:${side.code}` : `u:${side?.id}`);
     return {
-      lg: 'ucl', zh: '歐冠', meta: null, noMarket: true,
+      lg: 'ucl', zh: '歐冠', meta: null, noMarket: true, roundZh,
       /* 只數**還沒踢的**:模型只給未賽的場次,拿全季場數當分母會把踢完的 18 場講成「沒有評分」 */
       modelCover: (() => { const un = games.filter(m => !m.played); return { has: un.filter(m => predBy.has(m.id)).length, total: un.length }; })(),
       fixtures: games.map(m => ({
@@ -87,7 +129,10 @@ async function uclPool() {
         played: !!m.played,
         fh: m.final?.[0] ?? null, fa: m.final?.[1] ?? null,
         kickoff: m.kickoff ?? null, date: String(m.kickoff ?? '').slice(0, 10),
-        round: m.matchday ?? null,
+        round: roundOf(m), leg: legOf(m),
+        /* 鍵要帶 stage,不然聯賽階段與淘汰賽的同一組對戰會共用一筆預測
+           (2025-26 撞 7 組)。細節見 `matchKey` 的註解。 */
+        keySuffix: m.stage && m.stage !== 'LEAGUE_STAGE' ? m.stage : null,
         prediction: predOf(m), market: null,
       })),
       nameBy: new Map([...nameBy].map(([k, v]) => [k, v])),
@@ -137,6 +182,11 @@ export async function renderPredict(host) {
       const c = cur().crestBy.get(code);
       return c ? `<img class="crest" src="${c}" alt="" width="22" height="22" onerror='${HIDE}'>` : '';
     };
+
+    /* 輪次的名字。**不要直接印 `f.round`** —— 歐冠的淘汰賽是編出來的號碼
+       (聯賽階段 8 輪之後接 9、10…),印出來就是排序哨兵印在畫面上那條坑。
+       有 zh 就用 zh(歐冠連聯賽階段那幾輪都有),沒有才是聯賽的「第 N 輪」。 */
+    const roundName = r => cur().roundZh?.get(r) ?? `第 ${r} 輪`;
 
     /* 預設輪次 = 「還沒踢完的最小輪次」。用最小的而不是「下一場的輪次」——
        有場次提前開踢時,下一場可能屬於更後面的一輪(倒數那條坑的同一個形狀)。 */
@@ -191,7 +241,7 @@ export async function renderPredict(host) {
       <div class="row" style="gap:8px;align-items:center;margin:14px 0">
         <label class="small dim">輪次</label>
         <select id="roundSel" class="btn">${rounds.map(r => `<option value="${r}"
-          ${r === state.round ? 'selected' : ''}>第 ${r} 輪</option>`).join('')}</select>
+          ${r === state.round ? 'selected' : ''}>${C.esc(roundName(r))}</option>`).join('')}</select>
         <span class="small dim">${games.filter(f => recs[matchKey(f)]).length} / ${games.length} 場已填</span>
       </div>
       ${(() => {
@@ -251,7 +301,8 @@ export async function renderPredict(host) {
             ${star(f.home)}${crest(f.home)}<b>${C.esc(nameOf(f.home))}</b>
             <span class="dim">vs</span>${star(f.away)}${crest(f.away)}<b>${C.esc(nameOf(f.away))}</b>
           </div>
-          <span class="small dim">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}
+          <span class="small dim">${f.leg ? `<span class="pill tiny">${C.esc(f.leg)}</span> ` : ''}${
+            f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}
             ${lock
               ? `<span class="pill tiny warn" data-lockpill>${f.played ? `終場 ${f.fh}:${f.fa}` : '已開賽・鎖定'}</span>`
               : f.kickoff
@@ -331,7 +382,8 @@ export async function renderPredict(host) {
         ${[...s.rows].filter(r => r.actual).reverse().map(r => `<div class="stat-line" style="align-items:flex-start">
           <span class="small" style="flex:1">
             ${C.esc(nameOf(r.fixture.home))} <b class="mono">${r.fixture.fh}:${r.fixture.fa}</b> ${C.esc(nameOf(r.fixture.away))}
-            <span class="dim tiny">・第 ${r.fixture.round} 輪</span>
+            <span class="dim tiny">・${C.esc(roundName(r.fixture.round))}${
+              r.fixture.leg ? ` ${C.esc(r.fixture.leg)}` : ''}</span>
             <br><span class="tiny">你 ${zh[r.rec.pick]}${r.rec.fh != null ? ` ${r.rec.fh}:${r.rec.fa}` : ''}
               <span class="${r.youHit ? 'accent-text' : 'dim'}">${r.youHit ? '✔' : '✘'}</span>
               ・模型 ${r.modelPick ? zh[r.modelPick] : '—'}
@@ -440,6 +492,8 @@ export async function renderPredict(host) {
         savedAt: new Date().toISOString(),
         kickoff: f.kickoff ?? null,
         round: f.round ?? null,
+        // 編出來的輪次號碼在匯出檔裡沒有意義,名字要一起存(歐冠的 9 = 附加賽)
+        roundLabel: f.round == null ? null : roundName(f.round),
         // 凍結當下的兩份機率。只留 1X2 —— 計分要的就是這三個數
         model: P ? { home: P.home, draw: P.draw, away: P.away } : null,
         market: f.market?.probs ? { ...f.market.probs } : null,
