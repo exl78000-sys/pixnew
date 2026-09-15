@@ -110,9 +110,21 @@ async function main() {
   const byFd = new Map(T.list.filter(t => t.fd).map(t => [t.fd, t.code]));
   const codeOf = name => byFd.get(name) ?? T.codeOf(name);
 
-  /* 隊徽、隊色、城市這些**目前都還沒有**(要另外人工交付並過核對器)。
+  /* 隊徽走 `npm run de1:crests`(football-logos 的靜態檔,跟英超西甲同一支抓取器),
+     鍵就是本站隊碼。**隊色、城市、球場、教練還沒有** —— 要另外人工交付並過核對器。
      缺色時退中性灰 —— 畫面上看得出來是沒有,比隨便給一個顏色好。 */
-  for (const t of T.list) t.chartColor = intoBand(t.colors?.[0]) ?? '#9aa0aa';
+  const crestBy = new Map();
+  {
+    const p = join(ROOT, 'data', 'manual', 'crests-bundesliga.json');
+    if (existsSync(p)) {
+      const j = JSON.parse(await readFile(p, 'utf8'));
+      for (const [code, uri] of Object.entries(j.crests ?? {})) if (uri) crestBy.set(code, uri);
+    }
+  }
+  for (const t of T.list) {
+    t.chartColor = intoBand(t.colors?.[0]) ?? '#9aa0aa';
+    if (crestBy.has(t.code)) t.crest = crestBy.get(t.code);
+  }
 
   /* 哪幾季有第二來源。**這件事要進產物** —— 把關強度逐季不同而畫面不講,
      等於讓讀者以為每一季一樣可靠。 */
@@ -277,6 +289,9 @@ async function main() {
       squadSize: null,
     };
   });
+  /* 掛上隊徽的隊數。**只數本季在打的那幾隊** —— 名冊含升降級球隊,
+     數整份 crestBy 會得到一個比 teams.length 還大的數字,而那個數字會直接印在畫面上。 */
+  const crestCount = teams.filter(t => t.crest).length;
 
   const formIndex = buildFormIndex([...priorMatches, ...lastMatches, ...curPlayed]);
   const teamForm = curCodes.map(code => {
@@ -399,6 +414,39 @@ async function main() {
   }
   const hasPlayers = playersOut.length > 0;
 
+  /* ── 烏龍球對帳:這是**量測**,不是宣稱 ──
+     第一版我在界線裡直接寫「差額現在對得起來了」,而當時的資料根本撐不起那句話:
+     FotMob 只涵蓋 2026-27 的 19 / 27 場,2025-26 一場都沒有 —— 上一季的缺口
+     (990 - 970 = 20 顆)沒有任何烏龍球資料可以對。**涵蓋不完整的季不能下結論**,
+     這正是「無法核對 ≠ 不一致」與「我數不出來 ≠ 上游沒有」的同一條規矩。
+     所以逐季算三個數字:缺口、抓到的烏龍球、事件涵蓋率,由涵蓋率決定講哪一句。 */
+  const goalGap = [];
+  for (const [season, data] of Object.entries(playerSeasons)) {
+    const played = (season === CURRENT_SEASON ? curMatches : lastMatches).filter(m => m.played);
+    const tableGoals = played.reduce((a, m) => a + (m.fh ?? 0) + (m.fa ?? 0), 0);
+    const playerGoals = data.players.reduce((a, p) => a + (p.goals ?? 0), 0);
+    const og = ownGoals[season] ?? { matches: 0, own: 0 };
+    goalGap.push({ season, played: played.length, tableGoals, playerGoals,
+      gap: tableGoals - playerGoals, own: og.own, covered: og.matches,
+      /* 全部場次都有事件、而且缺口剛好等於烏龍球數 —— 兩個條件都成立才算對上。 */
+      settled: og.matches === played.length && tableGoals - playerGoals === og.own });
+  }
+  for (const g of goalGap) {
+    console.log(`  進球對帳 ${g.season}:積分榜 ${g.tableGoals} − 球員 ${g.playerGoals} = 缺口 ${g.gap}`
+      + `・事件涵蓋 ${g.covered}/${g.played} 場、抓到烏龍球 ${g.own} 顆`
+      + `${g.settled ? ' → 對上了' : ' → 涵蓋不完整或對不上,只回報'}`);
+  }
+  const goalGapLines = goalGap.length && goalGap.some(g => g.covered)
+    ? [goalGap.every(g => g.settled)
+      ? `✓ 球員榜與積分榜的進球差額已對帳:${goalGap.map(g => `${g.season} 缺口 ${g.gap} 顆 = 烏龍球 ${g.own} 顆`).join('、')}`
+        + '(球員榜本來就不算烏龍球)'
+      : `— 球員榜比積分榜少的那幾顆還在對帳中:${goalGap.map(g => `${g.season} 缺口 ${g.gap} 顆、`
+        + `逐場事件涵蓋 ${g.covered}/${g.played} 場、其中烏龍球 ${g.own} 顆`).join(';')}。`
+        + '量級跟烏龍球相符(球員榜不算烏龍球),但事件還沒涵蓋全部場次,所以只回報、不當結論。']
+    : ['— 球員進球加總比積分榜少 0~11%:西甲也有同量級的缺口,量級跟烏龍球相符'
+      + '(球員榜本來就不算烏龍球),但本站還沒抓德甲的逐場事件,所以只回報、不當結論。'];
+
+
   /* **隊名對照的獨立核對。** alias 是「一對一推出來的」,而一對一不是證據
      (租借姓名那條坑付過代價)。這裡逐隊比兩個數字:
        出賽分鐘  一隊一季最多 11 × 90 × 場數,對錯隊的話會差很遠
@@ -488,10 +536,6 @@ async function main() {
           /* 缺口要照實講,而且要講出它是哪一種。
              **這一句也會過期**:賽後報告接上之後就有烏龍球可以對帳了,
              那時候還印「本站沒有來源可以證明」就是假的(跟上面那句寫死的同一種)。 */
-          ...(reportCount
-            ? []
-            : ['— 球員進球加總比積分榜少 0~11%:西甲也有同量級的缺口,量級跟烏龍球相符'
-              + '(球員榜本來就不算烏龍球),但本站還沒抓德甲的逐場事件,所以只回報、不當結論。']),
           '— 球員層沒有背號、頭貼、出生日期與身價:Understat 不給,德甲也沒有西甲那層補充來源,'
           + '所以年齡是空的、「22 歲以下」那張榜畫不出來。']
         : ['— 還沒有球員數據與 xG:德甲是 Understat 涵蓋的聯賽,但開發沙箱的出口代理不放行 understat.com'
@@ -502,14 +546,16 @@ async function main() {
         ? [`✓ 賽後報告與逐場統計(FotMob,${reportCount} 場):球隊統計、控球、逐射門 xG、事件、`
           + '正式名單與逐人評分。比分逐場對回本站賽果才收;控球率沒有第二來源可抽核。'
           + (pendingCount ? `本季還有 ${pendingCount} 場還沒抓到。` : ''),
-          ...(Object.values(ownGoals).some(o => o.own > 0)
-            ? [`✓ 逐場事件含烏龍球(${Object.entries(ownGoals).map(([k, o]) => `${k} ${o.own} 顆`).join('、')})——`
-              + '球員榜與積分榜的進球差額現在對得起來了,不必再只回報。']
-            : []),
+          ...goalGapLines,
         ]
         : ['— 還沒有賽後報告與逐場統計:來源在(FotMob 逐場端點,聯賽 id 54 已驗證),'
           + '只是 raw 還沒抓。這是「還沒抓」,不是「沒有來源」。']),
-      '— 還沒有隊色、城市、球場、隊徽與教練:那幾樣要另外人工交付並通過核對器,交付之前畫面上不顯示',
+      ...(crestCount
+        ? [`✓ 隊徽(${crestCount} / ${teams.length} 隊):football-logos 的靜態檔,內嵌成 data URI`
+          + ' —— 不走遠端網址,圖被下架或讀者網路擋掉不會在畫面上留破圖框']
+        : []),
+      `— 還沒有隊色、城市、球場${crestCount === teams.length ? '' : '、部分球隊的隊徽'}與教練:`
+        + '那幾樣要另外人工交付並通過核對器,交付之前畫面上不顯示',
       '— 沒有即時比分:比分依 openfootball 的更新節奏落地',
       /* 德甲的升降級跟英格蘭不一樣,前端不要自己猜 */
       '德甲的升降級:後 2 名直接降級,第 16 名跟德乙第 3 名打附加賽 —— 那是「跨聯賽」的比賽,'
@@ -543,7 +589,11 @@ async function main() {
     },
     counts: {
       teams: teams.length, fixtures: fixtures.length,
-      players: 0, news: 0, injuries: 0, coaches: 0, crests: 0,
+      /* **數字一律從資料算。** 這三個原本是寫死的 0(球隊層那一輪留下來的),
+         而球員層與賽後報告接上之後它們就在畫面上說謊了 —— 球員頁的標題直接印
+         `counts.players`,所以那一頁一直寫著「0 名註冊球員」而下面列著 856 人。 */
+      players: playersOut.length, news: 0, injuries: 0, coaches: 0,
+      crests: crestCount, matchReports: reportCount,
       currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
     },
     /* 這個聯賽沒有的能力一律明講,前端才不會畫一個空殼。 */
