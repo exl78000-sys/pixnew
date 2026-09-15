@@ -1,7 +1,8 @@
 import * as C from './core.js?v=0398a1b2';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
-import { mountDuelAnim } from './duel-anim.js?v=8f839068';
+import { mountDuelAnim } from './duel-anim.js?v=cc096ebb';
 import { createMatch, defaultSetup, minuteAt, TACTIC_KEYS } from './game-engine.js?v=71a86a76';
+import { SPEEDS, planPlayback, modeFor } from './game-playback.js?v=3726cb40';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
    (比賽統計 / 事件流 / 陣容與換人 / 戰術)、下方勝率條 + 動能條 + 文字播報。
@@ -19,20 +20,14 @@ import { createMatch, defaultSetup, minuteAt, TACTIC_KEYS } from './game-engine.
  * 畫面上所有數字都讀 disp,唯二讀引擎的是 λ(換人 / 紅牌改的)與換人的合法性檢查。 */
 export const GAME_LEAGUES = ['pl'];
 
-/* 播放速度(2026-09-15 改成回合制之後的定義):
-   即時   每一腳都演、停球照引擎的秒數等 —— 一場約 95 分鐘;跑動量只有這一檔對得上真資料
-   正常   有結局的回合演最後兩腳 + 結局,其餘回合一格內跳過,停球快轉 —— 一場約 10~13 分鐘(使用者要的 8~12)
-   快     有結局的回合只演結局那一腳 —— 一場約 5 分鐘
-   精華   勾了之後只演有射門 / 進球 / 牌 / 角球的回合,其餘一格跳過(跟速度可以疊) */
-const SPEED_ZH = { normal: '正常(約 10 分鐘)', fast: '快(約 5 分鐘)', real: '即時(1 分鐘 = 1 分鐘)' };
+/* 播放速度(2026-09-15 晚,不剪接版):四檔的差別只在「演哪幾段」,演的段落一律連續、真人速度 ——
+   規則與每檔的定義在 game-playback.js(純函式,測得到)。頁面這邊只做三件事:向引擎多拿幾個回合排隊、
+   照規劃器說的跳過(事件照樣套進顯示狀態、事件流寫一行「略過」)、把要演的交給動畫(前面有跳過就淡出淡入)。 */
 const SIT_ZH = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快攻', FreeKick: '任意球', SetPiece: '定位球', ThrowInSetPiece: '界外球', IndividualPlay: '個人突破', Penalty: '十二碼', OwnGoal: '烏龍球' };
 const OUT_ZH = { saved: '被撲出', blocked: '被封阻', off: '射偏', post: '中柱' };
 const POS_ZH = { GK: '門將', DEF: '後衛', MID: '中場', FWD: '前鋒' };
 const START_ZH = { kickoff: '開球', goalkick: '球門球', throwin: '界外球', freekick: '任意球', corner: '角球', penalty: '十二碼', keeper: '門將發球', loose: '二點球', turnover: '斷球反擊' };
 
-/* 哪些回合值得演:有事件(射門 / 進球 / 角球 / 犯規 / 牌 / 越位)、或從定位球 / 開球開始。精華更嚴:要有射門、進球、牌或角球。 */
-const eventful = seq => seq.events.some(e => e.type !== 'sub') || ['corner', 'penalty', 'kickoff'].includes(seq.start.type) || (seq.start.type === 'freekick' && seq.start.x >= 70);
-const highlight = seq => seq.events.some(e => ['shot', 'goal', 'card', 'corner'].includes(e.type)) || seq.start.type === 'penalty';
 
 export async function renderGame(app) {
   try {
@@ -54,7 +49,7 @@ export async function renderGame(app) {
     const HIDE = `onerror="this.style.display='none'"`;
 
     const state = { home: teams[0]?.code, away: teams[1]?.code, neutral: false, seed: Math.floor(Math.random() * 1e9),
-      setup: { home: null, away: null }, speed: 'normal', highlights: false };
+      setup: { home: null, away: null }, speed: 'normal' };
     const setupOf = side => (state.setup[side] ??= { ...defaultSetup(profile, state[side]), tactics: defaultTactics(state[side]) });
     const defaultTactics = code => Object.fromEntries(TACTIC_KEYS.map(k => [k, profile.teams[code]?.style?.[k]?.level ?? 3]));
     /* 動畫吃的是相對預設的位移 */
@@ -66,6 +61,8 @@ export async function renderGame(app) {
     /* 顯示狀態:只含畫面上演過的事件(見檔頭)。 */
     let disp = null;
     let curSeq = null, lastDead = 0;
+    /* 排隊中的回合(引擎已產、畫面還沒處理)與「上一段演完之後跳過了幾個」(要淡出淡入的依據) */
+    let queue = [], skipped = [], everPlayed = false;
 
     const predOf = () => blendPair(sim, state.home, state.away, eloBy.get(state.home), eloBy.get(state.away), { neutral: state.neutral });
 
@@ -198,15 +195,14 @@ export async function renderGame(app) {
       stop();
       match = createMatch({ profile, home: state.home, away: state.away, pred: p, seed: state.seed,
         setup: { home: { ...setupOf('home') }, away: { ...setupOf('away') } } });
-      disp = freshDisp(); curSeq = null; lastDead = 0;
+      disp = freshDisp(); curSeq = null; lastDead = 0; queue = []; skipped = []; everPlayed = false;
       paused = false; running = true;
       box.innerHTML = `<div class="duel-stage">
         <div class="spread">
           <span class="pill bad" id="gMin"></span>
           <span class="tiny dim row" style="gap:6px;flex-wrap:wrap">
             <button class="btn tiny" id="gPause">暫停</button>
-            速度 <select id="gSpeed">${Object.entries(SPEED_ZH).map(([k, z]) => `<option value="${k}"${k === state.speed ? ' selected' : ''}>${z}</option>`).join('')}</select>
-            <label><input type="checkbox" id="gHl"${state.highlights ? ' checked' : ''}> 精華</label>
+            速度 <select id="gSpeed">${Object.entries(SPEEDS).map(([k, v]) => `<option value="${k}"${k === state.speed ? ' selected' : ''}>${v.zh}</option>`).join('')}</select>
             <button class="btn tiny" id="gSkip">跳到結果</button>
           </span>
         </div>
@@ -253,7 +249,6 @@ export async function renderGame(app) {
       for (const sd of ['home', 'away']) anim.setTactics(sd, tacticDeltas(sd, setupOf(sd).tactics ?? {}));
       document.querySelectorAll('#gTabs [data-tab]').forEach(b => { b.onclick = () => { tab = b.dataset.tab; document.querySelectorAll('#gTabs [data-tab]').forEach(x => x.classList.toggle('on', x.dataset.tab === tab)); renderPanel(); }; });
       document.getElementById('gSpeed').onchange = e => { state.speed = e.target.value; };   // 下一個回合起生效
-      document.getElementById('gHl').onchange = e => { state.highlights = e.target.checked; };
       document.getElementById('gPause').onclick = () => { paused = !paused; anim?.pause(paused); document.getElementById('gPause').textContent = paused ? '繼續' : '暫停'; if (paused) { tab = 'lineup'; renderPanel(); } uiTick(); };
       document.getElementById('gSkip').onclick = skipToEnd;
       frame();
@@ -262,29 +257,54 @@ export async function renderGame(app) {
       C.pageInterval(() => { if (anim && !document.body.contains(canvas)) { stop(); return; } uiTick(); }, 200);
       advance();
     }
-    /* 這個回合怎麼演(見檔頭 SPEED_ZH)。 */
-    function modeFor(seq, dead) {
-      const show = state.highlights ? highlight(seq) : (state.speed === 'real' ? true : eventful(seq));
-      if (!show) return { instant: true };
-      if (state.speed === 'real') return { hops: Infinity, fill: seq.dur, deadSec: dead };
-      if (state.speed === 'fast') return { hops: 0, carrySec: 0.25, deadSec: Math.min(dead, 0.4), celebrateSec: 1.2, cut: true };
-      return { hops: 2, carrySec: 0.4, deadSec: Math.min(dead, 1.0), cut: true };
-    }
-    /* 向引擎拿下一個回合交給動畫。引擎在這一步產生的事件分三種:回合開始前的(換人、開賽標記)、
-       回合自己的(射門 / 進球 / 角球 / 犯規 / 牌 / 越位 —— 動畫在畫面上發生時回報)、回合之後的(中場 / 完場)。 */
-    function advance() {
-      if (!match || !anim || !running) return;
-      if (match.state().finished) { finish(); return; }
+    /* 向引擎拿一個回合排進佇列。引擎在這一步產生的事件分三種:回合開始前的(換人、開賽標記)、
+       回合自己的(射門 / 進球 / 角球 / 犯規 / 牌 / 越位 —— 演的話動畫在畫面上發生時回報)、回合之後的(中場 / 完場)。 */
+    function pull() {
+      if (match.state().finished) return null;
       const before = match.events().length;
       const seq = match.nextSequence();
-      if (!seq) { finish(); return; }
+      if (!seq) return null;
       const evs = match.events().slice(before);
-      const pre = evs.filter(e => e.seq == null && e.type !== 'half' && e.type !== 'full');
-      const post = evs.filter(e => e.type === 'half' || e.type === 'full');
+      return { seq, pre: evs.filter(e => e.seq == null && e.type !== 'half' && e.type !== 'full'), post: evs.filter(e => e.type === 'half' || e.type === 'full') };
+    }
+    /* 跳過一個回合:不演,但它的每一筆事件照樣套進顯示狀態(事件流、比分、統計、動能都看得到),控球秒數也算 */
+    function skipSeq(q) {
+      for (const e of q.pre) applyEvent(e);
+      for (const e of q.seq.events) applyEvent(e);
+      for (const e of q.post) applyEvent(e);
+      lastDead = q.seq.dead; disp.poss[q.seq.side] += q.seq.dur; disp.seqs++;
+      skipped.push(q.seq);
+    }
+    /* 規劃器決定演或跳(game-playback.js):向引擎多拿到看得見下一段有戲的回合為止,前面的整段跳過,
+       然後把要演的交給動畫;跳過了幾個就先淡出淡入(所有人放到下一段開頭的站位)—— 演的段落裡沒有任何剪接。 */
+    function advance() {
+      if (!match || !anim || !running) return;
+      for (;;) {
+        const plan = planPlayback(queue.map(q => q.seq), { speed: state.speed, finished: match.state().finished });
+        if (plan.need) { const q = pull(); if (q) { queue.push(q); continue; } }
+        for (const q of queue.splice(0, plan.skip)) skipSeq(q);
+        if (plan.play && queue.length) { playSeq(queue.shift()); return; }
+        if (match.state().finished && !queue.length) { finish(); return; }
+      }
+    }
+    /* 一段跳過(可能分好幾輪規劃湊起來)在事件流寫一行,讓讀者知道中間過了幾個回合、事件都記了 */
+    function noteSkipped() {
+      if (!skipped.length) return;
+      const a = skipped[0], b = skipped[skipped.length - 1];
+      disp.notes.push({ kind: 'skip', n: skipped.length, from: minuteAt(a.t0, a.half), to: minuteAt(b.t1, b.half), at: disp.events.length - 0.5 });
+    }
+    function playSeq(q) {
+      const seq = q.seq;
+      const jumped = everPlayed && skipped.length > 0;
+      noteSkipped();
+      const m = minuteAt(seq.t0, seq.half);
+      const label = jumped ? `⏩ 略過 ${skipped.length} 回合,跳到第 ${m.min}${m.extra ? '+' + m.extra : ''} 分鐘` : null;
+      skipped = []; everPlayed = true;
       curSeq = seq;
       const deadBefore = lastDead;
+      frame();
       anim.play(seq, {
-        pre, post, deadBefore, mode: modeFor(seq, deadBefore),
+        pre: q.pre, post: q.post, deadBefore, mode: modeFor(seq, { speed: state.speed, deadBefore, jumped, label }),
         onEvent: e => { applyEvent(e); frame(); },
         onNote: n => { disp.notes.push({ ...n, at: disp.events.length }); renderComm(); },
         onDone: () => { lastDead = seq.dead; disp.poss[seq.side] += seq.dur; disp.seqs++; if (tab === 'stats') renderPanel(); advance(); },
@@ -295,6 +315,9 @@ export async function renderGame(app) {
     function finish() {
       running = false;
       if (disp && !disp.finished) disp.finished = true;
+      if (disp) { noteSkipped(); skipped = []; }
+      const sc = match?.state();
+      if (sc) anim?.finish({ hs: sc.score[0], as: sc.score[1] });   // 最後幾個回合被跳過時,記分板要寫完場比分
       frame();
     }
     function skipToEnd() {
@@ -304,7 +327,7 @@ export async function renderGame(app) {
       for (const e of match.events()) applyEvent(e);
       const s = match.state();
       disp.poss = { home: s.home.stats.possSec, away: s.away.stats.possSec }; disp.seqs = s.seqs; disp.finished = true; disp.half = 2;
-      running = false; curSeq = null;
+      running = false; curSeq = null; queue = []; skipped = [];
       anim?.finish({ hs: s.score[0], as: s.score[1] });   // 畫布留著、比分板寫完場比分;圓點不再照劇本動
       frame();
     }
@@ -386,7 +409,8 @@ export async function renderGame(app) {
     }
     function noteText(n) {
       const t = C.esc(nameOf(state[n.side]));
-      if (n.kind === 'turnover') return `<span class="dim">${C.esc(nameOf(state[n.bySide]))} ${C.esc(n.by ?? '')} 斷球</span>`;
+      if (n.kind === 'turnover') return `<span class="dim">${C.esc(nameOf(state[n.bySide]))} ${C.esc(n.by ?? '')} ${n.how === 'tackle' ? '搶斷' : n.how === 'intercept' ? '截到傳球' : '斷球'}</span>`;
+      if (n.kind === 'skip') return `<span class="dim">⏩ 略過 ${n.n} 回合(第 ${n.from.min}~${n.to.min} 分鐘,事件照記)</span>`;
       if (n.kind === 'out') return `<span class="dim">${n.out === 'throwin' ? '界外球' : '球門球'}(${C.esc(nameOf(state[n.to]))})</span>`;
       if (n.kind === 'loose') return `<span class="dim">${t} 沒控好,二點球</span>`;
       if (n.kind === 'restart' && ['corner', 'freekick', 'penalty', 'kickoff'].includes(n.type)) return `<span class="dim">${t} ${START_ZH[n.type]}${n.player ? `,${C.esc(n.player)}` : ''}</span>`;
@@ -434,7 +458,7 @@ export async function renderGame(app) {
       return `${row('控球 %', ph ?? '—', ph != null ? 100 - ph : '—', pt != null ? `目標 ${pt}:${100 - pt}` : '')}${row('射門', H.shots, A.shots)}${row('射正', H.on, A.on)}${row('被封阻', H.blocked, A.blocked)}
         ${row('xG', H.xg.toFixed(2), A.xg.toFixed(2), '逐射門')}${row('角球', H.corners, A.corners)}${row('犯規', H.fouls, A.fouls)}${row('越位', H.offsides, A.offsides)}${row('黃牌', H.yellow, A.yellow)}${row('紅牌', H.red, A.red)}
         ${row('λ(遊戲)', s.home.lambdaEff.toFixed(2), s.away.lambdaEff.toFixed(2), '含紅牌')}
-        <div class="tiny dim" style="margin-top:6px">全部由畫面上演過的事件累計(演到第 ${disp.seqs} 回合)。控球 = 演過的回合裡兩隊各持球多久;目標值抽自兩隊主/客場分布(FotMob ${profile.teams[state.home].possession.home.n}+${profile.teams[state.away].possession.away.n} 場)。xG 是每次射門抽到的那一筆真實射門的 xG。</div>`;
+        <div class="tiny dim" style="margin-top:6px">由畫面上演過與略過的回合累計(到第 ${disp.seqs} 回合;略過的回合事件照記,只是不演)。控球 = 演過的回合裡兩隊各持球多久;目標值抽自兩隊主/客場分布(FotMob ${profile.teams[state.home].possession.home.n}+${profile.teams[state.away].possession.away.n} 場)。xG 是每次射門抽到的那一筆真實射門的 xG。</div>`;
     }
     function eventsHtml() {
       const evs = disp.events.filter(e => e.type !== 'foul' && e.type !== 'kickoff');
@@ -542,7 +566,8 @@ export async function renderGame(app) {
         事件在畫面上發生時才進事件流與比分。跑動有物理:每個人有速度、加速度有上限,
         <b>最高速度就是他自己的真資料</b>(FotMob 逐人最高速度),站位參考逐人觸球熱區質心、進攻偏向參考三路進攻佔比。
         跑動量校準過:<b>播放速度選「即時」時</b>,每人每比賽分鐘約 105 公尺,對照 FotMob 這兩隊的真實值(每隊每分鐘 ÷ 11)。
-        <b>正常 / 快只演每個回合的最後幾腳</b>,沒結局的回合一格跳過、停球快轉 —— 畫面上的人仍是真人速度,但那時的跑動量不等於真實。
+        <b>正常 / 快 / 精華不剪接</b>:演的段落一律連續、真人速度、每一腳都演;省時間的方法只有整段跳過(畫面淡出、時鐘跳到那一分鐘、
+        跳過的回合事件照樣進事件流與比分)與把太長的停球剪到重新開始 —— 所以那三檔的跑動量不等於真實(只演了有戲的段落)。
         軌跡本身一律是演出。<b>戰術指令</b>(心態 / 壓迫 / 防線 / 寬度 / 節奏 / 直接度):預設 = 本季真實踢法(六個指標從逐場數據推,標 n;有些是代理指標),
         拉動只改回合的組成與站位,λ 不變 —— 每一級改多少是遊戲規則,沒有資料能校準。<b>沒有</b>:體能、球員屬性、賽中受傷、一對一、教練決策。
         <b>跟真實管線的關係只有一條</b>:沒有任何改動時 λ 等於站上預測;任何操作不寫回資料,也不影響站上任何一頁。</div>
