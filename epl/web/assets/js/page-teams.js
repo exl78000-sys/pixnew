@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0398a1b2';
+import * as C from './core.js?v=deaac0d6';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -314,7 +314,7 @@ try {
   /* 這兩個 adapter 原本用 `meta.edition === 'basic'` 分岔,而那問的是「是不是西甲」。
      它們真正要問的是**這份球員資料長什麼樣**:英超一人一列、帶 `team` 與 `last`/`current`;
      西甲是一人一季一列、要靠隊名反查隊碼。改成看欄位在不在,
-     新聯賽只要產物長得像其中一種就會自己走對邊(英冠沒有球員資料,兩邊都不會跑到)。 */
+     新聯賽只要產物長得像其中一種就會自己走對邊(英冠的球員層是逐場累加的,兩邊都不會跑到)。 */
   /* **挑只有一邊有的欄位。** 第一版用 `p.team !== undefined` —— 而西甲的球員檔**也有** team,
      於是西甲走了英超那條路,球隊頁在 `p.price.toFixed(1)` 整頁炸掉(npm run sweep 抓到的)。
      真正的形狀差別是「上季 / 本季拆成子物件」:英超有 last / current,西甲是一人一季一列。 */
@@ -364,7 +364,7 @@ try {
   function squadSection(t) {
     const rows = squadRows(t);
     if (!rows.length) return '';
-    // 有傷停/異動欄位才提示(西甲沒有 news 欄位,英冠沒有球員資料)
+    // 有傷停/異動欄位才提示(西甲沒有 news 欄位,英冠的球員層沒有傷停)
     const out = rows.filter(p => p.news && p.status !== 'a');
     return `<div class="section" style="margin-top:20px"><h2>陣容</h2>
       <span class="hint">${rows.length} 人・數據為 ${meta.lastSeason} 的表現</span></div>

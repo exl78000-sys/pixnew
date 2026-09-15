@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0398a1b2';
+import * as C from './core.js?v=deaac0d6';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountDuelAnim } from './duel-anim.js?v=cc096ebb';
 import { createMatch, defaultSetup, minuteAt, TACTIC_KEYS } from './game-engine.js?v=71a86a76';
@@ -33,7 +33,10 @@ export async function renderGame(app) {
   try {
     const lg = C.league();
     if (!GAME_LEAGUES.includes(lg)) {
-      app.innerHTML = `<h1>模擬遊玩</h1><div class="note">模擬遊玩目前只有英超。西甲少了推估先發、主罰與球員牌數,英冠沒有球員資料 ——
+      /* 缺的東西要講**這個聯賽真正缺的那幾樣**。英冠 2026-09-15 起有球員層了(逐場累加),
+         所以「英冠沒有球員資料」已經是假話 —— 它缺的是遊戲要的那幾樣:推估先發、主罰順位、逐人能力係數。 */
+      app.innerHTML = `<h1>模擬遊玩</h1><div class="note">模擬遊玩目前只有英超 —— 它要的是推估先發、主罰順位與逐人能力係數(英超靠 FPL)。
+        西甲與英冠有球員資料,但沒有這三樣:西甲缺推估先發、主罰與球員牌數,英冠的球員層是逐場統計累加的,沒有先發預測與能力係數。
         不是還沒接,是這幾樣目前沒有來源。<a href="${C.link('explore', { view: 'duel', league: 'pl' })}">切到英超玩</a></div>`;
       return;
     }

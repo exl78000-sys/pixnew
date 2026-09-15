@@ -1,6 +1,11 @@
-import * as C from './core.js?v=0398a1b2';
+import * as C from './core.js?v=deaac0d6';
 
 const app = document.getElementById('app');
+
+/* 逐場累加那一層的位置代碼(檔尾 renderAggregate 用)。**宣告要在最上面**:頂層的 try 在模組執行時就跑,
+   而 const 不像函式宣告會提升 —— 放在檔尾就是暫時死區,畫面上表格整個不見、只有 console 一行
+   ReferenceError(實際踩過)。直線腳本的原始碼順序就是執行順序。 */
+const POS_ZH_AGG = { G: '門將', D: '後衛', M: '中場', F: '前鋒' };
 
 /* 跨聯賽搜尋結果塊(兩個渲染器共用一份 —— 複製會悄悄過期)。
    token 防過期回應蓋掉新輸入;隊伍顯示隊碼不顯示名字 ——
@@ -61,6 +66,13 @@ try {
   const { meta, clubs, teams, players, leaders } = await C.load('meta', 'clubs', 'teams', 'players', 'leaders');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
+
+  /* 英冠:沒有整季的球員資料源,球員層由**逐場**統計累加而成(見檔尾 renderAggregate)。
+     分岔看 leaders.source 這個明講的欄位 —— 不要用「有沒有某個欄位」猜形狀。 */
+  if (leaders.source === 'match-aggregate') {
+    renderAggregate({ meta, clubs, teams, players, leaders });
+    throw new Error('skip');
+  }
 
   /* 西甲的比賽統計來自 Understat，身分、背號、頭貼與生日由 SportMonks
      本地快取補充；前端只呈現資料層確實提供的欄位，沒有的資料明確標示。 */
@@ -641,4 +653,149 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   /* 帶 ?code= 就直接整頁畫該球員、不畫列表(列表表格的延後綁定會在 #app 被換掉後丟錯) */
   if (requestedPlayer) { season = requestedPlayer.season; openUnderstatPlayer(requestedPlayer); return; }
   draw();
+}
+
+/* ── 逐場累加的球員層(2026-09-15,英冠)────────────────────────────────
+   英冠沒有整季的球員資料源(Understat 不涵蓋、FPL 只有英超,兩者都實測過),
+   但**逐場**資料每一場都帶雙方的逐人統計 —— 這一頁畫的是把它一場一場加起來的結果。
+   資料層在 `lib/season-players.mjs`(歐冠共用),每一場都要「球員進球 + 對手烏龍球 = 本站賽果的比分」才計入。
+
+   為什麼是第三個渲染器而不是硬塞進上面兩個:**欄位不一樣**。這一層沒有球員 xG 模型、沒有身價、
+   沒有年齡與國籍,而多了逐場評分。把它套進 FPL / Understat 的欄位工廠只會做出一排「—」
+   (鐵則三:留一個永遠空白的欄位比不做更糟)。分岔看 `leaders.source` 這個**明講的欄位**,
+   不是猜資料形狀(CLAUDE.md:用資料形狀分岔會挑到兩邊都有的欄位)。 */
+
+function renderAggregate({ meta, players, leaders }) {
+  const seasons = Object.keys(leaders.boards ?? {}).sort().reverse();
+  let season = seasons[0];
+  const fx = (v, d) => (v == null ? '—' : d ? C.fx(v, d) : v);
+
+  app.innerHTML = `
+    <h1>${C.esc(meta.leagueLabel ?? '')}球員 <span class="dim">逐場累加</span></h1>
+    <p class="lede">每一場比賽的逐人統計加起來就是這一頁。<b>這不是整季的球員資料庫</b> ——
+      沒有球員 xG 模型、身價、年齡與傷停,那幾樣這個聯賽沒有免費來源。</p>
+    <div id="srcNote"></div>
+    <div class="filters" id="seasonBar" style="margin-top:12px"></div>
+    <div id="boards" class="grid g3" style="margin-top:12px"></div>
+    <div class="section"><h2>全部球員</h2><span class="hint" id="count"></span></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+      <input id="q" placeholder="搜尋球員" style="min-width:160px">
+      <select id="fTeam"></select>
+      <select id="fPos"></select>
+      <label class="small dim">最少分鐘 <input id="fMin" type="number" value="0" min="0" step="90" style="width:80px"></label>
+    </div>
+    <div id="xleague"></div>
+    <div id="list"></div>
+    ${C.foot(meta)}`;
+
+  const seasonPlayers = () => players.filter(p => p.season === season);
+
+  const drawNote = () => {
+    const L = leaders.layer?.[season] ?? {};
+    const cc = L.cardCheck;
+    document.getElementById('srcNote').innerHTML = `<div class="note">
+      <b>這一頁的數字是怎麼來的。</b>${C.esc(leaders.note ?? '')}
+      <div class="tiny" style="margin-top:6px">
+        ${season}:逐場詳情 ${L.matches ?? 0} 場,其中 <b>${L.reconciled ?? 0} 場</b>的球員進球對得回本站賽果的比分才計入${
+          L.excluded?.length ? `,<b>${L.excluded.length} 場</b>對不上整場不計(${L.excluded.slice(0, 3).map(e => C.esc(e.key.split('|').slice(1).join(' vs '))).join('、')}${L.excluded.length > 3 ? '…' : ''})` : ''};
+        xG 只加射門圖完整的 ${L.xgComplete ?? 0} 場。
+        ${cc ? `牌是從比賽事件用「同一場同一隊的姓名」接回球員身上的,拿 ${C.esc(cc.source)} 逐場比對:
+          <b>${cc.agree}/${cc.compared}</b> 組一致(${(cc.agree / cc.compared * 100).toFixed(1)}%),
+          ${cc.withRed} 組差在有紅牌的場次(兩邊對「兩黃變一紅」的記法不同,不是錯)${cc.otherCount ? `,其餘 ${cc.otherCount} 組不一致` : ''}。` : ''}
+        ${L.cardsUnmatched ? `另有 ${L.cardsUnmatched} 筆牌事件接不到球員 —— 那是總教練吃牌,本來就不該掛到球員身上。` : ''}
+      </div>
+      <div class="tiny dim" style="margin-top:6px">這一層<b>沒有</b>:${(leaders.missing ?? []).map(C.esc).join('、')}。</div>
+    </div>`;
+  };
+
+  const drawBoards = () => {
+    const boards = leaders.boards[season] ?? [];
+    document.getElementById('boards').innerHTML = boards.map(b => `<div class="card">
+      <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3><span class="dim tiny">母體 ${b.pool} 人</span></div>
+      <div style="display:grid;gap:2px;margin-top:8px">
+        ${b.rows.map((r, i) => `<div class="stat-line" style="gap:8px;align-items:center">
+          <span class="tiny dim mono" style="min-width:18px">${i + 1}</span>
+          <span class="small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.name)}</span>
+          <span class="tiny dim">${C.badge(r.teamId)}</span>
+          <b class="mono small">${fx(r.value, b.dp)}${C.esc(b.unit)}</b>
+        </div>`).join('')}
+      </div></div>`).join('');
+  };
+
+  /* 欄位:**只列這一層真的有的**。哨兵 −1 一定配 render(不然畫面會印出 −1 —— 站上踩過)。 */
+  const columns = () => {
+    const n = (k, label, { dp = 0, fold = 0 } = {}) => ({
+      key: k, label, num: true, ...(fold ? { fold } : {}),
+      value: p => (p.stats[k] == null ? -1 : p.stats[k]),
+      render: p => fx(p.stats[k], dp),
+    });
+    return [
+      { key: 'name', label: '球員', left: true, value: p => p.name, render: p => C.esc(p.name) },
+      { key: 'shirt', label: '背號', num: true, fold: 8, value: p => p.shirt ?? -1, render: p => p.shirt ?? '—' },
+      { key: 'pos', label: '位置', fold: 7, value: p => ['G', 'D', 'M', 'F'].indexOf(p.pos), render: p => POS_ZH_AGG[p.pos] ?? '—' },
+      { key: 'team', label: '球隊', left: true, value: p => p.team, render: p => C.teamCell(p.team) },
+      { key: 'matches', label: '出賽', num: true, value: p => p.matches },
+      n('mins_played', '分鐘'),
+      n('goals', '進球'), n('goal_assist', '助攻'),
+      n('expected_goals', 'xG', { dp: 2 }), n('expected_assists', 'xA', { dp: 2, fold: 1 }),
+      n('ontarget_total', '射正'), n('shots_total', '射門', { fold: 2 }),
+      n('total_att_assist', '創造機會', { fold: 3 }),
+      n('tackles_total', '搶斷', { fold: 5 }), n('interceptions_total', '攔截', { fold: 6 }),
+      n('yellow_card', '黃牌', { fold: 9 }), n('red_card', '紅牌', { fold: 10 }),
+      n('saves_total', '撲救', { fold: 4 }),
+      n('rating', '評分', { dp: 2 }),
+    ];
+  };
+
+  const drawTable = () => {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const t = document.getElementById('fTeam').value;
+    const pos = document.getElementById('fPos').value;
+    const minMin = +document.getElementById('fMin').value || 0;
+    const rows = seasonPlayers().filter(p => (!t || p.team === t) && (!pos || p.pos === pos)
+      && p.minutes >= minMin && (!q || p.name.toLowerCase().includes(q)));
+    document.getElementById('count').textContent = `共 ${rows.length} 人・點欄位標題可換排序`;
+    document.getElementById('list').innerHTML = C.table(rows, columns(), { sortKey: 'mins_played', desc: true });
+    updateXLeague(q);
+  };
+
+  const drawSeasonBar = () => {
+    document.getElementById('seasonBar').innerHTML = seasons.map(s =>
+      `<button class="btn tiny${s === season ? ' on' : ''}" data-season="${C.esc(s)}">${C.esc(s)}${s === leaders.seasons?.current ? ' 本季至今' : ''}</button>`).join('');
+    document.querySelectorAll('#seasonBar [data-season]').forEach(b => {
+      b.onclick = () => { season = b.dataset.season; drawSeasonBar(); drawNote(); drawBoards(); fillFilters(); drawTable(); };
+    });
+  };
+
+  const fillFilters = () => {
+    const list = seasonPlayers();
+    const teams = [...new Set(list.map(p => p.team))].sort((a, b) => C.name(a).localeCompare(C.name(b)));
+    const sel = document.getElementById('fTeam');
+    const cur = sel.value;
+    sel.innerHTML = `<option value="">全部球隊</option>` + teams.map(c => `<option value="${C.esc(c)}">${C.esc(C.name(c))}</option>`).join('');
+    if (teams.includes(cur)) sel.value = cur;
+    const ps = document.getElementById('fPos');
+    const posCur = ps.value;
+    /* 位置是逐場登錄的眾數,只有替補上場的那幾場上游給 '?' —— 那種人沒有位置,選項要講出來 */
+    ps.innerHTML = `<option value="">全部位置</option>` + ['G', 'D', 'M', 'F'].filter(k => list.some(p => p.pos === k))
+      .map(k => `<option value="${k}">${POS_ZH_AGG[k]}</option>`).join('');
+    ps.value = posCur;
+  };
+
+  drawSeasonBar(); drawNote(); drawBoards(); fillFilters();
+  /* 別的聯賽的球員頁搜到英冠的人時會帶 ?code= 過來(跨聯賽搜尋)。這一層**沒有逐人頁**,
+     所以把那個人的名字填進搜尋框、切到他有紀錄的那一季 —— 不然點過來只會看到整份列表,
+     那就是「按鈕在但點了沒東西」。 */
+  {
+    const code = new URLSearchParams(location.search).get('code');
+    const hit = code ? players.find(p => String(p.providerId) === String(code)) : null;
+    if (hit) {
+      season = seasons.includes(hit.season) ? hit.season : season;
+      drawSeasonBar(); drawNote(); drawBoards(); fillFilters();
+      document.getElementById('q').value = hit.name;
+    }
+  }
+  drawTable();
+  for (const id of ['q', 'fMin']) document.getElementById(id).oninput = drawTable;
+  for (const id of ['fTeam', 'fPos']) document.getElementById(id).onchange = drawTable;
 }

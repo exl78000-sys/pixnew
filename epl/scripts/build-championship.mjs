@@ -10,10 +10,16 @@
  * `getTeamData/{英冠球隊}/2025` 一律 404。**那是驗證過的否定,不是猜的**
  * (對照組跑得出資料,所以不是我端點打錯)。
  *
- * 所以這個聯賽做得出來的是「球隊與比賽」那一層。**整季的球員層**(逐輪出賽、整季 xG、傷停)仍然沒有;
- * 但**比賽層**從 2026-09-05 起有了:FotMob 的逐場資料(聯賽 id 48,跟英超西甲同一支抓取器)
- * 給控球、球隊統計、逐射門 xG、事件、正式名單與逐人評分,比分逐場對回本站賽果才收。
- * 於是賽後報告(reports.json)與球隊頁的逐場統計英冠也有 —— 不是「做不到」,是以前沒有去接。
+ * 所以這個聯賽做得出來的是「球隊與比賽」那一層。**比賽層**從 2026-09-05 起有了:
+ * FotMob 的逐場資料(聯賽 id 48,跟英超西甲同一支抓取器)給控球、球隊統計、逐射門 xG、事件、
+ * 正式名單與逐人評分,比分逐場對回本站賽果才收。於是賽後報告(reports.json)與球隊頁的逐場統計英冠也有。
+ *
+ * **球員層 2026-09-15 起也有了,而且它一直躺在倉庫裡** —— 逐場資料每一場都帶雙方的逐人統計
+ * (分鐘、評分、進球、助攻、射門、關鍵傳球、對抗、攔截、牌、xA),一場一場加起來就是整季。
+ * 沒有的只是「整季的球員資料源」,不是球員資料本身。這條路歐冠先走過(本季沒有賽季總表交付檔),
+ * 累加與核對的規則收在 `lib/season-players.mjs`,兩邊共用。
+ * **但它不是 Understat 那一層**:沒有球員的 xG 模型(這裡的 xG 是逐射門加總)、沒有身價、沒有傷停、
+ * 沒有跨季的球員身分(上游的 id 只保證同一份資料裡一致)。畫面上要講清楚,不要讓讀者以為跟英超同級。
  * 導覽列只掛做得出來的頁(core.js 的 LEAGUES.en2.open),
  * 其餘的頁網址仍然進得來,由 LeagueGap 講一句實話 —— 不是給一個空白頁。
  *
@@ -36,6 +42,7 @@ import { fileURLToPath } from 'node:url';
 import { leagueMatches, backfillLine, europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
+import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
 import { competition } from './lib/canonical.mjs';
@@ -322,12 +329,15 @@ async function main() {
      上季不在英冠的(從英超降下來的 WOL/WHU/BUR、從英甲升上來的 BOL/CAR/LIN)
      基準是 null —— 拿別的聯賽的數字當基準,位移會把「聯賽不同」誤讀成「打法變了」。 */
   const styleTrendBy = new Map();
+  /* 牌的獨立核對要用同一批逐場列(football-data.co.uk),所以在這裡留一份 —— 見下面 cardCrossCheck */
+  const cardRowsBySeason = new Map();
   {
     const csvOf = season => {
       const p = join(ROOT, 'data', 'raw', FILL_DIR, `${season}.csv`);
       return existsSync(p) ? teamMatchRows(readFileSync(p, 'utf8'), { codeOf, div: 'E1' }) : new Map();
     };
     const lastRows = csvOf(LAST_SEASON), curRows = csvOf(CURRENT_SEASON);
+    cardRowsBySeason.set(LAST_SEASON, lastRows); cardRowsBySeason.set(CURRENT_SEASON, curRows);
     const playedOf = code => curLeague.filter(m => m.played && (m.home === code || m.away === code)).length;
     for (const code of curCodes) {
       const t = styleTrendFor({
@@ -347,6 +357,54 @@ async function main() {
     console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})・退回 ${fotmobStats.rejected.length} 場・控球率未經第二來源抽核`);
     for (const r of fotmobStats.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
   }
+
+  /* 球員層:由**逐場**的逐人統計累加(2026-09-15)。規則與歐冠共用(lib/season-players.mjs):
+     每一場「該隊球員進球 + 對手烏龍球 = 本站賽果的比分」才計入,對不上的整場不計並記進 excluded。
+     英冠 60 場有烏龍球的實測:翻轉(記給對手)57 場對、不翻 1 場對 —— 跟三聯賽同一個語意。 */
+  const teamNameOf = Object.fromEntries(T.list.map(t => [t.code, t.zh ?? t.en ?? t.code]));
+  const playerSeasons = {};
+  for (const season of [CURRENT_SEASON, LAST_SEASON]) {
+    const ms = Object.values(fotmobStats.matches).filter(m => m.season === season).sort((a, b) => a.key.localeCompare(b.key));
+    if (!ms.length) continue;
+    const rows = ms.map(m => (m.players && Object.values(m.players).some(l => l?.length)
+      ? { key: m.key, home: m.home, away: m.away, players: m.players, events: m.events ?? [], shots: m.shots ?? [], score: m.score, shotmapComplete: m.shotmapComplete }
+      : { key: m.key, skip: '這一場沒有逐人統計' }));
+    const agg = aggregatePlayers(rows, { teamNames: teamNameOf });
+    if (!agg.reconciled) continue;
+    /* 牌的**獨立來源核對**(鐵則五):我們的牌是從 FotMob 事件用姓名接回球員的,
+       拿 football-data.co.uk 的逐場牌數(完全獨立的來源)逐場逐隊比一次。
+       兩邊對「兩黃變一紅」的記法不同(football-data.co.uk 明講第二張黃牌不另計),
+       所以差異集中在有紅牌的場次 —— 那是**記法差異不是錯**,照實報出來、不擋。
+       跟 CLAUDE.md 那條「FPL 會把被罰下者的黃牌吞掉」同一家族。 */
+    const cardCheck = (() => {
+      const csvRows = cardRowsBySeason.get(season);
+      if (!csvRows?.size) return null;
+      const byKey = new Map();
+      for (const [code, list] of csvRows) for (const r of list) byKey.set(`${r.date}|${code}`, r.cards);
+      let compared = 0, agree = 0, withRed = 0, other = [];
+      for (const m of ms) {
+        const mine = { [m.home]: 0, [m.away]: 0 }, reds = { [m.home]: 0, [m.away]: 0 };
+        for (const e of (m.events ?? [])) {
+          if (e.type !== 'Card' || mine[e.team] == null) continue;
+          mine[e.team]++; if (e.detail === 'Red Card') reds[e.team]++;
+        }
+        for (const t of [m.home, m.away]) {
+          const c = byKey.get(`${m.date}|${t}`);
+          if (c == null) continue;
+          compared++;
+          if (c === mine[t]) agree++;
+          else if (reds[t] > 0) withRed++;
+          else other.push({ key: m.key, team: t, theirs: c, ours: mine[t] });
+        }
+      }
+      return { source: 'football-data.co.uk(E1 季檔,逐場牌數)', compared, agree, withRed, other: other.slice(0, 10), otherCount: other.length };
+    })();
+    playerSeasons[season] = { agg, boards: leadersFrom(agg), squads: squadsFrom(agg), cardCheck };
+    console.log(`  球員層 ${season}:${agg.players.length} 人・對回比分 ${agg.reconciled}/${agg.matches} 場・射門圖完整 ${agg.xgComplete} 場${agg.excluded.length ? `・不計 ${agg.excluded.length} 場` : ''}${agg.cardsUnmatched ? `・牌事件配不到球員 ${agg.cardsUnmatched} 筆(多半是教練)` : ''}`);
+    if (cardCheck) console.log(`    牌對獨立來源:${cardCheck.agree}/${cardCheck.compared} 一致(${(cardCheck.agree / cardCheck.compared * 100).toFixed(1)}%)・有紅牌的場次記法不同 ${cardCheck.withRed} 組・其餘不一致 ${cardCheck.otherCount} 組`);
+    for (const e of agg.excluded.slice(0, 3)) console.log(`    ⚠ ${e.key}:${e.reason}`);
+  }
+  const hasPlayers = Object.keys(playerSeasons).length > 0;
 
   const teams = curCodes.map(code => {
     const reg = T.byCode.get(code);
@@ -506,7 +564,7 @@ async function main() {
     /* capabilities 是前端用來決定「這一頁要不要畫」的旗標。
        沒有的一律 false,**不要留空不寫** —— 沒寫的話前端讀到 undefined,
        某些地方會當成「還沒判斷」而不是「沒有」。 */
-    capabilities: { players: false, injuries: false,
+    capabilities: { players: hasPlayers, injuries: false,
       coaches: existsSync(join(ROOT, 'data', 'championship-coaches-verified.json'))
         && JSON.parse(readFileSync(join(ROOT, 'data', 'championship-coaches-verified.json'), 'utf8')).accepted,
       xg: false, lineups: false, live: false },
@@ -524,8 +582,11 @@ async function main() {
        讀者看到「英冠」會預期跟英超一樣的東西,不講清楚就是靠沉默誤導。 */
     intro: `把 ${fullSeasons.join('、')} 與本季 ${CURRENT_SEASON} 的每一場英冠比賽跑成模型,`
       + '做出積分預測、單場勝負機率與賽季模擬,並跟市場賠率並排比較。'
-      + '這個聯賽只做到球隊與比賽這一層 —— 沒有球員數據、沒有 xG、沒有陣容與傷停,'
-      + '因為英冠沒有免費的球員級資料源(下方「目前資料界線」有實測細節)。',
+      + (hasPlayers
+        ? '球員層由逐場統計累加而來(出賽、進球、助攻、評分),'
+          + '但沒有球員 xG 模型、身價與傷停 —— 英冠沒有整季的球員級資料源(下方「目前資料界線」有實測細節)。'
+        : '這個聯賽只做到球隊與比賽這一層 —— 沒有球員數據、沒有 xG、沒有陣容與傷停,'
+          + '因為英冠沒有免費的球員級資料源(下方「目前資料界線」有實測細節)。'),
     boundaries: [
       '✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬(前 2 直升、3~6 附加賽、後 3 降級)',
       '✓ 兩個獨立來源逐場核對:openfootball(en.2)與 football-data.co.uk(E1),對不上就整份不採用',
@@ -534,8 +595,17 @@ async function main() {
       + 'Sky 有一個名字像英冠、實際回英超內容,不用它)。只有標題與短摘要,不翻譯',
       '✓ 逐場實測統計(射門/射正/角球/牌,football-data.co.uk):球隊頁的近 10 場風格位移,'
       + '跟英超同一份實作;上季不在英冠的球隊沒有比較基準,也不拿別的聯賽當基準',
-      '— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
-      + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超。這是驗證過的沒有,不是還沒做',
+      /* 球員那一段**跟著資料走**,不要寫死。2026-09-15 之前這裡寫「沒有球員數據與 xG」,
+         而球員層接上之後那就是畫面上的一句假話。做得到的與做不到的要一起講。 */
+      ...(hasPlayers
+        ? [`✓ 球員層(逐場累加):出賽、分鐘、進球、助攻、射門、創造機會、搶斷、攔截、牌與逐場評分平均 —— `
+            + `本季 ${playerSeasons[CURRENT_SEASON]?.agg.players.length ?? 0} 人、上季 ${playerSeasons[LAST_SEASON]?.agg.players.length ?? 0} 人;`
+            + '每一場都要「球員進球 + 對手烏龍球 = 本站賽果的比分」才計入,牌另外拿 football-data.co.uk 逐場核對',
+          '— 球員層沒有的:球員 xG 模型(這裡的 xG 是逐射門加總)、身價、年齡與國籍、傷停、頭貼。'
+            + '整季的球員資料源仍然沒有:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
+            + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超']
+        : ['— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
+            + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超。這是驗證過的沒有,不是還沒做']),
       /* 這一行**不要寫死**。第一版寫「隊色與球場資料尚未取得」,交付進來之後它就變成
          畫面上的一句假話 —— 而畫面說謊比缺一格嚴重。改成跟著資料走。 */
       ...(delivered.size
@@ -593,14 +663,14 @@ async function main() {
         '升級附加賽不進模型也不進積分榜(中立場地、只有四隊打),但保留在賽果裡。',
         /* 這一段是這個聯賽最重要的一句實話:少了什麼要講在畫面上,不是只寫在程式註解裡。 */
         '這個聯賽不含球員、傷停、xG 與陣容 —— 英冠沒有免費的球員級資料源'
-        + '(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過),'
-        + '所以這個聯賽只做得出球隊與比賽那一層。',
+        + '(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過)。'
+        + (hasPlayers ? '球員層是拿逐場統計累加出來的,不含球員 xG 模型與傷停。' : '所以這個聯賽只做得出球隊與比賽那一層。'),
         '升班馬沒有上一季英冠樣本,套用聯盟後段先驗並提高模擬不確定性。',
       ],
     },
     counts: {
       teams: teams.length, fixtures: fixtures.length,
-      players: 0, news: externalNews.length, injuries: 0, coaches: 0,
+      players: playerSeasons[CURRENT_SEASON]?.agg.players.length ?? 0, news: externalNews.length, injuries: 0, coaches: 0,
       crests: crestCount,
       currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
       playoffMatches: [...lastMatches, ...curMatches].filter(m => m.stage).length,
@@ -609,7 +679,15 @@ async function main() {
     live: { available: false, note: '英冠沒有接即時比分來源;比分依 openfootball 與 football-data.co.uk 的更新節奏落地。' },
     official: { available: false },
     ai: { enabled: false, pre: 0, post: 0 },
-    players: { available: false, note: 'Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,同一請求 EPL 537 人、西甲 600 人),FPL 只有英超。' },
+    /* 「有沒有球員資料」與「是哪一種球員資料」是兩件事。整季的球員資料源(Understat / FPL)仍然沒有;
+       有的是**逐場累加**出來的那一層,少了球員 xG 模型、身價與傷停。兩句都要講,只講前面那句會讓
+       讀者以為跟英超同級,只講後面那句又會讓人以為我們還沒去接。 */
+    players: hasPlayers
+      ? { available: true, source: 'match-aggregate',
+          note: `由 FotMob 逐場詳情的逐人統計累加(本季 ${playerSeasons[CURRENT_SEASON]?.agg.reconciled ?? 0} 場、上季 ${playerSeasons[LAST_SEASON]?.agg.reconciled ?? 0} 場對回本站賽果才計入)。`
+            + '沒有整季的球員資料源:Understat 不涵蓋英冠、FPL 只有英超(兩者都實測過),'
+            + '所以沒有球員 xG 模型、身價、年齡與傷停 —— 這一層做得到的是出賽、進球、助攻、牌、評分與逐場統計的累加。' }
+      : { available: false, note: 'Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,同一請求 EPL 537 人、西甲 600 人),FPL 只有英超。' },
   };
 
   console.log('寫入英冠資料集:');
@@ -652,8 +730,59 @@ async function main() {
   const noPlayerData = 'Understat 不涵蓋英冠(2026-08-28 實測 Championship / EFL_Championship / '
     + 'English_Championship / ENG_Championship 四種寫法皆回空陣列,而同一個請求 EPL 回 537 人、'
     + '西甲回 600 人,getTeamData 對英冠球隊一律 404),FPL 只有英超。';
-  await write('players', []);
-  await write('leaders', { available: false, note: noPlayerData, boards: [] });
+  /* 球員產物。**沒有整季來源時不是「沒有球員」**,而是「只有逐場累加的那一層」——
+     兩者對讀者的意義不同,所以 leaders 帶 source,前端照它決定怎麼講(不是用「有沒有東西」猜)。 */
+  if (hasPlayers) {
+    const flat = [];
+    for (const [season, ps] of Object.entries(playerSeasons)) {
+      for (const p of ps.agg.players) {
+        flat.push({ season, team: p.team, teamName: p.teamName, providerId: p.providerId, name: p.name,
+          pos: p.pos, shirt: p.shirt, matches: p.matches, minutes: p.minutes, ratedMatches: p.ratedMatches, stats: p.stats });
+      }
+    }
+    await write('players', flat);
+    /* 跨聯賽搜尋的索引(三個聯賽同一個形狀)。**不寫的話英冠球員從別的聯賽搜不到** ——
+       而且是靜靜搜不到:crossLeaguePlayers 對缺檔是 catch 成 null,一個錯都不報。
+       沒有的欄位給 null 不給 0(年齡、身價、傷停狀態這一層都沒有)。 */
+    {
+      const byPlayer = new Map();
+      for (const p of flat) {
+        const key = p.providerId ?? `${p.team}|${p.name}`;
+        const e = byPlayer.get(key) ?? { league: 'en2', code: String(key), name: p.name, fullName: p.name,
+          team: p.team, pos: p.pos, posZh: { G: '門將', D: '後衛', M: '中場', F: '前鋒' }[p.pos] ?? null,
+          age: null, price: null, status: null, statusZh: null, seasons: [] };
+        e.name = p.name; e.fullName = p.name; e.team = p.team;
+        e.seasons.push({ season: p.season, minutes: p.minutes, goals: p.stats.goals ?? null, assists: p.stats.goal_assist ?? null,
+          xG: p.stats.expected_goals ?? null, xA: p.stats.expected_assists ?? null,
+          shots: p.stats.shots_total ?? null, keyPasses: p.stats.total_att_assist ?? null,
+          yellow: p.stats.yellow_card ?? null, red: p.stats.red_card ?? null });
+        byPlayer.set(key, e);
+      }
+      for (const e of byPlayer.values()) e.seasons.sort((a, b) => a.season.localeCompare(b.season));
+      await write('players-core', [...byPlayer.values()]);
+    }
+    await write('leaders', {
+      available: true, source: 'match-aggregate', statMeta: PLAYER_STAT_META,
+      seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
+      note: '由本站每次部署抓的 FotMob 逐場詳情累加 —— 英冠沒有整季的球員資料源(Understat 不涵蓋、FPL 只有英超),'
+        + '但逐場資料每一場都帶雙方的逐人統計。每一場的球員進球(烏龍球記給對方)要對回本站賽果的比分才計入。',
+      boards: Object.fromEntries(Object.entries(playerSeasons).map(([k, v]) => [k, v.boards])),
+      squads: Object.fromEntries(Object.entries(playerSeasons).map(([k, v]) => [k, v.squads.teams])),
+      layer: Object.fromEntries(Object.entries(playerSeasons).map(([k, v]) => [k, {
+        matches: v.agg.matches, reconciled: v.agg.reconciled, xgComplete: v.agg.xgComplete,
+        players: v.agg.players.length, excluded: v.agg.excluded,
+        /* 牌事件配不到球員的筆數(教練吃牌)與獨立來源核對 —— 兩個都只回報、不擋 */
+        cardsUnmatched: v.agg.cardsUnmatched, cardCheck: v.cardCheck }])),
+      /* 這一層**沒有**什麼,要跟有什麼一樣明確地寫出來(鐵則四) */
+      /* 「跨季的球員身分」本來也列在這裡,**核對過之後拿掉了**:上游的球員 id 跨季是穩定的 ——
+         兩季都出現的 331 人裡 315 人姓名完全相同,其餘 16 筆是同一個人的拼法或暱稱差異
+         (Jhon Solis / Jhon Solís、Rob Apter / Robert Apter)。沒核對就寫「做不到」跟沒核對就寫「做得到」一樣糟。 */
+      missing: ['球員 xG 模型(這裡的 xG 是逐射門加總,只算射門圖完整的場次)', '身價與週表現', '傷停與停賽', '球員年齡、身高與國籍', '頭貼'],
+    });
+  } else {
+    await write('players', []);
+    await write('leaders', { available: false, note: noPlayerData, boards: [] });
+  }
   /* 教練。人工交付 → 核對器(npm run en2:verify-coaches)→ 產物,build 只讀產物。
      收件匣改過沒重跑核對時 sha 對不上,整批不掛(比照球隊資料與租借)。
      任期已知的,拿本站的英冠賽果**自動算任內戰績** —— 日期錯了戰績就會算到

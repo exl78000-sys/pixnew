@@ -9,7 +9,7 @@
    這一頁**只有賽後**,沒有賽前勝率 —— 盃賽沒有本站的模型:
    對手一半是第三、四級球隊,本站沒有它們的賽果,評不出強度(鐵則二:沒有回測證據就不給預測)。
    所以不要在這裡長出一個「賽前分析」分頁,那會是憑空的數字。 */
-import * as C from './core.js?v=0398a1b2';
+import * as C from './core.js?v=deaac0d6';
 
 const app = document.getElementById('app');
 

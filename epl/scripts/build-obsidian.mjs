@@ -42,8 +42,9 @@ const LEAGUES = [
      加英冠時它不會壞(隊碼跟西甲不重疊,查不到而已),只是英冠自己的 552 筆
      賽前預測永遠掛不上 vault 的比賽筆記。同一個坑的第五處,一律走註冊表。 */
   { key: 'es1', zh: '西甲', dir: '西甲', wf: 'backtest-laliga-matches.json' },
-  /* 英冠沒有球員與教練(來源就沒有),球隊與比賽照樣做得出來。
-     產生器對缺檔本來就是 load() 回 null → 該區塊不寫,所以不需要特判。 */
+  /* 英冠 2026-09-15 起有球員層(逐場累加,見 build-championship.mjs 檔頭)——
+     形狀跟英超 / 西甲都不一樣,所以 collectPlayers 有自己的一支。
+     產生器對缺檔本來就是 load() 回 null → 該區塊不寫,所以缺的東西不需要特判。 */
   { key: 'en2', zh: '英冠', dir: '英冠', wf: 'backtest-championship-matches.json' },
 ];
 
@@ -121,6 +122,40 @@ const wl = name => `[[${name}]]`;
    而 vault 看起來仍然正常 —— 這是專案在跨聯賽頁面上踩過的同一個坑。 */
 function collectPlayers(lg, meta) {
   const raw = arr(load(lg.key, 'players'));
+  /* 英冠:一人一季一筆(season + team + providerId),數字是**逐場累加**出來的。
+     **一定要有自己的一支** —— 沒有的話會掉進下面西甲那一支,而它用 `p.id` 當鍵,
+     英冠沒有那個欄位 → 1,338 筆全部併成一筆 key 為 undefined 的垃圾筆記,而且不會報錯
+     (「不是英超就是西甲」那條坑的第六處)。
+     跨季用上游的 providerId 串:兩季都出現的 331 人裡 315 人姓名完全相同,
+     其餘 16 筆是同一人的拼法或暱稱差異(核對過,不是假設)。 */
+  if (lg.key === 'en2') {
+    const byId = new Map();
+    for (const p of raw) {
+      const key = p.providerId ?? `${p.team}|${p.name}`;
+      if (!byId.has(key)) byId.set(key, []);
+      byId.get(key).push(p);
+    }
+    return [...byId.entries()].map(([key, rows]) => {
+      const newest = rows.slice().sort((a, b) => String(b.season).localeCompare(String(a.season)))[0];
+      return {
+        id: `en2:${key}`, base: newest.name, display: newest.name, code: null, tracking: null,
+        teamCode: newest.team, pos: newest.pos, posZh: { G: '門將', D: '後衛', M: '中場', F: '前鋒' }[newest.pos] ?? null,
+        squadNumber: newest.shirt, age: null, dob: null, height: null, weight: null, captain: null,
+        statusZh: null, news: null, price: null, photo: null, loans: [],
+        seasons: rows.slice().sort((a, b) => String(a.season).localeCompare(String(b.season))).map(r => ({
+          season: r.season, kind: r.season === meta.currentSeason ? '本季至今' : null,
+          /* statTable 讀的是扁平的鍵,所以把累加的 stats 攤平成跟另外兩個聯賽同名的欄位。
+             **沒有的鍵不要補 0** —— 上游沒記就是沒記(0 會被讀成「量到了,結果是零」)。 */
+          stats: { games: r.matches, minutes: r.minutes, goals: r.stats.goals, assists: r.stats.goal_assist,
+            xG: r.stats.expected_goals, xA: r.stats.expected_assists, shots: r.stats.shots_total,
+            keyPasses: r.stats.total_att_assist, yellow: r.stats.yellow_card, red: r.stats.red_card,
+            rating: r.stats.rating },
+          teams: [r.teamName].filter(Boolean),
+        })),
+        sources: { 表現統計: 'FotMob 逐場累加', 身分與背號: 'FotMob 逐場名單' },
+      };
+    });
+  }
   if (lg.key === 'pl') {
     return raw.map(p => ({
       id: `pl:${p.code}`, base: p.fullName || p.name, display: p.name,
@@ -188,6 +223,23 @@ function assignFilenames(players) {
       p.file = group.length === 1 ? b : sanitize(`${b} (${p.teamCode ?? p.leagueZh})`);
       if (group.length > 1) p.homonyms = group.filter(x => x !== p);
     }
+  }
+  /* **隊碼不一定分得開。** 英冠球員層(2026-09-15)接上之後出現第二層撞名:
+     同一個人可以同時在英超與英冠的名單裡,而且**隊碼一樣** —— 升班的球隊(例如 Coventry)
+     上季在英冠、本季在英超,他在英冠那一份是上季的紀錄、在英超那一份是本季的,兩邊 teamCode 都是 COV。
+     實測 52 組。加隊碼之後仍然撞的,再加聯賽(跟球隊筆記同一條慣例);
+     **聯賽照 LEAGUES 的順序讓排前面的那一個保持原名** —— 改名會斷掉手寫筆記裡既有的連結。 */
+  const byFile = new Map();
+  for (const p of players) {
+    if (!byFile.has(p.file)) byFile.set(p.file, []);
+    byFile.get(p.file).push(p);
+  }
+  for (const [f, group] of byFile) {
+    if (group.length < 2) continue;
+    const order = LEAGUES.map(l => l.zh);
+    const sorted = group.slice().sort((x, y) => order.indexOf(x.leagueZh) - order.indexOf(y.leagueZh));
+    sorted.forEach((p, i) => { if (i > 0) p.file = sanitize(`${f}・${p.leagueZh}`); });
+    for (const p of group) p.homonyms = [...new Set([...(p.homonyms ?? []), ...group.filter(x => x !== p)])];
   }
 }
 
@@ -838,13 +890,21 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     historyByTeam.get(c).push(m);
   }
 
+  /* 欄位照各聯賽真的有的來。**不要用「不是英超就是西甲」的二元式** —— 英冠是第三種
+     (逐場累加:多了評分、沒有 FPL 分與先發數)。 */
   const statCols = lg.key === 'pl'
     ? [['出賽分鐘', 'minutes'], ['先發', 'starts'], ['進球', 'goals'], ['助攻', 'assists'],
        ['xG', 'xG'], ['xA', 'xA'], ['黃牌', 'yellow'], ['紅牌', 'red'], ['FPL 分', 'points']]
-    : [['出賽', 'games'], ['分鐘', 'minutes'], ['進球', 'goals'], ['助攻', 'assists'],
-       ['xG', 'xG'], ['xA', 'xA'], ['射門', 'shots'], ['關鍵傳球', 'keyPasses'],
-       ['黃牌', 'yellow'], ['紅牌', 'red']];
-  const playerGaps = lg.key === 'pl' ? [] : ['傷停與停賽', '防守數據'];
+    : lg.key === 'en2'
+      ? [['出賽', 'games'], ['分鐘', 'minutes'], ['進球', 'goals'], ['助攻', 'assists'],
+         ['xG', 'xG'], ['xA', 'xA'], ['射門', 'shots'], ['關鍵傳球', 'keyPasses'],
+         ['黃牌', 'yellow'], ['紅牌', 'red'], ['評分(逐場平均)', 'rating']]
+      : [['出賽', 'games'], ['分鐘', 'minutes'], ['進球', 'goals'], ['助攻', 'assists'],
+         ['xG', 'xG'], ['xA', 'xA'], ['射門', 'shots'], ['關鍵傳球', 'keyPasses'],
+         ['黃牌', 'yellow'], ['紅牌', 'red']];
+  const playerGaps = lg.key === 'pl' ? []
+    : lg.key === 'en2' ? ['傷停與停賽', '球員 xG 模型(這裡的 xG 是逐射門加總)', '身價、年齡與頭貼']
+      : ['傷停與停賽', '防守數據'];
 
   const ctx = {
     lg, teamNameOf, playersByTeam, fixturesByTeam, historyByTeam, statCols, playerGaps,
@@ -886,7 +946,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   }
   for (const p of players) {
     /* 頭貼:英超是 base64 → 落成 jpg 檔嵌入;西甲是 SportMonks CDN 外連
-       (照實標示離線不顯示);英冠沒有球員。 */
+       (照實標示離線不顯示);英冠沒有頭貼(逐場資料不帶),photo 是 null → 兩條都不走。 */
     const d = dataUriBuf(p.photo);
     if (d) {
       const f = `頭貼 ${sanitize(p.id)}.${d.ext}`;
