@@ -26,7 +26,7 @@ import { buildLeague } from './lib/build-league.mjs';
 await buildLeague({
   root: join(dirname(fileURLToPath(import.meta.url)), '..'),
   key: 'fr1', zh: '法甲', competition: 'fra.1',
-  rawDir: 'openfootball-ligue-1', fillDir: 'football-data-couk-ligue-1', div: 'F1',
+  rawDir: 'openfootball-ligue-1', fillDir: 'football-data-couk-ligue-1', div: 'F1', ofCode: 'fr.1',
   understatDir: 'understat-ligue-1', fotmobDir: 'fotmob-ligue-1',
   teamFile: 'teams-ligue-1.json', crestFile: 'crests-ligue-1.json',
   /* 法國是 Europe/Paris:夏令 CEST(+02:00)、冬令 CET(+01:00)。 */

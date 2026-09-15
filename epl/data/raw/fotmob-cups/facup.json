@@ -5,7 +5,7 @@
  "leagueId": 132,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-09-15T18:18:49.065Z",
+ "retrievedAt": "2026-09-15T19:35:10.052Z",
  "availableSeasons": [
   "2025/2026",
   "2024/2025",
@@ -27,7 +27,7 @@
  "missingSeasons": [
   {
    "label": "2026-27",
-   "reason": "上游還沒發布這一季(端點目前最新是 2025/2026)"
+   "reason": "抓取失敗:HTTP 403 Host not in allowlist: www.fotmob.com. Add this host to your network egress settings to allow access"
   }
  ],
  "coverage": {

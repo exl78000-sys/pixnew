@@ -42,6 +42,7 @@ import { nameTokens as uclNameTokens } from './lib/adapters/fotmob-ucl.mjs';
 import { checkScores, toFeedItems, forLeague, KNOWN_STATUS } from './lib/adapters/curated-news.mjs';
 import { readDelivery, mergeDelivery, pruneArchive, coverageOf, overlay, emptyArchive } from './lib/curated-archive.mjs';
 import { tierKey, lookupTier } from './lib/adapters/england-tiers.mjs';
+import { mergeCupSeasons } from './lib/cup-seasons.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -2374,6 +2375,24 @@ async function checkDataGap() {
       return /join\(ROOT, 'data', lg\.wf\)/.test(src)
         && /wf: 'backtest-championship-matches\.json'/.test(src)
         && !/backtest-laliga-matches\.json'\s*\)/.test(src.split('const LEAGUES')[1].split('];')[1] ?? '');
+    })()],
+    /* **手寫的聯賽清單漏過三次**(資產戳漏英冠三個月、加德甲時又找到三份)。
+       `build-obsidian.mjs` 的 LEAGUES 不能改成掃目錄 —— `wf` 的檔名沒有規律 ——
+       所以在這裡守:`web/data/leagues/` 有的聯賽,vault 一個都不准少,
+       而且它指的那個走查回測逐場檔要真的存在(檔名打錯的話那個聯賽的
+       賽前預測會靜靜掛不上,vault 看起來完全正常)。 */
+    ['vault 的聯賽清單涵蓋 web/data/leagues 底下每一個聯賽', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'build-obsidian.mjs'), 'utf8');
+      const listed = [...src.matchAll(/\{ key: '([a-z0-9]+)', zh: '[^']+', dir: '[^']+', wf: '([^']+)' \}/g)];
+      const keys = new Set(listed.map(m => m[1]));
+      const onDisk = readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => e.name);
+      const missing = onDisk.filter(k => !keys.has(k));
+      const noFile = listed.filter(m => !existsSync(join(ROOT, 'data', m[2]))).map(m => m[1]);
+      if (missing.length || noFile.length) {
+        console.log(`    vault 少了:${missing.join('、') || '—'}・回測檔不存在:${noFile.join('、') || '—'}`);
+      }
+      return keys.has('pl') && missing.length === 0 && noFile.length === 0;
     })()],
     ['分析頁的「整季 N 場」從回測資料來,不寫死 380', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
@@ -6851,6 +6870,30 @@ function checkCups() {
     if (!cond) fail++;
     console.log(`  ${cond ? '✔' : '✗'} ${label}${extra ? ` (${extra})` : ''}`);
   };
+
+  /* 〇、比賽中那一趟不可以把上季寫掉(2026-09-15 真的發生,而且沒有任何地方報錯)。
+     抓取器是整份覆寫,而 `--live` 為了省請求把要看的賽季縮成只有本季 ——
+     上季沒進迴圈,於是被寫掉了:聯賽盃 2025-26 的 91 場連同
+     `cup-details/eflcup/2025-26/` 91 個檔一起消失,`missingSeasons` 還是 `[]`
+     (從迴圈的角度看什麼都沒缺),`npm test` 全綠。
+     規則抽在 `lib/cup-seasons.mjs`,這裡逐條驗它 —— 掃原始碼守不住這種東西。 */
+  {
+    const prev = { seasons: [{ label: '2026-27', matches: [1] }, { label: '2025-26', matches: [1, 2] }] };
+    const live = mergeCupSeasons({ prev, fetched: [{ label: '2026-27', matches: [1] }], want: ['2026-27'] });
+    ok(live.seasons.length === 2 && live.kept.join() === '2025-26',
+      '比賽中只看本季時,上季從快取原樣帶過來', `寫出 ${live.seasons.map(x => x.label).join('、')}`);
+    ok(live.shrunk === null, '帶過來之後季數沒有變少');
+    ok(live.seasons[0].label === '2026-27',
+      '季別由新到舊(build 與前端都讀第一季當本季)', live.seasons.map(x => x.label).join('、'));
+    /* 「這一輪不看」與「看了但沒拿到」要分開:後者抓取器自己會保留 old 並記 missingSeasons,
+       在合併這一層再補一次,會把「抓失敗」蓋成「一切正常」。 */
+    const failed = mergeCupSeasons({ prev, fetched: [{ label: '2025-26', matches: [1, 2] }], want: ['2026-27', '2025-26'] });
+    ok(failed.kept.length === 0, '看了卻沒拿到的季不在這一層補(那是抓取器的 missingSeasons 要講的)');
+    ok(failed.shrunk?.before === 2 && failed.shrunk?.after === 1,
+      '季數真的變少時要回報 shrunk(呼叫端據此整份不寫)', JSON.stringify(failed.shrunk));
+    ok(mergeCupSeasons({ prev: null, fetched: [{ label: '2026-27', matches: [] }], want: ['2026-27'] }).shrunk === null,
+      '第一次抓(沒有快取)不算變少');
+  }
 
   /* 一、嚴格比對:AFC Liverpool 不可以對成 Liverpool。
      這不是假想 —— 上游真的兩支都有(SportMonks 時代 id 8 與 id 19711;FotMob 一樣兩支都在),

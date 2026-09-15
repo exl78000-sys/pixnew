@@ -204,14 +204,33 @@ export function testLeague(L) {
          (租借姓名那條坑付過代價)。這裡守的是「核對做了、而且沒有可疑的隊」。 */
       check('隊名對照的核對結果有進產物', Array.isArray(leaders.nameCheck) && leaders.nameCheck.length > 0,
         `${leaders.nameCheck?.length ?? 0} 筆`);
-      const suspicious = (leaders.nameCheck ?? []).filter(x => (x.goalRatio != null && x.goalRatio > 1.02)
-        || (x.minutesRatio ?? 1) < 0.85
-        || (x.played >= 10 && x.goalRatio != null && x.goalRatio < 0.7));
+      /* **測試自己從區間判一次,不看 build 給的 verdict** —— 只讀 verdict 的話,
+         build 哪天寫死 'ok' 這條照樣會綠(「掃原始碼的測試加了反引號」那條的親戚:
+         守的東西要真的守得住)。判法跟 build 一樣但獨立算:
+           分鐘  區間 [掛得上去的, 再加上季中轉隊那些人的合計] 要涵蓋 11 × 90 × 場數
+           進球  區間下限不可以超過積分榜的該隊進球
+         早季 Understat 常比賽果多算一輪(實測 2026-27 德甲),那種區間整個在上限之上,
+         兩邊不是同一批 —— 不判,但要看得到有幾列是那樣。 */
+      const nc = leaders.nameCheck ?? [];
+      const judged = nc.filter(x => !(x.minutesLo > 1.05));
+      const suspicious = judged.filter(x => x.minutesHi < 0.95 || x.goalsLo > x.tableGoals);
       check('沒有任何一隊的進球或分鐘對不上(對錯隊的話一定會露出來)', suspicious.length === 0,
-        suspicious.map(x => `${x.season} ${x.code} 進球比 ${x.goalRatio}、分鐘比 ${x.minutesRatio}`).join('、'));
+        suspicious.map(x => `${x.season} ${x.code} 分鐘區間 ${x.minutesLo}~${x.minutesHi}、`
+          + `進球 ${x.goalsLo}~${x.goalsHi} vs 積分榜 ${x.tableGoals}`).join('、'));
+      check('build 標的 verdict 跟獨立算出來的一致(產物要自己說得出結論)',
+        judged.every(x => (x.verdict === 'suspect') === suspicious.includes(x)),
+        judged.filter(x => (x.verdict === 'suspect') !== suspicious.includes(x))
+          .map(x => `${x.season} ${x.code} verdict=${x.verdict}`).join('、'));
       /* 分鐘是最硬的一條:一隊一季最多 11 × 90 × 場數,對錯隊不可能還落在上限附近。 */
-      const worstMin = Math.min(...(leaders.nameCheck ?? []).map(x => x.minutesRatio ?? 1));
-      check('每一隊的出賽分鐘都接近理論上限(這是隊名對照最硬的證據)', worstMin >= 0.9, `最低 ${worstMin}`);
+      const worstHi = judged.length ? Math.min(...judged.map(x => x.minutesHi ?? 1)) : null;
+      check('每一隊的分鐘區間都涵蓋理論上限(這是隊名對照最硬的證據)',
+        judged.length > 0 && worstHi >= 0.95, `判了 ${judged.length} 列、區間上緣最低 ${worstHi}`);
+      /* 區間要真的是區間 —— 上下限一樣的話,等於又退回「把季中轉隊的人整個丟掉」那一版,
+         而那一版會把轉會多的隊冤枉成隊名對錯(法甲 REN 37/59、義甲 CAG 分鐘 0.898)。 */
+      check('進球與分鐘都是區間(季中轉隊的人上游只給兩隊合計,拆不開就不能當成一個值)',
+        nc.every(x => x.goalsLo <= x.goalsHi && x.minutesLo <= x.minutesHi)
+        && nc.some(x => x.transfers > 0 && x.minutesHi > x.minutesLo),
+        `有季中轉隊的列 ${nc.filter(x => x.transfers > 0).length} 筆`);
 
       /* 有了一部分之後最容易忘記講剩下的沒有 —— 德甲連西甲那層 SportMonks 都沒有。 */
       check('明講這一層沒有背號 / 頭貼 / 傷停', Array.isArray(leaders.missing) && leaders.missing.length >= 3
@@ -286,6 +305,21 @@ export function testLeague(L) {
        寫死 /德乙/ 的話義甲會紅在一件它本來就沒有的事上。 */
     check(`資料界線講出${L.zh}的升降級規則(讀者不會自己知道)`,
       (meta.boundaries ?? []).some(x => L.relegationHint.test(x)));
+
+    /* **來源代碼也是「這個聯賽的事實」**,跟隊數輪次、FotMob id、升降級規則同一類。
+       實際被咬到:共用的 build 把 `openfootball(de.1)` 與 `football-data.co.uk(D1)`
+       寫死在資料界線與頁尾來源裡,於是義甲法甲的畫面上印著**德甲的來源代碼** ——
+       不拋錯、`npm test` 也看不到版面,是把義甲首頁開起來看才現形的。
+       所以這裡兩個方向都守:自己的要在、別人的不准出現。 */
+    const CODES = { de1: ['de.1', 'D1'], it1: ['it.1', 'I1'], fr1: ['fr.1', 'F1'] };
+    const facing = JSON.stringify({ boundaries: meta.boundaries, sources: meta.sources,
+      intro: meta.intro, players: meta.players });
+    check(`資料界線與頁尾印的是${L.zh}自己的來源代碼(${L.ofCode} / ${L.div})`,
+      facing.includes(L.ofCode) && facing.includes(`(${L.div})`));
+    const alien = Object.entries(CODES).filter(([k]) => k !== L.key)
+      .flatMap(([, v]) => v).filter(c => facing.includes(c === c.toUpperCase() ? `(${c})` : c));
+    check('沒有印到別的聯賽的來源代碼(共用的 build 最容易照抄這種)', alien.length === 0,
+      alien.join('、'));
     /* 沒宣告 promotion 的聯賽不可以多出這個欄位 —— 共用的 simulateSeason 要真的靠參數分岔 */
     const plain = simulateSeason({
       model: { attack: { A: 0, B: 0 }, defence: { A: 0, B: 0 }, gamma: 0.2, rho: -0.1, mu: 0 },
@@ -297,8 +331,8 @@ export function testLeague(L) {
   // ── 6. 賽程、機率與回測 ────────────────────────────
   {
     const comp = meta.competition;
-    check('賽程場數等於 18 隊雙循環(306 場)', fixtures.length === comp.teams * (comp.teams - 1),
-      `${fixtures.length} 場、${comp.teams} 隊`);
+    check(`賽程場數等於 ${comp.teams} 隊雙循環(${comp.teams * (comp.teams - 1)} 場)`,
+      fixtures.length === comp.teams * (comp.teams - 1), `${fixtures.length} 場、${comp.teams} 隊`);
     check('未賽場次的三向機率加總約等於 1',
       fixtures.filter(f => !f.played).every(f => f.prediction
         && Math.abs(f.prediction.home + f.prediction.draw + f.prediction.away - 1) < 0.002));

@@ -26,7 +26,7 @@ import { buildLeague } from './lib/build-league.mjs';
 await buildLeague({
   root: join(dirname(fileURLToPath(import.meta.url)), '..'),
   key: 'de1', zh: '德甲', competition: 'ger.1',
-  rawDir: 'openfootball-bundesliga', fillDir: 'football-data-couk-bundesliga', div: 'D1',
+  rawDir: 'openfootball-bundesliga', fillDir: 'football-data-couk-bundesliga', div: 'D1', ofCode: 'de.1',
   understatDir: 'understat-bundesliga', fotmobDir: 'fotmob-bundesliga',
   teamFile: 'teams-bundesliga.json', crestFile: 'crests-bundesliga.json',
   /* 德國是 Europe/Berlin:夏令 CEST(+02:00)、冬令 CET(+01:00)。 */

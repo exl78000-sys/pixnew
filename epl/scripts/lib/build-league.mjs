@@ -440,57 +440,103 @@ export async function buildLeague(L) {
       : `— 球員榜比積分榜少的那幾顆還在對帳中:${goalGap.map(g => `${g.season} 缺口 ${g.gap} 顆、`
         + `逐場事件涵蓋 ${g.covered}/${g.played} 場、其中烏龍球 ${g.own} 顆`).join(';')}。`
         + '量級跟烏龍球相符(球員榜不算烏龍球),但事件還沒涵蓋全部場次,所以只回報、不當結論。']
-    : ['— 球員進球加總比積分榜少 0~11%:西甲也有同量級的缺口,量級跟烏龍球相符'
-      + `(球員榜本來就不算烏龍球),但本站還沒抓${L.zh}的逐場事件,所以只回報、不當結論。`];
+    /* **這個百分比一定要從資料算。** 第一版寫死「少 0~11%」—— 那是德甲量出來的,
+       照抄給義甲法甲就是在畫面上編數字(鐵則一沒有「只是一句說明」這種例外)。 */
+    : [`— 球員進球加總比積分榜少:${goalGap.map(g => `${g.season} 缺 ${g.gap} 顆`
+      + `(${g.tableGoals ? round((g.gap / g.tableGoals) * 100, 1) : 0}%)`).join('、')}。`
+      + '量級跟烏龍球相符(積分榜算烏龍球,球員榜不算),但本站還沒抓'
+      + `${L.zh}的逐場事件,沒有東西可以核對,所以只回報、不當結論。`];
 
 
   /* **隊名對照的獨立核對。** alias 是「一對一推出來的」,而一對一不是證據
-     (租借姓名那條坑付過代價)。這裡逐隊比兩個數字:
-       出賽分鐘  一隊一季最多 11 × 90 × 場數,對錯隊的話會差很遠
-       進球      Understat 的球員進球加總 **一定不會超過**積分榜的該隊進球
-     實測(2025-26 全 18 隊):分鐘都落在理論上限的 96~100%、進球比值 0.886~1.000,
-     沒有一隊接近 0 或超過 1 —— 對錯隊不可能長這樣。
-     **那個 0~11% 的缺口本身沒有查證到底**:西甲也有同樣量級的缺口(21/1024),
-     而西甲這條路已經在站上很久。它跟烏龍球的量級相符(球員榜不算烏龍球),
-     但本站沒有德甲的烏龍球來源可以證明,所以**只回報、不當結論**(鐵則四)。 */
+     (租借姓名那條坑付過代價)。這裡逐隊比 Understat 與積分榜的兩個數字。
+
+     **兩個數字都是「區間」而不是「一個值」**,因為季中轉隊的人上游只給兩隊合計,
+     拆不開 —— 掛到任何一隊都是編數字,所以下限不掛;但「不掛」不等於「不算」,
+     他確實在這個聯賽踢了那些分鐘、進了那些球,只是分不出哪一部分屬於哪一隊,
+     所以進上限。真值一定落在區間裡,而**隊名對錯的話下限與上限會一起塌到 0**,
+     鑑別力一點都沒少。
+
+     這一段被自己咬過兩次,兩次方向相反:
+       第一版兩邊都把那些人整個丟掉 → 轉會多的隊看起來就像對錯了隊
+         (法甲 2025-26 REN 的進球只算到 37 / 59 —— Esteban Lepaul 整季 21 球掛在
+          `Angers,Rennes`;義甲 2025-26 CAG 的分鐘只剩理論上限的 0.898,
+          因為三個轉隊的人的分鐘一分都沒算進去)
+       第二版把合計**整個加到每一隊** → 變成重複計算,德甲本來乾淨的兩隊
+         (FCA / M05,正是 `Augsburg,Mainz 05` 那一串)反而被標成可疑
+
+     判法是「理論值有沒有落在區間裡」,沒有魔術門檻:
+       分鐘  一隊一季最多 11 × 90 × 場數,這個上限要落在區間裡。
+             實測三個聯賽全季共 56 隊,區間上緣最低 0.995 —— 紅牌與碼表差
+             落在 ±0.5%,所以容差留 5%(十倍餘裕);對錯隊會差幾十個百分點
+       進球  區間下限**一定不會超過**積分榜的該隊進球(烏龍球只加在積分榜那一邊)
+
+     **早季兩邊涵蓋的場次不是同一批**:實測 2026-27 德甲有幾隊 Understat 已經算到
+     第 3 輪、openfootball 的賽果還停在第 2 輪,於是分鐘比值是 1.5、進球也超過積分榜
+     —— 兩邊都沒有錯。那種記成 `coverage` 只回報、不判可疑(「先問我的分母跟被比較的
+     那一邊是不是同一批」)。
+
+     **它測不出什麼要講清楚**:兩支差不多大的隊互換,總量看起來會一樣,這個核對測不出來。
+     它測得出的是「這個隊碼接到空的」與「接到一支大小差很多的隊」—— 而 alias 缺漏
+     正是前者:義甲的 ROM 就是這樣抓到的(Understat 寫 `Roma`、名冊只有 `AS Roma`,
+     寬鬆比對只去**字尾**的法人形式、不去字首的 AS,於是整隊一個球員都沒接到)。 */
+  const MIN_TOL = 0.05;
+  const blankCheck = () => ({ goals: 0, minutes: 0, multiGoals: 0, multiMinutes: 0, multiN: 0 });
   const nameCheck = [];
   for (const [season, data] of Object.entries(playerSeasons)) {
     const rows = season === CURRENT_SEASON ? curTable : lastTable;
     const byCode = new Map();
+    const touch = code => {
+      if (!byCode.has(code)) byCode.set(code, blankCheck());
+      return byCode.get(code);
+    };
     for (const p of data.players) {
-      if (p.multiTeam) continue;                  // 整季合計掛不到單一隊
+      if (p.multiTeam) {
+        for (const t of (p.teams ?? [])) {
+          const code = T.codeOf(t);
+          if (!code) continue;
+          const v = touch(code);
+          v.multiGoals += p.goals ?? 0; v.multiMinutes += p.minutes ?? 0; v.multiN++;
+        }
+        continue;
+      }
       const code = T.codeOf(p.teams?.[0] ?? '');
       if (!code) continue;
-      const v = byCode.get(code) ?? { goals: 0, minutes: 0 };
+      const v = touch(code);
       v.goals += p.goals ?? 0; v.minutes += p.minutes ?? 0;
-      byCode.set(code, v);
     }
     for (const r of rows) {
-      const v = byCode.get(r.code) ?? { goals: 0, minutes: 0 };
+      const v = byCode.get(r.code) ?? blankCheck();
       const cap = 11 * 90 * r.p;                  // 一隊一季的分鐘理論上限
+      const minutesLo = cap ? round(v.minutes / cap, 3) : null;
+      const minutesHi = cap ? round((v.minutes + v.multiMinutes) / cap, 3) : null;
+      // 區間整個在上限**之上** = Understat 比賽果多算了場次,不是隊名對錯
+      const coverage = minutesLo != null && minutesLo > 1 + MIN_TOL;
+      const thin = minutesHi != null && minutesHi < 1 - MIN_TOL;
+      const overGoals = !coverage && r.gf != null && v.goals > r.gf;
       nameCheck.push({
-        season, code: r.code,
-        goals: v.goals, tableGoals: r.gf,
-        goalRatio: r.gf ? round(v.goals / r.gf, 3) : null,
-        played: r.p,
-        minutes: v.minutes, minutesCap: cap,
-        minutesRatio: cap ? round(v.minutes / cap, 3) : null,
+        season, code: r.code, played: r.p, transfers: v.multiN,
+        goalsLo: v.goals, goalsHi: v.goals + v.multiGoals, tableGoals: r.gf,
+        minutes: v.minutes, minutesCap: cap, minutesLo, minutesHi,
+        verdict: (thin || overGoals) ? 'suspect' : coverage ? 'coverage' : 'ok',
+        why: thin ? '分鐘區間整個低於理論上限 —— 這個隊碼可能沒接到球員,或接到一支小很多的隊'
+          : overGoals ? '掛得上去的進球已經超過積分榜的該隊進球(烏龍球只會往另一個方向)'
+            : coverage ? 'Understat 涵蓋的場次比本站賽果多(早季常見),兩邊不是同一批,這一列不判'
+              : null,
       });
     }
   }
-  /* 對錯隊的樣子:進球比值接近 0 或大於 1、分鐘遠低於上限。兩個都要看 ——
-     只看進球的話,一支整季只進幾球的隊看不出來。 */
-  /* 進球比值在**剛開季**沒有鑑別力:踢 3 輪的隊,一顆烏龍球就讓比值掉到 0.75。
-     所以下限只在踢滿 10 場之後才看;而「超過 1」與分鐘比值是**不隨場數變**的,
-     一直都看。分鐘是這裡最硬的一條 —— 對錯隊的話它不可能還落在上限附近。 */
-  const suspect = nameCheck.filter(x => (x.goalRatio != null && x.goalRatio > 1.02)
-    || (x.minutesRatio ?? 1) < 0.85
-    || (x.played >= 10 && x.goalRatio != null && x.goalRatio < 0.7));
+  const nameJudgedRows = nameCheck.filter(x => x.verdict !== 'coverage' && x.minutesHi != null);
+  const nameJudged = nameJudgedRows.length;
+  const nameWorstHi = nameJudged ? Math.min(...nameJudgedRows.map(x => x.minutesHi)) : null;
   if (hasPlayers) {
-    const worstG = Math.min(...nameCheck.filter(x => x.goalRatio != null).map(x => x.goalRatio));
-    const worstM = Math.min(...nameCheck.filter(x => x.minutesRatio != null).map(x => x.minutesRatio));
-    console.log(`  隊名對照核對:進球比值最低 ${worstG}、分鐘比值最低 ${worstM}`
-      + (suspect.length ? ` ⚠ 可疑 ${suspect.length} 隊:${suspect.map(x => `${x.season} ${x.code}`).join('、')}` : '(沒有可疑的隊)'));
+    const suspect = nameCheck.filter(x => x.verdict === 'suspect');
+    const coverage = nameCheck.filter(x => x.verdict === 'coverage');
+    console.log(`  隊名對照核對:判了 ${nameJudged} 列、分鐘區間上緣最低 ${nameWorstHi}`
+      + `(理論上限要落在區間裡,容差 ${MIN_TOL})`
+      + (coverage.length ? `・${coverage.length} 列兩邊場次不同批,不判` : '')
+      + (suspect.length ? ` ⚠ 可疑 ${suspect.length} 隊:${suspect.map(x => `${x.season} ${x.code}`).join('、')}`
+        : '(沒有可疑的隊)'));
   }
 
 
@@ -524,15 +570,25 @@ export async function buildLeague(L) {
          這是「前端把聯賽的事實寫死」的 build 版,而 `npm test` 看不到版面。 */
       `✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬(${N} 隊 × ${L.rounds} 輪)`,
       ...(noFill.length < coverage.length
-        ? [`✓ 兩個獨立來源逐場核對:openfootball(de.1)與 football-data.co.uk(D1),對不上就整份不採用`
+        /* **來源代碼也是這個聯賽的事實**,跟隊數輪次、FotMob id 同一類。
+           這一行原本寫死 `de.1` 與 `D1`(德甲的),於是義甲法甲的資料界線上
+           印著別的聯賽的來源代碼 —— 不拋錯、`npm test` 也看不到版面,
+           是把義甲首頁開起來看才現形的(「照抄德甲」的第五、六處)。 */
+        ? [`✓ 兩個獨立來源逐場核對:openfootball(${L.ofCode})與 football-data.co.uk(${DIV}),對不上就整份不採用`
           + (noFill.length ? `。但只有部分賽季:${noFill.join('、')} 目前沒有 D1,那幾季只有單一來源` : '')]
         : [`— 目前只有 openfootball 一個來源:football-data.co.uk 的 ${DIV} 還沒抓到,所以還沒有逐場交叉核對`]),
       ...(styleTrendBy.size
         ? ['✓ 逐場實測統計(射門/射正/角球/牌,football-data.co.uk):球隊頁的近 10 場風格位移,跟英超同一份實作']
         : [`— 還沒有逐場實測統計(射門/角球/牌):那一份跟 ${DIV} 同一個來源,抓到之後才有`]),
       ...(hasPlayers
+        /* **這句話要講出核對實際做了什麼、量出來多少**,而不是複述一個寫死的門檻。
+           上一版寫「分鐘都落在滿季理論上限的 95% 以上」—— 那既是寫死的數字,
+           也已經不是這個核對在量的東西了(現在量的是「理論上限有沒有落在區間裡」,
+           而區間下緣最低到 0.898,因為季中轉隊的人只給兩隊合計)。 */
         ? [`✓ 球員整季數據與 xG(Understat,${playersOut.length} 筆):進球、助攻、xG、xA、射門、關鍵傳球與牌。`
-          + '隊名對照拿逐隊出賽分鐘與進球獨立核對過(分鐘都落在滿季理論上限的 95% 以上)。',
+          + `隊名對照拿逐隊出賽分鐘與進球獨立核對過:${nameJudged} 隊季裡,`
+          + '每一隊的分鐘區間(季中轉隊的人上游只給兩隊合計,拆不開,所以算成區間)都涵蓋'
+          + `滿季理論上限 11 × 90 × 場數,區間上緣最低 ${nameWorstHi};沒有一隊的球員進球超過積分榜。`,
           /* 缺口要照實講,而且要講出它是哪一種。
              **這一句也會過期**:賽後報告接上之後就有烏龍球可以對帳了,
              那時候還印「本站沒有來源可以證明」就是假的(跟上面那句寫死的同一種)。 */
@@ -566,8 +622,12 @@ export async function buildLeague(L) {
       L.relegation,
     ],
     sources: [
-      { name: 'openfootball / football.json', url: 'https://github.com/openfootball/football.json' },
-      { name: 'football-data.co.uk(D1)', url: 'https://www.football-data.co.uk/germanym.php' },
+      { name: `openfootball / football.json(${L.ofCode})`, url: 'https://github.com/openfootball/football.json' },
+      /* 網址指向**抓取器真的下載的那一支 CSV**,不是各國的索引頁 ——
+         索引頁的檔名(germanym.php / spainm.php…)本站只證實過三個,
+         剩下的憑印象填就是編一個網址出來。這個組法是 league-fetch.mjs 的同一條。 */
+      { name: `football-data.co.uk(${DIV})`,
+        url: `https://www.football-data.co.uk/mmz4281/${CURRENT_SEASON.slice(2, 4)}${CURRENT_SEASON.slice(-2)}/${DIV}.csv` },
     ],
     sourceCoverage: coverage,
     model: {
@@ -682,8 +742,10 @@ export async function buildLeague(L) {
     note: 'Understat 提供整季彙總(一季一個請求)。每 90 分鐘僅在上場時間達門檻時給出。'
       + '隊名對照已用逐隊出賽分鐘與進球獨立核對過(見 nameCheck)。',
     /* 隊名對照的核對結果放進產物,畫面才講得出「這個對照是驗過的」。
-       球員進球加總比積分榜少 0~11%,西甲也有同量級的缺口 —— 原因沒有查證到底,
-       所以只回報,不當結論(鐵則四)。 */
+       每一列帶著區間與 verdict,`coverage` 那種是「兩邊涵蓋的場次不同批」不是對錯
+       —— 不分開的話,早季每個聯賽都會有一批看起來像錯的列。
+       球員進球加總仍比積分榜少幾顆(逐季的實際數字在 boundaries 裡,不寫死),
+       量級跟烏龍球相符但沒有查證到底,所以只回報、不當結論(鐵則四)。 */
     nameCheck,
     current: playerSeasons[CURRENT_SEASON] ? buildLeaders(playerSeasons[CURRENT_SEASON].players) : null,
     last: playerSeasons[LAST_SEASON] ? buildLeaders(playerSeasons[LAST_SEASON].players) : null,

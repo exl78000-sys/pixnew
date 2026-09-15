@@ -32,6 +32,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
 import { inMatchWindow } from './live-window.mjs';
+import { mergeCupSeasons } from './lib/cup-seasons.mjs';
 import {
   FOTMOB_CUPS, fotmobSeason, buildCupTeamIndex, normaliseFotmobCupMatch, withCupDetails,
   parseCupDetail, crossCheckWithSportmonks,
@@ -166,7 +167,17 @@ async function main() {
       seasonsOut.push(season);
       job.slots.push({ label, season });
     }
+    /* 這一輪沒去看的季要原樣帶過來 —— 規則與它的來歷在 `lib/cup-seasons.mjs`。
+       抽成純函式是因為它**只能用測試守**:症狀是「少了一整季而畫面完全正常」。 */
+    const merged = mergeCupSeasons({ prev, fetched: seasonsOut, want: WANT });
+    if (merged.kept.length) console.log(`  ${cup.zh}:這一輪只看 ${WANT.join('、')},快取裡的 ${merged.kept.join('、')} 原樣保留`);
+    seasonsOut.length = 0;
+    seasonsOut.push(...merged.seasons);
     if (!seasonsOut.length) { console.log(`  ✗ ${cup.zh} 一季都沒有,不寫入`); continue; }
+    if (merged.shrunk) {
+      console.log(`  ✗ ${cup.zh}:要寫 ${merged.shrunk.after} 季,但快取有 ${merged.shrunk.before} 季 —— 會弄丟資料,整份不寫`);
+      continue;
+    }
     work.push(job);
   }
 
