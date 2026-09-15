@@ -1,4 +1,9 @@
-/* Understat 的整季球員數據 —— 西甲與德甲**共用這一支**。
+/* Understat 的整季球員數據**抓取** —— 西甲與德甲共用這一支。
+ *
+ * 檔名刻意叫 `understat-fetch`,不叫 `understat-players`:**後者已經被用掉了**
+ * (`lib/adapters/understat-players.mjs`,那一支是 build 端的讀檔與轉形狀)。
+ * 兩個同名檔一個抓、一個轉,總有一天會有人 import 錯那一個 —— 而那種錯不會拋錯,
+ * 只會拿到一個沒有你要的函式的模組。
  *
  * 抽出來的理由跟 `lib/league-matches.mjs`、`lib/backtest-runner.mjs` 同一條
  * (CLAUDE.md:跨聯賽的轉換與流程一律共用,不複製)。這裡特別要緊,因為這支的
@@ -108,12 +113,15 @@ export async function fetchUnderstatPlayers({
 
     /* 隊名要對得上我們的隊碼,對不上的**列出來**不要靜靜吞掉 ——
        CLAUDE.md 記著的坑:被 tolerant 模式吞掉之後整季資料消失,而畫面上看不出來。 */
-    /* **季中轉隊的人,`team_title` 是用逗號串起來的兩隊**(`Augsburg,Mainz 05`)——
-       德甲探測時才看見,回頭一查西甲 2025-26 也有 11 筆、2026-27 有 2 筆,
-       而那幾筆一直是 `code: null`:資訊本來就在上游,只是被丟掉了。
-       這裡拆開存進 `codes`,**但 `code` 仍然留 null** —— Understat 給的是整季合計,
-       把它掛給其中一隊就是把另一隊的產出算到這一隊頭上(那是編數字)。
-       下游要用的話自己決定怎麼呈現,至少它現在知道「這個人這季待過哪幾隊」。 */
+    /* **季中轉隊的人,`team_title` 是用逗號串起來的兩隊**(`Augsburg,Mainz 05`)。
+       **下游沒有漏掉他們** —— `lib/adapters/understat-players.mjs` 自己會拆這個字串,
+       西甲產物裡那 13 個人都帶著 `teams` 與 `multiTeam`(查過才敢寫)。
+       這裡拆開是為了另一件事:**不要讓轉隊的人污染「對不上隊名」那份警告**。
+       整串丟進 codeOf 的話,`Augsburg,Mainz 05` 會被報成一個對不上的隊名,
+       跟「某一隊的 alias 真的缺了」長得一模一樣 —— 而新接一個聯賽時,
+       那份清單正是唯一的信號(英冠那次 14 支就是靠它看見的)。
+       `code` 仍然留 null:Understat 給的是整季合計,掛給其中一隊就是把另一隊的
+       產出算到這一隊頭上(那是編數字),要怎麼呈現由下游決定。 */
     const unmatched = new Map();
     const players = rows.map(r => {
       const parts = String(r.team_title ?? '').split(',').map(x => x.trim()).filter(Boolean);
