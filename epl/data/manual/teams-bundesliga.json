@@ -1,6 +1,6 @@
 {
   "_note": "德甲(Bundesliga)球隊對照表。of = openfootball 的隊名(主來源),fd = football-data.co.uk 的簡稱(獨立來源,逐場核對用)。兩邊的對應**不是靠名字猜的**:of 名字是從 data/raw/openfootball-bundesliga/*.json 四季逐場掃出來的,fd 名字是從 football-data.co.uk 的 CSV 掃出來的 —— D1(2023-24、2024-25)直接觀察到 20 支,另外四支(Hamburg / Schalke 04 / Paderborn / Elversberg)當時在德乙,名字是從**同一個供應商**的 D2 檔(2022-23、2023-24)觀察到的。這樣做的依據是:同時出現在 D1 與 D2 的四支球隊(Heidenheim / St Pauli / Holstein Kiel / Darmstadt)兩邊拼法完全一致,所以這家供應商的隊名不隨分級改變。**沒有觀察到的名字一律留 null**,不要憑印象填 —— 英冠那次就是拿 T.codeOf 硬猜,結果 14 支球隊靜靜對不上而畫面完全正常。build 會把對不上的隊名印出來(tolerant 模式那一行輸出要看)。",
-  "_understat": "alias 裡的 Understat 寫法是從 probe-understat-bundesliga.mjs 在 CI runner 上跑出來的 log **逐字抄**的(2026-09-15,聯賽代號 Bundesliga、2025-26 回 499 筆),不是憑印象填的。上游用短名:Hoffenheim / RasenBallsport Leipzig / Borussia M.Gladbach / FC Cologne / Freiburg / Wolfsburg / FC Heidenheim。對應是**一對一推出來的**:2025-26 這一季 openfootball 的參賽隊正好 18 支,名冊比對上 11 支,剩下 7 支對上這 7 個上游名字,每一個都沒有第二個可能的對象。**但一對一不是證據**,所以 build 另外拿逐隊進球數跟積分榜對帳(球員進球加總 vs 該隊該季進球),對不上的要印出來 —— 「對錯人比對不到糟得多」。",
+  "_understat": "alias 裡的 Understat 寫法是從 probe-understat-bundesliga.mjs 在 CI runner 上跑出來的 log **逐字抄**的(2026-09-15,聯賽代號 Bundesliga、2025-26 回 499 筆),不是憑印象填的。上游用短名:Hoffenheim / RasenBallsport Leipzig / Borussia M.Gladbach / FC Cologne / Freiburg / Wolfsburg / FC Heidenheim;2026-27 的兩支升班馬又多兩個(Elversberg / Paderborn)—— 那正是「對不上的隊名」清單存在的理由,換一季就會再冒出來。對應是**一對一推出來的**:2025-26 這一季 openfootball 的參賽隊正好 18 支,名冊比對上 11 支,剩下 7 支對上這 7 個上游名字,每一個都沒有第二個可能的對象。**但一對一不是證據**,所以 build 另外拿逐隊進球數跟積分榜對帳(球員進球加總 vs 該隊該季進球),對不上的要印出來 —— 「對錯人比對不到糟得多」。",
   "_updated": "2026-09",
   "_pending": "隊色、城市、球場、容量、綽號、教練**都還沒有**。這個聯賽目前只做球隊與比賽那一層,那幾樣要另外人工交付並過核對器(比照英冠 data/manual/championship-*-delivery.json 那條路),交付之前畫面上不顯示、也不用中性灰假裝有。",
   "_codes": "隊碼是本站自己編的三碼,只在這個聯賽裡要求唯一(跨聯賽重複是既有現象,vault 的檔名與盃賽的身分查表都已經處理)。編法照既有慣例:優先用該隊通行的縮寫(FCB / BVB / RBL / HSV / S04),其餘取隊名字首。",
@@ -27,7 +27,7 @@
     { "code": "BOC", "en": "VfL Bochum", "of": "VfL Bochum 1848", "fd": "Bochum", "zh": "波鴻" },
     { "code": "D98", "en": "SV Darmstadt 98", "of": "SV Darmstadt 98", "fd": "Darmstadt", "zh": "達姆施塔特" },
     { "code": "S04", "en": "FC Schalke 04", "of": "FC Schalke 04", "fd": "Schalke 04", "zh": "沙爾克 04" },
-    { "code": "SCP", "en": "SC Paderborn 07", "of": "SC Paderborn 07", "fd": "Paderborn", "zh": "帕德博恩" },
-    { "code": "ELV", "en": "SV Elversberg", "of": "SV 07 Elversberg", "fd": "Elversberg", "zh": "埃爾沃斯堡" }
+    { "code": "SCP", "en": "SC Paderborn 07", "of": "SC Paderborn 07", "fd": "Paderborn", "zh": "帕德博恩", "alias": ["Paderborn"] },
+    { "code": "ELV", "en": "SV Elversberg", "of": "SV 07 Elversberg", "fd": "Elversberg", "zh": "埃爾沃斯堡", "alias": ["Elversberg"] }
   ]
 }

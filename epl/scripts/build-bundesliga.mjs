@@ -49,6 +49,15 @@ import { buildFormIndex, recentForm, formSummary, TUNED } from './lib/form.mjs';
 import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { round } from './lib/util.mjs';
+/* 跨聯賽球員搜尋的統一層。**開了球員頁就一定要寫這一份** ——
+   `allplayers-view.js` 與 `core.js` 的 crossLeaguePlayers 都是看
+   `LEAGUES[lg].open` 有沒有 players 才去要它的,沒寫就是一個保證 404,
+   而畫面只是「搜尋德甲球員什麼都搜不到」,不報錯。 */
+import { coreFromUnderstat } from './lib/player-core.mjs';
+/* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
+   同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
+import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES }
+  from './lib/adapters/understat-players.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'de1');
@@ -318,11 +327,86 @@ async function main() {
   }));
   const noFill = coverage.filter(c => !c.footballData).map(c => c.season);
 
+  /* ── 球員層(Understat)────────────────────────────────────────────
+     德甲是 Understat 涵蓋的五大聯賽之一,所以這一層做得出來 —— 前提是 raw 在。
+     沙箱抓不到 understat.com,raw 由 runner 上的 `de1:players` 抓回來並回寫;
+     沒有 raw 時整層退回「還沒抓」,**不是**「沒有來源」(那是英冠,意思完全不同)。
+
+     Understat 有什麼、沒有什麼寫在適配器的檔頭:沒有背號、頭貼、出生日期、傷停,
+     也沒有英超那套 FPL 欄位。德甲**連 SportMonks 那層補充都沒有**(西甲有),
+     所以年齡一律 null —— 吃年齡的榜(22 歲以下)會是空的,畫面要講得出為什麼。 */
+  const playerSeasons = {};
+  for (const season of [CURRENT_SEASON, LAST_SEASON]) {
+    const loaded = loadPlayers(ROOT, season, { dir: 'understat-bundesliga' });
+    if (!loaded) { console.log(`  ⚠ 德甲球員 ${season}:沒有快取,略過(runner 上跑 de1:players)`); continue; }
+    attachRadar(loaded.players);
+    playerSeasons[season] = loaded;
+    const multi = loaded.players.filter(p => p.multiTeam).length;
+    const qualified = loaded.players.filter(p => p.qualified).length;
+    console.log(`  德甲球員 ${season}:${loaded.players.length} 人・達 ${MIN_MINUTES} 分鐘門檻 ${qualified} 人・跨隊 ${multi} 人`);
+  }
+
+  const playersOut = [];
+  for (const [season, data] of Object.entries(playerSeasons)) {
+    for (const p of data.players) playersOut.push(normalisePlayerForSite({ ...p, season }, { codeOf: T.codeOf }));
+  }
+  const hasPlayers = playersOut.length > 0;
+
+  /* **隊名對照的獨立核對。** alias 是「一對一推出來的」,而一對一不是證據
+     (租借姓名那條坑付過代價)。這裡逐隊比兩個數字:
+       出賽分鐘  一隊一季最多 11 × 90 × 場數,對錯隊的話會差很遠
+       進球      Understat 的球員進球加總 **一定不會超過**積分榜的該隊進球
+     實測(2025-26 全 18 隊):分鐘都落在理論上限的 96~100%、進球比值 0.886~1.000,
+     沒有一隊接近 0 或超過 1 —— 對錯隊不可能長這樣。
+     **那個 0~11% 的缺口本身沒有查證到底**:西甲也有同樣量級的缺口(21/1024),
+     而西甲這條路已經在站上很久。它跟烏龍球的量級相符(球員榜不算烏龍球),
+     但本站沒有德甲的烏龍球來源可以證明,所以**只回報、不當結論**(鐵則四)。 */
+  const nameCheck = [];
+  for (const [season, data] of Object.entries(playerSeasons)) {
+    const rows = season === CURRENT_SEASON ? curTable : lastTable;
+    const byCode = new Map();
+    for (const p of data.players) {
+      if (p.multiTeam) continue;                  // 整季合計掛不到單一隊
+      const code = T.codeOf(p.teams?.[0] ?? '');
+      if (!code) continue;
+      const v = byCode.get(code) ?? { goals: 0, minutes: 0 };
+      v.goals += p.goals ?? 0; v.minutes += p.minutes ?? 0;
+      byCode.set(code, v);
+    }
+    for (const r of rows) {
+      const v = byCode.get(r.code) ?? { goals: 0, minutes: 0 };
+      const cap = 11 * 90 * r.p;                  // 一隊一季的分鐘理論上限
+      nameCheck.push({
+        season, code: r.code,
+        goals: v.goals, tableGoals: r.gf,
+        goalRatio: r.gf ? round(v.goals / r.gf, 3) : null,
+        played: r.p,
+        minutes: v.minutes, minutesCap: cap,
+        minutesRatio: cap ? round(v.minutes / cap, 3) : null,
+      });
+    }
+  }
+  /* 對錯隊的樣子:進球比值接近 0 或大於 1、分鐘遠低於上限。兩個都要看 ——
+     只看進球的話,一支整季只進幾球的隊看不出來。 */
+  /* 進球比值在**剛開季**沒有鑑別力:踢 3 輪的隊,一顆烏龍球就讓比值掉到 0.75。
+     所以下限只在踢滿 10 場之後才看;而「超過 1」與分鐘比值是**不隨場數變**的,
+     一直都看。分鐘是這裡最硬的一條 —— 對錯隊的話它不可能還落在上限附近。 */
+  const suspect = nameCheck.filter(x => (x.goalRatio != null && x.goalRatio > 1.02)
+    || (x.minutesRatio ?? 1) < 0.85
+    || (x.played >= 10 && x.goalRatio != null && x.goalRatio < 0.7));
+  if (hasPlayers) {
+    const worstG = Math.min(...nameCheck.filter(x => x.goalRatio != null).map(x => x.goalRatio));
+    const worstM = Math.min(...nameCheck.filter(x => x.minutesRatio != null).map(x => x.minutesRatio));
+    console.log(`  隊名對照核對:進球比值最低 ${worstG}、分鐘比值最低 ${worstM}`
+      + (suspect.length ? ` ⚠ 可疑 ${suspect.length} 隊:${suspect.map(x => `${x.season} ${x.code}`).join('、')}` : '(沒有可疑的隊)'));
+  }
+
+
   const meta = {
     /* **不要設 edition**(英冠那條註解同一個理由):那個欄位在前端被當成「是不是西甲」的二元旗標。 */
     league: 'de1', leagueLabel: '德甲',
     /* capabilities 是前端用來決定「這一頁要不要畫」的旗標。沒有的一律 false,不要留空不寫。 */
-    capabilities: { players: false, injuries: false, coaches: false, xg: false, lineups: false, live: false },
+    capabilities: { players: hasPlayers, injuries: false, coaches: false, xg: hasPlayers, lineups: false, live: false },
     builtAt: new Date().toISOString(), asOf: AS_OF,
     currentSeason: CURRENT_SEASON, lastSeason: LAST_SEASON,
     h2hSeasons: [...fullSeasons, CURRENT_SEASON],
@@ -332,9 +416,15 @@ async function main() {
        **先講做得到什麼、再講做不到什麼**,而且做不到的要講清楚是哪一種(還沒抓 vs 拿不到)。 */
     intro: `把 ${fullSeasons.join('、')} 與本季 ${CURRENT_SEASON} 的每一場德甲比賽跑成模型,`
       + '做出積分預測、單場勝負機率與賽季模擬,並跟市場賠率並排比較。'
-      + '這個聯賽目前只做到球隊與比賽這一層 —— 還沒有球員數據、xG、陣容與傷停。'
-      + '德甲是 Understat 有涵蓋的五大聯賽之一,所以球員層是「還沒接」,不是「拿不到」('
-      + '下方「目前資料界線」有細節)。',
+      /* **這句話會隨資料變,所以不可以寫死。** 第一版寫「目前只做到球隊與比賽這一層」,
+         球員層接上之後它就在畫面上說謊了 —— 那正是「『只有一個』那句寫死在畫面上」那條坑,
+         而且這次是在**加了那個能力的同一支 build 裡**。一律由 hasPlayers 決定。 */
+      + (hasPlayers
+        ? `球員層走 Understat(整季彙總),目前 ${playersOut.length} 筆 —— 有進球、助攻、xG、xA、`
+          + '射門與關鍵傳球;還沒有的是陣容、傷停與即時比分(下方「目前資料界線」有細節)。'
+        : '這個聯賽目前只做到球隊與比賽這一層 —— 還沒有球員數據、xG、陣容與傷停。'
+          + '德甲是 Understat 有涵蓋的五大聯賽之一,所以球員層是「還沒接」,不是「拿不到」('
+          + '下方「目前資料界線」有細節)。'),
     boundaries: [
       '✓ 賽程、比分、積分榜、近期戰績、單場預測與賽季模擬(18 隊 × 34 輪)',
       ...(noFill.length < coverage.length
@@ -344,8 +434,16 @@ async function main() {
       ...(styleTrendBy.size
         ? ['✓ 逐場實測統計(射門/射正/角球/牌,football-data.co.uk):球隊頁的近 10 場風格位移,跟英超同一份實作']
         : ['— 還沒有逐場實測統計(射門/角球/牌):那一份跟 D1 同一個來源,抓到之後才有']),
-      '— 還沒有球員數據與 xG:德甲是 Understat 涵蓋的聯賽,但開發沙箱的出口代理不放行 understat.com'
-        + '(2026-09-15 實測 CONNECT 403),要在 CI runner 上抓。這是「還沒抓」,跟英冠那種「來源就是沒有」不一樣。',
+      ...(hasPlayers
+        ? [`✓ 球員整季數據與 xG(Understat,${playersOut.length} 筆):進球、助攻、xG、xA、射門、關鍵傳球與牌。`
+          + '隊名對照拿逐隊出賽分鐘與進球獨立核對過(分鐘都落在滿季理論上限的 95% 以上)。',
+          /* 缺口要照實講,而且要講出它是哪一種 —— 這個殘差沒有查證到底(鐵則四) */
+          '— 球員進球加總比積分榜少 0~11%:西甲也有同量級的缺口,量級跟烏龍球相符'
+          + '(球員榜本來就不算烏龍球),但本站沒有德甲的烏龍球來源可以證明,所以只回報、不當結論。',
+          '— 球員層沒有背號、頭貼、出生日期與身價:Understat 不給,德甲也沒有西甲那層補充來源,'
+          + '所以年齡是空的、「22 歲以下」那張榜畫不出來。']
+        : ['— 還沒有球員數據與 xG:德甲是 Understat 涵蓋的聯賽,但開發沙箱的出口代理不放行 understat.com'
+          + '(2026-09-15 實測 CONNECT 403),要在 CI runner 上抓。這是「還沒抓」,跟英冠那種「來源就是沒有」不一樣。']),
       '— 還沒有隊色、城市、球場、隊徽與教練:那幾樣要另外人工交付並通過核對器,交付之前畫面上不顯示',
       '— 沒有即時比分:比分依 openfootball 的更新節奏落地',
       /* 德甲的升降級跟英格蘭不一樣,前端不要自己猜 */
@@ -387,10 +485,17 @@ async function main() {
     live: { available: false, note: '德甲還沒有接即時比分來源;比分依 openfootball 的更新節奏落地。' },
     official: { available: false },
     ai: { enabled: false, pre: 0, post: 0 },
-    players: { available: false, source: null,
-      note: '德甲的球員層還沒接。Understat 確實涵蓋德甲(它做五大聯賽),'
-        + '只是開發沙箱的出口代理不放行 understat.com(2026-09-15 實測 CONNECT 403),要在 CI runner 上抓。'
-        + '這跟英冠那種「來源就是沒有」不一樣 —— 是還沒做,不是做不到。' },
+    /* 有資料就講有、沒有就講**為什麼還沒有** —— 「還沒抓」跟英冠那種「來源就是沒有」
+       對讀者的意義完全不同,`npm test` 有一條守著沒資料時不准出現「不涵蓋」那種說法。 */
+    players: hasPlayers
+      ? { available: true, source: 'understat',
+        note: 'Understat 的整季彙總(一季一個請求)。有出賽、進球、助攻、xG、xA、射門、關鍵傳球與牌;'
+          + '沒有背號、頭貼、出生日期、身價與傷停 —— 那幾樣 Understat 就是不給,畫面上不留空欄位。'
+          + '季中轉隊的人上游只給兩隊合計,所以不掛到單一球隊,另外標記。' }
+      : { available: false, source: null,
+        note: '德甲的球員層還沒接。Understat 確實涵蓋德甲(它做五大聯賽),'
+          + '只是開發沙箱的出口代理不放行 understat.com(2026-09-15 實測 CONNECT 403),要在 CI runner 上抓。'
+          + '這跟英冠那種「來源就是沒有」不一樣 —— 是還沒做,不是做不到。' },
     scoreRefusals,
     backfills,
     /* 積分榜是從比分算的,不含扣分處分。德甲的扣分比英冠少見,但**沒有來源就不猜**:
@@ -422,15 +527,53 @@ async function main() {
     llmWritten: 0, cacheHits: 0, cacheEntries: 0,
     note: '德甲還沒有 AI 賽前/賽後報告(要先有球員層與逐場詳情)。' });
   await write('prob-history', { season: null, matches: {} });
-  await write('players', []);
+  await write('players', playersOut);
+  // 跨聯賽統一層(聯集 + null):德甲沒有身價與傷停 → null 不是 0
+  if (hasPlayers) await write('players-core', coreFromUnderstat(playersOut, { league: 'de1' }));
   /* 空產物的**形狀也要照抄既有聯賽**,不是只有欄位名。第一版自己寫了一套:
      `goals.seasons` 給了物件(既有聯賽是陣列)→ 球隊頁 `(goals?.seasons ?? []).filter`
      直接 TypeError,整頁「載入失敗」;`reports.pending` 給了陣列(既有聯賽是數字)、
      `leaders.boards` 給了陣列(既有聯賽是 `{季: []}`)。一個都不會拋錯到測試裡,
      是 `npm run sweep` 把頁面開起來才看到的。 */
-  await write('leaders', { available: false, source: null, statMeta: {},
+  /* **形狀逐欄位照抄西甲那一份。** 前端的球員頁是看 `leaders.source` 分岔的
+     (`'Understat'` 走整季彙總那條、`'match-aggregate'` 走英冠那條),
+     而且它會去讀 `current` / `last` / `boards` / `axes` / `minMinutes` / `ageCoverage`。
+     第一版我自己取了形狀(boards 依賽季分組、source 寫小寫 understat),
+     結果榜是「有資料但前端讀不到」—— 那正是「產物的欄位名是跟前端的約定」那條坑。
+     德甲**沒有** SportMonks 那層,所以 sportmonks 是空的、年齡一律 null。 */
+  await write('leaders', hasPlayers ? {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
-    boards: {}, squads: {}, layer: {}, missing: [], note: meta.players.note });
+    currentAvailable: Boolean(playerSeasons[CURRENT_SEASON]?.players?.length),
+    currentQualified: playerSeasons[CURRENT_SEASON]?.players?.filter(p => p.qualified).length ?? 0,
+    minMinutes: MIN_MINUTES,
+    source: 'Understat',
+    retrievedAt: playerSeasons[CURRENT_SEASON]?.retrievedAt ?? playerSeasons[LAST_SEASON]?.retrievedAt ?? null,
+    boards: BOARDS.map(({ key, label, unit, per90 }) => ({ key, label, unit, per90 })),
+    axes: RADAR_AXES,
+    /* 誠實層:這一層**沒有**什麼要明講 —— 有了一部分之後最容易忘記講剩下的沒有。
+       德甲連西甲那層 SportMonks 補充都沒有,所以背號 / 頭貼 / 出生日期全缺,
+       「22 歲以下」那張榜因此是空的(ageCoverage 會說出 0 / N)。 */
+    missing: ['背號', '頭貼', '出生日期與身價(所以年齡與「22 歲以下」那張榜是空的)',
+      '傷停與停賽', '防守數據(鏟球/攔截/撲救)'],
+    sportmonks: {},
+    note: 'Understat 提供整季彙總(一季一個請求)。每 90 分鐘僅在上場時間達門檻時給出。'
+      + '隊名對照已用逐隊出賽分鐘與進球獨立核對過(見 nameCheck)。',
+    /* 隊名對照的核對結果放進產物,畫面才講得出「這個對照是驗過的」。
+       球員進球加總比積分榜少 0~11%,西甲也有同量級的缺口 —— 原因沒有查證到底,
+       所以只回報,不當結論(鐵則四)。 */
+    nameCheck,
+    current: playerSeasons[CURRENT_SEASON] ? buildLeaders(playerSeasons[CURRENT_SEASON].players) : null,
+    last: playerSeasons[LAST_SEASON] ? buildLeaders(playerSeasons[LAST_SEASON].players) : null,
+    ageCoverage: Object.fromEntries(Object.entries(playerSeasons).map(([season, data]) => [season, {
+      known: data.players.filter(p => p.age != null).length,
+      total: data.players.length,
+    }])),
+    available: true,
+  } : {
+    available: false, source: null, statMeta: {},
+    seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
+    boards: {}, squads: {}, layer: {}, missing: [], nameCheck: [], note: meta.players.note,
+  });
   await write('coaches', { available: false, season: CURRENT_SEASON, source: null, verifiedAt: null,
     note: '德甲教練名冊還沒交付(要人工交付並過核對器,比照英冠那條路)。', coaches: [] });
   await write('goals', { available: false,

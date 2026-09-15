@@ -1,6 +1,8 @@
-// Adapter:Understat 球員整季數據 → 本站格式(西甲)
+// Adapter:Understat 球員整季數據 → 本站格式(西甲與德甲共用)
 //
-// 由 scripts/fetch-laliga-players.mjs 抓好寫成 JSON,這一支只負責讀檔與轉形狀。
+// 由 scripts/fetch-{laliga,bundesliga}-players.mjs 抓好寫成 JSON(兩支都走
+// lib/understat-fetch.mjs),這一支只負責讀檔與轉形狀。要讀哪個聯賽由 loadPlayers 的
+// dir 參數決定 —— **不要照聯賽再複製一份**,兩邊的欄位是同一組(探測比對過)。
 // 抓不到就回 null,上層自動退回「沒有球員資料」。
 //
 // **這個來源有什麼、沒有什麼**(實測,不是憑印象):
@@ -16,7 +18,11 @@ export const id = 'understat-players';
 export const label = 'Understat(球員整季數據)';
 export const supports = ['playerSeasonStats'];
 
-const FILE = (root, season) => join(root, 'data', 'raw', 'understat-la-liga', `${season}-players.json`);
+/* 目錄由呼叫端給:同一份 Understat 資料,西甲在 `understat-la-liga/`、
+   德甲在 `understat-bundesliga/`。**預設留西甲**,既有呼叫端一個字都不用改。
+   (抓取那一半在 `lib/understat-fetch.mjs` —— 刻意不同名,兩個同名檔遲早會有人 import 錯。) */
+const DEFAULT_DIR = 'understat-la-liga';
+const FILE = (root, season, dir = DEFAULT_DIR) => join(root, 'data', 'raw', dir, `${season}-players.json`);
 
 /* 位置是空白分隔的 token:GK / D / M / F / S。
    S 不是位置,是「以替補出場過」的標記 —— 有 71 人整季只有 S,
@@ -43,8 +49,8 @@ const r2 = n => Math.round(n * 100) / 100;
    給了反而誤導。未達門檻的照樣列出總數,只是不給每 90。 */
 export const MIN_MINUTES = 450;
 
-export function loadPlayers(root, season) {
-  const f = FILE(root, season);
+export function loadPlayers(root, season, { dir = DEFAULT_DIR } = {}) {
+  const f = FILE(root, season, dir);
   if (!existsSync(f)) return null;
   let raw;
   try { raw = JSON.parse(readFileSync(f, 'utf8')); } catch { return null; }

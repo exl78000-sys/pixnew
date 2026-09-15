@@ -727,9 +727,13 @@ export const LEAGUES = {
      球員搜尋(allplayers)掛:它查的是**其他聯賽**的球員,跟德甲自己還沒有球員層不衝突。 */
   de1: {
     zh: '德甲', brand: '德甲戰情室', en: 'BUNDESLIGA WAR ROOM',
-    open: ['overview', 'index', 'teams', 'model', 'allplayers', 'duel', 'explore', 'predict'],
-    gapNote: '德甲目前只做到球隊與比賽那一層,球員數據、xG、陣容與傷停還沒接 —— '
-      + '德甲是 Understat 有涵蓋的五大聯賽之一,所以這幾頁是還沒做,不是做不出來。',
+    /* players 2026-09-15 開:球員層走 Understat(整季彙總,一季一個請求)。
+       它**不是**英超那一層 —— 沒有背號、頭貼、出生日期、身價與傷停,
+       也沒有西甲那層 SportMonks 補充,所以年齡是 null。頁面自己把界線寫出來。
+       戰術與實時仍然沒有,不掛上去。 */
+    open: ['overview', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
+    gapNote: '德甲目前做到球隊、比賽與球員那一層,還沒有的是陣容、傷停與即時比分 —— '
+      + '球員層走 Understat(它涵蓋五大聯賽),所以剩下這幾頁是還沒做,不是做不出來。',
   },
 };
 

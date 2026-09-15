@@ -32,6 +32,9 @@ const hasFd = s => existsSync(join(FD_DIR, `${s}.csv`));
 const fdRaw = s => readFileSync(join(FD_DIR, `${s}.csv`), 'utf8');
 const out = n => JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'de1', `${n}.json`), 'utf8'));
 const en2 = n => JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'en2', `${n}.json`), 'utf8'));
+/* 球員層要跟**西甲**比,不是英冠:本站有兩種合法的球員層(逐場累加 / Understat 整季彙總),
+   德甲走的是後者,前端也是看 leaders.source 分岔的。 */
+const es1 = n => JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', `${n}.json`), 'utf8'));
 const check = (label, ok, detail = '') => {
   console.log(`  ${ok ? '✓' : '✗'} ${label}${detail ? ` (${detail})` : ''}`);
   if (!ok) process.exitCode = 1;
@@ -157,10 +160,63 @@ const table = out('table'), results = out('results'), sim = out('sim');
   check('meta 裡沒有 Markdown 強調(前端不處理 Markdown)', stars.length === 0, stars.join('、'));
 }
 
-// ── 4. 球員層:沒有就要明講,而且要講對原因 ─────────────
+// ── 4. 球員層:有就要對得起來,沒有就要講對原因 ─────────────
 {
   const players = out('players'), leaders = out('leaders');
   const has = players.length > 0;
+  if (has) {
+    /* 球員層走 Understat,**形狀逐欄位跟西甲一致** —— 前端的球員頁是看
+       `leaders.source` 分岔的,自己取形狀的話會變成「有資料但前端讀不到」
+       (第一版就是這樣:boards 依賽季分組、source 寫小寫,榜整個畫不出來)。 */
+    const l2 = es1('leaders');
+    const miss = Object.keys(l2).filter(k => !(k in leaders));
+    check('leaders 的欄位跟西甲一致(前端看 source 分岔,形狀不能自己取)', miss.length === 0, miss.join('、'));
+    check('leaders.source 是 Understat(大小寫要跟前端的判斷一致)', leaders.source === 'Understat');
+    check('boards 是「榜的定義」陣列,不是依賽季分組的物件', Array.isArray(leaders.boards));
+    check('上季的榜真的有人', (leaders.last?.scorers ?? []).length > 0,
+      `射手榜 ${(leaders.last?.scorers ?? []).length} 人`);
+
+    /* **隊名對照的獨立核對要進產物。** alias 是一對一推出來的,而一對一不是證據
+       (租借姓名那條坑付過代價)。這裡守的是「核對做了、而且沒有可疑的隊」。 */
+    check('隊名對照的核對結果有進產物', Array.isArray(leaders.nameCheck) && leaders.nameCheck.length > 0,
+      `${leaders.nameCheck?.length ?? 0} 筆`);
+    const suspicious = (leaders.nameCheck ?? []).filter(x => (x.goalRatio != null && x.goalRatio > 1.02)
+      || (x.minutesRatio ?? 1) < 0.85
+      || (x.played >= 10 && x.goalRatio != null && x.goalRatio < 0.7));
+    check('沒有任何一隊的進球或分鐘對不上(對錯隊的話一定會露出來)', suspicious.length === 0,
+      suspicious.map(x => `${x.season} ${x.code} 進球比 ${x.goalRatio}、分鐘比 ${x.minutesRatio}`).join('、'));
+    /* 分鐘是最硬的一條:一隊一季最多 11 × 90 × 場數,對錯隊不可能還落在上限附近。 */
+    const worstMin = Math.min(...(leaders.nameCheck ?? []).map(x => x.minutesRatio ?? 1));
+    check('每一隊的出賽分鐘都接近理論上限(這是隊名對照最硬的證據)', worstMin >= 0.9, `最低 ${worstMin}`);
+
+    /* 有了一部分之後最容易忘記講剩下的沒有 —— 德甲連西甲那層 SportMonks 都沒有。 */
+    check('明講這一層沒有背號 / 頭貼 / 傷停', Array.isArray(leaders.missing) && leaders.missing.length >= 3
+      && /背號/.test(leaders.missing.join('')) && /傷停/.test(leaders.missing.join('')));
+    check('沒有 SportMonks 那一層(德甲沒有身分欄位來源)', Object.keys(leaders.sportmonks ?? {}).length === 0);
+    check('年齡全是 null,而且涵蓋率照實寫出來(不是假裝有)',
+      players.every(p => p.age == null)
+      && Object.values(leaders.ageCoverage ?? {}).every(c => c.known === 0 && c.total > 0));
+    /* 前端的來源那一句要從資料判斷 —— 寫死的話德甲會印一個它沒用的來源 */
+    check('球員頁的來源文案由資料決定,不寫死 SportMonks', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      return /const hasSm = /.test(src) && !/資料來源 Understat \+ SportMonks/.test(src);
+    })());
+    check('季中轉隊的人不掛到單一球隊(整季合計掛上去就是編數字)',
+      players.filter(p => p.multiTeam).every(p => (p.teams ?? []).length > 1));
+
+    /* **開了球員頁就一定要有 players-core**:跨聯賽搜尋是看 open 有沒有 players
+       才去要它的,沒寫就是一個保證 404,而畫面只是「搜尋德甲球員什麼都搜不到」。 */
+    const core = out('players-core');
+    check('有 players-core(跨聯賽搜尋靠它,開了球員頁卻不寫就是保證 404)',
+      Array.isArray(core) && core.length > 0, `${core?.length ?? 0} 筆`);
+    /* 聯賽代碼**必須是自己**。原本 coreFromUnderstat 寫死 'es1',德甲照用的話
+       每一筆都掛西甲的標籤、點下去跳去西甲找一個不存在的人,而畫面完全正常。 */
+    check('players-core 的 league 是 de1,不是沿用西甲的寫死值',
+      core.every(r => r.league === 'de1'), [...new Set(core.map(r => r.league))].join(','));
+    check('身價與傷停是 null 不是 0(Understat 沒有這兩樣)',
+      core.every(r => r.price === null && r.status === null));
+  }
   check('球員產物與 meta 說的一致(有就是有、沒有就是沒有)',
     has === (meta.capabilities?.players === true) && has === (meta.players?.available === true)
     && has === (leaders.available === true));
@@ -247,6 +303,10 @@ const table = out('table'), results = out('results'), sim = out('sim');
     const kind = v => (Array.isArray(v) ? 'array' : v === null ? 'null' : typeof v);
     const bad = [];
     for (const n of need) {
+      /* `leaders` 刻意不跟英冠比:**本站有兩種合法的球員層**,英冠是逐場累加
+         (`match-aggregate`)、德甲跟西甲是 Understat 整季彙總,兩者形狀本來就不同,
+         前端也是看 `leaders.source` 分岔的。德甲那一份改跟**西甲**比,在下一節。 */
+      if (n === 'leaders') continue;
       let a, b;
       try { a = en2(n); b = out(n); } catch { continue; }          // 英冠沒有的就不比
       if (kind(a) !== kind(b)) { bad.push(`${n}(整份 ${kind(a)} vs ${kind(b)})`); continue; }

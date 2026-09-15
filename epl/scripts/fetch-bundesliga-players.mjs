@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* 抓德甲球員的整季數據(Understat)。實作在 `lib/understat-players.mjs` —— 跟西甲**同一支**。
+/* 抓德甲球員的整季數據(Understat)。實作在 `lib/understat-fetch.mjs` —— 跟西甲**同一支**。
  *
  *   npm run de1:players            # 只補還沒有的賽季
  *   npm run de1:players -- --force # 重抓
@@ -25,7 +25,7 @@
  */
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { fetchUnderstatPlayers } from './lib/understat-players.mjs';
+import { fetchUnderstatPlayers } from './lib/understat-fetch.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 

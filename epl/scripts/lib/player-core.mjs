@@ -51,13 +51,18 @@ export function coreFromFpl(players, { lastSeason, currentSeason }) {
 }
 
 /* Understat 形狀 → 核心。一人一季一筆,依 code 併回一人多季;
-   身價與傷停狀態西甲沒有來源 → null。 */
-export function coreFromUnderstat(rows) {
+   身價與傷停狀態 Understat 沒有來源 → null。
+
+   **聯賽代碼要由呼叫端給。** 原本寫死 `'es1'`,因為那時只有西甲走這條路 ——
+   德甲接上之後,它的每一筆都會被標成西甲:跨聯賽搜尋裡德甲球員掛著西甲的標籤,
+   點下去也跳去西甲的球員頁找一個不存在的人,而**畫面完全正常**。
+   (「不是英超就是西甲」那條坑的又一處;預設留 es1,既有呼叫端不用改。) */
+export function coreFromUnderstat(rows, { league = 'es1' } = {}) {
   const byCode = new Map();
   for (const r of rows) {
     if (!byCode.has(r.code)) {
       byCode.set(r.code, record({
-        league: 'es1', code: r.code, name: r.name, fullName: r.fullName, team: r.team,
+        league, code: r.code, name: r.name, fullName: r.fullName, team: r.team,
         pos: r.pos, posZh: r.posZh, age: r.age, price: null, status: null, statusZh: null,
         seasons: [],
       }));
