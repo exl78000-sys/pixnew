@@ -92,6 +92,17 @@ jobs:
         working-directory: epl
         run: npm run probe:understat-de1
 
+      # 2026-09-15:德甲的球員層接上了,缺的是比賽層(賽後報告、逐場統計、單場頁)。
+      # 逐場抓取器已經參數化給六個賽事用,加德甲是表裡多一列 —— **但 id 要先證明**。
+      # 這裡特別危險:倉庫裡已經有一個叫 Bundesliga 的聯賽(at1,奧地利甲,id 38),
+      # 照名字挑會挑到它,而它照樣回得出 18 隊與逐場資料,畫面不報錯、整個聯賽是錯的。
+      # 所以這支從 allLeagues 找 ccode=GER,再**逐隊比對本站名冊**才算證明
+      # (挑到奧地利的話一支都不會對上)。順便取樣兩場看逐場詳情有沒有那五塊。
+      # 唯讀、最多 8 個請求、不寫快取。
+      - name: 探測 FotMob 的德甲聯賽 id 與逐場詳情
+        working-directory: epl
+        run: npm run probe:fotmob-de1
+
   all:
     if: ${{ github.event.inputs.quick != 'true' }}
     runs-on: ubuntu-latest
