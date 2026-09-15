@@ -105,6 +105,25 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
     /* 下限不設 3 km:替補上場幾分鐘的人場均本來就低(實測有),上限 14 km 抓的是單位錯(公尺當公里之類) */
     check('先發球員多數有場均跑動(≥ 80%),數字在 0–14 km', xiAll.filter(p => p.run).length >= xiAll.length * 0.8 && xiAll.every(p => !p.run || (p.run.distancePerGame > 0 && p.run.distancePerGame < 14000)), `${xiAll.filter(p => p.run).length}/${xiAll.length}`);
     check('門將的熱區質心在自家半場(座標方向:兩隊都向右進攻)', xiAll.filter(p => p.pos === 'GK' && p.heat).every(p => p.heat.cx < 30));
+
+    /* 射門池(2026-09-15 回合制):每隊的真實射門列 [x, y, xG, 情境, 結果, 射手];座標在球場內、xG 在 [0,1]、
+       射手配對率要夠(對不上永遠是安靜的 —— 收完要數一次配對率),而且每隊的列數對得回 raw 裡該隊有射手的射門數。 */
+    /* 升班馬(HUL / IPS / COV)只有本季的英超場次,射門池幾十筆是資料的事實 —— 引擎某情境抽不到時退回聯賽池。門檻 30 守「有池」 */
+    check('每隊都有射門池,列數 ≥ 30、座標在 105×68 內、xG 在 [0,1]', teams.every(t => t.shots && t.shots.n >= 30 && t.shots.rows.every(r => r[0] >= 0 && r[0] <= 105 && r[1] >= 0 && r[1] <= 68 && r[2] >= 0 && r[2] <= 1)), teams.map(t => `${t.code} ${t.shots?.n}`).filter(x => /\s\d\d?$/.test(x)).join('、'));
+    check('射門池的射手配對率 ≥ 50%(每隊)', teams.every(t => t.shots.matched >= 0.5), teams.map(t => `${t.code} ${t.shots.matched}`).filter(x => /0\.[0-4]/.test(x)).join('、'));
+    check('射門池的情境與結果標籤是已知的那幾種', teams.every(t => t.shots.sits.every(s => ['RegularPlay', 'FastBreak', 'IndividualPlay', 'ThrowInSetPiece', 'FromCorner', 'FreeKick', 'SetPiece', 'Penalty'].includes(s)) && t.shots.outs.every(o => ['goal', 'saved', 'blocked', 'off', 'post'].includes(o))));
+    check('射門池的列數對回 raw 重算(ARS:該隊有座標與 xG 的射門筆數)', (() => {
+      const n = fm.flatMap(m => m.shots).filter(sh => sh.team === 'ARS' && Number.isFinite(sh.x) && Number.isFinite(sh.y) && sh.xg != null).length;
+      return g.teams.ARS.shots.n === n;
+    })(), `${g.teams.ARS.shots.n}`);
+    check('聯賽層射門池存在(某隊某情境一筆都沒有時的退路),列數是各隊的抽樣', g.league_.shotPool && g.league_.shotPool.rows.length >= 300);
+    check('每隊有主 / 客場的傳球數與越位數(回合制的傳球串長度與越位率用)', teams.every(t => t.play && ['home', 'away'].every(v => t.play[v] && t.play[v].games > 0 && t.play[v].passes > 200 && t.play[v].passes < 900 && t.play[v].offsides >= 0 && t.play[v].offsides < 8)));
+    check('傳球數對回 raw 快取重算(ARS 主場)', (() => {
+      const rows = fm.filter(m => m.home === 'ARS' && m.teamStats?.ARS);
+      if (!rows.length) return g.teams.ARS.play.home == null;
+      const mean = Math.round(rows.reduce((a, m) => a + (m.teamStats.ARS.passes ?? 0), 0) / rows.length * 100) / 100;
+      return g.teams.ARS.play.home.passes === mean && g.teams.ARS.play.home.games === rows.length;
+    })(), `${g.teams.ARS.play.home.passes}`);
   }
 }
 
