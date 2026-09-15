@@ -1,4 +1,4 @@
-import * as C from './core.js?v=f4adf252';
+import * as C from './core.js?v=d2162a48';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:

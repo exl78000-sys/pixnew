@@ -48,6 +48,23 @@ export const COMPETITIONS = {
     extraTime: false, penalties: false, twoLegged: false,
     crossLeague: false, crossTier: false,
   },
+  /* 義甲與法甲(2026-09-15)。teams 與 roundsPerSeason **是聯賽的事實**,
+     不是照抄德甲的:義甲 20 隊 38 輪 = 380 場、法甲 18 隊 34 輪 = 306 場,
+     兩個數字都拿 openfootball 四季的實際場次核對過(義甲每季 380、法甲每季 306)。 */
+  'ita.1': {
+    code: 'ita.1', name: 'Serie A', zh: '義大利足球甲級聯賽', short: '義甲',
+    country: 'ITA', type: 'league',
+    teams: 20, roundsPerSeason: 38,
+    extraTime: false, penalties: false, twoLegged: false,
+    crossLeague: false, crossTier: false,
+  },
+  'fra.1': {
+    code: 'fra.1', name: 'Ligue 1', zh: '法國足球甲級聯賽', short: '法甲',
+    country: 'FRA', type: 'league',
+    teams: 18, roundsPerSeason: 34,
+    extraTime: false, penalties: false, twoLegged: false,
+    crossLeague: false, crossTier: false,
+  },
   // 之後要加的(規劃已寫好,尚未實作):
   // 'uefa.cl': { type:'europe', extraTime:true, penalties:true, twoLegged:true, crossLeague:true }
   // 'eng.fa' : { type:'cup',    extraTime:true, penalties:true, twoLegged:false, crossTier:true }

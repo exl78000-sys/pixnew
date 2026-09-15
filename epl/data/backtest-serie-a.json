@@ -1,0 +1,627 @@
+{
+  "ranAt": "2026-09-15T18:06:04.011Z",
+  "league": "it1",
+  "season": "2025-26",
+  "trainSeasons": [
+    "2024-25"
+  ],
+  "coverage": {
+    "2024-25": {
+      "played": 370,
+      "scheduled": 380
+    },
+    "2025-26": {
+      "played": 380,
+      "scheduled": 380
+    },
+    "note": "上游(openfootball)有部分場次沒有比分,那些場次不納入回測母體。"
+  },
+  "games": 380,
+  "models": {
+    "poisson": {
+      "rps": 0.2047,
+      "logLoss": 1.0056,
+      "hitRate": 0.5158
+    },
+    "elo": {
+      "rps": 0.2056,
+      "logLoss": 1.0081,
+      "hitRate": 0.5158
+    },
+    "blend": {
+      "rps": 0.2032,
+      "logLoss": 1.0002,
+      "hitRate": 0.5211
+    },
+    "baseline": {
+      "rps": 0.2337,
+      "logLoss": 1.0902,
+      "hitRate": 0.3895
+    }
+  },
+  "chosen": "blend",
+  "calibration": [
+    {
+      "lo": 0,
+      "hi": 0.1,
+      "n": 17,
+      "predicted": 0.0835,
+      "actual": 0.0588
+    },
+    {
+      "lo": 0.1,
+      "hi": 0.2,
+      "n": 131,
+      "predicted": 0.1644,
+      "actual": 0.1603
+    },
+    {
+      "lo": 0.2,
+      "hi": 0.3,
+      "n": 484,
+      "predicted": 0.2536,
+      "actual": 0.2562
+    },
+    {
+      "lo": 0.3,
+      "hi": 0.4,
+      "n": 196,
+      "predicted": 0.3406,
+      "actual": 0.3265
+    },
+    {
+      "lo": 0.4,
+      "hi": 0.5,
+      "n": 117,
+      "predicted": 0.4482,
+      "actual": 0.4872
+    },
+    {
+      "lo": 0.5,
+      "hi": 0.6,
+      "n": 124,
+      "predicted": 0.5467,
+      "actual": 0.4919
+    },
+    {
+      "lo": 0.6,
+      "hi": 0.7,
+      "n": 53,
+      "predicted": 0.6421,
+      "actual": 0.717
+    },
+    {
+      "lo": 0.7,
+      "hi": 0.8,
+      "n": 17,
+      "predicted": 0.7343,
+      "actual": 0.8235
+    },
+    {
+      "lo": 0.8,
+      "hi": 0.9,
+      "n": 1,
+      "predicted": 0.8252,
+      "actual": 0
+    },
+    {
+      "lo": 0.9,
+      "hi": 1,
+      "n": 0,
+      "predicted": null,
+      "actual": null
+    }
+  ],
+  "byRound": [
+    {
+      "round": 1,
+      "games": 10,
+      "rps": 0.1808,
+      "hitRate": 0.5
+    },
+    {
+      "round": 2,
+      "games": 10,
+      "rps": 0.2008,
+      "hitRate": 0.7
+    },
+    {
+      "round": 3,
+      "games": 10,
+      "rps": 0.2544,
+      "hitRate": 0.5
+    },
+    {
+      "round": 4,
+      "games": 10,
+      "rps": 0.174,
+      "hitRate": 0.7
+    },
+    {
+      "round": 5,
+      "games": 10,
+      "rps": 0.1906,
+      "hitRate": 0.4
+    },
+    {
+      "round": 6,
+      "games": 10,
+      "rps": 0.1796,
+      "hitRate": 0.5
+    },
+    {
+      "round": 7,
+      "games": 10,
+      "rps": 0.208,
+      "hitRate": 0.2
+    },
+    {
+      "round": 8,
+      "games": 10,
+      "rps": 0.183,
+      "hitRate": 0.4
+    },
+    {
+      "round": 9,
+      "games": 10,
+      "rps": 0.1486,
+      "hitRate": 0.6
+    },
+    {
+      "round": 10,
+      "games": 10,
+      "rps": 0.2578,
+      "hitRate": 0.5
+    },
+    {
+      "round": 11,
+      "games": 10,
+      "rps": 0.2108,
+      "hitRate": 0.2
+    },
+    {
+      "round": 12,
+      "games": 10,
+      "rps": 0.1928,
+      "hitRate": 0.6
+    },
+    {
+      "round": 13,
+      "games": 10,
+      "rps": 0.2377,
+      "hitRate": 0.6
+    },
+    {
+      "round": 14,
+      "games": 10,
+      "rps": 0.2552,
+      "hitRate": 0.5
+    },
+    {
+      "round": 15,
+      "games": 10,
+      "rps": 0.2605,
+      "hitRate": 0.5
+    },
+    {
+      "round": 16,
+      "games": 10,
+      "rps": 0.2026,
+      "hitRate": 0.5
+    },
+    {
+      "round": 17,
+      "games": 10,
+      "rps": 0.1757,
+      "hitRate": 0.6
+    },
+    {
+      "round": 18,
+      "games": 10,
+      "rps": 0.1828,
+      "hitRate": 0.6
+    },
+    {
+      "round": 19,
+      "games": 10,
+      "rps": 0.2044,
+      "hitRate": 0.4
+    },
+    {
+      "round": 20,
+      "games": 10,
+      "rps": 0.155,
+      "hitRate": 0.6
+    },
+    {
+      "round": 21,
+      "games": 10,
+      "rps": 0.1968,
+      "hitRate": 0.4
+    },
+    {
+      "round": 22,
+      "games": 10,
+      "rps": 0.1947,
+      "hitRate": 0.6
+    },
+    {
+      "round": 23,
+      "games": 10,
+      "rps": 0.1762,
+      "hitRate": 0.8
+    },
+    {
+      "round": 24,
+      "games": 10,
+      "rps": 0.1841,
+      "hitRate": 0.4
+    },
+    {
+      "round": 25,
+      "games": 10,
+      "rps": 0.2333,
+      "hitRate": 0.5
+    },
+    {
+      "round": 26,
+      "games": 10,
+      "rps": 0.1974,
+      "hitRate": 0.7
+    },
+    {
+      "round": 27,
+      "games": 10,
+      "rps": 0.1732,
+      "hitRate": 0.5
+    },
+    {
+      "round": 28,
+      "games": 10,
+      "rps": 0.2383,
+      "hitRate": 0.5
+    },
+    {
+      "round": 29,
+      "games": 10,
+      "rps": 0.224,
+      "hitRate": 0.6
+    },
+    {
+      "round": 30,
+      "games": 10,
+      "rps": 0.1831,
+      "hitRate": 0.5
+    },
+    {
+      "round": 31,
+      "games": 10,
+      "rps": 0.1581,
+      "hitRate": 0.8
+    },
+    {
+      "round": 32,
+      "games": 10,
+      "rps": 0.2188,
+      "hitRate": 0.7
+    },
+    {
+      "round": 33,
+      "games": 10,
+      "rps": 0.2077,
+      "hitRate": 0.4
+    },
+    {
+      "round": 34,
+      "games": 10,
+      "rps": 0.1813,
+      "hitRate": 0.4
+    },
+    {
+      "round": 35,
+      "games": 10,
+      "rps": 0.1887,
+      "hitRate": 0.4
+    },
+    {
+      "round": 36,
+      "games": 10,
+      "rps": 0.2091,
+      "hitRate": 0.6
+    },
+    {
+      "round": 37,
+      "games": 10,
+      "rps": 0.3055,
+      "hitRate": 0.5
+    },
+    {
+      "round": 38,
+      "games": 10,
+      "rps": 0.1963,
+      "hitRate": 0.4
+    }
+  ],
+  "surprises": [
+    {
+      "date": "2025-08-31",
+      "round": 2,
+      "home": "INT",
+      "away": "UDI",
+      "fh": 1,
+      "fa": 2,
+      "real": "away",
+      "pReal": 0.0971,
+      "pred": {
+        "home": 0.7197,
+        "draw": 0.1834,
+        "away": 0.0971,
+        "xgHome": 2.53,
+        "xgAway": 0.56,
+        "topScores": [
+          {
+            "s": "2-0",
+            "p": 0.1452
+          },
+          {
+            "s": "3-0",
+            "p": 0.1225
+          },
+          {
+            "s": "1-0",
+            "p": 0.1092
+          }
+        ],
+        "over25": 0.5973,
+        "btts": 0.4021
+      }
+    },
+    {
+      "date": "2026-02-22",
+      "round": 26,
+      "home": "MLN",
+      "away": "PAR",
+      "fh": 0,
+      "fa": 1,
+      "real": "away",
+      "pReal": 0.1276,
+      "pred": {
+        "home": 0.6494,
+        "draw": 0.2231,
+        "away": 0.1276,
+        "xgHome": 1.75,
+        "xgAway": 0.6,
+        "topScores": [
+          {
+            "s": "1-0",
+            "p": 0.1662
+          },
+          {
+            "s": "2-0",
+            "p": 0.1465
+          },
+          {
+            "s": "1-1",
+            "p": 0.1015
+          }
+        ],
+        "over25": 0.4156,
+        "btts": 0.3724
+      }
+    },
+    {
+      "date": "2026-03-08",
+      "round": 28,
+      "home": "BLG",
+      "away": "VER",
+      "fh": 1,
+      "fa": 2,
+      "real": "away",
+      "pReal": 0.1345,
+      "pred": {
+        "home": 0.6567,
+        "draw": 0.2088,
+        "away": 0.1345,
+        "xgHome": 2.04,
+        "xgAway": 0.72,
+        "topScores": [
+          {
+            "s": "2-0",
+            "p": 0.1318
+          },
+          {
+            "s": "1-0",
+            "p": 0.1299
+          },
+          {
+            "s": "2-1",
+            "p": 0.0948
+          }
+        ],
+        "over25": 0.52,
+        "btts": 0.4457
+      }
+    },
+    {
+      "date": "2026-05-17",
+      "round": 37,
+      "home": "INT",
+      "away": "VER",
+      "fh": 1,
+      "fa": 1,
+      "real": "draw",
+      "pReal": 0.1384,
+      "pred": {
+        "home": 0.8252,
+        "draw": 0.1384,
+        "away": 0.0365,
+        "xgHome": 3.16,
+        "xgAway": 0.46,
+        "topScores": [
+          {
+            "s": "3-0",
+            "p": 0.1411
+          },
+          {
+            "s": "2-0",
+            "p": 0.1339
+          },
+          {
+            "s": "4-0",
+            "p": 0.1115
+          }
+        ],
+        "over25": 0.7,
+        "btts": 0.3561
+      }
+    },
+    {
+      "date": "2025-09-14",
+      "round": 3,
+      "home": "ROM",
+      "away": "TOR",
+      "fh": 0,
+      "fa": 1,
+      "real": "away",
+      "pReal": 0.1555,
+      "pred": {
+        "home": 0.5997,
+        "draw": 0.2449,
+        "away": 0.1555,
+        "xgHome": 1.64,
+        "xgAway": 0.54,
+        "topScores": [
+          {
+            "s": "1-0",
+            "p": 0.1784
+          },
+          {
+            "s": "2-0",
+            "p": 0.1529
+          },
+          {
+            "s": "0-0",
+            "p": 0.1205
+          }
+        ],
+        "over25": 0.372,
+        "btts": 0.3421
+      }
+    },
+    {
+      "date": "2025-12-01",
+      "round": 13,
+      "home": "BLG",
+      "away": "CRE",
+      "fh": 1,
+      "fa": 3,
+      "real": "away",
+      "pReal": 0.1558,
+      "pred": {
+        "home": 0.6132,
+        "draw": 0.2309,
+        "away": 0.1558,
+        "xgHome": 1.92,
+        "xgAway": 0.85,
+        "topScores": [
+          {
+            "s": "2-0",
+            "p": 0.1151
+          },
+          {
+            "s": "1-1",
+            "p": 0.1128
+          },
+          {
+            "s": "1-0",
+            "p": 0.1099
+          }
+        ],
+        "over25": 0.5232,
+        "btts": 0.4999
+      }
+    },
+    {
+      "date": "2025-11-02",
+      "round": 10,
+      "home": "FIO",
+      "away": "LEC",
+      "fh": 0,
+      "fa": 1,
+      "real": "away",
+      "pReal": 0.1559,
+      "pred": {
+        "home": 0.6069,
+        "draw": 0.2373,
+        "away": 0.1559,
+        "xgHome": 1.89,
+        "xgAway": 0.66,
+        "topScores": [
+          {
+            "s": "2-0",
+            "p": 0.1398
+          },
+          {
+            "s": "1-0",
+            "p": 0.1355
+          },
+          {
+            "s": "1-1",
+            "p": 0.1101
+          }
+        ],
+        "over25": 0.4675,
+        "btts": 0.4215
+      }
+    },
+    {
+      "date": "2025-11-09",
+      "round": 11,
+      "home": "ATA",
+      "away": "SAS",
+      "fh": 0,
+      "fa": 3,
+      "real": "away",
+      "pReal": 0.1613,
+      "pred": {
+        "home": 0.5967,
+        "draw": 0.242,
+        "away": 0.1613,
+        "xgHome": 1.73,
+        "xgAway": 0.75,
+        "topScores": [
+          {
+            "s": "1-0",
+            "p": 0.1351
+          },
+          {
+            "s": "2-0",
+            "p": 0.1255
+          },
+          {
+            "s": "1-1",
+            "p": 0.1191
+          }
+        ],
+        "over25": 0.4494,
+        "btts": 0.4432
+      }
+    }
+  ],
+  "baselineProbs": {
+    "home": 0.4027,
+    "draw": 0.2919,
+    "away": 0.3054
+  },
+  "vsBaseline": {
+    "diff": 0.03052,
+    "se": 0.00625,
+    "ratio": 4.88,
+    "n": 380
+  },
+  "vsMarket": null,
+  "skippedRounds": [],
+  "market": {
+    "available": false
+  }
+}

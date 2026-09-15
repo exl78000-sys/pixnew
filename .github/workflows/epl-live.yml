@@ -78,6 +78,16 @@ jobs:
         run: npm run de1:fetch
         continue-on-error: true
 
+      # 義甲與法甲(2026-09-15)。跟英冠德甲**同一支實作**(lib/league-fetch.mjs),只有參數不同。
+      # 同樣要在 runner 上才拿得到第二來源(I1 / F1);沒補到也不擋,build 照實寫 meta.sourceCoverage。
+      - name: 抓義甲四季賽程、賽果與逐場統計
+        run: npm run it1:fetch
+        continue-on-error: true
+
+      - name: 抓法甲四季賽程、賽果與逐場統計
+        run: npm run fr1:fetch
+        continue-on-error: true
+
       # 西甲球員整季數據(Understat)。一季一個請求,兩季共兩個 ——
       # API-Football 的 Free 方案不含這兩季,這是實測後改走的路。
       # 上季已完結,有檔就跳過;只有本季會每次重抓。
@@ -92,6 +102,18 @@ jobs:
       # 代號 Bundesliga 與上游的隊名短寫都是 probe-understat-bundesliga.mjs 實測出來的。
       - name: 抓德甲球員整季數據(Understat)
         run: npm run de1:players
+        continue-on-error: true
+
+      # 義甲與法甲球員整季數據(Understat)。跟西甲德甲同一支實作,只有聯賽代號與名冊不同。
+      # 代號 Serie_A / Ligue_1 是 probe-new-leagues.mjs 實測出來的(候選逐一試,不是猜的)——
+      # 猜錯的話端點回 200 + error 或空陣列,不會拋錯。
+      # **這一步也只能在 runner 上跑**:沙箱的出口代理不放行 understat.com。
+      - name: 抓義甲球員整季數據(Understat)
+        run: npm run it1:players
+        continue-on-error: true
+
+      - name: 抓法甲球員整季數據(Understat)
+        run: npm run fr1:players
         continue-on-error: true
 
       # 歷史賽季的 Understat 進球情境。這是為了測「上一季的定位球/運動戰強弱
@@ -294,6 +316,10 @@ jobs:
           # 德甲(2026-09-15):聯賽 id 54,是 probe-fotmob-bundesliga.mjs 逐隊比對名冊證明出來的
           # (GER 的清單裡一堆叫 Bundesliga 的,而奧地利甲也叫 Bundesliga)。
           npm run game:fetch -- --league=de1 || true
+          # 義甲 55 / 法甲 53(2026-09-15):同樣是 probe-new-leagues.mjs 逐隊比對 openfootball
+          # 證明出來的 —— 義大利有 Serie B 與女足 Serie A、巴西也有 Serie A;法國有 Ligue 2。
+          npm run game:fetch -- --league=it1 || true
+          npm run game:fetch -- --league=fr1 || true
           # 歐冠(2026-09-12):賽果來自 ucl.json(上面那步剛抓的 football-data),隊伍身分是 fd id。
           # 一場一個請求(不抓熱區圖),預設上限 40 → 每次最多 39 場;一輪 18 場,一次部署就補完。
           npm run game:fetch -- --league=ucl || true
@@ -392,6 +418,22 @@ jobs:
       - name: 建立德甲資料集
         run: npm run de1:build
 
+      # 義甲與法甲走查回測 —— 跟前面幾個聯賽同一支實作(lib/backtest-runner.mjs),
+      # 零 fetch 的本地計算,所以失敗不容忍。
+      - name: 義甲走查回測(模型準度)
+        run: npm run it1:backtest
+
+      - name: 建立義甲資料集
+        run: npm run it1:build
+
+      - name: 法甲走查回測(模型準度)
+        run: npm run fr1:backtest
+
+      # **這是最後一個聯賽的 build**,後面只剩英超那一支(它的 stamp-assets 會把戳
+      # 寫進每一個聯賽的 meta.json)。任何聯賽的 build 排到英超後面,那個聯賽的戳就沒了。
+      - name: 建立法甲資料集
+        run: npm run fr1:build
+
       # 近況/交手特徵的調參與驗收。三個賽季都已完結,數字很穩定 ——
       # 跑它是為了讓模型頁上「測過但沒進模型」那一段的數字永遠是現跑的,而不是寫死的。
       - name: 特徵驗證(調參賽季挑係數、驗收賽季驗收)
@@ -430,50 +472,82 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f epl/data/raw/live.json epl/data/raw/season-gws.json \
-                     epl/data/raw/openfootball/ epl/data/raw/pulselive/ \
-                     epl/data/raw/openfootball-la-liga/ \
-                     epl/data/raw/news-la-liga-zh.json \
-                     epl/data/raw/news-zh.json \
-                     epl/data/raw/news-championship-zh.json \
-                     epl/data/raw/news-championship.json \
-                     epl/data/championship-teams-verified.json \
-                     epl/data/live-history.json \
-                     epl/data/live-history-la-liga.json \
-                     epl/data/raw/schedule-status.json \
-                     epl/data/raw/understat/team-dates.json \
-                     epl/data/raw/understat-la-liga/team-dates.json \
-                     epl/data/championship-coaches-verified.json \
-                     epl/data/raw/understat/ \
-                     epl/data/raw/understat-la-liga/ \
-                     epl/data/raw/understat-bundesliga/ \
-                     epl/data/raw/fotmob-la-liga/ \
-                     epl/data/raw/fotmob-epl/ epl/data/raw/fotmob-championship/ epl/data/raw/fotmob-ucl/ \
-                     epl/data/raw/fotmob-bundesliga/ \
-                     epl/data/raw/sportmonks-la-liga/ \
-                     epl/data/raw/sportmonks-epl/ \
-                     epl/data/raw/sportmonks-cups/ \
-                     epl/data/raw/fotmob-cups/ \
-                     epl/data/raw/fotmob-facup/ epl/data/raw/fotmob-eflcup/ \
-                     epl/data/raw/football-data/ \
-                     epl/data/raw/probes/ \
-                     epl/data/raw/api-football/ \
-                     epl/data/raw/api-football-la-liga/ \
-                     epl/data/raw/football-data-couk/ \
-                     epl/data/raw/football-data-couk-la-liga/ \
-                     epl/data/backtest.json epl/data/backtest-matches.json \
-                     epl/data/backtest-laliga.json epl/data/backtest-laliga-matches.json \
-                     epl/data/raw/openfootball-championship/ \
-                     epl/data/raw/football-data-couk-championship/ \
-                     epl/data/raw/openfootball-ucl/ \
-                     epl/data/raw/fotmob-ucl-leagues/ \
-                     epl/data/backtest-championship.json epl/data/backtest-championship-matches.json \
-                     epl/data/raw/openfootball-bundesliga/ \
-                     epl/data/raw/football-data-couk-bundesliga/ \
-                     epl/data/backtest-bundesliga.json epl/data/backtest-bundesliga-matches.json \
-                     epl/data/form-tuning.json epl/data/availability-history.json \
-                     epl/data/situation-tuning.json epl/data/situation-tuning-es1.json \
-                     epl/data/congestion-tuning.json 2>/dev/null || true
+          # **一個 git add 列很多路徑,其中一個不存在就整條失敗、一個檔都沒加** ——
+          # 而 `2>/dev/null || true` 會把錯誤訊息跟結束碼一起吞掉,整個 job 照樣報 success。
+          # 這條坑在盃賽回填那次真的踩過(抓到 64 場、回寫印「沒有變化」)。
+          # 新聯賽特別容易中:understat-* / fotmob-* 那幾個目錄要**第一次抓成功之後**才存在,
+          # 而抓取那幾步是 continue-on-error 的。所以改成逐個判斷存不存在再加。
+          for p in \
+            epl/data/raw/live.json \
+            epl/data/raw/season-gws.json \
+            epl/data/raw/openfootball/ \
+            epl/data/raw/pulselive/ \
+            epl/data/raw/openfootball-la-liga/ \
+            epl/data/raw/news-la-liga-zh.json \
+            epl/data/raw/news-zh.json \
+            epl/data/raw/news-championship-zh.json \
+            epl/data/raw/news-championship.json \
+            epl/data/championship-teams-verified.json \
+            epl/data/live-history.json \
+            epl/data/live-history-la-liga.json \
+            epl/data/raw/schedule-status.json \
+            epl/data/raw/understat/team-dates.json \
+            epl/data/raw/understat-la-liga/team-dates.json \
+            epl/data/championship-coaches-verified.json \
+            epl/data/raw/understat/ \
+            epl/data/raw/understat-la-liga/ \
+            epl/data/raw/understat-bundesliga/ \
+            epl/data/raw/fotmob-la-liga/ \
+            epl/data/raw/fotmob-epl/ \
+            epl/data/raw/fotmob-championship/ \
+            epl/data/raw/fotmob-ucl/ \
+            epl/data/raw/fotmob-bundesliga/ \
+            epl/data/raw/sportmonks-la-liga/ \
+            epl/data/raw/sportmonks-epl/ \
+            epl/data/raw/sportmonks-cups/ \
+            epl/data/raw/fotmob-cups/ \
+            epl/data/raw/fotmob-facup/ \
+            epl/data/raw/fotmob-eflcup/ \
+            epl/data/raw/football-data/ \
+            epl/data/raw/probes/ \
+            epl/data/raw/api-football/ \
+            epl/data/raw/api-football-la-liga/ \
+            epl/data/raw/football-data-couk/ \
+            epl/data/raw/football-data-couk-la-liga/ \
+            epl/data/backtest.json \
+            epl/data/backtest-matches.json \
+            epl/data/backtest-laliga.json \
+            epl/data/backtest-laliga-matches.json \
+            epl/data/raw/openfootball-championship/ \
+            epl/data/raw/football-data-couk-championship/ \
+            epl/data/raw/openfootball-ucl/ \
+            epl/data/raw/fotmob-ucl-leagues/ \
+            epl/data/backtest-championship.json \
+            epl/data/backtest-championship-matches.json \
+            epl/data/raw/openfootball-bundesliga/ \
+            epl/data/raw/football-data-couk-bundesliga/ \
+            epl/data/backtest-bundesliga.json \
+            epl/data/backtest-bundesliga-matches.json \
+            epl/data/raw/openfootball-serie-a/ \
+            epl/data/raw/football-data-couk-serie-a/ \
+            epl/data/raw/understat-serie-a/ \
+            epl/data/raw/fotmob-serie-a/ \
+            epl/data/backtest-serie-a.json \
+            epl/data/backtest-serie-a-matches.json \
+            epl/data/raw/openfootball-ligue-1/ \
+            epl/data/raw/football-data-couk-ligue-1/ \
+            epl/data/raw/understat-ligue-1/ \
+            epl/data/raw/fotmob-ligue-1/ \
+            epl/data/backtest-ligue-1.json \
+            epl/data/backtest-ligue-1-matches.json \
+            epl/data/form-tuning.json \
+            epl/data/availability-history.json \
+            epl/data/situation-tuning.json \
+            epl/data/situation-tuning-es1.json \
+            epl/data/congestion-tuning.json \
+          ; do
+            [ -e "$p" ] && git add -f "$p" || echo "  (略過不存在的路徑:$p)"
+          done
           git add -f epl/data/manual/photos.json epl/data/manual/crests-cups.json epl/data/manual/team-tiers.json 2>/dev/null || true
           git add -f epl/data/manual/competition-logos.json 2>/dev/null || true
           # 產物也回寫:這條工作流的回寫清單沒有 web/data,倉庫裡那份會停在第一次提交的 0 張版
