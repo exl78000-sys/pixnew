@@ -118,6 +118,46 @@ export async function runEngineChecks(mod, root) {
     }
   }
 
+  // 7. 回合制(2026-09-15):結局的比例對得回該隊的率、每一筆回合內的事件都掛在回合上、碰球的人都在場上
+  {
+    const N2 = 200;
+    const sum = { home: { shots: 0, corners: 0, fouls: 0, offsides: 0 }, away: { shots: 0, corners: 0, fouls: 0, offsides: 0 } };
+    let seqsTot = 0, bip = 0, noSeq = [], notOn = [], lastIsActor = 0, ends = 0;
+    for (let seed = 1; seed <= N2; seed++) {
+      const m = mod.createMatch({ profile, home: 'ARS', away: 'LIV', pred, seed });
+      while (!m.state().finished) {
+        const q = m.nextSequence();
+        if (!q) break;
+        seqsTot++; bip += q.dur;
+        /* 對「這一回合產生之後」的名單:自動換人在 nextSequence 的開頭做,回合結束時的快照比它舊。
+           回合裡被罰下的人(對手犯規那一方不在傳球串裡,所以只有極少數)也算在場上過。 */
+        const onAfter = new Set(m.state()[q.side].onPitch);
+        for (const c of q.chain) if (!onAfter.has(c) && !q.events.some(e => e.type === 'card' && e.card === 'red' && e.player === c)) notOn.push(`seed ${seed} 回合 ${q.id}: ${c} 不在場上`);
+        if (q.end && ['shot', 'corner', 'foul', 'out', 'loose', 'offside'].includes(q.end.type)) { ends++; if (q.chain[q.chain.length - 1] === q.end.player) lastIsActor++; }
+        for (const e of q.events) if (e.seq !== q.id) noSeq.push(`seed ${seed}: ${e.type} 掛錯回合`);
+      }
+      const s = m.state();
+      for (const side of ['home', 'away']) { sum[side].shots += s[side].stats.shots; sum[side].corners += s[side].stats.corners; sum[side].fouls += s[side].stats.fouls; sum[side].offsides += s[side].stats.offsides; }
+      for (const e of m.events()) if (['shot', 'goal', 'corner', 'foul', 'card', 'offside'].includes(e.type) && e.seq == null) noSeq.push(`seed ${seed}: ${e.type} 沒有 seq`);
+    }
+    /* 期望值直接從側寫算(不經引擎):射門 = 我方射門率 × 對手被射門率 / 聯盟均;角球同理;犯規 = 對手犯規率與我方被犯規率的平均;越位 = 該隊逐場越位。 */
+    const L = profile.league_, A = profile.teams.ARS, V = profile.teams.LIV;
+    const exp = {
+      home: { shots: A.rates.home.sf * V.rates.away.sa / L.rates.sf, corners: A.rates.home.cf * V.rates.away.ca / L.rates.cf, fouls: (V.rates.away.fouls + A.rates.home.foulsAgainst) / 2, offsides: A.play.home.offsides },
+      away: { shots: V.rates.away.sf * A.rates.home.sa / L.rates.sf, corners: V.rates.away.cf * A.rates.home.ca / L.rates.cf, fouls: (A.rates.home.fouls + V.rates.away.foulsAgainst) / 2, offsides: V.play.away.offsides },
+    };
+    const within = (k, tol) => ['home', 'away'].every(sd => Math.abs(sum[sd][k] / N2 - exp[sd][k]) <= Math.max(tol * exp[sd][k], 3 * Math.sqrt(exp[sd][k] / N2)));
+    const fmt = k => ['home', 'away'].map(sd => `${(sum[sd][k] / N2).toFixed(2)} vs ${exp[sd][k].toFixed(2)}`).join('、');
+    out.push(['回合結局的射門數對回該隊的射門率(200 場均值,差 < 10% 或 3 個標準誤)', within('shots', 0.10), fmt('shots')]);
+    out.push(['回合結局的角球數對回角球率', within('corners', 0.12), fmt('corners')]);
+    out.push(['回合結局的犯規數對回犯規率', within('fouls', 0.12), fmt('fouls')]);
+    out.push(['回合結局的越位數對回越位率', within('offsides', 0.25), fmt('offsides')]);
+    out.push(['每隊每場約 100 個回合、球在場上約 57 分鐘(遊戲規則,回合長度由控球目標分配)', Math.abs(seqsTot / N2 - 2 * m0.rules.SEQ_PER_TEAM) < 25 && Math.abs(bip / N2 / 60 - m0.rules.BIP_SEC / 60) < 8, `${(seqsTot / N2).toFixed(0)} 回合・${(bip / N2 / 60).toFixed(1)} 分`]);
+    out.push(['回合內的事件都掛在那個回合上(seq),射門 / 角球 / 犯規 / 牌 / 越位一筆都不例外', noSeq.length === 0, noSeq.slice(0, 2).join(' | ')]);
+    out.push(['回合裡碰球的人都在場上', notOn.length === 0, notOn.slice(0, 2).join(' | ')]);
+    out.push(['結局的人就是傳球串的最後一個(畫面照這個人演)', lastIsActor === ends, `${lastIsActor}/${ends}`]);
+  }
+
   // 6. 控球目標在 [20,80]
   const pt = [...Array(50)].map((_, i) => mod.createMatch({ profile, home: 'SUN', away: 'MCI', pred, seed: i + 1 }).possTarget);
   out.push(['控球目標在 20–80 之間,且弱隊主場對強隊平均低於 50', pt.every(p => p >= 20 && p <= 80) && pt.reduce((a, b) => a + b, 0) / pt.length < 50, `平均 ${(pt.reduce((a, b) => a + b, 0) / pt.length).toFixed(1)}`]);

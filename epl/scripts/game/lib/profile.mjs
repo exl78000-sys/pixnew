@@ -13,6 +13,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { teamMatchRows } from '../../lib/style-trend.mjs';
 import { loadTeams } from '../../lib/teams.mjs';
+import { matchOne } from '../../lib/names.mjs';
 
 const r2 = n => Math.round(n * 100) / 100;
 const r3 = n => Math.round(n * 1000) / 1000;
@@ -68,6 +69,52 @@ function compactPlayer(p) {
     ...(p.tracking?.heat ? { heat: { cx: p.tracking.heat.cx, cy: p.tracking.heat.cy, spread: p.tracking.heat.spread, games: p.tracking.heat.games, touches: p.tracking.heat.touches } } : {}),
     ...(p.tracking?.distancePerGame != null ? { run: { distancePerGame: p.tracking.distancePerGame, topSpeed: p.tracking.topSpeed ?? null, games: p.tracking.games } } : {}),
   };
+}
+
+/* 真實射門池(2026-09-15,回合制引擎用):每一次射門存 [x, y, xG, 情境, 結果, 射手]。
+   引擎每次射門就從這裡**抽一筆真的**:位置、xG、情境、射手都是真資料,不是編的。
+   座標是 FotMob 的 105 × 68、攻向 x = 105(兩隊都正規化成同一邊,十二碼點在 (94, 34) 驗過)。
+   結果分五種:goal / saved(射正被撲)/ blocked / off / post —— `blocked` 是獨立旗標,
+   優先於 type(被封阻的射門 type 也會是 AttemptSaved 或 Miss)。
+   射手用全名對回名單(lib/names.mjs 的 matchOne + 「姓氏 = 簡稱」退路,跟 matchstats 同一套),
+   對不到就 -1 —— 引擎會退回「在場球員按射門數加權」,不會對錯人。 */
+const SIT_KEYS = ['RegularPlay', 'FastBreak', 'IndividualPlay', 'ThrowInSetPiece', 'FromCorner', 'FreeKick', 'SetPiece', 'Penalty'];
+const OUT_KEYS = ['goal', 'saved', 'blocked', 'off', 'post'];
+const outcomeOf = sh => (sh.type === 'Goal' ? 'goal' : sh.blocked ? 'blocked' : sh.type === 'AttemptSaved' ? 'saved' : sh.type === 'Post' ? 'post' : 'off');
+function shotPool(shots, squad) {
+  const cands = (squad ?? []).filter(x => x.fullName);
+  const byWeb = name => {
+    const last = String(name).trim().split(/\s+/).at(-1)?.toLowerCase();
+    const hits = (squad ?? []).filter(x => String(x.name ?? '').toLowerCase() === last);
+    return hits.length === 1 ? hits[0] : null;
+  };
+  const cache = new Map();
+  const find = name => {
+    if (!squad) return null;
+    if (!cache.has(name)) cache.set(name, matchOne(cands, name, { nameOf: c => c.fullName }) ?? byWeb(name));
+    return cache.get(name);
+  };
+  const players = [];
+  const idxOf = code => { let i = players.indexOf(code); if (i < 0) { players.push(code); i = players.length - 1; } return i; };
+  let matched = 0;
+  const rows = shots.filter(sh => Number.isFinite(sh.x) && Number.isFinite(sh.y) && sh.xg != null).map(sh => {
+    const who = sh.player ? find(sh.player) : null;
+    if (who) matched++;
+    const sit = SIT_KEYS.indexOf(sh.situation);
+    return [Math.round(sh.x * 10) / 10, Math.round(sh.y * 10) / 10, Math.round(sh.xg * 1000) / 1000,
+      sit < 0 ? 0 : sit, OUT_KEYS.indexOf(outcomeOf(sh)), who ? idxOf(who.code) : -1];
+  });
+  return { n: rows.length, sits: SIT_KEYS, outs: OUT_KEYS, players, rows, matched: rows.length ? r3(matched / rows.length) : null };
+}
+
+/* FotMob 逐場球隊統計(傳球、越位):CSV 沒有這兩項。主客分開,附 n。 */
+function playStatsOf(fm, code, isHome) {
+  const rows = fm.filter(m => (isHome ? m.home : m.away) === code && m.teamStats?.[code]);
+  if (!rows.length) return null;
+  const opp = m => m.teamStats[isHome ? m.away : m.home];
+  const v = k => r2(mean(rows.map(m => m.teamStats[code][k] ?? 0)));
+  return { games: rows.length, passes: v('passes'), offsides: v('offsides'),
+    offsidesAgainst: r2(mean(rows.map(m => opp(m)?.offsides ?? 0))) };
 }
 
 /* FotMob 逐場快取(data/raw/fotmob-epl/*-game-details.json)—— 控球、射門、事件。 */
@@ -239,6 +286,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     const formations = [...new Set([lf?.formation, lu?.shape, ...used.map(u => u.formation)].filter(Boolean))];
     const sp = t.tactics?.setPieces ?? {};
     const teamShots = shotsAll.filter(s => s.team === code);
+    const pool = shotPool(teamShots, squad);
     /* 逐人熱區與跑動:直接讀球員主檔的 tracking(build.mjs 用 lib/matchstats.mjs 的 attachPlayerTracking 掛的),
        這裡不再自己配對 —— 兩份配對邏輯一定會分岔(CLAUDE.md 的老坑)。 */
     const tp = tempoBy.get(code), zn = zonesBy.get(code);
@@ -258,6 +306,8 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
         against: { shots: v.against?.shots ?? null, goals: v.against?.goals ?? null } }])) : null,
       shotSituations: teamShots.length ? situationsOf(teamShots) : null,
       shotSample: teamShots.length,
+      shots: pool,
+      play: { home: playStatsOf(fm, code, true), away: playStatsOf(fm, code, false) },
       takers: sp.takers ?? null,
       subShare: goals.data?.[last]?.teams?.[code] ? r3((goals.data[last].teams[code].subGoals ?? 0) / Math.max(1, goals.data[last].teams[code].for ?? 1)) : null,
       assistShare: goals.data?.[last]?.teams?.[code] ? r3(Math.min(1, (goals.data[last].teams[code].assists ?? 0) / Math.max(1, goals.data[last].teams[code].for ?? 1))) : null,
@@ -272,7 +322,8 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     sources: {
       rates: `football-data.co.uk 逐場 CSV(${last}${existsSync(join(csvDir, `${cur}.csv`)) ? ` + ${cur}` : ''}),隊-場 ${leagueRates.teamGames} 列`,
       possession: `FotMob matchDetails(data/raw/fotmob-epl),${fm.length} 場;官網 /stats/match 抽核 20 場全部在 ±2 內`,
-      shots: `FotMob shotmap,${shotsAll.length} 次射門(逐射門 xG 與情境)`,
+      shots: `FotMob shotmap,${shotsAll.length} 次射門(逐射門 xG 與情境);射門池逐筆帶座標、結果與射手`,
+      play: `FotMob 逐場球隊統計(傳球數、越位),${fm.filter(m => m.teamStats).length} 場`,
       tempo: `FotMob 追蹤資料(跑動距離 / 衝刺),${[...tempoBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場;熱區與逐人跑動見球員主檔的 tracking、三路進攻 ${[...zonesBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場`,
       ability: 'FPL per-90(players.json 的 last / current),450 分鐘以上才用',
       cards: 'FPL 逐季黃紅牌 + CSV 逐場牌數',
@@ -294,6 +345,12 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       ownGoalShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Own Goal').length / goalEv.length) : null,
       penaltyShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Penalty').length / goalEv.length) : null,
       goals: goalEv.length,
+      /* 聯賽層的射門池(等距抽 400 筆,射手不對名單):某隊某個情境一筆都沒有時的退路 */
+      shotPool: (() => { const step = Math.max(1, Math.floor(shotsAll.length / 400)); return shotPool(shotsAll.filter((_, i) => i % step === 0), null); })(),
+      play: (() => {
+        const ts = fm.flatMap(m => Object.values(m.teamStats ?? {}));
+        return ts.length ? { teamGames: ts.length, passes: r2(mean(ts.map(t => t.passes ?? 0))), offsides: r2(mean(ts.map(t => t.offsides ?? 0))) } : null;
+      })(),
     },
     calibration: calibration ? { a: calibration.a, se: calibration.se, significant: calibration.significant,
       validGain: calibration.valid?.llGainVs0 ?? null, coverage: calibration.coverage, method: calibration.method, note: calibration.note } : null,

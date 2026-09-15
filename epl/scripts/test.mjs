@@ -3452,136 +3452,134 @@ async function checkDataGap() {
       ];
     })(),
 
-    /* ── 跑位動畫真的跑一遍(2026-09-01 加)────────────────────
-       上面那一條是掃原始碼的字串,掃不到「演出把腳本吞掉」這種錯。
-       實際踩到的:射門門檻寫死 `holder.x > 78`,而前鋒基準 x=53.26、
-       快攻加成上限 18、抖動 2.2 —— 最遠 73.5,**門檻永遠碰不到**。
-       後果不只是沒有射門動畫:pendingGoal 清不掉,goalsPlayed 停在 0,
-       第一顆之後整場卡在快攻模式,而畫面上一切正常、測試全綠。
-       這一條把模組真的載進來跑滿 90 分鐘,斷言排幾顆就要演幾顆。 */
+    /* ── 跑位動畫真的跑一遍(2026-09-01 加;2026-09-15 改成照劇本演)────────────────────
+       上面那一條是掃原始碼的字串,掃不到「演出把劇本吞掉」這種錯。
+       舊版實際踩到的:射門門檻寫死 `holder.x > 78`,而前鋒最遠 73.5 —— 門檻永遠碰不到,
+       腳本進球一次都演不出來,而畫面上一切正常、測試全綠。
+       現在動畫照引擎的回合演(`play(seq)`,畫面當主時鐘)。這一節拿**真的引擎**產一整場、真的演完,守四件事:
+       1. 事件流的每一筆都對得到一段演出,而且順序一樣 —— 事件在畫面發生時才回報,一筆都不能少、不能亂
+       2. 演的人就是事件裡的人(射門 / 進球的圓點 = 事件的射手);進球回報時球真的在網裡
+       3. 演出不會卡住:逾時補救是少數、看門狗一次都不該動;正常速一場落在使用者要的長度附近
+       4. 跑動仍像人:速度上限、分段、站著、不抖,而且即時模式的跑動量對得回 FotMob */
     ...await (async () => {
-      const url = pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'));
-      const anim = await import(url);
-      // 假畫布:什麼方法都吃。動畫本身不讀畫布回傳值
-      const sink = new Proxy({}, { get: () => () => {} });
-      const runOnce = (seed, dueAt) => {
-        let queued = null;
-        const prevRaf = globalThis.requestAnimationFrame;
-        const prevCancel = globalThis.cancelAnimationFrame;
-        globalThis.requestAnimationFrame = cb => { queued = cb; return 1; };
-        globalThis.cancelAnimationFrame = () => { queued = null; };
-        let rs = seed >>> 0;
-        const rng = () => {
-          rs = (rs + 0x6D2B79F5) >>> 0;
-          let t = rs; t = Math.imul(t ^ (t >>> 15), t | 1);
-          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-        };
-        const side = formation => ({ formation, color: '#0f0', xi: { GK: [], DEF: [], MID: [], FWD: [] } });
-        const api = anim.mountDuelAnim({ width: 900, height: 560, getContext: () => sink }, {
-          home: side('4-3-3'), away: side('4-4-2'),
-          homeCode: 'AAA', awayCode: 'BBB', lambdaHome: 1.8, lambdaAway: 1.1, rng,
-        });
-        const FPS = 30, SEC_PER_MIN = 60 / 90;    // 頁面把一分鐘壓成約 0.67 秒
-        /* 合成時鐘要從**現在**起算。從 0 起算的話第一格 now 比 mount 當下的
-           performance.now() 還小,dt 變負值 —— 而負多少取決於行程跑了多久,
-           於是同一個種子在 node 單跑與 npm test 裡結果不同(實測踩過)。 */
-        let now = performance.now(), kickoffs = 0, lastScore = 0;
-        /* **逐格量,不要只看最後一格。** `__animProbe()` 是呼叫當下的快照;
-           跑完才叫一次的話,「整場都沒有疊在一起」這句話一格都沒驗到 ——
-           實測那樣的斷言在最小間距 0.11m(全場)的情況下照樣全綠。 */
-        let minSep = Infinity, crowded = 0, frames = 0;
-        for (let f = 0; f < 95 * FPS * SEC_PER_MIN; f++) {
-          now += 1000 / FPS;
-          const min = Math.floor(f / (FPS * SEC_PER_MIN));
-          const dueSides = dueAt.filter(([m]) => m <= min).map(([, sd]) => sd);
-          if (dueSides.length !== lastScore) { kickoffs++; lastScore = dueSides.length; }
-          api.setState({ min, done: min >= 95, dueSides, hs: 0, as: 0 });
-          queued?.(now);
-          const sep = anim.__animProbe().minSeparation;
-          minSep = Math.min(minSep, sep);
-          if (sep < 1.2) crowded++;
-          frames++;
-        }
-        const out = anim.__animProbe();
-        api.destroy();
-        globalThis.requestAnimationFrame = prevRaf;
-        globalThis.cancelAnimationFrame = prevCancel;
-        return { ...out, minSep, crowdPct: (crowded / frames) * 100 };
+      const anim = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js')));
+      const eng = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-engine.js')));
+      const sink = new Proxy({}, { get: () => () => {} });   // 假畫布:什麼方法都吃。動畫本身不讀畫布回傳值
+      const game = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'game', 'pl.json'), 'utf8'));
+      const mk = code => {
+        const t = game.teams[code];
+        const meta = {}, xi = { GK: [], DEF: [], MID: [], FWD: [] }, shirts = { GK: [], DEF: [], MID: [], FWD: [] }, codes = { GK: [], DEF: [], MID: [], FWD: [] };
+        const by = new Map(t.squad.map(x => [x.code, x]));
+        for (const c of t.xi) { const x = by.get(c); if (!x) continue; (xi[x.pos] ?? xi.MID).push(x.name); (shirts[x.pos] ?? shirts.MID).push(x.shirt); (codes[x.pos] ?? codes.MID).push(x.code); meta[x.name] = { role: x.roleLow, heat: x.heat, run: x.run }; }
+        return { formation: t.formation.latest ?? t.formation.options[0], color: '#0f0', xi, shirts, codes, meta, pace: t.pace, zones: t.zones };
       };
-      const two = [[20, 'home'], [60, 'away']];
-      const seeds = [1, 7, 42, 1234];
-      const results = seeds.map(sd => runOnce(sd, two));
-      /* 事件演出(2026-09-03):排射偏、角球、中柱,跑完看出界統計 —— 射偏要變球門球、角球要演出來 */
-      const withEvents = (() => {
+      const eventful = seq => seq.events.some(e => e.type !== 'sub') || ['corner', 'penalty', 'kickoff'].includes(seq.start.type) || (seq.start.type === 'freekick' && seq.start.x >= 70);
+      const MODES = {
+        fast: (seq, dead) => (eventful(seq) ? { hops: 0, carrySec: 0.25, deadSec: Math.min(dead, 0.4), celebrateSec: 1.2, cut: true } : { instant: true }),
+        normal: (seq, dead) => (eventful(seq) ? { hops: 2, carrySec: 0.4, deadSec: Math.min(dead, 0.8), cut: true } : { instant: true }),
+        real: (seq, dead) => ({ hops: Infinity, fill: seq.dur, deadSec: dead }),
+      };
+      /* 台子:引擎一場、動畫照回合演到完(或到 limitSec 模擬秒)。合成時鐘從**現在**起算、整數毫秒 —— 見 duel-anim 的 loop 註解。 */
+      const runMatch = ({ seed, mode, limitSec = 0 }) => {
         let queued = null;
         const prevRaf = globalThis.requestAnimationFrame, prevCancel = globalThis.cancelAnimationFrame;
         globalThis.requestAnimationFrame = cb => { queued = cb; return 1; };
         globalThis.cancelAnimationFrame = () => { queued = null; };
-        let rs = 99;
+        let rs = seed >>> 0;
         const rng = () => { rs = (rs + 0x6D2B79F5) >>> 0; let t = rs; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-        const side = formation => ({ formation, color: '#0f0', xi: { GK: [], DEF: [], MID: [], FWD: [] } });
-        const api = anim.mountDuelAnim({ width: 900, height: 560, getContext: () => sink }, {
-          home: side('4-3-3'), away: side('4-4-2'), homeCode: 'AAA', awayCode: 'BBB', lambdaHome: 1.8, lambdaAway: 1.1, rng,
-        });
-        const FPS = 30, SEC = 2;
-        const evs = [[10, { type: 'shot', side: 'home', outcome: 'off' }], [25, { type: 'corner', side: 'home' }], [55, { type: 'shot', side: 'home', outcome: 'post' }], [70, { type: 'corner', side: 'away' }]];
-        let now = performance.now();
-        for (let f = 0; f < 95 * FPS * SEC; f++) {
-          now += 1000 / FPS;
-          const min = Math.floor(f / (FPS * SEC));
-          for (const [m, e] of evs) if (m === min && f % (FPS * SEC) === 0) api.perform(e);
-          api.setState({ min, done: min >= 95, dueSides: two.filter(([m]) => m <= min).map(([, sd]) => sd), hs: 0, as: 0 });
-          queued?.(now);
+        const match = eng.createMatch({ profile: game, home: 'ARS', away: 'MCI', pred: { xgHome: 1.6, xgAway: 1.3 }, seed });
+        const api = anim.mountDuelAnim({ width: 900, height: 560, getContext: () => sink }, { home: mk('ARS'), away: mk('MCI'), homeCode: 'ARS', awayCode: 'MCI', rng });
+        const shown = [], goalsInNet = []; let lastDead = 0, done = false, seqs = 0;
+        const advance = () => {
+          if (match.state().finished) { done = true; return; }
+          const before = match.events().length;
+          const seq = match.nextSequence();
+          if (!seq) { done = true; return; }
+          const evs = match.events().slice(before);
+          api.play(seq, { pre: evs.filter(e => e.seq == null && e.type !== 'half' && e.type !== 'full'), post: evs.filter(e => e.type === 'half' || e.type === 'full'), deadBefore: lastDead, mode: MODES[mode](seq, lastDead),
+            onEvent: e => { shown.push(e); if (e.type === 'goal') { const b = anim.__animProbe().ball; goalsInNet.push(b.inNet && (b.x >= 105 || b.x <= 0)); } },
+            onDone: () => { lastDead = seq.dead; seqs++; advance(); } });
+        };
+        const FPS = 30; let now = performance.now(), frames = 0, minSep = Infinity, crowded = 0, still = 0, samples = 0, rev = 0;
+        const prevPos = new Map();
+        advance();
+        while (!done && frames < 200000) {
+          now += 1000 / FPS; queued?.(now); frames++;
+          const p = anim.__animProbe();
+          /* **逐格量,不要只看最後一格。** `__animProbe()` 是呼叫當下的快照;跑完才叫一次的話,「整場都沒有疊在一起」一格都沒驗到 */
+          minSep = Math.min(minSep, p.minSeparation); if (p.minSeparation < 1.2) crowded++;
+          /* 抖動的量法(2026-09-15):「站著」= 一格位移 < 0.05 m/s;「看得到的來回」= 相鄰兩格都走 ≥ 0.05 m 而且方向相反 */
+          p.motion.players.forEach((q, i) => {
+            if (q.off) return;
+            const o = prevPos.get(i);
+            if (o) { const dx = q.x - o.x, dy = q.y - o.y, d = Math.hypot(dx, dy); samples++; if (d / (1 / FPS) < 0.05) still++; if (o.dx != null && d >= 0.05 && Math.hypot(o.dx, o.dy) >= 0.05 && dx * o.dx + dy * o.dy < 0) rev++; prevPos.set(i, { x: q.x, y: q.y, dx, dy }); }
+            else prevPos.set(i, { x: q.x, y: q.y, dx: null, dy: null });
+          });
+          if (limitSec && p.motion.secs > limitSec) break;
         }
-        const out = anim.__animProbe();
+        const probe = anim.__animProbe();
         api.destroy();
         globalThis.requestAnimationFrame = prevRaf; globalThis.cancelAnimationFrame = prevCancel;
-        return out;
-      })();
+        return { match, shown, goalsInNet, probe, seqs, frames, secs: probe.motion.secs, minSep, crowdPct: (crowded / frames) * 100, stillPct: (still / Math.max(1, samples)) * 100, revPerMin: rev / 22 / (probe.motion.secs / 60) };
+      };
+      const fast = runMatch({ seed: 42, mode: 'fast' });
+      const normal = runMatch({ seed: 7, mode: 'normal' });
+      const real = runMatch({ seed: 42, mode: 'real', limitSec: 180 });
+      const fidelity = r => {
+        const all = r.match.events();
+        const same = r.shown.length === all.length && r.shown.every((e, i) => e === all[i]);
+        const shots = all.filter(e => e.type === 'shot' || (e.type === 'goal' && !e.ownGoal));
+        const perf = r.probe.performed.filter(x => x.type === 'shot' || x.type === 'goal');
+        const mism = shots.filter((e, i) => perf[i]?.code !== (e.type === 'goal' ? e.scorer : e.player)).length;
+        return { same, shots: shots.length, mism, all: all.length };
+      };
+      const fF = fidelity(fast), fN = fidelity(normal);
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8');
+      const on = real.probe.motion.players.slice(0, 11).filter(p => !p.off && p.role !== 'GK');
+      const mps = on.reduce((a, p) => a + p.dist / real.secs, 0) / on.length;
+      const perMin = mps * 60, target = game.teams.ARS.pace.distancePerMin / 11;   // 即時播放是一比賽分鐘 60 秒
+      const off = Math.abs(perMin - target) / target;
+      console.log(`      快 ${(fast.secs / 60).toFixed(1)} 分・正常 ${(normal.secs / 60).toFixed(1)} 分(${normal.seqs} 回合)・逾時 快 ${JSON.stringify(fast.probe.timeouts)} 正常 ${JSON.stringify(normal.probe.timeouts)}`);
+      console.log(`      ARS 跑動(即時 3 分鐘):畫面 ${perMin.toFixed(0)} m/min・FotMob ${target.toFixed(0)} m/min(差 ${(off * 100).toFixed(0)}%)・站著 ${real.stillPct.toFixed(1)}%・看得到的來回 ${real.revPerMin.toFixed(2)} 次/人/分`);
+      const all3 = [fast, normal, real];
       return [
-        ['排幾顆進球就演幾顆(每個種子都要)', results.every(r => r.goalsPlayed === 2)],
-        ['演完就把 pendingGoal 清掉(不會卡在快攻模式)', results.every(r => r.pendingGoal === null)],
-        ['射門門檻用「離球門多遠」,不寫死一個 x 座標', /toGoal < BOX_X/.test(src) && !/holder\.x > 78/.test(src)],
-        ['快攻有保底收尾(演出不該吞掉模型排的進球)', /breakClock > BREAK_MAX/.test(src)],
-        /* 2026-09-03 球改成物理:速度 + 摩擦,停球往前推、盤帶撥球、搶斷彈開、出界規則 */
+        /* ── 1. 事件流 = 演出 ── */
+        ['事件流的每一筆都對得到一段演出,而且順序一樣(快 / 正常兩種模式)', fF.same && fN.same, `快 ${fast.shown.length}/${fF.all}・正常 ${normal.shown.length}/${fN.all}`],
+        ['演的人就是事件裡的人:每一次射門 / 進球的圓點 = 事件的射手', fF.mism === 0 && fN.mism === 0 && fF.shots > 5, `快 ${fF.shots} 筆射門對不上 ${fF.mism}・正常 ${fN.shots} 筆對不上 ${fN.mism}`],
+        ['進球回報時球真的在網裡(球過線才算進球,不是引擎說了算)', fast.goalsInNet.length > 0 && fast.goalsInNet.every(Boolean) && normal.goalsInNet.every(Boolean), `快 ${fast.goalsInNet.filter(Boolean).length}/${fast.goalsInNet.length}・正常 ${normal.goalsInNet.filter(Boolean).length}/${normal.goalsInNet.length}`],
+        ['演出的進球數 = 比分', fast.probe.goalsPlayed === fast.match.state().score[0] + fast.match.state().score[1] && normal.probe.goalsPlayed === normal.match.state().score[0] + normal.match.state().score[1]],
+        ['角球在物理層真的發生(守方解圍滾過底線),數量對得回事件流', fast.probe.counts.corners >= fast.match.events().filter(e => e.type === 'corner').length, `${fast.probe.counts.corners} vs ${fast.match.events().filter(e => e.type === 'corner').length}`],
+        /* ── 2. 不卡住 ── */
+        ['看門狗一次都不該動(演出對不上劇本時要靠逾時補救,不是等看門狗)', all3.every(r => r.probe.timeouts.watchdog === 0), all3.map(r => r.probe.timeouts.watchdog).join('/')],
+        ['逾時補救是少數(正常速一場 < 8% 的回合)', (normal.probe.timeouts.hop + normal.probe.timeouts.end + normal.probe.timeouts.fetch + normal.probe.timeouts.restart) < normal.seqs * 0.08, JSON.stringify(normal.probe.timeouts)],
+        /* 使用者定的:正常速 8~12 分鐘。上限放 15 —— 事件多的場次(種子 7 有 69 筆事件)會長一點;下限守「真的有在演」 */
+        ['正常速一場落在 6~15 分鐘、快一場不到 8 分鐘', normal.secs / 60 > 6 && normal.secs / 60 < 15 && fast.secs / 60 < 8, `正常 ${(normal.secs / 60).toFixed(1)}・快 ${(fast.secs / 60).toFixed(1)}`],
+        ['沒結局的回合一格內跳過,但事件照樣回報(instant 路徑)', /finishInstant/.test(src) && /mode\.instant/.test(src) && /flushEvents\(\)/.test(src)],
+        ['每一段演出都有逾時,逾時就把球放到該在的人腳下、事件照樣回報', /HOP_TIMEOUT/.test(src) && /END_TIMEOUT/.test(src) && /WATCHDOG/.test(src) && /snapBallTo/.test(src)],
+        ['劇本剪短時不剪接:留第一腳與最後幾腳,中間用長傳接起來', /function planChain/.test(src) && /keep === 2/.test(src)],
+        ['追空中球的人跑去落點,不是跑向球(迎上一顆 20 m/s 的球控不住,飛過去再回頭要兩秒)', /function landingOf/.test(src) && /return ball\.held \? holderRoute\(p\) : landingOf\(\)/.test(src)],
+        ['丟球的人由劇本決定(end.by),不是動畫自己挑;沒有自主的傳球時鐘', /end\.by/.test(src) && !/passClock/.test(src) && !/chooseNext/.test(src) && !/dueSides/.test(src)],
+        /* 2026-09-03 球改成物理:速度 + 摩擦,出界規則;劇本版只**記下**出界,怎麼接由劇本決定 */
         ['球是有速度與摩擦的獨立物體,不是插值', /const FRICTION/.test(src) && /ball\.vx/.test(src) && !/ball\.dur/.test(src)],
         ['出界規則:邊線 → 界外球、底線依最後碰球的隊決定球門球或角球', /function throwIn/.test(src) && /function byline/.test(src) && /lastSide === defending/.test(src)],
         ['注定出界的球誰都不准控回來(否則角球永遠演不出來)', /noCatch/.test(src)],
-        ['丟球由傳球路線決定誰攔到,不是隨機挑一個對手', /function laneCut/.test(src) && /turnover\(chooseNext\(\)\)/.test(src)],
-        /* ── 跑動的運動模型(2026-09-12,使用者回報「動作跑動還不真實」)────────
-           舊版是「位置每格往目標插值一個固定比例」,速度跟離目標的距離成正比,**沒有上限**。
-           量出來:尖峰 160 ~ 482 m/s(577 ~ 1735 km/h)、全隊均速 5.6 ~ 6.1 m/s 整場不變
-           —— 畫面上二十二個人永遠在衝刺。改成速度 + 加速度上限,最高速度用 FotMob 逐人真資料。
-           這四條守的是「像人在跑」的可量測部分;插值那條守著不要改回去。 */
-        ['沒有人超過自己的最高速度(逐人 topSpeed 真的當上限,不是倍率)',
-          results.every(r => r.motion.players.every(p => p.vmax <= p.vtop + 0.05))],
+        ['被封阻的射門由傳球路線上的人擋(laneCut)', /function laneCut/.test(src)],
+        /* ── 3. 跑動的運動模型(2026-09-12)── 舊版是位置插值,速度跟距離成正比、沒有上限:尖峰 160 ~ 482 m/s */
+        ['沒有人超過自己的最高速度(逐人 topSpeed 真的當上限,不是倍率)', all3.every(r => r.probe.motion.players.every(p => p.vmax <= p.vtop + 0.05))],
         ['尖峰速度在人類範圍(舊版的插值追目標會飆到 160~482 m/s)', (() => {
-          const peak = Math.max(...results.flatMap(r => r.motion.players.map(p => p.vmax)));
-          if (!(peak > 5 && peak < 12)) console.log(`      尖峰 ${peak.toFixed(1)} m/s`);
+          const peak = Math.max(...all3.flatMap(r => r.probe.motion.players.map(p => p.vmax)));
           return peak > 5 && peak < 12;
-        })()],
-        ['全隊均速接近真實比賽(約 1.9 m/s;舊版是 5.6~6.1,整場都在衝)', (() => {
-          const mean = results.map(r => {
-            const on = r.motion.players.filter(p => !p.off && p.role !== 'GK');
-            return on.reduce((a, p) => a + p.dist / r.motion.secs, 0) / on.length;
-          });
-          const avg = mean.reduce((a, b) => a + b, 0) / mean.length;
-          if (!(avg > 1.3 && avg < 2.5)) console.log(`      均速 ${avg.toFixed(2)} m/s(各種子 ${mean.map(x => x.toFixed(2)).join('、')})`);
-          return avg > 1.3 && avg < 2.5;
-        })()],
-        ['速度分段的時間形狀像比賽:走路帶過半、衝刺帶是少數', (() => {
+        })(), `${Math.max(...all3.flatMap(r => r.probe.motion.players.map(p => p.vmax))).toFixed(1)} m/s`],
+        ['全隊均速接近真實比賽(約 1.9 m/s;舊版是 5.6~6.1,整場都在衝)', mps > 1.3 && mps < 2.5, `${mps.toFixed(2)} m/s`],
+        ['速度分段的時間形狀像比賽:走路帶過半、衝刺帶是少數(即時模式)', (() => {
           const t = [0, 0, 0, 0];
-          for (const r of results) for (const p of r.motion.players) for (let b = 0; b < 4; b++) t[b] += p.bandT[b];
+          for (const p of real.probe.motion.players) for (let b = 0; b < 4; b++) t[b] += p.bandT[b];
           const tt = t.reduce((a, b) => a + b, 0);
-          const pct = t.map(x => (x / tt) * 100);
-          if (!(pct[0] > 50 && pct[3] < 5)) console.log(`      分段 ${pct.map(x => x.toFixed(0) + '%').join('/')}`);
-          return pct[0] > 50 && pct[3] < 5;
+          return t[0] / tt > 0.5 && t[3] / tt < 0.05;
         })()],
         ['位置不是直接往目標插值(那不是運動模型,而且沒有速度上限)',
-          /p\.vx \+= /.test(src) && /p\.x \+= p\.vx \* dt/.test(src)
-          && !/p\.x \+= \(\(a\.x/.test(src) && /const ACCEL = /.test(src)],
+          /p\.vx \+= /.test(src) && /p\.x \+= p\.vx \* dt/.test(src) && !/p\.x \+= \(\(a\.x/.test(src) && /const ACCEL = /.test(src)],
+        ['要轉彎就先減速(全速的轉彎半徑 4 m,追腳邊 2 m 的球會永遠繞圈)', /cos < 0\.85/.test(src)],
         ['衝刺的定義跟 FotMob 一樣(要持續,不是每次跨過門檻)', /SPRINT_HOLD/.test(src) && /p\.sprintT/.test(src)],
         ['間距兜底單格的推擠量有上限(一格推 1.6 m 是跳躍,不是走路)', /PUSH_MAX/.test(src)],
         ['畫面看得出方向與快慢(朝向、拖影、步態相位)', /faceAng/.test(src) && /p\.stride \+=/.test(src) && /ctx\.ellipse\(cx, cy/.test(src)],
@@ -3595,72 +3593,13 @@ async function checkDataGap() {
         })()],
         ['球黏在持球者腳下(帶球不再是踢出去再追,那會走走停停)', !/DRIBBLE_PUSH/.test(src) && /function holderRoute/.test(src)],
         ['上搶者 / 前插者換人有遲滯(沒有的話兩個差不多近的人會輪流當,一起抖)', /PRESS_HYST/.test(src) && /RUN_HYST/.test(src)],
-        /* 跑動量的**真資料對照**:拿 game/pl.json 的 ARS 與 MCI 真的跑一場,
-           均速要對得回 FotMob 的 `pace.distancePerMin / 11 / 60`。
+        /* 跑動量的**真資料對照**:即時模式跑 3 分鐘,均速要對得回 FotMob 的 `pace.distancePerMin / 11 / 60`。
            這一條是整組裡唯一有外部對照組的 —— 上面那幾條只證明「像人」,這一條證明「像這兩隊」。 */
-        ...(() => {
-          const gp = join(ROOT, 'web', 'data', 'game', 'pl.json');
-          if (!existsSync(gp)) return [['跑動量對回 FotMob(缺 game/pl.json,略過)', true]];
-          const game = JSON.parse(readFileSync(gp, 'utf8'));
-          const mk = code => {
-            const t = game.teams[code];
-            const meta = {}, xi = { GK: [], DEF: [], MID: [], FWD: [] }, shirts = { GK: [], DEF: [], MID: [], FWD: [] };
-            const by = new Map(t.squad.map(x => [x.code, x]));
-            for (const c of t.xi) { const x = by.get(c); if (!x) continue; (xi[x.pos] ?? xi.MID).push(x.name); (shirts[x.pos] ?? shirts.MID).push(x.shirt); meta[x.name] = { role: x.roleLow, heat: x.heat, run: x.run }; }
-            return { formation: t.formation, color: '#0f0', xi, shirts, meta, pace: t.pace, zones: t.zones };
-          };
-          let queued = null;
-          const prevRaf = globalThis.requestAnimationFrame, prevCancel = globalThis.cancelAnimationFrame;
-          globalThis.requestAnimationFrame = cb => { queued = cb; return 1; };
-          globalThis.cancelAnimationFrame = () => { queued = null; };
-          let rs = 42;
-          const rng = () => { rs = (rs + 0x6D2B79F5) >>> 0; let t = rs; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-          const api = anim.mountDuelAnim({ width: 900, height: 560, getContext: () => sink }, {
-            home: mk('ARS'), away: mk('MCI'), homeCode: 'ARS', awayCode: 'MCI', lambdaHome: 1.8, lambdaAway: 1.3, rng });
-          const FPS = 30, SPM = 2;
-          let now = performance.now();
-          /* 抖動的量法(2026-09-15):逐格取位置。「站著」= 一格位移 < 0.05 m/s 的比例;
-             「看得到的來回」= 同一個人相鄰兩格都走 ≥ 0.05 m(畫布上約半個像素)而且方向相反。
-             舊版站著只有 1.6%(正弦抖動讓沒有人停過)。 */
-          const prevPos = new Map(); let still = 0, samples = 0, rev = 0;
-          for (let f = 0; f < 95 * FPS * SPM; f++) {
-            now += 1000 / FPS;
-            const min = Math.floor(f / (FPS * SPM));
-            api.setState({ min, done: min >= 95, dueSides: [], hs: 0, as: 0 });
-            queued?.(now);
-            anim.__animProbe().motion.players.forEach((p, i) => {
-              if (p.off) return;
-              const q = prevPos.get(i);
-              if (q) {
-                const dx = p.x - q.x, dy = p.y - q.y, d = Math.hypot(dx, dy);
-                samples++; if (d / (1 / FPS) < 0.05) still++;
-                if (q.dx != null && d >= 0.05 && Math.hypot(q.dx, q.dy) >= 0.05 && dx * q.dx + dy * q.dy < 0) rev++;
-                prevPos.set(i, { x: p.x, y: p.y, dx, dy });
-              } else prevPos.set(i, { x: p.x, y: p.y, dx: null, dy: null });
-            });
-          }
-          const m = anim.__animProbe().motion;
-          api.destroy();
-          globalThis.requestAnimationFrame = prevRaf; globalThis.cancelAnimationFrame = prevCancel;
-          const on = m.players.slice(0, 11).filter(p => !p.off && p.role !== 'GK');
-          const mps = on.reduce((a, p) => a + p.dist / m.secs, 0) / on.length;
-          // 即時播放是一比賽分鐘 60 秒,所以 m/s × 60 就是「每人每比賽分鐘跑多少公尺」
-          const perMin = mps * 60, target = game.teams.ARS.pace.distancePerMin / 11;
-          const off = Math.abs(perMin - target) / target;
-          const stillPct = (still / samples) * 100, revPerMin = rev / 22 / (m.secs / 60);
-          console.log(`      ARS 跑動:畫面 ${perMin.toFixed(0)} m/min・FotMob ${target.toFixed(0)} m/min(差 ${(off * 100).toFixed(0)}%)・站著 ${stillPct.toFixed(1)}%・看得到的來回 ${revPerMin.toFixed(2)} 次/人/分`);
-          return [
-            ['跑動量對回 FotMob 的 pace.distancePerMin(即時播放,差 < 20%)', off < 0.20],
-            /* 抖動(2026-09-15,使用者回報):真人大半時間站著或走,舊版 1.6% 站著 —— 正弦抖動讓每個人整場漂。
-               門檻 8% 放在新版(15%)與舊版之間;它守的是「有人真的站過」,不是精確值。 */
-            ['有人真的站著(站著的時間 ≥ 8%;舊版正弦抖動之下只有 1.6%)', stillPct >= 8, `${stillPct.toFixed(1)}%`],
-            ['沒有看得到的來回抖動(相鄰兩格 ≥ 0.05 m 且反向,每人每分鐘 < 0.5 次)', revPerMin < 0.5, `${revPerMin.toFixed(2)}`],
-          ];
-        })(),
-        /* 避讓的真正防線在這四條**純函式**斷言上:它們是精確值,沒有門檻。
-           跑完整場那條只能當毛胚(見下面) —— 有避讓與沒避讓的壅擠比例
-           實測是 5.1~12.9% 對 7.6~22.7%(各 24 個種子),兩個分佈重疊,
-           **單一門檻分不開**。所以行為要在函式層釘死,不要靠跑一場的數字。 */
+        ['跑動量對回 FotMob 的 pace.distancePerMin(即時播放,差 < 20%)', off < 0.20, `${perMin.toFixed(0)} vs ${target.toFixed(0)}`],
+        /* 門檻 8% 放在新版(15%)與舊版(1.6%)之間;它守的是「有人真的站過」,不是精確值 */
+        ['有人真的站著(站著的時間 ≥ 8%;舊版正弦抖動之下只有 1.6%)', real.stillPct >= 8, `${real.stillPct.toFixed(1)}%`],
+        ['沒有看得到的來回抖動(相鄰兩格 ≥ 0.05 m 且反向,每人每分鐘 < 0.5 次)', real.revPerMin < 0.5, `${real.revPerMin.toFixed(2)}`],
+        /* 避讓的真正防線在這四條**純函式**斷言上:它們是精確值,沒有門檻。 */
         ['擋路的人在正前方時,偏移垂直於連線(沿切線繞,不是往後退)', (() => {
           const p = { x: 0, y: 0 }, q = { x: 2, y: 0 };
           const v = anim.avoidanceOf(p, { x: 5, y: 0 }, [p, q], 0);
@@ -3682,25 +3621,13 @@ async function checkDataGap() {
           const v = anim.avoidanceOf(p, { x: 5, y: 0 }, [p, q]);
           return v.x === 0 && v.y === 0;
         })()],
-        /* 跑完整場的那條:守的是「整個崩掉」,不是「避讓有沒有生效」。
-           門檻 20% 取在無避讓的中位數(11.9%)與最大值(22.7%)之間 ——
-           它抓得到「避讓被整個拿掉又剛好遇上壞種子」,抓不到「效果變差一點」。
-           那條界線就是分不開的,寫在這裡免得下一個人以為它守得更多。
-           實測有避讓:24 個種子 5.1~12.9%,這四個種子最大 9.3%。 */
-        /* 2026-09-03 位置層兜底(`separate()`)之後這兩條從毛胚變成真防線:
-           24 個種子實測壅擠畫格全部 0%、全場最小間距中位數 1.59 m(之前 0.11 m)。
-           門檻放在 1%(不是 0):第一格 mount 時球員從基準點出發,格線緊的陣型可能有一兩格還沒推開。 */
-        ['整場幾乎沒有畫格有人疊在一起(位置層兜底之後 < 1%;之前 5~13%)',
-          results.every(r => r.crowdPct < 1), results.map(r => r.crowdPct.toFixed(2)).join('/')],
-        /* 門檻 0.9:球的物理加進來之後角旗與底線角落偶爾會夾到 1.0 左右(實測 0.98),真正的防線是上面那條壅擠比例 */
-        ['球員最近也保持 0.9 m 以上(MIN_SEP 1.6 減去邊線夾住的餘裕)', results.every(r => r.minSep > 0.9), results.map(r => r.minSep.toFixed(2)).join('/')],
+        /* 位置層兜底(`separate()`):24 個種子實測壅擠畫格全部 0%、最小間距中位數 1.59 m(之前 0.11 m)。
+           門檻放在 1%(不是 0):mount 的第一格與剪接(壓縮播放把人放到附近)可能有一兩格還沒推開。 */
+        ['整場幾乎沒有畫格有人疊在一起(位置層兜底之後 < 1%;之前 5~13%)', all3.every(r => r.crowdPct < 1), all3.map(r => r.crowdPct.toFixed(2)).join('/')],
+        ['球員最近也保持 0.9 m 以上(MIN_SEP 1.6 減去邊線夾住的餘裕)', all3.every(r => r.minSep > 0.9), all3.map(r => r.minSep.toFixed(2)).join('/')],
         ['位置層兜底是純幾何:持球者不被推、不讀比分', /function separate/.test(src) && /p === holder \? 0/.test(src) && !/separate\([^)]*st\.score/.test(src)],
-        ['排的兩顆角球都演出來(守方解圍出底線 → 角旗)', withEvents.counts.corners >= 2, JSON.stringify(withEvents.counts)],
-        ['射偏滾出底線變球門球', withEvents.counts.goalKicks >= 1, JSON.stringify(withEvents.counts)],
-        ['有事件的那場進球照演、角旗沒有殘留', withEvents.goalsPlayed === 2 && withEvents.cornerFlag === false],
-        ['抖動吃模擬時鐘,不吃 performance.now(牆上時間會讓同種子不同劇本)',
-          !/performance\.now\(\) \/ 1000/.test(src) && /simT \+= dt/.test(src)],
-        ['球員不會被畫到場外', results.every(r => r.inBounds)],
+        ['抖動吃模擬時鐘,不吃 performance.now(牆上時間會讓同種子不同劇本)', !/performance\.now\(\) \/ 1000/.test(src) && /simT \+= dt/.test(src)],
+        ['球員不會被畫到場外', all3.every(r => r.probe.inBounds)],
       ];
     })(),
 
