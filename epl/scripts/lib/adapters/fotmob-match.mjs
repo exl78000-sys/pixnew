@@ -89,16 +89,35 @@ const TEAM_STAT_KEYS = {
   expected_goals: 'xG',
 };
 
+/* 對照表以外的 key(2026-09-15,模擬遊玩階段 C):**值也存下來**(extra),鍵照上游的 slug 不翻譯。
+   之前只記名字(unmappedStats),於是禁區觸球、長傳、抄截、攔截、對抗這些一直「有欄位沒有值」,
+   側寫的壓迫與直接度只能用代理指標。上游的 stats 有兩種形狀:數字,或 "123 (85%)" 這種字串 ——
+   後者取括號前的數字、百分比另存 `{key}_pct`;解不出來就 null,不猜。 */
+function extraValue(v) {
+  if (v == null) return { n: null, pct: null };
+  if (typeof v === 'number') return { n: Number.isFinite(v) ? v : null, pct: null };
+  const m = /^\s*(-?[\d.]+)\s*(?:\((\d+(?:\.\d+)?)%\))?/.exec(String(v));
+  return m ? { n: Number(m[1]), pct: m[2] != null ? Number(m[2]) : null } : { n: null, pct: null };
+}
 export function fotmobTeamStats(raw) {
   const groups = raw?.content?.stats?.Periods?.All?.stats ?? [];
   const home = {}, away = {};
   const unmapped = new Set();
+  const extra = { home: {}, away: {} };
   for (const group of groups) {
     for (const row of group?.stats ?? []) {
       // type:'title' 是分隔列,stats 是 [null,null]
       if (!row || row.type === 'title' || !Array.isArray(row.stats)) continue;
       const field = TEAM_STAT_KEYS[row.key];
-      if (!field) { if (row.key) unmapped.add(row.key); continue; }
+      if (!field) {
+        if (row.key) {
+          unmapped.add(row.key);
+          const [h, a] = row.stats.map(extraValue);
+          extra.home[row.key] = h.n; extra.away[row.key] = a.n;
+          if (h.pct != null || a.pct != null) { extra.home[row.key + '_pct'] = h.pct; extra.away[row.key + '_pct'] = a.pct; }
+        }
+        continue;
+      }
       const [h, a] = row.stats;
       home[field] = numOrNull(h); away[field] = numOrNull(a);
     }
@@ -108,7 +127,7 @@ export function fotmobTeamStats(raw) {
     corners: null, offsides: null, fouls: null, saves: null,
     passes: null, passesAccurate: null, passAccuracy: null, xG: null, ...s,
   });
-  return { home: fill(home), away: fill(away), unmapped: [...unmapped] };
+  return { home: fill(home), away: fill(away), unmapped: [...unmapped], extra };
 }
 
 /* 逐人統計。stats 是四組(Top stats / Attack / Defense / Duels),

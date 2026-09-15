@@ -1,0 +1,79 @@
+name: 逐場資料重抓 / 回填(手動,FotMob)
+
+# 模擬遊玩階段 C(2026-09-15):抓取器從這天起把對照表以外的球隊統計**值**存進 teamExtra
+#(禁區觸球、長傳、傳中、抄截、攔截、對抗…),萃取版本 1 → 2。舊快取只有欄位名 —— 英超 2025-26 的 380 場
+# 與本季要重抓一次,側寫的壓迫 / 直接度才能換成直接指標。一場一個請求(熱區圖沿用舊的,不重抓),
+# 整季 380 場一次 800 就補完(--limit 是請求數;英超一場算兩個,所以 800 → 399 場)。
+# 沙箱連不到 FotMob,只能在 runner 上跑;抓取器自己守門(比分對回本站賽程才收)。
+# 沒有掛 notify:手動的一次性工作,失敗就看 log(跟 ucl-backfill 同一個理由)。
+on:
+  workflow_dispatch:
+    inputs:
+      league:
+        description: '聯賽(pl / es1 / en2 / ucl / eflcup / facup)。只有 pl 會因版本落後重抓舊快取;其他聯賽只補缺的'
+        required: true
+        default: 'pl'
+      season:
+        description: '賽季標籤,例如 2025-26'
+        required: true
+        default: '2025-26'
+      limit:
+        description: '本次請求上限(英超一場兩個請求;整季 380 場填 800)'
+        required: false
+        default: '800'
+
+concurrency:
+  group: game-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 抓逐場資料(FotMob)
+        working-directory: epl
+        # --retry:不理抓取器 30 分鐘的退避 —— 人按下去就是要現在試
+        run: npm run game:fetch -- --league=${{ inputs.league }} --season=${{ inputs.season }} --limit=${{ inputs.limit }} --retry
+
+      - name: 回填進度(有 teamExtra 的場次 / 全部)
+        working-directory: epl
+        run: |
+          node -e "
+            const fs=require('fs');const dir='data/raw/'+({pl:'fotmob-epl',es1:'fotmob-la-liga',en2:'fotmob-championship',ucl:'fotmob-ucl',eflcup:'fotmob-eflcup',facup:'fotmob-facup'}['${{ inputs.league }}']??'fotmob-epl');
+            for (const f of fs.readdirSync(dir).filter(x=>/-game-details\.json$/.test(x))) { const ms=Object.values(JSON.parse(fs.readFileSync(dir+'/'+f,'utf8')).matches??{}); const has=ms.filter(m=>m.teamExtra&&Object.keys(m.teamExtra).length&&Object.values(m.teamExtra).some(t=>Object.keys(t).length)).length; console.log(f, '有 teamExtra', has+'/'+ms.length); }
+          " || true
+
+      - name: 回寫 raw
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # 逐個判斷目錄在不在再 add(一個 add 兩個路徑其中一個不存在 → 整個 add 什麼都沒加,那條坑)
+          for d in epl/data/raw/fotmob-epl epl/data/raw/fotmob-la-liga epl/data/raw/fotmob-championship epl/data/raw/fotmob-ucl epl/data/raw/fotmob-eflcup epl/data/raw/fotmob-facup; do
+            [ -d "$d" ] && git add -f "$d"
+          done
+          if git diff --cached --quiet; then
+            echo "raw 沒有變化,不提交"
+            exit 0
+          fi
+          git commit -q -m "chore(epl): ${{ inputs.league }} ${{ inputs.season }} 逐場資料重抓 / 回填 [skip ci]"
+          for try in 1 2 3; do
+            if git pull -q --rebase origin "$GITHUB_REF_NAME"; then
+              if git push -q origin "HEAD:$GITHUB_REF_NAME"; then echo "已回寫(第 $try 次)"; exit 0; fi
+            else
+              git rebase --abort 2>/dev/null || true
+            fi
+            sleep 5
+          done
+          echo "✗ 回寫連撞三次,這次的 raw 沒有進倉庫 —— 重跑一次就好"
+          exit 1

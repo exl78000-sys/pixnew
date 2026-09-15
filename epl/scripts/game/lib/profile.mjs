@@ -146,14 +146,26 @@ function styleMetrics(t) {
   const poss = t.possession.home.mean != null && t.possession.away.mean != null
     ? (t.possession.home.n * t.possession.home.mean + t.possession.away.n * t.possession.away.mean) / Math.max(1, t.possession.home.n + t.possession.away.n) : null;
   const sf = rate('sf'), sa = rate('sa'), passes = play('passes'), oppPasses = play('oppPasses'), offA = play('offsidesAgainst');
-  return {
+  const out = {
     mentality: { value: sf != null && sa != null ? r2(sf - sa) : null, n: nRates, unit: '次/場' },
-    pressing: { value: oppPasses != null ? r2(oppPasses) : null, n: nPlay, unit: '次/場', invert: true },
+    pressing: { value: oppPasses != null ? r2(oppPasses) : null, n: nPlay, unit: '次/場', invert: true, basis: STYLE_AXES.pressing.basis, proxy: true },
     line: { value: offA != null ? r2(offA) : null, n: nPlay, unit: '次/場' },
     width: { value: t.zones ? r3(t.zones.left + t.zones.right) : null, n: t.zones?.games ?? 0, unit: '' },
     tempo: { value: passes != null && poss ? r2(passes / poss) : null, n: Math.min(nPlay, t.possession.home.n + t.possession.away.n), unit: '次/控球%' },
-    directness: { value: passes && sf != null ? r2((sf / passes) * 100) : null, n: Math.min(nRates, nPlay), unit: '次/100 傳' },
+    directness: { value: passes && sf != null ? r2((sf / passes) * 100) : null, n: Math.min(nRates, nPlay), unit: '次/100 傳', basis: STYLE_AXES.directness.basis, proxy: true },
   };
+  /* 階段 C:重抓之後有直接指標就換掉代理 —— 涵蓋要到該隊一半以上的場次才換,不然一兩場的值當整季的踢法 */
+  const ex = t.extra;
+  const half = Math.max(1, Math.floor(nPlay / 2));
+  const tk = ex?.['matchstats.headers.tackles'], ic = ex?.interceptions, lb = ex?.long_balls_accurate;
+  if (ex && tk && ic && ex.oppPasses && Math.min(tk.n, ic.n) >= half) {
+    out.pressing = { value: r2(((tk.mean + ic.mean) / Math.max(1, ex.oppPasses.mean)) * 100), n: Math.min(tk.n, ic.n), unit: '次/100 對手傳球', invert: false,
+      basis: '每 100 次對手傳球的抄截 + 攔截(FotMob 逐場)', proxy: false };
+  }
+  if (ex && lb && passes && lb.n >= half) {
+    out.directness = { value: r2((lb.mean / passes) * 100), n: lb.n, unit: '次/100 傳', basis: '每 100 次傳球的成功長傳(FotMob 逐場)', proxy: false };
+  }
+  return out;
 }
 /* 20 隊排名分五級。排名用「值」由小到大(invert 的軸反過來),同值同名次。 */
 function styleLevels(metricsByCode) {
@@ -164,6 +176,24 @@ function styleLevels(metricsByCode) {
     rows.sort((a, b) => (inv ? b.v - a.v : a.v - b.v));
     rows.forEach((r, i) => { (out[r.code] ??= {})[axis] = Math.min(5, Math.floor((i / rows.length) * 5) + 1); });
   }
+  return out;
+}
+
+/* 對照表以外的球隊統計(teamExtra,階段 C 重抓後才有值):逐隊場均,附涵蓋場數。
+   鍵照上游 slug(touches_opp_box、long_balls_accurate、interceptions、'matchstats.headers.tackles'、duel_won…)。 */
+const EXTRA_KEYS = ['touches_opp_box', 'big_chance', 'shots_inside_box', 'shots_outside_box', 'own_half_passes', 'opposition_half_passes',
+  'long_balls_accurate', 'accurate_crosses', 'matchstats.headers.tackles', 'interceptions', 'clearances', 'duel_won', 'ground_duels_won', 'aerials_won', 'dribbles_succeeded'];
+function extraStatsOf(fm, code) {
+  const rows = fm.filter(m => (m.home === code || m.away === code) && m.teamExtra?.[code] && Object.keys(m.teamExtra[code]).length);
+  if (!rows.length) return null;
+  const out = { games: rows.length };
+  for (const k of EXTRA_KEYS) {
+    const vals = rows.map(m => m.teamExtra[code][k]).filter(v => Number.isFinite(v));
+    if (vals.length) out[k] = { mean: r2(mean(vals)), n: vals.length };
+  }
+  // 對手的抄截 + 攔截落在我方傳球上 → 我方的「被壓迫」不用;壓迫用自己的防守動作對對手的傳球
+  const oppPasses = rows.map(m => m.teamStats?.[m.home === code ? m.away : m.home]?.passes).filter(Number.isFinite);
+  out.oppPasses = oppPasses.length ? { mean: r2(mean(oppPasses)), n: oppPasses.length } : null;
   return out;
 }
 
@@ -358,6 +388,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       shotSample: teamShots.length,
       shots: pool,
       play: { home: playStatsOf(fm, code, true), away: playStatsOf(fm, code, false) },
+      extra: extraStatsOf(fm, code),   // 對照表以外的球隊統計(階段 C 重抓後才有;null = 還沒回填)
       takers: sp.takers ?? null,
       subShare: goals.data?.[last]?.teams?.[code] ? r3((goals.data[last].teams[code].subGoals ?? 0) / Math.max(1, goals.data[last].teams[code].for ?? 1)) : null,
       assistShare: goals.data?.[last]?.teams?.[code] ? r3(Math.min(1, (goals.data[last].teams[code].assists ?? 0) / Math.max(1, goals.data[last].teams[code].for ?? 1))) : null,
@@ -373,7 +404,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     for (const [code, t] of Object.entries(teamsOut)) {
       t.style = Object.fromEntries(Object.keys(STYLE_AXES).map(axis => {
         const m = metrics[code][axis];
-        return [axis, { level: levels[code]?.[axis] ?? 3, value: m.value, unit: m.unit, n: m.n, basis: STYLE_AXES[axis].basis, proxy: STYLE_AXES[axis].proxy }];
+        return [axis, { level: levels[code]?.[axis] ?? 3, value: m.value, unit: m.unit, n: m.n, basis: m.basis ?? STYLE_AXES[axis].basis, proxy: m.proxy ?? STYLE_AXES[axis].proxy }];
       }));
     }
   }
@@ -386,6 +417,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       possession: `FotMob matchDetails(data/raw/fotmob-epl),${fm.length} 場;官網 /stats/match 抽核 20 場全部在 ±2 內`,
       shots: `FotMob shotmap,${shotsAll.length} 次射門(逐射門 xG 與情境);射門池逐筆帶座標、結果與射手`,
       play: `FotMob 逐場球隊統計(傳球數、越位),${fm.filter(m => m.teamStats).length} 場`,
+      extra: `FotMob 對照表以外的球隊統計(禁區觸球、長傳、傳中、抄截、攔截、對抗;階段 C 重抓),${fm.filter(m => m.teamExtra && Object.values(m.teamExtra).some(t => Object.keys(t).length)).length} 場有值`,
       tempo: `FotMob 追蹤資料(跑動距離 / 衝刺),${[...tempoBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場;熱區與逐人跑動見球員主檔的 tracking、三路進攻 ${[...zonesBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場`,
       ability: 'FPL per-90(players.json 的 last / current),450 分鐘以上才用',
       cards: 'FPL 逐季黃紅牌 + CSV 逐場牌數',

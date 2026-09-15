@@ -47,7 +47,7 @@ const UA = 'pl-war-room/1.0 (football analysis side project)';
    西甲的 raw 跟既有的 fotmob-la-liga(正式先發、賽後 detail)放同一個資料夾,檔名不撞。
    官網抽核只有英超有(pulselive);西甲沒有第二來源,產物照實標「未抽核」。 */
 const LEAGUES = {
-  pl: { id: 47, ccode3: 'GBR', dir: 'fotmob-epl', teamFile: 'teams.json', results: ['web', 'data', 'results.json'], verify: true },
+  pl: { id: 47, ccode3: 'GBR', dir: 'fotmob-epl', teamFile: 'teams.json', results: ['web', 'data', 'results.json'], verify: true, refetchOld: true },
   es1: { id: 87, ccode3: 'ESP', dir: 'fotmob-la-liga', teamFile: 'teams-la-liga.json', results: ['web', 'data', 'leagues', 'es1', 'results.json'], verify: false },
   // 英冠(2026-09-05):同一支抓取器,只是聯賽 id 48;pulselive 只有英超,所以 verify false
   en2: { id: 48, ccode3: 'GBR', dir: 'fotmob-championship', teamFile: 'teams-championship.json', results: ['web', 'data', 'leagues', 'en2', 'results.json'], verify: false },
@@ -75,7 +75,9 @@ const LG = LEAGUES[arg('league') ?? 'pl'];
 if (!LG) { console.error(`未知聯賽 ${arg('league')};只有 ${Object.keys(LEAGUES).join('、')}`); process.exit(1); }
 const LEAGUE_ID = LG.id;
 const DIR = join(ROOT, 'data', 'raw', LG.dir);
-export const EXTRACT_VERSION = 1;
+/* 2 = 2026-09-15 起把對照表以外的球隊統計**值**存進 teamExtra(階段 C)。舊快取只有名字。
+   只有英超(模擬遊玩用)因為版本落後而重抓(LEAGUES.pl.refetchOld);其他聯賽的舊快取照用,新抓的自然是新版。 */
+export const EXTRACT_VERSION = 2;
 
 const HARD_LIMIT = 800;           // 一次執行的請求硬上限:一場兩個請求(詳情 + 熱區圖),回填一季 380 場要 760
 const DEFAULT_LIMIT = 40;
@@ -245,6 +247,7 @@ function extract(raw, fixture) {
     key: pairOf(fixture), ...(fixture.pair ? { pair: fixture.pair } : {}), season: fixture.season, date: fixture.date, matchId: null,
     home: homeCode, away: awayCode, score: [fixture.fh, fixture.fa], providerScore,
     teamStats: { [homeCode]: stats.home, [awayCode]: stats.away }, unmappedStats: stats.unmapped,
+    teamExtra: { [homeCode]: stats.extra?.home ?? {}, [awayCode]: stats.extra?.away ?? {} },   // 對照表以外的值(階段 C)
     possession: possessionByPeriod(raw),
     events, shots, momentum,
     lineups: { [homeCode]: side(lu.homeTeam, homeCode), [awayCode]: side(lu.awayTeam, awayCode) },
@@ -375,7 +378,9 @@ async function main() {
       console.log(`  · 舊鍵改成 ${pair}`);
     }
   }
-  const stale = k => store.matches[k]?.extractVersion !== EXTRACT_VERSION;
+  /* 萃取版本落後就重抓 —— 但只在這個聯賽要(pl:模擬遊玩的側寫要新欄位)。全部聯賽一起重抓是幾千個請求,
+     而那些欄位只有英超的側寫在用。 */
+  const stale = k => LG.refetchOld === true && store.matches[k]?.extractVersion !== EXTRACT_VERSION;
   const recentlyTried = k => { const at = Date.parse(store.attempts[k]?.at ?? ''); return Number.isFinite(at) && Date.now() - at < RETRY_MS; };
   const wanted = played.filter(f => refresh || !store.matches[pairOf(f)] || stale(pairOf(f)));
   const pending = wanted.filter(f => refresh || retryNow || !recentlyTried(pairOf(f)))
