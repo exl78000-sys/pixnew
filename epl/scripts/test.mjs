@@ -5105,9 +5105,17 @@ async function checkUclDetails() {
           'raw 快取的每一場都有去處(報告 / 拒收 / 不完整),沒有靜靜掉隊的',
           `${idx.cached} − ${idx.rejected.length} − ${idx.incomplete.length} ≠ ${idx.count}`);
       }
-      // lib 自己跑一次要跟寫出來的索引一致(build 沒有另外加工)
+      /* lib 自己跑一次要跟寫出來的索引一致(build 沒有另外加工)。
+
+         **比對時把 `retrievedAt` 拿掉**(2026-09-15,跟隔壁歐冠那一條同一個寫法):
+         它是「raw 上一次抓到的時間」,抓取器每跑一次就會變。排程的資料更新 commit
+         帶 `[skip ci]`,所以 raw 已經更新、產物還沒重建的狀態是**常態** ——
+         嚴格比對在那個狀態下必紅,而紅的原因跟這條想守的事(build 有沒有另外加工)
+         一點關係都沒有。CLAUDE.md 記過兩次同一件事:紅線只放在**資料**上,
+         時間戳不當紅線(ucl.json 兩份複本那條、上游時差那條)。 */
       const again = cupDetails(ROOT).index;
-      ok(JSON.stringify(again) === JSON.stringify(idx), 'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
+      ok(JSON.stringify({ ...again, retrievedAt: null }) === JSON.stringify({ ...idx, retrievedAt: null }),
+        'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
     }
 
     /* 報告的最低要求:盃賽三塊,聯賽與歐冠仍然五塊。
