@@ -21,9 +21,13 @@
  * 演出不可以吞掉劇本:每一段都有逾時(HOP_TIMEOUT / END_TIMEOUT / WATCHDOG),逾時就把球放到該在的人腳下、
  * 該回報的事件照樣回報 —— 寧可演得粗,不能演錯人或漏掉。
  *
- * 播放節奏由頁面用 `mode` 控制:即時(每一腳都演、停球照秒數等)、正常(每回合只演最後幾腳、停球快轉)、
- * 精華(沒結局的回合一格內跳過)。傳球串被剪短時**不剪接**:留第一腳(重新開始那一腳)與最後幾腳,
- * 中間用一記長傳接起來,球從頭到尾看得見。
+ * ── 2026-09-15 晚:不剪接(使用者回報「一直有球員瞬間換位、莫名掉球、無故進球,根本沒有在踢球」)──
+ * 上一版的正常 / 快是剪接:每回合只演最後兩腳、主罰者與接球者離得遠就直接放到該在的地方(cutTo)、
+ * 沒結局的回合一格內跳到終點(finishInstant)、停球用 4 倍快轉。那三件事在畫面上就是瞬間換位、莫名掉球、無故進球。
+ * 現在**演的段落一律連續、真人速度、不剪接任何人**:每一腳都演(planChain 不再剪短)、沒有 cutTo、沒有快轉。
+ * 省時間的方法只有一種 —— 整段跳過:頁面用 game-playback.js 決定哪些回合演、哪些跳,跳過的回合事件照樣回報、
+ * 畫面淡出、所有人放到下一段開頭的站位、淡入(`mode.jump`,像轉播切到下一段精華)。停球太長也用同一種淡出
+ * 剪到重新開始(deadcut),不快轉。丟球分兩種看得出來的:被搶斷(對手貼上來碰掉球)與傳球被截(傳給隊友的球被對手在半路截走)。
  *
  * **不引入遊戲引擎是刻意的。** 場上只有 23 個實體、一個 rAF 迴圈,渲染從來不是瓶頸;
  * 真正決定像不像在踢球的是下面這層行為模型(跑位、傳球路線、壓迫),那跟用什麼畫圖無關。
@@ -55,9 +59,12 @@ const MIN_SEP = 1.6;              // 位置層兜底:兩個人不會比這更近
    RESTART_PAUSE 重新開始前的停頓(哨聲);RESTART_MAX 等主罰者走到球邊的上限,逾時直接把他放到球邊
    CELEBRATE    進球後的慶祝;HALF_PAUSE 中場換邊的停頓;KICKOFF_SETUP 開球前讓大家站好的時間 */
 const HOP_TIMEOUT = 4.0, END_TIMEOUT = 4.0, WATCHDOG = 40;
-const RESTART_PAUSE = 0.6, RESTART_MAX = 3.0;
+const RESTART_PAUSE = 0.6, RESTART_MAX = 8.0;   // 主罰者用跑的過去(speedCap),8 s 夠 40 m;還到不了才放到球邊(timeouts.restart 數著)
 const CELEBRATE = 2.2, HALF_PAUSE = 1.5, KICKOFF_SETUP = 1.0;
-const FF_MAX = 4;                 // 停球快轉的上限倍率。第一版 12 倍,使用者看到的是「突然加速」;太遠的人由剪接(cutTo)處理,快轉只補最後幾公尺
+/* 跳段(淡出 → 所有人放到下一段開頭的站位 → 淡入)的長度;停球剩下的秒數超過 DEAD_CUT_MIN 才剪(不然演完就到了)。
+   沒有快轉:上一版 4 倍快轉是使用者看到的「突然加速」,再上一版 12 倍更糟。剪接只剩這一種,而且畫面上看得出來是剪接。 */
+const JUMP_FADE = 1.0, DEAD_CUT_MIN = 2.5;
+const TACKLE_R = 9;               // 斷球的人離持球者不到這麼遠 → 演成搶斷(貼上來碰掉球);更遠 → 傳球被截
 /* 無球時的走位(2026-09-15,使用者回報「球員不自然抖動」)。
 
    舊版每個非持球員的目標點上疊一個正弦「抖動」(±1.4~1.6 m,原意是別讓圓點焊死),
@@ -293,7 +300,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   const ball = { x: FW / 2, y: FH / 2, vx: 0, vy: 0, held: true, lastSide: 'home', loft: 0, inNet: false, cut: null, noCatch: false, out: null };
   /* noCatch:這顆球注定要出界(射偏、解圍出底線、傳歪出邊線),出界前誰都不准把它控回來 ——
      不然解圍的人站在球邊,下一格就把球又控住,角球永遠演不出來(實測兩次角球計數 0)。 */
-  const counts = { throwIns: 0, goalKicks: 0, corners: 0, tackles: 0 };   // 物理層數到的出界(給測試與畫面)
+  const counts = { throwIns: 0, goalKicks: 0, corners: 0, tackles: 0, intercepts: 0, jumps: 0, deadCuts: 0 };   // 物理層數到的出界、兩種丟球、跳段與剪停球的次數(給測試與畫面)
   let push = 0;                     // 控球方整條線往前壓的量
   const ballRef = { x: FW / 2, y: FH / 2 };   // 目標點用的參考球位置(EMA,見 BALL_REF_TAU)
   let simT = 0;                     // 模擬時鐘。走位不要吃 performance.now(),
@@ -319,7 +326,12 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   function kick(tx, ty, { speed = null, loft = 0, by = holder } = {}) {
     const dx = tx - ball.x, dy = ty - ball.y, d = Math.max(0.3, Math.hypot(dx, dy));
     let v = speed, lf = loft;
-    if (v == null) {
+    if (v == null && lf > 0) {
+      /* 空中球(界外球、角球、吊傳)沒給速度:飛行 T = loft / 0.6 秒,v = d / T,落點就是目標點。
+         上一版界外球固定 9 m/s,飛 8 m 就落地 —— 20 m 外的接球者等一顆停在草皮上的球,四秒後靠逾時把球放到他腳下 */
+      v = Math.max(8, Math.min(18, d / (lf / 0.6)));
+      lf = 0.6 * d / v;
+    } else if (v == null) {
       if (d > 24) {
         /* 長傳:空中飛 d / v 秒、落地時剩 LAND_KEEP 的速度再滾幾公尺。loft 每秒掉 0.6,所以 loft = 0.6 × 飛行秒數。
            一顆 50 m 的球約 2.2 s 到,跟真的長傳差不多。 */
@@ -397,70 +409,75 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     }
     const S = toAnim(seq.start.x, seq.start.y, s), E = toAnim(seq.end.x, seq.end.y, s);
     script = { seq, s, o, S, E, pre, post, mode, onEvent, onNote, onDone, phase: null, sub: null, t: 0, t0: simT, playT: 0, planned: 1,
-      deadBefore, deadSec: 0, ff: 1, emitted: new Set(), halfSwitch, hops: [], hopIdx: 0, actor: null, taker: null, carryTo: null, carrySec: 0.5, carryMax: 2, by: null, afterSec: 0 };
+      deadBefore, deadSec: 0, emitted: new Set(), halfSwitch, hops: [], hopIdx: 0, actor: null, taker: null, carryTo: null, carrySec: 0.5, carryMax: 2, by: null, afterSec: 0,
+      jump: mode.jump ?? null, jumped: false, fade: 0, deadCut: false, stoppage: isStoppage(seq.start.type) };
     // 停球期間先做的事:換人(圓點改名)、開賽標記
     for (const e of pre) { if (e.type === 'sub') applySub(e); emit(e); }
-    if (mode.instant) { script.phase = 'instant'; return; }   // step() 裡一格內做完
     const taker = resolve(s, seq.start.player, { gk: seq.start.type === 'goalkick' || seq.start.type === 'keeper' });
     script.taker = taker;
-    script.cut = mode.cut === true;   // 壓縮播放:太遠的人可以直接放到該在的地方(剪接);即時模式不剪
     const chainP = seq.chain.map(c => byCode(s, c)).filter(Boolean);
     planChain(chainP);
-    const stoppage = isStoppage(seq.start.type);
+    const stoppage = script.stoppage;
     if (stoppage) {
       placeBall(S.x, S.y); holder = taker; setPiece = seq.start.type;
       pendingKickoff = seq.start.type === 'kickoff' ? s : null;
-      if (script.cut) cutTo(taker, S.x - dirOf(s) * 1.2, S.y, 12);
+    } else if (script.jump) {
+      /* 跳段之後球在哪裡是上一段演完的地方,跟這個回合無關(中間跳過了幾個回合)—— 放到劇本的起點,teleportAll 再把它交給起點的人 */
+      placeBall(S.x, S.y); holder = taker; setPiece = null;
     } else if (seq.start.type === 'loose') {
       /* 二點球:球在物理層停的地方(被封阻彈開、沒控好滾開)就是它;只有球還在別人腳下時才擺到劇本的位置 */
       if (ball.held) placeBall(S.x, S.y);
       holder = taker; setPiece = null;
-      if (script.cut) cutTo(taker, ball.x - dirOf(s) * 3, ball.y, 12);
-    } else { setPiece = null; holder = taker; if (script.cut && !ball.held) cutTo(taker, ball.x - dirOf(s) * 2, ball.y, 12); }   // 斷球反擊 / 門將發球:球本來就在那個人腳下(上一回合的結局給的);不在就去撿(fetch)
+    } else { setPiece = null; holder = taker; }   // 斷球反擊 / 門將發球:球本來就在那個人腳下(上一回合的結局給的);不在就去撿(fetch)
     for (const p of active()) if (p.run?.scripted) p.run = null;
-    const deadSec = stoppage ? Math.max(mode.deadSec ?? deadBefore, halfSwitch ? HALF_PAUSE : seq.start.type === 'kickoff' ? KICKOFF_SETUP : 0) : 0;
+    /* 停球演幾秒:頁面給的上限(即時 = 全部)。跳段之後大家已經站好,停球只留哨聲前的一口氣。
+       演出的秒數比引擎的停球短太多(DEAD_CUT_MIN)就在演完之後剪到重新開始(deadcut)—— 不快轉。 */
+    let deadSec = stoppage ? Math.max(Math.min(mode.deadSec ?? deadBefore, deadBefore), halfSwitch ? HALF_PAUSE : seq.start.type === 'kickoff' ? KICKOFF_SETUP : 0) : 0;
+    if (script.jump) deadSec = Math.min(deadSec, 1.2);
     script.deadSec = deadSec;
-    script.ff = deadSec > 0 ? Math.max(1, Math.min(FF_MAX, deadBefore / deadSec)) : 1;
-    if (deadSec > 0) script.phase = 'dead';
-    else if (stoppage) script.phase = 'restart';
+    script.deadCut = stoppage && !script.jump && deadBefore - deadSec > DEAD_CUT_MIN;
+    script.t = 0;
+    if (script.jump) script.phase = 'jump';
+    else enterStart();
+  }
+  /* 回合真正開始:停球(演一段)→ 重新開始;或直接進傳球串 / 去撿球。跳段的淡入結束後也從這裡進。 */
+  function enterStart() {
+    const { stoppage, taker } = script;
+    script.t = 0;
+    if (script.deadSec > 0) script.phase = 'dead';
+    else if (stoppage) enterRestart();
     else if (ball.held && holder === taker) { script.phase = 'chain'; beginHop(); }
     else script.phase = 'fetch';
-    script.t = 0;
+  }
+  /* 重新開始的等待:主罰者跑向球;第一個接球的人**現在就**跑向接球點(不是等球踢出去才跑 —— 那樣一記 30 m 的界外球落地時他還在半路) */
+  function enterRestart() {
+    script.phase = 'restart'; script.t = 0;
+    if (script.hops[0]) readyReceiver(script.hops[0]);
+  }
+  /* 跳段 / 剪停球的中點:所有人放到現在該站的地方(站位規則就是平常的 aim,定位球用定位球的站位),速度歸零、跑位清掉。
+     兩輪:上搶者 / 前插者是依位置選的,第一輪放完第二輪才對。持球者站在球邊;非停球的起點球直接交到他腳下。 */
+  function teleportAll() {
+    ballRef.x = ball.x; ballRef.y = ball.y;
+    for (const p of active()) { p.run = null; p.wander = null; p.vx = 0; p.vy = 0; p.walking = false; }
+    presser = null; runner = null;
+    for (let round = 0; round < 2; round++) {
+      for (const p of active()) { if (p === holder) continue; const a = aim(p); const c = clampPt(a.x, a.y); p.x = c.x; p.y = c.y; }
+    }
+    if (holder) { const c = clampPt(ball.x - dirOf(holder.side) * 0.8, ball.y); holder.x = c.x; holder.y = c.y; }
+    for (let i = 0; i < 4; i++) separate();
+    for (const p of active()) { p.px = p.x; p.py = p.y; }
+    if (!script.stoppage && holder) snapBallTo(holder);
   }
 
-  /* 剪接:把人放到 (x, y) 附近 —— 只在他離那裡超過 far 公尺時,而且只有壓縮播放會叫它 */
-  function cutTo(p, x, y, far) {
-    if (!p || Math.hypot(p.x - x, p.y - y) <= far) return;
-    /* 放到附近**沒有人的**一點:直接放在 (x, y) 會疊到別人身上,separate() 一格只推 0.55 m,
-       要好幾格才分開 —— 測試量到壅擠畫格與最小間距都紅。先看目標點,再看 2 m 半徑上的八個點,挑離大家最遠的。 */
-    let best = null;
-    for (let i = -1; i < 8; i++) {
-      const c = i < 0 ? clampPt(x, y) : clampPt(x + Math.cos(i * Math.PI / 4) * 2.2, y + Math.sin(i * Math.PI / 4) * 2.2);
-      let dmin = Infinity;
-      for (const o of active()) if (o !== p) dmin = Math.min(dmin, Math.hypot(o.x - c.x, o.y - c.y));
-      if (!best || dmin > best.dmin) best = { c, dmin };
-      if (dmin >= MIN_SEP + 0.3) break;
-    }
-    p.x = best.c.x; p.y = best.c.y; p.vx = 0; p.vy = 0; p.px = p.x; p.py = p.y;
-  }
-  /* 傳球串 → 要演的幾腳。剪短時**不剪接**:留第一腳(重新開始那一腳)與最後幾腳,中間用一記長傳接起來。
+  /* 傳球串 → 要演的每一腳(每一腳都演;上一版依播放速度剪短,現在不剪)。
      接球點沿「起點 → 結局點」等分,橫向一半靠自己習慣的縱線,所以推進看起來有方向、又不是一條直線。 */
   function planChain(chainP) {
     const { seq, S, E, mode } = script;
-    const keep = mode.hops ?? Infinity;
     let raw = [];
     for (let i = 0; i + 1 < chainP.length; i++) if (chainP[i] !== chainP[i + 1]) raw.push({ from: chainP[i], to: chainP[i + 1] });
     // 越位:最後一腳(傳給越位的人)是結局那一段演的,不算傳球串
     if (seq.end.type === 'offside' && raw.length) raw = raw.slice(0, -1);
-    let hops = raw;
-    if (raw.length > keep) {
-      const last = raw[raw.length - 1];
-      if (keep <= 0) hops = [];
-      else if (keep === 1) hops = [{ from: raw[0].from, to: last.to }];
-      else if (keep === 2) hops = [raw[0], { from: raw[0].to, to: last.to }];
-      else { const tail = raw.slice(raw.length - (keep - 2)); hops = [raw[0], { from: raw[0].to, to: tail[0].from }, ...tail]; }
-      hops = hops.filter(h => h.from !== h.to);
-    }
+    const hops = raw;
     const n = hops.length;
     const L = Math.hypot(E.x - S.x, E.y - S.y);
     const fLast = L > 6 ? 1 - 5 / L : 1;   // 最後一腳落在結局點前 5 m
@@ -477,6 +494,8 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       const throughP = Math.max(0.2, Math.min(0.95, 0.6 + 0.1 * tacOf(h.to.side, 'directness')));
       if ((role === 'FB' || role === 'W') && j < n - 1) { const edge = h.to.by < FH / 2 ? 5 : FH - 5; ty = ty * (1 - wideK) + edge * wideK; }
       else if ((role === 'ST' || role === 'AM') && j >= n - 2 && rng() < throughP) { tx += dir * 8; h.through = true; }
+      // 界外球丟不到 30 m:第一腳的接球點離起點最多 14 m(接球者要在球落地前跑到,即時模式量到的三次逾時全是這個)
+      if (j === 0 && seq.start.type === 'throwin') { const dd = Math.hypot(tx - S.x, ty - S.y); if (dd > 14) { tx = S.x + (tx - S.x) * 14 / dd; ty = S.y + (ty - S.y) * 14 / dd; } }
       const pt = clampPt(tx, ty);
       h.tx = pt.x; h.ty = pt.y;
     });
@@ -513,22 +532,33 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   /* ── 逐格推進劇本 ── */
   function step(dt) {
     if (!script) { moveAll(dt); return; }
-    if (script.phase === 'instant') { finishInstant(); return; }
     const key = script.phase + (script.sub ? ':' + script.sub : '');
     phaseSecs[key] = (phaseSecs[key] ?? 0) + dt;
     switch (script.phase) {
-      case 'dead': {
-        // 停球:快轉 = 一格裡走 ff 次(每次仍是真 dt,運動模型不用吃大步)
-        const n = Math.max(1, Math.round(script.ff));
-        for (let i = 0; i < n; i++) moveAll(dt);
+      case 'jump': case 'deadcut': {
+        /* 淡出 → 中點把所有人放到該站的地方 → 淡入。中點之前畫面凍住(不然淡出時大家還在往舊的目標走);
+           中點之後照常走位,讓站位收乾淨。淡入完:跳段進回合的開頭,剪停球進重新開始。 */
         script.t += dt;
-        if (script.t >= script.deadSec) { script.phase = 'restart'; script.t = 0; }
+        const halfT = JUMP_FADE / 2;
+        if (!script.jumped && script.t >= halfT) { script.jumped = true; teleportAll(); counts[script.phase === 'jump' ? 'jumps' : 'deadCuts']++; }
+        if (script.jumped) moveAll(dt);
+        script.fade = script.t < halfT ? script.t / halfT : Math.max(0, 1 - (script.t - halfT) / halfT);
+        if (script.t >= JUMP_FADE) { script.fade = 0; if (script.phase === 'jump') enterStart(); else enterRestart(); }
+        break;
+      }
+      case 'dead': {
+        moveAll(dt); script.t += dt;
+        if (script.t >= script.deadSec) { if (script.deadCut) { script.phase = 'deadcut'; script.jumped = false; script.t = 0; } else enterRestart(); }
         break;
       }
       case 'restart': {
         moveAll(dt); script.t += dt;
         const near = Math.hypot(holder.x - ball.x, holder.y - ball.y) < 1.6;
-        if (script.t >= RESTART_PAUSE && (near || script.t > RESTART_MAX)) {
+        /* 主罰者等第一個接球的人跑到接球點附近才踢(真的球員也是等有人要球才丟):不等的話界外球丟出去時他還在 30 m 外,
+           球停在草皮上四秒沒人碰,最後靠逾時把球放到他腳下 —— 那就是「瞬間換位」的一種 */
+        const h0 = script.hops[0];
+        const recvReady = !h0 || Math.hypot(h0.to.x - h0.tx, h0.to.y - h0.ty) < 6 || script.t > RESTART_MAX;
+        if (script.t >= RESTART_PAUSE && ((near && recvReady) || script.t > RESTART_MAX)) {
           if (!near) { timeouts.restart++; holder.x = ball.x - dirOf(holder.side) * 0.8; holder.y = ball.y; holder.vx = 0; holder.vy = 0; }
           snapBallTo(holder); setPiece = null;
           takeRestart();
@@ -547,7 +577,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       default: moveAll(dt);
     }
     // 回合看門狗:不管演到哪,超過 WATCHDOG 秒就收尾(該回報的事件照樣回報)
-    if (script && script.phase !== 'after' && script.phase !== 'instant' && simT - script.t0 > Math.max(WATCHDOG, (script.mode.fill ?? 0) + script.deadSec + 25)) {
+    if (script && script.phase !== 'after' && simT - script.t0 > Math.max(WATCHDOG, (script.mode.fill ?? 0) + script.deadSec + 25)) {
       timeouts.watchdog++;
       if (script.seq.end.type === 'shot' && script.seq.end.outcome === 'goal') { const gx = goalX(script.s); ball.x = gx + dirOf(script.s) * 1; ball.y = FH / 2; ball.inNet = true; ball.vx = 0; ball.vy = 0; ball.held = false; goalsPlayed++; }
       beginAfter();
@@ -555,9 +585,8 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   }
 
   /* 重新開始那一腳:主罰者把球送給第一個接球的人。沒有傳球串(十二碼、直接任意球、一個人的回合)就直接進結局。 */
-  /* 接球的人先跑向接球點;壓縮播放時離得太遠就剪接到附近(不然一記長傳落地時他還在 30 m 外,只能等逾時) */
+  /* 接球的人先跑向接球點(重新開始的那一腳在 enterRestart 就叫了,主罰者還在走過去時他已經在跑) */
   function readyReceiver(h) {
-    if (script.cut) cutTo(h.to, h.tx - dirOf(h.to.side) * (h.through ? 10 : 4), h.ty, 15);
     h.to.run = { tx: h.tx, ty: h.ty, t: 99, sprint: !!h.through, scripted: true };
   }
   function takeRestart() {
@@ -566,7 +595,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     if (!h) { beginEnd(); return; }
     readyReceiver(h);
     const t = seq.start.type;
-    if (t === 'throwin') passTo(h.to, { speed: 9, loft: 0.6 });
+    if (t === 'throwin') passTo(h.to, { loft: 0.6 });
     else if (t === 'corner') kick(h.tx, h.ty, { loft: 1.0 });
     else passTo(h.to);
     holder = h.to;
@@ -611,13 +640,10 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     const actor = script.actor ?? holder;
     if (holder !== actor || !ball.held) snapBallTo(actor);
     for (const p of active()) if (p.run?.scripted) p.run = null;
-    // 壓縮播放:結局的人離結局點太遠就剪接到 6 m 外(不然沒有傳球串的回合要帶球半場)
-    if (script.cut && ['shot', 'corner', 'foul', 'out'].includes(end.type)) { cutTo(actor, E.x - dir * 4, E.y, 9); snapBallTo(actor); }
     switch (end.type) {
-      case 'shot': script.carryTo = clampPt(E.x, E.y); script.carryMax = script.cut ? 1.8 : 2.5; break;
+      case 'shot': script.carryTo = clampPt(E.x, E.y); script.carryMax = 2.5; break;
       case 'corner': script.carryTo = clampPt(E.x - dir * 9, E.y + (E.y < FH / 2 ? 7 : -7)); script.carryMax = 2.0; break;
-      case 'foul': script.by = resolve(o, end.by); script.by.run = null; script.carryTo = clampPt(E.x, E.y); script.carryMax = 2.5;
-        if (script.cut) cutTo(script.by, E.x + dir * 5, E.y + (rng() - 0.5) * 6, 10); break;
+      case 'foul': script.by = resolve(o, end.by); script.by.run = null; script.carryTo = clampPt(E.x, E.y); script.carryMax = 2.5; break;
       case 'offside': {
         script.passer = resolve(s, end.passer);
         script.off = resolve(s, end.player);
@@ -629,8 +655,24 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       }
       case 'out': script.carryTo = end.kind === 'throwin' ? clampPt(E.x, E.y < FH / 2 ? 4 : FH - 4) : clampPt(E.x - dir * 4, E.y); script.carryMax = 1.5; break;
       case 'loose': script.carryTo = clampPt(holder.x + dir * 2, holder.y); script.carryMax = 0.6; break;
-      case 'turnover': script.by = resolve(o, end.by); script.by.run = { tx: E.x, ty: E.y, t: 99, sprint: false, scripted: true }; script.carryTo = clampPt(holder.x + dir * 3, holder.y); script.carryMax = 0.7;
-        if (script.cut) cutTo(script.by, E.x + dir * 4, E.y + (rng() - 0.5) * 6, 14); break;
+      case 'turnover': {
+        /* 丟球要看得出來是怎麼丟的(使用者回報「莫名掉球」):
+           搶斷  斷球的人已經在附近(TACKLE_R 內)→ 持球者帶球往結局點走,他貼上來,碰到球就把球碰掉、自己撿走
+           截球  斷球的人在遠處 → 持球者傳給前方一個隊友(真的有人在那裡跑位),球經過結局點時被跑過來的他截走 */
+        script.by = resolve(o, end.by);
+        const near = Math.hypot(script.by.x - holder.x, script.by.y - holder.y) < TACKLE_R;
+        script.tackle = near;
+        if (near) { script.by.run = null; script.carryTo = clampPt(E.x, E.y); script.carryMax = 2.5; }
+        else {
+          script.by.run = { tx: E.x, ty: E.y, t: 99, sprint: true, scripted: true };
+          const D = clampPt(E.x + dir * 9, E.y + (rng() - 0.5) * 6);
+          script.decoy = nearestOf(s, D.x, D.y, [holder]);
+          script.decoy.run = { tx: D.x, ty: D.y, t: 99, sprint: false, scripted: true };
+          script.decoyPt = D;
+          script.carryTo = clampPt(holder.x + dir * 3, holder.y); script.carryMax = 0.9;
+        }
+        break;
+      }
       default: script.carryTo = { x: holder.x, y: holder.y }; script.carryMax = 0.3;
     }
   }
@@ -641,6 +683,12 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
         const by = script.by;
         const contact = by && Math.hypot(by.x - ball.x, by.y - ball.y) < 1.5 && script.t > 0.3;
         if (contact || script.t > script.carryMax + 1.5) whistleFoul();
+        return;
+      }
+      if (end.type === 'turnover' && script.tackle) {
+        const by = script.by;
+        const contact = by && Math.hypot(by.x - ball.x, by.y - ball.y) < 1.6 && script.t > 0.3;
+        if (contact || script.t > script.carryMax + 2.0) tackleBall();
         return;
       }
       const d = Math.hypot(script.carryTo.x - holder.x, script.carryTo.y - holder.y);
@@ -675,8 +723,9 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       case 'turnover':
         if ((ball.held && holder === script.by) || script.t > END_TIMEOUT) {
           if (!(ball.held && holder === script.by)) snapBallTo(script.by);
-          script.by.run = null; counts.tackles++;
-          note({ kind: 'turnover', by: script.by.name, bySide: o });
+          script.by.run = null; if (script.decoy) script.decoy.run = null;
+          if (script.tackle) counts.tackles++; else { counts.intercepts++; setCaption('傳球被截', ball.x, ball.y); }
+          note({ kind: 'turnover', by: script.by.name, bySide: o, how: script.tackle ? 'tackle' : 'intercept' });
           beginAfter();
         }
         break;
@@ -704,7 +753,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
         ball.noCatch = true; holder = nearestOf(o, E.x, E.y);   // 沒人去撿,它自己滾出去
         break;
       case 'loose': kick(E.x, E.y, { speed: 6 + rng() * 3 }); ball.noCatch = true; break;   // 沒控好,球滾開;下一回合有人去撿
-      case 'turnover': kick(E.x + dir * 4, E.y); holder = script.by; break;   // 傳向空檔,被劇本指定的那個人截走
+      case 'turnover': { const D = script.decoyPt ?? { x: E.x + dir * 4, y: E.y }; kick(D.x, D.y); holder = script.by; break; }   // 傳給前方跑位的隊友,被劇本指定的那個人在半路截走
       default: break;
     }
   }
@@ -715,6 +764,15 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     const ty = Math.max(3, Math.min(FH - 3, E.y < FH / 2 ? Math.min(c.y, FH / 2 - GOAL_HALF - 2) : Math.max(c.y, FH / 2 + GOAL_HALF + 2)));
     kick(gx + dir * 3, ty, { loft: 0.4, by: c });
     ball.lastSide = o; ball.noCatch = true; script.cleared = true;
+  }
+  /* 搶斷:斷球的人碰到球,球被碰掉、往他那一側彈開 2~3 m,他去撿(holder = by,物理層到了就控住)。不吹哨、不停球。 */
+  function tackleBall() {
+    const by = script.by;
+    const dx = by.x - ball.x, dy = by.y - ball.y, d = Math.max(0.3, Math.hypot(dx, dy));
+    kick(ball.x + (dx / d) * 2.5 + (rng() - 0.5) * 1.5, ball.y + (dy / d) * 2.5 + (rng() - 0.5) * 1.5, { speed: 5 + rng() * 2, by });
+    holder = by; ball.lastSide = by.side;
+    setCaption('被搶斷', ball.x, ball.y);
+    script.sub = 'ball'; script.t = 0;
   }
   function whistleFoul() {
     const { seq } = script;
@@ -731,6 +789,9 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
      進球飛進網、被撲飛向門將、被封打在最近的防守者身上、射偏過底線、中柱反彈。 */
   function shoot(end) {
     const { s, o } = script; const dir = dirOf(s), gx = goalX(s);
+    /* 射門的滯空時間依距離:loft = 0.6 × 飛行秒數 × 1.1,球要過了目標點才落地。
+       固定 0.5 的話 25 m 外的遠射飛 0.8 s 就落地、剩 35% 的速度再滾 7 m,停在禁區裡等結局逾時(實測一場 5 次,全是遠射的射偏 / 被撲) */
+    const loftTo = (tx, ty, v) => Math.max(0.35, 0.6 * (Math.hypot(tx - ball.x, ty - ball.y) / v) * 1.1);
     performed.push({ type: end.outcome === 'goal' ? 'goal' : 'shot', code: holder.code, outcome: end.outcome });
     script.shooter = holder;
     const gk = active().find(p => p.side === o && p.role === 'GK');
@@ -739,16 +800,16 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
         // 烏龍球:球打在守方那個人身上再進 —— 那個人是事件裡的人,不是隨便挑的
         const d = resolve(o, end.goal.scorer); script.deflector = d; script.sub2 = 'deflect';
         kick(d.x, d.y, { speed: 18, loft: 0.2 }); ball.noCatch = true; holder = d;
-      } else { kick(gx + dir * 2, FH / 2 + (rng() - 0.5) * 5, { speed: SHOT_SPEED, loft: 0.5 }); ball.inNet = true; ball.noCatch = true; holder = gk ?? holder; }
-    } else if (end.outcome === 'saved') { kick(gk ? gk.x : gx - dir * 3, gk ? gk.y : FH / 2, { speed: 22, loft: 0.4 }); holder = gk ?? holder; }
+      } else { const ty = FH / 2 + (rng() - 0.5) * 5; kick(gx + dir * 2, ty, { speed: SHOT_SPEED, loft: loftTo(gx + dir * 2, ty, SHOT_SPEED) }); ball.inNet = true; ball.noCatch = true; holder = gk ?? holder; }
+    } else if (end.outcome === 'saved') { const tx = gk ? gk.x : gx - dir * 3, ty = gk ? gk.y : FH / 2; kick(tx, ty, { speed: 22, loft: loftTo(tx, ty, 22) }); holder = gk ?? holder; }
     else if (end.outcome === 'blocked') {
       const cut = laneCut(ball, { x: gx, y: FH / 2 }, s);
       script.blocker = cut?.o ?? nearestOf(o, ball.x + dir * 4, ball.y);
       kick(script.blocker.x, script.blocker.y, { speed: 20 }); ball.noCatch = true; holder = script.blocker;
     } else if (end.outcome === 'post') {
       const py = FH / 2 + (rng() < 0.5 ? -GOAL_HALF : GOAL_HALF);
-      kick(gx, py, { speed: SHOT_SPEED, loft: 0.3 }); ball.cut = { x: gx - dir * 0.5, y: py, post: true }; ball.noCatch = true; holder = gk ?? holder;
-    } else { kick(gx + dir * 3, FH / 2 + (rng() < 0.5 ? -1 : 1) * (GOAL_HALF + 2 + rng() * 8), { speed: SHOT_SPEED, loft: 0.5 }); ball.noCatch = true; holder = gk ?? holder; }
+      kick(gx, py, { speed: SHOT_SPEED, loft: loftTo(gx, py, SHOT_SPEED) }); ball.cut = { x: gx - dir * 0.5, y: py, post: true }; ball.noCatch = true; holder = gk ?? holder;
+    } else { const ty = FH / 2 + (rng() < 0.5 ? -1 : 1) * (GOAL_HALF + 2 + rng() * 8); kick(gx + dir * 3, ty, { speed: SHOT_SPEED, loft: loftTo(gx + dir * 3, ty, SHOT_SPEED) }); ball.noCatch = true; holder = gk ?? holder; }
   }
   function shotResolve() {
     const { seq, s, o } = script; const end = seq.end; const dir = dirOf(s), gx = goalX(s);
@@ -761,7 +822,10 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       beginAfter();
     };
     const timeout = script.t > END_TIMEOUT;
-    if (timeout && !script.endTimedOut) { script.endTimedOut = true; timeouts.end++; }
+    if (timeout && !script.endTimedOut) {
+      script.endTimedOut = true; timeouts.end++;
+      if (timeoutLog.length < 40) timeoutLog.push({ kind: 'end', outcome: end.outcome, bx: Math.round(ball.x), by: Math.round(ball.y), v: Math.round(speedOf() * 10) / 10, held: ball.held, inNet: ball.inNet, out: ball.out?.kind ?? null, holderRole: holder?.role ?? null, gx });
+    }
     switch (end.outcome) {
       case 'goal':
         if (script.sub2 === 'deflect') {
@@ -807,33 +871,6 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     script = null;
     sc.onDone();
   }
-  /* 一格內做完(精華 / 快轉時沒結局的回合):球直接在結局點、該拿球的人去拿,事件一次回報。
-     這是刻意的「剪接」—— 只用在頁面說不用演的回合,而且每一筆事件仍然回報。 */
-  function finishInstant() {
-    const { seq, s, o, E } = script; const end = seq.end;
-    for (const p of active()) if (p.run?.scripted) p.run = null;
-    setPiece = null;
-    if (end.type === 'shot' && end.outcome === 'goal') {
-      const gx = goalX(s); placeBall(gx + dirOf(s) * 1, FH / 2); ball.inNet = true; goalsPlayed++; pendingKickoff = o;
-      performed.push({ type: 'goal', code: (script.actor ?? holder).code, outcome: 'goal', instant: true });
-    } else if (end.type === 'shot') {
-      placeBall(E.x, E.y); performed.push({ type: 'shot', code: (script.actor ?? holder).code, outcome: end.outcome, instant: true });
-      if (end.outcome === 'saved') { const gk = active().find(p => p.side === o && p.role === 'GK'); if (gk) snapBallTo(gk); }
-      else if (end.outcome === 'off') counts.goalKicks++;
-    } else {
-      placeBall(E.x, E.y);
-      if (end.type === 'turnover') { const by = resolve(o, end.by); holder = by; }
-      else if (end.type === 'corner') counts.corners++;
-      else if (end.type === 'out') { if (end.kind === 'throwin') counts.throwIns++; else counts.goalKicks++; }
-      else holder = script.actor ?? holder;
-    }
-    ballRef.x = ball.x; ballRef.y = ball.y;
-    flushEvents();
-    const sc = script;
-    for (const e of sc.post) { emit(e); if (e.type === 'full') st.done = true; }
-    script = null;
-    sc.onDone();
-  }
   const setCaption = (text, x, y, t = 1.4) => { caption = { text, x, y, t }; };
 
   /* 演出進度換成引擎秒數(頁面用它印分鐘:畫面當主時鐘)。
@@ -842,7 +879,9 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     if (!script) return null;
     const { seq } = script;
     switch (script.phase) {
-      case 'dead': return seq.t0 - script.deadBefore + Math.min(1, script.t / Math.max(1e-6, script.deadSec)) * script.deadBefore;
+      case 'jump': return seq.t0 - script.deadSec;
+      case 'dead': return seq.t0 - script.deadBefore + Math.min(1, script.t / Math.max(1e-6, script.deadSec)) * script.deadSec;
+      case 'deadcut': return seq.t0 - (script.deadBefore - script.deadSec) * (1 - Math.min(1, script.t / JUMP_FADE));
       case 'restart': case 'fetch': return seq.t0;
       case 'chain': case 'end': return seq.t0 + Math.min(1, script.playT / script.planned) * seq.dur;
       default: return seq.t1;
@@ -920,7 +959,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     // 門將:貼自家球門,橫向跟著球移動一點點(參考球位置,不跟著每一次觸球抖)
     if (p.role === 'GK') return { x: ownGoalX(p.side) + dir * 4.5, y: FH / 2 + (ballRef.y - FH / 2) * 0.35 };
     if (setPiece) { const t = setPieceSpot(p, attacking); if (t) return t; }
-    if (script?.phase === 'end' && script.seq.end.type === 'foul' && p === script.by) return { x: ball.x, y: ball.y };   // 犯規的人真的去撞
+    if (script?.phase === 'end' && p === script.by && (script.seq.end.type === 'foul' || (script.seq.end.type === 'turnover' && script.tackle))) return { x: ball.x, y: ball.y };   // 犯規 / 搶斷的人真的去撞
 
     if (attacking) {
       if (p.run) return { x: p.run.tx, y: p.run.ty };
@@ -1176,7 +1215,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   function speedCap(p, d) {
     if (p.role === 'GK') return Math.min(p.vtop, SPEED_JOG);
     if (p.run) return p.run.sprint ? p.vtop : Math.min(p.vtop, SPEED_RUN);
-    if (p === holder) return Math.min(p.vtop, ball.held ? SPEED_RUN * 0.8 : SPEED_RUN);   // 帶球比追球慢
+    if (p === holder) return Math.min(p.vtop, ball.held ? SPEED_RUN * 0.8 : SPEED_RUN);   // 帶球比追球慢;主罰者跑去拿球也是這個速度(不剪接,所以要用跑的)
     if (p === presser) return Math.min(p.vtop, SPEED_RUN);
     if (p === runner) return Math.min(p.vtop, SPEED_JOG * 1.2);
     if (setPiece) return Math.min(p.vtop, d > FAR_JOG ? SPEED_JOG : SPEED_WALK * 1.3);   // 停球時走去站位
@@ -1294,6 +1333,13 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     ctx.beginPath(); ctx.arc(sx(ball.x), sy(ball.y), br, 0, 7);
     ctx.fillStyle = '#fff'; ctx.shadowColor = '#00ff85'; ctx.shadowBlur = 14; ctx.fill(); ctx.shadowBlur = 0;
 
+    // 跳段 / 剪停球:黑幕淡出淡入,中間寫「跳到第幾分鐘」—— 讀者要看得出來這是剪接,不是有人瞬間換位
+    if (script?.fade > 0) {
+      ctx.fillStyle = `rgba(4,6,10,${(0.92 * script.fade).toFixed(3)})`; ctx.fillRect(0, 0, W, H);
+      const label = script.phase === 'jump' ? (script.jump?.label ?? '⏩') : '⏩ 重新開始';
+      ctx.font = 'bold 15px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = `rgba(255,255,255,${script.fade.toFixed(3)})`;
+      ctx.fillText(label, W / 2, H / 2 + 5);
+    }
     // 記分板(截圖/錄影時畫面裡要有資訊)。下半場換邊後隊伍色塊跟著換側
     const chipW = 190, chipH = 26, cx0 = W / 2 - chipW / 2;
     ctx.fillStyle = 'rgba(8,10,16,.82)';
@@ -1312,7 +1358,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
 
   probe = () => ({
     goalsPlayed, half, min: st.min, pendingKickoff,
-    script: script ? { id: script.seq.id, phase: script.phase, sub: script.sub } : null,
+    script: script ? { id: script.seq.id, phase: script.phase, sub: script.sub, fade: script.fade, tackle: script.tackle ?? null } : null,
     running: active().filter(p => p.run).length, sprinting: active().filter(p => p.run?.sprint).length,
     ball: { x: ball.x, y: ball.y, held: ball.held, speed: speedOf(), loft: ball.loft, inNet: ball.inNet }, holderSide: holder?.side ?? null, holderCode: holder?.code ?? null,
     counts: { ...counts }, setPiece, performed: performed.map(x => ({ ...x })), timeouts: { ...timeouts }, phaseSecs: { ...phaseSecs }, timeoutLog: timeoutLog.map(x => ({ ...x })),

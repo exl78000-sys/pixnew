@@ -2910,6 +2910,7 @@ async function checkDataGap() {
          內容在 game-view.js;view 鍵留 duel,舊書籤不斷。 */
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8');
       const pc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-core.js'), 'utf8');
+      const bundleSrc = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
       const explore = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8');
       const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS'));
       const pagesBlock = core.slice(core.indexOf('const GROUPS'));
@@ -2948,6 +2949,8 @@ async function checkDataGap() {
         && /setTactics/.test(pg) && /本季實際/.test(pg) && /TACTIC_KEYS/.test(pg) && !/戰術指令是下一階段/.test(pg) && !/戰術指令\(下一階段\)/.test(pg)
         && /export const TACTIC_KEYS/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-engine.js'), 'utf8'))
         && /setTactics\(side, deltas/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8'))
+        /* 播放:規劃器決定演 / 跳(game-playback,單檔版清單要有它)、沒有精華勾選框(併進速度)、事件流寫「略過」 */
+        && /planPlayback/.test(pg) && /game-playback/.test(bundleSrc) && !/gHl/.test(pg) && /kind === 'skip'/.test(pg) && /不剪接/.test(pg)
         /* 播放模式:in-play 引擎共用、計時器走 pageInterval(裸 setInterval 是老坑) */
         && /inPlaySim/.test(pg) && /跳到結果/.test(pg)
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
@@ -3461,10 +3464,13 @@ async function checkDataGap() {
        舊版實際踩到的:射門門檻寫死 `holder.x > 78`,而前鋒最遠 73.5 —— 門檻永遠碰不到,
        腳本進球一次都演不出來,而畫面上一切正常、測試全綠。
        現在動畫照引擎的回合演(`play(seq)`,畫面當主時鐘)。這一節拿**真的引擎**產一整場、真的演完,守四件事:
-       1. 事件流的每一筆都對得到一段演出,而且順序一樣 —— 事件在畫面發生時才回報,一筆都不能少、不能亂
+       1. 事件流的每一筆都對得到一段演出或一段跳過,而且順序一樣 —— 事件在畫面發生時才回報,一筆都不能少、不能亂
        2. 演的人就是事件裡的人(射門 / 進球的圓點 = 事件的射手);進球回報時球真的在網裡
        3. 演出不會卡住:逾時補救是少數、看門狗一次都不該動;正常速一場落在使用者要的長度附近
-       4. 跑動仍像人:速度上限、分段、站著、不抖,而且即時模式的跑動量對得回 FotMob */
+       4. 跑動仍像人:速度上限、分段、站著、不抖,而且即時模式的跑動量對得回 FotMob
+       2026-09-15 晚(使用者回報「瞬間換位、莫名掉球、無故進球」):正常 / 快 / 精華改成**不剪接**——
+       演的段落連續、真人速度,省時間只靠整段跳過(game-playback.js 規劃器)。這裡的台子跟頁面走同一條:
+       排隊 → 規劃器說跳的套事件不演 → 說演的交給動畫(前面有跳過就淡出淡入)。 */
     ...await (async () => {
       const anim = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js')));
       const eng = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-engine.js')));
@@ -3477,13 +3483,8 @@ async function checkDataGap() {
         for (const c of t.xi) { const x = by.get(c); if (!x) continue; (xi[x.pos] ?? xi.MID).push(x.name); (shirts[x.pos] ?? shirts.MID).push(x.shirt); (codes[x.pos] ?? codes.MID).push(x.code); meta[x.name] = { role: x.roleLow, heat: x.heat, run: x.run }; }
         return { formation: t.formation.latest ?? t.formation.options[0], color: '#0f0', xi, shirts, codes, meta, pace: t.pace, zones: t.zones };
       };
-      const eventful = seq => seq.events.some(e => e.type !== 'sub') || ['corner', 'penalty', 'kickoff'].includes(seq.start.type) || (seq.start.type === 'freekick' && seq.start.x >= 70);
-      const MODES = {
-        fast: (seq, dead) => (eventful(seq) ? { hops: 0, carrySec: 0.25, deadSec: Math.min(dead, 0.4), celebrateSec: 1.2, cut: true } : { instant: true }),
-        normal: (seq, dead) => (eventful(seq) ? { hops: 2, carrySec: 0.4, deadSec: Math.min(dead, 0.8), cut: true } : { instant: true }),
-        real: (seq, dead) => ({ hops: Infinity, fill: seq.dur, deadSec: dead }),
-      };
-      /* 台子:引擎一場、動畫照回合演到完(或到 limitSec 模擬秒)。合成時鐘從**現在**起算、整數毫秒 —— 見 duel-anim 的 loop 註解。 */
+      const pb = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-playback.js')));
+      /* 台子:引擎一場、規劃器決定演 / 跳、動畫演到完(或到 limitSec 模擬秒)。合成時鐘從**現在**起算、整數毫秒 —— 見 duel-anim 的 loop 註解。 */
       const runMatch = ({ seed, mode, limitSec = 0 }) => {
         let queued = null;
         const prevRaf = globalThis.requestAnimationFrame, prevCancel = globalThis.cancelAnimationFrame;
@@ -3493,16 +3494,30 @@ async function checkDataGap() {
         const rng = () => { rs = (rs + 0x6D2B79F5) >>> 0; let t = rs; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
         const match = eng.createMatch({ profile: game, home: 'ARS', away: 'MCI', pred: { xgHome: 1.6, xgAway: 1.3 }, seed });
         const api = anim.mountDuelAnim({ width: 900, height: 560, getContext: () => sink }, { home: mk('ARS'), away: mk('MCI'), homeCode: 'ARS', awayCode: 'MCI', rng });
-        const shown = [], goalsInNet = []; let lastDead = 0, done = false, seqs = 0;
-        const advance = () => {
-          if (match.state().finished) { done = true; return; }
+        const shown = [], goalsInNet = [], playedGoals = [], playedEvents = []; let lastDead = 0, done = false, seqs = 0, skippedN = 0, skippedSince = 0, everPlayed = false, queue = [];
+        const pull = () => {
+          if (match.state().finished) return null;
           const before = match.events().length;
           const seq = match.nextSequence();
-          if (!seq) { done = true; return; }
+          if (!seq) return null;
           const evs = match.events().slice(before);
-          api.play(seq, { pre: evs.filter(e => e.seq == null && e.type !== 'half' && e.type !== 'full'), post: evs.filter(e => e.type === 'half' || e.type === 'full'), deadBefore: lastDead, mode: MODES[mode](seq, lastDead),
-            onEvent: e => { shown.push(e); if (e.type === 'goal') { const b = anim.__animProbe().ball; goalsInNet.push(b.inNet && (b.x >= 105 || b.x <= 0)); } },
-            onDone: () => { lastDead = seq.dead; seqs++; advance(); } });
+          return { seq, pre: evs.filter(e => e.seq == null && e.type !== 'half' && e.type !== 'full'), post: evs.filter(e => e.type === 'half' || e.type === 'full') };
+        };
+        const advance = () => {
+          for (;;) {
+            const plan = pb.planPlayback(queue.map(q => q.seq), { speed: mode, finished: match.state().finished });
+            if (plan.need) { const q = pull(); if (q) { queue.push(q); continue; } }
+            for (const q of queue.splice(0, plan.skip)) { for (const e of [...q.pre, ...q.seq.events, ...q.post]) shown.push(e); lastDead = q.seq.dead; skippedN++; skippedSince++; }
+            if (plan.play && queue.length) {
+              const q = queue.shift(), seq = q.seq;
+              const jumped = everPlayed && skippedSince > 0; everPlayed = true; skippedSince = 0;
+              api.play(seq, { pre: q.pre, post: q.post, deadBefore: lastDead, mode: pb.modeFor(seq, { speed: mode, deadBefore: lastDead, jumped, label: '⏩' }),
+                onEvent: e => { shown.push(e); playedEvents.push(e); if (e.type === 'goal') { const b = anim.__animProbe().ball; goalsInNet.push(b.inNet && (b.x >= 105 || b.x <= 0)); playedGoals.push(e); } },
+                onDone: () => { lastDead = seq.dead; seqs++; advance(); } });
+              return;
+            }
+            if (match.state().finished && !queue.length) { done = true; return; }
+          }
         };
         const FPS = 30; let now = performance.now(), frames = 0, minSep = Infinity, crowded = 0, still = 0, samples = 0, rev = 0;
         const prevPos = new Map();
@@ -3524,43 +3539,78 @@ async function checkDataGap() {
         const probe = anim.__animProbe();
         api.destroy();
         globalThis.requestAnimationFrame = prevRaf; globalThis.cancelAnimationFrame = prevCancel;
-        return { match, shown, goalsInNet, probe, seqs, frames, secs: probe.motion.secs, minSep, crowdPct: (crowded / frames) * 100, stillPct: (still / Math.max(1, samples)) * 100, revPerMin: rev / 22 / (probe.motion.secs / 60) };
+        return { match, shown, goalsInNet, playedGoals, playedEvents, probe, seqs, skippedN, frames, secs: probe.motion.secs, minSep, crowdPct: (crowded / frames) * 100, stillPct: (still / Math.max(1, samples)) * 100, revPerMin: rev / 22 / (probe.motion.secs / 60) };
       };
       const fast = runMatch({ seed: 42, mode: 'fast' });
       const normal = runMatch({ seed: 7, mode: 'normal' });
       const real = runMatch({ seed: 42, mode: 'real', limitSec: 180 });
+      /* 演過的射門要對回事件裡的射手。正常 / 快演所有有射門的回合,所以射門一筆不少;精華與跳過的回合不演射門,performed 裡就沒有 */
       const fidelity = r => {
         const all = r.match.events();
         const same = r.shown.length === all.length && r.shown.every((e, i) => e === all[i]);
         const shots = all.filter(e => e.type === 'shot' || (e.type === 'goal' && !e.ownGoal));
         const perf = r.probe.performed.filter(x => x.type === 'shot' || x.type === 'goal');
         const mism = shots.filter((e, i) => perf[i]?.code !== (e.type === 'goal' ? e.scorer : e.player)).length;
-        return { same, shots: shots.length, mism, all: all.length };
+        return { same, shots: shots.length, perf: perf.length, mism, all: all.length };
       };
       const fF = fidelity(fast), fN = fidelity(normal);
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8');
+      const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');   // 剝掉註解再掃:檔頭就在講被拿掉的那幾個名字
       const on = real.probe.motion.players.slice(0, 11).filter(p => !p.off && p.role !== 'GK');
       const mps = on.reduce((a, p) => a + p.dist / real.secs, 0) / on.length;
       const perMin = mps * 60, target = game.teams.ARS.pace.distancePerMin / 11;   // 即時播放是一比賽分鐘 60 秒
       const off = Math.abs(perMin - target) / target;
-      console.log(`      快 ${(fast.secs / 60).toFixed(1)} 分・正常 ${(normal.secs / 60).toFixed(1)} 分(${normal.seqs} 回合)・逾時 快 ${JSON.stringify(fast.probe.timeouts)} 正常 ${JSON.stringify(normal.probe.timeouts)}`);
+      console.log(`      快 ${(fast.secs / 60).toFixed(1)} 分(演 ${fast.seqs} 跳 ${fast.skippedN})・正常 ${(normal.secs / 60).toFixed(1)} 分(演 ${normal.seqs} 跳 ${normal.skippedN},跳段 ${normal.probe.counts.jumps} 次、剪停球 ${normal.probe.counts.deadCuts} 次)・逾時 快 ${JSON.stringify(fast.probe.timeouts)} 正常 ${JSON.stringify(normal.probe.timeouts)}`);
       console.log(`      ARS 跑動(即時 3 分鐘):畫面 ${perMin.toFixed(0)} m/min・FotMob ${target.toFixed(0)} m/min(差 ${(off * 100).toFixed(0)}%)・站著 ${real.stillPct.toFixed(1)}%・看得到的來回 ${real.revPerMin.toFixed(2)} 次/人/分`);
       const all3 = [fast, normal, real];
       return [
         /* ── 1. 事件流 = 演出 ── */
-        ['事件流的每一筆都對得到一段演出,而且順序一樣(快 / 正常兩種模式)', fF.same && fN.same, `快 ${fast.shown.length}/${fF.all}・正常 ${normal.shown.length}/${fN.all}`],
-        ['演的人就是事件裡的人:每一次射門 / 進球的圓點 = 事件的射手', fF.mism === 0 && fN.mism === 0 && fF.shots > 5, `快 ${fF.shots} 筆射門對不上 ${fF.mism}・正常 ${fN.shots} 筆對不上 ${fN.mism}`],
+        ['事件流的每一筆都對得到一段演出或一段跳過,而且順序一樣(快 / 正常兩種模式)', fF.same && fN.same, `快 ${fast.shown.length}/${fF.all}・正常 ${normal.shown.length}/${fN.all}`],
+        ['演的人就是事件裡的人:每一次射門 / 進球的圓點 = 事件的射手;正常 / 快演了每一次射門', fF.mism === 0 && fN.mism === 0 && fF.shots > 5 && fF.perf === fF.shots && fN.perf === fN.shots, `快 ${fF.perf}/${fF.shots} 筆射門對不上 ${fF.mism}・正常 ${fN.perf}/${fN.shots} 筆對不上 ${fN.mism}`],
+        /* ── 不剪接(2026-09-15 晚)── 三個剪接函式都不在了(剝掉註解再掃);省時間只靠整段跳過,而且正常速真的跳了 */
+        ['演的段落不剪接:沒有 cutTo / finishInstant / 快轉(FF_MAX)、傳球串不剪短、沒有 mode.instant', !/cutTo|finishInstant|FF_MAX|mode\.instant|script\.cut\b|script\.ff\b|keep === 2/.test(code)],
+        ['省時間靠整段跳過:淡出 → 所有人放到下一段開頭的站位 → 淡入,而且正常速一場真的跳了幾段', /case 'jump': case 'deadcut'/.test(code) && /function teleportAll/.test(code) && /JUMP_FADE/.test(code) && normal.probe.counts.jumps >= 5 && normal.skippedN > normal.seqs, `跳段 ${normal.probe.counts.jumps}・跳過 ${normal.skippedN} 回合`],
+        ['停球太長剪到重新開始(deadcut),不快轉', /deadCut = stoppage/.test(code) && /DEAD_CUT_MIN/.test(code) && !/script\.ff/.test(code)],
+        ['即時模式什麼都不跳(每個回合都演)', real.skippedN === 0 && real.probe.counts.jumps === 0],
+        ['丟球分兩種看得出來的:搶斷(貼上來碰掉球)與傳球被截(傳給真的在跑位的隊友,半路被截),兩種在正常速一場都出現', /function tackleBall/.test(code) && /decoy/.test(code) && /TACKLE_R/.test(code) && normal.probe.counts.tackles + normal.probe.counts.intercepts > 0 && (fast.probe.counts.intercepts + normal.probe.counts.intercepts) > 0 && (fast.probe.counts.tackles + normal.probe.counts.tackles) > 0, `正常 搶斷 ${normal.probe.counts.tackles} 截球 ${normal.probe.counts.intercepts}`],
+        ['重新開始等第一個接球的人到位才踢(界外球丟出去時他還在 30 m 外就只能等逾時)', /recvReady/.test(code) && /function enterRestart/.test(code)],
+        /* 規劃器是純函式,四條精確斷言:有戲的回合、前一個回合當來由(只在連續開始時)、找不到就留最後一個、即時全演 */
+        ['規劃器:有戲的回合前面的都跳過;連續開始的有戲回合連前一個一起演,停球開始的不連', (() => {
+          const mk = (start, ev = [], end = {}) => ({ start: { type: start }, events: ev.map(t => ({ type: t })), end, dur: 10, dead: 5 });
+          const q1 = [mk('throwin'), mk('turnover'), mk('turnover', ['shot'])];
+          const a = pb.planPlayback(q1, { speed: 'normal' });
+          const q2 = [mk('throwin'), mk('out'), mk('corner', ['shot'])];
+          const b = pb.planPlayback(q2, { speed: 'normal' });
+          const c = pb.planPlayback(q1, { speed: 'fast' });
+          return a.skip === 1 && a.play === 1 && b.skip === 2 && b.play === 1 && c.skip === 2 && c.play === 1;
+        })()],
+        ['規劃器:看不到有戲的回合就再拿;拿滿了留最後一個(可能是下一段的來由)其餘跳過;完賽就全跳', (() => {
+          const mk = () => ({ start: { type: 'turnover' }, events: [], end: {}, dur: 10, dead: 5 });
+          const few = pb.planPlayback([mk(), mk()], { speed: 'normal' });
+          const full = pb.planPlayback(Array.from({ length: 14 }, mk), { speed: 'normal' });
+          const fin = pb.planPlayback([mk(), mk()], { speed: 'normal', finished: true });
+          return few.need && few.skip === 0 && full.skip === 13 && full.need && fin.skip === 2 && !fin.need && !fin.play;
+        })()],
+        ['規劃器:即時每個回合都演;精華只認進球 / 牌 / 十二碼', (() => {
+          const mk = (ev) => ({ start: { type: 'turnover' }, events: ev.map(t => ({ type: t })), end: {}, dur: 10, dead: 5 });
+          return pb.planPlayback([mk([])], { speed: 'real' }).play === 1 && pb.notable(mk(['shot']), 'highlights') === false && pb.notable(mk(['goal']), 'highlights') === true && pb.notable(mk(['card']), 'highlights') === true && pb.notable(mk(['corner']), 'normal') === false;
+        })()],
         ['進球回報時球真的在網裡(球過線才算進球,不是引擎說了算)', fast.goalsInNet.length > 0 && fast.goalsInNet.every(Boolean) && normal.goalsInNet.every(Boolean), `快 ${fast.goalsInNet.filter(Boolean).length}/${fast.goalsInNet.length}・正常 ${normal.goalsInNet.filter(Boolean).length}/${normal.goalsInNet.length}`],
         ['演出的進球數 = 比分', fast.probe.goalsPlayed === fast.match.state().score[0] + fast.match.state().score[1] && normal.probe.goalsPlayed === normal.match.state().score[0] + normal.match.state().score[1]],
-        ['角球在物理層真的發生(守方解圍滾過底線),數量對得回事件流', fast.probe.counts.corners >= fast.match.events().filter(e => e.type === 'corner').length, `${fast.probe.counts.corners} vs ${fast.match.events().filter(e => e.type === 'corner').length}`],
+        /* 只算**演過的**回合的角球:跳過的回合不演,物理層當然沒有它的角球(快 / 正常只演有射門的回合,贏得角球的回合多半被跳過,所以三種模式加總) */
+        ['角球在物理層真的發生(守方解圍滾過底線),數量對得回演過的事件流', (() => {
+          const played = all3.reduce((a, r) => a + r.playedEvents.filter(e => e.type === 'corner').length, 0);
+          const phys = all3.reduce((a, r) => a + r.probe.counts.corners, 0);
+          return played > 0 && phys >= played;
+        })(), `物理 ${all3.map(r => r.probe.counts.corners).join('/')} vs 演過 ${all3.map(r => r.playedEvents.filter(e => e.type === 'corner').length).join('/')}`],
         /* ── 2. 不卡住 ── */
         ['看門狗一次都不該動(演出對不上劇本時要靠逾時補救,不是等看門狗)', all3.every(r => r.probe.timeouts.watchdog === 0), all3.map(r => r.probe.timeouts.watchdog).join('/')],
         ['逾時補救是少數(正常速一場 < 8% 的回合)', (normal.probe.timeouts.hop + normal.probe.timeouts.end + normal.probe.timeouts.fetch + normal.probe.timeouts.restart) < normal.seqs * 0.08, JSON.stringify(normal.probe.timeouts)],
-        /* 使用者定的:正常速 8~12 分鐘。上限放 15 —— 事件多的場次(種子 7 有 69 筆事件)會長一點;下限守「真的有在演」 */
-        ['正常速一場落在 6~15 分鐘、快一場不到 8 分鐘', normal.secs / 60 > 6 && normal.secs / 60 < 15 && fast.secs / 60 < 8, `正常 ${(normal.secs / 60).toFixed(1)}・快 ${(fast.secs / 60).toFixed(1)}`],
-        ['沒結局的回合一格內跳過,但事件照樣回報(instant 路徑)', /finishInstant/.test(src) && /mode\.instant/.test(src) && /flushEvents\(\)/.test(src)],
+        /* 使用者定的:正常速 8~12 分鐘(不剪接版三個種子量到 8.0 / 8.3 / 10.8)。上限放 13 —— 射門多的場次會長一點;下限守「真的有在演」 */
+        ['正常速一場落在 7~13 分鐘、快一場不到 8 分鐘', normal.secs / 60 > 7 && normal.secs / 60 < 13 && fast.secs / 60 < 8, `正常 ${(normal.secs / 60).toFixed(1)}・快 ${(fast.secs / 60).toFixed(1)}`],
+        ['跳過的回合事件照樣回報(flushEvents / 頁面的 skipSeq)', /flushEvents\(\)/.test(src) && /function skipSeq/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8'))],
         ['每一段演出都有逾時,逾時就把球放到該在的人腳下、事件照樣回報', /HOP_TIMEOUT/.test(src) && /END_TIMEOUT/.test(src) && /WATCHDOG/.test(src) && /snapBallTo/.test(src)],
-        ['劇本剪短時不剪接:留第一腳與最後幾腳,中間用長傳接起來', /function planChain/.test(src) && /keep === 2/.test(src)],
+        ['傳球串每一腳都演(planChain 不再依播放速度剪短)', /function planChain/.test(code) && !/mode\.hops/.test(code)],
         ['追空中球的人跑去落點,不是跑向球(迎上一顆 20 m/s 的球控不住,飛過去再回頭要兩秒)', /function landingOf/.test(src) && /return ball\.held \? holderRoute\(p\) : landingOf\(\)/.test(src)],
         ['丟球的人由劇本決定(end.by),不是動畫自己挑;沒有自主的傳球時鐘', /end\.by/.test(src) && !/passClock/.test(src) && !/chooseNext/.test(src) && !/dueSides/.test(src)],
         /* 2026-09-03 球改成物理:速度 + 摩擦,出界規則;劇本版只**記下**出界,怎麼接由劇本決定 */

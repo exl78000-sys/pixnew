@@ -53,8 +53,8 @@ async function main() {
   'follow', 'fixture-list', 'sim-table', 'ucl-view', 'predict-core', 'duel-anim', 'predict-score',
   /* 探索頁的三個內容模組(併頁時抽出來的,做法同 ucl-view)。
      模擬遊玩(2026-09-03)取代了對戰模擬:game-engine 是引擎、game-view 是版面,
-     game-view import game-engine,所以引擎要排前面(共用模組引用共用模組,照相依排)。 */
-  'knowledge-view', 'allplayers-view', 'game-engine', 'game-view',
+     game-view import game-engine 與 game-playback(播放規劃,2026-09-15),所以那兩個要排前面(共用模組引用共用模組,照相依排)。 */
+  'knowledge-view', 'allplayers-view', 'game-engine', 'game-playback', 'game-view',
   /* 「我的」那一頁的兩個分頁(2026-09-14 併頁時抽出來的)。
      predict-view 引用 predict-score,所以排在它後面。 */
   'follow-view', 'predict-view'];
