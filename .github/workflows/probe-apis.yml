@@ -81,6 +81,17 @@ jobs:
         working-directory: epl
         run: npm run probe:fotmob-cups -- --only=report
 
+      # 2026-09-15:德甲上線了球隊與比賽層,球員層是唯一還缺的東西。
+      # 德甲是 Understat 涵蓋的五大聯賽之一,所以這是「還沒抓」不是「拿不到」——
+      # 但**聯賽代號的字串要實測**:西甲那條是 `La_liga`(底線、小寫 l),
+      # 照直覺推德甲會得到什麼寫法不一定對,而這個端點猜錯**不回 HTTP 錯誤**,
+      # 它回 200 加一個 error 物件,或是一個空陣列(英冠那次四種寫法全回空陣列)。
+      # 候選逐一試 + 西甲當對照組,才分得出「德甲沒有」與「整個端點不通」。
+      # 唯讀、最多 6 個請求、每個隔 1.5 秒,一個位元組都不寫進倉庫。
+      - name: 探測 Understat 有沒有德甲球員資料(以及聯賽代號是哪個字串)
+        working-directory: epl
+        run: npm run probe:understat-de1
+
   all:
     if: ${{ github.event.inputs.quick != 'true' }}
     runs-on: ubuntu-latest
