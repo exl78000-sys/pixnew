@@ -2152,14 +2152,20 @@ async function checkDataGap() {
          time —— 英超的 FPL 鏡像給的當地開球時間字串,另兩個聯賽的來源沒有這個欄位;
                  前端一律讀 kickoff(ISO),time 只有英超自己的舊版面在用。
          provisional —— 西甲賽程物件上的「未賽但即時來源已記到終場」;英超走官方 FPL,沒有這回事。
-         scoreSource / scoreProvisional —— 西甲與英冠的主來源(社群靜態檔)慢好幾天,所以有一條
-                 「獨立來源核對後補比分」的路(lib/league-matches),補進來的場次要標出處與「暫定」。
-                 英超走官方 FPL,比分當天就有,沒有這條路 —— 不是漏給,是它不需要。 */
-      const KNOWN = { time: ['pl'], provisional: ['es1'], scoreSource: ['es1', 'en2'], scoreProvisional: ['es1', 'en2'] };
+         scoreSource / scoreProvisional —— **英超以外每一個聯賽**的主來源都是社群靜態檔,
+                 它慢好幾天,所以有一條「獨立來源核對後補比分」的路(lib/league-matches),
+                 補進來的場次要標出處與「暫定」。英超走官方 FPL,比分當天就有,
+                 沒有這條路 —— 不是漏給,是它不需要。
+                 **這裡刻意不寫死聯賽清單**:第一版寫 ['es1','en2'],加德甲之後在 CI 上紅了 ——
+                 而本機是綠的,因為沙箱抓不到 football-data.co.uk,本機的德甲根本沒有補過比分,
+                 那個欄位當然不會出現。分界線是「主來源是不是官方 feed」,那只有英超,
+                 所以條件寫成「英超以外的都可以有」。 */
       const fieldsOf = rows => new Set((rows ?? []).flatMap(r => Object.keys(r)));
       const have = Object.fromEntries(Object.entries(sets).filter(([, v]) => Array.isArray(v)).map(([k, v]) => [k, fieldsOf(v)]));
       const leagues = Object.keys(have);
       if (leagues.length < 2) return true;                       // 還沒 build 出來就不判
+      const exceptPl = leagues.filter(k => k !== 'pl');
+      const KNOWN = { time: ['pl'], provisional: ['es1'], scoreSource: exceptPl, scoreProvisional: exceptPl };
       const all = new Set(leagues.flatMap(k => [...have[k]]));
       const problems = [];
       for (const field of all) {
