@@ -28,6 +28,11 @@ const KO = m => (m.kickoff ? C.kickoffLocal(m.kickoff) : '待定');
    那就是「按鈕在但點了沒東西」(歐冠那條坑的反面)。 */
 let CUP_REPORTS = {};
 
+/* 球員榜(cup-details.json 的 players 區塊,2026-09-15)。**宣告在模組層最上面** ——
+   下面的 cupLeaderBoards 是在頂層流程裡被呼叫的,const 不像函式宣告會提升,
+   放在檔尾就是暫時死區(球員頁那一輪剛踩過:整區不見、只有 console 一行 ReferenceError)。 */
+let CUP_PLAYERS = {};
+
 /* 關注的球隊(不分聯賽 —— 盃賽裡的 BUR 就是 Burnley,他今年在哪一級無關)。
    在模組層取一次:一輪一百多場、每場兩隊,每一格都讀 localStorage 太浪費。
    這裡的 ★ 是**純標記不是按鈕** —— 這一格點下去是進球隊頁,再塞一個切換會誤觸。 */
@@ -154,6 +159,47 @@ function roundCard(round) {
      展開資格賽        → 全部
      本站球隊還沒進場  → **只留最新一輪**(整季都是資格賽,全攤開是 533 場)
      一般              → 從第一個有本站球隊的輪次開始 */
+/* 球員榜(2026-09-15):逐場詳情裡的逐人統計累加而來(`lib/season-players.mjs`,歐冠與英冠共用)。
+   **說明要把三件事講掉**,不然讀者會把它當成完整的賽事統計:
+     1. 涵蓋率 —— 供應商對低分級的場次常常沒有逐人統計(足總盃 117 場裡只有 81 場有)
+     2. 核對是同一家供應商的一致性檢查,不是獨立來源(盃賽的賽果本身就是 FotMob)
+     3. 評分榜的門檻(淘汰制底下八成的人只踢一場) */
+function cupLeaderBoards(pl, cupZh, seasonLabel) {
+  if (!pl?.boards?.length) return '';
+  const fmt = (v, dp) => (dp ? Number(v).toFixed(dp) : v);
+  const cover = pl.withPlayers === pl.matches
+    ? `${pl.matches} 場全部有逐人統計`
+    : `${pl.matches} 場裡 <b>${pl.withPlayers} 場</b>有逐人統計(缺的 ${pl.noPlayerData} 場是供應商沒給,多半是低分級球隊互打)`;
+  return `
+    <div class="section"><h2>${C.esc(seasonLabel)} ${C.esc(cupZh)}球員榜</h2>
+      <span class="hint">由逐場詳情的逐人統計累加・${pl.pool} 人</span></div>
+    <div class="note" style="margin-bottom:10px">
+      <b>這幾張榜涵蓋哪些比賽。</b>${cover};其中 <b>${pl.reconciled} 場</b>的球員進球對得回比分才計入${
+        pl.mismatched.length ? `,${pl.mismatched.length} 場對不上整場不計` : ''}。
+      xG 只加射門圖完整的 ${pl.xgComplete} 場。
+      <div class="tiny dim" style="margin-top:6px">
+        比分核對用的是<b>同一家供應商</b>(盃賽的賽果本身就是 FotMob)—— 它擋得住抓錯場次,擋不住供應商自己記錯,
+        跟三個聯賽那種獨立來源核對不是同一回事。互射十二碼不算進球(40 場踢到 PK 的比賽逐場驗過)。
+        評分榜要出賽 ≥ ${pl.ratingMin} 場才列:淘汰制底下大部分人只踢一兩場,門檻低會讓踢兩場的人排在整個賽事第一。${
+          pl.cardsUnmatched ? ` 另有 ${pl.cardsUnmatched} 筆牌事件接不到球員 —— 那是總教練吃牌。` : ''}
+      </div>
+    </div>
+    <div class="grid g3">
+      ${pl.boards.map(b => `<div class="card">
+        <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3>
+          <span class="dim tiny">母體 ${b.pool} 人</span></div>
+        <div style="display:grid;gap:2px;margin-top:8px">
+          ${b.rows.map((r, i) => `<div class="stat-line" style="gap:8px;align-items:center">
+            <span class="tiny dim mono" style="min-width:18px">${i + 1}</span>
+            <span class="small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.name)}</span>
+            <span class="tiny dim" style="max-width:110px;overflow:hidden">${teamCell(pl.teams?.[r.teamId] ?? { name: r.team })}</span>
+            <b class="mono small">${fmt(r.value, b.dp)}${C.esc(b.unit)}</b>
+          </div>`).join('')}
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+
 function visibleRounds(season, showQual) {
   if (showQual) return season.rounds;
   if (season.noKnownYet) return season.rounds.slice(-1);
@@ -253,6 +299,7 @@ try {
      逐場報告在單場頁點開才載 —— 報告一份約 60 KB,清單裡展開就是歐冠那條坑
      (一份報告比整份清單還長)。 */
   CUP_REPORTS = shared['cup-details']?.reports ?? {};
+  CUP_PLAYERS = shared['cup-details']?.players ?? {};
   const cupReportCount = shared['cup-details']?.count ?? 0;
   /* 比賽中的比分不在 cups.json 裡(它要等下一次部署),在 cups-live.json 那份小檔。
 
@@ -396,6 +443,7 @@ try {
           <span class="hint">有本站球隊頁的才列・共 ${season.runs.length} 支・其餘球隊本站沒有資料,點不進去</span></div>
           <div id="runs"></div>` : ''}
         ${qualifyingToggle({ ...season, __showQual: showQualifying })}
+        ${cupLeaderBoards(CUP_PLAYERS?.[cup.key]?.[season.label], cup.zh, season.label)}
         <div class="section"><h2>逐輪賽果</h2>
           <span class="hint">最新的排在最上面(決賽 → 第一輪)・輪次順序依開球時間,不是照上游的輪次編號</span></div>
         ${/* **先切再倒。** 資格賽是用「從第幾輪開始」這個索引切掉的;

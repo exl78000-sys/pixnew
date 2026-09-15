@@ -144,13 +144,19 @@ export function aggregatePlayers(rows, { teamNames = {} } = {}) {
   return { players, matches, reconciled, xgComplete, excluded, cardsUnmatched };
 }
 
-export function leadersFrom(agg, { limit = 12 } = {}) {
+/* `minMatches` 讓呼叫端調評分榜的門檻。聯賽用 2 就夠(一季 38~46 輪,兩場以上的人是絕大多數);
+   **盃賽不行** —— 淘汰制,大部分人只踢一兩場,門檻 2 會讓一個踢了兩場拿 8.5 的人排在整個賽事第一。
+   所以門檻是參數,不是常數;呼叫端要**照自己賽事的場次分布**挑一個,並且把門檻印在榜的標題上。 */
+export function leadersFrom(agg, { limit = 12, minMatches = null } = {}) {
   const out = [];
   for (const c of LEADERS) {
-    const eligible = agg.players.filter(p => Number.isFinite(p.stats[c.key]) && (!c.minMatches || p.matches >= c.minMatches));
+    const need = c.minMatches ? (minMatches ?? c.minMatches) : 0;
+    const eligible = agg.players.filter(p => Number.isFinite(p.stats[c.key]) && (!need || p.matches >= need));
     const rows = eligible.map(p => ({ name: p.name, team: p.teamName, teamId: p.team, value: p.stats[c.key], minutes: p.minutes, matches: p.matches }))
       .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name)).slice(0, limit);
-    if (rows.length) out.push({ key: c.key, zh: c.zh, unit: c.unit, dp: c.dp, rows, pool: eligible.length });
+    /* 標題把門檻寫進去 —— 門檻變了而標題沒變的話,畫面上那句話就是假的 */
+    const zh = c.minMatches ? c.zh.replace(/出賽 ≥ \d+ 場/, `出賽 ≥ ${need} 場`) : c.zh;
+    if (rows.length) out.push({ key: c.key, zh, unit: c.unit, dp: c.dp, rows, pool: eligible.length, ...(need ? { minMatches: need } : {}) });
   }
   return out;
 }

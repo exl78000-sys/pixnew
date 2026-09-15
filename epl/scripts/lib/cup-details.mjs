@@ -36,6 +36,17 @@
  *      PK 那場 46 顆裡 8 顆是 `PenaltyShootout` —— 所以 `isShootoutShot` 用 period 就分得開,
  *      不必退回「分鐘 ≥ 120」那條推路。`pens` 要帶到 detail 與報告給前端的射門圖用。
  *
+ * ── 球員榜(2026-09-15)──
+ * 逐場詳情裡本來就有雙方的逐人統計,累加規則跟歐冠 / 英冠共用(`lib/season-players.mjs`)。
+ * 盃賽有三件事跟聯賽不一樣,都量過:
+ *   · **互射十二碼不會算進進球**:40 場踢到 PK 的比賽逐場核對,球員進球 + 烏龍球 100% 對得回
+ *     正規 + 延長的比分。(射門圖**會**把互射列進去,那是另一回事,`isShootoutShot` 處理。)
+ *   · **低分級的場次常常沒有逐人統計**:足總盃 117 場裡只有 81 場有(缺的都是第三、四級互打),
+ *     聯賽盃 155 場全有。這個涵蓋率要寫進產物讓畫面講,不能只給一個榜就當作全都涵蓋了。
+ *   · **評分榜的門檻不能用聯賽那個 2**:淘汰制底下 1,597 人裡 1,044 人只踢一場,
+ *     門檻 2 會讓踢兩場的人排在整個賽事第一。這裡用 3(門檻印在榜的標題上)。
+ * 而**比分核對仍然不是獨立來源**(見上面第 2 點),所以球員榜的說明要照著講,不要升級成「已核對」。
+ *
  * 產物分兩層(跟歐冠同一個規矩:索引小、逐場大):
  *   `cup-details.json`                     索引:哪幾場有報告、比分、xG、拒收與不完整的清單
  *   `cup-details/{盃賽}/{季}/{比賽 id}.json` 逐場報告(一場約 60 KB),前端點開才載
@@ -49,6 +60,7 @@ import { existsSync, readFileSync, readdirSync, rmSync, mkdirSync, writeFileSync
 import { join } from 'node:path';
 import { loadFotmobMatchStats, toCanonicalDetail, isShootoutShot } from './matchstats.mjs';
 import { buildProviderMatchReport, FULL_COVERAGE } from './postmatch-report.mjs';
+import { aggregatePlayers, leadersFrom } from './season-players.mjs';
 
 /* 兩個盃賽:key 要跟 `cups.json` 的 `cups[].key` 一樣(前端用它查),
    FotMob 的聯賽 id 是抓賽事 logo 時實證過的(132 = FA Cup、133 = EFL Cup)。 */
@@ -60,6 +72,11 @@ export const CUP_DETAILS_DIR = 'cup-details';
 export const CUPS_RAW_DIR = 'fotmob-cups';
 
 const r2 = n => Math.round(n * 100) / 100;
+
+/* 評分榜要出賽幾場才列。**這個數字是從場次分布挑的,不是憑感覺**:
+   足總盃 2025-26 的 1,597 人裡 1,044 人只踢一場、324 人踢兩場 —— 門檻 2 等於把「踢了兩場手感好」
+   當成整個賽事最好的球員。3 場代表他至少撐過兩輪。門檻會印在榜的標題與說明上。 */
+const CUP_RATING_MIN = 3;
 
 /* 隊伍身分:有隊碼用隊碼,沒有就 `fm{FotMob id}`。**一個函式決定**,抓取器與 build 都叫它 ——
    兩邊各寫一份的話,raw 的鍵跟讀取時算出來的鍵會對不上,而症狀是「抓了卻沒有報告」。 */
@@ -168,6 +185,9 @@ export function cupDetails(root) {
     },
     retrievedAt: null, count: 0, cached: 0,
     cups: {}, reports: {}, incomplete: [], rejected: [], attempts: [], missing: [],
+    /* 球員榜(逐場逐人統計累加)。一個盃賽一季一筆,含涵蓋率與被排除的場次 —— 榜單本身很小,
+       **不放全部球員**:淘汰制底下八成的人只踢一場,一張 1,700 人的表是雜訊不是資料。 */
+    players: {},
     /* 連 results 那一層都進不去的場次(身分或日期算不出來)。目前是空的,
        但不收著的話那種場次會從「已完賽 N 場」的分母裡靜靜消失。 */
     skipped: [],
@@ -228,6 +248,43 @@ export function cupDetails(root) {
       };
       seasons[r.season].reports++;
       index.count++;
+    }
+    /* 球員榜:一季一份。teamNames / teamCodes 從 results 來(逐場詳情的隊鍵是 `fm{id}` 或隊碼) */
+    {
+      const bySeason = {};
+      for (const m of Object.values(stats.matches)) (bySeason[m.season] ??= []).push(m);
+      /* 身分**在這裡決定一次**,前端不要自己從 `fm12345` 這種鍵反推 —— 隊徽與連結要的是
+         `{ code, sourceId, name }` 這個形狀(cups.json 的球隊格就是它),前端照它畫就好。
+         (跟「跨聯賽的東西不能有『目前聯賽』這個隱含參數」同一條:身分收在一個地方。) */
+      const nameOf = {}, sideOf = {};
+      for (const r of results) {
+        nameOf[r.home] = r.homeName; nameOf[r.away] = r.awayName;
+        sideOf[r.home] = { code: r.homeCode ?? null, sourceId: r.homeSourceId ?? null, name: r.homeName };
+        sideOf[r.away] = { code: r.awayCode ?? null, sourceId: r.awaySourceId ?? null, name: r.awayName };
+      }
+      for (const [season, ms] of Object.entries(bySeason)) {
+        const rows = ms.slice().sort((a, b) => String(a.key).localeCompare(String(b.key))).map(m => {
+          /* 「有逐人統計」= 至少有一個人真的上場過。供應商對低分級的場次常常只給空名單,
+             而空名單跟「這一場沒有人上場」長得一樣 —— 所以看的是分鐘,不是陣列長度。 */
+          const has = m.players && Object.values(m.players).some(l => l?.some(p => Number.isFinite(p.minutes) && p.minutes > 0));
+          return has
+            ? { key: m.key, home: m.home, away: m.away, players: m.players, events: m.events ?? [], shots: m.shots ?? [], score: m.score, shotmapComplete: m.shotmapComplete }
+            : { key: m.key, skip: '供應商沒有這一場的逐人統計' };
+        });
+        const agg = aggregatePlayers(rows, { teamNames: nameOf });
+        if (!agg.reconciled) continue;
+        const noData = agg.excluded.filter(e => /沒有這一場的逐人統計/.test(e.reason));
+        const mismatched = agg.excluded.filter(e => !/沒有這一場的逐人統計/.test(e.reason));
+        const boards = leadersFrom(agg, { minMatches: CUP_RATING_MIN });
+        const teams = {};
+        for (const b of boards) for (const r of b.rows) teams[r.teamId] = sideOf[r.teamId] ?? { code: null, sourceId: null, name: r.team };
+        (index.players[cup.key] ??= {})[season] = {
+          matches: ms.length, withPlayers: agg.matches, reconciled: agg.reconciled,
+          xgComplete: agg.xgComplete, pool: agg.players.length,
+          noPlayerData: noData.length, mismatched, cardsUnmatched: agg.cardsUnmatched,
+          ratingMin: CUP_RATING_MIN, boards, teams,
+        };
+      }
     }
     index.cups[cup.key] = { zh: cup.zh, leagueId: cup.id, seasons };
     for (const x of skipped) index.skipped.push({ cup: cup.key, ...x });

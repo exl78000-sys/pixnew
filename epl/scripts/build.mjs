@@ -1317,6 +1317,13 @@ async function main() {
       for (const [key, c] of Object.entries(cdet.index.cups)) {
         const rows = Object.entries(c.seasons).map(([s, v]) => `${s} ${v.reports}/${v.played}`).join('・');
         console.log(`    ${c.zh}:${rows || '(沒有已完賽場次)'}`);
+        /* 球員榜的涵蓋率要印出來 —— 足總盃低分級的場次常常沒有逐人統計,
+           只看「有幾張榜」看不出這件事 */
+        for (const [season, pl] of Object.entries(cdet.index.players?.[key] ?? {})) {
+          console.log(`      球員榜 ${season}:${pl.pool} 人・有逐人統計 ${pl.withPlayers}/${pl.matches} 場`
+            + `・對回比分 ${pl.reconciled}${pl.noPlayerData ? `・供應商沒給逐人 ${pl.noPlayerData} 場` : ''}`
+            + `${pl.mismatched.length ? `・對不上 ${pl.mismatched.length} 場` : ''}`);
+        }
       }
       for (const r of cdet.index.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
       for (const r of cdet.index.incomplete.slice(0, 5)) console.log(`    ⚠ ${r.cup} ${r.id}:${r.reason}(${r.missing.join('、')})`);
