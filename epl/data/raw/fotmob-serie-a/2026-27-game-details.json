@@ -66052,27 +66052,5467 @@
      }
     ]
    }
-  }
- },
- "attempts": {
+  },
   "ROM|FIO": {
-   "at": "2026-09-15T19:29:55.139Z",
-   "reason": "FotMob 賽程找不到對應場次",
-   "matchId": null,
-   "label": "ROM–FIO"
+   "key": "ROM|FIO",
+   "season": "2026-27",
+   "date": "2026-08-24",
+   "matchId": "5749640",
+   "home": "ROM",
+   "away": "FIO",
+   "score": [
+    4,
+    0
+   ],
+   "providerScore": [
+    4,
+    0
+   ],
+   "teamStats": {
+    "ROM": {
+     "possession": 61,
+     "shots": 17,
+     "shotsOn": 8,
+     "shotsOff": 6,
+     "blockedShots": 3,
+     "blocksMade": 0,
+     "corners": 2,
+     "offsides": 1,
+     "fouls": 15,
+     "saves": 4,
+     "passes": 539,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.07
+    },
+    "FIO": {
+     "possession": 39,
+     "shots": 9,
+     "shotsOn": 4,
+     "shotsOff": 5,
+     "blockedShots": 0,
+     "blocksMade": 3,
+     "corners": 3,
+     "offsides": 1,
+     "fouls": 11,
+     "saves": 4,
+     "passes": 343,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.35
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "ROM": {
+     "touches_opp_box": 41,
+     "big_chance": 5,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 13,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 2.62,
+     "expected_goals_set_play": 0.45,
+     "expected_goals_non_penalty": 3.07,
+     "expected_goals_on_target": 3,
+     "own_half_passes": 230,
+     "opposition_half_passes": 248,
+     "long_balls_accurate": 19,
+     "long_balls_accurate_pct": 50,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 21,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 22,
+     "interceptions": 9,
+     "clearances": 17,
+     "duel_won": 59,
+     "ground_duels_won": 42,
+     "ground_duels_won_pct": 58,
+     "aerials_won": 17,
+     "aerials_won_pct": 71,
+     "dribbles_succeeded": 9,
+     "dribbles_succeeded_pct": 64,
+     "red_cards": 0
+    },
+    "FIO": {
+     "touches_opp_box": 8,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 3,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 0.22,
+     "expected_goals_set_play": 0.13,
+     "expected_goals_non_penalty": 0.35,
+     "expected_goals_on_target": 0.36,
+     "own_half_passes": 153,
+     "opposition_half_passes": 132,
+     "long_balls_accurate": 17,
+     "long_balls_accurate_pct": 38,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 18,
+     "player_throws": 21,
+     "matchstats.headers.tackles": 10,
+     "interceptions": 5,
+     "clearances": 23,
+     "duel_won": 37,
+     "ground_duels_won": 30,
+     "ground_duels_won_pct": 42,
+     "aerials_won": 7,
+     "aerials_won_pct": 29,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 28,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     61,
+     39
+    ],
+    "h1": [
+     66,
+     34
+    ],
+    "h2": [
+     55,
+     45
+    ]
+   },
+   "events": [
+    {
+     "minute": 27,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Donyell Malen"
+    },
+    {
+     "minute": 30,
+     "extra": null,
+     "team": "FIO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Nicolò Fagioli"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "ROM",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Mario Hermoso"
+    },
+    {
+     "minute": 49,
+     "extra": null,
+     "team": "ROM",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Manu Koné"
+    },
+    {
+     "minute": 52,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Donyell Malen"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matias Soulé"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Donyell Malen"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "FIO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Álex Jiménez"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "FIO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Christ Inao Oulaï"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "FIO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Moise Kean"
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "FIO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Mateo Pellegrino"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Santiago Castro"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Konstantinos Koulierakis"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "FIO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rolando Mandragora"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Neil El Aynaoui"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Niccolò Pisilli"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "FIO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Valde"
+    },
+    {
+     "minute": 86,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Niccolò Pisilli"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.035,
+     "xgot": 0.094,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 24,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 6,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.6,
+     "y": 24.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "FIO",
+     "player": "Marco Brescianini",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0.012,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.9,
+     "y": 48.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 24.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0.114,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 47.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "ROM",
+     "player": "Evan N'Dicka",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.407,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 31.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "ROM",
+     "player": "Emanuele Lulli",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.121,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 31,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.387,
+     "xgot": 0.246,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.3,
+     "y": 35.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.4,
+     "y": 33.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.08,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 40.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "FIO",
+     "player": "Cher Ndour",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0.203,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.8,
+     "y": 21,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0.021,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.3,
+     "y": 46.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "FIO",
+     "player": "Franco Mastantuono",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.8,
+     "y": 23.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0.422,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 44.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "FIO",
+     "player": "Cher Ndour",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 31.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.1,
+     "y": 27.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.892,
+     "xgot": 0.987,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.4,
+     "y": 31.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "FIO",
+     "player": "Christ Inao Oulaï",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 23.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "FIO",
+     "player": "Moise Kean",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.14,
+     "xgot": 0.125,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.7,
+     "y": 25.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "FIO",
+     "player": "Dodô",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.005,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.6,
+     "y": 25.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "FIO",
+     "player": "Moise Kean",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.035,
+     "xgot": 0.024,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.5,
+     "y": 48.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "FIO",
+     "player": "Radu Dragusin",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 25.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "ROM",
+     "player": "Santiago Castro",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.155,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 37.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.186,
+     "xgot": 0.279,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.8,
+     "y": 25.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "ROM",
+     "player": "Niccolò Pisilli",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.317,
+     "xgot": 0.835,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 33.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.151,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 22.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     -5
+    ],
+    [
+     4,
+     -8
+    ],
+    [
+     5,
+     33
+    ],
+    [
+     6,
+     43
+    ],
+    [
+     7,
+     41
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     9,
+     8
+    ],
+    [
+     10,
+     19
+    ],
+    [
+     11,
+     16
+    ],
+    [
+     12,
+     38
+    ],
+    [
+     13,
+     22
+    ],
+    [
+     14,
+     43
+    ],
+    [
+     15,
+     33
+    ],
+    [
+     16,
+     38
+    ],
+    [
+     17,
+     16
+    ],
+    [
+     18,
+     33
+    ],
+    [
+     19,
+     27
+    ],
+    [
+     20,
+     100
+    ],
+    [
+     21,
+     84
+    ],
+    [
+     22,
+     65
+    ],
+    [
+     23,
+     -22
+    ],
+    [
+     24,
+     0
+    ],
+    [
+     25,
+     100
+    ],
+    [
+     26,
+     100
+    ],
+    [
+     27,
+     100
+    ],
+    [
+     28,
+     100
+    ],
+    [
+     29,
+     100
+    ],
+    [
+     30,
+     0
+    ],
+    [
+     31,
+     0
+    ],
+    [
+     32,
+     76
+    ],
+    [
+     33,
+     81
+    ],
+    [
+     34,
+     100
+    ],
+    [
+     35,
+     33
+    ],
+    [
+     36,
+     38
+    ],
+    [
+     37,
+     14
+    ],
+    [
+     38,
+     43
+    ],
+    [
+     39,
+     54
+    ],
+    [
+     40,
+     0
+    ],
+    [
+     41,
+     5
+    ],
+    [
+     42,
+     -33
+    ],
+    [
+     43,
+     16
+    ],
+    [
+     44,
+     -16
+    ],
+    [
+     45,
+     -3
+    ],
+    [
+     45.5,
+     6
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -27
+    ],
+    [
+     48,
+     -22
+    ],
+    [
+     49,
+     -22
+    ],
+    [
+     50,
+     0
+    ],
+    [
+     51,
+     -11
+    ],
+    [
+     52,
+     5
+    ],
+    [
+     53,
+     11
+    ],
+    [
+     54,
+     -19
+    ],
+    [
+     55,
+     -35
+    ],
+    [
+     56,
+     -24
+    ],
+    [
+     57,
+     11
+    ],
+    [
+     58,
+     38
+    ],
+    [
+     59,
+     27
+    ],
+    [
+     60,
+     100
+    ],
+    [
+     61,
+     100
+    ],
+    [
+     62,
+     100
+    ],
+    [
+     63,
+     -22
+    ],
+    [
+     64,
+     -8
+    ],
+    [
+     65,
+     -14
+    ],
+    [
+     66,
+     -24
+    ],
+    [
+     67,
+     -54
+    ],
+    [
+     68,
+     -49
+    ],
+    [
+     69,
+     -16
+    ],
+    [
+     70,
+     -11
+    ],
+    [
+     71,
+     -38
+    ],
+    [
+     72,
+     -33
+    ],
+    [
+     73,
+     -16
+    ],
+    [
+     74,
+     22
+    ],
+    [
+     75,
+     5
+    ],
+    [
+     76,
+     11
+    ],
+    [
+     77,
+     0
+    ],
+    [
+     78,
+     -5
+    ],
+    [
+     79,
+     -16
+    ],
+    [
+     80,
+     -22
+    ],
+    [
+     81,
+     -16
+    ],
+    [
+     82,
+     -16
+    ],
+    [
+     83,
+     -22
+    ],
+    [
+     84,
+     49
+    ],
+    [
+     85,
+     100
+    ],
+    [
+     86,
+     100
+    ],
+    [
+     87,
+     100
+    ],
+    [
+     88,
+     100
+    ],
+    [
+     89,
+     22
+    ],
+    [
+     90,
+     11
+    ],
+    [
+     90.5,
+     2
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "ROM": {
+     "team": "ROM",
+     "formation": "3-4-2-1",
+     "coach": "Gian Piero Gasperini",
+     "xi": [
+      {
+       "name": "Mile Svilar",
+       "shirt": 99,
+       "pos": "G"
+      },
+      {
+       "name": "Gianluca Mancini",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Evan N'Dicka",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Mario Hermoso",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Emanuele Lulli",
+       "shirt": 77,
+       "pos": "?"
+      },
+      {
+       "name": "Bryan Cristante",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Manu Koné",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Wesley",
+       "shirt": 43,
+       "pos": "?"
+      },
+      {
+       "name": "Paulo Dybala",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Rodrigo Mora",
+       "shirt": 86,
+       "pos": "M"
+      },
+      {
+       "name": "Donyell Malen",
+       "shirt": 14,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Matias Soulé",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Konstantinos Koulierakis",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Santiago Castro",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Neil El Aynaoui",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Niccolò Pisilli",
+       "shirt": 61,
+       "pos": "?"
+      },
+      {
+       "name": "Giorgio De Marzi",
+       "shirt": 70,
+       "pos": "?"
+      },
+      {
+       "name": "Pierluigi Gollini",
+       "shirt": 95,
+       "pos": "?"
+      },
+      {
+       "name": "Daniele Ghilardi",
+       "shirt": 87,
+       "pos": "?"
+      },
+      {
+       "name": "Jan Ziólkowski",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Nahuel Molina",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Robinio Vaz",
+       "shirt": 78,
+       "pos": "?"
+      }
+     ]
+    },
+    "FIO": {
+     "team": "FIO",
+     "formation": "4-3-2-1",
+     "coach": "Fabio Grosso",
+     "xi": [
+      {
+       "name": "David de Gea",
+       "shirt": 43,
+       "pos": "G"
+      },
+      {
+       "name": "Dodô",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Radu Dragusin",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Luca Ranieri",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "João Mário",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Cher Ndour",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Nicolò Fagioli",
+       "shirt": 44,
+       "pos": "?"
+      },
+      {
+       "name": "Marco Brescianini",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Franco Mastantuono",
+       "shirt": 30,
+       "pos": "M"
+      },
+      {
+       "name": "Arthur Atta",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Mateo Pellegrino",
+       "shirt": 32,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Álex Jiménez",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Christ Inao Oulaï",
+       "shirt": 42,
+       "pos": "?"
+      },
+      {
+       "name": "Moise Kean",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Rolando Mandragora",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Valde",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Luca Lezzerini",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Oliver Christensen",
+       "shirt": 53,
+       "pos": "?"
+      },
+      {
+       "name": "Eman Kospo",
+       "shirt": 71,
+       "pos": "?"
+      },
+      {
+       "name": "Marin Pongracic",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Viery",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Giovanni Fabbian",
+       "shirt": 80,
+       "pos": "?"
+      },
+      {
+       "name": "Albert Gudmundsson",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Brando Mazzeo",
+       "shirt": 72,
+       "pos": "?"
+      },
+      {
+       "name": "Federico Croci",
+       "shirt": 70,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 36,
+      "center": 27,
+      "right": 37
+     },
+     "firstHalf": {
+      "left": 36,
+      "center": 28,
+      "right": 36
+     },
+     "secondHalf": {
+      "left": 36,
+      "center": 25,
+      "right": 39
+     }
+    },
+    "away": {
+     "total": {
+      "left": 37,
+      "center": 28,
+      "right": 35
+     },
+     "firstHalf": {
+      "left": 29,
+      "center": 22,
+      "right": 49
+     },
+     "secondHalf": {
+      "left": 41,
+      "center": 32,
+      "right": 27
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-15T20:29:33.392Z",
+   "fdMatchId": "2026-27-9",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "FIO",
+      "name": "Nicolò Fagioli",
+      "n": 42,
+      "cx": 45.6,
+      "cy": 37.6,
+      "spread": 27.2,
+      "grid": "0,3,0,1,1,1,0,2,3,2,2,0,2,1,7,2,1,0,1,6,1,5,1,0"
+     },
+     {
+      "team": "FIO",
+      "name": "David de Gea",
+      "n": 54,
+      "cx": 9.2,
+      "cy": 33.7,
+      "spread": 8.7,
+      "grid": "1,0,0,0,0,0,19,1,0,0,0,0,26,7,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Bryan Cristante",
+      "n": 113,
+      "cx": 44.9,
+      "cy": 47.1,
+      "spread": 21.2,
+      "grid": "0,0,0,0,0,0,2,4,7,0,1,0,5,12,17,20,3,0,3,6,15,13,5,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Mateo Pellegrino",
+      "n": 44,
+      "cx": 65.8,
+      "cy": 33.8,
+      "spread": 26.1,
+      "grid": "0,1,1,2,1,3,1,0,1,3,9,1,1,1,1,8,2,1,0,0,1,6,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Manu Koné",
+      "n": 71,
+      "cx": 48,
+      "cy": 20.7,
+      "spread": 19.2,
+      "grid": "0,6,10,10,2,0,2,6,11,12,3,0,0,3,2,4,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Cher Ndour",
+      "n": 61,
+      "cx": 56.6,
+      "cy": 41.2,
+      "spread": 26.3,
+      "grid": "2,0,0,1,1,1,0,1,5,4,4,2,0,2,5,12,1,2,0,2,5,10,1,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Gianluca Mancini",
+      "n": 63,
+      "cx": 45.9,
+      "cy": 50.4,
+      "spread": 26.1,
+      "grid": "0,0,0,0,0,0,2,1,4,0,0,0,3,7,7,1,3,3,2,8,7,10,5,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Evan N'Dicka",
+      "n": 94,
+      "cx": 37.1,
+      "cy": 33.8,
+      "spread": 23,
+      "grid": "3,2,6,1,0,0,3,12,13,5,2,0,3,12,14,3,0,2,4,4,5,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Wesley",
+      "n": 69,
+      "cx": 59.3,
+      "cy": 7.9,
+      "spread": 23.9,
+      "grid": "2,8,18,10,14,7,0,1,2,4,1,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Rodrigo Mora",
+      "n": 27,
+      "cx": 65.7,
+      "cy": 27.9,
+      "spread": 22.7,
+      "grid": "0,0,2,1,2,0,0,2,1,5,6,2,0,0,1,3,0,0,0,0,0,1,1,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Mario Hermoso",
+      "n": 71,
+      "cx": 48.6,
+      "cy": 12.7,
+      "spread": 23.4,
+      "grid": "3,6,16,16,8,1,4,2,7,5,0,2,0,0,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Paulo Dybala",
+      "n": 71,
+      "cx": 70.8,
+      "cy": 45.6,
+      "spread": 25.4,
+      "grid": "0,0,0,3,4,0,0,0,3,4,1,0,0,1,1,9,8,6,0,3,3,4,11,10"
+     },
+     {
+      "team": "FIO",
+      "name": "João Mário",
+      "n": 62,
+      "cx": 44.5,
+      "cy": 8,
+      "spread": 26.7,
+      "grid": "8,12,12,12,6,3,4,1,3,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Luca Ranieri",
+      "n": 48,
+      "cx": 30.9,
+      "cy": 23.1,
+      "spread": 21.4,
+      "grid": "1,7,5,2,0,0,8,13,1,1,1,0,1,4,2,0,0,0,0,1,0,1,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Dodô",
+      "n": 45,
+      "cx": 40.6,
+      "cy": 56.5,
+      "spread": 20.6,
+      "grid": "0,0,0,0,0,0,1,0,2,1,0,0,0,2,0,1,2,0,4,10,15,6,1,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Donyell Malen",
+      "n": 41,
+      "cx": 71.1,
+      "cy": 21.6,
+      "spread": 28.3,
+      "grid": "2,0,6,2,4,1,0,1,2,2,5,9,0,0,0,1,2,2,0,0,0,0,1,1"
+     },
+     {
+      "team": "FIO",
+      "name": "Radu Dragusin",
+      "n": 47,
+      "cx": 33.8,
+      "cy": 46.8,
+      "spread": 25.4,
+      "grid": "0,0,0,0,0,0,2,2,0,0,0,0,9,11,4,1,0,1,0,6,5,2,3,1"
+     },
+     {
+      "team": "ROM",
+      "name": "Emanuele Lulli",
+      "n": 64,
+      "cx": 59.2,
+      "cy": 58.5,
+      "spread": 28.8,
+      "grid": "0,0,0,0,0,0,2,0,0,0,0,0,0,1,0,0,1,3,4,7,13,9,15,9"
+     },
+     {
+      "team": "ROM",
+      "name": "Mile Svilar",
+      "n": 61,
+      "cx": 10.1,
+      "cy": 35,
+      "spread": 9.5,
+      "grid": "1,0,0,0,0,0,26,0,0,0,0,0,26,7,0,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Arthur Atta",
+      "n": 59,
+      "cx": 61.5,
+      "cy": 22.1,
+      "spread": 29.4,
+      "grid": "0,3,7,8,5,7,0,3,4,5,0,0,1,2,1,3,1,3,0,0,1,1,4,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Marco Brescianini",
+      "n": 22,
+      "cx": 46.4,
+      "cy": 16.6,
+      "spread": 23.1,
+      "grid": "2,1,6,1,1,1,1,1,3,3,1,0,0,0,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Franco Mastantuono",
+      "n": 43,
+      "cx": 61.2,
+      "cy": 52.7,
+      "spread": 21.3,
+      "grid": "0,0,1,0,0,0,0,0,0,1,0,0,1,2,1,2,8,0,0,0,7,11,8,1"
+     },
+     {
+      "team": "ROM",
+      "name": "Matias Soulé",
+      "n": 28,
+      "cx": 62.6,
+      "cy": 46.8,
+      "spread": 29.8,
+      "grid": "0,0,1,0,1,0,0,0,2,1,0,0,0,1,2,2,1,6,1,3,0,2,5,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Moise Kean",
+      "n": 19,
+      "cx": 69.8,
+      "cy": 29.4,
+      "spread": 19.6,
+      "grid": "0,0,0,2,1,0,0,0,0,3,2,2,0,0,2,4,1,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Christ Inao Oulaï",
+      "n": 29,
+      "cx": 47.6,
+      "cy": 25.7,
+      "spread": 21.6,
+      "grid": "0,1,2,1,2,0,0,3,6,6,0,0,0,2,2,1,1,0,0,2,0,0,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Álex Jiménez",
+      "n": 12,
+      "cx": 66.3,
+      "cy": 50,
+      "spread": 31.8,
+      "grid": "0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,2,0,0,1,1,1,0,1,4"
+     },
+     {
+      "team": "ROM",
+      "name": "Konstantinos Koulierakis",
+      "n": 19,
+      "cx": 47.9,
+      "cy": 15.6,
+      "spread": 23,
+      "grid": "0,1,6,1,2,1,1,1,3,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Santiago Castro",
+      "n": 12,
+      "cx": 55.1,
+      "cy": 27.5,
+      "spread": 26,
+      "grid": "0,0,0,1,0,0,2,0,1,2,3,1,0,0,2,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Rolando Mandragora",
+      "n": 16,
+      "cx": 51.6,
+      "cy": 22.4,
+      "spread": 27.4,
+      "grid": "1,0,0,4,1,0,1,0,0,5,1,0,2,0,0,0,0,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "FIO",
+      "name": "Valde",
+      "n": 8,
+      "cx": 39.8,
+      "cy": 10.6,
+      "spread": 28.1,
+      "grid": "1,1,2,0,2,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Neil El Aynaoui",
+      "n": 11,
+      "cx": 48.5,
+      "cy": 20.6,
+      "spread": 13.1,
+      "grid": "0,0,2,1,1,0,0,0,6,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Niccolò Pisilli",
+      "n": 12,
+      "cx": 71.3,
+      "cy": 28.8,
+      "spread": 19.5,
+      "grid": "0,0,0,2,0,0,0,0,2,3,0,0,0,0,0,1,1,3,0,0,0,0,0,0"
+     }
+    ]
+   }
   },
   "LEC|ROM": {
-   "at": "2026-09-15T19:29:55.139Z",
-   "reason": "FotMob 賽程找不到對應場次",
-   "matchId": null,
-   "label": "LEC–ROM"
+   "key": "LEC|ROM",
+   "season": "2026-27",
+   "date": "2026-08-31",
+   "matchId": "5749656",
+   "home": "LEC",
+   "away": "ROM",
+   "score": [
+    0,
+    4
+   ],
+   "providerScore": [
+    0,
+    4
+   ],
+   "teamStats": {
+    "LEC": {
+     "possession": 36,
+     "shots": 7,
+     "shotsOn": 3,
+     "shotsOff": 4,
+     "blockedShots": 0,
+     "blocksMade": 0,
+     "corners": 2,
+     "offsides": 0,
+     "fouls": 9,
+     "saves": 4,
+     "passes": 375,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.8
+    },
+    "ROM": {
+     "possession": 64,
+     "shots": 15,
+     "shotsOn": 8,
+     "shotsOff": 7,
+     "blockedShots": 0,
+     "blocksMade": 1,
+     "corners": 1,
+     "offsides": 9,
+     "fouls": 8,
+     "saves": 2,
+     "passes": 677,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.27
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "LEC": {
+     "touches_opp_box": 13,
+     "big_chance": 2,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 3,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 0.48,
+     "expected_goals_set_play": 0.32,
+     "expected_goals_non_penalty": 0.8,
+     "expected_goals_on_target": 0.2,
+     "own_half_passes": 181,
+     "opposition_half_passes": 113,
+     "long_balls_accurate": 7,
+     "long_balls_accurate_pct": 16,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 29,
+     "player_throws": 18,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 8,
+     "clearances": 21,
+     "duel_won": 37,
+     "ground_duels_won": 33,
+     "ground_duels_won_pct": 38,
+     "aerials_won": 4,
+     "aerials_won_pct": 33,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 42,
+     "red_cards": 0
+    },
+    "ROM": {
+     "touches_opp_box": 40,
+     "big_chance": 8,
+     "big_chance_missed_title": 4,
+     "yellow_cards": 1,
+     "shots_woodwork": 1,
+     "shots_inside_box": 10,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 3.27,
+     "expected_goals_set_play": 0,
+     "expected_goals_non_penalty": 3.27,
+     "expected_goals_on_target": 3.79,
+     "own_half_passes": 321,
+     "opposition_half_passes": 276,
+     "long_balls_accurate": 20,
+     "long_balls_accurate_pct": 51,
+     "accurate_crosses": 0,
+     "accurate_crosses_pct": 0,
+     "player_throws": 8,
+     "matchstats.headers.tackles": 33,
+     "interceptions": 13,
+     "clearances": 7,
+     "duel_won": 61,
+     "ground_duels_won": 53,
+     "ground_duels_won_pct": 62,
+     "aerials_won": 8,
+     "aerials_won_pct": 67,
+     "dribbles_succeeded": 11,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     36,
+     64
+    ],
+    "h1": [
+     33,
+     67
+    ],
+    "h2": [
+     40,
+     60
+    ]
+   },
+   "events": [
+    {
+     "minute": 4,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Donyell Malen"
+    },
+    {
+     "minute": 9,
+     "extra": null,
+     "team": "ROM",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Donyell Malen"
+    },
+    {
+     "minute": 23,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Donyell Malen"
+    },
+    {
+     "minute": 25,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Matias Soulé"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Konan N’Dri"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Youssef Maleh"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nikola Stulic"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nahuel Molina"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rodrigo Mora"
+    },
+    {
+     "minute": 65,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Rodrigo Mora"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Niccolò Pisilli"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Santiago Castro"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Amar Fatah"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ivan Ilic"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Marten de Roon"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "LEC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ivan Ilic"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.122,
+     "xgot": 0.637,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 29.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "LEC",
+     "player": "Willem Geubbels",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.6,
+     "y": 28.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.17,
+     "xgot": 0.053,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 33,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.539,
+     "xgot": 0.536,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 37.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.139,
+     "xgot": 0.248,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.5,
+     "y": 36,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.484,
+     "xgot": 0.598,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 30.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.299,
+     "xgot": 0.734,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "LEC",
+     "player": "Willem Geubbels",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.371,
+     "xgot": 0.145,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 36.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.121,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 41.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0.038,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.9,
+     "y": 22.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.203,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 35,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.131,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.5,
+     "y": 32.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "LEC",
+     "player": "Konan N’Dri",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 49.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "ROM",
+     "player": "Wesley",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 47.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "LEC",
+     "player": "Santiago Pierotti",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0.058,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.1,
+     "y": 20.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "LEC",
+     "player": "Kialonda Gaspar",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.264,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 36,
+     "foot": "OtherBodyParts",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.293,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 28.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.683,
+     "xgot": 0.947,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 35.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.8,
+     "y": 23.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "ROM",
+     "player": "Santiago Castro",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 46.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "LEC",
+     "player": "Youssef Maleh",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.3,
+     "y": 45.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "LEC",
+     "player": "Konan N’Dri",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.2,
+     "y": 22.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     -49
+    ],
+    [
+     4,
+     -60
+    ],
+    [
+     5,
+     -60
+    ],
+    [
+     6,
+     0
+    ],
+    [
+     7,
+     81
+    ],
+    [
+     8,
+     -54
+    ],
+    [
+     9,
+     -60
+    ],
+    [
+     10,
+     -100
+    ],
+    [
+     11,
+     -5
+    ],
+    [
+     12,
+     -71
+    ],
+    [
+     13,
+     -76
+    ],
+    [
+     14,
+     -100
+    ],
+    [
+     15,
+     -52
+    ],
+    [
+     16,
+     -62
+    ],
+    [
+     17,
+     -49
+    ],
+    [
+     18,
+     -43
+    ],
+    [
+     19,
+     -5
+    ],
+    [
+     20,
+     22
+    ],
+    [
+     21,
+     -16
+    ],
+    [
+     22,
+     -49
+    ],
+    [
+     23,
+     -100
+    ],
+    [
+     24,
+     -100
+    ],
+    [
+     25,
+     -100
+    ],
+    [
+     26,
+     -16
+    ],
+    [
+     27,
+     -16
+    ],
+    [
+     28,
+     -5
+    ],
+    [
+     29,
+     0
+    ],
+    [
+     30,
+     -11
+    ],
+    [
+     31,
+     -11
+    ],
+    [
+     32,
+     -100
+    ],
+    [
+     33,
+     -100
+    ],
+    [
+     34,
+     -100
+    ],
+    [
+     35,
+     -33
+    ],
+    [
+     36,
+     -43
+    ],
+    [
+     37,
+     -54
+    ],
+    [
+     38,
+     -16
+    ],
+    [
+     39,
+     0
+    ],
+    [
+     40,
+     -49
+    ],
+    [
+     41,
+     -76
+    ],
+    [
+     42,
+     -87
+    ],
+    [
+     43,
+     -43
+    ],
+    [
+     44,
+     -57
+    ],
+    [
+     45,
+     -62
+    ],
+    [
+     45.5,
+     -69
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -27
+    ],
+    [
+     48,
+     -38
+    ],
+    [
+     49,
+     -49
+    ],
+    [
+     50,
+     -54
+    ],
+    [
+     51,
+     -68
+    ],
+    [
+     52,
+     -68
+    ],
+    [
+     53,
+     -35
+    ],
+    [
+     54,
+     -11
+    ],
+    [
+     55,
+     5
+    ],
+    [
+     56,
+     11
+    ],
+    [
+     57,
+     11
+    ],
+    [
+     58,
+     19
+    ],
+    [
+     59,
+     14
+    ],
+    [
+     60,
+     3
+    ],
+    [
+     61,
+     3
+    ],
+    [
+     62,
+     -46
+    ],
+    [
+     63,
+     -57
+    ],
+    [
+     64,
+     -92
+    ],
+    [
+     65,
+     -100
+    ],
+    [
+     66,
+     -100
+    ],
+    [
+     67,
+     -100
+    ],
+    [
+     68,
+     0
+    ],
+    [
+     69,
+     5
+    ],
+    [
+     70,
+     0
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     72,
+     -5
+    ],
+    [
+     73,
+     5
+    ],
+    [
+     74,
+     8
+    ],
+    [
+     75,
+     -3
+    ],
+    [
+     76,
+     -8
+    ],
+    [
+     77,
+     -22
+    ],
+    [
+     78,
+     -11
+    ],
+    [
+     79,
+     -11
+    ],
+    [
+     80,
+     -22
+    ],
+    [
+     81,
+     -81
+    ],
+    [
+     82,
+     -71
+    ],
+    [
+     83,
+     -46
+    ],
+    [
+     84,
+     -11
+    ],
+    [
+     85,
+     -5
+    ],
+    [
+     86,
+     19
+    ],
+    [
+     87,
+     49
+    ],
+    [
+     88,
+     43
+    ],
+    [
+     89,
+     38
+    ],
+    [
+     90,
+     0
+    ],
+    [
+     90.5,
+     26
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "LEC": {
+     "team": "LEC",
+     "formation": "3-5-2",
+     "coach": "Eusebio Di Francesco",
+     "xi": [
+      {
+       "name": "Wladimiro Falcone",
+       "shirt": 30,
+       "pos": "G"
+      },
+      {
+       "name": "Jamil Siebert",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Kialonda Gaspar",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Tiago Gabriel",
+       "shirt": 44,
+       "pos": "D"
+      },
+      {
+       "name": "Danilo Veiga",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Lassana Coulibaly",
+       "shirt": 29,
+       "pos": "M"
+      },
+      {
+       "name": "Oumar Ngom",
+       "shirt": 79,
+       "pos": "M"
+      },
+      {
+       "name": "Olaf Gorter",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Corrie Ndaba",
+       "shirt": 3,
+       "pos": "M"
+      },
+      {
+       "name": "Santiago Pierotti",
+       "shirt": 50,
+       "pos": "F"
+      },
+      {
+       "name": "Willem Geubbels",
+       "shirt": 69,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Youssef Maleh",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Konan N’Dri",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Nikola Stulic",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Ivan Ilic",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Amar Fatah",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Marco Bleve",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Plamen Penev",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Ali Dembélé",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Antonino Gallo",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Elijah Scott",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Medon Berisha",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Omri Gandelman",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Sadik Fofana",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Hjalte Laerke",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Paco Esteban",
+       "shirt": 22,
+       "pos": "?"
+      }
+     ]
+    },
+    "ROM": {
+     "team": "ROM",
+     "formation": "3-4-2-1",
+     "coach": "Gian Piero Gasperini",
+     "xi": [
+      {
+       "name": "Mile Svilar",
+       "shirt": 99,
+       "pos": "G"
+      },
+      {
+       "name": "Daniele Ghilardi",
+       "shirt": 87,
+       "pos": "D"
+      },
+      {
+       "name": "Gianluca Mancini",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Mario Hermoso",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Emanuele Lulli",
+       "shirt": 77,
+       "pos": "?"
+      },
+      {
+       "name": "Bryan Cristante",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Manu Koné",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Wesley",
+       "shirt": 43,
+       "pos": "?"
+      },
+      {
+       "name": "Matias Soulé",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Paulo Dybala",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Donyell Malen",
+       "shirt": 14,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Nahuel Molina",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Mora",
+       "shirt": 86,
+       "pos": "?"
+      },
+      {
+       "name": "Niccolò Pisilli",
+       "shirt": 61,
+       "pos": "?"
+      },
+      {
+       "name": "Santiago Castro",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Marten de Roon",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Giorgio De Marzi",
+       "shirt": 70,
+       "pos": "?"
+      },
+      {
+       "name": "Pierluigi Gollini",
+       "shirt": 95,
+       "pos": "?"
+      },
+      {
+       "name": "Konstantinos Koulierakis",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Leonardo Balerdi",
+       "shirt": 26,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 40,
+      "center": 28,
+      "right": 32
+     },
+     "firstHalf": {
+      "left": 35,
+      "center": 29,
+      "right": 36
+     },
+     "secondHalf": {
+      "left": 44,
+      "center": 27,
+      "right": 29
+     }
+    },
+    "away": {
+     "total": {
+      "left": 37,
+      "center": 28,
+      "right": 35
+     },
+     "firstHalf": {
+      "left": 35,
+      "center": 27,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 41,
+      "center": 29,
+      "right": 30
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-15T20:29:34.919Z",
+   "fdMatchId": "2026-27-18",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "ROM",
+      "name": "Paulo Dybala",
+      "n": 90,
+      "cx": 66.5,
+      "cy": 50.5,
+      "spread": 20.5,
+      "grid": "0,0,0,1,0,0,0,0,2,3,6,0,1,0,6,8,8,5,0,1,9,22,14,4"
+     },
+     {
+      "team": "ROM",
+      "name": "Gianluca Mancini",
+      "n": 88,
+      "cx": 40.3,
+      "cy": 35.8,
+      "spread": 24.5,
+      "grid": "0,3,2,1,0,1,5,4,10,8,0,2,3,17,16,4,2,0,2,0,5,2,0,1"
+     },
+     {
+      "team": "LEC",
+      "name": "Lassana Coulibaly",
+      "n": 53,
+      "cx": 46.1,
+      "cy": 45.5,
+      "spread": 25.3,
+      "grid": "0,0,2,0,0,0,1,1,5,0,0,0,4,6,11,4,1,2,2,2,1,7,3,1"
+     },
+     {
+      "team": "LEC",
+      "name": "Santiago Pierotti",
+      "n": 52,
+      "cx": 48.8,
+      "cy": 46,
+      "spread": 24.8,
+      "grid": "0,0,3,0,0,0,0,5,1,5,2,0,1,5,4,1,1,0,1,3,11,4,3,2"
+     },
+     {
+      "team": "ROM",
+      "name": "Mario Hermoso",
+      "n": 126,
+      "cx": 38.6,
+      "cy": 16.2,
+      "spread": 20.1,
+      "grid": "13,18,29,16,1,0,4,20,8,10,1,0,0,3,1,0,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Danilo Veiga",
+      "n": 73,
+      "cx": 45.2,
+      "cy": 58.7,
+      "spread": 22.5,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,3,3,4,1,1,0,3,12,26,10,7,3"
+     },
+     {
+      "team": "ROM",
+      "name": "Mile Svilar",
+      "n": 46,
+      "cx": 11.4,
+      "cy": 35.2,
+      "spread": 11.3,
+      "grid": "0,0,0,0,0,0,18,2,0,0,0,0,18,7,0,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Bryan Cristante",
+      "n": 91,
+      "cx": 48.8,
+      "cy": 30.2,
+      "spread": 22.8,
+      "grid": "0,1,10,7,0,0,2,9,15,9,4,0,0,4,8,10,1,0,1,1,1,6,2,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Daniele Ghilardi",
+      "n": 94,
+      "cx": 42.2,
+      "cy": 54.5,
+      "spread": 23.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,6,10,7,6,0,3,6,12,25,13,5,1"
+     },
+     {
+      "team": "ROM",
+      "name": "Emanuele Lulli",
+      "n": 72,
+      "cx": 61.4,
+      "cy": 55.3,
+      "spread": 25.9,
+      "grid": "0,0,2,0,1,0,0,0,2,1,0,1,1,1,1,1,1,1,1,4,13,18,14,9"
+     },
+     {
+      "team": "LEC",
+      "name": "Willem Geubbels",
+      "n": 25,
+      "cx": 62.1,
+      "cy": 29.5,
+      "spread": 28.1,
+      "grid": "0,0,0,7,1,0,0,0,1,0,4,1,0,2,3,0,0,2,0,0,3,1,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Matias Soulé",
+      "n": 62,
+      "cx": 67,
+      "cy": 17.1,
+      "spread": 22.8,
+      "grid": "0,1,8,13,10,5,0,2,5,4,6,2,0,0,0,1,1,3,0,0,0,0,0,1"
+     },
+     {
+      "team": "LEC",
+      "name": "Jamil Siebert",
+      "n": 49,
+      "cx": 40.6,
+      "cy": 26.9,
+      "spread": 24.5,
+      "grid": "0,3,6,3,2,0,2,6,8,6,0,0,3,3,1,1,0,0,1,0,3,0,1,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Wesley",
+      "n": 67,
+      "cx": 57.2,
+      "cy": 8,
+      "spread": 24.1,
+      "grid": "3,8,12,17,14,4,0,1,3,1,3,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Corrie Ndaba",
+      "n": 55,
+      "cx": 43,
+      "cy": 10.8,
+      "spread": 20.9,
+      "grid": "1,10,14,13,3,0,3,4,3,3,0,0,1,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Tiago Gabriel",
+      "n": 24,
+      "cx": 30.1,
+      "cy": 25.4,
+      "spread": 20.5,
+      "grid": "0,3,0,2,0,0,6,4,3,0,1,0,1,3,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Oumar Ngom",
+      "n": 53,
+      "cx": 43.1,
+      "cy": 40.4,
+      "spread": 23.5,
+      "grid": "1,1,0,2,1,0,1,5,3,1,2,0,1,4,5,8,1,0,0,6,7,4,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Wladimiro Falcone",
+      "n": 42,
+      "cx": 9.3,
+      "cy": 36.1,
+      "spread": 10.1,
+      "grid": "0,0,0,0,0,0,17,1,0,0,0,0,20,2,0,0,0,0,2,0,0,0,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Kialonda Gaspar",
+      "n": 75,
+      "cx": 29.8,
+      "cy": 44.2,
+      "spread": 22.1,
+      "grid": "0,0,1,1,0,0,5,1,4,1,0,1,10,16,10,3,0,0,7,9,4,0,2,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Donyell Malen",
+      "n": 41,
+      "cx": 73.9,
+      "cy": 25.6,
+      "spread": 26.7,
+      "grid": "0,2,4,1,0,3,0,1,1,1,5,10,0,1,1,3,3,5,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Manu Koné",
+      "n": 72,
+      "cx": 55.3,
+      "cy": 39.7,
+      "spread": 22.6,
+      "grid": "1,0,2,3,0,1,0,0,4,3,6,0,1,3,13,12,5,1,0,1,9,6,1,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Olaf Gorter",
+      "n": 22,
+      "cx": 52.9,
+      "cy": 16,
+      "spread": 23,
+      "grid": "0,2,5,7,0,0,0,1,2,2,1,0,0,0,0,1,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "LEC",
+      "name": "Youssef Maleh",
+      "n": 37,
+      "cx": 57.7,
+      "cy": 20.5,
+      "spread": 23.2,
+      "grid": "0,4,3,5,3,1,1,0,4,7,3,1,0,0,2,0,1,0,0,0,2,0,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Konan N’Dri",
+      "n": 34,
+      "cx": 76,
+      "cy": 32.6,
+      "spread": 30.8,
+      "grid": "0,0,3,1,3,6,0,1,1,0,1,1,0,0,0,2,2,3,0,0,2,3,2,3"
+     },
+     {
+      "team": "LEC",
+      "name": "Nikola Stulic",
+      "n": 19,
+      "cx": 62.8,
+      "cy": 35.7,
+      "spread": 23.9,
+      "grid": "0,1,0,1,0,0,0,0,3,2,1,2,0,0,1,1,3,1,0,1,1,1,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Rodrigo Mora",
+      "n": 31,
+      "cx": 57.4,
+      "cy": 39.2,
+      "spread": 32.5,
+      "grid": "0,0,0,0,2,3,0,2,2,0,3,2,0,1,1,3,0,1,1,5,3,0,2,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Nahuel Molina",
+      "n": 33,
+      "cx": 50.6,
+      "cy": 26,
+      "spread": 34.7,
+      "grid": "2,1,5,1,6,2,0,0,3,2,1,0,0,0,0,0,0,0,2,2,5,1,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Niccolò Pisilli",
+      "n": 31,
+      "cx": 43.3,
+      "cy": 19.9,
+      "spread": 18.6,
+      "grid": "0,8,3,4,2,0,0,1,6,2,0,0,0,1,3,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Amar Fatah",
+      "n": 19,
+      "cx": 81.8,
+      "cy": 13.2,
+      "spread": 15.9,
+      "grid": "0,0,1,3,7,3,0,0,0,0,1,4,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEC",
+      "name": "Ivan Ilic",
+      "n": 26,
+      "cx": 54.2,
+      "cy": 34.5,
+      "spread": 21.9,
+      "grid": "0,0,1,2,0,0,0,1,4,5,2,0,0,1,2,1,2,0,0,1,3,1,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Santiago Castro",
+      "n": 13,
+      "cx": 63,
+      "cy": 23.9,
+      "spread": 27.5,
+      "grid": "0,2,0,2,1,0,0,0,1,0,1,3,0,0,2,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Marten de Roon",
+      "n": 12,
+      "cx": 36.8,
+      "cy": 44.8,
+      "spread": 18.6,
+      "grid": "0,0,0,0,0,0,0,0,1,0,0,0,0,3,2,1,1,0,1,2,1,0,0,0"
+     }
+    ]
+   }
   },
   "ROM|ATA": {
-   "at": "2026-09-15T19:30:03.263Z",
-   "reason": "FotMob 賽程找不到對應場次",
-   "matchId": null,
-   "label": "ROM–ATA"
+   "key": "ROM|ATA",
+   "season": "2026-27",
+   "date": "2026-09-05",
+   "matchId": "5749660",
+   "home": "ROM",
+   "away": "ATA",
+   "score": [
+    2,
+    1
+   ],
+   "providerScore": [
+    2,
+    1
+   ],
+   "teamStats": {
+    "ROM": {
+     "possession": 66,
+     "shots": 39,
+     "shotsOn": 10,
+     "shotsOff": 20,
+     "blockedShots": 9,
+     "blocksMade": 1,
+     "corners": 14,
+     "offsides": 4,
+     "fouls": 9,
+     "saves": 1,
+     "passes": 615,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.97
+    },
+    "ATA": {
+     "possession": 34,
+     "shots": 6,
+     "shotsOn": 2,
+     "shotsOff": 3,
+     "blockedShots": 1,
+     "blocksMade": 9,
+     "corners": 1,
+     "offsides": 4,
+     "fouls": 10,
+     "saves": 9,
+     "passes": 324,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.7
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "ROM": {
+     "touches_opp_box": 78,
+     "big_chance": 4,
+     "big_chance_missed_title": 4,
+     "yellow_cards": 0,
+     "shots_woodwork": 2,
+     "shots_inside_box": 28,
+     "shots_outside_box": 11,
+     "expected_goals_open_play": 2.61,
+     "expected_goals_set_play": 0.36,
+     "expected_goals_non_penalty": 2.97,
+     "expected_goals_on_target": 2.57,
+     "own_half_passes": 223,
+     "opposition_half_passes": 326,
+     "long_balls_accurate": 26,
+     "long_balls_accurate_pct": 65,
+     "accurate_crosses": 18,
+     "accurate_crosses_pct": 43,
+     "player_throws": 21,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 14,
+     "clearances": 6,
+     "duel_won": 46,
+     "ground_duels_won": 35,
+     "ground_duels_won_pct": 58,
+     "aerials_won": 11,
+     "aerials_won_pct": 44,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 63,
+     "red_cards": 0
+    },
+    "ATA": {
+     "touches_opp_box": 16,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 6,
+     "shots_outside_box": 0,
+     "expected_goals_open_play": 0.65,
+     "expected_goals_set_play": 0.05,
+     "expected_goals_non_penalty": 0.7,
+     "expected_goals_on_target": 0.39,
+     "own_half_passes": 145,
+     "opposition_half_passes": 109,
+     "long_balls_accurate": 32,
+     "long_balls_accurate_pct": 52,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 50,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 13,
+     "interceptions": 8,
+     "clearances": 33,
+     "duel_won": 39,
+     "ground_duels_won": 25,
+     "ground_duels_won_pct": 42,
+     "aerials_won": 14,
+     "aerials_won_pct": 56,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 20,
+     "red_cards": 1
+    }
+   },
+   "possession": {
+    "all": [
+     66,
+     34
+    ],
+    "h1": [
+     63,
+     37
+    ],
+    "h2": [
+     70,
+     30
+    ]
+   },
+   "events": [
+    {
+     "minute": 40,
+     "extra": null,
+     "team": "ROM",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Gian Piero Gasperini"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ATA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nikola Krstović"
+    },
+    {
+     "minute": 47,
+     "extra": null,
+     "team": "ATA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Éderson"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nahuel Molina"
+    },
+    {
+     "minute": 55,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matias Soulé"
+    },
+    {
+     "minute": 55,
+     "extra": null,
+     "team": "ATA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Maurizio Sarri"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Daniele Ghilardi"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Santiago Castro"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "ATA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nicola Zalewski"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "ATA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mario Pašalić"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "ROM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Leonardo Balerdi"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "ATA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Davide Zappacosta"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "ATA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Franck Kessié"
+    },
+    {
+     "minute": 84,
+     "extra": null,
+     "team": "ATA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Raoul Bellanova"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Mario Hermoso"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "ROM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Matias Soulé"
+    },
+    {
+     "minute": 90,
+     "extra": 7,
+     "team": "ATA",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Gianluca Gaetano"
+    }
+   ],
+   "shots": [
+    {
+     "min": 2,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.161,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.4,
+     "y": 31.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "ROM",
+     "player": "Gianluca Mancini",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.162,
+     "xgot": 0.043,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 29.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.7,
+     "y": 50.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "ROM",
+     "player": "Manu Koné",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.4,
+     "y": 42.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 47.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "ROM",
+     "player": "Bryan Cristante",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0.621,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 33.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "ROM",
+     "player": "Gianluca Mancini",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 36.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.2,
+     "y": 22.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 25.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "ROM",
+     "player": "Manu Koné",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.6,
+     "y": 31.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.5,
+     "y": 31.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "ATA",
+     "player": "Gianluca Scamacca",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0.017,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93,
+     "y": 22.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.257,
+     "xgot": 0.111,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 28.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 47.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "ROM",
+     "player": "Donyell Malen",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.103,
+     "xgot": 0.293,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.5,
+     "y": 41.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.093,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 34.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "ROM",
+     "player": "Manu Koné",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 34.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "ROM",
+     "player": "Rodrigo Mora",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.124,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 35.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "ROM",
+     "player": "Evan N'Dicka",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 34.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "ATA",
+     "player": "Éderson",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.082,
+     "xgot": 0.373,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 41.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "ATA",
+     "player": "Odilon Kossounou",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 39.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "ROM",
+     "player": "Manu Koné",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.066,
+     "xgot": 0.147,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.9,
+     "y": 30.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "ATA",
+     "player": "Lazar Samardzic",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.174,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 33.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "ATA",
+     "player": "Nikola Krstovic",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.32,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 39.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "ATA",
+     "player": "Charles De Ketelaere",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.3,
+     "y": 25.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "ROM",
+     "player": "Bryan Cristante",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.9,
+     "y": 22.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0.085,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 37.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "ROM",
+     "player": "Santiago Castro",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 48.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "ROM",
+     "player": "Mario Hermoso",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.047,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 43.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "ROM",
+     "player": "Santiago Castro",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.195,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.1,
+     "y": 39.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.055,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 28.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.079,
+     "xgot": 0.158,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 33.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.5,
+     "y": 19.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "ROM",
+     "player": "Bryan Cristante",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.069,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 33,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.4,
+     "y": 44.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "ROM",
+     "player": "Bryan Cristante",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97,
+     "y": 30.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.158,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 30.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.2,
+     "y": 29.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "ROM",
+     "player": "Santiago Castro",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.16,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 33.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.115,
+     "xgot": 0.359,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 30.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "ROM",
+     "player": "Mario Hermoso",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.046,
+     "xgot": 0.591,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 37.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "ROM",
+     "player": "Paulo Dybala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 43.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.178,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.4,
+     "y": 28.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "ROM",
+     "player": "Santiago Castro",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.6,
+     "y": 42.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "ROM",
+     "player": "Matias Soulé",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0.165,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 20.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     22
+    ],
+    [
+     3,
+     22
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     5,
+     -16
+    ],
+    [
+     6,
+     -11
+    ],
+    [
+     7,
+     -3
+    ],
+    [
+     8,
+     14
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     12,
+     0
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     14,
+     81
+    ],
+    [
+     15,
+     100
+    ],
+    [
+     16,
+     100
+    ],
+    [
+     17,
+     87
+    ],
+    [
+     18,
+     65
+    ],
+    [
+     19,
+     60
+    ],
+    [
+     20,
+     43
+    ],
+    [
+     21,
+     100
+    ],
+    [
+     22,
+     84
+    ],
+    [
+     23,
+     76
+    ],
+    [
+     24,
+     19
+    ],
+    [
+     25,
+     22
+    ],
+    [
+     26,
+     62
+    ],
+    [
+     27,
+     46
+    ],
+    [
+     28,
+     65
+    ],
+    [
+     29,
+     38
+    ],
+    [
+     30,
+     33
+    ],
+    [
+     31,
+     5
+    ],
+    [
+     32,
+     -19
+    ],
+    [
+     33,
+     60
+    ],
+    [
+     34,
+     100
+    ],
+    [
+     35,
+     100
+    ],
+    [
+     36,
+     87
+    ],
+    [
+     37,
+     5
+    ],
+    [
+     38,
+     30
+    ],
+    [
+     39,
+     19
+    ],
+    [
+     40,
+     68
+    ],
+    [
+     41,
+     38
+    ],
+    [
+     42,
+     100
+    ],
+    [
+     43,
+     100
+    ],
+    [
+     44,
+     100
+    ],
+    [
+     45,
+     68
+    ],
+    [
+     45.5,
+     10
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -27
+    ],
+    [
+     48,
+     -33
+    ],
+    [
+     49,
+     -43
+    ],
+    [
+     50,
+     -16
+    ],
+    [
+     51,
+     -24
+    ],
+    [
+     52,
+     24
+    ],
+    [
+     53,
+     52
+    ],
+    [
+     54,
+     71
+    ],
+    [
+     55,
+     38
+    ],
+    [
+     56,
+     -14
+    ],
+    [
+     57,
+     -8
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     -3
+    ],
+    [
+     60,
+     -62
+    ],
+    [
+     61,
+     -65
+    ],
+    [
+     62,
+     -16
+    ],
+    [
+     63,
+     27
+    ],
+    [
+     64,
+     30
+    ],
+    [
+     65,
+     -3
+    ],
+    [
+     66,
+     0
+    ],
+    [
+     67,
+     -46
+    ],
+    [
+     68,
+     57
+    ],
+    [
+     69,
+     33
+    ],
+    [
+     70,
+     38
+    ],
+    [
+     71,
+     57
+    ],
+    [
+     72,
+     95
+    ],
+    [
+     73,
+     100
+    ],
+    [
+     74,
+     11
+    ],
+    [
+     75,
+     30
+    ],
+    [
+     76,
+     46
+    ],
+    [
+     77,
+     68
+    ],
+    [
+     78,
+     76
+    ],
+    [
+     79,
+     60
+    ],
+    [
+     80,
+     76
+    ],
+    [
+     81,
+     60
+    ],
+    [
+     82,
+     38
+    ],
+    [
+     83,
+     0
+    ],
+    [
+     84,
+     5
+    ],
+    [
+     85,
+     11
+    ],
+    [
+     86,
+     38
+    ],
+    [
+     87,
+     90
+    ],
+    [
+     88,
+     100
+    ],
+    [
+     89,
+     100
+    ],
+    [
+     90,
+     100
+    ],
+    [
+     90.5,
+     34
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "ROM": {
+     "team": "ROM",
+     "formation": "3-4-1-2",
+     "coach": "Gian Piero Gasperini",
+     "xi": [
+      {
+       "name": "Mile Svilar",
+       "shirt": 99,
+       "pos": "G"
+      },
+      {
+       "name": "Evan N'Dicka",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Gianluca Mancini",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Mario Hermoso",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Emanuele Lulli",
+       "shirt": 77,
+       "pos": "?"
+      },
+      {
+       "name": "Bryan Cristante",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Manu Koné",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Wesley",
+       "shirt": 43,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Mora",
+       "shirt": 86,
+       "pos": "M"
+      },
+      {
+       "name": "Paulo Dybala",
+       "shirt": 21,
+       "pos": "F"
+      },
+      {
+       "name": "Donyell Malen",
+       "shirt": 14,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Nahuel Molina",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Matias Soulé",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Daniele Ghilardi",
+       "shirt": 87,
+       "pos": "?"
+      },
+      {
+       "name": "Santiago Castro",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Leonardo Balerdi",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Giorgio De Marzi",
+       "shirt": 70,
+       "pos": "?"
+      },
+      {
+       "name": "Pierluigi Gollini",
+       "shirt": 95,
+       "pos": "?"
+      },
+      {
+       "name": "Konstantinos Koulierakis",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Devyne Rensch",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Marten de Roon",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Niccolò Pisilli",
+       "shirt": 61,
+       "pos": "?"
+      },
+      {
+       "name": "Antonio Arena",
+       "shirt": 68,
+       "pos": "?"
+      }
+     ]
+    },
+    "ATA": {
+     "team": "ATA",
+     "formation": "4-3-3",
+     "coach": "Maurizio Sarri",
+     "xi": [
+      {
+       "name": "Marco Carnesecchi",
+       "shirt": 29,
+       "pos": "G"
+      },
+      {
+       "name": "Raoul Bellanova",
+       "shirt": 16,
+       "pos": "D"
+      },
+      {
+       "name": "Odilon Kossounou",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Giorgio Scalvini",
+       "shirt": 42,
+       "pos": "D"
+      },
+      {
+       "name": "Sead Kolašinac",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Lazar Samardžić",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Gianluca Gaetano",
+       "shirt": 70,
+       "pos": "M"
+      },
+      {
+       "name": "Éderson",
+       "shirt": 13,
+       "pos": "M"
+      },
+      {
+       "name": "Charles De Ketelaere",
+       "shirt": 17,
+       "pos": "F"
+      },
+      {
+       "name": "Gianluca Scamacca",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Eljif Elmas",
+       "shirt": 99,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Nikola Krstović",
+       "shirt": 90,
+       "pos": "?"
+      },
+      {
+       "name": "Mario Pašalić",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Nicola Zalewski",
+       "shirt": 59,
+       "pos": "?"
+      },
+      {
+       "name": "Davide Zappacosta",
+       "shirt": 77,
+       "pos": "?"
+      },
+      {
+       "name": "Franck Kessié",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Marco Sportiello",
+       "shirt": 57,
+       "pos": "?"
+      },
+      {
+       "name": "Thomas Pompei",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Relja Obrić",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Thomas Kristensen",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Giacomo Raspadori",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Lorenzo Bernasconi",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Jonathan Rowe",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 33,
+      "center": 27,
+      "right": 40
+     },
+     "firstHalf": {
+      "left": 37,
+      "center": 27,
+      "right": 36
+     },
+     "secondHalf": {
+      "left": 30,
+      "center": 27,
+      "right": 43
+     }
+    },
+    "away": {
+     "total": {
+      "left": 26,
+      "center": 34,
+      "right": 40
+     },
+     "firstHalf": {
+      "left": 27,
+      "center": 41,
+      "right": 32
+     },
+     "secondHalf": {
+      "left": 26,
+      "center": 30,
+      "right": 44
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-15T20:29:36.603Z",
+   "fdMatchId": "2026-27-23",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "ROM",
+      "name": "Rodrigo Mora",
+      "n": 37,
+      "cx": 84.9,
+      "cy": 28.8,
+      "spread": 23.9,
+      "grid": "0,0,0,3,3,5,0,0,0,1,2,10,0,0,1,3,3,0,0,0,0,0,0,6"
+     },
+     {
+      "team": "ROM",
+      "name": "Mile Svilar",
+      "n": 41,
+      "cx": 12.4,
+      "cy": 36.5,
+      "spread": 9.4,
+      "grid": "0,0,0,0,0,0,11,4,0,0,0,0,18,6,0,0,0,0,2,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Éderson",
+      "n": 39,
+      "cx": 45.4,
+      "cy": 21.5,
+      "spread": 25.2,
+      "grid": "1,8,1,7,1,0,2,3,2,4,3,1,0,2,1,2,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Gianluca Gaetano",
+      "n": 52,
+      "cx": 39.5,
+      "cy": 28.8,
+      "spread": 25.5,
+      "grid": "4,5,3,0,0,0,5,4,3,9,2,0,1,1,3,4,1,0,0,2,3,2,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Bryan Cristante",
+      "n": 122,
+      "cx": 56.9,
+      "cy": 44.5,
+      "spread": 24.2,
+      "grid": "0,0,0,0,0,0,0,4,5,2,1,2,2,11,22,18,12,11,2,2,8,12,4,4"
+     },
+     {
+      "team": "ROM",
+      "name": "Paulo Dybala",
+      "n": 88,
+      "cx": 83.5,
+      "cy": 48.5,
+      "spread": 24.7,
+      "grid": "0,0,1,0,0,6,0,0,0,2,0,1,0,0,5,2,10,13,0,0,5,1,19,23"
+     },
+     {
+      "team": "ROM",
+      "name": "Donyell Malen",
+      "n": 22,
+      "cx": 83.5,
+      "cy": 17.7,
+      "spread": 18.9,
+      "grid": "0,0,2,3,2,2,0,0,0,0,3,9,0,0,0,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Giorgio Scalvini",
+      "n": 51,
+      "cx": 21.8,
+      "cy": 22.7,
+      "spread": 21.1,
+      "grid": "6,6,2,1,0,0,11,7,6,1,0,0,9,0,1,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Marco Carnesecchi",
+      "n": 86,
+      "cx": 8.4,
+      "cy": 34.2,
+      "spread": 8.7,
+      "grid": "0,0,0,0,0,0,42,3,0,0,0,0,32,8,0,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Gianluca Scamacca",
+      "n": 24,
+      "cx": 54.3,
+      "cy": 39.1,
+      "spread": 24.3,
+      "grid": "0,0,0,0,0,0,2,0,1,4,2,0,1,1,2,7,0,1,0,0,2,1,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Evan N'Dicka",
+      "n": 72,
+      "cx": 39.4,
+      "cy": 26.2,
+      "spread": 23.5,
+      "grid": "3,9,2,8,0,0,5,8,6,10,0,2,2,6,7,2,1,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Odilon Kossounou",
+      "n": 56,
+      "cx": 25.8,
+      "cy": 49.5,
+      "spread": 18.5,
+      "grid": "0,0,0,0,0,0,1,1,0,0,0,1,12,7,5,1,0,0,8,10,10,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Raoul Bellanova",
+      "n": 60,
+      "cx": 39.2,
+      "cy": 55.3,
+      "spread": 31.5,
+      "grid": "0,0,0,0,0,0,3,0,0,0,0,0,15,0,0,0,0,1,4,5,16,9,0,7"
+     },
+     {
+      "team": "ROM",
+      "name": "Mario Hermoso",
+      "n": 110,
+      "cx": 47.1,
+      "cy": 13.7,
+      "spread": 23.5,
+      "grid": "3,22,20,15,10,1,4,8,10,8,6,3,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Manu Koné",
+      "n": 87,
+      "cx": 55.1,
+      "cy": 23.5,
+      "spread": 21.3,
+      "grid": "2,3,6,11,1,1,1,8,14,16,8,1,0,0,3,6,4,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Gianluca Mancini",
+      "n": 57,
+      "cx": 49.6,
+      "cy": 54.7,
+      "spread": 25,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,2,1,6,4,2,2,1,2,11,7,13,4,2"
+     },
+     {
+      "team": "ROM",
+      "name": "Wesley",
+      "n": 87,
+      "cx": 66.4,
+      "cy": 8.9,
+      "spread": 26.2,
+      "grid": "3,7,11,15,26,11,2,0,1,0,4,7,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Sead Kolašinac",
+      "n": 42,
+      "cx": 24.8,
+      "cy": 15.4,
+      "spread": 23.6,
+      "grid": "9,7,6,3,1,0,7,4,1,1,0,0,3,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Lazar Samardžić",
+      "n": 31,
+      "cx": 50.2,
+      "cy": 49.8,
+      "spread": 26.4,
+      "grid": "0,0,0,0,0,0,0,0,0,1,0,0,3,3,3,4,1,1,1,2,5,3,2,2"
+     },
+     {
+      "team": "ATA",
+      "name": "Charles De Ketelaere",
+      "n": 65,
+      "cx": 55.7,
+      "cy": 47.3,
+      "spread": 28.2,
+      "grid": "0,1,1,1,0,0,1,2,0,1,5,1,2,4,1,3,7,3,3,4,4,13,8,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Emanuele Lulli",
+      "n": 41,
+      "cx": 61.9,
+      "cy": 61.1,
+      "spread": 19.6,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,11,12,12,3"
+     },
+     {
+      "team": "ATA",
+      "name": "Eljif Elmas",
+      "n": 23,
+      "cx": 37.1,
+      "cy": 11.5,
+      "spread": 26.1,
+      "grid": "3,6,6,1,2,0,2,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Nikola Krstović",
+      "n": 33,
+      "cx": 58,
+      "cy": 33.1,
+      "spread": 31.1,
+      "grid": "0,3,0,1,0,1,3,1,2,2,3,1,0,0,0,6,3,4,1,0,1,1,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Nahuel Molina",
+      "n": 50,
+      "cx": 75.2,
+      "cy": 60.5,
+      "spread": 23.5,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,2,2,1,2,8,18,15"
+     },
+     {
+      "team": "ROM",
+      "name": "Matias Soulé",
+      "n": 50,
+      "cx": 75.3,
+      "cy": 38.6,
+      "spread": 27.2,
+      "grid": "0,0,0,2,1,3,0,0,4,4,7,0,0,1,1,0,2,7,0,0,3,5,6,4"
+     },
+     {
+      "team": "ROM",
+      "name": "Daniele Ghilardi",
+      "n": 31,
+      "cx": 60.1,
+      "cy": 56,
+      "spread": 22.7,
+      "grid": "0,0,0,0,0,0,0,1,0,0,0,1,0,1,1,1,1,0,1,1,5,9,9,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Santiago Castro",
+      "n": 18,
+      "cx": 82.5,
+      "cy": 21.2,
+      "spread": 20.6,
+      "grid": "0,0,2,0,1,3,0,0,0,1,3,6,0,0,0,0,0,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "ROM",
+      "name": "Leonardo Balerdi",
+      "n": 32,
+      "cx": 38.2,
+      "cy": 26.7,
+      "spread": 20.6,
+      "grid": "0,1,5,1,0,0,3,9,1,2,1,0,0,2,5,2,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Nicola Zalewski",
+      "n": 16,
+      "cx": 47.4,
+      "cy": 13.6,
+      "spread": 27.1,
+      "grid": "0,5,1,2,3,1,2,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Davide Zappacosta",
+      "n": 21,
+      "cx": 43.6,
+      "cy": 9.9,
+      "spread": 28.7,
+      "grid": "1,6,4,1,2,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Mario Pašalić",
+      "n": 11,
+      "cx": 45.2,
+      "cy": 46.9,
+      "spread": 32,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,4,0,1,1,1,1,0,0,1,0,2,0"
+     },
+     {
+      "team": "ATA",
+      "name": "Franck Kessié",
+      "n": 10,
+      "cx": 48.4,
+      "cy": 20.7,
+      "spread": 23.7,
+      "grid": "1,1,0,0,2,0,0,0,4,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
- "updatedAt": "2026-09-15T19:57:28.882Z"
+ "attempts": {},
+ "updatedAt": "2026-09-15T20:29:37.296Z"
 }
