@@ -246,7 +246,6 @@ async function main() {
         if (!d) continue;
         const c = d.content ?? {};
         const has = k => (k in c) && c[k] != null;
-        console.log(`  ${m.home?.name} ${m.status?.scoreStr ?? ''} ${m.away?.name}`);
         const five = { stats: has('stats'), shotmap: has('shotmap'), lineup: has('lineup'),
           events: !!(d.header?.events ?? c.matchFacts?.events), playerStats: has('playerStats') || !!c.playerStats };
         console.log(`  ${m.home?.name} ${m.status?.scoreStr ?? ''} ${m.away?.name}`);
