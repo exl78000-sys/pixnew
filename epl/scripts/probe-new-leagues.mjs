@@ -190,9 +190,40 @@ async function main() {
       const bad = fmNames.filter(t => !ofNames.some(o => sameTeam(o, t)));
       console.log(`  隊名 ${fmNames.length} 個,對得上 ${fmNames.length - bad.length} 個`);
       if (bad.length) { console.log('  ⚠ 對不上(全部對不上 = 挑錯聯賽;只有幾個 = 上游用短名):'); for (const t of bad) console.log(`      ${t}`); }
-      const proven = fmNames.length >= 16 && bad.length === 0;
-      if (proven) { fmId = pick.id; console.log(`\n  ✔ **證明了**:${L.zh}的 FotMob id 是 ${pick.id}(${fmNames.length} 隊全對)`); }
-      else console.log(`\n  ✗ 還不能下結論 —— ${bad.length ? '有隊名對不上' : '隊數不足'},不要把這個 id 寫進表裡`);
+      /* ── 這裡有**兩個不同的問題**,第一版把它們混成一條 ──
+           (a) 這個 id 是不是這個聯賽?    (b) alias 表補齊了沒?
+         德甲那支寫 `bad.length === 0` 是對的,因為它比的是**本站名冊**(alias 已經在裡面)。
+         這一支比的是 openfootball 的全名而且還沒有 alias,所以短名一定對不上 ——
+         照抄那個門檻就會把「id 其實是對的」報成「還不能下結論」(第一次跑就是這樣)。
+
+         (a) 的判準是**辨別力**:挑錯聯賽的話幾乎一隊都不會對上(Serie B 沒有 Juventus,
+         巴西 Serie A 的 ccode 也不是 ITA)。所以要求隊數吻合 + 大多數對得上 + 國家碼相符,
+         而不是「一個都不能漏」。`bad` 全部落在**兩邊剩下的名字一樣多**那種情況時,
+         它是短名不是錯聯賽。
+         (b) 分開報,而且**明講那只是候選**:一對一是線索不是證據(CLAUDE.md 那條坑),
+         真正的核對是接上之後逐隊拿進球與分鐘對帳。 */
+      const leftover = ofNames.filter(o => !fmNames.some(t => sameTeam(o, t)));
+      const idProven = fmNames.length === ofNames.length
+        && bad.length <= Math.floor(fmNames.length * 0.2)
+        && String(fx?.details?.country ?? '').toUpperCase() === L.ccode
+        && bad.length === leftover.length;
+      if (idProven) {
+        fmId = pick.id;
+        console.log(`\n  ✔ **id 證明了**:${L.zh}的 FotMob id 是 ${pick.id}`
+          + `(隊數 ${fmNames.length} = openfootball ${ofNames.length}、對上 ${fmNames.length - bad.length} 隊、國家 ${L.ccode})`);
+        if (bad.length) {
+          console.log(`  剩下 ${bad.length} 個是上游的短名,**不是挑錯聯賽** —— 兩邊剩下的名字一樣多。候選配對(**只是候選**):`);
+          for (const t of bad) {
+            const guess = leftover.filter(o => norm(o).includes(norm(t)) || norm(t).includes(norm(o).split(' ')[0]));
+            console.log(`      ${t}  →  ${guess.length === 1 ? guess[0] : `(${leftover.join(' / ')} 之一,要人工判)`}`);
+          }
+          console.log('  一對一**不是證據**:alias 補上之後要逐隊拿進球與分鐘對帳才算數(德甲那輪的做法)。');
+        }
+      } else {
+        console.log(`\n  ✗ 還不能下結論 —— ${fmNames.length !== ofNames.length ? `隊數 ${fmNames.length} ≠ openfootball ${ofNames.length}`
+          : bad.length !== leftover.length ? '對不上的數量跟剩下的名字對不起來(可能真的是別的聯賽)'
+          : '對不上的比例太高'},不要把這個 id 寫進表裡`);
+      }
     }
 
     if (fmId) {
@@ -216,7 +247,7 @@ async function main() {
   for (const v of verdict) {
     console.log(`  ${v.zh}:openfootball ${v.ofTeams} 隊`
       + `・Understat ${v.usSlug ? `代號 "${v.usSlug}" ✔` : '✗ 沒問出來'}`
-      + `・FotMob ${v.fmId ? `id ${v.fmId} ✔(逐隊比對過)` : '✗ 沒證明出來'}`);
+      + `・FotMob ${v.fmId ? `id ${v.fmId} ✔(隊數吻合 + 逐隊比對)` : '✗ 沒證明出來'}`);
   }
   console.log(`\n共用掉 ${used} 個請求。`);
   console.log('**只有兩欄都 ✔ 的聯賽才照德甲那條路做三層;有一欄 ✗ 就只做做得出來的那幾層,');
