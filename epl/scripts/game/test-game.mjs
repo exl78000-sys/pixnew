@@ -118,6 +118,15 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
     })(), `${g.teams.ARS.shots.n}`);
     check('聯賽層射門池存在(某隊某情境一筆都沒有時的退路),列數是各隊的抽樣', g.league_.shotPool && g.league_.shotPool.rows.length >= 300);
     check('每隊有主 / 客場的傳球數與越位數(回合制的傳球串長度與越位率用)', teams.every(t => t.play && ['home', 'away'].every(v => t.play[v] && t.play[v].games > 0 && t.play[v].passes > 200 && t.play[v].passes < 900 && t.play[v].offsides >= 0 && t.play[v].offsides < 8)));
+    /* 踢法側寫(階段 B):六軸都有級與依據;20 隊分五級各 4 隊(排名分級);代理指標有標;值對回 rates / play 重算(ARS 心態 = 射門 − 被射門) */
+    const AX = ['mentality', 'pressing', 'line', 'width', 'tempo', 'directness'];
+    check('每隊都有六軸踢法側寫,級 1~5、附 n 與依據', teams.every(t => t.style && AX.every(k => t.style[k] && t.style[k].level >= 1 && t.style[k].level <= 5 && t.style[k].n > 0 && t.style[k].basis)));
+    check('20 隊每一軸分五級各 4 隊(排名分級,不是絕對門檻)', AX.every(k => { const c = [0, 0, 0, 0, 0]; for (const t of teams) c[t.style[k].level - 1]++; return c.every(x => x === 4); }));
+    check('代理指標有標(壓迫 / 防線 / 心態 / 節奏 / 直接度是代理,寬度是直接量)', teams.every(t => t.style.pressing.proxy === true && t.style.width.proxy === false) && g.styleAxes && AX.every(k => g.styleAxes[k].zh && g.styleAxes[k].levels.length === 5));
+    check('ARS 心態的依據值對回 rates 重算(射門 − 被射門,主客按場數加權)', (() => {
+      const r = g.teams.ARS.rates; const w = (k) => (r.home.games * r.home[k] + r.away.games * r.away[k]) / (r.home.games + r.away.games);
+      return Math.abs(g.teams.ARS.style.mentality.value - (w('sf') - w('sa'))) < 0.01 && g.teams.ARS.style.mentality.n === r.home.games + r.away.games;
+    })(), String(g.teams.ARS.style.mentality.value));
     check('傳球數對回 raw 快取重算(ARS 主場)', (() => {
       const rows = fm.filter(m => m.home === 'ARS' && m.teamStats?.ARS);
       if (!rows.length) return g.teams.ARS.play.home == null;

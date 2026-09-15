@@ -63,7 +63,14 @@ export const DEFAULT_RULES = {
   CORNER_KEEP: 0.35, FK_KEEP: 0.4,        // 角球 / 任意球沒射門時攻方留住球的比例
   SEQ_DUR_JITTER: 0.5,                    // 回合長度 = 均值 × (1 ± 0.5) 均勻
   MAX_CHAIN: 9,                           // 一個回合最多幾個人碰球(畫面演得完)
+  /* ── 戰術指令(2026-09-15,階段 B;使用者定的:只改踢法,不改進球機率)──
+     六項指令各 1~5 級,預設 = 側寫從本季真資料推的那一級(style.*.level);Δ = 現在的級 − 預設級。
+     每一級改多少是遊戲規則(沒有資料能校準「把壓迫調高一級會多幾次犯規」),所以數字都小、而且畫面上寫明是規則。
+     **λ 不動**:射門數變了,k = λ ÷ (射門數 × 平均 xG) 跟著重算,期望進球仍然精確等於 λ(測試守著)。 */
+  TAC: { mentalityShots: 0.08, mentalityOppShots: 0.05, widthCorners: 0.06, pressingFouls: 0.06, lineOffsides: 0.10,
+    directOffsides: 0.05, directPasses: 0.08, tempoPasses: 0.05, pressingTurnoverX: 5 },
 };
+export const TACTIC_KEYS = ['mentality', 'pressing', 'line', 'width', 'tempo', 'directness'];
 
 // mulberry32 —— 跟 predict-core 的 seededRng 同一個演算法。不 import 是為了讓這個檔在 node 裡零依賴載入。
 export function rngOf(seed) {
@@ -181,8 +188,12 @@ export function createMatch({ profile, home, away, pred, seed = 1, setup = {}, r
     const venue = side === 'home' ? 'home' : 'away';
     const rates = t.rates[venue] ?? t.rates.home ?? {};
     const play = t.play?.[venue] ?? t.play?.home ?? null;
+    /* 戰術指令:預設 = 側寫推的那一級(沒有側寫就 3);使用者給的只收 1~5 的整數 */
+    const defaults = Object.fromEntries(TACTIC_KEYS.map(k => [k, t.style?.[k]?.level ?? 3]));
+    const tactics = { ...defaults };
+    for (const k of TACTIC_KEYS) { const v = Number(cfg?.tactics?.[k]); if (Number.isInteger(v) && v >= 1 && v <= 5) tactics[k] = v; }
     return {
-      side, code, t, squad, venue,
+      side, code, t, squad, venue, tactics, tacticDefaults: defaults,
       formation: cfg?.formation ?? d.formation,
       defaultXi: d.xi, onPitch: [...xi], bench: [...bench], off: [], sentOff: [], cameOn: new Set(),
       subsUsed: 0, windows: new Set(), yellows: new Map(), red: 0,
@@ -287,7 +298,10 @@ export function createMatch({ profile, home, away, pred, seed = 1, setup = {}, r
     const code = row[5] >= 0 && !fromFallback ? src.players[row[5]] : null;
     return { x: row[0], y: row[1], xg: row[2], situation: src.sits[row[3]] ?? 'RegularPlay', realOutcome: src.outs[row[4]] ?? 'off', shooter: code, fromFallback };
   }
-  const expectedShots = s => Math.max(0.5, (s.rates.sf ?? L.rates.sf) * ((opp(s).rates.sa ?? L.rates.sf) / L.rates.sf));
+  const dT = (s, k) => s.tactics[k] - s.tacticDefaults[k];   // 指令相對預設的位移(−4 ~ +4)
+  const mul = (x, per, d) => x * Math.max(0.5, 1 + per * d);
+  /* 期望射門含心態:自己進攻多射一點、對手也多一點(壓上去後面就空)。k 從這個算,所以 λ 不變 */
+  const expectedShots = s => mul(mul(Math.max(0.5, (s.rates.sf ?? L.rates.sf) * ((opp(s).rates.sa ?? L.rates.sf) / L.rates.sf)), R.TAC.mentalityShots, dT(s, 'mentality')), R.TAC.mentalityOppShots, dT(opp(s), 'mentality'));
   const kOf = s => (lambda(s) * redFactor(s)) / (expectedShots(s) * Math.max(0.01, s.pool.meanXg));
   /* 進球機率隨分鐘的傾斜:同一顆 xG 在真實進球密度高的分鐘轉換率高一點(進球分布 ÷ 射門分布,兩邊都是真資料),
      總和不變 —— Σ_m wShot[m] × (wGoal[m]/wShot[m]) = 1,錨仍然精確。 */
@@ -388,10 +402,10 @@ export function createMatch({ profile, home, away, pred, seed = 1, setup = {}, r
 
   /* ── 每場期望值(全部從側寫的率算)── */
   const shotShare = (s, keys) => { const src = s.t.shotSituations ?? L.shotSituations ?? {}; return keys.reduce((a, k) => a + (src[k]?.share ?? 0), 0); };
-  const cornersExpected = s => Math.max(0.5, (s.rates.cf ?? L.rates.cf) * ((opp(s).rates.ca ?? L.rates.cf) / L.rates.cf));
-  const foulsBy = s => Math.max(1, ((s.rates.fouls ?? L.rates.fouls) + (opp(s).rates.foulsAgainst ?? L.rates.fouls)) / 2);   // s 犯規的次數/場
-  const offsidesOf = s => Math.max(0, s.play?.offsides ?? L.play?.offsides ?? 1.6);
-  const passesOf = s => Math.max(50, s.play?.passes ?? L.play?.passes ?? 430);
+  const cornersExpected = s => mul(Math.max(0.5, (s.rates.cf ?? L.rates.cf) * ((opp(s).rates.ca ?? L.rates.cf) / L.rates.cf)), R.TAC.widthCorners, dT(s, 'width'));
+  const foulsBy = s => mul(Math.max(1, ((s.rates.fouls ?? L.rates.fouls) + (opp(s).rates.foulsAgainst ?? L.rates.fouls)) / 2), R.TAC.pressingFouls, dT(s, 'pressing'));   // s 犯規的次數/場;壓迫高犯規多
+  const offsidesOf = s => mul(mul(Math.max(0, s.play?.offsides ?? L.play?.offsides ?? 1.6), R.TAC.lineOffsides, dT(opp(s), 'line')), R.TAC.directOffsides, dT(s, 'directness'));   // 對手防線高、自己踢得直接 → 越位多
+  const passesOf = s => mul(mul(Math.max(50, s.play?.passes ?? L.play?.passes ?? 430), -R.TAC.directPasses, dT(s, 'directness')), -R.TAC.tempoPasses, dT(s, 'tempo'));
   const outcomeShare = (s, key) => { const rows = s.pool.src.rows; if (!rows.length) return 0; return rows.filter(r => s.pool.src.outs[r[4]] === key).length / rows.length; };
 
   /* 停球縮放(見 DEAD 的註解):補不回來的停球在期望上要等於 比賽長度 − 球在場上 = 5400 + 2 × 基本補時 − BIP_SEC。 */
@@ -559,7 +573,7 @@ export function createMatch({ profile, home, away, pred, seed = 1, setup = {}, r
       next = { side: s.side, type: 'loose', x: end.x, y: end.y, player: null };
     } else {
       // 被斷球:對方某個人(防守能力加權)在球場某處把球贏走 → 對方從那裡反擊
-      const at = group === 'open' ? { x: r1(20 + rng() * 65), y: r1(6 + rng() * 56) } : { x: r1(70 + rng() * 25), y: r1(10 + rng() * 48) };
+      const at = group === 'open' ? { x: r1(clamp(20 + rng() * 65 - R.TAC.pressingTurnoverX * dT(o, 'pressing'), 8, 96)), y: r1(6 + rng() * 56) } : { x: r1(70 + rng() * 25), y: r1(10 + rng() * 48) };
       const by = pickWeighted(rng, outfield(o), c => 0.2 + defOf(o.squad.get(c)));
       end = { type: 'turnover', x: at.x, y: at.y, player: last, by };
       const f = flipXY(at.x, at.y);
@@ -588,6 +602,7 @@ export function createMatch({ profile, home, away, pred, seed = 1, setup = {}, r
   const sideState = s => ({
     code: s.code, formation: s.formation, onPitch: [...s.onPitch], bench: [...s.bench], off: [...s.off], sentOff: [...s.sentOff],
     subsUsed: s.subsUsed, windowsUsed: s.windows.size, red: s.red, stats: { ...s.stats, possSec: Math.round(s.stats.possSec) },
+    tactics: { ...s.tactics }, tacticDefaults: { ...s.tacticDefaults },
     ratioAtt: r2(ratioAtt(s)), ratioDef: r2(ratioDef(s)), lambda: r2(lambda(s)), lambdaEff: r2(lambda(s) * redFactor(s)),
     yellows: [...s.yellows.entries()].map(([c, n]) => ({ player: c, n })),
     plan: s.plan.map(p => ({ min: p.min, band: p.band ?? null, off: p.off ?? null, on: p.on ?? null, done: p.done === true, user: p.user === true })),
@@ -612,6 +627,13 @@ export function createMatch({ profile, home, away, pred, seed = 1, setup = {}, r
       return { ok: true, event: doSub(s, offCode, onCode, true) };
     },
     setFormation(side, label) { (side === 'home' ? H : A).formation = label; },
+    /* 戰術指令:賽中隨時改,下一個回合起生效;回傳現在的級與預設級(畫面標「本季實際」用) */
+    setTactics(side, patch = {}) {
+      const s = side === 'home' ? H : A;
+      for (const k of TACTIC_KEYS) { const v = Number(patch[k]); if (Number.isInteger(v) && v >= 1 && v <= 5) s.tactics[k] = v; }
+      return { levels: { ...s.tactics }, defaults: { ...s.tacticDefaults } };
+    },
+    tactics: () => ({ home: { levels: { ...H.tactics }, defaults: { ...H.tacticDefaults } }, away: { levels: { ...A.tactics }, defaults: { ...A.tacticDefaults } } }),
     playerOf: (side, code) => (side === 'home' ? H : A).squad.get(code) ?? null,
   };
 }

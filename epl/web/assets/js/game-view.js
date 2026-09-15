@@ -1,7 +1,7 @@
 import * as C from './core.js?v=0398a1b2';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
-import { mountDuelAnim } from './duel-anim.js?v=463759e3';
-import { createMatch, defaultSetup, minuteAt } from './game-engine.js?v=088e08bf';
+import { mountDuelAnim } from './duel-anim.js?v=8f839068';
+import { createMatch, defaultSetup, minuteAt, TACTIC_KEYS } from './game-engine.js?v=71a86a76';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
    (比賽統計 / 事件流 / 陣容與換人 / 戰術)、下方勝率條 + 動能條 + 文字播報。
@@ -55,7 +55,10 @@ export async function renderGame(app) {
 
     const state = { home: teams[0]?.code, away: teams[1]?.code, neutral: false, seed: Math.floor(Math.random() * 1e9),
       setup: { home: null, away: null }, speed: 'normal', highlights: false };
-    const setupOf = side => (state.setup[side] ??= defaultSetup(profile, state[side]));
+    const setupOf = side => (state.setup[side] ??= { ...defaultSetup(profile, state[side]), tactics: defaultTactics(state[side]) });
+    const defaultTactics = code => Object.fromEntries(TACTIC_KEYS.map(k => [k, profile.teams[code]?.style?.[k]?.level ?? 3]));
+    /* 動畫吃的是相對預設的位移 */
+    const tacticDeltas = (side, levels) => { const d = defaultTactics(state[side]); return Object.fromEntries(TACTIC_KEYS.map(k => [k, (levels[k] ?? d[k]) - d[k]])); };
     const squadOf = side => new Map(profile.teams[state[side]].squad.map(p => [p.code, p]));
 
     let match = null, anim = null, paused = false, tab = 'stats';
@@ -131,7 +134,9 @@ export async function renderGame(app) {
           <div class="tiny dim">預設先發 = 實時頁的推估先發;陣型只能從本季用過的挑(${t.formation.used.map(u => `${u.formation}×${u.games}`).join('、') || '官方最近一場'})。⚠ = 傷停狀態不是「可出賽」,遊戲不禁止。</div>
         </div>`;
       };
-      host.innerHTML = `<div class="row" style="gap:12px;align-items:flex-start;margin-top:12px;flex-wrap:wrap">${side('home')}${side('away')}</div>`;
+      host.innerHTML = `<div class="row" style="gap:12px;align-items:flex-start;margin-top:12px;flex-wrap:wrap">${side('home')}${side('away')}</div>
+        <div style="margin-top:12px">${tacticsPanelHtml('home')}${tacticsPanelHtml('away')}<div class="tiny dim">戰術指令的預設是本季真實踢法;開賽後在「戰術」分頁隨時可改。只改踢法,不改進球期望。</div></div>`;
+      bindTactics();
       let pick = null;
       host.querySelectorAll('[data-code]').forEach(b => {
         b.onclick = () => {
@@ -245,6 +250,7 @@ export async function renderGame(app) {
         away: { formation: setupOf('away').formation, ...aN, color: cB, meta: metaOf('away'), pace: profile.teams[state.away].pace ?? null, zones: profile.teams[state.away].zones ?? null },
         rng: seededRng(state.seed ^ 0x5bd1e995),
       });
+      for (const sd of ['home', 'away']) anim.setTactics(sd, tacticDeltas(sd, setupOf(sd).tactics ?? {}));
       document.querySelectorAll('#gTabs [data-tab]').forEach(b => { b.onclick = () => { tab = b.dataset.tab; document.querySelectorAll('#gTabs [data-tab]').forEach(x => x.classList.toggle('on', x.dataset.tab === tab)); renderPanel(); }; });
       document.getElementById('gSpeed').onchange = e => { state.speed = e.target.value; };   // 下一個回合起生效
       document.getElementById('gHl').onchange = e => { state.highlights = e.target.checked; };
@@ -416,6 +422,7 @@ export async function renderGame(app) {
       else if (tab === 'lineup') host.innerHTML = lineupHtml();
       else host.innerHTML = tacticsHtml();
       if (tab === 'lineup') bindSubs();
+      if (tab === 'tactics') bindTactics();
     }
     function statsHtml() {
       const H = statsOf('home'), A = statsOf('away');
@@ -473,6 +480,32 @@ export async function renderGame(app) {
         };
       });
     }
+    /* 戰術指令(階段 B):六軸 × 五級;預設 = 本季真實踢法推的那一級(標 n 與依據);改了下一個回合起生效。
+       只改回合的組成與站位,λ 不變 —— 面板上寫明。賽前(還沒開賽)改的存在 setup 裡,開賽時帶進引擎。 */
+    function tacticsPanelHtml(sd) {
+      const t = profile.teams[state[sd]], axes = profile.styleAxes ?? {};
+      const cur = match && running ? match.tactics()[sd].levels : (setupOf(sd).tactics ?? defaultTactics(state[sd]));
+      const def = defaultTactics(state[sd]);
+      return `<div class="card" style="margin-bottom:8px"><h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">戰術指令</span></h3>
+        ${TACTIC_KEYS.map(k => { const a = axes[k] ?? { zh: k, levels: ['1', '2', '3', '4', '5'] }; const st = t.style?.[k]; return `
+          <div class="tac-row" style="display:grid;grid-template-columns:52px 1fr;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)">
+            <span class="small"><b>${C.esc(a.zh)}</b></span>
+            <span class="row" style="gap:3px;flex-wrap:wrap">${a.levels.map((z, i) => `<button class="btn tiny${cur[k] === i + 1 ? ' on' : ''}" data-tac-side="${sd}" data-tac-key="${k}" data-tac-level="${i + 1}" title="${def[k] === i + 1 ? '本季實際' : ''}">${C.esc(z)}${def[k] === i + 1 ? '<span class="dim">・本季</span>' : ''}</button>`).join('')}</span>
+            <span></span><span class="tiny dim">本季實際:${st?.value != null ? `${st.value}${C.esc(st.unit ?? '')}(${C.esc(st.basis)},${st.n} 場${st.proxy ? ',代理指標' : ''})` : '沒有資料,預設中'}。改了會動:${C.esc(a.effects ?? '')}</span>
+          </div>`; }).join('')}
+      </div>`;
+    }
+    function bindTactics() {
+      document.querySelectorAll('[data-tac-key]').forEach(b => {
+        b.onclick = () => {
+          const { tacSide: sd, tacKey: k, tacLevel: lv } = b.dataset;
+          const level = Number(lv);
+          const su = setupOf(sd); su.tactics = { ...(su.tactics ?? defaultTactics(state[sd])), [k]: level };
+          if (match && running) { const r = match.setTactics(sd, { [k]: level }); anim?.setTactics(sd, tacticDeltas(sd, r.levels)); }
+          if (tab === 'tactics' && match) renderPanel(); else renderSetup();
+        };
+      });
+    }
     function tacticsHtml() {
       const side = sd => {
         const t = profile.teams[state[sd]], sit = t.shotSituations ?? {};
@@ -490,7 +523,10 @@ export async function renderGame(app) {
           ${t.resilience ? `<div class="tiny">韌性:領先守住 ${t.resilience.leadHoldPct}%・落後追回 ${t.resilience.trailRescuePct}%(資訊,不進遊戲)</div>` : ''}
         </div>`;
       };
-      return side('home') + side('away') + `<div class="tiny dim">全部是真資料(逐場 CSV、FotMob、Understat、FPL);唯讀 —— 戰術面板只描述,能改的只有先發、陣型與換人。戰術指令是下一階段。</div>`;
+      return tacticsPanelHtml('home') + tacticsPanelHtml('away')
+        + `<div class="tiny dim" style="margin-bottom:8px"><b>指令只改踢法,不改進球期望。</b>改的是回合的組成與站位:射門 / 角球 / 犯規 / 越位的次數、傳球串長度、斷球位置、防線與寬度;
+          引擎會把射門的轉換率跟著調回來,所以 λ(遊戲)一個都不變。每一級改多少是遊戲規則(沒有資料能校準),預設那一級是從本季真實數據推的,標「代理指標」的軸用的是替代量(例如壓迫用對手傳球數),階段 C 重抓抄截 / 攔截 / 長傳之後會換掉。改了下一個回合起生效。</div>`
+        + side('home') + side('away') + `<div class="tiny dim">下面這些是真資料(逐場 CSV、FotMob、Understat、FPL),唯讀。</div>`;
     }
 
     app.innerHTML = `
@@ -507,7 +543,8 @@ export async function renderGame(app) {
         <b>最高速度就是他自己的真資料</b>(FotMob 逐人最高速度),站位參考逐人觸球熱區質心、進攻偏向參考三路進攻佔比。
         跑動量校準過:<b>播放速度選「即時」時</b>,每人每比賽分鐘約 105 公尺,對照 FotMob 這兩隊的真實值(每隊每分鐘 ÷ 11)。
         <b>正常 / 快只演每個回合的最後幾腳</b>,沒結局的回合一格跳過、停球快轉 —— 畫面上的人仍是真人速度,但那時的跑動量不等於真實。
-        軌跡本身一律是演出。<b>沒有</b>:體能、球員屬性、賽中受傷、一對一、教練決策、戰術指令(下一階段)。
+        軌跡本身一律是演出。<b>戰術指令</b>(心態 / 壓迫 / 防線 / 寬度 / 節奏 / 直接度):預設 = 本季真實踢法(六個指標從逐場數據推,標 n;有些是代理指標),
+        拉動只改回合的組成與站位,λ 不變 —— 每一級改多少是遊戲規則,沒有資料能校準。<b>沒有</b>:體能、球員屬性、賽中受傷、一對一、教練決策。
         <b>跟真實管線的關係只有一條</b>:沒有任何改動時 λ 等於站上預測;任何操作不寫回資料,也不影響站上任何一頁。</div>
       ${C.foot(data.meta)}`;
     renderControls();

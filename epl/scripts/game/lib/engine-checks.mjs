@@ -158,6 +158,57 @@ export async function runEngineChecks(mod, root) {
     out.push(['結局的人就是傳球串的最後一個(畫面照這個人演)', lastIsActor === ends, `${lastIsActor}/${ends}`]);
   }
 
+  // 8. 戰術指令(階段 B):只改回合的組成,λ 一個都不變;改了方向要對;預設 = 側寫的級
+  {
+    const runN = (n, setup, home = 'ARS') => {
+      const agg = { shots: 0, corners: 0, fouls: 0, offsides: 0, oppOffsides: 0, oppShots: 0, goals: 0, oppGoals: 0, chain: 0, seqs: 0, turnX: 0, turnN: 0 };
+      for (let seed = 1; seed <= n; seed++) {
+        const m = mod.createMatch({ profile, home, away: 'LIV', pred, seed, setup });
+        while (!m.state().finished) { const q = m.nextSequence(); if (!q) break; if (q.side === 'home') { agg.chain += q.chain.length; agg.seqs++; if (q.end.type === 'turnover') { agg.turnX += q.end.x; agg.turnN++; } } }
+        const st = m.state();
+        agg.shots += st.home.stats.shots; agg.corners += st.home.stats.corners; agg.fouls += st.home.stats.fouls; agg.offsides += st.home.stats.offsides;
+        agg.oppOffsides += st.away.stats.offsides; agg.oppShots += st.away.stats.shots; agg.goals += st.score[0]; agg.oppGoals += st.score[1];
+      }
+      for (const k of Object.keys(agg)) agg[k] /= n;
+      agg.chainPerSeq = agg.chain / agg.seqs; agg.turnXMean = agg.turnX / Math.max(1e-9, agg.turnN);
+      return agg;
+    };
+    const N3 = 150;
+    const base = runN(N3, {});
+    const m0t = mod.createMatch({ profile, home: 'ARS', away: 'LIV', pred, seed: 1 });
+    const d0 = m0t.tactics();
+    out.push(['戰術指令的預設 = 側寫推的那一級(六軸都有,1~5)', mod.TACTIC_KEYS.every(k => d0.home.levels[k] === profile.teams.ARS.style[k].level && d0.home.levels[k] >= 1 && d0.home.levels[k] <= 5 && d0.home.levels[k] === d0.home.defaults[k]), JSON.stringify(d0.home.levels)]);
+    const extreme = { home: { tactics: { mentality: 5, pressing: 5, line: 5, width: 5, tempo: 5, directness: 5 } }, away: { tactics: { mentality: 1, pressing: 1, line: 1, width: 1, tempo: 1, directness: 1 } } };
+    const mx = mod.createMatch({ profile, home: 'ARS', away: 'LIV', pred, seed: 1, setup: extreme });
+    out.push(['指令拉到極端,λ 一個都不變(指令不進進球機率)', mx.lambdas().home === pred.xgHome && mx.lambdas().away === pred.xgAway, `${mx.lambdas().home}/${mx.lambdas().away}`]);
+    const ex = runN(N3, extreme);
+    const seH = Math.sqrt(pred.xgHome / N3), seA = Math.sqrt(pred.xgAway / N3);
+    out.push(['指令拉到極端,150 場平均進球仍在 λ 的 3 個標準誤內(射門變多,轉換率跟著調回來)', Math.abs(ex.goals - pred.xgHome) < 3 * seH && Math.abs(ex.oppGoals - pred.xgAway) < 3 * seA, `${ex.goals.toFixed(2)} vs ${pred.xgHome}、${ex.oppGoals.toFixed(2)} vs ${pred.xgAway}`]);
+    /* 方向測試要拿**預設在低檔**的隊(SUN:心態 1、壓迫 2、防線 2、節奏 1、直接度 2),全部拉到 5 才有位移。
+       第一版拿 ARS(心態與壓迫的預設已經是 5),拉到 5 是 Δ = 0,射門反而因為對手心態拉低而變少 —— 測的不是想測的東西。 */
+    const upAll = { home: { tactics: { mentality: 5, pressing: 5, line: 5, width: 5, tempo: 5, directness: 5 } } };
+    const baseS = runN(N3, {}, 'SUN'), exS = runN(N3, upAll, 'SUN');
+    const up = (a, b) => a > b * 1.03;
+    const dirs = [
+      ['心態進攻 → 射門變多(SUN 預設心態 1 拉到 5)', up(exS.shots, baseS.shots), `${exS.shots.toFixed(2)} vs ${baseS.shots.toFixed(2)}`],
+      ['寬度拉寬 → 角球變多', up(exS.corners, baseS.corners), `${exS.corners.toFixed(2)} vs ${baseS.corners.toFixed(2)}`],
+      ['壓迫拉高 → 自己犯規變多', up(exS.fouls, baseS.fouls), `${exS.fouls.toFixed(2)} vs ${baseS.fouls.toFixed(2)}`],
+      ['防線拉高 → 對手越位變多', up(exS.oppOffsides, baseS.oppOffsides), `${exS.oppOffsides.toFixed(2)} vs ${baseS.oppOffsides.toFixed(2)}`],
+      ['直接 + 快 → 傳球串變短', exS.chainPerSeq < baseS.chainPerSeq * 0.9, `${exS.chainPerSeq.toFixed(2)} vs ${baseS.chainPerSeq.toFixed(2)}`],
+      ['壓迫拉高 → 對手被斷球的位置更靠自己後場', (() => {
+        /* 對手(LIV)的斷球位置在 LIV 的進攻座標裡;SUN 壓迫高,LIV 應該在更後面(x 更小)丟球。runN 只記主隊的,這裡另外數 */
+        const meanX = setup => { let sx = 0, n = 0; for (let seed = 1; seed <= 60; seed++) { const m = mod.createMatch({ profile, home: 'SUN', away: 'LIV', pred, seed, setup }); while (!m.state().finished) { const q = m.nextSequence(); if (!q) break; if (q.side === 'away' && q.end.type === 'turnover' && q.start.type !== 'corner' && q.start.type !== 'freekick') { sx += q.end.x; n++; } } } return sx / n; };
+        const a = meanX({}), b = meanX(upAll); return b < a - 3;
+      })()],
+    ];
+    for (const [label, ok, detail] of dirs) out.push([label, ok, detail]);
+    // 賽中改:下一個回合起生效,而且回傳現在的級與預設級
+    const m3 = mod.createMatch({ profile, home: 'ARS', away: 'LIV', pred, seed: 5 });
+    while (m3.state().min < 30) m3.tick();
+    const r = m3.setTactics('home', { pressing: 5, bogus: 9, width: 0 });
+    out.push(['賽中改指令:只收 1~5 的整數,回傳現在的級與預設', r.levels.pressing === 5 && r.levels.width === d0.home.defaults.width && m3.lambdas().home === pred.xgHome, JSON.stringify(r.levels)]);
+  }
+
   // 6. 控球目標在 [20,80]
   const pt = [...Array(50)].map((_, i) => mod.createMatch({ profile, home: 'SUN', away: 'MCI', pred, seed: i + 1 }).possTarget);
   out.push(['控球目標在 20–80 之間,且弱隊主場對強隊平均低於 50', pt.every(p => p >= 20 && p <= 80) && pt.reduce((a, b) => a + b, 0) / pt.length < 50, `平均 ${(pt.reduce((a, b) => a + b, 0) / pt.length).toFixed(1)}`]);
