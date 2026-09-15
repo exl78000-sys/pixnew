@@ -79,7 +79,13 @@ const TEAM_STAT_KEYS = {
      `saves`、`blocked_shots`,全部對不上 —— 抓取器把對映不到的 key 印出來
      才看到真正的名字。大小寫與命名風格在同一份 payload 裡並不一致
      (`Offsides` 大寫、`keeper_saves` 加了前綴、tackles 是 i18n 字串)。 */
-  shot_blocks: 'blockedShots',
+  /* 2026-09-15 深夜換鍵(階段 C 存下對照表以外的值之後才看得出來):
+     shot_blocks 是**自己做的封阻**(對手的射門被我擋下),blocked_shots 才是**自己被封阻的射門**。
+     拿英超 2025-26 的 380 場跟射門圖逐顆比:blocked_shots 760/760 等於該隊 blocked 的射門數,
+     shot_blocks 只有 77% 等於**對手**的 —— 本站從第一天起把 shot_blocks 當「被封阻射門」顯示,是錯的。
+     舊快取(萃取版本 1)的 blockedShots 仍是舊語意,讀取器(lib/matchstats.mjs)用射門圖回推。 */
+  shot_blocks: 'blocksMade',
+  blocked_shots: 'blockedShots',
   corners: 'corners',
   Offsides: 'offsides',
   fouls: 'fouls',
@@ -123,7 +129,7 @@ export function fotmobTeamStats(raw) {
     }
   }
   const fill = s => ({
-    possession: null, shots: null, shotsOn: null, shotsOff: null, blockedShots: null,
+    possession: null, shots: null, shotsOn: null, shotsOff: null, blockedShots: null, blocksMade: null,
     corners: null, offsides: null, fouls: null, saves: null,
     passes: null, passesAccurate: null, passAccuracy: null, xG: null, ...s,
   });

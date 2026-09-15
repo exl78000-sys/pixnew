@@ -14,6 +14,7 @@ import { join } from 'node:path';
 import { teamMatchRows } from '../../lib/style-trend.mjs';
 import { loadTeams } from '../../lib/teams.mjs';
 import { matchOne } from '../../lib/names.mjs';
+import { fixBlockedShots } from '../../lib/matchstats.mjs';   // 被封阻射門的語意修正(讀取器那一份,不另寫)
 
 const r2 = n => Math.round(n * 100) / 100;
 const r3 = n => Math.round(n * 1000) / 1000;
@@ -202,7 +203,8 @@ function loadFotmob(root) {
   const dir = join(root, 'data', 'raw', 'fotmob-epl');
   if (!existsSync(dir)) return [];
   return readdirSync(dir).filter(f => /-game-details\.json$/.test(f)).sort()
-    .flatMap(f => Object.values(readJson(join(dir, f)).matches ?? {}));
+    .flatMap(f => Object.values(readJson(join(dir, f)).matches ?? {}))
+    .map(m => ({ ...m, teamStats: fixBlockedShots(m) }));
 }
 
 export function buildGameProfile(root, { league = 'pl' } = {}) {

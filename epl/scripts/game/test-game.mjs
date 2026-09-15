@@ -122,7 +122,8 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
     const AX = ['mentality', 'pressing', 'line', 'width', 'tempo', 'directness'];
     check('每隊都有六軸踢法側寫,級 1~5、附 n 與依據', teams.every(t => t.style && AX.every(k => t.style[k] && t.style[k].level >= 1 && t.style[k].level <= 5 && t.style[k].n > 0 && t.style[k].basis)));
     check('20 隊每一軸分五級各 4 隊(排名分級,不是絕對門檻)', AX.every(k => { const c = [0, 0, 0, 0, 0]; for (const t of teams) c[t.style[k].level - 1]++; return c.every(x => x === 4); }));
-    check('代理指標有標(壓迫 / 防線 / 心態 / 節奏 / 直接度是代理,寬度是直接量)', teams.every(t => t.style.pressing.proxy === true && t.style.width.proxy === false) && g.styleAxes && AX.every(k => g.styleAxes[k].zh && g.styleAxes[k].levels.length === 5));
+    /* 階段 C 回填後壓迫與直接度換成直接指標(proxy=false,依據寫著 FotMob 逐場);心態 / 防線 / 節奏仍是代理 */
+    check('代理指標有標(心態 / 防線 / 節奏是代理;寬度、壓迫、直接度是直接量)', teams.every(t => t.style.mentality.proxy === true && t.style.line.proxy === true && t.style.tempo.proxy === true && t.style.width.proxy === false && t.style.pressing.proxy === false && /FotMob/.test(t.style.pressing.basis) && t.style.directness.proxy === false) && g.styleAxes && AX.every(k => g.styleAxes[k].zh && g.styleAxes[k].levels.length === 5));
     check('ARS 心態的依據值對回 rates 重算(射門 − 被射門,主客按場數加權)', (() => {
       const r = g.teams.ARS.rates; const w = (k) => (r.home.games * r.home[k] + r.away.games * r.away[k]) / (r.home.games + r.away.games);
       return Math.abs(g.teams.ARS.style.mentality.value - (w('sf') - w('sa'))) < 0.01 && g.teams.ARS.style.mentality.n === r.home.games + r.away.games;
@@ -135,7 +136,12 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
       if (!withExtra.length) console.log('  · teamExtra 尚未回填(跑 game-backfill.yml 之後這幾條才會驗)');
       else {
         check('teamExtra:禁區內外射門相加 = 射門(每一場、每一隊)', withExtra.every(m => Object.entries(m.teamExtra).every(([c, x]) => x.shots_inside_box == null || x.shots_outside_box == null || m.teamStats[c].shots == null || x.shots_inside_box + x.shots_outside_box === m.teamStats[c].shots)), `${withExtra.length} 場`);
-        check('teamExtra:blocked_shots 對回同一份 payload 的 shot_blocks', withExtra.every(m => Object.entries(m.teamExtra).every(([c, x]) => x.blocked_shots == null || m.teamStats[c].blockedShots == null || x.blocked_shots === m.teamStats[c].blockedShots)));
+        /* blocked_shots 是**自己被封阻的射門**(跟射門圖的 blocked 逐顆對得上 760/760);shot_blocks 是**自己做的封阻**(對側,而且只有 77% 相等)。
+           第一版拿兩個互比,紅了才發現本站一直把 shot_blocks 當「被封阻射門」顯示 —— 對照表已換(2026-09-15 深夜) */
+        check('teamExtra:blocked_shots = 射門圖裡該隊被封阻的射門數(射門圖完整的場次,逐場逐隊)', withExtra.filter(m => m.checks?.shotmapComplete).every(m => [m.home, m.away].every(c => m.teamExtra[c].blocked_shots == null || m.shots.filter(sh => sh.team === c && sh.blocked).length === m.teamExtra[c].blocked_shots)));
+        /* raw 裡版本 2 的紀錄是換鍵**之前**抓的,blockedShots 仍是 shot_blocks;讀取器(fixBlockedShots)用 teamExtra / 射門圖修正,側寫與報告都走它 */
+        const { fixBlockedShots } = await import('../lib/matchstats.mjs');
+        check('讀取器修正後 teamStats.blockedShots = 自己被封阻的射門(= blocked_shots)', withExtra.every(m => { const t = fixBlockedShots(m); return [m.home, m.away].every(c => t[c].blockedShots == null || m.teamExtra[c].blocked_shots == null || t[c].blockedShots === m.teamExtra[c].blocked_shots); }));
         const csvRows = [g.lastSeason, g.currentSeason].filter(s2 => existsSync(csv(s2))).flatMap(s2 => [...teamMatchRows(readFileSync(csv(s2), 'utf8'), { codeOf: T.codeOf }).entries()].flatMap(([code, rows2]) => rows2.map(r => ({ code, ...r }))));
         /* CSV 的逐場列只有 cards(黃 + 紅合計),所以比的是 yellow_cards + red_cards */
         let cmp = 0, agree = 0;

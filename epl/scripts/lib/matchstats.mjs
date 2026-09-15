@@ -35,6 +35,25 @@ export const pairOf = m => m.pair ?? `${m.home}|${m.away}`;
 export const isShootoutShot = (s, { pens = false } = {}) => s?.period === 'PenaltyShootout'
   || (s?.period == null && !!pens && Number(s?.min) >= 120 && s?.situation === 'Penalty');
 
+/* 「被封阻射門」的語意修正(2026-09-15 深夜):對照表在版本 1 把 shot_blocks(自己做的封阻)當成被封阻的射門。
+   不重抓幾千場,用**射門圖**回推:射門圖完整的場次,被封阻 = 該隊 blocked 的射門數(跟 blocked_shots 760/760 一致);
+   有 teamExtra.blocked_shots(版本 2 抓的)就用它;兩者都沒有的舊紀錄,原值改記到 blocksMade、被封阻寫 null —— 不留一個語意錯的數字。 */
+export function fixBlockedShots(m) {
+  const out = {};
+  for (const [c, st] of Object.entries(m.teamStats ?? {})) {
+    const t = { ...st };
+    const fromExtra = m.teamExtra?.[c]?.blocked_shots;
+    const fromMap = m.shots?.length && m.checks?.shotmapComplete ? m.shots.filter(sh => sh.team === c && sh.blocked).length : null;
+    if ((m.extractVersion ?? 1) < 2 || t.blocksMade === undefined) {
+      // 版本 1(或還沒帶 blocksMade 的紀錄):blockedShots 原本裝的是 shot_blocks
+      if (t.blocksMade === undefined) t.blocksMade = t.blockedShots ?? null;
+      t.blockedShots = Number.isFinite(fromExtra) ? fromExtra : fromMap;
+    }
+    out[c] = t;
+  }
+  return out;
+}
+
 export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl' } = {}) {
   const dir = join(root, 'data', 'raw', rawDir);
   const out = { source: 'FotMob matchDetails', seasons: [], count: 0, rejected: [], verification: {}, matches: {}, teams: {} };
@@ -65,7 +84,7 @@ export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl'
       out.matches[key] = {
         key, season, date: m.date, home: m.home, away: m.away, score: [...truth], matchId: m.matchId,
         ...(m.pair ? { pair: m.pair } : {}), pens,
-        possession: m.possession, teamStats: m.teamStats, shots: m.shots ?? [], momentum: m.momentum ?? [],
+        possession: m.possession, teamStats: fixBlockedShots(m), shots: m.shots ?? [], momentum: m.momentum ?? [],
         events: m.events ?? [], lineups: m.lineups ?? null,
         /* 跑動 / 衝刺(2026-09-03 重探後加):供應商的追蹤資料,不是每場都有(2025-26 有 282/380,缺的集中在 11 座主場);沒有就是 null,不是 0 */
         physical: m.physical ?? null,

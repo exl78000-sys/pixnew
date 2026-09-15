@@ -67,7 +67,8 @@ const fmRaw = {
       { key: 'total_shots', stats: [18, 6], type: 'text' },
       { key: 'Offsides', stats: [4, 1], type: 'text' },
       { key: 'keeper_saves', stats: [2, 7], type: 'text' },
-      { key: 'shot_blocks', stats: [2, 3], type: 'text' },
+      { key: 'shot_blocks', stats: [2, 3], type: 'text' },        // 自己做的封阻(blocksMade)—— 不是被封阻的射門
+      { key: 'blocked_shots', stats: [4, 1], type: 'text' },      // 自己被封阻的射門(blockedShots)
       { key: 'expected_goals', stats: ['1.93', '0.24'], type: 'text' },
       { key: 'some_new_key_we_have_not_seen', stats: [1, 2], type: 'text' },
     ] }] } } },
@@ -117,9 +118,11 @@ const fmFixture = { season: '2026-27', home: 'ALA', away: 'GET', played: true, f
 const fmDetail = normaliseFotmobMatch(fmRaw, { fixture: fmFixture });
 const fmHome = fmDetail.teamStats.ALA, fmP = fmDetail.players.ALA[0];
 const fmGoals = fmDetail.events.filter(e => e.type === 'Goal');
-check('FotMob:球隊統計用實測過的 key(Offsides 大寫、keeper_saves、shot_blocks)',
+/* 2026-09-15 深夜換鍵:shot_blocks 是自己做的封阻(blocksMade),被封阻的射門是 blocked_shots ——
+   拿英超 380 場跟射門圖逐顆比才發現(blocked_shots 760/760 對上射門圖,shot_blocks 只有 77%) */
+check('FotMob:球隊統計用實測過的 key(Offsides 大寫、keeper_saves;blocked_shots 是被封阻、shot_blocks 是做的封阻)',
   fmHome.possession === 52 && fmHome.shots === 18 && fmHome.offsides === 4
-  && fmHome.saves === 2 && fmHome.blockedShots === 2 && fmHome.xG === 1.93);
+  && fmHome.saves === 2 && fmHome.blockedShots === 4 && fmHome.blocksMade === 2 && fmHome.xG === 1.93);
 check('FotMob:沒見過的 key 不猜,回報出來',
   fmDetail.unmappedStats.includes('some_new_key_we_have_not_seen'));
 /* 階段 C(2026-09-15):對照表以外的 key 除了回報名字,**值也存下來**(extra),鍵照上游 slug;"123 (85%)" 這種字串取數字、百分比另存 */

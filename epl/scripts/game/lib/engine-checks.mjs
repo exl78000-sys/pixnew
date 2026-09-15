@@ -143,8 +143,8 @@ export async function runEngineChecks(mod, root) {
     /* 期望值直接從側寫算(不經引擎):射門 = 我方射門率 × 對手被射門率 / 聯盟均;角球同理;犯規 = 對手犯規率與我方被犯規率的平均;越位 = 該隊逐場越位。 */
     const L = profile.league_, A = profile.teams.ARS, V = profile.teams.LIV;
     const exp = {
-      home: { shots: A.rates.home.sf * V.rates.away.sa / L.rates.sf, corners: A.rates.home.cf * V.rates.away.ca / L.rates.cf, fouls: (V.rates.away.fouls + A.rates.home.foulsAgainst) / 2, offsides: A.play.home.offsides },
-      away: { shots: V.rates.away.sf * A.rates.home.sa / L.rates.sf, corners: V.rates.away.cf * A.rates.home.ca / L.rates.cf, fouls: (A.rates.home.fouls + V.rates.away.foulsAgainst) / 2, offsides: V.play.away.offsides },
+      home: { shots: A.rates.home.sf * V.rates.away.sa / L.rates.sf, corners: A.rates.home.cf * V.rates.away.ca / L.rates.cf, fouls: (A.rates.home.fouls + V.rates.away.foulsAgainst) / 2, offsides: A.play.home.offsides },   // stats.fouls 是自己犯的:自己的犯規率 + 對手被犯規率(跟引擎 foulsBy 同定義;第一版寫反,兩隊差不多所以沒紅)
+      away: { shots: V.rates.away.sf * A.rates.home.sa / L.rates.sf, corners: V.rates.away.cf * A.rates.home.ca / L.rates.cf, fouls: (V.rates.away.fouls + A.rates.home.foulsAgainst) / 2, offsides: V.play.away.offsides },
     };
     const within = (k, tol) => ['home', 'away'].every(sd => Math.abs(sum[sd][k] / N2 - exp[sd][k]) <= Math.max(tol * exp[sd][k], 3 * Math.sqrt(exp[sd][k] / N2)));
     const fmt = k => ['home', 'away'].map(sd => `${(sum[sd][k] / N2).toFixed(2)} vs ${exp[sd][k].toFixed(2)}`).join('、');
@@ -186,11 +186,13 @@ export async function runEngineChecks(mod, root) {
     out.push(['指令拉到極端,150 場平均進球仍在 λ 的 3 個標準誤內(射門變多,轉換率跟著調回來)', Math.abs(ex.goals - pred.xgHome) < 3 * seH && Math.abs(ex.oppGoals - pred.xgAway) < 3 * seA, `${ex.goals.toFixed(2)} vs ${pred.xgHome}、${ex.oppGoals.toFixed(2)} vs ${pred.xgAway}`]);
     /* 方向測試要拿**預設在低檔**的隊(SUN:心態 1、壓迫 2、防線 2、節奏 1、直接度 2),全部拉到 5 才有位移。
        第一版拿 ARS(心態與壓迫的預設已經是 5),拉到 5 是 Δ = 0,射門反而因為對手心態拉低而變少 —— 測的不是想測的東西。 */
+    /* 第二版(側寫換直接指標之後 SUN 的寬度預設變了,Δ 又是 0):對照組直接指定 —— 全 1 對全 5,Δ 差 4,跟預設在哪無關 */
+    const lowAll = { home: { tactics: { mentality: 1, pressing: 1, line: 1, width: 1, tempo: 1, directness: 1 } } };
     const upAll = { home: { tactics: { mentality: 5, pressing: 5, line: 5, width: 5, tempo: 5, directness: 5 } } };
-    const baseS = runN(N3, {}, 'SUN'), exS = runN(N3, upAll, 'SUN');
+    const baseS = runN(N3, lowAll, 'SUN'), exS = runN(N3, upAll, 'SUN');
     const up = (a, b) => a > b * 1.03;
     const dirs = [
-      ['心態進攻 → 射門變多(SUN 預設心態 1 拉到 5)', up(exS.shots, baseS.shots), `${exS.shots.toFixed(2)} vs ${baseS.shots.toFixed(2)}`],
+      ['心態進攻 → 射門變多(全 1 對全 5)', up(exS.shots, baseS.shots), `${exS.shots.toFixed(2)} vs ${baseS.shots.toFixed(2)}`],
       ['寬度拉寬 → 角球變多', up(exS.corners, baseS.corners), `${exS.corners.toFixed(2)} vs ${baseS.corners.toFixed(2)}`],
       ['壓迫拉高 → 自己犯規變多', up(exS.fouls, baseS.fouls), `${exS.fouls.toFixed(2)} vs ${baseS.fouls.toFixed(2)}`],
       ['防線拉高 → 對手越位變多', up(exS.oppOffsides, baseS.oppOffsides), `${exS.oppOffsides.toFixed(2)} vs ${baseS.oppOffsides.toFixed(2)}`],
@@ -198,7 +200,7 @@ export async function runEngineChecks(mod, root) {
       ['壓迫拉高 → 對手被斷球的位置更靠自己後場', (() => {
         /* 對手(LIV)的斷球位置在 LIV 的進攻座標裡;SUN 壓迫高,LIV 應該在更後面(x 更小)丟球。runN 只記主隊的,這裡另外數 */
         const meanX = setup => { let sx = 0, n = 0; for (let seed = 1; seed <= 60; seed++) { const m = mod.createMatch({ profile, home: 'SUN', away: 'LIV', pred, seed, setup }); while (!m.state().finished) { const q = m.nextSequence(); if (!q) break; if (q.side === 'away' && q.end.type === 'turnover' && q.start.type !== 'corner' && q.start.type !== 'freekick') { sx += q.end.x; n++; } } } return sx / n; };
-        const a = meanX({}), b = meanX(upAll); return b < a - 3;
+        const a = meanX(lowAll), b = meanX(upAll); return b < a - 3;
       })()],
     ];
     for (const [label, ok, detail] of dirs) out.push([label, ok, detail]);
