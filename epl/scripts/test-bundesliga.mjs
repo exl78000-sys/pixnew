@@ -380,5 +380,64 @@ const table = out('table'), results = out('results'), sim = out('sim');
   }
 }
 
+// ── 10. 比賽層:逐場統計與賽後報告(FotMob)──────────────
+{
+  /* raw 由 runner 抓(沙箱連不到 fotmob.com),所以本機可能一場都沒有 ——
+     **那不是失敗**。這一節分兩半:沒有資料時守「講的是還沒抓、不是沒有來源」,
+     有資料時才逐條驗內容。斷言只能守本站自己算的東西(上游時差不是 bug)。 */
+  const rep = out('reports');
+  const msPath = join(ROOT, 'web', 'data', 'leagues', 'de1', 'matchstats.json');
+  if (!rep.count) {
+    check('沒有賽後報告時講的是「還沒抓」而不是「沒有來源」',
+      rep.blocked?.reason === 'not-fetched' && !/沒有.*資料源|no-source/.test(JSON.stringify(rep.blocked)),
+      rep.blocked?.reason ?? '—');
+    check('資料界線也照這樣講(來源在,只是還沒抓)',
+      (meta.boundaries ?? []).some(x => /還沒有賽後報告/.test(x) && /還沒抓/.test(x)));
+  } else {
+    check('德甲有 matchstats.json(FotMob 逐場統計)', existsSync(msPath));
+    const ms = JSON.parse(readFileSync(msPath, 'utf8'));
+    const byKey = new Map(fixtures.filter(f => f.played).map(f => [`${f.season}|${f.home}|${f.away}`, f]));
+    const cur = Object.values(ms.matches).filter(m => byKey.has(m.key));
+    check('逐場統計:每一場的比分等於本站賽果', cur.length > 0 && cur.every(m => {
+      const f = byKey.get(m.key); return m.score[0] === f.fh && m.score[1] === f.fa;
+    }), `${cur.length} 場`);
+    check('逐場統計:每場控球率相加 100',
+      Object.values(ms.matches).every(m => m.possession.all[0] + m.possession.all[1] === 100));
+    check('逐場統計:控球率沒有第二來源,verified 是 false',
+      Object.values(ms.teams).every(t => t.verified === false));
+
+    const played = fixtures.filter(f => f.played);
+    const withStats = played.filter(f => ms.matches[`${f.season}|${f.home}|${f.away}`]);
+    check('賽後報告:有逐場資料的場次每一場都有報告',
+      rep.count === withStats.length && withStats.every(f => rep.reports[`${f.season}|${f.home}|${f.away}`]),
+      `${rep.count} / ${withStats.length}`);
+    check('賽後報告:來源 fotmob、blocked 是 null(不能再說沒有資料源)',
+      rep.source === 'fotmob' && rep.blocked === null);
+    const all = Object.values(rep.reports);
+    check('賽後報告:比分等於賽果、雙方先發 11 人、有正式陣型', all.every(r => {
+      const f = byKey.get(`${r.season}|${r.home}|${r.away}`);
+      const H = r.sides[r.home], A = r.sides[r.away];
+      return f && r.hs === f.fh && r.as === f.fa && H.xi.length === 11 && A.xi.length === 11
+        && H.shape.label !== '—' && A.shape.label !== '—';
+    }));
+    /* 烏龍球沒有射手,不會進 sides.goals;所以是「射手進球 + 烏龍球 = 比分」。
+       事件的 team 已在 canonical 翻成得分方(FotMob 的 team 是踢進自家門那一隊)。 */
+    const ogOf = (r, side) => (r.advanced?.events ?? []).filter(e => e.ownGoal && e.team === side).length;
+    check('賽後報告:射手進球加烏龍球等於比分(兩隊各自)',
+      all.every(r => r.sides[r.home].goals + ogOf(r, r.home) === r.hs
+        && r.sides[r.away].goals + ogOf(r, r.away) === r.as));
+    check('賽後報告:advanced 五種 coverage 齊全、有逐射門與控球', all.every(r => {
+      const c = r.advanced.coverage;
+      return c.teamStatistics && c.playerStatistics && c.ratings && c.events && c.lineups
+        && Array.isArray(r.advanced.shots) && Array.isArray(r.advanced.possession?.all);
+    }));
+    /* 接上之後那句「本站沒有烏龍球來源可以證明」就過期了 —— 它必須自己消失,
+       不能靠人記得回來刪(同一支 build 裡寫死那句話的教訓)。 */
+    check('資料界線不再說「還沒抓德甲的逐場事件」(接上之後那句是假的)',
+      !(meta.boundaries ?? []).some(x => /還沒抓德甲的逐場事件/.test(x)));
+    check('meta.capabilities.lineups 跟著賽後報告走', meta.capabilities.lineups === true);
+  }
+}
+
 if (process.exitCode) throw new Error('德甲自我檢查失敗');
 console.log('  德甲全部通過');
