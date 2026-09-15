@@ -3585,6 +3585,16 @@ async function checkDataGap() {
         ['衝刺的定義跟 FotMob 一樣(要持續,不是每次跨過門檻)', /SPRINT_HOLD/.test(src) && /p\.sprintT/.test(src)],
         ['間距兜底單格的推擠量有上限(一格推 1.6 m 是跳躍,不是走路)', /PUSH_MAX/.test(src)],
         ['畫面看得出方向與快慢(朝向、拖影、步態相位)', /faceAng/.test(src) && /p\.stride \+=/.test(src) && /ctx\.ellipse\(cx, cy/.test(src)],
+        /* 2026-09-15 抖動:目標點上的正弦「抖動」是元凶之一,不准回來;步態的左右擺幅畫在 draw 裡、位置層量不到,
+           0.55 m 是全速 ±4.8 px、2.9 Hz 的晃 —— 那正是看起來在抖的東西。上限 0.15 m(全速約 1 px)。 */
+        ['目標點上沒有正弦抖動(閒置是走去一個點再站著,不是繞著一個點畫圓)',
+          !/Math\.sin\(simT \* 0\.9/.test(src) && /p\.wander/.test(src) && /IDLE_START/.test(src) && /IDLE_STOP/.test(src)],
+        ['步態的左右擺幅 ≤ 0.15 m(0.55 m 在全速時是一顆在發抖的點)', (() => {
+          const m2 = src.match(/const SWAY_M = ([\d.]+)/);
+          return !!m2 && Number(m2[1]) <= 0.15 && /SWAY_M \* fast/.test(src);
+        })()],
+        ['球黏在持球者腳下(帶球不再是踢出去再追,那會走走停停)', !/DRIBBLE_PUSH/.test(src) && /function holderRoute/.test(src)],
+        ['上搶者 / 前插者換人有遲滯(沒有的話兩個差不多近的人會輪流當,一起抖)', /PRESS_HYST/.test(src) && /RUN_HYST/.test(src)],
         /* 跑動量的**真資料對照**:拿 game/pl.json 的 ARS 與 MCI 真的跑一場,
            均速要對得回 FotMob 的 `pace.distancePerMin / 11 / 60`。
            這一條是整組裡唯一有外部對照組的 —— 上面那幾條只證明「像人」,這一條證明「像這兩隊」。 */
@@ -3609,11 +3619,25 @@ async function checkDataGap() {
             home: mk('ARS'), away: mk('MCI'), homeCode: 'ARS', awayCode: 'MCI', lambdaHome: 1.8, lambdaAway: 1.3, rng });
           const FPS = 30, SPM = 2;
           let now = performance.now();
+          /* 抖動的量法(2026-09-15):逐格取位置。「站著」= 一格位移 < 0.05 m/s 的比例;
+             「看得到的來回」= 同一個人相鄰兩格都走 ≥ 0.05 m(畫布上約半個像素)而且方向相反。
+             舊版站著只有 1.6%(正弦抖動讓沒有人停過)。 */
+          const prevPos = new Map(); let still = 0, samples = 0, rev = 0;
           for (let f = 0; f < 95 * FPS * SPM; f++) {
             now += 1000 / FPS;
             const min = Math.floor(f / (FPS * SPM));
             api.setState({ min, done: min >= 95, dueSides: [], hs: 0, as: 0 });
             queued?.(now);
+            anim.__animProbe().motion.players.forEach((p, i) => {
+              if (p.off) return;
+              const q = prevPos.get(i);
+              if (q) {
+                const dx = p.x - q.x, dy = p.y - q.y, d = Math.hypot(dx, dy);
+                samples++; if (d / (1 / FPS) < 0.05) still++;
+                if (q.dx != null && d >= 0.05 && Math.hypot(q.dx, q.dy) >= 0.05 && dx * q.dx + dy * q.dy < 0) rev++;
+                prevPos.set(i, { x: p.x, y: p.y, dx, dy });
+              } else prevPos.set(i, { x: p.x, y: p.y, dx: null, dy: null });
+            });
           }
           const m = anim.__animProbe().motion;
           api.destroy();
@@ -3623,8 +3647,15 @@ async function checkDataGap() {
           // 即時播放是一比賽分鐘 60 秒,所以 m/s × 60 就是「每人每比賽分鐘跑多少公尺」
           const perMin = mps * 60, target = game.teams.ARS.pace.distancePerMin / 11;
           const off = Math.abs(perMin - target) / target;
-          console.log(`      ARS 跑動:畫面 ${perMin.toFixed(0)} m/min・FotMob ${target.toFixed(0)} m/min(差 ${(off * 100).toFixed(0)}%)`);
-          return [['跑動量對回 FotMob 的 pace.distancePerMin(即時播放,差 < 20%)', off < 0.20]];
+          const stillPct = (still / samples) * 100, revPerMin = rev / 22 / (m.secs / 60);
+          console.log(`      ARS 跑動:畫面 ${perMin.toFixed(0)} m/min・FotMob ${target.toFixed(0)} m/min(差 ${(off * 100).toFixed(0)}%)・站著 ${stillPct.toFixed(1)}%・看得到的來回 ${revPerMin.toFixed(2)} 次/人/分`);
+          return [
+            ['跑動量對回 FotMob 的 pace.distancePerMin(即時播放,差 < 20%)', off < 0.20],
+            /* 抖動(2026-09-15,使用者回報):真人大半時間站著或走,舊版 1.6% 站著 —— 正弦抖動讓每個人整場漂。
+               門檻 8% 放在新版(15%)與舊版之間;它守的是「有人真的站過」,不是精確值。 */
+            ['有人真的站著(站著的時間 ≥ 8%;舊版正弦抖動之下只有 1.6%)', stillPct >= 8, `${stillPct.toFixed(1)}%`],
+            ['沒有看得到的來回抖動(相鄰兩格 ≥ 0.05 m 且反向,每人每分鐘 < 0.5 次)', revPerMin < 0.5, `${revPerMin.toFixed(2)}`],
+          ];
         })(),
         /* 避讓的真正防線在這四條**純函式**斷言上:它們是精確值,沒有門檻。
            跑完整場那條只能當毛胚(見下面) —— 有避讓與沒避讓的壅擠比例

@@ -27,14 +27,14 @@ const FW = 105, FH = 68;          // 球場座標(公尺),畫布再縮放
 const PASS_MIN = 0.55, PASS_MAX = 1.15;   // 傳球間隔(秒)
 const PASS_SPEED = 17, SHOT_SPEED = 27;   // 球速上限(公尺/秒);傳球的初速依距離算,到腳邊剩 ARRIVE_SPEED
 /* 球的物理(2026-09-03,使用者要求「球不是一直在腳下」):
-   球是獨立物體,有速度、有摩擦;持球者只是「該去控球的人」。停球把球往前推一步、盤帶每隔一小段把球撥出去再追、
+   球是獨立物體,有速度、有摩擦;持球者只是「該去控球的人」。停球把球往前推一步、
    被搶時球彈開、射門偏了滾出底線變球門球、傳出邊線變界外球、守方解圍出底線才是角球。
+   (2026-09-15 起帶球時球黏在腳下,觸球的起伏只是畫面 —— 真的撥出去再追會讓持球者走走停停,見 holderRoute。)
    摩擦是地面球 FRICTION、空中球 AIR;數值是「看起來像」,不是量測值 —— 這一層全是演出。 */
 const FRICTION = 5.5, AIR = 1.2;         // 減速(公尺/秒²)
 const ARRIVE_SPEED = 4;                 // 傳球到接球者腳邊時剩多少速度
 const CONTROL_R = 1.4;                  // 控到球的距離
 const TOUCH_AHEAD = [1.0, 1.8];         // 停球往前推多遠
-const DRIBBLE_EVERY = [0.5, 0.9], DRIBBLE_PUSH = [2.0, 3.5];   // 盤帶:多久撥一次、撥多遠
 const GOAL_HALF = 3.66;                 // 球門半寬
 const LANE_R = 3.4;               // 「站在傳球路線上」的判定半徑(公尺)
 const BOX_X = 16.5;               // 禁區深度,射門區由它推
@@ -42,6 +42,34 @@ const BREAK_MAX = 6;              // 快攻演出的上限秒數(超時強制收
 const AVOID_R = 4.6;              // 球員進入這個距離才需要繞行(公尺)
 const AVOID_MAX = 4.2;            // 避讓只改演出目標,不把球員推到別處(公尺)
 const MIN_SEP = 1.6;              // 位置層兜底:兩個人不會比這更近(公尺;圓點半徑約 0.9 m)
+/* 無球時的走位(2026-09-15,使用者回報「球員不自然抖動」)。
+
+   舊版每個非持球員的目標點上疊一個正弦「抖動」(±1.4~1.6 m,原意是別讓圓點焊死),
+   加上避讓與間距推擠每格重算、上搶者每格重選 —— 無畫布跑 3 分鐘即時量出來:
+   真的站著只有 1.6% 的時間、低速時每人每分鐘航向翻轉 2.9 次、4.2% 的五秒視窗在原地打轉。
+   那是抖,不是走。改成三件事:
+   1. 目標點用的參考球位置走 EMA(BALL_REF_TAU):盤帶每 0.5~0.9 s 把球撥 2~3 m,整條防線跟著一格一格跳;
+      濾過之後線是滑的。持球者與上搶者仍追真球。
+   2. 閒置的人**走去一個地方再站著**(WANDER):每 4~8 s 在自己的活動範圍內挑一個點走過去,到了就站著,
+      沒有來回。點是一次挑好的,不是每格算 —— 每格算就是舊版那個抖。
+   3. 死區 IDLE_R:離目標不到這麼近就不動(舊版 ARRIVE_R 0.35 m 對著會動的目標永遠到不了)。
+   避讓只在真的要走時算;站著的人不側步,重疊由 separate() 兜底。上搶者 / 前插者換人加遲滯。
+   跑動量的外部對照(pace.distancePerMin)照舊要對得上,見檔頭 SPEED_WALK 那段的校準表。 */
+const BALL_REF_TAU = 1.5;          // 參考球位置的平滑時間常數(秒)
+/* 閒置的起步 / 停步門檻是**兩個數**(遲滯):目標飄出 IDLE_START 才起步,走到 IDLE_STOP 內才停。
+   只有一個門檻的話,站在門檻邊上的人會被會飄的目標一下拉出去一下放回來 —— 第一版用單一 0.6 m,
+   量出來低速航向翻轉反而從 3.4 升到 5.3 次/人/分。 */
+const IDLE_START = 1.5, IDLE_STOP = 0.4;
+const WANDER_EVERY = [3, 5];       // 幾秒換一個閒置走位點
+const WANDER_R = 3.0;              // 閒置走位半徑(m)× spreadK
+const PRESS_HYST = 2.0, RUN_HYST = 3.0;   // 上搶者 / 前插者換人的遲滯(m):別人要近這麼多才換
+/* 閒置的人被人靠近時**自己讓一步**(REPEL):目標點沿連線推開,近到 MIN_SEP 附近時推開的量會超過
+   IDLE_START,他就起步走開。沒有這一層的話,讓開的工作全落在 separate() 的硬推上 —— 量出來每人每分鐘
+   被推 34 次、中位 5 cm:走著的人被推一下、下一格又轉回來,畫面上就是一顆在發抖的點。 */
+const REPEL_R = 2.8, REPEL_K = 2.5;
+/* 讓路(YIELD):走著的人前方 YIELD_R 內(前 ±60°)有人就先停下,等他過去再走 —— 量出來走著被推的主因是
+   兩隊中場對走互相擠(攻方壓上、守方提線,目標點穿過彼此),推開再走回去、每格重複。真人會等一步。 */
+const YIELD_R = 1.9, YIELD_COS = 0.5;
 /* 跑動節奏(2026-09-03,錨在 FotMob 追蹤資料):
    - LEAGUE_DIST_PER_MIN:英超一隊每分鐘跑動距離的聯盟均值,約 110 km / 95 分;球隊的 pace.distancePerMin 除以它
      就是「這隊比平均勤多少」,拿去縮放無球跑動的頻率與幅度。逐人再乘 run.distancePerGame 對隊均的比值。
@@ -49,7 +77,7 @@ const MIN_SEP = 1.6;              // 位置層兜底:兩個人不會比這更近
    軌跡仍是演出 —— 資料給的是「量」與「在哪一區」,不是誰在哪一秒站哪。 */
 const LEAGUE_DIST_PER_MIN = 1160;
 const LEAGUE_SPRINTS_PER_MIN = 1.1;
-const RUN_RATE = 0.12;            // 每個攻方非持球員每秒起跑的基準機率(× 節奏 × 個人勤勞度)。0.14 是插值時代校準的(約 1.1 人同時在跑);改速度模型之後一次跑動要花時間加速,所以連同下面三個速度一起重新校準成 0.12(見 SPEED_WALK 上面那段)
+const RUN_RATE = 0.14;            // 每個攻方非持球員每秒起跑的基準機率(× 節奏 × 個人勤勞度)。0.14 是插值時代校準的(約 1.1 人同時在跑);改速度模型之後一次跑動要花時間加速,所以連同下面三個速度一起重新校準成 0.12(見 SPEED_WALK 上面那段)
 const RUN_SECONDS = [2.2, 3.6];   // 一次跑動持續多久(秒)
 
 /* 跑動的運動模型(2026-09-12,使用者回報「動作跑動還不真實」)。
@@ -71,11 +99,15 @@ const RUN_SECONDS = [2.2, 3.6];   // 一次跑動持續多久(秒)
    最高速度是真資料,其餘是「看起來像」——**均速有對照組**:每比賽分鐘的跑動距離要對得回
    `pace.distancePerMin`(見檔尾 calibration 註與 `npm test` 那一節)。 */
 const ACCEL = 6.5, DECEL = 9.0;              // 加速 / 煞車上限(m/s²)
-const SPEED_WALK = 0.88, SPEED_JOG = 2.5, SPEED_RUN = 5.2;   // 走 / 慢跑 / 跑(m/s)
+const SPEED_WALK = 1.05, SPEED_JOG = 2.5, SPEED_RUN = 5.2;   // 走 / 慢跑 / 跑(m/s)
 const TOP_SPEED_KMH = 31.5;                  // 沒有逐人 topSpeed 時的預設(km/h,英超中位數附近)
 const ARRIVE_R = 0.35;                       // 離目標這麼近就算到了(m)
 const FAR_JOG = 9, FAR_RUN = 17;             // 離目標多遠開始慢跑 / 跑回位(m)
 const STRIDE_PER_M = 1.15;                   // 每公尺的步頻相位(畫面上的擺動,不是量測值)
+/* 步態的左右擺幅(m)。09-12 版是 0.55 m —— 全速時 ±4.8 px、約 2.9 Hz 的左右晃,那正是看起來在「抖」的東西
+   (位置層量不到它,因為它只在 draw 裡加;三個指標都說位置沒抖,畫面卻在抖)。真人跑步重心的橫向擺動只有幾公分,
+   縮到 0.12 m(全速時約 1 px):看得出腳步,看不出發抖。 */
+const SWAY_M = 0.12;
 const PUSH_MAX = 0.55;                       // 間距兜底單格最多推多遠(m)
 const SPRINT_MS = 7.0;                       // 衝刺門檻(m/s)= 25.2 km/h,FotMob 的定義
 const SPRINT_HOLD = 1.0;                     // 持續這麼久才算一次衝刺(秒)
@@ -90,6 +122,12 @@ const SPRINT_HOLD = 1.0;                     // 持續這麼久才算一次衝�
      | 0.85 / 2.4 / 9-16 / 0.10 | 107 | 1.9 | 0.15 | 70/20/9/0 |
      | **0.88 / 2.5 / 9-17 / 0.12** | **113** | **2.5** | **0.12** | **68/22/10/0** |
    最後一組三個對照組都落在真資料附近,而且時間佔比接近真實比賽(走 ~70%、慢跑 ~20%、跑 ~7%、衝刺 ~2%)。
+
+   **2026-09-15 重新校準**(去掉正弦抖動、閒置改成走去一個點再站著之後,跑動量掉到 91~101 m/min):
+     | 走 / 起跑率 / 閒置走位 | 跑動 | 走·慢跑·跑·衝 | 站著 | 走著被推 |
+     | 0.88 / 0.12 / 每 4~8 s 半徑 2.2 | 101 | 73/18/9/1 | 13% | 16.5 次/人/分 |
+     | **1.05 / 0.14 / 每 3~5 s 半徑 3.0** | **106**(npm test 的台子 110) | **72/18/9/1** | **15%** | **5.8** |
+   走的速度 1.05 m/s 在真人步行速度範圍(1.0~1.4);站著的比例是新的指標 —— 舊版 1.6%,沒有人真的站過。
 
    **一個誠實界線**:只有「即時」那一檔的絕對值對得上。播放速度壓縮時(預設一分鐘 2 秒),
    比賽時鐘比畫面上的足球跑得快 —— 動畫仍然是真人速度,但一分鐘之內演不完一分鐘的球。
@@ -256,12 +294,13 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   let holder = players.find(p => p.side === 'home' && p.role === 'MID') ?? players[0];
   /* held:球在持球者腳下;不然就是自由球(飛行 / 滾動 / 靜止),holder 是要去控它的人。
      lastSide:最後碰球的是哪一隊 —— 出界時決定是界外球 / 球門球 / 角球。 */
-  const ball = { x: FW / 2, y: FH / 2, vx: 0, vy: 0, held: true, lastSide: 'home', loft: 0, inNet: false, cut: null, dribble: 0.6, noCatch: false };
+  const ball = { x: FW / 2, y: FH / 2, vx: 0, vy: 0, held: true, lastSide: 'home', loft: 0, inNet: false, cut: null, noCatch: false };
   /* noCatch:這顆球注定要出界(射偏、解圍出底線、傳歪出邊線),出界前誰都不准把它控回來 ——
      不然解圍的人站在球邊,下一格就把球又控住,角球永遠演不出來(實測兩次角球計數 0)。 */
   const counts = { throwIns: 0, goalKicks: 0, corners: 0, tackles: 0 };   // 演出的出界統計(給測試與畫面)
   let passClock = 0.9, celebrate = 0, push = 0;   // push:控球方整條線往前壓的量
-  let simT = 0;                     // 模擬時鐘。抖動不要吃 performance.now(),
+  const ballRef = { x: FW / 2, y: FH / 2 };   // 目標點用的參考球位置(EMA,見 BALL_REF_TAU)
+  let simT = 0;                     // 模擬時鐘。走位不要吃 performance.now(),
                                     // 那是牆上時間,會讓「同種子同劇本」這句話不成立
   let presser = null, runner = null;   // 上搶的人、前插支援的中場(每格重算)
   let breakClock = 0;               // 快攻演出已經演多久
@@ -309,6 +348,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     holder = mids.sort((a, b) => Math.abs(a.by - FH / 2) - Math.abs(b.by - FH / 2))[0]
       ?? players.find(p => p.side === side) ?? players[0];
     ball.x = FW / 2; ball.y = FH / 2; ball.vx = 0; ball.vy = 0; ball.held = true; ball.loft = 0; ball.inNet = false; ball.cut = null;
+    ballRef.x = FW / 2; ballRef.y = FH / 2;
     ball.lastSide = side;
     push = 0; passClock = 0.9; breakClock = 0;
   }
@@ -416,19 +456,35 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
 
   /* 無球跑位。原本除了持球者以外全部待在基準點附近漂 —— 那是站著看,
      不是踢球。這裡按角色分工,全部是幾何,**不影響比分**(進球仍由模型排程)。 */
+  /* 持球者帶球的路線(2026-09-15)。舊版持球者的目標是球本身,而盤帶每 0.5~0.9 s 把球撥出去 2~3 m ——
+     他追到球煞停、球又被撥出去、再起步,整段帶球是走走停停。
+     現在球在腳下時他朝一個「要去的地方」走,球黏著他(觸球的起伏只是畫面,見 physics)。 */
+  function holderRoute(p) {
+    const dir = dirOf(p.side);
+    if (cornerFlag && cornerFlag.side === p.side) return { x: p.x, y: p.y };   // 主罰者站在角旗
+    const rush = pendingGoal ?? pendingShot;
+    if (rush && rush.side === p.side) {
+      return p.role === 'FWD'
+        ? { x: goalX(p.side) - dir * (BOX_X - 2), y: FH / 2 + (p.by - FH / 2) * 0.4 }
+        : { x: p.x + dir * 12, y: p.y + (p.by - p.y) * 0.3 };
+    }
+    // 一般控球:慢慢往前帶,並向自己習慣的縱線靠
+    return { x: p.x + dir * 5, y: p.y + (p.by - p.y) * 0.5 };
+  }
+
   function aim(p) {
-    if (p === holder) return { x: ball.x, y: ball.y };
+    if (p === holder) return ball.held ? holderRoute(p) : { x: ball.x, y: ball.y };
     const dir = dirOf(p.side);
     const attacking = p.side === holder.side;
     const bx = baseX(p);
-    // 門將:貼自家球門,橫向跟著球移動一點點
-    if (p.role === 'GK') return { x: ownGoalX(p.side) + dir * 4.5, y: FH / 2 + (ball.y - FH / 2) * 0.35 };
+    // 門將:貼自家球門,橫向跟著球移動一點點(參考球位置,不跟著每一次觸球抖)
+    if (p.role === 'GK') return { x: ownGoalX(p.side) + dir * 4.5, y: FH / 2 + (ballRef.y - FH / 2) * 0.35 };
 
     if (attacking) {
       // 正在跑動的人直奔跑動目標(pendingGoal 的前鋒衝刺優先,見下)
       if (p.run && !((pendingGoal ?? pendingShot) && p.role === 'FWD')) return { x: p.run.tx, y: p.run.ty };
       // 球推進到對方半場多深(0~1)——整條線往前壓多少由它決定,不是固定值
-      const adv = Math.min(1, Math.max(0, (dir * (ball.x - FW / 2)) / (FW / 2) * 0.5 + 0.5));
+      const adv = Math.min(1, Math.max(0, (dir * (ballRef.x - FW / 2)) / (FW / 2) * 0.5 + 0.5));
       const ADV = { DEF: 8, MID: 15, FWD: 24 }[p.role] ?? 10;
       let x = bx + dir * ADV * adv + push * dir * 0.4;
       // 邊路拉寬:離中線遠的人再往邊線站,把場地撐開;整體再往該隊慣用的那一側偏(三路進攻佔比)
@@ -445,21 +501,24 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       }
       // 角球:進攻方湧進禁區,主罰者(持球)留在角旗
       if (cornerFlag && p.side === cornerFlag.side && p.role !== 'GK') {
-        return { x: goalX(p.side) - dir * (6 + rng() * 6), y: FH / 2 + (p.by - FH / 2) * 0.35 };
+        // 禁區裡的站位用每個人固定的相位挑,不是每格抽一次(每格抽就是在禁區裡抖)
+        return { x: goalX(p.side) - dir * (6 + (p.ph / (2 * Math.PI)) * 6), y: FH / 2 + (p.by - FH / 2) * 0.35 };
       }
       return { x, y };
     }
 
     // 上搶:離球最近的那個真的去搶球,不是整隊平移
     if (p === presser) {
-      const d = Math.max(1.8, Math.hypot(ball.x - p.x, ball.y - p.y));
-      const k = 1.8 / d;
+      /* 站在離球 2.2 m(不是 1.8):持球者的球在腳前 0.7 m,1.8 會讓上搶者站到離持球者 1.1 m,
+         每一格都被 separate() 推開再走回來(量出來上搶者每分鐘被推 7.5 次)。2.2 > MIN_SEP + 0.5。 */
+      const d = Math.max(2.2, Math.hypot(ball.x - p.x, ball.y - p.y));
+      const k = 2.2 / d;
       return { x: ball.x + (p.x - ball.x) * k, y: ball.y + (p.y - ball.y) * k };
     }
     // 防線高度跟著球走:球在自家半場就退,球在對方半場就壓上
     const BACK = { DEF: 15, MID: 7, FWD: -4 }[p.role] ?? 8;
-    const line = ball.x - dir * BACK;
-    const squeeze = (ball.y - p.by) * 0.22;        // 朝球收縮,壓縮防守寬度
+    const line = ballRef.x - dir * BACK;
+    const squeeze = (ballRef.y - p.by) * 0.22;     // 朝球收縮,壓縮防守寬度
     return { x: bx + (line - bx) * (p.role === 'FWD' ? 0.25 : 0.6), y: p.by + squeeze };
   }
 
@@ -525,36 +584,77 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     }
     physics(dt);
 
-    /* 每格重算兩個角色:誰上搶(防守方離球最近的非門將)、誰前插
-       (控球方離球縱向最近的中場)。 */
+    const kRef = Math.min(1, dt / BALL_REF_TAU);
+    ballRef.x += (ball.x - ballRef.x) * kRef; ballRef.y += (ball.y - ballRef.y) * kRef;
+
+    /* 每格重算兩個角色:誰上搶(防守方離球最近的非門將)、誰前插(控球方離球縱向最近的中場)。
+       **有遲滯**:別人要比現任近 PRESS_HYST / RUN_HYST 才換人 ——
+       沒有遲滯的話兩個差不多近的防守者會輪流當上搶者,兩個人一起抖。 */
     const defSide = holder.side === 'home' ? 'away' : 'home';
-    presser = null; runner = null;
-    let bestPress = Infinity, bestRun = Infinity;
+    let bestP = null, bestPress = Infinity, bestR = null, bestRun = Infinity;
     for (const p of active()) {
       if (p.role === 'GK') continue;
       if (p.side === defSide) {
         const d = Math.hypot(p.x - ball.x, p.y - ball.y);
-        if (d < bestPress) { bestPress = d; presser = p; }
+        if (d < bestPress) { bestPress = d; bestP = p; }
       } else if (p.role === 'MID' && p !== holder) {
-        const d = Math.abs(p.by - ball.y);
-        if (d < bestRun) { bestRun = d; runner = p; }
+        const d = Math.abs(p.by - ballRef.y);
+        if (d < bestRun) { bestRun = d; bestR = p; }
       }
     }
+    const keepP = presser && !presser.off && presser.side === defSide && presser.role !== 'GK'
+      && Math.hypot(presser.x - ball.x, presser.y - ball.y) <= bestPress + PRESS_HYST;
+    presser = keepP ? presser : bestP;
+    const keepR = runner && !runner.off && runner.side === holder.side && runner !== holder && runner.role === 'MID'
+      && Math.abs(runner.by - ballRef.y) <= bestRun + RUN_HYST;
+    runner = keepR ? runner : bestR;
 
     scheduleRuns(dt);
-    for (const p of active()) { p.px = p.x; p.py = p.y; }
-    for (const p of active()) {
+    const list = active();
+    for (const p of list) { p.px = p.x; p.py = p.y; }
+    for (const p of list) {
       const a = aim(p);
-      const avoid = avoidanceOf(p, a, active());
-      // 抖動只是別讓點看起來焊死;持球者不抖(他要對得上球)。幅度依熱區離散度
-      const jx = p === holder ? 0 : Math.sin(simT * 0.9 + p.ph) * 1.4 * p.spreadK;
-      const jy = p === holder ? 0 : Math.cos(simT * 0.7 + p.ph) * 1.6 * p.spreadK;
-      const tx = a.x + avoid.x + jx, ty = a.y + avoid.y + jy;
-      const dx = tx - p.x, dy = ty - p.y, d = Math.hypot(dx, dy);
+      const busy = p === holder || p === presser || p === runner || !!p.run || p.role === 'GK';
+      // 有人靠近就讓一步(只有沒事的人讓;有任務的人由對方讓)
+      if (!busy) {
+        for (const o of list) {
+          if (o === p) continue;
+          const ox = p.x - o.x, oy = p.y - o.y, od = Math.hypot(ox, oy);
+          if (od < REPEL_R && od > 1e-6) { const k = (REPEL_R - od) * REPEL_K / od; a.x += ox * k; a.y += oy * k; }
+        }
+      }
+      /* 閒置走位:每 WANDER_EVERY 秒在自己的活動範圍內挑一個點,走過去就站著等下一個。
+         幅度依熱區離散度(spreadK)。點是一次挑好的,不是每格算。 */
+      if (!busy) {
+        if (!p.wander || simT >= p.wander.until) {
+          const r = WANDER_R * p.spreadK * Math.sqrt(rng()), th = rng() * Math.PI * 2;
+          p.wander = { ox: Math.cos(th) * r, oy: Math.sin(th) * r, until: simT + WANDER_EVERY[0] + rng() * (WANDER_EVERY[1] - WANDER_EVERY[0]) };
+        }
+        a.x += p.wander.ox; a.y += p.wander.oy;
+      }
+      let dx = a.x - p.x, dy = a.y - p.y, d = Math.hypot(dx, dy);
+      // 閒置的人:目標飄出 IDLE_START 才起步、走到 IDLE_STOP 內才停(遲滯);真的要走才算避讓(站著的人不側步)
+      if (busy) p.walking = false;
+      else if (!p.walking && d > IDLE_START) p.walking = true;
+      else if (p.walking && d < IDLE_STOP) p.walking = false;
+      const arrive = busy ? ARRIVE_R : (p.walking ? IDLE_STOP : Infinity);
+      let yieldNow = false;
+      if (d > arrive) {
+        const avoid = avoidanceOf(p, a, list);
+        dx += avoid.x; dy += avoid.y; d = Math.hypot(dx, dy);
+        // 沒事的人前方有人就先停下讓路(有任務的人不讓,由對方讓)
+        if (!busy && d > 1e-6) {
+          for (const o of list) {
+            if (o === p) continue;
+            const ox = o.x - p.x, oy = o.y - p.y, od = Math.hypot(ox, oy);
+            if (od < YIELD_R && od > 1e-6 && (ox * dx + oy * dy) / (od * d) > YIELD_COS) { yieldNow = true; break; }
+          }
+        }
+      }
       /* 目標速度:方向朝目標,大小 = min(這個狀態該跑多快, 煞得住的速度)。
          後面那一項是 v² = 2·a·d —— 少了它會繞著目標點來回過衝(而過衝的距離
          會被算進跑動量,均速就假了)。 */
-      const want = Math.min(speedCap(p, d), Math.sqrt(2 * DECEL * Math.max(0, d - ARRIVE_R)));
+      const want = d > arrive && !yieldNow ? Math.min(speedCap(p, d), Math.sqrt(2 * DECEL * Math.max(0, d - arrive))) : 0;
       const wx = d > 1e-3 ? (dx / d) * want : 0, wy = d > 1e-3 ? (dy / d) * want : 0;
       // 速度每格只能改變這麼多 → 起步、煞車、轉向都要時間(舊版是位置直接插值,沒有這一層)
       const cur = Math.hypot(p.vx, p.vy);
@@ -572,6 +672,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
          不要在 separate() 之後用前後位置相減 —— 那一步是幾何約束(把疊在一起的人推開),
          推開不是跑步,而它一格可以推 1.6 m,除以 dt 就是 48 m/s,尖峰整個假掉(實測 52.42)。 */
       const sp = Math.hypot(p.vx, p.vy);
+      if (sp > 0.15) p.faceAng = Math.atan2(p.vy, p.vx);   // 朝向在這裡定,畫面與球的黏附都讀它
       p.dist += sp * dt;
       p.vmax = Math.max(p.vmax, sp);
       const band = sp < 2 ? 0 : sp < 4 ? 1 : sp < SPRINT_MS ? 2 : 3;
@@ -592,17 +693,12 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
      球門球(攻方最後碰)、角球(守方最後碰)。角球的計數只給畫面,引擎的角球統計是資料,兩者分開。 */
   function physics(dt) {
     if (ball.held && holder) {
-      // 球在腳下:貼著持球者往前一點;盤帶時定時撥出去
-      const dir = dirOf(holder.side);
-      ball.x = holder.x + dir * 0.7; ball.y = holder.y;
-      ball.dribble -= dt;
-      const moving = Math.hypot(holder.x - (holder.px ?? holder.x), holder.y - (holder.py ?? holder.y)) / Math.max(dt, 1e-3);
-      if (ball.dribble <= 0 && moving > 1.2 && !cornerFlag) {
-        const ang = Math.atan2(holder.y - (holder.py ?? holder.y), holder.x - (holder.px ?? holder.x));
-        const d = DRIBBLE_PUSH[0] + rng() * (DRIBBLE_PUSH[1] - DRIBBLE_PUSH[0]);
-        kick(ball.x + Math.cos(ang) * d, ball.y + Math.sin(ang) * d);
-        ball.dribble = DRIBBLE_EVERY[0] + rng() * (DRIBBLE_EVERY[1] - DRIBBLE_EVERY[0]);
-      }
+      /* 球在腳下,黏著持球者。帶球時的「觸球」是畫面上的起伏(球在前腳與腳下之間來回,相位跟著步頻),
+         不再真的把球踢出去再追 —— 那會讓持球者走走停停(見 holderRoute)。 */
+      const sp = Math.hypot(holder.vx, holder.vy);
+      const ang = holder.faceAng ?? (dirOf(holder.side) === 1 ? 0 : Math.PI);
+      const touch = sp > 1.2 ? 0.55 + 0.35 * Math.abs(Math.sin(holder.stride * 0.5)) : 0.7;
+      ball.x = holder.x + Math.cos(ang) * touch; ball.y = holder.y + Math.sin(ang) * touch;
       return;
     }
     // 自由球:前進與摩擦
@@ -635,7 +731,6 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       const push = ball.cut?.bounce ? 0 : TOUCH_AHEAD[0] + rng() * (TOUCH_AHEAD[1] - TOUCH_AHEAD[0]);
       ball.x = holder.x + dir * push; ball.y = holder.y + (rng() - 0.5) * 0.8;
       ball.vx = 0; ball.vy = 0; ball.held = true; ball.loft = 0; ball.cut = null; ball.lastSide = holder.side;
-      ball.dribble = DRIBBLE_EVERY[0];
     }
   }
   function throwIn() {
@@ -798,7 +893,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
         ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1.2; ctx.lineCap = 'butt';
       }
       // 步態擺動:垂直前進方向,幅度依速度(公尺)
-      const sway = Math.sin(p.stride) * 0.55 * fast;
+      const sway = Math.sin(p.stride) * SWAY_M * fast;
       const dx = -Math.sin(ang) * sway, dy = Math.cos(ang) * sway;
       const cx = sx(p.x + dx), cy = sy(p.y + dy);
       ctx.beginPath(); ctx.ellipse(cx, cy, r * (1 + 0.22 * fast), r * (1 - 0.14 * fast), ang, 0, 7);
@@ -855,7 +950,9 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     running: active().filter(p => p.run).length, sprinting: active().filter(p => p.run?.sprint).length,
     ball: { x: ball.x, y: ball.y, held: ball.held, speed: speedOf(), loft: ball.loft }, holderSide: holder?.side ?? null, counts: { ...counts }, cornerFlag: !!cornerFlag,
     inBounds: players.every(p => p.x >= 0 && p.x <= FW && p.y >= 0 && p.y <= FH),
-    motion: { secs: simT, players: players.map(p => ({ role: p.role, off: p.off, dist: p.dist, vmax: p.vmax, act: p.act, topSpeed: p.topSpeed, vtop: p.vtop, bandT: [...p.bandT], bandD: [...p.bandD], sprints: p.sprints, x: p.x, y: p.y, bx: p.bx0, by: p.by })) },
+    motion: { secs: simT, players: players.map(p => ({ role: p.role, off: p.off, dist: p.dist, vmax: p.vmax, act: p.act, topSpeed: p.topSpeed, vtop: p.vtop, bandT: [...p.bandT], bandD: [...p.bandD], sprints: p.sprints, x: p.x, y: p.y, bx: p.bx0, by: p.by,
+      // 速度向量與當下的角色(量抖動用:翻轉是自己轉的還是被推的、是誰在翻)
+      vx: p.vx, vy: p.vy, busy: p === holder ? 'holder' : p === presser ? 'presser' : p === runner ? 'runner' : p.run ? 'run' : p.walking ? 'walk' : 'idle' })) },
     minSeparation: players.reduce((best, p, i) => players.slice(i + 1)
       .reduce((inner, q) => Math.min(inner, Math.hypot(p.x - q.x, p.y - q.y)), best), Infinity),
   });
