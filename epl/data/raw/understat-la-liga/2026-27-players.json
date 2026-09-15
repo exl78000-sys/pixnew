@@ -4,13 +4,11 @@
   "source": "Understat",
   "sourceUrl": "https://understat.com/main/getPlayersStats/",
   "note": "POST league=La_liga&season=YYYY，整季一個請求。無背號、無頭貼、無傷停、無出生日期。",
-  "retrievedAt": "2026-09-15T15:27:24.622Z",
+  "retrievedAt": "2026-09-15T15:42:15.775Z",
   "count": 448,
   "matched": 446,
-  "unmatchedTeams": {
-    "Racing Santander,Real Betis": 1,
-    "Atletico Madrid,Deportivo La Coruna": 1
-  },
+  "multiClub": 2,
+  "unmatchedTeams": {},
   "players": [
     {
       "id": "318",
@@ -514,7 +512,15 @@
       "npxG": "0.9880264326930046",
       "xGChain": "1.2213650569319725",
       "xGBuildup": "0.46753862500190735",
-      "code": null
+      "code": null,
+      "codes": [
+        "RAC",
+        "BET"
+      ],
+      "teams": [
+        "Racing Santander",
+        "Real Betis"
+      ]
     },
     {
       "id": "14709",
@@ -2383,7 +2389,15 @@
       "npxG": "0.10331887751817703",
       "xGChain": "1.4754656963050365",
       "xGBuildup": "1.4754656963050365",
-      "code": null
+      "code": null,
+      "codes": [
+        "ATM",
+        "DEP"
+      ],
+      "teams": [
+        "Atletico Madrid",
+        "Deportivo La Coruna"
+      ]
     },
     {
       "id": "2280",
