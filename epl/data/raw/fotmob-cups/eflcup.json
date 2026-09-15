@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-09-15T20:41:03.802Z",
+ "retrievedAt": "2026-09-15T20:43:24.799Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-09-15T20:38:42.512Z",
+   "retrievedAt": "2026-09-15T20:43:24.799Z",
    "matches": [
     {
      "id": "5840307",
@@ -2565,19 +2565,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       2,
       3
      ],
-     "state": "LIVE",
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/west-ham-united-vs-fulham/2u9b5i#6099343",
      "unknownReasons": []
     },
