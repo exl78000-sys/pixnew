@@ -1,6 +1,6 @@
 import * as C from './core.js?v=0398a1b2';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
-import { mountDuelAnim } from './duel-anim.js?v=2ba9ef6c';
+import { mountDuelAnim } from './duel-anim.js?v=463759e3';
 import { createMatch, defaultSetup, minuteAt } from './game-engine.js?v=088e08bf';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -262,7 +262,7 @@ export async function renderGame(app) {
       if (!show) return { instant: true };
       if (state.speed === 'real') return { hops: Infinity, fill: seq.dur, deadSec: dead };
       if (state.speed === 'fast') return { hops: 0, carrySec: 0.25, deadSec: Math.min(dead, 0.4), celebrateSec: 1.2, cut: true };
-      return { hops: 2, carrySec: 0.4, deadSec: Math.min(dead, 0.8), cut: true };
+      return { hops: 2, carrySec: 0.4, deadSec: Math.min(dead, 1.0), cut: true };
     }
     /* 向引擎拿下一個回合交給動畫。引擎在這一步產生的事件分三種:回合開始前的(換人、開賽標記)、
        回合自己的(射門 / 進球 / 角球 / 犯規 / 牌 / 越位 —— 動畫在畫面上發生時回報)、回合之後的(中場 / 完場)。 */

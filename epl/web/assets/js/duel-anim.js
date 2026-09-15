@@ -57,7 +57,7 @@ const MIN_SEP = 1.6;              // 位置層兜底:兩個人不會比這更近
 const HOP_TIMEOUT = 4.0, END_TIMEOUT = 4.0, WATCHDOG = 40;
 const RESTART_PAUSE = 0.6, RESTART_MAX = 3.0;
 const CELEBRATE = 2.2, HALF_PAUSE = 1.5, KICKOFF_SETUP = 1.0;
-const FF_MAX = 12;                // 停球快轉的上限倍率(再快就是瞬移)
+const FF_MAX = 4;                 // 停球快轉的上限倍率。第一版 12 倍,使用者看到的是「突然加速」;太遠的人由剪接(cutTo)處理,快轉只補最後幾公尺
 /* 無球時的走位(2026-09-15,使用者回報「球員不自然抖動」)。
 
    舊版每個非持球員的目標點上疊一個正弦「抖動」(±1.4~1.6 m,原意是別讓圓點焊死),
@@ -342,7 +342,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     let tx, ty;
     if (p.run && p.run.scripted) {
       const dx = p.run.tx - p.x, dy = p.run.ty - p.y, d = Math.hypot(dx, dy);
-      const k = d > 1e-6 ? Math.min(1, 6 / d) : 0;
+      const k = d > 1e-6 ? Math.min(1, (p.run.sprint ? 8 : 6) / d) : 0;
       tx = p.x + dx * k; ty = p.y + dy * k;
     } else { tx = p.x + dirOf(p.side) * 1.5; ty = p.y; }
     kick(tx, ty, opts);
@@ -463,7 +463,15 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     hops.forEach((h, j) => {
       const f = n === 1 ? fLast : (fLast * (j + 1)) / n;
       const lx = S.x + (E.x - S.x) * f, ly = S.y + (E.y - S.y) * f;
-      const pt = clampPt(lx, j === n - 1 ? ly : ly * 0.55 + h.to.by * 0.45);
+      let tx = lx, ty = j === n - 1 ? ly : ly * 0.55 + h.to.by * 0.45;
+      /* 接球點的形狀按角色(演出,不是資料):
+         拉邊  邊後衛 / 邊鋒的接球點往邊線靠 —— 場地撐開,球才會從邊路來
+         傳空檔 回合後段傳給前鋒 / 進攻中場時,球傳到他前方 8 m 的空檔,他衝刺去接
+         (突破在 beginHop:持球者是邊路 / 進攻角色時有三分之一機會帶球 9 m 再傳) */
+      const role = h.to.sub ?? h.to.role, dir = dirOf(h.to.side);
+      if ((role === 'FB' || role === 'W') && j < n - 1) { const edge = h.to.by < FH / 2 ? 5 : FH - 5; ty = ty * 0.4 + edge * 0.6; }
+      else if ((role === 'ST' || role === 'AM') && j >= n - 2 && rng() < 0.6) { tx += dir * 8; h.through = true; }
+      const pt = clampPt(tx, ty);
       h.tx = pt.x; h.ty = pt.y;
     });
     script.hops = hops; script.hopIdx = 0;
@@ -543,8 +551,8 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   /* 重新開始那一腳:主罰者把球送給第一個接球的人。沒有傳球串(十二碼、直接任意球、一個人的回合)就直接進結局。 */
   /* 接球的人先跑向接球點;壓縮播放時離得太遠就剪接到附近(不然一記長傳落地時他還在 30 m 外,只能等逾時) */
   function readyReceiver(h) {
-    if (script.cut) cutTo(h.to, h.tx - dirOf(h.to.side) * 4, h.ty, 15);
-    h.to.run = { tx: h.tx, ty: h.ty, t: 99, sprint: false, scripted: true };
+    if (script.cut) cutTo(h.to, h.tx - dirOf(h.to.side) * (h.through ? 10 : 4), h.ty, 15);
+    h.to.run = { tx: h.tx, ty: h.ty, t: 99, sprint: !!h.through, scripted: true };
   }
   function takeRestart() {
     const { seq, hops } = script;
@@ -565,9 +573,13 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     script.sub = 'carry'; script.t = 0;
     if (holder !== h.from && ball.held) { /* 傳球串的人跟畫面對不上(被罰下等):讓現在拿球的人代替 */ h.from = holder; }
     readyReceiver(h);
-    // 帶球點:朝接球點的方向 4 m(門將不帶球,原地等)
+    // 帶球點:朝接球點的方向 4 m(門將不帶球,原地等);突破時 9 m,而且要真的帶到才傳
     const ang = Math.atan2(h.ty - holder.y, h.tx - holder.x);
-    script.carryTo = holder.role === 'GK' ? { x: holder.x, y: holder.y } : clampPt(holder.x + Math.cos(ang) * 4, holder.y + Math.sin(ang) * 4);
+    const far = Math.hypot(h.tx - holder.x, h.ty - holder.y);
+    const dribble = holder.role !== 'GK' && ['W', 'AM', 'ST', 'FB'].includes(holder.sub ?? '') && far > 14 && rng() < 0.35;
+    const reach = dribble ? 9 : 4;
+    script.hopCarry = dribble ? Math.max(script.carrySec, 1.8) : script.carrySec;
+    script.carryTo = holder.role === 'GK' ? { x: holder.x, y: holder.y } : clampPt(holder.x + Math.cos(ang) * reach, holder.y + Math.sin(ang) * reach);
   }
   function chainStep() {
     const h = script.hops[script.hopIdx];
@@ -575,7 +587,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     if (script.sub === 'carry') {
       if (!ball.held) { if (script.t > HOP_TIMEOUT) { timeouts.hop++; snapBallTo(h.from); } return; }
       const d = Math.hypot(script.carryTo.x - holder.x, script.carryTo.y - holder.y);
-      if (script.t >= script.carrySec || (d < 1.0 && script.t >= 0.25)) { passTo(h.to); script.sub = 'flight'; script.t = 0; }
+      if (script.t >= (script.hopCarry ?? script.carrySec) || (d < 1.0 && script.t >= 0.25)) { passTo(h.to); script.sub = 'flight'; script.t = 0; }
     } else if (ball.held && holder === h.to) { h.to.run = null; script.hopIdx++; beginHop(); }
     else if (script.t > HOP_TIMEOUT) {
       timeouts.hop++;
@@ -919,10 +931,12 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     // 上搶:離球最近的那個真的去搶球,不是整隊平移
     if (p === presser) {
       /* 站在離球 2.2 m(不是 1.8):持球者的球在腳前 0.7 m,1.8 會讓上搶者站到離持球者 1.1 m,
-         每一格都被 separate() 推開再走回來(量出來上搶者每分鐘被推 7.5 次)。2.2 > MIN_SEP + 0.5。 */
-      const d = Math.max(2.2, Math.hypot(ball.x - p.x, ball.y - p.y));
+         每一格都被 separate() 推開再走回來(量出來上搶者每分鐘被推 7.5 次)。2.2 > MIN_SEP + 0.5。
+         球在飛 / 滾的時候(沒人持球),盯的是**要接球的人**:站在球旁邊看一顆沒人拿的球,畫面上就是「球在旁邊沒人搶」(使用者回報)。 */
+      const t = ball.held || !holder ? ball : holder;
+      const d = Math.max(2.2, Math.hypot(t.x - p.x, t.y - p.y));
       const k = 2.2 / d;
-      return { x: ball.x + (p.x - ball.x) * k, y: ball.y + (p.y - ball.y) * k };
+      return { x: t.x + (p.x - t.x) * k, y: t.y + (p.y - t.y) * k };
     }
     // 防線高度跟著球走:球在自家半場就退,球在對方半場就壓上
     const BACK = { DEF: 15, MID: 7, FWD: -4 }[p.role] ?? 8;
