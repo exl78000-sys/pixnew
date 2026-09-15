@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0398a1b2';
+import * as C from './core.js?v=deaac0d6';
 
 const app = document.getElementById('app');
 
@@ -9,10 +9,11 @@ const app = document.getElementById('app');
 
    1. **聯賽清單從註冊表長出來,不寫死。** 前一版寫死 `[{pl},{es1}]`,
       加英冠時它不會壞、只會安靜地少一個聯賽 —— 那比壞掉難發現。
-   2. **只連得進去的頁才給連結。** 英冠沒有球員頁,給了連結讀者點過去只會撞上
+   2. **只連得進去的頁才給連結。** 連結一律照 LEAGUES[lg].open 算,寫死的話點過去只會撞上
       缺口頁。判斷走 C.closedPage(),不是在這裡再列一次哪個聯賽有哪些頁。
-   3. **沒有來源的東西不顯示 0。** 英冠的 counts.players 是 0,印出來像資料壞了;
-      要講的是「這個聯賽沒有免費的球員資料源」。0 是一個看起來很像答案的數字。 */
+   3. **沒有來源的東西不顯示 0。** 一個聯賽的 counts.players 是 0 時,印出來像資料壞了;
+      要講的是「這個聯賽沒有免費的球員資料源」。0 是一個看起來很像答案的數字。
+      (英冠 2026-09-15 起有球員層 —— 這一段照 capabilities 走,所以它自己會變。) */
 
 try {
   const LEAGUE_SETS = ['meta', 'teams', 'fixtures', 'news', 'live'];

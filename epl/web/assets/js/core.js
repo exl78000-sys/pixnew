@@ -498,7 +498,7 @@ export function playerPhoto(player, size = 34) {
    每一處都加一個參數的話,漏掉的那一處會靜靜沒有頭貼而畫面完全正常(跟隊伍註冊表同一個道理)。
 
    **沒註冊就是沒頭貼,不是壞掉。** 實時戰況頁刻意不載球員檔(3 MB,那是它的決定),
-   英冠根本沒有球員層 —— 那兩種情況下小卡只印名字,版面不留空位。 */
+   有的聯賽沒有球員層或沒有頭貼 —— 那幾種情況下小卡只印名字,版面不留空位。 */
 let PLAYER_PHOTOS = new Map();
 export function registerPlayerPhotos(list) {
   const entries = list instanceof Map ? [...list.entries()]
@@ -687,10 +687,10 @@ export const stampRow = items =>
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
   es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['overview', 'index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'cups', 'allplayers', 'duel', 'explore', 'predict'] },
-  /* 英冠只掛「球隊與比賽」那一層。**不是還沒做,是做不出來** ——
-     英冠沒有免費的球員級資料源(Understat 只做五大聯賽、FPL 只有英超,
-     兩者都實測過,見 build-championship.mjs 的檔頭),
-     所以球員、戰術、實時這幾頁在這個聯賽是沒有資料的,不掛上導覽列。
+  /* 英冠掛「球隊與比賽」那一層,加上 2026-09-15 起的**球員層**。
+     沒有的是「整季的球員資料源」(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過)——
+     但逐場資料每一場都帶雙方的逐人統計,加起來就是整季,所以球員頁開了;
+     它做不到的(球員 xG 模型、身價、年齡、傷停)由頁面自己講。戰術與實時仍然沒有,不掛上導覽列。
      **外電是 2026-08-28 補上的** —— BBC 與 Guardian 的英冠 feed 實測可用;
      Sky 那一個看名字像英冠、實際回的是英超內容,所以不用(理由記在 feeds-championship.json)。
      網址仍然進得來,由 LeagueGap 講一句實話,不是給一個空白頁。
@@ -703,12 +703,15 @@ export const LEAGUES = {
     /* 盃賽也開:英冠球隊本來就打足總盃與聯賽盃,層級標籤還是靠英冠名冊做的。
        球員搜尋(allplayers)也開 —— 它查的是**其他聯賽**的球員,跟英冠自己
        沒有球員源不衝突;頁面上會照實列出英冠缺席的原因。 */
-    open: ['overview', 'index', 'teams', 'model', 'news', 'cups', 'allplayers', 'duel', 'explore', 'predict'],
+    /* players 2026-09-15 開:球員層由逐場統計累加而來(見 build-championship.mjs 檔頭)。
+       它**不是** Understat / FPL 那一層(沒有球員 xG 模型、身價、年齡、傷停),頁面自己把界線寫在最上面。 */
+    open: ['overview', 'index', 'teams', 'players', 'model', 'news', 'cups', 'allplayers', 'duel', 'explore', 'predict'],
     /* 缺口頁的預設說法是「資料還在補」—— 那對英冠是**錯的**,
        它不是還在補,是沒有來源(Understat 不做英冠、FPL 只有英超,兩者都實測過)。
        說成「還在補」等於暗示以後會有,而我們知道不會。 */
-    gapNote: '英冠沒有球員級的免費資料源 —— Understat 不涵蓋這個聯賽、FPL 只有英超,'
-      + '兩者都實測過。所以這幾頁不是還在補,是做不出來。',
+    gapNote: '英冠沒有「整季」的球員級免費資料源 —— Understat 不涵蓋這個聯賽、FPL 只有英超,兩者都實測過。'
+      + '球員頁畫得出來,因為那一層是拿逐場統計累加的;這幾頁要的東西(球員 xG 模型、傷停、即時比分)沒有來源,'
+      + '不是還在補,是做不出來。',
   },
 };
 

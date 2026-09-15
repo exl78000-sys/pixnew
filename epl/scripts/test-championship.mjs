@@ -150,14 +150,51 @@ const table = out('table'), results = out('results'), sim = out('sim');
   check('meta 沒有設 edition(設了會被前端當成西甲)', !('edition' in meta));
 }
 
-// ── 5. 不可以假裝有球員資料 ─────────────────────────
+/* ── 5. 球員層:有的要對得起來,沒有的要明講 ─────────────────
+   2026-09-15 之前這一節釘的是「players.json 是空的」——**那句話已經不成立**:
+   球員層由逐場統計累加而來(build-championship.mjs 檔頭)。
+   現在守的是兩件事:(a) 產物內部自己不矛盾、(b) 這一層做不到的仍然明講。
+   刻意**不釘人數**:每踢一輪就會變(把目標達成寫成 CI 紅線那條坑)。 */
 {
-  check('players.json 是空的', out('players').length === 0);
-  check('meta 明講這個聯賽沒有球員資料', meta.capabilities?.players === false
-    && meta.players?.available === false && /Understat/.test(meta.players?.note ?? ''));
+  const players = out('players'), leaders = out('leaders');
+  const has = players.length > 0;
+  check('球員產物與 meta 說的一致(有就是有、沒有就是沒有)',
+    has === (meta.capabilities?.players === true) && has === (meta.players?.available === true)
+    && has === (leaders.available === true));
+  if (has) {
+    check('球員層標明是「逐場累加」,不是整季資料源', leaders.source === 'match-aggregate'
+      && meta.players?.source === 'match-aggregate');
+    check('每一季都有榜單、核對數字與被排除的場次', Object.entries(leaders.layer ?? {}).length > 0
+      && Object.entries(leaders.layer).every(([k, L]) => Array.isArray(leaders.boards?.[k])
+        && L.reconciled > 0 && L.reconciled <= L.matches && Array.isArray(L.excluded)));
+    check('本季球員的隊碼都在本季名冊裡', (() => {
+      const codes = new Set(teams.map(t => t.code));
+      return players.filter(p => p.season === meta.currentSeason).every(p => codes.has(p.team));
+    })());
+    /* 上限是聯賽自己的:英冠一季 46 輪 + 最多 3 場附加賽,一場最多 90 分鐘多一點 */
+    check('出賽與分鐘不超過一季可能的上限', players.every(p => p.matches <= 49 && p.minutes <= p.matches * 98));
+    /* 這一層**沒有**的東西仍然要明講 —— 有了一部分之後最容易忘記講剩下的沒有 */
+    check('明講這一層沒有球員 xG 模型 / 身價 / 傷停', Array.isArray(leaders.missing)
+      && leaders.missing.length >= 3 && /xG/.test(leaders.missing.join('')) && /傷停/.test(leaders.missing.join('')));
+    check('牌有拿獨立來源逐場核對過(只回報不擋)', Object.values(leaders.layer).every(L =>
+      L.cardCheck == null || (L.cardCheck.compared > 0 && L.cardCheck.agree >= 0 && /football-data/.test(L.cardCheck.source))));
+    /* 哨兵不可以印在畫面上(站上踩過:戰術頁印出「角球進球 -1」)。
+       球員頁的 C.table 用 value 排序、render 顯示,所以規則是「這一欄用了 -1 就一定要有 render」。
+       只掃**這個渲染器**的欄位定義 —— 掃整份會誤報:別的表用 sortValue 放哨兵,那是另一種寫法。 */
+    check('球員頁逐場累加那一段的哨兵欄位都有 render', (() => {
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
+      const i = pg.indexOf('function renderAggregate');
+      if (i < 0) return false;
+      const cols = pg.slice(pg.indexOf('const columns = ', i), pg.indexOf('const drawTable = ', i));
+      const lines = cols.split('\n').filter(l => /\{ key:/.test(l) && /-1/.test(l));
+      return lines.length > 0 && lines.every(l => /render:/.test(l));
+    })());
+  } else {
+    check('沒有球員資料時 meta 要講原因', /Understat/.test(meta.players?.note ?? ''));
+  }
   /* 缺的東西要 null 不要 0 —— 0 看起來像「量到了,結果是零」。 */
   check('球隊的陣容人數是 null 不是 0', teams.every(t => t.squadSize === null));
-  check('資料界線有講出「沒有球員級資料源」', (meta.boundaries ?? []).some(x => /球員/.test(x)));
+  check('資料界線有講出球員層做得到什麼、做不到什麼', (meta.boundaries ?? []).some(x => /球員/.test(x)));
 }
 
 // ── 6. 模擬的分界線要對得上這個聯賽 ──────────────────

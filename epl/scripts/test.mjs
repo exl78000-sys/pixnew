@@ -1743,9 +1743,13 @@ async function checkDataGap() {
       g('es1', 'news', ['news'], { ...full, news: [] }).needs.join() === 'news'],
 
     /* ── 英冠(2026-08-28 加的第三個聯賽)──
-       它只掛三頁,而且**做不到的那幾頁不是「還在補」** —— 沒有來源。
-       缺口頁的文案要講得出這個差別。 */
-    ['英冠的球員頁要擋', !!g('en2', 'players', ['players', 'leaders'])],
+       做不到的那幾頁不是「還在補」—— 沒有來源。缺口頁的文案要講得出這個差別。
+       **2026-09-15 球員頁開了**:球員層由逐場統計累加(build-championship.mjs 檔頭)。
+       這一條原本釘的是「球員頁要擋」,而那句話已經不成立 —— 改成釘「開了,但資料真的空的仍然要擋」,
+       那才是這一節真正要守的事(宣告開放而拿不到資料時不可以給空白頁)。 */
+    ['英冠的球員頁開了(逐場累加),但資料空的仍然擋(保險)',
+      !g('en2', 'players', ['players', 'leaders'], { players: [1], leaders: { boards: {} } })
+      && !!g('en2', 'players', ['players', 'leaders'], { players: [], leaders: { boards: {} } })],
     ['英冠的戰術頁要擋', !!g('en2', 'tactics', ['tactics'], { tactics: [1] })],
     ['英冠的實時頁要擋', !!g('en2', 'live', ['live'])],
     ['英冠的首頁、球隊、模型、動態不擋',
@@ -2785,13 +2789,16 @@ async function checkDataGap() {
         && /gapNote/.test(pg)                                          // 英冠缺席講原因
         && /!= null/.test(pg) && /'—'/.test(pg);                       // null 不畫成 0
     })()],
-    ['跨聯賽搜尋:懶載入、不合併同人、跨池警語、兩個渲染器共用一份', (() => {
+    /* 三個渲染器(FPL / Understat / 逐場累加)共用同一份跨聯賽搜尋 —— 複製會悄悄過期。
+       2026-09-15 加英冠那一個時把數字從 2 改成 3:**釘的是「每個渲染器都有」**,
+       所以用渲染器的數量當基準,不要寫死一個會過期的常數。 */
+    ['跨聯賽搜尋:懶載入、不合併同人、跨池警語、每個渲染器都共用同一份', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
+      const renderers = (pg.match(/id="xleague"/g) ?? []).length;   // 每個渲染器的版面各放一個掛載點
       return /crossLeaguePlayers/.test(core) && /_playersCoreCache/.test(core)
-        && (pg.match(/updateXLeague\(/g) ?? []).length >= 3
-        && /同名不代表同一人/.test(pg) && /不可直接互比/.test(pg)
-        && (pg.match(/id="xleague"/g) ?? []).length === 2;
+        && renderers >= 2 && (pg.match(/updateXLeague\(/g) ?? []).length >= renderers + 1
+        && /同名不代表同一人/.test(pg) && /不可直接互比/.test(pg);
     })()],
 
     /* ── 中場/戰況講評(2026-08-29,使用者要求)──
@@ -5386,8 +5393,11 @@ async function checkUclDetails() {
         '1|2|2026-01-01': { players: { 1: [P(1, 'A', 2)], 2: [P(2, 'B', 0)] } },     // 2:1,B 隊的烏龍球記給 1 隊 → 3:0?不,設 1 隊 2 + 烏龍 1 = 3
         '3|4|2026-01-02': { players: { 3: [P(3, 'C', 1)], 4: [P(4, 'D', 0)] } },     // 球員進球 1:0,比分 2:0,沒有烏龍球事件 → 對不上,整場不計
       } };
+      /* 測資照**真實資料的形狀**:烏龍球一律 detail === 'Own Goal' 且沒有射手(歐冠 2025-26 與英冠 626 場都是這樣)。
+         2026-09-15 收緊之前這裡寫的是「沒有射手就算烏龍球」,那會讓一顆上游漏記射手的正常進球
+         靜靜記到對手頭上;下面多一條專門守這件事。 */
       const details = { matches: {
-        '1|2|2026-01-01': { names: { 1: 'One', 2: 'Two' }, events: [{ type: 'Goal', team: '2', player: '' }], shots: [], checks: { shotmapComplete: false } },
+        '1|2|2026-01-01': { names: { 1: 'One', 2: 'Two' }, events: [{ type: 'Goal', team: '2', detail: 'Own Goal', player: null }], shots: [], checks: { shotmapComplete: false } },
         '3|4|2026-01-02': { names: { 3: 'Three', 4: 'Four' }, events: [], shots: [], checks: { shotmapComplete: false } },
       } };
       const agg = aggregateSeasonPlayers(pstore, details, key => ({ '1|2|2026-01-01': [3, 0], '3|4|2026-01-02': [2, 0] }[key]));
@@ -5395,6 +5405,13 @@ async function checkUclDetails() {
       ok(agg.players.length === 2 && !agg.players.some(p => p.name === 'C'), '被排除那一場的球員不計入');
       const L = leadersFromAggregate(agg);
       ok(L.find(b => b.key === 'goals')?.rows[0]?.name === 'A' && !L.find(b => b.key === 'rating'), '球員榜從累計來;評分榜要出賽 ≥ 2 場才有(這裡沒有)');
+      /* 「沒有射手」**不等於**烏龍球:上游漏記射手的正常進球不可以記到對手頭上。
+         那種場次應該對不回比分 → 整場不計並留下原因,而不是把球算給錯的隊(配錯人比配不到糟)。 */
+      const noScorer = aggregateSeasonPlayers(
+        { matches: { '5|6|2026-01-03': { players: { 5: [P(5, 'E', 0)], 6: [P(6, 'F', 0)] } } } },
+        { matches: { '5|6|2026-01-03': { names: { 5: 'Five', 6: 'Six' }, events: [{ type: 'Goal', team: '5', detail: 'Normal Goal', player: null }], shots: [], checks: { shotmapComplete: false } }, } },
+        () => [1, 0]);
+      ok(noScorer.reconciled === 0 && noScorer.excluded.length === 1, '漏記射手的正常進球不算烏龍球:那一場對不回比分、整場不計', JSON.stringify(noScorer.excluded));
     }
     /* 累計器對回**另一份**資料:往季有 FotMob 的賽季總表交付檔(不同端點),拿 2025-26 的逐場累計跟它逐人比。
        實測 883/883 用 playerId 對上、進球相等 873、助攻 875、分鐘 ±10 分內 844;差的是季中換隊的人(累計按隊拆成兩筆)

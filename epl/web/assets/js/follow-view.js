@@ -12,14 +12,14 @@
       無關的大檔 —— 盃賽頁那條坑(第一次繪製之前 await 跨網域請求)的同一個形狀。
       所以:聯賽先畫,盃賽與歐冠拿到再併進「下一場」重畫。
 
-   2. **每一區自己判斷資料在不在。** 英冠沒有球員層(實測拿不到,不是還沒做),
+   2. **每一區自己判斷資料在不在。** 有的聯賽沒有某一層(實測拿不到,不是還沒做),
       所以傷停那一區在英冠的卡片上**整區消失並說明原因**;盃賽沒有勝率預測
       (對手一半是第三四級球隊,評不出強度),所以盃賽的下一場不印機率。
       留一個永遠空白的欄位比不做更糟(鐵則三)。
 
    3. **關注名單存在瀏覽器這件事要寫在畫面上**,而且給匯出/匯入 ——
       不要讓人以為它存在雲端(鐵則四,跟「我的預測」同一套)。 */
-import * as C from './core.js?v=0398a1b2';
+import * as C from './core.js?v=deaac0d6';
 /* **具名 import 要寫在同一行。** 單檔版的打包是用單行正則把 import 拆掉的,
    跨行的話拆不掉 → 攤平之後還留著一個 import 陳述句 → 整份單檔版死掉。
    bundle.mjs 的守門會擋下來(「單檔版裡還有沒拆掉的 import」),不會靜靜過關。 */
@@ -123,7 +123,7 @@ function teamCard(pool, code, extraFixtures) {
   const news = (pool.news ?? []).filter(n => n.team === code).slice(0, 4);
 
   /* 傷停。**三種狀態,不是兩種** —— 這一條踩過:
-       · 英冠沒有球員層(Understat 不涵蓋、FPL 只有英超,兩者都實測過)
+       · 沒有球員層的聯賽(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過)
        · 西甲**有**球員層但**沒有傷停來源**(`capabilities.injuries === false`,
          players-core 的 status 743 筆全是 null)
        · 英超兩者都有
@@ -210,9 +210,11 @@ function pickerHtml(pools) {
 export async function renderFollowTeams(host) {
   host.innerHTML = '<div class="loading">載入資料中…</div>';
 
-  /* 三個聯賽的基本資料。**meta 先拿到才知道有沒有球員層** ——
-     沒有球員層的聯賽不要去要 players-core(那是一個預期中的 404,
-     console 留一串自己造成的錯誤看起來像出了事)。 */
+  /* 三個聯賽的基本資料。**meta 先拿到才知道要不要去要 players-core** ——
+     這一份在這裡只有一個用途:傷停名單(下面的 outList)。所以條件是**有沒有傷停來源**,
+     不是「有沒有球員層」:西甲有球員層但傷停欄位全是 null、英冠 2026-09-15 起有球員層但沒有 players-core,
+     兩個聯賽照舊條件都會去要一份用不到的檔,英冠那次還是個 404 —— 預期中的 404 會在 console 留一串
+     自己造成的錯誤,看起來像出了事。 */
   /* **賽事標籤要先註冊才會是圖示。** `compBadge` 有 logo 就畫真圖、沒有就退回
      色塊 + 縮寫(EFL / PL / UCL / LL)—— 而 logo 在 `competitions.json` 裡,
      沒有 `registerCompetitions` 的話**每一頁都是退回那個縮寫色塊**,
@@ -229,7 +231,7 @@ export async function renderFollowTeams(host) {
       const { data } = await C.loadFrom(lg, ['meta', 'teams', 'fixtures', 'news']);
       if (!data.meta || !Array.isArray(data.teams)) continue;
       let players = null;
-      if (data.meta.capabilities?.players !== false) {
+      if (data.meta.capabilities?.players !== false && data.meta.capabilities?.injuries !== false) {
         const core = await C.loadFrom(lg, ['players-core']).catch(() => ({ data: {} }));
         players = Array.isArray(core.data['players-core']) ? core.data['players-core'] : null;
       }
