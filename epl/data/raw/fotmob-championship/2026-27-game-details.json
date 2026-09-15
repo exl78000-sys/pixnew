@@ -130034,8 +130034,3531 @@
      }
     ]
    }
+  },
+  "MID|MIL": {
+   "key": "MID|MIL",
+   "season": "2026-27",
+   "date": "2026-09-15",
+   "matchId": "5836818",
+   "home": "MID",
+   "away": "MIL",
+   "score": [
+    2,
+    2
+   ],
+   "providerScore": [
+    2,
+    2
+   ],
+   "teamStats": {
+    "MID": {
+     "possession": 80,
+     "shots": 22,
+     "shotsOn": 7,
+     "shotsOff": 5,
+     "blockedShots": 10,
+     "blocksMade": 1,
+     "corners": 14,
+     "offsides": 4,
+     "fouls": 3,
+     "saves": 2,
+     "passes": 644,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.79
+    },
+    "MIL": {
+     "possession": 20,
+     "shots": 11,
+     "shotsOn": 4,
+     "shotsOff": 6,
+     "blockedShots": 1,
+     "blocksMade": 10,
+     "corners": 1,
+     "offsides": 3,
+     "fouls": 12,
+     "saves": 5,
+     "passes": 161,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.46
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "MID": {
+     "touches_opp_box": 46,
+     "big_chance": 2,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 12,
+     "shots_outside_box": 10,
+     "expected_goals_open_play": 1.29,
+     "expected_goals_set_play": 0.5,
+     "expected_goals_non_penalty": 1.79,
+     "expected_goals_on_target": 1.45,
+     "own_half_passes": 231,
+     "opposition_half_passes": 363,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 54,
+     "accurate_crosses": 11,
+     "accurate_crosses_pct": 27,
+     "player_throws": 12,
+     "matchstats.headers.tackles": 5,
+     "interceptions": 2,
+     "clearances": 8,
+     "duel_won": 29,
+     "ground_duels_won": 20,
+     "ground_duels_won_pct": 43,
+     "aerials_won": 9,
+     "aerials_won_pct": 41,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 36,
+     "red_cards": 0
+    },
+    "MIL": {
+     "touches_opp_box": 15,
+     "big_chance": 3,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 11,
+     "shots_outside_box": 0,
+     "expected_goals_open_play": 0.18,
+     "expected_goals_set_play": 1.29,
+     "expected_goals_non_penalty": 1.46,
+     "expected_goals_on_target": 1.47,
+     "own_half_passes": 37,
+     "opposition_half_passes": 63,
+     "long_balls_accurate": 18,
+     "long_balls_accurate_pct": 32,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 56,
+     "player_throws": 11,
+     "matchstats.headers.tackles": 20,
+     "interceptions": 9,
+     "clearances": 41,
+     "duel_won": 39,
+     "ground_duels_won": 26,
+     "ground_duels_won_pct": 57,
+     "aerials_won": 13,
+     "aerials_won_pct": 59,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 60,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     80,
+     20
+    ],
+    "h1": [
+     82,
+     18
+    ],
+    "h2": [
+     78,
+     22
+    ]
+   },
+   "events": [
+    {
+     "minute": 11,
+     "extra": null,
+     "team": "MIL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Taïryk Arconte"
+    },
+    {
+     "minute": 36,
+     "extra": null,
+     "team": "MIL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Lyndon Dykes"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kyle Joseph"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Max Arfsten"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jeremy Sarmiento"
+    },
+    {
+     "minute": 50,
+     "extra": null,
+     "team": "MID",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Amario Cozier-Duberry"
+    },
+    {
+     "minute": 56,
+     "extra": 0,
+     "team": "MIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Elkan Baggott"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "MIL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Derek Mazou-Sacko"
+    },
+    {
+     "minute": 61,
+     "extra": null,
+     "team": "MID",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Will Lankshear"
+    },
+    {
+     "minute": 66,
+     "extra": null,
+     "team": "MID",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Riley McGree"
+    },
+    {
+     "minute": 75,
+     "extra": 0,
+     "team": "MIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Daniel Kelly"
+    },
+    {
+     "minute": 75,
+     "extra": 0,
+     "team": "MIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Zak Lovelace"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Myles Peart-Harris"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "MIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Luke Cundle"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "MIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Yanis Issoufou"
+    },
+    {
+     "minute": 85,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "David Strelec"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "MID",
+     "player": "Neto Borges",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.088,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 44.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 4,
+     "extra": null,
+     "team": "MID",
+     "player": "Riley McGree",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.141,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.4,
+     "y": 36.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 6,
+     "extra": null,
+     "team": "MIL",
+     "player": "Mark Sykes",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 41.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0.027,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.3,
+     "y": 18.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "MIL",
+     "player": "Lyndon Dykes",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "MIL",
+     "player": "Taïryk Arconte",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.098,
+     "xgot": 0.321,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 43.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "MIL",
+     "player": "Camiel Neghli",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.111,
+     "xgot": 0.04,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 34,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0.296,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 104.2,
+     "y": 40.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "MID",
+     "player": "Riley McGree",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.152,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 29.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.6,
+     "y": 20.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.5,
+     "y": 47.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "MID",
+     "player": "Callum Brittain",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 20.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "MID",
+     "player": "Aidan Morris",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.018,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 49.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "MIL",
+     "player": "Derek Mazou-Sacko",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 34.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "MIL",
+     "player": "Caleb Taylor",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.127,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.6,
+     "y": 26.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "MIL",
+     "player": "Lyndon Dykes",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.673,
+     "xgot": 0.993,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.3,
+     "y": 35.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "MID",
+     "player": "Tommy Conway",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.3,
+     "y": 46.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "MID",
+     "player": "Aidan Morris",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.9,
+     "y": 25,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0.013,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.8,
+     "y": 22,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.059,
+     "xgot": 0.582,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 28.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "MID",
+     "player": "Kyle Joseph",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.12,
+     "xgot": 0.167,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.3,
+     "y": 35.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.325,
+     "xgot": 0.177,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.3,
+     "y": 38.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "MID",
+     "player": "Jeremy Sarmiento",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83,
+     "y": 47.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.8,
+     "y": 18.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "MIL",
+     "player": "Elkan Baggott",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.214,
+     "xgot": 0.111,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 34.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "MID",
+     "player": "Aidan Morris",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.1,
+     "y": 39.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "MIL",
+     "player": "Camiel Neghli",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.6,
+     "y": 21.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 21,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "MID",
+     "player": "Luke Ayling",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.05,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 26.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "MID",
+     "player": "Jeremy Sarmiento",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.44,
+     "xgot": 0.184,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 32.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "MIL",
+     "player": "Jordi Osei-Tutu",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 22.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "MIL",
+     "player": "Zak Sturge",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 32.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "Miss",
+     "situation": "IndividualPlay",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.5,
+     "y": 29.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     2,
+     27
+    ],
+    [
+     3,
+     54
+    ],
+    [
+     4,
+     100
+    ],
+    [
+     5,
+     81
+    ],
+    [
+     6,
+     33
+    ],
+    [
+     7,
+     -16
+    ],
+    [
+     8,
+     0
+    ],
+    [
+     9,
+     38
+    ],
+    [
+     10,
+     -5
+    ],
+    [
+     11,
+     -24
+    ],
+    [
+     12,
+     -41
+    ],
+    [
+     13,
+     -8
+    ],
+    [
+     14,
+     5
+    ],
+    [
+     15,
+     -100
+    ],
+    [
+     16,
+     -100
+    ],
+    [
+     17,
+     -100
+    ],
+    [
+     18,
+     46
+    ],
+    [
+     19,
+     100
+    ],
+    [
+     20,
+     100
+    ],
+    [
+     21,
+     100
+    ],
+    [
+     22,
+     100
+    ],
+    [
+     23,
+     27
+    ],
+    [
+     24,
+     38
+    ],
+    [
+     25,
+     54
+    ],
+    [
+     26,
+     60
+    ],
+    [
+     27,
+     71
+    ],
+    [
+     28,
+     43
+    ],
+    [
+     29,
+     27
+    ],
+    [
+     30,
+     27
+    ],
+    [
+     31,
+     33
+    ],
+    [
+     32,
+     38
+    ],
+    [
+     33,
+     33
+    ],
+    [
+     34,
+     38
+    ],
+    [
+     35,
+     16
+    ],
+    [
+     36,
+     -19
+    ],
+    [
+     37,
+     -30
+    ],
+    [
+     38,
+     -24
+    ],
+    [
+     39,
+     -11
+    ],
+    [
+     40,
+     33
+    ],
+    [
+     41,
+     81
+    ],
+    [
+     42,
+     100
+    ],
+    [
+     43,
+     79
+    ],
+    [
+     44,
+     68
+    ],
+    [
+     45,
+     87
+    ],
+    [
+     45.5,
+     38
+    ],
+    [
+     46,
+     27
+    ],
+    [
+     47,
+     14
+    ],
+    [
+     48,
+     19
+    ],
+    [
+     49,
+     8
+    ],
+    [
+     50,
+     90
+    ],
+    [
+     51,
+     90
+    ],
+    [
+     52,
+     73
+    ],
+    [
+     53,
+     87
+    ],
+    [
+     54,
+     100
+    ],
+    [
+     55,
+     100
+    ],
+    [
+     56,
+     27
+    ],
+    [
+     57,
+     22
+    ],
+    [
+     58,
+     87
+    ],
+    [
+     59,
+     87
+    ],
+    [
+     60,
+     90
+    ],
+    [
+     61,
+     95
+    ],
+    [
+     62,
+     100
+    ],
+    [
+     63,
+     95
+    ],
+    [
+     64,
+     30
+    ],
+    [
+     65,
+     16
+    ],
+    [
+     66,
+     16
+    ],
+    [
+     67,
+     -52
+    ],
+    [
+     68,
+     -41
+    ],
+    [
+     69,
+     -33
+    ],
+    [
+     70,
+     11
+    ],
+    [
+     71,
+     22
+    ],
+    [
+     72,
+     5
+    ],
+    [
+     73,
+     41
+    ],
+    [
+     74,
+     57
+    ],
+    [
+     75,
+     60
+    ],
+    [
+     76,
+     38
+    ],
+    [
+     77,
+     5
+    ],
+    [
+     78,
+     16
+    ],
+    [
+     79,
+     -3
+    ],
+    [
+     80,
+     3
+    ],
+    [
+     81,
+     -3
+    ],
+    [
+     82,
+     -19
+    ],
+    [
+     83,
+     -19
+    ],
+    [
+     84,
+     -19
+    ],
+    [
+     85,
+     22
+    ],
+    [
+     86,
+     24
+    ],
+    [
+     87,
+     -5
+    ],
+    [
+     88,
+     -27
+    ],
+    [
+     89,
+     -24
+    ],
+    [
+     90,
+     43
+    ],
+    [
+     90.5,
+     38
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "MID": {
+     "team": "MID",
+     "formation": "4-2-3-1",
+     "coach": "Kim Hellberg",
+     "xi": [
+      {
+       "name": "Radek Vítek",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Callum Brittain",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Luke Ayling",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "Ashley Phillips",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Neto Borges",
+       "shirt": 30,
+       "pos": "D"
+      },
+      {
+       "name": "Aidan Morris",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Sebastian Berhalter",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Amario Cozier-Duberry",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Riley McGree",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Tommy Conway",
+       "shirt": 9,
+       "pos": "M"
+      },
+      {
+       "name": "Will Lankshear",
+       "shirt": 7,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Max Arfsten",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Jeremy Sarmiento",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Kyle Joseph",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Myles Peart-Harris",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "David Strelec",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Solomon Brynn",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Sam Byram",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Leo Castledine",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Rokas Pukštas",
+       "shirt": 21,
+       "pos": "?"
+      }
+     ]
+    },
+    "MIL": {
+     "team": "MIL",
+     "formation": "4-2-3-1",
+     "coach": "Alex Neil",
+     "xi": [
+      {
+       "name": "Max Crocombe",
+       "shirt": 15,
+       "pos": "G"
+      },
+      {
+       "name": "Jordi Osei-Tutu",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Caleb Taylor",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Jake Cooper",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Zak Sturge",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Jenson Metcalfe",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Derek Mazou-Sacko",
+       "shirt": 49,
+       "pos": "?"
+      },
+      {
+       "name": "Mark Sykes",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Lyndon Dykes",
+       "shirt": 13,
+       "pos": "M"
+      },
+      {
+       "name": "Camiel Neghli",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Taïryk Arconte",
+       "shirt": 7,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Elkan Baggott",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel Kelly",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Zak Lovelace",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Luke Cundle",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Yanis Issoufou",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Filip Marschall",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Danny Batth",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Tristan Parkes",
+       "shirt": 55,
+       "pos": "?"
+      },
+      {
+       "name": "Alfie Massey",
+       "shirt": 44,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 31,
+      "center": 26,
+      "right": 43
+     },
+     "firstHalf": {
+      "left": 35,
+      "center": 17,
+      "right": 48
+     },
+     "secondHalf": {
+      "left": 28,
+      "center": 33,
+      "right": 39
+     }
+    },
+    "away": {
+     "total": {
+      "left": 41,
+      "center": 26,
+      "right": 33
+     },
+     "firstHalf": {
+      "left": 36,
+      "center": 34,
+      "right": 30
+     },
+     "secondHalf": {
+      "left": 45,
+      "center": 19,
+      "right": 36
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-15T21:59:50.346Z",
+   "fdMatchId": "2026-27-81",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "MIL",
+      "name": "Jenson Metcalfe",
+      "n": 29,
+      "cx": 55.6,
+      "cy": 33.3,
+      "spread": 33.7,
+      "grid": "0,0,0,0,1,3,2,3,3,3,1,0,2,0,2,2,2,0,0,1,0,0,2,2"
+     },
+     {
+      "team": "MIL",
+      "name": "Jake Cooper",
+      "n": 30,
+      "cx": 23.3,
+      "cy": 29.4,
+      "spread": 19,
+      "grid": "1,1,2,0,0,0,8,7,2,1,0,0,2,3,2,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "MID",
+      "name": "Neto Borges",
+      "n": 62,
+      "cx": 54.8,
+      "cy": 11.7,
+      "spread": 21.1,
+      "grid": "0,6,22,13,8,2,1,0,2,4,2,1,0,0,0,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "MID",
+      "name": "Sebastian Berhalter",
+      "n": 45,
+      "cx": 72,
+      "cy": 32.7,
+      "spread": 32.2,
+      "grid": "0,2,3,1,1,6,0,2,4,2,3,1,0,0,3,0,3,0,0,0,0,1,8,5"
+     },
+     {
+      "team": "MID",
+      "name": "Luke Ayling",
+      "n": 109,
+      "cx": 45.4,
+      "cy": 45.6,
+      "spread": 26,
+      "grid": "0,1,1,0,0,0,2,6,3,1,0,4,4,13,17,11,3,3,3,9,16,4,7,1"
+     },
+     {
+      "team": "MID",
+      "name": "Tommy Conway",
+      "n": 26,
+      "cx": 72.8,
+      "cy": 13.2,
+      "spread": 21.8,
+      "grid": "0,0,4,5,7,5,0,0,1,0,2,0,0,0,0,1,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "MIL",
+      "name": "Jordi Osei-Tutu",
+      "n": 20,
+      "cx": 34,
+      "cy": 52.8,
+      "spread": 29.7,
+      "grid": "0,0,0,0,0,0,1,0,0,0,0,0,5,4,0,0,1,1,2,1,2,2,0,1"
+     },
+     {
+      "team": "MIL",
+      "name": "Lyndon Dykes",
+      "n": 29,
+      "cx": 51.9,
+      "cy": 44.6,
+      "spread": 33.1,
+      "grid": "0,0,0,0,0,0,1,2,2,0,0,2,3,3,0,6,0,2,0,0,3,2,2,1"
+     },
+     {
+      "team": "MID",
+      "name": "Callum Brittain",
+      "n": 86,
+      "cx": 60.8,
+      "cy": 56.7,
+      "spread": 26.5,
+      "grid": "0,0,0,0,0,0,0,0,0,1,0,0,3,3,1,1,9,3,4,6,12,22,14,7"
+     },
+     {
+      "team": "MID",
+      "name": "Ashley Phillips",
+      "n": 97,
+      "cx": 36.5,
+      "cy": 24.2,
+      "spread": 21.6,
+      "grid": "3,8,10,1,2,1,7,18,23,5,0,0,1,7,8,0,0,2,0,1,0,0,0,0"
+     },
+     {
+      "team": "MID",
+      "name": "Aidan Morris",
+      "n": 140,
+      "cx": 60.3,
+      "cy": 36.7,
+      "spread": 25.7,
+      "grid": "0,2,3,3,4,1,2,13,10,14,14,1,1,1,8,16,15,1,2,0,7,3,15,4"
+     },
+     {
+      "team": "MID",
+      "name": "Amario Cozier-Duberry",
+      "n": 77,
+      "cx": 84.7,
+      "cy": 53,
+      "spread": 18.8,
+      "grid": "0,0,0,0,0,2,0,0,0,0,2,1,0,0,0,0,11,14,0,2,1,7,13,24"
+     },
+     {
+      "team": "MIL",
+      "name": "Mark Sykes",
+      "n": 38,
+      "cx": 49.6,
+      "cy": 50.3,
+      "spread": 34.2,
+      "grid": "0,1,0,0,0,0,1,0,1,0,1,2,2,6,1,0,0,0,2,3,8,1,3,6"
+     },
+     {
+      "team": "MIL",
+      "name": "Zak Sturge",
+      "n": 43,
+      "cx": 35.3,
+      "cy": 16.7,
+      "spread": 33.1,
+      "grid": "2,6,5,2,8,0,10,2,0,0,0,0,5,0,1,0,0,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "MID",
+      "name": "Riley McGree",
+      "n": 72,
+      "cx": 62.6,
+      "cy": 29.6,
+      "spread": 26.4,
+      "grid": "0,1,8,5,4,1,0,2,5,11,7,2,0,1,2,3,5,3,0,1,3,2,5,1"
+     },
+     {
+      "team": "MID",
+      "name": "Will Lankshear",
+      "n": 24,
+      "cx": 78,
+      "cy": 34.2,
+      "spread": 23.2,
+      "grid": "0,0,2,1,0,0,0,0,1,0,5,4,0,0,1,0,4,1,0,0,0,1,2,2"
+     },
+     {
+      "team": "MIL",
+      "name": "Derek Mazou-Sacko",
+      "n": 37,
+      "cx": 44.5,
+      "cy": 24.4,
+      "spread": 30.9,
+      "grid": "3,3,2,5,1,0,3,5,1,2,1,3,0,2,4,0,0,0,0,0,0,0,1,1"
+     },
+     {
+      "team": "MIL",
+      "name": "Caleb Taylor",
+      "n": 33,
+      "cx": 32.6,
+      "cy": 43.2,
+      "spread": 32.6,
+      "grid": "0,0,0,0,0,0,2,1,0,0,0,0,13,3,2,2,1,2,0,2,3,0,0,2"
+     },
+     {
+      "team": "MIL",
+      "name": "Max Crocombe",
+      "n": 47,
+      "cx": 7.5,
+      "cy": 34.9,
+      "spread": 9.8,
+      "grid": "3,1,0,0,0,0,13,0,0,0,0,0,29,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "MIL",
+      "name": "Camiel Neghli",
+      "n": 41,
+      "cx": 46,
+      "cy": 16.8,
+      "spread": 32.4,
+      "grid": "5,8,4,8,3,1,2,0,0,3,0,0,2,1,0,1,0,2,0,0,0,0,0,1"
+     },
+     {
+      "team": "MIL",
+      "name": "Taïryk Arconte",
+      "n": 19,
+      "cx": 56,
+      "cy": 39.3,
+      "spread": 34.4,
+      "grid": "0,0,1,0,1,0,1,0,0,0,4,1,0,1,0,2,1,0,2,1,2,0,1,1"
+     },
+     {
+      "team": "MID",
+      "name": "Radek Vítek",
+      "n": 30,
+      "cx": 8.1,
+      "cy": 30.7,
+      "spread": 11.2,
+      "grid": "2,0,0,0,0,0,17,1,0,0,0,0,8,1,0,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "MID",
+      "name": "Max Arfsten",
+      "n": 63,
+      "cx": 62.4,
+      "cy": 22.4,
+      "spread": 32.5,
+      "grid": "2,6,2,6,9,5,3,1,3,6,4,1,0,1,2,2,2,0,0,0,0,1,2,5"
+     },
+     {
+      "team": "MID",
+      "name": "Jeremy Sarmiento",
+      "n": 36,
+      "cx": 72.8,
+      "cy": 17.6,
+      "spread": 25.7,
+      "grid": "0,0,1,3,7,5,2,1,2,1,7,3,0,0,0,1,2,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "MID",
+      "name": "Kyle Joseph",
+      "n": 16,
+      "cx": 77.8,
+      "cy": 36.1,
+      "spread": 25.3,
+      "grid": "0,0,0,0,1,0,0,1,0,1,1,5,0,0,0,1,3,1,0,0,1,0,1,0"
+     },
+     {
+      "team": "MIL",
+      "name": "Elkan Baggott",
+      "n": 21,
+      "cx": 38.4,
+      "cy": 17.5,
+      "spread": 30.1,
+      "grid": "0,1,3,5,0,0,5,0,1,2,0,1,3,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "MIL",
+      "name": "Daniel Kelly",
+      "n": 11,
+      "cx": 54,
+      "cy": 32.1,
+      "spread": 33.8,
+      "grid": "0,1,0,2,0,0,0,0,0,3,0,0,0,0,1,0,0,2,2,0,0,0,0,0"
+     },
+     {
+      "team": "MIL",
+      "name": "Zak Lovelace",
+      "n": 8,
+      "cx": 48.3,
+      "cy": 21.3,
+      "spread": 42.8,
+      "grid": "3,1,0,0,0,2,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "MID",
+      "name": "Myles Peart-Harris",
+      "n": 15,
+      "cx": 60,
+      "cy": 34.4,
+      "spread": 31.4,
+      "grid": "1,0,0,0,1,1,0,0,4,0,1,1,0,0,1,1,1,0,0,0,1,0,1,1"
+     },
+     {
+      "team": "MIL",
+      "name": "Luke Cundle",
+      "n": 6,
+      "cx": 42.7,
+      "cy": 21.6,
+      "spread": 26.8,
+      "grid": "0,0,0,2,0,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "MIL",
+      "name": "Yanis Issoufou",
+      "n": 5,
+      "cx": 39.9,
+      "cy": 29.8,
+      "spread": 21.1,
+      "grid": "0,0,1,1,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "MID",
+      "name": "David Strelec",
+      "n": 1,
+      "cx": 45,
+      "cy": 52.1,
+      "spread": 0,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0"
+     }
+    ]
+   }
+  },
+  "BRC|LIN": {
+   "key": "BRC|LIN",
+   "season": "2026-27",
+   "date": "2026-09-15",
+   "matchId": "5836816",
+   "home": "BRC",
+   "away": "LIN",
+   "score": [
+    0,
+    1
+   ],
+   "providerScore": [
+    0,
+    1
+   ],
+   "teamStats": {
+    "BRC": {
+     "possession": 67,
+     "shots": 18,
+     "shotsOn": 4,
+     "shotsOff": 8,
+     "blockedShots": 6,
+     "blocksMade": 3,
+     "corners": 13,
+     "offsides": 0,
+     "fouls": 13,
+     "saves": 2,
+     "passes": 515,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.46
+    },
+    "LIN": {
+     "possession": 33,
+     "shots": 9,
+     "shotsOn": 3,
+     "shotsOff": 3,
+     "blockedShots": 3,
+     "blocksMade": 5,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 19,
+     "saves": 4,
+     "passes": 249,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.85
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "BRC": {
+     "touches_opp_box": 27,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 1,
+     "shots_inside_box": 12,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 0.46,
+     "expected_goals_set_play": 1,
+     "expected_goals_non_penalty": 1.46,
+     "expected_goals_on_target": 0.74,
+     "own_half_passes": 223,
+     "opposition_half_passes": 208,
+     "long_balls_accurate": 13,
+     "long_balls_accurate_pct": 32,
+     "accurate_crosses": 9,
+     "accurate_crosses_pct": 28,
+     "player_throws": 23,
+     "matchstats.headers.tackles": 8,
+     "interceptions": 8,
+     "clearances": 39,
+     "duel_won": 56,
+     "ground_duels_won": 32,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 24,
+     "aerials_won_pct": 65,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 33,
+     "red_cards": 0
+    },
+    "LIN": {
+     "touches_opp_box": 14,
+     "big_chance": 1,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 5,
+     "shots_woodwork": 0,
+     "shots_inside_box": 5,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 0.76,
+     "expected_goals_set_play": 0.09,
+     "expected_goals_non_penalty": 0.85,
+     "expected_goals_on_target": 1.08,
+     "own_half_passes": 86,
+     "opposition_half_passes": 73,
+     "long_balls_accurate": 17,
+     "long_balls_accurate_pct": 27,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 25,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 19,
+     "clearances": 41,
+     "duel_won": 47,
+     "ground_duels_won": 34,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 13,
+     "aerials_won_pct": 35,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 58,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     67,
+     33
+    ],
+    "h1": [
+     68,
+     32
+    ],
+    "h2": [
+     66,
+     34
+    ]
+   },
+   "events": [
+    {
+     "minute": 14,
+     "extra": null,
+     "team": "LIN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ben House"
+    },
+    {
+     "minute": 28,
+     "extra": null,
+     "team": "BRC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lisav Naif Eissat"
+    },
+    {
+     "minute": 37,
+     "extra": null,
+     "team": "LIN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Deji Elerewe"
+    },
+    {
+     "minute": 41,
+     "extra": null,
+     "team": "BRC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lorent Tolaj"
+    },
+    {
+     "minute": 45,
+     "extra": null,
+     "team": "LIN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Freddie Draper"
+    },
+    {
+     "minute": 53,
+     "extra": null,
+     "team": "LIN",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Freddie Draper"
+    },
+    {
+     "minute": 59,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dominic Ballard"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "LIN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Reeco Hackett"
+    },
+    {
+     "minute": 68,
+     "extra": null,
+     "team": "LIN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ryley Towler"
+    },
+    {
+     "minute": 69,
+     "extra": null,
+     "team": "LIN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "George Wickens"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "LIN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Robert Street"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "LIN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Daniel Oyegoke"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Robert Atkinson"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sam Greenwood"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Elijah Adebayo"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sam Bell"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "LIN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tom Bayliss"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "LIN",
+     "player": "Freddie Draper",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0.048,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.5,
+     "y": 23.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 5,
+     "extra": null,
+     "team": "LIN",
+     "player": "Dom Jefferies",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78,
+     "y": 29.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 6,
+     "extra": null,
+     "team": "BRC",
+     "player": "Yu Hirakawa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0.029,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 25.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "BRC",
+     "player": "Lorent Tolaj",
+     "type": "Post",
+     "situation": "FromCorner",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 42.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "BRC",
+     "player": "Gibson Yah",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.291,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 34.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "BRC",
+     "player": "Lorent Tolaj",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.116,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 42.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "BRC",
+     "player": "Jed Wallace",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.8,
+     "y": 29.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "LIN",
+     "player": "Chiedozie Ogbene",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.132,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 33.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "BRC",
+     "player": "Rob Dickie",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 29.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "LIN",
+     "player": "Deji Elerewe",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.018,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.6,
+     "y": 41.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "LIN",
+     "player": "Chiedozie Ogbene",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0.045,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 50.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "LIN",
+     "player": "Freddie Draper",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.529,
+     "xgot": 0.987,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.4,
+     "y": 45,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "LIN",
+     "player": "Chiedozie Ogbene",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.4,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "LIN",
+     "player": "Freddie Draper",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.3,
+     "y": 42.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "BRC",
+     "player": "Yu Hirakawa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.266,
+     "xgot": 0.642,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.9,
+     "y": 24.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "BRC",
+     "player": "Dominic Ballard",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 32.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "BRC",
+     "player": "Lisav Naif Eissat",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.4,
+     "y": 30.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "BRC",
+     "player": "Lorent Tolaj",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 50,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "BRC",
+     "player": "Dominic Ballard",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.4,
+     "y": 40.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "BRC",
+     "player": "Lisav Naif Eissat",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.129,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 30.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "BRC",
+     "player": "Gibson Yah",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.145,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "BRC",
+     "player": "Sam Greenwood",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.022,
+     "xgot": 0.035,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 89.5,
+     "y": 56.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "LIN",
+     "player": "Daniel Oyegoke",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.6,
+     "y": 46.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "BRC",
+     "player": "Robert Atkinson",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.019,
+     "xgot": 0.035,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 33.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "BRC",
+     "player": "Yu Hirakawa",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.046,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.1,
+     "y": 43.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "BRC",
+     "player": "Lisav Naif Eissat",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.8,
+     "y": 33.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "BRC",
+     "player": "Dominic Ballard",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.08,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.1,
+     "y": 32.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     -30
+    ],
+    [
+     5,
+     -100
+    ],
+    [
+     6,
+     -100
+    ],
+    [
+     7,
+     -90
+    ],
+    [
+     8,
+     30
+    ],
+    [
+     9,
+     8
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     24
+    ],
+    [
+     12,
+     24
+    ],
+    [
+     13,
+     24
+    ],
+    [
+     14,
+     5
+    ],
+    [
+     15,
+     100
+    ],
+    [
+     16,
+     100
+    ],
+    [
+     17,
+     100
+    ],
+    [
+     18,
+     -11
+    ],
+    [
+     19,
+     30
+    ],
+    [
+     20,
+     35
+    ],
+    [
+     21,
+     22
+    ],
+    [
+     22,
+     0
+    ],
+    [
+     23,
+     3
+    ],
+    [
+     24,
+     16
+    ],
+    [
+     25,
+     16
+    ],
+    [
+     26,
+     19
+    ],
+    [
+     27,
+     -22
+    ],
+    [
+     28,
+     -22
+    ],
+    [
+     29,
+     54
+    ],
+    [
+     30,
+     81
+    ],
+    [
+     31,
+     81
+    ],
+    [
+     32,
+     -16
+    ],
+    [
+     33,
+     -16
+    ],
+    [
+     34,
+     -5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     36,
+     0
+    ],
+    [
+     37,
+     -11
+    ],
+    [
+     38,
+     65
+    ],
+    [
+     39,
+     60
+    ],
+    [
+     40,
+     54
+    ],
+    [
+     41,
+     -11
+    ],
+    [
+     42,
+     0
+    ],
+    [
+     43,
+     11
+    ],
+    [
+     44,
+     11
+    ],
+    [
+     45,
+     33
+    ],
+    [
+     45.5,
+     40
+    ],
+    [
+     46,
+     -3
+    ],
+    [
+     47,
+     -19
+    ],
+    [
+     48,
+     -100
+    ],
+    [
+     49,
+     -79
+    ],
+    [
+     50,
+     -84
+    ],
+    [
+     51,
+     0
+    ],
+    [
+     52,
+     -30
+    ],
+    [
+     53,
+     -8
+    ],
+    [
+     54,
+     -8
+    ],
+    [
+     55,
+     0
+    ],
+    [
+     56,
+     0
+    ],
+    [
+     57,
+     -11
+    ],
+    [
+     58,
+     -11
+    ],
+    [
+     59,
+     -5
+    ],
+    [
+     60,
+     54
+    ],
+    [
+     61,
+     54
+    ],
+    [
+     62,
+     68
+    ],
+    [
+     63,
+     22
+    ],
+    [
+     64,
+     27
+    ],
+    [
+     65,
+     24
+    ],
+    [
+     66,
+     38
+    ],
+    [
+     67,
+     60
+    ],
+    [
+     68,
+     54
+    ],
+    [
+     69,
+     38
+    ],
+    [
+     70,
+     11
+    ],
+    [
+     71,
+     -5
+    ],
+    [
+     72,
+     -5
+    ],
+    [
+     73,
+     -5
+    ],
+    [
+     74,
+     0
+    ],
+    [
+     75,
+     0
+    ],
+    [
+     76,
+     -5
+    ],
+    [
+     77,
+     0
+    ],
+    [
+     78,
+     5
+    ],
+    [
+     79,
+     71
+    ],
+    [
+     80,
+     65
+    ],
+    [
+     81,
+     54
+    ],
+    [
+     82,
+     5
+    ],
+    [
+     83,
+     16
+    ],
+    [
+     84,
+     41
+    ],
+    [
+     85,
+     24
+    ],
+    [
+     86,
+     19
+    ],
+    [
+     87,
+     30
+    ],
+    [
+     88,
+     35
+    ],
+    [
+     89,
+     30
+    ],
+    [
+     90,
+     -16
+    ],
+    [
+     90.5,
+     0
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BRC": {
+     "team": "BRC",
+     "formation": "4-2-3-1",
+     "coach": "Michael Skubala",
+     "xi": [
+      {
+       "name": "Sam Tickle",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Rio Cardines",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Rob Dickie",
+       "shirt": 16,
+       "pos": "D"
+      },
+      {
+       "name": "Lisav Naif Eissat",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Cameron Pring",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Jason Knight",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Gibson Yah",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Jed Wallace",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Scott Twine",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Yu Hirakawa",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Lorent Tolaj",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Dominic Ballard",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Robert Atkinson",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Sam Greenwood",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Elijah Adebayo",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Sam Bell",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Bradley Collins",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "George Tanner",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Noah Eile",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Adam Randell",
+       "shirt": 4,
+       "pos": "?"
+      }
+     ]
+    },
+    "LIN": {
+     "team": "LIN",
+     "formation": "4-2-3-1",
+     "coach": "Chris Cohen",
+     "xi": [
+      {
+       "name": "George Wickens",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Deji Elerewe",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Sonny Bradley",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Ryley Towler",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Adam Reach",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Conor McGrandles",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Ivan Varfolomeev",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Chiedozie Ogbene",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Dom Jefferies",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Ben House",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Freddie Draper",
+       "shirt": 34,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Reeco Hackett",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel Oyegoke",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Robert Street",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Tom Bayliss",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Joe Gauci",
+       "shirt": 46,
+       "pos": "?"
+      },
+      {
+       "name": "Andrei Coubiș",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Yunus Emre Konak",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Mikkel Ladefoged",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Tanto Olaofe",
+       "shirt": 19,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 34,
+      "center": 34,
+      "right": 32
+     },
+     "firstHalf": {
+      "left": 40,
+      "center": 32,
+      "right": 28
+     },
+     "secondHalf": {
+      "left": 28,
+      "center": 35,
+      "right": 37
+     }
+    },
+    "away": {
+     "total": {
+      "left": 39,
+      "center": 24,
+      "right": 37
+     },
+     "firstHalf": {
+      "left": 32,
+      "center": 24,
+      "right": 44
+     },
+     "secondHalf": {
+      "left": 46,
+      "center": 23,
+      "right": 31
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-15T21:59:51.742Z",
+   "fdMatchId": "2026-27-82",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "LIN",
+      "name": "Ivan Varfolomeev",
+      "n": 54,
+      "cx": 49.3,
+      "cy": 40.5,
+      "spread": 30.5,
+      "grid": "2,1,1,2,0,2,0,3,2,5,3,0,1,1,4,3,1,0,3,5,2,10,3,0"
+     },
+     {
+      "team": "LIN",
+      "name": "George Wickens",
+      "n": 65,
+      "cx": 17.9,
+      "cy": 37,
+      "spread": 18.8,
+      "grid": "0,0,1,0,0,0,11,9,2,0,0,1,26,11,1,0,0,0,0,3,0,0,0,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Lisav Naif Eissat",
+      "n": 102,
+      "cx": 39.2,
+      "cy": 23.1,
+      "spread": 24.7,
+      "grid": "2,17,5,3,2,0,8,17,18,12,1,1,3,3,2,1,0,5,1,1,0,0,0,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Dom Jefferies",
+      "n": 35,
+      "cx": 55.9,
+      "cy": 53.7,
+      "spread": 29.7,
+      "grid": "0,0,0,0,0,0,0,0,0,1,0,1,5,0,1,1,3,1,0,4,4,7,4,3"
+     },
+     {
+      "team": "BRC",
+      "name": "Yu Hirakawa",
+      "n": 47,
+      "cx": 67.2,
+      "cy": 27.2,
+      "spread": 31.3,
+      "grid": "0,2,2,5,8,3,2,0,4,1,2,0,0,0,3,0,4,2,0,1,0,0,4,4"
+     },
+     {
+      "team": "LIN",
+      "name": "Ryley Towler",
+      "n": 50,
+      "cx": 36.6,
+      "cy": 19.6,
+      "spread": 28.6,
+      "grid": "6,2,9,6,1,0,9,1,2,2,0,3,1,3,4,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Cameron Pring",
+      "n": 74,
+      "cx": 50.3,
+      "cy": 11.8,
+      "spread": 25.5,
+      "grid": "3,9,18,19,6,3,2,0,2,2,2,1,1,2,2,1,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Sonny Bradley",
+      "n": 50,
+      "cx": 31,
+      "cy": 31.9,
+      "spread": 30,
+      "grid": "3,1,5,1,2,0,12,4,0,1,0,3,6,1,3,0,0,1,2,1,4,0,0,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Lorent Tolaj",
+      "n": 35,
+      "cx": 67.1,
+      "cy": 26.4,
+      "spread": 27.8,
+      "grid": "0,0,0,4,2,2,2,1,1,6,5,4,0,0,0,0,5,1,0,1,0,1,0,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Conor McGrandles",
+      "n": 50,
+      "cx": 46.7,
+      "cy": 30.8,
+      "spread": 27.3,
+      "grid": "0,2,1,4,4,0,0,6,4,4,3,0,7,0,5,3,1,0,0,0,4,1,1,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Jason Knight",
+      "n": 91,
+      "cx": 51.1,
+      "cy": 43.8,
+      "spread": 22.5,
+      "grid": "0,0,2,1,0,0,2,1,7,3,1,1,4,9,15,17,1,0,0,1,5,12,8,1"
+     },
+     {
+      "team": "LIN",
+      "name": "Chiedozie Ogbene",
+      "n": 29,
+      "cx": 66.7,
+      "cy": 27.4,
+      "spread": 26.4,
+      "grid": "0,1,5,3,2,1,0,0,0,1,3,2,0,0,1,3,1,1,0,0,0,3,2,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Adam Reach",
+      "n": 47,
+      "cx": 48,
+      "cy": 15.2,
+      "spread": 35.1,
+      "grid": "5,14,3,2,8,1,2,2,1,1,1,1,0,0,0,0,2,0,0,0,0,0,2,2"
+     },
+     {
+      "team": "BRC",
+      "name": "Rio Cardines",
+      "n": 126,
+      "cx": 56.1,
+      "cy": 53,
+      "spread": 36.3,
+      "grid": "0,1,0,1,4,6,1,2,1,0,2,1,1,2,3,2,2,2,15,21,12,16,15,16"
+     },
+     {
+      "team": "BRC",
+      "name": "Rob Dickie",
+      "n": 97,
+      "cx": 37.3,
+      "cy": 44.9,
+      "spread": 21.6,
+      "grid": "0,0,0,0,0,0,3,6,0,1,0,0,10,22,19,6,4,4,1,7,11,3,0,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Sam Tickle",
+      "n": 49,
+      "cx": 16.6,
+      "cy": 37.7,
+      "spread": 15.7,
+      "grid": "0,0,0,0,0,0,13,6,0,0,0,0,17,9,0,0,0,0,1,0,2,1,0,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Deji Elerewe",
+      "n": 71,
+      "cx": 44,
+      "cy": 50.4,
+      "spread": 29.5,
+      "grid": "0,0,0,0,0,0,3,0,1,2,0,4,9,7,4,5,1,0,3,7,10,10,2,3"
+     },
+     {
+      "team": "LIN",
+      "name": "Freddie Draper",
+      "n": 37,
+      "cx": 69.9,
+      "cy": 39.6,
+      "spread": 24.7,
+      "grid": "0,0,0,2,1,0,2,0,1,1,4,3,0,0,1,1,9,1,0,0,0,4,7,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Gibson Yah",
+      "n": 94,
+      "cx": 50.3,
+      "cy": 24,
+      "spread": 26.9,
+      "grid": "1,10,9,6,3,0,1,3,10,16,5,5,4,1,8,5,2,2,3,0,0,0,0,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Scott Twine",
+      "n": 49,
+      "cx": 55.8,
+      "cy": 29.5,
+      "spread": 26.1,
+      "grid": "1,4,6,1,1,0,0,0,1,5,10,0,0,1,4,4,3,1,1,3,2,0,1,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Jed Wallace",
+      "n": 33,
+      "cx": 55,
+      "cy": 53.4,
+      "spread": 31.7,
+      "grid": "0,0,0,0,1,0,0,0,0,2,0,2,0,0,3,0,1,0,6,1,5,4,7,1"
+     },
+     {
+      "team": "LIN",
+      "name": "Ben House",
+      "n": 39,
+      "cx": 44,
+      "cy": 28.9,
+      "spread": 33.9,
+      "grid": "2,0,1,1,5,2,5,7,1,1,0,0,1,3,2,0,2,2,2,1,0,1,0,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Dominic Ballard",
+      "n": 20,
+      "cx": 78.2,
+      "cy": 33,
+      "spread": 17.6,
+      "grid": "0,0,0,0,1,0,0,0,0,1,4,4,0,0,2,0,6,1,0,0,0,0,1,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Reeco Hackett",
+      "n": 14,
+      "cx": 65.3,
+      "cy": 34.8,
+      "spread": 32.3,
+      "grid": "0,0,0,0,0,4,0,0,1,0,1,0,0,0,2,2,0,0,0,0,2,1,1,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Robert Street",
+      "n": 17,
+      "cx": 61,
+      "cy": 18.5,
+      "spread": 38.2,
+      "grid": "1,0,0,1,5,4,2,2,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1"
+     },
+     {
+      "team": "BRC",
+      "name": "Robert Atkinson",
+      "n": 19,
+      "cx": 51.9,
+      "cy": 38,
+      "spread": 27,
+      "grid": "0,0,0,0,0,0,1,2,1,2,0,0,0,4,2,1,0,4,0,0,1,1,0,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Daniel Oyegoke",
+      "n": 16,
+      "cx": 46.7,
+      "cy": 10.1,
+      "spread": 31,
+      "grid": "4,3,0,2,2,2,0,2,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Sam Greenwood",
+      "n": 7,
+      "cx": 72.7,
+      "cy": 23.2,
+      "spread": 27.8,
+      "grid": "0,0,0,1,0,2,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Elijah Adebayo",
+      "n": 12,
+      "cx": 61.3,
+      "cy": 33.8,
+      "spread": 30.4,
+      "grid": "0,0,0,1,0,0,0,0,2,0,1,3,0,0,0,0,0,0,0,1,3,1,0,0"
+     },
+     {
+      "team": "BRC",
+      "name": "Sam Bell",
+      "n": 4,
+      "cx": 71,
+      "cy": 5.1,
+      "spread": 12.9,
+      "grid": "0,0,0,3,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LIN",
+      "name": "Tom Bayliss",
+      "n": 4,
+      "cx": 43.1,
+      "cy": 36.2,
+      "spread": 18.8,
+      "grid": "0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-15T20:29:31.099Z"
+ "updatedAt": "2026-09-15T21:59:52.494Z"
 }
