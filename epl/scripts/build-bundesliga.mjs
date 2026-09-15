@@ -54,6 +54,10 @@ import { round } from './lib/util.mjs';
    `LEAGUES[lg].open` 有沒有 players 才去要它的,沒寫就是一個保證 404,
    而畫面只是「搜尋德甲球員什麼都搜不到」,不報錯。 */
 import { coreFromUnderstat } from './lib/player-core.mjs';
+/* 比賽層(2026-09-15):FotMob 逐場 → 逐場統計 + 賽後報告。跟西甲、英冠**同一份實作**,
+   不各寫一套(buildProviderMatchReport 自己會再核對一次比分、要求 coverage 齊全)。 */
+import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
+import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES }
@@ -335,6 +339,49 @@ async function main() {
      Understat 有什麼、沒有什麼寫在適配器的檔頭:沒有背號、頭貼、出生日期、傷停,
      也沒有英超那套 FPL 欄位。德甲**連 SportMonks 那層補充都沒有**(西甲有),
      所以年齡一律 null —— 吃年齡的榜(22 歲以下)會是空的,畫面要講得出為什麼。 */
+  /* ── 比賽層:逐場統計與賽後報告(FotMob)────────────────────────────
+     跟西甲、英冠同一份 lib。比分逐場對回本站賽果、控球率相加要是 100,不符的整場退回。
+     德甲沒有第二來源可抽核控球率,`verified` 會是 false,畫面照這個講。
+     raw 由 runner 上的 `game:fetch -- --league=de1` 抓回來(沙箱連不到 fotmob.com)。 */
+  const fotmobStats = loadFotmobMatchStats(ROOT, {
+    results: [...lastMatches, ...curMatches].filter(m => m.played), rawDir: 'fotmob-bundesliga',
+  });
+  if (fotmobStats.count) {
+    console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})`
+      + `・退回 ${fotmobStats.rejected.length} 場・控球率未經第二來源抽核`);
+  }
+
+  /* 逐場統計掛到球隊上(球隊頁的那一區)。沒有的隊不掛欄位,前端的判斷會讓它整塊消失。 */
+  for (const t of teams) { const ms = fotmobStats.teams[t.code]; if (ms?.games) t.matchStats = ms; }
+
+  /* 賽後報告:逐場詳情轉成 canonical detail,走跟西甲英冠同一個 buildProviderMatchReport。
+     它自己會再核對一次比分、要求五種 coverage 齊全 —— 不齊的那一場不發布(不是硬塞一份殘缺的)。 */
+  const reports = {};
+  const nameOf = code => T.byCode.get(code)?.en ?? code;
+  for (const f of fixtures) {
+    if (!f.played) continue;
+    const ms = fotmobStats.matches?.[`${f.season}|${f.home}|${f.away}`];
+    if (!ms) continue;
+    const report = buildProviderMatchReport({ fixture: f, detail: toCanonicalDetail(ms, { verified: false }), nameOf });
+    if (report) reports[`${f.season}|${f.home}|${f.away}`] = report;
+  }
+  const reportCount = Object.keys(reports).length;
+  const pendingCount = fixtures.filter(f => f.played && f.season === CURRENT_SEASON
+    && !reports[`${f.season}|${f.home}|${f.away}`]).length;
+  if (reportCount) console.log(`  德甲賽後報告:${reportCount} 場(FotMob)・本季還沒抓到 ${pendingCount} 場`);
+
+  /* **上一輪留下來的那個殘差,現在有資料可以對帳了。**
+     德甲球員進球加總比積分榜少 0~11%,我判斷是烏龍球但當時沒有德甲的事件來源可以證明。
+     逐場事件裡有烏龍球(canonical 已經翻成得分方),所以這裡逐季數一次:
+     缺口 = 烏龍球 的話,那個問號就可以收掉;對不上就照實留著,**不要硬湊一個解釋**。 */
+  const ownGoals = {};
+  for (const [key, r] of Object.entries(reports)) {
+    const season = r.season ?? key.split('|')[0];
+    ownGoals[season] ??= { matches: 0, own: 0 };
+    ownGoals[season].matches++;
+    ownGoals[season].own += (r.advanced?.events ?? []).filter(e => e.ownGoal).length;
+  }
+
   const playerSeasons = {};
   for (const season of [CURRENT_SEASON, LAST_SEASON]) {
     const loaded = loadPlayers(ROOT, season, { dir: 'understat-bundesliga' });
@@ -406,7 +453,8 @@ async function main() {
     /* **不要設 edition**(英冠那條註解同一個理由):那個欄位在前端被當成「是不是西甲」的二元旗標。 */
     league: 'de1', leagueLabel: '德甲',
     /* capabilities 是前端用來決定「這一頁要不要畫」的旗標。沒有的一律 false,不要留空不寫。 */
-    capabilities: { players: hasPlayers, injuries: false, coaches: false, xg: hasPlayers, lineups: false, live: false },
+    capabilities: { players: hasPlayers, injuries: false, coaches: false,
+      xg: hasPlayers || reportCount > 0, lineups: reportCount > 0, live: false },
     builtAt: new Date().toISOString(), asOf: AS_OF,
     currentSeason: CURRENT_SEASON, lastSeason: LAST_SEASON,
     h2hSeasons: [...fullSeasons, CURRENT_SEASON],
@@ -437,13 +485,30 @@ async function main() {
       ...(hasPlayers
         ? [`✓ 球員整季數據與 xG(Understat,${playersOut.length} 筆):進球、助攻、xG、xA、射門、關鍵傳球與牌。`
           + '隊名對照拿逐隊出賽分鐘與進球獨立核對過(分鐘都落在滿季理論上限的 95% 以上)。',
-          /* 缺口要照實講,而且要講出它是哪一種 —— 這個殘差沒有查證到底(鐵則四) */
-          '— 球員進球加總比積分榜少 0~11%:西甲也有同量級的缺口,量級跟烏龍球相符'
-          + '(球員榜本來就不算烏龍球),但本站沒有德甲的烏龍球來源可以證明,所以只回報、不當結論。',
+          /* 缺口要照實講,而且要講出它是哪一種。
+             **這一句也會過期**:賽後報告接上之後就有烏龍球可以對帳了,
+             那時候還印「本站沒有來源可以證明」就是假的(跟上面那句寫死的同一種)。 */
+          ...(reportCount
+            ? []
+            : ['— 球員進球加總比積分榜少 0~11%:西甲也有同量級的缺口,量級跟烏龍球相符'
+              + '(球員榜本來就不算烏龍球),但本站還沒抓德甲的逐場事件,所以只回報、不當結論。']),
           '— 球員層沒有背號、頭貼、出生日期與身價:Understat 不給,德甲也沒有西甲那層補充來源,'
           + '所以年齡是空的、「22 歲以下」那張榜畫不出來。']
         : ['— 還沒有球員數據與 xG:德甲是 Understat 涵蓋的聯賽,但開發沙箱的出口代理不放行 understat.com'
           + '(2026-09-15 實測 CONNECT 403),要在 CI runner 上抓。這是「還沒抓」,跟英冠那種「來源就是沒有」不一樣。']),
+      /* 比賽層跟著資料講 —— **不要寫死**。上一輪就是把「只做到球隊與比賽層」寫死在這裡,
+         球員層接上之後它在畫面上說謊了。同一支 build 裡的那句話要自己會變。 */
+      ...(reportCount
+        ? [`✓ 賽後報告與逐場統計(FotMob,${reportCount} 場):球隊統計、控球、逐射門 xG、事件、`
+          + '正式名單與逐人評分。比分逐場對回本站賽果才收;控球率沒有第二來源可抽核。'
+          + (pendingCount ? `本季還有 ${pendingCount} 場還沒抓到。` : ''),
+          ...(Object.values(ownGoals).some(o => o.own > 0)
+            ? [`✓ 逐場事件含烏龍球(${Object.entries(ownGoals).map(([k, o]) => `${k} ${o.own} 顆`).join('、')})——`
+              + '球員榜與積分榜的進球差額現在對得起來了,不必再只回報。']
+            : []),
+        ]
+        : ['— 還沒有賽後報告與逐場統計:來源在(FotMob 逐場端點,聯賽 id 54 已驗證),'
+          + '只是 raw 還沒抓。這是「還沒抓」,不是「沒有來源」。']),
       '— 還沒有隊色、城市、球場、隊徽與教練:那幾樣要另外人工交付並通過核對器,交付之前畫面上不顯示',
       '— 沒有即時比分:比分依 openfootball 的更新節奏落地',
       /* 德甲的升降級跟英格蘭不一樣,前端不要自己猜 */
@@ -588,8 +653,25 @@ async function main() {
     season: CURRENT_SEASON, fetchedAt: null,
     counts: { total: 0, live: 0, finished: 0, upcoming: 0, today: 0 },
     matches: [], note: meta.live.note });
-  await write('reports', { seasons: [], count: 0, reports: {}, source: null,
-    note: '德甲還沒有賽後報告(要逐場詳情來源)。', pending: 0, blocked: null, backupBlocked: null });
+  /* blocked 有明確語意(整季拿不到)。德甲**不是**沒有資料源 —— 來源在,只是 raw 還沒抓,
+     所以是 'not-fetched',不是 'no-source'。這兩句對讀者的意義完全不同(CLAUDE.md 一整條在講)。 */
+  await write('reports', {
+    seasons: reportCount ? [...new Set(Object.values(reports).map(r => r.season))].sort() : [],
+    count: reportCount, reports, source: reportCount ? 'fotmob' : null, pending: pendingCount,
+    blocked: reportCount ? null : { reason: 'not-fetched', message: '德甲的 FotMob 逐場資料還沒抓(npm run game:fetch -- --league=de1)。', at: new Date().toISOString() },
+    backupBlocked: null,
+    note: reportCount
+      ? '德甲賽後資料來自 FotMob 逐場端點:球隊統計、逐射門 xG、事件、正式名單與逐人評分;比分逐場對回本站賽果才收。沒有第二來源可抽核控球率。'
+      : '德甲的 FotMob 逐場資料還沒抓。',
+  });
+  if (fotmobStats.count) {
+    await write('matchstats', {
+      source: fotmobStats.source,
+      note: '德甲逐場統計(FotMob):控球、球隊統計、逐射門 xG、動能、事件、名單、跑動、逐人統計。比分已逐場對回本站賽果;控球率沒有第二來源可抽核。',
+      seasons: fotmobStats.seasons, count: fotmobStats.count, rejected: fotmobStats.rejected,
+      verification: fotmobStats.verification, teams: fotmobStats.teams, matches: fotmobStats.matches,
+    });
+  }
   /* 單場分析頁一定會去要這三份 —— 少一份就是 404 加「載入失敗」,
      而那是「這一站壞了」的訊息,不是「這個聯賽沒有這個功能」。既有聯賽沒有內容時
      寫的就是空物件 / 空陣列,照抄。 */

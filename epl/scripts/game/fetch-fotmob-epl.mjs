@@ -51,6 +51,17 @@ const LEAGUES = {
   es1: { id: 87, ccode3: 'ESP', dir: 'fotmob-la-liga', teamFile: 'teams-la-liga.json', results: ['web', 'data', 'leagues', 'es1', 'results.json'], verify: false },
   // 英冠(2026-09-05):同一支抓取器,只是聯賽 id 48;pulselive 只有英超,所以 verify false
   en2: { id: 48, ccode3: 'GBR', dir: 'fotmob-championship', teamFile: 'teams-championship.json', results: ['web', 'data', 'leagues', 'en2', 'results.json'], verify: false },
+  /* 德甲(2026-09-15):同一支抓取器,只是聯賽 id 54。
+     **那個 54 是證明出來的,不是猜的**,而且這裡特別容易挑錯:
+     FotMob 的 GER 清單裡有一堆叫 Bundesliga 的東西(2. Bundesliga、Frauen Bundesliga、
+     Bundesliga Qualification…),而**奧地利甲也叫 Bundesliga**(id 38,見
+     `data/manual/ucl-league-teams.json` 的 at1)。挑錯的話照樣回得出 18 隊與逐場資料,
+     畫面不報錯、整個聯賽是錯的。
+     `probe-fotmob-bundesliga.mjs`(2026-09-15 runner 上跑)從 allLeagues 找 ccode=GER,
+     再拿 id 抓一季賽程**逐隊比對本站名冊**:306 場、18 隊 18/18 全對,才敢寫下來。
+     取樣兩場確認逐場詳情五塊齊全(stats / shotmap / lineup / events / playerStats)。
+     pulselive 只有英超,所以 verify false。 */
+  de1: { id: 54, ccode3: 'GER', dir: 'fotmob-bundesliga', teamFile: 'teams-bundesliga.json', results: ['web', 'data', 'leagues', 'de1', 'results.json'], verify: false },
   /* 歐冠(2026-09-12):同一支抓取器,三個不同點 ——
      ① 聯賽 id 42 是 `probe-ucl-matchdetails.mjs` 走 FotMob 的 allLeagues 目錄用名字找到的,不是猜的;
         ccode3 不帶(國際賽事沒有國家)。
