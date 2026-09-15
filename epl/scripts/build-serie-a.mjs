@@ -27,7 +27,7 @@ import { buildLeague } from './lib/build-league.mjs';
 await buildLeague({
   root: join(dirname(fileURLToPath(import.meta.url)), '..'),
   key: 'it1', zh: '義甲', competition: 'ita.1',
-  rawDir: 'openfootball-serie-a', fillDir: 'football-data-couk-serie-a', div: 'I1',
+  rawDir: 'openfootball-serie-a', fillDir: 'football-data-couk-serie-a', div: 'I1', ofCode: 'it.1',
   understatDir: 'understat-serie-a', fotmobDir: 'fotmob-serie-a',
   teamFile: 'teams-serie-a.json', crestFile: 'crests-serie-a.json',
   /* 義大利是 Europe/Rome:夏令 CEST(+02:00)、冬令 CET(+01:00)—— 跟德國同一個時區。 */

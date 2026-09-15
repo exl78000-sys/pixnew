@@ -50,7 +50,17 @@ const LEAGUES = [
      產生器對缺檔本來就是 load() 回 null → 該區塊不寫,所以不需要為它特判,
      筆記裡就只會有球隊與比賽。球員層接上來之後這裡一個字都不用改。 */
   { key: 'de1', zh: '德甲', dir: '德甲', wf: 'backtest-bundesliga-matches.json' },
+  /* 義甲 / 法甲(2026-09-15):球員層跟德甲同一條(Understat 整季彙總),所以
+     collectPlayers 那一支直接涵蓋,這裡只要多兩列。 */
+  { key: 'it1', zh: '義甲', dir: '義甲', wf: 'backtest-serie-a-matches.json' },
+  { key: 'fr1', zh: '法甲', dir: '法甲', wf: 'backtest-ligue-1-matches.json' },
 ];
+/* **這份清單是手寫的,而手寫的聯賽清單本站漏過三次。** 這裡不能改成掃
+   `web/data/leagues/`:`wf`(走查回測的逐場檔)的檔名沒有可以推出來的規律
+   (pl→backtest、es1→laliga、en2→championship、de1→bundesliga…),
+   掃目錄只會讓新聯賽拿到一個不存在的檔名、賽前預測靜靜掛不上。
+   所以改用**守門**:`npm test` 有一條拿 `web/data/leagues/` 逐個比對,
+   少一個就紅 —— 漏掉的代價是那個聯賽整個從 vault 消失,而畫面完全正常。 */
 
 /* ── Markdown / YAML 小工具 ──────────────────────────────────
    Obsidian 的檔名不能有這些字元;`[` `]` `#` `^` `|` 會跟連結與區塊語法打架。 */

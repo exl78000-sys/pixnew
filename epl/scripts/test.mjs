@@ -2375,6 +2375,24 @@ async function checkDataGap() {
         && /wf: 'backtest-championship-matches\.json'/.test(src)
         && !/backtest-laliga-matches\.json'\s*\)/.test(src.split('const LEAGUES')[1].split('];')[1] ?? '');
     })()],
+    /* **手寫的聯賽清單漏過三次**(資產戳漏英冠三個月、加德甲時又找到三份)。
+       `build-obsidian.mjs` 的 LEAGUES 不能改成掃目錄 —— `wf` 的檔名沒有規律 ——
+       所以在這裡守:`web/data/leagues/` 有的聯賽,vault 一個都不准少,
+       而且它指的那個走查回測逐場檔要真的存在(檔名打錯的話那個聯賽的
+       賽前預測會靜靜掛不上,vault 看起來完全正常)。 */
+    ['vault 的聯賽清單涵蓋 web/data/leagues 底下每一個聯賽', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'build-obsidian.mjs'), 'utf8');
+      const listed = [...src.matchAll(/\{ key: '([a-z0-9]+)', zh: '[^']+', dir: '[^']+', wf: '([^']+)' \}/g)];
+      const keys = new Set(listed.map(m => m[1]));
+      const onDisk = readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => e.name);
+      const missing = onDisk.filter(k => !keys.has(k));
+      const noFile = listed.filter(m => !existsSync(join(ROOT, 'data', m[2]))).map(m => m[1]);
+      if (missing.length || noFile.length) {
+        console.log(`    vault 少了:${missing.join('、') || '—'}・回測檔不存在:${noFile.join('、') || '—'}`);
+      }
+      return keys.has('pl') && missing.length === 0 && noFile.length === 0;
+    })()],
     ['分析頁的「整季 N 場」從回測資料來,不寫死 380', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
       return /整季 \$\{mk\.games\} 場/.test(src) && !/整季 380 場/.test(src);

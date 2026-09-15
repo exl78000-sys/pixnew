@@ -9,7 +9,7 @@ import { testLeague } from './lib/test-league.mjs';
 testLeague({
   root: join(dirname(fileURLToPath(import.meta.url)), '..'),
   key: 'it1', zh: '義甲',
-  rawDir: 'openfootball-serie-a', fillDir: 'football-data-couk-serie-a',
+  rawDir: 'openfootball-serie-a', fillDir: 'football-data-couk-serie-a', ofCode: 'it.1', div: 'I1',
   teamFile: 'teams-serie-a.json',
   seasons: ['2023-24', '2024-25', '2025-26', '2026-27'],
   /* 義大利是 Europe/Rome,跟德國同一個時區(CET/CEST)。 */

@@ -9,7 +9,7 @@ import { testLeague } from './lib/test-league.mjs';
 testLeague({
   root: join(dirname(fileURLToPath(import.meta.url)), '..'),
   key: 'fr1', zh: '法甲',
-  rawDir: 'openfootball-ligue-1', fillDir: 'football-data-couk-ligue-1',
+  rawDir: 'openfootball-ligue-1', fillDir: 'football-data-couk-ligue-1', ofCode: 'fr.1', div: 'F1',
   teamFile: 'teams-ligue-1.json',
   seasons: ['2023-24', '2024-25', '2025-26', '2026-27'],
   /* 法國是 Europe/Paris,跟德國義大利同一個時區(CET/CEST)。 */

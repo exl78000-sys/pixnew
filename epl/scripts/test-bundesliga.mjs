@@ -9,7 +9,7 @@ import { testLeague } from './lib/test-league.mjs';
 testLeague({
   root: join(dirname(fileURLToPath(import.meta.url)), '..'),
   key: 'de1', zh: '德甲',
-  rawDir: 'openfootball-bundesliga', fillDir: 'football-data-couk-bundesliga',
+  rawDir: 'openfootball-bundesliga', fillDir: 'football-data-couk-bundesliga', ofCode: 'de.1', div: 'D1',
   teamFile: 'teams-bundesliga.json',
   seasons: ['2023-24', '2024-25', '2025-26', '2026-27'],
   timezone: { summer: '+02:00', winter: '+01:00' },

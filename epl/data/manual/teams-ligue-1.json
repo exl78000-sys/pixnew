@@ -1,5 +1,5 @@
 {
-  "_note": "法甲(Ligue 1)球隊對照表。of = openfootball 的隊名(主來源),fd = football-data.co.uk F1 的簡稱(獨立來源,逐場核對與補比分用)。of 名字是從 openfootball 的 fr.1 四季(2023-24 ~ 2026-27)逐場掃出來的,共 24 支(含升降級);fd 名字是從倉庫裡 data/raw/football-data-couk-extra/F1 的 2021-22 與 2022-23 逐場掃出來的,觀察到 23 個,其中 21 個對得上本表。**沒有觀察到的一律留 null**(Le Havre / Le Mans / Paris FC —— 那三支在那兩季不在法甲),不要憑印象填。Paris FC 特別要小心:它跟 Paris Saint-Germain 是**兩支不同的球隊**,寬鬆比對很容易把它對到 `Paris SG`,所以在 runner 抓到新的 F1 之前寧可留 null。runner 抓到 2023-24 之後的 F1 就補得上,build 會把對不上的隊名印出來(tolerant 模式那一行輸出要看)。",
+  "_note": "法甲(Ligue 1)球隊對照表。of = openfootball 的隊名(主來源),fd = football-data.co.uk F1 的簡稱(獨立來源,逐場核對與補比分用)。of 名字是從 openfootball 的 fr.1 四季(2023-24 ~ 2026-27)逐場掃出來的,共 24 支(含升降級);fd 名字是從倉庫裡 data/raw/football-data-couk-extra/F1 的 2021-22 與 2022-23 逐場掃出來的,觀察到 23 個,其中 21 個對得上本表。**2026-09-15 深夜補齊**:排程在 runner 上抓回 F1 四季之後,原本留 null 的 Le Havre / Paris FC / Le Mans 三支的簡稱都**觀察得到了**,照抄上游 —— 而且證實了當初不憑印象填是對的:上游寫的正是 `Paris FC`,跟 `Paris SG` 是兩個不同的字串。Paris FC 跟 Paris Saint-Germain 是**兩支不同的球隊**,寬鬆比對很容易把它對到 Paris SG。build 會把對不上的隊名印出來(tolerant 模式那一行輸出要看)。",
   "_understat": "alias 裡的 Understat / FotMob 寫法是從 probe-new-leagues.mjs 在 CI runner 上跑出來的 log **逐字抄**的(2026-09-15:Understat 聯賽代號 Ligue_1、2025-26 回 553 筆;FotMob 聯賽 id 53、2025-26 回 306 場)。兩家**對不上的是同一組三個**:`Rennes` / `Lyon` / `Brest` —— openfootball 的全名分別是 `Stade Rennais FC 1901` / `Olympique Lyonnais` / `Stade Brestois 29`,三個都跟短名一個共同 token 都沒有(Lyon 與 Lyonnais 也不算,token 不同),這正是 CLAUDE.md「兩份名單對照只比全名會整隊漏掉」那條坑,而且法甲一次出現三個。18 支裡 15 支直接對得上,剩下三支是一對一。**但一對一不是證據**:build 另外拿逐隊進球數跟積分榜對帳(球員進球加總 vs 該隊該季進球),對不上的要印出來 —— 「對錯人比對不到糟得多」。",
   "_updated": "2026-09",
   "_pending": "隊色、城市、球場、容量、綽號、隊徽、教練**都還沒有**。那幾樣要另外人工交付並過核對器(比照英冠 data/manual/championship-*-delivery.json 那條路),交付之前畫面上不顯示、也不用中性灰假裝有。隊徽可以照德甲那條路走 `fetch-crests.mjs`(football-logos 靜態檔)。",
@@ -26,8 +26,8 @@
     { "code": "STE", "en": "Saint-Étienne", "of": "AS Saint-Étienne", "fd": "St Etienne", "zh": "聖艾提安", "alias": ["Saint-Etienne", "St Etienne"] },
     { "code": "CLE", "en": "Clermont Foot", "of": "Clermont Foot 63", "fd": "Clermont", "zh": "克萊蒙" },
     { "code": "TRO", "en": "Troyes", "of": "ES Troyes AC", "fd": "Troyes", "zh": "特魯瓦" },
-    { "code": "HAV", "en": "Le Havre", "of": "Le Havre AC", "fd": null, "zh": "勒阿弗爾" },
-    { "code": "PFC", "en": "Paris FC", "of": "Paris FC", "fd": null, "zh": "巴黎足球會" },
-    { "code": "LMA", "en": "Le Mans", "of": "Le Mans FC", "fd": null, "zh": "勒芒" }
+    { "code": "HAV", "en": "Le Havre", "of": "Le Havre AC", "fd": "Le Havre", "zh": "勒阿弗爾" },
+    { "code": "PFC", "en": "Paris FC", "of": "Paris FC", "fd": "Paris FC", "zh": "巴黎足球會" },
+    { "code": "LMA", "en": "Le Mans", "of": "Le Mans FC", "fd": "Le Mans", "zh": "勒芒" }
   ]
 }
