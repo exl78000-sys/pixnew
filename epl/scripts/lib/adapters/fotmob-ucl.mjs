@@ -238,3 +238,116 @@ export function buildLeaders(players, { limit = 12 } = {}) {
   }
   return out;
 }
+
+/* ── 本季球員層:沒有交付檔時,從本站自己抓的逐場資料累計(2026-09-15)──────────────
+ *
+ * 往季的球員榜與逐隊陣容來自 FotMob 的**賽季總表交付檔**;本季那份交付檔只有抽籤(0 人),
+ * 而抽籤檔沒有比分可核、不能替球員榜背書。但 `game:fetch --league=ucl` 每次部署都在抓歐冠逐場詳情,
+ * 逐人統計(`{季}-player-stats.json`)與逐射門 xG(`{季}-game-details.json`)一直都在倉庫裡 ——
+ * 把它們按人累計就是本季的球員層,而且每次部署自動跟上,不用再等人交付。
+ *
+ * 核對(鐵則五):逐場「該隊球員進球總和 + 沒有射手的進球(烏龍球,FotMob 逐人不計)」要等於
+ * football-data 的比分;對不上的那一場整場不計、記在 excluded 裡讓畫面講。
+ * 實測本季 18 場:16 場直接相等、2 場差的正是烏龍球(4|94 兩邊各一、498|610 一),烏龍球記給對方之後 18/18。
+ *
+ * 單位跟著算法走,不借用交付檔的欄位名:交付檔的 total_scoring_att 是「每 90 分鐘」,
+ * 這裡累計的是總數,鍵就叫 shots_total,標題把「總數」寫進去。評分是逐場評分的平均
+ *(FotMob 的賽季評分算法沒有公開,不宣稱一樣)。xG 是逐射門 xG 相加,只算 shotmap 完整的場次。 */
+export const AGG_STAT_META = {
+  mins_played: 'Minutes played', goals: 'Goals', goal_assist: 'Assists',
+  rating: 'FotMob rating (average of match ratings)',
+  expected_goals: 'Expected goals (xG, sum of shots; complete shotmaps only)',
+  expected_assists: 'Expected assists (xA, sum)',
+  shots_total: 'Shots (total)', ontarget_total: 'Shots on target (total)',
+  total_att_assist: 'Chances created (key passes, total)',
+  tackles_total: 'Tackles (total)', interceptions_total: 'Interceptions (total)',
+  yellow_card: 'Yellow cards', red_card: 'Red cards', saves_total: 'Saves (total)',
+};
+const AGG_LEADERS = [
+  { key: 'goals', zh: '進球', unit: '球' },
+  { key: 'goal_assist', zh: '助攻', unit: '次' },
+  { key: 'expected_goals', zh: '預期進球 xG', unit: '', dp: 2 },
+  { key: 'total_att_assist', zh: '創造機會', unit: '次' },
+  { key: 'rating', zh: 'FotMob 評分(逐場平均,出賽 ≥ 2 場)', unit: '', dp: 2, minMatches: 2 },
+];
+
+/* pstore:{ matches: { key: { players: { fdTeamId: [canonical 逐人] } } } }
+   details:{ matches: { key: { score, events, shots, checks, names, home, away } } }
+   scoreOf(key) → [home, away] football-data 的最終比分(沒有就回 null → 這一場不計) */
+export function aggregateSeasonPlayers(pstore, details, scoreOf) {
+  const byPlayer = new Map();   // `${fdTeamId}|${providerId}` → 累計
+  const names = {};             // fdTeamId → 隊名
+  const excluded = [];
+  let matches = 0, reconciled = 0, xgComplete = 0;
+  const keys = Object.keys(pstore?.matches ?? {}).sort();
+  for (const key of keys) {
+    const pm = pstore.matches[key], dm = details?.matches?.[key];
+    if (!pm?.players || !dm) { excluded.push({ key, reason: '沒有逐場詳情' }); continue; }
+    matches++;
+    const score = scoreOf(key);
+    const [h, a] = key.split('|');
+    Object.assign(names, dm.names ?? {});
+    /* 逐隊核對:球員進球 + 烏龍球 = 主來源的比分。raw 事件裡烏龍球沒有射手,而 `team` 是**踢進自家門那個人的隊**
+       (跟 CLAUDE.md 那條「FotMob 烏龍球事件的 team 是踢進自家門的人那一隊」一致;實測 498|610 的那一顆
+       team=498 而得分的是 610),所以要記給**對方**。 */
+    const playerGoals = t => (pm.players[t] ?? []).reduce((s, p) => s + (p.goals?.total ?? 0), 0);
+    const ogGoals = t => (dm.events ?? []).filter(e => e.type === 'Goal' && (!e.player || e.ownGoal) && String(e.team) !== String(t)).length;
+    if (!score) { excluded.push({ key, reason: '主來源沒有比分' }); continue; }
+    const got = [playerGoals(h) + ogGoals(h), playerGoals(a) + ogGoals(a)];
+    if (got[0] !== score[0] || got[1] !== score[1]) { excluded.push({ key, reason: `球員進球 ${got.join(':')} 對不回比分 ${score.join(':')}` }); continue; }
+    reconciled++;
+    const shotmapOk = dm.checks?.shotmapComplete === true;
+    if (shotmapOk) xgComplete++;
+    for (const [t, list] of Object.entries(pm.players)) {
+      for (const p of list) {
+        if (!Number.isFinite(p.minutes) || p.minutes <= 0) continue;   // 沒上場的不列(跟交付檔那條路同一個規矩)
+        const id = `${t}|${p.providerId ?? p.name}`;
+        const e = byPlayer.get(id) ?? { team: t, providerId: p.providerId ?? null, name: p.name, minutes: 0, matches: 0, ratings: [], s: {} };
+        const add = (k, v) => { if (Number.isFinite(v)) e.s[k] = (e.s[k] ?? 0) + v; };
+        e.name = p.name; e.minutes += p.minutes; e.matches++;
+        if (Number.isFinite(p.rating)) e.ratings.push(p.rating);
+        add('goals', p.goals?.total); add('goal_assist', p.goals?.assists);
+        add('shots_total', p.shots?.total); add('ontarget_total', p.shots?.on);
+        add('total_att_assist', p.passes?.key); add('expected_assists', p.xA);
+        add('tackles_total', p.tackles?.total); add('interceptions_total', p.tackles?.interceptions);
+        add('yellow_card', p.cards?.yellow); add('red_card', p.cards?.red); add('saves_total', p.goals?.saves);
+        if (shotmapOk) {
+          const xg = (dm.shots ?? []).filter(sh => String(sh.team) === String(t) && sh.player === p.name && !sh.ownGoal && Number.isFinite(sh.xg)).reduce((s2, sh) => s2 + sh.xg, 0);
+          add('expected_goals', xg);
+        }
+        byPlayer.set(id, e);
+      }
+    }
+  }
+  const r2 = v => Math.round(v * 100) / 100;
+  const players = [...byPlayer.values()].map(e => {
+    const stats = { mins_played: e.minutes };
+    for (const [k, v] of Object.entries(e.s)) stats[k] = ['expected_goals', 'expected_assists'].includes(k) ? r2(v) : v;
+    if (e.ratings.length) stats.rating = r2(e.ratings.reduce((a, b) => a + b, 0) / e.ratings.length);
+    return { team: e.team, teamName: names[e.team] ?? String(e.team), providerId: e.providerId, name: e.name, minutes: e.minutes, matches: e.matches, ratedMatches: e.ratings.length, stats };
+  });
+  // 排序固定,兩個 build 的輸出才逐位元組相同
+  players.sort((a, b) => a.team.localeCompare(b.team) || b.minutes - a.minutes || a.name.localeCompare(b.name));
+  return { players, names, matches, reconciled, xgComplete, excluded };
+}
+
+export function leadersFromAggregate(agg, { limit = 12 } = {}) {
+  const out = [];
+  for (const c of AGG_LEADERS) {
+    const eligible = agg.players.filter(p => Number.isFinite(p.stats[c.key]) && (!c.minMatches || p.matches >= c.minMatches));
+    const rows = eligible.map(p => ({ name: p.name, team: p.teamName, teamId: p.team, value: p.stats[c.key], minutes: p.minutes, matches: p.matches }))
+      .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name)).slice(0, limit);
+    if (rows.length) out.push({ key: c.key, zh: c.zh, unit: c.unit, dp: c.dp, rows, pool: eligible.length });
+  }
+  return out;
+}
+
+/* 逐隊陣容,跟交付檔那條路同一個形狀(statMeta + teams{fdId: [...]}),vault 與畫面共用 */
+export function squadsFromAggregate(agg) {
+  const teams = {};
+  for (const p of agg.players) {
+    (teams[p.team] ??= []).push({ name: p.name, countryCode: null, minutes: p.minutes, matches: p.matches, stats: p.stats });
+  }
+  for (const list of Object.values(teams)) list.sort((a, b) => b.minutes - a.minutes || a.name.localeCompare(b.name));
+  return { statMeta: { ...AGG_STAT_META }, teams: Object.fromEntries(Object.entries(teams).sort((a, b) => Number(a[0]) - Number(b[0]))) };
+}

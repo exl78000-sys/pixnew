@@ -3,7 +3,7 @@
    不推論、不補值、不預測(歐冠沒有經過驗收的模型,理由見下方 build 產出的 note)。 */
 
 import { KO_ORDER, STAGE_ZH, winnerOfMatch, buildUclTeamIndex, normaliseUclMatch as _n } from './adapters/football-data-ucl.mjs';
-import { crossCheck, crossCheckDraw, isDrawFile, checkDraw, drawIsSane, buildLeaders } from './adapters/fotmob-ucl.mjs';
+import { crossCheck, crossCheckDraw, isDrawFile, checkDraw, drawIsSane, buildLeaders, aggregateSeasonPlayers, leadersFromAggregate, squadsFromAggregate } from './adapters/fotmob-ucl.mjs';
 /* squadsByTeam 要讀落地的 id 對照表。這一支只在 Node 跑,靜態 import 就好 —— 
    檔案其他地方用函式內動態 import 是既有風格,不要為了統一而改動它們。 */
 import { readFileSync as readFileSyncFn, existsSync as existsSyncFn } from 'node:fs';
@@ -413,6 +413,17 @@ function summariseDraw(fm, codeOfTeam, check) {
   return { rows, matches, check };
 }
 
+/* 本站自己抓的歐冠逐場資料(game:fetch --league=ucl):逐人統計 + 逐場詳情(比分、事件、逐射門 xG) */
+async function readUclPlayerRaw(root, season) {
+  const { readFile } = await import('node:fs/promises');
+  const { join } = await import('node:path');
+  const { existsSync } = await import('node:fs');
+  const dir = join(root, 'data', 'raw', 'fotmob-ucl');
+  const p = join(dir, `${season}-player-stats.json`), d = join(dir, `${season}-game-details.json`);
+  if (!existsSync(p) || !existsSync(d)) return null;
+  return { pstore: JSON.parse(await readFile(p, 'utf8')), details: JSON.parse(await readFile(d, 'utf8')) };
+}
+
 export async function loadUclSeasons(root, sources) {
   const { readFile, readdir } = await import('node:fs/promises');
   const { join } = await import('node:path');
@@ -506,6 +517,29 @@ export async function loadUclSeasons(root, sources) {
            為什麼值得做:36 隊裡本站只認得 8~11 支,其餘 25 支在站上
            除了名字與隊徽之外什麼都沒有 —— 而他們的球員數據一直就在這個檔案裡。 */
         s.squads = squadsByTeam(fm.players, fm.playerStatCategories, root);
+      }
+    }
+    /* 交付檔給不了球員層的那一季(本季只有抽籤檔、0 人),從本站自己抓的逐場資料累計(2026-09-15)。
+       只在交付檔沒有的時候才走這條 —— 兩條都有時不挑一個喜歡的,交付檔是賽季總表、先到先用。
+       核對在 aggregateSeasonPlayers 裡逐場做(球員進球 + 烏龍球 = football-data 的比分),
+       對不上的場次整場不計並留在 playerLayer.excluded 讓畫面講。 */
+    if (!s.leaders) {
+      const pl = await readUclPlayerRaw(root, raw.season);
+      if (pl) {
+        const all = [...(s.leagueMatches ?? []), ...(s.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))];
+        const scoreOf = key => {
+          const [h, a, d] = key.split('|');
+          const m = all.find(x => String(x.home?.id) === h && String(x.away?.id) === a && String(x.kickoff ?? '').slice(0, 10) === d);
+          return m?.final ?? null;
+        };
+        const agg = aggregateSeasonPlayers(pl.pstore, pl.details, scoreOf);
+        if (agg.reconciled > 0) {
+          s.leaders = leadersFromAggregate(agg);
+          s.leaderPool = agg.players.length;
+          s.squads = squadsFromAggregate(agg);
+          s.playerLayer = { source: 'match-aggregate', matches: agg.matches, reconciled: agg.reconciled, xgComplete: agg.xgComplete, excluded: agg.excluded,
+            note: '本季沒有 FotMob 賽季總表交付檔;球員層由本站每次部署抓的逐場資料累計,每一場的球員進球(含烏龍球記給對方)都對回 football-data 的比分才計入。' };
+        }
       }
     }
     seasons.push(s);

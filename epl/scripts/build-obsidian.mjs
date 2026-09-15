@@ -1138,10 +1138,11 @@ function buildUcl() {
            (goals 的 title 是 "Top scorer"),拿來當欄位名讀起來是錯的;
            但單位不能丟 —— total_scoring_att 是「每 90 分鐘」不是總數。
            所以自己下標題、單位寫在標題裡,並在表格下面附上對回來源欄位的說明。 */
+        /* 累計版(本季,沒有交付檔)的鍵不同:射門是總數(shots_total),評分是逐場平均 —— 標題照 meta 的宣告區分 */
         const LABEL = {
-          goals: '進球', goal_assist: '助攻', rating: 'FotMob 評分',
+          goals: '進球', goal_assist: '助攻', rating: sq.meta.rating && /average/.test(sq.meta.rating) ? 'FotMob 評分(逐場平均)' : 'FotMob 評分',
           expected_goals: 'xG', total_att_assist: '創造機會',
-          total_scoring_att: '射門(每 90 分)', yellow_card: '黃牌',
+          total_scoring_att: '射門(每 90 分)', shots_total: '射門(總數)', yellow_card: '黃牌',
         };
         const cols = Object.keys(LABEL).filter(k => sq.meta[k]);
         b.push('| 球員 | 出賽 | 分鐘 | ' + cols.map(k => LABEL[k]).join(' | ') + ' |\n');
