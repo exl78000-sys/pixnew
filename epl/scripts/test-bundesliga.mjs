@@ -204,6 +204,18 @@ const table = out('table'), results = out('results'), sim = out('sim');
     })());
     check('季中轉隊的人不掛到單一球隊(整季合計掛上去就是編數字)',
       players.filter(p => p.multiTeam).every(p => (p.teams ?? []).length > 1));
+
+    /* **開了球員頁就一定要有 players-core**:跨聯賽搜尋是看 open 有沒有 players
+       才去要它的,沒寫就是一個保證 404,而畫面只是「搜尋德甲球員什麼都搜不到」。 */
+    const core = out('players-core');
+    check('有 players-core(跨聯賽搜尋靠它,開了球員頁卻不寫就是保證 404)',
+      Array.isArray(core) && core.length > 0, `${core?.length ?? 0} 筆`);
+    /* 聯賽代碼**必須是自己**。原本 coreFromUnderstat 寫死 'es1',德甲照用的話
+       每一筆都掛西甲的標籤、點下去跳去西甲找一個不存在的人,而畫面完全正常。 */
+    check('players-core 的 league 是 de1,不是沿用西甲的寫死值',
+      core.every(r => r.league === 'de1'), [...new Set(core.map(r => r.league))].join(','));
+    check('身價與傷停是 null 不是 0(Understat 沒有這兩樣)',
+      core.every(r => r.price === null && r.status === null));
   }
   check('球員產物與 meta 說的一致(有就是有、沒有就是沒有)',
     has === (meta.capabilities?.players === true) && has === (meta.players?.available === true)

@@ -49,6 +49,11 @@ import { buildFormIndex, recentForm, formSummary, TUNED } from './lib/form.mjs';
 import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { round } from './lib/util.mjs';
+/* 跨聯賽球員搜尋的統一層。**開了球員頁就一定要寫這一份** ——
+   `allplayers-view.js` 與 `core.js` 的 crossLeaguePlayers 都是看
+   `LEAGUES[lg].open` 有沒有 players 才去要它的,沒寫就是一個保證 404,
+   而畫面只是「搜尋德甲球員什麼都搜不到」,不報錯。 */
+import { coreFromUnderstat } from './lib/player-core.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES }
@@ -509,6 +514,8 @@ async function main() {
     note: '德甲還沒有 AI 賽前/賽後報告(要先有球員層與逐場詳情)。' });
   await write('prob-history', { season: null, matches: {} });
   await write('players', playersOut);
+  // 跨聯賽統一層(聯集 + null):德甲沒有身價與傷停 → null 不是 0
+  if (hasPlayers) await write('players-core', coreFromUnderstat(playersOut, { league: 'de1' }));
   /* 空產物的**形狀也要照抄既有聯賽**,不是只有欄位名。第一版自己寫了一套:
      `goals.seasons` 給了物件(既有聯賽是陣列)→ 球隊頁 `(goals?.seasons ?? []).filter`
      直接 TypeError,整頁「載入失敗」;`reports.pending` 給了陣列(既有聯賽是數字)、
