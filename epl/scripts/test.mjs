@@ -3136,6 +3136,13 @@ async function checkDataGap() {
        另外守一條界線:這個功能**完全不碰模型**,預測只存在使用者的瀏覽器。 */
     ...await (async () => {
       const ps = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'predict-score.js')));
+      // predict-view 連帶載入 core.js,而它在模組層就 addEventListener
+      globalThis.document ??= { addEventListener() {} };
+      const pv = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'predict-view.js')));
+      const uclJson = join(ROOT, 'web', 'data', 'ucl.json');
+      const uclSeasons = existsSync(uclJson) ? (JSON.parse(readFileSync(uclJson, 'utf8')).seasons ?? []) : [];
+      const koSeasons = uclSeasons.filter(x => (x.rounds ?? []).length);
+      const uclId = x => (x?.code ? `c:${x.code}` : `u:${x?.id}`);
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
       /* 2026-09-14:「我的預測」變成「我的」那一頁的第二個分頁,內容搬進 predict-view.js
@@ -3257,6 +3264,62 @@ async function checkDataGap() {
           /if \(lockTimer\) clearInterval\(lockTimer\)/.test(page)],
         ['這一輪的截止倒數用還沒開賽裡最早的那一場,全開踢就不畫',
           /!locked\(f\) && f\.kickoff/.test(page) && /if \(!open\.length\) return ''/.test(page)],
+
+        /* ── 歐冠淘汰賽(2026-09-15)───────────────────────────
+           這一頁本來只讀 `leagueMatches`,所以二月起的附加賽到決賽 45 場一場都填不到。
+           本季 `rounds` 是 0,**用本季驗等於什麼都沒驗** —— 下面一律用有淘汰賽的舊賽季。 */
+        ['我的預測收整份歐冠(聯賽階段 + 淘汰賽),不列舉區塊',
+          /C\.uclSeasonMatches\(cur\)/.test(page)
+          && !/leagueMatches/.test(page.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, ''))],
+        ['歐冠的輪次:淘汰賽接在聯賽階段後面,每一場都有輪次、每一輪都有名字', (() => {
+          if (!koSeasons.length) return true;      // 沒有帶淘汰賽的賽季就沒得驗
+          return koSeasons.every(S => {
+            const games = pv.uclRoundIndex(S), all = [...(S.leagueMatches ?? []),
+              ...(S.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))];
+            const { roundOf, zh } = games;
+            if (all.some(m => roundOf(m) == null)) return false;          // 有場次沒有輪次 → 選單上永遠到不了
+            if ([...new Set(all.map(roundOf))].some(r => !zh.get(r))) return false;   // 有輪次沒有名字 → 印出編出來的號碼
+            const lg = all.filter(m => m.stage === 'LEAGUE_STAGE').map(roundOf);
+            const ko = all.filter(m => m.stage && m.stage !== 'LEAGUE_STAGE').map(roundOf);
+            // 淘汰賽的號碼一定大過聯賽階段的(不然十六強會排在第 1 輪旁邊)
+            return Math.min(...ko) > Math.max(...lg)
+              && zh.get(Math.min(...ko)) === (S.rounds[0].zh ?? S.rounds[0].stage);
+          });
+        })()],
+        /* 單場決勝的決賽,上游兩季寫法不同(2025-26 是 null、2024-25 是 0)——
+           「null 才不標」會讓 2024-25 決賽印出「第 0 回合」。沒見過的值一律不分類。 */
+        ['兩回合制的場次標首 / 次回合,單場決勝的不標(matchday 是 0 或 null 都一樣)', (() => {
+          if (!koSeasons.length) return true;
+          return koSeasons.every(S => {
+            const { legOf } = pv.uclRoundIndex(S);
+            const legs = (S.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => (t.legs ?? []).map(l => [t, l])));
+            return legs.every(([t, l]) => (t.twoLegged
+              ? legOf(l) === (l.matchday === 1 ? '首回合' : '次回合')
+              : legOf(l) === null));
+          });
+        })()],
+        /* **鍵是存在使用者瀏覽器裡的契約。** 既有場次的鍵一個字元都不能變,
+           否則人家填過的預測全部變成對不到的孤兒,而且一個錯都不報。 */
+        ['既有場次的鍵沒有變(localStorage 裡的紀錄還對得到)',
+          ps.matchKey({ season: 'S', home: 'A', away: 'B' }) === 'S|A|B'
+          && ps.matchKey({ season: 'S', home: 'A', away: 'B', keySuffix: null }) === 'S|A|B'],
+        ['帶 keySuffix 的場次跟不帶的分得開',
+          ps.matchKey({ season: 'S', home: 'A', away: 'B', keySuffix: 'LAST_16' }) === 'S|A|B|LAST_16'],
+        /* 「主隊|客隊」在歐冠一季會撞:同一組對戰聯賽階段一次、淘汰賽再一次,主客方向還相同。
+           撞到的話兩場比賽共用一筆預測。**這一條同時驗「不帶 stage 真的會撞」** ——
+           只驗「帶了不撞」的話,哪天資料變成本來就不撞,這條會變成在驗一件不存在的事。 */
+        ['歐冠一季的預測鍵唯一,而且不帶 stage 真的會撞', (() => {
+          if (!koSeasons.length) return true;
+          return koSeasons.every(S => {
+            const all = [...(S.leagueMatches ?? []),
+              ...(S.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))];
+            const key = (m, withStage) => ps.matchKey({ season: S.label, home: uclId(m.home), away: uclId(m.away),
+              keySuffix: withStage && m.stage && m.stage !== 'LEAGUE_STAGE' ? m.stage : null });
+            const withS = new Set(all.map(m => key(m, true)));
+            const plain = new Set(all.map(m => key(m, false)));
+            return withS.size === all.length && plain.size < all.length;
+          });
+        })()],
       ];
     })(),
 
