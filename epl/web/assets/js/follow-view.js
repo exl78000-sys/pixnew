@@ -31,6 +31,15 @@ const FOLLOW_LEAGUES = ['pl', 'es1', 'en2'];
 
 const fvEsc = C.esc;
 
+/* 「接下來」顯示幾場。**這個數字要同時管「每個賽事各取幾場」與「合併後留幾場」** ——
+   兩邊不一致就是 2026-09-15 使用者抓到的那個 bug:
+   聯賽只取**一場**、盃賽與歐冠取全部,合併排序後切三場 ——
+   於是 Arsenal 的第三場變成 10/13 的歐冠,而 **10/10 的英超對 Leeds 被整場跳過**,
+   因為它從頭到尾沒有進候選名單。畫面上完全看不出來:三場都是真的比賽、
+   時間也照順序,只是中間少了一場。
+   **每個來源各取 N 場,合併之後才是真正的前 N 場。** */
+const NEXT_N = 3;
+
 /* 這一支球隊最近踢完的幾場(從該聯賽的 fixtures 撈,不另外要一份產物)。 */
 function recentOf(fixtures, code, n = 5) {
   return (fixtures ?? [])
@@ -39,14 +48,18 @@ function recentOf(fixtures, code, n = 5) {
     .slice(0, n);
 }
 
-/* 下一場(只看聯賽)。**數的是「還沒踢」而不是「有開球時間」** ——
+/* 接下來的幾場聯賽。**數的是「還沒踢」而不是「有開球時間」** ——
    上游是逐月公布開球時間的,拿 kickoff 當條件會漏掉一整批還沒公布時間的場次。
-   但要排序就需要時間,所以:有時間的照時間排、沒時間的用日期排在後面。 */
-function nextLeagueMatch(fixtures, code) {
-  const mine = (fixtures ?? []).filter(f => !f.played && (f.home === code || f.away === code));
-  if (!mine.length) return null;
+   但要排序就需要時間,所以:有時間的照時間排、沒時間的用日期排在後面。
+
+   **要取 N 場不是一場**(2026-09-15 修):只取一場的話,合併盃賽與歐冠之後
+   第二、三格永遠是盃賽/歐冠,中間的聯賽場次被整場跳過。 */
+export function nextLeagueMatches(fixtures, code, n = NEXT_N) {
   const key = f => f.kickoff ?? `${f.date ?? '9999-99-99'}T99:99`;
-  return mine.sort((a, b) => String(key(a)).localeCompare(String(key(b))))[0];
+  return (fixtures ?? [])
+    .filter(f => !f.played && (f.home === code || f.away === code))
+    .sort((a, b) => String(key(a)).localeCompare(String(key(b))))
+    .slice(0, n);
 }
 
 /* 一場比賽畫成一行。`comp` 是賽事標籤,`prob` 有才畫(盃賽沒有預測)。 */
@@ -58,9 +71,15 @@ function matchLine(m) {
   const prob = m.prob
     ? `<span class="tiny">勝 <b>${C.pct(m.prob.win, 0)}</b>・和 ${C.pct(m.prob.draw, 0)}・負 ${C.pct(m.prob.lose, 0)}</span>`
     : `<span class="tiny dim" title="${fvEsc(m.noProbWhy ?? '')}">沒有勝率</span>`;
+  /* 對手的隊徽三條路:**本站認得的**用站上那份;**本站不認得但上游有圖的**
+     (歐冠的 Lille、盃賽的低級別球隊)用上游那張;都沒有才只印名字。
+     只寫前兩條的話,同一排裡有些格子有隊徽、有些是光禿禿的文字,看起來像壞掉。 */
   const opp = m.oppCode
     ? `${C.badge(m.oppCode)} ${fvEsc(C.name(m.oppCode))}`
-    : fvEsc(m.oppName ?? '待定');
+    : m.oppCrest
+      ? `<img class="crest" src="${m.oppCrest}" alt="" loading="lazy" width="22" height="22"
+           onerror='this.style.display="none"'> ${fvEsc(m.oppName ?? '')}`
+      : fvEsc(m.oppName ?? '待定');
   return `<div class="stat-line">
     <span class="small" style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">
       ${m.compBadge ?? ''}<span class="pill tiny">${side}</span>${opp}
@@ -98,9 +117,9 @@ function teamCard(pool, code, extraFixtures) {
     : null;
 
   const nextAll = [
-    ...(pool.next[code] ? [pool.next[code]] : []),
+    ...(pool.next[code] ?? []),
     ...(extraFixtures.get(`${pool.lg}|${code}`) ?? []),
-  ].sort((a, b) => String(a.sortKey).localeCompare(String(b.sortKey))).slice(0, 3);
+  ].sort((a, b) => String(a.sortKey).localeCompare(String(b.sortKey))).slice(0, NEXT_N);
 
   return `<div class="card followcard">
     <div class="spread" style="align-items:flex-start">
@@ -171,6 +190,16 @@ export async function renderFollowTeams(host) {
   /* 三個聯賽的基本資料。**meta 先拿到才知道有沒有球員層** ——
      沒有球員層的聯賽不要去要 players-core(那是一個預期中的 404,
      console 留一串自己造成的錯誤看起來像出了事)。 */
+  /* **賽事標籤要先註冊才會是圖示。** `compBadge` 有 logo 就畫真圖、沒有就退回
+     色塊 + 縮寫(EFL / PL / UCL / LL)—— 而 logo 在 `competitions.json` 裡,
+     沒有 `registerCompetitions` 的話**每一頁都是退回那個縮寫色塊**,
+     而總覽與盃賽頁有註冊所以是圖,同一個東西兩頁長得不一樣(使用者 2026-09-15 回報)。
+     這一份只有 34 KB,所以跟第一批一起載 —— 晚一步的話第一次繪製會先閃一次色塊。 */
+  try {
+    const { data } = await C.loadFrom('pl', ['competitions']);
+    C.registerCompetitions(data.competitions);
+  } catch { /* 註冊不到就退回縮寫色塊,不擋整頁 */ }
+
   const pools = [];
   for (const lg of FOLLOW_LEAGUES) {
     try {
@@ -183,19 +212,19 @@ export async function renderFollowTeams(host) {
       }
       const next = {};
       for (const t of data.teams) {
-        const f = nextLeagueMatch(data.fixtures, t.code);
-        if (!f) continue;
-        const home = f.home === t.code;
-        const p = f.prediction;
-        next[t.code] = {
-          sortKey: f.kickoff ?? `${f.date ?? '9999-99-99'}T99:99`,
-          kickoff: f.kickoff ?? null, date: f.date ?? null, home,
-          oppCode: home ? f.away : f.home, oppName: null,
-          compBadge: C.compBadge(lg),
-          link: C.link('analysis', { id: f.id, league: lg }),
-          prob: p ? { win: home ? p.home : p.away, draw: p.draw, lose: home ? p.away : p.home } : null,
-          noProbWhy: '這一場還沒有模型機率',
-        };
+        next[t.code] = nextLeagueMatches(data.fixtures, t.code).map(f => {
+          const home = f.home === t.code;
+          const p = f.prediction;
+          return {
+            sortKey: f.kickoff ?? `${f.date ?? '9999-99-99'}T99:99`,
+            kickoff: f.kickoff ?? null, date: f.date ?? null, home,
+            oppCode: home ? f.away : f.home, oppName: null, oppCrest: null,
+            compBadge: C.compBadge(lg),
+            link: C.link('analysis', { id: f.id, league: lg }),
+            prob: p ? { win: home ? p.home : p.away, draw: p.draw, lose: home ? p.away : p.home } : null,
+            noProbWhy: '這一場還沒有模型機率',
+          };
+        });
       }
       /* 這個聯賽有沒有傷停來源,以及沒有的話原因是什麼。**原因要分得出兩種** ——
          「沒有球員層」與「有球員層但沒有傷停欄位」對讀者的意思不同。 */
@@ -322,6 +351,8 @@ export async function renderFollowTeams(host) {
               sortKey: m.kickoff ?? `${String(m.kickoff ?? '').slice(0, 10) || '9999-99-99'}T99:99`,
               kickoff: m.kickoff ?? null, date: String(m.kickoff ?? '').slice(0, 10) || null,
               home: side === 'home', oppCode: opp?.code ?? null, oppName: opp?.name ?? null,
+              // 本站沒有隊碼的盃賽對手(第三、四級球隊)在 cups.json 的 crests 查表裡有圖
+              oppCrest: opp?.code ? null : (data.cups?.crests?.[opp?.sourceId] ?? null),
               compBadge: C.compBadge(cup.key), link: C.link('cups', { cup: cup.key }),
               prob: null,
               /* 盃賽沒有預測,而且**原因要講得出來** —— 空著的話讀者會以為壞了 */
@@ -333,6 +364,11 @@ export async function renderFollowTeams(host) {
     }
     /* 歐冠:兩隊都有跨聯賽評分的場次才有機率(回測通過才有,沒通過就一場都沒有)。 */
     const eloBy = new Map((data['ucl-elo']?.fixtures ?? []).map(f => [f.id, f.p]));
+    /* 歐冠對手的隊徽:本站認得的在 `teams`、不認得的(Lille 這種)在 `external`,
+       鍵是來源方的 team id。跟總覽頁的 `uclCrest` 同一條 —— 那裡早就做對了。 */
+    const uclKnown = new Map((data['ucl-teams']?.teams ?? []).map(t => [t.code, t]));
+    const uclExternal = new Map((data['ucl-teams']?.external ?? []).map(t => [t.id, t.crest]));
+    const uclCrest = side => (side?.code ? uclKnown.get(side.code)?.crest : uclExternal.get(side?.id)) ?? null;
     const uclSeason = (data.ucl?.seasons ?? []).find(s => s.current);
     for (const m of uclSeason?.leagueMatches ?? []) {
       if (m.played) continue;
@@ -348,6 +384,7 @@ export async function renderFollowTeams(host) {
             sortKey: m.kickoff ?? '9999-99-99T99:99',
             kickoff: m.kickoff ?? null, date: String(m.kickoff ?? '').slice(0, 10) || null,
             home, oppCode: opp?.code ?? null, oppName: opp?.name ?? null,
+            oppCrest: opp?.code ? null : uclCrest(opp),
             compBadge: C.compBadge('ucl'), link: C.link('ucl-match', { id: m.id }),
             prob: Array.isArray(p) ? { win: home ? p[0] : p[2], draw: p[1], lose: home ? p[2] : p[0] } : null,
             noProbWhy: '這一場歐冠沒有勝率:跨聯賽評分只給兩隊都評得出強度的場次',

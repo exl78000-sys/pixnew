@@ -6375,9 +6375,8 @@ async function checkFollow() {
      西甲有球員層但沒有傷停來源(capabilities.injuries === false,
      players-core 的 status 全是 null)—— 只看陣列長度的話會印
      「目前沒有傷停或停賽回報」,而那是假的(「0 是一個看起來很像答案的數字」)。 */
-  const fv = strip(src('follow-view.js'));
-  ok(/capabilities\?\.injuries !== false/.test(fv), '傷停那一區看 capabilities.injuries,不是看陣列長度');
-  ok(/capabilities\?\.players === false/.test(fv), '沒有球員層的聯賽另外講(兩種原因分得開)');
+  ok(/capabilities\?\.injuries !== false/.test(strip(src('follow-view.js'))), '傷停那一區看 capabilities.injuries,不是看陣列長度');
+  ok(/capabilities\?\.players === false/.test(strip(src('follow-view.js'))), '沒有球員層的聯賽另外講(兩種原因分得開)');
   // 產物真的是這樣:西甲 status 全 null、英超有非 a 的
   for (const [lg, p, expect] of [['pl', 'web/data/players-core.json', true],
     ['es1', 'web/data/leagues/es1/players-core.json', false]]) {
@@ -6388,10 +6387,49 @@ async function checkFollow() {
     ok(has === expect, `${lg} 的球員狀態欄位${expect ? '有內容' : '全是 null(所以不能印「沒有傷停」)'}`);
   }
 
-  /* 八、匯出/匯入與「存在這台瀏覽器」那句話要在畫面上(鐵則四) */
+  /* 八、**「接下來」每個賽事各取 N 場,合併之後才是真正的前 N 場。**
+     2026-09-15 使用者回報「Arsenal 第三場是錯的」:聯賽只取**一場**、
+     盃賽與歐冠取全部,合併排序切三場 —— 於是第三格是 10/13 的歐冠,
+     而 **10/10 的英超對 Leeds 被整場跳過**,因為它從頭到尾沒進候選名單。
+     畫面上完全看不出來:三場都是真的比賽、時間也照順序,只是中間少了一場。
+
+     守的是一條**不會過期的性質**:排進前 N 的那幾場,時間都不晚於任何被排除的場次。
+     斷言「第三場是 10/10 對 Leeds」的話,下一輪踢完就紅了(「把目標達成寫成 CI 紅線」那條坑)。 */
+  const FV = await import('../web/assets/js/follow-view.js');
+  {
+    const plFx = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'fixtures.json'), 'utf8'));
+    const codes = [...new Set(plFx.flatMap(f => [f.home, f.away]))];
+    const key = f => f.kickoff ?? `${f.date ?? '9999-99-99'}T99:99`;
+    let skipped = 0, short = 0;
+    for (const code of codes) {
+      const un = plFx.filter(f => !f.played && (f.home === code || f.away === code));
+      const top = FV.nextLeagueMatches(plFx, code, 3);
+      if (top.length !== Math.min(3, un.length)) short++;
+      if (!top.length) continue;
+      const last = String(key(top.at(-1)));
+      const ids = new Set(top.map(f => f.id));
+      // 被排除卻比「最後一場入選的」還早 = 有場次被跳過
+      if (un.some(f => !ids.has(f.id) && String(key(f)) < last)) skipped++;
+    }
+    ok(short === 0, `${codes.length} 支球隊的「接下來」都取到該取的場數`, `${short} 支不足`);
+    ok(skipped === 0, '沒有任何一場被跳過(前 N 場的時間都不晚於被排除的)', `${skipped} 支有跳號`);
+    // 一場都取不到不是回 null,是回空陣列 —— 呼叫端會 spread 它
+    ok(Array.isArray(FV.nextLeagueMatches([], 'XXX')), '沒有場次時回空陣列不是 null');
+  }
+  const fvSrc = strip(src('follow-view.js'));
+  ok(/slice\(0, NEXT_N\)/.test(fvSrc) && /nextLeagueMatches\(data\.fixtures, t\.code\)/.test(fvSrc),
+    '「各取幾場」與「合併後留幾場」用同一個常數(NEXT_N)');
+  ok(/\.\.\.\(pool\.next\[code\] \?\? \[\]\)/.test(fvSrc), '聯賽那一份是陣列,不是單一場次');
+
+  /* 九、**賽事標籤要是圖示。** `compBadge` 有 logo 才畫真圖,而 logo 在
+     `competitions.json` 裡 —— 沒有 registerCompetitions 就退回縮寫色塊(EFL / PL / LL),
+     而總覽與盃賽頁有註冊,於是同一個東西在兩頁長得不一樣(使用者 2026-09-15 回報)。 */
+  ok(/C\.registerCompetitions\(/.test(fvSrc), '我的球隊有註冊賽事 logo(不然賽事標籤是縮寫色塊)');
+
+  /* 十、匯出/匯入與「存在這台瀏覽器」那句話要在畫面上(鐵則四) */
   ok(/FOLLOW_STORAGE_NOTE/.test(src('follow-view.js')) && /換一台裝置/.test(src('follow.js')),
     '「換一台裝置就看不到」寫在畫面上');
-  ok(/fvExport/.test(fv) && /fvImport/.test(fv), '有匯出與匯入');
+  ok(/fvExport/.test(fvSrc) && /fvImport/.test(fvSrc), '有匯出與匯入');
   return fail;
 }
 
