@@ -303,6 +303,10 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
   let caption = null;               // 畫面上的一行字(結局:犯規、越位、被撲出…)
   let script = null;                // 正在演的回合(見 play)
   let paused = false;
+  /* 戰術指令的位移(階段 B,2026-09-15):頁面給每隊六軸相對預設的 Δ(−4 ~ +4),這裡只改站位與傳球的形狀 ——
+     防線高度、無球時跟球跟得多緊、邊路拉多開、帶球多久才傳、直塞與長傳的比例。誰碰球、在哪結束仍是引擎的劇本。 */
+  const tac = { home: {}, away: {} };
+  const tacOf = (side, k) => tac[side]?.[k] ?? 0;
   const performed = [];             // 演出紀錄(測試用):誰射門 / 進球 / 傳出越位球,對回事件裡的人
   const timeouts = { hop: 0, end: 0, restart: 0, fetch: 0, watchdog: 0 };   // 逾時補救的次數:演出對不上劇本的量尺
   const timeoutLog = [];            // 逾時當下的距離與球速(前 40 筆),校準用
@@ -469,8 +473,10 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
          傳空檔 回合後段傳給前鋒 / 進攻中場時,球傳到他前方 8 m 的空檔,他衝刺去接
          (突破在 beginHop:持球者是邊路 / 進攻角色時有三分之一機會帶球 9 m 再傳) */
       const role = h.to.sub ?? h.to.role, dir = dirOf(h.to.side);
-      if ((role === 'FB' || role === 'W') && j < n - 1) { const edge = h.to.by < FH / 2 ? 5 : FH - 5; ty = ty * 0.4 + edge * 0.6; }
-      else if ((role === 'ST' || role === 'AM') && j >= n - 2 && rng() < 0.6) { tx += dir * 8; h.through = true; }
+      const wideK = Math.max(0.2, Math.min(0.9, 0.6 + 0.1 * tacOf(h.to.side, 'width')));
+      const throughP = Math.max(0.2, Math.min(0.95, 0.6 + 0.1 * tacOf(h.to.side, 'directness')));
+      if ((role === 'FB' || role === 'W') && j < n - 1) { const edge = h.to.by < FH / 2 ? 5 : FH - 5; ty = ty * (1 - wideK) + edge * wideK; }
+      else if ((role === 'ST' || role === 'AM') && j >= n - 2 && rng() < throughP) { tx += dir * 8; h.through = true; }
       const pt = clampPt(tx, ty);
       h.tx = pt.x; h.ty = pt.y;
     });
@@ -576,9 +582,10 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     // 帶球點:朝接球點的方向 4 m(門將不帶球,原地等);突破時 9 m,而且要真的帶到才傳
     const ang = Math.atan2(h.ty - holder.y, h.tx - holder.x);
     const far = Math.hypot(h.tx - holder.x, h.ty - holder.y);
-    const dribble = holder.role !== 'GK' && ['W', 'AM', 'ST', 'FB'].includes(holder.sub ?? '') && far > 14 && rng() < 0.35;
+    const dribble = holder.role !== 'GK' && ['W', 'AM', 'ST', 'FB'].includes(holder.sub ?? '') && far > 14 && rng() < Math.max(0.05, 0.35 - 0.05 * tacOf(holder.side, 'directness'));
     const reach = dribble ? 9 : 4;
-    script.hopCarry = dribble ? Math.max(script.carrySec, 1.8) : script.carrySec;
+    const tempoK = Math.max(0.4, 1 - 0.15 * tacOf(holder.side, 'tempo'));   // 節奏快 = 帶球短就傳
+    script.hopCarry = (dribble ? Math.max(script.carrySec, 1.8) : script.carrySec) * tempoK;
     script.carryTo = holder.role === 'GK' ? { x: holder.x, y: holder.y } : clampPt(holder.x + Math.cos(ang) * reach, holder.y + Math.sin(ang) * reach);
   }
   function chainStep() {
@@ -923,7 +930,7 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       let x = bx + dir * ADV * adv + push * dir * 0.4;
       // 邊路拉寬:離中線遠的人再往邊線站,把場地撐開;整體再往該隊慣用的那一側偏(三路進攻佔比)
       const wide = Math.abs(p.by - FH / 2) > FH / 5;
-      const y = p.by + (wide ? Math.sign(p.by - FH / 2) * 4.2 * adv : 0) + flankShift(p.side) * adv * (p.role === 'DEF' ? 0.3 : 0.6);
+      const y = p.by + (wide ? Math.sign(p.by - FH / 2) * (4.2 + 1.5 * tacOf(p.side, 'width')) * adv : 0) + flankShift(p.side) * adv * (p.role === 'DEF' ? 0.3 : 0.6);
       if (p === runner) x += dir * 9;              // 一名中場前插支援
       return { x, y };
     }
@@ -938,11 +945,12 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
       const k = 2.2 / d;
       return { x: t.x + (p.x - t.x) * k, y: t.y + (p.y - t.y) * k };
     }
-    // 防線高度跟著球走:球在自家半場就退,球在對方半場就壓上
-    const BACK = { DEF: 15, MID: 7, FWD: -4 }[p.role] ?? 8;
+    // 防線高度跟著球走:球在自家半場就退,球在對方半場就壓上。防線指令改離球多遠,壓迫指令改跟球跟得多緊
+    const BACK = ({ DEF: 15 - 2.5 * tacOf(p.side, 'line'), MID: 7 - 1.5 * tacOf(p.side, 'line'), FWD: -4 })[p.role] ?? 8;
     const line = ballRef.x - dir * BACK;
     const squeeze = (ballRef.y - p.by) * 0.22;     // 朝球收縮,壓縮防守寬度
-    return { x: bx + (line - bx) * (p.role === 'FWD' ? 0.25 : 0.6), y: p.by + squeeze };
+    const follow = Math.max(0.2, Math.min(0.95, (p.role === 'FWD' ? 0.25 : 0.6) + 0.08 * tacOf(p.side, 'pressing')));
+    return { x: bx + (line - bx) * follow, y: p.by + squeeze };
   }
 
   /* 一格的運動:球的物理、參考球位置、上搶者 / 前插者、無球跑動、逐人的速度模型、間距兜底。
@@ -1345,6 +1353,8 @@ export function mountDuelAnim(canvas, { home, away, homeCode = '', awayCode = ''
     pause(v) { paused = !!v; },
     /* 記分板的分鐘由頁面給(它用引擎的 minuteAt 把 clock() 換成分鐘,規則只有一份) */
     setClock({ min, extra = null } = {}) { st.min = min; st.extra = extra; },
+    /* 戰術指令的位移(見 tac);下一個回合起生效 */
+    setTactics(side, deltas = {}) { tac[side] = { ...deltas }; },
     /* 跳到結果:劇本丟掉、比分板直接寫完場的比分,畫面留著(不然畫布停在跳過前那一格,跟上面的比分對不上) */
     finish({ hs, as }) { script = null; setPiece = null; st.hs = hs; st.as = as; st.done = true; },
     destroy() { alive = false; if (raf) cancelAnimationFrame(raf); },

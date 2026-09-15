@@ -2944,6 +2944,10 @@ async function checkDataGap() {
         && /不是本站預測/.test(pg) && /沒有 Dixon-Coles 修正/.test(pg) && /這張圖哪些是真的/.test(pg)
         && /createMatch/.test(pg) && /inPlaySim/.test(pg)
         && /seededRng/.test(pc) && /mulberry32/.test(pc)            // 種子亂數,同種子重播同一場
+        /* 戰術指令(階段 B,2026-09-15):面板在畫面上、標「本季實際」、引擎與動畫都有 setTactics;「戰術指令是下一階段」那句不能再出現 */
+        && /setTactics/.test(pg) && /本季實際/.test(pg) && /TACTIC_KEYS/.test(pg) && !/戰術指令是下一階段/.test(pg) && !/戰術指令\(下一階段\)/.test(pg)
+        && /export const TACTIC_KEYS/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-engine.js'), 'utf8'))
+        && /setTactics\(side, deltas/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8'))
         /* 播放模式:in-play 引擎共用、計時器走 pageInterval(裸 setInterval 是老坑) */
         && /inPlaySim/.test(pg) && /跳到結果/.test(pg)
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');

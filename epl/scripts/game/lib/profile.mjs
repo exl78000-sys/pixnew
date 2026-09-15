@@ -114,7 +114,57 @@ function playStatsOf(fm, code, isHome) {
   const opp = m => m.teamStats[isHome ? m.away : m.home];
   const v = k => r2(mean(rows.map(m => m.teamStats[code][k] ?? 0)));
   return { games: rows.length, passes: v('passes'), offsides: v('offsides'),
-    offsidesAgainst: r2(mean(rows.map(m => opp(m)?.offsides ?? 0))) };
+    offsidesAgainst: r2(mean(rows.map(m => opp(m)?.offsides ?? 0))),
+    oppPasses: r2(mean(rows.map(m => opp(m)?.passes ?? 0))) };   // 對手傳球數:壓迫的代理指標(階段 B)
+}
+
+/* ── 踢法側寫(2026-09-15,模擬遊玩階段 B):六項戰術指令的**預設值**從本季真實數據推 ──
+   使用者定的:每隊照自己本季的真實踢法當預設,畫面標「本季 N 場」;往別的方向拉才算改。
+   每一軸是一個可以從逐場資料算出來的量,20 隊排名分五級(1 = 最低五分之一)。
+   哪些是**代理指標**要講清楚:壓迫用「對手傳球數」(壓得緊對手傳得少),不是 PPDA;直接度用「每百次傳球的射門」;
+   節奏用「每一個控球百分點的傳球數」。抄截 / 攔截 / 長傳這些要等階段 C 重抓,到時候換成直接指標。 */
+export const STYLE_AXES = {
+  mentality: { zh: '心態', levels: ['很保守', '保守', '平衡', '進攻', '很進攻'], basis: '場均射門 − 場均被射門', proxy: true,
+    effects: '射門次數(自己多、對手也多一點)與整條線壓上的高度;進球期望不變' },
+  pressing: { zh: '壓迫', levels: ['很低', '低', '中', '高', '很高'], basis: '對手場均傳球數(越少 = 壓得越緊)', proxy: true,
+    effects: '斷球的位置(更前面)、自己的犯規次數;無球時整隊跟球跟得多緊' },
+  line: { zh: '防線', levels: ['很深', '深', '中', '高', '很高'], basis: '對手場均越位次數(越多 = 防線越高)', proxy: true,
+    effects: '對手越位次數;後衛線離球的距離' },
+  width: { zh: '寬度', levels: ['很窄', '窄', '中', '寬', '很寬'], basis: '三路進攻裡走邊路的比例', proxy: false,
+    effects: '角球次數;邊路球員拉多開、接球點多靠邊' },
+  tempo: { zh: '節奏', levels: ['很慢', '慢', '中', '快', '很快'], basis: '每一個控球百分點的傳球數', proxy: true,
+    effects: '一個回合幾腳傳球(快 = 少);帶球多久才傳' },
+  directness: { zh: '直接度', levels: ['短傳', '偏短傳', '混合', '偏直接', '直接'], basis: '每 100 次傳球的射門數', proxy: true,
+    effects: '傳球串長度(直接 = 短)、越位次數;長傳與直塞的比例' },
+};
+function styleMetrics(t) {
+  const w = (a, b) => (a && b ? (a.games * (a.v ?? 0) + b.games * (b.v ?? 0)) / Math.max(1, a.games + b.games) : (a?.v ?? b?.v ?? null));
+  const rh = t.rates.home, ra = t.rates.away, ph = t.play.home, pa = t.play.away;
+  const rate = k => (rh && ra ? (rh.games * rh[k] + ra.games * ra[k]) / Math.max(1, rh.games + ra.games) : null);
+  const play = k => (ph && pa ? (ph.games * ph[k] + pa.games * pa[k]) / Math.max(1, ph.games + pa.games) : (ph?.[k] ?? pa?.[k] ?? null));
+  const nRates = (rh?.games ?? 0) + (ra?.games ?? 0), nPlay = (ph?.games ?? 0) + (pa?.games ?? 0);
+  const poss = t.possession.home.mean != null && t.possession.away.mean != null
+    ? (t.possession.home.n * t.possession.home.mean + t.possession.away.n * t.possession.away.mean) / Math.max(1, t.possession.home.n + t.possession.away.n) : null;
+  const sf = rate('sf'), sa = rate('sa'), passes = play('passes'), oppPasses = play('oppPasses'), offA = play('offsidesAgainst');
+  return {
+    mentality: { value: sf != null && sa != null ? r2(sf - sa) : null, n: nRates, unit: '次/場' },
+    pressing: { value: oppPasses != null ? r2(oppPasses) : null, n: nPlay, unit: '次/場', invert: true },
+    line: { value: offA != null ? r2(offA) : null, n: nPlay, unit: '次/場' },
+    width: { value: t.zones ? r3(t.zones.left + t.zones.right) : null, n: t.zones?.games ?? 0, unit: '' },
+    tempo: { value: passes != null && poss ? r2(passes / poss) : null, n: Math.min(nPlay, t.possession.home.n + t.possession.away.n), unit: '次/控球%' },
+    directness: { value: passes && sf != null ? r2((sf / passes) * 100) : null, n: Math.min(nRates, nPlay), unit: '次/100 傳' },
+  };
+}
+/* 20 隊排名分五級。排名用「值」由小到大(invert 的軸反過來),同值同名次。 */
+function styleLevels(metricsByCode) {
+  const out = {};
+  for (const axis of Object.keys(STYLE_AXES)) {
+    const rows = Object.entries(metricsByCode).map(([code, m]) => ({ code, v: m[axis].value })).filter(r => r.v != null);
+    const inv = Object.values(metricsByCode)[0]?.[axis]?.invert === true;
+    rows.sort((a, b) => (inv ? b.v - a.v : a.v - b.v));
+    rows.forEach((r, i) => { (out[r.code] ??= {})[axis] = Math.min(5, Math.floor((i / rows.length) * 5) + 1); });
+  }
+  return out;
 }
 
 /* FotMob 逐場快取(data/raw/fotmob-epl/*-game-details.json)—— 控球、射門、事件。 */
@@ -316,6 +366,18 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     };
   }
 
+  /* 踢法側寫要等 20 隊都算完才能排名 */
+  {
+    const metrics = Object.fromEntries(Object.entries(teamsOut).map(([code, t]) => [code, styleMetrics(t)]));
+    const levels = styleLevels(metrics);
+    for (const [code, t] of Object.entries(teamsOut)) {
+      t.style = Object.fromEntries(Object.keys(STYLE_AXES).map(axis => {
+        const m = metrics[code][axis];
+        return [axis, { level: levels[code]?.[axis] ?? 3, value: m.value, unit: m.unit, n: m.n, basis: STYLE_AXES[axis].basis, proxy: STYLE_AXES[axis].proxy }];
+      }));
+    }
+  }
+
   return {
     league: 'pl', version: 1, builtAt: new Date().toISOString(), currentSeason: cur, lastSeason: last,
     note: '模擬遊玩的側寫。只讀真實管線的產物與 raw 資料,不寫回。每個數字附 n 或來源;遊戲規則(係數)不在這裡,在引擎裡。',
@@ -331,6 +393,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       lineups: 'lineups.json 推估先發 + official.json 最近一場的替補席與陣型',
       situations: 'Understat getTeamData 上季整季情境(球隊層級)',
     },
+    styleAxes: STYLE_AXES,
     league_: {
       rates: leagueRates,
       possession: dist(allPoss),
