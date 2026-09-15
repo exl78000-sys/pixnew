@@ -5200,6 +5200,64 @@ async function checkUclDetails() {
         'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
     }
 
+    /* ── 盃賽球員榜(2026-09-15)──────────────────────────────
+       逐場的逐人統計累加(跟歐冠 / 英冠共用 lib/season-players.mjs)。這一節守的是
+       **這個賽事跟聯賽不一樣的三件事**,不是重驗累加器本身(那在英冠那一節與單元測試裡):
+         1. 互射十二碼不可以算進進球(盃賽 PK 多,而射門圖是**會**列互射的)
+         2. 涵蓋率要進產物 —— 低分級的場次供應商常常沒給逐人統計,不講的話讀者會以為全涵蓋
+         3. 評分榜的門檻要比聯賽高,而且門檻要跟標題一致 */
+    {
+      const idxP = existsSync(idxPath) ? JSON.parse(readFileSync(idxPath, 'utf8')) : null;
+      const players = idxP?.players ?? {};
+      const seasons = Object.entries(players).flatMap(([cup, ss]) => Object.entries(ss).map(([season, p]) => ({ cup, season, p })));
+      ok(seasons.length > 0, '盃賽索引帶球員榜(逐場逐人統計累加)', `${seasons.length} 個盃賽賽季`);
+      ok(seasons.every(({ p }) => p.reconciled > 0 && p.reconciled <= p.withPlayers && p.withPlayers <= p.matches),
+        '計數自己不矛盾:對回比分 ≤ 有逐人統計 ≤ 總場次',
+        seasons.map(({ cup, season, p }) => `${cup} ${season} ${p.reconciled}/${p.withPlayers}/${p.matches}`).join('・'));
+      /* 涵蓋率是**照實回報**不是紅線:足總盃低分級的場次本來就沒有逐人統計,
+         把它寫成「一定要全涵蓋」的話,補不齊的那一天這條會紅在一件不是 bug 的事上。 */
+      ok(seasons.every(({ p }) => Number.isFinite(p.noPlayerData) && Array.isArray(p.mismatched)),
+        '沒有逐人統計的場次與對不上的場次都記在產物裡(依設計不計之後要留下紀錄)',
+        seasons.map(({ cup, season, p }) => `${cup} ${season} 缺 ${p.noPlayerData}・對不上 ${p.mismatched.length}`).join('・'));
+      ok(seasons.every(({ p }) => p.ratingMin >= 3
+        && p.boards.every(b2 => !b2.minMatches || new RegExp(`出賽 ≥ ${b2.minMatches} 場`).test(b2.zh))),
+        '評分榜的門檻比聯賽高(淘汰制),而且門檻跟榜的標題一致');
+      ok(seasons.every(({ p }) => p.boards.length >= 4 && p.boards.every(b2 => b2.rows.length > 0 && b2.pool > 0)),
+        '每一張榜都有母體人數與名次(母體要標,不然讀者會以為是完整名單)');
+      /* **互射十二碼不算進球。** 這是盃賽特有的風險:射門圖會列互射(歐冠決賽那條坑),
+         所以要確認球員的進球**不是**從射門圖來的。驗法:踢過 PK 的場次照樣對得回
+         正規 + 延長的比分 —— 互射有被算進去的話那些場次會整批對不上。 */
+      {
+        const { cupResultsOf: cr, readCupStore: rs, FOTMOB_CUP_DETAILS: CUPS } = await import('./lib/cup-details.mjs');
+        const { loadFotmobMatchStats: lf } = await import('./lib/matchstats.mjs');
+        let pens = 0, pensOk = 0;
+        for (const cup of CUPS) {
+          const store = rs(ROOT, cup.key);
+          if (!store) continue;
+          const st = lf(ROOT, { results: cr(store, []), rawDir: cup.rawDir });
+          for (const m of Object.values(st.matches)) {
+            if (!m.pens || !m.players) continue;
+            const has = Object.values(m.players).some(l => l?.some(p2 => Number.isFinite(p2.minutes) && p2.minutes > 0));
+            if (!has) continue;
+            pens++;
+            const pg = t => (m.players[t] ?? []).reduce((x, p2) => x + (p2.goals?.total ?? 0), 0);
+            const og = t => (m.events ?? []).filter(e => e.type === 'Goal' && (e.ownGoal || e.detail === 'Own Goal') && String(e.team) !== String(t)).length;
+            if (pg(m.home) + og(m.home) === m.score[0] && pg(m.away) + og(m.away) === m.score[1]) pensOk++;
+          }
+        }
+        ok(pens > 10 && pensOk === pens,
+          '踢過 PK 的場次照樣對得回正規 + 延長的比分(互射十二碼沒有被算成進球)', `${pensOk}/${pens} 場`);
+      }
+      /* 畫面要講的三句話(盃賽的核對不是獨立來源 —— 不可以跟三個聯賽混成一句「已核對」) */
+      const cupsPg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');
+      ok(/function cupLeaderBoards/.test(cupsPg) && /同一家供應商/.test(cupsPg)
+        && /有逐人統計/.test(cupsPg) && /互射十二碼不算進球/.test(cupsPg),
+        '盃賽頁的球員榜把涵蓋率、同一家供應商的核對、互射不算進球都寫在畫面上');
+      /* 模組層的 const 要宣告在最上面(球員頁那一輪踩過暫時死區) */
+      ok(cupsPg.indexOf('let CUP_PLAYERS') < cupsPg.indexOf('function cupLeaderBoards'),
+        '盃賽頁的球員榜狀態宣告在模組最上面(const 不像函式宣告會提升)');
+    }
+
     /* 報告的最低要求:盃賽三塊,聯賽與歐冠仍然五塊。
        足總盃前兩輪有 42 場上游只缺逐人那兩塊 —— 照五塊的契約會把有的四塊也丟掉,
        而那是「鐵則三被反過來用」:不要留空欄位,不等於把有的欄位也扔了。 */
