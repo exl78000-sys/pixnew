@@ -524,7 +524,9 @@ function leaderBoards(season) {
   const fmt = (v, dp) => (dp ? Number(v).toFixed(dp) : v);
   return `
     <div class="section"><h2>球員榜</h2>
-      <span class="hint">來源 FotMob・${season.leaderPool} 人母體・已與另一來源逐場核對比分後才採用</span></div>
+      <span class="hint">${season.playerLayer?.source === 'match-aggregate'
+        ? `由本站逐場資料累計(FotMob 逐場詳情,${season.playerLayer.reconciled}/${season.playerLayer.matches} 場的球員進球對回 football-data 的比分才計入${season.playerLayer.excluded?.length ? `,${season.playerLayer.excluded.length} 場對不上不計` : ''};xG 只算射門圖完整的 ${season.playerLayer.xgComplete} 場)・${season.leaderPool} 人`
+        : `來源 FotMob・${season.leaderPool} 人母體・已與另一來源逐場核對比分後才採用`}</span></div>
     <div class="grid g3">
       ${season.leaders.map(b => `<div class="card">
         <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3>

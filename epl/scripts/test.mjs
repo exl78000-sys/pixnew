@@ -5315,12 +5315,54 @@ async function checkUclDetails() {
       if (!sn.crossCheck) continue;
       ok(['draw', 'scores'].includes(sn.crossCheck.kind), `${sn.label}:第二來源核對有 kind`, sn.crossCheck.kind);
       if (sn.crossCheck.kind === 'draw') {
-        ok(!sn.leaders && !sn.squads, `${sn.label}:抽籤檔不替球員榜背書`);
+        /* 抽籤檔沒有比分可核,永遠不能替球員榜背書;抽籤那一季**可以有**球員榜,但只能來自本站逐場資料的累計
+           (playerLayer.source = match-aggregate,逐場對回 football-data 的比分),不是交付檔。2026-09-15 起。 */
+        ok((!sn.leaders && !sn.squads) || sn.playerLayer?.source === 'match-aggregate', `${sn.label}:抽籤檔不替球員榜背書(球員榜只能來自逐場累計)`);
         console.log(`  · ${sn.label}:第二來源是抽籤檔,配對 ${sn.crossCheck.aligned}/${sn.crossCheck.total}、主來源多出 ${sn.crossCheck.extra ?? 0}、${sn.crossCheck.passed ? '通過' : `沒過(${sn.crossCheck.problemCount} 處)`}(只回報)`);
       }
     }
     const view = readFileSync(join(W, 'assets', 'js', 'ucl-view.js'), 'utf8');
     ok(/s\.crossCheck\.kind === 'draw'/.test(view) && /抽籤對照通過/.test(view), '歐冠頁把抽籤檔的核對講成「抽籤對照」,不再印成逐場核對沒過');
+    ok(/playerLayer\?\.source === 'match-aggregate'/.test(view), '歐冠頁球員榜的來源說明分得出交付檔與逐場累計');
+    /* 逐場累計的核對規則(2026-09-15):球員進球 + 烏龍球 = 比分,烏龍球要記給**對方**(FotMob 事件的 team 是踢進自家門的人那一隊) */
+    {
+      const { aggregateSeasonPlayers, leadersFromAggregate } = await import('./lib/adapters/fotmob-ucl.mjs');
+      const P = (t, name, goals, minutes = 90) => ({ providerId: name, name, minutes, rating: 7, goals: { total: goals, assists: 0 }, shots: { total: 1, on: 1 }, passes: { key: 0 }, tackles: {}, cards: {} });
+      const pstore = { matches: {
+        '1|2|2026-01-01': { players: { 1: [P(1, 'A', 2)], 2: [P(2, 'B', 0)] } },     // 2:1,B 隊的烏龍球記給 1 隊 → 3:0?不,設 1 隊 2 + 烏龍 1 = 3
+        '3|4|2026-01-02': { players: { 3: [P(3, 'C', 1)], 4: [P(4, 'D', 0)] } },     // 球員進球 1:0,比分 2:0,沒有烏龍球事件 → 對不上,整場不計
+      } };
+      const details = { matches: {
+        '1|2|2026-01-01': { names: { 1: 'One', 2: 'Two' }, events: [{ type: 'Goal', team: '2', player: '' }], shots: [], checks: { shotmapComplete: false } },
+        '3|4|2026-01-02': { names: { 3: 'Three', 4: 'Four' }, events: [], shots: [], checks: { shotmapComplete: false } },
+      } };
+      const agg = aggregateSeasonPlayers(pstore, details, key => ({ '1|2|2026-01-01': [3, 0], '3|4|2026-01-02': [2, 0] }[key]));
+      ok(agg.reconciled === 1 && agg.excluded.length === 1 && agg.excluded[0].key === '3|4|2026-01-02', '烏龍球記給對方之後對得回比分;對不上的整場不計', JSON.stringify(agg.excluded));
+      ok(agg.players.length === 2 && !agg.players.some(p => p.name === 'C'), '被排除那一場的球員不計入');
+      const L = leadersFromAggregate(agg);
+      ok(L.find(b => b.key === 'goals')?.rows[0]?.name === 'A' && !L.find(b => b.key === 'rating'), '球員榜從累計來;評分榜要出賽 ≥ 2 場才有(這裡沒有)');
+    }
+    /* 累計器對回**另一份**資料:往季有 FotMob 的賽季總表交付檔(不同端點),拿 2025-26 的逐場累計跟它逐人比。
+       實測 883/883 用 playerId 對上、進球相等 873、助攻 875、分鐘 ±10 分內 844;差的是季中換隊的人(累計按隊拆成兩筆)
+       與被排除那一場(19|610)的球員。門檻放在實測值之下一點,守的是「算法沒歪」,不是精確值。 */
+    {
+      const rawDir = join(ROOT, 'data', 'raw', 'fotmob-ucl');
+      const dl = join(ROOT, 'data', 'manual', 'fotmob-ucl-2025-26.json');
+      if (existsSync(join(rawDir, '2025-26-player-stats.json')) && existsSync(dl)) {
+        const { aggregateSeasonPlayers } = await import('./lib/adapters/fotmob-ucl.mjs');
+        const P = JSON.parse(readFileSync(join(rawDir, '2025-26-player-stats.json'), 'utf8'));
+        const G = JSON.parse(readFileSync(join(rawDir, '2025-26-game-details.json'), 'utf8'));
+        const sn = (ucl.seasons ?? []).find(x => x.label === '2025-26');
+        const all = [...(sn?.leagueMatches ?? []), ...(sn?.rounds ?? []).flatMap(r => r.ties.flatMap(t => t.legs))];
+        const scoreOf = key => { const [h, a2, d] = key.split('|'); return all.find(x => String(x.home.id) === h && String(x.away.id) === a2 && x.kickoff.slice(0, 10) === d)?.final ?? null; };
+        const agg = aggregateSeasonPlayers(P, G, scoreOf);
+        const byId = new Map(JSON.parse(readFileSync(dl, 'utf8')).players.map(p => [p.playerId, p]));
+        let n = 0, g = 0, as = 0, m = 0;
+        for (const p of agg.players) { const q = byId.get(p.providerId); if (!q) continue; n++; if ((q.stats?.goals?.value ?? 0) === (p.stats.goals ?? 0)) g++; if ((q.stats?.goal_assist?.value ?? 0) === (p.stats.goal_assist ?? 0)) as++; if (Math.abs((q.stats?.mins_played?.value ?? 0) - p.minutes) <= 10) m++; }
+        ok(n >= 800 && g / n >= 0.97 && as / n >= 0.97 && m / n >= 0.9, '2025-26 逐場累計對回交付檔的賽季總表(進球 / 助攻相等 ≥ 97%、分鐘 ±10 ≥ 90%)', `${n} 人:進球 ${g}、助攻 ${as}、分鐘 ${m}`);
+        ok(agg.reconciled >= agg.matches - 2, '2025-26 逐場核對幾乎全過(對不上的最多 2 場,那是烏龍球記法之外的差異)', `${agg.reconciled}/${agg.matches}`);
+      }
+    }
   }
 
   // ── 工作流 ──
@@ -5386,9 +5428,10 @@ function checkUcl() {
           `歐冠 ${season.label}:陣容只掛得到對照表認得的球隊`);
         /* **單位要跟著資料走。** total_scoring_att 是「每 90 分鐘射門」不是總數,
            把它標成總數就是編數字。所以來源宣告的欄位名要一起輸出。 */
-        okU(sq.statMeta?.total_scoring_att === 'Shots per 90',
+        /* 交付檔那條路宣告的是每 90 分鐘(total_scoring_att);逐場累計那條路(2026-09-15)是總數(shots_total),兩邊都要把單位講出來 */
+        okU(season.playerLayer?.source === 'match-aggregate' ? /total/.test(sq.statMeta?.shots_total ?? '') : sq.statMeta?.total_scoring_att === 'Shots per 90',
           `歐冠 ${season.label}:球員數據帶著來源宣告的單位`,
-          sq.statMeta?.total_scoring_att ?? '(沒有 statMeta)');
+          sq.statMeta?.total_scoring_att ?? sq.statMeta?.shots_total ?? '(沒有 statMeta)');
         const players = Object.values(sq.teams ?? {}).flat();
         okU(players.every(x => x.minutes > 0),
           `歐冠 ${season.label}:陣容只收有實際出賽的球員`, `${players.length} 人`);
@@ -5975,8 +6018,16 @@ function checkUcl() {
         cc.problems.slice(0, 3).map(p => p.text).join(' / '));
       ok(cc.passed, `${s2.label}:完賽球季的第二來源核對通過`);
     }
-    // 核對沒過就不可以採用球員榜 —— 這條守的是「不要挑一個喜歡的答案」
-    ok(cc.passed || !s2.leaders, `${s2.label}:核對沒過時不採用第二來源的球員榜`);
+    // 核對沒過就不可以採用球員榜 —— 這條守的是「不要挑一個喜歡的答案」(逐場累計那條路自己逐場核對,不吃這一條)
+    ok(cc.passed || !s2.leaders || s2.playerLayer?.source === 'match-aggregate', `${s2.label}:核對沒過時不採用第二來源的球員榜`);
+    if (s2.playerLayer) {
+      const L = s2.playerLayer;
+      ok(L.source === 'match-aggregate' && L.reconciled === L.matches - L.excluded.length && L.reconciled > 0,
+        `${s2.label}:逐場累計的球員層每一場都對回比分,對不上的列在 excluded`, `${L.reconciled}/${L.matches},excluded ${L.excluded.length}`);
+      ok(L.reconciled === s2.played || L.matches === s2.played, `${s2.label}:累計涵蓋已完賽的每一場`, `${L.matches} vs 已完賽 ${s2.played}`);
+      ok(Object.keys(s2.squads?.teams ?? {}).length === s2.teamsTotal, `${s2.label}:36 隊都有逐隊陣容`, String(Object.keys(s2.squads?.teams ?? {}).length));
+      ok(/average/.test(s2.squads?.statMeta?.rating ?? '') && /total/.test(s2.squads?.statMeta?.shots_total ?? ''), `${s2.label}:累計版的欄位標題把單位講清楚(評分是逐場平均、射門是總數)`);
+    }
     if (s2.leaders) {
       ok(s2.leaders.length >= 4, `${s2.label}:球員榜有多個類別`, String(s2.leaders.length));
       ok(s2.leaders.every(b => b.rows.length && b.rows.every(r => Number.isFinite(r.value))),

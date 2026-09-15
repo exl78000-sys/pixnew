@@ -10,7 +10,7 @@
    盃賽頁與這一頁呼叫同一份(各寫一份的話,改了一邊另一邊會悄悄過期,本專案最常見的那種過期)。
    共用狀態(standings / elo / details / 隊伍註冊)走同一個 initUcl。 */
 import * as C from './core.js?v=0398a1b2';
-import { initUcl, uclAllMatches, uclExpandable, uclExpandKind, uclRegisterSides, renderUclCompare, renderUclPost } from './ucl-view.js?v=a0a3519a';
+import { initUcl, uclAllMatches, uclExpandable, uclExpandKind, uclRegisterSides, renderUclCompare, renderUclPost } from './ucl-view.js?v=5a5843e5';
 
 const app = document.getElementById('app');
 
