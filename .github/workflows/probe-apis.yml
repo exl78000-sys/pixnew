@@ -103,6 +103,17 @@ jobs:
         working-directory: epl
         run: npm run probe:fotmob-de1
 
+      # 義甲與法甲能不能照德甲那條路做三層。openfootball 已經在沙箱驗過(義甲四季各 380 場、
+      # 法甲各 306 場,全部有比分),football-data.co.uk 的 I1/F1 倉庫裡也有舊季可以看欄位 ——
+      # 剩下只有 Understat 的聯賽代號與 FotMob 的聯賽 id 沙箱問不到,這支就是問那兩個。
+      # 同名陷阱跟德甲同一種而且更多:巴西也有 Serie A、義大利有 Serie B 與女足 Serie A、
+      # 法國有 Ligue 2 與 D1 Féminine。所以 FotMob 那一段一樣要**逐隊比對 openfootball**
+      # 才算證明,Understat 那一段候選字串逐一試 + 西甲當對照組。
+      # 唯讀、最多 22 個請求、不寫快取。**這是 latest job 的最後一步**(讀結果靠 log 尾端)。
+      - name: 探測義甲與法甲做不做得成完整聯賽
+        working-directory: epl
+        run: npm run probe:new-leagues
+
   all:
     if: ${{ github.event.inputs.quick != 'true' }}
     runs-on: ubuntu-latest
