@@ -54,7 +54,7 @@ async function main() {
   /* 探索頁的三個內容模組(併頁時抽出來的,做法同 ucl-view)。
      模擬遊玩(2026-09-03)取代了對戰模擬:game-engine 是引擎、game-view 是版面,
      game-view import game-engine 與 game-playback(播放規劃,2026-09-15),所以那兩個要排前面(共用模組引用共用模組,照相依排)。 */
-  'knowledge-view', 'allplayers-view', 'game-engine', 'game-playback', 'game-view',
+  'knowledge-view', 'allplayers-view', 'game-engine', 'game-playback', 'game-diag', 'game-view',
   /* 「我的」那一頁的兩個分頁(2026-09-14 併頁時抽出來的)。
      predict-view 引用 predict-score,所以排在它後面。 */
   'follow-view', 'predict-view'];
@@ -74,11 +74,18 @@ async function main() {
   /* 共用模組會攤平到頂層,跟 core 的匯出同名就是 SyntaxError ——
      而分頁版有模組作用域,完全看不出來(ucl-view 的 teamCell 實際踩過)。 */
   const coreNames = new Set([...coreSrc.matchAll(/export (?:function|const|class) ([A-Za-z_$][\w$]*)/g)].map(m => m[1]));
+  /* 撞名不是只會撞 core —— **共用模組彼此也在同一個頂層作用域**,第一版只比 core 就漏掉這一半。
+     2026-09-16 加 game-diag 時實測:它的 `pct` 撞 core(擋下來了),但 `r1` 撞 game-engine、
+     `BOX_X` 撞 duel-anim **兩個都放行**,而單檔版一開就是 "Identifier 'r1' has already been declared"。
+     所以邊比邊記:比完一支就把它的頂層名字放進池子,下一支要跟 core 與池子都比。 */
+  const taken = new Map();   // 名字 → 哪一支先用的
   const sharedSrc = [];
   for (const name of SHARED) {
     const src = await readFile(join(WEB, 'assets', 'js', `${name}.js`), 'utf8');
     for (const m of src.matchAll(/^(?:export )?(?:async )?(?:function|const|let) ([A-Za-z_$][\w$]*)/gm)) {
       if (coreNames.has(m[1])) throw new Error(`${name}.js 的頂層識別字 ${m[1]} 跟 core.js 的匯出同名,單檔版會炸`);
+      if (taken.has(m[1])) throw new Error(`${name}.js 的頂層識別字 ${m[1]} 跟 ${taken.get(m[1])}.js 同名,單檔版會炸`);
+      taken.set(m[1], name);
     }
     /* 共用模組之間的具名 import 也要拆(game-view import predict-core / duel-anim / game-engine)。
        原本只拆 `import * as C`,具名的留著 → 單檔版一開就是
