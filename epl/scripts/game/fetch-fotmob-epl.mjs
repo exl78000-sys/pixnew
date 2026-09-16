@@ -25,7 +25,9 @@
  *   npm run game:fetch -- --verify=20                    # 拿官網端點核對 20 場控球
  *   npm run game:fetch -- --refresh --limit=30              # 萃取多了欄位時把本季重抓一次(不 +1 版本)
  *   npm run game:fetch -- --league=ucl                   # 歐冠(賽果來自 ucl.json,不抓熱區圖,一場一個請求)
- *   2026-09-03 起一場兩個請求(詳情 + 逐人熱區圖),--limit 是請求數,場數是它的一半。
+ *   `--limit` 一律是**請求數**,不是場數。一場幾個請求看那個聯賽抓不抓熱區圖:
+ *   英超與西甲抓(有人讀:439 / 641 人的 tracking.heat),一場兩個;
+ *   英冠德義法與歐冠盃賽不抓(沒有任何消費端,2026-09-16 數過),一場一個。
  *   npm run game:fetch -- --dry-run
  */
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -50,7 +52,15 @@ const LEAGUES = {
   pl: { id: 47, ccode3: 'GBR', dir: 'fotmob-epl', teamFile: 'teams.json', results: ['web', 'data', 'results.json'], verify: true, refetchOld: true },
   es1: { id: 87, ccode3: 'ESP', dir: 'fotmob-la-liga', teamFile: 'teams-la-liga.json', results: ['web', 'data', 'leagues', 'es1', 'results.json'], verify: false },
   // 英冠(2026-09-05):同一支抓取器,只是聯賽 id 48;pulselive 只有英超,所以 verify false
-  en2: { id: 48, ccode3: 'GBR', dir: 'fotmob-championship', teamFile: 'teams-championship.json', results: ['web', 'data', 'leagues', 'en2', 'results.json'], verify: false },
+  /* 熱區圖:只有**真的有人讀那份資料**的聯賽才抓,那是第二個請求(一場的成本翻倍)。
+     2026-09-16 數過消費端:`attachPlayerTracking`(把觸球熱區掛到球員身上)只在 `build.mjs`(英超)
+     與 `build-laliga.mjs`(西甲)被呼叫 —— 英超 439 / 599 人、西甲 641 / 1,050 人有 `tracking.heat`,
+     而英冠 1,338 人、德甲 856 人、義甲 1,023 人、法甲 966 人**全部是 0**;另一個消費端 `duel-anim.js`
+     只有模擬遊玩在用,而 `GAME_LEAGUES = ['pl']`、`web/data/game/` 底下只有 `pl.json`。
+     所以那四個聯賽每一場都在多花一個請求買一份沒有任何頁面在讀的資料(英冠 633 場裡 272 場、
+     德義法各 27 / 40 / 36 場已經花掉了)。已經抓到的保留(下面讀 `store.matches[key]?.heat`),
+     只是新抓的不帶;以後真要做它們的球員觸球熱區,那時候要 `--refresh` 整季重抓,那筆帳要算進去。 */
+  en2: { id: 48, ccode3: 'GBR', dir: 'fotmob-championship', teamFile: 'teams-championship.json', results: ['web', 'data', 'leagues', 'en2', 'results.json'], verify: false, heat: false },
   /* 德甲(2026-09-15):同一支抓取器,只是聯賽 id 54。
      **那個 54 是證明出來的,不是猜的**,而且這裡特別容易挑錯:
      FotMob 的 GER 清單裡有一堆叫 Bundesliga 的東西(2. Bundesliga、Frauen Bundesliga、
@@ -61,15 +71,15 @@ const LEAGUES = {
      再拿 id 抓一季賽程**逐隊比對本站名冊**:306 場、18 隊 18/18 全對,才敢寫下來。
      取樣兩場確認逐場詳情五塊齊全(stats / shotmap / lineup / events / playerStats)。
      pulselive 只有英超,所以 verify false。 */
-  de1: { id: 54, ccode3: 'GER', dir: 'fotmob-bundesliga', teamFile: 'teams-bundesliga.json', results: ['web', 'data', 'leagues', 'de1', 'results.json'], verify: false },
+  de1: { id: 54, ccode3: 'GER', dir: 'fotmob-bundesliga', teamFile: 'teams-bundesliga.json', results: ['web', 'data', 'leagues', 'de1', 'results.json'], verify: false, heat: false },
   /* 義甲與法甲(2026-09-15)。id 55 / 53 是 `probe-new-leagues.mjs` 證明出來的:
      從 allLeagues 找 ccode、再拿那個 id 抓一季賽程**逐隊比對 openfootball**
      (義甲 20 隊對上 19、法甲 18 隊對上 15,剩下的是上游短名,兩邊剩下的名字一樣多)。
      **不可以照名字挑**:義大利有 Serie B(86)與女足 Serie A(10178),而巴西也有 Serie A;
      法國有 Ligue 2(110)與 Première Ligue Féminine(9677)。挑錯照樣回得出 20 / 18 隊
      與完整的逐場資料,畫面不報錯、只是整個聯賽是錯的(德甲那次差點挑到奧地利甲)。 */
-  it1: { id: 55, ccode3: 'ITA', dir: 'fotmob-serie-a', teamFile: 'teams-serie-a.json', results: ['web', 'data', 'leagues', 'it1', 'results.json'], verify: false },
-  fr1: { id: 53, ccode3: 'FRA', dir: 'fotmob-ligue-1', teamFile: 'teams-ligue-1.json', results: ['web', 'data', 'leagues', 'fr1', 'results.json'], verify: false },
+  it1: { id: 55, ccode3: 'ITA', dir: 'fotmob-serie-a', teamFile: 'teams-serie-a.json', results: ['web', 'data', 'leagues', 'it1', 'results.json'], verify: false, heat: false },
+  fr1: { id: 53, ccode3: 'FRA', dir: 'fotmob-ligue-1', teamFile: 'teams-ligue-1.json', results: ['web', 'data', 'leagues', 'fr1', 'results.json'], verify: false, heat: false },
   /* 歐冠(2026-09-12):同一支抓取器,三個不同點 ——
      ① 聯賽 id 42 是 `probe-ucl-matchdetails.mjs` 走 FotMob 的 allLeagues 目錄用名字找到的,不是猜的;
         ccode3 不帶(國際賽事沒有國家)。
@@ -98,7 +108,7 @@ const DIR = join(ROOT, 'data', 'raw', LG.dir);
    只有英超(模擬遊玩用)因為版本落後而重抓(LEAGUES.pl.refetchOld);其他聯賽的舊快取照用,新抓的自然是新版。 */
 export const EXTRACT_VERSION = 2;
 
-const HARD_LIMIT = 800;           // 一次執行的請求硬上限:一場兩個請求(詳情 + 熱區圖),回填一季 380 場要 760
+const HARD_LIMIT = 800;           // 一次執行的請求硬上限:抓熱區圖的聯賽(英超西甲)一場兩個請求,回填一季 380 場要 760
 const DEFAULT_LIMIT = 40;
 const INTERVAL_MS = 600;
 /* 退回過的場次 30 分鐘內不再試。比賽日迴圈每 2 分鐘叫一次這支(歐冠之夜),沒有這條的話

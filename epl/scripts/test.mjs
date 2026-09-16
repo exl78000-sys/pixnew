@@ -2398,6 +2398,31 @@ async function checkDataGap() {
       }
       return keys.has('pl') && missing.length === 0 && noFile.length === 0;
     })()],
+    /* `local-sync.mjs`(本機一次同步)原本手寫聯賽順序,加義甲法甲時沒有人回來改 ——
+       跑 `npm run local:sync` 只重建四個聯賽,義甲法甲停在舊產物而畫面完全正常。
+       現在它掃 `web/data/leagues/`,用 package.json 的 `{聯賽}:build` 當對照表
+       (檔名推不出來:es1 → laliga、en2 → championship、de1 → bundesliga…),
+       兩種都不是的當場失敗。這裡守的是那張對照表沒有漏人。 */
+    ['local:sync 重建 web/data/leagues 底下每一個聯賽', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'local-sync.mjs'), 'utf8');
+      const scanned = /readdirSync\(join\(ROOT, 'web', 'data', 'leagues'\)/.test(src);
+      const explicit = ((src.match(/EXPLICIT = new Set\(\[([^\]]*)\]/) ?? [])[1] ?? '')
+        .match(/'([a-z0-9]+)'/g)?.map(x => x.replace(/'/g, '')) ?? [];
+      const scripts = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).scripts;
+      const onDisk = readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => e.name);
+      const uncovered = onDisk.filter(k => !explicit.includes(k) && !scripts[`${k}:build`]);
+      /* 英超那一步要走 `npm run build`(三支的串接),不是直接指 scripts/build.mjs ——
+         直接指的話 `stamp-assets.mjs` 不會跑,六個聯賽的 meta.assets 全變 undefined。
+         實際發生過:跑完 local:sync 再 npm test 紅 12 條,而這一支的註解從以前就在講資產戳。 */
+      const stamps = /await npm\('build'\)/.test(src) && !/run\('scripts\/build\.mjs'\)/.test(src);
+      /* 資產戳是那一串的最後一步寫的,所以每一個聯賽都要排在它前面 —— 明確跑的那幾個也是。 */
+      const laligaFirst = src.indexOf('build-laliga.mjs') > 0 && src.indexOf('build-laliga.mjs') < src.indexOf("npm('build')");
+      if (!scanned || uncovered.length || !laligaFirst || !stamps) {
+        console.log(`    掃目錄:${scanned}・沒涵蓋到:${uncovered.join('、') || '—'}・西甲排在英超前:${laligaFirst}・英超走 npm run build(含資產戳):${stamps}`);
+      }
+      return scanned && uncovered.length === 0 && laligaFirst && stamps;
+    })()],
     ['分析頁的「整季 N 場」從回測資料來,不寫死 380', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
       return /整季 \$\{mk\.games\} 場/.test(src) && !/整季 380 場/.test(src);
@@ -5108,7 +5133,27 @@ async function checkUclDetails() {
   {
     const src = readFileSync(join(ROOT, 'scripts', 'game', 'fetch-fotmob-epl.mjs'), 'utf8');
     ok(/ucl:\s*\{\s*id:\s*42,\s*ccode3:\s*null/.test(src), '抓取器有 ucl 參數組:id 42(allLeagues 目錄查到的)、不帶 ccode3');
-    ok(/heat:\s*false/.test(src) && /LG\.heat !== false && rec\.heatmapUrl/.test(src), '歐冠不抓熱區圖(一場一個請求),而且是參數決定的');
+    ok(/ucl: \{[^}]*heat: false/.test(src) && /LG\.heat !== false && rec\.heatmapUrl/.test(src), '歐冠不抓熱區圖(一場一個請求),而且是參數決定的');
+    /* 熱區圖是第二個請求,一場的成本翻倍 —— 所以「有抓」的聯賽必須真的有人讀那份資料。
+       2026-09-16 數出來英冠德義法各自 1,338 / 856 / 1,023 / 966 人裡有 tracking.heat 的是 0 人,
+       已經花掉的請求:英冠 633 場裡 272 場、德義法各 27 / 40 / 36 場。
+       兩邊都從實際的東西算,不列聯賽清單(「手寫的聯賽清單,加第五個聯賽時沒有人會記得回來改」)。 */
+    {
+      const lines = src.split('\n').filter(l => /^  \w+: \{ id: \d+/.test(l));
+      const fetchesHeat = lines.filter(l => !/heat:\s*false/.test(l)).map(l => l.match(/^  (\w+):/)[1]);
+      const gameSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8');
+      const gameLeagues = (gameSrc.match(/GAME_LEAGUES = \[([^\]]*)\]/)?.[1] ?? '').match(/'(\w+)'/g)?.map(x => x.replace(/'/g, '')) ?? [];
+      const readsHeat = k => {
+        const f = k === 'pl' ? join(ROOT, 'web', 'data', 'players.json') : join(ROOT, 'web', 'data', 'leagues', k, 'players.json');
+        if (!existsSync(f)) return false;
+        const d = JSON.parse(readFileSync(f, 'utf8'));
+        return (Array.isArray(d) ? d : d.players ?? []).some(x => x.tracking?.heat);
+      };
+      const orphan = fetchesHeat.filter(k => !gameLeagues.includes(k) && !readsHeat(k));
+      ok(fetchesHeat.length > 0 && orphan.length === 0,
+        `抓熱區圖的聯賽都真的有人讀那份資料(在抓的:${fetchesHeat.join('、')})`,
+        `沒有任何消費端卻在抓(一場多花一個請求):${orphan.join('、')}`);
+    }
     ok(/import \{ bridgeTeams \} from '\.\.\/lib\/adapters\/fotmob-ucl\.mjs'/.test(src) && /ucl-team-ids\.json/.test(src),
       '橋用 adapters/fotmob-ucl.mjs 的 bridgeTeams,而且拿人工對照表當守門');
     ok(/import \{ uclResultsOf, UCL_RAW_DIR \} from '\.\.\/lib\/ucl-details\.mjs'/.test(src), '賽果形狀跟 build 讀 raw 的是同一份(uclResultsOf)');

@@ -1,0 +1,81 @@
+name: 聯賽往季逐場資料回填(手動)
+
+# 各聯賽的逐場詳情(賽後報告、球隊統計、逐射門 xG、事件、名單與逐人統計)本季會自動累積
+# (部署與比賽夜迴圈都抓),**往季不自動回填** —— 一場一個請求,量大,是使用者的決定。
+# 2026-09-16 使用者同意回填德義法 2025-26(德甲 306、義甲 380、法甲 306 = 992 場),
+# 一次一個聯賽、分三次跑完,所以有這一支。歐冠有自己那一支(ucl-backfill.yml,賽果來源不同)。
+#
+# 沙箱連不到 FotMob,只能在 runner 上跑;抓取器自己守門(比分對回 results.json 才收、
+# 賽程端點的 selectedSeason 要等於要的那季、退回過的 30 分鐘內不重試)。
+# 沒有掛 notify:這是手動的一次性工作,失敗就看 log,開 Issue 只是雜訊(跟 probe-apis 同一個理由)。
+#
+# league 刻意是**自由輸入**不是 choice:choice 要列一份聯賽清單,而本站付過三次
+# 「手寫的聯賽清單沒有人記得回來改」的代價。真正的清單在 scripts/game/fetch-fotmob-epl.mjs
+# 的 LEAGUES,打錯的話抓取器會當場失敗講出有哪些 —— 靜靜跑錯的風險是 0。
+on:
+  workflow_dispatch:
+    inputs:
+      league:
+        description: '聯賽代碼(de1 / it1 / fr1 / en2 / es1 / pl;以 fetch-fotmob-epl.mjs 的 LEAGUES 為準)'
+        required: true
+        default: 'de1'
+      season:
+        description: '賽季標籤,例如 2025-26(要在該聯賽的 results.json 裡)'
+        required: true
+        default: '2025-26'
+      limit:
+        description: '本次請求上限。**是請求數不是場數**:有熱區圖的聯賽(英超西甲)一場兩個,其餘一場一個。400 夠一季 380 場'
+        required: false
+        default: '400'
+
+concurrency:
+  group: league-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 抓往季逐場資料(FotMob)
+        working-directory: epl
+        # --retry:不理抓取器 30 分鐘的退避 —— 人按下去就是要現在試(退回過的原因在 log 與索引的 attempts 裡)
+        run: npm run game:fetch -- --league=${{ inputs.league }} --season=${{ inputs.season }} --limit=${{ inputs.limit }} --retry
+
+      - name: 回寫 raw
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # 逐個判斷存不存在再 add:一個 git add 列到不存在的路徑,**整條指令失敗、一個檔都不會加**,
+          # 而 job 照樣報 success(盃賽回填「抓到 64 場卻印沒有變化」那條坑)。
+          added=0
+          for d in epl/data/raw/fotmob-*; do
+            if [ -d "$d" ]; then git add -f "$d" && added=$((added+1)); else echo "· 略過不存在的 $d"; fi
+          done
+          echo "加入索引的目錄數:$added"
+          if git diff --cached --quiet; then
+            echo "raw 沒有變化,不提交"
+            exit 0
+          fi
+          git commit -q -m "chore(epl): ${{ inputs.league }} ${{ inputs.season }} 往季逐場資料回填 [skip ci]"
+          # 同一條分支還有部署與比賽夜迴圈在推;rebase 失敗就 abort 重來,最多三次
+          for try in 1 2 3; do
+            if git pull -q --rebase origin "$GITHUB_REF_NAME"; then
+              if git push -q origin "HEAD:$GITHUB_REF_NAME"; then echo "已回寫(第 $try 次)"; exit 0; fi
+            else
+              git rebase --abort 2>/dev/null || true
+            fi
+            sleep 5
+          done
+          echo "✗ 回寫連撞三次,這次的 raw 沒有進倉庫 —— 重跑一次就好(抓過的已經在 runner 上,但沒回寫就會重抓)"
+          exit 1

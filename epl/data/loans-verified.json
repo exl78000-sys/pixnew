@@ -1,11 +1,11 @@
 {
   "_note": "產物:由 npm run loans:verify 從 data/manual/loans.json 核對後產生。不要手改,重跑就有。build 只讀這一份。",
-  "verifiedAt": "2026-08-28T10:24:40.340Z",
+  "verifiedAt": "2026-09-16T06:04:03.319Z",
   "inboxSha": "fb54c6df98c0731fd4aac2566263ea04c5c6f91d1c0b5efda4bb9e47a5bde81f",
   "tally": {
-    "unverifiable": 165,
-    "confirmed": 154,
-    "consistent": 440
+    "unverifiable": 164,
+    "confirmed": 159,
+    "consistent": 436
   },
   "bySeason": {
     "2024-25": {
@@ -19,9 +19,9 @@
       "unverifiable": 18
     },
     "2026-27": {
-      "consistent": 83,
-      "unverifiable": 17,
-      "confirmed": 10
+      "consistent": 79,
+      "unverifiable": 16,
+      "confirmed": 15
     }
   },
   "records": [
@@ -7884,7 +7884,7 @@
       "verdict": "confirmed",
       "evidence": [
         "✓ 母隊 AVL 當季確實在該聯賽",
-        "✓ 西甲 2026-27 逐季資料確認他在 GET(出賽 2 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 GET(出賽 4 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/1063329/transfer_id/6431883"
     },
@@ -8110,7 +8110,7 @@
       "verdict": "confirmed",
       "evidence": [
         "✓ 母隊 BHA 當季確實在該聯賽",
-        "✓ 西甲 2026-27 逐季資料確認他在 ELC(出賽 1 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 ELC(出賽 4 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/983989/transfer_id/6489457"
     },
@@ -8161,6 +8161,21 @@
     },
     {
       "season": "2026-27",
+      "player": "Matteo Prati",
+      "parentClub": "Cagliari Calcio",
+      "loanClub": "Racing Santander",
+      "parentCode": null,
+      "loanCode": "RAC",
+      "date": null,
+      "datePrecision": "summer-2026",
+      "verdict": "confirmed",
+      "evidence": [
+        "✓ 西甲 2026-27 逐季資料確認他在 RAC(出賽 3 場)"
+      ],
+      "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/876298/transfer_id/6536286"
+    },
+    {
+      "season": "2026-27",
       "player": "Juan Cruz",
       "parentClub": "CD Leganés",
       "loanClub": "Málaga CF",
@@ -8170,7 +8185,7 @@
       "datePrecision": "summer-2026",
       "verdict": "confirmed",
       "evidence": [
-        "✓ 西甲 2026-27 逐季資料確認他在 MAL(出賽 2 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 MAL(出賽 5 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/585700/transfer_id/6439542"
     },
@@ -8185,7 +8200,7 @@
       "datePrecision": "summer-2026",
       "verdict": "confirmed",
       "evidence": [
-        "✓ 西甲 2026-27 逐季資料確認他在 LEV(出賽 1 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 LEV(出賽 4 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/892221/transfer_id/6442279"
     },
@@ -8273,9 +8288,10 @@
       "loanCode": "RSO",
       "date": null,
       "datePrecision": "summer-2026",
-      "verdict": "consistent",
+      "verdict": "confirmed",
       "evidence": [
-        "✓ 母隊 CHE 當季確實在該聯賽"
+        "✓ 母隊 CHE 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 RSO(出賽 2 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/910905/transfer_id/6541618"
     },
@@ -8663,9 +8679,10 @@
       "loanCode": "LEV",
       "date": null,
       "datePrecision": "summer-2026",
-      "verdict": "consistent",
+      "verdict": "confirmed",
       "evidence": [
-        "✓ 母隊 LIV 當季確實在該聯賽"
+        "✓ 母隊 LIV 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 LEV(出賽 1 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/1167696/transfer_id/6525505"
     },
@@ -8860,7 +8877,7 @@
       "datePrecision": "summer-2026",
       "verdict": "confirmed",
       "evidence": [
-        "✓ 西甲 2026-27 逐季資料確認他在 VAL(出賽 2 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 VAL(出賽 5 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/251876/transfer_id/6522079"
     },
@@ -8875,7 +8892,7 @@
       "datePrecision": "summer-2026",
       "verdict": "confirmed",
       "evidence": [
-        "✓ 西甲 2026-27 逐季資料確認他在 GET(出賽 2 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 GET(出賽 5 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/289592/transfer_id/6489479"
     },
@@ -8920,7 +8937,7 @@
       "datePrecision": "summer-2026",
       "verdict": "confirmed",
       "evidence": [
-        "✓ 西甲 2026-27 逐季資料確認他在 MAL(出賽 1 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 MAL(出賽 4 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/819590/transfer_id/6462815"
     },
@@ -8963,9 +8980,10 @@
       "loanCode": "RAY",
       "date": null,
       "datePrecision": "summer-2026",
-      "verdict": "consistent",
+      "verdict": "confirmed",
       "evidence": [
-        "✓ 母隊 SEV 當季確實在該聯賽"
+        "✓ 母隊 SEV 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 RAY(出賽 4 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/501418/transfer_id/6540728"
     },
@@ -8995,7 +9013,7 @@
       "datePrecision": "summer-2026",
       "verdict": "confirmed",
       "evidence": [
-        "✓ 西甲 2026-27 逐季資料確認他在 RAC(出賽 2 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 RAC(出賽 5 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/1153105/transfer_id/6468640"
     },
@@ -9128,9 +9146,10 @@
       "loanCode": "LEV",
       "date": null,
       "datePrecision": "summer-2026",
-      "verdict": "consistent",
+      "verdict": "confirmed",
       "evidence": [
-        "✓ 母隊 VIL 當季確實在該聯賽"
+        "✓ 母隊 VIL 當季確實在該聯賽",
+        "✓ 西甲 2026-27 逐季資料確認他在 LEV(出賽 2 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/945709/transfer_id/6435276"
     },
@@ -9207,7 +9226,7 @@
       "verdict": "confirmed",
       "evidence": [
         "✓ 母隊 VIL 當季確實在該聯賽",
-        "✓ 西甲 2026-27 逐季資料確認他在 LEV(出賽 1 場)"
+        "✓ 西甲 2026-27 逐季資料確認他在 LEV(出賽 3 場)"
       ],
       "source": "https://www.transfermarkt.co.uk/jumplist/transfers/spieler/1127730/transfer_id/6495691"
     },
@@ -10178,12 +10197,6 @@
       "player": "Quilindschy Hartman",
       "parentClub": "Burnley FC",
       "loanClub": "RCD Espanyol Barcelona"
-    },
-    {
-      "season": "2026-27",
-      "player": "Matteo Prati",
-      "parentClub": "Cagliari Calcio",
-      "loanClub": "Racing Santander"
     },
     {
       "season": "2026-27",
