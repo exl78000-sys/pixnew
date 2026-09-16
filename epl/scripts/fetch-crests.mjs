@@ -20,7 +20,7 @@ const LEAGUE = arg('league') || 'pl';
 
 const PROFILES = {
   pl: {
-    teamFile: 'teams.json', outFile: 'crests.json', currentRaw: null,
+    teamFile: 'teams.json', outFile: 'crests.json', currentRaw: null, label: '英超',
     folders: [
       'logos/England - Premier League',
       'history/2025-26/England - Premier League',
@@ -65,6 +65,35 @@ const PROFILES = {
       'logos/Germany - Bundesliga',
       'history/2025-26/Germany - Bundesliga',
       'history/2024-25/Germany - Bundesliga',
+    ],
+  },
+  /* 義甲 / 法甲(2026-09-16)。資料夾名一樣是**試出來的**,不是猜的
+     (`probe-folders.mjs` 那一輪:`Italy - Serie A` 與 `France - Ligue 1` 回 200;
+      `Italy - Serie A TIM` / `Italy - SerieA` / `Italy - Serie-A`、
+      `France - Ligue1` / `France - Ligue 1 Uber Eats` / `France - Ligue 1 McDonald's` 全 404)。
+     歷史目錄列到 **2023-24**,比德甲多一季 —— 這兩個聯賽的名冊涵蓋四季,
+     2023-24 之後降級的那幾支(義甲 Salernitana / Frosinone、法甲 Clermont / Troyes)
+     只在那一季的目錄裡。三個歷史目錄都用「那一季真的在的球隊」驗過存在。 */
+  it1: {
+    teamFile: 'teams-serie-a.json', outFile: 'crests-serie-a.json',
+    competition: 'ita.1', label: '義甲',
+    currentRaw: join(ROOT, 'data', 'raw', 'openfootball-serie-a', '2026-27.json'),
+    folders: [
+      'logos/Italy - Serie A',
+      'history/2025-26/Italy - Serie A',
+      'history/2024-25/Italy - Serie A',
+      'history/2023-24/Italy - Serie A',
+    ],
+  },
+  fr1: {
+    teamFile: 'teams-ligue-1.json', outFile: 'crests-ligue-1.json',
+    competition: 'fra.1', label: '法甲',
+    currentRaw: join(ROOT, 'data', 'raw', 'openfootball-ligue-1', '2026-27.json'),
+    folders: [
+      'logos/France - Ligue 1',
+      'history/2025-26/France - Ligue 1',
+      'history/2024-25/France - Ligue 1',
+      'history/2023-24/France - Ligue 1',
     ],
   },
 };
@@ -134,7 +163,11 @@ async function main() {
   const crests = { ...(existing.crests ?? {}) };
   const sources = { ...(existing.sources ?? {}) };
 
-  console.log(`▶ 抓取 ${selected.length} 支${LEAGUE === 'es1' ? (INCLUDE_HISTORY ? '西甲／西乙名冊' : '西甲') : '英超'}球隊的隊徽(縮到寬 ${WIDTH}px)\n`);
+  /* **聯賽名一律從 profile 讀。** 這一行原本是 `LEAGUE === 'es1' ? '西甲' : '英超'` ——
+     「不是英超就不是西甲」那條二元式的第 N 次:德甲義甲法甲跑起來全部印「英超球隊」。
+     不拋錯、也不影響產物,只是 log 在說謊,而 log 就是這一步唯一的輸出。 */
+  const zh = PROFILE.label ?? '英超';
+  console.log(`▶ 抓取 ${selected.length} 支${zh}${LEAGUE === 'es1' && INCLUDE_HISTORY ? '／西乙名冊' : ''}球隊的隊徽(縮到寬 ${WIDTH}px)\n`);
   let got = 0, skipped = 0, failed = [];
   let raw = 0, small = 0;
 
