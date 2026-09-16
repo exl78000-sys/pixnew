@@ -5108,7 +5108,27 @@ async function checkUclDetails() {
   {
     const src = readFileSync(join(ROOT, 'scripts', 'game', 'fetch-fotmob-epl.mjs'), 'utf8');
     ok(/ucl:\s*\{\s*id:\s*42,\s*ccode3:\s*null/.test(src), '抓取器有 ucl 參數組:id 42(allLeagues 目錄查到的)、不帶 ccode3');
-    ok(/heat:\s*false/.test(src) && /LG\.heat !== false && rec\.heatmapUrl/.test(src), '歐冠不抓熱區圖(一場一個請求),而且是參數決定的');
+    ok(/ucl: \{[^}]*heat: false/.test(src) && /LG\.heat !== false && rec\.heatmapUrl/.test(src), '歐冠不抓熱區圖(一場一個請求),而且是參數決定的');
+    /* 熱區圖是第二個請求,一場的成本翻倍 —— 所以「有抓」的聯賽必須真的有人讀那份資料。
+       2026-09-16 數出來英冠德義法各自 1,338 / 856 / 1,023 / 966 人裡有 tracking.heat 的是 0 人,
+       已經花掉的請求:英冠 633 場裡 272 場、德義法各 27 / 40 / 36 場。
+       兩邊都從實際的東西算,不列聯賽清單(「手寫的聯賽清單,加第五個聯賽時沒有人會記得回來改」)。 */
+    {
+      const lines = src.split('\n').filter(l => /^  \w+: \{ id: \d+/.test(l));
+      const fetchesHeat = lines.filter(l => !/heat:\s*false/.test(l)).map(l => l.match(/^  (\w+):/)[1]);
+      const gameSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8');
+      const gameLeagues = (gameSrc.match(/GAME_LEAGUES = \[([^\]]*)\]/)?.[1] ?? '').match(/'(\w+)'/g)?.map(x => x.replace(/'/g, '')) ?? [];
+      const readsHeat = k => {
+        const f = k === 'pl' ? join(ROOT, 'web', 'data', 'players.json') : join(ROOT, 'web', 'data', 'leagues', k, 'players.json');
+        if (!existsSync(f)) return false;
+        const d = JSON.parse(readFileSync(f, 'utf8'));
+        return (Array.isArray(d) ? d : d.players ?? []).some(x => x.tracking?.heat);
+      };
+      const orphan = fetchesHeat.filter(k => !gameLeagues.includes(k) && !readsHeat(k));
+      ok(fetchesHeat.length > 0 && orphan.length === 0,
+        `抓熱區圖的聯賽都真的有人讀那份資料(在抓的:${fetchesHeat.join('、')})`,
+        `沒有任何消費端卻在抓(一場多花一個請求):${orphan.join('、')}`);
+    }
     ok(/import \{ bridgeTeams \} from '\.\.\/lib\/adapters\/fotmob-ucl\.mjs'/.test(src) && /ucl-team-ids\.json/.test(src),
       '橋用 adapters/fotmob-ucl.mjs 的 bridgeTeams,而且拿人工對照表當守門');
     ok(/import \{ uclResultsOf, UCL_RAW_DIR \} from '\.\.\/lib\/ucl-details\.mjs'/.test(src), '賽果形狀跟 build 讀 raw 的是同一份(uclResultsOf)');
