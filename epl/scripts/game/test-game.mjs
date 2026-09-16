@@ -40,12 +40,28 @@ console.log('\n▶ 模擬遊玩:獨立管線');
   const profile = readFileSync(join(ROOT, 'scripts', 'game', 'lib', 'profile.mjs'), 'utf8');
   check('profile.mjs 只讀不寫(沒有 writeFile)', !/writeFile/.test(profile));
 
-  /* 前端頁面清單:game- 開頭的共用模組要進 bundle 的 SHARED,不然單檔版靜靜少一頁。
-     檔還沒建時這條先不驗(引擎是階段 2)。 */
+  /* 前端頁面清單:**頁面真的會載入的**那幾支 game- 模組要進 bundle 的 SHARED,
+     不然單檔版靜靜少一頁。2026-09-16 之後 `game-engine` / `game-playback` 已經不是其中之一
+     (頁面不再 import 它們,檔案留著只為了它們自己的測試)——
+     所以這一條改成從 **game-view 的 import 開始走訪**,而不是「目錄裡每一個 game-*.js」:
+     那樣寫的話,任何一支被退役的模組都會讓這條紅在「它不在清單裡」,而它本來就不該在。 */
   const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
-  const gameJs = readdirSync(join(ROOT, 'web', 'assets', 'js')).filter(f => f.startsWith('game-') && f.endsWith('.js'));
-  if (gameJs.length) check('game-*.js 都在 bundle 的 SHARED 清單', gameJs.every(f => bundle.includes(`'${f.replace(/\.js$/, '')}'`)), gameJs.join('、'));
-  else console.log('  · 前端遊戲模組還沒建,SHARED 那條略過');
+  const JS = join(ROOT, 'web', 'assets', 'js');
+  const importsOf = f => [...readFileSync(join(JS, f), 'utf8').matchAll(/from '\.\/([a-z0-9-]+)\.js/g)].map(m => `${m[1]}.js`);
+  const reach = new Set(); const todo = ['game-view.js'];
+  while (todo.length) {
+    const f = todo.pop();
+    if (reach.has(f) || !existsSync(join(JS, f))) continue;
+    reach.add(f);
+    for (const n of importsOf(f)) if (n.startsWith('game-')) todo.push(n);
+  }
+  const need = [...reach].sort();
+  check('頁面載得到的 game-*.js 都在 bundle 的 SHARED 清單',
+    need.every(f => bundle.includes(`'${f.replace(/\.js$/, '')}'`)), need.join('、'));
+  /* 反過來也要守:退役的模組不可以還留在清單裡(留著就是單檔版多打包幾百行沒有人用的程式) */
+  const retired = readdirSync(JS).filter(f => f.startsWith('game-') && f.endsWith('.js') && !reach.has(f));
+  check('退役的 game-*.js 不在 SHARED 清單裡',
+    retired.every(f => !bundle.includes(`'${f.replace(/\.js$/, '')}'`)), retired.join('、') || '(沒有退役的)');
 }
 
 console.log('\n▶ 模擬遊玩:側寫對得回來源');
@@ -327,11 +343,12 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
        同時有它」那條坑的同一形狀。比的是**性質**(結算的同時要記),不是字面的寫法。 */
     {
       const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8').split('\n');
-      const sites = view.map((l, i) => [i, l]).filter(([, l]) => /disp\.seqs\s*(\+\+|=[^=])/.test(l));
-      const missing = sites.filter(([i]) => !/disp\.chains/.test(view[i] + (view[i + 1] ?? '')));
-      check('game-view 每個回合結算的地方都記了簡記', sites.length >= 3 && missing.length === 0,
-        `${sites.length} 處、漏 ${missing.length}`);
+      /* 2026-09-16:連續引擎裡「一次進攻」是引擎自己收的控球串(`sim.chains()`),
+         頁面不再逐回合記簡記 —— 所以這一條改成守**判讀吃的是引擎那一份**,
+         而不是「頁面每個結算點都要記」(那件事已經不存在了)。 */
       const src = view.join('\n');
+      check('賽後解讀吃的是引擎收的控球串,不是頁面自己記的',
+        /tally\(\{ events: disp\.events, chains: match\.chains\(\)/.test(src) && !/disp\.chains/.test(src));
       check('賽後解讀分頁只在完場後掛出來', /disp\?\.finished \? \[\.\.\.base, \['recap'/.test(src));
       /* 分頁列要重畫。開賽時那份 innerHTML 裡把分頁寫死的話,完場才長出來的那一頁
          **內容切過去了、按鈕不在**(實測過:讀者看不出自己在哪一頁,也回不去)。

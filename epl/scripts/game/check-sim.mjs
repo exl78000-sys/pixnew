@@ -32,10 +32,12 @@ const STEP = 1 / 60;
    瞬移的容差用**這個人自己的最高速**,不是一個全域常數 —— 每個人的上限本來就不同。 */
 function play(seed, minutes = 90) {
   const sim = createSim({ profile, home: HOME, away: AWAY, seed, pred: PRED });
-  const N = Math.round(minutes * 60 / STEP);
+  /* 跑到**完場**為止,不是跑固定的分鐘數 —— 階段 3 之後有中場與補時,一場是 90 分鐘以上。
+     guard 只是防無窮迴圈,不是比賽長度。 */
+  const N = Math.round((minutes + 20) * 60 / STEP);
   let prev = null, jumps = 0, maxJump = 0, still = 0, samples = 0;
   const bins = new Array(7).fill(0);
-  for (let i = 0; i < N; i++) {
+  for (let i = 0; i < N && !sim.state().over; i++) {
     sim.advance(STEP);
     const s = sim.state();
     bins[Math.min(6, Math.floor(Math.max(0, s.ball.x) / (105 / 7)))]++;
@@ -110,11 +112,27 @@ console.log('');
 const rt = (code, where) => profile.teams[code]?.rates?.[where] ?? {};
 const real = { sf: (rt(HOME, 'home').sf ?? 0) + (rt(AWAY, 'away').sf ?? 0), cf: (rt(HOME, 'home').cf ?? 0) + (rt(AWAY, 'away').cf ?? 0) };
 line('每場射門', mean(rows.map(r => r.st.counts.shots)).toFixed(1), `真實 ${real.sf.toFixed(1)}`);
-line('每場射正', mean(rows.map(r => r.st.counts.onTarget)).toFixed(1));
+{
+  const rr = (code, where) => profile.teams[code]?.rates?.[where] ?? {};
+  const realOn = (rr(HOME, 'home').stf ?? 0) + (rr(AWAY, 'away').stf ?? 0);
+  line('每場射正', mean(rows.map(r => r.st.counts.onTarget)).toFixed(1), `真實 ${realOn.toFixed(1)}`);
+}
 line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.corners.away)).toFixed(1), `真實 ${real.cf.toFixed(1)}`);
 line('每場 xG(主:客)', `${mean(rows.map(r => r.st.xg.home)).toFixed(2)} : ${mean(rows.map(r => r.st.xg.away)).toFixed(2)}`);
 line('每場界外球 / 球門球', `${mean(rows.map(r => r.st.counts.throwIns)).toFixed(0)} / ${mean(rows.map(r => r.st.counts.goalKicks)).toFixed(0)}`);
 line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed(0)} / ${mean(rows.map(r => r.st.counts.tackles)).toFixed(0)}`);
+/* 階段 3 加的:中場、補時、犯規與牌。真值都在側寫的 rates 裡(逐隊分主客),不是寫死的。 */
+{
+  const rr = (code, where) => profile.teams[code]?.rates?.[where] ?? {};
+  const realF = (rr(HOME, 'home').fouls ?? 0) + (rr(AWAY, 'away').fouls ?? 0);
+  const realY = (rr(HOME, 'home').yellow ?? 0) + (rr(AWAY, 'away').yellow ?? 0);
+  line('整場長度', `${mean(rows.map(r => r.st.t / 60)).toFixed(1)} 分`,
+    `上半補時 ${mean(rows.map(r => r.sim.events().find(e => e.type === 'half')?.extra ?? 0)).toFixed(1)} 分・下半 ${mean(rows.map(r => r.st.added)).toFixed(1)} 分`);
+  line('每場犯規', mean(rows.map(r => r.st.counts.fouls.home + r.st.counts.fouls.away)).toFixed(1), `真實 ${realF.toFixed(1)}`);
+  line('每場黃牌 / 紅牌', `${mean(rows.map(r => r.st.counts.cards.home + r.st.counts.cards.away)).toFixed(2)} / ${mean(rows.map(r => r.st.counts.reds.home + r.st.counts.reds.away)).toFixed(2)}`,
+    `真實 ${realY.toFixed(2)} / 0.10`);
+  line('控球串(賽後解讀吃這個)', mean(rows.map(r => r.sim.chains().length)).toFixed(0));
+}
 
 /* 3b. 射門的**離門距離分佈**。真值不是我寫的數字,是倉庫裡 FotMob 逐場 shotmap 的座標算出來的
        —— 這樣資料變了它自己會變(而且「真實是多少」永遠查得到出處)。

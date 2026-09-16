@@ -131,7 +131,14 @@ const GOAL_HEIGHT = 2.44;
    射門是模擬長出來的,但「多久出現一次夠好的機會」要跟真實球隊一致,不然 k 會補在錯的地方。
    SHOT_URGE 是唯一的全域旋鈕,量出來的(見 npm run game:sim):
    調到聯盟平均的球隊剛好射出聯盟平均的次數。 */
-const SHOT_URGE = 0.06;   // 量出來的:每場射門 24.8(真實 30.4)
+/* 扣扳機的基礎機率。階段 3 加了中場與補時之後一場從 90 分鐘變成約 95.5 分鐘,
+   射門數跟著漲到 36.1(真實 30.4)、進球 3.00 對 λ 1.99(+3.8 SE,錨沒守住)——
+   **比賽變長了,每分鐘的射門率就要跟著降**,不然「一場幾腳射門」這個真實值對不上。
+   掃出來的(8 場,跑到完場):
+     0.060 → 射門 36.1、射正 14.3、進球 3.00 : 0.38
+     0.050 → 射門 28.3、射正 10.6、進球 2.13 : 0.75   ← 選這個(真實 30.4 / 9.6,λ 1.99 : 0.70)
+     0.044 → 射門 23.5、射正  8.5、進球 1.63 : 0.50 */
+const SHOT_URGE = 0.05;
 /* xG 的**形狀**是遊戲模型(距離與張角),**水準**對回真實資料:
    XG_SCALE 調到模擬的每球平均 xG 等於聯盟真實的每球平均(league_.shotSituations)。
    形狀自己編、水準有出處 —— 兩件事要分開講,不然畫面上的 xG 就是編的。 */
@@ -202,6 +209,34 @@ const MARK_R = 18;                             // 這麼近的對手才盯
    射門 95 次而進球 0.58(射門都被人牆擋掉)。加上越位線,進攻方才會在一條線上等球。
    實作的是**位置上的**越位:進攻球員的陣型目標不會越過倒數第二名防守者(或中線,取靠後的)。 */
 const OFFSIDE_MARGIN = 0.8;                    // 貼著線站(公尺)
+/* 半場與補時。補時**不是一個寫死的數字,是一條規則**:裁判補回來的就是死球損失的時間,
+   所以這裡原樣補回去(係數 1.0,夾在 1~9 分鐘之間)—— 沒有任何要校準的東西。
+   **算出來會比真實的補時短,而那不是 bug,是模擬的球本來就在場內太久**:
+   真實足球一場 90+ 分鐘裡球只活約 55 分鐘,而這支模擬的死球等待只有 1~2 秒一次,
+   整個半場死掉的時間約 1~3 分鐘。硬把係數調大只會讓「一個半場裡有多少足球」超過真實值,
+   那比補時短更糟。畫面上要把這件事講出來(鐵則四)。
+   對照:倉庫裡 323 場的下半場,最後一個帶補時標記的事件平均在 90+**4.77**
+   (那是補時的**下限**,不是裁判宣布的分鐘數);上半場本站的擷取裡一場都沒有帶補時標記的事件。 */
+const HALF_SECS = 45 * 60;
+const STOP_FACTOR = 1.0;
+const STOP_MIN = 60, STOP_MAX = 9 * 60;
+/* 犯規與牌。`FOUL_ON_TACKLE` 從階段 1 就宣告在這裡而**從來沒有被用到** ——
+   `st.fouls` / `st.cards` 兩個計數器整場都是 0,而畫面只要印它就是在畫面上編數字
+   (鐵則一;「寫死的 0 比 null 危險」那條坑)。這一輪接上去,錨是側寫裡的真實值:
+   聯盟每隊每場犯規 10.9、黃牌 1.88、紅牌 0.052,而**每次犯規吃黃牌 0.172**
+   (`league_.rates.yellowPerFoul`,那三個數字自己就對得起來)。
+   紅牌只做**兩黃**:直接紅牌一季每隊 0.05 張,做了也驗不出來,而做錯會很明顯。 */
+const FOUL_RATE = 1.3;                         // 抄截範圍內每秒變成犯規的機率(用每場犯規數校準:0.55 → 每隊 3.8 次,真實 10.5)
+const YELLOW_PER_FOUL_FALLBACK = 0.172;        // 側寫沒給的時候才用(聯盟值,league_.rates)
+/* 吃過黃牌的人犯規率乘這個。掃出來的(20 場):
+     1.00(沒有這條)→ 黃 3.4、紅 0.50
+     0.35          → 黃 3.60、紅 0.35
+     0.15          → 黃 3.10、紅 0.00   ← 選這個(真實 黃 2.90、紅 0.10)
+   紅牌那一欄要注意:真實的 0.10 **含直接紅牌**,而這支模擬只做兩黃,
+   所以它應該落在 0.10 **以下**。20 場 0 張跟一個很低的率是相容的(平均 2 張時抽到 0 的機率 13.5%),
+   不是「壞掉了」—— 但它也驗不出「率剛剛好」,場數不夠。 */
+const CARDED_CARE = 0.15;
+const FOUL_NO_WHISTLE = 6;                     // 離自家門這麼近的犯規不在這裡處理(禁區 → 十二碼,還沒做)
 /* 無球跑動。這是使用者看預覽時說「沒有因為進攻或防守跑動」的那一半 ——
    第一版離球的十個人只會走回自己的陣型格子,所以畫面上永遠只有持球者跟逼搶者在動。
    兩種跑:**接應**(靠近持球者、把傳球路線讓出來)與**反越位的直塞跑**(衝到防線身後)。
@@ -405,7 +440,20 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        那個範圍比真實的行為差異大得多(兩隊的抄截率不會差一倍),所以只取它的方向、不取它的幅度。 */
     const pv = t.style?.pressing?.value;
     const press = pv == null ? 1 : cl(1 + (pv / PRESS_LG - 1) * PRESS_SPAN, 0.7, 1.3);
-    return { code: code, side, att, spec, players, gk: players[0], press };
+    /* 板凳:呼叫端給的優先,否則名單裡沒進先發的人。存成 Map 是因為換人查的是代碼,
+       而且要記 `used` —— 一個人只能被換上來一次(規則,而且不擋的話畫面會出現兩個同一個人)。 */
+    const benchCodes = (su.bench ?? t.bench ?? t.squad.map(x => x.code)).filter(c => !xi.includes(c) && byCode.has(c));
+    const bench = new Map(benchCodes.map(c => {
+      const q = byCode.get(c);
+      return [c, { used: false, p: { code: c, name: q?.name ?? c, pos: q?.pos ?? 'MID',
+        vmax: q?.run?.topSpeed ? q.run.topSpeed / 3.6 : VMAX_FALLBACK,
+        vmaxReal: !!q?.run?.topSpeed, ability: q?.ability ?? {} } }];
+    }));
+    /* 戰術指令裡**目前只有兩軸真的接到引擎**:壓迫(改 press)與防線高度(改 lineDrop)。
+       其餘四軸(心態 / 寬度 / 節奏 / 直接度)在連續引擎裡還沒有對應的旋鈕 ——
+       畫面上要照實講,**不要留四個拉了沒有反應的按鈕**(鐵則三的同一個道理:
+       一個永遠不動的控制項比沒有這個控制項更糟,讀者會以為是壞了)。 */
+    return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1, bench };
   };
 
   const H = mkSide(home, 'home', +1), A = mkSide(away, 'away', -1);
@@ -421,6 +469,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
    * 所以「N 場平均落在 λ 的幾個標準誤內」是這一版的錨,不再是精確相等。這是換引擎的代價。 */
   const L = profile.league_ ?? {};
   const lgSf = L.rates?.sf ?? 12.6;
+  /* 每次犯規吃黃牌的機率:側寫自己算好的真實值(黃牌 ÷ 犯規),沒有才退回聯盟值 */
+  const YELLOW_PER_FOUL = L.rates?.yellowPerFoul ?? YELLOW_PER_FOUL_FALLBACK;
   /* 聯盟真實的每球平均 xG:用各情境的 xgPerShot 依 share 加權。
      沒有這一份就退回 0.105 並標出來 —— 但英超的產物一直都有。 */
   const realXgPerShot = (() => {
@@ -489,11 +539,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
 
   const ball = { x: PITCH_W / 2, y: PITCH_H / 2, z: 0, vx: 0, vy: 0, vz: 0, holder: null, shot: null };
   const st = {
-    t: 0, half: 1, phase: 'kickoff', deadT: 0, restart: null,
+    t: 0, half: 1, halfT: 0, deadSec: 0, added: 0, phase: 'kickoff', deadT: 0, restart: null, over: false,
+    /* 控球串:賽後解讀(game-diag.js)要的是「一次進攻怎麼結束的」。連續模擬裡沒有「回合」這個東西,
+       所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
+    chains: [], chain: null,
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
-    corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 },
+    corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 }, reds: { home: 0, away: 0 }, subs: { home: 0, away: 0 },
+    /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
+       填了就是兩邊印同一個數字,那是在畫面上編數字。 */
+    shotsBy: { home: 0, away: 0 }, onTargetBy: { home: 0, away: 0 }, blockedBy: { home: 0, away: 0 },
+    crossedNotShot: 0,   // 過了門線但不是射門(解圍、折射後的鬆球)—— 只回報,不算進射正
     /* 抄截與攔截分開記:`style.pressing` 是兩者的和除以對手傳球數,要對回它就得兩個都有。
        攔截的定義照 FotMob 的語意 ——「球是對方踢出來的,而我控到了」。 */
     intercepts: { home: 0, away: 0 }, passBy: { home: 0, away: 0 }, tacklesBy: { home: 0, away: 0 }, passOk: { home: 0, away: 0 },
@@ -529,9 +586,40 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.phase = 'play'; decideIn = 0.4;
   }
 
+  /* 事件的欄位名是**跟畫面的約定**,不是自由發揮:`type` / `side` / `score` / `player` / `card`
+     跟舊引擎那一份一模一樣,所以 `game-view.js` 的 applyEvent 一個字都不用改
+     (「產物的欄位名是跟前端的約定」那條坑,本站犯過三次)。
+     `min` / `extra` 也一起給 —— 讓畫面不必自己再算一次補時怎麼顯示。 */
+  function emit(e) {
+    const m = clockOf();
+    st.events.push({ t: Math.round(st.t), half: st.half, min: m.min, extra: m.extra, ...e });
+  }
+  /* 時鐘:上半場從 0 起、下半場從 45:00 起,超過就是補時。這一份是**唯一的一份** ——
+     畫面讀它,不要在前端再寫一次(兩份會在補時那幾分鐘對不起來)。 */
+  function clockOf() {
+    const base = st.half === 1 ? 0 : HALF_SECS;
+    const shown = base + st.halfT;
+    const mm = Math.floor(shown / 60);
+    const lim = st.half === 1 ? 45 : 90;
+    return mm >= lim ? { min: lim, extra: mm - lim } : { min: mm, extra: 0 };
+  }
+  /* 一次進攻的結束。endType 用 game-diag 看得懂的那幾個字(它跟舊引擎共用同一支判讀)。 */
+  function closeChain(endType, x) {
+    const c = st.chain;
+    if (!c) return;
+    if (st.t - c.t0 > 0.6) st.chains.push({ side: c.side, endType, endX: x ?? ball.x, min: clockOf().min });
+    st.chain = null;
+  }
+  function openChain(side) {
+    if (st.chain?.side === side) return;
+    closeChain('lost', ball.x);
+    st.chain = { side, t0: st.t };
+  }
+
   /* 把球交給某個人(控到球) */
   function giveTo(p) {
     ball.holder = p; ball.vx = 0; ball.vy = 0; ball.vz = 0; ball.z = 0;
+    openChain(p.side);
     if (ball.shot) { st.lostShot++; if (ball.shot.willScore) st.lostGoal++; }
     ball.shot = null;               // 被人控到就不再是「飛向球門的那一腳」
     st.touches[p.side]++;
@@ -663,7 +751,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14), sp, miss && rng() < 0.4 ? 3.5 + rng() * 3 : 0, 'shot');
         ball.shot = { by: p, side: p.side, xg, willScore: !miss };
         if (!miss) st.willScore++;
-        st.shots++; st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
+        st.shots++; st.shotsBy[p.side]++; st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
+        emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10 });
+        closeChain('shot', p.x);
         st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
         if (dGoal < 18 && Math.abs(p.y - PITCH_H / 2) < 20.16) st.shotInBox++;
         p.intent = null;
@@ -708,6 +798,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const oline = offsideLine(p.side);
       if ((best.x - oline) * s.att > 0.3 && (best.x - PITCH_W / 2) * s.att > 0) {
         st.offsides[p.side]++;
+        emit({ type: 'offside', side: p.side, player: best.code, name: best.name });
+        closeChain('offside', best.x);
         offsideCall(p.side, best.x, best.y);
         p.intent = null;
         return { kind: 'offside' };
@@ -722,7 +814,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
 
   /* 一個固定時步。所有決策都在這裡發生,沒有任何東西是事先寫好的。 */
   function tick(dt) {
-    st.t += dt;
+    st.t += dt; st.halfT += dt;
+    if (st.phase === 'dead') st.deadSec += dt;
+    /* 半場與完場。**補時在時間到的時候才算**(這一半死了多少球時間),而且要等到
+       下一個死球或球權在後場才吹 —— 真的裁判不會在對方單刀的時候吹哨。
+       上限是再多演 60 秒,不然一段長時間的活球會讓補時無限延長。 */
+    if (!st.over) {
+      if (st.added === 0 && st.halfT >= HALF_SECS) st.added = cl(st.deadSec * STOP_FACTOR, STOP_MIN, STOP_MAX);
+      if (st.added > 0 && st.halfT >= HALF_SECS + st.added) {
+        const quiet = st.phase === 'dead' || !ball.holder || st.halfT >= HALF_SECS + st.added + 60;
+        if (quiet) { endHalf(); return; }
+      }
+    }
     // 攻勢的參考點追著球走,但有慣性(見 FOCUS_TAU)
     {
       const k = 1 - Math.exp(-dt / FOCUS_TAU);
@@ -870,7 +973,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         if (holder && holder.side !== p.side) {
           const goalX = s.att > 0 ? 0 : PITCH_W;
           // 防線:球往哪邊走,整條線跟著退,但不會退進自家門
-          const lineX = goalX + (ball.x - goalX) * (1 - LINE_DROP);
+          const lineX = goalX + (ball.x - goalX) * (1 - LINE_DROP * (s.lineDrop ?? 1));
           const behindBall = s.att > 0 ? Math.min(pos.x, Math.max(lineX, LINE_MIN)) : Math.max(pos.x, Math.min(lineX, PITCH_W - LINE_MIN));
           pos = { x: behindBall, y: pos.y };
           if (p.role !== 'FWD') {
@@ -932,6 +1035,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
             const sp1 = sp0 * DEFLECT_KEEP * (0.7 + rng() * 0.6);
             ball.vx = Math.cos(ang) * sp1; ball.vy = Math.sin(ang) * sp1;
             ball.vz = Math.max(ball.vz, rng() * 2.5);
+            /* 被封阻也要有事件 —— 畫面的統計是從**演過的事件**算的,只留一個計數器的話
+               面板就得同時讀兩個來源,而「同一個數字兩個來源」是本站踩過的坑。 */
+            if (ball.shot?.side) { st.blockedBy[ball.shot.side]++; emit({ type: 'block', side: ball.shot.side, by: q.code, name: q.name }); }
             ball.shot = null; st.lastTouch = q.side; st.deflects++; if (ball.passSide) ball.wasDeflected = true;
             break;
           }
@@ -970,15 +1076,29 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          那是足球規則,不是我挑的 —— 攻方最後碰到就是球門球,守方碰到就是角球。 */
       if (ball.x < 0 || ball.x > PITCH_W) {
         const inFrame = Math.abs(ball.y - PITCH_H / 2) < SIM_GOAL_HALF && ball.z < GOAL_HEIGHT;
-        const conceding = ball.x < 0 ? 'home' : 'away';     // 這一側的球門是誰的
+        /* 哪一邊的球門 —— **要從進攻方向算,不可以寫死**。第一版寫 `ball.x < 0 ? 'home' : 'away'`,
+           那在上半場是對的;加了中場換邊之後,下半場每一顆射正都判成「射進自己那一邊」,
+           於是 `ball.shot.side === scoring` 永遠不成立 → **整個下半場一球都進不了**,
+           全部記成門將撲救。症狀是進球 0.50 : 1.00 而 λ 是 1.99 : 0.70,射門數卻完全正常。
+           這是「前端把聯賽的事實寫死」的引擎版:寫死的是**場地的方向**。 */
+        const conceding = (ball.x < 0) === (H.att > 0) ? 'home' : 'away';
         const scoring = conceding === 'home' ? 'away' : 'home';
         st.crossedLine++;
         if (inFrame) {
           /* 射正了 —— 進不進在射門那一刻就由 xG × k 決定(willScore),
              這裡只是把它演出來。門將撲救不另外擲一次骰子:那會讓 λ 的錨失效。 */
-          st.onTarget++;
+          /* **射正只算真的是一腳射門的球。** 第一版只要球在門框範圍內過線就 +1,
+             於是解圍、折射後的鬆球也被算成射正 —— 一場 33 腳射門卻報 18 次射正(真實約 9),
+             而「進球 + 撲救」兩種事件加起來只有 13,自己跟自己對不上。
+             對不上的那 5 次就是「過了門線但它已經不是一腳射門」。 */
+          if (ball.shot?.side) { st.onTarget++; st.onTargetBy[ball.shot.side]++; }
+          else st.crossedNotShot++;
           if (ball.shot?.willScore && ball.shot.side === scoring) scoreGoal(scoring, ball.shot.by);
-          else { st.keeperSaves++; keeperCollect(conceding); }
+          else {
+            if (ball.shot?.side) st.keeperSaves++;
+            if (ball.shot?.side) emit({ type: 'save', side: ball.shot.side, by: ball.shot.by?.code ?? null, name: ball.shot.by?.name ?? null });
+            keeperCollect(conceding);
+          }
         } else if (st.lastTouch === scoring) {
           goalKick(conceding);                               // 攻方碰出底線 → 球門球
         } else {
@@ -995,7 +1115,19 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const d = hypot(presser.x - ball.holder.x, presser.y - ball.holder.y);
       if (d < SIM_TACKLE_R) {
         const skill = 0.6 + (presser.ability?.tkl ?? 0.2);
-        if (rng() < TACKLE_RATE * skill * dt) {
+        /* 先判犯規再判抄截 —— 反過來的話乾淨的抄截永遠先發生,犯規只在「沒抄到」時才有機會,
+           而那跟真實足球的因果相反:犯規是抄截**做壞了**,不是沒做。
+           禁區裡的不吹(十二碼還沒做,吹了會變成一個本站算不出來的機率),照實在畫面上講。 */
+        const gx = sideOf(ball.holder.side).att > 0 ? PITCH_W : 0;
+        const inBox = Math.abs(ball.holder.x - gx) < 16.5 && Math.abs(ball.holder.y - PITCH_H / 2) < 20.16;
+        /* **吃過黃牌的人會收手。** 沒有這一條的話,犯規只看位置與壓迫強度,於是一場下來
+           有人連吃兩張黃的機率高得離譜:實測一隊一場 2 張紅牌,而真實每隊每場 0.05 張。
+           真的球員被警告之後會避免再犯 —— 這不是一個調出來的係數,是一個缺掉的行為。 */
+        const booked = (presser.yellow ?? 0) > 0 ? CARDED_CARE : 1;
+        if (!inBox && Math.abs(ball.holder.x - (gx > 0 ? 0 : PITCH_W)) > FOUL_NO_WHISTLE
+            && rng() < FOUL_RATE * sideOf(presser.side).press * booked * dt) {
+          foulBy(presser, ball.holder);
+        } else if (rng() < TACKLE_RATE * skill * dt) {
           /* 球被捅開變成鬆球(不是直接換人持球):方向大致是防守者的來向,速度隨機。
              這樣兩邊都要去追,而追球本身就是跑動 —— 這也是「看起來像在踢球」的一大半。 */
           const victim = ball.holder;
@@ -1024,7 +1156,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      所有人都是**走回去**站位的(連續),不是淡出重擺。 */
   function scoreGoal(side, by) {
     st.goals[side]++;
-    st.events.push({ t: Math.round(st.t), kind: 'goal', side, by: by?.code ?? null, name: by?.name ?? null, xg: ball.shot?.xg ?? null });
+    emit({ type: 'goal', side, by: by?.code ?? null, name: by?.name ?? null, xg: ball.shot?.xg ?? null, score: [st.goals.home, st.goals.away] });
+    closeChain('goal', ball.x);
     ball.shot = null;
     /* 進球之後的死球時間放長:真的比賽慶祝加回中圈要幾十秒,而這段時間**畫面上大家是走回去的**。
        這不是「等」,是讓重新站位有時間連續地發生 —— 不然就得瞬移。 */
@@ -1037,12 +1170,50 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const s = sideOf(side);
     const taker = pickNearest(s, cx, cy, true) ?? s.players[1];
     st.corners[side]++;
+    emit({ type: 'corner', side });
+    closeChain('corner', ball.x);
     deadBall({ kind: 'corner', side, taker, x: cx, y: cy, wait: 2.0 + rng() * 1.5 });
   }
   function goalKick(side) {
     const s = sideOf(side);
     st.goalKicks++;
+    closeChain('out', ball.x);
     deadBall({ kind: 'goalkick', side, taker: s.gk, x: s.att > 0 ? 5.5 : PITCH_W - 5.5, y: PITCH_H / 2, wait: 1.6 + rng() * 1.4 });
+  }
+  /* 中場休息與完場。中場**換邊** —— 只要把兩隊的進攻方向對調,shapeOf 與門將位置都是從 att 算的,
+     所以整條陣型會自己翻過去,不必另外搬人。下半場由上半場**沒有開球**的那一隊開球。 */
+  function endHalf() {
+    closeChain('whistle', ball.x);
+    if (st.half === 1) {
+      emit({ type: 'half', side: null });
+      st.half = 2; st.halfT = 0; st.deadSec = 0; st.added = 0;
+      H.att = -H.att; A.att = -A.att;
+      for (const p of all()) { p.yellowShown = p.yellow ?? 0; }
+      kickoff(st.firstKick === 'home' ? 'away' : 'home', { place: true });
+    } else {
+      st.over = true; st.phase = 'dead'; st.deadT = 1e9; st.restart = null;
+      emit({ type: 'full', side: null, score: [st.goals.home, st.goals.away] });
+    }
+  }
+  /* 犯規:對方獲得自由球。牌照真實比率抽 —— 每次犯規 `yellowPerFoul` 機率吃黃,
+     同一個人第二張黃就是紅、離場。紅牌之後那一隊少一個人是**真的少**(`p.off = true`),
+     所以陣型會自己被拉開,不必另外寫「少一人要怎麼站」。 */
+  function foulBy(by, victim) {
+    const other = by.side === 'home' ? 'away' : 'home';
+    st.fouls[by.side]++;
+    st.tackleCool = TACKLE_COOLDOWN;
+    const px = cl(victim.x, 3, PITCH_W - 3), py = cl(victim.y, 3, PITCH_H - 3);
+    if (rng() < YELLOW_PER_FOUL) {
+      by.yellow = (by.yellow ?? 0) + 1;
+      const red = by.yellow >= 2;
+      st.cards[by.side]++;
+      emit({ type: 'card', side: by.side, player: by.code, name: by.name, card: red ? 'red' : 'yellow' });
+      if (red) { by.off = true; st.reds[by.side]++; }
+    }
+    closeChain('foul', victim.x);
+    emit({ type: 'foul', side: by.side, player: by.code, name: by.name });
+    deadBall({ kind: 'freekick', side: other, taker: pickNearest(sideOf(other), px, py, true),
+               x: px, y: py, wait: 1.6 + rng() * 1.6 });
   }
   /* 越位判罰:對方在越位的位置獲得自由球。跟界外球走同一條死球路徑。 */
   function offsideCall(side, x, y) {
@@ -1055,6 +1226,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const side = st.lastTouch === 'home' ? 'away' : 'home';
     const x = cl(ball.x, 1, PITCH_W - 1), y = ball.y < PITCH_H / 2 ? 0.4 : PITCH_H - 0.4;
     st.throwIns++;
+    closeChain('out', ball.x);
     deadBall({ kind: 'throwin', side, taker: pickNearest(sideOf(side), x, y, true), x, y, wait: 1.2 + rng() * 1.0 });
   }
   function deadBall({ kind, side, taker, x, y, wait }) {
@@ -1092,12 +1264,14 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
 
 
   calibrate(pred);
-  kickoff('home', { place: true });   // 開賽那一次才直接擺位
+  st.firstKick = 'home';
+  kickoff(st.firstKick, { place: true });   // 開賽那一次才直接擺位
 
   return {
     /* 畫面要跑多快就給多少秒 —— 物理照固定時步走,所以倍速不會改變結果的物理正確性。
        這是「連續播放」的基礎:不用剪接也能把 90 分鐘壓進十分鐘。 */
     advance(seconds) {
+      if (st.over) return 0;                 // 完場之後再叫也不動 —— 不然畫面會繼續跑一個不存在的比賽
       let left = Math.max(0, seconds), steps = 0;
       while (left > 1e-9 && steps < MAX_STEPS) {
         const dt = Math.min(SIM_DT, left);
@@ -1108,7 +1282,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       return steps;
     },
     state: () => ({
-      t: st.t, phase: st.phase, half: st.half,
+      t: st.t, phase: st.phase, half: st.half, halfT: st.halfT, over: st.over,
+      clock: clockOf(), added: Math.round(st.added / 60),
       ball: { x: ball.x, y: ball.y, z: ball.z, vx: ball.vx, vy: ball.vy, holder: ball.holder?.code ?? null, holderSide: ball.holder?.side ?? null },
       players: all().map(p => ({ code: p.code, side: p.side, name: p.name, role: p.role, x: p.x, y: p.y, vx: p.vx, vy: p.vy, vmax: p.vmax, vmaxReal: p.vmaxReal })),
       score: [st.goals.home, st.goals.away], xg: { ...st.xg },
@@ -1119,7 +1294,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         offsides: { ...st.offsides }, why: { ...(st.why ?? {}) },
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
-        fouls: { ...st.fouls }, cards: { ...st.cards }, deflects: st.deflects, clears: st.clears },
+        fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
+        shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
+        deflects: st.deflects, clears: st.clears },
     }),
     /* 量測用:跑動量、最高速、控球 —— 這幾個要對得回 FotMob 的真實值,不然「像不像在踢球」沒有判準 */
     motion: () => ({
@@ -1127,6 +1304,36 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       players: all().map(p => ({ code: p.code, side: p.side, role: p.role, dist: p.dist, vtop: p.vtop, vmax: p.vmax, vmaxReal: p.vmaxReal })),
     }),
     events: () => st.events.map(e => ({ ...e })),
+    /* 一次進攻怎麼結束的 —— 賽後解讀吃這個(舊引擎那邊是「回合」,這裡是控球串) */
+    chains: () => st.chains.map(c => ({ ...c })),
+    /* 還可以換上來的人。**已經用掉的不列** —— 列了就是一個點下去會失敗的按鈕。 */
+    benchOf: side => [...(sideOf(side).bench ?? new Map()).entries()]
+      .filter(([, v]) => !v.used).map(([code, v]) => ({ code, name: v.p.name, pos: v.p.pos })),
+    /* 指令:level 1~5,3 是「照這一隊本季真實的踢法」。倍率的範圍是遊戲規則(沒有資料能校準),
+       所以刻意小:壓迫 ±30%、防線 ±25% —— 大到會讓 λ 的錨失效的話,這一頁就在編數字了。 */
+    setTactics(side, levels = {}) {
+      const s = sideOf(side);
+      if (levels.pressing != null) s.press = s.pressBase * (1 + (cl(levels.pressing, 1, 5) - 3) * 0.15);
+      if (levels.line != null) s.lineDrop = 1 - (cl(levels.line, 1, 5) - 3) * 0.125;
+      return { pressing: s.press / s.pressBase, line: s.lineDrop };
+    },
+    /* 換人。**規則檢查在這裡做,不是在畫面**:下場的人要在場上、上場的人要在板凳上。
+       換上來的人接手原本那個位置的 slot —— 不然他會從場邊瞬移到一個陣型算出來的新位置。 */
+    substitute(side, offCode, onCode) {
+      const s = sideOf(side);
+      const i = s.players.findIndex(p => p.code === offCode && !p.off);
+      const spare = s.bench?.get(onCode);
+      if (i < 0 || !spare || spare.used) return false;
+      const out = s.players[i];
+      spare.used = true;
+      const now = { ...spare.p, side, slot: out.slot, role: out.role,
+        x: out.x, y: out.y, vx: 0, vy: 0, dist: 0, vtop: 0, off: false, going: false, yellow: 0 };
+      s.players[i] = now;
+      if (ball.holder === out) ball.holder = now;
+      st.subs[side]++;
+      emit({ type: 'sub', side, off: offCode, on: onCode, name: now.name, offName: out.name });
+      return true;
+    },
     teams: { home: { code: H.code, spec: H.spec }, away: { code: A.code, spec: A.spec } },
     /* λ 錨的來源要**看得到**:哪一項是真實資料、哪一項是遊戲模型,畫面與測試都讀這裡。
        不給這個的話「E[進球] = λ」就變成一句沒有出處的宣稱。 */
