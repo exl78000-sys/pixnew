@@ -3,6 +3,7 @@ import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountDuelAnim } from './duel-anim.js?v=cc096ebb';
 import { createMatch, defaultSetup, minuteAt, TACTIC_KEYS } from './game-engine.js?v=71a86a76';
 import { SPEEDS, planPlayback, modeFor } from './game-playback.js?v=3726cb40';
+import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=13b570f3';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
    (比賽統計 / 事件流 / 陣容與換人 / 戰術)、下方勝率條 + 動能條 + 文字播報。
@@ -27,6 +28,7 @@ const SIT_ZH = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快
 const OUT_ZH = { saved: '被撲出', blocked: '被封阻', off: '射偏', post: '中柱' };
 const POS_ZH = { GK: '門將', DEF: '後衛', MID: '中場', FWD: '前鋒' };
 const START_ZH = { kickoff: '開球', goalkick: '球門球', throwin: '界外球', freekick: '任意球', corner: '角球', penalty: '十二碼', keeper: '門將發球', loose: '二點球', turnover: '斷球反擊' };
+const TACTIC_ZH = { mentality: '心態', pressing: '壓迫', line: '防線高度', width: '場地寬度', tempo: '節奏', directness: '直接度' };
 
 
 export async function renderGame(app) {
@@ -163,7 +165,7 @@ export async function renderGame(app) {
     /* ── 顯示狀態 ─────────────────────────────────── */
     function freshDisp() {
       const side = sd => ({ on: [...setupOf(sd).xi], bench: [...setupOf(sd).bench], off: [], subs: 0, yellows: new Map() });
-      return { events: [], notes: [], score: [0, 0], poss: { home: 0, away: 0 }, seqs: 0, lineup: { home: side('home'), away: side('away') }, lastGoalAt: null, finished: false, half: 1, clock: 0 };
+      return { events: [], notes: [], chains: [], score: [0, 0], poss: { home: 0, away: 0 }, seqs: 0, lineup: { home: side('home'), away: side('away') }, lastGoalAt: null, finished: false, half: 1, clock: 0 };
     }
     /* 把一筆事件套進顯示狀態(不畫)。跳到結果時整串事件都走這裡,所以它跟逐筆回報用同一條路。 */
     function applyEvent(e) {
@@ -204,6 +206,7 @@ export async function renderGame(app) {
       match = createMatch({ profile, home: state.home, away: state.away, pred: p, seed: state.seed,
         setup: { home: { ...setupOf('home') }, away: { ...setupOf('away') } } });
       disp = freshDisp(); curSeq = null; lastDead = 0; queue = []; skipped = []; everPlayed = false;
+      if (tab === 'recap') tab = 'stats';
       paused = false; running = true;
       box.innerHTML = `<div class="duel-stage">
         <div class="spread">
@@ -228,7 +231,7 @@ export async function renderGame(app) {
             <div id="gMomentum" style="margin-top:8px"></div>
           </div>
           <div class="game-panel">
-            <div class="filters" id="gTabs">${[['stats', '比賽統計'], ['events', '事件流'], ['lineup', '陣容與換人'], ['tactics', '戰術']].map(([k, z]) => `<button class="btn tiny${k === tab ? ' on' : ''}" data-tab="${k}">${z}</button>`).join('')}</div>
+            <div class="filters" id="gTabs"></div>
             <div id="gPanel"></div>
           </div>
         </div>
@@ -255,7 +258,7 @@ export async function renderGame(app) {
         rng: seededRng(state.seed ^ 0x5bd1e995),
       });
       for (const sd of ['home', 'away']) anim.setTactics(sd, tacticDeltas(sd, setupOf(sd).tactics ?? {}));
-      document.querySelectorAll('#gTabs [data-tab]').forEach(b => { b.onclick = () => { tab = b.dataset.tab; document.querySelectorAll('#gTabs [data-tab]').forEach(x => x.classList.toggle('on', x.dataset.tab === tab)); renderPanel(); }; });
+      renderTabs();
       document.getElementById('gSpeed').onchange = e => { state.speed = e.target.value; };   // 下一個回合起生效
       document.getElementById('gPause').onclick = () => { paused = !paused; anim?.pause(paused); document.getElementById('gPause').textContent = paused ? '繼續' : '暫停'; if (paused) { tab = 'lineup'; renderPanel(); } uiTick(); };
       document.getElementById('gSkip').onclick = skipToEnd;
@@ -280,7 +283,7 @@ export async function renderGame(app) {
       for (const e of q.pre) applyEvent(e);
       for (const e of q.seq.events) applyEvent(e);
       for (const e of q.post) applyEvent(e);
-      lastDead = q.seq.dead; disp.poss[q.seq.side] += q.seq.dur; disp.seqs++;
+      lastDead = q.seq.dead; disp.poss[q.seq.side] += q.seq.dur; disp.seqs++; disp.chains.push(chainBrief(q.seq));
       skipped.push(q.seq);
     }
     /* 規劃器決定演或跳(game-playback.js):向引擎多拿到看得見下一段有戲的回合為止,前面的整段跳過,
@@ -315,15 +318,23 @@ export async function renderGame(app) {
         pre: q.pre, post: q.post, deadBefore, mode: modeFor(seq, { speed: state.speed, deadBefore, jumped, label }),
         onEvent: e => { applyEvent(e); frame(); },
         onNote: n => { disp.notes.push({ ...n, at: disp.events.length }); renderComm(); },
-        onDone: () => { lastDead = seq.dead; disp.poss[seq.side] += seq.dur; disp.seqs++; if (tab === 'stats') renderPanel(); advance(); },
+        onDone: () => { lastDead = seq.dead; disp.poss[seq.side] += seq.dur; disp.seqs++; disp.chains.push(chainBrief(seq)); if (tab === 'stats') renderPanel(); advance(); },
       });
       const el = document.getElementById('gSeq');
       if (el) el.textContent = `第 ${seq.id} 回合・${C.esc(nameOf(seq.team))} ${START_ZH[seq.start.type] ?? seq.start.type}`;
     }
     function finish() {
       running = false;
-      if (disp && !disp.finished) disp.finished = true;
-      if (disp) { noteSkipped(); skipped = []; }
+      if (disp) {
+        /* 掛賽後解讀**不可以**掛在「finished 從 false 變 true」那個轉換上 ——
+           `full` 事件在播放時就已經由 applyEvent 把 disp.finished 設成 true 了,
+           所以到這裡那個轉換永遠不成立。實測(精華模式自然完場,94 秒):
+           分頁列還是四個、沒有賽後解讀,要等讀者去點別的分頁才長出來。
+           `npm test` 與 `node --check` 都看不到這個 —— 是把頁面跑到完場才現形的。 */
+        disp.finished = true;
+        tab = 'recap'; renderTabs();
+        noteSkipped(); skipped = [];
+      }
       const sc = match?.state();
       if (sc) anim?.finish({ hs: sc.score[0], as: sc.score[1] });   // 最後幾個回合被跳過時,記分板要寫完場比分
       frame();
@@ -335,6 +346,8 @@ export async function renderGame(app) {
       for (const e of match.events()) applyEvent(e);
       const s = match.state();
       disp.poss = { home: s.home.stats.possSec, away: s.away.stats.possSec }; disp.seqs = s.seqs; disp.finished = true; disp.half = 2;
+      disp.chains = match.sequences().map(chainBrief);
+      tab = 'recap'; renderTabs();
       running = false; curSeq = null; queue = []; skipped = [];
       anim?.finish({ hs: s.score[0], as: s.score[1] });   // 畫布留著、比分板寫完場比分;圓點不再照劇本動
       frame();
@@ -446,12 +459,28 @@ export async function renderGame(app) {
     }
 
     /* ── 右側分頁 ───────────────────────────────── */
+    /* 賽後解讀只在完場後掛出來 —— 比賽中它一個字都寫不出來(判讀要的是整場的分母),
+       掛一個點了沒東西的按鈕比不掛更糟。反過來,完場時 finish() / skipToEnd() 會自己切過去,
+       不靠讀者去找(「東西在但沒有按鈕」那條坑的反面)。 */
+    function panelTabs() {
+      const base = [['stats', '比賽統計'], ['events', '事件流'], ['lineup', '陣容與換人'], ['tactics', '戰術']];
+      return disp?.finished ? [...base, ['recap', '賽後解讀']] : base;
+    }
+    /* 分頁列要**重畫**,不能只在開賽時寫一次 —— 完場才長出來的那一頁不重畫就沒有按鈕。
+       實測:內容切過去了、分頁列還是四個,讀者看不出自己在哪一頁,也回不去。 */
+    function renderTabs() {
+      const host = document.getElementById('gTabs');
+      if (!host) return;
+      host.innerHTML = panelTabs().map(([k, z]) => `<button class="btn tiny${k === tab ? ' on' : ''}" data-tab="${k}">${z}</button>`).join('');
+      host.querySelectorAll('[data-tab]').forEach(b => { b.onclick = () => { tab = b.dataset.tab; renderTabs(); renderPanel(); }; });
+    }
     function renderPanel() {
       const host = document.getElementById('gPanel');
       if (!host || !match || !disp) return;
       if (tab === 'stats') host.innerHTML = statsHtml();
       else if (tab === 'events') host.innerHTML = eventsHtml();
       else if (tab === 'lineup') host.innerHTML = lineupHtml();
+      else if (tab === 'recap') host.innerHTML = recapHtml();
       else host.innerHTML = tacticsHtml();
       if (tab === 'lineup') bindSubs();
       if (tab === 'tactics') bindTactics();
@@ -467,6 +496,31 @@ export async function renderGame(app) {
         ${row('xG', H.xg.toFixed(2), A.xg.toFixed(2), '逐射門')}${row('角球', H.corners, A.corners)}${row('犯規', H.fouls, A.fouls)}${row('越位', H.offsides, A.offsides)}${row('黃牌', H.yellow, A.yellow)}${row('紅牌', H.red, A.red)}
         ${row('λ(遊戲)', s.home.lambdaEff.toFixed(2), s.away.lambdaEff.toFixed(2), '含紅牌')}
         <div class="tiny dim" style="margin-top:6px">由畫面上演過與略過的回合累計(到第 ${disp.seqs} 回合;略過的回合事件照記,只是不演)。控球 = 演過的回合裡兩隊各持球多久;目標值抽自兩隊主/客場分布(FotMob ${profile.teams[state.home].possession.home.n}+${profile.teams[state.away].possession.away.n} 場)。xG 是每次射門抽到的那一筆真實射門的 xG。</div>`;
+    }
+    /* 賽後解讀。判讀與敘述都在 game-diag.js(純函式,測得到);這裡只負責畫。
+       讀的是 disp,不是 match.state() —— 完場之後兩者相同,但規矩只有一條才不會有人抄錯。 */
+    function recapHtml() {
+      const t = tally({ events: disp.events, chains: disp.chains, poss: disp.poss });
+      const diag = diagnose(t);
+      const hn = nameOf(state.home), an = nameOf(state.away);
+      const paras = recap(t, { homeName: hn, awayName: an, score: disp.score, diag });
+      const notes = tacticNotes(match.tactics(), TACTIC_ZH);
+      const byName = side => (side === 'home' ? hn : an);
+      const ev = e => Object.entries(e).map(([k, v]) => `${k} ${v}`).join('、');
+      /* 判讀不要用 .stat-line:它是 space-between 而且**不換行**,三個子元素會互相擠 ——
+         實測 1280px 下隊名被壓成直排的「兵 / 工 / 廠」。這裡要的是一段話加一行依據,所以用普通區塊。 */
+      const item = inner => `<div style="padding:6px 0;border-bottom:1px dashed var(--line-soft)">${inner}</div>`;
+      const list = diag.length
+        ? `<div style="margin-top:8px">${diag.map(d => item(`<b>${C.esc(byName(d.side))}</b>・${C.esc(d.text)}<div class="tiny dim" style="margin-top:2px">依據:${C.esc(ev(d.evidence))}</div>`)).join('')}</div>`
+        : '';
+      const tac = notes.length
+        ? `<div class="card" style="margin-top:8px"><div class="tiny dim">你調過的指令</div>${notes.map(n => item(`<b>${C.esc(byName(n.side))}</b>・${n.moved.map(m => `${C.esc(m.zh)} ${m.from} → ${m.to}`).join('、')}`)).join('')}
+            <div class="tiny dim" style="margin-top:4px">這裡只列你調了什麼,不宣稱結果是它造成的 —— 一場模擬分不出是調整還是抽樣,要分得出來得跑很多場。</div></div>`
+        : '';
+      return `<div style="display:grid;gap:8px">${paras.map(x => `<div>${C.esc(x.text)}</div>`).join('')}</div>${list}${tac}
+        <div class="tiny dim" style="margin-top:8px">這是<b>這一場模擬</b>的讀法,不是本站對真實比賽的賽後報告 ——
+        數字全部來自畫面上演過與略過的 ${disp.seqs} 個回合,判讀的門檻是兩隊互比或這一場的絕對次數,沒有拿聯賽平均當尺。
+        單場的樣本很小:同一組先發換一個亂數種子,結論可能就不一樣。</div>`;
     }
     function eventsHtml() {
       const evs = disp.events.filter(e => e.type !== 'foul' && e.type !== 'kickoff');

@@ -175,3 +175,174 @@ console.log('\n▶ 模擬遊玩:引擎不變量');
     for (const [label, ok, detail] of await runEngineChecks(mod, ROOT)) check(label, ok, detail);
   }
 }
+
+console.log('\n▶ 模擬遊玩:賽後判讀');
+{
+  const enginePath = join(ROOT, 'web', 'assets', 'js', 'game-engine.js');
+  const diagPath = join(ROOT, 'web', 'assets', 'js', 'game-diag.js');
+  if (!existsSync(enginePath) || !existsSync(diagPath)) console.log('  · 引擎或判讀模組還沒建,整節略過');
+  else {
+    const eng = await import(pathToFileURL(enginePath));
+    const D = await import(pathToFileURL(diagPath));
+    const profile = read(join(ROOT, 'web', 'data', 'game', 'pl.json'));
+    const pred = { xgHome: 1.6, xgAway: 1.1 };
+    const names = { home: 'Arsenal', away: 'Liverpool' };
+
+    /* 一場跑到完場,然後照 game-view 的 skipToEnd 那條路組出顯示狀態 ——
+       事件、回合簡記、控球秒數三樣都是畫面上會有的那一份。 */
+    const playOne = seed => {
+      const m = eng.createMatch({ profile, home: 'ARS', away: 'LIV', pred, seed });
+      while (!m.state().finished) m.nextSequence();
+      const s = m.state();
+      return {
+        m, s,
+        input: {
+          events: m.events(),
+          chains: m.sequences().map(D.chainBrief),
+          poss: { home: s.home.stats.possSec, away: s.away.stats.possSec },
+        },
+      };
+    };
+    const runs = [1, 2, 3, 4, 5, 6, 7, 8].map(playOne);
+
+    /* 1. 判讀的計數要對得回引擎自己的 stats。
+       「我數不出來 ≠ 上游沒有」的同一條:分母跟被比較的那一邊要是同一批。
+       實際抓到過一個:第一版照 pulselive 的直覺把烏龍球翻給另一隊,兩隊的進球數就互換了,
+       而畫面完全正常(負向對照在第 6 條)。 */
+    {
+      const bad = [];
+      for (const { s, input } of runs) {
+        const t = D.tally(input);
+        for (const side of ['home', 'away']) {
+          const st = s[side].stats;
+          for (const [k, mine, theirs] of [
+            ['進球', t[side].goals, st.goals], ['射門', t[side].shots, st.shots],
+            ['角球', t[side].corners, st.corners], ['犯規', t[side].fouls, st.fouls],
+            ['黃牌', t[side].yellow, st.yellow], ['紅牌', t[side].red, st.red],
+            ['越位', t[side].offsides, st.offsides],
+          ]) if (mine !== theirs) bad.push(`${side} ${k} ${mine}≠${theirs}`);
+        }
+      }
+      check('判讀的計數對得回引擎 stats(8 場 × 兩隊 × 七項)', bad.length === 0, bad.slice(0, 4).join('、'));
+    }
+
+    /* 2. 回合的分母也要對得上:簡記的筆數 = 引擎的回合數,而且逐側加總一樣。 */
+    {
+      const bad = runs.filter(({ s, input }) => {
+        const t = D.tally(input);
+        return input.chains.length !== s.seqs || t.home.seqs + t.away.seqs !== s.seqs;
+      });
+      check('回合簡記的分母對得回引擎的回合數', bad.length === 0, `${bad.length}/8 場對不上`);
+      /* 三個三分之一加起來要等於總丟球數 —— 只數一格的話哪天分界線改了不會有人發現。 */
+      const badThird = runs.filter(({ input }) => {
+        const t = D.tally(input);
+        return ['home', 'away'].some(sd => t[sd].lostOwn + t[sd].lostMid + t[sd].lostAtt !== t[sd].lostTotal);
+      });
+      check('丟球的三個三分之一加起來等於總丟球數', badThird.length === 0, `${badThird.length}/8 場對不上`);
+    }
+
+    /* 3. 鐵則一:文章裡的每一個數字都要在同一條的 evidence 找得到。
+       文字是純函式產的,所以驗一次就夠 —— 但要用真的模擬結果驗,不是手捏的。 */
+    {
+      const bad = [];
+      for (const { s, input } of runs) {
+        const t = D.tally(input);
+        const diag = D.diagnose(t);
+        const paras = D.recap(t, { homeName: names.home, awayName: names.away, score: s.score, diag });
+        for (const x of [...diag, ...paras]) {
+          const un = D.unattested(x.text, x.evidence, [names.home, names.away]);
+          if (un.length) bad.push(`${un.join(',')} ← ${x.text.slice(0, 28)}`);
+        }
+      }
+      check('判讀與敘述裡的每個數字都有出處(8 場全部)', bad.length === 0, bad.slice(0, 2).join(' | '));
+    }
+
+    /* 4. 空結果是正常結果。拿一場「什麼都沒發生」的計數驗,不驗「8 場裡至少有一場是空的」——
+       後者是把資料當紅線,哪天亂數換一批就紅在跟它想守的事無關的地方。 */
+    {
+      const blank = D.tally({});
+      const diag = D.diagnose(blank);
+      const paras = D.recap(blank, { homeName: names.home, awayName: names.away, score: [0, 0], diag });
+      check('沒有任何事件時判讀回空陣列、敘述照樣寫得出來(而且講出「沒有判讀」)',
+        diag.length === 0 && paras.length === 3 && paras.every(p => p.text.length > 0) && paras[2].text.includes('沒有特別的戰術判讀'));
+      /* 有判讀時敘述**不要**再重述一遍 —— 畫面上每一條連同依據就列在下面,重複畫兩次會長到讀不下去。 */
+      const withDiag = runs.find(r => D.diagnose(D.tally(r.input)).length > 0);
+      if (withDiag) {
+        const t2 = D.tally(withDiag.input);
+        const p2 = D.recap(t2, { homeName: names.home, awayName: names.away, score: withDiag.s.score, diag: D.diagnose(t2) });
+        check('有判讀時敘述只有比分與數字兩段(判讀由清單呈現,不重述)', p2.length === 2);
+      }
+    }
+
+    /* 5. 界線:判讀不可以把真實那一面的東西搬進來。
+       game-diag.js 一行 import 都不該有(它是純函式);門檻只能是兩隊互比或這一場的絕對次數,
+       所以原始碼裡不會出現 profile / league 這種聯賽層的東西。 */
+    {
+      const src = readFileSync(diagPath, 'utf8');
+      const noComment = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('判讀模組沒有任何 import(純函式,不吃聯賽基準)', !/^\s*import\s/m.test(noComment));
+      check('判讀模組不碰 profile / league 層的資料', !/\bprofile\b|\bleague_\b|C\.load/.test(noComment));
+    }
+
+    /* 6. 負向對照。每一條斷言都要證明它真的擋得住它想擋的那個 bug ——
+       「加完是綠的」跟「這條測試守不住任何東西」長得一模一樣。 */
+    {
+      const { s, input } = runs[0];
+      const t = D.tally(input);
+      // (a) 烏龍球翻給另一隊 → 第 1 條要紅(這一場有烏龍球才驗得到,沒有就找一場有的)
+      const ogRun = runs.find(r => r.input.events.some(e => e.type === 'goal' && e.ownGoal));
+      if (!ogRun) console.log('  · 這八場沒有烏龍球,烏龍球歸屬的負向對照略過(下一條照跑)');
+      else {
+        const flipped = ogRun.input.events.map(e => (e.type === 'goal' && e.ownGoal ? { ...e, side: e.side === 'home' ? 'away' : 'home' } : e));
+        const t2 = D.tally({ ...ogRun.input, events: flipped });
+        const st = ogRun.s;
+        check('負向對照:烏龍球歸錯隊 → 進球數就對不回引擎',
+          t2.home.goals !== st.home.stats.goals || t2.away.goals !== st.away.stats.goals);
+      }
+      // (b) 文字裡塞一個 evidence 沒有的數字 → 第 3 條要紅
+      check('負向對照:文字裡多一個沒出處的數字 → 驗證器抓得到',
+        D.unattested('射門 7 次,跑動 118 公里', { 射門: 7 }, []).includes('118'));
+      // (c) 隊名自己帶數字(Schalke 04)不剝掉的話會被當成沒出處
+      check('負向對照:隊名裡的數字要剝掉才不會誤報',
+        D.unattested('Schalke 04 射門 7 次', { 射門: 7 }, []).includes('04')
+        && D.unattested('Schalke 04 射門 7 次', { 射門: 7 }, ['Schalke 04']).length === 0);
+      // (c2) 誰先進球要看事件順序,不是 min:補時的 min 一律是 90,90+1 跟 90 用 min 比會平手
+      {
+        const evs = [
+          { type: 'goal', side: 'away', min: 90, extra: null, x: 95, xg: 0.3, situation: 'RegularPlay' },
+          { type: 'goal', side: 'home', min: 90, extra: 1, x: 95, xg: 0.3, situation: 'RegularPlay' },
+        ];
+        const tt = D.tally({ events: evs });
+        const p1 = D.recap(tt, { homeName: names.home, awayName: names.away, score: [1, 1], diag: [] });
+        check('先進球看事件順序(90 在 90+1 之前),不是拿 min 比',
+          p1[0].text.includes(`${names.away} 在第 90 分鐘先進球`), p1[0].text.slice(0, 40));
+      }
+      // (d) 回合簡記少記一筆 → 第 2 條要紅
+      const t3 = D.tally({ ...input, chains: input.chains.slice(0, -1) });
+      check('負向對照:回合簡記少一筆 → 分母就對不上', t3.home.seqs + t3.away.seqs !== s.seqs);
+    }
+
+    /* 7. 畫面那邊:每一個「一個回合結算」的地方都要記簡記。
+       少一個的話判讀的分母就跟畫面對不上,而畫面完全正常 —— 這是「接一條路徑要四個地方
+       同時有它」那條坑的同一形狀。比的是**性質**(結算的同時要記),不是字面的寫法。 */
+    {
+      const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8').split('\n');
+      const sites = view.map((l, i) => [i, l]).filter(([, l]) => /disp\.seqs\s*(\+\+|=[^=])/.test(l));
+      const missing = sites.filter(([i]) => !/disp\.chains/.test(view[i] + (view[i + 1] ?? '')));
+      check('game-view 每個回合結算的地方都記了簡記', sites.length >= 3 && missing.length === 0,
+        `${sites.length} 處、漏 ${missing.length}`);
+      const src = view.join('\n');
+      check('賽後解讀分頁只在完場後掛出來', /disp\?\.finished \? \[\.\.\.base, \['recap'/.test(src));
+      /* 分頁列要重畫。開賽時那份 innerHTML 裡把分頁寫死的話,完場才長出來的那一頁
+         **內容切過去了、按鈕不在**(實測過:讀者看不出自己在哪一頁,也回不去)。
+         守的是「那份一次性的樣板裡沒有分頁標籤」,不是某支函式叫什麼名字。 */
+      check('分頁列不是開賽時寫死的一份 innerHTML', /id="gTabs"><\/div>/.test(src) && !/id="gTabs">\$\{/.test(src));
+      /* 切到賽後解讀不可以掛在 `!disp.finished` 那個轉換上 —— `full` 事件在播放時就把它設成 true 了,
+         到 finish() 那個條件永遠是 false。實測自然完場時分頁列還是四個。
+         **這條擋的是同一個回歸,真正發現它的是瀏覽器**:掃原始碼看不到「什麼時候被呼叫」。 */
+      const finishBody = src.slice(src.indexOf('function finish()'), src.indexOf('function skipToEnd()'));
+      check('完場切到賽後解讀不是掛在 finished 的轉換上',
+        /tab = 'recap'/.test(finishBody) && !/!disp\.finished/.test(finishBody));
+    }
+  }
+}
