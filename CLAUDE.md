@@ -325,7 +325,7 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 
 ```bash
 cd epl
-npm test          # 走查回測 + 13 個自我檢查區塊,零依賴
+npm test          # 走查回測 + 各聯賽與各主題的自我檢查區塊,零依賴(數量看它自己印的那一行)
 npm run build     # 產生 web/data/*.json
 npm run bundle    # 產生單檔版 dist/warroom.html
 ```
