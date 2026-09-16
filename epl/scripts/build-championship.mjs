@@ -42,6 +42,7 @@ import { fileURLToPath } from 'node:url';
 import { leagueMatches, backfillLine, europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
+import { emptyMatchSim } from './lib/matchsim.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
@@ -954,6 +955,7 @@ async function main() {
   const reportCount = Object.keys(publishedReports).length;
   const pendingCount = fixtures.filter(f => f.played && f.season === CURRENT_SEASON && !reports[`${f.season}|${f.home}|${f.away}`]).length;
   if (reportCount) console.log(`  英冠賽後報告:${reportCount} 場(FotMob)・本季還沒抓到 ${pendingCount} 場`);
+  await write('matchsim', emptyMatchSim('英冠'));
   await write('reports', {
     seasons: reportCount ? [...new Set(Object.values(publishedReports).map(r => r.season))].sort() : [], count: reportCount, reports: publishedReports,
     source: reportCount ? 'fotmob' : null, pending: pendingCount,

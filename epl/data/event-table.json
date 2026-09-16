@@ -1,0 +1,174 @@
+{
+  "_": [
+    "事件模擬引擎的平衡參數與播報文本。matchsim.mjs 在載入時讀這一份。",
+    "",
+    "這些數字是對著三個賽季 1140 場英超逐場數據調出來的,不是憑感覺定的。",
+    "改任何一個都要跑 `npm run sim:check` 對帳 —— 只跑 npm test 會漏掉『慢慢漂掉』。",
+    "校驗看的不只是平均值,還有隊間差距 vs 隊內隨機、分布的 p99、主場優勢與轉換率。",
+    "",
+    "檔案本身有 schema 檢查(matchsim.mjs 的 validateTable):少欄位、型別錯、超出合理範圍",
+    "都會在載入時就爆,不會讓一個手滑的數字默默產生幾百場怪比賽。"
+  ],
+
+  "rates": {
+    "chains": 190,
+    "chainsTempo": 0.22,
+    "chainTilt": 0.55,
+    "homeChainEdge": 0.022,
+    "homePossEdge": 0.02,
+
+    "buildUp": 0.72,
+    "progress": 0.64,
+    "finalThird": 0.58,
+    "createChance": 0.537,
+
+    "foulPerChain": 0.115,
+    "freeKickShot": 0.05,
+    "yellowPerFoul": 0.194,
+    "penaltyPerTeam": 0.1,
+
+    "cornerFromCross": 0.46,
+    "cornerFromShot": 0.44,
+    "saveShare": 0.3,
+    "blockShare": 0.25,
+    "wideBase": 0.5
+  },
+
+  "_rates": {
+    "chains": "每場總進攻回合(兩隊合計)",
+    "chainsTempo": "每場步調的隨機幅度。固定回合數會讓同一隊每場都差不多 —— 實測單場射門的隊內離散只有真實的 0.78 倍。真實比賽有開放局與膠著局之分,落後的一方也會加碼猛攻(我們沒有模擬比分回饋,就用步調的隨機性一起代表)",
+    "chainTilt": "λ 的強弱傾斜要壓平多少才當進攻回合。λ 同時混了球隊強弱與主場優勢 γ,兩者對射門數的影響幅度不一樣,所以強弱那一段壓平、主場優勢用 homeChainEdge 單獨加回",
+    "homeChainEdge": "主場的進攻回合加成。英超主隊場均多 2.93 次射門",
+    "homePossEdge": "主場控球加成。英超主隊場均控球約 52%",
+    "buildUp": "後場出球成功率(勢均力敵時)",
+    "progress": "推進到前場",
+    "finalThird": "前場組織成功",
+    "createChance": "最後一擊形成射門。四道關卡是連乘的,動這個對射門總數影響最直接",
+    "foulPerChain": "每回合犯規機率",
+    "freeKickShot": "前場犯規變成有威脅的自由球。實際直接射門的自由球每場約 1 次",
+    "yellowPerFoul": "每次犯規吃黃牌的機率",
+    "penaltyPerTeam": "每隊每場十二碼期望次數",
+    "cornerFromCross": "傳中被解圍 → 角球",
+    "cornerFromShot": "射門被撲/被封 → 角球",
+    "saveShare": "沒進的射門裡被撲救的比例(調到射正率 ≈ 33%)",
+    "blockShare": "被封阻的比例(其餘為射偏)",
+    "wideBase": "走邊路而非中路的基準機率"
+  },
+
+  "gate": {
+    "exponent": 0.22,
+    "floor": 0.62,
+    "cap": 1.26,
+    "absoluteCap": 0.95
+  },
+
+  "_gate": [
+    "關卡機率依「我方相對強度 / 對方相對強度」調整:base * (ratio ** exponent),",
+    "再夾在 base*floor ~ min(absoluteCap, base*cap)。",
+    "",
+    "指數與上下限都刻意壓過。四道關卡連乘,單關放寬一點整條鏈就放大四次方 ——",
+    "cap 放到 1.6 時模擬跑出過單隊 59 次射門(英超三季實際上限 37),",
+    "而且隊間差距寬到真實的 1.52 倍,靠隊內隨機偏窄剛好抵銷成正確的總標準差。",
+    "那種互相抵銷的錯誤只有把兩種變異分開看才抓得到。"
+  ],
+
+  "mix": {
+    "crossHigh": 0.55,
+    "headerFromHigh": 0.6,
+    "cutbackFromLow": 0.4,
+    "dribbleGate": 0.62,
+    "oneOnOneFromDribble": 0.25,
+    "crossFirstTime": 0.35,
+    "flatten": 0.4,
+    "priorPct": 0.5,
+    "finishingEdge": 0.05
+  },
+
+  "_mix": {
+    "crossHigh": "傳中走高球的比例(其餘為低平球)",
+    "headerFromHigh": "高球傳中變成頭槌的比例。全給頭槌的話時間軸上四成都是頭槌,實際英超頭球射門只佔約 15%",
+    "cutbackFromLow": "低平球傳中變成倒三角回傳的比例(其餘為禁區近距離)",
+    "dribbleGate": "直塞後突破成功的基準機率",
+    "oneOnOneFromDribble": "突破成功後形成單刀的比例(其餘為禁區內射門)",
+    "crossFirstTime": "一腳觸球傳中的比例",
+    "flatten": "射門者權重的壓平指數。直接拿 xg90 當權重的話隊上最強前鋒會包辦四成射門,實際英超頭號射手只佔 20~28%",
+    "priorPct": "沒有英超紀錄的球員套聯盟同位置第幾百分位當先驗(0.5 = 中位數)。用後段值會變成雙重懲罰 —— poisson.mjs 的 applyPromotedPrior 已經在 λ 裡罰過一次了",
+    "finishingEdge": "射手把握度對 xG 的調整幅度,壓在 ±20% 內"
+  },
+
+  "clamps": {
+    "chainShare": [0.32, 0.68],
+    "possShare": [0.3, 0.7],
+    "possession": [0.28, 0.72],
+    "possessionDepthWeight": 0.35,
+    "saveP": [0.15, 0.45],
+    "wide": [0.25, 0.75],
+    "finishing": [0.8, 1.2]
+  },
+
+  "_clamps": [
+    "possession 夾在 28~72%:英超單場控球率實際上就沒有出過這個範圍。",
+    "possessionDepthWeight 是推進深度佔控球率的權重,其餘由 possShare 決定 ——",
+    "只用深度會複合放大,跑出過 12% / 89% 這種不存在的數字。"
+  ],
+
+  "timeline": {
+    "bigChanceXg": 0.09,
+    "cap": 22,
+    "missNoteXg": 0.2
+  },
+
+  "_timeline": {
+    "bigChanceXg": "低於這個 xG 的未進機會不上時間軸",
+    "cap": "時間軸最多幾條。進球與黃牌永遠保留,超過時砍優先度最低的",
+    "missNoteXg": "高於這個 xG 的未進機會,前面加一句「錯失大好機會」"
+  },
+
+  "chanceTypes": {
+    "penalty":    { "xg": 0.76, "zh": "十二碼" },
+    "oneOnOne":   { "xg": 0.35, "zh": "單刀" },
+    "closeRange": { "xg": 0.3,  "zh": "禁區近距離" },
+    "cutback":    { "xg": 0.14, "zh": "倒三角回傳" },
+    "boxShot":    { "xg": 0.11, "zh": "禁區內射門" },
+    "header":     { "xg": 0.1,  "zh": "頭槌" },
+    "freeKick":   { "xg": 0.07, "zh": "自由球直接射門" },
+    "longShot":   { "xg": 0.04, "zh": "禁區外遠射" }
+  },
+
+  "_chanceTypes": [
+    "xg 是公開統計的粗略量級(十二碼 ≈ 0.76、單刀 ≈ 0.35、遠射 ≈ 0.04),",
+    "只用來決定不同機會之間的相對品質。絕對值不重要 —— 引擎會把全場 xG 整體",
+    "縮放到賽前模型給的 λ,所以動這裡只會改變「哪種機會比較容易進」的相對關係。"
+  ],
+
+  "phrases": {
+    "goalOpener":    ["{t} 由 {p} 打破僵局", "{p} 先馳得點,{t} 取得領先"],
+    "goalEqualiser": ["{p} 扳平比分!", "{t} 由 {p} 追平"],
+    "goal":          ["{p} 破門,{t} 得分!", "{p} 送進去了!", "{p} 再下一城"],
+    "goalAssisted":  ["{a} 做球,{p} 完成射門!", "{p} 接 {a} 的傳球破門!", "{a} 助攻,{p} 得手"],
+    "bigChance":     ["{p} 錯失大好機會", "{p} 沒能把握這一次", "差一點!{p} 這下太可惜"],
+    "save":          ["{g} 撲出 {p} 的射門", "{p} 的攻門被 {g} 化解", "{g} 反應及時,擋下 {p}"],
+    "block":         ["{p} 的射門被封阻", "{p} 出腳,被身體擋掉"],
+    "off":           ["{p} 射偏", "{p} 這一腳沒踢正"],
+    "yellow":        ["{p} 吃到黃牌", "{p} 犯規被記名"]
+  },
+
+  "tails": {
+    "save": "被門將撲出",
+    "block": "被封阻",
+    "off": "射門偏出"
+  },
+
+  "_phrases": [
+    "token:{p}=動作者 {a}=助攻者 {t}=球隊 {g}=門將。全程不過 LLM ——",
+    "一場要產生數十條播報,乘上每輪十場,慢、貴,而且會幻覺出不存在的球員。",
+    "",
+    "進球依當下比分選詞:0-0 用 goalOpener、追平用 goalEqualiser,其餘用 goal。",
+    "第二球還說「打破僵局」就露餡了。",
+    "",
+    "每種事件至少要有兩種說法。引擎會在同一場內優先挑沒用過的,但說法太少時",
+    "還是會重複 —— 加句子是最便宜的改善方式,不需要動程式。",
+    "",
+    "tails 是接在「錯失大好機會」後面的短尾,不重複人名用的。"
+  ]
+}

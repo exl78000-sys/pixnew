@@ -20,6 +20,8 @@ import { simulateSeason } from './lib/simulate.mjs';
 import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
 import { buildTactics, formationImpact } from './lib/tactics.mjs';
 import { projectXI } from './lib/lineup.mjs';
+import { simulateMatch } from './lib/matchsim.mjs';
+import { diagnose } from './lib/matchdiag.mjs';
 import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, standardShape } from './lib/roles.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
@@ -35,7 +37,8 @@ import { loadCurated } from './lib/curated-archive.mjs';
 import { loadCompetitionLogos } from './lib/competitions.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
 import {
-  preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled,
+  preMatchBundle, postMatchBundle, simBundle, templateFor, caveatFor, verify,
+  generateReport, ReportCache, llmEnabled,
 } from './lib/report/index.mjs';
 import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
@@ -1161,6 +1164,75 @@ async function main() {
     console.log(`  預估先發陣型:官方 ${n('official')} 隊・角色推導 ${n('derived')} 隊・FPL 粗類 ${n('fpl')} 隊`);
   }
   await write('lineups.json', lineups);
+
+  /* ── 單場事件模擬 ──────────────────────────────
+   * 賽前頁只給一個「主勝 62%」,讀者對這場沒有畫面。這裡把那組機率攤成
+   * 一場 90 分鐘的可能走法:時間軸、戰術判斷,以及一篇過去式的敘述。
+   *
+   * 只跑「近期」的場次,不是全部 380 場。一場裁過的時間軸約 1.4 KB,
+   * 全跑會讓 npm run bundle 的單檔肥一倍,而且替半年後才踢的比賽模擬
+   * 逐分鐘過程本來就沒有閱讀價值。
+   *
+   * seed 由 fixture id 雜湊而來,同一場重新 build 永遠得到同一份模擬 ——
+   * 站是靜態產生的,讀者重整不能看到不一樣的比賽。
+   *
+   * ⚠ 這一層完全不參與預測。全場 xG 受賽前 λ 約束,勝率數字一個都不會動到。
+   *   平衡參數在 data/event-table.json,改完要跑 node scripts/validate-sim.mjs。 */
+  const SIM_WINDOW_DAYS = 21;
+  const simSeed = id => {
+    let h = 2166136261;
+    for (let i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  };
+  const simFrom = new Date(`${AS_OF}T00:00:00Z`);
+  const matchSims = {};
+  const simVerifyFails = [];
+  for (const f of fixtures) {
+    if (f.played || !f.prediction || !f.kickoff) continue;
+    const days = (new Date(f.kickoff) - simFrom) / 86400000;
+    if (days < 0 || days > SIM_WINDOW_DAYS) continue;
+    if (!lineups[f.home] || !lineups[f.away]) continue;
+    const home = T.byCode.get(f.home), away = T.byCode.get(f.away);
+    if (!home || !away) continue;
+
+    const sim = simulateMatch({
+      lambdaHome: f.prediction.xgHome, lambdaAway: f.prediction.xgAway,
+      home: lineups[f.home], away: lineups[f.away], players,
+      names: { home: home.en, away: away.en },
+      seed: simSeed(f.id),
+    });
+    const diag = diagnose(sim, { home: tacticsBy.get(f.home), away: tacticsBy.get(f.away) });
+    /* 賽後時態:同一份事件流再寫一篇過去式敘述,走跟賽前/賽後報告一樣的
+       facts → 模板 → verify 管線。模擬的數字更需要被綁住 —— 真實比賽寫錯
+       讀者可能會發現,模擬的寫錯沒有人查得出來。不打 LLM。 */
+    const bundle = simBundle({
+      fixture: f, sim, diag, home, away, asOf: AS_OF, seasonLabel: CURRENT_SEASON,
+    });
+    const tpl = templateFor(bundle);
+    /* **模板直出這條從來沒被驗過。** `features.mjs` 的註解寫著這一篇走
+       facts → 模板 → verify,而 `verify` 實際上只套在 LLM 產出上
+       (`generateReport` 裡的那一次);模擬不打 LLM,所以它走 `templateFor` 直出、
+       整條繞過驗證器。模板確實是從 facts 長出來的 —— 但那正是「理論上」,
+       而這一篇的數字寫錯**沒有人查得出來**(那是這個 bundle 自己註解裡的理由)。
+       所以這裡把驗證器補上,讓那句話變成真的。 */
+    const vr = verify(tpl.paragraphs.join('\n'), bundle.facts);
+    if (!vr.ok) simVerifyFails.push(`${f.id}:${vr.reason}`);
+
+    // events 是給戰術判斷用的原料(五百多條),前端只需要時間軸與結論
+    matchSims[f.id] = {
+      score: sim.score, stats: sim.stats, timeline: sim.timeline, diag,
+      recap: { title: tpl.title, paragraphs: tpl.paragraphs, caveat: caveatFor(bundle) },
+      calibration: sim.calibration, disclaimer: sim.disclaimer,
+    };
+  }
+  console.log(`  單場事件模擬:${Object.keys(matchSims).length} 場(未來 ${SIM_WINDOW_DAYS} 天內)`
+    + `・敘述過數字驗證 ${Object.keys(matchSims).length - simVerifyFails.length}/${Object.keys(matchSims).length}`);
+  for (const x of simVerifyFails.slice(0, 5)) console.log(`    ⚠ ${x}`);
+  await write('matchsim.json', {
+    asOf: AS_OF, windowDays: SIM_WINDOW_DAYS,
+    note: '事件流由模型生成,不是實際比賽過程。總 xG 受賽前 λ 約束,不影響任何勝率數字。',
+    matches: matchSims,
+  });
 
   await write('official.json', offLineups
     ? { available: true, asOf: offLineups.asOf, season: offLineups.season, matches: offLineups.matches,

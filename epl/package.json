@@ -124,7 +124,8 @@
     "fr1:test": "node scripts/test-ligue-1.mjs",
     "probe:understat-de1": "node scripts/probe-understat-bundesliga.mjs",
     "probe:fotmob-de1": "node scripts/probe-fotmob-bundesliga.mjs",
-    "probe:new-leagues": "node scripts/probe-new-leagues.mjs"
+    "probe:new-leagues": "node scripts/probe-new-leagues.mjs",
+    "sim:check": "node scripts/validate-sim.mjs"
   },
   "engines": {
     "node": ">=18"

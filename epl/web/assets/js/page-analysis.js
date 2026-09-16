@@ -4,8 +4,8 @@ const app = document.getElementById('app');
 
 try {
   // prob-history 的鍵帶連字號,解構拿不到,所以先收整包再取
-  const data = await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form', 'prob-history', 'news');
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } = data;
+  const data = await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form', 'prob-history', 'news', 'matchsim');
+  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, reports, experts, lineups, live, shapes, official, form, matchsim } = data;
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
   /* 完整版(renderMatch)吃的是英超才有的東西:FPL 球員欄位、傷停、預估先發、官方事件。
@@ -225,6 +225,8 @@ try {
     </div>
 
     ${lineupSection(f)}
+
+    ${simSection(f)}
 
     ${p.grid ? `<div class="section"><h2>比分機率分佈</h2><span class="hint">顏色越亮代表越可能</span></div>
       <div class="card">${C.scoreHeat(p.grid, f.home, f.away)}</div>` : ''}
@@ -1277,6 +1279,101 @@ try {
     </div>`}
     ${real ? '' : injuryNote(f, proj)}
 `;
+  }
+
+  /* ── 模擬時間軸 ────────────────────────────────
+   *
+   * 這一段跟頁面上其他所有東西性質不同:上面的勝率、期望進球、戰術指標都是
+   * 統計結果,這一段是**模型編出來的一場比賽**。所以視覺上必須一眼分得出來
+   * ——— 標題講明是模擬、整塊用虛線框、每一則都不帶「這會發生」的語氣,
+   * 而且旁邊就放「這不是實況」的說明。
+   *
+   * 為什麼還是值得放:單看「主勝 62%」讀者對這場沒有畫面。看到一條
+   * 「63' 十二碼追平、70' 傳中再進一球」的時間軸,才知道 62% 長什麼樣子。
+   *
+   * 只有近期場次有(build 只跑未來 21 天),已完賽的不顯示 —— 真的踢完了
+   * 就該看真實比分,拿模擬的蓋上去毫無意義。 */
+  function simSection(f) {
+    const s = matchsim?.matches?.[f.id];
+    if (!s || f.played || !s.timeline?.length) return '';
+
+    const col = side => (side === 'home' ? f.colors?.home : f.colors?.away) ?? 'var(--ink-3)';
+    const codeOf = side => (side === 'home' ? f.home : f.away);
+
+    const row = t => `
+      <li class="tl-row${t.kind === 'goal' ? ' goal' : ''}">
+        <span class="tl-min mono">${t.minute}'</span>
+        <span class="tl-dot" style="--c:${col(t.side)}"></span>
+        <span class="tl-body">
+          <span class="tl-text">${C.esc(t.text)}</span>
+          <span class="tl-meta tiny dim">${[
+            C.name(codeOf(t.side)),
+            t.chanceZh ? C.esc(t.chanceZh) : null,
+            t.xg != null ? `xG ${t.xg.toFixed(2)}` : null,
+            t.score ? `比分 ${t.score}` : null,
+          ].filter(Boolean).join(' · ')}</span>
+        </span>
+      </li>`;
+
+    const st = (side, key) => s.stats[side][key];
+    const line = (label, key, unit = '') => `<div class="stat-line">
+      <b class="mono">${st('home', key)}${unit}</b>
+      <span class="small muted">${label}</span>
+      <b class="mono">${st('away', key)}${unit}</b></div>`;
+
+    return `
+    <div class="section"><h2>如果這場踢起來會是什麼樣子</h2>
+      <span class="hint">模型模擬的一種可能,不是預測結果</span></div>
+    <div class="card tl-card">
+      <div class="scoreline" style="margin:2px 0 12px">
+        <div class="side">${C.badge(f.home)}<b>${C.name(f.home)}</b></div>
+        <div class="sc">${s.score.home} <span class="dim">:</span> ${s.score.away}</div>
+        <div class="side away">${C.badge(f.away)}<b>${C.name(f.away)}</b></div>
+      </div>
+      <div class="center tiny dim" style="margin-bottom:12px">這一場模擬的比分</div>
+
+      <ol class="tl">${s.timeline.map(row).join('')}</ol>
+
+      ${(s.diag ?? []).length ? `<div class="tl-diag">
+        <div class="tiny dim" style="margin-bottom:8px">這場模擬看出來的幾件事</div>
+        ${s.diag.map(d => `<div class="tl-diag-row">
+          <span class="tl-diag-dot" style="--c:${col(d.side)}"></span>
+          <span class="small"><b>${C.name(codeOf(d.side))}</b>　${C.esc(d.text)}</span>
+        </div>`).join('')}
+      </div>` : ''}
+
+      <div class="grid g2" style="margin-top:14px;gap:10px">
+        <div>
+          ${line('射門', 'shots')}
+          ${line('射正', 'onTarget')}
+          ${line('角球', 'corners')}
+        </div>
+        <div>
+          ${line('犯規', 'fouls')}
+          ${line('黃牌', 'yellow')}
+          ${line('控球率', 'possession', '%')}
+        </div>
+      </div>
+
+      ${s.recap ? `<div class="tl-recap">
+        <div class="tiny dim" style="margin-bottom:8px">如果把這場模擬寫成賽後報導</div>
+        ${s.recap.paragraphs.map(t => `<p>${C.esc(t)}</p>`).join('')}
+      </div>` : ''}
+
+      <div class="note" style="margin-top:14px">
+        <b>這不是實況,也不是「我們認為會這樣踢」。</b>
+        它是把上面那組勝率攤成 90 分鐘的一種可能走法 ——
+        換一顆種子就是另一場完全不同的比賽。人名、時間、比分都是模型生成的,
+        沒有任何一項真的發生過。要看真實比分請到<a href="${C.link('live')}">實時戰況</a>。
+      </div>
+      <div class="tiny dim" style="margin-top:8px">
+        事件流受賽前模型約束:全場期望進球總和等於上面用的
+        ${s.calibration.lambdaHome} : ${s.calibration.lambdaAway},
+        所以它<b>不會</b>跟勝率打架,也完全不參與任何機率計算。
+        球員的動作機率由上季 per-90 數據推導,傳球與對抗用創造力、掃蕩數當代理指標
+        —— FPL 沒有傳球成功率,這是已知的精度上限。
+      </div>
+    </div>`;
   }
 
   function injuryNote(f, proj) {

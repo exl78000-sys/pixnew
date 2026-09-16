@@ -794,3 +794,65 @@ input:focus-visible, tbody tr.clickable:focus-visible {
    跟外層那張卡之間要有一點呼吸空間,不然看起來像一整片沒有分段的表。 */
 .ucl-cmp { margin: 4px 0 14px; }
 .ucl-cmp > .card { margin-top: 10px; }
+
+/* ── 模擬時間軸 ──────────────────────────────
+   這一塊的內容是模型編出來的,不是統計結果,所以刻意跟其他卡片長得不一樣:
+   虛線外框 + 左側時間軸線,讀者掃過去就知道「這一段性質不同」。 */
+.tl-card { border-style: dashed; }
+/* 欄寬用變數定義,軸線位置由它算出來 —— 寫死 left 的話改欄寬就會跟圓點錯開
+   (第一版桌面偏 8px、手機偏 6px,就是漏算了 grid gap) */
+.tl {
+  --tl-min: 34px; --tl-dot: 20px; --tl-gap: 8px;
+  list-style: none; margin: 0; padding: 0; position: relative;
+}
+.tl::before {
+  content: ''; position: absolute; top: 6px; bottom: 6px; width: 1px;
+  left: calc(var(--tl-min) + var(--tl-gap) + var(--tl-dot) / 2);
+  background: var(--line);
+}
+.tl-row {
+  display: grid; grid-template-columns: var(--tl-min) var(--tl-dot) 1fr;
+  align-items: start; gap: var(--tl-gap); padding: 6px 0; position: relative;
+}
+.tl-min { font-size: 11.5px; color: var(--ink-3); text-align: right; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.tl-dot {
+  width: 9px; height: 9px; border-radius: 50%; background: var(--c, var(--ink-3));
+  margin: 5px auto 0; box-shadow: 0 0 0 3px var(--panel-solid);
+}
+.tl-body { display: grid; gap: 1px; min-width: 0; }
+.tl-text { font-size: 13px; color: var(--ink-2); }
+.tl-meta { font-size: 10.5px; }
+/* 進球要一眼看得到 —— 時間軸上其他都是沒進的機會 */
+.tl-row.goal .tl-text { color: var(--ink); font-weight: 700; font-size: 13.5px; }
+.tl-row.goal .tl-dot { width: 13px; height: 13px; margin-top: 3px; }
+.tl-row.goal .tl-min { color: var(--ink-2); font-weight: 700; }
+
+/* 戰術判斷。跟時間軸同一張卡,但要看得出是「歸納」而不是「事件」,
+   所以用實心底而不是軸線。 */
+.tl-diag {
+  margin-top: 14px; padding: 10px 12px; border-radius: var(--radius-sm);
+  background: #ffffff06; border: 1px solid var(--line-soft);
+}
+.tl-diag-row { display: flex; gap: 8px; align-items: baseline; padding: 4px 0; }
+.tl-diag-row + .tl-diag-row { border-top: 1px dashed var(--line-soft); }
+.tl-diag-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex: none;
+  background: var(--c, var(--ink-3)); transform: translateY(-1px);
+}
+
+/* 模擬的賽後敘述。跟站上真實的賽後分析用同一種排版(讀者已經認得那個樣子),
+   但整塊左側留一條線,提醒這是模擬而不是戰報。 */
+.tl-recap {
+  margin-top: 14px; padding-left: 12px;
+  border-left: 2px solid var(--line);
+}
+.tl-recap p {
+  margin: 0 0 9px; font-size: 13px; line-height: 1.85; color: var(--ink-2);
+}
+.tl-recap p:last-child { margin-bottom: 0; }
+
+@media (max-width: 720px) {
+  .tl { --tl-min: 30px; --tl-dot: 16px; --tl-gap: 6px; }
+  .tl-text { font-size: 12.5px; }
+  .tl-recap p { font-size: 12.5px; }
+}
