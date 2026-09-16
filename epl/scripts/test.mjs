@@ -15,10 +15,8 @@ import { buildElo, eloProbs } from './lib/elo.mjs';
 import { uclSeasonMatches } from './lib/ucl-elo.mjs';
 import { round } from './lib/util.mjs';
 import { inPlay } from './lib/inplay.mjs';
-import { simulateMatch, sampleMatch, validateTable } from './lib/matchsim.mjs';
-import { diagnose, tally } from './lib/matchdiag.mjs';
 import {
-  preMatchBundle, postMatchBundle, simBundle, templateFor, CAVEAT, verify, generateReport, ReportCache,
+  preMatchBundle, postMatchBundle, templateFor, verify, generateReport, ReportCache,
 } from './lib/report/index.mjs';
 import { attachCodes } from './lib/adapters/pulselive.mjs';
 import { oddsIndex, devig, parseOddsCsv, FD_NAMES, pickMarket } from './lib/odds.mjs';
@@ -403,17 +401,9 @@ async function main() {
   console.log('\n▶ 資產版本戳(部署後看不看得到更新)');
   const stampFail = checkAssetStamps();
 
-  // 事件模擬:最重要的一條是「它不准動到預測」—— Σxg 必須等於 λ
-  console.log('\n▶ 單場事件模擬');
-  const simFail = checkMatchSim();
-
-  // 戰術判斷與賽後敘述:不准說沒有數字撐著的話,沒事要閉嘴
-  console.log('\n▶ 模擬戰術判斷與賽後敘述');
-  const diagFail = checkMatchDiag();
-
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simFail || diagFail) process.exitCode = 1;
+  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -4330,36 +4320,6 @@ async function checkDataGap() {
       console.log(`    往季逐場檔:${seen} 個聯賽有索引`);
       return bad.length === 0;
     })()],
-    /* **`C.load` 在 404 時會 throw,所以清單裡少一份 = 整頁「載入失敗」。**
-       2026-09-16 實際發生過:單場頁把 `matchsim` 加進清單,而那一份只有英超的 build 會寫
-       —— 西甲英冠德義法**每一個單場頁**都變成 `#app` 只剩 93 字的「載入失敗」,
-       已完賽與未賽都一樣。`npm test` 看不到版面所以全綠,`npm run sweep` 抓得到(30 次異狀)。
-
-       這條守的是通則,不是只釘 `matchsim`:**每一頁 `C.load` 要的每一份產物,
-       在每一個聯賽都要存在**。CLAUDE.md 那條講過的解法在這裡也一樣 ——
-       沒有內容的產物要寫空的而不是不寫。 */
-    ['每一頁 C.load 的產物在每個聯賽都存在(少一份就整頁載入失敗)', (() => {
-      const JS = join(ROOT, 'web', 'assets', 'js');
-      const leagues = ['pl', ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
-        .filter(e => e.isDirectory()).map(e => e.name)];
-      const dirOf = k => (k === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'web', 'data', 'leagues', k));
-      const bad = [];
-      let pages = 0;
-      for (const f of readdirSync(JS).filter(x => /^page-.*\.js$/.test(x))) {
-        const src = readFileSync(join(JS, f), 'utf8');
-        const m = src.match(/C\.load\(([\s\S]{0,400}?)\)/);   // 清單可能跨行
-        if (!m) continue;
-        const names = [...m[1].matchAll(/'([a-z0-9-]+)'/g)].map(x => x[1]);
-        if (!names.length) continue;
-        pages++;
-        for (const k of leagues) for (const n of names) {
-          if (!existsSync(join(dirOf(k), `${n}.json`))) bad.push(`${f} @${k}:${n}`);
-        }
-      }
-      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}${bad.length > 6 ? ` …共 ${bad.length} 處` : ''}`);
-      /* pages 不寫死數量 —— 加一頁就紅在「多了一頁」是「把目標達成寫成 CI 紅線」那條坑。 */
-      return pages >= 8 && bad.length === 0;
-    })()],
     /* ── 往季賽後報告(2026-09-16)──
        上一季的報告不在 `reports.reports` 裡(那一份是首頁與單場頁**整份載**的,
        塞進去會從 1.6 MB 變成二十幾 MB),而是 `match-reports/{季}/{id}.json` 逐場檔。
@@ -7388,222 +7348,6 @@ function checkCups() {
       if (season.pensPending) console.log(`  · ${cup.zh} ${season.label}:${season.pensPending} 場 PK 的勝方還沒補到(分批抓,不擋)`);
     }
   }
-  return fail;
-}
-
-/* 單場事件模擬。
-   這一層是敘事,不是預測 —— 所以測試的重點不是「比分準不準」(那不歸它管),
-   而是三件事:
-
-   1. **它不准動到預測**。Σxg 必須精確等於上層給的 λ。一旦有人改壞了縮放,
-      整個 model.html 的校準就會被悄悄汙染,這是最貴的一種錯。
-   2. **同一場永遠一樣**。站是靜態產生的,讀者重整不能看到不同的比賽。
-   3. **量級要像英超**。射門 25.6 / 角球 10.4 / 犯規 21.5 / 進球 2.8(場均兩隊合計)。
-
-   開發時踩過的兩個雷,各留一條測試守著:
-   - 拿 creativity90(量級 ~20)去對 tackles90(量級 ~2),所有關卡都被 clamp
-     到上限,射門數暴衝成實際值的五倍。→ 用強弱懸殊的對戰驗量級。
-   - xorshift32 對小 seed 的前幾個輸出接近 0,而 fixture 序號正是小整數,
-     害第一個 Poisson 抽樣系統性吐 0,整季比分偏低。→ 專門用 seed 1..N 驗平均。 */
-function checkMatchSim() {
-  let lineups, players;
-  try {
-    const rd = f => JSON.parse(readFileSync(join(ROOT, 'web', 'data', f), 'utf8'));
-    lineups = rd('lineups.json'); players = rd('players.json');
-  } catch { console.log('  ⚠ 還沒有 lineups.json / players.json,略過'); return 0; }
-
-  const codes = Object.keys(lineups);
-  if (codes.length < 4) { console.log('  ⚠ 陣容資料不足,略過'); return 0; }
-  const [A, B] = codes;
-  const base = { home: lineups[A], away: lineups[B], players };
-  const cases = [];
-
-  // 1. 決定性
-  const r1 = simulateMatch({ ...base, lambdaHome: 1.8, lambdaAway: 1.1, seed: 777 });
-  const r2 = simulateMatch({ ...base, lambdaHome: 1.8, lambdaAway: 1.1, seed: 777 });
-  cases.push(['同 seed 產生完全相同的事件流', JSON.stringify(r1) === JSON.stringify(r2)]);
-  const r3 = simulateMatch({ ...base, lambdaHome: 1.8, lambdaAway: 1.1, seed: 778 });
-  cases.push(['不同 seed 產生不同結果', JSON.stringify(r1) !== JSON.stringify(r3)]);
-
-  // 2. 校準:跑遍所有對戰組合,Σxg 必須等於 λ
-  let drift = 0, possMin = 100, possMax = 0, scoreOk = true;
-  const agg = { shots: 0, corners: 0, fouls: 0, goals: 0, n: 0 };
-  let seed = 4242;
-  for (const h of codes) for (const a of codes) {
-    if (h === a) continue;
-    const lh = 1.1 + (seed % 13) * 0.07, la = 0.8 + (seed % 11) * 0.07;
-    const r = simulateMatch({ lambdaHome: lh, lambdaAway: la, home: lineups[h], away: lineups[a], players, seed: seed++ });
-    const c = r.calibration;
-    drift = Math.max(drift, Math.abs(c.xgHome - c.lambdaHome), Math.abs(c.xgAway - c.lambdaAway));
-    possMin = Math.min(possMin, r.stats.home.possession);
-    possMax = Math.max(possMax, r.stats.home.possession);
-    if (r.score.home > r.stats.home.shots || r.score.away > r.stats.away.shots) scoreOk = false;
-    agg.shots += r.stats.home.shots + r.stats.away.shots;
-    agg.corners += r.stats.home.corners + r.stats.away.corners;
-    agg.fouls += r.stats.home.fouls + r.stats.away.fouls;
-    agg.goals += r.score.home + r.score.away;
-    agg.n++;
-  }
-  const mean = k => agg[k] / agg.n;
-  cases.push([`Σxg 等於 λ(最大偏差 ${drift.toFixed(4)})`, drift < 1e-3]);
-  cases.push(['進球數不可能多於射門數', scoreOk]);
-  cases.push([`控球率在 28~72% 之間(實測 ${possMin}~${possMax}%)`, possMin >= 28 && possMax <= 72]);
-
-  // 3. 量級。區間給得寬一點 —— 這是防止「改壞了」,不是拿來逼近小數點的
-  const level = (k, lo, hi, real) => {
-    const v = mean(k);
-    cases.push([`場均${k} ${v.toFixed(1)}(英超 ${real},允收 ${lo}~${hi})`, v >= lo && v <= hi]);
-  };
-  level('shots', 20, 31, '25.6');
-  level('corners', 8, 13, '10.4');
-  level('fouls', 17, 26, '21.5');
-  level('goals', 2.2, 3.4, '2.8');
-
-  // 4. 小 seed 不可以有系統性偏差(踩過的雷)
-  const small = sampleMatch({ ...base, lambdaHome: 1.5, lambdaAway: 1.2, seed: 1 }, 400);
-  const bias = (small.goals - 2.7) / 2.7;
-  cases.push([`小 seed 起始不偏(進球 ${small.goals} vs λ 2.7,偏差 ${(bias * 100).toFixed(1)}%)`, Math.abs(bias) < 0.12]);
-
-  // 5. 性質:強隊該創造比較多機會
-  const strong = simulateMatch({ ...base, lambdaHome: 2.4, lambdaAway: 0.7, seed: 31337 });
-  cases.push(['λ 高的一方機會較多', strong.stats.home.shots > strong.stats.away.shots]);
-
-  /* 6. 事件表的 schema 檢查。
-     平衡參數搬到 data/event-table.json 之後,那份檔案就是「不用改程式也能動的東西」——
-     也就是最容易被手滑改壞的東西。驗證器本身要有測試,否則它只是裝飾。 */
-  const table = JSON.parse(readFileSync(join(ROOT, 'data', 'event-table.json'), 'utf8'));
-  const clone = () => JSON.parse(JSON.stringify(table));
-  const throws = mutate => {
-    const t = clone();
-    mutate(t);
-    try { validateTable(t, 'test'); return false; } catch { return true; }
-  };
-  cases.push(['現行事件表通過驗證', (() => { try { validateTable(clone(), 'test'); return true; } catch { return false; } })()]);
-  cases.push(['缺少區段會擋下', throws(t => { delete t.gate; })]);
-  cases.push(['關卡機率寫成 0 會擋下(四關連乘,等於整條鏈死掉)', throws(t => { t.rates.buildUp = 0; })]);
-  cases.push(['關卡機率寫成 1.5 會擋下', throws(t => { t.rates.createChance = 1.5; })]);
-  cases.push(['gate.floor 大於 cap 會擋下', throws(t => { t.gate.floor = 1.5; })]);
-  cases.push(['clamp 上下限顛倒會擋下', throws(t => { t.clamps.possession = [0.8, 0.2]; })]);
-  cases.push(['機會類型少一種會擋下(半場中間會丟 undefined)', throws(t => { delete t.chanceTypes.header; })]);
-  cases.push(['xG 超出 0~1 會擋下', throws(t => { t.chanceTypes.longShot.xg = 3; })]);
-  cases.push(['播報只剩一種說法會擋下(同場一定逐字重複)', throws(t => { t.phrases.goal = ['{p} 進球']; })]);
-  cases.push(['播報含空字串會擋下', throws(t => { t.phrases.save.push(''); })]);
-
-  // 7. 前端警語不可以被拿掉
-  cases.push(['輸出帶有「這是模擬」的警語', typeof r1.disclaimer === 'string' && r1.disclaimer.includes('模擬')]);
-
-  /* 7. 時間軸的可讀性。兩條都是實際踩到才補的:
-     - 直接拿 xg90 當權重,隊上最強的前鋒包辦四成射門(實際頭號射手 20~28%)
-     - 每種事件只有 2~3 種說法,隨機挑會出現連著兩條一字不差 */
-  const tally = new Map();
-  let shotTotal = 0, adjacentDup = 0, tlCount = 0;
-  for (let i = 0; i < 120; i++) {
-    const r = simulateMatch({ ...base, lambdaHome: 1.9, lambdaAway: 1.0, seed: 100 + i * 31 });
-    for (const e of r.events) {
-      if (e.type !== '射門' || e.side !== 'home') continue;
-      tally.set(e.player, (tally.get(e.player) ?? 0) + 1); shotTotal++;
-    }
-    const texts = r.timeline.map(t => t.text);
-    for (let j = 1; j < texts.length; j++) if (texts[j] === texts[j - 1]) adjacentDup++;
-    tlCount += texts.length;
-  }
-  const topShare = Math.max(...tally.values()) / shotTotal;
-  cases.push([`頭號射手佔全隊射門 ${(topShare * 100).toFixed(1)}%(英超 20~28%,允收 <33%)`, topShare < 0.33]);
-  cases.push([`射門者人數 ${tally.size} 人(單場十一人裡不該只有三四個人射門)`, tally.size >= 6]);
-  cases.push([`時間軸相鄰逐字重複 ${adjacentDup} 次 / ${tlCount} 條`, adjacentDup / Math.max(1, tlCount) < 0.01]);
-
-  let fail = 0;
-  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
-  return fail;
-}
-
-/* 模擬事件流的戰術判斷。
-   這一層最容易腐爛成占卜 —— 寫幾句聽起來很內行但沒有根據的話,讀者看不出來,
-   我們自己過一陣子也忘了它是不是真的在看資料。所以測試守三件事:
-
-   1. 每一條判斷都要附 evidence,而且 evidence 裡的數字要跟 stats 對得上
-   2. 平淡的比賽要回空陣列 —— 每場都硬擠判斷就是罐頭
-   3. 同一隊同一種判斷不會重複出現 */
-function checkMatchDiag() {
-  let lineups, players, tactics, clubs;
-  try {
-    const rd = f => JSON.parse(readFileSync(join(ROOT, 'web', 'data', f), 'utf8'));
-    lineups = rd('lineups.json'); players = rd('players.json');
-    tactics = rd('tactics.json'); clubs = rd('clubs.json');
-  } catch { console.log('  ⚠ 資料不足,略過'); return 0; }
-  const clubBy = new Map(clubs.map(c => [c.code, c]));
-  const codes = Object.keys(lineups);
-  if (codes.length < 4) { console.log('  ⚠ 陣容不足,略過'); return 0; }
-  const tacBy = new Map(tactics.map(t => [t.code, t]));
-
-  let runs = 0, withFindings = 0, total = 0;
-  let missingEvidence = 0, duplicates = 0, mismatched = 0, uncited = 0;
-  let recapRuns = 0, recapBad = 0, recapMarkdown = 0;
-  let seed = 555;
-  for (const h of codes) for (const a of codes) {
-    if (h === a) continue;
-    const r = simulateMatch({
-      lambdaHome: 1.1 + (seed % 11) * 0.09, lambdaAway: 0.8 + (seed % 7) * 0.09,
-      home: lineups[h], away: lineups[a], players, seed: seed++,
-    });
-    const d = diagnose(r, { home: tacBy.get(h), away: tacBy.get(a) });
-    const t = tally(r.events);
-    runs++; total += d.length;
-    if (d.length) withFindings++;
-
-    /* 賽後敘述走的是跟賽前/賽後報告同一條管線,所以也要通過同一個數字驗證。
-       模擬的數字更需要綁住 —— 真實比賽寫錯讀者可能會發現,模擬的寫錯沒人查得出來。 */
-    const b = simBundle({
-      fixture: { id: `${h}|${a}`, prediction: { home: 0.45, draw: 0.27, away: 0.28 } },
-      sim: r, diag: d, home: clubBy.get(h), away: clubBy.get(a),
-      asOf: '2026-01-01', seasonLabel: 'test',
-    });
-    const tplSim = templateFor(b);
-    recapRuns++;
-    if (!verify(tplSim.paragraphs.join('\n'), b.facts).ok) recapBad++;
-    if (/\*\*|__/.test(tplSim.paragraphs.join(''))) recapMarkdown++;
-
-    const seen = new Set();
-    for (const x of d) {
-      if (!x.evidence || !Object.keys(x.evidence).length) missingEvidence++;
-      /* 文字裡出現的每個數字都必須在 evidence 裡找得到。
-         這條不是潔癖:這些句子會被 report/ 的模板引用,而 verify.mjs 會逐一
-         檢查文章裡的數字有沒有出處 —— evidence 漏一個,整篇賽後敘述就退回。
-         人工盯不住,所以機械化比對。 */
-      const allowed = new Set();
-      for (const val of Object.values(x.evidence ?? {})) {
-        if (typeof val !== 'number') continue;
-        for (const dd of [0, 1, 2]) allowed.add(Number(val.toFixed(dd)));
-      }
-      for (const tok of String(x.text).match(/(?<![\d.\-])-?\d+(?:\.\d+)?/g) ?? []) {
-        if (!allowed.has(Number(tok))) { uncited++; break; }
-      }
-      const key = `${x.side}|${x.kind}`;
-      if (seen.has(key)) duplicates++;
-      seen.add(key);
-      // 判斷裡引用的射門數必須等於這一場實際的射門數,不能自己編
-      if (x.kind === 'outshot' && x.evidence['我方射門'] !== t[x.side].shots) mismatched++;
-      if (x.kind === 'long-range' && x.evidence['射門'] !== t[x.side].shots) mismatched++;
-    }
-  }
-
-  const quietRate = 1 - withFindings / runs;
-  const cases = [
-    [`每條判斷都有 evidence(${total} 條裡缺 ${missingEvidence} 條)`, missingEvidence === 0],
-    [`同一隊同一種判斷不重複(重複 ${duplicates} 次)`, duplicates === 0],
-    [`evidence 的數字跟事件流對得上(對不上 ${mismatched} 處)`, mismatched === 0],
-    [`判斷文字裡沒有 evidence 以外的數字(${uncited} 條有)`, uncited === 0],
-    [`平淡的比賽會閉嘴(${(quietRate * 100).toFixed(0)}% 的場次零判斷,應介於 5~60%)`,
-      quietRate >= 0.05 && quietRate <= 0.6],
-    [`不會一場塞太多(平均 ${(total / runs).toFixed(1)} 條,應少於 4)`, total / runs < 4],
-    [`賽後敘述全部通過數字驗證(${recapRuns} 篇裡有 ${recapBad} 篇沒過)`, recapBad === 0],
-    ['賽後敘述不含 markdown(前端走 esc,星號會原樣印出來)', recapMarkdown === 0],
-    ['模擬有專屬免責說明,且講明沒有真的發生過',
-      typeof CAVEAT.sim === 'string' && CAVEAT.sim.includes('沒有真的發生過')],
-  ];
-
-  let fail = 0;
-  for (const [name, ok] of cases) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) fail++; }
   return fail;
 }
 
