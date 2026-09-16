@@ -29,7 +29,7 @@ import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { leagueMatches, backfillLine, europeanKickoff } from './league-matches.mjs';
+import { leagueMatches, backfillLine, europeanKickoff, fotmobBackfillLine } from './league-matches.mjs';
 import { competition } from './canonical.mjs';
 import { loadTeams } from './teams.mjs';
 import { buildTable, headToHead, teamRecord } from './table.mjs';
@@ -129,16 +129,28 @@ export async function buildLeague(L) {
   const backfills = [];
 
   const load = season => {
-    const { matches, backfill } = leagueMatches(ROOT, season, {
+    /* **第三來源要傳進去,不然抓了也沒人用。** `fotmobDir` 原本只給逐場詳情用,
+       沒有傳給 `leagueMatches` —— 於是 `scores.json` 抓回來躺在 raw 裡,
+       比分還是只能等 football-data.co.uk 的天級節奏(2026-09-16 補)。
+       採用規矩跟英冠西甲同一份:FotMob 補的標暫定,兩邊都有的場次要逐場一致,
+       對不上整份不採用而且記進 `scoreRefusals`(鐵則五)。 */
+    const { matches, backfill, fotmob } = leagueMatches(ROOT, season, {
       codeOf, kickoffOf: berlinKickoff,
       competition: COMPETITION, rawDir: RAW_DIR, fillDir: FILL_DIR, div: DIV,
+      fotmobDir: L.fotmobDir,
       fill: hasFill(season),
     });
     const line = backfillLine(season, backfill);
     if (line) console.log(line);
+    const fmLine = fotmobBackfillLine(season, fotmob);
+    if (fmLine) console.log(fmLine);
     if (backfill?.filled) backfills.push({ season, ...backfill });
-    if (backfill?.mismatches?.length) {
-      scoreRefusals.push({ season, source: 'football-data.co.uk', count: backfill.mismatches.length, sample: backfill.mismatches.slice(0, 5) });
+    for (const [src, r] of [['football-data.co.uk', backfill], ['FotMob', fotmob]]) {
+      if (r?.mismatches?.length) {
+        scoreRefusals.push({ season, source: src, count: r.mismatches.length, sample: r.mismatches.slice(0, 5) });
+      } else if (r?.duplicateKeys) {
+        scoreRefusals.push({ season, source: src, duplicateKeys: true, count: 0, sample: [] });
+      }
     }
     return matches;
   };
@@ -158,9 +170,17 @@ export async function buildLeague(L) {
   const priorMatches = priorSeasons.flatMap(x => x.matches);
   const fullSeasons = [...priorSeasons.map(x => x.season), LAST_SEASON];
 
-  // 上游若先填入未來賽果,基準日之後一律當未賽 —— 模型不可以偷看未來
+  /* 上游若先填入未來賽果,基準日之後一律當未賽 —— 模型不可以偷看未來。
+     **兩個暫定旗標也要一起清掉**:第三來源(FotMob)補比分時會標 `scoreProvisional`
+     與 `scoreSource`,而這裡只清 played / fh / fa 的話,那一場會變成
+     「未賽、沒有比分,卻掛著『FotMob 暫定賽果』」——自己跟自己矛盾的狀態。
+     接第三來源進德義法時用假快照重現出來的(真的 FotMob 不會把未來場次報成完賽,
+     但清狀態就是要把不一致的組合清乾淨,不是賭上游不會那樣給)。 */
   for (const m of curMatches) {
-    if (m.date > AS_OF && m.played) Object.assign(m, { played: false, fh: null, fa: null, hh: null, ha: null });
+    if (m.date > AS_OF && m.played) {
+      Object.assign(m, { played: false, fh: null, fa: null, hh: null, ha: null });
+      delete m.scoreProvisional; delete m.scoreSource;
+    }
   }
   const curPlayed = curMatches.filter(m => m.played && m.date <= AS_OF);
 

@@ -10,7 +10,7 @@
  *   是**暫定**(`provisional`),社群檔到了兩邊要一致,對不上整季不採用 FotMob 那份(鐵則五)。
  * - 隊名走名冊寬鬆對照;對不上的隊名印出來(靜靜吞掉整隊消失是踩過的坑)。
  *
- *   npm run scores:fetch -- --league=es1      # 也可 pl / en2;一次一個聯賽,一個請求
+ *   npm run scores:fetch -- --league=es1      # 六個聯賽都可(見下面的表);一次一個聯賽,一個請求
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -24,6 +24,14 @@ const LEAGUES = {
   pl: { id: 47, ccode3: 'GBR', dir: 'fotmob-epl', teamFile: 'teams.json', meta: ['web', 'data', 'meta.json'] },
   es1: { id: 87, ccode3: 'ESP', dir: 'fotmob-la-liga', teamFile: 'teams-la-liga.json', meta: ['web', 'data', 'leagues', 'es1', 'meta.json'] },
   en2: { id: 48, ccode3: 'GBR', dir: 'fotmob-championship', teamFile: 'teams-championship.json', meta: ['web', 'data', 'leagues', 'en2', 'meta.json'] },
+  /* 德義法(2026-09-16)。id 與 ccode3 都是既有探測證明過的,不是查來就用:
+     德甲 54(從 allLeagues 找 ccode=GER 再逐隊比對名冊 18/18 —— **奧地利甲也叫 Bundesliga**)、
+     義甲 55、法甲 53(`probe-new-leagues.mjs`,同樣逐隊比對過)。
+     它們原本只有 football-data.co.uk 補比分,而那份以**天**為節奏 ——
+     比賽當晚畫面上是「等待賽果」,隔天才有。這一條讓它跟英超西甲英冠一樣當晚就有。 */
+  de1: { id: 54, ccode3: 'GER', dir: 'fotmob-bundesliga', teamFile: 'teams-bundesliga.json', meta: ['web', 'data', 'leagues', 'de1', 'meta.json'] },
+  it1: { id: 55, ccode3: 'ITA', dir: 'fotmob-serie-a', teamFile: 'teams-serie-a.json', meta: ['web', 'data', 'leagues', 'it1', 'meta.json'] },
+  fr1: { id: 53, ccode3: 'FRA', dir: 'fotmob-ligue-1', teamFile: 'teams-ligue-1.json', meta: ['web', 'data', 'leagues', 'fr1', 'meta.json'] },
 };
 const key = arg('league') ?? 'pl';
 const LG = LEAGUES[key];
