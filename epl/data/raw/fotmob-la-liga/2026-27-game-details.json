@@ -88635,8 +88635,3321 @@
      }
     ]
    }
+  },
+  "DEP|SEV": {
+   "key": "DEP|SEV",
+   "season": "2026-27",
+   "date": "2026-09-16",
+   "matchId": "5868064",
+   "home": "DEP",
+   "away": "SEV",
+   "score": [
+    0,
+    1
+   ],
+   "providerScore": [
+    0,
+    1
+   ],
+   "teamStats": {
+    "DEP": {
+     "possession": 53,
+     "shots": 4,
+     "shotsOn": 3,
+     "shotsOff": 1,
+     "blockedShots": 0,
+     "blocksMade": 2,
+     "corners": 4,
+     "offsides": 0,
+     "fouls": 15,
+     "saves": 5,
+     "passes": 499,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.18
+    },
+    "SEV": {
+     "possession": 47,
+     "shots": 11,
+     "shotsOn": 6,
+     "shotsOff": 3,
+     "blockedShots": 2,
+     "blocksMade": 0,
+     "corners": 4,
+     "offsides": 0,
+     "fouls": 16,
+     "saves": 3,
+     "passes": 443,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.87
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "DEP": {
+     "touches_opp_box": 13,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 1,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 0.17,
+     "expected_goals_set_play": 0.01,
+     "expected_goals_non_penalty": 0.18,
+     "expected_goals_on_target": 1.06,
+     "own_half_passes": 235,
+     "opposition_half_passes": 193,
+     "long_balls_accurate": 21,
+     "long_balls_accurate_pct": 46,
+     "accurate_crosses": 0,
+     "accurate_crosses_pct": 0,
+     "player_throws": 28,
+     "matchstats.headers.tackles": 20,
+     "interceptions": 16,
+     "clearances": 30,
+     "duel_won": 62,
+     "ground_duels_won": 47,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 15,
+     "aerials_won_pct": 52,
+     "dribbles_succeeded": 12,
+     "dribbles_succeeded_pct": 34,
+     "red_cards": 1
+    },
+    "SEV": {
+     "touches_opp_box": 14,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 4,
+     "shots_woodwork": 0,
+     "shots_inside_box": 5,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 0.81,
+     "expected_goals_set_play": 0.06,
+     "expected_goals_non_penalty": 0.87,
+     "expected_goals_on_target": 1.36,
+     "own_half_passes": 163,
+     "opposition_half_passes": 201,
+     "long_balls_accurate": 33,
+     "long_balls_accurate_pct": 54,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 17,
+     "player_throws": 17,
+     "matchstats.headers.tackles": 29,
+     "interceptions": 4,
+     "clearances": 30,
+     "duel_won": 68,
+     "ground_duels_won": 54,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 14,
+     "aerials_won_pct": 48,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 37,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     53,
+     47
+    ],
+    "h1": [
+     58,
+     42
+    ],
+    "h2": [
+     48,
+     52
+    ]
+   },
+   "events": [
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "DEP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Adama Traoré"
+    },
+    {
+     "minute": 52,
+     "extra": null,
+     "team": "SEV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Miguel Sierra"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "DEP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mario Soriano"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "DEP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jonathan Asp"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "DEP",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Angeliño"
+    },
+    {
+     "minute": 61,
+     "extra": 0,
+     "team": "DEP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Giacomo Quagliata"
+    },
+    {
+     "minute": 65,
+     "extra": null,
+     "team": "SEV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kike Salas"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "SEV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Isaac Romero"
+    },
+    {
+     "minute": 77,
+     "extra": null,
+     "team": "DEP",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lorenzo Amatucci"
+    },
+    {
+     "minute": 80,
+     "extra": null,
+     "team": "SEV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jon Guridi"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "SEV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Julio Díaz"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "SEV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Giorgi Kochorashvili"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "DEP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Zakaria Eddahchouri"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "SEV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Robbie Ure"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "SEV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Isaac Romero"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "SEV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Juan Iglesias"
+    }
+   ],
+   "shots": [
+    {
+     "min": 14,
+     "extra": null,
+     "team": "SEV",
+     "player": "Lucas Stassin",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.008,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73.1,
+     "y": 23.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "SEV",
+     "player": "Miguel Sierra",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0.058,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.7,
+     "y": 23.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "SEV",
+     "player": "Félix Correia",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0.018,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.3,
+     "y": 37.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "SEV",
+     "player": "Lucien Agoumé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.9,
+     "y": 21.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "DEP",
+     "player": "Bil Nsongo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.047,
+     "xgot": 0.26,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.9,
+     "y": 36,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "SEV",
+     "player": "Lucas Stassin",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.112,
+     "xgot": 0.481,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 42.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "SEV",
+     "player": "Miguel Sierra",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.243,
+     "xgot": 0.387,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 30.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "SEV",
+     "player": "Jon Guridi",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.055,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 32.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "DEP",
+     "player": "Jonathan Asp",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.113,
+     "xgot": 0.56,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 42,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "DEP",
+     "player": "Jonathan Asp",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.011,
+     "xgot": 0.237,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.8,
+     "y": 37.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "SEV",
+     "player": "Lucas Stassin",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.275,
+     "xgot": 0.328,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 25.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "SEV",
+     "player": "Lucas Stassin",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.042,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.4,
+     "y": 32.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "SEV",
+     "player": "Kike Salas",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0.084,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73.6,
+     "y": 33.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "DEP",
+     "player": "Mario Soriano",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.007,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73.8,
+     "y": 34.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "SEV",
+     "player": "Giorgi Kochorashvili",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 42.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     -5
+    ],
+    [
+     4,
+     -16
+    ],
+    [
+     5,
+     -16
+    ],
+    [
+     6,
+     -5
+    ],
+    [
+     7,
+     22
+    ],
+    [
+     8,
+     22
+    ],
+    [
+     9,
+     27
+    ],
+    [
+     10,
+     0
+    ],
+    [
+     11,
+     16
+    ],
+    [
+     12,
+     33
+    ],
+    [
+     13,
+     43
+    ],
+    [
+     14,
+     22
+    ],
+    [
+     15,
+     0
+    ],
+    [
+     16,
+     16
+    ],
+    [
+     17,
+     5
+    ],
+    [
+     18,
+     16
+    ],
+    [
+     19,
+     -22
+    ],
+    [
+     20,
+     0
+    ],
+    [
+     21,
+     -27
+    ],
+    [
+     22,
+     -5
+    ],
+    [
+     23,
+     -16
+    ],
+    [
+     24,
+     -5
+    ],
+    [
+     25,
+     -27
+    ],
+    [
+     26,
+     -22
+    ],
+    [
+     27,
+     -33
+    ],
+    [
+     28,
+     -27
+    ],
+    [
+     29,
+     -22
+    ],
+    [
+     30,
+     0
+    ],
+    [
+     31,
+     11
+    ],
+    [
+     32,
+     -16
+    ],
+    [
+     33,
+     -27
+    ],
+    [
+     34,
+     -33
+    ],
+    [
+     35,
+     -24
+    ],
+    [
+     36,
+     -35
+    ],
+    [
+     37,
+     -35
+    ],
+    [
+     38,
+     -22
+    ],
+    [
+     39,
+     49
+    ],
+    [
+     40,
+     73
+    ],
+    [
+     41,
+     81
+    ],
+    [
+     42,
+     33
+    ],
+    [
+     43,
+     24
+    ],
+    [
+     44,
+     19
+    ],
+    [
+     45,
+     14
+    ],
+    [
+     45.5,
+     8
+    ],
+    [
+     46,
+     49
+    ],
+    [
+     47,
+     65
+    ],
+    [
+     48,
+     65
+    ],
+    [
+     49,
+     0
+    ],
+    [
+     50,
+     -5
+    ],
+    [
+     51,
+     16
+    ],
+    [
+     52,
+     -22
+    ],
+    [
+     53,
+     -33
+    ],
+    [
+     54,
+     -57
+    ],
+    [
+     55,
+     -14
+    ],
+    [
+     56,
+     3
+    ],
+    [
+     57,
+     5
+    ],
+    [
+     58,
+     5
+    ],
+    [
+     59,
+     -11
+    ],
+    [
+     60,
+     -11
+    ],
+    [
+     61,
+     -5
+    ],
+    [
+     62,
+     3
+    ],
+    [
+     63,
+     14
+    ],
+    [
+     64,
+     30
+    ],
+    [
+     65,
+     22
+    ],
+    [
+     66,
+     11
+    ],
+    [
+     67,
+     -16
+    ],
+    [
+     68,
+     -38
+    ],
+    [
+     69,
+     -3
+    ],
+    [
+     70,
+     14
+    ],
+    [
+     71,
+     24
+    ],
+    [
+     72,
+     -100
+    ],
+    [
+     73,
+     -100
+    ],
+    [
+     74,
+     -100
+    ],
+    [
+     75,
+     -27
+    ],
+    [
+     76,
+     -54
+    ],
+    [
+     77,
+     -24
+    ],
+    [
+     78,
+     -16
+    ],
+    [
+     79,
+     -11
+    ],
+    [
+     80,
+     -16
+    ],
+    [
+     81,
+     -22
+    ],
+    [
+     82,
+     -19
+    ],
+    [
+     83,
+     -22
+    ],
+    [
+     84,
+     -24
+    ],
+    [
+     85,
+     -14
+    ],
+    [
+     86,
+     3
+    ],
+    [
+     87,
+     3
+    ],
+    [
+     88,
+     -49
+    ],
+    [
+     89,
+     -90
+    ],
+    [
+     90,
+     -81
+    ],
+    [
+     90.5,
+     -62
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "DEP": {
+     "team": "DEP",
+     "formation": "4-4-2",
+     "coach": "Antonio Hidalgo",
+     "xi": [
+      {
+       "name": "Leo Román",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Adrià Altimira",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "José Giménez",
+       "shirt": 20,
+       "pos": "D"
+      },
+      {
+       "name": "Miguel Loureiro",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Angeliño",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Luismi Cruz",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Lorenzo Amatucci",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Riki Rodríguez",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Yeremay Hernández",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Bil Nsongo",
+       "shirt": 32,
+       "pos": "F"
+      },
+      {
+       "name": "Pierre-Emerick Aubameyang",
+       "shirt": 7,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Adama Traoré",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Mario Soriano",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Jonathan Asp",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Giacomo Quagliata",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Zakaria Eddahchouri",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Álvaro Fernández",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Bright Ede",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Noubi",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Ximo Navarro",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Diego Villares",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Marc Casadó",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "David Mella",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    },
+    "SEV": {
+     "team": "SEV",
+     "formation": "4-2-3-1",
+     "coach": "Luis García",
+     "xi": [
+      {
+       "name": "Odysseas Vlachodimos",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Juan Iglesias",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Andrés Lopez",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Kike Salas",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Gabriel Suazo",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Lucien Agoumé",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Youssouf Fofana",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Miguel Sierra",
+       "shirt": 30,
+       "pos": "M"
+      },
+      {
+       "name": "Jon Guridi",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Félix Correia",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Lucas Stassin",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Isaac Romero",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Julio Díaz",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Giorgi Kochorashvili",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Robbie Ure",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Fran González",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Muñoz",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "José Ángel Carmona",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Marcão",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Alfon González",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Peque Fernández",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Manu Bueno",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Chidera Ejuke",
+       "shirt": 21,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 48,
+      "center": 19,
+      "right": 33
+     },
+     "firstHalf": {
+      "left": 45,
+      "center": 14,
+      "right": 41
+     },
+     "secondHalf": {
+      "left": 51,
+      "center": 25,
+      "right": 24
+     }
+    },
+    "away": {
+     "total": {
+      "left": 33,
+      "center": 24,
+      "right": 43
+     },
+     "firstHalf": {
+      "left": 31,
+      "center": 22,
+      "right": 47
+     },
+     "secondHalf": {
+      "left": 34,
+      "center": 26,
+      "right": 40
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-16T19:28:37.219Z",
+   "fdMatchId": "2026-27-54",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "SEV",
+      "name": "Jon Guridi",
+      "n": 59,
+      "cx": 58.9,
+      "cy": 30.7,
+      "spread": 31.4,
+      "grid": "2,1,3,5,6,1,0,4,2,4,6,1,5,0,1,1,1,2,0,0,3,1,8,2"
+     },
+     {
+      "team": "SEV",
+      "name": "Kike Salas",
+      "n": 67,
+      "cx": 37.3,
+      "cy": 27.9,
+      "spread": 19.6,
+      "grid": "0,4,4,0,0,0,6,16,17,4,0,0,0,5,6,3,1,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Angeliño",
+      "n": 68,
+      "cx": 50.7,
+      "cy": 7.2,
+      "spread": 31.5,
+      "grid": "4,17,12,8,11,11,3,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Andrés Lopez",
+      "n": 87,
+      "cx": 33.9,
+      "cy": 45.7,
+      "spread": 21,
+      "grid": "2,2,0,0,0,0,2,3,1,1,0,0,13,11,15,6,0,0,3,9,13,5,1,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Miguel Sierra",
+      "n": 81,
+      "cx": 62.7,
+      "cy": 55.9,
+      "spread": 25.2,
+      "grid": "0,0,0,0,0,1,0,0,0,1,0,0,0,1,2,6,7,2,2,12,4,17,19,7"
+     },
+     {
+      "team": "SEV",
+      "name": "Juan Iglesias",
+      "n": 89,
+      "cx": 54.3,
+      "cy": 57.1,
+      "spread": 25.2,
+      "grid": "0,0,0,0,0,0,1,1,1,2,0,1,1,2,4,3,1,1,4,13,13,19,20,2"
+     },
+     {
+      "team": "DEP",
+      "name": "Lorenzo Amatucci",
+      "n": 94,
+      "cx": 43.5,
+      "cy": 29.1,
+      "spread": 25.7,
+      "grid": "1,6,6,8,3,0,4,9,13,9,2,1,6,4,8,3,0,0,0,5,1,2,3,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Bil Nsongo",
+      "n": 36,
+      "cx": 58,
+      "cy": 29.6,
+      "spread": 32.7,
+      "grid": "0,2,3,3,3,0,5,0,1,1,0,4,0,0,3,3,1,3,0,0,1,1,2,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Pierre-Emerick Aubameyang",
+      "n": 29,
+      "cx": 65.3,
+      "cy": 29.1,
+      "spread": 27,
+      "grid": "0,0,5,0,2,0,1,0,1,2,5,3,0,0,1,2,2,0,0,1,0,2,2,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Luismi Cruz",
+      "n": 41,
+      "cx": 56.5,
+      "cy": 47.5,
+      "spread": 26.9,
+      "grid": "0,0,0,0,2,0,1,1,2,2,3,0,4,1,1,1,1,1,0,1,6,4,10,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Félix Correia",
+      "n": 50,
+      "cx": 66.4,
+      "cy": 17.2,
+      "spread": 29.4,
+      "grid": "1,6,6,6,11,5,0,0,1,1,3,4,0,1,0,0,0,1,0,0,0,1,3,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Lucien Agoumé",
+      "n": 90,
+      "cx": 54.7,
+      "cy": 36.1,
+      "spread": 22.3,
+      "grid": "0,0,4,5,1,0,0,2,19,13,2,1,1,3,6,9,1,1,0,1,6,7,8,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Riki Rodríguez",
+      "n": 39,
+      "cx": 50,
+      "cy": 37.8,
+      "spread": 22.6,
+      "grid": "0,0,1,3,0,0,2,2,6,2,0,0,0,0,4,8,1,0,0,1,5,1,3,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Adrià Altimira",
+      "n": 81,
+      "cx": 46.6,
+      "cy": 57.6,
+      "spread": 27.5,
+      "grid": "0,0,0,0,0,0,0,2,0,0,0,0,6,3,4,0,0,0,7,15,9,18,9,8"
+     },
+     {
+      "team": "SEV",
+      "name": "Gabriel Suazo",
+      "n": 65,
+      "cx": 51.3,
+      "cy": 10,
+      "spread": 27.6,
+      "grid": "3,15,11,9,11,6,4,0,0,4,0,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Lucas Stassin",
+      "n": 34,
+      "cx": 70.4,
+      "cy": 35.2,
+      "spread": 25.9,
+      "grid": "0,0,1,3,6,0,0,0,2,1,0,1,0,0,0,5,3,2,0,1,2,0,6,1"
+     },
+     {
+      "team": "DEP",
+      "name": "José Giménez",
+      "n": 85,
+      "cx": 34.5,
+      "cy": 45.8,
+      "spread": 20.8,
+      "grid": "0,1,0,0,0,0,3,3,7,0,0,1,9,12,7,5,0,0,4,11,17,5,0,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Miguel Loureiro",
+      "n": 114,
+      "cx": 38,
+      "cy": 22.7,
+      "spread": 23.5,
+      "grid": "1,26,17,11,3,0,1,10,12,6,0,0,5,6,3,4,0,0,3,3,2,0,0,1"
+     },
+     {
+      "team": "SEV",
+      "name": "Youssouf Fofana",
+      "n": 50,
+      "cx": 53.8,
+      "cy": 29.8,
+      "spread": 21,
+      "grid": "0,0,4,3,1,0,1,1,10,7,3,2,0,1,8,5,2,0,0,0,1,1,0,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Yeremay Hernández",
+      "n": 59,
+      "cx": 63.2,
+      "cy": 12,
+      "spread": 22.8,
+      "grid": "0,7,9,11,14,6,0,0,4,2,2,1,0,0,0,1,1,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "DEP",
+      "name": "Leo Román",
+      "n": 62,
+      "cx": 11.1,
+      "cy": 33.9,
+      "spread": 10.5,
+      "grid": "0,1,0,0,0,0,21,6,1,0,0,0,27,6,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Odysseas Vlachodimos",
+      "n": 24,
+      "cx": 9.4,
+      "cy": 35.9,
+      "spread": 10.3,
+      "grid": "0,1,0,0,0,0,5,0,0,0,0,0,16,2,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Adama Traoré",
+      "n": 20,
+      "cx": 56.4,
+      "cy": 55.4,
+      "spread": 24.4,
+      "grid": "0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0,1,0,5,2,5,3,1"
+     },
+     {
+      "team": "DEP",
+      "name": "Jonathan Asp",
+      "n": 21,
+      "cx": 53,
+      "cy": 19.2,
+      "spread": 27.6,
+      "grid": "0,4,2,3,2,0,0,2,1,0,2,2,0,0,2,0,0,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Mario Soriano",
+      "n": 36,
+      "cx": 44.1,
+      "cy": 30.5,
+      "spread": 29.8,
+      "grid": "1,4,2,0,0,2,2,4,3,3,1,0,1,0,4,3,1,0,1,1,1,0,2,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Giacomo Quagliata",
+      "n": 35,
+      "cx": 40.5,
+      "cy": 9.5,
+      "spread": 24.5,
+      "grid": "2,11,5,4,4,1,2,2,1,2,0,0,1,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Isaac Romero",
+      "n": 22,
+      "cx": 70,
+      "cy": 37.1,
+      "spread": 29.5,
+      "grid": "0,0,0,1,1,2,0,0,2,0,3,1,0,0,0,1,2,0,2,0,0,2,4,1"
+     },
+     {
+      "team": "SEV",
+      "name": "Giorgi Kochorashvili",
+      "n": 27,
+      "cx": 66.1,
+      "cy": 32.7,
+      "spread": 23.5,
+      "grid": "0,0,1,0,2,0,0,2,1,5,5,0,0,0,0,2,2,1,0,0,0,4,2,0"
+     },
+     {
+      "team": "DEP",
+      "name": "Zakaria Eddahchouri",
+      "n": 14,
+      "cx": 52.8,
+      "cy": 8.8,
+      "spread": 27.1,
+      "grid": "0,4,4,0,0,4,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Julio Díaz",
+      "n": 7,
+      "cx": 80.2,
+      "cy": 11.4,
+      "spread": 12.6,
+      "grid": "0,0,0,2,4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "SEV",
+      "name": "Robbie Ure",
+      "n": 7,
+      "cx": 77.4,
+      "cy": 40.3,
+      "spread": 15.3,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,3,2,1,0,0,0,0,0,0"
+     }
+    ]
+   }
+  },
+  "ATM|OSA": {
+   "key": "ATM|OSA",
+   "season": "2026-27",
+   "date": "2026-09-16",
+   "matchId": "5868062",
+   "home": "ATM",
+   "away": "OSA",
+   "score": [
+    4,
+    0
+   ],
+   "providerScore": [
+    4,
+    0
+   ],
+   "teamStats": {
+    "ATM": {
+     "possession": 68,
+     "shots": 27,
+     "shotsOn": 11,
+     "shotsOff": 8,
+     "blockedShots": 8,
+     "blocksMade": 1,
+     "corners": 8,
+     "offsides": 1,
+     "fouls": 7,
+     "saves": 1,
+     "passes": 656,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.99
+    },
+    "OSA": {
+     "possession": 32,
+     "shots": 3,
+     "shotsOn": 1,
+     "shotsOff": 1,
+     "blockedShots": 1,
+     "blocksMade": 7,
+     "corners": 0,
+     "offsides": 1,
+     "fouls": 12,
+     "saves": 7,
+     "passes": 314,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.48
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "ATM": {
+     "touches_opp_box": 46,
+     "big_chance": 10,
+     "big_chance_missed_title": 7,
+     "yellow_cards": 1,
+     "shots_woodwork": 1,
+     "shots_inside_box": 19,
+     "shots_outside_box": 8,
+     "expected_goals_open_play": 3.92,
+     "expected_goals_set_play": 0.07,
+     "expected_goals_non_penalty": 3.99,
+     "expected_goals_on_target": 3.88,
+     "own_half_passes": 244,
+     "opposition_half_passes": 336,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 50,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 22,
+     "player_throws": 18,
+     "matchstats.headers.tackles": 23,
+     "interceptions": 7,
+     "clearances": 12,
+     "duel_won": 54,
+     "ground_duels_won": 45,
+     "ground_duels_won_pct": 64,
+     "aerials_won": 9,
+     "aerials_won_pct": 60,
+     "dribbles_succeeded": 11,
+     "dribbles_succeeded_pct": 48,
+     "red_cards": 0
+    },
+    "OSA": {
+     "touches_opp_box": 9,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 3,
+     "shots_outside_box": 0,
+     "expected_goals_open_play": 0.44,
+     "expected_goals_set_play": 0.04,
+     "expected_goals_non_penalty": 0.48,
+     "expected_goals_on_target": 0.23,
+     "own_half_passes": 136,
+     "opposition_half_passes": 96,
+     "long_balls_accurate": 20,
+     "long_balls_accurate_pct": 34,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 29,
+     "player_throws": 20,
+     "matchstats.headers.tackles": 19,
+     "interceptions": 8,
+     "clearances": 28,
+     "duel_won": 31,
+     "ground_duels_won": 25,
+     "ground_duels_won_pct": 36,
+     "aerials_won": 6,
+     "aerials_won_pct": 40,
+     "dribbles_succeeded": 2,
+     "dribbles_succeeded_pct": 13,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     68,
+     32
+    ],
+    "h1": [
+     70,
+     30
+    ],
+    "h2": [
+     65,
+     35
+    ]
+   },
+   "events": [
+    {
+     "minute": 24,
+     "extra": null,
+     "team": "ATM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Jonathan David"
+    },
+    {
+     "minute": 50,
+     "extra": null,
+     "team": "ATM",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ademola Lookman"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "ATM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Kang-In Lee"
+    },
+    {
+     "minute": 59,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Enrique Barja"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rubén Garcia"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ante Budimir"
+    },
+    {
+     "minute": 63,
+     "extra": null,
+     "team": "ATM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Robin Le Normand"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "ATM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Arnau Ortiz"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "ATM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Giuliano Simeone"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "ATM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Marc Pubill"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jon Moncayola"
+    },
+    {
+     "minute": 75,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Romain Del Castillo"
+    },
+    {
+     "minute": 82,
+     "extra": null,
+     "team": "ATM",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Álex Baena"
+    },
+    {
+     "minute": 85,
+     "extra": 0,
+     "team": "ATM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dávid Hancko"
+    },
+    {
+     "minute": 85,
+     "extra": 0,
+     "team": "ATM",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Morten Hjulmand"
+    },
+    {
+     "minute": 86,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Rubén Garcia"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Abel Bretones"
+    }
+   ],
+   "shots": [
+    {
+     "min": 10,
+     "extra": null,
+     "team": "ATM",
+     "player": "Ademola Lookman",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.53,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "ATM",
+     "player": "Kang-In Lee",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.118,
+     "xgot": 0.228,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 26,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl García",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.378,
+     "xgot": 0.233,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 30.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "ATM",
+     "player": "Cristian Romero",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 31,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "ATM",
+     "player": "Álex Baena",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.6,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "ATM",
+     "player": "Alejandro Grimaldo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.185,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 35.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ATM",
+     "player": "Jonathan David",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.141,
+     "xgot": 0.102,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 27,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ATM",
+     "player": "Jonathan David",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.468,
+     "xgot": 0.746,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 30.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "ATM",
+     "player": "Kang-In Lee",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.9,
+     "y": 17.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "ATM",
+     "player": "Jonathan David",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.6,
+     "y": 41.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "ATM",
+     "player": "Jonathan David",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 21.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "ATM",
+     "player": "Jonathan David",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.469,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "ATM",
+     "player": "Kang-In Lee",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.246,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.2,
+     "y": 29.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "ATM",
+     "player": "Ademola Lookman",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.347,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.6,
+     "y": 40.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "ATM",
+     "player": "Álex Baena",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.2,
+     "y": 33.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "ATM",
+     "player": "Kang-In Lee",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.051,
+     "xgot": 0.039,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.3,
+     "y": 27.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "ATM",
+     "player": "Jonathan David",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.36,
+     "xgot": 0.34,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.3,
+     "y": 30.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl Moro",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 22.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "ATM",
+     "player": "Álex Baena",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0.364,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.1,
+     "y": 42.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "ATM",
+     "player": "Ademola Lookman",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.7,
+     "y": 41,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "ATM",
+     "player": "Kang-In Lee",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.29,
+     "xgot": 0.772,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 24.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "ATM",
+     "player": "Cristian Romero",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0.009,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.1,
+     "y": 32.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "ATM",
+     "player": "Robin Le Normand",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.037,
+     "xgot": 0.277,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 46.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "ATM",
+     "player": "Kang-In Lee",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0.178,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.6,
+     "y": 24.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "ATM",
+     "player": "Álex Baena",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.1,
+     "y": 41.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "ATM",
+     "player": "Marc Pubill",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "ATM",
+     "player": "Johnny Cardoso",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 26.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "ATM",
+     "player": "Alejandro Grimaldo",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 72.3,
+     "y": 40,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "ATM",
+     "player": "Álex Baena",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.322,
+     "xgot": 0.823,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.4,
+     "y": 31.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "OSA",
+     "player": "Unai Santos",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 34.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     33
+    ],
+    [
+     2,
+     43
+    ],
+    [
+     3,
+     71
+    ],
+    [
+     4,
+     38
+    ],
+    [
+     5,
+     27
+    ],
+    [
+     6,
+     5
+    ],
+    [
+     7,
+     27
+    ],
+    [
+     8,
+     38
+    ],
+    [
+     9,
+     43
+    ],
+    [
+     10,
+     90
+    ],
+    [
+     11,
+     84
+    ],
+    [
+     12,
+     90
+    ],
+    [
+     13,
+     -16
+    ],
+    [
+     14,
+     -16
+    ],
+    [
+     15,
+     -33
+    ],
+    [
+     16,
+     0
+    ],
+    [
+     17,
+     38
+    ],
+    [
+     18,
+     33
+    ],
+    [
+     19,
+     60
+    ],
+    [
+     20,
+     90
+    ],
+    [
+     21,
+     95
+    ],
+    [
+     22,
+     73
+    ],
+    [
+     23,
+     27
+    ],
+    [
+     24,
+     84
+    ],
+    [
+     25,
+     84
+    ],
+    [
+     26,
+     73
+    ],
+    [
+     27,
+     33
+    ],
+    [
+     28,
+     33
+    ],
+    [
+     29,
+     16
+    ],
+    [
+     30,
+     16
+    ],
+    [
+     31,
+     43
+    ],
+    [
+     32,
+     54
+    ],
+    [
+     33,
+     71
+    ],
+    [
+     34,
+     92
+    ],
+    [
+     35,
+     81
+    ],
+    [
+     36,
+     100
+    ],
+    [
+     37,
+     100
+    ],
+    [
+     38,
+     100
+    ],
+    [
+     39,
+     11
+    ],
+    [
+     40,
+     -5
+    ],
+    [
+     41,
+     0
+    ],
+    [
+     42,
+     0
+    ],
+    [
+     43,
+     11
+    ],
+    [
+     44,
+     -5
+    ],
+    [
+     45,
+     -8
+    ],
+    [
+     45.5,
+     6
+    ],
+    [
+     46,
+     35
+    ],
+    [
+     47,
+     35
+    ],
+    [
+     48,
+     35
+    ],
+    [
+     49,
+     5
+    ],
+    [
+     50,
+     11
+    ],
+    [
+     51,
+     -16
+    ],
+    [
+     52,
+     33
+    ],
+    [
+     53,
+     27
+    ],
+    [
+     54,
+     92
+    ],
+    [
+     55,
+     27
+    ],
+    [
+     56,
+     76
+    ],
+    [
+     57,
+     43
+    ],
+    [
+     58,
+     46
+    ],
+    [
+     59,
+     3
+    ],
+    [
+     60,
+     3
+    ],
+    [
+     61,
+     30
+    ],
+    [
+     62,
+     46
+    ],
+    [
+     63,
+     41
+    ],
+    [
+     64,
+     33
+    ],
+    [
+     65,
+     16
+    ],
+    [
+     66,
+     33
+    ],
+    [
+     67,
+     22
+    ],
+    [
+     68,
+     22
+    ],
+    [
+     69,
+     8
+    ],
+    [
+     70,
+     24
+    ],
+    [
+     71,
+     19
+    ],
+    [
+     72,
+     -11
+    ],
+    [
+     73,
+     -5
+    ],
+    [
+     74,
+     -5
+    ],
+    [
+     75,
+     38
+    ],
+    [
+     76,
+     16
+    ],
+    [
+     77,
+     54
+    ],
+    [
+     78,
+     76
+    ],
+    [
+     79,
+     87
+    ],
+    [
+     80,
+     38
+    ],
+    [
+     81,
+     0
+    ],
+    [
+     82,
+     43
+    ],
+    [
+     83,
+     43
+    ],
+    [
+     84,
+     19
+    ],
+    [
+     85,
+     -62
+    ],
+    [
+     86,
+     -52
+    ],
+    [
+     87,
+     -16
+    ],
+    [
+     88,
+     38
+    ],
+    [
+     89,
+     38
+    ],
+    [
+     90,
+     38
+    ],
+    [
+     90.5,
+     -3
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "ATM": {
+     "team": "ATM",
+     "formation": "4-4-2",
+     "coach": "Diego Simeone",
+     "xi": [
+      {
+       "name": "Jan Oblak",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Marcos Llorente",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Cristian Romero",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Robin Le Normand",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Alejandro Grimaldo",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Kang-In Lee",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Koke",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Johnny Cardoso",
+       "shirt": 5,
+       "pos": "M"
+      },
+      {
+       "name": "Álex Baena",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Jonathan David",
+       "shirt": 15,
+       "pos": "F"
+      },
+      {
+       "name": "Ademola Lookman",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Marc Pubill",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Giuliano Simeone",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Arnau Ortiz",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Dávid Hancko",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Morten Hjulmand",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Juan Musso",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Salvi Esquivel",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Dani Martínez",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Jorge Domínguez",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Jorge Castillo",
+       "shirt": 46,
+       "pos": "?"
+      },
+      {
+       "name": "Obed Vargas",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Mendoza",
+       "shirt": 4,
+       "pos": "?"
+      }
+     ]
+    },
+    "OSA": {
+     "team": "OSA",
+     "formation": "5-4-1",
+     "coach": "Luis Ramis",
+     "xi": [
+      {
+       "name": "Aitor Fernández",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Rockson Yeboah",
+       "shirt": 48,
+       "pos": "D"
+      },
+      {
+       "name": "Flavien Boyomo",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Unai Santos",
+       "shirt": 35,
+       "pos": "D"
+      },
+      {
+       "name": "Iñigo Arguibide",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Abel Bretones",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Jonathan Dubasin",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Asier Osambela",
+       "shirt": 29,
+       "pos": "M"
+      },
+      {
+       "name": "Lucas Torró",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Raúl Moro",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Raúl García",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Enrique Barja",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Ante Budimir",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Rubén Garcia",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Jon Moncayola",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Romain Del Castillo",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Rafa Fernández",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Sergio Herrera",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Alejandro Catena",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Diego Rico",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Muñoz",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Mauro Echegoyen",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Asier Bonel",
+       "shirt": 30,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 34,
+      "center": 26,
+      "right": 40
+     },
+     "firstHalf": {
+      "left": 37,
+      "center": 28,
+      "right": 35
+     },
+     "secondHalf": {
+      "left": 30,
+      "center": 24,
+      "right": 46
+     }
+    },
+    "away": {
+     "total": {
+      "left": 38,
+      "center": 19,
+      "right": 43
+     },
+     "firstHalf": {
+      "left": 28,
+      "center": 19,
+      "right": 53
+     },
+     "secondHalf": {
+      "left": 48,
+      "center": 19,
+      "right": 33
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-16T19:28:38.509Z",
+   "fdMatchId": "2026-27-55",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "OSA",
+      "name": "Jonathan Dubasin",
+      "n": 41,
+      "cx": 56.8,
+      "cy": 49.4,
+      "spread": 28.5,
+      "grid": "0,0,0,2,0,0,0,1,1,0,3,0,2,2,2,2,0,1,1,3,5,5,8,3"
+     },
+     {
+      "team": "OSA",
+      "name": "Flavien Boyomo",
+      "n": 65,
+      "cx": 29.2,
+      "cy": 34.1,
+      "spread": 18.5,
+      "grid": "0,0,0,0,0,0,12,20,3,0,0,0,5,7,9,3,2,0,1,0,2,1,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Unai Santos",
+      "n": 66,
+      "cx": 34.9,
+      "cy": 16,
+      "spread": 22.4,
+      "grid": "4,13,15,5,1,0,8,7,3,4,0,1,2,1,0,2,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Cristian Romero",
+      "n": 86,
+      "cx": 45.4,
+      "cy": 47,
+      "spread": 23.7,
+      "grid": "0,0,0,0,0,0,3,1,2,2,0,0,2,11,9,19,4,4,4,8,10,5,2,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Asier Osambela",
+      "n": 42,
+      "cx": 61,
+      "cy": 30.1,
+      "spread": 26.4,
+      "grid": "0,3,3,4,4,0,0,3,2,5,1,0,0,0,0,3,3,0,0,0,2,1,8,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Abel Bretones",
+      "n": 54,
+      "cx": 37.7,
+      "cy": 8.5,
+      "spread": 27.2,
+      "grid": "12,12,4,11,3,3,5,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Koke",
+      "n": 109,
+      "cx": 55.7,
+      "cy": 40.9,
+      "spread": 24.7,
+      "grid": "0,2,3,5,1,0,0,1,8,11,7,0,0,8,11,6,5,1,0,6,7,17,9,1"
+     },
+     {
+      "team": "ATM",
+      "name": "Álex Baena",
+      "n": 81,
+      "cx": 70.4,
+      "cy": 29.6,
+      "spread": 25.4,
+      "grid": "0,1,4,12,1,7,0,2,1,4,9,4,0,0,5,5,11,4,0,0,1,3,6,1"
+     },
+     {
+      "team": "ATM",
+      "name": "Alejandro Grimaldo",
+      "n": 94,
+      "cx": 60.9,
+      "cy": 15.6,
+      "spread": 32.4,
+      "grid": "8,11,8,18,14,9,0,3,1,1,4,3,0,0,0,3,5,1,0,0,0,0,0,5"
+     },
+     {
+      "team": "ATM",
+      "name": "Ademola Lookman",
+      "n": 47,
+      "cx": 76.1,
+      "cy": 13.3,
+      "spread": 20.6,
+      "grid": "0,4,1,5,18,7,0,0,0,2,4,6,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Rockson Yeboah",
+      "n": 63,
+      "cx": 32.9,
+      "cy": 50.6,
+      "spread": 21.7,
+      "grid": "0,1,0,0,0,0,0,3,0,0,0,0,9,10,5,1,0,0,2,14,6,11,1,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Robin Le Normand",
+      "n": 92,
+      "cx": 35.1,
+      "cy": 21.6,
+      "spread": 19.8,
+      "grid": "9,6,9,6,0,0,6,17,20,7,0,1,1,7,2,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Raúl Moro",
+      "n": 27,
+      "cx": 49.6,
+      "cy": 27,
+      "spread": 36.7,
+      "grid": "1,2,1,2,3,2,2,2,1,2,1,0,0,0,0,0,0,1,3,0,2,0,2,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Marcos Llorente",
+      "n": 93,
+      "cx": 54.4,
+      "cy": 58.5,
+      "spread": 26.8,
+      "grid": "0,2,0,0,0,0,0,2,0,0,0,0,0,4,2,2,0,1,5,14,8,27,19,7"
+     },
+     {
+      "team": "ATM",
+      "name": "Johnny Cardoso",
+      "n": 100,
+      "cx": 52.6,
+      "cy": 29.1,
+      "spread": 25.3,
+      "grid": "3,2,10,9,10,0,1,5,9,8,6,0,0,6,4,8,3,1,1,1,4,6,3,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Jonathan David",
+      "n": 36,
+      "cx": 76.9,
+      "cy": 41.5,
+      "spread": 23.3,
+      "grid": "0,0,0,0,4,1,0,0,0,0,1,1,0,0,4,3,5,9,0,0,1,3,3,1"
+     },
+     {
+      "team": "ATM",
+      "name": "Kang-In Lee",
+      "n": 80,
+      "cx": 68.2,
+      "cy": 50.6,
+      "spread": 23.3,
+      "grid": "0,0,2,0,0,0,1,0,0,0,4,0,0,2,3,2,19,7,0,3,7,11,14,5"
+     },
+     {
+      "team": "OSA",
+      "name": "Aitor Fernández",
+      "n": 62,
+      "cx": 9.1,
+      "cy": 34.6,
+      "spread": 9.9,
+      "grid": "1,1,0,0,0,0,32,1,0,0,0,0,20,5,0,0,0,0,1,1,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Raúl García",
+      "n": 26,
+      "cx": 72.7,
+      "cy": 36.8,
+      "spread": 28.3,
+      "grid": "0,0,1,4,3,1,0,0,0,0,0,0,0,0,1,3,2,3,0,0,1,1,3,3"
+     },
+     {
+      "team": "OSA",
+      "name": "Iñigo Arguibide",
+      "n": 26,
+      "cx": 48.6,
+      "cy": 58,
+      "spread": 30,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,3,0,1,2,1,0,3,4,4,2,3,3"
+     },
+     {
+      "team": "OSA",
+      "name": "Lucas Torró",
+      "n": 51,
+      "cx": 48.6,
+      "cy": 40.9,
+      "spread": 28.3,
+      "grid": "0,0,0,4,0,0,1,5,2,4,0,0,3,5,2,4,7,3,3,2,2,4,0,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Jan Oblak",
+      "n": 39,
+      "cx": 8.1,
+      "cy": 33.5,
+      "spread": 8,
+      "grid": "0,0,0,0,0,0,21,1,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Enrique Barja",
+      "n": 12,
+      "cx": 62.8,
+      "cy": 9.8,
+      "spread": 18.1,
+      "grid": "0,0,4,2,2,1,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Rubén Garcia",
+      "n": 26,
+      "cx": 45.4,
+      "cy": 46.8,
+      "spread": 30.6,
+      "grid": "0,0,0,1,0,0,1,0,0,3,0,0,3,0,2,2,0,1,4,0,3,5,1,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Ante Budimir",
+      "n": 7,
+      "cx": 36.7,
+      "cy": 31.9,
+      "spread": 30.6,
+      "grid": "0,0,0,1,0,0,2,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Marc Pubill",
+      "n": 30,
+      "cx": 37.4,
+      "cy": 49.1,
+      "spread": 20.2,
+      "grid": "0,0,0,0,0,0,0,0,2,0,0,1,3,1,7,2,0,0,3,2,9,0,0,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Giuliano Simeone",
+      "n": 19,
+      "cx": 60.2,
+      "cy": 46.2,
+      "spread": 29.7,
+      "grid": "0,1,0,3,0,0,0,0,0,0,0,0,0,0,1,1,0,1,0,0,6,2,3,1"
+     },
+     {
+      "team": "ATM",
+      "name": "Arnau Ortiz",
+      "n": 11,
+      "cx": 75.1,
+      "cy": 14.1,
+      "spread": 23.3,
+      "grid": "0,0,2,1,1,2,0,0,1,1,0,3,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Jon Moncayola",
+      "n": 16,
+      "cx": 56.3,
+      "cy": 30.5,
+      "spread": 22.5,
+      "grid": "0,0,0,1,2,0,0,1,3,1,0,0,0,0,5,0,3,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Romain Del Castillo",
+      "n": 10,
+      "cx": 51.7,
+      "cy": 53.9,
+      "spread": 22.1,
+      "grid": "0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,3,4,1,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Morten Hjulmand",
+      "n": 11,
+      "cx": 49.7,
+      "cy": 36.1,
+      "spread": 22.2,
+      "grid": "0,1,1,0,0,0,0,0,2,0,1,0,0,1,1,0,1,0,0,0,1,2,0,0"
+     },
+     {
+      "team": "ATM",
+      "name": "Dávid Hancko",
+      "n": 16,
+      "cx": 62.9,
+      "cy": 8.6,
+      "spread": 24.4,
+      "grid": "0,1,6,3,2,3,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-16T16:22:04.186Z"
+ "updatedAt": "2026-09-16T19:28:39.161Z"
 }
