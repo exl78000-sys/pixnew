@@ -49,7 +49,10 @@ function play(seed, minutes = 90) {
 const rows = [];
 /* λ 的來源:站上對這一場的預測。沒有給 pred 的話引擎用 1.35 當預設,
    那只是「有個數字可以跑」,不是本站的預測 —— 驗錨一定要餵真的 λ。 */
-const PRED = { xgHome: 1.99, xgAway: 0.70 };   // 站上 ARS(主)vs AVL 的預測
+/* 這一組 λ 是**測試用的**,不是站上對 ARS vs LIV 的預測(那一組是 ARS vs AVL 的)。
+   錨要驗的是「給它一個 λ,它跑出來的平均進球回不回得到那個 λ」,所以用哪一組都成立 ——
+   但註解不可以寫成「站上的預測」,那會變成一個沒有出處的宣稱。 */
+const PRED = { xgHome: 1.99, xgAway: 0.70 };
 for (let seed = 1; seed <= RUNS; seed++) rows.push(play(seed));
 const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
 const se = a => (a.length < 2 ? 0 : Math.sqrt(a.reduce((s, x) => s + (x - mean(a)) ** 2, 0) / (a.length - 1) / a.length));
@@ -76,8 +79,14 @@ console.log(`        k(客)${cal.away.k}(λ ${cal.away.lambda} ÷ 期望射門 $
 for (const [i, who, lam] of [[0, '主隊', PRED.xgHome], [1, '客隊', PRED.xgAway]]) {
   const g = rows.map(r => r.st.score[i]);
   const s2 = se(g), m = mean(g);
-  const sig = s2 > 0 ? (m - lam) / s2 : Infinity;
-  line(`${who}進球`, `${m.toFixed(2)} ± ${s2.toFixed(2)}`, `λ ${lam} → 差 ${sig.toFixed(1)} SE ${Math.abs(sig) <= 3 ? '✓' : '← 錨沒守住'}`);
+  /* SE 是 0 的時候(場次少、每一場的進球數剛好都一樣)這個檢定沒有定義 ——
+     不是「差無限多個 SE」。第一版印了 `Infinity SE ← 錨沒守住`,而那只是樣本太小。
+     這跟「0 是一個看起來很像答案的數字」同一家族:**沒有定義**與**很糟**是兩件事。 */
+  if (s2 === 0) line(`${who}進球`, `${m.toFixed(2)}`, `λ ${lam} → ${RUNS} 場的進球數完全相同,SE 是 0、這個檢定算不出來(要更多場)`);
+  else {
+    const sig = (m - lam) / s2;
+    line(`${who}進球`, `${m.toFixed(2)} ± ${s2.toFixed(2)}`, `λ ${lam} → 差 ${sig.toFixed(1)} SE ${Math.abs(sig) <= 3 ? '✓' : '← 錨沒守住'}`);
+  }
 }
 
 /* 3. 逐項對回球隊自己的真實比率(rates 是分主客的,不是平的 —— 踩過) */

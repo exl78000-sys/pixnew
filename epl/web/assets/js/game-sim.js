@@ -85,14 +85,50 @@ const GOAL_HEIGHT = 2.44;
    射門是模擬長出來的,但「多久出現一次夠好的機會」要跟真實球隊一致,不然 k 會補在錯的地方。
    SHOT_URGE 是唯一的全域旋鈕,量出來的(見 npm run game:sim):
    調到聯盟平均的球隊剛好射出聯盟平均的次數。 */
-const SHOT_URGE = 0.20;   // 量出來的(見下)
+const SHOT_URGE = 0.06;   // 量出來的:每場射門 24.8(真實 30.4)
 /* xG 的**形狀**是遊戲模型(距離與張角),**水準**對回真實資料:
    XG_SCALE 調到模擬的每球平均 xG 等於聯盟真實的每球平均(league_.shotSituations)。
    形狀自己編、水準有出處 —— 兩件事要分開講,不然畫面上的 xG 就是編的。 */
 const XG_SCALE = 1.0;                          // build 時不用,createSim 會依聯盟真實值自己算
 const FOUL_ON_TACKLE = 0.22;                   // 抄截失敗變成犯規的機率(用 rates.fouls 校準)
 const CORNER_SPEED = [12, 17];
-const SIM_PASS_SPEED = [9, 22];                    // 傳球初速範圍(m/s),依距離
+/* 折射。**角球幾乎都是從這裡來的** —— 射門或傳中碰到防守者改變方向,滾出底線。
+   沒有這個機制的話角球一場 0.0 次(真實 11.8),因為球權一換就是帶球,
+   守方根本沒有機會把球碰出自己的底線。
+   折射到的球也失去「該不該進」的判定 —— 那一腳已經不是原來那一腳了。 */
+const DEFLECT_R = 0.75;                        // 球從這麼近經過就可能碰到人(公尺)
+const DEFLECT_MIN_SPEED = 9;                   // 太慢的球不算折射,那是可以控的
+const DEFLECT_KEEP = 0.55;                     // 折射後保留的速度比例
+/* 折射的方向要**小改**,不是亂彈。第一版用 ±0.95 弧度(±54 度)加只留 45% 的速度 ——
+   球被彈到旁邊、慢下來、立刻被撿走,所以一場 436 次折射卻 0 個角球。
+   真的封阻是「擋一下、方向小改、繼續往原來那個方向去」,所以門前的封阻才會出底線變角球。 */
+const DEFLECT_ANG = 0.55;                      // 折射的角度改變上限(弧度,約 ±32 度)
+/* 不是每一顆從身邊過的球都擋得到 —— 要反應得過來。沒有這一條的話一場 348 次折射,
+   而真實的封阻大約 20~40 次。這個機率就是「反應得過來的比例」。 */
+const DEFLECT_P = 0.10;
+/* 解圍。防守者在自家三分之一贏到球而且被逼時,不帶球,直接往前大腳。
+   沒有這個動作的話球權一贏就是從自家門前開始帶,那既不像足球、也生不出角球。 */
+const CLEAR_ZONE = 30;                         // 離自家門這麼近算自家三分之一(公尺)
+const CLEAR_SPEED = [18, 25];
+/* 判定「該進」的那一腳,還要真的到得了球門 —— 中間會被封阻 / 折射掉。
+   實測(兩輪、各 8~10 場):該進的球有 **88~90%** 進得去。
+   k 如果不把這一項算進去,期望進球就會系統性地比 λ 少一成多,
+   而且**強隊少得比較多**(它的射門次數多、被擋的次數也多),看起來就像「強弱被壓縮」。
+   分解出來的證據:ΣpGoal 主 2.19 / 客 0.88(λ 1.99 / 0.70,校準本身是對的),
+   而實際進球 1.40 / 0.80 —— 差的正是這一段。 */
+const SHOT_THROUGH = 0.89;
+/* 傳球的力道要**算出來**,不是套一條跟距離成正比的公式。
+   真人傳球是「讓球剛好滾到他腳下」:v² = v_到達² + 2 × 摩擦 × 距離。
+   第一版寫 9 + d×0.35,算下來每一腳都多滾約 4 公尺 —— 靠邊線就出去了,
+   實測 **15.1% 的傳球直接出邊線**、一場 171 次界外球(真實約 40)。 */
+const PASS_ARRIVE = 4.5;                       // 希望球到接球者腳下時還有多快(m/s)
+const SIM_PASS_SPEED = [7, 26];                // 夾住極端值(太輕傳不到、太重沒有人踢得出來)
+/* 傳球會失準,而失準的方向是**角度**不是距離 —— 距離失準看起來像力道抓不準,
+   真正常見的是傳偏。壓力越大越容易偏。 */
+/* 每公尺距離的角度誤差(弧度)。0.004 在 20 公尺是 ±0.08 弧度 ≈ ±4.6 度、橫向偏 ±1.6 公尺 —— 那是失準。
+   第一版寫 0.045,在 20 公尺是 **±0.9 弧度 = ±51 度**:那不是失準是亂踢,
+   界外球從 171 漲到 226(19.1% 的傳球出邊線)。單位寫錯的東西看起來跟「參數調太大」一模一樣。 */
+const PASS_ERR = 0.014;   // 量出來的:界外球 34 次,2.4% 的傳球出邊線(真實約 40 次)
 const SHAPE_BALL_PULL = 0.30;                  // 陣型跟著球平移的比例(FM 式的一整塊移動)
 const SHAPE_COMPACT = 0.82;                    // 球在自己半場時陣型壓縮的比例
 /* 防守方要有**防線**,不是只有一個逼搶者。第一版沒有這個,症狀很具體:
@@ -209,7 +245,10 @@ function moveBall(ball, dt) {
 export function shotQuality(d, ang) {
   const byDist = Math.exp(-d / 11.5);
   const byAng = Math.pow(cl(ang / 0.85, 0, 1), 0.7);   // 0.85 rad ≈ 十二碼點看球門的張角
-  return cl(byDist * byAng, 0.002, 0.95);
+  /* 上限 0.88 不是隨手訂的:它乘上最大的 k 之後不可以超過 1,否則 pGoal 會被截斷,
+     而**截斷會系統性地偷走強隊的期望進球**(強隊的 k 比較大 → 截得比較多)。
+     實測 12 場:主隊 1.33 對 λ 1.99(−3.5 SE)、客隊 1.00 對 0.70 —— 壓縮的方向剛好對得上。 */
+  return cl(byDist * byAng, 0.002, 0.88);
 }
 
 /* 從一個點看球門的張角。兩根門柱的夾角 —— 正面比側面大得多,這是「角度」真正的意思。 */
@@ -330,21 +369,33 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   /* xG 形狀的**水準**校準:在禁區前沿一片常見的射門點上取樣,算出這個形狀的平均值,
      再乘一個係數讓它等於聯盟真實的每球平均 xG。形狀是遊戲模型、水準有出處。
      取樣點是固定網格(不吃亂數),所以這個係數對同一份側寫永遠一樣。 */
-  const xgScale = (() => {
-    let sum = 0, n = 0;
+  const grid = (() => {
+    const qs = [];
     for (let d = 6; d <= 30; d += 1.5) for (let off = 0; off <= 20; off += 2.5) {
       const x = PITCH_W - d, y = PITCH_H / 2 + off;
-      sum += shotQuality(hypot(PITCH_W - x, PITCH_H / 2 - y), goalAngle(x, y, PITCH_W)); n++;
+      qs.push(shotQuality(hypot(PITCH_W - x, PITCH_H / 2 - y), goalAngle(x, y, PITCH_W)));
     }
-    return n && sum > 0 ? realXgPerShot.v / (sum / n) : 1;
+    return qs;
   })();
+  /* xG 形狀的**水準**要對著「實際會被射出來的那些球」校準,不是對球場均勻取樣。
+     扣扳機的機率跟機會質量成正比(urge ∝ q),所以被射出來那些球的原始平均是 Σq² / Σq。
+     算過:對均勻取樣校準的話,實際射出來的每球 xG 是 **0.2412**(真實 0.1123)——
+     一場總 xG 會印成 12.4 而真實約 3,那是畫面上一個明顯錯的數字。
+     所以水準除以**選擇加權**的平均,而不是均勻平均。
+     三層分得清楚:形狀(幾何)是遊戲模型、選擇(偏好好機會)是行為、水準有真實出處。 */
+  const rawSelected = (() => {
+    const sq = grid.reduce((a, q) => a + q * q, 0), sm = grid.reduce((a, q) => a + q, 0);
+    return sm > 0 ? sq / sm : 0;
+  })();
+  const xgScale = rawSelected > 0 ? realXgPerShot.v / rawSelected : 1;
+  const selectedXg = realXgPerShot.v;   // 定義上就等於它 —— 上面那一行就是為了讓這件事成立
   const cal = { home: null, away: null };
   function calibrate(pred) {
     for (const side of ['home', 'away']) {
       const s = sideOf(side);
       const lam = Math.max(0.05, (side === 'home' ? pred?.xgHome : pred?.xgAway) ?? 1.35);
       const es = expShots(s);
-      cal[side] = { lambda: lam, expShots: es, k: lam / (es * realXgPerShot.v) };
+      cal[side] = { lambda: lam, expShots: es, k: lam / (es * selectedXg * SHOT_THROUGH) };
     }
   }
   const all = () => [...H.players, ...A.players].filter(p => !p.off);
@@ -355,7 +406,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   const st = {
     t: 0, half: 1, phase: 'kickoff', deadT: 0, restart: null,
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
-    outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0,
+    outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
     corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 },
   };
@@ -398,7 +449,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   }
 
   /* 踢球:目標點 + 初速 + 仰角。傳球一律踢向接球者的**提前量**(他會跑到哪),不是他現在站的地方 */
-  function kick(from, tx, ty, speed, loft = 0) {
+  function kick(from, tx, ty, speed, loft = 0, why = 'pass') {
+    st.lastKick = why;
     const dx = tx - from.x, dy = ty - from.y, d = Math.max(0.1, hypot(dx, dy));
     ball.holder = null;
     from.kickLock = KICK_LOCK;
@@ -413,7 +465,28 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   function decide(p) {
     const s = sideOf(p.side), o = oppOf(p.side);
     const goalX = s.att > 0 ? PITCH_W : 0;
+    const ownGoalX = s.att > 0 ? 0 : PITCH_W;
     const pressure = o.players.reduce((best, q) => Math.min(best, hypot(q.x - p.x, q.y - p.y)), Infinity);
+
+    /* 解圍:在自家三分之一被逼住就大腳往前,不帶球也不找短傳。
+       真的後衛就是這樣做的,而且它是轉換的來源 —— 沒有它球權一換就是從自家門前開始帶。 */
+    if (Math.abs(p.x - ownGoalX) < CLEAR_ZONE && pressure < 6 && p.role !== 'GK' && rng() < 0.7) {
+      /* 逼到自家門前就**把球捅出底線** —— 那是標準的防守動作,不是失誤。
+         而且它是角球的第三個來源(另外兩個是封阻與傳中被碰),沒有它角球一場 0~1 次。 */
+      if (Math.abs(p.x - ownGoalX) < 12 && pressure < 3 && rng() < 0.45) {
+        const ty = cl(p.y + (rng() - 0.5) * 14, 1, PITCH_H - 1);
+        kick(p, ownGoalX + (ownGoalX === 0 ? -6 : 6), ty, 12 + rng() * 6, 0, 'clear');
+        st.clears++; p.intent = null;
+        return { kind: 'clear-out' };
+      }
+      const tx = cl(p.x + s.att * (35 + rng() * 25), 4, PITCH_W - 4);
+      const ty = cl(p.y + (rng() - 0.5) * 30, 4, PITCH_H - 4);
+      const dd = hypot(tx - p.x, ty - p.y), tt = cl(dd / 16, 0.9, 2.4);
+      kick(p, tx, ty, dd / tt, GRAVITY * tt / 2, 'clear');
+      st.clears++;
+      p.intent = null;
+      return { kind: 'clear' };
+    }
     /* 傳球對象:算每個隊友的分數 —— 往前、沒被盯、不要太遠。
        分數不是玄學,三項各自有理由:往前才有進展、被盯住傳過去就是送球、太遠成功率低。 */
     let best = null, bestScore = -Infinity;
@@ -423,7 +496,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (d < 3 || d > 45) continue;
       const forward = (m.x - p.x) * s.att;
       const marked = o.players.reduce((b, q) => Math.min(b, hypot(q.x - m.x, q.y - m.y)), Infinity);
-      const score = forward * 0.6 + Math.min(marked, 12) * 1.4 - d * 0.25;
+      /* 貼著邊線的「空間」不是空間。第一版只看「身邊最近的對手有多遠」,
+         而貼線的人身邊本來就沒有人(場外沒有球員),於是他永遠看起來最沒人盯 ——
+         實測傳球目標的 y 分佈是 U 形(兩側邊線各堆 24% / 22%),而球員的 y 分佈是中間多。
+         結果是 16% 的傳球直接出邊線、一場 190 次界外球(真實約 40)。
+         真的球員知道這件事:靠線的空間用不出來,所以要扣分。 */
+      const edge = Math.min(m.y, PITCH_H - m.y);
+      const score = forward * 0.6 + Math.min(marked, 12) * 1.4 - d * 0.25 - Math.max(0, 10 - edge) * 1.1;
       if (score > bestScore) { bestScore = score; best = m; }
     }
     /* 進到射程就可能射門 —— 越近越想射,而且沒人逼的時候更想。
@@ -438,14 +517,14 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (rng() < cl(urge, 0, 0.9)) {
         const xg = cl(q * xgScale, 0.01, 0.95);
         const c = cal[p.side];
-        const pGoal = cl(xg * (c?.k ?? 1), 0, 0.97);
+        const pGoal = cl(xg * (c?.k ?? 1), 0, 1);   // 上限 1:一顆必進的球就是必進,截在 0.97 只會偷走期望值
         // 準度隨距離掉:遠射偏得多。偏差用球門寬度當尺,不是憑空的角度
         const miss = rng() >= pGoal;
         const err = miss
           ? (rng() < 0.5 ? -1 : 1) * (SIM_GOAL_HALF * (0.25 + rng() * 1.3) + dGoal * 0.06)
           : (rng() - 0.5) * 2 * SIM_GOAL_HALF * 0.75;
         const sp = SHOT_SPEED[0] + rng() * (SHOT_SPEED[1] - SHOT_SPEED[0]);
-        kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14), sp, miss && rng() < 0.4 ? 3.5 + rng() * 3 : 0);
+        kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14), sp, miss && rng() < 0.4 ? 3.5 + rng() * 3 : 0, 'shot');
         ball.shot = { by: p, side: p.side, xg, willScore: !miss };
         if (!miss) st.willScore++;
         st.shots++; st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
@@ -457,15 +536,35 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const wantPass = best && (pressure < 4.5 ? rng() < 0.75 : rng() < 0.25);
     if (wantPass) {
       const d = hypot(best.x - p.x, best.y - p.y);
-      const speed = cl(SIM_PASS_SPEED[0] + d * 0.35, SIM_PASS_SPEED[0], SIM_PASS_SPEED[1]);
-      const flight = d / speed;
+      // 力道:讓球到得了、而且到的時候還控得住
+      const speed = cl(Math.sqrt(PASS_ARRIVE * PASS_ARRIVE + 2 * BALL_FRICTION * d), SIM_PASS_SPEED[0], SIM_PASS_SPEED[1]);
+      const flight = 2 * d / (speed + PASS_ARRIVE);   // 等加速度下用平均速度算飛行時間,不是初速
       // 提前量:接球者依他現在的速度會跑到哪
       /* 提前量要**夾在場內**:不夾的話接球者往邊線跑時目標會被推出界,
          實測一場 184 次界外球(真實約 40)。真的球員不會把球傳到線外。 */
-      const tx = cl(best.x + best.vx * flight * 0.8, 2, PITCH_W - 2);
-      const ty = cl(best.y + best.vy * flight * 0.8, 2, PITCH_H - 2);
-      // 遠一點的球挑起來(過中間的人),近的貼地
-      kick(p, tx, ty, speed, d > 22 ? 4.5 + rng() * 2 : 0);
+      let tx = best.x + best.vx * flight * 0.8, ty = best.y + best.vy * flight * 0.8;
+      // 失準:角度偏,壓力越大偏越多
+      const perr = (rng() - 0.5) * 2 * PASS_ERR * d * (pressure < 4 ? 1.6 : 1);
+      const ca = Math.cos(perr), sa = Math.sin(perr), rx = tx - p.x, ry = ty - p.y;
+      tx = p.x + rx * ca - ry * sa; ty = p.y + rx * sa + ry * ca;
+      /* 提前量與失準都算完再夾在場內 —— 真的球員不會把球傳到線外。 */
+      tx = cl(tx, 3, PITCH_W - 3); ty = cl(ty, 3.5, PITCH_H - 3.5);
+      /* 挑傳:**只在傳球路線上真的有人擋時才挑**,而且力道要算成「落在目標上」——
+         不是給一個固定的仰角。第一版對所有 22 公尺以上的傳球都挑,而挑起來的球
+         在空中只吃空氣阻力、落地又不減速,所以每一記都飛過頭:
+         一記 23 公尺的挑傳實際跑 38 公尺,界外球一場 218 次。 */
+      const inLane = o.players.some(q => {
+        if (q.off) return false;
+        const rx = tx - p.x, ry = ty - p.y, len2 = Math.max(0.01, rx * rx + ry * ry);
+        const t = cl(((q.x - p.x) * rx + (q.y - p.y) * ry) / len2, 0, 1);
+        return t > 0.1 && t < 0.95 && hypot(p.x + rx * t - q.x, p.y + ry * t - q.y) < 2.0;
+      });
+      if (inLane && d > 8) {
+        const tt = cl(d / 14, 0.8, 2.6);                       // 飛行時間依距離
+        kick(p, tx, ty, d / tt, GRAVITY * tt / 2);             // 水平速度讓它剛好落在目標上
+      } else {
+        kick(p, tx, ty, speed, 0);
+      }
       p.intent = null;
       return { kind: 'pass', to: best.code };
     }
@@ -606,6 +705,26 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       ball.vx = holder.vx; ball.vy = holder.vy;
     } else {
       moveBall(ball, dt);
+      /* 折射:快速移動的球從防守者身邊經過就可能碰到人。
+         方向隨機改一點、速度掉、而且**不再是原來那一腳射門** —— 折射到的球不該照原判定進球。
+         lastTouch 要跟著改:那決定了球出底線時是角球還是球門球。 */
+      {
+        const sp0 = hypot(ball.vx, ball.vy);
+        if (sp0 > DEFLECT_MIN_SPEED && ball.z < 1.8) {
+          for (const q of all()) {
+            if ((q.kickLock ?? 0) > 0) continue;
+            if (q.side === st.lastTouch) continue;          // 擋球的是**對方**,自己人不算封阻
+            if (hypot(q.x - ball.x, q.y - ball.y) > DEFLECT_R) continue;
+            if (rng() >= DEFLECT_P) continue;
+            const ang = Math.atan2(ball.vy, ball.vx) + (rng() - 0.5) * 2 * DEFLECT_ANG;
+            const sp1 = sp0 * DEFLECT_KEEP * (0.7 + rng() * 0.6);
+            ball.vx = Math.cos(ang) * sp1; ball.vy = Math.sin(ang) * sp1;
+            ball.vz = Math.max(ball.vz, rng() * 2.5);
+            ball.shot = null; st.lastTouch = q.side; st.deflects++;
+            break;
+          }
+        }
+      }
       // 有人控到球?(離球夠近、球夠低、球不會太快)
       const sp = hypot(ball.vx, ball.vy);
       if (ball.z < 0.6) {
@@ -637,7 +756,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         } else if (st.lastTouch === scoring) {
           goalKick(conceding);                               // 攻方碰出底線 → 球門球
         } else {
-          corner(scoring === 'home' ? 'away' : 'home', ball.y < PITCH_H / 2 ? 0.5 : PITCH_H - 0.5, ball.x < 0 ? 0.5 : PITCH_W - 0.5);
+/* 角球是**攻方**踢的。第一版把主罰隊傳成失球方 —— 就算分支走到了,
+             角球也會記在錯的隊身上、而且由錯的人去罰。 */
+          corner(scoring, ball.y < PITCH_H / 2 ? 0.5 : PITCH_H - 0.5, ball.x < 0 ? 0.5 : PITCH_W - 0.5);
         }
       } else if (ball.y < 0 || ball.y > PITCH_H) throwIn();
     }
@@ -656,7 +777,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           const sp = TACKLE_POKE[0] + rng() * (TACKLE_POKE[1] - TACKLE_POKE[0]);
           ball.holder = null; ball.z = 0; ball.vz = 0;
           ball.x = victim.x; ball.y = victim.y;
-          ball.vx = Math.cos(ang) * sp; ball.vy = Math.sin(ang) * sp;
+          ball.vx = Math.cos(ang) * sp; ball.vy = Math.sin(ang) * sp; st.lastKick = 'tackle';
           victim.shield = 0; st.tackleCool = TACKLE_COOLDOWN; st.tackles++;
         }
       }
@@ -755,7 +876,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       poss: { ...st.possSec },
       counts: { outs: st.outs, tackles: st.tackles, passes: st.passes, loose: st.loose, shots: st.shots, onTarget: st.onTarget,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
-        fouls: { ...st.fouls }, cards: { ...st.cards } },
+        fouls: { ...st.fouls }, cards: { ...st.cards }, deflects: st.deflects, clears: st.clears },
     }),
     /* 量測用:跑動量、最高速、控球 —— 這幾個要對得回 FotMob 的真實值,不然「像不像在踢球」沒有判準 */
     motion: () => ({
@@ -768,7 +889,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        不給這個的話「E[進球] = λ」就變成一句沒有出處的宣稱。 */
     calibration: () => ({
       xgPerShotReal: Math.round(realXgPerShot.v * 10000) / 10000, xgPerShotFrom: realXgPerShot.from,
-      xgScale: Math.round(xgScale * 1000) / 1000,
+      xgScale: Math.round(xgScale * 1000) / 1000, selectedXg: Math.round(selectedXg * 10000) / 10000,
       home: cal.home && { ...cal.home, k: Math.round(cal.home.k * 1000) / 1000 },
       away: cal.away && { ...cal.away, k: Math.round(cal.away.k * 1000) / 1000 },
     }),
