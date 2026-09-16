@@ -154,8 +154,70 @@ export function postMatchTemplate(bundle) {
   return { title: `${H} ${hs}-${as} ${A} 賽後分析`, paragraphs: paras };
 }
 
+/* ── 模擬賽後 ────────────────────────────────
+ *
+ * FM 的每一條播報都有「現場」與「賽後」兩種時態,同一次模擬餵兩個地方。
+ * 時間軸是現場(「Saka 破門!」),這裡是賽後(「Saka 在第 25 分鐘打破僵局」)。
+ *
+ * 用詞紀律:主詞永遠是「這場模擬」,不是「這場比賽」。讀者絕不能把這段
+ * 誤讀成預測或戰報 —— 所以第一句就要講明,而且不用任何斷言未來的語氣。
+ */
+export function simTemplate(bundle) {
+  const m = F(bundle);
+  const H = bundle.home.en, A = bundle.away.en;
+  const hs = v(m, 'score.home'), as = v(m, 'score.away');
+  const paras = [];
+
+  // 一、結果。第一句就要說清楚這是模擬
+  const verdict = hs > as ? `${H} 贏下這一場` : hs < as ? `${A} 在客場拿走勝利` : '兩隊踢成平手';
+  paras.push(`在這次模擬裡,${verdict},比分 ${t(m, 'score.home')} 比 ${t(m, 'score.away')}。`
+    + ` 全場期望進球 ${t(m, 'xg.home')} 比 ${t(m, 'xg.away')} —— 這個數字等於賽前模型給的預期進球,`
+    + `事件引擎只負責把它攤成過程,不會自己加減。`);
+
+  // 二、走勢。進球順序是這段的骨架,沒進球就講「悶」
+  if (bundle.goals.length) {
+    const seq = bundle.goals.map((g, i) => {
+      const side = g.side === 'home' ? H : A;
+      const who = g.player ? `${g.player}` : side;
+      return `第 ${t(m, `goal.${i}.minute`)} 分鐘 ${who}${g.assist ? `(${g.assist} 助攻)` : ''} 為 ${side} 破門`;
+    });
+    const first = bundle.goals[0];
+    const firstSide = first.side === 'home' ? H : A;
+    const lost = (first.side === 'home' && hs <= as) || (first.side === 'away' && as <= hs);
+    paras.push(`${seq.join(',')}。`
+      + (bundle.goals.length >= 2 && lost ? ` ${firstSide} 先馳得點但沒能守住。` : ''));
+  } else {
+    paras.push('這次模擬雙方都沒有進球,機會有創造出來,但都沒有轉換成分數。');
+  }
+
+  // 三、數據對比
+  paras.push(`數據上,${H} 射門 ${t(m, 'home.shots')} 次(射正 ${t(m, 'home.onTarget')})、`
+    + `角球 ${t(m, 'home.corners')}、控球 ${t(m, 'home.possession')};`
+    + `${A} 射門 ${t(m, 'away.shots')} 次(射正 ${t(m, 'away.onTarget')})、`
+    + `角球 ${t(m, 'away.corners')}、控球 ${t(m, 'away.possession')}。`);
+
+  // 四、戰術判斷。直接引用 matchdiag 的句子,那些句子本來就帶著次數
+  if (bundle.diag?.length) {
+    const byName = d => (d.side === 'home' ? H : A);
+    paras.push(bundle.diag.map(d => `${byName(d)}:${d.text}。`).join(' '));
+  }
+
+  // 五、跟賽前機率對照 —— 這段是整篇的重點:模擬只是機率的一個樣本
+  if (m['pre.home']) {
+    const real = hs > as ? 'pre.home' : hs < as ? 'pre.away' : 'pre.draw';
+    const label = hs > as ? '主勝' : hs < as ? '客勝' : '和局';
+    paras.push(`這個結果(${label})賽前的機率是 ${t(m, real)}。`
+      + ` 換一顆亂數種子就會是另一場完全不同的比賽 —— 這一篇只是那個機率分布裡的一個樣本,`
+      + `不是預測,也不代表比較可能發生。`);
+  }
+
+  return { title: `${H} ${hs}-${as} ${A}(模擬)`, paragraphs: paras };
+}
+
 export const templateFor = bundle =>
-  bundle.kind === 'pre' ? preMatchTemplate(bundle) : postMatchTemplate(bundle);
+  bundle.kind === 'pre' ? preMatchTemplate(bundle)
+    : bundle.kind === 'sim' ? simTemplate(bundle)
+      : postMatchTemplate(bundle);
 
 /* 免責說明是固定樣板,不進正文:
    它一放進正文就會被 verify 的主題檢查擋下(因為它本來就在講「我們沒有這些資料」),
@@ -164,9 +226,12 @@ export const CAVEAT = {
   pre: '以上每個數字都由統計模型算出,不是評論員的印象。模型只看比賽結果與球員統計,不含轉會、傷停與賽程密度的人工調整。',
   post: '本文所有數字來自官方統計與本站模型,沒有經過人工調整;陣型由實際出場位置推導,不是賽前公布的陣型圖。',
   postOfficial: '本文所有數字來自供應商賽後統計與本站模型,沒有經過人工調整;陣型是公布的正式陣型。',
+  sim: '這一場沒有真的發生過。球員、時間、比分全部由事件模擬引擎生成,只是賽前機率分布裡的一個樣本;'
+    + '全場期望進球受賽前模型約束,但它不參與、也不影響任何一個勝率數字。要看真實比分請到實時戰況。',
 };
 
 /* 免責說明要跟 bundle 講的一致:陣型是推導的還是公布的、xG 是誰算的 */
-export const caveatFor = bundle => bundle.kind === 'pre' ? CAVEAT.pre
+export const caveatFor = bundle => bundle.kind === 'sim' ? CAVEAT.sim
+  : bundle.kind === 'pre' ? CAVEAT.pre
   : (bundle.shapeSource === 'official' ? CAVEAT.postOfficial : CAVEAT.post)
     + (bundle.xgSource === 'fotmob' ? ' 期望進球為 FotMob 逐射門 xG 加總。' : '');
