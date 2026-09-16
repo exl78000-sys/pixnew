@@ -456,7 +456,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {} } = {}) {
            單一門檻那版反而讓翻轉從 3.4 升到 5.3 —— 站在門檻邊上的人被會飄的目標拉來拉去(CLAUDE.md) */
         const d = hypot(pos.x - p.x, pos.y - p.y);
         if (p.going) { if (d < IDLE_STOP) p.going = false; } else if (d > IDLE_GO) p.going = true;
-        want = p.going ? { x: pos.x, y: pos.y, speed: d > 12 ? SIM_RUN : d > 4 ? SIM_JOG : SIM_WALK } : null;
+        /* 歸位是**慢跑**,不是衝刺 —— 只有離位置很遠才跑。
+           逐位置量出來的證據:第一版 DEF 113 m/分(正好是真實值)、MID 143、FWD 169,
+           而距離裡有 17.3% 是衝刺(真實足球不到一成)。差別就在這一行:
+           原本超過 12 m 就用跑的,而前鋒的陣型目標會跟著球大幅擺動,於是整場在衝。 */
+        want = p.going ? { x: pos.x, y: pos.y, speed: d > 22 ? SIM_RUN : d > 6 ? SIM_JOG : SIM_WALK } : null;
       }
       movePlayer(p, dt, want);
     }
