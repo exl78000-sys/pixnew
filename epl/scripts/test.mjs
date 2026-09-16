@@ -2398,6 +2398,31 @@ async function checkDataGap() {
       }
       return keys.has('pl') && missing.length === 0 && noFile.length === 0;
     })()],
+    /* `local-sync.mjs`(本機一次同步)原本手寫聯賽順序,加義甲法甲時沒有人回來改 ——
+       跑 `npm run local:sync` 只重建四個聯賽,義甲法甲停在舊產物而畫面完全正常。
+       現在它掃 `web/data/leagues/`,用 package.json 的 `{聯賽}:build` 當對照表
+       (檔名推不出來:es1 → laliga、en2 → championship、de1 → bundesliga…),
+       兩種都不是的當場失敗。這裡守的是那張對照表沒有漏人。 */
+    ['local:sync 重建 web/data/leagues 底下每一個聯賽', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'local-sync.mjs'), 'utf8');
+      const scanned = /readdirSync\(join\(ROOT, 'web', 'data', 'leagues'\)/.test(src);
+      const explicit = ((src.match(/EXPLICIT = new Set\(\[([^\]]*)\]/) ?? [])[1] ?? '')
+        .match(/'([a-z0-9]+)'/g)?.map(x => x.replace(/'/g, '')) ?? [];
+      const scripts = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).scripts;
+      const onDisk = readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => e.name);
+      const uncovered = onDisk.filter(k => !explicit.includes(k) && !scripts[`${k}:build`]);
+      /* 英超那一步要走 `npm run build`(三支的串接),不是直接指 scripts/build.mjs ——
+         直接指的話 `stamp-assets.mjs` 不會跑,六個聯賽的 meta.assets 全變 undefined。
+         實際發生過:跑完 local:sync 再 npm test 紅 12 條,而這一支的註解從以前就在講資產戳。 */
+      const stamps = /await npm\('build'\)/.test(src) && !/run\('scripts\/build\.mjs'\)/.test(src);
+      /* 資產戳是那一串的最後一步寫的,所以每一個聯賽都要排在它前面 —— 明確跑的那幾個也是。 */
+      const laligaFirst = src.indexOf('build-laliga.mjs') > 0 && src.indexOf('build-laliga.mjs') < src.indexOf("npm('build')");
+      if (!scanned || uncovered.length || !laligaFirst || !stamps) {
+        console.log(`    掃目錄:${scanned}・沒涵蓋到:${uncovered.join('、') || '—'}・西甲排在英超前:${laligaFirst}・英超走 npm run build(含資產戳):${stamps}`);
+      }
+      return scanned && uncovered.length === 0 && laligaFirst && stamps;
+    })()],
     ['分析頁的「整季 N 場」從回測資料來,不寫死 380', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
       return /整季 \$\{mk\.games\} 場/.test(src) && !/整季 380 場/.test(src);
