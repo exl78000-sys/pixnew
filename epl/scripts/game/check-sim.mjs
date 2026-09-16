@@ -10,6 +10,11 @@
  * 等階段 2 校準完再挑幾條真正的不變量進去。
  *
  * 用法:node scripts/game/check-sim.mjs [場數]
+ *
+ * **場數少的時候 λ 錨會假警報。** 預設本來是 3 場,而 3 場的 SE 只有 0.33 ——
+ * 同一份引擎 3 場量到「-4.0 SE 錨沒守住」、12 場量到 -2.5、30 場量到 -0.6。
+ * 那不是引擎在飄,是 SE 本身的噪音。所以預設改成 12,而且會印出
+ * 「這個場數驗得出多大的偏差」,不夠的時候只印不判。
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -18,7 +23,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const { createSim } = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
 const profile = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'game', 'pl.json'), 'utf8'));
-const RUNS = Math.max(1, parseInt(process.argv[2] ?? '3', 10));
+const RUNS = Math.max(1, parseInt(process.argv[2] ?? '12', 10));
+const MIN_JUDGE = 10;            // 少於這個場數只印不判(SE 的噪音比要驗的偏差還大)
 const HOME = 'ARS', AWAY = 'LIV';
 const STEP = 1 / 60;
 
@@ -66,8 +72,13 @@ const worstJump = Math.max(...rows.map(r => r.maxJump));
 line('瞬移(超過自己最高速)', `${totalJumps} 次`, totalJumps ? `最大 ${worstJump.toFixed(2)} m ← 引擎有問題` : '✓');
 const inside = rows.every(r => r.st.players.every(p => p.x >= -1.5 && p.x <= 106.5 && p.y >= -1.5 && p.y <= 69.5));
 line('所有人都在場內', inside ? '✓' : '✗ 有人跑出球場');
+/* 這一條原本寫「← 球的速度被蓋掉了」,那是**斷言原因**。實際量過兩種都會中:
+   (a) 持球者的 local 變數過期,球停在腳下被人撿走(階段 1 踩過,一次 93/97 顆);
+   (b) 射門力道不夠,球在門前滾到停,門將或後衛撿走(階段 2b 量到 12 場 5 次,
+       球速 0、離門 5~6 m,4 次是門將 1 次是後衛)。
+   所以這裡只講量到什麼,原因要去看 diag —— 鐵則一:不要寫一個查不到出處的因果。 */
 const lost = rows.reduce((a, r) => a + (r.st.diag?.lostShot ?? 0), 0);
-line('射門在飛行中被吃掉', `${lost} 次`, lost ? '← 球的速度被蓋掉了(踩過一次)' : '✓');
+line('射門在飛行中被吃掉', `${lost} 次`, lost ? '← 有人在球過門線之前控到它,要去查是球停了還是被蓋掉' : '✓');
 
 /* 2. λ 錨。換引擎之後它是**統計版**的:精確相等做不到(射門是長出來的),
       所以驗的是「N 場平均落在 λ 的幾個標準誤內」。 */
@@ -85,7 +96,12 @@ for (const [i, who, lam] of [[0, '主隊', PRED.xgHome], [1, '客隊', PRED.xgAw
   if (s2 === 0) line(`${who}進球`, `${m.toFixed(2)}`, `λ ${lam} → ${RUNS} 場的進球數完全相同,SE 是 0、這個檢定算不出來(要更多場)`);
   else {
     const sig = (m - lam) / s2;
-    line(`${who}進球`, `${m.toFixed(2)} ± ${s2.toFixed(2)}`, `λ ${lam} → 差 ${sig.toFixed(1)} SE ${Math.abs(sig) <= 3 ? '✓' : '← 錨沒守住'}`);
+    /* 「±3 SE 內」只在場數夠的時候才是結論。場數少的時候 SE 大,任何偏差都會通過(看起來很安全),
+       而 SE 的估計本身也在跳 —— 兩種錯都發生過。所以把**驗得出多大的偏差**一起印出來。 */
+    const res = `這個場數只驗得出 ≥ ${(3 * s2).toFixed(2)} 球的偏差`;
+    line(`${who}進球`, `${m.toFixed(2)} ± ${s2.toFixed(2)}`, RUNS < MIN_JUDGE
+      ? `λ ${lam} → 差 ${sig.toFixed(1)} SE(${RUNS} 場,只印不判;${res})`
+      : `λ ${lam} → 差 ${sig.toFixed(1)} SE ${Math.abs(sig) <= 3 ? '✓' : '← 錨沒守住'}(${res})`);
   }
 }
 

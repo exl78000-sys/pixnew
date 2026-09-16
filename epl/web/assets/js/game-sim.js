@@ -71,13 +71,19 @@ const BODY_R = 1.05;                           // 兩個人的身體不可以重
    真的防守是退著守(jockey),進到 2~3 m 盯著,抓到時機才撲。 */
 const JOCKEY_R = 2.4;                          // 逼搶者維持的距離(公尺)
 const CARRY_SPEED = 0.92;                      // 帶球速度佔自己最高速的比例(真人帶球比空跑慢一點)
-/* 射門:階段 1 **只做動作,不產生進球**。
-   沒有射門的話進攻沒有終點 —— 實測第一版帶球的人一路推到底線就停在那裡,
+/* 射門:沒有射門的話進攻沒有終點 —— 實測階段 1 的第一版帶球的人一路推到底線就停在那裡,
    球的 x 分佈兩頭各堆 40%、中場每段只剩 3.6%,整場球在兩條底線之間卡住。
-   但「這一腳進不進」是要校準的(鐵則一:沒校準過的進球數就是編出來的),那是階段 2。
-   所以這一版射門一律以門將沒收或出界收場,**畫面上不會有比分**。 */
+   「這一腳進不進」在階段 2 校準過了(k = λ ÷ 期望射門 ÷ 每球 xG),所以現在會有比分。
+
+   力道**要足以把球送到門線**,不是一個固定區間。第一版給 18~26 m/s 的平地球,
+   而滾地摩擦是 5.5 m/s² —— 18 m/s 只滾得動 29.5 m,於是 30 m 外的射門會在門前
+   **停下來**,由門將或後衛撿走(12 場量到 5 次,球速 0、離門 5~6 m)。
+   畫面上那是一顆「軟綿綿滾到停」的射門,看起來就不像在踢球。
+   改成跟傳球同一條式子解出需要的初速,再夾在人踢得出來的上限內。 */
 const SHOOT_RANGE = 30;                        // 離球門這麼近才會想射(公尺)
 const SHOT_SPEED = [18, 26];
+const SHOT_ARRIVE = 12;                        // 射門到門線時至少還有這個速度(m/s)
+const SHOT_MAX = 34;                           // 人踢得出來的上限(m/s,約 122 km/h)
 const SIM_GOAL_HALF = 3.66;                    // 球門半寬(公尺)
 const GOAL_HEIGHT = 2.44;
 /* 射門頻率**綁在球隊自己的真實射門率上**(rates.sf)。
@@ -523,7 +529,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const err = miss
           ? (rng() < 0.5 ? -1 : 1) * (SIM_GOAL_HALF * (0.25 + rng() * 1.3) + dGoal * 0.06)
           : (rng() - 0.5) * 2 * SIM_GOAL_HALF * 0.75;
-        const sp = SHOT_SPEED[0] + rng() * (SHOT_SPEED[1] - SHOT_SPEED[0]);
+        /* 初速取「隨機力道」與「送得到門線的最低力道」的大者:
+           近射照隨機,遠射一定踢得到。式子跟傳球那一行同一條(v² = arrive² + 2ad)。 */
+        const need = Math.sqrt(SHOT_ARRIVE * SHOT_ARRIVE + 2 * BALL_FRICTION * dGoal);
+        const sp = cl(SHOT_SPEED[0] + rng() * (SHOT_SPEED[1] - SHOT_SPEED[0]), need, SHOT_MAX);
         kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14), sp, miss && rng() < 0.4 ? 3.5 + rng() * 3 : 0, 'shot');
         ball.shot = { by: p, side: p.side, xg, willScore: !miss };
         if (!miss) st.willScore++;
