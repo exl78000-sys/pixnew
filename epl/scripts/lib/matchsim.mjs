@@ -786,3 +786,21 @@ export function sampleMatch(opts, runs = 300) {
   }
   return Object.fromEntries(Object.entries(acc).map(([k, v]) => [k, round(v / runs, 2)]));
 }
+
+/* 沒有事件模擬的聯賽要寫一份**空的**產物,不是不寫。
+
+   `page-analysis.js` 把 `matchsim` 放進 `C.load(...)` 的清單,而 `C.load` 在 404 時
+   **會 throw** —— 少這一份檔,那個聯賽的**每一個單場頁**都會變成「載入失敗」而不是
+   少一個區塊(2026-09-16 實測:西甲英冠德義法五個聯賽,已完賽與未賽都一樣,
+   `#app` 只剩 93 字)。CLAUDE.md 那條寫過:**沒有內容的產物要寫空的而不是不寫**。
+
+   而且「為什麼是空的」要講得出來:這個引擎吃 FPL 的逐人 `creativity90` / `threat90`
+   當關卡強度,那是**英超才有的欄位**(西甲德義法走 Understat、英冠是逐場累加,
+   三種形狀都沒有這兩個值)。所以這不是「還沒做」,是這幾個聯賽現在做不出來 ——
+   兩句話對讀者的意義不一樣,不要混。 */
+export const emptyMatchSim = zh => ({
+  asOf: null, windowDays: 0,
+  note: `${zh}沒有單場事件模擬:引擎要用 FPL 的逐人 creativity90 / threat90 當關卡強度,`
+    + '而那是英超才有的欄位。這不是還沒做,是這個聯賽目前做不出來。',
+  matches: {},
+});

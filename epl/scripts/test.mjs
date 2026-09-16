@@ -4330,6 +4330,36 @@ async function checkDataGap() {
       console.log(`    往季逐場檔:${seen} 個聯賽有索引`);
       return bad.length === 0;
     })()],
+    /* **`C.load` 在 404 時會 throw,所以清單裡少一份 = 整頁「載入失敗」。**
+       2026-09-16 實際發生過:單場頁把 `matchsim` 加進清單,而那一份只有英超的 build 會寫
+       —— 西甲英冠德義法**每一個單場頁**都變成 `#app` 只剩 93 字的「載入失敗」,
+       已完賽與未賽都一樣。`npm test` 看不到版面所以全綠,`npm run sweep` 抓得到(30 次異狀)。
+
+       這條守的是通則,不是只釘 `matchsim`:**每一頁 `C.load` 要的每一份產物,
+       在每一個聯賽都要存在**。CLAUDE.md 那條講過的解法在這裡也一樣 ——
+       沒有內容的產物要寫空的而不是不寫。 */
+    ['每一頁 C.load 的產物在每個聯賽都存在(少一份就整頁載入失敗)', (() => {
+      const JS = join(ROOT, 'web', 'assets', 'js');
+      const leagues = ['pl', ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => e.name)];
+      const dirOf = k => (k === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'web', 'data', 'leagues', k));
+      const bad = [];
+      let pages = 0;
+      for (const f of readdirSync(JS).filter(x => /^page-.*\.js$/.test(x))) {
+        const src = readFileSync(join(JS, f), 'utf8');
+        const m = src.match(/C\.load\(([\s\S]{0,400}?)\)/);   // 清單可能跨行
+        if (!m) continue;
+        const names = [...m[1].matchAll(/'([a-z0-9-]+)'/g)].map(x => x[1]);
+        if (!names.length) continue;
+        pages++;
+        for (const k of leagues) for (const n of names) {
+          if (!existsSync(join(dirOf(k), `${n}.json`))) bad.push(`${f} @${k}:${n}`);
+        }
+      }
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}${bad.length > 6 ? ` …共 ${bad.length} 處` : ''}`);
+      /* pages 不寫死數量 —— 加一頁就紅在「多了一頁」是「把目標達成寫成 CI 紅線」那條坑。 */
+      return pages >= 8 && bad.length === 0;
+    })()],
     /* ── 往季賽後報告(2026-09-16)──
        上一季的報告不在 `reports.reports` 裡(那一份是首頁與單場頁**整份載**的,
        塞進去會從 1.6 MB 變成二十幾 MB),而是 `match-reports/{季}/{id}.json` 逐場檔。

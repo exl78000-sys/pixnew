@@ -37,7 +37,7 @@ import { loadCurated } from './lib/curated-archive.mjs';
 import { loadCompetitionLogos } from './lib/competitions.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
 import {
-  preMatchBundle, postMatchBundle, simBundle, templateFor, caveatFor,
+  preMatchBundle, postMatchBundle, simBundle, templateFor, caveatFor, verify,
   generateReport, ReportCache, llmEnabled,
 } from './lib/report/index.mjs';
 import { parseCSVObjects, num } from './lib/csv.mjs';
@@ -1186,6 +1186,7 @@ async function main() {
   };
   const simFrom = new Date(`${AS_OF}T00:00:00Z`);
   const matchSims = {};
+  const simVerifyFails = [];
   for (const f of fixtures) {
     if (f.played || !f.prediction || !f.kickoff) continue;
     const days = (new Date(f.kickoff) - simFrom) / 86400000;
@@ -1208,6 +1209,14 @@ async function main() {
       fixture: f, sim, diag, home, away, asOf: AS_OF, seasonLabel: CURRENT_SEASON,
     });
     const tpl = templateFor(bundle);
+    /* **模板直出這條從來沒被驗過。** `features.mjs` 的註解寫著這一篇走
+       facts → 模板 → verify,而 `verify` 實際上只套在 LLM 產出上
+       (`generateReport` 裡的那一次);模擬不打 LLM,所以它走 `templateFor` 直出、
+       整條繞過驗證器。模板確實是從 facts 長出來的 —— 但那正是「理論上」,
+       而這一篇的數字寫錯**沒有人查得出來**(那是這個 bundle 自己註解裡的理由)。
+       所以這裡把驗證器補上,讓那句話變成真的。 */
+    const vr = verify(tpl.paragraphs.join('\n'), bundle.facts);
+    if (!vr.ok) simVerifyFails.push(`${f.id}:${vr.reason}`);
 
     // events 是給戰術判斷用的原料(五百多條),前端只需要時間軸與結論
     matchSims[f.id] = {
@@ -1216,7 +1225,9 @@ async function main() {
       calibration: sim.calibration, disclaimer: sim.disclaimer,
     };
   }
-  console.log(`  單場事件模擬:${Object.keys(matchSims).length} 場(未來 ${SIM_WINDOW_DAYS} 天內)`);
+  console.log(`  單場事件模擬:${Object.keys(matchSims).length} 場(未來 ${SIM_WINDOW_DAYS} 天內)`
+    + `・敘述過數字驗證 ${Object.keys(matchSims).length - simVerifyFails.length}/${Object.keys(matchSims).length}`);
+  for (const x of simVerifyFails.slice(0, 5)) console.log(`    ⚠ ${x}`);
   await write('matchsim.json', {
     asOf: AS_OF, windowDays: SIM_WINDOW_DAYS,
     note: '事件流由模型生成,不是實際比賽過程。總 xG 受賽前 λ 約束,不影響任何勝率數字。',

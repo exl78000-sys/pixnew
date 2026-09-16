@@ -51,6 +51,7 @@ import { coreFromUnderstat } from './player-core.mjs';
    不各寫一套(buildProviderMatchReport 自己會再核對一次比分、要求 coverage 齊全)。 */
 import { loadFotmobMatchStats, toCanonicalDetail } from './matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './match-archive.mjs';
+import { emptyMatchSim } from './matchsim.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
@@ -870,6 +871,7 @@ export async function buildLeague(L) {
     matches: [], note: meta.live.note });
   /* blocked 有明確語意(整季拿不到)。德甲**不是**沒有資料源 —— 來源在,只是 raw 還沒抓,
      所以是 'not-fetched',不是 'no-source'。這兩句對讀者的意義完全不同(CLAUDE.md 一整條在講)。 */
+  await write('matchsim', emptyMatchSim(L.zh));
   await write('reports', {
     seasons: reportCount ? [...new Set(Object.values(publishedReports).map(r => r.season))].sort() : [],
     count: reportCount, reports: publishedReports, source: reportCount ? 'fotmob' : null, pending: pendingCount,
