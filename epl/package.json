@@ -104,6 +104,8 @@
     "de1:backtest": "node scripts/backtest-bundesliga.mjs",
     "de1:players": "node scripts/fetch-bundesliga-players.mjs",
     "de1:crests": "node scripts/fetch-crests.mjs --league=de1",
+    "it1:crests": "node scripts/fetch-crests.mjs --league=it1",
+    "fr1:crests": "node scripts/fetch-crests.mjs --league=fr1",
     "it1:fetch": "node scripts/fetch-serie-a.mjs",
     "fr1:fetch": "node scripts/fetch-ligue-1.mjs",
     "it1:players": "node scripts/fetch-serie-a-players.mjs",

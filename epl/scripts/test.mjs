@@ -5790,7 +5790,25 @@ function checkUcl() {
       .replace(/(^|[^:])\/\/[^\n]*/g, (m, p) => p + ' '.repeat(m.length - p.length));
     /* 共用版面 = 三個以上聯賽都會走到的那幾支。core.js 例外:註冊表本身在那裡。 */
     const SHARED = ['page-analysis.js', 'page-teams.js', 'page-players.js', 'page-index.js', 'page-tactics.js'];
-    const NAMES = ['英超', '西甲', '英冠', '德甲'];
+    /* 抓取類的腳本也有同一種寫死。`fetch-crests.mjs` 的開場白原本是
+       `LEAGUE === 'es1' ? '西甲' : '英超'` —— 德甲義甲法甲跑起來全部印
+       「抓取 N 支**英超**球隊的隊徽」。不影響產物,但 log 是這一步唯一的輸出,
+       而下一個人就是靠它判斷抓對了沒。聯賽名一律從 profile 讀。 */
+    {
+      const src = stripComments(readFileSync(join(ROOT, 'scripts', 'fetch-crests.mjs'), 'utf8'));
+      ok(/PROFILE\.label/.test(src) && !/\?\s*'(西甲|英超|德甲|義甲|法甲)'\s*:\s*'(西甲|英超|德甲|義甲|法甲)'/.test(src),
+        '隊徽抓取器的聯賽名從 profile 讀,不是「不是西甲就是英超」的二元式');
+    }
+
+    /* **聯賽名單不可以寫死在這裡。** 第一版寫 `['英超','西甲','英冠','德甲']`,
+       而加義甲法甲時沒有人回來改 —— 這條測試就會**靜靜不再檢查新聯賽**,
+       而它守的正是「新聯賽被印成別的聯賽」。
+       名字從 `core.js` 的 `LEAGUES` 註冊表讀:那是前端唯一的聯賽名出處,
+       而這一條掃的就是前端。(改掃產物的 `leagueLabel` 行不通 —— 西甲的 meta
+       沒有那個欄位,掃出來會**少掉西甲**,比寫死還糟。) */
+    const NAMES = [...readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8')
+      .slice(readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8').indexOf('export const LEAGUES = {'))
+      .matchAll(/^\s*[a-z0-9]+:\s*\{\s*zh:\s*'([^']+)'/gm)].map(m => m[1]);
     const hits = [];
     for (const f of SHARED) {
       const p = join(W, 'assets', 'js', f);
