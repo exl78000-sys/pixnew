@@ -40,11 +40,17 @@ try {
   const hq = C.qs('home'), aq = C.qs('away');
   const target = id ? fixtures.find(f => f.id === id)
     : hq && aq ? fixtures.find(f => f.home === hq && f.away === aq) : null;
+  /* 往季的場次**不在 `fixtures` 裡**(那一份只有本季),但 2026-09-16 起它們有賽後報告。
+     索引在 `reports.archive.ids`(只有 id —— 報告本身是 `match-reports/{季}/{id}.json`
+     逐場檔,點開這一場才載;整份內嵌的話首頁會從 1.6 MB 變成二十幾 MB)。
+     不在索引裡的 id 才是真的沒有這一場,那時候才導回賽程表。 */
+  const archivedId = !target && id && (reports.archive?.ids ?? []).includes(id) ? id : null;
 
   /* 這一頁只處理「一場比賽」。沒指定是哪一場就導回賽程表 ——
      以前這裡有自己的列表,但它是賽程表的子集(只有未開賽且有文章的場次,
      還沒有篩選),兩個入口只會讓人猶豫該點哪一個。 */
   if (target) renderMatch(target);
+  else if (archivedId) await renderArchivedMatch(archivedId);
   else location.replace(C.link('index'));
 
   /* ── 單場分析 ────────────────────────────── */
@@ -284,6 +290,65 @@ try {
     setupExpertPagers();
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
     C.startCountdowns();
+  }
+
+  /* ── 往季單場(2026-09-16)────────────────────
+     上一季的賽後報告走逐場檔,這裡只畫**賽後**。
+
+     為什麼不順便畫賽前那幾塊:`renderBasicMatch` 的對比、近五場、關鍵球員與戰術雷達
+     吃的全是**今天**的資料(現在的 Elo、現在的近況、現在的名單)。把今天的數字擺在
+     一場去年的比賽旁邊,每一個都是錯的,而畫面完全正常 —— 那正是本站最怕的那種謊。
+     當時的賽前狀態本站沒有存,所以不假裝有,由畫面講出來(鐵則四)。
+
+     卡片一律走 `C.matchReportCards`(三個聯賽、歐冠、盃賽同一套),不自己再畫一份。 */
+  async function renderArchivedMatch(matchId) {
+    app.innerHTML = '<div class="card"><div class="tiny dim">載入賽後報告中…</div></div>';
+    const name = `match-reports/${reports.archive.season}/${matchId}`;
+    /* 走 loadFrom 不是 load:load() 回的是資料本身、而且 404 會 throw ——
+       往季逐場檔在單檔版裡本來就不存在(沒打包),那不是錯誤,要分得出來。
+       盃賽單場頁載它的逐場檔也是這樣寫的。 */
+    const { data, absent } = await C.loadFrom(C.league(), [name]);
+    const rep0 = data?.[name] ?? null;
+    if (!rep0) {
+      /* 單檔版沒有打包逐場檔(一季十幾 MB,六個聯賽就上百)—— 跟盃賽單場頁同一句話。
+         那不是壞掉,要講得出是哪一種,不然讀者會以為站壞了。 */
+      app.innerHTML = `<div class="page-head"><a class="small dim" href="${C.link('index')}">← 回積分與賽程</a></div>
+        <div class="card"><div class="note">${(absent ?? []).length
+          ? '單檔版沒有打包往季的逐場賽後報告(一季十幾 MB);分頁版才有。'
+          : '這一場的往季賽後報告讀不到。'}</div></div>`;
+      return;
+    }
+    const rep = C.reportWithPlayerPhotos(rep0, players);
+    const part = (keys, head, hint) => {
+      const html = C.matchReportCards(rep, { order: keys }).trim();
+      return html ? `<div class="section" style="margin-top:18px"><h2>${head}</h2>
+        <span class="hint">${hint}</span></div>${html}` : '';
+    };
+    app.innerHTML = `
+    <div class="page-head">
+      <a class="small dim" href="${C.link('index')}">← 回積分與賽程</a>
+      <h1 style="margin-top:6px">${C.teamLink(rep.home)} <span class="dim">vs</span> ${C.teamLink(rep.away)}</h1>
+      <p>${C.esc(C.LEAGUES[C.league()]?.zh ?? '')} ${C.esc(rep.season)}${
+        rep.round ? `・第 ${rep.round} 輪` : ''}・${rep.date ? C.dateFull(rep.date) : ''}
+        <span class="pill tiny">往季</span></p>
+    </div>
+    <div class="card">
+      <div class="scoreline" style="margin:4px 0 10px">
+        <div class="side">${C.badge(rep.home, 'big')}<b>${C.teamLink(rep.home)}</b></div>
+        <div class="sc" style="font-size:22px">${rep.hs} <span class="dim">:</span> ${rep.as}</div>
+        <div class="side away">${C.badge(rep.away, 'big')}<b>${C.teamLink(rep.away)}</b></div>
+      </div>
+      <div class="center tiny dim">這是<b>往季</b>的一場比賽,只有賽後資料 ——
+        本站沒有保存當時的賽前狀態(Elo、近況、名單都是會變的東西),所以不拿現在的數字冒充當時的賽前分析。</div>
+    </div>
+    ${part(['events'], '進球與比賽事件', '供應商回傳的完整事件時間軸')}
+    ${part(['tactics'], '戰術', '由本場已核對數據自動生成,不是人寫的評論')}
+    ${part(['lineups'], '陣容', '正式先發、陣型與站位')}
+    ${part(['compare', 'teamStats', 'players', 'best'], '數據', '球隊統計與球員評分')}`;
+    /* 球員名字可以點進球員頁(跟本季那兩條同一個呼叫)。往季離隊的人在站上沒有頁面,
+       那時候 players.html 自己會講,不在這裡先擋掉 —— 擋掉的話讀者連名字都點不動,
+       分不出「這個人沒有頁面」與「這一塊壞了」。 */
+    C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
   }
 
   function renderBasicMatch(f) {

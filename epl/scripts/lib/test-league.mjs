@@ -17,7 +17,7 @@
  *   3. 球員層是「還沒抓」不是「拿不到」(Understat 涵蓋這三個聯賽,是沙箱出不去)。
  *      英冠那句「來源就是沒有」抄過來就是說謊。
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadTeams } from './teams.mjs';
 import { simulateSeason } from './simulate.mjs';
@@ -511,6 +511,7 @@ export function testLeague(L) {
       check('逐場統計涵蓋的季數不少於報告(母體比發布範圍寬)',
         new Set(Object.keys(ms.matches).map(k => k.split('|')[0])).size >= rep.seasons.length,
         [...new Set(Object.keys(ms.matches).map(k => k.split('|')[0]))].sort().join('、'));
+
       const all = Object.values(rep.reports);
       check('賽後報告:比分等於賽果、雙方先發 11 人、有正式陣型', all.every(r => {
         const f = byKey.get(`${r.season}|${r.home}|${r.away}`);

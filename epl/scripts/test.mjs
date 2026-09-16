@@ -4271,6 +4271,88 @@ async function checkDataGap() {
       ];
     })(),
 
+    /* 往季逐場檔本身:**一處掃六個聯賽**,不要每個聯賽一份複本(手寫清單那條坑)。
+       索引與檔案是分開存的,對不上就是「按鈕在但點了沒東西」,而畫面完全正常。 */
+    ['往季逐場檔:索引與檔案對得起來(掃每一個聯賽)', (() => {
+      const dirs = [{ key: 'pl', dir: join(ROOT, 'web', 'data') },
+        ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+          .filter(e => e.isDirectory()).map(e => ({ key: e.name, dir: join(ROOT, 'web', 'data', 'leagues', e.name) }))];
+      const bad = [];
+      let seen = 0;
+      for (const { key, dir } of dirs) {
+        const rp = join(dir, 'reports.json');
+        if (!existsSync(rp)) continue;
+        const arc = JSON.parse(readFileSync(rp, 'utf8')).archive;
+        if (!arc) continue;
+        seen++;
+        const ad = join(dir, 'match-reports', arc.season);
+        const onDisk = existsSync(ad) ? readdirSync(ad).filter(f => f.endsWith('.json')) : [];
+        if (arc.count !== arc.ids.length || arc.count !== onDisk.length) {
+          bad.push(`${key}:索引 ${arc.count}/${arc.ids.length}、檔案 ${onDisk.length}`);
+          continue;
+        }
+        const miss = arc.ids.filter(x => !onDisk.includes(`${x}.json`));
+        if (miss.length) bad.push(`${key}:${miss.length} 個 id 沒有檔案`);
+        /* 逐場檔要**自足**(單場頁只載這一個檔就要畫得出頁首與比分),
+           而且不准有建置時間戳 —— 部署一天兩次整份重寫,有時間戳就每次往 git 塞 2,299 個新 blob。 */
+        const meta = JSON.parse(readFileSync(join(dir, 'meta.json'), 'utf8'));
+        /* 比分與主客要對得回 results.json。報告產生器自己核過一次,這裡守的是**寫檔那一步
+           有沒有把某一場的報告掛到另一場的 id 上** —— 英冠的附加賽就會撞鍵,
+           那幾場依設計不寫;真的寫錯的話讀者看到的是「另一場比賽」,而畫面完全正常。 */
+        const res = JSON.parse(readFileSync(join(dir, 'results.json'), 'utf8'));
+        const resBy = new Map(res.filter(m => m.season === arc.season).map(m => [m.id, m]));
+        const NEED = ['id', 'season', 'round', 'date', 'home', 'away', 'hs', 'as', 'sides', 'advanced'];
+        for (const x of arc.ids.slice(0, 12)) {
+          const r = JSON.parse(readFileSync(join(ad, `${x}.json`), 'utf8'));
+          const lack = NEED.filter(k => r[k] === undefined);
+          if (lack.length) bad.push(`${key}/${x}:缺 ${lack.join('、')}`);
+          if (JSON.stringify(r).includes(meta.builtAt)) bad.push(`${key}/${x}:帶了建置時間戳`);
+          const m = resBy.get(x);
+          if (!m) bad.push(`${key}/${x}:results.json 裡沒有這個 id`);
+          else if (m.home !== r.home || m.away !== r.away || m.fh !== r.hs || m.fa !== r.as) {
+            bad.push(`${key}/${x}:掛錯場次(檔 ${r.home} ${r.hs}-${r.as} ${r.away} vs 賽果 ${m.home} ${m.fh}-${m.fa} ${m.away})`);
+          }
+        }
+      }
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      /* seen 是「有往季索引的聯賽數」。**不寫死等於 6** —— 哪天某個聯賽沒有上季 raw
+         就會紅在「還沒補齊」上(「把目標達成寫成 CI 紅線」那條坑)。只要有就得對。 */
+      console.log(`    往季逐場檔:${seen} 個聯賽有索引`);
+      return bad.length === 0;
+    })()],
+    /* ── 往季賽後報告(2026-09-16)──
+       上一季的報告不在 `reports.reports` 裡(那一份是首頁與單場頁**整份載**的,
+       塞進去會從 1.6 MB 變成二十幾 MB),而是 `match-reports/{季}/{id}.json` 逐場檔。
+       所以前端有兩處要對:賽程表要肯給往季的列連結、單場頁要認得往季的 id。 */
+    ['賽程表的「有完整分析」不再只認本季 —— 往季看 reports.archive', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');
+      const i = src.indexOf('const hasFullAnalysis');
+      if (i < 0) return false;
+      const body = src.slice(i, i + 500);
+      /* 舊寫法是 `f.season === meta.currentSeason && (...)` —— 整個條件被本季擋住。
+         新寫法要分兩支,而且往季那一支要查 archive。 */
+      return /archive\?\.ids/.test(src) && /archived\.has\(f\.id\)/.test(body)
+        && !/hasFullAnalysis = f => f\.season === meta\.currentSeason &&/.test(src);
+    })()],
+    ['單場頁認得往季的 id,而且用 loadFrom 載逐場檔(load 會在 404 時 throw)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      return /reports\.archive\?\.ids/.test(src)
+        && /renderArchivedMatch/.test(src)
+        && /C\.loadFrom\(C\.league\(\), \[name\]\)/.test(src)
+        /* 單檔版沒有打包逐場檔 —— 那不是壞掉,要講得出是哪一種(跟盃賽單場頁同一句) */
+        && /單檔版沒有打包/.test(src);
+    })()],
+    /* 往季只畫賽後。`renderBasicMatch` 的賽前那幾塊吃的是**今天**的 Elo / 近況 / 名單,
+       擺在一場去年的比賽旁邊每一個都是錯的 —— 這條守「沒有偷偷共用那條路」。 */
+    ['往季單場頁不畫賽前(不拿今天的 Elo 冒充當時的賽前分析)', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      const i = src.indexOf('async function renderArchivedMatch');
+      if (i < 0) return false;
+      const body = src.slice(i, src.indexOf('function renderBasicMatch'));
+      return body.length > 200 && !/renderBasicMatch\(/.test(body)
+        && !/C\.versus\(/.test(body) && !/probCurveCard\(/.test(body)
+        && /不拿現在的數字冒充當時的賽前分析/.test(body);
+    })()],
     /* ── 盃賽併頁 + 球隊完整賽程含盃賽(2026-08-29,使用者要求)── */
     ['球隊深連結預設只看未賽(「完整賽程」要的是未來)', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'fixture-list.js'), 'utf8');

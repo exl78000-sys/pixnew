@@ -55,6 +55,8 @@ import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './li
 import { numberProfile, traditionVsData, formationFromLineups } from './lib/knowledge.mjs';
 import { round } from './lib/util.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
+import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
+import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
@@ -1560,10 +1562,42 @@ async function main() {
     teams: teamForm,
   });
   await write('analysis.json', { ...aiSummary, pre: aiPre, post: aiPost, counts: { pre: aiSummary.pre, post: aiSummary.post } });
+  /* 上一季的賽後報告(2026-09-16):逐場檔 `match-reports/{季}/{id}.json`,
+     索引在 `reports.archive`。整份內嵌的話 `reports.json` 會從 2.1 MB 變成二十幾 MB,
+     而首頁與單場頁都是整份載它的。
+
+     **走 FotMob,不走上面那條 FPL + pulselive 的路。** 本季的報告是那條路建的
+     (`buildMatchReport`,吃 FPL 的逐場欄位與官方事件);上一季本站留的是 FotMob 的
+     逐場快取,而那正是其他五個聯賽用的同一支 `buildProviderMatchReport` ——
+     一場一份、比分對回賽果才收。報告自己帶 `source`,畫面講得出出處。 */
+  const archiveReports = {};
+  for (const f of lastMatches) {
+    if (!f.played) continue;
+    const ms = fotmobStats.matches?.[`${f.season}|${f.home}|${f.away}`];
+    if (!ms) continue;
+    const rep = buildProviderMatchReport({
+      fixture: f, detail: toCanonicalDetail(ms, { verified: false }),
+      nameOf: code => T.byCode.get(code)?.en ?? code,
+    });
+    if (rep) archiveReports[`${f.season}|${f.home}|${f.away}`] = rep;
+  }
+  const { map: lastByKey, duplicates: dupKeys } = idMapForArchive(lastMatches);
+  if (dupKeys.length) console.log(`  ⚠ 英超往季有 ${dupKeys.length} 組撞鍵的對戰,那幾場不寫逐場檔:${dupKeys.join('、')}`);
+  const archive = writeMatchArchive({
+    outDir: OUT, reports: archiveReports, season: LAST_SEASON,
+    idOf: key => lastByKey.get(key)?.id ?? null,
+    extraOf: key => ({ round: lastByKey.get(key)?.round ?? null, date: lastByKey.get(key)?.date ?? null }),
+  });
+  if (archive.count || archive.missingId.length) {
+    console.log(`  英超往季賽後報告(${LAST_SEASON}):${archive.count} 場逐場檔、${archive.kb} KB`
+      + (archive.missingId.length ? `・${archive.missingId.length} 場對不到場次 id,沒寫` : ''));
+  }
   await write('reports.json', {
     seasons: [...new Set(Object.keys(reports).map(k => k.split('|')[0]))],
     count: Object.keys(reports).length,
     reports,
+    /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json */
+    archive: archive.count ? { season: archive.season, count: archive.count, ids: archive.ids } : null,
   });
   const knownMatchKeys = new Set([...history, ...curMatches].map(m => `${m.season}|${m.home}|${m.away}`));
   const expertOpinions = loadExpertOpinions(ROOT, { validMatchKeys: knownMatchKeys });

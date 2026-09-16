@@ -41,6 +41,7 @@ import { fileURLToPath } from 'node:url';
 
 import { leagueMatches, backfillLine, europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
+import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
@@ -924,19 +925,40 @@ async function main() {
      那句「沒有接賽後資料源」現在不成立了,blocked 要回 null。 */
   const reports = {};
   const nameOf = code => T.byCode.get(code)?.en ?? code;
-  for (const f of fixtures) {
+  /* 走**兩季**的已完賽場次,不是只走 `fixtures`(那只有本季)——
+     上一季的報告 2026-09-16 起發布成逐場檔。`reports` 產物裡**內嵌的**仍然只有本季
+     (首頁與單場頁是整份載那一份的,英冠已經 4.9 MB)。 */
+  for (const f of [...lastMatches, ...curMatches]) {
     if (!f.played) continue;
     const ms = fotmobStats.matches?.[`${f.season}|${f.home}|${f.away}`];
     if (!ms) continue;
     const report = buildProviderMatchReport({ fixture: f, detail: toCanonicalDetail(ms, { verified: false }), nameOf });
     if (report) reports[`${f.season}|${f.home}|${f.away}`] = report;
   }
-  const reportCount = Object.keys(reports).length;
+  const publishedReports = Object.fromEntries(
+    Object.entries(reports).filter(([k]) => k.startsWith(`${CURRENT_SEASON}|`)));
+  /* **英冠是唯一會撞鍵的那一個**:季末的升級附加賽由聯賽裡的四隊互打,
+     `NOR|LEE` 可以同時是聯賽場次與附加賽場次。撞到的一律不寫逐場檔 ——
+     挑一個 id 去命名等於把某一場的報告掛到另一場的網址上。 */
+  const { map: lastByKey, duplicates: dupKeys } = idMapForArchive(lastMatches);
+  if (dupKeys.length) console.log(`  ⚠ 英冠往季有 ${dupKeys.length} 組撞鍵的對戰(附加賽),那幾場不寫逐場檔:${dupKeys.join('、')}`);
+  const archive = writeMatchArchive({
+    outDir: OUT, reports, season: LAST_SEASON,
+    idOf: key => lastByKey.get(key)?.id ?? null,
+    extraOf: key => ({ round: lastByKey.get(key)?.round ?? null, date: lastByKey.get(key)?.date ?? null }),
+  });
+  if (archive.count || archive.missingId.length) {
+    console.log(`  英冠往季賽後報告(${LAST_SEASON}):${archive.count} 場逐場檔、${archive.kb} KB`
+      + (archive.missingId.length ? `・${archive.missingId.length} 場對不到場次 id,沒寫` : ''));
+  }
+  const reportCount = Object.keys(publishedReports).length;
   const pendingCount = fixtures.filter(f => f.played && f.season === CURRENT_SEASON && !reports[`${f.season}|${f.home}|${f.away}`]).length;
   if (reportCount) console.log(`  英冠賽後報告:${reportCount} 場(FotMob)・本季還沒抓到 ${pendingCount} 場`);
   await write('reports', {
-    seasons: reportCount ? [...new Set(Object.values(reports).map(r => r.season))].sort() : [], count: reportCount, reports,
+    seasons: reportCount ? [...new Set(Object.values(publishedReports).map(r => r.season))].sort() : [], count: reportCount, reports: publishedReports,
     source: reportCount ? 'fotmob' : null, pending: pendingCount,
+    /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json */
+    archive: archive.count ? { season: archive.season, count: archive.count, ids: archive.ids } : null,
     blocked: reportCount ? null : { reason: 'not-fetched', message: '英冠的 FotMob 逐場資料還沒抓(npm run game:fetch -- --league=en2)。', at: new Date().toISOString() },
     backupBlocked: null,
     note: reportCount
@@ -971,7 +993,10 @@ async function main() {
       usedHashes.add(rep.hash);
       aiPre[`${f.home}|${f.away}`] = rep;
     }
-    for (const [key, r] of Object.entries(reports)) {
+    /* **只給本季寫賽後文章。** `reports` 2026-09-16 起含兩季(往季要拿去寫逐場檔),
+       照它全部生的話 `analysis.json` 會從 83 篇變成 633 篇 —— 而那一份是首頁與
+       單場頁**整份載**的。往季的單場頁本來就只畫賽後卡片,沒有文章的位置。 */
+    for (const [key, r] of Object.entries(publishedReports)) {
       const bundle = postMatchBundle({
         report: { ...r, preMatch: null },   // 英冠沒有賽前機率快照,不寫賽前對照
         home: teamFull(r.home), away: teamFull(r.away), asOf: AS_OF, seasonLabel, league,

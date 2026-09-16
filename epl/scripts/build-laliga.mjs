@@ -36,6 +36,7 @@ import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
+import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { recordFor } from './lib/coaches.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { percentile, round } from './lib/util.mjs';
@@ -633,6 +634,36 @@ async function main() {
       .map(([code, t]) => [code, t && 'xG' in t ? { ...t, xG: null } : t]));
     return { ...detail, teamStats };
   };
+
+  /* 上一季的賽後報告(2026-09-16):逐場檔 `match-reports/{季}/{id}.json`,
+     索引在 `reports.archive`,讀者點開那一場才載 —— 整份內嵌的話 `reports.json`
+     會從 4.2 MB 變成三十幾 MB,而首頁與單場頁都是整份載它的。
+
+     **只走 FotMob,而且刻意不併進下面的 `reports`。** 本季那一份是多來源合併的
+     (SportMonks 為主、API-Football 補缺口、FotMob 墊底),而上一季本站只有 FotMob 的
+     逐場快取;混進同一個 map 會讓「這一場是哪個來源」講不清楚,而畫面上要講出處。 */
+  const archiveReports = {};
+  for (const f of lastMatches) {
+    if (!f.played) continue;
+    const ms = fotmobStats.matches?.[`${f.season}|${f.home}|${f.away}`];
+    if (!ms) continue;
+    const report = buildProviderMatchReport({
+      fixture: f, detail: toCanonicalDetail(ms, { verified: false }),
+      nameOf: code => T.byCode.get(code)?.en ?? code,
+    });
+    if (report) archiveReports[`${f.season}|${f.home}|${f.away}`] = report;
+  }
+  const { map: lastByKey, duplicates: dupKeys } = idMapForArchive(lastMatches);
+  if (dupKeys.length) console.log(`  ⚠ 西甲往季有 ${dupKeys.length} 組撞鍵的對戰,那幾場不寫逐場檔:${dupKeys.join('、')}`);
+  const archive = writeMatchArchive({
+    outDir: OUT, reports: archiveReports, season: LAST_SEASON,
+    idOf: key => lastByKey.get(key)?.id ?? null,
+    extraOf: key => ({ round: lastByKey.get(key)?.round ?? null, date: lastByKey.get(key)?.date ?? null }),
+  });
+  if (archive.count || archive.missingId.length) {
+    console.log(`  西甲往季賽後報告(${LAST_SEASON}):${archive.count} 場逐場檔、${archive.kb} KB`
+      + (archive.missingId.length ? `・${archive.missingId.length} 場對不到場次 id,沒寫` : ''));
+  }
 
   const reports = {};
   for (const [pair, detail] of Object.entries(postMatchStore.matches ?? {})) {
@@ -1398,6 +1429,8 @@ async function main() {
   await write('goals', goalsOut);
   await write('reports', {
     seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,
+    /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json */
+    archive: archive.count ? { season: archive.season, count: archive.count, ids: archive.ids } : null,
     source: reportCount ? [...new Set(Object.values(reports).map(r => r.source))].join(' + ') : 'sportmonks + api-football', pending: pendingCount,
     blocked,
     // 備援補不了缺口這件事仍要說,但它不是「這一季拿不到」的理由 —— 主要來源已發布 reportCount 場。

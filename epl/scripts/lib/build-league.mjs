@@ -50,6 +50,7 @@ import { coreFromUnderstat } from './player-core.mjs';
 /* 比賽層(2026-09-15):FotMob 逐場 → 逐場統計 + 賽後報告。跟西甲、英冠**同一份實作**,
    不各寫一套(buildProviderMatchReport 自己會再核對一次比分、要求 coverage 齊全)。 */
 import { loadFotmobMatchStats, toCanonicalDetail } from './matchstats.mjs';
+import { writeMatchArchive, idMapForArchive } from './match-archive.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
@@ -423,8 +424,10 @@ export async function buildLeague(L) {
      2026-09-16 回填上一季的逐場資料時踩到:raw 從 27 場變成 333 場,而下面的烏龍球對帳
      仍然印「事件涵蓋 0/306 場」—— 看起來像回填沒有用,實際上是**回填進來的那一季根本沒被走到**,
      因為報告只建在本季賽程上,而對帳數的正是報告裡的事件。
-     發布的仍然只有本季(`reports` 產物,跟其他四個聯賽一致);上一季的報告是另一件事
-     —— 那會讓產物大十倍,要另外決定。所以**建立的母體**與**發布的範圍**分開。 */
+     `reports` 產物裡**內嵌的**仍然只有本季 —— 首頁與單場頁是整份載那一份的,
+     把上一季塞進去會讓它從 1.6 MB 變成二十幾 MB。上一季走 `match-reports/{季}/{id}.json`
+     逐場檔(2026-09-16,跟盃賽同一條路),`reports.json` 只留 id 索引。
+     所以這裡有三個範圍,不要混:**建立的母體**(兩季)、**內嵌的**(本季)、**逐場檔的**(上一季)。 */
   for (const f of [...lastMatches, ...curMatches]) {
     if (!f.played) continue;
     const ms = fotmobStats.matches?.[`${f.season}|${f.home}|${f.away}`];
@@ -435,6 +438,19 @@ export async function buildLeague(L) {
   const publishedReports = Object.fromEntries(
     Object.entries(reports).filter(([k]) => k.startsWith(`${CURRENT_SEASON}|`)));
   const reportCount = Object.keys(publishedReports).length;
+  /* 上一季寫成逐場檔。檔名用**場次 id**(`2025-26-0`)不是「季|主|客」——
+     那個鍵帶 `|`,當檔名要跳脫、當網址參數更麻煩,而 id 本來就是單場頁的網址參數。 */
+  const { map: lastByKey, duplicates: dupKeys } = idMapForArchive(lastMatches);
+  if (dupKeys.length) console.log(`  ⚠ ${L.zh}往季有 ${dupKeys.length} 組撞鍵的對戰,那幾場不寫逐場檔:${dupKeys.join('、')}`);
+  const archive = writeMatchArchive({
+    outDir: OUT, reports, season: LAST_SEASON,
+    idOf: key => lastByKey.get(key)?.id ?? null,
+    extraOf: key => ({ round: lastByKey.get(key)?.round ?? null, date: lastByKey.get(key)?.date ?? null }),
+  });
+  if (archive.count || archive.missingId.length) {
+    console.log(`  ${L.zh}往季賽後報告(${LAST_SEASON}):${archive.count} 場逐場檔、${archive.kb} KB`
+      + (archive.missingId.length ? `・${archive.missingId.length} 場對不到場次 id,沒寫` : ''));
+  }
   const pendingCount = fixtures.filter(f => f.played && f.season === CURRENT_SEASON
     && !reports[`${f.season}|${f.home}|${f.away}`]).length;
   if (reportCount) console.log(`  ${L.zh}賽後報告:${reportCount} 場(FotMob)・本季還沒抓到 ${pendingCount} 場`);
@@ -857,6 +873,9 @@ export async function buildLeague(L) {
   await write('reports', {
     seasons: reportCount ? [...new Set(Object.values(publishedReports).map(r => r.season))].sort() : [],
     count: reportCount, reports: publishedReports, source: reportCount ? 'fotmob' : null, pending: pendingCount,
+    /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json。
+       前端拿它決定「這一列要不要給連結」與「這個 id 是不是往季的」。 */
+    archive: archive.count ? { season: archive.season, count: archive.count, ids: archive.ids } : null,
     blocked: reportCount ? null : { reason: 'not-fetched', message: `${L.zh}的 FotMob 逐場資料還沒抓(npm run game:fetch -- --league=${L.key})。`, at: new Date().toISOString() },
     backupBlocked: null,
     note: reportCount

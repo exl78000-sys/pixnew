@@ -28,9 +28,16 @@ export function mountFixtureList({
     ? fixtures
     : results.filter(m => m.season === season).map(m => ({ ...m, kickoff: null }));
   const reportFor = f => reports.reports[`${f.season}|${f.home}|${f.away}`] ?? null;
-  const hasFullAnalysis = f => f.season === meta.currentSeason && (f.played
-    ? !!reportFor(f) || !!analysis.post[`${f.season}|${f.home}|${f.away}`]
-    : !!analysis.pre[`${f.home}|${f.away}`]);
+  /* 往季的賽後報告不在 `reports.reports` 裡(那一份只內嵌本季,不然首頁會變成幾十 MB),
+     它們是 `match-reports/{季}/{id}.json` 逐場檔,`reports.archive.ids` 是索引。
+     這一行原本寫死 `f.season === meta.currentSeason` —— 上一季的列因此沒有連結,
+     而 2026-09-16 起那些報告是真的存在的(「東西在但沒有按鈕」)。 */
+  const archived = new Set(reports.archive?.ids ?? []);
+  const hasFullAnalysis = f => (f.season === meta.currentSeason
+    ? (f.played
+      ? !!reportFor(f) || !!analysis.post[`${f.season}|${f.home}|${f.away}`]
+      : !!analysis.pre[`${f.home}|${f.away}`])
+    : archived.has(f.id));
 
   const render = () => {
     const season = document.getElementById(selectIds.season).value;
