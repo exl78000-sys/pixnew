@@ -5799,6 +5799,41 @@ function checkUcl() {
       .replace(/(^|[^:])\/\/[^\n]*/g, (m, p) => p + ' '.repeat(m.length - p.length));
     /* 共用版面 = 三個以上聯賽都會走到的那幾支。core.js 例外:註冊表本身在那裡。 */
     const SHARED = ['page-analysis.js', 'page-teams.js', 'page-players.js', 'page-index.js', 'page-tactics.js'];
+    /* ── 人工交付的把關(2026-09-16,推薦順序第二項)──
+       德義法的隊色 / 城市 / 球場 / 教練要人工交付。收件匣還沒到,所以這裡守的是
+       **管道本身是對的**:核對器在、build 只讀核對後的產物、三個聯賽都掛上了。
+       交付一到就會被檢查,不必有人記得回來加。 */
+    {
+      const teamsSrc = readFileSync(join(ROOT, 'scripts', 'verify-league-teams.mjs'), 'utf8');
+      const coachSrc = readFileSync(join(ROOT, 'scripts', 'verify-league-coaches.mjs'), 'utf8');
+      const core = readFileSync(join(ROOT, 'scripts', 'lib', 'team-delivery.mjs'), 'utf8');
+      const en2 = readFileSync(join(ROOT, 'scripts', 'verify-championship-teams.mjs'), 'utf8');
+      const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).scripts;
+
+      ok(['de1', 'it1', 'fr1'].every(k => pkg[`${k}:verify-teams`] && pkg[`${k}:verify-coaches`]),
+        '德義法三個聯賽都有球隊與教練的核對指令');
+      /* 四道核對的實作只能有一份 —— 各寫一份會慢慢分岔,而分岔的症狀是
+         「某個聯賽的把關比別人鬆」,沒有人會發現。 */
+      ok(/from '\.\/lib\/team-delivery\.mjs'/.test(teamsSrc) && /from '\.\/lib\/team-delivery\.mjs'/.test(en2),
+        '球隊交付的核對實作是共用的(英冠與德義法同一份)');
+      ok(!/function crestColours/.test(teamsSrc) && !/function crestColours/.test(en2),
+        '沒有人自己再寫一份隊徽取色');
+      /* 「沒有對照組」要回 null —— 0 會被讀成「查了 0 支、全過」 */
+      ok(/control = null/.test(core) && /controlTeams = control \? 0 : null/.test(core),
+        '沒有對照組時 controlTeams 是 null 不是 0');
+      ok(/control: null/.test(teamsSrc), '德義法明確宣告沒有對照組');
+      /* 教練的獨立來源是逐場正式名單,而且查不動要記 unverified 不是 confirmed */
+      ok(/lineups/.test(coachSrc) && /'unverified'/.test(coachSrc) && /'conflict'/.test(coachSrc),
+        '教練核對用逐場正式名單當獨立來源,查不動記 unverified');
+      /* build 只讀核對後的產物,而且 sha 對不上要整批不採用 */
+      const bl = readFileSync(join(ROOT, 'scripts', 'lib', 'build-league.mjs'), 'utf8');
+      ok(/deliveryFile/.test(bl) && /inboxSha !== sha/.test(bl) && !/deliveryInbox\b[^\n]*JSON\.parse/.test(bl),
+        'build 只讀核對後的產物,收件匣改過沒重跑核對就整批不採用');
+      for (const f of ['build-bundesliga.mjs', 'build-serie-a.mjs', 'build-ligue-1.mjs']) {
+        ok(/deliveryInbox: '/.test(readFileSync(join(ROOT, 'scripts', f), 'utf8')), `${f} 掛了交付收件匣`);
+      }
+    }
+
     /* ── 比賽夜的即時路徑,每個聯賽都要接上(2026-09-16)──
        德義法原本只有 football-data.co.uk 補比分,而那份以**天**為節奏:比賽當晚畫面上
        是「等待賽果」,隔天才有。接 FotMob 賽程端點要**三個清單同時有它**,少一個就等於沒接:

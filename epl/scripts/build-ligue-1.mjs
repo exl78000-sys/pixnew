@@ -29,6 +29,10 @@ await buildLeague({
   rawDir: 'openfootball-ligue-1', fillDir: 'football-data-couk-ligue-1', div: 'F1', ofCode: 'fr.1',
   understatDir: 'understat-ligue-1', fotmobDir: 'fotmob-ligue-1',
   teamFile: 'teams-ligue-1.json', crestFile: 'crests-ligue-1.json',
+  /* 人工交付(隊色/城市/球場/容量/綽號)的收件匣與核對後產物。交付還沒到,
+     所以這兩個檔現在都不存在 —— build 對缺檔是什麼都不做,不是報錯。
+     格式與核對規矩見 docs/交付格式-德義法球隊與教練.md */
+  deliveryInbox: 'ligue-1-teams-delivery.json', deliveryFile: 'ligue-1-teams-verified.json',
   /* 法國是 Europe/Paris:夏令 CEST(+02:00)、冬令 CET(+01:00)。 */
   timezone: { summer: '+02:00', winter: '+01:00' },
   lastSeason: '2025-26', currentSeason: '2026-27', priorSeasons: ['2023-24', '2024-25'],

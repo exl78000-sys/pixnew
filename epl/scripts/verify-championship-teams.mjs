@@ -35,47 +35,27 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { decodePNG } from './lib/png.mjs';
-import { oklch, deltaE } from './lib/colour.mjs';
+import { verifyTeamDelivery, deliveryLines } from './lib/team-delivery.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const INBOX = join(ROOT, 'data', 'manual', 'championship-teams-delivery.json');
 const OUT = join(ROOT, 'data', 'championship-teams-verified.json');
 
-const FIELDS = ['colors', 'city', 'venue', 'capacity', 'nickname'];
+/* **四道核對的實作抽在 `lib/team-delivery.mjs`**,德義法共用同一份 ——
+   各寫一份的話,同一個核對在不同聯賽會慢慢分岔,而分岔的症狀是
+   「某個聯賽的把關比別人鬆」,沒有人會發現。
+   留在這裡的只有英冠自己的兩件事:對照組(12 支本站既有球隊)與隊徽的來源
+   (英冠的隊徽散在 crests.json 與盃賽那份的名字查表裡,不是自己一個檔)。 */
 const CAP_MIN = 10000, CAP_MAX = 63000;
-const DELTA_E_LIMIT = 40;
 
-const loose = s => String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g, '')
+const loose = s => String(s ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
   .toLowerCase().replace(/^afc\s+|\s+afc$/g, ' ').replace(/^fc\s+|\s+fc$/g, ' ')
   .replace(/&/g, ' and ').replace(/[^a-z0-9]/g, '');
 
-const hex = (r, g, b) => '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
-
-/* 隊徽的主色。量化成 16 階再分箱 —— 不分箱的話同一塊藍會散成上百個相近色,
-   誰都排不到前面。透明像素不算(背景不是球隊的顏色)。 */
-function crestColours(dataUri, n = 10) {
-  const img = decodePNG(Buffer.from(dataUri.split(',')[1], 'base64'));
-  const bins = new Map();
-  for (let i = 0; i < img.data.length; i += 4) {
-    const [r, g, b, a] = [img.data[i], img.data[i + 1], img.data[i + 2], img.data[i + 3]];
-    if (a < 200) continue;
-    const k = `${r >> 4},${g >> 4},${b >> 4}`;
-    const e = bins.get(k) ?? { n: 0, r: 0, g: 0, b: 0 };
-    e.n++; e.r += r; e.g += g; e.b += b; bins.set(k, e);
-  }
-  return [...bins.values()].sort((a, b) => b.n - a.n).slice(0, n)
-    .map(e => hex(Math.round(e.r / e.n), Math.round(e.g / e.n), Math.round(e.b / e.n)));
-}
-
 export function verify(root = ROOT) {
   const inboxRaw = readFileSync(join(root, 'data', 'manual', 'championship-teams-delivery.json'));
-  const inbox = JSON.parse(inboxRaw);
-  const inboxSha = createHash('sha256').update(inboxRaw).digest('hex');
   const roster = JSON.parse(readFileSync(join(root, 'data', 'manual', 'teams-championship.json'), 'utf8')).teams;
   const pl = JSON.parse(readFileSync(join(root, 'data', 'manual', 'teams.json'), 'utf8')).teams;
-  const plBy = new Map(pl.map(t => [t.code, t]));
-  const rosterBy = new Map(roster.map(t => [t.code, t]));
 
   const crests = (() => {
     const map = new Map();
@@ -91,99 +71,18 @@ export function verify(root = ROOT) {
     return map;
   })();
 
-  const problems = [];       // 足以整份退回的
-  const notes = [];          // 只回報,不退回
-  const teams = [];
-
-  const codes = inbox.teams.map(t => t.code);
-  if (new Set(codes).size !== codes.length) problems.push('交付檔裡有重複的隊碼');
-  for (const t of inbox.teams) if (!rosterBy.has(t.code)) problems.push(`隊碼不在名冊裡:${t.code} ${t.en}`);
-  const missing = roster.filter(t => !codes.includes(t.code));
-  if (missing.length) notes.push(`交付沒有涵蓋 ${missing.length} 支:${missing.map(t => t.code).join('、')}`);
-
-  // ── 1. 對照題 ──
-  let control = 0;
-  for (const t of inbox.teams) {
-    const o = plBy.get(t.code);
-    if (!o) continue;
-    control++;
-    const diff = [];
-    if (o.city && t.city && o.city !== t.city) diff.push(`城市 ${o.city} ≠ ${t.city}`);
-    if (o.venue && t.venue && o.venue !== t.venue) diff.push(`球場 ${o.venue} ≠ ${t.venue}`);
-    if (o.capacity && t.capacity && o.capacity !== t.capacity) diff.push(`容量 ${o.capacity} ≠ ${t.capacity}`);
-    const a = (o.colors ?? []).map(x => x.toUpperCase()).join(','), b = (t.colors ?? []).map(x => x.toUpperCase()).join(',');
-    if (a && b && a !== b) diff.push(`隊色 ${a} ≠ ${b}`);
-    if (diff.length) problems.push(`對照題不符 ${t.code}:${diff.join('、')}`);
-  }
-
-  // ── 2~4. 逐隊 ──
-  const venueCap = new Map();
-  for (const t of inbox.teams) {
-    const rec = { code: t.code, en: t.en, fields: {}, checks: {} };
-    for (const f of FIELDS) {
-      const v = t[f];
-      if (v == null || (Array.isArray(v) && !v.length)) continue;
-      /* 有值就要有出處。沒有出處的那一格不採用 —— 核對時對不上要回得去看。 */
-      if (!t.sources?.[f]) { notes.push(`${t.code} 的 ${f} 有值但沒有出處,不採用`); continue; }
-      rec.fields[f] = v;
-    }
-
-    if (rec.fields.capacity != null) {
-      const c = rec.fields.capacity;
-      if (!Number.isInteger(c) || c < CAP_MIN || c > CAP_MAX) {
-        problems.push(`${t.code} 容量超出合理範圍:${c}(英冠球場約 ${CAP_MIN}~${CAP_MAX})`);
-      }
-      if (rec.fields.venue) {
-        const prev = venueCap.get(rec.fields.venue);
-        if (prev && prev.cap !== c) problems.push(`同一座球場容量不一致:${rec.fields.venue} ${prev.code} ${prev.cap} vs ${t.code} ${c}`);
-        else venueCap.set(rec.fields.venue, { cap: c, code: t.code });
-      }
-    }
-
-    const claimed = rec.fields.colors?.[0];
-    const crest = crests.get(t.code);
-    if (claimed && crest) {
-      const top = crestColours(crest);
-      const best = Math.min(...top.map(h => deltaE(claimed, h)));
-      const achromatic = oklch(claimed).C < 0.05;
-      rec.checks.crestDeltaE = Math.round(best);
-      /* 白/黑這種無彩度的主色,隊徽比不出來 —— Bolton 的隊徽一點白都沒有,
-         但球衣真的是白的。這種只回報,不判定。 */
-      rec.checks.crestVerdict = achromatic ? 'not-comparable' : best <= DELTA_E_LIMIT ? 'ok' : 'far';
-      if (rec.checks.crestVerdict === 'far') {
-        notes.push(`${t.code} 的主色 ${claimed} 跟隊徽差很遠(ΔE ${Math.round(best)}),已保留但請人看一眼`);
-      }
-    } else if (claimed) {
-      rec.checks.crestVerdict = 'no-crest';
-    }
-    teams.push(rec);
-  }
-
-  /* **有一筆被證明錯就整份不採用。** 挑通過的用,等於在兩個對不上的來源裡
-     選一個喜歡的答案 —— 進球明細那次的教訓。 */
-  const accepted = problems.length === 0;
-  const report = {
-    ranAt: new Date().toISOString(),
-    inboxSha, source: inbox.source ?? null, retrievedAt: inbox.retrievedAt ?? null,
-    accepted, controlTeams: control, problems, notes,
-    counts: Object.fromEntries(FIELDS.map(f => [f, teams.filter(t => t.fields[f] != null).length])),
-    teams: accepted ? teams : [],
-  };
-  return report;
+  return verifyTeamDelivery({
+    inboxRaw, roster, crests,
+    control: new Map(pl.map(t => [t.code, t])),   // 12 支本站既有球隊,刻意留在交付清單裡
+    capMin: CAP_MIN, capMax: CAP_MAX,
+  });
 }
 
 function main() {
   const r = verify();
-  console.log(`▶ 英冠球隊資料核對(收件匣 sha ${r.inboxSha.slice(0, 12)})`);
-  console.log(`  對照題:${r.controlTeams} 支本站既有球隊`);
-  console.log(`  欄位:${Object.entries(r.counts).map(([k, v]) => `${k} ${v}`).join('・')}`);
-  for (const n of r.notes) console.log(`  · ${n}`);
-  for (const p of r.problems) console.log(`  ✗ ${p}`);
-  console.log(r.accepted
-    ? `✔ 採用 ${r.teams.length} 隊 → data/championship-teams-verified.json`
-    : `✗ 有 ${r.problems.length} 項對不上,**整份不採用**(不挑著用)`);
+  for (const line of deliveryLines(r, '英冠')) console.log(line);
+  if (r.accepted) console.log('  → data/championship-teams-verified.json');
   writeFileSync(OUT, JSON.stringify(r, null, 2));
-  if (!r.accepted) process.exitCode = 1;
 }
 
 /* **不要用 `import.meta.url === \`file://${process.argv[1]}\``。**

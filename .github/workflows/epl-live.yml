@@ -412,6 +412,18 @@ jobs:
 
       # 德甲走查回測 —— 跟上面兩個聯賽同一支實作(lib/backtest-runner.mjs),
       # 零 fetch 的本地計算,所以失敗不容忍。
+      # 人工交付的隊色/城市/球場/教練。收件匣還沒到時這幾支會印「略過」,不是錯 ——
+      # 先掛上去,交付一到當次部署就會核對並上站,不用有人記得回來加這一步。
+      - name: 核對人工交付的德義法球隊資料與教練
+        run: |
+          npm run de1:verify-teams || true
+          npm run it1:verify-teams || true
+          npm run fr1:verify-teams || true
+          npm run de1:verify-coaches || true
+          npm run it1:verify-coaches || true
+          npm run fr1:verify-coaches || true
+        continue-on-error: true
+
       - name: 德甲走查回測(模型準度)
         run: npm run de1:backtest
 

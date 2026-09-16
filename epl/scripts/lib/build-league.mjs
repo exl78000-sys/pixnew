@@ -27,6 +27,7 @@
  */
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
 import { leagueMatches, backfillLine, europeanKickoff, fotmobBackfillLine } from './league-matches.mjs';
@@ -117,7 +118,34 @@ export async function buildLeague(L) {
       for (const [code, uri] of Object.entries(j.crests ?? {})) if (uri) crestBy.set(code, uri);
     }
   }
+  /* 人工交付的隊色、城市、球場、容量、綽號。**只讀核對後的產物,不讀收件匣** ——
+     直接讀收件匣等於把核對繞過去(比照租借與英冠那兩條)。
+     收件匣改過卻沒重跑核對時 sha 對不上,整批不掛並印出原因,
+     不會拿舊的核對結果替新內容背書。交付還沒到就什麼都不做,畫面照舊標「未取得」。 */
+  const delivered = new Map();
+  let deliveryNote = null;
+  if (L.deliveryFile && L.deliveryInbox) {
+    const vPath = join(ROOT, 'data', L.deliveryFile);
+    const inboxPath = join(ROOT, 'data', 'manual', L.deliveryInbox);
+    if (existsSync(vPath) && existsSync(inboxPath)) {
+      const v = JSON.parse(await readFile(vPath, 'utf8'));
+      const sha = createHash('sha256').update(await readFile(inboxPath)).digest('hex');
+      if (!v.accepted) {
+        deliveryNote = `球隊資料交付未通過核對(${v.problems.length} 項),整批不採用。`;
+      } else if (v.inboxSha !== sha) {
+        deliveryNote = `收件匣改過但沒重跑核對(sha 對不上),整批不採用 —— 請跑 npm run ${L.key}:verify-teams。`;
+      } else {
+        for (const rec of v.teams) delivered.set(rec.code, rec.fields);
+      }
+      if (deliveryNote) console.log(`  ⚠ ${deliveryNote}`);
+      /* **對照題是 null 不是 0**:這三個聯賽沒有對照組,講出來比印一個 0 誠實 */
+      else console.log(`  球隊資料交付:${delivered.size} 隊`
+        + (v.controlTeams == null ? '(這個聯賽沒有對照組,把關靠逐欄位出處)' : `(對照題 ${v.controlTeams} 支)`));
+    }
+  }
+
   for (const t of T.list) {
+    Object.assign(t, delivered.get(t.code) ?? {});
     t.chartColor = intoBand(t.colors?.[0]) ?? '#9aa0aa';
     if (crestBy.has(t.code)) t.crest = crestBy.get(t.code);
   }
