@@ -47,8 +47,13 @@ const url = (page, lg, extra = '') => {
   return `${BASE}/${page}.html${q ? '?' + q : ''}`;
 };
 const pages = readdirSync(WEB).filter(f => f.endsWith('.html')).map(f => f.replace(/\.html$/, ''));
-// 跨聯賽那幾頁只在 pl 開一次就夠(內容跟聯賽無關);其餘每個聯賽都開
-const SITE = new Set(['overview', 'knowledge', 'allplayers', 'explore', 'cups', 'ucl']);
+/* **這一組原本只在 pl 開一次**,理由寫的是「內容跟聯賽無關」——**那個前提是錯的**。
+   `explore.html` 的第一個分頁(足球知識)`C.load('knowledge')`,而那份產物是**逐聯賽**的:
+   英冠德甲義甲法甲根本沒寫,四個聯賽點「探索」都 404、畫面停在「載入資料中…」不動。
+   而這支掃描器只在 pl 開它,所以每次都回報「全部乾淨」——**使用者是自己點到的**。
+   現在每個聯賽都開。代價是多幾十次載入(這支本來就要跑幾分鐘),
+   換掉的是「跨聯賽的頁不用逐聯賽驗」這個會再犯一次的假設。 */
+const SITE = new Set();
 /* 一定要帶參數才有內容的頁:不帶就照設計顯示「找不到這一場」,而那會被報成「#app 幾乎空的」。
    它們由下面帶著真實 id 另外掃。 */
 const NEEDS_ID = new Set(['ucl-match', 'cup-match']);

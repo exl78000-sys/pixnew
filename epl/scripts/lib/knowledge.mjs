@@ -148,3 +148,36 @@ export function usageAsRows(usage) {
     })),
   };
 }
+
+/* 足球知識頁的資料層 —— **給「沒有自己那套算法」的聯賽用的共用版**。
+ *
+ * 為什麼要有它:`explore.html` 的第一個分頁就是足球知識,而它 `C.load('knowledge')`。
+ * 英超與西甲各自寫了這份產物,英冠德甲義甲法甲**沒有寫** —— 於是那四個聯賽點「探索」
+ * 會 404,而且畫面停在「載入資料中…」不動(連錯誤訊息都沒有,比報錯更難判斷)。
+ * 這正是 CLAUDE.md 那條:**沒有內容的產物要寫空的,而不是不寫。**
+ *
+ * 兩層要分得出來,不可以混:
+ *   guide       共識層(陣型定義、背號慣例)——人工整理、**跨聯賽相同**,每個聯賽各嵌一份
+ *   numbers     資料層,本站從該聯賽的名單算的。**算不出來就 null,不要給 0 或空表**
+ *   formations  資料層,同上
+ * 把共識寫成看起來像統計的樣子就是編數字(鐵則一)。
+ *
+ * `numbers` 能不能算,看的是**資料裡有沒有背號**,不是聯賽是誰:
+ * 英冠的球員層有 `shirt`(逐場名單來的,本季 547 人全有),所以它算得出來;
+ * 德甲義甲法甲走 Understat,上游根本不給背號,所以是 null ——
+ * 前端照 null 讓整段消失並說出為什麼,不留一個永遠空白的欄位(鐵則三)。
+ */
+export function leagueKnowledge({ season, guide, players = [], numberField = 'squadNumber' }) {
+  if (!guide) return null;
+  const roster = players.filter(p => p.season == null || p.season === season);
+  /* 取值前先看**有沒有值**,不是看欄位在不在 —— 欄位在而全是 null 的話,
+     算出來會是一張每一格都 0 的表,那比沒有更糟(讀者會以為是統計結果)。 */
+  const numbered = roster
+    .map(p => ({ ...p, squadNumber: p[numberField] ?? p.squadNumber ?? null }))
+    .filter(p => p.squadNumber != null);
+  const numbers = numbered.length
+    ? (() => { const profile = numberProfile(numbered);
+        return { ...profile, tradition: traditionVsData(guide.numbers, profile) }; })()
+    : null;
+  return { season, guide, numbers, formations: null };
+}
