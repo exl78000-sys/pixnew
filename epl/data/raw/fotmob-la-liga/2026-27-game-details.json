@@ -91948,8 +91948,1967 @@
      }
     ]
    }
+  },
+  "BAR|RAC": {
+   "key": "BAR|RAC",
+   "season": "2026-27",
+   "date": "2026-09-16",
+   "matchId": "5868066",
+   "home": "BAR",
+   "away": "RAC",
+   "score": [
+    7,
+    2
+   ],
+   "providerScore": [
+    7,
+    2
+   ],
+   "teamStats": {
+    "BAR": {
+     "possession": 69,
+     "shots": 30,
+     "shotsOn": 9,
+     "shotsOff": 15,
+     "blockedShots": 6,
+     "blocksMade": 1,
+     "corners": 18,
+     "offsides": 3,
+     "fouls": 10,
+     "saves": 0,
+     "passes": 644,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 6.65
+    },
+    "RAC": {
+     "possession": 31,
+     "shots": 5,
+     "shotsOn": 3,
+     "shotsOff": 2,
+     "blockedShots": 0,
+     "blocksMade": 6,
+     "corners": 0,
+     "offsides": 2,
+     "fouls": 13,
+     "saves": 3,
+     "passes": 287,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.86
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "BAR": {
+     "touches_opp_box": 64,
+     "big_chance": 12,
+     "big_chance_missed_title": 7,
+     "yellow_cards": 3,
+     "shots_woodwork": 1,
+     "shots_inside_box": 23,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 2.73,
+     "expected_goals_set_play": 1.55,
+     "expected_goals_non_penalty": 4.28,
+     "expected_goals_on_target": 4.67,
+     "own_half_passes": 201,
+     "opposition_half_passes": 387,
+     "long_balls_accurate": 21,
+     "long_balls_accurate_pct": 72,
+     "accurate_crosses": 7,
+     "accurate_crosses_pct": 27,
+     "player_throws": 19,
+     "matchstats.headers.tackles": 7,
+     "interceptions": 9,
+     "clearances": 5,
+     "duel_won": 44,
+     "ground_duels_won": 33,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 11,
+     "aerials_won_pct": 69,
+     "dribbles_succeeded": 15,
+     "dribbles_succeeded_pct": 60,
+     "red_cards": 0
+    },
+    "RAC": {
+     "touches_opp_box": 11,
+     "big_chance": 3,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 5,
+     "shots_outside_box": 0,
+     "expected_goals_open_play": 1.83,
+     "expected_goals_set_play": 0.03,
+     "expected_goals_non_penalty": 1.86,
+     "expected_goals_on_target": 1.38,
+     "own_half_passes": 181,
+     "opposition_half_passes": 45,
+     "long_balls_accurate": 12,
+     "long_balls_accurate_pct": 41,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 50,
+     "player_throws": 7,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 10,
+     "clearances": 39,
+     "duel_won": 35,
+     "ground_duels_won": 30,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 5,
+     "aerials_won_pct": 31,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 64,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     69,
+     31
+    ],
+    "h1": [
+     70,
+     30
+    ],
+    "h2": [
+     69,
+     31
+    ]
+   },
+   "events": [
+    {
+     "minute": 8,
+     "extra": null,
+     "team": "BAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "João Cancelo"
+    },
+    {
+     "minute": 23,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Pedro Felipe"
+    },
+    {
+     "minute": 25,
+     "extra": null,
+     "team": "BAR",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Raphinha"
+    },
+    {
+     "minute": 30,
+     "extra": null,
+     "team": "RAC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Maguette Gueye"
+    },
+    {
+     "minute": 36,
+     "extra": null,
+     "team": "RAC",
+     "type": "Goal",
+     "detail": "Own Goal",
+     "player": null
+    },
+    {
+     "minute": 42,
+     "extra": null,
+     "team": "BAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Raphinha"
+    },
+    {
+     "minute": 45,
+     "extra": 5,
+     "team": "BAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lamine Yamal"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "BAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Wojciech Szczęsny"
+    },
+    {
+     "minute": 59,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Iñigo Vicente"
+    },
+    {
+     "minute": 59,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Yassir Zabiri"
+    },
+    {
+     "minute": 59,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Iker Luque"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "BAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Karim Adeyemi"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Yassir Zabiri"
+    },
+    {
+     "minute": 61,
+     "extra": 0,
+     "team": "BAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Marc Bernal"
+    },
+    {
+     "minute": 61,
+     "extra": 0,
+     "team": "BAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gavi"
+    },
+    {
+     "minute": 65,
+     "extra": null,
+     "team": "RAC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Yassir Zabiri"
+    },
+    {
+     "minute": 67,
+     "extra": null,
+     "team": "BAR",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Raphinha"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "BAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gabriel Jesus"
+    },
+    {
+     "minute": 69,
+     "extra": null,
+     "team": "BAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "João Cancelo"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "BAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alejandro Balde"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Giorgi Guliashvili"
+    },
+    {
+     "minute": 79,
+     "extra": null,
+     "team": "BAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Gabriel Jesus"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jorge Salinas"
+    },
+    {
+     "minute": 89,
+     "extra": null,
+     "team": "BAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Lamine Yamal"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "BAR",
+     "player": "João Cancelo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 47.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 5,
+     "extra": null,
+     "team": "BAR",
+     "player": "Dani Olmo",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.4,
+     "y": 21,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "BAR",
+     "player": "Rodri",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 37.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "BAR",
+     "player": "Raphinha",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.103,
+     "xgot": 0.156,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 39.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "BAR",
+     "player": "João Cancelo",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0.249,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.4,
+     "y": 45.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "BAR",
+     "player": "Karim Adeyemi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.8,
+     "y": 46.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "BAR",
+     "player": "Raphinha",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.3,
+     "y": 46.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "BAR",
+     "player": "Dani Olmo",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.204,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.4,
+     "y": 23.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "BAR",
+     "player": "Karim Adeyemi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.335,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.5,
+     "y": 39.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "BAR",
+     "player": "Raphinha",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.291,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.2,
+     "y": 37.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "BAR",
+     "player": "Raphinha",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.785,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "BAR",
+     "player": "Andreas Christensen",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.283,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.5,
+     "y": 31.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "BAR",
+     "player": "Lamine Yamal",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 20.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "RAC",
+     "player": "Maguette Gueye",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.295,
+     "xgot": 0.383,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 31.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "RAC",
+     "player": "Asier Villalibre",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0,
+     "xgot": 0.119,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": true,
+     "x": 15.1,
+     "y": 24.4,
+     "foot": "OtherBodyParts",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "BAR",
+     "player": "João Cancelo",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 71.6,
+     "y": 47.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "BAR",
+     "player": "Andreas Christensen",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.117,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 38.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "BAR",
+     "player": "Raphinha",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.332,
+     "xgot": 0.751,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "BAR",
+     "player": "Lamine Yamal",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.801,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "BAR",
+     "player": "Karim Adeyemi",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.91,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.9,
+     "y": 34,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "BAR",
+     "player": "Karim Adeyemi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.042,
+     "xgot": 0.07,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 46.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 6,
+     "team": "RAC",
+     "player": "Maguette Gueye",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 26.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "BAR",
+     "player": "Karim Adeyemi",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.092,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 33.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "BAR",
+     "player": "Karim Adeyemi",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 47.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "RAC",
+     "player": "Juan Carlos Arana",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.286,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 29,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "BAR",
+     "player": "Lamine Yamal",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.153,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93,
+     "y": 25.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "BAR",
+     "player": "Lamine Yamal",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.08,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.8,
+     "y": 33.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "RAC",
+     "player": "Yassir Zabiri",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.983,
+     "xgot": 0.995,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 104.2,
+     "y": 31.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "BAR",
+     "player": "Raphinha",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.8,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "BAR",
+     "player": "Lamine Yamal",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81,
+     "y": 21.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "BAR",
+     "player": "Gabriel Jesus",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.139,
+     "xgot": 0.493,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 42.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "BAR",
+     "player": "Lamine Yamal",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.18,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.5,
+     "y": 31.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "BAR",
+     "player": "Karim Adeyemi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.255,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.1,
+     "y": 46,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "RAC",
+     "player": "Yassir Zabiri",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.263,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 30.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "BAR",
+     "player": "Lamine Yamal",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.311,
+     "xgot": 0.569,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 39,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "BAR",
+     "player": "Karim Adeyemi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.124,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 42.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     27
+    ],
+    [
+     2,
+     54
+    ],
+    [
+     3,
+     81
+    ],
+    [
+     4,
+     81
+    ],
+    [
+     5,
+     60
+    ],
+    [
+     6,
+     60
+    ],
+    [
+     7,
+     81
+    ],
+    [
+     8,
+     76
+    ],
+    [
+     9,
+     49
+    ],
+    [
+     10,
+     0
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     12,
+     16
+    ],
+    [
+     13,
+     33
+    ],
+    [
+     14,
+     38
+    ],
+    [
+     15,
+     81
+    ],
+    [
+     16,
+     76
+    ],
+    [
+     17,
+     81
+    ],
+    [
+     18,
+     49
+    ],
+    [
+     19,
+     81
+    ],
+    [
+     20,
+     100
+    ],
+    [
+     21,
+     95
+    ],
+    [
+     22,
+     57
+    ],
+    [
+     23,
+     14
+    ],
+    [
+     24,
+     5
+    ],
+    [
+     25,
+     0
+    ],
+    [
+     26,
+     0
+    ],
+    [
+     27,
+     27
+    ],
+    [
+     28,
+     87
+    ],
+    [
+     29,
+     100
+    ],
+    [
+     30,
+     22
+    ],
+    [
+     31,
+     -33
+    ],
+    [
+     32,
+     27
+    ],
+    [
+     33,
+     81
+    ],
+    [
+     34,
+     81
+    ],
+    [
+     35,
+     11
+    ],
+    [
+     36,
+     27
+    ],
+    [
+     37,
+     22
+    ],
+    [
+     38,
+     22
+    ],
+    [
+     39,
+     81
+    ],
+    [
+     40,
+     92
+    ],
+    [
+     41,
+     100
+    ],
+    [
+     42,
+     87
+    ],
+    [
+     43,
+     81
+    ],
+    [
+     44,
+     60
+    ],
+    [
+     45,
+     22
+    ],
+    [
+     45.5,
+     80
+    ],
+    [
+     46,
+     11
+    ],
+    [
+     47,
+     22
+    ],
+    [
+     48,
+     27
+    ],
+    [
+     49,
+     60
+    ],
+    [
+     50,
+     11
+    ],
+    [
+     51,
+     76
+    ],
+    [
+     52,
+     38
+    ],
+    [
+     53,
+     71
+    ],
+    [
+     54,
+     22
+    ],
+    [
+     55,
+     22
+    ],
+    [
+     56,
+     73
+    ],
+    [
+     57,
+     46
+    ],
+    [
+     58,
+     41
+    ],
+    [
+     59,
+     -5
+    ],
+    [
+     60,
+     0
+    ],
+    [
+     61,
+     0
+    ],
+    [
+     62,
+     33
+    ],
+    [
+     63,
+     54
+    ],
+    [
+     64,
+     54
+    ],
+    [
+     65,
+     22
+    ],
+    [
+     66,
+     54
+    ],
+    [
+     67,
+     54
+    ],
+    [
+     68,
+     54
+    ],
+    [
+     69,
+     -5
+    ],
+    [
+     70,
+     -5
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     72,
+     5
+    ],
+    [
+     73,
+     5
+    ],
+    [
+     74,
+     0
+    ],
+    [
+     75,
+     5
+    ],
+    [
+     76,
+     22
+    ],
+    [
+     77,
+     52
+    ],
+    [
+     78,
+     57
+    ],
+    [
+     79,
+     95
+    ],
+    [
+     80,
+     65
+    ],
+    [
+     81,
+     65
+    ],
+    [
+     82,
+     22
+    ],
+    [
+     83,
+     22
+    ],
+    [
+     84,
+     27
+    ],
+    [
+     85,
+     16
+    ],
+    [
+     86,
+     16
+    ],
+    [
+     87,
+     33
+    ],
+    [
+     88,
+     49
+    ],
+    [
+     89,
+     54
+    ],
+    [
+     90,
+     22
+    ],
+    [
+     90.5,
+     42
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BAR": {
+     "team": "BAR",
+     "formation": "4-3-3",
+     "coach": "Hans-Dieter Flick",
+     "xi": [
+      {
+       "name": "Joan García",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Eric García",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Andreas Christensen",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Gerard Martín",
+       "shirt": 18,
+       "pos": "D"
+      },
+      {
+       "name": "João Cancelo",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Dani Olmo",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Rodri",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Pedri",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Lamine Yamal",
+       "shirt": 10,
+       "pos": "F"
+      },
+      {
+       "name": "Raphinha",
+       "shirt": 11,
+       "pos": "F"
+      },
+      {
+       "name": "Karim Adeyemi",
+       "shirt": 14,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Wojciech Szczęsny",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Gavi",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Marc Bernal",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Gabriel Jesus",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Alejandro Balde",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Dominik Livaković",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Jules Koundé",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Pau Cubarsí",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Xavi Espart",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Fermín López",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Anthony Gordon",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Hamza Abdelkarim",
+       "shirt": 29,
+       "pos": "?"
+      }
+     ]
+    },
+    "RAC": {
+     "team": "RAC",
+     "formation": "4-1-3-2",
+     "coach": "José López",
+     "xi": [
+      {
+       "name": "Julen Agirrezabala",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Manu",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Pedro Felipe",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Facundo González",
+       "shirt": 16,
+       "pos": "D"
+      },
+      {
+       "name": "Aarón Martín",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Matteo Prati",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Sergio Canales",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Maguette Gueye",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Íñigo Sainz-Maza",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Asier Villalibre",
+       "shirt": 12,
+       "pos": "F"
+      },
+      {
+       "name": "Juan Carlos Arana",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Iker Luque",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Iñigo Vicente",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Yassir Zabiri",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Giorgi Guliashvili",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Jorge Salinas",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Laro Gómez",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Álvaro Mantilla",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Jeanuël Belocian",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo Ramón",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Iván Martin",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo García",
+       "shirt": 15,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 41,
+      "center": 23,
+      "right": 36
+     },
+     "firstHalf": {
+      "left": 40,
+      "center": 25,
+      "right": 35
+     },
+     "secondHalf": {
+      "left": 42,
+      "center": 20,
+      "right": 38
+     }
+    },
+    "away": {
+     "total": {
+      "left": 43,
+      "center": 32,
+      "right": 25
+     },
+     "firstHalf": {
+      "left": 56,
+      "center": 33,
+      "right": 11
+     },
+     "secondHalf": {
+      "left": 24,
+      "center": 31,
+      "right": 45
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 9,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-16T21:58:47.890Z",
+   "fdMatchId": "2026-27-57",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "RAC",
+      "name": "Juan Carlos Arana",
+      "n": 26,
+      "cx": 52,
+      "cy": 21.2,
+      "spread": 19.1,
+      "grid": "0,0,8,1,0,1,0,3,1,6,0,0,0,0,2,3,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Julen Agirrezabala",
+      "n": 49,
+      "cx": 7.7,
+      "cy": 34.1,
+      "spread": 9.1,
+      "grid": "0,0,0,0,0,0,21,3,0,0,0,0,23,0,0,0,0,0,0,2,0,0,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Rodri",
+      "n": 74,
+      "cx": 60,
+      "cy": 35.8,
+      "spread": 23.8,
+      "grid": "0,1,2,0,3,2,0,0,6,11,3,5,0,3,12,10,2,1,0,1,1,8,3,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Sergio Canales",
+      "n": 61,
+      "cx": 41.1,
+      "cy": 41.7,
+      "spread": 25,
+      "grid": "0,0,4,1,2,0,0,1,6,3,0,1,4,4,12,2,0,0,2,8,7,3,1,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Íñigo Sainz-Maza",
+      "n": 48,
+      "cx": 40.1,
+      "cy": 22.5,
+      "spread": 24,
+      "grid": "3,6,5,7,0,0,4,3,5,5,0,0,0,1,5,0,0,0,0,1,1,1,1,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Facundo González",
+      "n": 44,
+      "cx": 24.5,
+      "cy": 18.6,
+      "spread": 18.3,
+      "grid": "3,4,10,3,0,0,13,5,2,1,0,0,2,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "João Cancelo",
+      "n": 90,
+      "cx": 63.5,
+      "cy": 14.3,
+      "spread": 27,
+      "grid": "1,6,14,13,18,11,1,6,2,1,7,4,0,0,3,2,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Karim Adeyemi",
+      "n": 90,
+      "cx": 78.9,
+      "cy": 14.6,
+      "spread": 22.2,
+      "grid": "2,0,2,21,19,13,0,0,3,4,1,18,0,0,0,0,1,5,0,0,0,0,0,1"
+     },
+     {
+      "team": "BAR",
+      "name": "Lamine Yamal",
+      "n": 91,
+      "cx": 76.2,
+      "cy": 50.5,
+      "spread": 25.4,
+      "grid": "1,0,0,0,1,2,0,0,0,0,3,4,0,0,1,2,15,10,2,0,7,15,18,10"
+     },
+     {
+      "team": "RAC",
+      "name": "Manu",
+      "n": 68,
+      "cx": 25.1,
+      "cy": 50.6,
+      "spread": 22.9,
+      "grid": "0,0,0,0,0,0,3,3,0,0,0,0,17,5,2,2,0,0,9,11,10,4,1,1"
+     },
+     {
+      "team": "BAR",
+      "name": "Eric García",
+      "n": 109,
+      "cx": 55.3,
+      "cy": 58.2,
+      "spread": 20.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,5,1,7,1,3,3,12,28,33,10,6"
+     },
+     {
+      "team": "BAR",
+      "name": "Pedri",
+      "n": 66,
+      "cx": 62.6,
+      "cy": 31.9,
+      "spread": 24.9,
+      "grid": "0,1,2,7,4,2,0,0,1,10,6,1,1,1,5,11,2,1,0,1,2,6,2,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Gerard Martín",
+      "n": 83,
+      "cx": 46.4,
+      "cy": 20.6,
+      "spread": 18.1,
+      "grid": "1,3,13,15,0,0,3,3,20,16,1,0,0,1,6,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Pedro Felipe",
+      "n": 34,
+      "cx": 16.6,
+      "cy": 41.5,
+      "spread": 17.5,
+      "grid": "0,0,1,0,0,0,2,1,1,1,0,0,17,6,0,0,0,0,3,2,0,0,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Joan García",
+      "n": 15,
+      "cx": 15,
+      "cy": 37,
+      "spread": 13.5,
+      "grid": "0,0,0,0,0,0,4,2,0,0,0,0,4,4,0,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Andreas Christensen",
+      "n": 80,
+      "cx": 45.4,
+      "cy": 42.2,
+      "spread": 24.5,
+      "grid": "0,0,0,0,0,0,4,2,6,1,0,3,4,3,28,10,1,3,2,3,6,4,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Matteo Prati",
+      "n": 57,
+      "cx": 32.2,
+      "cy": 32.2,
+      "spread": 21.6,
+      "grid": "0,1,4,2,0,0,5,5,11,4,0,0,7,7,3,0,0,0,0,5,2,1,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Asier Villalibre",
+      "n": 19,
+      "cx": 36,
+      "cy": 37.4,
+      "spread": 30.1,
+      "grid": "0,0,0,2,0,0,0,0,0,3,1,0,8,2,0,1,0,0,0,0,2,0,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Dani Olmo",
+      "n": 90,
+      "cx": 73.1,
+      "cy": 35.2,
+      "spread": 29.1,
+      "grid": "0,0,0,4,4,11,1,0,1,5,7,4,0,1,4,13,10,2,0,2,3,7,6,5"
+     },
+     {
+      "team": "RAC",
+      "name": "Aarón Martín",
+      "n": 45,
+      "cx": 31.1,
+      "cy": 10.7,
+      "spread": 23.4,
+      "grid": "9,9,9,8,2,0,6,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Maguette Gueye",
+      "n": 35,
+      "cx": 45.1,
+      "cy": 28.7,
+      "spread": 28.2,
+      "grid": "2,2,5,1,0,0,3,1,4,3,0,0,0,1,3,2,1,3,0,1,1,2,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Raphinha",
+      "n": 33,
+      "cx": 77.7,
+      "cy": 41.7,
+      "spread": 23.3,
+      "grid": "0,0,0,0,1,1,0,0,0,0,3,4,0,0,2,6,2,4,0,0,0,6,0,4"
+     },
+     {
+      "team": "BAR",
+      "name": "Wojciech Szczęsny",
+      "n": 11,
+      "cx": 12.7,
+      "cy": 35.6,
+      "spread": 13,
+      "grid": "0,0,0,0,0,0,5,0,0,0,0,0,4,2,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Yassir Zabiri",
+      "n": 14,
+      "cx": 74.8,
+      "cy": 37.8,
+      "spread": 22.8,
+      "grid": "0,0,0,0,0,0,0,0,0,1,0,0,0,0,4,3,0,6,0,0,0,0,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Marc Bernal",
+      "n": 22,
+      "cx": 56.4,
+      "cy": 43.3,
+      "spread": 21.3,
+      "grid": "0,0,0,2,0,0,0,0,0,1,0,0,1,1,2,8,3,0,0,1,0,3,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Gavi",
+      "n": 30,
+      "cx": 56.5,
+      "cy": 24.4,
+      "spread": 25.3,
+      "grid": "1,1,2,6,2,1,0,0,4,6,0,0,0,0,1,0,1,0,0,1,1,1,2,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Iker Luque",
+      "n": 17,
+      "cx": 39.3,
+      "cy": 60.4,
+      "spread": 24.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,2,5,4,2,1,1"
+     },
+     {
+      "team": "RAC",
+      "name": "Iñigo Vicente",
+      "n": 14,
+      "cx": 56,
+      "cy": 43.4,
+      "spread": 30.5,
+      "grid": "0,0,2,1,0,0,0,0,1,0,0,0,0,0,1,1,0,0,1,1,1,2,1,2"
+     },
+     {
+      "team": "BAR",
+      "name": "Gabriel Jesus",
+      "n": 11,
+      "cx": 75.8,
+      "cy": 31.3,
+      "spread": 24.5,
+      "grid": "0,0,0,1,0,2,0,0,1,0,0,2,0,0,0,2,1,0,0,0,0,2,0,0"
+     },
+     {
+      "team": "BAR",
+      "name": "Alejandro Balde",
+      "n": 20,
+      "cx": 62.8,
+      "cy": 5.4,
+      "spread": 23.8,
+      "grid": "2,0,2,8,4,2,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Giorgi Guliashvili",
+      "n": 6,
+      "cx": 45.2,
+      "cy": 33,
+      "spread": 16.9,
+      "grid": "0,0,0,0,0,0,0,0,3,0,0,0,0,0,2,0,0,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Jorge Salinas",
+      "n": 2,
+      "cx": 15.4,
+      "cy": 29.7,
+      "spread": 4.9,
+      "grid": "0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-16T19:28:39.161Z"
+ "updatedAt": "2026-09-16T21:58:48.617Z"
 }
