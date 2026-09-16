@@ -2346,9 +2346,13 @@ async function checkDataGap() {
     /* 三支 workflow 的排程 2026-08-29 開回來。西甲那支同時補了守衛 ——
        沒有守衛的「每 5 分鐘」等於沒比賽也每天打 576 次 API。
        (別在 block comment 裡寫 cron 的星號斜線寫法,那會提早把註解關掉。) */
-    ['西甲比賽日 workflow 有「沒比賽就結束」的守衛', (() => {
+    /* 原本比對的是字面的 `--league=es1`。2026-09-16 那支 workflow 改成逐聯賽迴圈
+       (`--league=$lg`,涵蓋 es1/en2/de1/it1/fr1),那個字面就不在了 ——
+       **守的東西沒有變**:有沒有問過 live-window、有沒有照它的結果決定進不進場。
+       所以比對放寬到「有帶 --league 問」,而不是問了哪一個。 */
+    ['比賽日 workflow 有「沒比賽就結束」的守衛', (() => {
       const src = readFileSync(join(ROOT, '..', '.github', 'workflows', 'laliga-matchday.yml'), 'utf8');
-      return /live-window\.mjs --league=es1/.test(src)
+      return /live-window\.mjs --league=/.test(src)
         && /steps\.win\.outputs\.active == 'true'/.test(src);
     })()],
     ['三支 workflow 都有排程', (() => {
@@ -3928,9 +3932,14 @@ async function checkDataGap() {
     ['比賽日迴圈:判斷不出還有沒有比賽時要繼續跑,不能當成結束', (() => {
       const wfs = ['epl-matchday.yml', 'laliga-matchday.yml']
         .map(f => readFileSync(join(ROOT, '..', '.github', 'workflows', f), 'utf8'));
-      return wfs.every(w => /ACTIVE=\$\(node scripts\/live-window\.mjs/.test(w)
-        && /if \[ "\$ACTIVE" = "false" \]; then/.test(w)      // 只有明確 false 才收工
-        && /console\.log\("unknown"\)/.test(w)                 // 解不出來要說 unknown
+      /* **比的是性質,不是寫法。** 原本釘死「`ACTIVE=$(node …live-window`」與
+         「`console.log("unknown")`」這兩個字面,而西甲那支 2026-09-16 改成
+         逐聯賽的 shell 迴圈(inline node 拿掉了)—— 字面沒了,性質一個都沒少。
+         釘死寫法的測試會在「重構但行為不變」時紅,那種紅久了就沒有人看。
+         這裡守三件事:有 ACTIVE 這個狀態、有「判斷不出來」的值、**只有明確 false 才收工**。 */
+      return wfs.every(w => /\bACTIVE=/.test(w)
+        && /unknown/.test(w)                                   // 解不出來要有一個「不知道」的值
+        && /if \[ "\$ACTIVE" = "false" \]; then/.test(w)       // 只有明確 false 才收工
         && !/!= "true" \]; then\n\s*echo "  比賽都結束了/.test(w));
     })()],
     ['點火器 Worker:無狀態、窗口比工作流程寬、不複製 live-window 的判斷', (() => {
@@ -5790,6 +5799,31 @@ function checkUcl() {
       .replace(/(^|[^:])\/\/[^\n]*/g, (m, p) => p + ' '.repeat(m.length - p.length));
     /* 共用版面 = 三個以上聯賽都會走到的那幾支。core.js 例外:註冊表本身在那裡。 */
     const SHARED = ['page-analysis.js', 'page-teams.js', 'page-players.js', 'page-index.js', 'page-tactics.js'];
+    /* ── 比賽夜的即時路徑,每個聯賽都要接上(2026-09-16)──
+       德義法原本只有 football-data.co.uk 補比分,而那份以**天**為節奏:比賽當晚畫面上
+       是「等待賽果」,隔天才有。接 FotMob 賽程端點要**三個清單同時有它**,少一個就等於沒接:
+         fetch-fotmob-scores.mjs  沒有 → 根本不會去抓
+         live-window.mjs          沒有 → 回「不認得的聯賽」,比賽夜的迴圈不會為它進場
+         laliga-matchday.yml      沒有 → 抓了也不會在比賽夜跑
+       三個都是手寫清單,而本站在手寫聯賽清單上已經犯過四次。 */
+    {
+      const dirs = readdirSync(join(W, 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => e.name);
+      const all = ['pl', ...dirs];
+      const scores = readFileSync(join(ROOT, 'scripts', 'fetch-fotmob-scores.mjs'), 'utf8');
+      const win = readFileSync(join(ROOT, 'scripts', 'live-window.mjs'), 'utf8');
+      const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'laliga-matchday.yml'), 'utf8');
+      const lgsLine = wf.match(/^\s*LGS="([^"]+)"/m)?.[1]?.trim().split(/\s+/) ?? [];
+      const missScores = all.filter(k => !new RegExp(`^\\s*${k}:\\s*\\{`, 'm').test(scores));
+      const missWin = all.filter(k => !new RegExp(`^\\s*${k}:\\s*\\{`, 'm').test(win));
+      /* 比賽夜迴圈那一份不含英超 —— 英超有自己的 epl-matchday.yml */
+      const missWf = dirs.filter(k => !lgsLine.includes(k));
+      ok(missScores.length === 0, '每個聯賽都在 FotMob 賽果抓取器的表裡', missScores.join('、'));
+      ok(missWin.length === 0, '每個聯賽都在 live-window 的表裡(不然比賽夜不會進場)', missWin.join('、'));
+      ok(lgsLine.length > 0 && missWf.length === 0,
+        '每個聯賽都在比賽夜迴圈的 LGS 裡', `LGS=${lgsLine.join(' ')}${missWf.length ? '・缺 ' + missWf.join('、') : ''}`);
+    }
+
     /* ── 導覽列上有的頁,它要的產物就一定要在(2026-09-16,使用者回報「有的頁面進不去」)──
        「探索」掛在**每一個**聯賽的導覽列上,而它第一個分頁就 `C.load('knowledge')` ——
        那份產物只有英超與西甲寫了。英冠德甲義甲法甲點進去 404,而且畫面停在

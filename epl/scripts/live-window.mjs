@@ -107,7 +107,8 @@ export function decideWindow({ now, fixtures, live = null }) {
 
 /* 各聯賽的檔案位置。走註冊表,不要用「是不是某一個」的二元判斷 ——
    那種寫法在只有兩個聯賽時看起來完全正確(CLAUDE.md 那條坑已經出現四次)。
-   英冠沒有即時來源,所以不在這裡;真的加了再補一筆。 */
+   「沒有即時來源」不等於「不該進場」:英冠德義法都沒有 FPL 形狀的 live.json,
+   但它們的比分來自 FotMob 賽程端點,而那要**有人在比賽夜去打**才會更新。 */
 const LEAGUES = {
   pl: { fixtures: ['web', 'data', 'fixtures.json'], live: ['data', 'raw', 'live.json'] },
   es1: {
@@ -116,6 +117,12 @@ const LEAGUES = {
   },
   /* 英冠(2026-09-04):比分來源是 FotMob 賽程端點,沒有 FPL 形狀的 live.json,進場與否純用開賽時間推 */
   en2: { fixtures: ['web', 'data', 'leagues', 'en2', 'fixtures.json'], live: null },
+  /* 德義法(2026-09-16):跟英冠同一種 —— FotMob 賽程端點供比分,沒有 live.json,純用開賽時間推。
+     不在這裡的話 `liveWindow` 回「不認得的聯賽」,比賽夜的迴圈**根本不會為它們進場**,
+     比分要等 12 小時一次的部署 —— 那就等於沒有「當晚就有比分」這件事。 */
+  de1: { fixtures: ['web', 'data', 'leagues', 'de1', 'fixtures.json'], live: null },
+  it1: { fixtures: ['web', 'data', 'leagues', 'it1', 'fixtures.json'], live: null },
+  fr1: { fixtures: ['web', 'data', 'leagues', 'fr1', 'fixtures.json'], live: null },
 };
 
 /* 英格蘭盃賽的場次也算「有比賽在踢」(2026-09-08)。
