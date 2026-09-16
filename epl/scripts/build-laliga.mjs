@@ -37,7 +37,6 @@ import { setPieceProfile } from './lib/tactics.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
-import { emptyMatchSim } from './lib/matchsim.mjs';
 import { recordFor } from './lib/coaches.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { percentile, round } from './lib/util.mjs';
@@ -1428,7 +1427,6 @@ async function main() {
     }
   }
   await write('goals', goalsOut);
-  await write('matchsim', emptyMatchSim('西甲'));
   await write('reports', {
     seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,
     /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json */

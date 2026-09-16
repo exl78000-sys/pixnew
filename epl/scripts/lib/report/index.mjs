@@ -1,10 +1,10 @@
-import { preMatchBundle, postMatchBundle, simBundle } from './features.mjs';
+import { preMatchBundle, postMatchBundle } from './features.mjs';
 import { templateFor, CAVEAT, caveatFor } from './template.mjs';
 import { verify } from './verify.mjs';
 import { callLLM, llmEnabled } from './llm.mjs';
 import { bundleHash, ReportCache } from './cache.mjs';
 
-export { preMatchBundle, postMatchBundle, simBundle, templateFor, CAVEAT, caveatFor, verify, bundleHash, ReportCache, llmEnabled };
+export { preMatchBundle, postMatchBundle, templateFor, CAVEAT, caveatFor, verify, bundleHash, ReportCache, llmEnabled };
 
 /* 一篇報告的生產流程:
  *
