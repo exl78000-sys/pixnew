@@ -499,6 +499,18 @@ export function testLeague(L) {
         `${rep.count} / ${withStats.length}`);
       check('賽後報告:來源 fotmob、blocked 是 null(不能再說沒有資料源)',
         rep.source === 'fotmob' && rep.blocked === null);
+      /* **發布範圍與建立母體是兩件事,而且刻意不同。**
+         發布的只有本季(跟其他四個聯賽一致);建立的要走兩季,因為烏龍球對帳數的是報告裡的事件 ——
+         2026-09-16 回填上一季 992 場之後,raw 從 27 場變成 333 場而對帳仍印「涵蓋 0/306」,
+         就是因為報告只建在本季賽程上,回填進來的那一季根本沒被走到。
+         這兩條一條守發布範圍、一條守母體;**只守前者的話,把母體改回 fixtures 照樣綠**。 */
+      check('賽後報告:發布的全部屬於本季(上季報告是另一件事,會讓產物大十倍)',
+        rep.seasons.length === 1 && rep.seasons[0] === meta.currentSeason
+          && Object.keys(rep.reports).every(k => k.startsWith(`${meta.currentSeason}|`)),
+        rep.seasons.join('、'));
+      check('逐場統計涵蓋的季數不少於報告(母體比發布範圍寬)',
+        new Set(Object.keys(ms.matches).map(k => k.split('|')[0])).size >= rep.seasons.length,
+        [...new Set(Object.keys(ms.matches).map(k => k.split('|')[0]))].sort().join('、'));
       const all = Object.values(rep.reports);
       check('賽後報告:比分等於賽果、雙方先發 11 人、有正式陣型', all.every(r => {
         const f = byKey.get(`${r.season}|${r.home}|${r.away}`);

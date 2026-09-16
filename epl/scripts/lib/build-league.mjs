@@ -419,14 +419,22 @@ export async function buildLeague(L) {
      它自己會再核對一次比分、要求五種 coverage 齊全 —— 不齊的那一場不發布(不是硬塞一份殘缺的)。 */
   const reports = {};
   const nameOf = code => T.byCode.get(code)?.en ?? code;
-  for (const f of fixtures) {
+  /* 走**兩季**的已完賽場次,不是只走 `fixtures`(那只有本季)。
+     2026-09-16 回填上一季的逐場資料時踩到:raw 從 27 場變成 333 場,而下面的烏龍球對帳
+     仍然印「事件涵蓋 0/306 場」—— 看起來像回填沒有用,實際上是**回填進來的那一季根本沒被走到**,
+     因為報告只建在本季賽程上,而對帳數的正是報告裡的事件。
+     發布的仍然只有本季(`reports` 產物,跟其他四個聯賽一致);上一季的報告是另一件事
+     —— 那會讓產物大十倍,要另外決定。所以**建立的母體**與**發布的範圍**分開。 */
+  for (const f of [...lastMatches, ...curMatches]) {
     if (!f.played) continue;
     const ms = fotmobStats.matches?.[`${f.season}|${f.home}|${f.away}`];
     if (!ms) continue;
     const report = buildProviderMatchReport({ fixture: f, detail: toCanonicalDetail(ms, { verified: false }), nameOf });
     if (report) reports[`${f.season}|${f.home}|${f.away}`] = report;
   }
-  const reportCount = Object.keys(reports).length;
+  const publishedReports = Object.fromEntries(
+    Object.entries(reports).filter(([k]) => k.startsWith(`${CURRENT_SEASON}|`)));
+  const reportCount = Object.keys(publishedReports).length;
   const pendingCount = fixtures.filter(f => f.played && f.season === CURRENT_SEASON
     && !reports[`${f.season}|${f.home}|${f.away}`]).length;
   if (reportCount) console.log(`  ${L.zh}賽後報告:${reportCount} 場(FotMob)・本季還沒抓到 ${pendingCount} 場`);
@@ -482,13 +490,25 @@ export async function buildLeague(L) {
       + `・事件涵蓋 ${g.covered}/${g.played} 場、抓到烏龍球 ${g.own} 顆`
       + `${g.settled ? ' → 對上了' : ' → 涵蓋不完整或對不上,只回報'}`);
   }
+  /* **逐季講,不要用一句話蓋住兩季。** 2026-09-16 回填上一季之後真的出現混合狀態:
+     德甲 2025-26 對上了(缺口 20 = 烏龍球 20、涵蓋 306/306),而 2026-27 還沒
+     (缺口 4、烏龍球 3)。舊寫法只有「全部對上」與「全部還沒對上」兩支,
+     混合時會走後者,於是畫面上對著一季已經涵蓋滿的資料寫「事件還沒涵蓋全部場次」——
+     那是假的。而且**沒對上的理由有兩種**(還沒涵蓋滿 / 涵蓋滿了但還差幾顆),
+     要分開講,不然讀者不知道是等資料還是真的有出入。 */
+  const seasonClause = g => (g.settled
+    ? `${g.season} 缺口 ${g.gap} 顆 = 烏龍球 ${g.own} 顆(逐場事件涵蓋 ${g.covered}/${g.played} 場),對上了`
+    : `${g.season} 缺口 ${g.gap} 顆、逐場事件涵蓋 ${g.covered}/${g.played} 場、其中烏龍球 ${g.own} 顆`);
+  const whyUnsettled = goalGap.filter(g => !g.settled).map(g => (g.covered < g.played
+    ? `${g.season} 的事件還沒涵蓋全部場次`
+    : `${g.season} 的事件已涵蓋全部場次,但缺口比烏龍球${g.gap > g.own ? '多' : '少'} ${Math.abs(g.gap - g.own)} 顆`));
   const goalGapLines = goalGap.length && goalGap.some(g => g.covered)
     ? [goalGap.every(g => g.settled)
-      ? `✓ 球員榜與積分榜的進球差額已對帳:${goalGap.map(g => `${g.season} 缺口 ${g.gap} 顆 = 烏龍球 ${g.own} 顆`).join('、')}`
+      ? `✓ 球員榜與積分榜的進球差額已對帳:${goalGap.map(seasonClause).join(';')}`
         + '(球員榜本來就不算烏龍球)'
-      : `— 球員榜比積分榜少的那幾顆還在對帳中:${goalGap.map(g => `${g.season} 缺口 ${g.gap} 顆、`
-        + `逐場事件涵蓋 ${g.covered}/${g.played} 場、其中烏龍球 ${g.own} 顆`).join(';')}。`
-        + '量級跟烏龍球相符(球員榜不算烏龍球),但事件還沒涵蓋全部場次,所以只回報、不當結論。']
+      : `— 球員榜比積分榜少的那幾顆:${goalGap.map(seasonClause).join(';')}。`
+        + `量級跟烏龍球相符(球員榜不算烏龍球),而 ${whyUnsettled.join(';')};`
+        + `所以${whyUnsettled.length > 1 ? '那幾季' : '那一季'}只回報、不當結論。`]
     /* **這個百分比一定要從資料算。** 第一版寫死「少 0~11%」—— 那是德甲量出來的,
        照抄給義甲法甲就是在畫面上編數字(鐵則一沒有「只是一句說明」這種例外)。 */
     : [`— 球員進球加總比積分榜少:${goalGap.map(g => `${g.season} 缺 ${g.gap} 顆`
@@ -835,8 +855,8 @@ export async function buildLeague(L) {
   /* blocked 有明確語意(整季拿不到)。德甲**不是**沒有資料源 —— 來源在,只是 raw 還沒抓,
      所以是 'not-fetched',不是 'no-source'。這兩句對讀者的意義完全不同(CLAUDE.md 一整條在講)。 */
   await write('reports', {
-    seasons: reportCount ? [...new Set(Object.values(reports).map(r => r.season))].sort() : [],
-    count: reportCount, reports, source: reportCount ? 'fotmob' : null, pending: pendingCount,
+    seasons: reportCount ? [...new Set(Object.values(publishedReports).map(r => r.season))].sort() : [],
+    count: reportCount, reports: publishedReports, source: reportCount ? 'fotmob' : null, pending: pendingCount,
     blocked: reportCount ? null : { reason: 'not-fetched', message: `${L.zh}的 FotMob 逐場資料還沒抓(npm run game:fetch -- --league=${L.key})。`, at: new Date().toISOString() },
     backupBlocked: null,
     note: reportCount

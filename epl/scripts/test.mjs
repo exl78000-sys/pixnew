@@ -5877,6 +5877,13 @@ function checkUcl() {
       for (const f of ['build-bundesliga.mjs', 'build-serie-a.mjs', 'build-ligue-1.mjs']) {
         ok(/deliveryInbox: '/.test(readFileSync(join(ROOT, 'scripts', f), 'utf8')), `${f} 掛了交付收件匣`);
       }
+      /* 賽後報告的**建立母體**要走兩季(烏龍球對帳數的是報告裡的事件),發布的才只有本季。
+         2026-09-16 回填上一季 992 場時踩到:raw 從 27 場變成 333 場,而對帳還印「涵蓋 0/306」——
+         因為報告只建在 `fixtures`(只有本季)上,回填進來的那一季一場都沒被走到,
+         看起來像回填沒有用。產物那一頭由 test-league 守,這裡守程式碼那一頭。 */
+      ok(/for \(const f of \[\.\.\.lastMatches, \.\.\.curMatches\]\) \{/.test(bl)
+        && /const publishedReports = /.test(bl) && /reports: publishedReports/.test(bl),
+        '賽後報告建在兩季的已完賽場次上(對帳要數得到上一季),但只發布本季');
     }
 
     /* ── 比賽夜的即時路徑,每個聯賽都要接上(2026-09-16)──
