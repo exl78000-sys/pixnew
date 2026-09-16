@@ -16,7 +16,7 @@
  * 那不是引擎在飄,是 SE 本身的噪音。所以預設改成 12,而且會印出
  * 「這個場數驗得出多大的偏差」,不夠的時候只印不判。
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -115,6 +115,84 @@ line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.c
 line('每場 xG(主:客)', `${mean(rows.map(r => r.st.xg.home)).toFixed(2)} : ${mean(rows.map(r => r.st.xg.away)).toFixed(2)}`);
 line('每場界外球 / 球門球', `${mean(rows.map(r => r.st.counts.throwIns)).toFixed(0)} / ${mean(rows.map(r => r.st.counts.goalKicks)).toFixed(0)}`);
 line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed(0)} / ${mean(rows.map(r => r.st.counts.tackles)).toFixed(0)}`);
+
+/* 3b. 射門的**離門距離分佈**。真值不是我寫的數字,是倉庫裡 FotMob 逐場 shotmap 的座標算出來的
+       —— 這樣資料變了它自己會變(而且「真實是多少」永遠查得到出處)。
+       為什麼要看分佈而不是只看每球平均 xG:只對平均值的話,一堆六公尺的射門配一個很小的
+       xG 係數也會「對上」,而那是把形狀調錯之後再用水準去湊。 */
+const realShots = (() => {
+  const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
+  for (const f of ['2025-26-game-details.json', '2026-27-game-details.json']) {
+    const path = join(ROOT, 'data', 'raw', 'fotmob-epl', f);
+    if (!existsSync(path)) continue;
+    const j = JSON.parse(readFileSync(path, 'utf8'));
+    for (const m of Object.values(j.matches ?? {})) for (const sh of (m.shots ?? [])) {
+      if (sh.x == null || sh.y == null) continue;
+      const d = Math.hypot(105 - sh.x, 34 - sh.y);
+      bins[Math.min(6, Math.floor(d / 5))]++; n++; ds += d; if (sh.inBox) box++;
+      if (sh.xg != null) xg += sh.xg;
+    }
+  }
+  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n) } : null;
+})();
+const simShots = (() => {
+  const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
+  for (const r of rows) {
+    const c = r.st.counts;
+    for (let b = 0; b < 7; b++) bins[b] += c.shotBins[b];
+    n += c.shots; ds += c.shotDsum; box += c.shotInBox; xg += r.st.xg.home + r.st.xg.away;
+  }
+  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n) } : null;
+})();
+if (simShots && realShots) {
+  const pc = a => a.map(v => `${Math.round(v * 100)}%`).join(' ');
+  line('射門離門距離', `${simShots.dist.toFixed(1)} m`, `真實 ${realShots.dist.toFixed(1)} m(${realShots.n} 顆)`);
+  line('射門在禁區內', `${(simShots.box * 100).toFixed(0)}%`, `真實 ${(realShots.box * 100).toFixed(0)}%`);
+  line('每球 xG', simShots.xg.toFixed(4), `真實 ${realShots.xg.toFixed(4)}`);
+  console.log(`  ${'離門 0-5/5-10/…/30+'.padEnd(26, '\u3000')} ${pc(simShots.bins)}`);
+  console.log(`  ${'真實'.padEnd(26, '\u3000')} ${pc(realShots.bins)}`);
+}
+
+/* 3c. 越位與逼搶。兩個都有真值:越位是 shotmap 同一份檔案裡的 teamStats.offsides,
+       逼搶是側寫的 `style.pressing`(每 100 次對手傳球的抄截 + 攔截,FotMob 逐場、非 proxy)。
+       傳球成功率**只印不判** —— 本站的擷取裡 `passAccuracy` 840 個隊季場全是 null,沒有真值。 */
+const realOffside = (() => {
+  let n = 0, sum = 0;
+  for (const f of ['2025-26-game-details.json', '2026-27-game-details.json']) {
+    const path = join(ROOT, 'data', 'raw', 'fotmob-epl', f);
+    if (!existsSync(path)) continue;
+    const j = JSON.parse(readFileSync(path, 'utf8'));
+    for (const m of Object.values(j.matches ?? {})) for (const ts of Object.values(m.teamStats ?? {}))
+      if (ts.offsides != null) { sum += ts.offsides; n++; }
+  }
+  return n ? sum / n : null;
+})();
+console.log('');
+for (const [side, code, opp] of [['home', HOME, 'away'], ['away', AWAY, 'home']]) {
+  const off = mean(rows.map(r => r.st.counts.offsides[side]));
+  const acts = mean(rows.map(r => r.st.counts.tacklesBy[side] + r.st.counts.intercepts[side]));
+  const oppPass = mean(rows.map(r => r.st.counts.passBy[opp]));
+  const ok = mean(rows.map(r => r.st.counts.passOk[side]));
+  const mine = mean(rows.map(r => r.st.counts.passBy[side]));
+  const pv = profile.teams[code]?.style?.pressing?.value;
+  line(`${code} 越位`, off.toFixed(2), realOffside == null ? '' : `真實 ${realOffside.toFixed(2)}`);
+  line(`${code} 逼搶(每100對手傳球)`, (acts / Math.max(1, oppPass) * 100).toFixed(2), pv == null ? '' : `真實 ${pv}`);
+  line(`${code} 傳球 / 傳到隊友`, `${mine.toFixed(0)} / ${ok.toFixed(0)} = ${(ok / Math.max(1, mine) * 100).toFixed(1)}%`, '只回報(本站沒有真實的傳球成功率)');
+}
+/* 逼搶那一行的**定義對不齊**,要講出來:本站數的是「對方踢出來的球被我方控到」的全部次數,
+   而 FotMob 的 tackles + interceptions 是兩個特定事件,亂戰中的解圍與撿球不算。
+   所以模擬的數字本來就會比真實大 —— 它能看**趨勢**(調鬆了會漲),不能當成「差幾倍就是錯幾倍」。
+   這是本站踩過很多次的「我的分母跟被比較的那一邊是不是同一批」。 */
+console.log('  （逼搶那一行的定義比 FotMob 寬:本站把所有「對方的球被我控到」都算進去,數字本來就會偏大）');
+/* 傳球失敗的原因分類 —— 找根因時唯一有用的那一行。第一次跑出來是
+   「接球者就在四公尺內卻被別人拿走」佔 76%,那才把問題指到「接球者沒有優先權」上;
+   在那之前我以為是傳球失準或被折射。 */
+const why = rows.reduce((a, r) => { for (const k of ['defl', 'near', 'far']) a[k] += r.st.counts.why?.[k] ?? 0; return a; },
+  { defl: 0, near: 0, far: 0 });
+const lostAll = why.defl + why.near + why.far;
+if (lostAll) console.log(`  ${'傳球失敗的原因'.padEnd(26, '\u3000')} 被折射 ${(why.defl / lostAll * 100).toFixed(0)}%`
+  + ` / 接球者在旁邊卻被搶走 ${(why.near / lostAll * 100).toFixed(0)}%`
+  + ` / 接球者不在那裡 ${(why.far / lostAll * 100).toFixed(0)}%`);
 
 /* 4. 運動層(階段 1 的那幾項,回歸用) */
 console.log('');
