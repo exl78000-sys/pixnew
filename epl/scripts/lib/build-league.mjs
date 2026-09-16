@@ -54,6 +54,7 @@ import { buildProviderMatchReport } from './postmatch-report.mjs';
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES }
   from './adapters/understat-players.mjs';
+import { leagueKnowledge } from './knowledge.mjs';
 
 
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
@@ -761,6 +762,16 @@ export async function buildLeague(L) {
   });
   await write('coaches', { available: false, season: CURRENT_SEASON, source: null, verifiedAt: null,
     note: `${L.zh}教練名冊還沒交付(要人工交付並過核對器,比照英冠那條路)。`, coaches: [] });
+  /* 足球知識的資料層。**這一份漏掉的代價是整個「探索」頁進不去** ——
+     `explore.html` 的第一個分頁就 `C.load('knowledge')`,404 之後畫面停在
+     「載入資料中…」不動,連錯誤訊息都沒有。德義法三個聯賽都是這樣壞的
+     (英冠也是,那一份在 build-championship.mjs 補)。
+     共識層是跨聯賽的人工資料,照嵌;背號與陣型這兩層算不出來就 null。 */
+  {
+    const kp = join(ROOT, 'data', 'manual', 'football-knowledge.json');
+    const guide = existsSync(kp) ? JSON.parse(await readFile(kp, 'utf8')) : null;
+    await write('knowledge', leagueKnowledge({ season: CURRENT_SEASON, guide, players: playersOut }));
+  }
   await write('goals', { available: false,
     note: `${L.zh}還沒有逐場進球明細 —— 那要先有球員層。Understat 涵蓋${L.zh},只是還沒抓。`,
     seasons: [], data: {}, unavailable: ['scorers'] });

@@ -5790,6 +5790,39 @@ function checkUcl() {
       .replace(/(^|[^:])\/\/[^\n]*/g, (m, p) => p + ' '.repeat(m.length - p.length));
     /* 共用版面 = 三個以上聯賽都會走到的那幾支。core.js 例外:註冊表本身在那裡。 */
     const SHARED = ['page-analysis.js', 'page-teams.js', 'page-players.js', 'page-index.js', 'page-tactics.js'];
+    /* ── 導覽列上有的頁,它要的產物就一定要在(2026-09-16,使用者回報「有的頁面進不去」)──
+       「探索」掛在**每一個**聯賽的導覽列上,而它第一個分頁就 `C.load('knowledge')` ——
+       那份產物只有英超與西甲寫了。英冠德甲義甲法甲點進去 404,而且畫面停在
+       「載入資料中…」不動:連錯誤訊息都沒有,比報錯還難判斷是什麼壞了。
+       `npm run sweep` 每次都說「全部乾淨」,因為它把那幾頁當成跨聯賽的、只在英超開一次。
+
+       所以這裡守的是**配對**而不是「每個聯賽都要有 knowledge.json」:
+       導覽列有那一頁,產物才必須在 —— 哪天某個聯賽不掛探索了,這條不會變成假紅線。 */
+    {
+      const raw = readFileSync(join(W, 'assets', 'js', 'core.js'), 'utf8');
+      const src = stripComments(raw);
+      const i = src.indexOf('export const LEAGUES = {');
+      const blk = src.slice(i, src.indexOf('\n};', i));
+      /* 頁 → 它會載入的產物。只列「載不到就整頁壞掉」的那些,不是全部。 */
+      const NEEDS = { explore: 'knowledge.json' };
+      const miss = [];
+      let parsed = 0;
+      for (const m of blk.matchAll(/^\s*([a-z0-9]+):\s*\{([\s\S]*?)\},?\s*$/gm)) {
+        const [, lg, body] = m;
+        const om = body.match(/open:\s*(null|\[[^\]]*\])/);
+        if (!om) continue;
+        parsed++;
+        const dir = lg === 'pl' ? join(W, 'data') : join(W, 'data', 'leagues', lg);
+        for (const [page, file] of Object.entries(NEEDS)) {
+          const open = om[1] === 'null' || om[1].includes(`'${page}'`);
+          if (open && !existsSync(join(dir, file))) miss.push(`${lg} 掛了 ${page} 卻沒有 ${file}`);
+        }
+      }
+      /* 解析不到就等於沒驗 —— 註冊表改寫法時這條要自己紅,不是靜靜跳過 */
+      ok(parsed >= 6, `LEAGUES 註冊表解析得到 open 清單(${parsed} 個聯賽)`, `${parsed}`);
+      ok(miss.length === 0, '導覽列上有的頁,它要的產物就一定要在', miss.join('、'));
+    }
+
     /* 抓取類的腳本也有同一種寫死。`fetch-crests.mjs` 的開場白原本是
        `LEAGUE === 'es1' ? '西甲' : '英超'` —— 德甲義甲法甲跑起來全部印
        「抓取 N 支**英超**球隊的隊徽」。不影響產物,但 log 是這一步唯一的輸出,

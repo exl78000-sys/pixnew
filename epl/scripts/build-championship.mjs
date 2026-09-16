@@ -60,6 +60,7 @@ import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { round } from './lib/util.mjs';
+import { leagueKnowledge } from './lib/knowledge.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'en2');
@@ -838,6 +839,19 @@ async function main() {
     await write('teams', teams);   // 重寫一次,把 coach 掛上去
   }
   await write('goals', { available: false, note: noPlayerData, seasons: [], data: {}, unavailable: ['scorers'] });
+  /* 足球知識的資料層。**沒有這一份,整個「探索」頁進不去** —— 第一個分頁就
+     `C.load('knowledge')`,404 之後畫面停在「載入資料中…」不動,連錯誤訊息都沒有。
+     英冠跟德義法不一樣的地方:它的球員層有**背號**(逐場正式名單帶下來的 `shirt`,
+     本季 547 人全有),所以背號那一段算得出來 —— 走 Understat 的那三個聯賽才是 null。
+     「這個聯賽有沒有」一律看資料裡有沒有值,不要按聯賽寫死。 */
+  {
+    const kp = join(ROOT, 'data', 'manual', 'football-knowledge.json');
+    const guide = existsSync(kp) ? JSON.parse(await readFile(kp, 'utf8')) : null;
+    const roster = existsSync(join(OUT, 'players.json'))
+      ? JSON.parse(await readFile(join(OUT, 'players.json'), 'utf8')) : [];
+    await write('knowledge', leagueKnowledge({
+      season: CURRENT_SEASON, guide, players: roster, numberField: 'shirt' }));
+  }
 
   /* ── 單場分析頁要的六份 ──
      這一頁**不在導覽列的 open 清單裡,但它照樣進得來** —— 首頁的「接下來的比賽」

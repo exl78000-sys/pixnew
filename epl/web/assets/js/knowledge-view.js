@@ -129,6 +129,22 @@ export async function renderKnowledge(app) {
   
     function numberSection() {
       const N = knowledge.numbers;
+      /* **算不出來就整段說清楚,不要留一張空表,也不要讓整頁掛掉。**
+         第一版直接讀 `N.coverage` —— 走 Understat 的那三個聯賽(德甲義甲法甲)
+         `numbers` 是 null,於是這一行 TypeError,整個「探索」頁停在
+         「載入資料中…」不動。陣型那一段本來就有這個分支,背號這一段漏了。
+         照鐵則三:拿不到的不留空欄位,但要講出為什麼拿不到。 */
+      if (!N) {
+        return `
+      <div class="section" style="margin-top:24px"><h2>背號</h2>
+        <span class="hint">只有傳統說法這一半</span></div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="small muted">${C.esc(G.numberOrigin.zh)}</div>
+        <div class="tiny dim" style="margin-top:8px">${tradPill} 來源:${cite(G.numberOrigin.sources)}</div>
+      </div>
+      <div class="note">這個聯賽的球員資料源<b>沒有背號</b>,所以右半邊「本站實際分佈」那一欄畫不出來 ——
+        不是還沒算,是上游不給這個欄位。</div>`;
+      }
       const cov = N.coverage;
       return `
       <div class="section" style="margin-top:24px"><h2>背號</h2>
