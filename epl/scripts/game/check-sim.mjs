@@ -35,12 +35,18 @@ function play(seed, minutes = 90) {
   /* 跑到**完場**為止,不是跑固定的分鐘數 —— 階段 3 之後有中場與補時,一場是 90 分鐘以上。
      guard 只是防無窮迴圈,不是比賽長度。 */
   const N = Math.round((minutes + 20) * 60 / STEP);
-  let prev = null, jumps = 0, maxJump = 0, still = 0, samples = 0;
+  let prev = null, jumps = 0, maxJump = 0, still = 0, samples = 0, half = null, swaps = 0;
   const bins = new Array(7).fill(0);
   for (let i = 0; i < N && !sim.state().over; i++) {
     sim.advance(STEP);
     const s = sim.state();
     bins[Math.min(6, Math.floor(Math.max(0, s.ball.x) / (105 / 7)))]++;
+    /* 中場換邊那一格,二十二個人**依設計**被鏡射到對面 —— 那不是瞬移。
+       第一版沒排除它,12 場印「263 次瞬移、最大 98.33 m ← 引擎有問題」,
+       而追下去每一次都在第 45 分、每場剛好 22 次(= 全隊)。
+       排的是**換半場的那一格**(不是「第 45 分」,補時會讓分鐘不準),
+       代價是那一格真的有 bug 也看不到 —— 一場三十四萬格裡的一格,換一個不會說謊的數字。 */
+    if (s.half !== half) { half = s.half; if (prev) swaps++; prev = null; }
     if (prev) for (const p of s.players) {
       const a = prev[p.code];
       if (!a) continue;
@@ -51,7 +57,7 @@ function play(seed, minutes = 90) {
     }
     prev = Object.fromEntries(s.players.map(p => [p.code, p]));
   }
-  return { sim, st: sim.state(), m: sim.motion(), jumps, maxJump, still, samples, bins };
+  return { sim, st: sim.state(), m: sim.motion(), jumps, maxJump, still, samples, bins, swaps };
 }
 
 const rows = [];
@@ -71,7 +77,8 @@ console.log(`\n▶ 連續時間引擎(${HOME} vs ${AWAY},${RUNS} 場 × 90 分�
 /* 1. 硬性不變量:這幾條不該有例外,錯了就是引擎壞了 */
 const totalJumps = rows.reduce((a, r) => a + r.jumps, 0);
 const worstJump = Math.max(...rows.map(r => r.maxJump));
-line('瞬移(超過自己最高速)', `${totalJumps} 次`, totalJumps ? `最大 ${worstJump.toFixed(2)} m ← 引擎有問題` : '✓');
+const swaps = rows.reduce((a, r) => a + r.swaps, 0);
+line('瞬移(超過自己最高速)', `${totalJumps} 次`, totalJumps ? `最大 ${worstJump.toFixed(2)} m ← 引擎有問題` : `✓(換邊的 ${swaps} 格不算,見 play() 的註解)`);
 const inside = rows.every(r => r.st.players.every(p => p.x >= -1.5 && p.x <= 106.5 && p.y >= -1.5 && p.y <= 69.5));
 line('所有人都在場內', inside ? '✓' : '✗ 有人跑出球場');
 /* 這一條原本寫「← 球的速度被蓋掉了」,那是**斷言原因**。實際量過兩種都會中:
@@ -132,6 +139,16 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
   line('每場黃牌 / 紅牌', `${mean(rows.map(r => r.st.counts.cards.home + r.st.counts.cards.away)).toFixed(2)} / ${mean(rows.map(r => r.st.counts.reds.home + r.st.counts.reds.away)).toFixed(2)}`,
     `真實 ${realY.toFixed(2)} / 0.10`);
   line('控球串(賽後解讀吃這個)', mean(rows.map(r => r.sim.chains().length)).toFixed(0));
+  /* 控球(2026-09-17,階段 2c)。目標值**跟引擎要**(`possTarget`),不在這裡自己算一份 ——
+     兩邊各寫一份式子的話,改了引擎那邊的推法,這支檢查會拿舊式子去判它。
+     這裡印的是這一組配對;跨配對的擬合(模擬會不會只是永遠停在 50%)是校準時做的事,
+     掃描紀錄留在 game-sim.js 的 POSS_K 註解裡。 */
+  const want = rows[0].sim.possTarget();
+  const got = (() => {
+    const h = rows.reduce((a, r) => a + r.st.poss.home, 0), a2 = rows.reduce((a, r) => a + r.st.poss.away, 0);
+    return h + a2 > 0 ? h / (h + a2) * 100 : null;
+  })();
+  if (got != null) line('控球(主隊)', `${got.toFixed(1)}%`, want == null ? '側寫沒有控球率' : `目標 ${want.toFixed(1)}%(從兩隊真實的主客控球率推)`);
 }
 
 /* 3b. 射門的**離門距離分佈**。真值不是我寫的數字,是倉庫裡 FotMob 逐場 shotmap 的座標算出來的

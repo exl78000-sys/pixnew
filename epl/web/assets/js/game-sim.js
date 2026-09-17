@@ -43,7 +43,7 @@ const IDLE_GO = 1.5, IDLE_STOP = 0.4;          // 閒置走位的兩個門檻(�
 /* 球:地面摩擦與空阻沿用 duel-anim */
 const BALL_FRICTION = 5.5, BALL_AIR = 1.2, GRAVITY = 9.81;
 const BALL_BOUNCE = 0.45;                      // 落地彈跳保留的垂直速度比例
-const SIM_CONTROL_R = 1.2;
+const SIM_CONTROL_R = 1.2;                     // 這麼近才控得到球(公尺)
 /* 傳球到位的時候,**接球者本來就佔便宜**:他知道球要來、身體已經轉好、腳已經伸出去。
    防守者要斷下這一球得真的**搶到他前面**,不是站在旁邊就自動贏。
    第一版沒有這一條,控球權由「誰離球近」決定 —— 量出來:失敗的傳球裡 **76%** 是
@@ -61,7 +61,29 @@ const SIM_CONTROL_R = 1.2;
            2.0 → 35.7、7.7、87%
    射門數是這裡最硬的錨:k = λ ÷ 期望射門 ÷ 每球 xG,所以**實際射門數偏離期望射門,
    進球就會偏離 λ** —— 對上射門數同時就守住了 λ 的錨。 */
-const RECEIVE_EDGE = 1.4;                      // 搶接球者的球時,對手的有效距離要乘上這個                         // 這麼近才控得到球(公尺)
+const RECEIVE_EDGE = 1.4;                      // 搶接球者的球時,對手的有效距離要乘上這個
+/* **控球**(2026-09-17,階段 2c)。在這之前模擬完全沒有讀 `possession` ——
+   量出來每一組配對都落在 50% 附近:目標 33.0% 的那一組跑出 51、目標 57.0% 的跑出 47
+   (**方向還是反的**;2026-09-17 在這一版上重量的,見下面那張表的「(沒有)」列)。強隊拿不到它該有的球權,就拿不到它該有的進攻次數,
+   於是強弱在畫面上被壓平了。
+   做法不是「把控球硬設成目標值」—— 那是在畫面上編數字。給每一隊一個**護球能力**
+   (從它自己的真實控球率推),讓配對的結果自己長出來:
+   護得住的隊,傳球到位時接球者更佔優勢、被抄走的機率也低一點。
+   `POSS_K` 是那個能力對行為的換算率,用**逐配對的目標控球率**校準(掃描紀錄見下)。 */
+const POSS_K = 0.018;                          // 每高於聯盟平均 1 個百分點,護球倍率乘 e^POSS_K
+/* 掃描(2026-09-17,5 組配對 × 5 場,誤差是「模擬控球 − 目標控球」的均方根)。
+   **五列是同一次跑出來的** —— 校準當下那一版的數字跟這一版差了 0.1~1.5,
+   混在同一張表裡就不能互比了,所以整張重跑。要引用也是自己再掃一次,不要抄這裡:
+     POSS_K   誤差    MCI/IPS  ARS/LIV  IPS/MCI  MCI/ARS  HUL/MCI
+     (沒有)   10.2    57→47    49→52    40→50    52→51    33→51
+     0.055     7.9    57→66    49→52    40→28    52→54    33→26
+     0.035     5.8    57→65    49→49    40→31    52→50    33→28
+     0.025     4.2    57→55    49→46    40→32    52→49    33→32
+     0.018     2.8    57→51    49→50    40→41    52→53    33→33   ← 選這個
+   剩下的誤差幾乎全在 MCI vs IPS 那一組。那一組是**最一面倒的攻防**:
+   MCI 的期望射門高、IPS 的被射門也高,而射門本身會結束一次控球 ——
+   所以強隊在這種配對裡「控球被自己的射門吃掉」。照實留著,不要為了那一組把係數調大,
+   調大會讓其他四組全部跑掉(0.025 那一列就是)。 */
 /* 踢球的人自己不可以馬上把球撿回來。第一版沒有這條,症狀是 90 分鐘 5,861 次傳球對上
    5,881 次「撿到鬆球」—— 球一離腳 0.5 m,下一格才飛 0.33 m,踢的人還在 1.2 m 內,
    於是自己又控到了。結果:98.2% 的時間球在某人腳下、90 分鐘一次出界都沒有、球永遠飛不出去。 */
@@ -440,6 +462,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        那個範圍比真實的行為差異大得多(兩隊的抄截率不會差一倍),所以只取它的方向、不取它的幅度。 */
     const pv = t.style?.pressing?.value;
     const press = pv == null ? 1 : cl(1 + (pv / PRESS_LG - 1) * PRESS_SPAN, 0.7, 1.3);
+    /* 護球能力:用**這一隊在這個主客身分下**的真實控球率。50 是聯盟平均(控球是零和的,
+       所以平均一定是 50,不必另外算)。夾在 ±15 個百分點內 —— 超出那個範圍的是樣本太少,
+       不是真的有球隊能控 70%(實測全聯盟落在 27~61)。 */
+    const pmRaw = (side === 'home' ? t.possession?.home?.mean : t.possession?.away?.mean);
+    const keep = pmRaw == null ? 1 : Math.exp(cl(pmRaw - 50, -15, 15) * POSS_K);
     /* 板凳:呼叫端給的優先,否則名單裡沒進先發的人。存成 Map 是因為換人查的是代碼,
        而且要記 `used` —— 一個人只能被換上來一次(規則,而且不擋的話畫面會出現兩個同一個人)。 */
     const benchCodes = (su.bench ?? t.bench ?? t.squad.map(x => x.code)).filter(c => !xi.includes(c) && byCode.has(c));
@@ -453,7 +480,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        其餘四軸(心態 / 寬度 / 節奏 / 直接度)在連續引擎裡還沒有對應的旋鈕 ——
        畫面上要照實講,**不要留四個拉了沒有反應的按鈕**(鐵則三的同一個道理:
        一個永遠不動的控制項比沒有這個控制項更糟,讀者會以為是壞了)。 */
-    return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1, bench };
+    return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1, keep, possMean: pmRaw ?? null, bench };
   };
 
   const H = mkSide(home, 'home', +1), A = mkSide(away, 'away', -1);
@@ -1051,7 +1078,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           if ((p.kickLock ?? 0) > 0) continue;          // 剛把球踢出去的人不算
           let d = hypot(p.x - ball.x, p.y - ball.y);
           // 這是一腳有指定對象的傳球 → 對手要更近才搶得到(見 RECEIVE_EDGE)
-          if (ball.passTo && p !== ball.passTo && p.side !== ball.passSide) d *= RECEIVE_EDGE;
+          /* 護球好的隊,傳到位的球更難被斷(對手的有效距離再乘一次)。
+             這是**相對的**:拿自己的 keep 除以對手的,兩隊都平庸時就等於沒有這一項。 */
+          if (ball.passTo && p !== ball.passTo && p.side !== ball.passSide) {
+            const mine = sideOf(ball.passSide), his = sideOf(p.side);
+            d *= RECEIVE_EDGE * (mine.keep / his.keep);
+          }
           if (d < bd) { bd = d; best = p; }
         }
         // 球越快越控不住:一格的成功機率隨速度掉,不是硬門檻
@@ -1114,7 +1146,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (ball.holder && presser && st.tackleCool <= 0 && (ball.holder.shield ?? 0) <= 0) {
       const d = hypot(presser.x - ball.holder.x, presser.y - ball.holder.y);
       if (d < SIM_TACKLE_R) {
-        const skill = 0.6 + (presser.ability?.tkl ?? 0.2);
+        // 護球好的隊被捅走的機率低一點(同一個 keep,兩邊相除)
+        const skill = (0.6 + (presser.ability?.tkl ?? 0.2)) * (sideOf(presser.side).keep / sideOf(ball.holder.side).keep);
         /* 先判犯規再判抄截 —— 反過來的話乾淨的抄截永遠先發生,犯規只在「沒抄到」時才有機會,
            而那跟真實足球的因果相反:犯規是抄截**做壞了**,不是沒做。
            禁區裡的不吹(十二碼還沒做,吹了會變成一個本站算不出來的機率),照實在畫面上講。 */
@@ -1306,6 +1339,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     events: () => st.events.map(e => ({ ...e })),
     /* 一次進攻怎麼結束的 —— 賽後解讀吃這個(舊引擎那邊是「回合」,這裡是控球串) */
     chains: () => st.chains.map(c => ({ ...c })),
+    /* 控球的**目標**:兩隊真實主客控球率推出來的那個數字。放在引擎裡是因為
+       算它要用兩隊的 `possMean`,而檢查腳本與畫面都要印它 —— 各自抄一份式子的話,
+       改了 keep 的推法,那兩份會悄悄過期(本站在轉換邏輯上付過這個代價)。
+       **它不是模擬的輸入**:引擎只把 keep 接上去,跑出多少是它自己的結果。 */
+    possTarget: () => (H.possMean == null || A.possMean == null ? null : (H.possMean + (100 - A.possMean)) / 2),
     /* 還可以換上來的人。**已經用掉的不列** —— 列了就是一個點下去會失敗的按鈕。 */
     benchOf: side => [...(sideOf(side).bench ?? new Map()).entries()]
       .filter(([, v]) => !v.used).map(([code, v]) => ({ code, name: v.p.name, pos: v.p.pos })),

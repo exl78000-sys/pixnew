@@ -1,7 +1,7 @@
 import * as C from './core.js?v=d2162a48';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountPitch } from './game-pitch.js?v=7d3b9def';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=0a6add9f';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=831ba90c';
 import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=13b570f3';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -437,15 +437,22 @@ export async function renderGame(app) {
     function statsHtml() {
       const H = statsOf('home'), A = statsOf('away');
       const s = match.state();
+      /* 控球的「目標」是從**兩隊真實的主客控球率**推的,式子在引擎裡(`possTarget`)——
+         這裡不自己算一份:抄過來的話,改了引擎那邊的推法,這一頁會悄悄過期。
+         模擬跑出來的是它自己踢出來的結果,兩個並排,讀者看得出這一場偏了多少。
+         引擎不會把控球硬設成目標值:目標只是對照,不是模擬的輸入。 */
+      const pTarget = match.possTarget();
       const tot = s.possSec.home + s.possSec.away;
       const ph = tot > 0 ? Math.round(100 * s.possSec.home / tot) : null;
       const row = (label, a, b, note = '') => `<div class="game-stat"><span>${a}</span><span class="dim tiny">${label}${note ? `<span class="dim"> ${note}</span>` : ''}</span><span>${b}</span></div>`;
       const l = match.lambdas();
-      return `${row('控球 %', ph ?? '—', ph != null ? 100 - ph : '—', '持球秒數')}${row('射門', H.shots, A.shots)}${row('射正', H.on, A.on)}${row('被封阻', H.blocked, A.blocked)}
+      return `${row('控球 %', ph ?? '—', ph != null ? 100 - ph : '—', `持球秒數・目標 ${pTarget != null ? `${Math.round(pTarget)}:${100 - Math.round(pTarget)}` : '—'}`)}${row('射門', H.shots, A.shots)}${row('射正', H.on, A.on)}${row('被封阻', H.blocked, A.blocked)}
         ${row('xG', H.xg.toFixed(2), A.xg.toFixed(2), '逐射門')}${row('角球', H.corners, A.corners)}${row('犯規', H.fouls, A.fouls)}${row('越位', H.offsides, A.offsides)}${row('黃牌', H.yellow, A.yellow)}${row('紅牌', H.red, A.red)}
         ${row('λ(遊戲的錨)', l.home.toFixed(2), l.away.toFixed(2), '整場不變')}
         <div class="tiny dim" style="margin-top:6px">全部由<b>畫面上已經發生的事件</b>累計 —— 這個引擎不會算到未來,所以不會提前洩露還沒演的射門。
-          控球 = 兩隊各持球多久(秒);xG 是每一腳射門當下由距離與張角算的,水準校準到聯盟每球平均。
+          控球 = 兩隊各持球多久(秒);目標那一欄是從兩隊<b>真實的主客控球率</b>推的,
+          引擎只是把每一隊的護球能力接上去,實際踢出來多少是它自己的結果(所以會偏)。
+          xG 是每一腳射門當下由距離與張角算的,水準校準到聯盟每球平均。
           <b>還沒做的</b>:十二碼、直接紅牌、助攻、進球情境分類(運動戰 / 角球 / 快攻)—— 沒做就不列,不放空欄位。</div>`;
     }
     /* 賽後解讀。判讀與敘述都在 game-diag.js(純函式,測得到);這裡只負責畫。

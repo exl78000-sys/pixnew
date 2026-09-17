@@ -11,7 +11,7 @@
  *
  * 這一層**不做任何模型上的決定** —— 不改機率、不改 λ、不補事件。它只翻譯。
  */
-import { createSim } from './game-sim.js?v=9e21d9e9';
+import { createSim } from './game-sim.js?v=15671f70';
 
 /* 播放速度是**時間倍率**,不是剪接。舊版四檔的差別在「演哪幾段」(cutTo / finishInstant /
    整段跳過),而使用者的原話是「根本沒有在踢球」。現在四檔的差別只有一個:一秒真實時間
@@ -84,6 +84,7 @@ export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {
       redHome: sim.state().counts.reds.home, redAway: sim.state().counts.reds.away }),
     calibration: () => cal,
     chains: () => sim.chains(),
+    possTarget: () => sim.possTarget(),
     playerOf: (side, code) => squads[side]?.get(code) ?? null,
     benchOf: side => sim.benchOf(side),
     sub: (side, off, on) => sim.substitute(side, off, on),

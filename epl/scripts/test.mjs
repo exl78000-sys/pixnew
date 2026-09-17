@@ -3030,6 +3030,23 @@ async function checkDataGap() {
            留四個拉了沒反應的按鈕比沒有更糟,所以那句話本身是紅線。 */
         && /setTactics/.test(pg) && /本季實際/.test(pg) && /還沒接上新引擎的指令/.test(pg)
         && /LIVE_TACTICS/.test(pg) && /TACTIC_TODO/.test(pg)
+        /* ── 2026-09-17 階段 2c:控球接上真實值 ──
+           守兩件事:(1) 引擎真的讀了側寫的 `possession`(POSS_K 與 keep 都在);
+           (2) 「目標控球率」的式子**只有一份**,在引擎裡 —— 畫面跟它要,不自己再算一次。
+           第二條是本站付過代價的那一類:同一個轉換抄兩份,改了一邊另一邊會悄悄過期。
+           盯的是**那個數字綁到誰**(`const pTarget = match.possTarget()`),不是「畫面裡有沒有出現
+           possession 這個字」—— 球隊資訊卡本來就在印兩隊的真實控球率,那不是重算目標值。
+           負向對照驗過:把原本那兩行(自己從側寫算 pTarget)貼回去,這條就紅。
+           掃之前剝註解:講這條規則的註解自己就寫著 possTarget。 */
+        && (() => {
+          const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+          const sim = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8'));
+          const live = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-live.js'), 'utf8'));
+          const view = strip(pg);
+          return /const POSS_K = [0-9.]+;/.test(sim) && /possession\?\.home\?\.mean/.test(sim)
+            && /possTarget:/.test(sim) && /possTarget:/.test(live)
+            && /const pTarget = match\.possTarget\(\);/.test(view);
+        })()
         /* 播放:時間倍率,不是剪接。速度清單在 game-live(純資料,測得到) */
         && /LIVE_SPEEDS/.test(pg) && /export const LIVE_SPEEDS/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-live.js'), 'utf8'))
         && !/planPlayback|modeFor|skipSeq/.test(pg) && /跳到結果/.test(pg)
