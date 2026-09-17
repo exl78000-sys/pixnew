@@ -156,6 +156,19 @@ const SHOT_ARRIVE = 12;                        // 射門到門線時至少還有
 const SHOT_MAX = 34;                           // 人踢得出來的上限(m/s,約 122 km/h)
 const SIM_GOAL_HALF = 3.66;                    // 球門半寬(公尺)
 const GOAL_HEIGHT = 2.44;
+/* 撲救之後門將**抱住**的比例(2026-09-17,階段 4h)。在這之前撲救一律 `keeperCollect` ——
+   每場 5.6 次撲救**全部**是乾淨抱住:沒有脫手、沒有補射、而且**一個角球都生不出來**。
+   量過的證據:角球的來源是解圍 69%、被封阻的射門 19%、傳中第一點 9%、傳球 3%,**撲救 0%**。
+   脫手之後往哪去**不是一個參數,是幾何**:球過門線的 y 離球門中心越遠(越貼柱),
+   門將越只能把它往外撥 → 出底線 → 角球;越正中間就越是擋回場內 → 補射。
+   所以只有這一個常數,而且是拿**角球數**掃出來的(每個值 50 場,`SAVE_HOLD = 1.0` 就是這之前的行為):
+     1.0  → 角球 10.4   FromCorner 15.0 ± 1.1%   射門/預算 0.99
+     0.80 → 角球 11.9   FromCorner 17.9 ± 1.1%   射門/預算 1.00   ← 選這個(真實 11.8 / 17.3)
+     0.69 → 角球 13.3   FromCorner 19.0 ± 1.1%   射門/預算 1.06
+     0.55 → 角球 13.9   FromCorner 18.0 ± 1.1%   射門/預算 1.06
+   **憑推算填的話會填錯**:我先用「5.6 次撲救 × 脫手比例 × 四成往外撥」推出 0.69,
+   而實際答案是 0.80 —— 因為擋回場內的那些球也會在下一腳被解圍出底線,角球不只來自「往外撥」那一支。 */
+const SAVE_HOLD = 0.80;
 /* 射門頻率**綁在球隊自己的真實射門率上**(rates.sf)。
    這是 λ 錨能成立的前提:E[進球] = E[射門] × E[xG] × k,而 k 由 λ 閉式算出來。
    射門是模擬長出來的,但「多久出現一次夠好的機會」要跟真實球隊一致,不然 k 會補在錯的地方。
@@ -1342,7 +1355,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          高度取 CROSS_HEAD(頭球高度),水平 2.5 m(傳中的瞄準誤差就有這麼大)。
          **還要球正在下降**(`vz < 0`,階段 4g):不加的話,球剛離開角旗那一段也低於頭球高度,
          「第一點」就會判在角旗邊 —— 那不是爭頂。加了它,爭頂只發生在球掉進目標區的最後幾公尺
-         (量出來在飛行 94% 處、離瞄的那個點 1.9 公尺)。 */
+         (量出來在飛行 94% 處、離瞄的那個點 1.9 公尺)。
+         **門將不在這個迴圈裡,而且把他放進來不會有任何差別**(2026-09-17,階段 4h 量過):
+         219 次爭頂裡,守方門將在落點 2.5 公尺內的是 **0 次**,離落點中位 **10.7 公尺** ——
+         因為他整場站在自家門前 5.5 公尺的線上,而傳中瞄的是禁區裡 6~19 公尺的那幾個點。
+         所以真正缺的行為不是「讓門將參加爭頂」,是「**門將會出擊搶傳中**」,那是另一件事。
+         沒做的理由要講清楚:它會把 FromCorner 往**下**壓,而現在本站還比真實低
+         —— 先拿一個少的行為去抵另一個少的行為,兩邊都看不出來還差什麼。 */
       if (CORNER_XG != null && st.lastKick === 'corner' && ball.passer
           && ball.z < CROSS_HEAD && ball.vz < 0) {
         const att = ball.passer.side;
@@ -1449,7 +1468,31 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           else {
             if (ball.shot?.side) st.keeperSaves++;
             if (ball.shot?.side) emit({ type: 'save', side: ball.shot.side, by: ball.shot.by?.code ?? null, name: ball.shot.by?.name ?? null });
-            keeperCollect(conceding);
+            /* 撲救有三種下場,不是只有「抱住」(見 SAVE_HOLD)。抱不住的往哪去由**幾何**決定:
+               `off` 是這一球過門線的位置離球門中心多遠(0 = 正中間、1 = 貼著門柱),
+               越貼柱越只能往外撥掉(出底線 → 角球,最後碰到的是門將所以是角球不是球門球),
+               越正中間越是擋回場內變成鬆球。`off` 不是我挑的分配,是射門自己落在哪裡。
+               非射門的球(解圍 / 折射越過自家門線)不走這條 —— 那不是撲救。 */
+            const shotSave = !!ball.shot?.side;
+            const off = Math.min(1, Math.abs(ball.y - PITCH_H / 2) / SIM_GOAL_HALF);
+            if (!shotSave || rng() < SAVE_HOLD) keeperCollect(conceding);
+            else if (rng() < off) {
+              st.lastTouch = conceding;             // 最後碰到的是門將 → 角球(足球規則)
+              ball.shot = null; st.lastKick = 'save';
+              corner(scoring, ball.y < PITCH_H / 2 ? 0.5 : PITCH_H - 0.5, ball.x < 0 ? 0.5 : PITCH_W - 0.5);
+            } else {
+              /* 擋回場內:球回到門線前一點點,往場內帶一個不大的速度。
+                 之後誰搶到、要不要補射,交給既有的鬆球與射門邏輯 ——
+                 補射**不另外給一套進球機率**,那會變成在畫面上編數字(鐵則一)。 */
+              const gx = ball.x < 0 ? 0 : PITCH_W, inward = ball.x < 0 ? 1 : -1;
+              const ang = (rng() - 0.5) * 1.6;
+              const sp2 = 5 + rng() * 6;
+              ball.shot = null; st.lastTouch = conceding; st.lastKick = 'save';
+              ball.holder = null; ball.x = gx + inward * 1.2; ball.y = cl(ball.y, 2, PITCH_H - 2);
+              ball.z = 0.3; ball.vz = 1 + rng() * 2;
+              ball.vx = Math.cos(ang) * sp2 * inward; ball.vy = Math.sin(ang) * sp2;
+              ball.passSide = null; ball.passTo = null; ball.passer = null; ball.wasDeflected = false;
+            }
           }
         } else if (st.lastTouch === scoring) {
           goalKick(conceding);                               // 攻方碰出底線 → 球門球
