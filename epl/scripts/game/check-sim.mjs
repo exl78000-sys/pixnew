@@ -149,6 +149,37 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
     return h + a2 > 0 ? h / (h + a2) * 100 : null;
   })();
   if (got != null) line('控球(主隊)', `${got.toFixed(1)}%`, want == null ? '側寫沒有控球率' : `目標 ${want.toFixed(1)}%(從兩隊真實的主客控球率推)`);
+
+  /* 階段 4b(2026-09-17):十二碼、助攻、進球情境。
+     十二碼的真值是從側寫推的,不是寫死的:Penalty 佔射門 share × 每隊每場射門 × 2 隊。
+     助攻**只印不判** —— 本站唯一的助攻資料是 FPL 的定義(贏得十二碼、被撲出後補進都算,
+     實測助攻/進球 0.905~0.937),跟這裡算的「進球前一腳傳到射手腳下」不是同一件事。
+     拿定義不同的兩個數字互比,就是本站在衝刺次數上踩過的那個坑。 */
+  const pen = profile.league_?.shotSituations?.Penalty;
+  const realPen = pen ? pen.share * profile.league_.rates.sf * 2 : null;
+  line('每場十二碼', mean(rows.map(r => r.st.counts.pens.home + r.st.counts.pens.away)).toFixed(2),
+    realPen == null ? '側寫沒有十二碼情境' : `真實 ${realPen.toFixed(2)}(Penalty 佔射門 ${pen.share} × 每隊 ${profile.league_.rates.sf} 射門 × 2)`);
+  const gl = rows.reduce((a, r) => a + r.st.score[0] + r.st.score[1], 0);
+  const asts = rows.reduce((a, r) => a + r.st.counts.assists.home + r.st.counts.assists.away, 0);
+  line('助攻 / 進球', gl ? (asts / gl).toFixed(3) : '—',
+    '只回報 —— 本站的助攻真值是 FPL 定義(較寬鬆),跟這裡的「進球前一腳」不能比');
+}
+
+/* 2f. 射門情境的分佈。真值是側寫的 shotSituations share(FotMob 逐射門分類)。
+      **引擎分得出來的只有六種**,分不出來的那兩種照實印出來說「不做」,不要偷偷併進別人。 */
+{
+  const real = profile.league_?.shotSituations ?? {};
+  const sit = {};
+  for (const r of rows) for (const [k, v] of Object.entries(r.st.counts.shotSit ?? {})) sit[k] = (sit[k] ?? 0) + v;
+  const tot = Object.values(sit).reduce((a, b) => a + b, 0);
+  if (tot > 0) {
+    console.log('');
+    for (const k of ['RegularPlay', 'FromCorner', 'FastBreak', 'ThrowInSetPiece', 'SetPiece', 'Penalty']) {
+      line(`情境 ${k}`, `${((sit[k] ?? 0) / tot * 100).toFixed(1)}%`, `真實 ${((real[k]?.share ?? 0) * 100).toFixed(1)}%`);
+    }
+    line('情境(引擎不分)', `FreeKick ${((real.FreeKick?.share ?? 0) * 100).toFixed(1)}% · IndividualPlay ${((real.IndividualPlay?.share ?? 0) * 100).toFixed(1)}%`,
+      '直接罰球射門與單人突破沒有可靠判準,不假裝分得出來');
+  }
 }
 
 /* 3b. 射門的**離門距離分佈**。真值不是我寫的數字,是倉庫裡 FotMob 逐場 shotmap 的座標算出來的
