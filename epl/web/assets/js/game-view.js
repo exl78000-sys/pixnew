@@ -1,7 +1,7 @@
 import * as C from './core.js?v=d2162a48';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountPitch } from './game-pitch.js?v=7d3b9def';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=831ba90c';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=551f693f';
 import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=13b570f3';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -194,6 +194,10 @@ export async function renderGame(app) {
         corners: n('corner'), fouls: n('foul'), offsides: n('offside'),
         yellow: ev.filter(e => e.type === 'card' && e.card === 'yellow').length,
         red: ev.filter(e => e.type === 'card' && e.card === 'red').length,
+        /* 階段 4b。全部從**已經演過的事件**算,跟這一支其他數字同一個來源 ——
+           讀引擎的計數器會提前洩露還沒演到的十二碼。 */
+        pens: n('penalty'),
+        assists: ev.filter(e => e.type === 'goal' && e.assist).length,
       };
     }
 
@@ -448,12 +452,16 @@ export async function renderGame(app) {
       const l = match.lambdas();
       return `${row('控球 %', ph ?? '—', ph != null ? 100 - ph : '—', `持球秒數・目標 ${pTarget != null ? `${Math.round(pTarget)}:${100 - Math.round(pTarget)}` : '—'}`)}${row('射門', H.shots, A.shots)}${row('射正', H.on, A.on)}${row('被封阻', H.blocked, A.blocked)}
         ${row('xG', H.xg.toFixed(2), A.xg.toFixed(2), '逐射門')}${row('角球', H.corners, A.corners)}${row('犯規', H.fouls, A.fouls)}${row('越位', H.offsides, A.offsides)}${row('黃牌', H.yellow, A.yellow)}${row('紅牌', H.red, A.red)}
+        ${H.pens + A.pens ? row('十二碼', H.pens, A.pens, 'xG 0.79・本站量到的') : ''}
+        ${row('助攻', H.assists, A.assists, '進球前一腳')}
         ${row('λ(遊戲的錨)', l.home.toFixed(2), l.away.toFixed(2), '整場不變')}
         <div class="tiny dim" style="margin-top:6px">全部由<b>畫面上已經發生的事件</b>累計 —— 這個引擎不會算到未來,所以不會提前洩露還沒演的射門。
           控球 = 兩隊各持球多久(秒);目標那一欄是從兩隊<b>真實的主客控球率</b>推的,
           引擎只是把每一隊的護球能力接上去,實際踢出來多少是它自己的結果(所以會偏)。
           xG 是每一腳射門當下由距離與張角算的,水準校準到聯盟每球平均。
-          <b>還沒做的</b>:十二碼、直接紅牌、助攻、進球情境分類(運動戰 / 角球 / 快攻)—— 沒做就不列,不放空欄位。</div>`;
+          十二碼的 xG 用本站量到的 0.79(側寫 100 次十二碼),跟運動戰射門走<b>同一條</b>校準,
+          不是外掛一個額外的進球來源;助攻算的是<b>進球前一腳傳到射手腳下的球</b>。
+          <b>還沒做的</b>:直接紅牌(只做兩黃)—— 沒做就不列,不放空欄位。</div>`;
     }
     /* 賽後解讀。判讀與敘述都在 game-diag.js(純函式,測得到);這裡只負責畫。
        讀的是 disp,不是 match.state() —— 完場之後兩者相同,但規矩只有一條才不會有人抄錯。 */
@@ -594,8 +602,11 @@ export async function renderGame(app) {
         實際差多少每次都印在 <code>npm run game:sim</code> 的輸出裡(這一頁不抄那些數字,它們會變)。
         <b>遊戲規則</b>(沒有資料可以校準的部分):加速度與煞車上限、控球半徑、逼搶距離、
         折射的機率與角度、接球者的優勢、扣扳機的機率形狀、戰術指令每一級改多少。
-        <b>還沒做的</b>:十二碼、直接紅牌、助攻、進球情境分類、體能、受傷、自動換人、
-        六軸戰術裡的心態 / 寬度 / 節奏 / 直接度。<b>沒做的一律不放欄位</b>,不留空格子。
+        <b>還沒做的</b>:直接紅牌(只做兩黃)、體能、受傷、自動換人、
+        六軸戰術裡的心態 / 寬度 / 節奏 / 直接度(引擎裡接得動,但量下去只有直接度改的是踢法、
+        其餘三軸改的是強弱,所以還沒掛上來)。<b>沒做的一律不放欄位</b>,不留空格子。
+        <b>進球情境分類</b>只分得出運動戰 / 角球 / 快攻 / 界外球 / 定位球 / 十二碼六種;
+        直接罰球射門與個人突破沒有可靠判準,不假裝分得出來。
         <b>補時比真實的短</b>,那不是 bug:真實足球 90 分鐘裡球只活約 55 分鐘,而這支模擬的死球等待只有一兩秒,
         補時是照「這一半死掉多少時間」原樣補回去的。
         <b>跟真實管線的關係只有一條</b>:沒有任何改動時,N 場的平均進球回得到站上的 λ(統計上的等式,不是逐場相等);
