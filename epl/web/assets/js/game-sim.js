@@ -203,14 +203,14 @@ const BEATEN_T = 2.4;                          // 被過掉的人這段時間不
    所以**不可以直接拿來當乘數** —— 舊模型的 `(0.6 + tkl)` 中位數是 2.09,那是一個
    「平均意義下把抄截乘兩倍」的項。改成除以聯盟中位數變成相對值,並夾住避免極端。 */
 const DUEL_SKILL_CLAMP = [0.5, 2];
-/* 抄截之後兩件事必須成立,否則整場會退化成中圈的一團(實測第一版:90 分鐘 13,143 次抄截、
-   跑動 11 m/分、85% 的時間站著)。原因是球被抄走之後新持球者旁邊就站著剛剛那個人,
-   下一格他就變成逼搶者再抄回來,來回幾格一次,球哪裡都去不了,所以沒有人需要跑:
-     1. 抄下來的球是**鬆的**,不是直接換人持球 —— 真的抄截本來就會把球捅開
-     2. 剛被抄的人要有一小段搶不回來的時間,不然只是換個方向再來一次 */
-const TACKLE_COOLDOWN = 1.6;                   // 抄截之後這段時間內不再判抄截(秒)
+/* 抄截之後球要是**鬆的**,不是直接換人持球,否則整場會退化成中圈的一團
+   (實測第一版:90 分鐘 13,143 次抄截、跑動 11 m/分、85% 的時間站著)—— 因為球被抄走之後
+   新持球者旁邊就站著剛剛那個人,下一格他就變成逼搶者再抄回來,球哪裡都去不了。
+   **舊模型為此還有兩個時間閘門**(`TACKLE_COOLDOWN` 1.6 秒不再判抄截、`SHIELD` 0.55 秒
+   剛接到球搶不走),階段 4r 之後**兩個都退場了**:一次對抗是一個離散事件、結局三選一,
+   抄截之後沒有持球者可以再宣告對抗,所以來回互抄在結構上就不會發生。
+   留著一個沒有人讀的常數比刪掉更糟 —— 它的註解會讓下一個人以為那條規則還在。 */
 const TACKLE_POKE = [4, 9];                    // 抄下來的球被捅開的初速(m/s)
-const SHIELD = 0.55;                           // 剛接到球的人這段時間內不會被抄(秒)
 const BODY_R = 1.05;                           // 兩個人的身體不可以重疊到比這更近(公尺)
 /* 逼搶要**保持距離**,不是貼著。第一版讓逼搶者停在一個身體的距離(1.05 m),
    實測最近防守者距離中位數 0.91 m、99.3% 的時間在 2 m 以內 —— 於是持球者永遠在最大壓力下,
@@ -991,7 +991,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        固定的話他可能在另一個半場,一開球就是一次瞬移。 */
     const taker = pickNearest(s, PITCH_W / 2, PITCH_H / 2, true) ?? s.players[1];
     if (place) { taker.x = PITCH_W / 2 - s.att * 1.2; taker.y = PITCH_H / 2; }
-    ball.holder = taker; taker.shield = SHIELD;
+    ball.holder = taker;
     st.phase = 'play'; decideIn = 0.4;
   }
 
@@ -1072,7 +1072,6 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (ball.shot) { st.lostShot++; if (ball.shot.willScore) st.lostGoal++; }
     ball.shot = null;               // 被人控到就不再是「飛向球門的那一腳」
     st.touches[p.side]++;
-    p.shield = SHIELD;            // 剛接到球有一小段時間搶不走(不然抄截會變成來回互抄)
     /* 接到球**立刻**有方向 —— 第一版是等下一次 decide() 才給 intent,而在那之前 want 是 null、
        他會煞停。實測持球者速度中位數 0.11 m/s:球在誰腳下誰就站住,整場看起來沒有人在帶球。 */
     const s0 = sideOf(p.side);
@@ -1824,7 +1823,6 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       else if (hypot(by.x - on.x, by.y - on.y) < SIM_TACKLE_R || st.duel.t >= DUEL_LUNGE) resolveDuel();
     }
     for (const p of all()) {
-      if (p.shield > 0) p.shield -= dt;
       if (p.beaten > 0) p.beaten -= dt;
       if (p.kickLock > 0) p.kickLock -= dt;
       if (p.runCool > 0) p.runCool -= dt;
@@ -1994,7 +1992,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     ball.holder = null; ball.z = 0; ball.vz = 0;
     ball.x = on.x; ball.y = on.y;
     ball.vx = Math.cos(ang) * sp; ball.vy = Math.sin(ang) * sp; st.lastKick = 'tackle';
-    on.shield = 0; st.tackles++; st.tacklesBy[by.side]++;
+    st.tackles++; st.tacklesBy[by.side]++;
   }
 
   /* 犯規:對方獲得自由球。牌照真實比率抽 —— 每次犯規 `yellowPerFoul` 機率吃黃,
