@@ -321,29 +321,48 @@ if (simShots && realShots) {
   }
 }
 
-/* 3b-4. **對抗那一層的錨**(階段 4q)。本站三輪防守側的修正(4k 放大半徑、4n 門將碰持球者、
-         4o 逼搶者站到球門那一側)全部死在「抄截與犯規爆炸」上,而我一路以為沒有東西可以校準
-         那一層 —— **側寫的 `extra` 裡就有**:`ground_duels_won` 每隊每場 32.86(兩隊合計 ≈ 66 次對抗),
-         而三種結局剛好把它拆完:抄截 32 + 過人成功 14 + 犯規 20.8 = 66。
-         所以「一場該有幾次對抗」是**查得到出處的**,不是一個自由參數。
-         過人成功這一項引擎目前**根本沒有**(沒有「持球者擺脫防守員」這個動作),
-         那正是防守員一站到球門那一側就變成永久接觸的原因。 */
+/* 3b-4. **對抗那一層**(階段 4q 找到錨,4r 照它重寫)。本站四輪防守側的修正(4k 放大半徑、
+         4n 門將碰持球者、4o 逼搶者站到球門那一側、4p 換分母)全部死在「抄截與犯規爆炸」上,
+         而我一路以為沒有東西可以校準那一層 —— **側寫的 `extra` 與 `rates` 裡就有**。
+         三個錨(抄截 / 犯規 / 過人成功)由**引擎**從側寫算並吐出來(`duelAnchors()`),
+         這裡不自己再算一份 —— 兩份會悄悄過期。 */
 {
-  const teams = Object.values(profile.teams ?? {}).filter(t => t.extra);
-  const M = k => { const v = teams.map(t => t.extra[k]?.mean).filter(x => x != null);
-    return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
-  const gd = M('ground_duels_won'), rtk = M('matchstats.headers.tackles'), dr = M('dribbles_succeeded');
-  const duels = rows.reduce((a, r) => a + (r.st.counts.duels ?? 0), 0) / rows.length;
-  if (gd && rtk && dr) {
-    console.log('');
-    console.log(`  ${'一場的對抗次數(進入抄截半徑)'.padEnd(20, '\u3000')} ${duels.toFixed(1).padStart(6)}`
-      + `\u3000真實 ${(gd * 2).toFixed(0)}(ground_duels_won 兩隊合計)→ **${(duels / (gd * 2)).toFixed(1)} 倍**`);
-    const secs = rows.reduce((a, r) => a + (r.st.counts.judgeFrames ?? 0), 0) / rows.length / 60;
-    console.log(`  ${'　而判定是「每一格擲一次」,所以真正的分母是秒數'.padEnd(20, '\u3000')} ${secs.toFixed(1)} 秒 / 場`);
-    console.log(`  ${'　三種結局的真實拆帳'.padEnd(20, '\u3000')} 抄截 ${(rtk * 2).toFixed(0)}`
-      + ` + 過人成功 ${(dr * 2).toFixed(0)} + 犯規 20.8 = ${(rtk * 2 + dr * 2 + 20.8).toFixed(0)}`);
-    console.log(`  ${'　本站'.padEnd(20, '\u3000')} 抄截 ${(rows.reduce((a, r) => a + r.st.counts.tackles, 0) / rows.length).toFixed(1)}`
-      + ` + 過人成功 **沒有這個動作** + 犯規 ${(rows.reduce((a, r) => a + r.st.counts.fouls.home + r.st.counts.fouls.away, 0) / rows.length).toFixed(1)}`);
+  const A = rows[0]?.sim?.duelAnchors?.() ?? null;
+  const avg = f => rows.reduce((a, r) => a + f(r.st.counts), 0) / rows.length;
+  const se = f => {
+    const v = rows.map(r => f(r.st.counts)), m = v.reduce((a, b) => a + b, 0) / v.length;
+    return v.length < 2 ? 0 : Math.sqrt(v.reduce((a, b) => a + (b - m) ** 2, 0) / (v.length - 1) / v.length);
+  };
+  console.log('');
+  if (!A) {
+    console.log('  對抗那一層:側寫算不出錨(缺 extra 或 rates)—— 只印本站的數字,不判');
+    console.log(`  ${'對抗'.padEnd(14, '\u3000')} ${avg(c => c.duels ?? 0).toFixed(1)}`
+      + `\u3000抄截 ${avg(c => c.tackles).toFixed(1)}\u3000犯規 ${avg(c => c.fouls.home + c.fouls.away).toFixed(1)}`
+      + `\u3000過人成功 ${avg(c => c.dribbles ?? 0).toFixed(1)}`);
+  } else {
+    console.log('  對抗那一層(階段 4r:一次對抗判一次,三種結局把它拆完)');
+    const line = (名稱, f, real) => {
+      const v = avg(f), e = se(f);
+      const 判 = e > 0 && Math.abs(v - real) > 2 * e ? `**差 ${((v - real) / e).toFixed(1)} SE**` : '✓';
+      console.log(`  ${名稱.padEnd(14, '\u3000')} ${v.toFixed(1).padStart(6)} ± ${e.toFixed(1)}`
+        + `\u3000真實 ${real.toFixed(1)}\u3000${判}`);
+    };
+    line('一場的對抗次數', c => c.duels ?? 0, A.duels);
+    line('　抄截', c => c.tackles, A.tackles);
+    line('　犯規', c => c.fouls.home + c.fouls.away, A.fouls);
+    line('　過人成功', c => c.dribbles ?? 0, A.dribbles);
+    /* 「對抗總數」的真實值是三種結局相加,而地面對抗自己也有一個數字 —— 兩個各自算出來
+       卻對得上,那是很強的線索不是證明,所以印出來但不當判準。 */
+    const teams = Object.values(profile.teams ?? {}).filter(t => t.extra?.ground_duels_won?.mean != null);
+    const gn = teams.reduce((a, t) => a + t.extra.ground_duels_won.n, 0);
+    const gd = gn ? teams.reduce((a, t) => a + t.extra.ground_duels_won.mean * t.extra.ground_duels_won.n, 0) / gn : null;
+    if (gd) console.log(`  ${'（三種結局相加'.padEnd(14, '\u3000')} ${A.duels.toFixed(1)}`
+      + `,而 ground_duels_won 兩隊合計 ${(gd * 2).toFixed(1)} —— 線索,不是判準)`);
+    /* 接觸**不是**對抗:這一行是 4r 的判準來源 —— 站位改動會把「判定跑了多久」放大 4.5 倍,
+       而「碰到幾次」幾乎不變(×1.06)。判定掛在更穩的帶球決策上(×1.01)才脫得了鉤。 */
+    console.log(`  ${'　（參考)進到抄截半徑的次數'.padEnd(14, '\u3000')} ${avg(c => c.contacts ?? 0).toFixed(0).padStart(6)}`
+      + `\u3000在半徑內的秒數 ${(avg(c => c.contactFrames ?? 0) / 60).toFixed(0)} 秒`
+      + ` —— 這兩個都**不是**對抗,只是幾何`);
   }
 }
 

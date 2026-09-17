@@ -113,8 +113,7 @@ const COVER_BACK = 7;                          // 補位者站在逼搶者身後
    進球 2.8 : 1.6(λ 1.99 : 0.70)、RegularPlay 佔比從 63% 掉到 41%。
    **1.3 不是疏忽,是它在擋這件事** —— 跟這一段上面記的「逼搶者站 1.05 m 會讓整場垮掉」
    是同一個病從另一個門進來。門前那幾公尺要另外處理,見 `GOAL_LINE_PRESS`。 */
-const SIM_TACKLE_R = 1.3;                      // 進到這麼近之後才判抄截
-const TACKLE_RATE = 1.1;                       // 在那個範圍內每秒這個機率把球捅走(乘防守能力)
+const SIM_TACKLE_R = 1.3;                      // 撲上去之後進到這麼近就結算(不再是「每秒判一次」的範圍)
 /* **階段 4p 試過把判定改成「一次控球判一次」,而它只做到一半(2026-09-17)。**
    做法:接到球的人帶一個 `duel` 籌碼,防守員進到抄截半徑時用掉它、判一次(機率不乘 dt)。
    回推的校準點很準:分母實測 犯規 145 / 抄截 327(兩個不一樣是因為 `canFoul` 會排掉
@@ -145,6 +144,65 @@ const TACKLE_RATE = 1.1;                       // 在那個範圍內每秒這個
    先把接觸的機會吃掉 —— 實測 TACKLE_RATE 0.10/0.15/0.22/0.35 → 抄截 26/38/54/80,
    而犯規一直是 77~85。要讓防守的站位變真實,得先把這個接觸模型改成
    **一次對抗一次判定**(而不是每秒判一次),那是階段 4p。 */
+/* ── 一次對抗判一次(2026-09-17,階段 4r)──────────────────────────────
+   4k / 4n / 4o / 4p 四輪全部死在同一塊石頭上:判定是「在 1.3 公尺內**每秒**這個機率」,
+   所以那兩個率把『有多常在 1.3 公尺內』偷偷編進去了,任何改動防守站位的修正都會**爆炸式**失效。
+   4r 先量了可以當分母的五個東西(各 30 場,現況 vs 4o 的「逼搶者站到球門那一側」):
+     **判定跑過的秒數**            19.2 → 86.6 秒   **×4.5**   ← 舊模型真正的分母
+       (是「閘門過了而且在半徑內」的秒數,不是總接觸時間 —— 總接觸時間另外印在 `game:sim`)
+     進入 1.3 m 的**次數**         868.6 → 918.3    **×1.06**  ← 次數本來就幾乎不變
+     帶球決策・最近對手 < 1.3 m     65.1 → 149.2    ×2.29
+     帶球決策・最近對手 < 2.5 m    205.3 → 225.9    ×1.10
+     **帶球決策・最近對手 < 3.0 m** 255.2 → 256.8   **×1.01**  ← 最穩,而且它是一個**動作**
+   所以爆炸的不是「碰到幾次」,是「碰了多久」。判定改成一次對抗判一次、
+   而對抗由持球者的**帶球決策**(他在有人盯著的時候選擇不出球)觸發,就跟幾何脫鉤了。
+   **不可以等到兩個人真的碰到才結算:**同一批 30 場量過,宣告之後 1.2 秒內真的進到
+   1.3 公尺的比例是 28.0% → **66.4%**(×2.37)—— 那等於又把幾何接回來。
+   所以結局與判罰都在宣告的那一刻決定(見下面那一段:「等兩個人真的碰到」的三個版本都更糟)。 */
+const DUEL_R = 3.0;                            // 有對手在這麼近的時候還帶球,才算一次「敢過他」的決定
+const DUEL_P = 0.273;                          /* 那些決定裡有多少真的變成一次對抗。
+                                                  校準:90 場 × 兩輪,0.26 → 對抗 64.2、0.273 → 68.1(錨 68.2)。
+                                                  **它只定總數,不影響三種結局的分配。** */
+/* 三種結局的比例**從側寫算**(見 createSim 的 `DW`),不寫死在這裡 ——
+   寫死的話側寫重算它就會悄悄過期,而那正是本站記過三次的坑。量到的是(以場數加權):
+     抄截      `matchstats.headers.tackles` × 2 = 32.7
+     犯規      `rates.fouls` × 2                = 21.6
+     過人成功  `dribbles_succeeded` × 2         = 13.9
+   合計 68.2,而地面對抗 `ground_duels_won` × 2 = **67.4**。
+   (`ground_duels_won + aerials_won = duel_won` 逐隊最大差 0.01,所以「地面 / 空中」這個拆法
+   是上游自己的。三種結局各自算出來、加起來卻等於地面對抗總數,是**很強的線索,不是證明** ——
+   真正要守的是那三個數字本身,不是這個和。)
+   **「過人成功」是引擎原本完全沒有的一種結局** —— 而它正是防守員一站到球門那一側
+   就變成永久接觸的原因:被過掉的人得離開這場對抗一段時間(`BEATEN_T`)。 */
+/* 犯規的權重要**乘一個校準係數**才會落在錨上,而它有理由:禁區裡收腳(`BOX_CARE`)與
+   自家門前不吹(`FOUL_NO_WHISTLE`)會把一部分「本來要犯規」換成乾淨的搶,
+   所以權重不等於最後的佔比。1.30 是量出來的(90 場 × 兩組獨立種子:
+   1.00 → 犯規 17.0、1.30 → 18.8,錨 21.8 → 1.60)。**它補的是那三道收腳,不是一個自由參數**:
+   禁區裡(`BOX_CARE`)、自家門前(`FOUL_NO_WHISTLE`)、吃過黃牌的人(`CARDED_CARE`)——
+   三者都會把「本來要犯規」換成乾淨的搶球,所以權重不等於最後的佔比。
+   **改動那三個之中任何一個就要重量一次。** */
+const DUEL_FOUL_FIT = 1.60;
+/* 宣告之後**防守員撲上去**,結算在「碰到」或「撲了 `DUEL_LUNGE` 秒」—— 兩種都就地結算,
+   **不可以因為撲不到就取消**,那等於讓幾何決定對抗成不成立,而那正是 4k~4p 爆炸的來源。
+   四個版本都量過(各 20~90 場),而**選的那一個不是畫面最好的,是錨守得住的那一個**:
+     (甲)撲 0.9 秒        撲到 **34.7%**,沒撲到時平均 **5.2 m**;λ 主 1.87 ± 0.10 / 客 0.70 ✓
+     (乙)＋持球者減速 0.6  撲到 38.0%(只多 3 pp);**客隊進球 0.70 → 0.98(+2.5 SE)** ✗
+     (丙)＋持球者往他身上帶 撲到 **90.8%**、距離 2.3 m ← 畫面最好,
+                            但**主隊進球 1.93 → 1.35(−4.2 SE)**:他不再往球門帶 ✗
+     (丁)不撲,宣告即結算   距離一律 ≤ 3 m(≈ 2.4);**λ 主 1.69(−2.1 SE)/ 客 0.96(+2.3 SE)** ✗
+   撲不到的原因:帶球 0.92 × vmax、撲的人 1.0 ×,**closing speed 只有 8%**(1.7 m 要 2.8 秒),
+   而且他要先轉向再加速 —— 那 0.9 秒持球者已經跑掉 4 公尺。
+   **(丁)看起來應該最好而量出來最差**(強弱被壓縮,那正是階段 2c 花一整輪修好的東西),
+   所以留(甲)。代價要講清楚:**三分之二的抄截發生在盯人的距離上,不是身體接觸** ——
+   要做到身體接觸,缺的是「撲搶」這個動作本身(短暫超過自己最高速),
+   而本站有一條硬規則不准那樣做(`check-sim` 的「瞬移(超過自己最高速)」)。那是另一件事。 */
+const DUEL_LUNGE = 0.9;                        // 撲上去最多演這麼久(秒),時間到就地結算
+const BEATEN_T = 2.4;                          // 被過掉的人這段時間不能再當逼搶者(他在回追)
+/* 能力值只在**抄截 ↔ 過人成功**之間搬,不碰犯規(犯規是動作做壞了,跟誰比較會搶沒有單調關係)。
+   `ability.tkl` 的聯盟分佈是 0.00 / 中位 1.49 / 最高 4.73(316 人有值、599 人裡),
+   所以**不可以直接拿來當乘數** —— 舊模型的 `(0.6 + tkl)` 中位數是 2.09,那是一個
+   「平均意義下把抄截乘兩倍」的項。改成除以聯盟中位數變成相對值,並夾住避免極端。 */
+const DUEL_SKILL_CLAMP = [0.5, 2];
 /* 抄截之後兩件事必須成立,否則整場會退化成中圈的一團(實測第一版:90 分鐘 13,143 次抄截、
    跑動 11 m/分、85% 的時間站著)。原因是球被抄走之後新持球者旁邊就站著剛剛那個人,
    下一格他就變成逼搶者再抄回來,來回幾格一次,球哪裡都去不了,所以沒有人需要跑:
@@ -409,7 +467,9 @@ const STOP_MIN = 60, STOP_MAX = 9 * 60;
    聯盟每隊每場犯規 10.9、黃牌 1.88、紅牌 0.052,而**每次犯規吃黃牌 0.172**
    (`league_.rates.yellowPerFoul`,那三個數字自己就對得起來)。
    紅牌只做**兩黃**:直接紅牌一季每隊 0.05 張,做了也驗不出來,而做錯會很明顯。 */
-const FOUL_RATE = 1.3;                         // 抄截範圍內每秒變成犯規的機率(用每場犯規數校準:0.55 → 每隊 3.8 次,真實 10.5)
+/* **`FOUL_RATE` 已經退場(2026-09-17,階段 4r)。** 它曾經是「在抄截範圍內每秒這個機率」,
+   而那個寫法把『有多常在 1.3 公尺內』偷偷編進去了 —— 見 `DUEL_R` 那一段的量測。
+   犯規現在是一次對抗的三種結局之一,比例直接來自側寫。 */
 const YELLOW_PER_FOUL_FALLBACK = 0.172;        // 側寫沒給的時候才用(聯盟值,league_.rates)
 /* 吃過黃牌的人犯規率乘這個。掃出來的(20 場):
      1.00(沒有這條)→ 黃 3.4、紅 0.50
@@ -432,8 +492,19 @@ const CARDED_CARE = 0.15;
    十二碼次數對 BOX_CARE 是**嚴格線性**的(它就是機率上的乘數),所以改成量基準率再除:
      BOX_CARE = 1(完全不收腳)跑 30 場,共 59 球 → 1.97 ± 0.26 /場(Poisson)
      0.23 ÷ 1.97 = 0.117,±1SE 落在 0.103 ~ 0.134 → 取 0.12
-   要重算就再跑一次那個基準率,不要拿幾場去掃一個一場只出現 0.2 次的東西。 */
-const BOX_CARE = 0.12;
+   要重算就再跑一次那個基準率,不要拿幾場去掃一個一場只出現 0.2 次的東西。
+   **階段 4r 重量過(2026-09-17):0.12 → 0.027。** 接觸模型從「每秒判一次」換成
+   「一次對抗判一次」之後,禁區內的對抗一場有 11.2 次而每一次都會判,所以同一個
+   `BOX_CARE` 會給出 0.88 球十二碼(真實 0.23)。量法照這一段:把每次禁區內對抗的
+   「這次是犯規」的機率**加起來**(期望值,連續量),而不是數次數。量到兩件事:
+     (一)禁區內宣告的那 11.2 次,機率就是這個常數決定的(0.042 時期望 0.30 / 場)
+     (二)**還有第二條路**:禁區外宣告、撲的那 0.9 秒裡飄進禁區的(約占犯規的 7%),
+          它們在 `resolveDuel` 補一次收腳 —— 所以實際 = 期望 + 這條路(0.042 時 0.39 對期望 0.30)
+   照**實際次數**收:0.042 → 0.39、0.027 → 0.33,兩點外推到 0.23 得 **0.022**。
+   **踩過一次**:把 `DUEL_FOUL_FIT` 1.30 → 1.60 的同時把 BOX_CARE 0.055 → 0.042,
+   兩個改動在禁區內的權重上**剛好互相抵銷**(1.231 × 0.764 = 0.94),期望值一個數字都沒動。
+   一次改兩個乘在一起的常數,要先算它們的積。 */
+const BOX_CARE = 0.022;
 /* 角球(2026-09-17,階段 4f)。在這之前**根本沒有角球戰術**:開角球的人照一般傳球處理,
    而其他人留在「跟著球平移的正常陣型」裡 —— 所以禁區裡一個人都沒有。
    量出來每個角球只生 0.084 腳射門,真實是 0.440(`FromCorner` 佔射門 17.3% ÷ 每場 9.9 個角球),
@@ -652,6 +723,36 @@ export function shapeOf(slot, ball, att, opts = {}) {
 export function createSim({ profile, home, away, seed = 1, setup = {}, pred = null } = {}) {
   const rng = simRng(seed);
   const teamOf = code => profile.teams[code];
+  /* 搶斷能力的**聯盟中位**,用來把 `ability.tkl` 變成相對值(見 `DUEL_SKILL_CLAMP`)。
+     寫死一個數字的話,側寫重算它就會悄悄過期 —— 所以在這裡從同一份側寫算。 */
+  const tklAll = [];
+  for (const t of Object.values(profile.teams ?? {}))
+    for (const q of (t.squad ?? [])) if (q.ability?.tkl != null) tklAll.push(q.ability.tkl);
+  tklAll.sort((a, b) => a - b);
+  const TKL_MID = tklAll.length ? tklAll[Math.floor(tklAll.length / 2)] : 1.49;
+  /* **每隊的犯規傾向,側寫裡本來就有**(`rates.{主客}.fouls`,ARS 主場 10.14、LIV 客場 10.62)。
+     舊模型拿壓迫強度(`style.pressing`)當它的 proxy —— 那是錯的維度:高壓迫的隊抄截與攔截多,
+     不代表他犯規多(這兩隊 pressing 差 9%,而真實犯規只差 5%)。而且在 4r 的三選一裡
+     「犯規多」會**換掉抄截**,於是壓迫強的那一隊搶不到球 —— λ 就被壓縮了。
+     這是「資料躺在倉庫裡而沒有人讀它」的又一次:錨在同一份側寫的同一個物件上。 */
+  /* 聯盟平均用**聯盟那一層自己的欄位**(`league_.rates.fouls`,n = 840 隊-場),
+     不要自己把 20 隊平均一次 —— 逐隊加權算出來是 10.82(726 隊-場,升班馬只有 4 場),
+     跟它的 10.9 差 1%,而那 1% 純粹是我用了不同的母體。**同一個量只能有一個來源。** */
+  const FOUL_LG = profile.league_?.rates?.fouls ?? null;
+  /* **一次對抗的三種結局,比例從側寫算**(以場數加權;兩隊合計 = 每隊 × 2)。
+     算不出來就退回聯盟量級的備援值並標出來 —— 但那不會在英超發生(側寫就是從英超算的)。 */
+  const DW = (() => {
+    const ex = k => {
+      const v = Object.values(profile.teams ?? {}).map(t => t.extra?.[k]).filter(x => x?.mean != null);
+      const n = v.reduce((a, b) => a + b.n, 0);
+      return n ? v.reduce((a, b) => a + b.mean * b.n, 0) / n : null;
+    };
+    const tk = ex('matchstats.headers.tackles'), dr = ex('dribbles_succeeded');
+    if (tk == null || dr == null || FOUL_LG == null) return { tackle: 0.48, foul: 0.32 * DUEL_FOUL_FIT, beat: 0.20, real: null };
+    const rTk = tk * 2, rDr = dr * 2, rFl = FOUL_LG * 2, tot = rTk + rDr + rFl;
+    return { tackle: rTk / tot, foul: rFl / tot * DUEL_FOUL_FIT, beat: rDr / tot,
+             real: { tackles: rTk, fouls: rFl, dribbles: rDr, duels: tot } };
+  })();
   const mkSide = (code, side, att) => {
     const t = teamOf(code);
     const su = setup[side] ?? {};
@@ -683,6 +784,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        那個範圍比真實的行為差異大得多(兩隊的抄截率不會差一倍),所以只取它的方向、不取它的幅度。 */
     const pv = t.style?.pressing?.value;
     const press = pv == null ? 1 : cl(1 + (pv / PRESS_LG - 1) * PRESS_SPAN, 0.7, 1.3);
+    // 犯規傾向:這一隊在**這個主客身分**下的真實犯規數 ÷ 聯盟平均(夾住樣本少的極端)
+    const fl = t.rates?.[side]?.fouls;
+    const foulRel = (fl == null || FOUL_LG == null) ? 1 : cl(fl / FOUL_LG, 0.7, 1.3);
     /* 護球能力:用**這一隊在這個主客身分下**的真實控球率。50 是聯盟平均(控球是零和的,
        所以平均一定是 50,不必另外算)。夾在 ±15 個百分點內 —— 超出那個範圍的是樣本太少,
        不是真的有球隊能控 70%(實測全聯盟落在 27~61)。 */
@@ -704,7 +808,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 四軸的中性值(階段 4a)。**恆等元**:push 0、wide 1、tempo 1、direct 0 —— 沒有下指令時
        每一條算式都跟接這四軸之前完全一樣,所以 λ 的錨不會因為「多了四個旋鈕」而動。 */
     return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1,
-      push: 0, wide: 1, tempo: 1, direct: 0, keep, possMean: pmRaw ?? null, bench };
+      push: 0, wide: 1, tempo: 1, direct: 0, keep, foulRel, possMean: pmRaw ?? null, bench };
   };
 
   const H = mkSide(home, 'home', +1), A = mkSide(away, 'away', -1);
@@ -847,7 +951,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 控球串:賽後解讀(game-diag.js)要的是「一次進攻怎麼結束的」。連續模擬裡沒有「回合」這個東西,
        所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
     chains: [], chain: null, pendingOrigin: null,
-    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, duels: 0, judgeFrames: 0, duelPair: null, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
+    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, duels: 0, contacts: 0, contactFrames: 0, duelPair: null, duel: null, dribbles: 0, dribblesBy: { home: 0, away: 0 }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
@@ -1196,6 +1300,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        整段已移除。**下一次要盯的數字是 0~10 m 的合計,不是 0~5 m 那一格,也不是平均** ——
        那兩個都可以靠「把射門挪一格」變好看。 */
     p.intent = { x: cl(p.x + s.att * 12, 3, PITCH_W - 3), y: cl(p.y + (rng() - 0.5) * 10, 3, PITCH_H - 3), goalX };
+    /* **有人盯著還選擇帶球 = 一次「敢過他」的決定**(階段 4r)。這是整個接觸模型的觸發點:
+       它是一個動作,不是幾何的副產品 —— 量出來對站位的敏感度是 ×1.01(見 `DUEL_R`)。
+       門將與剛被過掉的人不算(他在回追,不是在盯人)。 */
+    if (!st.duel) {
+      let foe = null, fd = Infinity;
+      for (const q of o.players) {
+        if (q.off || q.role === 'GK' || (q.beaten ?? 0) > 0) continue;
+        const d = hypot(q.x - p.x, q.y - p.y);
+        if (d < fd) { fd = d; foe = q; }
+      }
+      if (foe && fd < DUEL_R && rng() < DUEL_P) startDuel(p, foe);
+    }
     return { kind: 'carry' };
   }
 
@@ -1350,7 +1466,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const reach = PRESS_R * o.press;
       let bd = reach, bd2 = reach;
       for (const q of o.players) {
-        if (q.off || q.role === 'GK') continue;
+        // 剛被過掉的人不算 —— 他在回追,不是在盯人(階段 4r 的 `BEATEN_T`)
+        if (q.off || q.role === 'GK' || (q.beaten ?? 0) > 0) continue;
         const d = hypot(q.x - holder.x, q.y - holder.y);
         if (d < bd) { bd2 = bd; cover = presser; bd = d; presser = q; }
         else if (d < bd2) { bd2 = d; cover = q; }
@@ -1376,6 +1493,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const ty = cl(holder.y + sideY * gap * 0.85, 4, PITCH_H - 4);
         const dd = hypot(tx - p.x, ty - p.y);
         want = { x: tx, y: ty, speed: dd > 16 ? SIM_RUN : dd > 4 ? SIM_JOG : SIM_WALK };
+      } else if (st.duel && p === st.duel.by && holder === st.duel.on) {
+        /* **撲上去**(階段 4r):結局已經抽好了,這一段只是把它演出來 ——
+           所以這裡不保持 `JOCKEY_R`,直接衝著持球者去(見 `DUEL_LUNGE` 的四個版本)。 */
+        want = { x: holder.x, y: holder.y, speed: p.vmax };
       } else if (p === presser) {
         /* 逼搶:瞄準持球者的提前量,但**停在一個身體的距離之外** ——
            讓他跑到持球者身上的話,兩個圓點會疊在一起,而且下一格就抄到球、再下一格被抄回來。 */
@@ -1680,65 +1801,31 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       } else if (ball.y < 0 || ball.y > PITCH_H) throwIn();
     }
 
-    // ── 抄截 ──
-    /* **一場有幾次「對抗」** —— 這是階段 4q 找到的錨,側寫的 `extra.ground_duels_won` 給的:
-       20 隊平均每隊每場 32.86 次地面對抗獲勝,兩隊合計 ≈ **66 次對抗**。而且三種結局拆得開:
-       抄截 32(`matchstats.headers.tackles` 15.95 × 2)+ 過人成功 14(`dribbles_succeeded` 6.75 × 2)
-       + 犯規 20.8 = 66 —— 剛好等於對抗總數。
-       只計數不判定,所以**不受 `tackleCool` / `shield` 影響**:那兩個是判定的閘門,不是對抗的定義。 */
+    // ── 接觸與對抗 ──
+    /* **接觸事件只計數,不判定**(階段 4q 加的錨,4r 保留)。它是「進到抄截半徑幾次」,
+       而 4r 量出來這個數字對站位幾乎不敏感(868.6 → 918.3,×1.06)—— 爆炸的是**判定跑了多久**
+       (舊模型的 19.2 → 86.6 秒,×4.5)。兩個數字並排印出來,才看得出下一個修正動到的是哪一個。
+       `contactFrames` 是**總**接觸時間(沒有閘門),跟上面那個 19.2 不是同一個量,不要互相比。 */
     st.duelGap = (st.duelGap ?? 0) + dt;
     if (ball.holder && presser) {
       const dd = hypot(presser.x - ball.holder.x, presser.y - ball.holder.y);
       const pair = dd < SIM_TACKLE_R ? ball.holder.code + '|' + presser.code : null;
       /* 同一組人在半徑邊緣來回會把次數灌大(第一版數到 908 / 場),所以要**斷開夠久**才算新的一次:
          0.5 秒不是調出來的,它只要大過「一格」而且小過一次真實對抗的長度就行。 */
-      if (pair && (pair !== st.duelPair || st.duelGap > 0.5)) st.duels++;
-      if (pair) st.duelGap = 0;
+      if (pair && (pair !== st.duelPair || st.duelGap > 0.5)) st.contacts++;
+      if (pair) { st.duelGap = 0; st.contactFrames++; }
       st.duelPair = pair ?? st.duelPair;
     }
-    st.tackleCool = Math.max(0, (st.tackleCool ?? 0) - dt);
-    if (ball.holder && presser && st.tackleCool <= 0 && (ball.holder.shield ?? 0) <= 0) {
-      const d = hypot(presser.x - ball.holder.x, presser.y - ball.holder.y);
-      if (d < SIM_TACKLE_R) {
-        /* **判定跑了幾格** —— 不是幾次對抗。這正是問題本身:判定是「每一格都擲一次」,
-           所以真正的分母是**接觸的秒數**(這個數字 ÷ 60),而不是對抗的次數。 */
-        st.judgeFrames++;
-        // 護球好的隊被捅走的機率低一點(同一個 keep,兩邊相除)
-        const skill = (0.6 + (presser.ability?.tkl ?? 0.2)) * (sideOf(presser.side).keep / sideOf(ball.holder.side).keep);
-        /* 先判犯規再判抄截 —— 反過來的話乾淨的抄截永遠先發生,犯規只在「沒抄到」時才有機會,
-           而那跟真實足球的因果相反:犯規是抄截**做壞了**,不是沒做。
-           **禁區裡的 2026-09-17(階段 4b)起吹十二碼** —— 在這之前是不吹的,理由寫著
-           「吹了會變成一個本站算不出來的機率」,而那個機率現在查得到出處:
-           側寫的 `shotSituations.Penalty` 有 100 次十二碼的 xG 0.788 與進球率 0.83。 */
-        const gx = sideOf(ball.holder.side).att > 0 ? PITCH_W : 0;
-        const inBox = Math.abs(ball.holder.x - gx) < 16.5 && Math.abs(ball.holder.y - PITCH_H / 2) < 20.16;
-        /* **吃過黃牌的人會收手。** 沒有這一條的話,犯規只看位置與壓迫強度,於是一場下來
-           有人連吃兩張黃的機率高得離譜:實測一隊一場 2 張紅牌,而真實每隊每場 0.05 張。
-           真的球員被警告之後會避免再犯 —— 這不是一個調出來的係數,是一個缺掉的行為。 */
-        const booked = (presser.yellow ?? 0) > 0 ? CARDED_CARE : 1;
-        /* 先看**位置**允不允許吹,再抽亂數 —— 反過來寫(先抽再看位置)的話,
-           每一格都會消耗一個亂數,整個序列就跟接十二碼之前錯開了,
-           同一個種子跑出來的比賽會完全不同,新舊兩版就沒辦法逐場比。 */
-        const canFoul = inBox ? PEN_XG != null
-          : Math.abs(ball.holder.x - (gx > 0 ? 0 : PITCH_W)) > FOUL_NO_WHISTLE;
-        if (canFoul && rng() < FOUL_RATE * sideOf(presser.side).press * booked * (inBox ? BOX_CARE : 1) * dt) {
-          if (inBox) penaltyFor(ball.holder.side, presser);
-          else foulBy(presser, ball.holder);
-        } else if (rng() < TACKLE_RATE * skill * dt) {
-          /* 球被捅開變成鬆球(不是直接換人持球):方向大致是防守者的來向,速度隨機。
-             這樣兩邊都要去追,而追球本身就是跑動 —— 這也是「看起來像在踢球」的一大半。 */
-          const victim = ball.holder;
-          const ang = Math.atan2(victim.y - presser.y, victim.x - presser.x) + (rng() - 0.5) * 1.6;
-          const sp = TACKLE_POKE[0] + rng() * (TACKLE_POKE[1] - TACKLE_POKE[0]);
-          ball.holder = null; ball.z = 0; ball.vz = 0;
-          ball.x = victim.x; ball.y = victim.y;
-          ball.vx = Math.cos(ang) * sp; ball.vy = Math.sin(ang) * sp; st.lastKick = 'tackle';
-          victim.shield = 0; st.tackleCool = TACKLE_COOLDOWN; st.tackles++; st.tacklesBy[presser.side]++;
-        }
-      }
+    /* **對抗的結算:一次對抗判一次。** 結局在 `startDuel` 就抽好了,這裡只決定什麼時候演完。 */
+    if (st.duel) {
+      st.duel.t += dt;
+      const { on, by } = st.duel;
+      if (ball.holder !== on || by.off || on.off) st.duel = null;   // 球已經傳掉 / 被抄走 → 這次過人沒發生
+      else if (hypot(by.x - on.x, by.y - on.y) < SIM_TACKLE_R || st.duel.t >= DUEL_LUNGE) resolveDuel();
     }
     for (const p of all()) {
       if (p.shield > 0) p.shield -= dt;
+      if (p.beaten > 0) p.beaten -= dt;
       if (p.kickLock > 0) p.kickLock -= dt;
       if (p.runCool > 0) p.runCool -= dt;
       /* 跑動在**球權沒了**的時候就結束 —— 沒有這一行的話,丟了球還有人往對方門衝,
@@ -1845,13 +1932,77 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       emit({ type: 'full', side: null, score: [st.goals.home, st.goals.away] });
     }
   }
+  /* **一次對抗**(2026-09-17,階段 4r)。結局在這裡就抽好 —— 撲上去只是把它演出來。
+     等「真的碰到」才抽的話,碰得到碰不到又變成幾何,而那正是 4k~4p 四輪爆炸的來源
+     (宣告之後 1.2 秒內真的碰到的比例,現況 28.0% vs 4o 的站位 66.4%,×2.37)。 */
+  function startDuel(on, by) {
+    const s = sideOf(by.side);
+    /* 能力值只在**抄截 ↔ 過人成功**之間搬,不碰犯規。`tkl` 直接當乘數的話中位數是 2.09
+       (舊模型就是這樣寫的),所以要先除以聯盟中位變成相對值,再夾住避免極端。
+       護球是**相對的**:拿自己的 keep 除以對手的,兩隊都平庸時等於沒有這一項。 */
+    const tk = by.ability?.tkl;
+    const rel = tk == null ? 1 : cl((0.6 + tk) / (0.6 + TKL_MID), DUEL_SKILL_CLAMP[0], DUEL_SKILL_CLAMP[1]);
+    const skill = rel * (s.keep / sideOf(on.side).keep);
+    /* 吃過黃牌的人會收手(階段 3 量出來的行為,不是係數);禁區裡收腳(`BOX_CARE`,
+       十二碼的次數就是這樣校準的);自家門前 6 公尺的犯規本站不處理 —— 三種都退回「乾淨地搶」。
+       犯規傾向用 `foulRel`(這一隊的真實犯規數)**不是 `press`** —— 理由見 `FOUL_LG` 那一段。 */
+    const booked = (by.yellow ?? 0) > 0 ? CARDED_CARE : 1;
+    const gx = sideOf(on.side).att > 0 ? PITCH_W : 0;
+    const inBox = Math.abs(on.x - gx) < BOX_D && Math.abs(on.y - PITCH_H / 2) < BOX_W;
+    const canFoul = inBox ? PEN_XG != null : Math.abs(on.x - (gx > 0 ? 0 : PITCH_W)) > FOUL_NO_WHISTLE;
+    const wf = canFoul ? DW.foul * s.foulRel * booked * (inBox ? BOX_CARE : 1) : 0;
+    const wt = DW.tackle * skill;
+    const wb = DW.beat / skill;
+    /* 正規化成三選一 —— 三個權重都是**相對**的,聯盟平均的一組會回到側寫的比例。
+       不正規化的話「吹不了的犯規」就變成「什麼都沒發生」,而一次對抗一定有結局。 */
+    const r = rng() * (wf + wt + wb);
+    st.duel = { on, by, out: r < wf ? 'foul' : r < wf + wt ? 'tackle' : 'beat', inBox, t: 0 };
+  }
+  function resolveDuel() {
+    const { on, by, inBox } = st.duel;
+    let out = st.duel.out;
+    st.duel = null;
+    st.duels++;
+    if (out === 'foul') {
+      /* **判在哪裡吹,用結算當下的位置** —— `startDuel` 的 `inBox` 是防守員**決定要撲**的時候
+         在哪裡(那是他收不收腳的依據),而裁判看的是接觸發生在哪裡。照宣告時的位置吹的話,
+         一個在禁區外宣告、禁區內結算的犯規會變成**禁區裡的自由球**,那不是足球裡存在的東西。
+         **光改這一行會讓十二碼爆掉:**實測 1.51 球 / 場(真實 0.23)—— 禁區外宣告的犯規
+         有約 7% 在撲的那 0.9 秒裡飄進禁區,而它們**沒有經過 `BOX_CARE`**。
+         收腳要跟判罰在同一個位置上成立:飄進禁區的那些在這裡補一次收腳,
+         沒收住才是十二碼,收住了就是乾淨地把球搶下來。
+         (反方向 —— 禁區內宣告、禁區外結算 —— 不補:那只是少一次犯規,不會多判一個十二碼。) */
+      const gx = sideOf(on.side).att > 0 ? PITCH_W : 0;
+      const nowBox = Math.abs(on.x - gx) < BOX_D && Math.abs(on.y - PITCH_H / 2) < BOX_W;
+      if (!nowBox) { foulBy(by, on); return; }
+      if (PEN_XG != null && (inBox || rng() < BOX_CARE)) { penaltyFor(on.side, by); return; }
+      out = 'tackle';                                  // 收住了 —— 退回乾淨的搶球
+    }
+    if (out === 'beat') {
+      /* **過人成功** —— 引擎原本完全沒有這種結局,而它正是「防守員一站到球門那一側
+         就變成永久接觸」的原因:被過掉的人得離開這場對抗一段時間,不能下一格又貼上來。
+         **只計數,不發事件**:一場 14 次過人成功放進時間軸會把進球與牌淹掉,
+         而「要不要顯示」是另一個決定(鐵則三:沒做的不放欄位)。錨守的是數字本身。 */
+      by.beaten = BEATEN_T;
+      st.dribbles++; st.dribblesBy[on.side]++;
+      return;
+    }
+    /* 抄截:球被捅開變成**鬆球**,不是直接換人持球(理由見 `TACKLE_COOLDOWN` 那一段)。
+       球從持球者腳下彈開、方向大致是防守者的來向 —— 兩邊都要去追,而追球本身就是跑動。 */
+    const ang = Math.atan2(on.y - by.y, on.x - by.x) + (rng() - 0.5) * 1.6;
+    const sp = TACKLE_POKE[0] + rng() * (TACKLE_POKE[1] - TACKLE_POKE[0]);
+    ball.holder = null; ball.z = 0; ball.vz = 0;
+    ball.x = on.x; ball.y = on.y;
+    ball.vx = Math.cos(ang) * sp; ball.vy = Math.sin(ang) * sp; st.lastKick = 'tackle';
+    on.shield = 0; st.tackles++; st.tacklesBy[by.side]++;
+  }
+
   /* 犯規:對方獲得自由球。牌照真實比率抽 —— 每次犯規 `yellowPerFoul` 機率吃黃,
      同一個人第二張黃就是紅、離場。紅牌之後那一隊少一個人是**真的少**(`p.off = true`),
      所以陣型會自己被拉開,不必另外寫「少一人要怎麼站」。 */
   function foulBy(by, victim) {
     const other = by.side === 'home' ? 'away' : 'home';
     st.fouls[by.side]++;
-    st.tackleCool = TACKLE_COOLDOWN;
     const px = cl(victim.x, 3, PITCH_W - 3), py = cl(victim.y, 3, PITCH_H - 3);
     if (rng() < YELLOW_PER_FOUL) {
       by.yellow = (by.yellow ?? 0) + 1;
@@ -1874,7 +2025,6 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   function penaltyFor(side, by) {
     const s = sideOf(side);
     st.fouls[by.side]++;
-    st.tackleCool = TACKLE_COOLDOWN;
     // 禁區內的犯規照樣可能吃牌(規則跟一般犯規同一條,不另外訂一個機率)
     if (rng() < YELLOW_PER_FOUL) {
       by.yellow = (by.yellow ?? 0) + 1;
@@ -2064,7 +2214,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
-        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, judgeFrames: st.judgeFrames, goalSit: { ...st.goalSit },
+        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy }, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         deflects: st.deflects, clears: st.clears },
     }),
@@ -2081,6 +2231,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        改了 keep 的推法,那兩份會悄悄過期(本站在轉換邏輯上付過這個代價)。
        **它不是模擬的輸入**:引擎只把 keep 接上去,跑出多少是它自己的結果。 */
     possTarget: () => (H.possMean == null || A.possMean == null ? null : (H.possMean + (100 - A.possMean)) / 2),
+    /* 對抗那一層的錨(從側寫算的那三個數字)。`check-sim` 讀這一份 ——
+       各自算一份的話,改了算法另一邊會悄悄過期(本站在轉換邏輯上付過這個代價)。 */
+    duelAnchors: () => (DW.real ? { ...DW.real } : null),
     /* 還可以換上來的人。**已經用掉的不列** —— 列了就是一個點下去會失敗的按鈕。 */
     benchOf: side => [...(sideOf(side).bench ?? new Map()).entries()]
       .filter(([, v]) => !v.used).map(([code, v]) => ({ code, name: v.p.name, pos: v.p.pos })),
