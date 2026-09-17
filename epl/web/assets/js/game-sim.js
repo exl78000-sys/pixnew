@@ -210,6 +210,44 @@ const PASS_ERR = 0.014;   // 量出來的:界外球 34 次,2.4% 的傳球出邊�
    (路徑/位移 6.1 倍),畫面上就是二十二個人在自己的格子裡繞 —— 使用者的原話是「呆站」。
    x 的值是用**跑動量**校準的(全隊每分鐘的跑動、衝刺次數與衝刺距離要對回 FotMob 的 pace),
    不是憑印象:本站沒有真實的位置資料,所以「重心該移動幾公尺」驗不了,只能驗它的後果。 */
+/* 四軸戰術的級距(2026-09-17,階段 4a)。**這四個數字沒有資料可以校準** ——
+   本站沒有「把心態調到很進攻會怎樣」的對照組,所以它們是遊戲規則不是量測值,
+   而且刻意訂得小(跟既有兩軸同一個量級:壓迫 ±30%、防線 ±25%)。
+   每一軸的作用點都照側寫自己宣告的 `effects` 挑,不是我想到哪接哪:
+     心態   「整條線壓上的高度」        → 陣型整塊沿進攻方向平移
+     寬度   「邊路球員拉多開」          → 陣型離中線的偏移放大
+     節奏   「一個回合幾腳傳球」        → 想不想傳的機率
+     直接度 「長傳與直塞的比例」        → 傳球選人時「往前」與「太遠」的權重
+   五級都是對稱的,級數 3 一律是恆等元。
+
+   **四軸的鉤子都接好了,但畫面上一個都還沒掛(2026-09-17)** —— 量完發現只有直接度
+   可以見人。6 場 × 每格、主隊調客隊不動,量的是各軸自己宣告會改的那件事:
+
+     軸(級1→級5)   射門        對手射門     平均傳球        越位
+     中性           16.8        9.8          19.9 m         1.5
+     直接度         17.7→17.2   9.8→9.8      15.9→25.2 m    1.7→1.0   ← 乾淨
+     心態           13.0→19.0   10.8→9.2     24.0→19.9 m    1.2→4.8
+     寬度           22.5→13.2   7.3→13.0     22.2→23.7 m    2.3→1.2
+     節奏           26.7→8.0    8.0→13.0     19.4→23.6 m    2.0→0.7
+
+   直接度是對的:傳球長度 15.9→25.2 公尺(正是它宣告的「長傳與直塞的比例」),
+   而射門幾乎不動 —— **改的是踢法不是強弱**,那正是一個戰術指令該有的樣子。
+   其餘三軸不能掛:
+     · 寬度**方向是反的而且是假的**:拉寬反而自己射門砍半、對手翻倍。原因是傳球選人
+       本來就對靠邊的隊友扣分(見 edge 那一項,「貼著邊線的空間不是空間」),
+       把陣型拉寬等於把自己人推進那個被扣分的區 —— 這不是打邊路,是跟既有的懲罰項打架。
+       真的要修,懲罰項得跟著寬度一起縮。
+     · 節奏的**幅度離譜**:±20% 的機率換來射門 26.7 對 8.0(3.3 倍)。decide() 每 0.8~1.7 秒
+       才跑一次,一次進攻只有幾個決策點,±20% 在那上面複利起來太兇。級距大概要 0.03,
+       而且要像 POSS_K 那樣掃出來,不是猜。
+     · 心態方向對但過頭(越位 4 倍),而且側寫宣告的是「自己多、**對手也多一點**」,
+       量出來對手反而變少 —— 跟它自己講的不一致。
+   所以 game-view 的 TACTIC_TODO 這一輪**一個都沒有搬走**:四個拉了會讓球隊踢得很爛的
+   按鈕,比四個寫著「還沒接」更糟。這張表是否定的證據,下一輪逐軸校準時從這裡接著做。 */
+const MENT_PUSH = 3;                           // 心態每級把整塊往前推幾公尺(±2 級 = ±6 m)
+const WIDE_STEP = 0.07;                        // 寬度每級把 y 偏移放大幾成(±14%)
+const TEMPO_STEP = 0.10;                       // 節奏每級改變出手機率幾成(±20%)
+const DIRECT_STEP = 0.06;                      // 直接度每級在傳球權重上加減多少
 const SHAPE_PULL_X = 0.58;
 const SHAPE_PULL_Y = 0.28;
 /* 陣型要跟著的不是球「現在在哪」,是**這一波攻勢在哪**。直接跟著球的話,一記 30 公尺的傳球
@@ -409,6 +447,13 @@ export function shapeOf(slot, ball, att, opts = {}) {
   const pullX = opts.pull ?? opts.pullX ?? SHAPE_PULL_X;
   const pullY = opts.pullY ?? (opts.pull != null ? opts.pull : SHAPE_PULL_Y);
   const compact = opts.compact ?? SHAPE_COMPACT;
+  /* 心態與寬度(2026-09-17,階段 4a)。兩個都**只改站位**,不碰 xg 也不碰 k ——
+     指令沒有資料可以校準,所以它們永遠不准直接進進球機率(補齊規劃的「不做」那一條)。
+     射門會不會變多是**長出來的**:整塊站得前面一點,待在對方三分之一的時間就長一點。
+     預設 0 與 1 是恆等元 —— 級數 3(照這一隊本季真實的踢法)跑出來要跟沒有這兩個旋鈕
+     時**逐位元相同**,那是這一版唯一硬的驗收(驗過:6 場 check-sim 輸出一字不差)。 */
+  const push = opts.push ?? 0;                   // 整塊沿進攻方向前移幾公尺
+  const wide = opts.wide ?? 1;                   // 離中線的偏移放大多少
   // 把 slot 從「自己的進攻座標」轉到球場座標
   const bx = att > 0 ? slot.x : PITCH_W - slot.x;
   const by = att > 0 ? slot.y : PITCH_H - slot.y;
@@ -416,9 +461,9 @@ export function shapeOf(slot, ball, att, opts = {}) {
   const own = att > 0 ? ball.x < PITCH_W / 2 : ball.x > PITCH_W / 2;
   const cx = PITCH_W / 2, cy = PITCH_H / 2;
   let x = cx + (bx - cx) * (own ? compact : 1);
-  let y = cy + (by - cy) * (own ? compact : 1);
+  let y = cy + (by - cy) * (own ? compact : 1) * wide;
   // 跟著球平移
-  x += (ball.x - cx) * pullX;
+  x += (ball.x - cx) * pullX + push * att;
   y += (ball.y - cy) * pullY;
   return { x: cl(x, 2, PITCH_W - 2), y: cl(y, 2, PITCH_H - 2) };
 }
@@ -480,7 +525,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        其餘四軸(心態 / 寬度 / 節奏 / 直接度)在連續引擎裡還沒有對應的旋鈕 ——
        畫面上要照實講,**不要留四個拉了沒有反應的按鈕**(鐵則三的同一個道理:
        一個永遠不動的控制項比沒有這個控制項更糟,讀者會以為是壞了)。 */
-    return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1, keep, possMean: pmRaw ?? null, bench };
+    /* 四軸的中性值(階段 4a)。**恆等元**:push 0、wide 1、tempo 1、direct 0 —— 沒有下指令時
+       每一條算式都跟接這四軸之前完全一樣,所以 λ 的錨不會因為「多了四個旋鈕」而動。 */
+    return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1,
+      push: 0, wide: 1, tempo: 1, direct: 0, keep, possMean: pmRaw ?? null, bench };
   };
 
   const H = mkSide(home, 'home', +1), A = mkSide(away, 'away', -1);
@@ -722,6 +770,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 傳球對象:算每個隊友的分數 —— 往前、沒被盯、不要太遠。
        分數不是玄學,三項各自有理由:往前才有進展、被盯住傳過去就是送球、太遠成功率低。 */
     let best = null, bestScore = -Infinity;
+    const dir = s.direct ?? 0;
     for (const m of s.players) {
       if (m === p || m.off) continue;
       const d = hypot(m.x - p.x, m.y - p.y);
@@ -749,7 +798,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       }
       /* 距離的代價本來只有 0.25/公尺,而往前的獎勵是 0.6/公尺 —— 淨值是「越遠越好」,
          所以模型整場在打長傳。真實足球大多數傳球在 20 公尺以內。 */
-      const score = forward * 0.45 + Math.min(marked, 12) * 1.2 - d * 0.55
+      /* 直接度(階段 4a):往前的獎勵與距離的代價一起偏移。`direct` 是 0 時這一行
+         跟接四軸之前**逐字相同** —— 0.45 + 0 與 0.55 − 0,加減 0 在浮點數上是恆等的。
+         只動這兩項是有理由的:側寫宣告直接度的效果是「傳球串長度、長傳與直塞的比例」,
+         那兩件事就是由「往前多值錢」與「遠多貴」決定的。盯人、邊線、傳球路線三項不動 ——
+         那些是**物理與規則**(有人擋著就是傳不過去),不該被一個指令買通。 */
+      const score = forward * (0.45 + dir) + Math.min(marked, 12) * 1.2 - d * (0.55 - dir * 0.5)
         - Math.max(0, 10 - edge) * 1.1 - Math.max(0, 4 - Math.min(lane, 4)) * 9;
       if (score > bestScore) { bestScore = score; best = m; }
     }
@@ -787,8 +841,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         return { kind: 'shot' };
       }
     }
-    // 壓力越大越想傳;沒有壓力就帶球往前
-    const wantPass = best && (pressure < 4.5 ? rng() < 0.75 : rng() < 0.25);
+    /* 壓力越大越想傳;沒有壓力就帶球往前。
+       節奏(階段 4a)乘在這個機率上:快 = 早一點出手、一次進攻少幾腳帶球。
+       `tempo` 是 1 時乘法是恆等的,所以中性級數跟接四軸之前一模一樣。
+       夾在 [0.05, 0.95]:任何一級都不可以變成「永遠傳」或「永遠不傳」——
+       那不是一個踢法,那是把一整條行為關掉。 */
+    const wantPass = best && rng() < cl((pressure < 4.5 ? 0.75 : 0.25) * (s.tempo ?? 1), 0.05, 0.95);
     if (wantPass) {
       const d = hypot(best.x - p.x, best.y - p.y);
       // 力道:讓球到得了、而且到的時候還控得住
@@ -864,7 +922,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       // 死球時大家照樣走回自己的位置(連續,不是淡出重擺)
       for (const p of all()) {
         const s = sideOf(p.side);
-        const pos = shapeOf(p.slot, st.focus, s.att);
+        const pos = shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
         movePlayer(p, dt, near(p, pos) ? null : { ...pos, speed: SIM_JOG });
       }
       if (st.deadT <= 0 && st.restart) {
@@ -988,7 +1046,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const dx = ball.x - gx, dy = ball.y - PITCH_H / 2, d = Math.max(1, hypot(dx, dy));
         want = { x: gx + dx / d * 5.5, y: cl(PITCH_H / 2 + dy / d * 5.5, 20, PITCH_H - 20), speed: SIM_JOG };
       } else {
-        let pos = shapeOf(p.slot, st.focus, s.att);
+        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
         /* 有球的那一隊:前場的人不越過越位線。這一行是「看起來像足球」的另一半 ——
            沒有它前鋒會站到對方底線,防線跟著退,整場擠在門前。 */
         if (holder && holder.side === p.side && p.role !== 'GK') {
@@ -1353,7 +1411,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const s = sideOf(side);
       if (levels.pressing != null) s.press = s.pressBase * (1 + (cl(levels.pressing, 1, 5) - 3) * 0.15);
       if (levels.line != null) s.lineDrop = 1 - (cl(levels.line, 1, 5) - 3) * 0.125;
-      return { pressing: s.press / s.pressBase, line: s.lineDrop };
+      // 2026-09-17 階段 4a:另外四軸。級數 3 一律是恆等元(0 / 1 / 1 / 0),見 MENT_PUSH 那一段
+      if (levels.mentality != null) s.push = (cl(levels.mentality, 1, 5) - 3) * MENT_PUSH;
+      if (levels.width != null) s.wide = 1 + (cl(levels.width, 1, 5) - 3) * WIDE_STEP;
+      if (levels.tempo != null) s.tempo = 1 + (cl(levels.tempo, 1, 5) - 3) * TEMPO_STEP;
+      if (levels.directness != null) s.direct = (cl(levels.directness, 1, 5) - 3) * DIRECT_STEP;
+      return { pressing: s.press / s.pressBase, line: s.lineDrop,
+        mentality: s.push, width: s.wide, tempo: s.tempo, directness: s.direct };
     },
     /* 換人。**規則檢查在這裡做,不是在畫面**:下場的人要在場上、上場的人要在板凳上。
        換上來的人接手原本那個位置的 slot —— 不然他會從場邊瞬移到一個陣型算出來的新位置。 */
