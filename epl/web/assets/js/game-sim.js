@@ -181,12 +181,15 @@ const GOAL_HEIGHT = 2.44;
    掃描(3 組配對 × 5 場,目標是「實際射門 ÷ expShots = 1.00」):
      0.050 → 1.24   離門 16.0 m   禁區內 59%
      0.044 → 1.11   離門 15.8 m   禁區內 63%
-     0.040 → 0.97   離門 15.6 m   禁區內 64%   ← 選這個
+     0.040 → 0.97   離門 15.6 m   禁區內 64%   ← 階段 4e 選的
      0.036 → 1.01   離門 15.4 m   禁區內 65%
    最後兩列不單調,那是 15 場的雜訊(±0.05),不是曲線真的翻過來。
    **離門距離分佈沒有被改壞**:urge 是整體縮放,被選中的 q 分佈理論上不變,
-   實測也只從 16.0 走到 15.6 m(真實 16.4),禁區內比例反而更靠近真實的 67%。 */
-const SHOT_URGE = 0.040;
+   實測也只從 16.0 走到 15.6 m(真實 16.4),禁區內比例反而更靠近真實的 67%。
+
+   階段 4f 之後再降一格到 **0.0375**:角球現在會自己生出射門(頭球那一條),
+   那是運動戰之外多出來的一個來源,所以運動戰要讓出一點,總量才回得到預算。 */
+const SHOT_URGE = 0.0375;
 /* xG 的**形狀**是遊戲模型(距離與張角),**水準**對回真實資料:
    XG_SCALE 調到模擬的每球平均 xG 等於聯盟真實的每球平均(league_.shotSituations)。
    形狀自己編、水準有出處 —— 兩件事要分開講,不然畫面上的 xG 就是編的。 */
@@ -337,6 +340,21 @@ const CARDED_CARE = 0.15;
      0.23 ÷ 1.97 = 0.117,±1SE 落在 0.103 ~ 0.134 → 取 0.12
    要重算就再跑一次那個基準率,不要拿幾場去掃一個一場只出現 0.2 次的東西。 */
 const BOX_CARE = 0.12;
+/* 角球(2026-09-17,階段 4f)。在這之前**根本沒有角球戰術**:開角球的人照一般傳球處理,
+   而其他人留在「跟著球平移的正常陣型」裡 —— 所以禁區裡一個人都沒有。
+   量出來每個角球只生 0.084 腳射門,真實是 0.440(`FromCorner` 佔射門 17.3% ÷ 每場 9.9 個角球),
+   **少了 5.2 倍**;連帶讓進球情境的 FromCorner 只佔 2.7%(真實 17.3%)—— 兩個症狀同一個根因。
+   做法是把它當**定位球**演:進攻方擠進禁區、防守方跟著進來盯,開球的人傳中到危險區域,
+   之後交給既有的爭球與射門邏輯 —— 不另外給角球一套「進球機率」,那會變成編數字。 */
+/* 角球傳中落到禁區裡,搶到的人是**第一時間頂 / 捅一腳**,不是「先控球、過 1.25 秒再考慮要不要射」。
+   量過:進攻方 73% 搶得到第一點,但每個角球只生 0.045 腳射門 —— 因為搶到之後要等
+   `decideIn`(0.35~0.8 秒)才輪到射門判定,而那時身邊有九個防守球員,早被捅走了。
+   **率是對的、結果不對,那就是少了一個行為** —— 跟「吃過黃牌的人會收手」、
+   「後衛在自家禁區會收腳」同一類。0.62 是掃出來的(掃描紀錄見 CORNER_HEAD 那一行)。 */
+const CORNER_HEAD = 0.62;                      // 在禁區裡搶到角球傳中 → 第一時間攻門的機率
+const CORNER_WAIT = 12;                        // 等大家進禁區的上限(秒);真實角球本來就要等十幾秒
+const CORNER_READY = 4;                        // 進攻方有這麼多人進到禁區附近就開球
+const BOX_D = 16.5, BOX_W = 20.16;             // 禁區:深 16.5 m、半寬 20.16 m(正式尺寸)
 const FOUL_NO_WHISTLE = 6;                     // 離自家門這麼近的犯規不在這裡處理(禁區 → 十二碼,還沒做)
 /* 無球跑動。這是使用者看預覽時說「沒有因為進攻或防守跑動」的那一半 ——
    第一版離球的十個人只會走回自己的陣型格子,所以畫面上永遠只有持球者跟逼搶者在動。
@@ -606,12 +624,21 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      而 λ 的錨守的正是總量。所以:運動戰的射門目標乘 (1 − share)、水準改對**非十二碼**的平均。
      兩件一起做之後 `expShots × selectedXg` 這個預算才重新成立,k 完全不用動。 */
   const PEN_SHARE = PEN_XG == null ? 0 : (L.shotSituations?.Penalty?.share ?? 0);
-  const nonPenXgPerShot = (() => {
+  /* 角球(階段 4f)跟十二碼走**完全一樣**的處理:它是一個獨立的射門來源,
+     有自己的份額(17.3%)與自己的每球 xG(0.103,跟運動戰的 0.105 幾乎一樣 ——
+     角球近歸近,頭球難度高,所以不是特別好的機會)。兩個都從運動戰的預算裡扣掉。
+     **不用 q 模型去算角球射門的 xG**:那會因為離門近而給出過高的值,
+     而真實資料已經直接告訴我們是多少了(鐵則一:有出處的數字優先於推導出來的)。 */
+  const CORNER_XG = L.shotSituations?.FromCorner?.xgPerShot ?? null;
+  const CORNER_SHARE = CORNER_XG == null ? 0 : (L.shotSituations?.FromCorner?.share ?? 0);
+  const SET_SHARE = PEN_SHARE + CORNER_SHARE;      // 從運動戰扣掉的總份額
+  /* 運動戰那一份的平均 xG:把已經獨立處理的情境(十二碼、角球)排除之後重新加權。 */
+  const openXgPerShot = (() => {
     const ss = L.shotSituations;
-    if (!ss || !PEN_SHARE) return realXgPerShot.v;
+    if (!ss || !SET_SHARE) return realXgPerShot.v;
     let num = 0, den = 0;
     for (const k of Object.keys(ss)) {
-      if (k === 'Penalty') continue;
+      if (k === 'Penalty' || k === 'FromCorner') continue;
       const o = ss[k]; if (o?.share && o?.xgPerShot) { num += o.share * o.xgPerShot; den += o.share; }
     }
     return den > 0 ? num / den : realXgPerShot.v;
@@ -628,6 +655,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   /* 射門機會的頻率乘數:球隊射門率越高,同樣的位置越常扣扳機。
      這樣「強隊射得多」是從球隊自己的真實資料來的,不是我給的偏好。 */
   // 運動戰只負責「全部射門扣掉十二碼」那一份(見 PEN_SHARE)
+  /* **只扣十二碼那一份**。角球不扣 —— 它的份額(真實 17.3%)本站**補不到**:
+     角球機制實測只生出 7.2% 的射門(見 CORNER_HEAD 那一段的量測)。
+     照 17.3% 去扣的話,預算被拿走 18.2% 而只補回 8.1%,總量短 10% ——
+     實測 30 場射門/預算掉到 0.88、主隊進球 −2.9 SE。**扣了預算就要有人補上,
+     補不上的那一份不可以扣**。角球實際補上的那一點併進 SHOT_URGE 的全域校準裡
+     (它本來就是為此存在的),所以 4f 之後 SHOT_URGE 又往下走了一格。 */
   const urgeOf = s => SHOT_URGE * (expShots(s) / lgSf) * (1 - PEN_SHARE);
   /* xG 形狀的**水準**校準:在禁區前沿一片常見的射門點上取樣,算出這個形狀的平均值,
      再乘一個係數讓它等於聯盟真實的每球平均 xG。形狀是遊戲模型、水準有出處。
@@ -661,10 +694,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   const SELECT_FIX = 0.776;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
-  const xgScale = rawSelected > 0 ? nonPenXgPerShot / rawSelected * SELECT_FIX : 1;
+  const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
   /* `selectedXg` 是**全部射門**的平均(含十二碼),因為 k 守的是總量:
      運動戰 (1−share) × 非十二碼平均 + 十二碼 share × 0.788 = 含十二碼的平均。
-     算過:0.991 × 0.1062 + 0.009 × 0.788 = 0.1123 ✓ —— 所以 k 這一行一個字都不用改。 */
+     階段 4f 之後是三項:運動戰 (1−0.182) × 0.1048 + 十二碼 0.009 × 0.788 + 角球 0.173 × 0.103
+     = 0.1123 ✓ —— 所以 k 這一行仍然一個字都不用改。 */
   const selectedXg = realXgPerShot.v;
   const cal = { home: null, away: null };
   function calibrate(pred) {
@@ -1030,17 +1064,37 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
            量出來 43 公尺的瞬移 —— 那正是使用者說的「瞬間換位」,而連續引擎的整個重點
            就是不剪接。寧可多等一下,不要把人放過去。 */
         const pen = st.restart?.kind === 'penalty' && p === st.restart.taker;
+        /* 角球:用排好的站位(cornerSpots),不是「跟著球平移的正常陣型」——
+           後者會讓禁區裡一個人都沒有,那正是角球生不出射門的原因。 */
+        const sp = st.restart?.spots;
+        const spot = sp && (sp.att.get(p.code) ?? sp.def.get(p.code));
         const pos = pen ? { x: st.restart.x, y: st.restart.y }
-          : shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
-        movePlayer(p, dt, near(p, pos) ? null : { ...pos, speed: SIM_JOG });
+          : spot ?? shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
+        movePlayer(p, dt, near(p, pos) ? null : { ...pos, speed: spot ? SIM_RUN : SIM_JOG });
       }
       /* 主罰者還沒走到就多等(最多再 8 秒,防他被卡住時整場停住)。 */
       if (st.deadT <= 0 && st.restart?.kind === 'penalty' && st.deadT > -8
           && hypot(st.restart.taker.x - st.restart.x, st.restart.taker.y - st.restart.y) > 1.2) return;
+      /* 角球:**進攻方有夠多人進到禁區**就開,不必等滿 CORNER_WAIT ——
+         等滿的話每個角球都固定佔掉十二秒,一場的死球時間會被角球吃掉一大塊
+         (而補時是照死球時間補回去的,那會把整場長度一起拉長)。 */
+      if (st.restart?.kind === 'corner' && st.deadT > 0) {
+        const rs = sideOf(st.restart.side);
+        const gx = rs.att > 0 ? PITCH_W : 0;
+        const inBox = rs.players.filter(p => !p.off && p !== st.restart.taker
+          && Math.abs(p.x - gx) < BOX_D + 3 && Math.abs(p.y - PITCH_H / 2) < BOX_W).length;
+        /* **開球的人也要先走到角旗**。第一版只看禁區裡有幾個人就開,
+           而 takeCorner 會把他的座標收到角旗上 —— 他還在半場的話那就是一次瞬移,
+           量出來最大 21.1 公尺。連續引擎不剪接,寧可多等一格。 */
+        const tk = st.restart.taker;
+        const ready = hypot(tk.x - st.restart.x, tk.y - st.restart.y) < 1.5;
+        if (inBox >= CORNER_READY && ready) st.deadT = 0;
+      }
       if (st.deadT <= 0 && st.restart) {
         const r = st.restart; st.restart = null;
         if (r.kind === 'kickoff') kickoff(r.side);
         else if (r.kind === 'penalty') { st.phase = 'play'; ball.x = r.x; ball.y = r.y; takePenalty(r); }
+        else if (r.kind === 'corner') { st.phase = 'play'; ball.x = r.x; ball.y = r.y; takeCorner(r); }
         else { st.phase = 'play'; ball.x = r.x; ball.y = r.y; giveTo(r.taker); }
       }
       return;
@@ -1243,6 +1297,42 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       }
       // 有人控到球?(離球夠近、球夠低、球不會太快)
       const sp = hypot(ball.vx, ball.vy);
+      /* 角球傳中的第一點:**在兩道閘門之前處理**(2026-09-17,階段 4f)。
+         底下那兩道是給「控球」用的:`ball.z < 0.6`(球要落地)與
+         `pCtl = 1 − 速度 / CONTROL_SPEED`(14 m/s 以上基本控不住)。
+         而一記傳中飛 35 公尺、1.5 秒到,水平速度就是 23 m/s、而且大半時間在空中 ——
+         兩道閘門都過不了,所以**沒有人碰得到它**。這就是第一版頭球一次都不發生的原因,
+         而它完全不報錯:球飛過禁區、落地、被門將撿走,畫面上一切正常。
+         真實的頭球本來就不需要「控住」球,所以它不該走控球那條路。
+         高度取 2.6 m(頭球高度),水平 1.8 m(比控球半徑大一點:頂到就算)。 */
+      if (CORNER_XG != null && st.lastKick === 'corner' && ball.passer && ball.z < 2.6) {
+        const att = ball.passer.side;
+        let who = null, wd = 2.5;          // 傳中誤差就有 2.5 m,抓太緊會變成誰都碰不到
+        for (const p of all()) {
+          if ((p.kickLock ?? 0) > 0 || p.role === 'GK') continue;
+          const d = hypot(p.x - ball.x, p.y - ball.y);
+          if (d < wd) { wd = d; who = p; }
+        }
+        if (who) {
+          const ws = sideOf(who.side), wgx = ws.att > 0 ? PITCH_W : 0;
+          const inBox = Math.abs(who.x - wgx) < BOX_D && Math.abs(who.y - PITCH_H / 2) < BOX_W;
+          st.lastKick = null;                        // 這一球處理掉了,別再觸發第二次
+          if (who.side === att && inBox && rng() < CORNER_HEAD) headerAt(who);
+          else {
+            /* 防守方頂到就是解圍(往場外 / 往前大腳),進攻方沒頂成就變鬆球 ——
+               兩種都不是「控球」,所以不走 giveTo。 */
+            const dir = who.side === att ? 1 : -1;
+            const ang = Math.atan2(PITCH_H / 2 - who.y, (wgx - who.x) * dir) + (rng() - 0.5) * 2.2;
+            const sp2 = 8 + rng() * 10;
+            ball.holder = null; ball.z = 0.4; ball.vz = 2 + rng() * 3;
+            ball.x = who.x; ball.y = who.y;
+            ball.vx = Math.cos(ang) * sp2 * dir; ball.vy = Math.sin(ang) * sp2;
+            ball.passSide = null; ball.passTo = null; ball.passer = null;
+            if (who.side !== att) st.clears++;
+            who.kickLock = KICK_LOCK;
+          }
+        }
+      }
       if (ball.z < 0.6) {
         let best = null, bd = SIM_CONTROL_R;
         for (const p of all()) {
@@ -1270,10 +1360,28 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
                 else if (ball.passTo && hypot(ball.passTo.x - ball.x, ball.passTo.y - ball.y) < 4) st.why.near++;
                 else st.why.far++; }
             }
+            /* 角球傳中落到禁區裡的第一點:第一時間攻門(見 CORNER_HEAD)。
+               進攻方才有這個動作 —— 防守方搶到是解圍,走原本那條路。 */
+            const cs = sideOf(best.side);
+            const cgx = cs.att > 0 ? PITCH_W : 0;
+            /* **不可以用 `st.chain` 判斷**:傳中還在空中的時候串是關著的
+               (`corner()` 關了它,而開串的是 giveTo —— 正是這裡要繞過的那一條)。
+               第一版就是這樣寫的,條件永遠不成立,頭球一次都沒發生而**不報任何錯**。
+               用「現在飛的這一球是角球傳中」(`lastKick`)加「搶到的人跟開球的同隊」
+               (`ball.passer.side`)判 —— 兩個在這一刻都還是有效的。 */
+            const isCross = CORNER_XG != null && st.lastKick === 'corner'
+              && ball.passer && ball.passer.side === best.side;
+            if (isCross && Math.abs(best.x - cgx) < BOX_D
+                && Math.abs(best.y - PITCH_H / 2) < BOX_W && rng() < CORNER_HEAD) {
+              st.lastKick = null;               // 這一球已經處理掉,別讓後面的鬆球再觸發一次
+              headerAt(best);
+            } else {
+            if (st.lastKick === 'corner') st.lastKick = null;
             // 助攻要在**清掉之前**先抓下來(見 giveTo 的註解):同隊、而且他就是指定的接球者
             const assisted = (ball.passTo === best && ball.passSide === best.side) ? ball.passer : null;
             ball.passSide = null; ball.passTo = null; ball.passer = null; ball.wasDeflected = false;
             giveTo(best, assisted); st.loose++;
+            }
           }
         }
       }
@@ -1385,13 +1493,51 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   }
 
   /* 角球:主罰者跑到角旗,把球傳進禁區 —— 不是把球瞬間放到某個人腳下 */
+  /* 角球的站位。進攻方除了開球的人與兩個留守的,其餘進禁區;防守方除了留一個在前場,
+     其餘回來盯人(站在對方與自家球門之間)。位置是固定的幾個點 + 一點隨機,
+     不是「每個人各自找位置」—— 真實的角球戰術就是排好的。 */
+  function cornerSpots(side, taker, cy) {
+    const s = sideOf(side), o = oppOf(side);
+    const gx = s.att > 0 ? PITCH_W : 0, dir = s.att > 0 ? -1 : 1;   // dir:從球門往場內
+    const nearY = cy < PITCH_H / 2 ? PITCH_H / 2 - 7 : PITCH_H / 2 + 7;   // 近柱在開球那一側
+    const farY = cy < PITCH_H / 2 ? PITCH_H / 2 + 7 : PITCH_H / 2 - 7;
+    const spots = [
+      { x: gx + dir * 6, y: nearY },                  // 近柱
+      { x: gx + dir * 6, y: farY },                   // 遠柱
+      { x: gx + dir * 11, y: PITCH_H / 2 },           // 罰球點
+      { x: gx + dir * 14, y: PITCH_H / 2 - 5 },
+      { x: gx + dir * 14, y: PITCH_H / 2 + 5 },
+      { x: gx + dir * 19, y: PITCH_H / 2 },           // 禁區線外(二點球)
+    ];
+    const att = new Map(), def = new Map();
+    /* 進攻方:開球的人去角旗,最前面的幾個進禁區,最後兩個留在中線附近 ——
+       全隊壓上去的話丟球就是空門,真實球隊也會留人。 */
+    const rest = s.players.filter(p => p !== taker && !p.off && p.role !== 'GK');
+    const up = rest.slice(0, spots.length), back = rest.slice(spots.length);
+    up.forEach((p, i) => att.set(p.code, { x: spots[i].x, y: spots[i].y }));
+    back.forEach((p, i) => att.set(p.code, { x: PITCH_W / 2 - dir * (6 + i * 5), y: PITCH_H / 2 + (i - 0.5) * 12 }));
+    att.set(taker.code, { x: gx + dir * 0.8, y: cy });
+    /* 防守方:門將守自己的門,一個留在前場等解圍,其餘一人盯一個(站在對方與自家球門之間 2 m)。 */
+    const dRest = o.players.filter(p => !p.off && p.role !== 'GK');
+    dRest.forEach((p, i) => {
+      if (i === dRest.length - 1) { def.set(p.code, { x: PITCH_W / 2 + dir * 8, y: PITCH_H / 2 }); return; }
+      const m = up[i] ? spots[i] : { x: gx + dir * 10, y: PITCH_H / 2 + (i - 4) * 4 };
+      def.set(p.code, { x: m.x - dir * 1.8, y: m.y + (i % 2 ? 1.6 : -1.6) });
+    });
+    def.set(o.gk.code, { x: gx + dir * 3.2, y: PITCH_H / 2 });
+    return { att, def };
+  }
+
   function corner(side, cy, cx) {
     const s = sideOf(side);
     const taker = pickNearest(s, cx, cy, true) ?? s.players[1];
     st.corners[side]++;
     emit({ type: 'corner', side });
     closeChain('corner', ball.x);
-    deadBall({ kind: 'corner', side, taker, x: cx, y: cy, wait: 2.0 + rng() * 1.5 });
+    /* 等的時間比一般死球長很多 —— 十個人要從場上各處走進禁區,那本來就要十幾秒。
+       這不是「等」,是讓站位連續地發生(跟進球之後回中圈同一個道理),不然就得瞬移。 */
+    deadBall({ kind: 'corner', side, taker, x: cx, y: cy, wait: CORNER_WAIT,
+      spots: cornerSpots(side, taker, cy) });
   }
   function goalKick(side) {
     const s = sideOf(side);
@@ -1493,6 +1639,60 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        下一個控到球的人(補射或門將)由 giveTo 開串就好。在這裡多開一次會多一條空串。 */
   }
 
+  /* 開角球:傳中到禁區裡的危險區域。**這裡只決定球飛到哪**,
+     誰碰到、碰到之後射不射,交給既有的爭球與射門邏輯 ——
+     角球不另外給一套「進球機率」,那會變成在畫面上編數字(鐵則一)。
+     落點分三種(近柱 / 中路 / 後點),各帶一點隨機;飛行時間 1.0~1.5 秒,
+     用跟挑傳同一條式子算水平速度,讓它剛好落在目標上。 */
+  function takeCorner(r) {
+    const s = sideOf(r.side), p = r.taker;
+    const gx = s.att > 0 ? PITCH_W : 0, dir = s.att > 0 ? -1 : 1;
+    /* 傳中**瞄一個人**,不是瞄一塊空地。第一版丟到禁區裡的隨機點,而球員站在排好的幾個位置上 ——
+       一個 16×40 公尺的禁區裡,球飛過任何人 1.8 公尺以內的機率很低,所以幾乎沒有人碰得到
+       (量出來每個角球 0.053 腳射門)。真實的角球本來就是找人:近柱、後點、罰球點都有人在等。
+       誤差留 2.5 公尺,所以還是搶得到搶不到的問題,不是「一定給他」。 */
+    const targets = s.players.filter(q => !q.off && q !== p && q.role !== 'GK'
+      && Math.abs(q.x - gx) < BOX_D + 2 && Math.abs(q.y - PITCH_H / 2) < BOX_W);
+    const aim = targets.length ? targets[Math.floor(rng() * targets.length)] : null;
+    const tx = aim ? aim.x + (rng() - 0.5) * 2.5 : gx + dir * (6 + rng() * 10);
+    const ty = cl((aim ? aim.y : PITCH_H / 2) + (rng() - 0.5) * 2.5, 6, PITCH_H - 6);
+    /* **不搬人**:死球那一段已經確認他走到角旗附近了(見 CORNER_READY 那一段),
+       從他實際站的地方踢。硬收座標的話,等滿 CORNER_WAIT 而他還沒走到時就是一次瞬移。 */
+    const d = hypot(tx - p.x, ty - p.y);
+    const tt = cl(d / 16, 1.0, 1.5);
+    kick(p, tx, ty, d / tt, GRAVITY * tt / 2, 'pass');
+    st.lastKick = 'corner';               // 讓「第一點」認得出這是角球傳中(見 CORNER_HEAD)
+    ball.passTo = null;                   // 傳中沒有指定接球者:誰搶到算誰的
+    st.pendingOrigin = 'corner';          // 這一串仍然算角球來的(見 openChain)
+  }
+
+  /* 角球的第一時間攻門。**xg 用側寫量到的 0.103,不用 q 模型** ——
+     q 模型會因為離門近而給出過高的值,而真實資料已經直接說了角球射門平均就是 0.103
+     (跟運動戰的 0.105 幾乎一樣:近歸近,頭球難度高)。跟十二碼完全同一個處理。
+     助攻算給開角球的人 —— 那正是「進球前一腳傳到射手腳下」。 */
+  function headerAt(p) {
+    const s = sideOf(p.side);
+    const goalX = s.att > 0 ? PITCH_W : 0;
+    const xg = cl(CORNER_XG, 0.01, 0.95);
+    const c = cal[p.side];
+    const miss = rng() >= cl(xg * (c?.k ?? 1), 0, 1);
+    const err = miss
+      ? (rng() < 0.5 ? -1 : 1) * (SIM_GOAL_HALF * (0.3 + rng() * 1.4) + 2)
+      : (rng() - 0.5) * 2 * SIM_GOAL_HALF * 0.8;
+    const dGoal = hypot(goalX - p.x, PITCH_H / 2 - p.y);
+    const need = Math.sqrt(SHOT_ARRIVE * SHOT_ARRIVE + 2 * BALL_FRICTION * dGoal);
+    const assist = ball.passer && ball.passer.side === p.side && ball.passer !== p ? ball.passer : null;
+    kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14),
+      cl(14 + rng() * 8, need, SHOT_MAX), 0, 'shot');
+    ball.shot = { by: p, side: p.side, xg, willScore: !miss, sit: 'FromCorner', assist };
+    if (!miss) st.willScore++;
+    st.shots++; st.shotsBy[p.side]++;
+    st.shotSit.FromCorner = (st.shotSit.FromCorner ?? 0) + 1;
+    st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
+    emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner' });
+    st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal; st.shotInBox++;
+  }
+
   /* 越位判罰:對方在越位的位置獲得自由球。跟界外球走同一條死球路徑。 */
   function offsideCall(side, x, y) {
     const other = side === 'home' ? 'away' : 'home';
@@ -1507,11 +1707,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     closeChain('out', ball.x);
     deadBall({ kind: 'throwin', side, taker: pickNearest(sideOf(side), x, y, true), x, y, wait: 1.2 + rng() * 1.0 });
   }
-  function deadBall({ kind, side, taker, x, y, wait }) {
+  function deadBall({ kind, side, taker, x, y, wait, spots = null }) {
     const s = sideOf(side);
     ball.holder = null; ball.vx = 0; ball.vy = 0; ball.vz = 0; ball.z = 0; ball.x = x; ball.y = y; ball.shot = null;
     st.phase = 'dead'; st.deadT = wait;
-    st.restart = { kind, side, taker: taker ?? s.players[1], x, y };
+    st.restart = { kind, side, taker: taker ?? s.players[1], x, y, spots };
     st.pendingOrigin = kind;        // 下一串進攻的來源(見 openChain)
     st.outs++;
   }
