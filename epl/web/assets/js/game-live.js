@@ -11,7 +11,7 @@
  *
  * 這一層**不做任何模型上的決定** —— 不改機率、不改 λ、不補事件。它只翻譯。
  */
-import { createSim } from './game-sim.js?v=b7111a14';
+import { createSim } from './game-sim.js?v=90a9e0e0';
 
 /* 播放速度是**時間倍率**,不是剪接。舊版四檔的差別在「演哪幾段」(cutTo / finishInstant /
    整段跳過),而使用者的原話是「根本沒有在踢球」。現在四檔的差別只有一個:一秒真實時間

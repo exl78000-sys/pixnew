@@ -257,6 +257,39 @@ if (simShots && realShots) {
       const r = realShots.bySit[k];
       if (r) console.log(row('    真實', r));
     }
+    /* 驗收的那兩個數字(RegularPlay 的 0~10 與 10~20 合計,階段 4m 定的)要附**以場為單位**
+       的標準誤。逐顆射門的二項式 `√(p(1−p)/射門數)` 把「同一場裡的射門互相獨立」當前提,
+       而那不一定成立:禁區戰打得多的那一場會一次貢獻一堆近距離射門。
+       **實測下來差得不多**:50 場、714 顆 RegularPlay 射門,二項式 1.74 pp、
+       以場為單位的 jackknife 1.90 pp —— 只低估 1.1 倍(一場才 15 顆 RegularPlay 射門,
+       沒什麼可叢集的)。我原本從「換一組種子 share 跳 4.4 個百分點」推論低估 1.8~2.5 倍,
+       **直接量一次就推翻了**:那 4.4 個百分點只有 1.6 個 SE,本來就是噪音。
+       留 jackknife 是因為它問的才是對的問題(獨立的單位是場不是球),不是因為差很多。
+       真正要記住的是另一件事:**同一個種子換一個旗標不會給出同一場比賽**
+       (引擎是決定性的,但旗標改了 rng 抽籤的次數就對不上,整條序列錯開 ——
+       接十二碼那一段的註解本來就寫著)。所以開/關**不是成對比較**,
+       差值的標準誤要照兩個獨立樣本算:√2 × 1.9 ≈ 2.7 pp。
+       階段 4n 的四個配置差值是 +1.4 / +1.0 / −1.9 / −1.8 pp,全部在 1 個 SE 以內。 */
+    const per = rows.map(r => r.st.counts.sitBins?.RegularPlay)
+      .filter(v => v && v.n > 0)
+      .map(v => ({ n: v.n, lo: v.bins[0] + v.bins[1], mid: v.bins[2] + v.bins[3] }));
+    const realRP = realShots.bySit.RegularPlay;
+    if (per.length > 2 && realRP) {
+      const jack = key => {
+        const tot = per.reduce((a, m) => a + m.n, 0), num = per.reduce((a, m) => a + m[key], 0);
+        const g = per.length;
+        const ps = per.map(m => (num - m[key]) / (tot - m.n) * 100);
+        const mu = ps.reduce((a, x) => a + x, 0) / g;
+        return { v: num / tot * 100, se: Math.sqrt((g - 1) / g * ps.reduce((a, x) => a + (x - mu) ** 2, 0)) };
+      };
+      const lo = jack('lo'), mid = jack('mid');
+      const rTot = realRP.bins.reduce((a, b) => a + b, 0);
+      const rLo = (realRP.bins[0] + realRP.bins[1]) / rTot * 100, rMid = (realRP.bins[2] + realRP.bins[3]) / rTot * 100;
+      console.log(`  ${'    驗收 0~10 / 10~20'.padEnd(20, '\u3000')} `
+        + `${lo.v.toFixed(1)}% ± ${lo.se.toFixed(1)} / ${mid.v.toFixed(1)}% ± ${mid.se.toFixed(1)}`
+        + `　真實 ${rLo.toFixed(1)} / ${rMid.toFixed(1)}`);
+      console.log(`  ${'    (標準誤以場為單位 —— 逐顆射門的二項式會低估,見上面那段註解)'.padEnd(20, '\u3000')}`);
+    }
   }
 }
 
