@@ -1283,6 +1283,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         .sort((a, b) => a[0] - b[0]);
       for (let i = 0; i < Math.min(SUPPORT_N, mates.length); i++) support.add(mates[i][1]);
     }
+    /* 逼搶者的走位是「**維持自己現在的方位角**、停在 JOCKEY_R 之外」——
+       他從哪邊來就留在哪邊,**不會繞到球門那一側**。實測 12 場:持球者在 0~5 公尺時,
+       最近的非門將防守員在球門那一側的只有 **18.7%**(5~10 m 17.3%、10~15 m 19.5%)。
+       兩個後果連在一起:一、他沒有擋在通往球門的路上;二、他**不在傳球路線上**,
+       所以 `lane` 那一項對「塞進禁區的那一球」根本不扣分。而球進到門前 10 公尺
+       **93.2% 是傳進去的**(每場 66.9 次,每次只待 1.30 個決策點)——
+       不是帶進去的(4m 找錯了機制),也不是待太久(4k 找錯了機制)。
+       這是階段 4o 要動的地方,4n 沒有動它。
+       門將另外還被這裡、`cover` 與 `chasers` **三份名單同時排除**,所以「門將把球從
+       對方腳下拿走」在統計裡是 0。4n 兩種接法都試過(當抄截 → 十二碼 0.90~1.56 一場、
+       真實 0.23;當抱球 → 十二碼正常但抄截 47/場、真實兩隊合計 32~40),
+       兩種對 0~10 m 的 share 都在噪音裡(−1.0 SE),所以都沒有留下。 */
     let presser = null, cover = null;
     if (holder) {
       const o = oppOf(holder.side);
@@ -1357,7 +1369,16 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           && Math.abs(ball.x - gx) < BOX_D && Math.abs(ball.y - PITCH_H / 2) < BOX_W;
         if (looseInBox) { want = { x: ball.x, y: ball.y, speed: p.vmax }; }
         else {
-          // 門將:站在自己球門與球的連線上,離門線不遠
+          /* 門將:站在自己球門與球的連線上,離門線不遠。
+             **這裡有一個量到的幾何錯誤,而修它沒有用(2026-09-17,階段 4n)。**
+             球比 5.5 公尺更近時,`gx + dx/d * 5.5` 那個點在**球的後面** —— 他跑過頭、
+             背對自家球門。實測 12 場:持球者在 0~5 公尺時,門將離自家門 7.0 公尺、
+             **99% 的時候比球更遠離球門**、離持球者 4.1 公尺。
+             夾成 `min(5.5, d)` 試過(沒有新參數),50 場 × 兩組種子:
+               0~10 m 的射門 share 差 +0.6 / +2.2 pp(噪音是 ±2.7),沒有動;
+               而合併 100 場的主隊進球 1.83 → **1.64**(λ 1.99,約 2 SE)—— 砍掉近距離
+               機會會先砍到強隊,跟 4m 同一個病。所以**不改**,留這段註解說明現況是錯的。
+             要改的話得連 SELECT_FIX 一起重量,而 4m 已經證明那條路會讓錨更歪。 */
           const dx = ball.x - gx, dy = ball.y - PITCH_H / 2, d = Math.max(1, hypot(dx, dy));
           want = { x: gx + dx / d * 5.5, y: cl(PITCH_H / 2 + dy / d * 5.5, 20, PITCH_H - 20), speed: SIM_JOG };
         }
