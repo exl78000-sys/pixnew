@@ -581,6 +581,23 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   /* 十二碼的 xG(階段 4b):側寫量到的那一個(n=100)。**側寫沒有就不吹十二碼** ——
      編一個 0.76 上去就是在畫面上編數字(鐵則一)。 */
   const PEN_XG = L.shotSituations?.Penalty?.xgPerShot ?? null;
+  /* 十二碼佔射門的份額(階段 4d,2026-09-17)。**這一份要從運動戰的預算裡扣掉。**
+     真實的每隊 12.6 次射門**本來就含十二碼**,而每球平均 xG 0.1123 也是含十二碼加權出來的。
+     引擎在階段 4b 之後自己會產生十二碼,如果運動戰仍然照「全部射門 × 含十二碼的平均 xG」去跑,
+     十二碼就變成**外加**的 —— 一球 0.788 xG 約等於七腳普通射門,總 xG 會多出 6.3%,
+     而 λ 的錨守的正是總量。所以:運動戰的射門目標乘 (1 − share)、水準改對**非十二碼**的平均。
+     兩件一起做之後 `expShots × selectedXg` 這個預算才重新成立,k 完全不用動。 */
+  const PEN_SHARE = PEN_XG == null ? 0 : (L.shotSituations?.Penalty?.share ?? 0);
+  const nonPenXgPerShot = (() => {
+    const ss = L.shotSituations;
+    if (!ss || !PEN_SHARE) return realXgPerShot.v;
+    let num = 0, den = 0;
+    for (const k of Object.keys(ss)) {
+      if (k === 'Penalty') continue;
+      const o = ss[k]; if (o?.share && o?.xgPerShot) { num += o.share * o.xgPerShot; den += o.share; }
+    }
+    return den > 0 ? num / den : realXgPerShot.v;
+  })();
   /* `rates` 是**分主客的**(`rates.home` / `rates.away`),不是平的。
      第一版寫 `t.rates.sf` —— 永遠是 undefined,於是每支球隊都退回聯盟平均、強弱完全沒進來。
      不拋錯、不報警,只是所有隊一模一樣(實測 expShots 兩邊都是 12.6)。 */
@@ -592,7 +609,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   };
   /* 射門機會的頻率乘數:球隊射門率越高,同樣的位置越常扣扳機。
      這樣「強隊射得多」是從球隊自己的真實資料來的,不是我給的偏好。 */
-  const urgeOf = s => SHOT_URGE * (expShots(s) / lgSf);
+  // 運動戰只負責「全部射門扣掉十二碼」那一份(見 PEN_SHARE)
+  const urgeOf = s => SHOT_URGE * (expShots(s) / lgSf) * (1 - PEN_SHARE);
   /* xG 形狀的**水準**校準:在禁區前沿一片常見的射門點上取樣,算出這個形狀的平均值,
      再乘一個係數讓它等於聯盟真實的每球平均 xG。形狀是遊戲模型、水準有出處。
      取樣點是固定網格(不吃亂數),所以這個係數對同一份側寫永遠一樣。 */
@@ -623,8 +641,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      為什麼不直接改 xG 的形狀去湊:形狀已經用**離門距離分佈**校準過了(見 SHOT_ALPHA),
      再去動它就是拿一個對上的東西去湊另一個。 */
   const SELECT_FIX = 0.776;
-  const xgScale = rawSelected > 0 ? realXgPerShot.v / rawSelected * SELECT_FIX : 1;
-  const selectedXg = realXgPerShot.v;   // 定義上就等於它 —— 上面那一行就是為了讓這件事成立
+  /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
+     十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
+  const xgScale = rawSelected > 0 ? nonPenXgPerShot / rawSelected * SELECT_FIX : 1;
+  /* `selectedXg` 是**全部射門**的平均(含十二碼),因為 k 守的是總量:
+     運動戰 (1−share) × 非十二碼平均 + 十二碼 share × 0.788 = 含十二碼的平均。
+     算過:0.991 × 0.1062 + 0.009 × 0.788 = 0.1123 ✓ —— 所以 k 這一行一個字都不用改。 */
+  const selectedXg = realXgPerShot.v;
   const cal = { home: null, away: null };
   function calibrate(pred) {
     for (const side of ['home', 'away']) {
