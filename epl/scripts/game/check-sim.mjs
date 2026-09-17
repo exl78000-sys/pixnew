@@ -118,7 +118,19 @@ for (const [i, who, lam] of [[0, '主隊', PRED.xgHome], [1, '客隊', PRED.xgAw
 console.log('');
 const rt = (code, where) => profile.teams[code]?.rates?.[where] ?? {};
 const real = { sf: (rt(HOME, 'home').sf ?? 0) + (rt(AWAY, 'away').sf ?? 0), cf: (rt(HOME, 'home').cf ?? 0) + (rt(AWAY, 'away').cf ?? 0) };
-line('每場射門', mean(rows.map(r => r.st.counts.shots)).toFixed(1), `真實 ${real.sf.toFixed(1)}`);
+/* 射門數要對的是 **expShots**(= 自己的 sf × 對手的 sa ÷ 聯盟平均),不是兩隊 sf 相加。
+   sf 相加**不看對手防守** —— 兩支防守好的隊碰在一起,它會高估一大截(ARS vs LIV:30.4 對 23.5)。
+   而 λ 的錨用的就是 expShots(`k = λ ÷ expShots ÷ 每球 xG`),所以拿 sf 相加當目標去調 urge,
+   等於引擎照一個量調、錨照另一個量驗 —— 那正是階段 4e 修的那個系統性 25% 偏高。
+   兩個都印:對的那個在前面,sf 相加放後面當參考(它是「不管對手是誰」的上限)。 */
+{
+  const c0 = rows[0].sim.calibration();
+  const budget = (c0.home?.expShots ?? 0) + (c0.away?.expShots ?? 0);
+  const got = mean(rows.map(r => r.st.counts.shots));
+  line('每場射門', got.toFixed(1),
+    `期望 ${budget.toFixed(1)}(= 各自 sf × 對手 sa ÷ 聯盟平均,λ 的錨用的就是它)→ 比值 ${(got / budget).toFixed(2)}`);
+  line('  (參考)兩隊 sf 相加', real.sf.toFixed(1), '不看對手防守,所以是上限 —— 不要拿它調 urge');
+}
 {
   const rr = (code, where) => profile.teams[code]?.rates?.[where] ?? {};
   const realOn = (rr(HOME, 'home').stf ?? 0) + (rr(AWAY, 'away').stf ?? 0);
