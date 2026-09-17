@@ -3001,29 +3001,57 @@ async function checkDataGap() {
           return existsSync(f) && statSync(f).size < 300 * 1024;
         })
         && !/img src="assets\/img\/duel-[^"]*"(?![^>]*(?:onerror|\$\{HIDE\}))/.test(pg)
-        /* 2D 跑位動畫:FM 式演出。界線要打在畫面上;動畫用種子衍生的 rng(可重播) */
+        /* ── 2026-09-16 階段 3:畫面換成連續時間引擎 ──
+           斷言比**性質**不比寫法(CLAUDE.md):這裡守的是「頁面跑的是連續引擎、而且沒有剪接」,
+           不是某一支函式叫什麼。舊的三支(duel-anim / game-engine / game-playback)檔案還在倉庫
+           (它們自己的測試還在跑),但**頁面不可以再 import 它們** —— 兩套運動模型同時在,
+           畫面上看到的是哪一套沒有人說得準。 */
         && (() => {
-          const an = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8');
-          const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
-          return /mountDuelAnim/.test(pg) && /程序化演出/.test(pg)
-            && /程序化演出/.test(an) && /parseFormation/.test(an)
-            && /'duel-anim'/.test(bundle) && /'game-engine'/.test(bundle) && /'game-view'/.test(bundle)
-            && /dirOf/.test(an) && /pendingKickoff/.test(an)
-            && /記分板/.test(an) && /squeeze/.test(an)
-            && /seededRng\(state\.seed \^/.test(pg);
+          const live = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-live.js'), 'utf8');
+          const pitch = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-pitch.js'), 'utf8');
+          const importsOf = src => [...src.matchAll(/from '\.\/([a-z0-9-]+)\.js/g)].map(m => m[1]);
+          const viewImports = importsOf(pg);
+          return /createLiveMatch/.test(pg) && /mountPitch/.test(pg)
+            && viewImports.includes('game-live') && viewImports.includes('game-pitch')
+            /* 這三個是舊的回合制那一套,頁面一個都不准 import */
+            && !['duel-anim', 'game-engine', 'game-playback'].some(m => viewImports.includes(m))
+            && /'game-live'/.test(bundleSrc) && /'game-pitch'/.test(bundleSrc) && /'game-sim'/.test(bundleSrc)
+            /* 轉接層只翻譯,不自己做模型決定:它不可以有亂數 */
+            && !/Math\.random|rng\(/.test(live)
+            /* 球場只畫,不決定誰跑去哪:它不可以 import 引擎 */
+            && !importsOf(pitch).length
+            && /seededRng\(state\.seed \^|state\.seed/.test(pg);
         })()
-        /* 誠實界線:遊戲不是預測、沒有 Dixon-Coles、哪些是真的那張圖例 */
-        && /不是本站預測/.test(pg) && /沒有 Dixon-Coles 修正/.test(pg) && /這張圖哪些是真的/.test(pg)
-        && /createMatch/.test(pg) && /inPlaySim/.test(pg)
+        /* 誠實界線:遊戲不是預測、哪些是真的那張圖例、而且要講出「沒有剪接」 */
+        && /不是本站預測/.test(pg) && /沒有 Dixon-Coles/.test(pg) && /這張圖哪些是真的/.test(pg)
+        && /沒有劇本、沒有剪接/.test(pg) && /inPlaySim/.test(pg)
         && /seededRng/.test(pc) && /mulberry32/.test(pc)            // 種子亂數,同種子重播同一場
-        /* 戰術指令(階段 B,2026-09-15):面板在畫面上、標「本季實際」、引擎與動畫都有 setTactics;「戰術指令是下一階段」那句不能再出現 */
-        && /setTactics/.test(pg) && /本季實際/.test(pg) && /TACTIC_KEYS/.test(pg) && !/戰術指令是下一階段/.test(pg) && !/戰術指令\(下一階段\)/.test(pg)
-        && /export const TACTIC_KEYS/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-engine.js'), 'utf8'))
-        && /setTactics\(side, deltas/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8'))
-        /* 播放:規劃器決定演 / 跳(game-playback,單檔版清單要有它)、沒有精華勾選框(併進速度)、事件流寫「略過」 */
-        && /planPlayback/.test(pg) && /game-playback/.test(bundleSrc) && !/gHl/.test(pg) && /kind === 'skip'/.test(pg) && /不剪接/.test(pg)
-        /* 播放模式:in-play 引擎共用、計時器走 pageInterval(裸 setInterval 是老坑) */
-        && /inPlaySim/.test(pg) && /跳到結果/.test(pg)
+        /* 戰術指令:面板在畫面上、標「本季實際」、**而且要講出哪幾軸還沒接上新引擎** ——
+           留四個拉了沒反應的按鈕比沒有更糟,所以那句話本身是紅線。 */
+        && /setTactics/.test(pg) && /本季實際/.test(pg) && /還沒接上新引擎的指令/.test(pg)
+        && /LIVE_TACTICS/.test(pg) && /TACTIC_TODO/.test(pg)
+        /* ── 2026-09-17 階段 2c:控球接上真實值 ──
+           守兩件事:(1) 引擎真的讀了側寫的 `possession`(POSS_K 與 keep 都在);
+           (2) 「目標控球率」的式子**只有一份**,在引擎裡 —— 畫面跟它要,不自己再算一次。
+           第二條是本站付過代價的那一類:同一個轉換抄兩份,改了一邊另一邊會悄悄過期。
+           盯的是**那個數字綁到誰**(`const pTarget = match.possTarget()`),不是「畫面裡有沒有出現
+           possession 這個字」—— 球隊資訊卡本來就在印兩隊的真實控球率,那不是重算目標值。
+           負向對照驗過:把原本那兩行(自己從側寫算 pTarget)貼回去,這條就紅。
+           掃之前剝註解:講這條規則的註解自己就寫著 possTarget。 */
+        && (() => {
+          const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+          const sim = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8'));
+          const live = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-live.js'), 'utf8'));
+          const view = strip(pg);
+          return /const POSS_K = [0-9.]+;/.test(sim) && /possession\?\.home\?\.mean/.test(sim)
+            && /possTarget:/.test(sim) && /possTarget:/.test(live)
+            && /const pTarget = match\.possTarget\(\);/.test(view);
+        })()
+        /* 播放:時間倍率,不是剪接。速度清單在 game-live(純資料,測得到) */
+        && /LIVE_SPEEDS/.test(pg) && /export const LIVE_SPEEDS/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-live.js'), 'utf8'))
+        && !/planPlayback|modeFor|skipSeq/.test(pg) && /跳到結果/.test(pg)
+        /* 計時器走 pageInterval(裸 setInterval 是老坑);rAF 自己要收 */
+        && /cancelAnimationFrame/.test(pg)
         && /C\.pageInterval/.test(pg) && !pg.includes(' setInterval(');
     })()],
 
@@ -3685,7 +3713,10 @@ async function checkDataGap() {
         ['逾時補救是少數(正常速一場 < 8% 的回合)', (normal.probe.timeouts.hop + normal.probe.timeouts.end + normal.probe.timeouts.fetch + normal.probe.timeouts.restart) < normal.seqs * 0.08, JSON.stringify(normal.probe.timeouts)],
         /* 使用者定的:正常速 8~12 分鐘(不剪接版三個種子量到 8.0 / 8.3 / 10.8)。上限放 13 —— 射門多的場次會長一點;下限守「真的有在演」 */
         ['正常速一場落在 7~13 分鐘、快一場不到 8 分鐘', normal.secs / 60 > 7 && normal.secs / 60 < 13 && fast.secs / 60 < 8, `正常 ${(normal.secs / 60).toFixed(1)}・快 ${(fast.secs / 60).toFixed(1)}`],
-        ['跳過的回合事件照樣回報(flushEvents / 頁面的 skipSeq)', /flushEvents\(\)/.test(src) && /function skipSeq/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8'))],
+        /* 2026-09-16:頁面已經沒有 skipSeq 了(連續引擎不跳過任何一格),所以這一條只守
+           **動畫模組自己**那一半。它守的那件事在舊那一套裡仍然成立,而頁面那一半
+           已經是一件不存在的事 —— 守一件不存在的事跟沒有這條測試長得一模一樣。 */
+        ['跳過的回合事件照樣回報(duel-anim 的 flushEvents)', /flushEvents\(\)/.test(src)],
         ['每一段演出都有逾時,逾時就把球放到該在的人腳下、事件照樣回報', /HOP_TIMEOUT/.test(src) && /END_TIMEOUT/.test(src) && /WATCHDOG/.test(src) && /snapBallTo/.test(src)],
         ['傳球串每一腳都演(planChain 不再依播放速度剪短)', /function planChain/.test(code) && !/mode\.hops/.test(code)],
         ['追空中球的人跑去落點,不是跑向球(迎上一顆 20 m/s 的球控不住,飛過去再回頭要兩秒)', /function landingOf/.test(src) && /return ball\.held \? holderRoute\(p\) : landingOf\(\)/.test(src)],
