@@ -66,17 +66,36 @@ const parseScore = s => {
   return m ? [Number(m[1]), Number(m[2])] : null;
 };
 
+/* 「勝者未定」的參與者(2026-09-17)。下一輪的抽籤先公布、而上一輪還沒踢完時,
+   FotMob 會塞一個**不是球隊**的參與者:名字是兩隊用斜線串起來
+   (實測 `Manchester City/Norwich City`,那一輪的 tie id 2244253),而且配一個自己的 id。
+   它長得跟球隊一模一樣 —— 有 name、有 id、有 logo 網址 —— 所以:
+     1. 隊徽查表查不到它,「盃賽出現的每一支球隊都查得到隊徽」就紅在一個不是球隊的東西上;
+     2. **更危險的是隊碼**:整串丟進 codeOf,寬鬆比對有機會對上 `Manchester City`,
+        於是一個還沒決定的參與者會被當成曼城,出現在「走到哪一輪」那張表裡 ——
+        畫面完全正常,只是講了一件沒發生的事。這是「隊名寬鬆比對會對錯球隊」的第三次。
+   本站不編身分(鐵則三):標成 `tbd`,畫面照實講「這一格還沒決定」,不要塞一個灰方塊。 */
+/* 匯出的理由:抓取器把正規化過的結果**存進 raw**,所以舊的 raw 裡那些勝者未定的
+   參與者身上沒有這個旗標。下游(build、前端、測試)一律用
+   `t.tbd ?? isCupTbd(t.name)` 判斷 —— 存了就用存的,沒存就自己認。
+   各寫一份 `includes('/')` 的話,改了認法就會有人悄悄過期。 */
+export const isCupTbd = name => !!name && name.includes('/');
+
 function teamOf(t, codeOf) {
   if (!t || (!t.name && !t.id)) return null;
   const name = t.name ?? null;
+  const tbd = isCupTbd(name);
   return {
     name,
     shortName: t.shortName ?? null,
     // 本站只認得英超那些;認不得的**只給名字**,不編隊碼(鐵則三)。codeOf 必須是嚴格版。
-    code: name ? codeOf(name) : null,
+    // 勝者未定的一律不查隊碼 —— 見上面那段,寬鬆比對會把它對成其中一隊。
+    code: !tbd && name ? codeOf(name) : null,
     sourceId: t.id != null ? String(t.id) : null,
     // 只是記「哪裡拿得到」,不等於掛隊徽(抓圖另一步,而且 artifact 的 CSP 擋外站)
-    imageUrl: t.id != null ? teamLogoUrl(t.id) : null,
+    // 勝者未定沒有 logo 可拿(它不是球會),給 null 讓下游的欄位判斷自己消失
+    imageUrl: !tbd && t.id != null ? teamLogoUrl(t.id) : null,
+    ...(tbd ? { tbd: true } : {}),
   };
 }
 

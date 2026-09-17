@@ -40,6 +40,16 @@ let CUP_FOLLOWED = new Set();
 
 function teamCell(t, { align = 'left' } = {}) {
   if (!t) return '<span class="dim small">待定</span>';
+  /* 勝者未定(2026-09-17):下一輪抽籤先公布、上一輪還沒踢完時,上游給的參與者
+     **不是一支球隊** —— 名字是兩隊用斜線串起來(`Manchester City/Norwich City`),
+     還帶一個自己的 id。照球隊畫的話,讀者會以為那是一支叫這個名字的球會。
+     本站不編身分(鐵則三),所以直接講出它是什麼:那一場的勝者。
+     旗標由抓取器寫進產物(`tbd`);正則只是**給這個旗標出現之前建的產物**的退路。 */
+  if (t.tbd ?? /\//.test(t.name ?? '')) {
+    const parts = String(t.name ?? '').split('/');
+    return `<span class="dim small" title="上一輪還沒踢完,這一格的參與者還沒決定" style="text-align:${align}">${
+      parts.map(x => C.esc(x.trim())).join(' / ')} 的勝者</span>`;
+  }
   const name = C.esc(C.cupName(t, CUP_IDENT));
   const star = t.code && CUP_FOLLOWED.has(t.code)
     ? '<span class="followstar on" title="你關注的球隊" aria-label="你關注的球隊">★</span>' : '';

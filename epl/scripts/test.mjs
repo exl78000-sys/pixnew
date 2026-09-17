@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
+import { isCupTbd } from './lib/adapters/fotmob-cups.mjs';
 import { matchPerson as loanMatchPerson, yearShifted as loanYearShifted } from './verify-loans.mjs';
 import { normName, matchOne as nameMatchOne } from './lib/names.mjs';
 import { loadMatches } from './lib/adapters/index.mjs';
@@ -7085,10 +7086,23 @@ async function checkCupIdentity() {
       for (const k of ['home', 'away']) if (m[k]) sides.set(String(m[k].sourceId ?? m[k].name), m[k]);
     }
   }
-  const all = [...sides.values()];
+  const every = [...sides.values()];
+  /* 「勝者未定」的參與者不是球隊(2026-09-17)。下一輪抽籤先公布時,FotMob 會給一個
+     名字是 `A/B`、自己帶一個 id 的參與者 —— 實測 `Manchester City/Norwich City#2244253`,
+     而它讓這條斷言在 CI 上紅了(本機看不到:沙箱抓不到 FotMob,raw 裡根本沒有那一輪)。
+     它沒有隊徽是**對的**,因為它不是球會。判斷走 adapter 那一份共用的認法,不要在這裡自己寫。 */
+  const tbdOf = t => t.tbd ?? isCupTbd(t.name);
+  const all = every.filter(t => !tbdOf(t));
+  const tbd = every.filter(tbdOf);
   const noCrest = all.filter(t => !(t.code ? byCode.get(t.code)?.crest : null) && !crests[t.sourceId]);
   ok(noCrest.length === 0, `盃賽出現的 ${all.length} 支球隊都查得到隊徽`,
     noCrest.slice(0, 5).map(t => `${t.name}#${t.sourceId}`).join('、') || '無');
+  /* 而勝者未定的那幾個要**真的被當成未定**:最危險的不是沒隊徽,是被編了隊碼 ——
+     整串丟進寬鬆比對有機會對上其中一隊,那一格就會變成「曼城已經晉級」。
+     負向對照驗過:把 tbd 的 code 填回去,這條就紅。 */
+  ok(tbd.every(t => !t.code), `勝者未定的 ${tbd.length} 個參與者都沒有被編隊碼`,
+    tbd.filter(t => t.code).slice(0, 5).map(t => `${t.name}→${t.code}`).join('、') || '無');
+  if (tbd.length) console.log(`  · 盃賽有 ${tbd.length} 個「勝者未定」的參與者(下一輪抽籤已公布、上一輪還沒踢完),依設計不查隊徽也不編隊碼`);
   const coded = all.filter(t => t.code);
   const codedMiss = coded.filter(t => !byCode.has(t.code));
   ok(codedMiss.length === 0, `有隊碼的 ${coded.length} 支都在英超目錄的 clubs.json 裡`,
