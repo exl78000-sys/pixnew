@@ -321,6 +321,32 @@ if (simShots && realShots) {
   }
 }
 
+/* 3b-4. **對抗那一層的錨**(階段 4q)。本站三輪防守側的修正(4k 放大半徑、4n 門將碰持球者、
+         4o 逼搶者站到球門那一側)全部死在「抄截與犯規爆炸」上,而我一路以為沒有東西可以校準
+         那一層 —— **側寫的 `extra` 裡就有**:`ground_duels_won` 每隊每場 32.86(兩隊合計 ≈ 66 次對抗),
+         而三種結局剛好把它拆完:抄截 32 + 過人成功 14 + 犯規 20.8 = 66。
+         所以「一場該有幾次對抗」是**查得到出處的**,不是一個自由參數。
+         過人成功這一項引擎目前**根本沒有**(沒有「持球者擺脫防守員」這個動作),
+         那正是防守員一站到球門那一側就變成永久接觸的原因。 */
+{
+  const teams = Object.values(profile.teams ?? {}).filter(t => t.extra);
+  const M = k => { const v = teams.map(t => t.extra[k]?.mean).filter(x => x != null);
+    return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const gd = M('ground_duels_won'), rtk = M('matchstats.headers.tackles'), dr = M('dribbles_succeeded');
+  const duels = rows.reduce((a, r) => a + (r.st.counts.duels ?? 0), 0) / rows.length;
+  if (gd && rtk && dr) {
+    console.log('');
+    console.log(`  ${'一場的對抗次數(進入抄截半徑)'.padEnd(20, '\u3000')} ${duels.toFixed(1).padStart(6)}`
+      + `\u3000真實 ${(gd * 2).toFixed(0)}(ground_duels_won 兩隊合計)→ **${(duels / (gd * 2)).toFixed(1)} 倍**`);
+    const secs = rows.reduce((a, r) => a + (r.st.counts.judgeFrames ?? 0), 0) / rows.length / 60;
+    console.log(`  ${'　而判定是「每一格擲一次」,所以真正的分母是秒數'.padEnd(20, '\u3000')} ${secs.toFixed(1)} 秒 / 場`);
+    console.log(`  ${'　三種結局的真實拆帳'.padEnd(20, '\u3000')} 抄截 ${(rtk * 2).toFixed(0)}`
+      + ` + 過人成功 ${(dr * 2).toFixed(0)} + 犯規 20.8 = ${(rtk * 2 + dr * 2 + 20.8).toFixed(0)}`);
+    console.log(`  ${'　本站'.padEnd(20, '\u3000')} 抄截 ${(rows.reduce((a, r) => a + r.st.counts.tackles, 0) / rows.length).toFixed(1)}`
+      + ` + 過人成功 **沒有這個動作** + 犯規 ${(rows.reduce((a, r) => a + r.st.counts.fouls.home + r.st.counts.fouls.away, 0) / rows.length).toFixed(1)}`);
+  }
+}
+
 /* 3c. 越位與逼搶。兩個都有真值:越位是 shotmap 同一份檔案裡的 teamStats.offsides,
        逼搶是側寫的 `style.pressing`(每 100 次對手傳球的抄截 + 攔截,FotMob 逐場、非 proxy)。
        傳球成功率**只印不判** —— 本站的擷取裡 `passAccuracy` 840 個隊季場全是 null,沒有真值。 */

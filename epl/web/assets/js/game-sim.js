@@ -847,7 +847,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 控球串:賽後解讀(game-diag.js)要的是「一次進攻怎麼結束的」。連續模擬裡沒有「回合」這個東西,
        所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
     chains: [], chain: null, pendingOrigin: null,
-    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
+    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, duels: 0, judgeFrames: 0, duelPair: null, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
@@ -1681,10 +1681,28 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     }
 
     // ── 抄截 ──
+    /* **一場有幾次「對抗」** —— 這是階段 4q 找到的錨,側寫的 `extra.ground_duels_won` 給的:
+       20 隊平均每隊每場 32.86 次地面對抗獲勝,兩隊合計 ≈ **66 次對抗**。而且三種結局拆得開:
+       抄截 32(`matchstats.headers.tackles` 15.95 × 2)+ 過人成功 14(`dribbles_succeeded` 6.75 × 2)
+       + 犯規 20.8 = 66 —— 剛好等於對抗總數。
+       只計數不判定,所以**不受 `tackleCool` / `shield` 影響**:那兩個是判定的閘門,不是對抗的定義。 */
+    st.duelGap = (st.duelGap ?? 0) + dt;
+    if (ball.holder && presser) {
+      const dd = hypot(presser.x - ball.holder.x, presser.y - ball.holder.y);
+      const pair = dd < SIM_TACKLE_R ? ball.holder.code + '|' + presser.code : null;
+      /* 同一組人在半徑邊緣來回會把次數灌大(第一版數到 908 / 場),所以要**斷開夠久**才算新的一次:
+         0.5 秒不是調出來的,它只要大過「一格」而且小過一次真實對抗的長度就行。 */
+      if (pair && (pair !== st.duelPair || st.duelGap > 0.5)) st.duels++;
+      if (pair) st.duelGap = 0;
+      st.duelPair = pair ?? st.duelPair;
+    }
     st.tackleCool = Math.max(0, (st.tackleCool ?? 0) - dt);
     if (ball.holder && presser && st.tackleCool <= 0 && (ball.holder.shield ?? 0) <= 0) {
       const d = hypot(presser.x - ball.holder.x, presser.y - ball.holder.y);
       if (d < SIM_TACKLE_R) {
+        /* **判定跑了幾格** —— 不是幾次對抗。這正是問題本身:判定是「每一格都擲一次」,
+           所以真正的分母是**接觸的秒數**(這個數字 ÷ 60),而不是對抗的次數。 */
+        st.judgeFrames++;
         // 護球好的隊被捅走的機率低一點(同一個 keep,兩邊相除)
         const skill = (0.6 + (presser.ability?.tkl ?? 0.2)) * (sideOf(presser.side).keep / sideOf(ball.holder.side).keep);
         /* 先判犯規再判抄截 —— 反過來的話乾淨的抄截永遠先發生,犯規只在「沒抄到」時才有機會,
@@ -2046,7 +2064,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
-        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, goalSit: { ...st.goalSit },
+        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, judgeFrames: st.judgeFrames, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         deflects: st.deflects, clears: st.clears },
     }),

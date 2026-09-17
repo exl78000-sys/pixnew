@@ -1,7 +1,7 @@
 import * as C from './core.js?v=d2162a48';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountPitch } from './game-pitch.js?v=7d3b9def';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=ae35c36d';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=8747604c';
 import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=13b570f3';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
