@@ -103,7 +103,18 @@ const PRESS_R = 14;                            // 這麼近的防守者才會去
 const PRESS_LG = 5.54;                         // 聯盟平均(算出來的,見上)—— 只當比例的分母
 const PRESS_SPAN = 0.45;                       // 最強與最弱之間 PRESS_R 差這個比例
 const COVER_BACK = 7;                          // 補位者站在逼搶者身後幾公尺(往自家門的方向)
-const SIM_TACKLE_R = 1.3, TACKLE_RATE = 1.1;       // 進到這麼近之後,每秒這個機率把球捅走(乘防守能力)
+/* 抄截半徑 1.3 m,而逼搶者刻意維持 `JOCKEY_R` = **2.4 m** —— 也就是說一個完全照設計在做事的
+   逼搶者**永遠搶不到球**,抄截只在「別人剛好更近」或「持球者自己走過來」時意外發生。
+   量得出來:持球者在門前五公尺待 **3.2 秒**(其他距離 1.65~1.7 秒),而 85% 的時間最近的
+   防守者就在 3 m 內(平均 2.2 m,正好是 JOCKEY_R)—— 有人盯著卻沒有人能碰到球。
+   **但把半徑放大到 2.4 m 是走不通的**(2026-09-17,階段 4k 掃過,50 場一個值):
+     TACKLE_RATE  1.1 → 抄截 232.5/場   0.7 → 168.3   0.5 → 130.8
+   真實兩隊合計 32~40,而且整場退化成搶來搶去:每球 xG 0.167(真實 0.1125)、
+   進球 2.8 : 1.6(λ 1.99 : 0.70)、RegularPlay 佔比從 63% 掉到 41%。
+   **1.3 不是疏忽,是它在擋這件事** —— 跟這一段上面記的「逼搶者站 1.05 m 會讓整場垮掉」
+   是同一個病從另一個門進來。門前那幾公尺要另外處理,見 `GOAL_LINE_PRESS`。 */
+const SIM_TACKLE_R = 1.3;                      // 進到這麼近之後才判抄截
+const TACKLE_RATE = 1.1;                       // 在那個範圍內每秒這個機率把球捅走(乘防守能力)
 /* 抄截之後兩件事必須成立,否則整場會退化成中圈的一團(實測第一版:90 分鐘 13,143 次抄截、
    跑動 11 m/分、85% 的時間站著)。原因是球被抄走之後新持球者旁邊就站著剛剛那個人,
    下一格他就變成逼搶者再抄回來,來回幾格一次,球哪裡都去不了,所以沒有人需要跑:
@@ -118,6 +129,15 @@ const BODY_R = 1.05;                           // 兩個人的身體不可以重
    每次決定都選傳球(90 分鐘 7,555 次),球在腳下待不到一秒。
    真的防守是退著守(jockey),進到 2~3 m 盯著,抓到時機才撲。 */
 const JOCKEY_R = 2.4;                          // 逼搶者維持的距離(公尺)
+/* **試過「在自家六碼區裡不保持距離、直接上搶」,而它讓事情變糟**(2026-09-17,階段 4k)。
+   想法是合理的:真的後衛在六碼區裡不會跟你保持兩公尺。實作也沒有新的自由參數
+   (六碼區用正式尺寸 5.5 × 9.16 m、貼近距離用既有的 `BODY_R`)。量出來(開 / 關各兩組
+   獨立種子 × 50 場,兩組一致):
+     每場抄截 39.8 / 41.7 → 50.2 / 50.9(真實兩隊合計 32~40)
+     每球 xG  0.1125 / 0.1114 → 0.1301 / 0.1291(真實 0.1125)
+     客隊進球 0.84 / 0.78 → 1.20 / 1.00(λ 0.70)
+     射門平均離門 15.0 / 15.0 → 15.2 / 15.0(**它要修的那一項完全沒動**)
+   貼上去只是在門前多製造鬆球,而鬆球就在門前 —— 近距離射門反而更多。整段已移除。 */
 const CARRY_SPEED = 0.92;                      // 帶球速度佔自己最高速的比例(真人帶球比空跑慢一點)
 /* 射門:沒有射門的話進攻沒有終點 —— 實測階段 1 的第一版帶球的人一路推到底線就停在那裡,
    球的 x 分佈兩頭各堆 40%、中場每段只剩 3.6%,整場球在兩條底線之間卡住。
@@ -797,7 +817,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 控球串:賽後解讀(game-diag.js)要的是「一次進攻怎麼結束的」。連續模擬裡沒有「回合」這個東西,
        所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
     chains: [], chain: null, pendingOrigin: null,
-    shotSit: {}, sitBins: {}, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
+    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
@@ -1038,7 +1058,14 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const ang = goalAngle(p.x, p.y, goalX);
       const q = shotQuality(dGoal, ang);
       const urge = urgeOf(s) * (pressure < 3 ? 0.55 : 1) * Math.pow(q / 0.08, SHOT_ALPHA);
+      /* 射門 = **機會 × 扣扳機機率**,兩項分開記(2026-09-17,階段 4k)。
+         只看射門的分佈分不出是「球太常在那裡」還是「在那裡太愛射」——
+         而那兩件事要修的地方完全不同。`check-sim` 用這兩排回推
+         「要生出真實的分佈,每一格的機率得是多少」。 */
+      const oppBin = Math.min(6, Math.floor(dGoal / 5));
+      st.oppBins.n[oppBin]++;
       if (rng() < cl(urge, 0, 0.9)) {
+        st.oppBins.shot[oppBin]++;
         const xg = cl(q * xgScale, 0.01, 0.95);
         const c = cal[p.side];
         const pGoal = cl(xg * (c?.k ?? 1), 0, 1);   // 上限 1:一顆必進的球就是必進,截在 0.97 只會偷走期望值
@@ -1935,7 +1962,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
-        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), goalSit: { ...st.goalSit },
+        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         deflects: st.deflects, clears: st.clears },
     }),

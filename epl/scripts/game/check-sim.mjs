@@ -260,6 +260,34 @@ if (simShots && realShots) {
   }
 }
 
+/* 3b-3. **射門 = 機會 × 扣扳機機率**(階段 4k)。只看射門的分佈分不出兩件完全不同的事:
+         「球太常在那裡」還是「在那裡太愛射」。最後一欄回推**要生出真實的分佈,
+         每一格的機率得是多少** —— 如果那個數字在近距離低得離譜(真人在三公尺當然會射),
+         那錯的就不是選擇,是機會的分佈,而那要改的是別的東西。 */
+{
+  const n = new Array(7).fill(0), sh = new Array(7).fill(0);
+  for (const r of rows) {
+    const o = r.st.counts.oppBins; if (!o) continue;
+    o.n.forEach((v, i) => { n[i] += v; }); o.shot.forEach((v, i) => { sh[i] += v; });
+  }
+  const totN = n.reduce((a, b) => a + b, 0), totS = sh.reduce((a, b) => a + b, 0);
+  const realBins = realShots?.bySit?.RegularPlay?.bins;
+  if (totN > 0 && totS > 0 && realBins) {
+    const realN = realBins.reduce((a, b) => a + b, 0);
+    const LAB = ['0-5', '5-10', '10-15', '15-20', '20-25', '25-30', '30+'];
+    console.log('');
+    console.log(`  ${'射程內的決策點'.padEnd(20, '\u3000')} 機會%   射門%  真實%   扣扳機   要對上真實得是`);
+    for (let i = 0; i < 7; i++) {
+      const need = n[i] > 0 ? realBins[i] / realN * totS / n[i] : NaN;
+      console.log(`  ${('  ' + LAB[i]).padEnd(20, '\u3000')}`
+        + `${(n[i] / totN * 100).toFixed(1).padStart(5)}%${(sh[i] / totS * 100).toFixed(1).padStart(7)}%`
+        + `${(realBins[i] / realN * 100).toFixed(0).padStart(6)}%${(sh[i] / n[i]).toFixed(3).padStart(9)}`
+        + `${need.toFixed(3).padStart(16)}`);
+    }
+    console.log(`  ${'（真實那一欄是 RegularPlay 的離門分佈;扣扳機機率的上限是 0.9)'.padEnd(20, '\u3000')}`);
+  }
+}
+
 /* 3c. 越位與逼搶。兩個都有真值:越位是 shotmap 同一份檔案裡的 teamStats.offsides,
        逼搶是側寫的 `style.pressing`(每 100 次對手傳球的抄截 + 攔截,FotMob 逐場、非 proxy)。
        傳球成功率**只印不判** —— 本站的擷取裡 `passAccuracy` 840 個隊季場全是 null,沒有真值。 */
