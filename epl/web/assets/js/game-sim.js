@@ -230,6 +230,17 @@ const GK_NOT_BEYOND = false;
    沒有新的機率參數:判定走既有的 TACKLE_RATE 與犯規那一段(門將在自家禁區犯規就是十二碼,
    那是規則不是我挑的),所以旗標關掉時整段逐字等於舊版。 */
 const GK_PRESS = false;
+/* 門將碰到持球者的**下場是抱住球,不是抄截**(階段 4n 第二輪)。
+   第一輪把門將接進既有的抄截判定,兩件事同時壞掉:
+     一、抄截那一段先判犯規,而門將永遠在自家禁區裡 → 十二碼 **0.90 / 1.34 一場**
+         (真實 0.23)。`BOX_CARE` 是對著「逼搶者站在 2.4 公尺外、偶爾才進到 1.3」校準的,
+         而門將現在是**一直**在 1.3 公尺內,同一個係數就完全不是同一件事了。
+     二、抄截把球捅開(`TACKLE_POKE`),而捅開的方向是離開門將 = 往禁區裡 ——
+         於是門前的鬆球**變多**,0~10 公尺的射門share 從 31.9% 升到 34.0%,方向相反。
+   真實的門將是用手把球抱住,那是死球:沒有犯規的分支,也不會留下鬆球。
+   速率沿用 TACKLE_RATE(不新增參數);範圍自然被 GK_NOT_BEYOND 限制住 ——
+   他只有在球離門 5.5 公尺內才會走到球上,所以碰得到的本來就只有那一圈。 */
+const GK_SMOTHER = false;
 /* 射門頻率**綁在球隊自己的真實射門率上**(rates.sf)。
    這是 λ 錨能成立的前提:E[進球] = E[射門] × E[xG] × k,而 k 由 λ 閉式算出來。
    射門是模擬長出來的,但「多久出現一次夠好的機會」要跟真實球隊一致,不然 k 會補在錯的地方。
@@ -1650,6 +1661,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (d < SIM_TACKLE_R) {
         // 護球好的隊被捅走的機率低一點(同一個 keep,兩邊相除)
         const skill = (0.6 + (chal.ability?.tkl ?? 0.2)) * (sideOf(chal.side).keep / sideOf(ball.holder.side).keep);
+        /* 門將把球抱住 —— 死球,沒有犯規也沒有鬆球(見 GK_SMOTHER)。 */
+        if (GK_SMOTHER && chal === gkPress) {
+          if (rng() < TACKLE_RATE * skill * dt) {
+            st.tackleCool = TACKLE_COOLDOWN; st.tackles++; st.tacklesBy[chal.side]++;
+            keeperCollect(chal.side);
+          }
+        } else {
         /* 先判犯規再判抄截 —— 反過來的話乾淨的抄截永遠先發生,犯規只在「沒抄到」時才有機會,
            而那跟真實足球的因果相反:犯規是抄截**做壞了**,不是沒做。
            **禁區裡的 2026-09-17(階段 4b)起吹十二碼** —— 在這之前是不吹的,理由寫著
@@ -1679,6 +1697,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           ball.x = victim.x; ball.y = victim.y;
           ball.vx = Math.cos(ang) * sp; ball.vy = Math.sin(ang) * sp; st.lastKick = 'tackle';
           victim.shield = 0; st.tackleCool = TACKLE_COOLDOWN; st.tackles++; st.tacklesBy[chal.side]++;
+        }
         }
       }
     }
