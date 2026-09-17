@@ -188,8 +188,17 @@ const GOAL_HEIGHT = 2.44;
    實測也只從 16.0 走到 15.6 m(真實 16.4),禁區內比例反而更靠近真實的 67%。
 
    階段 4f 之後再降一格到 **0.0375**:角球現在會自己生出射門(頭球那一條),
-   那是運動戰之外多出來的一個來源,所以運動戰要讓出一點,總量才回得到預算。 */
-const SHOT_URGE = 0.0375;
+   那是運動戰之外多出來的一個來源,所以運動戰要讓出一點,總量才回得到預算。
+
+   階段 4g 再降到 **0.036**:傳中改成吊球之後角球真的供得出射門(FromCorner 5.1% → 14.7%),
+   那一份又是加上去的,所以運動戰再退一格。50 場一個值(CORNER_HEAD 0.85):
+     0.0375 → 射門/預算 1.06   進球 1.98 : 0.92
+     0.0360 → 射門/預算 1.01   進球 1.76 : 0.78   ← 選這個
+     0.0345 → 射門/預算 0.96   進球 1.80 : 0.84
+     0.0330 → 射門/預算 0.94   進球 1.64 : 0.74
+   λ 是 1.99 : 0.70,50 場的每場進球 SE 約 0.20 —— 0.0360 與 0.0375 在 λ 上打平
+   (−1.2 SE 對 −0.1 / +0.4 對 +1.1),預算上 0.0360 贏,所以選它。 */
+const SHOT_URGE = 0.036;
 /* xG 的**形狀**是遊戲模型(距離與張角),**水準**對回真實資料:
    XG_SCALE 調到模擬的每球平均 xG 等於聯盟真實的每球平均(league_.shotSituations)。
    形狀自己編、水準有出處 —— 兩件事要分開講,不然畫面上的 xG 就是編的。 */
@@ -350,10 +359,32 @@ const BOX_CARE = 0.12;
    量過:進攻方 73% 搶得到第一點,但每個角球只生 0.045 腳射門 —— 因為搶到之後要等
    `decideIn`(0.35~0.8 秒)才輪到射門判定,而那時身邊有九個防守球員,早被捅走了。
    **率是對的、結果不對,那就是少了一個行為** —— 跟「吃過黃牌的人會收手」、
-   「後衛在自家禁區會收腳」同一類。0.62 是掃出來的(掃描紀錄見 CORNER_HEAD 那一行)。 */
-const CORNER_HEAD = 0.62;                      // 在禁區裡搶到角球傳中 → 第一時間攻門的機率
+   「後衛在自家禁區會收腳」同一類。
+   **4f 掃這個常數掃出「完全沒有影響」(0.62 / 0.80 / 0.95 印出來一模一樣),那個結論作廢** ——
+   當時傳中是一記平射、球在半路就被防守方切掉(見 CROSS_APEX),禁區裡根本沒有人搶得到第一點,
+   所以那一次掃的是**一條被堵住的路**:量到「沒有影響」的是瓶頸,不是這個參數。
+   4g 把傳中改成吊球之後重掃,每個值 50 場(FromCorner 佔射門,真實 17.3%):
+     0.62 → 10.0 ± 0.9%    射門/預算 1.01   角球 9.6    離門 15.7 m
+     0.75 → 12.3 ± 0.9%    射門/預算 1.05   角球 10.2   離門 15.4 m
+     0.85 → 14.7 ± 1.0%    射門/預算 1.06   角球 10.6   離門 15.2 m   ← 選這個
+     0.95 → 14.8 ± 1.0%    射門/預算 1.08   角球 10.3   離門 15.1 m
+   取 0.85:**到這裡就飽和了**,再往上 FromCorner 不動,而進球衝過 λ(2.16 對 1.99)。
+   多出來的射門由 SHOT_URGE 退一格收回去(那一格就是為這件事存在的)。
+   **場數不夠的掃描會騙人**:同一份程式 20 場量到 12.1%、50 場量到 10.0% —— 分享率的 SE
+   在 20 場是 1.5 個百分點,而要分辨的差距就是這個量級,四個值排出來的單調趨勢照樣出得來。 */
+const CORNER_HEAD = 0.85;                      // 在禁區裡搶到角球傳中 → 第一時間攻門的機率
 const CORNER_WAIT = 12;                        // 等大家進禁區的上限(秒);真實角球本來就要等十幾秒
 const CORNER_READY = 4;                        // 進攻方有這麼多人進到禁區附近就開球
+/* 傳中要**吊過人群**,不是平射穿過去(2026-09-17,階段 4g)。
+   4f 的飛行時間寫 `cl(d / 16, 1.0, 1.5)` 秒,算出來的弧頂只有 2.76 公尺 —— 剛好就是頭球高度,
+   所以球整段都在頭的高度上以 23 m/s 橫穿禁區。而「第一點」判的是「球飛過誰身邊 2.5 公尺內」,
+   量出來:**防守方在飛行 69% 處、離瞄的那個點還有 11.6 公尺就把球切掉了**(71 個第一點裡 67 個,
+   而進攻方搶到的那 4 次都發生在 84% 處、離瞄點 5.6 公尺)。那不是落點的爭頂,是一記穿過人群的平射。
+   弧頂是**幾何推出來的,不是憑印象挑的**:要讓球只在「還在角旗邊」與「到了目標區」這兩段
+   低於頭球高度,弧頂取 6 公尺 → vz = √(2g·6) = 10.85 m/s、飛行 2.21 秒,
+   算出來兩端各只有 4.3 公尺低於 2.6 公尺(以 35 公尺的傳中計),中間整段都在人頭上。 */
+const CROSS_APEX = 6;                          // 傳中弧頂(公尺)
+const CROSS_HEAD = 2.6;                        // 頭球高度:低於它才搶得到第一點
 const BOX_D = 16.5, BOX_W = 20.16;             // 禁區:深 16.5 m、半寬 20.16 m(正式尺寸)
 const FOUL_NO_WHISTLE = 6;                     // 離自家門這麼近的犯規不在這裡處理(禁區 → 十二碼,還沒做)
 /* 無球跑動。這是使用者看預覽時說「沒有因為進攻或防守跑動」的那一半 ——
@@ -790,12 +821,16 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   /* 一次進攻**是怎麼開始的**(2026-09-17,階段 4b)。射門的情境分類整個掛在這上面:
      死球重開時 deadBall 先記下 `pendingOrigin`,第一個控到球的人開串時把它領走。
      領走之後就清掉 —— 同一次死球之後如果球權換手,新的那一串是運動戰,不是角球。
+     **來源要記是誰的**(2026-09-17,階段 4g):第一版只記種類,所以角球被解圍、
+     防守方自己控住開的那一串也領到 `corner` —— 他們接著反擊射門就被標成 FromCorner,
+     而那是場上完全相反的一件事。領的人跟死球是同一隊才算,不同隊就是運動戰。
      `t0` 與 `x0` 是給快攻判定用的:從自家半場搶到球、幾秒內就射,那才是快攻。 */
   function openChain(side) {
     if (st.chain?.side === side) return;
     closeChain('lost', ball.x);
-    const origin = st.pendingOrigin ?? 'open';
-    st.pendingOrigin = null;
+    const pend = st.pendingOrigin;
+    st.pendingOrigin = null;                                  // 誰領到都算領完了:這次死球的餘波結束
+    const origin = pend && pend.side === side ? pend.kind : 'open';
     st.chain = { side, t0: st.t, origin, x0: ball.x };
   }
 
@@ -1304,8 +1339,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          兩道閘門都過不了,所以**沒有人碰得到它**。這就是第一版頭球一次都不發生的原因,
          而它完全不報錯:球飛過禁區、落地、被門將撿走,畫面上一切正常。
          真實的頭球本來就不需要「控住」球,所以它不該走控球那條路。
-         高度取 2.6 m(頭球高度),水平 1.8 m(比控球半徑大一點:頂到就算)。 */
-      if (CORNER_XG != null && st.lastKick === 'corner' && ball.passer && ball.z < 2.6) {
+         高度取 CROSS_HEAD(頭球高度),水平 2.5 m(傳中的瞄準誤差就有這麼大)。
+         **還要球正在下降**(`vz < 0`,階段 4g):不加的話,球剛離開角旗那一段也低於頭球高度,
+         「第一點」就會判在角旗邊 —— 那不是爭頂。加了它,爭頂只發生在球掉進目標區的最後幾公尺
+         (量出來在飛行 94% 處、離瞄的那個點 1.9 公尺)。 */
+      if (CORNER_XG != null && st.lastKick === 'corner' && ball.passer
+          && ball.z < CROSS_HEAD && ball.vz < 0) {
         const att = ball.passer.side;
         let who = null, wd = 2.5;          // 傳中誤差就有 2.5 m,抓太緊會變成誰都碰不到
         for (const p of all()) {
@@ -1642,8 +1681,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   /* 開角球:傳中到禁區裡的危險區域。**這裡只決定球飛到哪**,
      誰碰到、碰到之後射不射,交給既有的爭球與射門邏輯 ——
      角球不另外給一套「進球機率」,那會變成在畫面上編數字(鐵則一)。
-     落點分三種(近柱 / 中路 / 後點),各帶一點隨機;飛行時間 1.0~1.5 秒,
-     用跟挑傳同一條式子算水平速度,讓它剛好落在目標上。 */
+     落點瞄禁區裡的某一個人(見下面那一段),飛行軌跡由 CROSS_APEX 決定 —— 吊過人群、
+     只在目標區才掉到頭球高度以下。 */
   function takeCorner(r) {
     const s = sideOf(r.side), p = r.taker;
     const gx = s.att > 0 ? PITCH_W : 0, dir = s.att > 0 ? -1 : 1;
@@ -1658,12 +1697,15 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const ty = cl((aim ? aim.y : PITCH_H / 2) + (rng() - 0.5) * 2.5, 6, PITCH_H - 6);
     /* **不搬人**:死球那一段已經確認他走到角旗附近了(見 CORNER_READY 那一段),
        從他實際站的地方踢。硬收座標的話,等滿 CORNER_WAIT 而他還沒走到時就是一次瞬移。 */
+    /* 吊過人群(見 CROSS_APEX):弧頂固定,所以飛行時間固定、遠的球就踢得更重 ——
+       真實的後點球本來就比近柱球用力。水平速度要**補空氣阻力**:球在空中每秒被拖慢
+       BALL_AIR,不補的話 2.21 秒會少飛 BALL_AIR·tt²/2 = 2.9 公尺,每一記傳中都短。 */
     const d = hypot(tx - p.x, ty - p.y);
-    const tt = cl(d / 16, 1.0, 1.5);
-    kick(p, tx, ty, d / tt, GRAVITY * tt / 2, 'pass');
+    const vz = Math.sqrt(2 * GRAVITY * CROSS_APEX), tt = 2 * vz / GRAVITY;
+    kick(p, tx, ty, d / tt + BALL_AIR * tt / 2, vz, 'pass');
     st.lastKick = 'corner';               // 讓「第一點」認得出這是角球傳中(見 CORNER_HEAD)
     ball.passTo = null;                   // 傳中沒有指定接球者:誰搶到算誰的
-    st.pendingOrigin = 'corner';          // 這一串仍然算角球來的(見 openChain)
+    st.pendingOrigin = { kind: 'corner', side: r.side };   // 這一串仍然算角球來的(見 openChain)
   }
 
   /* 角球的第一時間攻門。**xg 用側寫量到的 0.103,不用 q 模型** ——
@@ -1712,7 +1754,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     ball.holder = null; ball.vx = 0; ball.vy = 0; ball.vz = 0; ball.z = 0; ball.x = x; ball.y = y; ball.shot = null;
     st.phase = 'dead'; st.deadT = wait;
     st.restart = { kind, side, taker: taker ?? s.players[1], x, y, spots };
-    st.pendingOrigin = kind;        // 下一串進攻的來源(見 openChain)
+    st.pendingOrigin = { kind, side };   // 下一串進攻的來源與**是誰的**(見 openChain)
     st.outs++;
   }
   /* 越位線:對手倒數第二名防守者的 x(含門將),跟中線取靠自己後場的那一個。
