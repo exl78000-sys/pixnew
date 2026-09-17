@@ -211,6 +211,25 @@ const SAVE_HOLD = 0.80;
    —— 因為它不是「選不選擇射門」的問題,是**球不該那麼常在那裡落到對方腳下**。
    範圍取禁區(球在自家禁區內的鬆球才出來),不是憑印象的半徑:那正是他可以用手的範圍。 */
 const GK_RUSH = true;
+/* 門將的站位深度,以及**他不可以站得比球更遠離自家球門**(2026-09-17,階段 4n)。
+   舊寫法是「在門與球的連線上、離門線固定 5.5 公尺」—— 球比 5.5 公尺更近時,那個點
+   在**球的後面**,於是門將跑過頭、背對自家球門。實測 12 場:持球者在 0~5 公尺時,
+   門將離自家門 7.0 公尺、**99% 的時候比球更遠離球門**,離持球者 4.1 公尺。
+   夾一個 min 就好,沒有新參數:球更近他就站在球那裡(那就是出來封堵),
+   球在 5.5 公尺外時這一行跟舊版逐字相同。 */
+const GK_DEPTH = 5.5;
+const GK_NOT_BEYOND = false;
+/* 門將**可以碰進到自家禁區的對方持球者**(階段 4n)。在這之前他被 presser / cover /
+   chasers 三份名單同時排除,所以「門將把球從對方腳下拿走」這件事在統計裡是 **0** ——
+   不是少,是那條路根本沒鋪(跟 4h 的撲救只有一種收尾同一類)。
+   兩個界線:
+     一、**只在自家禁區內** —— 那是他可以用手的範圍,也是唯一不必憑印象校準時機的範圍。
+     二、**他不進逼搶者的走位名單**。逼搶者的規則是「停在 JOCKEY_R = 2.4 公尺之外」,
+         門將照那個走就永遠進不到抄截半徑 1.3 公尺,而且會被拉離球門(4k 那條矛盾)。
+         他照自己的站位走,對方帶到他身上才碰得到 —— 那正是真實的門前封堵。
+   沒有新的機率參數:判定走既有的 TACKLE_RATE 與犯規那一段(門將在自家禁區犯規就是十二碼,
+   那是規則不是我挑的),所以旗標關掉時整段逐字等於舊版。 */
+const GK_PRESS = false;
 /* 射門頻率**綁在球隊自己的真實射門率上**(rates.sf)。
    這是 λ 錨能成立的前提:E[進球] = E[射門] × E[xG] × k,而 k 由 λ 閉式算出來。
    射門是模擬長出來的,但「多久出現一次夠好的機會」要跟真實球隊一致,不然 k 會補在錯的地方。
@@ -1283,7 +1302,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         .sort((a, b) => a[0] - b[0]);
       for (let i = 0; i < Math.min(SUPPORT_N, mates.length); i++) support.add(mates[i][1]);
     }
-    let presser = null, cover = null;
+    let presser = null, cover = null, gkPress = null;
     if (holder) {
       const o = oppOf(holder.side);
       const reach = PRESS_R * o.press;
@@ -1293,6 +1312,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const d = hypot(q.x - holder.x, q.y - holder.y);
         if (d < bd) { bd2 = bd; cover = presser; bd = d; presser = q; }
         else if (d < bd2) { bd2 = d; cover = q; }
+      }
+      /* 門將**另外記一份**,不放進上面那個迴圈(見 GK_PRESS):進去的話他會佔掉逼搶者的
+         名額、照逼搶的規則走位,而那條規則保證他碰不到球。這一份只影響「碰得到誰」。 */
+      if (GK_PRESS) {
+        const hgx = sideOf(holder.side).att > 0 ? PITCH_W : 0;
+        if (Math.abs(holder.x - hgx) < BOX_D && Math.abs(holder.y - PITCH_H / 2) < BOX_W)
+          gkPress = o.players.find(q => q.role === 'GK' && !q.off) ?? null;
       }
     }
 
@@ -1359,7 +1385,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         else {
           // 門將:站在自己球門與球的連線上,離門線不遠
           const dx = ball.x - gx, dy = ball.y - PITCH_H / 2, d = Math.max(1, hypot(dx, dy));
-          want = { x: gx + dx / d * 5.5, y: cl(PITCH_H / 2 + dy / d * 5.5, 20, PITCH_H - 20), speed: SIM_JOG };
+          const out = GK_NOT_BEYOND ? Math.min(GK_DEPTH, d) : GK_DEPTH;   // 見 GK_NOT_BEYOND
+          want = { x: gx + dx / d * out, y: cl(PITCH_H / 2 + dy / d * out, 20, PITCH_H - 20), speed: SIM_JOG };
         }
       } else {
         let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
@@ -1612,11 +1639,17 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
 
     // ── 抄截 ──
     st.tackleCool = Math.max(0, (st.tackleCool ?? 0) - dt);
-    if (ball.holder && presser && st.tackleCool <= 0 && (ball.holder.shield ?? 0) <= 0) {
-      const d = hypot(presser.x - ball.holder.x, presser.y - ball.holder.y);
+    /* 碰得到持球者的那個人:逼搶者,或(階段 4n)持球者帶進自家禁區時的門將 —— 取近的那個。
+       `gkPress` 是 null 時這一行回的就是逼搶者,所以 GK_PRESS 關掉時整段逐字等於舊版。 */
+    const chal = !ball.holder || !gkPress ? presser
+      : !presser ? gkPress
+      : hypot(gkPress.x - ball.holder.x, gkPress.y - ball.holder.y)
+        < hypot(presser.x - ball.holder.x, presser.y - ball.holder.y) ? gkPress : presser;
+    if (ball.holder && chal && st.tackleCool <= 0 && (ball.holder.shield ?? 0) <= 0) {
+      const d = hypot(chal.x - ball.holder.x, chal.y - ball.holder.y);
       if (d < SIM_TACKLE_R) {
         // 護球好的隊被捅走的機率低一點(同一個 keep,兩邊相除)
-        const skill = (0.6 + (presser.ability?.tkl ?? 0.2)) * (sideOf(presser.side).keep / sideOf(ball.holder.side).keep);
+        const skill = (0.6 + (chal.ability?.tkl ?? 0.2)) * (sideOf(chal.side).keep / sideOf(ball.holder.side).keep);
         /* 先判犯規再判抄截 —— 反過來的話乾淨的抄截永遠先發生,犯規只在「沒抄到」時才有機會,
            而那跟真實足球的因果相反:犯規是抄截**做壞了**,不是沒做。
            **禁區裡的 2026-09-17(階段 4b)起吹十二碼** —— 在這之前是不吹的,理由寫著
@@ -1627,25 +1660,25 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         /* **吃過黃牌的人會收手。** 沒有這一條的話,犯規只看位置與壓迫強度,於是一場下來
            有人連吃兩張黃的機率高得離譜:實測一隊一場 2 張紅牌,而真實每隊每場 0.05 張。
            真的球員被警告之後會避免再犯 —— 這不是一個調出來的係數,是一個缺掉的行為。 */
-        const booked = (presser.yellow ?? 0) > 0 ? CARDED_CARE : 1;
+        const booked = (chal.yellow ?? 0) > 0 ? CARDED_CARE : 1;
         /* 先看**位置**允不允許吹,再抽亂數 —— 反過來寫(先抽再看位置)的話,
            每一格都會消耗一個亂數,整個序列就跟接十二碼之前錯開了,
            同一個種子跑出來的比賽會完全不同,新舊兩版就沒辦法逐場比。 */
         const canFoul = inBox ? PEN_XG != null
           : Math.abs(ball.holder.x - (gx > 0 ? 0 : PITCH_W)) > FOUL_NO_WHISTLE;
-        if (canFoul && rng() < FOUL_RATE * sideOf(presser.side).press * booked * (inBox ? BOX_CARE : 1) * dt) {
-          if (inBox) penaltyFor(ball.holder.side, presser);
-          else foulBy(presser, ball.holder);
+        if (canFoul && rng() < FOUL_RATE * sideOf(chal.side).press * booked * (inBox ? BOX_CARE : 1) * dt) {
+          if (inBox) penaltyFor(ball.holder.side, chal);
+          else foulBy(chal, ball.holder);
         } else if (rng() < TACKLE_RATE * skill * dt) {
           /* 球被捅開變成鬆球(不是直接換人持球):方向大致是防守者的來向,速度隨機。
              這樣兩邊都要去追,而追球本身就是跑動 —— 這也是「看起來像在踢球」的一大半。 */
           const victim = ball.holder;
-          const ang = Math.atan2(victim.y - presser.y, victim.x - presser.x) + (rng() - 0.5) * 1.6;
+          const ang = Math.atan2(victim.y - chal.y, victim.x - chal.x) + (rng() - 0.5) * 1.6;
           const sp = TACKLE_POKE[0] + rng() * (TACKLE_POKE[1] - TACKLE_POKE[0]);
           ball.holder = null; ball.z = 0; ball.vz = 0;
           ball.x = victim.x; ball.y = victim.y;
           ball.vx = Math.cos(ang) * sp; ball.vy = Math.sin(ang) * sp; st.lastKick = 'tackle';
-          victim.shield = 0; st.tackleCool = TACKLE_COOLDOWN; st.tackles++; st.tacklesBy[presser.side]++;
+          victim.shield = 0; st.tackleCool = TACKLE_COOLDOWN; st.tackles++; st.tacklesBy[chal.side]++;
         }
       }
     }
