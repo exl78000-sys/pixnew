@@ -141,7 +141,22 @@ const SHOOT_RANGE = 32;                        // 離球門這麼近才會想射
      0.5   32.4   18.4m   51%     28%
      0.35  31.4   19.4m   41%     21%
      真實  30.4   16.4m   67%     24%
-   射門數與離門距離同時對上,禁區內比例略低(61% 對 67%)—— 照實記著,不另外調。 */
+   射門數與離門距離同時對上,禁區內比例略低(61% 對 67%)—— 照實記著,不另外調。
+   ---
+   **2026-09-17(階段 4i)重掃,結論是不要動它 —— 這是一條否定的結果。**
+   上面那張表是拿**總和**掃的,而總和是好幾種情境混出來的。真實資料逐情境拆開差很多
+   (RegularPlay 17.1 m、FromCorner 12.7 m、FreeKick 26.7 m),所以要對的是 RegularPlay。
+   拿 RegularPlay 重掃(每個值 50 場,`L1` 是七格分佈跟真實的絕對差總和,越小越像):
+     α     RegularPlay 離門   分佈 L1   總射門/預算   禁區內
+     0.7   14.9m              27        0.97          69%   ← 留著
+     0.6   15.9m              29        0.92          64%
+     0.5   16.4m              27→28     0.85          59%
+     真實  17.1m              0         1.00          67%
+   **α 只搬得動平均,搬不動形狀**:L1 三個值幾乎一樣,而 0-5 m 那一格永遠是 10~11%
+   (真實 3%)、15-20 m 那一格永遠是 16~17%(真實 23%)。降 α 只是把遠端的尾巴拉更遠,
+   於是平均對上了而分佈變成雙峰 —— 那正是本站自己寫過的坑:**先用係數湊平均,
+   分佈就永遠不會被發現**。真正的缺口是「球太常在門前五公尺落到進攻方腳下」與
+   「禁區線外那一圈射得太少」,那要換一個機制,不是換一個指數。 */
 /* 快攻(2026-09-17,階段 4b)。上游(FotMob shotmap)把射門分成八種情境,
    而本站的引擎**分得出來的只有其中五種** —— 分不出來的不假裝分得出來(鐵則三):
      做得到:Penalty / FromCorner / ThrowInSetPiece / SetPiece(自由球後) / FastBreak / RegularPlay
@@ -169,6 +184,13 @@ const GOAL_HEIGHT = 2.44;
    **憑推算填的話會填錯**:我先用「5.6 次撲救 × 脫手比例 × 四成往外撥」推出 0.69,
    而實際答案是 0.80 —— 因為擋回場內的那些球也會在下一腳被解圍出底線,角球不只來自「往外撥」那一支。 */
 const SAVE_HOLD = 0.80;
+/* 門將**會出來收自家門前的鬆球**(2026-09-17,階段 4i)。在這之前他整場只做一件事:
+   站在自家球門與球的連線上、離門線 5.5 公尺 —— 球滾到他腳邊三公尺他也不動,
+   於是六碼區裡的鬆球一律被對方先拿到。量出來:運動戰的射門有 **11%** 在 0~5 公尺,
+   而真實只有 **3%**(倉庫裡 6,470 顆 RegularPlay 射門),那一格是所有 α 值都修不掉的
+   —— 因為它不是「選不選擇射門」的問題,是**球不該那麼常在那裡落到對方腳下**。
+   範圍取禁區(球在自家禁區內的鬆球才出來),不是憑印象的半徑:那正是他可以用手的範圍。 */
+const GK_RUSH = true;
 /* 射門頻率**綁在球隊自己的真實射門率上**(rates.sf)。
    這是 λ 錨能成立的前提:E[進球] = E[射門] × E[xG] × k,而 k 由 λ 閉式算出來。
    射門是模擬長出來的,但「多久出現一次夠好的機會」要跟真實球隊一致,不然 k 會補在錯的地方。
@@ -387,7 +409,8 @@ const BOX_CARE = 0.12;
    在 20 場是 1.5 個百分點,而要分辨的差距就是這個量級,四個值排出來的單調趨勢照樣出得來。 */
 const CORNER_HEAD = 0.85;                      // 在禁區裡搶到角球傳中 → 第一時間攻門的機率
 const CORNER_WAIT = 12;                        // 等大家進禁區的上限(秒);真實角球本來就要等十幾秒
-const CORNER_READY = 4;                        // 進攻方有這麼多人進到禁區附近就開球
+const CORNER_READY = 4;                        // 進攻方有這麼多人**站到排好的位置上**就開球
+const CORNER_SPOT_R = 2.5;                     // 離自己那個站位這麼近算到位(站位彼此相隔 5~7 m,不會認錯)
 /* 傳中要**吊過人群**,不是平射穿過去(2026-09-17,階段 4g)。
    4f 的飛行時間寫 `cl(d / 16, 1.0, 1.5)` 秒,算出來的弧頂只有 2.76 公尺 —— 剛好就是頭球高度,
    所以球整段都在頭的高度上以 23 m/s 橫穿禁區。而「第一點」判的是「球飛過誰身邊 2.5 公尺內」,
@@ -734,8 +757,19 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      所以再乘 0.776。這個數字是量出來的、不是調出來的,而且 `npm run game:sim`
      每次都會把實際的每球 xG 印出來 —— 行為變了它就會漂,漂了看得見。
      為什麼不直接改 xG 的形狀去湊:形狀已經用**離門距離分佈**校準過了(見 SHOT_ALPHA),
-     再去動它就是拿一個對上的東西去湊另一個。 */
-  const SELECT_FIX = 0.776;
+     再去動它就是拿一個對上的東西去湊另一個。
+
+     **2026-09-17(階段 4i)重新量過:0.776 → 0.71。** 上面那句「行為變了它就會漂」成真了 ——
+     4b~4h 加了十二碼、角球頭球、撲救脫手三個來源,射門的位置整批往門前擠,
+     每球 xG 漂到 **0.1213**(真實 0.1125,+8%),而 λ 的錨跟著歪:客隊進球 **+2.5 SE**。
+     重掃(每個值 50 場,射門數完全不動 —— 這個係數只縮放 xG、不改扣不扣扳機):
+       0.776 → 每球 xG 0.1213   進球 1.90 : 1.00
+       0.73  → 0.1156           1.88 : 0.86
+       0.71  → **0.1125**       1.82 : 0.84   ← 選這個(客隊 +2.5 SE → +1.1 SE)
+       0.69  → 0.1110           1.84 : 0.84
+     **原本那個數字是 6 場量的**,這次 50 場。而且要講清楚:它是在補**形狀還沒修好**的水準誤差,
+     所以哪天離門分佈真的修好了(見 SHOT_ALPHA 那一段的否定結果),**這個係數要再量一次**。 */
+  const SELECT_FIX = 0.71;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
   const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
@@ -763,7 +797,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 控球串:賽後解讀(game-diag.js)要的是「一次進攻怎麼結束的」。連續模擬裡沒有「回合」這個東西,
        所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
     chains: [], chain: null, pendingOrigin: null,
-    shotSit: {}, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
+    shotSit: {}, sitBins: {}, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
@@ -845,6 +879,16 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.pendingOrigin = null;                                  // 誰領到都算領完了:這次死球的餘波結束
     const origin = pend && pend.side === side ? pend.kind : 'open';
     st.chain = { side, t0: st.t, origin, x0: ball.x };
+  }
+
+  /* 射門的離門距離**逐情境**記一份(2026-09-17,階段 4i)。
+     為什麼不只記總和:真實資料裡不同情境的離門分佈差很多(RegularPlay 平均 17.1 m、
+     FromCorner 12.7 m、FreeKick 26.7 m),所以總和對上不代表每一種都對 ——
+     實測本站總和 15.1 m 看起來只差一點,拆開才看到角球是 15.0 m(真實 12.7)
+     而且 69% 擠在 15~20 m 一格、0~5 m 一顆都沒有。`check-sim` 逐情境印出來。 */
+  function noteShotDist(sit, dGoal) {
+    const b = (st.sitBins[sit] ??= { n: 0, dsum: 0, bins: new Array(7).fill(0) });
+    b.n++; b.dsum += dGoal; b.bins[Math.min(6, Math.floor(dGoal / 5))]++;
   }
 
   /* 這一腳射門算哪一種情境。**只回答分得出來的那幾種** —— 見 FASTBREAK_SECS 上面那一段。
@@ -1010,6 +1054,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14), sp, miss && rng() < 0.4 ? 3.5 + rng() * 3 : 0, 'shot');
         const sit = shotSituation(s);
         st.shotSit[sit] = (st.shotSit[sit] ?? 0) + 1;
+        noteShotDist(sit, dGoal);
         /* 助攻(階段 4b):**進球前一腳傳到這位射手腳下的球**,而且要是同一隊、同一次進攻。
            `assistBy` 是在 giveTo 收球時記下來的(誰傳給他),射門的當下把它凍在 ball.shot ——
            不凍的話球一離腳 holder 就換人,進球時再回頭找已經找不到了。
@@ -1128,9 +1173,16 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          (而補時是照死球時間補回去的,那會把整場長度一起拉長)。 */
       if (st.restart?.kind === 'corner' && st.deadT > 0) {
         const rs = sideOf(st.restart.side);
-        const gx = rs.att > 0 ? PITCH_W : 0;
-        const inBox = rs.players.filter(p => !p.off && p !== st.restart.taker
-          && Math.abs(p.x - gx) < BOX_D + 3 && Math.abs(p.y - PITCH_H / 2) < BOX_W).length;
+        /* **等的是「他們到站位了」,不是「他們進到某個圈子裡」**(2026-09-17,階段 4i)。
+           第一版數的是 `|x − 門線| < BOX_D + 3`(19.5 公尺)裡有幾個人 —— 而排好的站位
+           在 6 / 6 / 11 / 14 / 14 / 19 公尺,所以只要四個人走進那個**最外緣**就開球了。
+           量出來開球那一刻進攻方最近六人離門中位 **19.1 公尺**、十公尺內一個人都沒有。
+           判斷的條件要跟它在等的那件事是同一件事,不然等於沒有等。 */
+        const sp = st.restart.spots;
+        const inBox = rs.players.filter(p => !p.off && p !== st.restart.taker).filter(p => {
+          const t = sp?.att.get(p.code);
+          return t?.box && hypot(p.x - t.x, p.y - t.y) < CORNER_SPOT_R;
+        }).length;
         /* **開球的人也要先走到角旗**。第一版只看禁區裡有幾個人就開,
            而 takeCorner 會把他的座標收到角旗上 —— 他還在半場的話那就是一次瞬移,
            量出來最大 21.1 公尺。連續引擎不剪接,寧可多等一格。 */
@@ -1256,10 +1308,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const rd = rival ? hypot(land.x - rival.x, land.y - rival.y) : Infinity;
         want = { x: land.x, y: land.y, speed: d > 18 && d < rd + 3 ? p.vmax : SIM_RUN };
       } else if (p.role === 'GK') {
-        // 門將:站在自己球門與球的連線上,離門線不遠
         const gx = s.att > 0 ? 0 : PITCH_W;
-        const dx = ball.x - gx, dy = ball.y - PITCH_H / 2, d = Math.max(1, hypot(dx, dy));
-        want = { x: gx + dx / d * 5.5, y: cl(PITCH_H / 2 + dy / d * 5.5, 20, PITCH_H - 20), speed: SIM_JOG };
+        /* 自家禁區裡的鬆球:出來收(見 GK_RUSH)。沒有這一條的話六碼區的鬆球一律被對方先拿到,
+           而那就是 0~5 公尺那一格 11% 對真實 3% 的來源。**只對鬆球**:對方持球時出擊
+           是另一件事(那要判斷角度與時機,本站沒有資料可以校準),不做。 */
+        const looseInBox = GK_RUSH && !ball.holder && ball.z < 2
+          && Math.abs(ball.x - gx) < BOX_D && Math.abs(ball.y - PITCH_H / 2) < BOX_W;
+        if (looseInBox) { want = { x: ball.x, y: ball.y, speed: p.vmax }; }
+        else {
+          // 門將:站在自己球門與球的連線上,離門線不遠
+          const dx = ball.x - gx, dy = ball.y - PITCH_H / 2, d = Math.max(1, hypot(dx, dy));
+          want = { x: gx + dx / d * 5.5, y: cl(PITCH_H / 2 + dy / d * 5.5, 20, PITCH_H - 20), speed: SIM_JOG };
+        }
       } else {
         let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
         /* 有球的那一隊:前場的人不越過越位線。這一行是「看起來像足球」的另一半 ——
@@ -1438,7 +1498,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
             // 助攻要在**清掉之前**先抓下來(見 giveTo 的註解):同隊、而且他就是指定的接球者
             const assisted = (ball.passTo === best && ball.passSide === best.side) ? ball.passer : null;
             ball.passSide = null; ball.passTo = null; ball.passer = null; ball.wasDeflected = false;
-            giveTo(best, assisted); st.loose++;
+            /* 門將在**自家禁區裡**收到球就是死球(他用手拿住了)—— 不走 giveTo,
+               不然他會變成一個在門前三公尺帶球的持球者,而對方會過來搶。 */
+            const bs = sideOf(best.side), bgx = bs.att > 0 ? 0 : PITCH_W;
+            if (best.role === 'GK' && Math.abs(best.x - bgx) < BOX_D
+                && Math.abs(best.y - PITCH_H / 2) < BOX_W) { keeperCollect(best.side); st.loose++; }
+            else { giveTo(best, assisted); st.loose++; }
             }
           }
         }
@@ -1592,11 +1657,20 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       { x: gx + dir * 19, y: PITCH_H / 2 },           // 禁區線外(二點球)
     ];
     const att = new Map(), def = new Map();
-    /* 進攻方:開球的人去角旗,最前面的幾個進禁區,最後兩個留在中線附近 ——
-       全隊壓上去的話丟球就是空門,真實球隊也會留人。 */
-    const rest = s.players.filter(p => p !== taker && !p.off && p.role !== 'GK');
+    /* 進攻方:開球的人去角旗,**離對方球門最近的六個**進禁區,其餘留在中線附近 ——
+       全隊壓上去的話丟球就是空門,真實球隊也會留人。
+       **「最近的六個」是 2026-09-17(階段 4i)才改的,在這之前是名單順序的前六個** ——
+       而名單是 GK → DEF → MID → FWD,所以上去的是後衛線、前鋒留在中線,
+       而且後衛站得最深、要跑最遠。量出來開球那一刻進攻方最近六人離門**中位 19.1 公尺**、
+       十公尺內一個人都沒有 —— 禁區裡沒有人,角球當然只能傳到禁區邊緣(瞄的點中位 15.1 公尺)。
+       本站沒有定位球戰術的資料,所以**不假裝有一套跑位**(鐵則三):只是不要讓站最深的人
+       跑七十公尺、而前鋒站在中線看。 */
+    const rest = s.players.filter(p => p !== taker && !p.off && p.role !== 'GK')
+      .sort((a, b) => hypot(gx - a.x, PITCH_H / 2 - a.y) - hypot(gx - b.x, PITCH_H / 2 - b.y));
     const up = rest.slice(0, spots.length), back = rest.slice(spots.length);
-    up.forEach((p, i) => att.set(p.code, { x: spots[i].x, y: spots[i].y }));
+    /* `box: true` 是給「開球前要等誰到位」用的(見 CORNER_READY 那一段)——
+       留守的那幾個也在這張表裡,但他們到不到位跟角球能不能開沒有關係。 */
+    up.forEach((p, i) => att.set(p.code, { x: spots[i].x, y: spots[i].y, box: true }));
     back.forEach((p, i) => att.set(p.code, { x: PITCH_W / 2 - dir * (6 + i * 5), y: PITCH_H / 2 + (i - 0.5) * 12 }));
     att.set(taker.code, { x: gx + dir * 0.8, y: cy });
     /* 防守方:門將守自己的門,一個留在前場等解圍,其餘一人盯一個(站在對方與自家球門之間 2 m)。 */
@@ -1713,6 +1787,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (!miss) st.willScore++;
     st.shots++; st.shotsBy[p.side]++;
     st.shotSit.Penalty = (st.shotSit.Penalty ?? 0) + 1;
+    noteShotDist('Penalty', 11);
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
     emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'Penalty' });
     st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
@@ -1773,6 +1848,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (!miss) st.willScore++;
     st.shots++; st.shotsBy[p.side]++;
     st.shotSit.FromCorner = (st.shotSit.FromCorner ?? 0) + 1;
+    noteShotDist('FromCorner', dGoal);
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
     emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner' });
     st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal; st.shotInBox++;
@@ -1859,7 +1935,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
-        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, goalSit: { ...st.goalSit },
+        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         deflects: st.deflects, clears: st.clears },
     }),

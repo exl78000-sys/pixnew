@@ -200,6 +200,9 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
        xG 係數也會「對上」,而那是把形狀調錯之後再用水準去湊。 */
 const realShots = (() => {
   const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
+  /* **逐情境**也收一份(階段 4i)。總和對上不代表每一種都對:實測本站總和 15.1 m
+     看起來只差一點,拆開才看到角球是 15.0 m(真實 12.7)而且 69% 擠在 15~20 m 一格。 */
+  const bySit = {};
   for (const f of ['2025-26-game-details.json', '2026-27-game-details.json']) {
     const path = join(ROOT, 'data', 'raw', 'fotmob-epl', f);
     if (!existsSync(path)) continue;
@@ -209,9 +212,11 @@ const realShots = (() => {
       const d = Math.hypot(105 - sh.x, 34 - sh.y);
       bins[Math.min(6, Math.floor(d / 5))]++; n++; ds += d; if (sh.inBox) box++;
       if (sh.xg != null) xg += sh.xg;
+      const b = (bySit[sh.situation ?? '(無)'] ??= { n: 0, dsum: 0, bins: new Array(7).fill(0) });
+      b.n++; b.dsum += d; b.bins[Math.min(6, Math.floor(d / 5))]++;
     }
   }
-  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n) } : null;
+  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n), bySit } : null;
 })();
 const simShots = (() => {
   const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
@@ -229,6 +234,30 @@ if (simShots && realShots) {
   line('每球 xG', simShots.xg.toFixed(4), `真實 ${realShots.xg.toFixed(4)}`);
   console.log(`  ${'離門 0-5/5-10/…/30+'.padEnd(26, '\u3000')} ${pc(simShots.bins)}`);
   console.log(`  ${'真實'.padEnd(26, '\u3000')} ${pc(realShots.bins)}`);
+}
+
+/* 3b-2. **逐情境**的離門分佈(階段 4i)。總和是幾種情境的混合,它對上只代表混出來的平均對上 ——
+         而每一種的形狀可以整個是錯的。真實的三個形狀差很多:RegularPlay 17.1 m、
+         FromCorner 12.7 m、FreeKick 26.7 m,所以要各自對各自。 */
+{
+  const simSit = {};
+  for (const r of rows) for (const [k, v] of Object.entries(r.st.counts.sitBins ?? {})) {
+    const a = (simSit[k] ??= { n: 0, dsum: 0, bins: new Array(7).fill(0) });
+    a.n += v.n; a.dsum += v.dsum; v.bins.forEach((b, i) => { a.bins[i] += b; });
+  }
+  const keys = Object.keys(simSit).filter(k => simSit[k].n >= 20)
+    .sort((a, b) => simSit[b].n - simSit[a].n);
+  if (keys.length && realShots?.bySit) {
+    console.log('');
+    console.log(`  ${'情境的離門分佈'.padEnd(20, '\u3000')} 平均   0-5 5-10 10-15 15-20 20-25 25-30 30+`);
+    const row = (label, a) => `  ${label.padEnd(20, '\u3000')} ${(a.dsum / a.n).toFixed(1).padStart(5)}m `
+      + a.bins.map(b => String(Math.round(b / a.n * 100)).padStart(4)).join('');
+    for (const k of keys) {
+      console.log(row(`  ${k}`, simSit[k]));
+      const r = realShots.bySit[k];
+      if (r) console.log(row('    真實', r));
+    }
+  }
 }
 
 /* 3c. 越位與逼搶。兩個都有真值:越位是 shotmap 同一份檔案裡的 teamStats.offsides,
