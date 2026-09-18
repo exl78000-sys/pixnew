@@ -160,9 +160,13 @@ const SIM_TACKLE_R = 1.3;                      // 撲上去之後進到這麼近
    1.3 公尺的比例是 28.0% → **66.4%**(×2.37)—— 那等於又把幾何接回來。
    所以結局與判罰都在宣告的那一刻決定(見下面那一段:「等兩個人真的碰到」的三個版本都更糟)。 */
 const DUEL_R = 3.0;                            // 有對手在這麼近的時候還帶球,才算一次「敢過他」的決定
-const DUEL_P = 0.273;                          /* 那些決定裡有多少真的變成一次對抗。
-                                                  校準:90 場 × 兩輪,0.26 → 對抗 64.2、0.273 → 68.1(錨 68.2)。
-                                                  **它只定總數,不影響三種結局的分配。** */
+const DUEL_P = 0.382;                          /* 那些決定裡有多少真的變成一次對抗。
+   **它只定總數,不影響三種結局的分配。** 原本是 0.273(90 場 × 兩輪,0.26 → 64.2、0.273 → 68.1)。
+   **2026-09-18 階段 4v 重量成 0.382** —— `forward` 從 0.45 降到 0.30 讓帶球決策變少,
+   對抗的觸發掛在帶球決策上,所以這個常數跟著漂。30 場量到對抗 **69.4**(錨 68.4)、
+   抄截 33.0(32.7)、犯規 22.6(21.8)、過人成功 13.8(13.9)。
+   **它跟 SHOT_URGE 互相牽動**:射得多 → 帶球少 → 對抗少,所以兩個要一起迭代
+   (4v 實測:只把這個從 0.285 升到 0.323,對抗反而從 60.3 掉到 57.9,因為同一輪 urge 也升了)。 */
 /* 三種結局的比例**從側寫算**(見 createSim 的 `DW`),不寫死在這裡 ——
    寫死的話側寫重算它就會悄悄過期,而那正是本站記過三次的坑。量到的是(以場數加權):
      抄截      `matchstats.headers.tackles` × 2 = 32.7
@@ -341,7 +345,11 @@ const GK_RUSH = true;
      0.0330 → 射門/預算 0.94   進球 1.64 : 0.74
    λ 是 1.99 : 0.70,50 場的每場進球 SE 約 0.20 —— 0.0360 與 0.0375 在 λ 上打平
    (−1.2 SE 對 −0.1 / +0.4 對 +1.1),預算上 0.0360 贏,所以選它。 */
-const SHOT_URGE = 0.036;
+/* **2026-09-18 階段 4v 重量成 0.0632。** 上面那張表是 `forward = 0.45` 時掃的,而 4v 把它降到 0.30
+   → 射程內的決策點變少,同一個機率就生不出預算內的射門數(未校準時 22.0 → 18.4)。
+   30 場量到射門/預算 **0.949**。這個常數是「每個決策點扣扳機的機率」,所以**只要機會數變了它就要重量** ——
+   那正是 4s 講的「下游的校準綁在灌水的底數上」,底數修了就得跟著修。 */
+const SHOT_URGE = 0.0632;
 /* xG 的**形狀**是遊戲模型(距離與張角),**水準**對回真實資料:
    XG_SCALE 調到模擬的每球平均 xG 等於聯盟真實的每球平均(league_.shotSituations)。
    形狀自己編、水準有出處 —— 兩件事要分開講,不然畫面上的 xG 就是編的。 */
@@ -384,7 +392,14 @@ const SIM_PASS_SPEED = [7, 26];                // 夾住極端值(太輕傳不�
 /* 每公尺距離的角度誤差(弧度)。0.004 在 20 公尺是 ±0.08 弧度 ≈ ±4.6 度、橫向偏 ±1.6 公尺 —— 那是失準。
    第一版寫 0.045,在 20 公尺是 **±0.9 弧度 = ±51 度**:那不是失準是亂踢,
    界外球從 171 漲到 226(19.1% 的傳球出邊線)。單位寫錯的東西看起來跟「參數調太大」一模一樣。 */
-const PASS_ERR = 0.014;   /* 量出來的:界外球 34 次,2.4% 的傳球出邊線。
+const PASS_ERR = 0.0320;  /* 傳球出邊線的機率。原本 0.014(界外球 34 次、2.4% 的傳球出邊線)。
+   **2026-09-18 階段 4v 重量成 0.0320,而且刻意沒有推到它自己的錨。** 界外球的錨是 36.1,
+   0.0320 只生得出 29.4(×0.81)—— 再往上推到 0.0408 確實把界外球帶到 33.1,
+   但**同一格把「對方半場佔完成傳球」從 54.6% 推過頭到 49.1%、λ 主隊掉到 −2.5 SE**。
+   兩個錨互相牽制,所以停在領土落在錨上的那一格,缺的那一段照實記成「還差 19%」。
+   界線:本站只有「傳球出邊線」一條路生得出界外球,而真實的界外球還來自解圍出邊線、
+   抄截折射出去、故意破壞 —— 逼一個機制供出全部 36.1 次就是 4d 那條坑的反面
+   (「補不上的那一份不可以扣」)。原本的舊註解:
    **「真實約 40」那句原本是憑印象寫的** —— raw 的 `teamExtra.player_throws` 就是這個數字
    (840 隊-場平均 17.88 → 兩隊 35.8;ARS + LIV 36.1),2026-09-18 接進側寫與 `check-sim`。
    而接上之後量到界外球已經漂到 21.5(×0.60):這個常數是在別的行為之前校準的。 */
@@ -511,8 +526,15 @@ const CARDED_CARE = 0.15;
    照**實際次數**收:0.042 → 0.39、0.027 → 0.33,兩點外推到 0.23 得 **0.022**。
    **踩過一次**:把 `DUEL_FOUL_FIT` 1.30 → 1.60 的同時把 BOX_CARE 0.055 → 0.042,
    兩個改動在禁區內的權重上**剛好互相抵銷**(1.231 × 0.764 = 0.94),期望值一個數字都沒動。
-   一次改兩個乘在一起的常數,要先算它們的積。 */
-const BOX_CARE = 0.022;
+   一次改兩個乘在一起的常數,要先算它們的積。
+   **2026-09-18 階段 4v 從 0.022 重量成 0.0649。** 這個常數校準的是「禁區裡的對抗會不會吹」,
+   而次數等於「禁區裡有幾次對抗 × 這個機率」—— 4v 把 `forward` 從 0.45 降到 0.30,
+   禁區觸球 ×1.90 → ×0.54,禁區裡的對抗跟著少,於是十二碼塌到 0.03 / 場(真實 0.23)。
+   **它是第五個「綁在灌水底數上」的下游常數**,而我第一輪的四個裡漏了它 ——
+   抓到它的不是次數(30 場只出現一兩球,Poisson 雜訊),是把**期望值接進 `check-sim`**
+   並排印出來(0.078 對目標 0.23 → ×2.95 → 0.0649)。凡是改動「球在哪裡」的東西,
+   都要回頭問一次:**還有哪一個常數的分母是那個位置分佈?** */
+const BOX_CARE = 0.0649;
 /* 角球(2026-09-17,階段 4f)。在這之前**根本沒有角球戰術**:開角球的人照一般傳球處理,
    而其他人留在「跟著球平移的正常陣型」裡 —— 所以禁區裡一個人都沒有。
    量出來每個角球只生 0.084 腳射門,真實是 0.440(`FromCorner` 佔射門 17.3% ÷ 每場 9.9 個角球),
@@ -931,7 +953,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        0.69  → 0.1110           1.84 : 0.84
      **原本那個數字是 6 場量的**,這次 50 場。而且要講清楚:它是在補**形狀還沒修好**的水準誤差,
      所以哪天離門分佈真的修好了(見 SHOT_ALPHA 那一段的否定結果),**這個係數要再量一次**。 */
-  const SELECT_FIX = 0.71;
+  /* **2026-09-18 階段 4v 重量成 1.012。** 上面那一段自己就寫著「哪天離門分佈真的修好了,
+     這個係數要再量一次」—— 4v 把 `forward` 降到 0.30,RegularPlay 的 0~10 從 32% 降到 25%
+     (真實 19)、10~20 從 35% 升到 38%(真實 50),形狀真的動了,所以照它說的重量。
+     30 場量到每球 xG **0.1143**(真實 0.1125,×1.016)。 */
+  const SELECT_FIX = 1.012;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
   const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
@@ -964,7 +990,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
-    longTry: 0, longOk: 0, longTry25: 0, longOk25: 0,
+    longTry: 0, longOk: 0, longTry25: 0, longOk25: 0, penExp: 0,
     corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 }, reds: { home: 0, away: 0 }, subs: { home: 0, away: 0 },
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
@@ -1216,7 +1242,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          只動這兩項是有理由的:側寫宣告直接度的效果是「傳球串長度、長傳與直塞的比例」,
          那兩件事就是由「往前多值錢」與「遠多貴」決定的。盯人、邊線、傳球路線三項不動 ——
          那些是**物理與規則**(有人擋著就是傳不過去),不該被一個指令買通。 */
-      const score = forward * (0.45 + dir) + Math.min(marked, 12) * 1.2 - d * (0.55 - dir * 0.5)
+      /* 往前的獎勵 **0.45 → 0.30**(2026-09-18,階段 4v)。4u 掃出它是唯一推得動
+         「對方半場佔完成傳球」的槓桿(71.5 → 68.7 → 66.6 → 62.0%,單調),而**單獨動它不夠**:
+         推到 0 那個佔比還停在 62.0(錨 55.7)、而且 0 是「傳球完全不偏好往前」的退化模型。
+         真正落在錨上是**跟四個下游常數一起重量**之後(4v,見下面那四個的註解):
+         30 場量到 **53.2%**。0.15 試過 —— 領土過頭到 49.2、禁區觸球塌到 ×0.44、
+         λ 主隊 −3.9 SE 而且強弱被壓縮(1.27 : 0.87),所以取 0.30。 */
+      const score = forward * (0.30 + dir) + Math.min(marked, 12) * 1.2 - d * (0.55 - dir * 0.5)
         - Math.max(0, 10 - edge) * 1.1 - Math.max(0, 4 - Math.min(lane, 4)) * 9;
       if (score > bestScore) { bestScore = score; best = m; }
     }
@@ -1995,6 +2027,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const wb = DW.beat / skill;
     /* 正規化成三選一 —— 三個權重都是**相對**的,聯盟平均的一組會回到側寫的比例。
        不正規化的話「吹不了的犯規」就變成「什麼都沒發生」,而一次對抗一定有結局。 */
+    /* **十二碼的期望值**(2026-09-18,階段 4v):禁區裡每一次對抗把「判成犯規」的機率加起來。
+       稀有事件數次數估不準(30 場只出現一兩球,Poisson 雜訊蓋過要量的東西 —— 4b 記過),
+       而期望值是連續量。這一輪就是靠它抓到十二碼塌了:`forward` 降到 0.30 之後禁區觸球
+       ×0.54,禁區裡的對抗跟著少,而 `BOX_CARE` 是對著**舊的**禁區活動量校準的。
+       純加總,不呼叫 rng。 */
+    if (inBox) st.penExp += wf / (wf + wt + wb);
     const r = rng() * (wf + wt + wb);
     st.duel = { on, by, out: r < wf ? 'foul' : r < wf + wt ? 'tackle' : 'beat', inBox, t: 0 };
   }
@@ -2257,7 +2295,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
         boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
-        deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25 },
+        deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp },
     }),
     /* 量測用:跑動量、最高速、控球 —— 這幾個要對得回 FotMob 的真實值,不然「像不像在踢球」沒有判準 */
     motion: () => ({

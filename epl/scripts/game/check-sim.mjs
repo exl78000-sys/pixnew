@@ -26,6 +26,15 @@ const profile = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'game', 'pl.js
 const RUNS = Math.max(1, parseInt(process.argv[2] ?? '12', 10));
 const MIN_JUDGE = 10;            // 少於這個場數只印不判(SE 的噪音比要驗的偏差還大)
 const HOME = 'ARS', AWAY = 'LIV';
+
+/* 這一場兩隊自己的 extra 相加 —— 錨要跟被量的那一批同一批(4s 的教訓)。
+   宣告在**檔案前段**:用它的地方(對抗那一節、領土那一節)都在後面,
+   放在後面就是暫時死區 —— 那條坑本站記過,而我寫這一段的時候又踩了一次。 */
+const ex2 = k => {
+  const a = profile.teams?.[HOME]?.extra?.[k]?.mean, b = profile.teams?.[AWAY]?.extra?.[k]?.mean;
+  return a == null || b == null ? null : a + b;
+};
+
 const STEP = 1 / 60;
 
 /* 一場:逐格推進並量「眼睛看得到的那一層」。
@@ -219,6 +228,13 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
   const realPen = pen ? pen.share * profile.league_.rates.sf * 2 : null;
   line('每場十二碼', mean(rows.map(r => r.st.counts.pens.home + r.st.counts.pens.away)).toFixed(2),
     realPen == null ? '側寫沒有十二碼情境' : `真實 ${realPen.toFixed(2)}(Penalty 佔射門 ${pen.share} × 每隊 ${profile.league_.rates.sf} 射門 × 2)`);
+{
+  /* 稀有事件要把**期望值與實際次數並排印**(階段 4b 的規矩,4v 加上來的)。
+     30 場只會出現一兩球十二碼,次數的 Poisson 雜訊蓋過要量的東西 ——
+     4v 就是靠期望值才看出 `forward` 改了之後十二碼塌了(次數 0.03、期望值一起掉)。 */
+  const pe = rows.reduce((a, r) => a + (r.st.counts.penExp ?? 0), 0) / rows.length;
+  line('\u3000十二碼的期望值', pe.toFixed(3), '次數是 Poisson 雜訊,校準看這個');
+}
   const gl = rows.reduce((a, r) => a + r.st.score[0] + r.st.score[1], 0);
   const asts = rows.reduce((a, r) => a + r.st.counts.assists.home + r.st.counts.assists.away, 0);
   line('助攻 / 進球', gl ? (asts / gl).toFixed(3) : '—',
@@ -399,6 +415,20 @@ if (simShots && realShots) {
     line('　抄截', c => c.tackles, A.tackles);
     line('　犯規', c => c.fouls.home + c.fouls.away, A.fouls);
     line('　過人成功', c => c.dribbles ?? 0, A.dribbles);
+    /* **這四個錨是聯盟平均 ×2,不是這一場兩隊自己的值**(2026-09-18,階段 4v 發現)。
+       `duelAnchors()` 是從側寫**全聯盟**加權算的 —— 那對「三種結局的比例」是對的基礎
+       (比例該是聯賽典型的),但拿它當「這一場該出現幾次」的判準就是
+       「錨用了聯盟平均,而這一場踢的是兩支特定的球隊」那條坑(4s 記過,這是第八次)。
+       實測差距不小:抄截 −12%、過人成功 +7%、犯規 −5%。而引擎的 `foulRel` 明確按
+       各隊自己的犯規數縮放,所以犯規那一項**本來就該追這一場的值**。
+       兩個都印、標清楚哪個是哪個;**4r 與 4v 都是照聯盟那一組校準的**,
+       改成追這一場要重跑 `DW` 的比例,那是下一輪(見 docs/補齊規劃.md 的 4w)。 */
+    {
+      const fxT = ex2('matchstats.headers.tackles'), fxD = ex2('dribbles_succeeded');
+      const fxF = (profile.teams[HOME]?.rates?.home?.fouls ?? 0) + (profile.teams[AWAY]?.rates?.away?.fouls ?? 0);
+      if (fxT != null && fxD != null) console.log(`  ${`　（這一場兩隊自己的值)抄截 ${fxT.toFixed(1)} ・犯規 ${fxF.toFixed(1)} ・過人成功 ${fxD.toFixed(1)}`.padEnd(16, '\u3000')}`
+        + `\u3000上面那四個是**聯盟平均 ×2** —— 校準到哪一組是 4w 要決定的`);
+    }
     /* 「對抗總數」的真實值是三種結局相加,而地面對抗自己也有一個數字 —— 兩個各自算出來
        卻對得上,那是很強的線索不是證明,所以印出來但不當判準。 */
     const teams = Object.values(profile.teams ?? {}).filter(t => t.extra?.ground_duels_won?.mean != null);
@@ -450,8 +480,12 @@ if (simShots && realShots) {
     const shr = 100 * opp / Math.max(1, own + opp), rshr = 100 * realOpp / (realOwn + realOpp);
     console.log(`  ${'對方半場佔完成傳球'.padEnd(16, '\u3000')} ${shr.toFixed(1).padStart(6)}%`
       + `\u3000真實 ${rshr.toFixed(1)}%\u3000${Math.abs(shr - rshr) > 5 ? '**球住得太前面**' : '✓'}`);
-    console.log(`  ${'　傳球總量只高兩成,錯的是**位置**不是數量 —— 這是 4k/4m/4n/4o'.padEnd(16, '\u3000')}`);
-    console.log(`  ${'　四輪都沒修好的那一層的上游(見 docs/變更紀錄.md 的階段 4s)'.padEnd(16, '\u3000')}`);
+    /* 這兩行原本寫「傳球總量只高兩成,錯的是位置不是數量」—— 那是 4s 的診斷,
+       而 4v 把佔比從 71.5% 校到 53.2% 之後那句已經不是現況了。改成從資料算:
+       描述句一律講「現在量到什麼」,不要複述上一輪的結論(「核對的定義換了而畫面上
+       那句話還在講舊的定義」那條坑)。 */
+    console.log(`  ${`　自家半場 ${(own / realOwn).toFixed(2)} 倍、對方半場 ${(opp / realOpp).toFixed(2)} 倍 ——`.padEnd(16, '\u3000')}`);
+    console.log(`  ${`　兩邊${Math.abs(own / realOwn - opp / realOpp) < 0.15 ? '一起偏,那是總量的問題' : '偏的方向不同,那是位置的問題'}(階段 4s / 4v)`.padEnd(16, '\u3000')}`);
   }
 }
 
@@ -490,7 +524,7 @@ if (simShots && realShots) {
     const th = avg(c => c.throwIns ?? 0);
     console.log(`  ${'界外球'.padEnd(16, '\u3000')} ${th.toFixed(1).padStart(7)}`
       + `\u3000真實 ${realThrow.toFixed(1)}\u3000**${(th / realThrow).toFixed(2)} 倍**`
-      + `\u3000(PASS_ERR 是對著 34 次校準的,行為變了它就漂)`);
+      + `\u3000(4v 刻意停在領土落在錨上的那一格 —— 再推它會把佔比推過頭)`);
   }
   /* 活球時間**只印不判**:FotMob 的 teamStats / teamExtra 都沒有這個欄位(dump 過整份 raw),
      所以本站沒有「一場真的踢幾分鐘」的錨。憑印象填一個數字就是編數字(鐵則一)。

@@ -442,5 +442,31 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('駐留的追蹤那一段只讀 state 的物件,沒有回頭呼叫引擎',
         track.length > 200 && !/\bsim\s*\./.test(track));
     }
+
+    /* 11. 階段 4v 的兩件事,兩條都守**性質**不守數字(五個常數的值會隨側寫重算而漂,
+       拿它們當紅線就是「把會隨資料變動的數字當 CI 紅線」)。
+
+       (一) **稀有事件要有期望值。** 十二碼一場 0.23 球,30 場只出現一兩球 ——
+       次數的 Poisson 雜訊蓋過要量的東西(4b 記過)。4v 就是靠期望值才抓到
+       `forward` 改了之後十二碼塌到 0.03:`BOX_CARE` 是第五個「綁在灌水底數上」的
+       下游常數,而我第一輪的四個裡漏了它。
+
+       (二) **對抗那四個錨是聯盟平均 ×2,不是這一場兩隊自己的值。** 實測差
+       抄截 −12% / 過人 +7% / 犯規 −5%。兩個都要印出來,不然下一個人(或我)
+       會再照著聯盟那一組校準一次 ——「錨用了聯盟平均,而這一場踢的是兩支特定的球隊」第八次。 */
+    {
+      const sim = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      check('引擎把十二碼的期望值吐給 counts', /penExp: st\.penExp/.test(sim));
+      const chkRaw = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
+      const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const chk = strip(chkRaw);
+      check('十二碼的期望值跟次數並排印(稀有事件不看次數)',
+        /每場十二碼/.test(chk) && /十二碼的期望值/.test(chk) && /penExp/.test(chk));
+      /* 段落的頭尾用剝註解之後還在的輸出字面值(第 10 節那條坑) */
+      const d0 = chk.indexOf('一場的對抗次數'), d1 = chk.indexOf('三種結局相加');
+      const duel = chk.slice(d0, d1 > d0 ? d1 : d0 + 900);
+      check('對抗那一節兩個錨都印:聯盟平均與這一場兩隊自己的值',
+        /這一場兩隊自己的值/.test(duel) && /聯盟平均/.test(duel) && /ex2\(/.test(duel));
+    }
   }
 }
