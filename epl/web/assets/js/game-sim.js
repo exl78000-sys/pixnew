@@ -584,6 +584,18 @@ const BOX_CARE = 0.0600;
    **場數不夠的掃描會騙人**:同一份程式 20 場量到 12.1%、50 場量到 10.0% —— 分享率的 SE
    在 20 場是 1.5 個百分點,而要分辨的差距就是這個量級,四個值排出來的單調趨勢照樣出得來。 */
 const CORNER_HEAD = 0.85;                      // 在禁區裡搶到角球傳中 → 第一時間攻門的機率
+/* **第二球是一腳出手,不是控球之後再決定**(2026-09-18,階段 4l)。
+   規劃寫的是「本站幾乎沒有第二波」,而量下來不是那樣:進攻方一場**贏到 5.1 次第二球**
+   (防守方 2.7),其中 62% 在射程內 —— 他們拿得到球,只是拿到之後不射
+   (5.1 次只生出 0.8 腳射門,18%)。原因是控到球之後走的是一般的持球流程:
+   停球、拿到一個往前帶的 intent、被盯著(`pressure < 3` 讓射門意願再 ×0.55),
+   而禁區裡的亂戰中真人是直接把球打掉。
+   **錨是上游逐顆射門的 `foot` 欄位**(1,835 顆 FromCorner):頭球 46%(平均 8.4 m)、
+   腳下 54%(平均 16.3 m,30% 在 20 m 外)。本站的頭球那一條路量下來是對的(2.0 對 1.9),
+   缺的正是腳下那一種(0.8 對 2.2)。這個機率就是拿那個缺口掃出來的。
+   **它偏高是一個要講出來的結論**:本站沒有「一場該贏到幾次第二球」的錨,
+   所以分不出是第二球太少還是出手率太低,兩者都會被這一個常數吸收(鐵則四)。 */
+const CORNER_SNAP = 0.70;                      // 角球的第二球在射程內 → 直接出手的機率
 const CORNER_WAIT = 12;                        // 等大家進禁區的上限(秒);真實角球本來就要等十幾秒
 const CORNER_READY = 4;                        // 進攻方有這麼多人**站到排好的位置上**就開球
 const CORNER_SPOT_R = 2.5;                     // 離自己那個站位這麼近算到位(站位彼此相隔 5~7 m,不會認錯)
@@ -1076,6 +1088,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
     longTry: 0, longOk: 0, longTry25: 0, longOk25: 0, penExp: 0, boxDuels: 0,
+    /* **角球的來源、第一點與射門來源**(2026-09-18,階段 4l)。純計數,不呼叫 rng。
+       本站的規矩是「找為什麼某個量偏低,先把它的來源逐類列出來,再看有沒有哪一類是 0」
+       (階段 4h)—— 而 4k/4m/4n 連續三輪沒照它做,各自猜了一個機制。
+       角球每場 10.1(真實 11.8)、FromCorner 佔射門 12.4%(17.3),
+       所以這三排要回答的是:角球是怎麼來的、傳中的第一點被誰碰到、角球射門是從哪一種情況射的。
+       `ballFrom` 是「球現在這個速度是誰給的」,跟 `lastKick` 的差別在**它不會被清掉** ——
+       lastKick 在傳中處理完就設 null(防止第二次觸發),所以出底線時它已經不記得是解圍造成的。 */
+    cornerSrc: {}, cornerFirst: {}, cornerShot: {}, ballFrom: 'none',
+    /* 第一點之後**球被誰控住**:角球射門缺的是腳下那一種(禁區內補射 + 禁區外第二波),
+       而它的前提就是進攻方拿得到第二球。`clearWhy` 是解圍的三條路各自幾次 ——
+       側寫的 `clearances` 說真實一場 48.7 次,本站 145.7,先看是哪一條在產生它。 */
+    cornerNext: {}, cornerNextD: [], clearWhy: {},
     corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 }, reds: { home: 0, away: 0 }, subs: { home: 0, away: 0 },
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
@@ -1152,6 +1176,17 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     closeChain('lost', ball.x);
     const pend = st.pendingOrigin;
     st.pendingOrigin = null;                                  // 誰領到都算領完了:這次死球的餘波結束
+    if (pend?.kind === 'corner') {
+      const k = pend.side === side ? 'att' : 'def';
+      st.cornerNext[k] = (st.cornerNext[k] ?? 0) + 1;
+      /* **他在哪裡控到第二球**:如果進攻方拿得到球卻不射,要先知道他站在幾公尺 ——
+         35 公尺外拿到的話該做的不是「讓他射」。真實的角球腳下射門平均離門 16.3 m。 */
+      if (k === 'att') {
+        const gx = sideOf(side).att > 0 ? PITCH_W : 0;
+        const d = hypot(gx - ball.x, PITCH_H / 2 - ball.y);
+        st.cornerNextD.push(Math.round(d * 10) / 10);
+      }
+    }
     const origin = pend && pend.side === side ? pend.kind : 'open';
     st.chain = { side, t0: st.t, origin, x0: ball.x };
   }
@@ -1187,6 +1222,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      就把 passTo / passSide 清掉了(那是攔截統計那一段),所以在這裡讀永遠是 null。
      第一版就是這樣寫的,結果助攻整場 0 筆而**一個錯都不報**:對不上永遠是安靜的。 */
   function giveTo(p, from = null) {
+    /* **在 openChain 之前先看** —— 它會把 pendingOrigin 領走清掉(見 CORNER_SNAP)。 */
+    const second = st.pendingOrigin?.kind === 'corner' && st.pendingOrigin.side === p.side;
     p.assistBy = from && from !== p && from.side === p.side ? from : null;
     ball.holder = p; ball.vx = 0; ball.vy = 0; ball.vz = 0; ball.z = 0;
     openChain(p.side);
@@ -1215,11 +1252,21 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const s0 = sideOf(p.side);
     p.intent = { x: cl(p.x + s0.att * 14, 3, PITCH_W - 3), y: cl(p.y + (rng() - 0.5) * 8, 3, PITCH_H - 3) };
     decideIn = 0.35 + rng() * 0.45;
+    /* 角球的第二球:射程內就**立刻**決定,而且那一次不走一般的扣扳機機率(見 CORNER_SNAP)。
+       不另外寫一份射門程式 —— 走 decide() 原本那一條,xG、情境分類、事件與統計才只有一個來源。 */
+    /* **每一次接球都要覆寫它**,不是只有第二球的時候設 true —— 他拿到球之後還沒決定
+       就被抄走的話,這個旗標會留著,下一次在完全不同的情況下決策時才發作。 */
+    p.snap = false;
+    if (second) {
+      const gx = s0.att > 0 ? PITCH_W : 0;
+      if (hypot(gx - p.x, PITCH_H / 2 - p.y) < SHOOT_RANGE) { p.snap = true; decideIn = 0; }
+    }
   }
 
   /* 踢球:目標點 + 初速 + 仰角。傳球一律踢向接球者的**提前量**(他會跑到哪),不是他現在站的地方 */
   function kick(from, tx, ty, speed, loft = 0, why = 'pass') {
     st.lastKick = why;
+    st.ballFrom = why;                      // 見 cornerSrc 那一段:lastKick 會被清掉,這個不會
     const dx = tx - from.x, dy = ty - from.y, d = Math.max(0.1, hypot(dx, dy));
     ball.holder = null;
     from.kickLock = KICK_LOCK;
@@ -1261,14 +1308,14 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (Math.abs(p.x - ownGoalX) < 12 && pressure < 3 && rng() < 0.45) {
         const ty = cl(p.y + (rng() - 0.5) * 14, 1, PITCH_H - 1);
         kick(p, ownGoalX + (ownGoalX === 0 ? -6 : 6), ty, 12 + rng() * 6, 0, 'clear');
-        st.clears++; p.intent = null;
+        st.clears++; st.clearWhy.out = (st.clearWhy.out ?? 0) + 1; p.intent = null;
         return { kind: 'clear-out' };
       }
       const tx = cl(p.x + s.att * (35 + rng() * 25), 4, PITCH_W - 4);
       const ty = cl(p.y + (rng() - 0.5) * 30, 4, PITCH_H - 4);
       const dd = hypot(tx - p.x, ty - p.y), tt = cl(dd / 16, 0.9, 2.4);
       kick(p, tx, ty, dd / tt, GRAVITY * tt / 2, 'clear');
-      st.clears++;
+      st.clears++; st.clearWhy.hoof = (st.clearWhy.hoof ?? 0) + 1;
       p.intent = null;
       return { kind: 'clear' };
     }
@@ -1352,7 +1399,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          「要生出真實的分佈,每一格的機率得是多少」。 */
       const oppBin = Math.min(6, Math.floor(dGoal / 5));
       st.oppBins.n[oppBin]++;
-      if (rng() < cl(urge, 0, 0.9)) {
+      /* 角球第二球的一腳出手(見 CORNER_SNAP):**只換機率,其餘完全一樣**。
+         `oppBins` 是「要生出真實分佈,每一格的機率得是多少」的回推用的 ——
+         這一條路的機率不是 urge,所以那個回推在角球那一段會被它拉高,引用時要記得。 */
+      const snap = p.snap === true; p.snap = false;
+      if (rng() < (snap ? CORNER_SNAP : cl(urge, 0, 0.9))) {
         st.oppBins.shot[oppBin]++;
         const xg = cl(q * xgScale, 0.01, 0.95);
         const c = cal[p.side];
@@ -1369,6 +1420,14 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14), sp, miss && rng() < 0.4 ? 3.5 + rng() * 3 : 0, 'shot');
         const sit = shotSituation(s);
         st.shotSit[sit] = (st.shotSit[sit] ?? 0) + 1;
+        /* 角球射門**不是只有第一點頭球**:真實的 FromCorner 有 16% 在 20 m 外,那是第二波
+           (解圍出來的球在禁區線外被射)。分成禁區內的補射與禁區外的第二波兩類記,
+           才看得出本站缺的是哪一種 —— 只看總數的話兩種都只是「有點少」。 */
+        if (sit === 'FromCorner') {
+          const inBox = Math.abs(goalX - p.x) < BOX_D && Math.abs(p.y - PITCH_H / 2) < BOX_W;
+          const k = inBox ? 'box' : 'edge';
+          st.cornerShot[k] = (st.cornerShot[k] ?? 0) + 1;
+        }
         noteShotDist(sit, dGoal);
         /* 助攻(階段 4b):**進球前一腳傳到這位射手腳下的球**,而且要是同一隊、同一次進攻。
            `assistBy` 是在 giveTo 收球時記下來的(誰傳給他),射門的當下把它凍在 ball.shot ——
@@ -1784,7 +1843,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
             /* 被封阻也要有事件 —— 畫面的統計是從**演過的事件**算的,只留一個計數器的話
                面板就得同時讀兩個來源,而「同一個數字兩個來源」是本站踩過的坑。 */
             if (ball.shot?.side) { st.blockedBy[ball.shot.side]++; emit({ type: 'block', side: ball.shot.side, by: q.code, name: q.name }); }
-            ball.shot = null; st.lastTouch = q.side; st.deflects++; if (ball.passSide) ball.wasDeflected = true;
+            ball.shot = null; st.lastTouch = q.side; st.deflects++; st.ballFrom = 'block'; if (ball.passSide) ball.wasDeflected = true;
             break;
           }
         }
@@ -1821,8 +1880,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           const ws = sideOf(who.side), wgx = ws.att > 0 ? PITCH_W : 0;
           const inBox = Math.abs(who.x - wgx) < BOX_D && Math.abs(who.y - PITCH_H / 2) < BOX_W;
           st.lastKick = null;                        // 這一球處理掉了,別再觸發第二次
-          if (who.side === att && inBox && rng() < CORNER_HEAD) headerAt(who);
+          if (who.side === att && inBox && rng() < CORNER_HEAD) { cornerFirst('attHead'); headerAt(who); }
           else {
+            cornerFirst(who.side === att ? 'attMiss' : 'defHead');
             /* 防守方頂到就是解圍(往場外 / 往前大腳),進攻方沒頂成就變鬆球 ——
                兩種都不是「控球」,所以不走 giveTo。 */
             const dir = who.side === att ? 1 : -1;
@@ -1832,7 +1892,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
             ball.x = who.x; ball.y = who.y;
             ball.vx = Math.cos(ang) * sp2 * dir; ball.vy = Math.sin(ang) * sp2;
             ball.passSide = null; ball.passTo = null; ball.passer = null;
-            if (who.side !== att) st.clears++;
+            if (who.side !== att) { st.clears++; st.clearWhy.cross = (st.clearWhy.cross ?? 0) + 1; }
+            st.ballFrom = who.side === att ? 'crossLoose' : 'crossClear';
             who.kickLock = KICK_LOCK;
           }
         }
@@ -1882,9 +1943,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
             if (isCross && Math.abs(best.x - cgx) < BOX_D
                 && Math.abs(best.y - PITCH_H / 2) < BOX_W && rng() < CORNER_HEAD) {
               st.lastKick = null;               // 這一球已經處理掉,別讓後面的鬆球再觸發一次
+              cornerFirst('attHead');
               headerAt(best);
             } else {
-            if (st.lastKick === 'corner') st.lastKick = null;
+            /* 傳中沒有人頂到、直接落地被控住 —— 控到的是進攻方就是「第一點控住了」,
+               是防守方就是防守方把它收下來。兩種都要記,不然第一點的分類會少掉一整類。 */
+            if (st.lastKick === 'corner') { cornerFirst(ball.passer?.side === best.side ? 'attCtl' : 'defCtl'); st.lastKick = null; }
             // 助攻要在**清掉之前**先抓下來(見 giveTo 的註解):同隊、而且他就是指定的接球者
             const assisted = (ball.passTo === best && ball.passSide === best.side) ? ball.passer : null;
             ball.passSide = null; ball.passTo = null; ball.passer = null; ball.wasDeflected = false;
@@ -1933,7 +1997,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
             if (!shotSave || rng() < SAVE_HOLD) keeperCollect(conceding);
             else if (rng() < off) {
               st.lastTouch = conceding;             // 最後碰到的是門將 → 角球(足球規則)
-              ball.shot = null; st.lastKick = 'save';
+              ball.shot = null; st.lastKick = 'save'; st.ballFrom = 'save';
               corner(scoring, ball.y < PITCH_H / 2 ? 0.5 : PITCH_H - 0.5, ball.x < 0 ? 0.5 : PITCH_W - 0.5);
             } else {
               /* 擋回場內:球回到門線前一點點,往場內帶一個不大的速度。
@@ -2057,10 +2121,15 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     return { att, def };
   }
 
+  /* 傳中的第一點是誰碰的。分類只回答分得出來的那幾種,加起來不等於角球數的那一份
+     就是「沒有人碰到」(球飛過所有人),`check-sim` 用減的把它印出來。 */
+  function cornerFirst(k) { st.cornerFirst[k] = (st.cornerFirst[k] ?? 0) + 1; }
+
   function corner(side, cy, cx) {
     const s = sideOf(side);
     const taker = pickNearest(s, cx, cy, true) ?? s.players[1];
     st.corners[side]++;
+    st.cornerSrc[st.ballFrom ?? 'none'] = (st.cornerSrc[st.ballFrom ?? 'none'] ?? 0) + 1;
     emit({ type: 'corner', side });
     closeChain('corner', ball.x);
     /* 等的時間比一般死球長很多 —— 十個人要從場上各處走進禁區,那本來就要十幾秒。
@@ -2298,6 +2367,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (!miss) st.willScore++;
     st.shots++; st.shotsBy[p.side]++;
     st.shotSit.FromCorner = (st.shotSit.FromCorner ?? 0) + 1;
+    st.cornerShot.header = (st.cornerShot.header ?? 0) + 1;
     noteShotDist('FromCorner', dGoal);
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
     emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner' });
@@ -2388,7 +2458,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
         boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
-        deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp, boxDuels: st.boxDuels },
+        deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp, boxDuels: st.boxDuels,
+        cornerSrc: { ...st.cornerSrc }, cornerFirst: { ...st.cornerFirst }, cornerShot: { ...st.cornerShot },
+        cornerNext: { ...st.cornerNext }, cornerNextD: [...st.cornerNextD], clearWhy: { ...st.clearWhy } },
     }),
     /* 量測用:跑動量、最高速、控球 —— 這幾個要對得回 FotMob 的真實值,不然「像不像在踢球」沒有判準 */
     motion: () => ({

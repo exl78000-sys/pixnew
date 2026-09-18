@@ -195,7 +195,93 @@ const real = { sf: (rt(HOME, 'home').sf ?? 0) + (rt(AWAY, 'away').sf ?? 0), cf: 
   const realOn = (rr(HOME, 'home').stf ?? 0) + (rr(AWAY, 'away').stf ?? 0);
   line('每場射正', mean(rows.map(r => r.st.counts.onTarget)).toFixed(1), `真實 ${realOn.toFixed(1)}`);
 }
+/* **這一塊本來在檔案後段**(3b),階段 4l 把角球射門的真實拆解印在上面的角球那一節,
+   於是它變成「用在宣告之前」—— 模組層的 const 不會提升,那是暫時死區,
+   `node --check` 完全看不出來(語法合法),一跑就 ReferenceError。本站記過兩次的同一條坑。 */
+/* 3b. 射門的**離門距離分佈**。真值不是我寫的數字,是倉庫裡 FotMob 逐場 shotmap 的座標算出來的
+       —— 這樣資料變了它自己會變(而且「真實是多少」永遠查得到出處)。
+       為什麼要看分佈而不是只看每球平均 xG:只對平均值的話,一堆六公尺的射門配一個很小的
+       xG 係數也會「對上」,而那是把形狀調錯之後再用水準去湊。 */
+const realShots = (() => {
+  const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
+  /* **逐情境**也收一份(階段 4i)。總和對上不代表每一種都對:實測本站總和 15.1 m
+     看起來只差一點,拆開才看到角球是 15.0 m(真實 12.7)而且 69% 擠在 15~20 m 一格。 */
+  const bySit = {};
+  for (const f of ['2025-26-game-details.json', '2026-27-game-details.json']) {
+    const path = join(ROOT, 'data', 'raw', 'fotmob-epl', f);
+    if (!existsSync(path)) continue;
+    const j = JSON.parse(readFileSync(path, 'utf8'));
+    for (const m of Object.values(j.matches ?? {})) for (const sh of (m.shots ?? [])) {
+      if (sh.x == null || sh.y == null) continue;
+      const d = Math.hypot(105 - sh.x, 34 - sh.y);
+      bins[Math.min(6, Math.floor(d / 5))]++; n++; ds += d; if (sh.inBox) box++;
+      if (sh.xg != null) xg += sh.xg;
+      const b = (bySit[sh.situation ?? '(無)'] ??= { n: 0, dsum: 0, bins: new Array(7).fill(0), head: 0, headD: 0, foot: 0, footD: 0, footFar: 0 });
+      b.n++; b.dsum += d; b.bins[Math.min(6, Math.floor(d / 5))]++;
+      /* **頭球與腳下分開收**(2026-09-18,階段 4l)。上游逐顆有 `foot` 欄位,而在這之前沒有人讀它 ——
+         角球射門拆開之後兩種的形狀差很多(頭球 8.4 m、腳下 16.3 m),混在一起看
+         本站的 12.9 m 只像「差一點」,拆開才知道缺的是哪一種。 */
+      if (sh.foot === 'Header') { b.head++; b.headD += d; }
+      else { b.foot++; b.footD += d; if (d >= 20) b.footFar++; }
+    }
+  }
+  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n), bySit } : null;
+})();
+
 line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.corners.away)).toFixed(1), `真實 ${real.cf.toFixed(1)}`);
+/* **角球的三排來源分類**(2026-09-18,階段 4l)。本站的規矩是「找為什麼某個量偏低,
+   先把它的來源逐類列出來,再看有沒有哪一類是 0」(階段 4h)——0 不是「少」,
+   是那條路根本沒鋪,而它在總數上看起來只是「有點低」。
+   只印不判:上游沒有「角球是怎麼贏來的」「傳中的第一點是誰」這兩種真值,
+   只有第三排的離門分佈有錨(真實 FromCorner 有 17% 在 20 m 外)。 */
+{
+  const ZH = { pass: '傳球', clear: '解圍', shot: '射門', block: '封阻', save: '撲救', tackle: '抄截',
+    corner: '角球傳中', crossClear: '傳中被解圍', crossLoose: '傳中沒頂成', none: '不詳',
+    attHead: '進攻頭球', attMiss: '進攻沒頂成', defHead: '防守頭球解圍',
+    att: '進攻控住', def: '防守控住', out: '捅出底線', hoof: '大腳解圍', cross: '頭球解圍傳中',
+    attCtl: '進攻控住', defCtl: '防守控住', header: '第一點頭球', box: '禁區內補射', edge: '禁區外第二波' };
+  const bag = key => {
+    const t = {};
+    for (const r of rows) for (const [k, v] of Object.entries(r.st.counts[key] ?? {})) t[k] = (t[k] ?? 0) + v;
+    return t;
+  };
+  const show = (label, t, total, extra = '') => {
+    const n = Object.values(t).reduce((a, b) => a + b, 0);
+    const parts = Object.entries(t).sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => `${ZH[k] ?? k} ${(v / rows.length).toFixed(1)}`);
+    if (total != null && total - n > 0.05 * rows.length) parts.push(`沒有人碰到 ${((total - n) / rows.length).toFixed(1)}`);
+    line(label, parts.join('・') || '(一類都沒有)', extra);
+  };
+  const cor = mean(rows.map(r => r.st.counts.corners.home + r.st.counts.corners.away)) * rows.length;
+  /* **解圍是角球的最大來源,而在這之前沒有人讀這個錨**(2026-09-18,階段 4l)。
+     側寫的 `extra.clearances` 就是它,零個消費端 ——「資料躺在倉庫裡而沒有人讀它」的第八次。
+     角球 = 解圍次數 × 解圍出底線的比例 + 別的來源,所以要修角球的量,
+     得先知道錯的是哪一項(階段 4y 的規矩:先問這個量是什麼乘什麼)。 */
+  const realClr = pair('clearances') ?? 0;
+  const clr = mean(rows.map(r => r.st.counts.clears));
+  if (realClr) line('  每場解圍', clr.toFixed(1), `真實 ${realClr.toFixed(1)}  **${(clr / realClr).toFixed(2)} 倍** —— 定義可能不同(見下一行),只回報`);
+  show('  　解圍的三條路', bag('clearWhy'));
+  show('  角球是怎麼來的', bag('cornerSrc'));
+  show('  傳中的第一點', bag('cornerFirst'), cor);
+  /* 第一點之後球被誰控住。角球射門缺的是**腳下**那一種,而它的前提是進攻方拿得到第二球 ——
+     這一行如果幾乎都是「防守控住」,那缺的就不是射門的判定,是**沒有人還留在那裡**。 */
+  show('  第二球被誰控住', bag('cornerNext'));
+  const cs = bag('cornerShot');
+  const csN = Object.values(cs).reduce((a, b) => a + b, 0);
+  show('  角球射門的來源', cs, null, csN ? `頭球佔 ${(100 * (cs.header ?? 0) / csN).toFixed(0)}%` : '');
+  /* **真實的角球射門有兩種,而本站只有一種**。1,835 顆 FromCorner 逐顆的 foot 欄位:
+     頭球 46.2%(平均 8.4 m,20 m 外 1%)、腳下 53.8%(平均 16.3 m,20 m 外 30%)——
+     兩個完全不同的形狀。本站的第一點頭球那一條路量下來是對的,少的是腳下那一種
+     (禁區內的補射與禁區外的第二波)。這一行的數字**從 raw 算,不寫死**。 */
+  const rc = realShots?.bySit?.FromCorner;
+  if (rc && rc.head + rc.foot > 0) {
+    const t = rc.head + rc.foot;
+    line('  　真實(逐顆的 foot 欄位)',
+      `頭球 ${(100 * rc.head / t).toFixed(0)}%(平均 ${(rc.headD / rc.head).toFixed(1)} m)`
+      + `・腳下 ${(100 * rc.foot / t).toFixed(0)}%(平均 ${(rc.footD / rc.foot).toFixed(1)} m,`
+      + `${(100 * rc.footFar / rc.foot).toFixed(0)}% 在 20 m 外)`, `${t} 顆`);
+  }
+}
 line('每場 xG(主:客)', `${mean(rows.map(r => r.st.xg.home)).toFixed(2)} : ${mean(rows.map(r => r.st.xg.away)).toFixed(2)}`);
 line('每場界外球 / 球門球', `${mean(rows.map(r => r.st.counts.throwIns)).toFixed(0)} / ${mean(rows.map(r => r.st.counts.goalKicks)).toFixed(0)}`);
 line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed(0)} / ${mean(rows.map(r => r.st.counts.tackles)).toFixed(0)}`);
@@ -281,30 +367,6 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
   }
 }
 
-/* 3b. 射門的**離門距離分佈**。真值不是我寫的數字,是倉庫裡 FotMob 逐場 shotmap 的座標算出來的
-       —— 這樣資料變了它自己會變(而且「真實是多少」永遠查得到出處)。
-       為什麼要看分佈而不是只看每球平均 xG:只對平均值的話,一堆六公尺的射門配一個很小的
-       xG 係數也會「對上」,而那是把形狀調錯之後再用水準去湊。 */
-const realShots = (() => {
-  const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
-  /* **逐情境**也收一份(階段 4i)。總和對上不代表每一種都對:實測本站總和 15.1 m
-     看起來只差一點,拆開才看到角球是 15.0 m(真實 12.7)而且 69% 擠在 15~20 m 一格。 */
-  const bySit = {};
-  for (const f of ['2025-26-game-details.json', '2026-27-game-details.json']) {
-    const path = join(ROOT, 'data', 'raw', 'fotmob-epl', f);
-    if (!existsSync(path)) continue;
-    const j = JSON.parse(readFileSync(path, 'utf8'));
-    for (const m of Object.values(j.matches ?? {})) for (const sh of (m.shots ?? [])) {
-      if (sh.x == null || sh.y == null) continue;
-      const d = Math.hypot(105 - sh.x, 34 - sh.y);
-      bins[Math.min(6, Math.floor(d / 5))]++; n++; ds += d; if (sh.inBox) box++;
-      if (sh.xg != null) xg += sh.xg;
-      const b = (bySit[sh.situation ?? '(無)'] ??= { n: 0, dsum: 0, bins: new Array(7).fill(0) });
-      b.n++; b.dsum += d; b.bins[Math.min(6, Math.floor(d / 5))]++;
-    }
-  }
-  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n), bySit } : null;
-})();
 const simShots = (() => {
   const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
   for (const r of rows) {
@@ -318,6 +380,17 @@ if (simShots && realShots) {
   const pc = a => a.map(v => `${Math.round(v * 100)}%`).join(' ');
   line('射門離門距離', `${simShots.dist.toFixed(1)} m`, `真實 ${realShots.dist.toFixed(1)} m(${realShots.n} 顆)`);
   line('射門在禁區內', `${(simShots.box * 100).toFixed(0)}%`, `真實 ${(realShots.box * 100).toFixed(0)}%`);
+  /* **第二個獨立來源**(2026-09-18,階段 4l):上面那個 67% 是從 shotmap 的座標自己算的,
+     而側寫的 `extra.shots_inside_box` / `shots_outside_box` 是 FotMob 自己分好的 ——
+     兩份對得上才代表「禁區內」這個判準跟上游同一個意思(鐵則五)。
+     這兩個欄位在這之前**零個消費端**。只印不判:它是這一場兩隊的值,而上面那個是全聯盟的。 */
+  {
+    const inB = pair('shots_inside_box'), outB = pair('shots_outside_box');
+    if (inB != null && outB != null && inB + outB > 0) {
+      line('　(第二來源)禁區內佔比', `${(inB / (inB + outB) * 100).toFixed(0)}%`,
+        `${HOME}+${AWAY} 的 shots_inside_box ${inB.toFixed(1)} / 全部 ${(inB + outB).toFixed(1)} —— 跟上面那個 shotmap 算出來的互相核對`);
+    }
+  }
   line('每球 xG', simShots.xg.toFixed(4), `真實 ${realShots.xg.toFixed(4)}`);
   console.log(`  ${'離門 0-5/5-10/…/30+'.padEnd(26, '\u3000')} ${pc(simShots.bins)}`);
   console.log(`  ${'真實'.padEnd(26, '\u3000')} ${pc(realShots.bins)}`);
