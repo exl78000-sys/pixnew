@@ -28,9 +28,11 @@ const MIN_JUDGE = 10;            // 少於這個場數只印不判(SE 的噪音�
 const HOME = 'ARS', AWAY = 'LIV';
 
 /* 這一場兩隊自己的 extra 相加 —— 錨要跟被量的那一批同一批(4s 的教訓)。
-   宣告在**檔案前段**:用它的地方(對抗那一節、領土那一節)都在後面,
-   放在後面就是暫時死區 —— 那條坑本站記過,而我寫這一段的時候又踩了一次。 */
-const ex2 = k => {
+   宣告在**檔案前段**:用它的地方都在後面,放在後面就是暫時死區 —— 那條坑本站記過,
+   而我寫 4v 那一段的時候又踩了一次。
+   **只留這一份**:4v 加它的時候領土那兩節各自已經有一份一模一樣的 `pair`,
+   三份同義的東西就是「同一個量三個來源」,改了算法會有兩份悄悄過期(階段 4w 併掉)。 */
+const pair = k => {
   const a = profile.teams?.[HOME]?.extra?.[k]?.mean, b = profile.teams?.[AWAY]?.extra?.[k]?.mean;
   return a == null || b == null ? null : a + b;
 };
@@ -411,23 +413,26 @@ if (simShots && realShots) {
       console.log(`  ${名稱.padEnd(14, '\u3000')} ${v.toFixed(1).padStart(6)} ± ${e.toFixed(1)}`
         + `\u3000真實 ${real.toFixed(1)}\u3000${判}`);
     };
-    line('一場的對抗次數', c => c.duels ?? 0, A.duels);
-    line('　抄截', c => c.tackles, A.tackles);
-    line('　犯規', c => c.fouls.home + c.fouls.away, A.fouls);
-    line('　過人成功', c => c.dribbles ?? 0, A.dribbles);
-    /* **這四個錨是聯盟平均 ×2,不是這一場兩隊自己的值**(2026-09-18,階段 4v 發現)。
-       `duelAnchors()` 是從側寫**全聯盟**加權算的 —— 那對「三種結局的比例」是對的基礎
-       (比例該是聯賽典型的),但拿它當「這一場該出現幾次」的判準就是
-       「錨用了聯盟平均,而這一場踢的是兩支特定的球隊」那條坑(4s 記過,這是第八次)。
-       實測差距不小:抄截 −12%、過人成功 +7%、犯規 −5%。而引擎的 `foulRel` 明確按
-       各隊自己的犯規數縮放,所以犯規那一項**本來就該追這一場的值**。
-       兩個都印、標清楚哪個是哪個;**4r 與 4v 都是照聯盟那一組校準的**,
-       改成追這一場要重跑 `DW` 的比例,那是下一輪(見 docs/補齊規劃.md 的 4w)。 */
-    {
-      const fxT = ex2('matchstats.headers.tackles'), fxD = ex2('dribbles_succeeded');
-      const fxF = (profile.teams[HOME]?.rates?.home?.fouls ?? 0) + (profile.teams[AWAY]?.rates?.away?.fouls ?? 0);
-      if (fxT != null && fxD != null) console.log(`  ${`　（這一場兩隊自己的值)抄截 ${fxT.toFixed(1)} ・犯規 ${fxF.toFixed(1)} ・過人成功 ${fxD.toFixed(1)}`.padEnd(16, '\u3000')}`
-        + `\u3000上面那四個是**聯盟平均 ×2** —— 校準到哪一組是 4w 要決定的`);
+    /* **判準是這一場兩隊自己的值**(2026-09-18,階段 4w)。4v 之前這四行比的是
+       `duelAnchors()` 的聯盟平均 ×2 —— 那對「三種結局的比例」是對的基礎(比例該是
+       聯賽典型的),但拿它當「這一場該出現幾次」的判準就是「錨用了聯盟平均,而這一場
+       踢的是兩支特定的球隊」那條坑(4s 記過,這是第八次):抄截差 −12%、過人 +7%、犯規 −5%。
+       引擎現在由兩隊自己的 `tklRel` / `drbRel` / `foulRel` 帶,所以這一場的值是**長出來的**。
+       聯盟那一組仍然印出來當參照,但**不判** —— 它不是這一場該有的數字。 */
+    const F = A.fixture ?? A.league;
+    line('一場的對抗次數', c => c.duels ?? 0, F.duels);
+    line('　抄截', c => c.tackles, F.tackles);
+    line('　犯規', c => c.fouls.home + c.fouls.away, F.fouls);
+    line('　過人成功', c => c.dribbles ?? 0, F.dribbles);
+    if (A.fixture) {
+      const L = A.league, r = (a, b) => `${(a / b * 100 - 100).toFixed(0)}%`;
+      console.log(`  ${'　參照:聯盟平均 ×2'.padEnd(14, '\u3000')}`
+        + `對抗 ${L.duels.toFixed(1)} ・抄截 ${L.tackles.toFixed(1)} ・犯規 ${L.fouls.toFixed(1)} ・過人成功 ${L.dribbles.toFixed(1)}`);
+      console.log(`  ${'　'.padEnd(14, '\u3000')}這一場跟它差 對抗 ${r(F.duels, L.duels)}`
+        + ` ・抄截 ${r(F.tackles, L.tackles)} ・犯規 ${r(F.fouls, L.fouls)} ・過人成功 ${r(F.dribbles, L.dribbles)}`
+        + `\u3000（比例照聯盟、次數照這一場）`);
+    } else {
+      console.log('  　這一場的錨算不出來(缺 extra 或 rates),上面比的是**聯盟平均 ×2**');
     }
     /* 「對抗總數」的真實值是三種結局相加,而地面對抗自己也有一個數字 —— 兩個各自算出來
        卻對得上,那是很強的線索不是證明,所以印出來但不當判準。 */
@@ -458,8 +463,6 @@ if (simShots && realShots) {
          上游宣告的 title 沒有被存進 raw(`fotmob-match.mjs` 對 extra 只留值不留 title),
          所以這是**推論不是證實** —— 本站對它的處理:引擎也記成功的傳球,兩邊同一個定義。 */
 {
-  const ex = (code, k) => profile.teams?.[code]?.extra?.[k]?.mean ?? null;
-  const pair = k => { const a = ex(HOME, k), b = ex(AWAY, k); return a == null || b == null ? null : a + b; };
   const realBox = pair('touches_opp_box'), realOwn = pair('own_half_passes'), realOpp = pair('opposition_half_passes');
   const avg = f => rows.reduce((a, r) => a + f(r.st.counts), 0) / rows.length;
   const box = avg(c => (c.boxTouch?.home ?? 0) + (c.boxTouch?.away ?? 0));
@@ -505,8 +508,6 @@ if (simShots && realShots) {
          對方半場的完成傳球 ×1.60 是「球在那裡待太久」,不是「球太容易到那裡」。
          詳見 docs/變更紀錄.md 的階段 4t。 */
 {
-  const ex = (code, k) => profile.teams?.[code]?.extra?.[k]?.mean ?? null;
-  const pair = k => { const a = ex(HOME, k), b = ex(AWAY, k); return a == null || b == null ? null : a + b; };
   const avg = f => rows.reduce((a, r) => a + f(r.st.counts), 0) / rows.length;
   const realLong = pair('long_balls_accurate'), realThrow = pair('player_throws');
   console.log('');

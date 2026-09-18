@@ -375,9 +375,15 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         && /okOppHalf: \{ \.\.\.st\.okOppHalf \}/.test(sim));
       const chk = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
       const block = chk.slice(chk.indexOf('3b-5.'), chk.indexOf('3b-6.'));
+      /* 這一條原本釘著 `ex(HOME, k)` 這個**寫法**,而 4w 把三份同義的輔助併成一份之後
+         它就紅在「重構但行為不變」上。改成守性質:領土的錨走那一份共用的 `pair()`,
+         而 `pair()` 本身讀的是 HOME 與 AWAY 自己的 extra。
+         順帶守住併完的狀態:**只能有一份** —— 兩份同義的東西改了一邊另一邊會悄悄過期。 */
       check('領土的錨取這兩隊自己的值,不是聯盟平均',
-        /profile\.teams\?\.\[code\]\?\.extra/.test(block)
-        && /ex\(HOME, k\)/.test(block) && /ex\(AWAY, k\)/.test(block));
+        /pair\('touches_opp_box'\)/.test(block) && /pair\('own_half_passes'\)/.test(block)
+        && /\[HOME\]\?\.extra/.test(chk) && /\[AWAY\]\?\.extra/.test(chk));
+      check('取這兩隊 extra 的輔助只有一份(同一個量不要兩個來源)',
+        (chk.match(/const pair = /g) ?? []).length === 1);
     }
 
     /* 9. 長傳與界外球的錨(階段 4t)。跟第 8 節同一個病:側寫裡有、沒有人讀。
@@ -465,8 +471,53 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       /* 段落的頭尾用剝註解之後還在的輸出字面值(第 10 節那條坑) */
       const d0 = chk.indexOf('一場的對抗次數'), d1 = chk.indexOf('三種結局相加');
       const duel = chk.slice(d0, d1 > d0 ? d1 : d0 + 900);
+      /* 這一條原本還釘著 `ex2(` 這個輔助函式的名字 —— 那是**釘寫法**,而 4w 把三份同義的
+         輔助併成一份之後它就紅在「重構但行為不變」上(本站記過的那條坑)。改成守性質:
+         兩組錨都出現在那一節裡。 */
       check('對抗那一節兩個錨都印:聯盟平均與這一場兩隊自己的值',
-        /這一場兩隊自己的值/.test(duel) && /聯盟平均/.test(duel) && /ex2\(/.test(duel));
+        /這一場/.test(duel) && /聯盟平均/.test(duel) && /A\.league/.test(duel));
+    }
+
+    /* 12. 階段 4w:對抗的四個錨改追**這一場兩隊自己的值**。
+       守的是性質不是數字(那四個值會隨側寫重算而漂):
+       (一) 引擎吐得出兩組,而且 `fixture` 真的是這兩隊自己的值(這裡獨立再算一次來對);
+       (二) 三種結局各由**對應那一隊**自己的相對值帶:抄截看防守方、過人成功看持球方、
+            犯規看防守方(`foulRel` 從 4r 就是這樣);
+       (三) 控球的比值不准再出現在對抗的權重裡 —— 它是過人成功的 proxy,而真正的欄位
+            (`dribbles_succeeded`)就在同一個物件上(4r 拿 `style.pressing` 當犯規 proxy 的同一個錯)。 */
+    {
+      const simPath = join(ROOT, 'web', 'assets', 'js', 'game-sim.js');
+      const S = await import(pathToFileURL(simPath));
+      const sim = S.createSim({ profile, home: 'ARS', away: 'LIV', seed: 1 });
+      const A = sim.duelAnchors?.() ?? null;
+      check('duelAnchors 兩組都吐:league(比例的基礎)與 fixture(這一場的判準)',
+        !!A && !!A.league && !!A.fixture && A.league.duels > 0 && A.fixture.duels > 0);
+      if (A?.fixture) {
+        /* 獨立再算一次 —— 引擎自己算的跟這裡算的要一樣,不然「這一場的錨」只是一個名字。
+           犯規要用**各自主客身分**的值,因為引擎的 `foulRel` 就是那樣取的。 */
+        const ex = (c, k) => profile.teams?.[c]?.extra?.[k]?.mean;
+        const wantTk = ex('ARS', 'matchstats.headers.tackles') + ex('LIV', 'matchstats.headers.tackles');
+        const wantDr = ex('ARS', 'dribbles_succeeded') + ex('LIV', 'dribbles_succeeded');
+        const wantFl = profile.teams.ARS.rates.home.fouls + profile.teams.LIV.rates.away.fouls;
+        const near = (a, b) => Math.abs(a - b) < 1e-9;
+        check('fixture 的三個數字就是這兩隊自己的(獨立算一次對得上)',
+          near(A.fixture.tackles, wantTk) && near(A.fixture.dribbles, wantDr) && near(A.fixture.fouls, wantFl),
+          `抄截 ${A.fixture.tackles.toFixed(2)} / 過人 ${A.fixture.dribbles.toFixed(2)} / 犯規 ${A.fixture.fouls.toFixed(2)}`);
+        /* 兩組**要不一樣** —— 一樣的話這一輪等於沒做,而那正是 4v 之前的狀態。
+           不釘差多少(那會隨側寫漂),只釘「不是同一個數字」。 */
+        check('這一場的錨跟聯盟平均 ×2 不是同一組數字',
+          A.fixture.tackles !== A.league.tackles && A.fixture.dribbles !== A.league.dribbles);
+      }
+      const src = readFileSync(simPath, 'utf8');
+      const strip2 = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const bare = strip2(src);
+      const d0 = bare.indexOf('function startDuel'), d1 = bare.indexOf('function resolveDuel');
+      const duelSrc = bare.slice(d0, d1);
+      check('對抗的權重由各隊自己的相對值帶(抄截看防守方、過人看持球方)',
+        /DW\.tackle \* s\.tklRel/.test(duelSrc) && /DW\.beat \* sideOf\(on\.side\)\.drbRel/.test(duelSrc)
+        && /DW\.foul \* s\.foulRel/.test(duelSrc));
+      check('控球的比值不再出現在對抗的權重裡(它是過人成功的 proxy)',
+        d0 > 0 && d1 > d0 && !/keep/.test(duelSrc));
     }
   }
 }

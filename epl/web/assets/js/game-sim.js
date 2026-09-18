@@ -770,19 +770,43 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      跟它的 10.9 差 1%,而那 1% 純粹是我用了不同的母體。**同一個量只能有一個來源。** */
   const FOUL_LG = profile.league_?.rates?.fouls ?? null;
   /* **一次對抗的三種結局,比例從側寫算**(以場數加權;兩隊合計 = 每隊 × 2)。
-     算不出來就退回聯盟量級的備援值並標出來 —— 但那不會在英超發生(側寫就是從英超算的)。 */
+     算不出來就退回聯盟量級的備援值並標出來 —— 但那不會在英超發生(側寫就是從英超算的)。
+     這裡算的是**聯賽典型的比例**;某一場該出現幾次由兩隊自己的相對值決定(見 mkSide 的
+     `tklRel` / `drbRel` / `foulRel`)。階段 4v 之前這一份同時當了「比例」與「這一場的判準」,
+     而模擬的是 ARS vs LIV —— 抄截差 −12%、過人 +7%,那是「錨用了聯盟平均」的第二次。 */
+  const TEAM_TKL = 'matchstats.headers.tackles', TEAM_DRB = 'dribbles_succeeded';
   const DW = (() => {
+    const per = k => Object.values(profile.teams ?? {}).map(t => t.extra?.[k]).filter(x => x?.mean != null);
     const ex = k => {
-      const v = Object.values(profile.teams ?? {}).map(t => t.extra?.[k]).filter(x => x?.mean != null);
+      const v = per(k);
       const n = v.reduce((a, b) => a + b.n, 0);
       return n ? v.reduce((a, b) => a + b.mean * b.n, 0) / n : null;
     };
-    const tk = ex('matchstats.headers.tackles'), dr = ex('dribbles_succeeded');
-    if (tk == null || dr == null || FOUL_LG == null) return { tackle: 0.48, foul: 0.32 * DUEL_FOUL_FIT, beat: 0.20, real: null };
+    /* 相對值的夾子**從側寫自己算**:場數夠多的那些球隊實際走到哪裡,就是一個只有幾場的
+       樣本最多能宣稱到哪裡。照抄犯規那一個的 [0.7, 1.3] 在這裡是錯的 —— 實測滿季的 17 隊
+       drbRel 有三隊落在外面(0.599 / 1.389 / 1.552),夾住等於把**真的**差異剪掉;
+       而只踢了 4 場的升班馬 tklRel 是 0.504,沒有任何滿季球隊到過那裡。
+       門檻取「最多場數的一半」:同一份側寫重算它會自己跟著變,不是寫死的數字。 */
+    const lim = k => {
+      const v = per(k), lg = ex(k);
+      if (!v.length || !lg) return [0.7, 1.3];
+      const full = Math.max(...v.map(x => x.n)) / 2;
+      const r = v.filter(x => x.n >= full).map(x => x.mean / lg);
+      return r.length ? [Math.min(...r), Math.max(...r)] : [0.7, 1.3];
+    };
+    const tk = ex(TEAM_TKL), dr = ex(TEAM_DRB);
+    if (tk == null || dr == null || FOUL_LG == null)
+      return { tackle: 0.48, foul: 0.32 * DUEL_FOUL_FIT, beat: 0.20, real: null, lg: null, lim: null };
     const rTk = tk * 2, rDr = dr * 2, rFl = FOUL_LG * 2, tot = rTk + rDr + rFl;
     return { tackle: rTk / tot, foul: rFl / tot * DUEL_FOUL_FIT, beat: rDr / tot,
-             real: { tackles: rTk, fouls: rFl, dribbles: rDr, duels: tot } };
+             real: { tackles: rTk, fouls: rFl, dribbles: rDr, duels: tot },
+             lg: { tkl: tk, drb: dr }, lim: { tkl: lim(TEAM_TKL), drb: lim(TEAM_DRB) } };
   })();
+  /* 個人的搶斷能力,壓成相對值。**只留隊內差異** —— 隊的層級由 `tklRel` 那一個帶
+     (兩者量的是同一件事:`ability.tkl` 是每 90 分的抄截數,一隊的抄截數就約等於
+     場上十一個人的加總,所以兩個都放等於把同一個差異算兩次)。 */
+  const relOf = tk => tk == null ? 1
+    : cl((0.6 + tk) / (0.6 + TKL_MID), DUEL_SKILL_CLAMP[0], DUEL_SKILL_CLAMP[1]);
   const mkSide = (code, side, att) => {
     const t = teamOf(code);
     const su = setup[side] ?? {};
@@ -817,6 +841,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     // 犯規傾向:這一隊在**這個主客身分**下的真實犯規數 ÷ 聯盟平均(夾住樣本少的極端)
     const fl = t.rates?.[side]?.fouls;
     const foulRel = (fl == null || FOUL_LG == null) ? 1 : cl(fl / FOUL_LG, 0.7, 1.3);
+    /* 抄截與過人成功也一樣,**這一隊自己的真實值除以聯盟平均**(階段 4w)。
+       犯規那一個從 4r 就是這樣做的,而這兩個當時留在聯盟平均上 —— 於是 `check-sim`
+       量到的抄截永遠是聯盟的量級,跟這一場(ARS + LIV 28.7)差 −12% 而畫面完全正常。
+       兩邊平均起來剛好等於「這一場 ÷ 聯盟×2」(代數上是同一個量,實測 0.8776 對 0.8776),
+       所以接上去之後這一場的錨是自己長出來的,不是設定進去的。 */
+    const tklRel = DW.lg ? cl((t.extra?.[TEAM_TKL]?.mean ?? DW.lg.tkl) / DW.lg.tkl, DW.lim.tkl[0], DW.lim.tkl[1]) : 1;
+    const drbRel = DW.lg ? cl((t.extra?.[TEAM_DRB]?.mean ?? DW.lg.drb) / DW.lg.drb, DW.lim.drb[0], DW.lim.drb[1]) : 1;
     /* 護球能力:用**這一隊在這個主客身分下**的真實控球率。50 是聯盟平均(控球是零和的,
        所以平均一定是 50,不必另外算)。夾在 ±15 個百分點內 —— 超出那個範圍的是樣本太少,
        不是真的有球隊能控 70%(實測全聯盟落在 27~61)。 */
@@ -837,8 +868,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        一個永遠不動的控制項比沒有這個控制項更糟,讀者會以為是壞了)。 */
     /* 四軸的中性值(階段 4a)。**恆等元**:push 0、wide 1、tempo 1、direct 0 —— 沒有下指令時
        每一條算式都跟接這四軸之前完全一樣,所以 λ 的錨不會因為「多了四個旋鈕」而動。 */
+    /* 隊內平均的搶斷相對值:`relOf` 要除掉它才只剩「這個人比隊友強多少」。
+       用先發十一人算 —— 換人會讓它稍微偏,那是二階的,而把它寫成「隨時重算」
+       會讓同一次對抗的權重跟著板凳變,那更難解釋。 */
+    const relMean = players.reduce((a, q) => a + relOf(q.ability?.tkl), 0) / (players.length || 1);
     return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1,
-      push: 0, wide: 1, tempo: 1, direct: 0, keep, foulRel, possMean: pmRaw ?? null, bench };
+      push: 0, wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, relMean,
+      possMean: pmRaw ?? null, bench };
   };
 
   const H = mkSide(home, 'home', +1), A = mkSide(away, 'away', -1);
@@ -2010,11 +2046,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   function startDuel(on, by) {
     const s = sideOf(by.side);
     /* 能力值只在**抄截 ↔ 過人成功**之間搬,不碰犯規。`tkl` 直接當乘數的話中位數是 2.09
-       (舊模型就是這樣寫的),所以要先除以聯盟中位變成相對值,再夾住避免極端。
-       護球是**相對的**:拿自己的 keep 除以對手的,兩隊都平庸時等於沒有這一項。 */
-    const tk = by.ability?.tkl;
-    const rel = tk == null ? 1 : cl((0.6 + tk) / (0.6 + TKL_MID), DUEL_SKILL_CLAMP[0], DUEL_SKILL_CLAMP[1]);
-    const skill = rel * (s.keep / sideOf(on.side).keep);
+       (舊模型就是這樣寫的),所以要先除以聯盟中位變成相對值,再夾住避免極端;
+       接著**除掉自己隊上的平均**,只留「這個人比隊友強多少」——隊的層級由 `tklRel` 帶。
+       階段 4w 之前這裡還乘了控球的比值(`s.keep / 對手 keep`),那是**過人成功的 proxy**,
+       而真正的欄位(`dribbles_succeeded`)就在同一個物件上 —— 跟 4r 拿 `style.pressing`
+       當犯規的 proxy 是同一個錯,所以換成持球方自己的 `drbRel`。
+       (`keep` 仍然在接球爭搶那一段裡,那才是它本來要講的事。) */
+    const rel = relOf(by.ability?.tkl) / (s.relMean || 1);
     /* 吃過黃牌的人會收手(階段 3 量出來的行為,不是係數);禁區裡收腳(`BOX_CARE`,
        十二碼的次數就是這樣校準的);自家門前 6 公尺的犯規本站不處理 —— 三種都退回「乾淨地搶」。
        犯規傾向用 `foulRel`(這一隊的真實犯規數)**不是 `press`** —— 理由見 `FOUL_LG` 那一段。 */
@@ -2023,8 +2061,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const inBox = Math.abs(on.x - gx) < BOX_D && Math.abs(on.y - PITCH_H / 2) < BOX_W;
     const canFoul = inBox ? PEN_XG != null : Math.abs(on.x - (gx > 0 ? 0 : PITCH_W)) > FOUL_NO_WHISTLE;
     const wf = canFoul ? DW.foul * s.foulRel * booked * (inBox ? BOX_CARE : 1) : 0;
-    const wt = DW.tackle * skill;
-    const wb = DW.beat / skill;
+    const wt = DW.tackle * s.tklRel * rel;
+    const wb = DW.beat * sideOf(on.side).drbRel / rel;
     /* 正規化成三選一 —— 三個權重都是**相對**的,聯盟平均的一組會回到側寫的比例。
        不正規化的話「吹不了的犯規」就變成「什麼都沒發生」,而一次對抗一定有結局。 */
     /* **十二碼的期望值**(2026-09-18,階段 4v):禁區裡每一次對抗把「判成犯規」的機率加起來。
@@ -2310,9 +2348,27 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        改了 keep 的推法,那兩份會悄悄過期(本站在轉換邏輯上付過這個代價)。
        **它不是模擬的輸入**:引擎只把 keep 接上去,跑出多少是它自己的結果。 */
     possTarget: () => (H.possMean == null || A.possMean == null ? null : (H.possMean + (100 - A.possMean)) / 2),
-    /* 對抗那一層的錨(從側寫算的那三個數字)。`check-sim` 讀這一份 ——
+    /* 對抗那一層的錨。**兩組都吐出來,而且名字講清楚是哪一組**(階段 4w):
+       `league` 是聯盟平均 ×2 —— 它是「三種結局的比例」的基礎(比例該是聯賽典型的);
+       `fixture` 是**這一場兩隊自己**的值,那才是「這一場該出現幾次」的判準。
+       4v 之前只有前者,而 `check-sim` 拿它當判準 —— 抄截因此差了 12% 沒有人看見。
        各自算一份的話,改了算法另一邊會悄悄過期(本站在轉換邏輯上付過這個代價)。 */
-    duelAnchors: () => (DW.real ? { ...DW.real } : null),
+    duelAnchors: () => {
+      if (!DW.real) return null;
+      const mean = (c, k) => profile.teams?.[c]?.extra?.[k]?.mean;
+      const tk = [mean(home, TEAM_TKL), mean(away, TEAM_TKL)];
+      const dr = [mean(home, TEAM_DRB), mean(away, TEAM_DRB)];
+      const fl = [profile.teams?.[home]?.rates?.home?.fouls, profile.teams?.[away]?.rates?.away?.fouls];
+      const ok = [...tk, ...dr, ...fl].every(v => v != null);
+      const sum = a => a[0] + a[1];
+      return {
+        league: { ...DW.real },
+        /* 犯規用**各自主客身分**下的值 —— 引擎的 `foulRel` 就是這樣取的,
+           錨跟被量的東西要是同一個定義。 */
+        fixture: ok ? { tackles: sum(tk), fouls: sum(fl), dribbles: sum(dr),
+                        duels: sum(tk) + sum(fl) + sum(dr) } : null,
+      };
+    },
     /* 還可以換上來的人。**已經用掉的不列** —— 列了就是一個點下去會失敗的按鈕。 */
     benchOf: side => [...(sideOf(side).bench ?? new Map()).entries()]
       .filter(([, v]) => !v.used).map(([code, v]) => ({ code, name: v.p.name, pos: v.p.pos })),
