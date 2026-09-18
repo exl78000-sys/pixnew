@@ -236,6 +236,27 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
      4v 就是靠期望值才看出 `forward` 改了之後十二碼塌了(次數 0.03、期望值一起掉)。 */
   const pe = rows.reduce((a, r) => a + (r.st.counts.penExp ?? 0), 0) / rows.length;
   line('\u3000十二碼的期望值', pe.toFixed(3), '次數是 Poisson 雜訊,校準看這個');
+  /* **把期望值拆成「次數 × 機率」**(2026-09-18,階段 4y)。4x 把 `DUEL_FOUL_FIT` 降 7%、
+     犯規跟著降,而期望值 0.248 → 0.249 一動都沒動 —— 只看期望值分不出是禁區裡的對抗變多
+     還是每次吹的機率變高,而那兩件事要改的地方完全不同(領土 vs `BOX_CARE`)。 */
+  const bd = rows.reduce((a, r) => a + (r.st.counts.boxDuels ?? 0), 0) / rows.length;
+  line('\u3000　禁區裡的對抗次數', bd.toFixed(1), '期望值 = 這個 × 每次判成犯規的機率');
+  if (bd > 0) line('\u3000　每次判成犯規的機率', (pe / bd).toFixed(4), '要動的是 BOX_CARE 的話看這一項');
+  /* 黃牌逐隊拆(4x 之後 2.57 對錨 2.90,−11%)。兩隊的吃牌率差一倍,所以最終的張數
+     取決於**哪一隊犯規多** —— 不逐隊印的話分不出是「率錯了」還是「混合比例不同」。 */
+  {
+    const ypf = (c, side) => { const r = profile.teams?.[c]?.rates?.[side];
+      return (r?.yellow == null || !r?.fouls) ? null : r.yellow / r.fouls; };
+    const fh = rows.reduce((a, r) => a + r.st.counts.fouls.home, 0) / rows.length;
+    const fa = rows.reduce((a, r) => a + r.st.counts.fouls.away, 0) / rows.length;
+    const yh = ypf(HOME, 'home'), ya = ypf(AWAY, 'away');
+    if (yh != null && ya != null) {
+      const want = (profile.teams[HOME].rates.home.yellow ?? 0) + (profile.teams[AWAY].rates.away.yellow ?? 0);
+      console.log(`  ${'　黃牌怎麼來的'.padEnd(14, '\u3000')} ${HOME} 犯規 ${fh.toFixed(1)} × ${yh.toFixed(3)}`
+        + ` + ${AWAY} 犯規 ${fa.toFixed(1)} × ${ya.toFixed(3)} = ${(fh * yh + fa * ya).toFixed(2)}`
+        + `\u3000真實 ${want.toFixed(2)}(${HOME} ${profile.teams[HOME].rates.home.yellow} + ${AWAY} ${profile.teams[AWAY].rates.away.yellow})`);
+    }
+  }
 }
   const gl = rows.reduce((a, r) => a + r.st.score[0] + r.st.score[1], 0);
   const asts = rows.reduce((a, r) => a + r.st.counts.assists.home + r.st.counts.assists.away, 0);

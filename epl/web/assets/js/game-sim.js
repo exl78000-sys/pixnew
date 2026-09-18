@@ -1068,7 +1068,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
-    longTry: 0, longOk: 0, longTry25: 0, longOk25: 0, penExp: 0,
+    longTry: 0, longOk: 0, longTry25: 0, longOk25: 0, penExp: 0, boxDuels: 0,
     corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 }, reds: { home: 0, away: 0 }, subs: { home: 0, away: 0 },
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
@@ -2112,7 +2112,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        而期望值是連續量。這一輪就是靠它抓到十二碼塌了:`forward` 降到 0.30 之後禁區觸球
        ×0.54,禁區裡的對抗跟著少,而 `BOX_CARE` 是對著**舊的**禁區活動量校準的。
        純加總,不呼叫 rng。 */
-    if (inBox) st.penExp += wf / (wf + wt + wb);
+    /* **期望值 = 次數 × 每次的機率**,兩項都要記(2026-09-18,階段 4y)。
+       4x 把 `DUEL_FOUL_FIT` 降 7%、犯規確實跟著降,而這個期望值 0.248 → 0.249 **一動都沒動** ——
+       那不是沒調好,是它不由那個參數決定(4t 的不變性)。只記期望值分不出是
+       「禁區裡的對抗變多了」還是「每次吹的機率變高了」,而那兩件事要改的地方完全不同
+       (前者是領土,後者才是 `BOX_CARE`)。**能拆就拆**(4k 那條)。
+       純加總,不呼叫 rng。 */
+    if (inBox) { st.boxDuels++; st.penExp += wf / (wf + wt + wb); }
     const r = rng() * (wf + wt + wb);
     st.duel = { on, by, out: r < wf ? 'foul' : r < wf + wt ? 'tackle' : 'beat', inBox, t: 0 };
   }
@@ -2375,7 +2381,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
         boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
-        deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp },
+        deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp, boxDuels: st.boxDuels },
     }),
     /* 量測用:跑動量、最高速、控球 —— 這幾個要對得回 FotMob 的真實值,不然「像不像在踢球」沒有判準 */
     motion: () => ({
