@@ -439,7 +439,10 @@ if (simShots && realShots) {
     const teams = Object.values(profile.teams ?? {}).filter(t => t.extra?.ground_duels_won?.mean != null);
     const gn = teams.reduce((a, t) => a + t.extra.ground_duels_won.n, 0);
     const gd = gn ? teams.reduce((a, t) => a + t.extra.ground_duels_won.mean * t.extra.ground_duels_won.n, 0) / gn : null;
-    if (gd) console.log(`  ${'（三種結局相加'.padEnd(14, '\u3000')} ${A.duels.toFixed(1)}`
+    /* 這一行原本讀 `A.duels`,而 4w 把 `duelAnchors()` 換成 `{ league, fixture }` 兩組 ——
+       **改形狀要把消費端逐個找出來**,漏一個就是這裡:整個 check-sim 跑到這裡才拋,
+       前面所有的數字都印完了,看起來像「跑完了」。負向對照就是把 `F` 改回 `A`。 */
+    if (gd) console.log(`  ${'（三種結局相加'.padEnd(14, '\u3000')} ${F.duels.toFixed(1)}`
       + `,而 ground_duels_won 兩隊合計 ${(gd * 2).toFixed(1)} —— 線索,不是判準)`);
     /* 接觸**不是**對抗:這一行是 4r 的判準來源 —— 站位改動會把「判定跑了多久」放大 4.5 倍,
        而「碰到幾次」幾乎不變(×1.06)。判定掛在更穩的帶球決策上(×1.01)才脫得了鉤。 */
