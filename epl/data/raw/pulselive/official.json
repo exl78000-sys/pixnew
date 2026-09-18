@@ -28336,7 +28336,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 130,
@@ -28763,7 +28763,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 50460,
+     "assist": 129096,
+     "team": 130,
+     "min": 61,
+     "label": "61'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
@@ -28794,8 +28808,8 @@
      }
     ]
    },
-   "clock": "60'00"
+   "clock": "63'00"
   }
  },
- "fetchedAt": "2026-09-18T20:18:38.479Z"
+ "fetchedAt": "2026-09-18T20:20:57.492Z"
 }
