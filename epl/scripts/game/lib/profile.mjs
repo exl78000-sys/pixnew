@@ -276,17 +276,41 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     .map(m => m.possession.all[isHome ? 0 : 1]));
   const allPoss = fm.filter(m => m.possession?.all).map(m => m.possession.all[0]);
   const shotsAll = fm.flatMap(m => m.shots.map(s => ({ ...s, key: m.key })));
+  /* **同一個情境裡還有兩種形狀**(2026-09-18,階段 4l-2)。上游逐顆射門帶 `foot`,
+     而這裡本來只算總和 —— 拆開來 FromCorner 是兩件完全不同的事:
+     頭球 847 顆(xG/腳 0.1236、平均離門 8.4 m、19% 在 5 m 內、被封阻 20%)、
+     腳下 988 顆(0.0861、16.3 m、8% 在 5 m 內、被封阻 37%)。
+     混在一起的 0.1034 兩邊都不是,而引擎的 `headerAt` 正是拿它當頭球的 xG。
+     這是「總和對上不代表每一種都對」在**同一個 situation 之內**的版本。
+     離門分佈也收一份(5 公尺一格),引擎的形狀要對著它調而不是對著混合的。 */
+  const footKind = s => (s.foot === 'Header' ? 'header' : 'foot');
+  const shotBox = () => ({ shots: 0, goals: 0, onTarget: 0, blocked: 0, xg: 0, dist: 0, bins: new Array(7).fill(0) });
+  const addShot = (b, s) => {
+    b.shots++; b.goals += s.type === 'Goal' ? 1 : 0; b.onTarget += s.onTarget ? 1 : 0;
+    b.blocked += s.blocked ? 1 : 0; b.xg += s.xg ?? 0;
+    if (s.x != null && s.y != null) {
+      const d = Math.hypot(105 - s.x, 34 - s.y);
+      b.dist += d; b.bins[Math.min(6, Math.floor(d / 5))]++;
+    }
+  };
+  const outBox = (b, total) => ({
+    shots: b.shots, goals: b.goals, share: r3(b.shots / total), onTargetPct: r3(b.onTarget / b.shots),
+    blockedPct: r3(b.blocked / b.shots), xgPerShot: r3(b.xg / b.shots), goalPerShot: r3(b.goals / b.shots),
+    distMean: b.bins.reduce((a, x) => a + x, 0) ? r2(b.dist / b.bins.reduce((a, x) => a + x, 0)) : null,
+    distBins: b.bins.map(x => r3(x / (b.bins.reduce((a, y) => a + y, 0) || 1))) });
   const situationsOf = shots => {
     const by = {};
     for (const s of shots) {
       const k = s.situation ?? 'Unknown';
-      by[k] ??= { shots: 0, goals: 0, onTarget: 0, xg: 0 };
-      by[k].shots++; by[k].goals += s.type === 'Goal' ? 1 : 0; by[k].onTarget += s.onTarget ? 1 : 0; by[k].xg += s.xg ?? 0;
+      by[k] ??= { all: shotBox(), header: shotBox(), foot: shotBox() };
+      addShot(by[k].all, s); addShot(by[k][footKind(s)], s);
     }
     const total = shots.length || 1;
     return Object.fromEntries(Object.entries(by).map(([k, v]) => [k, {
-      shots: v.shots, goals: v.goals, share: r3(v.shots / total), onTargetPct: r3(v.onTarget / v.shots),
-      xgPerShot: r3(v.xg / v.shots), goalPerShot: r3(v.goals / v.shots) }]));
+      ...outBox(v.all, total),
+      /* 兩種各自的份額是**這個情境之內**的佔比(相加 = 1),不是佔全部射門 */
+      byFoot: Object.fromEntries(['header', 'foot'].filter(f => v[f].shots > 0)
+        .map(f => [f, outBox(v[f], v.all.shots)])) }]));
   };
   /* 跑動節奏、三路進攻、逐人熱區與跑動(2026-09-03 加,給動畫用):
      - tempo:該隊每分鐘跑動距離與衝刺次數(FotMob 追蹤資料,不是每場都有,n 另記)

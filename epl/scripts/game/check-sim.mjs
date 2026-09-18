@@ -191,9 +191,21 @@ const real = { sf: (rt(HOME, 'home').sf ?? 0) + (rt(AWAY, 'away').sf ?? 0), cf: 
   line('  (參考)兩隊 sf 相加', real.sf.toFixed(1), '不看對手防守,所以是上限 —— 不要拿它調 urge');
 }
 {
+  /* **射正要比「率」不是比「次數」**(2026-09-18,階段 4l-2)。
+     `stf` 與 `sf` 是同一份 CSV 的 HST / HS,兩個都是**賽季平均**;而引擎的射門數
+     校準的是 `expShots`(sf × 對手 sa ÷ 聯盟平均,這一場的期望,23.5 而不是 30.4)。
+     拿 8.2 去比 9.6 就是拿兩個不同基礎的數字相減 —— 那是 4w 那條坑
+     (「錨與引擎各自用了不同的基礎」)的第三次,而 4l 因此把一個**改善**寫成了退步:
+     射正率 4y 是 9.0/23.8 = 37.8%、4l 是 8.2/24.1 = 34.0%,而真實是 9.6/30.4 = **31.6%**。
+     判的是率,次數只印出來當參考。 */
   const rr = (code, where) => profile.teams[code]?.rates?.[where] ?? {};
   const realOn = (rr(HOME, 'home').stf ?? 0) + (rr(AWAY, 'away').stf ?? 0);
-  line('每場射正', mean(rows.map(r => r.st.counts.onTarget)).toFixed(1), `真實 ${realOn.toFixed(1)}`);
+  const shotsAvg = mean(rows.map(r => r.st.counts.shots));
+  const onAvg = mean(rows.map(r => r.st.counts.onTarget));
+  const realRate = real.sf > 0 ? realOn / real.sf : null;
+  line('射正率', `${(100 * onAvg / shotsAvg).toFixed(1)}%`,
+    realRate == null ? '' : `真實 ${(100 * realRate).toFixed(1)}%(${realOn.toFixed(1)} ÷ ${real.sf.toFixed(1)})`
+      + ` —— 本站 ${onAvg.toFixed(1)} 腳,照真實的率該是 ${(shotsAvg * realRate).toFixed(1)}`);
 }
 /* **這一塊本來在檔案後段**(3b),階段 4l 把角球射門的真實拆解印在上面的角球那一節,
    於是它變成「用在宣告之前」—— 模組層的 const 不會提升,那是暫時死區,
@@ -280,6 +292,33 @@ line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.c
       `頭球 ${(100 * rc.head / t).toFixed(0)}%(平均 ${(rc.headD / rc.head).toFixed(1)} m)`
       + `・腳下 ${(100 * rc.foot / t).toFixed(0)}%(平均 ${(rc.footD / rc.foot).toFixed(1)} m,`
       + `${(100 * rc.footFar / rc.foot).toFixed(0)}% 在 20 m 外)`, `${t} 顆`);
+  }
+  /* **逐種的離門分佈**(2026-09-18,階段 4l-2)。角球射門是兩個形狀,所以要各自對各自 ——
+     真值從側寫的 `shotSituations.FromCorner.byFoot` 讀(build 時從 raw 的 `foot` 欄位算的),
+     不在這裡再攤一次 raw:同一個量兩個來源是本站的老坑。 */
+  {
+    const rb = profile.league_?.shotSituations?.FromCorner?.byFoot ?? {};
+    const sb = { header: new Array(7).fill(0), foot: new Array(7).fill(0) };
+    const sx = { header: 0, foot: 0 };
+    for (const r of rows) for (const k of ['header', 'foot']) {
+      (r.st.counts.cornerShotBins?.[k] ?? []).forEach((v, i) => { sb[k][i] += v; });
+      sx[k] += r.st.counts.cornerShotXg?.[k] ?? 0;
+    }
+    const pcs = (a, n) => a.map(v => String(Math.round(v / (n || 1) * 100)).padStart(4)).join('');
+    const ZH2 = { header: '頭球', foot: '腳下' };
+    if (sb.header.some(v => v) || sb.foot.some(v => v)) {
+      console.log(`  ${'　角球射門逐種的離門'.padEnd(20, '\u3000')} 平均  xG/腳   0-5 5-10 10-15 15-20 20-25 25-30 30+`);
+      for (const k of ['header', 'foot']) {
+        const n = sb[k].reduce((a, b) => a + b, 0);
+        if (!n) continue;
+        const mean2 = sb[k].reduce((a, v, i) => a + v * (i * 5 + 2.5), 0) / n;
+        console.log(`  ${('　　' + ZH2[k]).padEnd(20, '\u3000')} ${mean2.toFixed(1).padStart(5)}m `
+          + `${(sx[k] / n).toFixed(3).padStart(6)} ` + pcs(sb[k], n));
+        const r = rb[k];
+        if (r) console.log(`  ${'　　　真實'.padEnd(20, '\u3000')} ${String(r.distMean).padStart(5)}m `
+          + `${String(r.xgPerShot).padStart(6)} ` + pcs(r.distBins.map(v => v * 100), 100));
+      }
+    }
   }
 }
 line('每場 xG(主:客)', `${mean(rows.map(r => r.st.xg.home)).toFixed(2)} : ${mean(rows.map(r => r.st.xg.away)).toFixed(2)}`);

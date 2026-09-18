@@ -600,5 +600,45 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('解圍的錨走共用的 pair()(這一場兩隊,不是聯盟平均)',
         /pair\('clearances'\)/.test(chkBare) && /定義可能不同/.test(chkSrc));
     }
+
+    /* 15. 階段 4l-2:**同一個 situation 裡還有兩種形狀**。上游逐顆射門帶 `foot`,
+       拆開來 FromCorner 是頭球(xG 0.124、平均 8.4 m)與腳下(0.086、16.3 m)兩件事,
+       而引擎的 `headerAt` 本來拿混合的 0.103 當頭球的 xG。
+       另外兩條守的是這一輪修掉的**基礎錯配**:射正要比率不比次數(`stf` 與 `sf` 是賽季平均,
+       而引擎的射門數校準的是 `expShots`)。 */
+    {
+      const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const bare = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const fc = profile.league_?.shotSituations?.FromCorner;
+      check('側寫把角球射門拆成頭球與腳下(逐顆的 foot 欄位)',
+        fc?.byFoot?.header?.shots > 0 && fc?.byFoot?.foot?.shots > 0
+        && fc.byFoot.header.shots + fc.byFoot.foot.shots === fc.shots,
+        `頭球 ${fc?.byFoot?.header?.shots} + 腳下 ${fc?.byFoot?.foot?.shots} = ${fc?.shots}`);
+      /* 兩種**真的不一樣**,否則這一條在守一件不存在的事(4v 的教訓)。 */
+      check('兩種的 xG 與離門真的不同(不然拆開沒有意義)',
+        Math.abs(fc.byFoot.header.xgPerShot - fc.byFoot.foot.xgPerShot) > 0.02
+        && Math.abs(fc.byFoot.header.distMean - fc.byFoot.foot.distMean) > 3,
+        `xG ${fc.byFoot.header.xgPerShot} vs ${fc.byFoot.foot.xgPerShot}`
+        + `・離門 ${fc.byFoot.header.distMean} vs ${fc.byFoot.foot.distMean}`);
+      check('頭球的 xG 用頭球那一種的真值,不是混合的',
+        /CORNER_HEAD_XG = [^;]*byFoot\?\.header\?\.xgPerShot/.test(bare)
+        && /const xg = cl\(CORNER_HEAD_XG,/.test(bare));
+      /* 站位的**性質**:瞄得到的那幾個裡要有一個在 5 公尺內(真實的角球頭球 19% 在 5 m 內),
+         而二點球那一個要在瞄得到的範圍外(`BOX_D + 2`)。比性質不比字面的數字。 */
+      {
+        const m = bare.match(/const spots = \[([\s\S]*?)\];/);
+        const xs = [...(m?.[1] ?? '').matchAll(/dir \* ([0-9.]+)/g)].map(a => Number(a[1]));
+        const aimable = xs.filter(x => x < 18.5);
+        check('角球站位有一個在小禁區(瞄得到的最近一個 < 5 m),二點球那個在瞄不到的範圍外',
+          xs.length >= 5 && Math.min(...aimable) < 5 && xs.some(x => x > 18.5),
+          `瞄得到 ${aimable.join(' / ')}・全部 ${xs.join(' / ')}`);
+      }
+      const chkBare2 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('射正判的是率,不是拿兩個不同基礎的次數相減',
+        /line\('射正率'/.test(chkBare2) && !/line\('每場射正'/.test(chkBare2));
+      check('角球射門逐種的離門分佈印出來,而真值從側寫讀(不另外攤一次 raw)',
+        /cornerShotBins/.test(chkBare2) && /byFoot/.test(chkBare2));
+    }
   }
 }

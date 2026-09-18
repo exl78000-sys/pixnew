@@ -314,6 +314,7 @@ const SAVE_HOLD = 0.80;
    —— 因為它不是「選不選擇射門」的問題,是**球不該那麼常在那裡落到對方腳下**。
    範圍取禁區(球在自家禁區內的鬆球才出來),不是憑印象的半徑:那正是他可以用手的範圍。 */
 const GK_RUSH = true;
+const NEAR_GOAL = 8;                           // 「門前」的量測範圍(公尺)—— 只給計數用,不影響行為
 /* 射門頻率**綁在球隊自己的真實射門率上**(rates.sf)。
    這是 λ 錨能成立的前提:E[進球] = E[射門] × E[xG] × k,而 k 由 λ 閉式算出來。
    射門是模擬長出來的,但「多久出現一次夠好的機會」要跟真實球隊一致,不然 k 會補在錯的地方。
@@ -594,7 +595,18 @@ const BOX_CARE = 0.0719;
    多出來的射門由 SHOT_URGE 退一格收回去(那一格就是為這件事存在的)。
    **場數不夠的掃描會騙人**:同一份程式 20 場量到 12.1%、50 場量到 10.0% —— 分享率的 SE
    在 20 場是 1.5 個百分點,而要分辨的差距就是這個量級,四個值排出來的單調趨勢照樣出得來。 */
-const CORNER_HEAD = 0.85;                      // 在禁區裡搶到角球傳中 → 第一時間攻門的機率
+/* **2026-09-18 階段 4l-2 重量成 0.70。** 上面那張表是**舊站位**(6 / 6 / 11 / 14 / 14 / 19)掃的,
+   而 4l-2 把站位排到真實的頭球離門分佈上(4.7 / 7.8 / 8.0 / 8.5 / 11.7)——
+   站位一往前挪,進攻方就更常搶到第一點(第一點 攻 2.25 → 3.05 / 守 6.95 → 6.65,各 20 場),
+   同一個機率就生出太多頭球。錨是**頭球 ÷ 角球 = 0.20**(真實 FromCorner 頭球 46% ×
+   每個角球 0.44 腳射門)。新站位下逐值掃(各 30 場):
+     0.85 → 頭球/角球 0.270   FromCorner 18.0%   射門/預算 1.03   進球 2.30 : 0.87
+     0.70 → **0.216**         **16.0%**          **0.98**         2.03 : 0.83   ← 選這個
+     0.58 → 0.207             15.6%              0.97             2.00 : 0.77
+     0.45 → 0.167             14.5%              0.98             2.20 : 0.83
+   兩個錨方向相反(頭球/角球 要低一點、FromCorner% 要高一點),0.70 是兩邊都在 8% 以內的那一格。
+   **這是「改動會改變射門位置分佈的行為,就回頭重量」的同一條** —— 站位是行為。 */
+const CORNER_HEAD = 0.70;                      // 在禁區裡搶到角球傳中 → 第一時間攻門的機率
 /* **第二球是一腳出手,不是控球之後再決定**(2026-09-18,階段 4l)。
    規劃寫的是「本站幾乎沒有第二波」,而量下來不是那樣:進攻方一場**贏到 5.1 次第二球**
    (防守方 2.7),其中 62% 在射程內 —— 他們拿得到球,只是拿到之後不射
@@ -618,6 +630,14 @@ const CORNER_SPOT_R = 2.5;                     // 離自己那個站位這麼近
    弧頂是**幾何推出來的,不是憑印象挑的**:要讓球只在「還在角旗邊」與「到了目標區」這兩段
    低於頭球高度,弧頂取 6 公尺 → vz = √(2g·6) = 10.85 m/s、飛行 2.21 秒,
    算出來兩端各只有 4.3 公尺低於 2.6 公尺(以 35 公尺的傳中計),中間整段都在人頭上。 */
+/* **傳中的瞄準誤差**(2026-09-18,階段 4l-2)。4l-2 之前寫死 2.5(每軸 ±1.25 公尺),
+   而那個數字是「跟盯人的距離同一個量級」——盯人在 2.4 公尺外,所以球一定落在
+   進攻方那一邊,第一點幾乎必然是他的。加上「傳中飛行中守住站位」之後實測
+   **進攻方贏到 7.4 次第一點、防守方 5.2**(59%),而真實的角球第一點大多是防守方拿到的。
+   真實的角球不是「一定找得到人」:`extra.accurate_crosses` 一隊一場只有 4.28 次(傳中成功率的量級),
+   所以誤差本來就該跟盯人的距離同量級**以上**。這個值用錨掃出來 ——
+   錨是「進攻方的頭球 ÷ 角球」:真實 FromCorner 頭球 46% × 每個角球 0.44 腳射門 = **0.20**。 */
+const CROSS_AIM_ERR = 2.5;                     // 傳中落點的誤差範圍(公尺,每軸 ±一半)
 const CROSS_APEX = 6;                          // 傳中弧頂(公尺)
 const CROSS_HEAD = 2.6;                        // 頭球高度:低於它才搶得到第一點
 const BOX_D = 16.5, BOX_W = 20.16;             // 禁區:深 16.5 m、半寬 20.16 m(正式尺寸)
@@ -977,6 +997,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      **不用 q 模型去算角球射門的 xG**:那會因為離門近而給出過高的值,
      而真實資料已經直接告訴我們是多少了(鐵則一:有出處的數字優先於推導出來的)。 */
   const CORNER_XG = L.shotSituations?.FromCorner?.xgPerShot ?? null;
+  /* **頭球要用頭球那一種的 xG**(2026-09-18,階段 4l-2)。上面那個 0.103 是頭球與腳下**混在一起**
+     的平均,而逐顆的 `foot` 欄位說頭球是 **0.124**、腳下是 0.086 —— 拿混合值當頭球的 xG
+     就是「拿一個相關的欄位當 proxy,而真正的那個欄位就在同一個物件裡」。
+     腳下那一種本站走 q 模型(距離與張角),所以只要改頭球這一條。
+     側寫沒有這個欄位時退回混合值(舊側寫仍然跑得動)。 */
+  const CORNER_HEAD_XG = L.shotSituations?.FromCorner?.byFoot?.header?.xgPerShot ?? CORNER_XG;
   const CORNER_SHARE = CORNER_XG == null ? 0 : (L.shotSituations?.FromCorner?.share ?? 0);
   const SET_SHARE = PEN_SHARE + CORNER_SHARE;      // 從運動戰扣掉的總份額
   /* 運動戰那一份的平均 xG:把已經獨立處理的情境(十二碼、角球)排除之後重新加權。 */
@@ -1073,7 +1099,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      **一次把水準拉低 9.5% 會讓兩個 λ 一起塌**(主 1.72、客 0.82),而我差一點把它讀成
      「角球射門被封阻吃掉了」。拆開看 `進球 ÷ 會進的球` 0.896 → 0.903 **一動都沒動**,
      封阻不是原因 —— 原因是我自己的外推。稀疏取樣的線性外推要回頭實跑確認。 */
-  const SELECT_FIX = 0.97;
+  /* **2026-09-18 階段 4l-2 重量成 0.90。** 這一輪動了兩樣會改變射門組合的東西:
+     角球的站位往前挪(頭球離門 13.3 → 10.3 公尺)、頭球的 xG 改用頭球那一種的真值
+     (0.103 → 0.124)。40 場逐值量(`CORNER_HEAD` 0.70 那一格):
+       0.92 → 每球 xG 0.1177、λ 2.10 ± 0.25 : 0.72 ± 0.14
+       0.90 → **0.1155**、2.10 ± 0.25 : **0.70** ± 0.14   ← 選這個
+     這次**沒有再用線性外推**(4l 那次外推 0.905、實跑 −4.5%,兩個 λ 一起塌)。 */
+  const SELECT_FIX = 0.90;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
   const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
@@ -1119,6 +1151,15 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        而它的前提就是進攻方拿得到第二球。`clearWhy` 是解圍的三條路各自幾次 ——
        側寫的 `clearances` 說真實一場 48.7 次,本站 145.7,先看是哪一條在產生它。 */
     cornerNext: {}, cornerNextD: [], clearWhy: {},
+    /* **0~5 公尺那一格是 0**(2026-09-18,階段 4l-2)。真實的角球射門有 13% 在 5 公尺內
+       (頭球 19% / 腳下 8%),本站 1%。0 不是「少」,是那條路根本沒鋪(階段 4h)——
+       所以先量兩件事:傳中被碰到的那一刻**最近的進攻方離門多遠**(有沒有人在那裡),
+       以及**門前的鬆球被誰收走**(門將 / 進攻 / 防守)。純計數,不呼叫 rng。 */
+    cornerNearD: [], nearBall: {}, cornerAimD: [], cornerSpotD: [],
+    /* 角球射門**逐種**的離門分佈與 xG:真實是兩個形狀(頭球 8.4 m / 腳下 16.3 m),
+       所以本站也要分開量,不然又是「總和對上而每一種都不對」。 */
+    cornerShotBins: { header: new Array(7).fill(0), foot: new Array(7).fill(0) },
+    cornerShotXg: { header: 0, foot: 0 },
     corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 }, reds: { home: 0, away: 0 }, subs: { home: 0, away: 0 },
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
@@ -1235,12 +1276,26 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     return 'RegularPlay';
   }
 
+  /* 門前的鬆球被誰收走(階段 4l-2)。`who` 是 'gk' / 'att' / 'def' —— 進攻方是**這一球
+     所指的那一邊**(離哪一個球門近就是往那邊攻的那一隊)。分角球期間與其他兩種記。 */
+  function noteNearBall(p) {
+    const s2 = sideOf(p.side), gx = s2.att > 0 ? PITCH_W : 0;   // 他自己要攻的門
+    const dAtt = hypot(gx - ball.x, PITCH_H / 2 - ball.y);      // 球離「他攻的門」多遠
+    const dOwn = hypot((s2.att > 0 ? 0 : PITCH_W) - ball.x, PITCH_H / 2 - ball.y);
+    const d = Math.min(dAtt, dOwn);
+    if (d > NEAR_GOAL) return;
+    const who = p.role === 'GK' ? 'gk' : (dAtt < dOwn ? 'att' : 'def');
+    const k = (st.pendingOrigin?.kind === 'corner' ? '角球・' : '運動戰・') + who;
+    st.nearBall[k] = (st.nearBall[k] ?? 0) + 1;
+  }
+
   /* 把球交給某個人(控到球) */
   /* `from` = 傳球給他的隊友(沒有就是解圍 / 折射 / 鬆球 / 死球重開)。
      **這個要由呼叫端明講,不可以在這裡自己讀 `ball.passTo`** —— 呼叫端在叫 giveTo 之前
      就把 passTo / passSide 清掉了(那是攔截統計那一段),所以在這裡讀永遠是 null。
      第一版就是這樣寫的,結果助攻整場 0 筆而**一個錯都不報**:對不上永遠是安靜的。 */
   function giveTo(p, from = null) {
+    noteNearBall(p);
     /* **在 openChain 之前先看** —— 它會把 pendingOrigin 領走清掉(見 CORNER_SNAP)。 */
     const second = st.pendingOrigin?.kind === 'corner' && st.pendingOrigin.side === p.side;
     p.assistBy = from && from !== p && from.side === p.side ? from : null;
@@ -1446,6 +1501,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           const inBox = Math.abs(goalX - p.x) < BOX_D && Math.abs(p.y - PITCH_H / 2) < BOX_W;
           const k = inBox ? 'box' : 'edge';
           st.cornerShot[k] = (st.cornerShot[k] ?? 0) + 1;
+          st.cornerShotBins.foot[Math.min(6, Math.floor(dGoal / 5))]++;
+          st.cornerShotXg.foot += xg;
         }
         noteShotDist(sit, dGoal);
         /* 助攻(階段 4b):**進球前一腳傳到這位射手腳下的球**,而且要是同一隊、同一次進攻。
@@ -1975,7 +2032,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
                不然他會變成一個在門前三公尺帶球的持球者,而對方會過來搶。 */
             const bs = sideOf(best.side), bgx = bs.att > 0 ? 0 : PITCH_W;
             if (best.role === 'GK' && Math.abs(best.x - bgx) < BOX_D
-                && Math.abs(best.y - PITCH_H / 2) < BOX_W) { keeperCollect(best.side); st.loose++; }
+                && Math.abs(best.y - PITCH_H / 2) < BOX_W) { noteNearBall(best); keeperCollect(best.side); st.loose++; }
             else { giveTo(best, assisted); st.loose++; }
             }
           }
@@ -2104,13 +2161,24 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const gx = s.att > 0 ? PITCH_W : 0, dir = s.att > 0 ? -1 : 1;   // dir:從球門往場內
     const nearY = cy < PITCH_H / 2 ? PITCH_H / 2 - 7 : PITCH_H / 2 + 7;   // 近柱在開球那一側
     const farY = cy < PITCH_H / 2 ? PITCH_H / 2 + 7 : PITCH_H / 2 - 7;
+    /* **站位的深度對著真實的頭球離門分佈排**(2026-09-18,階段 4l-2)。
+       上游逐顆射門的 `foot` 欄位說:角球頭球 847 顆,**19% 在 5 公尺內、64% 在 5~10、15% 在 10~15、
+       15 公尺外幾乎沒有**(平均 8.4 m)。而 4l-2 量出來本站**傳中被碰到的那一刻,
+       進攻方最近的人離門中位 9.5 公尺、最小 5.8、5 公尺內 0%** —— 因為舊的站位
+       (6 / 6 / 11 / 14 / 14 / 19)算成離門距離最近的一個就是 √(6² + 7²) = 9.2 公尺。
+       那正是「0~5 公尺那一格是 0」的原因:**不是機率太低,是那裡從來沒有人**(階段 4h)。
+       本站沒有定位球戰術的資料,所以**站位是一個自由參數**(鐵則三不准編的是數字,
+       不是不准挑站位)—— 自由參數就對著量得到的真實分佈校準:
+       瞄得到的五個點(`BOX_D + 2` 以內才會被當成傳中目標)算出來是
+       4.7 / 7.8 / 8.5 / 8.0 / 11.7 公尺,均勻挑一個 → 20% / 60% / 20%,對上 19 / 64 / 15。
+       第六個 19 公尺**刻意在瞄得到的範圍外**:它是二點球的站位,不是傳中的目標。 */
     const spots = [
-      { x: gx + dir * 6, y: nearY },                  // 近柱
-      { x: gx + dir * 6, y: farY },                   // 遠柱
-      { x: gx + dir * 11, y: PITCH_H / 2 },           // 罰球點
-      { x: gx + dir * 14, y: PITCH_H / 2 - 5 },
-      { x: gx + dir * 14, y: PITCH_H / 2 + 5 },
-      { x: gx + dir * 19, y: PITCH_H / 2 },           // 禁區線外(二點球)
+      { x: gx + dir * 4.5, y: PITCH_H / 2 + (nearY > PITCH_H / 2 ? 1.5 : -1.5) },  // 小禁區(離門 4.7)
+      { x: gx + dir * 5.5, y: nearY + (nearY > PITCH_H / 2 ? -1.5 : 1.5) },        // 近柱(7.8)
+      { x: gx + dir * 6, y: farY },                                                // 遠柱(8.5)
+      { x: gx + dir * 8, y: PITCH_H / 2 },                                         // 六碼線前(8.0)
+      { x: gx + dir * 11, y: PITCH_H / 2 + (farY > PITCH_H / 2 ? 4 : -4) },        // 罰球點附近(11.7)
+      { x: gx + dir * 19, y: PITCH_H / 2 },           // 禁區線外(二點球)—— 瞄不到他,他等第二球
     ];
     const att = new Map(), def = new Map();
     /* 進攻方:開球的人去角旗,**離對方球門最近的六個**進禁區,其餘留在中線附近 ——
@@ -2142,7 +2210,21 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
 
   /* 傳中的第一點是誰碰的。分類只回答分得出來的那幾種,加起來不等於角球數的那一份
      就是「沒有人碰到」(球飛過所有人),`check-sim` 用減的把它印出來。 */
-  function cornerFirst(k) { st.cornerFirst[k] = (st.cornerFirst[k] ?? 0) + 1; }
+  function cornerFirst(k) {
+    st.cornerFirst[k] = (st.cornerFirst[k] ?? 0) + 1;
+    /* 傳中被碰到的那一刻,進攻方最近的人離門多遠 —— 站位排在 6 / 6 / 11 / 14 / 14 / 19 公尺,
+       所以理論上最近的一個是 √(6² + 7²) = 9.2 公尺。量它是要確認**實際**也是這樣
+       (人會跑),而真實的角球頭球平均在 8.4 公尺、19% 在 5 公尺內。 */
+    const att = ball.passer?.side;
+    if (!att) return;
+    const gx = sideOf(att).att > 0 ? PITCH_W : 0;
+    let best = Infinity;
+    for (const q of sideOf(att).players) {
+      if (q.off || q.role === 'GK') continue;
+      best = Math.min(best, hypot(gx - q.x, PITCH_H / 2 - q.y));
+    }
+    if (Number.isFinite(best)) st.cornerNearD.push(Math.round(best * 10) / 10);
+  }
 
   function corner(side, cy, cx) {
     const s = sideOf(side);
@@ -2349,17 +2431,64 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const targets = s.players.filter(q => !q.off && q !== p && q.role !== 'GK'
       && Math.abs(q.x - gx) < BOX_D + 2 && Math.abs(q.y - PITCH_H / 2) < BOX_W);
     const aim = targets.length ? targets[Math.floor(rng() * targets.length)] : null;
-    const tx = aim ? aim.x + (rng() - 0.5) * 2.5 : gx + dir * (6 + rng() * 10);
-    const ty = cl((aim ? aim.y : PITCH_H / 2) + (rng() - 0.5) * 2.5, 6, PITCH_H - 6);
+    const tx0 = aim ? aim.x + (rng() - 0.5) * CROSS_AIM_ERR : gx + dir * (6 + rng() * 10);
+    const ty0 = cl((aim ? aim.y : PITCH_H / 2) + (rng() - 0.5) * CROSS_AIM_ERR, 6, PITCH_H - 6);
+    const tx = tx0, ty = ty0;
+    /* 量:**瞄的那個人離門多遠**(aim)與**瞄的那個點離門多遠**(修正後的 tx/ty)。
+       頭球落在哪裡是這兩個加上幾何決定的 —— 分開記才看得出是「沒有瞄到那裡」
+       還是「瞄了但球不落在那裡」。 */
+    if (aim) st.cornerSpotD.push(Math.round(hypot(gx - aim.x, PITCH_H / 2 - aim.y) * 10) / 10);
+    st.cornerAimD.push(Math.round(hypot(gx - tx, PITCH_H / 2 - ty) * 10) / 10);
     /* **不搬人**:死球那一段已經確認他走到角旗附近了(見 CORNER_READY 那一段),
        從他實際站的地方踢。硬收座標的話,等滿 CORNER_WAIT 而他還沒走到時就是一次瞬移。 */
     /* 吊過人群(見 CROSS_APEX):弧頂固定,所以飛行時間固定、遠的球就踢得更重 ——
        真實的後點球本來就比近柱球用力。水平速度要**補空氣阻力**:球在空中每秒被拖慢
        BALL_AIR,不補的話 2.21 秒會少飛 BALL_AIR·tt²/2 = 2.9 公尺,每一記傳中都短。 */
+    /* **「讓球在到他頭上的那一刻剛好是頭球高度」試過了,而且失敗 —— 階段 4l-2 的第二個否定。**
+       起點是一個真的幾何事實:搶第一點的條件是「下降中而且低於 `CROSS_HEAD`」,
+       而那個窗口在落點**之前**就開始(解 z(t) = vz·t − g·t²/2 = CROSS_HEAD 的下降根
+       t_head = 1.94 s、落地 2.21 s → 窗口是最後 12.4% 的路程,32 公尺的傳中就是 4.0 公尺)。
+       所以球是**落在他腳下**而第一點發生在他前面 4 公尺 —— 實測站位平均 8.1、頭球平均 10.4。
+       把水平速度改成 `d / t_head`(球到目標點時正好是頭球高度)確實把那 4 公尺收掉了,
+       **而它把角球變成一台頭球機器**。2×2 對照(各 20 場,站位 × 飛行):
+         舊站位・落腳下  第一點 攻 2.25 / 守 6.95   頭球/角球 0.218   FromCorner 17.1%   射門 23.1
+         舊站位・到頭上  　　　 3.90 / 4.90   　　　 0.370   　　　　 20.4%   　　 24.7
+         新站位・落腳下  　　　 3.05 / 6.65   　　　 0.292   　　　　 18.7%   　　 24.4
+         新站位・到頭上  　　　 7.20 / 5.05   　　　 **0.522**  　　　 **29.6%**  　 **29.2**
+       錨是「頭球 ÷ 角球 = 0.20」(真實 FromCorner 頭球 46% × 每個角球 0.44 腳射門),
+       而**到頭上那一版的頭球離門一點都沒有更好**(12.4 / 10.4 對 13.3 / 10.1)——
+       它付了兩倍的第一點,買到的是零。
+       唯一找得到的槓桿是傳中的瞄準誤差,**掃到極端也構不到錨**(20 場一個值):
+       2.5 → 0.505、5 → 0.377、8 → 0.393、11 → 0.403,降一段就飽和在 0.38~0.40。
+       同一輪還試過「傳中飛行中守住角球站位」(球飛 1.94 秒,而站位在球一踢出去就散了,
+       排在 4.7 公尺的人已經飄到 5~7.5):它**真的把 0~5 公尺那一格做出來了**
+       (頭球離門 0/50/39/9 → 29/49/14/8),但第一點同樣是 7.4 / 5.2、FromCorner 30.9%。
+       兩個都還原。**結論是同一件事:缺的維度是爭頂本身** —— 現在的規則是
+       「離球最近的人拿到」,所以傳中準一點就等於第一點必然是他的;而真實的角球第一點
+       是一次空中對抗(側寫有 `aerials_won`,一隊一場 16.17)。那是下一個階段。 */
     const d = hypot(tx - p.x, ty - p.y);
     const vz = Math.sqrt(2 * GRAVITY * CROSS_APEX), tt = 2 * vz / GRAVITY;
     kick(p, tx, ty, d / tt + BALL_AIR * tt / 2, vz, 'pass');
     st.lastKick = 'corner';               // 讓「第一點」認得出這是角球傳中(見 CORNER_HEAD)
+    /* **「傳中飛行中守住站位」試過了,而且失敗 —— 這是階段 4l-2 的否定結果。**
+       起因是量出來的事實:`deadBall` 的站位只在死球那一段有效,球一踢出去 `st.restart`
+       就清掉、所有人立刻走回陣型格子,而傳中要飛 1.94 秒 —— 排在 4.7 公尺的那個人
+       在第一點發生的那一刻已經飄到 **5~7.5 公尺(85%)**。所以「0~5 公尺那一格是 0」
+       的直接原因是**那個人已經不在那裡了**。
+       做法是在活球段把角球站位當移動目標,閘門掛 `lastKick === 'corner'`(只守到第一點)。
+       **它確實解決了那一格**:頭球的離門分佈 0 / 50 / 39 / 9 → **29 / 49 / 14 / 8**
+       (真實 19 / 64 / 16 / 0),0~5 公尺第一次不是 0。
+       **而代價是整個角球變成一台頭球機器**(50 場):傳中的第一點 進攻方 **7.4** / 防守方 5.2
+       (改之前是 2.8 / 6.7,真實的角球第一點大多是防守方拿到)、每場角球 **14.7**(11.8)、
+       情境 FromCorner **30.9%**(17.3)、射門 27.9(預算 23.5,比值 1.19)、λ 客隊 **+2.9 SE**。
+       原因是六個進攻方被凍在傳中的目標點上,而盯人站在 2.4 公尺外 —— 球落在誰旁邊是確定的。
+       唯一找得到的槓桿是傳中的瞄準誤差,**掃到極端也構不到錨**(20 場一個值,
+       錨是「頭球 ÷ 角球 = 0.20」):2.5 → **0.505**、5 → 0.377、8 → 0.393、11 → 0.403 ——
+       降一段之後就飽和在 0.38~0.40,而且角球數與射門數一起被帶歪。
+       那是 4u 那條「槓桿推到退化的極端仍然構不到錨 = 模型少一個維度」的同一個形狀:
+       **缺的維度是爭頂本身** —— 現在的規則是「離球最近的人拿到」,而真實的角球第一點
+       是一次空中對抗(側寫有 `aerials_won`,一隊一場 16.17)。那是另一件事,開在規劃裡。
+       整段已移除,只留這段量測。 */
     ball.passTo = null;                   // 傳中沒有指定接球者:誰搶到算誰的
     st.pendingOrigin = { kind: 'corner', side: r.side };   // 這一串仍然算角球來的(見 openChain)
   }
@@ -2371,7 +2500,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   function headerAt(p) {
     const s = sideOf(p.side);
     const goalX = s.att > 0 ? PITCH_W : 0;
-    const xg = cl(CORNER_XG, 0.01, 0.95);
+    const xg = cl(CORNER_HEAD_XG, 0.01, 0.95);
     const c = cal[p.side];
     const miss = rng() >= cl(xg * (c?.k ?? 1), 0, 1);
     const err = miss
@@ -2387,6 +2516,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.shots++; st.shotsBy[p.side]++;
     st.shotSit.FromCorner = (st.shotSit.FromCorner ?? 0) + 1;
     st.cornerShot.header = (st.cornerShot.header ?? 0) + 1;
+    st.cornerShotBins.header[Math.min(6, Math.floor(dGoal / 5))]++;
+    st.cornerShotXg.header += xg;
     noteShotDist('FromCorner', dGoal);
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
     emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner' });
@@ -2479,7 +2610,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp, boxDuels: st.boxDuels,
         cornerSrc: { ...st.cornerSrc }, cornerFirst: { ...st.cornerFirst }, cornerShot: { ...st.cornerShot },
-        cornerNext: { ...st.cornerNext }, cornerNextD: [...st.cornerNextD], clearWhy: { ...st.clearWhy } },
+        cornerNext: { ...st.cornerNext }, cornerNextD: [...st.cornerNextD], clearWhy: { ...st.clearWhy },
+        cornerNearD: [...st.cornerNearD], nearBall: { ...st.nearBall },
+        cornerAimD: [...st.cornerAimD], cornerSpotD: [...st.cornerSpotD],
+        cornerShotBins: { header: [...st.cornerShotBins.header], foot: [...st.cornerShotBins.foot] },
+        cornerShotXg: { ...st.cornerShotXg } },
     }),
     /* 量測用:跑動量、最高速、控球 —— 這幾個要對得回 FotMob 的真實值,不然「像不像在踢球」沒有判準 */
     motion: () => ({
