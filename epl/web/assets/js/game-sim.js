@@ -192,7 +192,11 @@ const DUEL_P = 0.35;                           /* 那些決定裡有多少真的
    禁區裡(`BOX_CARE`)、自家門前(`FOUL_NO_WHISTLE`)、吃過黃牌的人(`CARDED_CARE`)——
    三者都會把「本來要犯規」換成乾淨的搶球,所以權重不等於最後的佔比。
    **改動那三個之中任何一個就要重量一次。** */
-const DUEL_FOUL_FIT = 1.60;
+/* **2026-09-18 階段 4x 重量成 1.486**(4w 是 1.60,而 4w 把錨換成了這一場的 20.8)。
+   犯規 22.4 要 ×0.929、十二碼的期望值 0.248 要 ×0.927 —— **兩個要乘的係數一樣**,
+   所以只動這一個、`BOX_CARE` 不跟著補。4v 記的「兩個相乘的常數要一起算」是為了防止
+   互相抵銷,而這裡兩個目標**同向同幅**,補了反而會把十二碼留在高處。 */
+const DUEL_FOUL_FIT = 1.486;
 /* 宣告之後**防守員撲上去**,結算在「碰到」或「撲了 `DUEL_LUNGE` 秒」—— 兩種都就地結算,
    **不可以因為撲不到就取消**,那等於讓幾何決定對抗成不成立,而那正是 4k~4p 爆炸的來源。
    四個版本都量過(各 20~90 場),而**選的那一個不是畫面最好的,是錨守得住的那一個**:
@@ -783,6 +787,20 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      不要自己把 20 隊平均一次 —— 逐隊加權算出來是 10.82(726 隊-場,升班馬只有 4 場),
      跟它的 10.9 差 1%,而那 1% 純粹是我用了不同的母體。**同一個量只能有一個來源。** */
   const FOUL_LG = profile.league_?.rates?.fouls ?? null;
+  /* 每次犯規吃黃牌的機率。**2026-09-18 階段 4x 改成逐隊**(各自在這個主客身分下的
+     `yellow ÷ fouls`),聯盟值只當退路 —— 這是 4w 那條坑的**鏡像**:那次是錨用了聯盟平均
+     而引擎是對的,這次是 `check-sim` 的錨早就是這一場的值(ARS 0.95 + LIV 1.95 = 2.90),
+     **而引擎用聯盟**。實測這兩隊差一倍:ARS 主 0.95/10.14 = **0.094**、
+     LIV 客 1.95/10.62 = **0.184**,而聯盟是 0.172 —— 拿聯盟值套上去,黃牌 3.87 對 2.90。
+     機制對得起來:犯規 22.4 × 0.1725 = 3.86 ≈ 實測 3.87。
+     **宣告要在 `mkSide` 之前** —— 放在後面就是暫時死區,`createSim` 一叫就拋
+     「Cannot access before initialization」(本站記過的坑,這次是函式作用域版,
+     而 `npm run game:test` 擋下來了,不是上線才發現)。 */
+  const YELLOW_LG = profile.league_?.rates?.yellowPerFoul ?? YELLOW_PER_FOUL_FALLBACK;
+  const yellowPerFoulOf = (code, side) => {
+    const r = profile.teams?.[code]?.rates?.[side];
+    return (r?.yellow == null || !r?.fouls) ? YELLOW_LG : r.yellow / r.fouls;
+  };
   /* **一次對抗的三種結局,比例從側寫算**(以場數加權;兩隊合計 = 每隊 × 2)。
      算不出來就退回聯盟量級的備援值並標出來 —— 但那不會在英超發生(側寫就是從英超算的)。
      這裡算的是**聯賽典型的比例**;某一場該出現幾次由兩隊自己的相對值決定(見 mkSide 的
@@ -888,7 +906,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const relMean = players.reduce((a, q) => a + relOf(q.ability?.tkl), 0) / (players.length || 1);
     return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1,
       push: 0, wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, relMean,
-      possMean: pmRaw ?? null, bench };
+      ypf: yellowPerFoulOf(code, side), possMean: pmRaw ?? null, bench };
   };
 
   const H = mkSide(home, 'home', +1), A = mkSide(away, 'away', -1);
@@ -904,8 +922,6 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
    * 所以「N 場平均落在 λ 的幾個標準誤內」是這一版的錨,不再是精確相等。這是換引擎的代價。 */
   const L = profile.league_ ?? {};
   const lgSf = L.rates?.sf ?? 12.6;
-  /* 每次犯規吃黃牌的機率:側寫自己算好的真實值(黃牌 ÷ 犯規),沒有才退回聯盟值 */
-  const YELLOW_PER_FOUL = L.rates?.yellowPerFoul ?? YELLOW_PER_FOUL_FALLBACK;
   /* 聯盟真實的每球平均 xG:用各情境的 xgPerShot 依 share 加權。
      沒有這一份就退回 0.105 並標出來 —— 但英超的產物一直都有。 */
   const realXgPerShot = (() => {
@@ -1014,7 +1030,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      所以 0.93 × 0.1125/0.1090 = **0.96**。
      **它不影響射門數** —— 扣扳機那一條用的是 `q` 本身,`xgScale` 只進 `xg = q × xgScale`,
      所以兩個常數可以各自定,不會互相追(4w 特地去確認過)。 */
-  const SELECT_FIX = 0.96;
+  /* **2026-09-18 階段 4x 重量成 1.00。** 4w 的 0.96 是照掃描那一格線性外推的,實跑落在
+     0.1082(真實 0.1125,−3.8%),回推是 0.998。**三次量出來是 1.012 / 0.96 / 0.998 ——
+     它們都在 1 附近而且沒有方向**,那個散佈是射門組合的逐輪雜訊,不是漂移。
+     所以定成 1.00 並停手:網格模型的 xG 水準現在**不需要補正**了,
+     再追下去是在雜訊裡挑數字(4f 的「20 場的掃描沒有鑑別力」同一條)。 */
+  const SELECT_FIX = 1.00;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
   const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
@@ -2141,7 +2162,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const other = by.side === 'home' ? 'away' : 'home';
     st.fouls[by.side]++;
     const px = cl(victim.x, 3, PITCH_W - 3), py = cl(victim.y, 3, PITCH_H - 3);
-    if (rng() < YELLOW_PER_FOUL) {
+    if (rng() < sideOf(by.side).ypf) {
       by.yellow = (by.yellow ?? 0) + 1;
       const red = by.yellow >= 2;
       st.cards[by.side]++;
@@ -2163,7 +2184,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const s = sideOf(side);
     st.fouls[by.side]++;
     // 禁區內的犯規照樣可能吃牌(規則跟一般犯規同一條,不另外訂一個機率)
-    if (rng() < YELLOW_PER_FOUL) {
+    if (rng() < sideOf(by.side).ypf) {
       by.yellow = (by.yellow ?? 0) + 1;
       const red = by.yellow >= 2;
       st.cards[by.side]++;

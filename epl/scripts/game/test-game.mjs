@@ -519,5 +519,38 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('控球的比值不再出現在對抗的權重裡(它是過人成功的 proxy)',
         d0 > 0 && d1 > d0 && !/keep/.test(duelSrc));
     }
+
+    /* 13. 階段 4x:**每次犯規吃黃牌的機率改成逐隊**。這是 4w 那條坑的鏡像 ——
+       4w 是「錨用了聯盟平均而引擎是對的」,這次是 **`check-sim` 的錨早就是這一場的值
+       (ARS 0.95 + LIV 1.95 = 2.90),而引擎用聯盟的 0.172**。兩隊差一倍
+       (ARS 主 0.094 / LIV 客 0.184),拿聯盟值套上去黃牌就是 3.87 對 2.90。
+       守的是**性質**:兩個抽牌點都要用犯規者那一隊的值,而那個值算得出這兩隊不同的數字。 */
+    {
+      const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const bare = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      /* 正則第一版寫 `[^)]*`,而它跨不過 `sideOf(by.side)` 裡的那個右括號 → 找到 0 處。
+         那是**斷言自己的誤報**,不是程式少做 —— 先確認失敗的是哪一邊再改。 */
+      const draws = bare.match(/rng\(\) <[^;{]*\.ypf\b/g) ?? [];
+      check('兩個抽牌點都用犯規者那一隊的吃牌率', draws.length === 2,
+        `找到 ${draws.length} 處`);
+      /* 這一條第一版寫 `!/rng\(\) < YELLOW_PER_FOUL/` —— 而 4x 把那個名字改成 `YELLOW_LG` 了,
+         所以**負向對照下它照樣是綠的**(把聯盟值貼回去也不含舊名字)。守不住回歸的斷言
+         跟沒有這條一樣。改成:抽牌點一個都不准直接用聯盟那個常數。 */
+      check('聯盟那個值只剩退路,不再直接拿去抽牌',
+        !/rng\(\) <[^;{]*\bYELLOW_(LG|PER_FOUL)\b/.test(bare)
+        && /YELLOW_LG/.test(bare) && /yellowPerFoulOf/.test(bare));
+      /* 這兩隊的值**真的不一樣**,否則這一條在守一件不存在的事(4v 的 keySuffix 那條教訓:
+         只驗「帶了不撞」而不驗「不帶真的會撞」,等於沒驗)。 */
+      const ypf = (c, side) => {
+        const r = profile.teams?.[c]?.rates?.[side];
+        return (r?.yellow == null || !r?.fouls) ? null : r.yellow / r.fouls;
+      };
+      const a = ypf('ARS', 'home'), b = ypf('LIV', 'away');
+      const lg = profile.league_?.rates?.yellowPerFoul;
+      check('這兩隊的吃牌率彼此不同,也跟聯盟不同(不然這一條沒有守到東西)',
+        a != null && b != null && lg != null && Math.abs(a - b) > 0.02
+        && Math.abs((a + b) / 2 - lg) > 0.01,
+        `ARS ${a?.toFixed(3)} / LIV ${b?.toFixed(3)} / 聯盟 ${lg?.toFixed(3)}`);
+    }
   }
 }
