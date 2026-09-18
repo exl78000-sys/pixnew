@@ -361,5 +361,23 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('完場切到賽後解讀不是掛在 finished 的轉換上',
         /tab = 'recap'/.test(finishBody) && !/!disp\.finished/.test(finishBody));
     }
+
+    /* 8. 領土的三個錨(階段 4s)。它們在這之前**沒有任何消費端** —— 側寫寫進去、沒有人讀,
+       而本站的球住在對方半場的時間多了一半(完成傳球 71.5% 對真實 55.7%)。
+       兩條守的是不同的東西:計數器還在(掉了的話畫面與報告都不會報錯),
+       以及**錨用的是這兩隊自己的值** —— 我第一版拿聯盟平均當錨,而 ARS 與 LIV 都是控球型的隊,
+       那樣會把差距誇大一截(更早一版更糟:把單一隊的 extra 當成了聯盟平均)。 */
+    {
+      const sim = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      check('引擎把領土的三個計數器吐給 counts',
+        /boxTouch: \{ \.\.\.st\.boxTouch \}/.test(sim)
+        && /okOwnHalf: \{ \.\.\.st\.okOwnHalf \}/.test(sim)
+        && /okOppHalf: \{ \.\.\.st\.okOppHalf \}/.test(sim));
+      const chk = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
+      const block = chk.slice(chk.indexOf('3b-5.'), chk.indexOf('3c.'));
+      check('領土的錨取這兩隊自己的值,不是聯盟平均',
+        /profile\.teams\?\.\[code\]\?\.extra/.test(block)
+        && /ex\(HOME, k\)/.test(block) && /ex\(AWAY, k\)/.test(block));
+    }
   }
 }

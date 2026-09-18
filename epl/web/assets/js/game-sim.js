@@ -951,7 +951,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 控球串:賽後解讀(game-diag.js)要的是「一次進攻怎麼結束的」。連續模擬裡沒有「回合」這個東西,
        所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
     chains: [], chain: null, pendingOrigin: null,
-    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, duels: 0, contacts: 0, contactFrames: 0, duelPair: null, duel: null, dribbles: 0, dribblesBy: { home: 0, away: 0 }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
+    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, duels: 0, contacts: 0, contactFrames: 0, duelPair: null, duel: null, dribbles: 0, dribblesBy: { home: 0, away: 0 },
+    boxTouch: { home: 0, away: 0 }, okOwnHalf: { home: 0, away: 0 }, okOppHalf: { home: 0, away: 0 }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
@@ -1072,6 +1073,23 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (ball.shot) { st.lostShot++; if (ball.shot.willScore) st.lostGoal++; }
     ball.shot = null;               // 被人控到就不再是「飛向球門的那一腳」
     st.touches[p.side]++;
+    /* **球在哪裡**(2026-09-18,階段 4s)。這三個數字側寫裡本來就有錨,而在這之前沒有人讀:
+       `touches_opp_box`、`own_half_passes`、`opposition_half_passes`。量出來本站的球住得太前面 ——
+       完成的傳球有 71.5% 在對方半場,而 ARS + LIV 的真實值是 55.7%(見 `check-sim` 那一節)。
+       純計數,不呼叫 rng。 */
+    {
+      const s1 = sideOf(p.side), gx1 = s1.att > 0 ? PITCH_W : 0;
+      if (Math.abs(p.x - gx1) < BOX_D && Math.abs(p.y - PITCH_H / 2) < BOX_W) st.boxTouch[p.side]++;
+      /* 傳球者要用呼叫端傳進來的 `from` —— `ball.passer` 在叫 giveTo 的上一行就被清成 null 了
+         (助攻那條坑,CLAUDE.md 記過;我在 4s 的第一版探針照樣踩進去,量出來是 0.1 / 0.3)。
+         上游那兩個欄位是**成功**的傳球(兩者相加只有嘗試數的 82.6%,正好是傳球成功率的量級),
+         所以這裡記在「接到球」而不是「踢出去」,而且照**傳球者**的半場分。 */
+      if (from && from.side === p.side) {
+        const sf = sideOf(from.side);
+        if ((from.x - PITCH_W / 2) * sf.att > 0) st.okOppHalf[from.side]++;
+        else st.okOwnHalf[from.side]++;
+      }
+    }
     /* 接到球**立刻**有方向 —— 第一版是等下一次 decide() 才給 intent,而在那之前 want 是 null、
        他會煞停。實測持球者速度中位數 0.11 m/s:球在誰腳下誰就站住,整場看起來沒有人在帶球。 */
     const s0 = sideOf(p.side);
@@ -2212,7 +2230,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
-        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy }, goalSit: { ...st.goalSit },
+        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
+        boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         deflects: st.deflects, clears: st.clears },
     }),
