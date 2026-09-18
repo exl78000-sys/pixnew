@@ -409,5 +409,38 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('活球時間只印不判,沒有憑印象的真值',
         !/活球.{0,12}真實/.test(block) && /沒有「活球時間」的上游錨/.test(block));
     }
+
+    /* 10. 駐留(階段 4u)。這一節**沒有上游的錨**(34 個 teamExtra + 13 個 teamStats 鍵
+       全部 dump 過,沒有進攻段落 / 球門球 / 活球時間),所以兩條守的是**它不准假裝有**:
+       不出現「真實 N」那種字樣,而且時間佔比與傳球佔比兩個都印(它們不相等,
+       差值本身是「每秒傳球次數前後場不同」這件事的證據 —— 第一版我寫成「兩個要一致」)。
+
+       第三條守的是量測**不消耗 rng**:駐留全部從 state() 讀。會消耗亂數的量測工具
+       會讓同一個種子跑出不同的比賽(4t 那條坑),那種東西量到的差值一個字都不能信。 */
+    {
+      const chkRaw = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
+      /* **掃之前剝註解** —— 講這條規則的註解自己就寫著「兩個要一致」(那是它要擋的字串)。
+         不剝的話這條永遠紅,而紅的原因跟它想守的事一點關係都沒有。同一個坑本站記過一次,
+         而我在寫這一條的同一輪又犯了。 */
+      const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const chk = strip(chkRaw);
+      /* 段落的頭尾都要用**剝註解之後還在**的字串(那一節的輸出字面值)。
+         第一版拿下一節的註解標題當結尾,而它正好被剝掉了 → 段落一路吃到檔尾,
+         把別節的「真實 ${…}」也算進來,於是這條紅在一件它管不到的事上。 */
+      const b0 = chk.indexOf('一段進攻 = 球進到'), b1 = chk.indexOf('怎麼結束:');
+      const block = chk.slice(b0, b1 + 300);
+      check('駐留那一節只印不判,不假裝有上游的錨',
+        /只印不判/.test(block) && !/真實 \$\{/.test(block));
+      check('時間佔比與傳球佔比兩個都印,而且沒有宣稱它們相等',
+        /球在對方半場的時間/.test(block) && /完成傳球的佔比/.test(block)
+        && !/兩個要一致/.test(block));
+      /* 駐留的追蹤**不消耗 rng**:它只讀 `s`(state() 回來的那個物件)。
+         迴圈本身當然要 `sim.advance` / `sim.state` —— 那是呼叫端,不是追蹤器。
+         所以掃的是**我插進去的那一段**,不是整個 play()(第一版掃整個,而它必然含
+         advance,於是那條在守一件做不到的事)。 */
+      const track = chkRaw.slice(chkRaw.indexOf('const now = snap(s.counts);'), chkRaw.indexOf('pc = now;'));
+      check('駐留的追蹤那一段只讀 state 的物件,沒有回頭呼叫引擎',
+        track.length > 200 && !/\bsim\s*\./.test(track));
+    }
   }
 }
