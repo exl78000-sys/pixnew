@@ -366,6 +366,47 @@ if (simShots && realShots) {
   }
 }
 
+/* 3b-5. **球住在哪裡**(階段 4s)。側寫的 `extra` 裡有三個攻方的錨,而在這之前沒有人讀 ——
+         `touches_opp_box`、`own_half_passes`、`opposition_half_passes`。那是 4q 那條坑的第二次,
+         而這一次它就在四輪(4k/4m/4n/4o)一直修不好的那一層上。
+
+         **錨要用這兩隊自己的值,不是聯盟平均** —— ARS 與 LIV 都是控球型的隊,
+         聯盟平均的對方半場傳球是 184.5,而這兩隊是 216.8 與 260.0。拿聯盟平均當錨
+         會把差距誇大一截(我第一版就是這樣讀的,而且更糟:我把**單一隊**的 extra
+         當成了聯盟平均)。
+
+         **單位的警告**:`own_half_passes` + `opposition_half_passes` 只有 `teamStats.passes` 的
+         **82.6%**(840 隊-場),而那正好是傳球成功率的量級,所以它們幾乎確定是**成功**的傳球。
+         上游宣告的 title 沒有被存進 raw(`fotmob-match.mjs` 對 extra 只留值不留 title),
+         所以這是**推論不是證實** —— 本站對它的處理:引擎也記成功的傳球,兩邊同一個定義。 */
+{
+  const ex = (code, k) => profile.teams?.[code]?.extra?.[k]?.mean ?? null;
+  const pair = k => { const a = ex(HOME, k), b = ex(AWAY, k); return a == null || b == null ? null : a + b; };
+  const realBox = pair('touches_opp_box'), realOwn = pair('own_half_passes'), realOpp = pair('opposition_half_passes');
+  const avg = f => rows.reduce((a, r) => a + f(r.st.counts), 0) / rows.length;
+  const box = avg(c => (c.boxTouch?.home ?? 0) + (c.boxTouch?.away ?? 0));
+  const own = avg(c => (c.okOwnHalf?.home ?? 0) + (c.okOwnHalf?.away ?? 0));
+  const opp = avg(c => (c.okOppHalf?.home ?? 0) + (c.okOppHalf?.away ?? 0));
+  console.log('');
+  if (realBox == null || realOwn == null || realOpp == null) {
+    console.log('  球住在哪裡:側寫沒有這兩隊的 extra —— 只印本站的數字,不判');
+    console.log(`  ${'禁區觸球 / 自家半場 / 對方半場'.padEnd(16, '\u3000')} ${box.toFixed(1)} / ${own.toFixed(1)} / ${opp.toFixed(1)}`);
+  } else {
+    const line = (名稱, v, real) => console.log(`  ${名稱.padEnd(16, '\u3000')} ${v.toFixed(1).padStart(7)}`
+      + `\u3000真實 ${real.toFixed(1)}\u3000**${(v / real).toFixed(2)} 倍**`);
+    console.log(`  球住在哪裡(錨是 ${HOME} + ${AWAY} 自己的值,不是聯盟平均)`);
+    line('禁區觸球', box, realBox);
+    console.log(`  ${'　（本站只數「接到球」,帶球與射門的觸球沒算 —— 所以這個倍率是下限)'.padEnd(16, '\u3000')}`);
+    line('成功傳球・自家半場', own, realOwn);
+    line('成功傳球・對方半場', opp, realOpp);
+    const shr = 100 * opp / Math.max(1, own + opp), rshr = 100 * realOpp / (realOwn + realOpp);
+    console.log(`  ${'對方半場佔完成傳球'.padEnd(16, '\u3000')} ${shr.toFixed(1).padStart(6)}%`
+      + `\u3000真實 ${rshr.toFixed(1)}%\u3000${Math.abs(shr - rshr) > 5 ? '**球住得太前面**' : '✓'}`);
+    console.log(`  ${'　傳球總量只高兩成,錯的是**位置**不是數量 —— 這是 4k/4m/4n/4o'.padEnd(16, '\u3000')}`);
+    console.log(`  ${'　四輪都沒修好的那一層的上游(見 docs/變更紀錄.md 的階段 4s)'.padEnd(16, '\u3000')}`);
+  }
+}
+
 /* 3c. 越位與逼搶。兩個都有真值:越位是 shotmap 同一份檔案裡的 teamStats.offsides,
        逼搶是側寫的 `style.pressing`(每 100 次對手傳球的抄截 + 攔截,FotMob 逐場、非 proxy)。
        傳球成功率**只印不判** —— 本站的擷取裡 `passAccuracy` 840 個隊季場全是 null,沒有真值。 */
