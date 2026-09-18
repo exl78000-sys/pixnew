@@ -61691,8 +61691,1317 @@
      }
     ]
    }
+  },
+  "MON|LEN": {
+   "key": "MON|LEN",
+   "season": "2026-27",
+   "date": "2026-09-18",
+   "matchId": "5802941",
+   "home": "MON",
+   "away": "LEN",
+   "score": [
+    2,
+    1
+   ],
+   "providerScore": [
+    2,
+    1
+   ],
+   "teamStats": {
+    "MON": {
+     "possession": 49,
+     "shots": 9,
+     "shotsOn": 6,
+     "shotsOff": 2,
+     "blockedShots": 1,
+     "blocksMade": 4,
+     "corners": 2,
+     "offsides": 3,
+     "fouls": 13,
+     "saves": 3,
+     "passes": 530,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.42
+    },
+    "LEN": {
+     "possession": 51,
+     "shots": 12,
+     "shotsOn": 4,
+     "shotsOff": 4,
+     "blockedShots": 4,
+     "blocksMade": 1,
+     "corners": 8,
+     "offsides": 1,
+     "fouls": 11,
+     "saves": 5,
+     "passes": 530,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.04
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "MON": {
+     "touches_opp_box": 13,
+     "big_chance": 3,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 6,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 1.3,
+     "expected_goals_set_play": 0.11,
+     "expected_goals_non_penalty": 1.42,
+     "expected_goals_on_target": 2.06,
+     "own_half_passes": 278,
+     "opposition_half_passes": 187,
+     "long_balls_accurate": 23,
+     "long_balls_accurate_pct": 56,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 33,
+     "player_throws": 23,
+     "matchstats.headers.tackles": 22,
+     "interceptions": 12,
+     "clearances": 31,
+     "duel_won": 45,
+     "ground_duels_won": 36,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 9,
+     "aerials_won_pct": 47,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 38,
+     "red_cards": 0
+    },
+    "LEN": {
+     "touches_opp_box": 22,
+     "big_chance": 2,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 10,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.73,
+     "expected_goals_set_play": 0.32,
+     "expected_goals_non_penalty": 1.04,
+     "expected_goals_on_target": 1.12,
+     "own_half_passes": 289,
+     "opposition_half_passes": 166,
+     "long_balls_accurate": 25,
+     "long_balls_accurate_pct": 54,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 24,
+     "player_throws": 21,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 7,
+     "clearances": 11,
+     "duel_won": 43,
+     "ground_duels_won": 33,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 10,
+     "aerials_won_pct": 53,
+     "dribbles_succeeded": 4,
+     "dribbles_succeeded_pct": 21,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     49,
+     51
+    ],
+    "h1": [
+     51,
+     49
+    ],
+    "h2": [
+     47,
+     53
+    ]
+   },
+   "events": [
+    {
+     "minute": 32,
+     "extra": null,
+     "team": "MON",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Paris Brunner"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "LEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jonathan Gradit"
+    },
+    {
+     "minute": 53,
+     "extra": null,
+     "team": "LEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Florian Thauvin"
+    },
+    {
+     "minute": 57,
+     "extra": null,
+     "team": "LEN",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Matthieu Udol"
+    },
+    {
+     "minute": 58,
+     "extra": 0,
+     "team": "LEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Odsonne Édouard"
+    },
+    {
+     "minute": 58,
+     "extra": 0,
+     "team": "LEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Thorgan Hazard"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "MON",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mathys Detourbet"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "LEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Michał Skóras"
+    },
+    {
+     "minute": 71,
+     "extra": null,
+     "team": "MON",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lamine Camara"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "LEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Andrija Bulatović"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "MON",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Folarin Balogun"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "MON",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pape Cabral"
+    },
+    {
+     "minute": 84,
+     "extra": null,
+     "team": "LEN",
+     "type": "Goal",
+     "detail": "Own Goal",
+     "player": null
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "MON",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mohammed Salisu"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "LEN",
+     "player": "Abdallah Sima",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.056,
+     "xgot": 0.068,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 49.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "MON",
+     "player": "Matthis Abline",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 40.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "LEN",
+     "player": "Michaël Cuisance",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.103,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 30.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "MON",
+     "player": "Paris Brunner",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.466,
+     "xgot": 0.834,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.7,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "MON",
+     "player": "Aleksandr Golovin",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.9,
+     "y": 47.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "MON",
+     "player": "Paris Brunner",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.345,
+     "xgot": 0.726,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 40.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "MON",
+     "player": "Matthis Abline",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.47,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 32,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "MON",
+     "player": "Denis Zakaria",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.067,
+     "xgot": 0.086,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.5,
+     "y": 35,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "LEN",
+     "player": "Abdallah Sima",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.052,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 38.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 3,
+     "team": "MON",
+     "player": "Matthis Abline",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.043,
+     "xgot": 0.101,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.5,
+     "y": 22.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 4,
+     "team": "LEN",
+     "player": "Florian Thauvin",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 26.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "LEN",
+     "player": "Matthieu Udol",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.2,
+     "xgot": 0.818,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 32,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "LEN",
+     "player": "Thorgan Hazard",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.223,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 36.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "LEN",
+     "player": "Florian Thauvin",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.149,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 27.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "LEN",
+     "player": "Thorgan Hazard",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.086,
+     "xgot": 0.209,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.6,
+     "y": 44.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "LEN",
+     "player": "Michaël Cuisance",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 21.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "LEN",
+     "player": "Jonathan Gradit",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": true,
+     "x": 8.7,
+     "y": 33.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "LEN",
+     "player": "Kyllian Antonio",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 31.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "MON",
+     "player": "Paris Brunner",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0.013,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 35.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "LEN",
+     "player": "Odsonne Édouard",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 26.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "MON",
+     "player": "Folarin Balogun",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.077,
+     "xgot": 0.305,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 43.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 6,
+     "team": "LEN",
+     "player": "Matthieu Udol",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.041,
+     "xgot": 0.021,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 27.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -5
+    ],
+    [
+     2,
+     -5
+    ],
+    [
+     3,
+     -30
+    ],
+    [
+     4,
+     -41
+    ],
+    [
+     5,
+     -35
+    ],
+    [
+     6,
+     3
+    ],
+    [
+     7,
+     33
+    ],
+    [
+     8,
+     27
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     10,
+     -24
+    ],
+    [
+     11,
+     -24
+    ],
+    [
+     12,
+     -30
+    ],
+    [
+     13,
+     11
+    ],
+    [
+     14,
+     22
+    ],
+    [
+     15,
+     27
+    ],
+    [
+     16,
+     33
+    ],
+    [
+     17,
+     16
+    ],
+    [
+     18,
+     5
+    ],
+    [
+     19,
+     -16
+    ],
+    [
+     20,
+     -11
+    ],
+    [
+     21,
+     0
+    ],
+    [
+     22,
+     -11
+    ],
+    [
+     23,
+     -11
+    ],
+    [
+     24,
+     -19
+    ],
+    [
+     25,
+     19
+    ],
+    [
+     26,
+     19
+    ],
+    [
+     27,
+     33
+    ],
+    [
+     28,
+     11
+    ],
+    [
+     29,
+     5
+    ],
+    [
+     30,
+     0
+    ],
+    [
+     31,
+     5
+    ],
+    [
+     32,
+     100
+    ],
+    [
+     33,
+     100
+    ],
+    [
+     34,
+     100
+    ],
+    [
+     35,
+     11
+    ],
+    [
+     36,
+     24
+    ],
+    [
+     37,
+     60
+    ],
+    [
+     38,
+     54
+    ],
+    [
+     39,
+     52
+    ],
+    [
+     40,
+     16
+    ],
+    [
+     41,
+     27
+    ],
+    [
+     42,
+     92
+    ],
+    [
+     43,
+     100
+    ],
+    [
+     44,
+     100
+    ],
+    [
+     45,
+     57
+    ],
+    [
+     45.5,
+     -40
+    ],
+    [
+     46,
+     -5
+    ],
+    [
+     47,
+     -5
+    ],
+    [
+     48,
+     -5
+    ],
+    [
+     49,
+     5
+    ],
+    [
+     50,
+     3
+    ],
+    [
+     51,
+     14
+    ],
+    [
+     52,
+     14
+    ],
+    [
+     53,
+     16
+    ],
+    [
+     54,
+     5
+    ],
+    [
+     55,
+     62
+    ],
+    [
+     56,
+     73
+    ],
+    [
+     57,
+     3
+    ],
+    [
+     58,
+     -60
+    ],
+    [
+     59,
+     -81
+    ],
+    [
+     60,
+     -79
+    ],
+    [
+     61,
+     -81
+    ],
+    [
+     62,
+     -54
+    ],
+    [
+     63,
+     24
+    ],
+    [
+     64,
+     27
+    ],
+    [
+     65,
+     -38
+    ],
+    [
+     66,
+     -38
+    ],
+    [
+     67,
+     -46
+    ],
+    [
+     68,
+     8
+    ],
+    [
+     69,
+     -14
+    ],
+    [
+     70,
+     0
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     72,
+     11
+    ],
+    [
+     73,
+     0
+    ],
+    [
+     74,
+     -16
+    ],
+    [
+     75,
+     -43
+    ],
+    [
+     76,
+     -38
+    ],
+    [
+     77,
+     -27
+    ],
+    [
+     78,
+     5
+    ],
+    [
+     79,
+     -3
+    ],
+    [
+     80,
+     -3
+    ],
+    [
+     81,
+     -3
+    ],
+    [
+     82,
+     5
+    ],
+    [
+     83,
+     11
+    ],
+    [
+     84,
+     16
+    ],
+    [
+     85,
+     14
+    ],
+    [
+     86,
+     -19
+    ],
+    [
+     87,
+     -79
+    ],
+    [
+     88,
+     -71
+    ],
+    [
+     89,
+     -33
+    ],
+    [
+     90,
+     0
+    ],
+    [
+     90.5,
+     -27
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "MON": {
+     "team": "MON",
+     "formation": "4-2-3-1",
+     "coach": "Filipe Luís",
+     "xi": [
+      {
+       "name": "Lukás Hrádecky",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Vanderson",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Sadibou Sané",
+       "shirt": 72,
+       "pos": "D"
+      },
+      {
+       "name": "Eric Dier",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Flávio Nazinho",
+       "shirt": 20,
+       "pos": "D"
+      },
+      {
+       "name": "Lamine Camara",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Denis Zakaria",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Edan Diop",
+       "shirt": 37,
+       "pos": "M"
+      },
+      {
+       "name": "Aleksandr Golovin",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Matthis Abline",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Paris Brunner",
+       "shirt": 29,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Mathys Detourbet",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Pape Cabral",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Folarin Balogun",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Mohammed Salisu",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Philipp Köhn",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Christian Mawissa",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Ilane Touré",
+       "shirt": 49,
+       "pos": "?"
+      },
+      {
+       "name": "Takumi Minamino",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Safouane Benzahra",
+       "shirt": 47,
+       "pos": "?"
+      }
+     ]
+    },
+    "LEN": {
+     "team": "LEN",
+     "formation": "3-4-2-1",
+     "coach": "Yannick Cahuzac",
+     "xi": [
+      {
+       "name": "Robin Risser",
+       "shirt": 40,
+       "pos": "G"
+      },
+      {
+       "name": "Kyllian Antonio",
+       "shirt": 32,
+       "pos": "D"
+      },
+      {
+       "name": "Jean-Clair Todibo",
+       "shirt": 20,
+       "pos": "D"
+      },
+      {
+       "name": "Matthieu Udol",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Ruben Aguilar",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Amadou Haidara",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Michaël Cuisance",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Junior Kadile",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Florian Thauvin",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Mezian Mesloub Soares",
+       "shirt": 38,
+       "pos": "M"
+      },
+      {
+       "name": "Abdallah Sima",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jonathan Gradit",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Thorgan Hazard",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Odsonne Édouard",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Michał Skóras",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Andrija Bulatović",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Mathieu Gorgelin",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Souleymane Sagnan",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Florian Sotoca",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Franjo Ivanović",
+       "shirt": 29,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 30,
+      "center": 32,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 32,
+      "center": 30,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 27,
+      "center": 34,
+      "right": 39
+     }
+    },
+    "away": {
+     "total": {
+      "left": 36,
+      "center": 25,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 34,
+      "center": 21,
+      "right": 45
+     },
+     "secondHalf": {
+      "left": 37,
+      "center": 29,
+      "right": 34
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-18T21:29:59.567Z",
+   "fdMatchId": "2026-27-36",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-18T16:02:00.459Z"
+ "updatedAt": "2026-09-18T21:29:59.569Z"
 }

@@ -48412,8 +48412,1445 @@
      }
     ]
    }
+  },
+  "FCB|FCU": {
+   "key": "FCB|FCU",
+   "season": "2026-27",
+   "date": "2026-09-18",
+   "matchId": "5881171",
+   "home": "FCB",
+   "away": "FCU",
+   "score": [
+    7,
+    0
+   ],
+   "providerScore": [
+    7,
+    0
+   ],
+   "teamStats": {
+    "FCB": {
+     "possession": 68,
+     "shots": 23,
+     "shotsOn": 15,
+     "shotsOff": 3,
+     "blockedShots": 5,
+     "blocksMade": 0,
+     "corners": 9,
+     "offsides": 2,
+     "fouls": 12,
+     "saves": 2,
+     "passes": 639,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.77
+    },
+    "FCU": {
+     "possession": 32,
+     "shots": 3,
+     "shotsOn": 2,
+     "shotsOff": 1,
+     "blockedShots": 0,
+     "blocksMade": 7,
+     "corners": 2,
+     "offsides": 2,
+     "fouls": 9,
+     "saves": 6,
+     "passes": 298,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.34
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "FCB": {
+     "touches_opp_box": 55,
+     "big_chance": 6,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 14,
+     "shots_outside_box": 9,
+     "expected_goals_open_play": 2.45,
+     "expected_goals_set_play": 0.52,
+     "expected_goals_non_penalty": 2.98,
+     "expected_goals_on_target": 3.54,
+     "own_half_passes": 144,
+     "opposition_half_passes": 442,
+     "long_balls_accurate": 23,
+     "long_balls_accurate_pct": 79,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 24,
+     "player_throws": 21,
+     "matchstats.headers.tackles": 12,
+     "interceptions": 8,
+     "clearances": 6,
+     "duel_won": 44,
+     "ground_duels_won": 36,
+     "ground_duels_won_pct": 44,
+     "aerials_won": 8,
+     "aerials_won_pct": 53,
+     "dribbles_succeeded": 16,
+     "dribbles_succeeded_pct": 48,
+     "red_cards": 0
+    },
+    "FCU": {
+     "touches_opp_box": 5,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 2,
+     "shots_outside_box": 1,
+     "expected_goals_open_play": 0.2,
+     "expected_goals_set_play": 0.14,
+     "expected_goals_non_penalty": 0.34,
+     "expected_goals_on_target": 0.43,
+     "own_half_passes": 157,
+     "opposition_half_passes": 67,
+     "long_balls_accurate": 24,
+     "long_balls_accurate_pct": 41,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 33,
+     "player_throws": 14,
+     "matchstats.headers.tackles": 24,
+     "interceptions": 9,
+     "clearances": 40,
+     "duel_won": 53,
+     "ground_duels_won": 46,
+     "ground_duels_won_pct": 56,
+     "aerials_won": 7,
+     "aerials_won_pct": 47,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 59,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     68,
+     32
+    ],
+    "h1": [
+     68,
+     32
+    ],
+    "h2": [
+     68,
+     32
+    ]
+   },
+   "events": [
+    {
+     "minute": 18,
+     "extra": null,
+     "team": "FCB",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Jamal Musiala"
+    },
+    {
+     "minute": 38,
+     "extra": null,
+     "team": "FCU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Felix Uduokhai"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "FCB",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Harry Kane"
+    },
+    {
+     "minute": 42,
+     "extra": null,
+     "team": "FCU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Rani Khedira"
+    },
+    {
+     "minute": 43,
+     "extra": null,
+     "team": "FCB",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Michael Olise"
+    },
+    {
+     "minute": 45,
+     "extra": 2,
+     "team": "FCB",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Dayot Upamecano"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "FCB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Min-Jae Kim"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "FCU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tim Skarke"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "FCB",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Harry Kane"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "FCU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Aljoscha Kemlein"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "FCU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Livan Burcu"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "FCB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tom Bischof"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "FCB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ismael Saibari"
+    },
+    {
+     "minute": 70,
+     "extra": null,
+     "team": "FCB",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Ismael Saibari"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "FCU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Zeno Van Den Bosch"
+    },
+    {
+     "minute": 73,
+     "extra": null,
+     "team": "FCB",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Michael Olise"
+    },
+    {
+     "minute": 76,
+     "extra": null,
+     "team": "FCB",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Michael Olise"
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "FCB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Serge Gnabry"
+    },
+    {
+     "minute": 78,
+     "extra": null,
+     "team": "FCU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Livan Burcu"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "FCU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Derrick Köhn"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "FCB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nathaniel Brown"
+    }
+   ],
+   "shots": [
+    {
+     "min": 2,
+     "extra": null,
+     "team": "FCB",
+     "player": "Michael Olise",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0.023,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 22.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "FCB",
+     "player": "Michael Olise",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.1,
+     "y": 31.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "FCB",
+     "player": "Jamal Musiala",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.054,
+     "xgot": 0.041,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.2,
+     "y": 45.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "FCB",
+     "player": "Jonathan Tah",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.134,
+     "xgot": 0.665,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 37.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "FCB",
+     "player": "Jamal Musiala",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.6,
+     "y": 40.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "FCB",
+     "player": "Michael Olise",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0.01,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.4,
+     "y": 21.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "FCB",
+     "player": "Josip Stanišić",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.108,
+     "xgot": 0.21,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.9,
+     "y": 19.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "FCB",
+     "player": "Harry Kane",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.674,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "FCB",
+     "player": "Michael Olise",
+     "type": "Goal",
+     "situation": "SetPiece",
+     "xg": 0.026,
+     "xgot": 0.171,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.6,
+     "y": 22.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "FCB",
+     "player": "Harry Kane",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 44.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "FCU",
+     "player": "Janik Haberer",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.199,
+     "xgot": 0.069,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.5,
+     "y": 33.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "FCU",
+     "player": "Tom Rothe",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.114,
+     "xgot": 0.366,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.9,
+     "y": 32.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "FCB",
+     "player": "Harry Kane",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.162,
+     "xgot": 0.294,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 30.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "FCB",
+     "player": "Luis Díaz",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.116,
+     "xgot": 0.132,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 26.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "FCB",
+     "player": "Luis Díaz",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.6,
+     "y": 29.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "FCB",
+     "player": "Harry Kane",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.163,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.8,
+     "y": 34.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "FCB",
+     "player": "Harry Kane",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 46.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "FCB",
+     "player": "Ismael Saibari",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.327,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.3,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "FCB",
+     "player": "Ismael Saibari",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.368,
+     "xgot": 0.231,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 42.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "FCB",
+     "player": "Ismael Saibari",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0.067,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 48.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "FCB",
+     "player": "Michael Olise",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.939,
+     "xgot": 0.991,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 29.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "FCB",
+     "player": "Michael Olise",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.047,
+     "xgot": 0.034,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 36.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "FCB",
+     "player": "Tom Bischof",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.4,
+     "y": 44.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "FCB",
+     "player": "Ismael Saibari",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.4,
+     "y": 49,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "FCU",
+     "player": "Derrick Köhn",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.3,
+     "y": 15.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "FCB",
+     "player": "Serge Gnabry",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.214,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.7,
+     "y": 37.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     2,
+     33
+    ],
+    [
+     3,
+     22
+    ],
+    [
+     4,
+     38
+    ],
+    [
+     5,
+     49
+    ],
+    [
+     6,
+     92
+    ],
+    [
+     7,
+     87
+    ],
+    [
+     8,
+     76
+    ],
+    [
+     9,
+     43
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     11,
+     -3
+    ],
+    [
+     12,
+     5
+    ],
+    [
+     13,
+     27
+    ],
+    [
+     14,
+     46
+    ],
+    [
+     15,
+     54
+    ],
+    [
+     16,
+     76
+    ],
+    [
+     17,
+     71
+    ],
+    [
+     18,
+     60
+    ],
+    [
+     19,
+     27
+    ],
+    [
+     20,
+     14
+    ],
+    [
+     21,
+     14
+    ],
+    [
+     22,
+     79
+    ],
+    [
+     23,
+     92
+    ],
+    [
+     24,
+     100
+    ],
+    [
+     25,
+     43
+    ],
+    [
+     26,
+     57
+    ],
+    [
+     27,
+     62
+    ],
+    [
+     28,
+     98
+    ],
+    [
+     29,
+     62
+    ],
+    [
+     30,
+     41
+    ],
+    [
+     31,
+     11
+    ],
+    [
+     32,
+     54
+    ],
+    [
+     33,
+     65
+    ],
+    [
+     34,
+     76
+    ],
+    [
+     35,
+     22
+    ],
+    [
+     36,
+     8
+    ],
+    [
+     37,
+     -3
+    ],
+    [
+     38,
+     19
+    ],
+    [
+     39,
+     16
+    ],
+    [
+     40,
+     11
+    ],
+    [
+     41,
+     5
+    ],
+    [
+     42,
+     11
+    ],
+    [
+     43,
+     5
+    ],
+    [
+     44,
+     49
+    ],
+    [
+     45,
+     43
+    ],
+    [
+     45.5,
+     23
+    ],
+    [
+     46,
+     49
+    ],
+    [
+     47,
+     81
+    ],
+    [
+     48,
+     100
+    ],
+    [
+     49,
+     81
+    ],
+    [
+     50,
+     5
+    ],
+    [
+     51,
+     -81
+    ],
+    [
+     52,
+     -100
+    ],
+    [
+     53,
+     -14
+    ],
+    [
+     54,
+     100
+    ],
+    [
+     55,
+     100
+    ],
+    [
+     56,
+     100
+    ],
+    [
+     57,
+     54
+    ],
+    [
+     58,
+     87
+    ],
+    [
+     59,
+     65
+    ],
+    [
+     60,
+     65
+    ],
+    [
+     61,
+     54
+    ],
+    [
+     62,
+     33
+    ],
+    [
+     63,
+     38
+    ],
+    [
+     64,
+     19
+    ],
+    [
+     65,
+     19
+    ],
+    [
+     66,
+     35
+    ],
+    [
+     67,
+     38
+    ],
+    [
+     68,
+     33
+    ],
+    [
+     69,
+     0
+    ],
+    [
+     70,
+     54
+    ],
+    [
+     71,
+     49
+    ],
+    [
+     72,
+     98
+    ],
+    [
+     73,
+     84
+    ],
+    [
+     74,
+     79
+    ],
+    [
+     75,
+     38
+    ],
+    [
+     76,
+     30
+    ],
+    [
+     77,
+     35
+    ],
+    [
+     78,
+     52
+    ],
+    [
+     79,
+     14
+    ],
+    [
+     80,
+     14
+    ],
+    [
+     81,
+     16
+    ],
+    [
+     82,
+     43
+    ],
+    [
+     83,
+     49
+    ],
+    [
+     84,
+     49
+    ],
+    [
+     85,
+     33
+    ],
+    [
+     86,
+     71
+    ],
+    [
+     87,
+     76
+    ],
+    [
+     88,
+     100
+    ],
+    [
+     89,
+     92
+    ],
+    [
+     90,
+     76
+    ],
+    [
+     90.5,
+     4
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "FCB": {
+     "team": "FCB",
+     "formation": "4-2-3-1",
+     "coach": "Vincent Kompany",
+     "xi": [
+      {
+       "name": "Manuel Neuer",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Josip Stanišić",
+       "shirt": 44,
+       "pos": "D"
+      },
+      {
+       "name": "Dayot Upamecano",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Jonathan Tah",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Alphonso Davies",
+       "shirt": 19,
+       "pos": "D"
+      },
+      {
+       "name": "Joshua Kimmich",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Aleksandar Pavlović",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Michael Olise",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Jamal Musiala",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Luis Díaz",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Harry Kane",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Min-Jae Kim",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Tom Bischof",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Ismael Saibari",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Serge Gnabry",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Nathaniel Brown",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Jonas Urbig",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Hiroki Ito",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Bara Ndiaye",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Lennart Karl",
+       "shirt": 42,
+       "pos": "?"
+      }
+     ]
+    },
+    "FCU": {
+     "team": "FCU",
+     "formation": "4-2-3-1",
+     "coach": "Mauro Lustrinelli",
+     "xi": [
+      {
+       "name": "Frederik Rønnow",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Christopher Trimmel",
+       "shirt": 28,
+       "pos": "D"
+      },
+      {
+       "name": "Leopold Querfeld",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Felix Uduokhai",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Tom Rothe",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Rani Khedira",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Michel Aebischer",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Janik Haberer",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Woo-Yeong Jeong",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "András Schäfer",
+       "shirt": 13,
+       "pos": "M"
+      },
+      {
+       "name": "Emmanuel Latte Lath",
+       "shirt": 29,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Tim Skarke",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Aljoscha Kemlein",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Livan Burcu",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Zeno Van Den Bosch",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Derrick Köhn",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Matheo Raab",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Robert Skov",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Kastriot Imeri",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Marin Ljubičić",
+       "shirt": 27,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 40,
+      "center": 26,
+      "right": 34
+     },
+     "firstHalf": {
+      "left": 37,
+      "center": 17,
+      "right": 46
+     },
+     "secondHalf": {
+      "left": 43,
+      "center": 36,
+      "right": 21
+     }
+    },
+    "away": {
+     "total": {
+      "left": 50,
+      "center": 15,
+      "right": 35
+     },
+     "firstHalf": {
+      "left": 63,
+      "center": 13,
+      "right": 24
+     },
+     "secondHalf": {
+      "left": 37,
+      "center": 17,
+      "right": 46
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 7,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-18T21:29:55.034Z",
+   "fdMatchId": "2026-27-27",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-18T16:02:00.073Z"
+ "updatedAt": "2026-09-18T21:29:55.035Z"
 }

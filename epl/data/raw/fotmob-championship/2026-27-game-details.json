@@ -133557,8 +133557,1431 @@
      }
     ]
    }
+  },
+  "BRC|WAT": {
+   "key": "BRC|WAT",
+   "season": "2026-27",
+   "date": "2026-09-18",
+   "matchId": "5836839",
+   "home": "BRC",
+   "away": "WAT",
+   "score": [
+    1,
+    0
+   ],
+   "providerScore": [
+    1,
+    0
+   ],
+   "teamStats": {
+    "BRC": {
+     "possession": 36,
+     "shots": 17,
+     "shotsOn": 7,
+     "shotsOff": 5,
+     "blockedShots": 5,
+     "blocksMade": 4,
+     "corners": 2,
+     "offsides": 3,
+     "fouls": 11,
+     "saves": 2,
+     "passes": 270,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.56
+    },
+    "WAT": {
+     "possession": 64,
+     "shots": 10,
+     "shotsOn": 2,
+     "shotsOff": 3,
+     "blockedShots": 5,
+     "blocksMade": 5,
+     "corners": 5,
+     "offsides": 0,
+     "fouls": 15,
+     "saves": 6,
+     "passes": 491,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.52
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "BRC": {
+     "touches_opp_box": 25,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 12,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 0.64,
+     "expected_goals_set_play": 0.92,
+     "expected_goals_non_penalty": 1.56,
+     "expected_goals_on_target": 0.85,
+     "own_half_passes": 96,
+     "opposition_half_passes": 112,
+     "long_balls_accurate": 15,
+     "long_balls_accurate_pct": 41,
+     "accurate_crosses": 7,
+     "accurate_crosses_pct": 58,
+     "player_throws": 16,
+     "matchstats.headers.tackles": 19,
+     "interceptions": 7,
+     "clearances": 20,
+     "duel_won": 51,
+     "ground_duels_won": 35,
+     "ground_duels_won_pct": 55,
+     "aerials_won": 16,
+     "aerials_won_pct": 70,
+     "dribbles_succeeded": 2,
+     "dribbles_succeeded_pct": 29,
+     "red_cards": 0
+    },
+    "WAT": {
+     "touches_opp_box": 9,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 5,
+     "shots_woodwork": 0,
+     "shots_inside_box": 3,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 0.49,
+     "expected_goals_set_play": 0.03,
+     "expected_goals_non_penalty": 0.52,
+     "expected_goals_on_target": 0.04,
+     "own_half_passes": 293,
+     "opposition_half_passes": 125,
+     "long_balls_accurate": 30,
+     "long_balls_accurate_pct": 48,
+     "accurate_crosses": 0,
+     "accurate_crosses_pct": 0,
+     "player_throws": 25,
+     "matchstats.headers.tackles": 9,
+     "interceptions": 5,
+     "clearances": 22,
+     "duel_won": 36,
+     "ground_duels_won": 29,
+     "ground_duels_won_pct": 45,
+     "aerials_won": 7,
+     "aerials_won_pct": 30,
+     "dribbles_succeeded": 9,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     36,
+     64
+    ],
+    "h1": [
+     43,
+     57
+    ],
+    "h2": [
+     28,
+     72
+    ]
+   },
+   "events": [
+    {
+     "minute": 21,
+     "extra": null,
+     "team": "WAT",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Mamadou Doumbia"
+    },
+    {
+     "minute": 25,
+     "extra": null,
+     "team": "WAT",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Amin Nabizada"
+    },
+    {
+     "minute": 31,
+     "extra": null,
+     "team": "BRC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Dominic Ballard"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "WAT",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Branimir Mlačić"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "BRC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jason Knight"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "WAT",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Edo Kayembe"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "BRC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Joe Williams"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "WAT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Albert Eames"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "WAT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Othmane Maamma"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "WAT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Stephy Mavididi"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lorent Tolaj"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jed Wallace"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "WAT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Myron Boadu"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Cameron Pring"
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "team": "WAT",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Matthew Pollock"
+    },
+    {
+     "minute": 88,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lisav Naif Eissat"
+    },
+    {
+     "minute": 88,
+     "extra": 0,
+     "team": "BRC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gibson Yah"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "BRC",
+     "player": "Jason Knight",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.208,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.6,
+     "y": 33.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "WAT",
+     "player": "Amin Nabizada",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.1,
+     "y": 45.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "WAT",
+     "player": "Luca Kjerrumgaard",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.116,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 35.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "BRC",
+     "player": "Sam Greenwood",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.175,
+     "xgot": 0.179,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 32.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "BRC",
+     "player": "Yu Hirakawa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 31.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "BRC",
+     "player": "Yu Hirakawa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0.025,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.5,
+     "y": 20,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "BRC",
+     "player": "Yu Hirakawa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.075,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.2,
+     "y": 29.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "BRC",
+     "player": "Joe Williams",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.264,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 32,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "WAT",
+     "player": "Edo Kayembe",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 52.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "BRC",
+     "player": "Dominic Ballard",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0.322,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 36,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "BRC",
+     "player": "Noah Eile",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 30.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "BRC",
+     "player": "George Tanner",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.041,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.3,
+     "y": 33.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "WAT",
+     "player": "Amin Nabizada",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.3,
+     "y": 49.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "BRC",
+     "player": "Joe Williams",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.124,
+     "xgot": 0.065,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 30.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "WAT",
+     "player": "Hector Kyprianou",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.7,
+     "y": 40.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "WAT",
+     "player": "Hector Kyprianou",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0.021,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.3,
+     "y": 39.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "WAT",
+     "player": "Rocco Vata",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.4,
+     "y": 45.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "BRC",
+     "player": "Sam Greenwood",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.041,
+     "xgot": 0.059,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.1,
+     "y": 45.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "BRC",
+     "player": "Lorent Tolaj",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.14,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 46.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "BRC",
+     "player": "Lorent Tolaj",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.157,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 26.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "BRC",
+     "player": "Rio Cardines",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.3,
+     "y": 35.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "BRC",
+     "player": "Joe Williams",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.05,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.9,
+     "y": 26.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "WAT",
+     "player": "Myron Boadu",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.169,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.2,
+     "y": 42.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "BRC",
+     "player": "Gibson Yah",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.01,
+     "xgot": 0.076,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 30.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "BRC",
+     "player": "Lorent Tolaj",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.051,
+     "xgot": 0.122,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.7,
+     "y": 22.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "WAT",
+     "player": "Edo Kayembe",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.3,
+     "y": 36,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "WAT",
+     "player": "Stephy Mavididi",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.032,
+     "xgot": 0.015,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86,
+     "y": 42.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     71
+    ],
+    [
+     4,
+     71
+    ],
+    [
+     5,
+     71
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     7,
+     33
+    ],
+    [
+     8,
+     30
+    ],
+    [
+     9,
+     3
+    ],
+    [
+     10,
+     -14
+    ],
+    [
+     11,
+     8
+    ],
+    [
+     12,
+     35
+    ],
+    [
+     13,
+     52
+    ],
+    [
+     14,
+     27
+    ],
+    [
+     15,
+     38
+    ],
+    [
+     16,
+     33
+    ],
+    [
+     17,
+     38
+    ],
+    [
+     18,
+     0
+    ],
+    [
+     19,
+     -27
+    ],
+    [
+     20,
+     -22
+    ],
+    [
+     21,
+     -16
+    ],
+    [
+     22,
+     -16
+    ],
+    [
+     23,
+     -27
+    ],
+    [
+     24,
+     -16
+    ],
+    [
+     25,
+     0
+    ],
+    [
+     26,
+     73
+    ],
+    [
+     27,
+     62
+    ],
+    [
+     28,
+     57
+    ],
+    [
+     29,
+     -33
+    ],
+    [
+     30,
+     -33
+    ],
+    [
+     31,
+     0
+    ],
+    [
+     32,
+     22
+    ],
+    [
+     33,
+     33
+    ],
+    [
+     34,
+     -8
+    ],
+    [
+     35,
+     3
+    ],
+    [
+     36,
+     27
+    ],
+    [
+     37,
+     41
+    ],
+    [
+     38,
+     30
+    ],
+    [
+     39,
+     -5
+    ],
+    [
+     40,
+     -11
+    ],
+    [
+     41,
+     -5
+    ],
+    [
+     42,
+     0
+    ],
+    [
+     43,
+     16
+    ],
+    [
+     44,
+     5
+    ],
+    [
+     45,
+     -5
+    ],
+    [
+     45.5,
+     6
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     0
+    ],
+    [
+     48,
+     16
+    ],
+    [
+     49,
+     16
+    ],
+    [
+     50,
+     16
+    ],
+    [
+     51,
+     0
+    ],
+    [
+     52,
+     -11
+    ],
+    [
+     53,
+     -11
+    ],
+    [
+     54,
+     -11
+    ],
+    [
+     55,
+     0
+    ],
+    [
+     56,
+     62
+    ],
+    [
+     57,
+     62
+    ],
+    [
+     58,
+     62
+    ],
+    [
+     59,
+     0
+    ],
+    [
+     60,
+     -11
+    ],
+    [
+     61,
+     -14
+    ],
+    [
+     62,
+     -14
+    ],
+    [
+     63,
+     -3
+    ],
+    [
+     64,
+     0
+    ],
+    [
+     65,
+     5
+    ],
+    [
+     66,
+     27
+    ],
+    [
+     67,
+     24
+    ],
+    [
+     68,
+     8
+    ],
+    [
+     69,
+     -30
+    ],
+    [
+     70,
+     -33
+    ],
+    [
+     71,
+     -33
+    ],
+    [
+     72,
+     -16
+    ],
+    [
+     73,
+     -24
+    ],
+    [
+     74,
+     -3
+    ],
+    [
+     75,
+     -8
+    ],
+    [
+     76,
+     -27
+    ],
+    [
+     77,
+     -43
+    ],
+    [
+     78,
+     -27
+    ],
+    [
+     79,
+     5
+    ],
+    [
+     80,
+     57
+    ],
+    [
+     81,
+     46
+    ],
+    [
+     82,
+     46
+    ],
+    [
+     83,
+     11
+    ],
+    [
+     84,
+     11
+    ],
+    [
+     85,
+     35
+    ],
+    [
+     86,
+     90
+    ],
+    [
+     87,
+     57
+    ],
+    [
+     88,
+     38
+    ],
+    [
+     89,
+     -27
+    ],
+    [
+     90,
+     30
+    ],
+    [
+     90.5,
+     8
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BRC": {
+     "team": "BRC",
+     "formation": "4-2-3-1",
+     "coach": "Michael Skubala",
+     "xi": [
+      {
+       "name": "Sam Tickle",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "George Tanner",
+       "shirt": 19,
+       "pos": "D"
+      },
+      {
+       "name": "Noah Eile",
+       "shirt": 38,
+       "pos": "D"
+      },
+      {
+       "name": "Robert Atkinson",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Rio Cardines",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Joe Williams",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Adam Randell",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Yu Hirakawa",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Jason Knight",
+       "shirt": 12,
+       "pos": "M"
+      },
+      {
+       "name": "Sam Greenwood",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Dominic Ballard",
+       "shirt": 23,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jed Wallace",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Lorent Tolaj",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Cameron Pring",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Lisav Naif Eissat",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Gibson Yah",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Bradley Collins",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Scott Twine",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Tomi Horvat",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Elijah Adebayo",
+       "shirt": 45,
+       "pos": "?"
+      }
+     ]
+    },
+    "WAT": {
+     "team": "WAT",
+     "formation": "3-4-1-2",
+     "coach": "Alessio Dionisi",
+     "xi": [
+      {
+       "name": "Federico Ravaglia",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Kévin Keben",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Matthew Pollock",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Branimir Mlačić",
+       "shirt": 29,
+       "pos": "D"
+      },
+      {
+       "name": "Rocco Vata",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Hector Kyprianou",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Edo Kayembe",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Amin Nabizada",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Bravo",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Mamadou Doumbia",
+       "shirt": 20,
+       "pos": "F"
+      },
+      {
+       "name": "Luca Kjerrumgaard",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Albert Eames",
+       "shirt": 56,
+       "pos": "?"
+      },
+      {
+       "name": "Othmane Maamma",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Stephy Mavididi",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Myron Boadu",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel Bachmann",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Sam Walker",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "James Andrew Clarridge",
+       "shirt": 53,
+       "pos": "?"
+      },
+      {
+       "name": "Jack Grieves",
+       "shirt": 43,
+       "pos": "?"
+      },
+      {
+       "name": "Nikoloz Chikovani",
+       "shirt": 19,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 36,
+      "center": 25,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 42,
+      "center": 27,
+      "right": 31
+     },
+     "secondHalf": {
+      "left": 25,
+      "center": 22,
+      "right": 53
+     }
+    },
+    "away": {
+     "total": {
+      "left": 41,
+      "center": 22,
+      "right": 37
+     },
+     "firstHalf": {
+      "left": 43,
+      "center": 24,
+      "right": 33
+     },
+     "secondHalf": {
+      "left": 40,
+      "center": 21,
+      "right": 39
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-18T21:29:53.146Z",
+   "fdMatchId": "2026-27-83",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-18T16:01:59.864Z"
+ "updatedAt": "2026-09-18T21:29:53.147Z"
 }
