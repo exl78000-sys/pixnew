@@ -37,6 +37,25 @@ function play(seed, minutes = 90) {
   const N = Math.round((minutes + 20) * 60 / STEP);
   let prev = null, jumps = 0, maxJump = 0, still = 0, samples = 0, half = null, swaps = 0;
   const bins = new Array(7).fill(0);
+  /* **駐留**(2026-09-18,階段 4u)。4t 證明「對方半場佔完成傳球」對三個抵達機制都不敏感
+     (長傳掃四個值只動 0.7 個百分點),所以要量的是球到了前場之後待多久、怎麼結束。
+     全部從 `state()` 讀 —— **不改引擎、不消耗 rng**,那是量測工具的硬規矩(4t 那條
+     「同一個種子換一個旗標就不是同一場比賽」)。
+     結案的理由在**事件發生的那一格**認,不是等換手時回頭看前一格:射門 / 角球 / 界外球
+     都比換手早幾格,那樣認會讓它們全被「傳球被接走」吸收成 0,看起來像 4h 那條
+     「這一類根本沒鋪路」而其實只是我量錯(第一版就是這樣)。 */
+  const stay = { visits: 0, secs: 0, passes: 0, zero: 0, why: {}, attSecs: 0, live: 0 };
+  let ctrl = null, visit = null, pc = null;
+  const snap = c => ({ shots: c.shots, tackles: c.tackles, thr: c.throwIns, gk: c.goalKicks,
+    cor: c.corners.home + c.corners.away, fouls: c.fouls.home + c.fouls.away,
+    offs: c.offsides.home + c.offsides.away, ok: c.passOk.home + c.passOk.away });
+  const closeVisit = (why, t) => {
+    if (!visit) return;
+    stay.visits++; stay.secs += t - visit.t0; stay.passes += visit.passes;
+    if (!visit.passes) stay.zero++;
+    stay.why[why] = (stay.why[why] ?? 0) + 1;
+    visit = null;
+  };
   for (let i = 0; i < N && !sim.state().over; i++) {
     sim.advance(STEP);
     const s = sim.state();
@@ -56,8 +75,37 @@ function play(seed, minutes = 90) {
       if (Math.hypot(p.vx, p.vy) < 0.3) still++;
     }
     prev = Object.fromEntries(s.players.map(p => [p.code, p]));
+
+    /* 進攻方向從門將的 x 推 —— 兩隊中場會換邊,寫死方向就是「場地的方向寫死在引擎裡」那條坑 */
+    const now = snap(s.counts);
+    if (pc) {
+      const d = k => now[k] - pc[k];
+      const why = d('shots') ? '射門' : d('cor') ? '角球' : d('thr') ? '界外球'
+        : d('gk') ? '球門球' : d('offs') ? '越位' : d('fouls') ? '犯規'
+        : d('tackles') ? '被抄截' : null;
+      if (why) closeVisit(why, s.t);
+    }
+    if (s.ball.holderSide && s.ball.holderSide !== ctrl) {
+      closeVisit('傳球被接走', s.t);
+      ctrl = s.ball.holderSide;
+    }
+    if (ctrl) {
+      const gk = {};
+      for (const p of s.players) if (p.role === 'GK') gk[p.side] = p.x;
+      const att = gk[ctrl] == null ? 0 : Math.sign(105 / 2 - gk[ctrl]);
+      const inAtt = att !== 0 && (s.ball.x - 105 / 2) * att > 0;
+      stay.live += STEP;
+      if (inAtt) stay.attSecs += STEP;
+      if (inAtt && !visit) visit = { t0: s.t, passes: 0 };
+      if (visit) {
+        if (pc) visit.passes += now.ok - pc.ok;
+        if (!inAtt) closeVisit('退回自家半場', s.t);
+      }
+    }
+    pc = now;
   }
-  return { sim, st: sim.state(), m: sim.motion(), jumps, maxJump, still, samples, bins, swaps };
+  closeVisit('完場', sim.state().t);
+  return { sim, st: sim.state(), m: sim.motion(), jumps, maxJump, still, samples, bins, swaps, stay };
 }
 
 const rows = [];
@@ -449,6 +497,39 @@ if (simShots && realShots) {
      印它的理由是死球事件的錨(界外球、角球、犯規)判得出來,而它們一起說明死球太少。 */
   console.log(`  ${'（參考）死球事件'.padEnd(16, '\u3000')} 界外球 + 角球 + 犯規 = ${avg(c => (c.throwIns ?? 0) + c.corners.home + c.corners.away + c.fouls.home + c.fouls.away).toFixed(1)}`
     + `\u3000本站沒有「活球時間」的上游錨(raw 裡沒有這個欄位),所以不印分鐘數`);
+}
+
+/* 3b-7. **駐留**(階段 4u)。4t 排除了三個「球怎麼到前場」的機制之後,這一節量的是
+         「到了之後待多久、怎麼結束」。**沒有上游的錨**(FotMob 的 teamStats / teamExtra
+         都沒有進攻段落、球門球或活球時間 —— 34 + 13 個鍵全部 dump 過),所以這一節
+         **只印不判**;它存在的理由是把 3b-5 的佔比拆成「幾段 × 每段幾腳」,
+         那兩項才指得出要動哪一個。
+
+         時間佔比跟完成傳球的佔比**兩個都印,而且它們不相等**(實測 67.1% 對 71.5%)——
+         第一版我寫「兩個要一致」,而差的那 4.4 個百分點本身就是資訊:
+         **本站在對方半場的每秒傳球次數比自家半場高**。所以修領土的時候要問的是
+         「時間變少了還是每秒傳得少了」,兩個不是同一件事。 */
+{
+  const A = rows.map(r => r.stay);
+  const sum = f => A.reduce((a, x) => a + f(x), 0);
+  const v = sum(x => x.visits), n = rows.length;
+  if (v) {
+    console.log('');
+    console.log(`  一段進攻 = 球進到持球方的對方半場到它離開為止(只印不判,上游沒有這一層的錨)`);
+    console.log(`  ${'進到對方半場'.padEnd(16, '\u3000')} ${(v / n).toFixed(1).padStart(7)} 次/場`
+      + `\u3000每次 ${(sum(x => x.secs) / v).toFixed(2)} 秒 / ${(sum(x => x.passes) / v).toFixed(2)} 腳完成傳球`);
+    console.log(`  ${'　一腳都沒完成的'.padEnd(16, '\u3000')} ${(sum(x => x.zero) / v * 100).toFixed(1).padStart(6)}%`
+      + `\u3000生得出射門的 ${((sum(x => x.why['射門'] ?? 0)) / v * 100).toFixed(1)}%`);
+    const live = sum(x => x.live), att = sum(x => x.attSecs);
+    console.log(`  ${'球在對方半場的時間'.padEnd(16, '\u3000')} ${(att / live * 100).toFixed(1).padStart(6)}%`
+      + `\u3000完成傳球的佔比是 ${(100 * rows.reduce((a, r) => a + (r.st.counts.okOppHalf.home + r.st.counts.okOppHalf.away), 0)
+        / rows.reduce((a, r) => a + (r.st.counts.okOppHalf.home + r.st.counts.okOppHalf.away + r.st.counts.okOwnHalf.home + r.st.counts.okOwnHalf.away), 0)).toFixed(1)}%`
+      + ` —— 兩個不相等就代表每秒的傳球次數前後場不同`);
+    const why = {};
+    for (const x of A) for (const [k, c] of Object.entries(x.why)) why[k] = (why[k] ?? 0) + c;
+    console.log('  怎麼結束:' + Object.entries(why).sort((a, b) => b[1] - a[1])
+      .map(([k, c]) => `${k} ${(c / v * 100).toFixed(1)}%`).join(' ・ '));
+  }
 }
 
 /* 3c. 越位與逼搶。兩個都有真值:越位是 shotmap 同一份檔案裡的 teamStats.offsides,
