@@ -552,5 +552,53 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         && Math.abs((a + b) / 2 - lg) > 0.01,
         `ARS ${a?.toFixed(3)} / LIV ${b?.toFixed(3)} / 聯盟 ${lg?.toFixed(3)}`);
     }
+
+    /* 14. 階段 4l:**角球射門有兩種,而本站只有一種**。真實的 1,835 顆 FromCorner
+       逐顆有 `foot` 欄位:頭球 46%(平均 8.4 m)、腳下 54%(平均 16.3 m)。
+       本站的頭球那條路是對的,缺的是腳下 —— 而規劃寫的「沒有第二波」是錯的:
+       進攻方一場贏到 5.1 次第二球,只是拿到之後不射。
+       守四件事:第二球的旗標要在 openChain 之前算(它會把 pendingOrigin 清掉)、
+       出手不另外寫一份射門程式、真實的拆解要從 raw 算、量測用的計數器要吐出來。 */
+    {
+      const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const bare = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      /* 結尾的錨要寫 `function kick(from` —— 只寫 `function kick` 的話會命中**更前面**的
+         `function kickoff`,切出來的是空字串,而兩條斷言就紅在「切錯了」上。
+         這是本站「批次改名用名字 + 左括號當錨」那條坑的近親:**識別字是別人的前綴**。 */
+      const g0 = bare.indexOf('function giveTo'), g1 = bare.indexOf('function kick(from');
+      const giveSrc = g0 >= 0 && g1 > g0 ? bare.slice(g0, g1) : '';
+      /* `openChain` 消費掉 pendingOrigin,所以「這是不是第二球」一定要在它之前算完。
+         寫在後面的話旗標永遠是 false,而**一個錯都不會報**(本站記過的那一類)。 */
+      check('第二球的判斷在 openChain 之前(它會把 pendingOrigin 領走)',
+        giveSrc.indexOf('pendingOrigin') > 0
+        && giveSrc.indexOf('pendingOrigin') < giveSrc.indexOf('openChain('));
+      /* 出手要走 decide() 原本那一條 —— 換的只有扣扳機的機率。另外寫一份的話
+         xG、情境分類、事件與統計就有兩個來源,而那是本站踩過的坑。 */
+      const snapUse = bare.match(/CORNER_SNAP/g) ?? [];
+      check('第二球只換扣扳機的機率,不另外寫一份射門程式',
+        /rng\(\) < \(snap \? CORNER_SNAP : cl\(urge/.test(bare) && snapUse.length === 2,
+        `CORNER_SNAP 出現 ${snapUse.length} 次(宣告 + 用一次)`);
+      /* 旗標每次接球都要覆寫:拿到球還沒決定就被抄走的話,它會留到下一次完全不同的情況。 */
+      check('接球時一律覆寫第二球的旗標(不是只在第二球時設 true)',
+        /p\.snap = false;/.test(giveSrc) && /p\.snap = true;/.test(giveSrc));
+      const counts = ['cornerSrc', 'cornerFirst', 'cornerShot', 'cornerNext', 'clearWhy'];
+      check('角球的來源分類計數器都吐給 counts',
+        counts.every(k => new RegExp(k + ': \\{ \\.\\.\\.st\\.' + k + ' \\}').test(bare)));
+
+      const chkSrc = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
+      const chkBare = chkSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      /* 真實的頭球 / 腳下拆解要**從 raw 算**,不是抄一個數字進來(鐵則一沒有「只在註解裡」這種例外)。 */
+      check('真實的頭球 / 腳下拆解從 raw 的 foot 欄位算',
+        /sh\.foot === 'Header'/.test(chkBare) && /rc\.head/.test(chkBare));
+      /* `realShots` 是模組層的 const —— 用在宣告之前就是暫時死區,而 `node --check` 看不出來。
+         4l 把角球那一節的真實拆解印在它前面,當場踩到。 */
+      check('realShots 宣告在它第一個用的地方之前(模組層 const 沒有提升)',
+        chkBare.indexOf('const realShots') > 0
+        && chkBare.indexOf('const realShots') < chkBare.indexOf('realShots?.bySit?.FromCorner'));
+      /* 解圍那個錨是這一場兩隊自己的值(4w 的規矩),而且只回報不判 ——
+         本站的 `st.clears` 跟上游的 `clearances` 定義不保證一樣。 */
+      check('解圍的錨走共用的 pair()(這一場兩隊,不是聯盟平均)',
+        /pair\('clearances'\)/.test(chkBare) && /定義可能不同/.test(chkSrc));
+    }
   }
 }
