@@ -28333,7 +28333,7 @@
   "BRE|CHE": {
    "fixtureId": 128964,
    "kickoff": "2026-09-18T19:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -28342,16 +28342,38 @@
    "homeId": 130,
    "awayId": 4,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      14723
+     ],
+     [
+      133460,
+      129096,
+      20113,
+      24369
+     ],
+     [
+      128891,
+      23194
+     ],
+     [
+      50460,
+      49731,
+      127594
+     ],
+     [
+      124052
+     ]
+    ],
     "xi": [
      {
       "id": 24369,
       "playerId": null,
       "name": "Keane Lewis-Potter",
       "shirt": 23,
-      "pos": "F",
+      "pos": "D",
       "posInfo": "Striker",
       "captain": false
      },
@@ -28441,7 +28463,7 @@
       "playerId": null,
       "name": "Jaidon Anthony",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      }
@@ -28531,16 +28553,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      4245
+     ],
+     [
+      66284,
+      76104,
+      51229
+     ],
+     [
+      21998,
+      3712,
+      120417,
+      70585
+     ],
+     [
+      49293,
+      23968
+     ],
+     [
+      3452
+     ]
+    ],
     "xi": [
      {
       "id": 23968,
       "playerId": null,
       "name": "Morgan Rogers",
       "shirt": 17,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -28549,7 +28593,7 @@
       "playerId": null,
       "name": "Pep Chavarría",
       "shirt": 29,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -28585,7 +28629,7 @@
       "playerId": null,
       "name": "Pedro Neto",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -28630,7 +28674,7 @@
       "playerId": null,
       "name": "Cole Palmer",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      }
@@ -28723,10 +28767,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-18T18:59:53.692Z"
+ "fetchedAt": "2026-09-18T19:02:12.273Z"
 }
