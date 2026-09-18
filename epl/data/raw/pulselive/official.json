@@ -28333,8 +28333,8 @@
   "BRE|CHE": {
    "fixtureId": 128964,
    "kickoff": "2026-09-18T19:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 3,
     "away": 0
@@ -28766,6 +28766,19 @@
    "goals": [
     {
      "side": "H",
+     "person": 50460,
+     "assist": 129096,
+     "team": 130,
+     "min": 61,
+     "label": "61'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
      "person": 124052,
      "assist": null,
      "team": 130,
@@ -28978,12 +28991,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -29000,11 +29007,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-18T20:58:05.094Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-09-18T20:55:45.774Z"
+ "fetchedAt": "2026-09-18T20:58:05.095Z"
 }
