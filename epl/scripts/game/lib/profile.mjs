@@ -183,7 +183,10 @@ function styleLevels(metricsByCode) {
 /* 對照表以外的球隊統計(teamExtra,階段 C 重抓後才有值):逐隊場均,附涵蓋場數。
    鍵照上游 slug(touches_opp_box、long_balls_accurate、interceptions、'matchstats.headers.tackles'、duel_won…)。 */
 const EXTRA_KEYS = ['touches_opp_box', 'big_chance', 'shots_inside_box', 'shots_outside_box', 'own_half_passes', 'opposition_half_passes',
-  'long_balls_accurate', 'accurate_crosses', 'matchstats.headers.tackles', 'interceptions', 'clearances', 'duel_won', 'ground_duels_won', 'aerials_won', 'dribbles_succeeded'];
+  'long_balls_accurate', 'accurate_crosses', 'matchstats.headers.tackles', 'interceptions', 'clearances', 'duel_won', 'ground_duels_won', 'aerials_won', 'dribbles_succeeded',
+  /* `player_throws` 是界外球數(2026-09-18 加的)。引擎裡那個常數的註解寫著「真實約 40 次」——
+     憑印象的數字,而 raw 裡一直有這個欄位。接上之後量到本站是 21.5、錨是 35.8,所以那句是錯的。 */
+  'player_throws'];
 function extraStatsOf(fm, code) {
   const rows = fm.filter(m => (m.home === code || m.away === code) && m.teamExtra?.[code] && Object.keys(m.teamExtra[code]).length);
   if (!rows.length) return null;

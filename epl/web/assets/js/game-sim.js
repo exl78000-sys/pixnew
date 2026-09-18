@@ -384,7 +384,15 @@ const SIM_PASS_SPEED = [7, 26];                // 夾住極端值(太輕傳不�
 /* 每公尺距離的角度誤差(弧度)。0.004 在 20 公尺是 ±0.08 弧度 ≈ ±4.6 度、橫向偏 ±1.6 公尺 —— 那是失準。
    第一版寫 0.045,在 20 公尺是 **±0.9 弧度 = ±51 度**:那不是失準是亂踢,
    界外球從 171 漲到 226(19.1% 的傳球出邊線)。單位寫錯的東西看起來跟「參數調太大」一模一樣。 */
-const PASS_ERR = 0.014;   // 量出來的:界外球 34 次,2.4% 的傳球出邊線(真實約 40 次)
+const PASS_ERR = 0.014;   /* 量出來的:界外球 34 次,2.4% 的傳球出邊線。
+   **「真實約 40」那句原本是憑印象寫的** —— raw 的 `teamExtra.player_throws` 就是這個數字
+   (840 隊-場平均 17.88 → 兩隊 35.8;ARS + LIV 36.1),2026-09-18 接進側寫與 `check-sim`。
+   而接上之後量到界外球已經漂到 21.5(×0.60):這個常數是在別的行為之前校準的。 */
+/* 長傳的門檻:30 碼。上游的 `long_balls_accurate` 沒有把定義存進 raw,所以這個數字是
+   **本站選的對照門檻**,不是上游的定義。`check-sim` 會印 25 / 30 碼兩個門檻 ——
+   結論(本站的長傳 ×3 ~ ×5)在任何一個合理的門檻下都成立,所以它不靠這個選擇。 */
+const LONG_BALL = 27.43;
+const LONG_BALL_25 = 22.86;   // 25 碼:另一個常見的定義,兩個都量才看得出結論不靠門檻的選擇
 /* 陣型跟著球平移的比例。**x 與 y 不是同一個數字** —— 一支球隊沿著球場長邊是整塊上下travel
    (深守時後衛線離自家門約 18 m、高壓時壓到 45 m),橫向則只是往球那一側靠,幅度小得多。
    第一版兩軸都寫 0.30,結果是每個人的目標點幾乎不動:三十秒走 53 公尺而只離開原地 8.7 公尺
@@ -956,6 +964,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
+    longTry: 0, longOk: 0, longTry25: 0, longOk25: 0,
     corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 }, reds: { home: 0, away: 0 }, subs: { home: 0, away: 0 },
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
@@ -1107,6 +1116,17 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     ball.vx = dx / d * speed; ball.vy = dy / d * speed;
     ball.vz = loft; ball.z = loft > 0 ? 0.1 : 0;
     st.passes++;
+    /* **長傳的量**(2026-09-18,階段 4t)。側寫的 `extra` 裡有 `long_balls_accurate`,
+       而在這之前**沒有人讀它** —— 那是「資料躺在倉庫裡」的第六次,而這一次它就是
+       四輪(4k/4m/4n/4o)一直在找的那一層:球是怎麼跑到對方半場的。
+       門檻用 30 碼(27.43 m)。上游沒有把 title 存進 raw,所以 FotMob 對「長傳」的定義
+       是推論不是證實 —— `check-sim` 會把幾個門檻都印出來,結論不靠單一個門檻。
+       純計數,不呼叫 rng。 */
+    if (why === 'pass') {
+      ball.passDist = d;
+      if (d >= LONG_BALL) st.longTry++;
+      if (d >= LONG_BALL_25) st.longTry25++;
+    }
     /* 傳球的成敗要**逐球**判,不能事後用「誰控到」回推 —— 中間可能被捅了好幾次,
        那樣算出來的成功率會把一次爭搶算成好幾次失敗。 */
     // passer 是給助攻用的(階段 4b):只有真的傳球才記,解圍與射門一律清掉
@@ -1720,7 +1740,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           if (rng() < pCtl) {
             /* 攔截 = 球是**對方**踢出來的而我控到了。射門被撿走不算(那是撲救 / 解圍那一側的事)。 */
             if (ball.passSide) {
-              if (ball.passSide === best.side) st.passOk[best.side]++;
+              if (ball.passSide === best.side) {
+                st.passOk[best.side]++;
+                if ((ball.passDist ?? 0) >= LONG_BALL) st.longOk++;
+                if ((ball.passDist ?? 0) >= LONG_BALL_25) st.longOk25++;
+              }
               else { st.intercepts[best.side]++;
                 st.why ??= { defl: 0, near: 0, far: 0 };
                 if (ball.wasDeflected) st.why.defl++;
@@ -2233,7 +2257,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
         boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
-        deflects: st.deflects, clears: st.clears },
+        deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25 },
     }),
     /* 量測用:跑動量、最高速、控球 —— 這幾個要對得回 FotMob 的真實值,不然「像不像在踢球」沒有判準 */
     motion: () => ({

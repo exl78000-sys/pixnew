@@ -374,10 +374,40 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         && /okOwnHalf: \{ \.\.\.st\.okOwnHalf \}/.test(sim)
         && /okOppHalf: \{ \.\.\.st\.okOppHalf \}/.test(sim));
       const chk = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
-      const block = chk.slice(chk.indexOf('3b-5.'), chk.indexOf('3c.'));
+      const block = chk.slice(chk.indexOf('3b-5.'), chk.indexOf('3b-6.'));
       check('領土的錨取這兩隊自己的值,不是聯盟平均',
         /profile\.teams\?\.\[code\]\?\.extra/.test(block)
         && /ex\(HOME, k\)/.test(block) && /ex\(AWAY, k\)/.test(block));
+    }
+
+    /* 9. 長傳與界外球的錨(階段 4t)。跟第 8 節同一個病:側寫裡有、沒有人讀。
+       `long_balls_accurate` 在 4t 之前 **0 個消費端**,而它量出來是 ×2.9 ——
+       那正是四輪都在找的「球是怎麼到對方半場的」那一層(結論:它不是原因,見變更紀錄)。
+       `player_throws` 更直接:引擎那個常數的註解寫著「真實約 40 次」,**憑印象的數字**,
+       而 raw 裡一直有這個欄位(真實 36.1,而本站已經漂到 21.5)。
+
+       三條守的是三件不同的事:計數器還在、錨的欄位還在側寫裡、**兩個門檻都要印**。
+       最後一條是因為上游沒把「長傳」的定義存進 raw ——
+       只印一個門檻的話,讀者會以為那是上游的定義,而那是本站選的。 */
+    {
+      const sim = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      check('引擎把長傳的計數器吐給 counts(兩個門檻)',
+        /longTry: st\.longTry, longOk: st\.longOk/.test(sim)
+        && /longTry25: st\.longTry25, longOk25: st\.longOk25/.test(sim));
+      const prof = readFileSync(join(ROOT, 'scripts', 'game', 'lib', 'profile.mjs'), 'utf8');
+      check('側寫收 long_balls_accurate 與 player_throws 兩個錨',
+        /'long_balls_accurate'/.test(prof) && /'player_throws'/.test(prof));
+      const chk = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
+      const block = chk.slice(chk.indexOf('3b-6.'), chk.indexOf('3c.'));
+      check('長傳那一節印兩個門檻,而且錨是 long_balls_accurate',
+        /long_balls_accurate/.test(block) && /longOk25/.test(block) && /longOk\b/.test(block));
+      check('界外球對回 player_throws', /player_throws/.test(block));
+      /* 活球時間**沒有**上游的錨(dump 過 raw:teamStats / teamExtra 都沒有這個欄位)。
+         「英超一場活球約 55 分」是我自己的常識,不是這個倉庫量得出來的東西 ——
+         寫進畫面或文件就是編數字(鐵則一,而它沒有「只在畫面上」這種例外)。
+         這一條守的是:那一節不准出現一個活球分鐘數的真值。 */
+      check('活球時間只印不判,沒有憑印象的真值',
+        !/活球.{0,12}真實/.test(block) && /沒有「活球時間」的上游錨/.test(block));
     }
   }
 }

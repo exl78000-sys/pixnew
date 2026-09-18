@@ -407,6 +407,50 @@ if (simShots && realShots) {
   }
 }
 
+/* 3b-6. **長傳與界外球**(階段 4t)。這兩個錨也是側寫裡本來就有、而在這之前沒有人讀的:
+         `long_balls_accurate` 與 `player_throws`(後者 2026-09-18 才加進 `EXTRA_KEYS`)。
+
+         **為什麼要印兩個門檻**:上游沒有把 `long_balls_accurate` 的定義存進 raw
+         (`fotmob-match.mjs` 對 extra 只留值不留 title),所以「長傳」是 25 碼還是 30 碼
+         本站不知道。兩個都印 —— 結論(本站的長傳是真實值的 3 ~ 5 倍)在兩個門檻下都成立,
+         所以它不靠這個選擇。這跟 `own_half_passes` 的單位那一段是同一個處理:
+         **推論就寫成推論,而且讓結論不依賴推論**。
+
+         **4t 量到的是一個否定的結果**:把距離的代價從 0.55 掃到 1.8,長傳成功
+         115.6 → 37.0(剛好落在錨 39.9 上),而「對方半場佔完成傳球」從 69.9% 只動到 69.2%,
+         禁區觸球反而從 124.4 惡化到 156.4、λ 的主隊進球掉到 −2.7 SE。
+         所以長傳的量確實是錯的(×2.9),但它**不是**球住得太前面的原因 ——
+         對方半場的完成傳球 ×1.60 是「球在那裡待太久」,不是「球太容易到那裡」。
+         詳見 docs/變更紀錄.md 的階段 4t。 */
+{
+  const ex = (code, k) => profile.teams?.[code]?.extra?.[k]?.mean ?? null;
+  const pair = k => { const a = ex(HOME, k), b = ex(AWAY, k); return a == null || b == null ? null : a + b; };
+  const avg = f => rows.reduce((a, r) => a + f(r.st.counts), 0) / rows.length;
+  const realLong = pair('long_balls_accurate'), realThrow = pair('player_throws');
+  console.log('');
+  if (realLong == null) console.log('  長傳:側寫沒有這兩隊的 long_balls_accurate —— 不判');
+  else {
+    const ok30 = avg(c => c.longOk ?? 0), ok25 = avg(c => c.longOk25 ?? 0), try30 = avg(c => c.longTry ?? 0);
+    console.log(`  ${'長傳成功(≥30 碼)'.padEnd(16, '\u3000')} ${ok30.toFixed(1).padStart(7)}`
+      + `\u3000真實 ${realLong.toFixed(1)}\u3000**${(ok30 / realLong).toFixed(2)} 倍**`);
+    console.log(`  ${'　　(≥25 碼)'.padEnd(16, '\u3000')} ${ok25.toFixed(1).padStart(7)}`
+      + `\u3000同一個錨\u3000**${(ok25 / realLong).toFixed(2)} 倍** —— 上游的門檻本站不知道,兩個都印`);
+    console.log(`  ${'　長傳嘗試(≥30 碼)'.padEnd(16, '\u3000')} ${try30.toFixed(1).padStart(7)}\u3000沒有真值(上游只給成功數)`);
+  }
+  if (realThrow == null) console.log('  界外球:側寫沒有這兩隊的 player_throws —— 不判');
+  else {
+    const th = avg(c => c.throwIns ?? 0);
+    console.log(`  ${'界外球'.padEnd(16, '\u3000')} ${th.toFixed(1).padStart(7)}`
+      + `\u3000真實 ${realThrow.toFixed(1)}\u3000**${(th / realThrow).toFixed(2)} 倍**`
+      + `\u3000(PASS_ERR 是對著 34 次校準的,行為變了它就漂)`);
+  }
+  /* 活球時間**只印不判**:FotMob 的 teamStats / teamExtra 都沒有這個欄位(dump 過整份 raw),
+     所以本站沒有「一場真的踢幾分鐘」的錨。憑印象填一個數字就是編數字(鐵則一)。
+     印它的理由是死球事件的錨(界外球、角球、犯規)判得出來,而它們一起說明死球太少。 */
+  console.log(`  ${'（參考）死球事件'.padEnd(16, '\u3000')} 界外球 + 角球 + 犯規 = ${avg(c => (c.throwIns ?? 0) + c.corners.home + c.corners.away + c.fouls.home + c.fouls.away).toFixed(1)}`
+    + `\u3000本站沒有「活球時間」的上游錨(raw 裡沒有這個欄位),所以不印分鐘數`);
+}
+
 /* 3c. 越位與逼搶。兩個都有真值:越位是 shotmap 同一份檔案裡的 teamStats.offsides,
        逼搶是側寫的 `style.pressing`(每 100 次對手傳球的抄截 + 攔截,FotMob 逐場、非 proxy)。
        傳球成功率**只印不判** —— 本站的擷取裡 `passAccuracy` 840 個隊季場全是 null,沒有真值。 */
