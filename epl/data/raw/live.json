@@ -926,9 +926,9 @@
    "away": "AVL",
    "kickoff": "2026-09-19T11:30:00Z",
    "started": true,
-   "finished": false,
+   "finished": true,
    "minutes": 90,
-   "hs": 1,
+   "hs": 2,
    "as": 3,
    "lineups": {
     "TOT": [
@@ -938,7 +938,7 @@
       "pos": "DEF",
       "minutes": 90,
       "starts": 1,
-      "goals": 0,
+      "goals": 1,
       "assists": 0,
       "own": 0,
       "yellow": 1,
@@ -946,11 +946,11 @@
       "saves": 0,
       "conceded": 3,
       "cleanSheets": 0,
-      "xG": 0,
+      "xG": 0.14,
       "xA": 0.3,
       "xGC": 1.16,
       "bonus": 0,
-      "bps": -1,
+      "bps": 13,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -959,7 +959,7 @@
       "recoveries": 4,
       "cbi": 6,
       "defCon": 9,
-      "points": 0
+      "points": 6
      },
      {
       "code": "438234",
@@ -1113,7 +1113,7 @@
       "minutes": 90,
       "starts": 1,
       "goals": 0,
-      "assists": 0,
+      "assists": 1,
       "own": 0,
       "yellow": 0,
       "red": 0,
@@ -1121,10 +1121,10 @@
       "conceded": 3,
       "cleanSheets": 0,
       "xG": 0,
-      "xA": 0.18,
+      "xA": 0.4,
       "xGC": 1.16,
       "bonus": 0,
-      "bps": 3,
+      "bps": 16,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -1133,7 +1133,7 @@
       "recoveries": 6,
       "cbi": 1,
       "defCon": 3,
-      "points": 1
+      "points": 4
      },
      {
       "code": "491279",
@@ -1211,15 +1211,15 @@
       "xA": 0.02,
       "xGC": 0.15,
       "bonus": 0,
-      "bps": 7,
+      "bps": 9,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
       "ict": 0,
-      "tackles": 3,
+      "tackles": 4,
       "recoveries": 2,
       "cbi": 0,
-      "defCon": 5,
+      "defCon": 6,
       "points": 1
      },
      {
@@ -1410,13 +1410,13 @@
       "yellow": 1,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0,
       "xGC": 0.42,
       "bonus": 0,
-      "bps": -3,
+      "bps": -7,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -1425,7 +1425,7 @@
       "recoveries": 0,
       "cbi": 3,
       "defCon": 3,
-      "points": 0
+      "points": -1
      },
      {
       "code": "149484",
@@ -1439,13 +1439,13 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0,
       "xGC": 1,
       "bonus": 0,
-      "bps": 13,
+      "bps": 9,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -1454,7 +1454,7 @@
       "recoveries": 3,
       "cbi": 11,
       "defCon": 12,
-      "points": 4
+      "points": 3
      },
      {
       "code": "184667",
@@ -1468,13 +1468,13 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0,
       "xGC": 1,
       "bonus": 0,
-      "bps": 5,
+      "bps": 1,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -1483,7 +1483,7 @@
       "recoveries": 2,
       "cbi": 6,
       "defCon": 6,
-      "points": 2
+      "points": 1
      },
      {
       "code": "195546",
@@ -1497,13 +1497,13 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0.14,
       "xA": 0.06,
       "xGC": 1,
-      "bonus": 2,
-      "bps": 42,
+      "bonus": 3,
+      "bps": 47,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -1512,7 +1512,7 @@
       "recoveries": 6,
       "cbi": 1,
       "defCon": 13,
-      "points": 11
+      "points": 12
      },
      {
       "code": "122806",
@@ -1555,7 +1555,7 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0,
@@ -1613,7 +1613,7 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0,
@@ -1647,7 +1647,7 @@
       "xG": 0.44,
       "xA": 0.16,
       "xGC": 0.64,
-      "bonus": 3,
+      "bonus": 2,
       "bps": 45,
       "influence": 0,
       "creativity": 0,
@@ -1657,7 +1657,7 @@
       "recoveries": 4,
       "cbi": 2,
       "defCon": 7,
-      "points": 14
+      "points": 13
      },
      {
       "code": "448089",
@@ -1671,7 +1671,7 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0.02,
@@ -1700,7 +1700,7 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 0,
+      "conceded": 1,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0,
@@ -1735,7 +1735,7 @@
       "xA": 0.02,
       "xGC": 0.89,
       "bonus": 1,
-      "bps": 33,
+      "bps": 30,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -1758,13 +1758,13 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0.03,
       "xA": 0.01,
       "xGC": 1,
       "bonus": 0,
-      "bps": 17,
+      "bps": 13,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -1773,7 +1773,7 @@
       "recoveries": 9,
       "cbi": 13,
       "defCon": 13,
-      "points": 4
+      "points": 3
      },
      {
       "code": "433969",
@@ -1787,13 +1787,13 @@
       "yellow": 0,
       "red": 0,
       "saves": 5,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0,
       "xGC": 1,
       "bonus": 0,
-      "bps": 21,
+      "bps": 17,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -1802,7 +1802,7 @@
       "recoveries": 12,
       "cbi": 4,
       "defCon": 0,
-      "points": 3
+      "points": 2
      },
      {
       "code": "214590",
@@ -1845,7 +1845,7 @@
       "yellow": 0,
       "red": 0,
       "saves": 0,
-      "conceded": 1,
+      "conceded": 2,
       "cleanSheets": 0,
       "xG": 0,
       "xA": 0,
@@ -1986,5 +1986,5 @@
    }
   }
  ],
- "fetchedAt": "2026-09-19T13:32:59.644Z"
+ "fetchedAt": "2026-09-19T13:35:15.616Z"
 }

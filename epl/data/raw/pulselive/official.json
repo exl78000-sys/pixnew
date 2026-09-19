@@ -29028,10 +29028,10 @@
   "TOT|AVL": {
    "fixtureId": 128972,
    "kickoff": "2026-09-19T11:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 3
    },
    "homeId": 21,
@@ -29460,6 +29460,45 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 304175,
+     "assist": 25067,
+     "team": 2,
+     "min": 45,
+     "label": "45+4'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 110526,
+     "assist": 304175,
+     "team": 2,
+     "min": 67,
+     "label": "67'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 2
+    },
+    {
+     "side": "A",
+     "person": 26408,
+     "assist": 51423,
+     "team": 2,
+     "min": 79,
+     "label": "79'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 3
+    },
+    {
      "side": "H",
      "person": 21887,
      "assist": 51364,
@@ -29470,6 +29509,19 @@
      "type": "G",
      "kind": "G",
      "hs": 1,
+     "as": 3
+    },
+    {
+     "side": "H",
+     "person": 76090,
+     "assist": 10458,
+     "team": 21,
+     "min": 90,
+     "label": "90+8'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
      "as": 3
     }
    ],
@@ -29696,12 +29748,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -29718,10 +29764,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+9'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+9'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-19T13:35:17.538Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "BHA|ARS": {
    "fixtureId": 128965,
@@ -30915,5 +30974,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-19T13:33:01.294Z"
+ "fetchedAt": "2026-09-19T13:35:17.942Z"
 }
