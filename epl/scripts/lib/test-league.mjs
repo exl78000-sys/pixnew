@@ -22,6 +22,7 @@ import { join } from 'node:path';
 import { loadTeams } from './teams.mjs';
 import { simulateSeason } from './simulate.mjs';
 import { europeanKickoff } from './league-matches.mjs';
+import { nameCheckVerdict } from './build-league.mjs';
 
 
 export function testLeague(L) {
@@ -212,8 +213,39 @@ export function testLeague(L) {
          早季 Understat 常比賽果多算一輪(實測 2026-27 德甲),那種區間整個在上限之上,
          兩邊不是同一批 —— 不判,但要看得到有幾列是那樣。 */
       const nc = leaders.nameCheck ?? [];
-      const judged = nc.filter(x => !(x.minutesLo > 1.05));
+      /* **另一個方向的同一件事**:Understat 還沒算到這一隊最新的那幾場,缺口剛好是整數場
+         (一場 = 11 × 90 = 990 分鐘)。2026-09-19 實測六隊 2970~3962,除以 990 是
+         3.000~4.002。那種也是「兩邊不是同一批」,不判 —— 但 `coveredN === 0`
+         (整隊一個球員都沒接到)**仍然要判**,那正是 alias 漏掉的樣子。
+         這裡**自己算一次**,不讀 build 給的 verdict(下面那條才是比 verdict)。 */
+      const behind = x => {
+        const c = x.minutes / (11 * 90), n = Math.round(c);
+        return n >= 1 && n < x.played && Math.abs(c - n) <= 0.01;
+      };
+      const judged = nc.filter(x => !(x.minutesLo > 1.05) && !behind(x));
       const suspicious = judged.filter(x => x.minutesHi < 0.95 || x.goalsLo > x.tableGoals);
+      /* 不判的那幾列要**看得到**,不然這個逃生門會靜靜把整份核對吃掉。 */
+      const covered = nc.filter(x => x.verdict === 'coverage');
+      check('兩邊場次不同批的那幾列有記下涵蓋幾場,而且不是全部',
+        covered.every(x => Number.isInteger(x.coveredMatches)) && covered.length < nc.length,
+        `${covered.length} / ${nc.length} 列不判:${covered.map(x => `${x.code} ${x.coveredMatches}/${x.played}`).join('、') || '(無)'}`);
+      /* **判定本身拿捏造的列驗一次**(`nameCheckVerdict` 是純函式)。上面那幾條只驗得到
+         「當下這份資料」,而這個判定要守的兩種情況都不常出現在當下的資料裡 ——
+         真的踩到的那一天才發現它寫錯,就太晚了。四個案例:
+           ① 還沒算到最新那一場(缺口整數場)→ coverage
+           ② alias 整隊漏掉(0 分鐘)→ **仍然 suspect**,這是它最主要的用途
+           ③ 缺口不是整數場 → suspect
+           ④ Understat 多算了場次 → coverage
+         ①②③ 是 2026-09-19 德甲 FCB 那一列的真實數字與它的兩個對照。 */
+      const vd = o => nameCheckVerdict(o).verdict;
+      check('判定:Understat 還沒算到最新那一場(缺口剛好整數場)→ 不判',
+        vd({ minutes: 2970, played: 4, minutesLo: 0.75, minutesHi: 0.75, goals: 6, tableGoals: 14 }) === 'coverage');
+      check('判定:alias 整隊漏掉(0 分鐘)→ 仍然可疑',
+        vd({ minutes: 0, played: 4, minutesLo: 0, minutesHi: 0, goals: 0, tableGoals: 7 }) === 'suspect');
+      check('判定:缺口不是整數場 → 仍然可疑',
+        vd({ minutes: 2100, played: 4, minutesLo: 0.53, minutesHi: 0.53, goals: 2, tableGoals: 7 }) === 'suspect');
+      check('判定:Understat 多算了場次 → 不判',
+        vd({ minutes: 2970, played: 2, minutesLo: 1.5, minutesHi: 1.5, goals: 9, tableGoals: 5 }) === 'coverage');
       check('沒有任何一隊的進球或分鐘對不上(對錯隊的話一定會露出來)', suspicious.length === 0,
         suspicious.map(x => `${x.season} ${x.code} 分鐘區間 ${x.minutesLo}~${x.minutesHi}、`
           + `進球 ${x.goalsLo}~${x.goalsHi} vs 積分榜 ${x.tableGoals}`).join('、'));

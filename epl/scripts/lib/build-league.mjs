@@ -61,6 +61,46 @@ import { leagueKnowledge } from './knowledge.mjs';
 
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 
+/* **隊名對照核對的判定**(抽成純函式才測得到 —— 埋在 build 裡的規則只能靠
+   「跑一次看產物」驗,而它要守的兩種情況正好都不常出現在當下的資料裡)。
+
+   回傳 `{ verdict, coveredMatches, why }`,四種:
+     `suspect`  分鐘區間整個低於理論上限(這個隊碼接到空的或接到一支小很多的隊),
+                或掛得上去的進球已經超過積分榜(烏龍球只會往另一個方向)
+     `coverage` 兩邊涵蓋的場次不是同一批 —— **兩個方向都算**:
+                Understat 多算了場次(`ahead`),或還沒算到最新那幾場(`behind`)
+     `ok`      其餘
+
+   `behind` 的判準是「缺口剛好是整數場」:Understat 的一場就是 11 × 90 = 990 分鐘。
+   2026-09-19 實測(產物停在前一次 build、賽果已經有 2026-09-18 那一輪):
+   德甲 FCB 2970 / FCU 2972、義甲 SAS 3960 / MZA 3960、法甲 MON 3961 / LEN 3962 ——
+   零頭 0~2 分鐘(補時的碼表差),除以 990 是 3.000~3.002 / 4.000~4.002。
+   容差留 0.01 場(≈ 9.9 分鐘,五倍餘裕)。
+
+   **它測不出什麼**:這個隊碼要是接到「剛好少踢一場的另一支隊」,缺口也會是整數場,
+   這一條就會把它放掉 —— 而那本來就落在「兩支差不多大的隊互換測不出來」那一句裡。
+   `coveredMatches === 0`(整隊一個球員都沒接到)**仍然算可疑**:那正是 alias 漏掉的樣子
+   (義甲 ROM 就是這樣抓到的),跟「還沒抓到第一輪」分不開的時候要往嚴的那邊站。 */
+export function nameCheckVerdict({ minutes, played, minutesLo, minutesHi, goals, tableGoals },
+  { minTol = 0.05, coverTol = 0.01 } = {}) {
+  const ahead = minutesLo != null && minutesLo > 1 + minTol;
+  const covered = played > 0 ? minutes / (11 * 90) : null;
+  const coveredMatches = covered == null ? null : Math.round(covered);
+  const behind = coveredMatches != null && coveredMatches >= 1 && coveredMatches < played
+    && Math.abs(covered - coveredMatches) <= coverTol;
+  const thin = !behind && minutesHi != null && minutesHi < 1 - minTol;
+  const overGoals = !ahead && tableGoals != null && goals > tableGoals;
+  return {
+    coveredMatches,
+    verdict: (thin || overGoals) ? 'suspect' : (ahead || behind) ? 'coverage' : 'ok',
+    why: thin ? '分鐘區間整個低於理論上限 —— 這個隊碼可能沒接到球員,或接到一支小很多的隊'
+      : overGoals ? '掛得上去的進球已經超過積分榜的該隊進球(烏龍球只會往另一個方向)'
+        : ahead ? 'Understat 涵蓋的場次比本站賽果多(早季常見),兩邊不是同一批,這一列不判'
+          : behind ? `Understat 只算到這一隊的 ${coveredMatches} / ${played} 場(缺口剛好是整數場),兩邊不是同一批,這一列不判`
+            : null,
+  };
+}
+
 export async function buildLeague(L) {
   const ROOT = L.root;
   const OUT = join(ROOT, 'web', 'data', 'leagues', L.key);
@@ -564,7 +604,10 @@ export async function buildLeague(L) {
      **它測不出什麼要講清楚**:兩支差不多大的隊互換,總量看起來會一樣,這個核對測不出來。
      它測得出的是「這個隊碼接到空的」與「接到一支大小差很多的隊」—— 而 alias 缺漏
      正是前者:義甲的 ROM 就是這樣抓到的(Understat 寫 `Roma`、名冊只有 `AS Roma`,
-     寬鬆比對只去**字尾**的法人形式、不去字首的 AS,於是整隊一個球員都沒接到)。 */
+     寬鬆比對只去**字尾**的法人形式、不去字首的 AS,於是整隊一個球員都沒接到)。
+
+     **判定本身在檔頭的 `nameCheckVerdict`**(抽成純函式才測得到),含另一個方向的
+     「兩邊不是同一批」:Understat 還沒算到這一隊最新的那幾場。 */
   const MIN_TOL = 0.05;
   const blankCheck = () => ({ goals: 0, minutes: 0, multiGoals: 0, multiMinutes: 0, multiN: 0 });
   const nameCheck = [];
@@ -595,23 +638,20 @@ export async function buildLeague(L) {
       const cap = 11 * 90 * r.p;                  // 一隊一季的分鐘理論上限
       const minutesLo = cap ? round(v.minutes / cap, 3) : null;
       const minutesHi = cap ? round((v.minutes + v.multiMinutes) / cap, 3) : null;
-      // 區間整個在上限**之上** = Understat 比賽果多算了場次,不是隊名對錯
-      const coverage = minutesLo != null && minutesLo > 1 + MIN_TOL;
-      const thin = minutesHi != null && minutesHi < 1 - MIN_TOL;
-      const overGoals = !coverage && r.gf != null && v.goals > r.gf;
+      /* 判定走 `nameCheckVerdict`(檔頭那支純函式)—— 兩個方向的「兩邊不是同一批」
+         都在那裡,連同它測不出什麼。埋在這個迴圈裡的話只能靠跑一次看產物驗。 */
+      const vd = nameCheckVerdict({ minutes: v.minutes, played: r.p, minutesLo, minutesHi,
+        goals: v.goals, tableGoals: r.gf }, { minTol: MIN_TOL });
       nameCheck.push({
         season, code: r.code, played: r.p, transfers: v.multiN,
         goalsLo: v.goals, goalsHi: v.goals + v.multiGoals, tableGoals: r.gf,
         minutes: v.minutes, minutesCap: cap, minutesLo, minutesHi,
-        verdict: (thin || overGoals) ? 'suspect' : coverage ? 'coverage' : 'ok',
-        why: thin ? '分鐘區間整個低於理論上限 —— 這個隊碼可能沒接到球員,或接到一支小很多的隊'
-          : overGoals ? '掛得上去的進球已經超過積分榜的該隊進球(烏龍球只會往另一個方向)'
-            : coverage ? 'Understat 涵蓋的場次比本站賽果多(早季常見),兩邊不是同一批,這一列不判'
-              : null,
+        coveredMatches: vd.coveredMatches, verdict: vd.verdict, why: vd.why,
       });
     }
   }
   const nameJudgedRows = nameCheck.filter(x => x.verdict !== 'coverage' && x.minutesHi != null);
+  const nameCoverRows = nameCheck.filter(x => x.verdict === 'coverage');
   const nameJudged = nameJudgedRows.length;
   const nameWorstHi = nameJudged ? Math.min(...nameJudgedRows.map(x => x.minutesHi)) : null;
   if (hasPlayers) {
@@ -619,7 +659,8 @@ export async function buildLeague(L) {
     const coverage = nameCheck.filter(x => x.verdict === 'coverage');
     console.log(`  隊名對照核對:判了 ${nameJudged} 列、分鐘區間上緣最低 ${nameWorstHi}`
       + `(理論上限要落在區間裡,容差 ${MIN_TOL})`
-      + (coverage.length ? `・${coverage.length} 列兩邊場次不同批,不判` : '')
+      + (coverage.length ? `・${coverage.length} 列兩邊場次不同批,不判`
+        + `(${coverage.map(x => `${x.code} ${x.coveredMatches}/${x.played}`).join('、')})` : '')
       + (suspect.length ? ` ⚠ 可疑 ${suspect.length} 隊:${suspect.map(x => `${x.season} ${x.code}`).join('、')}`
         : '(沒有可疑的隊)'));
   }
@@ -673,7 +714,15 @@ export async function buildLeague(L) {
         ? [`✓ 球員整季數據與 xG(Understat,${playersOut.length} 筆):進球、助攻、xG、xA、射門、關鍵傳球與牌。`
           + `隊名對照拿逐隊出賽分鐘與進球獨立核對過:${nameJudged} 隊季裡,`
           + '每一隊的分鐘區間(季中轉隊的人上游只給兩隊合計,拆不開,所以算成區間)都涵蓋'
-          + `滿季理論上限 11 × 90 × 場數,區間上緣最低 ${nameWorstHi};沒有一隊的球員進球超過積分榜。`,
+          + `滿季理論上限 11 × 90 × 場數,區間上緣最低 ${nameWorstHi};沒有一隊的球員進球超過積分榜。`
+          /* **不判的那幾列要講出來**(鐵則四)。早季兩邊涵蓋的場次常常不是同一批:
+             Understat 多算一輪、或還沒算到最新那一場,兩種都不是資料錯,但讀者看到
+             「核對了 N 隊季」會以為每一隊都核對過了。缺口是整數場就寫出來是哪幾隊。 */
+          + (nameCoverRows.length
+            ? `另有 ${nameCoverRows.length} 隊季兩邊涵蓋的場次不是同一批(`
+              + nameCoverRows.map(x => `${x.season} ${x.code} Understat ${x.coveredMatches}/${x.played} 場`).join('、')
+              + ')—— 那一列無法核對,不算通過也不算不一致。'
+            : ''),
           /* 缺口要照實講,而且要講出它是哪一種。
              **這一句也會過期**:賽後報告接上之後就有烏龍球可以對帳了,
              那時候還印「本站沒有來源可以證明」就是假的(跟上面那句寫死的同一種)。 */
