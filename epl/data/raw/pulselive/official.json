@@ -29028,7 +29028,7 @@
   "TOT|AVL": {
    "fixtureId": 128972,
    "kickoff": "2026-09-19T11:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -29037,9 +29037,31 @@
    "homeId": 21,
    "awayId": 2,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      32229,
+      76090,
+      75582,
+      10458
+     ],
+     [
+      22802,
+      71623
+     ],
+     [
+      126943,
+      119072,
+      76216
+     ],
+     [
+      10443
+     ]
+    ],
     "xi": [
      {
       "id": 10443,
@@ -29091,7 +29113,7 @@
       "playerId": null,
       "name": "Omar Marmoush",
       "shirt": 22,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Striker",
       "captain": false
      },
@@ -29109,7 +29131,7 @@
       "playerId": null,
       "name": "Sávio",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -29226,9 +29248,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      125556
+     ],
+     [
+      14164,
+      5066,
+      8900,
+      69196
+     ],
+     [
+      25067,
+      133679
+     ],
+     [
+      51423,
+      304175,
+      26408
+     ],
+     [
+      110526
+     ]
+    ],
     "xi": [
      {
       "id": 304175,
@@ -29418,10 +29462,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-19T11:30:00.187Z"
+ "fetchedAt": "2026-09-19T11:32:17.190Z"
 }
