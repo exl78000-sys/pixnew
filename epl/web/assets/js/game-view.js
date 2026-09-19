@@ -1,8 +1,8 @@
 import * as C from './core.js?v=d2162a48';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountPitch } from './game-pitch.js?v=7d3b9def';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=aceeab49';
-import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=13b570f3';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=09130185';
+import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=be283192';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
    (比賽統計 / 事件流 / 陣容與換人 / 戰術)、下方勝率條 + 動能條 + 文字播報。
@@ -189,7 +189,9 @@ export async function renderGame(app) {
       return {
         shots: n('shot'),
         on: n('goal') + n('save'),
-        blocked: n('block'),
+        /* **門將碰到的不算封阻**(2026-09-19,階段 5a):折射的迴圈連門將都跑,
+           而上游的「封阻」是場上球員擋掉的射門。引擎已經在事件上標了 `gk`。 */
+        blocked: ev.filter(e => e.type === 'block' && !e.gk).length,
         xg: ev.filter(e => e.type === 'shot').reduce((a, e) => a + (e.xg ?? 0), 0),
         corners: n('corner'), fouls: n('foul'), offsides: n('offside'),
         yellow: ev.filter(e => e.type === 'card' && e.card === 'yellow').length,
@@ -381,7 +383,7 @@ export async function renderGame(app) {
         case 'goal': return `${m} ⚽ <b>${t} 進球!</b> ${who}(xG ${e.xg != null ? e.xg.toFixed(2) : '—'}) ${e.score[0]}:${e.score[1]}`;
         case 'shot': return `${m} ${t} ${who} 射門(${e.dist} 公尺,xG ${e.xg != null ? e.xg.toFixed(2) : '—'})`;
         case 'save': return `${m} <span class="dim">${t} ${who} 的射門被撲出</span>`;
-        case 'block': return `${m} <span class="dim">${who} 封阻</span>`;
+        case 'block': return `${m} <span class="dim">${who}${e.gk ? '(門將)擋出' : ' 封阻'}</span>`;
         case 'corner': return `${m} ${t} 角球`;
         case 'card': return `${m} ${e.card === 'red' ? '🟥' : '🟨'} ${t} ${who}${e.card === 'red' ? ' 兩黃罰下' : ' 黃牌'}`;
         case 'sub': return `${m} 🔁 ${t} ${who} 換 ${C.esc(e.offName ?? '')}`;

@@ -695,6 +695,15 @@ const CROSS_AIM_ERR = 2.5;                     // 傳中落點的誤差範圍(�
 const CROSS_APEX = 6;                          // 傳中弧頂(公尺)
 const CROSS_HEAD = 2.6;                        // 頭球高度:低於它才搶得到第一點
 const BOX_D = 16.5, BOX_W = 20.16;             // 禁區:深 16.5 m、半寬 20.16 m(正式尺寸)
+/* **「射門在禁區內」是矩形,不是「離門 18 公尺以內」的圓。**(2026-09-19,階段 5a)
+   第一版寫 `dGoal < 18 && |y − 中線| < 20.16` —— 而 `BOX_D` / `BOX_W` 就在上一行。
+   兩者差多少不是猜的:拿倉庫裡 10,610 顆真實射門逐顆判,矩形 66.8%、那個圓 62.3%,
+   **差 4.5 個百分點**(圓把禁區兩個角落 16.5~26.1 公尺那一圈漏掉、又把中路 16.5~18 公尺
+   那一塊算進來)。於是「本站 59% 對真實 67%」那 8 個百分點裡有 5 個是**兩邊在量不同的東西** ——
+   跟 `intercepts` 那條(拿自己計數器的名字去比上游的同名欄位)同一家族。
+   三個射門產生點共用這一支:十二碼(離門線 11 公尺)一定在裡面,
+   而角球頭球**不一定** —— 第六個站位在禁區線外 19 公尺,原本那兩處是無條件 ++。 */
+const inBoxAt = (x, y, goalX) => Math.abs(goalX - x) < BOX_D && Math.abs(y - PITCH_H / 2) < BOX_W;
 const FOUL_NO_WHISTLE = 6;                     // 離自家門這麼近的犯規不在這裡處理(禁區 → 十二碼,還沒做)
 /* 無球跑動。這是使用者看預覽時說「沒有因為進攻或防守跑動」的那一半 ——
    第一版離球的十個人只會走回自己的陣型格子,所以畫面上永遠只有持球者跟逼搶者在動。
@@ -1232,6 +1241,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
     shotsBy: { home: 0, away: 0 }, onTargetBy: { home: 0, away: 0 }, blockedBy: { home: 0, away: 0 },
+    gkStopBy: { home: 0, away: 0 },
     crossedNotShot: 0,   // 過了門線但不是射門(解圍、折射後的鬆球)—— 只回報,不算進射正
     /* 抄截與攔截分開記:`style.pressing` 是兩者的和除以對手傳球數,要對回它就得兩個都有。
        攔截的定義照 FotMob 的語意 ——「球是對方踢出來的,而我控到了」。 */
@@ -1615,7 +1625,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
            (解圍出來的球在禁區線外被射)。分成禁區內的補射與禁區外的第二波兩類記,
            才看得出本站缺的是哪一種 —— 只看總數的話兩種都只是「有點少」。 */
         if (sit === 'FromCorner') {
-          const inBox = Math.abs(goalX - p.x) < BOX_D && Math.abs(p.y - PITCH_H / 2) < BOX_W;
+          const inBox = inBoxAt(p.x, p.y, goalX);
           const k = inBox ? 'box' : 'edge';
           st.cornerShot[k] = (st.cornerShot[k] ?? 0) + 1;
           st.cornerShotBins.foot[Math.min(6, Math.floor(dGoal / 5))]++;
@@ -1631,10 +1641,15 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         ball.shot = { by: p, side: p.side, xg, willScore: !miss, sit, assist: p.assistBy ?? null };
         if (!miss) st.willScore++;
         st.shots++; st.shotsBy[p.side]++; st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
-        emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10 });
+        /* `sit` 與 `inBox` 要**跟著事件走**(2026-09-19,階段 5a)。賽後解讀(`game-diag`)
+           吃的是這條事件流,而它原本找的是 `e.situation` 與 `e.x` —— 這裡一個都沒有,
+           於是「禁區內射門」「定位球射門」兩項**永遠是 0**,靠它們的兩則判讀從來沒有響過。
+           `inBox` 由引擎給(不要讓下游拿 `dist` 自己劃一條線 —— 那就是本輪修掉的那個圓)。 */
+        emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg,
+               dist: Math.round(dGoal * 10) / 10, sit, inBox: inBoxAt(p.x, p.y, goalX) });
         closeChain('shot', p.x);
         st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
-        if (dGoal < 18 && Math.abs(p.y - PITCH_H / 2) < 20.16) st.shotInBox++;
+        if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
         p.intent = null;
         return { kind: 'shot' };
       }
@@ -2036,7 +2051,17 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
             ball.vz = Math.max(ball.vz, rng() * 2.5);
             /* 被封阻也要有事件 —— 畫面的統計是從**演過的事件**算的,只留一個計數器的話
                面板就得同時讀兩個來源,而「同一個數字兩個來源」是本站踩過的坑。 */
-            if (ball.shot?.side) { st.blockedBy[ball.shot.side]++; emit({ type: 'block', side: ball.shot.side, by: q.code, name: q.name }); }
+            /* **門將碰到的球不是「封阻」。**(2026-09-19,階段 5a)折射的迴圈跑 `all()`,
+               門將也在裡面 —— 而上游的 `blocked` 是**場上球員**擋掉的射門(門將擋的記成撲救)。
+               實測 12 場 21 次「封阻」裡有 **12 次是門將**,所以拿本站的 8% 去比真實的 32%
+               連量的東西都不一樣。分成兩個計數器:`blockedBy` 才是拿去比錨的那一個。
+               門將那一半**不硬塞進射正**(上游沒有這一類,硬塞就是編一個對照);
+               它自己一行、照實說「上游不分這一類」(鐵則四)。 */
+            if (ball.shot?.side) {
+              const gk = q === sideOf(q.side).gk;
+              if (gk) st.gkStopBy[ball.shot.side]++; else st.blockedBy[ball.shot.side]++;
+              emit({ type: 'block', side: ball.shot.side, by: q.code, name: q.name, gk });
+            }
             ball.shot = null; st.lastTouch = q.side; st.deflects++; st.ballFrom = 'block'; if (ball.passSide) ball.wasDeflected = true;
             break;
           }
@@ -2542,9 +2567,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.shotSit.Penalty = (st.shotSit.Penalty ?? 0) + 1;
     noteShotDist('Penalty', 11);
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
-    emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'Penalty' });
+    emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'Penalty', inBox: inBoxAt(p.x, p.y, goalX) });
     st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
-    st.shotInBox++;
+    if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
     /* 這裡**不叫 openChain** —— deadBall 已經把 pendingOrigin 設成 'penalty',
        下一個控到球的人(補射或門將)由 giveTo 開串就好。在這裡多開一次會多一條空串。 */
   }
@@ -2653,8 +2678,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.cornerShotXg.header += xg;
     noteShotDist('FromCorner', dGoal);
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
-    emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner' });
-    st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal; st.shotInBox++;
+    emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner', inBox: inBoxAt(p.x, p.y, goalX) });
+    st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
+    if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
   }
 
   /* 越位判罰:對方在越位的位置獲得自由球。跟界外球走同一條死球路徑。 */
@@ -2741,6 +2767,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
         boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
+        gkStopBy: { ...st.gkStopBy },
         deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp, boxDuels: st.boxDuels,
         cornerSrc: { ...st.cornerSrc }, cornerFirst: { ...st.cornerFirst }, cornerShot: { ...st.cornerShot },
         cornerNext: { ...st.cornerNext },

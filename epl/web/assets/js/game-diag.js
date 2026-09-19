@@ -21,10 +21,15 @@
 
 /* 模組層的常數一律宣告在檔案最前面 —— 渲染器在模組執行時就會被呼叫,
    而 const 不會提升(球員頁踩過:整張表不見,只有 console 一行 TDZ 錯誤)。 */
-const BOX_LINE = 88.5;          // 禁區線:105 − 16.5
 const THIRD_1 = 35;          // 自家三分之一
 const THIRD_2 = 70;          // 中場三分之一
-const SET_PIECE_SITS = new Set(['FromCorner', 'FreeKick', 'SetPiece', 'Penalty']);
+/* **只收可信的那兩類**(2026-09-19,階段 5a)。階段 4z 量過:情境標籤標的是「出身」
+   (這次控球從哪裡開始)而不是上游的「波段」,串活得越久越不可信 ——
+   `SetPiece` 的串中位 6 秒、`ThrowInSetPiece` 16 秒,兩類的佔比與離門都系統性偏掉;
+   `FromCorner` 的串中位 **0 秒**,是唯一對得上真實的一類,`Penalty` 則是精確的。
+   所以判讀只認這兩類,而且句子照著寫成「角球與十二碼」—— 不是「定位球」。
+   (`FreeKick` 從清單裡拿掉:引擎結構上生不出直接罰球射門,列著只會悄悄過期。) */
+const SET_PIECE_SITS = new Set(['FromCorner', 'Penalty']);
 const SIDES = ['home', 'away'];
 /* 兩隊互比時的「明顯差距」。1.6 倍是從真實報告層那支判讀搬過來的同一個值:
    低於它的差距在單場的樣本裡分不出是踢法還是運氣。 */
@@ -35,11 +40,14 @@ const NUM = /(?<![\d.\-])-?\d+(?:\.\d+)?/g;
 const round1 = x => Math.round(x * 10) / 10;
 const shareOf = (a, b) => (b > 0 ? a / b : 0);
 const other = side => (side === 'home' ? 'away' : 'home');
-/* 進球在既有的統計面板裡就算一次射門(引擎的每一顆進球都由 resolveShot 產生),
-   烏龍球也算 —— 而且算在**得分方**:引擎的 goal 事件 side 就是得分方,ownGoal 只是說
-   射門的人是對方後衛。第一版我照 pulselive 的直覺把烏龍球翻給另一隊,那會讓兩隊的
-   進球數互換,而畫面完全正常。xG 由事件自己給(烏龍球是 0),不必在這裡分岔。 */
-const isShot = e => e.type === 'shot' || e.type === 'goal';
+/* **進球不另外算一次射門**(2026-09-19,階段 5a)。連續引擎每一腳射門都先發一筆 `shot`,
+   進了才再發 `goal` —— 舊的回合制引擎是「shot 或 goal」二選一,所以這一行原本寫成
+   `type === 'shot' || type === 'goal'`。照舊寫法接上連續引擎,**每個進球都被算成兩次射門**:
+   實測一場引擎 24 腳,這裡數出 29 腳,而畫面上那一句就寫著「射門 15 比 14」。
+   `game-view` 的統計面板早就修好了(它的註解就在講這件事),**而這一份沒跟上** ——
+   那是本站記過的「修好一份、忘了另一份複本」。
+   烏龍球算在**得分方**(引擎的 goal 事件 side 就是得分方)—— 不過連續引擎還沒有烏龍球。 */
+const isShot = e => e.type === 'shot';
 
 /* 一個回合演完(或被略過)之後留下的簡記:丟球在哪個三分之一 —— 事件流沒有位置。
    只留四個欄位,不是整個回合物件:disp 是**顯示**狀態,塞進整個回合等於把引擎算好的未來也帶進去。
@@ -55,7 +63,7 @@ export const chainBrief = seq => ({ side: seq.side, endType: seq.end?.type ?? nu
 export function tally({ events = [], chains = [], poss = { home: 0, away: 0 } } = {}) {
   const blank = () => ({
     seqs: 0, possSec: 0, possPct: 0,
-    shots: 0, on: 0, off: 0, blocked: 0, goals: 0, xg: 0,
+    shots: 0, on: 0, off: 0, blocked: 0, gkStops: 0, goals: 0, xg: 0,
     boxShots: 0, longShots: 0, setPieceShots: 0,
     corners: 0, fouls: 0, yellow: 0, red: 0, offsides: 0,
     /* 丟球分三個三分之一。目前只有 lostOwn 有規則在用,另外兩個是同一組分解,
@@ -75,7 +83,7 @@ export function tally({ events = [], chains = [], poss = { home: 0, away: 0 } } 
     const s = t[e.side];
     if (!s) continue;
     if (e.type === 'goal') {
-      s.goals++;
+      s.goals++; s.on++;
       /* `at` 是事件在事件流裡的位置,用來判斷誰先進球 —— **不可以拿 min 比**:
          補時的 min 一律是 90(或 45),所以 90+1 跟 90 用 min 比會平手,先後就看誰寫在前面。
          這跟 CLAUDE.md 那條「官方把補時全部記成第 90 分」是同一個坑,只是這次的上游是自己的引擎。 */
@@ -84,12 +92,20 @@ export function tally({ events = [], chains = [], poss = { home: 0, away: 0 } } 
     if (isShot(e)) {
       s.shots++;
       s.xg = round1(s.xg + (e.xg ?? 0));
-      if (e.type === 'goal' || e.outcome === 'saved') s.on++;
-      else if (e.outcome === 'blocked') s.blocked++;
-      else s.off++;
-      if (e.x != null) { if (e.x >= BOX_LINE) s.boxShots++; else s.longShots++; }
-      if (SET_PIECE_SITS.has(e.situation)) s.setPieceShots++;
+      /* 三種下場**不在射門事件上** —— 它們是後來才發生的,各自有自己的事件
+         (`goal` / `save` / `block`)。原本這裡讀 `e.outcome`,而連續引擎的射門事件
+         根本沒有那個欄位:於是「射正」等於進球數、「被封阻」永遠是 0。
+         改成在下面按事件型別數,跟 `game-view` 的統計面板同一條規則。 */
+      if (e.inBox != null) { if (e.inBox) s.boxShots++; else s.longShots++; }
+      if (SET_PIECE_SITS.has(e.sit)) s.setPieceShots++;
     }
+    /* 射正 = 進球 + 被撲出;被封阻**只算場上球員**(門將碰到的球上游記成撲救,
+       而引擎把它分成 `gk: true` 的 block 事件 —— 混進來的話本站的封阻會被**虛報將近一倍**
+       (30 場實測:場上球員 1.0 腳/場、門將 0.8 腳/場),見階段 5a)。
+       偏出在最後用「射門 − 其餘三類」算,四類才會剛好把射門數分完。 */
+    if (e.type === 'save') s.on++;
+    if (e.type === 'block' && !e.gk) s.blocked++;
+    if (e.type === 'block' && e.gk) s.gkStops++;
     if (e.type === 'corner') s.corners++;
     if (e.type === 'foul') s.fouls++;
     if (e.type === 'offside') s.offsides++;
@@ -104,6 +120,15 @@ export function tally({ events = [], chains = [], poss = { home: 0, away: 0 } } 
     if (c.endX < THIRD_1) s.lostOwn++;
     else if (c.endX < THIRD_2) s.lostMid++;
     else s.lostAtt++;
+  }
+  /* 偏出是**算出來的**,不是另外數的:射門 − 射正 − 被封阻 − 門將擋掉。
+     另外數一次就是「同一件事兩個計數器」,而本站已經為那件事付過代價。
+     夾在 0 以上是**防禦性**的:事件是照時間順序來的,射門一定先於它的下場,
+     所以照理不會是負的 —— 但這是一條減法,而畫面那一側餵進來的是**演過的**那一份,
+     寧可夾住也不要在畫面上印一個負數。 */
+  for (const side of SIDES) {
+    const s = t[side];
+    s.off = Math.max(0, s.shots - s.on - s.blocked - s.gkStops);
   }
   return t;
 }
@@ -151,8 +176,8 @@ const RULES = [
     if (share < 0.4) return null;
     return {
       side, kind: 'set-piece',
-      text: `威脅集中在定位球:${me.shots} 次射門有 ${me.setPieceShots} 次來自角球、任意球或十二碼(${Math.round(share * 100)}%)`,
-      evidence: { 射門: me.shots, 定位球射門: me.setPieceShots, 定位球佔比: Math.round(share * 100) },
+      text: `威脅集中在角球與十二碼:${me.shots} 次射門有 ${me.setPieceShots} 次是這兩種(${Math.round(share * 100)}%)`,
+      evidence: { 射門: me.shots, 角球與十二碼射門: me.setPieceShots, 佔比: Math.round(share * 100) },
     };
   },
 
