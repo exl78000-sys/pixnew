@@ -29788,7 +29788,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 0
    },
    "homeId": 131,
@@ -30228,6 +30228,19 @@
      "kind": "G",
      "hs": 1,
      "as": 0
+    },
+    {
+     "side": "H",
+     "person": 145043,
+     "assist": 143240,
+     "team": 131,
+     "min": 45,
+     "label": "45'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 0
     }
    ],
    "timeline": {
@@ -30240,25 +30253,34 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 50727,
+      "team": 131,
+      "min": 45,
+      "label": "45+1'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+2'00"
   },
   "EVE|IPS": {
    "fixtureId": 128966,
@@ -31212,6 +31234,15 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 55642,
+      "team": 41,
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [],
@@ -31230,8 +31261,8 @@
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-19T14:45:57.331Z"
+ "fetchedAt": "2026-09-19T14:48:14.828Z"
 }
