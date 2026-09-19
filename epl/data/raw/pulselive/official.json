@@ -29385,15 +29385,6 @@
       "captain": false
      },
      {
-      "id": 69397,
-      "playerId": null,
-      "name": "James Wright",
-      "shirt": 42,
-      "pos": "G",
-      "posInfo": "Goalkeeper",
-      "captain": false
-     },
-     {
       "id": 107846,
       "playerId": null,
       "name": "Lamare Bogarde",
@@ -29455,21 +29446,30 @@
       "pos": "F",
       "posInfo": "Left/Right Winger",
       "captain": false
+     },
+     {
+      "id": 69397,
+      "playerId": null,
+      "name": "James Wright",
+      "shirt": 42,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
      }
     ]
    },
    "goals": [
     {
-     "side": "A",
-     "person": 304175,
-     "assist": 25067,
-     "team": 2,
-     "min": 45,
-     "label": "45+4'00",
-     "phase": "1",
+     "side": "H",
+     "person": 51364,
+     "assist": null,
+     "team": 21,
+     "min": 60,
+     "label": "60'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 0,
+     "hs": 1,
      "as": 1
     }
    ],
@@ -29577,7 +29577,7 @@
      }
     ]
    },
-   "clock": "58'00"
+   "clock": "60'00"
   },
   "BHA|ARS": {
    "fixtureId": 128965,
@@ -30374,5 +30374,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-19T12:52:16.975Z"
+ "fetchedAt": "2026-09-19T12:54:32.991Z"
 }
