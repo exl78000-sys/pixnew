@@ -29788,7 +29788,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 131,
@@ -30215,7 +30215,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 22542,
+     "assist": 145043,
+     "team": 131,
+     "min": 31,
+     "label": "31'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
@@ -30234,7 +30248,7 @@
      }
     ]
    },
-   "clock": "28'00"
+   "clock": "32'00"
   },
   "EVE|IPS": {
    "fixtureId": 128966,
@@ -30702,7 +30716,7 @@
      }
     ]
    },
-   "clock": "29'00"
+   "clock": "32'00"
   },
   "NEW|HUL": {
    "fixtureId": 128970,
@@ -31151,7 +31165,17 @@
     }
    ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 8885,
+      "team": 41,
+      "min": 29,
+      "label": "29'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -31168,8 +31192,8 @@
      }
     ]
    },
-   "clock": "29'00"
+   "clock": "32'00"
   }
  },
- "fetchedAt": "2026-09-19T14:29:50.769Z"
+ "fetchedAt": "2026-09-19T14:32:08.416Z"
 }
