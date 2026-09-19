@@ -218,10 +218,17 @@ export function testLeague(L) {
          3.000~4.002。那種也是「兩邊不是同一批」,不判 —— 但 `coveredN === 0`
          (整隊一個球員都沒接到)**仍然要判**,那正是 alias 漏掉的樣子。
          這裡**自己算一次**,不讀 build 給的 verdict(下面那條才是比 verdict)。 */
-      const behind = x => {
-        const c = x.minutes / (11 * 90), n = Math.round(c);
-        return n >= 1 && n < x.played && Math.abs(c - n) <= 0.01;
-      };
+      /* **判準改成上游自己的 `games` 欄位**(2026-09-19)。原本從分鐘推:
+         `minutes / (11 × 90)` 再要求零頭 ≤ 0.01 —— 而**紅牌會把分鐘吃掉**,
+         一張紅牌最多 90 分鐘 = 0.09 場。德甲 BMG 2026-27 就是這樣紅的:
+         games 最大 3 / 積分榜 4 場,分鐘 2933 ÷ 990 = 2.963(零頭 37 分鐘)→ 被判 suspect。
+         這裡讀的是 `gamesMax`(**上游的觀測值**,不是 build 的判決),所以仍然獨立於 verdict。 */
+      /* **逃生門要跟 build 一樣先問 `low`。** 無條件的 `gamesMax < played` 會把
+         輪換的滿季球隊也放掉(實測 112 列放掉 39 列,義甲判的列從 27 掉到 14)——
+         而測試這一側放得比 build 寬的話,build 判 suspect 的列會整個不在 `judged` 裡,
+         下面那條一致性檢查就走不到它。獨立性仍然在:讀的是產物裡的觀測值
+         (`minutesHi` / `gamesMax` / `played`),不是 build 給的 verdict。 */
+      const behind = x => x.minutesHi < 0.95 && (x.gamesMax ?? 0) > 0 && x.gamesMax < x.played;
       const judged = nc.filter(x => !(x.minutesLo > 1.05) && !behind(x));
       const suspicious = judged.filter(x => x.minutesHi < 0.95 || x.goalsLo > x.tableGoals);
       /* 不判的那幾列要**看得到**,不然這個逃生門會靜靜把整份核對吃掉。 */
@@ -229,6 +236,17 @@ export function testLeague(L) {
       check('兩邊場次不同批的那幾列有記下涵蓋幾場,而且不是全部',
         covered.every(x => Number.isInteger(x.coveredMatches)) && covered.length < nc.length,
         `${covered.length} / ${nc.length} 列不判:${covered.map(x => `${x.code} ${x.coveredMatches}/${x.played}`).join('、') || '(無)'}`);
+      /* **逃生門不可以放掉「本來就會通過的列」** —— 那樣它就是在吃整份核對,
+         而症狀完全是靜的:判的列變少、剩下的每一列照樣全過,一條斷言都不會紅。
+         兩個方向分開看:`minutesLo > 1.05` 是 Understat **多算**了場次(分鐘本來就高),
+         另一邊(**還沒算到**)放掉的每一列都必須本來會被判可疑 —— 也就是分鐘整個低於上限。
+         守的是**性質**不是筆數(筆數每一輪都會變,當紅線就是假紅線)。 */
+      const released = covered.filter(x => !(x.minutesLo > 1.05));
+      const freeRide = released.filter(x => !(x.minutesHi < 0.95));
+      check('逃生門只放掉「本來會被判可疑」的那幾列(不然它會靜靜吃掉整份核對)',
+        freeRide.length === 0,
+        `放掉 ${released.length} 列、其中本來就會通過的 ${freeRide.length} 列`
+        + (freeRide.length ? `:${freeRide.map(x => `${x.code} ${x.gamesMax}/${x.played} 上緣 ${x.minutesHi}`).join('、')}` : ''));
       /* **判定本身拿捏造的列驗一次**(`nameCheckVerdict` 是純函式)。上面那幾條只驗得到
          「當下這份資料」,而這個判定要守的兩種情況都不常出現在當下的資料裡 ——
          真的踩到的那一天才發現它寫錯,就太晚了。四個案例:
@@ -238,17 +256,31 @@ export function testLeague(L) {
            ④ Understat 多算了場次 → coverage
          ①②③ 是 2026-09-19 德甲 FCB 那一列的真實數字與它的兩個對照。 */
       const vd = o => nameCheckVerdict(o).verdict;
-      check('判定:Understat 還沒算到最新那一場(缺口剛好整數場)→ 不判',
-        vd({ minutes: 2970, played: 4, minutesLo: 0.75, minutesHi: 0.75, goals: 6, tableGoals: 14 }) === 'coverage');
-      check('判定:alias 整隊漏掉(0 分鐘)→ 仍然可疑',
-        vd({ minutes: 0, played: 4, minutesLo: 0, minutesHi: 0, goals: 0, tableGoals: 7 }) === 'suspect');
-      check('判定:缺口不是整數場 → 仍然可疑',
-        vd({ minutes: 2100, played: 4, minutesLo: 0.53, minutesHi: 0.53, goals: 2, tableGoals: 7 }) === 'suspect');
+      check('判定:Understat 還沒算到最新那一場(games 比積分榜少)→ 不判',
+        vd({ minutes: 2970, played: 4, minutesLo: 0.75, minutesHi: 0.75, goals: 6, tableGoals: 14, gamesMax: 3 }) === 'coverage');
+      check('判定:alias 整隊漏掉(0 分鐘、沒有人有 games)→ 仍然可疑',
+        vd({ minutes: 0, played: 4, minutesLo: 0, minutesHi: 0, goals: 0, tableGoals: 7, gamesMax: 0 }) === 'suspect');
+      check('判定:games 對得上而分鐘整個偏低(接到一支小很多的隊)→ 仍然可疑',
+        vd({ minutes: 2100, played: 4, minutesLo: 0.53, minutesHi: 0.53, goals: 2, tableGoals: 7, gamesMax: 4 }) === 'suspect');
       check('判定:Understat 多算了場次 → 不判',
-        vd({ minutes: 2970, played: 2, minutesLo: 1.5, minutesHi: 1.5, goals: 9, tableGoals: 5 }) === 'coverage');
+        vd({ minutes: 2970, played: 2, minutesLo: 1.5, minutesHi: 1.5, goals: 9, tableGoals: 5, gamesMax: 3 }) === 'coverage');
+      /* **真的踩到的那一列**(2026-09-19 德甲 BMG 2026-27)。零頭 37 分鐘 = 一張中場的紅牌,
+         舊的「缺口要是整數場、容差 0.01 場」判成 suspect、部署被擋。這一條是它的迴歸測試。 */
+      check('判定:缺口是「整數場減一張紅牌」(BMG 2933 / 4 場)→ 不判',
+        vd({ minutes: 2933, played: 4, minutesLo: 0.741, minutesHi: 0.741, goals: 3, tableGoals: 6, gamesMax: 3 }) === 'coverage');
+      /* 拿不到 `games` 的來源要退回舊那一版,不能整個不判 —— 那會讓逃生門吃掉整份核對 */
+      check('判定:沒有 games 欄位時退回從分鐘推(整數場 → 不判、非整數場 → 可疑)',
+        vd({ minutes: 2970, played: 4, minutesLo: 0.75, minutesHi: 0.75, goals: 6, tableGoals: 14 }) === 'coverage'
+        && vd({ minutes: 2100, played: 4, minutesLo: 0.53, minutesHi: 0.53, goals: 2, tableGoals: 7 }) === 'suspect');
       check('沒有任何一隊的進球或分鐘對不上(對錯隊的話一定會露出來)', suspicious.length === 0,
         suspicious.map(x => `${x.season} ${x.code} 分鐘區間 ${x.minutesLo}~${x.minutesHi}、`
           + `進球 ${x.goalsLo}~${x.goalsHi} vs 積分榜 ${x.tableGoals}`).join('、'));
+      /* 上面那條只走 `judged`,所以**測試這一側的逃生門放得比 build 寬**的話它走不到那幾列
+         —— 那正是第一版的樣子。這一條比**兩邊的集合**:build 不判的那幾列,
+         必須剛好是測試自己也不判的那幾列。 */
+      check('build 放掉的那一組跟測試自己算的那一組是同一組(兩邊的逃生門要一致)',
+        judged.every(x => x.verdict !== 'coverage') && nc.length - judged.length === covered.length,
+        `build 不判 ${covered.length} 列、測試不判 ${nc.length - judged.length} 列`);
       check('build 標的 verdict 跟獨立算出來的一致(產物要自己說得出結論)',
         judged.every(x => (x.verdict === 'suspect') === suspicious.includes(x)),
         judged.filter(x => (x.verdict === 'suspect') !== suspicious.includes(x))
