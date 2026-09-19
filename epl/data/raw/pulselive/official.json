@@ -31923,7 +31923,7 @@
   "NFO|COV": {
    "fixtureId": 128971,
    "kickoff": "2026-09-19T16:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -31932,9 +31932,31 @@
    "homeId": 15,
    "awayId": 5,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      16723
+     ],
+     [
+      304238,
+      123299,
+      139648
+     ],
+     [
+      76353,
+      20335,
+      49270,
+      23811
+     ],
+     [
+      50623,
+      15259
+     ],
+     [
+      51813
+     ]
+    ],
     "xi": [
      {
       "id": 50623,
@@ -31977,7 +31999,7 @@
       "playerId": null,
       "name": "Neco Williams",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -31986,7 +32008,7 @@
       "playerId": null,
       "name": "Daniel Muñoz",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -32022,7 +32044,7 @@
       "playerId": null,
       "name": "Morgan Gibbs-White",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": true
      },
@@ -32121,16 +32143,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      55556
+     ],
+     [
+      22043,
+      63836,
+      128136
+     ],
+     [
+      108612,
+      337310,
+      8650,
+      10438
+     ],
+     [
+      66304,
+      20930
+     ],
+     [
+      19694
+     ]
+    ],
     "xi": [
      {
       "id": 20930,
       "playerId": null,
       "name": "Ephron Mason-Clark",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Left/Right Attacking Midfielder",
       "captain": false
      },
@@ -32157,7 +32201,7 @@
       "playerId": null,
       "name": "Jay Dasilva",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -32175,7 +32219,7 @@
       "playerId": null,
       "name": "Jack Rudoni",
       "shirt": 5,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -32313,10 +32357,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-09-19T16:29:33.890Z"
+ "fetchedAt": "2026-09-19T16:31:48.819Z"
 }
