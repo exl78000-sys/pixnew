@@ -102668,8 +102668,1740 @@
      }
     ]
    }
+  },
+  "CEL|RAC": {
+   "key": "CEL|RAC",
+   "season": "2026-27",
+   "date": "2026-09-19",
+   "matchId": "5868073",
+   "home": "CEL",
+   "away": "RAC",
+   "score": [
+    5,
+    0
+   ],
+   "providerScore": [
+    5,
+    0
+   ],
+   "teamStats": {
+    "CEL": {
+     "possession": 41,
+     "shots": 13,
+     "shotsOn": 9,
+     "shotsOff": 2,
+     "blockedShots": 2,
+     "blocksMade": 2,
+     "corners": 3,
+     "offsides": 3,
+     "fouls": 13,
+     "saves": 5,
+     "passes": 429,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.08
+    },
+    "RAC": {
+     "possession": 59,
+     "shots": 11,
+     "shotsOn": 5,
+     "shotsOff": 4,
+     "blockedShots": 2,
+     "blocksMade": 2,
+     "corners": 3,
+     "offsides": 1,
+     "fouls": 11,
+     "saves": 4,
+     "passes": 606,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.61
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "CEL": {
+     "touches_opp_box": 17,
+     "big_chance": 3,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 8,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 1.2,
+     "expected_goals_set_play": 0.09,
+     "expected_goals_non_penalty": 1.3,
+     "expected_goals_on_target": 3.38,
+     "own_half_passes": 198,
+     "opposition_half_passes": 174,
+     "long_balls_accurate": 29,
+     "long_balls_accurate_pct": 58,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 43,
+     "player_throws": 9,
+     "matchstats.headers.tackles": 25,
+     "interceptions": 16,
+     "clearances": 16,
+     "duel_won": 44,
+     "ground_duels_won": 40,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 4,
+     "aerials_won_pct": 31,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    },
+    "RAC": {
+     "touches_opp_box": 17,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 5,
+     "shots_woodwork": 0,
+     "shots_inside_box": 6,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 0.46,
+     "expected_goals_set_play": 0.16,
+     "expected_goals_non_penalty": 0.61,
+     "expected_goals_on_target": 0.22,
+     "own_half_passes": 251,
+     "opposition_half_passes": 288,
+     "long_balls_accurate": 10,
+     "long_balls_accurate_pct": 38,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 13,
+     "player_throws": 16,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 4,
+     "clearances": 11,
+     "duel_won": 46,
+     "ground_duels_won": 37,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 9,
+     "aerials_won_pct": 69,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 42,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     41,
+     59
+    ],
+    "h1": [
+     41,
+     59
+    ],
+    "h2": [
+     42,
+     58
+    ]
+   },
+   "events": [
+    {
+     "minute": 32,
+     "extra": null,
+     "team": "CEL",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Hugo González"
+    },
+    {
+     "minute": 43,
+     "extra": null,
+     "team": "CEL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Ilaix Moriba"
+    },
+    {
+     "minute": 45,
+     "extra": 4,
+     "team": "CEL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Javi Rueda"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pablo Durán"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sergio Carreira"
+    },
+    {
+     "minute": 57,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Yassir Zabiri"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sergio Canales"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Aarón Martín"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Asier Villalibre"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Borja Iglesias"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Javi Galán"
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jeanuël Belocian"
+    },
+    {
+     "minute": 69,
+     "extra": null,
+     "team": "CEL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Miguel Román"
+    },
+    {
+     "minute": 73,
+     "extra": null,
+     "team": "CEL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Yoel Lago"
+    },
+    {
+     "minute": 75,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Giorgi Guliashvili"
+    },
+    {
+     "minute": 75,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Pablo Ramón"
+    },
+    {
+     "minute": 78,
+     "extra": null,
+     "team": "CEL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Pablo Durán"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "CEL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hugo Burcio"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Íñigo Sainz-Maza"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Sergio Canales"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "CEL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Pablo Durán"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Iñigo Vicente"
+    }
+   ],
+   "shots": [
+    {
+     "min": 26,
+     "extra": null,
+     "team": "RAC",
+     "player": "Pablo García",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0.067,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.4,
+     "y": 42.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "CEL",
+     "player": "Hugo González",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.894,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "CEL",
+     "player": "Ferrán Jutglà",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0.021,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 18.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "RAC",
+     "player": "Iñigo Vicente",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.109,
+     "xgot": 0.076,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.4,
+     "y": 39,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "RAC",
+     "player": "Iñigo Vicente",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 52.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "CEL",
+     "player": "Javi Rueda",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 24.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "CEL",
+     "player": "Yoel Lago",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 26,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "CEL",
+     "player": "Ilaix Moriba",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.151,
+     "xgot": 0.791,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 32.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 4,
+     "team": "RAC",
+     "player": "Iñigo Vicente",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 45.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "RAC",
+     "player": "Pablo Ramón",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0.011,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 70.3,
+     "y": 32.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "CEL",
+     "player": "Ferrán Jutglà",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.01,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 49.9,
+     "y": 24,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "RAC",
+     "player": "Yassir Zabiri",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 48.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "CEL",
+     "player": "Miguel Román",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0.076,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.8,
+     "y": 46.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "RAC",
+     "player": "Jorge Salinas",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.025,
+     "xgot": 0.017,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 31.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "CEL",
+     "player": "Miguel Román",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.042,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.6,
+     "y": 37.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "RAC",
+     "player": "Pablo Ramón",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80,
+     "y": 26.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "CEL",
+     "player": "Pablo Durán",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.334,
+     "xgot": 0.809,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 33.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "RAC",
+     "player": "Iker Luque",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.024,
+     "xgot": 0.049,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.9,
+     "y": 25,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "CEL",
+     "player": "Álvaro Núñez",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0.268,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.2,
+     "y": 22.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "RAC",
+     "player": "Giorgi Guliashvili",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.265,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 36.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "RAC",
+     "player": "Asier Villalibre",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 38,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "CEL",
+     "player": "Hugo Burcio",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.186,
+     "xgot": 0.2,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.1,
+     "y": 30.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "CEL",
+     "player": "Pablo Durán",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0.036,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.2,
+     "y": 51.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "CEL",
+     "player": "Pablo Durán",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.37,
+     "xgot": 0.282,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.1,
+     "y": 25.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     -22
+    ],
+    [
+     3,
+     -54
+    ],
+    [
+     4,
+     -43
+    ],
+    [
+     5,
+     0
+    ],
+    [
+     6,
+     33
+    ],
+    [
+     7,
+     19
+    ],
+    [
+     8,
+     3
+    ],
+    [
+     9,
+     -24
+    ],
+    [
+     10,
+     -16
+    ],
+    [
+     11,
+     -38
+    ],
+    [
+     12,
+     -16
+    ],
+    [
+     13,
+     -22
+    ],
+    [
+     14,
+     -16
+    ],
+    [
+     15,
+     -5
+    ],
+    [
+     16,
+     0
+    ],
+    [
+     17,
+     0
+    ],
+    [
+     18,
+     5
+    ],
+    [
+     19,
+     -19
+    ],
+    [
+     20,
+     -3
+    ],
+    [
+     21,
+     -24
+    ],
+    [
+     22,
+     -11
+    ],
+    [
+     23,
+     5
+    ],
+    [
+     24,
+     -60
+    ],
+    [
+     25,
+     -65
+    ],
+    [
+     26,
+     -100
+    ],
+    [
+     27,
+     0
+    ],
+    [
+     28,
+     49
+    ],
+    [
+     29,
+     65
+    ],
+    [
+     30,
+     38
+    ],
+    [
+     31,
+     0
+    ],
+    [
+     32,
+     0
+    ],
+    [
+     33,
+     0
+    ],
+    [
+     34,
+     5
+    ],
+    [
+     35,
+     22
+    ],
+    [
+     36,
+     49
+    ],
+    [
+     37,
+     43
+    ],
+    [
+     38,
+     38
+    ],
+    [
+     39,
+     0
+    ],
+    [
+     40,
+     -3
+    ],
+    [
+     41,
+     -8
+    ],
+    [
+     42,
+     62
+    ],
+    [
+     43,
+     76
+    ],
+    [
+     44,
+     65
+    ],
+    [
+     45,
+     -38
+    ],
+    [
+     45.5,
+     -46
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -11
+    ],
+    [
+     48,
+     -33
+    ],
+    [
+     49,
+     -46
+    ],
+    [
+     50,
+     -41
+    ],
+    [
+     51,
+     -35
+    ],
+    [
+     52,
+     -38
+    ],
+    [
+     53,
+     -38
+    ],
+    [
+     54,
+     22
+    ],
+    [
+     55,
+     27
+    ],
+    [
+     56,
+     33
+    ],
+    [
+     57,
+     5
+    ],
+    [
+     58,
+     5
+    ],
+    [
+     59,
+     0
+    ],
+    [
+     60,
+     -16
+    ],
+    [
+     61,
+     -27
+    ],
+    [
+     62,
+     -38
+    ],
+    [
+     63,
+     -38
+    ],
+    [
+     64,
+     -11
+    ],
+    [
+     65,
+     -8
+    ],
+    [
+     66,
+     -30
+    ],
+    [
+     67,
+     -30
+    ],
+    [
+     68,
+     0
+    ],
+    [
+     69,
+     60
+    ],
+    [
+     70,
+     49
+    ],
+    [
+     71,
+     54
+    ],
+    [
+     72,
+     -11
+    ],
+    [
+     73,
+     -35
+    ],
+    [
+     74,
+     -35
+    ],
+    [
+     75,
+     -3
+    ],
+    [
+     76,
+     11
+    ],
+    [
+     77,
+     -22
+    ],
+    [
+     78,
+     54
+    ],
+    [
+     79,
+     71
+    ],
+    [
+     80,
+     79
+    ],
+    [
+     81,
+     3
+    ],
+    [
+     82,
+     30
+    ],
+    [
+     83,
+     41
+    ],
+    [
+     84,
+     -84
+    ],
+    [
+     85,
+     -100
+    ],
+    [
+     86,
+     -100
+    ],
+    [
+     87,
+     -5
+    ],
+    [
+     88,
+     -41
+    ],
+    [
+     89,
+     100
+    ],
+    [
+     90,
+     100
+    ],
+    [
+     90.5,
+     41
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "CEL": {
+     "team": "CEL",
+     "formation": "3-4-3",
+     "coach": "Claudio Giráldez",
+     "xi": [
+      {
+       "name": "Ionuț Radu",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Álvaro Núñez",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Yoel Lago",
+       "shirt": 18,
+       "pos": "D"
+      },
+      {
+       "name": "Sebastián Cáceres",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Javi Rueda",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Miguel Román",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Ilaix Moriba",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Hugo Álvarez",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Hugo González",
+       "shirt": 16,
+       "pos": "F"
+      },
+      {
+       "name": "Ferrán Jutglà",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Williot Swedberg",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Sergio Carreira",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo Durán",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Javi Galán",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Borja Iglesias",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Burcio",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Altay Bayındır",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Abdoulaye Faye",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Carl Starfelt",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Javi Rodríguez",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Marcos Alonso",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Aleix Febas",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Couhaib Driouech",
+       "shirt": 24,
+       "pos": "?"
+      }
+     ]
+    },
+    "RAC": {
+     "team": "RAC",
+     "formation": "4-2-3-1",
+     "coach": "José López",
+     "xi": [
+      {
+       "name": "Julen Agirrezabala",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Álvaro Mantilla",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Pablo Ramón",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Jeanuël Belocian",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Jorge Salinas",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "André Almeida",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Iván Martin",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo García",
+       "shirt": 15,
+       "pos": "M"
+      },
+      {
+       "name": "Iñigo Vicente",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Iker Luque",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Yassir Zabiri",
+       "shirt": 21,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Aarón Martín",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Sergio Canales",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Asier Villalibre",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Giorgi Guliashvili",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Íñigo Sainz-Maza",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Laro Gómez",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Facundo González",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Manu",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Pedro Felipe",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Maguette Gueye",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Matteo Prati",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Juan Carlos Arana",
+       "shirt": 9,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 21,
+      "center": 37,
+      "right": 42
+     },
+     "firstHalf": {
+      "left": 14,
+      "center": 38,
+      "right": 48
+     },
+     "secondHalf": {
+      "left": 29,
+      "center": 36,
+      "right": 35
+     }
+    },
+    "away": {
+     "total": {
+      "left": 34,
+      "center": 22,
+      "right": 44
+     },
+     "firstHalf": {
+      "left": 27,
+      "center": 26,
+      "right": 47
+     },
+     "secondHalf": {
+      "left": 42,
+      "center": 17,
+      "right": 41
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 5,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-19T18:59:16.428Z",
+   "fdMatchId": "2026-27-63",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "RAC",
+      "name": "Iñigo Vicente",
+      "n": 104,
+      "cx": 61.7,
+      "cy": 26.2,
+      "spread": 28,
+      "grid": "2,5,10,19,9,3,0,1,9,5,5,2,0,0,1,5,4,0,0,1,0,11,10,2"
+     },
+     {
+      "team": "RAC",
+      "name": "Pablo Ramón",
+      "n": 102,
+      "cx": 40.3,
+      "cy": 40.3,
+      "spread": 23,
+      "grid": "0,3,3,1,2,0,4,12,12,0,0,0,3,11,12,7,4,0,2,9,6,10,1,0"
+     },
+     {
+      "team": "RAC",
+      "name": "André Almeida",
+      "n": 83,
+      "cx": 52.8,
+      "cy": 33.3,
+      "spread": 26.5,
+      "grid": "2,4,4,6,1,0,1,2,9,8,5,0,3,2,2,12,3,0,1,0,3,5,10,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Jeanuël Belocian",
+      "n": 85,
+      "cx": 33.2,
+      "cy": 23.4,
+      "spread": 23.2,
+      "grid": "6,4,9,5,0,1,12,18,10,3,0,0,2,2,7,3,0,0,1,1,0,0,0,1"
+     },
+     {
+      "team": "RAC",
+      "name": "Jorge Salinas",
+      "n": 95,
+      "cx": 42.9,
+      "cy": 11.4,
+      "spread": 26.2,
+      "grid": "13,18,17,15,10,0,5,3,5,1,1,0,1,1,0,0,2,3,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Julen Agirrezabala",
+      "n": 45,
+      "cx": 10.1,
+      "cy": 32.4,
+      "spread": 8.3,
+      "grid": "0,0,0,0,0,0,26,1,0,0,0,0,15,3,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Williot Swedberg",
+      "n": 30,
+      "cx": 57.2,
+      "cy": 29.6,
+      "spread": 27.2,
+      "grid": "0,3,0,1,0,0,0,4,3,2,4,0,0,1,3,0,6,1,0,0,0,1,1,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Ilaix Moriba",
+      "n": 74,
+      "cx": 51.1,
+      "cy": 39.6,
+      "spread": 21.2,
+      "grid": "0,1,1,0,2,0,0,3,2,9,1,0,1,11,9,18,5,0,0,3,4,3,0,1"
+     },
+     {
+      "team": "RAC",
+      "name": "Yassir Zabiri",
+      "n": 24,
+      "cx": 76.7,
+      "cy": 43,
+      "spread": 25,
+      "grid": "0,0,0,0,0,0,0,1,2,0,1,3,0,0,2,1,3,4,0,0,0,1,2,4"
+     },
+     {
+      "team": "CEL",
+      "name": "Ferrán Jutglà",
+      "n": 33,
+      "cx": 62.5,
+      "cy": 33,
+      "spread": 27.2,
+      "grid": "0,0,1,0,2,1,2,0,6,2,4,1,0,0,2,4,2,2,0,0,0,3,1,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Iván Martin",
+      "n": 81,
+      "cx": 57.7,
+      "cy": 38.4,
+      "spread": 21.6,
+      "grid": "0,2,0,2,2,0,0,1,7,10,4,1,0,4,14,10,10,0,0,2,1,5,5,1"
+     },
+     {
+      "team": "RAC",
+      "name": "Iker Luque",
+      "n": 81,
+      "cx": 61.4,
+      "cy": 40.8,
+      "spread": 35.2,
+      "grid": "0,0,10,4,5,0,5,3,3,0,3,1,0,0,0,1,3,0,3,0,8,3,19,10"
+     },
+     {
+      "team": "CEL",
+      "name": "Javi Rueda",
+      "n": 41,
+      "cx": 61.2,
+      "cy": 58.6,
+      "spread": 27.8,
+      "grid": "0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,2,0,4,1,4,5,11,7,5"
+     },
+     {
+      "team": "RAC",
+      "name": "Álvaro Mantilla",
+      "n": 61,
+      "cx": 54.5,
+      "cy": 58.3,
+      "spread": 26.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,1,0,0,5,2,1,0,2,5,5,11,10,17,2"
+     },
+     {
+      "team": "RAC",
+      "name": "Pablo García",
+      "n": 29,
+      "cx": 69.9,
+      "cy": 47.6,
+      "spread": 26.9,
+      "grid": "0,0,0,2,0,1,0,0,0,0,1,0,0,1,2,3,4,0,0,1,2,2,6,4"
+     },
+     {
+      "team": "CEL",
+      "name": "Ionuț Radu",
+      "n": 57,
+      "cx": 5.8,
+      "cy": 34,
+      "spread": 8.2,
+      "grid": "3,0,0,0,0,0,22,0,0,0,0,0,29,1,0,0,0,0,0,2,0,0,0,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Sebastián Cáceres",
+      "n": 62,
+      "cx": 31.8,
+      "cy": 18.3,
+      "spread": 21.8,
+      "grid": "9,7,8,2,3,0,8,9,6,6,0,0,2,1,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Hugo Álvarez",
+      "n": 57,
+      "cx": 47.9,
+      "cy": 23.7,
+      "spread": 36.6,
+      "grid": "8,17,2,4,2,3,1,0,0,1,2,0,1,0,1,0,2,0,0,0,2,2,7,2"
+     },
+     {
+      "team": "CEL",
+      "name": "Miguel Román",
+      "n": 75,
+      "cx": 51.5,
+      "cy": 31,
+      "spread": 21.7,
+      "grid": "0,0,3,3,1,0,1,8,14,11,6,0,2,1,8,9,0,1,0,1,0,5,1,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Yoel Lago",
+      "n": 68,
+      "cx": 30.2,
+      "cy": 39.2,
+      "spread": 24.9,
+      "grid": "0,0,2,1,0,0,11,3,3,3,0,0,11,11,11,1,1,2,3,2,2,1,0,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Álvaro Núñez",
+      "n": 62,
+      "cx": 49.4,
+      "cy": 53.8,
+      "spread": 23.3,
+      "grid": "0,0,0,0,0,0,0,0,0,1,1,0,1,2,5,8,1,1,7,4,13,10,8,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Hugo González",
+      "n": 35,
+      "cx": 70,
+      "cy": 52.9,
+      "spread": 23.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,7,4,1,0,3,4,6,2,6"
+     },
+     {
+      "team": "CEL",
+      "name": "Pablo Durán",
+      "n": 33,
+      "cx": 64.5,
+      "cy": 28.2,
+      "spread": 28.3,
+      "grid": "1,1,3,2,3,1,0,0,5,0,4,1,0,0,0,4,0,2,0,1,2,0,1,2"
+     },
+     {
+      "team": "CEL",
+      "name": "Sergio Carreira",
+      "n": 35,
+      "cx": 50.7,
+      "cy": 49.3,
+      "spread": 28.4,
+      "grid": "0,2,0,0,1,0,0,0,0,1,2,0,0,1,1,5,3,1,3,6,5,1,3,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Borja Iglesias",
+      "n": 14,
+      "cx": 66.9,
+      "cy": 42,
+      "spread": 23.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,3,1,0,0,4,1,2,1,0,0,1,0,1,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Javi Galán",
+      "n": 29,
+      "cx": 55.5,
+      "cy": 8.9,
+      "spread": 26.4,
+      "grid": "1,6,5,4,4,6,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Aarón Martín",
+      "n": 31,
+      "cx": 58,
+      "cy": 8.5,
+      "spread": 24.4,
+      "grid": "1,2,4,8,12,0,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Asier Villalibre",
+      "n": 10,
+      "cx": 67.1,
+      "cy": 22,
+      "spread": 20.7,
+      "grid": "0,0,0,1,3,0,0,1,1,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Sergio Canales",
+      "n": 25,
+      "cx": 60.7,
+      "cy": 37.6,
+      "spread": 20.2,
+      "grid": "0,0,0,4,0,0,0,0,1,1,3,0,0,0,4,3,4,0,0,0,1,3,1,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Giorgi Guliashvili",
+      "n": 8,
+      "cx": 78.4,
+      "cy": 17.3,
+      "spread": 23.1,
+      "grid": "0,1,0,0,3,0,0,0,0,0,2,1,0,0,0,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Íñigo Sainz-Maza",
+      "n": 8,
+      "cx": 46,
+      "cy": 30.3,
+      "spread": 20.3,
+      "grid": "0,1,0,0,1,0,0,0,2,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CEL",
+      "name": "Hugo Burcio",
+      "n": 10,
+      "cx": 58.7,
+      "cy": 30.1,
+      "spread": 26,
+      "grid": "0,0,1,0,1,0,0,1,0,2,0,0,0,2,0,1,1,1,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-19T16:44:07.819Z"
+ "updatedAt": "2026-09-19T18:59:17.144Z"
 }
