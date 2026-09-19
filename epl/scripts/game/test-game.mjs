@@ -194,67 +194,95 @@ console.log('\n▶ 模擬遊玩:引擎不變量');
 
 console.log('\n▶ 模擬遊玩:賽後判讀');
 {
-  const enginePath = join(ROOT, 'web', 'assets', 'js', 'game-engine.js');
+  /* **判讀要拿畫面實際餵給它的那一份事件流去驗。**(2026-09-19,階段 5a)
+     這一節原本跑的是**已經退役的回合制引擎**(`game-engine.js`),而頁面從 2026-09-16 起
+     餵的是連續引擎的事件 —— 兩種事件的形狀不一樣,於是測試全綠而畫面印著錯的數字:
+     連續引擎每一腳射門先發 `shot`、進了再發 `goal`,舊的是二選一,所以
+     `isShot = shot || goal` 把每個進球算成兩次射門(實測一場 24 腳數成 29);
+     `outcome` / `x` / `situation` 三個欄位連續引擎一個都沒有,所以「射正」等於進球數、
+     「被封阻」「禁區內射門」「定位球射門」**永遠是 0**,靠後兩者的兩則判讀從來沒有響過。
+     這是本站記過的「同一種東西有兩種合法形狀,而測試拿錯的那一種當標準」。
+     場數用 4 不是 8:連續引擎一場要跑十幾秒,而這一節驗的是**純函式**,
+     4 場已經足夠讓每一類事件都出現(下面第 1 條會驗它們真的都出現了)。 */
+  const simPath = join(ROOT, 'web', 'assets', 'js', 'game-sim.js');
   const diagPath = join(ROOT, 'web', 'assets', 'js', 'game-diag.js');
-  if (!existsSync(enginePath) || !existsSync(diagPath)) console.log('  · 引擎或判讀模組還沒建,整節略過');
+  if (!existsSync(simPath) || !existsSync(diagPath)) console.log('  · 引擎或判讀模組還沒建,整節略過');
   else {
-    const eng = await import(pathToFileURL(enginePath));
+    const eng = await import(pathToFileURL(simPath));
     const D = await import(pathToFileURL(diagPath));
     const profile = read(join(ROOT, 'web', 'data', 'game', 'pl.json'));
     const pred = { xgHome: 1.6, xgAway: 1.1 };
     const names = { home: 'Arsenal', away: 'Liverpool' };
 
-    /* 一場跑到完場,然後照 game-view 的 skipToEnd 那條路組出顯示狀態 ——
-       事件、回合簡記、控球秒數三樣都是畫面上會有的那一份。 */
+    /* 一場跑到完場,然後照 game-view 那條路組出判讀的輸入 ——
+       事件、控球串、控球秒數三樣都是畫面上會有的那一份(`renderGame` 就是這樣叫的)。 */
     const playOne = seed => {
-      const m = eng.createMatch({ profile, home: 'ARS', away: 'LIV', pred, seed });
-      while (!m.state().finished) m.nextSequence();
+      const m = eng.createSim({ profile, home: 'ARS', away: 'LIV', pred, seed });
+      for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !m.state().over; i++) m.advance(1 / 60);
       const s = m.state();
-      return {
-        m, s,
-        input: {
-          events: m.events(),
-          chains: m.sequences().map(D.chainBrief),
-          poss: { home: s.home.stats.possSec, away: s.away.stats.possSec },
-        },
-      };
+      return { m, s, input: { events: m.events(), chains: m.chains(), poss: s.possSec } };
     };
-    const runs = [1, 2, 3, 4, 5, 6, 7, 8].map(playOne);
+    const runs = [1, 2, 3, 4].map(playOne);
 
-    /* 1. 判讀的計數要對得回引擎自己的 stats。
+    /* 1. 判讀的計數要對得回引擎自己的 counts。
        「我數不出來 ≠ 上游沒有」的同一條:分母跟被比較的那一邊要是同一批。
-       實際抓到過一個:第一版照 pulselive 的直覺把烏龍球翻給另一隊,兩隊的進球數就互換了,
-       而畫面完全正常(負向對照在第 6 條)。 */
+       實際抓到過兩個,兩次畫面都完全正常:回合制引擎那一輪是把烏龍球翻給另一隊
+       (兩隊的進球數互換);連續引擎這一輪是把每個進球也算成一次射門
+       (一場 24 腳數成 29 腳,而畫面上那一句就寫著「射門 15 比 14」)。
+       現在的負向對照守的是後者,在第 6 條 —— 前者的那個機制在連續引擎裡還不存在。 */
     {
-      const bad = [];
+      const bad = [], zero = [];
       for (const { s, input } of runs) {
         const t = D.tally(input);
+        const c = s.counts;
         for (const side of ['home', 'away']) {
-          const st = s[side].stats;
+          const i = side === 'home' ? 0 : 1;
           for (const [k, mine, theirs] of [
-            ['進球', t[side].goals, st.goals], ['射門', t[side].shots, st.shots],
-            ['角球', t[side].corners, st.corners], ['犯規', t[side].fouls, st.fouls],
-            ['黃牌', t[side].yellow, st.yellow], ['紅牌', t[side].red, st.red],
-            ['越位', t[side].offsides, st.offsides],
+            ['進球', t[side].goals, s.score[i]], ['射門', t[side].shots, c.shotsBy[side]],
+            ['射正', t[side].on, c.onTargetBy[side]], ['被封阻', t[side].blocked, c.blockedBy[side]],
+            ['門將擋掉', t[side].gkStops, c.gkStopBy[side]],
+            ['角球', t[side].corners, c.corners[side]], ['犯規', t[side].fouls, c.fouls[side]],
+            ['紅牌', t[side].red, c.reds[side]], ['越位', t[side].offsides, c.offsides[side]],
           ]) if (mine !== theirs) bad.push(`${side} ${k} ${mine}≠${theirs}`);
+          /* 四類要剛好把射門數分完 —— 少數一類的話它會被偏出吸收成一個看不出來的數字。 */
+          const ss = t[side];
+          if (ss.on + ss.off + ss.blocked + ss.gkStops !== ss.shots) bad.push(`${side} 四類加起來 ${ss.on + ss.off + ss.blocked + ss.gkStops}≠射門 ${ss.shots}`);
         }
+        /* **這幾類不可以全場是 0** —— 它們正是階段 5a 之前「欄位根本不存在」的那幾個,
+           而 0 在畫面上看起來只是「這場沒發生」(4h:0 不是少,是那條路沒鋪)。 */
+        const sum = k => t.home[k] + t.away[k];
+        /* **只列每場一定有很多次的那幾類。** `blocked` 不在裡面:場上球員的封阻目前
+           一場只有 0.8 次(真實約 7 次,那正是階段 5a 量出來的缺口),
+           要求「每一場都大於 0」就是把一個會隨引擎變的數字當紅線 —— 而且修好它的那一天
+           這條會變成永遠綠、修壞的那一天會紅在一個跟它無關的地方。封阻那一類由
+           下面的**分割**與**逐事件的 gk 旗標**守,數量只印出來。 */
+        for (const k of ['on', 'boxShots', 'longShots']) if (sum(k) === 0) zero.push(k);
       }
-      check('判讀的計數對得回引擎 stats(8 場 × 兩隊 × 七項)', bad.length === 0, bad.slice(0, 4).join('、'));
+      check(`判讀的計數對得回引擎 counts(${runs.length} 場 × 兩隊 × 九項 + 四類分完射門數)`,
+        bad.length === 0, bad.slice(0, 4).join('、'));
+      {
+        const tot = k => runs.reduce((a, r) => { const t = D.tally(r.input); return a + t.home[k] + t.away[k]; }, 0);
+        check('射正 / 禁區內 / 禁區外都不是整批 0(欄位不存在時它們全是 0,而畫面完全正常)',
+          zero.length === 0, zero.join('、'));
+        console.log(`  · ${runs.length} 場合計:射正 ${tot('on')}、被封阻 ${tot('blocked')}、門將擋掉 ${tot('gkStops')}、禁區內 ${tot('boxShots')}、禁區外 ${tot('longShots')}、角球與十二碼射門 ${tot('setPieceShots')}`);
+      }
     }
 
     /* 2. 回合的分母也要對得上:簡記的筆數 = 引擎的回合數,而且逐側加總一樣。 */
     {
       const bad = runs.filter(({ s, input }) => {
         const t = D.tally(input);
-        return input.chains.length !== s.seqs || t.home.seqs + t.away.seqs !== s.seqs;
+        /* 連續引擎沒有「回合數」這個東西 —— 分母就是引擎自己收的控球串,
+           所以這一條驗的是「逐側加總 = 總串數」(舊引擎那邊是比 `state().seqs`)。 */
+        return t.home.seqs + t.away.seqs !== input.chains.length;
       });
-      check('回合簡記的分母對得回引擎的回合數', bad.length === 0, `${bad.length}/8 場對不上`);
+      check('控球串的分母逐側加總對得回總串數', bad.length === 0, `${bad.length}/${runs.length} 場對不上`);
       /* 三個三分之一加起來要等於總丟球數 —— 只數一格的話哪天分界線改了不會有人發現。 */
       const badThird = runs.filter(({ input }) => {
         const t = D.tally(input);
         return ['home', 'away'].some(sd => t[sd].lostOwn + t[sd].lostMid + t[sd].lostAtt !== t[sd].lostTotal);
       });
-      check('丟球的三個三分之一加起來等於總丟球數', badThird.length === 0, `${badThird.length}/8 場對不上`);
+      check('丟球的三個三分之一加起來等於總丟球數', badThird.length === 0, `${badThird.length}/${runs.length} 場對不上`);
     }
 
     /* 3. 鐵則一:文章裡的每一個數字都要在同一條的 evidence 找得到。
@@ -270,7 +298,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           if (un.length) bad.push(`${un.join(',')} ← ${x.text.slice(0, 28)}`);
         }
       }
-      check('判讀與敘述裡的每個數字都有出處(8 場全部)', bad.length === 0, bad.slice(0, 2).join(' | '));
+      check(`判讀與敘述裡的每個數字都有出處(${runs.length} 場全部)`, bad.length === 0, bad.slice(0, 2).join(' | '));
     }
 
     /* 4. 空結果是正常結果。拿一場「什麼都沒發生」的計數驗,不驗「8 場裡至少有一場是空的」——
@@ -305,15 +333,18 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
     {
       const { s, input } = runs[0];
       const t = D.tally(input);
-      // (a) 烏龍球翻給另一隊 → 第 1 條要紅(這一場有烏龍球才驗得到,沒有就找一場有的)
-      const ogRun = runs.find(r => r.input.events.some(e => e.type === 'goal' && e.ownGoal));
-      if (!ogRun) console.log('  · 這八場沒有烏龍球,烏龍球歸屬的負向對照略過(下一條照跑)');
-      else {
-        const flipped = ogRun.input.events.map(e => (e.type === 'goal' && e.ownGoal ? { ...e, side: e.side === 'home' ? 'away' : 'home' } : e));
-        const t2 = D.tally({ ...ogRun.input, events: flipped });
-        const st = ogRun.s;
-        check('負向對照:烏龍球歸錯隊 → 進球數就對不回引擎',
-          t2.home.goals !== st.home.stats.goals || t2.away.goals !== st.away.stats.goals);
+      /* (a) **把進球也算成一次射門** → 第 1 條要紅。這正是階段 5a 之前的寫法
+         (`isShot = shot || goal`),而它在舊的回合制引擎上是對的 —— 換引擎之後沒有人回來改,
+         於是畫面上那一句「射門 15 比 14」多算了每一顆進球。
+         (原本這裡的負向對照是「烏龍球歸錯隊」,那是回合制引擎才有的東西 ——
+         連續引擎還沒有烏龍球,留著就是在守一件不存在的事。) */
+      {
+        const dbl = { home: 0, away: 0 };
+        for (const e of input.events) if (e.type === 'goal') dbl[e.side]++;
+        const bad = ['home', 'away'].some(sd => dbl[sd] > 0);
+        check('負向對照:進球也算一次射門 → 射門數就對不回引擎 counts',
+          bad && ['home', 'away'].some(sd => t[sd].shots + dbl[sd] !== s.counts.shotsBy[sd]),
+          bad ? '' : '(這一場兩隊都沒進球,驗不到)');
       }
       // (b) 文字裡塞一個 evidence 沒有的數字 → 第 3 條要紅
       check('負向對照:文字裡多一個沒出處的數字 → 驗證器抓得到',
@@ -335,7 +366,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       }
       // (d) 回合簡記少記一筆 → 第 2 條要紅
       const t3 = D.tally({ ...input, chains: input.chains.slice(0, -1) });
-      check('負向對照:回合簡記少一筆 → 分母就對不上', t3.home.seqs + t3.away.seqs !== s.seqs);
+      check('負向對照:控球串少一筆 → 分母就對不上', t3.home.seqs + t3.away.seqs !== input.chains.length);
     }
 
     /* 7. 畫面那邊:每一個「一個回合結算」的地方都要記簡記。
@@ -766,6 +797,61 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         const tot = k => (nb[k] ?? []).reduce((a, b) => a + b, 0);
         check('一場真模擬裡進攻與防守兩排都有第二球',
           tot('att') > 0 && tot('def') > 0, `進攻 ${tot('att')} / 防守 ${tot('def')}`);
+      }
+    }
+
+    /* 19. 階段 5a:**射門的三種下場**,以及「禁區內」是矩形不是圓。
+       兩件事都是**量錯了**而不是引擎錯了:
+       ① `st.shotInBox` 第一版寫 `dGoal < 18`(圓),而錨是 FotMob 的 `inBox`(矩形)——
+          拿 10,610 顆真實射門逐顆判,兩種差 4.5 個百分點,那就是「59% 對 67%」裡的一大半。
+       ② 射門 = 被封阻 + 射正 + 偏出,而 `check-sim` 只印了射正那一類 ——
+          `blockedBy` 零個消費端,於是「封阻只有真實的 0.26 倍」在畫面上完全看不見。
+       掃原始碼之前**先剝註解**:上面那兩段註解自己就寫著 `dGoal < 18`,
+       不剝的話這一條會永遠紅,而紅的原因跟它想守的事一點關係都沒有。 */
+    {
+      const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const bare6 = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const inc = bare6.match(/^.*st\.shotInBox\+\+.*$/gm) ?? [];
+      check('三個射門產生點都用同一支矩形判準(十二碼與角球頭球原本是無條件 ++)',
+        inc.length === 3 && inc.every(l => /inBoxAt\(p\.x, p\.y, goalX\)/.test(l)),
+        `${inc.length} 處:${inc.map(l => l.trim()).join(' | ')}`);
+      check('判準從 BOX_D / BOX_W 來,不是自己寫一個半徑',
+        /const inBoxAt = \(x, y, goalX\) =>[^;]*BOX_D[^;]*BOX_W/.test(bare6)
+        && !/dGoal < 18/.test(bare6),
+        /dGoal < 18/.test(bare6) ? '原始碼裡還有 dGoal < 18' : '');
+
+      const chkBare6 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('check-sim 把三種下場一起印(封阻那一類先前零個消費端)',
+        /blockedBy\.home \+ r\.st\.counts\.blockedBy\.away/.test(chkBare6)
+        && /被封阻/.test(chkBare6) && /偏出/.test(chkBare6));
+      /* 真值的母體要跟引擎同一批:烏龍球 shotmap 有、引擎產不出來,
+         而它們的座標在自己那一端(離門 95 公尺以上),不排掉會整批掉進「30 公尺以上」那一格。 */
+      check('真值把烏龍球排掉(引擎產不出烏龍球,母體要同一批)',
+        /sh\.ownGoal\) continue/.test(chkBare6));
+      check('判定用這一場兩隊、聯盟只當參照(4w 的規矩)',
+        /collectReal\(sh => sh\.team === HOME \|\| sh\.team === AWAY\)/.test(chkBare6)
+        && /realFx\.box/.test(chkBare6));
+      /* **封阻真的會發生** —— 不然上面那幾條是在守一件不存在的事(4l-3 的同一條規矩)。
+         只驗「大於 0」:它離錨還很遠(×0.26),把目前的值寫成紅線就是
+         「把會隨資料變動的數字當 CI 紅線」,而修好它的那一天這條會紅在「補上了」。 */
+      {
+        const S4 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        const sim4 = S4.createSim({ profile, home: 'ARS', away: 'LIV', seed: 13 });
+        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim4.state().over; i++) sim4.advance(1 / 60);
+        const c4 = sim4.state().counts, ev4 = sim4.events();
+        const blk = c4.blockedBy.home + c4.blockedBy.away;
+        const gk4 = c4.gkStopBy.home + c4.gkStopBy.away;
+        const off4 = c4.shots - blk - gk4 - c4.onTarget;
+        /* 守的是**分割**(四類剛好把射門分完)與**旗標**,不是「每一類都要大於 0」——
+           場上球員的封阻現在一場才 0.8 次,seed 13 就真的是 0,而那正是這一輪要講的缺口。
+           把它寫成紅線就是「把會隨資料變動的數字當 CI 紅線」。 */
+        const blkEv = ev4.filter(e => e.type === 'block');
+        check('四種下場剛好把射門數分完,而且每一筆封阻都標了是不是門將',
+          off4 >= 0 && blk + gk4 + c4.onTarget + off4 === c4.shots
+          && blkEv.every(e => typeof e.gk === 'boolean')
+          && blkEv.filter(e => !e.gk).length === blk && blkEv.filter(e => e.gk).length === gk4,
+          `射門 ${c4.shots} = 封阻 ${blk} + 門將擋掉 ${gk4} + 射正 ${c4.onTarget} + 偏出 ${off4}`);
       }
     }
   }

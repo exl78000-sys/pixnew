@@ -214,8 +214,16 @@ const real = { sf: (rt(HOME, 'home').sf ?? 0) + (rt(AWAY, 'away').sf ?? 0), cf: 
        —— 這樣資料變了它自己會變(而且「真實是多少」永遠查得到出處)。
        為什麼要看分佈而不是只看每球平均 xG:只對平均值的話,一堆六公尺的射門配一個很小的
        xG 係數也會「對上」,而那是把形狀調錯之後再用水準去湊。 */
-const realShots = (() => {
+/* **烏龍球不在引擎的母體裡,所以也不能在真值的母體裡。**(2026-09-19,階段 5a)
+   shotmap 把烏龍球記成一腳射門,而座標在**自己那一端** —— 46 顆的離門距離都在 95 公尺以上,
+   於是它們整批落在「30 公尺以上」那一格(那一格 356 顆裡有 45 顆是它們),
+   還把真實的平均離門從 16.02 拉到 16.38 公尺。引擎產不出烏龍球,
+   拿含烏龍球的真值去比就是「我的分母跟被比較的那一邊不是同一批」。
+   `sel` 讓同一支收兩份:**聯盟**那一份樣本大(形狀與逐情境用它),
+   **這一場兩隊**那一份才是判定的錨(4w 的規矩)。 */
+const collectReal = (sel) => {
   const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
+  const out = { blk: 0, on: 0, off: 0 };
   /* **逐情境**也收一份(階段 4i)。總和對上不代表每一種都對:實測本站總和 15.1 m
      看起來只差一點,拆開才看到角球是 15.0 m(真實 12.7)而且 69% 擠在 15~20 m 一格。 */
   const bySit = {};
@@ -224,9 +232,14 @@ const realShots = (() => {
     if (!existsSync(path)) continue;
     const j = JSON.parse(readFileSync(path, 'utf8'));
     for (const m of Object.values(j.matches ?? {})) for (const sh of (m.shots ?? [])) {
-      if (sh.x == null || sh.y == null) continue;
+      if (sh.x == null || sh.y == null || sh.ownGoal) continue;
+      if (!sel(sh)) continue;
       const d = Math.hypot(105 - sh.x, 34 - sh.y);
       bins[Math.min(6, Math.floor(d / 5))]++; n++; ds += d; if (sh.inBox) box++;
+      /* 三種下場**互斥而且窮盡**:被封阻 / 射正(不含被封阻)/ 偏出(含打中門框)。
+         FotMob 的 `onTarget` 旗標把被封阻的也算射正(10,610 顆裡 62.9% 對 33.7%),
+         而 football-data 的 HST 與引擎都不算 —— 用哪一個定義要講出來,不能挑名字像的那個。 */
+      if (sh.blocked) out.blk++; else if (sh.onTarget) out.on++; else out.off++;
       if (sh.xg != null) xg += sh.xg;
       const b = (bySit[sh.situation ?? '(無)'] ??= { n: 0, dsum: 0, bins: new Array(7).fill(0), head: 0, headD: 0, foot: 0, footD: 0, footFar: 0 });
       b.n++; b.dsum += d; b.bins[Math.min(6, Math.floor(d / 5))]++;
@@ -237,8 +250,11 @@ const realShots = (() => {
       else { b.foot++; b.footD += d; if (d >= 20) b.footFar++; }
     }
   }
-  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n), bySit } : null;
-})();
+  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n), bySit,
+    out: { blk: out.blk / n, on: out.on / n, off: out.off / n } } : null;
+};
+const realShots = collectReal(() => true);                                   // 全聯盟:形狀與逐情境用它(樣本大)
+const realFx = collectReal(sh => sh.team === HOME || sh.team === AWAY);      // 這一場兩隊:判定用它
 
 line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.corners.away)).toFixed(1), `真實 ${real.cf.toFixed(1)}`);
 /* **角球的三排來源分類**(2026-09-18,階段 4l)。本站的規矩是「找為什麼某個量偏低,
@@ -501,12 +517,19 @@ const simShots = (() => {
 })();
 if (simShots && realShots) {
   const pc = a => a.map(v => `${Math.round(v * 100)}%`).join(' ');
-  line('射門離門距離', `${simShots.dist.toFixed(1)} m`, `真實 ${realShots.dist.toFixed(1)} m(${realShots.n} 顆)`);
-  line('射門在禁區內', `${(simShots.box * 100).toFixed(0)}%`, `真實 ${(realShots.box * 100).toFixed(0)}%`);
-  /* **第二個獨立來源**(2026-09-18,階段 4l):上面那個 67% 是從 shotmap 的座標自己算的,
+  /* **判這一場兩隊,聯盟那一份只當參照**(4w 的規矩)。兩者差不大(離門 15.96 對 16.02、
+     禁區內 68.5% 對 67.1%),但「差不大」是量出來的結果,不是可以省掉這一步的理由。 */
+  line('射門離門距離', `${simShots.dist.toFixed(1)} m`,
+    `真實 ${realFx.dist.toFixed(2)} m(${HOME}+${AWAY} ${realFx.n} 顆・聯盟 ${realShots.dist.toFixed(2)} m)`);
+  line('射門在禁區內', `${(simShots.box * 100).toFixed(1)}%`,
+    `真實 ${(realFx.box * 100).toFixed(1)}%(聯盟 ${(realShots.box * 100).toFixed(1)}%)—— 兩邊同一個判準:禁區是矩形(深 16.5 m、半寬 20.16 m),不是「離門 18 公尺以內」`);
+  /* **第二個獨立來源**(2026-09-18,階段 4l):上面那個數字是從 shotmap 的**座標**自己算的,
      而側寫的 `extra.shots_inside_box` / `shots_outside_box` 是 FotMob 自己分好的 ——
      兩份對得上才代表「禁區內」這個判準跟上游同一個意思(鐵則五)。
-     這兩個欄位在這之前**零個消費端**。只印不判:它是這一場兩隊的值,而上面那個是全聯盟的。 */
+     這兩個欄位在這之前**零個消費端**。只印不判。
+     (2026-09-19,階段 5a:上面那一行改成判這一場兩隊之後,這兩個數字的母體終於一樣了 ——
+     原本這一段註解寫著「它是這一場兩隊的值,而上面那個是全聯盟的」,那句話已經不成立。
+     **改判定的時候要一起問:哪一句話在描述這個判定?**) */
   {
     const inB = pair('shots_inside_box'), outB = pair('shots_outside_box');
     if (inB != null && outB != null && inB + outB > 0) {
@@ -514,9 +537,45 @@ if (simShots && realShots) {
         `${HOME}+${AWAY} 的 shots_inside_box ${inB.toFixed(1)} / 全部 ${(inB + outB).toFixed(1)} —— 跟上面那個 shotmap 算出來的互相核對`);
     }
   }
-  line('每球 xG', simShots.xg.toFixed(4), `真實 ${realShots.xg.toFixed(4)}`);
+  /* **這一行兩個基礎都要看。** 判的是這一場兩隊(4w),因為引擎演的就是他們 ——
+     他們射門的位置分佈本來就跟聯盟平均不一樣。但 `SELECT_FIX`(把網格模型的 xG 水準
+     拉到真實每球平均的那個係數)是**全域**的一個常數,而 `check-sim` 只跑這一組對戰:
+     照這一場重新校準它,等於把一組對戰的偏好寫進所有對戰。兩個值差 1% 上下,
+     **要動那個常數的時候用聯盟那一個**,判這一輪跑得準不準用這一場那一個。 */
+  line('每球 xG', simShots.xg.toFixed(4), `真實 ${realFx.xg.toFixed(4)}(聯盟 ${realShots.xg.toFixed(4)}・SELECT_FIX 是全域常數,要重新校準它用聯盟那一個)`);
   console.log(`  ${'離門 0-5/5-10/…/30+'.padEnd(26, '\u3000')} ${pc(simShots.bins)}`);
-  console.log(`  ${'真實'.padEnd(26, '\u3000')} ${pc(realShots.bins)}`);
+  console.log(`  ${`真實(${HOME}+${AWAY})`.padEnd(26, '\u3000')} ${pc(realFx.bins)}`);
+  console.log(`  ${'真實(聯盟)'.padEnd(26, '\u3000')} ${pc(realShots.bins)}`);
+
+  /* **一腳射門的三種下場**(2026-09-19,階段 5a)。4h 的規矩:找「某個量為什麼偏掉」,
+     先把它的來源逐類列出來。射門 = 被封阻 + 射正 + 偏出,而這裡本來只印了射正那一類的率 ——
+     於是「射正率高了 5 個百分點」看起來像一個小殘差,拆開才看到**封阻差了一個數量級** ——
+     那些本該被擋掉的球飛出去,大半偏出、一部分變成射正,兩邊的超額合起來正好是封阻的缺口。
+     `blockedBy` 在這之前**零個消費端**(4l-5 的 `cornerNextBins` 是同一件事的上一次)。
+     差多少**看這裡印出來的那一行**,不要抄進註解 —— 它會隨引擎變。
+     真值逐顆從 shotmap 算:`blocked` 旗標本站驗過它就是逐人 `blocked_shots` 的加總。
+     射正的定義兩邊都是「不含被封阻」—— FotMob 的 `onTarget` 旗標**含**被封阻(62.9%),
+     而 football-data 的 HST 不含;引擎的射正在 `ball.shot` 被封阻時就清掉了,所以跟後者同義。
+     兩個獨立來源核對過:shotmap 逐顆算的這一場兩隊射正率 32.1%、CSV 的 stf ÷ sf 31.6%(鐵則五)。 */
+  {
+    const shots = mean(rows.map(r => r.st.counts.shots));
+    const blk = mean(rows.map(r => r.st.counts.blockedBy.home + r.st.counts.blockedBy.away));
+    const gk = mean(rows.map(r => (r.st.counts.gkStopBy?.home ?? 0) + (r.st.counts.gkStopBy?.away ?? 0)));
+    const on = mean(rows.map(r => r.st.counts.onTarget));
+    const off = shots - blk - gk - on;
+    /* **分母扣掉上游沒有的那一類**(4z 那一課:「不併進別人」跟「用哪個分母」是兩件事)。
+       門將在門線前碰掉的球,上游會記成撲救而不是封阻 —— 本站不硬把它塞進射正
+       (那是編一個對照),但也不能留在分母裡:留著的話上面三類會被它整批壓低。
+       原樣那一欄照樣印,看得到扣掉多少。 */
+    const base = shots - gk;
+    const fx = k => 100 * (realFx.out?.[k] ?? 0), lg = k => 100 * (realShots.out?.[k] ?? 0);
+    const row = (zh, v, k) => line(`　${zh}`, `${(100 * v / base).toFixed(1)}%`,
+      `真實 ${fx(k).toFixed(1)}%(聯盟 ${lg(k).toFixed(1)}%)・本站每場 ${v.toFixed(1)} 腳・佔全部射門 ${(100 * v / shots).toFixed(1)}%`);
+    console.log('');
+    row('被封阻(場上球員)', blk, 'blk'); row('射正(進球 + 撲救)', on, 'on'); row('偏出 / 打中門框', off, 'off');
+    line('　門將在門線前碰掉', `${(100 * gk / shots).toFixed(1)}%`,
+      `上游不分這一類(門將擋的記成撲救),所以上面三類的分母把它扣掉了・本站每場 ${gk.toFixed(1)} 腳`);
+  }
 }
 
 /* 3b-2. **逐情境**的離門分佈(階段 4i)。總和是幾種情境的混合,它對上只代表混出來的平均對上 ——
