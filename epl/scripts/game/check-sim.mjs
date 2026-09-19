@@ -224,6 +224,11 @@ const real = { sf: (rt(HOME, 'home').sf ?? 0) + (rt(AWAY, 'away').sf ?? 0), cf: 
 const collectReal = (sel) => {
   const bins = new Array(7).fill(0); let n = 0, ds = 0, box = 0, xg = 0;
   const out = { blk: 0, on: 0, off: 0 };
+  /* **封阻的形狀**(2026-09-19,階段 5b):逐帶、xG、頭球 / 腳下。
+     只比總數的話任何一個全域乘數都能把它湊對,而 5b 量出來引擎的封阻**形狀是平的**
+     (逐帶曝光每一帶都 ~0.53),真實是駝峰。這三個是乘數偽造不了的檢查。 */
+  const blkBins = new Array(7).fill(0), allBins = new Array(7).fill(0);
+  const qual = { blkXg: 0, blkN: 0, freeXg: 0, freeN: 0, headN: 0, headBlk: 0, footN: 0, footBlk: 0 };
   /* **逐情境**也收一份(階段 4i)。總和對上不代表每一種都對:實測本站總和 15.1 m
      看起來只差一點,拆開才看到角球是 15.0 m(真實 12.7)而且 69% 擠在 15~20 m 一格。 */
   const bySit = {};
@@ -240,6 +245,13 @@ const collectReal = (sel) => {
          FotMob 的 `onTarget` 旗標把被封阻的也算射正(10,610 顆裡 62.9% 對 33.7%),
          而 football-data 的 HST 與引擎都不算 —— 用哪一個定義要講出來,不能挑名字像的那個。 */
       if (sh.blocked) out.blk++; else if (sh.onTarget) out.on++; else out.off++;
+      {
+        const bi = Math.min(6, Math.floor(d / 5));
+        allBins[bi]++; if (sh.blocked) blkBins[bi]++;
+        if (sh.blocked) { qual.blkXg += sh.xg ?? 0; qual.blkN++; } else { qual.freeXg += sh.xg ?? 0; qual.freeN++; }
+        if (sh.foot === 'Header') { qual.headN++; if (sh.blocked) qual.headBlk++; }
+        else { qual.footN++; if (sh.blocked) qual.footBlk++; }
+      }
       if (sh.xg != null) xg += sh.xg;
       const b = (bySit[sh.situation ?? '(無)'] ??= { n: 0, dsum: 0, bins: new Array(7).fill(0), head: 0, headD: 0, foot: 0, footD: 0, footFar: 0 });
       b.n++; b.dsum += d; b.bins[Math.min(6, Math.floor(d / 5))]++;
@@ -251,7 +263,8 @@ const collectReal = (sel) => {
     }
   }
   return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n), bySit,
-    out: { blk: out.blk / n, on: out.on / n, off: out.off / n } } : null;
+    out: { blk: out.blk / n, on: out.on / n, off: out.off / n },
+    blkShape: { bins: allBins.map((v, i) => (v ? blkBins[i] / v : null)), ...qual } } : null;
 };
 const realShots = collectReal(() => true);                                   // 全聯盟:形狀與逐情境用它(樣本大)
 const realFx = collectReal(sh => sh.team === HOME || sh.team === AWAY);      // 這一場兩隊:判定用它
@@ -575,6 +588,46 @@ if (simShots && realShots) {
     row('被封阻(場上球員)', blk, 'blk'); row('射正(進球 + 撲救)', on, 'on'); row('偏出 / 打中門框', off, 'off');
     line('　門將在門線前碰掉', `${(100 * gk / shots).toFixed(1)}%`,
       `上游不分這一類(門將擋的記成撲救),所以上面三類的分母把它扣掉了・本站每場 ${gk.toFixed(1)} 腳`);
+
+    /* **封阻的形狀**(2026-09-19,階段 5b)。總數對上不代表封阻的是對的那些球 ——
+       任何一個全域乘數都能把總數湊對。真實有三個形狀,乘數一個都偽造不了:
+       ① 逐帶是**駝峰**(近門低、15~25 m 最高、30 m 外又低);
+       ② 被封阻的球平均 xG 只有沒被封阻的一半上下 —— 因為「有人擋著」同時造成了
+          「被擋掉」與「這一腳品質差」,兩件事同一個原因;
+       ③ 頭球被封阻的比例遠低於腳下。
+       5b 量出來本站三個都不對:逐帶的曝光每一帶都 ~0.53(平的)、被封阻的球跟沒被封阻的
+       一樣好、而 0~5 m 那一帶曝光是 0。只印不判 —— 這是 5c 的驗收條件,不是現在的紅線。 */
+    {
+      const bi = k => mean(rows.map(r => r.st.counts.shotBins[k]));
+      const bb = k => mean(rows.map(r => r.st.counts.shotBlkBins[k]));
+      const pc = v => (v == null ? '  —' : `${(100 * v).toFixed(0)}`.padStart(3));
+      const mine = [], rf = [], rl = [];
+      for (let k = 0; k < 7; k++) {
+        mine.push(pc(bi(k) > 0 ? bb(k) / bi(k) : null));
+        rf.push(pc(realFx.blkShape?.bins[k])); rl.push(pc(realShots.blkShape?.bins[k]));
+      }
+      console.log('');
+      console.log(`  ${'封阻率 0-5/5-10/…/30+'.padEnd(26, '\u3000')} ${mine.join(' ')}`);
+      console.log(`  ${`真實(${HOME}+${AWAY})`.padEnd(26, '\u3000')} ${rf.join(' ')}`);
+      console.log(`  ${'真實(聯盟)'.padEnd(26, '\u3000')} ${rl.join(' ')}`);
+      const q = realShots.blkShape, qf = realFx.blkShape;
+      const ratio = (x) => (x && x.blkN && x.freeN ? (x.blkXg / x.blkN) / (x.freeXg / x.freeN) : null);
+      const myBlkN = mean(rows.map(r => r.st.counts.blockedBy.home + r.st.counts.blockedBy.away));
+      const myBlkXg = mean(rows.map(r => r.st.counts.blkXg));
+      const myAllXg = mean(rows.map(r => r.st.xg.home + r.st.xg.away));
+      const myN = mean(rows.map(r => r.st.counts.shots));
+      const myRatio = myBlkN > 0 && myN > myBlkN
+        ? (myBlkXg / myBlkN) / ((myAllXg - myBlkXg) / (myN - myBlkN)) : null;
+      /* **把樣本數印出來**:封阻現在一場才 0.8 腳,6 場的比值是五顆球算出來的 ——
+         沒有這個數字,讀的人會把雜訊當成形狀(本站在「20 場的掃描沒有鑑別力」上付過代價)。 */
+      line('　被封阻 ÷ 沒被封阻 的 xG', myRatio == null ? '—' : myRatio.toFixed(2),
+        `真實 ${ratio(qf)?.toFixed(2) ?? '—'}(聯盟 ${ratio(q)?.toFixed(2) ?? '—'})・本站樣本只有 ${(myBlkN * rows.length).toFixed(0)} 顆被封阻的球`
+        + ` —— 低於 1 才代表「擋掉的是本來就比較差的那些球」`);
+      const myHead = mean(rows.map(r => r.st.counts.shotHead)), myHeadBlk = mean(rows.map(r => r.st.counts.blkHead));
+      line('　頭球 / 腳下 的封阻率',
+        `${myHead > 0 ? (100 * myHeadBlk / myHead).toFixed(0) : '—'}% / ${myN > myHead ? (100 * (myBlkN - myHeadBlk) / (myN - myHead)).toFixed(0) : '—'}%`,
+        `真實 ${q ? (100 * q.headBlk / q.headN).toFixed(0) : '—'}% / ${q ? (100 * q.footBlk / q.footN).toFixed(0) : '—'}%(聯盟)`);
+    }
   }
 }
 

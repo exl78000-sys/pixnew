@@ -854,5 +854,54 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           `射門 ${c4.shots} = 封阻 ${blk} + 門將擋掉 ${gk4} + 射正 ${c4.onTarget} + 偏出 ${off4}`);
       }
     }
+
+    /* 20. 階段 5b:**封阻的形狀**。5a 把總數印出來之後,5b 量到那個總數差 ×0.15 ——
+       而「調一個全域乘數把總數湊對」會讓封阻的**是隨機的一批球**。真實有三個形狀:
+       逐帶是駝峰、被封阻的球平均 xG 只有沒被封阻的 0.46 倍、頭球被封阻遠少於腳下。
+       這一節守的是**那三個量得出來**(計數器存在、加得回總數、check-sim 印出來),
+       不守它們的值 —— 值是 5c 的驗收條件,現在寫成紅線就是「把目標達成寫成 CI 紅線」。 */
+    {
+      const chkBare7 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('check-sim 把封阻的三個形狀都印出來(逐帶 / xG / 頭球腳下)',
+        /shotBlkBins/.test(chkBare7) && /被封阻 ÷ 沒被封阻/.test(chkBare7) && /頭球 \/ 腳下 的封阻率/.test(chkBare7));
+      /* 真值要**從 shotmap 逐顆算**,不是抄一個數字進程式 —— 抄的那種資料變了不會跟著變。
+         錨**不可以**用 `sh.foot === 'Header'`:4l 的角球頭球腳下拆解也有一模一樣的那一行,
+         把 blkShape 這一份停掉它照樣命中 —— 四條負向對照裡只有這條沒紅,就是這樣抓到的。
+         改用只在這一份出現的三個累加器(逐帶 / xG / 頭球),三個都要在。 */
+      check('封阻的真值是從逐顆射門算的(blkShape 的三個累加器都在)',
+        /blkShape:/.test(chkBare7) && /blkBins\[bi\]\+\+/.test(chkBare7)
+        && /qual\.blkXg \+=/.test(chkBare7) && /qual\.headBlk\+\+/.test(chkBare7));
+      /* **四個計數器要一起加**。跑一場真模擬來驗有一個問題:場上球員的封阻現在一場才 0.8 腳,
+         隨便一個種子就是 **0** —— 那幾條斷言會「通過」而什麼都沒守到(第一版 seed 17 就是 0)。
+         所以拆成兩層:**形狀的接線掃原始碼**(那一段一定在,跟資料無關),
+         **恆等式跑真模擬**(逐帶合計 = 封阻總數,那在 0 的時候也成立、在有封阻時才真的守得住)。 */
+      {
+        const simSrc7 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+          .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+        const i0 = simSrc7.indexOf('if (gk) st.gkStopBy[ball.shot.side]++;');
+        const i1 = simSrc7.indexOf("emit({ type: 'block'", i0);
+        const seg7 = i0 >= 0 && i1 > i0 ? simSrc7.slice(i0, i1) : '';
+        check('場上球員的封阻同時記逐帶、xG 與頭球(少一個的話那個形狀永遠是空的)',
+          seg7.length > 0 && /st\.shotBlkBins\[/.test(seg7) && /st\.blkXg \+=/.test(seg7)
+          && /st\.blkHead\+\+/.test(seg7) && /st\.blockedBy\[ball\.shot\.side\]\+\+/.test(seg7),
+          `切出來 ${seg7.length} 字元`);
+      }
+      {
+        const S5 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        let binSum = 0, blk5 = 0, head = 0, headBlk = 0, shots5 = 0, blkXg = 0;
+        for (const seed of [17, 18, 19]) {
+          const sim5 = S5.createSim({ profile, home: 'ARS', away: 'LIV', seed });
+          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim5.state().over; i++) sim5.advance(1 / 60);
+          const c5 = sim5.state().counts;
+          binSum += c5.shotBlkBins.reduce((a, b) => a + b, 0);
+          blk5 += c5.blockedBy.home + c5.blockedBy.away;
+          head += c5.shotHead; headBlk += c5.blkHead; shots5 += c5.shots; blkXg += c5.blkXg;
+        }
+        check('逐帶的封阻數加起來等於封阻總數,而且頭球的封阻不會多過頭球',
+          binSum === blk5 && headBlk <= head && head <= shots5 && headBlk <= blk5,
+          `3 場合計:逐帶 ${binSum} = 封阻 ${blk5}・頭球 ${head}(其中被封阻 ${headBlk})・射門 ${shots5}・blkXg ${blkXg.toFixed(3)}`);
+      }
+    }
   }
 }

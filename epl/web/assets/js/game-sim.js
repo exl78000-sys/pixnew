@@ -1252,6 +1252,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        不是只對「每球平均 xG」—— 只對平均值的話,一堆六公尺的射門配一個很小的係數也會「對上」,
        而那是把形狀調錯之後再用水準去湊。 */
     shotBins: new Array(7).fill(0), shotDsum: 0, shotInBox: 0,
+    /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
+       而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
+       被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
+       那三個是乘數偽造不了的形狀檢查,所以計數器要分帶、分 xG、分頭球 / 腳下。 */
+    shotBlkBins: new Array(7).fill(0), blkXg: 0, shotHead: 0, blkHead: 0,
     focus: { x: PITCH_W / 2, y: PITCH_H / 2 },
   };
   let decideIn = 0;      // 持球者下一次做決定還有幾秒
@@ -1638,7 +1643,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
            **本站沒有這個定義的真值**:goals.json 的助攻是 FPL 的定義(贏得十二碼、
            射門被撲出後補進都算,實測助攻/進球 0.905~0.937),比這裡寬鬆得多,
            所以模擬的助攻率只回報、不當錨(定義不一樣的數字不能比)。 */
-        ball.shot = { by: p, side: p.side, xg, willScore: !miss, sit, assist: p.assistBy ?? null };
+        ball.shot = { dist: dGoal, by: p, side: p.side, xg, willScore: !miss, sit, assist: p.assistBy ?? null };
         if (!miss) st.willScore++;
         st.shots++; st.shotsBy[p.side]++; st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
         /* `sit` 與 `inBox` 要**跟著事件走**(2026-09-19,階段 5a)。賽後解讀(`game-diag`)
@@ -2059,7 +2064,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
                它自己一行、照實說「上游不分這一類」(鐵則四)。 */
             if (ball.shot?.side) {
               const gk = q === sideOf(q.side).gk;
-              if (gk) st.gkStopBy[ball.shot.side]++; else st.blockedBy[ball.shot.side]++;
+              if (gk) st.gkStopBy[ball.shot.side]++;
+              else {
+                st.blockedBy[ball.shot.side]++;
+                st.shotBlkBins[Math.min(6, Math.floor((ball.shot.dist ?? 0) / 5))]++;
+                st.blkXg += ball.shot.xg ?? 0;
+                if (ball.shot.head) st.blkHead++;
+              }
               emit({ type: 'block', side: ball.shot.side, by: q.code, name: q.name, gk });
             }
             ball.shot = null; st.lastTouch = q.side; st.deflects++; st.ballFrom = 'block'; if (ball.passSide) ball.wasDeflected = true;
@@ -2561,7 +2572,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const need = Math.sqrt(SHOT_ARRIVE * SHOT_ARRIVE + 2 * BALL_FRICTION * dGoal);
     kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14),
       cl(SHOT_SPEED[0] + rng() * (SHOT_SPEED[1] - SHOT_SPEED[0]), need, SHOT_MAX), 0, 'shot');
-    ball.shot = { by: p, side: p.side, xg, willScore: !miss, sit: 'Penalty', assist: null };
+    ball.shot = { dist: dGoal, by: p, side: p.side, xg, willScore: !miss, sit: 'Penalty', assist: null };
     if (!miss) st.willScore++;
     st.shots++; st.shotsBy[p.side]++;
     st.shotSit.Penalty = (st.shotSit.Penalty ?? 0) + 1;
@@ -2669,10 +2680,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const assist = ball.passer && ball.passer.side === p.side && ball.passer !== p ? ball.passer : null;
     kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14),
       cl(14 + rng() * 8, need, SHOT_MAX), 0, 'shot');
-    ball.shot = { by: p, side: p.side, xg, willScore: !miss, sit: 'FromCorner', assist };
+    ball.shot = { dist: dGoal, head: true, by: p, side: p.side, xg, willScore: !miss, sit: 'FromCorner', assist };
     if (!miss) st.willScore++;
     st.shots++; st.shotsBy[p.side]++;
     st.shotSit.FromCorner = (st.shotSit.FromCorner ?? 0) + 1;
+    st.shotHead++;
     st.cornerShot.header = (st.cornerShot.header ?? 0) + 1;
     st.cornerShotBins.header[Math.min(6, Math.floor(dGoal / 5))]++;
     st.cornerShotXg.header += xg;
@@ -2762,6 +2774,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         intercepts: { ...st.intercepts }, passBy: { ...st.passBy }, tacklesBy: { ...st.tacklesBy }, passOk: { ...st.passOk },
         offsides: { ...st.offsides }, why: { ...(st.why ?? {}) },
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
+        shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
         pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
