@@ -408,6 +408,9 @@ const CORNER_SPEED = [12, 17];
    守方根本沒有機會把球碰出自己的底線。
    折射到的球也失去「該不該進」的判定 —— 那一腳已經不是原來那一腳了。 */
 const DEFLECT_R = 0.75;                        // 球從這麼近經過就可能碰到人(公尺)
+/* 「差一點」的上界(公尺,階段 5d 的量測用)。四公尺是**量測的邊界不是模型的參數** ——
+   再遠就不叫「差一點撲得到」了。引擎的行為一個字都不讀它,只有 `noteShotLane` 在用。 */
+const LANE_FAR = 4;
 const DEFLECT_MIN_SPEED = 9;                   // 太慢的球不算折射,那是可以控的
 const DEFLECT_KEEP = 0.55;                     // 折射後保留的速度比例
 /* 折射的方向要**小改**,不是亂彈。第一版用 ±0.95 弧度(±54 度)加只留 45% 的速度 ——
@@ -1256,6 +1259,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        而那個數字是 scratchpad 探針量的、**沒有消費端** —— 本站記過那條坑(4l-5 的 `cornerNextD`
        加了三個階段零個消費端,而下一輪的規劃還在說「本站沒有這個計數器」)。所以這一輪接進來。 */
     laneShots: new Array(7).fill(0), laneOcc: new Array(7).fill(0), laneNear: new Array(7).fill(0),
+    /* **撲搶的天花板**(2026-09-19,階段 5d)。`laneFar` 是「路上四公尺內有人」——
+       它是曝光能長到多大的上限;`laneReach` 是「有人**來得及**撲進 `DEFLECT_R`」,
+       也就是「就算撲搶百發百中,這一帶最多能擋掉多少」。
+       兩個都逐帶記,因為 5d 的結論正是**形狀**:它們隨離門距離單調上升,而真實是駝峰。 */
+    laneFar: new Array(7).fill(0), laneReach: new Array(7).fill(0),
     /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
        而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
        被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
@@ -1363,23 +1371,36 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      被罰下的人要排掉:他留在原地不動,算進去就是「量測的母體跟畫面不一致」。
      純觀測,一次 `rng()` 都不呼叫。 */
   function noteShotLane(shooter, dGoal) {
-    const n = hypot(ball.vx, ball.vy);
-    if (!(n > 0.01)) return;
-    const ux = ball.vx / n, uy = ball.vy / n;
+    const v = hypot(ball.vx, ball.vy);
+    if (!(v > 0.01)) return;
+    const ux = ball.vx / v, uy = ball.vy / v;
     const gx = sideOf(shooter.side).att > 0 ? PITCH_W : 0;
     const L = Math.abs(ux) > 0.01 ? Math.abs((gx - ball.x) / ux) : dGoal;
-    let lane = Infinity;
+    let lane = Infinity, reach = false;
     for (const q of all()) {
       if (q.off || q.side === shooter.side || q === sideOf(q.side).gk) continue;
       const a = (q.x - ball.x) * ux + (q.y - ball.y) * uy;
       if (a <= 0.3 || a >= L) continue;          // 球已經過去的人擋不到
       const perp = Math.abs((q.x - ball.x) * uy - (q.y - ball.y) * ux);
       if (perp < lane) lane = perp;
+      /* 「他來得及嗎」:球滾地會減速,所以**要解二次式**,不是 `a / v0` ——
+         用後者會低估飛行時間,把「來得及」算少。判別式 ≤ 0 表示球根本滾不到那麼遠。
+         人這一側取**樂觀**的那一邊(已經在全速),所以這是一個**上限**:
+         就算撲搶百發百中也只能到這裡。 */
+      if (!reach && perp < LANE_FAR) {
+        const disc = v * v - 2 * BALL_FRICTION * a;
+        if (disc > 0) {
+          const tBall = (v - Math.sqrt(disc)) / BALL_FRICTION;
+          if (Math.max(0, perp - DEFLECT_R) / Math.max(0.1, q.vmax) <= tBall) reach = true;
+        }
+      }
     }
     const k = Math.min(6, Math.floor(dGoal / 5));
     st.laneShots[k]++;
     if (lane < DEFLECT_R) st.laneOcc[k]++;
     if (lane < 1) st.laneNear[k]++;
+    if (lane < LANE_FAR) st.laneFar[k]++;
+    if (reach) st.laneReach[k]++;
   }
 
   /* 這一腳射門算哪一種情境。**只回答分得出來的那幾種** —— 見 FASTBREAK_SECS 上面那一段。
@@ -2814,6 +2835,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         offsides: { ...st.offsides }, why: { ...(st.why ?? {}) },
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         laneShots: [...st.laneShots], laneOcc: [...st.laneOcc], laneNear: [...st.laneNear],
+        laneFar: [...st.laneFar], laneReach: [...st.laneReach],
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },

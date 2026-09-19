@@ -954,5 +954,51 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           ls === shots && bad === 0, `3 場:射門 ${shots}、量到 ${ls}、逐帶不一致 ${bad} 格`);
       }
     }
+
+    /* 22. 階段 5d:**撲搶的天花板**。5c 的結論是「缺的全是曝光」,而最順手的下一步
+       是給防守員一個「撲上去擋」的動作。5d 先回推它的上限(4k:先問函式族生不生得出
+       目標的形狀),量出來天花板**隨離門距離單調上升**而真實的封阻率是**駝峰** ——
+       15~25 公尺天花板比真實還低、30 公尺外高到三倍,**沒有任何撲搶成功率生得出駝峰**。
+       這一節守的是那個量測本身量得對(飛行時間解二次式、只算擋得在中間的人、
+       `LANE_FAR` 只是量測的邊界不進引擎行為),**不守它的值**。 */
+    {
+      const simBare8 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const j0 = simBare8.indexOf('function noteShotLane(');
+      const j1 = simBare8.indexOf('st.laneReach[k]++;', j0);
+      const seg8 = j0 >= 0 && j1 > j0 ? simBare8.slice(j0, j1) : '';
+      /* 飛行時間**要解二次式**:球滾地會減速,寫 `a / v` 會低估時間、把「來得及」算少。
+         錨挑 `2 * BALL_FRICTION * a`(判別式那一項)—— 整份裡只有這裡有。 */
+      check('「他來得及嗎」的飛行時間解二次式(球會減速),不是 a ÷ v',
+        seg8.length > 0 && /2 \* BALL_FRICTION \* a/.test(seg8) && /Math\.sqrt\(disc\)/.test(seg8),
+        `切出來 ${seg8.length} 字元`);
+      /* `LANE_FAR` 是**量測的邊界**,不是模型的參數 —— 引擎的行為不准讀它。
+         三處:宣告、撲得到的前置、4 m 內那一格。多一處就是它漏進行為裡了。 */
+      check('LANE_FAR 只給量測用(宣告 + noteShotLane 裡兩處,引擎行為不讀它)',
+        (simBare8.match(/LANE_FAR/g) ?? []).length === 3
+        && (seg8.match(/LANE_FAR/g) ?? []).length === 2);
+      const chkBare9 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('check-sim 把「4 m 內」與「撲得到的天花板」兩排都印出來',
+        /laneFar/.test(chkBare9) && /laneReach/.test(chkBare9) && /撲得到/.test(chkBare9));
+      {
+        const S9 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        let bad = 0, far = 0, rch = 0, shots = 0;
+        for (const seed of [21, 22, 23]) {
+          const sim9 = S9.createSim({ profile, home: 'ARS', away: 'LIV', seed });
+          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim9.state().over; i++) sim9.advance(1 / 60);
+          const c9 = sim9.state().counts;
+          for (let k = 0; k < 7; k++) {
+            /* 四個門檻是一層套一層的:DEFLECT_R ⊂ 1 m ⊂ 4 m ⊂ 這一帶的射門。
+               而「撲得到」的前置就是 4 m 內有人,所以它也不可能比 4 m 那一格多。 */
+            if (!(c9.laneOcc[k] <= c9.laneNear[k] && c9.laneNear[k] <= c9.laneFar[k]
+              && c9.laneFar[k] <= c9.laneShots[k] && c9.laneReach[k] <= c9.laneFar[k])) bad++;
+            far += c9.laneFar[k]; rch += c9.laneReach[k]; shots += c9.laneShots[k];
+          }
+        }
+        check('四個門檻一層套一層,而且天花板不會超過「4 m 內有人」',
+          bad === 0, `3 場:射門 ${shots}、4 m 內 ${far}、撲得到 ${rch}、逐帶不一致 ${bad} 格`);
+      }
+    }
   }
 }
