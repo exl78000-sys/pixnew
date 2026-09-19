@@ -732,5 +732,41 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           Object.entries(hf).map(([k, v]) => `${k} ${v}`).join('、') || '(一種都沒有)');
       }
     }
+
+    /* 18. 階段 4l-5:**第二球落在哪裡**。角球的腳下射門 73% 走 snap 那一條,所以
+       「進攻方在哪裡控到第二球」這張直方圖**就是**那一種射門的離門分佈。
+       `cornerNextD` 是階段 4l 加的,加完之後**四個階段零個消費端** ——
+       而 4l-5 的規劃還寫著「本站沒有這個計數器」,下一個人會再造一個。
+       守三件事:兩邊都記(只記進攻方的話看不到球是被誰截走的)、
+       離門距離對**開角球那一隊要攻的球門**算(兩排才在同一根軸上)、
+       以及 `check-sim` 真的把它印出來。 */
+    {
+      const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const bare5 = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      /* **切出那一段再看**:掃整份的話別處出現 `cornerNextBins` 照樣綠。
+         負向對照是把舊寫法貼回去(`if (k === 'att')` + `sideOf(side)`)。 */
+      const i0 = bare5.indexOf("st.cornerNext[k] =");
+      const i1 = bare5.indexOf("const origin = pend && pend.side === side");
+      const seg5 = i0 >= 0 && i1 > i0 ? bare5.slice(i0, i1) : '';
+      check('第二球的位置兩邊都記,而且對開角球那一隊的球門算',
+        seg5.length > 0 && /st\.cornerNextBins\[k\]/.test(seg5)
+        && /sideOf\(pend\.side\)/.test(seg5) && !/if \(k === 'att'\)/.test(seg5),
+        `切出來 ${seg5.length} 字元`);
+      const chkBare5 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('check-sim 把它印出來(這個計數器先前零個消費端)',
+        /cornerNextBins/.test(chkBare5) && /第二球落在哪裡/.test(chkBare5));
+      /* **兩排都要真的有東西** —— 跑一場真模擬來數。只記到一邊的話上面兩條
+         就是在守一件不會發生的事(4l-3 那一節的同一條規矩)。 */
+      {
+        const S3 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        const sim3 = S3.createSim({ profile, home: 'ARS', away: 'LIV', seed: 11 });
+        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim3.state().over; i++) sim3.advance(1 / 60);
+        const nb = sim3.state().counts.cornerNextBins ?? {};
+        const tot = k => (nb[k] ?? []).reduce((a, b) => a + b, 0);
+        check('一場真模擬裡進攻與防守兩排都有第二球',
+          tot('att') > 0 && tot('def') > 0, `進攻 ${tot('att')} / 防守 ${tot('def')}`);
+      }
+    }
   }
 }

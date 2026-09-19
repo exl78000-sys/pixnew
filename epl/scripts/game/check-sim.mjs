@@ -319,6 +319,31 @@ line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.c
   /* 第一點之後球被誰控住。角球射門缺的是**腳下**那一種,而它的前提是進攻方拿得到第二球 ——
      這一行如果幾乎都是「防守控住」,那缺的就不是射門的判定,是**沒有人還留在那裡**。 */
   show('  第二球被誰控住', bag('cornerNext'));
+  /* **第二球落在哪裡**(2026-09-19,階段 4l-5)。上面那一行講的是「誰拿到」,而 4l-5 量下來
+     卡住的是「在**哪裡**拿到」:角球的腳下射門有 **73%** 走 snap 那一條(第二球一進射程就出手),
+     所以進攻方這一排**就是**那一種射門的離門分佈,不是一個旁證。
+     本站的形狀是**雙峰**的 —— 禁區裡一堆、35 公尺外一堆,而 20~35 公尺幾乎是空的;
+     真實的角球腳下射門有 28% 在 20~30 公尺(側寫 `FromCorner.byFoot.foot`)。
+     那個洞跟角球**站位**的洞在同一個地方(禁區裡六個點最遠 19 m,其餘三人在中線 36 m 外)。
+     **上游沒有「第二球在哪裡被贏走」這個欄位,所以這兩排只回報、不判。** */
+  {
+    const NB = 10;
+    const nb = { att: new Array(NB).fill(0), def: new Array(NB).fill(0) };
+    for (const r of rows) for (const k of ['att', 'def']) {
+      (r.st.counts.cornerNextBins?.[k] ?? []).forEach((v, i) => { nb[k][i] += v; });
+    }
+    const lab = ['0-5', '5-10', '10-15', '15-20', '20-25', '25-30', '30-35', '35-40', '40-45', '45+'];
+    if (nb.att.some(v => v) || nb.def.some(v => v)) {
+      console.log(`  ${'　第二球落在哪裡(只回報)'.padEnd(20, '\u3000')}` + lab.map(x => x.padStart(6)).join(''));
+      for (const k of ['att', 'def']) {
+        const t = nb[k].reduce((a, b) => a + b, 0);
+        if (!t) continue;
+        console.log(`  ${('　　' + (k === 'att' ? '進攻方' : '防守方')).padEnd(20, '\u3000')}`
+          + nb[k].map(v => `${Math.round(v / t * 100)}%`.padStart(6)).join('')
+          + `　一場 ${(t / rows.length).toFixed(1)} 次`);
+      }
+    }
+  }
   const cs = bag('cornerShot');
   const csN = Object.values(cs).reduce((a, b) => a + b, 0);
   show('  角球射門的來源', cs, null, csN ? `頭球佔 ${(100 * (cs.header ?? 0) / csN).toFixed(0)}%` : '');

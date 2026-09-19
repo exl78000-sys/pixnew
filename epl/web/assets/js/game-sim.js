@@ -653,6 +653,10 @@ const AERIAL_DEF_EDGE = 1.95;                  // 同樣距離時防守方贏的
 const CORNER_WAIT = 12;                        // 等大家進禁區的上限(秒);真實角球本來就要等十幾秒
 const CORNER_READY = 4;                        // 進攻方有這麼多人**站到排好的位置上**就開球
 const CORNER_SPOT_R = 2.5;                     // 離自己那個站位這麼近算到位(站位彼此相隔 5~7 m,不會認錯)
+/* 第二球的離門直方圖切到 45 公尺以上,每格 5 公尺(`cornerNextBins`)。切得夠遠是因為
+   本站的第二球**是雙峰的**:一堆在禁區裡、一堆在 35 公尺外,中間 20~35 公尺幾乎是空的 ——
+   只切到 30 就看不出那個洞,而那個洞正是角球腳下射門對不上真實分佈的地方。 */
+const NEXT_BINS = 10;
 /* 傳中要**吊過人群**,不是平射穿過去(2026-09-17,階段 4g)。
    4f 的飛行時間寫 `cl(d / 16, 1.0, 1.5)` 秒,算出來的弧頂只有 2.76 公尺 —— 剛好就是頭球高度,
    所以球整段都在頭的高度上以 23 m/s 橫穿禁區。而「第一點」判的是「球飛過誰身邊 2.5 公尺內」,
@@ -1188,7 +1192,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 第一點之後**球被誰控住**:角球射門缺的是腳下那一種(禁區內補射 + 禁區外第二波),
        而它的前提就是進攻方拿得到第二球。`clearWhy` 是解圍的三條路各自幾次 ——
        側寫的 `clearances` 說真實一場 48.7 次,本站 145.7,先看是哪一條在產生它。 */
-    cornerNext: {}, cornerNextD: [], clearWhy: {}, hoofFrom: {},
+    cornerNext: {}, cornerNextBins: { att: new Array(NEXT_BINS).fill(0), def: new Array(NEXT_BINS).fill(0) },
+    clearWhy: {}, hoofFrom: {},
     /* **0~5 公尺那一格是 0**(2026-09-18,階段 4l-2)。真實的角球射門有 13% 在 5 公尺內
        (頭球 19% / 腳下 8%),本站 1%。0 不是「少」,是那條路根本沒鋪(階段 4h)——
        所以先量兩件事:傳中被碰到的那一刻**最近的進攻方離門多遠**(有沒有人在那裡),
@@ -1283,13 +1288,15 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (pend?.kind === 'corner') {
       const k = pend.side === side ? 'att' : 'def';
       st.cornerNext[k] = (st.cornerNext[k] ?? 0) + 1;
-      /* **他在哪裡控到第二球**:如果進攻方拿得到球卻不射,要先知道他站在幾公尺 ——
-         35 公尺外拿到的話該做的不是「讓他射」。真實的角球腳下射門平均離門 16.3 m。 */
-      if (k === 'att') {
-        const gx = sideOf(side).att > 0 ? PITCH_W : 0;
-        const d = hypot(gx - ball.x, PITCH_H / 2 - ball.y);
-        st.cornerNextD.push(Math.round(d * 10) / 10);
-      }
+      /* **他在哪裡控到第二球**:角球的腳下射門有 73% 走「第二球在射程內就出手」那一條
+         (階段 4l-5 拆過),所以**這張直方圖就是那一種射門的離門分佈**,不是一個旁證。
+         兩邊都記,而且離門距離一律對**開角球那一隊要攻的球門**算,兩排才在同一根軸上。
+         上游沒有「第二球在哪裡被贏走」的欄位,所以這兩排**只回報、不判**。
+         (這個計數器是階段 4l 加的,加完之後**沒有任何消費端**,而 4l-5 的規劃還寫著
+         「本站沒有這個計數器」—— 所以這裡把它接到 `check-sim` 上。) */
+      const gx = sideOf(pend.side).att > 0 ? PITCH_W : 0;
+      const d = hypot(gx - ball.x, PITCH_H / 2 - ball.y);
+      st.cornerNextBins[k][Math.min(NEXT_BINS - 1, Math.floor(d / 5))]++;
     }
     const origin = pend && pend.side === side ? pend.kind : 'open';
     st.chain = { side, t0: st.t, origin, x0: ball.x };
@@ -2704,7 +2711,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp, boxDuels: st.boxDuels,
         cornerSrc: { ...st.cornerSrc }, cornerFirst: { ...st.cornerFirst }, cornerShot: { ...st.cornerShot },
-        cornerNext: { ...st.cornerNext }, cornerNextD: [...st.cornerNextD], clearWhy: { ...st.clearWhy },
+        cornerNext: { ...st.cornerNext },
+        cornerNextBins: { att: [...st.cornerNextBins.att], def: [...st.cornerNextBins.def] },
+        clearWhy: { ...st.clearWhy },
         hoofFrom: { ...st.hoofFrom },
         cornerNearD: [...st.cornerNearD], nearBall: { ...st.nearBall },
         cornerAimD: [...st.cornerAimD], cornerSpotD: [...st.cornerSpotD],
