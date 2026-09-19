@@ -30316,7 +30316,7 @@
      }
     ]
    },
-   "clock": "65'00"
+   "clock": "67'00"
   },
   "EVE|IPS": {
    "fixtureId": 128966,
@@ -30785,9 +30785,55 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 127644,
+      "team": 8,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "kindRaw": "YR",
+      "kind": "兩黃罰下"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 112917,
+      "team": 7,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49374,
+      "team": 7,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 64519,
+      "team": 8,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 32715,
+      "team": 8,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -30815,7 +30861,7 @@
      }
     ]
    },
-   "clock": "66'00"
+   "clock": "68'00"
   },
   "NEW|HUL": {
    "fixtureId": 128970,
@@ -31329,6 +31375,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 126447,
+      "team": 41,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21455,
+      "team": 41,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -31358,7 +31422,7 @@
      }
     ]
    },
-   "clock": "63'00"
+   "clock": "64'00"
   },
   "NFO|COV": {
    "fixtureId": 128971,
@@ -31758,5 +31822,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-19T15:23:45.538Z"
+ "fetchedAt": "2026-09-19T15:26:07.442Z"
 }
