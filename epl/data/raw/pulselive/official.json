@@ -29461,16 +29461,16 @@
    "goals": [
     {
      "side": "A",
-     "person": 304175,
-     "assist": 25067,
+     "person": 110526,
+     "assist": null,
      "team": 2,
-     "min": 45,
-     "label": "45+4'00",
-     "phase": "1",
+     "min": 67,
+     "label": "67'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
      "hs": 0,
-     "as": 1
+     "as": 2
     }
    ],
    "timeline": {
@@ -29548,6 +29548,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 8456,
+      "team": 21,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 10443,
+      "team": 21,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -29577,7 +29595,7 @@
      }
     ]
    },
-   "clock": "64'00"
+   "clock": "67'00"
   },
   "BHA|ARS": {
    "fixtureId": 128965,
@@ -30771,5 +30789,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-19T12:59:05.376Z"
+ "fetchedAt": "2026-09-19T13:01:21.229Z"
 }
