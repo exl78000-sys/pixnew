@@ -30316,7 +30316,7 @@
      }
     ]
    },
-   "clock": "67'00"
+   "clock": "70'00"
   },
   "EVE|IPS": {
    "fixtureId": 128966,
@@ -30861,7 +30861,7 @@
      }
     ]
    },
-   "clock": "68'00"
+   "clock": "71'00"
   },
   "NEW|HUL": {
    "fixtureId": 128970,
@@ -31297,16 +31297,16 @@
    "goals": [
     {
      "side": "H",
-     "person": 108922,
-     "assist": 14716,
-     "team": 23,
-     "min": 7,
-     "label": "07'00",
-     "phase": "1",
+     "person": 126447,
+     "assist": null,
+     "team": 41,
+     "min": 67,
+     "label": "67'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
      "hs": 2,
-     "as": 0
+     "as": 1
     }
    ],
    "timeline": {
@@ -31393,6 +31393,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 5220,
+      "team": 23,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 303043,
+      "team": 23,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -31422,7 +31440,7 @@
      }
     ]
    },
-   "clock": "64'00"
+   "clock": "67'00"
   },
   "NFO|COV": {
    "fixtureId": 128971,
@@ -31822,5 +31840,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-19T15:26:07.442Z"
+ "fetchedAt": "2026-09-19T15:28:29.321Z"
 }
