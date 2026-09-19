@@ -461,19 +461,32 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
 }
 
 /* 2f. 射門情境的分佈。真值是側寫的 shotSituations share(FotMob 逐射門分類)。
-      **引擎分得出來的只有六種**,分不出來的那兩種照實印出來說「不做」,不要偷偷併進別人。 */
+      **引擎分得出來的只有六種**,分不出來的那兩種照實印出來說「不做」,不要偷偷併進別人。
+
+      **而「不併進別人」跟「分母」是兩件事**(2026-09-19,階段 4z)。引擎的 100% 攤在六類上、
+      真實的 100% 攤在八類上 —— 直接比就是拿兩個不同的分母比。那 4.0%
+      (FreeKick 2.7 + IndividualPlay 1.3)引擎**結構上**生不出來,所以它會讓本站的
+      每一類都看起來偏高,而那是比較方式造成的,不是模型的偏差。
+      真值改成**在這六類裡重新正規化**(分母 96.0%),原樣的那一欄留著。
+      注意這**不是**把那兩類併進別人:它們仍然不在分子裡,只是不再算進分母。
+      重新正規化之後才看得出真正的形狀 —— FastBreak +6.0、定位球 +2.4、界外球 +1.0
+      合計 +9.4,而 RegularPlay 正好短 8.7,**它們是同一件事的兩面**(見階段 4z 的變更紀錄)。 */
 {
   const real = profile.league_?.shotSituations ?? {};
+  const CAN = ['RegularPlay', 'FromCorner', 'FastBreak', 'ThrowInSetPiece', 'SetPiece', 'Penalty'];
   const sit = {};
   for (const r of rows) for (const [k, v] of Object.entries(r.st.counts.shotSit ?? {})) sit[k] = (sit[k] ?? 0) + v;
   const tot = Object.values(sit).reduce((a, b) => a + b, 0);
-  if (tot > 0) {
+  const keep = CAN.reduce((a, k) => a + (real[k]?.share ?? 0), 0);
+  if (tot > 0 && keep > 0) {
     console.log('');
-    for (const k of ['RegularPlay', 'FromCorner', 'FastBreak', 'ThrowInSetPiece', 'SetPiece', 'Penalty']) {
-      line(`情境 ${k}`, `${((sit[k] ?? 0) / tot * 100).toFixed(1)}%`, `真實 ${((real[k]?.share ?? 0) * 100).toFixed(1)}%`);
+    for (const k of CAN) {
+      const raw = (real[k]?.share ?? 0) * 100;
+      line(`情境 ${k}`, `${((sit[k] ?? 0) / tot * 100).toFixed(1)}%`,
+        `真實 ${(raw / keep).toFixed(1)}%(六類正規化・原樣 ${raw.toFixed(1)}%)`);
     }
     line('情境(引擎不分)', `FreeKick ${((real.FreeKick?.share ?? 0) * 100).toFixed(1)}% · IndividualPlay ${((real.IndividualPlay?.share ?? 0) * 100).toFixed(1)}%`,
-      '直接罰球射門與單人突破沒有可靠判準,不假裝分得出來');
+      `直接罰球射門與單人突破沒有可靠判準,不假裝分得出來 —— 上面那一欄的分母已經把這 ${(100 - keep * 100).toFixed(1)}% 扣掉`);
   }
 }
 
