@@ -30754,20 +30754,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+2'00"
   },
   "NEW|HUL": {
    "fixtureId": 128970,
@@ -31243,6 +31243,15 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 9662,
+      "team": 23,
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [],
@@ -31261,8 +31270,8 @@
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45+5'00"
   }
  },
- "fetchedAt": "2026-09-19T14:48:14.828Z"
+ "fetchedAt": "2026-09-19T14:50:31.698Z"
 }
