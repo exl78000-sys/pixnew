@@ -81,14 +81,40 @@ const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
    這一條就會把它放掉 —— 而那本來就落在「兩支差不多大的隊互換測不出來」那一句裡。
    `coveredMatches === 0`(整隊一個球員都沒接到)**仍然算可疑**:那正是 alias 漏掉的樣子
    (義甲 ROM 就是這樣抓到的),跟「還沒抓到第一輪」分不開的時候要往嚴的那邊站。 */
-export function nameCheckVerdict({ minutes, played, minutesLo, minutesHi, goals, tableGoals },
+export function nameCheckVerdict({ minutes, played, minutesLo, minutesHi, goals, tableGoals, gamesMax },
   { minTol = 0.05, coverTol = 0.01 } = {}) {
   const ahead = minutesLo != null && minutesLo > 1 + minTol;
+  /* 「Understat 只算到這一隊 k 場」要用**上游自己的 `games` 欄位**,不要從分鐘去推。
+     推的那一版寫 `minutes / (11 × 90)` 再要求零頭 ≤ `coverTol` —— 而**紅牌會把分鐘吃掉**:
+     一張紅牌最多少 90 分鐘 = 0.09 場,遠大於 0.01 的容差。
+     實測(2026-09-19,德甲 BMG 2026-27):`games` 最大 **3**、積分榜 **4** 場,
+     分鐘 2933 ÷ 990 = 2.963 —— 零頭 0.037 場(約 37 分鐘,一張中場的紅牌),
+     於是推的那一版判成 suspect,`npm test` 紅兩條、部署被擋,**而兩邊根本不是同一批**。
+     那個容差當初是拿「實測零頭 0~2 分鐘」定的,而那個樣本裡沒有紅牌 ——
+     **核對門檻的鑑別力要實測,而樣本裡沒出現過的東西不會被它擋到**。
+
+     `gamesMax` 是這一隊**每位球員自己的出賽場次的最大值**,所以它是
+     「Understat 至少算到幾場」的**下界**:小於 played 就一定不是同一批。
+     **放掉什麼要寫清楚**:輪換到沒有任何一個人踢滿全部場次的隊也會被放掉
+     (那個方向是保守的 —— 少判一列,而不是冤枉一列)。
+     季中轉隊的人不進 `gamesMax`(他的 `games` 是兩隊合計,掛不到其中一隊)。
+     拿不到 `games` 的來源退回推的那一版。 */
   const covered = played > 0 ? minutes / (11 * 90) : null;
-  const coveredMatches = covered == null ? null : Math.round(covered);
-  const behind = coveredMatches != null && coveredMatches >= 1 && coveredMatches < played
-    && Math.abs(covered - coveredMatches) <= coverTol;
-  const thin = !behind && minutesHi != null && minutesHi < 1 - minTol;
+  const est = covered == null ? null : Math.round(covered);
+  const hasGames = gamesMax != null && gamesMax > 0;
+  const coveredMatches = hasGames ? gamesMax : est;
+  /* **逃生門只在那一列本來就會被判可疑時才開。** 第一版寫成無條件的 `gamesMax < played`,
+     而那樣**輪換的滿季球隊也會被放掉** —— 實測 112 列裡有 39 列 `gamesMax < played`
+     (義甲 INT 35/38、LAZ 33/38、法甲 LOR 31/34 …),它們的分鐘比值都在 1.0 附近、
+     本來就通得過,卻被逃生門吃掉:判的列從 27 掉到 14。
+     **逃生門放掉的必須只有「本來會被誤判的那幾列」**,不是「所有看起來像的列」。
+     所以先算 `low`(分鐘整個低於上限),只有 low 的列才問「是不是兩邊不同批」。
+     同一件事的另一半:`gamesMax === played` 而分鐘仍然低 —— 那是真的接錯隊,照樣判。 */
+  const low = minutesHi != null && minutesHi < 1 - minTol;
+  const behind = low && (hasGames
+    ? gamesMax >= 1 && gamesMax < played
+    : (est != null && est >= 1 && est < played && Math.abs(covered - est) <= coverTol));
+  const thin = !behind && low;
   const overGoals = !ahead && tableGoals != null && goals > tableGoals;
   return {
     coveredMatches,
@@ -96,7 +122,7 @@ export function nameCheckVerdict({ minutes, played, minutesLo, minutesHi, goals,
     why: thin ? '分鐘區間整個低於理論上限 —— 這個隊碼可能沒接到球員,或接到一支小很多的隊'
       : overGoals ? '掛得上去的進球已經超過積分榜的該隊進球(烏龍球只會往另一個方向)'
         : ahead ? 'Understat 涵蓋的場次比本站賽果多(早季常見),兩邊不是同一批,這一列不判'
-          : behind ? `Understat 只算到這一隊的 ${coveredMatches} / ${played} 場(缺口剛好是整數場),兩邊不是同一批,這一列不判`
+          : behind ? `Understat 只算到這一隊的 ${coveredMatches} / ${played} 場(${hasGames ? '上游的 games 欄位' : '從分鐘推的'}),兩邊不是同一批,這一列不判`
             : null,
   };
 }
@@ -609,7 +635,7 @@ export async function buildLeague(L) {
      **判定本身在檔頭的 `nameCheckVerdict`**(抽成純函式才測得到),含另一個方向的
      「兩邊不是同一批」:Understat 還沒算到這一隊最新的那幾場。 */
   const MIN_TOL = 0.05;
-  const blankCheck = () => ({ goals: 0, minutes: 0, multiGoals: 0, multiMinutes: 0, multiN: 0 });
+  const blankCheck = () => ({ goals: 0, minutes: 0, multiGoals: 0, multiMinutes: 0, multiN: 0, gamesMax: 0 });
   const nameCheck = [];
   for (const [season, data] of Object.entries(playerSeasons)) {
     const rows = season === CURRENT_SEASON ? curTable : lastTable;
@@ -632,6 +658,8 @@ export async function buildLeague(L) {
       if (!code) continue;
       const v = touch(code);
       v.goals += p.goals ?? 0; v.minutes += p.minutes ?? 0;
+      /* 季中轉隊的人**不進這裡**(上面那一段已經 continue)—— 他的 `games` 是兩隊合計 */
+      if ((p.games ?? 0) > v.gamesMax) v.gamesMax = p.games;
     }
     for (const r of rows) {
       const v = byCode.get(r.code) ?? blankCheck();
@@ -641,11 +669,11 @@ export async function buildLeague(L) {
       /* 判定走 `nameCheckVerdict`(檔頭那支純函式)—— 兩個方向的「兩邊不是同一批」
          都在那裡,連同它測不出什麼。埋在這個迴圈裡的話只能靠跑一次看產物驗。 */
       const vd = nameCheckVerdict({ minutes: v.minutes, played: r.p, minutesLo, minutesHi,
-        goals: v.goals, tableGoals: r.gf }, { minTol: MIN_TOL });
+        goals: v.goals, tableGoals: r.gf, gamesMax: v.gamesMax }, { minTol: MIN_TOL });
       nameCheck.push({
         season, code: r.code, played: r.p, transfers: v.multiN,
         goalsLo: v.goals, goalsHi: v.goals + v.multiGoals, tableGoals: r.gf,
-        minutes: v.minutes, minutesCap: cap, minutesLo, minutesHi,
+        minutes: v.minutes, minutesCap: cap, minutesLo, minutesHi, gamesMax: v.gamesMax,
         coveredMatches: vd.coveredMatches, verdict: vd.verdict, why: vd.why,
       });
     }
