@@ -54260,8 +54260,1709 @@
    "fetchedAt": "2026-09-19T15:34:16.209Z",
    "fdMatchId": "2026-27-31",
    "heat": null
+  },
+  "BMG|M05": {
+   "key": "BMG|M05",
+   "season": "2026-27",
+   "date": "2026-09-19",
+   "matchId": "5881172",
+   "home": "BMG",
+   "away": "M05",
+   "score": [
+    3,
+    4
+   ],
+   "providerScore": [
+    3,
+    4
+   ],
+   "teamStats": {
+    "BMG": {
+     "possession": 47,
+     "shots": 21,
+     "shotsOn": 7,
+     "shotsOff": 7,
+     "blockedShots": 7,
+     "blocksMade": 2,
+     "corners": 6,
+     "offsides": 0,
+     "fouls": 12,
+     "saves": 4,
+     "passes": 421,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.36
+    },
+    "M05": {
+     "possession": 53,
+     "shots": 17,
+     "shotsOn": 8,
+     "shotsOff": 7,
+     "blockedShots": 2,
+     "blocksMade": 5,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 14,
+     "saves": 4,
+     "passes": 481,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.66
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "BMG": {
+     "touches_opp_box": 33,
+     "big_chance": 4,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 6,
+     "shots_woodwork": 1,
+     "shots_inside_box": 15,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 1.22,
+     "expected_goals_set_play": 0.56,
+     "expected_goals_non_penalty": 1.78,
+     "expected_goals_on_target": 3.32,
+     "own_half_passes": 222,
+     "opposition_half_passes": 111,
+     "long_balls_accurate": 19,
+     "long_balls_accurate_pct": 34,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 28,
+     "player_throws": 17,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 10,
+     "clearances": 43,
+     "duel_won": 45,
+     "ground_duels_won": 27,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 18,
+     "aerials_won_pct": 41,
+     "dribbles_succeeded": 0,
+     "dribbles_succeeded_pct": 0,
+     "red_cards": 0
+    },
+    "M05": {
+     "touches_opp_box": 32,
+     "big_chance": 5,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 5,
+     "shots_woodwork": 0,
+     "shots_inside_box": 15,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.68,
+     "expected_goals_set_play": 1.98,
+     "expected_goals_non_penalty": 2.66,
+     "expected_goals_on_target": 2.78,
+     "own_half_passes": 176,
+     "opposition_half_passes": 214,
+     "long_balls_accurate": 12,
+     "long_balls_accurate_pct": 30,
+     "accurate_crosses": 10,
+     "accurate_crosses_pct": 53,
+     "player_throws": 16,
+     "matchstats.headers.tackles": 17,
+     "interceptions": 10,
+     "clearances": 32,
+     "duel_won": 57,
+     "ground_duels_won": 31,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 26,
+     "aerials_won_pct": 59,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 33,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     47,
+     53
+    ],
+    "h1": [
+     41,
+     59
+    ],
+    "h2": [
+     55,
+     45
+    ]
+   },
+   "events": [
+    {
+     "minute": 11,
+     "extra": null,
+     "team": "BMG",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Florian Neuhaus"
+    },
+    {
+     "minute": 18,
+     "extra": null,
+     "team": "M05",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Phillip Tietz"
+    },
+    {
+     "minute": 19,
+     "extra": null,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lukas Ullrich"
+    },
+    {
+     "minute": 45,
+     "extra": 1,
+     "team": "M05",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Sheraldo Becker"
+    },
+    {
+     "minute": 55,
+     "extra": null,
+     "team": "M05",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Stefan Posch"
+    },
+    {
+     "minute": 55,
+     "extra": null,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Franck Honorat"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "BMG",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Isac Lidberg"
+    },
+    {
+     "minute": 62,
+     "extra": null,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Florian Neuhaus"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Wael Mohya"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "M05",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Danny da Costa"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "M05",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Eric Martel"
+    },
+    {
+     "minute": 73,
+     "extra": null,
+     "team": "M05",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Phillipp Mwene"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "M05",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ransford Königsdörffer"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Daiki Hashioka"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kevin Stöger"
+    },
+    {
+     "minute": 78,
+     "extra": null,
+     "team": "M05",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Eric Martel"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Shuto Machino"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Robin Hack"
+    },
+    {
+     "minute": 87,
+     "extra": null,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Wael Mohya"
+    },
+    {
+     "minute": 87,
+     "extra": null,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kevin Stöger"
+    },
+    {
+     "minute": 89,
+     "extra": null,
+     "team": "M05",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Danny da Costa"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "M05",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lennard Maloney"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "M05",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kacper Potulski"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Shuto Machino"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "M05",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Alexander Schwolow"
+    },
+    {
+     "minute": 90,
+     "extra": 5,
+     "team": "BMG",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Shuto Machino"
+    },
+    {
+     "minute": 90,
+     "extra": 7,
+     "team": "M05",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ransford Königsdörffer"
+    }
+   ],
+   "shots": [
+    {
+     "min": 7,
+     "extra": null,
+     "team": "M05",
+     "player": "Anthony Caci",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.168,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.2,
+     "y": 29.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "M05",
+     "player": "Kaishu Sano",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.6,
+     "y": 38.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "BMG",
+     "player": "Lukas Ullrich",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.6,
+     "y": 46.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "BMG",
+     "player": "Florian Neuhaus",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.369,
+     "xgot": 0.685,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.3,
+     "y": 36.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "BMG",
+     "player": "Jan Leszczyński",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.055,
+     "xgot": 0.289,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 31,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "M05",
+     "player": "Sheraldo Becker",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.7,
+     "y": 24.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "M05",
+     "player": "Phillip Tietz",
+     "type": "Goal",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.738,
+     "xgot": 0.955,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.4,
+     "y": 37.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "M05",
+     "player": "Sheraldo Becker",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0.032,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 21.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "M05",
+     "player": "Kacper Potulski",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.394,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.9,
+     "y": 34,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "BMG",
+     "player": "Hugo Bolin",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0.095,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 21,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "M05",
+     "player": "Anthony Caci",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.137,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.5,
+     "y": 24.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "BMG",
+     "player": "Philipp Sander",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 21.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "BMG",
+     "player": "Hugo Bolin",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.077,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88.1,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "M05",
+     "player": "Phillipp Mwene",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "BMG",
+     "player": "Isac Lidberg",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 19,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "BMG",
+     "player": "Ko Itakura",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.13,
+     "xgot": 0.493,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.7,
+     "y": 38,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "M05",
+     "player": "Sheraldo Becker",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.08,
+     "xgot": 0.518,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 37.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 5,
+     "team": "M05",
+     "player": "Sheraldo Becker",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.032,
+     "xgot": 0.068,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 18.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 6,
+     "team": "BMG",
+     "player": "Isac Lidberg",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.075,
+     "xgot": 0.272,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 31.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 7,
+     "team": "BMG",
+     "player": "Joseph Scally",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.006,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.7,
+     "y": 26.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "BMG",
+     "player": "Kevin Diks",
+     "type": "Post",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "BMG",
+     "player": "Florian Neuhaus",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.9,
+     "y": 42.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "BMG",
+     "player": "Lukas Ullrich",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.3,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.2,
+     "y": 32.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "BMG",
+     "player": "Isac Lidberg",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.25,
+     "xgot": 0.681,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.2,
+     "y": 39.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "M05",
+     "player": "Phillip Tietz",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.089,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 39.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "M05",
+     "player": "Phillip Tietz",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0.009,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.4,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "M05",
+     "player": "Sheraldo Becker",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.7,
+     "y": 25.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "M05",
+     "player": "Eric Martel",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.195,
+     "xgot": 0.517,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.4,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "M05",
+     "player": "Kacper Potulski",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.262,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101,
+     "y": 35.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "BMG",
+     "player": "Shuto Machino",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.114,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 32.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "M05",
+     "player": "Stefan Posch",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.024,
+     "xgot": 0.014,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 38.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "M05",
+     "player": "Danny da Costa",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.342,
+     "xgot": 0.669,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.1,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "BMG",
+     "player": "Shuto Machino",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.3,
+     "y": 27.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "BMG",
+     "player": "Shuto Machino",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.052,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 28.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "BMG",
+     "player": "Shuto Machino",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.809,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 7,
+     "team": "BMG",
+     "player": "Jan Leszczyński",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.8,
+     "y": 33.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 8,
+     "team": "BMG",
+     "player": "Philipp Sander",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 72,
+     "y": 34.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 8,
+     "team": "BMG",
+     "player": "Wael Mohya",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.149,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 42,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -11
+    ],
+    [
+     2,
+     -33
+    ],
+    [
+     3,
+     -79
+    ],
+    [
+     4,
+     -54
+    ],
+    [
+     5,
+     -38
+    ],
+    [
+     6,
+     -3
+    ],
+    [
+     7,
+     -100
+    ],
+    [
+     8,
+     -79
+    ],
+    [
+     9,
+     -68
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     0
+    ],
+    [
+     12,
+     0
+    ],
+    [
+     13,
+     0
+    ],
+    [
+     14,
+     11
+    ],
+    [
+     15,
+     30
+    ],
+    [
+     16,
+     19
+    ],
+    [
+     17,
+     3
+    ],
+    [
+     18,
+     -16
+    ],
+    [
+     19,
+     0
+    ],
+    [
+     20,
+     0
+    ],
+    [
+     21,
+     -5
+    ],
+    [
+     22,
+     -5
+    ],
+    [
+     23,
+     -16
+    ],
+    [
+     24,
+     -76
+    ],
+    [
+     25,
+     -16
+    ],
+    [
+     26,
+     -43
+    ],
+    [
+     27,
+     5
+    ],
+    [
+     28,
+     -81
+    ],
+    [
+     29,
+     -43
+    ],
+    [
+     30,
+     -22
+    ],
+    [
+     31,
+     5
+    ],
+    [
+     32,
+     5
+    ],
+    [
+     33,
+     49
+    ],
+    [
+     34,
+     54
+    ],
+    [
+     35,
+     22
+    ],
+    [
+     36,
+     -22
+    ],
+    [
+     37,
+     -11
+    ],
+    [
+     38,
+     79
+    ],
+    [
+     39,
+     71
+    ],
+    [
+     40,
+     35
+    ],
+    [
+     41,
+     -27
+    ],
+    [
+     42,
+     -49
+    ],
+    [
+     43,
+     -84
+    ],
+    [
+     44,
+     -68
+    ],
+    [
+     45,
+     -27
+    ],
+    [
+     45.5,
+     27
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     0
+    ],
+    [
+     48,
+     16
+    ],
+    [
+     49,
+     11
+    ],
+    [
+     50,
+     5
+    ],
+    [
+     51,
+     -3
+    ],
+    [
+     52,
+     -24
+    ],
+    [
+     53,
+     -30
+    ],
+    [
+     54,
+     -38
+    ],
+    [
+     55,
+     -11
+    ],
+    [
+     56,
+     0
+    ],
+    [
+     57,
+     0
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     100
+    ],
+    [
+     60,
+     100
+    ],
+    [
+     61,
+     100
+    ],
+    [
+     62,
+     -22
+    ],
+    [
+     63,
+     -11
+    ],
+    [
+     64,
+     0
+    ],
+    [
+     65,
+     0
+    ],
+    [
+     66,
+     -8
+    ],
+    [
+     67,
+     -3
+    ],
+    [
+     68,
+     -30
+    ],
+    [
+     69,
+     -52
+    ],
+    [
+     70,
+     -46
+    ],
+    [
+     71,
+     5
+    ],
+    [
+     72,
+     11
+    ],
+    [
+     73,
+     0
+    ],
+    [
+     74,
+     -30
+    ],
+    [
+     75,
+     -30
+    ],
+    [
+     76,
+     -30
+    ],
+    [
+     77,
+     -41
+    ],
+    [
+     78,
+     -100
+    ],
+    [
+     79,
+     -90
+    ],
+    [
+     80,
+     -76
+    ],
+    [
+     81,
+     -52
+    ],
+    [
+     82,
+     -73
+    ],
+    [
+     83,
+     -38
+    ],
+    [
+     84,
+     81
+    ],
+    [
+     85,
+     98
+    ],
+    [
+     86,
+     65
+    ],
+    [
+     87,
+     11
+    ],
+    [
+     88,
+     -14
+    ],
+    [
+     89,
+     -14
+    ],
+    [
+     90,
+     -8
+    ],
+    [
+     90.5,
+     23
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BMG": {
+     "team": "BMG",
+     "formation": "3-4-2-1",
+     "coach": "Jan-Moritz Lichte",
+     "xi": [
+      {
+       "name": "Moritz Nicolas",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Ko Itakura",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Jan Leszczyński",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Kevin Diks",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Joseph Scally",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Bolin",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Philipp Sander",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Lukas Ullrich",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Franck Honorat",
+       "shirt": 9,
+       "pos": "M"
+      },
+      {
+       "name": "Florian Neuhaus",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Isac Lidberg",
+       "shirt": 3,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Wael Mohya",
+       "shirt": 36,
+       "pos": "?"
+      },
+      {
+       "name": "Daiki Hashioka",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Kevin Stöger",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Robin Hack",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Shuto Machino",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel Batz",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "David Herold",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Fabio Chiarodia",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Mathieu Nguefack",
+       "shirt": 34,
+       "pos": "?"
+      }
+     ]
+    },
+    "M05": {
+     "team": "M05",
+     "formation": "3-5-2",
+     "coach": "Urs Fischer",
+     "xi": [
+      {
+       "name": "Alexander Schwolow",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Stefan Posch",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Fabio Gruber",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Kacper Potulski",
+       "shirt": 48,
+       "pos": "D"
+      },
+      {
+       "name": "Anthony Caci",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Nadiem Amiri",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Kaishu Sano",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Jae-Sung Lee",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Phillipp Mwene",
+       "shirt": 2,
+       "pos": "M"
+      },
+      {
+       "name": "Phillip Tietz",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Sheraldo Becker",
+       "shirt": 23,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Danny da Costa",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Eric Martel",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Ransford Königsdörffer",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Lennard Maloney",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Maximilian Kinzig",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Rael Nakuzola",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Stefan Bell",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Otto Ruoppi",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Benedict Hollerbach",
+       "shirt": 17,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 37,
+      "center": 32,
+      "right": 31
+     },
+     "firstHalf": {
+      "left": 28,
+      "center": 34,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 45,
+      "center": 31,
+      "right": 24
+     }
+    },
+    "away": {
+     "total": {
+      "left": 31,
+      "center": 29,
+      "right": 40
+     },
+     "firstHalf": {
+      "left": 36,
+      "center": 27,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 23,
+      "center": 32,
+      "right": 45
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 7,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-19T16:44:15.334Z",
+   "fdMatchId": "2026-27-29",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-19T15:34:16.210Z"
+ "updatedAt": "2026-09-19T16:44:15.336Z"
 }
