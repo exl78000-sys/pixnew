@@ -30258,6 +30258,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 67928,
+      "team": 131,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -30388,6 +30397,24 @@
       "dir": "off"
      },
      {
+      "person": 147052,
+      "team": 131,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 129259,
+      "team": 131,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
       "person": 334200,
       "team": 131,
       "min": 86,
@@ -30406,7 +30433,7 @@
       "dir": "off"
      },
      {
-      "person": 147052,
+      "person": 14671,
       "team": 131,
       "min": 86,
       "label": "86'00",
@@ -30415,7 +30442,7 @@
       "dir": "on"
      },
      {
-      "person": 129259,
+      "person": 143240,
       "team": 131,
       "min": 86,
       "label": "86'00",
@@ -30451,7 +30478,7 @@
      }
     ]
    },
-   "clock": "86'00"
+   "clock": "90+2'00"
   },
   "EVE|IPS": {
    "fixtureId": 128966,
@@ -30929,6 +30956,15 @@
       "phase": "2",
       "kindRaw": "YR",
       "kind": "兩黃罰下"
+     },
+     {
+      "person": 75735,
+      "team": 8,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -31057,6 +31093,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 112589,
+      "team": 7,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 10428,
+      "team": 7,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 25375,
+      "team": 7,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14706,
+      "team": 7,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -31086,7 +31158,7 @@
      }
     ]
    },
-   "clock": "86'00"
+   "clock": "90+3'00"
   },
   "NEW|HUL": {
    "fixtureId": 128970,
@@ -31708,6 +31780,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 149630,
+      "team": 23,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14446,
+      "team": 23,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -31737,7 +31827,7 @@
      }
     ]
    },
-   "clock": "84'00"
+   "clock": "89'00"
   },
   "NFO|COV": {
    "fixtureId": 128971,
@@ -32137,5 +32227,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-19T15:45:03.501Z"
+ "fetchedAt": "2026-09-19T15:51:11.431Z"
 }
