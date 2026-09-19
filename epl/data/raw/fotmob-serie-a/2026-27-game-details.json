@@ -77640,8 +77640,1497 @@
    "fetchedAt": "2026-09-19T18:59:22.279Z",
    "fdMatchId": "2026-27-43",
    "heat": null
+  },
+  "VEN|LAZ": {
+   "key": "VEN|LAZ",
+   "season": "2026-27",
+   "date": "2026-09-19",
+   "matchId": "5749689",
+   "home": "VEN",
+   "away": "LAZ",
+   "score": [
+    0,
+    2
+   ],
+   "providerScore": [
+    0,
+    2
+   ],
+   "teamStats": {
+    "VEN": {
+     "possession": 49,
+     "shots": 17,
+     "shotsOn": 6,
+     "shotsOff": 6,
+     "blockedShots": 5,
+     "blocksMade": 3,
+     "corners": 7,
+     "offsides": 2,
+     "fouls": 14,
+     "saves": 0,
+     "passes": 483,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.89
+    },
+    "LAZ": {
+     "possession": 51,
+     "shots": 12,
+     "shotsOn": 2,
+     "shotsOff": 7,
+     "blockedShots": 3,
+     "blocksMade": 4,
+     "corners": 2,
+     "offsides": 0,
+     "fouls": 8,
+     "saves": 7,
+     "passes": 506,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.6
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "VEN": {
+     "touches_opp_box": 30,
+     "big_chance": 2,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 6,
+     "shots_woodwork": 0,
+     "shots_inside_box": 10,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 0.49,
+     "expected_goals_set_play": 0.62,
+     "expected_goals_non_penalty": 1.11,
+     "expected_goals_on_target": 1.65,
+     "own_half_passes": 219,
+     "opposition_half_passes": 194,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 52,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 17,
+     "player_throws": 19,
+     "matchstats.headers.tackles": 12,
+     "interceptions": 10,
+     "clearances": 16,
+     "duel_won": 33,
+     "ground_duels_won": 27,
+     "ground_duels_won_pct": 44,
+     "aerials_won": 6,
+     "aerials_won_pct": 46,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 41,
+     "red_cards": 0
+    },
+    "LAZ": {
+     "touches_opp_box": 20,
+     "big_chance": 2,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 5,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 0.47,
+     "expected_goals_set_play": 0.34,
+     "expected_goals_non_penalty": 0.81,
+     "expected_goals_on_target": 1.94,
+     "own_half_passes": 201,
+     "opposition_half_passes": 240,
+     "long_balls_accurate": 14,
+     "long_balls_accurate_pct": 45,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 18,
+     "player_throws": 9,
+     "matchstats.headers.tackles": 11,
+     "interceptions": 8,
+     "clearances": 23,
+     "duel_won": 41,
+     "ground_duels_won": 34,
+     "ground_duels_won_pct": 56,
+     "aerials_won": 7,
+     "aerials_won_pct": 54,
+     "dribbles_succeeded": 9,
+     "dribbles_succeeded_pct": 69,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     49,
+     51
+    ],
+    "h1": [
+     45,
+     55
+    ],
+    "h2": [
+     53,
+     47
+    ]
+   },
+   "events": [
+    {
+     "minute": 29,
+     "extra": null,
+     "team": "VEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kike Pérez"
+    },
+    {
+     "minute": 51,
+     "extra": null,
+     "team": "LAZ",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Mattia Zaccagni"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "VEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Juan Jesus"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "LAZ",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Tijjani Noslin"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Albion Rrahmani"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lamine Fanne"
+    },
+    {
+     "minute": 74,
+     "extra": null,
+     "team": "VEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Thierry Correia"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Richie Sagrado"
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Albert Guðmundsson"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Andrea Pinamonti"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Manuel Lazzari"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alfonso Pedraza"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gustav Isaksen"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Toni Fernández"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "VEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Toni Fernández"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "VEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Joël Schingtienne"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "VEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Matías Moreno"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Mattia Zaccagni",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.3,
+     "y": 18.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 6,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Kenneth Taylor",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 46.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0.049,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.1,
+     "y": 15.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "VEN",
+     "player": "John Yeboah",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.633,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "VEN",
+     "player": "Thórir Helgason",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.042,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.9,
+     "y": 25,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Kenneth Taylor",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.7,
+     "y": 42.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "VEN",
+     "player": "Simon Sohm",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.022,
+     "xgot": 0.023,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.2,
+     "y": 33.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "VEN",
+     "player": "Thierry Correia",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 27.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "VEN",
+     "player": "Simon Sohm",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.082,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103,
+     "y": 27.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.241,
+     "xgot": 0.854,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 42,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "VEN",
+     "player": "Antoine Hainaut",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.027,
+     "xgot": 0.053,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.9,
+     "y": 17.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 53,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Kenneth Taylor",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.8,
+     "y": 24.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Mattia Zaccagni",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 58.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Matteo Cancellieri",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.2,
+     "y": 15.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Mattia Zaccagni",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.982,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "VEN",
+     "player": "Thierry Correia",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 45.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "VEN",
+     "player": "Matías Moreno",
+     "type": "Miss",
+     "situation": "IndividualPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.6,
+     "y": 50.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Reda Belahyane",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.084,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.1,
+     "y": 36.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Tijjani Noslin",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.271,
+     "xgot": 0.954,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 33.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Tijjani Noslin",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.233,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.3,
+     "y": 35.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 48,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "VEN",
+     "player": "John Yeboah",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.107,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83,
+     "y": 30.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.066,
+     "xgot": 0.036,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83,
+     "y": 35.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "VEN",
+     "player": "Matías Moreno",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.183,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 32,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "VEN",
+     "player": "Matías Moreno",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.137,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 32.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "VEN",
+     "player": "Matías Moreno",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80,
+     "y": 43.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Manuel Lazzari",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.5,
+     "y": 19,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "LAZ",
+     "player": "Alfonso Pedraza",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.1,
+     "y": 48.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -14
+    ],
+    [
+     2,
+     -19
+    ],
+    [
+     3,
+     -19
+    ],
+    [
+     4,
+     -11
+    ],
+    [
+     5,
+     -16
+    ],
+    [
+     6,
+     -16
+    ],
+    [
+     7,
+     -5
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     9,
+     19
+    ],
+    [
+     10,
+     14
+    ],
+    [
+     11,
+     0
+    ],
+    [
+     12,
+     -35
+    ],
+    [
+     13,
+     -46
+    ],
+    [
+     14,
+     -27
+    ],
+    [
+     15,
+     14
+    ],
+    [
+     16,
+     24
+    ],
+    [
+     17,
+     16
+    ],
+    [
+     18,
+     5
+    ],
+    [
+     19,
+     -100
+    ],
+    [
+     20,
+     -100
+    ],
+    [
+     21,
+     -100
+    ],
+    [
+     22,
+     46
+    ],
+    [
+     23,
+     49
+    ],
+    [
+     24,
+     33
+    ],
+    [
+     25,
+     27
+    ],
+    [
+     26,
+     27
+    ],
+    [
+     27,
+     22
+    ],
+    [
+     28,
+     16
+    ],
+    [
+     29,
+     38
+    ],
+    [
+     30,
+     98
+    ],
+    [
+     31,
+     71
+    ],
+    [
+     32,
+     14
+    ],
+    [
+     33,
+     8
+    ],
+    [
+     34,
+     27
+    ],
+    [
+     35,
+     79
+    ],
+    [
+     36,
+     22
+    ],
+    [
+     37,
+     24
+    ],
+    [
+     38,
+     -14
+    ],
+    [
+     39,
+     -33
+    ],
+    [
+     40,
+     -54
+    ],
+    [
+     41,
+     -38
+    ],
+    [
+     42,
+     -27
+    ],
+    [
+     43,
+     -16
+    ],
+    [
+     44,
+     -11
+    ],
+    [
+     45,
+     -27
+    ],
+    [
+     45.5,
+     -38
+    ],
+    [
+     46,
+     -11
+    ],
+    [
+     47,
+     -43
+    ],
+    [
+     48,
+     -60
+    ],
+    [
+     49,
+     -60
+    ],
+    [
+     50,
+     -27
+    ],
+    [
+     51,
+     -11
+    ],
+    [
+     52,
+     11
+    ],
+    [
+     53,
+     27
+    ],
+    [
+     54,
+     43
+    ],
+    [
+     55,
+     22
+    ],
+    [
+     56,
+     16
+    ],
+    [
+     57,
+     -5
+    ],
+    [
+     58,
+     -5
+    ],
+    [
+     59,
+     -16
+    ],
+    [
+     60,
+     -92
+    ],
+    [
+     61,
+     -81
+    ],
+    [
+     62,
+     -81
+    ],
+    [
+     63,
+     -100
+    ],
+    [
+     64,
+     -79
+    ],
+    [
+     65,
+     -52
+    ],
+    [
+     66,
+     54
+    ],
+    [
+     67,
+     43
+    ],
+    [
+     68,
+     5
+    ],
+    [
+     69,
+     11
+    ],
+    [
+     70,
+     -16
+    ],
+    [
+     71,
+     11
+    ],
+    [
+     72,
+     -11
+    ],
+    [
+     73,
+     -16
+    ],
+    [
+     74,
+     11
+    ],
+    [
+     75,
+     27
+    ],
+    [
+     76,
+     100
+    ],
+    [
+     77,
+     76
+    ],
+    [
+     78,
+     65
+    ],
+    [
+     79,
+     -11
+    ],
+    [
+     80,
+     14
+    ],
+    [
+     81,
+     62
+    ],
+    [
+     82,
+     73
+    ],
+    [
+     83,
+     49
+    ],
+    [
+     84,
+     5
+    ],
+    [
+     85,
+     16
+    ],
+    [
+     86,
+     24
+    ],
+    [
+     87,
+     30
+    ],
+    [
+     88,
+     30
+    ],
+    [
+     89,
+     16
+    ],
+    [
+     90,
+     16
+    ],
+    [
+     90.5,
+     -2
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "VEN": {
+     "team": "VEN",
+     "formation": "3-5-2",
+     "coach": "Giovanni Stroppa",
+     "xi": [
+      {
+       "name": "Filip Stanković",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Joël Schingtienne",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Juan Jesus",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Matías Moreno",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Antoine Hainaut",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Kike Pérez",
+       "shirt": 71,
+       "pos": "M"
+      },
+      {
+       "name": "Simon Sohm",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Thórir Helgason",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Thierry Correia",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "John Yeboah",
+       "shirt": 10,
+       "pos": "F"
+      },
+      {
+       "name": "Akor Adams",
+       "shirt": 45,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Lamine Fanne",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Albion Rrahmani",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Richie Sagrado",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Toni Fernández",
+       "shirt": 77,
+       "pos": "?"
+      },
+      {
+       "name": "Lorenzo Montipò",
+       "shirt": 96,
+       "pos": "?"
+      },
+      {
+       "name": "Ale Gomes",
+       "shirt": 95,
+       "pos": "?"
+      },
+      {
+       "name": "Redouane Halhal",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Rufai Mohammed",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Lorenzo Berardi",
+       "shirt": 36,
+       "pos": "?"
+      },
+      {
+       "name": "Simone Panada",
+       "shirt": 55,
+       "pos": "?"
+      },
+      {
+       "name": "Kornel Lisman",
+       "shirt": 56,
+       "pos": "?"
+      },
+      {
+       "name": "Lion Lauberbach",
+       "shirt": 29,
+       "pos": "?"
+      }
+     ]
+    },
+    "LAZ": {
+     "team": "LAZ",
+     "formation": "4-3-3",
+     "coach": "Gennaro Gattuso",
+     "xi": [
+      {
+       "name": "Christos Mandas",
+       "shirt": 35,
+       "pos": "G"
+      },
+      {
+       "name": "Romano Floriani Mussolini",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Josip Šutalo",
+       "shirt": 37,
+       "pos": "D"
+      },
+      {
+       "name": "Oliver Provstgaard",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Nuno Tavares",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Davide Frattesi",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Reda Belahyane",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Kenneth Taylor",
+       "shirt": 24,
+       "pos": "M"
+      },
+      {
+       "name": "Matteo Cancellieri",
+       "shirt": 22,
+       "pos": "F"
+      },
+      {
+       "name": "Tijjani Noslin",
+       "shirt": 14,
+       "pos": "F"
+      },
+      {
+       "name": "Mattia Zaccagni",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Albert Guðmundsson",
+       "shirt": 80,
+       "pos": "?"
+      },
+      {
+       "name": "Manuel Lazzari",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Andrea Pinamonti",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Alfonso Pedraza",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Gustav Isaksen",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Davide Renzetti",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Edoardo Motta",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Danilho Doekhi",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Diogo Leite",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Danilo Cataldi",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Valerio Farcomeni",
+       "shirt": 71,
+       "pos": "?"
+      },
+      {
+       "name": "Federico Serra",
+       "shirt": 63,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 25,
+      "center": 29,
+      "right": 46
+     },
+     "firstHalf": {
+      "left": 26,
+      "center": 28,
+      "right": 46
+     },
+     "secondHalf": {
+      "left": 24,
+      "center": 30,
+      "right": 46
+     }
+    },
+    "away": {
+     "total": {
+      "left": 48,
+      "center": 24,
+      "right": 28
+     },
+     "firstHalf": {
+      "left": 47,
+      "center": 24,
+      "right": 29
+     },
+     "secondHalf": {
+      "left": 50,
+      "center": 24,
+      "right": 26
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-19T21:29:04.461Z",
+   "fdMatchId": "2026-27-44",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-19T18:59:22.280Z"
+ "updatedAt": "2026-09-19T21:29:04.463Z"
 }
