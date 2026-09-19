@@ -30218,19 +30218,6 @@
    "goals": [
     {
      "side": "H",
-     "person": 22542,
-     "assist": 145043,
-     "team": 131,
-     "min": 31,
-     "label": "31'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "H",
      "person": 145043,
      "assist": 143240,
      "team": 131,
@@ -30267,6 +30254,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -30277,10 +30270,16 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45'00"
   },
   "EVE|IPS": {
    "fixtureId": 128966,
@@ -30754,6 +30753,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -30764,10 +30769,16 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "47'00"
   },
   "NEW|HUL": {
    "fixtureId": 128970,
@@ -31286,5 +31297,5 @@
    "clock": "45+6'00"
   }
  },
- "fetchedAt": "2026-09-19T15:01:58.108Z"
+ "fetchedAt": "2026-09-19T15:04:14.796Z"
 }
