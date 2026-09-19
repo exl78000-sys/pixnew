@@ -29785,7 +29785,7 @@
   "BHA|ARS": {
    "fixtureId": 128965,
    "kickoff": "2026-09-19T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -29794,9 +29794,31 @@
    "homeId": 131,
    "awayId": 1,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75709
+     ],
+     [
+      50727,
+      134632,
+      33124,
+      20505
+     ],
+     [
+      129259,
+      134333
+     ],
+     [
+      143240,
+      22542,
+      67928
+     ],
+     [
+      145043
+     ]
+    ],
     "xi": [
      {
       "id": 143240,
@@ -29821,7 +29843,7 @@
       "playerId": null,
       "name": "Maxim De Cuyper",
       "shirt": 29,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -29983,9 +30005,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      7975
+     ],
+     [
+      67776,
+      13274,
+      50234,
+      69914
+     ],
+     [
+      15202,
+      74761
+     ],
+     [
+      49481,
+      11419,
+      67704
+     ],
+     [
+      20810
+     ]
+    ],
     "xi": [
      {
       "id": 11419,
@@ -30019,7 +30063,7 @@
       "playerId": null,
       "name": "Christos Tzolis",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -30082,7 +30126,7 @@
       "playerId": null,
       "name": "Bukayo Saka",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      }
@@ -30175,14 +30219,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   },
   "EVE|IPS": {
    "fixtureId": 128966,
    "kickoff": "2026-09-19T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -30191,9 +30248,31 @@
    "homeId": 7,
    "awayId": 8,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4640
+     ],
+     [
+      10428,
+      8143,
+      66318,
+      24983
+     ],
+     [
+      134286,
+      23841
+     ],
+     [
+      49374,
+      14706,
+      4260
+     ],
+     [
+      143922
+     ]
+    ],
     "xi": [
      {
       "id": 4260,
@@ -30254,7 +30333,7 @@
       "playerId": null,
       "name": "Ainsley Maitland-Niles",
       "shirt": 2,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre/Right Wing Back",
       "captain": false
      },
@@ -30272,7 +30351,7 @@
       "playerId": null,
       "name": "Brennan Johnson",
       "shirt": 22,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -30380,9 +30459,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      8159
+     ],
+     [
+      126111,
+      49884,
+      15154,
+      51454
+     ],
+     [
+      16044,
+      40161
+     ],
+     [
+      127644,
+      125827,
+      32715
+     ],
+     [
+      313194
+     ]
+    ],
     "xi": [
      {
       "id": 8159,
@@ -30416,7 +30517,7 @@
       "playerId": null,
       "name": "Abdul Fatawu",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -30434,7 +30535,7 @@
       "playerId": null,
       "name": "Jack Clarke",
       "shirt": 47,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -30572,14 +30673,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   },
   "NEW|HUL": {
    "fixtureId": 128970,
    "kickoff": "2026-09-19T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -30588,9 +30702,31 @@
    "homeId": 23,
    "awayId": 41,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      117647,
+      124462,
+      49908,
+      108922
+     ],
+     [
+      303043,
+      14446
+     ],
+     [
+      9662,
+      135108,
+      14716
+     ],
+     [
+      117497
+     ]
+    ],
     "xi": [
      {
       "id": 114689,
@@ -30606,7 +30742,7 @@
       "playerId": null,
       "name": "Matias Fernandez-Pardo",
       "shirt": 20,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Striker",
       "captain": false
      },
@@ -30642,7 +30778,7 @@
       "playerId": null,
       "name": "Lewis Miley",
       "shirt": 67,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Midfielder",
       "captain": false
      },
@@ -30777,16 +30913,36 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      337567,
+      20081
+     ],
+     [
+      137549,
+      8885,
+      21385,
+      21455
+     ],
+     [
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 21455,
       "playerId": null,
       "name": "Sorba Thomas",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Winger",
       "captain": false
      },
@@ -30840,7 +30996,7 @@
       "playerId": null,
       "name": "Mohamed Belloumi",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -30969,10 +31125,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-09-19T14:00:07.267Z"
+ "fetchedAt": "2026-09-19T14:02:24.080Z"
 }
