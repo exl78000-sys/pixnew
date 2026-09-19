@@ -366,7 +366,11 @@ const NEAR_GOAL = 8;                           // 「門前」的量測範圍(�
    (`SET_SHARE`),那一份先前是供不滿的、由這個常數多補了一點。供得上之後就要退回去。
    差 0.9% 本身在噪音帶裡(50 場的射門/預算 SE 約 0.03),留它是因為**方向有理由**
    而且是量出來的:50 場射門/預算 1.03(0.0696 那一格是 1.04)。 */
-const SHOT_URGE = 0.0690;      /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632)。
+/* **2026-09-19 階段 4l-4 重量成 0.0675。** 爭頂接上去之後角球那一條路的產出又變了
+   (第一點不再必然是進攻方的),所以這個常數跟 `CORNER_SNAP`、`SELECT_FIX` 三個一起重量。
+   50 場固定 snap=0.42:射門/預算 **0.98**、每球 xG 0.1120(真實 0.1125)、
+   進球 1.92 ± 0.16 : 0.72 ± 0.13(λ 1.99 : 0.70)。 */
+const SHOT_URGE = 0.0675;      /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632)。
    4w 換掉對抗的結局分配之後,球權流向跟著變,射門掉到預算的 0.91 —— 而同一批裡每球 xG
    卻高了 9.6%,**兩個方向相反的錯乘起來剛好等於 λ**(0.91 × 1.096),總量看起來完全正常。
    那是本站記過的坑,所以兩個一起重量。40 場逐值掃(`SELECT_FIX` 固定 0.93):
@@ -617,8 +621,35 @@ const CORNER_HEAD = 0.70;                      // 在禁區裡搶到角球傳中
    腳下 54%(平均 16.3 m,30% 在 20 m 外)。本站的頭球那一條路量下來是對的(2.0 對 1.9),
    缺的正是腳下那一種(0.8 對 2.2)。這個機率就是拿那個缺口掃出來的。
    **它偏高是一個要講出來的結論**:本站沒有「一場該贏到幾次第二球」的錨,
-   所以分不出是第二球太少還是出手率太低,兩者都會被這一個常數吸收(鐵則四)。 */
-const CORNER_SNAP = 0.40;                      // 角球的第二球在射程內 → 直接出手的機率
+   所以分不出是第二球太少還是出手率太低,兩者都會被這一個常數吸收(鐵則四)。
+   **2026-09-19 階段 4l-4 重量:0.40 → 0.42。** 爭頂接上去之後第一點的歸屬變了,這個常數
+   的分母(進攻方贏到幾次第二球)跟著動,所以回頭重掃 —— 那是本站的規矩:
+   改動會改變射門位置分佈的行為,就把每一個分母是那個分佈的常數重量一次。
+   **掃的方法自己也修了一次**:第一輪把 snap 與 `SHOT_URGE` 兩個一起掃、每格 40 場,
+   讀出來的最佳格是 0.55 —— 而 50 場的驗收跑出 FromCorner **20.5%**(錨 17.3,+2.7 SE)。
+   改成**只動 snap、其餘固定、每格 50 場**之後曲線是乾淨的(FromCorner ± 1.1):
+     0.35 → 15.8% ・ **0.42 → 17.2%** ・ 0.48 → 17.9% ・ 0.55 → 18.7%
+   錨被 0.35 與 0.42 夾住,0.42 就是落在錨上的那一格。40 場那一輪不是「值挑錯了」,
+   是**一次掃兩個常數而每格的解析度不夠**:兩格的差 2.3 個百分點,而 40 場的 SE 是 1.3。 */
+const CORNER_SNAP = 0.42;                      // 角球的第二球在射程內 → 直接出手的機率
+/* **角球的第一點是一次爭頂,不是「離球最近的人拿到」**(2026-09-19,階段 4l-4)。
+   4l-2 的兩個否定都停在同一塊石頭上:規則是「下降中、低於頭球高度、2.5 公尺內、最近的人拿到」,
+   所以**傳中一準,第一點就必然是進攻方的** —— 讓球到他頭上時剛好是頭球高度那一版,
+   第一點從 2.25 / 6.95 變成 7.20 / 5.05、FromCorner 17.1% → 29.6%,而頭球的離門一點都沒有更好。
+   唯一的槓桿(瞄準誤差)掃到 11 公尺也只到 0.40,飽和了。
+   現在改成兩邊各派最近的一個人爭,而贏家由機率決定:權重是「這一隊的空中能力 ×
+   防守方的結構優勢」,錨是 **頭球 ÷ 角球 = 0.20**(真實 FromCorner 頭球 46% ×
+   每個角球 0.44 腳射門)。只有一邊在範圍裡就沒有爭頂 —— 爭頂是兩個人的事。
+   兩隊的空中能力走側寫的 `extra.aerials_won`(一隊一場 16.17,這一場 ARS 15.79 + LIV 15.14)——
+   **那個欄位在這之前零個消費端**,而 `duel_won = ground_duels_won + aerials_won`
+   (逐隊最大差 0.01),4r 的接觸模型只接了地面那一半。
+   **距離那一項試過,而它是不變的,所以拿掉了**:第一版是
+   `這一隊的空中能力 × exp(−離球距離 / AERIAL_REACH)`,而 reach 掃 0.6 / 1.2 / 2.5(各 40 場)
+   印出來**一模一樣**(頭球÷角球 0.215 / 0.215 / 0.215、平均 pAtt 0.360 / 0.359 / 0.358)。
+   原因是機制決定的:這一段在「球降到頭球高度以下」之後**每一格都重試**,直到有人進到 2.5 公尺內,
+   所以觸發的那一刻兩邊最近的人都剛好在門檻上 —— 實測**兩邊離球的距離差平均 0.042 公尺、
+   最大 0.84**(10 場 53 次爭頂)。一個量出來完全不動的參數不要留著裝樣子(4t 的不變性那條)。 */
+const AERIAL_DEF_EDGE = 1.95;                  // 同樣距離時防守方贏的倍率(用頭球÷角球校準)
 const CORNER_WAIT = 12;                        // 等大家進禁區的上限(秒);真實角球本來就要等十幾秒
 const CORNER_READY = 4;                        // 進攻方有這麼多人**站到排好的位置上**就開球
 const CORNER_SPOT_R = 2.5;                     // 離自己那個站位這麼近算到位(站位彼此相隔 5~7 m,不會認錯)
@@ -857,6 +888,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      `tklRel` / `drbRel` / `foulRel`)。階段 4v 之前這一份同時當了「比例」與「這一場的判準」,
      而模擬的是 ARS vs LIV —— 抄截差 −12%、過人 +7%,那是「錨用了聯盟平均」的第二次。 */
   const TEAM_TKL = 'matchstats.headers.tackles', TEAM_DRB = 'dribbles_succeeded';
+  const TEAM_AER = 'aerials_won';
   const DW = (() => {
     const per = k => Object.values(profile.teams ?? {}).map(t => t.extra?.[k]).filter(x => x?.mean != null);
     const ex = k => {
@@ -882,7 +914,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const rTk = tk * 2, rDr = dr * 2, rFl = FOUL_LG * 2, tot = rTk + rDr + rFl;
     return { tackle: rTk / tot, foul: rFl / tot * DUEL_FOUL_FIT, beat: rDr / tot,
              real: { tackles: rTk, fouls: rFl, dribbles: rDr, duels: tot },
-             lg: { tkl: tk, drb: dr }, lim: { tkl: lim(TEAM_TKL), drb: lim(TEAM_DRB) } };
+             lg: { tkl: tk, drb: dr, aer: ex(TEAM_AER) },
+             lim: { tkl: lim(TEAM_TKL), drb: lim(TEAM_DRB), aer: lim(TEAM_AER) } };
   })();
   /* 個人的搶斷能力,壓成相對值。**只留隊內差異** —— 隊的層級由 `tklRel` 那一個帶
      (兩者量的是同一件事:`ability.tkl` 是每 90 分的抄截數,一隊的抄截數就約等於
@@ -930,6 +963,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        所以接上去之後這一場的錨是自己長出來的,不是設定進去的。 */
     const tklRel = DW.lg ? cl((t.extra?.[TEAM_TKL]?.mean ?? DW.lg.tkl) / DW.lg.tkl, DW.lim.tkl[0], DW.lim.tkl[1]) : 1;
     const drbRel = DW.lg ? cl((t.extra?.[TEAM_DRB]?.mean ?? DW.lg.drb) / DW.lg.drb, DW.lim.drb[0], DW.lim.drb[1]) : 1;
+    /* 空中能力(見 AERIAL_DEF_EDGE):夾子跟上面兩個同一套,從側寫自己算。 */
+    const aerRel = DW.lg?.aer ? cl((t.extra?.[TEAM_AER]?.mean ?? DW.lg.aer) / DW.lg.aer, DW.lim.aer[0], DW.lim.aer[1]) : 1;
     /* 護球能力:用**這一隊在這個主客身分下**的真實控球率。50 是聯盟平均(控球是零和的,
        所以平均一定是 50,不必另外算)。夾在 ±15 個百分點內 —— 超出那個範圍的是樣本太少,
        不是真的有球隊能控 70%(實測全聯盟落在 27~61)。 */
@@ -955,7 +990,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        會讓同一次對抗的權重跟著板凳變,那更難解釋。 */
     const relMean = players.reduce((a, q) => a + relOf(q.ability?.tkl), 0) / (players.length || 1);
     return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1,
-      push: 0, wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, relMean,
+      push: 0, wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, aerRel, relMean,
       ypf: yellowPerFoulOf(code, side), possMean: pmRaw ?? null, bench };
   };
 
@@ -1105,7 +1140,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        0.92 → 每球 xG 0.1177、λ 2.10 ± 0.25 : 0.72 ± 0.14
        0.90 → **0.1155**、2.10 ± 0.25 : **0.70** ± 0.14   ← 選這個
      這次**沒有再用線性外推**(4l 那次外推 0.905、實跑 −4.5%,兩個 λ 一起塌)。 */
-  const SELECT_FIX = 0.90;
+  /* **2026-09-19 階段 4l-4 重量成 0.915。** 爭頂讓第一點的歸屬改變,頭球那一種的顆數
+     跟著動(它的 xG 0.124 比腳下的 0.086 高一截),所以射門的組合又變了 —— 同一條規矩。
+     50 場固定 snap=0.42:每球 xG **0.1120**(真實 0.1125)。 */
+  const SELECT_FIX = 0.915;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
   const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
@@ -1156,6 +1194,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        所以先量兩件事:傳中被碰到的那一刻**最近的進攻方離門多遠**(有沒有人在那裡),
        以及**門前的鬆球被誰收走**(門將 / 進攻 / 防守)。純計數,不呼叫 rng。 */
     cornerNearD: [], nearBall: {}, cornerAimD: [], cornerSpotD: [],
+    /* **空中球的爭頂**(2026-09-19,階段 4l-4)。側寫的 `extra.aerials_won` 一隊一場 16.17
+       (這一場 ARS 15.79 + LIV 15.14 = 30.93),而 `duel_won = ground_duels_won + aerials_won`
+       —— 4r 的接觸模型只接了地面那一半,**空中那一半引擎裡根本沒有**。
+       先量不改:一顆飛過頭球高度的球落下來被誰碰到、那一刻對手在不在搶得到的距離內。
+       半徑不挑一個,三個一起量(1.5 / 2.5 / 4.0 公尺)看它敏不敏感。純計數,不呼叫 rng。 */
+    air: { touch: 0, byCorner: 0, contested: [0, 0, 0], wonAtt: [0, 0, 0], peak: [], duel: 0, pAttSum: 0 },
     /* 角球射門**逐種**的離門分佈與 xG:真實是兩個形狀(頭球 8.4 m / 腳下 16.3 m),
        所以本站也要分開量,不然又是「總和對上而每一種都不對」。 */
     cornerShotBins: { header: new Array(7).fill(0), foot: new Array(7).fill(0) },
@@ -1276,6 +1320,31 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     return 'RegularPlay';
   }
 
+  /* 一顆「飛過頭球高度」的球落下來被誰碰到,而那一刻對手在不在搶得到的距離內(階段 4l-4)。
+     `ball.airMax` 是這一段飛行的最高點,碰到就歸零 —— 所以量的是**每一次空中球的歸屬**,
+     不是每一格。三個半徑一起記,因為 Opta 的「空中對抗」要兩個人都真的去爭,
+     而那個距離本站沒有資料,只能看它對半徑敏不敏感再決定(**先量,不要先挑**)。 */
+  const AIR_R = [1.5, 2.5, 4.0];
+  function noteAerial(p) {
+    if ((ball.airMax ?? 0) < CROSS_HEAD) { ball.airMax = 0; return; }
+    ball.airMax = 0;
+    st.air.touch++;
+    if (st.lastKick === 'corner' || st.pendingOrigin?.kind === 'corner') st.air.byCorner++;
+    let rival = Infinity;
+    for (const q of all()) {
+      if (q.off || q.side === p.side || q === p) continue;
+      rival = Math.min(rival, hypot(q.x - ball.x, q.y - ball.y));
+    }
+    const att = sideOf(p.side).att > 0 ? PITCH_W : 0;
+    const toGoal = hypot(att - ball.x, PITCH_H / 2 - ball.y);
+    AIR_R.forEach((r, i) => {
+      if (rival > r) return;
+      st.air.contested[i]++;
+      /* 「進攻方贏到」= 碰到的人是往那個球門攻的那一隊。只回報,不判。 */
+      if (toGoal < PITCH_W / 2) st.air.wonAtt[i]++;
+    });
+  }
+
   /* 門前的鬆球被誰收走(階段 4l-2)。`who` 是 'gk' / 'att' / 'def' —— 進攻方是**這一球
      所指的那一邊**(離哪一個球門近就是往那邊攻的那一隊)。分角球期間與其他兩種記。 */
   function noteNearBall(p) {
@@ -1295,7 +1364,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      就把 passTo / passSide 清掉了(那是攔截統計那一段),所以在這裡讀永遠是 null。
      第一版就是這樣寫的,結果助攻整場 0 筆而**一個錯都不報**:對不上永遠是安靜的。 */
   function giveTo(p, from = null) {
-    noteNearBall(p);
+    noteNearBall(p); noteAerial(p);
     /* **在 openChain 之前先看** —— 它會把 pendingOrigin 領走清掉(見 CORNER_SNAP)。 */
     const second = st.pendingOrigin?.kind === 'corner' && st.pendingOrigin.side === p.side;
     p.assistBy = from && from !== p && from.side === p.side ? from : null;
@@ -1608,6 +1677,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   function tick(dt) {
     st.t += dt; st.halfT += dt;
     if (st.phase === 'dead') st.deadSec += dt;
+    if (!ball.holder) ball.airMax = Math.max(ball.airMax ?? 0, ball.z);   // 見 noteAerial
     /* 半場與完場。**補時在時間到的時候才算**(這一半死了多少球時間),而且要等到
        下一個死球或球權在後場才吹 —— 真的裁判不會在對方單刀的時候吹哨。
        上限是再多演 60 秒,不然一段長時間的活球會讓補時無限延長。 */
@@ -1946,16 +2016,31 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (CORNER_XG != null && st.lastKick === 'corner' && ball.passer
           && ball.z < CROSS_HEAD && ball.vz < 0) {
         const att = ball.passer.side;
-        let who = null, wd = 2.5;          // 傳中誤差就有 2.5 m,抓太緊會變成誰都碰不到
+        /* **兩邊各派最近的一個人**,不是全場最近的一個(見 AERIAL_DEF_EDGE)。
+           只有一邊在範圍裡就沒有爭頂,那一個直接拿到 —— 爭頂是兩個人的事。 */
+        let na = null, nd = null, da = 2.5, dd = 2.5;   // 傳中誤差就有 2.5 m,抓太緊會變成誰都碰不到
         for (const p of all()) {
           if ((p.kickLock ?? 0) > 0 || p.role === 'GK') continue;
           const d = hypot(p.x - ball.x, p.y - ball.y);
-          if (d < wd) { wd = d; who = p; }
+          if (p.side === att) { if (d < da) { da = d; na = p; } }
+          else if (d < dd) { dd = d; nd = p; }
         }
+        let who = null;
+        if (na && nd) {
+          /* 權重 = 這一隊的空中能力,防守方再乘一個結構優勢(人多、面對球來的方向)——
+             那個倍率由「頭球 ÷ 角球 = 0.20」校準。**沒有距離項**,理由見 AERIAL_DEF_EDGE。 */
+          const wA = sideOf(att).aerRel;
+          const wD = sideOf(nd.side).aerRel * AERIAL_DEF_EDGE;
+          const pAtt = wA / (wA + wD);
+          st.air.duel = (st.air.duel ?? 0) + 1;
+          st.air.pAttSum = (st.air.pAttSum ?? 0) + pAtt;
+          who = rng() < pAtt ? na : nd;
+        } else who = na ?? nd;
         if (who) {
           const ws = sideOf(who.side), wgx = ws.att > 0 ? PITCH_W : 0;
           const inBox = Math.abs(who.x - wgx) < BOX_D && Math.abs(who.y - PITCH_H / 2) < BOX_W;
           st.lastKick = null;                        // 這一球處理掉了,別再觸發第二次
+          noteAerial(who);
           if (who.side === att && inBox && rng() < CORNER_HEAD) { cornerFirst('attHead'); headerAt(who); }
           else {
             cornerFirst(who.side === att ? 'attMiss' : 'defHead');
@@ -2032,7 +2117,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
                不然他會變成一個在門前三公尺帶球的持球者,而對方會過來搶。 */
             const bs = sideOf(best.side), bgx = bs.att > 0 ? 0 : PITCH_W;
             if (best.role === 'GK' && Math.abs(best.x - bgx) < BOX_D
-                && Math.abs(best.y - PITCH_H / 2) < BOX_W) { noteNearBall(best); keeperCollect(best.side); st.loose++; }
+                && Math.abs(best.y - PITCH_H / 2) < BOX_W) { noteNearBall(best); noteAerial(best); keeperCollect(best.side); st.loose++; }
             else { giveTo(best, assisted); st.loose++; }
             }
           }
@@ -2613,6 +2698,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         cornerNext: { ...st.cornerNext }, cornerNextD: [...st.cornerNextD], clearWhy: { ...st.clearWhy },
         cornerNearD: [...st.cornerNearD], nearBall: { ...st.nearBall },
         cornerAimD: [...st.cornerAimD], cornerSpotD: [...st.cornerSpotD],
+        air: { touch: st.air.touch, byCorner: st.air.byCorner, duel: st.air.duel, pAttSum: st.air.pAttSum,
+               contested: [...st.air.contested], wonAtt: [...st.air.wonAtt] },
         cornerShotBins: { header: [...st.cornerShotBins.header], foot: [...st.cornerShotBins.foot] },
         cornerShotXg: { ...st.cornerShotXg } },
     }),

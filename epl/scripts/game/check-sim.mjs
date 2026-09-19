@@ -275,23 +275,55 @@ line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.c
   show('  　解圍的三條路', bag('clearWhy'));
   show('  角球是怎麼來的', bag('cornerSrc'));
   show('  傳中的第一點', bag('cornerFirst'), cor);
+  /* **角球第一點的爭頂**(2026-09-19,階段 4l-4)。4l-2 的兩個否定都停在「離球最近的人拿到」
+     這條規則上,所以這裡改成兩邊各派一個人爭、贏家由機率決定。
+     判的錨是上面那個「頭球 ÷ 角球 = 0.20」;這一行印的是機制自己的兩個數字
+     (一場爭幾次、平均勝率多少),只回報。 */
+  {
+    const duel = rows.reduce((a, r) => a + (r.st.counts.air?.duel ?? 0), 0);
+    const pSum = rows.reduce((a, r) => a + (r.st.counts.air?.pAttSum ?? 0), 0);
+    const hd = (bag('cornerShot').header ?? 0);
+    if (duel) line('  　第一點的爭頂', `${(duel / rows.length).toFixed(1)} 次/場・進攻方平均勝率 ${(pSum / duel).toFixed(3)}`,
+      `頭球 ÷ 角球 ${(hd / cor).toFixed(3)}  真實 0.20(FromCorner 頭球 46% × 每個角球 0.44 腳射門)`);
+  }
+  /* **全場的空中球**(只回報)。側寫的 `extra.aerials_won` 一隊一場 16.17 —— 那個欄位
+     在 4l-4 之前零個消費端,而 `duel_won = ground_duels_won + aerials_won`,
+     4r 的接觸模型只接了地面那一半。**定義不保證一樣**:本站數的是「一顆飛過頭球高度的球
+     落下來被誰碰到、那一刻對手在不在 r 公尺內」,而 Opta 的空中對抗要兩個人都真的去爭,
+     那個距離本站沒有資料 —— 所以三個半徑一起印,看它對半徑多敏感。 */
+  {
+    const air = rows.map(r => r.st.counts.air).filter(Boolean);
+    const realAer = pair('aerials_won');
+    if (air.length && realAer) {
+      const touch = air.reduce((a, x) => a + x.touch, 0) / rows.length;
+      const con = [0, 1, 2].map(i => air.reduce((a, x) => a + x.contested[i], 0) / rows.length);
+      line('  　(參考)全場的空中球', `落下來被碰到 ${touch.toFixed(0)} 次`,
+        `對手在 1.5 / 2.5 / 4.0 m 內 = ${con.map(v => v.toFixed(1)).join(' / ')}`
+        + `  真實 aerials_won ${realAer.toFixed(1)} —— 定義不保證一樣,只回報`);
+    }
+  }
   /* 第一點之後球被誰控住。角球射門缺的是**腳下**那一種,而它的前提是進攻方拿得到第二球 ——
      這一行如果幾乎都是「防守控住」,那缺的就不是射門的判定,是**沒有人還留在那裡**。 */
   show('  第二球被誰控住', bag('cornerNext'));
   const cs = bag('cornerShot');
   const csN = Object.values(cs).reduce((a, b) => a + b, 0);
   show('  角球射門的來源', cs, null, csN ? `頭球佔 ${(100 * (cs.header ?? 0) / csN).toFixed(0)}%` : '');
-  /* **真實的角球射門有兩種,而本站只有一種**。1,835 顆 FromCorner 逐顆的 foot 欄位:
-     頭球 46.2%(平均 8.4 m,20 m 外 1%)、腳下 53.8%(平均 16.3 m,20 m 外 30%)——
-     兩個完全不同的形狀。本站的第一點頭球那一條路量下來是對的,少的是腳下那一種
-     (禁區內的補射與禁區外的第二波)。這一行的數字**從 raw 算,不寫死**。 */
-  const rc = realShots?.bySit?.FromCorner;
-  if (rc && rc.head + rc.foot > 0) {
-    const t = rc.head + rc.foot;
+  /* **真實的角球射門有兩種,而本站只有一種**:FromCorner 逐顆的 `foot` 欄位拆開是
+     頭球(平均 8.4 m,20 m 外 1%)與腳下(16.3 m,20 m 外 30%)兩個完全不同的形狀。
+     本站的第一點頭球那一條路量下來是對的,少的是腳下那一種(禁區內的補射與禁區外的第二波)。
+     **數字一個都不寫死,而且只有一個來源**:走側寫的 `byFoot`(build 時從 raw 的 foot 算的),
+     跟下面那張逐種的離門分佈同一份。第一版這一行自己去 raw 攤了一次,兩邊就會在
+     「側寫還沒重建」的時候各說各話 —— 2026-09-19 實測到 1,835 對 1,838
+     (側寫停在前一次 build、raw 多了一場)。**同一個量兩個來源是本站的老坑。** */
+  const bf = profile.league_?.shotSituations?.FromCorner?.byFoot;
+  if (bf?.header?.shots && bf?.foot?.shots) {
+    const t = bf.header.shots + bf.foot.shots;
+    const far = k => 100 * (bf[k].distBins ?? []).slice(4).reduce((a, b) => a + b, 0);
     line('  　真實(逐顆的 foot 欄位)',
-      `頭球 ${(100 * rc.head / t).toFixed(0)}%(平均 ${(rc.headD / rc.head).toFixed(1)} m)`
-      + `・腳下 ${(100 * rc.foot / t).toFixed(0)}%(平均 ${(rc.footD / rc.foot).toFixed(1)} m,`
-      + `${(100 * rc.footFar / rc.foot).toFixed(0)}% 在 20 m 外)`, `${t} 顆`);
+      `頭球 ${(100 * bf.header.shots / t).toFixed(0)}%(平均 ${bf.header.distMean.toFixed(1)} m,`
+      + `${far('header').toFixed(0)}% 在 20 m 外)`
+      + `・腳下 ${(100 * bf.foot.shots / t).toFixed(0)}%(平均 ${bf.foot.distMean.toFixed(1)} m,`
+      + `${far('foot').toFixed(0)}% 在 20 m 外)`, `${t} 顆`);
   }
   /* **逐種的離門分佈**(2026-09-18,階段 4l-2)。角球射門是兩個形狀,所以要各自對各自 ——
      真值從側寫的 `shotSituations.FromCorner.byFoot` 讀(build 時從 raw 的 `foot` 欄位算的),

@@ -587,14 +587,22 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
 
       const chkSrc = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
       const chkBare = chkSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-      /* 真實的頭球 / 腳下拆解要**從 raw 算**,不是抄一個數字進來(鐵則一沒有「只在註解裡」這種例外)。 */
-      check('真實的頭球 / 腳下拆解從 raw 的 foot 欄位算',
-        /sh\.foot === 'Header'/.test(chkBare) && /rc\.head/.test(chkBare));
+      /* 真實的頭球 / 腳下拆解要**從 raw 算**,不是抄一個數字進來(鐵則一沒有「只在註解裡」這種例外)。
+         **而且只能有一個來源**:2026-09-19 實測到 check-sim 自己攤 raw 算出 1,838、
+         側寫寫著 1,835(側寫停在前一次 build),同一頁上兩個數字。所以印在畫面上的那一行
+         改讀側寫的 `byFoot`,raw 那一份只留給沒有進側寫的量。 */
+      check('真實的頭球 / 腳下拆解從 raw 的 foot 欄位算(進側寫)',
+        /sh\.foot === 'Header'/.test(chkBare));
+      check('角球的頭球 / 腳下那一行只讀側寫,不另外攤一次 raw',
+        /byFoot/.test(chkBare) && !/rc\.head/.test(chkBare));
       /* `realShots` 是模組層的 const —— 用在宣告之前就是暫時死區,而 `node --check` 看不出來。
-         4l 把角球那一節的真實拆解印在它前面,當場踩到。 */
+         4l 把角球那一節的真實拆解印在它前面,當場踩到。
+         **錨不要挑某一個用它的地方**:4l-4 把那一行改讀側寫之後,原本釘的
+         `realShots?.bySit?.FromCorner` 就不在了,測試紅在「錨不見了」而不是紅在它要守的事。
+         守的性質寫成「檔案裡第一次出現 realShots 就是那個宣告」。 */
+      const rsDecl = chkBare.indexOf('const realShots');
       check('realShots 宣告在它第一個用的地方之前(模組層 const 沒有提升)',
-        chkBare.indexOf('const realShots') > 0
-        && chkBare.indexOf('const realShots') < chkBare.indexOf('realShots?.bySit?.FromCorner'));
+        rsDecl > 0 && chkBare.indexOf('realShots') === rsDecl + 'const '.length);
       /* 解圍那個錨是這一場兩隊自己的值(4w 的規矩),而且只回報不判 ——
          本站的 `st.clears` 跟上游的 `clearances` 定義不保證一樣。 */
       check('解圍的錨走共用的 pair()(這一場兩隊,不是聯盟平均)',
@@ -639,6 +647,50 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         /line\('射正率'/.test(chkBare2) && !/line\('每場射正'/.test(chkBare2));
       check('角球射門逐種的離門分佈印出來,而真值從側寫讀(不另外攤一次 raw)',
         /cornerShotBins/.test(chkBare2) && /byFoot/.test(chkBare2));
+    }
+
+    /* 16. 階段 4l-4:**角球的第一點是一次爭頂,不是「離球最近的人拿到」**。
+       4l-2 的兩個否定都停在那條規則上:傳中一準,第一點就必然是進攻方的。
+       守四件事:兩邊各派一個人(不是全場最近的一個)、贏家由機率決定、
+       空中能力走側寫的 `aerials_won`(先前零消費端)而且夾子從側寫算、
+       以及**距離不進權重**(掃 0.6 / 1.2 / 2.5 完全不動,兩邊離球差平均 0.042 m)。 */
+    {
+      const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const bare = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const c0 = bare.indexOf("st.lastKick === 'corner' && ball.passer");
+      const c1 = bare.indexOf('function headerAt');
+      const duelSrc = c0 >= 0 && c1 > c0 ? bare.slice(c0, c1) : '';
+      check('傳中的第一點是兩邊各派最近的一個人(不是全場最近的一個)',
+        duelSrc.length > 0 && /p\.side === att/.test(duelSrc)
+        && /na && nd/.test(duelSrc) && !/let who = null, wd = 2\.5/.test(duelSrc),
+        `切出來 ${duelSrc.length} 字元`);
+      check('兩個人都在範圍裡時,贏家由機率決定',
+        /const pAtt = wA \/ \(wA \+ wD\)/.test(duelSrc) && /rng\(\) < pAtt \? na : nd/.test(duelSrc));
+      /* **距離不進權重**:掃出來完全不動(0.215 / 0.215 / 0.215),而原因是機制決定的 ——
+         這一段每一格重試到有人進到 2.5 公尺內,所以兩邊都剛好在門檻上。
+         守的是性質:算權重那兩行不准讀 `da` / `dd`。 */
+      const wLines = (duelSrc.match(/const w[AD] = [^;]*;/g) ?? []).join(' ');
+      check('爭頂的權重只看兩隊的空中能力與防守方的結構優勢,不看距離',
+        wLines.includes('aerRel') && wLines.includes('AERIAL_DEF_EDGE')
+        && !/\bda\b|\bdd\b/.test(wLines),
+        wLines.replace(/\s+/g, ' ').slice(0, 120));
+      /* 空中能力接的是側寫的欄位,而夾子跟 tklRel / drbRel 走同一支 `lim()`
+         —— 照抄一個寫死的範圍是 4w 記過的坑。 */
+      check('空中能力走 extra.aerials_won,夾子從側寫算(不是寫死的範圍)',
+        /TEAM_AER = 'aerials_won'/.test(bare) && /aer: lim\(TEAM_AER\)/.test(bare)
+        && /DW\.lim\.aer\[0\], DW\.lim\.aer\[1\]/.test(bare));
+      /* 這個欄位**真的在側寫裡**,而且兩隊不一樣 —— 不然這條在守一件不存在的事。 */
+      const aer = c => profile.teams?.[c]?.extra?.aerials_won?.mean;
+      check('側寫真的有 aerials_won,而且這兩隊的值不同',
+        aer('ARS') > 0 && aer('LIV') > 0 && aer('ARS') !== aer('LIV'),
+        `ARS ${aer('ARS')} / LIV ${aer('LIV')}`);
+      /* **掃之前先剝註解** —— 第一版直接掃原始碼,而我自己寫的那段註解裡就有「第一點的爭頂」
+         這幾個字,所以負向對照(把那一行的標籤改掉)照樣是綠的。本站記過的同一條坑,
+         而這次是反過來:註解讓一條守不住的斷言看起來有守到。 */
+      const chkBare3 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('爭頂的計數器吐給 counts,check-sim 印出來',
+        /air: \{ touch: st\.air\.touch/.test(bare) && /第一點的爭頂/.test(chkBare3));
     }
   }
 }
