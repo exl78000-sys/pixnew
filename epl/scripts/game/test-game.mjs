@@ -903,5 +903,56 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           `3 場合計:逐帶 ${binSum} = 封阻 ${blk5}・頭球 ${head}(其中被封阻 ${headBlk})・射門 ${shots5}・blkXg ${blkXg.toFixed(3)}`);
       }
     }
+
+    /* 21. 階段 5c:**射門線上有沒有人**。5b 的結論(「不是擋不到,是路上沒有人」)
+       靠一支 scratchpad 探針,而那支探針**量錯了線** —— 畫的是「射手 → 球門中心」,
+       而球瞄的是 `PITCH_H/2 + err`(射正 ±2.7 m、偏出 2.1~6.9 m)。30 場 675 腳的交叉表:
+       兩條線都判「有人」55 腳、只有中心線判有人 28 腳、只有真飛行線判有人 43 腳 ——
+       **兩個方向各錯三分之一**。所以這一節守三件事:量測接進了引擎(不再只活在 scratchpad)、
+       線畫在**真正的飛行方向**上、以及計數自己不矛盾。
+       **不守它的值** —— 值是 5d 的驗收條件,現在寫成紅線就是「把目標達成寫成 CI 紅線」。 */
+    {
+      const simBare = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('三個射門產生點都量了射門線(少一個那一種射門就靜靜不在分母裡)',
+        (simBare.match(/noteShotLane\(p, dGoal\)/g) ?? []).length === 3);
+      /* 錨要切出**函式自己那一段**:`hypot(ball.vx, ball.vy)` 在整份裡有六處,
+         直接掃全檔的話把別人的那幾處也算進來,停掉這一份它照樣綠
+         —— 那正是 5b 的四條負向對照裡唯一沒紅的那一條踩到的坑。 */
+      const i0 = simBare.indexOf('function noteShotLane(');
+      const i1 = simBare.indexOf('st.laneNear[k]++;', i0);
+      const seg = i0 >= 0 && i1 > i0 ? simBare.slice(i0, i1) : '';
+      /* 否定那半句原本寫 `!/PITCH_H \/ 2 - p\.y/` —— 而這支函式的參數叫 `shooter` 不叫 `p`,
+         所以那半句**永遠不會命中**,真正在守的只有正向那半句(負向對照裡它確實紅了,
+         但紅的是正向那一半)。改成守「線的**起點**是球不是射手」:`shooter` 只准出現在
+         `sideOf(shooter.side)` 與比隊伍那兩處,位置一律讀 `ball`。 */
+      check('射門線畫在**真正的飛行方向**上,而且從球起算(不是射手 → 球門中心)',
+        seg.length > 0 && /hypot\(ball\.vx, ball\.vy\)/.test(seg)
+        && /q\.x - ball\.x/.test(seg) && !/shooter\.[xy]\b/.test(seg),
+        `切出來 ${seg.length} 字元`);
+      check('兩個門檻都在:DEFLECT_R(擋得到)與 1 m(差一點)—— 只有一個就分不出「沒有人」與「站得不夠準」',
+        /lane < DEFLECT_R/.test(seg) && /lane < 1\b/.test(seg));
+      const chkBare8 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('check-sim 把曝光印在封阻率旁邊(不印的話這個量測又只活在 scratchpad 裡)',
+        /laneOcc/.test(chkBare8) && /路上有人/.test(chkBare8) && /封阻 ÷ 路上有人/.test(chkBare8));
+      /* 標題上的半徑要**從引擎讀**。自己寫一個 0.75 的話,引擎改了 DEFLECT_R 它會靜靜過期 */
+      check('曝光那一行的半徑是從引擎的原始碼讀的,不是寫死的數字',
+        /const DEFLECT_R = \(\[0-9.\]|DEFLECT_R = \(readFileSync/.test(chkBare8)
+        || /match\(\/const DEFLECT_R/.test(chkBare8));
+      {
+        const S6 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        let shots = 0, ls = 0, bad = 0;
+        for (const seed of [11, 12, 13]) {
+          const sim6 = S6.createSim({ profile, home: 'ARS', away: 'LIV', seed });
+          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim6.state().over; i++) sim6.advance(1 / 60);
+          const c6 = sim6.state().counts;
+          shots += c6.shots; ls += c6.laneShots.reduce((a, b) => a + b, 0);
+          for (let k = 0; k < 7; k++) if (!(c6.laneOcc[k] <= c6.laneNear[k] && c6.laneNear[k] <= c6.laneShots[k])) bad++;
+        }
+        check('每一腳射門都量到了,而且 DEFLECT_R 內 ≤ 1 m 內 ≤ 這一帶的射門數',
+          ls === shots && bad === 0, `3 場:射門 ${shots}、量到 ${ls}、逐帶不一致 ${bad} 格`);
+      }
+    }
   }
 }

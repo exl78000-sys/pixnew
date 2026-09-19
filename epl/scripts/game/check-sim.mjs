@@ -32,6 +32,11 @@ const HOME = 'ARS', AWAY = 'LIV';
    而我寫 4v 那一段的時候又踩了一次。
    **只留這一份**:4v 加它的時候領土那兩節各自已經有一份一模一樣的 `pair`,
    三份同義的東西就是「同一個量三個來源」,改了算法會有兩份悄悄過期(階段 4w 併掉)。 */
+/* 這個數字只用在標題上。**不要自己寫一個** —— 引擎那邊改了 `DEFLECT_R`,
+   這裡會靜靜過期。從引擎的原始碼讀出來,讀不到就印問號。 */
+const DEFLECT_R_DOC = (readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+  .match(/const DEFLECT_R = ([0-9.]+)/)?.[1]) ?? '?';
+
 const pair = k => {
   const a = profile.teams?.[HOME]?.extra?.[k]?.mean, b = profile.teams?.[AWAY]?.extra?.[k]?.mean;
   return a == null || b == null ? null : a + b;
@@ -610,6 +615,41 @@ if (simShots && realShots) {
       console.log(`  ${'封阻率 0-5/5-10/…/30+'.padEnd(26, '\u3000')} ${mine.join(' ')}`);
       console.log(`  ${`真實(${HOME}+${AWAY})`.padEnd(26, '\u3000')} ${rf.join(' ')}`);
       console.log(`  ${'真實(聯盟)'.padEnd(26, '\u3000')} ${rl.join(' ')}`);
+      /* **曝光**(2026-09-19,階段 5c):射門當下,球**真正的飛行方向**上 `DEFLECT_R` 內
+         有沒有對方的場上球員。跟上面那一排並排看才分得出「這一帶封阻少」是
+         **沒有人在路上**還是**有人而擋不到** —— 兩件事要修的地方完全不同。
+         5c 量出來是前者:有人的時候封阻率本來就跟真實差不多,缺的全是「有沒有人」。
+
+         **線要畫對。** 5b 的探針畫的是「射手 → 球門中心」,而球瞄的是 `PITCH_H/2 + err`
+         (射正 ±2.7 公尺、偏出 2.1~6.9 公尺)。兩條線在 30 場 675 腳上的交叉表:
+         兩條都有人 55、只有中心線有 28、只有真飛行線有 43 —— **兩個方向都錯三分之一**。
+         判準:沒有人在路上的時候封阻率要接近 0(真飛行線 0.3%,中心線那一版是 2.2%,
+         那個 2.2 就是它把「其實有人」的射門判成沒有人)。 */
+      const myBlkN0 = mean(rows.map(r => r.st.counts.blockedBy.home + r.st.counts.blockedBy.away));
+      const ls = k => mean(rows.map(r => r.st.counts.laneShots?.[k] ?? 0));
+      const lo = k => mean(rows.map(r => r.st.counts.laneOcc?.[k] ?? 0));
+      const ln = k => mean(rows.map(r => r.st.counts.laneNear?.[k] ?? 0));
+      const occ = [], near = [];
+      for (let k = 0; k < 7; k++) {
+        occ.push(pc(ls(k) > 0 ? lo(k) / ls(k) : null));
+        near.push(pc(ls(k) > 0 ? ln(k) / ls(k) : null));
+      }
+      console.log(`  ${`路上有人(${DEFLECT_R_DOC} m 內)`.padEnd(26, '\u3000')} ${occ.join(' ')}　← 上面那一排的分母`);
+      console.log(`  ${'　　　　(1 m 內)'.padEnd(26, '\u3000')} ${near.join(' ')}`);
+      {
+        const S = [0, 1, 2, 3, 4, 5, 6].reduce((a, k) => a + ls(k), 0);
+        const O = [0, 1, 2, 3, 4, 5, 6].reduce((a, k) => a + lo(k), 0);
+        /* 兩個數字並排,**不要替它下結論** —— 讀的人自己看得出缺口在哪一項。
+           `封阻 ÷ 路上有人` 大於 1 是正常的:曝光是**射門那一瞬間**量的,
+           而球飛的那 0.8 秒裡防守員還在動,所以會有「射門時沒人、飛到一半被擋掉」的球。 */
+        line('　全部射門裡路上有人的比例', S > 0 ? `${(100 * O / S).toFixed(1)}%` : '—',
+          `而真實的封阻率是全部射門的 ${realFx.out ? (100 * realFx.out.blk).toFixed(1) : '—'}%`
+          + `(${HOME}+${AWAY};聯盟 ${realShots.out ? (100 * realShots.out.blk).toFixed(1) : '—'}%)`
+          + ` —— 缺口在曝光還是在轉換,看下面那一行`);
+        line('　封阻 ÷ 路上有人', O > 0 ? (myBlkN0 / O).toFixed(2) : '—',
+          `射門當下路上有人的每 1 腳,實際被擋掉 N 腳。**大於 1 正常**(曝光是那一瞬間量的,`
+          + `球飛的時候防守員還在動);這一項接近 1 就代表缺的是曝光不是判定`);
+      }
       const q = realShots.blkShape, qf = realFx.blkShape;
       const ratio = (x) => (x && x.blkN && x.freeN ? (x.blkXg / x.blkN) / (x.freeXg / x.freeN) : null);
       const myBlkN = mean(rows.map(r => r.st.counts.blockedBy.home + r.st.counts.blockedBy.away));
