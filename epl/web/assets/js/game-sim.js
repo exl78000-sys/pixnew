@@ -1252,6 +1252,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        不是只對「每球平均 xG」—— 只對平均值的話,一堆六公尺的射門配一個很小的係數也會「對上」,
        而那是把形狀調錯之後再用水準去湊。 */
     shotBins: new Array(7).fill(0), shotDsum: 0, shotInBox: 0,
+    /* **射門線上有沒有人**(2026-09-19,階段 5c)。5b 的結論是「不是擋不到,是路上沒有人」,
+       而那個數字是 scratchpad 探針量的、**沒有消費端** —— 本站記過那條坑(4l-5 的 `cornerNextD`
+       加了三個階段零個消費端,而下一輪的規劃還在說「本站沒有這個計數器」)。所以這一輪接進來。 */
+    laneShots: new Array(7).fill(0), laneOcc: new Array(7).fill(0), laneNear: new Array(7).fill(0),
     /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
        而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
        被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
@@ -1344,6 +1348,38 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   function noteShotDist(sit, dGoal) {
     const b = (st.sitBins[sit] ??= { n: 0, dsum: 0, bins: new Array(7).fill(0) });
     b.n++; b.dsum += dGoal; b.bins[Math.min(6, Math.floor(dGoal / 5))]++;
+  }
+
+  /* 射門當下,**球的路上**有沒有對方的場上球員。跟逐帶的封阻率並排看才分得出
+     「這一帶封阻少」是因為沒有人在路上,還是有人而擋不到 —— 兩件事要修的地方完全不同。
+
+     **線要畫在球真正飛的方向上。** 5c 的第一支探針照 5b 的寫法畫「射手 → 球門中心」,
+     而球瞄的是 `PITCH_H / 2 + err`:射正 ±2.7 公尺、偏出 2.1~6.9 公尺(20 公尺的射門)。
+     那條線上站著的人,球多半從他旁邊過去。這一段跑在 `kick()` **之後**,
+     所以 `ball.vx / vy` 就是真正的方向,用它。
+
+     半徑用 `DEFLECT_R`(折射判定同一個),另外記 1 公尺內的「差一點」——
+     兩個都要,不然分不出「沒有人」與「有人但站得不夠準」。
+     被罰下的人要排掉:他留在原地不動,算進去就是「量測的母體跟畫面不一致」。
+     純觀測,一次 `rng()` 都不呼叫。 */
+  function noteShotLane(shooter, dGoal) {
+    const n = hypot(ball.vx, ball.vy);
+    if (!(n > 0.01)) return;
+    const ux = ball.vx / n, uy = ball.vy / n;
+    const gx = sideOf(shooter.side).att > 0 ? PITCH_W : 0;
+    const L = Math.abs(ux) > 0.01 ? Math.abs((gx - ball.x) / ux) : dGoal;
+    let lane = Infinity;
+    for (const q of all()) {
+      if (q.off || q.side === shooter.side || q === sideOf(q.side).gk) continue;
+      const a = (q.x - ball.x) * ux + (q.y - ball.y) * uy;
+      if (a <= 0.3 || a >= L) continue;          // 球已經過去的人擋不到
+      const perp = Math.abs((q.x - ball.x) * uy - (q.y - ball.y) * ux);
+      if (perp < lane) lane = perp;
+    }
+    const k = Math.min(6, Math.floor(dGoal / 5));
+    st.laneShots[k]++;
+    if (lane < DEFLECT_R) st.laneOcc[k]++;
+    if (lane < 1) st.laneNear[k]++;
   }
 
   /* 這一腳射門算哪一種情境。**只回答分得出來的那幾種** —— 見 FASTBREAK_SECS 上面那一段。
@@ -1654,6 +1690,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
                dist: Math.round(dGoal * 10) / 10, sit, inBox: inBoxAt(p.x, p.y, goalX) });
         closeChain('shot', p.x);
         st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
+        noteShotLane(p, dGoal);
         if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
         p.intent = null;
         return { kind: 'shot' };
@@ -2580,6 +2617,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
     emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'Penalty', inBox: inBoxAt(p.x, p.y, goalX) });
     st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
+    noteShotLane(p, dGoal);
     if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
     /* 這裡**不叫 openChain** —— deadBall 已經把 pendingOrigin 設成 'penalty',
        下一個控到球的人(補射或門將)由 giveTo 開串就好。在這裡多開一次會多一條空串。 */
@@ -2692,6 +2730,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
     emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner', inBox: inBoxAt(p.x, p.y, goalX) });
     st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
+    noteShotLane(p, dGoal);
     if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
   }
 
@@ -2774,6 +2813,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         intercepts: { ...st.intercepts }, passBy: { ...st.passBy }, tacklesBy: { ...st.tacklesBy }, passOk: { ...st.passOk },
         offsides: { ...st.offsides }, why: { ...(st.why ?? {}) },
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
+        laneShots: [...st.laneShots], laneOcc: [...st.laneOcc], laneNear: [...st.laneNear],
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
