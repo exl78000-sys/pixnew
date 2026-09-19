@@ -32369,7 +32369,17 @@
     }
    ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 51813,
+      "team": 15,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [
      {
       "person": 74964,
@@ -32385,6 +32395,24 @@
       "team": 5,
       "min": 45,
       "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 304123,
+      "team": 15,
+      "min": 59,
+      "label": "59'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 50623,
+      "team": 15,
+      "min": 59,
+      "label": "59'00",
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
@@ -32417,8 +32445,8 @@
      }
     ]
    },
-   "clock": "58'00"
+   "clock": "62'00"
   }
  },
- "fetchedAt": "2026-09-19T17:46:28.486Z"
+ "fetchedAt": "2026-09-19T17:48:44.290Z"
 }
