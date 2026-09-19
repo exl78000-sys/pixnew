@@ -271,8 +271,22 @@ line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.c
      得先知道錯的是哪一項(階段 4y 的規矩:先問這個量是什麼乘什麼)。 */
   const realClr = pair('clearances') ?? 0;
   const clr = mean(rows.map(r => r.st.counts.clears));
-  if (realClr) line('  每場解圍', clr.toFixed(1), `真實 ${realClr.toFixed(1)}  **${(clr / realClr).toFixed(2)} 倍** —— 定義可能不同(見下一行),只回報`);
+  /* **「本站的 clear」不是一種事件,是兩種**(2026-09-19,階段 4l-3)。逐次量了大腳那一腳
+     的來源:59% 是搶到鬆球之後解掉(上游的 `clearances`),41% 是**接了隊友的傳球、
+     控住 0.9 秒、再大腳**(上游會記成一記長傳,不是解圍)。所以總數拿去比 `clearances`
+     是「拿自己計數器的名字去比上游的同名欄位」—— 那個 ×3 有一大半是名字對錯了。
+     這裡改成**分開比**:反應式的那一份對 `clearances`、teamPass 的那一份併進長傳那一節講。 */
+  const hoof = bag('hoofFrom'), cw = bag('clearWhy');   // bag() 給的是總和,要自己除場數
+  const react = ((hoof.loose ?? 0) + (hoof.steal ?? 0) + (cw.cross ?? 0) + (cw.out ?? 0)) / rows.length;
+  const asPass = (hoof.teamPass ?? 0) / rows.length;
+  if (realClr) {
+    line('  每場解圍(反應式)', react.toFixed(1),
+      `真實 ${realClr.toFixed(1)}  **${(react / realClr).toFixed(2)} 倍** —— 搶到鬆球解掉 + 頭球解圍傳中 + 捅出底線`);
+    line('  　另計:接隊友傳球再大腳', asPass.toFixed(1),
+      `上游會記成一記長傳、不是解圍,所以**不**拿去比 ${realClr.toFixed(1)}(本站總 clear ${clr.toFixed(1)})`);
+  }
   show('  　解圍的三條路', bag('clearWhy'));
+  show('  　大腳是怎麼拿到球的', hoof);
   show('  角球是怎麼來的', bag('cornerSrc'));
   show('  傳中的第一點', bag('cornerFirst'), cor);
   /* **角球第一點的爭頂**(2026-09-19,階段 4l-4)。4l-2 的兩個否定都停在「離球最近的人拿到」

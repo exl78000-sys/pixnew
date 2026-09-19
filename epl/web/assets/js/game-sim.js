@@ -1188,7 +1188,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 第一點之後**球被誰控住**:角球射門缺的是腳下那一種(禁區內補射 + 禁區外第二波),
        而它的前提就是進攻方拿得到第二球。`clearWhy` 是解圍的三條路各自幾次 ——
        側寫的 `clearances` 說真實一場 48.7 次,本站 145.7,先看是哪一條在產生它。 */
-    cornerNext: {}, cornerNextD: [], clearWhy: {},
+    cornerNext: {}, cornerNextD: [], clearWhy: {}, hoofFrom: {},
     /* **0~5 公尺那一格是 0**(2026-09-18,階段 4l-2)。真實的角球射門有 13% 在 5 公尺內
        (頭球 19% / 腳下 8%),本站 1%。0 不是「少」,是那條路根本沒鋪(階段 4h)——
        所以先量兩件事:傳中被碰到的那一刻**最近的進攻方離門多遠**(有沒有人在那裡),
@@ -1368,6 +1368,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* **在 openChain 之前先看** —— 它會把 pendingOrigin 領走清掉(見 CORNER_SNAP)。 */
     const second = st.pendingOrigin?.kind === 'corner' && st.pendingOrigin.side === p.side;
     p.assistBy = from && from !== p && from.side === p.side ? from : null;
+    /* **球是怎麼到他腳下的**(2026-09-19,階段 4l-3)。解圍那一腳要分兩種:
+       接了隊友的傳球、控住、再大腳,在上游是一記(長)**傳球**;
+       而搶到鬆球 / 被對手踢來的球之後把它解掉,才是上游的 `clearances`。
+       本站原本兩種都記成 `clear`,拿總數去比 `clearances` 就是
+       「拿自己計數器的名字去比上游的同名欄位」。純標記,不呼叫 rng。 */
+    p.gotFrom = from ? (from.side === p.side ? 'teamPass' : 'steal') : 'loose';
     ball.holder = p; ball.vx = 0; ball.vy = 0; ball.vz = 0; ball.z = 0;
     openChain(p.side);
     if (ball.shot) { st.lostShot++; if (ball.shot.willScore) st.lostGoal++; }
@@ -1459,6 +1465,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const dd = hypot(tx - p.x, ty - p.y), tt = cl(dd / 16, 0.9, 2.4);
       kick(p, tx, ty, dd / tt, GRAVITY * tt / 2, 'clear');
       st.clears++; st.clearWhy.hoof = (st.clearWhy.hoof ?? 0) + 1;
+      /* 大腳逐來源記一次 —— `check-sim` 拿 `loose` + `steal` 那一份去比 `clearances`,
+         `teamPass` 那一份是長傳,兩個錨分開講(見 giveTo 裡的註解)。 */
+      st.hoofFrom[p.gotFrom ?? 'loose'] = (st.hoofFrom[p.gotFrom ?? 'loose'] ?? 0) + 1;
       p.intent = null;
       return { kind: 'clear' };
     }
@@ -2696,6 +2705,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp, boxDuels: st.boxDuels,
         cornerSrc: { ...st.cornerSrc }, cornerFirst: { ...st.cornerFirst }, cornerShot: { ...st.cornerShot },
         cornerNext: { ...st.cornerNext }, cornerNextD: [...st.cornerNextD], clearWhy: { ...st.clearWhy },
+        hoofFrom: { ...st.hoofFrom },
         cornerNearD: [...st.cornerNearD], nearBall: { ...st.nearBall },
         cornerAimD: [...st.cornerAimD], cornerSpotD: [...st.cornerSpotD],
         air: { touch: st.air.touch, byCorner: st.air.byCorner, duel: st.air.duel, pAttSum: st.air.pAttSum,

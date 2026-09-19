@@ -603,10 +603,12 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       const rsDecl = chkBare.indexOf('const realShots');
       check('realShots 宣告在它第一個用的地方之前(模組層 const 沒有提升)',
         rsDecl > 0 && chkBare.indexOf('realShots') === rsDecl + 'const '.length);
-      /* 解圍那個錨是這一場兩隊自己的值(4w 的規矩),而且只回報不判 ——
-         本站的 `st.clears` 跟上游的 `clearances` 定義不保證一樣。 */
+      /* 解圍那個錨是這一場兩隊自己的值(4w 的規矩),而且只回報不判。
+         **這一條原本還釘著註解裡的「定義可能不同」那五個字** —— 而 4l-3 把那個問題
+         量出答案了(59% 是解圍、41% 是長傳),句子跟著改,測試就紅在「錨不見了」。
+         釘字面的句子守不住任何性質:改成守**錨的來源**,而「有沒有分開比」由第 17 節守。 */
       check('解圍的錨走共用的 pair()(這一場兩隊,不是聯盟平均)',
-        /pair\('clearances'\)/.test(chkBare) && /定義可能不同/.test(chkSrc));
+        /pair\('clearances'\)/.test(chkBare));
     }
 
     /* 15. 階段 4l-2:**同一個 situation 裡還有兩種形狀**。上游逐顆射門帶 `foot`,
@@ -691,6 +693,44 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
       check('爭頂的計數器吐給 counts,check-sim 印出來',
         /air: \{ touch: st\.air\.touch/.test(bare) && /第一點的爭頂/.test(chkBare3));
+    }
+
+    /* 17. 階段 4l-3:**「本站的 clear」不是一種事件,是兩種**。逐次量過大腳那一腳的來源:
+       59% 是搶到鬆球之後解掉(上游的 `clearances`),41% 是接了隊友的傳球、控住 0.9 秒、
+       再大腳 —— 上游會把那一記記成長傳。所以拿總數比 `clearances` 是
+       「拿自己計數器的名字去比上游的同名欄位」,那個 ×3.06 有一大半是名字對錯了。
+       守三件事:引擎標了來源、`check-sim` **分開比**(反應式的那一份才對 `clearances`)、
+       以及**兩種都真的存在**(只有一種的話這個拆解在守一件不存在的事)。 */
+    {
+      const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const bare4 = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('接到球時標了「球是怎麼來的」,大腳時逐來源記一次',
+        /p\.gotFrom = from \? \(from\.side === p\.side \? 'teamPass' : 'steal'\) : 'loose'/.test(bare4)
+        && /st\.hoofFrom\[p\.gotFrom/.test(bare4) && /hoofFrom: \{ \.\.\.st\.hoofFrom \}/.test(bare4));
+      /* **拿去比 `clearances` 的不可以是總數。** 切出那一段再看它讀的是誰 ——
+         掃整份的話「clears」在別處出現照樣綠(負向對照驗過)。 */
+      const chkBare4 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const i0 = chkBare4.indexOf("const realClr");
+      const i1 = chkBare4.indexOf("show('  　解圍的三條路'");
+      const seg = i0 >= 0 && i1 > i0 ? chkBare4.slice(i0, i1) : '';
+      check('解圍的倍率用反應式那一份算,不是總 clear',
+        seg.length > 0 && /react \/ realClr/.test(seg) && !/\bclr \/ realClr\b/.test(seg),
+        `切出來 ${seg.length} 字元`);
+      const chkRaw4 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8');
+      check('接隊友傳球再大腳那一份另外印,而且講明它是長傳不是解圍',
+        /asPass/.test(seg) && /會記成一記長傳/.test(chkRaw4));
+      /* **兩種都要真的出現** —— 跑一場真的模擬來數,不是掃原始碼。
+         只有一種的話,上面那兩條就是在守一個不會發生的分支。 */
+      {
+        const S2 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        const sim2 = S2.createSim({ profile, home: 'ARS', away: 'LIV', seed: 7 });
+        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim2.state().over; i++) sim2.advance(1 / 60);
+        const hf = sim2.state().counts.hoofFrom ?? {};
+        check('一場真模擬裡兩種來源都出現(拆解不是在守一件不存在的事)',
+          (hf.loose ?? 0) > 0 && (hf.teamPass ?? 0) > 0,
+          Object.entries(hf).map(([k, v]) => `${k} ${v}`).join('、') || '(一種都沒有)');
+      }
     }
   }
 }
