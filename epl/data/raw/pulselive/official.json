@@ -29483,9 +29483,36 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 110526,
+      "team": 2,
+      "min": 46,
+      "label": "46'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
+     {
+      "person": 117596,
+      "team": 21,
+      "min": 19,
+      "label": "19'00",
+      "phase": "1",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 32229,
+      "team": 21,
+      "min": 19,
+      "label": "19'00",
+      "phase": "1",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
      {
       "person": 13344,
       "team": 2,
@@ -29505,25 +29532,31 @@
       "dir": "off"
      },
      {
-      "person": 117596,
+      "person": 51364,
       "team": 21,
-      "min": 19,
-      "label": "19'00",
-      "phase": "1",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
       "dirRaw": "ON",
       "dir": "on"
      },
      {
-      "person": 32229,
+      "person": 119072,
       "team": 21,
-      "min": 19,
-      "label": "19'00",
-      "phase": "1",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
      }
     ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -29535,11 +29568,17 @@
       "min": 45,
       "label": "45+8'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "47'00"
   }
  },
- "fetchedAt": "2026-09-19T12:38:33.147Z"
+ "fetchedAt": "2026-09-19T12:40:51.106Z"
 }
