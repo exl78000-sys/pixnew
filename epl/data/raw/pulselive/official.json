@@ -30279,7 +30279,7 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "48'00"
   },
   "EVE|IPS": {
    "fixtureId": 128966,
@@ -30778,7 +30778,7 @@
      }
     ]
    },
-   "clock": "47'00"
+   "clock": "49'00"
   },
   "NEW|HUL": {
    "fixtureId": 128970,
@@ -31214,19 +31214,6 @@
    "goals": [
     {
      "side": "H",
-     "person": 14446,
-     "assist": 14716,
-     "team": 23,
-     "min": 3,
-     "label": "03'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "H",
      "person": 108922,
      "assist": 14716,
      "team": 23,
@@ -31278,8 +31265,33 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 66538,
+      "team": 41,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 8885,
+      "team": 41,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -31291,11 +31303,17 @@
       "min": 45,
       "label": "45+6'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+6'00"
+   "clock": "45'00"
   }
  },
- "fetchedAt": "2026-09-19T15:04:14.796Z"
+ "fetchedAt": "2026-09-19T15:06:31.764Z"
 }
