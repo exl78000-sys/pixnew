@@ -34558,7 +34558,7 @@
    "fixtureId": 128967,
    "kickoff": "2026-09-20T15:30:00.000Z",
    "status": "C",
-   "final": false,
+   "final": true,
    "score": {
     "home": 1,
     "away": 1
@@ -35218,8 +35218,15 @@
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+4'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-20T17:22:03.637Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-09-20T17:19:47.253Z"
+ "fetchedAt": "2026-09-20T17:22:03.637Z"
 }
