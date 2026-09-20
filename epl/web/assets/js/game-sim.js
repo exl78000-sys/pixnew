@@ -1390,6 +1390,20 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        「**至少有一個人**落在 `DEFLECT_R` 內」的腳數,跟「路上有人(0.75 m 內)」
        那一排逐字同一個判準,可以直接並排比。 */
     laneSqHit: SQUEEZE.map(() => new Array(7).fill(0)),
+    /* **扣扳機有沒有在挑空走廊**(2026-09-20,階段 5g)。5c 量到射門當下球的路上有人
+       只有 10.8%,而**有人時封阻 32.9%、沒人 0.3%** —— 判定本身沒問題,缺的是曝光。
+       5f 否定了收窄(天花板 21%)、5d 否定了撲搶(天花板單調而真實是駝峰),
+       剩下的候選是「射手等到沒有人擋才出手」。
+
+       **量在每一個射程內的決策點**(射與不射都算),再按「後來有沒有射」拆兩群。
+       線是射手 → **球門中心**:飛行方向要等 `miss` / `err` 抽完才存在,拿它分群
+       等於**用結局去條件化**;決策當下看得到的只有意圖。
+       **代價寫在這裡**:這幾個數字跟 5c / 5d 那幾排**不可比**(5c 實測兩條線
+       各錯三分之一),`check-sim` 另外標名字,不要跟那幾排並排讀。
+
+       **這一段一次 `rng()` 都不准呼叫** —— 純觀測,驗法是同一組種子逐場逐字相同。 */
+    decN: new Array(7).fill(0), decOcc: new Array(7).fill(0), decFar: new Array(7).fill(0),
+    decShot: new Array(7).fill(0), decShotOcc: new Array(7).fill(0), decShotFar: new Array(7).fill(0),
     /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
        而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
        被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
@@ -1496,6 +1510,26 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      兩個都要,不然分不出「沒有人」與「有人但站得不夠準」。
      被罰下的人要排掉:他留在原地不動,算進去就是「量測的母體跟畫面不一致」。
      純觀測,一次 `rng()` 都不呼叫。 */
+  /* **決策當下的球道佔比**(2026-09-20,階段 5g)。跟 `noteShotLane` 的幾何同一套,
+     差別只有一條線:那支用**球真正的飛行方向**(射出去之後才存在),這支用
+     射手 → **球門中心**(決策當下唯一看得到的意圖)。兩條線不可比,所以計數器分開。
+     **一次 `rng()` 都沒有** —— 它只讀座標。 */
+  function laneAtDecision(p, dGoal) {
+    const gx = sideOf(p.side).att > 0 ? PITCH_W : 0;
+    const dx = gx - p.x, dy = PITCH_H / 2 - p.y;
+    const L = hypot(dx, dy);
+    if (!(L > 0.01)) return { occ: 0, far: 0 };
+    const ux = dx / L, uy = dy / L;
+    let lane = Infinity;
+    for (const q of all()) {
+      if (q.off || q.side === p.side || q === sideOf(q.side).gk) continue;
+      const a = (q.x - p.x) * ux + (q.y - p.y) * uy;
+      if (a <= 0.3 || a >= L) continue;            // 球已經過去的人擋不到(跟 noteShotLane 同一條)
+      const perp = Math.abs((q.x - p.x) * uy - (q.y - p.y) * ux);
+      if (perp < lane) lane = perp;
+    }
+    return { occ: lane < DEFLECT_R ? 1 : 0, far: lane < LANE_FAR ? 1 : 0 };
+  }
   function noteShotLane(shooter, dGoal) {
     const v = hypot(ball.vx, ball.vy);
     if (!(v > 0.01)) return;
@@ -1843,12 +1877,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          「要生出真實的分佈,每一格的機率得是多少」。 */
       const oppBin = Math.min(6, Math.floor(dGoal / 5));
       st.oppBins.n[oppBin]++;
+      /* **階段 5g:球道佔比要在抽籤之前量**,而且射與不射用同一份。
+         在這裡量、抽完再加射門那一份 —— 兩群逐字同一條線、同一個母體。
+         放到抽籤後面分兩支各量一次的話,那就是兩份程式,遲早會分岔。 */
+      const dl = laneAtDecision(p, dGoal);
+      st.decN[oppBin]++; st.decOcc[oppBin] += dl.occ; st.decFar[oppBin] += dl.far;
       /* 角球第二球的一腳出手(見 CORNER_SNAP):**只換機率,其餘完全一樣**。
          `oppBins` 是「要生出真實分佈,每一格的機率得是多少」的回推用的 ——
          這一條路的機率不是 urge,所以那個回推在角球那一段會被它拉高,引用時要記得。 */
       const snap = p.snap === true; p.snap = false;
       if (rng() < (snap ? CORNER_SNAP : cl(urge, 0, 0.9))) {
         st.oppBins.shot[oppBin]++;
+        st.decShot[oppBin]++; st.decShotOcc[oppBin] += dl.occ; st.decShotFar[oppBin] += dl.far;
         const xg = cl(q * xgScale, 0.01, 0.95);
         const c = cal[p.side];
         const pGoal = cl(xg * (c?.k ?? 1), 0, 1);   // 上限 1:一顆必進的球就是必進,截在 0.97 只會偷走期望值
@@ -3029,6 +3069,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         lineBack: [...st.lineBack], lineFront: [...st.lineFront], lineWide: [...st.lineWide],
         lineWideShape: [...st.lineWideShape], lineShapeN: [...st.lineShapeN], lineMarked: [...st.lineMarked],
         laneSq: st.laneSq.map(a => [...a]), laneSqHit: st.laneSqHit.map(a => [...a]),
+        decN: [...st.decN], decOcc: [...st.decOcc], decFar: [...st.decFar],
+        decShot: [...st.decShot], decShotOcc: [...st.decShotOcc], decShotFar: [...st.decShotFar],
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
