@@ -32988,7 +32988,17 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 33231,
+      "team": 10,
+      "min": 46,
+      "label": "46'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -33017,7 +33027,7 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "47'00"
   },
   "LEE|CRY": {
    "fixtureId": 128968,
@@ -33463,8 +33473,33 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 37776,
+      "team": 6,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 115169,
+      "team": 6,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -33476,10 +33511,16 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "46'00"
   },
   "MCI|SUN": {
    "fixtureId": 128969,
@@ -34012,5 +34053,5 @@
    "clock": "45+6'00"
   }
  },
- "fetchedAt": "2026-09-20T14:02:07.577Z"
+ "fetchedAt": "2026-09-20T14:04:27.654Z"
 }
