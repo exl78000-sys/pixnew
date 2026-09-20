@@ -32556,8 +32556,8 @@
   "BOU|LIV": {
    "fixtureId": 128963,
    "kickoff": "2026-09-20T13:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 1
@@ -33197,12 +33197,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -33219,10 +33213,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+3'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-20T14:53:30.494Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "LEE|CRY": {
    "fixtureId": 128968,
@@ -34431,7 +34438,7 @@
      }
     ]
    },
-   "clock": "87'00"
+   "clock": "90+1'00"
   },
   "FUL|MUN": {
    "fixtureId": 128967,
@@ -34831,5 +34838,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T14:51:11.832Z"
+ "fetchedAt": "2026-09-20T14:53:31.180Z"
 }
