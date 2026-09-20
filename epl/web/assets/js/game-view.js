@@ -66,8 +66,8 @@ export async function renderGame(app) {
     /* **只列連續引擎真的接得到的那兩軸。** 舊版有六軸,而新引擎裡只有壓迫與防線高度有對應的旋鈕 ——
        其餘四個留著就是四個拉了不會有任何反應的按鈕,那比沒有更糟(鐵則三的同一個道理)。
        缺的那四個在畫面上列出來說「還沒接」,不要讓讀者自己去猜。 */
-    const LIVE_TACTICS = ['pressing', 'line'];
-    const TACTIC_TODO = ['mentality', 'width', 'tempo', 'directness'];
+    const LIVE_TACTICS = ['pressing', 'line', 'directness'];
+    const TACTIC_TODO = ['mentality', 'width', 'tempo'];
     const defaultTactics = code => Object.fromEntries(LIVE_TACTICS.map(k => [k, profile.teams[code]?.style?.[k]?.level ?? 3]));
     const squadOf = side => new Map(profile.teams[state[side]].squad.map(p => [p.code, p]));
 
@@ -537,10 +537,14 @@ export async function renderGame(app) {
         };
       });
     }
-    /* 戰術指令。**只列連續引擎真的接得到的兩軸**,其餘四個照實說還沒接 ——
-       留著四個拉了不會有任何反應的按鈕,比沒有這四個更糟。
-       每一級改多少是遊戲規則(壓迫 ±15%/級、防線 ±12.5%/級),刻意做小:
-       大到會讓 λ 的錨失效的話,這一頁就在編數字了。 */
+    /* 戰術指令。**只列連續引擎真的接得到、而且量過方向對的軸** ——
+       留著拉了不會有反應、或者拉了會讓球隊踢得很爛的按鈕,比沒有這些按鈕更糟。
+       每一級改多少是遊戲規則(壓迫 ±15%/級、防線 ±12.5%/級、直接度 ±0.06/級),刻意做小:
+       大到會讓 λ 的錨失效的話,這一頁就在編數字了。
+       **直接度 2026-09-20 掛上來**:階段 4a 量過它是四軸裡唯一乾淨的一個
+       (傳球 15.9→25.2 公尺、射門 17.7→17.2 幾乎不動 = 改踢法不改強弱),
+       而它在那之後一直留在「還沒接」那一行 —— 那是「東西在但沒有按鈕」。
+       **軸的數量不要寫死**:這一段講的話從 LIVE_TACTICS / TACTIC_TODO 算出來。 */
     function tacticsPanelHtml(sd) {
       const t = profile.teams[state[sd]], axes = profile.styleAxes ?? {};
       const cur = setupOf(sd).tactics ?? defaultTactics(state[sd]);
@@ -553,7 +557,7 @@ export async function renderGame(app) {
             <span class="row" style="gap:3px;flex-wrap:wrap">${a.levels.map((z, i) => `<button class="btn tiny${cur[k] === i + 1 ? ' on' : ''}" data-tac-side="${sd}" data-tac-key="${k}" data-tac-level="${i + 1}">${C.esc(z)}${def[k] === i + 1 ? '<span class="dim">・本季</span>' : ''}</button>`).join('')}</span>
             <span></span><span class="tiny dim">本季實際:${st?.value != null ? `${st.value}${C.esc(st.unit ?? '')}(${C.esc(st.basis)},${st.n} 場${st.proxy ? ',代理指標' : ''})` : '沒有資料,預設中'}</span>
           </div>`; }).join('')}
-        <div class="tiny dim" style="margin-top:6px">還沒接上新引擎的指令:${C.esc(todo)} —— 舊引擎有,連續引擎裡還沒有對應的旋鈕,所以不放按鈕。</div>
+        <div class="tiny dim" style="margin-top:6px">還沒掛上來的指令:${C.esc(todo)} —— 引擎裡的旋鈕接了,但量下去<b>方向不對或幅度離譜</b>(寬度拉寬反而自己射門砍半、節奏 ±20% 換來 3.3 倍的射門、心態的越位變 4 倍而且跟側寫自己宣告的相反),所以不放按鈕。</div>
       </div>`;
     }
     function bindTactics() {
