@@ -340,12 +340,26 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
          (原本這裡的負向對照是「烏龍球歸錯隊」,那是回合制引擎才有的東西 ——
          連續引擎還沒有烏龍球,留著就是在守一件不存在的事。) */
       {
+        /* **不可以靠「這個種子剛好有進球」。** 第一版拿 `runs[0]` 的真事件流當母體,
+           而它要有進球才驗得到 —— 2026-09-20 接體能那一輪,新的常數加上當天重算的側寫
+           讓種子 1 變成 0-0,這條就紅在「驗不到」上,而它要守的事一件都沒變。
+           那是「把目標達成寫成 CI 紅線」的近親:**斷言的前提綁在一個會漂的結果上**。
+           改成**合成**的輸入:在真的事件流後面各加一顆進球與一腳射門 ——
+           射門數只准 +1;`tally` 如果把進球也算成射門就會 +2。一場都不用跑,而且不會漂。 */
+        const synth = { ...input, events: [...input.events,
+          { type: 'goal', side: 'home', min: 10 }, { type: 'shot', side: 'home', min: 11 }] };
+        const ts = D.tally(synth);
+        check('負向對照:進球也算一次射門 → 射門數就多一顆(合成輸入,不靠種子有沒有進球)',
+          ts.home.shots === t.home.shots + 1 && ts.home.goals === t.home.goals + 1,
+          `射門 ${t.home.shots} → ${ts.home.shots}、進球 ${t.home.goals} → ${ts.home.goals}`);
+        /* 真事件流上的那一條保留,但只在**這一場真的有進球**時才判 ——
+           有就是白拿的一條,沒有就印一行,不當紅線(「無法核對 ≠ 不一致」)。 */
         const dbl = { home: 0, away: 0 };
         for (const e of input.events) if (e.type === 'goal') dbl[e.side]++;
-        const bad = ['home', 'away'].some(sd => dbl[sd] > 0);
-        check('負向對照:進球也算一次射門 → 射門數就對不回引擎 counts',
-          bad && ['home', 'away'].some(sd => t[sd].shots + dbl[sd] !== s.counts.shotsBy[sd]),
-          bad ? '' : '(這一場兩隊都沒進球,驗不到)');
+        const scored = ['home', 'away'].some(sd => dbl[sd] > 0);
+        check('(有進球時才判)真事件流上把進球也算成射門一樣對不回 counts',
+          !scored || ['home', 'away'].some(sd => t[sd].shots + dbl[sd] !== s.counts.shotsBy[sd]),
+          scored ? `這一場 ${dbl.home}-${dbl.away}` : '這一場兩隊都沒進球 —— 只印不判');
       }
       // (b) 文字裡塞一個 evidence 沒有的數字 → 第 3 條要紅
       check('負向對照:文字裡多一個沒出處的數字 → 驗證器抓得到',
