@@ -16,7 +16,7 @@
  * 那不是引擎在飄,是 SE 本身的噪音。所以預設改成 12,而且會印出
  * 「這個場數驗得出多大的偏差」,不夠的時候只印不判。
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -287,6 +287,41 @@ const collectReal = (sel) => {
     out: { blk: out.blk / n, on: out.on / n, off: out.off / n },
     blkShape: { bins: allBins.map((v, i) => (v ? blkBins[i] / v : null)), ...qual } } : null;
 };
+/* **進球的時間分佈**(2026-09-20,體能的錨)。體能本身沒有直接的真值可以校準 ——
+   FotMob 的 `physical` 只有全場總計(distance / sprintDistance / sprints / running),
+   **沒有逐半場**(dump 過)。能當錨的是它的**後果**:真實世界的進球在後段變多。
+
+   兩件事要先分開,因為它們決定體能該做成什麼形狀:
+   ① 補時的進球要**單獨算** —— 第 3 與第 6 格含補時的話格子比較寬,會虛胖;
+   ② 量出來**不是單調的**(46-60 分比 61-75 分高),那是中場休息後的重啟效應,
+      不是疲勞。單純「體能線性衰退」生不出這個形狀(4k:先問函式族生不生得出目標的形狀)。
+
+   判的是**英超**(這一場踢的是英超),六聯賽 + 盃賽 + 歐冠那一份只當參照 —— 4w 的規矩。 */
+const goalClock = (onlyEpl) => {
+  const bins = new Array(6).fill(0);
+  let ht = 0, ft = 0, games = 0;
+  const dirs = readdirSync(join(ROOT, 'data', 'raw')).filter(d => d.startsWith('fotmob-'));
+  for (const d of (onlyEpl ? ['fotmob-epl'] : dirs)) {
+    const dir = join(ROOT, 'data', 'raw', d);
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir)) {
+      if (!/game-details\.json$/.test(f)) continue;
+      let j; try { j = JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { continue; }
+      for (const m of Object.values(j.matches ?? {})) {
+        games++;
+        for (const e of (m.events ?? [])) {
+          if (e.type !== 'Goal' || !e.minute) continue;
+          if ((e.extra ?? 0) > 0) { (e.minute <= 45 ? ht++ : ft++); continue; }
+          bins[Math.min(5, Math.floor((e.minute - 1) / 15))]++;
+        }
+      }
+    }
+  }
+  const reg = bins.reduce((a, b) => a + b, 0);
+  return { bins, reg, ht, ft, games, rel: bins.map(b => (reg ? b / reg * 6 : null)) };
+};
+const clockEpl = goalClock(true), clockAll = goalClock(false);
+
 const realShots = collectReal(() => true);                                   // 全聯盟:形狀與逐情境用它(樣本大)
 const realFx = collectReal(sh => sh.team === HOME || sh.team === AWAY);      // 這一場兩隊:判定用它
 
@@ -790,6 +825,32 @@ if (simShots && realShots) {
         line('　封阻 ÷ 路上有人', O > 0 ? (myBlkN0 / O).toFixed(2) : '—',
           `射門當下路上有人的每 1 腳,實際被擋掉 N 腳。**大於 1 正常**(曝光是那一瞬間量的,`
           + `球飛的時候防守員還在動);這一項接近 1 就代表缺的是曝光不是判定`);
+      }
+      /* **進球的時間分佈**(2026-09-20,體能的錨)。完全從 `sim.events()` 算 ——
+         引擎一個字都沒動。補時單獨一欄:含補時的格子比較寬會虛胖。
+         真實**不是單調的**(46-60 比 61-75 高 = 中場休息的重啟效應),
+         所以「體能線性衰退」這種函式族生不出這個形狀 —— 接體能的時候要先問這件事。 */
+      {
+        const eb = new Array(6).fill(0); let eht = 0, eft = 0;
+        for (const r of rows) for (const e of r.sim.events()) {
+          if (e.type !== 'goal' || !e.min) continue;
+          if ((e.extra ?? 0) > 0) { (e.min <= 45 ? eht++ : eft++); continue; }
+          eb[Math.min(5, Math.floor((e.min - 1) / 15))]++;
+        }
+        const reg = eb.reduce((x, y) => x + y, 0);
+        const rel = v => (v == null ? '  —' : v.toFixed(2).padStart(4));
+        console.log('');
+        console.log(`  ${'進球的時間(每分鐘相對率)'.padEnd(26, '　')} ${eb.map(v => rel(reg ? v / reg * 6 : null)).join(' ')}　← 1-15 / … / 76-90`);
+        console.log(`  ${`真實(英超 ${clockEpl.reg} 顆)`.padEnd(26, '　')} ${clockEpl.rel.map(rel).join(' ')}`);
+        console.log(`  ${`真實(六聯賽+盃賽 ${clockAll.reg} 顆)`.padEnd(26, '　')} ${clockAll.rel.map(rel).join(' ')}　← 只當參照`);
+        /* 本站的樣本:一場約 2.4 顆、六格,所以場數少的時候這一排的雜訊很大。
+           把樣本數印出來(本站的規矩:沒有它,單調趨勢與雜訊長得一模一樣)。 */
+        line('　這一排的樣本', `${reg} 顆(每格約 ${Math.round(reg / 6)})`,
+          `一格的 ±1 SE 約 ${reg ? (6 * Math.sqrt((1 / 6) * (5 / 6) / reg)).toFixed(2) : '—'} —— 差不到它的就是雜訊`);
+        line('　補時進球(顆 / 場)',
+          `半場 ${(eht / rows.length).toFixed(3)}・終場 ${(eft / rows.length).toFixed(3)}`,
+          `真實(英超)半場 ${(clockEpl.ht / clockEpl.games).toFixed(3)}・終場 ${(clockEpl.ft / clockEpl.games).toFixed(3)}`
+          + ` —— 終場補時每分鐘約是正規時間的 1.5 倍,那是體能之外的另一件事`);
       }
       const q = realShots.blkShape, qf = realFx.blkShape;
       const ratio = (x) => (x && x.blkN && x.freeN ? (x.blkXg / x.blkN) / (x.freeXg / x.freeN) : null);
