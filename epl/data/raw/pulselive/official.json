@@ -32992,20 +32992,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+1'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+1'00"
   },
   "LEE|CRY": {
    "fixtureId": 128968,
@@ -33454,20 +33454,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+2'00"
   },
   "MCI|SUN": {
    "fixtureId": 128969,
@@ -33475,7 +33475,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 2,
+    "home": 3,
     "away": 2
    },
    "homeId": 11,
@@ -33906,7 +33906,7 @@
     {
      "side": "H",
      "person": 25474,
-     "assist": null,
+     "assist": 14569,
      "team": 11,
      "min": 43,
      "label": "43'00",
@@ -33945,8 +33945,8 @@
      }
     ]
    },
-   "clock": "43'00"
+   "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-09-20T13:45:41.378Z"
+ "fetchedAt": "2026-09-20T13:48:01.461Z"
 }
