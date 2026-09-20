@@ -1114,13 +1114,19 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         /perp < LANE_FAR\) n\+\+/.test(seg5f) && /perp < DEFLECT_R\) hit = 1/.test(seg5f));
       /* `SQUEEZE` 跟 `LANE_FAR` 同一類:量測的邊界,引擎的行為不准讀它。
          守性質不數次數(數次數的斷言這一輪已經被自己咬過一次)。 */
-      const sq0 = simBare.indexOf('const SQUEEZE = ');
+      /* **計數器的長度由它決定是合法的**(`laneSq: SQUEEZE.map(...)`)——
+         那是量測的基礎設施,不是引擎的行為。第一版的規則寫成「宣告與 noteShotLane
+         以外一處都不准有」,於是**乾淨狀態下就紅**,而且七個負向對照每個都多紅一條、
+         針對它的那個 bug 因此完全沒驗到。所以允許的三種:宣告、`noteShotLane` 裡面、
+         以及**同一行也提到 `laneSq`** 的(配置計數器)。 */
       let strayS = 0, atS = -1, totS = 0;
       while ((atS = simBare.indexOf('SQUEEZE', atS + 1)) >= 0) {
         totS++;
         const isDecl = simBare.slice(Math.max(0, atS - 6), atS) === 'const ';
-        if (!isDecl && !(b0 >= 0 && b1 > b0 && atS > b0 && atS < b1)
-          && !(sq0 >= 0 && Math.abs(atS - sq0) < 40)) strayS++;
+        const ls0 = simBare.lastIndexOf('\n', atS), ls1 = simBare.indexOf('\n', atS);
+        const lineOf = simBare.slice(ls0 + 1, ls1 < 0 ? undefined : ls1);
+        const isAlloc = lineOf.includes('laneSq');
+        if (!isDecl && !isAlloc && !(b0 >= 0 && b1 > b0 && atS > b0 && atS < b1)) strayS++;
       }
       check('SQUEEZE 只給量測用:宣告與 noteShotLane 以外一處都不准有',
         totS >= 2 && strayS === 0, `整份 ${totS} 處、漏進行為 ${strayS} 處`);
