@@ -34989,25 +34989,35 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 128976,
+      "team": 34,
+      "min": 45,
+      "label": "45'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
      {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+1'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+1'00"
   }
  },
- "fetchedAt": "2026-09-20T16:14:29.573Z"
+ "fetchedAt": "2026-09-20T16:16:48.543Z"
 }
