@@ -490,8 +490,14 @@ jobs:
           # 這條坑在盃賽回填那次真的踩過(抓到 64 場、回寫印「沒有變化」)。
           # 新聯賽特別容易中:understat-* / fotmob-* 那幾個目錄要**第一次抓成功之後**才存在,
           # 而抓取那幾步是 continue-on-error 的。所以改成逐個判斷存不存在再加。
+          # `fpl/*-fixtures.csv` 是 2026-09-20 補的:它是英超 kickoff 的鏡像來源,而**當季那一份
+          # 不是靜態檔** —— 轉播改期會改它。原本沒回寫,所以 `fetch --force` 抓到的新版隨 runner
+          # 消失,倉庫裡那份從 2026-08-23 起就沒變過,改期在站上永遠看不見(實測 9/20 兩場)。
+          # build 已經改成優先信官方 API(`live.json`),但那只涵蓋當前這一輪;回寫這一份是為了
+          # 讓更遠的輪次也跟得上,**同時讓鏡像到底新不新變成看得見的**(它一直沒變就是答案)。
           for p in \
             epl/data/raw/live.json \
+            epl/data/raw/fpl/*-fixtures.csv \
             epl/data/raw/season-gws.json \
             epl/data/raw/openfootball/ \
             epl/data/raw/pulselive/ \
