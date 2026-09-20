@@ -66,6 +66,12 @@ function play(seed, minutes = 90) {
      射門那一刻的深度要跟這個數字比才讀得出「射門時防線特別深 / 特別高」還是本來就那樣。
      沒有真實世界的錨(側寫只有 `style.line` 這個 proxy),所以**只印不判**。 */
   const def = { depth: 0, n: 0 };
+  /* **體能**(2026-09-20):逐 15 分的平均速度。疲勞縮的是**要求的速度**,
+     所以要量的就是跑出來的速度 —— 第一版的體能只壓 `vmax`,而球員只有 0.06% 的時間
+     跑在自己上限的 95% 以上,量「完場的 vmax」看得到衰退、量球場上實際發生的事看不到。
+     從 `state()` 讀,不碰引擎、不消耗 rng(4t 的硬規矩)。**沒有真實世界的錨**
+     (逐場的 physical 只有全場總計,沒有逐半場),所以只印不判。 */
+  const stam = { sum: new Array(6).fill(0), n: new Array(6).fill(0) };
   let ctrl = null, visit = null, pc = null;
   const snap = c => ({ shots: c.shots, tackles: c.tackles, thr: c.throwIns, gk: c.goalKicks,
     cor: c.corners.home + c.corners.away, fouls: c.fouls.home + c.fouls.away,
@@ -87,6 +93,8 @@ function play(seed, minutes = 90) {
        排的是**換半場的那一格**(不是「第 45 分」,補時會讓分鐘不準),
        代價是那一格真的有 bug 也看不到 —— 一場三十四萬格裡的一格,換一個不會說謊的數字。 */
     if (s.half !== half) { half = s.half; if (prev) swaps++; prev = null; }
+    const sk = Math.min(5, Math.max(0, Math.floor((((s.clock?.min ?? 0) + (s.clock?.extra ?? 0)) - 1) / 15)));
+    for (const p of s.players) { stam.sum[sk] += Math.hypot(p.vx, p.vy); stam.n[sk]++; }
     if (prev) for (const p of s.players) {
       const a = prev[p.code];
       if (!a) continue;
@@ -137,7 +145,7 @@ function play(seed, minutes = 90) {
     pc = now;
   }
   closeVisit('完場', sim.state().t);
-  return { sim, st: sim.state(), m: sim.motion(), jumps, maxJump, still, samples, bins, swaps, stay, def };
+  return { sim, st: sim.state(), m: sim.motion(), jumps, maxJump, still, samples, bins, swaps, stay, def, stam };
 }
 
 const rows = [];
@@ -851,6 +859,21 @@ if (simShots && realShots) {
           `半場 ${(eht / rows.length).toFixed(3)}・終場 ${(eft / rows.length).toFixed(3)}`,
           `真實(英超)半場 ${(clockEpl.ht / clockEpl.games).toFixed(3)}・終場 ${(clockEpl.ft / clockEpl.games).toFixed(3)}`
           + ` —— 終場補時每分鐘約是正規時間的 1.5 倍,那是體能之外的另一件事`);
+      }
+      /* **體能:逐 15 分的平均速度**(2026-09-20)。上面那一排是體能的**後果**、
+         這一排是體能**自己**:疲勞縮的是要求的速度,所以跑出來的速度該隨時間走低。
+         **沒有真實世界的錨** —— 逐場的 `physical` 只有全場總計(dump 過),沒有逐半場,
+         所以只印不判;它在這裡的用處是回答「這個常數到底有沒有在做事」。
+         (第一版的體能只壓 `vmax`,而球員只有 0.06% 的時間跑在上限的 95% 以上 ——
+          完場的 vmax 看得到衰退,而這一排一動都不動。那就是一個裝樣子的旋鈕。) */
+      {
+        const ss = new Array(6).fill(0), sn = new Array(6).fill(0);
+        for (const r of rows) for (let k = 0; k < 6; k++) { ss[k] += r.stam.sum[k]; sn[k] += r.stam.n[k]; }
+        const sp = ss.map((x, k) => (sn[k] ? x / sn[k] : null));
+        console.log(`  ${'體能:逐 15 分的平均速度'.padEnd(26, '　')} ${sp.map(v => (v == null ? '  —' : v.toFixed(3))).join(' ')} m/s`);
+        line('　後 15 分 ÷ 前 15 分', sp[0] && sp[5] ? (sp[5] / sp[0]).toFixed(3) : '—',
+          `STAM_FADE = 0 時這一格是 1.00 —— 低於 1 才代表體能真的在作用。`
+          + `沒有真值可以校準衰退的幅度,所以只回報`);
       }
       const q = realShots.blkShape, qf = realFx.blkShape;
       const ratio = (x) => (x && x.blkN && x.freeN ? (x.blkXg / x.blkN) / (x.freeXg / x.freeN) : null);
