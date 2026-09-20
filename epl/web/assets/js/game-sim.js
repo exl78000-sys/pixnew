@@ -1312,7 +1312,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        球進禁區的路徑整個變,所以真值一定比這個小。當天花板用(5d 的規矩):
        連 0%(四個人全擠在中線)都構不到需要的量,那就不是「參數沒調好」,
        是模型少一個維度,不要再掃了。 */
-    laneSq: [0.75, 0.5, 0.25, 0].map(() => new Array(7).fill(0)),
+    laneSq: SQUEEZE.map(() => new Array(7).fill(0)),
+    /* **量在造成封阻的那個半徑上。** `laneSq` 數的是 `LANE_FAR`(4 m)內幾個人,
+       而真正會碰到球的是 `DEFLECT_R`(0.75 m)—— 拿前者去推後者就是推論,
+       而本站這一輪已經推錯兩次。`laneSqHit` 是同一個收窄下
+       「**至少有一個人**落在 `DEFLECT_R` 內」的腳數,跟「路上有人(0.75 m 內)」
+       那一排逐字同一個判準,可以直接並排比。 */
+    laneSqHit: SQUEEZE.map(() => new Array(7).fill(0)),
     /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
        而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
        被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
@@ -1484,14 +1490,17 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       /* 把同樣那四個人的 y 往中線收,逐個重算它離球道多遠。
          判定跟上面那一排逐字相同(同一段球道區間、同一個半徑),只有 y 換了。 */
       SQUEEZE.forEach((c, si) => {
-        let n = 0;
+        let n = 0, hit = 0;
         for (const o of f4) {
           const yc = PITCH_H / 2 + (o.y - PITCH_H / 2) * c;
           const a = (o.x - ball.x) * ux + (yc - ball.y) * uy;
           if (a <= 0.3 || a >= L) continue;
-          if (Math.abs((o.x - ball.x) * uy - (yc - ball.y) * ux) < LANE_FAR) n++;
+          const perp = Math.abs((o.x - ball.x) * uy - (yc - ball.y) * ux);
+          if (perp < LANE_FAR) n++;
+          if (perp < DEFLECT_R) hit = 1;
         }
         st.laneSq[si][k] += n;
+        st.laneSqHit[si][k] += hit;
       });
       /* 被盯人那個數字的分母是 `lineDepthN`(全部),而隊形跨距的分母是 `lineShapeN`
          (四個人都有新鮮值的那些)—— 兩個分母不同,印的時候要各除各的。 */
@@ -2948,7 +2957,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         lineDepth: [...st.lineDepth], lineDepthN: [...st.lineDepthN],
         lineBack: [...st.lineBack], lineFront: [...st.lineFront], lineWide: [...st.lineWide],
         lineWideShape: [...st.lineWideShape], lineShapeN: [...st.lineShapeN], lineMarked: [...st.lineMarked],
-        laneSq: st.laneSq.map(a => [...a]),
+        laneSq: st.laneSq.map(a => [...a]), laneSqHit: st.laneSqHit.map(a => [...a]),
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },

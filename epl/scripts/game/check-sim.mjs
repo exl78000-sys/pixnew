@@ -755,13 +755,19 @@ if (simShots && realShots) {
            在射門那一刻直接算有幾個落進球道 4 公尺內。跟上面「站進球道 4 m」那一排
            (現況 = 100%)並排看。**這是直接的幾何效果,不是真值** ——
            真的收窄會讓對手打邊路,所以真值一定比這個小。當天花板用。 */
+        /* 兩排一起印:4 m 內幾個人(收窄推得動多少)與 **0.75 m 內有沒有人**
+           (那才是會碰到球的半徑,跟上面「路上有人(0.75 m 內)」同一個判準)。
+           只印前者的話,要把它換算成封阻率就只能用推的。 */
         [0.75, 0.5, 0.25, 0].forEach((c, si) => {
-          const row = [];
+          const row = [], hit = [];
           for (let k = 0; k < 7; k++) {
-            const S = ls(k), v = mean(rows.map(r => r.st.counts.laneSq?.[si]?.[k] ?? 0));
-            row.push(num(S > 0 ? v / S : null));
+            const S = ls(k);
+            row.push(num(S > 0 ? mean(rows.map(r => r.st.counts.laneSq?.[si]?.[k] ?? 0)) / S : null));
+            const h = mean(rows.map(r => r.st.counts.laneSqHit?.[si]?.[k] ?? 0));
+            hit.push(S > 0 ? `${(100 * h / S).toFixed(0)}`.padStart(3) : '  —');
           }
-          console.log(`  ${`　收窄到 ${(c * 100).toFixed(0)}% 寬(人 / 腳)`.padEnd(26, '\u3000')} ${row.join(' ')}${si === 0 ? '　← 天花板,真值一定比它小' : ''}`);
+          console.log(`  ${`　收窄到 ${(c * 100).toFixed(0)}%:4 m 內(人)`.padEnd(26, '\u3000')} ${row.join(' ')}${si === 0 ? '　← 天花板,真值一定比它小' : ''}`);
+          console.log(`  ${'　　　　　0.75 m 內(%)'.padEnd(26, '\u3000')} ${hit.join(' ')}${si === 0 ? '　← 這一排才換算得到封阻率' : ''}`);
         });
         const dn = rows.reduce((a, r) => a + (r.def?.n ?? 0), 0);
         const dd = rows.reduce((a, r) => a + (r.def?.depth ?? 0), 0);
