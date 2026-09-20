@@ -1264,6 +1264,38 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        也就是「就算撲搶百發百中,這一帶最多能擋掉多少」。
        兩個都逐帶記,因為 5d 的結論正是**形狀**:它們隨離門距離單調上升,而真實是駝峰。 */
     laneFar: new Array(7).fill(0), laneReach: new Array(7).fill(0),
+    /* **禁區線外那一帶,其餘九個人站在哪裡**(2026-09-20,階段 5e)。
+       5d 的結論是「不要寫撲搶」,而它同一張表上指出來的是另一件事:
+       `4 m 內有人` 隨離門距離**單調上升**,15~20 公尺那一格卻是個凹陷 ——
+       而真實的封阻率正好在那一帶到高峰。那不是「撲不撲」(5d 已否定),是**站位**。
+
+       量之前要先拆掉一個機械效應:`laneLen` 是那一腳的**球道長度**(球到球門線,
+       沿真正的飛行方向,跟上面那幾排的 `a < L` 是同一段)。球道越長,
+       「路上有人」本來就越容易成立 —— 沒有這個分母,單調上升有多少是防守站位讀不出來。
+
+       `gsN` 是**門側**的對方場上球員數(離球門比射手近,不看橫向):
+       回答「他跟球門之間有幾個人」。`laneN` 是其中真的站進球道 `LANE_FAR` 內的**人數**
+       (上面那一排只記「有沒有」,分不出一個人跟五個人)。
+       `lanePerp` / `lanePerpN` 是最近那一個離線多遠 —— 只在真的有人在球道區間裡時才記,
+       不然「沒有人」會被當成一個很大的距離混進平均。
+
+       `lineDepth` 是**防線深度**:防守方最深的四個場上球員離自家球門線的平均距離。
+       **只回報、不判** —— 側寫裡沒有公尺的錨(4q 的規矩,已經 dump 過:`style.line` 是
+       `proxy: true`、basis 寫「對手場均越位次數」,`zones` 與 `extra` 那些欄位裡也沒有位置),
+       所以不可以把它調成一個「真實深度」,那是編數字(鐵則一)。能當判準的只有
+       真實的封阻率駝峰本身,它是「禁區線外有幾個人擋著」的間接證據。 */
+    /* **「門側」有兩種,而它們差很多。** `gsN` 是「離**球門中心**比射手近」——
+       那是門側的標準意思(在球與球門之間),但它把**站得寬**的後衛排掉:
+       x = 12 公尺、靠邊線的人離球門中心 31 公尺,比一個 18 公尺的射手還遠。
+       所以另外記 `gsLineN`:只看沿場長的深度(`|q.x − gx| < |ball.x − gx|`)。
+       兩個一起看才分得出「防線根本沒退到球後面」與「退了但散得很開」——
+       第一次量到 15~20 公尺只有 2.2 個門側時,這兩種解釋長得一模一樣。 */
+    laneLen: new Array(7).fill(0), laneN: new Array(7).fill(0), gsN: new Array(7).fill(0), gsLineN: new Array(7).fill(0),
+    lanePerp: new Array(7).fill(0), lanePerpN: new Array(7).fill(0),
+    /* 只記平均會讓「一條線」跟「散開的四個人」長得一模一樣 —— 而那兩件事要修的
+       地方完全不同。所以**最深的**與**第四深的**各記一份:兩個差很多就是沒有線。 */
+    lineDepth: new Array(7).fill(0), lineDepthN: new Array(7).fill(0),
+    lineBack: new Array(7).fill(0), lineFront: new Array(7).fill(0), lineWide: new Array(7).fill(0),
     /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
        而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
        被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
@@ -1376,13 +1408,21 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const ux = ball.vx / v, uy = ball.vy / v;
     const gx = sideOf(shooter.side).att > 0 ? PITCH_W : 0;
     const L = Math.abs(ux) > 0.01 ? Math.abs((gx - ball.x) / ux) : dGoal;
-    let lane = Infinity, reach = false;
+    let lane = Infinity, reach = false, near4 = 0, gs = 0, gsLine = 0;
+    const depths = [], ys = [];
     for (const q of all()) {
       if (q.off || q.side === shooter.side || q === sideOf(q.side).gk) continue;
+      /* 深度與門側人數要在 `a` 的區間篩選**之前**算 —— 那個篩選問的是「擋不擋得到這一腳」,
+         而這兩個問的是「這九個人站在哪裡」,母體本來就不一樣(4s 的「我的分母跟
+         被比較的那一邊是不是同一批」)。 */
+      depths.push(Math.abs(q.x - gx)); ys.push({ d: Math.abs(q.x - gx), y: q.y });
+      if (hypot(gx - q.x, PITCH_H / 2 - q.y) < dGoal) gs++;
+      if (Math.abs(q.x - gx) < Math.abs(ball.x - gx)) gsLine++;
       const a = (q.x - ball.x) * ux + (q.y - ball.y) * uy;
       if (a <= 0.3 || a >= L) continue;          // 球已經過去的人擋不到
       const perp = Math.abs((q.x - ball.x) * uy - (q.y - ball.y) * ux);
       if (perp < lane) lane = perp;
+      if (perp < LANE_FAR) near4++;
       /* 「他來得及嗎」:球滾地會減速,所以**要解二次式**,不是 `a / v0` ——
          用後者會低估飛行時間,把「來得及」算少。判別式 ≤ 0 表示球根本滾不到那麼遠。
          人這一側取**樂觀**的那一邊(已經在全速),所以這是一個**上限**:
@@ -1401,6 +1441,22 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (lane < 1) st.laneNear[k]++;
     if (lane < LANE_FAR) st.laneFar[k]++;
     if (reach) st.laneReach[k]++;
+    st.laneLen[k] += L; st.laneN[k] += near4; st.gsN[k] += gs; st.gsLineN[k] += gsLine;
+    if (lane < Infinity) { st.lanePerp[k] += lane; st.lanePerpN[k]++; }
+    /* 紅牌之後可能不到四個場上球員 —— 母體要跟畫面一致(「測試的最小間距把被罰下的
+       圓點算進去」那條坑的同一個道理),所以湊不滿四個的那一腳不進這個平均。 */
+    if (depths.length >= 4) {
+      depths.sort((p, q) => p - q);
+      st.lineDepth[k] += (depths[0] + depths[1] + depths[2] + depths[3]) / 4;
+      st.lineBack[k] += depths[0]; st.lineFront[k] += depths[3];
+      /* **寬度**:深度上很緊(前後差 ~4 m)不代表填得滿通往球門的走廊。
+         同樣那四個人的橫向跨距 —— 大的話「線」是攤開的,擋不到中路那條線。
+         這是把「橫向攤開」從推論變成量測:本站在同一輪已經用平均推錯過一次
+         (推「沒有線」,而前後差量出來是 4 公尺,是一條很整齊的線)。 */
+      const four = ys.sort((a, b) => a.d - b.d).slice(0, 4).map(o => o.y);
+      st.lineWide[k] += Math.max(...four) - Math.min(...four);
+      st.lineDepthN[k]++;
+    }
   }
 
   /* 這一腳射門算哪一種情境。**只回答分得出來的那幾種** —— 見 FASTBREAK_SECS 上面那一段。
@@ -2836,6 +2892,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         laneShots: [...st.laneShots], laneOcc: [...st.laneOcc], laneNear: [...st.laneNear],
         laneFar: [...st.laneFar], laneReach: [...st.laneReach],
+        laneLen: [...st.laneLen], laneN: [...st.laneN], gsN: [...st.gsN], gsLineN: [...st.gsLineN],
+        lanePerp: [...st.lanePerp], lanePerpN: [...st.lanePerpN],
+        lineDepth: [...st.lineDepth], lineDepthN: [...st.lineDepthN],
+        lineBack: [...st.lineBack], lineFront: [...st.lineFront], lineWide: [...st.lineWide],
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
