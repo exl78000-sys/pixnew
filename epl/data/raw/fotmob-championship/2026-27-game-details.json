@@ -148129,8 +148129,1309 @@
    "fetchedAt": "2026-09-19T16:44:13.210Z",
    "fdMatchId": "2026-27-92",
    "heat": null
+  },
+  "WOL|WBA": {
+   "key": "WOL|WBA",
+   "season": "2026-27",
+   "date": "2026-09-20",
+   "matchId": "5836848",
+   "home": "WOL",
+   "away": "WBA",
+   "score": [
+    1,
+    0
+   ],
+   "providerScore": [
+    1,
+    0
+   ],
+   "teamStats": {
+    "WOL": {
+     "possession": 45,
+     "shots": 15,
+     "shotsOn": 6,
+     "shotsOff": 3,
+     "blockedShots": 6,
+     "blocksMade": 1,
+     "corners": 8,
+     "offsides": 2,
+     "fouls": 18,
+     "saves": 2,
+     "passes": 338,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.96
+    },
+    "WBA": {
+     "possession": 55,
+     "shots": 7,
+     "shotsOn": 2,
+     "shotsOff": 4,
+     "blockedShots": 1,
+     "blocksMade": 6,
+     "corners": 7,
+     "offsides": 0,
+     "fouls": 13,
+     "saves": 5,
+     "passes": 420,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.27
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "WOL": {
+     "touches_opp_box": 28,
+     "big_chance": 4,
+     "big_chance_missed_title": 3,
+     "yellow_cards": 1,
+     "shots_woodwork": 1,
+     "shots_inside_box": 12,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 1.24,
+     "expected_goals_set_play": 0.72,
+     "expected_goals_non_penalty": 1.96,
+     "expected_goals_on_target": 3.66,
+     "own_half_passes": 166,
+     "opposition_half_passes": 110,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 46,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 24,
+     "player_throws": 19,
+     "matchstats.headers.tackles": 18,
+     "interceptions": 11,
+     "clearances": 23,
+     "duel_won": 60,
+     "ground_duels_won": 42,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 18,
+     "aerials_won_pct": 56,
+     "dribbles_succeeded": 11,
+     "dribbles_succeeded_pct": 38,
+     "red_cards": 0
+    },
+    "WBA": {
+     "touches_opp_box": 15,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 2,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 0.05,
+     "expected_goals_set_play": 0.22,
+     "expected_goals_non_penalty": 0.27,
+     "expected_goals_on_target": 0.13,
+     "own_half_passes": 209,
+     "opposition_half_passes": 125,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 35,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 11,
+     "player_throws": 26,
+     "matchstats.headers.tackles": 26,
+     "interceptions": 7,
+     "clearances": 26,
+     "duel_won": 59,
+     "ground_duels_won": 45,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 14,
+     "aerials_won_pct": 44,
+     "dribbles_succeeded": 1,
+     "dribbles_succeeded_pct": 10,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     45,
+     55
+    ],
+    "h1": [
+     51,
+     49
+    ],
+    "h2": [
+     39,
+     61
+    ]
+   },
+   "events": [
+    {
+     "minute": 25,
+     "extra": null,
+     "team": "WBA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jayson Molumby"
+    },
+    {
+     "minute": 44,
+     "extra": null,
+     "team": "WBA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Nathaniel Phillips"
+    },
+    {
+     "minute": 50,
+     "extra": null,
+     "team": "WOL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Fer López"
+    },
+    {
+     "minute": 61,
+     "extra": 0,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Barney Stewart"
+    },
+    {
+     "minute": 61,
+     "extra": 0,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rabby Nzingoula"
+    },
+    {
+     "minute": 69,
+     "extra": null,
+     "team": "WOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Marshall Munetsi"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tommy Doyle"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jean-Ricner Bellegarde"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jordan James"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Toby Collyer"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "WBA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kareem Tunde"
+    },
+    {
+     "minute": 88,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sean Neave"
+    },
+    {
+     "minute": 88,
+     "extra": 0,
+     "team": "WOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Boubacar Traoré"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "WOL",
+     "player": "Rodrigo Gomes",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.101,
+     "xgot": 0.37,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.8,
+     "y": 24.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "WOL",
+     "player": "Marshall Munetsi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.099,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.3,
+     "y": 39.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "WOL",
+     "player": "Adam Armstrong",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.4,
+     "y": 33.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "WOL",
+     "player": "Marshall Munetsi",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 41.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "WOL",
+     "player": "Nasser Djiga",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.35,
+     "xgot": 0.885,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.7,
+     "y": 34,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "WOL",
+     "player": "André",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.434,
+     "xgot": 0.903,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.8,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "WBA",
+     "player": "Isaac Price",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.027,
+     "xgot": 0.078,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73.8,
+     "y": 43.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "WOL",
+     "player": "Fer López",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.103,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.8,
+     "y": 26.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "WOL",
+     "player": "Mateus Mané",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0.058,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 49,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "WOL",
+     "player": "Marshall Munetsi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.071,
+     "xgot": 0.597,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 40.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "WOL",
+     "player": "Mateus Mané",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.018,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.7,
+     "y": 26.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "WOL",
+     "player": "Mateus Mané",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.041,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 50.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "WOL",
+     "player": "Fer López",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.12,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 39.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 3,
+     "team": "WOL",
+     "player": "André",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.2,
+     "y": 34.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "WBA",
+     "player": "Jayson Molumby",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 25.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "WOL",
+     "player": "Fer López",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.604,
+     "xgot": 0.85,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.4,
+     "y": 30.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "WBA",
+     "player": "Isaac Price",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.027,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 70.4,
+     "y": 38,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "WBA",
+     "player": "Callum Styles",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.7,
+     "y": 39.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "WOL",
+     "player": "Jean-Ricner Bellegarde",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.6,
+     "y": 21.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "WBA",
+     "player": "Callum Styles",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 31.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "WBA",
+     "player": "Jimmy-Jay Morgan",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0.057,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.2,
+     "y": 32.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 7,
+     "team": "WBA",
+     "player": "Ousmane Diakité",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.006,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 47.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     16
+    ],
+    [
+     4,
+     41
+    ],
+    [
+     5,
+     41
+    ],
+    [
+     6,
+     30
+    ],
+    [
+     7,
+     49
+    ],
+    [
+     8,
+     49
+    ],
+    [
+     9,
+     49
+    ],
+    [
+     10,
+     33
+    ],
+    [
+     11,
+     95
+    ],
+    [
+     12,
+     95
+    ],
+    [
+     13,
+     41
+    ],
+    [
+     14,
+     -33
+    ],
+    [
+     15,
+     -38
+    ],
+    [
+     16,
+     11
+    ],
+    [
+     17,
+     43
+    ],
+    [
+     18,
+     54
+    ],
+    [
+     19,
+     38
+    ],
+    [
+     20,
+     16
+    ],
+    [
+     21,
+     11
+    ],
+    [
+     22,
+     5
+    ],
+    [
+     23,
+     -11
+    ],
+    [
+     24,
+     -22
+    ],
+    [
+     25,
+     -33
+    ],
+    [
+     26,
+     -27
+    ],
+    [
+     27,
+     -11
+    ],
+    [
+     28,
+     -5
+    ],
+    [
+     29,
+     16
+    ],
+    [
+     30,
+     87
+    ],
+    [
+     31,
+     87
+    ],
+    [
+     32,
+     76
+    ],
+    [
+     33,
+     0
+    ],
+    [
+     34,
+     11
+    ],
+    [
+     35,
+     27
+    ],
+    [
+     36,
+     33
+    ],
+    [
+     37,
+     46
+    ],
+    [
+     38,
+     19
+    ],
+    [
+     39,
+     22
+    ],
+    [
+     40,
+     -8
+    ],
+    [
+     41,
+     11
+    ],
+    [
+     42,
+     35
+    ],
+    [
+     43,
+     35
+    ],
+    [
+     44,
+     27
+    ],
+    [
+     45,
+     -5
+    ],
+    [
+     45.5,
+     12
+    ],
+    [
+     46,
+     -5
+    ],
+    [
+     47,
+     -43
+    ],
+    [
+     48,
+     -38
+    ],
+    [
+     49,
+     -33
+    ],
+    [
+     50,
+     -49
+    ],
+    [
+     51,
+     -54
+    ],
+    [
+     52,
+     -71
+    ],
+    [
+     53,
+     -27
+    ],
+    [
+     54,
+     -65
+    ],
+    [
+     55,
+     -60
+    ],
+    [
+     56,
+     -33
+    ],
+    [
+     57,
+     0
+    ],
+    [
+     58,
+     11
+    ],
+    [
+     59,
+     -5
+    ],
+    [
+     60,
+     0
+    ],
+    [
+     61,
+     0
+    ],
+    [
+     62,
+     30
+    ],
+    [
+     63,
+     24
+    ],
+    [
+     64,
+     24
+    ],
+    [
+     65,
+     0
+    ],
+    [
+     66,
+     0
+    ],
+    [
+     67,
+     76
+    ],
+    [
+     68,
+     71
+    ],
+    [
+     69,
+     65
+    ],
+    [
+     70,
+     -11
+    ],
+    [
+     71,
+     -11
+    ],
+    [
+     72,
+     0
+    ],
+    [
+     73,
+     11
+    ],
+    [
+     74,
+     11
+    ],
+    [
+     75,
+     -5
+    ],
+    [
+     76,
+     -38
+    ],
+    [
+     77,
+     -43
+    ],
+    [
+     78,
+     -27
+    ],
+    [
+     79,
+     0
+    ],
+    [
+     80,
+     5
+    ],
+    [
+     81,
+     16
+    ],
+    [
+     82,
+     11
+    ],
+    [
+     83,
+     -16
+    ],
+    [
+     84,
+     -22
+    ],
+    [
+     85,
+     -43
+    ],
+    [
+     86,
+     -16
+    ],
+    [
+     87,
+     -11
+    ],
+    [
+     88,
+     11
+    ],
+    [
+     89,
+     5
+    ],
+    [
+     90,
+     -14
+    ],
+    [
+     90.5,
+     -63
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "WOL": {
+     "team": "WOL",
+     "formation": "4-2-3-1",
+     "coach": "César Peixoto",
+     "xi": [
+      {
+       "name": "José Sá",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Kieran Trippier",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Nasser Djiga",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Toti Gomes",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Hugo Bueno",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "André",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Marshall Munetsi",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Gomes",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Fer López",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Mateus Mané",
+       "shirt": 36,
+       "pos": "M"
+      },
+      {
+       "name": "Adam Armstrong",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jean-Ricner Bellegarde",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Tommy Doyle",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Jordan James",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Boubacar Traoré",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Sean Neave",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "João Virgínia",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Ghislain Konan",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Jackson Tchatchoua",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Bertrand Traoré",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    },
+    "WBA": {
+     "team": "WBA",
+     "formation": "4-4-2",
+     "coach": "James Morrison",
+     "xi": [
+      {
+       "name": "Max O'Leary",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Callum Styles",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Nathaniel Phillips",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "George Campbell",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Conor Townsend",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Harry Whitwell",
+       "shirt": 29,
+       "pos": "M"
+      },
+      {
+       "name": "Jayson Molumby",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Ousmane Diakité",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Isaac Price",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Aune Selland Heggebø",
+       "shirt": 19,
+       "pos": "F"
+      },
+      {
+       "name": "Jimmy-Jay Morgan",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Rabby Nzingoula",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Barney Stewart",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Toby Collyer",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Kareem Tunde",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Matt Ingram",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Brayann Pereira",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Chris Mepham",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Felix Horn Myhre",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Tammer Bany Odeh",
+       "shirt": 23,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 40,
+      "center": 22,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 33,
+      "center": 29,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 49,
+      "center": 14,
+      "right": 37
+     }
+    },
+    "away": {
+     "total": {
+      "left": 33,
+      "center": 27,
+      "right": 40
+     },
+     "firstHalf": {
+      "left": 38,
+      "center": 26,
+      "right": 36
+     },
+     "secondHalf": {
+      "left": 31,
+      "center": 27,
+      "right": 42
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-20T14:28:52.833Z",
+   "fdMatchId": "2026-27-93",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-20T10:46:15.993Z"
+ "updatedAt": "2026-09-20T14:28:52.835Z"
 }
