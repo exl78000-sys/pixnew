@@ -1128,25 +1128,33 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         (seg5f.match(/a <= 0\.3 \|\| a >= L/g) ?? []).length === 2);
       {
         let bad = 0, shots = 0, wide = 0, sq0n = 0, sq3n = 0;
+        /* 幾個收窄檔次由產物自己決定 —— 寫死 `[0,1,2,3]` 的話,
+           以後多一檔就會靜靜不被檢查(手寫清單那條坑)。 */
+        const SQ_N = (st5e[0]?.laneSq ?? []).map((_, i) => i);
         for (const c of st5e) {
           for (let k = 0; k < 7; k++) {
-            /* 收窄是單調的:越窄,落進球道的人只會多不會少(同一批人、同一條線)。
-               而 0.75 m 那一排是「有沒有」,所以不會多過這一帶的射門數。 */
-            if (!(c.laneSq[0][k] <= c.laneSq[1][k] && c.laneSq[1][k] <= c.laneSq[2][k]
-              && c.laneSq[2][k] <= c.laneSq[3][k]
-              && c.laneSqHit[3][k] <= c.laneShots[k]
+            /* **不要守「越窄越多」** —— 那不是結構上必然的:球道不經過中線時,
+               把人往中線收會讓他離開走廊(實測 0.75 m 那一排 25% 就比 0% 高)。
+               守的是結構上的上界:最多四個人、「有沒有」不會多過射門數、
+               跨距不會超過場寬、被盯人不會超過四個。 */
+            if (!(SQ_N.every(si => c.laneSq[si][k] <= 4 * c.laneShots[k]
+                && c.laneSqHit[si][k] <= c.laneShots[k])
               && c.lineWideShape[k] <= 68 * c.lineShapeN[k]
               && c.lineMarked[k] <= 4 * c.lineDepthN[k])) bad++;
             shots += c.laneShots[k]; wide += c.lineWideShape[k];
-            sq0n += c.laneSq[0][k]; sq3n += c.laneSq[3][k];
+            sq0n += c.laneSq[0][k]; sq3n += c.laneSq[SQ_N.length - 1][k];
           }
         }
-        check('收窄越多落進球道的人只會變多(同一批人、同一條線),歸因也在上下界裡',
-          st5e.length > 0 && shots > 0 && bad === 0,
-          `${st5e.length} 場:射門 ${shots}、75% 時 ${sq0n}、0% 時 ${sq3n}、逐帶越界 ${bad} 格`);
+        check('收窄的每一檔都在結構上界裡(最多四個人、有沒有不會多過射門數)',
+          st5e.length > 0 && shots > 0 && SQ_N.length >= 2 && bad === 0,
+          `${st5e.length} 場:射門 ${shots}、${SQ_N.length} 檔、不收窄 ${sq0n}、最窄 ${sq3n}、逐帶越界 ${bad} 格`);
+        /* **第一檔一定要是「不收窄」** —— 沒有同母體的基準線,
+           「收窄買到多少」就混進了「母體從十個人換成四個人」。 */
+        check('收窄的第一檔是「不收窄」(同母體的基準線)',
+          /const SQUEEZE = \[1,/.test(simBare));
       }
-      check('check-sim 真的印出 5f 那幾排(照隊形 / 被盯人 / 兩個半徑的收窄)',
-        ['照隊形會是', '其中被盯人拉走', '收窄到 75%', '0.75 m 內']
+      check('check-sim 真的印出 5f 那幾排(照隊形 / 被盯人 / 基準線 / 兩個半徑的收窄)',
+        ['照隊形會是', '其中被盯人拉走', '不收窄', '收窄到 75%', '0.75 m 內']
           .every(t => chkOut.includes(t)), `check-sim 輸出 ${chkOut.length} 字元`);
     }
   }

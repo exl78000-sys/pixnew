@@ -758,7 +758,7 @@ if (simShots && realShots) {
         /* 兩排一起印:4 m 內幾個人(收窄推得動多少)與 **0.75 m 內有沒有人**
            (那才是會碰到球的半徑,跟上面「路上有人(0.75 m 內)」同一個判準)。
            只印前者的話,要把它換算成封阻率就只能用推的。 */
-        [0.75, 0.5, 0.25, 0].forEach((c, si) => {
+        [1, 0.75, 0.5, 0.25, 0].forEach((c, si) => {
           const row = [], hit = [];
           for (let k = 0; k < 7; k++) {
             const S = ls(k);
@@ -766,8 +766,9 @@ if (simShots && realShots) {
             const h = mean(rows.map(r => r.st.counts.laneSqHit?.[si]?.[k] ?? 0));
             hit.push(S > 0 ? `${(100 * h / S).toFixed(0)}`.padStart(3) : '  —');
           }
-          console.log(`  ${`　收窄到 ${(c * 100).toFixed(0)}%:4 m 內(人)`.padEnd(26, '\u3000')} ${row.join(' ')}${si === 0 ? '　← 天花板,真值一定比它小' : ''}`);
-          console.log(`  ${'　　　　　0.75 m 內(%)'.padEnd(26, '\u3000')} ${hit.join(' ')}${si === 0 ? '　← 這一排才換算得到封阻率' : ''}`);
+          const tag = c === 1 ? '(現況,只數後四人)' : '';
+          console.log(`  ${`　${c === 1 ? '不收窄' : `收窄到 ${(c * 100).toFixed(0)}%`}:4 m 內(人)`.padEnd(26, '\u3000')} ${row.join(' ')}${si === 0 ? `　← ${tag}同母體的基準線` : ''}`);
+          console.log(`  ${'　　　　　0.75 m 內(%)'.padEnd(26, '\u3000')} ${hit.join(' ')}${si === 0 ? '　← 跟它比才是收窄的效果' : ''}`);
         });
         const dn = rows.reduce((a, r) => a + (r.def?.n ?? 0), 0);
         const dd = rows.reduce((a, r) => a + (r.def?.depth ?? 0), 0);
