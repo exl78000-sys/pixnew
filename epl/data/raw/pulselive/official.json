@@ -34557,7 +34557,7 @@
   "FUL|MUN": {
    "fixtureId": 128967,
    "kickoff": "2026-09-20T15:30:00.000Z",
-   "status": "L",
+   "status": "C",
    "final": false,
    "score": {
     "home": 1,
@@ -34990,6 +34990,19 @@
    "goals": [
     {
      "side": "H",
+     "person": 67191,
+     "assist": null,
+     "team": 34,
+     "min": 63,
+     "label": "63'00",
+     "phase": "2",
+     "type": "O",
+     "kind": "O",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
      "person": 51202,
      "assist": 146567,
      "team": 12,
@@ -35180,12 +35193,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -35202,11 +35209,17 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+2'00"
+   "clock": "90+4'00"
   }
  },
- "fetchedAt": "2026-09-20T17:17:30.666Z"
+ "fetchedAt": "2026-09-20T17:19:47.253Z"
 }
