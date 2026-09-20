@@ -508,6 +508,58 @@ const MENT_PUSH = 3;                           // 心態每級把整塊往前推
 const WIDE_STEP = 0.07;                        // 寬度每級把 y 偏移放大幾成(±14%)
 const TEMPO_STEP = 0.10;                       // 節奏每級改變出手機率幾成(±20%)
 const DIRECT_STEP = 0.06;                      // 直接度每級在傳球權重上加減多少
+/* **體能**(2026-09-20)。使用者要做體能,而它**沒有直接的真值可以校準**:
+   FotMob 逐場的 `physical` 只有全場總計(distance / sprintDistance / sprints / running),
+   **沒有逐半場**(dump 過);`zones` 的 firstHalf / secondHalf 是進攻路線不是體能。
+
+   所以能當錨的只有它的**後果**:真實世界的進球在下半場比上半場多。
+   量出來(3,309 場、8,476 顆正規時間進球,六聯賽 + 盃賽 + 歐冠):
+     每分鐘相對率  1-15 0.84 / 16-30 0.90 / 31-45 0.98 / 46-60 1.13 / 61-75 1.04 / 76-90 1.11
+     → 下半場 ÷ 上半場 = **1.20**
+   而本站(300 場、713 顆)是 1.04 / 1.08 / 0.89 / 1.10 / 0.93 / 0.96 → **1.00**,
+   下半場佔比 49.9% 對真實 54.6%,差 4.8 個百分點 = 2.6 SE。**沒有後段效應。**
+
+   **做法是改行為不是改結果**:體能只降低跑得出來的速度,不碰 xG、不碰扣扳機的機率 ——
+   後者就是在畫面上編數字(控球那一課:把控球硬設成目標值)。
+   **只有一個常數。** 兩個相乘的旋鈕會互相抵銷(4v 的坑),所以直接寫成
+   「跑滿 10 公里之後速度掉幾成」:`fatigue = 1 − STAM_FADE × dist / 10000`,
+   同時縮**要求的速度**與 `vmax`。**0 是恆等元** —— 設成 0 跑出來跟沒有體能時逐位元相同。
+   **每個人的衰退速率一樣**:側寫裡沒有逐人的體能資料,給每個人編一個體能值就是編數字。
+   換上場的人 `dist` 從 0 開始 —— 生力軍自然比場上的人快,那正是手動換人的價值。
+
+   **第一版只壓 `vmax`,量出來幾乎沒有作用**:球員只有 **0.06%** 的時間跑在自己上限的
+   95% 以上 —— 大部分走位用的是固定的速度檔(`SIM_JOG` / `SIM_RUN`),逼搶那一行只有
+   離球 20 公尺外才用到上限。8% 的衰退只讓後 15 分的平均速度掉 1.4%,而要咬得動就得把
+   上限砍到 5.77 m/s(比慢跑快不了多少),λ 的錨會先破。所以疲勞要縮**要求的速度**。
+
+   **它不產生後段進球潮 —— 掃描已經否定了,不要再試一次。**
+   v2(縮要求的速度)逐 200 場掃五個值,下半場佔比(目標 **54.6%**):
+     STAM_FADE  0 → 50.5%(半場比 1.02)/ 0.02 → 45.8%(0.85)/ 0.05 → 50.1%(1.00)
+                0.10 → 44.3%(0.80)/ 0.18 → 38.1%(0.62)      一格的 ±1 SE 約 2.3
+   **讀法要小心,我第一次讀錯了**:前四個值排出來像一條單調下降的曲線,而補上 0.02
+   之後它就不單調了(45.8 夾在 50.5 與 50.1 中間)。相鄰兩格的差最多 1.4 個 SE ——
+   小值之間**分不開**,那是雜訊不是趨勢(本站記過「四個值排出來的單調趨勢看起來像訊號」)。
+   站得住的只有兩句:**沒有任何一個值高於 0**,而最大的那個(0.18)確確實實更低
+   (−12.4 個百分點 = −3.6 SE)。也就是說疲勞的方向是**往下或持平,絕不往上**,
+   而目標 54.6% 五個值一個都構不到。要對上得給一個負的衰退率(球員越踢越快),那不是體能。
+   機制講得出來:疲勞讓**兩邊**一起慢,整場的節奏跟著降,所以後段的機會變少而不是變多。
+   真實那一排本來就不是單調的(46-60 的 1.13 比 61-75 的 1.04 高),而線性疲勞是單調的 ——
+   照 4k 的規矩:先問模型的函式族生不生得出目標的形狀。生不出來,所以**不硬湊**。
+   後段進球潮是另一件事(落後方壓上、生力軍、終場補時真實是正規時間的 1.5 倍而本站只有 0.32 倍),
+   列在 `docs/補齊規劃.md`,這個常數不負責它。
+
+   **值定在 0.02,理由是「最大的、不破任何錨的值」,不是量出來的衰退幅度**(沒有真值)。
+   逐 200 場對 STAM_FADE = 0 比(每場的標準誤):
+     0.02  角球 9.48 ±0.26(−1.3 SE)・解圍 147.0(−2.2 SE)・射門 22.91(−0.9 SE)
+     0.05  角球 8.64 ±0.25(**−3.5 SE**)・解圍 142.2(−6.9 SE)・射門 23.30(−0.1 SE)
+   角球本站本來就短(9.98 對真實 11.8),0.05 再拿走 1.34 就是 4o 那條
+   「看驗收的數字之前先確認其他的錨還在不在範圍內」。機制看得到:慢下來的防守員
+   搶到的鬆球變少 → 大腳解圍變少 → 由解圍來的角球跟著少。
+   而 0.02 **仍然是活的旋鈕**(40 場):後 15 分 ÷ 前 15 分的平均速度
+   **0.983**(0 是 1.007、0.05 是 0.963,單調),完場的最高速掉 2.4%,
+   而兩個半場的射門與傳球不動(下/上 1.013 / 1.000)—— 它改的是跑得動多快,
+   不是把比賽拖慢。`npm run game:sim` 每次都把那一排印出來,**引用就跑一次**。 */
+const STAM_FADE = 0.02;                       // 跑滿 10 km 之後最高速掉幾成(0 = 沒有體能)
 const SHAPE_PULL_X = 0.58;
 const SHAPE_PULL_Y = 0.28;
 /* 陣型要跟著的不是球「現在在哪」,是**這一波攻勢在哪**。直接跟著球的話,一記 30 公尺的傳球
@@ -776,7 +828,13 @@ function movePlayer(p, dt, want) {
   }
   const dx = want.x - p.x, dy = want.y - p.y;
   const dist = hypot(dx, dy);
-  let target = Math.min(want.speed ?? SIM_RUN, p.vmax);
+  /* 體能要縮的是**要求的速度**,不是上限。第一版只壓 `vmax`,量出來**幾乎沒有作用**:
+     球員只有 0.06% 的時間跑在自己上限的 95% 以上 —— 大部分走位用的是固定的速度檔
+     (`SIM_JOG` / `SIM_RUN`),逼搶那一行只有離球 20 公尺外才用到上限。
+     所以疲勞掛在上限上碰不到球場上實際發生的事:8% 的衰退只讓後 15 分的平均速度
+     掉 1.4%,而要咬得動就得把上限砍到 5.77 m/s(比慢跑快不了多少),λ 的錨會先破。 */
+  const fat = p.fatigue ?? 1;
+  let target = Math.min((want.speed ?? SIM_RUN) * fat, p.vmax);
   /* 靠近目標要收速度:v² = 2ad,不然會衝過頭再回頭,那看起來就是「抖」 */
   if (dist > 1e-6) target = Math.min(target, Math.sqrt(2 * SIM_DECEL * Math.max(0, dist - 0.15)));
   /* 要轉彎就先減速 —— 加速度有上限,全速的轉彎半徑 v²/a ≈ 4 m,比控球距離還大。
@@ -799,6 +857,13 @@ function movePlayer(p, dt, want) {
   p.y = cl(p.y + p.vy * dt, -1, PITCH_H + 1);
   p.dist += hypot(p.vx, p.vy) * dt;
   p.vtop = Math.max(p.vtop, hypot(p.vx, p.vy));
+  /* 體能:跑過的路越多,最高速越低(見 STAM_FADE)。**0 是恆等元**,
+     所以接上去而不調的話這一行不會改變任何東西。夾住不讓它掉到離譜的低點 ——
+     真人再累也還跑得動,而且 0.5 以下會讓畫面變成慢動作。 */
+  if (STAM_FADE > 0) {
+    p.fatigue = cl(1 - STAM_FADE * p.dist / 10000, 0.5, 1);
+    if (p.vmax0) p.vmax = p.vmax0 * p.fatigue;
+  }
 }
 
 /* 球的一步。回傳「這一步有沒有落地」讓上層決定要不要算彈跳。 */
@@ -984,9 +1049,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         vx: 0, vy: 0,
         // 逐人的真實最高速度當上限(km/h → m/s);沒有的人用聯盟量級的備援值,而且標出來
         vmax: p?.run?.topSpeed ? p.run.topSpeed / 3.6 : VMAX_FALLBACK,
+        vmax0: p?.run?.topSpeed ? p.run.topSpeed / 3.6 : VMAX_FALLBACK,
         vmaxReal: !!p?.run?.topSpeed,
         ability: p?.ability ?? {},
-        dist: 0, vtop: 0, off: false, going: false,
+        dist: 0, vtop: 0, off: false, going: false, fatigue: 1,
       };
     });
     /* 這一隊逼搶多凶:真實值除以聯盟平均,再壓進 ±PRESS_SPAN。
@@ -1018,6 +1084,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const q = byCode.get(c);
       return [c, { used: false, p: { code: c, name: q?.name ?? c, pos: q?.pos ?? 'MID',
         vmax: q?.run?.topSpeed ? q.run.topSpeed / 3.6 : VMAX_FALLBACK,
+        vmax0: q?.run?.topSpeed ? q.run.topSpeed / 3.6 : VMAX_FALLBACK,
         vmaxReal: !!q?.run?.topSpeed, ability: q?.ability ?? {} } }];
     }));
     /* 戰術指令裡**目前只有兩軸真的接到引擎**:壓迫(改 press)與防線高度(改 lineDrop)。
@@ -3042,8 +3109,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (i < 0 || !spare || spare.used) return false;
       const out = s.players[i];
       spare.used = true;
+      /* 換上場的人 `dist` 從 0 開始,所以 `vmax` 也要回到新鮮值 ——
+         少這一行的話生力軍會繼承替補席上那個(沒跑過所以本來就是滿的)值,
+         看起來對,但只要以後有「熱身也算跑動」之類的東西就會靜靜錯掉。 */
       const now = { ...spare.p, side, slot: out.slot, role: out.role,
-        x: out.x, y: out.y, vx: 0, vy: 0, dist: 0, vtop: 0, off: false, going: false, yellow: 0 };
+        x: out.x, y: out.y, vx: 0, vy: 0, dist: 0, vtop: 0, off: false, going: false, yellow: 0,
+        fatigue: 1, vmax: spare.p.vmax0 ?? spare.p.vmax };
       s.players[i] = now;
       if (ball.holder === out) ball.holder = now;
       st.subs[side]++;

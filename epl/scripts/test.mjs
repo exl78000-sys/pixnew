@@ -3052,10 +3052,24 @@ async function checkDataGap() {
         && /不是本站預測/.test(pg) && /沒有 Dixon-Coles/.test(pg) && /這張圖哪些是真的/.test(pg)
         && /沒有劇本、沒有剪接/.test(pg) && /inPlaySim/.test(pg)
         && /seededRng/.test(pc) && /mulberry32/.test(pc)            // 種子亂數,同種子重播同一場
-        /* 戰術指令:面板在畫面上、標「本季實際」、**而且要講出哪幾軸還沒接上新引擎** ——
-           留四個拉了沒反應的按鈕比沒有更糟,所以那句話本身是紅線。 */
-        && /setTactics/.test(pg) && /本季實際/.test(pg) && /還沒接上新引擎的指令/.test(pg)
-        && /LIVE_TACTICS/.test(pg) && /TACTIC_TODO/.test(pg)
+        /* 戰術指令:面板在畫面上、標「本季實際」、**而且要講出哪幾軸還沒掛上來** ——
+           留幾個拉了沒反應的按鈕比沒有更糟,所以那句話本身是紅線。
+
+           **比性質不比寫法。** 第一版釘死字面「還沒接上新引擎的指令」,而 2026-09-19
+           把直接度掛上畫面那一輪順手把文案改好了(「還沒掛上來的指令」)—— 它要守的事
+           **一件都沒少**,這條卻紅了,而且紅在開發分支上沒有人看(那一則沒有合併進
+           部署分支,所以 CI 沒紅)。本站記過「測試釘死實作的寫法,重構之後紅在
+           『行為沒變』上」,而這是它的文案版。
+           現在守三件事:① 名單從 `TACTIC_TODO` **算出來**(不是手寫,加一軸不會忘);
+           ② 那個名單**真的被插進畫面的字串**;③ 同一句話裡要出現「指令」與「還沒」。 */
+        && /setTactics/.test(pg) && /本季實際/.test(pg)
+        && /LIVE_TACTICS/.test(pg) && /TACTIC_TODO\.map\(/.test(pg)
+        && (() => {
+          const at = pg.indexOf('${C.esc(todo)}');
+          if (at < 0) return false;
+          const near = pg.slice(Math.max(0, at - 120), at + 40);
+          return near.includes('指令') && near.includes('還沒');
+        })()
         /* ── 2026-09-17 階段 2c:控球接上真實值 ──
            守兩件事:(1) 引擎真的讀了側寫的 `possession`(POSS_K 與 keep 都在);
            (2) 「目標控球率」的式子**只有一份**,在引擎裡 —— 畫面跟它要,不自己再算一次。

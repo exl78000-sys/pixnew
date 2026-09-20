@@ -1162,6 +1162,131 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('check-sim 真的印出 5f 那幾排(照隊形 / 被盯人 / 基準線 / 兩個半徑的收窄)',
         ['照隊形會是', '其中被盯人拉走', '不收窄', '收窄到 75%', '0.75 m 內']
           .every(t => chkOut.includes(t)), `check-sim 輸出 ${chkOut.length} 字元`);
+
+    /* 25. **體能**(2026-09-20)。使用者指定要做體能。它**沒有直接的真值**
+       (逐場的 `physical` 只有全場總計),所以這一節守的不是「衰退幅度對不對」——
+       那個沒有錨可以判 —— 而是三件守得住的事:
+       ① **0 是恆等元**(接上去而不調的話,跑出來跟沒有體能時逐場逐字相同);
+       ② **它只改跑得出來的速度,不碰任何結果**(xG、扣扳機的機率一個都不准讀它);
+       ③ **它在畫面上不准再被寫成「還沒做」**(本站記過五次的坑)。
+       **不守「後 15 分比前 15 分慢」** —— 量過:那個比值在 2 / 3 / 4 場是
+       1.002 / 1.012 / 1.004,場間雜訊完全蓋過 0.02 的效果(40 場才看得到 0.983)。
+       拿它當紅線就是一條會隨機變紅的假紅線。守得住的是**確定性**的那一層:
+       `vmax` 逐格不會變大,而且比值剛好等於疲勞公式。 */
+    {
+      const simRaw = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const S25 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+      const STEP25 = 1 / 60;
+      const fade = Number((simRaw.match(/^const STAM_FADE = ([0-9.]+);/m) ?? [])[1]);
+      check('STAM_FADE 是一個讀得出來的常數', Number.isFinite(fade) && fade >= 0, `STAM_FADE = ${fade}`);
+      /* **恆等元要用跑的證明,不是用讀的。** 兩個版本:把常數設成 0、
+         以及把疲勞那個乘數**整段拿掉**。兩邊逐場的比分 / 射門 / 角球 / 犯規 / 傳球
+         要一字不差 —— 差一個字就代表 0 也在消耗 rng 或改行為,
+         那樣「沒有體能時等於站上的 λ」那條保證就不成立了。
+
+         **剝除的錨挑在「用到 fat 的那一行」,不是「算出 fat 的那一行」。**
+         第一版錨在 `const fat = p.fatigue ?? 1;`,而負向對照要打壞恆等元最自然的改法
+         就是改那一行(`* 0.999`)—— 於是剝除**靜靜沒命中**、兩個版本變成同一份程式,
+         紅的是下面那條「對照版真的不一樣了」而不是恆等元本身。
+         (在 STAM_FADE = 0 下,`p.vmax = p.vmax0 * p.fatigue` 那一行在 guard 裡不會跑,
+          所以只剝 `* fat` 就等於把疲勞整個拿掉。) */
+      {
+        const load = async s => import('data:text/javascript;base64,' + Buffer.from(s, 'utf8').toString('base64'));
+        const zeroed = simRaw.replace(/^const STAM_FADE = [0-9.]+;/m, 'const STAM_FADE = 0;');
+        const stripped = zeroed.replace(' * fat,', ' * 1,');
+        check('把疲勞那個乘數拿掉的對照版真的不一樣了(不然下一條在比兩份相同的程式)',
+          stripped !== zeroed && zeroed !== simRaw);
+        const [A, B] = [await load(zeroed), await load(stripped)];
+        const fin = (M, seed) => {
+          const s = M.createSim({ profile, home: 'ARS', away: 'LIV', seed, pred });
+          for (let i = 0; i < Math.round(110 * 60 / STEP25) && !s.state().over; i++) s.advance(STEP25);
+          const c = s.state();
+          return `${c.score[0]}-${c.score[1]}/${c.counts.shots}/${c.counts.corners.home + c.counts.corners.away}`
+            + `/${c.counts.fouls.home + c.counts.fouls.away}/${c.counts.passes}`;
+        };
+        let same = 0; const seeds = [1, 2];
+        for (const sd of seeds) if (fin(A, sd) === fin(B, sd)) same++;
+        check('STAM_FADE = 0 是恆等元(跟「整段拿掉」逐場相同)',
+          same === seeds.length, `${same} / ${seeds.length} 場逐場相同`);
+      }
+      /* **體能改的是行為不是結果。** 把控球硬設成目標值那一課:一個「體能」如果去
+         乘 xG 或扣扳機的機率,那就是在畫面上編數字。守法是位置 —— 每一處
+         `STAM_FADE` 要嘛是宣告、要嘛在 `movePlayer` 裡;每一處 `fatigue` 要嘛在
+         `movePlayer` 裡、要嘛是初始化(`fatigue: 1`,球員構造與換人各一)。
+         **不要數出現次數**(「數出現次數的斷言,加一個就紅在多了一個」)。 */
+      {
+        const bare = simRaw.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+        const m0 = bare.indexOf('function movePlayer(');
+        const m1 = bare.indexOf('function moveBall(', m0);
+        const inMove = i => m0 >= 0 && m1 > m0 && i > m0 && i < m1;
+        let strayF = 0, strayG = 0, totF = 0, totG = 0, at = -1;
+        while ((at = bare.indexOf('STAM_FADE', at + 1)) >= 0) {
+          totG++;
+          if (!inMove(at) && !/^const STAM_FADE = /.test(bare.slice(at - 6, at + 20))) strayG++;
+        }
+        at = -1;
+        while ((at = bare.indexOf('fatigue', at + 1)) >= 0) {
+          totF++;
+          if (!inMove(at) && !/^fatigue: 1/.test(bare.slice(at, at + 10))) strayF++;
+        }
+        check('體能只在跑動那一層:STAM_FADE 只在宣告與 movePlayer、fatigue 只在 movePlayer 與初始化',
+          m0 >= 0 && m1 > m0 && totG >= 2 && totF >= 3 && strayG === 0 && strayF === 0,
+          `STAM_FADE ${totG} 處(漏出去 ${strayG})・fatigue ${totF} 處(漏出去 ${strayF})`);
+        /* 換上場的人 `dist` 從 0 開始,所以 `vmax` 也要回到新鮮值 ——
+           **手動換人的價值就是這個**,少這一行生力軍就跟被換下的人一樣累。 */
+        const sub0 = bare.indexOf('substitute(side, offCode, onCode)');
+        const subSeg = sub0 >= 0 ? bare.slice(sub0, sub0 + 900) : '';
+        check('換上場的人體能是滿的(換人那一段把 fatigue 與 vmax 一起重設)',
+          /dist: 0/.test(subSeg) && /fatigue: 1/.test(subSeg) && /vmax: spare\.p\.vmax0/.test(subSeg),
+          `切出來 ${subSeg.length} 字元`);
+      }
+      /* **確定性的那一層**:`vmax` 逐格不准變大(疲勞是單調的),而且兩個時間點的
+         比值要剛好等於 `(1 − f·d₂/10⁴) / (1 − f·d₁/10⁴)`。這不是統計量,
+         一場就驗得死 —— 上面那段註解講的「不守速度比」換來的就是這一條。 */
+      if (fade > 0) {
+        const s = S25.createSim({ profile, home: 'ARS', away: 'LIV', seed: 1, pred });
+        let t1 = null, rises = 0, prev = {};
+        for (let i = 0; i < Math.round(110 * 60 / STEP25); i++) {
+          if (s.state().over) break;
+          const mo = s.motion();
+          if (i === Math.round(20 * 60 / STEP25)) t1 = Object.fromEntries(mo.players.map(p => [p.code, p]));
+          for (const p of mo.players) { if (prev[p.code] && p.vmax > prev[p.code] + 1e-9) rises++; prev[p.code] = p.vmax; }
+          s.advance(STEP25);
+        }
+        const t2 = Object.fromEntries(s.motion().players.map(p => [p.code, p]));
+        let worst = 0, n = 0, km = 0;
+        for (const c of Object.keys(t2)) {
+          const a = t1?.[c]; if (!a) continue;
+          const want = (1 - fade * t2[c].dist / 1e4) / (1 - fade * a.dist / 1e4);
+          worst = Math.max(worst, Math.abs(t2[c].vmax / a.vmax - want)); n++; km += t2[c].dist;
+        }
+        check('vmax 逐格不會變大,而且比值剛好等於疲勞公式(一場、22 人)',
+          n >= 20 && rises === 0 && worst < 1e-9,
+          `${n} 人:變大 ${rises} 次、最大誤差 ${worst.toExponential(1)}、完場平均跑動 ${(km / n / 1000).toFixed(2)} km`);
+      }
+      check('check-sim **真的印出**體能那一排(跑一次掃 stdout)',
+        chkOut.includes('體能:逐 15 分的平均速度') && chkOut.includes('後 15 分 ÷ 前 15 分'),
+        `check-sim 輸出 ${chkOut.length} 字元`);
+      /* **有哪一句還在講我們沒有它** —— 本站記過五次,最近一次就犯在 CLAUDE.md 自己身上。
+         體能做完之後,畫面上任何一段「還沒做的」都不准再列它。
+         掃的是 `game-view.js` 裡每一段 `還沒做的` 之後到句號為止的那一小段,
+         不是整份(整份會被「刻意不做」與解釋體能的那幾句誤報)。 */
+      {
+        const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8')
+          .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+        const segs = [];
+        let at = -1;
+        while ((at = view.indexOf('還沒做的', at + 1)) >= 0) {
+          const end = view.indexOf('。', at);
+          segs.push(view.slice(at, end < 0 ? at + 300 : end));
+        }
+        check('畫面上的「還沒做的」不准再列體能(加了能力之後要回頭看的那一句)',
+          segs.length >= 2 && segs.every(t => !t.includes('體能')),
+          `${segs.length} 段「還沒做的」`);
+        check('畫面把體能講清楚:沒有真值可校準、而且它不負責後段進球潮',
+          /衰退的幅度沒有真值可以校準/.test(view) && /不產生真實世界的後段進球潮/.test(view));
+      }
+    }
     }
   }
 }

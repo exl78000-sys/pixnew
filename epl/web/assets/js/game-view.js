@@ -1,7 +1,7 @@
 import * as C from './core.js?v=d2162a48';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountPitch } from './game-pitch.js?v=7d3b9def';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=3ecfd7ad';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=dd8bdb52';
 import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=be283192';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -66,8 +66,8 @@ export async function renderGame(app) {
     /* **只列連續引擎真的接得到的那兩軸。** 舊版有六軸,而新引擎裡只有壓迫與防線高度有對應的旋鈕 ——
        其餘四個留著就是四個拉了不會有任何反應的按鈕,那比沒有更糟(鐵則三的同一個道理)。
        缺的那四個在畫面上列出來說「還沒接」,不要讓讀者自己去猜。 */
-    const LIVE_TACTICS = ['pressing', 'line'];
-    const TACTIC_TODO = ['mentality', 'width', 'tempo', 'directness'];
+    const LIVE_TACTICS = ['pressing', 'line', 'directness'];
+    const TACTIC_TODO = ['mentality', 'width', 'tempo'];
     const defaultTactics = code => Object.fromEntries(LIVE_TACTICS.map(k => [k, profile.teams[code]?.style?.[k]?.level ?? 3]));
     const squadOf = side => new Map(profile.teams[state[side]].squad.map(p => [p.code, p]));
 
@@ -505,7 +505,7 @@ export async function renderGame(app) {
         };
         const reds = L.off.length - L.subs;
         return `<div class="card" style="margin-bottom:8px">
-          <h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">${setupOf(sd).formation}・換人 ${L.subs}/5${reds > 0 ? `・紅牌 ${reds}` : ''}</span></h3>
+          <h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">${setupOf(sd).formation}・換人 ${L.subs} 次${reds > 0 ? `・紅牌 ${reds}` : ''}</span></h3>
           <div class="tiny dim">場上</div><div class="row" style="gap:4px;flex-wrap:wrap;margin:4px 0">${L.on.map(c => btn(c, 'on')).join('')}</div>
           <div class="tiny dim">替補席</div><div class="row" style="gap:4px;flex-wrap:wrap;margin:4px 0">${L.bench.map(c => btn(c, 'bench')).join('')}</div>
           ${L.off.length ? `<div class="tiny dim">已下場:${L.off.map(c => C.esc(sq.get(c)?.name ?? c)).join('、')}</div>` : ''}
@@ -514,8 +514,10 @@ export async function renderGame(app) {
       };
       return side('home') + side('away')
         + `<div class="tiny dim">換人<b>立刻</b>生效:換上來的人接手原本那個位置,下一格就在場上跑。
-          這個引擎裡換人不改 λ —— 影響是從場上長出來的(他的最高速度、他站的位置)。
-          <b>還沒做的</b>:自動換人(引擎不會自己換)、換人次數與窗口的規則、體能。</div>`;
+          這個引擎裡換人不改 λ —— 影響是從場上長出來的:他的最高速度、他站的位置,
+          以及他的<b>體能是滿的</b>(場上的人跑得越多、跑得出來的速度越低,換上來的人從零開始算)。
+          <b>刻意不做</b>:自動換人 —— 換誰、什麼時候換是你的決定,引擎不會替你換。
+          <b>還沒做的</b>:換人次數與窗口的規則(所以上面只數你換了幾次,沒有上限)。</div>`;
     }
     function bindSubs() {
       document.querySelectorAll('[data-sub-code]').forEach(b => {
@@ -537,10 +539,14 @@ export async function renderGame(app) {
         };
       });
     }
-    /* 戰術指令。**只列連續引擎真的接得到的兩軸**,其餘四個照實說還沒接 ——
-       留著四個拉了不會有任何反應的按鈕,比沒有這四個更糟。
-       每一級改多少是遊戲規則(壓迫 ±15%/級、防線 ±12.5%/級),刻意做小:
-       大到會讓 λ 的錨失效的話,這一頁就在編數字了。 */
+    /* 戰術指令。**只列連續引擎真的接得到、而且量過方向對的軸** ——
+       留著拉了不會有反應、或者拉了會讓球隊踢得很爛的按鈕,比沒有這些按鈕更糟。
+       每一級改多少是遊戲規則(壓迫 ±15%/級、防線 ±12.5%/級、直接度 ±0.06/級),刻意做小:
+       大到會讓 λ 的錨失效的話,這一頁就在編數字了。
+       **直接度 2026-09-20 掛上來**:階段 4a 量過它是四軸裡唯一乾淨的一個
+       (傳球 15.9→25.2 公尺、射門 17.7→17.2 幾乎不動 = 改踢法不改強弱),
+       而它在那之後一直留在「還沒接」那一行 —— 那是「東西在但沒有按鈕」。
+       **軸的數量不要寫死**:這一段講的話從 LIVE_TACTICS / TACTIC_TODO 算出來。 */
     function tacticsPanelHtml(sd) {
       const t = profile.teams[state[sd]], axes = profile.styleAxes ?? {};
       const cur = setupOf(sd).tactics ?? defaultTactics(state[sd]);
@@ -553,7 +559,7 @@ export async function renderGame(app) {
             <span class="row" style="gap:3px;flex-wrap:wrap">${a.levels.map((z, i) => `<button class="btn tiny${cur[k] === i + 1 ? ' on' : ''}" data-tac-side="${sd}" data-tac-key="${k}" data-tac-level="${i + 1}">${C.esc(z)}${def[k] === i + 1 ? '<span class="dim">・本季</span>' : ''}</button>`).join('')}</span>
             <span></span><span class="tiny dim">本季實際:${st?.value != null ? `${st.value}${C.esc(st.unit ?? '')}(${C.esc(st.basis)},${st.n} 場${st.proxy ? ',代理指標' : ''})` : '沒有資料,預設中'}</span>
           </div>`; }).join('')}
-        <div class="tiny dim" style="margin-top:6px">還沒接上新引擎的指令:${C.esc(todo)} —— 舊引擎有,連續引擎裡還沒有對應的旋鈕,所以不放按鈕。</div>
+        <div class="tiny dim" style="margin-top:6px">還沒掛上來的指令:${C.esc(todo)} —— 引擎裡的旋鈕接了,但量下去<b>方向不對或幅度離譜</b>(寬度拉寬反而自己射門砍半、節奏 ±20% 換來 3.3 倍的射門、心態的越位變 4 倍而且跟側寫自己宣告的相反),所以不放按鈕。</div>
       </div>`;
     }
     function bindTactics() {
@@ -604,9 +610,15 @@ export async function renderGame(app) {
         實際差多少每次都印在 <code>npm run game:sim</code> 的輸出裡(這一頁不抄那些數字,它們會變)。
         <b>遊戲規則</b>(沒有資料可以校準的部分):加速度與煞車上限、控球半徑、逼搶距離、
         折射的機率與角度、接球者的優勢、扣扳機的機率形狀、戰術指令每一級改多少。
-        <b>還沒做的</b>:直接紅牌(只做兩黃)、體能、受傷、自動換人、
+        <b>體能</b>有了,但它只做一件事:跑過的路越多,跑得出來的速度越低(換上場的人從零開始算)。
+        <b>衰退的幅度沒有真值可以校準</b> —— 逐場的體能資料只有全場總計,沒有逐半場,
+        所以那個常數定在「最大的、不會把其他對得上的數字弄歪的值」。
+        而且它<b>不產生真實世界的後段進球潮</b>:真實的下半場進球比上半場多兩成,
+        本站是持平,把衰退調大只會讓下半場更少 —— 那是落後方壓上、生力軍與終場補時的事,不是體力。
+        <b>還沒做的</b>:直接紅牌(只做兩黃)、受傷、換人次數與窗口的規則、
         六軸戰術裡的心態 / 寬度 / 節奏 / 直接度(引擎裡接得動,但量下去只有直接度改的是踢法、
-        其餘三軸改的是強弱,所以還沒掛上來)。<b>沒做的一律不放欄位</b>,不留空格子。
+        其餘三軸改的是強弱,所以還沒掛上來)。<b>刻意不做</b>:自動換人(換人是玩家的決定)。
+        <b>沒做的一律不放欄位</b>,不留空格子。
         <b>進球情境分類</b>只分得出運動戰 / 角球 / 快攻 / 界外球 / 定位球 / 十二碼六種;
         直接罰球射門與個人突破沒有可靠判準,不假裝分得出來。
         <b>補時比真實的短</b>,那不是 bug:真實足球 90 分鐘裡球只活約 55 分鐘,而這支模擬的死球等待只有一兩秒,
