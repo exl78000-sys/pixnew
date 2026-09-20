@@ -72931,8 +72931,1719 @@
    "fetchedAt": "2026-09-20T17:40:26.195Z",
    "fdMatchId": "2026-27-43",
    "heat": null
+  },
+  "MAR|PSG": {
+   "key": "MAR|PSG",
+   "season": "2026-27",
+   "date": "2026-09-20",
+   "matchId": "5802945",
+   "home": "MAR",
+   "away": "PSG",
+   "score": [
+    1,
+    2
+   ],
+   "providerScore": [
+    1,
+    2
+   ],
+   "teamStats": {
+    "MAR": {
+     "possession": 39,
+     "shots": 12,
+     "shotsOn": 4,
+     "shotsOff": 3,
+     "blockedShots": 5,
+     "blocksMade": 8,
+     "corners": 3,
+     "offsides": 1,
+     "fouls": 9,
+     "saves": 8,
+     "passes": 404,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.8
+    },
+    "PSG": {
+     "possession": 61,
+     "shots": 31,
+     "shotsOn": 10,
+     "shotsOff": 12,
+     "blockedShots": 9,
+     "blocksMade": 4,
+     "corners": 7,
+     "offsides": 2,
+     "fouls": 3,
+     "saves": 3,
+     "passes": 628,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 4.33
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "MAR": {
+     "touches_opp_box": 27,
+     "big_chance": 3,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 1.49,
+     "expected_goals_set_play": 0.32,
+     "expected_goals_non_penalty": 1.8,
+     "expected_goals_on_target": 0.65,
+     "own_half_passes": 183,
+     "opposition_half_passes": 145,
+     "long_balls_accurate": 29,
+     "long_balls_accurate_pct": 48,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 15,
+     "player_throws": 12,
+     "matchstats.headers.tackles": 10,
+     "interceptions": 10,
+     "clearances": 19,
+     "duel_won": 32,
+     "ground_duels_won": 18,
+     "ground_duels_won_pct": 39,
+     "aerials_won": 14,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 36,
+     "red_cards": 1
+    },
+    "PSG": {
+     "touches_opp_box": 52,
+     "big_chance": 8,
+     "big_chance_missed_title": 7,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 22,
+     "shots_outside_box": 9,
+     "expected_goals_open_play": 3.08,
+     "expected_goals_set_play": 1.25,
+     "expected_goals_non_penalty": 4.33,
+     "expected_goals_on_target": 4.22,
+     "own_half_passes": 180,
+     "opposition_half_passes": 380,
+     "long_balls_accurate": 37,
+     "long_balls_accurate_pct": 60,
+     "accurate_crosses": 7,
+     "accurate_crosses_pct": 39,
+     "player_throws": 24,
+     "matchstats.headers.tackles": 13,
+     "interceptions": 3,
+     "clearances": 20,
+     "duel_won": 42,
+     "ground_duels_won": 28,
+     "ground_duels_won_pct": 61,
+     "aerials_won": 14,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 64,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     39,
+     61
+    ],
+    "h1": [
+     41,
+     59
+    ],
+    "h2": [
+     38,
+     62
+    ]
+   },
+   "events": [
+    {
+     "minute": 30,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Angel Gomes"
+    },
+    {
+     "minute": 32,
+     "extra": null,
+     "team": "MAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Timothy Weah"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "PSG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Nuno Mendes"
+    },
+    {
+     "minute": 59,
+     "extra": 0,
+     "team": "PSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ferrán Torres"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Keyliane Abdallah"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "PSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Maghnes Akliouche"
+    },
+    {
+     "minute": 66,
+     "extra": null,
+     "team": "PSG",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Ferrán Torres"
+    },
+    {
+     "minute": 72,
+     "extra": null,
+     "team": "MAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Angel Gomes"
+    },
+    {
+     "minute": 74,
+     "extra": null,
+     "team": "PSG",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Marquinhos"
+    },
+    {
+     "minute": 77,
+     "extra": null,
+     "team": "MAR",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Timothy Weah"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "PSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mika Godts"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "PSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lucas Beraldo"
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "team": "MAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Keyliane Abdallah"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kelyann Bezahaf"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Faris Moumbagna"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ulisses Garcia"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "MAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Angel Gomes"
+    }
+   ],
+   "shots": [
+    {
+     "min": 8,
+     "extra": null,
+     "team": "PSG",
+     "player": "Désiré Doué",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.064,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.6,
+     "y": 24.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "PSG",
+     "player": "Nuno Mendes",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.035,
+     "xgot": 0.133,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 104.2,
+     "y": 44.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "PSG",
+     "player": "Fabián Ruiz",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 45,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "PSG",
+     "player": "Désiré Doué",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.8,
+     "y": 22.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ousmane Dembélé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.114,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 43.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "MAR",
+     "player": "Pierre-Emile Højbjerg",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.027,
+     "xgot": 0.038,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.4,
+     "y": 30.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "PSG",
+     "player": "Vítinha",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.7,
+     "y": 34.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "MAR",
+     "player": "Neal Maupay",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.25,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.1,
+     "y": 37.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "MAR",
+     "player": "Angel Gomes",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.8,
+     "y": 49.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ousmane Dembélé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.206,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 27.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "PSG",
+     "player": "Warren Zaïre-Emery",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.133,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 38.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "PSG",
+     "player": "Fabián Ruiz",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 21.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ousmane Dembélé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.9,
+     "y": 19.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 3,
+     "team": "PSG",
+     "player": "Vítinha",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.094,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 30.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 4,
+     "team": "PSG",
+     "player": "Ousmane Dembélé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.027,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 27.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "PSG",
+     "player": "Désiré Doué",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0.017,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 17.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "PSG",
+     "player": "João Neves",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0.5,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 37.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "PSG",
+     "player": "Khvicha Kvaratskhelia",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.136,
+     "xgot": 0.528,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 29.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "MAR",
+     "player": "Timothy Weah",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 19.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "PSG",
+     "player": "Khvicha Kvaratskhelia",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.263,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 32.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ousmane Dembélé",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.209,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.8,
+     "y": 26.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "PSG",
+     "player": "Vítinha",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.2,
+     "y": 21.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "PSG",
+     "player": "João Neves",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.428,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 32.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ousmane Dembélé",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 20.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "PSG",
+     "player": "Désiré Doué",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.051,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 44.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "MAR",
+     "player": "Neal Maupay",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.218,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 31.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ferrán Torres",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.253,
+     "xgot": 0.719,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 35.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "MAR",
+     "player": "Keyliane Abdallah",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.1,
+     "y": 22.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "MAR",
+     "player": "Pierre-Emile Højbjerg",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.035,
+     "xgot": 0.023,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 38.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ferrán Torres",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.136,
+     "xgot": 0.658,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 28.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "MAR",
+     "player": "Angel Gomes",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.373,
+     "xgot": 0.565,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.1,
+     "y": 30.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "PSG",
+     "player": "Marquinhos",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.684,
+     "xgot": 0.261,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 33,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "PSG",
+     "player": "Marquinhos",
+     "type": "Goal",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.536,
+     "xgot": 0.979,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.2,
+     "y": 32.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "MAR",
+     "player": "Pierre-Emile Højbjerg",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0.022,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.9,
+     "y": 43.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ousmane Dembélé",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.294,
+     "xgot": 0.385,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 40.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "PSG",
+     "player": "Nuno Mendes",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.027,
+     "xgot": 0.041,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.2,
+     "y": 45.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ferrán Torres",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.041,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.6,
+     "y": 30.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "PSG",
+     "player": "Maghnes Akliouche",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.284,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 36.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "PSG",
+     "player": "Maghnes Akliouche",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.301,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "PSG",
+     "player": "João Neves",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.073,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79,
+     "y": 32,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "MAR",
+     "player": "Nayef Aguerd",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 27.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "MAR",
+     "player": "Ulisses Garcia",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.257,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.8,
+     "y": 35.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 6,
+     "team": "MAR",
+     "player": "Nayef Aguerd",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.517,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.2,
+     "y": 36.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     14
+    ],
+    [
+     3,
+     22
+    ],
+    [
+     4,
+     19
+    ],
+    [
+     5,
+     3
+    ],
+    [
+     6,
+     -5
+    ],
+    [
+     7,
+     -11
+    ],
+    [
+     8,
+     -27
+    ],
+    [
+     9,
+     -38
+    ],
+    [
+     10,
+     -76
+    ],
+    [
+     11,
+     -57
+    ],
+    [
+     12,
+     -71
+    ],
+    [
+     13,
+     -27
+    ],
+    [
+     14,
+     -19
+    ],
+    [
+     15,
+     -16
+    ],
+    [
+     16,
+     -54
+    ],
+    [
+     17,
+     -60
+    ],
+    [
+     18,
+     -65
+    ],
+    [
+     19,
+     -33
+    ],
+    [
+     20,
+     -38
+    ],
+    [
+     21,
+     -35
+    ],
+    [
+     22,
+     -52
+    ],
+    [
+     23,
+     -60
+    ],
+    [
+     24,
+     -30
+    ],
+    [
+     25,
+     -8
+    ],
+    [
+     26,
+     11
+    ],
+    [
+     27,
+     5
+    ],
+    [
+     28,
+     5
+    ],
+    [
+     29,
+     -5
+    ],
+    [
+     30,
+     -27
+    ],
+    [
+     31,
+     -30
+    ],
+    [
+     32,
+     -30
+    ],
+    [
+     33,
+     -8
+    ],
+    [
+     34,
+     -5
+    ],
+    [
+     35,
+     0
+    ],
+    [
+     36,
+     -11
+    ],
+    [
+     37,
+     -22
+    ],
+    [
+     38,
+     43
+    ],
+    [
+     39,
+     49
+    ],
+    [
+     40,
+     87
+    ],
+    [
+     41,
+     16
+    ],
+    [
+     42,
+     -73
+    ],
+    [
+     43,
+     -100
+    ],
+    [
+     44,
+     -100
+    ],
+    [
+     45,
+     -92
+    ],
+    [
+     45.5,
+     -72
+    ],
+    [
+     46,
+     -16
+    ],
+    [
+     47,
+     -38
+    ],
+    [
+     48,
+     -65
+    ],
+    [
+     49,
+     -60
+    ],
+    [
+     50,
+     -30
+    ],
+    [
+     51,
+     16
+    ],
+    [
+     52,
+     -87
+    ],
+    [
+     53,
+     -100
+    ],
+    [
+     54,
+     -100
+    ],
+    [
+     55,
+     -100
+    ],
+    [
+     56,
+     -100
+    ],
+    [
+     57,
+     -100
+    ],
+    [
+     58,
+     -100
+    ],
+    [
+     59,
+     -5
+    ],
+    [
+     60,
+     -5
+    ],
+    [
+     61,
+     -38
+    ],
+    [
+     62,
+     98
+    ],
+    [
+     63,
+     92
+    ],
+    [
+     64,
+     100
+    ],
+    [
+     65,
+     -22
+    ],
+    [
+     66,
+     -87
+    ],
+    [
+     67,
+     -68
+    ],
+    [
+     68,
+     -49
+    ],
+    [
+     69,
+     -22
+    ],
+    [
+     70,
+     -100
+    ],
+    [
+     71,
+     -68
+    ],
+    [
+     72,
+     -30
+    ],
+    [
+     73,
+     27
+    ],
+    [
+     74,
+     -95
+    ],
+    [
+     75,
+     -90
+    ],
+    [
+     76,
+     -79
+    ],
+    [
+     77,
+     5
+    ],
+    [
+     78,
+     -43
+    ],
+    [
+     79,
+     -43
+    ],
+    [
+     80,
+     -65
+    ],
+    [
+     81,
+     -22
+    ],
+    [
+     82,
+     -33
+    ],
+    [
+     83,
+     -38
+    ],
+    [
+     84,
+     -43
+    ],
+    [
+     85,
+     -43
+    ],
+    [
+     86,
+     -100
+    ],
+    [
+     87,
+     -100
+    ],
+    [
+     88,
+     -100
+    ],
+    [
+     89,
+     -84
+    ],
+    [
+     90,
+     -92
+    ],
+    [
+     90.5,
+     31
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "MAR": {
+     "team": "MAR",
+     "formation": "4-4-2",
+     "coach": "Bruno Génésio",
+     "xi": [
+      {
+       "name": "Jeffrey De Lange",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Timothy Weah",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "CJ Egan-Riley",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Nayef Aguerd",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Emerson",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Amine Harit",
+       "shirt": 77,
+       "pos": "M"
+      },
+      {
+       "name": "Pierre-Emile Højbjerg",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Himad Abdelli",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Igor Paixão",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Neal Maupay",
+       "shirt": 11,
+       "pos": "F"
+      },
+      {
+       "name": "Amine Gouiri",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Angel Gomes",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Keyliane Abdallah",
+       "shirt": 48,
+       "pos": "?"
+      },
+      {
+       "name": "Kelyann Bezahaf",
+       "shirt": 74,
+       "pos": "?"
+      },
+      {
+       "name": "Ulisses Garcia",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Faris Moumbagna",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Théo Vermot",
+       "shirt": 92,
+       "pos": "?"
+      },
+      {
+       "name": "Alexi Koum",
+       "shirt": 46,
+       "pos": "?"
+      },
+      {
+       "name": "Derek Cornelius",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Tadjidine Mmadi",
+       "shirt": 43,
+       "pos": "?"
+      }
+     ]
+    },
+    "PSG": {
+     "team": "PSG",
+     "formation": "4-3-3",
+     "coach": "Luis Enrique",
+     "xi": [
+      {
+       "name": "Matvey Safonov",
+       "shirt": 39,
+       "pos": "G"
+      },
+      {
+       "name": "Warren Zaïre-Emery",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Marquinhos",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Willian Pacho",
+       "shirt": 51,
+       "pos": "D"
+      },
+      {
+       "name": "Nuno Mendes",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "João Neves",
+       "shirt": 87,
+       "pos": "M"
+      },
+      {
+       "name": "Vítinha",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Fabián Ruiz",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Désiré Doué",
+       "shirt": 14,
+       "pos": "F"
+      },
+      {
+       "name": "Ousmane Dembélé",
+       "shirt": 10,
+       "pos": "F"
+      },
+      {
+       "name": "Khvicha Kvaratskhelia",
+       "shirt": 7,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Ferrán Torres",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Maghnes Akliouche",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Beraldo",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Mika Godts",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Chevalier",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Ilya Zabarnyi",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Digne",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Dro Fernández",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Senny Mayulu",
+       "shirt": 24,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 55,
+      "center": 21,
+      "right": 24
+     },
+     "firstHalf": {
+      "left": 48,
+      "center": 15,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 62,
+      "center": 27,
+      "right": 11
+     }
+    },
+    "away": {
+     "total": {
+      "left": 37,
+      "center": 28,
+      "right": 35
+     },
+     "firstHalf": {
+      "left": 36,
+      "center": 27,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 38,
+      "center": 30,
+      "right": 32
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-20T21:29:14.162Z",
+   "fdMatchId": "2026-27-44",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-20T20:12:14.287Z"
+ "updatedAt": "2026-09-20T21:29:14.164Z"
 }
