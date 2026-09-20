@@ -33027,7 +33027,7 @@
      }
     ]
    },
-   "clock": "47'00"
+   "clock": "53'00"
   },
   "LEE|CRY": {
    "fixtureId": 128968,
@@ -33520,7 +33520,7 @@
      }
     ]
    },
-   "clock": "49'00"
+   "clock": "51'00"
   },
   "MCI|SUN": {
    "fixtureId": 128969,
@@ -33958,58 +33958,6 @@
    "goals": [
     {
      "side": "H",
-     "person": 63741,
-     "assist": null,
-     "team": 11,
-     "min": 9,
-     "label": "09'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "A",
-     "person": 67784,
-     "assist": 138104,
-     "team": 29,
-     "min": 12,
-     "label": "12'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
-     "as": 1
-    },
-    {
-     "side": "H",
-     "person": 68150,
-     "assist": 25474,
-     "team": 11,
-     "min": 29,
-     "label": "29'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 2,
-     "as": 1
-    },
-    {
-     "side": "A",
-     "person": 67784,
-     "assist": 12196,
-     "team": 29,
-     "min": 33,
-     "label": "33'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 2,
-     "as": 2
-    },
-    {
-     "side": "H",
      "person": 25474,
      "assist": 14569,
      "team": 11,
@@ -34037,6 +33985,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -34047,11 +34001,17 @@
       "min": 45,
       "label": "45+6'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+6'00"
+   "clock": "45'00"
   }
  },
- "fetchedAt": "2026-09-20T14:06:47.847Z"
+ "fetchedAt": "2026-09-20T14:09:08.657Z"
 }
