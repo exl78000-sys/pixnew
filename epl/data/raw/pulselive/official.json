@@ -32784,8 +32784,8 @@
      ],
      [
       66133,
-      5140,
       133104,
+      5140,
       116665
      ],
      [
@@ -33005,7 +33005,7 @@
      }
     ]
    },
-   "clock": "01'00"
+   "clock": "03'00"
   },
   "LEE|CRY": {
    "fixtureId": 128968,
@@ -33235,14 +33235,14 @@
       20497
      ],
      [
-      147312,
       50842,
-      115169
+      115169,
+      147312
      ],
      [
       123848,
-      67779,
       69595,
+      67779,
       24334
      ],
      [
@@ -33457,12 +33457,12 @@
      }
     ]
    },
-   "clock": "00'00"
+   "clock": "03'00"
   },
   "MCI|SUN": {
    "fixtureId": 128969,
    "kickoff": "2026-09-20T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -33471,9 +33471,31 @@
    "homeId": 11,
    "awayId": 29,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      76204,
+      16431,
+      14569,
+      67178
+     ],
+     [
+      63741,
+      51593
+     ],
+     [
+      25474,
+      68150,
+      31936
+     ],
+     [
+      65970
+     ]
+    ],
     "xi": [
      {
       "id": 22857,
@@ -33516,7 +33538,7 @@
       "playerId": null,
       "name": "Antoine Semenyo",
       "shirt": 42,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -33543,7 +33565,7 @@
       "playerId": null,
       "name": "Matheus Nunes",
       "shirt": 27,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -33561,7 +33583,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -33660,9 +33682,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75692
+     ],
+     [
+      51199,
+      25892,
+      19864,
+      147437
+     ],
+     [
+      12136,
+      124944
+     ],
+     [
+      12196,
+      138104,
+      115105
+     ],
+     [
+      67784
+     ]
+    ],
     "xi": [
      {
       "id": 12136,
@@ -33705,7 +33749,7 @@
       "playerId": null,
       "name": "Nilson Angulo",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -33714,7 +33758,7 @@
       "playerId": null,
       "name": "Thomas Meunier",
       "shirt": 12,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -33852,10 +33896,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-09-20T13:01:19.285Z"
+ "fetchedAt": "2026-09-20T13:03:39.274Z"
 }
