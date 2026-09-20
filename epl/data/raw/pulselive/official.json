@@ -33879,7 +33879,7 @@
    "fixtureId": 128969,
    "kickoff": "2026-09-20T13:00:00.000Z",
    "status": "C",
-   "final": false,
+   "final": true,
    "score": {
     "home": 5,
     "away": 3
@@ -34545,7 +34545,14 @@
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-20T15:00:28.631Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "FUL|MUN": {
    "fixtureId": 128967,
@@ -34945,5 +34952,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T14:58:09.606Z"
+ "fetchedAt": "2026-09-20T15:00:28.631Z"
 }
