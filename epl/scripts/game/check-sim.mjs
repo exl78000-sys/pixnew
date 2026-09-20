@@ -717,7 +717,10 @@ if (simShots && realShots) {
         const lb = k => mean(rows.map(r => r.st.counts.lineBack?.[k] ?? 0));
         const lfr = k => mean(rows.map(r => r.st.counts.lineFront?.[k] ?? 0));
         const lw = k => mean(rows.map(r => r.st.counts.lineWide?.[k] ?? 0));
-        const gsR = [], glR = [], n4R = [], denR = [], perpR = [], lenR = [], depR = [], sprR = [], widR = [];
+        const lws = k => mean(rows.map(r => r.st.counts.lineWideShape?.[k] ?? 0));
+        const lsN = k => mean(rows.map(r => r.st.counts.lineShapeN?.[k] ?? 0));
+        const lmk = k => mean(rows.map(r => r.st.counts.lineMarked?.[k] ?? 0));
+        const gsR = [], glR = [], n4R = [], denR = [], perpR = [], lenR = [], depR = [], sprR = [], widR = [], shpR = [], mkR = [];
         for (let k = 0; k < 7; k++) {
           const S = ls(k);
           gsR.push(num(S > 0 ? gsn(k) / S : null));
@@ -729,6 +732,8 @@ if (simShots && realShots) {
           depR.push(num(ldN(k) > 0 ? ld(k) / ldN(k) : null));
           sprR.push(num(ldN(k) > 0 ? (lfr(k) - lb(k)) / ldN(k) : null));
           widR.push(num(ldN(k) > 0 ? lw(k) / ldN(k) : null));
+          shpR.push(num(lsN(k) > 0 ? lws(k) / lsN(k) : null));
+          mkR.push(num(ldN(k) > 0 ? lmk(k) / ldN(k) : null));
         }
         console.log(`  ${'門側的人(人 / 腳)'.padEnd(26, '\u3000')} ${gsR.join(' ')}　← 他跟球門之間幾個人`);
         console.log(`  ${'　深度上在球之前(人 / 腳)'.padEnd(26, '\u3000')} ${glR.join(' ')}　← 只看沿場長,不管站多寬`);
@@ -741,6 +746,11 @@ if (simShots && realShots) {
            第四深的減最深的:一條真的防線這個數字很小,散開的話它會跟深度本身同量級。 */
         console.log(`  ${'　後四人的前後差(m)'.padEnd(26, '\u3000')} ${sprR.join(' ')}　← 小 = 真的是一條線`);
         console.log(`  ${'　後四人的橫向跨距(m)'.padEnd(26, '\u3000')} ${widR.join(' ')}　← 大 = 線是攤開的,填不滿走廊`);
+        /* **寬度是誰決定的**(階段 5f)。y 只有兩個來源:隊形的槽位與盯人。
+           隊形那一排就已經跟上面一樣寬 → 寬度是隊形決定的;
+           隊形窄而實際寬 → 是盯人把人拉開的。被盯人覆蓋的人數是第三個數字。 */
+        console.log(`  ${'　　照隊形會是(m)'.padEnd(26, '\u3000')} ${shpR.join(' ')}　← 跟上面一樣寬 = 隊形決定的`);
+        console.log(`  ${'　　其中被盯人拉走(人)'.padEnd(26, '\u3000')} ${mkR.join(' ')}　← 四個人裡幾個`);
         const dn = rows.reduce((a, r) => a + (r.def?.n ?? 0), 0);
         const dd = rows.reduce((a, r) => a + (r.def?.depth ?? 0), 0);
         line('　平時的防線深度', dn > 0 ? `${(dd / dn).toFixed(1)} m` : '—',

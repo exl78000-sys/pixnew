@@ -1296,6 +1296,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        地方完全不同。所以**最深的**與**第四深的**各記一份:兩個差很多就是沒有線。 */
     lineDepth: new Array(7).fill(0), lineDepthN: new Array(7).fill(0),
     lineBack: new Array(7).fill(0), lineFront: new Array(7).fill(0), lineWide: new Array(7).fill(0),
+    /* 寬度歸因(階段 5f):`lineWideShape` 是**同樣那四個人**照隊形會站的 y 跨距,
+       `lineMarked` 是其中被盯人覆蓋掉的人數。兩個跟 `lineWide` 並排看:
+       隊形跨距就已經是 41 公尺 → 寬度是隊形決定的;隊形窄而實際寬 → 是盯人拉開的。 */
+    lineWideShape: new Array(7).fill(0), lineShapeN: new Array(7).fill(0), lineMarked: new Array(7).fill(0),
     /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
        而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
        被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
@@ -1415,7 +1419,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       /* 深度與門側人數要在 `a` 的區間篩選**之前**算 —— 那個篩選問的是「擋不擋得到這一腳」,
          而這兩個問的是「這九個人站在哪裡」,母體本來就不一樣(4s 的「我的分母跟
          被比較的那一邊是不是同一批」)。 */
-      depths.push(Math.abs(q.x - gx)); ys.push({ d: Math.abs(q.x - gx), y: q.y });
+      depths.push(Math.abs(q.x - gx));
+      /* **鬆球時沒有持球者,站位那一段整塊不跑** —— 角球頭球與凌空抽射就是這種。
+         只檢查 `!= null` 分不出「這一格寫的」與「上一次持球時寫的」,那會把一個
+         好幾秒前的 y 當成現況。帶時間戳,超過半秒就當沒有(母體要跟被比較的那一邊同一批)。 */
+      const fresh = q.dfAt != null && st.t - q.dfAt < 0.5;
+      ys.push({ d: Math.abs(q.x - gx), y: q.y, sy: fresh ? q.dfShapeY : null, mk: fresh ? (q.dfMark ?? 0) : 0 });
       if (hypot(gx - q.x, PITCH_H / 2 - q.y) < dGoal) gs++;
       if (Math.abs(q.x - gx) < Math.abs(ball.x - gx)) gsLine++;
       const a = (q.x - ball.x) * ux + (q.y - ball.y) * uy;
@@ -1453,8 +1462,19 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          同樣那四個人的橫向跨距 —— 大的話「線」是攤開的,擋不到中路那條線。
          這是把「橫向攤開」從推論變成量測:本站在同一輪已經用平均推錯過一次
          (推「沒有線」,而前後差量出來是 4 公尺,是一條很整齊的線)。 */
-      const four = ys.sort((a, b) => a.d - b.d).slice(0, 4).map(o => o.y);
+      const f4 = ys.sort((a, b) => a.d - b.d).slice(0, 4);
+      const four = f4.map(o => o.y);
       st.lineWide[k] += Math.max(...four) - Math.min(...four);
+      /* 隊形那一份要**四個人都有值**才算 —— 缺一個就不是同一批(本站的老規矩)。
+         值是這一格站位那一步寫的,而射門跑在同一格稍後,所以最多差一格(1/60 秒)。 */
+      st.lineMarked[k] += f4.reduce((a, o) => a + o.mk, 0);
+      /* 被盯人那個數字的分母是 `lineDepthN`(全部),而隊形跨距的分母是 `lineShapeN`
+         (四個人都有新鮮值的那些)—— 兩個分母不同,印的時候要各除各的。 */
+      if (f4.every(o => o.sy != null)) {
+        const sy = f4.map(o => o.sy);
+        st.lineWideShape[k] += Math.max(...sy) - Math.min(...sy);
+        st.lineShapeN[k]++;
+      }
       st.lineDepthN[k]++;
     }
   }
@@ -2109,6 +2129,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           const lineX = goalX + (ball.x - goalX) * (1 - LINE_DROP * (s.lineDrop ?? 1));
           const behindBall = s.att > 0 ? Math.min(pos.x, Math.max(lineX, LINE_MIN)) : Math.max(pos.x, Math.min(lineX, PITCH_W - LINE_MIN));
           pos = { x: behindBall, y: pos.y };
+          /* **寬度歸因**(2026-09-20,階段 5f)。5e 量到防守方後四人橫向跨距 41~46 公尺
+             (場寬 68),而 y 只有兩個來源:隊形的槽位(`shapeOf`,這一行的 `pos.y`)
+             與**盯人**(下面那一段,站到對手與自家門之間)。留下兩者才分得出是哪一個 ——
+             5e 已經示範過推論會錯,所以不猜。純觀測:只是兩個欄位,不碰 rng。 */
+          p.dfShapeY = pos.y; p.dfMark = 0; p.dfAt = st.t;
           if (p.role !== 'FWD') {
             // 盯最近的對手:站在他與自家門之間
             let m = null, md = MARK_R;
@@ -2120,6 +2145,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
             if (m) {
               const dx = goalX - m.x, dy = PITCH_H / 2 - m.y, d = Math.max(0.1, hypot(dx, dy));
               pos = { x: cl(m.x + dx / d * GOALSIDE, 2, PITCH_W - 2), y: cl(m.y + dy / d * GOALSIDE, 2, PITCH_H - 2) };
+              p.dfMark = 1;
             }
           }
         }
@@ -2896,6 +2922,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         lanePerp: [...st.lanePerp], lanePerpN: [...st.lanePerpN],
         lineDepth: [...st.lineDepth], lineDepthN: [...st.lineDepthN],
         lineBack: [...st.lineBack], lineFront: [...st.lineFront], lineWide: [...st.lineWide],
+        lineWideShape: [...st.lineWideShape], lineShapeN: [...st.lineShapeN], lineMarked: [...st.lineMarked],
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
