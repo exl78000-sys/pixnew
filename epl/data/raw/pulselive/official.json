@@ -34557,11 +34557,11 @@
   "FUL|MUN": {
    "fixtureId": 128967,
    "kickoff": "2026-09-20T15:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
-    "away": 0
+    "away": 1
    },
    "homeId": 34,
    "awayId": 12,
@@ -35000,6 +35000,19 @@
      "kind": "O",
      "hs": 1,
      "as": 0
+    },
+    {
+     "side": "A",
+     "person": 51202,
+     "assist": 146567,
+     "team": 12,
+     "min": 89,
+     "label": "89'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
     }
    ],
    "timeline": {
@@ -35180,12 +35193,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -35202,11 +35209,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "89'00"
+   "clock": "90+4'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-09-20T17:22:03.637Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-09-20T17:15:13.775Z"
+ "fetchedAt": "2026-09-20T17:24:19.966Z"
 }
