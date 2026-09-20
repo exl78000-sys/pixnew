@@ -1295,7 +1295,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 只記平均會讓「一條線」跟「散開的四個人」長得一模一樣 —— 而那兩件事要修的
        地方完全不同。所以**最深的**與**第四深的**各記一份:兩個差很多就是沒有線。 */
     lineDepth: new Array(7).fill(0), lineDepthN: new Array(7).fill(0),
-    lineBack: new Array(7).fill(0), lineFront: new Array(7).fill(0),
+    lineBack: new Array(7).fill(0), lineFront: new Array(7).fill(0), lineWide: new Array(7).fill(0),
     /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
        而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
        被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
@@ -1409,13 +1409,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const gx = sideOf(shooter.side).att > 0 ? PITCH_W : 0;
     const L = Math.abs(ux) > 0.01 ? Math.abs((gx - ball.x) / ux) : dGoal;
     let lane = Infinity, reach = false, near4 = 0, gs = 0, gsLine = 0;
-    const depths = [];
+    const depths = [], ys = [];
     for (const q of all()) {
       if (q.off || q.side === shooter.side || q === sideOf(q.side).gk) continue;
       /* 深度與門側人數要在 `a` 的區間篩選**之前**算 —— 那個篩選問的是「擋不擋得到這一腳」,
          而這兩個問的是「這九個人站在哪裡」,母體本來就不一樣(4s 的「我的分母跟
          被比較的那一邊是不是同一批」)。 */
-      depths.push(Math.abs(q.x - gx));
+      depths.push(Math.abs(q.x - gx)); ys.push({ d: Math.abs(q.x - gx), y: q.y });
       if (hypot(gx - q.x, PITCH_H / 2 - q.y) < dGoal) gs++;
       if (Math.abs(q.x - gx) < Math.abs(ball.x - gx)) gsLine++;
       const a = (q.x - ball.x) * ux + (q.y - ball.y) * uy;
@@ -1449,6 +1449,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       depths.sort((p, q) => p - q);
       st.lineDepth[k] += (depths[0] + depths[1] + depths[2] + depths[3]) / 4;
       st.lineBack[k] += depths[0]; st.lineFront[k] += depths[3];
+      /* **寬度**:深度上很緊(前後差 ~4 m)不代表填得滿通往球門的走廊。
+         同樣那四個人的橫向跨距 —— 大的話「線」是攤開的,擋不到中路那條線。
+         這是把「橫向攤開」從推論變成量測:本站在同一輪已經用平均推錯過一次
+         (推「沒有線」,而前後差量出來是 4 公尺,是一條很整齊的線)。 */
+      const four = ys.sort((a, b) => a.d - b.d).slice(0, 4).map(o => o.y);
+      st.lineWide[k] += Math.max(...four) - Math.min(...four);
       st.lineDepthN[k]++;
     }
   }
@@ -2889,7 +2895,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         laneLen: [...st.laneLen], laneN: [...st.laneN], gsN: [...st.gsN], gsLineN: [...st.gsLineN],
         lanePerp: [...st.lanePerp], lanePerpN: [...st.lanePerpN],
         lineDepth: [...st.lineDepth], lineDepthN: [...st.lineDepthN],
-        lineBack: [...st.lineBack], lineFront: [...st.lineFront],
+        lineBack: [...st.lineBack], lineFront: [...st.lineFront], lineWide: [...st.lineWide],
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },

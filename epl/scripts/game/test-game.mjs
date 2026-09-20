@@ -5,6 +5,7 @@
  * 引擎的不變量(進球數 = 射門進球數、射手在場上、無操作 = 站上預測…)在下面第三節,
  * 引擎檔還沒建時那一節整段跳過並印出來,不假裝通過。 */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { teamMatchRows } from '../lib/style-trend.mjs';
@@ -1032,15 +1033,28 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         seg.length > 0 && !/\brng\s*\(/.test(seg), `切出來 ${seg.length} 字元`);
       const chkBare = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-      check('check-sim 印出 5e 那幾排(門側的兩種 / 站進球道 / 每 10 m / 離線 / 球道長度 / 防線深度)',
-        ['門側的人', '深度上在球之前', '站進球道', '每 10 m 球道', '最近那個離線', '球道長度', '防線深度', '後四人的前後差']
-          .every(t => chkBare.includes(t)));
+      /* **掃原始碼分不出「印出來」與「原始碼裡有這個字串」。** 這兩條的第一版寫成
+         `chkBare.includes('這一帶幾腳')`,而負向對照把那一行包進 `if (0)` 之後
+         **照樣是綠的** —— 字串還在,只是永遠不執行。那跟「這條測試守不住任何東西」
+         長得一模一樣,而它是負向對照抓到的,不是讀程式看出來的。
+         所以真的跑一次 check-sim,掃它的 **stdout**。一場就夠:這幾排跟場數無關。 */
+      const chkOut = spawnSync(process.execPath,
+        [join(ROOT, 'scripts', 'game', 'check-sim.mjs'), '1'],
+        { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).stdout ?? '';
+      check('check-sim **真的印出** 5e 那幾排(跑一次掃 stdout,不是掃原始碼)',
+        ['門側的人', '深度上在球之前', '站進球道', '每 10 m 球道', '最近那個離線',
+          '球道長度', '防線深度', '後四人的前後差', '後四人的橫向跨距']
+          .every(t => chkOut.includes(t)), `check-sim 輸出 ${chkOut.length} 字元`);
       /* 樣本數與 SE 要印在旁邊 —— 少了它們,逐帶的比例看起來就像一條曲線,
          而一帶只有幾十腳。5e 的規劃就是這樣把雜訊寫成了「要修的凹陷」。 */
-      check('逐帶的比例旁邊要有樣本數與 ±1 SE(不然雜訊會被讀成形狀)',
-        chkBare.includes('這一帶幾腳') && /±1 SE/.test(chkBare) && /Math\.sqrt\(p \* \(1 - p\) \/ n\)/.test(chkBare));
+      check('逐帶的比例旁邊**真的印出**樣本數與 ±1 SE(不然雜訊會被讀成形狀)',
+        chkOut.includes('這一帶幾腳') && /±1 SE/.test(chkOut), `check-sim 輸出 ${chkOut.length} 字元`);
+      /* SE 是二項式的 √(p(1−p)/n) —— 這一條掃不到 stdout(輸出只有數字),
+         所以它留在原始碼那一層,而且自己一條:一條斷言有幾個子句就要貼幾個 bug。 */
+      check('那個 ±1 SE 是二項式算的,不是隨手給一個數字',
+        /Math\.sqrt\(p \* \(1 - p\) \/ n\)/.test(chkBare));
       {
-        let bad = 0, gs = 0, n4 = 0, shots = 0, dep = 0, depN = 0;
+        let bad = 0, badLine = 0, gs = 0, n4 = 0, shots = 0, dep = 0, depN = 0;
         for (const c of st5e) {
           for (let k = 0; k < 7; k++) {
             /* 上下界:① 站進球道 4 m 的**人數**不會比「有沒有人」那一格的**腳數**少
@@ -1054,7 +1068,10 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
             if (!(c.laneN[k] >= c.laneFar[k] && c.gsN[k] <= 10 * c.laneShots[k]
               && c.gsLineN[k] <= 10 * c.laneShots[k]
               && c.lanePerpN[k] <= c.laneShots[k] && c.lineDepthN[k] <= c.laneShots[k]
-              && c.lineBack[k] <= c.lineDepth[k] && c.lineDepth[k] <= c.lineFront[k])) bad++;
+              && c.lineWide[k] <= 68 * c.lineDepthN[k])) bad++;
+            /* 最深 ≤ 平均 ≤ 第四深 自己一條 —— 它守的是「深度那三個數字沒有接反」,
+               跟上面那些上界是不同的性質(一條斷言有幾個子句就要貼幾個 bug)。 */
+            if (!(c.lineBack[k] <= c.lineDepth[k] && c.lineDepth[k] <= c.lineFront[k])) badLine++;
             gs += c.gsN[k]; n4 += c.laneN[k]; shots += c.laneShots[k];
             dep += c.lineDepth[k]; depN += c.lineDepthN[k];
           }
@@ -1062,6 +1079,8 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         check('5e 的四個計數器都在上下界裡(人數 ≥ 有沒有、門側 ≤ 10 人、記到的 ≤ 射門數)',
           st5e.length > 0 && shots > 0 && bad === 0,
           `${st5e.length} 場:射門 ${shots}、門側 ${gs}、站進球道 ${n4}、逐帶越界 ${bad} 格`);
+        check('後四人的最深 ≤ 平均 ≤ 第四深(三個數字沒有接反)',
+          st5e.length > 0 && badLine === 0, `逐帶不一致 ${badLine} 格`);
         /* 深度量的是離**自家**球門線。拿錯一邊的話它會變成 105 − 真值,
            而射門那一刻防守方最深的四個人一定在自家半場那一側,所以平均必定小於半場。
            **這是拿錯球門的判別式**,不是一個調出來的門檻。 */
