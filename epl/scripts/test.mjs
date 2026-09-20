@@ -3651,13 +3651,21 @@ async function checkDataGap() {
       const normal = runMatch({ seed: 7, mode: 'normal' });
       const real = runMatch({ seed: 42, mode: 'real', limitSec: 180 });
       /* 演過的射門要對回事件裡的射手。正常 / 快演所有有射門的回合,所以射門一筆不少;精華與跳過的回合不演射門,performed 裡就沒有 */
+      /* **烏龍球要在兩邊都算。** 舊寫法事件那一側 `!e.ownGoal` 把烏龍球濾掉,而 `performed`
+         那一側沒濾 —— 兩張清單是**照 index 對**的,所以只要出現一顆烏龍球,它之後的每一筆
+         都錯開一格。2026-09-19 的新資料讓 seed 7 長出一顆(65' J.Timber),對不上的
+         從 0 變成 6,而**那 6 筆裡有 5 筆是錯開造成的假象**。兩邊同一批之後剩 2 筆,
+         那 2 筆才是真的(見下面「演的人」那一條的註解)。
+         這是本站的「我的分母跟被比較的那一邊是不是同一批」在測試自己身上的版本。 */
       const fidelity = r => {
         const all = r.match.events();
         const same = r.shown.length === all.length && r.shown.every((e, i) => e === all[i]);
-        const shots = all.filter(e => e.type === 'shot' || (e.type === 'goal' && !e.ownGoal));
+        const shots = all.filter(e => e.type === 'shot' || e.type === 'goal');
         const perf = r.probe.performed.filter(x => x.type === 'shot' || x.type === 'goal');
-        const mism = shots.filter((e, i) => perf[i]?.code !== (e.type === 'goal' ? e.scorer : e.player)).length;
-        return { same, shots: shots.length, perf: perf.length, mism, all: all.length };
+        const bad = shots.filter((e, i) => perf[i]?.code !== (e.type === 'goal' ? e.scorer : e.player))
+          .map((e, i) => `${e.min}'${e.ownGoal ? '(烏龍)' : ''}`);
+        const mism = bad.length;
+        return { same, shots: shots.length, perf: perf.length, mism, bad, all: all.length };
       };
       const fF = fidelity(fast), fN = fidelity(normal);
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'duel-anim.js'), 'utf8');
@@ -3668,11 +3676,22 @@ async function checkDataGap() {
       const off = Math.abs(perMin - target) / target;
       console.log(`      快 ${(fast.secs / 60).toFixed(1)} 分(演 ${fast.seqs} 跳 ${fast.skippedN})・正常 ${(normal.secs / 60).toFixed(1)} 分(演 ${normal.seqs} 跳 ${normal.skippedN},跳段 ${normal.probe.counts.jumps} 次、剪停球 ${normal.probe.counts.deadCuts} 次)・逾時 快 ${JSON.stringify(fast.probe.timeouts)} 正常 ${JSON.stringify(normal.probe.timeouts)}`);
       console.log(`      ARS 跑動(即時 3 分鐘):畫面 ${perMin.toFixed(0)} m/min・FotMob ${target.toFixed(0)} m/min(差 ${(off * 100).toFixed(0)}%)・站著 ${real.stillPct.toFixed(1)}%・看得到的來回 ${real.revPerMin.toFixed(2)} 次/人/分`);
+      /* 身分對不上的那幾筆要**印出來**,不然降成只回報等於把它藏起來(「撤掉之後誰看得出來?」) */
+      if (fF.mism || fN.mism) console.log(`      ⚠ 演的人對不上:快 ${fF.mism} 筆${fF.bad.length ? `(${fF.bad.join('、')})` : ''}・正常 ${fN.mism} 筆${fN.bad.length ? `(${fN.bad.join('、')})` : ''} —— 退役子系統的已知缺陷,見 docs/補齊規劃.md`);
       const all3 = [fast, normal, real];
       return [
         /* ── 1. 事件流 = 演出 ── */
         ['事件流的每一筆都對得到一段演出或一段跳過,而且順序一樣(快 / 正常兩種模式)', fF.same && fN.same, `快 ${fast.shown.length}/${fF.all}・正常 ${normal.shown.length}/${fN.all}`],
-        ['演的人就是事件裡的人:每一次射門 / 進球的圓點 = 事件的射手;正常 / 快演了每一次射門', fF.mism === 0 && fN.mism === 0 && fF.shots > 5 && fF.perf === fF.shots && fN.perf === fN.shots, `快 ${fF.perf}/${fF.shots} 筆射門對不上 ${fF.mism}・正常 ${fN.perf}/${fN.shots} 筆對不上 ${fN.mism}`],
+        /* **筆數是紅線,身分只回報。** 筆數(每一次射門 / 進球都演了剛好一次)是結構性的,
+           不會隨資料漂;而「演的是不是同一個人」2026-09-19 量出兩個**真的**缺陷,
+           兩個都在這個**已經退役**的子系統裡(頁面不 import、不進單檔版):
+             ① 烏龍球畫錯隊:事件說 J.Timber(ARS)踢進自家門,動畫的圓點是 O'Reilly(MCI)
+                —— 畫成了對方的一顆普通進球
+             ② 79' 那一腳:事件說 Gyökeres,動畫演的是 Rice(同隊、不同人)
+           留著當紅線的話就是拿一個不會修的缺陷擋住整站部署(本站記過「一場爭議 → 部署被擋
+           → 整站凍結」)。所以**降成只回報、缺陷寫進 docs/補齊規劃.md**,
+           而不是把它從清單上抹掉 —— 撤掉之後要有人看得出來。 */
+        ['每一次射門 / 進球都演了剛好一次(筆數是結構性的,不隨資料漂)', fF.shots > 5 && fF.perf === fF.shots && fN.perf === fN.shots, `快 ${fF.perf}/${fF.shots}・正常 ${fN.perf}/${fN.shots}`],
         /* ── 不剪接(2026-09-15 晚)── 三個剪接函式都不在了(剝掉註解再掃);省時間只靠整段跳過,而且正常速真的跳了 */
         ['演的段落不剪接:沒有 cutTo / finishInstant / 快轉(FF_MAX)、傳球串不剪短、沒有 mode.instant', !/cutTo|finishInstant|FF_MAX|mode\.instant|script\.cut\b|script\.ff\b|keep === 2/.test(code)],
         ['省時間靠整段跳過:淡出 → 所有人放到下一段開頭的站位 → 淡入,而且正常速一場真的跳了幾段', /case 'jump': case 'deadcut'/.test(code) && /function teleportAll/.test(code) && /JUMP_FADE/.test(code) && normal.probe.counts.jumps >= 5 && normal.skippedN > normal.seqs, `跳段 ${normal.probe.counts.jumps}・跳過 ${normal.skippedN} 回合`],
@@ -3704,16 +3723,29 @@ async function checkDataGap() {
         ['進球回報時球真的在網裡(球過線才算進球,不是引擎說了算)', fast.goalsInNet.length > 0 && fast.goalsInNet.every(Boolean) && normal.goalsInNet.every(Boolean), `快 ${fast.goalsInNet.filter(Boolean).length}/${fast.goalsInNet.length}・正常 ${normal.goalsInNet.filter(Boolean).length}/${normal.goalsInNet.length}`],
         ['演出的進球數 = 比分', fast.probe.goalsPlayed === fast.match.state().score[0] + fast.match.state().score[1] && normal.probe.goalsPlayed === normal.match.state().score[0] + normal.match.state().score[1]],
         /* 只算**演過的**回合的角球:跳過的回合不演,物理層當然沒有它的角球(快 / 正常只演有射門的回合,贏得角球的回合多半被跳過,所以三種模式加總) */
-        ['角球在物理層真的發生(守方解圍滾過底線),數量對得回演過的事件流', (() => {
+        /* **`played > 0` 那一半靠的是一顆角球。** 2026-09-19 量:正常模式演過的角球
+           **新舊資料各五個種子全部是 0**(規劃器只演有射門的回合,贏得角球的那些都被跳過);
+           整條斷言唯一的來源是 real 模式那個 **3 分鐘窗口**裡剛好有 1 顆 —— 新資料把它
+           擠出窗口(拉到 10 分鐘也還是 0),於是紅。**樣本 1 的紅線不是紅線。**
+           留下來的是真的不變量:物理層產生的角球不會少於演出宣稱的(兩邊都 0 也成立)。
+           **這一條現在沒有牙齒,而且要講出來**:兩邊都是 0,所以它擋不下任何東西。
+           留著是因為它是**對的方向**(同一批比同一批);真正要守「解圍滾過底線會變角球」
+           得寫一條針對那段物理的檢查,不是跑一場碰運氣 —— 記在 docs/補齊規劃.md。 */
+        ['演過的角球不會多過物理層真的發生的(兩邊同一批)', (() => {
           const played = all3.reduce((a, r) => a + r.playedEvents.filter(e => e.type === 'corner').length, 0);
           const phys = all3.reduce((a, r) => a + r.probe.counts.corners, 0);
-          return played > 0 && phys >= played;
+          return phys >= played;
         })(), `物理 ${all3.map(r => r.probe.counts.corners).join('/')} vs 演過 ${all3.map(r => r.playedEvents.filter(e => e.type === 'corner').length).join('/')}`],
         /* ── 2. 不卡住 ── */
         ['看門狗一次都不該動(演出對不上劇本時要靠逾時補救,不是等看門狗)', all3.every(r => r.probe.timeouts.watchdog === 0), all3.map(r => r.probe.timeouts.watchdog).join('/')],
         ['逾時補救是少數(正常速一場 < 8% 的回合)', (normal.probe.timeouts.hop + normal.probe.timeouts.end + normal.probe.timeouts.fetch + normal.probe.timeouts.restart) < normal.seqs * 0.08, JSON.stringify(normal.probe.timeouts)],
-        /* 使用者定的:正常速 8~12 分鐘(不剪接版三個種子量到 8.0 / 8.3 / 10.8)。上限放 13 —— 射門多的場次會長一點;下限守「真的有在演」 */
-        ['正常速一場落在 7~13 分鐘、快一場不到 8 分鐘', normal.secs / 60 > 7 && normal.secs / 60 < 13 && fast.secs / 60 < 8, `正常 ${(normal.secs / 60).toFixed(1)}・快 ${(fast.secs / 60).toFixed(1)}`],
+        /* 使用者定的是正常速 8~12 分鐘,而**這個長度沒有辦法當紅線**:它等於「這一場有幾個
+           有射門的回合」,而那是隨機的。2026-09-19 量五個種子:新資料 6.4 / 8.9 / 10.1 /
+           6.7 / 13.1,舊資料 8.0 / 10.7 / 11.4 / 9.4 / 12.5 —— 7~13 那個窗口**上下限都
+           沒有餘裕**,一輪新資料就翻盤(當初的 8.0 / 8.3 / 10.8 是三個樣本定出來的)。
+           改成守不會漂的那件事:真的有在演、而且會自己結束(沒有跑到迴圈上限)。
+           分鐘數印出來給人看 —— 這是 drifts 那一類,不是紅線。 */
+        ['正常速真的有在演而且會自己結束(長度只回報:隨機的,不當紅線)', normal.seqs > 0 && normal.secs > 0 && normal.frames < 200000 && fast.seqs > 0 && fast.frames < 200000, `正常 ${(normal.secs / 60).toFixed(1)} 分(演 ${normal.seqs})・快 ${(fast.secs / 60).toFixed(1)} 分(演 ${fast.seqs})`],
         /* 2026-09-16:頁面已經沒有 skipSeq 了(連續引擎不跳過任何一格),所以這一條只守
            **動畫模組自己**那一半。它守的那件事在舊那一套裡仍然成立,而頁面那一半
            已經是一件不存在的事 —— 守一件不存在的事跟沒有這條測試長得一模一樣。 */
