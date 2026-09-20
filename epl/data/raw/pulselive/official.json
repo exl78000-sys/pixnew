@@ -32556,7 +32556,7 @@
   "BOU|LIV": {
    "fixtureId": 128963,
    "kickoff": "2026-09-20T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -32776,27 +32776,29 @@
     ]
    },
    "away": {
-    "formation": "4-4-2",
-    "formationRaw": "4-4-2",
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
     "rows": [
      [
       20559
      ],
      [
+      66133,
       5140,
-      75382,
-      33231,
-      133104
+      133104,
+      116665
      ],
      [
-      21737,
-      116665,
       63633,
-      66133
+      33231
      ],
      [
       68840,
+      75382,
       32894
+     ],
+     [
+      21737
      ]
     ],
     "xi": [
@@ -32988,14 +32990,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "01'00"
   },
   "LEE|CRY": {
    "fixtureId": 128968,
    "kickoff": "2026-09-20T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -33004,9 +33019,29 @@
    "homeId": 9,
    "awayId": 6,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-5-2",
+    "formationRaw": "3-5-2",
+    "rows": [
+     [
+      32280
+     ],
+     [
+      13515,
+      12337,
+      114504
+     ],
+     [
+      14608,
+      116888,
+      19731,
+      126426,
+      75543
+     ],
+     [
+      9576,
+      33162
+     ]
+    ],
     "xi": [
      {
       "id": 126426,
@@ -33058,7 +33093,7 @@
       "playerId": null,
       "name": "Jayden Bogle",
       "shirt": 2,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -33067,7 +33102,7 @@
       "playerId": null,
       "name": "Gabriel Gudmundsson",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -33193,9 +33228,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      20497
+     ],
+     [
+      147312,
+      50842,
+      115169
+     ],
+     [
+      123848,
+      67779,
+      69595,
+      24334
+     ],
+     [
+      49759,
+      109117
+     ],
+     [
+      35670
+     ]
+    ],
     "xi": [
      {
       "id": 69595,
@@ -33211,7 +33268,7 @@
       "playerId": null,
       "name": "Tyrick Mitchell",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -33220,7 +33277,7 @@
       "playerId": null,
       "name": "Yéremy Pino",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -33265,7 +33322,7 @@
       "playerId": null,
       "name": "Daichi Kamada",
       "shirt": 18,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Attacking Midfielder",
       "captain": false
      },
@@ -33274,7 +33331,7 @@
       "playerId": null,
       "name": "Anan Khalaili",
       "shirt": 25,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -33385,7 +33442,20 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
@@ -33787,5 +33857,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T12:58:59.984Z"
+ "fetchedAt": "2026-09-20T13:01:19.285Z"
 }
