@@ -33878,7 +33878,7 @@
   "MCI|SUN": {
    "fixtureId": 128969,
    "kickoff": "2026-09-20T13:00:00.000Z",
-   "status": "L",
+   "status": "C",
    "final": false,
    "score": {
     "home": 5,
@@ -34311,6 +34311,97 @@
    "goals": [
     {
      "side": "H",
+     "person": 63741,
+     "assist": null,
+     "team": 11,
+     "min": 9,
+     "label": "09'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 67784,
+     "assist": 138104,
+     "team": 29,
+     "min": 12,
+     "label": "12'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 68150,
+     "assist": 25474,
+     "team": 11,
+     "min": 29,
+     "label": "29'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 67784,
+     "assist": 12196,
+     "team": 29,
+     "min": 33,
+     "label": "33'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 2
+    },
+    {
+     "side": "H",
+     "person": 25474,
+     "assist": 14569,
+     "team": 11,
+     "min": 43,
+     "label": "43'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 3,
+     "as": 2
+    },
+    {
+     "side": "H",
+     "person": 25474,
+     "assist": null,
+     "team": 11,
+     "min": 57,
+     "label": "57'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 4,
+     "as": 2
+    },
+    {
+     "side": "A",
+     "person": 67784,
+     "assist": 115105,
+     "team": 29,
+     "min": 59,
+     "label": "59'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 4,
+     "as": 3
+    },
+    {
+     "side": "H",
      "person": 65970,
      "assist": 67178,
      "team": 11,
@@ -34429,12 +34520,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -34451,10 +34536,16 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+3'00"
+   "clock": "90+6'00"
   },
   "FUL|MUN": {
    "fixtureId": 128967,
@@ -34854,5 +34945,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T14:55:50.432Z"
+ "fetchedAt": "2026-09-20T14:58:09.606Z"
 }
