@@ -1032,8 +1032,8 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         seg.length > 0 && !/\brng\s*\(/.test(seg), `切出來 ${seg.length} 字元`);
       const chkBare = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-      check('check-sim 印出 5e 那幾排(門側 / 站進球道 / 每 10 m / 離線 / 球道長度 / 防線深度)',
-        ['門側的人', '站進球道', '每 10 m 球道', '最近那個離線', '球道長度', '防線深度']
+      check('check-sim 印出 5e 那幾排(門側的兩種 / 站進球道 / 每 10 m / 離線 / 球道長度 / 防線深度)',
+        ['門側的人', '深度上在球之前', '站進球道', '每 10 m 球道', '最近那個離線', '球道長度', '防線深度', '後四人的前後差']
           .every(t => chkBare.includes(t)));
       /* 樣本數與 SE 要印在旁邊 —— 少了它們,逐帶的比例看起來就像一條曲線,
          而一帶只有幾十腳。5e 的規劃就是這樣把雜訊寫成了「要修的凹陷」。 */
@@ -1046,8 +1046,15 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
             /* 上下界:① 站進球道 4 m 的**人數**不會比「有沒有人」那一格的**腳數**少
                (有人 → 至少一個人);② 只有 10 個對方場上球員,門側最多 10 × 腳數;
                ③ 有記到離線距離 / 深度的腳數不會超過這一帶的射門數。 */
+            /* 「門側」的兩種量法:離球門**中心**比射手近(`gsN`)是標準意思,
+               而它把**站得寬**的後衛排掉;`gsLineN` 只看沿場長的深度。
+               **兩個誰都不包含誰**(第一版斷言寫了 `gsN <= gsLineN`,那是錯的:
+               射手站得很寬的時候,離門線比他遠的後衛照樣可以離球門中心比他近),
+               所以這裡只守各自的上界 —— 對方場上最多 10 個人。 */
             if (!(c.laneN[k] >= c.laneFar[k] && c.gsN[k] <= 10 * c.laneShots[k]
-              && c.lanePerpN[k] <= c.laneShots[k] && c.lineDepthN[k] <= c.laneShots[k])) bad++;
+              && c.gsLineN[k] <= 10 * c.laneShots[k]
+              && c.lanePerpN[k] <= c.laneShots[k] && c.lineDepthN[k] <= c.laneShots[k]
+              && c.lineBack[k] <= c.lineDepth[k] && c.lineDepth[k] <= c.lineFront[k])) bad++;
             gs += c.gsN[k]; n4 += c.laneN[k]; shots += c.laneShots[k];
             dep += c.lineDepth[k]; depN += c.lineDepthN[k];
           }

@@ -709,26 +709,35 @@ if (simShots && realShots) {
         const ll = k => mean(rows.map(r => r.st.counts.laneLen?.[k] ?? 0));
         const lN = k => mean(rows.map(r => r.st.counts.laneN?.[k] ?? 0));
         const gsn = k => mean(rows.map(r => r.st.counts.gsN?.[k] ?? 0));
+        const gsl = k => mean(rows.map(r => r.st.counts.gsLineN?.[k] ?? 0));
         const lp = k => mean(rows.map(r => r.st.counts.lanePerp?.[k] ?? 0));
         const lpN = k => mean(rows.map(r => r.st.counts.lanePerpN?.[k] ?? 0));
         const ld = k => mean(rows.map(r => r.st.counts.lineDepth?.[k] ?? 0));
         const ldN = k => mean(rows.map(r => r.st.counts.lineDepthN?.[k] ?? 0));
-        const gsR = [], n4R = [], denR = [], perpR = [], lenR = [], depR = [];
+        const lb = k => mean(rows.map(r => r.st.counts.lineBack?.[k] ?? 0));
+        const lfr = k => mean(rows.map(r => r.st.counts.lineFront?.[k] ?? 0));
+        const gsR = [], glR = [], n4R = [], denR = [], perpR = [], lenR = [], depR = [], sprR = [];
         for (let k = 0; k < 7; k++) {
           const S = ls(k);
           gsR.push(num(S > 0 ? gsn(k) / S : null));
+          glR.push(num(S > 0 ? gsl(k) / S : null));
           n4R.push(num(S > 0 ? lN(k) / S : null));
           denR.push(num(ll(k) > 0 ? 10 * lN(k) / ll(k) : null));
           perpR.push(num(lpN(k) > 0 ? lp(k) / lpN(k) : null));
           lenR.push(num(S > 0 ? ll(k) / S : null));
           depR.push(num(ldN(k) > 0 ? ld(k) / ldN(k) : null));
+          sprR.push(num(ldN(k) > 0 ? (lfr(k) - lb(k)) / ldN(k) : null));
         }
         console.log(`  ${'門側的人(人 / 腳)'.padEnd(26, '\u3000')} ${gsR.join(' ')}　← 他跟球門之間幾個人`);
+        console.log(`  ${'　深度上在球之前(人 / 腳)'.padEnd(26, '\u3000')} ${glR.join(' ')}　← 只看沿場長,不管站多寬`);
         console.log(`  ${'　站進球道 4 m(人 / 腳)'.padEnd(26, '\u3000')} ${n4R.join(' ')}`);
         console.log(`  ${'　每 10 m 球道幾個人'.padEnd(26, '\u3000')} ${denR.join(' ')}　← 去掉「球道越長越容易有人」`);
         console.log(`  ${'最近那個離線(m)'.padEnd(26, '\u3000')} ${perpR.join(' ')}`);
         console.log(`  ${'球道長度(m)'.padEnd(26, '\u3000')} ${lenR.join(' ')}　← 上面幾排的分母`);
         console.log(`  ${'防線深度(m,只回報)'.padEnd(26, '\u3000')} ${depR.join(' ')}`);
+        /* **只印平均會讓「一條線」跟「散開的四個人」長得一模一樣。** 前後差 =
+           第四深的減最深的:一條真的防線這個數字很小,散開的話它會跟深度本身同量級。 */
+        console.log(`  ${'　後四人的前後差(m)'.padEnd(26, '\u3000')} ${sprR.join(' ')}　← 小 = 真的是一條線`);
         const dn = rows.reduce((a, r) => a + (r.def?.n ?? 0), 0);
         const dd = rows.reduce((a, r) => a + (r.def?.depth ?? 0), 0);
         line('　平時的防線深度', dn > 0 ? `${(dd / dn).toFixed(1)} m` : '—',
