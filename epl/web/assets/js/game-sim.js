@@ -802,7 +802,13 @@ function movePlayer(p, dt, want) {
   }
   const dx = want.x - p.x, dy = want.y - p.y;
   const dist = hypot(dx, dy);
-  let target = Math.min(want.speed ?? SIM_RUN, p.vmax);
+  /* 體能要縮的是**要求的速度**,不是上限。第一版只壓 `vmax`,量出來**幾乎沒有作用**:
+     球員只有 0.06% 的時間跑在自己上限的 95% 以上 —— 大部分走位用的是固定的速度檔
+     (`SIM_JOG` / `SIM_RUN`),逼搶那一行只有離球 20 公尺外才用到上限。
+     所以疲勞掛在上限上碰不到球場上實際發生的事:8% 的衰退只讓後 15 分的平均速度
+     掉 1.4%,而要咬得動就得把上限砍到 5.77 m/s(比慢跑快不了多少),λ 的錨會先破。 */
+  const fat = p.fatigue ?? 1;
+  let target = Math.min((want.speed ?? SIM_RUN) * fat, p.vmax);
   /* 靠近目標要收速度:v² = 2ad,不然會衝過頭再回頭,那看起來就是「抖」 */
   if (dist > 1e-6) target = Math.min(target, Math.sqrt(2 * SIM_DECEL * Math.max(0, dist - 0.15)));
   /* 要轉彎就先減速 —— 加速度有上限,全速的轉彎半徑 v²/a ≈ 4 m,比控球距離還大。
@@ -828,7 +834,10 @@ function movePlayer(p, dt, want) {
   /* 體能:跑過的路越多,最高速越低(見 STAM_FADE)。**0 是恆等元**,
      所以接上去而不調的話這一行不會改變任何東西。夾住不讓它掉到離譜的低點 ——
      真人再累也還跑得動,而且 0.5 以下會讓畫面變成慢動作。 */
-  if (STAM_FADE > 0 && p.vmax0) p.vmax = p.vmax0 * cl(1 - STAM_FADE * p.dist / 10000, 0.5, 1);
+  if (STAM_FADE > 0) {
+    p.fatigue = cl(1 - STAM_FADE * p.dist / 10000, 0.5, 1);
+    if (p.vmax0) p.vmax = p.vmax0 * p.fatigue;
+  }
 }
 
 /* 球的一步。回傳「這一步有沒有落地」讓上層決定要不要算彈跳。 */
@@ -1017,7 +1026,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         vmax0: p?.run?.topSpeed ? p.run.topSpeed / 3.6 : VMAX_FALLBACK,
         vmaxReal: !!p?.run?.topSpeed,
         ability: p?.ability ?? {},
-        dist: 0, vtop: 0, off: false, going: false,
+        dist: 0, vtop: 0, off: false, going: false, fatigue: 1,
       };
     });
     /* 這一隊逼搶多凶:真實值除以聯盟平均,再壓進 ±PRESS_SPAN。
@@ -3079,7 +3088,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          看起來對,但只要以後有「熱身也算跑動」之類的東西就會靜靜錯掉。 */
       const now = { ...spare.p, side, slot: out.slot, role: out.role,
         x: out.x, y: out.y, vx: 0, vy: 0, dist: 0, vtop: 0, off: false, going: false, yellow: 0,
-        vmax: spare.p.vmax0 ?? spare.p.vmax };
+        fatigue: 1, vmax: spare.p.vmax0 ?? spare.p.vmax };
       s.players[i] = now;
       if (ball.holder === out) ball.holder = now;
       st.subs[side]++;
