@@ -997,15 +997,26 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
          而它就發生在守「不要把量測漏進行為」的這一條自己身上。
          改成守**性質**:每一處 `LANE_FAR` 都要落在宣告那一行或 `noteShotLane` 裡面。 */
       const jE = simBare8.indexOf('function ', j0 + 22);   // noteShotLane 的下一個函式 = 它的結尾
+      /* **量測函式不只一支了**(2026-09-20,階段 5g 加了 `laneAtDecision`)——
+         而這一條守的性質是「**引擎的行為**不准讀 `LANE_FAR`」,不是「只有一支量測函式」。
+         所以清單要跟著量測函式走,不是寫死一支。這正是它自己上一段註解在講的坑
+         (從「數出現次數」改成守性質之後,**範圍**還是會過期)。
+         **範圍要自己算出來**:每一支量測函式的起點到它的下一個 `function `,
+         寫死行號或寫死名字清單的話,下一支量測函式又會讓它紅在「行為沒變」上。 */
+      const MEASURE = ['function noteShotLane(', 'function laneAtDecision('];
+      const spans = MEASURE.map(sig => {
+        const a = simBare8.indexOf(sig);
+        return a < 0 ? null : [a, simBare8.indexOf('function ', a + sig.length)];
+      }).filter(Boolean);
       let stray = 0, at = -1, tot = 0;
       while ((at = simBare8.indexOf('LANE_FAR', at + 1)) >= 0) {
         tot++;
         const isDecl = simBare8.slice(Math.max(0, at - 6), at) === 'const ';
-        if (!isDecl && !(j0 >= 0 && jE > j0 && at > j0 && at < jE)) stray++;
+        if (!isDecl && !spans.some(([a, b]) => b > a && at > a && at < b)) stray++;
       }
-      check('LANE_FAR 只給量測用:宣告與 noteShotLane 以外一處都不准有',
-        j0 >= 0 && jE > j1 && tot >= 2 && stray === 0,
-        `整份 ${tot} 處、漏進行為 ${stray} 處`);
+      check('LANE_FAR 只給量測用:宣告與那幾支量測函式以外一處都不准有',
+        j0 >= 0 && jE > j1 && spans.length === MEASURE.length && tot >= 2 && stray === 0,
+        `整份 ${tot} 處、量測函式 ${spans.length} 支、漏進行為 ${stray} 處`);
       const chkBare9 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
       check('check-sim 把「4 m 內」與「撲得到的天花板」兩排都印出來',
@@ -1299,6 +1310,76 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           `${segs.length} 段「還沒做的」`);
         check('畫面把體能講清楚:沒有真值可校準、而且它不負責後段進球潮',
           /衰退的幅度沒有真值可以校準/.test(view) && /不產生真實世界的後段進球潮/.test(view));
+      }
+    }
+
+    /* 26. 階段 5g:**扣扳機有沒有在挑空走廊**(2026-09-20)。5f 否定收窄、5d 否定撲搶之後
+       剩下的最後一個候選。量法是在**每一個射程內的決策點**上取球道佔比,射與不射同一份。
+       結論是**否定**(射的 7.7% 對沒射的 8.1%,0.4 SE),而更硬的一句在回推那一行:
+       封阻率 = 曝光 × 轉換,拿現在的轉換回推,要對上真實得有 **>100%** 的曝光 ——
+       **算術上不可能**,所以站位 / 扣扳機 / 半徑三條路都不是缺口所在。
+       這一節守的是**量測本身量得對**(純觀測、同一條線、同一批母體、上下界),
+       **不守它的值** —— 那會漂。 */
+    {
+      const simB = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const d0 = simB.indexOf('function laneAtDecision(');
+      const d1 = simB.indexOf('function noteShotLane(', d0);
+      const seg = d0 >= 0 && d1 > d0 ? simB.slice(d0, d1) : '';
+      /* 純觀測:這一段碰 `rng()` 的話,同一個種子跑出來就不是同一場比賽,
+         而 5g 之後的每一個比較都會失效(「同一個種子換一個旗標」那條坑)。 */
+      check('決策點的球道量測不呼叫 rng(純觀測)',
+        seg.length > 0 && !/\brng\(/.test(seg), `切出來 ${seg.length} 字元`);
+      /* **兩條線要分得開**:決策當下用意圖線(射手 → 球門中心),射出去之後用飛行方向。
+         拿飛行方向去分「射 / 沒射」等於用結局條件化,而拿意圖線去比 5c 那幾排
+         等於拿兩條不同的線並排讀(5c 實測兩條在 675 腳上各錯三分之一)。 */
+      check('決策點用意圖線(球門中心)、noteShotLane 用飛行方向 —— 兩條線沒有混用',
+        /PITCH_H \/ 2 - p\.y/.test(seg) && !/ball\.v[xy]/.test(seg)
+        && /ball\.vx \/ v/.test(simB), `切出來 ${seg.length} 字元`);
+      /* **同一份 `dl` 給兩群用**:抽籤前算一次,抽完再加射門那一份。
+         分兩支各量一次的話那就是兩份程式,而「射的」與「沒射的」就不再是同一條線。 */
+      check('球道在抽籤**之前**量一次,射門那一份直接沿用同一個結果',
+        simB.indexOf('const dl = laneAtDecision(') >= 0
+        && simB.indexOf('const dl = laneAtDecision(') < simB.indexOf('st.decShotOcc[oppBin] += dl.occ')
+        && (simB.match(/laneAtDecision\(/g) ?? []).length === 2);   // 宣告 + 唯一的呼叫點
+      {
+        const S26 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        let bad = 0, N = 0, SN = 0, O = 0, F = 0;
+        for (const seed of [31, 32]) {
+          const sim = S26.createSim({ profile, home: 'ARS', away: 'LIV', seed });
+          for (let i = 0, M = Math.round(110 * 60 * 60); i < M && !sim.state().over; i++) sim.advance(1 / 60);
+          const c = sim.state().counts;
+          for (let k = 0; k < 7; k++) {
+            /* 一層套一層:射門 ⊂ 決策點、0.75 m ⊂ 4 m ⊂ 決策點,而射門那一份
+               不可能多過它自己的母體、也不可能多過同一個門檻的全體。 */
+            if (!(c.decShot[k] <= c.decN[k] && c.decOcc[k] <= c.decFar[k] && c.decFar[k] <= c.decN[k]
+              && c.decShotOcc[k] <= c.decShotFar[k] && c.decShotFar[k] <= c.decShot[k]
+              && c.decShotOcc[k] <= c.decOcc[k] && c.decShotFar[k] <= c.decFar[k])) bad++;
+            N += c.decN[k]; SN += c.decShot[k]; O += c.decOcc[k]; F += c.decFar[k];
+          }
+          /* 決策點的射門數要對得回引擎自己的射門計數器 —— 對不上就代表
+             有一條射門的路沒有經過這個決策點(十二碼與角球頭球就是那種),
+             而那會讓「射的那一群」跟畫面上的射門不是同一批。 */
+          if (SN > c.counts?.shots) bad++;
+        }
+        check('決策點的計數器一層套一層(射門 ⊂ 決策點、0.75 m ⊂ 4 m)',
+          N > 0 && SN > 0 && bad === 0,
+          `2 場:決策點 ${N}、射門 ${SN}、0.75 m ${O}、4 m ${F}、逐帶越界 ${bad} 格`);
+      }
+      check('check-sim **真的印出** 5g 那幾排(跑一次掃 stdout)',
+        ['決策點的球道', '路上有人:射的 / 沒射的', 'P(射|有人)', '全部決策點的曝光']
+          .every(t => chkOut.includes(t)), `check-sim 輸出 ${chkOut.length} 字元`);
+      /* **回推那一行是 5g 真正的結論**:封阻率 = 曝光 × 轉換,所以「要對上真實需要多少曝光」
+         = 真實封阻率 ÷ 轉換。它超過 100% 就是算術上不可能 —— 那句話要印得出來,
+         不然下一個人會再去調一次站位(本站已經為這件事花了 5b~5g 六輪)。 */
+      {
+        const chkB = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+          .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+        check('回推的式子是「真實封阻率 ÷ 轉換」,而且轉換取的就是印出來的那一個',
+          /const conv = O > 0 \? myBlkN0 \/ O : null;/.test(chkB)
+          && /100 \* realBlk \/ conv/.test(chkB));
+        check('check-sim **真的印出**回推那一行(它是 5g 的結論)',
+          chkOut.includes('回推:要對上真實的封阻率,曝光得是'), `check-sim 輸出 ${chkOut.length} 字元`);
       }
     }
     }
