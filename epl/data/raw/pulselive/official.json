@@ -33222,7 +33222,7 @@
      }
     ]
    },
-   "clock": "90'00"
+   "clock": "90+3'00"
   },
   "LEE|CRY": {
    "fixtureId": 128968,
@@ -33832,7 +33832,7 @@
      }
     ]
    },
-   "clock": "89'00"
+   "clock": "90'00"
   },
   "MCI|SUN": {
    "fixtureId": 128969,
@@ -34366,6 +34366,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 112948,
+      "team": 11,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68150,
+      "team": 11,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -34395,7 +34413,7 @@
      }
     ]
    },
-   "clock": "84'00"
+   "clock": "85'00"
   },
   "FUL|MUN": {
    "fixtureId": 128967,
@@ -34795,5 +34813,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T14:46:32.761Z"
+ "fetchedAt": "2026-09-20T14:48:52.704Z"
 }
