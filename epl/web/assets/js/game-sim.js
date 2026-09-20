@@ -411,6 +411,8 @@ const DEFLECT_R = 0.75;                        // 球從這麼近經過就可能
 /* 「差一點」的上界(公尺,階段 5d 的量測用)。四公尺是**量測的邊界不是模型的參數** ——
    再遠就不叫「差一點撲得到」了。引擎的行為一個字都不讀它,只有 `noteShotLane` 在用。 */
 const LANE_FAR = 4;
+/* 階段 5f 的天花板探針要試的幾個寬度(1 = 現況)。**量測的邊界,引擎的行為不准讀它。** */
+const SQUEEZE = [0.75, 0.5, 0.25, 0];
 const DEFLECT_MIN_SPEED = 9;                   // 太慢的球不算折射,那是可以控的
 const DEFLECT_KEEP = 0.55;                     // 折射後保留的速度比例
 /* 折射的方向要**小改**,不是亂彈。第一版用 ±0.95 弧度(±54 度)加只留 45% 的速度 ——
@@ -1300,6 +1302,17 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        `lineMarked` 是其中被盯人覆蓋掉的人數。兩個跟 `lineWide` 並排看:
        隊形跨距就已經是 41 公尺 → 寬度是隊形決定的;隊形窄而實際寬 → 是盯人拉開的。 */
     lineWideShape: new Array(7).fill(0), lineShapeN: new Array(7).fill(0), lineMarked: new Array(7).fill(0),
+    /* **收窄能買到多少**(2026-09-20,階段 5f)。歸因指出寬度是隊形決定的
+       (槽位 y 是 7/25/43/61,跨距 54 m,球在自家半場乘 `SHAPE_COMPACT` 0.82 = 44.3),
+       而 `shapeOf` 的 `wide` 就是「離中線的偏移放大多少」。所以在射門那一刻**直接算**:
+       把後四人的 y 照 `wide` 那條式子往中線收到 75 / 50 / 25 / 0%,
+       有幾個會落進球道 `LANE_FAR` 內?
+
+       **這是收窄的直接幾何效果,不是它真正能買到的東西** —— 真的收窄會讓對手打邊路、
+       球進禁區的路徑整個變,所以真值一定比這個小。當天花板用(5d 的規矩):
+       連 0%(四個人全擠在中線)都構不到需要的量,那就不是「參數沒調好」,
+       是模型少一個維度,不要再掃了。 */
+    laneSq: [0.75, 0.5, 0.25, 0].map(() => new Array(7).fill(0)),
     /* **封阻的形狀**(2026-09-19,階段 5b)。只有總數的話,任何一個全域乘數都能把它湊對 ——
        而真實的封阻率是**駝峰**(逐帶 8.4 / 17.3 / 28.7 / 38.9 / 39.2 / 32.2 / 20.3),
        被封阻的球平均 xG 只有沒被封阻的 **0.46 倍**,頭球 14.8% 對腳下 32.7%。
@@ -1424,7 +1437,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          只檢查 `!= null` 分不出「這一格寫的」與「上一次持球時寫的」,那會把一個
          好幾秒前的 y 當成現況。帶時間戳,超過半秒就當沒有(母體要跟被比較的那一邊同一批)。 */
       const fresh = q.dfAt != null && st.t - q.dfAt < 0.5;
-      ys.push({ d: Math.abs(q.x - gx), y: q.y, sy: fresh ? q.dfShapeY : null, mk: fresh ? (q.dfMark ?? 0) : 0 });
+      ys.push({ d: Math.abs(q.x - gx), x: q.x, y: q.y, sy: fresh ? q.dfShapeY : null, mk: fresh ? (q.dfMark ?? 0) : 0 });
       if (hypot(gx - q.x, PITCH_H / 2 - q.y) < dGoal) gs++;
       if (Math.abs(q.x - gx) < Math.abs(ball.x - gx)) gsLine++;
       const a = (q.x - ball.x) * ux + (q.y - ball.y) * uy;
@@ -1468,6 +1481,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       /* 隊形那一份要**四個人都有值**才算 —— 缺一個就不是同一批(本站的老規矩)。
          值是這一格站位那一步寫的,而射門跑在同一格稍後,所以最多差一格(1/60 秒)。 */
       st.lineMarked[k] += f4.reduce((a, o) => a + o.mk, 0);
+      /* 把同樣那四個人的 y 往中線收,逐個重算它離球道多遠。
+         判定跟上面那一排逐字相同(同一段球道區間、同一個半徑),只有 y 換了。 */
+      SQUEEZE.forEach((c, si) => {
+        let n = 0;
+        for (const o of f4) {
+          const yc = PITCH_H / 2 + (o.y - PITCH_H / 2) * c;
+          const a = (o.x - ball.x) * ux + (yc - ball.y) * uy;
+          if (a <= 0.3 || a >= L) continue;
+          if (Math.abs((o.x - ball.x) * uy - (yc - ball.y) * ux) < LANE_FAR) n++;
+        }
+        st.laneSq[si][k] += n;
+      });
       /* 被盯人那個數字的分母是 `lineDepthN`(全部),而隊形跨距的分母是 `lineShapeN`
          (四個人都有新鮮值的那些)—— 兩個分母不同,印的時候要各除各的。 */
       if (f4.every(o => o.sy != null)) {
@@ -2923,6 +2948,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         lineDepth: [...st.lineDepth], lineDepthN: [...st.lineDepthN],
         lineBack: [...st.lineBack], lineFront: [...st.lineFront], lineWide: [...st.lineWide],
         lineWideShape: [...st.lineWideShape], lineShapeN: [...st.lineShapeN], lineMarked: [...st.lineMarked],
+        laneSq: st.laneSq.map(a => [...a]),
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },

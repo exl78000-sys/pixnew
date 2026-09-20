@@ -751,6 +751,18 @@ if (simShots && realShots) {
            隊形窄而實際寬 → 是盯人把人拉開的。被盯人覆蓋的人數是第三個數字。 */
         console.log(`  ${'　　照隊形會是(m)'.padEnd(26, '\u3000')} ${shpR.join(' ')}　← 跟上面一樣寬 = 隊形決定的`);
         console.log(`  ${'　　其中被盯人拉走(人)'.padEnd(26, '\u3000')} ${mkR.join(' ')}　← 四個人裡幾個`);
+        /* **收窄能買到多少**(階段 5f)。把後四人的 y 往中線收到 75/50/25/0%,
+           在射門那一刻直接算有幾個落進球道 4 公尺內。跟上面「站進球道 4 m」那一排
+           (現況 = 100%)並排看。**這是直接的幾何效果,不是真值** ——
+           真的收窄會讓對手打邊路,所以真值一定比這個小。當天花板用。 */
+        [0.75, 0.5, 0.25, 0].forEach((c, si) => {
+          const row = [];
+          for (let k = 0; k < 7; k++) {
+            const S = ls(k), v = mean(rows.map(r => r.st.counts.laneSq?.[si]?.[k] ?? 0));
+            row.push(num(S > 0 ? v / S : null));
+          }
+          console.log(`  ${`　收窄到 ${(c * 100).toFixed(0)}% 寬(人 / 腳)`.padEnd(26, '\u3000')} ${row.join(' ')}${si === 0 ? '　← 天花板,真值一定比它小' : ''}`);
+        });
         const dn = rows.reduce((a, r) => a + (r.def?.n ?? 0), 0);
         const dd = rows.reduce((a, r) => a + (r.def?.depth ?? 0), 0);
         line('　平時的防線深度', dn > 0 ? `${(dd / dn).toFixed(1)} m` : '—',
