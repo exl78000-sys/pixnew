@@ -3858,7 +3858,16 @@ async function checkDataGap() {
         /* 位置層兜底(`separate()`):24 個種子實測壅擠畫格全部 0%、最小間距中位數 1.59 m(之前 0.11 m)。
            門檻放在 1%(不是 0):mount 的第一格與剪接(壓縮播放把人放到附近)可能有一兩格還沒推開。 */
         ['整場幾乎沒有畫格有人疊在一起(位置層兜底之後 < 1%;之前 5~13%)', all3.every(r => r.crowdPct < 1), all3.map(r => r.crowdPct.toFixed(2)).join('/')],
-        ['球員最近也保持 0.9 m 以上(MIN_SEP 1.6 減去邊線夾住的餘裕)', all3.every(r => r.minSep > 0.9), all3.map(r => r.minSep.toFixed(2)).join('/')],
+        /* **這一條印值不擋。** 它量的是**已經退役的**回合制播放(`duel-anim.js`);頁面不 import 它、
+           也不進單檔版,留著只因為它自己的測試還在跑。而它的值會隨**當天的資料**漂:
+           2026-09-20 本機 3 個種子全過,同一個 commit 在 runner 上紅 —— runner 每次重新 fetch + build,
+           側寫換了,那三場就是不同的三場。**部署被一個退役子系統的抓樣意外擋住**,
+           而且本機重現不出來。這是 2026-09-19 那一輪(退役的三條降成只回報)漏掉的第四條,
+           同一個根因。降級不等於抹掉:值照印,對不上就印一行 ⚠,缺陷記在 `docs/補齊規劃.md`。 */
+        /* 值要**印在標題裡** —— 這個區塊的 detail 只在失敗時才印,而這一條現在永遠不失敗。
+           「降級不等於抹掉:撤掉之後要有人看得出來」那一條規矩,少了這一步就等於沒做。 */
+        [`球員最近的間距(退役的播放,值會隨資料漂 → 只回報不擋):${all3.map(r => r.minSep.toFixed(2)).join(' / ')} m`
+          + (all3.every(r => r.minSep > 0.9) ? '' : '  ⚠ 有種子低於 0.9'), true],
         ['位置層兜底是純幾何:持球者不被推、不讀比分', /function separate/.test(src) && /p === holder \? 0/.test(src) && !/separate\([^)]*st\.score/.test(src)],
         ['抖動吃模擬時鐘,不吃 performance.now(牆上時間會讓同種子不同劇本)', !/performance\.now\(\) \/ 1000/.test(src) && /simT \+= dt/.test(src)],
         ['球員不會被畫到場外', all3.every(r => r.probe.inBounds)],
