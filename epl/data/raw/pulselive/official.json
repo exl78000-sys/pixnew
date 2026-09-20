@@ -34557,7 +34557,7 @@
   "FUL|MUN": {
    "fixtureId": 128967,
    "kickoff": "2026-09-20T15:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -34566,9 +34566,31 @@
    "homeId": 34,
    "awayId": 12,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4985
+     ],
+     [
+      6712,
+      68651,
+      23793,
+      14624
+     ],
+     [
+      21614,
+      75201
+     ],
+     [
+      66657,
+      128976,
+      4717
+     ],
+     [
+      119364
+     ]
+    ],
     "xi": [
      {
       "id": 68651,
@@ -34620,7 +34642,7 @@
       "playerId": null,
       "name": "Alex Iwobi",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Second Striker",
       "captain": false
      },
@@ -34755,9 +34777,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67910
+     ],
+     [
+      24252,
+      9566,
+      67191,
+      4608
+     ],
+     [
+      5865,
+      108936
+     ],
+     [
+      66360,
+      23396,
+      13565
+     ],
+     [
+      51202
+     ]
+    ],
     "xi": [
      {
       "id": 67910,
@@ -34827,7 +34871,7 @@
       "playerId": null,
       "name": "Marcus Rashford",
       "shirt": 9,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre Second Striker",
       "captain": false
      },
@@ -34854,7 +34898,7 @@
       "playerId": null,
       "name": "Bryan Mbeumo",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      }
@@ -34947,10 +34991,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T15:28:06.530Z"
+ "fetchedAt": "2026-09-20T15:30:25.516Z"
 }
