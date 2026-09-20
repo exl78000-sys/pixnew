@@ -33543,7 +33543,7 @@
      }
     ]
    },
-   "clock": "60'00"
+   "clock": "62'00"
   },
   "MCI|SUN": {
    "fixtureId": 128969,
@@ -33551,7 +33551,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 3,
+    "home": 4,
     "away": 2
    },
    "homeId": 11,
@@ -33982,14 +33982,14 @@
     {
      "side": "H",
      "person": 25474,
-     "assist": 14569,
+     "assist": null,
      "team": 11,
-     "min": 43,
-     "label": "43'00",
-     "phase": "1",
+     "min": 57,
+     "label": "57'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 3,
+     "hs": 4,
      "as": 2
     }
    ],
@@ -34033,8 +34033,405 @@
      }
     ]
    },
-   "clock": "55'00"
+   "clock": "58'00"
+  },
+  "FUL|MUN": {
+   "fixtureId": 128967,
+   "kickoff": "2026-09-20T15:30:00.000Z",
+   "status": "U",
+   "final": false,
+   "score": {
+    "home": 0,
+    "away": 0
+   },
+   "homeId": 34,
+   "awayId": 12,
+   "home": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 68651,
+      "playerId": null,
+      "name": "David Affengruber",
+      "shirt": 22,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 128976,
+      "playerId": null,
+      "name": "Josh King",
+      "shirt": 24,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 14624,
+      "playerId": null,
+      "name": "Antonee Robinson",
+      "shirt": 33,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 75201,
+      "playerId": null,
+      "name": "Shea Charles",
+      "shirt": 19,
+      "pos": "M",
+      "posInfo": "Centre Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 119364,
+      "playerId": null,
+      "name": "Gonzalo García",
+      "shirt": 7,
+      "pos": "F",
+      "posInfo": "Left/Centre/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 4717,
+      "playerId": null,
+      "name": "Alex Iwobi",
+      "shirt": 17,
+      "pos": "F",
+      "posInfo": "Left/Centre/Right Second Striker",
+      "captain": false
+     },
+     {
+      "id": 4985,
+      "playerId": null,
+      "name": "Bernd Leno",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 66657,
+      "playerId": null,
+      "name": "Oscar Bobb",
+      "shirt": 14,
+      "pos": "M",
+      "posInfo": "Left/Centre/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 6712,
+      "playerId": null,
+      "name": "Timothy Castagne",
+      "shirt": 21,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 23793,
+      "playerId": null,
+      "name": "Calvin Bassey",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": true
+     },
+     {
+      "id": 21614,
+      "playerId": null,
+      "name": "Sander Berge",
+      "shirt": 16,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 14656,
+      "playerId": null,
+      "name": "Ryan Sessegnon",
+      "shirt": 30,
+      "pos": "M",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 118739,
+      "playerId": null,
+      "name": "Hugo Larsson",
+      "shirt": 15,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 117763,
+      "playerId": null,
+      "name": "Rodrigo Muniz",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 26151,
+      "playerId": null,
+      "name": "Joachim Andersen",
+      "shirt": 5,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 123594,
+      "playerId": null,
+      "name": "César Palacios",
+      "shirt": 8,
+      "pos": "M",
+      "posInfo": "Centre Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 117286,
+      "playerId": null,
+      "name": "Benjamin Lecomte",
+      "shirt": 23,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 14445,
+      "playerId": null,
+      "name": "Emile Smith Rowe",
+      "shirt": 32,
+      "pos": "M",
+      "posInfo": "Centre Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 121610,
+      "playerId": null,
+      "name": "Kevin",
+      "shirt": 11,
+      "pos": "F",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 119362,
+      "playerId": null,
+      "name": "Manuel Ángel",
+      "shirt": 20,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     }
+    ]
+   },
+   "away": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 67910,
+      "playerId": null,
+      "name": "Senne Lammens",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 24252,
+      "playerId": null,
+      "name": "Diogo Dalot",
+      "shirt": 2,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 23396,
+      "playerId": null,
+      "name": "Bruno Fernandes",
+      "shirt": 8,
+      "pos": "M",
+      "posInfo": "Left/Centre/Right Attacking Midfielder",
+      "captain": true
+     },
+     {
+      "id": 4608,
+      "playerId": null,
+      "name": "Luke Shaw",
+      "shirt": 23,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 9566,
+      "playerId": null,
+      "name": "Harry Maguire",
+      "shirt": 5,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 5865,
+      "playerId": null,
+      "name": "Youri Tielemans",
+      "shirt": 18,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 51202,
+      "playerId": null,
+      "name": "Matheus Cunha",
+      "shirt": 10,
+      "pos": "F",
+      "posInfo": "Left/Centre Second Striker",
+      "captain": false
+     },
+     {
+      "id": 13565,
+      "playerId": null,
+      "name": "Marcus Rashford",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Left/Centre Second Striker",
+      "captain": false
+     },
+     {
+      "id": 108936,
+      "playerId": null,
+      "name": "Kobbie Mainoo",
+      "shirt": 37,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 67191,
+      "playerId": null,
+      "name": "Lisandro Martínez",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 66360,
+      "playerId": null,
+      "name": "Bryan Mbeumo",
+      "shirt": 19,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 118591,
+      "playerId": null,
+      "name": "Leny Yoro",
+      "shirt": 15,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 124396,
+      "playerId": null,
+      "name": "Carlos Baleba",
+      "shirt": 20,
+      "pos": "M",
+      "posInfo": "Centre Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 133245,
+      "playerId": null,
+      "name": "Andrey Santos",
+      "shirt": 17,
+      "pos": "M",
+      "posInfo": "Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 146567,
+      "playerId": null,
+      "name": "Patrick Dorgu",
+      "shirt": 13,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 50848,
+      "playerId": null,
+      "name": "Joshua Zirkzee",
+      "shirt": 11,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 14580,
+      "playerId": null,
+      "name": "Mason Mount",
+      "shirt": 7,
+      "pos": "M",
+      "posInfo": "Centre Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 130151,
+      "playerId": null,
+      "name": "Shea Lacey",
+      "shirt": 31,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 9251,
+      "playerId": null,
+      "name": "Karl Darlow",
+      "shirt": 12,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 33245,
+      "playerId": null,
+      "name": "Noussair Mazraoui",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     }
+    ]
+   },
+   "goals": [],
+   "timeline": {
+    "cards": [],
+    "subs": [],
+    "periods": []
+   },
+   "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T14:18:30.198Z"
+ "fetchedAt": "2026-09-20T14:20:50.300Z"
 }
