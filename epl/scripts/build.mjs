@@ -268,6 +268,26 @@ async function main() {
       liveFilled++;
     }
   }
+
+  /* **開球時間也要信最新的那一份**(2026-09-20 使用者回報「還沒到開賽時間卻顯示等賽果」)。
+
+     `kickoff` 原本唯一的來源是 GitHub 鏡像的 `fpl/{季}-fixtures.csv`,而那一份在倉庫裡
+     **從 2026-08-23 第一個 commit 之後就沒有變過** —— `fetch.mjs` 是「檔案存在就跳過」
+     (只有 `--force` 覆寫),而 `epl-live.yml` 雖然跑了 `--force`,**回寫清單裡沒有
+     `data/raw/fpl/`**,所以抓到的新版隨 runner 一起消失。於是**轉播改期看不見**:
+     實測 2026-09-20 兩場(LEE vs CRY、MCI vs SUN)從 9/19 14:00Z 移到 9/20 13:00Z,
+     本站還記著舊的 —— 開賽前 23 小時就被 `scheduleState` 判成 awaiting,
+     畫面印「時間上早該結束,但本站還沒拿到比分」,而那場根本還沒踢。
+
+     FPL 官方 API(`live.json`,`source: 'fpl-api'`)是比賽日每兩分鐘重抓的,它就是最新的
+     那一份 —— 跟上面補賽果**同一條規矩:誰最新就信誰**(`scheduleState` 在前端也是這樣)。
+     界線要講清楚:**它只涵蓋當前這一輪**(本季一輪 10 場),更遠的輪次仍然只有鏡像那一份,
+     所以改期要等到那一輪變成「當前輪」才會被修正。真正根治要讓鏡像自己更新
+     (`epl-live.yml` 的回寫清單已補上 `*-fixtures.csv`,但鏡像上游夠不夠新沙箱驗不到)。 */
+  const liveKickoff = new Map();
+  if (liveState && !liveState.demo) {
+    for (const f of liveState.fixtures) if (f.key && f.kickoff) liveKickoff.set(f.key, f.kickoff);
+  }
   const curPlayed = curMatches.filter(m => m.played);
   const curTable = buildTable(curMatches, curCodes);
 
@@ -492,13 +512,15 @@ async function main() {
       away: round((p.away + e.away) / 2, 4),
     };
     const d = diff.byPair.get(`${m.home}|${m.away}`) ?? null;
+    const liveKo = liveKickoff.get(`${m.home}|${m.away}`) ?? null;
     return {
       id: m.id, season: m.season, round: m.round, date: m.date,
       home: m.home, away: m.away, played: m.played,
       fh: m.fh, fa: m.fa, hh: m.hh, ha: m.ha, time: m.time ?? null,
-      // 倒數計時要用精確到分鐘的 UTC 時間;沒有 FPL 資料才退回 openfootball 的英國當地時間
-      kickoff: d?.kickoff ?? `${m.date}T${(m.time ?? '15:00')}:00+01:00`,
-      kickoffSource: d?.kickoff ? 'fpl' : 'openfootball',
+      /* 倒數計時要用精確到分鐘的 UTC 時間。優先序:**官方 API 最新的那一份** →
+         鏡像的 fixtures.csv(季初快照,改期看不見)→ openfootball 的英國當地預設時段。 */
+      kickoff: liveKo ?? d?.kickoff ?? `${m.date}T${(m.time ?? '15:00')}:00+01:00`,
+      kickoffSource: liveKo ? 'fpl-api' : (d?.kickoff ? 'fpl' : 'openfootball'),
       difficulty: d ? { home: d.home, away: d.away } : null,
       /* prediction 這個欄位**只放真正的賽前機率**:未賽 = 目前模型;
          已賽 = 開賽前凍結的快照(拿不到就 null)。
@@ -521,6 +543,19 @@ async function main() {
   {
     const n = fixtures.filter(f => f.market).length;
     if (n) console.log(`  逐場模型 vs 市場:${n} 場對得上`);
+  }
+
+  /* 修正過的要**印出來**:改期是外部事件,靜靜改掉等於沒有人知道本站曾經講錯。
+     兩邊都有 kickoff 而且不一樣的才算「修正」——鏡像沒有那一場只是補上,不是改期。 */
+  {
+    const fixed = fixtures.filter(f => f.kickoffSource === 'fpl-api')
+      .map(f => ({ f, old: diff.byPair.get(`${f.home}|${f.away}`)?.kickoff ?? null }))
+      .filter(x => x.old && x.old !== x.f.kickoff);
+    console.log(`  開球時間:官方 API 涵蓋 ${liveKickoff.size} 場`
+      + (fixed.length
+        ? `,其中 ${fixed.length} 場跟鏡像的季初快照不同(改期):`
+          + fixed.map(x => `${x.f.home}|${x.f.away} ${x.old} → ${x.f.kickoff}`).join('、')
+        : ',跟鏡像一致'));
   }
 
   // ── 賽季模擬 ──────────────────────────────

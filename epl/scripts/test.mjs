@@ -1856,6 +1856,31 @@ async function checkDataGap() {
       return /const unplayedCount = fixtures\.filter\(f => !f\.played\)\.length/.test(src)
         && /本季還有 \$\{unplayedCount\} 場未賽/.test(src);
     })()],
+    /* ── 還沒開賽卻寫「還沒有賽果」(2026-09-20,使用者回報「比賽時間錯誤」)────────
+       上一條是**踢完了**卻說沒賽果,這一條是**還沒踢**就說早該結束 —— 同一區、相反方向。
+       根因不在前端:`scheduleState` 的 `elapsed < 0 → upcoming` 一直是對的,
+       錯的是**輸入的 kickoff**。它原本唯一的來源是鏡像的 `fpl/{季}-fixtures.csv`,
+       而那一份在倉庫裡從 2026-08-23 第一個 commit 之後就沒變過(`fetch.mjs` 檔案存在就跳過;
+       `epl-live.yml` 雖然 `--force`,回寫清單裡卻沒有 `data/raw/fpl/`)。
+       於是轉播改期看不見:9/20 兩場從 9/19 14:00Z 移到 9/20 13:00Z,
+       本站還記著舊的 → 開賽前 23 小時就被判成 awaiting。
+
+       守的是**性質**不是那兩場(那兩場踢完就不在了):官方 API 涵蓋到的場次,
+       產物的 kickoff 必須等於官方那一份。負向對照 = 把優先序改回鏡像優先。 */
+    ['英超的開球時間以官方 API 為準(鏡像的季初快照看不見轉播改期)', (() => {
+      const livePath = join(ROOT, 'data', 'raw', 'live.json');
+      if (!existsSync(livePath)) return true;        // 沒有快照不是失敗(沙箱)
+      const live = JSON.parse(readFileSync(livePath, 'utf8'));
+      if (live.demo) return true;                     // 重播模式的時間本來就不是現況
+      const fx = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'fixtures.json'), 'utf8'));
+      const list = Array.isArray(fx) ? fx : (fx.fixtures ?? fx.matches ?? []);
+      const by = new Map(list.map(f => [`${f.home}|${f.away}`, f]));
+      const bad = (live.fixtures ?? []).filter(m => {
+        const f = by.get(m.key);
+        return m.kickoff && f && f.kickoff !== m.kickoff;
+      });
+      return bad.length === 0;
+    })()],
     /* ── 踢完了卻寫「還沒有賽果」(2026-09-12,使用者在比賽剛結束時回報)────────
        「比賽途中其實就有資料,有比分結果,結束卻歸零、寫沒賽果」。
        原因:`scheduleState` 只看賽程時間與 `fixture.played`,而那兩個都落後 ——
