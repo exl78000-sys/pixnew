@@ -961,6 +961,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
        15~25 公尺天花板比真實還低、30 公尺外高到三倍,**沒有任何撲搶成功率生得出駝峰**。
        這一節守的是那個量測本身量得對(飛行時間解二次式、只算擋得在中間的人、
        `LANE_FAR` 只是量測的邊界不進引擎行為),**不守它的值**。 */
+    const st5e = [];                          // 第 22 節跑的那三場,第 23 節(5e)接著用
     {
       const simBare8 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
@@ -973,10 +974,22 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         seg8.length > 0 && /2 \* BALL_FRICTION \* a/.test(seg8) && /Math\.sqrt\(disc\)/.test(seg8),
         `切出來 ${seg8.length} 字元`);
       /* `LANE_FAR` 是**量測的邊界**,不是模型的參數 —— 引擎的行為不准讀它。
-         三處:宣告、撲得到的前置、4 m 內那一格。多一處就是它漏進行為裡了。 */
-      check('LANE_FAR 只給量測用(宣告 + noteShotLane 裡兩處,引擎行為不讀它)',
-        (simBare8.match(/LANE_FAR/g) ?? []).length === 3
-        && (seg8.match(/LANE_FAR/g) ?? []).length === 2);
+
+         **不要數出現次數。** 這條原本寫成「整份 3 處、函式裡 2 處」,而階段 5e 只是
+         在同一個迴圈裡**多加一個量測**(數人數,不是只記有沒有)就紅在「多了一個」——
+         本站記過那條坑(「數出現次數的斷言,加一個聯賽就紅在多了一個」),
+         而它就發生在守「不要把量測漏進行為」的這一條自己身上。
+         改成守**性質**:每一處 `LANE_FAR` 都要落在宣告那一行或 `noteShotLane` 裡面。 */
+      const jE = simBare8.indexOf('function ', j0 + 22);   // noteShotLane 的下一個函式 = 它的結尾
+      let stray = 0, at = -1, tot = 0;
+      while ((at = simBare8.indexOf('LANE_FAR', at + 1)) >= 0) {
+        tot++;
+        const isDecl = simBare8.slice(Math.max(0, at - 6), at) === 'const ';
+        if (!isDecl && !(j0 >= 0 && jE > j0 && at > j0 && at < jE)) stray++;
+      }
+      check('LANE_FAR 只給量測用:宣告與 noteShotLane 以外一處都不准有',
+        j0 >= 0 && jE > j1 && tot >= 2 && stray === 0,
+        `整份 ${tot} 處、漏進行為 ${stray} 處`);
       const chkBare9 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
       check('check-sim 把「4 m 內」與「撲得到的天花板」兩排都印出來',
@@ -988,6 +1001,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           const sim9 = S9.createSim({ profile, home: 'ARS', away: 'LIV', seed });
           for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim9.state().over; i++) sim9.advance(1 / 60);
           const c9 = sim9.state().counts;
+          st5e.push(c9);                        // 第 23 節(5e)共用這三場,不要再跑三場
           for (let k = 0; k < 7; k++) {
             /* 四個門檻是一層套一層的:DEFLECT_R ⊂ 1 m ⊂ 4 m ⊂ 這一帶的射門。
                而「撲得到」的前置就是 4 m 內有人,所以它也不可能比 4 m 那一格多。 */
@@ -998,6 +1012,55 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         }
         check('四個門檻一層套一層,而且天花板不會超過「4 m 內有人」',
           bad === 0, `3 場:射門 ${shots}、4 m 內 ${far}、撲得到 ${rch}、逐帶不一致 ${bad} 格`);
+      }
+    }
+
+    /* 23. 階段 5e:**其餘九個人站在哪裡**。5d 在同一張表上留了一句「15~20 公尺那一格是
+       個凹陷」,而重量出來那個差**不到 1 個 SE、而且符號相反** —— 規劃裡的診斷是雜訊。
+       這一節守的是新那幾個量測本身量得對:純觀測(不碰 rng)、計數器的上下界、
+       深度量的是**自家**球門那一側,以及 check-sim 真的把樣本數與 SE 印出來
+       (沒有那兩行,下一個人會再一次把雜訊讀成凹陷)。**不守它們的值** —— 那會漂。 */
+    {
+      const simBare = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const a0 = simBare.indexOf('function noteShotLane(');
+      const a1 = simBare.indexOf('function ', a0 + 22);
+      const seg = a0 >= 0 && a1 > a0 ? simBare.slice(a0, a1) : '';
+      /* 純觀測:量測一旦呼叫 rng() 就會把亂數序列錯開,同一個種子跑出來不是同一場比賽
+         (本站記過那條坑,而 5e 是拿同種子 8/8 逐場逐字相同證明的)。 */
+      check('noteShotLane 一次 rng() 都不呼叫(它是量測,不是行為)',
+        seg.length > 0 && !/\brng\s*\(/.test(seg), `切出來 ${seg.length} 字元`);
+      const chkBare = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('check-sim 印出 5e 那幾排(門側 / 站進球道 / 每 10 m / 離線 / 球道長度 / 防線深度)',
+        ['門側的人', '站進球道', '每 10 m 球道', '最近那個離線', '球道長度', '防線深度']
+          .every(t => chkBare.includes(t)));
+      /* 樣本數與 SE 要印在旁邊 —— 少了它們,逐帶的比例看起來就像一條曲線,
+         而一帶只有幾十腳。5e 的規劃就是這樣把雜訊寫成了「要修的凹陷」。 */
+      check('逐帶的比例旁邊要有樣本數與 ±1 SE(不然雜訊會被讀成形狀)',
+        chkBare.includes('這一帶幾腳') && /±1 SE/.test(chkBare) && /Math\.sqrt\(p \* \(1 - p\) \/ n\)/.test(chkBare));
+      {
+        let bad = 0, gs = 0, n4 = 0, shots = 0, dep = 0, depN = 0;
+        for (const c of st5e) {
+          for (let k = 0; k < 7; k++) {
+            /* 上下界:① 站進球道 4 m 的**人數**不會比「有沒有人」那一格的**腳數**少
+               (有人 → 至少一個人);② 只有 10 個對方場上球員,門側最多 10 × 腳數;
+               ③ 有記到離線距離 / 深度的腳數不會超過這一帶的射門數。 */
+            if (!(c.laneN[k] >= c.laneFar[k] && c.gsN[k] <= 10 * c.laneShots[k]
+              && c.lanePerpN[k] <= c.laneShots[k] && c.lineDepthN[k] <= c.laneShots[k])) bad++;
+            gs += c.gsN[k]; n4 += c.laneN[k]; shots += c.laneShots[k];
+            dep += c.lineDepth[k]; depN += c.lineDepthN[k];
+          }
+        }
+        check('5e 的四個計數器都在上下界裡(人數 ≥ 有沒有、門側 ≤ 10 人、記到的 ≤ 射門數)',
+          st5e.length > 0 && shots > 0 && bad === 0,
+          `${st5e.length} 場:射門 ${shots}、門側 ${gs}、站進球道 ${n4}、逐帶越界 ${bad} 格`);
+        /* 深度量的是離**自家**球門線。拿錯一邊的話它會變成 105 − 真值,
+           而射門那一刻防守方最深的四個人一定在自家半場那一側,所以平均必定小於半場。
+           **這是拿錯球門的判別式**,不是一個調出來的門檻。 */
+        check('防線深度算的是離自家球門線(射門當下必定小於半場)',
+          depN > 0 && dep / depN < 105 / 2,
+          `${depN} 腳平均 ${depN > 0 ? (dep / depN).toFixed(1) : '—'} m`);
       }
     }
   }

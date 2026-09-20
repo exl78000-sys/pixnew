@@ -61,6 +61,11 @@ function play(seed, minutes = 90) {
      都比換手早幾格,那樣認會讓它們全被「傳球被接走」吸收成 0,看起來像 4h 那條
      「這一類根本沒鋪路」而其實只是我量錯(第一版就是這樣)。 */
   const stay = { visits: 0, secs: 0, passes: 0, zero: 0, why: {}, attSecs: 0, live: 0 };
+  /* **平時的防線深度**(2026-09-20,階段 5e):防守方最深的四個場上球員離自家球門線多遠。
+     完全從 `state()` 量 —— 不碰引擎、不消耗 rng(4t 的硬規矩)。
+     射門那一刻的深度要跟這個數字比才讀得出「射門時防線特別深 / 特別高」還是本來就那樣。
+     沒有真實世界的錨(側寫只有 `style.line` 這個 proxy),所以**只印不判**。 */
+  const def = { depth: 0, n: 0 };
   let ctrl = null, visit = null, pc = null;
   const snap = c => ({ shots: c.shots, tackles: c.tackles, thr: c.throwIns, gk: c.goalKicks,
     cor: c.corners.home + c.corners.away, fouls: c.fouls.home + c.fouls.away,
@@ -109,6 +114,17 @@ function play(seed, minutes = 90) {
       const gk = {};
       for (const p of s.players) if (p.role === 'GK') gk[p.side] = p.x;
       const att = gk[ctrl] == null ? 0 : Math.sign(105 / 2 - gk[ctrl]);
+      {
+        const dSide = ctrl === 'home' ? 'away' : 'home';
+        if (gk[dSide] != null) {
+          const ownX = gk[dSide] < 105 / 2 ? 0 : 105;
+          /* `state().players` 走的是引擎的 `all()`,而它已經濾掉被罰下的人 ——
+             母體跟射門那一刻那一份一致(「量測的母體要跟畫面一致」那條坑)。 */
+          const ds = s.players.filter(p => p.side === dSide && p.role !== 'GK')
+            .map(p => Math.abs(p.x - ownX)).sort((a, b) => a - b);
+          if (ds.length >= 4) { def.depth += (ds[0] + ds[1] + ds[2] + ds[3]) / 4; def.n++; }
+        }
+      }
       const inAtt = att !== 0 && (s.ball.x - 105 / 2) * att > 0;
       stay.live += STEP;
       if (inAtt) stay.attSecs += STEP;
@@ -121,7 +137,7 @@ function play(seed, minutes = 90) {
     pc = now;
   }
   closeVisit('完場', sim.state().t);
-  return { sim, st: sim.state(), m: sim.motion(), jumps, maxJump, still, samples, bins, swaps, stay };
+  return { sim, st: sim.state(), m: sim.motion(), jumps, maxJump, still, samples, bins, swaps, stay, def };
 }
 
 const rows = [];
@@ -658,6 +674,68 @@ if (simShots && realShots) {
       }
       console.log(`  ${'　　　　(4 m 內)'.padEnd(26, '\u3000')} ${far.join(' ')}　← 曝光的上限`);
       console.log(`  ${'撲得到(天花板)'.padEnd(26, '\u3000')} ${rch.join(' ')}　← 撲搶百發百中也只到這裡`);
+      /* **其餘九個人站在哪裡**(2026-09-20,階段 5e)。上面那幾排回答「這一腳有沒有人擋」,
+         這幾排回答**為什麼沒有**。
+
+         第一件事是拆掉一個機械效應:`球道長度` 是分母。球道從幾公尺長到三十幾公尺,
+         掃過的走廊面積差十倍 —— 沒有它,`4 m 內有人` 的單調上升讀不出有多少是站位、
+         多少只是「線比較長」。所以另外印**每 10 公尺球道幾個人**(密度)。
+
+         `門側的人` 不看橫向,回答「他跟球門之間有幾個人」;
+         `站進球道 4 m` 是其中真的擋在路上的**人數**(上面那一排只記有沒有,
+         分不出一個人跟五個人);`最近那個離線` 只在球道區間裡真的有人時才計入平均 ——
+         「沒有人」不可以當成一個很大的距離混進去(那會把兩件事平均在一起)。
+
+         `防線深度` **沒有錨**:側寫裡只有 `style.line`(`proxy: true`,basis 是
+         「對手場均越位次數」),不是公尺。所以它只回報、只拿來比帶與帶之間,
+         以及跟「平時」那一行比 —— 把它調成一個「真實深度」就是編數字(鐵則一)。 */
+      {
+        /* 一律三個字元寬,才跟上面那幾排的百分比對得齊;≥10 的印到整數位。 */
+        const num = v => (v == null || !isFinite(v) ? '  —' : (v >= 10 ? v.toFixed(0) : v.toFixed(1)).padStart(3));
+        /* **先把樣本數與 SE 印出來。** 上面那幾排是逐帶的比例,而一帶只有幾十到一百多腳 ——
+           本站在「20 場的掃描沒有鑑別力」上付過代價,規矩是**把 SE 印在每一格旁邊**,
+           不然單調趨勢與雜訊長得一模一樣。5e 的規劃就是這樣寫壞的:它引用 5d 的
+           「15~20 公尺 34% 比 10~15 的 40% 低,是一個凹陷」當作要修的東西,
+           而那個差在這個樣本數下不到 1 個 SE —— 這一輪重量出來符號還是**相反的**。 */
+        const nB = [], seB = [];
+        for (let k = 0; k < 7; k++) {
+          const n = ls(k) * rows.length;
+          nB.push(n >= 1000 ? `${Math.round(n / 100) / 10}k`.padStart(3) : `${Math.round(n)}`.padStart(3));
+          const p = ls(k) > 0 ? lf(k) / ls(k) : null;
+          seB.push(p == null || n < 2 ? '  —' : `${(100 * Math.sqrt(p * (1 - p) / n)).toFixed(0)}`.padStart(3));
+        }
+        console.log(`  ${'這一帶幾腳(合計)'.padEnd(26, '\u3000')} ${nB.join(' ')}　← 上面每一排的樣本數`);
+        console.log(`  ${'　(4 m 內)的 ±1 SE'.padEnd(26, '\u3000')} ${seB.join(' ')}　← 差不到這個數字的就是雜訊`);
+        const ll = k => mean(rows.map(r => r.st.counts.laneLen?.[k] ?? 0));
+        const lN = k => mean(rows.map(r => r.st.counts.laneN?.[k] ?? 0));
+        const gsn = k => mean(rows.map(r => r.st.counts.gsN?.[k] ?? 0));
+        const lp = k => mean(rows.map(r => r.st.counts.lanePerp?.[k] ?? 0));
+        const lpN = k => mean(rows.map(r => r.st.counts.lanePerpN?.[k] ?? 0));
+        const ld = k => mean(rows.map(r => r.st.counts.lineDepth?.[k] ?? 0));
+        const ldN = k => mean(rows.map(r => r.st.counts.lineDepthN?.[k] ?? 0));
+        const gsR = [], n4R = [], denR = [], perpR = [], lenR = [], depR = [];
+        for (let k = 0; k < 7; k++) {
+          const S = ls(k);
+          gsR.push(num(S > 0 ? gsn(k) / S : null));
+          n4R.push(num(S > 0 ? lN(k) / S : null));
+          denR.push(num(ll(k) > 0 ? 10 * lN(k) / ll(k) : null));
+          perpR.push(num(lpN(k) > 0 ? lp(k) / lpN(k) : null));
+          lenR.push(num(S > 0 ? ll(k) / S : null));
+          depR.push(num(ldN(k) > 0 ? ld(k) / ldN(k) : null));
+        }
+        console.log(`  ${'門側的人(人 / 腳)'.padEnd(26, '\u3000')} ${gsR.join(' ')}　← 他跟球門之間幾個人`);
+        console.log(`  ${'　站進球道 4 m(人 / 腳)'.padEnd(26, '\u3000')} ${n4R.join(' ')}`);
+        console.log(`  ${'　每 10 m 球道幾個人'.padEnd(26, '\u3000')} ${denR.join(' ')}　← 去掉「球道越長越容易有人」`);
+        console.log(`  ${'最近那個離線(m)'.padEnd(26, '\u3000')} ${perpR.join(' ')}`);
+        console.log(`  ${'球道長度(m)'.padEnd(26, '\u3000')} ${lenR.join(' ')}　← 上面幾排的分母`);
+        console.log(`  ${'防線深度(m,只回報)'.padEnd(26, '\u3000')} ${depR.join(' ')}`);
+        const dn = rows.reduce((a, r) => a + (r.def?.n ?? 0), 0);
+        const dd = rows.reduce((a, r) => a + (r.def?.depth ?? 0), 0);
+        line('　平時的防線深度', dn > 0 ? `${(dd / dn).toFixed(1)} m` : '—',
+          '活球時逐格取樣(防守方最深的四個場上球員離自家球門線)。'
+          + '**沒有真實世界的錨** —— 側寫只有 `style.line` 這個 proxy(對手場均越位次數),'
+          + '所以這一行只拿來跟上面那一排比:射門那一刻的防線比平時深還是高');
+      }
       {
         const S = [0, 1, 2, 3, 4, 5, 6].reduce((a, k) => a + ls(k), 0);
         const O = [0, 1, 2, 3, 4, 5, 6].reduce((a, k) => a + lo(k), 0);
