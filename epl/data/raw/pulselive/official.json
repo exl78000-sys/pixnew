@@ -33175,6 +33175,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 121972,
+      "team": 127,
+      "min": 88,
+      "label": "88'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 42894,
+      "team": 127,
+      "min": 88,
+      "label": "88'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -33204,7 +33222,7 @@
      }
     ]
    },
-   "clock": "88'00"
+   "clock": "90'00"
   },
   "LEE|CRY": {
    "fixtureId": 128968,
@@ -33814,7 +33832,7 @@
      }
     ]
    },
-   "clock": "86'00"
+   "clock": "89'00"
   },
   "MCI|SUN": {
    "fixtureId": 128969,
@@ -33822,7 +33840,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 4,
+    "home": 5,
     "away": 3
    },
    "homeId": 11,
@@ -34252,15 +34270,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 67784,
-     "assist": 115105,
-     "team": 29,
-     "min": 59,
-     "label": "59'00",
+     "person": 65970,
+     "assist": 67178,
+     "team": 11,
+     "min": 81,
+     "label": "81'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 4,
+     "hs": 5,
      "as": 3
     }
    ],
@@ -34377,7 +34395,7 @@
      }
     ]
    },
-   "clock": "81'00"
+   "clock": "84'00"
   },
   "FUL|MUN": {
    "fixtureId": 128967,
@@ -34777,5 +34795,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T14:44:12.802Z"
+ "fetchedAt": "2026-09-20T14:46:32.761Z"
 }
