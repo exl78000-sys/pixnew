@@ -33022,7 +33022,44 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 130665,
+      "team": 10,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 75382,
+      "team": 10,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 119386,
+      "team": 10,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68840,
+      "team": 10,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -33050,7 +33087,7 @@
      }
     ]
    },
-   "clock": "71'00"
+   "clock": "73'00"
   },
   "LEE|CRY": {
    "fixtureId": 128968,
@@ -33597,7 +33634,7 @@
      }
     ]
    },
-   "clock": "69'00"
+   "clock": "72'00"
   },
   "MCI|SUN": {
    "fixtureId": 128969,
@@ -34106,7 +34143,7 @@
      }
     ]
    },
-   "clock": "65'00"
+   "clock": "67'00"
   },
   "FUL|MUN": {
    "fixtureId": 128967,
@@ -34506,5 +34543,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-09-20T14:27:49.765Z"
+ "fetchedAt": "2026-09-20T14:30:09.847Z"
 }
