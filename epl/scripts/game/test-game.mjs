@@ -963,6 +963,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
        這一節守的是那個量測本身量得對(飛行時間解二次式、只算擋得在中間的人、
        `LANE_FAR` 只是量測的邊界不進引擎行為),**不守它的值**。 */
     const st5e = [];                          // 第 22 節跑的那三場,第 23 節(5e)接著用
+    let chkOut = '';                          // check-sim 跑一次的 stdout,第 23 / 24 節共用(只跑一次)
     {
       const simBare8 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
@@ -1038,7 +1039,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
          **照樣是綠的** —— 字串還在,只是永遠不執行。那跟「這條測試守不住任何東西」
          長得一模一樣,而它是負向對照抓到的,不是讀程式看出來的。
          所以真的跑一次 check-sim,掃它的 **stdout**。一場就夠:這幾排跟場數無關。 */
-      const chkOut = spawnSync(process.execPath,
+      chkOut = spawnSync(process.execPath,
         [join(ROOT, 'scripts', 'game', 'check-sim.mjs'), '1'],
         { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).stdout ?? '';
       check('check-sim **真的印出** 5e 那幾排(跑一次掃 stdout,不是掃原始碼)',
@@ -1088,6 +1089,65 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           depN > 0 && dep / depN < 105 / 2,
           `${depN} 腳平均 ${depN > 0 ? (dep / depN).toFixed(1) : '—'} m`);
       }
+    }
+
+    /* 24. 階段 5f:**寬度是誰決定的,以及收窄能買到多少**。5e 量到後四人橫向跨距
+       41~46 公尺(場寬 68),而 y 只有兩個來源:隊形的槽位與盯人。這一節守的是
+       那兩個量測量得對,以及天花板探針量在**會碰到球的那個半徑**上 ——
+       第一版只量 `LANE_FAR`(4 m),而真正造成封阻的是 `DEFLECT_R`(0.75 m),
+       拿前者換算封阻率就是用推的(這一輪已經推錯兩次)。**不守它們的值。** */
+    {
+      const simBare = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const b0 = simBare.indexOf('function noteShotLane(');
+      const b1 = simBare.indexOf('function ', b0 + 22);
+      const seg5f = b0 >= 0 && b1 > b0 ? simBare.slice(b0, b1) : '';
+      /* **歸因的值會過期。** 站位那一段只在有持球者時跑,而鬆球(角球頭球、凌空抽射)
+         整塊不跑 —— 只檢查 `!= null` 分不出「這一格寫的」與「上一次持球時寫的」。
+         錨挑時間戳那個判斷,它只在這裡出現。 */
+      check('隊形歸因帶新鮮度判定(鬆球時站位那段不跑,值會過期)',
+        seg5f.length > 0 && /dfAt != null && st\.t - q\.dfAt </.test(seg5f),
+        `切出來 ${seg5f.length} 字元`);
+      /* 天花板要量在 `DEFLECT_R` 上 —— 只有 `LANE_FAR` 的話,
+         要換算成封阻率就只能推(5c 量過的轉換率是掛在 0.75 m 上的)。 */
+      check('收窄的天花板同時量 4 m 與 0.75 m(後者才換算得到封阻率)',
+        /perp < LANE_FAR\) n\+\+/.test(seg5f) && /perp < DEFLECT_R\) hit = 1/.test(seg5f));
+      /* `SQUEEZE` 跟 `LANE_FAR` 同一類:量測的邊界,引擎的行為不准讀它。
+         守性質不數次數(數次數的斷言這一輪已經被自己咬過一次)。 */
+      const sq0 = simBare.indexOf('const SQUEEZE = ');
+      let strayS = 0, atS = -1, totS = 0;
+      while ((atS = simBare.indexOf('SQUEEZE', atS + 1)) >= 0) {
+        totS++;
+        const isDecl = simBare.slice(Math.max(0, atS - 6), atS) === 'const ';
+        if (!isDecl && !(b0 >= 0 && b1 > b0 && atS > b0 && atS < b1)
+          && !(sq0 >= 0 && Math.abs(atS - sq0) < 40)) strayS++;
+      }
+      check('SQUEEZE 只給量測用:宣告與 noteShotLane 以外一處都不准有',
+        totS >= 2 && strayS === 0, `整份 ${totS} 處、漏進行為 ${strayS} 處`);
+      check('那個收窄的判定跟上面那幾排逐字同一段球道區間(a 的上下界一樣)',
+        (seg5f.match(/a <= 0\.3 \|\| a >= L/g) ?? []).length === 2);
+      {
+        let bad = 0, shots = 0, wide = 0, sq0n = 0, sq3n = 0;
+        for (const c of st5e) {
+          for (let k = 0; k < 7; k++) {
+            /* 收窄是單調的:越窄,落進球道的人只會多不會少(同一批人、同一條線)。
+               而 0.75 m 那一排是「有沒有」,所以不會多過這一帶的射門數。 */
+            if (!(c.laneSq[0][k] <= c.laneSq[1][k] && c.laneSq[1][k] <= c.laneSq[2][k]
+              && c.laneSq[2][k] <= c.laneSq[3][k]
+              && c.laneSqHit[3][k] <= c.laneShots[k]
+              && c.lineWideShape[k] <= 68 * c.lineShapeN[k]
+              && c.lineMarked[k] <= 4 * c.lineDepthN[k])) bad++;
+            shots += c.laneShots[k]; wide += c.lineWideShape[k];
+            sq0n += c.laneSq[0][k]; sq3n += c.laneSq[3][k];
+          }
+        }
+        check('收窄越多落進球道的人只會變多(同一批人、同一條線),歸因也在上下界裡',
+          st5e.length > 0 && shots > 0 && bad === 0,
+          `${st5e.length} 場:射門 ${shots}、75% 時 ${sq0n}、0% 時 ${sq3n}、逐帶越界 ${bad} 格`);
+      }
+      check('check-sim 真的印出 5f 那幾排(照隊形 / 被盯人 / 兩個半徑的收窄)',
+        ['照隊形會是', '其中被盯人拉走', '收窄到 75%', '0.75 m 內']
+          .every(t => chkOut.includes(t)), `check-sim 輸出 ${chkOut.length} 字元`);
     }
   }
 }
