@@ -9,11 +9,11 @@
 //   npm run photos -- --probe=448104       # 只測一位，不寫入 photos.json
 //   npm run photos -- --probe=448104 --template='https://.../{code}.png'
 import { createHash } from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import { readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { playerPhotos } from './lib/adapters/fotmob-manual.mjs';
+import { pillowReady, toJpeg } from './lib/photo-jpeg.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const MANIFEST = join(ROOT, 'data', 'manual', 'photo-manifest.json');
@@ -38,59 +38,6 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
    一個人一個網址、走同一條節流與去重路徑,不另外開一套抓圖流程。 */
 const urlFor = (code, override = null) => override ?? TEMPLATE.replace('{code}', code);
 const sha = buf => createHash('sha256').update(buf).digest('hex');
-
-const PYTHON = String.raw`
-import io, sys
-from PIL import Image
-
-raw = sys.stdin.buffer.read()
-im = Image.open(io.BytesIO(raw)).convert('RGBA')
-if im.width < 20 or im.height < 20:
-    raise ValueError(f'image too small: {im.width}x{im.height}')
-h = max(1, round(im.height * 96 / im.width))
-im = im.resize((96, h), Image.Resampling.LANCZOS)
-bg = Image.new('RGB', im.size, '#1a1420')
-bg.paste(im, mask=im.getchannel('A'))
-
-def encode(quality):
-    out = io.BytesIO()
-    bg.save(out, 'JPEG', quality=quality, optimize=True)
-    return out.getvalue()
-
-result = encode(78)
-if len(result) > 3072:
-    result = encode(70)
-sys.stdout.buffer.write(result)
-`;
-
-/* 缺 Pillow 就整支跳過,而且要在開跑前就說。
-
-   原本是抓到第一個人、呼叫 toJpeg 的時候才丟例外 —— 訊息混在球員清單裡,
-   而這一步是 continue-on-error,所以在 CI 上一直紅、一直沒有人看到。
-   缺依賴不是「這一筆失敗」,是「這件事現在做不了」,要分開講。
-
-   縮圖與轉檔為什麼靠 Python:輸出是 JPEG,而本專案零 npm 依賴、
-   lib/png.mjs 只做 PNG。手寫一個 JPEG 編碼器不划算,所以借 Pillow。
-   runner 上要 pip install pillow(epl-live.yml 有一步在做)。 */
-function pillowReady() {
-  const probe = spawnSync('python3', ['-c', 'import PIL'], { encoding: 'utf8' });
-  if (probe.error) return { ok: false, why: '這台機器沒有 python3' };
-  if (probe.status !== 0) return { ok: false, why: "python3 有,但沒有 Pillow(pip install pillow)" };
-  return { ok: true };
-}
-
-function toJpeg(png) {
-  const run = spawnSync('python3', ['-c', PYTHON], {
-    input: png,
-    encoding: null,
-    maxBuffer: 5 * 1024 * 1024,
-  });
-  if (run.error) throw run.error;
-  if (run.status !== 0) throw new Error(`Pillow 處理失敗: ${run.stderr.toString().trim()}`);
-  const out = Buffer.from(run.stdout);
-  if (!out.subarray(0, 2).equals(Buffer.from([0xff, 0xd8]))) throw new Error('輸出不是 JPEG');
-  return out;
-}
 
 async function request(code, override = null) {
   const url = urlFor(code, override);

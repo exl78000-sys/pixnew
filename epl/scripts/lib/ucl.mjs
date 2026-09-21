@@ -222,6 +222,36 @@ function fotmobToFdMap(root) {
   return m;
 }
 
+/* 歐冠球員榜的頭貼(2026-09-21)。收件匣是 `data/manual/ucl-photos.json`
+   (`npm run ucl:photos` 一個球員一個請求抓來的),這裡只負責**挑出畫面真的會用到的那些**
+   再發布成一份小檔。
+
+   為什麼不塞進 `ucl.json`:那一份已經 538 KB,而且**總覽頁也整份載它** ——
+   把 120 KB 的頭貼塞進去等於讓一頁不顯示頭貼的頁面多載 120 KB。
+
+   為什麼只收本季:使用者 2026-09-21 選的是「只抓本季(40 人)」。往季的榜走交付檔那一路、
+   列上本來就沒有 `pid`,所以那幾張榜不會有頭貼 —— 那是資料的事實,畫面照實呈現。
+
+   **沒有收件匣也要寫一份空的**(不是不寫):前端 `C.loadFrom` 拿不到檔會走
+   「還沒 build」那條訊息,而那是假的 —— 「沒有內容的產物要寫空的而不是不寫」那條坑。
+
+   裡面**刻意沒有抓取時間戳**:兩個 build 各產一次,內容要逐位元組相同
+   (跟 ucl-teams / ucl-standings 同一個理由)。日期用收件匣自己記的 `_updated`。 */
+export function uclPhotos(root, ucl) {
+  const p = joinPath(root, 'data', 'manual', 'ucl-photos.json');
+  const store = existsSyncFn(p) ? JSON.parse(readFileSyncFn(p, 'utf8')) : null;
+  const cur = (ucl?.seasons ?? []).find(s => s.current);
+  const want = new Set();
+  for (const b of cur?.leaders ?? []) for (const r of b.rows ?? []) if (r.pid != null) want.add(String(r.pid));
+  const photos = {};
+  // 鍵照數字排序,兩份產物才逐位元組相同(插入順序會跟著榜的順序走)
+  for (const id of [...want].sort((a, b) => Number(a) - Number(b))) {
+    const v = store?.photos?.[id];
+    if (v) photos[id] = v;
+  }
+  return { updated: store?._updated ?? null, want: want.size, count: Object.keys(photos).length, photos };
+}
+
 /* 球員榜的 teamId 換成 football-data 的 id(2026-09-21)。
    **交付檔那一路本來給的是 FotMob id** —— 而本站自己累計的那一路(leadersFromAggregate)
    給的是 football-data id,兩季用一種、一季用另一種,同一個欄位兩種語意。

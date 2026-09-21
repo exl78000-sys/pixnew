@@ -3,7 +3,9 @@
 // 用來驗證預測引擎沒有偷看未來,而且真的比亂猜好。
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, statSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { uclPhotos as uclPhotosFn } from './lib/ucl.mjs';
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
 import { isCupTbd } from './lib/adapters/fotmob-cups.mjs';
@@ -3262,14 +3264,33 @@ async function checkDataGap() {
         ['球員榜是一張 grid(欄寬由整張榜算,不是逐列各自算)',
           /\.lead-board \{ display: grid; grid-template-columns:/.test(css)
           && /\.lead-board > \*:nth-last-child\(-n\+4\)/.test(css)],
-        ['盃賽與歐冠的球員榜共用 .lead-board,而且一列剛好四格',
+        /* **這一條 2026-09-21 改過寫法,守的性質一個字都沒變。** 原本數 `<span ` 要剛好 4 個,
+           而歐冠的列加了頭貼之後那一格裡多包一個 span —— 它紅了,紅的是寫法不是性質
+           (一張榜仍然是一個 grid、仍然四欄、兩個消費端仍然沒有各寫一份欄寬)。
+           釘死寫法的測試會在「加東西但性質不變」時紅,那種紅久了就沒有人看。
+           改成**逐格問角色**:名次 / 球員名 / 隊伍 / 數值各一格,而且頭貼要**包在球員名那一格裡** ——
+           它變成第五欄的話,兩個消費端就不再是同一個 grid 了(那才是這一條真正要擋的)。 */
+        ['盃賽與歐冠的球員榜共用 .lead-board,而且一列剛好四格(名次/球員/隊伍/數值)',
           [cups, ucl].every(src => {
             const seg = src.slice(src.indexOf('<div class="lead-board">'));
             if (!seg.startsWith('<div class="lead-board">')) return false;
             const row = seg.slice(0, seg.indexOf('`).join(\'\')'));
-            // 四格:名次、球員名、隊伍、數值 —— 少一格或多包一層 div 就不是同一個 grid 了
-            return (row.match(/<span /g) ?? []).length === 4 && !/<div class="stat-line"/.test(row);
+            const one = re => (row.match(re) ?? []).length === 1;
+            if (!(one(/class="tiny dim mono"/) && one(/lead-name/) && one(/lead-team/) && one(/lead-val/))) return false;
+            if (/<div class="stat-line"/.test(row)) return false;
+            if (!/lead-face/.test(row)) return true;              // 盃賽沒有頭貼,到這裡就通過
+            return row.indexOf('lead-face') > row.indexOf('lead-name')
+              && row.lastIndexOf('lead-face') < row.indexOf('lead-team');
           })],
+        /* 頭貼(2026-09-21)。三件事:**逐張榜**自己判斷有沒有臉(往季的榜列上沒有 pid,
+           不該排出十二個空框)、查頭貼用的是 `pid` 而**不是** `teamId`(那是兩個 id 空間,
+           今天上午才修掉混用的坑),以及頭貼那一格的尺寸是固定的 ——
+           有圖沒圖都一樣寬,名字才對得成一直線(不然它就退回這一輪之前的樣子)。 */
+        ['歐冠球員榜的頭貼:逐張榜判斷、用 pid 查、沒有圖也佔同樣的寬',
+          /b\.rows\.some\(r => faceOf\(r\)\)/.test(ucl)
+          && /faceOf = r => \(r\.pid != null/.test(ucl)
+          && !/faceOf[\s\S]{0,120}teamId/.test(ucl)
+          && /\.lead-face \{[^}]*width: 22px[^}]*flex: 0 0 22px/.test(css)],
         ['球員榜的隊伍欄靠左而且單行截斷(隊徽才對得成一直線)',
           /\.lead-team > \* > span:not\(\.pill\)/.test(css) && /\.lead-team \.crest \{ width: 20px/.test(css)
           && !/max-width:110px|max-width:88px/.test(cups + ucl)],
@@ -5908,6 +5929,72 @@ function checkUcl() {
       /* 2026-08-28 起「走到哪一輪」涵蓋全部球隊,不再只算本站認得的那 8~11 支。
          那些數字本來就在同一份資料裡,只是以前 runsByTeam 遇到沒有隊碼就 continue。 */
       const ucl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'ucl.json'), 'utf8'));
+      /* ── 球員榜的頭貼(2026-09-21)────────────────────────
+         使用者選「只抓本季(40 人)」,而抓取是**一人一個請求**,所以這一組守的是
+         「有沒有多抓、有沒有少寫」,不是「有幾張圖」——圖的張數在沙箱一定是 0
+         (連不到圖片 CDN),寫成紅線的話本機永遠紅、runner 永遠綠。 */
+      {
+        const photosPath = join(ROOT, 'web', 'data', 'ucl-photos.json');
+        okU(existsSync(photosPath), '歐冠頭貼的產物一定要在(沒有圖也要寫一份空的)',
+          '缺了的話前端 C.loadFrom 會 404,畫面停在「載入資料中…」');
+        if (existsSync(photosPath)) {
+          const ph = JSON.parse(readFileSync(photosPath, 'utf8'));
+          const cur = (ucl.seasons ?? []).find(x => x.current);
+          const want = new Set();
+          for (const b of cur?.leaders ?? []) for (const r of b.rows ?? []) if (r.pid != null) want.add(String(r.pid));
+          okU(Number.isFinite(ph.want) && Number.isFinite(ph.count) && ph.count <= ph.want,
+            '頭貼的計數自己不矛盾(有圖的不可能多過榜上的人)', `有圖 ${ph.count} / 榜上 ${ph.want}`);
+          okU(ph.want === want.size, '產物記的「榜上幾人」就是本季榜上真的有 pid 的人數', `${ph.want} 人`);
+          /* **只發布畫面會用到的那些。** 收件匣整份倒進產物的話,離開榜的人也會被發布 ——
+             那是讀者永遠看不到的位元組,而 ucl.json 已經夠大了。
+
+             **這一條單獨看守不住任何東西** —— 沙箱的收件匣是空的,「整份倒出來」等於倒出零,
+             所以負向對照貼了那個 bug 之後紅了 **0 條**。真正守得住的是下面那個**純函式**的驗證
+             (拿捏造的收件匣 + 捏造的榜跑一次);這一條留著是驗**實際出貨的那一份**。
+             規則抽成純函式才測得到 —— 跟 `nameCheckVerdict`、`decideWindow` 同一條。 */
+          okU(Object.keys(ph.photos ?? {}).every(id => want.has(id)),
+            '出貨的那一份只收本季榜上那些人(收件匣是空的時候這一條是空話,看下一條)',
+            `${Object.keys(ph.photos ?? {}).length} 張`);
+          /* 兩個 build 各寫一次,內容要逐位元組相同(跟 ucl-teams / ucl-standings 同一條)。
+             所以 uclPhotos 裡刻意沒有抓取時間戳 —— 有的話這一條每次都紅。 */
+          const esPath = join(ROOT, 'web', 'data', 'leagues', 'es1', 'ucl-photos.json');
+          okU(existsSync(esPath) && readFileSync(esPath, 'utf8') === readFileSync(photosPath, 'utf8'),
+            '英超與西甲寫出的 ucl-photos.json 逐位元組相同(兩個 build 呼叫同一個函式)');
+        }
+        /* `uclPhotos` 的純函式驗證:捏一份收件匣(3 個人)與一份榜(只認得其中 2 個),
+           看它挑出來的是哪些。**這一條才是真的在守「不要整份倒出來」** —— 上面那一條
+           拿真產物驗,而真收件匣在沙箱是空的,空的集合怎麼倒都通過。 */
+        {
+          const tmp = join(tmpdir(), `ucl-photos-test-${process.pid}`);
+          mkdirSync(join(tmp, 'data', 'manual'), { recursive: true });
+          writeFileSync(join(tmp, 'data', 'manual', 'ucl-photos.json'),
+            JSON.stringify({ _updated: '2026-09-21', photos: { 11: 'data:a', 22: 'data:b', 33: 'data:c' } }));
+          const fakeUcl = { seasons: [
+            { label: '舊季', leaders: [{ rows: [{ pid: 33 }] }] },                    // 往季的人不該被發布
+            { label: '本季', current: true, leaders: [{ rows: [{ pid: 11 }, { pid: 22 }, { name: '沒有 pid 的人' }] }] },
+          ] };
+          const got = uclPhotosFn(tmp, fakeUcl);
+          okU(got.want === 2 && got.count === 2
+            && JSON.stringify(Object.keys(got.photos)) === JSON.stringify(['11', '22'])
+            && got.updated === '2026-09-21',
+            '頭貼只挑本季榜上有 pid 的那些(捏造的收件匣 3 人、榜認得 2 人)',
+            `want ${got.want}・count ${got.count}・挑出 ${Object.keys(got.photos).join(',')}`);
+          // 沒有收件匣也要回一份完整的形狀(空的產物,不是 undefined)
+          const none = uclPhotosFn(join(tmp, '不存在'), fakeUcl);
+          okU(none.want === 2 && none.count === 0 && JSON.stringify(none.photos) === '{}' && none.updated === null,
+            '沒有收件匣時回的是「空的一份」而不是缺一份(前端 404 會停在載入中)');
+          rmSync(tmp, { recursive: true, force: true });
+        }
+        /* 縮圖與轉檔只能有一份實作:兩支抓取器各寫一份的話,尺寸 / 背景色 / 品質退讓
+           會分岔,而症狀是「兩邊的頭貼長得不一樣」而沒有人會發現(姓名配對那條坑的同一個病)。 */
+        const jpegLib = readFileSync(join(ROOT, 'scripts', 'lib', 'photo-jpeg.mjs'), 'utf8');
+        const fetchers = ['fetch-photos.mjs', 'fetch-ucl-photos.mjs']
+          .map(f => readFileSync(join(ROOT, 'scripts', f), 'utf8'));
+        okU(/from PIL import/.test(jpegLib)
+          && fetchers.every(src => /from '\.\/lib\/photo-jpeg\.mjs'/.test(src) && !/from PIL import/.test(src)),
+          'Pillow 的縮圖與轉檔只有一份(兩支抓取器都 import 共用模組,自己沒有第二份)');
+      }
+
       for (const season of ucl.seasons ?? []) {
         const rows = season.table?.rows ?? [];
         if (!rows.length) continue;

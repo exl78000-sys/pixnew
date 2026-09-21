@@ -114,6 +114,18 @@ nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
 /* 最後一列(四格)不畫底線 —— 原本 .stat-line:last-child 做的事 */
 .lead-board > *:nth-last-child(-n+4) { border-bottom: none; }
 .lead-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 球員榜的頭貼(2026-09-21)。**只有本季那幾張榜有** —— 往季的榜走交付檔那一路、
+   列上沒有球員 id,所以那幾張榜連這一格都不出現(不是排十二個空框)。
+   盃賽的榜也沒有,所以規則掛在 .has-face 上、.lead-board 的四欄一個字都沒動。
+   名字要能截斷,而 ellipsis 對 flex 容器**自己**無效 —— 規則下在裡面的文字節點上
+   (跟隊名那一欄踩過的是同一條)。 */
+.lead-name.has-face { display: flex; align-items: center; gap: 6px; }
+.lead-name.has-face > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 22px:一列的行高就這麼多,再大整張榜會變高。空的那一格(這個人還沒有頭貼)
+   用同一個尺寸與一塊淡底 —— 尺寸一樣名字才對得成一直線,淡底才不像破圖。
+   object-position 貼上緣:頭貼是人像,裁下半部比裁掉頭好。 */
+.lead-face { width: 22px; height: 22px; flex: 0 0 22px; border-radius: 50%;
+  object-fit: cover; object-position: top center; background: var(--line-soft); }
 .lead-val { font-family: var(--mono); font-weight: 700; text-align: right; white-space: nowrap; }
 /* 隊伍欄的上限寫成**百分比**而不是一個像素值:榜的寬度在桌機(四欄)與手機(一欄)差很多,
    寫死的話手機上會把隊名截在還有空位的地方。34% 是掃出來的 —— 對齊的代價就是隊伍欄要吃

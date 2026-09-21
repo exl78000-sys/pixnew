@@ -152,7 +152,15 @@ export function leadersFrom(agg, { limit = 12, minMatches = null } = {}) {
   for (const c of LEADERS) {
     const need = c.minMatches ? (minMatches ?? c.minMatches) : 0;
     const eligible = agg.players.filter(p => Number.isFinite(p.stats[c.key]) && (!need || p.matches >= need));
-    const rows = eligible.map(p => ({ name: p.name, team: p.teamName, teamId: p.team, value: p.stats[c.key], minutes: p.minutes, matches: p.matches }))
+    /* `pid` 是上游的球員 id(歐冠與盃賽是 FotMob 的、英冠也是)。聚合那一步一直帶著它
+       (`providerId`),而這裡原本沒有輸出 —— 於是 `ucl.json` 裡 `"providerId"` 出現 **0 次**,
+       想替榜上的人掛頭貼就查不到人。「資料躺在倉庫裡而沒有人讀它」的變形:
+       這次不是沒算,是**算出來了卻沒發布**。
+       查不到 id 的人**不給這個欄位**(不是給 null)—— 空欄位比沒有更糟,而且
+       前端的判斷是「有沒有這個鍵」,給 null 會讓它以為查得到一個叫 null 的人。 */
+    const rows = eligible.map(p => ({ name: p.name, team: p.teamName, teamId: p.team,
+      ...(p.providerId != null ? { pid: p.providerId } : {}),
+      value: p.stats[c.key], minutes: p.minutes, matches: p.matches }))
       .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name)).slice(0, limit);
     /* 標題把門檻寫進去 —— 門檻變了而標題沒變的話,畫面上那句話就是假的 */
     const zh = c.minMatches ? c.zh.replace(/出賽 ≥ \d+ 場/, `出賽 ≥ ${need} 場`) : c.zh;

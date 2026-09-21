@@ -38,6 +38,8 @@ const registered = code => !!code && C.team(code).en !== code;
    **有隊徽不等於有球隊頁** —— 這一組只畫圖,不給連結;
    連到一個空頁比不連更糟(鐵則三)。 */
 let externalCrest = new Map();
+/* 球員榜的頭貼:{ 上游球員 id: data URI }。呼叫端傳進來,跟 standings / model 同一個模式 */
+let photos = null;
 
 /* 名字刻意避開 core.js 的 teamCell —— 單檔版會把共用模組攤平到頂層,
    跟 core 的匯出同名就是 SyntaxError(分頁版有模組作用域,看不出來)。
@@ -533,6 +535,17 @@ function leaderBoards(season) {
      量一次就推翻了。鐵則:斷言兩個 id 對不起來之前,先把它們拿去對一次。)
      走整份收一次(`uclSeasonMatches` 含淘汰賽),不列舉區塊 —— 只讀 leagueMatches 的話
      二月起淘汰賽才出現的球隊會靜靜查不到身分。 */
+  /* 球員頭貼(2026-09-21)。榜上的 `pid` 是**上游的球員 id**,跟隊伍那一欄的
+     `teamId`(football-data)是兩個不同的空間 —— 不要互相套用(今天上午才修掉那個坑)。
+
+     **逐張榜自己判斷有沒有臉**:本季的榜走本站逐場累計那一路、列上有 `pid`,
+     往季的走交付檔那一路、列上沒有 —— 所以往季那幾張榜連那一格都不會出現,
+     而不是排出十二個空框(鐵則三:拿不到的不留空欄位)。
+
+     圖是**內嵌的 data URI**,所以不會有「遠端網址留下破圖框」那個問題
+     (西甲頭貼踩過,全站的 .pphoto 因此才有一條 capture 階段的 error 監聽)。 */
+  const faceOf = r => (r.pid != null ? photos?.[String(r.pid)] : null) ?? null;
+
   const sideById = new Map();
   for (const m of C.uclSeasonMatches(season)) for (const t of [m.home, m.away]) if (t?.id != null) sideById.set(String(t.id), t);
   // 查不到就只給上游的名字:本站不替一支認不得的球隊編身分(鐵則三)
@@ -542,7 +555,14 @@ function leaderBoards(season) {
       <span class="hint">${season.playerLayer?.source === 'match-aggregate'
         ? `由本站逐場資料累計(FotMob 逐場詳情,${season.playerLayer.reconciled}/${season.playerLayer.matches} 場的球員進球對回 football-data 的比分才計入${season.playerLayer.excluded?.length ? `,${season.playerLayer.excluded.length} 場對不上不計` : ''};xG 只算射門圖完整的 ${season.playerLayer.xgComplete} 場)・${season.leaderPool} 人`
         : `來源 FotMob・${season.leaderPool} 人母體・已與另一來源逐場核對比分後才採用`}</span></div>
-    <div class="grid g3">
+    ${/* **g2 不是 g3**(2026-09-21,接頭貼那一輪量出來的)。g3 是 minmax(250px,1fr),
+         在 1240px 的版面排**四張**、每張只有 256px —— 而一列要塞名次、頭貼、球員名、
+         隊伍、數值。實測 48 列:名字截斷 26 列(平均切 20px,最嚴重 Ousmane Dembélé 38px)。
+         先試的是縮隊伍欄,而那只是**拿名字換隊名**:34% → 26% 名字 26 → 12 列,隊名 8 → 29 列。
+         根因是卡片太窄,所以改排 minmax(320px,1fr) —— 一排三張、每張 357px,
+         **1280 與 1024px 的名字與隊名截斷都是 0**。代價是卡片從一排變兩排
+         (本季 4 張:3+1;往季 6 張:3+3,比 g3 的 4+2 還整齊)。 */''}
+    <div class="grid g2">
       ${season.leaders.map(b => `<div class="card">
         <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3>
           <span class="dim tiny">母體 ${b.pool} 人</span></div>
@@ -550,10 +570,13 @@ function leaderBoards(season) {
              本站認得的畫隊徽並連到球隊頁,認不得而上游有圖的只畫圖不連結,
              兩種都沒有的只給名字 —— 跟這一頁其他地方同一條界線。 */''}
         <div class="lead-board">
-          ${b.rows.map((r, i) => `<span class="tiny dim mono">${i + 1}</span>
-            <span class="small lead-name">${C.esc(r.name)}</span>
+          ${(() => { const faces = b.rows.some(r => faceOf(r));
+            return b.rows.map((r, i) => `<span class="tiny dim mono">${i + 1}</span>
+            <span class="small lead-name${faces ? ' has-face' : ''}">${faces ? (faceOf(r)
+              ? `<img class="lead-face" src="${faceOf(r)}" alt="" width="22" height="22" loading="lazy">`
+              : '<span class="lead-face" title="這位球員還沒有頭貼"></span>') : ''}<span>${C.esc(r.name)}</span></span>
             <span class="tiny dim lead-team">${uclTeamCell(teamOf(r), { short: true })}</span>
-            <span class="small lead-val">${fmt(r.value, b.dp)}${C.esc(b.unit)}</span>`).join('')}
+            <span class="small lead-val">${fmt(r.value, b.dp)}${C.esc(b.unit)}</span>`).join(''); })()}
         </div>
       </div>`).join('')}
     </div>`;
@@ -581,7 +604,8 @@ function unavailableNote(season) {
    nav、page-head 與 foot 由盃賽頁統一管。ucl.html 保留為轉址,舊連結不斷。 */
 /* 共用狀態的初始化。**盃賽頁與單場頁都要跑這一段** —— 各寫一份的話,
    單場頁會少掉某一個來源而且不報錯(例如 standings 沒設 → 賽前對比整塊靜靜消失)。 */
-export function initUcl({ clubs, teams, uclTeams, uclStandings = null, uclElo = null, uclDetails = null }) {
+export function initUcl({ clubs, teams, uclTeams, uclStandings = null, uclElo = null, uclDetails = null, uclPhotos = null }) {
+  photos = uclPhotos;
   standings = uclStandings;
   model = uclElo;
   details = uclDetails;
@@ -606,8 +630,8 @@ export const uclAllMatches = s => allMatchesOf(s);
 export const renderUclCompare = (el, m) => renderCompare(el, m);
 export const renderUclPost = (el, m) => renderPostMatch(el, m);
 
-export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null, uclElo = null, uclDetails = null }) {
-  initUcl({ clubs, teams, uclTeams, uclStandings, uclElo, uclDetails });
+export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStandings = null, uclElo = null, uclDetails = null, uclPhotos = null }) {
+  initUcl({ clubs, teams, uclTeams, uclStandings, uclElo, uclDetails, uclPhotos });
 
   const seasons = ucl?.seasons ?? [];
   if (!seasons.length) {

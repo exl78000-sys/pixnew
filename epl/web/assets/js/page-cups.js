@@ -1,6 +1,6 @@
 import * as C from './core.js?v=d2162a48';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=42acf32d';
+import { renderUclView } from './ucl-view.js?v=1db9d382';
 
 const app = document.getElementById('app');
 
@@ -298,7 +298,7 @@ try {
      meta/clubs/teams 仍取目前聯賽 —— nav 與頁尾要跟著使用者所在的聯賽。 */
   const { meta, clubs, teams } = await C.load('meta', 'clubs', 'teams');
   /* ucl-details 是賽後報告的**索引**(幾 KB);逐場報告點開才載(ucl-view 的 renderPostMatch)。 */
-  const { data: shared } = await C.loadFrom('pl', ['cups', 'cup-details', 'ucl', 'ucl-teams', 'ucl-standings', 'ucl-elo', 'ucl-details', 'competitions']);
+  const { data: shared } = await C.loadFrom('pl', ['cups', 'cup-details', 'ucl', 'ucl-teams', 'ucl-standings', 'ucl-elo', 'ucl-details', 'ucl-photos', 'competitions']);
   C.registerCompetitions(shared.competitions);   // 分頁按鈕的賽事圖像:有真圖就用真圖
   const cups = shared.cups;
   /* 球隊身分:英超目錄的 clubs.json(本站的英格蘭球會名冊)+ 盃賽 crests 查表。
@@ -386,6 +386,7 @@ try {
   const renderComp = () => {
     if (comp === 'ucl') {
       renderUclView(compBody, { meta, clubs, teams, ucl: shared.ucl, uclTeams: shared['ucl-teams'],
+        uclPhotos: shared['ucl-photos']?.photos ?? null,
         uclStandings: shared['ucl-standings'], uclElo: shared['ucl-elo'], uclDetails: shared['ucl-details'] });
       return;
     }

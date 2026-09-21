@@ -24,7 +24,7 @@ import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, sta
 import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
 import { summariseSeason, CUPS_ATTRIBUTION } from './lib/cups.mjs';
-import { loadUclSeasons, uclTeamAssets, uclIdentitySources } from './lib/ucl.mjs';
+import { loadUclSeasons, uclTeamAssets, uclIdentitySources, uclPhotos } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
 import { uclElo } from './lib/ucl-elo.mjs';
 import { uclDetails, writeUclDetails, uclScoreContext } from './lib/ucl-details.mjs';
@@ -1389,6 +1389,13 @@ async function main() {
          隊徽也只出現一半。內容與 build-laliga 產出的必須逐位元組相同。 */
       const assets = await uclTeamAssets(ROOT, ucl);
       await write('ucl-teams.json', assets);
+      /* 歐冠球員榜的頭貼。跟 ucl-teams 一樣是**跨聯賽一份**、兩個 build 各產一次、
+         內容必須逐位元組相同(所以 uclPhotos 裡刻意沒有抓取時間戳)。
+         **收件匣是空的也要寫**:前端拿不到檔會印「還沒 build」,而那是假的。 */
+      const photos = uclPhotos(ROOT, ucl);
+      await write('ucl-photos.json', photos);
+      console.log(`  歐冠球員榜頭貼:榜上 ${photos.want} 人・有圖 ${photos.count} 張`
+        + (photos.count < photos.want ? `・還缺 ${photos.want - photos.count}(npm run ucl:photos,沙箱抓不到)` : ''));
       /* 歐冠賽前對比要用的三個聯賽積分榜(德甲/義甲/法甲)。跟 ucl-teams 一樣是**跨聯賽一份**,
          兩個 build 各產一次、內容必須逐位元組相同 —— 所以裡面刻意沒有時間戳。 */
       const standings = uclStandings(ROOT, ucl);

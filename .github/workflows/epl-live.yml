@@ -259,6 +259,16 @@ jobs:
         run: npm run photos -- --limit=5
         continue-on-error: true
 
+      # 歐冠球員榜的頭貼(2026-09-21)。**一人一個請求**,所以只抓本季榜上真的會出現的人
+      # (探測 run #40 證明過:本站本來就在打的 matchDetails 回應裡沒有球員照片,
+      # 零額外請求那條路不存在;而 images.fotmob.com/.../playerimages/{id}.png 可用)。
+      # 第一次 40 個請求,之後每輪只補榜上新出現的人 —— 已經有圖的不重抓。
+      # 沙箱連不到圖片 CDN,所以這一步只在 runner 上真的做事。
+      - name: 補抓歐冠球員榜的頭貼
+        working-directory: epl
+        run: npm run ucl:photos
+        continue-on-error: true
+
       # 英超官方 CDN 沒有的少量頭貼，SportMonks 名單會先補入；
       # API-Football 僅作最後備援，避免把兩個來源的資料混在一起。
       # 每次最多 10 人、每日最多 10 次，結果寫入 photos.json 快取。
@@ -561,6 +571,7 @@ jobs:
             epl/data/backtest-ligue-1-matches.json \
             epl/data/form-tuning.json \
             epl/data/availability-history.json \
+            epl/data/manual/ucl-photos.json \
             epl/data/situation-tuning.json \
             epl/data/situation-tuning-es1.json \
             epl/data/congestion-tuning.json \
