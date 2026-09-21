@@ -214,26 +214,53 @@ try {
     return rows.sort((a, b) => (a.kick < b.kick ? -1 : 1));
   };
 
-  /* 窗外的下一批盃賽:7 天內沒有盃賽時,讀者會以為盃賽沒接上 ——
-     所以窗外的用一行摘要講(跟實時戰況頁倒數區的溢位摘要同一個做法)。 */
-  const cupBeyond = (() => {
+  /* 窗外的下一批:窗裡沒有那個賽事時,讀者會以為它沒接上 —— 所以用一行摘要講
+     (跟實時戰況頁倒數區的溢位摘要同一個做法)。
+
+     **聯賽也要算進來**(2026-09-21 補)。第一版只走盃賽與歐冠兩個區塊,於是國際賽週
+     那一天整個「即將到來」只剩一句「未來 7 天沒有已排定的比賽」,而六個聯賽的下一場
+     10/09~10/10 就在資料裡、畫面一個字都沒講 —— 讀者看到的是「一個月沒有足球」或
+     「站壞了」。實測那天:英超第 5 輪 9/18–9/20 踢完、第 6 輪 10/10 才開打(openfootball
+     自己就是這樣排的),六個聯賽一模一樣。這是本站的老坑「只讀了資料的其中一個區塊」。
+
+     而且條件從「這個賽事窗外還有場次」改成「這個賽事**窗裡一場都沒有**」——
+     那才是這一行本來要回答的問題(舊註解寫的就是這個,實作寫寬了)。 */
+  const beyondOf = present => {
     const now = Date.now(), end = now + 7 * 86400000;
+    /* 沒有開球時間的場次只比得了日期,所以要一個**當地**的今天(上游是逐月公布開球時間的,
+       西甲現在 311 場未賽而只有 20 場有時間 —— 拿「有開球時間」當分母會講出假數字)。 */
+    const todayISO = new Date(now - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    const out = [];
+    /* 聯賽:「還有幾場」一律數 `!played`,不是數有開球時間的那些。
+       日期已過卻還沒踢的(改期而上游還沒給新日期)不算「接下來」—— 本站沒有延賽的資料源,
+       把它當成下一批會印出一個已經過去的日期。 */
+    for (const { lg, data } of leagues) {
+      if (UPCOMING_HIDE.has(lg) || present.has(lg)) continue;
+      const rest = (data.fixtures ?? []).filter(f => !f.played && f.date >= todayISO);
+      if (!rest.length) continue;
+      const first = rest.reduce((a, b) => (a.date <= b.date ? a : b));
+      const batch = rest.filter(f => f.round === first.round);
+      const pend = batch.filter(f => !f.kickoff).length;
+      out.push(`${C.LEAGUES[lg].zh} 第 ${first.round} 輪:${C.dateFull(first.date)} 起(${batch.length} 場${
+        pend ? `,${pend} 場時間待定` : ''})`);
+    }
     const known = new Set(leagues.flatMap(({ data }) =>
       (data.teams ?? []).flatMap(t => [t.en, t.of].filter(Boolean).map(x => x.toLowerCase()))));
     const covered = s => s && (s.code || known.has(String(s.name ?? '').toLowerCase()));
-    const out = cupList.map(cup => {
+    for (const cup of cupList) {
+      if (present.has(cup.key)) continue;
       const season = (cup.seasons ?? []).find(s => s.current);
       const future = (season?.rounds ?? []).flatMap(r => (r.matches ?? [])
         .filter(m => !m.played && m.kickoff && Date.parse(m.kickoff) > end
           && (covered(m.home) || covered(m.away)))
         .map(m => ({ kick: m.kickoff, stage: m.stage })));
-      if (!future.length) return null;
+      if (!future.length) continue;
       const first = future.sort((a, b) => (a.kick < b.kick ? -1 : 1))[0];
-      return `${cup.zh ?? cup.en} ${first.stage ?? ''}:${C.dateFull(first.kick.slice(0, 10))} 起(${future.length} 場)`;
-    }).filter(Boolean);
-    // 歐冠也一樣:7 天內沒有歐冠時,用一行講下一批是聯賽階段第幾輪、幾號起
+      out.push(`${cup.zh ?? cup.en} ${first.stage ?? ''}:${C.dateFull(first.kick.slice(0, 10))} 起(${future.length} 場)`);
+    }
+    // 歐冠也一樣:窗裡沒有歐冠時,用一行講下一批是聯賽階段第幾輪、幾號起
     const uclSeason = (shared.ucl?.seasons ?? []).find(s => s.current);
-    const uclFuture = C.uclSeasonMatches(uclSeason)
+    const uclFuture = present.has('ucl') ? [] : C.uclSeasonMatches(uclSeason)
       .filter(m => !m.played && m.kickoff && Date.parse(m.kickoff) > end && (m.home?.code || m.away?.code))
       .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
     if (uclFuture.length) {
@@ -241,10 +268,11 @@ try {
       out.push(`歐冠 ${uclNote(f, uclSeason)}:${C.dateFull(f.kickoff.slice(0, 10))} 起(本站球隊 ${uclFuture.length} 場)`);
     }
     return out;
-  })();
+  };
 
   // 每次 render() 重算:覆蓋(盃賽小檔、聯賽 raw feed)改的是資料,表要跟著資料重畫
-  const upcomingHtml = () => { const upcoming = buildUpcoming(); return `
+  const upcomingHtml = () => { const upcoming = buildUpcoming();
+    const beyond = beyondOf(new Set(upcoming.map(u => u.compKey))); return `
   <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・${leagues.filter(x => !UPCOMING_HIDE.has(x.lg)).map(x => C.LEAGUES[x.lg].zh).join('、')} + 歐冠、盃賽</span></div>
   ${upcoming.length ? `<div class="card">${C.table(upcoming, [
     { key: 'kick', label: '開球(台北)', value: u => u.kick,
@@ -279,11 +307,14 @@ try {
        是因為這張表只列**還沒踢的**場次(上面的 `if (m.played) continue`),
        而單場頁是賽後報告,還沒踢的場次點進去沒有東西可看。 */
     onRow: u => { if (u.link) location.href = u.link; } })}
-  <div class="tiny dim" style="margin-top:8px">${cupBeyond.length ? `7 天之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}
+  <div class="tiny dim" style="margin-top:8px">${beyond.length ? `窗外的下一批:${beyond.map(C.esc).join(';')}。` : ''}
     聯賽場次點對戰直接進賽前分析,歐冠場次進歐冠單場頁(賽前對比、勝率與賽後報告都在那一頁);盃賽場次開盃賽頁的對應分頁。
     只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
-  : `<div class="note">未來 7 天沒有已排定的比賽(或開球時間上游還沒公布)。
-    ${cupBeyond.length ? `之後的盃賽:${cupBeyond.map(C.esc).join(';')}。` : ''}</div>`}`; };
+  : `<div class="note"><b>未來 7 天沒有已排定的比賽。</b>${beyond.length
+      ? `本站涵蓋的賽事接下來是 —— ${beyond.map(C.esc).join(';')}。`
+      : '而且每個賽事的下一場都還沒公布日期。'}
+    <div class="tiny dim" style="margin-top:6px">場次的日期來自賽程資料源;<b>沒有場次不等於資料沒更新</b> ——
+      國際賽週、盃賽的輪次之間都會出現這種空窗。改期而上游還沒給新日期的場次不算在上面那幾批裡。</div></div>`}`; };
 
   /* 最新動態:每個聯賽各取前幾則再依日期合併。
      只取一部分是因為這是總覽 —— 完整的在各聯賽的動態頁。 */

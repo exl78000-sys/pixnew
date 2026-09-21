@@ -99,6 +99,37 @@ nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
 }
 .stat-line.tie-leg .leg-ko { min-width: 96px; text-align: right; }
+
+/* 球員榜(盃賽頁與歐冠頁共用)。原本一列是一個 flex 的 .stat-line,隊伍那一格只有
+   `max-width:110px` 加內容的自然寬度 —— 於是**每一列的寬度跟著隊名長短變**,隊徽的 x
+   就跟著跳:足總盃進球榜 12 列量到 10 個不同的 x、散佈 38px,`Mansfield Town` 還折成
+   兩行把列高從 41 撐到 51。改成**整張榜一個 grid**(列是 display:contents 的概念,
+   直接把四個格子攤進同一個 grid),欄寬就由**整張榜的資料**決定而不是逐列各自算 ——
+   隊徽對成一直線,數值也對齊,而且一個寫死的欄寬都不需要。
+   (先前試過只把隊伍欄固定成 106px:四張榜對齊了,第五張還有 8px 的跳動,因為
+   **數值欄的寬度**也會隨位數變 —— `17次` 比 `9次` 寬,space-between 就把隊伍欄往左推。) */
+.lead-board { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 34%) auto;
+  column-gap: 8px; align-items: center; margin-top: 8px; }
+.lead-board > * { padding: 5px 0; border-bottom: 1px dashed var(--line-soft); min-width: 0; }
+/* 最後一列(四格)不畫底線 —— 原本 .stat-line:last-child 做的事 */
+.lead-board > *:nth-last-child(-n+4) { border-bottom: none; }
+.lead-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lead-val { font-family: var(--mono); font-weight: 700; text-align: right; white-space: nowrap; }
+/* 隊伍欄的上限寫成**百分比**而不是一個像素值:榜的寬度在桌機(四欄)與手機(一欄)差很多,
+   寫死的話手機上會把隊名截在還有空位的地方。34% 是掃出來的 —— 對齊的代價就是隊伍欄要吃
+   整張榜最寬的那一個,而那是從球員名那一欄借來的。足總盃五張榜 60 列(1280px)實測
+   (球員名截斷 / 隊名截斷):對齊前 7 / 0(但隊徽 10 個不同的 x、兩列折行);
+   40% → 24 / 7、36% → 10 / 11、**34% → 9 / 11**、32% → 7 / 16。取 34%:球員名的截斷
+   幾乎回到對齊前的水準,代價壓在隊名上 —— 隊名旁邊有隊徽,截掉幾個字仍然認得出是誰。截斷要下到裡面那個文字節點,理由跟上面那一組
+   tie-leg 一模一樣(inline-flex 身上的 ellipsis 不生效)。teamCell 有三種形狀:
+   a > img + span、span > img + span + pill、以及只有文字的 span;歐冠那一份沒有隊徽,
+   所以在 ucl-view 那邊多包一層 span,兩邊走同一條規則。 */
+.lead-team { overflow: hidden; }
+/* 榜上的隊徽比別處小一號:這一列的文字只有 11.5px,26px 的隊徽在裡面又大又吃寬度。
+   同一份實測:隊徽 26 → 20 讓 34% 那一格的隊名截斷從 22 列降到 11 列。 */
+.lead-team .crest { width: 20px; height: 20px; }
+.lead-team > * { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lead-team > * > span:not(.pill) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 /* 桌機上這一層不存在(display:contents),版面跟沒有它時完全一樣;
    手機上它變成兩組分頁共用的那一條橫向捲動列。 */
 .tabwrap { display: contents; }

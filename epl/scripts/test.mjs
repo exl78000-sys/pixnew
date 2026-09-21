@@ -1998,6 +1998,24 @@ async function checkDataGap() {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       return /C\.loadFrom\(/.test(src) && !/\bfetch\(/.test(src);
     })()],
+    /* 「即將到來」是 7 天的窗。窗裡沒東西時那一區只剩一句話,而窗外的摘要**第一版只走盃賽與歐冠**
+       —— 2026-09-21 國際賽週實測:六個聯賽的下一場 10/09~10/10 全都在資料裡,畫面一個字都沒講,
+       讀者看到的是「一個月沒有足球」。守的是**每個區塊都要被走到**(「只讀了資料的其中一個區塊」),
+       以及「還有幾場」數的是 `!played` 而不是「有開球時間」(上游逐月公布時間,拿後者當分母
+       西甲會講出「還有 11 場」而它其實還有 360 場)。 */
+    ['窗外的下一批摘要走聯賽、盃賽與歐冠三個區塊,而且聯賽那一段數的是還沒踢的場次', (() => {
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      const i = src.indexOf('const beyondOf =');
+      if (i < 0) return false;
+      const body = src.slice(i, src.indexOf('const upcomingHtml', i));
+      const league = /for \(const \{ lg, data \} of leagues\)/.test(body)
+        && /\.filter\(f => !f\.played && f\.date >=/.test(body);
+      const cup = /for \(const cup of cupList\)/.test(body);
+      const ucl = /uclSeasonMatches\(uclSeason\)/.test(body);
+      // 空狀態不准再寫死「只有盃賽」——那是「我們只有 X」那種會過期的宣稱
+      const empty = !/之後的盃賽/.test(src);
+      return league && cup && ucl && empty;
+    })()],
     /* 英冠沒有球員頁,給連結等於把讀者送去缺口頁 —— 判斷走 closedPage,
        不要在總覽頁再列一次哪個聯賽有哪些頁。 */
     /* 賽事色塊的註冊表要涵蓋每一個聯賽與三個盃賽 —— 漏掉的那一個不會壞,只會靜靜沒有圖像。
@@ -2008,6 +2026,27 @@ async function checkDataGap() {
         && ['ucl', 'facup', 'eflcup'].every(k => keys.includes(k))
         && V.compBadge('nope') === '' && /class="pill tiny"/.test(V.compBadge('nope', { label: '未知' }))
         && /comp-badge/.test(V.compBadge('pl')) && /英超/.test(V.compBadge('pl', { label: true }));
+    })()],
+    /* **抓 logo 的那一支也有一份手寫的聯賽清單**,而上面那條只守 core.js 那一份。
+       2026-09-21 實測:德甲義甲法甲 9/15 上線,`fetch-competition-logos.mjs` 沒人回來加 ——
+       `competitions.json` 六張圖裡沒有它們,總覽頁那三個聯賽從上線起印的是縮寫色塊,
+       而畫面完全正常、測試全綠。「手寫的聯賽清單」第六次,所以這裡也拿目錄逐個比對。
+       守的是**清單**不是**圖**:圖要 runner 上跑那一步才會進倉庫(沙箱連不到),
+       用「每個聯賽都要有 logo」當紅線的話,新聯賽上線到下一次抓圖之間會假紅。 */
+    ['抓 logo 的清單涵蓋 web/data/leagues 底下每一個聯賽(加上英超與三個盃賽)', (() => {
+      const src = readFileSync(join(ROOT, 'scripts', 'fetch-competition-logos.mjs'), 'utf8');
+      const block = src.slice(src.indexOf('const COMPETITIONS = ['), src.indexOf('const fresh ='));
+      const keys = new Set([...block.matchAll(/\{ key: '([a-z0-9]+)'/g)].map(m => m[1]));
+      const onDisk = readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => e.name);
+      const missing = [...onDisk, 'pl', 'ucl', 'facup', 'eflcup'].filter(k => !keys.has(k));
+      /* 只回報:哪幾個聯賽還沒抓到圖。這一行會隨資料變,所以不是紅線(docs:check 的 drifts 同一個分法)。 */
+      const logos = existsSync(join(ROOT, 'web', 'data', 'competitions.json'))
+        ? Object.keys(JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'competitions.json'), 'utf8')).logos ?? {}) : [];
+      const noLogo = [...keys].filter(k => !logos.includes(k));
+      console.log(`    賽事 logo:清單 ${keys.size} 個・倉庫裡有圖 ${logos.length} 個・還沒抓到 ${noLogo.join('、') || '—'}`);
+      if (missing.length) console.log(`    ✗ 抓取器的清單少了:${missing.join('、')}`);
+      return missing.length === 0;
     })()],
     /* 真圖:competitions.json 一定要在(沒抓到就 logos 空,前端退回色塊,檔案不在會 404);
        registerCompetitions 只掛已登記的鍵,不會因為有一張圖就長出一個賽事。 */
@@ -3186,6 +3225,7 @@ async function checkDataGap() {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
       const ucl = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8');
+      const cups = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');
       const mobile = css.slice(css.indexOf('@media (max-width: 700px)'));
       return [
         /* 手機上兩組分頁本來各佔一行,加品牌那行是 245px **而且 sticky** ——
@@ -3214,6 +3254,25 @@ async function checkDataGap() {
            層級標籤 .pill 不截,截的只有隊名那個 span。 */
         ['隊名截斷的規則下在文字節點上,而且不限連結(inline-flex 的 ellipsis 對自己無效)',
           /\.stat-line\.tie-leg \.leg-home > \* > span:not\(\.pill\)/.test(css)],
+        /* 球員榜(盃賽頁 + 歐冠頁)。原本一列是一個 flex,隊伍那一格照自己的內容算寬度 ——
+           隊徽的 x 就跟著隊名長短跳(足總盃進球榜 12 列量到 10 個不同的 x、散佈 38px),
+           而且**數值欄**的位數一變又會把隊伍欄往左推。守的是**性質**不是某個像素值:
+           一張榜是一個 grid(欄寬由整張榜的資料決定),而且兩個消費端都不准自己在列上
+           寫 flex 的欄寬 —— 兩份各寫一份的話,改了一邊另一邊會悄悄過期。 */
+        ['球員榜是一張 grid(欄寬由整張榜算,不是逐列各自算)',
+          /\.lead-board \{ display: grid; grid-template-columns:/.test(css)
+          && /\.lead-board > \*:nth-last-child\(-n\+4\)/.test(css)],
+        ['盃賽與歐冠的球員榜共用 .lead-board,而且一列剛好四格',
+          [cups, ucl].every(src => {
+            const seg = src.slice(src.indexOf('<div class="lead-board">'));
+            if (!seg.startsWith('<div class="lead-board">')) return false;
+            const row = seg.slice(0, seg.indexOf('`).join(\'\')'));
+            // 四格:名次、球員名、隊伍、數值 —— 少一格或多包一層 div 就不是同一個 grid 了
+            return (row.match(/<span /g) ?? []).length === 4 && !/<div class="stat-line"/.test(row);
+          })],
+        ['球員榜的隊伍欄靠左而且單行截斷(隊徽才對得成一直線)',
+          /\.lead-team > \* > span:not\(\.pill\)/.test(css) && /\.lead-team \.crest \{ width: 20px/.test(css)
+          && !/max-width:110px|max-width:88px/.test(cups + ucl)],
       ];
     })(),
 

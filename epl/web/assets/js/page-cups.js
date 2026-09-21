@@ -1,6 +1,6 @@
 import * as C from './core.js?v=d2162a48';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=8ca2925d';
+import { renderUclView } from './ucl-view.js?v=84b1ede3';
 
 const app = document.getElementById('app');
 
@@ -198,13 +198,14 @@ function cupLeaderBoards(pl, cupZh, seasonLabel) {
       ${pl.boards.map(b => `<div class="card">
         <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3>
           <span class="dim tiny">母體 ${b.pool} 人</span></div>
-        <div style="display:grid;gap:2px;margin-top:8px">
-          ${b.rows.map((r, i) => `<div class="stat-line" style="gap:8px;align-items:center">
-            <span class="tiny dim mono" style="min-width:18px">${i + 1}</span>
-            <span class="small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.name)}</span>
-            <span class="tiny dim" style="max-width:110px;overflow:hidden">${teamCell(pl.teams?.[r.teamId] ?? { name: r.team })}</span>
-            <b class="mono small">${fmt(r.value, b.dp)}${C.esc(b.unit)}</b>
-          </div>`).join('')}
+        ${/* 一列四格直接攤進同一個 grid(不包 div)—— 欄寬才會由整張榜的資料決定,
+             隊徽與數值各自對成一直線。包成一列一個 flex 的話每一列各自算寬度,
+             隊徽的 x 就會跟著隊名長短跳(見 app.css 的 .lead-board)。 */''}
+        <div class="lead-board">
+          ${b.rows.map((r, i) => `<span class="tiny dim mono">${i + 1}</span>
+            <span class="small lead-name">${C.esc(r.name)}</span>
+            <span class="tiny dim lead-team">${teamCell(pl.teams?.[r.teamId] ?? { name: r.team })}</span>
+            <span class="small lead-val">${fmt(r.value, b.dp)}${C.esc(b.unit)}</span>`).join('')}
         </div>
       </div>`).join('')}
     </div>`;

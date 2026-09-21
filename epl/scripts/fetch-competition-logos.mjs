@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* 賽事 logo(英超/西甲/英冠/歐冠/足總盃/聯賽盃)→ data/manual/competition-logos.json
+/* 賽事 logo(六個聯賽 + 歐冠 + 兩個英格蘭盃賽)→ data/manual/competition-logos.json
  *
  * 站上原本用色塊 + 縮寫當賽事圖像,使用者要真圖。沙箱連不到任何圖片 CDN,
  * 所以這支只在 runner 上跑(epl-live.yml 有一步)。SportMonks 已退訂,不能用。
@@ -8,7 +8,9 @@
  *
  *   A. football-data.org v4  /competitions/{code} 的 `emblem`
  *      官方文件明寫 competition 有 emblem(例如 https://crests.football-data.org/PL.png)。
- *      免費層有 PL / PD(西甲)/ ELC(英冠)/ CL 四個;FA Cup 與聯賽盃不在裡面。
+ *      本站確認在免費層的是 PL / PD(西甲)/ ELC(英冠)/ CL;德甲義甲法甲的 BL1 / SA / FL1
+ *      **是查來的,沒有在這裡驗過** —— 拿不到就掉到來源 B,log 會寫是哪一種失敗。
+ *      FA Cup 與聯賽盃確定不在裡面。
  *      本站的歐冠資料就是從這裡來的,token 已在 secrets。免費方案 10 req/分,所以每次請求隔 7 秒。
  *
  *   B. FotMob(探測)。站上已經在打它的聯賽端點(fetch-fotmob-scores.mjs,id 47/87/48 是在用的)。
@@ -44,14 +46,34 @@ const FORCE = process.argv.includes('--force');
 const TTL_DAYS = 30;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-/* 鍵跟前端 core.js 的 COMPETITIONS 一致。expect 是名字的核對,不是搜尋條件。 */
+/* 鍵跟前端 core.js 的 COMPETITIONS 一致。expect 是名字的核對,不是搜尋條件。
+ *
+ * **這份清單是手寫的,而且 npm test 拿 `web/data/leagues/` 逐個比對它**(2026-09-21):
+ * 德甲義甲法甲 2026-09-15 上線,而這裡沒有人回來加 —— 於是那三個聯賽從上線起
+ * 在總覽頁印的一直是縮寫色塊(BL / SA / L1),而 `core.js` 的 COMPETITIONS 有它們、
+ * 既有的那條斷言也只守 core.js 那一份。「手寫的聯賽清單」在本站是第六次。
+ *
+ * `area` 是**可選的**第二道核對(football-data 回傳裡有國家)。寫成可選是因為倉庫裡
+ * 沒有離線證據說那個欄位一定在(這支的規矩 #2:不假設回傳一定有某個欄位);
+ * 有就必須對得上,沒有就印出來說「這一輪沒核對到國家」。會需要它是因為
+ * **同名的頂級聯賽不只一個**:奧地利甲也叫 Bundesliga、巴西也有 Serie A ——
+ * 光看名字分不開,所以 FotMob 那一側真正的憑據是 **id**:54 / 55 / 53 是
+ * `probe-new-leagues.mjs` 在 runner 上**逐隊比對本站名冊**證明出來的(見 CLAUDE.md),
+ * 名字核對在那裡只是擋「這個 id 整個回錯東西」。
+ *
+ * football-data 的 BL1 / SA / FL1 **是查來的,不是驗過的** —— 免費層有沒有它們、
+ * 代碼對不對,都由回傳自己回答(code 要對得上、名字要對得上),對不上就掉到 FotMob。
+ */
 const COMPETITIONS = [
-  { key: 'pl',     zh: '英超',   expect: /^premier league$/i,               fd: 'PL',  fm: 47 },
-  { key: 'es1',    zh: '西甲',   expect: /primera divisi|la ?liga/i,        fd: 'PD',  fm: 87 },
-  { key: 'en2',    zh: '英冠',   expect: /championship/i,                   fd: 'ELC', fm: 48 },
+  { key: 'pl',     zh: '英超',   expect: /^premier league$/i,               fd: 'PL',  fm: 47,  area: /england/i },
+  { key: 'es1',    zh: '西甲',   expect: /primera divisi|la ?liga/i,        fd: 'PD',  fm: 87,  area: /spain/i },
+  { key: 'en2',    zh: '英冠',   expect: /championship/i,                   fd: 'ELC', fm: 48,  area: /england/i },
+  { key: 'de1',    zh: '德甲',   expect: /bundesliga/i,                     fd: 'BL1', fm: 54,  area: /germany/i },
+  { key: 'it1',    zh: '義甲',   expect: /serie a/i,                        fd: 'SA',  fm: 55,  area: /italy/i },
+  { key: 'fr1',    zh: '法甲',   expect: /ligue 1/i,                        fd: 'FL1', fm: 53,  area: /france/i },
   { key: 'ucl',    zh: '歐冠',   expect: /champions league/i,               fd: 'CL',  fm: 42 },
-  { key: 'facup',  zh: '足總盃', expect: /fa cup/i,                         fd: null,  fm: 132 },
-  { key: 'eflcup', zh: '聯賽盃', expect: /carabao|league cup|efl cup/i,     fd: null,  fm: 133 },
+  { key: 'facup',  zh: '足總盃', expect: /fa cup/i,                         fd: null,  fm: 132, area: /england/i },
+  { key: 'eflcup', zh: '聯賽盃', expect: /carabao|league cup|efl cup/i,     fd: null,  fm: 133, area: /england/i },
 ];
 
 const fresh = e => e?.retrievedAt && (Date.now() - Date.parse(e.retrievedAt)) < TTL_DAYS * 86400000;
@@ -84,9 +106,14 @@ async function fromFootballData(c) {
   const d = await getJson(`${FD_BASE}/competitions/${c.fd}`, { 'X-Auth-Token': FD_TOKEN });
   const name = String(d?.name ?? '');
   if (d?.code !== c.fd || !c.expect.test(name)) return { fail: `回傳 code=${d?.code} name=「${name}」,跟預期的 ${c.zh} 對不上` };
+  /* 國家核對:同名的頂級聯賽不只一個(奧地利甲也叫 Bundesliga、巴西也有 Serie A),
+     光看名字擋不住。欄位不在就**講出來**而不是當成通過(鐵則四)。 */
+  const area = String(d?.area?.name ?? '');
+  if (c.area && area && !c.area.test(area)) return { fail: `回傳的國家是「${area}」,跟預期的 ${c.zh} 對不上` };
+  const areaNote = c.area && !area ? '(回傳裡沒有 area,這一筆只核對了名字)' : '';
   if (!d.emblem) return { fail: `回傳裡沒有 emblem(欄位有:${Object.keys(d ?? {}).slice(0, 12).join(',')})` };
   await sleep(300);
-  return { dataUri: await fetchPng(d.emblem), name, url: d.emblem, source: 'football-data.org', id: d.code };
+  return { dataUri: await fetchPng(d.emblem), name: name + areaNote, url: d.emblem, source: 'football-data.org', id: d.code };
 }
 
 /* 來源 B:FotMob(探測)。名字從聯賽端點核對,圖從推測的網址抓 —— 兩關都過才算。 */

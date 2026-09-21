@@ -531,13 +531,13 @@ function leaderBoards(season) {
       ${season.leaders.map(b => `<div class="card">
         <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3>
           <span class="dim tiny">母體 ${b.pool} 人</span></div>
-        <div style="display:grid;gap:2px;margin-top:8px">
-          ${b.rows.map((r, i) => `<div class="stat-line" style="gap:8px;align-items:center">
-            <span class="tiny dim mono" style="min-width:18px">${i + 1}</span>
-            <span class="small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.name)}</span>
-            <span class="tiny dim" style="max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.team)}</span>
-            <b class="mono small">${fmt(r.value, b.dp)}${C.esc(b.unit)}</b>
-          </div>`).join('')}
+        ${/* 跟盃賽頁的球員榜同一組規則(.lead-board)—— 隊名沒有隊徽,但多包一層 span
+             讓截斷的選擇器兩邊共用。 */''}
+        <div class="lead-board">
+          ${b.rows.map((r, i) => `<span class="tiny dim mono">${i + 1}</span>
+            <span class="small lead-name">${C.esc(r.name)}</span>
+            <span class="tiny dim lead-team"><span>${C.esc(r.team)}</span></span>
+            <span class="small lead-val">${fmt(r.value, b.dp)}${C.esc(b.unit)}</span>`).join('')}
         </div>
       </div>`).join('')}
     </div>`;
