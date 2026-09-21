@@ -408,6 +408,11 @@ const CORNER_SPEED = [12, 17];
    守方根本沒有機會把球碰出自己的底線。
    折射到的球也失去「該不該進」的判定 —— 那一腳已經不是原來那一腳了。 */
 const DEFLECT_R = 0.75;                        // 球從這麼近經過就可能碰到人(公尺)
+/* 禁區進出的「重新進來」門檻(階段 5h)。**這是量測的參數,不是模型的參數** ——
+   引擎的行為不准讀它,它只決定「球沿著禁區線滾來滾去算不算一次新的進攻」。
+   0.5 秒是憑幾何定的:球以 5 m/s 滾 0.5 秒是 2.5 公尺,已經離開禁區線一段距離了。
+   兩個版本的數字都印出來,差很多就代表這個門檻在做事、不能只讀其中一個。 */
+const BOX_REVISIT = 0.5;
 /* 「差一點」的上界(公尺,階段 5d 的量測用)。四公尺是**量測的邊界不是模型的參數** ——
    再遠就不叫「差一點撲得到」了。引擎的行為一個字都不讀它,只有 `noteShotLane` 在用。 */
 const LANE_FAR = 4;
@@ -655,6 +660,14 @@ const CARDED_CARE = 0.15;
    分母又變了,所以照 4y 那條路重量:0.0600 × 0.23/0.192 = 0.0719。
    **提醒下一個人**:這個常數的分母是「禁區裡幾次對抗」,而那是位置**與行為**兩者的函式 ——
    任何改動禁區裡的人在做什麼的修正,都要回頭把期望值再量一次。 */
+/* **2026-09-21 階段 5h:上面兩段裡「禁區觸球只有真實的 0.59 倍」那個推論的前提沒了。**
+   那個 0.59 是拿**只數接到球**的計數器去比上游的**全部觸球**(Opta 的 touch:接球 /
+   傳出 / 射門 / 解圍 / 頭球各一次)。對齊定義之後是 **×2.01** —— 所以「禁區裡的對抗
+   如果偏,是偏**少**」這句話已經不成立,方向反過來了。
+   **這個常數本身不動**(它現在對著自己的錨:十二碼的期望值 0.23),動它要有它自己的
+   證據;改的是它的**理由**,而理由過期了就要講出來。真正短少的是**人**不是球
+   (運動戰的禁區內射門當下,禁區裡平均只有 1.24 個攻方球員),所以下一個會動到它的
+   分母的,是「讓人跟進禁區」那一類修正 —— 那一天要回頭把期望值再量一次。 */
 const BOX_CARE = 0.0719;
 /* 角球(2026-09-17,階段 4f)。在這之前**根本沒有角球戰術**:開角球的人照一般傳球處理,
    而其他人留在「跟著球平移的正常陣型」裡 —— 所以禁區裡一個人都沒有。
@@ -1281,6 +1294,20 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     chains: [], chain: null, pendingOrigin: null,
     shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, duels: 0, contacts: 0, contactFrames: 0, duelPair: null, duel: null, dribbles: 0, dribblesBy: { home: 0, away: 0 },
     boxTouch: { home: 0, away: 0 }, okOwnHalf: { home: 0, away: 0 }, okOppHalf: { home: 0, away: 0 }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
+    /* **禁區裡的活動量**(2026-09-21,階段 5h)。純計數,不呼叫 rng。
+       5b~5g 六輪的結論是「封阻補不上是因為這個引擎沒有製造出真實的人堆」,
+       而那句話唯一的憑據是 `boxTouch` 的倍率 —— 所以先把那個數字本身拆開看。
+       `boxTouchAll` 是**對齊上游定義**的那一個:Opta 的 touch 是「碰到球」,
+       接球、傳出、射門、解圍、頭球各算一次,而 `boxTouch` 只數接球
+       (那一行的註解本來就寫著「所以這個倍率是下限」,而六輪沒有人回去修)。
+       **仍然是下限**:連續引擎的持球是球黏在腳下,沒有帶球的逐下觸球。
+       entry / sec / attSec / defSec 上游**沒有錨**(FotMob 的 34 個 teamExtra 鍵 4u 全 dump 過,
+       沒有駐留時間也沒有人數),所以它們只能當內部拆解用 —— 不可以反推真實世界是多少。 */
+    boxTouchAll: { home: 0, away: 0 }, boxEntry: { home: 0, away: 0 }, boxEntry2: { home: 0, away: 0 },
+    boxSec: { home: 0, away: 0 }, boxAttSec: { home: 0, away: 0 }, boxDefSec: { home: 0, away: 0 },
+    boxSecBy: { att: 0, def: 0, loose: 0 }, boxEntryHit: { home: 0, away: 0 }, boxHit: { home: false, away: false },
+    boxIn: { home: false, away: false }, boxOut: { home: 0, away: 0 },
+    shotBox: { open: { n: 0, att: 0, def: 0 }, corner: { n: 0, att: 0, def: 0 } },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
@@ -1684,6 +1711,82 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.nearBall[k] = (st.nearBall[k] ?? 0) + 1;
   }
 
+  /* **禁區裡的活動量**(2026-09-21,階段 5h)。逐格取樣,`tick` 每一格叫一次,
+     而且**只在活球時**(死球那一段在呼叫點之前就 return 了 —— 十二碼的球擺在禁區裡
+     而且是死的,算進來就是虛胖)。
+     `boxEntry` 是幾何上的進出次數,**球沿著禁區線滾會來回跳**,所以另外記一個
+     「出去超過 `BOX_REVISIT` 秒才算重新進來」的版本;兩個差很多就代表在跳。
+     量測自己也會騙人 —— 那條規矩本站記過,所以兩個都印。
+     抽成具名函式是為了讓 `BOX_REVISIT` 跟 `LANE_FAR` 適用同一條規則:
+     **那是量測的邊界,引擎的行為不准讀它**。純計數,不呼叫 rng。 */
+  function noteBoxFrame(dt) {
+    for (const side of ['home', 'away']) {
+      const gx = sideOf(side).att > 0 ? PITCH_W : 0;
+      const inside = inBoxAt(ball.x, ball.y, gx);
+      /* **依持球方拆開**(只回報)。這一排就是抓到第一版量錯的那一排,所以它要留著:
+         第一版把「球在對方禁區裡」整段都當成進攻,量出來一場 263 次進出、760 秒 ——
+         而其中 260 秒是**守方自己**在禁區裡持球(門將抱著、後衛在自家禁區裡出球),
+         368 秒是鬆球。那不是進攻,是別人的後場。 */
+      if (inside) {
+        const h = ball.holder;
+        st.boxSecBy[h ? (h.side === side ? 'att' : 'def') : 'loose'] += dt;
+      }
+      /* **一次「禁區進攻」的定義**:球在對方禁區裡,**而且最後碰球的是攻方**。
+         用 `lastTouch` 而不是 `ball.holder`,是因為傳中、射門與被解圍後的鬆球
+         都還是這一次進攻的一部分(球在飛的時候沒有 holder)。 */
+      const on = inside && st.lastTouch === side;
+      if (on) {
+        if (!st.boxIn[side]) {
+          st.boxEntry[side]++;
+          st.boxHit[side] = false;            // 新的一段,重新問「這一次有沒有人碰到球」
+          if (st.boxOut[side] >= BOX_REVISIT) st.boxEntry2[side]++;
+        }
+        st.boxOut[side] = 0;
+        st.boxSec[side] += dt;
+        let att = 0, def = 0;
+        for (const q of all()) {
+          if (q.off || !inBoxAt(q.x, q.y, gx)) continue;
+          /* **守方不含門將**:他永遠站在自己的禁區裡,算進去等於每一格白加一,
+             而要回答的是「擋得住射門的人有幾個」。攻方的門將不可能在這裡,不必排。 */
+          if (q.side === side) att++; else if (q !== sideOf(q.side).gk) def++;
+        }
+        st.boxAttSec[side] += att * dt; st.boxDefSec[side] += def * dt;
+      } else st.boxOut[side] += dt;
+      st.boxIn[side] = on;
+    }
+  }
+
+  /* **射門當下,禁區裡有幾個人**(2026-09-21,階段 5h)。只記禁區內的射門;
+     守方不含門將(同上)。**十二碼不記** —— 那是死球,所有人都排在禁區外,
+     算進來只會把平均壓低而它跟「人堆」一點關係都沒有。角球與運動戰分開記:
+     角球本來就是全隊上去搶,混在一起的平均誰都不代表(「總和對上不代表每一種都對」)。
+     純計數,不呼叫 rng。 */
+  function noteShotBox(p, sit) {
+    const gx = sideOf(p.side).att > 0 ? PITCH_W : 0;
+    if (!inBoxAt(p.x, p.y, gx)) return;
+    let att = 0, def = 0;
+    for (const q of all()) {
+      if (q.off || !inBoxAt(q.x, q.y, gx)) continue;
+      if (q.side === p.side) att++; else if (q !== sideOf(q.side).gk) def++;
+    }
+    const b = st.shotBox[sit === 'FromCorner' ? 'corner' : 'open'];
+    b.n++; b.att += att; b.def += def;
+  }
+
+  /* **禁區觸球,對齊上游的定義**(2026-09-21,階段 5h)。`giveTo` 與 `kick` 兩處呼叫 ——
+     那是引擎裡**所有**的離散碰球:接到球、傳出、射門、解圍、頭球、角球、十二碼
+     全都走這兩支(`kick` 是唯一的踢球漏斗,13 個呼叫點都經過它)。
+     折射**不算**:折射到球的是防守方(`q.side !== st.lastTouch`),他在自己的禁區裡,
+     而 `touches_opp_box` 數的是「在**對方**禁區裡碰到球」。純計數,不呼叫 rng。 */
+  function noteBoxTouch(p) {
+    if (!inBoxAt(p.x, p.y, sideOf(p.side).att > 0 ? PITCH_W : 0)) return;
+    st.boxTouchAll[p.side]++;
+    /* **這一次進去有沒有人碰到球。** 在「第一次碰到」的那一格記,不是等這一段結束回頭看 ——
+       `noteBoxFrame` 跑在一格的開頭、碰球發生在後面,等結束再回頭認會把最後一格的觸球
+       算到下一段去(「差分式的分類要在事件發生的那一格認」,4u 那條坑)。 */
+    if (st.boxIn[p.side] && !st.boxHit[p.side]) { st.boxHit[p.side] = true; st.boxEntryHit[p.side]++; }
+  }
+
   /* 把球交給某個人(控到球) */
   /* `from` = 傳球給他的隊友(沒有就是解圍 / 折射 / 鬆球 / 死球重開)。
      **這個要由呼叫端明講,不可以在這裡自己讀 `ball.passTo`** —— 呼叫端在叫 giveTo 之前
@@ -1711,7 +1814,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        純計數,不呼叫 rng。 */
     {
       const s1 = sideOf(p.side), gx1 = s1.att > 0 ? PITCH_W : 0;
-      if (Math.abs(p.x - gx1) < BOX_D && Math.abs(p.y - PITCH_H / 2) < BOX_W) st.boxTouch[p.side]++;
+      /* 判準走共用的 `inBoxAt`(5a 抽出來的矩形):這裡本來自己又寫了一次同樣的算式,
+         而「同一個量兩個來源」改了一邊另一邊會悄悄過期 —— 本站記過。逐字等價,行為不變。 */
+      if (inBoxAt(p.x, p.y, gx1)) st.boxTouch[p.side]++;
+      noteBoxTouch(p);                       // 對齊上游定義的那一個(階段 5h)
       /* 傳球者要用呼叫端傳進來的 `from` —— `ball.passer` 在叫 giveTo 的上一行就被清成 null 了
          (助攻那條坑,CLAUDE.md 記過;我在 4s 的第一版探針照樣踩進去,量出來是 0.1 / 0.3)。
          上游那兩個欄位是**成功**的傳球(兩者相加只有嘗試數的 82.6%,正好是傳球成功率的量級),
@@ -1740,6 +1846,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
 
   /* 踢球:目標點 + 初速 + 仰角。傳球一律踢向接球者的**提前量**(他會跑到哪),不是他現在站的地方 */
   function kick(from, tx, ty, speed, loft = 0, why = 'pass') {
+    noteBoxTouch(from);                      // 踢出去也是一次觸球(階段 5h)
     st.lastKick = why;
     st.ballFrom = why;                      // 見 cornerSrc 那一段:lastKick 會被清掉,這個不會
     const dx = tx - from.x, dy = ty - from.y, d = Math.max(0.1, hypot(dx, dy));
@@ -1933,6 +2040,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         closeChain('shot', p.x);
         st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
         noteShotLane(p, dGoal);
+        noteShotBox(p, sit);                   // 階段 5h
         if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
         p.intent = null;
         return { kind: 'shot' };
@@ -2095,6 +2203,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
 
     const holder = ball.holder;
     if (holder) st.possSec[holder.side] += dt;
+
+    noteBoxFrame(dt);
 
     // ── 決策 ──
     if (holder) {
@@ -2979,6 +3089,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner', inBox: inBoxAt(p.x, p.y, goalX) });
     st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
     noteShotLane(p, dGoal);
+    noteShotBox(p, 'FromCorner');              // 階段 5h
     if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
   }
 
@@ -3076,6 +3187,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
         pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
         boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
+        boxTouchAll: { ...st.boxTouchAll }, boxEntry: { ...st.boxEntry }, boxEntry2: { ...st.boxEntry2 },
+        boxSec: { ...st.boxSec }, boxAttSec: { ...st.boxAttSec }, boxDefSec: { ...st.boxDefSec },
+        boxSecBy: { ...st.boxSecBy }, boxEntryHit: { ...st.boxEntryHit },
+        shotBox: { open: { ...st.shotBox.open }, corner: { ...st.shotBox.corner } },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         gkStopBy: { ...st.gkStopBy },
         deflects: st.deflects, clears: st.clears, longTry: st.longTry, longOk: st.longOk, longTry25: st.longTry25, longOk25: st.longOk25, penExp: st.penExp, boxDuels: st.boxDuels,

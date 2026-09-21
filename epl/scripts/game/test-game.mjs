@@ -1382,6 +1382,135 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           chkOut.includes('回推:要對上真實的封阻率,曝光得是'), `check-sim 輸出 ${chkOut.length} 字元`);
       }
     }
+
+    /* 27. 階段 5h:**禁區裡的活動量**(2026-09-21)。5b~5g 六輪的結論是「封阻補不上是因為
+       這個引擎沒有製造出真實的人堆」,而那句話唯一的憑據是 `boxTouch` 的倍率 ——
+       **而那個倍率的兩邊不是同一個定義**:上游的 `touches_opp_box` 是 Opta 的「碰到球」,
+       本站只數接到球。`check-sim` 那一行的註解**本來就寫著「所以這個倍率是下限」**,
+       六輪沒有人回去修(「我的分母跟被比較的那一邊是不是同一批」第十次,而這一次
+       它就寫在要被當前提的那個數字旁邊)。
+       這一節守的是量測本身量得對:純觀測、兩個呼叫點都在、十二碼不算、守方不含門將、
+       `BOX_REVISIT` 不漏進引擎行為、計數器的上下界,以及 check-sim 真的把那幾排
+       **連同「仍然是下限」那句話**印出來(鐵則四)。**不守它們的值** —— 那會漂。 */
+    {
+      const simBareA = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      /* 量測函式的範圍**自己算**(起點到下一個 `function `)—— 寫死行號或名字清單的話,
+         下一支量測函式又會讓它紅在「行為沒變」上(5g 在 LANE_FAR 那一條上踩過)。 */
+      const MEAS = ['function noteBoxTouch(', 'function noteBoxFrame(', 'function noteShotBox('];
+      const span = sig => {
+        const a = simBareA.indexOf(sig);
+        return a < 0 ? null : [a, simBareA.indexOf('function ', a + sig.length)];
+      };
+      const spansA = MEAS.map(span).filter(Boolean);
+      const bodyOf = sig => { const sp = span(sig); return sp && sp[1] > sp[0] ? simBareA.slice(sp[0], sp[1]) : ''; };
+      check('5h 的三支量測函式都在,而且一個 rng( 都沒有(純觀測)',
+        spansA.length === MEAS.length && MEAS.every(sig => bodyOf(sig) && !/rng\(/.test(bodyOf(sig))),
+        `${spansA.length}/${MEAS.length} 支`);
+      /* **兩個呼叫點都要在。** 只留 `giveTo` 那一個的話,數字會靜靜退回「只數接到球」,
+         而那正是這一輪要修的那個定義落差 —— 不報錯、畫面正常、倍率變小。 */
+      {
+        const gi = simBareA.indexOf('function giveTo('), ki = simBareA.indexOf('function kick(');
+        const gEnd = simBareA.indexOf('function ', gi + 17), kEnd = simBareA.indexOf('function ', ki + 15);
+        const inGive = gi >= 0 && simBareA.slice(gi, gEnd).includes('noteBoxTouch(p)');
+        const inKick = ki >= 0 && simBareA.slice(ki, kEnd).includes('noteBoxTouch(from)');
+        check('對齊上游定義:接到球與踢出去**兩邊**都記一次觸球',
+          inGive && inKick, `giveTo ${inGive ? '✓' : '✗'}、kick ${inKick ? '✓' : '✗'}`);
+      }
+      /* **十二碼不記**:那是死球、所有人排在禁區外,算進來只會把「人堆」的平均壓低,
+         而它跟人堆一點關係都沒有。錨挑 takePenalty 這一段裡有沒有 noteShotBox。 */
+      {
+        const pi = simBareA.indexOf('function takePenalty(');
+        const pEnd = simBareA.indexOf('function ', pi + 22);
+        check('十二碼不進「射門當下禁區裡幾個人」(死球,所有人都排在禁區外)',
+          pi >= 0 && pEnd > pi && !simBareA.slice(pi, pEnd).includes('noteShotBox('));
+      }
+      /* 兩支取樣都要把門將排掉,而且是**同一個寫法** —— 一邊排一邊不排的話,
+         逐格的人數跟射門當下的人數就不是同一個量,而兩個數字會被並排讀。 */
+      check('守方不含門將,而且兩支取樣同一個寫法',
+        ['function noteBoxFrame(', 'function noteShotBox(']
+          .every(sig => /q !== sideOf\(q\.side\)\.gk/.test(bodyOf(sig))));
+      /* `BOX_REVISIT` 跟 `LANE_FAR` 同一條規則:**量測的邊界,引擎的行為不准讀它**。
+         它決定的是「球沿著禁區線滾來滾去算不算一次新的進攻」,不是球該怎麼滾。 */
+      {
+        let stray = 0, at = -1, tot = 0;
+        while ((at = simBareA.indexOf('BOX_REVISIT', at + 1)) >= 0) {
+          tot++;
+          const isDecl = simBareA.slice(Math.max(0, at - 6), at) === 'const ';
+          if (!isDecl && !spansA.some(([a, b]) => b > a && at > a && at < b)) stray++;
+        }
+        check('BOX_REVISIT 只給量測用:宣告與那三支量測函式以外一處都不准有',
+          tot >= 2 && stray === 0, `整份 ${tot} 處、漏進行為 ${stray} 處`);
+      }
+      /* 上下界:對齊版一定 ≥ 只數接到球那一版(它多算了踢出去);
+         「出去 0.5 秒以上才算」一定 ≤ 原始的進出次數;禁區內的射門不會多過總射門。 */
+      {
+        const SA = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        let bad = 0, recv = 0, all_ = 0, ent = 0, ent2 = 0, sec = 0, sbn = 0, shots = 0;
+        for (const seed of [31, 32]) {
+          const simA = SA.createSim({ profile, home: 'ARS', away: 'LIV', seed });
+          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !simA.state().over; i++) simA.advance(1 / 60);
+          const c = simA.state().counts;
+          const two = o => (o?.home ?? 0) + (o?.away ?? 0);
+          recv += two(c.boxTouch); all_ += two(c.boxTouchAll);
+          ent += two(c.boxEntry); ent2 += two(c.boxEntry2); sec += two(c.boxSec);
+          sbn += c.shotBox.open.n + c.shotBox.corner.n; shots += c.shots;
+          if (!(two(c.boxTouchAll) >= two(c.boxTouch))) bad++;
+          if (!(two(c.boxEntry2) <= two(c.boxEntry))) bad++;
+          if (!(two(c.boxSec) > 0 && two(c.boxEntry) > 0)) bad++;
+          /* 「有人碰到球的那幾次」⊂「越過禁區線的那幾次」,而且每一次至少有一下觸球。
+             這一條擋的是把兩個計數器接反 —— 它們的比值(40%)正是這一輪的結論之一。
+
+             **上界要寫成嚴格的 `<`。** 第一版寫 `<=`,而負向對照(把「一段只記第一次」
+             改成「每一下都記」)**一條都沒紅** —— 那樣 boxEntryHit 會等於 boxTouchAll,
+             兩個 `<=` 都還成立。嚴格的那一個要求「至少有一段碰到球超過一下」,
+             而那正是被改掉的性質(實測 83 段 / 124 下,差很遠)。
+             「加完是綠的」不是驗收 —— 它跟「這條斷言守不住任何東西」長得一模一樣。 */
+          if (!(two(c.boxEntryHit) <= two(c.boxEntry) && two(c.boxEntryHit) < two(c.boxTouchAll))) bad++;
+          /* 攻方持球的秒數 ≤ 球在禁區裡的總秒數:三段(攻/守/鬆球)是把同一段時間切開的。
+             而「攻方最後碰球」那一段不可能多過三段相加 —— 它是其中的一部分。 */
+          {
+            const by = c.boxSecBy ?? {}, tot = (by.att ?? 0) + (by.def ?? 0) + (by.loose ?? 0);
+            if (!(tot >= two(c.boxSec) - 1e-6 && (by.att ?? 0) <= tot + 1e-6)) bad++;
+          }
+          if (!(c.shotBox.open.n + c.shotBox.corner.n <= c.shots)) bad++;
+          /* 一隊場上最多 10 個非門將的人,所以禁區裡的人數不可能超過 10。
+             這一條擋的是「把兩隊算在同一邊」或「把門將算進去」這種量錯。 */
+          for (const k of ['open', 'corner']) {
+            const b = c.shotBox[k];
+            if (b.n > 0 && !(b.att / b.n <= 10 && b.def / b.n <= 10)) bad++;
+          }
+          if (!(two(c.boxAttSec) <= 10 * two(c.boxSec) && two(c.boxDefSec) <= 10 * two(c.boxSec))) bad++;
+        }
+        check('5h 的計數器上下界都對(對齊版 ≥ 接球版、重新進來 ≤ 進出、人數 ≤ 10)',
+          bad === 0, `2 場:接球 ${recv}、對齊 ${all_}、進出 ${ent}/${ent2}、秒 ${sec.toFixed(0)}、禁區內射門 ${sbn}/${shots}、越界 ${bad} 項`);
+      }
+      /* 數字的上下界擋不住「每一下都記」以外的接法,所以**再守一次寫法**:
+         `boxEntryHit` 只准在「這一段的第一次碰球」加一,而且新的一段要把旗標放掉。
+         兩個子句各自對應一個負向對照(拿掉守衛 / 拿掉重設)—— 一條斷言有幾個子句,
+         就要貼幾個 bug,這是本站記過的規矩。 */
+      check('「有人碰到球的那幾次」一段只記一次(有守衛,而且新的一段會重設旗標)',
+        /!st\.boxHit\[p\.side\]\) \{ st\.boxHit\[p\.side\] = true; st\.boxEntryHit\[p\.side\]\+\+; \}/.test(simBareA)
+        && /st\.boxHit\[side\] = false;/.test(simBareA));
+      /* 掃 stdout,不是掃原始碼 —— 掃原始碼分不出「印出來」與「字串還在但永遠不執行」
+         (5e 那條坑:把那一行包進 `if (0)` 的負向對照紅了 0 條)。 */
+      check('check-sim **真的印出** 5h 那幾排(跑一次掃 stdout)',
+        ['禁區觸球・對齊上游定義', '球越過禁區線進去(次/場)', '其中有人碰到球的',
+          '球在禁區時,禁區裡平均幾個人', '禁區內射門當下・運動戰']
+          .every(t => chkOut.includes(t)), `check-sim 輸出 ${chkOut.length} 字元`);
+      /* **兩個「我自己量錯」的警語也要印出來。** 第一版把「球在對方禁區裡」整段當成進攻
+         (其中 256 秒是守方自己在禁區裡持球),而「越過禁區線」有 60% 根本沒有人碰到球 ——
+         兩個數字單獨看都像一個進攻次數,而它們都不是。不把這兩句印出來的話,
+         下一個人(或我自己)會照著讀一次。 */
+      check('check-sim 講出那兩個容易讀錯的地方(守方那一段不是進攻、越線不等於攻進禁區)',
+        chkOut.includes('守方那一段不是進攻') && chkOut.includes('不等於足球講的「攻進禁區」'),
+        `check-sim 輸出 ${chkOut.length} 字元`);
+      /* **「仍然是下限」那句話是鐵則四。** 對齊之後還是少了帶球的逐下觸球,
+         不講出來的話下一個人會把對齊後的倍率當成最終答案。 */
+      check('check-sim 講出「對齊之後仍然是下限」(沒有帶球的逐下觸球)',
+        chkOut.includes('仍然是下限') && chkOut.includes('球黏在腳下'),
+        `check-sim 輸出 ${chkOut.length} 字元`);
+    }
     }
   }
 }

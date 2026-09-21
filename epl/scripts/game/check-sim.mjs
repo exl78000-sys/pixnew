@@ -1138,6 +1138,67 @@ if (simShots && realShots) {
   }
 }
 
+/* 3b-6. **禁區裡的活動量**(2026-09-21,階段 5h)。
+        5b~5g 六輪的結論是「封阻補不上是因為這個引擎沒有製造出真實的人堆」,而那句話
+        唯一的憑據就是上面那個倍率 —— 所以先把它本身拆開看,不要拿它當下一輪的前提。
+
+        **第一件事是把定義對齊。** 上面那一行的註解自己寫著「本站只數接到球…所以這個
+        倍率是下限」,而六輪沒有人回去修:Opta 的 touch 是「碰到球」,接球、傳出、射門、
+        解圍、頭球各算一次。`boxTouchAll` 是對齊之後的那一個(`giveTo` + `kick`,
+        引擎裡所有的離散碰球都走這兩支)。**對齊之後仍然是下限** —— 連續引擎的持球是
+        球黏在腳下,沒有帶球的逐下觸球,而真實的帶球每一兩步就是一次。
+
+        進出次數、駐留秒數與人數**上游都沒有錨**(FotMob 的 34 個 teamExtra 鍵 4u 全 dump 過,
+        沒有駐留時間也沒有人數;也沒有追蹤座標)。所以它們只能當**內部拆解**用 ——
+        回答「要改的話該改哪一半」,不可以反推真實世界是多少(5c 畫的那條線)。 */
+{
+  const realBox = pair('touches_opp_box');
+  const avg = f => rows.reduce((a, r) => a + f(r.st.counts), 0) / rows.length;
+  const two = (o) => (o?.home ?? 0) + (o?.away ?? 0);
+  const recv = avg(c => two(c.boxTouch));
+  const all_ = avg(c => two(c.boxTouchAll));
+  const ent = avg(c => two(c.boxEntry)), ent2 = avg(c => two(c.boxEntry2));
+  const sec = avg(c => two(c.boxSec));
+  const attS = avg(c => two(c.boxAttSec)), defS = avg(c => two(c.boxDefSec));
+  console.log('');
+  console.log('  禁區裡的活動量(階段 5h —— 進出 / 駐留 / 人數上游沒有錨,只回報)');
+  const line = (名稱, v, real) => console.log(`  ${名稱.padEnd(20, '\u3000')} ${v.toFixed(1).padStart(7)}`
+    + (real == null ? '' : `\u3000真實 ${real.toFixed(1)}\u3000**${(v / real).toFixed(2)} 倍**`));
+  line('禁區觸球・只數接到球', recv, realBox);
+  line('禁區觸球・對齊上游定義', all_, realBox);
+  console.log('  　對齊的是「碰到球」:接球 + 傳出 + 射門 + 解圍 + 頭球各一次(上游 Opta 的定義)。');
+  console.log('  　**仍然是下限** —— 本站的持球是球黏在腳下,沒有帶球的逐下觸球,而真實的帶球每一兩步就一次。');
+  const by = rows.reduce((a, r) => {
+    const o = r.st.counts.boxSecBy ?? {};
+    return { att: a.att + (o.att ?? 0), def: a.def + (o.def ?? 0), loose: a.loose + (o.loose ?? 0) };
+  }, { att: 0, def: 0, loose: 0 });
+  const byN = k => by[k] / rows.length;
+  console.log(`  ${'　球在禁區的秒數,依誰持球'.padEnd(20, '\u3000')} `
+    + `攻方 ${byN('att').toFixed(0)}\u3000守方 ${byN('def').toFixed(0)}\u3000鬆球 ${byN('loose').toFixed(0)}`);
+  console.log('  　**守方那一段不是進攻** —— 門將抱著球、後衛在自家禁區裡出球都算「球在對方的禁區裡」。');
+  console.log('  　所以底下的進出與駐留只算「球在禁區裡**而且最後碰球的是攻方**」(第一版沒有這個條件,量出來一場 263 次)。');
+  const hit = avg(c => two(c.boxEntryHit));
+  line('球越過禁區線進去(次/場)', ent, null);
+  console.log(`  ${'　出去 0.5 秒以上才算重新進來'.padEnd(20, '\u3000')} ${ent2.toFixed(1).padStart(7)}`
+    + `\u3000${Math.abs(ent - ent2) / Math.max(1, ent) > 0.2 ? '**兩個差很多 —— 球在禁區線上來回跳,只讀其中一個會讀錯**' : '兩個接近,沒有在線上跳'}`);
+  console.log(`  ${'　其中有人碰到球的'.padEnd(20, '\u3000')} ${hit.toFixed(1).padStart(7)}`
+    + `\u3000= ${(100 * hit / Math.max(1, ent)).toFixed(0)}% —— **其餘是球從禁區穿過去、沒有人碰到**`);
+  console.log('  　所以「越過禁區線」不等於足球講的「攻進禁區」,那個數字不要當成進攻次數讀。');
+  line('禁區進攻的秒數(秒/場)', sec, null);
+  console.log(`  ${'　每次碰得到球的進去,待幾秒 / 幾下'.padEnd(20, '\u3000')} `
+    + `${(sec / Math.max(1, ent)).toFixed(2)} 秒 / ${(all_ / Math.max(1, hit)).toFixed(2)} 下`);
+  console.log(`  ${'　球在禁區時,禁區裡平均幾個人'.padEnd(20, '\u3000')} `
+    + `攻 ${(attS / Math.max(0.01, sec)).toFixed(2)}\u3000守 ${(defS / Math.max(0.01, sec)).toFixed(2)}(不含門將)`);
+  for (const [k, 名] of [['open', '運動戰'], ['corner', '角球']]) {
+    const b = rows.reduce((a, r) => {
+      const x = r.st.counts.shotBox?.[k]; return x ? { n: a.n + x.n, att: a.att + x.att, def: a.def + x.def } : a;
+    }, { n: 0, att: 0, def: 0 });
+    console.log(`  ${`　禁區內射門當下・${名}`.padEnd(20, '\u3000')} `
+      + (b.n ? `${(b.n / rows.length).toFixed(1)} 腳/場\u3000攻 ${(b.att / b.n).toFixed(2)}\u3000守 ${(b.def / b.n).toFixed(2)}` : '0 腳'));
+  }
+  console.log('  　十二碼不記(死球,所有人排在禁區外,算進來只會把平均壓低而跟人堆無關)。');
+}
+
 /* 3b-6. **長傳與界外球**(階段 4t)。這兩個錨也是側寫裡本來就有、而在這之前沒有人讀的:
          `long_balls_accurate` 與 `player_throws`(後者 2026-09-18 才加進 `EXTRA_KEYS`)。
 
