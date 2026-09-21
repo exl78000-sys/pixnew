@@ -60146,8 +60146,1577 @@
    "fetchedAt": "2026-09-20T17:40:23.838Z",
    "fdMatchId": "2026-27-34",
    "heat": null
+  },
+  "SCP|TSG": {
+   "key": "SCP|TSG",
+   "season": "2026-27",
+   "date": "2026-09-20",
+   "matchId": "5881175",
+   "home": "SCP",
+   "away": "TSG",
+   "score": [
+    3,
+    1
+   ],
+   "providerScore": [
+    3,
+    1
+   ],
+   "teamStats": {
+    "SCP": {
+     "possession": 34,
+     "shots": 13,
+     "shotsOn": 5,
+     "shotsOff": 3,
+     "blockedShots": 5,
+     "blocksMade": 12,
+     "corners": 6,
+     "offsides": 1,
+     "fouls": 6,
+     "saves": 1,
+     "passes": 324,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.7
+    },
+    "TSG": {
+     "possession": 66,
+     "shots": 23,
+     "shotsOn": 2,
+     "shotsOff": 8,
+     "blockedShots": 13,
+     "blocksMade": 5,
+     "corners": 5,
+     "offsides": 3,
+     "fouls": 14,
+     "saves": 2,
+     "passes": 636,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.42
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "SCP": {
+     "touches_opp_box": 18,
+     "big_chance": 2,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 0.6,
+     "expected_goals_set_play": 0.1,
+     "expected_goals_non_penalty": 0.7,
+     "expected_goals_on_target": 1.76,
+     "own_half_passes": 118,
+     "opposition_half_passes": 115,
+     "long_balls_accurate": 21,
+     "long_balls_accurate_pct": 31,
+     "accurate_crosses": 7,
+     "accurate_crosses_pct": 39,
+     "player_throws": 14,
+     "matchstats.headers.tackles": 22,
+     "interceptions": 19,
+     "clearances": 45,
+     "duel_won": 58,
+     "ground_duels_won": 42,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 16,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 43,
+     "red_cards": 0
+    },
+    "TSG": {
+     "touches_opp_box": 61,
+     "big_chance": 2,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 1,
+     "shots_woodwork": 2,
+     "shots_inside_box": 16,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 1.24,
+     "expected_goals_set_play": 0.18,
+     "expected_goals_non_penalty": 1.42,
+     "expected_goals_on_target": 0.65,
+     "own_half_passes": 242,
+     "opposition_half_passes": 299,
+     "long_balls_accurate": 28,
+     "long_balls_accurate_pct": 51,
+     "accurate_crosses": 6,
+     "accurate_crosses_pct": 23,
+     "player_throws": 23,
+     "matchstats.headers.tackles": 19,
+     "interceptions": 17,
+     "clearances": 32,
+     "duel_won": 53,
+     "ground_duels_won": 37,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 16,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 12,
+     "dribbles_succeeded_pct": 48,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     34,
+     66
+    ],
+    "h1": [
+     35,
+     65
+    ],
+    "h2": [
+     33,
+     67
+    ]
+   },
+   "events": [
+    {
+     "minute": 29,
+     "extra": null,
+     "team": "SCP",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Santiago Castañeda"
+    },
+    {
+     "minute": 43,
+     "extra": null,
+     "team": "SCP",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Stefano Marino"
+    },
+    {
+     "minute": 45,
+     "extra": 1,
+     "team": "TSG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Wouter Burger"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "TSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Albian Hajdari"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "SCP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Steffen Tigges"
+    },
+    {
+     "minute": 50,
+     "extra": null,
+     "team": "TSG",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Adam Daghim"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "TSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tim Lemperle"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "TSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Patrick Wimmer"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "SCP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jonah Sticker"
+    },
+    {
+     "minute": 69,
+     "extra": null,
+     "team": "SCP",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Steffen Tigges"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "SCP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rayan Philippe"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "SCP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tom Baack"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "SCP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Felix Götze"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "TSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Andrej Kramarić"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "TSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Fisnik Asllani"
+    }
+   ],
+   "shots": [
+    {
+     "min": 5,
+     "extra": null,
+     "team": "SCP",
+     "player": "Raphael Obermair",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 44,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "TSG",
+     "player": "Wouter Burger",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 26.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "SCP",
+     "player": "Raphael Obermair",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.6,
+     "y": 47.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "TSG",
+     "player": "Adam Hložek",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.066,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.6,
+     "y": 46.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "SCP",
+     "player": "Stefano Marino",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.023,
+     "xgot": 0.036,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.2,
+     "y": 15.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "TSG",
+     "player": "Bambasé Conté",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 25.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "TSG",
+     "player": "Vladimír Coufal",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.5,
+     "y": 22.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "SCP",
+     "player": "Santiago Castañeda",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 37.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "SCP",
+     "player": "Santiago Castañeda",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.045,
+     "xgot": 0.167,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.5,
+     "y": 39.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "TSG",
+     "player": "Bambasé Conté",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.01,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.3,
+     "y": 22.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "SCP",
+     "player": "Gabriel Vidović",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "TSG",
+     "player": "Adam Hložek",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.109,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.2,
+     "y": 36.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "SCP",
+     "player": "Stefano Marino",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.204,
+     "xgot": 0.817,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 30.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "SCP",
+     "player": "Marvin Pieringer",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.4,
+     "y": 41.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "TSG",
+     "player": "Bambasé Conté",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.099,
+     "xgot": 0.374,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.1,
+     "y": 36.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "TSG",
+     "player": "Adam Daghim",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.223,
+     "xgot": 0.276,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 37.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "SCP",
+     "player": "Jano ter Horst",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.5,
+     "y": 25.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "SCP",
+     "player": "Steffen Tigges",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.5,
+     "y": 32.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "TSG",
+     "player": "Albian Hajdari",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73.6,
+     "y": 43.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "TSG",
+     "player": "Wouter Burger",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.141,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.1,
+     "y": 35.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "TSG",
+     "player": "Tim Lemperle",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 42.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "TSG",
+     "player": "Bambasé Conté",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.5,
+     "y": 30.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "TSG",
+     "player": "Patrick Wimmer",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.113,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 33.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "SCP",
+     "player": "Steffen Tigges",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.098,
+     "xgot": 0.691,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 29.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "TSG",
+     "player": "Albian Hajdari",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.8,
+     "y": 45.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "TSG",
+     "player": "Bambasé Conté",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.7,
+     "y": 41.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "SCP",
+     "player": "Rayan Philippe",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0.052,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.2,
+     "y": 48.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "TSG",
+     "player": "Fisnik Asllani",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.098,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 39.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "TSG",
+     "player": "Patrick Wimmer",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.4,
+     "y": 42.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "TSG",
+     "player": "Koki Machida",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.078,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "TSG",
+     "player": "Fisnik Asllani",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.076,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88.2,
+     "y": 24.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "TSG",
+     "player": "Bambasé Conté",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.6,
+     "y": 20.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "TSG",
+     "player": "Patrick Wimmer",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.3,
+     "y": 40.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "TSG",
+     "player": "Fisnik Asllani",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 29.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "TSG",
+     "player": "Bambasé Conté",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.018,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.6,
+     "y": 26.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "SCP",
+     "player": "Steffen Tigges",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.061,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -5
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     -11
+    ],
+    [
+     4,
+     -16
+    ],
+    [
+     5,
+     -22
+    ],
+    [
+     6,
+     -11
+    ],
+    [
+     7,
+     -16
+    ],
+    [
+     8,
+     -71
+    ],
+    [
+     9,
+     -76
+    ],
+    [
+     10,
+     -73
+    ],
+    [
+     11,
+     -73
+    ],
+    [
+     12,
+     -57
+    ],
+    [
+     13,
+     -100
+    ],
+    [
+     14,
+     -52
+    ],
+    [
+     15,
+     -100
+    ],
+    [
+     16,
+     -49
+    ],
+    [
+     17,
+     -49
+    ],
+    [
+     18,
+     -27
+    ],
+    [
+     19,
+     -27
+    ],
+    [
+     20,
+     -27
+    ],
+    [
+     21,
+     -22
+    ],
+    [
+     22,
+     -49
+    ],
+    [
+     23,
+     -100
+    ],
+    [
+     24,
+     -100
+    ],
+    [
+     25,
+     -76
+    ],
+    [
+     26,
+     27
+    ],
+    [
+     27,
+     3
+    ],
+    [
+     28,
+     19
+    ],
+    [
+     29,
+     -3
+    ],
+    [
+     30,
+     16
+    ],
+    [
+     31,
+     -49
+    ],
+    [
+     32,
+     -33
+    ],
+    [
+     33,
+     -11
+    ],
+    [
+     34,
+     100
+    ],
+    [
+     35,
+     100
+    ],
+    [
+     36,
+     84
+    ],
+    [
+     37,
+     -22
+    ],
+    [
+     38,
+     -22
+    ],
+    [
+     39,
+     -3
+    ],
+    [
+     40,
+     -3
+    ],
+    [
+     41,
+     -100
+    ],
+    [
+     42,
+     -100
+    ],
+    [
+     43,
+     -100
+    ],
+    [
+     44,
+     57
+    ],
+    [
+     45,
+     -14
+    ],
+    [
+     45.5,
+     24
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     47,
+     5
+    ],
+    [
+     48,
+     -22
+    ],
+    [
+     49,
+     -81
+    ],
+    [
+     50,
+     -100
+    ],
+    [
+     51,
+     -100
+    ],
+    [
+     52,
+     -54
+    ],
+    [
+     53,
+     0
+    ],
+    [
+     54,
+     11
+    ],
+    [
+     55,
+     8
+    ],
+    [
+     56,
+     8
+    ],
+    [
+     57,
+     -16
+    ],
+    [
+     58,
+     0
+    ],
+    [
+     59,
+     5
+    ],
+    [
+     60,
+     14
+    ],
+    [
+     61,
+     8
+    ],
+    [
+     62,
+     3
+    ],
+    [
+     63,
+     0
+    ],
+    [
+     64,
+     -100
+    ],
+    [
+     65,
+     -100
+    ],
+    [
+     66,
+     -100
+    ],
+    [
+     67,
+     -100
+    ],
+    [
+     68,
+     -76
+    ],
+    [
+     69,
+     81
+    ],
+    [
+     70,
+     71
+    ],
+    [
+     71,
+     71
+    ],
+    [
+     72,
+     -81
+    ],
+    [
+     73,
+     -60
+    ],
+    [
+     74,
+     -54
+    ],
+    [
+     75,
+     16
+    ],
+    [
+     76,
+     19
+    ],
+    [
+     77,
+     -3
+    ],
+    [
+     78,
+     -30
+    ],
+    [
+     79,
+     -81
+    ],
+    [
+     80,
+     -100
+    ],
+    [
+     81,
+     -92
+    ],
+    [
+     82,
+     -71
+    ],
+    [
+     83,
+     -68
+    ],
+    [
+     84,
+     -100
+    ],
+    [
+     85,
+     -100
+    ],
+    [
+     86,
+     -24
+    ],
+    [
+     87,
+     -8
+    ],
+    [
+     88,
+     46
+    ],
+    [
+     89,
+     -92
+    ],
+    [
+     90,
+     -76
+    ],
+    [
+     90.5,
+     -33
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "SCP": {
+     "team": "SCP",
+     "formation": "3-5-2",
+     "coach": "Ralf Kettemann",
+     "xi": [
+      {
+       "name": "Nahuel Noll",
+       "shirt": 15,
+       "pos": "G"
+      },
+      {
+       "name": "Jano ter Horst",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Tjark Scheller",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Mattes Hansen",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Laurin Curda",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Laurin Ulrich",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Santiago Castañeda",
+       "shirt": 5,
+       "pos": "M"
+      },
+      {
+       "name": "Gabriel Vidović",
+       "shirt": 40,
+       "pos": "M"
+      },
+      {
+       "name": "Raphael Obermair",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Marvin Pieringer",
+       "shirt": 18,
+       "pos": "F"
+      },
+      {
+       "name": "Stefano Marino",
+       "shirt": 30,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Steffen Tigges",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Jonah Sticker",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Tom Baack",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Rayan Philippe",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Felix Götze",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Markus Schubert",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Ruben Müller",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Sven Michel",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Deniz Zeitler",
+       "shirt": 38,
+       "pos": "?"
+      }
+     ]
+    },
+    "TSG": {
+     "team": "TSG",
+     "formation": "4-4-2",
+     "coach": "Christian Ilzer",
+     "xi": [
+      {
+       "name": "Oliver Baumann",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Vladimír Coufal",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Ozan Kabak",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Koki Machida",
+       "shirt": 28,
+       "pos": "D"
+      },
+      {
+       "name": "Mats Rots",
+       "shirt": 39,
+       "pos": "D"
+      },
+      {
+       "name": "Bambasé Conté",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Leon Avdullahu",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Wouter Burger",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Adam Daghim",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Adam Hložek",
+       "shirt": 10,
+       "pos": "F"
+      },
+      {
+       "name": "Max Moerstedt",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Albian Hajdari",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Patrick Wimmer",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Tim Lemperle",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Andrej Kramarić",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Fisnik Asllani",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Luca Philipp",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Robin Hranác",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Nathan De Cat",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Valentin Gendrey",
+       "shirt": 15,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 33,
+      "center": 31,
+      "right": 36
+     },
+     "firstHalf": {
+      "left": 35,
+      "center": 34,
+      "right": 31
+     },
+     "secondHalf": {
+      "left": 31,
+      "center": 27,
+      "right": 42
+     }
+    },
+    "away": {
+     "total": {
+      "left": 47,
+      "center": 29,
+      "right": 24
+     },
+     "firstHalf": {
+      "left": 51,
+      "center": 26,
+      "right": 23
+     },
+     "secondHalf": {
+      "left": 45,
+      "center": 31,
+      "right": 24
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-09-20T20:12:14.017Z",
+   "fdMatchId": "2026-27-35",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-09-20T18:59:23.902Z"
+ "updatedAt": "2026-09-20T21:29:10.098Z"
 }
