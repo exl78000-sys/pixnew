@@ -676,7 +676,7 @@ build → laliga:build,跑完 `npm run local:sync` 再跑 `npm test` 就會紅�
 兩者對讀者的意義不同,不可以混成一句「有租借紀錄」。
 
 **Obsidian vault 是產物,而且有一個不能刪的例外。**
-`npm run obsidian` 產生 `epl/vault/`(10,898 則筆記,會隨資料變動:六個聯賽 + 歐冠 +
+`npm run obsidian` 產生 `epl/vault/`(10,899 則筆記,會隨資料變動:六個聯賽 + 歐冠 +
 英格蘭盃賽 + 足球知識),比照 `dist/` 不進版控。
 **它的聯賽清單是手寫的**(`build-obsidian.mjs` 的 `LEAGUES`),因為 `wf` 的檔名推不出來 ——
 加義甲法甲時漏掉過,vault 照樣產出 0 個壞連結而兩個聯賽整個不在裡面。
