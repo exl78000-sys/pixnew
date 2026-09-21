@@ -12,7 +12,7 @@
 # 兩個 job:`latest` 是最新要判讀的那幾支,`all` 是歷來全部。
 # 勾 quick 就只跑 latest —— 全部跑一次要十幾分鐘,而且前面任何一步紅了後面的就看不到。
 #
-# **新加的探測排在 latest 的最後一步。** 讀結果的方法是抓 job log 的**尾端**
+# **新加的探測排在 `latest` job 的最後一步 —— 是那個 job 的最後,不是檔案的最後一行。** 讀結果的方法是抓 job log 的**尾端**
 # (整份 log 幾百行,而下載連結在沙箱被 egress 擋掉),排在前面的話它的輸出會被
 # 後面那幾步擠出視窗 —— 2026-09-13 實際踩到:新探測成功跑完,但看不到它印了什麼。
 
@@ -109,10 +109,21 @@ jobs:
       # 同名陷阱跟德甲同一種而且更多:巴西也有 Serie A、義大利有 Serie B 與女足 Serie A、
       # 法國有 Ligue 2 與 D1 Féminine。所以 FotMob 那一段一樣要**逐隊比對 openfootball**
       # 才算證明,Understat 那一段候選字串逐一試 + 西甲當對照組。
-      # 唯讀、最多 22 個請求、不寫快取。**這是 latest job 的最後一步**(讀結果靠 log 尾端)。
+      # 唯讀、最多 22 個請求、不寫快取。(這一步不再是最後一步 —— 下面那支歐冠照片探測才是。)
       - name: 探測義甲與法甲做不做得成完整聯賽
         working-directory: epl
         run: npm run probe:new-leagues
+
+      # 歐冠球員榜想加球員照片,而倉庫裡一張都沒有。先問的是「**我們本來就抓的那份回應裡有沒有圖**」——
+      # 有的話照片是零額外請求;沒有才談一人一個請求(抓取禮貌那一條)。硬上限 3 個請求,不寫快取。
+      #
+      # **這是 latest job 的最後一步。** 2026-09-21 第一版放在**檔尾** —— 而檔尾是 `all` job,
+      # 勾 quick 時 `all` 整個 skipped,於是探測「成功跑完」而那一步根本沒有執行(run #39)。
+      # 「排在最後一步」講的是**哪一個 job 的**最後一步,不是檔案的最後一行。
+      - name: 探測歐冠球員照片(先問回應裡有沒有,再談要不要一人一個請求)
+        working-directory: epl
+        run: npm run probe:ucl-photo
+        continue-on-error: true
 
   all:
     if: ${{ github.event.inputs.quick != 'true' }}
@@ -211,12 +222,4 @@ jobs:
       - name: 探測西甲賽後資料的替代來源(FotMob)
         working-directory: epl
         run: npm run probe:laliga-postmatch
-        continue-on-error: true
-
-      # 歐冠球員榜想加球員照片,而倉庫裡一張都沒有。先問的是「**我們本來就抓的那份回應裡有沒有圖**」——
-      # 有的話照片是零額外請求;沒有才談一人一個請求(抓取禮貌那一條)。硬上限 3 個請求,不寫快取。
-      # 排在**最後一步**:讀 log 是抓尾端,排前面的輸出會被後面的步驟擠出視窗(那條坑記過)。
-      - name: 探測歐冠球員照片(先問回應裡有沒有,再談要不要一人一個請求)
-        working-directory: epl
-        run: npm run probe:ucl-photo
         continue-on-error: true

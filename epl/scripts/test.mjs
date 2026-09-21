@@ -4138,6 +4138,23 @@ async function checkDataGap() {
         && /if \[ "\$ACTIVE" = "false" \]; then/.test(w)       // 只有明確 false 才收工
         && !/!= "true" \]; then\n\s*echo "  比賽都結束了/.test(w));
     })()],
+    /* 新加的探測要排在 **`latest` job 的**最後一步。2026-09-21 踩到:我把它加在**檔尾**,
+       而檔尾是 `all` job —— 勾 quick 時 `all` 整個 skipped,於是 run #39 報 success、
+       十一個步驟全綠,而那一步**根本沒有執行**。症狀跟「新加的探測排在 workflow 前面 →
+       讀不到輸出」同一家族,差別在那次是輸出被擠掉、這次是**連跑都沒跑**。
+       守的是註解與位置一致(註解寫的是意圖,先假設註解是對的)。 */
+    ['探測:宣告「這是 latest job 的最後一步」的那一步,真的是 latest 的最後一步', (() => {
+      const w = readFileSync(join(ROOT, '..', '.github', 'workflows', 'probe-apis.yml'), 'utf8');
+      const MARK = '這是 latest job 的最後一步';
+      if ((w.match(new RegExp(MARK, 'g')) ?? []).length !== 1) return false;  // 只能有一處宣告
+      const from = w.indexOf('\n  latest:\n'), to = w.indexOf('\n  all:\n');
+      if (from < 0 || to < 0 || to < from) return false;
+      const body = w.slice(from, to);
+      const at = body.indexOf(MARK);
+      if (at < 0) return false;                                               // 宣告要在 latest job 裡
+      // 宣告之後只剩它自己那一步
+      return (body.slice(at).match(/^ {6}- name: /gm) ?? []).length === 1;
+    })()],
     ['點火器 Worker:無狀態、窗口比工作流程寬、不複製 live-window 的判斷', (() => {
       const root = join(ROOT, '..', 'infra', 'ignition-worker');
       if (!existsSync(join(root, 'src', 'worker.js'))) return false;
