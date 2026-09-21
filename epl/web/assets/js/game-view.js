@@ -1,7 +1,7 @@
 import * as C from './core.js?v=d2162a48';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
 import { mountPitch } from './game-pitch.js?v=7d3b9def';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=136e6021';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=c17b3f23';
 import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=be283192';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -463,11 +463,13 @@ export async function renderGame(app) {
           xG 是每一腳射門當下由距離與張角算的,水準校準到聯盟每球平均。
           十二碼的 xG 用本站量到的 0.79(側寫 100 次十二碼),跟運動戰射門走<b>同一條</b>校準,
           不是外掛一個額外的進球來源;助攻算的是<b>進球前一腳傳到射手腳下的球</b>。
-          <b>被封阻的射門比真實少很多</b>,而那是一個<b>結構上的限制</b>不是還沒調:
-          封阻要有人站在球飛的路上,而這個引擎的射門多半發生在空的走廊裡。
-          量過六輪(站位、撲搶、收窄防線、扣扳機、放寬判定半徑)全部否定 ——
-          <code>npm run game:sim</code> 有一行回推「要對上真實得有多少曝光」,它印出來超過 100%,
-          也就是算術上做不到。缺的是<b>禁區裡的人堆</b>,那是另一件還沒收掉的事。
+          <b>被封阻的射門比真實少很多</b>(真實約三成,這裡只有幾個百分點)。
+          防守者<b>會撲上去擋</b> —— 球在飛的時候,離飛行線三公尺內的人會衝向那條線,
+          大約三分之一的射門有人撲(那是<b>遊戲變數</b>,不是從資料算出來的)。
+          它只補得到這麼多,原因量得出來:整段飛行裡<b>最近的防守者離球的路線 5.7 公尺</b>,
+          而擋得到要進到 0.75 公尺內 —— 人根本不在球的路上,撲只救得回本來就很近的那幾個。
+          要再往上得讓防守者<b>在射門之前</b>就站進球門那一側,而那樣做會把兩隊的強弱壓平
+          (試過三次都是),所以現在沒有做。
           <b>還沒做的</b>:直接紅牌(只做兩黃)—— 沒做就不列,不放空欄位。</div>`;
     }
     /* 賽後解讀。判讀與敘述都在 game-diag.js(純函式,測得到);這裡只負責畫。

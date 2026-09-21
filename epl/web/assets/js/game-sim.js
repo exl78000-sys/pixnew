@@ -408,6 +408,29 @@ const CORNER_SPEED = [12, 17];
    守方根本沒有機會把球碰出自己的底線。
    折射到的球也失去「該不該進」的判定 —— 那一腳已經不是原來那一腳了。 */
 const DEFLECT_R = 0.75;                        // 球從這麼近經過就可能碰到人(公尺)
+/* **撲上去擋**(2026-09-21,階段 5l)。這是一個**遊戲變數** —— 使用者把這一側的驗收
+   定成「畫面上的行為像不像踢球」,而不是「封阻率落在真實值上」。
+   為什麼現在可以做,而 5d 當初否定它:5d 的理由是**形狀** —— 撲搶的天花板逐帶是
+   20/24/32/25/35/46/68%(單調上升),而真實是 8/17/29/39/39/32/20(駝峰),
+   所以它生不出真實的形狀。**但那個天花板本身遠高於當時的 2.9%**,
+   在「盡量接近、不要求形狀」的驗收下它是一條通的路(4f:前提改了就把否定結果重驗)。
+   折射那一段一個字都沒改 —— 5c 量過:球**真正的飛行方向**上 `DEFLECT_R` 內有對手時
+   封阻率 32.9%,跟真實的整體封阻率同一個量級,**機制本來就是對的,缺的是曝光**。
+   撲的速度是 `p.vmax`,不破「不准超過自己最高速」那條硬規則(本站沒有撲救式的撲倒)。 */
+const BLOCK_REACH = 3;                         /* 離飛行線這麼近的防守者會撲上去擋(公尺)。**恆等元 0**
+   掃 0 / 1.5 / 3 / 5(各 30 場,兩組獨立種子複驗過):
+     被封阻      2.9 → 4.8 / 4.8 / 4.6%(第二組種子 3.7 → 5.2%,**兩組都複現**;真實 32.0%)
+     封阻 ÷ 路上有人  0.26 → 0.41 / 0.48 / 0.51(第二組 0.34 → 0.51)—— **動的是轉換率**,
+                  因為「路上有人」是**射門那一瞬間**量的,撲是之後才發生的
+     λ 主 : 客    1.70:0.70 → 1.50:0.73 / 1.50:0.70 / 1.77:0.50(第二組 1.77:0.80 → 1.77:0.73)
+                  —— 兩組合起來看 λ 沒有被吃掉,5 那一格的客隊 −1.9 SE 沒有複現
+   取 3:封阻跟 1.5 一樣高,而撲的人多一些(一腳射門 0.43 人撲、32% 的射門有人撲),
+   畫面上「有人擋」這件事才看得見;5 會讓射門掉到 21.7 而封阻沒有更好。
+   **它到不了真實的 32%,原因量出來了**:整段飛行裡最近的防守者離飛行線 **5.66 公尺**
+   (擋得到要 < `DEFLECT_R` 0.75),「差一點(0.75~1.5 m)」的只佔 10% ——
+   **防守者根本不在球的路上**,撲的動作只救得到本來就在 3 公尺內的那幾個。
+   要再往上只能讓防守者**在射門之前**就站進球門那一側,而那條路(4o / 5c)三次都因為
+   強弱被壓縮而否定 —— 那是下一輪的事,不是這個常數的事。 */
 /* 禁區進出的「重新進來」門檻(階段 5h)。**這是量測的參數,不是模型的參數** ——
    引擎的行為不准讀它,它只決定「球沿著禁區線滾來滾去算不算一次新的進攻」。
    0.5 秒是憑幾何定的:球以 5 m/s 滾 0.5 秒是 2.5 公尺,已經離開禁區線一段距離了。
@@ -1312,6 +1335,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        而角球是 4.27 —— 引擎放得進人,運動戰不會。這幾個計數器回答「誰把人送進去」
        與「送不送得到」。上游**沒有錨**(沒有追蹤座標),只回報,不反推真實值。 */
     boxWho: {}, runFire: 0, runToBox: 0, runInBox: 0,
+    shotChase: { shots: 0, tries: 0, withTry: 0, minPerp: 0, near: 0, cur: null },
     boxVisit: { home: null, away: null },
     boxFollow: { visits: 0, cand: 0, near: 0, ceil: 0, came: 0, dwell: 0, missWho: {}, missV: 0, missD: 0, missN: 0, ceilRun: 0, missTgt: 0, missTgtN: 0, missTgtNear: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
@@ -1371,7 +1395,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        兩個都逐帶記,因為 5d 的結論正是**形狀**:它們隨離門距離單調上升,而真實是駝峰。 */
     laneFar: new Array(7).fill(0), laneReach: new Array(7).fill(0),
     /* **禁區線外那一帶,其餘九個人站在哪裡**(2026-09-20,階段 5e)。
-       5d 的結論是「不要寫撲搶」,而它同一張表上指出來的是另一件事:
+       5d 的結論是「不要寫撲搶」(**2026-09-21 階段 5l 推翻了它** —— 那個否定是對著
+       「要生出真實的逐帶形狀」講的,而使用者把驗收改成「畫面上的行為像不像踢球」之後
+       它就成立了:撲上去擋現在是引擎的一個動作,封阻 2.9% → 4.8%,見 `BLOCK_REACH`),
+       而它同一張表上指出來的是另一件事:
        `4 m 內有人` 隨離門距離**單調上升**,15~20 公尺那一格卻是個凹陷 ——
        而真實的封阻率正好在那一帶到高峰。那不是「撲不撲」(5d 已否定),是**站位**。
 
@@ -1425,7 +1452,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     laneSqHit: SQUEEZE.map(() => new Array(7).fill(0)),
     /* **扣扳機有沒有在挑空走廊**(2026-09-20,階段 5g)。5c 量到射門當下球的路上有人
        只有 10.8%,而**有人時封阻 32.9%、沒人 0.3%** —— 判定本身沒問題,缺的是曝光。
-       5f 否定了收窄(天花板 21%)、5d 否定了撲搶(天花板單調而真實是駝峰),
+       5f 否定了收窄(天花板 21%)、5d 否定了撲搶(天花板單調而真實是駝峰 ——
+       **5l 在「不要求形狀」的驗收下把它做了,封阻 2.9% → 4.8%**,見 `BLOCK_REACH`),
        剩下的候選是「射手等到沒有人擋才出手」。
 
        **量在每一個射程內的決策點**(射與不射都算),再按「後來有沒有射」拆兩群。
@@ -1836,6 +1864,56 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (q.off || !(q.runT > 0) || q.runSawBox) continue;
       if (inBoxAt(q.x, q.y, gx)) { q.runSawBox = true; st.runInBox++; }
     }
+  }
+
+  /* **撲球的診斷**(階段 5l,純觀測)。一腳射門飛行中:有幾個防守者在撲、
+     整段飛行裡最近的人離飛行線最近到幾公尺。它回答的是「只到 4.8% 是為什麼」——
+     撲到 0.9 公尺(差一點)跟撲到 2.5 公尺(根本到不了)要修的地方完全不同。
+     `BLOCK_REACH = 0` 時 `tries` 自然是 0,但 `minPerp` 照樣量得到(那是恆等元那一版的基準線)。 */
+  function noteShotChase() {
+    if (!ball.shot) { closeShotChase(); return; }
+    const sp = hypot(ball.vx, ball.vy);
+    if (sp < 1) return;
+    if (!st.shotChase.cur || st.shotChase.cur.shot !== ball.shot) {
+      st.shotChase.cur = { shot: ball.shot, perp: Infinity, tries: new Set() };
+      st.shotChase.shots++;
+    }
+    const cur = st.shotChase.cur;
+    const ux = ball.vx / sp, uy = ball.vy / sp;
+    for (const q of all()) {
+      if (q.off || q.role === 'GK' || q.side === ball.shot.side) continue;
+      const dx = q.x - ball.x, dy = q.y - ball.y;
+      if (dx * ux + dy * uy <= 0) continue;            // 球已經過去了,不算
+      const perp = Math.abs(dx * -uy + dy * ux);
+      if (perp < cur.perp) cur.perp = perp;
+      if (q.wantWhy === 'block') cur.tries.add(q);
+    }
+  }
+  /* 一腳射門結束時把那一腳的診斷收起來(進球 / 出界 / 被碰到都算結束)。 */
+  function closeShotChase() {
+    const cur = st.shotChase.cur;
+    if (!cur) return;
+    if (cur.perp < Infinity) { st.shotChase.minPerp += cur.perp; if (cur.perp < 1.5 && cur.perp >= DEFLECT_R) st.shotChase.near++; }
+    st.shotChase.tries += cur.tries.size;
+    if (cur.tries.size > 0) st.shotChase.withTry++;
+    st.shotChase.cur = null;
+  }
+
+  /* 球的**飛行線**上離這個人最近的那一點(階段 5l)。回 null 代表「不值得撲」:
+     球太慢(不是一腳飛行中的射門)、他在球的**後面**(擋不到已經過去的球),
+     或離線太遠(`BLOCK_REACH` 以外)。
+     線一定要畫在**球真正的飛行方向**上(`ball.vx/vy`),不是「射手 → 球門中心」——
+     5b 那支探針就是畫錯線,兩條線在 675 腳上各錯三分之一(見 `noteShotLane`)。 */
+  function lanePoint(p) {
+    const sp = hypot(ball.vx, ball.vy);
+    if (sp < 1) return null;
+    const ux = ball.vx / sp, uy = ball.vy / sp;
+    const dx = p.x - ball.x, dy = p.y - ball.y;
+    const along = dx * ux + dy * uy;
+    if (along <= 0) return null;                       // 球已經過去了
+    const perp = Math.abs(dx * -uy + dy * ux);
+    if (perp > BLOCK_REACH) return null;
+    return { x: ball.x + ux * along, y: ball.y + uy * along };
   }
 
   /* 離禁區邊還有多遠(在禁區裡就是 0)。矩形的距離,跟 `inBoxAt` 同一個判準。 */
@@ -2391,6 +2469,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          標在分支自己身上,不在探針裡把條件抄一遍 —— 抄一遍就是「同一個量兩個來源」,
          改了一邊另一邊會悄悄過期。純字串指派,不呼叫 rng、不影響 `want`。 */
       p.wantWhy = 'shape';
+      /* 撲上去擋的目標點只算一次(階段 5l)。`BLOCK_REACH = 0` 時整段跳過 —— 那是恆等元。 */
+      const lunge = (BLOCK_REACH > 0 && ball.shot && p.side !== ball.shot.side
+        && p.role !== 'GK' && !p.off && (p.beaten ?? 0) <= 0) ? lanePoint(p) : null;
       if (p === holder) {
         p.wantWhy = 'holder';
         const it = p.intent;
@@ -2439,6 +2520,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const dd = hypot(tx - p.x, ty - p.y);
         p.wantWhy = 'cover';
         want = { x: tx, y: ty, speed: dd > 12 ? SIM_RUN : SIM_JOG };
+      } else if (lunge) {
+        /* 撲上去擋(階段 5l):瞄球的飛行線上**離自己最近、而且球還沒過去**的那一點。
+           排在「追鬆球」前面 —— 站在線上的人應該擋,不是跑去落點。
+           門將不在這一支(他擋的上游記成撲救,不是封阻,見折射那一段的註解)。 */
+        p.wantWhy = 'block';
+        want = { x: lunge.x, y: lunge.y, speed: p.vmax };
       } else if (!holder && p === chasers[p.side]) {
         // 追鬆球同理:遠了衝、近了跑(衝到落點旁邊還全速的話會直接衝過球)
         /* 追鬆球:遠了才衝,而且**只在自己搶得到的時候才衝**。
@@ -2585,6 +2672,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       movePlayer(p, dt, want);
     }
     noteBoxWho();                              // 階段 5i:純計數,要在走位迴圈之後
+    noteShotChase();                           // 階段 5l:純計數,要在走位迴圈之後(讀這一格的 wantWhy)
 
     // ── 球 ──
     /* **要重新讀 ball.holder,不能用這一格開頭抓的那個 local。**
@@ -3360,6 +3448,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         boxSec: { ...st.boxSec }, boxAttSec: { ...st.boxAttSec }, boxDefSec: { ...st.boxDefSec },
         boxSecBy: { ...st.boxSecBy }, boxEntryHit: { ...st.boxEntryHit },
         boxWho: { ...st.boxWho }, runFire: st.runFire, runToBox: st.runToBox, runInBox: st.runInBox,
+        shotChase: { shots: st.shotChase.shots, tries: st.shotChase.tries, withTry: st.shotChase.withTry,
+          minPerp: st.shotChase.minPerp, near: st.shotChase.near },
         boxFollow: { ...st.boxFollow, missWho: { ...st.boxFollow.missWho } },
         shotBox: { open: { ...st.shotBox.open }, corner: { ...st.shotBox.corner } },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },

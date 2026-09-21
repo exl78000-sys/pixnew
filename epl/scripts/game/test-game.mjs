@@ -1680,6 +1680,54 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           `${dep.length} 顆:深度中位 ${q(dep, 0.5).toFixed(2)}(註解 ${claimD})、`
           + `橫向 75 分位 ${q(lat, 0.75).toFixed(2)}(註解 ${claimW})`);
       }
+
+    }
+
+    /* 31. 階段 5l:**撲上去擋**(2026-09-21)。使用者把遊戲側的驗收改成
+       「動畫的行為像不像踢球」(真實資料當依據 + 遊戲變數,λ 仍是硬錨),
+       於是 5d 那個**對著形狀**的否定不再擋住這個動作 —— 接上去封阻 2.9% → 4.8%
+       (第二組獨立種子 3.7% → 5.2%,兩組都複現),而 λ 兩組都沒被吃掉。
+       這一節守四件事:① 撲的速度不准超過自己的最高速(本站的硬規則);
+       ② 線畫在**球真正的飛行方向**上(5b 踩過畫成「射手 → 球門中心」);
+       ③ 只撲**球還沒過去**的那一段、而且門將不在這一支(他擋的上游記成撲救);
+       ④ 診斷是純觀測(一個 rng 都沒有),而且 check-sim 真的把它印出來。 */
+    {
+      const simRawL = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const simBareL = simRawL.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const a = simBareL.indexOf('function lanePoint(');
+      const lp = a >= 0 ? simBareL.slice(a, simBareL.indexOf('function ', a + 20)) : '';
+      check('撲球的目標點畫在球**真正的飛行方向**上(不是射手 → 球門中心)',
+        /ball\.vx \/ sp/.test(lp) && /ball\.vy \/ sp/.test(lp) && !/PITCH_H \/ 2/.test(lp),
+        `lanePoint ${lp.length} 字元`);
+      check('只撲球還沒過去的那一段(背後的球擋不到),而且離線太遠的不撲',
+        /if \(along <= 0\) return null;/.test(lp) && /if \(perp > BLOCK_REACH\) return null;/.test(lp));
+      /* 速度是 `p.vmax` —— 本站沒有撲救式的撲倒,任何人任何時候都不准超過自己的最高速。
+         這一條**不是**在守某個寫法,是在守那條硬規則:撲球那一支給的速度不可以是別的東西。 */
+      {
+        const i = simBareL.indexOf("p.wantWhy = 'block';");
+        const seg = i >= 0 ? simBareL.slice(i, i + 200) : '';
+        check('撲球的速度是自己的最高速,沒有偷偷加速', /speed: p\.vmax \}/.test(seg), `切出來 ${seg.length} 字元`);
+      }
+      check('門將不在撲球那一支(他擋掉的上游記成撲救,不是封阻)',
+        /p\.role !== 'GK' && !p\.off/.test(simBareL.slice(simBareL.indexOf('const lunge ='), simBareL.indexOf('const lunge =') + 260)));
+      /* 診斷跟 5h / 5i 的量測同一條規矩:純觀測,一個 rng 都不准有。 */
+      {
+        const b2 = simBareL.indexOf('function noteShotChase(');
+        const seg = b2 >= 0 ? simBareL.slice(b2, simBareL.indexOf('function ', b2 + 24)) : '';
+        check('撲球的診斷是純觀測(noteShotChase 裡一個 rng( 都沒有)',
+          seg.length > 200 && !/rng\(/.test(seg), `noteShotChase ${seg.length} 字元`);
+      }
+      check('check-sim **真的印出**撲球那一排(跑一次掃 stdout)',
+        chkOut.includes('撲球:一腳射門有幾個人撲') && chkOut.includes('整段飛行最近的防守者離飛行線'),
+        `check-sim 輸出 ${chkOut.length} 字元`);
+      /* 畫面上那段說明**不准再說撲搶被否定了** —— 那是本站記過五次的坑
+         (加了能力之後要回頭問:有哪一頁還在講我們沒有它)。 */
+      {
+        const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8')
+          .replace(/\/\*[\s\S]*?\*\//g, '');
+        check('統計面板不再寫「撲搶被否定」,而是講現在的行為與它的界線',
+          /會撲上去擋/.test(view) && !/量過六輪/.test(view) && /5\.7 公尺/.test(view));
+      }
     }
     }
   }
