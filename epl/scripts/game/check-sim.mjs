@@ -1185,8 +1185,14 @@ if (simShots && realShots) {
     + `\u3000= ${(100 * hit / Math.max(1, ent)).toFixed(0)}% —— **其餘是球從禁區穿過去、沒有人碰到**`);
   console.log('  　所以「越過禁區線」不等於足球講的「攻進禁區」,那個數字不要當成進攻次數讀。');
   line('禁區進攻的秒數(秒/場)', sec, null);
-  console.log(`  ${'　每次碰得到球的進去,待幾秒 / 幾下'.padEnd(20, '\u3000')} `
-    + `${(sec / Math.max(1, ent)).toFixed(2)} 秒 / ${(all_ / Math.max(1, hit)).toFixed(2)} 下`);
+  /* **這兩個數字的分母不同,所以分兩行印。** 5h 第一版把它們寫在同一行、標成
+     「每次碰得到球的進去」,而秒數那一半除的是**全部越線次數**(208.8)不是
+     碰得到球的那幾次(84.9)—— 標籤說的跟算的不是同一件事,量出來的 1.72 秒
+     比實際低了一倍多(階段 5i 直接量每一段的駐留是 3.84 秒)。 */
+  console.log(`  ${'　每次越線平均待幾秒'.padEnd(20, '\u3000')} ${(sec / Math.max(1, ent)).toFixed(2)} 秒`
+    + `\u3000(分母是越線 ${ent.toFixed(1)} 次,含沒有人碰到球的那 ${(100 * (1 - hit / Math.max(1, ent))).toFixed(0)}%)`);
+  console.log(`  ${'　每次碰得到球的進去,幾下觸球'.padEnd(20, '\u3000')} ${(all_ / Math.max(1, hit)).toFixed(2)} 下`
+    + `\u3000(分母是 ${hit.toFixed(1)} 次;那幾次的駐留看下一節)`);
   console.log(`  ${'　球在禁區時,禁區裡平均幾個人'.padEnd(20, '\u3000')} `
     + `攻 ${(attS / Math.max(0.01, sec)).toFixed(2)}\u3000守 ${(defS / Math.max(0.01, sec)).toFixed(2)}(不含門將)`);
   for (const [k, 名] of [['open', '運動戰'], ['corner', '角球']]) {
@@ -1197,6 +1203,63 @@ if (simShots && realShots) {
       + (b.n ? `${(b.n / rows.length).toFixed(1)} 腳/場\u3000攻 ${(b.att / b.n).toFixed(2)}\u3000守 ${(b.def / b.n).toFixed(2)}` : '0 腳'));
   }
   console.log('  　十二碼不記(死球,所有人排在禁區外,算進來只會把平均壓低而跟人堆無關)。');
+}
+
+/* 3b-7. **跟進**(2026-09-21,階段 5i)。5h 的結論是「引擎做得出人堆(角球 4.27),
+        運動戰不會(1.24)」,所以這一節問:**誰把人送進禁區、送不送得到**。
+        上游**沒有錨**(沒有追蹤座標),所以整節只回報 —— 不可以反推真實值(5c 畫的線)。
+        天花板那一行照 5d 的做法取**對自己有利**的樂觀值(當成他已經在全速、直線衝),
+        上限都構不到才是硬的結論。 */
+{
+  const sum = f => rows.reduce((a, r) => a + f(r.st.counts), 0);
+  const n = rows.length;
+  const who = {};
+  for (const r of rows) for (const [k, v] of Object.entries(r.st.counts.boxWho ?? {})) who[k] = (who[k] ?? 0) + v;
+  const whoTot = Object.values(who).reduce((a, b) => a + b, 0);
+  const fire = sum(c => c.runFire ?? 0), toBox = sum(c => c.runToBox ?? 0), inBox = sum(c => c.runInBox ?? 0);
+  const F = rows.reduce((a, r) => {
+    const f = r.st.counts.boxFollow ?? {};
+    /* **不要手寫鍵的清單。** 第一版列了六個,而引擎後來多了 `missV/missD/missN` ——
+       它們靜靜沒被加總,於是「到得了卻沒到的」印成 0.00 人/次,而旁邊的百分比是有值的
+       (那一份另外加總)。一個數字是 0 而它隔壁不是,先懷疑自己的加總。
+       改成把**所有數值鍵**都加起來,引擎多一個計數器就自動跟上。 */
+    for (const [k, v] of Object.entries(f)) if (typeof v === 'number') a[k] = (a[k] ?? 0) + v;
+    return a;
+  }, {});
+  console.log('');
+  console.log('  跟進:誰把攻方球員送進對方禁區(階段 5i —— 上游沒有錨,只回報)');
+  const pad = (t) => t.padEnd(22, '\u3000');
+  console.log(`  ${pad('　人-格的來源(非持球者)')} `
+    + (whoTot ? Object.entries(who).sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => `${k} ${(100 * v / whoTot).toFixed(0)}%`).join('・') : '一格都沒有'));
+  console.log(`  ${pad('　直塞跑')} ${(fire / n).toFixed(1)} 次/場`
+    + `\u3000目標落在禁區 ${fire ? (100 * toBox / fire).toFixed(0) : '—'}%`
+    + `\u3000真的跑進禁區 ${fire ? (100 * inBox / fire).toFixed(0) : '—'}%`);
+  const V = Math.max(1, F.visits ?? 0);
+  console.log(`  ${pad('　一次禁區進攻(有人碰到球的)')} ${((F.visits ?? 0) / n).toFixed(1)} 次/場`
+    + `\u3000平均駐留 ${((F.dwell ?? 0) / V).toFixed(2)} 秒`);
+  console.log(`  ${pad('　　開始時禁區外的攻方球員')} ${((F.cand ?? 0) / V).toFixed(2)} 人`
+    + `\u3000其中 10 公尺內 ${((F.near ?? 0) / V).toFixed(2)} 人`);
+  console.log(`  ${pad('　　**天花板**:全速直衝到得了')} ${((F.ceil ?? 0) / V).toFixed(2)} 人`
+    + `\u3000← 這一段的駐留裡**物理上**有幾個進得來(樂觀值:當成已經在全速)`);
+  console.log(`  ${pad('　　第二個天花板:用跑的(5.2 m/s)')} ${((F.ceilRun ?? 0) / V).toFixed(2)} 人`
+    + `\u3000← 只要讓走位的人用跑的、不必衝刺,到得了幾個(下一輪那個修正的獎品)`);
+  console.log(`  ${pad('　　實際進到禁區的')} ${((F.came ?? 0) / V).toFixed(2)} 人`
+    + `\u3000${(F.ceil ?? 0) > 0 ? `= 天花板的 ${(100 * (F.came ?? 0) / F.ceil).toFixed(0)}%` : ''}`);
+  const mw = rows.reduce((a, r) => {
+    for (const [k, v] of Object.entries(r.st.counts.boxFollow?.missWho ?? {})) a[k] = (a[k] ?? 0) + v;
+    return a;
+  }, {});
+  const mwTot = Object.values(mw).reduce((a, b) => a + b, 0);
+  const mN = Math.max(1, F.missN ?? 0);
+  console.log(`  ${pad('　　到得了卻沒到的')} ${((F.missN ?? 0) / V).toFixed(2)} 人/次`
+    + `\u3000那幾格在做什麼:` + (mwTot ? Object.entries(mw).sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => `${k} ${(100 * v / mwTot).toFixed(0)}%`).join('・') : '—'));
+  console.log(`  ${pad('　　他們這一段跑多快 / 靠近了多少')} `
+    + `${((F.missV ?? 0) / mN).toFixed(2)} m/s\u3000${((F.missD ?? 0) / mN).toFixed(2)} 公尺`
+    + `\u3000(天花板取的是各自的最高速,約 8~9 m/s)`);
+  console.log('  　天花板低就代表「叫人跟進」這條路本身補不了(那時要問的是駐留);');
+  console.log('  　天花板夠高而實際沒到,就一定有一條既有規則擋著 —— 上面那兩行就是拿來指名它的。');
 }
 
 /* 3b-6. **長傳與界外球**(階段 4t)。這兩個錨也是側寫裡本來就有、而在這之前沒有人讀的:

@@ -1511,6 +1511,76 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         chkOut.includes('仍然是下限') && chkOut.includes('球黏在腳下'),
         `check-sim 輸出 ${chkOut.length} 字元`);
     }
+
+    /* 28. 階段 5i:**跟進**(2026-09-21)。5h 量到運動戰的禁區內射門當下攻方只有 1.24 人
+       而角球是 4.27,所以這一節問「誰把人送進去、送不送得到」。答案是 (乙):
+       **天花板 3.89 人、實際 0.97 人**,到得了卻沒到的那 2.92 人有 83% 在 `shape` 分支、
+       整段只跑 2.22 m/s(= `SIM_JOG` 2.5)—— 擋住的是走位分支的速度檔,不是物理。
+       這一節守的是量測本身量得對:純觀測、標籤標在分支自己身上、探針在走位迴圈**之後**、
+       計數器的恆等式,以及 check-sim 真的把那幾排印出來。**不守它們的值** —— 那會漂。 */
+    {
+      const simBareB = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const spanOf = sig => {
+        const a = simBareB.indexOf(sig);
+        return a < 0 ? '' : simBareB.slice(a, simBareB.indexOf('function ', a + sig.length));
+      };
+      const who = spanOf('function noteBoxWho('), d2b = spanOf('function distToBox(');
+      check('5i 的兩支量測函式都在,而且一個 rng( 都沒有(純觀測)',
+        who.length > 0 && d2b.length > 0 && !/rng\(/.test(who) && !/rng\(/.test(d2b),
+        `noteBoxWho ${who.length} 字元、distToBox ${d2b.length} 字元`);
+      /* **標籤標在分支自己身上,探針不准把條件抄一遍。** 抄一遍就是「同一個量兩個來源」
+         (本站的老坑):改了走位的分支,探針的歸因會悄悄過期而畫面完全正常。 */
+      check('wantWhy 由走位分支自己標,探針不重算條件',
+        (simBareB.match(/p\.wantWhy = '/g) ?? []).length >= 9
+        && !/support\.has\(|=== presser|=== cover/.test(who),
+        `分支標籤 ${(simBareB.match(/p\.wantWhy = '/g) ?? []).length} 處`);
+      /* 探針要在**走位迴圈之後**叫 —— 之前叫的話讀到的是上一格的 wantWhy
+         (「取值與判條件要在同一個時間點」)。直線腳本的原始碼順序就是執行順序。 */
+      {
+        const mv = simBareB.indexOf('movePlayer(p, dt, want);');
+        const nb = simBareB.indexOf('noteBoxWho();');
+        check('歸因的探針叫在走位迴圈之後(不是之前)', mv > 0 && nb > mv, `movePlayer@${mv}、noteBoxWho@${nb}`);
+      }
+      /* check-sim 加總 `boxFollow` 時**不准手寫鍵的清單**:第一版列了六個,引擎後來多了
+         三個計數器,它們靜靜沒被加總 → 「到得了卻沒到的」印成 0.00 而旁邊的百分比有值。 */
+      {
+        const chkB2 = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+          .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+        check('check-sim 把 boxFollow 的**每一個數值鍵**都加總,不手寫清單',
+          /typeof v === 'number'/.test(chkB2) && !/\['visits', 'cand', 'near'/.test(chkB2));
+      }
+      {
+        const SB = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        let bad = 0, vis = 0, cand = 0, ceil = 0, came = 0, miss = 0, whoTot = 0;
+        for (const seed of [41, 42]) {
+          const simB = SB.createSim({ profile, home: 'ARS', away: 'LIV', seed });
+          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !simB.state().over; i++) simB.advance(1 / 60);
+          const f = simB.state().counts.boxFollow ?? {};
+          vis += f.visits ?? 0; cand += f.cand ?? 0; ceil += f.ceil ?? 0; came += f.came ?? 0; miss += f.missN ?? 0;
+          whoTot += Object.values(simB.state().counts.boxWho ?? {}).reduce((a, b) => a + b, 0);
+          /* **恆等式**:到得了卻沒到的 = 天花板 − 實際到的。兩個計數器接反或漏掉一個
+             這一條就會紅,而它不依賴任何會漂的值。 */
+          if ((f.missN ?? 0) !== (f.ceil ?? 0) - (f.came ?? 0)) bad++;
+          if (!((f.cand ?? 0) >= (f.ceil ?? 0) && (f.cand ?? 0) >= (f.near ?? 0))) bad++;
+          if (!((f.ceil ?? 0) >= (f.came ?? 0))) bad++;   // 到得了的一定涵蓋真的到了的
+          if (!((f.visits ?? 0) > 0 && (f.dwell ?? 0) > 0)) bad++;
+        }
+        check('5i 的計數器自己不矛盾(沒到 = 天花板 − 到了、候選 ⊇ 天花板 ⊇ 實際)',
+          bad === 0 && whoTot > 0,
+          `2 場:進攻 ${vis}、候選 ${cand}、天花板 ${ceil}、實際 ${came}、沒到 ${miss}、人-格 ${whoTot}、越界 ${bad} 項`);
+      }
+      check('check-sim **真的印出** 5i 那幾排(跑一次掃 stdout)',
+        ['跟進:誰把攻方球員送進對方禁區', '人-格的來源(非持球者)', '直塞跑',
+          '**天花板**:全速直衝到得了', '到得了卻沒到的']
+          .every(t => chkOut.includes(t)), `check-sim 輸出 ${chkOut.length} 字元`);
+      /* **5h 那一行的標籤修好了。** 它印的是 `sec / ent`(分母是全部越線次數),而標題
+         寫著「每次碰得到球的進去,待幾秒」—— 標籤說的跟算的不是同一件事,量出來的
+         1.72 秒比實際(3.63)低了一倍多。掃 stdout,不是掃原始碼。 */
+      check('5h 的駐留那一行標的是它真正算的東西(分母寫出來了)',
+        chkOut.includes('每次越線平均待幾秒') && chkOut.includes('含沒有人碰到球的那')
+        && !chkOut.includes('每次碰得到球的進去,待幾秒'), `check-sim 輸出 ${chkOut.length} 字元`);
+    }
     }
   }
 }
