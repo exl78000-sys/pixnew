@@ -1405,17 +1405,140 @@ if (lostAll) console.log(`  ${'傳球失敗的原因'.padEnd(26, '\u3000')} 被�
   + ` / 接球者在旁邊卻被搶走 ${(why.near / lostAll * 100).toFixed(0)}%`
   + ` / 接球者不在那裡 ${(why.far / lostAll * 100).toFixed(0)}%`);
 
-/* 4. 運動層(階段 1 的那幾項,回歸用) */
+/* 4. 運動層(階段 1 的那幾項,回歸用)
+
+   **錨換了(2026-09-21,階段 5m)。** 原本印的是 `distancePerMin ÷ 11`,而那個分子是
+   FotMob 的**球隊總計**(含門將、也含替補:逐人加總 = 球隊總計,566 隊-場比值 0.9999),
+   拿去比的卻是模擬裡**十個外場球員**的平均 —— 兩邊不是同一批,666 隊-場實測**低 4.8%**
+   (÷11 109.4 對「外場一個位置」114.6 m/分;ARS 112.3 → 116.7、LIV 106.7 → 111.9)。
+   現在用側寫的 `outfieldPerMin`((球隊總計 − 門將) ÷ 10 ÷ 95)。
+   這是「我的分母跟被比較的那一邊是不是同一批」的又一次,而它讓「超了多少」整個重算。
+   還有一個**量不掉的差**照實講:真值除的是固定 95 分,模擬除的是這一場真正的長度
+   (實測最後一個事件的分鐘平均 92.3 / 中位 93 / p90 97,所以 95 只是合理的近似)。 */
 console.log('');
 for (const [side, code] of [['home', HOME], ['away', AWAY]]) {
   const per = mean(rows.map(r => {
     const ps = r.m.players.filter(p => p.side === side && p.role !== 'GK');
     return ps.reduce((a, p) => a + p.dist, 0) / ps.length / (r.m.secs / 60);
   }));
-  const realRun = profile.teams[code]?.pace?.distancePerMin / 11;
-  line(`${code} 場上球員跑動`, `${per.toFixed(0)} m/分`, realRun ? `真實 ${realRun.toFixed(0)}` : '');
+  const pc2 = profile.teams[code]?.pace;
+  line(`${code} 場上球員跑動`, `${per.toFixed(0)} m/分`,
+    pc2?.outfieldPerMin ? `真實 ${pc2.outfieldPerMin.toFixed(0)}(外場一個位置:球隊 ${pc2.distancePerMin} − 門將 ${Math.round(pc2.gkPerMin)} ÷ 10)` : '側寫沒有外場跑動');
 }
 line('站著的比例', `${mean(rows.map(r => 100 * r.still / r.samples)).toFixed(1)}%`);
+/* **衝刺:側寫裡有而從來沒印出來的兩個錨**(2026-09-21,階段 5m)。
+   引擎的 `JOCKEY_R` 與追鬆球那兩段註解**就是拿它們校準的**(寫著「全隊衝刺 4.06 次/分
+   (真實 1.11)」),而這支檢查一直沒印 —— 行為改了它們會靜靜漂掉,
+   那就是「註解裡的『真實約 N』是憑印象的」那條坑。
+   母體:`sprintsPerMin` / `sprintDistPerMin` 是**球隊總計**(含門將),
+   所以引擎那一側的衝刺也含門將(逐人 physical 沒有逐人衝刺,拆不出門將那一份)。
+   **距離的定義上游沒寫明**,所以兩種都印:進得了 1 秒門檻的那幾次,
+   以及所有 ≥ 7.0 m/s 的距離(含碎步)。差很多就代表那個門檻在做事(鐵則四)。 */
+{
+  const sum = k => rows.reduce((a, r) => a + (r.st.counts.run?.[k]?.home ?? 0) + (r.st.counts.run?.[k]?.away ?? 0), 0);
+  const mins = rows.reduce((a, r) => a + r.st.t / 60, 0);
+  if (mins > 0 && rows[0].st.counts.run) {
+    const realS = (profile.teams[HOME]?.pace?.sprintsPerMin ?? 0) + (profile.teams[AWAY]?.pace?.sprintsPerMin ?? 0);
+    const realD = (profile.teams[HOME]?.pace?.sprintDistPerMin ?? 0) + (profile.teams[AWAY]?.pace?.sprintDistPerMin ?? 0);
+    line('衝刺次數(兩隊合計)', `${(sum('sprints') / mins).toFixed(2)} 次/分`,
+      realS ? `真實 ${realS.toFixed(2)}(${HOME} ${profile.teams[HOME].pace.sprintsPerMin} + ${AWAY} ${profile.teams[AWAY].pace.sprintsPerMin})・≥ 7.0 m/s 持續 ≥ 1 秒` : '');
+    line('衝刺距離(兩隊合計)', `${(sum('sprintDist') / mins).toFixed(1)} m/分`,
+      realD ? `真實 ${realD.toFixed(0)}・不含 1 秒門檻的話 ${(sum('sprintDistAll') / mins).toFixed(1)}` : '');
+  }
+}
+/* **跑動的來源歸因**(2026-09-21,階段 5m)。4h 的規矩:某個量偏掉,先把它的來源
+   逐類列出來,再決定動哪一個 —— 而「哪一支分支在跑」本站從來沒有量過。
+   **上游沒有逐分支的錨**(FotMob 只有全場總計),所以這幾行只回報、不判,
+   也不可以反推真實世界的某一支該是多少。它要回答的是一個**內部**問題:
+   超出來的那一段集中在哪一支,還是攤在每一支上。 */
+{
+  const agg = (key) => rows.reduce((a, r) => {
+    for (const [k, v] of Object.entries(r.st.counts.run?.[key] ?? {})) a[k] = (a[k] ?? 0) + v;
+    return a;
+  }, {});
+  const mins = rows.reduce((a, r) => a + r.st.t / 60, 0);
+  const why = agg('why'), role = agg('role');
+  const tot = Object.values(why).reduce((a, b) => a + b, 0);
+  /* 分母是**這幾場真的有幾個外場球員**(`all()` 已經濾掉被罰下的人,所以平均略低於 20)——
+     寫死 20 的話紅牌多的那幾場會讓每一支都看起來偏低(「量測的母體要跟畫面一致」)。 */
+  const heads = {};
+  for (const r of rows) for (const q of r.m.players) if (q.role !== 'GK') { const k = q.pos ?? q.role; heads[k] = (heads[k] ?? 0) + 1 / rows.length; }
+  const outN = Object.values(heads).reduce((a, b) => a + b, 0) || 20;
+  if (tot > 0) {
+    const ZH = { shape: '走位(陣型/盯人)', holder: '帶球', run: '直塞跑', support: '接應', duel: '對抗',
+      press: '逼搶', cover: '補位', block: '撲擋', chase: '追鬆球', gk: '門將',
+      dead: '死球走回位置', spot: '死球站位(角球/定位球)' };
+    const ord = Object.entries(why).sort((a, b) => b[1] - a[1]);
+    console.log(`
+  跑動的來源(外場 ${outN.toFixed(1)} 人合計 ${(tot / mins / outN).toFixed(0)} m/分・人,只回報沒有錨):`);
+    for (const [k, v] of ord) {
+      console.log(`  ${`　${ZH[k] ?? k}`.padEnd(26, '　')} ${(v / mins / outN).toFixed(1)} m/分・人`
+        + `　${(100 * v / tot).toFixed(1)}%`);
+    }
+    /* 逐位置要除的也是真的有幾個人,不是猜一個 4-4-2 —— 兩隊的陣型不同,
+       寫死人數就是在畫面上編一個數字(而且它會讓某一個位置看起來高或低一截)。
+       **真值有了**(2026-09-21,階段 5m):`league_.runByPos` —— 逐人 physical 的距離
+       照本站自己的球員分類歸組、除以先發的槽位數。**兩邊同一個分類器**(squad.pos),
+       不是陣型的槽位(4-3-3 有三個 FWD,而分類器一隊只認得出 0.74 個)。
+       它是**聯盟參照不是這一場**(逐隊切下去樣本太薄),所以只回報、不判。 */
+    const rbp = profile.league_?.runByPos;
+    if (Object.values(role).reduce((a, b) => a + b, 0) > 0) {
+      console.log(`  ${'　逐位置'.padEnd(26, '　')} `
+        + ['DEF', 'MID', 'FWD'].filter(k => role[k]).map(k => `${k} ${(role[k] / mins / (heads[k] || 1)).toFixed(0)}(${(heads[k] ?? 0).toFixed(1)} 人)`).join(' / ')
+        + ' m/分・人');
+      /* **走位那一支:球員跑的 vs 目標自己走的**(階段 5m 的第二支探針)。
+         走位佔全部跑動的 70%,而「跑太多」有兩種成因要分開:
+         跟著一個擺動太大的目標忠實地跑(比值接近 1),或在一個幾乎不動的目標旁邊來回(比值很低)。
+         **沒有真實世界的錨**(沒有追蹤座標,也沒有「陣型目標」這種東西),只回報。 */
+      const sd = agg('shapeD'), stt = agg('shapeT'), sg = agg('shapeGo'), sn = agg('shapeN');
+      const s0 = agg('shape0'), snet = agg('shapeNet');
+      const ks = ['DEF', 'MID', 'FWD'].filter(k => sn[k] > 0);
+      const perP = (v, k) => (v / mins / (heads[k] || 1)).toFixed(0);
+      if (ks.length) {
+        console.log(`  ${'　　走位:人跑的 / 目標走的'.padEnd(22, '　')} `
+          + ks.map(k => `${k} ${perP(sd[k], k)} / ${perP(stt[k], k)}`
+            + `(比值 ${(sd[k] / Math.max(1e-9, stt[k])).toFixed(2)}・起步中 ${(100 * sg[k] / sn[k]).toFixed(0)}%)`).join('　'));
+        /* 目標的路徑長拆兩段,再對它一秒的淨位移 —— 路徑長分不出「往同一個方向走」與「原地抖」。 */
+        console.log(`  ${'　　目標:夾之前 / 夾之後 / 淨位移'.padEnd(20, '　')} `
+          + ks.map(k => `${k} ${perP(s0[k] ?? 0, k)} / ${perP(stt[k], k)} / ${perP(snet[k] ?? 0, k)}`).join('　')
+          + '　m/分(淨位移:每秒取樣一次的位移加起來 —— 跟路徑長差很多才是「原地抖」)');
+        /* 三道夾在時間上互斥(越位夾只在自己持球、防線與盯人只在對手持球),所以依持球方拆
+           就等於把它們分開。看的是**夾之後 ÷ 夾之前**:哪一相位放大最多,要改的就是那一道。 */
+        const p0 = agg('phase0'), pT = agg('phaseT'), pD = agg('phaseD'), pN = agg('phaseN');
+        const ZHP = { att: '自己持球(越位夾)', def: '對手持球(防線+盯人)', loose: '鬆球(都不夾)' };
+        const tot2 = Object.values(pN).reduce((a, b) => a + b, 0);
+        if (tot2 > 0) {
+          console.log(`  ${'　　目標的擺動是哪一道夾放大的'.padEnd(20, '　')}`);
+          for (const k of ['att', 'def', 'loose']) {
+            if (!pN[k]) continue;
+            console.log(`  ${`　　　${ZHP[k]}`.padEnd(24, '　')} 夾之前 ${(p0[k] / (pN[k] / 60)).toFixed(0)}`
+              + ` → 夾之後 ${(pT[k] / (pN[k] / 60)).toFixed(0)} m/分(**×${(pT[k] / Math.max(1e-9, p0[k])).toFixed(1)}**)`
+              + `　人跑 ${(pD[k] / (pN[k] / 60)).toFixed(0)}　佔走位時間 ${(100 * pN[k] / tot2).toFixed(0)}%`);
+          }
+        }
+        {
+          const jd = rows.reduce((a, r) => a + (r.st.counts.run?.jumpD ?? 0), 0);
+          const jn = rows.reduce((a, r) => a + (r.st.counts.run?.jumpN ?? 0), 0);
+          const lp = rows.reduce((a, r) => a + (r.st.counts.run?.loosePass ?? 0), 0);
+          const lf = rows.reduce((a, r) => a + (r.st.counts.run?.looseFree ?? 0), 0);
+          const pnAll = Object.values(pN).reduce((a, b) => a + b, 0);
+          if (jn) console.log(`  ${'　　換相位那一格:目標跳多遠'.padEnd(21, '　')} ${(jd / jn).toFixed(2)} m × `
+            + `${(jn / mins / (outN || 1)).toFixed(1)} 次/分・人 = ${(jd / mins / (outN || 1)).toFixed(0)} m/分・人`
+            + `　← 目標路徑長的大頭是這個,不是「目標在平移」`);
+          if (lp + lf > 0) console.log(`  ${'　　　其中「鬆球」是什麼'.padEnd(22, '　')} 一球在傳的路上 ${(100 * lp / (lp + lf)).toFixed(0)}%`
+            + ` / 真的沒人擁有 ${(100 * lf / (lp + lf)).toFixed(0)}%`
+            + `　(走位時間的 ${(100 * (lp + lf) / Math.max(1e-9, pnAll + lp + lf - (pN.loose ?? 0))).toFixed(0)}% 在鬆球)`);
+        }
+        const foc = rows.reduce((a, r) => a + (r.st.counts.run?.focus ?? 0), 0);
+        console.log(`  ${'　　上游:攻勢參考點(focus)'.padEnd(22, '　')} ${(foc / mins).toFixed(0)} m/分`
+          + '　它跟著球走,陣型目標是它的線性函數 —— 目標比它大很多就代表放大在夾那一段');
+      }
+      if (rbp) console.log(`  ${'　　真實(聯盟參照)'.padEnd(24, '　')} `
+        + ['DEF', 'MID', 'FWD'].filter(k => rbp[k]).map(k => `${k} ${rbp[k].perMin.toFixed(0)}(${rbp[k].slots.toFixed(1)} 槽)`).join(' / ')
+        + ` m/分・槽　${rbp.teamGames} 隊-場・位置認不出來的距離 ${(100 * rbp.unmatched).toFixed(0)}%`);
+    }
+  }
+}
 const bins = new Array(7).fill(0);
 for (const r of rows) r.bins.forEach((b, i) => { bins[i] += b; });
 const bt = bins.reduce((a, b) => a + b, 0);

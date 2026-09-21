@@ -322,8 +322,21 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     for (const [code, idx] of [[m.home, 0], [m.away, 1]]) {
       const ph = m.physical?.team;
       if (ph?.distance?.[idx] != null) {
-        const t = tempoBy.get(code) ?? { games: 0, distance: 0, sprints: 0, sprintDist: 0 };
+        const t = tempoBy.get(code) ?? { games: 0, distance: 0, sprints: 0, sprintDist: 0, pg: 0, pTeam: 0, pGk: 0 };
         t.games++; t.distance += ph.distance[idx]; t.sprints += ph.sprints?.[idx] ?? 0; t.sprintDist += ph.sprintDistance?.[idx] ?? 0;
+        /* **門將的那一份要單獨記**(2026-09-21,階段 5m)。`distance` 是**球隊總計**
+           (含門將、也含替補:逐人加總 = 球隊總計,比值 0.9999,566 隊-場驗過),
+           而模擬那一側量的是**十個外場球員**的平均 —— 直接 ÷11 去比就是兩邊不同批,
+           666 隊-場實測低 **4.8%**(÷11 109.4 對「外場一個位置」114.6 m/分)。
+           門將從名單的 `pos === 'G'` 認(逐人 physical 沒有位置欄位)。
+           **兩個累加器要走同一批場次** —— 換門將或沒有名單的場次兩邊都不收,
+           不然分子分母又是不同批(本站在這件事上付過很多次代價)。 */
+        const lu = m.lineups?.[code];
+        if (lu?.xi?.length) {
+          const gkShirts = new Set([...(lu.xi ?? []), ...(lu.bench ?? [])].filter(q => q.pos === 'G').map(q => q.shirt));
+          const gks = (m.physical?.players ?? []).filter(q => q.team === code && q.distance != null && gkShirts.has(q.shirt));
+          if (gks.length === 1) { t.pg++; t.pTeam += ph.distance[idx]; t.pGk += gks[0].distance; }
+        }
         tempoBy.set(code, t);
       }
       const z = (idx === 0 ? m.zones?.home : m.zones?.away)?.total;
@@ -401,7 +414,14 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     const tp = tempoBy.get(code), zn = zonesBy.get(code);
     teamsOut[code] = {
       /* 叫 pace 不叫 tempo —— tempo 是既有的半場進球那一組,同名會被後面那個蓋掉(實際踩到) */
-      pace: tp ? { games: tp.games, distancePerMin: Math.round(tp.distance / tp.games / 95), sprintsPerMin: r2(tp.sprints / tp.games / 95), sprintDistPerMin: Math.round(tp.sprintDist / tp.games / 95) } : null,
+      /* `distancePerMin` / `sprintsPerMin` / `sprintDistPerMin` 都是**球隊總計**(含門將與替補)÷ 95。
+         `outfieldPerMin` 是「**外場一個位置**每分鐘跑多少」= (球隊總計 − 門將) ÷ 10 ÷ 95 ——
+         那才是拿來比模擬裡十個外場球員的那個數字。衝刺沒有對應的拆法:
+         逐人 physical 只有距離與最高速,**沒有逐人衝刺**,所以拆不出門將那一份
+         (模擬那一側因此把門將算進衝刺,兩邊同一批)。 */
+      pace: tp ? { games: tp.games, distancePerMin: Math.round(tp.distance / tp.games / 95), sprintsPerMin: r2(tp.sprints / tp.games / 95), sprintDistPerMin: Math.round(tp.sprintDist / tp.games / 95),
+        gkGames: tp.pg, gkPerMin: tp.pg ? r2(tp.pGk / tp.pg / 95) : null,
+        outfieldPerMin: tp.pg ? r2((tp.pTeam - tp.pGk) / tp.pg / 10 / 95) : null } : null,
       zones: zn ? { games: zn.games, left: r3(zn.left / zn.games / 100), center: r3(zn.center / zn.games / 100), right: r3(zn.right / zn.games / 100) } : null,
       code, zh: t.zh, en: t.en, colors: t.colors ?? [],
       formation: { latest: lf?.formation ?? null, latestMatch: lf?.match ?? null, predicted: lu?.shape ?? null,
@@ -474,6 +494,45 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       play: (() => {
         const ts = fm.flatMap(m => Object.values(m.teamStats ?? {}));
         return ts.length ? { teamGames: ts.length, passes: r2(mean(ts.map(t => t.passes ?? 0))), offsides: r2(mean(ts.map(t => t.offsides ?? 0))) } : null;
+      })(),
+      /* **逐位置的跑動**(2026-09-21,階段 5m)。倉庫裡本來就有(逐人 physical 的 `distance`),
+         而本站從來沒有讀過它 —— 引擎的閒置走位那一段註解寫著「DEF 113 m/分(正好是真實值)」,
+         而那個「真實值」是球隊總計 ÷ 11,不是後衛自己的。
+
+         **算的是「一個槽位」不是「一個先發」**:上游只記換人**上場**的那一個
+         (3,570 筆 subst 的 player 全部來自替補席、0 筆是先發 —— 所以「誰換誰」查不到,
+         跟官方事件流那條坑一樣),先發的出場分鐘因此不可知。所以把**所有上場球員**
+         照自己的位置歸組、除以**先發在那一組的槽位數**:那個商是「這個位置踢滿一場跑多少」,
+         正好是模擬那一側的形狀(二十二個人都踢滿)。
+         位置用**本站自己的分類**(squad.pos,配對鍵是球隊 + 背號),不是 FotMob 名單的 `pos`
+         (那個欄位大量是 `?`)—— 模擬那一側用的也是這個分類,兩邊同一個分類器才比得起來。
+         **只回報聯盟層**:認得出位置的槽位一場只有 7.8 個(上一季的球員背號對不上本季名單),
+         逐隊切下去樣本太薄。`slots` / `unmatched` 一起輸出,讓讀的人自己判斷這個子樣本夠不夠。 */
+      runByPos: (() => {
+        const posOf = new Map();
+        for (const [code, t] of Object.entries(teamsOut)) for (const q of t.squad ?? []) if (q.shirt != null) posOf.set(`${code}|${q.shirt}`, q.pos);
+        const acc = { DEF: { d: 0, slots: 0 }, MID: { d: 0, slots: 0 }, FWD: { d: 0, slots: 0 } };
+        let tm = 0, okD = 0, missD = 0;
+        for (const m of fm) {
+          const ph = m.physical;
+          if (!ph?.players?.length || !ph.team?.distance || !m.lineups) continue;
+          for (const [code, idx] of [[m.home, 0], [m.away, 1]]) {
+            const lu = m.lineups[code];
+            if (!lu?.xi?.length || ph.team.distance[idx] == null) continue;
+            tm++;
+            for (const q of lu.xi) { const k = posOf.get(`${code}|${q.shirt}`); if (acc[k]) acc[k].slots++; }
+            for (const q of ph.players) {
+              if (q.team !== code || q.distance == null) continue;
+              const k = posOf.get(`${code}|${q.shirt}`);
+              if (k === 'GK') continue;
+              if (acc[k]) { acc[k].d += q.distance; okD += q.distance; } else missD += q.distance;
+            }
+          }
+        }
+        if (!tm) return null;
+        const out = { teamGames: tm, unmatched: r3(missD / (okD + missD)) };
+        for (const k of ['DEF', 'MID', 'FWD']) out[k] = acc[k].slots ? { perMin: r2(acc[k].d / acc[k].slots / 95), slots: r2(acc[k].slots / tm) } : null;
+        return out;
       })(),
     },
     calibration: calibration ? { a: calibration.a, se: calibration.se, significant: calibration.significant,

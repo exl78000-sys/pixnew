@@ -1729,6 +1729,94 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           /會撲上去擋/.test(view) && !/量過六輪/.test(view) && /5\.7 公尺/.test(view));
       }
     }
+
+    /* 32. 階段 5m:**跑動**(2026-09-21)。使用者「跑動先做」。
+       這一節守的是**量法**,不是那幾個會漂的數字:
+       ① 錨是「外場一個位置」((球隊總計 − 門將) ÷ 10),不是 `distancePerMin ÷ 11`
+          —— 後者的分子含門將與替補,拿去比十個外場球員低 4.8%;
+       ② 側寫的兩個累加器走**同一批場次**(`gkGames ≤ games`),而且修正的**方向**要對;
+       ③ 衝刺那兩個錨(側寫裡有而三個月沒人讀)**真的印出來**,掃 stdout 不是掃原始碼;
+       ④ **逐分支的歸因加起來要等於球員真的跑掉的距離** —— 第一版漏掉死球那兩支,
+          合計 119 對錨的 129,而剩下幾類的百分比看起來完全正常。
+          這一條是**數值**的,下一個人再加一支分支而忘了記,它就會紅;
+       ⑤ 相位的累加要求**相位跟上一格一樣**(沒有它,「鬆球」那一列會印出 ×2.6,
+          而鬆球時兩道夾都不生效、夾前夾後必須相同 —— 我差一點照它寫下錯的根因);
+       ⑥ 兩道走位的夾看的是 `shapeSide`(傳球在路上時沿用傳球方),不是 `ball.holder`;
+       ⑦ `SPRINT_V` / `SPRINT_T` 是**量測的邊界**,引擎的行為不准讀(跟 `LANE_FAR` 同一條)。 */
+    {
+      const simRawM = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const simBareM = simRawM.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const chkBareM = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('跑動的錨用「外場一個位置」(outfieldPerMin),不是球隊總計 ÷ 11',
+        /outfieldPerMin/.test(chkBareM) && !/distancePerMin\s*\/\s*11/.test(chkBareM));
+      {
+        const withPace = Object.values(profile.teams).filter(t => t.pace);
+        const bad = withPace.filter(t => t.pace.outfieldPerMin == null || t.pace.gkGames > t.pace.games
+          || !(t.pace.outfieldPerMin > t.pace.distancePerMin / 11));
+        check('側寫每隊都有外場跑動,兩個累加器同一批,而且方向是「比 ÷11 高」',
+          withPace.length >= 20 && bad.length === 0,
+          bad.map(t => t.code).join('、') || `${withPace.length} 隊都通過`);
+      }
+      check('check-sim **真的印出**衝刺那兩個錨(側寫裡有而三個月沒人讀)',
+        chkOut.includes('衝刺次數(兩隊合計)') && chkOut.includes('衝刺距離(兩隊合計)')
+        && chkOut.includes('跑動的來源'), `check-sim 輸出 ${chkOut.length} 字元`);
+      {
+        const b3 = simBareM.indexOf('function noteRun(');
+        const segR = b3 >= 0 ? simBareM.slice(b3, simBareM.indexOf('function ', b3 + 18)) : '';
+        check('跑動的歸因是純觀測(noteRun 裡一個 rng( 都沒有)',
+          segR.length > 300 && !/rng\(/.test(segR), `noteRun ${segR.length} 字元`);
+        /* **這一條第一版守不住任何東西**(2026-09-21 的負向對照抓到的):錨寫成
+           `/p\.tgtPhaseOk/`,而 `noteRun` 裡它出現**兩次** —— 跳躍那個計數器用的是
+           `!p.tgtPhaseOk`。把相位累加的 `&& p.tgtPhaseOk` 整個拿掉,另一處照樣命中,
+           斷言照樣綠。錨要挑**只在被守的那一份出現**的東西(本站記過這條,而我又犯了)。
+           兩個子句各自釘死,而且各有一個負向對照(b5 拿掉累加的守衛、b5b 把 contPh 放寬)。 */
+        check('相位的累加要求相位跟上一格一樣(否則量到的是換手那一格的跳躍)',
+          /if \(p\.tgt0Move != null && p\.tgtPhaseOk\)/.test(segR)
+          && /contPh = cont && p\.tgtPhase === ph0/.test(simBareM));
+      }
+      check('兩道走位的夾看 shapeSide(傳球在路上沿用傳球方),不是 ball.holder',
+        /const shapeSide = holder \? holder\.side : \(\(SHAPE_PASS_KEEP && ball\.passSide\) \|\| null\)/.test(simBareM)
+        && /if \(shapeSide === p\.side && p\.role !== 'GK'\)/.test(simBareM)
+        && /if \(shapeSide && shapeSide !== p\.side\)/.test(simBareM)
+        && !/if \(holder && holder\.side [!=]== p\.side/.test(simBareM));
+      /* `SPRINT_V` / `SPRINT_T` 跟 `LANE_FAR` 同一條:量測的邊界,引擎的行為不准讀。
+         **範圍自己算出來**(宣告那一行 + `noteRun` 的起訖),寫死行號的話下一輪又會紅在「行為沒變」。 */
+      {
+        const a3 = simBareM.indexOf('function noteRun(');
+        const span = a3 < 0 ? null : [a3, simBareM.indexOf('function ', a3 + 18)];
+        let stray = 0, tot = 0;
+        for (const name of ['SPRINT_V', 'SPRINT_T']) {
+          let at = -1;
+          while ((at = simBareM.indexOf(name, at + 1)) >= 0) {
+            tot++;
+            const isDecl = simBareM.slice(Math.max(0, at - 6), at) === 'const ';
+            if (!isDecl && !(span && at > span[0] && at < span[1])) stray++;
+          }
+        }
+        check('SPRINT_V / SPRINT_T 只給量測用:宣告與 noteRun 以外一處都不准有',
+          span && span[1] > span[0] && tot >= 4 && stray === 0, `整份 ${tot} 處、漏進行為 ${stray} 處`);
+      }
+      /* **加起來要等於真的跑掉的距離。** 掃原始碼守不住這一條 —— 漏掉一整類的症狀是
+         「剩下幾類的百分比看起來完全正常」,只有拿總和對一次才看得出來。 */
+      {
+        const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        const simM = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 5 });
+        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !simM.state().over; i++) simM.advance(1 / 60);
+        const run = simM.state().counts.run ?? {};
+        const why = Object.values(run.why ?? {}).reduce((a, b) => a + b, 0);
+        const role = Object.values(run.role ?? {}).reduce((a, b) => a + b, 0);
+        const real = simM.motion().players.filter(q => q.role !== 'GK').reduce((a, q) => a + q.dist, 0);
+        const rel = real > 0 ? Math.abs(why - real) / real : 1;
+        check('逐分支與逐位置的歸因加起來 = 外場球員真的跑掉的距離(漏一整類就會紅)',
+          real > 50000 && rel < 0.005 && Math.abs(role - why) / Math.max(1, why) < 0.005,
+          `分支 ${why.toFixed(0)} / 位置 ${role.toFixed(0)} / 實際 ${real.toFixed(0)} m,差 ${(100 * rel).toFixed(2)}%`);
+        check('衝刺有數到(≥ 7 m/s 持續 ≥ 1 秒),而且 1 秒門檻真的在做事',
+          (run.sprints?.home ?? 0) + (run.sprints?.away ?? 0) > 0
+          && (run.sprintDistAll?.home ?? 0) > (run.sprintDist?.home ?? 0),
+          `一場 ${(run.sprints?.home ?? 0) + (run.sprints?.away ?? 0)} 次`);
+      }
+    }
     }
   }
 }

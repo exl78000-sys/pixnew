@@ -445,6 +445,54 @@ const LANE_FAR = 4;
    「收窄買到多少」就混進了「母體換了」(本站在分母上付過很多次代價)。
    **量測的邊界,引擎的行為不准讀它。** */
 const SQUEEZE = [1, 0.75, 0.5, 0.25, 0];
+/* **衝刺的定義**(階段 5m 的量測用)。FotMob 的 `pace.sprintsPerMin` 數的是
+   「≥ 7.0 m/s 持續 ≥ 1 秒」算一次 —— 這個定義本站早就寫在 `JOCKEY_R` 與追鬆球那兩段
+   註解裡(它們的門檻就是拿它校準的),而 `check-sim` **從來沒有把它印出來**,
+   所以行為改了它會靜靜漂掉(「註解裡的『真實約 N』是憑印象的」那條坑)。
+   **量測的邊界,引擎的行為不准讀它們** —— 跟 `LANE_FAR` / `SQUEEZE` / `BOX_REVISIT` 同一條。
+   **衝刺「距離」的定義上游沒有寫明**,所以兩種都量:
+   `sprintDist` 只算進得了那 1 秒門檻的那幾次(跟次數同一批事件),
+   `sprintDistAll` 算所有 ≥ 7.0 m/s 的距離(含不到 1 秒的碎步)。
+   差很多就代表這個門檻在做事,只讀一個會講錯話(鐵則四)。 */
+const SPRINT_V = 7.0;
+const SPRINT_T = 1.0;
+/* **一球在傳的路上,陣型算誰持球**(2026-09-21,階段 5m)。**恆等元 0**(舊行為)。
+   兩道走位的夾(進攻的越位夾、防守的防線 + 盯人)本來都只看 `ball.holder`,
+   而傳球出腳到接到之間 `holder` 是 null —— 於是**每傳一球,二十二個人的夾就鬆開一次再夾回去**。
+   量出來:走位時間有 57% 在「鬆球」,而那裡面 **79% 是一球正在傳的路上**;
+   目標每次換相位跳 **14.63 公尺**、一分鐘跳 **19.7 次**,合計 **288 m/分・人** ——
+   那是目標路徑長的大頭(同一個相位裡連續走只有 169~201)。
+   真實足球裡「球在自己人之間飛」不是換手,防線不會因此重置。 */
+const SHAPE_PASS_KEEP = 0;                     /* **0 = 舊行為(現在用的)。** 掃描的結果見下面。
+
+   30 場 × 兩組獨立種子(1~30 / 1001~1030),恆等元 0 對 1:
+                          0 (1~30)  1 (1~30)  0 (1001~)  1 (1001~)   真實 / 錨
+     跑動 ARS / LIV        129/129   130/132   129/129    131/131     117 / 112
+     衝刺次數(兩隊)        4.13      4.78      4.15       4.81        2.42
+     衝刺距離(兩隊)        61.7      71.0      61.4       72.0        51
+     **被封阻**            4.8%      **12.0%** 5.2%       **11.8%**   32.0%
+     每場角球              9.0       **10.9**  9.5        **11.7**    11.8
+     **每場犯規**          20.4      **14.0**  23.5       **14.5**    20.8
+     每場黃牌              2.80      1.80      3.10       2.17        2.90
+     每場射門 / 預算       0.94      **1.15**  0.99       **1.19**    1.00
+     主隊進球(λ 1.99)     1.50      1.57      1.80       1.97
+     客隊進球(λ 0.70)     0.70      1.03      0.73       0.70
+     主 : 客               2.14      1.52      2.47       2.81        2.84
+
+   **照預先登記的驗收:退。** 要買的那三個(跑動 / 衝刺次數 / 衝刺距離)
+   **一個都沒有往錨靠,三個都更遠**;而犯規掉 **−33%**、黃牌 −33%、射門超預算 15~19%,
+   三個都在兩組種子上複現 —— 4o 的規矩:有錨大幅出界,別的數字的「改善」就不算數。
+   (強弱比**兩組種子方向相反**(1.52 vs 2.81),所以那一項無法判定 —— 5k 那條坑。)
+
+   **但它不是一條死路,而且要記清楚它買到了什麼**:被封阻 **×2.4**(4.8 → 12.0 / 5.2 → 11.8,
+   兩組都複現)是 5b~5l **七輪裡幅度最大的一次**(5l 那次是 2.9 → 4.8),角球也**落在錨上**
+   (9.0 → 10.9 / 9.5 → 11.7,錨 11.8)。兩個長年短缺的量同時動了。
+   **代價集中在接觸模型**(犯規 / 黃牌 / 射門預算),而那幾個常數(`DUEL_P` / `DUEL_FOUL_FIT` /
+   `SHOT_URGE`)**是對著現在這個會閃爍的站位校準出來的** —— 跟 4o 那條
+   「每秒判一次的率把暴露量偷偷編進去」是同一個形狀,只是這次被編進去的是**站位的抖動**。
+   所以下一輪的做法照 4v:**打開這個旗標、把那幾個常數一起迭代重量**,再看封阻與角球守不守得住。
+   **歸因還沒做**:為什麼夾住不放會讓犯規少三成、射門多兩成,這一輪沒有量出來 ——
+   逐相位的探針(`run.phase*`)已經在了,下一輪先用它,不要憑「講得通」的解釋動手。 */
 const DEFLECT_MIN_SPEED = 9;                   // 太慢的球不算折射,那是可以控的
 const DEFLECT_KEEP = 0.55;                     // 折射後保留的速度比例
 /* 折射的方向要**小改**,不是亂彈。第一版用 ±0.95 弧度(±54 度)加只留 45% 的速度 ——
@@ -1336,6 +1384,17 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        與「送不送得到」。上游**沒有錨**(沒有追蹤座標),只回報,不反推真實值。 */
     boxWho: {}, runFire: 0, runToBox: 0, runInBox: 0,
     shotChase: { shots: 0, tries: 0, withTry: 0, minPerp: 0, near: 0, cur: null },
+    /* **跑動的來源歸因**(2026-09-21,階段 5m)。跑動超錨,而「哪一支分支在跑」沒有量過 ——
+       4h 的規矩:先把來源逐類列出來,再決定動哪一個;某一類是 0 就是那條路根本沒鋪。
+       逐格把這一格跑掉的距離依 `wantWhy`(那一格是哪一支分支決定他要去哪)與位置累加。
+       **門將不算**:真值那一側是「外場一個位置」(球隊總計扣掉門將 ÷ 10),
+       把門將算進來就是兩邊不同批(本站在分母上付過很多次代價)。
+       上游**沒有**逐分支的錨(FotMob 只有全場總計),所以歸因只回報、不反推真實值 ——
+       它要回答的是「超出來的那一段在哪一支」,那是個**內部**問題。 */
+    run: { why: {}, role: {}, dist: { home: 0, away: 0 }, secs: 0,
+           shapeD: {}, shapeT: {}, shapeGo: {}, shapeN: {}, shape0: {}, shapeNet: {}, focus: 0,
+           phase0: {}, phaseT: {}, phaseD: {}, phaseN: {}, jumpD: 0, jumpN: 0, loosePass: 0, looseFree: 0,
+           sprints: { home: 0, away: 0 }, sprintDist: { home: 0, away: 0 }, sprintDistAll: { home: 0, away: 0 } },
     boxVisit: { home: null, away: null },
     boxFollow: { visits: 0, cand: 0, near: 0, ceil: 0, came: 0, dwell: 0, missWho: {}, missV: 0, missD: 0, missN: 0, ceilRun: 0, missTgt: 0, missTgtN: 0, missTgtNear: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
@@ -1889,6 +1948,68 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (q.wantWhy === 'block') cur.tries.add(q);
     }
   }
+  /* **跑動的來源歸因與衝刺**(2026-09-21,階段 5m,純觀測)。
+     **在走位迴圈之後叫** —— 這一格的速度是 `movePlayer` 剛算出來的,而
+     `p.dist` 加的就是 `hypot(vx,vy) * dt`(同一個量,不要另外推一份)。
+     `wantWhy` 也是那一格剛寫的,在迴圈之前讀到的是上一格的
+     (「取值與判條件要在同一個時間點」,本站記過兩次)。
+     純計數,不呼叫 rng。 */
+  function noteRun(dt) {
+    st.run.secs += dt;
+    for (const p of all()) {
+      const v = hypot(p.vx, p.vy), d = v * dt;
+      /* **兩個量的母體不一樣,因為兩個錨的母體不一樣。**
+         跑動的錨是「外場一個位置」(球隊總計**扣掉門將**再 ÷10,見側寫的 `outfieldPerMin`),
+         所以距離這一側排掉門將;衝刺的錨 `sprintsPerMin` 是**球隊總計**(上游的逐人 physical
+         只有距離與最高速,沒有逐人衝刺,拆不出門將),所以衝刺這一側**要含門將**。
+         兩邊各自跟自己的錨同一批 —— 這是本站付過很多次代價的那條規矩。 */
+      if (p.role !== 'GK') {
+        st.run.dist[p.side] += d;
+        const k = p.wantWhy ?? '?';
+        st.run.why[k] = (st.run.why[k] ?? 0) + d;
+        /* 逐位置用 **`p.pos`(本站自己的球員分類)**,不是 `p.role`(陣型的槽位)——
+           真值那一側(`league_.runByPos`)也是用 squad.pos 分的,兩邊同一個分類器才比得起來。
+           4-3-3 的槽位有三個 FWD,而本站的分類器一隊只認得出 0.74 個 —— 拿槽位去比分類器
+           就是兩邊不同批。名單裡認不出來的人退回槽位(`pos` 本來就是這樣填的)。 */
+        st.run.role[p.pos ?? p.role] = (st.run.role[p.pos ?? p.role] ?? 0) + d;
+        /* 走位那一格:球員跑的 vs 目標自己走的,**同一批格子**才比得起來 */
+        if (p.wantWhy === 'shape' && p.tgtMove != null) {
+          const k2 = p.pos ?? p.role;
+          st.run.shapeD[k2] = (st.run.shapeD[k2] ?? 0) + d;
+          st.run.shapeT[k2] = (st.run.shapeT[k2] ?? 0) + p.tgtMove;
+          if (p.tgt0Move != null) st.run.shape0[k2] = (st.run.shape0[k2] ?? 0) + p.tgt0Move;
+          if (p.tgtNet != null) st.run.shapeNet[k2] = (st.run.shapeNet[k2] ?? 0) + p.tgtNet;
+          /* 再依**這一格是誰持球**分一次:越位夾只在自己持球時生效、防線與盯人只在對手持球時生效,
+             所以拆成攻 / 守 / 鬆球就等於把三道夾分開(它們在時間上互斥)。 */
+          const ph = p.tgtPhase ?? '?';
+          /* 「鬆球」有兩種:**一球正在傳的路上**(`ball.passSide` 還在)與真的沒有人擁有。
+             前者在真實足球裡**不算換手** —— 而引擎的兩道夾都只看 `ball.holder`,
+             所以每傳一球,二十二個人的目標就被鬆開一次再夾回去。 */
+          if (ph === 'loose') { if (ball.passSide) st.run.loosePass += dt; else st.run.looseFree += dt; }
+          /* **換相位那一格**:目標從「夾過的」跳到「沒夾的」(或反過來)。
+             這才是目標路徑長的大頭 —— 而 `holder` 每傳一球就會變成 null 再變回來,
+             所以它一分鐘會發生很多次。跳幾公尺、一分鐘幾次要分開印:
+             一個大跳 vs 很多小跳,要改的地方不一樣。 */
+          if (p.tgtMove != null && !p.tgtPhaseOk) { st.run.jumpD += p.tgtMove; st.run.jumpN++; }
+          if (p.tgt0Move != null && p.tgtPhaseOk) { st.run.phase0[ph] = (st.run.phase0[ph] ?? 0) + p.tgt0Move;
+            st.run.phaseT[ph] = (st.run.phaseT[ph] ?? 0) + p.tgtMove;
+            st.run.phaseD[ph] = (st.run.phaseD[ph] ?? 0) + d;
+            st.run.phaseN[ph] = (st.run.phaseN[ph] ?? 0) + dt; }
+          st.run.shapeGo[k2] = (st.run.shapeGo[k2] ?? 0) + (p.going ? dt : 0);
+          st.run.shapeN[k2] = (st.run.shapeN[k2] ?? 0) + dt;
+        }
+      }
+      if (v >= SPRINT_V) {
+        st.run.sprintDistAll[p.side] += d;
+        p.sprT = (p.sprT ?? 0) + dt; p.sprD = (p.sprD ?? 0) + d;
+        if (!p.sprOn && p.sprT >= SPRINT_T) {
+          // 剛跨過 1 秒門檻:這一次算一趟衝刺,**前面那一秒的距離要補記**
+          p.sprOn = true; st.run.sprints[p.side]++; st.run.sprintDist[p.side] += p.sprD;
+        } else if (p.sprOn) st.run.sprintDist[p.side] += d;
+      } else { p.sprT = 0; p.sprD = 0; p.sprOn = false; }
+    }
+  }
+
   /* 一腳射門結束時把那一腳的診斷收起來(進球 / 出界 / 被碰到都算結束)。 */
   function closeShotChase() {
     const cur = st.shotChase.cur;
@@ -2318,8 +2439,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     // 攻勢的參考點追著球走,但有慣性(見 FOCUS_TAU)
     {
       const k = 1 - Math.exp(-dt / FOCUS_TAU);
+      const fx0 = st.focus.x, fy0 = st.focus.y;
       st.focus.x += (ball.x - st.focus.x) * k;
       st.focus.y += (ball.y - st.focus.y) * k;
+      st.run.focus += hypot(st.focus.x - fx0, st.focus.y - fy0);   // 階段 5m:上游走了多遠(純計數)
     }
     if (st.phase === 'dead') {
       st.deadT -= dt;
@@ -2336,8 +2459,14 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const spot = sp && (sp.att.get(p.code) ?? sp.def.get(p.code));
         const pos = pen ? { x: st.restart.x, y: st.restart.y }
           : spot ?? shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
+        /* 死球時走回位置**也是跑動**(2026-09-21,階段 5m)。第一版的歸因只掛在活球那一支,
+           於是逐分支加起來是 119 m/分・人而畫面上的錨是 129 —— **少了 8%**,
+           而它看起來就像「來源列完了」。4h 的規矩是把來源逐類列出來,
+           而漏掉一整類比某一類是 0 更難發現:剩下那幾類的百分比看起來完全正常。 */
+        p.wantWhy = spot ? 'spot' : 'dead';
         movePlayer(p, dt, near(p, pos) ? null : { ...pos, speed: spot ? SIM_RUN : SIM_JOG });
       }
+      noteRun(dt);                             // 階段 5m:死球那一段也要記(見上面那段註解)
       /* 主罰者還沒走到就多等(最多再 8 秒,防他被卡住時整場停住)。 */
       if (st.deadT <= 0 && st.restart?.kind === 'penalty' && st.deadT > -8
           && hypot(st.restart.taker.x - st.restart.x, st.restart.taker.y - st.restart.y) > 1.2) return;
@@ -2563,15 +2692,18 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         }
       } else {
         let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
+        const raw0 = { x: pos.x, y: pos.y };     // 階段 5m:夾之前的原始目標,用來拆「擺動是誰造成的」
         /* 有球的那一隊:前場的人不越過越位線。這一行是「看起來像足球」的另一半 ——
            沒有它前鋒會站到對方底線,防線跟著退,整場擠在門前。 */
-        if (holder && holder.side === p.side && p.role !== 'GK') {
+        /* 夾看的是**這一刻算誰持球**,不是 `ball.holder` 有沒有值(見 SHAPE_PASS_KEEP)。 */
+        const shapeSide = holder ? holder.side : ((SHAPE_PASS_KEEP && ball.passSide) || null);
+        if (shapeSide === p.side && p.role !== 'GK') {
           const line = offsideLine(p.side);
           pos = { x: s.att > 0 ? Math.min(pos.x, line) : Math.max(pos.x, line), y: pos.y };
         }
         /* 沒有球的那一隊:整條隊形退到球的**自家門那一側**,後衛再各自盯一個最近的對手。
            這一段是「看起來像不像足球」的主要來源 —— 沒有它,防守方只是散在自己的格子裡。 */
-        if (holder && holder.side !== p.side) {
+        if (shapeSide && shapeSide !== p.side) {
           const goalX = s.att > 0 ? 0 : PITCH_W;
           // 防線:球往哪邊走,整條線跟著退,但不會退進自家門
           const lineX = goalX + (ball.x - goalX) * (1 - LINE_DROP * (s.lineDrop ?? 1));
@@ -2667,12 +2799,44 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
            **擋在球道上的防守員**,不是禁區裡的人。
            參數已經拿掉(「量出來完全不動的參數不要留著裝樣子」);真實的深度分佈留在這段註解裡,
            下一個人要重走這條路的話不必再量一次。 */
+        /* **目標自己走了多遠**(2026-09-21,階段 5m 的第二支探針,純觀測)。
+           走位佔了全部跑動的 70%,而「跑太多」有兩種完全不同的成因:
+           跟著一個**擺動太大的目標**忠實地跑,或在一個幾乎不動的目標旁邊**來回**。
+           兩者要改的地方不一樣(目標的擺幅 vs `IDLE_GO` / `IDLE_STOP`),
+           而球員自己的距離**分不出來** —— 這是 5j 那條「速度只有在方向對的時候才買得到東西」
+           的反面:跑太多要先問他跟的那個目標自己跑了多少。
+           只在**連續兩格都走位**時才算:中間插了死球或別的分支的話,
+           `pos` 的差是兩件事之間的跳躍,不是目標在走(取值與判條件要在同一個時間點)。 */
+        /* **相位也要跟上一格一樣才算**(否則量到的是換手那一格的跳躍,不是目標在走)。
+           第一版沒有這個條件,於是「鬆球(都不夾)」那一列印出 ×2.6 —— 而鬆球時
+           `holder` 是 null、兩道夾都不生效,夾前夾後**必須完全相同**。
+           ×2.6 全部是換手那一格從「夾過的」跳到「沒夾的」。
+           自己跟自己矛盾的數字就是線索:那一列的正確值只能是 ×1.0。 */
+        /* 相位要跟**夾實際看的那一個**一致(`shapeSide`),不是 `ball.holder` ——
+           不然 `SHAPE_PASS_KEEP` 打開之後,這支探針量的還是舊的分界。 */
+        const ph0 = !shapeSide ? 'loose' : shapeSide === p.side ? 'att' : 'def';
+        const cont = p.tgtAt != null && st.t - p.tgtAt > 0 && st.t - p.tgtAt < dt * 1.5;
+        const contPh = cont && p.tgtPhase === ph0;
+        p.tgtMove = cont ? hypot(pos.x - p.tgtPrev.x, pos.y - p.tgtPrev.y) : null;
+        /* **拆成兩段**:`shapeOf` 自己(跟著 focus 平移)與後面那幾道夾
+           (越位線、防線、盯人)。兩個差很多的話,擺動是夾造成的不是陣型造成的 ——
+           而夾是**離散**的(越位線換人、盯的對象換人),那跟「目標在平移」要改的地方完全不同。 */
+        p.tgt0Move = cont ? hypot(raw0.x - p.tgt0Prev.x, raw0.y - p.tgt0Prev.y) : null;
+        /* 路徑長分不出「一直往同一個方向走」與「原地抖」—— 所以再量**一秒的淨位移**。
+           這是本站量跑動時學到的那一條(「跑動距離看不見呆站」)反過來用。 */
+        if (p.tgtSecAt == null || st.t - p.tgtSecAt >= 1) {
+          p.tgtNet = (p.tgtSecAt != null && cont) ? hypot(pos.x - p.tgtSec.x, pos.y - p.tgtSec.y) : null;
+          p.tgtSec = { x: pos.x, y: pos.y }; p.tgtSecAt = st.t;
+        } else p.tgtNet = null;
+        p.tgtPrev = { x: pos.x, y: pos.y }; p.tgt0Prev = raw0; p.tgtAt = st.t;
+        p.tgtPhase = ph0; p.tgtPhaseOk = contPh;
         want = p.going ? { x: pos.x, y: pos.y, speed: d > 22 ? SIM_RUN : d > 6 ? SIM_JOG : SIM_WALK } : null;
       }
       movePlayer(p, dt, want);
     }
     noteBoxWho();                              // 階段 5i:純計數,要在走位迴圈之後
     noteShotChase();                           // 階段 5l:純計數,要在走位迴圈之後(讀這一格的 wantWhy)
+    noteRun(dt);                               // 階段 5m:純計數,要在走位迴圈之後(速度與 wantWhy 都是這一格的)
 
     // ── 球 ──
     /* **要重新讀 ball.holder,不能用這一格開頭抓的那個 local。**
@@ -3450,6 +3614,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         boxWho: { ...st.boxWho }, runFire: st.runFire, runToBox: st.runToBox, runInBox: st.runInBox,
         shotChase: { shots: st.shotChase.shots, tries: st.shotChase.tries, withTry: st.shotChase.withTry,
           minPerp: st.shotChase.minPerp, near: st.shotChase.near },
+        run: { why: { ...st.run.why }, role: { ...st.run.role }, dist: { ...st.run.dist }, secs: st.run.secs,
+          shapeD: { ...st.run.shapeD }, shapeT: { ...st.run.shapeT }, shapeGo: { ...st.run.shapeGo }, shapeN: { ...st.run.shapeN },
+          shape0: { ...st.run.shape0 }, shapeNet: { ...st.run.shapeNet }, focus: st.run.focus,
+          phase0: { ...st.run.phase0 }, phaseT: { ...st.run.phaseT }, phaseD: { ...st.run.phaseD }, phaseN: { ...st.run.phaseN },
+          jumpD: st.run.jumpD, jumpN: st.run.jumpN, loosePass: st.run.loosePass, looseFree: st.run.looseFree,
+          sprints: { ...st.run.sprints }, sprintDist: { ...st.run.sprintDist }, sprintDistAll: { ...st.run.sprintDistAll } },
         boxFollow: { ...st.boxFollow, missWho: { ...st.boxFollow.missWho } },
         shotBox: { open: { ...st.shotBox.open }, corner: { ...st.shotBox.corner } },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
@@ -3470,7 +3640,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 量測用:跑動量、最高速、控球 —— 這幾個要對得回 FotMob 的真實值,不然「像不像在踢球」沒有判準 */
     motion: () => ({
       secs: st.t,
-      players: all().map(p => ({ code: p.code, side: p.side, role: p.role, dist: p.dist, vtop: p.vtop, vmax: p.vmax, vmaxReal: p.vmaxReal })),
+      players: all().map(p => ({ code: p.code, side: p.side, role: p.role, pos: p.pos, dist: p.dist, vtop: p.vtop, vmax: p.vmax, vmaxReal: p.vmaxReal })),
     }),
     events: () => st.events.map(e => ({ ...e })),
     /* 一次進攻怎麼結束的 —— 賽後解讀吃這個(舊引擎那邊是「回合」,這裡是控球串) */
