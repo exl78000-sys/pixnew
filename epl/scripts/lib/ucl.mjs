@@ -211,14 +211,35 @@ const SQUAD_STATS = [
   'total_tackle', 'interception', 'yellow_card',
 ];
 
-function squadsByTeam(players, categories, root) {
+/* FotMob team id → football-data team id(人工交付並核對過的那份對照)。
+   交付檔那一路的球員資料用的是 FotMob 的 id,而 `ucl.json` 其餘所有地方
+   (場次、積分榜、陣容)用的都是 football-data 的 id ——
+   **同一個欄位名兩種語意是本站踩過的坑**,所以進產物之前一律換成後者。 */
+function fotmobToFdMap(root) {
   const idPath = joinPath(root, 'data', 'manual', 'ucl-team-ids.json');
-  const fmToFd = new Map();
-  if (existsSyncFn(idPath)) {
-    for (const t of JSON.parse(readFileSyncFn(idPath, 'utf8')).teams ?? []) {
-      fmToFd.set(t.fotmobId, t.fdId);
-    }
+  const m = new Map();
+  if (existsSyncFn(idPath)) for (const t of JSON.parse(readFileSyncFn(idPath, 'utf8')).teams ?? []) m.set(t.fotmobId, t.fdId);
+  return m;
+}
+
+/* 球員榜的 teamId 換成 football-data 的 id(2026-09-21)。
+   **交付檔那一路本來給的是 FotMob id** —— 而本站自己累計的那一路(leadersFromAggregate)
+   給的是 football-data id,兩季用一種、一季用另一種,同一個欄位兩種語意。
+   前端拿它查隊徽,對不上的話**不會報錯,只會靜靜沒有隊徽**。
+   對照不到的**不丟掉那一列**(他是真的射手),而是把 teamId 設成 null ——
+   留一個別的空間的 id 在那裡,下一個人會拿它去查別的東西(鐵則三:不編身分)。 */
+function leadersToFdIds(leaders, root) {
+  const fmToFd = fotmobToFdMap(root);
+  let unmapped = 0;
+  for (const b of leaders ?? []) for (const r of b.rows ?? []) {
+    const fd = fmToFd.get(Number(r.teamId)) ?? fmToFd.get(r.teamId);
+    if (fd == null) { r.teamId = null; unmapped++; } else r.teamId = String(fd);
   }
+  return unmapped;
+}
+
+function squadsByTeam(players, categories, root) {
+  const fmToFd = fotmobToFdMap(root);
   const titleOf = new Map((categories ?? []).map(c => [c.slug, c.title]));
   const num = v => (Number.isFinite(v) ? v : null);
   const byFd = new Map();
@@ -510,6 +531,10 @@ export async function loadUclSeasons(root, sources) {
       // 抽籤檔沒有比分可核,不能替球員榜背書(它也沒有球員):只有逐場核對通過才採用
       if (!draw && s.crossCheck.passed && Array.isArray(fm.players) && fm.players.length) {
         s.leaders = buildLeaders(fm.players);
+        /* 交付檔給的是 FotMob 的 team id,產物一律換成 football-data 的
+           (其餘所有地方用的都是後者;前端拿它查隊徽)。換不到的設成 null,
+           畫面上那幾列就只有名字 —— 而不是掛一個別的 id 空間的數字。 */
+        s.leaderTeamIdUnmapped = leadersToFdIds(s.leaders, root);
         s.leaderPool = fm.players.length;
         /* 逐隊陣容。走的是**同一份、同一道核對**的資料 ——
            球員榜本來就從這 879 人裡挑前幾名,只是以前沒有按隊分過。
@@ -581,6 +606,44 @@ export async function loadUclSeasons(root, sources) {
  * 所以那一格是「隊徽 + 名字」,不是連結 —— 連到一個空頁比不連更糟(鐵則三)。
  * Paphos FC 是 FotMob 三季檔案裡都沒有的那一支,照舊只有名字。
  */
+/* 歐冠的球隊身分來源:**一份定義,所有消費端共用**。
+ *
+ * 有兩個地方要用它 —— `loadUclSeasons` 的隊名 → 隊碼對照(決定一支歐冠球隊
+ * 在本站算不算「認得的」),以及 `uclTeamAssets` 的名字與隊徽。各寫一份的話
+ * 改了一邊另一邊會悄悄過期,而且 `ucl.json` / `ucl-teams.json` 必須由
+ * `build.mjs` 與 `build-laliga.mjs` 產出**逐位元組相同**的內容(有測試守著),
+ * 兩邊的順序只要不一樣就會分岔。
+ *
+ * **2026-09-21 從 pl + es1 擴成五個聯賽。** 德義法 2026-09-15 上線之後,
+ * Inter / Napoli / Roma / Como / Dortmund / Stuttgart / Bayern / RB Leipzig /
+ * PSG / Lille / Lens 這 11 支在歐冠頁一直被當成「本站認不得的球隊」——
+ * 本站有它們的完整資料、球隊頁與隊徽,只是這張表沒跟上(「手寫的聯賽清單」)。
+ * 實測本季 36 隊有隊碼的從 **10 變成 21**,而新認得的 11 支**每一支在自己聯賽的
+ * 隊徽檔裡都有圖** —— 所以不會發生「從上游的真隊徽退回灰方塊」,那正是
+ * CLAUDE.md 記著要先確認的那一件事。
+ *
+ * **英冠(en2)刻意不在裡面**:它不打歐冠,收進來只會多一個隊碼撞車的來源
+ * (Burnley 在英超與英冠都是 BUR)。
+ *
+ * 檔名推不出來(es1 → teams-la-liga、de1 → teams-bundesliga…),所以這是一份
+ * **明確清單**,`npm test` 拿 `web/data/leagues/` 逐個比對它 —— 跟
+ * `build-obsidian.mjs` 的 LEAGUES 同一個處理:「推不出來」不是留著手寫的理由,
+ * 是加守門的理由。 */
+export const UCL_IDENTITY_LEAGUES = [
+  { league: 'pl',  teams: 'teams.json',            crests: 'crests.json' },
+  { league: 'es1', teams: 'teams-la-liga.json',    crests: 'crests-la-liga.json' },
+  { league: 'de1', teams: 'teams-bundesliga.json', crests: 'crests-bundesliga.json' },
+  { league: 'it1', teams: 'teams-serie-a.json',    crests: 'crests-serie-a.json' },
+  { league: 'fr1', teams: 'teams-ligue-1.json',    crests: 'crests-ligue-1.json' },
+];
+
+/* `loadUclSeasons` 要的那一組(league + codeOf)。兩個 build 都呼叫這一支,
+   不各自拼一份 —— 順序也由這裡決定,產出才會逐位元組相同。 */
+export async function uclIdentitySources(root) {
+  const { loadTeams } = await import('./teams.mjs');
+  return UCL_IDENTITY_LEAGUES.map(src => ({ league: src.league, codeOf: loadTeams(root, { file: src.teams }).codeOf }));
+}
+
 export async function uclTeamAssets(root, ucl) {
   const { readFile } = await import('node:fs/promises');
   const { join } = await import('node:path');
@@ -606,12 +669,8 @@ export async function uclTeamAssets(root, ucl) {
   walk(ucl);   // 賽季之外的地方(例如 teamCodeConflicts)照舊也收
   const currentSeason = (ucl?.seasons ?? []).find(s => s.current)?.label ?? ucl?.seasons?.[0]?.label ?? null;
 
-  const sources = [
-    { league: 'pl', teams: 'teams.json', crests: 'crests.json' },
-    { league: 'es1', teams: 'teams-la-liga.json', crests: 'crests-la-liga.json' },
-  ];
   const rows = [];
-  for (const src of sources) {
+  for (const src of UCL_IDENTITY_LEAGUES) {
     const T = loadTeams(root, { file: src.teams });
     const cp = join(root, 'data', 'manual', src.crests);
     const crests = existsSync(cp) ? (JSON.parse(await readFile(cp, 'utf8')).crests ?? {}) : {};

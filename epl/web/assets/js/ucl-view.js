@@ -42,9 +42,13 @@ let externalCrest = new Map();
 /* 名字刻意避開 core.js 的 teamCell —— 單檔版會把共用模組攤平到頂層,
    跟 core 的匯出同名就是 SyntaxError(分頁版有模組作用域,看不出來)。
    bundle.mjs 有一條守門擋這種撞名。 */
-function uclTeamCell(t, { align = 'left', strong = false } = {}) {
+/* `short`:用上游給的簡稱,不用本站名冊的全名。**只給球員榜那種一列塞四欄的地方** ——
+   對戰列刻意用全名(兩頁一致,見上面那一段),而榜上一格只有 90 px 左右,
+   全名會變成「Paris Sai…」「Borussia…」,而簡稱 PSG / Dortmund 本來就放得下。
+   身分由隊徽與連結帶,名字在這裡是輔助。 */
+function uclTeamCell(t, { align = 'left', strong = false, short = false } = {}) {
   if (!t?.name) return '<span class="dim small">待定</span>';
-  const label = C.esc(registered(t.code) ? C.name(t.code) : t.name);
+  const label = C.esc(!short && registered(t.code) ? C.name(t.code) : t.name);
   const weight = strong ? 'font-weight:700' : '';
   if (!t.code) {
     const crest = externalCrest.get(t.id);
@@ -522,6 +526,17 @@ function drawView(season) {
 function leaderBoards(season) {
   if (!season.leaders?.length) return '';
   const fmt = (v, dp) => (dp ? Number(v).toFixed(dp) : v);
+  /* 隊徽(2026-09-21)。榜上每一列的 `teamId` **是 football-data 的 team id** ——
+     跟 `ucl.json` 裡場次兩邊的 `id` 同一個空間(本季 21 組 (teamId, 隊名) 逐一對過,
+     id 與名字都一樣、0 筆對不上),所以直接查得到身分,不需要任何 id 橋。
+     (我一度寫下「那是 FotMob id、沒有橋就是編身分」—— 那是**沒有量就下的結論**,
+     量一次就推翻了。鐵則:斷言兩個 id 對不起來之前,先把它們拿去對一次。)
+     走整份收一次(`uclSeasonMatches` 含淘汰賽),不列舉區塊 —— 只讀 leagueMatches 的話
+     二月起淘汰賽才出現的球隊會靜靜查不到身分。 */
+  const sideById = new Map();
+  for (const m of C.uclSeasonMatches(season)) for (const t of [m.home, m.away]) if (t?.id != null) sideById.set(String(t.id), t);
+  // 查不到就只給上游的名字:本站不替一支認不得的球隊編身分(鐵則三)
+  const teamOf = r => sideById.get(String(r.teamId)) ?? { name: r.team };
   return `
     <div class="section"><h2>球員榜</h2>
       <span class="hint">${season.playerLayer?.source === 'match-aggregate'
@@ -531,12 +546,13 @@ function leaderBoards(season) {
       ${season.leaders.map(b => `<div class="card">
         <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3>
           <span class="dim tiny">母體 ${b.pool} 人</span></div>
-        ${/* 跟盃賽頁的球員榜同一組規則(.lead-board)—— 隊名沒有隊徽,但多包一層 span
-             讓截斷的選擇器兩邊共用。 */''}
+        ${/* 跟盃賽頁的球員榜同一組規則(.lead-board)。隊伍那一格走 uclTeamCell:
+             本站認得的畫隊徽並連到球隊頁,認不得而上游有圖的只畫圖不連結,
+             兩種都沒有的只給名字 —— 跟這一頁其他地方同一條界線。 */''}
         <div class="lead-board">
           ${b.rows.map((r, i) => `<span class="tiny dim mono">${i + 1}</span>
             <span class="small lead-name">${C.esc(r.name)}</span>
-            <span class="tiny dim lead-team"><span>${C.esc(r.team)}</span></span>
+            <span class="tiny dim lead-team">${uclTeamCell(teamOf(r), { short: true })}</span>
             <span class="small lead-val">${fmt(r.value, b.dp)}${C.esc(b.unit)}</span>`).join('')}
         </div>
       </div>`).join('')}

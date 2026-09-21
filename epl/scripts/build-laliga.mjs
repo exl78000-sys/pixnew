@@ -16,7 +16,7 @@ import { loadTeams } from './lib/teams.mjs';
 import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
 import { europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
 import { numberProfile, traditionVsData, formationUsage, usageAsRows } from './lib/knowledge.mjs';
-import { loadUclSeasons, uclTeamAssets } from './lib/ucl.mjs';
+import { loadUclSeasons, uclTeamAssets, uclIdentitySources } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
 import { uclElo } from './lib/ucl-elo.mjs';
 import { uclDetails, writeUclDetails, uclScoreContext } from './lib/ucl-details.mjs';
@@ -1203,7 +1203,9 @@ async function main() {
     const other = loadTeams(ROOT);
     const fx = [...lastMatches, ...curPlayed];
     // 歐冠在這裡就載進來(說明見 build.mjs 的同一段);下面歐冠那一段用同一份
-    uclData = await loadUclSeasons(ROOT, [{ league: 'pl', codeOf: other.codeOf }, { league: 'es1', codeOf: T.codeOf }]);
+    /* 身分來源收在 lib/ucl.mjs 的 uclIdentitySources ——兩個 build 各拼一份的話,
+       順序或內容一不一樣,兩份 ucl.json 就不再逐位元組相同(有測試守著)。 */
+    uclData = await loadUclSeasons(ROOT, await uclIdentitySources(ROOT));
     const uclCtx = uclScoreContext(uclData);
     const r = await loadCurated({
       root: ROOT, league: 'es1', asOf: AS_OF,

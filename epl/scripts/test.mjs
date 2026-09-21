@@ -5930,10 +5930,78 @@ function checkUcl() {
   }
   const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
 
+  /* 身分來源(2026-09-21)。以前只有 pl + es1,德義法 9/15 上線之後沒有人回來加 ——
+     於是 Inter / Dortmund / PSG / Bayern 那一批在歐冠頁一直是「本站認不得的球隊」,
+     而本站有它們的完整資料、球隊頁與隊徽。守三件:
+       一、清單涵蓋 `web/data/leagues/` 底下每一個**會打歐冠**的聯賽(英冠刻意不在,
+           它不打歐冠、而且隊碼會跟英超撞);
+       二、兩個 build 都走共用的那一支,沒有人自己再拼一份 sources
+           (兩份 ucl.json 必須同結構,各拼一份順序一歪就分岔);
+       三、新認得的球隊**在自己聯賽的隊徽檔裡真的有圖** —— 沒有的話,那一隊會從
+           「上游的真隊徽」退回灰方塊,那是 CLAUDE.md 記著要先確認的事。 */
+  {
+    const src = readFileSync(join(ROOT, 'scripts', 'lib', 'ucl.mjs'), 'utf8');
+    const block = src.slice(src.indexOf('export const UCL_IDENTITY_LEAGUES'), src.indexOf('export async function uclIdentitySources'));
+    const listed = [...block.matchAll(/league: '([a-z0-9]+)',\s*teams: '([^']+)',\s*crests: '([^']+)'/g)];
+    const keys = new Set(listed.map(m => m[1]));
+    const onDisk = readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+      .filter(e => e.isDirectory()).map(e => e.name);
+    /* 不打歐冠的聯賽。列在這裡是為了「新增聯賽時這一條會紅」—— 預設是要加進去,
+       不加的話要在這裡寫明理由,而不是靜靜地漏掉。 */
+    const NO_UCL = new Set(['en2']);
+    const missing = [...onDisk, 'pl'].filter(k => !keys.has(k) && !NO_UCL.has(k));
+    ok(missing.length === 0, '歐冠的身分來源涵蓋每一個會打歐冠的聯賽(英冠除外)',
+      missing.length ? `少了:${missing.join('、')}` : `${keys.size} 個`);
+    const noFile = listed.filter(m => !existsSync(join(ROOT, 'data', 'manual', m[2]))
+      || !existsSync(join(ROOT, 'data', 'manual', m[3]))).map(m => m[1]);
+    ok(noFile.length === 0, '清單指的名冊與隊徽檔都存在', noFile.join('、') || '—');
+    for (const f of ['build.mjs', 'build-laliga.mjs']) {
+      const b = readFileSync(join(ROOT, 'scripts', f), 'utf8');
+      ok(/loadUclSeasons\(ROOT, await uclIdentitySources\(ROOT\)\)/.test(b)
+        && !/loadUclSeasons\(ROOT, \[/.test(b), `${f} 走共用的身分來源,沒有自己拼一份`);
+    }
+    // 三、有隊碼的球隊一定要查得到隊徽(不然畫面會從上游的真圖退回灰方塊)
+    const assetsPath = join(ROOT, 'web', 'data', 'ucl-teams.json');
+    if (existsSync(assetsPath)) {
+      const a = JSON.parse(readFileSync(assetsPath, 'utf8'));
+      const noCrest = (a.teams ?? []).filter(t => !t.crest).map(t => `${t.league}/${t.code}`);
+      ok(noCrest.length === 0, '本站認得的歐冠球隊每一支都有隊徽', noCrest.join('、') || `${(a.teams ?? []).length} 支`);
+    }
+  }
+
   const W = join(ROOT, 'web');
   const uclPath = join(W, 'data', 'ucl.json');
   if (!existsSync(uclPath)) { console.log('  (沒有 ucl.json,略過)'); return 0; }
   const ucl = JSON.parse(readFileSync(uclPath, 'utf8'));
+
+  /* 球員榜的隊徽(2026-09-21)。**釘住的是「榜上的 teamId 跟場次的 id 是同一個空間」** ——
+     我一度憑印象寫下「那是 FotMob id,沒有橋就是編身分」,而量一次就推翻了:
+     本季 21 組 (teamId, 隊名) 逐一比對,id 與名字都一樣、0 筆對不上。
+     這一條是紅線不是回報:哪天上游換了 id 空間,榜上的隊徽會**靜靜全部消失**
+     (查不到就退回只有名字,不報錯)。走整份收一次(含淘汰賽的 legs),
+     只讀 leagueMatches 的話二月起才出現的球隊會被誤判成對不上。 */
+  for (const season of ucl.seasons ?? []) {
+    if (!season.leaders?.length) continue;
+    const sideById = new Map();
+    const walkLegs = v => {
+      if (Array.isArray(v)) { for (const x of v) walkLegs(x); return; }
+      if (!v || typeof v !== 'object') return;
+      for (const t of [v.home, v.away]) if (t && typeof t === 'object' && t.id != null) sideById.set(String(t.id), t);
+      for (const x of Object.values(v)) walkLegs(x);
+    };
+    walkLegs(season.leagueMatches ?? []); walkLegs(season.rounds ?? []);
+    const ids = new Set();
+    for (const b of season.leaders) for (const r of b.rows ?? []) ids.add(String(r.teamId));
+    /* null 是**刻意的**:交付檔那一路給的是 FotMob 的 id,對照不到的就不掛 id
+       (留一個別的空間的數字在那裡,下一個人會拿它去查別的東西)。
+       所以紅線是「有 id 的一定對得上」,而不是「每一列都要有 id」。 */
+    const unknown = [...ids].filter(id => id !== 'null' && !sideById.has(id));
+    ok(unknown.length === 0, `${season.label} 球員榜的 teamId 跟場次的球隊 id 是同一個空間`,
+      unknown.length ? `對不上 ${unknown.length} 個:${unknown.slice(0, 5).join('、')}` : `${[...ids].filter(x => x !== 'null').length} 支`);
+    // 涵蓋率只回報:對照得到幾支、本站認得幾支,都會隨賽季與交付內容變
+    const named = [...ids].filter(id => sideById.get(id)?.code).length;
+    console.log(`    ${season.label} 球員榜上的球隊:${ids.size} 組,其中對得上 ${ids.size - (ids.has('null') ? 1 : 0) - unknown.length} 支、本站認得 ${named} 支(只回報)`);
+  }
 
   /* 兩個聯賽必須是**同一份**。歐冠是跨聯賽的賽事,兩邊看到不一樣的東西
      代表有人複製了一份轉換邏輯過去,那份遲早會漂移。

@@ -212,3 +212,11 @@ jobs:
         working-directory: epl
         run: npm run probe:laliga-postmatch
         continue-on-error: true
+
+      # 歐冠球員榜想加球員照片,而倉庫裡一張都沒有。先問的是「**我們本來就抓的那份回應裡有沒有圖**」——
+      # 有的話照片是零額外請求;沒有才談一人一個請求(抓取禮貌那一條)。硬上限 3 個請求,不寫快取。
+      # 排在**最後一步**:讀 log 是抓尾端,排前面的輸出會被後面的步驟擠出視窗(那條坑記過)。
+      - name: 探測歐冠球員照片(先問回應裡有沒有,再談要不要一人一個請求)
+        working-directory: epl
+        run: npm run probe:ucl-photo
+        continue-on-error: true
