@@ -1313,7 +1313,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        與「送不送得到」。上游**沒有錨**(沒有追蹤座標),只回報,不反推真實值。 */
     boxWho: {}, runFire: 0, runToBox: 0, runInBox: 0,
     boxVisit: { home: null, away: null },
-    boxFollow: { visits: 0, cand: 0, near: 0, ceil: 0, came: 0, dwell: 0, missWho: {}, missV: 0, missD: 0, missN: 0, ceilRun: 0 },
+    boxFollow: { visits: 0, cand: 0, near: 0, ceil: 0, came: 0, dwell: 0, missWho: {}, missV: 0, missD: 0, missN: 0, ceilRun: 0, missTgt: 0, missTgtN: 0, missTgtNear: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
@@ -1802,6 +1802,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
               st.boxFollow.missV += c.nv ? c.sv / c.nv : 0;
               st.boxFollow.missD += c.d0 - distToBox(c.q, gx);   // 正 = 這一段真的靠近了
               st.boxFollow.missN++;
+              /* **他的陣型目標離禁區邊多遠**(階段 5j)。`shapeD2B` 是走位分支寫的,
+                 只有真的走那一支的那一格才有 —— 沒有就不算,不要拿 0 湊數
+                 (「0 是一個看起來很像答案的數字」)。 */
+              if (c.q.shapeD2B != null) { st.boxFollow.missTgt += c.q.shapeD2B; st.boxFollow.missTgtN++; }
+              if (c.q.shapeD2B != null && c.q.shapeD2B <= 3) st.boxFollow.missTgtNear++;
             }
           }
         }
@@ -1834,9 +1839,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   }
 
   /* 離禁區邊還有多遠(在禁區裡就是 0)。矩形的距離,跟 `inBoxAt` 同一個判準。 */
-  function distToBox(q, gx) {
-    const dx = Math.max(0, Math.abs(gx - q.x) - BOX_D);
-    const dy = Math.max(0, Math.abs(q.y - PITCH_H / 2) - BOX_W);
+  function distToBox(q, gx, at = null) {
+    const x = at ? at.x : q.x, y = at ? at.y : q.y;
+    const dx = Math.max(0, Math.abs(gx - x) - BOX_D);
+    const dy = Math.max(0, Math.abs(y - PITCH_H / 2) - BOX_W);
     return hypot(dx, dy);
   }
 
@@ -2512,6 +2518,29 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
            逐位置量出來的證據:第一版 DEF 113 m/分(正好是真實值)、MID 143、FWD 169,
            而距離裡有 17.3% 是衝刺(真實足球不到一成)。差別就在這一行:
            原本超過 12 m 就用跑的,而前鋒的陣型目標會跟著球大幅擺動,於是整場在衝。 */
+        /* **他要跑去哪**(2026-09-21,階段 5j 的第一支探針)。5i 證明他們在慢跑,
+           而「他們要跑去的那個點在不在禁區裡」沒有量過 —— 目標在禁區外的話,
+           把速度調快只是讓他更快到一個禁區外的點(4l-2:兩個修正各自都對而買到零)。
+           純觀測:只寫一個數字欄位,不改 want、不呼叫 rng。 */
+        p.shapeD2B = distToBox(p, sideOf(p.side).att > 0 ? PITCH_W : 0, pos);
+        /* **「讓跟進的人用跑的」試過了,買到的是零(2026-09-21,階段 5j)。**
+           做法:進攻方、球在對方三分之一場時把上面那個 22 換成一個可掃的門檻
+           (恆等元 22,逐字等價,驗過)。30 場 × 三個值 —— 22(恆等元)/ 12 / 6:
+             禁區內射門當下的攻方人數  1.24 / 1.27 / 1.27   (天花板 2.62)
+             一次禁區進攻實際進到的人  0.97 / 1.01 / 0.97   (天花板的 25 / 25 / 24%)
+             禁區觸球倍率              2.01 / 1.99 / 2.02
+             射門在禁區內              59.9 / 58.9 / 58.9%  (真實 68.6)
+             被封阻                    2.9 / 2.6 / 3.2%     (真實 32.0)
+           **要買的東西一個都沒動**,而代價是:射門 / 預算 0.99 → 0.93、角球 8.8 → 8.2,
+           門檻推到 6(幾乎一律用跑的)時**強弱被壓縮** 1.70:0.70 = 2.43 → 1.50:0.87 = **1.72**
+           (2c 修好、4o / 4p / 4t / 5c 各賠過一次的那個東西)。
+           **原因在同一輪先量出來了**:那些「到得了卻沒到」的人,他們的陣型目標
+           離禁區邊 **17.9 公尺**、只有 **9%** 在 3 公尺內 —— 跑快只是讓他更快到一個
+           禁區外的點(4l-2:兩個修正各自都對,而買到的是零)。
+           所以槓桿是**目標**不是速度,而那是另一件事(見補齊規劃 5k)。
+           那個可掃的門檻**已經拿掉**:量出來完全不動的參數不要留著裝樣子,
+           它會讓下一個人以為那裡有一個旋鈕(`AERIAL_REACH` 那條坑)。
+           順帶一提跑動本來就已經超了(129 m/分 對真實 112 / 107),代價那一側早就付掉了。 */
         want = p.going ? { x: pos.x, y: pos.y, speed: d > 22 ? SIM_RUN : d > 6 ? SIM_JOG : SIM_WALK } : null;
       }
       movePlayer(p, dt, want);

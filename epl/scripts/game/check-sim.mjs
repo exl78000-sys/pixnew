@@ -1258,6 +1258,10 @@ if (simShots && realShots) {
   console.log(`  ${pad('　　他們這一段跑多快 / 靠近了多少')} `
     + `${((F.missV ?? 0) / mN).toFixed(2)} m/s\u3000${((F.missD ?? 0) / mN).toFixed(2)} 公尺`
     + `\u3000(天花板取的是各自的最高速,約 8~9 m/s)`);
+  console.log(`  ${pad('　　他們的陣型目標離禁區邊')} `
+    + `${((F.missTgt ?? 0) / Math.max(1, F.missTgtN ?? 0)).toFixed(1)} 公尺`
+    + `\u30003 公尺內的佔 ${(100 * (F.missTgtNear ?? 0) / Math.max(1, F.missTgtN ?? 0)).toFixed(0)}%`
+    + `\u3000← 目標在禁區外的話,調速度只是讓他更快到一個禁區外的點`);
   console.log('  　天花板低就代表「叫人跟進」這條路本身補不了(那時要問的是駐留);');
   console.log('  　天花板夠高而實際沒到,就一定有一條既有規則擋著 —— 上面那兩行就是拿來指名它的。');
 }

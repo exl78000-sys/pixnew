@@ -1581,6 +1581,44 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         chkOut.includes('每次越線平均待幾秒') && chkOut.includes('含沒有人碰到球的那')
         && !chkOut.includes('每次碰得到球的進去,待幾秒'), `check-sim 輸出 ${chkOut.length} 字元`);
     }
+
+    /* 29. 階段 5j:**「讓跟進的人用跑的」買到的是零**(2026-09-21)。5i 指名了走位分支的
+       速度檔,而同一輪沒問「他們要跑去哪」——量出來那些人的陣型目標離禁區邊 **17.9 公尺**、
+       只有 9% 在 3 公尺內,所以跑快只是讓他更快到一個禁區外的點(4l-2 那條坑)。
+       掃 22(恆等元)/ 12 / 6 的結果寫在 `game-sim.js` 那一行的註解裡,可掃的門檻已拿掉。
+       這一節守的是:① 那個否定結果**沒有被偷偷改回去**(速度檔是無條件的);
+       ② 新加的 `shapeD2B` 是**量測的欄位**,引擎的行為不准讀它;
+       ③ 沒有值的那幾格不准拿 0 湊數;④ check-sim 真的把那一排印出來。 */
+    {
+      const simBareC = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      /* 否定結果要守得住:速度檔**無條件**,而且那個掃完不動的門檻一個字都不准留下
+         (「量出來完全不動的參數不要留著裝樣子」)。 */
+      check('5j 的否定結果還在:走位的速度檔是無條件的,沒有留下那個掃不動的門檻',
+        /speed: d > 22 \? SIM_RUN : d > 6 \? SIM_JOG : SIM_WALK/.test(simBareC)
+        && !/FOLLOW_RUN/.test(simBareC));
+      /* `shapeD2B` 跟 `LANE_FAR` / `BOX_REVISIT` 同一條規則:**量測的欄位,行為不准讀它**。
+         允許的位置只有兩處 —— 走位分支裡那一行寫入,與量測函式 `noteBoxFrame` 裡的讀取。 */
+      {
+        const a = simBareC.indexOf('function noteBoxFrame(');
+        const span = a < 0 ? null : [a, simBareC.indexOf('function ', a + 22)];
+        let stray = 0, at = -1, tot = 0;
+        while ((at = simBareC.indexOf('shapeD2B', at + 1)) >= 0) {
+          tot++;
+          const isWrite = simBareC.slice(at, at + 40).startsWith('shapeD2B = distToBox(');
+          if (!isWrite && !(span && at > span[0] && at < span[1])) stray++;
+        }
+        check('shapeD2B 只給量測用:寫入那一行與 noteBoxFrame 以外一處都不准有',
+          tot >= 2 && stray === 0, `整份 ${tot} 處、漏進行為 ${stray} 處`);
+      }
+      /* 沒走到走位分支的那幾格沒有 `shapeD2B`,**不可以拿 0 去湊分母** ——
+         那會把平均往下拉,而 0 看起來剛好像「目標就在禁區邊上」(0 是一個很像答案的數字)。 */
+      check('沒有值的那幾格不進分母(用 != null 守著,不是拿 0 湊)',
+        /if \(c\.q\.shapeD2B != null\) \{ st\.boxFollow\.missTgt \+= c\.q\.shapeD2B; st\.boxFollow\.missTgtN\+\+; \}/.test(simBareC));
+      check('check-sim **真的印出**「他們的陣型目標離禁區邊」那一排(跑一次掃 stdout)',
+        chkOut.includes('他們的陣型目標離禁區邊') && chkOut.includes('3 公尺內的佔'),
+        `check-sim 輸出 ${chkOut.length} 字元`);
+    }
     }
   }
 }
