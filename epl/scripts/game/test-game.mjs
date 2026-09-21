@@ -1619,6 +1619,68 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         chkOut.includes('他們的陣型目標離禁區邊') && chkOut.includes('3 公尺內的佔'),
         `check-sim 輸出 ${chkOut.length} 字元`);
     }
+
+    /* 30. 階段 5k:**「把目標拉進禁區」人真的進去了,而買到的還是零**(2026-09-21)。
+       5j 指名的槓桿是**目標**不是速度,這一輪照 `cornerSpots` 的慣例做了:持球方離對方球門
+       最近的 N 個,在球進到進攻三分之一時把走位目標拉進禁區(深度與橫向對著真實的
+       運動戰禁區內射門分佈挑)。恆等元 N = 0 驗過兩層(同種子 8/8 一字不差、30 場逐項相同)。
+       結果:機制**確實生效**(禁區內射門當下的攻方人數 1.24 → 1.85、連守方也被盯人帶進去
+       2.74 → 3.09),而**封阻一動都沒動**(2.9% → 3.1%,真實 32.0%);唯一動了的
+       「射門在禁區內」換一組種子就**符號相反**(+5.8 / −3.8 pp);代價是強弱被壓縮
+       (客隊進球 +2.7 / +2.8 SE,兩組種子都是)。完整的表在 `game-sim.js` 那段註解裡。
+       這一節守兩件事:① 那個否定結果**沒有被偷偷改回去**(走位的目標不由禁區的幾何決定);
+       ② 註解裡記的那兩個真實數字**對得回 shotmap**(鐵則一沒有「只在註解裡」這種例外)。 */
+    {
+      const simRawK = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const simBareK = simRawK.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      /* 守的是**性質**:走位分支裡對 `pos` 的每一次改寫都要是「已知的那幾處」——
+         數字 4 不是寫死的門檻,它就是下面那張表的長度,加一處合法的改寫就要在這裡列出來
+         (那正是要的覆核點)。這樣連「不用具名常數、直接寫 `PITCH_W - 10`」的版本也擋得住。 */
+      const kA = simBareK.indexOf('let pos = shapeOf(p.slot,');
+      const kE = simBareK.indexOf('const d = hypot(pos.x - p.x', kA);
+      const seg5k = kA >= 0 && kE > kA ? simBareK.slice(kA, kE) : '';
+      const POS_WRITES = [
+        /let pos = shapeOf\(p\.slot,/,
+        /pos = \{ x: s\.att > 0 \? Math\.min\(pos\.x, line\) : Math\.max\(pos\.x, line\), y: pos\.y \}/,
+        /pos = \{ x: behindBall, y: pos\.y \}/,
+        /pos = \{ x: cl\(m\.x \+ dx \/ d \* GOALSIDE/,
+      ];
+      const known = POS_WRITES.filter(re => re.test(seg5k)).length;
+      const writes = (seg5k.match(/pos = /g) ?? []).length;
+      check('5k 的否定結果還在:走位的目標只由陣型 / 越位 / 防守改寫,沒有「拉進禁區」那一步',
+        seg5k.length > 200 && known === POS_WRITES.length && writes === POS_WRITES.length
+        && !/BOX_RUN/.test(simBareK),
+        `走位分支 ${seg5k.length} 字元、改寫 ${writes} 處、已知 ${known} 處`);
+      /* 註解裡記的「真實深度中位 10.0 / 橫向 75 分位 10.8」是一個**宣稱**,
+         鐵則一一樣管它(「註解裡的『真實約 N』是憑印象的」那條坑)。所以在這裡
+         **從 shotmap 逐顆重算一次**,而且把實際值印出來 —— 容差留 1.0 / 1.5 公尺
+         是給資料自然增長用的(這是會漂的量,不是人為改動才會變的紅線)。 */
+      {
+        const dir5k = join(ROOT, 'data', 'raw', 'fotmob-epl');
+        const dep = [], lat = [];
+        if (existsSync(dir5k)) {
+          for (const f of readdirSync(dir5k).filter(f => /-game-details\.json$/.test(f))) {
+            for (const m of Object.values(read(join(dir5k, f)).matches ?? {})) {
+              for (const sh of (m.shots ?? [])) {
+                if (sh.x == null || sh.y == null || sh.ownGoal) continue;
+                if (sh.situation !== 'RegularPlay') continue;
+                const d = 105 - sh.x, w = Math.abs(sh.y - 34);
+                if (d <= 16.5 && w <= 20.16) { dep.push(d); lat.push(w); }   // 矩形判準,跟 inBoxAt 同一套
+              }
+            }
+          }
+        }
+        const q = (a, pp) => { const v = [...a].sort((x, y) => x - y); return v[Math.floor(v.length * pp)]; };
+        const claimD = Number((simRawK.match(/拉到深度 ([\d.]+)/) ?? [])[1]);
+        const claimW = Number((simRawK.match(/橫向夾到 ([\d.]+)/) ?? [])[1]);
+        if (!existsSync(dir5k)) check('5k 註解裡的真實深度對得回 shotmap', true, '沒有 fotmob-epl 的 raw,不判');
+        else check('5k 註解裡記的真實深度 / 橫向,對得回 shotmap 逐顆(容差 1.0 / 1.5 m)',
+          dep.length > 500 && claimD > 0 && claimW > 0
+          && Math.abs(claimD - q(dep, 0.5)) <= 1.0 && Math.abs(claimW - q(lat, 0.75)) <= 1.5,
+          `${dep.length} 顆:深度中位 ${q(dep, 0.5).toFixed(2)}(註解 ${claimD})、`
+          + `橫向 75 分位 ${q(lat, 0.75).toFixed(2)}(註解 ${claimW})`);
+      }
+    }
     }
   }
 }
