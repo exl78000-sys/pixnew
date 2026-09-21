@@ -1308,6 +1308,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     boxSecBy: { att: 0, def: 0, loose: 0 }, boxEntryHit: { home: 0, away: 0 }, boxHit: { home: false, away: false },
     boxIn: { home: false, away: false }, boxOut: { home: 0, away: 0 },
     shotBox: { open: { n: 0, att: 0, def: 0 }, corner: { n: 0, att: 0, def: 0 } },
+    /* **跟進**(2026-09-21,階段 5i)。5h 量到運動戰的禁區內射門當下攻方只有 1.24 人,
+       而角球是 4.27 —— 引擎放得進人,運動戰不會。這幾個計數器回答「誰把人送進去」
+       與「送不送得到」。上游**沒有錨**(沒有追蹤座標),只回報,不反推真實值。 */
+    boxWho: {}, runFire: 0, runToBox: 0, runInBox: 0,
+    boxVisit: { home: null, away: null },
+    boxFollow: { visits: 0, cand: 0, near: 0, ceil: 0, came: 0, dwell: 0, missWho: {}, missV: 0, missD: 0, missN: 0, ceilRun: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
     outs: 0, tackles: 0, passes: 0, loose: 0, shots: 0, onTarget: 0, keeperSaves: 0, deflects: 0, clears: 0, lastKick: 'none',
     goals: { home: 0, away: 0 }, xg: { home: 0, away: 0 }, willScore: 0, crossedLine: 0, lostShot: 0, lostGoal: 0,
@@ -1740,6 +1746,16 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           st.boxEntry[side]++;
           st.boxHit[side] = false;            // 新的一段,重新問「這一次有沒有人碰到球」
           if (st.boxOut[side] >= BOX_REVISIT) st.boxEntry2[side]++;
+          /* **跟進的名單在這一刻就定下來**(階段 5i):球剛進禁區時,還在禁區外的攻方
+             場上球員是誰、離禁區邊多遠、他自己的最高速多少。之後只看他有沒有進來。
+             天花板取**對自己有利**的樂觀值(當成他已經在全速、而且直線衝)——
+             上限都構不到才是硬的結論(5d 的做法)。 */
+          const cands = [];
+          for (const q of sideOf(side).players) {
+            if (q.off || q.role === 'GK' || inBoxAt(q.x, q.y, gx)) continue;
+            cands.push({ q, d0: distToBox(q, gx), v: q.vmax || SIM_RUN, came: false, sv: 0, nv: 0 });
+          }
+          st.boxVisit[side] = { t0: st.t, cands };
         }
         st.boxOut[side] = 0;
         st.boxSec[side] += dt;
@@ -1751,9 +1767,77 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           if (q.side === side) att++; else if (q !== sideOf(q.side).gk) def++;
         }
         st.boxAttSec[side] += att * dt; st.boxDefSec[side] += def * dt;
+        // 這一段期間真的跑進禁區的(一個人只記一次)
+        const v = st.boxVisit[side];
+        if (v) for (const c of v.cands) {
+          if (!c.came && inBoxAt(c.q.x, c.q.y, gx)) c.came = true;
+          /* 他這一段實際上跑多快、在做什麼 —— 天花板取的是 `vmax`(樂觀),
+             而走位分支給的速度檔可能是走路。差別要量出來,不要用猜的。 */
+          c.sv += hypot(c.q.vx, c.q.vy); c.nv++; c.why = c.q.wantWhy ?? '?';
+        }
       } else st.boxOut[side] += dt;
+      /* 一段結束:**只結算有人碰到球的那幾次**(5h:越過禁區線有 59% 根本沒有人碰到,
+         那些不是進攻)。天花板 = 這一段的實際駐留時間裡,有幾個人**物理上**到得了。 */
+      if (st.boxIn[side] && !on) {
+        const v = st.boxVisit[side];
+        if (v && st.boxHit[side]) {
+          const dwell = st.t - v.t0;
+          st.boxFollow.visits++; st.boxFollow.dwell += dwell;
+          for (const c of v.cands) {
+            st.boxFollow.cand++;
+            if (c.d0 <= 10) st.boxFollow.near++;
+            const canMake = c.d0 / Math.max(0.1, c.v) <= dwell;
+            if (canMake) st.boxFollow.ceil++;
+            /* **第二個天花板:用 `SIM_RUN` 而不是最高速。** 上面那個取的是各自的 vmax
+               (8~9 m/s,對自己最有利);而走位分支實際給的是慢跑檔。這一個回答
+               「**只要讓他們用跑的**,到得了幾個」—— 也就是下一輪那個修正的獎品有多大,
+               而不必先把它寫出來(4u:先把槓桿能走多遠量出來,再決定目標定在哪)。 */
+            if (c.d0 / SIM_RUN <= dwell) st.boxFollow.ceilRun++;
+            if (c.came) st.boxFollow.came++;
+            /* **到得了卻沒到的那幾個是誰、在做什麼、跑多快。** 這一格就是判決規則的
+               (乙) 分支要指名的東西 —— 天花板夠高而實際沒到,就一定有一條既有規則擋著。 */
+            if (canMake && !c.came) {
+              const k = c.why ?? '?';
+              st.boxFollow.missWho[k] = (st.boxFollow.missWho[k] ?? 0) + 1;
+              st.boxFollow.missV += c.nv ? c.sv / c.nv : 0;
+              st.boxFollow.missD += c.d0 - distToBox(c.q, gx);   // 正 = 這一段真的靠近了
+              st.boxFollow.missN++;
+            }
+          }
+        }
+        st.boxVisit[side] = null;
+      }
       st.boxIn[side] = on;
     }
+  }
+
+  /* **誰把攻方球員送進對方禁區**(2026-09-21,階段 5i)。逐格數「人-格」,
+     依那一格是哪一支分支決定他要去哪(`wantWhy`,標在分支自己身上)。
+     **在走位迴圈之後叫** —— `wantWhy` 是那一格剛寫的,在迴圈之前讀到的是上一格的
+     (「取值與判條件要在同一個時間點」,本站記過)。持球者自己不算:要回答的是「跟進」。
+     純計數,不呼叫 rng。 */
+  function noteBoxWho() {
+    const h = ball.holder;
+    if (!h) return;                            // 只問持球的那一隊有沒有人跟進
+    const gx = sideOf(h.side).att > 0 ? PITCH_W : 0;
+    for (const q of sideOf(h.side).players) {
+      if (q.off || q === h || q.role === 'GK') continue;
+      if (!inBoxAt(q.x, q.y, gx)) continue;
+      const k = q.wantWhy ?? '?';
+      st.boxWho[k] = (st.boxWho[k] ?? 0) + 1;
+    }
+    // 直塞跑的人真的跑進禁區了嗎(一次跑只記一次)
+    for (const q of sideOf(h.side).players) {
+      if (q.off || !(q.runT > 0) || q.runSawBox) continue;
+      if (inBoxAt(q.x, q.y, gx)) { q.runSawBox = true; st.runInBox++; }
+    }
+  }
+
+  /* 離禁區邊還有多遠(在禁區裡就是 0)。矩形的距離,跟 `inBoxAt` 同一個判準。 */
+  function distToBox(q, gx) {
+    const dx = Math.max(0, Math.abs(gx - q.x) - BOX_D);
+    const dy = Math.max(0, Math.abs(q.y - PITCH_H / 2) - BOX_W);
+    return hypot(dx, dy);
   }
 
   /* **射門當下,禁區裡有幾個人**(2026-09-21,階段 5h)。只記禁區內的射門;
@@ -1917,10 +2001,14 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         if (back >= 0 && back < bd) { bd = back; who = m; }
       }
       if (who) {
+        st.runFire++;                          // 階段 5i:純計數
         who.runT = RUN_HOLD[0] + rng() * (RUN_HOLD[1] - RUN_HOLD[0]);
         who.runCool = RUN_COOL;
         who.runTo = { x: cl(line + s.att * RUN_AHEAD, 3, PITCH_W - 3),
                       y: cl(who.y + (rng() - 0.5) * 16, 4, PITCH_H - 4) };
+        // 目標點落在對方禁區裡嗎(階段 5i,純計數 —— 要在抽完 rng 之後才讀得到 runTo)
+        if (inBoxAt(who.runTo.x, who.runTo.y, s.att > 0 ? PITCH_W : 0)) st.runToBox++;
+        who.runSawBox = false;
       }
     }
     /* 傳球對象:算每個隊友的分數 —— 往前、沒被盯、不要太遠。
@@ -2293,11 +2381,17 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     for (const p of all()) {
       const s = sideOf(p.side);
       let want = null;
+      /* **`wantWhy` 是量測用的標籤**(2026-09-21,階段 5i):這一格是哪一支分支決定他要去哪。
+         標在分支自己身上,不在探針裡把條件抄一遍 —— 抄一遍就是「同一個量兩個來源」,
+         改了一邊另一邊會悄悄過期。純字串指派,不呼叫 rng、不影響 `want`。 */
+      p.wantWhy = 'shape';
       if (p === holder) {
+        p.wantWhy = 'holder';
         const it = p.intent;
         want = it ? { x: it.x, y: it.y, speed: p.vmax * CARRY_SPEED } : null;
       } else if (p.runT > 0 && p.runTo) {
         // 直塞跑:這是真人會用到最高速的少數時刻之一,所以這裡才給 vmax
+        p.wantWhy = 'run';
         want = { x: p.runTo.x, y: p.runTo.y, speed: p.vmax };
       } else if (support.has(p)) {
         /* 接應點:在持球者的**側前方**,而且往離最近的防守者遠的那一側偏。
@@ -2308,10 +2402,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const tx = cl(holder.x + s2.att * gap * 0.55, 4, PITCH_W - 4);
         const ty = cl(holder.y + sideY * gap * 0.85, 4, PITCH_H - 4);
         const dd = hypot(tx - p.x, ty - p.y);
+        p.wantWhy = 'support';
         want = { x: tx, y: ty, speed: dd > 16 ? SIM_RUN : dd > 4 ? SIM_JOG : SIM_WALK };
       } else if (st.duel && p === st.duel.by && holder === st.duel.on) {
         /* **撲上去**(階段 4r):結局已經抽好了,這一段只是把它演出來 ——
            所以這裡不保持 `JOCKEY_R`,直接衝著持球者去(見 `DUEL_LUNGE` 的四個版本)。 */
+        p.wantWhy = 'duel';
         want = { x: holder.x, y: holder.y, speed: p.vmax };
       } else if (p === presser) {
         /* 逼搶:瞄準持球者的提前量,但**停在一個身體的距離之外** ——
@@ -2325,6 +2421,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
            而一次衝刺的定義是 ≥ 7.0 m/s 持續 ≥ 1 秒(FotMob 的定義,`pace.sprintsPerMin`)。
            寫 14 公尺的時候全隊 2.95 次/分 —— 逼搶者整場在衝。真人壓迫大多是「跑」不是「衝」,
            衝刺留給真的要追很遠的那幾次。 */
+        p.wantWhy = 'press';
         want = { x: hx + dx / d * JOCKEY_R, y: hy + dy / d * JOCKEY_R,
                  speed: d > 20 ? p.vmax : d > 6 ? SIM_RUN : SIM_JOG };
       } else if (p === cover) {
@@ -2334,6 +2431,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const dx = gx - holder.x, dy = PITCH_H / 2 - holder.y, d = Math.max(0.1, hypot(dx, dy));
         const tx = holder.x + dx / d * COVER_BACK, ty = holder.y + dy / d * COVER_BACK;
         const dd = hypot(tx - p.x, ty - p.y);
+        p.wantWhy = 'cover';
         want = { x: tx, y: ty, speed: dd > 12 ? SIM_RUN : SIM_JOG };
       } else if (!holder && p === chasers[p.side]) {
         // 追鬆球同理:遠了衝、近了跑(衝到落點旁邊還全速的話會直接衝過球)
@@ -2345,8 +2443,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const d = hypot(land.x - p.x, land.y - p.y);
         const rival = chasers[p.side === 'home' ? 'away' : 'home'];
         const rd = rival ? hypot(land.x - rival.x, land.y - rival.y) : Infinity;
+        p.wantWhy = 'chase';
         want = { x: land.x, y: land.y, speed: d > 18 && d < rd + 3 ? p.vmax : SIM_RUN };
       } else if (p.role === 'GK') {
+        p.wantWhy = 'gk';
         const gx = s.att > 0 ? 0 : PITCH_W;
         /* 自家禁區裡的鬆球:出來收(見 GK_RUSH)。沒有這一條的話六碼區的鬆球一律被對方先拿到,
            而那就是 0~5 公尺那一格 11% 對真實 3% 的來源。**只對鬆球**:對方持球時出擊
@@ -2416,6 +2516,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       }
       movePlayer(p, dt, want);
     }
+    noteBoxWho();                              // 階段 5i:純計數,要在走位迴圈之後
 
     // ── 球 ──
     /* **要重新讀 ball.holder,不能用這一格開頭抓的那個 local。**
@@ -3190,6 +3291,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         boxTouchAll: { ...st.boxTouchAll }, boxEntry: { ...st.boxEntry }, boxEntry2: { ...st.boxEntry2 },
         boxSec: { ...st.boxSec }, boxAttSec: { ...st.boxAttSec }, boxDefSec: { ...st.boxDefSec },
         boxSecBy: { ...st.boxSecBy }, boxEntryHit: { ...st.boxEntryHit },
+        boxWho: { ...st.boxWho }, runFire: st.runFire, runToBox: st.runToBox, runInBox: st.runInBox,
+        boxFollow: { ...st.boxFollow, missWho: { ...st.boxFollow.missWho } },
         shotBox: { open: { ...st.shotBox.open }, corner: { ...st.shotBox.corner } },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },
         gkStopBy: { ...st.gkStopBy },
