@@ -116,13 +116,24 @@ jobs:
 
       # 歐冠球員榜想加球員照片,而倉庫裡一張都沒有。先問的是「**我們本來就抓的那份回應裡有沒有圖**」——
       # 有的話照片是零額外請求;沒有才談一人一個請求(抓取禮貌那一條)。硬上限 3 個請求,不寫快取。
+      # (這一步不再是最後一步 —— 下面那支站台確認才是。)
+      - name: 探測歐冠球員照片(先問回應裡有沒有,再談要不要一人一個請求)
+        working-directory: epl
+        run: npm run probe:ucl-photo
+        continue-on-error: true
+
+      # 「部署完開站上確認一次」——**沙箱開不了站台**(出口代理對 github.io 的 CONNECT 回 403,
+      # policy denial,不是暫時性失敗),所以這件事只能在 runner 上做。
+      # 它去抓 Pages 實際供出來的那幾個檔並把事實印出來:這是哪一次建置、歐冠外部球隊有幾支帶隊徽、
+      # 本季積分榜那 36 列**實際上有幾列畫得出隊徽**,外加 sha256 讓本機開過的那份能逐位元組比對。
+      # 唯讀、零快取、7 個請求,而且打的是本站自己的站台。
       #
       # **這是 latest job 的最後一步。** 2026-09-21 第一版放在**檔尾** —— 而檔尾是 `all` job,
       # 勾 quick 時 `all` 整個 skipped,於是探測「成功跑完」而那一步根本沒有執行(run #39)。
       # 「排在最後一步」講的是**哪一個 job 的**最後一步,不是檔案的最後一行。
-      - name: 探測歐冠球員照片(先問回應裡有沒有,再談要不要一人一個請求)
+      - name: 部署後到站上確認一次(Pages 實際供出來的那幾個檔)
         working-directory: epl
-        run: npm run probe:ucl-photo
+        run: npm run probe:live
         continue-on-error: true
 
   all:

@@ -74,6 +74,7 @@
     "ucl:ids": "node scripts/land-ucl-ids.mjs",
     "ucl:crests": "node scripts/fetch-ucl-crests.mjs",
     "probe:ucl-photo": "node scripts/probe-fotmob-player-photo.mjs",
+    "probe:live": "node scripts/probe-live-site.mjs",
     "tiers": "node scripts/fetch-tiers.mjs",
     "probe:laliga-players": "node scripts/probe-laliga-players.mjs",
     "probe:laliga-playerdata": "node scripts/probe-laliga-playerdata.mjs",
