@@ -1817,6 +1817,37 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           `一場 ${(run.sprints?.home ?? 0) + (run.sprints?.away ?? 0)} 次`);
       }
     }
+
+    /* 33. 階段 5o:**第二組獨立種子也走 `check-sim`**(2026-09-22)。
+       本站每一輪的驗收都要「兩組獨立種子都複現」(5k / 5l / 5m 都是這樣收的),
+       而在這之前第二組一律是另外寫一支 scratch harness 去跑 —— 那是
+       「同一個量兩個來源」:兩支各算一次,公式改了會有一份悄悄過期
+       (5m 的跑動錨就是在 harness 那一份上漏掉門將的)。
+       守兩件事,而且是**相反的方向**:
+       ① 種子真的可以位移(`--seed0`),不然第二組還是得另外寫一支;
+       ② **不給旗標時第一場仍然是種子 1** —— 預設一漂,先前每一輪的紀錄就對不回來了,
+          而那種錯是靜的(數字全都變了,而看起來只是「引擎又動了」)。 */
+    {
+      const chkBareS = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('check-sim 收得了 --seed0,而且場數不會被旗標吃掉',
+        /--seed0=/.test(chkBareS) && /find\(a => !a\.startsWith\('--'\)\)/.test(chkBareS)
+        && /for \(let seed = SEED0; seed < SEED0 \+ RUNS; seed\+\+\)/.test(chkBareS));
+      /* **把它自己那兩行解析式抓出來真的算一次**,不要掃 `?? '1'` 這個字面 ——
+         字面搬到別的運算式裡照樣綠。負向對照:把預設改成 '1001' 這一條會紅。 */
+      {
+        const decl = chkBareS.match(/^const (?:RUNS|SEED0) = .*$/gm) ?? [];
+        const run = argv => {
+          const fn = new Function('argv', decl.map(d => d.replace(/process\.argv\.slice\(2\)/g, 'argv'))
+            .join('\n') + '\nreturn [RUNS, SEED0];');
+          return fn(argv);
+        };
+        const [r0, s0] = run([]), [r1, s1] = run(['30', '--seed0=1001']), [r2, s2] = run(['--seed0=1001']);
+        check('沒給 --seed0 的時候第一場還是種子 1(先前每一輪的紀錄才對得回來)',
+          s0 === 1 && s1 === 1001 && r1 === 30 && s2 === 1001 && r2 === 12 && r0 === 12,
+          `預設 ${r0} 場 / 種子 ${s0};帶旗標 ${r1} 場 / 種子 ${s1};只帶旗標 ${r2} 場 / 種子 ${s2}`);
+      }
+    }
     }
   }
 }
