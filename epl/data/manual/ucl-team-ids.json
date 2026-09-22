@@ -3,14 +3,8 @@
   "_why": "不在 build 時做模糊隊名比對 —— 那種比對會靜靜對錯球隊(盃賽頁踩過兩次)。對照落地成檔案,錯了看得出來也改得掉。",
   "_method": "以隊名 token 交集比對 web/data/ucl.json 三季出現過的球隊 × data/manual/fotmob-ucl-*.json 的球隊,只收完全涵蓋的配對。三支拼法不同的由人工確認:Olympiakos↔Olympiacos、Slavia Praha↔Slavia Prague、Sparta Praha↔Sparta Prague。",
   "_scope": "只收本站兩個聯賽都不認得的球隊(有隊碼的走 clubs.json / teams-la-liga.json)。",
-  "verifiedAt": "2026-08-28",
-  "unmapped": [
-    {
-      "fdId": 11034,
-      "fdName": "Paphos FC",
-      "why": "FotMob 三季檔案裡都沒有這一支;不從別處找圖補(來源不明的圖比缺一張更糟)"
-    }
-  ],
+  "verifiedAt": "2026-09-22",
+  "unmapped": [],
   "teams": [
     {
       "fdId": 3,
@@ -85,6 +79,13 @@
       "fotmobName": "Sporting CP"
     },
     {
+      "fdId": 503,
+      "fdName": "Porto",
+      "fotmobId": 9773,
+      "fotmobName": "FC Porto",
+      "via": "matchId 橋(1 場)"
+    },
+    {
       "fdId": 512,
       "fdName": "Brest",
       "fotmobId": 8521,
@@ -125,6 +126,13 @@
       "fdName": "Qarabağ Ağdam",
       "fotmobId": 7981,
       "fotmobName": "Qarabağ FK"
+    },
+    {
+      "fdId": 613,
+      "fdName": "Fenerbahçe",
+      "fotmobId": 8695,
+      "fotmobName": "Fenerbahçe",
+      "via": "matchId 橋(1 場)"
     },
     {
       "fdId": 654,
@@ -214,10 +222,24 @@
       "fotmobName": "Shakhtar Donetsk"
     },
     {
+      "fdId": 1899,
+      "fdName": "PAE AEK",
+      "fotmobId": 8563,
+      "fotmobName": "AEK Athens",
+      "via": "matchId 橋(1 場)"
+    },
+    {
       "fdId": 1903,
       "fdName": "SL Benfica",
       "fotmobId": 9772,
       "fotmobName": "Benfica"
+    },
+    {
+      "fdId": 2016,
+      "fdName": "LASK",
+      "fotmobId": 9977,
+      "fotmobName": "LASK",
+      "via": "matchId 橋(1 場)"
     },
     {
       "fdId": 2021,
@@ -230,6 +252,13 @@
       "fdName": "Union SG",
       "fotmobId": 7978,
       "fotmobName": "Union St.Gilloise"
+    },
+    {
+      "fdId": 5720,
+      "fdName": "Viking",
+      "fotmobId": 8478,
+      "fotmobName": "Viking",
+      "via": "matchId 橋(1 場)"
     },
     {
       "fdId": 5721,
@@ -250,10 +279,25 @@
       "fotmobName": "Slovan Bratislava"
     },
     {
+      "fdId": 10233,
+      "fdName": "Sabah FK",
+      "fotmobId": 951893,
+      "fotmobName": "Sabah FK",
+      "via": "matchId 橋(1 場)"
+    },
+    {
       "fdId": 10601,
       "fdName": "FK Kairat",
       "fotmobId": 8037,
       "fotmobName": "Kairat Almaty"
+    },
+    {
+      "fdId": 11034,
+      "fdName": "Paphos FC",
+      "fotmobId": 2137,
+      "fotmobName": "Pafos FC",
+      "via": "matchId 橋(8 場)"
     }
-  ]
+  ],
+  "_method2": "FotMob matchId 橋(scripts/lib/ucl-ids.mjs,2026-09-22 起):同一個 matchId 的主隊對主隊、客隊對客隊,完全不比隊名。三季 396/396 場對上、0 衝突,既有那 40 組 40/40 重現。新的球隊由 npm run ucl:ids 自己補上去,npm test 每次重推一次跟落地的比對。"
 }

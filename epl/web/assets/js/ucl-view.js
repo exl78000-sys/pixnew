@@ -430,8 +430,14 @@ function leagueTable(season) {
   if (!rows.length) return '';
   return C.table(rows, [
     { key: 'position', label: '#', value: r => r.position, num: true },
+    /* `id` 不能漏(2026-09-22)。`uclTeamCell` 對沒有隊碼的球隊是拿 `t.id` 去查
+       `externalCrest` 的,這裡原本只傳 name / code / league —— 於是**積分榜從第一天起
+       對那 15 支外部球隊一張隊徽都不畫**,而隔壁「各隊走到哪一輪」那張表(runsTable,
+       它傳了 id)畫得出來,那 40 張圖早就在倉庫裡。
+       不拋錯、`npm test` 看不到版面,而且只有兩張表並排才看得出來 ——
+       跟「同一份資料兩個渲染路徑」「資料躺在倉庫裡而沒有人讀它」同一家族。 */
     { key: 'team', label: '球隊', value: r => r.name, left: true,
-      render: r => uclTeamCell({ name: r.name, code: r.code, league: r.league }) },
+      render: r => uclTeamCell({ id: r.id, name: r.name, code: r.code, league: r.league }) },
     { key: 'p', label: '賽', value: r => r.p, num: true },
     { key: 'w', label: '勝', value: r => r.w, num: true },
     { key: 'd', label: '和', value: r => r.d, num: true },

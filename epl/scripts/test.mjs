@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, statSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { uclPhotos as uclPhotosFn } from './lib/ucl.mjs';
+import { bridgeUclTeamIds } from './lib/ucl-ids.mjs';
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
 import { isCupTbd } from './lib/adapters/fotmob-cups.mjs';
@@ -5900,10 +5901,16 @@ async function checkUclDetails() {
 
 function checkUcl() {
   let fail = 0;
-  /* 認不得的球隊的隊徽。三件事要釘住:
-     一、隊徽的 key 是 FotMob id,對照表是另一份檔;兩邊對不上就代表有一邊改過沒同步。
+  /* 認不得的球隊的隊徽。要釘住的:
+     一、隊徽的 key 是 FotMob id,對照表是另一份檔;**有圖卻沒有對照**是紅線
+         (那代表有人硬塞了一張不知道是誰的圖)。反過來「有對照、圖還沒抓」只回報 ——
+         沙箱連不到圖片 CDN,寫成紅線的話本機永遠紅;而 npm test 擋 deploy,
+         那會變成「要靠部署去抓的圖,被『還沒抓到』擋住不能部署」。(closingPending 同一套。)
      二、**有隊徽不等於有球隊頁** —— 網站上那些球隊只給圖不給連結。
-     三、對照不到的那一支(Paphos FC)不可以偷偷生一張圖出來。 */
+     三、對照不到的球隊不可以偷偷生一張圖出來。
+     四、落地的對照要對得回 **FotMob matchId 橋**(lib/ucl-ids.mjs 重新推一次)。
+         那 40 組原本是「隊名 token 交集」配的,而那種比對漏掉過整支球隊
+         (Pafos FC vs Paphos FC 一個共同 token 都沒有,於是被寫成「上游沒有這一支」)。 */
   {
     const okU = (cond, label, extra = '') => {
       if (!cond) fail++;
@@ -5916,12 +5923,96 @@ function checkUcl() {
       const crests = JSON.parse(readFileSync(crp, 'utf8')).crests ?? {};
       const mapIds = new Set((map.teams ?? []).map(t => String(t.fotmobId)));
       const crestIds = new Set(Object.keys(crests));
-      okU([...mapIds].every(x => crestIds.has(x)) && [...crestIds].every(x => mapIds.has(x)),
-        '歐冠隊徽的 key 與 id 對照表完全一致',
-        `對照 ${mapIds.size} / 隊徽 ${crestIds.size}`);
+      const orphan = [...crestIds].filter(x => !mapIds.has(x));
+      okU(orphan.length === 0,
+        '每一張歐冠隊徽都查得到它是誰(沒有對照的圖是紅線)',
+        `對照 ${mapIds.size} / 隊徽 ${crestIds.size}` + (orphan.length ? `,沒有對照的 ${orphan.join('、')}` : ''));
+      const pending = (map.teams ?? []).filter(t => !crestIds.has(String(t.fotmobId)));
+      console.log(`  · 對照有、圖還沒抓到的:${pending.length} 支`
+        + (pending.length ? `(${pending.map(t => t.fdName).join('、')};跑 npm run ucl:crests)` : ''));
+      /* 產物要照實把那個缺口講出來 —— 這一條是紅線,因為它是本站自己算的:
+         畫面上少幾支隊徽可以,但產物說「一支都不缺」而實際上缺七支就是說謊。 */
+      {
+        const assets0 = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'ucl-teams.json'), 'utf8'));
+        const got = [...(assets0.externalPending ?? [])].sort();
+        const want = pending.map(t => t.fdName).sort();
+        okU(got.length === want.length && got.every((v, i) => v === want[i]),
+          '產物的 externalPending 等於「對照有、圖沒有」那一批',
+          `產物 ${got.length} / 實際 ${want.length}`
+            + (got.length === want.length ? '' : ' —— 隊徽剛落地而產物還沒重建?跑一次 npm run build'));
+      }
+      /* 這一條 2026-09-22 起有兩件事要講清楚,免得下一個人以為它在守什麼:
+         一、unmapped 現在是 0(Paphos FC 被 matchId 橋解掉了)—— 所以它目前**沒有東西可守**,
+             標籤把筆數印出來。
+         二、就算 unmapped 不是 0,它也被上面那兩條**蘊含**了:要「對照不到的球隊有圖」,
+             那個 FotMob id 就得有一張圖,而有圖就必須有對照(第一條)、而有對照就不能同時在
+             unmapped(第三條)。負向對照實測:硬湊一筆出來會紅**兩條**,而且不是這一條單獨紅。
+         留著它的理由只有一個:它把鐵則三那句意圖直接寫在畫面上,而且哪天上面兩條被放寬,
+         它會是最後一道。**不要把它當成獨立的證據。** */
+      /* 隊徽有了不等於畫得出來。`uclTeamCell` 對**沒有隊碼**的球隊是拿 `t.id` 去查
+         externalCrest 的,所以傳進去的物件字面值少一個 `id` 就整欄不畫圖 ——
+         積分榜從第一天起就是這樣(而隔壁「走到哪一輪」那張畫得出來)。
+         守的是性質:**每一個帶 code 的物件字面值都要帶 id**,不是「某一支函式長什麼樣」。
+         剝註解再掃 —— 講這條規則的註解自己就寫著 uclTeamCell 與 id。 */
+      {
+        const uvBare = readFileSync(join(ROOT, 'web', 'assets', 'js', 'ucl-view.js'), 'utf8')
+          .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+        const lits = [...uvBare.matchAll(/uclTeamCell\(\{([^}]*)\}/g)].map(m => m[1]);
+        const withCode = lits.filter(x => /\bcode\s*:/.test(x));
+        const bad = withCode.filter(x => !/\bid\s*:/.test(x));
+        okU(withCode.length > 0 && bad.length === 0,
+          '每個傳給 uclTeamCell 的物件字面值都帶 id(少了就整欄不畫外部球隊的隊徽)',
+          `帶 code 的字面值 ${withCode.length} 處` + (bad.length ? `,缺 id ${bad.length} 處:${bad.map(x => x.trim().slice(0, 40)).join(' / ')}` : ''));
+        /* 資料那一頭也要有 id —— 前端傳得對而產物沒有,症狀一模一樣。 */
+        const u = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'ucl.json'), 'utf8'));
+        const rows = (u.seasons ?? []).flatMap(x => x.table?.rows ?? []);
+        okU(rows.length > 0 && rows.every(r => r.id != null),
+          '積分榜每一列都有 football-data 的 team id(前端拿它查外部球隊的隊徽)',
+          `${rows.filter(r => r.id != null).length} / ${rows.length} 列`);
+      }
       okU((map.unmapped ?? []).every(u => !crestIds.has(String(u.fotmobId ?? ''))),
         '對照不到的球隊沒有被硬補一張圖',
-        (map.unmapped ?? []).map(u => u.fdName).join('、') || '無');
+        (map.unmapped ?? []).length ? (map.unmapped ?? []).map(u => u.fdName).join('、')
+          : 'unmapped 0 支 —— 這一條目前沒有東西可守');
+      {
+        const mapped = new Set((map.teams ?? []).map(t => t.fdId));
+        const both = (map.unmapped ?? []).filter(u => mapped.has(u.fdId));
+        okU(both.length === 0,
+          '同一隊不會同時在 teams 與 unmapped(對照到了就要從 unmapped 拿掉)',
+          both.map(u => u.fdName).join('、') || '無重疊');
+      }
+      /* matchId 橋:同一個 FotMob matchId 的主隊對主隊、客隊對客隊,完全不比隊名。
+         橋推不出來的不算失敗(那一隊還沒踢、或逐場詳情還沒抓),推得出來就必須一致。 */
+      {
+        const br = bridgeUclTeamIds(ROOT);
+        const checked = (map.teams ?? []).filter(t => br.pairs.has(t.fdId));
+        const clash = checked.filter(t => br.pairs.get(t.fdId) !== t.fotmobId);
+        okU(br.unmatchedMid === 0,
+          'FotMob 逐場詳情的 matchId 全部在交付檔裡找得到(橋本身是好的)',
+          `${br.matched} 場對上、${br.unmatchedMid} 場對不上`);
+        okU(br.conflicts.length === 0, '橋沒有一個 id 對到兩個 id',
+          br.conflicts.length ? JSON.stringify(br.conflicts.slice(0, 3)) : '無衝突');
+        okU(checked.length > 0 && clash.length === 0,
+          '落地的球隊 id 對照對得回 matchId 橋',
+          `驗了 ${checked.length} / ${(map.teams ?? []).length} 組` + (clash.length ? `,不一致 ${clash.map(t => `${t.fdName} ${t.fotmobId}≠${br.pairs.get(t.fdId)}`).join('、')}` : ''));
+        /* 橋推得出來、本站也認不得、ucl.json 有名字的,就該落地 —— 漏掉的話
+           那一隊永遠不會被 ucl:crests 看到,而畫面上只是少一個隊徽,不報錯。 */
+        const coded = new Set(), named = new Set();
+        {
+          const u = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'ucl.json'), 'utf8'));
+          const walk = v => {
+            if (Array.isArray(v)) { for (const x of v) walk(x); return; }
+            if (!v || typeof v !== 'object') return;
+            if (v.id != null && typeof v.name === 'string') { named.add(v.id); if (v.code) coded.add(v.id); }
+            for (const x of Object.values(v)) walk(x);
+          };
+          walk(u);
+        }
+        const mappedFd = new Set((map.teams ?? []).map(t => t.fdId));
+        const missed = [...br.pairs.keys()].filter(fd => !mappedFd.has(fd) && !coded.has(fd) && named.has(fd));
+        okU(missed.length === 0, '橋推得出來而本站認不得的球隊都已經落地(跑 npm run ucl:ids)',
+          missed.length ? missed.join('、') : '沒有漏的');
+      }
       const assets = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'ucl-teams.json'), 'utf8'));
       okU((assets.external ?? []).every(t => t.crest && !t.code),
         '外部球隊只帶名字與隊徽,沒有隊碼(有隊碼就會被當成有球隊頁)',
