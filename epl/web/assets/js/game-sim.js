@@ -491,8 +491,36 @@ const SHAPE_PASS_KEEP = 0;                     /* **0 = 舊行為(現在用的)�
    `SHOT_URGE`)**是對著現在這個會閃爍的站位校準出來的** —— 跟 4o 那條
    「每秒判一次的率把暴露量偷偷編進去」是同一個形狀,只是這次被編進去的是**站位的抖動**。
    所以下一輪的做法照 4v:**打開這個旗標、把那幾個常數一起迭代重量**,再看封阻與角球守不守得住。
-   **歸因還沒做**:為什麼夾住不放會讓犯規少三成、射門多兩成,這一輪沒有量出來 ——
-   逐相位的探針(`run.phase*`)已經在了,下一輪先用它,不要憑「講得通」的解釋動手。 */
+   **歸因 2026-09-22(階段 5o)做了,而答案是一個機制不是兩個。**
+   拆成「對抗 = 帶球決策(可觸發的) × 曝光(最近的對手在 `DUEL_R` 內) × `DUEL_P`」與
+   「射門 = 決策點 × 出手率」,30 場 × 兩組獨立種子(1~30 / 1001~30):
+
+                            k0(1~30) k1(1~30) k0(1001~) k1(1001~)   兩組變化
+     **最近對手平均距離**      9.90 m   12.71 m   9.80 m   12.79 m   **+28% / +30%**
+     曝光率(< DUEL_R = 3 m)  13.74%    8.60%   13.62%    8.58%     −37% / −37%
+     對抗                     63.3     44.0     64.4     44.2      −31% / −31%
+     犯規                     21.1     14.0     23.5     13.4      −34% / −43%
+     犯規 ÷ 對抗              0.33     0.32     0.36     0.30      −5% / −17%(雜訊)
+     帶球決策(可觸發)        1349.8   1532.7   1348.2   1535.8     +14% / +14%
+     決策點                  434.9    530.4    433.7    527.4      +22% / +22%
+     出手率                   4.68%    4.64%    4.69%    4.85%     −1% / +4%(雜訊)
+     射門                     22.4     26.5     22.5     27.5      +18% / +22%
+
+   **犯規少三成不是「判得比較鬆」** —— 三選一的比例幾乎沒動(兩組方向還相反)。
+   少的是**對抗次數**,而對抗少是因為**防守者離持球者遠了將近 3 公尺**:
+   夾住不放 = 球在自己人之間飛的時候防線不收縮,球到位時最近的對手從 9.9 m 變成 12.7 m,
+   於是「有人盯著還帶球」這個觸發條件的曝光率掉 37%。
+   **射門多兩成是同一個機制的另一面**:沒人逼 → 帶球決策 +14%、傳球 −8% →
+   決策點 **+22%**,而**出手率一動都沒動** —— 動的是機會不是機率(4k 的「能拆就拆」)。
+
+   **所以這個旗標的真正意義是「防守者離球多遠」**,不是「陣型穩不穩」。
+   而 9.9 m 本來就已經太遠了(真實足球裡最近的防守者離持球者是個位數公尺的前段),
+   12.7 m 是往**更遠**的方向走 —— 這跟 5c / 5d 量到的「人根本不在球的路上」是同一件事。
+   封阻 ×3 與角球 +22% 是「防守者留在陣型裡 = 留在射門路線上」換來的,不是壓迫變好。
+
+   **量測的一個教訓**:第一版的 harness 沒傳 `pred`(λ 的輸入,`check-sim` 的 `PRED`),
+   同一個 k0 量到主 1.33 / 客 1.57,而紀錄裡是 1.50 / 0.70 —— 看起來像「引擎變了」,
+   其實是**我的量測跟被比較的那一邊不同批**。補上之後 k0 量到 1.50 / 0.67,對得上。 */
 const DEFLECT_MIN_SPEED = 9;                   // 太慢的球不算折射,那是可以控的
 const DEFLECT_KEEP = 0.55;                     // 折射後保留的速度比例
 /* 折射的方向要**小改**,不是亂彈。第一版用 ±0.95 弧度(±54 度)加只留 45% 的速度 ——
@@ -1364,6 +1392,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
     chains: [], chain: null, pendingOrigin: null,
     shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, duels: 0, contacts: 0, contactFrames: 0, duelPair: null, duel: null, dribbles: 0, dribblesBy: { home: 0, away: 0 },
+    carryN: 0, carryFree: 0, carryMarked: 0, carryFoeD: 0, carryFoeN: 0,
     boxTouch: { home: 0, away: 0 }, okOwnHalf: { home: 0, away: 0 }, okOppHalf: { home: 0, away: 0 }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
     /* **禁區裡的活動量**(2026-09-21,階段 5h)。純計數,不呼叫 rng。
        5b~5g 六輪的結論是「封阻補不上是因為這個引擎沒有製造出真實的人堆」,
@@ -2409,14 +2438,23 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* **有人盯著還選擇帶球 = 一次「敢過他」的決定**(階段 4r)。這是整個接觸模型的觸發點:
        它是一個動作,不是幾何的副產品 —— 量出來對站位的敏感度是 ×1.01(見 `DUEL_R`)。
        門將與剛被過掉的人不算(他在回追,不是在盯人)。 */
+    /* **把觸發拆成三層**(2026-09-22,階段 5o 的歸因)。對抗次數 =
+       帶球決策 × 「這一刻沒有正在進行的對抗」× 曝光(最近的對手在 `DUEL_R` 內) × `DUEL_P`。
+       只記總數分不出「帶球變少了」與「帶球時旁邊沒人了」,而那兩件事要改的地方完全不同 ——
+       4o 那條(率 × 暴露量)在這一層的樣子。**純加總,一次 `rng()` 都不多呼叫**:
+       原本是 `foe && fd < DUEL_R && rng() < DUEL_P` 一條短路,拆成巢狀之後
+       `rng()` 仍然只在「曝光成立」時才被消耗,順序一模一樣。 */
+    st.carryN++;
     if (!st.duel) {
+      st.carryFree++;
       let foe = null, fd = Infinity;
       for (const q of o.players) {
         if (q.off || q.role === 'GK' || (q.beaten ?? 0) > 0) continue;
         const d = hypot(q.x - p.x, q.y - p.y);
         if (d < fd) { fd = d; foe = q; }
       }
-      if (foe && fd < DUEL_R && rng() < DUEL_P) startDuel(p, foe);
+      if (foe) { st.carryFoeD += fd; st.carryFoeN++; }
+      if (foe && fd < DUEL_R) { st.carryMarked++; if (rng() < DUEL_P) startDuel(p, foe); }
     }
     return { kind: 'carry' };
   }
@@ -3590,6 +3628,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       diag: { willScore: st.willScore, crossedLine: st.crossedLine, lostShot: st.lostShot, lostGoal: st.lostGoal },
       poss: { ...st.possSec },
       counts: { outs: st.outs, tackles: st.tackles, passes: st.passes, loose: st.loose, shots: st.shots, onTarget: st.onTarget,
+        carryN: st.carryN, carryFree: st.carryFree, carryMarked: st.carryMarked, carryFoeD: st.carryFoeD, carryFoeN: st.carryFoeN,
         intercepts: { ...st.intercepts }, passBy: { ...st.passBy }, tacklesBy: { ...st.tacklesBy }, passOk: { ...st.passOk },
         offsides: { ...st.offsides }, why: { ...(st.why ?? {}) },
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
