@@ -339,6 +339,26 @@ jobs:
           npm run game:fetch -- --league=facup || true
         continue-on-error: true
 
+      # 歐冠外部球隊(本站六個聯賽都不認得的那些)的身分對照。**零網路** ——
+      # 它讀的是上一步剛抓的 data/raw/fotmob-ucl/*-game-details.json 與交付檔,
+      # 用 FotMob 的 matchId 當橋推出 football-data id ↔ FotMob id(完全不比隊名)。
+      # 排在 game:fetch 之後:新球隊踢完第一場、逐場詳情落地,它才推得出來。
+      #
+      # **刻意沒有 continue-on-error**:這一步零 fetch、全是本站自己算的,
+      # 它失敗(落地的對照跟橋衝突)就是有一邊錯了,要擋下來 —— npm test 也守著同一條。
+      - name: 補歐冠球隊的 id 對照(零網路,matchId 橋)
+        working-directory: epl
+        run: npm run ucl:ids
+
+      # 上一步新落地的球隊,把隊徽補上。原本那 40 張是 2026-08-28 人工交付的、沒有抓取器,
+      # 於是本季新進來的七支卡在「沒有人會回來補」—— 那正是本站記過的
+      # 「抓取器的輸入靠一個沒進工作流的手動步驟」。
+      # 目標名單完全由對照表決定,已經有的略過,所以補齊之後這一步 **0 個請求**。
+      - name: 抓歐冠外部球隊隊徽(缺的才抓,補完就 0 個請求)
+        working-directory: epl
+        run: npm run ucl:crests
+        continue-on-error: true
+
       # 賽果與比分(FotMob 賽程端點,一個聯賽一個請求,2026-09-04):西甲與英冠的社群賽果檔慢好幾天,
       # 這裡先補暫定賽果;比賽日的高頻更新在 laliga-matchday.yml。
       # 步驟名不寫數字:原本叫「抓三聯賽」,加德義法之後就是假的
@@ -572,6 +592,8 @@ jobs:
             epl/data/form-tuning.json \
             epl/data/availability-history.json \
             epl/data/manual/ucl-photos.json \
+            epl/data/manual/ucl-team-ids.json \
+            epl/data/manual/crests-ucl.json \
             epl/data/situation-tuning.json \
             epl/data/situation-tuning-es1.json \
             epl/data/congestion-tuning.json \

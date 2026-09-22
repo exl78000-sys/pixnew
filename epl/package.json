@@ -71,6 +71,8 @@
     "cup-crests": "node scripts/fetch-cup-crests.mjs",
     "competition-logos": "node scripts/fetch-competition-logos.mjs",
     "ucl:photos": "node scripts/fetch-ucl-photos.mjs",
+    "ucl:ids": "node scripts/land-ucl-ids.mjs",
+    "ucl:crests": "node scripts/fetch-ucl-crests.mjs",
     "probe:ucl-photo": "node scripts/probe-fotmob-player-photo.mjs",
     "tiers": "node scripts/fetch-tiers.mjs",
     "probe:laliga-players": "node scripts/probe-laliga-players.mjs",

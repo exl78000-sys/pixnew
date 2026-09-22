@@ -723,16 +723,22 @@ export async function uclTeamAssets(root, ucl) {
   const idPath = join(root, 'data', 'manual', 'ucl-team-ids.json');
   const crestPath = join(root, 'data', 'manual', 'crests-ucl.json');
   let externalUnmapped = 0;
+  /* 「對照不到」與「對照得到但圖還沒抓」是**兩件事**,要分開記:
+     前者是永久的(那一隊在上游就查不到),後者只是下一次 `npm run ucl:crests` 還沒跑
+     (沙箱連不到圖片 CDN,本機一定有一批落在這裡)。混成一個數字的話,
+     沙箱看到的「缺 7 支」會跟 runner 看到的「缺 0 支」講同一句話,而那兩句意思完全不同。 */
+  const externalPending = [];
   if (existsSync(idPath) && existsSync(crestPath)) {
     const map = JSON.parse(await readFile(idPath, 'utf8'));
     const crests = JSON.parse(await readFile(crestPath, 'utf8')).crests ?? {};
     externalUnmapped = (map.unmapped ?? []).length;
     for (const t of map.teams ?? []) {
       const crest = crests[String(t.fotmobId)] ?? null;
-      if (!crest) continue;   // 對照有、圖沒抓到 → 當成沒有,不給半套
+      if (!crest) { externalPending.push(t.fdName); continue; }   // 對照有、圖沒抓到 → 當成沒有,不給半套
       external.push({ id: t.fdId, en: t.fdName, crest });
     }
     external.sort((a, b) => a.id - b.id);
+    externalPending.sort();
   }
 
   return {
@@ -743,8 +749,12 @@ export async function uclTeamAssets(root, ucl) {
     teams: rows,
     /* 認不得的球隊的隊徽,key 是 football-data 的 team id。
        有隊徽不代表有球隊頁 —— 前端只畫圖,不給連結。 */
-    externalNote: '本站沒有這些球隊的資料,只有名字與隊徽(FotMob,人工交付並核對過)。有隊徽不等於有球隊頁,所以不給連結。',
+    /* 2026-09-22:這句原本寫「人工交付並核對過」,而現在有兩種來歷 —— 2026-08-28 那次交付的 40 支,
+       與 `npm run ucl:ids` / `ucl:crests` 自己補的那些(身分用 FotMob 的 matchId 對照,不比隊名)。
+       前端不讀這一句,但它仍然是產物裡的一句宣稱,過期了就是假話。 */
+    externalNote: '本站沒有這些球隊的資料,只有名字與隊徽(來源 FotMob;球隊身分用 FotMob 的 matchId 逐場對照過,不靠隊名比對)。有隊徽不等於有球隊頁,所以不給連結。',
     external,
     externalUnmapped,
+    externalPending,
   };
 }
