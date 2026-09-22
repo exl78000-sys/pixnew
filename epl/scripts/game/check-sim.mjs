@@ -9,7 +9,7 @@
  * (CLAUDE.md:把會隨資料變動的數字當 CI 紅線,紅久了就沒有人看)。
  * 等階段 2 校準完再挑幾條真正的不變量進去。
  *
- * 用法:node scripts/game/check-sim.mjs [場數]
+ * 用法:node scripts/game/check-sim.mjs [場數] [--seed0=起始種子]
  *
  * **場數少的時候 λ 錨會假警報。** 預設本來是 3 場,而 3 場的 SE 只有 0.33 ——
  * 同一份引擎 3 場量到「-4.0 SE 錨沒守住」、12 場量到 -2.5、30 場量到 -0.6。
@@ -23,7 +23,15 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const { createSim } = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
 const profile = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'game', 'pl.json'), 'utf8'));
-const RUNS = Math.max(1, parseInt(process.argv[2] ?? '12', 10));
+/* 場數取**第一個不是旗標的參數** —— 直接讀 argv[2] 的話,`check-sim --seed0=1001`
+   會把旗標 parseInt 成 NaN,迴圈一場都不跑而輸出看起來只是「沒有資料」。 */
+const RUNS = Math.max(1, parseInt(process.argv.slice(2).find(a => !a.startsWith('--')) ?? '12', 10));
+/* **第二組獨立種子**(2026-09-22,階段 5o)。本站每次驗收都要「兩組獨立種子都複現」
+   (5k / 5l / 5m 都是這樣收的),而在這之前每一輪都是另外寫一支 scratch harness 去跑
+   第二組 —— 那就是「同一個量兩個來源」:兩支各算一次,哪天公式改了會有一份悄悄過期
+   (5m 的跑動錨就是在 harness 那一份上漏掉門將的)。所以第二組也走這一支。
+   `--seed0=1001` 就是從 1001 開始的 30 場;不給就是 1(跟以前逐字相同)。 */
+const SEED0 = Math.max(0, parseInt(process.argv.slice(2).find(a => a.startsWith('--seed0='))?.slice(8) ?? '1', 10));
 const MIN_JUDGE = 10;            // 少於這個場數只印不判(SE 的噪音比要驗的偏差還大)
 const HOME = 'ARS', AWAY = 'LIV';
 
@@ -155,12 +163,12 @@ const rows = [];
    錨要驗的是「給它一個 λ,它跑出來的平均進球回不回得到那個 λ」,所以用哪一組都成立 ——
    但註解不可以寫成「站上的預測」,那會變成一個沒有出處的宣稱。 */
 const PRED = { xgHome: 1.99, xgAway: 0.70 };
-for (let seed = 1; seed <= RUNS; seed++) rows.push(play(seed));
+for (let seed = SEED0; seed < SEED0 + RUNS; seed++) rows.push(play(seed));
 const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
 const se = a => (a.length < 2 ? 0 : Math.sqrt(a.reduce((s, x) => s + (x - mean(a)) ** 2, 0) / (a.length - 1) / a.length));
 const line = (label, v, extra = '') => console.log(`  ${label.padEnd(26, '\u3000')} ${v}${extra ? `  ${extra}` : ''}`);
 
-console.log(`\n▶ 連續時間引擎(${HOME} vs ${AWAY},${RUNS} 場 × 90 分鐘)\n`);
+console.log(`\n▶ 連續時間引擎(${HOME} vs ${AWAY},${RUNS} 場 × 90 分鐘,種子 ${SEED0}~${SEED0 + RUNS - 1})\n`);
 
 /* 1. 硬性不變量:這幾條不該有例外,錯了就是引擎壞了 */
 const totalJumps = rows.reduce((a, r) => a + r.jumps, 0);
