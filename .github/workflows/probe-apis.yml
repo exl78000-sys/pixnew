@@ -138,7 +138,7 @@ jobs:
       # (martj42/international_results),但它**只收已經踢完的比賽** —— 賽程與即時比分只能靠 FotMob,
       # 而 FotMob 沙箱連不到。這一支問:國際賽事的 id(照印 allLeagues 那一段)、這個窗口有沒有賽程,
       # 並拿已完賽的場次跟 martj42 **逐場對**來證明 id(名字相同的東西不只一個:CONCACAF 也有 Nations League)。
-      # 唯讀、最多 16 個請求、不寫快取。
+      # 唯讀、最多 44 個請求(第二輪:候選全問一次 + Nations League 用上一季證明)、不寫快取。
       #
       # **這是 latest job 的最後一步。**
       - name: 探測 FotMob 的國家隊賽事(id、這個窗口的賽程、跟 martj42 逐場對)
