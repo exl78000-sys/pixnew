@@ -26,6 +26,16 @@
  */
 import { parseCSVObjects } from './csv.mjs';
 
+/* 調參與驗收的年份、評分門檻與上線門檻。**調參腳本與建置共用這一份** ——
+   兩邊各寫一份的話,驗收區間改了一邊,畫面上印的就不是實際驗收的那一批(backtest-runner 那一課)。
+   中間空 2020–2021:疫情年比賽少、很多移到中立場,而且讓兩段之間沒有任何一場重疊。 */
+export const INTL_TUNE = { from: '2014-01-01', to: '2019-12-31' };
+export const INTL_HOLDOUT = { from: '2022-01-01', to: null };
+export const INTL_MIN_GAMES = 20;
+/* 上線門檻:改善要大過兩倍的成對標準誤(跟歐冠跨聯賽評分同一條,lib/ucl-elo.mjs 的 passes)。
+   每次建置用當下的資料重算,沒過就整批不給勝率 —— 不是「上次過了就一直算數」。 */
+export const intlPasses = g => Boolean(g) && g.gain > 2 * g.se;
+
 /* 賽事分級 → K 的基準值(World Football Elo 的慣例分級;整體倍率 kScale 另外掃)。
    **分級是照賽事名寫的規則**,新賽事名出現時落到「其他 30」—— 不會拋錯,但會印出來(unknownTournaments)。 */
 const CONTINENTAL_FINALS = new Set([
@@ -195,7 +205,9 @@ export function calibration(rows, bins = 10) {
      agree     兩邊比分一致
      mismatch  兩邊都有這一場、比分不一樣(畫面兩個都印,不挑一個當答案;這一場不進評分)
      awarded   FotMob 是判決比分(AW),martj42 記場上比分 —— 記法不同,不算不一致
-     unmatched martj42 查不到這一場(日期在它涵蓋的範圍內卻找不到 —— 通常是隊名對照漏了)
+     unmatched 兩隊都認得、日期也在 martj42 涵蓋的範圍內,它卻沒有這兩隊前後一天內的對戰 ——
+               run #44 實測 19 場**全是 martj42 沒收**:非洲盃資格賽三月那一輪預賽整輪沒有(12 場)、
+               幾場友誼賽沒有(同一對球隊隔三天的第二場之類)。不是隊名的問題(隊名對不上的是 noKey)
      notYet    日期晚於 martj42 最新一場:它還沒收錄,**無法核對 ≠ 不一致**
      noKey     有一隊的名字對不上身分,核對不了(隊名要補進對照表) */
 const dayShift = (iso, d) => new Date(Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) + d * 86400000).toISOString().slice(0, 10);

@@ -20,9 +20,9 @@ import { tournamentClass } from '../intl.mjs';
  * 9808 48/48(比分一致 47,另一場是判決 3-0)、9809 12/12、9821 96/110。
  * 10608 與 329 在 run #43 時本季已完賽的還沒進 martj42,所以**交給抓取器第一次跑時用上一季證明**。
  *
- * 沒收的:各洲世界盃資格賽、歐國盃資格賽、世界盃、歐國盃、美洲盃、非洲盃、亞洲盃、金盃、東協盃、
- * SAFF、阿拉伯盃 —— run #43 全部證明過 id,但這個窗口**一場都沒有**(接下來 45 天 0 場)。
- * 那一季開打時再加進來,不留一個永遠空白的分頁(鐵則三)。 */
+ * 沒收的在下面的 INTL_NOT_FETCHED:這個窗口**一場都沒有**(接下來 45 天 0 場),那一季開打時再加進來,
+ * 不留一個永遠空白的分頁(鐵則三)。**不是每一個都證明過** —— 歐國盃(50)與亞洲盃(290)的本季是下一屆
+ * (2028 / 2027),一場都還沒踢,內容比對無從做起;第一版註解寫成「全部證明過」,是錯的。 */
 export const FOTMOB_INTL = [
   { key: 'unl-a', id: 9806, zh: '歐洲國家聯賽 A 級', short: '歐國聯 A', en: 'UEFA Nations League A', family: 'unl', expect: /^UEFA Nations League$/ },
   { key: 'unl-b', id: 9807, zh: '歐洲國家聯賽 B 級', short: '歐國聯 B', en: 'UEFA Nations League B', family: 'unl', expect: /^UEFA Nations League$/ },
@@ -37,6 +37,75 @@ export const FOTMOB_INTL = [
   { key: 'friendly', id: 114, zh: '國際友誼賽', short: '友誼賽', en: 'International Friendlies', family: 'friendly',
     expect: t => tournamentClass(t) === 'friendly' || tournamentClass(t) === 'other' },
 ];
+
+/* 探測過、這一輪沒收的國家隊賽事(probe-fotmob-intl run #43,2026-09-24 的 log)。
+   `proof` 是那一次拿本季最近 80 場已完賽對 martj42 的「對上 / 取樣」;**null = 那一季還沒有已完賽的場次,
+   id 沒被內容證明** —— 加進 FOTMOB_INTL 之前抓取器會自己證明(本季不夠就拿上一季)。
+   畫面的「資料界線」讀這一份(經產物),前端不另寫一份清單。 */
+export const INTL_NOT_FETCHED = {
+  checkedAt: '2026-09-24', horizonDays: 45, probeRun: 43,
+  comps: [
+    { id: 10195, zh: '世界盃資格賽(歐洲區)', proof: '69/80' },
+    { id: 10196, zh: '世界盃資格賽(非洲區)', proof: '80/80' },
+    { id: 10197, zh: '世界盃資格賽(亞洲區)', proof: '68/80' },
+    { id: 10198, zh: '世界盃資格賽(中北美區)', proof: '77/80' },
+    { id: 10199, zh: '世界盃資格賽(南美區)', proof: '80/80' },
+    { id: 10200, zh: '世界盃資格賽(大洋洲區)', proof: '18/18' },
+    { id: 10201, zh: '世界盃洲際附加賽', proof: '4/4' },
+    { id: 77, zh: '世界盃', proof: '73/80' },
+    { id: 50, zh: '歐國盃', proof: null },
+    { id: 10607, zh: '歐國盃資格賽', proof: '9/9' },
+    { id: 44, zh: '美洲盃', proof: '29/32' },
+    { id: 289, zh: '非洲國家盃', proof: '52/52' },
+    { id: 290, zh: '亞洲盃', proof: null },
+    { id: 10609, zh: '亞洲盃資格賽', proof: '54/72' },
+    { id: 298, zh: '中北美金盃賽', proof: '25/31' },
+    { id: 9265, zh: '東協錦標賽', proof: '26/26' },
+    { id: 9876, zh: '南亞足協錦標賽', proof: '15/15' },
+    { id: 10242, zh: 'FIFA 阿拉伯盃', proof: '26/32' },
+    { id: 11156, zh: '阿拉伯盃資格賽', proof: '7/7' },
+  ],
+};
+
+/* 畫面上的篩選以「賽事家族」為單位:歐國聯四個級別是同一個賽事,拆成四顆按鈕只會讓讀者找不到。
+   順序就是畫面上的順序。 */
+export const INTL_FAMILIES = [
+  { key: 'unl', zh: '歐國聯' },
+  { key: 'cnl', zh: '中北美國聯' },
+  { key: 'afconq', zh: '非洲盃資格賽' },
+  { key: 'gulf', zh: '海灣盃' },
+  { key: 'friendly', zh: '友誼賽' },
+];
+
+/* **參與者還沒決定的那一格**(2026-09-24 run #44 實測):海灣盃的四強與決賽,上游先把對戰排好,
+   參與者寫成 `1A`、`2B`、`Winner SF 1`,**而且各自帶一個隊 id**(1870、1983…)—— 照球隊處理的話,
+   它們會被當成三支叫「1A」的國家隊。不編身分(鐵則三,盃賽 `Manchester City/Norwich City` 那條坑的國家隊版):
+   建置時看名字認出來,不查身分、不給勝率,畫面講出它代表什麼。
+   只認實測見過的兩種寫法加盃賽那一種(斜線串兩隊);沒見過的寫法會落到「隊名對不上身分」那一份清單 —— 看得到,不會被吞掉。 */
+export function isIntlTbd(name) {
+  const n = String(name ?? '').trim();
+  return /^[1-9][A-Z]$/.test(n) || /^(Winner|Loser)\s+\S/i.test(n) || n.includes('/');
+}
+/* 佔位的中文說法:只翻實測見過、意思沒有歧義的兩種,其餘照印原文加「待定」 */
+export function intlTbdLabel(name) {
+  const n = String(name ?? '').trim();
+  let m = /^([1-9])([A-Z])$/.exec(n);
+  if (m) return `${m[2]} 組第 ${m[1]} 名`;
+  m = /^Winner SF\s*(\d)$/i.exec(n);
+  if (m) return `準決賽 ${m[1]} 的勝者`;
+  return `待定(${n})`;
+}
+
+/* 輪次的中文。**只翻數字與驗證過的名字** —— 上游的 round 字串在不同賽事意思不同:
+   海灣盃的 `final` 是決賽(對戰是 Winner SF 1 v Winner SF 2),非洲盃資格賽的 `final` 卻是**三月的預賽**
+   (12 場主客兩回合,Eritrea v Eswatini 那一種;run #44 實測)。照字面翻會把預賽講成決賽。
+   沒驗證過的非數字輪次不印,不猜。 */
+const ROUND_ZH = { gulf: { '1/2': '準決賽', final: '決賽' } };
+export function intlRoundZh(compKey, round) {
+  if (round == null) return null;
+  if (/^\d+$/.test(String(round))) return `第 ${round} 輪`;
+  return ROUND_ZH[compKey]?.[round] ?? null;
+}
 
 /* 比分字串 → [主, 客];PK 場的 scoreStr 是平手比分(含延長),PK 勝負不在這個端點 */
 const parseScore = s => {

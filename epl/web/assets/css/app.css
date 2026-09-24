@@ -99,6 +99,11 @@ nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
 }
 .stat-line.tie-leg .leg-ko { min-width: 96px; text-align: right; }
+/* 國家隊頁的對戰列(2026-09-24):中間那一格放勝率條,比比分寬 —— .prob 本身最小 170px,
+   沿用 128px 的話勝率條會把兩邊的隊名擠掉。手機上(下面 700px 那一段)整列換成兩列格線,這裡的寬度不作用。 */
+.stat-line.tie-leg.intl-row .leg-score { min-width: 190px; }
+.stat-line.tie-leg.intl-row .leg-ko { min-width: 150px; }
+.intl-team { display: inline-flex; max-width: 100%; }
 
 /* 球員榜(盃賽頁與歐冠頁共用)。原本一列是一個 flex 的 .stat-line,隊伍那一格只有
    `max-width:110px` 加內容的自然寬度 —— 於是**每一列的寬度跟著隊名長短變**,隊徽的 x
@@ -226,6 +231,9 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
   .stat-line.tie-leg .leg-home { grid-area: home; text-align: left; }
   .stat-line.tie-leg .leg-score { grid-area: score; min-width: 0; }
   .stat-line.tie-leg .leg-away { grid-area: away; text-align: right; }
+  /* 國家隊頁:勝率條在手機上縮到 120px,兩個隊名才留得下空間(375px 寬實測) */
+  .stat-line.tie-leg.intl-row .leg-score, .stat-line.tie-leg.intl-row .leg-ko { min-width: 0; }
+  .stat-line.tie-leg.intl-row .prob { min-width: 120px; }
   /* 觸控目標:原本 36px,低於一般建議的 44。單行之後高度省下來了,補回去 */
   nav.tabs > a { min-height: 40px; display: flex; align-items: center; }
 }

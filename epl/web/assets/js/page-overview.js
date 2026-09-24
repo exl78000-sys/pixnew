@@ -1,4 +1,4 @@
-import * as C from './core.js?v=fbc09f0c';
+import * as C from './core.js?v=6d9662ee';
 
 const app = document.getElementById('app');
 
@@ -29,6 +29,10 @@ try {
 
   // 跨聯賽的資料集掛在英超目錄下(它們本來就是跨聯賽的一份)
   const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams', 'competitions']);
+  /* 歐冠的勝率與國家隊各自讀,**讀不到就當沒有**:這兩份不是這一頁的主體,少一份不該讓整個總覽載入失敗
+     (英超目錄的 404 在 loadFrom 裡是直接拋錯的)。 */
+  const uclElo = (await C.loadFrom('pl', ['ucl-elo']).catch(() => ({ data: {} }))).data['ucl-elo'] ?? null;
+  const intl = (await C.loadFrom('pl', ['intl']).catch(() => ({ data: {} }))).data.intl ?? null;
   /* 盃賽的球隊身分(隊徽/隊名)。**跨聯賽的一頁不能靠目前聯賽的名冊** ——
      而這一頁連目前聯賽的名冊都不是問題:cups.json 的 crests 查表**刻意只收本站沒有隊碼的球隊**,
      所以有隊碼的那些(英超 + 英冠 27 支)在這張「即將到來」的表上**一張隊徽都沒有**,
@@ -331,12 +335,16 @@ try {
     .map(s => `<a href="${C.esc(s.url)}" target="_blank" rel="noopener">${C.esc(s.name)}</a>`)
     .join('、');
 
+  const uclPred = uclElo?.model?.passes ? (uclElo.fixtures?.length ?? 0) : 0;
   const render = () => {
-  const scrollY = window.scrollY;   // 覆蓋後重畫不要把讀者捲回頂端(跟實時頁同一招)
+  const scrollY = window.scrollY;
+  const nowT = Date.now();
+  const intlSoon = (intl?.fixtures ?? []).filter(f => f.state !== 'CANCELLED'
+    && Date.parse(f.kickoff) > nowT && Date.parse(f.kickoff) <= nowT + 7 * 86400000);   // 覆蓋後重畫不要把讀者捲回頂端(跟實時頁同一招)
   app.innerHTML = `
   <div class="page-head">
     <h1>總覽</h1>
-    <p>本站目前有 ${leagues.length} 個聯賽,加上跨聯賽的歐冠、英格蘭盃賽與足球知識。
+    <p>本站目前有 ${leagues.length} 個聯賽,加上跨聯賽的歐冠、英格蘭盃賽${intl ? '、國家隊' : ''}與足球知識。
        每個聯賽的模型各自訓練、各自回測,不互相借數字;做不到的那一層在下面各張卡上直說。</p>
     ${C.stampRow([
       C.stamp('聯賽資料', { iso: leagues[0]?.data.meta.builtAt, kind: 'daily', note: '每次 build 重算' }),
@@ -359,15 +367,27 @@ try {
     ${skipped.map(x => C.esc(C.LEAGUES[x.lg]?.zh ?? x.lg)).join('、')} 的資料集還沒建置,
     這一輪先不畫 —— 少了 ${C.esc(skipped[0].absent.join('、'))}。</div>` : ''}
 
-  <div class="section"><h2>跨聯賽</h2><span class="hint">這幾頁不分聯賽,兩邊看到的是同一份資料</span></div>
+  <div class="section"><h2>跨聯賽</h2><span class="hint">這幾頁不分聯賽,每個聯賽看到的是同一份資料</span></div>
   <div class="grid g3">
     <div class="card"><div class="spread"><h3 style="margin:0;display:flex;align-items:center;gap:7px">${C.compBadge('ucl')}歐冠</h3>
       <a class="pill accent" href="${C.link('cups', { cup: 'ucl' })}">開啟 →</a></div>
       <div class="tiny dim" style="margin-top:8px">${uclSeasons.length
         ? `${uclSeasons.map(s => C.esc(s.label)).join('、')} 完整・每季 36 隊`
         : '目前沒有可用的完整賽季'}</div>
-      <div class="tiny dim" style="margin-top:6px">沒有勝率預測 —— 現有模型是用聯賽比賽調的,
-        歐冠有跨聯賽實力比較、兩回合制、延長與 PK 四件它沒見過的事。</div></div>
+      ${/* 這一句原本寫死「沒有勝率預測」—— 階段 C 之後歐冠頁掛著上百場賽前勝率,這裡還在說沒有
+            (「有哪一句還在講我們沒有它」又一次,2026-09-24 加國家隊卡片時看到)。改成照產物講:
+            否定句只留在「真的是零」的分支。 */''}
+      <div class="tiny dim" style="margin-top:6px">${uclPred
+        ? `${uclPred} 場未賽有賽前勝率 —— 跨聯賽評分,走查回測改善 ${uclElo.model.improvement} ± ${uclElo.model.se}`
+        : '這一輪沒有勝率預測 —— 跨聯賽評分的驗收沒有通過,或已經沒有未賽的場次。'}</div></div>
+
+    ${intl ? `<div class="card"><div class="spread"><h3 style="margin:0">國家隊</h3>
+      <a class="pill accent" href="${C.link('intl')}">開啟 →</a></div>
+      <div class="tiny dim" style="margin-top:8px">${intl.comps.filter(c => c.status === 'ok').length} 個賽事・接下來 7 天 ${intlSoon.length} 場${
+        intlSoon.length ? `(給勝率 ${intlSoon.filter(f => f.prob).length} 場)` : ''}</div>
+      <div class="tiny dim" style="margin-top:6px">${intl.model.passed && intl.model.holdout
+        ? `本站的國家隊 Elo,走查回測改善 ${intl.model.holdout.gain} ± ${intl.model.holdout.se};評分只從獨立來源的歷史賽果算,收錄到 ${C.esc(intl.model.ratingsAsOf)}。`
+        : '國家隊 Elo 這一次的驗收沒有通過,所以不給勝率;賽程與賽果照常。'}</div></div>` : ''}
 
     <div class="card"><div class="spread"><h3 style="margin:0;display:flex;align-items:center;gap:7px">${C.compBadge('facup')}${C.compBadge('eflcup')}英格蘭盃賽</h3>
       <a class="pill accent" href="${C.link('cups', { cup: 'facup' })}">開啟 →</a></div>

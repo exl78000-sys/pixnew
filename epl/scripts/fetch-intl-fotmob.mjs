@@ -56,11 +56,12 @@ export function loadMartj42(root = ROOT) {
   return existsSync(p) ? parseIntlResults(readFileSync(p, 'utf8')) : null;
 }
 
-export async function fetchIntl({ outDir = INTL_RAW_DIR, force = false, maxRequests = 20, log = console.log } = {}) {
+/* `gapMs` 只給測試用(拿假的 fetch 驗守門邏輯時不必真的等);線上一律用預設的禮貌間隔。 */
+export async function fetchIntl({ outDir = INTL_RAW_DIR, force = false, maxRequests = 20, gapMs = GAP, log = console.log } = {}) {
   let requests = 0;
   async function get(url) {
     if (requests >= maxRequests) throw new Error(`已達本次 ${maxRequests} 個請求上限`);
-    if (requests) await sleep(GAP);
+    if (requests && gapMs) await sleep(gapMs);
     requests++;
     const res = await fetch(url, { signal: AbortSignal.timeout(30000),
       headers: { accept: 'application/json', 'user-agent': UA, referer: `${BASE}/` } });

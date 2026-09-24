@@ -45,6 +45,8 @@ const STEPS = [
   ['scripts/test-serie-a.mjs', []],
   ['scripts/backtest-ligue-1.mjs', []],
   ['scripts/test-ligue-1.mjs', []],
+  /* 國家隊(2026-09-24):只讀產物與 raw,不產生別的測試要驗的數字;抓取器那一段用假的 fetch,不連網。 */
+  ['scripts/test-intl.mjs', []],
   /* 模擬遊玩(2026-09-03):獨立管線的守門 + 側寫對回來源 + 引擎不變量。
      排在英冠之後、文件檢查之前 —— 它只讀產物,不產生別的測試要驗的數字。 */
   ['scripts/game/test-game.mjs', []],

@@ -17,12 +17,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseIntlResults, backtestIntl, frequencyBaseline, pairedGain, tournamentClass } from './lib/intl.mjs';
+import {
+  parseIntlResults, backtestIntl, frequencyBaseline, pairedGain, tournamentClass,
+  INTL_TUNE as TUNE, INTL_HOLDOUT as HOLDOUT, INTL_MIN_GAMES as MIN_GAMES,
+} from './lib/intl.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-export const TUNE = { from: '2014-01-01', to: '2019-12-31' };
-export const HOLDOUT = { from: '2022-01-01', to: null };
-export const MIN_GAMES = 20;
 const GRID = {
   homeAdv: [50, 75, 100, 125, 150],
   kScale: [0.5, 0.75, 1, 1.25],
