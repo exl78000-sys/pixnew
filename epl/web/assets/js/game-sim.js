@@ -1452,6 +1452,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        沒有駐留時間也沒有人數),所以它們只能當內部拆解用 —— 不可以反推真實世界是多少。 */
     boxTouchAll: { home: 0, away: 0 }, boxEntry: { home: 0, away: 0 }, boxEntry2: { home: 0, away: 0 },
     boxSec: { home: 0, away: 0 }, boxAttSec: { home: 0, away: 0 }, boxDefSec: { home: 0, away: 0 },
+    shotCrowd: { open: { n: Array(8).fill(0), exp: Array(8).fill(0), blk: Array(8).fill(0) },
+                 corner: { n: Array(8).fill(0), exp: Array(8).fill(0), blk: Array(8).fill(0) } },
     boxSecBy: { att: 0, def: 0, loose: 0 }, boxEntryHit: { home: 0, away: 0 }, boxHit: { home: false, away: false },
     boxIn: { home: false, away: false }, boxOut: { home: 0, away: 0 },
     shotBox: { open: { n: 0, att: 0, def: 0 }, corner: { n: 0, att: 0, def: 0 } },
@@ -1764,6 +1766,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         }
       }
     }
+    if (ball.shot) ball.shot.exposed = lane < DEFLECT_R;   // 階段 5p:封阻發生時要知道這一腳當初路上有沒有人
     const k = Math.min(6, Math.floor(dGoal / 5));
     st.laneShots[k]++;
     if (lane < DEFLECT_R) st.laneOcc[k]++;
@@ -2136,6 +2139,13 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     }
     const b = st.shotBox[sit === 'FromCorner' ? 'corner' : 'open'];
     b.n++; b.att += att; b.def += def;
+    /* **人堆會不會變成「路上有人」**(2026-09-24,階段 5p)。角球是同一支引擎裡的自然實驗:
+       有排好的站位、禁區裡擠滿人。依「射門當下守方人數」分桶記曝光,封阻在發生那一格
+       補記(見 `blockedBy` 那一段)。**分桶是為了看斜率**:只比兩個平均的話分不出
+       「人堆沒用」與「人堆有用但運動戰湊不到那麼多人」。純計數,不呼叫 rng。 */
+    if (ball.shot) ball.shot.defIn = def;
+    const cr = st.shotCrowd[sit === 'FromCorner' ? 'corner' : 'open'], ck = Math.min(7, def);
+    cr.n[ck]++; if (ball.shot?.exposed) cr.exp[ck]++;
   }
 
   /* **禁區觸球,對齊上游的定義**(2026-09-21,階段 5h)。`giveTo` 與 `kick` 兩處呼叫 ——
@@ -2968,6 +2978,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
               if (gk) st.gkStopBy[ball.shot.side]++;
               else {
                 st.blockedBy[ball.shot.side]++;
+                if (ball.shot.defIn != null) st.shotCrowd[ball.shot.sit === 'FromCorner' ? 'corner' : 'open'].blk[Math.min(7, ball.shot.defIn)]++;
                 st.shotBlkBins[Math.min(6, Math.floor((ball.shot.dist ?? 0) / 5))]++;
                 st.blkXg += ball.shot.xg ?? 0;
                 if (ball.shot.head) st.blkHead++;
@@ -3696,6 +3707,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
         boxTouchAll: { ...st.boxTouchAll }, boxEntry: { ...st.boxEntry }, boxEntry2: { ...st.boxEntry2 },
         boxSec: { ...st.boxSec }, boxAttSec: { ...st.boxAttSec }, boxDefSec: { ...st.boxDefSec },
+        shotCrowd: { open: { n: [...st.shotCrowd.open.n], exp: [...st.shotCrowd.open.exp], blk: [...st.shotCrowd.open.blk] },
+                     corner: { n: [...st.shotCrowd.corner.n], exp: [...st.shotCrowd.corner.exp], blk: [...st.shotCrowd.corner.blk] } },
         boxSecBy: { ...st.boxSecBy }, boxEntryHit: { ...st.boxEntryHit },
         boxWho: { ...st.boxWho }, runFire: st.runFire, runToBox: st.runToBox, runInBox: st.runInBox,
         shotChase: { shots: st.shotChase.shots, tries: st.shotChase.tries, withTry: st.shotChase.withTry,
