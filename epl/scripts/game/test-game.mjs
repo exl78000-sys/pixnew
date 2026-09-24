@@ -1860,6 +1860,46 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           `預設 ${r0} 場 / 種子 ${s0};帶旗標 ${r1} 場 / 種子 ${s1};只帶旗標 ${r2} 場 / 種子 ${s2}`);
       }
     }
+
+    /* 34. 階段 5p:**人堆值多少封阻**(2026-09-24)。5o-3 登記「角球有排好的站位而運動戰沒有」
+       是封阻唯一沒被否定的路,動手蓋之前先量兩個上限 —— 引擎自己的角球(人堆做到滿),
+       與真實的角球 vs 運動戰(人堆在真實世界值多少)。守四件事:
+       ① check-sim **真的印出**那幾排(掃 stdout,5e 那條坑:掃原始碼分不出印與不印);
+       ② `shotCrowd` 與 `shotBox` 是**同一個呼叫點**記的,兩種情境的腳數要一模一樣 ——
+          哪天有人只搬了其中一個,分桶就跟 5h 的人數不同批,而兩邊看起來都對;
+       ③ 真實那一側的切法跟引擎一樣:禁區內、**十二碼不算**、角球 vs 其他;
+       ④ 頭腳真的有拆,而且兩邊都有樣本(角球射門一半是頭球,混在一起比會把人堆的效果算錯)。
+
+       **負向對照(2026-09-24,五個 bug 各跑一次)** —— 驗收是「紅了 N 條而且是**對應的**那幾條」:
+         b1 印出那段包進 `if (0)`        → 紅 2(①+②)—— ②讀的就是那一行,**不是獨立的證據**
+         b2 真實那一份頭腳不拆            → **紅 1(只有②)**,訊息印出「頭球 —」
+         b3 引擎只記運動戰、不記角球      → **紅 1(只有③)**,訊息印出「角球 0 / 2」
+         b4 真實那一側把十二碼算進來      → **紅 1(只有④ 的第一個子句)**
+         b5 真實那一側拿 SetPiece 當角球  → **紅 1(只有④ 的第二個子句)**
+       一條斷言有幾個子句就貼幾個 bug(④有兩個,所以 b4 / b5 各打一個)。 */
+    {
+      check('check-sim **真的印出**人堆那幾排(引擎曝光 / 封阻 + 同一個切法的真實封阻)',
+        ['人堆・運動戰', '曝光依守方人數', '真實封阻', '人堆做到滿'].every(t => chkOut.includes(t)),
+        `check-sim 輸出 ${chkOut.length} 字元`);
+      check('真實那一份頭腳都拆了,而且都有樣本(不是「—」)',
+        /真實封阻 [0-9.]+%\(腳下 [0-9.]+%・頭球 [0-9.]+%/.test(chkOut) && !/腳下 —|頭球 —/.test(chkOut),
+        (chkOut.match(/真實封阻 [^,]*/) ?? ['(找不到)'])[0]);
+      {
+        const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+        const sim = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 3, pred: { xgHome: 1.99, xgAway: 0.70 } });
+        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim.state().over; i++) sim.advance(1 / 60);
+        const c = sim.state().counts, sum = a => a.reduce((x, y) => x + y, 0);
+        const on = sum(c.shotCrowd?.open?.n ?? []), cn = sum(c.shotCrowd?.corner?.n ?? []);
+        check('shotCrowd 跟 shotBox 同一批:兩種情境的腳數一模一樣(同一個呼叫點記的)',
+          on === c.shotBox.open.n && cn === c.shotBox.corner.n && on > 0,
+          `運動戰 ${on} / ${c.shotBox.open.n}・角球 ${cn} / ${c.shotBox.corner.n}`);
+      }
+      const chkBareP = readFileSync(join(ROOT, 'scripts', 'game', 'check-sim.mjs'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('真實那一側跟引擎同一個切法:禁區內、十二碼不算、角球 vs 其他',
+        /sh\.inBox && sh\.situation !== 'Penalty'/.test(chkBareP)
+        && /boxBlk\[sh\.situation === 'FromCorner' \? 'corner' : 'open'\]/.test(chkBareP));
+    }
     }
   }
 }

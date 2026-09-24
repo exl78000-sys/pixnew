@@ -269,6 +269,11 @@ const collectReal = (sel) => {
   /* **逐情境**也收一份(階段 4i)。總和對上不代表每一種都對:實測本站總和 15.1 m
      看起來只差一點,拆開才看到角球是 15.0 m(真實 12.7)而且 69% 擠在 15~20 m 一格。 */
   const bySit = {};
+  /* **禁區內射門的封阻率,依情境 × 頭腳**(2026-09-24,階段 5p)。要回答「角球那種人堆值多少封阻」,
+     就要跟引擎那一側(`shotCrowd`)用**同一個切法**:禁區內、十二碼不算、角球 vs 其他全部。
+     頭腳一定要拆 —— 角球射門一半是頭球,而頭球的封阻率在兩種情境差很多
+     (4l 的「同一類裡還有兩類」),混在一起比會把人堆的效果算錯。 */
+  const boxBlk = { open: { head: [0, 0], foot: [0, 0] }, corner: { head: [0, 0], foot: [0, 0] } };
   for (const f of ['2025-26-game-details.json', '2026-27-game-details.json']) {
     const path = join(ROOT, 'data', 'raw', 'fotmob-epl', f);
     if (!existsSync(path)) continue;
@@ -286,7 +291,11 @@ const collectReal = (sel) => {
         const bi = Math.min(6, Math.floor(d / 5));
         allBins[bi]++; if (sh.blocked) blkBins[bi]++;
         if (sh.blocked) { qual.blkXg += sh.xg ?? 0; qual.blkN++; } else { qual.freeXg += sh.xg ?? 0; qual.freeN++; }
-        if (sh.foot === 'Header') { qual.headN++; if (sh.blocked) qual.headBlk++; }
+        if (sh.inBox && sh.situation !== 'Penalty') {
+        const bb = boxBlk[sh.situation === 'FromCorner' ? 'corner' : 'open'][sh.foot === 'Header' ? 'head' : 'foot'];
+        bb[0]++; if (sh.blocked) bb[1]++;
+      }
+      if (sh.foot === 'Header') { qual.headN++; if (sh.blocked) qual.headBlk++; }
         else { qual.footN++; if (sh.blocked) qual.footBlk++; }
       }
       if (sh.xg != null) xg += sh.xg;
@@ -299,7 +308,7 @@ const collectReal = (sel) => {
       else { b.foot++; b.footD += d; if (d >= 20) b.footFar++; }
     }
   }
-  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n), bySit,
+  return n ? { n, dist: ds / n, box: box / n, xg: xg / n, bins: bins.map(b => b / n), bySit, boxBlk,
     out: { blk: out.blk / n, on: out.on / n, off: out.off / n },
     blkShape: { bins: allBins.map((v, i) => (v ? blkBins[i] / v : null)), ...qual } } : null;
 };
@@ -1234,6 +1243,36 @@ if (simShots && realShots) {
       + (b.n ? `${(b.n / rows.length).toFixed(1)} 腳/場\u3000攻 ${(b.att / b.n).toFixed(2)}\u3000守 ${(b.def / b.n).toFixed(2)}` : '0 腳'));
   }
   console.log('  　十二碼不記(死球,所有人排在禁區外,算進來只會把平均壓低而跟人堆無關)。');
+  /* **人堆值多少封阻**(2026-09-24,階段 5p)。5o-3 登記「角球有排好的站位而運動戰沒有」是
+     封阻唯一沒被否定的路。動手蓋之前先量兩個上限:
+       ① 引擎自己的角球 —— 那是「人堆做到滿」的樣子,運動戰的站位再像也只能到這裡;
+       ② 真實的角球比運動戰多擋多少 —— 那是人堆在真實世界值多少。
+     依「射門當下守方人數」分桶印曝光,是為了看**斜率**:只比兩個平均的話,
+     分不出「人堆沒用」與「人堆有用但運動戰湊不到那麼多人」。 */
+  {
+    const cr = { open: { n: Array(8).fill(0), exp: Array(8).fill(0), blk: Array(8).fill(0) },
+                 corner: { n: Array(8).fill(0), exp: Array(8).fill(0), blk: Array(8).fill(0) } };
+    for (const r of rows) for (const c of ['open', 'corner']) {
+      const x = r.st.counts.shotCrowd?.[c]; if (!x) continue;
+      for (let i = 0; i < 8; i++) { cr[c].n[i] += x.n[i]; cr[c].exp[i] += x.exp[i]; cr[c].blk[i] += x.blk[i]; }
+    }
+    const sum = a => a.reduce((x, y) => x + y, 0);
+    const pct = (a, b) => (b ? `${(100 * a / b).toFixed(1)}%` : '—');
+    const rb = realShots?.boxBlk;
+    const realPct = (c, k) => (rb ? pct(rb[c][k][1], rb[c][k][0]) : '—');
+    const realAll = c => (rb ? pct(rb[c].head[1] + rb[c].foot[1], rb[c].head[0] + rb[c].foot[0]) : '—');
+    for (const [c, 名] of [['open', '運動戰'], ['corner', '角球']]) {
+      const n = sum(cr[c].n);
+      if (!n) { console.log(`  ${`　人堆・${名}`.padEnd(20, '\u3000')} 0 腳`); continue; }
+      console.log(`  ${`　人堆・${名}(禁區內射門)`.padEnd(20, '\u3000')} `
+        + `曝光 ${pct(sum(cr[c].exp), n)}\u3000封阻 ${pct(sum(cr[c].blk), n)}`
+        + `\u3000真實封阻 ${realAll(c)}(腳下 ${realPct(c, 'foot')}・頭球 ${realPct(c, 'head')},聯盟)`);
+      const cells = [];
+      for (let i = 0; i < 8; i++) if (cr[c].n[i] >= 3) cells.push(`${i}${i === 7 ? '+' : ''}人 ${pct(cr[c].exp[i], cr[c].n[i])}(${cr[c].n[i]})`);
+      console.log(`  ${'　　曝光依守方人數'.padEnd(20, '\u3000')} ${cells.join('・')}`);
+    }
+    console.log('  　引擎的角球 = 人堆做到滿,是運動戰站位的**上限**;真實的角球 vs 運動戰 = 人堆在真實世界值多少。');
+  }
 }
 
 /* 3b-7. **跟進**(2026-09-21,階段 5i)。5h 的結論是「引擎做得出人堆(角球 4.27),
