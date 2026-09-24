@@ -664,9 +664,12 @@ async function main() {
         ...backfillNotes,
         '升級附加賽不進模型也不進積分榜(中立場地、只有四隊打),但保留在賽果裡。',
         /* 這一段是這個聯賽最重要的一句實話:少了什麼要講在畫面上,不是只寫在程式註解裡。 */
-        '這個聯賽不含球員、傷停、xG 與陣容 —— 英冠沒有免費的球員級資料源'
-        + '(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過)。'
-        + (hasPlayers ? '球員層是拿逐場統計累加出來的,不含球員 xG 模型與傷停。' : '所以這個聯賽只做得出球隊與比賽那一層。'),
+        /* 有球員層之後,開頭那句「不含球員」自己跟後半句打架(2026-09-24 全站掃描)—— 兩種情況各講各的 */
+        (hasPlayers
+          ? '這個聯賽的球員層是拿逐場統計累加出來的,不含球員 xG 模型、傷停與陣容推估'
+          : '這個聯賽不含球員、傷停、xG 與陣容')
+        + ' —— 英冠沒有整季的球員級免費資料源(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過)。'
+        + (hasPlayers ? '' : '所以這個聯賽只做得出球隊與比賽那一層。'),
         '升班馬沒有上一季英冠樣本,套用聯盟後段先驗並提高模擬不確定性。',
       ],
     },
@@ -678,7 +681,7 @@ async function main() {
       playoffMatches: [...lastMatches, ...curMatches].filter(m => m.stage).length,
     },
     /* 這個聯賽沒有的能力一律明講,前端才不會畫一個空殼。 */
-    live: { available: false, note: '英冠沒有接即時比分來源;比分依 openfootball 與 football-data.co.uk 的更新節奏落地。' },
+    live: { available: false, note: '英冠沒有接比賽中的即時比分;完賽比分以 openfootball 與 football-data.co.uk 為準,晚到時先用 FotMob 的賽果補上並標「暫定」。' },
     official: { available: false },
     ai: { enabled: false, pre: 0, post: 0 },
     /* 「有沒有球員資料」與「是哪一種球員資料」是兩件事。整季的球員資料源(Understat / FPL)仍然沒有;

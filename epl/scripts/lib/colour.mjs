@@ -95,6 +95,10 @@ export const THRESHOLDS = {
 /* 把球隊配色調成圖表可用:保留色相,把明度拉進區間、彩度拉到下限。
    幾乎無彩(黑/白/深灰)的顏色沒有可用的色相 —— 回 null,由呼叫端換備案。 */
 export function intoBand(hex, { band = THRESHOLDS.band, chroma = THRESHOLDS.chromaSet } = {}) {
+  /* 沒有顏色就回 null,讓呼叫端的 `?? 備案` 接得到。原本 undefined 一路算成 NaN,而 `NaN < 0.035` 是 false,
+     於是回傳 `#NaNNaNNaN` —— 一個非 null 的字串,`??` 永遠輪不到備案。德甲義甲法甲還沒有隊色交付,
+     三個聯賽每一隊的 chartColor 都是它(2026-09-24 全站掃描抓到;SVG 拿到無效顏色不報錯,線條直接不見)。 */
+  if (typeof hex !== 'string' || !/^#?[0-9a-f]{6}$/i.test(hex.trim())) return null;
   const { L, C, h } = oklch(hex);
   if (C < 0.035) return null;                 // 黑白條紋的球隊沒有色相可用
   const L2 = Math.min(band[1], Math.max(band[0], L));

@@ -24,7 +24,7 @@ import {
 } from './lib/report/index.mjs';
 import { attachCodes } from './lib/adapters/pulselive.mjs';
 import { oddsIndex, devig, parseOddsCsv, FD_NAMES, pickMarket } from './lib/odds.mjs';
-import { pickPair, oklch, contrast, deltaE, THRESHOLDS } from './lib/colour.mjs';
+import { pickPair, oklch, contrast, deltaE, THRESHOLDS, intoBand } from './lib/colour.mjs';
 import {
   buildFormIndex, formDelta, goalForm, h2hDelta, recentForm, formSummary, adjustLambdas, TUNED,
 } from './lib/form.mjs';
@@ -1765,6 +1765,12 @@ async function checkDataGap() {
       !!g('en2', 'news', ['news'], { ...full, news: [] })],
     ['英冠的缺口說法是「沒有來源」不是「還在補」',
       /實測|做不出來/.test(V.LEAGUES.en2.gapNote ?? '')],
+    /* 導覽列上已經掛著球員頁的聯賽,缺口頁不准再說「球員層還沒抓 / 只做到球隊那一層」——
+       義甲法甲那兩句在球員層接上之後掛了一週(2026-09-24 全站掃描)。守的是**配對**:看 open 有沒有 players,
+       不列聯賽名(下一個聯賽照樣被檢查)。 */
+    ...Object.entries(V.LEAGUES).filter(([, L]) => (L.open ?? []).includes('players') && L.gapNote).map(([k, L]) =>
+      [`${L.zh}(${k})球員頁已開,缺口說法不再說球員層還沒有`,
+        !/做到球隊那一層|球員層.{0,40}還沒抓|還沒有球員/.test(L.gapNote), L.gapNote.slice(0, 40)]),
 
     /* **分頁標籤有些是函式**(首頁要顯示「英超首頁 / 西甲首頁 / 英冠首頁」)。
        pageLabel 原本直接回傳,於是缺口頁把函式的原始碼印在畫面上:
@@ -2544,6 +2550,61 @@ async function checkDataGap() {
       ['data', ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
         .filter(e => e.isDirectory()).map(e => `data/leagues/${e.name}`)]
         .every(d => existsSync(join(ROOT, 'web', d, 'prob-history.json'))), ''],
+    /* 沒有隊色的聯賽(德甲義甲法甲還沒交付)chartColor 曾經全是 `#NaNNaNNaN`:intoBand(undefined) 算成 NaN,
+       而那是非 null 字串,`?? '#9aa0aa'` 永遠輪不到。畫面上是 SVG 拿到無效顏色、線條直接不見,不報錯。 */
+    ['intoBand:沒有顏色回 null(讓呼叫端的備案接得到),有顏色照舊',
+      intoBand(undefined) === null && intoBand(null) === null && intoBand('') === null
+        && /^#[0-9a-f]{6}$/i.test(intoBand('#DB0007') ?? ''), String(intoBand(undefined))],
+    ...(() => {
+      const bad = [];
+      for (const d of ['data', ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => `data/leagues/${e.name}`)]) {
+        for (const f of ['teams.json', 'clubs.json']) {
+          const path = join(ROOT, 'web', d, f);
+          if (!existsSync(path)) continue;
+          const j = JSON.parse(readFileSync(path, 'utf8'));
+          const list = Array.isArray(j) ? j : (j.teams ?? j.clubs ?? []);
+          for (const t of list) if (t.chartColor != null && !/^#[0-9a-f]{6}$/i.test(t.chartColor)) bad.push(`${d}/${f} ${t.code} ${t.chartColor}`);
+        }
+      }
+      return [['每個聯賽的 chartColor 都是有效的六位色碼(或 null)', bad.length === 0, bad.slice(0, 4).join('; ')]];
+    })(),
+    /* 缺口頁「現在看得到的」那一排原本把 allplayers / duel 印成英文鍵名 —— 它們是「探索」裡的分頁,沒有標籤。 */
+    ['缺口頁「現在看得到的」只列有標籤的頁(不印 allplayers / duel 這種鍵名)',
+      /\.filter\(p => \[\.\.\.PAGES, \.\.\.SITE_PAGES\]\.some\(\(\[n\]\) => n === p\)\)/
+        .test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8')), ''],
+    /* C.table 的第一次 render 排在 microtask 裡。英超球員頁的下拉同時掛 oninput 與 onchange,選一次連畫兩張表,
+       第一張的 render 跑的時候容器已經被第二張蓋掉 → null.querySelector 拋錯(2026-09-24 點擊掃描抓到)。 */
+    ['C.table:容器已經不在 DOM 裡時 render 直接收手,不拋錯',
+      /const el = document\.getElementById\(id\);\s*if \(!el\) return;\s*el\.querySelector\('table'\)/
+        .test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8')), ''],
+    /* Understat 那條球員頁用上游的隊名查隊碼。德甲的 Augsburg / Schalke 04 / St. Pauli 在名冊上是
+       「FC Augsburg」之類,前端逐字比對不到 → 球隊欄印上游原名、沒有隊徽、點下去是不存在的隊碼
+       (2026-09-24 全站掃描)。前端改成也收 build 對好的 `teamCodes`;這裡守**兩邊加起來每個隊名都查得到**,
+       負向對照:把前端那一段拿掉,德甲就會回到三個查不到。 */
+    ...(() => {
+      const pageSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const usesCodes = /p\.teamCodes\[i\]/.test(pageSrc);
+      const norm = v => String(v ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+      const miss = [];
+      for (const e of readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })) {
+        if (!e.isDirectory()) continue;
+        const d = join(ROOT, 'web', 'data', 'leagues', e.name);
+        const L = existsSync(join(d, 'leaders.json')) ? JSON.parse(readFileSync(join(d, 'leaders.json'), 'utf8')) : null;
+        if (L?.source !== 'Understat') continue;
+        const players = JSON.parse(readFileSync(join(d, 'players.json'), 'utf8'));
+        const keys = new Set();
+        for (const f of ['clubs.json', 'teams.json']) {
+          if (!existsSync(join(d, f))) continue;
+          for (const t of JSON.parse(readFileSync(join(d, f), 'utf8'))) for (const v of [t.code, t.en, t.zh, t.of, t.understat, ...(t.alias ?? [])]) if (norm(v)) keys.add(norm(v));
+        }
+        if (usesCodes) for (const p of players) if (p.teams?.length === p.teamCodes?.length) p.teams.forEach((n, i) => { if (p.teamCodes[i]) keys.add(norm(n)); });
+        for (const p of players) for (const n of p.teams ?? []) if (!keys.has(norm(n)) && !miss.includes(`${e.name}:${n}`)) miss.push(`${e.name}:${n}`);
+      }
+      return [['Understat 球員頁:每個上游隊名都查得到隊碼(名冊 + build 對好的 teamCodes)', usesCodes && miss.length === 0,
+        usesCodes ? miss.slice(0, 5).join('、') : '前端沒有收 teamCodes']];
+    })(),
 
     /* ── 近 10 場風格位移(A 層,2026-08-29 加)── */
     ...await (async () => {
@@ -4244,7 +4305,13 @@ async function checkDataGap() {
         + item(99, 'Barcelona close to deal for Arsenal forward');
       const hit = parseFeed(xml, 'probe', 8, ['barcelona']);
       const noKw = parseFeed(xml, 'probe', 8, []);
+      /* 段落邊界(2026-09-24):Guardian 的 description 是跳脫過的 <p>…</p><p>…</p>,
+         刪掉標籤而不留空白的話兩段的字會黏在一起(「own goalManchester United」)。 */
+      const glued = parseFeed(`<item><title>t</title><description>&lt;p&gt;Martínez’s own goal&lt;/p&gt;&lt;p&gt;Manchester United are &lt;a href="x"&gt;rocking&lt;/a&gt;, again&lt;br/&gt;Next&lt;/p&gt;</description>`
+        + `<link>http://x/1</link><pubDate>Mon, 31 Aug 2026 10:00:00 GMT</pubDate></item>`, 'probe', 8, []);
       return [
+        ['外電:段落 / 換行標籤變成空白(兩段的字不黏在一起),行內標籤不留空白',
+          glued[0]?.body === 'Martínez’s own goal Manchester United are rocking, again Next', glued[0]?.body],
         ['外電:關鍵字篩選在切之前(綜合 feed 才收得到少數命中的那幾則)',
           hit.length === 1 && /Barcelona/.test(hit[0].title), `${hit.length} 則`],
         ['外電:沒有關鍵字時 max 照舊是上限', noKw.length === 8, `${noKw.length} 則`],
@@ -7328,6 +7395,17 @@ async function checkFollow() {
     'fixture-list.js', 'page-cups.js', 'follow-view.js', 'predict-view.js']
     .filter(f => /warroom:follow/.test(strip(src(f))));
   ok(others.length === 0, '沒有人自己再讀一次 localStorage 的鍵', others.join('、'));
+
+  /* 可以關注的聯賽從註冊表算,不手寫。手寫的 ['pl','es1','en2'] 在德義法有了球隊頁與 ☆ 之後沒有人回來改,
+     於是在德甲球隊頁按 ☆ 會存進去、「我的球隊」卻寫「還沒有關注任何球隊」(2026-09-24 全站掃描)。
+     守**配對**:球隊頁在導覽列上的聯賽(沒有 open 清單 = 全開),就一定要在可關注的名單裡。 */
+  {
+    const fv = strip(src('follow-view.js'));
+    const m = fv.match(/const FOLLOW_LEAGUES = ([\s\S]*?);\n/);
+    const derived = !!m && /C\.LEAGUES/.test(m[1]) && !/\[\s*'pl'/.test(m[1]);
+    ok(derived, '可關注的聯賽從 C.LEAGUES 算,不是手寫清單', m?.[1]?.slice(0, 80) ?? '找不到 FOLLOW_LEAGUES');
+    ok(!/三個聯賽/.test(fv), '「我的球隊」不再寫死「三個聯賽」');
+  }
 
   /* 四、**聯賽頁一律帶聯賽,只有盃賽頁可以不分聯賽。**
      盃賽裡的 BUR 就是 Burnley 這間俱樂部,他今年在哪一級無關;

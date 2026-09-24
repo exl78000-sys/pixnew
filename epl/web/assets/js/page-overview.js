@@ -1,4 +1,4 @@
-import * as C from './core.js?v=d2162a48';
+import * as C from './core.js?v=fbc09f0c';
 
 const app = document.getElementById('app');
 
@@ -322,8 +322,12 @@ try {
     .map(n => ({ ...n, leagueZh: C.LEAGUES[lg].zh })))
     .sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 8);
 
+  /* 用網址去重的話,同一家來源在不同聯賽指向不同頁面就會重複列:頁尾實測是 football-data.co.uk 六次、
+     Understat 與 SportMonks 各兩次(2026-09-24 全站掃描)。總覽只講「用了哪幾家」,
+     所以按名字(去掉括號裡的聯賽代碼)去重,各聯賽自己的頁尾仍然連到各自的那一頁。 */
+  const baseName = s => String(s.name ?? '').replace(/[((][^))]*[))]\s*$/, '').trim();
   const sources = leagues.flatMap(x => x.data.meta.sources ?? [])
-    .filter((s, i, all) => all.findIndex(y => y.url === s.url) === i)
+    .filter((s, i, all) => all.findIndex(y => baseName(y) === baseName(s)) === i)
     .map(s => `<a href="${C.esc(s.url)}" target="_blank" rel="noopener">${C.esc(s.name)}</a>`)
     .join('、');
 

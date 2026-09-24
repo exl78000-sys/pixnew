@@ -1,4 +1,4 @@
-import * as C from './core.js?v=d2162a48';
+import * as C from './core.js?v=fbc09f0c';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -652,7 +652,7 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
     app.innerHTML = `
     <div style="margin-bottom:12px">
       <p class="small muted">歐洲冠軍聯賽的聯賽階段積分榜、淘汰賽結果與球員榜。跟聯賽不一樣的地方這一頁都照實顯示:
-        <b>兩回合的總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及本站兩個聯賽的球隊各自走到了哪一輪。
+        <b>兩回合的總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及本站認得的球隊各自走到了哪一輪。
         已完賽的兩季是<b>兩個獨立來源逐場核對過</b>的;進行中的那一季只有一個來源,
         沒得交叉核對。</p>
       ${C.stampRow([
@@ -761,13 +761,9 @@ export function renderUclView(app, { meta, clubs, teams, ucl, uclTeams, uclStand
       const unknown = s.teamsTotal - s.teamsKnown;
       cov.innerHTML = `
         <b>球隊涵蓋率:${s.teamsKnown} / ${s.teamsTotal} 支有本站資料。</b>
-        歐冠有全歐洲的球隊,而本站有球隊頁的只有英超、西甲與英冠的球隊 —— 這一季有 ${unknown} 支球隊本站沒有,
-        它們照樣出現在賽程與積分榜裡,但<b>只有名字,沒有隊徽也點不進去</b>。
-        不替它們編一個隊碼或找一張像的隊徽,那會讓讀者以為本站有它們的資料。
-        <div style="margin-top:6px" class="tiny dim">
-          另一個聯賽的球隊(例如在英超頁看到的皇馬)有連結、但沒有隊徽 ——
-          隊徽是按聯賽打包的,這一頁只端得出目前這個聯賽那一份。點進去會切到對的聯賽。
-        </div>
+        歐冠有全歐洲的球隊,本站只認得自己有收的那幾個聯賽的球隊 —— 這一季有 ${unknown} 支本站沒有,
+        它們照樣出現在賽程與積分榜裡,但<b>點不進去</b>。
+        不替它們編一個隊碼,那會讓讀者以為本站有它們的資料。
         ${/* 賽後報告的涵蓋率(鐵則四):有幾場、缺幾場、為什麼缺,全部從索引讀。
              「還沒抓到」跟「拒收」是兩句不同的話 —— 拒收代表兩個來源的比分對不上,那一場整場不採用。 */''}
         ${detSeason ? `<div style="margin-top:6px">

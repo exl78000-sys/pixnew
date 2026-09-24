@@ -1,4 +1,4 @@
-import * as C from './core.js?v=d2162a48';
+import * as C from './core.js?v=fbc09f0c';
 
 const app = document.getElementById('app');
 
@@ -321,7 +321,7 @@ try {
   </div>` : ''}
 
   <div class="card" style="margin-top:14px">
-    <h3>這個模型不知道的事</h3>
+    <h3>歐冠勝率不知道的事</h3>
     <div class="small muted" style="display:grid;gap:6px">
       <div>・<b>不預測淘汰賽的加時與 PK</b>,也不做兩回合的合計 —— 給的是單場的主/和/客。</div>
       <div>・沒有為歐冠調過主場優勢,用的是域內那一個。客場遠征的距離與時差不在模型裡。</div>
@@ -413,7 +413,9 @@ try {
      悄悄不顯示等於假裝沒測過。以後再多測幾個特徵,加一個 VIEW 就好。 */
   const SITUATION_VIEW = {
     title: '上一季的定位球強弱有沒有預測力',
-    coefLabels: { bAtk: 'bAtk', bDef: 'bDef' },
+    /* 表頭與列名用讀者看得懂的名字;鍵(bAtk…)是調參腳本的產物欄位,不改。
+       原本表頭直接印 BATK / BREST(CSS 轉大寫),列名印「只開 bRest」—— 程式變數名掉進畫面。 */
+    coefLabels: { bAtk: '定位球進攻', bDef: '對手定位球失球' },
     extra: t => `
       <div><b>怎麼定義:</b>定位球 = ${t.deadBall.join(' + ')}。
         <b>十二碼不算</b> —— 罰球次數主要反映被犯規多少與裁判尺度,不是定位球能力。</div>
@@ -437,7 +439,7 @@ try {
 
   const CONGESTION_VIEW = {
     title: '賽程密度(休息天數)有沒有預測力',
-    coefLabels: { bRest: 'bRest', bOpp: 'bOpp' },
+    coefLabels: { bRest: '自己休息', bOpp: '對手休息' },
     extra: t => `
       <div><b>怎麼定義:</b>距離上一場聯賽幾天,以 ${t.normalRest} 天(一般一週)為基準取對數比,
         上限壓在 ${t.restCap} 天 —— 休 14 天跟休 29 天對疲勞的意義差不多。</div>
@@ -450,11 +452,10 @@ try {
       const c = t.tuneBest?.coef ?? {};
       const flipped = (c.bRest ?? 0) < 0;
       return `${flipped ? `<b>而且方向跟假說相反</b>:調參挑出來的最佳係數是
-        bRest=${c.bRest}(休得越多、進球期望越<b>低</b>)、bOpp=${c.bOpp}(對手休得越多、自己進球期望越<b>高</b>)。
+        「自己休息」${c.bRest}(休得越多、進球期望越<b>低</b>)、「對手休息」${c.bOpp}(對手休得越多、自己進球期望越<b>高</b>)。
         疲勞假說預期的是相反的號誌。最可能的解釋是<b>混淆</b>:在只有聯賽日期的資料裡,
         「休息短」幾乎等於「有打歐戰」,而打歐戰的正好是強隊 ——
-        所以係數抓到的是球隊實力,不是疲勞。這跟本頁「陣型到底有沒有影響」那一段
-        是同一種陷阱:相關不等於因果,而且因果可能是反過來的。` : ''}
+        所以係數抓到的是球隊實力,不是疲勞 —— 相關不等於因果,而且因果可能是反過來的。` : ''}
         調參賽季基準 ${t.tuneBaselineRps} → 最佳 ${t.tuneBest.rps}。`;
     },
   };
@@ -467,8 +468,9 @@ try {
     if (!t) return '';
     const keys = Object.keys(view.coefLabels);
     const pass = r => r.對基準 < 0 && Math.abs(r.對基準) > r['±標準誤'];
+    const rowName = name => keys.reduce((s, k) => s.replace(k, `「${view.coefLabels[k]}」`), String(name ?? ''));
     const rows = (t.holdout?.trials ?? []).map(r => `<tr>
-      <td>${C.esc(r.係數)}</td>
+      <td>${C.esc(rowName(r.係數))}</td>
       ${keys.map(k => `<td class="mono num">${r[k] ?? 0}</td>`).join('')}
       <td class="mono num">${r.RPS}</td>
       <td class="mono num">${r.對基準 > 0 ? '+' : ''}${r.對基準}</td>

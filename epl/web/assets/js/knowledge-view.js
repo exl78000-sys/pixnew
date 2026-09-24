@@ -1,4 +1,4 @@
-import * as C from './core.js?v=d2162a48';
+import * as C from './core.js?v=fbc09f0c';
 
 
 /* 足球知識頁。
@@ -166,8 +166,8 @@ export async function renderKnowledge(app) {
       <div class="note" style="margin-top:12px">
         <b>讀這張表要小心一件事:位置分類是上游給的,而多數來源把邊鋒歸在「中場」。</b>
         所以 7 號與 11 號看起來「不再是前鋒」,有一部分是分類粒度造成的,
-        不能直接讀成傳統瓦解。真正能看的是<b>大類有沒有換邊</b> ——
-        例如 6 號在兩個聯賽分別落在後衛與中場,那個差異不是分類問題。
+        不能直接讀成傳統瓦解。真正能看的是<b>大類有沒有換邊</b>(例如後衛與中場之間)——
+        那種差異不是分類粒度造成的。
       </div>`;
     }
   

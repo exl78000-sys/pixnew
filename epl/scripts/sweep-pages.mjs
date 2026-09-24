@@ -12,7 +12,9 @@
  * ── 讀結果時要知道的兩件事(不然會追錯 bug)──
  * 1. 沙箱連不到外網:西甲頭貼(SportMonks CDN)、教練照(Wikimedia)在這裡一定載不到,
  *    症狀是 console 的 `ERR_TUNNEL_CONNECTION_FAILED`。正式站不會。這裡把它們
- *    分開計成「外部資源」,不混進 pageerror。
+ *    分開計成「外部資源」,不混進 pageerror。2026-09-24 起還有第二種:出口代理攔 TLS,
+ *    即時比分的 raw.githubusercontent.com 那一份回 `ERR_CERT_AUTHORITY_INVALID`
+ *    (總覽、實時、未賽的單場頁都會先試它)—— 同樣是沙箱的事,不分開的話一次報 30 個「異狀」。
  * 2. `loading="lazy"` 的圖在首屏外**不會開始載入**,但 `complete` 是 true、
  *    `naturalWidth` 是 0 —— 看起來跟破圖一模一樣。所以破圖只數**在視窗內**的。
  *    第一版沒分,allplayers 報了 37 張「破圖」,其中 32 張只是還沒捲到。
@@ -117,7 +119,7 @@ for (const t of picked) for (const w of [1200, 400]) {
   page.on('console', m => {
     if (m.type() !== 'error') return;
     const txt = m.text();
-    (/ERR_TUNNEL|ERR_CONNECTION|ERR_NAME_NOT_RESOLVED/.test(txt) ? external : errs).push(txt.slice(0, 160));
+    (/ERR_TUNNEL|ERR_CONNECTION|ERR_NAME_NOT_RESOLVED|ERR_CERT_AUTHORITY_INVALID/.test(txt) ? external : errs).push(txt.slice(0, 160));
   });
   page.on('response', r => { if (r.status() >= 400 && r.url().startsWith(BASE)) fails.push(`${r.status()} ${r.url().replace(BASE, '')}`); });
   let nav = 'ok';
@@ -128,6 +130,9 @@ for (const t of picked) for (const w of [1200, 400]) {
     const vh = innerHeight;
     return {
       text, appLen: (document.getElementById('app')?.innerText ?? '').trim().length,
+      /* 「幾乎空的」要抓的是卡在載入中或什麼都沒畫出來的頁;刻意很短的說明(例如非英超的模擬遊玩:
+         「只有英超有…切到英超玩」)有一個 .note,那不是故障。2026-09-24 把那段說明縮短之後被誤報。 */
+      hasNote: !!document.querySelector('#app .note'),
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
         ? `${document.documentElement.scrollWidth}/${document.documentElement.clientWidth}` : '',
       // 只數視窗內的破圖(lazy 的在首屏外根本還沒載)
@@ -135,13 +140,13 @@ for (const t of picked) for (const w of [1200, 400]) {
         && (() => { const b = i.getBoundingClientRect(); return b.top >= 0 && b.top < vh; })()).length,
     };
   });
-  results.push({ lg: t.lg, page: t.page, w, nav, errs, fails, external: external.length, badText: BAD.filter(([re]) => re.test(r.text)).map(([, n]) => n), appLen: r.appLen, overflow: r.overflow, broken: r.broken });
+  results.push({ lg: t.lg, page: t.page, w, nav, errs, fails, external: external.length, badText: BAD.filter(([re]) => re.test(r.text)).map(([, n]) => n), appLen: r.appLen, short: r.appLen < 120 && !r.hasNote, overflow: r.overflow, broken: r.broken });
   await page.close();
 }
 await browser.close();
 if (OUT) writeFileSync(OUT, JSON.stringify(results, null, 1));
 
-const bad = results.filter(r => r.nav !== 'ok' || r.errs.length || r.fails.length || r.badText.length || r.overflow || r.appLen < 120 || r.broken);
+const bad = results.filter(r => r.nav !== 'ok' || r.errs.length || r.fails.length || r.badText.length || r.overflow || r.short || r.broken);
 console.log(`掃了 ${picked.length} 個目標 × 2 寬度 = ${results.length} 次載入;有異狀 ${bad.length} 次`
   + `(外部資源載不到 ${results.filter(r => r.external).length} 次 —— 沙箱擋外網,正式站不會)\n`);
 for (const r of bad) {
@@ -151,7 +156,7 @@ for (const r of bad) {
   if (r.fails.length) tags.push(`本站 HTTP 失敗×${r.fails.length}`);
   if (r.badText.length) tags.push(`文字:${r.badText.join('/')}`);
   if (r.overflow) tags.push(`橫向溢位 ${r.overflow}`);
-  if (r.appLen < 120) tags.push(`#app 幾乎空的(${r.appLen} 字)`);
+  if (r.short) tags.push(`#app 幾乎空的(${r.appLen} 字)`);
   if (r.broken) tags.push(`視窗內破圖×${r.broken}`);
   console.log(`[${r.lg}] ${r.page} @${r.w}  →  ${tags.join('、')}`);
   for (const e of r.errs.slice(0, 2)) console.log(`      ✗ ${e}`);

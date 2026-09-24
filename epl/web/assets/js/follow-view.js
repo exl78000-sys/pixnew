@@ -19,15 +19,18 @@
 
    3. **關注名單存在瀏覽器這件事要寫在畫面上**,而且給匯出/匯入 ——
       不要讓人以為它存在雲端(鐵則四,跟「我的預測」同一套)。 */
-import * as C from './core.js?v=d2162a48';
+import * as C from './core.js?v=fbc09f0c';
 /* **具名 import 要寫在同一行。** 單檔版的打包是用單行正則把 import 拆掉的,
    跨行的話拆不掉 → 攤平之後還留著一個 import 陳述句 → 整份單檔版死掉。
    bundle.mjs 的守門會擋下來(「單檔版裡還有沒拆掉的 import」),不會靜靜過關。 */
 import { readFollows, writeFollows, followStar, bindFollowStars, SOFT_LIMIT, FOLLOW_STORAGE_NOTE } from './follow.js?v=02130043';
 
-/* 可以關注的聯賽 = 有球隊頁的那三個。**寫成明確清單,不要用「不是某某」的二元式** ——
-   那種寫法在只有幾個聯賽時看起來完全正確,加第四個就會靜靜把它也放進來。 */
-const FOLLOW_LEAGUES = ['pl', 'es1', 'en2'];
+/* 可以關注的聯賽 = 導覽列上有球隊頁的聯賽,**從註冊表算**(沒有 open 清單 = 全部開放,英超就是這樣)。
+   原本是手寫的 ['pl', 'es1', 'en2'],註解寫著「有球隊頁的那三個」—— 德義法 9/15 有了球隊頁與 ☆ 之後
+   沒有人回來改:在德甲球隊頁按 ☆ 會存進瀏覽器,「我的球隊」卻照樣寫「還沒有關注任何球隊」
+   (2026-09-24 全站掃描抓到;「手寫的聯賽清單」那條坑又一次)。 */
+const FOLLOW_LEAGUES = Object.entries(C.LEAGUES)
+  .filter(([, L]) => !L.open || L.open.includes('teams')).map(([k]) => k);
 
 const fvEsc = C.esc;
 
@@ -195,7 +198,7 @@ function teamCard(pool, code, extraFixtures) {
   </div>`;
 }
 
-/* 球隊挑選器:三個聯賽的全部球隊,打勾就關注。 */
+/* 球隊挑選器:可關注的聯賽的全部球隊,打勾就關注。 */
 function pickerHtml(pools) {
   return pools.map(p => `<div style="margin-top:12px">
     <div class="tiny dim" style="margin-bottom:6px">${C.compBadge(p.lg)} ${fvEsc(C.LEAGUES[p.lg]?.zh ?? p.lg)}
@@ -210,7 +213,7 @@ function pickerHtml(pools) {
 export async function renderFollowTeams(host) {
   host.innerHTML = '<div class="loading">載入資料中…</div>';
 
-  /* 三個聯賽的基本資料。**meta 先拿到才知道要不要去要 players-core** ——
+  /* 各聯賽的基本資料。**meta 先拿到才知道要不要去要 players-core** ——
      這一份在這裡只有一個用途:傷停名單(下面的 outList)。所以條件是**有沒有傷停來源**,
      不是「有沒有球員層」:西甲有球員層但傷停欄位全是 null、英冠 2026-09-15 起有球員層但沒有 players-core,
      兩個聯賽照舊條件都會去要一份用不到的檔,英冠那次還是個 404 —— 預期中的 404 會在 console 留一串
@@ -266,7 +269,7 @@ export async function renderFollowTeams(host) {
       C.registerTeams(data.teams);
     } catch { /* 某個聯賽載不到就少那一段,不要整頁掛掉 */ }
   }
-  if (!pools.length) { host.innerHTML = '<div class="note warn">三個聯賽的資料都載不到。</div>'; return; }
+  if (!pools.length) { host.innerHTML = '<div class="note warn">各聯賽的資料都載不到。</div>'; return; }
 
   /* 盃賽與歐冠的場次晚一步併進來(見檔頭第 1 點)。先給一張空表,拿到再重畫。 */
   let extra = new Map();
@@ -295,7 +298,7 @@ export async function renderFollowTeams(host) {
         動態可以只看你的球隊、賽程與盃賽的場次會加上 ★。</div>`}
 
       <div class="section" style="margin-top:22px"><h2>選球隊</h2>
-        <span class="hint">三個聯賽共 ${pools.reduce((a, p) => a + (p.teams?.length ?? 0), 0)} 支・點 ☆ 加入、點 ★ 取消</span></div>
+        <span class="hint">${pools.length} 個聯賽共 ${pools.reduce((a, p) => a + (p.teams?.length ?? 0), 0)} 支・點 ☆ 加入、點 ★ 取消</span></div>
       <div class="card">${pickerHtml(pools)}</div>
 
       <div class="section" style="margin-top:22px"><h2>帶著走</h2>

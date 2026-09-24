@@ -776,7 +776,9 @@ export async function buildLeague(L) {
         : []),
       `— 還沒有隊色、城市、球場${crestCount === teams.length ? '' : '、部分球隊的隊徽'}與教練:`
         + '那幾樣要另外人工交付並通過核對器,交付之前畫面上不顯示',
-      '— 沒有即時比分:比分依 openfootball 的更新節奏落地',
+      /* 原本只寫「比分依 openfootball 的更新節奏落地」—— 2026-09-16 起比賽夜迴圈會抓 FotMob 賽果補上晚到的比分
+         (標暫定、逐場核對),那句話少講了一半(2026-09-24 全站掃描)。 */
+      '— 沒有比賽中的即時比分:完賽比分以 openfootball 為準;它晚到時,比賽夜先用 FotMob 的賽果補上並標「暫定」',
       /* 德甲的升降級跟英格蘭不一樣,前端不要自己猜 */
       /* 升降級規則**由呼叫端給**,不可以照抄:德甲與法甲的第 16 名打的是跨聯賽附加賽
          (對德乙 / 法乙第 3 名),義甲是後 3 名直接降級、根本沒有附加賽。
@@ -823,7 +825,7 @@ export async function buildLeague(L) {
       currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
     },
     /* 這個聯賽沒有的能力一律明講,前端才不會畫一個空殼。 */
-    live: { available: false, note: `${L.zh}還沒有接即時比分來源;比分依 openfootball 的更新節奏落地。` },
+    live: { available: false, note: `${L.zh}還沒有接比賽中的即時比分;完賽比分以 openfootball 為準,晚到時先用 FotMob 的賽果補上並標「暫定」。` },
     official: { available: false },
     ai: { enabled: false, pre: 0, post: 0 },
     /* 有資料就講有、沒有就講**為什麼還沒有** —— 「還沒抓」跟英冠那種「來源就是沒有」
@@ -902,7 +904,8 @@ export async function buildLeague(L) {
       '傷停與停賽', '防守數據(鏟球/攔截/撲救)'],
     sportmonks: {},
     note: 'Understat 提供整季彙總(一季一個請求)。每 90 分鐘僅在上場時間達門檻時給出。'
-      + '隊名對照已用逐隊出賽分鐘與進球獨立核對過(見 nameCheck)。',
+      /* 原本寫「(見 nameCheck)」—— 那是產物的欄位名,讀者找不到。核對的數字在首頁「目前資料界線」那一條 */
+      + '隊名對照已用逐隊出賽分鐘與進球獨立核對過(數字見首頁的資料界線)。',
     /* 隊名對照的核對結果放進產物,畫面才講得出「這個對照是驗過的」。
        每一列帶著區間與 verdict,`coverage` 那種是「兩邊涵蓋的場次不同批」不是對錯
        —— 不分開的話,早季每個聯賽都會有一批看起來像錯的列。

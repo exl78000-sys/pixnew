@@ -1,4 +1,4 @@
-import * as C from './core.js?v=d2162a48';
+import * as C from './core.js?v=fbc09f0c';
 
 const app = document.getElementById('app');
 
@@ -1265,8 +1265,8 @@ try {
              (${C.name(f.home)} ${shapes[f.home].official.formation}、${C.name(f.away)} ${shapes[f.away].official.formation}),
              再由球員的角色(中衛/邊後衛/防中/中場/前腰/邊鋒/中鋒)決定誰站哪一格。`
           : `有官方陣型的隊伍就照官方排,沒有的(本季還沒開踢)才由球員角色推導。`}
-        <span class="dim">先前這裡是用 FPL 的四個粗類分線,而 FPL 把邊鋒歸為中場 ——
-        結果 20 隊裡有 13 隊都會顯示成 4-5-1,那是分類太粗,不是球隊真的都這樣踢。</span>
+        ${/* 原本還有一句「先前這裡是用 FPL 的四個粗類分線…20 隊裡有 13 隊顯示成 4-5-1」——
+             那是改版紀錄不是給讀者的資訊,2026-09-24 全站掃描時拿掉 */''}
       </div>
       ${proj.home?.basis === 'last' || proj.away?.basis === 'last'
         ? '本季才剛開打,目前主要依據<b>上季</b>的先發紀錄,準度會比賽季中段低不少。'

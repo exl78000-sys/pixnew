@@ -25,10 +25,16 @@ if (!Object.hasOwn(LEAGUES, want)) {
 const league = want;
 const { config: configFile, out: outputFile, cat: category } = LEAGUES[league];
 
-const strip = s => s
+/* **段落邊界要變成空白,不是直接刪掉**(2026-09-24)。Guardian 的 description 是一串跳脫過的
+   `<p>…</p><p>…</p>`,原本一律 `replace(/<[^>]+>/g, '')` —— 於是上一段的最後一個字跟下一段的
+   第一個字黏在一起:「Lisandro Martínez’s own goal**Manchester** United are rocking…」、
+   「touristsThe document…」,英超、西甲、英冠三份外電都有。**行內標籤**(a / strong / em)照舊直接拿掉 ——
+   換成空白的話「<a>Arsenal</a>, who」會變成「Arsenal , who」。 */
+export const strip = s => s
   .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
   .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+  .replace(/<\/?(?:p|br|div|li|ul|ol|h[1-6]|tr|td|th|table|blockquote|figure|figcaption|section|article|hr)\b[^>]*>/gi, ' ')
   .replace(/<[^>]+>/g, '')
   .replace(/\s+/g, ' ')
   .trim();

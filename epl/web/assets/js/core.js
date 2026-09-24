@@ -724,7 +724,7 @@ export const LEAGUES = {
       + '球員頁畫得出來,因為那一層是拿逐場統計累加的;這幾頁要的東西(球員 xG 模型、傷停、即時比分)沒有來源,'
       + '不是還在補,是做不出來。',
   },
-  /* 德甲(2026-09-15 加的第四個聯賽)。目前只做「球隊與比賽」那一層 ——
+  /* 德甲(2026-09-15 加的第四個聯賽)。先做「球隊與比賽」那一層,同日接上球員層 ——
      賽程、賽果、積分榜、近況、交手、單場機率、賽季模擬、走查回測(RPS 0.1966 對基準線 0.2337)。
      **它缺的東西跟英冠缺的不是同一種**:英冠是「Understat 不涵蓋這個聯賽」(永遠不會有),
      德甲是五大聯賽之一、Understat 有它,只是還沒接 —— 所以缺口頁要說「還沒接」,不是「做不到」。
@@ -749,14 +749,17 @@ export const LEAGUES = {
   it1: {
     zh: '義甲', brand: '義甲戰情室', en: 'SERIE A WAR ROOM',
     open: ['overview', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
-    gapNote: '義甲目前做到球隊那一層,球員層與賽後報告的來源都已經實測過(Understat Serie_A、'
-      + 'FotMob 聯賽 id 55),只是那兩家開發沙箱連不到,要在排程上抓 —— 所以是還沒抓,不是做不出來。',
+    /* 義甲法甲的缺口說法原本停在「只做到球隊那一層、球員層還沒抓」—— 球員頁與賽後報告接上之後沒有回來改,
+       於是站在義甲的戰術 / 實時 / 動態頁,讀者被告知「球員層還沒抓」,而導覽列上就掛著球員頁
+       (「有哪一句還在講我們沒有它」第七次;2026-09-24 全站掃描抓到)。說法跟德甲那一份對齊。 */
+    gapNote: '義甲目前做到球隊、比賽與球員那一層,還沒有的是陣容、傷停與即時比分 —— '
+      + '球員層走 Understat(它涵蓋五大聯賽),所以剩下這幾頁是還沒做,不是做不出來。',
   },
   fr1: {
     zh: '法甲', brand: '法甲戰情室', en: 'LIGUE 1 WAR ROOM',
     open: ['overview', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
-    gapNote: '法甲目前做到球隊那一層,球員層與賽後報告的來源都已經實測過(Understat Ligue_1、'
-      + 'FotMob 聯賽 id 53),只是那兩家開發沙箱連不到,要在排程上抓 —— 所以是還沒抓,不是做不出來。',
+    gapNote: '法甲目前做到球隊、比賽與球員那一層,還沒有的是陣容、傷停與即時比分 —— '
+      + '球員層走 Understat(它涵蓋五大聯賽),所以剩下這幾頁是還沒做,不是做不出來。',
   },
 };
 
@@ -1668,7 +1671,11 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
       `<tr class="${[onRow && (!rowClickable || rowClickable(r)) ? 'clickable' : '',
         rowClass ? (rowClass(r) ?? '') : ''].filter(Boolean).join(' ')}" data-i="${rows.indexOf(r)}">${cols.map(c =>
         `<td class="${cls(c)}" data-k="${c.key}">${cellHtml(c, r, i)}</td>`).join('')}</tr>`).join('');
+    /* 表格在第一次 render 之前就被換掉的話,這一份已經不在 DOM 裡了:英超球員頁的下拉同時掛 oninput 與
+       onchange,選一次會連畫兩張表,第一張排進 microtask 的 render 跑的時候容器早就被第二張蓋掉 →
+       `null.querySelector` 拋錯(2026-09-24 全站點擊掃描抓到;畫面正常,因為第二張照常畫出來)。 */
     const el = document.getElementById(id);
+    if (!el) return;
     el.querySelector('table').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
     el.querySelectorAll('th.sortable').forEach(th => {
       th.onclick = () => {
@@ -2224,7 +2231,10 @@ function gapScreen({ league: lg, page, needs }) {
   const app = document.getElementById('app') ?? document.querySelector('.wrap');
   if (!app) return;
   const what = (needs ?? []).map(n => DATASET_ZH[n] ?? n).join('、');
+  /* 只列導覽列上真的有的頁。open 清單裡還有 allplayers / duel / knowledge —— 那幾個是「探索」裡的分頁
+     (舊網址留著轉址),沒有自己的標籤,原本就在這一排印成英文鍵名「allplayers」「duel」(2026-09-24 全站掃描)。 */
   const open = (L.open ?? PAGES.map(([n]) => n))
+    .filter(p => [...PAGES, ...SITE_PAGES].some(([n]) => n === p))
     .map(p => `<a class="pill" href="${esc(link(p))}">${esc(pageLabel(p))}</a>`).join('');
   app.innerHTML = `
     <div class="page-head">

@@ -90,7 +90,8 @@ export function inplayCalibration(store, { minMatches = 30 } = {}) {
         comebackRate: round(t.won / t.n, 4),   // 實際翻盤比例(同一批時點)
       } : null;
     }).filter(Boolean),
-    note: '點與點同場相關,有效樣本看場數。第 0 分錨點與 90+ 收斂點不計入。'
-      + '對照組 brierPre 是「賽前機率凍結不動」。每季重新累積(live-history 換季重開)。',
+    /* 這句畫在模型頁表格下面。原本還有「對照組 brierPre 是…(live-history 換季重開)」——
+       變數名與檔名掉進畫面,而對照組是什麼,表格上面那段已經講過了(2026-09-24 全站掃描)。 */
+    note: '點與點同場相關,有效樣本看場數。第 0 分錨點與 90+ 收斂點不計入。每季重新累積。',
   };
 }

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=d2162a48';
+import * as C from './core.js?v=fbc09f0c';
 
 const app = document.getElementById('app');
 
@@ -147,8 +147,7 @@ try {
   <div id="list"></div>
   <div id="xleague"></div>
   <div class="tiny dim" style="margin-top:8px">
-    背號以 FPL 官方快照為主;快照沒有的,先用英超官方名單上的號碼補
-    (那是零額外請求、既有排程就抓回來的),再不然才用單一來源的補件並標
+    背號以 FPL 官方快照為主;快照沒有的,先用英超官方名單上的號碼補,再不然才用單一來源的補件並標
     <span class="dim">*</span>。兩個來源對不上的一律不填 —— 掛錯號碼比留空更糟。
     仍然查不到的顯示「—」。</div>
   ${C.foot(meta)}`;
@@ -438,6 +437,17 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       const key = normalise(value);
       if (key && !teamNames.has(key)) teamNames.set(key, t.code);
     }
+  }
+  /* 名冊比不到的,改用 build 已經對好的那一份(`teamCodes`,跟 `teams` 逐位對齊,過了隊名對照的獨立核對)。
+     德甲的 Augsburg / Schalke 04 / St. Pauli 在名冊上是 FC Augsburg 之類,build 的寬鬆比對認得、這裡的逐字比對不認得 ——
+     於是球隊欄印出上游的原名、沒有隊徽、點下去是不存在的隊碼,篩選下拉也多出三個原名選項(2026-09-24 全站掃描抓到)。
+     長度對不齊的不收(西甲有 SportMonks 補的租借母隊,`teamCodes` 比 `teams` 長,位置不再一一對應)。 */
+  for (const p of players) {
+    if (!Array.isArray(p.teams) || !Array.isArray(p.teamCodes) || p.teams.length !== p.teamCodes.length) continue;
+    p.teams.forEach((name, i) => {
+      const key = normalise(name);
+      if (key && p.teamCodes[i] && !teamNames.has(key)) teamNames.set(key, p.teamCodes[i]);
+    });
   }
   const codeOf = value => teamNames.get(normalise(value)) ?? value;
   const codeName = c => C.name(codeOf(c));

@@ -1,6 +1,6 @@
-import * as C from './core.js?v=d2162a48';
+import * as C from './core.js?v=fbc09f0c';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=8c872c8d';
+import { renderUclView } from './ucl-view.js?v=37538d82';
 
 const app = document.getElementById('app');
 
@@ -189,7 +189,7 @@ function cupLeaderBoards(pl, cupZh, seasonLabel) {
       xG 只加射門圖完整的 ${pl.xgComplete} 場。
       <div class="tiny dim" style="margin-top:6px">
         比分核對用的是<b>同一家供應商</b>(盃賽的賽果本身就是 FotMob)—— 它擋得住抓錯場次,擋不住供應商自己記錯,
-        跟三個聯賽那種獨立來源核對不是同一回事。互射十二碼不算進球(40 場踢到 PK 的比賽逐場驗過)。
+        跟聯賽那種兩個獨立來源的核對不是同一回事。互射十二碼不算進球(40 場踢到 PK 的比賽逐場驗過)。
         評分榜要出賽 ≥ ${pl.ratingMin} 場才列:淘汰制底下大部分人只踢一兩場,門檻低會讓踢兩場的人排在整個賽事第一。${
           pl.cardsUnmatched ? ` 另有 ${pl.cardsUnmatched} 筆牌事件接不到球員 —— 那是總教練吃牌。` : ''}
       </div>
