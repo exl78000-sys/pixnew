@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
     inputs:
       quick:
-        description: '只跑最新的探測(盃賽逐場詳情有沒有賽後報告),略過其他'
+        description: '只跑 latest 那一組探測(最後一步是國家隊賽事),略過歷來全部'
         type: boolean
         default: false
 
@@ -127,13 +127,23 @@ jobs:
       # 它去抓 Pages 實際供出來的那幾個檔並把事實印出來:這是哪一次建置、歐冠外部球隊有幾支帶隊徽、
       # 本季積分榜那 36 列**實際上有幾列畫得出隊徽**,外加 sha256 讓本機開過的那份能逐位元組比對。
       # 唯讀、零快取、7 個請求,而且打的是本站自己的站台。
-      #
-      # **這是 latest job 的最後一步。** 2026-09-21 第一版放在**檔尾** —— 而檔尾是 `all` job,
-      # 勾 quick 時 `all` 整個 skipped,於是探測「成功跑完」而那一步根本沒有執行(run #39)。
-      # 「排在最後一步」講的是**哪一個 job 的**最後一步,不是檔案的最後一行。
+      # (這一步不再是最後一步 —— 下面那支國家隊探測才是。2026-09-21 第一版把新探測放在**檔尾** ——
+      # 而檔尾是 `all` job,勾 quick 時整個 skipped(run #39);「最後一步」講的是 latest 這個 job 的最後。)
       - name: 部署後到站上確認一次(Pages 實際供出來的那幾個檔)
         working-directory: epl
         run: npm run probe:live
+        continue-on-error: true
+
+      # 國家隊比賽做不做得成(2026-09-24 使用者要求)。歷史賽果有一份沙箱就抓得到的獨立來源
+      # (martj42/international_results),但它**只收已經踢完的比賽** —— 賽程與即時比分只能靠 FotMob,
+      # 而 FotMob 沙箱連不到。這一支問:國際賽事的 id(照印 allLeagues 那一段)、這個窗口有沒有賽程,
+      # 並拿已完賽的場次跟 martj42 **逐場對**來證明 id(名字相同的東西不只一個:CONCACAF 也有 Nations League)。
+      # 唯讀、最多 16 個請求、不寫快取。
+      #
+      # **這是 latest job 的最後一步。**
+      - name: 探測 FotMob 的國家隊賽事(id、這個窗口的賽程、跟 martj42 逐場對)
+        working-directory: epl
+        run: npm run probe:intl
         continue-on-error: true
 
   all:
