@@ -1,0 +1,75 @@
+{
+ "note": "國家隊 Elo 的參數。調參與驗收用不同年份;建置時會用這組參數重算一次驗收(資料會長),畫面讀建置那一份。",
+ "params": {
+  "homeAdv": 100,
+  "kScale": 0.75,
+  "drawA": 0.38,
+  "drawB": 0.6
+ },
+ "minGames": 20,
+ "tune": {
+  "from": "2014-01-01",
+  "to": "2019-12-31",
+  "n": 5527,
+  "rps": 0.1773,
+  "tried": 400,
+  "grid": {
+   "homeAdv": [
+    50,
+    75,
+    100,
+    125,
+    150
+   ],
+   "kScale": [
+    0.5,
+    0.75,
+    1,
+    1.25
+   ],
+   "drawA": [
+    0.26,
+    0.3,
+    0.34,
+    0.38,
+    0.42
+   ],
+   "drawB": [
+    0.2,
+    0.4,
+    0.6,
+    0.8
+   ]
+  },
+  "edges": []
+ },
+ "holdoutAtTune": {
+  "from": "2022-01-01",
+  "to": null,
+  "n": 4661,
+  "model": 0.17181,
+  "baseline": 0.22694,
+  "gain": 0.05513,
+  "se": 0.00247,
+  "competitive": {
+   "n": 3396,
+   "gain": 0.05964,
+   "se": 0.00295
+  },
+  "friendly": {
+   "n": 1265,
+   "gain": 0.04063,
+   "se": 0.00431
+  }
+ },
+ "neutralUnknown": {
+  "note": "上線時未賽的比賽一律當名單上的主隊在主場(FotMob 賽程沒有中立場資訊)。這是在驗收那一批上量的代價。",
+  "neutralMatches": 1645,
+  "shareOfHoldout": 0.35293,
+  "shareFriendly": 0.34545,
+  "shareOther": 0.35571,
+  "rpsCostPerNeutralMatch": 0.00867,
+  "rpsCostOverall": 0.00306
+ },
+ "ranAt": "2026-09-24T14:09:26.301Z"
+}
