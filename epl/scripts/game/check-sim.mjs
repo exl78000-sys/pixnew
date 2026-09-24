@@ -44,6 +44,10 @@ const HOME = 'ARS', AWAY = 'LIV';
    這裡會靜靜過期。從引擎的原始碼讀出來,讀不到就印問號。 */
 const DEFLECT_R_DOC = (readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
   .match(/const DEFLECT_R = ([0-9.]+)/)?.[1]) ?? '?';
+/* 射門那一瞬間的真值(StatsBomb freeze frame 的分箱計數,階段 5q)。「射手被逼住」與 5h 的人數兩節共用 ——
+   各讀一次就是同一份資料兩個來源。只有分箱計數;要重算就跑 `npm run game:statsbomb`。 */
+const SB_FILE = join(ROOT, 'data', 'raw', 'statsbomb', 'pl-2015-16-shot-pressure.json');
+const SB = existsSync(SB_FILE) ? JSON.parse(readFileSync(SB_FILE, 'utf8')) : null;
 
 const pair = k => {
   const a = profile.teams?.[HOME]?.extra?.[k]?.mean, b = profile.teams?.[AWAY]?.extra?.[k]?.mean;
@@ -878,7 +882,11 @@ if (simShots && realShots) {
            需要的曝光就是「真實封阻率 ÷ 轉換」。**超過 100% 就是算術上不可能** ——
            那不是參數沒調好,是這個引擎的封阻機制生不出真實的量(階段 5g)。
            界線:轉換率是在**現在這批**「路上有人」的射門上量的,曝光真的漲上去的話
-           邊際那些球的防守員會離得更遠、轉換只會更低 —— 所以這是**下限**。 */
+           邊際那些球的防守員會離得更遠、轉換只會更低 —— 所以這是**下限**。
+           **2026-09-24(階段 5q):真實的曝光有資料了** —— 5c 登記「沒有資料可以查」,而 StatsBomb 的
+           freeze frame 加 end_location 就是:禁區內運動戰腳下 **50.1%**、路上有人時擋 **53.5%**
+           (「射手被逼住」那一節並排印)。所以這一行的「算術上不可能」是**在引擎自己的轉換率下**,
+           不是真實世界的上限;缺口在曝光(引擎禁區內運動戰 2~3%),不在轉換。 */
         const conv = O > 0 ? myBlkN0 / O : null;
         const realBlk = realFx.out ? realFx.out.blk : null;
         line('　回推:要對上真實的封阻率,曝光得是',
@@ -1239,8 +1247,15 @@ if (simShots && realShots) {
     const b = rows.reduce((a, r) => {
       const x = r.st.counts.shotBox?.[k]; return x ? { n: a.n + x.n, att: a.att + x.att, def: a.def + x.def } : a;
     }, { n: 0, att: 0, def: 0 });
+    /* 真值(階段 5q):StatsBomb freeze frame 射門當下禁區裡的人數,切法跟 `shotBox` 一樣
+       (攻方含射手、守方不含門將)。運動戰只比腳下(引擎的運動戰射門全部是腳下),角球頭腳合起來。
+       5h~5p 一路寫「上游沒有錨」—— 那是本站的來源沒有,不是世界上沒有。 */
+    const rs = SB ? (k === 'open' ? [SB.open.foot] : [SB.corner.foot, SB.corner.head]) : null;
+    const rn = rs ? rs.reduce((a, x) => a + (x.boxAtt != null ? x.n : 0), 0) : 0;
+    const ref = rn ? `\u3000真實 攻 ${(rs.reduce((a, x) => a + (x.boxAtt ?? 0), 0) / rn).toFixed(2)}\u3000守 ${(rs.reduce((a, x) => a + (x.boxDef ?? 0), 0) / rn).toFixed(2)}`
+      + `(StatsBomb 2015-16,${k === 'open' ? '腳下' : '頭腳合計'})` : '';
     console.log(`  ${`　禁區內射門當下・${名}`.padEnd(20, '\u3000')} `
-      + (b.n ? `${(b.n / rows.length).toFixed(1)} 腳/場\u3000攻 ${(b.att / b.n).toFixed(2)}\u3000守 ${(b.def / b.n).toFixed(2)}` : '0 腳'));
+      + (b.n ? `${(b.n / rows.length).toFixed(1)} 腳/場\u3000攻 ${(b.att / b.n).toFixed(2)}\u3000守 ${(b.def / b.n).toFixed(2)}` : '0 腳') + ref);
   }
   console.log('  　十二碼不記(死球,所有人排在禁區外,算進來只會把平均壓低而跟人堆無關)。');
   /* **人堆值多少封阻**(2026-09-24,階段 5p)。5o-3 登記「角球有排好的站位而運動戰沒有」是
@@ -1272,6 +1287,48 @@ if (simShots && realShots) {
       console.log(`  ${'　　曝光依守方人數'.padEnd(20, '\u3000')} ${cells.join('・')}`);
     }
     console.log('  　引擎的角球 = 人堆做到滿,是運動戰站位的**上限**;真實的角球 vs 運動戰 = 人堆在真實世界值多少。');
+  }
+  /* **射手被逼住**(2026-09-24,階段 5q)。5p 的淨結論是「真實的運動戰在普通密度下就擋 30.8%」,
+     最像的解釋是「射手被逼住、最近的防守者就在球的路上」—— 而那一句登記成「沒有真值」。
+     真值其實在 StatsBomb 的 freeze frame 裡(射門那一瞬間所有人的座標),
+     `fetch-statsbomb-shots.mjs` 把它彙整成分箱計數;引擎那一側是 `shotPress`,分箱逐字相同。
+     **真值是形狀的錨**:2015-16 比引擎校準的 2025-26 早十年,所以只比「站在哪、多近、多快射」,
+     封阻率本身仍然對 FotMob 那一份(上面那兩排)。只印運動戰腳下 —— 引擎的運動戰射門全部是腳下。 */
+  {
+    const sb = SB;
+    const eng = rows.reduce((a, r) => {
+      const x = r.st.counts.shotPress?.open?.foot; if (!x) return a;
+      for (const [k, v] of Object.entries(x)) a[k] = Array.isArray(v) ? v.map((y, i) => (a[k]?.[i] ?? 0) + y) : (a[k] ?? 0) + v;
+      return a;
+    }, {});
+    const real = sb?.open?.foot ?? null;
+    const shares = (arr, n) => (arr && n ? arr.map(v => Math.round(100 * v / n)).join('/') + '%' : '—');
+    const one = (a, n) => (n ? `${(100 * a / n).toFixed(1)}%` : '—');
+    const blkBy = (b, n) => (b && n ? n.map((v, i) => (v >= 10 ? Math.round(100 * b[i] / v) : '·')).join('/') + '%' : '—');
+    const row = (label, e, r) => console.log(`  ${`　${label}`.padEnd(24, '　')} 引擎 ${e.padEnd(22)} 真實 ${r}`);
+    console.log('');
+    console.log(`  射手被逼住・禁區內運動戰腳下(射門那一瞬間,不含門將)  引擎 ${eng.n ?? 0} 腳・真實 ${real?.n ?? '—'} 腳`
+      + `(${sb ? `StatsBomb ${sb.competition},${sb.matchIds.length} 場` : '真值檔不在'})`);
+    const B = sb?.bins;
+    row(`最近的防守者 ${B ? '<' + B.near.join('/') + '+ m' : ''}`, shares(eng.near, eng.n), shares(real?.near, real?.n));
+    row('　擋下的比例(依距離)', blkBy(eng.nearBlk, eng.near), blkBy(real?.nearBlk, real?.near));
+    row('他的方位 門側/側前/側後/背後', shares(eng.ang, eng.n), shares(real?.ang, real?.n));
+    row('3 m 內有人站在門側', `${one(eng.gs3 ?? 0, eng.n)}(擋 ${one(eng.gs3Blk ?? 0, eng.gs3)})`,
+      real ? `${one(real.gs3, real.n)}(擋 ${one(real.gs3Blk, real.gs3)})` : '—');
+    /* 路上有沒有人:5c 登記「真實世界的曝光率沒有資料可以查」,所以 5b~5l 只能從封阻率反推
+       (那一行印 >100%)。真值那一側的飛行線是射門點 → end_location,半徑跟引擎同一個。 */
+    row(`路上有人(真飛行線 ${sb?.laneR ?? DEFLECT_R_DOC} m 內)`, `${one(eng.laneExp ?? 0, eng.laneN)}(擋 ${one(eng.laneExpBlk ?? 0, eng.laneExp)})`,
+      real ? `${one(real.laneExp, real.laneN)}(擋 ${one(real.laneExpBlk, real.laneExp)})` : '—');
+    row(`三角形裡的人數 0/1/2/3+`, shares(eng.cone, eng.n), shares(real?.cone, real?.n));
+    row('　擋下的比例(依人數)', blkBy(eng.coneBlk, eng.cone), blkBy(real?.coneBlk, real?.cone));
+    row(`接球到射門 ${B ? '<' + B.recv.join('/') + '+ s' : ''}`, shares(eng.recv, eng.recvN), shares(real?.recv, real?.recvN));
+    /* 真實有很大一塊是**第一時間射門**(StatsBomb 的 `first_time`),而引擎的射門一律要先控住球
+       (`snap` 掛在 `giveTo` 上,4l-6 那一條)—— 所以「< 1 s」那一格引擎本來就湊不滿,照實講。 */
+    if (real) console.log(`  ${'　　真實裡第一時間射門'.padEnd(24, '\u3000')} ${one(real.first, real.n)}(引擎的射門一律要先控住球,沒有這一類)`);
+    row(`接球點到射門點 ${B ? '<' + B.carry.join('/') + '+ m' : ''}`, shares(eng.carry, eng.carryN), shares(real?.carry, real?.carryN));
+    row(`封阻點離射手 ${B ? '<' + B.blockAt.join('/') + '+ m' : ''}`, shares(eng.blockAt, eng.blk), shares(real?.blockAt, real?.blk));
+    console.log('  　「·」= 那一格不到 10 腳,不印比例。真值是形狀的錨(比引擎校準的季早十年);封阻率本身對 FotMob 那一份。');
+    console.log('  　資料來源:StatsBomb 開放資料(github.com/statsbomb/open-data),非商業使用。');
   }
 }
 

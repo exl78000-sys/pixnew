@@ -439,6 +439,25 @@ const BOX_REVISIT = 0.5;
 /* 「差一點」的上界(公尺,階段 5d 的量測用)。四公尺是**量測的邊界不是模型的參數** ——
    再遠就不叫「差一點撲得到」了。引擎的行為一個字都不讀它,只有 `noteShotLane` 在用。 */
 const LANE_FAR = 4;
+/* **射手被逼住的分箱**(2026-09-24,階段 5q)。**量測的邊界不是模型的參數** —— 引擎的行為不讀它。
+   跟 `scripts/game/fetch-statsbomb-shots.mjs` 寫進真值檔的 `bins` **逐字相同**(`npm test` 守著),
+   兩邊才可以逐格並排:最近的對方外場球員(公尺)、他的方位(度,0° 是正好擋在射手與球門中間、
+   180° 在射手背後)、射手 → 兩根門柱的三角形裡有幾個人、接球到射門(秒)、接球點到射門點(公尺)、
+   封阻點離射手(公尺)。 */
+export const PRESS_BINS = { near: [1, 2, 3, 5], ang: [45, 90, 135], cone: [1, 2, 3], recv: [1, 2, 4, 6], carry: [5, 10, 20], blockAt: [1, 2, 4] };
+const pressBin = (edges, v) => { let i = 0; while (i < edges.length && v >= edges[i]) i++; return i; };
+const pressBlank = () => ({
+  n: 0, blk: 0, near: Array(5).fill(0), nearBlk: Array(5).fill(0), ang: Array(4).fill(0), angBlk: Array(4).fill(0),
+  cone: Array(4).fill(0), coneBlk: Array(4).fill(0), gs3: 0, gs3Blk: 0,
+  recvN: 0, recv: Array(5).fill(0), carryN: 0, carry: Array(4).fill(0), blockAt: Array(4).fill(0),
+  laneN: 0, laneExp: 0, laneExpBlk: 0,
+});
+/* 點在三角形裡(含邊):射手、兩根門柱。跟真值那一側同一條式子(外積的正負號)。 */
+function inTri(px, py, ax, ay, bx, by, cx, cy) {
+  const s = (x1, y1, x2, y2, x3, y3) => (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3);
+  const d1 = s(px, py, ax, ay, bx, by), d2 = s(px, py, bx, by, cx, cy), d3 = s(px, py, cx, cy, ax, ay);
+  return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+}
 /* 階段 5f 的天花板探針要試的幾個寬度。**第一個一定要是 1(現況)** ——
    上面「路上有人(0.75 m 內)」那一排數的是**全部十個對手**,而收窄那幾排只重排
    並只數**後四人**,兩邊不是同一批人。沒有 c = 1 這條同母體的基準線,
@@ -1454,6 +1473,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     boxSec: { home: 0, away: 0 }, boxAttSec: { home: 0, away: 0 }, boxDefSec: { home: 0, away: 0 },
     shotCrowd: { open: { n: Array(8).fill(0), exp: Array(8).fill(0), blk: Array(8).fill(0) },
                  corner: { n: Array(8).fill(0), exp: Array(8).fill(0), blk: Array(8).fill(0) } },
+    shotPress: { open: { foot: pressBlank(), head: pressBlank() }, corner: { foot: pressBlank(), head: pressBlank() } },
     boxSecBy: { att: 0, def: 0, loose: 0 }, boxEntryHit: { home: 0, away: 0 }, boxHit: { home: false, away: false },
     boxIn: { home: false, away: false }, boxOut: { home: 0, away: 0 },
     shotBox: { open: { n: 0, att: 0, def: 0 }, corner: { n: 0, att: 0, def: 0 } },
@@ -2146,6 +2166,42 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (ball.shot) ball.shot.defIn = def;
     const cr = st.shotCrowd[sit === 'FromCorner' ? 'corner' : 'open'], ck = Math.min(7, def);
     cr.n[ck]++; if (ball.shot?.exposed) cr.exp[ck]++;
+    notePress(p, sit, gx);
+  }
+
+  /* **射門那一瞬間,射手有沒有被逼住**(2026-09-24,階段 5q)。5p 登記「真實世界沒有追蹤座標,
+     所以最近的防守者多近沒有真值」—— StatsBomb 的 freeze frame 就是那個真值
+     (`data/raw/statsbomb/`,`check-sim` 並排印)。記的東西跟真值那一側逐項相同:
+     最近的對方外場球員多遠、在哪一側、三角形裡幾個人、3 公尺內有沒有人站在門側;
+     腳下射門另外記接球到射門幾秒、接球點到射門點多遠(頭球沒有「接球」,不記)。
+     門將排掉(真值那一側同樣排掉)。封阻在發生那一格補記(見 `blockedBy` 那一段)。
+     純計數,不呼叫 rng。 */
+  function notePress(p, sit, gx) {
+    const head = !!ball.shot?.head;
+    const r = st.shotPress[sit === 'FromCorner' ? 'corner' : 'open'][head ? 'head' : 'foot'];
+    const ux = gx - p.x, uy = PITCH_H / 2 - p.y, L = Math.max(0.01, hypot(ux, uy));
+    let near = null, cone = 0, gs3 = false;
+    for (const q of all()) {
+      if (q.off || q.side === p.side || q === sideOf(q.side).gk) continue;
+      const dx = q.x - p.x, dy = q.y - p.y, d = hypot(dx, dy);
+      const ang = Math.acos(cl((dx * ux + dy * uy) / (Math.max(1e-6, d) * L), -1, 1)) * 180 / Math.PI;
+      if (!near || d < near.d) near = { d, ang };
+      if (inTri(q.x, q.y, p.x, p.y, gx, PITCH_H / 2 - SIM_GOAL_HALF, gx, PITCH_H / 2 + SIM_GOAL_HALF)) cone++;
+      if (d < 3 && ang < 45) gs3 = true;
+    }
+    const b = { near: near ? pressBin(PRESS_BINS.near, near.d) : null, ang: near ? pressBin(PRESS_BINS.ang, near.ang) : null,
+                cone: pressBin(PRESS_BINS.cone, cone), gs3, exp: !!ball.shot?.exposed };
+    r.n++;
+    if (near) { r.near[b.near]++; r.ang[b.ang]++; }
+    r.cone[b.cone]++; if (gs3) r.gs3++;
+    /* 路上有沒有人(`noteShotLane` 在這之前已經算好,同一條真飛行線、同一個 `DEFLECT_R`)。
+       真值那一側是射門點 → end_location,5c 登記「真實世界的曝光率沒有資料可以查」的那一個。 */
+    if (ball.shot) { r.laneN++; if (b.exp) r.laneExp++; }
+    if (!head && p.recvAt != null) {
+      r.recvN++; r.recv[pressBin(PRESS_BINS.recv, st.t - p.recvAt)]++;
+      r.carryN++; r.carry[pressBin(PRESS_BINS.carry, hypot(p.x - p.recvX, p.y - p.recvY))]++;
+    }
+    if (ball.shot) ball.shot.press = { r, b, ox: p.x, oy: p.y };
   }
 
   /* **禁區觸球,對齊上游的定義**(2026-09-21,階段 5h)。`giveTo` 與 `kick` 兩處呼叫 ——
@@ -2172,6 +2228,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* **在 openChain 之前先看** —— 它會把 pendingOrigin 領走清掉(見 CORNER_SNAP)。 */
     const second = st.pendingOrigin?.kind === 'corner' && st.pendingOrigin.side === p.side;
     p.assistBy = from && from !== p && from.side === p.side ? from : null;
+    p.recvAt = st.t; p.recvX = p.x; p.recvY = p.y;   // 階段 5q:接球到射門幾秒、從多遠帶過來(純標記)
     /* **球是怎麼到他腳下的**(2026-09-19,階段 4l-3)。解圍那一腳要分兩種:
        接了隊友的傳球、控住、再大腳,在上游是一記(長)**傳球**;
        而搶到鬆球 / 被對手踢來的球之後把它解掉,才是上游的 `clearances`。
@@ -2732,6 +2789,26 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
            而一次衝刺的定義是 ≥ 7.0 m/s 持續 ≥ 1 秒(FotMob 的定義,`pace.sprintsPerMin`)。
            寫 14 公尺的時候全隊 2.95 次/分 —— 逼搶者整場在衝。真人壓迫大多是「跑」不是「衝」,
            衝刺留給真的要追很遠的那幾次。 */
+        /* **「讓逼搶者與補位者跟得上持球者」試過了,買到的是「從背後跟得更近」(2026-09-24,階段 5q)。**
+           動機是量出來的:射門當下逼搶者中位 **2.48 m/s**(這一行的慢跑檔)、離射手 4.1 m、
+           **42~45% 在他背後** —— 而持球者帶球是自己最高速的 0.92 倍,一半的禁區射門是帶了 20 公尺以上才射。
+           做法:速度取 `max(這一行的速度檔, k × 持球者速度)`(補位者那一支同一條),恆等元 k = 0
+           (同種子逐場一字不差、逐腳的最近距離逐字相同,驗過)。30 場,種子 1~30:
+                                          k=0     逼搶者 1.0   兩人 1.0   兩人 1.2    真實(StatsBomb)
+             禁區運動戰腳下・最近的防守者   4.09 m    3.37        3.23       3.03       2.00 m
+             最近那個人在門側               5.2%     2.1         7.1        5.2        50.3%
+             最近那個人在背後              45.0%    38.2        44.6       45.9        10.6%
+             接球到射門(中位)              3.12 s    3.20        2.55       2.13       1.07 s
+             帶球 20 m 以上才射            48.5%    48.7        40.6       36.0        12.1%
+             射門 / 場                     22.4     17.7        19.5       14.8
+             衝刺 次/分(真實 2.42)        4.15     4.85        5.35       5.91
+             主隊進球(λ 1.99)             1.50     1.00        1.47       1.23
+           **跟得上不等於擋在前面**:距離縮了一公尺,而門側 / 背後的比例一格都沒動 ——
+           他們是從背後追得更近。代價是射門少 13~34%、衝刺多 17~42%(本來就超了 1.7 倍);
+           主隊進球往下掉的方向是強弱被壓縮,但 30 場的 SE ±0.2~0.3、都不到 2 SE,只回報。
+           **退的理由是目標量(門側)沒動**,常數沒有留下(「量出來不動的參數不要留著裝樣子」)。
+           接球那一刻其實是對的(禁區內接球最近的防守者 0.5~0.6 m、35% 在門側),所以要動的是
+           「持球者往前帶的時候,門側那個人為什麼會跑到他背後」—— 那是下一輪的事(補齊規劃)。 */
         p.wantWhy = 'press';
         want = { x: hx + dx / d * JOCKEY_R, y: hy + dy / d * JOCKEY_R,
                  speed: d > 20 ? p.vmax : d > 6 ? SIM_RUN : SIM_JOG };
@@ -2979,6 +3056,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
               else {
                 st.blockedBy[ball.shot.side]++;
                 if (ball.shot.defIn != null) st.shotCrowd[ball.shot.sit === 'FromCorner' ? 'corner' : 'open'].blk[Math.min(7, ball.shot.defIn)]++;
+                if (ball.shot.press) {                 // 階段 5q:射門當下的分箱,在封阻發生這一格補記
+                  const { r, b, ox, oy } = ball.shot.press;
+                  r.blk++; if (b.near != null) { r.nearBlk[b.near]++; r.angBlk[b.ang]++; }
+                  r.coneBlk[b.cone]++; if (b.gs3) r.gs3Blk++; if (b.exp) r.laneExpBlk++;
+                  r.blockAt[pressBin(PRESS_BINS.blockAt, hypot(ball.x - ox, ball.y - oy))]++;
+                }
                 st.shotBlkBins[Math.min(6, Math.floor((ball.shot.dist ?? 0) / 5))]++;
                 st.blkXg += ball.shot.xg ?? 0;
                 if (ball.shot.head) st.blkHead++;
@@ -3709,6 +3792,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         boxSec: { ...st.boxSec }, boxAttSec: { ...st.boxAttSec }, boxDefSec: { ...st.boxDefSec },
         shotCrowd: { open: { n: [...st.shotCrowd.open.n], exp: [...st.shotCrowd.open.exp], blk: [...st.shotCrowd.open.blk] },
                      corner: { n: [...st.shotCrowd.corner.n], exp: [...st.shotCrowd.corner.exp], blk: [...st.shotCrowd.corner.blk] } },
+        shotPress: JSON.parse(JSON.stringify(st.shotPress)),
         boxSecBy: { ...st.boxSecBy }, boxEntryHit: { ...st.boxEntryHit },
         boxWho: { ...st.boxWho }, runFire: st.runFire, runToBox: st.runToBox, runInBox: st.runInBox,
         shotChase: { shots: st.shotChase.shots, tries: st.shotChase.tries, withTry: st.shotChase.withTry,

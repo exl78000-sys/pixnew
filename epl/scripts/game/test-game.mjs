@@ -1900,6 +1900,67 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         /sh\.inBox && sh\.situation !== 'Penalty'/.test(chkBareP)
         && /boxBlk\[sh\.situation === 'FromCorner' \? 'corner' : 'open'\]/.test(chkBareP));
     }
+
+    /* 35. 階段 5q:**射手被逼住**(2026-09-24)。5p 登記「真實世界沒有追蹤座標,所以沒有真值」——
+       StatsBomb 的 freeze frame 就是那個真值(`data/raw/statsbomb/`,只存分箱計數)。守五件事:
+       ① check-sim **真的印出**那幾排,而且真實那一側有數字(掃 stdout);
+       ② 引擎的分箱跟真值檔**逐字相同** —— 兩邊各自改一個邊界的話,並排的每一格都是錯的而看起來都對;
+       ③ `shotPress` 跟 `shotCrowd` 是同一個呼叫點記的:腳數與封阻數一模一樣,每一組分箱加起來等於它的母體;
+       ④ 真值檔標明出處與授權(StatsBomb 開放資料是非商業使用、要標明來源),而且**只有分箱計數**;
+       ⑤ `notePress` 是純計數:不呼叫 rng(呼叫的話同一個種子就不是同一場比賽)。
+
+       **負向對照(2026-09-24,五個 bug 各跑一次整份 test-game)** —— 驗收是「紅了 N 條而且是**對應的**那幾條」:
+         b1 check-sim 印的那段包進 `if (0)`                 → **紅 1(只有①)**,訊息印「找不到」
+         b2 引擎的 near 邊界 5 改成 6                      → **紅 1(只有②)**
+         b3 角球那一側不記 `r.n++`                         → **紅 1(只有③)**,角球腳數 0 ≠ 2
+         b4 真值檔 source 裡兩個 StatsBomb 都拿掉          → **紅 1(只有④)**(網址裡的小寫 statsbomb 還在)
+         b5 notePress 裡多一個短路不執行的 `rng()`          → **紅 1(只有⑤)**
+       b1 與 b4 第一次是「沒命中」:b1 的錨是後來重構掉的那一行、b4 只拿掉了兩個 StatsBomb 的其中一個 ——
+       打 bug 的腳本自己沒打中,harness 照設計大聲跳過;改好之後重跑才是上面那兩行。 */
+    {
+      check('check-sim **真的印出**射手被逼住那幾排,而且真實那一側有數字',
+        ['射手被逼住・禁區內運動戰腳下', '最近的防守者', '路上有人(真飛行線', '三角形裡的人數', '接球到射門', '接球點到射門點', '資料來源:StatsBomb']
+          .every(t => chkOut.includes(t))
+        && /最近的防守者[^\n]*真實 \d+\/\d+\/\d+\/\d+\/\d+%/.test(chkOut),
+        (chkOut.match(/最近的防守者 <[^\n]*/) ?? ['(找不到)'])[0]);
+      const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+      const sbFile = join(ROOT, 'data', 'raw', 'statsbomb', 'pl-2015-16-shot-pressure.json');
+      const sb = existsSync(sbFile) ? JSON.parse(readFileSync(sbFile, 'utf8')) : null;
+      const deflectR = Number((readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8').match(/const DEFLECT_R = ([0-9.]+)/) ?? [])[1]);
+      check('引擎的分箱跟真值檔逐字相同,「路上有人」的半徑也是同一個(兩邊各改一個的話,並排的每一格都錯)',
+        !!sb && JSON.stringify(SM.PRESS_BINS) === JSON.stringify(sb.bins) && sb.laneR === deflectR,
+        `引擎 ${JSON.stringify(SM.PRESS_BINS)} / DEFLECT_R ${deflectR}・真值 ${JSON.stringify(sb?.bins)} / ${sb?.laneR}`);
+      {
+        const sim = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 3, pred: { xgHome: 1.99, xgAway: 0.70 } });
+        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim.state().over; i++) sim.advance(1 / 60);
+        const c = sim.state().counts, sum = a => a.reduce((x, y) => x + y, 0);
+        const P = c.shotPress ?? {}, bad = [];
+        for (const sit of ['open', 'corner']) {
+          const n = (P[sit]?.foot?.n ?? 0) + (P[sit]?.head?.n ?? 0), blk = (P[sit]?.foot?.blk ?? 0) + (P[sit]?.head?.blk ?? 0);
+          if (n !== sum(c.shotCrowd[sit].n)) bad.push(`${sit} 腳數 ${n} ≠ ${sum(c.shotCrowd[sit].n)}`);
+          if (blk !== sum(c.shotCrowd[sit].blk)) bad.push(`${sit} 封阻 ${blk} ≠ ${sum(c.shotCrowd[sit].blk)}`);
+          for (const body of ['foot', 'head']) {
+            const r = P[sit]?.[body]; if (!r) { bad.push(`${sit}.${body} 不在`); continue; }
+            for (const [k, tot] of [['near', r.n], ['ang', r.n], ['cone', r.n], ['recv', r.recvN], ['carry', r.carryN], ['blockAt', r.blk]])
+              if (sum(r[k]) !== tot) bad.push(`${sit}.${body}.${k} ${sum(r[k])} ≠ ${tot}`);
+            if (body === 'head' && r.recvN !== 0) bad.push(`${sit}.head 記了接球(頭球沒有接球)`);
+            if (r.laneN !== r.n || r.laneExp > r.laneN || r.laneExpBlk > Math.min(r.laneExp, r.blk)) bad.push(`${sit}.${body} 路上有人 ${r.laneExpBlk}/${r.laneExp}/${r.laneN}(n ${r.n}・封阻 ${r.blk})`);
+          }
+        }
+        check('shotPress 跟 shotCrowd 同一批(腳數 / 封阻數一樣),每一組分箱加起來等於它的母體',
+          bad.length === 0 && (P.open?.foot?.n ?? 0) > 0, bad.join('・') || `運動戰腳下 ${P.open?.foot?.n} 腳`);
+      }
+      check('真值檔標明出處與授權,而且只有分箱計數(不存逐腳的座標)',
+        !!sb && /StatsBomb/.test(sb.source) && /非商業/.test(sb.source)
+        && ['open', 'corner'].every(s => ['foot', 'head'].every(b => Object.values(sb[s][b]).every(v => typeof v === 'number' || (Array.isArray(v) && v.every(x => typeof x === 'number'))))),
+        sb ? sb.source : '真值檔不在');
+      {
+        const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+        const a = simSrc.indexOf('function notePress('), b = simSrc.indexOf('\n  }\n', a);
+        const body = a > 0 && b > a ? simSrc.slice(a, b).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '') : '';
+        check('notePress 是純計數:不呼叫 rng', body.length > 200 && !/\brng\(/.test(body), `切出 ${body.length} 字元`);
+      }
+    }
     }
   }
 }
