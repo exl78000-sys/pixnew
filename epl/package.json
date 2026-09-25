@@ -79,6 +79,7 @@
     "intl:results": "node scripts/fetch-intl-results.mjs",
     "intl:fetch": "node scripts/fetch-intl-fotmob.mjs",
     "intl:build": "node scripts/build-intl.mjs",
+    "intl:flags": "node scripts/fetch-intl-flags.mjs",
     "probe:intl-fetch": "node scripts/probe-intl-fetch.mjs",
     "probe:intl-tables": "node scripts/probe-intl-tables.mjs",
     "probe:undump": "node scripts/undump-probe-log.mjs",

@@ -31,6 +31,7 @@ const S = { fam: 'all', ahead: STEP_DAYS, back: STEP_DAYS, rankAll: false, stand
 const TEAM = C.qs('team');
 let D = null;
 let COMPS = new Map();
+let FLAGS = {};   // 隊 → 國旗(data URI);intl-flags.json,沒有就是空的(隊名照樣印)
 
 const esc = C.esc;
 const localDay = iso => new Date(iso).toLocaleDateString('en-CA');   // YYYY-MM-DD(觀看者時區)
@@ -44,7 +45,7 @@ const zhOf = key => D.teams[key]?.zh ?? key;
      還沒決定的參與者(海灣盃四強的 1A、Winner SF 1)—— 照產物給的說法,不當成球隊
      身分對不上的名字 —— 照印上游的名字、加一個記號,滑過去說明為什麼沒有評分
      一般 —— 中文名(CLDR;查不到就是英文),滑過去看英文名與本站 Elo */
-function teamHtml(t) {
+function teamHtml(t, { flagAfter = false } = {}) {
   if (!t) return '<span class="dim small">待定</span>';
   if (t.tbd) return `<span class="intl-team dim small" title="上一階段還沒踢完,這一格的參與者還沒決定(上游寫作 ${esc(t.name)})"><span>${esc(t.label)}</span></span>`;
   if (!t.key) return `<span class="intl-team small" title="本站還對不上「${esc(t.name)}」的身分,所以沒有它的評分"><span>${esc(t.name)}<span class="dim">*</span></span></span>`;
@@ -52,8 +53,13 @@ function teamHtml(t) {
   const zh = info?.zh ?? t.key;
   const tip = [zh !== t.key ? t.key : null,
     info?.rating != null ? `本站 Elo ${info.rating}${info.rank ? `(排名第 ${info.rank})` : ''}` : null].filter(Boolean).join('・');
-  return `<span class="intl-team small" title="${esc(tip)}">${teamLink(t.key, esc(zh))}</span>`;
+  // 國旗放在靠比分的那一側:主隊在名字後面、客隊在名字前面
+  return `<span class="intl-team small" title="${esc(tip)}">${flagAfter ? '' : flagImg(t.key)}${teamLink(t.key, esc(zh))}${flagAfter ? flagImg(t.key) : ''}</span>`;
 }
+/* 國旗。**只用產物裡內嵌的圖**(不從外部網址載 —— 單檔版與離線都要看得到);沒有國旗的隊不留空格。
+   旁邊就是隊名,所以 alt 是空字串(讀螢幕的人不需要聽兩次)。 */
+const flagImg = (key, big = false) => (key && FLAGS[key]
+  ? `<img class="intl-flag${big ? ' big' : ''}" src="${FLAGS[key]}" alt="" width="${big ? 40 : 20}" height="${big ? 30 : 15}">` : '');
 /* 球隊頁的連結。字典裡沒有的隊(不該發生,但產物是外部來的)就只印字,不給一個點下去是空白的連結 */
 const teamLink = (key, label) => (key && D.teams[key]
   ? `<a class="intl-link" href="${esc(C.link('intl', { team: key }))}">${label}</a>` : `<span>${label}</span>`);
@@ -90,7 +96,7 @@ function fixtureRow(f) {
   }
   return `<div class="stat-line tie-leg intl-row">
     <span class="leg-when tiny dim mono">${timeOf(f.kickoff)}</span>
-    <span class="leg-home">${teamHtml(f.home)}</span>
+    <span class="leg-home">${teamHtml(f.home, { flagAfter: true })}</span>
     <span class="leg-score">${mid}</span>
     <span class="leg-away">${teamHtml(f.away)}</span>
     <span class="leg-ko tiny dim">${tagsOf(f)}</span>
@@ -128,7 +134,7 @@ function resultRow(r) {
   }
   return `<div class="stat-line tie-leg intl-row">
     <span class="leg-when tiny dim mono">${timeOf(r.kickoff)}</span>
-    <span class="leg-home" style="${strong('home')}">${teamHtml(r.home)}</span>
+    <span class="leg-home" style="${strong('home')}">${teamHtml(r.home, { flagAfter: true })}</span>
     <span class="leg-score"><span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center">${bits.join('')}</span></span>
     <span class="leg-away" style="${strong('away')}">${teamHtml(r.away)}</span>
     <span class="leg-ko tiny">${checkBadge(r)} ${compTag(r.comp)}</span>
@@ -168,7 +174,7 @@ function pendingBlock(now) {
       : `<span class="pill tiny warn" title="時間上早該結束,但本站還沒有這一場的賽果:可能是比分還沒進來(賽程是 ${esc(C.ageText(c?.retrievedAt))}抓的),也可能延期了 —— 本站分不出是哪一種">已過 ${Math.round(min / 60)} 小時・還沒有賽果</span>`;
     return `<div class="stat-line tie-leg intl-row">
       <span class="leg-when tiny dim mono">${timeOf(f.kickoff)}</span>
-      <span class="leg-home">${teamHtml(f.home)}</span>
+      <span class="leg-home">${teamHtml(f.home, { flagAfter: true })}</span>
       <span class="leg-score">${status}</span>
       <span class="leg-away">${teamHtml(f.away)}</span>
       <span class="leg-ko tiny dim">${tagsOf(f)}</span>
@@ -243,7 +249,7 @@ function groupCard(g, { me = null, title = null } = {}) {
     const mark = r.check === 'pending' ? `<span class="dim" title="上游算的是 ${r.up.p} 場 ${r.up.pts} 分${r.live ? '(含正在踢的那一場)' : ''}">*</span>` : '';
     return `<tr${r.key && r.key === me ? ' class="me"' : ''}>
       <td class="num intl-zone" style="--zone:${z?.tone ? TONE[z.tone] : 'transparent'}"${z ? ` title="${esc(z.zh ?? z.en)}"` : ''}>${r.pos}</td>
-      <td class="left">${r.key ? teamLink(r.key, esc(nameOf(r))) : `${esc(r.name)}<span class="dim" title="本站對不上這一隊的身分">*</span>`}${mark}</td>
+      <td class="left">${r.key ? `<span class="intl-team">${flagImg(r.key)}${teamLink(r.key, esc(nameOf(r)))}</span>` : `${esc(r.name)}<span class="dim" title="本站對不上這一隊的身分">*</span>`}${mark}</td>
       <td class="num">${r.p}</td><td class="num">${r.w}</td><td class="num">${r.d}</td><td class="num">${r.l}</td>
       <td class="num mono">${r.gf}:${r.ga}</td><td class="num">${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="num"><b>${r.pts}</b></td></tr>`;
   }).join('');
@@ -310,7 +316,7 @@ function rankingBlock() {
     <div class="table-wrap"><table>
       <thead><tr><th class="num">名次</th><th class="left">國家隊</th><th class="num">Elo</th><th class="num">場數</th><th class="num">最近一場</th></tr></thead>
       <tbody>${rows.map(r => `<tr><td class="num">${r.rank}</td>
-        <td class="left" title="${esc(r.key)}">${teamLink(r.key, esc(zhOf(r.key)))}</td>
+        <td class="left" title="${esc(r.key)}"><span class="intl-team">${flagImg(r.key)}${teamLink(r.key, esc(zhOf(r.key)))}</span></td>
         <td class="num">${r.rating}</td><td class="num">${r.games}</td><td class="num">${esc(C.dateFull(r.last))}</td></tr>`).join('')}</tbody>
     </table></div>
     ${D.ranking.length > 20 ? `<div class="row" style="margin-top:10px"><button class="btn" id="rankToggle">${S.rankAll ? '只看前 20' : `看全部 ${D.ranking.length} 隊`}</button></div>` : ''}`;
@@ -390,6 +396,7 @@ function boundaryBlock() {
         <p class="small"><b>賽程與這一窗的賽果:FotMob</b> —— 一個賽事一個請求。每個賽事的 id 都用<b>內容</b>證明過:
           已完賽的場次逐場對 martj42,對上的比賽在那邊確實叫這個賽事(名字靠不住:CONCACAF 也有 Nations League)。</p>
         <p class="small">國名的中文走 Unicode CLDR(標準資料,不是翻譯);足球上慣用名不同的由本站覆寫(英格蘭四隊、中華台北)。</p>
+        ${flagNote()}
         ${unknown.length ? `<p class="small">本站還對不上身分的隊名(那幾場不給勝率):${unknown.map(u => `${esc(u.name)}×${u.n}`).join('、')}。</p>` : ''}
       </div>
       <div class="card">
@@ -411,6 +418,24 @@ function boundaryBlock() {
     <div class="table-wrap" style="margin-top:12px"><table>
       <thead><tr><th class="left">賽事</th><th class="num">FotMob id</th><th class="left">季</th><th class="num">場次</th><th class="left">id 的證明</th><th class="left">抓取</th></tr></thead>
       <tbody>${compRows}</tbody></table></div>`;
+}
+
+/* 國旗從哪來、哪些隊沒有、為什麼(三種原因分開講:沒有國碼、刻意不給、屬地用的是宗主國的旗) */
+function flagNote() {
+  const f = D.flags;
+  if (!f) return '<p class="small"><b>國旗:</b>這一次建置沒有國旗檔,隊名照樣印。</p>';
+  const src = D.sources.find(x => x.key === 'flags');
+  const names = xs => xs.map(x => esc(zhOf(x.key ?? x))).join('、');
+  const excluded = new Set((f.excluded ?? []).map(x => x.key));
+  const noCode = f.noCode.filter(k => !excluded.has(k));
+  const parts = [
+    ...(f.excluded ?? []).map(x => `${esc(zhOf(x.key))}刻意不給:${esc(x.why ?? '')}`),
+    f.sameAs.length ? `${f.sameAs.map(x => `${esc(zhOf(x.key))}(國旗集裡就是${esc(x.asKey ? zhOf(x.asKey) : x.as.toUpperCase())}的旗)`).join('、')} —— 掛上去會讓人以為是那一國,所以不掛` : null,
+    noCode.length ? `${names(noCode)}沒有國碼(大多是非會員的區域隊)` : null,
+    f.notFetched.length ? `${names(f.notFetched)}的圖還沒抓(npm run intl:flags)` : null,
+  ].filter(Boolean);
+  return `<p class="small"><b>國旗:</b><a href="${esc(src?.url)}" target="_blank" rel="noopener">${esc(src?.name ?? '開源國旗集')}</a>
+    (${esc(f.source?.license ?? '')} 授權),本站縮成 ${esc((f.size ?? []).join('×'))} 內嵌。${f.count} 隊有國旗${parts.length ? `;沒有的:${parts.join(';')}` : ''}。</p>`;
 }
 
 /* 最近賽果的核對狀態,一句話。**獨立來源還沒收到的那幾天不是「不一致」** ——
@@ -520,7 +545,7 @@ function h2hBlock(key, opp, H) {
       <span class="tiny dim">${esc(tourZh(m.t))}</span>${outPill(outcome(mine))}</div>`;
   }).join('');
   return `<div class="card" style="margin-top:10px">
-    <div class="spread"><h3 style="margin:0;font-size:15px">對${oz}</h3><span class="tiny dim">交手 ${x.n} 次・自 ${esc(x.since.slice(0, 4))} 年</span></div>
+    <div class="spread"><h3 style="margin:0;font-size:15px"><span class="intl-team">對${flagImg(opp)}${oz}</span></h3><span class="tiny dim">交手 ${x.n} 次・自 ${esc(x.since.slice(0, 4))} 年</span></div>
     ${C.statCells([{ label: '勝', value: w, tone: 'win' }, { label: '和', value: d }, { label: '負', value: l, tone: 'loss' },
       { label: '進:失', value: `${gf}:${ga}` }], { compact: true })}
     <div style="display:grid;gap:2px;margin-top:8px">${last}</div>
@@ -570,7 +595,7 @@ async function renderTeam(key) {
 
   const recentRows = [...recent].reverse().map(m => `<tr>
       <td class="num mono">${esc(C.dateFull(m.d))}</td>
-      <td class="left">${teamLink(m.o, esc(zhOf(m.o)))}</td>
+      <td class="left"><span class="intl-team">${flagImg(m.o)}${teamLink(m.o, esc(zhOf(m.o)))}</span></td>
       <td class="num">${VENUE[m.v] ?? m.v}</td>
       <td class="num mono">${m.s[0]} - ${m.s[1]} ${outPill(outcome(m.s))}</td>
       <td class="left small">${esc(tourZh(m.t))}</td>
@@ -581,7 +606,7 @@ async function renderTeam(key) {
   app.innerHTML = `
   <div class="page-head">
     ${back}
-    <h1>${esc(zh)}</h1>
+    <h1 class="intl-team">${flagImg(key, true)}${esc(zh)}</h1>
     <p>${zh !== key ? `${esc(key)}・` : ''}本站 Elo ${info.rating ?? '—'}(${standing})・累積 ${info.games} 場・最近一場 ${esc(C.dateFull(info.last))}。
       評分只從 martj42 的歷史賽果算,算到 ${esc(D.model.ratingsAsOf)}。</p>
   </div>
@@ -628,9 +653,10 @@ async function renderTeam(key) {
 }
 
 try {
-  const { data, absent } = await C.loadFrom('pl', ['intl']);
+  const { data, absent } = await C.loadFrom('pl', ['intl', 'intl-flags']);
   if (!data.intl) throw new Error(`讀取 ${absent.join('、') || 'intl'} 失敗`);
   D = data.intl;
+  FLAGS = data['intl-flags']?.flags ?? {};
   COMPS = new Map(D.comps.map(c => [c.key, c]));
   C.nav();
   if (TEAM) await renderTeam(TEAM);

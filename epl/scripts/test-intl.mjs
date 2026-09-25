@@ -20,7 +20,8 @@ import {
   frequencyBaseline, pairedGain, PROOF_MIN_MATCHED, INTL_TUNE, INTL_HOLDOUT, intlPasses,
   intlStandings, intlLagCost, intlH2H, pairKey,
 } from './lib/intl.mjs';
-import { loadIntlTeamTable, makeIntlResolver } from './lib/intl-teams.mjs';
+import { loadIntlTeamTable, makeIntlResolver, intlFlagPlan, flagDistance, FLAG_SAME } from './lib/intl-teams.mjs';
+import { decodePNG } from './lib/png.mjs';
 import { FOTMOB_INTL, INTL_FAMILIES, INTL_LEGEND_ZH, isIntlTbd, normalizeIntlTable, intlGroupZh } from './lib/adapters/fotmob-intl.mjs';
 import { fetchIntl, INTL_SCHEMA_VERSION } from './fetch-intl-fotmob.mjs';
 
@@ -345,6 +346,63 @@ console.log('\n▶ 國家隊:球隊頁(評分走勢、最近幾場、歷來交�
     const diff = Object.keys(DT.h2h).filter(k => JSON.stringify(re.get(k) ?? null) !== JSON.stringify(DT.h2h[k]));
     check('交手紀錄整份重算一次對得回產物', diff.length === 0, diff.slice(0, 3).join('、'));
   }
+}
+
+// ── 5d. 國旗 ────────────────────────────────────────
+console.log('\n▶ 國家隊:國旗(開源國旗集;屬地用宗主國的旗不掛)');
+{
+  const table = loadIntlTeamTable(ROOT);
+  const R = makeIntlResolver(table, new Set(mj.flatMap(x => [x.home, x.away])));
+  /* ICU 會把廢止的舊代碼換成新碼再翻譯(DD → DE),所以反查時 DD 也回「Germany」,而它在字母順序上比 DE 早 ——
+     第一版把德國對到 DD、塞爾維亞對到 CS、辛巴威對到 RH。中文名剛好沒事,拿代碼找國旗檔時才現形 */
+  const want = { Germany: 'DE', Serbia: 'RS', Zimbabwe: 'ZW', 'Curaçao': 'CW', Vietnam: 'VN', Yemen: 'YE', Vanuatu: 'VU' };
+  const got = Object.fromEntries(Object.keys(want).map(k => [k, R.isoOf(k)]));
+  check('國碼反查不收廢止的舊代碼(德國是 DE 不是 DD)', Object.entries(want).every(([k, v]) => got[k] === v), JSON.stringify(got));
+  check('國旗碼:英格蘭四隊走國旗集的非 ISO 碼、中華台北刻意不給、其餘是國碼小寫',
+    R.flagCodeOf('England') === 'gb-eng' && R.flagCodeOf('Wales') === 'gb-wls' && R.flagCodeOf('Northern Ireland') === 'gb-nir'
+    && R.flagCodeOf('Taiwan') === null && R.flagCodeOf('Japan') === 'jp' && R.flagCodeOf('Germany') === 'de');
+  check('刻意不給的每一隊都寫了理由', Object.entries(table.flag ?? {}).filter(([, v]) => v === null).every(([k]) => table._flagEvidence?.[k]));
+
+  /* 規則用捏造的像素驗:會員照給;非會員跟別的碼看起來同一面(差一點點也算)→ 不給;獨一無二的照給 */
+  const img = v => ({ width: 2, height: 1, data: Uint8Array.from([v, v, v, 255, v, v, v, 255]) });
+  const PX = { aa: img(10), bb: img(10.5 | 0), cc: img(200), dd: img(11) };   // bb 跟 aa 一樣、dd 跟 aa 差 1(< 門檻)
+  PX.dd.data[0] = 11;
+  const plan = intlFlagPlan({ keys: ['A', 'B', 'C', 'D', 'E', 'F'], flags: { aa: { img: 'aa' }, bb: { img: 'bb' }, cc: { img: 'cc' }, dd: { img: 'dd' } },
+    flagCodeOf: k => ({ A: 'aa', B: 'bb', C: 'cc', D: 'dd', E: null, F: 'ff' })[k], isMember: k => k === 'A', pixelsOf: x => PX[x] });
+  check('會員照給;非會員跟別的碼同一面(含差一點點)不給;獨一無二的照給;沒碼、沒圖分開記',
+    plan.byKey.A && !plan.byKey.B && plan.byKey.C && !plan.byKey.D && plan.sameAs.map(x => x.key).join() === 'B,D'
+    && plan.noCode.join() === 'E' && plan.notFetched.map(x => x.key).join() === 'F', JSON.stringify(Object.keys(plan.byKey)));
+  check('「同一面」的門檻落在量過的空隙裡(同一面 0.38 以下、不同國家最近 4.54)', FLAG_SAME > 0.38 && FLAG_SAME < 4.54, String(FLAG_SAME));
+
+  const FP = join(ROOT, 'data', 'manual', 'intl-flags.json');
+  const FF = existsSync(FP) ? JSON.parse(readFileSync(FP, 'utf8')) : null;
+  check('國旗檔記著出處與授權(開源國旗集、MIT)', FF?.source?.name === 'lipis/flag-icons' && FF.source.license === 'MIT' && /github\.com\/lipis\/flag-icons/.test(FF.source.url));
+  const flagsOk = FF && Object.values(FF.flags).every(f => { if (!/^data:image\/png;base64,/.test(f.img)) return false;
+    const im = decodePNG(Buffer.from(f.img.split(',')[1], 'base64')); return im.width === FF.size[0] && im.height === FF.size[1]; });
+  check('每一面都是內嵌的 PNG、尺寸跟檔案記的一樣', Boolean(flagsOk), FF ? `${Object.keys(FF.flags).length} 面 ${FF.size?.join('×')}` : '沒有國旗檔');
+
+  const FLP = join(ROOT, 'web', 'data', 'intl-flags.json');
+  const FL = existsSync(FLP) ? JSON.parse(readFileSync(FLP, 'utf8')) : null;
+  check('產物存在(intl-flags.json,國旗另外一份)', Boolean(FL));
+  if (D && FL) {
+    check('intl.json 不含國旗的圖(總覽頁也載它,不該多下載兩百 KB)', !JSON.stringify(D.teams).includes('data:image/'));
+    check('國旗的每一隊都在字典裡、數量跟產物講的一樣', Object.keys(FL.flags).every(k => D.teams[k]) && Object.keys(FL.flags).length === D.flags?.count,
+      `${Object.keys(FL.flags).length} / ${D.flags?.count}`);
+    const members = new Set(Object.entries(D.teams).filter(([, t]) => t.member).map(([k]) => k));
+    check('會員不會因為「同一面旗」被拿掉;被拿掉的那一邊講得出是跟誰', D.flags.sameAs.every(x => !members.has(x.key) && (!x.asKey || members.has(x.asKey))),
+      D.flags.sameAs.map(x => `${x.key}=${x.as}`).join('、'));
+    check('中華台北不掛國旗(國際賽用的不是國旗),而且產物講了理由', !D.teams.Taiwan || (!FL.flags.Taiwan && D.flags.excluded.some(x => x.key === 'Taiwan' && x.why)));
+    /* 掛出去的國旗兩兩不同:兩隊掛同一面旗,讀者分不出誰是誰(屬地那條就是為了這個) */
+    // 產物裡每一隊存的直接是 data URI 字串(不是物件)
+    const pix = Object.fromEntries(Object.entries(FL.flags).map(([k, v]) => [k, decodePNG(Buffer.from(String(v).split(',')[1], 'base64'))]));
+    const ks = Object.keys(pix), same = [];
+    for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++) if (flagDistance(pix[ks[i]], pix[ks[j]]) < FLAG_SAME) same.push(`${ks[i]}=${ks[j]}`);
+    check('掛出去的國旗兩兩看起來不一樣', same.length === 0, same.slice(0, 4).join('、'));
+  }
+  const page = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8'));
+  check('頁面只用產物裡內嵌的國旗,不從外部網址載', !/flag-icons|raw\.githubusercontent|\.svg['"`]/.test(page) && /FLAGS\[key\]/.test(page));
+  const ov = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8'));
+  check('總覽頁不載國旗那一份', !ov.includes('intl-flags'));
 }
 
 // ── 6. 抓取器的守門(假的 fetch,不連網)────────────────

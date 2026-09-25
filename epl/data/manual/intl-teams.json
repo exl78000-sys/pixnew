@@ -56,5 +56,21 @@
   "Congo": "剛果",
   "Bonaire": "波奈",
   "Tahiti": "大溪地"
+ },
+ "flag": {
+  "England": "gb-eng",
+  "Scotland": "gb-sct",
+  "Wales": "gb-wls",
+  "Northern Ireland": "gb-nir",
+  "Basque Country": "es-pv",
+  "Taiwan": null
+ },
+ "_flagEvidence": {
+  "England": "國旗集(lipis/flag-icons)的英格蘭是 gb-eng —— 不是 ISO 地區碼(country.json 標 iso:false),isoOf 查不到,只能明寫(2026-09-25)",
+  "Scotland": "同上,gb-sct",
+  "Wales": "同上,gb-wls",
+  "Northern Ireland": "同上,gb-nir(國旗集那一面是足球上沿用的 Ulster Banner)",
+  "Basque Country": "國旗集的 es-pv(iso:false);巴斯克不是國際足總會員,不列排名,但球隊頁與賽果會出現",
+  "Taiwan": "國際賽用的是中華台北奧會會旗,不是國旗,而國旗集裡沒有那一面 —— 不拿國旗代替"
  }
 }

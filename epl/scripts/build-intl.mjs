@@ -28,7 +28,8 @@ import {
   intlLagCost, intlTeamHistory, intlH2H, intlStandings,
   INTL_HOLDOUT, INTL_MIN_GAMES, intlPasses,
 } from './lib/intl.mjs';
-import { loadIntlTeamTable, makeIntlResolver } from './lib/intl-teams.mjs';
+import { loadIntlTeamTable, makeIntlResolver, intlFlagPlan } from './lib/intl-teams.mjs';
+import { decodePNG } from './lib/png.mjs';
 import {
   FOTMOB_INTL, INTL_FAMILIES, INTL_NOT_FETCHED, INTL_LEGEND_ZH, isIntlTbd, intlTbdLabel, intlRoundZh, intlGroupZh,
 } from './lib/adapters/fotmob-intl.mjs';
@@ -38,6 +39,7 @@ const OUT = join(ROOT, 'web', 'data', 'intl.json');
 /* 球隊頁的明細另外一份:只有點進某一隊時才載(兩百多隊的走勢與交手紀錄約四、五百 KB,
    放進 intl.json 的話每一個打開國家隊頁的人都要多下載一次)。 */
 const OUT_TEAMS = join(ROOT, 'web', 'data', 'intl-teams.json');
+const OUT_FLAGS = join(ROOT, 'web', 'data', 'intl-flags.json');
 /* 走勢圖從這一天起畫:一隊一年十場上下,八年多 ≈ 八十個點 —— 夠看出起伏,又不會把 1872 年起的
    幾百場都塞進去(那段跟現在的球隊已經沒什麼關係)。 */
 const TREND_FROM = '2018-01-01';
@@ -58,7 +60,7 @@ const r4 = x => Math.round(x * 1e4) / 1e4;
 const dayMs = 86400000;
 
 /* 純函式:所有輸入都由呼叫端給,方便 npm test 拿捏造的資料驗每一條分岔。 */
-export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params, table, raws, builtAt }) {
+export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params, table, raws, builtAt, flags = null }) {
   const P = params.params;
   const minGames = params.minGames ?? INTL_MIN_GAMES;
   const resolver = makeIntlResolver(table, new Set(mj.flatMap(m => [m.home, m.away])));
@@ -224,6 +226,21 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
     teams[k] = { zh: resolver.zhOf(k), rating: rating.has(k) ? Math.round(rating.get(k)) : null,
       games: games.get(k) ?? 0, last: last.get(k) ?? null, rank: rankOf.get(k) ?? null, member: members.has(k) };
   }
+  /* 國旗(2026-09-25):哪一隊掛哪一面由 intlFlagPlan 決定 —— 屬地在國旗集裡用宗主國的旗的(瓜德羅普 = 法國三色旗),
+     非會員那一邊不給。沒有國旗的三種原因分開記,畫面照講(鐵則四)。 */
+  let flagInfo = null, flagImgs = null;
+  if (flags?.flags) {
+    const plan = intlFlagPlan({ keys: Object.keys(teams), flagCodeOf: resolver.flagCodeOf, flags: flags.flags,
+      isMember: k => members.has(k), pixelsOf: img => decodePNG(Buffer.from(String(img).split(',')[1] ?? '', 'base64')) });
+    // 圖本身另外一份產物(intl-flags.json):總覽頁也載 intl.json,只為了一張小卡不該多下載兩百 KB 的國旗
+    flagImgs = Object.fromEntries(Object.entries(plan.byKey).map(([k, f]) => [k, f.img]));
+    flagInfo = { source: flags.source ?? null, size: flags.size ?? null, count: Object.keys(plan.byKey).length,
+      noCode: plan.noCode, notFetched: plan.notFetched,
+      // 跟哪一隊同一面旗(畫面要講「瓜德羅普在國旗集裡就是法國的旗」,不是只印一個 fr)
+      sameAs: plan.sameAs.map(x => ({ ...x, asKey: Object.keys(teams).find(k => resolver.flagCodeOf(k) === x.as) ?? null })),
+      excluded: Object.entries(table.flag ?? {}).filter(([, v]) => v === null).map(([k]) => ({ key: k, why: table._flagEvidence?.[k] ?? null }))
+        .filter(x => teams[x.key]) };
+  }
 
   const checkCounts = {};
   for (const r of results) checkCounts[r.check] = (checkCounts[r.check] ?? 0) + 1;
@@ -250,6 +267,8 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
         lastDate, rows: mjMeta?.files?.['results.csv']?.rows ?? mj.length, retrievedAt: mjMeta?.retrievedAt ?? null },
       { key: 'fotmob', name: 'FotMob', url: 'https://www.fotmob.com', role: '賽程與這一窗的賽果(八個賽事,一個賽事一個請求)' },
       { key: 'cldr', name: 'Unicode CLDR', url: 'https://cldr.unicode.org', role: '國名的中文(標準資料,不是翻譯);足球慣用名不同的由本站覆寫' },
+      ...(flagInfo?.source ? [{ key: 'flags', name: flagInfo.source.name, url: flagInfo.source.url,
+        role: `國旗(${flagInfo.source.license} 授權,v${flagInfo.source.version};本站縮成 ${flagInfo.size?.join('×')} 內嵌)` }] : []),
     ],
     comps,
     // 只列有賽事收進來的家族 —— 沒有場次的按鈕按下去是空的(「按鈕在但點了沒東西」)
@@ -263,6 +282,9 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
     ranking,
     nonMembers,
     teams,
+    flags: flagInfo,
+    // 不進 intl.json:main() 另外寫成 intl-flags.json(見上面的註解)
+    flagImgs,
     unknownNames: [...unknownNames.values()].sort((a, b) => b.n - a.n).map(u => ({ name: u.name, n: u.n, comps: [...u.comps] })),
     dupes,
   };
@@ -308,8 +330,10 @@ async function main() {
   const metaPath = join(ROOT, 'data', 'raw', 'intl', 'meta.json');
   const mjMeta = existsSync(metaPath) ? JSON.parse(readFileSync(metaPath, 'utf8')) : null;
   const params = JSON.parse(readFileSync(join(ROOT, 'data', 'intl-elo-params.json'), 'utf8'));
+  const flagsPath = join(ROOT, 'data', 'manual', 'intl-flags.json');
+  const flags = existsSync(flagsPath) ? JSON.parse(readFileSync(flagsPath, 'utf8')) : null;
   const out = assembleIntl({ mj, shootouts, mjMeta, params, table: loadIntlTeamTable(ROOT),
-    raws: loadRaws(join(ROOT, 'data', 'raw', 'fotmob-intl')), builtAt: new Date().toISOString() });
+    raws: loadRaws(join(ROOT, 'data', 'raw', 'fotmob-intl')), builtAt: new Date().toISOString(), flags });
 
   const h = out.model.holdout;
   console.log(`▶ 國家隊:martj42 ${mj.length} 場(到 ${out.model.ratingsAsOf})・驗收 ${h?.n} 場 改善 ${h?.gain} ± ${h?.se}(${h?.z} SE)→ ${out.model.passed ? '通過,給勝率' : '沒通過,整批不給勝率'}`);
@@ -328,16 +352,28 @@ async function main() {
   if (bad.length) console.log(`  ⚠ 積分對不上(場數一樣):${bad.map(g => g.name).join('、')}`);
   console.log(`  未賽 ${out.fixtures.length} 場(給勝率 ${withProb})・已完賽 ${out.results.length} 場(核對 ${JSON.stringify(out.checkCounts)})・排名 ${out.ranking.length} 隊`
     + `(另有非會員 ${out.nonMembers.length} 隊不列:跟會員交手為主 ${out.nonMembers.filter(x => x.linked).length}、大多只跟彼此踢 ${out.nonMembers.filter(x => !x.linked).length})`);
+  const fl = out.flags;
+  if (fl) console.log(`  國旗 ${fl.count}/${Object.keys(out.teams).length} 隊・沒有的:沒有國碼 ${fl.noCode.length}、國旗集的圖還沒抓 ${fl.notFetched.length}`
+    + `、跟別的碼同一面旗(屬地用宗主國的旗)${fl.sameAs.length}${fl.sameAs.length ? `(${fl.sameAs.map(x => `${x.key}=${x.as}`).join('、')})` : ''}`
+    + (fl.notFetched.length ? ` ← 跑 npm run intl:flags 補:${fl.notFetched.map(x => x.key).join('、')}` : ''));
+  else console.log('  國旗:沒有 data/manual/intl-flags.json(npm run intl:flags),這一次不掛國旗');
   if (out.unknownNames.length) console.log(`  ⚠ 隊名對不上身分 ${out.unknownNames.length} 個:${out.unknownNames.slice(0, 12).map(u => `${u.name}×${u.n}`).join('、')}`);
   if (out.dupes.length) console.log(`  ⚠ 同一場出現在兩個賽事:${out.dupes.join('、')}(留第一個)`);
 
   await mkdir(dirname(OUT), { recursive: true });
+  const { flagImgs, ...main } = out;
   const tmp = `${OUT}.tmp`;
-  await writeFile(tmp, JSON.stringify(out) + '\n');
+  await writeFile(tmp, JSON.stringify(main) + '\n');
   await rename(tmp, OUT);
-  console.log(`✔ web/data/intl.json(${(JSON.stringify(out).length / 1024).toFixed(0)} KB)`);
+  console.log(`✔ web/data/intl.json(${(JSON.stringify(main).length / 1024).toFixed(0)} KB)`);
+  /* 國旗的圖:只有國家隊頁(與它的球隊頁)載。沒有國旗檔也寫一份空的 —— 404 會讓前端走「讀取失敗」那條路 */
+  const flagsOut = { builtAt: out.builtAt, size: out.flags?.size ?? null, flags: flagImgs ?? {} };
+  const tmp3 = `${OUT_FLAGS}.tmp`;
+  await writeFile(tmp3, JSON.stringify(flagsOut) + '\n');
+  await rename(tmp3, OUT_FLAGS);
+  console.log(`✔ web/data/intl-flags.json(${(JSON.stringify(flagsOut).length / 1024).toFixed(0)} KB;${Object.keys(flagsOut.flags).length} 面)`);
 
-  const teams = assembleIntlTeams({ mj, params, main: out, builtAt: out.builtAt });
+  const teams = assembleIntlTeams({ mj, params, main, builtAt: out.builtAt });
   const tmp2 = `${OUT_TEAMS}.tmp`;
   await writeFile(tmp2, JSON.stringify(teams) + '\n');
   await rename(tmp2, OUT_TEAMS);

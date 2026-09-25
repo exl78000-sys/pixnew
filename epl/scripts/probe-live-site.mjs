@@ -16,7 +16,8 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**9 個請求**(meta / intl.html / intl.json / cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
+ * 唯讀、零快取、**11 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
+ * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
  * 網址不寫死:從 runner 的 `GITHUB_REPOSITORY` 推(owner/repo → owner.github.io/repo/),
  * 本機測試用 `--base=` 覆寫。
  *
@@ -67,7 +68,20 @@ async function main() {
     console.log(`  國家隊建置 ${I.builtAt}・評分截止 ${I.model?.ratingsAsOf}・驗收 ${I.model?.holdout?.gain} ± ${I.model?.holdout?.se}`
       + `(${I.model?.passed ? '通過' : '沒通過'})・未賽 ${fx.length}(給勝率 ${fx.filter(f => f.prob).length})`
       + `・賽果 ${(I.results ?? []).length}・核對 ${JSON.stringify(I.checkCounts ?? null)}`);
+    /* 2026-09-25 那一批:積分榜、排名只列會員、國旗 —— 欄位不在就是**站上還是上一版**,印「沒有這個欄位」而不是 0
+       (0 是一個看起來很像答案的數字) */
+    const st = I.standings;
+    console.log(`  分組積分榜 ${st ? `${st.length} 個賽事 ${st.reduce((a, c) => a + (c.groups?.length ?? 0), 0)} 組` : '(沒有這個欄位)'}`
+      + `・排名 ${(I.ranking ?? []).length} 隊・不列的非會員 ${I.nonMembers ? I.nonMembers.length : '(沒有這個欄位)'}`
+      + `・國旗 ${I.flags ? `${I.flags.count} 隊` : '(沒有這個欄位)'}`);
   } else console.log('  ✗ data/intl.json 不是 JSON');
+  /* 球隊頁與國旗的明細是另外兩份產物(只有國家隊頁載)。404 就是那一批還沒部署上去 —— 照實講,不當成錯。 */
+  for (const [path, count] of [['data/intl-teams.json', j => `${Object.keys(j.teams ?? {}).length} 隊`],
+    ['data/intl-flags.json', j => `${Object.keys(j.flags ?? {}).length} 面・${JSON.stringify(j.size ?? null)}`]]) {
+    const r = await get(path);
+    const j = r.ok ? jsonOf(r) : null;
+    console.log(`  ${path}  HTTP ${r.status}  ${r.buf.length} bytes${j ? `・${count(j)}・建置 ${j.builtAt ?? '?'}  sha256:${sha(r.buf)}` : r.ok ? '・✗ 不是 JSON' : '(站上沒有這個檔)'}`);
+  }
 
   // ── 二、歐冠那一頁實際供出來的 JS ──────────────────────
   /* `ucl.html` 2026-08-29 起**只是轉址頁**(歐冠併進盃賽單頁,渲染在 ucl-view.js),
