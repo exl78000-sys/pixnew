@@ -338,6 +338,120 @@ export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, 
   return { days, all: stat(all), affected: stat(hit) };
 }
 
+/* ── 中立場的賽前推論(2026-09-25;補齊規劃第 6 項)──────────────────────
+   FotMob 的賽程沒有「是不是中立場」這一欄,第一版一律當名單上的主隊在主場。驗收期(2022 起)裡
+   真的是中立場的佔 35%,那一批每場 RPS 多付 0.0087(tune-intl 的 neutralUnknown)。
+   這裡推一個機率 q(是中立場的機率),**只用開賽前 `lag` 天以前的 martj42**(上線時它比賽程慢):
+     - 主辦型(世界盃、洲際決賽圈、區域盃這類「其他」):同一個賽事名最近 W 天已踢的比賽,
+       一半以上是中立場 → 這一屆有主辦國。主隊在這一屆踢過非中立場 → 它就是主辦國,q = 0;
+       否則 q = 那一屆的中立比例(加一平滑)。同一屆還沒有資料 → 這一類的先驗。
+     - 主客場型(資格賽、國家聯賽)與友誼賽:**主隊**最近 N 場「列在主隊」的同類比賽有幾場在中立場,
+       往這一類的先驗收縮(alpha 個虛擬場次)。以色列在匈牙利、烏克蘭在波蘭踢「主場」、非洲幾支
+       主場不合格的隊在摩洛哥踢 —— 那是隊的習慣,不是賽事的。
+   機率怎麼用:兩種場地各算一次三個機率,照 q 加權平均(`venueProbs`)。q = 0 時跟第一版**逐位元組相同**。
+   參數(N、alpha、W、lag、各類先驗)在 tune-intl.mjs 用**調參期**挑,驗收期驗;建置每次重算驗收,
+   沒過門檻就整批退回一律主場 —— 跟勝率本身同一套規矩。 */
+export const venueGroup = t => {
+  const c = tournamentClass(t);
+  return c === 'friendly' ? 'friendly' : (c === 'worldcup' || c === 'continental') ? 'finals' : c;
+};
+const daysBefore = (d, n) => new Date(Date.parse(`${d}T00:00:00Z`) - n * 86400000).toISOString().slice(0, 10);
+// 照日期排好的陣列裡,日期 < cutoff 的有幾筆
+const countBefore = (arr, cutoff) => {
+  let lo = 0, hi = arr.length;
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (arr[mid].date < cutoff) lo = mid + 1; else hi = mid; }
+  return lo;
+};
+export function makeVenueModel(matches, { N, alpha, W, lag, prior }) {
+  const homeListed = new Map(), byTour = new Map();
+  for (const m of matches) {
+    if (!homeListed.has(m.home)) homeListed.set(m.home, []);
+    homeListed.get(m.home).push(m);
+    if (!byTour.has(m.tournament)) byTour.set(m.tournament, []);
+    byTour.get(m.tournament).push(m);
+  }
+  return ({ home, tournament, date }) => {
+    const g = venueGroup(tournament);
+    const cut = daysBefore(date, lag);
+    const pri = prior[g] ?? 0;
+    if (g === 'finals' || g === 'other') {
+      const arr = byTour.get(tournament) ?? [];
+      const start = daysBefore(date, lag + W);
+      const rec = [];
+      for (let i = countBefore(arr, cut) - 1; i >= 0 && arr[i].date >= start; i--) rec.push(arr[i]);
+      const k = rec.filter(x => x.neutral).length;
+      if (rec.length >= 2 && k / rec.length >= 0.5) {
+        return rec.some(x => !x.neutral && x.home === home)
+          ? { q: 0, basis: 'host', n: rec.length, k }
+          : { q: (k + 1) / (rec.length + 2), basis: 'edition', n: rec.length, k };
+      }
+      return { q: pri, basis: 'prior', n: 0, k: 0 };
+    }
+    const arr = homeListed.get(home) ?? [];
+    let n = 0, k = 0;
+    for (let i = countBefore(arr, cut) - 1; i >= 0 && n < N; i--) {
+      if (venueGroup(arr[i].tournament) !== g) continue;
+      n++; k += arr[i].neutral ? 1 : 0;
+    }
+    return { q: (k + alpha * pri) / (n + alpha), basis: 'team', n, k };
+  };
+}
+export function venueProbs(rh, ra, q, params) {
+  const pH = probsFromE(expectedScore(rh, ra, { neutral: false, homeAdv: params.homeAdv }), params);
+  if (!q) return pH;
+  const pN = probsFromE(expectedScore(rh, ra, { neutral: true, homeAdv: params.homeAdv }), params);
+  return { home: (1 - q) * pH.home + q * pN.home, draw: (1 - q) * pH.draw + q * pN.draw, away: (1 - q) * pH.away + q * pN.away };
+}
+/* 先驗:某一段期間(調參期)裡每一類有幾成是中立場。**母體跟回測同一批**(兩隊都至少 minGames 場)。 */
+export function venuePrior(matches, params, { from, to, minGames = INTL_MIN_GAMES }) {
+  const acc = {};
+  for (const r of backtestIntl(matches, params, { from, to, minGames })) {
+    const g = venueGroup(r.m.tournament);
+    acc[g] ??= [0, 0];
+    acc[g][0] += r.m.neutral ? 1 : 0; acc[g][1]++;
+  }
+  return Object.fromEntries(Object.entries(acc).map(([g, [k, n]]) => [g, k / n]));
+}
+/* 驗收:同一批比賽三種算法逐場比 RPS —— 一律主場(第一版)、推論、拿賽後才知道的中立場欄位當答案。
+   gain = 一律主場 − 推論(正值 = 推論比較好),oracle = 一律主場 − 當答案的那一種。
+   **「當答案」不是嚴格的上限**:主客場型那一類推論(0~1 之間的機率)反而比二元欄位好一點 ——
+   名義主隊在中立場踢,兩段期間都比中立場的預期多拿 0.035~0.050 分(主場分乘 0.25~0.5 的 RPS 最好),
+   但那個改善沒有大過標準誤,所以只記成觀察,模型不另外給它參數。 */
+export function venueBacktest(matches, params, venue, { from, to, minGames = INTL_MIN_GAMES }) {
+  const guess = makeVenueModel(matches, venue);
+  const home = [], inferred = [], truth = [], groups = [];
+  runIntlElo(matches, params, {
+    until: to ? nextDay(to) : null,
+    onDay: (d, day) => {
+      if (d < from || (to && d > to)) return;
+      for (const r of day) {
+        if (r.nh < minGames || r.na < minGames) continue;
+        const o = outcomeOf(r.m);
+        const q = guess({ home: r.m.home, tournament: r.m.tournament, date: r.m.date }).q;
+        home.push(rpsOf(venueProbs(r.rh, r.ra, 0, params), o));
+        inferred.push(rpsOf(venueProbs(r.rh, r.ra, q, params), o));
+        truth.push(rpsOf(venueProbs(r.rh, r.ra, r.m.neutral ? 1 : 0, params), o));
+        groups.push(venueGroup(r.m.tournament));
+      }
+    },
+  });
+  const diff = (a, b, keep = () => true) => {
+    const xs = a.map((x, i) => x - b[i]).filter((_, i) => keep(i));
+    const n = xs.length;
+    if (n < 2) return null;
+    const m = xs.reduce((s, x) => s + x, 0) / n;
+    const se = Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / (n - 1) / n);
+    return { n, gain: m, se, z: se ? m / se : null };
+  };
+  const byGroup = {};
+  for (const g of [...new Set(groups)].sort()) {
+    const keep = i => groups[i] === g;
+    byGroup[g] = { inferred: diff(home, inferred, keep), oracle: diff(home, truth, keep) };
+  }
+  return { n: home.length, inferred: diff(home, inferred), oracle: diff(home, truth), byGroup,
+    rps: home.length ? inferred.reduce((s, x) => s + x, 0) / home.length : null };
+}
+
 /* ── 球隊頁:評分走勢與最近幾場(每一場的評分變化)──────────────────────
    走同一條 runIntlElo 與 eloDelta,畫面上「這一場 +12」加起來就是排名上那個數字。
    `from` 之後的每一場記一個點(走勢圖);`recentN` 是最近幾場的明細。

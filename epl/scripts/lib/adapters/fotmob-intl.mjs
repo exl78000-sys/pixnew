@@ -22,19 +22,23 @@ import { tournamentClass } from '../intl.mjs';
  *
  * 沒收的在下面的 INTL_NOT_FETCHED:這個窗口**一場都沒有**(接下來 45 天 0 場),那一季開打時再加進來,
  * 不留一個永遠空白的分頁(鐵則三)。**不是每一個都證明過** —— 歐國盃(50)與亞洲盃(290)的本季是下一屆
- * (2028 / 2027),一場都還沒踢,內容比對無從做起;第一版註解寫成「全部證明過」,是錯的。 */
+ * (2028 / 2027),一場都還沒踢,內容比對無從做起;第一版註解寫成「全部證明過」,是錯的。
+ *
+ * `tournament` 是這個賽事在 martj42 裡叫什麼(`expect` 一定要認得它,npm test 守著)。**只給中立場推論用**:
+ * 推論要知道這一場屬於哪一類(主辦型 / 主客場型 / 友誼賽)、同一屆在 martj42 裡已經踢了哪幾場(lib/intl.mjs 的
+ * makeVenueModel)。友誼賽底下的邀請賽(Baltic Cup 那種)從 FotMob 的賽程分不出來,一律當友誼賽推。 */
 export const FOTMOB_INTL = [
-  { key: 'unl-a', id: 9806, zh: '歐洲國家聯賽 A 級', short: '歐國聯 A', en: 'UEFA Nations League A', family: 'unl', expect: /^UEFA Nations League$/ },
-  { key: 'unl-b', id: 9807, zh: '歐洲國家聯賽 B 級', short: '歐國聯 B', en: 'UEFA Nations League B', family: 'unl', expect: /^UEFA Nations League$/ },
-  { key: 'unl-c', id: 9808, zh: '歐洲國家聯賽 C 級', short: '歐國聯 C', en: 'UEFA Nations League C', family: 'unl', expect: /^UEFA Nations League$/ },
-  { key: 'unl-d', id: 9809, zh: '歐洲國家聯賽 D 級', short: '歐國聯 D', en: 'UEFA Nations League D', family: 'unl', expect: /^UEFA Nations League$/ },
-  { key: 'cnl', id: 9821, zh: '中北美國家聯賽', short: '中北美國聯', en: 'CONCACAF Nations League', family: 'cnl', expect: /^CONCACAF Nations League$/ },
-  { key: 'afconq', id: 10608, zh: '非洲國家盃資格賽', short: '非洲盃資格賽', en: 'Africa Cup of Nations Qualification', family: 'afconq', expect: /^African Cup of Nations qualification$/ },
-  { key: 'gulf', id: 329, zh: '海灣盃', short: '海灣盃', en: 'Gulf Cup', family: 'gulf', expect: /^Gulf Cup$/ },
+  { key: 'unl-a', id: 9806, zh: '歐洲國家聯賽 A 級', short: '歐國聯 A', en: 'UEFA Nations League A', family: 'unl', tournament: 'UEFA Nations League', expect: /^UEFA Nations League$/ },
+  { key: 'unl-b', id: 9807, zh: '歐洲國家聯賽 B 級', short: '歐國聯 B', en: 'UEFA Nations League B', family: 'unl', tournament: 'UEFA Nations League', expect: /^UEFA Nations League$/ },
+  { key: 'unl-c', id: 9808, zh: '歐洲國家聯賽 C 級', short: '歐國聯 C', en: 'UEFA Nations League C', family: 'unl', tournament: 'UEFA Nations League', expect: /^UEFA Nations League$/ },
+  { key: 'unl-d', id: 9809, zh: '歐洲國家聯賽 D 級', short: '歐國聯 D', en: 'UEFA Nations League D', family: 'unl', tournament: 'UEFA Nations League', expect: /^UEFA Nations League$/ },
+  { key: 'cnl', id: 9821, zh: '中北美國家聯賽', short: '中北美國聯', en: 'CONCACAF Nations League', family: 'cnl', tournament: 'CONCACAF Nations League', expect: /^CONCACAF Nations League$/ },
+  { key: 'afconq', id: 10608, zh: '非洲國家盃資格賽', short: '非洲盃資格賽', en: 'Africa Cup of Nations Qualification', family: 'afconq', tournament: 'African Cup of Nations qualification', expect: /^African Cup of Nations qualification$/ },
+  { key: 'gulf', id: 329, zh: '海灣盃', short: '海灣盃', en: 'Gulf Cup', family: 'gulf', tournament: 'Gulf Cup', expect: /^Gulf Cup$/ },
   /* 友誼賽的 expect 收「友誼賽或其他」兩類:FotMob 把邀請賽也放在這個 id 底下 —— run #43 對上的 61 場裡
      martj42 記成 Friendly 的 54 場,其餘是 Baltic Cup×4、Diamond Jubilee International Football Tournament×2、
      Tri-Nations Cup×1,在本站的分級都是 other。**不收資格賽與洲際決賽圈**:那兩類出現在這個 id 底下就是 id 錯了。 */
-  { key: 'friendly', id: 114, zh: '國際友誼賽', short: '友誼賽', en: 'International Friendlies', family: 'friendly',
+  { key: 'friendly', id: 114, zh: '國際友誼賽', short: '友誼賽', en: 'International Friendlies', family: 'friendly', tournament: 'Friendly',
     expect: t => tournamentClass(t) === 'friendly' || tournamentClass(t) === 'other' },
 ];
 

@@ -12,8 +12,9 @@ const app = document.getElementById('app');
    2. **勝率只給驗收過的模型,而且每次建置重算。** 門檻、樣本數、基準線都從產物讀,這一頁不寫任何數字。
    3. **評分會落後。** martj42 還沒收的比賽不進評分(沒被核對過的比分不拿來改評分)——
       每一場把「評分之後兩隊又踢了幾場」印出來,不確定性寫在畫面上(鐵則四)。
-   4. **不知道是不是中立場。** FotMob 賽程沒有這個欄位,一律當名單上的主隊在主場;
-      代價是調參時在驗收那一批上量過的,模型那一節照產物印。
+   4. **中立場是推的。** FotMob 賽程沒有這個欄位。第一版一律當名單上的主隊在主場(代價在驗收那一批上量過);
+      2026-09-25 起用開賽前的歷史賽果推一個機率,驗收過門檻才用(產物的 model.venue)。每一場用了多少、
+      憑什麼推的寫在勝率的說明裡,機率高的那幾場另外印一行 —— 推論要標成推論(鐵則四)。
 
    顯示範圍一律用「天」當單位(接下來 7 天、最近 7 天),不用筆數 —— 固定筆數會把同一天的比賽切一半
    (實時戰況頁那條坑)。
@@ -71,16 +72,30 @@ const compTag = key => {
 // 輪次與組別各自不准斷行 —— 手機上「第 1 / 輪 第 1 組」這種斷法讀起來像兩件事
 const tagsOf = x => [compTag(x.comp), ...[x.roundZh, x.groupZh].filter(Boolean).map(t => `<span class="nowrap">${esc(t)}</span>`)].filter(Boolean).join(' ');
 
+/* 這一場的場地怎麼算的(一句話)。推論沒通過驗收時 f.venue 是 null → 一律當主場(第一版的說法) */
+const VENUE_SHOW = 0.4;   // 機率到這裡才在勝率下面另外印一行;每一場的機率都在滑過去的說明裡
+function venueText(f) {
+  const v = f.venue;
+  if (!v) return '當成名單上的主隊在主場算(上游沒有中立場資訊)';
+  const why = v.basis === 'host' ? `主隊在這一屆踢過主場,是主辦國`
+    : v.basis === 'edition' ? `這一屆已收錄的 ${v.n} 場有 ${v.k} 場在中立場`
+    : v.basis === 'prior' ? `這一屆還沒有已收錄的比賽,用這一類賽事的平均`
+    : v.n ? `${zhOf(f.home.key)}最近 ${v.n} 場同類的主場有 ${v.k} 場在中立場,往這一類賽事的平均收縮`
+    : `${zhOf(f.home.key)}沒有同類的主場紀錄,用這一類賽事的平均`;
+  return `中立場的機率 ${C.pct(v.q, 0)}(推論:${why});勝率照這個機率把「主隊在主場」與「中立場」兩種算法加權`;
+}
 function probCell(f) {
   const lags = (f.lag ?? []).map(n => n ?? 0);
   const lag = Math.max(0, ...lags);
-  const tip = `本站 Elo ${f.elo[0]} 對 ${f.elo[1]}・當成名單上的主隊在主場算(上游沒有中立場資訊)`;
+  const tip = `本站 Elo ${f.elo[0]} 對 ${f.elo[1]}・${venueText(f)}`;
   const bar = `<span title="${esc(tip)}">${C.probBar({ home: f.prob[0], draw: f.prob[1], away: f.prob[2] })}</span>`;
-  if (!lag) return bar;
+  const venue = f.venue && f.venue.q >= VENUE_SHOW
+    ? `<div class="tiny dim" style="margin-top:3px" title="${esc(venueText(f))}">中立場機率 ${C.pct(f.venue.q, 0)}</div>` : '';
+  if (!lag) return bar + venue;
   const who = [f.home, f.away].map((t, i) => (lags[i] ? `${zhOf(t.key)} ${lags[i]} 場` : null)).filter(Boolean).join('、');
   const lg = D.model.lag?.affected;
   const cost = lg ? `量過這件事值多少:評分落後 ${D.model.lag.days} 天,受影響的場次每場 RPS 平均多 ${lg.cost} ± ${lg.se}(模型整體的改善是 ${D.model.holdout?.gain})。` : '';
-  return `${bar}<div class="tiny dim" style="margin-top:3px" title="評分只算到 ${esc(D.model.ratingsAsOf)}(獨立來源收錄到的最後一天);之後踢的比賽還沒被核對,不拿來改評分。這兩隊之後又踢了:${esc(who)}。${esc(cost)}">評分未含最近 ${lag} 場</div>`;
+  return `${bar}${venue}<div class="tiny dim" style="margin-top:3px" title="評分只算到 ${esc(D.model.ratingsAsOf)}(獨立來源收錄到的最後一天);之後踢的比賽還沒被核對,不拿來改評分。這兩隊之後又踢了:${esc(who)}。${esc(cost)}">評分未含最近 ${lag} 場</div>`;
 }
 
 function fixtureRow(f) {
@@ -334,10 +349,27 @@ function nonMemberNote() {
     (${names(alone)}${tours.length ? `;賽事像是 ${tours.map(esc).join('、')}` : ''}),評分是在那個小圈子裡累積的,跟會員比不起來` : ''}。`;
 }
 
+/* 中立場那一段:上游沒有這一欄 → 一律當主場的代價(量過)→ 用推的、推論自己的驗收。數字全部從產物讀 */
+function venueBlock(m) {
+  const nu = m.neutralUnknown, v = m.venue, vh = v?.holdout;
+  const cost = nu ? `中立場佔驗收那一批的 ${C.pct(nu.shareOfHoldout)},把它們當主場算,每場 RPS 多 ${nu.rpsCostPerNeutralMatch}、攤到整批 ${nu.rpsCostOverall}` : '';
+  if (!vh) return nu ? `<p class="small"><b>不知道是不是中立場。</b>上游的賽程沒有這個欄位,所以一律當名單上的主隊在主場算。
+    在驗收那一批上量過代價:${cost}。盃賽決賽圈(例如海灣盃)大多是中立場,那幾場的主隊被多算了主場優勢。</p>` : '';
+  const f5 = x => Number(x).toFixed(5);
+  const share = vh.oracle?.gain > 0 ? `(推論拿回其中大約 ${Math.round(vh.gain / vh.oracle.gain * 100)}%)` : '';
+  return `<p class="small"><b>中立場是推的。</b>上游的賽程沒有這個欄位,一律當主場算要付代價(${cost})。所以用<b>開賽前 ${v.lag} 天以前</b>的歷史賽果推一個
+    「是中立場」的機率:決賽圈與區域盃這類主辦型賽事,看同一屆已踢的比賽是不是多半在中立場、主隊是不是主辦國;
+    主客場型賽事與友誼賽,看主隊最近 ${v.N} 場同類的主場有幾場在中立場,再往這一類賽事的平均收縮。
+    勝率照這個機率把「主隊在主場」與「中立場」兩種算法加權。這是<b>推論</b>,不是賽事公布的場地。</p>
+    <p class="small">參數在 ${esc(v.tune?.from)} ~ ${esc(v.tune?.to)} 挑的(試了 ${v.tune?.tried ?? '—'} 組),驗收在 ${esc(vh.from)} 之後的 ${vh.n} 場:
+    對「一律當主場」改善 <b class="mono">${f5(vh.gain)} ± ${f5(vh.se)}</b>(${vh.z} 倍標準誤);拿賽後才知道的中立場欄位當答案的話是
+    ${f5(vh.oracle.gain)}${share}。${v.passes ? '這一次通過門檻,所以未賽的勝率用推的 —— 每一場用了多少、憑什麼推的,滑過勝率就看得到,機率到 '
+      + `${C.pct(VENUE_SHOW, 0)} 以上的在勝率下面另外印一行。` : '這一次<b>沒有</b>通過門檻,所以未賽一律當主場算。'}</p>`;
+}
+
 function modelBlock() {
   const m = D.model;
   const h = m.holdout;
-  const nu = m.neutralUnknown;
   const f4 = x => Number(x).toFixed(4);   // 0.0030 印成 0.003 會讓兩個數字看起來精度不同
   const g = x => (x ? `${f4(x.gain)} ± ${f4(x.se)}(${x.n} 場)` : '—');
   return `<div class="section"><h2>勝率怎麼來的</h2><span class="hint">每次建置用當下的資料重算驗收</span></div>
@@ -355,9 +387,7 @@ function modelBlock() {
           (中立場與否分開算)—— 它偷看了答案,對基準線有利。上線門檻:${esc(m.gate)}。這一次:${m.passed
             ? '<b class="accent-text">通過</b>,所以給勝率。'
             : '<b>沒通過</b>,所以這一頁<b>一場都不給</b>勝率。'}</p>` : '<p class="small">這一次沒有驗收結果,所以不給勝率。</p>'}
-        <p class="small">${nu ? `<b>不知道是不是中立場。</b>上游的賽程沒有這個欄位,所以一律當名單上的主隊在主場算。
-          在驗收那一批上量過代價:中立場佔 ${C.pct(nu.shareOfHoldout)},把它們當主場算,每場 RPS 多 ${nu.rpsCostPerNeutralMatch}、
-          攤到整批 ${nu.rpsCostOverall}。盃賽決賽圈(例如海灣盃)大多是中立場,那幾場的主隊被多算了主場優勢。` : ''}</p>
+        ${venueBlock(m)}
         ${m.lag?.affected ? `<p class="small"><b>評分會落後,量過值多少。</b>martj42 收錄新賽果會晚幾天到幾週,那段時間踢的比賽不進評分。
           拿驗收那一批模擬「評分晚 ${m.lag.days} 天」:兩隊至少一隊在那幾天裡踢過的 ${m.lag.affected.n} 場,每場 RPS 平均多
           ${m.lag.affected.cost} ± ${m.lag.affected.se}(${m.lag.affected.z} 倍標準誤;模型整體的改善是 ${h?.gain ?? '—'})。

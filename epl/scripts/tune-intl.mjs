@@ -10,6 +10,7 @@
  * 另外量一件上線才會遇到的事:**FotMob 的賽程不告訴你是不是中立場。** 上線時未賽的比賽
  * 一律當「名單上的主隊在主場」算,那在真的是中立場的比賽上會多給主隊 homeAdv 分。
  * 代價不是猜的 —— 在驗收那一批上把中立場當主場重算一次,差多少照實寫進產物。
+ * 2026-09-25 起再挑一個**賽前推中立場**的做法(`venue`):參數一樣只用調參期挑、驗收期驗。
  *
  * 輸出 data/intl-elo-params.json(參數 + 調參與驗收當時的紀錄)。建置時讀它,
  * 並且**每次建置重算一次驗收**(參數不變、資料會長),畫面讀的是建置那一份。
@@ -18,7 +19,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  parseIntlResults, backtestIntl, frequencyBaseline, pairedGain, tournamentClass,
+  parseIntlResults, backtestIntl, frequencyBaseline, pairedGain, tournamentClass, venuePrior, venueBacktest,
   INTL_TUNE as TUNE, INTL_HOLDOUT as HOLDOUT, INTL_MIN_GAMES as MIN_GAMES,
 } from './lib/intl.mjs';
 
@@ -68,6 +69,32 @@ const shareBy = cls => { const rows = hold.filter(r => (tournamentClass(r.m.tour
 console.log(`中立場當主場算的代價:中立場 ${truth.length} 場(佔驗收 ${(share * 100).toFixed(1)}%;友誼賽 ${(shareBy('friendly') * 100).toFixed(1)}%、非友誼賽 ${(shareBy('other') * 100).toFixed(1)}%),`
   + `每場 RPS 多 ${cost?.toFixed(4)} → 攤到整批 ${(cost * share).toFixed(4)}`);
 
+/* 中立場的賽前推論(2026-09-25;lib/intl.mjs 的 makeVenueModel)。上面那一段量的是「不知道」的代價,
+   這一段挑一個**只用開賽前 lag 天以前的資料**推 q 的做法,**只看調參期**挑參數,驗收期驗。
+   結構(主辦型看同一屆、主客場型看主隊的習慣、機率照 q 加權平均)是探索時在**調參期**比出來的:
+   不分類別的主場習慣、把主場加分乘上 (1−q) 的線性版本,調參期都比較差,所以網格裡只剩這一種結構。
+   lag 固定 7 天:上線時 martj42 比賽程慢(跟 intlLagCost 同一個數字);0 天與 30 天也量過,挑出來的參數一樣。 */
+const VENUE_LAG = 7;
+const VENUE_GRID = { N: [3, 5, 8, 12, 20], alpha: [0.5, 1, 2, 4, 8, 16, 32], W: [21, 40, 60] };
+const prior = venuePrior(matches, best.params, { ...TUNE, minGames: MIN_GAMES });
+let vBest = null;
+let vTried = 0;
+const vHome = backtestIntl(matches, best.params, { ...TUNE, minGames: MIN_GAMES, assumeHome: true });
+const rpsHomeTune = vHome.reduce((a, r) => a + r.rps, 0) / vHome.length;
+for (const N of VENUE_GRID.N) for (const alpha of VENUE_GRID.alpha) for (const W of VENUE_GRID.W) {
+  const venue = { N, alpha, W, lag: VENUE_LAG, prior };
+  const t = venueBacktest(matches, best.params, venue, { ...TUNE, minGames: MIN_GAMES });
+  vTried++;
+  if (!vBest || t.rps < vBest.rps) vBest = { venue, rps: t.rps, n: t.n };
+}
+const vEdges = Object.entries(VENUE_GRID).filter(([k, v]) => vBest.venue[k] === v[0] || vBest.venue[k] === v.at(-1)).map(([k]) => k);
+console.log(`中立場推論・調參:試了 ${vTried} 組,最好 N=${vBest.venue.N} alpha=${vBest.venue.alpha} W=${vBest.venue.W} lag=${VENUE_LAG}`
+  + ` RPS ${vBest.rps.toFixed(5)}(一律主場 ${rpsHomeTune.toFixed(5)})`);
+if (vEdges.length) console.log(`  ⚠ 落在網格邊上:${vEdges.join('、')} —— 往外擴一格再掃一次`);
+const vHold = venueBacktest(matches, best.params, vBest.venue, { ...HOLDOUT, minGames: MIN_GAMES });
+const fv = g => g && `${g.gain >= 0 ? '+' : ''}${g.gain.toFixed(5)} ± ${g.se.toFixed(5)}(${g.z.toFixed(1)} SE)`;
+console.log(`  驗收 ${vHold.n} 場:推論對一律主場 ${fv(vHold.inferred)}・拿賽後的中立場欄位當答案 ${fv(vHold.oracle)}`);
+
 const out = {
   note: '國家隊 Elo 的參數。調參與驗收用不同年份;建置時會用這組參數重算一次驗收(資料會長),畫面讀建置那一份。',
   params: best.params,
@@ -83,6 +110,16 @@ const out = {
     neutralMatches: truth.length, shareOfHoldout: r5(share),
     shareFriendly: r5(shareBy('friendly')), shareOther: r5(shareBy('other')),
     rpsCostPerNeutralMatch: r5(cost), rpsCostOverall: r5(cost * share),
+  },
+  venue: {
+    note: '中立場的賽前推論(lib/intl.mjs 的 makeVenueModel)。參數只用調參期挑;建置每次重算驗收,沒過門檻就退回一律主場。',
+    N: vBest.venue.N, alpha: vBest.venue.alpha, W: vBest.venue.W, lag: VENUE_LAG,
+    prior: Object.fromEntries(Object.entries(prior).sort().map(([g, x]) => [g, r5(x)])),
+    tune: { ...TUNE, n: vBest.n, rps: r5(vBest.rps), rpsHome: r5(rpsHomeTune), tried: vTried, grid: VENUE_GRID, edges: vEdges },
+    holdoutAtTune: {
+      ...HOLDOUT, n: vHold.n,
+      gain: r5(vHold.inferred.gain), se: r5(vHold.inferred.se), oracleGain: r5(vHold.oracle.gain), oracleSe: r5(vHold.oracle.se),
+    },
   },
   ranAt: new Date().toISOString(),
 };

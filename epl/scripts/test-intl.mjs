@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 import {
   parseIntlResults, runIntlElo, backtestIntl, probsFromE, expectedScore, crossCheckIntl, proofFromCheck,
   frequencyBaseline, pairedGain, PROOF_MIN_MATCHED, INTL_TUNE, INTL_HOLDOUT, intlPasses,
-  intlStandings, intlLagCost, intlH2H, pairKey,
+  intlStandings, intlLagCost, intlH2H, pairKey, makeVenueModel, venueProbs, venueBacktest, venueGroup, testExpect,
 } from './lib/intl.mjs';
 import { loadIntlTeamTable, makeIntlResolver, intlFlagPlan, flagDistance, FLAG_SAME } from './lib/intl-teams.mjs';
 import { decodePNG } from './lib/png.mjs';
@@ -132,6 +132,88 @@ console.log('\n▶ 國家隊:模型(走查、門檻、參數)');
     check('澤西島、北賽普勒斯、曼島不在排名裡(第一版的 bug)', was.every(k => !D.ranking.some(r => r.key === k)), was.join('、') || '資料裡沒有,略過');
     check('俄羅斯(被禁賽、只踢友誼賽)仍在排名裡 —— 用「兩年內踢過正式賽」當門檻會把它錯排掉',
       !rating.has('Russia') || !(D.teams.Russia) || D.ranking.some(r => r.key === 'Russia') || (D.teams.Russia.games < D.model.minGames));
+  }
+}
+
+// ── 2b. 中立場的賽前推論(2026-09-25)──────────────────────
+/* FotMob 的賽程沒有「是不是中立場」。第一版一律當主場;現在用開賽前 lag 天以前的 martj42 推一個機率 q,
+   調參期挑參數、驗收期驗,**建置每次重算、過門檻才用**。這一節守:推論不偷看、主辦國的判斷、
+   q = 0 時跟第一版逐位元組相同、產物的每一場重算得回來、賽事對照表的名字真的被 expect 認得。 */
+console.log('\n▶ 國家隊:中立場的賽前推論(只看開賽前、驗收過才用)');
+{
+  const P = params.params;
+  const prior = { competitive: 0.1, friendly: 0.3, other: 0.6, finals: 0.8 };
+  const V = { N: 5, alpha: 8, W: 40, lag: 7, prior };
+  const g = (date, home, away, tournament, neutral) => ({ date, home, away, fh: 1, fa: 0, tournament, neutral });
+  const UNL = 'UEFA Nations League';
+  // A 最近五場主場(歐國聯)都在中立場;查 2026-02-01 那一場
+  const base = [1, 2, 3, 4, 5].map(i => g(`2026-01-0${i}`, 'A', `X${i}`, UNL, true));
+  const q0 = makeVenueModel(base, V)({ home: 'A', tournament: UNL, date: '2026-02-01' });
+  check('主客場型:主隊最近 N 場同類的主場有幾場在中立場,往先驗收縮', q0.basis === 'team' && q0.n === 5 && q0.k === 5
+    && Math.abs(q0.q - (5 + 8 * 0.1) / 13) < 1e-12, JSON.stringify(q0));
+  // 開賽前 lag 天之內的比賽不能用(上線時 martj42 還沒收)—— 那一場是非中立場,用了的話 q 會掉
+  const late = [...base, g('2026-01-28', 'A', 'Y', UNL, false)];
+  const q1 = makeVenueModel(late, V)({ home: 'A', tournament: UNL, date: '2026-02-01' });
+  check('不偷看:開賽前 lag 天之內的比賽不影響推論', q1.q === q0.q && q1.n === q0.n, JSON.stringify(q1));
+  // 別類的主場不算(友誼賽在中立場踢,不代表資格賽也是)
+  const other = [...base, g('2026-01-10', 'A', 'Z', 'Friendly', false)];
+  const q2 = makeVenueModel(other, V)({ home: 'A', tournament: UNL, date: '2026-02-01' });
+  check('只看同一類的主場', q2.q === q0.q && q2.n === 5);
+  const qNew = makeVenueModel(base, V)({ home: 'NEW', tournament: UNL, date: '2026-02-01' });
+  check('沒有主場紀錄的隊用這一類的先驗', qNew.n === 0 && qNew.q === 0.1);
+  // 主辦型:同一屆(W 天內)已踢的比賽一半以上在中立場 → 有主辦國;主辦國自己踢 q = 0
+  const GULF = 'Gulf Cup';
+  const ed = [g('2026-03-01', 'H', 'B', GULF, false), g('2026-03-01', 'C', 'D', GULF, true), g('2026-03-02', 'E', 'F', GULF, true), g('2026-03-02', 'B', 'C', GULF, true)];
+  const vm = makeVenueModel(ed, V);
+  const host = vm({ home: 'H', tournament: GULF, date: '2026-03-12' }), guest = vm({ home: 'D', tournament: GULF, date: '2026-03-12' });
+  check('主辦型:主辦國踢主場 q = 0', host.basis === 'host' && host.q === 0, JSON.stringify(host));
+  check('主辦型:其他隊照這一屆的中立比例(加一平滑)', guest.basis === 'edition' && Math.abs(guest.q - (3 + 1) / (4 + 2)) < 1e-12, JSON.stringify(guest));
+  const early = vm({ home: 'D', tournament: GULF, date: '2026-03-05' });
+  check('主辦型:同一屆的比賽還在 lag 天之內 → 用先驗', early.basis === 'prior' && early.q === 0.6);
+  // 機率:q = 0 跟第一版**逐位元組**相同、q = 1 就是中立場、中間是兩者加權
+  const ps = [[1600, 1500], [1500, 1700], [1500, 1500]].map(([rh, ra]) => ({
+    h0: venueProbs(rh, ra, 0, P), old: probsFromE(expectedScore(rh, ra, { neutral: false, homeAdv: P.homeAdv }), P),
+    h1: venueProbs(rh, ra, 1, P), neu: probsFromE(expectedScore(rh, ra, { neutral: true, homeAdv: P.homeAdv }), P),
+    mid: venueProbs(rh, ra, 0.37, P) }));
+  check('q = 0 時勝率跟第一版逐位元組相同', ps.every(x => JSON.stringify(x.h0) === JSON.stringify(x.old)));
+  check('q = 1 時就是中立場的算法', ps.every(x => ['home', 'draw', 'away'].every(k => Math.abs(x.h1[k] - x.neu[k]) < 1e-15)));
+  check('中間的 q:三個機率加起來是 1,而且主勝落在兩種場地之間', ps.every(x => Math.abs(x.mid.home + x.mid.draw + x.mid.away - 1) < 1e-12
+    && x.mid.home <= Math.max(x.old.home, x.neu.home) + 1e-15 && x.mid.home >= Math.min(x.old.home, x.neu.home) - 1e-15));
+
+  // 賽事對照表:推論靠 `tournament` 找同一類與同一屆 —— 名字要是 martj42 真的在用、而且被這個賽事的 expect 認得
+  const names = new Set(mj.map(m => m.tournament));
+  const badT = FOTMOB_INTL.filter(c => !c.tournament || !testExpect(c.expect, c.tournament) || (mj.length && !names.has(c.tournament)));
+  check('每個賽事的 martj42 名字都被自己的 expect 認得、而且資料裡真的有', badT.length === 0, badT.map(c => c.key).join('、'));
+  check('分類:國家聯賽與資格賽是主客場型、海灣盃是主辦型、友誼賽自成一類',
+    FOTMOB_INTL.every(c => venueGroup(c.tournament) === ({ gulf: 'other', friendly: 'friendly' }[c.key] ?? 'competitive')));
+
+  const VP = params.venue;
+  check('參數檔有中立場推論的參數,而且不在網格邊上', VP && VP.lag > 0 && VP.N > 0 && VP.alpha > 0 && Array.isArray(VP.tune?.edges) && VP.tune.edges.length === 0,
+    VP ? `N=${VP.N} alpha=${VP.alpha} W=${VP.W} lag=${VP.lag}・邊上 ${(VP.tune?.edges ?? []).join('、') || '無'}` : '沒有 venue');
+  check('推論的調參區間跟共用常數一致', VP?.tune?.from === INTL_TUNE.from && VP?.tune?.to === INTL_TUNE.to);
+  if (D && VP && mj.length) {
+    const vm2 = D.model.venue;
+    const re = venueBacktest(mj, P, VP, { from: INTL_HOLDOUT.from, minGames: D.model.minGames });
+    check('推論的驗收重算一次對得回產物', vm2?.holdout && re.inferred.n === vm2.holdout.n && Math.abs(re.inferred.gain - vm2.holdout.gain) < 1e-5
+      && Math.abs(re.inferred.se - vm2.holdout.se) < 1e-5, re.inferred ? `${re.inferred.n} 場 ${re.inferred.gain.toFixed(5)} ± ${re.inferred.se.toFixed(5)}` : '—');
+    check('產物的「推論通過」跟它自己印的改善與標準誤一致', vm2?.passes === intlPasses(vm2?.holdout));
+    const withProb = D.fixtures.filter(f => f.prob);
+    const off = withProb.filter(f => vm2.passes ? !f.venue : f.venue);
+    check('推論通過就每一場都有 venue、沒通過就一場都沒有', off.length === 0, `${off.length} 場不符`);
+    // 每一場的勝率重算得回來:同一個推論、同一條評分
+    const { rating } = runIntlElo(mj, P);
+    const guess = makeVenueModel(mj, VP);
+    const TOUR = new Map(FOTMOB_INTL.map(c => [c.key, c.tournament]));
+    const r4 = x => Math.round(x * 1e4) / 1e4;
+    const wrong = withProb.filter(f => {
+      const q = vm2.passes ? guess({ home: f.home.key, tournament: TOUR.get(f.comp), date: (f.kickoff ?? D.builtAt).slice(0, 10) }).q : 0;
+      const p = venueProbs(rating.get(f.home.key), rating.get(f.away.key), q, P);
+      return [p.home, p.draw, p.away].some((x, i) => r4(x) !== f.prob[i]) || (f.venue && Math.abs(f.venue.q - q) > 5e-4);
+    });
+    check('每一場給出去的勝率,拿同一個推論重算對得回來', withProb.length > 0 && wrong.length === 0,
+      wrong.slice(0, 3).map(f => `${f.home.key}-${f.away.key}`).join('、') || `${withProb.length} 場`);
+    const BASES = new Set(['team', 'prior', 'host', 'edition']);
+    check('每一場的推論依據都是四種之一、q 在 0~1 之間', withProb.every(f => !f.venue || (BASES.has(f.venue.basis) && f.venue.q >= 0 && f.venue.q <= 1)));
   }
 }
 

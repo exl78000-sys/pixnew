@@ -11,8 +11,10 @@
  *      改善沒有大過兩倍成對標準誤就整批不給(`intlPasses`)。
  *   2. **評分只從 martj42 算**,不拿 FotMob 還沒被核對的新賽果去改評分(鐵則五)。martj42 落後的那幾天,
  *      每一場的兩隊「評分之後又踢了幾場」寫進產物(`lag`),畫面講出來 —— 不確定性寫在畫面上(鐵則四)。
- *   3. **不知道是不是中立場**:FotMob 賽程沒有這個欄位,一律當名單上的主隊在主場。代價在調參時量過
- *      (neutralUnknown),照抄進產物讓畫面講。
+ *   3. **中立場是推的**:FotMob 賽程沒有這個欄位。第一版一律當名單上的主隊在主場(代價在調參時量過,
+ *      neutralUnknown);2026-09-25 起用開賽前的 martj42 推一個機率 q(lib/intl.mjs 的 makeVenueModel,
+ *      參數在調參期挑)。**每次建置重算推論的驗收**,沒過門檻就整批退回一律主場 —— q = 0 時勝率跟第一版逐位元組相同。
+ *      每一場用了多少 q、憑什麼推的寫進產物(`venue`),畫面講出來(鐵則四:推論要標成推論)。
  *   4. **id 沒證明過的賽事整個不收**(proofFromCheck;抓取器也算一次,但它算的只是要不要多抓上一季 ——
  *      這裡用當下的對照表重算,判決以這裡為準)。
  *
@@ -24,7 +26,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   parseIntlResults, parseShootouts, runIntlElo, backtestIntl, frequencyBaseline, pairedGain, calibration,
-  expectedScore, probsFromE, tournamentClass, crossCheckIntl, proofFromCheck,
+  tournamentClass, crossCheckIntl, proofFromCheck, makeVenueModel, venueProbs, venueBacktest,
   intlLagCost, intlTeamHistory, intlH2H, intlStandings,
   INTL_HOLDOUT, INTL_MIN_GAMES, intlPasses,
 } from './lib/intl.mjs';
@@ -56,7 +58,10 @@ const iso = t => { const x = Date.parse(t ?? ''); return Number.isFinite(x) ? ne
 const groupZh = g => (g == null || g === '' ? null : /^\d+$/.test(String(g)) ? `第 ${g} 組` : `${g} 組`);
 
 const r1 = x => Math.round(x * 10) / 10;
+// FotMob 賽事 → 它在 martj42 裡的賽事名(中立場推論用;adapter 的 `tournament`)
+const COMP_TOURNAMENT = new Map(FOTMOB_INTL.map(c => [c.key, c.tournament]));
 const r4 = x => Math.round(x * 1e4) / 1e4;
+const r5 = x => Math.round(x * 1e5) / 1e5;
 const dayMs = 86400000;
 
 /* 純函式:所有輸入都由呼叫端給,方便 npm test 拿捏造的資料驗每一條分岔。 */
@@ -78,6 +83,13 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
   const packLag = x => x && { n: x.n, cost: r4(x.cost), se: r4(x.se), z: x.z == null ? null : r1(x.z) };
   const lag = lagRaw && { days: lagRaw.days, all: packLag(lagRaw.all), affected: packLag(lagRaw.affected),
     passes: intlPasses(lagRaw.affected && { gain: lagRaw.affected.cost, se: lagRaw.affected.se }) };
+  /* 中立場的賽前推論:參數在 params.venue(tune-intl 用調參期挑的),**這裡每次重算驗收**,沒過就不用。
+     推論只看開賽前 lag 天以前的 martj42,所以未賽那幾場跟驗收那一批用的是同一條規則。 */
+  const V = params.venue ?? null;
+  const venueRaw = V ? venueBacktest(mj, P, V, { from: INTL_HOLDOUT.from, minGames }) : null;
+  const venuePassed = Boolean(venueRaw && intlPasses(venueRaw.inferred));
+  const guessVenue = venuePassed ? makeVenueModel(mj, V) : null;
+  const packV = g => g && { n: g.n, gain: r5(g.gain), se: r5(g.se), z: g.z == null ? null : r1(g.z) };
 
   // ── 賽事:讀快取、用當下的對照表重算 id 證明 ──
   const comps = [];
@@ -160,8 +172,12 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
       : null;
     if (why) return { ...out, prob: null, why };
     const rh = rating.get(h.key), ra = rating.get(a.key);
-    const p = probsFromE(expectedScore(rh, ra, { neutral: false, homeAdv: P.homeAdv }), P);
-    return { ...out, prob: [r4(p.home), r4(p.draw), r4(p.away)], elo: [Math.round(rh), Math.round(ra)], why: null };
+    /* 中立場的機率 q(推論沒過驗收就是 null → 一律主場,跟第一版一樣)。日期用開球時間的 UTC 日期;
+       沒有開球時間的(上游還沒公布)用建置當天 —— 推論只看 lag 天以前的資料,差幾天不影響它看到什麼 */
+    const v = guessVenue ? guessVenue({ home: h.key, tournament: COMP_TOURNAMENT.get(m.comp), date: (m.kickoff ?? builtAt).slice(0, 10) }) : null;
+    const p = venueProbs(rh, ra, v?.q ?? 0, P);
+    return { ...out, prob: [r4(p.home), r4(p.draw), r4(p.away)], elo: [Math.round(rh), Math.round(ra)],
+      venue: v && { q: Math.round(v.q * 1000) / 1000, basis: v.basis, n: v.n, k: v.k }, why: null };
   }).sort((a, b) => Date.parse(a.kickoff) - Date.parse(b.kickoff));
 
   // ── 分組積分榜:積分由本站用已完賽的賽果算,上游的表只拿來取名單、官方排序與核對(lib/intl.mjs 的 intlStandings)──
@@ -258,6 +274,13 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
         friendly: pack(sub(m => tournamentClass(m.tournament) === 'friendly')) },
       calibration: calibration(hold).map(b => ({ ...b, predicted: r4(b.predicted), actual: r4(b.actual) })),
       neutralUnknown: params.neutralUnknown ?? null,
+      venue: V && {
+        N: V.N, alpha: V.alpha, W: V.W, lag: V.lag, prior: V.prior,
+        tune: V.tune && { from: V.tune.from, to: V.tune.to, n: V.tune.n, tried: V.tune.tried, rps: V.tune.rps, rpsHome: V.tune.rpsHome },
+        holdout: venueRaw && { from: INTL_HOLDOUT.from, ...packV(venueRaw.inferred), oracle: packV(venueRaw.oracle),
+          byGroup: Object.fromEntries(Object.entries(venueRaw.byGroup).map(([g, x]) => [g, { inferred: packV(x.inferred), oracle: packV(x.oracle) }])) },
+        passes: venuePassed,
+      },
       ratingsAsOf: lastDate,
       lag,
     },
@@ -345,6 +368,14 @@ async function main() {
   const lg = out.model.lag;
   if (lg?.affected) console.log(`  評分落後 ${lg.days} 天的代價:受影響的 ${lg.affected.n} 場每場 RPS +${lg.affected.cost} ± ${lg.affected.se}(${lg.affected.z} SE)`
     + `・全部 ${lg.all.n} 場 +${lg.all.cost} → ${lg.passes ? '大過兩倍標準誤' : '沒有大過兩倍標準誤,不拿未核對的賽果做暫定更新'}`);
+  const vn = out.model.venue;
+  if (vn?.holdout) {
+    const used = out.fixtures.filter(f => f.venue);
+    const byBasis = {};
+    for (const f of used) byBasis[f.venue.basis] = (byBasis[f.venue.basis] ?? 0) + 1;
+    console.log(`  中立場推論:驗收 ${vn.holdout.n} 場 對一律主場 +${vn.holdout.gain} ± ${vn.holdout.se}(${vn.holdout.z} SE;拿賽後的中立場欄位當答案 +${vn.holdout.oracle.gain})`
+      + ` → ${vn.passes ? `套用 ${used.length} 場(${JSON.stringify(byBasis)}・q ≥ 0.5 的 ${used.filter(f => f.venue.q >= 0.5).length} 場)` : '沒有大過兩倍標準誤,退回一律主場'}`);
+  } else console.log('  中立場推論:參數檔沒有 venue(npm run tune:intl),一律當主場');
   const sg = out.standings.flatMap(s => s.groups);
   if (sg.length) console.log(`  分組積分榜 ${out.standings.length} 個賽事 ${sg.length} 組:${JSON.stringify(out.standingsCounts)}`
     + (sg.some(g => g.live.length) ? `・上游算進了進行中的比賽 ${[...new Set(sg.flatMap(g => g.live))].length} 場` : ''));
