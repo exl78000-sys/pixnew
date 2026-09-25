@@ -804,14 +804,22 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         /cornerNextBins/.test(chkBare5) && /第二球落在哪裡/.test(chkBare5));
       /* **兩排都要真的有東西** —— 跑一場真模擬來數。只記到一邊的話上面兩條
          就是在守一件不會發生的事(4l-3 那一節的同一條規矩)。 */
+      /* **最多三場加總、兩排都有就停**(2026-09-25 改)。它要守的是「兩排計數器都有在寫」,
+         不是「某一場兩邊都搶到第二球」—— 階段 5n 之後種子 11 那一場防守方剛好 0 次
+         (一場平均兩三次,一場是 0 的機率約 6%),單場版本就紅在抽樣上(「斷言是抓樣意外」那條坑)。 */
       {
         const S3 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
-        const sim3 = S3.createSim({ profile, home: 'ARS', away: 'LIV', seed: 11 });
-        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim3.state().over; i++) sim3.advance(1 / 60);
-        const nb = sim3.state().counts.cornerNextBins ?? {};
-        const tot = k => (nb[k] ?? []).reduce((a, b) => a + b, 0);
-        check('一場真模擬裡進攻與防守兩排都有第二球',
-          tot('att') > 0 && tot('def') > 0, `進攻 ${tot('att')} / 防守 ${tot('def')}`);
+        let att3 = 0, def3 = 0, played3 = 0;
+        for (const sd of [11, 12, 13]) {
+          const sim3 = S3.createSim({ profile, home: 'ARS', away: 'LIV', seed: sd });
+          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim3.state().over; i++) sim3.advance(1 / 60);
+          const nb = sim3.state().counts.cornerNextBins ?? {};
+          const tot = k => (nb[k] ?? []).reduce((a, b) => a + b, 0);
+          att3 += tot('att'); def3 += tot('def'); played3++;
+          if (att3 > 0 && def3 > 0) break;
+        }
+        check('真模擬裡進攻與防守兩排都有第二球(最多三場加總)',
+          att3 > 0 && def3 > 0, `${played3} 場:進攻 ${att3} / 防守 ${def3}`);
       }
     }
 
@@ -1318,6 +1326,8 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
        結論是**否定**(射的 7.7% 對沒射的 8.1%,0.4 SE),而更硬的一句在回推那一行:
        封阻率 = 曝光 × 轉換,拿現在的轉換回推,要對上真實得有 **>100%** 的曝光 ——
        **算術上不可能**,所以站位 / 扣扳機 / 半徑三條路都不是缺口所在。
+       (2026-09-25 階段 5n:那裡的「站位」是 5f 的**收窄防線**;逼搶者站到門側是另一條,
+        它動得了曝光 —— check-sim 那一行的結論現在跟著數字變,不再是固定的字串。)
        這一節守的是**量測本身量得對**(純觀測、同一條線、同一批母體、上下界),
        **不守它的值** —— 那會漂。 */
     {
@@ -1725,8 +1735,10 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       {
         const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8')
           .replace(/\/\*[\s\S]*?\*\//g, '');
+        /* 2026-09-25(階段 5n)起這段也講逼搶者站門側;「最近的防守者離球的路線 5.7 公尺」那句
+           是 5n 之前的量測,改成跟 StatsBomb 並排的講法(第 36 節守它不再說「所以現在沒有做」)。 */
         check('統計面板不再寫「撲搶被否定」,而是講現在的行為與它的界線',
-          /會撲上去擋/.test(view) && !/量過六輪/.test(view) && /5\.7 公尺/.test(view));
+          /撲上去擋/.test(view) && !/量過六輪/.test(view) && /StatsBomb/.test(view));
       }
     }
 
@@ -1959,6 +1971,95 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         const a = simSrc.indexOf('function notePress('), b = simSrc.indexOf('\n  }\n', a);
         const body = a > 0 && b > a ? simSrc.slice(a, b).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '') : '';
         check('notePress 是純計數:不呼叫 rng', body.length > 200 && !/\brng\(/.test(body), `切出 ${body.length} 字元`);
+      }
+    }
+
+    /* 36. 階段 5n:**逼搶者站門側、跟得上**(2026-09-25;使用者:「做阻擋要看得見」)。
+       量出來的機制:射門前那段持球裡,門側的逼搶者離開門側 197 / 198 次(第二組 200 / 201)
+       是**同一個人被帶過去** —— 他照速度檔在 6 m 內慢跑,持球者 6.6~7.1 m/s。
+       改兩件事(目標在持球者與自家球門之間、目標跟著持球者的速度走,上限是跑不是衝刺),
+       再把射門的壓力倍率與幾個常數重新校準(數字與驗收見 `PRESS_TRACK` 與變更紀錄)。
+       這一節守的是**寫法與恆等元**,不守那幾個會漂的數字(那些 `check-sim` 每次都印):
+       ① **`PRESS_TRACK = 0` 是恆等元**:跟「把新那一支與 movePlayer 的會動目標整段拿掉」逐場相同;
+       ② 拿掉的對照版真的不一樣(不然①在比兩份相同的程式),而且現行版本跟 0 不一樣(那一支是活的);
+       ③ 會動的目標**只給逼搶者**:補位者也跟上的版本量過會把弱隊壓垮(30 場客隊 0.17 球),
+          誰要加第二個使用者得先重量 λ;
+       ④ 射門的壓力倍率是讀得出來的常數、只在扣扳機那一行用,寫死的 0.55 不准回來
+          (拿 StatsBomb 的分佈對過:懲罰只會把「被逼住才射」的比例推離真實)。
+       負向對照(2026-09-25,八個 bug 各一份影子目錄,結果表在變更紀錄 5n 第六節):
+       每個 bug 只紅它對應的那一條。 */
+    {
+      const simRawN = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+      const loadN = async s => import('data:text/javascript;base64,' + Buffer.from(s, 'utf8').toString('base64'));
+      const trackRaw = (simRawN.match(/^const PRESS_TRACK = ([A-Za-z_0-9.]+);/m) ?? [])[1];
+      check('PRESS_TRACK 是一個讀得出來的常數,而且現在是開的', trackRaw != null && trackRaw !== '0', `PRESS_TRACK = ${trackRaw}`);
+      const zeroed = simRawN.replace(/^const PRESS_TRACK = [A-Za-z_0-9.]+;/m, 'const PRESS_TRACK = 0;');
+      /* 「整段拿掉」:逼搶那一支只留舊的寫法,movePlayer 的會動目標那一段刪掉、加速度那一行換回原樣。
+         錨挑在**新程式自己才有**的字串上 —— 負向對照打壞恆等元最自然的寫法是去改舊那一支,
+         錨要是挑在舊那一支上,剝除會靜靜沒命中(STAM_FADE 那一條記過)。 */
+      const S0 = '        if (PRESS_TRACK > 0) {\n', MID = '        } else {\n', END = '        }\n      } else if (p === cover) {';
+      const i0 = zeroed.indexOf(S0), i1 = zeroed.indexOf(MID, i0), i2 = zeroed.indexOf(END, i1);
+      let stripped = i0 > 0 && i1 > i0 && i2 > i1
+        ? zeroed.slice(0, i0) + zeroed.slice(i1 + MID.length, i2) + '      } else if (p === cover) {' + zeroed.slice(i2 + END.length)
+        : zeroed;
+      const m0 = stripped.indexOf('  if (want.tvx != null) {'), m1 = stripped.indexOf('  const ex = wantVx - p.vx', m0);
+      stripped = m0 > 0 && m1 > m0 ? stripped.slice(0, m0) + stripped.slice(m1) : stripped;
+      stripped = stripped.replace('const a = ((want.tvx != null ? hypot(wantVx, wantVy) : target) < sp ? SIM_DECEL : SIM_ACCEL) * dt;',
+        'const a = (target < sp ? SIM_DECEL : SIM_ACCEL) * dt;');
+      /* 「剝乾淨了沒」要看**剝掉註解之後**的程式 —— 註解裡本來就在講 `want.tvx`(第一版就紅在自己的註解上)。
+         新那一支只認它自己的開頭 `if (PRESS_TRACK > 0) {`:第一版寫「整份都不准有 `PRESS_TRACK > 0`」,
+         負向對照 b3(補位那一行也用同一個開關)就多紅在這一條 —— 那是斷言比它要守的範圍寬。 */
+      const strippedBare = stripped.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('拿掉新那一支的對照版真的不一樣了(三處都剝到;不然下一條在比兩份相同的程式)',
+        i0 > 0 && i1 > i0 && i2 > i1 && m0 > 0 && m1 > m0 && !/want\.tvx/.test(strippedBare) && !/if \(PRESS_TRACK > 0\) \{/.test(strippedBare)
+        && stripped !== zeroed && zeroed !== simRawN,
+        `剝除點 ${i0} / ${i1} / ${i2}・movePlayer ${m0} / ${m1}`);
+      const [Z, X, C] = [await loadN(zeroed), await loadN(stripped),
+        await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')))];
+      const STEPN = 1 / 60, MINS = 20;
+      const fp = (M, seed) => {
+        const s = M.createSim({ profile, home: 'ARS', away: 'LIV', seed, pred });
+        for (let i = 0; i < Math.round(MINS * 60 / STEPN) && !s.state().over; i++) s.advance(STEPN);
+        const c = s.state();
+        const pos = c.players.reduce((a, q) => a + q.x * 3 + q.y, 0).toFixed(6);
+        return `${c.score[0]}-${c.score[1]}/${c.counts.shots}/${c.counts.passes}/${c.counts.fouls.home + c.counts.fouls.away}/${pos}`;
+      };
+      const seedsN = [1, 2];
+      let same = 0;
+      for (const sd of seedsN) if (fp(Z, sd) === fp(X, sd)) same++;
+      check(`PRESS_TRACK = 0 是恆等元(跟「整段拿掉」逐場相同:${MINS} 分鐘的比分 / 射門 / 傳球 / 犯規 / 二十二人的位置)`,
+        same === seedsN.length, `${same} / ${seedsN.length} 場相同`);
+      check('現行的版本跟 PRESS_TRACK = 0 不一樣(新那一支是活的,不是寫了沒跑)', fp(C, 1) !== fp(Z, 1));
+      /* ③ 會動的目標只給逼搶者。先剝註解(註解裡本來就在講 tvx),再看每一個落在哪裡。
+         **不數出現次數**(加一處就紅在「多了一個」),只問每一處在不在它該在的地方。 */
+      const bareN = simRawN.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const p0 = bareN.indexOf('} else if (p === presser) {'), p1 = bareN.indexOf('} else if (p === cover) {', p0);
+      const mv0 = bareN.indexOf('function movePlayer('), mv1 = bareN.indexOf('function moveBall(', mv0);
+      let strayT = 0, inPressT = 0, at = -1;
+      while ((at = bareN.indexOf('tvx', at + 1)) >= 0) {
+        if (at > p0 && at < p1) inPressT++;
+        else if (!(at > mv0 && at < mv1)) strayT++;
+      }
+      check('會動的目標只給逼搶者(tvx 只出現在逼搶那一支與 movePlayer;補位者也跟上會把弱隊壓垮)',
+        p0 > 0 && p1 > p0 && mv0 > 0 && mv1 > mv0 && inPressT > 0 && strayT === 0, `逼搶那一支 ${inPressT} 處・漏出去 ${strayT} 處`);
+      /* ④ 射門的壓力倍率 */
+      const spN = Number((simRawN.match(/^const SHOT_PRESSED = ([0-9.]+);/m) ?? [])[1]);
+      let strayP = 0; at = -1;
+      while ((at = bareN.indexOf('SHOT_PRESSED', at + 1)) >= 0) {
+        const decl = /^const SHOT_PRESSED = /.test(bareN.slice(at - 6, at + 20));
+        const urge = /pressure < 3 \? SHOT_PRESSED : 1/.test(bareN.slice(Math.max(0, at - 20), at + 20));
+        if (!decl && !urge) strayP++;
+      }
+      check('射門的壓力倍率是讀得出來的常數、只在扣扳機那一行用,寫死的 0.55 沒有回來',
+        Number.isFinite(spN) && spN >= 0 && spN <= 1 && /pressure < 3 \? SHOT_PRESSED : 1/.test(bareN) && strayP === 0
+        && !/pressure < 3 \? 0\.\d+/.test(bareN),
+        `SHOT_PRESSED = ${spN}・漏出去 ${strayP} 處`);
+      /* ⑤ 畫面上那段說明**不准再說「站到門側會壓平強弱,所以沒有做」** —— 做了(本站記過好幾次的坑:
+         加了能力之後要回頭問,有哪一句還在講我們沒有它)。剝註解再掃,註解裡本來就在講那句話。 */
+      {
+        const viewN = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+        check('統計面板講逼搶者站門側、跟著退,而且不再說「所以現在沒有做」',
+          /站在持球者與自家球門之間/.test(viewN) && !/所以現在沒有做/.test(viewN) && !/在射門之前<\/b>就站進球門那一側/.test(viewN));
       }
     }
     }

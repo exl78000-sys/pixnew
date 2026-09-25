@@ -44,11 +44,20 @@ const HOME = 'ARS', AWAY = 'LIV';
    這裡會靜靜過期。從引擎的原始碼讀出來,讀不到就印問號。 */
 const DEFLECT_R_DOC = (readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
   .match(/const DEFLECT_R = ([0-9.]+)/)?.[1]) ?? '?';
+/* `SHOT_THROUGH`(k 那一行用的「該進的球有幾成真的進得去」)同樣從原始碼讀 ——
+   它是拿「進球 ÷ 該進的球」校準的,而那個比例在階段 5n 之前**從來沒有被印出來過**
+   (註解寫「實測兩輪、各 8~10 場:88~90%」,封阻變多之後它靜靜掉到 85%,λ 跟著兩隊一起偏低)。 */
+const SHOT_THROUGH_DOC = Number(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+  .match(/const SHOT_THROUGH = ([0-9.]+)/)?.[1] ?? NaN);
 /* 射門那一瞬間的真值(StatsBomb freeze frame 的分箱計數,階段 5q)。「射手被逼住」與 5h 的人數兩節共用 ——
    各讀一次就是同一份資料兩個來源。只有分箱計數;要重算就跑 `npm run game:statsbomb`。 */
 const SB_FILE = join(ROOT, 'data', 'raw', 'statsbomb', 'pl-2015-16-shot-pressure.json');
 const SB = existsSync(SB_FILE) ? JSON.parse(readFileSync(SB_FILE, 'utf8')) : null;
 
+/* 「要對上真實的封阻率,曝光得是多少」(下面「回推」那一行算的)。決策點那一節要拿它來比 ——
+   **結論要跟著數字變**:第一版把「連 4 公尺都構不到」寫成固定的字串,而那是階段 5g 當時的數字,
+   5n 之後曝光動了,固定的字串會變成一句沒有人再驗的宣稱。宣告在檔案前段(暫時死區那條坑)。 */
+let NEED_EXP = null;
 const pair = k => {
   const a = profile.teams?.[HOME]?.extra?.[k]?.mean, b = profile.teams?.[AWAY]?.extra?.[k]?.mean;
   return a == null || b == null ? null : a + b;
@@ -212,6 +221,17 @@ for (const [i, who, lam] of [[0, '主隊', PRED.xgHome], [1, '客隊', PRED.xgAw
       ? `λ ${lam} → 差 ${sig.toFixed(1)} SE(${RUNS} 場,只印不判;${res})`
       : `λ ${lam} → 差 ${sig.toFixed(1)} SE ${Math.abs(sig) <= 3 ? '✓' : '← 錨沒守住'}(${res})`);
   }
+}
+
+/* 「該進的球進了幾成」:進球只會來自射門那一刻就判定「該進」的球(`willScore`),
+   其餘的被封阻、折射、門將在門線前碰掉、或在飛行中被人控走。k 假設這個比例是 `SHOT_THROUGH` ——
+   兩個差很多,λ 就會兩隊一起偏(而不是強弱被壓縮,那是另一件事)。 */
+{
+  const ws = rows.reduce((a, r) => a + (r.st.diag?.willScore ?? 0), 0);
+  const gl = rows.reduce((a, r) => a + r.st.score[0] + r.st.score[1], 0);
+  line('該進的球進了幾成', ws ? `${(100 * gl / ws).toFixed(1)}%` : '—',
+    `${gl} ÷ ${ws} 顆・k 用的 SHOT_THROUGH 是 ${Number.isFinite(SHOT_THROUGH_DOC) ? (100 * SHOT_THROUGH_DOC).toFixed(0) + '%' : '?'}`
+    + ' —— 差很多的話兩隊的 λ 會一起偏,要重量它');
 }
 
 /* 3. 逐項對回球隊自己的真實比率(rates 是分主客的,不是平的 —— 踩過) */
@@ -889,6 +909,7 @@ if (simShots && realShots) {
            不是真實世界的上限;缺口在曝光(引擎禁區內運動戰 2~3%),不在轉換。 */
         const conv = O > 0 ? myBlkN0 / O : null;
         const realBlk = realFx.out ? realFx.out.blk : null;
+        NEED_EXP = conv && conv > 0 && realBlk ? 100 * realBlk / conv : null;
         line('　回推:要對上真實的封阻率,曝光得是',
           conv && conv > 0 && realBlk ? `${(100 * realBlk / conv).toFixed(0)}%` : '—',
           `= 真實封阻率 ÷ 現在的轉換。**超過 100% 代表算術上不可能** —— `
@@ -928,8 +949,12 @@ if (simShots && realShots) {
            而需要的曝光由 5c 的算術定:`曝光 × 轉換 = 真實封阻率`。 */
         line('　全部決策點的曝光(= 拿掉選擇的天花板)',
           `${pc(O, N)} ±${seOf(O, N)?.toFixed(1) ?? '—'}`,
-          `4 m 內有人 ${pc(F, N)} —— **連把半徑放寬到 4 公尺都構不到需要的曝光**,`
-          + '所以站位 / 扣扳機 / 半徑三條路都不是缺口所在(見階段 5g)');
+          `4 m 內有人 ${pc(F, N)} —— `
+          + (NEED_EXP == null ? '(算不出需要的曝光)'
+            : 100 * F / N < NEED_EXP
+              ? `**連把半徑放寬到 4 公尺都構不到需要的 ${NEED_EXP.toFixed(0)}%**,所以扣扳機挑空走廊與放寬半徑補不滿(階段 5g)`
+              : `放寬到 4 公尺就構得到需要的 ${NEED_EXP.toFixed(0)}%(階段 5g 當時構不到)`)
+          + ';逼搶者站門側是動得了曝光的那一條(階段 5n)');
       }
       /* **進球的時間分佈**(2026-09-20,體能的錨)。完全從 `sim.events()` 算 ——
          引擎一個字都沒動。補時單獨一欄:含補時的格子比較寬會虛胖。
