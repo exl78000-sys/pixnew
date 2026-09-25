@@ -16,6 +16,8 @@
  * 4. **驗 details.name 不是女足 / 青年 / 奧運**:allLeagues 的名字靠不住(10557 在那裡沒有 Women's),
  *    所以看單一賽事端點自己的 details.name。
  * 5. 抓不到就保留上一份,不洗掉;回的場次是 0 而同一季上一份有場次,當成上游暫時性的空回應,也保留上一份。
+ * 6. **分組積分榜**(2026-09-25)在同一個回應的 `table` 裡,一起存成 `groups`,不多一個請求。
+ *    上游的表**已經把進行中的比賽算進去**(run #45 實測),所以原樣存、記下 live,積分由建置用已完賽的賽果重算。
  *
  * 唯讀以外只寫 `outDir`。沙箱連不到 FotMob —— 在 runner 上跑(epl-live.yml 的部署那一條)。
  *
@@ -27,7 +29,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { FOTMOB_INTL, normaliseIntlMatch } from './lib/adapters/fotmob-intl.mjs';
+import { FOTMOB_INTL, normaliseIntlMatch, normalizeIntlTable } from './lib/adapters/fotmob-intl.mjs';
 import { parseIntlResults, crossCheckIntl, proofFromCheck } from './lib/intl.mjs';
 import { loadIntlTeamTable, makeIntlResolver } from './lib/intl-teams.mjs';
 
@@ -37,8 +39,11 @@ const BASE = 'https://www.fotmob.com';
 const UA = 'pl-war-room/1.0 (football analysis side project)';
 const GAP = 800;
 const TTL_MS = 3 * 3600000;
-// 版本不同就整份重抓(修了轉換邏輯而快取還在 TTL 內 → 修了等於沒修,encups 踩過)
-export const INTL_SCHEMA_VERSION = 1;
+// 版本不同就整份重抓(修了轉換邏輯而快取還在 TTL 內 → 修了等於沒修,encups 踩過)。
+// 2 = 多存分組積分榜(groups,2026-09-25)。**場次的正規化沒有變**,所以上一季的證據(proof)照舊沿用 ——
+// 哪天改了 normaliseIntlMatch,要把 PROOF_SCHEMA 一起加一,不然舊證據會以舊形狀混進新的核對。
+export const INTL_SCHEMA_VERSION = 2;
+const PROOF_SCHEMA = 1;
 /* 不是男子 A 級的賽事名。只拿來擋 details.name —— 真正的身分證明是內容比對,這一道是便宜的第一關。 */
 const NOT_MEN_A = /women|\(w\)|\bw\b|femenin|\bu-?\d{2}\b|youth|olympic|futsal|beach/i;
 
@@ -88,8 +93,11 @@ export async function fetchIntl({ outDir = INTL_RAW_DIR, force = false, maxReque
   for (const comp of FOTMOB_INTL) {
     const file = join(outDir, `${comp.key}.json`);
     let prev = await readJson(file);
+    /* 上一季的證據不會再變:結構版本換了但場次的形狀沒換(PROOF_SCHEMA 相同)就留著,
+       不然每次加一個欄位都要多抓七個上一季 */
+    const keepProof = prev && prev.id === comp.id && (prev.proofSchema ?? 1) === PROOF_SCHEMA ? prev.proof ?? null : null;
     if (prev && (prev.schemaVersion !== INTL_SCHEMA_VERSION || prev.id !== comp.id)) {
-      log(`  ${comp.zh}:快取是舊版結構或別的 id,整份重抓`);
+      log(`  ${comp.zh}:快取是舊版結構或別的 id,整份重抓${keepProof ? '(上一季的證據沿用)' : ''}`);
       prev = null;
     }
     const age = prev?.retrievedAt ? Date.now() - Date.parse(prev.retrievedAt) : Infinity;
@@ -109,8 +117,11 @@ export async function fetchIntl({ outDir = INTL_RAW_DIR, force = false, maxReque
           schemaVersion: INTL_SCHEMA_VERSION, key: comp.key, id: comp.id, fmName: name || null,
           season, availableSeasons: body.allAvailableSeasons ?? det.allAvailableSeasons ?? [],
           retrievedAt: new Date().toISOString(), matches,
+          /* 分組積分榜:同一個回應裡的 table(不多一個請求)。友誼賽沒有 → null。
+             **上游已經把進行中的比賽算進去** —— 這裡原樣存(記 live),積分由建置用已完賽的賽果重算 */
+          groups: normalizeIntlTable(body.table),
           // 上一季的證據不隨本季重抓而消失(它不會再變)
-          proof: prev?.proof ?? null,
+          proof: prev?.proof ?? keepProof, proofSchema: PROOF_SCHEMA,
         };
         await writeAtomic(file, rec);
       } catch (e) {
@@ -148,6 +159,7 @@ export async function fetchIntl({ outDir = INTL_RAW_DIR, force = false, maxReque
       if (got !== want) throw new Error(`要的是 ${want},回的是 ${got} —— 上游沒有那一季時會回最新那季,不收`);
       const matches = (body.fixtures?.allMatches ?? []).map(normaliseIntlMatch).filter(m => m.id && m.kickoff && m.state === 'FT');
       rec.proof = { season: want, retrievedAt: new Date().toISOString(), matches };
+      rec.proofSchema = PROOF_SCHEMA;
       await writeAtomic(file, rec);
       const p = proofFromCheck(crossCheckIntl([...rec.matches, ...matches], mj, resolver.keyOf), comp.expect);
       log(`  ${comp.zh}:上一季 ${want} 已完賽 ${matches.length} 場 → 證明 ${p.ok ? '✓' : '✗ ' + p.why}(對上 ${p.matched}:${p.tournaments.slice(0, 3).map(x => `${x.t}×${x.n}`).join('、')})`);

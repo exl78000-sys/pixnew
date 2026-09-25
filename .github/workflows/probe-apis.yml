@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
     inputs:
       quick:
-        description: '只跑 latest 那一組探測(站台確認 + 國家隊積分榜的形狀),略過歷來全部'
+        description: '只跑 latest 那一組探測(站台確認 + 國家隊抓取器真跑一次),略過歷來全部'
         type: boolean
         default: false
 
@@ -44,17 +44,19 @@ jobs:
         run: npm run probe:live
         continue-on-error: true
 
-      # 國家隊賽事的積分榜與淘汰賽對陣(2026-09-25,使用者:「完善國家隊」)。抓取器打的聯賽端點,
-      # 同一個回應裡除了賽程還有 `table` / `playoff`,抓取器目前只存賽程 —— 要存要畫之前,
-      # 先看上游**實際**給什麼,不照直覺讀欄位名(本站踩過「每 90 分被當總數」「增量被當累計」)。
-      # 印每個賽事的頂層鍵與 tabs、兩個區塊的逐層結構、每一張分組表的列數與第一列原文,
-      # 最後把原文 gzip + base64 印出來(附 sha256,本機 npm run probe:undump 還原)。
-      # 唯讀、8 個請求(一個賽事一個,跟抓取器同一個網址)、不寫任何快取。
+      # 國家隊比賽(2026-09-24 使用者要求)。id 的探測(probe:intl,run #42 / #43)已經做完、結論寫進
+      # lib/adapters/fotmob-intl.mjs,**那一支不再每次跑**(一次 39 個請求,結論不會變)—— 要重探就手動加回來。
+      # 這一步換成把**抓取器真的跑一次**:寫到 runner 的暫存目錄(不動倉庫)、印摘要,
+      # 再把抓回來的檔 gzip + base64 印在 log 最後,附 sha256 —— 本機還原後雜湊對得上才算拿到完整的一份。
+      # 為什麼不直接在開發分支跑部署那一支:epl-live 會連 Pages 一起部署,還沒合併的東西不能那樣驗。
+      # 請求數由抓取器自己限(20)。2026-09-25 起**先把倉庫裡的快取放進暫存目錄**(部署就是帶著它跑的):
+      # 上一季的證據沿用,這一輪只打 8 個請求。這一次要驗的是新加的分組積分榜(groups)——
+      # 形狀是上一支(probe:intl-tables,run #45)看過才寫的,這裡驗抓取器實際寫出來的那一份。
       #
       # **這是 latest job 的最後一步。**
-      - name: 國家隊賽事的積分榜與淘汰賽對陣長什麼樣(先存一份看過,不猜欄位名)
+      - name: 國家隊抓取器在 runner 上真跑一次(寫暫存目錄、印摘要與可還原的內容)
         working-directory: epl
-        run: npm run probe:intl-tables
+        run: npm run probe:intl-fetch
         continue-on-error: true
 
   all:
@@ -256,13 +258,13 @@ jobs:
         run: npm run probe:ucl-photo
         continue-on-error: true
 
-      # 國家隊比賽(2026-09-24 使用者要求)。id 的探測(probe:intl,run #42 / #43)已經做完、結論寫進
-      # lib/adapters/fotmob-intl.mjs,**那一支不再每次跑**(一次 39 個請求,結論不會變)—— 要重探就手動加回來。
-      # 這一步換成把**抓取器真的跑一次**:寫到 runner 的暫存目錄(不動倉庫)、印摘要,
-      # 再把抓回來的檔 gzip + base64 印在 log 最後,附 sha256 —— 本機還原後雜湊對得上才算拿到完整的一份。
-      # 為什麼不直接在開發分支跑部署那一支:epl-live 會連 Pages 一起部署,還沒合併的東西不能那樣驗。
-      # 請求數由抓取器自己限(20;第一次 8 個賽事 + 最多 7 個上一季證據)。
-      - name: 國家隊抓取器在 runner 上真跑一次(寫暫存目錄、印摘要與可還原的內容)
+      # 國家隊賽事的積分榜與淘汰賽對陣(2026-09-25,使用者:「完善國家隊」)。抓取器打的聯賽端點,
+      # 同一個回應裡除了賽程還有 `table` / `playoff`,抓取器目前只存賽程 —— 要存要畫之前,
+      # 先看上游**實際**給什麼,不照直覺讀欄位名(本站踩過「每 90 分被當總數」「增量被當累計」)。
+      # 印每個賽事的頂層鍵與 tabs、兩個區塊的逐層結構、每一張分組表的列數與第一列原文,
+      # 最後把原文 gzip + base64 印出來(附 sha256,本機 npm run probe:undump 還原)。
+      # 唯讀、8 個請求(一個賽事一個,跟抓取器同一個網址)、不寫任何快取。
+      - name: 國家隊賽事的積分榜與淘汰賽對陣長什麼樣(先存一份看過,不猜欄位名)
         working-directory: epl
-        run: npm run probe:intl-fetch
+        run: npm run probe:intl-tables
         continue-on-error: true

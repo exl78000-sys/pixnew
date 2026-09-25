@@ -141,9 +141,66 @@ export function normaliseIntlMatch(m) {
   };
 }
 
-/* 積分榜:只留畫面會用到的欄位。`table[].data.table.all[]` 的形狀在第一次真抓時才看得到 ——
-   這裡**只保留原樣的最小子集**,不猜欄位名;抓回來之後建置那一步再決定怎麼用。 */
-export function compactTable(table) {
-  if (!Array.isArray(table)) return null;
-  return table.map(t => ({ name: t?.data?.leagueName ?? t?.data?.name ?? null, raw: t?.data ?? null }));
+/* ── 分組積分榜(2026-09-25)──────────────────────────────────────────
+   第一版在這裡留了一個 compactTable,註解寫「形狀要等第一次真抓才看得到」—— probe-intl-tables(run #45)
+   看過之後才寫這一支。八個賽事實測的形狀:
+
+     table[0].data.tables[]            一組一張(七個有分組的賽事全是 composite: true;友誼賽 table 是 null)
+       .leagueName                     "Grp. 1" / "Grp. A" / "B Grp. 1"(中北美國聯的 B 級第 1 組)
+       .leagueId                       這一組自己的 id
+       .legend[]                       晉級規則:tKey、英文 title、顏色、indices = **從 0 起算**的名次
+       .table.all[]                    每一列:name、id、played、wins、draws、losses、scoresStr、goalConDiff、pts、idx、
+                                       deduction、ongoing(home / away / xg 是主客場與 xG 的拆分,本站不用)
+
+   兩件會咬人的事:
+     1. **ongoing 不是 null 的那一列,已經把進行中的比賽算進去了**(Costa Rica `played: 1`、`scoresStr: "3-0"`,
+        而 ongoing 說那場 status S)。這裡把它記成 `live`(那一場的 id),建置時積分由本站自己用已完賽的賽果算。
+     2. `scoresStr` 是「進-失」,不是比分;淨勝球是 goalConDiff。
+
+   `data.tables` 以外的形狀(單一一張表)這八個賽事一個都沒出現過 —— 不猜,回 null,建置那邊講「上游沒有分組積分榜」。 */
+export function normalizeIntlTable(table) {
+  const data = Array.isArray(table) ? table[0]?.data : null;
+  if (!Array.isArray(data?.tables) || !data.tables.length) return null;
+  return data.tables.map(t => ({
+    name: t?.leagueName ?? null,
+    fmId: t?.leagueId != null ? String(t.leagueId) : null,
+    legend: (t?.legend ?? []).map(l => ({ key: l?.tKey ?? null, title: l?.title ?? null,
+      idx: Array.isArray(l?.indices) ? l.indices.filter(Number.isInteger) : [] })),
+    rows: (t?.table?.all ?? []).map(r => {
+      const gfga = parseScore(r?.scoresStr);
+      return {
+        fmId: r?.id != null ? String(r.id) : null, name: r?.name ?? null, idx: r?.idx ?? null,
+        played: r?.played ?? null, wins: r?.wins ?? null, draws: r?.draws ?? null, losses: r?.losses ?? null,
+        gf: gfga?.[0] ?? null, ga: gfga?.[1] ?? null, pts: r?.pts ?? null,
+        deduction: r?.deduction ?? null,
+        live: r?.ongoing ? String(r.ongoing.id ?? 'unknown') : null,
+      };
+    }),
+  }));
 }
+
+/* 組名的中文。**只翻看過的三種寫法**,其餘照印上游的字 —— 猜錯組別比印英文糟。 */
+export function intlGroupZh(name) {
+  const s = String(name ?? '');
+  let m = /^Grp\. (\d+)$/.exec(s);
+  if (m) return `第 ${m[1]} 組`;
+  m = /^Grp\. ([A-Z])$/.exec(s);
+  if (m) return `${m[1]} 組`;
+  m = /^([A-D]) Grp\. (\d+)$/.exec(s);
+  if (m) return `${m[1]} 級第 ${m[2]} 組`;
+  return s || null;
+}
+
+/* 晉級規則(legend 的 tKey)的中文與語氣。**只收 run #45 看過的八個**:
+   沒看過的 tKey 照印上游的英文 title,不翻 —— 「Relegation」翻成「升級」那種錯,畫面完全看不出來。
+   tone 是畫面的顏色類別(好 / 中性偏好 / 警告 / 壞),不是上游的色碼。 */
+export const INTL_LEGEND_ZH = {
+  championship_playoff: { zh: '爭冠淘汰賽', tone: 'good' },
+  qualification_next_stage: { zh: '晉級下一階段', tone: 'good' },
+  promotion: { zh: '升級', tone: 'good' },
+  promotionqual: { zh: '升級附加賽', tone: 'maybe' },
+  possible_qualification_next_stage: { zh: '可能晉級下一階段', tone: 'maybe' },
+  relegationqual: { zh: '降級附加賽', tone: 'warn' },
+  possiblerelegation: { zh: '可能降級', tone: 'warn' },
+  relegation: { zh: '降級', tone: 'bad' },
+};
