@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-09-25T16:47:52.209Z",
+ "retrievedAt": "2026-09-25T20:24:22.873Z",
  "matches": [
   {
    "id": "5991938",
@@ -218,7 +218,7 @@
     "shortName": "Guadeloupe",
     "fmId": "5757"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1594,6 +1594,318 @@
  ],
  "groups": [
   {
+   "name": "B Grp. 1",
+   "fmId": "941122",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "6222",
+     "name": "Guyana",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 1,
+     "ga": 0,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "287982",
+     "name": "Cayman Islands",
+     "idx": 2,
+     "played": 1,
+     "wins": 0,
+     "draws": 1,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 1,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "287980",
+     "name": "Dominica",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 1,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 1,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5756",
+     "name": "Puerto Rico",
+     "idx": 4,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 1,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "B Grp. 2",
+   "fmId": "941123",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "5943",
+     "name": "Bermuda",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 1,
+     "ga": 0,
+     "pts": 3,
+     "deduction": null,
+     "live": "5991913"
+    },
+    {
+     "fmId": "5886",
+     "name": "Barbados",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "127408",
+     "name": "Saint Lucia",
+     "idx": 3,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5757",
+     "name": "Guadeloupe",
+     "idx": 4,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 1,
+     "pts": 0,
+     "deduction": null,
+     "live": "5991913"
+    }
+   ]
+  },
+  {
+   "name": "B Grp. 3",
+   "fmId": "941124",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "929188",
+     "name": "Bonaire",
+     "idx": 1,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5857",
+     "name": "Cuba",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6548",
+     "name": "Grenada",
+     "idx": 3,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5924",
+     "name": "St. Kitts and Nevis",
+     "idx": 4,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "B Grp. 4",
+   "fmId": "941125",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "127409",
+     "name": "Belize",
+     "idx": 1,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "835267",
+     "name": "French Guiana",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5923",
+     "name": "Saint Vincent and The Grenadines",
+     "idx": 3,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "929190",
+     "name": "Sint Maarten",
+     "idx": 4,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
    "name": "A Grp. 1",
    "fmId": "941120",
    "legend": [
@@ -1797,318 +2109,6 @@
      "fmId": "127411",
      "name": "Suriname",
      "idx": 6,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    }
-   ]
-  },
-  {
-   "name": "B Grp. 1",
-   "fmId": "941122",
-   "legend": [
-    {
-     "key": "promotion",
-     "title": "Promotion",
-     "idx": [
-      0
-     ]
-    },
-    {
-     "key": "relegation",
-     "title": "Relegation",
-     "idx": [
-      3
-     ]
-    }
-   ],
-   "rows": [
-    {
-     "fmId": "6222",
-     "name": "Guyana",
-     "idx": 1,
-     "played": 1,
-     "wins": 1,
-     "draws": 0,
-     "losses": 0,
-     "gf": 1,
-     "ga": 0,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "287982",
-     "name": "Cayman Islands",
-     "idx": 2,
-     "played": 1,
-     "wins": 0,
-     "draws": 1,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 1,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "287980",
-     "name": "Dominica",
-     "idx": 3,
-     "played": 1,
-     "wins": 0,
-     "draws": 1,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 1,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5756",
-     "name": "Puerto Rico",
-     "idx": 4,
-     "played": 1,
-     "wins": 0,
-     "draws": 0,
-     "losses": 1,
-     "gf": 0,
-     "ga": 1,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    }
-   ]
-  },
-  {
-   "name": "B Grp. 2",
-   "fmId": "941123",
-   "legend": [
-    {
-     "key": "promotion",
-     "title": "Promotion",
-     "idx": [
-      0
-     ]
-    },
-    {
-     "key": "relegation",
-     "title": "Relegation",
-     "idx": [
-      3
-     ]
-    }
-   ],
-   "rows": [
-    {
-     "fmId": "5886",
-     "name": "Barbados",
-     "idx": 1,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5943",
-     "name": "Bermuda",
-     "idx": 2,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5757",
-     "name": "Guadeloupe",
-     "idx": 3,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "127408",
-     "name": "Saint Lucia",
-     "idx": 4,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    }
-   ]
-  },
-  {
-   "name": "B Grp. 3",
-   "fmId": "941124",
-   "legend": [
-    {
-     "key": "promotion",
-     "title": "Promotion",
-     "idx": [
-      0
-     ]
-    },
-    {
-     "key": "relegation",
-     "title": "Relegation",
-     "idx": [
-      3
-     ]
-    }
-   ],
-   "rows": [
-    {
-     "fmId": "929188",
-     "name": "Bonaire",
-     "idx": 1,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5857",
-     "name": "Cuba",
-     "idx": 2,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "6548",
-     "name": "Grenada",
-     "idx": 3,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5924",
-     "name": "St. Kitts and Nevis",
-     "idx": 4,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    }
-   ]
-  },
-  {
-   "name": "B Grp. 4",
-   "fmId": "941125",
-   "legend": [
-    {
-     "key": "promotion",
-     "title": "Promotion",
-     "idx": [
-      0
-     ]
-    },
-    {
-     "key": "relegation",
-     "title": "Relegation",
-     "idx": [
-      3
-     ]
-    }
-   ],
-   "rows": [
-    {
-     "fmId": "127409",
-     "name": "Belize",
-     "idx": 1,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "835267",
-     "name": "French Guiana",
-     "idx": 2,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5923",
-     "name": "Saint Vincent and The Grenadines",
-     "idx": 3,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "929190",
-     "name": "Sint Maarten",
-     "idx": 4,
      "played": 0,
      "wins": 0,
      "draws": 0,

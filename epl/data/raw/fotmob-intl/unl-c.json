@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-25T16:47:49.864Z",
+ "retrievedAt": "2026-09-25T20:24:20.970Z",
  "matches": [
   {
    "id": "5181921",
@@ -26,10 +26,13 @@
     "shortName": "Latvia",
     "fmId": "5795"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "2"
@@ -47,7 +50,7 @@
     "shortName": "Cyprus",
     "fmId": "5793"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1143,39 +1146,39 @@
      "wins": 1,
      "draws": 0,
      "losses": 0,
-     "gf": 1,
+     "gf": 2,
      "ga": 0,
      "pts": 3,
      "deduction": null,
-     "live": "5181921"
+     "live": null
     },
     {
      "fmId": "5793",
      "name": "Cyprus",
      "idx": 2,
-     "played": 0,
+     "played": 1,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
+     "gf": 1,
+     "ga": 1,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181922"
     },
     {
      "fmId": "49437",
      "name": "Montenegro",
      "idx": 3,
-     "played": 0,
+     "played": 1,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
+     "gf": 1,
+     "ga": 1,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181922"
     },
     {
      "fmId": "5795",
@@ -1186,10 +1189,10 @@
      "draws": 0,
      "losses": 1,
      "gf": 0,
-     "ga": 1,
+     "ga": 2,
      "pts": 0,
      "deduction": null,
-     "live": "5181921"
+     "live": null
     }
    ]
   },

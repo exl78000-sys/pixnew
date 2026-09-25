@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-25T16:47:48.586Z",
+ "retrievedAt": "2026-09-25T20:24:20.004Z",
  "matches": [
   {
    "id": "5181812",
@@ -74,10 +74,13 @@
     "shortName": "Northern Ireland",
     "fmId": "10259"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "2"
@@ -95,7 +98,7 @@
     "shortName": "Ukraine",
     "fmId": "6718"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -116,7 +119,7 @@
     "shortName": "Bosnia and Herzegovina",
     "fmId": "10106"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -137,7 +140,7 @@
     "shortName": "Romania",
     "fmId": "9730"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1156,60 +1159,60 @@
    ],
    "rows": [
     {
-     "fmId": "8268",
-     "name": "Georgia",
+     "fmId": "6718",
+     "name": "Ukraine",
      "idx": 1,
      "played": 1,
-     "wins": 0,
-     "draws": 1,
+     "wins": 1,
+     "draws": 0,
      "losses": 0,
-     "gf": 0,
+     "gf": 1,
      "ga": 0,
-     "pts": 1,
+     "pts": 3,
      "deduction": null,
-     "live": "5181800"
+     "live": "5181801"
     },
     {
      "fmId": "10259",
      "name": "Northern Ireland",
      "idx": 2,
      "played": 1,
-     "wins": 0,
-     "draws": 1,
+     "wins": 1,
+     "draws": 0,
      "losses": 0,
-     "gf": 0,
+     "gf": 1,
      "ga": 0,
-     "pts": 1,
+     "pts": 3,
      "deduction": null,
-     "live": "5181800"
+     "live": null
+    },
+    {
+     "fmId": "8268",
+     "name": "Georgia",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 1,
+     "pts": 0,
+     "deduction": null,
+     "live": null
     },
     {
      "fmId": "8565",
      "name": "Hungary",
-     "idx": 3,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "6718",
-     "name": "Ukraine",
      "idx": 4,
-     "played": 0,
+     "played": 1,
      "wins": 0,
      "draws": 0,
-     "losses": 0,
+     "losses": 1,
      "gf": 0,
-     "ga": 0,
+     "ga": 1,
      "pts": 0,
      "deduction": null,
-     "live": null
+     "live": "5181801"
     }
    ]
   },
@@ -1340,60 +1343,60 @@
    ],
    "rows": [
     {
+     "fmId": "8520",
+     "name": "Sweden",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 2,
+     "ga": 1,
+     "pts": 3,
+     "deduction": null,
+     "live": "5181838"
+    },
+    {
      "fmId": "10106",
      "name": "Bosnia and Herzegovina",
-     "idx": 1,
-     "played": 0,
+     "idx": 2,
+     "played": 1,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
      "gf": 0,
      "ga": 0,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181837"
     },
     {
      "fmId": "8568",
      "name": "Poland",
-     "idx": 2,
-     "played": 0,
+     "idx": 3,
+     "played": 1,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
      "gf": 0,
      "ga": 0,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181837"
     },
     {
      "fmId": "9730",
      "name": "Romania",
-     "idx": 3,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "8520",
-     "name": "Sweden",
      "idx": 4,
-     "played": 0,
+     "played": 1,
      "wins": 0,
      "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
+     "losses": 1,
+     "gf": 1,
+     "ga": 2,
      "pts": 0,
      "deduction": null,
-     "live": null
+     "live": "5181838"
     }
    ]
   }
