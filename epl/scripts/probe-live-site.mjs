@@ -16,8 +16,9 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**13 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
- * explore.html / game-sim.js / cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
+ * 唯讀、零快取、**15 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
+ * explore.html / game-sim.js / model.html / inplay-tuning.json /
+ * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
  * 網址不寫死:從 runner 的 `GITHUB_REPOSITORY` 推(owner/repo → owner.github.io/repo/),
  * 本機測試用 `--base=` 覆寫。
  *
@@ -102,6 +103,24 @@ async function main() {
     const has = re => re.test(sim.text) ? '✓' : '✗';
     console.log(`  assets/js/game-sim.js  HTTP ${sim.status}  ${sim.buf.length} bytes  sha256:${sha(sim.buf)}`
       + `・PRESS_TRACK = SIM_RUN ${has(/^const PRESS_TRACK = SIM_RUN;/m)}・SHOT_PRESSED = 1 ${has(/^const SHOT_PRESSED = 1;/m)}`);
+  }
+
+  // ── 即時勝率的時間曲線(2026-09-25):站上用的是曲線還是線性 ─────
+  /* inUse 是 build **實際讀到**的那一條(npm test 守著「產物講的等於實際的」),所以它就是站上即時勝率用哪一個的答案。
+     runner 會重跑 tune:inplay:驗收季每多踢一場都重算,哪天掉到兩倍標準誤以內,這裡會印「沒有在用」—— 那不是錯,是閘門在做事。
+     欄位不在就印「沒有這個欄位」(站上還是上一版),不印 false。 */
+  const modelPage = await get('model.html');
+  const modelSrc = /["']((?:\.\/)?assets\/js\/page-model\.js(?:\?v=[0-9a-f]{8})?)["']/.exec(modelPage.text)?.[1];
+  console.log(`  model.html  HTTP ${modelPage.status}  ${modelPage.buf.length} bytes・引用 ${modelSrc ?? '✗ 找不到 page-model.js'}`);
+  const ip = await get('data/inplay-tuning.json');
+  const IP = ip.ok ? jsonOf(ip) : null;
+  if (!IP) console.log(`  data/inplay-tuning.json  HTTP ${ip.status}${ip.ok ? '・✗ 不是 JSON' : '(站上沒有這個檔 —— 時間曲線那一批還沒部署上去)'}`);
+  else {
+    const v = IP.validation ?? {};
+    console.log(`  data/inplay-tuning.json  HTTP ${ip.status}  ${ip.buf.length} bytes  sha256:${sha(ip.buf)}`
+      + `・${'inUse' in IP ? (IP.inUse ? '使用中' : '沒有在用(退回線性)') : '(沒有 inUse 這個欄位)'}`
+      + `・驗收 ${(v.seasons ?? []).join('、') || '?'} ${v.matches ?? '?'} 場 ${v.diff ?? '?'} ± ${v.se ?? '?'}(z ${v.z ?? '?'}、${v.passes ? '通過' : '沒通過'})`
+      + `・S(90) ${IP.curve?.S?.[90] ?? '?'}`);
   }
 
   // ── 二、歐冠那一頁實際供出來的 JS ──────────────────────
