@@ -432,7 +432,7 @@ function flagNote() {
     ...(f.excluded ?? []).map(x => `${esc(zhOf(x.key))}刻意不給:${esc(x.why ?? '')}`),
     f.sameAs.length ? `${f.sameAs.map(x => `${esc(zhOf(x.key))}(國旗集裡就是${esc(x.asKey ? zhOf(x.asKey) : x.as.toUpperCase())}的旗)`).join('、')} —— 掛上去會讓人以為是那一國,所以不掛` : null,
     noCode.length ? `${names(noCode)}沒有國碼(大多是非會員的區域隊)` : null,
-    f.notFetched.length ? `${names(f.notFetched)}的圖還沒抓(npm run intl:flags)` : null,
+    f.notFetched.length ? `${names(f.notFetched)}是新出現的隊,國旗還沒補上` : null,
   ].filter(Boolean);
   return `<p class="small"><b>國旗:</b><a href="${esc(src?.url)}" target="_blank" rel="noopener">${esc(src?.name ?? '開源國旗集')}</a>
     (${esc(f.source?.license ?? '')} 授權),本站縮成 ${esc((f.size ?? []).join('×'))} 內嵌。${f.count} 隊有國旗${parts.length ? `;沒有的:${parts.join(';')}` : ''}。</p>`;

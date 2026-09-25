@@ -403,6 +403,9 @@ console.log('\n▶ 國家隊:國旗(開源國旗集;屬地用宗主國的旗不�
   check('頁面只用產物裡內嵌的國旗,不從外部網址載', !/flag-icons|raw\.githubusercontent|\.svg['"`]/.test(page) && /FLAGS\[key\]/.test(page));
   const ov = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8'));
   check('總覽頁不載國旗那一份', !ov.includes('intl-flags'));
+  /* 畫面上的字是給讀者看的:「npm run …」那種指令本站其他頁都拿掉了(模型頁、球隊頁),
+     國旗那一句第一版寫了「圖還沒抓(npm run intl:flags)」—— 當時沒有新隊所以沒露出來,有新隊那天就會。 */
+  check('國家隊頁不對讀者印開發指令', !/npm (run|test)/.test(page));
 }
 
 // ── 6. 抓取器的守門(假的 fetch,不連網)────────────────
