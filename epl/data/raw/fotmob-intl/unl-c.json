@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-25T10:55:11.677Z",
+ "retrievedAt": "2026-09-25T16:47:49.864Z",
  "matches": [
   {
    "id": "5181921",
@@ -26,7 +26,7 @@
     "shortName": "Latvia",
     "fmId": "5795"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1139,15 +1139,15 @@
      "fmId": "6583",
      "name": "Armenia",
      "idx": 1,
-     "played": 0,
-     "wins": 0,
+     "played": 1,
+     "wins": 1,
      "draws": 0,
      "losses": 0,
-     "gf": 0,
+     "gf": 1,
      "ga": 0,
-     "pts": 0,
+     "pts": 3,
      "deduction": null,
-     "live": null
+     "live": "5181921"
     },
     {
      "fmId": "5793",
@@ -1164,8 +1164,8 @@
      "live": null
     },
     {
-     "fmId": "5795",
-     "name": "Latvia",
+     "fmId": "49437",
+     "name": "Montenegro",
      "idx": 3,
      "played": 0,
      "wins": 0,
@@ -1178,18 +1178,18 @@
      "live": null
     },
     {
-     "fmId": "49437",
-     "name": "Montenegro",
+     "fmId": "5795",
+     "name": "Latvia",
      "idx": 4,
-     "played": 0,
+     "played": 1,
      "wins": 0,
      "draws": 0,
-     "losses": 0,
+     "losses": 1,
      "gf": 0,
-     "ga": 0,
+     "ga": 1,
      "pts": 0,
      "deduction": null,
-     "live": null
+     "live": "5181921"
     }
    ]
   },

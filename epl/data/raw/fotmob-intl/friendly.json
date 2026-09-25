@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-09-25T10:55:18.294Z",
+ "retrievedAt": "2026-09-25T16:47:56.648Z",
  "matches": [
   {
    "id": "5120889",
@@ -7576,10 +7576,13 @@
     "shortName": "Brazil",
     "fmId": "8256"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -7597,10 +7600,13 @@
     "shortName": "Panama",
     "fmId": "5922"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
