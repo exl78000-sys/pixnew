@@ -11,6 +11,8 @@
  *   - 分數:每場取 c = 1..90 的 RPS 平均當一場;成對差的 SE 用場算。
  *   - 通過 = 驗收季「曲線 − 線性」< 0、超過 2 個 SE、而且驗收 ≥ MIN_VALID_MATCHES 場。
  *   - 局面乘數(落後方加速、領先方收)只量不上線;每次重跑只為了讓模型頁的數字是現跑的。
+ *   - 開賽那一刻的落差(賽前頁是 Poisson + Elo 的平均、即時只用 Poisson)也只量:兩種把平均帶進場中的做法,
+ *     第二種要先在調參季過 2 個 SE 才跑驗收(看過第一種的驗收才想到的,見 lib/inplay-tuning.mjs 那一段)。
  *
  * 只讀倉庫、零網路,寫 data/inplay-tuning.json(build 讀它)。 */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -25,6 +27,7 @@ import { inPlay } from './lib/inplay.mjs';
 import {
   eventsOf, reconcile, goalTimingCurve, validCurve, scoreMatches, pairedScores, trailingTable,
   fitGameState, gameStateModel, stateBucket, timeBand, MIN_VALID_MATCHES,
+  outcome0, anchorLambdas, splitLambdas, kickStep,
 } from './lib/inplay-tuning.mjs';
 import { round } from './lib/util.mjs';
 
@@ -78,7 +81,9 @@ function leagueSeason(L, season) {
     const { goals: raw, reds } = eventsOf(fm, m.home, m.away);
     const goals = reconcile(raw, m.fh, m.fa);
     if (!goals) { mismatch++; continue; }
-    rows.push({ league: L.key, season, date: m.date, home: m.home, away: m.away, fh: m.fh, fa: m.fa, lh: m.pred.xgHome, la: m.pred.xgAway, goals, reds });
+    /* pre = 賽前頁顯示的那一組(Poisson 與 Elo 的平均),開賽那一刻的落差要跟它比 */
+    rows.push({ league: L.key, season, date: m.date, home: m.home, away: m.away, fh: m.fh, fa: m.fa, lh: m.pred.xgHome, la: m.pred.xgAway,
+      pre: { home: m.pred.home, draw: m.pred.draw, away: m.pred.away }, goals, reds });
   }
   return {
     rows,
@@ -130,7 +135,7 @@ const compare = (rows, a, b, win) => pairedScores(scoreMatches(rows, a, win), sc
 const WINDOWS = [['1-45', 1, 45], ['46-75', 46, 75], ['76-90', 76, 90], ['90', 90, 90]];
 
 let validation = { passes: false, reason: 'no-curve', matches: valid.rows.length, minMatches: MIN_VALID_MATCHES, seasons: validSeasons };
-let tuning = null, gameState = null, truncation = null, trailing = null;
+let tuning = null, gameState = null, truncation = null, trailing = null, kickoff = null;
 if (S) {
   tuning = { ...pack(compare(tune.rows, linear, withCurve)), windows: Object.fromEntries(WINDOWS.map(([k, from, to]) => [k, pack(compare(tune.rows, linear, withCurve, { from, to }))])) };
   const v = valid.rows.length ? compare(valid.rows, linear, withCurve) : null;
@@ -174,6 +179,44 @@ if (S) {
   const exactLinear = gameStateModel(linS, () => 1);
   truncation = { base: 'inPlay(每隊最多再 7 球)', candidate: '同一條線性時間的精確解',
     tuning: pack(compare(tune.rows, linear, exactLinear), BC), validation: valid.rows.length ? pack(compare(valid.rows, linear, exactLinear), BC) : null };
+
+  /* 開賽那一刻的落差(只量):對照組是現行(時間曲線 + Poisson 的 λ),候選只換 λ。 */
+  for (const m of [...tune.rows, ...valid.rows]) {
+    const a = anchorLambdas(m.lh, m.la, m.pre), sp = splitLambdas(m.lh, m.la, m.pre);
+    m.alh = a.lh; m.ala = a.la; m.aerr = a.err; m.slh = sp.lh; m.sla = sp.la;
+  }
+  const withLam = (fh, fa) => (m, c, st) => { const p = inPlay({ lambdaHome: m[fh], lambdaAway: m[fa], hs: st.hs, as: st.as, minute: c, redHome: st.rh, redAway: st.ra, curve: S }); return [p.home, p.draw, p.away]; };
+  const anchored = withLam('alh', 'ala'), split = withLam('slh', 'sla');
+  const q = (xs, p) => { const v = [...xs].sort((a, b) => a - b); return v.length ? v[Math.min(v.length - 1, Math.floor(p * v.length))] : null; };
+  const stepStats = rows => { const d = rows.map(m => kickStep(m.lh, m.la, m.pre)); return d.length ? { matches: d.length, mean: round(d.reduce((s, x) => s + x, 0) / d.length, 4), p90: round(q(d, 0.9), 4), max: round(Math.max(...d), 4) } : null; };
+  const drawGap = rows => rows.length ? round(rows.reduce((s, m) => s + m.pre.draw - outcome0(m.lh, m.la)[1], 0) / rows.length, 4) : null;
+  const ratio = rows => rows.length ? round(q(rows.map(m => (m.alh + m.ala) / (m.lh + m.la)), 0.5), 3) : null;
+  const winPack = (rows, cand) => Object.fromEntries([['1-15', 1, 15], ['76-90', 76, 90]].map(([k, from, to]) => [k, pack(compare(rows, withCurve, cand, { from, to }), BC)]));
+  const splitTune = compare(tune.rows, withCurve, split);
+  const splitGate = !!splitTune && splitTune.diff < 0 && splitTune.z != null && splitTune.z <= -2;
+  const av = valid.rows.length ? compare(valid.rows, withCurve, anchored) : null;
+  kickoff = {
+    adopted: false,
+    rule: '驗收季贏過現行(時間曲線 + Poisson 的 λ)超過 2 個 SE 才有資格進模型,上線要人改程式;只拿強弱那一種要先在調參季過 2 個 SE 才跑驗收',
+    base: '現行:時間曲線 + Poisson 的 λ',
+    step: { tuning: stepStats(tune.rows), validation: stepStats(valid.rows) },
+    /* 賽前平均的和局機率比第 0 分的即時模型高多少(正 = 賽前比較常給和局)—— 完全對齊為什麼會把總進球壓低 */
+    drawGap: { tuning: drawGap(tune.rows), validation: drawGap(valid.rows) },
+    anchor: {
+      name: '完全對齊賽前(第 0 分的主勝、客勝都等於賽前平均)',
+      totalRatio: { tuning: ratio(tune.rows), validation: ratio(valid.rows) },
+      maxSolveError: round(Math.max(0, ...[...tune.rows, ...valid.rows].map(m => m.aerr)), 8),
+      tuning: pack(compare(tune.rows, withCurve, anchored), BC), validation: pack(av, BC),
+      windows: { tuning: winPack(tune.rows, anchored), validation: valid.rows.length ? winPack(valid.rows, anchored) : null },
+      passes: !!av && av.matches >= MIN_VALID_MATCHES && av.diff < 0 && av.z != null && av.z <= -2,
+    },
+    split: {
+      name: '只拿強弱(總進球不動,「主勝 − 客勝」等於賽前平均)',
+      tuning: pack(splitTune, BC),
+      validation: splitGate && valid.rows.length ? pack(compare(valid.rows, withCurve, split), BC) : null,
+      validationSkipped: splitGate ? null : 'tuning-not-significant',
+    },
+  };
 }
 
 const out = {
@@ -188,7 +231,7 @@ const out = {
     firstHalfStoppageShare: curve.goals ? round(curve.firstHalfStoppage / curve.goals, 4) : null,
     secondHalfStoppageShare: curve.goals ? round(curve.secondHalfStoppage / curve.goals, 4) : null,
   },
-  tuning, validation, trailing, gameState, truncation,
+  tuning, validation, trailing, gameState, truncation, kickoff,
 };
 /* 曲線以捨入後的那一份為準(build 讀的是檔案):通過與否也用捨入後的再確認一次形狀。 */
 if (out.curve.S && !validCurve(out.curve.S)) { out.validation.passes = false; out.validation.reason = 'rounded-curve-invalid'; }
@@ -203,4 +246,7 @@ console.log(`  驗收 ${validSeasons.join('、') || '—'}:${validation.matches}
 if (gameState) console.log(`  局面乘數(只量):調參 ${f5(gameState.tuning?.diff)} ± ${f5(gameState.tuning?.se)}(${gameState.tuning?.z} SE)`
   + `・驗收 ${f5(gameState.validation?.diff)} ± ${f5(gameState.validation?.se)}(${gameState.validation?.z ?? '—'} SE)→ ${gameState.passes ? '過了門檻,但要人決定才上線' : '沒過,不進模型'}`);
 if (truncation) console.log(`  截斷修正(只回報):驗收 ${f5(truncation.validation?.diff)} ± ${f5(truncation.validation?.se)}`);
+if (kickoff) console.log(`  開賽那一刻(只量):那一步平均 ${(100 * kickoff.step.tuning.mean).toFixed(1)} 個百分點、最大 ${(100 * kickoff.step.tuning.max).toFixed(1)}`
+  + `・完全對齊 調參 ${f5(kickoff.anchor.tuning?.diff)} ± ${f5(kickoff.anchor.tuning?.se)} / 驗收 ${f5(kickoff.anchor.validation?.diff)} ± ${f5(kickoff.anchor.validation?.se)}`
+  + `・只拿強弱 調參 ${f5(kickoff.split.tuning?.diff)} ± ${f5(kickoff.split.tuning?.se)}${kickoff.split.validation ? ` / 驗收 ${f5(kickoff.split.validation.diff)}` : '(調參季沒過,不跑驗收)'} → 不進模型`);
 console.log('→ 已寫入 data/inplay-tuning.json');

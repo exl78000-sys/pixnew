@@ -609,8 +609,12 @@ export const formRun = arr => `<span class="form-run">${(arr ?? []).map(f => `<i
    兩個防倒退/歸零的規則,都是使用者實際看到過的症狀:
    - 錨取官方鐘與 FPL 分鐘的**較大者**:兩個都是「至少踢到這裡」的下界,
      剛開賽的官方鐘快取還停在賽前的 00'00,單獨信它會變 0 分鐘。
-   - 不跨 45/90 界線:中場多久、補時多長沒有資料,越線停在 45+/90+。 */
+   - 不跨 45/90 界線:中場多久、補時多長沒有資料,越線停在 45+/90+。
+   資料源明講「中場」(FotMob 的 `HT`,build 的 `lib/live-minute.mjs` 轉成 `period: 'HT'`)時就講中場 ——
+   原本那個字串沒有數字,被當成第 0 分,整個中場印「第 0 分鐘」還往上走(2026-09-25 從 git 歷史的快照量到)。
+   `ht` 讓呼叫端不必自己拼「第 X 分鐘」:一律走 minuteText()。 */
 export function liveMinute(m, fetchedAt) {
+  if (m.period === 'HT') return { disp: '中場', src: '資料源:中場休息', est: false, ht: true };
   const off = typeof m.clock === 'string' ? m.clock.match(/^(\d+)\s*(?:\+(\d+))?/) : null;
   /* 錨定時刻取「快照抓取」與「開球」較晚者。快照在開賽前抓的話(分鐘還是 0),
      開球前的死時間不能算進比賽分鐘 —— 實測 TOT|NEW:快照 16:02、開球 16:30,
@@ -632,6 +636,8 @@ export function liveMinute(m, fetchedAt) {
   // 標籤不寫死 FPL —— 西甲的分鐘來自 SportMonks,寫 FPL 是把來源講錯
   return { disp, src: useOff ? `官方比賽鐘 ${m.clock}` : `資料源分鐘 ${m.minute}`, est: elapsed >= 1 };
 }
+/* 「第 X 分鐘」/「中場休息」—— 每一個畫分鐘的地方都走這裡,不各自拼字(中場那個字塞進「第 … 分鐘」會變成「第 中場 分鐘」)。 */
+export const minuteText = mn => (mn?.ht ? '中場休息' : `第 ${mn?.disp ?? '—'} 分鐘`);
 
 /* 外部來源的網址進 href 之前一定要過這裡。
    esc() 擋得住「跳出屬性」,擋不住 scheme —— `javascript:alert(1)` escape 之後
@@ -2170,14 +2176,27 @@ function renderGoalRow(g, { away } = {}) {
    **不是市場盤口** —— 說明文字由這裡固定帶著,呼叫端不用每次自己寫。
 
    進球標記不用另外傳:每個樣本帶著當下比分,比分變了就是有人進球
-   (跟 goalsOf 的判定是同一個道理)。 */
-export function probCurve(pts, { home, away } = {}) {
+   (跟 goalsOf 的判定是同一個道理)。
+
+   `kick`(2026-09-25):即時模型在第 0 分會說什麼(build 從凍結的賽前 λ 算,prob-history 的 kick)。
+   第 0 分那個點是賽前頁的機率(Poisson 與 Elo 的平均),比賽中的點只用 Poisson —— 兩者之間本來就有一步。
+   連成一條線的話,那一步看起來像「開賽頭幾分鐘發生了什麼」;所以有 kick 時線從 kick 起畫,
+   賽前機率畫成圓點、用第 0 分上一段直的點線接過去,說明寫出這一場那一步多大。 */
+export function probCurve(pts, { home, away, kick = null } = {}) {
   if (!Array.isArray(pts) || pts.length < 3) return '';
   const W = 560, H = 190, L = 34, R = 10, T = 12, B = 22;
   const maxMin = Math.max(90, pts.at(-1)[0]);
   const x = m => L + ((W - L - R) * m) / maxMin;
   const y = p => T + (H - T - B) * (1 - p);
-  const path = i => pts.map((s, k) => `${k ? 'L' : 'M'}${x(s[0]).toFixed(1)},${y(s[i]).toFixed(1)}`).join('');
+  const anchored = pts[0][0] === 0;
+  const hasKick = anchored && Array.isArray(kick) && kick.length === 3 && kick.every(Number.isFinite);
+  const line = hasKick ? [[0, kick[0], kick[1], kick[2]], ...pts.slice(1)] : pts;
+  const path = i => line.map((s, k) => `${k ? 'L' : 'M'}${x(s[0]).toFixed(1)},${y(s[i]).toFixed(1)}`).join('');
+  const COLORS = ['var(--accent)', 'var(--ink-3)', 'var(--accent-3)'];
+  const step = hasKick ? Math.max(...[1, 2, 3].map(i => Math.abs(pts[0][i] - kick[i - 1]))) : null;
+  const preMarks = hasKick ? [1, 2, 3].map(i => `<line x1="${x(0)}" y1="${y(pts[0][i]).toFixed(1)}" x2="${x(0)}" y2="${y(kick[i - 1]).toFixed(1)}"
+        stroke="${COLORS[i - 1]}" stroke-width="1.4" stroke-dasharray="1.5 2.5"/>
+      <circle cx="${x(0)}" cy="${y(pts[0][i]).toFixed(1)}" r="3" fill="var(--panel-solid)" stroke="${COLORS[i - 1]}" stroke-width="1.4"/>`).join('') : '';
 
   // 比分變化 = 進球。標在變化後那個樣本的分鐘上。
   const goals = [];
@@ -2203,6 +2222,7 @@ export function probCurve(pts, { home, away } = {}) {
     <path d="${path(1)}" fill="none" stroke="var(--accent)" stroke-width="2"/>
     <path d="${path(3)}" fill="none" stroke="var(--accent-3)" stroke-width="2"/>
     <path d="${path(2)}" fill="none" stroke="var(--ink-3)" stroke-width="1.4" stroke-dasharray="4 3"/>
+    ${preMarks}
   </svg>
   <div class="row tiny" style="gap:14px;margin-top:6px;flex-wrap:wrap">
     <span><i style="display:inline-block;width:14px;height:3px;background:var(--accent);vertical-align:middle"></i>
@@ -2215,7 +2235,11 @@ export function probCurve(pts, { home, away } = {}) {
   </div>
   <div class="tiny dim" style="margin-top:6px">這是<b>本站模型</b>的即時機率,不是市場盤口 ——
     模型整季表現與跟市場的差距攤在<a href="${link('model')}">模型驗證頁</a>。
-    比賽中約每 2 分鐘一個點(${pts.length} 點);第 0 分是賽前機率。</div>`;
+    比賽中約每 2 分鐘一個點(${pts.length} 點)。${hasKick
+      ? `第 0 分的圓點是賽前機率(Poisson 與 Elo 兩個模型的平均);比賽中只用 Poisson 那一個,
+         所以開球時那一段直的點線是<b>換算法</b>,不是場上發生了什麼(這一場約 ${(step * 100).toFixed(1)} 個百分點)。
+         為什麼不把平均帶進場中,量過的結果在<a href="${link('model')}">模型驗證頁</a>。`
+      : anchored ? '第 0 分是賽前機率(Poisson 與 Elo 兩個模型的平均);比賽中只用 Poisson,所以開球那一段的落差是換算法,不是場上發生了什麼。' : ''}</div>`;
 }
 
 export function fail(err) {

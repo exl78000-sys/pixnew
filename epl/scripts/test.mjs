@@ -19,8 +19,9 @@ import { buildElo, eloProbs } from './lib/elo.mjs';
 import { uclSeasonMatches } from './lib/ucl-elo.mjs';
 import { round } from './lib/util.mjs';
 import { inPlay, remainingFraction } from './lib/inplay.mjs';
-import { loadInplayCurve, validCurve, reconcile as reconcileEvents, happened, goalTimingCurve, pairedScores } from './lib/inplay-tuning.mjs';
-import { appendSamples } from './lib/prob-history.mjs';
+import { loadInplayCurve, validCurve, reconcile as reconcileEvents, happened, goalTimingCurve, pairedScores, outcome0, anchorLambdas, splitLambdas, kickStep } from './lib/inplay-tuning.mjs';
+import { appendSamples, historyForSite } from './lib/prob-history.mjs';
+import { fotmobMinute } from './lib/live-minute.mjs';
 import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import {
   preMatchBundle, postMatchBundle, templateFor, verify, generateReport, ReportCache,
@@ -60,6 +61,113 @@ const TRAIN_FROM = ['2023-24', '2024-25'];
    ① 沒有曲線時行為跟改之前一個字元都不差(恆等元);② 有曲線時補時不再歸零;
    ③ build 用不用曲線只由同一支 loadInplayCurve 決定,產物講的等於實際的;
    ④ 每一個算即時勝率的呼叫點都有傳曲線(少一個,那一頁就還是舊算法 —— 「四個地方同時有它」那條坑)。 */
+/* 開球那一步(2026-09-25):賽前頁是 Poisson 與 Elo 的平均、即時勝率只用 Poisson —— 兩者之間本來就有一步。
+   量過兩種把平均帶進場中的做法都沒有更準,所以模型不改;要守的是「量的方法對、畫面把那一步講成換算法」。
+   同一輪還修了 FotMob 的分鐘字串:中場 `HT` 原本被讀成第 0 分(整個中場印「第 0 分鐘」)。 */
+async function checkInplayKickoff() {
+  const results = [];
+  const ok = (name, pass, detail = '') => results.push([name, !!pass, detail]);
+  const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+
+  // ① FotMob 分鐘字串:樣本都是倉庫 git 歷史裡比賽夜回寫的快照(Marseille–PSG、Valencia–Real Sociedad 那幾場)
+  const Z = '‎', Q = '’';
+  const ko = '2026-09-20T19:00:00Z', at = min => new Date(Date.parse(ko) + min * 60000).toISOString();
+  const fm = (lt, el) => fotmobMinute(lt, { kickoff: ko, fetchedAt: at(el) });
+  ok('分鐘字串:中場 `HT` = 第 45 分 + 中場旗標(原本被讀成第 0 分)', fm('HT', 55).minute === 45 && fm('HT', 55).period === 'HT');
+  ok('分鐘字串:上半場補時(開球後 48.4 分鐘看到 49’)= 第 45 分', fm(`49${Z}${Q}${Z}`, 48.4).minute === 45 && fm(`49${Z}${Q}${Z}`, 48.4).period == null);
+  ok('分鐘字串:中場之後的 47’(開球後 66.3 分鐘)= 下半場第 47 分', fm(`47${Z}${Q}${Z}`, 66.3).minute === 47);
+  ok('分鐘字串:61’ 以上不搬回 45(抓取時間歪了也不會)、一般分鐘照讀、完賽 = 90、沒有字串 = 0',
+    fm(`61${Z}${Q}${Z}`, 50).minute === 61 && fm(`23${Z}${Q}${Z}`, 23).minute === 23
+    && fotmobMinute(`96${Z}${Q}${Z}`, { finished: true }).minute === 90 && fotmobMinute(null).minute === 0);
+  ok('分鐘字串:沒有開球時間或抓取時間就不猜(照讀數字)', fotmobMinute(`47${Z}${Q}${Z}`, {}).minute === 47);
+  const builds = ['build-laliga.mjs', 'build-championship.mjs'].map(f => [f, strip(readFileSync(join(ROOT, 'scripts', f), 'utf8'))]);
+  ok('西甲、英冠的即時快照都走共用的 fotmobMinute(不各自寫一份),而且把中場旗標帶進產物',
+    builds.every(([, src]) => /fotmobMinute\(m\.liveTime/.test(src) && !/const minuteOf\b/.test(src) && /period: mm\.period/.test(src)),
+    builds.filter(([, src]) => !/fotmobMinute\(m\.liveTime/.test(src) || /const minuteOf\b/.test(src) || !/period: mm\.period/.test(src)).map(([f]) => f).join('、'));
+
+  // ② 顯示:中場講中場,每一個畫分鐘的地方都走 minuteText(core.js 載入時會掛鍵盤事件,跟其他節一樣先給一個假的 document)
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const htMin = V.liveMinute({ period: 'HT', minute: 45 }, new Date().toISOString());
+  ok('liveMinute:資料源說中場就是中場(不從 45 往上推)', htMin.ht === true && V.minuteText(htMin) === '中場休息');
+  ok('minuteText:一般分鐘照舊是「第 X 分鐘」', V.minuteText(V.liveMinute({ minute: 30 }, null)) === '第 30 分鐘');
+  const pages = ['page-analysis.js', 'page-live.js', 'page-overview.js'].map(f => [f, strip(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8'))]);
+  const selfBuilt = pages.filter(([, src]) => /第 \$\{[^}]*disp\} 分鐘/.test(src) || /第 \$\{u\.live\.minute\} 分鐘/.test(src)).map(([f]) => f);
+  ok('畫分鐘的三頁都走 C.minuteText,沒有人自己拼「第 X 分鐘」(中場會變成「第 中場 分鐘」)',
+    !selfBuilt.length && pages.every(([, src]) => /C\.minuteText\(/.test(src)), selfBuilt.join('、'));
+
+  // ③ 開球那一步的量測工具
+  let maxDiff = 0;
+  for (const lh of [0.3, 0.9, 1.4, 2.2, 3.5]) for (const la of [0.2, 0.8, 1.3, 2.0]) {
+    const r = outcome0(lh, la), p = inPlay({ lambdaHome: lh, lambdaAway: la, minute: 0 });
+    maxDiff = Math.max(maxDiff, Math.abs(r[0] - p.home), Math.abs(r[1] - p.draw), Math.abs(r[2] - p.away));
+  }
+  ok('outcome0 = inPlay 在第 0 分的機率(只差捨入)', maxDiff < 6e-5, `最大差 ${maxDiff.toExponential(1)}`);
+  const pre = { home: 0.52, draw: 0.27, away: 0.21 };
+  const a = anchorLambdas(1.5, 1.2, pre), ra = outcome0(a.lh, a.la);
+  ok('完全對齊:解出來的 λ\' 在第 0 分重現賽前的主勝與客勝', a.err < 1e-8 && Math.abs(ra[0] - pre.home) < 1e-8 && Math.abs(ra[2] - pre.away) < 1e-8);
+  const sp = splitLambdas(1.5, 1.2, pre), rs = outcome0(sp.lh, sp.la);
+  ok('只拿強弱:總進球不動、「主勝 − 客勝」等於賽前', Math.abs(sp.lh + sp.la - 2.7) < 1e-9 && Math.abs(rs[0] - rs[2] - (pre.home - pre.away)) < 1e-6);
+  ok('kickStep = 賽前 vs 第 0 分,三個裡差最多的那一個', Math.abs(kickStep(1.5, 1.2, pre) - Math.max(...outcome0(1.5, 1.2).map((v, i) => Math.abs(v - [pre.home, pre.draw, pre.away][i])))) < 1e-12);
+
+  // ④ 調參檔的 kickoff:只量、不上線、第二種的驗收只在調參季過了門檻才跑
+  const tp = join(ROOT, 'data', 'inplay-tuning.json');
+  if (existsSync(tp)) {
+    const K = JSON.parse(readFileSync(tp, 'utf8')).kickoff;
+    ok('調參檔有開球那一步的量測(兩季的步幅、兩種做法)', !!(K?.step?.tuning?.matches && K?.anchor?.tuning && K?.split?.tuning));
+    if (K) {
+      ok('開球那一步:只量不上線(adopted 一律 false,要上線得有人改程式)', K.adopted === false);
+      const gate = K.split.tuning && K.split.tuning.diff < 0 && K.split.tuning.z != null && K.split.tuning.z <= -2;
+      ok('只拿強弱那一種:調參季沒過 2 SE 就不跑驗收(事先定的規則)',
+        gate ? K.split.validation != null : (K.split.validation == null && K.split.validationSkipped === 'tuning-not-significant'),
+        `調參 z ${K.split.tuning?.z}・驗收 ${K.split.validation ? '有' : '沒跑'}`);
+      const av = K.anchor.validation;
+      ok('完全對齊的 passes 跟它自己的數字一致', K.anchor.passes === (!!av && av.matches >= 150 && av.diff < 0 && av.z != null && av.z <= -2));
+      ok('完全對齊:解方程的誤差是 0(λ\' 真的重現了賽前機率)', K.anchor.maxSolveError != null && K.anchor.maxSolveError < 1e-6, `${K.anchor.maxSolveError}`);
+    }
+  }
+
+  // ⑤ 勝率曲線的 kick:就是即時模型在第 0 分會說的話;第 0 分那個點(賽前平均)一個字都不動
+  const store = { season: '2026-27', matches: {
+    'A|B': { pts: [[0, 0.55, 0.25, 0.2, 0, 0], [2, 0.5, 0.27, 0.23, 0, 0], [30, 0.6, 0.25, 0.15, 1, 0]], pre: { xgHome: 1.6, xgAway: 1.1 }, done: false },
+    'C|D': { pts: [[0, 0.4, 0.3, 0.3, 0, 0], [2, 0.4, 0.3, 0.3, 0, 0], [30, 0.4, 0.3, 0.3, 0, 0]], done: false },
+    'E|F': { pts: [[6, 0.4, 0.3, 0.3, 0, 0], [8, 0.4, 0.3, 0.3, 0, 0], [30, 0.4, 0.3, 0.3, 0, 0]], pre: { xgHome: 1.2, xgAway: 1.2 }, done: false },
+  } };
+  const site = historyForSite(store);
+  const k0 = inPlay({ lambdaHome: 1.6, lambdaAway: 1.1, minute: 0 });
+  ok('勝率曲線的 kick = 用凍結的賽前 λ 跑 inPlay 的第 0 分', JSON.stringify(site.matches['A|B'].kick) === JSON.stringify([k0.home, k0.draw, k0.away]));
+  ok('勝率曲線:第 0 分那個點(賽前平均)原樣留著,沒有賽前 λ 或沒有第 0 分的不給 kick',
+    JSON.stringify(site.matches['A|B'].pts[0]) === JSON.stringify([0, 0.55, 0.25, 0.2, 0, 0]) && !('kick' in site.matches['C|D']) && !('kick' in site.matches['E|F']));
+
+  // ⑥ 畫面:有 kick 時線從 kick 起畫、賽前是圓點加一段直的點線、說明講換算法與這一場的步幅
+  const pts = store.matches['A|B'].pts, kick = site.matches['A|B'].kick;
+  /* probCurve 的說明裡有連到模型頁的連結,link() 會讀網址列 —— 暫時給一個,用完拿掉(跟聯賽那一節同一招) */
+  const hadLoc = 'location' in globalThis;
+  if (!hadLoc) globalThis.location = { search: '', hash: '' };
+  let withK, noK, notAnchored;
+  try {
+    withK = V.probCurve(pts, { home: 'ARS', away: 'CHE', kick });
+    noK = V.probCurve(pts, { home: 'ARS', away: 'CHE' });
+    notAnchored = V.probCurve(store.matches['E|F'].pts, { home: 'ARS', away: 'CHE' });
+  } finally { if (!hadLoc) delete globalThis.location; }
+  const yOf = p => (12 + (190 - 12 - 22) * (1 - p)).toFixed(1);
+  const stepPP = (100 * Math.max(...[1, 2, 3].map(i => Math.abs(pts[0][i] - kick[i - 1])))).toFixed(1);
+  ok('勝率曲線:有 kick 時主勝那條線從 kick 起畫(不是從賽前平均)', withK.includes(`M34.0,${yOf(kick[0])}`) && !withK.includes(`M34.0,${yOf(pts[0][1])}`));
+  ok('勝率曲線:賽前三個機率畫成圓點、各一段直的點線,說明寫出這一場的步幅', (withK.match(/<circle /g) ?? []).length === 3 && withK.includes('換算法') && withK.includes(`約 ${stepPP} 個百分點`));
+  ok('勝率曲線:沒有 kick 仍講換算法(不畫圓點);第一點不是第 0 分就不講', !/<circle /.test(noK) && noK.includes('換算法') && !notAnchored.includes('第 0 分'));
+  const pa = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8'));
+  ok('單場頁把 kick 傳進勝率曲線', /C\.probCurve\(rec\.pts, \{[^}]*kick: rec\.kick/.test(pa));
+
+  // ⑦ 模型頁:那一節的數字全部從 kickoff 讀,結論也跟著資料(不寫死「沒有更準」)
+  const pm = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-model.js'), 'utf8'));
+  const kn = pm.slice(pm.indexOf('function kickoffNote('), pm.indexOf('function inplayCalibSection('));
+  ok('模型頁的開球那一節讀 kickoff、結論看 passed(),不寫死數字', kn.length > 100 && /T\.kickoff/.test(kn) && /passed\(A\.validation\)/.test(kn)
+    && !/\d+\.\d+ 個(百分點|標準誤)/.test(kn) && /\$\{kickoffNote\(T\)\}/.test(pm));
+
+  for (const [name, pass, detail] of results) console.log(`  ${pass ? '✔' : '✗'} ${name}${!pass && detail ? `(${detail})` : detail && pass ? `(${detail})` : ''}`);
+  return results.filter(r => !r[1]).length;
+}
+
 async function checkInplayCurve() {
   const results = [];
   const ok = (name, pass, detail = '') => results.push([name, !!pass, detail]);
@@ -430,6 +538,8 @@ async function main() {
 
   console.log('\n▶ 即時勝率的時間曲線(補時、進球分佈;驗收過才用)');
   const inplayCurveFail = await checkInplayCurve();
+  console.log('\n▶ 即時勝率:開球那一步與中場的分鐘(只量不改模型;中場不再是第 0 分)');
+  const inplayKickFail = await checkInplayKickoff();
 
   // AI 報告層:重點不是文字好不好看,是「數字有沒有被編造」這條線守不守得住
   console.log('\n▶ AI 報告層自我檢查');
@@ -542,7 +652,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || inplayCurveFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。

@@ -35,6 +35,7 @@ import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
 import { loadInplayCurve } from './lib/inplay-tuning.mjs';
+import { fotmobMinute } from './lib/live-minute.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
@@ -1035,18 +1036,19 @@ async function main() {
         if (sc.season === CURRENT_SEASON && Number.isFinite(ageH) && ageH <= LIVE_STALE_H) {
           const today = sc.fetchedAt.slice(0, 10);
           const todays = sc.matches.filter(m => m.date === today && (m.started || m.finished) && !m.cancelled);
-          const minuteOf = m => { const mm = /^(\d+)/.exec(String(m.liveTime ?? '')); return m.finished ? 90 : mm ? Number(mm[1]) : 0; };
+          /* 分鐘字串的解讀(中場 `HT`、上半場補時也連續數)收在 lib/live-minute.mjs,兩支 build 共用 */
           const matches = todays.map(m => {
             const fixture = fixtureByPair.get(`${m.home}|${m.away}`);
             if (!fixture) return null;
+            const mm = fotmobMinute(m.liveTime, { kickoff: m.utcTime, fetchedAt: sc.fetchedAt, finished: m.finished });
             const detail = { key: `${m.home}|${m.away}`, season: CURRENT_SEASON, source: 'fotmob', kickoff: m.utcTime,
               home: m.home, away: m.away, score: m.score ? { home: m.score[0], away: m.score[1] } : { home: null, away: null },
               teamStats: {}, players: {}, events: [], lineups: {},
               coverage: { teamStatistics: false, playerStatistics: false, ratings: false, events: false, lineups: false } };
-            const rep = buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code, inplayCurve: INPLAY_CURVE });
+            const rep = buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: mm.minute, nameOf: code => T.byCode.get(code)?.en ?? code, inplayCurve: INPLAY_CURVE });
             /* fixtureId 與 round 是跟前端的約定(英超的 live.json 有帶):實時頁的進行中卡片靠 fixtureId 直達分析頁,
                沒有就退回 href="#" 的抽屜 —— 使用者 2026-09-07 點西甲進行中的比賽進不去,就是這裡漏了。 */
-            return rep ? { ...rep, fixtureId: fixture.id ?? null, round: fixture.round ?? null } : rep;
+            return rep ? { ...rep, fixtureId: fixture.id ?? null, round: fixture.round ?? null, period: mm.period } : rep;
           }).filter(Boolean);
           liveOut = { available: true, source: 'fotmob', sourceLabel: 'FotMob 比分(比賽日約每 15 分鐘)', demo: false,
             season: CURRENT_SEASON, fetchedAt: sc.fetchedAt,

@@ -1,6 +1,6 @@
-import * as C from './core.js?v=6d9662ee';
+import * as C from './core.js?v=712282cc';
 import { followedIn } from './follow.js?v=02130043';
-import { mountSimTable } from './sim-table.js?v=2c8b105a';
+import { mountSimTable } from './sim-table.js?v=2bf1c0fe';
 
 const app = document.getElementById('app');
 
@@ -410,7 +410,7 @@ try {
     return `<a class="card matchcard" ${m.fixtureId
       ? `href="${C.link('analysis', { id: m.fixtureId })}"`
       : `href="#" data-match="${m.key}"`}>
-      <div class="spread"><span class="pill bad"><span class="livedot"></span><span data-liveclock="${C.esc(m.key)}">第 ${C.liveMinute(m, live.fetchedAt).disp} 分鐘</span></span>
+      <div class="spread"><span class="pill bad"><span class="livedot"></span><span data-liveclock="${C.esc(m.key)}">${C.minuteText(C.liveMinute(m, live.fetchedAt))}</span></span>
         <span class="tiny dim">第 ${m.round} 輪</span></div>
       <div style="margin:12px 0">${scoreOf(m)}</div>
       ${p ? C.probBar(p) : ''}
@@ -491,7 +491,7 @@ try {
       <div class="card">
         <div class="spread">
           <span class="small dim">${C.kickoffLocal(m.kickoff)}・第 ${m.round} 輪</span>
-          <span class="pill ${m.finished ? '' : 'bad'}">${m.finished ? '完場' : `<span data-liveclock="${C.esc(m.key)}">第 ${C.liveMinute(m, live.fetchedAt).disp} 分鐘</span>`}</span>
+          <span class="pill ${m.finished ? '' : 'bad'}">${m.finished ? '完場' : `<span data-liveclock="${C.esc(m.key)}">${C.minuteText(C.liveMinute(m, live.fetchedAt))}</span>`}</span>
         </div>
         <div style="margin:14px 0">${scoreOf(m)}</div>
         ${p ? `${C.probBar(p)}
@@ -554,7 +554,7 @@ try {
   C.pageInterval(() => {
     for (const n of document.querySelectorAll('[data-liveclock]')) {
       const m = (live?.matches ?? []).find(x => x.key === n.dataset.liveclock);
-      if (m && m.started && !m.finished) n.textContent = `第 ${C.liveMinute(m, live.fetchedAt).disp} 分鐘`;
+      if (m && m.started && !m.finished) n.textContent = `${C.minuteText(C.liveMinute(m, live.fetchedAt))}`;
     }
   }, 1000);
 

@@ -224,3 +224,54 @@ export function gameStateModel(S, mult) {
     return t[c][Math.max(0, Math.min(N - 1, st.hs - st.as + D))];
   };
 }
+
+/* ── 開賽那一刻的落差(只量,2026-09-25) ─────────────────────────────
+   賽前頁的機率是 Dixon-Coles Poisson 與 Elo 的平均;即時勝率只用 Poisson 的 λ(獨立 Poisson、沒有 τ)。
+   所以勝率曲線的第 0 分(賽前平均)跟第一個即時點之間有一步落差,那一步是**換算法**,不是場上發生了什麼。
+   兩種把平均帶進場中的做法都量過,都沒有讓比賽中的機率更準(數字每次部署重算,寫在 inplay-tuning.json 的 kickoff):
+     ① 完全對齊:解 λ' 讓第 0 分的主勝、客勝都等於賽前平均 —— 賽前平均的和局機率比第 0 分的即時模型高約 1 個百分點
+        (`kickoff.drawGap`;是 Elo 還是 Dixon-Coles 的 τ 造成的沒有拆),獨立 Poisson 要多給和局只能把總進球壓低,
+        對齊之後總進球少了約 5~6%(`kickoff.anchor.totalRatio`),前 15 分好一點、最後 15 分反而變差(剩下的進球被少算);
+     ② 只拿強弱:總進球不動,只調主客的比例讓「主勝 − 客勝」等於賽前平均 —— 調參季就沒過 2 個 SE。
+   **第二種要先在調參季過 2 個 SE 才跑驗收**:兩種做法是看過第一種的驗收之後才想到第二種的,
+   不這樣限制的話就是在驗收季挑一個喜歡的答案。 */
+const KICK_MAX = 7;   // 跟 lib/inplay.mjs 的 MAX_MORE 同一個(第 0 分要跟 inPlay 算出來的一模一樣)
+/* 第 0 分的主和客勝(跟 inPlay 同一個算法,但不捨入 —— 解方程時捨入會把數值微分吃掉) */
+export function outcome0(lh, la) {
+  const pmf = l => { const o = []; let t = Math.exp(-l); for (let k = 0; k <= KICK_MAX; k++) { o.push(t); t = t * l / (k + 1); } return o; };
+  const ph = pmf(lh), pa = pmf(la);
+  let h = 0, d = 0, a = 0;
+  for (let i = 0; i <= KICK_MAX; i++) for (let j = 0; j <= KICK_MAX; j++) { const p = ph[i] * pa[j]; if (i > j) h += p; else if (i === j) d += p; else a += p; }
+  const t = h + d + a;
+  return [h / t, d / t, a / t];
+}
+/* ① 完全對齊:在 log λ 上做牛頓法,數值雅可比。解不到(極端的賽前機率)就回最後一步,err 照實帶出去。 */
+export function anchorLambdas(lh, la, pre) {
+  let x = [Math.log(lh), Math.log(la)];
+  const g = ([a, b]) => { const r = outcome0(Math.exp(a), Math.exp(b)); return [r[0] - pre.home, r[2] - pre.away]; };
+  for (let it = 0; it < 60; it++) {
+    const y = g(x);
+    if (Math.hypot(y[0], y[1]) < 1e-10) break;
+    const h = 1e-6, y1 = g([x[0] + h, x[1]]), y2 = g([x[0], x[1] + h]);
+    const J = [[(y1[0] - y[0]) / h, (y2[0] - y[0]) / h], [(y1[1] - y[1]) / h, (y2[1] - y[1]) / h]];
+    const det = J[0][0] * J[1][1] - J[0][1] * J[1][0];
+    if (Math.abs(det) < 1e-14) break;
+    const dx = [(J[1][1] * y[0] - J[0][1] * y[1]) / det, (-J[1][0] * y[0] + J[0][0] * y[1]) / det];
+    const step = Math.min(1, 0.5 / Math.max(Math.abs(dx[0]), Math.abs(dx[1]), 1e-12));
+    x = [x[0] - dx[0] * step, x[1] - dx[1] * step];
+  }
+  const y = g(x);
+  return { lh: Math.exp(x[0]), la: Math.exp(x[1]), err: Math.hypot(y[0], y[1]) };
+}
+/* ② 只拿強弱:Λ = λh + λa 不動,二分法找主隊的比例 s(主勝 − 客勝對 s 單調)。 */
+export function splitLambdas(lh, la, pre) {
+  const L = lh + la, target = pre.home - pre.away;
+  const f = s => { const r = outcome0(s * L, (1 - s) * L); return r[0] - r[2] - target; };
+  let lo = 1e-4, hi = 1 - 1e-4;
+  if (f(lo) > 0) hi = lo; else if (f(hi) < 0) lo = hi;
+  else for (let i = 0; i < 80; i++) { const mid = (lo + hi) / 2; if (f(mid) < 0) lo = mid; else hi = mid; }
+  const s = (lo + hi) / 2;
+  return { lh: s * L, la: (1 - s) * L };
+}
+/* 開球那一步有多大:賽前平均 vs 第 0 分的即時勝率,主和客三個裡差最多的那一個(0~1) */
+export const kickStep = (lh, la, pre) => { const r = outcome0(lh, la); return Math.max(Math.abs(r[0] - pre.home), Math.abs(r[1] - pre.draw), Math.abs(r[2] - pre.away)); };

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6d9662ee';
+import * as C from './core.js?v=712282cc';
 
 const app = document.getElementById('app');
 
@@ -177,7 +177,32 @@ try {
     ${G?.tuning ? `<div class="note" style="margin-top:10px"><b>測過但沒有進模型:局面乘數</b>(落後一方進球加速、領先一方放慢,
       依淨勝球與時段分 15 格,在 ${C.esc(T.tuneSeason)} 估)。調參季改善 ${sez(G.tuning.z)} 個標準誤、驗收季 ${sez(G.validation?.z)} 個標準誤 ——
       ${G.passes ? '驗收過了門檻,但還沒有人看過,所以還沒上線。' : '驗收沒過 2 個標準誤,不進模型。'}每次部署重算,樣本多了會再回答一次。</div>` : ''}
+    ${kickoffNote(T)}
   </div>`;
+  }
+
+  /* 開球那一刻的落差(2026-09-25 量的,只量):賽前頁是 Poisson 與 Elo 的平均,即時勝率只用 Poisson。
+     數字一律從 inplay-tuning.json 的 kickoff 讀(每次部署重算);勝率曲線那張圖的說明講同一件事。 */
+  function kickoffNote(T) {
+    const K = T.kickoff;
+    if (!K?.anchor?.tuning || !K.split?.tuning) return '';
+    const stepS = K.step?.validation ?? K.step?.tuning;
+    const stepSeason = K.step?.validation ? (T.validSeasons ?? []).join('、') : T.tuneSeason;
+    const pp = v => (v == null ? '—' : (v * 100).toFixed(1));
+    const zs = p => (p?.z == null ? '—' : `${p.diff <= 0 ? '改善' : '變差'} ${Math.abs(p.z).toFixed(1)} 個標準誤`);
+    const passed = p => !!p && p.diff < 0 && p.z != null && p.z <= -2;
+    const A = K.anchor, Sp = K.split, aw = A.windows?.tuning ?? {};
+    const shrink = A.totalRatio?.tuning == null ? '—' : ((1 - A.totalRatio.tuning) * 100).toFixed(0);
+    return `<div class="note" style="margin-top:10px"><b>測過但沒有進模型:開球那一刻的落差</b>。賽前頁的機率是 Poisson 與 Elo 兩個模型的平均,
+      比賽中的即時勝率只用 Poisson 的預期進球,所以開球時兩者之間本來就有一步(${C.esc(stepSeason)}:平均 ${pp(stepS?.mean)} 個百分點、
+      九成的比賽在 ${pp(stepS?.p90)} 以內、最大 ${pp(stepS?.max)})。把平均帶進場中試了兩種做法:
+      <br>① <b>完全對齊</b>(第 0 分的主勝、客勝都等於賽前平均):賽前平均的和局機率比較高,對齊之後總進球少了約 ${shrink}%,
+      前 15 分${zs(aw['1-15'])}、最後 15 分${zs(aw['76-90'])};整場在 ${C.esc(T.tuneSeason)} ${zs(A.tuning)}、驗收季${zs(A.validation)}。
+      <br>② <b>只拿強弱</b>(總進球不動):${C.esc(T.tuneSeason)} ${zs(Sp.tuning)}${Sp.validation ? `、驗收季${zs(Sp.validation)}`
+        : ',沒過 2 個標準誤,照事先定的規則不跑驗收'}。
+      <br>${passed(A.validation) || passed(Sp.validation)
+        ? '其中有一種在驗收季過了 2 個標準誤 —— 上線要人決定,所以還沒有改。'
+        : '兩種都沒有讓比賽中的機率更準,所以沒有改。'}單場頁的勝率曲線把那一步畫成第 0 分上一段直的點線。</div>`;
   }
 
   /* ── 即時機率的可靠度(校準量測,累積中)──────────────

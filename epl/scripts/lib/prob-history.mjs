@@ -19,6 +19,7 @@
  *   { season, matches: { "home|away": { pts: [[min,h,d,a,hs,as],...], done } } }
  */
 import { round } from './util.mjs';
+import { inPlay } from './inplay.mjs';
 
 export function appendSamples(store, liveOut, { now = Date.now() } = {}) {
   if (!liveOut?.available || liveOut.demo) return store ?? null;
@@ -86,12 +87,26 @@ export function preMatchSnapshots(store) {
   return out;
 }
 
-/* 給前端的形狀:只給有內容的場次(>= 3 個點才畫得成曲線)。 */
+/* 給前端的形狀:只給有內容的場次(>= 3 個點才畫得成曲線)。
+ *
+ * `kick`(2026-09-25):即時模型在**第 0 分**會說什麼 —— 用凍結的賽前 λ 跑同一個 inPlay。
+ * 第 0 分那個點是賽前頁的機率(Poisson 與 Elo 的平均),而比賽中的點只用 Poisson,所以兩者之間本來就有一步
+ * (往季平均 3 個百分點、最大將近 20,見 inplay-tuning.json 的 kickoff)。畫成一條線的話,那一步會被讀成
+ * 「開賽頭幾分鐘發生了什麼」;有了 kick,前端把它畫成第 0 分上一段直的點線。
+ * 不存進累積檔,每次輸出時算:它是 pre 的純函數,舊紀錄只要有 pre 就有。pre 捨入到小數第 2 位,
+ * 跟比賽中用的 λ 差不到 0.005,算出來的機率差不到 0.2 個百分點 —— 畫面寫「約」。 */
 export function historyForSite(store) {
   if (!store) return { season: null, matches: {} };
   const out = {};
   for (const [k, rec] of Object.entries(store.matches ?? {})) {
-    if ((rec.pts?.length ?? 0) >= 3) out[k] = { pts: rec.pts, done: !!rec.done };
+    if ((rec.pts?.length ?? 0) < 3) continue;
+    const o = { pts: rec.pts, done: !!rec.done };
+    const pre = rec.pre;
+    if (rec.pts[0][0] === 0 && Number.isFinite(pre?.xgHome) && Number.isFinite(pre?.xgAway)) {
+      const p = inPlay({ lambdaHome: pre.xgHome, lambdaAway: pre.xgAway, minute: 0 });
+      o.kick = [p.home, p.draw, p.away];
+    }
+    out[k] = o;
   }
   return { season: store.season, matches: out };
 }

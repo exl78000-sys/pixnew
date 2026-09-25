@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6d9662ee';
+import * as C from './core.js?v=712282cc';
 import { followedIn } from './follow.js?v=02130043';
 import { scorePredictions, outcomeOf, pickOf, matchKey, OUTCOMES } from './predict-score.js?v=3cc21f65';
 

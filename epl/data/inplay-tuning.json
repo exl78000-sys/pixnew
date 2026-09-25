@@ -1,5 +1,5 @@
 {
- "builtAt": "2026-09-25T12:23:13.218Z",
+ "builtAt": "2026-09-25T13:03:53.131Z",
  "method": "檢查點 c = 1..90(時鐘走到 c:00)的即時勝率,逐場平均 RPS;場為獨立樣本",
  "tuneSeason": "2025-26",
  "validSeasons": [
@@ -715,6 +715,105 @@
    "diff": 0,
    "se": 0,
    "z": -1.26
+  }
+ },
+ "kickoff": {
+  "adopted": false,
+  "rule": "驗收季贏過現行(時間曲線 + Poisson 的 λ)超過 2 個 SE 才有資格進模型,上線要人改程式;只拿強弱那一種要先在調參季過 2 個 SE 才跑驗收",
+  "base": "現行:時間曲線 + Poisson 的 λ",
+  "step": {
+   "tuning": {
+    "matches": 2299,
+    "mean": 0.0321,
+    "p90": 0.0596,
+    "max": 0.1752
+   },
+   "validation": {
+    "matches": 345,
+    "mean": 0.0439,
+    "p90": 0.0902,
+    "max": 0.1976
+   }
+  },
+  "drawGap": {
+   "tuning": 0.0112,
+   "validation": 0.0137
+  },
+  "anchor": {
+   "name": "完全對齊賽前(第 0 分的主勝、客勝都等於賽前平均)",
+   "totalRatio": {
+    "tuning": 0.945,
+    "validation": 0.937
+   },
+   "maxSolveError": 0,
+   "tuning": {
+    "matches": 2299,
+    "base": 0.14767,
+    "candidate": 0.14753,
+    "diff": -0.00015,
+    "se": 0.00029,
+    "z": -0.52
+   },
+   "validation": {
+    "matches": 345,
+    "base": 0.14955,
+    "candidate": 0.14979,
+    "diff": 0.00023,
+    "se": 0.00098,
+    "z": 0.24
+   },
+   "windows": {
+    "tuning": {
+     "1-15": {
+      "matches": 2299,
+      "base": 0.20297,
+      "candidate": 0.20229,
+      "diff": -0.00067,
+      "se": 0.00047,
+      "z": -1.44
+     },
+     "76-90": {
+      "matches": 2299,
+      "base": 0.0722,
+      "candidate": 0.07251,
+      "diff": 0.0003,
+      "se": 0.00014,
+      "z": 2.14
+     }
+    },
+    "validation": {
+     "1-15": {
+      "matches": 345,
+      "base": 0.20575,
+      "candidate": 0.2046,
+      "diff": -0.00115,
+      "se": 0.00172,
+      "z": -0.67
+     },
+     "76-90": {
+      "matches": 345,
+      "base": 0.07171,
+      "candidate": 0.07206,
+      "diff": 0.00035,
+      "se": 0.0004,
+      "z": 0.88
+     }
+    }
+   },
+   "passes": false
+  },
+  "split": {
+   "name": "只拿強弱(總進球不動,「主勝 − 客勝」等於賽前平均)",
+   "tuning": {
+    "matches": 2299,
+    "base": 0.14767,
+    "candidate": 0.14736,
+    "diff": -0.00032,
+    "se": 0.00026,
+    "z": -1.25
+   },
+   "validation": null,
+   "validationSkipped": "tuning-not-significant"
   }
  }
 }

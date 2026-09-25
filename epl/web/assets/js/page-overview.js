@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6d9662ee';
+import * as C from './core.js?v=712282cc';
 
 const app = document.getElementById('app');
 
@@ -168,7 +168,7 @@ try {
         const m = liveBy.get(`${f.home}|${f.away}`);
         const live = m && (m.started || m.finished)
           ? { hs: m.hs ?? null, as: m.as ?? null, finished: m.finished === true,
-              minute: m.finished ? null : C.liveMinute(m, lv.fetchedAt).disp }
+              minute: m.finished ? null : C.minuteText(C.liveMinute(m, lv.fetchedAt)) }
           : null;
         rows.push({ kick: f.kickoff, comp: C.LEAGUES[lg].zh, compKey: lg,
           home: h?.en ?? f.home, away: a?.en ?? f.away,
@@ -292,7 +292,7 @@ try {
         return u.live.finished
           ? `<span class="small" style="display:inline-flex;align-items:center;gap:6px"><span class="pill tiny">完場</span>${sc}</span>`
           : `<span class="small" style="display:inline-flex;align-items:center;gap:6px"><span class="pill bad tiny"><span class="livedot"></span>${
-              u.live.minute != null ? `第 ${u.live.minute} 分鐘` : '進行中'}</span>${sc}</span>`;
+              u.live.minute ?? '進行中'}</span>${sc}</span>`;
       } },
     // 靠左:內容是「圖 + 字」的 flex 排版,跟對戰欄同一邊(使用者要求,2026-09-07)
     { key: 'comp', label: '賽事', value: u => u.comp, left: true, render: u => C.compBadge(u.compKey, { label: u.comp }) },

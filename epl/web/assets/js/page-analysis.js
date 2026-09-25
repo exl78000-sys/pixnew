@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6d9662ee';
+import * as C from './core.js?v=712282cc';
 
 const app = document.getElementById('app');
 
@@ -729,7 +729,7 @@ try {
        只改字,不重畫面板。 */
     C.pageInterval(() => {
       if (!cur) return;
-      const t = `第 ${C.liveMinute(cur.m, cur.fetchedAt).disp} 分鐘`;
+      const t = C.minuteText(C.liveMinute(cur.m, cur.fetchedAt));
       document.querySelectorAll('[data-liveclock]').forEach(n => { n.textContent = t; });
     }, 1000);
   }
@@ -763,15 +763,15 @@ try {
     return `<div class="section"><h2>${done ? '終場戰況' : '即時戰況'}</h2>
         <span class="hint">${done
           ? '比分與場上數據來自即時快照・官方賽果與完整賽後報告還沒到'
-          : `<span class="livedot"></span> <span data-liveclock>第 ${mn.disp} 分鐘</span>・每 20 秒自動更新`}</span></div>
+          : `<span class="livedot"></span> <span data-liveclock>${C.minuteText(mn)}</span>・每 20 秒自動更新`}</span></div>
       <div class="card">
         <div class="spread">${done
           ? '<span class="pill warn">終場</span>'
-          : `<span class="pill bad"><span class="livedot"></span><span data-liveclock>第 ${mn.disp} 分鐘</span></span>`}
+          : `<span class="pill bad"><span class="livedot"></span><span data-liveclock>${C.minuteText(mn)}</span></span>`}
           <span class="tiny dim">${C.kickoffLocal(m.kickoff)}</span></div>
         <div class="tiny dim" style="margin-top:4px">${done
           ? `${C.esc(data.live?.sourceLabel ?? data.live?.source ?? '即時來源')}・${C.ageText(fetchedAt)}抓的。獨立賽果核對通過後才會進積分榜與模型,球隊統計、正式陣容與球員評分會在下一次部署出現。`
-          : `${mn.src}・分鐘由抓取後的實際時間推進(推算;中場與補時長度沒有資料,顯示停在 45+/90+)`}</div>
+          : mn.ht ? `${mn.src}・下半場開踢後分鐘會接著走` : `${mn.src}・分鐘由抓取後的實際時間推進(推算;中場與補時長度沒有資料,顯示停在 45+/90+)`}</div>
         <div class="scoreline" style="margin:14px 0">
           <div class="side">${C.badge(m.home)}<b>${C.name(m.home)}</b></div>
           <div class="sc">${m.hs ?? '-'} : ${m.as ?? '-'}</div>
@@ -814,7 +814,7 @@ try {
     if (!rec) return '';
     return `<div class="section"><h2>勝率變化</h2>
         <span class="hint">本站模型的即時機率・比賽中約每 2 分鐘一點</span></div>
-      <div class="card">${C.probCurve(rec.pts, { home: f.home, away: f.away })}</div>`;
+      <div class="card">${C.probCurve(rec.pts, { home: f.home, away: f.away, kick: rec.kick ?? null })}</div>`;
   }
 
   function goalsCard(f, { live = false } = {}) {

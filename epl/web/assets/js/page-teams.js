@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6d9662ee';
+import * as C from './core.js?v=712282cc';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
