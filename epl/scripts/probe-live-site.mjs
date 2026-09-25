@@ -16,7 +16,7 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**7 個請求**(meta / cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
+ * 唯讀、零快取、**9 個請求**(meta / intl.html / intl.json / cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
  * 網址不寫死:從 runner 的 `GITHUB_REPOSITORY` 推(owner/repo → owner.github.io/repo/),
  * 本機測試用 `--base=` 覆寫。
  *
@@ -52,6 +52,22 @@ async function main() {
   if (!m) { console.log('  ✗ meta.json 不是 JSON —— 站台可能還沒部署過,後面的都不用看了'); return; }
   console.log(`  建置時間 ${m.builtAt ?? m.generatedAt ?? '(沒有這個欄位)'}・本季 ${m.currentSeason ?? '?'}`);
   console.log(`  資產戳 ${JSON.stringify(m.assets ?? null)}`);
+
+  // ── 國家隊(2026-09-25):合併後第一次部署有沒有真的把那一頁供出來 ─────
+  /* 部署 job 綠了只代表上傳成功;頁面、資料與它引用的 JS 三個都要在站上才算上線。
+     放在歐冠那一段**前面** —— 歐冠那一段有好幾個 return,放後面的話那邊一出事這邊就沒跑。 */
+  const intlPage = await get('intl.html');
+  const intlSrc = /["']((?:\.\/)?assets\/js\/page-intl\.js(?:\?v=[0-9a-f]{8})?)["']/.exec(intlPage.text)?.[1];
+  console.log(`  intl.html  HTTP ${intlPage.status}  ${intlPage.buf.length} bytes・引用 ${intlSrc ?? '✗ 找不到 page-intl.js'}`);
+  const intl = await get('data/intl.json');
+  const I = jsonOf(intl);
+  console.log(`  data/intl.json  HTTP ${intl.status}  ${intl.buf.length} bytes  sha256:${sha(intl.buf)}`);
+  if (I) {
+    const fx = I.fixtures ?? [];
+    console.log(`  國家隊建置 ${I.builtAt}・評分截止 ${I.model?.ratingsAsOf}・驗收 ${I.model?.holdout?.gain} ± ${I.model?.holdout?.se}`
+      + `(${I.model?.passed ? '通過' : '沒通過'})・未賽 ${fx.length}(給勝率 ${fx.filter(f => f.prob).length})`
+      + `・賽果 ${(I.results ?? []).length}・核對 ${JSON.stringify(I.checkCounts ?? null)}`);
+  } else console.log('  ✗ data/intl.json 不是 JSON');
 
   // ── 二、歐冠那一頁實際供出來的 JS ──────────────────────
   /* `ucl.html` 2026-08-29 起**只是轉址頁**(歐冠併進盃賽單頁,渲染在 ucl-view.js),

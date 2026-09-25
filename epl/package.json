@@ -80,6 +80,7 @@
     "intl:fetch": "node scripts/fetch-intl-fotmob.mjs",
     "intl:build": "node scripts/build-intl.mjs",
     "probe:intl-fetch": "node scripts/probe-intl-fetch.mjs",
+    "probe:intl-tables": "node scripts/probe-intl-tables.mjs",
     "probe:undump": "node scripts/undump-probe-log.mjs",
     "tune:intl": "node scripts/tune-intl.mjs",
     "tiers": "node scripts/fetch-tiers.mjs",
