@@ -16,8 +16,8 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**15 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
- * explore.html / game-sim.js / model.html / inplay-tuning.json /
+ * 唯讀、零快取、**16 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
+ * explore.html / game-sim.js / model.html / inplay-tuning.json / prob-history.json /
  * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
  * 網址不寫死:從 runner 的 `GITHUB_REPOSITORY` 推(owner/repo → owner.github.io/repo/),
  * 本機測試用 `--base=` 覆寫。
@@ -121,6 +121,16 @@ async function main() {
       + `・${'inUse' in IP ? (IP.inUse ? '使用中' : '沒有在用(退回線性)') : '(沒有 inUse 這個欄位)'}`
       + `・驗收 ${(v.seasons ?? []).join('、') || '?'} ${v.matches ?? '?'} 場 ${v.diff ?? '?'} ± ${v.se ?? '?'}(z ${v.z ?? '?'}、${v.passes ? '通過' : '沒通過'})`
       + `・S(90) ${IP.curve?.S?.[90] ?? '?'}`);
+    /* 開球那一步(2026-09-25):只量不改,站上要看得到那一段量測、勝率曲線要帶得到 kick */
+    const K = IP.kickoff;
+    console.log(`  開球那一步 ${K ? `平均 ${K.step?.tuning?.mean ?? '?'}・完全對齊驗收 ${K.anchor?.validation?.diff ?? '?'}・adopted ${K.adopted}` : '(沒有 kickoff 這個欄位 —— 站上還是上一版)'}`);
+  }
+  const ph = await get('data/prob-history.json');
+  const PH = ph.ok ? jsonOf(ph) : null;
+  if (!PH) console.log(`  data/prob-history.json  HTTP ${ph.status}${ph.ok ? '・✗ 不是 JSON' : ''}`);
+  else {
+    const recs = Object.values(PH.matches ?? {});
+    console.log(`  data/prob-history.json  HTTP ${ph.status}  ${ph.buf.length} bytes・${recs.length} 場有曲線、帶 kick 的 ${recs.filter(r => Array.isArray(r.kick)).length} 場`);
   }
 
   // ── 二、歐冠那一頁實際供出來的 JS ──────────────────────
