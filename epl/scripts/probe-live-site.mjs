@@ -74,6 +74,11 @@ async function main() {
     console.log(`  分組積分榜 ${st ? `${st.length} 個賽事 ${st.reduce((a, c) => a + (c.groups?.length ?? 0), 0)} 組` : '(沒有這個欄位)'}`
       + `・排名 ${(I.ranking ?? []).length} 隊・不列的非會員 ${I.nonMembers ? I.nonMembers.length : '(沒有這個欄位)'}`
       + `・國旗 ${I.flags ? `${I.flags.count} 隊` : '(沒有這個欄位)'}`);
+    // 2026-09-25 的中立場推論:過了門檻的話,每一場給勝率的都要帶 venue
+    const vn = I.model?.venue;
+    const withVenue = fx.filter(f => f.prob && f.venue).length;
+    console.log(`  中立場推論 ${vn ? `${vn.passes ? '通過' : '沒通過'}(驗收 ${vn.holdout?.gain} ± ${vn.holdout?.se})・給勝率 ${fx.filter(f => f.prob).length} 場裡帶推論的 ${withVenue} 場`
+      + `・機率 40% 以上 ${fx.filter(f => f.venue?.q >= 0.4).length} 場` : '(沒有這個欄位)'}`);
   } else console.log('  ✗ data/intl.json 不是 JSON');
   /* 球隊頁與國旗的明細是另外兩份產物(只有國家隊頁載)。404 就是那一批還沒部署上去 —— 照實講,不當成錯。 */
   for (const [path, count] of [['data/intl-teams.json', j => `${Object.keys(j.teams ?? {}).length} 隊`],
