@@ -1,5 +1,5 @@
 {
- "schemaVersion": 1,
+ "schemaVersion": 2,
  "key": "gulf",
  "id": 329,
  "fmName": "Gulf Cup",
@@ -14,7 +14,7 @@
   "2013",
   "2010"
  ],
- "retrievedAt": "2026-09-24T14:27:45.568Z",
+ "retrievedAt": "2026-09-25T03:13:27.243Z",
  "matches": [
   {
    "id": "6052027",
@@ -66,7 +66,7 @@
   },
   {
    "id": "6052082",
-   "kickoff": "2026-09-24T15:00:00.000Z",
+   "kickoff": "2026-09-24T15:55:00Z",
    "home": {
     "name": "UAE",
     "shortName": "UAE",
@@ -77,17 +77,20 @@
     "shortName": "Yemen",
     "fmId": "5892"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    4,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": null
   },
   {
    "id": "6052083",
-   "kickoff": "2026-09-24T18:00:00.000Z",
+   "kickoff": "2026-09-24T18:00:00Z",
    "home": {
     "name": "Qatar",
     "shortName": "Qatar",
@@ -98,10 +101,13 @@
     "shortName": "Bahrain",
     "fmId": "5901"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": null
@@ -336,6 +342,152 @@
    "awarded": false,
    "round": "final",
    "group": null
+  }
+ ],
+ "groups": [
+  {
+   "name": "Grp. A",
+   "fmId": "943992",
+   "legend": [
+    {
+     "key": "qualification_next_stage",
+     "title": "Qualification next stage",
+     "idx": [
+      0,
+      1
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "7795",
+     "name": "Saudi Arabia",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 1,
+     "ga": 0,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5824",
+     "name": "Oman",
+     "idx": 2,
+     "played": 1,
+     "wins": 0,
+     "draws": 1,
+     "losses": 0,
+     "gf": 1,
+     "ga": 1,
+     "pts": 1,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5819",
+     "name": "Iraq",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 1,
+     "losses": 0,
+     "gf": 1,
+     "ga": 1,
+     "pts": 1,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5821",
+     "name": "Kuwait",
+     "idx": 4,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 1,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "Grp. B",
+   "fmId": "943993",
+   "legend": [
+    {
+     "key": "qualification_next_stage",
+     "title": "Qualification next stage",
+     "idx": [
+      0,
+      1
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "5789",
+     "name": "UAE",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 4,
+     "ga": 0,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5902",
+     "name": "Qatar",
+     "idx": 2,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 2,
+     "ga": 0,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5901",
+     "name": "Bahrain",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 2,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5892",
+     "name": "Yemen",
+     "idx": 4,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 4,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
   }
  ],
  "proof": {
@@ -703,5 +855,6 @@
     "group": null
    }
   ]
- }
+ },
+ "proofSchema": 1
 }

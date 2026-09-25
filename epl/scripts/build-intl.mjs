@@ -25,13 +25,24 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   parseIntlResults, parseShootouts, runIntlElo, backtestIntl, frequencyBaseline, pairedGain, calibration,
   expectedScore, probsFromE, tournamentClass, crossCheckIntl, proofFromCheck,
+  intlLagCost, intlTeamHistory, intlH2H, intlStandings,
   INTL_HOLDOUT, INTL_MIN_GAMES, intlPasses,
 } from './lib/intl.mjs';
 import { loadIntlTeamTable, makeIntlResolver } from './lib/intl-teams.mjs';
-import { FOTMOB_INTL, INTL_FAMILIES, INTL_NOT_FETCHED, isIntlTbd, intlTbdLabel, intlRoundZh } from './lib/adapters/fotmob-intl.mjs';
+import {
+  FOTMOB_INTL, INTL_FAMILIES, INTL_NOT_FETCHED, INTL_LEGEND_ZH, isIntlTbd, intlTbdLabel, intlRoundZh, intlGroupZh,
+} from './lib/adapters/fotmob-intl.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web', 'data', 'intl.json');
+/* 球隊頁的明細另外一份:只有點進某一隊時才載(兩百多隊的走勢與交手紀錄約四、五百 KB,
+   放進 intl.json 的話每一個打開國家隊頁的人都要多下載一次)。 */
+const OUT_TEAMS = join(ROOT, 'web', 'data', 'intl-teams.json');
+/* 走勢圖從這一天起畫:一隊一年十場上下,八年多 ≈ 八十個點 —— 夠看出起伏,又不會把 1872 年起的
+   幾百場都塞進去(那段跟現在的球隊已經沒什麼關係)。 */
+const TREND_FROM = '2018-01-01';
+const RECENT_N = 12;
+const H2H_LAST = 5;
 /* 排名只列「還在踢」的隊:最後一場在評分截止日之前兩年內。解散的隊(蘇聯、南斯拉夫)與
    很久沒踢的隊評分凍在當年,列進來會讓排名看起來像歷史榜。 */
 const ACTIVE_DAYS = 730;
@@ -60,6 +71,11 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
   const all = pairedGain(hold, frequencyBaseline(hold));
   const pack = g => g && { n: g.n, model: r4(g.model), baseline: r4(g.baseline), gain: r4(g.gain), se: r4(g.se), z: r1(g.z) };
   const passed = intlPasses(all);
+  /* 評分落後一週的代價(每次建置重算;為什麼不拿未核對的賽果做暫定更新,見 lib/intl.mjs 的 intlLagCost) */
+  const lagRaw = intlLagCost(mj, P, { from: INTL_HOLDOUT.from, minGames, days: 7 });
+  const packLag = x => x && { n: x.n, cost: r4(x.cost), se: r4(x.se), z: x.z == null ? null : r1(x.z) };
+  const lag = lagRaw && { days: lagRaw.days, all: packLag(lagRaw.all), affected: packLag(lagRaw.affected),
+    passes: intlPasses(lagRaw.affected && { gain: lagRaw.affected.cost, se: lagRaw.affected.se }) };
 
   // ── 賽事:讀快取、用當下的對照表重算 id 證明 ──
   const comps = [];
@@ -146,23 +162,73 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
     return { ...out, prob: [r4(p.home), r4(p.draw), r4(p.away)], elo: [Math.round(rh), Math.round(ra)], why: null };
   }).sort((a, b) => Date.parse(a.kickoff) - Date.parse(b.kickoff));
 
+  // ── 分組積分榜:積分由本站用已完賽的賽果算,上游的表只拿來取名單、官方排序與核對(lib/intl.mjs 的 intlStandings)──
+  const standings = [];
+  for (const comp of FOTMOB_INTL) {
+    const raw = raws[comp.key];
+    if (comps.find(c => c.key === comp.key)?.status !== 'ok' || !raw?.groups?.length) continue;
+    const groups = intlStandings(raw.groups, raw.matches)
+      .sort((x, y) => String(x.name).localeCompare(String(y.name), 'en', { numeric: true }))
+      .map(g => ({
+        name: g.name, zh: intlGroupZh(g.name), status: g.status, orderBy: g.orderBy, counted: g.counted, live: g.live,
+        legend: g.legend.map(l => ({ key: l.key, zh: INTL_LEGEND_ZH[l.key]?.zh ?? null, en: l.title, tone: INTL_LEGEND_ZH[l.key]?.tone ?? null, idx: l.idx })),
+        rows: g.rows.map(r => ({
+          pos: r.pos, key: resolver.keyOf(r.name), name: r.name, p: r.p, w: r.w, d: r.d, l: r.l, gf: r.gf, ga: r.ga, gd: r.gd, pts: r.pts,
+          check: r.check, ...(r.check === 'agree' ? {} : { up: r.up }),
+          ...(r.deduction != null ? { deduction: r.deduction } : {}), ...(r.live ? { live: r.live } : {}),
+        })),
+      }));
+    standings.push({ comp: comp.key, retrievedAt: raw.retrievedAt, groups });
+  }
+
   // ── 評分排名 ──
+  /* **只列國際足總會員**(2026-09-25)。第一版把澤西島排到第 37、北賽普勒斯第 54 —— martj42 也收了
+     島嶼運動會、CONIFA 這類非會員的比賽,那些隊大多只跟彼此踢,評分是在另一個小圈子裡累積的,
+     跟會員比不起來。會員用「**踢過世界盃(含資格賽)**」認:只有會員能報名,資料本身就證明得了,
+     不必另外抄一份會員名單。俄羅斯被禁賽、兩年只踢友誼賽,照這一條仍是會員 —— 用「兩年內踢過正式賽」
+     當門檻的話會把它錯排掉(量過)。
+     不列排名的非會員分兩種,畫面分開講:**主要跟會員交手**的(中北美國聯的瓜德羅普、馬丁尼克……)
+     評分可以比,比賽照常給勝率;**大多只跟彼此踢**的,評分只是那個小圈子裡的相對位置。 */
+  const members = new Set();
+  for (const m of mj) if (m.tournament === 'FIFA World Cup' || m.tournament === 'FIFA World Cup qualification') { members.add(m.home); members.add(m.away); }
   const cutoff = lastDate ? new Date(Date.parse(`${lastDate}T00:00:00Z`) - ACTIVE_DAYS * dayMs).toISOString().slice(0, 10) : '';
-  const ranking = [...rating].filter(([k]) => (games.get(k) ?? 0) >= minGames && (last.get(k) ?? '') >= cutoff)
+  const active = [...rating].filter(([k]) => (games.get(k) ?? 0) >= minGames && (last.get(k) ?? '') >= cutoff);
+  const ranking = active.filter(([k]) => members.has(k))
     .sort((x, y) => y[1] - x[1]).map(([k, r], i) => ({ rank: i + 1, key: k, rating: Math.round(r), games: games.get(k), last: last.get(k) }));
+  // 不列排名的非會員:兩年內的比賽有一半以上是對會員踢的 → 評分跟會員接得上
+  const vsMembers = new Map();
+  for (const m of mj) {
+    if (m.date < cutoff) continue;
+    for (const [t, o] of [[m.home, m.away], [m.away, m.home]]) {
+      if (members.has(t)) continue;
+      const x = vsMembers.get(t) ?? { n: 0, members: 0, tours: new Map() };
+      x.n++; if (members.has(o)) x.members++;
+      x.tours.set(m.tournament, (x.tours.get(m.tournament) ?? 0) + 1);
+      vsMembers.set(t, x);
+    }
+  }
+  const nonMembers = active.filter(([k]) => !members.has(k)).map(([k, r]) => {
+    const x = vsMembers.get(k) ?? { n: 0, members: 0, tours: new Map() };
+    // 那兩年踢的是什麼賽事(畫面講「小圈子」時舉例用,從資料讀,不憑印象寫)
+    const tours = [...x.tours].sort((a, b) => b[1] - a[1]).slice(0, 2).map(([t]) => t);
+    return { key: k, rating: Math.round(r), n: x.n, vsMembers: x.members, linked: x.n > 0 && x.members / x.n >= 0.5, tours };
+  }).sort((a, b) => b.rating - a.rating);
   const rankOf = new Map(ranking.map(r => [r.key, r.rank]));
 
   // 畫面會提到的每一隊:中文名、評分與名次(一份字典,場次裡只放鍵)
-  const keys = new Set([...ranking.map(r => r.key),
-    ...fixtures.flatMap(f => [f.home.key, f.away.key]), ...results.flatMap(r => [r.home.key, r.away.key])].filter(Boolean));
+  const keys = new Set([...ranking.map(r => r.key), ...nonMembers.map(r => r.key),
+    ...fixtures.flatMap(f => [f.home.key, f.away.key]), ...results.flatMap(r => [r.home.key, r.away.key]),
+    ...standings.flatMap(s => s.groups.flatMap(g => g.rows.map(r => r.key)))].filter(Boolean));
   const teams = {};
   for (const k of [...keys].sort()) {
     teams[k] = { zh: resolver.zhOf(k), rating: rating.has(k) ? Math.round(rating.get(k)) : null,
-      games: games.get(k) ?? 0, last: last.get(k) ?? null, rank: rankOf.get(k) ?? null };
+      games: games.get(k) ?? 0, last: last.get(k) ?? null, rank: rankOf.get(k) ?? null, member: members.has(k) };
   }
 
   const checkCounts = {};
   for (const r of results) checkCounts[r.check] = (checkCounts[r.check] ?? 0) + 1;
+  const standingsCounts = {};
+  for (const g of standings.flatMap(s => s.groups)) standingsCounts[g.status] = (standingsCounts[g.status] ?? 0) + 1;
   return {
     builtAt,
     model: {
@@ -176,6 +242,7 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
       calibration: calibration(hold).map(b => ({ ...b, predicted: r4(b.predicted), actual: r4(b.actual) })),
       neutralUnknown: params.neutralUnknown ?? null,
       ratingsAsOf: lastDate,
+      lag,
     },
     sources: [
       { key: 'martj42', name: 'martj42/international_results', url: 'https://github.com/martj42/international_results',
@@ -191,13 +258,33 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
     fixtures,
     results,
     checkCounts,
+    standings,
+    standingsCounts,
     ranking,
+    nonMembers,
     teams,
     unknownNames: [...unknownNames.values()].sort((a, b) => b.n - a.n).map(u => ({ name: u.name, n: u.n, comps: [...u.comps] })),
     dupes,
   };
 }
 
+/* 球隊頁的明細(web/data/intl-teams.json):評分走勢、最近幾場(每一場的評分變化)、接下來那幾場的歷來交手。
+   全部來自 martj42 與同一條 Elo —— 零新請求。**交手紀錄只當資訊,不進模型**(畫面講)。 */
+export function assembleIntlTeams({ mj, params, main, builtAt }) {
+  const P = params.params;
+  const keys = Object.keys(main.teams);
+  const { trend, recent } = intlTeamHistory(mj, P, { keys, from: TREND_FROM, recentN: RECENT_N });
+  const pairs = main.fixtures.filter(f => f.state !== 'CANCELLED' && f.home.key && f.away.key).map(f => [f.home.key, f.away.key]);
+  const h2h = intlH2H(mj, pairs, { lastN: H2H_LAST });
+  const teams = {};
+  for (const k of keys) teams[k] = { trend: trend.get(k) ?? [], recent: recent.get(k) ?? [] };
+  return {
+    builtAt, ratingsAsOf: main.model.ratingsAsOf, trendFrom: TREND_FROM, recentN: RECENT_N, h2hLast: H2H_LAST,
+    teams,
+    // 沒交手過的那一組也留著(值是 null):畫面才分得出「沒交手過」與「沒算到」
+    h2h: Object.fromEntries([...h2h].sort(([a], [b]) => (a < b ? -1 : 1))),
+  };
+}
 function loadRaws(dir) {
   const out = {};
   if (!existsSync(dir)) return out;
@@ -231,7 +318,16 @@ async function main() {
       : `季 ${c.season}・${c.counts.total} 場・證明 對上 ${c.proof.matched}${c.proof.proofSeason ? `(含上一季 ${c.proof.proofSeason.season})` : ''}${c.why ? ` —— ${c.why}` : ''}`}`);
   }
   const withProb = out.fixtures.filter(f => f.prob).length;
-  console.log(`  未賽 ${out.fixtures.length} 場(給勝率 ${withProb})・已完賽 ${out.results.length} 場(核對 ${JSON.stringify(out.checkCounts)})・排名 ${out.ranking.length} 隊`);
+  const lg = out.model.lag;
+  if (lg?.affected) console.log(`  評分落後 ${lg.days} 天的代價:受影響的 ${lg.affected.n} 場每場 RPS +${lg.affected.cost} ± ${lg.affected.se}(${lg.affected.z} SE)`
+    + `・全部 ${lg.all.n} 場 +${lg.all.cost} → ${lg.passes ? '大過兩倍標準誤' : '沒有大過兩倍標準誤,不拿未核對的賽果做暫定更新'}`);
+  const sg = out.standings.flatMap(s => s.groups);
+  if (sg.length) console.log(`  分組積分榜 ${out.standings.length} 個賽事 ${sg.length} 組:${JSON.stringify(out.standingsCounts)}`
+    + (sg.some(g => g.live.length) ? `・上游算進了進行中的比賽 ${[...new Set(sg.flatMap(g => g.live))].length} 場` : ''));
+  const bad = sg.filter(g => g.status === 'mismatch');
+  if (bad.length) console.log(`  ⚠ 積分對不上(場數一樣):${bad.map(g => g.name).join('、')}`);
+  console.log(`  未賽 ${out.fixtures.length} 場(給勝率 ${withProb})・已完賽 ${out.results.length} 場(核對 ${JSON.stringify(out.checkCounts)})・排名 ${out.ranking.length} 隊`
+    + `(另有非會員 ${out.nonMembers.length} 隊不列:跟會員交手為主 ${out.nonMembers.filter(x => x.linked).length}、大多只跟彼此踢 ${out.nonMembers.filter(x => !x.linked).length})`);
   if (out.unknownNames.length) console.log(`  ⚠ 隊名對不上身分 ${out.unknownNames.length} 個:${out.unknownNames.slice(0, 12).map(u => `${u.name}×${u.n}`).join('、')}`);
   if (out.dupes.length) console.log(`  ⚠ 同一場出現在兩個賽事:${out.dupes.join('、')}(留第一個)`);
 
@@ -240,6 +336,13 @@ async function main() {
   await writeFile(tmp, JSON.stringify(out) + '\n');
   await rename(tmp, OUT);
   console.log(`✔ web/data/intl.json(${(JSON.stringify(out).length / 1024).toFixed(0)} KB)`);
+
+  const teams = assembleIntlTeams({ mj, params, main: out, builtAt: out.builtAt });
+  const tmp2 = `${OUT_TEAMS}.tmp`;
+  await writeFile(tmp2, JSON.stringify(teams) + '\n');
+  await rename(tmp2, OUT_TEAMS);
+  const withH2h = Object.values(teams.h2h).filter(Boolean).length;
+  console.log(`✔ web/data/intl-teams.json(${(JSON.stringify(teams).length / 1024).toFixed(0)} KB;${Object.keys(teams.teams).length} 隊・交手 ${withH2h}/${Object.keys(teams.h2h).length} 組有紀錄)`);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {

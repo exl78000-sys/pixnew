@@ -1,5 +1,5 @@
 {
- "schemaVersion": 1,
+ "schemaVersion": 2,
  "key": "unl-b",
  "id": 9807,
  "fmName": "UEFA Nations League B",
@@ -11,11 +11,11 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-24T14:27:39.088Z",
+ "retrievedAt": "2026-09-25T03:13:20.683Z",
  "matches": [
   {
    "id": "5181812",
-   "kickoff": "2026-09-24T18:45:00.000Z",
+   "kickoff": "2026-09-24T18:45:00Z",
    "home": {
     "name": "Austria",
     "shortName": "Austria",
@@ -26,17 +26,20 @@
     "shortName": "Israel",
     "fmId": "8567"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "3"
   },
   {
    "id": "5181813",
-   "kickoff": "2026-09-24T18:45:00.000Z",
+   "kickoff": "2026-09-24T18:45:00Z",
    "home": {
     "name": "Kosovo",
     "shortName": "Kosovo",
@@ -47,17 +50,20 @@
     "shortName": "Ireland",
     "fmId": "5791"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "3"
   },
   {
    "id": "5181800",
-   "kickoff": "2026-09-25T16:00:00Z",
+   "kickoff": "2026-09-25T16:00:00.000Z",
    "home": {
     "name": "Georgia",
     "shortName": "Georgia",
@@ -78,7 +84,7 @@
   },
   {
    "id": "5181801",
-   "kickoff": "2026-09-25T18:45:00Z",
+   "kickoff": "2026-09-25T18:45:00.000Z",
    "home": {
     "name": "Hungary",
     "shortName": "Hungary",
@@ -99,7 +105,7 @@
   },
   {
    "id": "5181837",
-   "kickoff": "2026-09-25T18:45:00Z",
+   "kickoff": "2026-09-25T18:45:00.000Z",
    "home": {
     "name": "Poland",
     "shortName": "Poland",
@@ -120,7 +126,7 @@
   },
   {
    "id": "5181838",
-   "kickoff": "2026-09-25T18:45:00Z",
+   "kickoff": "2026-09-25T18:45:00.000Z",
    "home": {
     "name": "Sweden",
     "shortName": "Sweden",
@@ -1020,6 +1026,376 @@
    "awarded": false,
    "round": "6",
    "group": "2"
+  }
+ ],
+ "groups": [
+  {
+   "name": "Grp. 1",
+   "fmId": "920745",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "promotionqual",
+     "title": "Promotion qualification",
+     "idx": [
+      1
+     ]
+    },
+    {
+     "key": "relegationqual",
+     "title": "Relegation qualification",
+     "idx": [
+      2
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "8260",
+     "name": "North Macedonia",
+     "idx": 1,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8498",
+     "name": "Scotland",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5787",
+     "name": "Slovenia",
+     "idx": 3,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6717",
+     "name": "Switzerland",
+     "idx": 4,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "Grp. 2",
+   "fmId": "920746",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "promotionqual",
+     "title": "Promotion qualification",
+     "idx": [
+      1
+     ]
+    },
+    {
+     "key": "relegationqual",
+     "title": "Relegation qualification",
+     "idx": [
+      2
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "8268",
+     "name": "Georgia",
+     "idx": 1,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8565",
+     "name": "Hungary",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "10259",
+     "name": "Northern Ireland",
+     "idx": 3,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6718",
+     "name": "Ukraine",
+     "idx": 4,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "Grp. 3",
+   "fmId": "920747",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "promotionqual",
+     "title": "Promotion qualification",
+     "idx": [
+      1
+     ]
+    },
+    {
+     "key": "relegationqual",
+     "title": "Relegation qualification",
+     "idx": [
+      2
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "8255",
+     "name": "Austria",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 3,
+     "ga": 1,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "430156",
+     "name": "Kosovo",
+     "idx": 2,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 1,
+     "ga": 0,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5791",
+     "name": "Ireland",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 1,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8567",
+     "name": "Israel",
+     "idx": 4,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 1,
+     "ga": 3,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "Grp. 4",
+   "fmId": "920748",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "promotionqual",
+     "title": "Promotion qualification",
+     "idx": [
+      1
+     ]
+    },
+    {
+     "key": "relegationqual",
+     "title": "Relegation qualification",
+     "idx": [
+      2
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "10106",
+     "name": "Bosnia and Herzegovina",
+     "idx": 1,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8568",
+     "name": "Poland",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "9730",
+     "name": "Romania",
+     "idx": 3,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8520",
+     "name": "Sweden",
+     "idx": 4,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
   }
  ],
  "proof": {
@@ -2179,5 +2555,6 @@
     "group": "4"
    }
   ]
- }
+ },
+ "proofSchema": 1
 }

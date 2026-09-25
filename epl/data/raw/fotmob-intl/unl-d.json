@@ -1,5 +1,5 @@
 {
- "schemaVersion": 1,
+ "schemaVersion": 2,
  "key": "unl-d",
  "id": 9809,
  "fmName": "UEFA Nations League D",
@@ -11,11 +11,11 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-24T14:27:41.481Z",
+ "retrievedAt": "2026-09-25T03:13:23.128Z",
  "matches": [
   {
    "id": "5181874",
-   "kickoff": "2026-09-24T16:00:00.000Z",
+   "kickoff": "2026-09-24T16:00:00Z",
    "home": {
     "name": "Andorra",
     "shortName": "Andorra",
@@ -26,17 +26,20 @@
     "shortName": "Malta",
     "fmId": "8495"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "1"
   },
   {
    "id": "5181880",
-   "kickoff": "2026-09-24T18:45:00.000Z",
+   "kickoff": "2026-09-24T18:45:00Z",
    "home": {
     "name": "Liechtenstein",
     "shortName": "Liechtenstein",
@@ -47,10 +50,13 @@
     "shortName": "Lithuania",
     "fmId": "8254"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "2"
@@ -264,6 +270,136 @@
    "awarded": false,
    "round": "6",
    "group": "1"
+  }
+ ],
+ "groups": [
+  {
+   "name": "Grp. 1",
+   "fmId": "920754",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "promotionqual",
+     "title": "Promotion qualification",
+     "idx": [
+      1
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "8495",
+     "name": "Malta",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 2,
+     "ga": 1,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "507764",
+     "name": "Gibraltar",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "10045",
+     "name": "Andorra",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 1,
+     "ga": 2,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "Grp. 2",
+   "fmId": "920753",
+   "legend": [
+    {
+     "key": "promotion",
+     "title": "Promotion",
+     "idx": [
+      0
+     ]
+    },
+    {
+     "key": "promotionqual",
+     "title": "Promotion qualification",
+     "idx": [
+      1
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "8254",
+     "name": "Lithuania",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 2,
+     "ga": 0,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8566",
+     "name": "Azerbaijan",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5799",
+     "name": "Liechtenstein",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 2,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
   }
  ],
  "proof": {
@@ -559,5 +695,6 @@
     "group": "2"
    }
   ]
- }
+ },
+ "proofSchema": 1
 }

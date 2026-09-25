@@ -98,6 +98,13 @@ export function probsFromE(E, { drawA, drawB }) {
 
 export const expectedScore = (rh, ra, { neutral, homeAdv }) => 1 / (1 + 10 ** (-((rh - ra) + (neutral ? 0 : homeAdv)) / 400));
 
+/* 一場比賽讓主隊的評分變多少(客隊變一樣多、方向相反)。**走查、排名與球隊頁的逐場紀錄共用這一條** ——
+   球隊頁要印「這一場 +12」,自己再算一次的話,改了 K 或進球差加權,畫面上的數字就跟排名對不起來。 */
+export function eloDelta(m, E, params) {
+  const act = m.fh > m.fa ? 1 : m.fh === m.fa ? 0.5 : 0;
+  return params.kScale * K_BASE[tournamentClass(m.tournament)] * gdMultiplier(m.fh - m.fa) * (act - E);
+}
+
 /* 走查 Elo:**按日期分批** —— 同一天的比賽先全部用當天開始時的評分預測,再一起更新,
    所以同一天的比賽互相看不到對方的結果(那才是「開賽前」)。
    `onDay(date, rows)` 在更新**之前**被叫,rows 是 { m, E, rh, ra, nh, na }。 */
@@ -117,8 +124,7 @@ export function runIntlElo(matches, params, { onDay = null, until = null } = {})
     });
     if (onDay) onDay(d, day);
     for (const { m, E } of day) {
-      const act = m.fh > m.fa ? 1 : m.fh === m.fa ? 0.5 : 0;
-      const delta = params.kScale * K_BASE[tournamentClass(m.tournament)] * gdMultiplier(m.fh - m.fa) * (act - E);
+      const delta = eloDelta(m, E, params);
       rating.set(m.home, get(m.home) + delta);
       rating.set(m.away, get(m.away) - delta);
       games.set(m.home, (games.get(m.home) ?? 0) + 1);
@@ -203,7 +209,8 @@ export function calibration(rows, bins = 10) {
    兩隊用**身分解析後的鍵**完全相同、主客可以對調(中立場的主客順序兩家不一定一樣)。
    結果分六種,**「對不上」跟「不一致」是兩件事**(CLAUDE.md 那條坑):
      agree     兩邊比分一致
-     mismatch  兩邊都有這一場、比分不一樣(畫面兩個都印,不挑一個當答案;這一場不進評分)
+     mismatch  兩邊都有這一場、比分不一樣(畫面兩個都印,不挑一個當答案)。評分用的是 martj42 那一份 ——
+               評分只從它算;要不要把這種場次排出評分是模型的改動,見補齊規劃(第一版的註解寫「不進評分」,那不是事實)
      awarded   FotMob 是判決比分(AW),martj42 記場上比分 —— 記法不同,不算不一致
      unmatched 兩隊都認得、日期也在 martj42 涵蓋的範圍內,它卻沒有這兩隊前後一天內的對戰 ——
                run #44 實測 19 場**全是 martj42 沒收**:非洲盃資格賽三月那一輪預賽整輪沒有(12 場)、
@@ -274,4 +281,168 @@ export function proofFromCheck(rows, expect) {
     ok: !why, why, matched: hit.length, expectHits, agree, status,
     tournaments: [...tours].sort((a, b) => b[1] - a[1]).map(([t, n]) => ({ t, n })),
   };
+}
+
+/* ── 評分落後的代價(2026-09-25 量的;補齊規劃第 5 項)────────────────────
+   評分只從 martj42 算,而它收錄新賽果會晚幾天到幾週 —— 同一個比賽窗裡,第二輪開踢時評分還沒算進第一輪。
+   這裡量「晚了 `days` 天」值多少:同一批驗收場次上,拿**開賽前一刻**的評分(正常的走查)
+   對**`days` 天前凍結**的評分(那幾天的比賽都還沒算進去),逐場相減 RPS。
+   正值 = 落後讓預測變差。分兩個母體報:全部驗收場次,以及「兩隊至少一隊在那幾天裡踢過」的場次
+   (其餘場次兩個評分一模一樣,差是 0,攤進去只會把代價稀釋掉)。
+   2026-09-25 第一次量:落後一週,全部 +0.0004 ± 0.0002(1.9 SE)、受影響的 60% +0.0006 ± 0.0003 ——
+   模型整體對基準線的改善是 0.055,落後吃掉的大約 1%,而且沒有大過兩倍標準誤。
+   所以**不**拿還沒被核對的 FotMob 賽果去做暫定更新(那要冒用錯比分的風險,換一個量不出來的好處)。
+   數字每次建置重算、畫面讀產物;上面那一行是當時的紀錄,不是現況。 */
+export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, days = 7 } = {}) {
+  const before = new Map();   // 隊 → [[比賽日, 那一天開賽前的評分], …]
+  const rows = [];
+  runIntlElo(matches, params, { onDay: (d, day) => {
+    for (const r of day) {
+      for (const [t, v] of [[r.m.home, r.rh], [r.m.away, r.ra]]) {
+        let h = before.get(t);
+        if (!h) before.set(t, (h = []));
+        if (h.at(-1)?.[0] !== d) h.push([d, v]);
+      }
+      if (d >= from && r.nh >= minGames && r.na >= minGames) rows.push({ ...r, d });
+    }
+  } });
+  if (rows.length < 2) return null;
+  // c 之前的評分 = 這隊在 c 當天或之後第一個比賽日「開賽前」的評分(中間沒有比賽,評分不會變)。
+  // 這一場本身就是這隊的比賽日,所以一定找得到。
+  const asOf = (t, c) => {
+    const h = before.get(t);
+    let lo = 0, hi = h.length - 1;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (h[mid][0] >= c) hi = mid; else lo = mid + 1; }
+    return h[lo];
+  };
+  const back = d => new Date(Date.parse(`${d}T00:00:00Z`) - days * 86400000).toISOString().slice(0, 10);
+  const all = [], hit = [];
+  for (const r of rows) {
+    const c = back(r.d);
+    const [dh, rh] = asOf(r.m.home, c), [da, ra] = asOf(r.m.away, c);
+    const o = outcomeOf(r.m);
+    const p0 = probsFromE(r.E, params);
+    const pL = probsFromE(expectedScore(rh, ra, { neutral: r.m.neutral, homeAdv: params.homeAdv }), params);
+    const diff = rpsOf(pL, o) - rpsOf(p0, o);
+    all.push(diff);
+    // 那幾天裡有踢過:凍結時查到的比賽日比這一場早
+    if (dh < r.d || da < r.d) hit.push(diff);
+  }
+  const stat = xs => {
+    const n = xs.length;
+    if (n < 2) return null;
+    const m = xs.reduce((a, x) => a + x, 0) / n;
+    const se = Math.sqrt(xs.reduce((a, x) => a + (x - m) ** 2, 0) / (n - 1) / n);
+    return { n, cost: m, se, z: se ? m / se : null };
+  };
+  return { days, all: stat(all), affected: stat(hit) };
+}
+
+/* ── 球隊頁:評分走勢與最近幾場(每一場的評分變化)──────────────────────
+   走同一條 runIntlElo 與 eloDelta,畫面上「這一場 +12」加起來就是排名上那個數字。
+   `from` 之後的每一場記一個點(走勢圖);`recentN` 是最近幾場的明細。
+   場地是**相對這一隊**的:主場 H、客場 A、中立場 N(martj42 的 neutral 欄;它記的是當地的事實,
+   跟 FotMob 賽程「不知道是不是中立場」不是同一件事)。 */
+export function intlTeamHistory(matches, params, { keys, from, recentN = 12 }) {
+  const want = new Set(keys);
+  const trend = new Map(), recent = new Map();
+  runIntlElo(matches, params, { onDay: (d, day) => {
+    /* 同一隊同一天踢兩場(martj42 有 139 組,2000 年後 Fiji 2024-09-02、聖克里斯多福及尼維斯 2025-05-25):
+       兩場都用開賽前的評分預測、變化一起加上去(runIntlElo 的定義)。所以「賽後評分」要在同一天裡**依序累加** ——
+       第一版每一場都寫「開賽前 + 這一場」,第二場就少了第一場的變化,逐場紀錄跟排名接不起來(npm test 抓到的)。 */
+    const dayCur = new Map();
+    for (const { m, E, rh, ra } of day) {
+      const dr = eloDelta(m, E, params);
+      const sides = [
+        [m.home, m.away, rh, dr, m.neutral ? 'N' : 'H', m.fh, m.fa],
+        [m.away, m.home, ra, -dr, m.neutral ? 'N' : 'A', m.fa, m.fh],
+      ];
+      for (const [t, opp, r0, delta, venue, gf, ga] of sides) {
+        if (!want.has(t)) continue;
+        const after = (dayCur.get(t) ?? r0) + delta;
+        dayCur.set(t, after);
+        if (d >= from) {
+          let tr = trend.get(t);
+          if (!tr) trend.set(t, (tr = []));
+          tr.push([d, Math.round(after)]);
+        }
+        let rc = recent.get(t);
+        if (!rc) recent.set(t, (rc = []));
+        rc.push({ d, o: opp, v: venue, s: [gf, ga], t: m.tournament, dr: Math.round(delta * 10) / 10, r: Math.round(after) });
+        if (rc.length > recentN) rc.shift();
+      }
+    }
+  } });
+  return { trend, recent };
+}
+
+/* ── 歷來交手(只當資訊,**不進模型**)──────────────────────────────────
+   比分含延長、不含 PK(martj42 的慣例)—— PK 決勝的那一場在這裡是和局。
+   鍵是兩隊名字排序後用 | 接起來,`w` 是 [前一隊勝, 和, 後一隊勝]、`g` 是 [前一隊進球, 後一隊進球]。 */
+export const pairKey = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
+export function intlH2H(matches, pairs, { lastN = 5 } = {}) {
+  const out = new Map(pairs.map(([a, b]) => [pairKey(a, b), null]));
+  for (const m of matches) {
+    const k = pairKey(m.home, m.away);
+    if (!out.has(k)) continue;
+    let s = out.get(k);
+    const [first] = k.split('|');
+    if (!s) out.set(k, (s = { n: 0, w: [0, 0, 0], g: [0, 0], since: m.date, last: [] }));
+    const gA = m.home === first ? m.fh : m.fa, gB = m.home === first ? m.fa : m.fh;
+    s.n++;
+    s.w[gA > gB ? 0 : gA === gB ? 1 : 2]++;
+    s.g[0] += gA; s.g[1] += gB;
+    s.last.push({ d: m.date, h: m.home, a: m.away, s: [m.fh, m.fa], t: m.tournament, n: m.neutral });
+    if (s.last.length > lastN) s.last.shift();
+  }
+  return out;
+}
+
+/* ── 分組積分榜(2026-09-25;形狀是 probe-intl-tables run #45 看過才寫的)────────────
+   **積分由本站自己用已完賽的賽果算,上游的表只拿來取分組名單、官方排序與核對。**
+   實測過上游的表會把**進行中**的比賽算進去(中北美國聯 A 級那一列 Costa Rica `played: 1`、`3-0`,
+   同一列的 `ongoing` 說那場還在踢)—— 照印的話,積分榜會跟本站「還沒完賽」的賽程自相矛盾。
+
+   哪幾場算:**輪次是數字的場次**(分組賽的第幾輪),而且兩隊都在這一組的名單裡。
+   不看比賽的 group 欄位:中北美國聯 A、B、C 三級都有「第 1 組」,海灣盃的分組賽根本沒有 group。
+   預賽(非洲盃資格賽三月那一輪的 round 是 `final`)與淘汰賽(海灣盃 1/2、final)不算。
+
+   逐隊核對,判決分三種(跟歐冠官方積分榜那一套同一個分法):
+     agree     場數一樣,勝和負、進失球、積分也都一樣
+     pending   場數不一樣 —— 上游算進了進行中的比賽,或上游還沒更新;**不是錯**,只回報、畫面講
+     mismatch  場數一樣卻對不上 —— 那才是真的有人算錯
+   整組都 agree 才照上游的名次排(官方的同分規則 —— 相互對戰等 —— 本站沒有實作,借上游的);
+   否則照積分、淨勝球、進球排,並在畫面上講「同分的官方排序規則沒有套用」。 */
+export function intlStandings(groups, matches) {
+  if (!Array.isArray(groups)) return [];
+  const leaguePhase = matches.filter(m => m.state === 'FT' && Array.isArray(m.final) && /^\d+$/.test(String(m.round ?? '')));
+  return groups.map(g => {
+    const ids = new Set(g.rows.map(r => r.fmId).filter(Boolean));
+    const acc = new Map([...ids].map(id => [id, { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 }]));
+    const counted = leaguePhase.filter(m => ids.has(m.home?.fmId) && ids.has(m.away?.fmId));
+    for (const m of counted) {
+      const [fh, fa] = m.final;
+      for (const [id, gf, ga] of [[m.home.fmId, fh, fa], [m.away.fmId, fa, fh]]) {
+        const a = acc.get(id);
+        a.p++; a.gf += gf; a.ga += ga;
+        if (gf > ga) { a.w++; a.pts += 3; } else if (gf === ga) { a.d++; a.pts += 1; } else a.l++;
+      }
+    }
+    const rows = g.rows.map(r => {
+      const o = acc.get(r.fmId) ?? { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 };
+      const up = { p: r.played, w: r.wins, d: r.draws, l: r.losses, gf: r.gf, ga: r.ga, pts: r.pts };
+      const check = up.p !== o.p ? 'pending'
+        : (up.w === o.w && up.d === o.d && up.l === o.l && up.gf === o.gf && up.ga === o.ga && up.pts === o.pts) ? 'agree' : 'mismatch';
+      return { fmId: r.fmId, name: r.name, upIdx: r.idx, ...o, gd: o.gf - o.ga, up, check,
+        deduction: r.deduction ?? null, live: r.live ?? null };
+    });
+    const status = rows.some(r => r.check === 'mismatch') ? 'mismatch' : rows.some(r => r.check === 'pending') ? 'pending' : 'ok';
+    const official = status === 'ok';
+    rows.sort(official
+      ? (a, b) => (a.upIdx ?? 99) - (b.upIdx ?? 99)
+      : (a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || (a.upIdx ?? 99) - (b.upIdx ?? 99));
+    rows.forEach((r, i) => { r.pos = i + 1; });
+    return { name: g.name, fmId: g.fmId, legend: g.legend ?? [], status, orderBy: official ? 'official' : 'computed',
+      counted: counted.length, live: [...new Set(rows.map(r => r.live).filter(Boolean))], rows };
+  });
 }

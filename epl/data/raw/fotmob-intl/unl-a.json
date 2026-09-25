@@ -1,5 +1,5 @@
 {
- "schemaVersion": 1,
+ "schemaVersion": 2,
  "key": "unl-a",
  "id": 9806,
  "fmName": "UEFA Nations League A",
@@ -11,11 +11,11 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-24T14:27:37.829Z",
+ "retrievedAt": "2026-09-25T03:13:19.307Z",
  "matches": [
   {
    "id": "5181825",
-   "kickoff": "2026-09-24T18:45:00.000Z",
+   "kickoff": "2026-09-24T18:45:00Z",
    "home": {
     "name": "Netherlands",
     "shortName": "Netherlands",
@@ -26,17 +26,20 @@
     "shortName": "Germany",
     "fmId": "8570"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "2"
   },
   {
    "id": "5181861",
-   "kickoff": "2026-09-24T18:45:00.000Z",
+   "kickoff": "2026-09-24T18:45:00Z",
    "home": {
     "name": "Norway",
     "shortName": "Norway",
@@ -47,17 +50,20 @@
     "shortName": "Denmark",
     "fmId": "8238"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "4"
   },
   {
    "id": "5181862",
-   "kickoff": "2026-09-24T18:45:00.000Z",
+   "kickoff": "2026-09-24T18:45:00Z",
    "home": {
     "name": "Portugal",
     "shortName": "Portugal",
@@ -68,17 +74,20 @@
     "shortName": "Wales",
     "fmId": "5790"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "4"
   },
   {
    "id": "5181826",
-   "kickoff": "2026-09-24T18:45:00.000Z",
+   "kickoff": "2026-09-24T18:45:00Z",
    "home": {
     "name": "Serbia",
     "shortName": "Serbia",
@@ -89,17 +98,20 @@
     "shortName": "Greece",
     "fmId": "6383"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "2"
   },
   {
    "id": "5181788",
-   "kickoff": "2026-09-25T18:45:00Z",
+   "kickoff": "2026-09-25T18:45:00.000Z",
    "home": {
     "name": "Italy",
     "shortName": "Italy",
@@ -120,7 +132,7 @@
   },
   {
    "id": "5181789",
-   "kickoff": "2026-09-25T18:45:00Z",
+   "kickoff": "2026-09-25T18:45:00.000Z",
    "home": {
     "name": "Turkiye",
     "shortName": "Turkiye",
@@ -1020,6 +1032,352 @@
    "awarded": false,
    "round": "6",
    "group": "4"
+  }
+ ],
+ "groups": [
+  {
+   "name": "Grp. 1",
+   "fmId": "920741",
+   "legend": [
+    {
+     "key": "championship_playoff",
+     "title": "Championship playoff",
+     "idx": [
+      0,
+      1
+     ]
+    },
+    {
+     "key": "relegationqual",
+     "title": "Relegation qualification",
+     "idx": [
+      2
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "8263",
+     "name": "Belgium",
+     "idx": 1,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6723",
+     "name": "France",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8204",
+     "name": "Italy",
+     "idx": 3,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6595",
+     "name": "Turkiye",
+     "idx": 4,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "Grp. 2",
+   "fmId": "920744",
+   "legend": [
+    {
+     "key": "championship_playoff",
+     "title": "Championship playoff",
+     "idx": [
+      0,
+      1
+     ]
+    },
+    {
+     "key": "relegationqual",
+     "title": "Relegation qualification",
+     "idx": [
+      2
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "6383",
+     "name": "Greece",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 2,
+     "ga": 1,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8570",
+     "name": "Germany",
+     "idx": 2,
+     "played": 1,
+     "wins": 0,
+     "draws": 1,
+     "losses": 0,
+     "gf": 1,
+     "ga": 1,
+     "pts": 1,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6708",
+     "name": "Netherlands",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 1,
+     "losses": 0,
+     "gf": 1,
+     "ga": 1,
+     "pts": 1,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8205",
+     "name": "Serbia",
+     "idx": 4,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 1,
+     "ga": 2,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "Grp. 3",
+   "fmId": "920743",
+   "legend": [
+    {
+     "key": "championship_playoff",
+     "title": "Championship playoff",
+     "idx": [
+      0,
+      1
+     ]
+    },
+    {
+     "key": "relegationqual",
+     "title": "Relegation qualification",
+     "idx": [
+      2
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "10155",
+     "name": "Croatia",
+     "idx": 1,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8496",
+     "name": "Czechia",
+     "idx": 2,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8491",
+     "name": "England",
+     "idx": 3,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6720",
+     "name": "Spain",
+     "idx": 4,
+     "played": 0,
+     "wins": 0,
+     "draws": 0,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "Grp. 4",
+   "fmId": "920742",
+   "legend": [
+    {
+     "key": "championship_playoff",
+     "title": "Championship playoff",
+     "idx": [
+      0,
+      1
+     ]
+    },
+    {
+     "key": "relegationqual",
+     "title": "Relegation qualification",
+     "idx": [
+      2
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      3
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "8492",
+     "name": "Norway",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 3,
+     "ga": 2,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8361",
+     "name": "Portugal",
+     "idx": 2,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 1,
+     "ga": 0,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8238",
+     "name": "Denmark",
+     "idx": 3,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 2,
+     "ga": 3,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5790",
+     "name": "Wales",
+     "idx": 4,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 0,
+     "ga": 1,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
   }
  ],
  "proof": {
@@ -2467,5 +2825,6 @@
     "group": null
    }
   ]
- }
+ },
+ "proofSchema": 1
 }
