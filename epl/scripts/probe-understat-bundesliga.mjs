@@ -11,7 +11,7 @@
  * 那正是「API 回 200 加一個 error 物件」那條坑,只看 res.ok 會以為成功了。
  *
  * 沙箱連不到 understat.com(2026-09-15 實測 CONNECT 403),所以這支是給
- * GitHub Actions 的 runner 跑的(probe-apis.yml 的 latest job **最後一步** ——
+ * GitHub Actions 的 runner 跑的(probe-apis.yml;當時在 latest job **最後一步**,2026-09-25 搬去 all ——
  * 讀結果的方法是抓 job log 的尾端,排前面會被後面的步驟擠出視窗)。
  *
  * 要回答的四個問題:

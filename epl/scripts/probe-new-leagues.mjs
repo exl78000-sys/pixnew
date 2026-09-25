@@ -24,8 +24,8 @@
  * —— 這兩個結論差很多。
  *
  * openfootball 走 raw.githubusercontent.com(沙箱也通),另外兩家只有 runner 通,
- * 所以整支掛在 probe-apis.yml 的 latest job **最後一步**(讀結果是抓 log 尾端,
- * 排前面會被後面的步驟擠出視窗)。唯讀、**最多 22 個請求**、不寫任何快取。
+ * 所以整支當時掛在 probe-apis.yml 的 latest job **最後一步**(讀結果是抓 log 尾端,
+ * 排前面會被後面的步驟擠出視窗;2026-09-25 結論用完後搬去 all)。唯讀、**最多 22 個請求**、不寫任何快取。
  */
 const OF = 'https://raw.githubusercontent.com/openfootball/football.json/master';
 const FM = 'https://www.fotmob.com';

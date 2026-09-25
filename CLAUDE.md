@@ -754,9 +754,9 @@ build → laliga:build,跑完 `npm run local:sync` 再跑 `npm test` 就會紅�
 所有外部端點在開發沙箱都被擋。要實測資料源:寫成 `scripts/probe-*.mjs`,
 加進 `.github/workflows/probe-apis.yml`,用 workflow_dispatch 跑,再讀 log。
 
-**沙箱連不到、部署那一支又會發布的東西,怎麼拿真資料驗**(2026-09-24,國家隊):在 probe-apis 的 latest job
-最後一步**真跑一次抓取器**、寫 runner 的暫存目錄,把檔案 gzip + base64 印在 log 最後、附位元組數與 sha256
-(`probe-intl-fetch.mjs`)。GitHub MCP 的 job log 太大時會**自動存成本機檔**,`node scripts/undump-probe-log.mjs`
+**沙箱連不到、部署那一支又會發布的東西,怎麼拿真資料驗**(2026-09-24,國家隊):把**真跑一次抓取器**的探測
+掛在 probe-apis 的 latest job 最後一步、寫 runner 的暫存目錄,把檔案 gzip + base64 印在 log 最後、附位元組數與 sha256
+(`probe-intl-fetch.mjs`;驗完就搬去 all —— 國家隊那一支 2026-09-25 已搬,latest 只留部署後的站台確認)。GitHub MCP 的 job log 太大時會**自動存成本機檔**,`node scripts/undump-probe-log.mjs`
 直接吃那個檔、逐檔比對雜湊,對不上的不寫(log 被截斷就是半份檔案,而它看起來完全正常)。
 不要在開發分支上跑 epl-live 來驗 —— 它會連 Pages 一起部署。
 

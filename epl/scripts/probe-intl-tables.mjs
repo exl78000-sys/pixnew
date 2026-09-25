@@ -17,7 +17,7 @@
  *      附位元組數與 sha256,本機用 `npm run probe:undump` 還原後逐位元組核對
  *
  * 唯讀、**8 個請求**(一個賽事一個,跟抓取器打的是同一個網址)、不寫任何快取,
- * 掛在 probe-apis.yml 的 latest job 最後一步。
+ * 掛在 probe-apis.yml 的 all job(run #45 看過形狀、積分榜做完之後從 latest 搬過去;要重看就搬回 latest 的最後一步)。
  */
 import { gzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';

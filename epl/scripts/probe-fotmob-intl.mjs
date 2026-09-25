@@ -25,7 +25,8 @@
  *     單場端點的 details.name 卻是 **Women's** —— 名字靠不住,要看 details.name);
  *   - 第 4 節:Nations League 四級與 CONCACAF 那一個**拿上一季(2024/2025)**逐場對 martj42 —— 那才是證明;
  *   - 第 6 節:友誼賽那一場比分不一致的,把兩邊印出來。
- * 掛在 probe-apis.yml 的 latest job **最後一步**(讀結果是抓 log 尾端)。
+ * 當時掛在 probe-apis.yml 的 latest job **最後一步**(讀結果是抓 log 尾端)。結論寫進 adapter 之後就從 workflow 拿掉了
+ * (一次 39 個請求,結論不會變);要重探就加回 latest 的最後一步。
  */
 import { parseCSVObjects } from './lib/csv.mjs';
 

@@ -23,7 +23,7 @@
  * 我判斷是烏龍球但證明不了(本站沒有德甲的事件來源)。逐場事件裡就有烏龍球 ——
  * 這支會數一季的烏龍球,看它對不對得上那個缺口。
  *
- * 沙箱連不到 fotmob.com,所以這支給 runner 跑(probe-apis.yml 的 latest job 最後一步)。
+ * 沙箱連不到 fotmob.com,所以這支給 runner 跑(probe-apis.yml;寫的時候在 latest job 最後一步,2026-09-25 結論用完後搬去 all)。
  * 唯讀、**最多 8 個請求**、不寫任何快取。
  */
 import { readFileSync } from 'node:fs';
