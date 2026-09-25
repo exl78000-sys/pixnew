@@ -13,7 +13,6 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { teamMatchRows } from '../../lib/style-trend.mjs';
 import { loadTeams } from '../../lib/teams.mjs';
-import { matchOne } from '../../lib/names.mjs';
 import { fixBlockedShots } from '../../lib/matchstats.mjs';   // 被封阻射門的語意修正(讀取器那一份,不另寫)
 
 const r2 = n => Math.round(n * 100) / 100;
@@ -67,46 +66,13 @@ function compactPlayer(p) {
     yellow: (p.last?.yellow ?? 0) + (p.current?.yellow ?? 0),
     red: (p.last?.red ?? 0) + (p.current?.red ?? 0),
     ability: a,
-    ...(p.tracking?.heat ? { heat: { cx: p.tracking.heat.cx, cy: p.tracking.heat.cy, spread: p.tracking.heat.spread, games: p.tracking.heat.games, touches: p.tracking.heat.touches } } : {}),
     ...(p.tracking?.distancePerGame != null ? { run: { distancePerGame: p.tracking.distancePerGame, topSpeed: p.tracking.topSpeed ?? null, games: p.tracking.games } } : {}),
   };
 }
 
-/* 真實射門池(2026-09-15,回合制引擎用):每一次射門存 [x, y, xG, 情境, 結果, 射手]。
-   引擎每次射門就從這裡**抽一筆真的**:位置、xG、情境、射手都是真資料,不是編的。
-   座標是 FotMob 的 105 × 68、攻向 x = 105(兩隊都正規化成同一邊,十二碼點在 (94, 34) 驗過)。
-   結果分五種:goal / saved(射正被撲)/ blocked / off / post —— `blocked` 是獨立旗標,
-   優先於 type(被封阻的射門 type 也會是 AttemptSaved 或 Miss)。
-   射手用全名對回名單(lib/names.mjs 的 matchOne + 「姓氏 = 簡稱」退路,跟 matchstats 同一套),
-   對不到就 -1 —— 引擎會退回「在場球員按射門數加權」,不會對錯人。 */
-const SIT_KEYS = ['RegularPlay', 'FastBreak', 'IndividualPlay', 'ThrowInSetPiece', 'FromCorner', 'FreeKick', 'SetPiece', 'Penalty'];
-const OUT_KEYS = ['goal', 'saved', 'blocked', 'off', 'post'];
-const outcomeOf = sh => (sh.type === 'Goal' ? 'goal' : sh.blocked ? 'blocked' : sh.type === 'AttemptSaved' ? 'saved' : sh.type === 'Post' ? 'post' : 'off');
-function shotPool(shots, squad) {
-  const cands = (squad ?? []).filter(x => x.fullName);
-  const byWeb = name => {
-    const last = String(name).trim().split(/\s+/).at(-1)?.toLowerCase();
-    const hits = (squad ?? []).filter(x => String(x.name ?? '').toLowerCase() === last);
-    return hits.length === 1 ? hits[0] : null;
-  };
-  const cache = new Map();
-  const find = name => {
-    if (!squad) return null;
-    if (!cache.has(name)) cache.set(name, matchOne(cands, name, { nameOf: c => c.fullName }) ?? byWeb(name));
-    return cache.get(name);
-  };
-  const players = [];
-  const idxOf = code => { let i = players.indexOf(code); if (i < 0) { players.push(code); i = players.length - 1; } return i; };
-  let matched = 0;
-  const rows = shots.filter(sh => Number.isFinite(sh.x) && Number.isFinite(sh.y) && sh.xg != null).map(sh => {
-    const who = sh.player ? find(sh.player) : null;
-    if (who) matched++;
-    const sit = SIT_KEYS.indexOf(sh.situation);
-    return [Math.round(sh.x * 10) / 10, Math.round(sh.y * 10) / 10, Math.round(sh.xg * 1000) / 1000,
-      sit < 0 ? 0 : sit, OUT_KEYS.indexOf(outcomeOf(sh)), who ? idxOf(who.code) : -1];
-  });
-  return { n: rows.length, sits: SIT_KEYS, outs: OUT_KEYS, players, rows, matched: rows.length ? r3(matched / rows.length) : null };
-}
+/* 真實射門池(2026-09-15 給回合制引擎抽樣用)**2026-09-25 拿掉了**:回合制那一套退役之後,
+   連續引擎的射門是從場上長出來的(位置、xG 由網格模型算,再對真實 shotmap 校準),
+   一筆都不從池子裡抽 —— 而那個池子佔了這份產物的三分之一(242 KB)。要找它看 git 歷史。 */
 
 /* FotMob 逐場球隊統計(傳球、越位):CSV 沒有這兩項。主客分開,附 n。 */
 function playStatsOf(fm, code, isHome) {
@@ -312,11 +278,11 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       byFoot: Object.fromEntries(['header', 'foot'].filter(f => v[f].shots > 0)
         .map(f => [f, outBox(v[f], v.all.shots)])) }]));
   };
-  /* 跑動節奏、三路進攻、逐人熱區與跑動(2026-09-03 加,給動畫用):
+  /* 跑動節奏與三路進攻(2026-09-03 加,給動畫用):
      - tempo:該隊每分鐘跑動距離與衝刺次數(FotMob 追蹤資料,不是每場都有,n 另記)
      - zones:該隊左/中/右進攻佔比的平均(供應商算的)
-     - 逐人:熱區質心 / 離散度(觸球位置,兩隊都正規化成向右進攻,門將質心 x≈12 驗過)、場均跑動、最高速度。
-       FotMob 用全名,FPL 用簡稱,配對走 lib/names.mjs 的 matchOne(姓氏 + 名字首字母,配不出唯一就不掛)。 */
+     逐人的最高速度與場均跑動在 `compactPlayer` 的 `run`(讀球員主檔的 tracking)。
+     逐人熱區 2026-09-25 拿掉了:唯一讀它的是退役的回合制播放(`duel-anim.js`),連續引擎一個字都沒讀。 */
   const tempoBy = new Map(), zonesBy = new Map();
   for (const m of fm) {
     for (const [code, idx] of [[m.home, 0], [m.away, 1]]) {
@@ -408,7 +374,6 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     const formations = [...new Set([lf?.formation, lu?.shape, ...used.map(u => u.formation)].filter(Boolean))];
     const sp = t.tactics?.setPieces ?? {};
     const teamShots = shotsAll.filter(s => s.team === code);
-    const pool = shotPool(teamShots, squad);
     /* 逐人熱區與跑動:直接讀球員主檔的 tracking(build.mjs 用 lib/matchstats.mjs 的 attachPlayerTracking 掛的),
        這裡不再自己配對 —— 兩份配對邏輯一定會分岔(CLAUDE.md 的老坑)。 */
     const tp = tempoBy.get(code), zn = zonesBy.get(code);
@@ -435,7 +400,6 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
         against: { shots: v.against?.shots ?? null, goals: v.against?.goals ?? null } }])) : null,
       shotSituations: teamShots.length ? situationsOf(teamShots) : null,
       shotSample: teamShots.length,
-      shots: pool,
       play: { home: playStatsOf(fm, code, true), away: playStatsOf(fm, code, false) },
       extra: extraStatsOf(fm, code),   // 對照表以外的球隊統計(階段 C 重抓後才有;null = 還沒回填)
       takers: sp.takers ?? null,
@@ -464,7 +428,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     sources: {
       rates: `football-data.co.uk 逐場 CSV(${last}${existsSync(join(csvDir, `${cur}.csv`)) ? ` + ${cur}` : ''}),隊-場 ${leagueRates.teamGames} 列`,
       possession: `FotMob matchDetails(data/raw/fotmob-epl),${fm.length} 場;官網 /stats/match 抽核 20 場全部在 ±2 內`,
-      shots: `FotMob shotmap,${shotsAll.length} 次射門(逐射門 xG 與情境);射門池逐筆帶座標、結果與射手`,
+      shots: `FotMob shotmap,${shotsAll.length} 次射門(逐射門 xG 與情境)`,
       play: `FotMob 逐場球隊統計(傳球數、越位),${fm.filter(m => m.teamStats).length} 場`,
       extra: `FotMob 對照表以外的球隊統計(禁區觸球、長傳、傳中、抄截、攔截、對抗;階段 C 重抓),${fm.filter(m => m.teamExtra && Object.values(m.teamExtra).some(t => Object.keys(t).length)).length} 場有值`,
       tempo: `FotMob 追蹤資料(跑動距離 / 衝刺),${[...tempoBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場;熱區與逐人跑動見球員主檔的 tracking、三路進攻 ${[...zonesBy.values()].reduce((a, t) => a + t.games, 0)} 隊-場`,
@@ -489,8 +453,6 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       ownGoalShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Own Goal').length / goalEv.length) : null,
       penaltyShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Penalty').length / goalEv.length) : null,
       goals: goalEv.length,
-      /* 聯賽層的射門池(等距抽 400 筆,射手不對名單):某隊某個情境一筆都沒有時的退路 */
-      shotPool: (() => { const step = Math.max(1, Math.floor(shotsAll.length / 400)); return shotPool(shotsAll.filter((_, i) => i % step === 0), null); })(),
       play: (() => {
         const ts = fm.flatMap(m => Object.values(m.teamStats ?? {}));
         return ts.length ? { teamGames: ts.length, passes: r2(mean(ts.map(t => t.passes ?? 0))), offsides: r2(mean(ts.map(t => t.offsides ?? 0))) } : null;

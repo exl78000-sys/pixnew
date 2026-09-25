@@ -1,14 +1,15 @@
 import * as C from './core.js?v=712282cc';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
-import { mountPitch } from './game-pitch.js?v=7d3b9def';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=ca6a7cae';
-import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=be283192';
+import { mountPitch } from './game-pitch.js?v=1610cd7c';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=9818603d';
+import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
    (比賽統計 / 事件流 / 陣容與換人 / 戰術)、下方勝率條 + 動能條 + 文字播報。
  *
- * **這是遊戲,不是本站的預測。** 跟真實管線的關係只有一條:沒有任何改動時 λ_game = 站上的 λ
- * (game-engine.js 檔頭;測試守著)。使用者換人、改先發之後才會偏離。
+ * **這是遊戲,不是本站的預測。** 跟真實管線的關係只有一條:沒有任何改動時,兩隊的預期進球 = 站上的 λ
+ * (連續引擎的射門率與 xG 水準是對著它校準的,`npm run game:sim` 每次都印那一行)。
+ * 使用者換人、改先發、下戰術指令之後就會偏離 —— 引擎不會把進球期望調回來。
  * 所有操作只存在這一頁的記憶體裡,不進資料、不進 vault。
  * 只開英超 —— 明確清單 GAME_LEAGUES,不用「不是某聯賽就開」的二元式(league() 那條坑)。
  *
@@ -62,13 +63,20 @@ export async function renderGame(app) {
 
     const state = { home: teams[0]?.code, away: teams[1]?.code, neutral: false, seed: Math.floor(Math.random() * 1e9),
       setup: { home: null, away: null }, speed: 'normal' };
-    const setupOf = side => (state.setup[side] ??= { ...defaultSetup(profile, state[side]), tactics: defaultTactics(state[side]) });
-    /* **只列連續引擎真的接得到的那兩軸。** 舊版有六軸,而新引擎裡只有壓迫與防線高度有對應的旋鈕 ——
-       其餘四個留著就是四個拉了不會有任何反應的按鈕,那比沒有更糟(鐵則三的同一個道理)。
-       缺的那四個在畫面上列出來說「還沒接」,不要讓讀者自己去猜。 */
+    /* `tactics` 只放**使用者真的改過的那幾軸** —— 預設是空的,開賽時送進引擎的也就是空的。 */
+    const setupOf = side => (state.setup[side] ??= { ...defaultSetup(profile, state[side]), tactics: {} });
+    /* **只列連續引擎真的接得到、而且量過方向對的那三軸**(壓迫、防線高度、直接度;直接度 2026-09-20 掛上來)。
+       其餘三個留著就是拉了會讓球隊踢得很爛的按鈕,那比沒有更糟(鐵則三的同一個道理)。
+       缺的那三個在畫面上列出來說「還沒掛上來」,不要讓讀者自己去猜。 */
     const LIVE_TACTICS = ['pressing', 'line', 'directness'];
     const TACTIC_TODO = ['mentality', 'width', 'tempo'];
-    const defaultTactics = code => Object.fromEntries(LIVE_TACTICS.map(k => [k, profile.teams[code]?.style?.[k]?.level ?? 3]));
+    /* 兩種「預設」要分開(2026-09-25):**引擎沒收到指令時實際在踢的那一級**(亮起來的就是它,語意由引擎給)
+       與**這一隊本季真實所在的那一級**(標「・本季」)。壓迫兩者相同;防線與直接度引擎沒有逐隊的基準,
+       引擎的預設是中間那一級。第一版把側寫的級同時當成兩者,而且**建立設定時就塞進 tactics、開賽就送進引擎** ——
+       每一場(使用者什麼都沒碰)都在跑一組沒校準過的偏移(ARS 的防線被壓到最深一級),
+       而動任何一顆按鈕,另外兩軸也會跟著被送出去。 */
+    const engineTactics = code => engineTacticLevels(profile, code);
+    const seasonTactics = code => Object.fromEntries(LIVE_TACTICS.map(k => [k, profile.teams[code]?.style?.[k]?.level ?? null]));
     const squadOf = side => new Map(profile.teams[state[side]].squad.map(p => [p.code, p]));
 
     let match = null, pitch = null, paused = false, tab = 'stats';
@@ -142,7 +150,7 @@ export async function renderGame(app) {
         </div>`;
       };
       host.innerHTML = `<div class="row" style="gap:12px;align-items:flex-start;margin-top:12px;flex-wrap:wrap">${side('home')}${side('away')}</div>
-        <div style="margin-top:12px">${tacticsPanelHtml('home')}${tacticsPanelHtml('away')}<div class="tiny dim">戰術指令的預設是本季真實踢法;開賽後在「戰術」分頁隨時可改。只改踢法,不改進球期望。</div></div>`;
+        <div style="margin-top:12px">${tacticsPanelHtml('home')}${tacticsPanelHtml('away')}<div class="tiny dim">沒下指令時,壓迫照這一隊本季的真實值,防線與直接度是中間那一級(引擎沒有逐隊的基準);「・本季」標的是這一隊真實所在的那一級。這時兩隊的預期進球等於站上的 λ —— 下了指令、換了人,引擎不會把它調回來。開賽後在「戰術」分頁隨時可改。</div></div>`;
       bindTactics();
       let pick = null;
       host.querySelectorAll('[data-code]').forEach(b => {
@@ -547,16 +555,16 @@ export async function renderGame(app) {
     }
     /* 戰術指令。**只列連續引擎真的接得到、而且量過方向對的軸** ——
        留著拉了不會有反應、或者拉了會讓球隊踢得很爛的按鈕,比沒有這些按鈕更糟。
-       每一級改多少是遊戲規則(壓迫 ±15%/級、防線 ±12.5%/級、直接度 ±0.06/級),刻意做小:
-       大到會讓 λ 的錨失效的話,這一頁就在編數字了。
+       壓迫的五級是聯盟五分位的真實中位數(引擎的 `pressLevels`,2026-09-25 起);防線 ±12.5%/級、
+       直接度 ±0.06/級是遊戲規則,刻意做小:大到會讓 λ 的錨失效的話,這一頁就在編數字了。
        **直接度 2026-09-20 掛上來**:階段 4a 量過它是四軸裡唯一乾淨的一個
        (傳球 15.9→25.2 公尺、射門 17.7→17.2 幾乎不動 = 改踢法不改強弱),
        而它在那之後一直留在「還沒接」那一行 —— 那是「東西在但沒有按鈕」。
        **軸的數量不要寫死**:這一段講的話從 LIVE_TACTICS / TACTIC_TODO 算出來。 */
     function tacticsPanelHtml(sd) {
       const t = profile.teams[state[sd]], axes = profile.styleAxes ?? {};
-      const cur = setupOf(sd).tactics ?? defaultTactics(state[sd]);
-      const def = defaultTactics(state[sd]);
+      const cur = { ...engineTactics(state[sd]), ...(setupOf(sd).tactics ?? {}) };
+      const def = seasonTactics(state[sd]);
       const todo = TACTIC_TODO.map(k => axes[k]?.zh ?? k).join('、');
       return `<div class="card" style="margin-bottom:8px"><h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">戰術指令</span></h3>
         ${LIVE_TACTICS.map(k => { const a = axes[k] ?? { zh: k, levels: ['1', '2', '3', '4', '5'] }; const st = t.style?.[k]; return `
@@ -572,7 +580,8 @@ export async function renderGame(app) {
       document.querySelectorAll('[data-tac-key]').forEach(b => {
         b.onclick = () => {
           const { tacSide: sd, tacKey: k, tacLevel: lv } = b.dataset;
-          const su = setupOf(sd); su.tactics = { ...(su.tactics ?? defaultTactics(state[sd])), [k]: Number(lv) };
+          /* 只送這一軸:其餘的維持使用者上一次設的(或引擎的預設)—— 第一版把整組側寫級一起送出去 */
+          const su = setupOf(sd); su.tactics = { ...(su.tactics ?? {}), [k]: Number(lv) };
           if (match) match.setTactics(sd, su.tactics);
           if (tab === 'tactics' && match) renderPanel(); else renderSetup();
         };
@@ -590,14 +599,12 @@ export async function renderGame(app) {
           <div class="tiny">主場 射門 ${r?.sf ?? '—'}/場・被射門 ${r?.sa ?? '—'}・角球 ${r?.cf ?? '—'}・犯規 ${r?.fouls ?? '—'}・黃牌 ${r?.yellow ?? '—'}(${r?.games ?? 0} 場);客場 射門 ${ra?.sf ?? '—'}・被射門 ${ra?.sa ?? '—'}(${ra?.games ?? 0} 場)</div>
           <div class="tiny">控球:主場 ${t.possession.home.mean ?? '—'}%±${t.possession.home.sd ?? '—'}・客場 ${t.possession.away.mean ?? '—'}%±${t.possession.away.sd ?? '—'}${pl ? `・傳球 ${pl.passes ?? '—'}/場・越位 ${pl.offsides ?? '—'}/場(${pl.games} 場)` : ''}</div>
           <div class="tiny">射門情境(${t.shotSample} 次):${top || '—'}</div>
-          <div class="tiny">射門池:${t.shots?.n ?? 0} 筆真實射門(座標、xG、射手),引擎每次射門抽一筆</div>
           <div class="tiny">主罰:${tk}</div>
           ${t.resilience ? `<div class="tiny">韌性:領先守住 ${t.resilience.leadHoldPct}%・落後追回 ${t.resilience.trailRescuePct}%(資訊,不進遊戲)</div>` : ''}
         </div>`;
       };
       return tacticsPanelHtml('home') + tacticsPanelHtml('away')
-        + `<div class="tiny dim" style="margin-bottom:8px"><b>指令只改踢法,不改進球期望。</b>改的是回合的組成與站位:射門 / 角球 / 犯規 / 越位的次數、傳球串長度、斷球位置、防線與寬度;
-          引擎會把射門的轉換率跟著調回來,所以 λ(遊戲)一個都不變。每一級改多少是遊戲規則(沒有資料能校準),預設那一級是從本季真實數據推的,標「代理指標」的軸用的是替代量(例如壓迫用對手傳球數),階段 C 重抓抄截 / 攔截 / 長傳之後會換掉。改了下一個回合起生效。</div>`
+        + `<div class="tiny dim" style="margin-bottom:8px"><b>指令改的是踢法,結果會跟著變。</b>壓迫的五級是聯盟真實的五分位:選哪一級,就照那一組球隊的中位數逼搶,選自己那一級等於沒下指令。防線與直接度引擎沒有逐隊的基準,預設是中間那一級,每一級改多少是遊戲規則(沒有資料能校準,刻意做小)。引擎不會把進球期望調回來 —— 沒下指令時兩隊的預期進球等於站上的 λ,下了就會偏離。標「代理指標」的軸用的是替代量(例如防線用對手越位數)。改了立刻生效。</div>`
         + side('home') + side('away') + `<div class="tiny dim">下面這些是真資料(逐場 CSV、FotMob、Understat、FPL),唯讀。</div>`;
     }
 

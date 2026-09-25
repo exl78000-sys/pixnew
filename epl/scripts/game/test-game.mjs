@@ -2,8 +2,8 @@
 /* 模擬遊玩的自我檢查。守兩件事:
  *   1. **獨立管線**(使用者 2026-09-03 的決定)—— 真實管線不 import 遊戲、遊戲只寫 web/data/game/。
  *   2. **側寫的每個數字對得回來源** —— 不是「看起來合理」,是重算一次要一樣。
- * 引擎的不變量(進球數 = 射門進球數、射手在場上、無操作 = 站上預測…)在下面第三節,
- * 引擎檔還沒建時那一節整段跳過並印出來,不假裝通過。 */
+ * 第三節是**連續引擎**的結構不變量(不超速、不出界、事件的當事人在場上、同種子同一場);
+ * 會漂的數字(射門數、跑動量)不在這裡,由 `npm run game:sim` 印。 */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
@@ -112,29 +112,23 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
       cur.verification ? `${cur.verification.agree}/${cur.verification.checked}` : '沒有 verification');
     check('抽樣類的來源說明有 n', ['rates', 'possession', 'shots', 'subs'].every(k => /\d/.test(g.sources[k] ?? '')));
 
-    /* 動畫的節奏資料(2026-09-03):跑動節奏、三路進攻、逐人熱區與跑動。不是每場都有追蹤資料,
-       所以看的是「大多數」而不是全部;熱區質心要落在球場內,門將不該有熱區驅動(引擎那邊排除),
-       三路佔比相加要是 1。 */
+    /* 動畫的節奏資料(2026-09-03):跑動節奏、三路進攻、逐人跑動與最高速度。不是每場都有追蹤資料,
+       所以看的是「大多數」而不是全部;三路佔比相加要是 1。
+       (逐人熱區 2026-09-25 從側寫拿掉 —— 唯一讀它的是退役的回合制播放,檢查跟著撤。) */
     const xiAll = teams.flatMap(t => t.xi.map(c => t.squad.find(p => p.code === c)));
     check('每隊都有跑動節奏(pace),每分鐘跑動距離在 800–1600 m 之間', teams.every(t => t.pace && t.pace.distancePerMin > 800 && t.pace.distancePerMin < 1600), teams.filter(t => !t.pace).map(t => t.code).join('、'));
     check('每隊都有三路進攻佔比且相加 = 1', teams.every(t => t.zones && Math.abs(t.zones.left + t.zones.center + t.zones.right - 1) < 0.02));
-    check('先發球員多數有觸球熱區(≥ 80%),質心在球場內', xiAll.filter(p => p.heat).length >= xiAll.length * 0.8 && xiAll.every(p => !p.heat || (p.heat.cx >= 0 && p.heat.cx <= 105 && p.heat.cy >= 0 && p.heat.cy <= 68)), `${xiAll.filter(p => p.heat).length}/${xiAll.length}`);
     /* 下限不設 3 km:替補上場幾分鐘的人場均本來就低(實測有),上限 14 km 抓的是單位錯(公尺當公里之類) */
     check('先發球員多數有場均跑動(≥ 80%),數字在 0–14 km', xiAll.filter(p => p.run).length >= xiAll.length * 0.8 && xiAll.every(p => !p.run || (p.run.distancePerGame > 0 && p.run.distancePerGame < 14000)), `${xiAll.filter(p => p.run).length}/${xiAll.length}`);
-    check('門將的熱區質心在自家半場(座標方向:兩隊都向右進攻)', xiAll.filter(p => p.pos === 'GK' && p.heat).every(p => p.heat.cx < 30));
+    /* **最高速度是連續引擎唯一讀的那一個**(`vmax = run.topSpeed / 3.6`,每個人跑不過自己的真實上限)。
+       之前這一節只驗場均跑動、從來沒驗過引擎真正在用的那個欄位 —— 單位錯(m/s 當 km/h)的話,
+       二十二個人會一起慢三倍半,而畫面只是「看起來有點慢」。20~40 km/h 抓的是那種錯,不是精確值。 */
+    check('有最高速度的先發球員,數字在 20–40 km/h(引擎拿它當每個人的速度上限)',
+      xiAll.filter(p => p.run?.topSpeed != null).length >= xiAll.length * 0.8 && xiAll.every(p => p.run?.topSpeed == null || (p.run.topSpeed >= 20 && p.run.topSpeed <= 40)),
+      `${xiAll.filter(p => p.run?.topSpeed != null).length}/${xiAll.length}・範圍 ${Math.min(...xiAll.filter(p => p.run?.topSpeed != null).map(p => p.run.topSpeed))}~${Math.max(...xiAll.filter(p => p.run?.topSpeed != null).map(p => p.run.topSpeed))}`);
+    check('側寫不再帶熱區與射門池(沒有人讀的東西不進產物)', teams.every(t => !('shots' in t) && t.squad.every(p => !('heat' in p))) && !('shotPool' in (g.league_ ?? {})));
 
-    /* 射門池(2026-09-15 回合制):每隊的真實射門列 [x, y, xG, 情境, 結果, 射手];座標在球場內、xG 在 [0,1]、
-       射手配對率要夠(對不上永遠是安靜的 —— 收完要數一次配對率),而且每隊的列數對得回 raw 裡該隊有射手的射門數。 */
-    /* 升班馬(HUL / IPS / COV)只有本季的英超場次,射門池幾十筆是資料的事實 —— 引擎某情境抽不到時退回聯賽池。門檻 30 守「有池」 */
-    check('每隊都有射門池,列數 ≥ 30、座標在 105×68 內、xG 在 [0,1]', teams.every(t => t.shots && t.shots.n >= 30 && t.shots.rows.every(r => r[0] >= 0 && r[0] <= 105 && r[1] >= 0 && r[1] <= 68 && r[2] >= 0 && r[2] <= 1)), teams.map(t => `${t.code} ${t.shots?.n}`).filter(x => /\s\d\d?$/.test(x)).join('、'));
-    check('射門池的射手配對率 ≥ 50%(每隊)', teams.every(t => t.shots.matched >= 0.5), teams.map(t => `${t.code} ${t.shots.matched}`).filter(x => /0\.[0-4]/.test(x)).join('、'));
-    check('射門池的情境與結果標籤是已知的那幾種', teams.every(t => t.shots.sits.every(s => ['RegularPlay', 'FastBreak', 'IndividualPlay', 'ThrowInSetPiece', 'FromCorner', 'FreeKick', 'SetPiece', 'Penalty'].includes(s)) && t.shots.outs.every(o => ['goal', 'saved', 'blocked', 'off', 'post'].includes(o))));
-    check('射門池的列數對回 raw 重算(ARS:該隊有座標與 xG 的射門筆數)', (() => {
-      const n = fm.flatMap(m => m.shots).filter(sh => sh.team === 'ARS' && Number.isFinite(sh.x) && Number.isFinite(sh.y) && sh.xg != null).length;
-      return g.teams.ARS.shots.n === n;
-    })(), `${g.teams.ARS.shots.n}`);
-    check('聯賽層射門池存在(某隊某情境一筆都沒有時的退路),列數是各隊的抽樣', g.league_.shotPool && g.league_.shotPool.rows.length >= 300);
-    check('每隊有主 / 客場的傳球數與越位數(回合制的傳球串長度與越位率用)', teams.every(t => t.play && ['home', 'away'].every(v => t.play[v] && t.play[v].games > 0 && t.play[v].passes > 200 && t.play[v].passes < 900 && t.play[v].offsides >= 0 && t.play[v].offsides < 8)));
+    check('每隊有主 / 客場的傳球數與越位數(戰術分頁印的真實值)', teams.every(t => t.play && ['home', 'away'].every(v => t.play[v] && t.play[v].games > 0 && t.play[v].passes > 200 && t.play[v].passes < 900 && t.play[v].offsides >= 0 && t.play[v].offsides < 8)));
     /* 踢法側寫(階段 B):六軸都有級與依據;20 隊分五級各 4 隊(排名分級);代理指標有標;值對回 rates / play 重算(ARS 心態 = 射門 − 被射門) */
     const AX = ['mentality', 'pressing', 'line', 'width', 'tempo', 'directness'];
     check('每隊都有六軸踢法側寫,級 1~5、附 n 與依據', teams.every(t => t.style && AX.every(k => t.style[k] && t.style[k].level >= 1 && t.style[k].level <= 5 && t.style[k].n > 0 && t.style[k].basis)));
@@ -182,15 +176,174 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
   }
 }
 
-console.log('\n▶ 模擬遊玩:引擎不變量');
+console.log('\n▶ 模擬遊玩:連續引擎的結構不變量');
 {
-  const enginePath = join(ROOT, 'web', 'assets', 'js', 'game-engine.js');
-  if (!existsSync(enginePath)) console.log('  · game-engine.js 還沒建(階段 2),整節略過');
-  else {
-    const mod = await import(pathToFileURL(enginePath));
-    const { runEngineChecks } = await import(pathToFileURL(join(ROOT, 'scripts', 'game', 'lib', 'engine-checks.mjs')));
-    for (const [label, ok, detail] of await runEngineChecks(mod, ROOT)) check(label, ok, detail);
+  /* **2026-09-25 從退役的回合制那一套搬過來。** 舊的 `game-engine.js`(回合制引擎)與
+     `duel-anim.js`(照劇本演的播放)守了四十幾條規則,其中幾條講的是**任何一台引擎都該成立**的事 ——
+     不超速、不出界、事件的當事人在場上、場上人數 = 11 − 紅牌、同種子同一場。
+     頁面從 2026-09-16 起跑的是 `game-sim.js`,而那幾條在它身上**一條都不是紅線**
+     (`check-sim` 會印瞬移次數,但它刻意不進 npm test)。量過三場,它們現在都成立;
+     這一節讓它們**一直**成立。退役那一套的其餘規則守的是它自己的機制(劇本、剪接、
+     播放規劃器、步態擺幅),連續引擎沒有那些東西,不搬。
+     **只守結構,不守會漂的數字** —— 射門數、跑動量那些由 `check-sim` 印。 */
+  const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+  const profile = read(join(ROOT, 'web', 'data', 'game', 'pl.json'));
+  const PRED = { xgHome: 1.99, xgAway: 0.70 };
+  const STEP = 1 / 60;
+  const sim = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 1, pred: PRED });
+  /* 瞬移的容差跟 `check-sim` 的 play() 同一條(自己的最高速 × 1.5 × 一格 + 2 cm):
+     那一邊印、這一邊擋,兩邊用同一個定義 —— 不然會有一場在這裡紅、在那裡印 ✓。 */
+  const jumpTol = p => p.vmax * STEP * 1.5 + 0.02;
+  let prev = null, prevOn = null, half = null, nEv = 0, jumps = 0, worstJump = 0, frames = 0;
+  const outside = [], badCount = [], badActor = [], subLog = [];
+  let subbed = null;
+  /* 上限是 110 分鐘的格數(跟 check-sim 的 play() 同一個算法):一場有中場與補時,跑固定的格數會停在半場 ——
+     第一版寫 200,000 格(55 分鐘),換人那一步永遠輪不到,而「跑到完場」那條紅在迴圈上限。 */
+  const N = Math.round(110 * 60 / STEP);
+  for (let i = 0; i < N && !sim.state().over; i++) {
+    /* 換人要**真的發生一次**才驗得到(連續引擎不自動換人,使用者 2026-09-20 的決定)。
+       第 60 分換一次:主隊第一個外場球員換替補席第一個人。 */
+    if (!subbed && sim.state().t >= 60 * 60) {
+      const st0 = sim.state();
+      const off = st0.players.find(p => p.side === 'home' && p.role !== 'GK')?.code;
+      const on = sim.benchOf('home')[0]?.code;
+      subbed = { off, on, ok: sim.substitute('home', off, on) };
+      /* 換完**當下**就看:上場的人在場上、下場的人不在(標題講的就是這兩件事 ——
+         第一版只看完場時下場的人不在,把換人寫成「拿掉一個人」的錯它看不出來,只有人數那一條紅) */
+      const after = new Set(sim.state().players.map(p => p.code));
+      subbed.onAfter = after.has(on); subbed.offAfter = after.has(off);
+      /* 同一個替補不能上場兩次;已經下場的人不在替補席,也不能再換回來 */
+      const other = sim.state().players.find(p => p.side === 'home' && p.role !== 'GK' && p.code !== on)?.code;
+      subbed.again = sim.substitute('home', other, on);
+      subbed.back = sim.substitute('home', other, off);
+    }
+    sim.advance(STEP);
+    frames++;
+    const s = sim.state();
+    const on = new Set(s.players.map(p => p.code));
+    const evs = sim.events();
+    for (const e of evs.slice(nEv)) {
+      if (e.type === 'sub') { subLog.push(e); continue; }
+      const who = e.type === 'goal' || e.type === 'block' || e.type === 'save' ? e.by : e.player;
+      if (who == null) continue;
+      /* 上一格或這一格在場上都算:紅牌的那一格,拿牌的人在事件之後就離場了 */
+      if (!on.has(who) && !prevOn?.has(who)) badActor.push(`${e.type} ${who} @${Math.floor(s.t / 60)}'`);
+    }
+    nEv = evs.length;
+    for (const sd of ['home', 'away']) {
+      const n = s.players.filter(p => p.side === sd).length;
+      if (n !== 11 - s.counts.reds[sd] && badCount.length < 3) badCount.push(`${sd} ${n} 人、紅牌 ${s.counts.reds[sd]} @${Math.floor(s.t / 60)}'`);
+    }
+    /* 中場換邊那一格二十二個人**依設計**被鏡射到對面 —— 不是瞬移(check-sim 那條坑) */
+    if (s.half !== half) { half = s.half; prev = null; }
+    for (const p of s.players) {
+      if ((p.x < -2 || p.x > 107 || p.y < -2 || p.y > 70) && outside.length < 3) outside.push(`${p.code} (${p.x.toFixed(1)}, ${p.y.toFixed(1)})`);
+      const q = prev?.get(p.code);
+      if (q) {
+        const d = Math.hypot(p.x - q.x, p.y - q.y);
+        if (d > jumpTol(p)) { jumps++; worstJump = Math.max(worstJump, d); }
+      }
+    }
+    prev = new Map(s.players.map(p => [p.code, p]));
+    prevOn = on;
   }
+  const end = sim.state();
+  check('跑到完場(不是跑到迴圈上限)', end.over, `${frames} 格`);
+  check('沒有人超過自己的最高速度(逐格位移,換邊那一格除外)', jumps === 0, jumps ? `${jumps} 次,最大 ${worstJump.toFixed(2)} m` : '');
+  check('球員不會跑到場外(離邊線 ≤ 2 m)', outside.length === 0, outside.join('、'));
+  check('每一格的場上人數 = 11 − 紅牌(兩隊)', badCount.length === 0, badCount.join('、'));
+  check('事件的當事人在事件當下都在場上(射門、進球、犯規、拿牌、越位、十二碼、封阻、撲救)', badActor.length === 0, badActor.slice(0, 3).join('、'));
+  check('換人成功:事件記下來、下場的人原本在場上、上場的人換完在場上',
+    !!subbed?.ok && subLog.some(e => e.off === subbed.off && e.on === subbed.on) && subbed.onAfter && !subbed.offAfter,
+    subbed ? `${subbed.off} → ${subbed.on}` : '沒有換到人');
+  check('同一個替補不能上場兩次、下場的人不能再換回來', subbed?.again === false && subbed?.back === false);
+  /* 可重現:同種子、同設定,前 10 分鐘的事件流逐字相同(整場跑兩次太貴,事件流的前綴已經足夠抓到
+     「偷用 Math.random / 牆上時鐘」那一類錯)。跨設定**不保證**可比 —— 那是 4f 那條坑,不是這裡守的事。 */
+  /* 一格一格推:`advance()` 一次最多走 MAX_STEPS 格,一口氣叫 advance(600) 只會走到那個上限 */
+  const firstTen = seed => {
+    const m = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed, pred: PRED });
+    for (let i = 0; i < 10 * 60 / STEP; i++) m.advance(STEP);
+    return JSON.stringify(m.events());
+  };
+  const a = firstTen(7), b = firstTen(7), c = firstTen(8);
+  check('同種子同一場(前 10 分鐘的事件流逐字相同),換一個種子就不同', a === b && a !== c && a.length > 50);
+}
+
+console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套意思)');
+{
+  /* **2026-09-25 修的那個錯**:畫面上的五級是聯盟的五分位(側寫的 `style.*.level`,標「・本季」的是
+     這一隊所在的那一級),而引擎的級數是「3 = 恆等元」。畫面又在**建立設定時就把側寫的級塞進 tactics、
+     開賽就送進引擎** —— 於是每一場(使用者什麼都沒碰)都在跑一組沒校準過的偏移:ARS 的防線被壓到
+     最深一級、壓迫 ×1.15,而 λ 的錨(`check-sim`)量的是**沒有偏移**的那一場。動任何一顆按鈕,
+     另外兩軸也會跟著被送出去。這一節守四件事:
+       ① 引擎給的「沒下指令時是哪一級」:壓迫 = 這一隊自己那一級,其餘 = 3;轉接層轉出去的是同一份
+       ② 送出那一組級數 = 恆等元(倍率一個都不動,前 10 分鐘的事件流跟什麼都沒送的逐字相同)
+       ③ 壓迫的五級是聯盟五分位的真實中位數:非遞減、落在聯盟真實的範圍裡、換算跟 pressBase 同一條
+       ④ 畫面:設定預設是空的、亮的是引擎那一級、本季只當標記、點一顆只送那一軸 */
+  const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+  const LV = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-live.js')));
+  const profile = read(join(ROOT, 'web', 'data', 'game', 'pl.json'));
+  const PRED = { xgHome: 1.99, xgAway: 0.70 };
+  const codes = Object.keys(profile.teams);
+  const OTHER = ['line', 'directness', 'mentality', 'width', 'tempo'];
+
+  /* ① */
+  const badDef = codes.filter(c => {
+    const d = SM.tacticDefaults(profile, c);
+    return d.pressing !== profile.teams[c].style.pressing.level || OTHER.some(k => d[k] !== 3);
+  });
+  check('沒下指令時引擎在踢的那一級:壓迫 = 這一隊自己那一級,其餘五軸 = 3(20 隊)', badDef.length === 0 && codes.length === 20, badDef.join('、'));
+  check('轉接層轉出去的就是引擎那一份(頁面不自己寫一份「哪一級是恆等元」)',
+    codes.every(c => JSON.stringify(LV.engineTacticLevels(profile, c)) === JSON.stringify(SM.tacticDefaults(profile, c))));
+
+  /* ② 恆等元:倍率與跑出來的比賽都不動 */
+  const idBad = codes.filter(c => {
+    const other = codes.find(x => x !== c);
+    const m = SM.createSim({ profile, home: c, away: other, seed: 1, pred: PRED });
+    const r = m.setTactics('home', SM.tacticDefaults(profile, c));
+    return !(r.pressing === 1 && r.line === 1 && r.directness === 0 && r.mentality === 0 && r.width === 1 && r.tempo === 1);
+  });
+  check('把引擎的預設級原封送回去,六個倍率一個都不動(20 隊)', idBad.length === 0, idBad.join('、'));
+  const tenMin = send => {
+    const m = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 5, pred: PRED });
+    if (send) { m.setTactics('home', SM.tacticDefaults(profile, 'ARS')); m.setTactics('away', SM.tacticDefaults(profile, 'LIV')); }
+    for (let i = 0; i < 10 * 60 * 60; i++) m.advance(1 / 60);
+    return JSON.stringify(m.events());
+  };
+  check('送了預設級跟什麼都沒送是同一場(前 10 分鐘的事件流逐字相同)', tenMin(false) === tenMin(true));
+
+  /* ③ 壓迫的五級:期望值自己從側寫算一次(中位數 + 跟引擎同一條換算,常數從引擎原始碼讀) */
+  const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+  const LG = Number(simSrc.match(/const PRESS_LG = ([0-9.]+)/)?.[1]), SPAN = Number(simSrc.match(/const PRESS_SPAN = ([0-9.]+)/)?.[1]);
+  const conv = v => Math.min(1.3, Math.max(0.7, 1 + (v / LG - 1) * SPAN));
+  const med = a => { const s = [...a].sort((x, y) => x - y), k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
+  const want = [1, 2, 3, 4, 5].map(L => conv(med(codes.filter(c => profile.teams[c].style.pressing.level === L).map(c => profile.teams[c].style.pressing.value))));
+  const bases = codes.map(c => conv(profile.teams[c].style.pressing.value));
+  let worst = 0, mono = true, inRange = true;
+  for (const c of codes) {
+    const own = profile.teams[c].style.pressing.level, base = conv(profile.teams[c].style.pressing.value);
+    const got = [1, 2, 3, 4, 5].map(L => {
+      const m = SM.createSim({ profile, home: c, away: codes.find(x => x !== c), seed: 1, pred: PRED });
+      return m.setTactics('home', { pressing: L }).pressing * base;
+    });
+    got.forEach((g, i) => { const w = i + 1 === own ? base : want[i]; worst = Math.max(worst, Math.abs(g - w)); });
+    if (got.some((g, i) => i && g < got[i - 1] - 1e-12)) mono = false;
+    if (got.some(g => g < Math.min(...bases) - 1e-12 || g > Math.max(...bases) + 1e-12)) inRange = false;
+  }
+  check('壓迫的每一級 = 那一級球隊真實值的中位數(自己那一級 = 自己的真實值),換算跟 pressBase 同一條',
+    Number.isFinite(LG) && Number.isFinite(SPAN) && worst < 1e-12, `最大差 ${worst.toExponential(1)}・五級 ${want.map(w => w.toFixed(3)).join(' / ')}`);
+  check('壓迫的五級非遞減,而且落在聯盟真實的範圍裡(不是遊戲規則的 ±30%)', mono && inRange,
+    `聯盟 ${Math.min(...bases).toFixed(3)}~${Math.max(...bases).toFixed(3)}`);
+
+  /* ④ 畫面:用原始碼守(剝掉註解再掃 —— 這一段註解本身就在講舊的寫法) */
+  const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  check('設定的 tactics 預設是空的(開賽送進引擎的也就是空的)', /tactics: \{\} \}\)/.test(view) && !/tactics: defaultTactics\(/.test(view));
+  check('亮起來的是引擎那一級 + 使用者改過的,「・本季」只當標記',
+    /const cur = \{ \.\.\.engineTactics\(state\[sd\]\), \.\.\.\(setupOf\(sd\)\.tactics \?\? \{\}\) \}/.test(view)
+    && /const def = seasonTactics\(state\[sd\]\)/.test(view) && /engineTacticLevels\(profile, code\)/.test(view));
+  check('點一顆按鈕只送那一軸(不再把整組側寫級一起送出去)',
+    /su\.tactics = \{ \.\.\.\(su\.tactics \?\? \{\}\), \[k\]: Number\(lv\) \}/.test(view) && !/defaultTactics/.test(view));
+  check('畫面不再宣稱「只改踢法,不改進球期望」(引擎不會把進球期望調回來)', !/不改進球期望/.test(view) && /不會把/.test(view));
 }
 
 console.log('\n▶ 模擬遊玩:賽後判讀');

@@ -54,9 +54,8 @@ async function main() {
   /* 探索頁的三個內容模組(併頁時抽出來的,做法同 ucl-view)。
      模擬遊玩 2026-09-16 起跑連續時間引擎:`game-sim` 是引擎、`game-live` 是它跟畫面之間的轉接層、
      `game-pitch` 畫球場、`game-view` 是版面 —— 照相依順序排(共用模組引用共用模組)。
-     **`game-engine` / `game-playback` / `duel-anim` 已經不在這條清單裡**:那是舊的回合制引擎與
-     它的剪接式播放,頁面不再 import 它們。檔案還留在倉庫(自己的測試還在跑),但不進單檔版 ——
-     留在清單裡的話單檔版會多打包三份沒有人用的程式,而且 `defaultSetup` 會跟 `game-live` 撞名。 */
+     舊的回合制引擎與它的剪接式播放(`game-engine` / `game-playback` / `duel-anim`)2026-09-16 起
+     不在這條清單裡、2026-09-25 連檔案一起拆了。 */
   'knowledge-view', 'allplayers-view', 'game-diag', 'game-sim', 'game-pitch', 'game-live', 'game-view',
   /* 「我的」那一頁的兩個分頁(2026-09-14 併頁時抽出來的)。
      predict-view 引用 predict-score,所以排在它後面。 */
@@ -90,7 +89,7 @@ async function main() {
       if (taken.has(m[1])) throw new Error(`${name}.js 的頂層識別字 ${m[1]} 跟 ${taken.get(m[1])}.js 同名,單檔版會炸`);
       taken.set(m[1], name);
     }
-    /* 共用模組之間的具名 import 也要拆(game-view import predict-core / duel-anim / game-engine)。
+    /* 共用模組之間的具名 import 也要拆(game-view import predict-core / game-pitch / game-live / game-diag)。
        原本只拆 `import * as C`,具名的留著 → 單檔版一開就是
        「Identifier 'blendPair' has already been declared」(攤平後的函式跟 import 撞名)。
        2026-09-03 實測:對戰模擬併進探索頁之後單檔版的那一頁其實一直是壞的

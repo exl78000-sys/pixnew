@@ -4,7 +4,7 @@
  * 不寫任何真實資料、不被真實管線 import、不畫在真實的頁面上。
  * 遊戲內的參數照本站的現實資料走,但**遊戲不影響真實參數,也不影響真實比賽**。
  *
- * ── 為什麼不是把 game-engine.js 改一改 ──
+ * ── 為什麼不是把舊的 game-engine.js 改一改(那一支與 duel-anim.js 2026-09-25 已移除,git 歷史裡有)──
  * 舊的是「回合制 + 演出」:引擎先決定一個回合的結局(射門 / 丟球 / 角球),
  * 畫面再想辦法把二十二個人擺成那個結局該有的樣子。那個形狀決定了三件使用者看得出來的事:
  * 演出會被切斷(整段跳過要淡出淡入)、人的動作是被擺出來的、球是照腳本跳到下一個人。
@@ -17,7 +17,7 @@
  * 那本身就是「物理綁在畫面上」的症狀。
  *
  * ── 沿用而不重寫的東西 ──
- * 運動核心的常數與三條規則是 duel-anim.js 那邊**量出來**的,CLAUDE.md 上每一條都付過代價:
+ * 運動核心的常數與三條規則是舊的 duel-anim.js 那邊**量出來**的,CLAUDE.md 上每一條都付過代價:
  *   1. 加速度有上限 → 全速的轉彎半徑 v²/a ≈ 4 m,所以要轉彎就得先減速,不然永遠繞圈
  *   2. 追空中球要追**落點**,不是追球 —— 朝球跑會在半路迎上一顆太快的球,然後看它飛過頭
  *   3. 閒置走位要**兩個門檻**(起步 1.5 m、停步 0.4 m),單一門檻會讓人在門檻邊上被拉來拉去
@@ -30,17 +30,17 @@
 
 /* 模組層的 const 一律宣告在最前面 —— const 不會提升,而渲染器在模組執行時就可能被呼叫
    (球員頁那次整張表不見、只有 console 一行 TDZ 錯誤)。 */
-const PITCH_W = 105, PITCH_H = 68;                       // 球場(公尺),跟 duel-anim 同一套座標
+const PITCH_W = 105, PITCH_H = 68;                       // 球場(公尺),跟 FotMob 的座標同一套
 const SIM_DT = 1 / 60;                         // 固定時步。物理不吃畫面的 dt(見檔頭)
 const MAX_STEPS = 600;                         // 一次 advance 最多推幾步,防止分頁切回來時一次補上幾分鐘
 
-/* 運動:duel-anim.js 量出來的那一組,不重新發明 */
+/* 運動:舊的 duel-anim.js 量出來的那一組,不重新發明 */
 const SIM_ACCEL = 6.5, SIM_DECEL = 9.0;                // 加速 / 煞車上限(m/s²)
 const SIM_WALK = 1.05, SIM_JOG = 2.5, SIM_RUN = 5.2;
 const VMAX_FALLBACK = 8.6;                     // 沒有逐人最高速時用(m/s;約 31 km/h,聯盟中位數量級)
 const IDLE_GO = 1.5, IDLE_STOP = 0.4;          // 閒置走位的兩個門檻(見檔頭第 3 條)
 
-/* 球:地面摩擦與空阻沿用 duel-anim */
+/* 球:地面摩擦與空阻沿用舊的 duel-anim.js */
 const BALL_FRICTION = 5.5, BALL_AIR = 1.2, GRAVITY = 9.81;
 const BALL_BOUNCE = 0.45;                      // 落地彈跳保留的垂直速度比例
 const SIM_CONTROL_R = 1.2;                     // 這麼近才控得到球(公尺)
@@ -102,6 +102,36 @@ const CARRY_AHEAD = 0.9;                       // 帶球時球在身前多遠
 const PRESS_R = 14;                            // 這麼近的防守者才會去逼搶(會再乘上該隊的強度)
 const PRESS_LG = 5.54;                         // 聯盟平均(算出來的,見上)—— 只當比例的分母
 const PRESS_SPAN = 0.45;                       // 最強與最弱之間 PRESS_R 差這個比例
+/* 真實的壓迫值 → 引擎的倍率。**只有這一條換算** —— 每隊的 pressBase 與戰術指令的五級都走它,
+   兩邊各寫一份的話,改了一邊另一邊會悄悄過期。 */
+const pressOfValue = pv => (pv == null ? 1 : cl(1 + (pv / PRESS_LG - 1) * PRESS_SPAN, 0.7, 1.3));
+/* 戰術指令「壓迫」的五級(2026-09-25)。畫面上的五級是**聯盟的五分位**(側寫的 `style.pressing.level`,
+   很低 … 很高,各 4 隊),所以引擎這邊也照那個意思:選某一級 = 照那一級球隊真實值的**中位數**逼搶,
+   換算跟 pressBase 同一條 —— 每一級差多少是聯盟真的有的差距,不再是遊戲規則。
+   **選自己那一級是恆等元**(pressBase,這一隊自己的真實值,不是那一級的中位數)。
+   第一版是「3 = 恆等元、每級 ±15%」,而畫面把這一隊所在的那一級標成「本季」:
+   ARS(第 4 級)什麼都沒動,開賽就被送進 ×1.15。 */
+function pressLevels(profile) {
+  const by = [[], [], [], [], [], []];
+  for (const t of Object.values(profile?.teams ?? {})) {
+    const st = t.style?.pressing;
+    if (st?.value != null && st.level >= 1 && st.level <= 5) by[st.level].push(st.value);
+  }
+  return by.map(v => {
+    if (!v.length) return null;
+    const s = [...v].sort((a, b) => a - b), m = s.length >> 1;
+    return pressOfValue(s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2);
+  });
+}
+/* **沒收到任何指令時,引擎實際在踢的是哪一級**(2026-09-25)。畫面要亮的是這一級,不是側寫的級:
+   壓迫的恆等元是這一隊自己那一級(pressBase 就是它的真實值);其餘五軸引擎沒有逐隊的基準,
+   恆等元一律是中間那一級(3)。第一版的畫面把側寫的級同時當成「目前」與「本季」,
+   而且開賽時就把它們送進 setTactics —— 每一場(使用者什麼都沒碰)都在跑一組沒校準過的偏移,
+   λ 的錨量的是另一場比賽。 */
+export function tacticDefaults(profile, code) {
+  const lv = profile?.teams?.[code]?.style?.pressing?.level;
+  return { pressing: lv >= 1 && lv <= 5 ? lv : 3, line: 3, directness: 3, mentality: 3, width: 3, tempo: 3 };
+}
 const COVER_BACK = 7;                          // 補位者站在逼搶者身後幾公尺(往自家門的方向)
 /* 抄截半徑 1.3 m,而逼搶者刻意維持 `JOCKEY_R` = **2.4 m** —— 也就是說一個完全照設計在做事的
    逼搶者**永遠搶不到球**,抄截只在「別人剛好更近」或「持球者自己走過來」時意外發生。
@@ -702,7 +732,7 @@ const LONG_BALL_25 = 22.86;   // 25 碼:另一個常見的定義,兩個都量才
    不是憑印象:本站沒有真實的位置資料,所以「重心該移動幾公尺」驗不了,只能驗它的後果。 */
 /* 四軸戰術的級距(2026-09-17,階段 4a)。**這四個數字沒有資料可以校準** ——
    本站沒有「把心態調到很進攻會怎樣」的對照組,所以它們是遊戲規則不是量測值,
-   而且刻意訂得小(跟既有兩軸同一個量級:壓迫 ±30%、防線 ±25%)。
+   而且刻意訂得小(跟當時既有兩軸同一個量級:壓迫 ±30%、防線 ±25%;壓迫 2026-09-25 改成聯盟五分位的真實值,見 pressLevels)。
    每一軸的作用點都照側寫自己宣告的 `effects` 挑,不是我想到哪接哪:
      心態   「整條線壓上的高度」        → 陣型整塊沿進攻方向平移
      寬度   「邊路球員拉多開」          → 陣型離中線的偏移放大
@@ -1026,7 +1056,7 @@ const RUN_TRIGGER = 0.017;                     // 每次持球決定觸發一次
 const cl = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 const hypot = (x, y) => Math.sqrt(x * x + y * y);
 
-/* 亂數:同種子同結果。跟 game-engine 用同一支(mulberry32),兩台引擎的可重現性才是同一個意思 */
+/* 亂數:同種子同結果。mulberry32 —— 跟 predict-core 的 seededRng 同一個演算法,可重現性才是同一個意思 */
 export function simRng(seed) {
   let a = (seed >>> 0) || 1;
   return () => { a |= 0; a = (a + 0x6D2B79F5) | 0;
@@ -1214,6 +1244,8 @@ export function shapeOf(slot, ball, att, opts = {}) {
 export function createSim({ profile, home, away, seed = 1, setup = {}, pred = null } = {}) {
   const rng = simRng(seed);
   const teamOf = code => profile.teams[code];
+  /* 壓迫五級各自的典型值(見 pressLevels):從同一份側寫算,側寫重算它會自己跟上 */
+  const PRESS_AT = pressLevels(profile);
   /* 搶斷能力的**聯盟中位**,用來把 `ability.tkl` 變成相對值(見 `DUEL_SKILL_CLAMP`)。
      寫死一個數字的話,側寫重算它就會悄悄過期 —— 所以在這裡從同一份側寫算。 */
   const tklAll = [];
@@ -1315,7 +1347,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        直接拿比值當倍率的話 COV(2.93)會變成 0.53 倍、TOT(6.65)1.20 倍 ——
        那個範圍比真實的行為差異大得多(兩隊的抄截率不會差一倍),所以只取它的方向、不取它的幅度。 */
     const pv = t.style?.pressing?.value;
-    const press = pv == null ? 1 : cl(1 + (pv / PRESS_LG - 1) * PRESS_SPAN, 0.7, 1.3);
+    const pressLevel = tacticDefaults(profile, code).pressing;
+    const press = pressOfValue(pv);
     // 犯規傾向:這一隊在**這個主客身分**下的真實犯規數 ÷ 聯盟平均(夾住樣本少的極端)
     const fl = t.rates?.[side]?.fouls;
     const foulRel = (fl == null || FOUL_LG == null) ? 1 : cl(fl / FOUL_LG, 0.7, 1.3);
@@ -1353,7 +1386,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        用先發十一人算 —— 換人會讓它稍微偏,那是二階的,而把它寫成「隨時重算」
        會讓同一次對抗的權重跟著板凳變,那更難解釋。 */
     const relMean = players.reduce((a, q) => a + relOf(q.ability?.tkl), 0) / (players.length || 1);
-    return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, lineDrop: 1,
+    return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, pressLevel, lineDrop: 1,
       push: 0, wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, aerRel, relMean,
       ypf: yellowPerFoulOf(code, side), possMean: pmRaw ?? null, bench };
   };
@@ -3958,11 +3991,16 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 還可以換上來的人。**已經用掉的不列** —— 列了就是一個點下去會失敗的按鈕。 */
     benchOf: side => [...(sideOf(side).bench ?? new Map()).entries()]
       .filter(([, v]) => !v.used).map(([code, v]) => ({ code, name: v.p.name, pos: v.p.pos })),
-    /* 指令:level 1~5,3 是「照這一隊本季真實的踢法」。倍率的範圍是遊戲規則(沒有資料能校準),
-       所以刻意小:壓迫 ±30%、防線 ±25% —— 大到會讓 λ 的錨失效的話,這一頁就在編數字了。 */
+    /* 指令:level 1~5,**每一軸的恆等元是 `tacticDefaults` 回的那一級**(壓迫 = 這一隊自己那一級,
+       其餘 = 3)。壓迫的五級是聯盟五分位的真實中位數(見 pressLevels);防線與另外四軸引擎沒有逐隊的
+       基準,每一級改多少仍是遊戲規則(沒有資料能校準),所以刻意小:防線 ±25% —— 大到會讓 λ 的錨
+       失效的話,這一頁就在編數字了。**沒送的軸不動** —— 呼叫端只送使用者真的改過的那幾軸。 */
     setTactics(side, levels = {}) {
       const s = sideOf(side);
-      if (levels.pressing != null) s.press = s.pressBase * (1 + (cl(levels.pressing, 1, 5) - 3) * 0.15);
+      if (levels.pressing != null) {
+        const L = cl(Math.round(levels.pressing), 1, 5);
+        s.press = L === s.pressLevel || PRESS_AT[L] == null ? s.pressBase : PRESS_AT[L];
+      }
       if (levels.line != null) s.lineDrop = 1 - (cl(levels.line, 1, 5) - 3) * 0.125;
       // 2026-09-17 階段 4a:另外四軸。級數 3 一律是恆等元(0 / 1 / 1 / 0),見 MENT_PUSH 那一段
       if (levels.mentality != null) s.push = (cl(levels.mentality, 1, 5) - 3) * MENT_PUSH;
