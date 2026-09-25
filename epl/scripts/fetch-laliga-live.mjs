@@ -6,16 +6,19 @@
 //
 //   npm run laliga:live
 //   npm run laliga:live -- --max-requests=2
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
 import { loadMatches } from './lib/adapters/openfootball.mjs';
 import { normaliseSportmonksMatch } from './lib/adapters/sportmonks.mjs';
+import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { buildLiveProviderReport } from './lib/postmatch-report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+/* 即時勝率的時間曲線(npm run tune:inplay 產生;驗收沒過或檔案不在就是 null → 線性)。 */
+const INPLAY_CURVE = loadInplayCurve(ROOT, { readFileSync, existsSync, join });
 const TOKEN = process.env.SPORTMONKS_TOKEN || process.env.SPORTMONKS_KEY || process.env.SPORTMONKS_API_KEY;
 const BASE = 'https://api.sportmonks.com/v3';
 const LEAGUE_ID = Number(process.env.SPORTMONKS_LALIGA_LEAGUE_ID ?? 564);
@@ -159,7 +162,7 @@ async function main() {
     const report = buildLiveProviderReport({
       fixture: { ...fixture, played: false, started: true, finished, fh: hs, fa: as },
       detail, prediction: fixture.prediction ?? predByPair.get(`${homeCode}|${awayCode}`) ?? null, minute,
-      nameOf: code => T.byCode.get(code)?.en ?? code,
+      nameOf: code => T.byCode.get(code)?.en ?? code, inplayCurve: INPLAY_CURVE,
     });
     if (report) matches.push(report);
   }

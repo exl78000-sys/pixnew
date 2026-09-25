@@ -70,9 +70,15 @@ export function inplayCalibration(store, { minMatches = 30 } = {}) {
     brierPre: c.nPre ? round(c.brierPre / c.nPre, 4) : null,
   });
 
+  /* 同一季的點可能來自兩個模型(2026-09-25 時間曲線上線)。混在一起的表量的是兩個模型的平均,
+     所以場數照模型分開數出來,畫面要講。 */
+  const byTiming = {};
+  for (const [, rec] of done) { const t = rec.timing ?? 'linear'; byTiming[t] = (byTiming[t] ?? 0) + 1; }
+
   return {
     season: store?.season ?? null,
     matches: done.length,
+    byTiming,
     points: overall.n,
     minMatches,
     /* 樣本不足時數字照給、但結論欄位明講 —— 前端要把這個字打在畫面上(鐵則四) */

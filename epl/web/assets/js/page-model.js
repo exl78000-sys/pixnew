@@ -69,6 +69,9 @@ try {
   const calib = meta.capabilities?.live === false ? null   // 英冠沒有 in-play feed,不打一個註定 404 的請求
     : (await C.loadFrom(C.league(), ['inplay-calibration']).catch(() => ({ data: {} })))
       .data?.['inplay-calibration'] ?? null;
+  /* 即時勝率的時間曲線(npm run tune:inplay → build)。跨聯賽一份,一律從 pl 讀(跟 ucl-elo 同一個做法)。 */
+  const ipTune = (await C.loadFrom('pl', ['inplay-tuning']).catch(() => ({ data: {} })))
+    .data?.['inplay-tuning'] ?? null;
 
   /* 歐冠的跨聯賽評分。**一律從 pl 讀**(跟 page-cups.js 同一個做法):
      這是跨聯賽的產物,三個聯賽的模型頁要看到同一份 ——
@@ -118,14 +121,79 @@ try {
       ${grid}${legend}${path('marketRps', 'var(--draw)')}${path('modelRps', 'var(--accent)')}${xLabels}</svg>`;
   }
 
+  /* ── 即時勝率的時間曲線(2026-09-25)──────────────────
+     以前的即時勝率把賽前 λ 按「剩幾分鐘 ÷ 90」縮:沒有補時、也當進球平均分佈。
+     這一節講換成實測曲線的理由與驗收;**數字一個都不寫死**,全部從 inplay-tuning 讀
+     (改了 tune-inplay 這邊會自己跟著變)。 */
+  function inplayCurveSection() {
+    const T = ipTune;
+    if (!T || T.missing || !T.curve?.S || !T.validation) return '';
+    const S = T.curve.S, V = T.validation;
+    const pc = v => (v == null ? '—' : C.pct(v, 1));
+    const sez = z => (z == null ? '—' : Math.abs(z).toFixed(1));
+    const d4 = v => (v == null ? '—' : v.toFixed(4));
+    const valid = (T.validSeasons ?? []).join('、') || '—';
+    const verdict = V.passes ? '通過' : V.reason === 'insufficient' ? `樣本不足(門檻 ${V.minMatches} 場)` : '沒通過';
+    const curveRows = [45, 60, 75, 80, 85, 90].map(c => `<tr><td>${c} 分</td>
+      <td class="num">${pc((90 - c) / 90)}</td><td class="num">${pc(S[c])}</td></tr>`).join('');
+    const w = V.windows ?? {};
+    const winLine = ['76-90', '90'].filter(k => w[k]).map(k =>
+      `${k === '90' ? '時鐘剛到 90 分那一刻' : `${k} 分`}:${d4(w[k].linear)} → ${d4(w[k].curve)}(${sez(w[k].z)} 個標準誤)`).join(';');
+    const trail = T.trailing?.validation ?? T.trailing?.tuning ?? [];
+    const trailSeason = T.trailing?.validation ? valid : T.tuneSeason;
+    const trailRows = trail.filter(r => r.actual).map(r => `<tr><td>${r.band === '90-90' ? '90' : r.band} 分</td>
+      <td class="num">${pc(r.models.linear?.notLose)}</td><td class="num">${pc(r.models.curve?.notLose)}</td>
+      <td class="num">${pc(r.actual.notLose)}</td><td class="num dim">${r.matches} 場 / ${r.points} 點</td></tr>`).join('');
+    const under = trail.filter(r => r.actual && r.models.curve && r.actual.notLose > r.models.curve.notLose).length;
+    const G = T.gameState;
+    return `
+  <div class="section" style="margin-top:20px"><h2>即時勝率的時間曲線</h2>
+    <span class="hint">調參 ${C.esc(T.tuneSeason)}・驗收 ${C.esc(valid)}</span></div>
+  <div class="card">
+    ${T.inUse ? '' : `<div class="note warn"><b>目前站上用的還是線性時間</b> —— 曲線的驗收結果是「${C.esc(verdict)}」,
+      沒過門檻就不換(鐵則二)。下面是量到的數字。</div>`}
+    <p class="small">即時勝率把賽前的預期進球,依「這場還剩多少進球」縮小,再加上目前比分算勝和負。
+      「還剩多少」以前是<b>剩幾分鐘 ÷ 90</b>:沒有補時,時鐘走到 90 分就當比賽結束 ——
+      補時中領先一球的那一隊會被算成 100% 贏。${C.esc(T.tuneSeason)} 六個聯賽 ${T.curve.goals.toLocaleString()} 顆進球裡,
+      ${pc(T.curve.secondHalfStoppageShare)} 是下半場補時進的,下半場(含補時)佔 ${pc(1 - T.curve.firstHalfShare)}。
+      ${T.inUse ? '現在改用' : '候選的曲線用'}實測的比例:時鐘走到那一分鐘之後,還會進的球佔全場多少。</p>
+    <div class="table-wrap" style="margin-top:8px"><table>
+      <thead><tr><th>時鐘</th><th class="num">舊的線性:還剩</th><th class="num">實測:還剩</th></tr></thead>
+      <tbody>${curveRows}</tbody></table></div>
+    <p class="small" style="margin-top:10px">驗收用<b>沒有參與估曲線</b>的 ${C.esc(valid)}(${V.matches} 場,賽前預期進球是逐輪走查的,
+      每一輪只用那一輪之前的比賽):每場取第 1 到 90 分每一分鐘的勝率算 RPS(越低越準),一場一個分數再平均。
+      線性 ${d4(V.linear)} → 曲線 ${d4(V.curve)},差 ${d4(V.diff)} ± ${d4(V.se)}(${sez(V.z)} 個標準誤)→ <b>${C.esc(verdict)}</b>。
+      ${winLine ? `越接近終場差越多 —— ${winLine}。` : ''}</p>
+    <p class="tiny dim">界線:補時中本站多半不知道已經踢了幾分鐘補時(時鐘停在 90),所以一律當補時剛開始算,補時後段的勝率會偏保守;
+      中場休息同理(當上半場補時還沒踢完)。</p>
+    ${trailRows ? `<h3 style="margin-top:16px">對落後方是不是太樂觀?</h3>
+    <p class="small">有一方落後的時點裡,模型給落後方「最後沒輸」(追平或逆轉)的機率,對上實際(${C.esc(trailSeason)})。
+      ${trail.filter(r => r.actual).length} 個時段裡有 ${under} 個實際比曲線給的還高 ——
+      ${under === trail.filter(r => r.actual).length ? '模型對落後方是<b>偏悲觀</b>,不是太樂觀;曲線補回了一部分。' : ''}</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>時段</th><th class="num">舊的線性</th><th class="num">時間曲線</th>
+        <th class="num">實際</th><th class="num">樣本</th></tr></thead>
+      <tbody>${trailRows}</tbody></table></div>` : ''}
+    ${G?.tuning ? `<div class="note" style="margin-top:10px"><b>測過但沒有進模型:局面乘數</b>(落後一方進球加速、領先一方放慢,
+      依淨勝球與時段分 15 格,在 ${C.esc(T.tuneSeason)} 估)。調參季改善 ${sez(G.tuning.z)} 個標準誤、驗收季 ${sez(G.validation?.z)} 個標準誤 ——
+      ${G.passes ? '驗收過了門檻,但還沒有人看過,所以還沒上線。' : '驗收沒過 2 個標準誤,不進模型。'}每次部署重算,樣本多了會再回答一次。</div>` : ''}
+  </div>`;
+  }
+
   /* ── 即時機率的可靠度(校準量測,累積中)──────────────
-     只量不改:in-play 模型要不要調,等這裡的數字自己說話(鐵則二)。
+     這一節只量本季比賽中記下來的點。模型 2026-09-25 那一次調整(時間曲線)的依據
+     在上一節 —— 往季逐場重建、另一季驗收;這一節的樣本太少,當不了那種證據。
      樣本不足時整節照畫、但把「還不夠下結論」打在最顯眼的位置(鐵則四)。 */
   function inplayCalibSection() {
     if (!calib || !calib.points) return '';
     const STATE_ZH = { lead: '主隊領先', level: '平手', trail: '主隊落後' };
     const insufficient = calib.verdict !== 'ok';
     const fmt = v => (v == null ? '—' : v.toFixed(3));
+    /* 這一季的點可能來自兩個模型(時間曲線 2026-09-25 上線)—— 混在一起就要講出來。 */
+    const bt2 = calib.byTiming ?? {};
+    const timingNote = bt2.curve
+      ? `<p class="tiny dim">這 ${calib.matches} 場裡,${bt2.curve} 場是時間曲線上線後記的、${bt2.linear ?? 0} 場是之前的線性時間算的 —— 兩種混在同一張表裡。</p>`
+      : calib.matches ? '<p class="tiny dim">這些點全部是時間曲線上線前、用線性時間算的。</p>' : '';
     const cellRows = calib.cells.map(c => `<tr>
       <td>${c.band} 分</td><td>${STATE_ZH[c.state] ?? c.state}</td>
       <td class="num">${fmt(c.brier)}</td><td class="num">${fmt(c.brierPre)}</td>
@@ -137,7 +205,7 @@ try {
       <td class="num dim">${t.matches} 場 / ${t.n} 點</td></tr>`).join('');
     return `
   <div class="section" style="margin-top:20px"><h2>即時機率的可靠度</h2>
-    <span class="hint">量測累積中・只量不改模型</span></div>
+    <span class="hint">本季比賽中記下來的點・只量</span></div>
   <div class="card">
     ${insufficient ? `<div class="note warn"><b>樣本還不夠下結論</b> ——
       目前累積 ${calib.matches} 場完賽(門檻 ${calib.minMatches} 場)。
@@ -151,11 +219,10 @@ try {
       <thead><tr><th>時間段</th><th>比分狀態</th><th class="num">即時 Brier</th>
         <th class="num">凍結 Brier</th><th class="num">樣本</th></tr></thead>
       <tbody>${cellRows}</tbody></table></div>
-    <h3 style="margin-top:16px">對落後方是不是太樂觀?</h3>
+    ${timingNote}
+    <h3 style="margin-top:16px">落後方:模型給的勝率 vs 實際翻盤</h3>
     <p class="small">有一方落後的時點裡,模型平均給落後方的勝率 vs 落後方實際翻盤的比例。
-      兩個數字該接近;模型的那欄明顯偏高就是太樂觀。
-      (外部單點參照:2026-08-29 同一時刻本站給落後情境的客隊 54~58%、
-      Google/Sportradar 給 38% —— 一個觀察,不是結論,放這裡等樣本裁決。)</p>
+      本季這一份樣本還少;同一個問題拿往季重建的答案在上一節。</p>
     <div class="table-wrap"><table>
       <thead><tr><th>時間段</th><th class="num">模型給落後方(平均)</th>
         <th class="num">實際翻盤率</th><th class="num">樣本</th></tr></thead>
@@ -649,6 +716,8 @@ try {
   </div>
 
   ${rejectedSection()}
+
+  ${inplayCurveSection()}
 
   ${inplayCalibSection()}
 

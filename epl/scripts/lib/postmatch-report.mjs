@@ -167,7 +167,7 @@ export function buildProviderMatchReport({ fixture, detail, nameOf = code => cod
 
 // 即時賽事沿用同一份 canonical detail，但不要求完賽才有的完整欄位。
 // 缺少陣容、評分或統計時仍可畫比分卡；前端會把缺欄位顯示成「未取得」。
-export function buildLiveProviderReport({ fixture, detail, prediction = null, minute = 0, nameOf = code => code } = {}) {
+export function buildLiveProviderReport({ fixture, detail, prediction = null, minute = 0, nameOf = code => code, inplayCurve = null } = {}) {
   if (!fixture || !detail || fixture.home !== detail.home || fixture.away !== detail.away) return null;
   const hs = detail.score?.home ?? fixture.fh ?? null;
   const as = detail.score?.away ?? fixture.fa ?? null;
@@ -206,6 +206,7 @@ export function buildLiveProviderReport({ fixture, detail, prediction = null, mi
       lambdaHome: prediction.xgHome, lambdaAway: prediction.xgAway,
       hs, as, minute: report.minute, finished: report.finished,
       redHome: report.sides[fixture.home].red, redAway: report.sides[fixture.away].red,
+      curve: inplayCurve,   // 時間曲線:見 matchreport.mjs 那一行的註解
     });
     report.preMatch = { home: prediction.home, draw: prediction.draw, away: prediction.away, xgHome: prediction.xgHome, xgAway: prediction.xgAway };
     /* 講評走英超同一支 liveSummaryFor(規則生成、每句只引用算好的數字)——

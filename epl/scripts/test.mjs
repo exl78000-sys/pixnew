@@ -18,7 +18,10 @@ import { fitPoisson, applyPromotedPrior, predict } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { uclSeasonMatches } from './lib/ucl-elo.mjs';
 import { round } from './lib/util.mjs';
-import { inPlay } from './lib/inplay.mjs';
+import { inPlay, remainingFraction } from './lib/inplay.mjs';
+import { loadInplayCurve, validCurve, reconcile as reconcileEvents, happened, goalTimingCurve, pairedScores } from './lib/inplay-tuning.mjs';
+import { appendSamples } from './lib/prob-history.mjs';
+import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import {
   preMatchBundle, postMatchBundle, templateFor, verify, generateReport, ReportCache,
 } from './lib/report/index.mjs';
@@ -51,6 +54,135 @@ import { mergeCupSeasons } from './lib/cup-seasons.mjs';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
 const TRAIN_FROM = ['2023-24', '2024-25'];
+
+/* 即時勝率的時間曲線(2026-09-25)。守的是**寫法與一致性**,不守「一定要通過」——
+   通過與否是資料說了算(把目標達成寫成紅線那條坑);這裡只要求:
+   ① 沒有曲線時行為跟改之前一個字元都不差(恆等元);② 有曲線時補時不再歸零;
+   ③ build 用不用曲線只由同一支 loadInplayCurve 決定,產物講的等於實際的;
+   ④ 每一個算即時勝率的呼叫點都有傳曲線(少一個,那一頁就還是舊算法 —— 「四個地方同時有它」那條坑)。 */
+async function checkInplayCurve() {
+  const results = [];
+  const ok = (name, pass, detail = '') => results.push([name, !!pass, detail]);
+  const S = Array.from({ length: 91 }, (_, c) => c === 0 ? 1 : Math.max(0.05, 1 - c / 95));   // 捏的合格曲線:S[90] > 0
+  const L = { lambdaHome: 1.8, lambdaAway: 1.1 };
+
+  // ① 恆等元:不傳曲線 = 原本的線性,逐鍵比對(timing 之外)
+  let same = 0, total = 0;
+  for (const minute of [0, 1, 30, 45, 77, 89, 90, 95]) for (const [hs, as] of [[0, 0], [1, 0], [0, 2]]) for (const finished of [false, true]) {
+    total++;
+    const a = inPlay({ ...L, hs, as, minute, finished });
+    const lin = Math.max(0, Math.min(1, (90 - minute) / 90));
+    const f = finished ? 0 : minute <= 0 ? 1 : lin;
+    if (a.timing === 'linear' && a.remaining === Math.round(f * 1000) / 1000) same++;
+  }
+  ok('不傳曲線 = 原本的線性(剩餘份額逐格相同、timing 標 linear)', same === total, `${same} / ${total}`);
+  ok('不傳曲線時,補時中領先一球仍被算成必勝(舊行為原樣保留)', inPlay({ ...L, hs: 1, minute: 90 }).home === 1);
+
+  // ② 有曲線:補時不歸零、開賽 = 1、完賽 = 0、內插、90 之後停在 S[90]
+  const ip90 = inPlay({ ...L, hs: 1, minute: 90, curve: S });
+  ok('有曲線:時鐘到 90 分(補時中)領先一球不再是必勝', ip90.home < 1 && ip90.draw > 0 && ip90.timing === 'curve', `主 ${ip90.home}・和 ${ip90.draw}`);
+  ok('有曲線:開賽剩 1、完賽剩 0、90 分之後停在 S[90]',
+    remainingFraction(0, false, S) === 1 && remainingFraction(60, true, S) === 0
+    && remainingFraction(97, false, S) === S[90] && remainingFraction(90, false, S) === S[90]);
+  ok('有曲線:分鐘帶小數時兩格之間線性內插', Math.abs(remainingFraction(30.5, false, S) - (S[30] + S[31]) / 2) < 1e-12);
+
+  // validCurve:長度、單調、S[0] = 1、S[90] > 0
+  const bad = [S.slice(0, 90), [0.9, ...S.slice(1)], S.map((x, i) => i === 50 ? S[49] + 0.01 : x), S.map((x, i) => i === 90 ? 0 : x)];
+  ok('validCurve 擋下四種壞曲線(長度 / S[0] / 不單調 / 補時是 0),放行合格的', validCurve(S) && bad.every(b => !validCurve(b)));
+
+  // loadInplayCurve:只有「通過 + 形狀合格」才回傳
+  const fakeFs = obj => ({
+    existsSync: () => obj !== undefined, join: (...xs) => xs.join('/'),
+    readFileSync: () => JSON.stringify(obj),
+  });
+  ok('loadInplayCurve:檔案不在 / 沒通過 / 曲線壞掉 → null;通過 → 曲線',
+    loadInplayCurve('/x', fakeFs(undefined)) === null
+    && loadInplayCurve('/x', fakeFs({ curve: { S }, validation: { passes: false } })) === null
+    && loadInplayCurve('/x', fakeFs({ curve: { S: bad[2] }, validation: { passes: true } })) === null
+    && loadInplayCurve('/x', fakeFs({ curve: { S }, validation: { passes: true } }))?.length === 91);
+
+  // 事件的時間語意:45+2 在下半場開球前、90+3 在所有檢查點之後
+  ok('事件時間:37′ 在 c = 37 已發生;45+2′ 在 c = 45 還沒、c = 46 已發生;90+3′ 在 c = 90 還沒',
+    happened({ minute: 37, extra: null }, 37) && !happened({ minute: 37, extra: null }, 36)
+    && !happened({ minute: 45, extra: 2 }, 45) && happened({ minute: 45, extra: 2 }, 46)
+    && !happened({ minute: 90, extra: 3 }, 90));
+  // 逐場核對:烏龍球翻成得分方才對得上比分;對不上就整場不收
+  const og = [{ minute: 10, extra: null, side: 'h', own: false }, { minute: 50, extra: null, side: 'h', own: true }];
+  ok('reconcile:烏龍球翻成得分方(1-1)才對得上;加不回比分的整場不收',
+    reconcileEvents(og, 1, 1)?.filter(g => g.side === 'a').length === 1 && reconcileEvents(og, 3, 0) === null);
+  const cur = goalTimingCurve([{ goals: [{ minute: 20, extra: null }, { minute: 45, extra: 2 }, { minute: 90, extra: 4 }, { minute: 70, extra: null }] }]);
+  ok('goalTimingCurve:S(0) = 1、S(45) 含上半場補時、S(90) = 下半場補時的份額',
+    cur.S[0] === 1 && cur.S[45] === 0.75 && cur.S[46] === 0.5 && cur.S[90] === 0.25 && cur.secondHalfStoppage === 1);
+  const pd = pairedScores([0.2, 0.2, 0.2], [0.1, 0.1, 0.1]);
+  ok('pairedScores:差 = b − a、SE 用場算', Math.abs(pd.diff + 0.1) < 1e-12 && pd.matches === 3 && pd.se < 1e-12);
+
+  // ③ 調參結果本身要自洽:通過的定義跟 tune-inplay 寫的一樣
+  const tp = join(ROOT, 'data', 'inplay-tuning.json');
+  const T = existsSync(tp) ? JSON.parse(readFileSync(tp, 'utf8')) : null;
+  if (T) {
+    const V = T.validation ?? {};
+    const expect = V.matches >= V.minMatches && V.diff < 0 && V.z != null && V.z <= -2 && validCurve(T.curve?.S);
+    ok('inplay-tuning:passes 跟定義一致(驗收場數夠、差為負而且超過 2 個 SE、曲線合格)', V.passes === expect,
+      `passes ${V.passes}・${V.matches} 場・z ${V.z}`);
+    ok('inplay-tuning:驗收季都在調參季之後(調參與驗收不同季)', (T.validSeasons ?? []).length > 0 && T.validSeasons.every(s => s > T.tuneSeason));
+    ok('inplay-tuning:局面乘數只量不上線(adopted 一律 false,要上線得有人改程式)', !T.gameState || T.gameState.adopted === false);
+    const g = T.curve;
+    ok('inplay-tuning:曲線的份額跟它自己的計數對得上', g && Math.abs(g.S[90] - g.secondHalfStoppageShare) < 1e-3
+      && Math.abs(g.S[46] - (1 - g.firstHalfShare)) < 0.05, g ? `S[90] ${g.S[90]} / 補時 ${g.secondHalfStoppageShare}` : '');
+  } else {
+    console.log('  (沒有 data/inplay-tuning.json —— npm run tune:inplay 還沒跑過,build 維持線性)');
+  }
+  const inUse = loadInplayCurve(ROOT, { readFileSync, existsSync, join });
+  const prodPath = join(ROOT, 'web', 'data', 'inplay-tuning.json');
+  const prod = existsSync(prodPath) ? JSON.parse(readFileSync(prodPath, 'utf8')) : null;
+  ok('產物講的等於實際的:web/data/inplay-tuning.json 的 inUse = build 讀到的曲線有沒有', prod && prod.inUse === !!inUse,
+    prod ? `inUse ${prod.inUse}・實際 ${!!inUse}` : '產物不在');
+  const gp = join(ROOT, 'web', 'data', 'game', 'pl.json');
+  if (existsSync(gp)) {
+    const game = JSON.parse(readFileSync(gp, 'utf8'));
+    ok('遊戲側寫帶的曲線 = 實時頁用的那一條(勝率條寫著「跟實時頁同一顆引擎」)',
+      JSON.stringify(game.inplayCurve ?? null) === JSON.stringify(inUse ?? null));
+  }
+
+  // ④ 每一個算即時勝率的呼叫點都有傳曲線(剝註解之後逐個呼叫取括號內的內容)
+  const strip = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const callArgs = (src, fn) => {
+    const out = []; let at = -1;
+    while ((at = src.indexOf(`${fn}(`, at + 1)) >= 0) {
+      if (/function\s+$/.test(src.slice(Math.max(0, at - 9), at))) continue;   // 定義那一行不算
+      let depth = 0, i = at + fn.length;
+      for (; i < src.length; i++) { if (src[i] === '(') depth++; else if (src[i] === ')' && --depth === 0) break; }
+      out.push(src.slice(at, i + 1));
+    }
+    return out;
+  };
+  const sites = [
+    ['scripts/build.mjs', 'buildMatchReport'], ['scripts/live-server.mjs', 'buildMatchReport'],
+    ['scripts/build-laliga.mjs', 'buildLiveProviderReport'], ['scripts/build-championship.mjs', 'buildLiveProviderReport'],
+    ['scripts/fetch-laliga-live.mjs', 'buildLiveProviderReport'],
+  ];
+  const missing = [];
+  let calls = 0;
+  for (const [f, fn] of sites) for (const c of callArgs(strip(readFileSync(join(ROOT, f), 'utf8')), fn)) { calls++; if (!/inplayCurve:/.test(c)) missing.push(`${f}:${fn}`); }
+  ok('每一個算即時勝率的呼叫點都傳了 inplayCurve(漏一個,那一頁的勝率還是補時歸零)', calls >= 6 && !missing.length,
+    missing.length ? `漏了:${missing.join('、')}` : `${calls} 個呼叫點`);
+  const libs = ['scripts/lib/matchreport.mjs', 'scripts/lib/postmatch-report.mjs'].map(f => strip(readFileSync(join(ROOT, f), 'utf8')));
+  ok('兩支報告產生器都把曲線傳進 inPlay', libs.every(src => callArgs(src, 'inPlay').every(c => /curve:\s*inplayCurve/.test(c)) && callArgs(src, 'inPlay').length > 0));
+  const gv = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8'));
+  ok('遊戲的勝率條把側寫的曲線傳進 inPlaySim', callArgs(gv, 'inPlaySim').length > 0 && callArgs(gv, 'inPlaySim').every(c => /curve:\s*profile\.inplayCurve/.test(c)));
+
+  // 勝率曲線的累積檔記下每一場是哪一種時間算法;校準那一節照模型分開數
+  const liveOut = (timing, finished) => ({ available: true, season: '2026-27', matches: [{ home: 'ARS', away: 'CHE', started: true, finished, hs: 1, as: 0,
+    preMatch: { home: 0.5, draw: 0.25, away: 0.25 }, inplay: { minute: finished ? 90 : 50, home: 0.7, draw: 0.2, away: 0.1, ...(timing ? { timing } : {}) } }] });
+  let store = appendSamples(null, liveOut('curve', false));
+  store = appendSamples(store, { ...liveOut('linear', true), matches: [{ ...liveOut('linear', true).matches[0], inplay: { minute: 90, home: 1, draw: 0, away: 0, timing: 'linear' } }] });
+  ok('勝率曲線:一場只記第一個點的 timing(之後的點換了版本也不改)', store.matches['ARS|CHE'].timing === 'curve');
+  const oldRec = { season: '2026-27', matches: { 'A|B': { pts: [[0, 0.4, 0.3, 0.3, 0, 0], [30, 0.5, 0.3, 0.2, 1, 0], [90, 1, 0, 0, 1, 0]], done: true } } };
+  ok('校準:沒有 timing 的舊紀錄一律當 linear,照模型分開數', inplayCalibration(oldRec).byTiming?.linear === 1);
+
+  for (const [name, pass, detail] of results) console.log(`  ${pass ? '✔' : '✗'} ${name}${!pass && detail ? `(${detail})` : detail && pass ? `(${detail})` : ''}`);
+  return results.filter(r => !r[1]).length;
+}
 
 function checkApiFootball(T) {
   const homeName = T.byCode.get('ARS')?.en ?? 'Arsenal';
@@ -296,6 +428,9 @@ async function main() {
   let inplayFail = 0;
   for (const [name, ok] of checks) { console.log(`  ${ok ? '✔' : '✗'} ${name}`); if (!ok) inplayFail++; }
 
+  console.log('\n▶ 即時勝率的時間曲線(補時、進球分佈;驗收過才用)');
+  const inplayCurveFail = await checkInplayCurve();
+
   // AI 報告層:重點不是文字好不好看,是「數字有沒有被編造」這條線守不守得住
   console.log('\n▶ AI 報告層自我檢查');
   const reportFail = await checkReports();
@@ -407,7 +542,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || inplayCurveFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -3097,7 +3232,12 @@ async function checkDataGap() {
         ['校準:build 產出資料集、模型頁有量測節與不足警語', (() => {
           const pm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-model.js'), 'utf8');
           const b = readFileSync(join(ROOT, 'scripts', 'build.mjs'), 'utf8');
-          return /樣本還不夠下結論/.test(pm) && /凍結不動/.test(pm) && /只量不改模型/.test(pm)
+          /* 2026-09-25 起即時勝率改過一次(時間曲線,走 tune:inplay 另外驗收的那條路),
+             所以這一節的提示不能再寫「只量不改模型」—— 它自己仍然只量(本季比賽中記下來的點),
+             改模型的依據在上面那一節(從 inplay-tuning 讀)。 */
+          return /樣本還不夠下結論/.test(pm) && /凍結不動/.test(pm) && /本季比賽中記下來的點・只量/.test(pm)
+            && !/只量不改模型/.test(pm.replace(/\/\*[\s\S]*?\*\//g, ''))
+            && /loadFrom\('pl', \['inplay-tuning'\]\)/.test(pm) && /function inplayCurveSection/.test(pm)
             && /inplay-calibration/.test(b)
             && existsSync(join(ROOT, 'web', 'data', 'inplay-calibration.json'));
         })(), ''],
@@ -4387,16 +4527,22 @@ async function checkDataGap() {
          120 個情境(λ×比分×分鐘×紅牌×完場)逐鍵完全一致 */
       const { inPlay } = await import('./lib/inplay.mjs');
       const { inPlaySim } = await import('../web/assets/js/predict-core.js');
-      let ipBad = 0;
-      for (const lambdaHome of [0.8, 1.42, 2.68]) for (const lambdaAway of [0.7, 1.65])
-        for (const [hs, as] of [[0, 0], [1, 0], [1, 2], [3, 3]])
-          for (const minute of [0, 30, 45, 77, 90])
-            for (const args of [{}, { redHome: 1 }, { finished: true }]) {
-              const a = inPlay({ lambdaHome, lambdaAway, hs, as, minute, ...args });
-              const b = inPlaySim({ lambdaHome, lambdaAway, hs, as, minute, ...args });
-              if (JSON.stringify(a) !== JSON.stringify(b)) ipBad++;
-            }
-      out.push(['模擬 golden:播放模式的 in-play 引擎與實時頁逐鍵一致(360 情境)', ipBad === 0, `${ipBad} 個情境不一致`]);
+      let ipBad = 0, ipN = 0;
+      /* 有曲線、沒曲線各比一次(2026-09-25 起實時頁用時間曲線;遊戲側寫帶著同一條)。
+         曲線用倉庫裡那一份,沒有就捏一條合格的 —— 比的是兩邊的算法,不是曲線本身。 */
+      const tunedS = (() => { try { return JSON.parse(readFileSync(join(ROOT, 'data', 'inplay-tuning.json'), 'utf8')).curve?.S ?? null; } catch { return null; } })();
+      const curveS = tunedS ?? Array.from({ length: 91 }, (_, c) => (c === 0 ? 1 : Math.max(0.05, 1 - c / 95)));
+      for (const curve of [null, curveS])
+        for (const lambdaHome of [0.8, 1.42, 2.68]) for (const lambdaAway of [0.7, 1.65])
+          for (const [hs, as] of [[0, 0], [1, 0], [1, 2], [3, 3]])
+            for (const minute of [0, 30, 45, 77, 90, 93])
+              for (const args of [{}, { redHome: 1 }, { finished: true }]) {
+                ipN++;
+                const a = inPlay({ lambdaHome, lambdaAway, hs, as, minute, ...args, ...(curve ? { curve } : {}) });
+                const b = inPlaySim({ lambdaHome, lambdaAway, hs, as, minute, ...args, ...(curve ? { curve } : {}) });
+                if (JSON.stringify(a) !== JSON.stringify(b)) ipBad++;
+              }
+      out.push([`模擬 golden:播放模式的 in-play 引擎與實時頁逐鍵一致(${ipN} 情境,有曲線與沒曲線)`, ipBad === 0, `${ipBad} 個情境不一致`]);
       return out;
     })(),
 

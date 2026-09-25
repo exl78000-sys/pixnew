@@ -41,6 +41,7 @@ import { parseCSVObjects, num } from './lib/csv.mjs';
 import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { appendSamples, historyForSite, preMatchSnapshots } from './lib/prob-history.mjs';
+import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } from './lib/style-trend.mjs';
 import { attachCareers } from './lib/coach-career.mjs';
@@ -64,6 +65,8 @@ import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs'
 import { loadVerifiedLoans, attachLoans } from './lib/loans.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+/* 即時勝率的時間曲線(npm run tune:inplay 產生;驗收沒過或檔案不在就是 null → 線性)。 */
+const INPLAY_CURVE = loadInplayCurve(ROOT, { readFileSync, existsSync, join });
 const OUT = join(ROOT, 'web', 'data');
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 const AS_OF = arg('as-of') || new Date().toISOString().slice(0, 10);
@@ -826,6 +829,7 @@ async function main() {
         zh: code => T.byCode.get(code)?.en ?? code,
         // 官方陣型與排位:有的話陣型與球場圖都以官方為準
         official: offLineups?.matches?.[`${f.home}|${f.away}`] ?? null,
+        inplayCurve: INPLAY_CURVE,
       });
       const report = {
         ...rep,
@@ -875,6 +879,7 @@ async function main() {
           fixture: f, prediction: pre, tactics: tacticsBy,
           official: isCur ? offLineups?.matches?.[`${f.home}|${f.away}`] ?? null : null,
           zh: code => T.byCode.get(code)?.en ?? code,
+          inplayCurve: INPLAY_CURVE,
         }),
         season: src.season, demo: src.demo,
       };
@@ -1494,6 +1499,15 @@ async function main() {
     const calib = inplayCalibration(store);
     await write('inplay-calibration.json', calib);
     if (calib.matches) console.log(`  即時校準:${calib.matches} 場完賽・${calib.points} 個時點(${calib.verdict === 'ok' ? '樣本足夠' : `樣本不足,門檻 ${calib.minMatches} 場`})`);
+  }
+  /* 即時勝率的時間曲線:驗收的完整數字給模型頁(跨聯賽一份,各聯賽的模型頁都從 pl 讀)。
+     inUse 是 build 實際有沒有用它 —— 由同一支 loadInplayCurve 決定,不是讀 passes 自己再判一次,
+     兩邊判準分岔的話畫面會講一個跟實際不一樣的模型。 */
+  {
+    const p = join(ROOT, 'data', 'inplay-tuning.json');
+    const t = existsSync(p) ? JSON.parse(await readFile(p, 'utf8')) : null;
+    await write('inplay-tuning.json', t ? { ...t, inUse: !!INPLAY_CURVE } : { inUse: false, missing: true });
+    console.log(`  即時勝率時間曲線:${INPLAY_CURVE ? '使用中' : t ? `未使用(${t.validation?.reason ?? '沒有驗收結果'})` : '沒有 data/inplay-tuning.json(npm run tune:inplay),維持線性'}`);
   }
   await write('live.json', liveOut);
   await write('h2h.json', h2h);

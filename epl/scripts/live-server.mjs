@@ -9,6 +9,8 @@ import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { join, extname, normalize, dirname } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
 import { fetchLive } from './lib/live.mjs';
@@ -16,6 +18,8 @@ import { buildMatchReport } from './lib/matchreport.mjs';
 import { CURRENT_SEASON } from './lib/sources.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+/* 即時勝率的時間曲線(npm run tune:inplay 產生;驗收沒過或檔案不在就是 null → 線性)。 */
+const INPLAY_CURVE = loadInplayCurve(ROOT, { readFileSync, existsSync, join });
 const WEB = join(ROOT, 'web');
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
 const PORT = Number(process.env.PORT || 5173);
@@ -56,6 +60,7 @@ async function poll() {
         ...buildMatchReport({
           fixture: f, prediction: fx?.prediction ?? null, tactics: tacticsBy,
           zh: code => T.byCode.get(code)?.en ?? code,
+          inplayCurve: INPLAY_CURVE,
         }),
         fixtureId: fx?.id ?? null,
         round: fx?.round ?? state.round,

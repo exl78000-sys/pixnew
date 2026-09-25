@@ -426,6 +426,12 @@ jobs:
       - name: 核對人工交付的租借紀錄
         run: npm run loans:verify
 
+      # 即時勝率的時間曲線:從 2025-26 的逐場事件估、在之後每一季驗收(走查,零網路)。
+      # 排在所有聯賽的 build **之前**:西甲、英冠、英超的即時勝率都讀它寫的 data/inplay-tuning.json,
+      # 驗收沒過(或這一步寫出「沒有通過」)就一律退回線性。本站自己算的東西,所以不容忍失敗。
+      - name: 即時勝率時間曲線(調參季估、之後每一季驗收)
+        run: npm run tune:inplay
+
       # 先建西甲再建英超。順序不能反:stamp-assets 掛在 build 最後,會把資產戳
       # 寫進**兩個聯賽**的 meta.json;反過來跑的話 laliga:build 會把 es1 的 meta 重寫掉。
       - name: 建立西甲資料集
@@ -612,6 +618,7 @@ jobs:
             epl/data/situation-tuning.json \
             epl/data/situation-tuning-es1.json \
             epl/data/congestion-tuning.json \
+            epl/data/inplay-tuning.json \
           ; do
             [ -e "$p" ] && git add -f "$p" || echo "  (略過不存在的路徑:$p)"
           done

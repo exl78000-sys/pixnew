@@ -40,6 +40,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { leagueMatches, backfillLine, europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
+import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
@@ -64,6 +65,8 @@ import { round } from './lib/util.mjs';
 import { leagueKnowledge } from './lib/knowledge.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+/* 即時勝率的時間曲線(npm run tune:inplay 產生;驗收沒過或檔案不在就是 null → 線性)。 */
+const INPLAY_CURVE = loadInplayCurve(ROOT, { readFileSync, existsSync, join });
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'en2');
 const COMPETITION = 'eng.2';
 const RAW_DIR = 'openfootball-championship';
@@ -903,7 +906,7 @@ async function main() {
               home: m.home, away: m.away, score: m.score ? { home: m.score[0], away: m.score[1] } : { home: null, away: null },
               teamStats: {}, players: {}, events: [], lineups: {},
               coverage: { teamStatistics: false, playerStatistics: false, ratings: false, events: false, lineups: false } };
-            const rep = buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code });
+            const rep = buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code, inplayCurve: INPLAY_CURVE });
             // fixtureId / round 是跟前端的約定(英超、西甲的 live.json 都帶):卡片靠它直達分析頁
             return rep ? { ...rep, fixtureId: fixture.id ?? null, round: fixture.round ?? null } : rep;
           }).filter(Boolean);

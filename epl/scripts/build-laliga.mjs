@@ -34,6 +34,7 @@ import { inplayCalibration } from './lib/inplay-calibration.mjs';
 import { upcomingOdds, seasonMarket, pickMarket } from './lib/odds.mjs';
 import { pickPair, intoBand } from './lib/colour.mjs';
 import { setPieceProfile } from './lib/tactics.mjs';
+import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
@@ -52,6 +53,8 @@ import { attachProfiles } from './lib/coach-profiles.mjs';
 import { coreFromUnderstat } from './lib/player-core.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+/* 即時勝率的時間曲線(npm run tune:inplay 產生;驗收沒過或檔案不在就是 null → 線性)。 */
+const INPLAY_CURVE = loadInplayCurve(ROOT, { readFileSync, existsSync, join });
 const OUT = join(ROOT, 'web', 'data', 'leagues', 'es1');
 const COMPETITION = 'esp.1';
 const LAST_SEASON = '2025-26';
@@ -1040,7 +1043,7 @@ async function main() {
               home: m.home, away: m.away, score: m.score ? { home: m.score[0], away: m.score[1] } : { home: null, away: null },
               teamStats: {}, players: {}, events: [], lineups: {},
               coverage: { teamStatistics: false, playerStatistics: false, ratings: false, events: false, lineups: false } };
-            const rep = buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code });
+            const rep = buildLiveProviderReport({ fixture: { ...fixture, finished: m.finished }, detail, minute: minuteOf(m), nameOf: code => T.byCode.get(code)?.en ?? code, inplayCurve: INPLAY_CURVE });
             /* fixtureId 與 round 是跟前端的約定(英超的 live.json 有帶):實時頁的進行中卡片靠 fixtureId 直達分析頁,
                沒有就退回 href="#" 的抽屜 —— 使用者 2026-09-07 點西甲進行中的比賽進不去,就是這裡漏了。 */
             return rep ? { ...rep, fixtureId: fixture.id ?? null, round: fixture.round ?? null } : rep;

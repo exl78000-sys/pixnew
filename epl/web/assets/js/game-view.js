@@ -1,5 +1,5 @@
 import * as C from './core.js?v=6d9662ee';
-import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=a99cd006';
+import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=7d3b9def';
 import { createLiveMatch, defaultSetup, LIVE_SPEEDS } from './game-live.js?v=ca6a7cae';
 import { tally, diagnose, tacticNotes, recap, chainBrief } from './game-diag.js?v=be283192';
@@ -334,7 +334,7 @@ export async function renderGame(app) {
       /* 勝率條走站上的即時模型(`predict-core.js`),吃的是 λ 的錨與現在的比分 / 紅牌。
          λ 整場不變是刻意的 —— 見 predHtml 那一段。 */
       const l = match.lambdas();
-      const ip = inPlaySim({ lambdaHome: l.home, lambdaAway: l.away, hs: disp.score[0], as: disp.score[1], minute: Math.min(90, m.min), finished: disp.finished, redHome: l.redHome, redAway: l.redAway });
+      const ip = inPlaySim({ lambdaHome: l.home, lambdaAway: l.away, hs: disp.score[0], as: disp.score[1], minute: Math.min(90, m.min), finished: disp.finished, redHome: l.redHome, redAway: l.redAway, curve: profile.inplayCurve ?? null });
       const prob = $('gProb'); if (prob) prob.innerHTML = C.probBar(ip);
       const nx = $('gNext');
       if (nx) nx.innerHTML = disp.finished ? '' : `剩餘期望進球 ${ip.xgRestHome} : ${ip.xgRestAway}・下一球 ${C.esc(nameOf(state.home))} ${C.pct(ip.nextGoal.home, 0)} / ${C.esc(nameOf(state.away))} ${C.pct(ip.nextGoal.away, 0)}${l.redHome || l.redAway ? `・紅牌 ${l.redHome}:${l.redAway}` : ''}`;

@@ -229,7 +229,9 @@ export function liveSummaryFor(rep, zh) {
   return { kind: atHT ? 'ht' : 'live', minute: rep.minute, paragraphs: ps };
 }
 
-export function buildMatchReport({ fixture, prediction, tactics, zh, official = null }) {
+/* inplayCurve:即時勝率的時間曲線(`loadInplayCurve` 讀的,驗收沒過就是 null → 線性)。
+   每一個呼叫點都要傳 —— 少一個,那一頁的即時勝率就還是補時歸零的舊算法(npm test 守著)。 */
+export function buildMatchReport({ fixture, prediction, tactics, zh, official = null, inplayCurve = null }) {
   const { home, away, lineups } = fixture;
   const matchMinutes = fixture.minutes || (fixture.finished ? 90 : 0);
   const seasonShape = code => {
@@ -256,6 +258,7 @@ export function buildMatchReport({ fixture, prediction, tactics, zh, official = 
       hs: fixture.hs ?? 0, as: fixture.as ?? 0,
       minute: matchMinutes, finished: fixture.finished,
       redHome: rep.sides[home].red, redAway: rep.sides[away].red,
+      curve: inplayCurve,
     });
     rep.preMatch = { home: prediction.home, draw: prediction.draw, away: prediction.away, xgHome: prediction.xgHome, xgAway: prediction.xgAway };
     rep.vsPrediction = {

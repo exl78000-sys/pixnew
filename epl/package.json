@@ -55,6 +55,7 @@
     "en2:build": "node scripts/build-championship.mjs",
     "laliga:backtest": "node scripts/backtest-laliga.mjs",
     "tune:form": "node scripts/tune-form.mjs",
+    "tune:inplay": "node scripts/tune-inplay.mjs",
     "snapshot": "node scripts/snapshot-availability.mjs",
     "probe:goals": "node scripts/probe-goals.mjs",
     "probe:events": "node scripts/probe-events.mjs",

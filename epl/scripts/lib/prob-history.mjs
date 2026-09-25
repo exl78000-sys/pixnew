@@ -44,6 +44,10 @@ export function appendSamples(store, liveOut, { now = Date.now() } = {}) {
 
     const p = m.inplay;
     if (!p) continue;
+    /* 這一場是哪一種時間算法算的(2026-09-25 起 inPlay 會帶 timing)。一場只記一次、記第一個點的 ——
+       同一場中途換版本(部署剛好在比賽中)的話,那一場算舊的,校準那一節會照實分開數。
+       舊的紀錄沒有這個欄位,讀的一邊一律當 linear(那時只有線性)。 */
+    if (!rec.timing) rec.timing = p.timing ?? 'linear';
     const min = m.finished ? Math.max(90, p.minute ?? 90) : (p.minute ?? null);
     if (min == null || min <= 0) continue;
     const sample = [min, round(p.home, 4), round(p.draw, 4), round(p.away, 4), m.hs ?? 0, m.as ?? 0];

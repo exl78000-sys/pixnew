@@ -81,14 +81,25 @@ export function predictPair(sim, home, away, { neutral = false } = {}) {
 
 /* 播放模式的即時勝率 —— scripts/lib/inplay.mjs 的 inPlay 逐行移植
    (跟實時頁同一顆引擎;紅牌參數保留,模擬目前傳 0)。
-   等價性同樣由 golden 守著:node 測試拿一批情境直接呼叫兩邊逐鍵比對。 */
+   等價性同樣由 golden 守著:node 測試拿一批情境直接呼叫兩邊逐鍵比對(有曲線、沒曲線都比)。
+   curve 是實時頁在用的時間曲線(驗收通過才有,由遊戲側寫帶進來);沒有就是線性,跟以前一樣。 */
 const MAX_MORE = 7;
 const RED_OWN = 0.72;
 const RED_OPP = 1.30;
 const FULL = 90;
 
-export function inPlaySim({ lambdaHome, lambdaAway, hs = 0, as = 0, minute = 0, finished = false, redHome = 0, redAway = 0 }) {
-  const f = finished ? 0 : (minute == null || minute <= 0 ? 1 : Math.max(0, Math.min(1, (FULL - minute) / FULL)));
+function remainingShare(minute, finished, curve) {
+  if (finished) return 0;
+  if (minute == null || minute <= 0) return 1;
+  if (curve) {
+    const t = Math.min(FULL, minute), i = Math.floor(t);
+    return i >= FULL ? curve[FULL] : curve[i] + (curve[i + 1] - curve[i]) * (t - i);
+  }
+  return Math.max(0, Math.min(1, (FULL - minute) / FULL));
+}
+
+export function inPlaySim({ lambdaHome, lambdaAway, hs = 0, as = 0, minute = 0, finished = false, redHome = 0, redAway = 0, curve = null }) {
+  const f = remainingShare(minute, finished, curve);
   const lh = lambdaHome * f * RED_OWN ** redHome * RED_OPP ** redAway;
   const la = lambdaAway * f * RED_OWN ** redAway * RED_OPP ** redHome;
 
@@ -109,7 +120,7 @@ export function inPlaySim({ lambdaHome, lambdaAway, hs = 0, as = 0, minute = 0, 
   const anyMore = 1 - Math.exp(-nextTotal);
 
   return {
-    minute, finished, remaining: round(f, 3),
+    minute, finished, remaining: round(f, 3), timing: curve ? 'curve' : 'linear',
     home: round(home / total, 4), draw: round(draw / total, 4), away: round(away / total, 4),
     xgRestHome: round(lh, 2), xgRestAway: round(la, 2),
     expectedFinal: { home: round(hs + lh, 2), away: round(as + la, 2) },

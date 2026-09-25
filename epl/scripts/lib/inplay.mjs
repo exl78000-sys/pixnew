@@ -2,9 +2,19 @@ import { round } from './util.mjs';
 
 // 進行中比賽的即時勝率。
 //
-// 做法:賽前模型算出的 λ 是「整場 90 分鐘」的期望進球,按剩餘時間等比例縮放,
+// 做法:賽前模型算出的 λ 是「整場」的期望進球,按「還剩多少進球份額」縮放,
 // 再把「目前比分」當成已經確定的部分,對剩餘時間的進球數做卷積。
-// 比賽結束時剩餘時間為 0,結果自然收斂成實際比分(機率 100%)。
+// 比賽結束時剩餘份額為 0,結果自然收斂成實際比分(機率 100%)。
+//
+// 「還剩多少份額」有兩種算法(2026-09-25 起):
+//   - **時間曲線**(`curve`,91 格 S[0..90]):實測的「時鐘走到 c 分之後還會進的球佔全場的比例」,
+//     含補時、而且下半場比上半場密。`npm run tune:inplay` 從逐場事件估、在另一季驗收,
+//     **通過才由 build 傳進來**(`lib/inplay-tuning.mjs` 的 `loadInplayCurve`)。
+//   - **線性**(沒傳 curve):(90 − 分鐘) ÷ 90。這是原本的做法 —— 它沒有補時,
+//     時鐘走到 90 就當比賽結束(補時中領先一球的那一隊被算成 100% 贏),80 分時以為還剩 11% 的進球、實際是 19%。
+//     沒有曲線(檔案不在、驗收沒過)就退回這一條,行為跟改之前一個字元都不差。
+// 補時的第幾分鐘本站多半不知道(FPL 的 minutes 在補時停在 90),所以 90 分之後一律用 S[90]
+// —— 當補時剛開始算,補時後段會偏保守。
 const MAX_MORE = 7;         // 剩餘時間最多再算幾球
 const RED_OWN = 0.72;       // 每張紅牌:自己的進攻打折
 const RED_OPP = 1.30;       // 每張紅牌:對手的進攻放大
@@ -17,14 +27,19 @@ const pmf = (l, n) => {
   return out;
 };
 
-export function remainingFraction(minute, finished) {
+export function remainingFraction(minute, finished, curve = null) {
   if (finished) return 0;
   if (minute == null || minute <= 0) return 1;
+  if (curve) {
+    /* 分鐘可能帶小數(官方鐘):兩格之間線性內插;90 之後停在 S[90]。 */
+    const t = Math.min(FULL, minute), i = Math.floor(t);
+    return i >= FULL ? curve[FULL] : curve[i] + (curve[i + 1] - curve[i]) * (t - i);
+  }
   return Math.max(0, Math.min(1, (FULL - minute) / FULL));
 }
 
-export function inPlay({ lambdaHome, lambdaAway, hs = 0, as = 0, minute = 0, finished = false, redHome = 0, redAway = 0 }) {
-  const f = remainingFraction(minute, finished);
+export function inPlay({ lambdaHome, lambdaAway, hs = 0, as = 0, minute = 0, finished = false, redHome = 0, redAway = 0, curve = null }) {
+  const f = remainingFraction(minute, finished, curve);
   const lh = lambdaHome * f * RED_OWN ** redHome * RED_OPP ** redAway;
   const la = lambdaAway * f * RED_OWN ** redAway * RED_OPP ** redHome;
 
@@ -47,7 +62,9 @@ export function inPlay({ lambdaHome, lambdaAway, hs = 0, as = 0, minute = 0, fin
   const anyMore = 1 - Math.exp(-nextTotal);
 
   return {
-    minute, finished, remaining: round(f, 3),
+    /* timing:這一格是哪一種時間算法算的 —— 勝率曲線的累積檔會記下來,
+       校準那一節才分得出新舊兩個模型的點(混在一起的話那張表在量兩個模型的平均)。 */
+    minute, finished, remaining: round(f, 3), timing: curve ? 'curve' : 'linear',
     home: round(home / total, 4), draw: round(draw / total, 4), away: round(away / total, 4),
     xgRestHome: round(lh, 2), xgRestAway: round(la, 2),
     expectedFinal: { home: round(hs + lh, 2), away: round(as + la, 2) },

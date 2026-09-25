@@ -9,14 +9,20 @@
  *   npm run game:build
  */
 import { mkdir, writeFile } from 'node:fs/promises';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildGameProfile } from './lib/profile.mjs';
+import { loadInplayCurve } from '../lib/inplay-tuning.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const OUT = join(ROOT, 'web', 'data', 'game');
 
 const profile = buildGameProfile(ROOT, { league: 'pl' });
+/* 勝率條走站上的即時模型(predict-core 的 inPlaySim),所以站上用的時間曲線也要帶進來 ——
+   不帶的話遊戲的勝率條會是補時歸零的舊算法,而畫面寫著「跟實時頁同一顆引擎」。
+   驗收沒過就是 null(跟實時頁一起退回線性)。讀的是真實管線的產物,方向是允許的那一邊。 */
+profile.inplayCurve = loadInplayCurve(ROOT, { readFileSync, existsSync, join });
 await mkdir(OUT, { recursive: true });
 await writeFile(join(OUT, 'pl.json'), JSON.stringify(profile));
 const teams = Object.values(profile.teams);
