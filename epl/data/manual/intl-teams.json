@@ -1,0 +1,60 @@
+{
+ "_note": "國家隊身分對照。鍵一律是 martj42/international_results 的隊名(評分池的身分)。aliases:FotMob 的寫法 → martj42 的寫法,每一筆都要有 _evidence(哪一次探測、逐場對上幾場),不是憑印象填;比對只做正規化後完全相同,對不上的不給勝率。iso:martj42 的隊名跟 CLDR 英文地區名對不上時補 ISO 碼(拿來查 CLDR 中文名)。zhOverride:足球上慣用名跟 CLDR 不同的(英格蘭四隊不是 ISO 地區、TW 在國際賽是中華台北)。都查不到的照印英文名,不編譯名。",
+ "aliases": {
+  "Turkiye": "Turkey",
+  "Ireland": "Republic of Ireland",
+  "Czechia": "Czech Republic",
+  "USA": "United States",
+  "UAE": "United Arab Emirates",
+  "St Kitts and Nevis": "Saint Kitts and Nevis",
+  "Chinese Taipei": "Taiwan",
+  "U.S. Virgin Islands": "United States Virgin Islands",
+  "Macao": "Macau"
+ },
+ "_evidence": {
+  "Turkiye": "probe-fotmob-intl run #42(2026-09-24):FotMob 已完賽場次裡 turkiye 出現 8 次、martj42 沒有這個名字;martj42 的寫法是 Turkey(同一批 World Cup Qualification UEFA 逐場對上 69/69、比分全一致)",
+  "Ireland": "probe-fotmob-intl run #42:ireland 出現 6 次、martj42 沒有;martj42 的 Ireland 是 1882–1956 的北愛爾蘭舊名(former_names.csv),現在的愛爾蘭共和國隊叫 Republic of Ireland —— 不能正規化成同一個,只能明寫",
+  "Czechia": "probe-fotmob-intl run #42:czechia 出現 3 次、martj42 的寫法是 Czech Republic",
+  "USA": "probe-fotmob-intl run #42:usa 出現 1 次(友誼賽)、martj42 的寫法是 United States",
+  "UAE": "probe-fotmob-intl run #43(2026-09-24)第 5 節:FotMob 已完賽場次裡 uae 出現 18 次、martj42 沒有這個名字;martj42 的寫法是 United Arab Emirates(612 場,最近一場 2025-12-15)",
+  "St Kitts and Nevis": "probe-fotmob-intl run #43 第 5 節:st kitts and nevis 出現 9 次;martj42 的寫法是 Saint Kitts and Nevis(226 場)",
+  "Chinese Taipei": "probe-fotmob-intl run #43 第 5 節:chinese taipei 出現 6 次;martj42 用 Taiwan(245 場)。畫面上的中文名由 zhOverride 給「中華台北」",
+  "U.S. Virgin Islands": "probe-fotmob-intl run #43 第 5 節:u s virgin islands 出現 4 次;martj42 的寫法是 United States Virgin Islands(78 場)",
+  "Macao": "probe-intl-fetch run #44(2026-09-24):FotMob 友誼賽裡 Macao 出現 2 場,martj42 同日同比分各有一場,寫成 Macau(2026-03-26 Aruba 4-1 Macau、2026-03-29 Macau 0-6 Tanzania,都是 Kigali 的 FIFA Series)"
+ },
+ "iso": {
+  "Turkey": "TR",
+  "Czech Republic": "CZ",
+  "Ivory Coast": "CI",
+  "DR Congo": "CD",
+  "Congo": "CG",
+  "Republic of Ireland": "IE",
+  "Palestine": "PS",
+  "Myanmar": "MM",
+  "Hong Kong": "HK",
+  "Macau": "MO",
+  "Saint Vincent and the Grenadines": "VC",
+  "Saint Kitts and Nevis": "KN",
+  "Saint Lucia": "LC",
+  "Saint Martin": "MF",
+  "Saint Barthélemy": "BL",
+  "United States Virgin Islands": "VI",
+  "Bonaire": "BQ",
+  "Tahiti": "PF",
+  "Taiwan": "TW"
+ },
+ "zhOverride": {
+  "England": "英格蘭",
+  "Scotland": "蘇格蘭",
+  "Wales": "威爾斯",
+  "Northern Ireland": "北愛爾蘭",
+  "Taiwan": "中華台北",
+  "Hong Kong": "香港",
+  "Macau": "澳門",
+  "Palestine": "巴勒斯坦",
+  "DR Congo": "剛果民主共和國",
+  "Congo": "剛果",
+  "Bonaire": "波奈",
+  "Tahiti": "大溪地"
+ }
+}

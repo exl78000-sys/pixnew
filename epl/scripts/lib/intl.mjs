@@ -1,0 +1,277 @@
+/* 國家隊:賽果解析、Elo 評分、走查回測與勝率(2026-09-24 起)。
+ *
+ * ## 資料
+ *
+ * 歷史賽果來自 **martj42/international_results**(github 上的公開資料集,raw.githubusercontent.com,
+ * 沙箱與 runner 都抓得到):1872 年至今的男子國家隊 A 級賽,四萬九千多場。
+ *
+ * 實測過、會咬人的三件事:
+ *   1. **只收已經踢完的比賽**(2026-09-24:0 筆未賽)。賽程與即時比分不能靠它 —— 那一半走 FotMob。
+ *   2. **77 列的城市欄是帶引號的 `"Washington, D.C."`**,`split(',')` 會錯欄。一律走 `lib/csv.mjs`。
+ *   3. 更名的球隊**全程用現名**(Zaire 的比賽記成 DR Congo),所以評分是連續的;
+ *      分裂的不算更名(Yugoslavia、Czechoslovakia、Soviet Union 各自是一支隊)—— 照資料集原樣,不自己併。
+ *
+ * 比分是**含延長賽、不含 PK 大戰**的最終比分;PK 另在 `shootouts.csv`。Elo 只看比分(PK 勝負不算贏球),
+ * 這是 World Football Elo 的慣例。
+ *
+ * ## 模型(鐵則二:量過才上)
+ *
+ * 形式照 World Football Elo(eloratings.net)的公開公式:預期分數用 400 分一個數量級的 logistic,
+ * 主場加分(**中立場不加**)、進球差加權、K 依賽事分級。**不照抄它的數字**:
+ * 主場分、K 的整體倍率、和局曲線三件事是在**調參年份**上掃出來的,
+ * 驗收在**另一段年份**上做,參數固定。產物裡的 `model` 每次建置重算,畫面讀那一份。
+ *
+ * 機率:E = 預期分數(主隊視角),和局 = drawA − drawB × |E − 0.5|(實力越接近越容易和),
+ * 主勝 = E − 和局/2、客勝 = 1 − E − 和局/2 —— 這樣 主勝 + 和局/2 = E,跟 Elo 自己的定義一致。
+ */
+import { parseCSVObjects } from './csv.mjs';
+
+/* 調參與驗收的年份、評分門檻與上線門檻。**調參腳本與建置共用這一份** ——
+   兩邊各寫一份的話,驗收區間改了一邊,畫面上印的就不是實際驗收的那一批(backtest-runner 那一課)。
+   中間空 2020–2021:疫情年比賽少、很多移到中立場,而且讓兩段之間沒有任何一場重疊。 */
+export const INTL_TUNE = { from: '2014-01-01', to: '2019-12-31' };
+export const INTL_HOLDOUT = { from: '2022-01-01', to: null };
+export const INTL_MIN_GAMES = 20;
+/* 上線門檻:改善要大過兩倍的成對標準誤(跟歐冠跨聯賽評分同一條,lib/ucl-elo.mjs 的 passes)。
+   每次建置用當下的資料重算,沒過就整批不給勝率 —— 不是「上次過了就一直算數」。 */
+export const intlPasses = g => Boolean(g) && g.gain > 2 * g.se;
+
+/* 賽事分級 → K 的基準值(World Football Elo 的慣例分級;整體倍率 kScale 另外掃)。
+   **分級是照賽事名寫的規則**,新賽事名出現時落到「其他 30」—— 不會拋錯,但會印出來(unknownTournaments)。 */
+const CONTINENTAL_FINALS = new Set([
+  'UEFA Euro', 'Copa América', 'African Cup of Nations', 'AFC Asian Cup', 'Gold Cup',
+  'CONCACAF Championship', 'Oceania Nations Cup', 'Confederations Cup',
+]);
+export function tournamentClass(t) {
+  if (t === 'FIFA World Cup') return 'worldcup';
+  if (CONTINENTAL_FINALS.has(t)) return 'continental';
+  if (/qualification|Nations League/i.test(t)) return 'competitive';
+  if (t === 'Friendly') return 'friendly';
+  return 'other';
+}
+export const K_BASE = { worldcup: 60, continental: 50, competitive: 40, other: 30, friendly: 20 };
+
+// 進球差加權(World Football Elo 慣例,本站聯賽 Elo 用的也是這一條)
+export const gdMultiplier = gd => {
+  const a = Math.abs(gd);
+  if (a <= 1) return 1;
+  if (a === 2) return 1.5;
+  return (11 + a) / 8;
+};
+
+const START = 1500;
+
+/* results.csv → 比賽。沒有比分的列(資料集目前沒有,但格式允許 NA)不收。 */
+export function parseIntlResults(text) {
+  const out = [];
+  for (const o of parseCSVObjects(text)) {
+    const fh = Number(o.home_score), fa = Number(o.away_score);
+    if (!o.date || !o.home_team || !o.away_team || o.home_score === '' || o.away_score === ''
+      || !Number.isFinite(fh) || !Number.isFinite(fa)) continue;
+    out.push({
+      date: o.date, home: o.home_team, away: o.away_team, fh, fa,
+      tournament: o.tournament, city: o.city, country: o.country, neutral: o.neutral === 'TRUE',
+    });
+  }
+  // 依日期排序(資料集本來就是,但不依賴它);同一天保持原順序
+  return out.map((m, i) => ({ m, i })).sort((a, b) => (a.m.date < b.m.date ? -1 : a.m.date > b.m.date ? 1 : a.i - b.i)).map(x => x.m);
+}
+
+/* shootouts.csv → `日期|主|客` → { winner, firstShooter }。PK 勝方只當資訊顯示,不進評分。 */
+export function parseShootouts(text) {
+  const map = new Map();
+  for (const o of parseCSVObjects(text)) {
+    if (!o.date || !o.home_team || !o.away_team) continue;
+    map.set(`${o.date}|${o.home_team}|${o.away_team}`, { winner: o.winner || null, firstShooter: o.first_shooter || null });
+  }
+  return map;
+}
+
+/* 預期分數 → 三個機率。夾在 [0.005, …] 之後重新正規化:強弱懸殊時 E − 和局/2 會變負 ——
+   那是和局曲線在極端處的形狀問題,不是真的「負機率」;夾住是為了讓 RPS 與 log loss 有定義。 */
+export function probsFromE(E, { drawA, drawB }) {
+  const draw = Math.max(0.02, drawA - drawB * Math.abs(E - 0.5));
+  const h = Math.max(0.005, E - draw / 2), a = Math.max(0.005, 1 - E - draw / 2);
+  const s = h + draw + a;
+  return { home: h / s, draw: draw / s, away: a / s };
+}
+
+export const expectedScore = (rh, ra, { neutral, homeAdv }) => 1 / (1 + 10 ** (-((rh - ra) + (neutral ? 0 : homeAdv)) / 400));
+
+/* 走查 Elo:**按日期分批** —— 同一天的比賽先全部用當天開始時的評分預測,再一起更新,
+   所以同一天的比賽互相看不到對方的結果(那才是「開賽前」)。
+   `onDay(date, rows)` 在更新**之前**被叫,rows 是 { m, E, rh, ra, nh, na }。 */
+export function runIntlElo(matches, params, { onDay = null, until = null } = {}) {
+  const rating = new Map(), games = new Map(), last = new Map();
+  const get = t => rating.get(t) ?? START;
+  let i = 0;
+  while (i < matches.length) {
+    const d = matches[i].date;
+    if (until && d >= until) break;
+    let j = i;
+    while (j < matches.length && matches[j].date === d) j++;
+    const day = matches.slice(i, j).map(m => {
+      const rh = get(m.home), ra = get(m.away);
+      return { m, rh, ra, nh: games.get(m.home) ?? 0, na: games.get(m.away) ?? 0,
+        E: expectedScore(rh, ra, { neutral: m.neutral, homeAdv: params.homeAdv }) };
+    });
+    if (onDay) onDay(d, day);
+    for (const { m, E } of day) {
+      const act = m.fh > m.fa ? 1 : m.fh === m.fa ? 0.5 : 0;
+      const delta = params.kScale * K_BASE[tournamentClass(m.tournament)] * gdMultiplier(m.fh - m.fa) * (act - E);
+      rating.set(m.home, get(m.home) + delta);
+      rating.set(m.away, get(m.away) - delta);
+      games.set(m.home, (games.get(m.home) ?? 0) + 1);
+      games.set(m.away, (games.get(m.away) ?? 0) + 1);
+      last.set(m.home, d); last.set(m.away, d);
+    }
+    i = j;
+  }
+  return { rating, games, last };
+}
+
+export const outcomeOf = m => (m.fh > m.fa ? 0 : m.fh === m.fa ? 1 : 2);
+export function rpsOf(p, o) {
+  const pv = [p.home, p.draw, p.away];
+  let cp = 0, co = 0, s = 0;
+  for (let k = 0; k < 2; k++) { cp += pv[k]; co += k === o ? 1 : 0; s += (cp - co) ** 2; }
+  return s / 2;
+}
+
+/* 走查回測:只評「兩隊在該場之前都至少踢過 minGames 場」的比賽 —— 新隊的評分還是起始值,
+   拿它來評分等於在評起始值。**上線時的門檻用同一個數字**(`predictable`),不然回測評的跟畫面給的不是同一批。
+   `assumeHome`:把中立場當成主場算(量「賽程不知道是不是中立場」的代價用,見 tune-intl.mjs)。 */
+export function backtestIntl(matches, params, { from, to, minGames = 20, filter = null, assumeHome = false } = {}) {
+  const rows = [];
+  runIntlElo(matches, params, {
+    until: to ? nextDay(to) : null,
+    onDay: (d, day) => {
+      if (d < from || (to && d > to)) return;
+      for (const r of day) {
+        if (r.nh < minGames || r.na < minGames) continue;
+        if (filter && !filter(r.m)) continue;
+        const neutral = assumeHome ? false : r.m.neutral;
+        const E = expectedScore(r.rh, r.ra, { neutral, homeAdv: params.homeAdv });
+        const p = probsFromE(E, params);
+        const o = outcomeOf(r.m);
+        rows.push({ m: r.m, p, o, rps: rpsOf(p, o), E });
+      }
+    },
+  });
+  return rows;
+}
+const nextDay = d => new Date(Date.parse(`${d}T00:00:00Z`) + 86400000).toISOString().slice(0, 10);
+
+/* 基準線:**驗收這批比賽自己的**主/和/客分佈,中立場與否分開算 —— 它偷看了答案,對基準線有利;
+   贏過它才算數(跟歐冠跨聯賽評分那一套同一個標準)。 */
+export function frequencyBaseline(rows) {
+  const f = { true: [0, 0, 0], false: [0, 0, 0] };
+  for (const r of rows) f[r.m.neutral][r.o]++;
+  const norm = v => { const s = v[0] + v[1] + v[2] || 1; return { home: v[0] / s, draw: v[1] / s, away: v[2] / s }; };
+  const P = { true: norm(f.true), false: norm(f.false) };
+  return r => P[r.m.neutral];
+}
+
+/* 逐場配對相減的標準誤。正值 = 模型比基準線好。 */
+export function pairedGain(rows, baseline) {
+  const n = rows.length;
+  if (n < 2) return null;
+  const d = rows.map(r => rpsOf(baseline(r), r.o) - r.rps);
+  const mean = d.reduce((a, x) => a + x, 0) / n;
+  const se = Math.sqrt(d.reduce((a, x) => a + (x - mean) ** 2, 0) / (n - 1) / n);
+  const avg = f => rows.reduce((a, r) => a + f(r), 0) / n;
+  return { n, model: avg(r => r.rps), baseline: avg(r => rpsOf(baseline(r), r.o)), gain: mean, se, z: mean / se };
+}
+
+/* 校準:模型說 60% 的,實際是不是 60%。每場貢獻三個點(主勝/和/客勝)。 */
+export function calibration(rows, bins = 10) {
+  const acc = Array.from({ length: bins }, () => ({ n: 0, p: 0, hit: 0 }));
+  for (const r of rows) {
+    const probs = [r.p.home, r.p.draw, r.p.away];
+    for (let k = 0; k < 3; k++) {
+      const b = Math.min(bins - 1, Math.floor(probs[k] * bins));
+      acc[b].n++; acc[b].p += probs[k]; acc[b].hit += r.o === k ? 1 : 0;
+    }
+  }
+  return acc.map((b, i) => ({ bin: i, n: b.n, predicted: b.n ? b.p / b.n : null, actual: b.n ? b.hit / b.n : null })).filter(b => b.n);
+}
+
+/* ── 兩個來源逐場核對(FotMob 的場次 vs martj42)──────────────────────
+   抓取器拿它**證明 id**、建置拿它**核對每一場賽果**,同一份邏輯不寫兩份。
+
+   配對規則:日期 ±1 天(FotMob 給 UTC 開球時間,martj42 給當地日期,跨日的比賽差一天)、
+   兩隊用**身分解析後的鍵**完全相同、主客可以對調(中立場的主客順序兩家不一定一樣)。
+   結果分六種,**「對不上」跟「不一致」是兩件事**(CLAUDE.md 那條坑):
+     agree     兩邊比分一致
+     mismatch  兩邊都有這一場、比分不一樣(畫面兩個都印,不挑一個當答案;這一場不進評分)
+     awarded   FotMob 是判決比分(AW),martj42 記場上比分 —— 記法不同,不算不一致
+     unmatched 兩隊都認得、日期也在 martj42 涵蓋的範圍內,它卻沒有這兩隊前後一天內的對戰 ——
+               run #44 實測 19 場**全是 martj42 沒收**:非洲盃資格賽三月那一輪預賽整輪沒有(12 場)、
+               幾場友誼賽沒有(同一對球隊隔三天的第二場之類)。不是隊名的問題(隊名對不上的是 noKey)
+     notYet    日期晚於 martj42 最新一場:它還沒收錄,**無法核對 ≠ 不一致**
+     noKey     有一隊的名字對不上身分,核對不了(隊名要補進對照表) */
+const dayShift = (iso, d) => new Date(Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) + d * 86400000).toISOString().slice(0, 10);
+export function indexByDay(matches) {
+  const idx = new Map();
+  for (const m of matches) { if (!idx.has(m.date)) idx.set(m.date, []); idx.get(m.date).push(m); }
+  return idx;
+}
+export function crossCheckIntl(fmMatches, mjMatches, keyOf) {
+  const idx = indexByDay(mjMatches);
+  const lastDate = mjMatches.at(-1)?.date ?? '';
+  return fmMatches.filter(f => f.state === 'FT' && Array.isArray(f.final)).map(f => {
+    const date = String(f.kickoff ?? '').slice(0, 10);
+    const h = keyOf(f.home?.name), a = keyOf(f.away?.name);
+    if (!h || !a) return { fm: f, status: 'noKey', date };
+    let hit = null;
+    for (const d of [date, dayShift(date, -1), dayShift(date, 1)]) {
+      for (const m of idx.get(d) ?? []) {
+        if (m.home === h && m.away === a) { hit = { m, swapped: false }; break; }
+        if (m.home === a && m.away === h) { hit = { m, swapped: true }; break; }
+      }
+      if (hit) break;
+    }
+    if (!hit) return { fm: f, status: date > lastDate ? 'notYet' : 'unmatched', date, home: h, away: a };
+    const [fh, fa] = f.final;
+    const same = hit.swapped ? (hit.m.fh === fa && hit.m.fa === fh) : (hit.m.fh === fh && hit.m.fa === fa);
+    return { fm: f, mj: hit.m, swapped: hit.swapped, date, home: h, away: a,
+      status: same ? 'agree' : f.awarded ? 'awarded' : 'mismatch' };
+  });
+}
+
+/* ── 用內容證明 FotMob 的 id ─────────────────────────────────────────
+   一個 id 是不是它自稱的那個賽事,**看對上的場次在 martj42 叫什麼**,不看名字
+   (德甲那次:奧地利甲也叫 Bundesliga;這次:CONCACAF 也叫 Nations League、女足的 10557 在 allLeagues 沒有 Women's)。
+   martj42 只收男子 A 級賽,所以 id 挑到女足、U21、俱樂部賽的話**一場都對不上** —— 這一道本身就很硬。
+
+   三個門檻,每一個都有來歷(probe-fotmob-intl run #43,2026-09-24):
+     對上 ≥ 8 場      證明過的賽事裡最小的一個(Nations League D,2024/25)有 12 場;少於 8 場的樣本
+                      一兩場撞名就能湊出比例,不算證據
+     賽事名符合 ≥ 80%  友誼賽那個 id 對上的 61 場裡,martj42 記成 Friendly 的是 54 場,其餘是 Baltic Cup×4、
+                      Diamond Jubilee×2、Tri-Nations Cup×1 —— FotMob 把邀請賽也放進友誼賽,所以友誼賽的
+                      expect 收「友誼賽或其他」兩類(見 adapter),其餘賽事是 100%
+     比分一致 ≥ 90%    對上的場次裡兩邊比分一致(判決比分算一致:那是記法不同,不是錯)。實測 60/61、47+1/48
+   **一場一場的判決都留在產物裡**,門檻只決定整個賽事收不收。 */
+export const PROOF_MIN_MATCHED = 8;
+export const PROOF_MIN_SHARE = 0.8;
+export const PROOF_MIN_AGREE = 0.9;
+export const testExpect = (expect, t) => (typeof expect === 'function' ? expect(t) : expect.test(t));
+export function proofFromCheck(rows, expect) {
+  const hit = rows.filter(r => r.mj);
+  const tours = new Map();
+  for (const r of hit) tours.set(r.mj.tournament, (tours.get(r.mj.tournament) ?? 0) + 1);
+  const expectHits = hit.filter(r => testExpect(expect, r.mj.tournament)).length;
+  const agree = hit.filter(r => r.status === 'agree' || r.status === 'awarded').length;
+  const share = hit.length ? expectHits / hit.length : 0;
+  const agreeShare = hit.length ? agree / hit.length : 0;
+  const status = {};
+  for (const r of rows) status[r.status] = (status[r.status] ?? 0) + 1;
+  const why = hit.length < PROOF_MIN_MATCHED ? `對上 martj42 的已完賽場次只有 ${hit.length} 場(要 ${PROOF_MIN_MATCHED} 場以上才算證據)`
+    : share < PROOF_MIN_SHARE ? `對上的 ${hit.length} 場裡只有 ${expectHits} 場是預期的賽事(要 ${PROOF_MIN_SHARE * 100}% 以上)`
+    : agreeShare < PROOF_MIN_AGREE ? `對上的 ${hit.length} 場裡比分一致的只有 ${agree} 場(要 ${PROOF_MIN_AGREE * 100}% 以上)`
+    : null;
+  return {
+    ok: !why, why, matched: hit.length, expectHits, agree, status,
+    tournaments: [...tours].sort((a, b) => b[1] - a[1]).map(([t, n]) => ({ t, n })),
+  };
+}

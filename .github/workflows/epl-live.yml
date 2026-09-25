@@ -164,6 +164,19 @@ jobs:
         run: npm run cups:fetch
         continue-on-error: true
 
+      # 國家隊(2026-09-24):兩個來源,**順序不能反** —— FotMob 抓取器用 martj42 證明賽事 id
+      # (已完賽的場次逐場對,本季不夠就多抓一次上一季、永久存著)。
+      # martj42 是 raw.githubusercontent.com 上的靜態 CSV(一個檔一個請求,6 小時內不重抓);
+      # FotMob 一個賽事一個請求(八個,3 小時內不重抓)。沒有即時路徑:國家隊跟著這支每天兩次更新。
+      - name: 抓國家隊歷史賽果(martj42/international_results)
+        working-directory: epl
+        run: npm run intl:results
+        continue-on-error: true
+      - name: 抓國家隊賽程與賽果(FotMob)
+        working-directory: epl
+        run: npm run intl:fetch
+        continue-on-error: true
+
       # 歐冠。football-data.org 免費方案限 10 req/分,所以一季一個請求、間隔 7 秒。
       # 2026-27 目前回 404(還沒建立,九月中才開打)—— 那不是「拿不到」,
       # 腳本會照實記成 not-published 並繼續,不讓整個流程變紅。
@@ -587,6 +600,8 @@ jobs:
             epl/data/raw/football-data-couk-ligue-1/ \
             epl/data/raw/understat-ligue-1/ \
             epl/data/raw/fotmob-ligue-1/ \
+            epl/data/raw/intl/ \
+            epl/data/raw/fotmob-intl/ \
             epl/data/backtest-ligue-1.json \
             epl/data/backtest-ligue-1-matches.json \
             epl/data/form-tuning.json \
