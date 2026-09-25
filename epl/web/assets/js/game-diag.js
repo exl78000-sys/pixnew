@@ -248,24 +248,6 @@ export function diagnose(t) {
   return out;
 }
 
-/* 使用者把哪幾個指令調離了「本季實際踢法」。
- *
- * 這一段刻意**不**宣稱因果:一場模擬分不出結果是調整造成的還是抽樣造成的,
- * 要證明得跑很多場(而那是另一件事)。所以只陳述調了什麼、以及這一場的結果,
- * 由讀者自己判斷 —— 鐵則四:不確定性要寫在畫面上。 */
-export function tacticNotes(tactics = {}, labels = {}) {
-  const out = [];
-  for (const side of SIDES) {
-    const t = tactics[side];
-    if (!t?.levels || !t?.defaults) continue;
-    const moved = Object.keys(t.levels)
-      .filter(k => t.levels[k] !== t.defaults[k])
-      .map(k => ({ key: k, zh: labels[k] ?? k, from: t.defaults[k], to: t.levels[k] }));
-    if (moved.length) out.push({ side, moved });
-  }
-  return out;
-}
-
 /* 賽後敘述。過去式、只講這一場模擬,而且每個數字都在 evidence 裡。
    回傳 [{ text, evidence }] —— 跟判讀同一個形狀,才能用同一個檢查器驗。 */
 export function recap(t, { homeName, awayName, score, diag = [] } = {}) {

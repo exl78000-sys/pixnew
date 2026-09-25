@@ -16,8 +16,8 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**16 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
- * explore.html / game-sim.js / model.html / inplay-tuning.json / prob-history.json /
+ * 唯讀、零快取、**17 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
+ * explore.html / game-sim.js / game/pl.json / model.html / inplay-tuning.json / prob-history.json /
  * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
  * 網址不寫死:從 runner 的 `GITHUB_REPOSITORY` 推(owner/repo → owner.github.io/repo/),
  * 本機測試用 `--base=` 覆寫。
@@ -102,7 +102,21 @@ async function main() {
   else {
     const has = re => re.test(sim.text) ? '✓' : '✗';
     console.log(`  assets/js/game-sim.js  HTTP ${sim.status}  ${sim.buf.length} bytes  sha256:${sha(sim.buf)}`
-      + `・PRESS_TRACK = SIM_RUN ${has(/^const PRESS_TRACK = SIM_RUN;/m)}・SHOT_PRESSED = 1 ${has(/^const SHOT_PRESSED = 1;/m)}`);
+      + `・PRESS_TRACK = SIM_RUN ${has(/^const PRESS_TRACK = SIM_RUN;/m)}・SHOT_PRESSED = 1 ${has(/^const SHOT_PRESSED = 1;/m)}`
+      + `・tacticDefaults ${has(/^export function tacticDefaults\(/m)}・壓迫五級 pressLevels ${has(/^function pressLevels\(/m)}`);
+  }
+  /* 遊戲側寫(2026-09-25):射門池與熱區拿掉之後應該是 438 KB 上下(之前 722 KB)。
+     印位元組數與兩個欄位**在不在** —— 還在的話站上是上一版的側寫。 */
+  const gp = await get('data/game/pl.json');
+  if (!gp.ok) console.log(`  data/game/pl.json  HTTP ${gp.status} ← ✗ 站上抓不到`);
+  else {
+    let pool = '?', heat = '?';
+    try {
+      const g = JSON.parse(gp.text);
+      pool = Object.values(g.teams ?? {}).some(t => 'shots' in t) || 'shotPool' in (g.league_ ?? {}) ? '還在 ✗' : '沒有 ✓';
+      heat = Object.values(g.teams ?? {}).some(t => (t.squad ?? []).some(q => 'heat' in q)) ? '還在 ✗' : '沒有 ✓';
+    } catch { pool = heat = '解析失敗 ✗'; }
+    console.log(`  data/game/pl.json  HTTP ${gp.status}  ${gp.buf.length} bytes・射門池 ${pool}・熱區 ${heat}`);
   }
 
   // ── 即時勝率的時間曲線(2026-09-25):站上用的是曲線還是線性 ─────

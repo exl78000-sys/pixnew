@@ -11,7 +11,7 @@
  *
  * 這一層**不做任何模型上的決定** —— 不改機率、不改 λ、不補事件。它只翻譯。
  */
-import { createSim } from './game-sim.js?v=29d49ea3';
+import { createSim, tacticDefaults } from './game-sim.js?v=24025b70';
 
 /* 播放速度是**時間倍率**,不是剪接。舊版四檔的差別在「演哪幾段」(cutTo / finishInstant /
    整段跳過),而使用者的原話是「根本沒有在踢球」。現在四檔的差別只有一個:一秒真實時間
@@ -24,13 +24,18 @@ export const LIVE_SPEEDS = {
   rush: { zh: '極快(約 3 分鐘)', mult: 32 },
 };
 
-/* 先發 / 板凳 / 陣型的預設值。搬到這裡是為了讓頁面**完全不必 import 舊引擎** ——
-   舊引擎還在倉庫裡(它自己的測試還在跑),但它已經不是這一頁的引擎了。 */
+/* 先發 / 板凳 / 陣型的預設值。搬到這裡是為了讓頁面不必 import 引擎
+   (舊的回合制引擎當時還在倉庫裡;2026-09-25 已移除)。 */
 export function defaultSetup(profile, code) {
   const t = profile.teams[code];
   return { xi: [...t.xi], bench: [...t.bench],
     formation: t.formation.latest ?? t.formation.predicted ?? t.formation.options[0] ?? '4-4-2' };
 }
+
+/* 引擎沒收到指令時實際在踢的那一級(戰術面板要亮的就是它)。**語意由引擎決定**,這裡只轉交 ——
+   頁面自己寫一份「哪一級是恆等元」的話,引擎改了它會悄悄過期(本站在轉換邏輯上付過這個代價)。
+   名字刻意跟引擎那支不同:單檔版把共用模組攤平在同一個作用域,同名就撞。 */
+export const engineTacticLevels = (profile, code) => tacticDefaults(profile, code);
 
 export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {} } = {}) {
   const sim = createSim({ profile, home, away, seed, setup, pred });
