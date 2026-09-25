@@ -16,8 +16,8 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**11 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
- * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
+ * 唯讀、零快取、**13 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
+ * explore.html / game-sim.js / cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
  * 網址不寫死:從 runner 的 `GITHUB_REPOSITORY` 推(owner/repo → owner.github.io/repo/),
  * 本機測試用 `--base=` 覆寫。
  *
@@ -86,6 +86,22 @@ async function main() {
     const r = await get(path);
     const j = r.ok ? jsonOf(r) : null;
     console.log(`  ${path}  HTTP ${r.status}  ${r.buf.length} bytes${j ? `・${count(j)}・建置 ${j.builtAt ?? '?'}  sha256:${sha(r.buf)}` : r.ok ? '・✗ 不是 JSON' : '(站上沒有這個檔)'}`);
+  }
+
+  // ── 模擬遊玩(2026-09-25,階段 5n):站上的引擎是不是新的那一份 ─────
+  /* 兩個請求就夠:資產戳是內容雜湊、一層一層串起來的(explore.html → page-explore → game-view
+     → game-live → game-sim),所以 explore.html 引用的戳對上本機那一份,整條鏈就是同一次建置;
+     game-sim.js 直接抓(Pages 不看 ?v=),印 sha256 讓本機逐位元組比。
+     字面值查的是 5n 的兩個常數 —— 找不到就印 ✗,不印 0(那個檔不可能一處都沒有)。 */
+  const explore = await get('explore.html');
+  const exploreSrc = /["']((?:\.\/)?assets\/js\/page-explore\.js(?:\?v=[0-9a-f]{8})?)["']/.exec(explore.text)?.[1];
+  console.log(`  explore.html  HTTP ${explore.status}  ${explore.buf.length} bytes・引用 ${exploreSrc ?? '✗ 找不到 page-explore.js'}`);
+  const sim = await get('assets/js/game-sim.js');
+  if (!sim.ok) console.log(`  assets/js/game-sim.js  HTTP ${sim.status} ← ✗ 站上抓不到`);
+  else {
+    const has = re => re.test(sim.text) ? '✓' : '✗';
+    console.log(`  assets/js/game-sim.js  HTTP ${sim.status}  ${sim.buf.length} bytes  sha256:${sha(sim.buf)}`
+      + `・PRESS_TRACK = SIM_RUN ${has(/^const PRESS_TRACK = SIM_RUN;/m)}・SHOT_PRESSED = 1 ${has(/^const SHOT_PRESSED = 1;/m)}`);
   }
 
   // ── 二、歐冠那一頁實際供出來的 JS ──────────────────────
