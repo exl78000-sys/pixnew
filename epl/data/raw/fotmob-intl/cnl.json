@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-09-24T14:27:42.604Z",
+ "retrievedAt": "2026-09-25T02:34:00.234Z",
  "matches": [
   {
    "id": "5991938",
@@ -87,7 +87,7 @@
   },
   {
    "id": "5991903",
-   "kickoff": "2026-09-24T19:00:00.000Z",
+   "kickoff": "2026-09-24T19:00:00Z",
    "home": {
     "name": "Puerto Rico",
     "shortName": "Puerto Rico",
@@ -98,17 +98,20 @@
     "shortName": "Guyana",
     "fmId": "6222"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "1"
   },
   {
    "id": "5991879",
-   "kickoff": "2026-09-25T00:00:00Z",
+   "kickoff": "2026-09-25T00:00:00.000Z",
    "home": {
     "name": "Dominican Republic",
     "shortName": "Dominican Republic",
@@ -119,17 +122,20 @@
     "shortName": "Nicaragua",
     "fmId": "5807"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "1"
   },
   {
    "id": "5991904",
-   "kickoff": "2026-09-25T00:10:00Z",
+   "kickoff": "2026-09-25T00:10:00.000Z",
    "home": {
     "name": "Cayman Islands",
     "shortName": "Cayman Islands",
@@ -140,17 +146,20 @@
     "shortName": "Dominica",
     "fmId": "287980"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "1"
   },
   {
    "id": "5991878",
-   "kickoff": "2026-09-25T00:20:00Z",
+   "kickoff": "2026-09-25T00:20:00.000Z",
    "home": {
     "name": "Haiti",
     "shortName": "Haiti",
@@ -161,17 +170,20 @@
     "shortName": "Trinidad and Tobago",
     "fmId": "7724"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "1"
   },
   {
    "id": "5991877",
-   "kickoff": "2026-09-25T02:00:00Z",
+   "kickoff": "2026-09-25T02:00:00.000Z",
    "home": {
     "name": "Costa Rica",
     "shortName": "Costa Rica",
@@ -182,7 +194,7 @@
     "shortName": "Curacao",
     "fmId": "287981"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -192,7 +204,7 @@
   },
   {
    "id": "5991913",
-   "kickoff": "2026-09-25T19:00:00Z",
+   "kickoff": "2026-09-25T19:00:00.000Z",
    "home": {
     "name": "Bermuda",
     "shortName": "Bermuda",
@@ -213,7 +225,7 @@
   },
   {
    "id": "5991922",
-   "kickoff": "2026-09-25T21:00:00Z",
+   "kickoff": "2026-09-25T21:00:00.000Z",
    "home": {
     "name": "Grenada",
     "shortName": "Grenada",

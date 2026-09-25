@@ -11,11 +11,11 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-24T14:27:41.481Z",
+ "retrievedAt": "2026-09-25T02:33:59.248Z",
  "matches": [
   {
    "id": "5181874",
-   "kickoff": "2026-09-24T16:00:00.000Z",
+   "kickoff": "2026-09-24T16:00:00Z",
    "home": {
     "name": "Andorra",
     "shortName": "Andorra",
@@ -26,17 +26,20 @@
     "shortName": "Malta",
     "fmId": "8495"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "1"
   },
   {
    "id": "5181880",
-   "kickoff": "2026-09-24T18:45:00.000Z",
+   "kickoff": "2026-09-24T18:45:00Z",
    "home": {
     "name": "Liechtenstein",
     "shortName": "Liechtenstein",
@@ -47,10 +50,13 @@
     "shortName": "Lithuania",
     "fmId": "8254"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "2"

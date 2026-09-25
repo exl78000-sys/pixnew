@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-09-24T14:27:47.088Z",
+ "retrievedAt": "2026-09-25T02:34:03.806Z",
  "matches": [
   {
    "id": "5120889",
@@ -7445,7 +7445,7 @@
   },
   {
    "id": "6280193",
-   "kickoff": "2026-09-24T09:30:00.000Z",
+   "kickoff": "2026-09-24T09:30:00Z",
    "home": {
     "name": "Palestine",
     "shortName": "Palestine",
@@ -7469,7 +7469,7 @@
   },
   {
    "id": "6280194",
-   "kickoff": "2026-09-24T10:05:00.000Z",
+   "kickoff": "2026-09-24T10:05:00Z",
    "home": {
     "name": "Japan",
     "shortName": "Japan",
@@ -7493,7 +7493,7 @@
   },
   {
    "id": "6280195",
-   "kickoff": "2026-09-24T11:00:00.000Z",
+   "kickoff": "2026-09-24T11:00:00Z",
    "home": {
     "name": "South Korea",
     "shortName": "South Korea",
@@ -7517,7 +7517,7 @@
   },
   {
    "id": "6280196",
-   "kickoff": "2026-09-24T11:35:00.000Z",
+   "kickoff": "2026-09-24T11:35:00Z",
    "home": {
     "name": "China",
     "shortName": "China",
@@ -7541,7 +7541,7 @@
   },
   {
    "id": "6280204",
-   "kickoff": "2026-09-24T14:00:00.000Z",
+   "kickoff": "2026-09-24T14:00:00Z",
    "home": {
     "name": "Uzbekistan",
     "shortName": "Uzbekistan",
@@ -7552,17 +7552,20 @@
     "shortName": "Iran",
     "fmId": "6711"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "5924776",
-   "kickoff": "2026-09-25T10:00:00Z",
+   "kickoff": "2026-09-25T10:00:00.000Z",
    "home": {
     "name": "Australia",
     "shortName": "Australia",
@@ -7583,7 +7586,7 @@
   },
   {
    "id": "6280205",
-   "kickoff": "2026-09-25T14:00:00Z",
+   "kickoff": "2026-09-25T14:00:00.000Z",
    "home": {
     "name": "India",
     "shortName": "India",
@@ -8181,6 +8184,48 @@
     "name": "Tahiti",
     "shortName": "Tahiti",
     "fmId": "5927"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6315046",
+   "kickoff": "2026-10-01T06:10:00Z",
+   "home": {
+    "name": "Panama",
+    "shortName": "Panama",
+    "fmId": "5922"
+   },
+   "away": {
+    "name": "New Zealand",
+    "shortName": "New Zealand",
+    "fmId": "5820"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6315047",
+   "kickoff": "2026-10-01T10:10:00Z",
+   "home": {
+    "name": "Japan",
+    "shortName": "Japan",
+    "fmId": "6715"
+   },
+   "away": {
+    "name": "Ecuador",
+    "shortName": "Ecuador",
+    "fmId": "6707"
    },
    "state": "NS",
    "final": null,
