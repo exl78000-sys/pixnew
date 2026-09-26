@@ -58,6 +58,7 @@ import { round } from './lib/util.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
+import { externalizeImages } from './lib/image-files.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
@@ -114,11 +115,16 @@ function attachAdvancedCodes(detail, report) {
   return { ...detail, source, players, events };
 }
 
+/* 圖(隊徽、頭貼、國旗、賽事圖)在寫檔前落成 assets/img/h/ 的獨立檔,產物裡只留路徑(2026-09-26,A2 + A3;
+   理由在 lib/image-files.mjs)。所有產物都走這一個 write,所以不必逐個資料集記得要做。 */
+const IMG = { webDir: join(ROOT, 'web') };
 const write = async (name, data) => {
   const path = join(OUT, name);
-  await writeFile(path, JSON.stringify(data));
-  const kb = (JSON.stringify(data).length / 1024).toFixed(0);
-  console.log(`  ✓ ${name.padEnd(16)} ${kb.padStart(5)} KB`);
+  const stats = {};
+  const json = JSON.stringify(externalizeImages(data, { ...IMG, stats }));
+  await writeFile(path, json);
+  const kb = (json.length / 1024).toFixed(0);
+  console.log(`  ✓ ${name.padEnd(16)} ${kb.padStart(5)} KB${stats.images ? `(圖 ${stats.images} 張外置)` : ''}`);
 };
 
 // FPL 官方的賽程難度(1~5),照 (主,客) 配對接到 openfootball 賽程上

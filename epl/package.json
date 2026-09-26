@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "fetch": "node scripts/fetch.mjs",
-    "build": "node scripts/build.mjs && node scripts/build-intl.mjs && node scripts/game/build-game.mjs && node scripts/stamp-assets.mjs",
+    "build": "node scripts/build.mjs && node scripts/build-intl.mjs && node scripts/game/build-game.mjs && node scripts/prune-images.mjs && node scripts/stamp-assets.mjs",
     "stamp": "node scripts/stamp-assets.mjs",
     "all": "node scripts/fetch.mjs --force && node scripts/build.mjs",
     "serve": "node scripts/serve.mjs",

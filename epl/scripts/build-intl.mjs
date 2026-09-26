@@ -42,6 +42,7 @@ const OUT = join(ROOT, 'web', 'data', 'intl.json');
    放進 intl.json 的話每一個打開國家隊頁的人都要多下載一次)。 */
 const OUT_TEAMS = join(ROOT, 'web', 'data', 'intl-teams.json');
 const OUT_FLAGS = join(ROOT, 'web', 'data', 'intl-flags.json');
+import { externalizeImages } from './lib/image-files.mjs';   // 國旗落成 assets/img/h/ 的獨立檔(2026-09-26,A3)
 /* 走勢圖從這一天起畫:一隊一年十場上下,八年多 ≈ 八十個點 —— 夠看出起伏,又不會把 1872 年起的
    幾百場都塞進去(那段跟現在的球隊已經沒什麼關係)。 */
 const TREND_FROM = '2018-01-01';
@@ -398,7 +399,8 @@ async function main() {
   await rename(tmp, OUT);
   console.log(`✔ web/data/intl.json(${(JSON.stringify(main).length / 1024).toFixed(0)} KB)`);
   /* 國旗的圖:只有國家隊頁(與它的球隊頁)載。沒有國旗檔也寫一份空的 —— 404 會讓前端走「讀取失敗」那條路 */
-  const flagsOut = { builtAt: out.builtAt, size: out.flags?.size ?? null, flags: flagImgs ?? {} };
+  // 國旗跟隊徽一樣落成獨立圖檔,產物只留路徑(理由在 lib/image-files.mjs)
+  const flagsOut = externalizeImages({ builtAt: out.builtAt, size: out.flags?.size ?? null, flags: flagImgs ?? {} }, { webDir: join(ROOT, 'web') });
   const tmp3 = `${OUT_FLAGS}.tmp`;
   await writeFile(tmp3, JSON.stringify(flagsOut) + '\n');
   await rename(tmp3, OUT_FLAGS);

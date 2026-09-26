@@ -301,7 +301,8 @@ export const COMPETITIONS = {
    就長出一個項目(那等於前端自己編了一個賽事)。頁面載入 'competitions' 之後呼叫一次。 */
 export function registerCompetitions(data) {
   for (const [key, uri] of Object.entries(data?.logos ?? {})) {
-    if (COMPETITIONS[key] && typeof uri === 'string' && uri.startsWith('data:image/')) COMPETITIONS[key].logo = uri;
+    // 圖是 assets/img/h/ 的相對路徑(分頁版,2026-09-26 起)或 data URI(單檔版);其他字串一律不掛
+    if (COMPETITIONS[key] && typeof uri === 'string' && (uri.startsWith('data:image/') || uri.startsWith('assets/img/'))) COMPETITIONS[key].logo = uri;
   }
   return COMPETITIONS;
 }

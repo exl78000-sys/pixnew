@@ -52,6 +52,7 @@ import { readDelivery, mergeDelivery, pruneArchive, coverageOf, overlay, emptyAr
 import { tierKey, lookupTier } from './lib/adapters/england-tiers.mjs';
 import { mergeCupSeasons } from './lib/cup-seasons.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
+import { isImageRef, IMG_DIR } from './lib/image-files.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -2310,13 +2311,13 @@ async function checkDataGap() {
     })()],
     /* 真圖:competitions.json 一定要在(沒抓到就 logos 空,前端退回色塊,檔案不在會 404);
        registerCompetitions 只掛已登記的鍵,不會因為有一張圖就長出一個賽事。 */
-    ['competitions.json 存在;有 logo 就是 PNG data URI、鍵都在 COMPETITIONS 裡', (() => {
+    ['competitions.json 存在;有 logo 就是本站的 PNG 圖檔、鍵都在 COMPETITIONS 裡', (() => {
       const p = join(ROOT, 'web', 'data', 'competitions.json');
       if (!existsSync(p)) return false;
       const c = JSON.parse(readFileSync(p, 'utf8'));
       const keys = Object.keys(c.logos ?? {});
       return typeof c.note === 'string' && (keys.length ? true : /尚未抓/.test(c.note))
-        && keys.every(k => k in (V.COMPETITIONS ?? {}) && /^data:image\/png;base64,/.test(c.logos[k]));
+        && keys.every(k => k in (V.COMPETITIONS ?? {}) && isImageRef(c.logos[k], { webDir: join(ROOT, 'web') }, 'png'));
     })()],
     ['registerCompetitions:已登記的鍵掛上 logo 後 compBadge 畫圖;沒登記的鍵不會被創出來', (() => {
       const before = Object.keys(V.COMPETITIONS).length;
@@ -4591,6 +4592,35 @@ async function checkDataGap() {
       /* seen 是「有往季索引的聯賽數」。**不寫死等於 6** —— 哪天某個聯賽沒有上季 raw
          就會紅在「還沒補齊」上(「把目標達成寫成 CI 紅線」那條坑)。只要有就得對。 */
       console.log(`    往季逐場檔:${seen} 個聯賽有索引`);
+      return bad.length === 0;
+    })()],
+    /* ── 圖片外置(2026-09-26,A2 + A3)──
+       產物裡不准再有 data URI 的圖:一張圖存成 assets/img/h/<內容雜湊>.<ext>,產物只留路徑
+       (players.json 3.3 MB 有 2 MB 是 572 張 base64 頭貼,gzip 壓不動;理由在 lib/image-files.mjs)。
+       守兩件事:沒有內嵌圖、每個路徑都指得到檔。沒被引用的孤兒只回報不擋 ——
+       只跑某一個聯賽的 build 時舊檔會留到下一次完整 build(prune-images 排在 npm run build 最後)。 */
+    ['產物裡的圖都是 assets/img/h/ 的檔:沒有內嵌 data URI、每個路徑都指得到檔', (() => {
+      const W2 = join(ROOT, 'web');
+      const walk = d => readdirSync(d, { withFileTypes: true }).flatMap(e => (e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]));
+      const files = walk(join(W2, 'data')).filter(f => f.endsWith('.json') && !/match-reports|ucl-details|cup-details/.test(f));
+      const bad = [];
+      let refs = 0;
+      const seen = new Set();
+      for (const f of files) {
+        const s = readFileSync(f, 'utf8');
+        const rel = f.slice(W2.length + 1);
+        const embedded = (s.match(/"data:image\//g) ?? []).length;
+        if (embedded) bad.push(`${rel}:還有 ${embedded} 張內嵌圖`);
+        for (const m of s.matchAll(/assets\/img\/h\/[0-9a-f]{16}\.[a-z]+/g)) {
+          refs++;
+          if (seen.has(m[0])) continue;
+          seen.add(m[0]);
+          if (!existsSync(join(W2, m[0]))) bad.push(`${rel}:${m[0]} 沒有檔`);
+        }
+      }
+      const onDisk = existsSync(join(W2, IMG_DIR)) ? readdirSync(join(W2, IMG_DIR)).length : 0;
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      console.log(`    圖檔:${seen.size} 個被引用(${refs} 處)、磁碟上 ${onDisk} 個${onDisk > seen.size ? `(${onDisk - seen.size} 個沒人引用,npm run build 會清)` : ''}`);
       return bad.length === 0;
     })()],
     /* ── 本季賽後報告也是逐場檔(2026-09-26,A1)──
@@ -7109,8 +7139,8 @@ function checkUcl() {
       const cupsData = JSON.parse(readFileSync(cupsPath, 'utf8'));
       const lookup = cupsData.crests ?? {};
       ok(Object.keys(lookup).length > 0, '盃賽對手隊徽:有查表', String(Object.keys(lookup).length));
-      ok(Object.values(lookup).every(v => /^data:image\/png;base64,/.test(v)),
-        '盃賽對手隊徽:全部是內嵌的 PNG(CSP 會擋外部圖,熱連也等於每次開頁去要圖)');
+      ok(Object.values(lookup).every(v => isImageRef(v, { webDir: join(ROOT, 'web') }, 'png')),
+        '盃賽對手隊徽:全部是本站的 PNG 圖檔(不熱連外站;2026-09-26 起是 assets/img/h/ 的檔)');
       // 場次裡不可以再夾帶隊徽 —— 那就是把同一張圖存幾百遍
       let inline = 0;
       for (const c of cupsData.cups ?? []) for (const s2 of c.seasons ?? []) {

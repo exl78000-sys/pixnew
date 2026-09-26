@@ -16,6 +16,7 @@ import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmat
 import { backfillScores } from './lib/laliga-matches.mjs';
 import { normaliseFotmobMatch, ADAPTER_VERSION, fotmobPos } from './lib/adapters/fotmob-match.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
+import { isImageRef } from './lib/image-files.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
@@ -36,7 +37,7 @@ check('只納入指定兩季', meta.lastSeason === '2025-26' && meta.currentSeas
 check('2025-26 原始賽程 380 場', last.matches.length === 380, String(last.matches.length));
 check('2026-27 原始賽程 380 場', current.matches.length === 380, String(current.matches.length));
 check('本季輸出 20 隊', teams.length === 20, String(teams.length));
-check('本季 20 隊都有內嵌 PNG 隊徽', teams.every(t => t.crest?.startsWith('data:image/png;base64,')), String(teams.filter(t => t.crest).length));
+check('本季 20 隊都有 PNG 隊徽(2026-09-26 起是 assets/img/h/ 的圖檔,檔要真的在)', teams.every(t => isImageRef(t.crest, { webDir: join(ROOT, 'web') }, 'png')), String(teams.filter(t => t.crest).length));
 check('球隊頁顯示已核對的 SportMonks 名單人數', teams.filter(t => t.squadSize > 0).length === 20
   && teams.find(t => t.code === 'VIL')?.squadSize > 0);
 check('本季輸出 380 場', fixtures.length === 380, String(fixtures.length));

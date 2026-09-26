@@ -44,6 +44,7 @@ import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { fotmobMinute } from './lib/live-minute.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
+import { externalizeImages } from './lib/image-files.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
@@ -85,9 +86,12 @@ const RUNS = Number(arg('runs') ?? 5000);
    照用的話冬季場次會整批早一小時。DST 規則共用 lib 那一份,不自己再寫。 */
 const londonKickoff = europeanKickoff({ summer: '+01:00', winter: '+00:00' });
 
+// 圖在寫檔前落成 assets/img/h/ 的獨立檔,產物只留路徑(2026-09-26,A2 + A3;理由在 lib/image-files.mjs)
+const IMG = { webDir: join(ROOT, 'web') };
 const write = async (name, data) => {
-  await writeFile(join(OUT, `${name}.json`), JSON.stringify(data));
-  console.log(`  ✓ ${name}.json`);
+  const stats = {};
+  await writeFile(join(OUT, `${name}.json`), JSON.stringify(externalizeImages(data, { ...IMG, stats })));
+  console.log(`  ✓ ${name}.json${stats.images ? `(圖 ${stats.images} 張外置)` : ''}`);
 };
 
 const slimMatch = m => {

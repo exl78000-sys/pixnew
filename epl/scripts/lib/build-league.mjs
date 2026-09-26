@@ -51,6 +51,7 @@ import { coreFromUnderstat } from './player-core.mjs';
    不各寫一套(buildProviderMatchReport 自己會再核對一次比分、要求 coverage 齊全)。 */
 import { loadFotmobMatchStats, toCanonicalDetail } from './matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './match-archive.mjs';
+import { externalizeImages } from './image-files.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
@@ -146,9 +147,12 @@ export async function buildLeague(L) {
      (英冠用倫敦、西甲用馬德里、德義法用中歐,同一個函式)。 */
   const berlinKickoff = europeanKickoff(L.timezone);
 
+  // 圖在寫檔前落成 assets/img/h/ 的獨立檔,產物只留路徑(2026-09-26,A2 + A3;理由在 lib/image-files.mjs)
+  const IMG = { webDir: join(ROOT, 'web') };
   const write = async (name, data) => {
-    await writeFile(join(OUT, `${name}.json`), JSON.stringify(data));
-    console.log(`  ✓ ${name}.json`);
+    const stats = {};
+    await writeFile(join(OUT, `${name}.json`), JSON.stringify(externalizeImages(data, { ...IMG, stats })));
+    console.log(`  ✓ ${name}.json${stats.images ? `(圖 ${stats.images} 張外置)` : ''}`);
   };
 
   const slimMatch = m => {

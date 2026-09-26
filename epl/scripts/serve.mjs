@@ -15,6 +15,8 @@ const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon',
+  // 頭貼是 jpg(2026-09-26 起產物裡的圖是 assets/img/h/ 的獨立檔),沒列的副檔名會被當 octet-stream
+  '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif',
 };
 
 createServer(async (req, res) => {
