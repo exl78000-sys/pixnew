@@ -595,6 +595,9 @@ Node 端要本體(測試、Obsidian、單檔打包)走 `lib/match-archive.mjs` �
 `build-overview-shared.mjs` 在 build 鏈的 build-intl 之後抽),要多畫一個跨聯賽的欄位先去那裡加。
 總覽的 HTML 預載是依頁面的(`stamp-assets` 的 `preloadScriptFor`):它不依 league,預載六份 overview.json 與跨聯賽摘要,不預載 teams.json。
 
+**幾百列的長表用 `C.table` 的 `pageSize`(2026-09-27 起,球員列表掛 100):** 排序照整份排、只畫前 N 列,下方有「再顯示 / 全部顯示」;
+不要另外寫一套「顯示更多」,也不要用 `limit` 硬切(那是給本來就只要前幾名的表用的)。
+
 **只有某個分頁才用到的大模組,點到才 `import()`(2026-09-26 起,探索頁的 game-view 是第一個)。** 三件事要一起對:
 stamp-assets 的 modulepreload 只收靜態 import(`staticImportsOf`);bundle.mjs 把 `import('./x.js')` 換成攤平後匯出的
 `Promise.resolve({…})`(x 要在 SHARED 清單裡);註解裡不要寫那個字面路徑(字面替換連註解都會戳)。`npm test` 守著。

@@ -4727,6 +4727,18 @@ async function checkDataGap() {
         && bundle.includes('Promise.resolve({ ${names.join') && bundle.includes('沒換掉的動態 import')
         && stamp.includes("const staticImportsOf = f => shared.filter(s => srcs.get(f).includes(`from './${s}'`))");
     })()],
+    /* ── 長表先畫前 100 列(2026-09-26,B5)──
+       球員總表 617 列一次畫是 1,312 張圖、16,755 個節點。C.table 加 pageSize:排序仍照整份排、切前 N 列,
+       下方一列「再顯示 / 全部顯示」;三個球員列表(FPL、Understat、累加)都掛 100。 */
+    ['C.table 有 pageSize(先畫前 N 列 + 再顯示 / 全部顯示),三個球員列表都掛 100', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
+      const pp = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
+      const sig = core.slice(core.indexOf('export function table('), core.indexOf('export function table(') + 260);
+      return /pageSize = null/.test(sig) && /data-more/.test(core) && /data-all/.test(core) && /class="table-more/.test(core)
+        && /\.table-box \.table-more/.test(css)
+        && (pp.match(/pageSize: 100/g) ?? []).length >= 3;
+    })()],
     /* ── 預載(2026-09-26,B1)──
        每一頁的 <head> 由 stamp-assets 注入:這一頁模組圖裡每一支的 modulepreload(含現行的戳)、
        以及依 league 預載 meta / clubs / teams 的那段 script。守的是「每一頁都有、而且戳跟 import 一字不差」——

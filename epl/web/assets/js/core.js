@@ -1674,9 +1674,13 @@ export function foldPlan({ cols, widths, available, total = null, keep = new Set
 /* `rowClass(列)` 讓呼叫端給某幾列加 class(2026-09-14 為了關注球隊加的)。
    為什麼不讓呼叫端自己在某一欄的 render 裡加標記:**那只會標到一格**,
    而「這一列是我的球隊」要整列看得出來。重排序之後也要跟著走,所以在 render 裡算。 */
-export function table(rows, cols, { sortKey = null, desc = true, onRow = null, rowClickable = null, limit = null, rowClass = null } = {}) {
+/* pageSize(2026-09-26,B5):長表先畫前 N 列,表格下方一列「再顯示 N 列 / 全部顯示」。
+   球員總表 617 列一次畫是 1,312 張圖、16,755 個節點,而讀者在前 100 列之外要的多半是搜尋或排序。
+   **排序仍照整份排**(排完才切前 N 列),讀者換排序時已展開的列數保留;limit 是硬切(沒有按鈕),兩個可以並用。 */
+export function table(rows, cols, { sortKey = null, desc = true, onRow = null, rowClickable = null, limit = null, rowClass = null, pageSize = null } = {}) {
   const id = `t${Math.random().toString(36).slice(2, 8)}`;
   let state = { key: sortKey, desc };
+  let shown = pageSize;        // 讀者按「再顯示」會加大;null 就是全部
   const foldable = cols.filter(c => c.fold).sort((a, b) => b.fold - a.fold);
   const keep = new Set();      // 讀者點回來的欄
   let expanded = false;        // 讀者按了「展開全部」:不收,表格橫向捲動
@@ -1733,6 +1737,9 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
       });
     }
     if (limit) data = data.slice(0, limit);
+    const total = data.length;
+    const paged = !!pageSize && total > shown;
+    if (paged) data = data.slice(0, shown);
     // 表格預設靠右(數字才好比對),但隊伍欄的內容是 flex 排版,一定靠左顯示 ——
     // 表頭若還是靠右,標題就會飄到欄位的另一端,離自己的資料好幾百 px。
     // 這裡直接看第一列渲染出來的內容判斷,call site 不用逐一標註。
@@ -1766,6 +1773,18 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
         tr.onclick = () => onRow(row);
       });
     }
+    // 「再顯示 / 全部顯示」那一列:只在真的有沒畫的列時出現;數字從資料算,不寫死
+    const more = el.querySelector('.table-more');
+    if (more) {
+      if (paged) {
+        more.hidden = false;
+        more.innerHTML = `<span>先畫前 ${data.length} 列,共 ${total} 列。</span>`
+          + `<button class="btn tiny" type="button" data-more>再顯示 ${Math.min(pageSize, total - data.length)} 列</button>`
+          + `<button class="btn tiny" type="button" data-all>全部顯示</button>`;
+        more.querySelector('[data-more]').onclick = () => { shown += pageSize; render(); };
+        more.querySelector('[data-all]').onclick = () => { shown = total; render(); };
+      } else { more.hidden = true; more.innerHTML = ''; }
+    }
     fit();
   };
 
@@ -1788,7 +1807,7 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
     });
     ro.observe(wrap); ro.observe(tbl);
   });
-  return `<div class="table-box" id="${id}"><div class="table-fold small dim" hidden></div><div class="table-wrap"><table></table></div></div>`;
+  return `<div class="table-box" id="${id}"><div class="table-fold small dim" hidden></div><div class="table-wrap"><table></table></div><div class="table-more small dim" hidden></div></div>`;
 }
 
 /* ── 雷達圖 ─────────────────────────── */
