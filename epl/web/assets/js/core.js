@@ -973,6 +973,46 @@ export function nav() {
      `block: 'nearest'` 是必要的:預設會連垂直方向一起捲,整頁會跳。 */
   document.querySelector('.tabwrap')?.querySelector('a.on')
     ?.scrollIntoView({ inline: 'center', block: 'nearest' });
+
+  /* 手機上往下捲就收品牌列(2026-09-27,C1)。量過:375px 寬的導覽列 131px 而且 sticky,佔 812px 螢幕的 16%,
+     捲到哪裡都跟著;品牌那一行(站名 + 切換聯賽)在讀內容時用不到。往下捲超過 120px 就加 `compact`
+     (CSS 把品牌列收起,分頁列留著),往上捲一點或回到頂端就放回來 —— 切換聯賽是常按的東西,要一捲回來就在。
+     桌機不收(高度本來就只有 61px)。監聽只掛一次:單檔版每次換頁都重畫導覽列,handler 每次都重新找 .topbar。
+     順便把導覽列的實際高度寫進 --topbar-h:分析頁那條 sticky 的分頁列以前寫死 top: 61px(桌機的高度),
+     手機上一直是錯的,現在收合時高度還會變。 */
+  if (!globalThis.__topbarScroll) {
+    globalThis.__topbarScroll = true;
+    let lastY = window.scrollY;
+    const compactMq = matchMedia('(max-width: 700px)');
+    const setH = () => {
+      const bar = document.querySelector('.topbar');
+      if (bar) document.documentElement.style.setProperty('--topbar-h', `${bar.offsetHeight}px`);
+    };
+    /* 不走 requestAnimationFrame:背景分頁裡 rAF 是停的,scroll 事件照發 —— 用 rAF 節流的話換回前景時
+       導覽列停在錯的狀態。這個 handler 只在狀態真的變時碰 DOM(toggle 回傳有沒有變),量高度也只在那時量。 */
+    const onScroll = () => {
+      const bar = document.querySelector('.topbar');
+      if (!bar) return;
+      const y = window.scrollY;
+      let want = bar.classList.contains('compact');
+      if (!compactMq.matches) { want = false; lastY = y; }
+      else {
+        const down = y > lastY + 4, up = y < lastY - 4;
+        if (y < 40 || up) want = false;
+        else if (down && y > 120) want = true;
+        if (down || up) lastY = y;
+      }
+      if (want !== bar.classList.contains('compact')) { bar.classList.toggle('compact', want); setH(); }
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+    if (typeof ResizeObserver === 'function') {
+      const ro = new ResizeObserver(setH);
+      const watch = () => { const bar = document.querySelector('.topbar'); if (bar) ro.observe(bar); };
+      watch();
+      globalThis.__topbarWatch = watch;   // 單檔版換頁後重畫的導覽列要重新觀察
+    }
+    setH();
+  } else globalThis.__topbarWatch?.();
 }
 
 /* sources 給跨聯賽的頁(盃賽)用:那一頁的資料不是目前聯賽的 meta.sources 給的,

@@ -1,6 +1,6 @@
-import * as C from './core.js?v=126d954f';
+import * as C from './core.js?v=95f7e756';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=c290cadc';
+import { renderUclView } from './ucl-view.js?v=91f86801';
 
 const app = document.getElementById('app');
 

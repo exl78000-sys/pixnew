@@ -697,6 +697,13 @@ jobs:
         if: steps.pages_check.outputs.enabled == 'true'
         run: cp dist/warroom.html web/warroom.html
 
+      # matchstats.json 六份約 98 MB **沒有任何頁面會 fetch**(單場用 match-reports、球隊頁用 teams.json 的 matchStats;
+      # 它是給 Obsidian vault 與逐場查詢用的,而 vault 是本機產的)。倉庫裡的檔案不動 —— 回寫那一步早就跑完了,
+      # 這裡只是不把它放進 Pages 的上傳物;單檔版同樣跳過它(bundle.mjs 的 SKIP_DATASETS)。(2026-09-27,D2)
+      - name: matchstats.json 不進 Pages 上傳物
+        if: steps.pages_check.outputs.enabled == 'true'
+        run: find web/data -name matchstats.json -print -delete
+
       - name: 設定 GitHub Pages
         if: steps.pages_check.outputs.enabled == 'true'
         uses: actions/configure-pages@v5
