@@ -4739,6 +4739,22 @@ async function checkDataGap() {
         && /\.table-box \.table-more/.test(css)
         && (pp.match(/pageSize: 100/g) ?? []).length >= 3;
     })()],
+    /* ── 手機導覽列與觸控目標(2026-09-27,C1 + C2)──
+       C1:往下捲收品牌列(nav() 掛一次 scroll 監聽、只在狀態變時碰 DOM;不用 rAF,背景分頁裡 rAF 是停的),
+       導覽列的實際高度寫進 --topbar-h,分析頁那條 sticky 分頁列吃它(以前寫死 61px)。
+       C2:手機上連結與按鈕形態的 pill、小按鈕、切換聯賽、勾選格、關注星、表格裡的球隊格拉到 36px。 */
+    ['手機導覽列往下捲收品牌列、高度寫進 --topbar-h;觸控目標在 700px 以下拉到 36px', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
+      const mobile = css.slice(css.indexOf('@media (max-width: 700px)'));
+      return /globalThis\.__topbarScroll/.test(core) && /classList\.toggle\('compact', want\)/.test(core)
+        && /setProperty\('--topbar-h'/.test(core) && !/requestAnimationFrame\(\(\) => \{ ticking/.test(core)
+        && /addEventListener\('scroll', onScroll, \{ passive: true \}\)/.test(core)
+        && /\.topbar\.compact \.brand, \.topbar\.compact \.league-switch \{ display: none; \}/.test(mobile)
+        && /\.league-switch a, a\.pill, button\.pill, \.btn\.tiny, \.comp-pick \{ min-height: 36px/.test(mobile)
+        && /\.followstar \{ min-width: 36px; min-height: 36px/.test(mobile)
+        && /\.analysis-switch \{[\s\S]{0,200}top: var\(--topbar-h, 61px\)/.test(css);
+    })()],
     /* ── 預載(2026-09-26,B1)──
        每一頁的 <head> 由 stamp-assets 注入:這一頁模組圖裡每一支的 modulepreload(含現行的戳)、
        以及依 league 預載 meta / clubs / teams 的那段 script。守的是「每一頁都有、而且戳跟 import 一字不差」——

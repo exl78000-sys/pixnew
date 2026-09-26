@@ -253,6 +253,16 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
   .stat-line.tie-leg.intl-row .prob { min-width: 120px; }
   /* 觸控目標:原本 36px,低於一般建議的 44。單行之後高度省下來了,補回去 */
   nav.tabs > a { min-height: 40px; display: flex; align-items: center; }
+  /* 往下捲時收品牌列(2026-09-27,C1;規則在 core.js 的 nav()):品牌與切換聯賽那一行收起,分頁列留著,
+     導覽列從 131px 降到 ~70px;往上捲一點就放回來。 */
+  .topbar.compact .brand, .topbar.compact .league-switch { display: none; }
+  /* 觸控目標拉到 36px(2026-09-27,C2)。375px 實測首頁 74 個可點的東西裡 50 個不到 32px:切換聯賽 42×25、
+     分頁與卡片上的 pill 連結 24px、小按鈕 21–23px、勾選格 26–28px、表格裡的球隊連結 26px。
+     只動**連結與按鈕形態的 pill**(a / button),當標籤用的 span.pill 不動;內文裡的文字連結(14–16px)不動 ——
+     那是段落的一部分,撐高會把行距撐壞。 */
+  .league-switch a, a.pill, button.pill, .btn.tiny, .comp-pick { min-height: 36px; display: inline-flex; align-items: center; }
+  .followstar { min-width: 36px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; }
+  td .team-cell, td a .team-cell { min-height: 36px; align-items: center; }
 }
 nav.tabs a {
   color: var(--ink-2); padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
@@ -507,7 +517,8 @@ tbody tr.followed td:first-child { box-shadow: inset 2px 0 0 #ffc531; }
 
 /* ── 單場分析:賽前 / 賽後 / 綜合 ─────────── */
 .analysis-switch {
-  position: sticky; top: 61px; z-index: 15; display: flex; gap: 7px; flex-wrap: wrap;
+  /* top 是導覽列的實際高度(core.js 的 nav() 量了寫進 --topbar-h):以前寫死 61px 是桌機的高度,手機上一直是錯的 */
+  position: sticky; top: var(--topbar-h, 61px); z-index: 15; display: flex; gap: 7px; flex-wrap: wrap;
   margin: 16px 0 2px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius);
   background: #120b1aeb; backdrop-filter: blur(10px);
 }

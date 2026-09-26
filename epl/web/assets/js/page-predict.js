@@ -14,9 +14,9 @@
  *
  * 網址 `?view=teams|predict`,舊連結(沒帶 view)進來預設停在「我的球隊」——
  * 關注是新功能,而預測要一輪一輪填,先看關注比較合理。 */
-import * as C from './core.js?v=126d954f';
-import { renderFollowTeams } from './follow-view.js?v=4e1ead54';
-import { renderPredict } from './predict-view.js?v=0560d93a';
+import * as C from './core.js?v=95f7e756';
+import { renderFollowTeams } from './follow-view.js?v=3458b2df';
+import { renderPredict } from './predict-view.js?v=a599eddc';
 
 const VIEWS = [
   { key: 'teams', zh: '我的球隊', render: renderFollowTeams },
