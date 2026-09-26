@@ -527,6 +527,14 @@ function renderTeam(t, ctx) {
   if (t.rich) {
     body.push(renderTactics(t, ctx));
     body.push(renderShape(ctx.shapeFor(t.code), ctx));
+    /* 站上球隊頁的另外四塊(2026-09-27):Elo 走勢、近 N 場風格位移、xG 走勢、開季賽程難度。
+       都是 teams.json 上的欄位,沒有的聯賽 / 球隊整塊不寫(xG 走勢與賽程難度只有英超有)。 */
+    body.push(renderEloHistory(t));
+    body.push(renderStyleTrend(t));
+    body.push(renderXgTrend(t));
+    const sch = renderSchedule(t, ctx);
+    body.push(sch.text);
+    links.push(...sch.links);
   }
 
   /* 逐場進球明細在發布的資料裡是**球隊層級的整季彙總**,不是逐顆球的紀錄。
@@ -768,6 +776,7 @@ function renderMatch(f, ctx) {
     /* 建置當下正在踢的場次:賽程還沒記成完賽,但即時勝率已經有點了(表上會標「比賽還在進行」) */
     body.push(renderProbCurve(prob, H, A));
     body.push(renderArticle(preArt, 'pre'));
+    body.push(renderLineups(f, ctx, H, A));   // 預估先發(2026-09-27;英超才有 lineups.json)
     if (ctx.h2hAvailable) {
       const h = renderH2H(ctx.h2hFor(f), f, ctx);
       body.push(h.text);
@@ -1214,6 +1223,129 @@ function renderNewsNote(items, ctx) {
 }
 
 /* ── 聯賽首頁(MOC)─────────────────────────────────────── */
+/* ── 球隊頁其餘四塊 + 預估先發 + 模型驗證(2026-09-27,使用者:「依序製作」→ vault 補齊)──────────
+   全部從產物搬運,不在這裡重算;每一塊的出處與界線照站上那一頁的講法。 */
+const dash = x => (x === null || x === undefined ? '—' : x);
+
+function renderEloHistory(t) {
+  const h = arr(t.eloHistory).filter(x => x && x.date != null && x.r != null);
+  if (!h.length) return '';
+  const last = h[h.length - 1], first = h[0];
+  const hi = h.reduce((a, b) => (b.r > a.r ? b : a)), lo = h.reduce((a, b) => (b.r < a.r ? b : a));
+  return `\n## Elo 走勢(${h.length} 個點,${first.date} ~ ${last.date})\n\n`
+    + `最新 **${last.r}**・最高 ${hi.r}(${hi.date})・最低 ${lo.r}(${lo.date})\n\n`
+    + '| 日期 | Elo |\n|---|---|\n' + h.map(x => `| ${x.date} | ${x.r} |`).join('\n') + '\n'
+    + '\n> 本站自己的 Elo(每場賽後更新,跟 Poisson 一起做勝率預測),不是任何外部排名;分數只在同一個聯賽的池子裡有意義。\n';
+}
+
+const TREND_ROWS = [['sf', '射門/場'], ['sa', '被射門/場'], ['stf', '射正/場'], ['sta', '被射正/場'], ['cf', '角球/場'], ['ca', '被角球/場'],
+  ['cards', '牌/場'], ['gf', '進球/場'], ['ga', '失球/場'], ['xg', 'xG/場'], ['xga', 'xGA/場'], ['resil', '守成率']];
+function renderStyleTrend(t) {
+  const st = t.styleTrend;
+  if (!st?.recent?.games) return '';
+  const rows = TREND_ROWS.filter(([k]) => st.recent[k] != null || st.baseline?.[k] != null);
+  const out = [`\n## 近 ${st.recent.games} 場風格位移(${dash(st.span?.from)} ~ ${dash(st.span?.to)})\n\n`];
+  out.push(`視窗:本季 ${st.currentSeasonGames ?? 0} 場,不足 ${st.window ?? st.recent.games} 場的部分用上季末湊${
+    st.pendingGames ? `;還有 ${st.pendingGames} 場踢完了但逐場統計還沒到` : ''}。基準是上季全季(${dash(st.baseline?.games)} 場)。\n\n`);
+  out.push('| 指標 | 近 N 場 | 上季全季 | 差 |\n|---|---|---|---|\n');
+  for (const [k, label] of rows) out.push(`| ${label} | ${dash(st.recent[k])} | ${dash(st.baseline?.[k])} | ${st.delta?.[k] == null ? '—' : signedFx(st.delta[k], 2)} |\n`);
+  if (st.recentPct && Array.isArray(st.axes) && st.axes.length) {
+    out.push('\n### 六軸百分位(同聯賽的池子,越高越強)\n\n| 軸 | 近 N 場 | 上季全季 | 算法 |\n|---|---|---|---|\n');
+    for (const a of st.axes) out.push(`| ${a.label} | ${dash(st.recentPct[a.key])} | ${dash(st.baselinePct?.[a.key])} | ${a.formula ?? ''} |\n`);
+  }
+  out.push('\n> 跟站上球隊頁的「近 N 場風格位移」同一份數字;差是「近 N 場 − 上季全季」,由 build 算,這裡只搬運。\n');
+  return out.join('');
+}
+
+function renderXgTrend(t) {
+  const x = t.xgTrend;
+  if (!x?.games) return '';
+  return `\n## 本季 xG 走勢\n\n本季 ${x.games} 場:場均 xG ${x.xg}、xGA ${x.xga}\n\n> 逐場 xG 的場均,跟站上球隊頁同一份數字。\n`;
+}
+
+function renderSchedule(t, ctx) {
+  const s = t.schedule;
+  const links = [];
+  if (!Array.isArray(s?.detail) || !s.detail.length) return { text: '', links };
+  const out = [`\n## 開季賽程難度(FPL 官方難度 1 易 ~ 5 難)\n\n| 輪 | 對手 | 主/客 | 難度 | 開球 |\n|---|---|---|---|---|\n`];
+  for (const d of s.detail) {
+    const nm = ctx.teamNameOf(d.opp);
+    if (nm) links.push(nm);
+    out.push(`| ${d.event} | ${nm ? wl(nm) : d.opp} | ${d.home ? '主' : '客'} | ${d.diff} | ${dash(d.kickoff)} |\n`);
+  }
+  out.push(`\n前 ${s.detail.length} 輪平均難度 ${s.avg}。\n\n> 難度是 FPL 官方給的整數,不是本站算的;英超才有這一份。\n`);
+  return { text: out.join(''), links };
+}
+
+/* 預估先發(lineups.json,英超):本站依本季先發次數、上場分鐘與可出賽狀態推的,**不是官方名單**。
+   找不到該角色的人時從剩下分數最高的補、標 filled(lib/lineup.mjs);doubt 是出賽有疑慮。 */
+function renderLineups(f, ctx, H, A) {
+  const luH = ctx.lineupFor?.(f.home), luA = ctx.lineupFor?.(f.away);
+  if (!luH && !luA) return '';
+  const out = ['\n## 預估先發陣容\n\n'];
+  for (const [lu, nm] of [[luH, H], [luA, A]]) {
+    if (!lu) { out.push(`### ${nm}\n\n本站沒有這一隊的預估先發。\n\n`); continue; }
+    out.push(`### ${nm}(${lu.shape}${lu.shapeSource === 'official' ? ',官方最近的先發陣型' : ''})\n\n`);
+    for (const row of arr(lu.rows)) {
+      out.push(`- ${arr(row).map(p => `${p.name}${p.roleZh ? `(${p.roleZh})` : ''}${p.doubt ? ' ⚠' : ''}${p.filled ? ' [補位]' : ''}`).join('・')}\n`);
+    }
+    out.push('\n');
+  }
+  out.push('> 本站依本季先發次數、上場分鐘與可出賽狀態推估,**不是官方名單**;⚠ 是出賽有疑慮的人,[補位] 是該角色找不到人時從剩下分數最高的補進來的。有官方名單時站上的單場頁會換成實際先發。\n');
+  return out.join('');
+}
+
+/* 模型驗證(站上 model.html 的主體):meta.model 與 meta.model.backtest,每個聯賽一則 */
+function renderModelNote(meta, ctx) {
+  const m = meta.model ?? {}, bt = m.backtest ?? { available: false };
+  const links = [];
+  const name = code => { const n = ctx.teamNameOf(code); if (n) links.push(n); return n ? wl(n) : code; };
+  const body = [];
+  body.push(frontmatter({
+    類型: '模型驗證', 聯賽: ctx.lg.zh, 模型: m.type ?? null, 回測賽季: bt.available ? bt.season : null,
+    回測場數: bt.available ? bt.games : null, RPS: bt.available ? bt.rps : null, 基準線RPS: bt.available ? bt.baselineRps : null,
+    命中率: bt.available ? bt.hitRate : null, 產生時間: ctx.builtAt,
+  }));
+  body.push(`\n# ${ctx.lg.zh} 模型驗證\n\n## 模型\n\n`);
+  body.push(defTable([['類型', m.type], ['主場優勢(進球倍率)', m.homeAdvantage], ['低比分修正 ρ', m.rho], ['時間衰減 ξ', m.decayXi],
+    ['升班馬先驗', m.promotedPrior != null ? (typeof m.promotedPrior === 'object' ? JSON.stringify(m.promotedPrior) : m.promotedPrior) : null],
+    ['賽季模擬次數', m.simulationRuns]]) ?? '');
+  if (!bt.available) {
+    body.push('\n## 走查回測\n\n這個聯賽還沒有走查回測結果,所以站上與這裡都**不給準度數字** —— 給了就是假的。\n');
+  } else {
+    body.push(`\n## 走查回測(${bt.season},${bt.games} 場;訓練資料 ${arr(bt.trainSeasons).join('、')};跑於 ${dash(bt.ranAt)})\n\n`);
+    body.push('每一輪都只用「開賽前」的資料建模再預測,模型沒有看過那一輪的結果。\n\n| 模型 | RPS(越低越好) | LogLoss | 命中率 |\n|---|---|---|---|\n');
+    const M = bt.models ?? {};
+    for (const [k, label] of [['blend', '採用(Poisson 與 Elo 平均)'], ['poisson', 'Poisson'], ['elo', 'Elo'], ['baseline', '固定機率基準線']]) {
+      if (M[k]) body.push(`| ${label} | ${M[k].rps} | ${M[k].logLoss} | ${pct(M[k].hitRate)} |\n`);
+    }
+    if (bt.vsBaseline) body.push(`\n對基準線:RPS 改善 ${bt.vsBaseline.diff} ± ${bt.vsBaseline.se}(${bt.vsBaseline.ratio} 倍標準誤,${bt.vsBaseline.n} 場)。\n`);
+    if (bt.vsMarket) {
+      body.push(`對市場(${bt.market?.source ?? '收盤盤口'}):${bt.vsMarket.diff} ± ${bt.vsMarket.se}(${bt.vsMarket.ratio} 倍標準誤,${bt.vsMarket.n} 場)`
+        + `${bt.market?.market ? `;市場本身 RPS ${bt.market.market.rps}` : ''} —— ${bt.vsMarket.diff < 0 ? '仍輸給市場' : '沒有輸給市場'}。\n`);
+    }
+    if (bt.baselineProbs) body.push(`基準線是固定機率:主勝 ${pct(bt.baselineProbs.home)} / 和 ${pct(bt.baselineProbs.draw)} / 客勝 ${pct(bt.baselineProbs.away)}。\n`);
+    if (arr(bt.calibration).length) {
+      body.push('\n### 校準(預測機率 vs 實際發生)\n\n| 機率區間 | 場次 | 預測平均 | 實際 |\n|---|---|---|---|\n');
+      // 沒有場次的區間,預測平均與實際都是 null —— 印「—」,不印 null 也不印 0%
+      for (const c of bt.calibration) body.push(`| ${pct(c.lo)}~${pct(c.hi)} | ${c.n} | ${c.predicted == null ? '—' : pct(c.predicted)} | ${c.actual == null ? '—' : pct(c.actual)} |\n`);
+    }
+    if (arr(bt.byRound).length) {
+      body.push('\n### 逐輪\n\n| 輪 | 場 | RPS | 命中率 |\n|---|---|---|---|\n');
+      for (const r of bt.byRound) body.push(`| ${r.round} | ${r.games} | ${r.rps} | ${pct(r.hitRate)} |\n`);
+    }
+    if (arr(bt.surprises).length) {
+      body.push(`\n### 最出乎模型意料的 ${bt.surprises.length} 場\n\n| 日期 | 輪 | 對戰 | 比分 | 實際結果的賽前機率 |\n|---|---|---|---|---|\n`);
+      for (const s of bt.surprises) body.push(`| ${s.date} | ${s.round} | ${name(s.home)} vs ${name(s.away)} | ${s.fh}:${s.fa} | ${pct(s.pReal)} |\n`);
+    }
+  }
+  if (arr(m.caveats).length) body.push(`\n## 但書\n\n${m.caveats.map(c => `- ${c}`).join('\n')}\n`);
+  body.push(`\n## 資料界線\n\n- 全部數字來自 meta.json 的 model 與 backtest(build 的回測寫的),這裡只搬運,沒有重算\n`
+    + '- 站上「模型驗證」頁讀的是同一份;它另有即時勝率的校準與跨聯賽(歐冠)模型,那兩份不在這一則\n'
+    + `- 建置時間 ${ctx.builtAt}\n`);
+  return { body: body.join(''), links };
+}
+
 function renderLeague(ctx, teams, players, fixtures) {
   const links = [];
   const body = [];
@@ -1622,6 +1754,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   const simAll = arr(load(lg.key, 'sim'));
   const formationFile = load(lg.key, 'formation');
   const newsAll = arr(load(lg.key, 'news')).filter(n => n?.title);
+  const lineupsFile = load(lg.key, 'lineups');   // 預估先發(英超才有;其他聯賽是 null,整段不寫)
 
   /* 本季賽程 + 歷史賽果。results.json 與 fixtures.json 在本季是重疊的
      (results 只收已完賽),所以用 season|home|away 去重,以 fixtures 為準 ——
@@ -1743,6 +1876,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     fixtureFileById: id => fixtureById.get(String(id)) ?? null,
     simTable: simAll, tacticsAll, formation: formationFile,
     newsCount: newsAll.length,
+    lineupFor: code => (lineupsFile && typeof lineupsFile === 'object' ? lineupsFile[code] ?? null : null),
     newsRange: newsAll.length ? (d => `${d[0]} ~ ${d.at(-1)}`)(newsAll.map(n => n.date).filter(Boolean).sort()) : null,
   };
 
@@ -1752,7 +1886,14 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     players, teamFile: code => teamFileByCode.get(lg.key + ':' + code) ?? null, builtAt: meta.builtAt,
   });
   const leagueNote = renderLeague(ctx, [...clubs.values()], players, matches);
-  addNote(D + '/' + lg.zh + '.md', leagueNote.body, leagueNote.links);
+  /* 模型驗證一則(2026-09-27),聯賽首頁最後連過去 —— 站上唯一該被檢驗的東西,vault 裡也要查得到 */
+  const modelFile = sanitize(lg.zh + ' 模型驗證');
+  const mn = renderModelNote(meta, ctx);
+  addNote(D + '/' + modelFile + '.md', mn.body, mn.links);
+  const btLine = meta.model?.backtest?.available
+    ? `走查回測 RPS ${meta.model.backtest.rps}(基準線 ${meta.model.backtest.baselineRps},${meta.model.backtest.games} 場)`
+    : '這個聯賽還沒有走查回測';
+  addNote(D + '/' + lg.zh + '.md', leagueNote.body + `\n## 模型驗證\n\n${wl(modelFile)} —— ${btLine}\n`, [...leagueNote.links, modelFile]);
   if (newsAll.length) {
     const nn = renderNewsNote(newsAll, ctx);
     addNote(D + '/' + ctx.newsFile + '.md', nn.body, nn.links);
