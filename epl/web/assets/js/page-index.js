@@ -1,24 +1,19 @@
-import * as C from './core.js?v=60554fa2';
-import { mountFixtureList } from './fixture-list.js?v=5d89c59c';
+import * as C from './core.js?v=7a065aae';
+import { mountFixtureList } from './fixture-list.js?v=6df7ff61';
 import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
 
 try {
-  /* 預測積分榜移到實時戰況頁了,所以這一頁不再需要 sim.json —— 少載一份。 */
-  /* `table` 拿掉了(2026-09-03):上季戰績搬到球隊頁之後,這一頁沒有任何地方
-     用到它 —— 留著就是每次進首頁多下載一份用不到的資料集。 */
-  const { meta, teams, fixtures, news, clubs, reports, results, analysis } =
-    await C.load('meta', 'teams', 'fixtures', 'news', 'clubs', 'reports', 'results', 'analysis');
+  /* **導覽列與頁首先畫,不等資料**(2026-09-26,B3)。量過正式站:首頁冷載 8 秒才有東西,而導覽列、
+     頁首那段話、資料界線、模型說明只要 meta 就畫得出來 —— meta / clubs / teams 三份 HTML 的預載 script
+     已經在抓(stamp-assets 注入的那一段)。所以分兩段:先用這三份把整頁的框畫好、要等賽程 / 動態的
+     區塊放骨架(骨架上不寫任何數字),第二段資料到了再填那幾塊。 */
+  C.nav();
+  const { meta, clubs, teams } = await C.load('meta', 'clubs', 'teams');
   C.registerTeams(clubs);
   C.registerTeams(teams);
-  C.nav();
 
-  const played = fixtures.filter(f => f.played);
-
-  const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
-  const nextRound = upcoming[0]?.round ?? null;
-  const injuries = news.filter(n => n.cat === '傷停' || n.cat === '禁賽');
   const bt = meta.model.backtest ?? { available: false };
   /* 頁首那段話原本是「西甲 or 英超」二選一寫死在這裡(`edition === 'basic'`)。
      加第三個聯賽時它就撞上了:英冠沒有 edition → 走英超那句 → 宣稱一堆本站沒有的東西。
@@ -27,26 +22,44 @@ try {
   const intro = meta.intro
     ?? `把 ${meta.historySeasons?.join('、') ?? '過往賽季'} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`;
 
-  /* ── 賽程表(原 page-fixtures.js)── */
-  const pastSeasons = [...new Set(results.map(m => m.season))].filter(x => x !== meta.currentSeason).sort().reverse();
-  const rounds = [...new Set(fixtures.map(f => f.round))].sort((a, b) => a - b);
-  const codes = [...new Set(fixtures.flatMap(f => [f.home, f.away]))]
-    .sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
-  const nextRoundNo = fixtures.find(f => !f.played && f.date >= meta.asOf)?.round ?? rounds[0];
-
   const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;
+  const skelValue = '<span class="skel line" style="display:inline-block;width:3em;height:1em;margin:0"></span>';
+
+  /* 四格 KPI。第一段只有 meta:第一格(要賽程)與第四格的傷停那一支(要動態)先放骨架,第二段補上。 */
+  const kpisHtml = ({ played, fixtures, injuries } = {}) => `
+    ${played
+      ? kpi('本季進度', played.length ? `第 ${played.at(-1).round} 輪` : `第 ${fixtures.find(f => !f.played)?.round ?? 1} 輪`,
+        `${meta.currentSeason}・已賽 ${played.length} / ${fixtures.length} 場`)
+      : kpi('本季進度', skelValue, `${meta.currentSeason}`)}
+    ${/* 兩個聯賽現在都有走查回測,所以這裡不再分聯賽。
+          舊的兩句都已經過期:西甲那句「尚無獨立留出賽季」不成立了,
+          英超那句「執行 npm test 後產生」是寫給開發者的。 */''}
+    ${kpi('模型準度', bt.available ? bt.rps : '—',
+      bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : '這個聯賽還沒有回測結果')}
+    ${kpi('命中率', bt.available ? C.pct(bt.hitRate, 1) : '—', bt.available ? `${bt.season} ${bt.games} 場走查回測` : '尚未回測')}
+    ${/* 第四格:有傷停資料才講傷停,沒有就講資料範圍。
+          原本問的是「是不是西甲」,現在問**這個聯賽有沒有傷停來源** ——
+          英超的產物沒有 capabilities 欄位,所以 undefined 會落到傷停那一支(正確)。 */''}
+    ${meta.capabilities?.injuries === false || meta.players?.available === false
+      ? kpi('資料範圍', `${(meta.historySeasons?.length ?? 1) + 1} 季`, `${meta.lastSeason} 完整・${meta.currentSeason} 進行中`)
+      : meta.live?.demo === false && meta.live?.counts?.live > 0
+      ? kpi('進行中', `${meta.live.counts.live} 場`, `第 ${meta.live.round} 輪・點上方實時戰況`)
+      : injuries
+        ? kpi('傷停名單', injuries.length, `涵蓋 ${meta.counts.players} 名註冊球員`)
+        : kpi('傷停名單', skelValue, `涵蓋 ${meta.counts.players} 名註冊球員`)}`;
 
   /* ── 你的球隊(2026-09-14)──────────────────
      關注的那幾支收成一張卡,釘在賽程表上方。**積分榜的順序一個字都不動** ——
      那張表的順序就是名次,把關注的搬上去會讓第 14 名出現在第一列(標記在 sim-table 做,只標色)。
      一支都沒關注時整張卡不畫:空卡片比沒有卡片更讓人以為壞了(鐵則三)。 */
+  let fixturesAll = null;   // 第二段才有;卡片在那之後才畫
   function myTeamsCard() {
     const mine = followedIn(C.league());
-    if (!mine.size) return '';
+    if (!mine.size || !fixturesAll) return '';
     const rows = teams.filter(t => mine.has(t.code));
     if (!rows.length) return '';
     const nextOf = code => {
-      const un = fixtures.filter(f => !f.played && (f.home === code || f.away === code));
+      const un = fixturesAll.filter(f => !f.played && (f.home === code || f.away === code));
       if (!un.length) return null;
       // 排序用開球時間,沒有時間的排最後(上游是逐月公布的,不能拿它當篩選條件)
       const key = f => f.kickoff ?? `${f.date ?? '9999-99-99'}T99:99`;
@@ -87,29 +100,12 @@ try {
     ])}
   </div>
 
-  <div class="grid g4">
-    ${kpi('本季進度', played.length ? `第 ${played.at(-1).round} 輪` : `第 ${nextRound ?? 1} 輪`,
-      `${meta.currentSeason}・已賽 ${played.length} / ${fixtures.length} 場`)}
-    ${/* 兩個聯賽現在都有走查回測,所以這裡不再分聯賽。
-          舊的兩句都已經過期:西甲那句「尚無獨立留出賽季」不成立了,
-          英超那句「執行 npm test 後產生」是寫給開發者的。 */''}
-    ${kpi('模型準度', bt.available ? bt.rps : '—',
-      bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : '這個聯賽還沒有回測結果')}
-    ${kpi('命中率', bt.available ? C.pct(bt.hitRate, 1) : '—', bt.available ? `${bt.season} ${bt.games} 場走查回測` : '尚未回測')}
-    ${/* 第四格:有傷停資料才講傷停,沒有就講資料範圍。
-          原本問的是「是不是西甲」,現在問**這個聯賽有沒有傷停來源** ——
-          英超的產物沒有 capabilities 欄位,所以 undefined 會落到傷停那一支(正確)。 */''}
-    ${meta.capabilities?.injuries === false || meta.players?.available === false
-      ? kpi('資料範圍', `${(meta.historySeasons?.length ?? 1) + 1} 季`, `${meta.lastSeason} 完整・${meta.currentSeason} 進行中`)
-      : meta.live?.demo === false && meta.live?.counts?.live > 0
-      ? kpi('進行中', `${meta.live.counts.live} 場`, `第 ${meta.live.round} 輪・點上方實時戰況`)
-      : kpi('傷停名單', injuries.length, `涵蓋 ${meta.counts.players} 名註冊球員`)}
-  </div>
+  <div class="grid g4" id="kpis">${kpisHtml()}</div>
 
   <div class="grid g2" style="margin-top:16px">
     <div class="card">
       <h2>接下來的比賽</h2>
-      <div id="next"></div>
+      <div id="next">${'<div class="skel line"></div>'.repeat(4)}</div>
       ${/* 「往下看完整賽程與預測」那個錨點連結拿掉了(2026-09-03,使用者要求):
             完整賽程就在同一頁再往下捲一點,連結省不了多少事。
             實時戰況是**跨頁**的,那個留著 —— 以前是「西甲一律不給」,
@@ -119,31 +115,19 @@ try {
     </div>
     <div class="card">
       <h2>最新動態</h2>
-      <div id="news"></div>
+      <div id="news">${'<div class="skel line"></div>'.repeat(4)}</div>
       <div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>
     </div>
   </div>
 
-  <div id="myTeams">${myTeamsCard()}</div>
+  <div id="myTeams"></div>
 
   ${/* 賽程表原本是獨立的一頁。分成兩頁的話,讀者看完積分榜想看下一輪對誰,
         要再點一次而且整頁重載;而兩頁的頁首、時效標籤、模型說明本來就講同一件事,
         等於同一段話維護兩份。合併之後這一頁就是「這個賽季的全部」。 */''}
   <div class="section" id="allFixtures"><h2>完整賽程與預測</h2>
     <span class="hint">點任一場看單場分析・${C.tzName()}</span></div>
-  <div class="filters">
-    <label>賽季</label><select id="fSeason">
-      <option value="${meta.currentSeason}">${meta.currentSeason}(本季・預測)</option>
-      ${pastSeasons.map(x => `<option value="${x}">${x}(已完賽)</option>`).join('')}</select>
-    <label>輪次</label><select id="fRound"><option value="">全部</option>
-      ${rounds.map(r => `<option value="${r}" ${r === nextRoundNo ? 'selected' : ''}>第 ${r} 輪</option>`).join('')}</select>
-    <label>球隊</label><select id="fTeam"><option value="">全部</option>
-      ${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
-    <label>狀態</label><select id="fState">
-      <option value="">全部</option><option value="未賽">未賽</option><option value="已賽">已賽</option></select>
-    <span class="dim small" id="fxCount"></span>
-  </div>
-  <div id="fixtureList"></div>
+  <div id="fixturesBlock">${C.skel(6)}</div>
 
   ${/* 「目前資料界線」**只有一條路**(2026-09-12)。原本是兩張卡片:西甲那張整段寫死在這裡
         (連 reports.count 都在前端算),其他聯賽讀 meta.boundaries。所以同一塊內容有兩份,
@@ -179,6 +163,18 @@ try {
   </div>
   ${C.foot(meta)}`;
 
+  /* ── 第二段:賽程、動態、往季賽果與報告索引到了,填那幾塊 ────────────
+     預測積分榜移到實時戰況頁了,所以這一頁不再需要 sim.json —— 少載一份。
+     `table` 拿掉了(2026-09-03):上季戰績搬到球隊頁之後,這一頁沒有任何地方
+     用到它 —— 留著就是每次進首頁多下載一份用不到的資料集。 */
+  const { fixtures, news, results, reports, analysis } = await C.load('fixtures', 'news', 'results', 'reports', 'analysis');
+  fixturesAll = fixtures;
+
+  const played = fixtures.filter(f => f.played);
+  const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
+  const injuries = news.filter(n => n.cat === '傷停' || n.cat === '禁賽');
+  document.getElementById('kpis').innerHTML = kpisHtml({ played, fixtures, injuries });
+
   /* 近期比賽 */
   document.getElementById('next').innerHTML = upcoming.slice(0, 6).map(f => `
     <a href="${C.link('analysis', { id: f.id })}" style="color:inherit;text-decoration:none">
@@ -208,6 +204,29 @@ try {
       <div class="tiny muted" style="margin-top:2px">${C.esc(n.body).slice(0, 96)}${n.source ? `<span class="dim">・${C.esc(n.source)}</span>` : ''}</div>
     </div>`).join('')
     : '<div class="small dim">目前沒有動態。</div>';
+
+  document.getElementById('myTeams').innerHTML = myTeamsCard();
+
+  /* ── 賽程表(原 page-fixtures.js)── 篩選器要賽程與往季賽果才組得出來,所以放第二段 */
+  const pastSeasons = [...new Set(results.map(m => m.season))].filter(x => x !== meta.currentSeason).sort().reverse();
+  const rounds = [...new Set(fixtures.map(f => f.round))].sort((a, b) => a - b);
+  const codes = [...new Set(fixtures.flatMap(f => [f.home, f.away]))]
+    .sort((a, b) => C.name(a).localeCompare(C.name(b), 'zh-Hant'));
+  const nextRoundNo = fixtures.find(f => !f.played && f.date >= meta.asOf)?.round ?? rounds[0];
+  document.getElementById('fixturesBlock').innerHTML = `
+  <div class="filters">
+    <label>賽季</label><select id="fSeason">
+      <option value="${meta.currentSeason}">${meta.currentSeason}(本季・預測)</option>
+      ${pastSeasons.map(x => `<option value="${x}">${x}(已完賽)</option>`).join('')}</select>
+    <label>輪次</label><select id="fRound"><option value="">全部</option>
+      ${rounds.map(r => `<option value="${r}" ${r === nextRoundNo ? 'selected' : ''}>第 ${r} 輪</option>`).join('')}</select>
+    <label>球隊</label><select id="fTeam"><option value="">全部</option>
+      ${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
+    <label>狀態</label><select id="fState">
+      <option value="">全部</option><option value="未賽">未賽</option><option value="已賽">已賽</option></select>
+    <span class="dim small" id="fxCount"></span>
+  </div>
+  <div id="fixtureList"></div>`;
 
   C.startCountdowns();
 

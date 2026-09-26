@@ -756,6 +756,10 @@ export function stamp(label, { iso = null, kind = 'daily', note = null } = {}) {
 }
 
 // 頁面標題下的那一列時效標記
+/* 漸進式載入的骨架(2026-09-26,B3):導覽列與頁首先畫,區塊等資料到了再填。
+   只是佔位,不寫任何數字 —— 骨架上不能有看起來像答案的東西。 */
+export const skel = (lines = 3) => `<div class="card skel-card" aria-busy="true">${'<div class="skel line"></div>'.repeat(lines)}</div>`;
+
 export const stampRow = items =>
   `<div class="stamp-row">${items.filter(Boolean).join('')}</div>`;
 

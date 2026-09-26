@@ -55,6 +55,7 @@ import { coreFromUnderstat } from './player-core.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './match-archive.mjs';
 import { externalizeImages } from './image-files.mjs';
+import { overviewFrom } from './overview.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
@@ -152,9 +153,12 @@ export async function buildLeague(L) {
 
   // 圖在寫檔前落成 assets/img/h/ 的獨立檔,產物只留路徑(2026-09-26,A2 + A3;理由在 lib/image-files.mjs)
   const IMG = { webDir: join(ROOT, 'web') };
+  const written = {};   // 寫出去的產物留一份,總覽摘要從這裡抽(跟產物永遠一致)
   const write = async (name, data) => {
     const stats = {};
-    await writeFile(join(OUT, `${name}.json`), JSON.stringify(externalizeImages(data, { ...IMG, stats })));
+    const out = externalizeImages(data, { ...IMG, stats });
+    written[name] = out;
+    await writeFile(join(OUT, `${name}.json`), JSON.stringify(out));
     console.log(`  ✓ ${name}.json${stats.images ? `(圖 ${stats.images} 張外置)` : ''}`);
   };
 
@@ -1004,6 +1008,8 @@ export async function buildLeague(L) {
   await write('tactics', []);
   await write('lineups', {});
   await write('shapes', {});
+
+  await write('overview', overviewFrom(written));   // 總覽頁的摘要(2026-09-26,A4),理由在 lib/overview.mjs
 
   console.log(`\n✔ ${L.zh}:${teams.length} 隊、${fixtures.length} 場賽程、已完賽 ${curPlayed.length} 場`);
   console.log(`  第二來源涵蓋:${coverage.map(c => `${c.season} ${DIV} ${c.footballData ? "✓" : "—"}`).join("・")}`);

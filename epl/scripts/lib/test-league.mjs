@@ -449,7 +449,7 @@ export function testLeague(L) {
        這一輪 analysis.json 就是漏掉的那一份:首頁 console 印 404、#app 只剩 93 個字元。 */
     const need = ['meta', 'clubs', 'teams', 'fixtures', 'table', 'sim', 'form', 'h2h', 'results',
       'news', 'analysis', 'prob-history', 'players', 'leaders', 'coaches', 'goals', 'experts',
-      'official', 'live', 'reports', 'tactics', 'lineups', 'shapes'];
+      'official', 'live', 'reports', 'tactics', 'lineups', 'shapes', 'overview'];
     const miss = need.filter(n => !existsSync(join(ROOT, 'web', 'data', 'leagues', L.key, `${n}.json`)));
     check('前端會讀的資料集一份都不缺', miss.length === 0, miss.join('、'));
 

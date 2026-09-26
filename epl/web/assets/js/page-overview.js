@@ -1,4 +1,4 @@
-import * as C from './core.js?v=60554fa2';
+import * as C from './core.js?v=7a065aae';
 
 const app = document.getElementById('app');
 
@@ -16,11 +16,40 @@ const app = document.getElementById('app');
       (英冠 2026-09-15 起有球員層 —— 這一段照 capabilities 走,所以它自己會變。) */
 
 try {
-  const LEAGUE_SETS = ['meta', 'teams', 'fixtures', 'news', 'live'];
+  /* **導覽列與頁首先畫,不等資料**(2026-09-26,B3)。量過正式站:這一頁 6 秒時還是一行「載入資料中…」。
+     骨架先把位置站好,各聯賽的卡片一張一張隨它自己的資料到齊填上;「即將到來」那張表要六個聯賽 + 盃賽 + 歐冠
+     + 國家隊都到了才畫得出來,所以最後才整頁重畫(render)。骨架上不寫任何數字。 */
+  C.nav();
   const entries = Object.keys(C.LEAGUES);
+  app.innerHTML = `
+  <div class="page-head">
+    <h1>總覽</h1>
+    <p>本站目前有 ${entries.length} 個聯賽,加上跨聯賽的歐冠、英格蘭盃賽、國家隊與足球知識。
+       每個聯賽的模型各自訓練、各自回測,不互相借數字;做不到的那一層在下面各張卡上直說。</p>
+  </div>
+  <div class="grid g4">${['聯賽', '球隊', '已完賽', '盃賽'].map(l => kpi(l, '<span class="skel line" style="display:inline-block;width:3em;height:1em;margin:0"></span>', '載入中')).join('')}</div>
+  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・勾選存在這個瀏覽器</span></div>
+  <div id="upcoming">${C.skel(4)}</div>
+  <div class="section"><h2>各聯賽</h2><span class="hint">點分頁直接進去・只列這個聯賽真的做得出來的頁</span></div>
+  <div class="grid g2" id="leagueCards">${entries.map(lg => `<div class="card" id="lc-${lg}" aria-busy="true">
+      <div class="spread"><h2 style="margin:0;display:flex;align-items:center;gap:8px">${C.compBadge(lg, { size: 'lg' })}${C.esc(C.LEAGUES[lg].zh)}</h2>
+        <span class="pill">載入中</span></div>${'<div class="skel line"></div>'.repeat(3)}</div>`).join('')}</div>`;
+
+  /* 賽事圖先登記(1 KB),各聯賽的卡片才畫得出真圖;它是跨聯賽的一份,掛在英超目錄下。 */
+  const { data: compData } = await C.loadFrom('pl', ['competitions']).catch(() => ({ data: {} }));
+  C.registerCompetitions(compData.competitions);   // 有真圖就用真圖,沒有就退回色塊
+
+  /* 每個聯賽只載 overview.json(2026-09-26,A4):build 把這一頁要的欄位抽成一份 —— 賽程只留 id / 輪次 / 日期 /
+     開球 / 主客 / 已賽(沒有預測與盤口),名冊只留隊碼 / 隊名 / 隊徽,動態前 4 則,即時快照只留比分與分鐘。
+     之前六個聯賽各載 teams + fixtures + news + live,總覽解壓後 5.4 MB,其中 95% 這一頁用不到。
+     形狀跟以前一樣(meta / teams / fixtures / news / live),下面的程式一個字都不用改。
+     **到一個聯賽就先畫那一張卡**,不等別的聯賽。 */
   const loaded = await Promise.all(entries.map(async lg => {
-    const { data, absent } = await C.loadFrom(lg, LEAGUE_SETS);
-    return { lg, data, absent };
+    const { data, absent } = await C.loadFrom(lg, ['overview']);
+    const x = { lg, data: data.overview ?? {}, absent: data.overview ? [] : absent };
+    const slot = document.getElementById(`lc-${lg}`);
+    if (slot && x.data.meta && x.data.fixtures) slot.outerHTML = leagueCard(x);
+    return x;
   }));
   /* 某個聯賽少了必要的資料集就整張卡不畫,不要畫一張半空的 ——
      半空的卡看起來像那個聯賽壞了,而實際上多半是還沒 build。 */
@@ -28,7 +57,7 @@ try {
   const skipped = loaded.filter(x => !x.data.meta || !x.data.fixtures);
 
   // 跨聯賽的資料集掛在英超目錄下(它們本來就是跨聯賽的一份)
-  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams', 'competitions']);
+  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams']);
   /* 歐冠的勝率與國家隊各自讀,**讀不到就當沒有**:這兩份不是這一頁的主體,少一份不該讓整個總覽載入失敗
      (英超目錄的 404 在 loadFrom 裡是直接拋錯的)。 */
   const uclElo = (await C.loadFrom('pl', ['ucl-elo']).catch(() => ({ data: {} }))).data['ucl-elo'] ?? null;
@@ -39,11 +68,13 @@ try {
      旁邊第九級的球隊反而有 —— 而歐冠那幾列早就做對了(uclCrest 會先看 code)。
      核心說明在 core.js 的 cupClubs。 */
   const cupIdent = { clubs: await C.cupClubs(), crests: shared.cups?.crests ?? {} };
-  C.registerCompetitions(shared.competitions);   // 有真圖就用真圖,沒有就退回色塊
-  C.nav();
 
-  const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div>
+  /* 下面這幾支是 function 宣告不是 const 箭頭:骨架那一段在它們的原始碼位置**之前**就會叫(各聯賽的卡片
+     隨資料到齊先畫),const 會撞 TDZ,function 宣告在區塊內會提升。 */
+  function kpi(label, value, sub) {
+    return `<div class="kpi"><div class="label">${label}</div>
     <div class="value">${value}</div><div class="sub">${sub}</div></div>`;
+  }
 
   /* 盃賽的比分在 cups-live.json 那份小檔(cups.json 要等下一次部署)。
 
@@ -80,12 +111,13 @@ try {
   const totalPlayed = leagues.reduce((n, x) => n + x.data.fixtures.filter(f => f.played).length, 0);
 
   /* 這一頁的分頁清單。只列這個聯賽真的開放的頁 —— open 是 null 代表全開(英超)。 */
-  const openPages = lg => ['index', 'live', 'teams', 'tactics', 'players', 'news', 'model']
-    .filter(p => !C.closedPage(lg, p));
+  function openPages(lg) {
+    return ['index', 'live', 'teams', 'tactics', 'players', 'news', 'model'].filter(p => !C.closedPage(lg, p));
+  }
   /* 一律明講聯賽。寫成「pl 就不給」會在站在西甲時被 link() 繼承成 es1(踩過) */
-  const pageLink = (page, lg) => C.link(page, { league: lg });
+  function pageLink(page, lg) { return C.link(page, { league: lg }); }
 
-  const leagueCard = ({ lg, data }) => {
+  function leagueCard({ lg, data }) {
     const L = C.LEAGUES[lg];
     const m = data.meta;
     const played = data.fixtures.filter(f => f.played).length;
@@ -130,7 +162,7 @@ try {
         ${openPages(lg).map((p, i) => `<a class="pill ${i === 0 ? 'info' : ''}"
           href="${pageLink(p, lg)}">${C.esc(C.pageLabel(p, lg))}</a>`).join('')}
       </div></div>`;
-  };
+  }
 
   /* 即將到來(未來 7 天,全部聯賽 + 盃賽,使用者要求)。
      用「天數窗」不用固定筆數 —— 固定筆數會把一輪切一半(實時戰況頁踩過那條坑)。

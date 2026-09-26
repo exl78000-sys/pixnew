@@ -40,6 +40,7 @@ import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmat
 import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
+import { overviewFrom } from './lib/overview.mjs';
 import { recordFor } from './lib/coaches.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { percentile, round } from './lib/util.mjs';
@@ -95,9 +96,12 @@ const madridKickoff = europeanKickoff({ summer: '+02:00', winter: '+01:00' });
 
 // 圖在寫檔前落成 assets/img/h/ 的獨立檔,產物只留路徑(2026-09-26,A2 + A3;理由在 lib/image-files.mjs)
 const IMG = { webDir: join(ROOT, 'web') };
+const written = {};   // 寫出去的產物留一份,總覽摘要從這裡抽(跟產物永遠一致)
 const write = async (name, data) => {
   const stats = {};
-  await writeFile(join(OUT, `${name}.json`), JSON.stringify(externalizeImages(data, { ...IMG, stats })));
+  const out = externalizeImages(data, { ...IMG, stats });
+  written[name] = out;
+  await writeFile(join(OUT, `${name}.json`), JSON.stringify(out));
   console.log(`  ✓ ${name}.json${stats.images ? `(圖 ${stats.images} 張外置)` : ''}`);
 };
 
@@ -1570,6 +1574,7 @@ async function main() {
     matches: officialMatches,
   });
   await write('live', liveOut);
+  await write('overview', overviewFrom(written));   // 總覽頁的摘要(2026-09-26,A4),理由在 lib/overview.mjs
 
   const crestHits = teams.filter(t => t.crest).length;
   console.log(`\n✔ 西甲球隊數據第二版：${teams.length} 隊・${LAST_SEASON} ${lastMatches.filter(m => m.played).length} 場・${CURRENT_SEASON} ${curPlayed.length}/${curMatches.length} 場已完賽`);

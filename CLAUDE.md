@@ -587,6 +587,13 @@ Node 端要本體(測試、Obsidian、單檔打包)走 `lib/match-archive.mjs` �
 前端本來就是 `<img src>`;單檔版打包時 `inlineImages` 換回 data URI;Node 端要讀圖一律走 `imageBytes`(兩種都吃),
 不要自己 `split(',')[1]` 解 base64 —— 產物已經不是那個形狀。`npm run build` 最後一步 `prune-images` 清沒人引用的孤兒,
 `npm test` 守「產物裡沒有內嵌圖、每個路徑都指得到檔」。
+
+**總覽只讀每個聯賽的 `overview.json`(2026-09-26 起)。** 那是 `lib/overview.mjs` 的 `overviewFrom` 在四份 build 的最後
+從**剛寫出去的**產物抽的摘要(meta 整份、teams / fixtures / news / live 只留總覽用到的欄位),六份合計 367 KB,原本四份整載是 5 MB。
+要在總覽多畫一個欄位,先去 overview.mjs 加那個欄位,**不要回頭 loadFrom 整份 teams / fixtures**;`npm test` 守著鍵、大小與筆數。
+
+**首頁與總覽先畫框再填(B3)。** `C.nav()` 在任何 `await C.load` 之前;只要 meta 就畫得出來的區塊先畫,要賽程或動態的
+區塊放 `C.skel()` 骨架,資料到了再填。骨架只是佔位,**不寫任何數字** —— 骨架上不能有看起來像答案的東西。
 兩件事不能忘:**逐場檔必須逐次建置位元組相同**(部署一天兩次整份重寫,有時間戳就每次塞
 2,299 個新 blob),以及**檔名用場次 id、撞鍵的不寫**(英冠的升級附加賽會讓「季|主|客」不唯一,
 挑一個 id 去命名等於把某一場的報告掛到另一場的網址上)。單檔版打包**本季**的逐場檔、不打包往季的,畫面要講出來。

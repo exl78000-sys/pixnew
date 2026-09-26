@@ -2361,9 +2361,14 @@ async function checkDataGap() {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
       return /fxByPair/.test(src) && /m\.fixtureId == null\) m\.fixtureId = fx\.id/.test(src);
     })()],
-    ['總覽:載每個聯賽的 live,已開賽的場次印比數與分鐘(沒有快照才寫「等待資料」)', (() => {
+    /* 2026-09-26(A4)起總覽只載 overview.json,即時快照是它裡面的 live 鍵(lib/overview.mjs 的 slimLive);
+       這裡改守「摘要帶著比分與分鐘的欄位」+「總覽還在印比數」—— 摘要少了 hs / minute 就會靜靜退回「等待資料」。 */
+    ['總覽:每個聯賽的即時快照跟著 overview.json 來,已開賽的場次印比數與分鐘(沒有快照才寫「等待資料」)', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
-      return /LEAGUE_SETS = \[[^\]]*'live'/.test(src) && /u\.live\.hs/.test(src) && /C\.liveMinute\(m, lv\.fetchedAt\)/.test(src) && /C\.countdown\(u\.kick\)/.test(src);
+      const ov = readFileSync(join(ROOT, 'scripts', 'lib', 'overview.mjs'), 'utf8');
+      return /loadFrom\(lg, \['overview'\]\)/.test(src) && /live: slimLive\(live\)/.test(ov)
+        && ['hs', 'as', 'minute', 'clock', 'period', 'kickoff', 'started', 'finished', 'fetchedAt'].every(k => new RegExp(`\\b${k}:`).test(ov))
+        && /u\.live\.hs/.test(src) && /C\.liveMinute\(m, lv\.fetchedAt\)/.test(src) && /C\.countdown\(u\.kick\)/.test(src);
     })()],
     /* 盃賽比分的快速通道(2026-09-08)。
 
@@ -4631,6 +4636,40 @@ async function checkDataGap() {
         && /from '\.\/lib\/test-steps\.mjs'/.test(bt) && !/backtest-laliga\.mjs'/.test(bt)
         && /isGameStep/.test(all) && /--skip-game/.test(all)
         && listed.length >= 5 && new Set(listed).size === listed.length;
+    })()],
+    /* ── 總覽摘要 + 漸進式載入(2026-09-26,A4 + B3)──
+       總覽每個聯賽只載 overview.json(賽程沒有預測、名冊沒有 matchStats、即時快照沒有 advanced),
+       而且導覽列與頁首要在第一次 await 之前就畫。守:每個聯賽都有這一份、形狀是瘦的、大小合理;
+       總覽頁不再載整份 teams / fixtures;兩頁的 C.nav() 在第一個 await C.load 之前。 */
+    ['每個聯賽都有 overview.json,而且是瘦的(賽程沒有 prediction、名冊沒有 matchStats、live 沒有 advanced)', (() => {
+      const dirs = [{ key: 'pl', dir: join(ROOT, 'web', 'data') },
+        ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+          .filter(e => e.isDirectory()).map(e => ({ key: e.name, dir: join(ROOT, 'web', 'data', 'leagues', e.name) }))];
+      const bad = [];
+      for (const { key, dir } of dirs) {
+        const p = join(dir, 'overview.json');
+        if (!existsSync(p)) { bad.push(`${key}:沒有 overview.json`); continue; }
+        const raw = readFileSync(p, 'utf8');
+        const o = JSON.parse(raw);
+        for (const k of ['meta', 'teams', 'fixtures', 'news', 'live']) if (!(k in o)) bad.push(`${key}:少 ${k}`);
+        if (/"prediction"|"matchStats"|"advanced"|"sides"/.test(raw)) bad.push(`${key}:帶了整份產物才有的欄位`);
+        if (raw.length > 120 * 1024) bad.push(`${key}:${Math.round(raw.length / 1024)} KB,不像摘要`);
+        const fx = JSON.parse(readFileSync(join(dir, 'fixtures.json'), 'utf8'));
+        if ((o.fixtures ?? []).length !== fx.length) bad.push(`${key}:賽程 ${o.fixtures?.length} 場 ≠ fixtures.json ${fx.length}`);
+        const tm = JSON.parse(readFileSync(join(dir, 'teams.json'), 'utf8'));
+        if ((o.teams ?? []).length !== tm.length) bad.push(`${key}:名冊 ${o.teams?.length} 隊 ≠ teams.json ${tm.length}`);
+      }
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      return bad.length === 0;
+    })()],
+    ['總覽只載 overview.json,不再載整份 teams / fixtures / news / live;總覽與首頁的導覽列在第一個 await 之前就畫', (() => {
+      const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      const ix = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-index.js'), 'utf8');
+      const firstAwait = s => s.search(/await C\.load(From)?\(/);
+      return /loadFrom\(lg, \['overview'\]\)/.test(ov) && !/\['meta', 'teams', 'fixtures', 'news', 'live'\]/.test(ov)
+        && ov.indexOf('C.nav()') > 0 && ov.indexOf('C.nav()') < firstAwait(ov)
+        && ix.indexOf('C.nav()') > 0 && ix.indexOf('C.nav()') < firstAwait(ix)
+        && /C\.skel\(/.test(ov) && /C\.skel\(/.test(ix);
     })()],
     /* ── 預載(2026-09-26,B1)──
        每一頁的 <head> 由 stamp-assets 注入:這一頁模組圖裡每一支的 modulepreload(含現行的戳)、
