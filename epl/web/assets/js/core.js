@@ -523,6 +523,11 @@ export function shownComps(comps, picks = {}) {
     .filter(c => (typeof picks?.[c.key] === 'boolean' ? picks[c.key] : c.on !== false))
     .map(c => c.key));
 }
+
+/* 國家隊一場比賽的一邊叫什麼(國家隊頁與總覽共用 —— 各寫一份的話,改了一邊另一邊會悄悄過期)。
+   三種形狀:認得的隊印中文名(查不到就是英文 key)、還沒決定的參與者(海灣盃四強的 1A、Winner SF 1)
+   印產物給的說法、對不上身分的照印上游的名字。`teams` 是 intl.json 的 teams。 */
+export const intlSideName = (t, teams) => (t?.key ? (teams?.[t.key]?.zh ?? t.key) : t?.tbd ? t.label : t?.name ?? '待定');
 export function badge(code, size = '') {
   const t = team(code);
   // 有隊徽就用隊徽(已內嵌為 data URI);沒有才退回配色方塊

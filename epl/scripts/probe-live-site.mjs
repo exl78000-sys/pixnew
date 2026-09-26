@@ -16,7 +16,8 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**17 個請求**(meta / intl.html / intl.json / intl-teams.json / intl-flags.json /
+ * 唯讀、零快取、**21 個請求**(meta / overview.html / page-overview.js / core.js / app.css /
+ * intl.html / intl.json / intl-teams.json / intl-flags.json /
  * explore.html / game-sim.js / game/pl.json / model.html / inplay-tuning.json / prob-history.json /
  * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
  * 網址不寫死:從 runner 的 `GITHUB_REPOSITORY` 推(owner/repo → owner.github.io/repo/),
@@ -54,6 +55,23 @@ async function main() {
   if (!m) { console.log('  ✗ meta.json 不是 JSON —— 站台可能還沒部署過,後面的都不用看了'); return; }
   console.log(`  建置時間 ${m.builtAt ?? m.generatedAt ?? '(沒有這個欄位)'}・本季 ${m.currentSeason ?? '?'}`);
   console.log(`  資產戳 ${JSON.stringify(m.assets ?? null)}`);
+
+  // ── 總覽的賽事勾選(2026-09-26):站上的總覽是不是有勾選的那一份 ─────
+  /* 三個檔要一起在:頁面(勾選列與只重畫那一區)、core(規則與儲存鍵)、css(勾著 / 沒勾分得出來)。
+     字面值找不到就印 ✗ —— 站上還是上一版,不是「0 處」。sha256 讓本機逐位元組比(本機在瀏覽器裡點過的就是那一份)。 */
+  const ovPage = await get('overview.html');
+  const ovSrc = /["']((?:\.\/)?assets\/js\/page-overview\.js(?:\?v=[0-9a-f]{8})?)["']/.exec(ovPage.text)?.[1];
+  console.log(`  overview.html  HTTP ${ovPage.status}  ${ovPage.buf.length} bytes・引用 ${ovSrc ?? '✗ 找不到 page-overview.js'}`);
+  for (const [path, checks] of [
+    ['assets/js/page-overview.js', [['勾選列', /class="comp-picks"/], ['只重畫那一區', /<div id="upcoming">/], ['走 core 的判斷', /C\.shownComps\(upcomingComps, picks\)/]]],
+    ['assets/js/core.js', [['儲存鍵', /^export const UPCOMING_PICKS_KEY = 'warroom:upcoming-comps:v1';/m], ['shownComps', /^export function shownComps\(/m]]],
+    ['assets/css/app.css', [['.comp-pick', /^\.comp-pick \{/m], ['沒勾的退暗', /^\.comp-pick:not\(\.on\) \.comp-badge/m]]],
+  ]) {
+    const r = await get(path);
+    if (!r.ok) { console.log(`  ${path}  HTTP ${r.status} ← ✗ 站上抓不到`); continue; }
+    console.log(`  ${path}  HTTP ${r.status}  ${r.buf.length} bytes  sha256:${sha(r.buf)}・`
+      + checks.map(([label, re]) => `${label} ${re.test(r.text) ? '✓' : '✗'}`).join('・'));
+  }
 
   // ── 國家隊(2026-09-25):合併後第一次部署有沒有真的把那一頁供出來 ─────
   /* 部署 job 綠了只代表上傳成功;頁面、資料與它引用的 JS 三個都要在站上才算上線。
