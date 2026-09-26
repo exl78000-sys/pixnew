@@ -56,6 +56,7 @@ import { loadFotmobMatchStats, toCanonicalDetail } from './matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './match-archive.mjs';
 import { externalizeImages } from './image-files.mjs';
 import { overviewFrom } from './overview.mjs';
+import { playersListFrom } from './players-list.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
@@ -908,6 +909,7 @@ export async function buildLeague(L) {
      走「還沒 build」那條訊息,那是錯的(這個聯賽 build 過了,只是還沒有球員)。
      這是德甲那一輪的同一條教訓,`npm run sweep` 在義甲法甲上又抓到一次。 */
   await write('players-core', hasPlayers ? coreFromUnderstat(playersOut, { league: L.key }) : []);
+  await write('players-list', playersListFrom(written.players, { source: 'Understat' }));   // 球員頁列表用的摘要(2026-09-27,A6)
   /* 空產物的**形狀也要照抄既有聯賽**,不是只有欄位名。第一版自己寫了一套:
      `goals.seasons` 給了物件(既有聯賽是陣列)→ 球隊頁 `(goals?.seasons ?? []).filter`
      直接 TypeError,整頁「載入失敗」;`reports.pending` 給了陣列(既有聯賽是數字)、

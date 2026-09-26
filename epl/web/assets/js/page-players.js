@@ -63,9 +63,14 @@ function coreColumns({ statOf, nameCell, teamCol, afterId = [] }) {
 }
 
 try {
-  const { meta, clubs, teams, players, leaders } = await C.load('meta', 'clubs', 'teams', 'players', 'leaders');
+  /* 列表只讀 players-list(2026-09-27,A6):每人十幾個欄位,英超 1,280 KB → 幾百 KB。整份 players.json(雷達、追蹤、租借…)
+     只有兩條路才讀:帶 ?code= 的詳情頁,以及對比模式(雷達與對照表)—— 點到才 loadFrom,讀過會快取。
+     三個渲染器讀的欄位不變(形狀同名同層),只是列表的來源換了一份。 */
+  const { meta, clubs, teams, leaders, 'players-list': playersList } = await C.load('meta', 'clubs', 'teams', 'players-list', 'leaders');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
+  const fullPlayers = async () => (await C.loadFrom(C.league(), ['players'])).data.players;
+  const players = C.qs('code') ? await fullPlayers() : playersList;
 
   /* 英冠:沒有整季的球員資料源,球員層由**逐場**統計累加而成(見檔尾 renderAggregate)。
      分岔看 leaders.source 這個明講的欄位 —— 不要用「有沒有某個欄位」猜形狀。 */
@@ -221,12 +226,14 @@ try {
   // 不要求使用者先在 599 人清單裡重新搜尋一次。
   if (C.qs('code')) app.insertAdjacentHTML('afterbegin', `<div class="note">找不到球員代碼 ${C.esc(String(C.qs('code')))} —— 可能是別的聯賽的球員,或已不在本季名單。</div>`);
 
-  function toggleCompare(p) {
+  async function toggleCompare(p) {
     compare = compare.includes(p.code) ? compare.filter(c => c !== p.code) : [...compare, p.code].slice(-2);
     render();
     const box = document.getElementById('cmpBox');
     if (compare.length < 2) { box.innerHTML = '<div class="note info">已選 ' + compare.length + ' 人,再選一位即可對比。</div>'; return; }
-    const [a, b] = compare.map(c => byCode.get(c));
+    // 雷達與對照表要整份 players.json 的欄位(列表那一份沒有):點到才讀,讀過會快取
+    const byFull = new Map((await fullPlayers()).map(x => [x.code, x]));
+    const [a, b] = compare.map(c => byFull.get(c));
     if (a.pos !== b.pos) { box.innerHTML = `<div class="note">${a.name}(${a.posZh})與 ${b.name}(${b.posZh})位置不同,雷達軸不一樣,只列數據對照。</div>${statTable(a, b)}`; return; }
     box.innerHTML = `<div class="card"><h3>${C.esc(a.name)} vs ${C.esc(b.name)}</h3>
       ${C.radar([

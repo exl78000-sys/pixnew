@@ -60,6 +60,7 @@ import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
+import { playersListFrom } from './lib/players-list.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
@@ -1169,6 +1170,7 @@ async function main() {
   })));
   // 跨聯賽統一層(lib/player-core.mjs):聯集 + null、不帶照片,給跨聯賽搜尋用
   await write('players-core.json', coreFromFpl(players, { lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON }));
+  await write('players-list.json', playersListFrom(written.players, { source: 'fpl' }));   // 球員頁列表用的摘要(2026-09-27,A6),理由在 lib/players-list.mjs
   await write('leaders.json', leaders);
   await write('tactics.json', tactics);
   await write('formation.json', formationImpact({ tactics, table: lastTable }));

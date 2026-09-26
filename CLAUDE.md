@@ -593,6 +593,8 @@ Node 端要本體(測試、Obsidian、單檔打包)走 `lib/match-archive.mjs` �
 要在總覽多畫一個欄位,先去 overview.mjs 加那個欄位,**不要回頭 loadFrom 整份 teams / fixtures**;`npm test` 守著鍵、大小與筆數。
 跨聯賽那幾份(cups / ucl / ucl-teams / ucl-elo / intl)同一個道理:總覽只讀 `overview-shared.json`(`lib/overview-shared.mjs`,
 `build-overview-shared.mjs` 在 build 鏈的 build-intl 之後抽),要多畫一個跨聯賽的欄位先去那裡加。
+球員頁的列表也一樣(2026-09-27,A6):只讀 `players-list.json`(`lib/players-list.mjs`,三種形狀照三個渲染器),整份 `players.json`
+只在 ?code= 詳情與對比模式 `loadFrom`;要在列表多畫一欄先去 players-list.mjs 加。`players-core.json` 是跨聯賽搜尋的另一個契約,兩份不要混。
 總覽的 HTML 預載是依頁面的(`stamp-assets` 的 `preloadScriptFor`):它不依 league,預載六份 overview.json 與跨聯賽摘要,不預載 teams.json。
 
 **幾百列的長表用 `C.table` 的 `pageSize`(2026-09-27 起,球員列表掛 100):** 排序照整份排、只畫前 N 列,下方有「再顯示 / 全部顯示」;
