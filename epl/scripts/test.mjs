@@ -20,6 +20,7 @@ import { uclSeasonMatches } from './lib/ucl-elo.mjs';
 import { round } from './lib/util.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { simZoneIssues } from './lib/sim-zones.mjs';
+import { h2hIssues } from './lib/h2h-check.mjs';
 import { inPlay, remainingFraction } from './lib/inplay.mjs';
 import { loadInplayCurve, validCurve, reconcile as reconcileEvents, happened, goalTimingCurve, pairedScores, outcome0, anchorLambdas, splitLambdas, kickStep } from './lib/inplay-tuning.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
@@ -663,9 +664,12 @@ async function main() {
   console.log('\n▶ 賽季模擬的名額(降級、直升、附加賽照各聯賽的規則數)');
   const simZoneFail = checkSimZones();
 
+  console.log('\n▶ 歷來交手(六個聯賽;聯賽清單掃目錄)');
+  const h2hFail = checkH2H();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail) process.exitCode = 1;
+  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -7395,6 +7399,40 @@ function checkSimZones() {
   ok(i4 > 0 && /s\.promotionPct != null/.test(teamsSrc.slice(Math.max(0, i4 - 400), i4)),
     '球隊頁的「前四」只在沒有直升的聯賽出現(英冠換成直升與附加賽區)');
   ok(/label: '附加賽區', value: `\$\{s\.playoffPct\}`/.test(teamsSrc), '球隊頁的附加賽區讀 playoffPct');
+  return fail;
+}
+
+/* 歷來交手(2026-09-26)。英冠與德義法的 build 原本寫 `r?.matches?.length`(headToHead 沒有這個欄位),
+   h2h.json 整份是 {} —— 單場頁對每一場都印「以來沒有在這個聯賽交手過」,不拋錯。
+   六個聯賽一起守(不變量見 lib/h2h-check.mjs),**聯賽清單掃 web/data/leagues/**,不手寫。 */
+function checkH2H() {
+  let fail = 0;
+  const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
+  const base = join(ROOT, 'web', 'data');
+  const dirs = [['pl', base], ...(existsSync(join(base, 'leagues')) ? readdirSync(join(base, 'leagues')) : [])
+    .filter(d => existsSync(join(base, 'leagues', d, 'h2h.json'))).map(d => [d, join(base, 'leagues', d)])];
+  for (const [lg, dir] of dirs) {
+    const rd = n => JSON.parse(readFileSync(join(dir, `${n}.json`), 'utf8'));
+    if (!['meta', 'fixtures', 'results', 'h2h'].every(n => existsSync(join(dir, `${n}.json`)))) { console.log(`  (${lg} 還沒建置,略過)`); continue; }
+    const meta = rd('meta'), fx = rd('fixtures');
+    const { issues, pairs, expected } = h2hIssues({ h2h: rd('h2h'), results: rd('results'), fixtures: fx.fixtures ?? fx, currentSeason: meta.currentSeason });
+    ok(issues.length === 0 && (expected === 0 || pairs > 0),
+      `${lg} 歷來交手 ${pairs} 組:results.json 裡碰過面的 ${expected} 組每一場都在、勝和負加得起來`, issues.slice(0, 3).join(' / '));
+  }
+  /* 負向對照:整份空掉、少一場、鍵沒排序,核對器都要抓得到 —— 不然上面的綠燈什麼都沒守 */
+  const results = [
+    { season: '2025-26', home: 'AAA', away: 'BBB', played: true, fh: 1, fa: 0 },
+    { season: '2026-27', home: 'BBB', away: 'AAA', played: true, fh: 2, fa: 2 },
+    { season: '2026-27', home: 'AAA', away: 'BBB', played: true, fh: 0, fa: 1, stage: '附加賽' },
+  ];
+  const fixtures = [{ season: '2026-27', home: 'AAA', away: 'BBB' }, { season: '2026-27', home: 'BBB', away: 'AAA' }];
+  const list = results.slice(0, 2).map(({ season, home, away, fh, fa }) => ({ season, date: season, home, away, fh, fa }));
+  const good = { 'AAA|BBB': { games: 2, aWin: 1, draw: 1, bWin: 0, aGoals: 3, bGoals: 2, list } };
+  ok(h2hIssues({ h2h: good, results, fixtures, currentSeason: '2026-27' }).issues.length === 0, '核對器:對的那一份過得去(附加賽不算進交手)');
+  ok(h2hIssues({ h2h: {}, results, fixtures, currentSeason: '2026-27' }).issues.length > 0, '核對器抓得到整份空掉(負向對照)');
+  ok(h2hIssues({ h2h: { 'AAA|BBB': { ...good['AAA|BBB'], games: 1, draw: 0, list: list.slice(0, 1) } }, results, fixtures, currentSeason: '2026-27' }).issues.length > 0,
+    '核對器抓得到少一場(負向對照)');
+  ok(h2hIssues({ h2h: { 'BBB|AAA': good['AAA|BBB'] }, results, fixtures, currentSeason: '2026-27' }).issues.length > 0, '核對器抓得到鍵沒排序(負向對照)');
   return fail;
 }
 

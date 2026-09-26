@@ -428,7 +428,9 @@ export async function buildLeague(L) {
     for (let j = i + 1; j < curCodes.length; j++) {
       const a = curCodes[i], b = curCodes[j];
       const r = headToHead([...priorMatches, ...lastMatches, ...curPlayed], a, b);
-      if (r?.matches?.length) h2h[`${a}|${b}`] = r;
+      /* headToHead 回的是 { games, aWin, …, list } —— **沒有 matches**。原本寫 `r?.matches?.length`,
+         條件永遠不成立,h2h.json 整份是 {}:單場頁對每一場都印「以來沒有在這個聯賽交手過」(2026-09-26 修)。 */
+      if (r.games) h2h[`${a}|${b}`] = r;
     }
   }
 

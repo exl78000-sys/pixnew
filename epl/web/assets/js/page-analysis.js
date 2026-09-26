@@ -1457,7 +1457,7 @@ try {
   }
 
   function h2hHtml(f, rec) {
-    if (!rec) return `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在${C.LEAGUES[C.league()]?.zh ?? '本聯賽'}交手過(多半是剛升上來的球隊)。</div>`;
+    if (!rec) return `<div class="dim small">${meta.h2hSeasons?.[0] ?? ''} 以來沒有在${C.LEAGUES[C.league()]?.zh ?? '本聯賽'}交手過(多半是剛升上來或剛降下來的球隊)。</div>`;
     const homeIsA = [f.home, f.away].sort()[0] === f.home;
     return `<div class="row small" style="justify-content:space-between">
         <span>${C.teamLink(f.home)} <b>${homeIsA ? rec.aWin : rec.bWin}</b> 勝</span>

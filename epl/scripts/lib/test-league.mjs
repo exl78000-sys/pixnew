@@ -469,6 +469,19 @@ export function testLeague(L) {
         try { a = en2(n); b = out(n); } catch { continue; }          // 英冠沒有的就不比
         if (kind(a) !== kind(b)) { bad.push(`${n}(整份 ${kind(a)} vs ${kind(b)})`); continue; }
         if (kind(a) !== 'object') continue;
+        /* h2h 與 shapes 是**以隊碼為鍵的表**:鍵是資料不是欄位,兩個聯賽本來就不一樣。
+           比的是「每一筆長什麼樣」(各拿第一筆比欄位與容器型別),不比鍵。
+           2026-09-26 前 h2h 兩邊都是 {}(英冠與德義法的 build 條件寫錯),所以這裡從來沒有真的比過。 */
+        if (n === 'h2h' || n === 'shapes') {
+          const va = Object.values(a)[0], vb = Object.values(b)[0];
+          if (va && vb) {
+            for (const k of Object.keys(va)) {
+              if (!(k in vb)) bad.push(`${n}[*].${k} 缺`);
+              else if (kind(va[k]) !== 'null' && kind(vb[k]) !== 'null' && kind(va[k]) !== kind(vb[k])) bad.push(`${n}[*].${k}(${kind(va[k])} vs ${kind(vb[k])})`);
+            }
+          }
+          continue;
+        }
         for (const k of Object.keys(a)) {
           /* assets 是 `npm run build` 最後那一步(stamp-assets)寫的,不是各聯賽的 build ——
              照建置順序它一定會有,但單獨跑 `de1:build` 之後這裡不該紅。
