@@ -18,6 +18,7 @@
 import { readFileSync, existsSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isShootoutShot } from './lib/matchstats.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const argOf = name => {
@@ -130,6 +131,8 @@ const dataUriBuf = uri => {
   return m ? { ext: m[1] === 'jpeg' ? 'jpg' : m[1], buf: Buffer.from(m[2], 'base64') } : null;
 };
 const wl = name => `[[${name}]]`;
+/* 射門情境的中文(供應商的代碼)。聯賽的比賽筆記與盃賽/歐冠的賽後報告共用這一張,不各寫一份 */
+const SHOT_SIT_ZH = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快攻', FreeKick: '任意球', SetPiece: '定位球', ThrowInSetPiece: '界外球', IndividualPlay: '個人突破', Penalty: '十二碼' };
 
 /* ── 球員:兩個聯賽正規化成同一個形狀 ────────────────────────
    一定要走同一個 renderPlayer。各寫一份的話,兩邊的欄位取捨會慢慢分岔,
@@ -200,7 +203,12 @@ function collectPlayers(lg, meta) {
   return [...byId.values()].map(p => {
     const newest = p.seasons.slice().sort((a, b) => String(b.season).localeCompare(String(a.season)))[0];
     return {
-      id: `es1:${p.id}`, base: newest.fullName || newest.name, display: newest.name,
+      /* 西甲、德甲、義甲、法甲都走這一支(都是 Understat)。前綴原本寫死 'es1:' ——
+         德義法的球員 id 也掛著西甲的前綴(「不是英超就是西甲」那條坑);只是目前沒有人拿它查東西,所以沒炸。 */
+      id: `${lg.key}:${p.id}`, base: newest.fullName || newest.name, display: newest.name,
+      /* Understat 的球員 id **跨聯賽共用**(understat.com/player/{id}):上季在法甲、本季在德甲的人,
+         兩個聯賽的資料裡是同一個 id。同名提醒靠它分得出「同一人」與「只是同名」。 */
+      understatId: String(p.id),
       code: newest.code ?? String(p.id), tracking: newest.tracking ?? null,   // 逐場紀錄與跑動/熱區/評分(FotMob),跟英超分支一樣
       teamCode: (newest.teamCodes || [])[0] ?? null, pos: newest.pos, posZh: newest.posZh,
       squadNumber: newest.squadNumber, age: newest.age, dob: newest.dateOfBirth,
@@ -213,18 +221,26 @@ function collectPlayers(lg, meta) {
       seasons: p.seasons
         .slice().sort((a, b) => String(a.season).localeCompare(String(b.season)))
         .map(s => ({ season: s.season, kind: null, stats: s, teams: s.teams })),
-      sources: { 表現統計: 'Understat', 身分與背號: 'SportMonks' },
+      /* 來源照產物自己宣告的(`dataSources`)。原本寫死「身分與背號:SportMonks」——
+         西甲是對的,德義法**沒有**身分來源(Understat 不給背號、頭貼與出生日期),
+         於是那三個聯賽的每一則球員筆記都寫著一個它根本沒用的來源(「寫死的不是聯賽名,是資料來源」那條坑)。 */
+      sources: { 表現統計: newest.dataSources?.performance ?? 'Understat', 身分與背號: newest.dataSources?.identity ?? null },
     };
   });
 }
 
 /* ── 檔名:唯一性是被驗證出來的,不是假設的 ──────────────────
-   實測:以 fullName 當檔名,1,299 個球員裡有 15 組撞名 ——
-   13 組是跨聯賽(多半是轉會的同一人)、2 組是西甲內部的不同人。
+   以 fullName 當檔名會撞名。只有英超西甲時量到 15 組(13 組跨聯賽);六個聯賽之後是幾百組 ——
+   **數字由產生器每次算、印在 README**(`homonymStats`),不寫在這裡:這裡原本寫著「13 組」,
+   加了四個聯賽之後沒有人回來改。
 
-   跨聯賽那 13 組**不能合併**:兩份資料源在同一個名字上從來沒有同時給出
-   sportmonksId,0 組可以核對。「看起來是同一人」不是證據(鐵則五)。
-   所以兩邊各自成篇,檔名加隊碼區分,並在筆記上寫明無法核對。 */
+   撞名的**不合併**,各自成篇、檔名加隊碼區分。是不是同一人看**有沒有共用的球員 id**:
+   西甲、德甲、義甲、法甲都走 Understat,而它的球員 id 跨聯賽共用 —— 同一個 id 就是同一人
+   (上季在法甲、本季在德甲的轉會球員),不同 id 就是不同人;英超(FPL)與英冠(FotMob)
+   跟別人沒有共用 id,無法核對,「看起來是同一人」不是證據(鐵則五)。
+   (這一段原本寫「兩份資料源從來沒有同時給出 sportmonksId,0 組可以核對」——
+   那是只有英超西甲時的事;德義法接上之後有一百多組是同一個 Understat id,筆記卻還寫著無法核對。) */
+const homonymStats = { groups: 0, cross: 0, sameId: 0, diffId: 0 };
 function assignFilenames(players) {
   const byBase = new Map();
   for (const p of players) {
@@ -236,6 +252,15 @@ function assignFilenames(players) {
     for (const p of group) {
       p.file = group.length === 1 ? b : sanitize(`${b} (${p.teamCode ?? p.leagueZh})`);
       if (group.length > 1) p.homonyms = group.filter(x => x !== p);
+    }
+    if (group.length < 2) continue;
+    homonymStats.groups++;
+    if (new Set(group.map(p => p.leagueZh)).size > 1) homonymStats.cross++;
+    /* 同一個聯賽裡同一個 Understat id 已經被 collectPlayers 併成一人,所以「同 id」只會是跨聯賽的 */
+    const u = group.filter(p => p.understatId);
+    if (u.length > 1) {
+      if (new Set(u.map(p => p.understatId)).size < u.length) homonymStats.sameId++;
+      else homonymStats.diffId++;
     }
   }
   /* **隊碼不一定分得開。** 英冠球員層(2026-09-15)接上之後出現第二層撞名:
@@ -267,6 +292,8 @@ function renderPlayer(p, ctx) {
     狀態: p.statusZh, FPL身價百萬英鎊: p.price,
     租借紀錄數: p.loans?.length || null,
     表現統計來源: p.sources.表現統計, 身分來源: p.sources.身分與背號,
+    /* 跨聯賽共用的身分鍵(西甲、德義法)。同名提醒靠它判「同一人 / 不同人」,放進 frontmatter 讓讀者與測試都查得到 */
+    Understat球員id: p.understatId,
     產生時間: ctx.builtAt,
   }));
   body.push(`\n# ${p.base}\n`);
@@ -360,25 +387,35 @@ function renderPlayer(p, ctx) {
   /* 同名的處理照鐵則四寫在筆記上,不靠讀者自己發現。 */
   if (p.homonyms?.length) {
     body.push(`\n## 同名提醒\n`);
-    body.push(`\n這個名字在本站資料裡不只一筆。**兩份資料源沒有共用的球員 id 可以核對是不是同一人**,`
-      + `所以各自成篇、不合併,也不宣稱是同一人:\n`);
+    body.push(`\n這個名字在本站資料裡不只一筆,各自成篇、不合併。是不是同一人,要看兩邊有沒有**共用的球員 id**:\n`);
     for (const h of p.homonyms) {
+      /* 西甲、德義法都走 Understat,它的球員 id 跨聯賽共用:同一個 id 就是同一人、不同就是不同人。
+         英超(FPL)與英冠(FotMob)跟別人沒有共用 id —— 那一種才是「無法核對」。
+         原本這裡一律寫「沒有共用 id」,德義法接上之後就有一百多組其實查得到。 */
+      const both = p.understatId && h.understatId;
       /* 租借紀錄接得上的話,同名這件事就有證據了 ——
          「Brighton → Elche」正好把英超那一則與西甲那一則接起來。
          但這仍然是第三方的說法,不是共用 id,所以是「有紀錄支持」不是「已證實」。 */
-      const bridge = (p.loans ?? []).find(l => l.loanCode === h.teamCode || l.parentCode === h.teamCode);
+      const bridge = both ? null : (p.loans ?? []).find(l => l.loanCode === h.teamCode || l.parentCode === h.teamCode);
       body.push(`- ${wl(h.file)} —— ${h.leagueZh} / ${h.teamCode ?? '球隊未知'}`
-        + (bridge
-          ? `。**有一筆${bridge.verdict === 'confirmed' ? '經獨立來源確認' : '核對無矛盾'}的租借紀錄接得起來**`
-            + `(${bridge.season} ${bridge.parentClub} → ${bridge.loanClub}),支持是同一人 ——`
-            + ` 但那仍是第三方說法,兩邊資料源沒有共用 id,所以不合併。`
-          : '') + '\n');
+        + (both && p.understatId === h.understatId
+          ? `。**同一人**:兩邊是同一個 Understat 球員 id(${p.understatId}),而 Understat 的 id 跨聯賽共用 ——`
+            + ` 兩則是他在不同聯賽的紀錄,只是本站分成兩則筆記。`
+          : both
+            ? `。**不同人**:Understat 球員 id 不同(${p.understatId} / ${h.understatId}),只是同名。`
+            : bridge
+              ? `。**有一筆${bridge.verdict === 'confirmed' ? '經獨立來源確認' : '核對無矛盾'}的租借紀錄接得起來**`
+                + `(${bridge.season} ${bridge.parentClub} → ${bridge.loanClub}),支持是同一人 ——`
+                + ` 但那仍是第三方說法,兩邊資料源沒有共用 id,所以不合併。`
+              : '。兩邊的資料源沒有共用的球員 id,**無法核對**是不是同一人,所以不宣稱是。') + '\n');
       links.push(h.file);
     }
   }
 
   body.push(`\n## 資料界線\n`);
-  body.push(`\n- 表現統計來自 **${p.sources.表現統計}**,身分與背號來自 **${p.sources.身分與背號}**\n`);
+  body.push(p.sources.身分與背號
+    ? `\n- 表現統計來自 **${p.sources.表現統計}**,身分與背號來自 **${p.sources.身分與背號}**\n`
+    : `\n- 表現統計來自 **${p.sources.表現統計}**;身分與背號:這個聯賽**沒有來源**(不是漏了,見下一行)\n`);
   if (ctx.playerGaps.length) body.push(`- 這個聯賽拿不到:${ctx.playerGaps.join('、')}\n`);
   body.push(`- 建置時間 ${ctx.builtAt};數值全部來自本站資料集,沒有推估值\n`);
 
@@ -619,7 +656,7 @@ function renderMatch(f, ctx) {
 
     const ms = ctx.matchStatsFor(f);
     if (ms) {
-      const SIT = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快攻', FreeKick: '任意球', SetPiece: '定位球', ThrowInSetPiece: '界外球', IndividualPlay: '個人突破', Penalty: '十二碼' };
+      const SIT = SHOT_SIT_ZH;
       const v = x => (x == null ? '—' : x);
       const hs = ms.teamStats[f.home] ?? {}, as = ms.teamStats[f.away] ?? {};
       body.push(`\n## 逐場統計(FotMob)\n\n`);
@@ -916,9 +953,13 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
       : [['出賽', 'games'], ['分鐘', 'minutes'], ['進球', 'goals'], ['助攻', 'assists'],
          ['xG', 'xG'], ['xA', 'xA'], ['射門', 'shots'], ['關鍵傳球', 'keyPasses'],
          ['黃牌', 'yellow'], ['紅牌', 'red']];
+  /* Understat 那四個聯賽裡,有沒有身分來源(背號、頭貼、出生日期)看產物宣告的,不看聯賽代碼:
+     西甲有 SportMonks,德義法沒有 —— 寫成「不是英超英冠就是 ['傷停與停賽', '防守數據']」的話,
+     德義法的筆記會漏講背號與頭貼為什麼是空的。 */
+  const noIdentity = players.length > 0 && players.every(p => p.sources?.身分與背號 == null);
   const playerGaps = lg.key === 'pl' ? []
     : lg.key === 'en2' ? ['傷停與停賽', '球員 xG 模型(這裡的 xG 是逐射門加總)', '身價、年齡與頭貼']
-      : ['傷停與停賽', '防守數據'];
+      : ['傷停與停賽', '防守數據', ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)'] : [])];
 
   const ctx = {
     lg, teamNameOf, playersByTeam, fixturesByTeam, historyByTeam, statCols, playerGaps,
@@ -986,16 +1027,119 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
 }
 
 
+/* ── 盃賽與歐冠的賽後報告 ─────────────────────────────────
+   2026-09-26 加的(使用者:「盃賽跟歐冠的賽後報告也存進去」)。逐場檔是 `toCanonicalDetail` 的形狀
+   (`cup-details/{盃}/{季}/{id}.json`、`ucl-details/{季}/{id}.json`),跟聯賽比賽筆記讀的 matchstats 不一樣,
+   所以自己一支。做法跟聯賽的賽後報告一樣:**併進那一場的比賽筆記,不另開筆記** —— 它是那則筆記的內容。
+
+   界線照站上單場頁講的(page-cup-match.js、ucl-view.js 的 renderPostMatch):
+   - 盃賽的比分核對**不是獨立來源**(賽果本身就是 FotMob),產物的 scoreCheck.note 照印;歐冠跟 football-data.org 核對過
+   - xG 是逐射門加總;射門圖不完整的場次沒有 xG
+   - PK 大戰的十二碼不算射門 —— 用 lib/matchstats.mjs 的 isShootoutShot,同一條規則不寫第二份
+   - 上游這一場沒有的那幾塊(`partial`,足總盃前幾輪的低級別場次常見)講出來,不畫一張空表
+   - 上游的 detail / comments 有時候是物件 → 取 defaultText,取不到就整句不印(`[object Object]` 那條坑) */
+const loadDetail = rel => {
+  const p = join(ROOT, 'web', 'data', rel + '.json');
+  return existsSync(p) ? read(p) : null;
+};
+const EVENT_ZH = { Goal: '進球', Card: '牌', subst: '換人', Var: 'VAR' };
+const reportCount = { ucl: 0, cup: 0 };   // 併進比賽筆記的賽後報告有幾場(印在摘要與 README)
+const textOf = v => (v == null ? '' : typeof v === 'object' ? (v.defaultText ?? '') : String(v));
+function renderDetailReport(rep, { caveats = [] } = {}) {
+  const d = rep?.advanced;
+  if (!d) return '';
+  const ids = [rep.home, rep.away];
+  const nm = id => rep.names?.[id] ?? id;
+  const v = x => (x == null ? '—' : x);
+  const out = ['\n## 賽後報告(FotMob 逐場詳情)\n\n'];
+  for (const c of caveats.filter(Boolean)) out.push('> ' + c + '\n');
+  const miss = (rep.partial ?? []).map(x => x.zh).filter(Boolean);
+  if (miss.length) out.push(`> **上游這一場沒有${miss.join('與')}** —— 低級別的場次常見,所以下面沒有那幾塊;球隊統計、事件、射門與正式名單不受影響。\n`);
+
+  // 球隊統計
+  const hs = d.teamStats?.[rep.home] ?? {}, as = d.teamStats?.[rep.away] ?? {};
+  const rows = [['控球 %', 'possession'], ['射門', 'shots'], ['射正', 'shotsOn'], ['射偏', 'shotsOff'], ['被封阻', 'blockedShots'],
+    ['xG', 'xG'], ['角球', 'corners'], ['越位', 'offsides'], ['犯規', 'fouls'], ['撲救', 'saves'], ['傳球', 'passes'],
+    ['成功傳球', 'passesAccurate'], ['傳球成功率 %', 'passAccuracy']]
+    .filter(([, k]) => hs[k] != null || as[k] != null)
+    .map(([l, k]) => `| ${l} | ${v(hs[k])} | ${v(as[k])} |`);
+  if (d.possession?.h1) rows.push(`| 上半場控球 % | ${v(d.possession.h1[0])} | ${v(d.possession.h1[1])} |`, `| 下半場控球 % | ${v(d.possession.h2?.[0])} | ${v(d.possession.h2?.[1])} |`);
+  const ph = d.physical?.team;
+  if (ph?.distance?.some(x => x != null)) {
+    const km = x => (x == null ? '—' : (x / 1000).toFixed(1) + ' km');
+    rows.push(`| 跑動距離 | ${km(ph.distance[0])} | ${km(ph.distance[1])} |`);
+    if (ph.sprintDistance?.some(x => x != null)) rows.push(`| 衝刺距離 | ${v(ph.sprintDistance[0])} m | ${v(ph.sprintDistance[1])} m |`);
+    if (ph.sprints?.some(x => x != null)) rows.push(`| 衝刺次數 | ${v(ph.sprints[0])} | ${v(ph.sprints[1])} |`);
+  }
+  if (rows.length) out.push(`\n### 球隊統計\n\n| | ${nm(rep.home)} | ${nm(rep.away)} |\n|---|---|---|\n${rows.join('\n')}\n`);
+
+  // 陣型、教練、先發
+  const lines = ids.map(id => {
+    const lu = d.lineups?.[id], sd = rep.sides?.[id];
+    const shape = lu?.formation ?? sd?.shape?.label;
+    const coach = lu?.coach ?? sd?.coach;
+    const xi = (lu?.xi ?? []).map(p => `${p.shirt != null ? p.shirt + ' ' : ''}${p.name}`);
+    const subs = (d.players?.[id] ?? []).filter(p => p.substitute && p.minutes > 0).map(p => p.name);
+    if (!shape && !coach && !xi.length) return null;
+    return `- **${nm(id)}**${shape ? ` ${shape}` : ''}${coach ? `・教練 ${coach}` : ''}`
+      + (xi.length ? `\n  - 先發:${xi.join('、')}` : '') + (subs.length ? `\n  - 替補上場:${subs.join('、')}` : '');
+  }).filter(Boolean);
+  if (lines.length) out.push('\n### 正式名單\n\n' + lines.join('\n') + '\n');
+
+  // 事件
+  const ev = (d.events ?? []).map(e => {
+    const bits = [`${e.label || (e.minute != null ? e.minute + "'" : '—')}`, e.team ? nm(e.team) : null, EVENT_ZH[e.type] ?? e.type ?? '事件'];
+    let s = '- ' + bits.filter(Boolean).join(' ') + (e.player ? `:${e.player}` : '');
+    const extra = [e.assist ? `相關球員 ${e.assist}` : null,
+      e.ownGoal ? `烏龍球${e.ownGoalBy ? `,${nm(e.ownGoalBy)} 的球員踢進自家球門` : ''}` : textOf(e.detail) || null,
+      textOf(e.comments) || null].filter(Boolean);
+    return s + (extra.length ? `(${extra.join(';')})` : '');
+  });
+  out.push('\n### 事件\n\n' + (ev.length ? ev.join('\n') + '\n' : '供應商沒有回傳事件時間軸。\n'));
+
+  // 射門(PK 大戰的十二碼不算)
+  const allShots = d.shots ?? [];
+  const shots = allShots.filter(s => !isShootoutShot(s, { pens: d.pens === true }));
+  if (shots.length) {
+    const SIT = SHOT_SIT_ZH;
+    out.push(`\n### 射門(${shots.length} 次${d.shotmapComplete === false ? ',進球數跟比分對不上,清單不完整' : ''})\n\n`
+      + '| 分鐘 | 球隊 | 球員 | 情境 | xG | 結果 |\n|---|---|---|---|---|---|\n'
+      + shots.map(s => `| ${s.min}${s.extra ? '+' + s.extra : ''} | ${nm(s.team)} | ${s.player ?? ''} | ${SIT[s.situation] ?? s.situation ?? ''} `
+        + `| ${s.xg == null ? '' : s.xg.toFixed(2)} | ${s.type === 'Goal' ? '**進球**' : s.type ?? ''} |`).join('\n') + '\n');
+    if (allShots.length > shots.length) out.push(`\n> PK 大戰的 ${allShots.length - shots.length} 球不算射門、也不算進 xG。\n`);
+  }
+
+  // 逐人(有上場分鐘的;整欄都沒有值的欄位不列)
+  const COLS = [['位置', p => p.pos], ['分鐘', p => p.minutes], ['評分', p => (p.rating == null ? null : p.rating.toFixed(2))],
+    ['進球', p => p.goals?.total], ['助攻', p => p.goals?.assists], ['射門/射正', p => (p.shots?.total == null && p.shots?.on == null ? null : `${v(p.shots?.total)}/${v(p.shots?.on)}`)],
+    ['傳球/關鍵', p => (p.passes?.total == null && p.passes?.key == null ? null : `${v(p.passes?.total)}/${v(p.passes?.key)}`)],
+    ['對抗勝/總', p => (p.duels?.won == null && p.duels?.total == null ? null : `${v(p.duels?.won)}/${v(p.duels?.total)}`)],
+    ['鏟球', p => p.tackles?.total], ['抄截', p => p.tackles?.interceptions], ['撲救', p => p.goals?.saves],
+    ['黃/紅', p => (p.cards?.yellow == null && p.cards?.red == null ? null : `${v(p.cards?.yellow)}/${v(p.cards?.red)}`)]];
+  for (const id of ids) {
+    const list = (d.players?.[id] ?? []).filter(p => p.minutes != null && p.minutes > 0)
+      .sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
+    if (!list.length) continue;
+    const cols = COLS.filter(([, f]) => list.some(p => f(p) != null));
+    out.push(`\n### ${nm(id)} 逐人(${list.length} 人,依評分排)\n\n| 球員 | ${cols.map(([l]) => l).join(' | ')} |\n|---|${cols.map(() => '---').join('|')}|\n`
+      + list.map(p => `| ${p.shirt != null ? p.shirt + ' ' : ''}${p.name}${p.captain ? '(隊長)' : ''} | ${cols.map(([, f]) => v(f(p))).join(' | ')} |`).join('\n') + '\n');
+  }
+
+  const mo = (d.momentum ?? []).filter(x => Array.isArray(x) && x.length === 2);
+  if (mo.length) out.push(`\n### 動能(每分鐘,正=${nm(rep.home)})\n\n\`${mo.map(([, val]) => val).join(' ')}\`\n\n> 供應商的逐分鐘動能指標,本站只搬運不重算。\n`);
+  return out.join('');
+}
+
 /* ── 歐冠 ────────────────────────────────────────────────
    跨聯賽的一份資料,所以放在自己的資料夾,不掛在任一個聯賽底下。
 
-   **不另外開歐冠球隊筆記。** 36 隊裡本站認得的只有 8~11 支,
-   其餘只有名字。給每一隊開一則筆記的話,認得的那幾支會跟
-   英超/西甲的球隊筆記變成兩個同名檔案 —— Obsidian 的連結會指錯。
-   所以認得的連回既有筆記,不認得的就印名字,不造一則空殼。
+   **認得的球隊不另外開歐冠球隊筆記。** 認得的連回各聯賽的球隊筆記,不認得的才在 `歐冠/球隊/` 開一則
+   (見下面那段)。給認得的也開一則的話,會跟聯賽那一則變成兩個同名檔案 —— Obsidian 的連結會指錯。
 
-   **不放勝率預測。** 現有模型是用聯賽比賽調的,歐冠有跨聯賽實力比較、
-   兩回合制、延長賽、PK 大戰四件它沒見過的事。沒有回測證據就不上(鐵則二)。 */
+   **勝率照產物給(`ucl-elo.json`,2026-09-09 階段 C 起)。** 這裡原本寫「不放勝率預測」——
+   那是階段 C 之前的事;之後站上兩隊都有跨聯賽評分的未賽場次都有賽前勝率,而 vault 還在否認
+   (「只有一個」那句寫死在畫面上,第五次,這次在 vault)。所以有沒有、有幾場、驗收多少,一律從產物讀:
+   回測沒通過時 fixtures 是空的,那句否定才會印,而那時它是真的。 */
 /* 本站兩個聯賽認不得的球隊,在 vault 裡自己有一則筆記(`歐冠/球隊/`)。
    網站那邊只給隊徽不給連結 —— 因為網站沒有這些球隊的頁面可以連。
    vault 不一樣:一則筆記列出他們在歐冠踢過的每一場,是有內容的,所以連得過去。
@@ -1039,10 +1183,23 @@ const uclScoreLine = m => scoreParts(m) ?? '未賽';
 
 let uclSource = null;
 let uclExternalCount = 0;
+/* 跨聯賽評分的賽前勝率(ucl-elo.json)。只有未賽、而且兩隊都有評分的場次才在 fixtures 裡 ——
+   已完賽的場次產物本來就不帶(本站沒有保存歐冠的賽前機率快照)。 */
+let uclElo = null;
+let uclPredById = new Map();
+/* 賽後報告的索引(ucl-details.json:football-data 的比賽 id → 賽季、xG…);逐場檔另外讀 */
+let uclDetails = null;
 function buildUcl() {
   const u = load('pl', 'ucl');
   if (!u) return 0;
   uclSource = u.source;
+  uclElo = load('pl', 'ucl-elo');
+  uclPredById = new Map((uclElo?.fixtures ?? []).map(f => [f.id, f.p]));
+  uclDetails = load('pl', 'ucl-details');
+  /* 認不得的球隊的隊徽在 ucl-teams.json 的 external(FotMob;身分用 matchId 逐場對照,不比隊名)。
+     站上一直有,vault 原本只寫一句「隊徽有」卻沒放圖 —— 現在落成圖檔嵌進球隊筆記。 */
+  const uclTeams = load('pl', 'ucl-teams');
+  const extCrest = new Map((uclTeams?.external ?? []).map(e => [e.id, e.crest]));
 
   /* 先走一遍收集認不得的球隊與他們的比賽,筆記檔名要在產生比賽之前就決定好 ——
      比賽筆記裡的 [[連結]] 需要它。 */
@@ -1113,6 +1270,8 @@ function buildUcl() {
     }));
     body.push('\n# 歐冠 ' + s.label + '\n');
     if (s.message) body.push('\n> ' + s.message + '\n');
+    const dc = uclDetails?.seasons?.[s.label];
+    if (dc) body.push('\n賽後報告 ' + dc.reports + ' / ' + dc.played + ' 場(FotMob 逐場詳情,併在各場的比賽筆記裡)\n');
 
     if (s.champion?.team) {
       body.push('\n## 冠軍\n\n**' + uclTeamRef(s.champion.team, links) + '**');
@@ -1178,7 +1337,7 @@ function buildUcl() {
     if (s.singleSource) body.push('- **這一季只有一個來源**,沒得交叉核對。結構自洽的條件過了才顯示。\n');
     body.push('- 本站認得 ' + (s.teamsKnown ?? 0) + ' / ' + (s.teamsTotal ?? s.teams ?? 0)
       + ' 支球隊 —— 其餘只給名字,不掛隊徽也不給連結\n');
-    body.push('- **不做勝率預測**:現有模型沒見過跨聯賽比較、兩回合制、延長賽與 PK(鐵則二)\n');
+    body.push('- ' + uclPredLine(s) + '\n');
     body.push('- 來源:' + (s.source ?? u.source) + '・抓取於 ' + (s.retrievedAt ?? u.retrievedAt) + '\n');
     addNote(D + '/賽季/' + sf + '.md', body.join(''), links);
     count++;
@@ -1196,9 +1355,17 @@ function buildUcl() {
       場次: e.matches.length, 產生時間: u.retrievedAt,
     }));
     b.push('\n# ' + e.name + '\n');
+    /* 原本寫「那些只收目前在英超與西甲的球隊」—— 加了四個聯賽之後沒有人回來改。聯賽清單從 LEAGUES 讀 */
+    const crestUri = extCrest.get(e.id);
+    const cd = dataUriBuf(crestUri);
+    if (cd) {
+      const cf = `隊徽 ucl-${e.id}.${cd.ext}`;
+      addAsset(`_資產/隊徽/${cf}`, cd.buf);
+      b.push('\n![[' + cf + '|72]]\n');
+    }
     b.push('\n> **本站沒有這支球隊的聯賽資料。** 這一則只有歐冠範圍內的東西 ——\n'
       + '> 戰績、歐冠出賽的球員與逐場比賽。他們在自己聯賽的成績、完整名冊、\n'
-      + '> 傷停與教練本站都沒有(那些只收目前在英超與西甲的球隊)。\n');
+      + '> 傷停與教練本站都沒有(本站只收' + LEAGUES.map(l => l.zh).join('、') + '的球隊)。\n');
     if (e.runs?.length) {
       b.push('\n## 歐冠戰績\n\n');
       b.push('| 賽季 | 走到哪一輪 | 聯賽階段名次 | 勝 | 和 | 負 | 進 | 失 | 淘汰賽 | 出局於 |\n');
@@ -1263,9 +1430,15 @@ function buildUcl() {
       }
     }
     b.push('\n## 資料界線\n\n');
-    b.push(noCrest.has(e.id)
-      ? '- **連隊徽都沒有**:FotMob 三季檔案裡都沒有這一支,而本站不從別處找來源不明的圖補\n'
-      : '- 隊徽有(FotMob,人工交付並核對過);但本站仍然沒有這支球隊的聯賽資料\n');
+    /* 「隊徽有(人工交付)」是舊的說法:2026-09-22 起身分改用 FotMob matchId 逐場對照、隊徽每次部署自動補。
+       (產物的 externalNote 是寫給網站的 ——「有隊徽不等於有球隊頁,所以不給連結」在 vault 裡是反的,這裡有筆記。)
+       對照不到的才講「沒有」,
+       而且講清楚是**比對方式**找不到,不是上游沒有(Paphos 那條坑)。 */
+    b.push(cd
+      ? '- 隊徽:FotMob(球隊身分用同一場比賽的 matchId 主對主、客對客對照,不比隊名 —— `data/manual/ucl-team-ids.json`)\n'
+      : noCrest.has(e.id)
+        ? '- **沒有隊徽**:本站的對照表對不上這一支(比對方式找不到,不代表上游沒有),而本站不從別處找來源不明的圖補\n'
+        : '- **沒有隊徽**:這一次建置的產物裡沒有這一支的圖\n');
     b.push('- 來源:' + u.source + '(賽果)\n');
     /* 檔名走 uclExternalFile —— 撞到聯賽那一邊時它已經加了後綴。
        這裡自己再算一次 sanitize(e.name) 的話,連結指到 A、檔案寫成 B,
@@ -1280,19 +1453,46 @@ function buildUcl() {
     .map(e => wl(uclExternalFile.get(e.id))).join(' · ') + '\n');
 
   mocBody.push('\n## 資料界線\n\n- 來源:' + u.source + '\n');
-  mocBody.push('- **不做勝率預測** —— 見任一賽季筆記的說明\n');
+  mocBody.push('- ' + uclPredLine(u.seasons.find(x => x.current) ?? null) + '\n');
   addNote(D + '/歐冠.md', mocBody.join(''), mocLinks);
   return count + 1;
+}
+
+/* 歐冠有沒有勝率,一句話。**從產物讀,不寫死** —— 這裡原本三處寫死「不做勝率預測」,
+   階段 C(2026-09-09)之後站上有上百場賽前勝率,vault 還在否認。 */
+function uclPredLine(s) {
+  const md = uclElo?.model;
+  if (!s?.current) return '這一季已經踢完。本站沒有保存歐冠的賽前機率快照,所以已完賽的場次不放勝率';
+  if (!md) return '**沒有勝率預測**:這一次建置沒有跨聯賽評分的產物';
+  if (!md.passes) return `**沒有勝率預測**:跨聯賽評分的走查回測這一次沒有通過門檻(${md.n} 場,改善 ${md.improvement} ± ${md.se}),所以一場都不給(鐵則二)`;
+  const unrated = uclElo.coverage?.unrated ?? [];
+  return `未賽、而且兩隊都有跨聯賽評分的場次有**賽前勝率**(本季 ${uclPredById.size} 場`
+    + (unrated.length ? `;沒有評分、所以那些場次不給的球隊:${unrated.map(x => x.name).join('、')}` : '') + ')。'
+    + (uclElo.note ?? '') + `走查回測 ${md.n} 場:RPS ${md.rps}、基準線 ${md.baseline},改善 ${md.improvement} ± ${md.se}。`
+    + '兩回合制、延長賽與 PK 大戰模型沒見過;已完賽的場次不放勝率(本站沒有保存賽前的機率快照)';
 }
 
 function renderUclMatch(m, s, stageZh, tie) {
   const links = [];
   const body = [];
   const H = m.home?.name ?? '?', A = m.away?.name ?? '?';
+  /* 只有未賽的場次才可能有;產物裡已完賽的本來就沒有,這裡再擋一次是因為「賽後重算冒充賽前」是鐵則 */
+  const pred = !m.played ? uclPredById.get(m.id) ?? null : null;
+  const idx = m.played ? uclDetails?.reports?.[String(m.id)] ?? null : null;
+  const rep = idx ? loadDetail(`ucl-details/${idx.season}/${m.id}`) : null;
+  const xg = rep && idx?.xG && idx.shotmapComplete !== false ? idx.xG : null;
   body.push(frontmatter({
+    /* 淘汰賽的 matchday 是**首 / 次回合**(1 / 2),不是輪次 —— 寫成「輪次: 2」會讓十六強次回合看起來像第 2 輪
+       (CLAUDE.md「『這一輪』在淘汰賽裡不是一個數字」)。回合標記只認 1 與 2,其他不標 */
     類型: '比賽', 賽事: '歐冠', 賽季: s.label, 階段: stageZh,
-    輪次: m.matchday ?? null, 開球: m.kickoff, 主隊: H, 客隊: A,
+    輪次: stageZh === '聯賽階段' ? m.matchday ?? null : null,
+    回合: stageZh !== '聯賽階段' && (m.matchday === 1 || m.matchday === 2) ? m.matchday : null,
+    開球: m.kickoff, 主隊: H, 客隊: A,
     已完賽: m.played, 延長賽: m.aet || null,
+    主勝率: pred?.[0], 和局率: pred?.[1], 客勝率: pred?.[2],
+    /* 比賽 id 放進 frontmatter:Dataview 查得到,測試也靠它把筆記跟逐場檔對起來(檔名是隊名拼的) */
+    footballData比賽id: m.id != null ? String(m.id) : null,
+    賽後報告: rep ? true : null, 主隊xG: xg?.[0], 客隊xG: xg?.[1],
     產生時間: s.retrievedAt,
   }));
   body.push('\n# 歐冠 ' + s.label + ' ' + stageZh + ' ' + H + ' vs ' + A + '\n');
@@ -1314,8 +1514,35 @@ function renderUclMatch(m, s, stageZh, tie) {
   if (tie?.aggregate && (tie.legs?.length ?? 1) > 1) {
     body.push('\n## 兩回合總比分\n\n' + tie.aggregate[0] + ' : ' + tie.aggregate[1] + '\n');
   }
+  if (rep) {
+    reportCount.ucl++;
+    body.push(renderDetailReport(rep, { caveats: [
+      '賽後資料來自 FotMob 的逐場詳情(球隊統計、事件、正式名單、逐人評分、逐射門 xG),比分已跟 football-data.org 的賽果核對。',
+      `xG 是${uclDetails?.xgNote ?? '逐射門 xG 加總'}${rep.shotmapComplete === false ? ' —— **這一場射門圖不完整,所以沒有 xG**' : ''}。`,
+      '控球率是供應商的數字,歐冠沒有第二來源可抽核。',
+    ] }));
+  } else if (m.played) {
+    /* 索引有、逐場檔讀不到是**產物不完整**(重跑 build),跟「還沒抓到」是兩件事 —— 前者不會自己好 */
+    body.push('\n## 賽後報告\n\n這一場沒有賽後報告 —— '
+      + (idx ? '產物的索引有這一場,但逐場檔讀不到(產物不完整,要重跑 build)' : '逐場詳情還沒抓到(每次部署會補,一場一個請求)') + '。\n');
+  }
+  if (pred) {
+    const md = uclElo.model;
+    body.push('\n## 賽前勝率(跨聯賽 Elo)\n\n| 主勝 | 和 | 客勝 |\n|---|---|---|\n'
+      + '| ' + pred.map(x => (x * 100).toFixed(1) + '%').join(' | ') + ' |\n');
+    body.push('\n> ' + (uclElo.note ?? '') + '\n'
+      + `> 走查回測 ${md.n} 場:RPS ${md.rps}、基準線 ${md.baseline},改善 ${md.improvement} ± ${md.se}。`
+      + '**樣本只有兩季多**,而且能回測的都是兩隊都有評分的場次 —— 比整體偏向大聯賽的對戰。\n'
+      + '> 勝率僅供分析參考,不構成投注建議。\n');
+  }
   body.push('\n## 資料界線\n\n- 來源:' + (s.source ?? uclSource ?? 'football-data.org') + '\n');
-  body.push('- 不做勝率預測(鐵則二)\n');
+  /* 沒有勝率的理由分開講:已完賽(沒有賽前快照)、回測沒過(整批不給)、有一隊沒有評分 —— 三件事不混成一句 */
+  const rated = t => t?.id != null && uclElo?.ratings?.[String(t.id)] != null;
+  body.push('- ' + (m.played ? '已完賽:本站沒有保存歐冠的賽前機率快照,所以不放勝率'
+    : pred ? '勝率來自跨聯賽 Elo(見上);兩回合制、延長賽與 PK 大戰模型沒見過'
+      : !uclElo?.model?.passes ? '沒有勝率:跨聯賽評分的走查回測這一次沒有通過門檻,整批不給(鐵則二)'
+        : !rated(m.home) || !rated(m.away) ? '沒有勝率:至少一隊沒有跨聯賽評分(它的聯賽本站不收賽果),不拿聯賽模型硬套'
+          : '沒有勝率:這一場不在跨聯賽模型的預測清單裡') + '\n');
   return { body: body.join(''), links };
 }
 
@@ -1338,9 +1565,12 @@ function cupTeamRef(t, links) {
 const cupScoreLine = m => scoreParts(m) ?? '未賽';
 
 let cupsMerged = 0;
+/* 盃賽賽後報告的索引(cup-details.json:FotMob 的比賽 id → 盃賽、賽季、xG…;還有拒收與缺漏的理由) */
+let cupDetails = null;
 function buildCups() {
   const c = load('pl', 'cups');
   if (!c) return 0;
+  cupDetails = load('pl', 'cup-details');
   const D = '英格蘭盃賽';
   let count = 0;
   for (const cup of c.cups) {
@@ -1358,8 +1588,19 @@ function buildCups() {
       if (s.total != null) bits.push(s.played + ' / ' + s.total + ' 場');
       if (s.teamsTotal) bits.push(s.teamsTotal + ' 隊');
       if (s.rounds?.length) bits.push(s.rounds.length + ' 輪');
+      /* 賽後報告的涵蓋(產物記的):報告併在各場的比賽筆記裡,這裡講有幾場有 */
+      const cov = cupDetails?.cups?.[cup.key]?.seasons?.[s.label];
+      if (cov) bits.push('賽後報告 ' + cov.reports + ' / ' + cov.played + ' 場');
       if (bits.length) body.push(bits.join('・') + '\n');
-      if (s.champion?.name) body.push('\n冠軍:**' + s.champion.name + '**\n');
+      /* 冠軍的形狀是 { team: { name }, runnerUp, match }(FotMob 那一版);原本讀 `s.champion.name` ——
+         改接 FotMob 之後那個欄位就不存在了,於是**冠軍那一行整個不見**,不拋錯(足總盃 2025-26 的 Man City)。
+         舊的扁平形狀照樣認 */
+      const champ = s.champion?.team?.name ?? s.champion?.name;
+      if (champ) {
+        const cm = s.champion?.match;
+        body.push('\n冠軍:**' + champ + '**' + (s.champion?.runnerUp?.name ? '・亞軍 ' + s.champion.runnerUp.name : '')
+          + (cm && scoreParts(cm) ? '・決賽 ' + (cm.home?.name ?? '?') + ' ' + scoreParts(cm) + ' ' + (cm.away?.name ?? '?') : '') + '\n');
+      }
 
       /* 上游會把同一場掛在兩個階段。實測 1,573 場裡只有一組
          (足總盃 2026-27 Aylesbury United vs Flackwell Heath,
@@ -1396,7 +1637,7 @@ function buildCups() {
           const file = sanitize(cup.zh + ' ' + s.label + ' ' + date + ' '
             + (m.home?.name ?? '?').slice(0, 26) + '-' + (m.away?.name ?? '?').slice(0, 26));
           links.push(file);
-          const r = renderCupMatch(m, cup, s, rd, mergedOf.get(m));
+          const r = renderCupMatch(m, cup, s, rd, mergedOf.get(m), c.source);
           addNote(D + '/比賽/' + file + '.md', r.body, r.links);
           count++; seasonMatches++;
           body.push('- ' + date + ' ' + (m.home?.name ?? '?') + ' ' + cupScoreLine(m)
@@ -1413,7 +1654,10 @@ function buildCups() {
 
     body.push('\n## 資料界線\n\n');
     body.push('- 來源:' + c.source + '\n');
-    if (cup.missingSeasons?.length) body.push('- 拿不到的賽季:' + cup.missingSeasons.join('、') + '\n');
+    /* missingSeasons 是 { label, reason } —— 直接 join 就是「[object Object]」(不拋錯,test-vault 掃到的) */
+    if (cup.missingSeasons?.length) {
+      body.push('- 拿不到的賽季:' + cup.missingSeasons.map(x => (x?.label ?? x) + (x?.reason ? ':' + x.reason : '')).join('、') + '\n');
+    }
     body.push('- 對手的聯賽層級**逐季查**(球隊每年升降級),認不出來的就不標\n');
     body.push('- **隊名正規化只去字尾的 FC/AFC** —— 字首的 AFC 是球隊身分的一部分,\n');
     body.push('  去掉的話第九級的 AFC Liverpool 會被對成英超的 Liverpool(踩過兩次)\n');
@@ -1423,15 +1667,21 @@ function buildCups() {
   return count;
 }
 
-function renderCupMatch(m, cup, s, rd, mergedStages) {
+function renderCupMatch(m, cup, s, rd, mergedStages, source) {
   const links = [];
   const body = [];
   const H = m.home?.name ?? '?', A = m.away?.name ?? '?';
+  const idx = m.played ? cupDetails?.reports?.[String(m.id)] ?? null : null;
+  const rep = idx ? loadDetail(`cup-details/${idx.cup}/${idx.season}/${m.id}`) : null;
+  const xg = rep && idx?.xG && idx.shotmapComplete !== false ? idx.xG : null;
   body.push(frontmatter({
     類型: '比賽', 賽事: cup.zh, 賽季: s.label, 階段: rd.stage,
     回合: m.leg, 開球: m.kickoff, 主隊: H, 客隊: A, 已完賽: m.played,
     延長賽: m.aet || null, PK: m.pens ? true : null,
     主隊層級: m.home?.tier, 客隊層級: m.away?.tier,
+    /* 比賽 id 放進 frontmatter:Dataview 查得到,測試也靠它把筆記跟逐場檔對起來(檔名是隊名拼的) */
+    FotMob比賽id: m.id != null ? String(m.id) : null,
+    賽後報告: rep ? true : null, 主隊xG: xg?.[0], 客隊xG: xg?.[1],
     產生時間: s.retrievedAt ?? cup.retrievedAt,
   }));
   body.push('\n# ' + cup.zh + ' ' + s.label + ' ' + rd.stage + ' ' + H + ' vs ' + A + '\n');
@@ -1446,6 +1696,25 @@ function renderCupMatch(m, cup, s, rd, mergedStages) {
         + '> 兩邊對不起來時本站不挑一個當答案,只顯示總比分並把這件事寫出來。\n');
     }
   }
+  if (rep) {
+    reportCount.cup++;
+    const sc = cupDetails?.scoreCheck;
+    body.push(renderDetailReport(rep, { caveats: [
+      '賽後資料來自 FotMob 的逐場詳情(球隊統計、事件、正式名單、逐人評分、逐射門 xG)。',
+      `xG 是${cupDetails?.xgNote ?? '逐射門 xG 加總'}${rep.shotmapComplete === false ? ' —— **這一場射門圖不完整,所以沒有 xG**' : ''}。`,
+      sc?.independent === false ? `**比分核對不是獨立來源**:${sc.note ?? ''}` : '比分已跟獨立來源核對。',
+    ] }));
+  } else if (m.played) {
+    /* 沒有報告要講得出為什麼,分得出三種(站上 page-cup-match 同一套):供應商缺資料、本站拒收、還沒抓到。
+       「還沒抓到」會再來,「上游沒有」不會 —— 對讀者的意思完全不同 */
+    const inc = (cupDetails?.incomplete ?? []).find(x => String(x.id) === String(m.id));
+    const rej = (cupDetails?.rejected ?? []).find(x => String(x.key ?? '').endsWith(`|${m.id}`));
+    body.push('\n## 賽後報告\n\n這一場沒有賽後報告 —— '
+      + (idx ? '產物的索引有這一場,但逐場檔讀不到(產物不完整,要重跑 build)'
+        : inc ? `供應商這一場缺了必要的資料(${inc.reason || (inc.missing ?? []).join('、')})`
+          : rej ? `本站沒有收這一場的詳情:${rej.reason ?? '核對沒過'}`
+            : '這一場的逐場詳情還沒抓到(每次部署會補,一場一個請求)') + '。\n');
+  }
   body.push('\n## 資料界線\n\n');
   if (mergedStages?.length) {
     body.push('- **上游把這一場掛在兩個階段**(' + rd.stage + '、' + mergedStages.join('、') + '),\n'
@@ -1456,8 +1725,515 @@ function renderCupMatch(m, cup, s, rd, mergedStages) {
     body.push('- 認不出聯賽層級:' + unknownTier.join('、')
       + ' —— 對照表只涵蓋英格蘭前幾級,認不出來就不標,不猜\n');
   }
-  body.push('- 來源:SportMonks・不做勝率預測(盃賽要另一套模型:加時、PK、兩回合)\n');
+  /* 來源原本寫死「SportMonks」—— 盃賽 2026-09-13 起改接 FotMob(SportMonks 已退訂,舊快取只拿來核對),
+     每一則盃賽比賽筆記都印著一個早就不是它來源的名字。來源從產物讀。
+     沒有勝率的理由照站上那一句:模型是用聯賽調的,沒在國內盃賽上驗收過(對手一半是低級別球隊,本站沒有它們的賽果)。 */
+  body.push('- 來源:' + (source ?? '見賽事筆記') + '\n');
+  body.push('- 沒有勝率預測:模型是用聯賽調的,沒在國內盃賽上驗收過 —— 對手有一半是本站沒有賽果的低級別球隊,套上去就是編數字\n');
   return { body: body.join(''), links };
+}
+
+
+/* ── 國家隊 ───────────────────────────────────────────────
+   2026-09-26 加的(使用者:「目前最新資料要存進 obsidian 資料庫」)—— 國家隊那一頁 9/24 就上線了,
+   vault 一直沒有它。資料是英超目錄那三份產物:`intl.json`(賽程、賽果、分組積分榜、排名、模型的驗收)、
+   `intl-teams.json`(逐隊的評分走勢、最近幾場、跟接下來對手的交手)與 `intl-flags.json`(國旗)。
+
+   網站怎麼講,這裡就怎麼講(page-intl.js 的檔頭),四件事跟聯賽不一樣:
+   1. **兩個來源分工不重疊。** 場次來自 FotMob(八個賽事);評分與勝率只從 martj42 算。
+      每一場已完賽的核對判決照抄 ——「待核對」「獨立來源沒收」「不一致」是三件事,不混成一個問號。
+   2. **勝率只給未賽、而且模型通過驗收的場次**,連同「評分之後兩隊又踢了幾場」與中立場的推論一起寫 ——
+      推論要標成推論(鐵則四)。已完賽的場次產物本來就不帶勝率,這裡也不補。
+   3. **時間一律 UTC。** 網站依讀者的時區分天;筆記是靜態的,沒有讀者的時區可用。
+   4. **martj42 的賽事名照原文。** 網站把它翻成中文的那張表在前端(page-intl.js 的 TOUR_ZH),
+      這裡再抄一份就是兩份會分岔的複本(「修好一份、忘了另一份複本」)。FotMob 那八個賽事的中文名本來就在產物裡。
+
+   檔名:球隊用產物的中文名(CLDR;撞了守門會擋),比賽用「賽事中文名 日期 主-客」,賽事用它的中文名。 */
+const INTL_DIR = '國家隊';
+let intlCounts = null;
+function buildIntl() {
+  const I = load('pl', 'intl');
+  if (!I) return 0;
+  const T = load('pl', 'intl-teams') ?? {};
+  const FL = load('pl', 'intl-flags');
+  const asOf = I.model?.ratingsAsOf ?? null;
+  const teams = I.teams ?? {};
+  const comps = new Map((I.comps ?? []).map(c => [c.key, c]));
+  const zhOf = k => teams[k]?.zh ?? k;
+  const teamFile = new Map(Object.keys(teams).map(k => [k, sanitize(zhOf(k))]));
+  const compZh = key => comps.get(key)?.zh ?? key;
+  const compFile = key => sanitize(compZh(key));
+  const kick = x => Date.parse(x.kickoff);   // 一律 Date.parse,不比字串(時間字串的字典序那條坑)
+  const ref = (k, links) => {
+    if (k && teamFile.has(k)) { links.push(teamFile.get(k)); return wl(teamFile.get(k)); }
+    return k ? zhOf(k) : '(未知)';
+  };
+  /* 一邊叫什麼:認得的是球隊,還沒決定的(海灣盃四強的 1A)照產物的說法,對不上身分的照上游的名字 */
+  const sideName = t => (t?.key ? zhOf(t.key) : t?.tbd ? (t.label ?? t.name) : t?.name ?? '待定');
+  const sideRef = (t, links) => (t?.key ? ref(t.key, links)
+    : t?.tbd ? `${t.label ?? t.name}(對戰還沒決定)` : `${t?.name ?? '待定'}(本站對不上這一隊的身分)`);
+  const matchFile = x => sanitize(`${compZh(x.comp)} ${String(x.kickoff).slice(0, 10)} ${sideName(x.home)}-${sideName(x.away)}`);
+  const utc = iso => (iso ? String(iso).slice(0, 16).replace('T', ' ') + ' UTC' : '');
+  const pc = x => (x * 100).toFixed(1) + '%';
+  const tagsOf = x => [x.roundZh, x.groupZh].filter(Boolean).join('・');
+  const okComps = (I.comps ?? []).filter(c => c.status === 'ok').length;
+
+  /* 國旗:跟站上同一份。屬地用宗主國旗的、中華台北,產物那一層已經排掉了,這裡照單全收 */
+  const flagFile = new Map();
+  for (const [k, uri] of Object.entries(FL?.flags ?? {})) {
+    const d = dataUriBuf(uri);
+    if (!d) continue;
+    const f = `國旗 ${sanitize(k)}.${d.ext}`;
+    addAsset(`_資產/國旗/${f}`, d.buf);
+    flagFile.set(k, f);
+  }
+  /* 為什麼沒有國旗:三種原因分開講(站上 flagNote 同一套)。來源資訊在 intl.json 的 flags,國旗檔本身只有圖 */
+  const flagWhyNot = k => {
+    const excluded = (I.flags?.excluded ?? []).find(x => x.key === k);
+    if (excluded) return `刻意不給:${excluded.why}`;
+    const same = (I.flags?.sameAs ?? []).find(x => x.key === k);
+    if (same) return `國旗集裡這一面就是${same.asKey ? zhOf(same.asKey) : String(same.as).toUpperCase()}的旗 —— 掛上去會讓人以為是那一國,所以不掛`;
+    if ((I.flags?.noCode ?? []).includes(k)) return '沒有國碼(大多是非會員的區域隊)';
+    return '這一次建置的國旗檔裡沒有這一隊';
+  };
+
+  /* 已完賽的核對判決(照站上 checkBadge 的說法;三種「沒對上」是三件不同的事) */
+  const CHECK = {
+    agree: () => ['已核對', '✓ 兩個獨立來源(FotMob、martj42)的比分一致'],
+    mismatch: r => ['不一致', `⚠ 兩個來源記的比分不一樣:martj42 記 ${(r.other ?? []).join('-')}。本站不挑一個當答案,評分用的是 martj42 那一份`],
+    awarded: r => ['判決比分', `FotMob 記的是判決比分,martj42 記的是場上比分(${(r.other ?? []).join('-')})—— 記法不同,不算不一致`],
+    notYet: () => ['待核對', `martj42 目前收錄到 ${asOf},這一場它還沒收 —— 無法核對,不等於不一致`],
+    unmatched: () => ['獨立來源沒收', '兩隊都認得,但 martj42 前後一天內沒有這兩隊的對戰:它沒收這一場'],
+  };
+  const checkOf = r => (CHECK[r.check] ?? (() => ['隊名未對上', '有一隊的名字本站還對不上身分,核對不了']))(r);
+  /* 評分只從 martj42 算:它收了的(一致、判決、不一致都算收了)才進評分 —— 跟站上球隊頁「還沒進評分的賽果」同一個判準 */
+  const inRating = r => r.check === 'agree' || r.check === 'awarded' || r.check === 'mismatch';
+  const endText = r => (r.reason === 'AET' ? '(延長賽後)'
+    : r.reason === 'Pen' ? (r.pensWinner ? `(PK,${zhOf(r.pensWinner)} 勝)` : '(PK,勝方待查)') : '')
+    + (r.awarded ? '(判決比分)' : '');
+
+  /* 中立場的推論,一句話(站上 venueText 的說法)。推論要標成推論 */
+  const venueText = f => {
+    const v = f.venue;
+    if (!v) return '當成名單上的主隊在主場算(上游沒有中立場資訊)';
+    const home = zhOf(f.home?.key);
+    const why = v.basis === 'host' ? '主隊在這一屆踢過主場,是主辦國'
+      : v.basis === 'edition' ? `這一屆已收錄的 ${v.n} 場有 ${v.k} 場在中立場`
+        : v.basis === 'prior' ? '這一屆還沒有已收錄的比賽,用這一類賽事的平均'
+          : v.basis === 'team' ? (v.n ? `${home}最近 ${v.n} 場同類的主場有 ${v.k} 場在中立場,往這一類賽事的平均收縮`
+            : `${home}沒有同類的主場紀錄,用這一類賽事的平均`)
+            : `依據:${v.basis}`;
+    return `中立場的機率 ${Math.round(v.q * 100)}%(**推論**:${why});勝率照這個機率把「主隊在主場」與「中立場」兩種算法加權`;
+  };
+  /* 評分落後:martj42 還沒收的比賽不進評分,每一場講兩隊之後又踢了幾場,連同量過的代價 */
+  const lagText = f => {
+    const lags = (f.lag ?? []).map(n => n ?? 0);
+    const lag = Math.max(0, ...lags);
+    if (!lag) return null;
+    const who = [f.home, f.away].map((t, i) => (lags[i] ? `${sideName(t)} ${lags[i]} 場` : null)).filter(Boolean).join('、');
+    const lg = I.model?.lag;
+    return `**評分未含最近 ${lag} 場**:評分只算到 ${asOf}(martj42 收錄到的最後一天),之後踢的比賽還沒被核對,不拿來改評分。`
+      + `這兩隊之後又踢了:${who}。`
+      + (lg?.affected ? `量過這件事值多少:評分落後 ${lg.days} 天,受影響的場次每場 RPS 平均多 ${lg.affected.cost} ± ${lg.affected.se}`
+        + `(模型整體的改善是 ${I.model.holdout?.gain})。` : '');
+  };
+  const probShort = f => (f.prob ? `主勝 ${pc(f.prob[0])}・和 ${pc(f.prob[1])}・客勝 ${pc(f.prob[2])}` : (f.why ?? '不給勝率'));
+  const stateOf = f => (f.state === 'CANCELLED' ? (f.reason === 'Ab' ? '中止' : '取消') : f.state === 'LIVE' ? '建置時進行中' : '未賽');
+  const fixtureLine = (f, links) => {
+    const file = matchFile(f);
+    links.push(file);
+    const st = stateOf(f);
+    return `- ${utc(f.kickoff)} ${tagsOf(f) ? tagsOf(f) + ' ' : ''}${sideRef(f.home, links)} vs ${sideRef(f.away, links)}`
+      + (st === '未賽' ? '' : `(${st})`) + ` —— ${f.state === 'CANCELLED' ? (f.why ?? '比賽取消') : probShort(f)} → ${wl(file)}`;
+  };
+  const resultLine = (r, links) => {
+    const file = matchFile(r);
+    links.push(file);
+    return `- ${utc(r.kickoff)} ${tagsOf(r) ? tagsOf(r) + ' ' : ''}${sideRef(r.home, links)} **${r.final[0]} - ${r.final[1]}** `
+      + `${sideRef(r.away, links)}${endText(r)}・${checkOf(r)[0]} → ${wl(file)}`;
+  };
+
+  /* 歷來交手(從 a 的角度講)。只當資訊,不進模型 */
+  const H2H = T.h2h ?? {};
+  const h2hLines = (a, b, links) => {
+    const k = a < b ? `${a}|${b}` : `${b}|${a}`;
+    if (!(k in H2H)) return null;
+    const x = H2H[k];
+    if (!x) return [`${zhOf(a)}與${ref(b, links)}沒有交手紀錄(martj42 自 1872 年起的男子 A 級賽)。`];
+    const first = k.startsWith(`${a}|`);
+    const [w, d, l] = first ? x.w : [x.w[2], x.w[1], x.w[0]];
+    const [gf, ga] = first ? x.g : [x.g[1], x.g[0]];
+    return [
+      `${zhOf(a)}對${ref(b, links)}:交手 ${x.n} 次(自 ${String(x.since).slice(0, 4)} 年),${w} 勝 ${d} 和 ${l} 負,進失球 ${gf}:${ga}。最近 ${x.last.length} 次:`,
+      '',
+      ...[...x.last].reverse().map(m => `- ${m.d} ${zhOf(m.h)} ${m.s[0]} - ${m.s[1]} ${zhOf(m.a)}${m.n ? '(中立場)' : ''} —— ${m.t}`),
+      '',
+      '比分含延長、不含 PK(PK 決勝的算和局)。**只當資訊,不進模型** —— 評分本來就含了每一場比賽。',
+    ];
+  };
+
+  /* 分組積分榜。積分是本站用已完賽的賽果算的,上游的表只拿來取名單、官方名次與核對 */
+  const groupTable = (g, links, me = null) => {
+    const zoneAt = i => (g.legend ?? []).find(l => (l.idx ?? []).includes(i)) ?? null;
+    const lines = ['| 名次 | 國家隊 | 賽 | 勝 | 和 | 負 | 進:失 | 淨 | 分 | 區間 |', '|---|---|---|---|---|---|---|---|---|---|'];
+    g.rows.forEach((r, i) => {
+      const z = zoneAt(i);
+      const nm = r.key ? (r.key === me ? `**${zhOf(r.key)}**` : ref(r.key, links)) : `${r.name}(本站對不上身分)`;
+      const mark = r.check === 'pending' && r.up ? `(上游算 ${r.up.p} 場 ${r.up.pts} 分${r.live ? ',含正在踢的那一場' : ''})` : '';
+      lines.push(`| ${r.pos} | ${nm}${mark} | ${r.p} | ${r.w} | ${r.d} | ${r.l} | ${r.gf}:${r.ga} | ${r.gd > 0 ? '+' : ''}${r.gd} | ${r.pts} | ${z ? (z.zh ?? z.en) : ''} |`);
+    });
+    let note = '';
+    if (g.status === 'ok') {
+      if (!g.counted) note = '還沒開踢:名次是上游列的順序(抽籤的順序)。';
+    } else {
+      const diffs = g.rows.filter(r => r.check !== 'agree' && r.up)
+        .map(r => `${r.key ? zhOf(r.key) : r.name} 本站 ${r.p} 場 ${r.pts} 分、上游 ${r.up.p} 場 ${r.up.pts} 分`).join(';');
+      note = g.status === 'mismatch'
+        ? `⚠ 場數一樣,積分或進失球卻跟上游對不上:${diffs}。本站印的是自己用賽果算的。`
+        : `${(g.live ?? []).length ? `上游的積分榜已經算進正在踢的 ${g.live.length} 場,本站只算踢完的` : '上游的積分榜跟本站的賽果不是同一批(其中一邊還沒更新)'}:${diffs}。`
+          + '這一組照積分、淨勝球、進球排,同分時官方的排序規則(例如相互對戰)沒有套用。';
+    }
+    return lines.join('\n') + '\n' + (note ? `\n> ${note}\n` : '') + `\n已完賽 ${g.counted} 場。\n`;
+  };
+
+  const matchBoundary = c => '\n## 資料界線\n\n'
+    + `- 賽程與賽果:FotMob(${c?.zh ?? '—'},一個賽事一個請求${c?.retrievedAt ? ',抓取於 ' + utc(c.retrievedAt) : ''})\n`
+    + `- 評分與勝率:只從 martj42/international_results 算(收錄到 ${asOf})\n`
+    + '- 沒有即時比分、陣容、傷停與賽後報告 —— 國家隊的逐場詳情還沒接\n'
+    + `- 時間是 UTC・建置於 ${utc(I.builtAt)}\n`;
+
+  let nMatch = 0, nTeam = 0, nComp = 0;
+  const m = I.model ?? {};
+  const h = m.holdout;
+
+  // ── 比賽:未賽 ──
+  for (const f of I.fixtures ?? []) {
+    const links = [];
+    const c = comps.get(f.comp);
+    const H = sideName(f.home), A = sideName(f.away);
+    const st = stateOf(f);
+    const b = [];
+    b.push(frontmatter({
+      類型: '比賽', 分類: '國家隊', 賽事: compZh(f.comp), 輪次: f.roundZh, 分組: f.groupZh,
+      開球: f.kickoff, 主隊: H, 客隊: A, 已完賽: false, 狀態: st,
+      主勝率: f.prob?.[0], 和局率: f.prob?.[1], 客勝率: f.prob?.[2],
+      主隊Elo: f.prob ? f.elo?.[0] : null, 客隊Elo: f.prob ? f.elo?.[1] : null,
+      中立場機率: f.prob ? f.venue?.q : null,
+      產生時間: I.builtAt,
+    }));
+    b.push(`\n# ${compZh(f.comp)}${tagsOf(f) ? ' ' + tagsOf(f) : ''} ${H} vs ${A}\n`);
+    links.push(compFile(f.comp));
+    b.push(`\n${sideRef(f.home, links)} vs ${sideRef(f.away, links)} —— ${utc(f.kickoff)}・${wl(compFile(f.comp))}\n`);
+    if (f.state === 'CANCELLED') {
+      b.push(`\n> **${st}**${f.stoppedAt ? `(中止時 ${f.stoppedAt[0]}-${f.stoppedAt[1]})` : ''}。`
+        + (f.reasonLong ? `上游的說法:${f.reasonLong}。` : '') + '\n');
+    }
+    if (f.state === 'LIVE') {
+      b.push(`\n> **建置當下(${utc(I.builtAt)})這一場正在踢。** 國家隊沒有即時比分,賽果等下一次部署(每天兩次)。`
+        + '下面的勝率是賽前的。\n');
+    }
+    if (f.prob) {
+      b.push('\n## 賽前勝率\n\n| 主勝 | 和 | 客勝 |\n|---|---|---|\n| ' + f.prob.map(pc).join(' | ') + ' |\n');
+      b.push(`\n- 本站 Elo ${f.elo?.[0]} 對 ${f.elo?.[1]}(評分算到 ${asOf})\n`);
+      b.push('- ' + venueText(f) + '\n');
+      const lt = lagText(f);
+      if (lt) b.push('- ' + lt + '\n');
+      if (h) {
+        b.push(`\n> ${m.method}。參數在 ${m.tune?.from} ~ ${m.tune?.to} 挑、驗收在另一段年份(${h.from} 之後 ${h.n} 場):`
+          + `RPS ${h.model} 對基準線 ${h.baseline},改善 ${h.gain} ± ${h.se}(${h.z} 倍標準誤)。\n`
+          + '> 沒有放進模型的:先發名單、傷停、總教練、旅途與時差;友誼賽常常大量輪換,那是模型看不到的。'
+          + '勝率僅供分析參考,不構成投注建議。\n');
+      }
+    } else if (f.state !== 'CANCELLED') {
+      b.push(`\n## 賽前勝率\n\n不給:${f.why ?? '這一場沒有勝率'}。\n`);
+    }
+    if (f.home?.key && f.away?.key) {
+      const hl = h2hLines(f.home.key, f.away.key, links);
+      if (hl) b.push('\n## 歷來交手\n\n' + hl.join('\n') + '\n');
+    }
+    b.push(matchBoundary(c));
+    addNote(INTL_DIR + '/比賽/' + matchFile(f) + '.md', b.join(''), links);
+    nMatch++;
+  }
+
+  // ── 比賽:賽果 ──
+  for (const r of I.results ?? []) {
+    const links = [];
+    const c = comps.get(r.comp);
+    const H = sideName(r.home), A = sideName(r.away);
+    const [label, text] = checkOf(r);
+    const b = [];
+    b.push(frontmatter({
+      類型: '比賽', 分類: '國家隊', 賽事: compZh(r.comp), 輪次: r.roundZh, 分組: r.groupZh,
+      開球: r.kickoff, 主隊: H, 客隊: A, 已完賽: true,
+      主隊進球: r.final[0], 客隊進球: r.final[1],
+      結束方式: r.reason === 'AET' ? '延長賽後' : r.reason === 'Pen' ? 'PK' : null,
+      PK勝方: r.pensWinner ? zhOf(r.pensWinner) : null, 判決比分: r.awarded || null,
+      核對: label, 已進評分: inRating(r),
+      產生時間: I.builtAt,
+    }));
+    b.push(`\n# ${compZh(r.comp)}${tagsOf(r) ? ' ' + tagsOf(r) : ''} ${H} vs ${A}\n`);
+    links.push(compFile(r.comp));
+    b.push(`\n${sideRef(r.home, links)} vs ${sideRef(r.away, links)} —— ${utc(r.kickoff)}・${wl(compFile(r.comp))}\n`);
+    /* 印的是 FotMob 記的比分(產物的 final)。兩個來源記得不一樣的時候要講出這是哪一邊的,不然讀者會以為是定論 */
+    b.push(`\n## 比分\n\n**${H} ${r.final[0]} - ${r.final[1]} ${A}**${endText(r)}`
+      + (r.check === 'mismatch' || r.check === 'awarded' ? '(FotMob 記的比分,見下面的核對)' : '') + '\n');
+    if (r.reason === 'Pen') {
+      b.push(r.pensWinner
+        ? '\n> PK 勝方來自 martj42 的 shootouts.csv(FotMob 的賽程沒有 PK 比數)。\n'
+        : '\n> 上游只說 PK 後結束,勝方要等獨立來源收錄這一場 —— 不拿平手比分猜。\n');
+    }
+    /* 進不進評分分三種講:已經算進去、還沒(martj42 還沒收到那一天,收了就會算)、不會(它沒收這一場,或隊名對不上) */
+    b.push(`\n## 核對\n\n- ${text}\n- ${inRating(r)
+      ? `這一場已經算進評分(martj42 收錄到 ${asOf})`
+      : r.check === 'notYet'
+        ? '這一場**還沒**算進評分 —— 評分只從 martj42 算,它收了這一天之後才會算進去'
+        : '這一場**不會**算進評分 —— 評分只從 martj42 算,而它沒有這一場(或這一場的隊名本站對不上)'}\n`);
+    b.push('\n## 賽前勝率\n\n國家隊的已完賽場次產物裡不帶勝率 —— 本站沒有保存國家隊的賽前機率快照,'
+      + '也不拿賽後的評分重算一個冒充賽前的。\n');
+    b.push(matchBoundary(c));
+    addNote(INTL_DIR + '/比賽/' + matchFile(r) + '.md', b.join(''), links);
+    nMatch++;
+  }
+
+  // ── 賽事 ──
+  for (const c of I.comps ?? []) {
+    const links = [];
+    const fx = (I.fixtures ?? []).filter(f => f.comp === c.key).sort((x, y) => kick(x) - kick(y));
+    const rs = (I.results ?? []).filter(r => r.comp === c.key).sort((x, y) => kick(y) - kick(x));
+    const st = (I.standings ?? []).find(x => x.comp === c.key);
+    const b = [];
+    b.push(frontmatter({
+      類型: '賽事', 分類: '國家隊', 名稱: c.zh, 英文名: c.en, 賽季: c.season, FotMob賽事id: c.id,
+      未賽: fx.length, 賽果: rs.length, 產生時間: c.retrievedAt,
+    }));
+    b.push(`\n# ${c.zh}\n\n${[c.en, c.season].filter(Boolean).join('・')}\n`);
+    if (c.status !== 'ok') b.push(`\n> 這個賽事${c.status === 'excluded' ? '**不收**' : '**還沒抓**'}:${c.why ?? ''}\n`);
+    if (c.proof) {
+      b.push(`\n> 賽事 id 用**內容**證明過:已完賽的場次逐場對 martj42,對上 ${c.proof.matched} 場`
+        + (c.proof.proofSeason ? `(含上一季 ${c.proof.proofSeason.season})` : '')
+        + `,那邊叫 ${(c.proof.tournaments ?? []).slice(0, 2).map(t => `${t.t}×${t.n}`).join('、')}。名字靠不住(CONCACAF 也有 Nations League)。\n`);
+    }
+    if (st?.groups?.length) {
+      b.push('\n## 分組積分榜\n');
+      for (const g of st.groups) b.push(`\n### ${g.zh ?? g.name}\n\n` + groupTable(g, links));
+      b.push('\n> 積分由本站用已完賽的賽果算,再逐隊跟上游的表核對;晉級區間是上游(FotMob)的圖例,本站照譯。'
+        + '上游會把正在踢的比賽算進積分榜,本站只算踢完的 —— 比賽進行中那幾組會跟上游差一場。\n');
+    }
+    if (fx.length) b.push(`\n## 接下來的比賽(${fx.length} 場)\n\n` + fx.map(f => fixtureLine(f, links)).join('\n') + '\n');
+    if (rs.length) {
+      const n = k => rs.filter(r => r.check === k).length;
+      b.push(`\n## 賽果(${rs.length} 場)\n\n` + rs.map(r => resultLine(r, links)).join('\n') + '\n');
+      b.push(`\n> 核對:兩個來源一致 ${n('agree')}・待核對 ${n('notYet')}・獨立來源沒收 ${n('unmatched')}・不一致 ${n('mismatch')}`
+        + (n('awarded') ? `・判決比分 ${n('awarded')}` : '') + '。「待核對」是獨立來源還沒收到那一天,不等於不一致。\n');
+    }
+    b.push('\n## 資料界線\n\n'
+      + `- 賽程與賽果:FotMob(賽事 id ${c.id}${c.retrievedAt ? ',抓取於 ' + utc(c.retrievedAt) : ''})\n`
+      + `- 勝率只從 martj42 的歷史賽果算(收錄到 ${asOf});見 ${wl(INTL_DIR)}\n`
+      + '- 沒有即時比分:賽程與賽果跟著每天兩次的部署更新\n'
+      + '- 時間是 UTC\n');
+    links.push(INTL_DIR);
+    addNote(INTL_DIR + '/賽事/' + compFile(c.key) + '.md', b.join(''), links);
+    nComp++;
+  }
+
+  // ── 球隊 ──
+  const outc = s => (s[0] > s[1] ? 'W' : s[0] === s[1] ? 'D' : 'L');
+  const OUT = { W: '勝', D: '和', L: '負' };
+  const VENUE = { H: '主', A: '客', N: '中立' };
+  const DAY = 86400000;
+  for (const [k, info] of Object.entries(teams)) {
+    const links = [];
+    const X = T.teams?.[k] ?? {};
+    const zh = zhOf(k);
+    const nm = (I.nonMembers ?? []).find(x => x.key === k);
+    const standing = info.rank ? `排名第 ${info.rank} / ${(I.ranking ?? []).length} 隊`
+      : nm ? (nm.linked ? '不是國際足總會員,不列排名(主要跟會員交手,評分可以比)'
+        : '不是國際足總會員,不列排名(兩年內只跟非會員踢,評分跟會員比不起來)')
+        : '不列排名(兩年內沒踢,或場數不到門檻)';
+    const b = [];
+    b.push(frontmatter({
+      類型: '球隊', 分類: '國家隊', 名稱: zh, 英文名: k, Elo: info.rating, 排名: info.rank,
+      國際足總會員: info.member, 場數: info.games, 最近一場: info.last, 評分算到: asOf,
+      產生時間: I.builtAt,
+    }));
+    b.push(`\n# ${zh}\n`);
+    if (flagFile.has(k)) b.push(`\n![[${flagFile.get(k)}|48]]\n`);
+    b.push(`\n${zh !== k ? k + '・' : ''}${info.rating != null ? `本站 Elo ${info.rating}(${standing})` : standing}`
+      + `・累積 ${info.games} 場・最近一場 ${info.last}。\n`
+      + `評分只從 martj42 的歷史賽果算,算到 ${asOf} —— **不是 FIFA 排名**。\n`);
+
+    const recent = X.recent ?? [];
+    const last10 = recent.slice(-10);
+    if (last10.length) {
+      const cnt = o => last10.filter(r => outc(r.s) === o).length;
+      b.push(`\n**最近 ${last10.length} 場**:${cnt('W')} 勝 ${cnt('D')} 和 ${cnt('L')} 負(martj42 收錄、已算進評分的最近 ${last10.length} 場)\n`);
+    }
+    /* 過去一年的評分:**評分截止日**往前推一年那一刻的評分,對現在(站上球隊頁同一個定義 ——
+       拿「這一隊最後一場」往前推的話,很久沒踢的隊會拿好幾年前的點冒充「一年來」) */
+    const tr = X.trend ?? [];
+    const yearAgo = asOf ? new Date(Date.parse(`${asOf}T00:00:00Z`) - 365 * DAY).toISOString().slice(0, 10) : null;
+    const basePt = yearAgo ? [...tr].reverse().find(p => p[0] <= yearAgo) : null;
+    if (basePt && info.rating != null) {
+      const yoy = info.rating - basePt[1];
+      b.push(`\n**過去一年的評分**:${yoy > 0 ? '+' : ''}${yoy}(${yearAgo} 是 ${basePt[1]} → ${asOf} 是 ${info.rating}・`
+        + `這一年踢了 ${tr.filter(p => p[0] > yearAgo).length} 場)\n`);
+    }
+
+    const mine = x => x.home?.key === k || x.away?.key === k;
+    const upcoming = (I.fixtures ?? []).filter(mine).sort((x, y) => kick(x) - kick(y));
+    b.push('\n## 接下來的比賽\n\n' + (upcoming.length
+      ? upcoming.map(f => fixtureLine(f, links)).join('\n') + '\n'
+      : `建置當下,本站抓的 ${okComps} 個賽事裡這一隊沒有排定的比賽。\n`));
+
+    const groups = (I.standings ?? []).flatMap(st => st.groups.filter(g => g.rows.some(r => r.key === k))
+      .map(g => ({ g, comp: st.comp })));
+    if (groups.length) {
+      b.push('\n## 分組積分榜\n');
+      for (const { g, comp } of groups) {
+        links.push(compFile(comp));
+        b.push(`\n### ${wl(compFile(comp))}・${g.zh ?? g.name}\n\n` + groupTable(g, links, k));
+      }
+    }
+
+    const res = (I.results ?? []).filter(mine).sort((x, y) => kick(y) - kick(x));
+    if (res.length) {
+      const pend = res.filter(r => !inRating(r)).length;
+      b.push(`\n## 這一窗的賽果(本站抓的賽事,${res.length} 場)\n\n` + res.map(r => resultLine(r, links)).join('\n') + '\n');
+      if (pend) b.push(`\n> 其中 ${pend} 場**還沒進評分**:獨立來源(martj42)還沒收或沒收,所以沒有改到上面的評分。\n`);
+    }
+
+    const opps = [...new Set(upcoming.filter(f => f.state !== 'CANCELLED')
+      .map(f => (f.home?.key === k ? f.away?.key : f.home?.key)).filter(Boolean))];
+    const h2h = opps.map(o => h2hLines(k, o, links)).filter(Boolean);
+    if (h2h.length) b.push('\n## 歷來交手(跟接下來的對手)\n\n' + h2h.map(x => x.join('\n')).join('\n\n') + '\n');
+
+    if (tr.length > 1) {
+      const byYear = new Map();
+      for (const [d, r] of tr) {
+        const y = d.slice(0, 4);
+        byYear.set(y, { last: r, n: (byYear.get(y)?.n ?? 0) + 1 });
+      }
+      b.push(`\n## 評分走勢(${String(T.trendFrom ?? tr[0][0]).slice(0, 4)} 年起)\n\n`
+        + `${tr.length} 場・${tr[0][0]} 是 ${tr[0][1]} → 目前 ${tr.at(-1)[1]}(${tr.at(-1)[1] - tr[0][1] >= 0 ? '+' : ''}${tr.at(-1)[1] - tr[0][1]})\n\n`
+        + '| 年 | 那一年最後一場之後的評分 | 那一年的場數 |\n|---|---|---|\n'
+        + [...byYear].map(([y, v]) => `| ${y} | ${v.last} | ${v.n} |`).join('\n') + '\n');
+    }
+
+    if (recent.length) {
+      b.push(`\n## 最近的比賽(評分已經算進去的最近 ${recent.length} 場)\n\n`
+        + '| 日期 | 對手 | 場地 | 比分 | 賽事(martj42 原文) | 評分變化 | 賽後評分 |\n|---|---|---|---|---|---|---|\n'
+        + [...recent].reverse().map(r => `| ${r.d} | ${ref(r.o, links)} | ${VENUE[r.v] ?? r.v} | ${r.s[0]} - ${r.s[1]} ${OUT[outc(r.s)]} `
+          + `| ${r.t} | ${r.dr > 0 ? '+' : ''}${Number(r.dr).toFixed(1)} | ${r.r} |`).join('\n') + '\n'
+        + '\n> 評分變化就是這一場讓 Elo 動了多少。比分含延長、不含 PK。\n');
+    }
+
+    b.push('\n## 資料界線\n\n'
+      + `- 評分、走勢、最近的比賽與交手紀錄:martj42/international_results(收錄到 ${asOf})\n`
+      + '- 賽程與這一窗的賽果:FotMob\n'
+      + (flagFile.has(k)
+        ? `- 國旗:${I.flags?.source?.name ?? '開源國旗集'}(${I.flags?.source?.license ?? ''} 授權,本站縮成 ${(FL?.size ?? I.flags?.size ?? []).join('×')})\n`
+        : `- 沒有國旗:${flagWhyNot(k)}\n`)
+      + '- 沒有陣容、傷停、總教練與賽後報告\n'
+      + `- 時間是 UTC・建置於 ${utc(I.builtAt)}\n`);
+    links.push(INTL_DIR);
+    addNote(INTL_DIR + '/球隊/' + teamFile.get(k) + '.md', b.join(''), links);
+    nTeam++;
+  }
+
+  // ── 國家隊首頁(MOC)──
+  const links = [];
+  const b = [];
+  b.push(frontmatter({ 類型: '賽事', 分類: '國家隊', 名稱: '國家隊', 評分算到: asOf, 產生時間: I.builtAt }));
+  b.push('\n# 國家隊\n\n男子 A 級國家隊。**兩個來源,分工不重疊**:\n\n');
+  for (const s of I.sources ?? []) {
+    b.push(`- **[${s.name}](${s.url})** —— ${s.role}`
+      + (s.rows ? `(${s.rows.toLocaleString('en-US')} 場,收錄到 ${s.lastDate})` : '') + '\n');
+  }
+  b.push('\n## 賽事\n\n');
+  for (const c of I.comps ?? []) {
+    const nf = (I.fixtures ?? []).filter(f => f.comp === c.key).length;
+    const nr = (I.results ?? []).filter(r => r.comp === c.key).length;
+    links.push(compFile(c.key));
+    b.push(`- ${wl(compFile(c.key))} —— 未賽 ${nf}・賽果 ${nr}\n`);
+  }
+  const rk = I.ranking ?? [];
+  if (rk.length) {
+    b.push(`\n## 本站 Elo 排名(${rk.length} 隊)\n\n`
+      + `> **不是 FIFA 排名。** 只列國際足總會員(用「踢過世界盃或它的資格賽」認)、兩年內踢過比賽、而且累積 ${m.minGames} 場以上的隊 —— `
+      + '評分從 1872 年的第一場算起,解散或很久沒踢的隊評分凍在當年,列進來會變成歷史榜。'
+      + `分數本身沒有單位:兩隊差 100 分,代表中立場上強的那一邊的預期得分是 ${Math.round(100 / (1 + 10 ** (-100 / 400)))}%(贏算 1、和算 0.5)。\n\n`
+      + '| 名次 | 國家隊 | Elo | 場數 | 最近一場 |\n|---|---|---|---|---|\n'
+      + rk.map(r => `| ${r.rank} | ${ref(r.key, links)} | ${r.rating} | ${r.games} | ${r.last} |`).join('\n') + '\n');
+  }
+  const nmList = I.nonMembers ?? [];
+  if (nmList.length) {
+    const linked = nmList.filter(x => x.linked), alone = nmList.filter(x => !x.linked);
+    b.push(`\n### 有評分、但不是會員的 ${nmList.length} 隊(不列排名)\n\n`);
+    if (linked.length) b.push(`- **主要跟會員交手**(評分可以比,它們的比賽照常給勝率):${linked.map(x => ref(x.key, links)).join('、')}\n`);
+    if (alone.length) b.push(`- **兩年內只跟非會員踢**(評分是在那個小圈子裡累積的,跟會員比不起來):${alone.map(x => ref(x.key, links)).join('、')}\n`);
+  }
+  if (h) {
+    b.push('\n## 勝率怎麼來的\n\n'
+      + `${m.method}。主場分、K 的整體倍率與和局曲線在 **${m.tune?.from} ~ ${m.tune?.to}** 的 ${m.tune?.n} 場上挑(試了 ${m.tune?.tried} 組),`
+      + `驗收在**另一段年份**(${h.from} 之後)上做,參數固定、同一天的比賽互相看不到結果。\n\n`
+      + '| | 場數 | RPS(越低越好) | 基準線 | 改善 |\n|---|---|---|---|---|\n'
+      + `| 全部 | ${h.n} | ${h.model} | ${h.baseline} | ${h.gain} ± ${h.se}(${h.z} 倍標準誤) |\n`
+      + (h.competitive ? `| 非友誼賽 | ${h.competitive.n} | ${h.competitive.model} | ${h.competitive.baseline} | ${h.competitive.gain} ± ${h.competitive.se} |\n` : '')
+      + (h.friendly ? `| 友誼賽 | ${h.friendly.n} | ${h.friendly.model} | ${h.friendly.baseline} | ${h.friendly.gain} ± ${h.friendly.se} |\n` : '')
+      + `\n基準線是驗收那一批**自己的**主勝/和局/客勝比例(中立場與否分開算)—— 它偷看了答案,對基準線有利。`
+      + `上線門檻:${m.gate}。這一次:${m.passed ? '**通過**,所以未賽的場次給勝率' : '**沒通過**,所以一場都不給勝率'}。\n`);
+    if (m.calibration?.length) {
+      b.push('\n### 校準:說 60% 的,實際是不是 60%\n\n| 預測區間 | 場次點數 | 平均預測 | 實際發生 |\n|---|---|---|---|\n'
+        + m.calibration.map(x => `| ${x.bin * 10}~${x.bin * 10 + 10}% | ${x.n} | ${pc(x.predicted)} | ${pc(x.actual)} |`).join('\n')
+        + '\n\n> 驗收那一批的每一場貢獻三個點(主勝、和局、客勝)。\n');
+    }
+    const v = m.venue, vh = v?.holdout;
+    if (vh) {
+      b.push(`\n### 中立場是推的\n\n上游的賽程沒有中立場這個欄位。所以用**開賽前 ${v.lag} 天以前**的歷史賽果推一個「是中立場」的機率:`
+        + '決賽圈與區域盃這類主辦型賽事,看同一屆已踢的比賽是不是多半在中立場、主隊是不是主辦國;'
+        + `主客場型賽事與友誼賽,看主隊最近 ${v.N} 場同類的主場有幾場在中立場,再往這一類賽事的平均收縮。`
+        + `參數在 ${v.tune?.from} ~ ${v.tune?.to} 挑的(試了 ${v.tune?.tried} 組),驗收在 ${vh.from} 之後的 ${vh.n} 場:`
+        + `對「一律當主場」改善 ${vh.gain} ± ${vh.se}(${vh.z} 倍標準誤)`
+        + (vh.oracle ? `;拿賽後才知道的中立場欄位當答案的話是 ${vh.oracle.gain}` : '') + '。'
+        + (v.passes ? '這一次通過門檻,所以未賽的勝率用推的 —— 這是**推論**,不是賽事公布的場地。' : '這一次**沒有**通過門檻,所以未賽一律當主場算。') + '\n');
+    }
+    if (m.lag?.affected) {
+      b.push(`\n### 評分會落後\n\nmartj42 收錄新賽果會晚幾天到幾週,那段時間踢的比賽不進評分。拿驗收那一批模擬「評分晚 ${m.lag.days} 天」:`
+        + `兩隊至少一隊在那幾天裡踢過的 ${m.lag.affected.n} 場,每場 RPS 平均多 ${m.lag.affected.cost} ± ${m.lag.affected.se}`
+        + `(${m.lag.affected.z} 倍標準誤;模型整體的改善是 ${h.gain})。`
+        + (m.lag.passes ? '這個代價大過兩倍標準誤。' : '沒有大過兩倍標準誤 —— 所以本站**不**拿還沒被核對的賽果提早更新評分。') + '\n');
+    }
+    b.push('\n沒有放進模型的:先發名單、傷停、總教練、旅途與時差 —— 本站沒有這些資料,勝率只看兩隊的歷史戰績。\n');
+  }
+  const cc = I.checkCounts ?? {};
+  b.push('\n## 資料界線\n\n'
+    + `- **核對**:FotMob 的每一場已完賽都跟 martj42 逐場對 —— 一致 ${cc.agree ?? 0}・待核對 ${cc.notYet ?? 0}・`
+    + `獨立來源沒收 ${cc.unmatched ?? 0}・不一致 ${cc.mismatch ?? 0}。「待核對」是它還沒收到那一天,不等於不一致\n`
+    + '- **沒有即時比分**:賽程與賽果跟著每天兩次的部署更新,比賽中不會動\n'
+    + '- **評分會落後**:獨立來源還沒收的比賽不拿來改評分,所以每一場的勝率旁邊會講兩隊之後又踢了幾場\n'
+    + '- **沒有陣容、傷停與賽後報告**:國家隊的逐場詳情還沒接\n'
+    + '- **時間一律 UTC**;網站依讀者的時區分天,筆記是靜態的\n'
+    + '- **martj42 的賽事名照原文**(Friendly、UEFA Nations League…);FotMob 那幾個賽事的中文名是產物給的\n');
+  const nf = I.notFetched;
+  if (nf?.comps?.length) {
+    b.push(`- **只收有比賽的 ${(I.comps ?? []).length} 個賽事。** 其餘 ${nf.comps.length} 個在 ${nf.checkedAt} 探測時,`
+      + `接下來 ${nf.horizonDays} 天一場都沒有,開打時再加進來:`
+      + nf.comps.map(c => `${c.zh}(${c.id}${c.proof ? `,id 已證明 ${c.proof}` : ',id 未證明'})`).join('、') + '\n');
+  }
+  if (I.flags) {
+    const f = I.flags;
+    b.push(`- **國旗**:${f.source?.name}(${f.source?.license} 授權),${f.count} 隊有。沒有的:`
+      + [...(f.excluded ?? []).map(x => `${zhOf(x.key)}刻意不給(${x.why})`),
+        (f.sameAs ?? []).length ? `${f.sameAs.map(x => zhOf(x.key)).join('、')}(國旗集裡就是宗主國的旗,掛上去會讓人以為是那一國)` : null,
+        (f.noCode ?? []).filter(x => !(f.excluded ?? []).some(e => e.key === x)).length
+          ? `${f.noCode.filter(x => !(f.excluded ?? []).some(e => e.key === x)).map(zhOf).join('、')}(沒有國碼)` : null,
+      ].filter(Boolean).join(';') + '\n');
+  }
+  addNote(INTL_DIR + '/' + INTL_DIR + '.md', b.join(''), links);
+
+  intlCounts = { comps: nComp, teams: nTeam, matches: nMatch };
+  return nComp + nTeam + nMatch + 1;
 }
 
 
@@ -1589,10 +2365,11 @@ function buildKnowledge() {
 }
 
 
-/* 跨聯賽的三塊:歐冠、英格蘭盃賽、足球知識。
+/* 跨聯賽的四塊:歐冠、英格蘭盃賽、國家隊、足球知識。
    都是各自一份資料,不掛在任一個聯賽底下,也各自呼叫一次(不複製轉換邏輯)。 */
-summary.push('  歐冠:' + buildUcl() + ' 則');
-{ const n = buildCups(); summary.push('  英格蘭盃賽:' + n + ' 則' + (cupsMerged ? '(上游重覆掛在兩個階段的 ' + cupsMerged + ' 場已合併)' : '')); }
+summary.push('  歐冠:' + buildUcl() + ' 則(' + reportCount.ucl + ' 場併了賽後報告)');
+{ const n = buildCups(); summary.push('  英格蘭盃賽:' + n + ' 則(' + reportCount.cup + ' 場併了賽後報告)' + (cupsMerged ? '(上游重覆掛在兩個階段的 ' + cupsMerged + ' 場已合併)' : '')); }
+{ const n = buildIntl(); summary.push('  國家隊:' + n + ' 則' + (intlCounts ? '(賽事 ' + intlCounts.comps + '・球隊 ' + intlCounts.teams + '・比賽 ' + intlCounts.matches + ')' : '')); }
 summary.push('  足球知識:' + buildKnowledge() + ' 則');
 
 /* ── 驗證:寫進磁碟之前先確認 ────────────────────────────────
@@ -1682,7 +2459,9 @@ if (!existsSync(mineDir)) {
   writeFileSync(join(mineDir, '讀我.md'),
     `# 我的筆記\n\n這個資料夾是**你的**,\`npm run obsidian\` 永遠不會碰它。\n\n`
     + `外面那些聯賽資料夾是產物,每次重跑都會整個重建 —— 在那裡面寫的東西會不見。\n`
-    + `想對某支球隊或某個球員加自己的想法,在這裡開一則筆記,用 [[球隊名]] 連過去就好;\n`
+    /* `[[球隊名]]` 要包在行內程式碼裡:裸寫的話它就是一個真的連結,在 Obsidian 裡點下去會開出一則空白的「球隊名」
+       (壞連結守門只查產生器宣告的連結,看不到內文;test-vault.mjs 掃內文才抓到) */
+    + `想對某支球隊或某個球員加自己的想法,在這裡開一則筆記,用 \`[[球隊名]]\` 連過去就好;\n`
     + `Obsidian 的反向連結會讓那則球隊筆記也看得到你寫了什麼。\n`);
 }
 
@@ -1717,7 +2496,8 @@ writeFileSync(join(OUT, 'README.md'), [
   '',
   '## 欄位',
   '',
-  '每則筆記的 frontmatter 都有 `類型`(球員 / 球隊 / 比賽 / 聯賽)與 `聯賽`。',
+  '每則筆記的 frontmatter 都有 `類型`(球員 / 球隊 / 比賽 / 聯賽 / 賽事…),聯賽的筆記有 `聯賽`、',
+  '歐冠 / 盃賽 / 國家隊的有 `賽事`;國家隊的另有 `分類: 國家隊`,**時間一律是 UTC**。',
   '**拿不到的欄位整個不出現** —— 看到空白代表版面壞了,不是資料是空的。',
   '',
   '裝了 Dataview 之後可以這樣查:',
@@ -1741,12 +2521,20 @@ writeFileSync(join(OUT, 'README.md'), [
   'WHERE 已完賽 = false AND 輪次 = 2',
   '```',
   '',
+  '```dataview',
+  'TABLE 開球, 主隊, 客隊, 主勝率, 和局率, 客勝率',
+  'FROM "國家隊/比賽"',
+  'WHERE 已完賽 = false AND 主勝率',
+  'SORT 開球 ASC',
+  '```',
+  '',
   '## 裡面有什麼',
   '',
   ...summary.map(s => '- ' + s.trim()),
   '',
-  '球員↔球隊↔比賽↔教練用 `[[連結]]` 互相串起來。歐冠與盃賽的對手,',
-  '本站認得的連回球隊筆記、不認得的只印名字 —— 不為了版面對齊造空殼筆記。',
+  '球員↔球隊↔比賽↔教練用 `[[連結]]` 互相串起來。歐冠的對手本站認得的連回聯賽的球隊筆記,',
+  '認不得的在 `歐冠/球隊/` 各有一則(只有歐冠範圍的戰績、球員與比賽);盃賽的低級別對手只印名字 ——',
+  '不為了版面對齊造空殼筆記。國家隊自成一區:賽事 ↔ 球隊 ↔ 比賽互相連結。',
   '',
   '## 這裡不做的事',
   '',
@@ -1755,9 +2543,12 @@ writeFileSync(join(OUT, 'README.md'), [
   '(`trainMatches = [...history, ...curPlayed]`)已經包含那場結果。',
   '拿它當賽前預測是假的。未賽場次的預測則是真的賽前預測,照放。',
   '',
-  '**同名球員不合併。** 跨聯賽有 13 組同名(多半是轉會的同一人),',
-  '但兩份資料源在同一個名字上從來沒有同時給出 sportmonksId,0 組可以核對。',
-  '「看起來是同一人」不是證據,所以各自成篇並在筆記上寫明無法核對。',
+  /* 這一段原本寫死「跨聯賽有 13 組同名、0 組可以核對」—— 那是只有英超西甲時量的。
+     數字改成這一次產生時算的(homonymStats),判準寫在 assignFilenames 的檔頭。 */
+  `**同名球員不合併。** 這一次有 ${homonymStats.groups} 組同名,其中 ${homonymStats.cross} 組跨聯賽。`,
+  `西甲、德甲、義甲、法甲的球員來自 Understat,它的球員 id 跨聯賽共用:${homonymStats.sameId} 組是**同一個 id**(確定是同一人,多半是轉會),`,
+  `${homonymStats.diffId} 組 id 不同(確定是不同人);其餘的兩邊沒有共用 id(英超用 FPL、英冠用 FotMob),**無法核對**。`,
+  '「看起來是同一人」不是證據。三種情況都各自成篇,筆記上的「同名提醒」逐筆寫明是哪一種。',
   '',
   '**沒有出賽紀錄不列一整排 0。** 上游的 0 分不出「在這個聯賽但沒上場」與',
   '「當季不在這個聯賽」(外借到別的聯賽一樣是 0),所以改成把這件事講清楚。',
