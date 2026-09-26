@@ -94,7 +94,7 @@ npm run build     # 併進網站
 第一次跑或換季時,再抓一次隊徽:
 
 ```bash
-npm run crests    # 27 隊隊徽 → 縮圖 → 內嵌成 data URI
+npm run crests    # 27 隊隊徽 → 縮圖 → 存進 data/manual/crests.json(build 時落成 web/assets/img/h/ 的圖檔)
 ```
 
 ---
@@ -475,7 +475,7 @@ epl/
 │   ├── fetch.mjs          抓原始資料 → data/raw/
 │   ├── fetch-live.mjs     抓即時比賽狀態 → data/raw/live.json
 │   ├── fetch-season.mjs   抓本季每一輪 → data/raw/season-gws.json
-│   ├── fetch-crests.mjs   抓隊徽、縮圖、內嵌成 data URI
+│   ├── fetch-crests.mjs   抓隊徽、縮圖、存進 manual 原始庫(產物裡是 assets/img/h/ 的圖檔路徑)
 │   ├── fetch-news.mjs     選用:抓外部 RSS → data/raw/news.json
 │   ├── fetch-official.mjs 英超官方:正式名單、陣型、教練、**進球事件**
 │   ├── fetch-odds.mjs     博彩收盤賠率(模型 vs 市場的基準)

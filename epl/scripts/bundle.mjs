@@ -4,6 +4,7 @@
 // 用法: npm run bundle  → dist/warroom.html
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { readMatchReports } from './lib/match-archive.mjs';
+import { inlineImages } from './lib/image-files.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -149,8 +150,10 @@ async function main() {
   const meta = data.meta;
 
   // 資料裡若出現 </script 會提前關掉標籤,要先拆開
-  const dataJson = JSON.stringify(data).replace(/<\/script/gi, '<\\/script');
-  const datasetsJson = JSON.stringify(datasets).replace(/<\/script/gi, '<\\/script');
+  /* 產物裡的圖 2026-09-26 起是 assets/img/h/ 的獨立檔;單檔版沒有外部檔,這裡換回 data URI 內嵌
+     (datasets.pl 跟 data 是同一個物件,兩邊各換一次,結果一樣)。 */
+  const dataJson = JSON.stringify(inlineImages(data, { webDir: WEB })).replace(/<\/script/gi, '<\\/script');
+  const datasetsJson = JSON.stringify(inlineImages(datasets, { webDir: WEB })).replace(/<\/script/gi, '<\\/script');
 
   /* 單檔版也標 noindex —— 它可能被丟到任何靜態空間上,不該被收錄。
      charset 一定要有:沒有的話,任何不帶 charset 標頭的靜態伺服器(python -m http.server 就是)

@@ -39,6 +39,7 @@ import { fotmobMinute } from './lib/live-minute.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
+import { externalizeImages } from './lib/image-files.mjs';
 import { recordFor } from './lib/coaches.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { percentile, round } from './lib/util.mjs';
@@ -92,9 +93,12 @@ const ageAt = (birthDate, asOf) => {
 // DST 規則共用 lib/league-matches 那一份,不自己再寫。
 const madridKickoff = europeanKickoff({ summer: '+02:00', winter: '+01:00' });
 
+// 圖在寫檔前落成 assets/img/h/ 的獨立檔,產物只留路徑(2026-09-26,A2 + A3;理由在 lib/image-files.mjs)
+const IMG = { webDir: join(ROOT, 'web') };
 const write = async (name, data) => {
-  await writeFile(join(OUT, `${name}.json`), JSON.stringify(data));
-  console.log(`  ✓ ${name}.json`);
+  const stats = {};
+  await writeFile(join(OUT, `${name}.json`), JSON.stringify(externalizeImages(data, { ...IMG, stats })));
+  console.log(`  ✓ ${name}.json${stats.images ? `(圖 ${stats.images} 張外置)` : ''}`);
 };
 
 const slimMatch = m => {

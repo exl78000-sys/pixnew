@@ -22,6 +22,7 @@ import {
 } from './lib/intl.mjs';
 import { loadIntlTeamTable, makeIntlResolver, intlFlagPlan, flagDistance, FLAG_SAME } from './lib/intl-teams.mjs';
 import { decodePNG } from './lib/png.mjs';
+import { imageBytes } from './lib/image-files.mjs';
 import { FOTMOB_INTL, INTL_FAMILIES, INTL_LEGEND_ZH, isIntlTbd, normalizeIntlTable, intlGroupZh } from './lib/adapters/fotmob-intl.mjs';
 import { fetchIntl, INTL_SCHEMA_VERSION } from './fetch-intl-fotmob.mjs';
 
@@ -475,8 +476,8 @@ console.log('\n▶ 國家隊:國旗(開源國旗集;屬地用宗主國的旗不�
       D.flags.sameAs.map(x => `${x.key}=${x.as}`).join('、'));
     check('中華台北不掛國旗(國際賽用的不是國旗),而且產物講了理由', !D.teams.Taiwan || (!FL.flags.Taiwan && D.flags.excluded.some(x => x.key === 'Taiwan' && x.why)));
     /* 掛出去的國旗兩兩不同:兩隊掛同一面旗,讀者分不出誰是誰(屬地那條就是為了這個) */
-    // 產物裡每一隊存的直接是 data URI 字串(不是物件)
-    const pix = Object.fromEntries(Object.entries(FL.flags).map(([k, v]) => [k, decodePNG(Buffer.from(String(v).split(',')[1], 'base64'))]));
+    // 產物裡每一隊存的直接是圖的路徑字串(不是物件;2026-09-26 起是 assets/img/h/ 的檔,單檔版才是 data URI)
+    const pix = Object.fromEntries(Object.entries(FL.flags).map(([k, v]) => [k, decodePNG(imageBytes(v, { webDir: join(ROOT, 'web') }).buf)]));
     const ks = Object.keys(pix), same = [];
     for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++) if (flagDistance(pix[ks[i]], pix[ks[j]]) < FLAG_SAME) same.push(`${ks[i]}=${ks[j]}`);
     check('掛出去的國旗兩兩看起來不一樣', same.length === 0, same.slice(0, 4).join('、'));

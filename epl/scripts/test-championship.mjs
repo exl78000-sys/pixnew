@@ -21,6 +21,7 @@ import { loadTeams } from './lib/teams.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { preMatchBundle, postMatchBundle, templateFor, verify } from './lib/report/index.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
+import { isImageRef } from './lib/image-files.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEASONS = ['2023-24', '2024-25', '2025-26', '2026-27'];
@@ -214,8 +215,8 @@ const table = out('table'), results = out('results'), sim = out('sim');
 
 // ── 7. 隊徽、賠率、回測 ────────────────────────────
 {
-  check('本季 24 隊都有內嵌 PNG 隊徽',
-    teams.every(t => t.crest?.startsWith('data:image/png;base64,')),
+  check('本季 24 隊都有 PNG 隊徽(2026-09-26 起是 assets/img/h/ 的圖檔,檔要真的在)',
+    teams.every(t => isImageRef(t.crest, { webDir: join(ROOT, 'web') }, 'png')),
     `${teams.filter(t => t.crest).length} / ${teams.length}`);
   check('未賽場次的三向機率加總約等於 1',
     fixtures.filter(f => !f.played).every(f => f.prediction

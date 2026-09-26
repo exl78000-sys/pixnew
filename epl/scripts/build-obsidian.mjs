@@ -20,6 +20,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isShootoutShot } from './lib/matchstats.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
+import { imageBytes } from './lib/image-files.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const argOf = name => {
@@ -127,10 +128,8 @@ const addNote = (path, body, links = []) => notes.push({ path, body, links });
 const assets = [];
 const assetSeen = new Set();
 const addAsset = (path, buf) => { if (!assetSeen.has(path)) { assetSeen.add(path); assets.push({ path, buf }); } };
-const dataUriBuf = uri => {
-  const m = /^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/.exec(String(uri ?? ''));
-  return m ? { ext: m[1] === 'jpeg' ? 'jpg' : m[1], buf: Buffer.from(m[2], 'base64') } : null;
-};
+// 產物裡的圖 2026-09-26 起是 assets/img/h/ 的路徑(單檔版才是 data URI);imageBytes 兩種都讀得回位元組
+const dataUriBuf = uri => imageBytes(uri, { webDir: join(ROOT, 'web') });
 const wl = name => `[[${name}]]`;
 /* 射門情境的中文(供應商的代碼)。聯賽的比賽筆記與盃賽/歐冠的賽後報告共用這一張,不各寫一份 */
 const SHOT_SIT_ZH = { RegularPlay: '運動戰', FromCorner: '角球', FastBreak: '快攻', FreeKick: '任意球', SetPiece: '定位球', ThrowInSetPiece: '界外球', IndividualPlay: '個人突破', Penalty: '十二碼' };
