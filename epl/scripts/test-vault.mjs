@@ -623,8 +623,72 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
       }
       if (!moc.includes('反過來的因果')) bad('陣型與成績', `${zh}:沒講「相關不是因果」`);
     }
+
+    /* ── 球隊頁其餘四塊(2026-09-27):Elo 走勢、近 N 場風格位移、xG 走勢、開季賽程難度,照 teams.json ── */
+    for (const tm of teams) {
+      const t = teamNote.get(tm.code) ?? '';
+      const eh = arr(tm.eloHistory).filter(x => x && x.date != null && x.r != null);
+      if (eh.length) {
+        seen('Elo');
+        const last = eh[eh.length - 1];
+        if (!t.includes(`## Elo 走勢(${eh.length} 個點`) || !t.includes(`| ${last.date} | ${last.r} |`) || !t.includes(`最新 **${last.r}**`)) bad('Elo', `${zh} ${tm.code}:Elo 走勢缺或最後一點不對`);
+      }
+      const st = tm.styleTrend;
+      if (st?.recent?.games) {
+        seen('位移');
+        const sec = sectionOf(t, `近 ${st.recent.games} 場風格位移`);
+        const axesBad = st.recentPct && Array.isArray(st.axes) ? st.axes.filter(a => !sec.includes(`| ${a.label} | ${st.recentPct[a.key] ?? '—'} |`)) : [];
+        if (!sec.includes(`| 射門/場 | ${st.recent.sf ?? '—'} | ${st.baseline?.sf ?? '—'} |`) || axesBad.length) bad('位移', `${zh} ${tm.code}:風格位移的射門列或六軸不對`);
+      }
+      if (tm.xgTrend?.games) {
+        seen('xG走勢');
+        if (!t.includes(`本季 ${tm.xgTrend.games} 場:場均 xG ${tm.xgTrend.xg}、xGA ${tm.xgTrend.xga}`)) bad('xG走勢', `${zh} ${tm.code}:xG 走勢不對`);
+      }
+      const sc = tm.schedule;
+      if (Array.isArray(sc?.detail) && sc.detail.length) {
+        seen('賽程難度');
+        const sec = sectionOf(t, '開季賽程難度');
+        const rowBad = sc.detail.filter(d => !new RegExp(`\\| ${d.event} \\| [^|]+ \\| ${d.home ? '主' : '客'} \\| ${d.diff} \\|`).test(sec));
+        if (rowBad.length || !sec.includes(`平均難度 ${sc.avg}`)) bad('賽程難度', `${zh} ${tm.code}:賽程難度的列或平均不對`);
+      }
+    }
+
+    /* ── 預估先發(lineups.json,英超):本季未賽、至少一隊有的每一場;名單逐人在、講明不是官方名單 ── */
+    const LU = product(lg, 'lineups');
+    if (LU && typeof LU === 'object') {
+      for (const f of fixtures.filter(x => !x.played)) {
+        const lh = LU[f.home], la = LU[f.away];
+        if (!lh && !la) continue;
+        seen('預估先發');
+        const t = matchNote.get(`${cur}|${f.home}|${f.away}`) ?? '';
+        const sec = sectionOf(t, '預估先發陣容');
+        for (const [lu, code] of [[lh, f.home], [la, f.away]]) {
+          if (!lu) continue;
+          const nm = teams.find(x => x.code === code)?.en ?? code;
+          const names = arr(lu.rows).flat().map(p => p.name);
+          if (!sec.includes(`### ${nm}(${lu.shape}`) || names.some(n => !sec.includes(n))) bad('預估先發', `${zh} ${f.home}-${f.away} ${code}:陣型或名單不對`);
+        }
+        if (!sec.includes('不是官方名單')) bad('預估先發', `${zh} ${f.home}-${f.away}:沒講不是官方名單`);
+      }
+    }
+
+    /* ── 模型驗證(2026-09-27):一則、數字照 meta.model.backtest、聯賽首頁連過去 ── */
+    {
+      const bt = meta.model?.backtest;
+      const mfile = sanitize(zh + ' 模型驗證');
+      const mn = note(`${zh}/${mfile}.md`);
+      seen('模型驗證');
+      if (!mn) bad('模型驗證', `${zh}:沒有模型驗證筆記`);
+      else if (bt?.available) {
+        // 沒有場次的區間是 null → 筆記印「—」(不是 0.0%,那是假數字)
+        const calBad = (bt.calibration ?? []).filter(c => !mn.includes(`| ${pct(c.lo)}~${pct(c.hi)} | ${c.n} | ${c.predicted == null ? '—' : pct(c.predicted)} | ${c.actual == null ? '—' : pct(c.actual)} |`));
+        if (!mn.includes(`| 採用(Poisson 與 Elo 平均) | ${bt.rps} | ${bt.logLoss} | ${pct(bt.hitRate)} |`) || calBad.length) bad('模型驗證', `${zh}:回測數字或校準表不對`);
+      } else if (!mn.includes('還沒有走查回測結果')) bad('模型驗證', `${zh}:沒有回測卻沒講`);
+      if (!moc.includes(`[[${mfile}]]`)) bad('模型驗證', `${zh}:聯賽首頁沒有連到模型驗證`);
+    }
   }
-  for (const k of ['文章', '快照', '專家', '勝率', '交手', '模擬', '近況', '風格', '陣型', '外電', '陣型與成績']) {
+  for (const k of ['文章', '快照', '專家', '勝率', '交手', '模擬', '近況', '風格', '陣型', '外電', '陣型與成績',
+    'Elo', '位移', 'xG走勢', '賽程難度', '預估先發', '模型驗證']) {
     check(`${k}:筆記跟產物一致`, (N[k] ?? 0) > 0 && !(P[k]?.length), `驗了 ${N[k] ?? 0} 筆${P[k]?.length ? `;${P[k].length} 個問題:${P[k].slice(0, 3).join('、')}` : ''}`);
   }
 }
