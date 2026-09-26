@@ -535,6 +535,8 @@ npm run bundle    # 產生單檔版 dist/warroom.html
 build 最後的 `npm test -- --skip-backtests --skip-game` 只剩 40 秒。deploy 同時等 build 與 game-tests,閘門沒有放鬆。
 逐步計時(本機):npm test 462 秒裡 test-game 422 秒、五個回測合計 10 秒、test.mjs 4 秒 —— **慢的是模擬引擎測試,不是回測**。
 步驟清單只有 `lib/test-steps.mjs` 一份,backtest-all 與 test-all 都從它挑。
+test-game 的「賽後判讀」那一節二十幾場完整模擬走 `scripts/game/lib/match-pool.mjs` 的 worker 池(同種子只跑一次、
+並行、以快照回來);**要逐格觀察或「同種子跑兩次比對」的測試不能走它**,那會拿同一份快照比自己。
 
 進球事件的 `description` 子代碼目前已見過 **`G`(一般)、`P`(十二碼)、`O`(烏龍球)** ——
 `O` 已用名單核對過(踢進的人在對方名單裡)。這三種已經在單場分析頁的
