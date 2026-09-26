@@ -52,6 +52,10 @@ const STEPS = [
   ['scripts/game/test-game.mjs', []],
   ['scripts/check-docs.mjs', []],
   ['scripts/build-obsidian.mjs', [`--out=${VAULT_TMP}`]],
+  /* vault 的**內容**(2026-09-26):產生器的守門只看形狀(同檔名、壞連結),筆記裡印著過期的宣稱、
+     或者少了一整區資料,它都照樣放行 —— 國家隊整區不在、歐冠寫「不做勝率預測」、盃賽寫「來源:SportMonks」
+     都是這樣留下來的。這一支自己產一份到暫存目錄,逐則拿筆記跟產物對。 */
+  ['scripts/test-vault.mjs', []],
 ];
 
 const tally = { blocks: 0, pass: 0, fail: 0 };
