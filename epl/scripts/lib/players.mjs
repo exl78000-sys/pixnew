@@ -205,6 +205,27 @@ export function buildPlayers({ current, last, currentTotals, teamMatches, season
   return { players: out, poolSizes: sizes(pools), currentPoolSizes: sizes(curPools) };
 }
 
+/* 英超每一張榜的標題、單位與數字格式(2026-09-26 從 page-players.js 搬過來)。
+   放在**算它的函式旁邊**、寫進 leaders.json 的 `boards`,網頁與 Obsidian vault 讀同一份 ——
+   原本只寫在前端,vault 要列榜就得再抄一份標題,改了一邊另一邊會悄悄過期
+   (「前端自己抄一份的話,改了 lib 那邊會悄悄過期」)。Understat 那四個聯賽與英冠的產物本來就帶 boards。
+   `digits` 是小數位(0 = 原樣印)、`signed` 是正數前面加 +、`suffix` 接在數字後面。
+   鍵的順序就是顯示順序,而且要跟 leaderboards() 回傳的鍵一一對應(npm test 守著)。 */
+export const PL_BOARDS = [
+  { key: 'scorers', label: '射手榜', unit: '進球', digits: 0 },
+  { key: 'assisters', label: '助攻榜', unit: '助攻', digits: 0 },
+  { key: 'xgi', label: '每 90 分鐘進球參與', unit: 'xGI/90', digits: 2 },
+  { key: 'creators', label: '創造機會', unit: 'xA/90', digits: 2 },
+  { key: 'finishers', label: '終結超出期望', unit: '進球 − xG', digits: 1, signed: true },
+  { key: 'defenders', label: '後衛防守貢獻', unit: '防守貢獻/90', digits: 2 },
+  { key: 'keepers', label: '門將撲救效率', unit: '少失球數', digits: 1, signed: true },
+  { key: 'workhorses', label: '回收球', unit: '回收/90', digits: 1 },
+  { key: 'youngGuns', label: '22 歲以下', unit: '總得分', digits: 0 },
+  { key: 'value', label: 'CP 值', unit: '每百萬身價得分', digits: 1 },
+  { key: 'dreamteam', label: '單週最佳陣容', unit: '入選次數', digits: 0, suffix: ' 次' },
+  { key: 'supersubs', label: '板凳奇兵', unit: '先發率(越低越常替補上場)', digits: 2 },
+];
+
 // 各式排行榜(只取上季有實際出場的球員)
 export function leaderboards(players, season = 'last') {
   const stat = p => (season === 'current' ? p.current : p.last);

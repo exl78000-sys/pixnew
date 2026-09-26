@@ -17,7 +17,7 @@ import { previousLeagueRecords } from './lib/prev-league.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
-import { buildPlayers, leaderboards, aggregateSeason } from './lib/players.mjs';
+import { buildPlayers, leaderboards, aggregateSeason, PL_BOARDS } from './lib/players.mjs';
 import { buildTactics, formationImpact } from './lib/tactics.mjs';
 import { projectXI } from './lib/lineup.mjs';
 import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, standardShape } from './lib/roles.mjs';
@@ -358,6 +358,7 @@ async function main() {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
     currentAvailable: currentTotals.size > 0,
     currentRounds: seasonUsable ? seasonStore.rounds.length : 0,
+    boards: PL_BOARDS,   // 每張榜的標題、單位與格式(網頁與 vault 共用這一份,見 lib/players.mjs)
     last: leaderboards(players, 'last'),
     current: currentTotals.size ? leaderboards(players, 'current') : null,
   };

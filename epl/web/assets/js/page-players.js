@@ -93,20 +93,11 @@ try {
   const POS = [['GK', '門將'], ['DEF', '後衛'], ['MID', '中場'], ['FWD', '前鋒']];
   let compare = [];
 
-  const boardDefs = [
-    ['scorers', '射手榜', '進球', v => v],
-    ['assisters', '助攻榜', '助攻', v => v],
-    ['xgi', '每 90 分鐘進球參與', 'xGI/90', v => C.fx(v, 2)],
-    ['creators', '創造機會', 'xA/90', v => C.fx(v, 2)],
-    ['finishers', '終結超出期望', '進球 − xG', v => C.signed(v, 1)],
-    ['defenders', '後衛防守貢獻', '防守貢獻/90', v => C.fx(v, 2)],
-    ['keepers', '門將撲救效率', '少失球數', v => C.signed(v, 1)],
-    ['workhorses', '回收球', '回收/90', v => C.fx(v, 1)],
-    ['youngGuns', '22 歲以下', '總得分', v => v],
-    ['value', 'CP 值', '每百萬身價得分', v => C.fx(v, 1)],
-    ['dreamteam', '單週最佳陣容', '入選次數', v => `${v} 次`],
-    ['supersubs', '板凳奇兵', '先發率(越低越常替補上場)', v => C.fx(v, 2)],
-  ];
+  /* 每張榜的標題、單位與格式由產物給(leaders.json 的 boards,定義在 lib/players.mjs 的 PL_BOARDS)——
+     原本寫在這裡,而 Obsidian vault 要列同一批榜時只能再抄一份(2026-09-26 搬過去)。
+     digits 0 原樣印(整數);signed 是正數加 +;suffix 接在數字後面。 */
+  const boardFmt = b => v => (b.signed ? C.signed(v, b.digits) : b.digits ? C.fx(v, b.digits) : v) + (b.suffix ?? '');
+  const boardDefs = (leaders.boards ?? []).map(b => [b.key, b.label, b.unit, boardFmt(b)]);
 
   /* 帶 ?code= 就直接整頁畫該球員,不先畫列表 —— 列表的表格有延後綁定的排序處理,#app 被換掉之後會找不到節點而丟錯 */
   if (C.qs('code') && byCode.has(String(C.qs('code')))) { openPlayer(byCode.get(String(C.qs('code')))); throw new Error('skip'); }   // 模組頂層不能 return;skip 是這個檔既有的「到此為止」慣例
@@ -157,7 +148,7 @@ try {
     const boards = mode === 'current' ? leaders.current : leaders.last;
     document.getElementById('boardHint').textContent = mode === 'current'
       ? `本季 ${leaders.seasons.current} 至今(${leaders.currentRounds} 輪)`
-      : `上季 ${leaders.seasons.last} 完整賽季・掛在當時效力的球隊`;
+      : `上季 ${leaders.seasons.last} 完整賽季・掛在季末效力的球隊(FPL 季末快照:季中轉隊的人整季數字掛在季末那一隊)`;
     document.getElementById('seasonNote').textContent = mode === 'current'
       ? `${meta.counts.currentSeasonPlayers} 名球員有本季出場紀錄`
       : `${meta.counts.poolSizes.MID + meta.counts.poolSizes.DEF + meta.counts.poolSizes.FWD + meta.counts.poolSizes.GK} 名球員達上季百分位門檻`;

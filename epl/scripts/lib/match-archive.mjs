@@ -77,6 +77,38 @@ export function readMatchReports(dir) {
   return { ...idx, reports, missing };
 }
 
+/* 讀回**往季**的逐場檔(Node 端用;2026-09-26 為 Obsidian vault 加的:「上季聯賽的賽後報告也存進去」)。
+   `readMatchReports` 只讀本季的 `index` —— 它的呼叫端(測試、單檔打包)要的就是本季,不能改它的意思。
+   往季的索引是 `reports.archive.ids`(只有 id),所以鍵從**檔案自己帶的** season / home / away 組,
+   回傳同一個形狀:「季|主|客」→ 報告本體。
+   兩種不採用,各自收起來讓呼叫端講:索引指到而檔案不在(`missing`)、
+   檔案的季跟索引宣告的不同或兩個檔組出同一個鍵(`conflicts`,**兩個都不用** ——
+   挑一個等於把某一場的報告掛到另一場上,跟 `idMapForArchive` 同一個理由)。 */
+export function readArchivedReports(dir) {
+  const idxPath = join(dir, 'reports.json');
+  if (!existsSync(idxPath)) return null;
+  const a = JSON.parse(readFileSync(idxPath, 'utf8')).archive;
+  const reports = {};
+  const missing = [];
+  const conflicts = [];
+  if (!a?.season || !a.ids?.length) return { season: a?.season ?? null, reports, missing, conflicts };
+  const byKey = new Map();   // 鍵 → [{ id, r }]
+  for (const id of a.ids) {
+    const fp = join(dir, 'match-reports', a.season, `${id}.json`);
+    if (!existsSync(fp)) { missing.push(id); continue; }
+    const r = JSON.parse(readFileSync(fp, 'utf8'));
+    if (r.season !== a.season) { conflicts.push(id); continue; }
+    const key = `${r.season}|${r.home}|${r.away}`;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key).push({ id, r });
+  }
+  for (const [key, list] of byKey) {
+    if (list.length === 1) reports[key] = list[0].r;
+    else conflicts.push(...list.map(x => x.id));
+  }
+  return { season: a.season, reports, missing, conflicts };
+}
+
 /* 「季|主|客」當鍵在**有附加賽的聯賽**裡不唯一(英冠季末的升級附加賽由聯賽裡的四隊互打,
    2023-24 就出現過附加賽 `NOR|LEE 0-0` 與聯賽 `NOR|LEE 2-3` 撞同一個鍵)。
    撞到的話 `reports` 本來就只留得下一份,而這裡再挑一個 id 去命名檔案,
