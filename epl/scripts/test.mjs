@@ -4755,6 +4755,52 @@ async function checkDataGap() {
         && /\.followstar \{ min-width: 36px; min-height: 36px/.test(mobile)
         && /\.analysis-switch \{[\s\S]{0,200}top: var\(--topbar-h, 61px\)/.test(css);
     })()],
+    /* ── matchstats.json 不進 Pages 上傳物(2026-09-27,D2)──
+       六份約 98 MB、沒有任何頁面會 fetch(單場用 match-reports、球隊頁用 teams.json 的 matchStats)。
+       守:部署工作流在「回寫」與「自我檢查」之後、「上傳網站」之前把它從 web/data 拿掉;前端仍然沒有人 fetch 它。 */
+    ['部署工作流在上傳 Pages 之前拿掉 matchstats.json(回寫與測試之後),而且前端沒有人 fetch 它', (() => {
+      const y = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+      const del = y.indexOf('find web/data -name matchstats.json -print -delete');
+      const up = y.indexOf('actions/upload-pages-artifact');
+      const back = y.indexOf('回寫即時資料');
+      const test = y.indexOf('run: npm test -- --skip-backtests --skip-game');
+      const noComments = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const js = readdirSync(join(ROOT, 'web', 'assets', 'js')).filter(f => f.endsWith('.js'))
+        .map(f => noComments(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8')));
+      const fetches = js.filter(s => /['"`]matchstats['"`]|matchstats\.json/.test(s)).length;
+      return del > 0 && up > del && back > 0 && back < del && test > 0 && test < del && fetches === 0;
+    })()],
+    /* ── 頁面資料預算(2026-09-27,E)──
+       首頁與球員頁的資料集清單**從頁面原始碼解析**(C.load(...) 的字串引數),六個聯賽各自加總解壓後的大小。
+       預算:首頁 1.5 MB(A1 / A4 之後六個聯賽 0.6–1.25 MB);球員頁先設 2.0 MB —— 量到英超 1.7 MB、西甲 1.8 MB,
+       players.json 本身 1.25–1.45 MB,要到 1.5 MB 得把球員頁列表用不到的欄位搬走(補齊規劃另記一項),
+       在那之前把預算設成過不了的數字只會讓每次部署都紅。 */
+    ['頁面資料預算:首頁 ≤ 1.5 MB、球員頁 ≤ 2.0 MB(六個聯賽,資料集清單從 C.load 解析)', (() => {
+      const listOf = f => {
+        const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+        const names = new Set();
+        for (const m of src.matchAll(/C\.load\(([^)]*)\)/g)) for (const s of m[1].matchAll(/'([\w-]+)'/g)) names.add(s[1]);
+        return [...names];
+      };
+      const budgets = [['page-index.js', 1.5], ['page-players.js', 2.0]];
+      const dirs = [['pl', join(ROOT, 'web', 'data')],
+        ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true }).filter(e => e.isDirectory())
+          .map(e => [e.name, join(ROOT, 'web', 'data', 'leagues', e.name)])];
+      const bad = [];
+      const worst = {};
+      for (const [page, mb] of budgets) {
+        const list = listOf(page);
+        if (list.length < 3) { bad.push(`${page}:解析不到 C.load 清單`); continue; }
+        for (const [lg, dir] of dirs) {
+          const kb = list.reduce((n, name) => n + (existsSync(join(dir, `${name}.json`)) ? statSync(join(dir, `${name}.json`)).size : 0), 0) / 1024;
+          worst[page] = Math.max(worst[page] ?? 0, kb);
+          if (kb > mb * 1024) bad.push(`${page} ${lg}:${Math.round(kb)} KB > ${mb} MB`);
+        }
+      }
+      console.log(`    首頁最大 ${Math.round(worst['page-index.js'] ?? 0)} KB、球員頁最大 ${Math.round(worst['page-players.js'] ?? 0)} KB`);
+      if (bad.length) console.log(`    ${bad.join(' / ')}`);
+      return bad.length === 0;
+    })()],
     /* ── 預載(2026-09-26,B1)──
        每一頁的 <head> 由 stamp-assets 注入:這一頁模組圖裡每一支的 modulepreload(含現行的戳)、
        以及依 league 預載 meta / clubs / teams 的那段 script。守的是「每一頁都有、而且戳跟 import 一字不差」——
