@@ -73,9 +73,11 @@ async function main() {
   {
     for (const p of PAGES) {
       const src = await readFile(join(WEB, 'assets', 'js', `page-${p}.js`), 'utf8');
-      for (const m of src.matchAll(/import \{[^}]*\} from '\.\/([\w-]+)\.js/g)) {
-        if (m[1] !== 'core' && !SHARED.includes(m[1])) {
-          throw new Error(`page-${p}.js import 了 ${m[1]}.js,但它不在 bundle 的 SHARED 清單裡`);
+      // 靜態的 `import {…} from './x.js'` 與動態的 `import('./x.js')` 都算(探索頁的 game-view 2026-09-26 起是動態的)
+      for (const m of src.matchAll(/import \{[^}]*\} from '\.\/([\w-]+)\.js|import\('\.\/([\w-]+)\.js/g)) {
+        const name = m[1] ?? m[2];
+        if (name !== 'core' && !SHARED.includes(name)) {
+          throw new Error(`page-${p}.js import 了 ${name}.js,但它不在 bundle 的 SHARED 清單裡`);
         }
       }
     }
@@ -89,8 +91,10 @@ async function main() {
      所以邊比邊記:比完一支就把它的頂層名字放進池子,下一支要跟 core 與池子都比。 */
   const taken = new Map();   // 名字 → 哪一支先用的
   const sharedSrc = [];
+  const exportsOf = new Map();   // 模組 → 它匯出的名字(動態 import() 換成 Promise 時要列出來;從原始碼解析,不手寫)
   for (const name of SHARED) {
     const src = await readFile(join(WEB, 'assets', 'js', `${name}.js`), 'utf8');
+    exportsOf.set(name, coreExports(src));
     for (const m of src.matchAll(/^(?:export )?(?:async )?(?:function|const|let) ([A-Za-z_$][\w$]*)/gm)) {
       if (coreNames.has(m[1])) throw new Error(`${name}.js 的頂層識別字 ${m[1]} 跟 core.js 的匯出同名,單檔版會炸`);
       if (taken.has(m[1])) throw new Error(`${name}.js 的頂層識別字 ${m[1]} 跟 ${taken.get(m[1])}.js 同名,單檔版會炸`);
@@ -112,7 +116,14 @@ async function main() {
     const src = await readFile(join(WEB, 'assets', 'js', `page-${p}.js`), 'utf8');
     pageSrc[p] = src
       .replace(/^import \* as C from '\.\/core\.js(\?v=[0-9a-f]+)?';\s*/m, '')
-      .replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js(\?v=[0-9a-f]+)?';\s*/gm, '');
+      .replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js(\?v=[0-9a-f]+)?';\s*/gm, '')
+      /* 動態 import()(探索頁的 game-view,2026-09-26 起點到分頁才載):單檔版沒有模組檔可載,
+         而那個模組已經攤平在同一個作用域 —— 換成「馬上就有」的 Promise,裡面列它的匯出(從原始碼解析)。 */
+      .replace(/import\('\.\/([\w-]+)\.js(\?v=[0-9a-f]+)?'\)/g, (m, name) => {
+        const names = exportsOf.get(name);
+        if (!names) throw new Error(`page-${p}.js 動態 import 了 ${name}.js,但它不在 bundle 的 SHARED 清單裡`);
+        return `Promise.resolve({ ${names.join(', ')} })`;
+      });
   }
 
   /* matchstats.json(4 MB)不進單檔版:沒有任何頁面直接載它 —— 單場用 reports.json 的 advanced、
@@ -210,6 +221,9 @@ route();
      而分頁版完全看不出來。 */
   const leftover = html.match(/^\s*import [^\n]*/gm);
   if (leftover) throw new Error(`單檔版裡還有沒拆掉的 import:${leftover.slice(0, 3).join(' | ')}`);
+  // 動態的也一樣:留著的 import('./x.js') 在單檔版會去抓一個不存在的檔
+  const dyn = html.match(/import\('\.\/[^)]*\)/g);
+  if (dyn) throw new Error(`單檔版裡還有沒換掉的動態 import:${dyn.slice(0, 3).join(' | ')}`);
   await mkdir(join(ROOT, 'dist'), { recursive: true });
   const out = join(ROOT, 'dist', 'warroom.html');
   await writeFile(out, html);

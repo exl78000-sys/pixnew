@@ -1,7 +1,11 @@
 import * as C from './core.js?v=7a065aae';
 import { renderKnowledge } from './knowledge-view.js?v=de1928a4';
 import { renderAllPlayers } from './allplayers-view.js?v=d3f81a79';
-import { renderGame } from './game-view.js?v=94cad03d';
+/* 模擬遊玩那一支**不在這裡 import**(2026-09-26,B4):game-view → game-live → game-sim,引擎本身 314 KB,
+   而知識與球員搜尋兩個分頁根本用不到 —— 原本三個分頁都揹著它(explore.html 的 modulepreload 也一起預載)。
+   改成點到那個分頁才 `import()`(見 VIEWS)。stamp-assets 照樣給那個字面路徑戳,但 modulepreload 只收靜態 import;
+   單檔版沒有模組檔,bundle.mjs 把那一行 import() 換成攤平後那幾個匯出的 Promise。
+   (這段註解刻意不寫那個字面路徑 —— stamp-assets 是用字面替換的,寫了連註解都會被戳。) */
 
 /* 探索(2026-09-03)。足球知識、對戰模擬、球員搜尋收成一頁,三個頁內分頁。
  *
@@ -25,8 +29,9 @@ import { renderGame } from './game-view.js?v=94cad03d';
 
 const VIEWS = [
   { key: 'knowledge', zh: '足球知識', render: renderKnowledge },
-  /* 模擬遊玩(2026-09-03)取代了對戰模擬;view 鍵留 duel,舊書籤不斷 */
-  { key: 'duel', zh: '模擬遊玩', render: renderGame },
+  /* 模擬遊玩(2026-09-03)取代了對戰模擬;view 鍵留 duel,舊書籤不斷。
+     模組點到才載(B4);載入失敗會走 show() 的 catch,畫面講「載入失敗」而不是空白。 */
+  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=94cad03d')).renderGame(body) },
   { key: 'allplayers', zh: '球員搜尋', render: renderAllPlayers },
 ];
 

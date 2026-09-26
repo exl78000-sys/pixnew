@@ -4713,6 +4713,20 @@ async function checkDataGap() {
         && chain.indexOf('build-intl.mjs') < chain.indexOf('build-overview-shared.mjs')
         && chain.indexOf('build-overview-shared.mjs') < chain.indexOf('stamp-assets.mjs');
     })()],
+    /* ── 探索頁的模擬遊玩點到才載(2026-09-26,B4)──
+       game-view → game-live → game-sim(314 KB)只有「模擬遊玩」分頁用得到,原本三個分頁都揹著,而且 explore.html
+       的 modulepreload 也一起預載。守:宿主是動態 import()(帶戳)、不再靜態 import;explore.html 不預載任何 game-*.js;
+       stamp-assets 的 modulepreload 只收靜態 import;bundle 把 import() 換成攤平後的匯出、留著的會擋。 */
+    ['探索頁的模擬遊玩是點到分頁才 import();explore.html 不預載引擎;單檔版把 import() 換成攤平後的匯出', (() => {
+      const ex = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8');
+      const html = readFileSync(join(ROOT, 'web', 'explore.html'), 'utf8');
+      const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
+      const stamp = readFileSync(join(ROOT, 'scripts', 'stamp-assets.mjs'), 'utf8');
+      return /import\('\.\/game-view\.js\?v=[0-9a-f]{8}'\)/.test(ex) && !/from '\.\/game-view\.js/.test(ex)
+        && !/modulepreload" href="assets\/js\/game-/.test(html)
+        && bundle.includes('Promise.resolve({ ${names.join') && bundle.includes('沒換掉的動態 import')
+        && stamp.includes("const staticImportsOf = f => shared.filter(s => srcs.get(f).includes(`from './${s}'`))");
+    })()],
     /* ── 預載(2026-09-26,B1)──
        每一頁的 <head> 由 stamp-assets 注入:這一頁模組圖裡每一支的 modulepreload(含現行的戳)、
        以及依 league 預載 meta / clubs / teams 的那段 script。守的是「每一頁都有、而且戳跟 import 一字不差」——

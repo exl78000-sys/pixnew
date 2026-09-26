@@ -98,12 +98,16 @@ async function main() {
 
   /* 一頁遞移引用哪些共用模組(page → fixture-list → follow …)。照 order 的順序給(被依賴的在前),
      產物才穩定 —— 不然同一個模組圖每次可能排出不同順序,HTML 每次 build 都會 churn。 */
+  /* **只收靜態 import**(2026-09-26,B4):探索頁的 game-view 是點到分頁才 `import()` 的,
+     預載它等於把 314 KB 的引擎塞回每一次打開探索頁 —— 那正是改成動態的理由。
+     上面的 importsOf(任何字面引用)仍用在定版順序:動態 import 的目標也要先定版,字串裡的戳才對。 */
+  const staticImportsOf = f => shared.filter(s => srcs.get(f).includes(`from './${s}'`));
   const closureOf = page => {
     const seen = new Set();
     const stack = [page];
     while (stack.length) {
       const f = stack.pop();
-      for (const dep of importsOf(f)) if (!seen.has(dep)) { seen.add(dep); stack.push(dep); }
+      for (const dep of staticImportsOf(f)) if (!seen.has(dep)) { seen.add(dep); stack.push(dep); }
     }
     return order.filter(f => seen.has(f));
   };
