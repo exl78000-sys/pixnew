@@ -53,6 +53,7 @@ import { tierKey, lookupTier } from './lib/adapters/england-tiers.mjs';
 import { mergeCupSeasons } from './lib/cup-seasons.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef, IMG_DIR } from './lib/image-files.mjs';
+import { PRELOAD_SCRIPT, PRELOAD_START, PRELOAD_END } from './stamp-assets.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -4273,12 +4274,13 @@ async function checkDataGap() {
     })()],
     ['epl-live.yml:點火器心跳看門狗獨立成 job、不擋部署、沒有心跳紀錄時不判斷、兩天沒心跳才紅', (() => {
       const y = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
-      const deployNeeds = /^  deploy:\n    needs: build$/m.test(y);   // deploy 只等 build,看門狗紅了照樣部署
+      // deploy 等 build 與 game-tests(2026-09-26 起模擬引擎測試並行跑),不等看門狗 —— 看門狗紅了照樣部署
+      const deployNeeds = /^  deploy:\n    needs: \[build, game-tests\]$/m.test(y);
       return /^  ignition-watch:$/m.test(y) && deployNeeds
         && /workflow_id: 'ignition-alert\.yml'/.test(y)
         && /if \(!runs\.length\) \{ core\.info\(/.test(y)
         && /hours > 48\) core\.setFailed/.test(y)
-        && /needs: \[build, deploy, ignition-watch\]/.test(y);
+        && /needs: \[build, game-tests, deploy, ignition-watch\]/.test(y);
     })()],
 
     /* ── 外電 RSS:先篩再切(2026-08-31)──
@@ -4592,6 +4594,86 @@ async function checkDataGap() {
       /* seen 是「有往季索引的聯賽數」。**不寫死等於 6** —— 哪天某個聯賽沒有上季 raw
          就會紅在「還沒補齊」上(「把目標達成寫成 CI 紅線」那條坑)。只要有就得對。 */
       console.log(`    往季逐場檔:${seen} 個聯賽有索引`);
+      return bad.length === 0;
+    })()],
+    /* ── 回測拆出部署主線(2026-09-26,D1)──
+       workflow 只能有一個回測步驟(npm run backtests,五支並行),不可以再有 xx:backtest 的串行步驟;
+       npm test 那一步要帶 --skip-backtests(不然同一批回測算兩遍);而 backtest-all 挑的清單必須是
+       lib/test-steps.mjs 的那一份(手寫第二份的話加聯賽會漏一邊)。 */
+    ['部署 workflow:五個聯賽回測一步並行、模擬引擎測試另開 job 並行、npm test 帶兩個 skip 旗標、清單只有一份', (() => {
+      const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+      const bt = readFileSync(join(ROOT, 'scripts', 'backtest-all.mjs'), 'utf8');
+      const steps = readFileSync(join(ROOT, 'scripts', 'lib', 'test-steps.mjs'), 'utf8');
+      const all = readFileSync(join(ROOT, 'scripts', 'test-all.mjs'), 'utf8');
+      const serial = wf.match(/npm run [a-z0-9]+:backtest\b/g) ?? [];
+      const listed = [...steps.matchAll(/\['scripts\/(backtest-[\w-]+\.mjs)'/g)].map(m => m[1]);
+      return /run: npm run backtests\b/.test(wf) && serial.length === 0
+        && /run: npm test -- --skip-backtests --skip-game/.test(wf)
+        && /^  game-tests:$/m.test(wf) && /run: node scripts\/game\/test-game\.mjs/.test(wf)
+        && /from '\.\/lib\/test-steps\.mjs'/.test(bt) && !/backtest-laliga\.mjs'/.test(bt)
+        && /isGameStep/.test(all) && /--skip-game/.test(all)
+        && listed.length >= 5 && new Set(listed).size === listed.length;
+    })()],
+    /* ── 預載(2026-09-26,B1)──
+       每一頁的 <head> 由 stamp-assets 注入:這一頁模組圖裡每一支的 modulepreload(含現行的戳)、
+       以及依 league 預載 meta / clubs / teams 的那段 script。守的是「每一頁都有、而且戳跟 import 一字不差」——
+       戳對不上的話瀏覽器會抓兩份(預載的用不到),比沒有預載更糟。 */
+    ['每一頁都注入了 modulepreload(遞移引用、戳跟 import 一致)與資料預載 script', (() => {
+      const W2 = join(ROOT, 'web');
+      const JS2 = join(W2, 'assets', 'js');
+      const bad = [];
+      let pages = 0;
+      for (const f of readdirSync(W2).filter(x => x.endsWith('.html'))) {
+        const html = readFileSync(join(W2, f), 'utf8');
+        const page = /src="assets\/js\/(page-[\w-]+\.js)\?v=[0-9a-f]{8}"/.exec(html)?.[1];
+        if (!page) { bad.push(`${f}:找不到頁面模組`); continue; }
+        pages++;
+        const s = html.indexOf(PRELOAD_START), e = html.indexOf(PRELOAD_END);
+        if (s < 0 || e < s) { bad.push(`${f}:沒有預載區塊`); continue; }
+        const block = html.slice(s, e);
+        if (!block.includes(PRELOAD_SCRIPT)) bad.push(`${f}:資料預載 script 不是現行版本`);
+        const links = new Set([...block.matchAll(/<link rel="modulepreload" href="assets\/js\/([^"]+)">/g)].map(m => m[1]));
+        // 遞移引用:從頁面模組出發,把每一層 import 的 './x.js?v=…' 都收進來,每一支都要有一模一樣的 modulepreload
+        const seen = new Set();
+        const stack = [page];
+        while (stack.length) {
+          const cur = stack.pop();
+          const src = readFileSync(join(JS2, cur), 'utf8');
+          for (const m of src.matchAll(/from '\.\/([\w-]+\.js\?v=[0-9a-f]{8})'/g)) {
+            const ref = m[1];
+            if (seen.has(ref)) continue;
+            seen.add(ref);
+            if (!links.has(ref)) bad.push(`${f}:${cur} import 了 ${ref},但沒有對應的 modulepreload`);
+            stack.push(ref.split('?')[0]);
+          }
+        }
+        for (const l of links) if (!seen.has(l)) bad.push(`${f}:多預載了沒人 import 的 ${l}`);
+        if (!seen.has(`core.js?v=${JSON.parse(readFileSync(join(W2, 'data', 'meta.json'), 'utf8')).assets?.core}`)) bad.push(`${f}:core.js 的戳跟 meta.assets.core 不一致`);
+      }
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      console.log(`    預載:${pages} 頁`);
+      return pages > 0 && bad.length === 0;
+    })()],
+    /* ── 字型改獨立檔(2026-09-26,B2)──
+       fonts.css 不再內嵌 base64、不再由 app.css @import(要等 app.css 到了才被發現);
+       每一頁 <link> 它、並 preload 兩個 .woff2。單檔版仍自足:bundle 把 .woff2 讀回來內嵌。 */
+    ['字型是獨立的 .woff2:fonts.css 只指路徑、app.css 不 @import、每一頁 link + preload', (() => {
+      const W2 = join(ROOT, 'web');
+      const bad = [];
+      const fonts = readFileSync(join(W2, 'assets', 'css', 'fonts.css'), 'utf8');
+      if (/base64,/.test(fonts)) bad.push('fonts.css 還有 base64');
+      const files = [...fonts.matchAll(/url\('\.\.\/fonts\/([^']+)'\)/g)].map(m => m[1]);
+      if (!files.length) bad.push('fonts.css 沒有指到任何字型檔');
+      for (const x of files) if (!existsSync(join(W2, 'assets', 'fonts', x))) bad.push(`字型檔不在:${x}`);
+      // 只認真正的 @import 規則(行首),app.css 的註解裡本來就有這個字
+      if (/^\s*@import\b/m.test(readFileSync(join(W2, 'assets', 'css', 'app.css'), 'utf8'))) bad.push('app.css 還有 @import');
+      for (const f of readdirSync(W2).filter(x => x.endsWith('.html'))) {
+        const html = readFileSync(join(W2, f), 'utf8');
+        if (!/<link rel="stylesheet" href="assets\/css\/fonts\.css\?v=[0-9a-f]{8}">/.test(html)) bad.push(`${f}:沒有 link fonts.css(或沒戳)`);
+        for (const x of files) if (!html.includes(`<link rel="preload" href="assets/fonts/${x}" as="font" type="font/woff2" crossorigin>`)) bad.push(`${f}:沒有 preload ${x}`);
+      }
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      console.log(`    字型:${files.length} 個檔、fonts.css ${fonts.length} 位元組`);
       return bad.length === 0;
     })()],
     /* ── 圖片外置(2026-09-26,A2 + A3)──
