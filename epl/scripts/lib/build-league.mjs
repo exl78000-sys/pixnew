@@ -503,7 +503,17 @@ export async function buildLeague(L) {
   }
   const publishedReports = Object.fromEntries(
     Object.entries(reports).filter(([k]) => k.startsWith(`${CURRENT_SEASON}|`)));
-  const reportCount = Object.keys(publishedReports).length;
+  /* 本季的報告 2026-09-26 起也是逐場檔(A1,跟下面往季那條同一支寫檔):`reports.json` 只剩索引。
+     發布數從**寫出去的檔案**數,不從 map 數 —— 對不到場次 id 的那幾場沒有檔可點,不能算發布。 */
+  const { map: curByKey, duplicates: curDup } = idMapForArchive(curMatches);
+  if (curDup.length) console.log(`  ⚠ ${L.zh}本季有 ${curDup.length} 組撞鍵的對戰,那幾場不寫逐場檔:${curDup.join('、')}`);
+  const current = writeMatchArchive({
+    outDir: OUT, reports: publishedReports, season: CURRENT_SEASON,
+    idOf: key => curByKey.get(key)?.id ?? null,
+    extraOf: key => ({ round: curByKey.get(key)?.round ?? null, date: curByKey.get(key)?.date ?? null }),
+  });
+  if (current.missingId.length) console.log(`  ⚠ ${L.zh}本季 ${current.missingId.length} 場對不到場次 id,沒寫逐場檔:${current.missingId.join('、')}`);
+  const reportCount = current.count;
   /* 上一季寫成逐場檔。檔名用**場次 id**(`2025-26-0`)不是「季|主|客」——
      那個鍵帶 `|`,當檔名要跳脫、當網址參數更麻煩,而 id 本來就是單場頁的網址參數。 */
   const { map: lastByKey, duplicates: dupKeys } = idMapForArchive(lastMatches);
@@ -951,8 +961,9 @@ export async function buildLeague(L) {
   /* blocked 有明確語意(整季拿不到)。德甲**不是**沒有資料源 —— 來源在,只是 raw 還沒抓,
      所以是 'not-fetched',不是 'no-source'。這兩句對讀者的意義完全不同(CLAUDE.md 一整條在講)。 */
   await write('reports', {
-    seasons: reportCount ? [...new Set(Object.values(publishedReports).map(r => r.season))].sort() : [],
-    count: reportCount, reports: publishedReports, source: reportCount ? 'fotmob' : null, pending: pendingCount,
+    seasons: reportCount ? [...new Set(Object.keys(current.index).map(k => k.split('|')[0]))].sort() : [],
+    /* 本季的索引:「季|主|客」→ 場次 id,報告本身在 match-reports/{季}/{id}.json,點開那一場才載 */
+    count: reportCount, index: current.index, source: reportCount ? 'fotmob' : null, pending: pendingCount,
     /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json。
        前端拿它決定「這一列要不要給連結」與「這個 id 是不是往季的」。 */
     archive: archive.count ? { season: archive.season, count: archive.count, ids: archive.ids } : null,

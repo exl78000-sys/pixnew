@@ -959,11 +959,23 @@ async function main() {
     console.log(`  英冠往季賽後報告(${LAST_SEASON}):${archive.count} 場逐場檔、${archive.kb} KB`
       + (archive.missingId.length ? `・${archive.missingId.length} 場對不到場次 id,沒寫` : ''));
   }
-  const reportCount = Object.keys(publishedReports).length;
+  /* 本季的報告 2026-09-26 起也是逐場檔(A1,跟上面往季那條同一支寫檔):`reports.json` 只剩索引。
+     發布數從**寫出去的檔案**數,不從 map 數 —— 對不到場次 id 的那幾場沒有檔可點,不能算發布。 */
+  const { map: curByKey, duplicates: curDup } = idMapForArchive(curMatches);
+  if (curDup.length) console.log(`  ⚠ 英冠本季有 ${curDup.length} 組撞鍵的對戰,那幾場不寫逐場檔:${curDup.join('、')}`);
+  const current = writeMatchArchive({
+    outDir: OUT, reports: publishedReports, season: CURRENT_SEASON,
+    idOf: key => curByKey.get(key)?.id ?? null,
+    extraOf: key => ({ round: curByKey.get(key)?.round ?? null, date: curByKey.get(key)?.date ?? null }),
+  });
+  if (current.missingId.length) console.log(`  ⚠ 英冠本季 ${current.missingId.length} 場對不到場次 id,沒寫逐場檔:${current.missingId.join('、')}`);
+  const reportCount = current.count;
   const pendingCount = fixtures.filter(f => f.played && f.season === CURRENT_SEASON && !reports[`${f.season}|${f.home}|${f.away}`]).length;
   if (reportCount) console.log(`  英冠賽後報告:${reportCount} 場(FotMob)・本季還沒抓到 ${pendingCount} 場`);
   await write('reports', {
-    seasons: reportCount ? [...new Set(Object.values(publishedReports).map(r => r.season))].sort() : [], count: reportCount, reports: publishedReports,
+    seasons: reportCount ? [...new Set(Object.keys(current.index).map(k => k.split('|')[0]))].sort() : [], count: reportCount,
+    /* 本季的索引:「季|主|客」→ 場次 id,報告本身在 match-reports/{季}/{id}.json,點開那一場才載 */
+    index: current.index,
     source: reportCount ? 'fotmob' : null, pending: pendingCount,
     /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json */
     archive: archive.count ? { season: archive.season, count: archive.count, ids: archive.ids } : null,

@@ -51,6 +51,7 @@ import { checkScores, toFeedItems, forLeague, KNOWN_STATUS } from './lib/adapter
 import { readDelivery, mergeDelivery, pruneArchive, coverageOf, overlay, emptyArchive } from './lib/curated-archive.mjs';
 import { tierKey, lookupTier } from './lib/adapters/england-tiers.mjs';
 import { mergeCupSeasons } from './lib/cup-seasons.mjs';
+import { readMatchReports } from './lib/match-archive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -361,8 +362,10 @@ async function checkReports() {
   const rd = f => JSON.parse(readFileSync(join(ROOT, 'web', 'data', f), 'utf8'));
   let fixtures, teams, h2h, tactics, reports;
   try {
-    [fixtures, teams, h2h, tactics, reports] =
-      ['fixtures.json', 'teams.json', 'h2h.json', 'tactics.json', 'reports.json'].map(rd);
+    [fixtures, teams, h2h, tactics] = ['fixtures.json', 'teams.json', 'h2h.json', 'tactics.json'].map(rd);
+    // 報告本體是逐場檔(2026-09-26 起本季也是);讀回來的形狀跟以前整份內嵌時一樣
+    reports = readMatchReports(join(ROOT, 'web', 'data'));
+    if (!reports) throw new Error('沒有 reports.json');
   } catch {
     console.log('  ⚠ 找不到前端資料集,跳過(請先跑 npm run build)');
     return 0;
@@ -1827,7 +1830,7 @@ async function checkPlayerChip() {
   if (existsSync(esPlayers) && existsSync(esReports)) {
     const raw = JSON.parse(readFileSync(esPlayers, 'utf8'));
     const ix = V.shirtPhotoIndex(raw.players ?? raw);
-    const reps = JSON.parse(readFileSync(esReports, 'utf8'));
+    const reps = readMatchReports(join(ROOT, 'web', 'data', 'leagues', 'es1')) ?? {};
     let tot = 0, got = 0;
     for (const m of Object.values(reps.reports ?? {})) {
       for (const [code, list] of Object.entries(m.advanced?.players ?? {})) {
@@ -3955,7 +3958,7 @@ async function checkDataGap() {
       const score = new Map(results.map(r => [`${r.season}|${r.home}|${r.away}`, [r.fh, r.fa]]));
       const list = Object.values(ms.matches);
       const teamsJson = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
-      const reports = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'reports.json'), 'utf8')).reports;
+      const reports = readMatchReports(join(ROOT, 'web', 'data'))?.reports ?? {};
       const fmReports = Object.values(reports).filter(r => r.advanced?.source === 'fotmob');
       const mci = list.filter(m => m.home === 'MCI').map(m => m.possession.all[0]);
       const mean = Math.round((mci.reduce((a, b) => a + b, 0) / mci.length) * 100) / 100;
@@ -4590,8 +4593,54 @@ async function checkDataGap() {
       console.log(`    往季逐場檔:${seen} 個聯賽有索引`);
       return bad.length === 0;
     })()],
+    /* ── 本季賽後報告也是逐場檔(2026-09-26,A1)──
+       reports.json 只剩索引(index:「季|主|客」→ 場次 id)。這一條守四件事:索引指到的檔案都在、
+       每個 id 都對得回本季賽程(鍵也要對,不然是把某一場掛到另一場的網址上)、逐場檔自足、
+       而且**索引本身不准變胖** —— 誰把報告本體塞回去,首頁又會揹 3 MB(量過:3.2 MB 只為了一個布林值)。 */
+    ['本季逐場檔:索引與檔案對得起來、id 對得回賽程、reports.json 不超過 64 KB(掃每一個聯賽)', (() => {
+      const dirs = [{ key: 'pl', dir: join(ROOT, 'web', 'data') },
+        ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+          .filter(e => e.isDirectory()).map(e => ({ key: e.name, dir: join(ROOT, 'web', 'data', 'leagues', e.name) }))];
+      const bad = [];
+      let seen = 0, files = 0;
+      for (const { key, dir } of dirs) {
+        const rp = join(dir, 'reports.json');
+        if (!existsSync(rp)) continue;
+        const raw = readFileSync(rp, 'utf8');
+        const idx = JSON.parse(raw);
+        if (!idx.index || typeof idx.index !== 'object') { bad.push(`${key}:沒有 index`); continue; }
+        if (raw.length > 64 * 1024) bad.push(`${key}:reports.json ${Math.round(raw.length / 1024)} KB,索引不該這麼大`);
+        if (/"advanced"|"sides"/.test(raw)) bad.push(`${key}:索引裡有報告本體`);
+        const entries = Object.entries(idx.index);
+        if (idx.count !== entries.length) bad.push(`${key}:count ${idx.count} ≠ 索引 ${entries.length}`);
+        if (!entries.length) continue;
+        seen++;
+        const fixtures = JSON.parse(readFileSync(join(dir, 'fixtures.json'), 'utf8'));
+        const byId = new Map(fixtures.map(f => [f.id, f]));
+        const meta = JSON.parse(readFileSync(join(dir, 'meta.json'), 'utf8'));
+        let read = 0;
+        for (const [k, id] of entries) {
+          const f = byId.get(id);
+          if (!f) { bad.push(`${key}/${id}:賽程裡沒有這個 id`); continue; }
+          if (`${f.season}|${f.home}|${f.away}` !== k) { bad.push(`${key}/${id}:鍵 ${k} 對不上賽程`); continue; }
+          const fp = join(dir, 'match-reports', f.season, `${id}.json`);
+          if (!existsSync(fp)) { bad.push(`${key}/${id}:沒有檔案`); continue; }
+          files++;
+          if (++read > 12) continue;   // 每個聯賽抽 12 場讀內容就夠,不必把幾百個檔全解析
+          const r = JSON.parse(readFileSync(fp, 'utf8'));
+          const lack = ['id', 'season', 'home', 'away', 'hs', 'as', 'sides'].filter(x => r[x] === undefined);
+          if (lack.length) bad.push(`${key}/${id}:缺 ${lack.join('、')}`);
+          if (meta.builtAt && JSON.stringify(r).includes(meta.builtAt)) bad.push(`${key}/${id}:帶了建置時間戳`);
+          if (r.home !== f.home || r.away !== f.away) bad.push(`${key}/${id}:掛錯場次`);
+          if (f.played && r.finished && (r.hs !== f.fh || r.as !== f.fa)) bad.push(`${key}/${id}:比分 ${r.hs}-${r.as} 對不上賽果 ${f.fh}-${f.fa}`);
+        }
+      }
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      console.log(`    本季逐場檔:${seen} 個聯賽有報告、${files} 個檔`);
+      return bad.length === 0;
+    })()],
     /* ── 往季賽後報告(2026-09-16)──
-       上一季的報告不在 `reports.reports` 裡(那一份是首頁與單場頁**整份載**的,
+       上一季的報告不在本季的索引裡(那一份是首頁與單場頁**整份載**的,
        塞進去會從 1.6 MB 變成二十幾 MB),而是 `match-reports/{季}/{id}.json` 逐場檔。
        所以前端有兩處要對:賽程表要肯給往季的列連結、單場頁要認得往季的 id。 */
     ['賽程表的「有完整分析」不再只認本季 —— 往季看 reports.archive', (() => {

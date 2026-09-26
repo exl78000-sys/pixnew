@@ -1,4 +1,4 @@
-import * as C from './core.js?v=bd9a38a8';
+import * as C from './core.js?v=15d4daad';
 
 const app = document.getElementById('app');
 
@@ -18,7 +18,10 @@ try {
   const preArticleFor = f => analysis.pre[`${f.home}|${f.away}`] ?? null;
   const reportKey = f => `${f.season}|${f.home}|${f.away}`;
   const postArticleFor = f => analysis.post[reportKey(f)] ?? null;
-  const reportFor = f => reports.reports[reportKey(f)] ?? null;
+  /* 賽後報告本體 2026-09-26 起是逐場檔(本季與往季同一條路):`reports.json` 只剩索引
+     (`index`:「季|主|客」→ 場次 id),點開這一場才載那一個檔。整份內嵌時這一頁與首頁各揹 3.2 MB,
+     而這一頁只用其中一場。載入器在 core.js(賽程表的速覽抽屜也用同一支)。 */
+  const loadReport = f => C.loadMatchReport(reports, f);
   const expertsFor = f => experts.matches[reportKey(f)] ?? [];
   // 這幾個會在 renderMatch 裡用到,必須在呼叫點之前就初始化好 —— 放在下面的
   // 函式區只會撞上 TDZ(函式宣告會提升,const 不會)
@@ -49,13 +52,13 @@ try {
   /* 這一頁只處理「一場比賽」。沒指定是哪一場就導回賽程表 ——
      以前這裡有自己的列表,但它是賽程表的子集(只有未開賽且有文章的場次,
      還沒有篩選),兩個入口只會讓人猶豫該點哪一個。 */
-  if (target) renderMatch(target);
+  if (target) await renderMatch(target);
   else if (archivedId) await renderArchivedMatch(archivedId);
   else location.replace(C.link('index'));
 
   /* ── 單場分析 ────────────────────────────── */
-  function renderMatch(f) {
-    if (basic) { renderBasicMatch(f); return; }
+  async function renderMatch(f) {
+    if (basic) { await renderBasicMatch(f); return; }
     /* 兩個不同的東西,以前混在同一個欄位裡:
        - `pre` 是**真的賽前機率**:未賽 = 目前模型,已賽 = 開賽前凍結的快照,
          拿不到就是 null。只有它有資格出現在「賽前 → 市場 → 賽後」那一節。
@@ -65,7 +68,7 @@ try {
     const p = f.postFit ?? f.prediction;
     const preArt = preArticleFor(f);
     const postArt = postArticleFor(f);
-    const postReport = reportFor(f);
+    const postReport = await loadReport(f);
     const expertRows = expertsFor(f);
     const H = teamBy.get(f.home), A = teamBy.get(f.away);
     const th = tacBy.get(f.home), ta = tacBy.get(f.away);
@@ -351,8 +354,8 @@ try {
     C.bindPlayerLinks(document, code => playerByCode.get(code), { meta, mode: 'current' });
   }
 
-  function renderBasicMatch(f) {
-    const report = reportFor(f);
+  async function renderBasicMatch(f) {
+    const report = await loadReport(f);
     // 賽後那七張卡現在分四段畫,頭貼只投影一次就好(每段各投影一次是白做工)
     const rep = report ? C.reportWithPlayerPhotos(report, players) : null;
     const expertRows = expertsFor(f);

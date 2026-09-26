@@ -15,6 +15,7 @@ import { verifyTranslation } from './lib/report/translate.mjs';
 import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { backfillScores } from './lib/laliga-matches.mjs';
 import { normaliseFotmobMatch, ADAPTER_VERSION, fotmobPos } from './lib/adapters/fotmob-match.mjs';
+import { readMatchReports } from './lib/match-archive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
@@ -319,7 +320,7 @@ check('西甲即時輪詢有 include fallback 與硬上限',
   const fp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json');
   const gp = join(ROOT, 'data', 'raw', 'fotmob-la-liga', '2026-27-game-details.json');
   if (existsSync(rp) && existsSync(fp) && existsSync(gp)) {
-    const reports = JSON.parse(readFileSync(rp, 'utf8')).reports ?? {};
+    const reports = readMatchReports(join(ROOT, 'web', 'data', 'leagues', 'es1'))?.reports ?? {};
     const fixtures = JSON.parse(readFileSync(fp, 'utf8'));
     const details = JSON.parse(readFileSync(gp, 'utf8')).matches ?? {};
     const have = new Set(Object.values(details).filter(m => m.season === '2026-27').map(m => `${m.season}|${m.home}|${m.away}`));
@@ -699,7 +700,7 @@ check('摘要漏掉大部分數字 → 擋下',
 {
   const D = join(ROOT, 'web', 'data', 'leagues', 'es1');
   const rd = f => JSON.parse(readFileSync(join(D, f), 'utf8'));
-  const an = rd('analysis.json'), fixtures = rd('fixtures.json'), teams = rd('teams.json'), h2h = rd('h2h.json'), tactics = rd('tactics.json'), reports = rd('reports.json');
+  const an = rd('analysis.json'), fixtures = rd('fixtures.json'), teams = rd('teams.json'), h2h = rd('h2h.json'), tactics = rd('tactics.json'), reports = readMatchReports(D);
   const byCode = new Map(teams.map(t => [t.code, t]));
   const tacBy = new Map(tactics.map(t => [t.code, t]));
   const league = { key: 'es1', zh: '西甲' };

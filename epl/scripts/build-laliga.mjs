@@ -753,7 +753,17 @@ async function main() {
       possession: ms.possession, physical: ms.physical ?? null, possessionVerified: false,
       coverage: { ...rep.advanced.coverage, distance: !!ms.physical?.team?.distance?.some(v => v != null), sprints: !!ms.physical?.team?.sprints?.some(v => v != null), speed: !!ms.physical?.players?.some(p => p.topSpeed != null) } };
   }
-  const reportCount = Object.keys(reports).length;
+  /* 本季的報告 2026-09-26 起也是逐場檔(A1,跟上面往季那條同一支寫檔):`reports.json` 只剩索引。
+     發布數從**寫出去的檔案**數,不從 map 數 —— 對不到場次 id 的那幾場沒有檔可點,不能算發布。 */
+  const { map: curByKey, duplicates: curDup } = idMapForArchive(curMatches);
+  if (curDup.length) console.log(`  ⚠ 西甲本季有 ${curDup.length} 組撞鍵的對戰,那幾場不寫逐場檔:${curDup.join('、')}`);
+  const current = writeMatchArchive({
+    outDir: OUT, reports, season: CURRENT_SEASON,
+    idOf: key => curByKey.get(key)?.id ?? null,
+    extraOf: key => ({ round: curByKey.get(key)?.round ?? null, date: curByKey.get(key)?.date ?? null }),
+  });
+  if (current.missingId.length) console.log(`  ⚠ 西甲本季 ${current.missingId.length} 場對不到場次 id,沒寫逐場檔:${current.missingId.join('、')}`);
+  const reportCount = current.count;
   /* 「這一季拿不到」只能在**主要來源一場都發不出來**的時候講。
 
      SportMonks 是西甲賽後的主要來源,API-Football 只是備援。原本這裡的判斷是
@@ -1437,7 +1447,9 @@ async function main() {
   }
   await write('goals', goalsOut);
   await write('reports', {
-    seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount, reports,
+    seasons: reportCount ? [CURRENT_SEASON] : [], count: reportCount,
+    /* 本季的索引:「季|主|客」→ 場次 id,報告本身在 match-reports/{季}/{id}.json,點開那一場才載 */
+    index: current.index,
     /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json */
     archive: archive.count ? { season: archive.season, count: archive.count, ids: archive.ids } : null,
     source: reportCount ? [...new Set(Object.values(reports).map(r => r.source))].join(' + ') : 'sportmonks + api-football', pending: pendingCount,

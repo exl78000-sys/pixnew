@@ -19,6 +19,7 @@ import { readFileSync, existsSync, rmSync, mkdirSync, writeFileSync } from 'node
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isShootoutShot } from './lib/matchstats.mjs';
+import { readMatchReports } from './lib/match-archive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const argOf = name => {
@@ -890,7 +891,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   const tableRaw = load(lg.key, 'table');
   const table = arr(tableRaw?.rows ?? tableRaw?.table ?? tableRaw ?? [])
     .filter(r => r && r.code && r.pos != null);
-  const reportsFile = load(lg.key, 'reports');
+  const reportsFile = readMatchReports(dataDir(lg.key));   // 本體是逐場檔(2026-09-26 起本季也是),讀回來形狀不變
   const reports = reportsFile?.reports ?? {};
   const goalsFile = load(lg.key, 'goals');
   /* 逐場統計(FotMob,2026-09-03):控球、球隊統計、逐射門 xG、事件。英超才有;沒有檔就整段不寫。

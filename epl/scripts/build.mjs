@@ -1650,10 +1650,24 @@ async function main() {
     console.log(`  英超往季賽後報告(${LAST_SEASON}):${archive.count} 場逐場檔、${archive.kb} KB`
       + (archive.missingId.length ? `・${archive.missingId.length} 場對不到場次 id,沒寫` : ''));
   }
+  /* 本季的報告 2026-09-26 起也是逐場檔(A1):`reports.json` 只剩索引。
+     量過正式站:這一份 3.2 MB(解壓後),首頁載它只問「這場有沒有賽後報告」、單場頁只用其中一場,
+     兩頁都在為一個布林值付 3 MB。往季那條路(上面)直接沿用,寫檔的是同一支。 */
+  const { map: curByKey, duplicates: curDup } = idMapForArchive(curMatches);
+  if (curDup.length) console.log(`  ⚠ 英超本季有 ${curDup.length} 組撞鍵的對戰,那幾場不寫逐場檔:${curDup.join('、')}`);
+  const current = writeMatchArchive({
+    outDir: OUT, reports, season: CURRENT_SEASON,
+    idOf: key => curByKey.get(key)?.id ?? null,
+    extraOf: key => ({ round: curByKey.get(key)?.round ?? null, date: curByKey.get(key)?.date ?? null }),
+  });
+  console.log(`  英超本季賽後報告:${current.count} 場逐場檔、${current.kb} KB`
+    + (current.missingId.length ? `・${current.missingId.length} 場對不到場次 id,沒寫` : '')
+    + (current.otherSeason.length ? `・${current.otherSeason.length} 場不是本季,沒寫` : ''));
   await write('reports.json', {
-    seasons: [...new Set(Object.keys(reports).map(k => k.split('|')[0]))],
-    count: Object.keys(reports).length,
-    reports,
+    seasons: [...new Set(Object.keys(current.index).map(k => k.split('|')[0]))],
+    count: current.count,
+    /* 本季的索引:「季|主|客」→ 場次 id,報告本身在 match-reports/{季}/{id}.json,點開那一場才載 */
+    index: current.index,
     /* 往季的索引:只有 id,報告本身在 match-reports/{季}/{id}.json */
     archive: archive.count ? { season: archive.season, count: archive.count, ids: archive.ids } : null,
   });

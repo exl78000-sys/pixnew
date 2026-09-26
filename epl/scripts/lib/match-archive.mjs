@@ -1,10 +1,13 @@
-/* 往季賽後報告的逐場檔(2026-09-16)。
+/* 賽後報告的逐場檔(往季 2026-09-16 起;本季 2026-09-26 起也是)。
 
    為什麼不塞進 `reports.json`:那一份是**首頁與單場頁整份載**的
    (`page-index.js` 與 `page-analysis.js` 都在 `C.load` 清單裡)。
-   本季已經 1.6~4.9 MB;把上一季加進去,六個聯賽合計 2,302 場、一場約 60 KB ——
-   首頁會變成幾十 MB。所以照**盃賽那條路**(`cup-details/{盃賽}/{季}/{id}.json`,
-   2026-09-13 起,同樣的理由量過):索引留在 `reports.json`(只有 id),
+   往季那次量過:六個聯賽合計 2,302 場、一場約 60 KB,塞進去首頁會變成幾十 MB。
+   本季那次(2026-09-26)量的是正式站:英超 `reports.json` 3.2 MB(解壓後),首頁載它
+   只回答「這場有沒有賽後報告」、單場頁載它只用其中一場 —— 兩頁都在為一個布林值付 3 MB,
+   而且 `live.json` 裡還有一份一模一樣的 advanced 與 sides。
+   所以本季也照**盃賽那條路**(`cup-details/{盃賽}/{季}/{id}.json`,2026-09-13 起):
+   索引留在 `reports.json`(`index`:「季|主|客」→ 場次 id;往季是 `archive.ids`),
    報告本身一場一個檔,讀者點開那一場才載。
 
    **檔案內容必須逐次建置位元組相同。** 部署一天跑兩次而且每次整份重寫;
@@ -15,21 +18,27 @@
 
    清掉舊檔的範圍**只限這一季這一個聯賽的目錄**,而且只刪 `{id}.json` ——
    跟盃賽同一個寫法。整個目錄 rm 的話,哪天有人把別的東西放進來就會被連坐。 */
-import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /* reports 是「季|主|客」→ 報告;idOf 把那個鍵換成場次 id(檔名)。
    回傳索引與統計 —— 索引只有 id,因為**報告檔自己就帶 home / away / hs / as / season**,
-   單場頁拿到檔案就畫得出來,不必再載 results.json(那是 274 KB)。 */
+   單場頁拿到檔案就畫得出來,不必再載 results.json(那是 274 KB)。
+   `ids` 是排好序的 id 清單(往季的索引:單場頁要認得「這個 id 是不是往季的」),
+   `index` 是「鍵 → id」(本季的索引:賽程表要用鍵問「這場有沒有」)。兩個都給,呼叫端各取所需。
+   不是這一季的鍵**不寫、也不進索引**,但收在 `otherSeason` 回報 —— 靜靜略過的話,
+   索引說「沒有」而報告其實建過了,而畫面完全正常。 */
 export function writeMatchArchive({ outDir, reports, season, idOf, extraOf = () => ({}) }) {
   const dir = join(outDir, 'match-reports', season);
   if (existsSync(dir)) for (const f of readdirSync(dir)) if (f.endsWith('.json')) rmSync(join(dir, f));
 
   const ids = [];
+  const index = {};
   let bytes = 0;
   const missingId = [];
+  const otherSeason = [];
   for (const [key, report] of Object.entries(reports)) {
-    if (!key.startsWith(`${season}|`)) continue;
+    if (!key.startsWith(`${season}|`)) { otherSeason.push(key); continue; }
     const id = idOf(key);
     /* id 查不到就**不寫**:檔名是網址的一部分,編一個出來的話讀者點進去會是 404,
        而索引會說「這一場有報告」——「按鈕在但點了沒東西」。記下來讓 build 印出人數。 */
@@ -42,9 +51,30 @@ export function writeMatchArchive({ outDir, reports, season, idOf, extraOf = () 
     writeFileSync(join(dir, `${id}.json`), str);
     bytes += str.length;
     ids.push(id);
+    index[key] = id;
   }
   ids.sort();   // 索引排序,不然鍵的順序會跟著 Object 的插入順序漂,產物每次都不一樣
-  return { season, count: ids.length, ids, kb: Math.round(bytes / 1024), missingId };
+  const sortedIndex = Object.fromEntries(Object.entries(index).sort(([a], [b]) => (a < b ? -1 : 1)));
+  return { season, count: ids.length, ids, index: sortedIndex, kb: Math.round(bytes / 1024), missingId, otherSeason };
+}
+
+/* 讀回逐場檔(Node 端用:測試、Obsidian、單檔打包)。
+   回傳的形狀跟 2026-09-26 之前整份內嵌的 `reports.json` 一樣 ——
+   `{ ...索引, reports: { 鍵 → 報告本體 } }` —— 所以既有的檢查邏輯不必重寫,只換讀法。
+   本體的路徑從**鍵的季**組(`match-reports/{季}/{id}.json`),不另外存季:鍵本來就帶季。
+   索引指到而檔案不在的,收進 `missing` 讓呼叫端決定要不要紅 —— 這裡不擋,測試才擋。 */
+export function readMatchReports(dir) {
+  const idxPath = join(dir, 'reports.json');
+  if (!existsSync(idxPath)) return null;
+  const idx = JSON.parse(readFileSync(idxPath, 'utf8'));
+  const reports = {};
+  const missing = [];
+  for (const [key, id] of Object.entries(idx.index ?? {})) {
+    const fp = join(dir, 'match-reports', key.split('|')[0], `${id}.json`);
+    if (!existsSync(fp)) { missing.push(key); continue; }
+    reports[key] = JSON.parse(readFileSync(fp, 'utf8'));
+  }
+  return { ...idx, reports, missing };
 }
 
 /* 「季|主|客」當鍵在**有附加賽的聯賽**裡不唯一(英冠季末的升級附加賽由聯賽裡的四隊互打,
