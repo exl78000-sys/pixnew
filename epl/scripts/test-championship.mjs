@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { backfillScores } from './lib/league-matches.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
+import { simZoneIssues } from './lib/sim-zones.mjs';
 import { preMatchBundle, postMatchBundle, templateFor, verify } from './lib/report/index.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef } from './lib/image-files.mjs';
@@ -203,6 +204,12 @@ const table = out('table'), results = out('results'), sim = out('sim');
 {
   check('模擬輸出直升機率(英冠前 2 直升)', sim.every(r => typeof r.promotionPct === 'number'));
   check('直升機率不高於前六機率', sim.every(r => r.promotionPct <= r.top6Pct + 0.001));
+  /* 附加賽區是**第 3~6 名**(playoffPct),不是 top6Pct —— 後者含直升的前 2 名。
+     2026-09-26 前畫面的「附加賽區」就是 top6Pct:WHU 印 99%,真正落在 3~6 名的是 20%。
+     名額由這支測試自己講(前 2 直升、3~6 附加賽、後 3 直接降級),不從產物讀。 */
+  const zoneIssues = simZoneIssues(sim, { relegated: 3, promotion: 2, promotionPlayoff: 6 });
+  check('直升 / 附加賽區(3~6 名)/ 降級(後 3 名)都跟 posDist 對得上', zoneIssues.length === 0,
+    zoneIssues.slice(0, 3).join(' / '));
   const sumTitle = sim.reduce((a, r) => a + r.titlePct, 0);
   check('奪冠機率加總約 100%', Math.abs(sumTitle - 100) < 1.5, sumTitle.toFixed(1));
   /* 沒給 promotion 的聯賽不可以多出這個欄位 —— 多給了前端會以為英超也有直升。 */

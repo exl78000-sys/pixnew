@@ -317,6 +317,10 @@ async function main() {
     codes: curCodes, played: curPlayed, runs: RUNS, seed: 20262702,
     // 英冠前 2 直升英超、3~6 打附加賽 ——「前四」在這裡不是一條界線
     promotion: 2,
+    /* 附加賽區是第 3~6 名(`playoffPct`)。原本畫面拿 top6Pct 當附加賽區,那含直升的前 2 名 */
+    promotionPlayoff: 6,
+    // 後 3 名直接降到英甲,沒有降級附加賽 —— 寫出來而不是靠預設值,這是這個聯賽的事實
+    relegated: 3,
   });
   const simBy = new Map(sim.map(x => [x.code, x]));
   const lastBy = new Map(lastTable.map(x => [x.code, x]));

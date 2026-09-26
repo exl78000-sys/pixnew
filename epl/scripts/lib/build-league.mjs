@@ -20,8 +20,11 @@
  *   key / zh / competition / rawDir / fillDir / div / understatDir / fotmobDir
  *   crestFile / teamFile / timezone / lastSeason / currentSeason / priorSeasons
  *   teamCount / rounds / relegation(這個聯賽的升降級規則,**不可以照抄**)
+ *   relegated(直接降級幾名)/ relegationPlayoff(直接降級的上一名要不要打附加賽)
  *
- * **`teamCount`、`rounds` 與 `relegation` 是聯賽的事實,抄過來就是一個假數字。**
+ * **`teamCount`、`rounds`、`relegation` 與 `relegated` 是聯賽的事實,抄過來就是一個假數字。**
+ * `relegation` 是給讀者的那句話,`relegated` / `relegationPlayoff` 是模擬真的照著數的名額 ——
+ * 2026-09-26 之前只有那句話,模擬一律數後 3 名,於是德甲法甲的「降級」含第 16 名(附加賽)。
  * 德甲與法甲的第 16 名打的是**跨聯賽**的附加賽(對德乙 / 法乙第 3 名),
  * 而義甲是後 3 名直接降級、沒有附加賽 —— 三句話對讀者的意義完全不同。
  */
@@ -344,9 +347,13 @@ export async function buildLeague(L) {
   /* 賽季模擬。**德甲沒有「直升」這個欄位** —— 它的第 16 名打的是跨聯賽的升降級附加賽,
      而本站沒有德乙的資料,評不出對手強度(鐵則二)。所以只給冠軍 / 前四 / 降級,
      附加賽那一名由前端照 `meta.boundaries` 講,不編一個機率出來。 */
+  /* 直接降級的名額要呼叫端講明,**不給預設值**:德甲法甲後 2 名、義甲後 3 名,
+     照抄任何一個給另一個都是假數字。第 16 名的附加賽只給「打到這一名」的機率(relegationPlayoffPct)。 */
+  if (!Number.isInteger(L.relegated)) throw new Error(`${L.zh}:沒有給 relegated(直接降級幾名)`);
   const sim = simulateSeason({
     model, fixtures: curMatches.filter(m => !m.played),
     codes: curCodes, played: curPlayed, runs: RUNS, seed: 20262703,
+    relegated: L.relegated, relegationPlayoff: L.relegationPlayoff === true,
   });
   const simBy = new Map(sim.map(x => [x.code, x]));
   const lastBy = new Map(lastTable.map(x => [x.code, x]));

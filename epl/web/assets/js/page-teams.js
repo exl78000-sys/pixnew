@@ -968,10 +968,17 @@ try {
      機率拆成獨立一排、每個自己帶標籤,KPI 只留單一數字。 */
   function kpiRow(t) {
     const ls = t.lastSeason, cur = t.current, s = t.sim;
+    /* 「前四」在有 promotionPct 的聯賽(英冠)沒有意義,換成直升與附加賽區 —— 跟 sim-table 同一個判斷。
+       這一格原本不分聯賽一律印前四,英冠的球隊頁就印著一條那個聯賽沒有的界線。 */
     const probs = s ? C.statCells([
       s.titlePct != null ? { label: '奪冠', value: `${s.titlePct}`, unit: '%', tone: s.titlePct >= 50 ? 'win' : null } : null,
-      { label: '前四', value: `${s.top4Pct}`, unit: '%' },
-      { label: '降級', value: `${s.relegationPct}`, unit: '%', tone: s.relegationPct >= 20 ? 'loss' : null },
+      ...(s.promotionPct != null
+        ? [{ label: '直升', value: `${s.promotionPct}`, unit: '%' },
+          s.playoffPct != null ? { label: '附加賽區', value: `${s.playoffPct}`, unit: '%', title: '落在第 3~6 名(不含直升)' } : null]
+        : [{ label: '前四', value: `${s.top4Pct}`, unit: '%' }]),
+      { label: '降級', value: `${s.relegationPct}`, unit: '%', tone: s.relegationPct >= 20 ? 'loss' : null, title: '直接降級' },
+      s.relegationPlayoffPct != null
+        ? { label: '降級附加賽', value: `${s.relegationPlayoffPct}`, unit: '%', title: '落在直接降級的上一名(不含附加賽勝負)' } : null,
       { label: 'Elo', value: C.fx(t.elo, 0), title: '1500 是起點基準' },
     ]) : '';
     return `<div class="grid g4">

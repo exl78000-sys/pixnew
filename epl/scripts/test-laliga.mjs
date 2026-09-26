@@ -17,6 +17,7 @@ import { backfillScores } from './lib/laliga-matches.mjs';
 import { normaliseFotmobMatch, ADAPTER_VERSION, fotmobPos } from './lib/adapters/fotmob-match.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef } from './lib/image-files.mjs';
+import { simZoneIssues } from './lib/sim-zones.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
@@ -723,6 +724,16 @@ check('摘要漏掉大部分數字 → 擋下',
   check('西甲賽前文章不會講「上季英超」', Object.values(an.pre).every(a => !/上季英超/.test(a.paragraphs.join(''))));
   check('西甲賽前的陣型講「最常用」不講「平均站位」(Understat 給的是使用分鐘)', Object.values(an.pre).every(a => !/平均站位/.test(a.paragraphs.join(''))) && pre.every(b => b.shape.kind === 'mostUsed'));
   check('西甲文章的資料出處不寫 FPL', [...Object.values(an.pre), ...Object.values(an.post)].every(a => !/FPL/.test(a.caveat ?? '') && !/FPL/.test(a.paragraphs.join(''))));
+}
+
+/* 賽季模擬的名額(2026-09-26):降級是「後 3 名直接降級」、沒有附加賽 —— 名額由這支測試自己講,
+   不從產物讀。這一條是德甲法甲那次(模擬一律數後 3 名、他們只有後 2 名直接降級)之後加的,
+   西甲的名額本來就對,守的是「以後有人改共用的模擬時,西甲不會跟著走鐘」。 */
+{
+  const sim = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'sim.json'), 'utf8'));
+  const zoneIssues = simZoneIssues(sim, { relegated: 3 });
+  check('西甲模擬:降級是後 3 名、沒有直升與附加賽欄位,跟 posDist 對得上', zoneIssues.length === 0,
+    zoneIssues.slice(0, 3).join(' / '));
 }
 
 /* 教練本季戰績(2026-09-04):本站賽果算的,場數要等於該隊本季已賽場數,並標 tenureUnknown */

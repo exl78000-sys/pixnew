@@ -21,6 +21,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadTeams } from './teams.mjs';
 import { simulateSeason } from './simulate.mjs';
+import { simZoneIssues } from './sim-zones.mjs';
 import { europeanKickoff } from './league-matches.mjs';
 import { nameCheckVerdict } from './build-league.mjs';
 import { readMatchReports } from './match-archive.mjs';
@@ -365,6 +366,12 @@ export function testLeague(L) {
       sim.every(r => ['titlePct', 'top4Pct', 'relegationPct'].every(k => typeof r[k] === 'number')));
     const sumTitle = sim.reduce((a, r) => a + r.titlePct, 0);
     check('奪冠機率加總約 100%', Math.abs(sumTitle - 100) < 1.5, sumTitle.toFixed(1));
+    /* **那句話之外,模擬真的照著數的名額也要對。** 2026-09-26 之前模擬一律數後 3 名,
+       德甲法甲的「降級」於是含第 16 名(附加賽)—— 而資料界線寫的是「直接降級」。
+       名額由這支測試的參數**獨立**講一次(L.relegated),不從產物讀:產物跟著錯的時候才抓得到。 */
+    const zoneIssues = simZoneIssues(sim, { relegated: L.relegated, relegationPlayoff: L.relegationPlayoff === true });
+    check(`降級是「後 ${L.relegated} 名直接降級」的機率${L.relegationPlayoff ? `,第 ${sim.length - L.relegated} 名另給附加賽機率` : '(沒有附加賽)'}`
+      + '・跟 posDist 對得上', zoneIssues.length === 0, zoneIssues.slice(0, 3).join(' / '));
     /* **升降級那句話逐聯賽不同,不可以用同一個正則。** 德甲要提德乙、法甲要提法乙、
        義甲根本沒有附加賽(它要講的是「後 3 名直接降級、沒有附加賽」)——
        寫死 /德乙/ 的話義甲會紅在一件它本來就沒有的事上。 */

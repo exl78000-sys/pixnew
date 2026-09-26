@@ -44,15 +44,27 @@ export function mountSimTable(mountId, { sim, teams, table, meta, note = true })
       { key: 'promotionPct', label: '直升', value: r => r.promotionPct, num: true,
         title: '前 2 名直接升上英超',
         render: r => `${r.promotionPct}%${C.bar(r.promotionPct, 100, 'alt')}` },
-      { key: 'top6Pct', label: '附加賽區', value: r => r.top6Pct, num: true,
-        title: '第 3~6 名打升級附加賽',
-        render: r => `${r.top6Pct}%${C.bar(r.top6Pct, 100, 'alt')}` },
+      /* 附加賽區讀 playoffPct(落在第 3~6 名)。**不是 top6Pct** —— 那含直升的前 2 名,
+         2026-09-26 前這一欄就是它:WHU 印 99%,真正落在 3~6 名的是 20%。沒有這個欄位就整欄不畫。 */
+      ...(sim[0]?.playoffPct != null ? [
+        { key: 'playoffPct', label: '附加賽區', value: r => r.playoffPct, num: true,
+          title: '落在第 3~6 名、打升級附加賽的機率(不含直升的前 2 名)',
+          render: r => `${r.playoffPct}%${C.bar(r.playoffPct, 100, 'alt')}` },
+      ] : []),
     ] : [
       { key: 'top4Pct', label: '前四', value: r => r.top4Pct, num: true,
         render: r => `${r.top4Pct}%${C.bar(r.top4Pct, 100, 'alt')}` },
     ]),
     { key: 'relegationPct', label: '降級', value: r => r.relegationPct, num: true,
+      title: '直接降級的機率(名額照這個聯賽的規則)',
       render: r => `${r.relegationPct}%${C.bar(r.relegationPct, 100, 'hot')}` },
+    /* 德甲法甲的第 16 名打跨聯賽附加賽:只給「落在這一名」的機率,不給附加賽的勝負(對手在次級聯賽,評不出強度)。
+       有這個欄位的聯賽才畫 —— 看資料,不在前端寫死聯賽代碼。 */
+    ...(sim[0]?.relegationPlayoffPct != null ? [
+      { key: 'relegationPlayoffPct', label: '降級附加賽', value: r => r.relegationPlayoffPct, num: true,
+        title: '落在直接降級上一名、要跟次級聯賽球隊打附加賽的機率(不含附加賽的勝負)',
+        render: r => `${r.relegationPlayoffPct}%${C.bar(r.relegationPlayoffPct, 100, 'hot')}` },
+    ] : []),
     { key: 'last', label: '上季', value: r => (teamBy.get(r.code)?.lastSeason?.pos ?? 99), num: true,
       render: r => { const t = teamBy.get(r.code);
         return t?.lastSeason ? `第 ${t.lastSeason.pos} 名` : '<span class="pill">升班馬</span>'; } },

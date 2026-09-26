@@ -18,6 +18,8 @@ import { fitPoisson, applyPromotedPrior, predict } from './lib/poisson.mjs';
 import { buildElo, eloProbs } from './lib/elo.mjs';
 import { uclSeasonMatches } from './lib/ucl-elo.mjs';
 import { round } from './lib/util.mjs';
+import { simulateSeason } from './lib/simulate.mjs';
+import { simZoneIssues } from './lib/sim-zones.mjs';
 import { inPlay, remainingFraction } from './lib/inplay.mjs';
 import { loadInplayCurve, validCurve, reconcile as reconcileEvents, happened, goalTimingCurve, pairedScores, outcome0, anchorLambdas, splitLambdas, kickStep } from './lib/inplay-tuning.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
@@ -658,9 +660,12 @@ async function main() {
   console.log('\n▶ 資產版本戳(部署後看不看得到更新)');
   const stampFail = checkAssetStamps();
 
+  console.log('\n▶ 賽季模擬的名額(降級、直升、附加賽照各聯賽的規則數)');
+  const simZoneFail = checkSimZones();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -7327,6 +7332,72 @@ function checkUcl() {
    2026-08-28 那一份交付的 2024-25 整批是偽造的 —— 把 2025-26 複製一份、年份 -1。
    Leeds United 2024-25 在英冠,而檔案裡有 6 筆「2024-25 英超 / 母隊 Leeds」。
    協作方不會回報這件事,畫面上也看起來完全正常,所以這幾條要釘死。 */
+/* 賽季模擬的名額(2026-09-26)。
+
+   模擬原本一律數「後 3 名」當降級、`top6Pct` 被畫面拿去當英冠的「附加賽區」:
+   德甲法甲的「降級」於是含第 16 名(那是跨聯賽附加賽,資料界線寫的卻是「直接降級」),
+   英冠的「附加賽區」含直升的前 2 名(WHU 印 99%,真正落在 3~6 名的是 20%)。
+   兩個都不拋錯、畫面完全正常 —— 數字在講另一件事。
+
+   這裡守三層:英超產物的名額、模擬函式本身(合成聯賽,名額參數真的有照著數、而且不多抽亂數)、
+   前端(附加賽區讀 playoffPct、球隊頁的「前四」只在沒有直升的聯賽出現)。
+   其餘五個聯賽的產物在各自的測試裡對(名額由那支測試獨立講一次,不從產物讀)。 */
+function checkSimZones() {
+  let fail = 0;
+  const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
+  const strip = x => x.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+
+  // ── 一、英超的產物:後 3 名直接降級,沒有直升與附加賽 ──
+  const simPath = join(ROOT, 'web', 'data', 'sim.json');
+  if (existsSync(simPath)) {
+    const issues = simZoneIssues(JSON.parse(readFileSync(simPath, 'utf8')), { relegated: 3 });
+    ok(issues.length === 0, '英超模擬:降級是後 3 名、沒有直升與附加賽欄位,跟 posDist 對得上', issues.slice(0, 3).join(' / '));
+  } else console.log('  (還沒建置 sim.json,產物那一條略過)');
+
+  // ── 二、模擬函式本身(合成的 6 隊聯賽,雙循環 30 場,全部未賽)──
+  const codes = ['A', 'B', 'C', 'D', 'E', 'F'];
+  const fixtures = codes.flatMap(h => codes.filter(a => a !== h).map(a => ({ home: h, away: a })));
+  const model = { idx: new Map(), promoted: [] };   // 查不到隊 → lambdas 給固定的 1.4 / 1.2
+  const base = { model, fixtures, codes, played: [], runs: 3000, seed: 7 };
+  const plain = simulateSeason(base);
+  const explicit3 = simulateSeason({ ...base, relegated: 3 });
+  ok(JSON.stringify(plain) === JSON.stringify(explicit3), '預設名額就是「後 3 名」(不給 = 給 3,輸出逐字相同)');
+  const zoned = simulateSeason({ ...base, relegated: 2, relegationPlayoff: true, promotion: 1, promotionPlayoff: 3 });
+  const zi = simZoneIssues(zoned, { relegated: 2, relegationPlayoff: true, promotion: 1, promotionPlayoff: 3 });
+  ok(zi.length === 0, '名額參數真的照著數:後 2 名降級、第 4 名降級附加賽、第 1 名直升、第 2~3 名附加賽區', zi.slice(0, 3).join(' / '));
+  /* 名額只改「數哪幾名」,不可以多抽一個亂數 —— 不然英超西甲義甲的產物會跟著漂(實測修正前後三份逐位元組相同) */
+  const same = k => zoned.every((r, i) => JSON.stringify(r[k]) === JSON.stringify(plain[i][k]));
+  ok(zoned.every((r, i) => r.code === plain[i].code) && ['expectedPoints', 'expectedPos', 'titlePct', 'top4Pct', 'top6Pct', 'posDist'].every(same),
+    '換了名額,其餘欄位逐字不變(沒有多抽亂數)');
+  ok(zoned.every((r, i) => r.relegationPct <= plain[i].relegationPct), '後 2 名的降級機率不高於後 3 名的(方向對)');
+  const throws = f => { try { f(); return false; } catch { return true; } };
+  ok(throws(() => simulateSeason({ ...base, relegated: 0 })), '直接降級名額不是正整數會拋錯');
+  ok(throws(() => simulateSeason({ ...base, promotionPlayoff: 3 })), '沒有直升名額卻給附加賽區會拋錯');
+  ok(throws(() => simulateSeason({ ...base, promotion: 2, promotionPlayoff: 2 })), '附加賽區的最後一名不大於直升名額會拋錯');
+  /* 反向:故意拿「後 3 名」的產物去對「後 2 名」的名額,核對器必須報錯 —— 不然上面那些綠燈什麼都沒守 */
+  ok(simZoneIssues(plain, { relegated: 2 }).length > 0, '核對器抓得到「降級數成後 3 名」(負向對照)');
+  /* 全隊加總那一條會先抓到上面那種;這一條是總和不變、數字掛錯隊 —— 只有逐列比對得出來 */
+  const rev = plain.map(r => r.relegationPct).reverse();
+  ok(simZoneIssues(plain.map((r, i) => ({ ...r, relegationPct: rev[i] })), { relegated: 3 }).length > 0,
+    '核對器逐列比:總和對得上、但降級機率掛錯隊也抓得到(負向對照)');
+  ok(simZoneIssues(plain.map(r => ({ ...r, promotionPct: 50, playoffPct: r.top6Pct })), { relegated: 3, promotion: 1, promotionPlayoff: 3 }).length > 0,
+    '核對器抓得到「附加賽區拿 top6Pct 充數」(負向對照)');
+
+  // ── 三、前端 ──
+  const js = f => strip(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8'));
+  const table = js('sim-table.js');
+  ok(/key: 'playoffPct', label: '附加賽區'/.test(table) && !/key: 'top6Pct', label: '附加賽區'/.test(table),
+    '預測積分榜的「附加賽區」讀 playoffPct,不是 top6Pct(那含直升的前 2 名)');
+  ok(/sim\[0\]\?\.relegationPlayoffPct != null/.test(table) && /label: '降級附加賽'/.test(table),
+    '預測積分榜有降級附加賽的聯賽才畫那一欄(看資料,不寫死聯賽)');
+  const teamsSrc = js('page-teams.js');
+  const i4 = teamsSrc.indexOf("{ label: '前四', value: `${s.top4Pct}`");
+  ok(i4 > 0 && /s\.promotionPct != null/.test(teamsSrc.slice(Math.max(0, i4 - 400), i4)),
+    '球隊頁的「前四」只在沒有直升的聯賽出現(英冠換成直升與附加賽區)');
+  ok(/label: '附加賽區', value: `\$\{s\.playoffPct\}`/.test(teamsSrc), '球隊頁的附加賽區讀 playoffPct');
+  return fail;
+}
+
 function checkLoans() {
   let fail = 0;
   const ok = (cond, label, extra = '') => {

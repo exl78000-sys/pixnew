@@ -571,6 +571,8 @@ async function main() {
   // ── 賽季模擬 ──────────────────────────────
   const sim = simulateSeason({
     model, fixtures: curMatches.filter(m => !m.played), codes: curCodes, played: curPlayed, runs: RUNS,
+    // 英超後 3 名直接降級、沒有附加賽 —— 寫出來而不是靠預設值,這是這個聯賽的事實
+    relegated: 3,
   });
   const simBy = new Map(sim.map(s => [s.code, s]));
 

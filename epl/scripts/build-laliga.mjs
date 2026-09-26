@@ -425,6 +425,8 @@ async function main() {
     played: curPlayed,
     runs: RUNS,
     seed: 20262701,
+    // 西甲後 3 名直接降級、沒有附加賽 —— 寫出來而不是靠預設值,這是這個聯賽的事實
+    relegated: 3,
   });
   const simBy = new Map(sim.map(x => [x.code, x]));
   const lastBy = new Map(lastTable.map(x => [x.code, x]));

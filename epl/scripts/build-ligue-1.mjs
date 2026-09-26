@@ -38,5 +38,7 @@ await buildLeague({
   lastSeason: '2025-26', currentSeason: '2026-27', priorSeasons: ['2023-24', '2024-25'],
   fotmobId: 53, rounds: 34, backtestFile: 'backtest-ligue-1.json',
   relegation: '法甲的升降級:後 2 名直接降級,第 16 名跟法乙第 3 名打附加賽 —— 那是「跨聯賽」的比賽,'
-    + '本站沒有法乙的資料評不出對手強度,所以模擬只給冠軍 / 前四 / 直接降級,不給附加賽的勝負機率',
+    + '本站沒有法乙的資料評不出對手強度,所以模擬給冠軍 / 前四 / 直接降級與「落在第 16 名」的機率,不給附加賽的勝負機率',
+  /* 模擬真的照著數的名額(跟上面那句話是同一件事的兩面,兩個都要給)。 */
+  relegated: 2, relegationPlayoff: true,
 });

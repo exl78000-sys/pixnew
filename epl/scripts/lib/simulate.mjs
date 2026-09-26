@@ -11,8 +11,26 @@ const SIGMA_PRIOR = 0.15;    // 套用升班馬先驗的球隊,不確定性更�
    輸出多一個欄位對它們沒有意義,而且會讓前端以為每個聯賽都有直升。
    英冠是前 2 直升、3~6 打附加賽,所以「前四」那一欄在那裡沒有意義,
    要換成「直升」才講得對。既有的 top4Pct / top6Pct 語意不變(就是 ≤4 與 ≤6),
-   不去改它們的名字 —— 名字對得上值,是這個檔案最不該動的東西。 */
-export function simulateSeason({ model, fixtures, codes, played = [], runs = 10000, seed = 20262027, promotion = null }) {
+   不去改它們的名字 —— 名字對得上值,是這個檔案最不該動的東西。
+
+   promotionPlayoff:升級附加賽區的最後一名(英冠 6)→ `playoffPct` = 落在 promotion+1 ~ 這一名。
+   **不要拿 top6Pct 當附加賽區**:它含直升的前 2 名。2026-09-26 前英冠的「附加賽區」就是這樣印的 ——
+   標題寫「第 3~6 名」,而 WHU 印 99%,真正落在 3~6 名的機率是 20%。
+
+   relegated:**直接**降級的名額。原本寫死「後 3 名」(`pos >= n - 2`),六個聯賽共用 ——
+   德甲法甲只有後 2 名直接降級、第 16 名打跨聯賽附加賽,於是那兩個聯賽的「降級」
+   一直是「後 3 名」的機率(漢堡 58%,其中直接降級 43%、第 16 名 15%),而資料界線寫的是「直接降級」。
+   預設 3 是英超、西甲、英冠、義甲的規則;德義法共用的 build 一律要自己給(lib/build-league.mjs)。
+   relegationPlayoff:直接降級的上一名要打附加賽 → `relegationPlayoffPct` = 落在那一名的機率。
+   只給「打到這一名」,不給附加賽的勝負 —— 對手在次級聯賽,本站評不出強度(鐵則二)。
+
+   這幾個參數只改「數哪幾名」,不多抽一個亂數:同一組 seed 跑出來的其餘欄位逐位元組不變。 */
+export function simulateSeason({ model, fixtures, codes, played = [], runs = 10000, seed = 20262027, promotion = null,
+  promotionPlayoff = null, relegated = 3, relegationPlayoff = false }) {
+  if (!Number.isInteger(relegated) || relegated < 1) throw new Error(`simulateSeason: relegated 要是正整數(拿到 ${relegated})`);
+  if (promotionPlayoff != null && !(promotion && promotionPlayoff > promotion)) {
+    throw new Error(`simulateSeason: promotionPlayoff(${promotionPlayoff})要大於 promotion(${promotion})`);
+  }
   const idx = new Map(codes.map((c, i) => [c, i]));
   const n = codes.length;
 
@@ -48,7 +66,7 @@ export function simulateSeason({ model, fixtures, codes, played = [], runs = 100
 
   const sumPts = new Float64Array(n), sumPos = new Float64Array(n);
   const title = new Float64Array(n), top4 = new Float64Array(n), top6 = new Float64Array(n), releg = new Float64Array(n);
-  const promo = new Float64Array(n);
+  const promo = new Float64Array(n), promoPlayoff = new Float64Array(n), relegPlayoff = new Float64Array(n);
   const posHist = Array.from({ length: n }, () => new Float64Array(n + 1));
   const pts = new Float64Array(n), gd = new Float64Array(n);
   const nAtt = new Float64Array(n), nDef = new Float64Array(n);
@@ -75,9 +93,11 @@ export function simulateSeason({ model, fixtures, codes, played = [], runs = 100
       sumPts[t] += pts[t]; sumPos[t] += pos; posHist[t][pos]++;
       if (pos === 1) title[t]++;
       if (promotion && pos <= promotion) promo[t]++;
+      if (promotionPlayoff && pos > promotion && pos <= promotionPlayoff) promoPlayoff[t]++;
       if (pos <= 4) top4[t]++;
       if (pos <= 6) top6[t]++;
-      if (pos >= n - 2) releg[t]++;
+      if (pos > n - relegated) releg[t]++;
+      if (relegationPlayoff && pos === n - relegated) relegPlayoff[t]++;
     }
   }
 
@@ -87,9 +107,11 @@ export function simulateSeason({ model, fixtures, codes, played = [], runs = 100
     expectedPos: round(sumPos[i] / runs, 2),
     titlePct: round((title[i] / runs) * 100, 1),
     ...(promotion ? { promotionPct: round((promo[i] / runs) * 100, 1) } : {}),
+    ...(promotionPlayoff ? { playoffPct: round((promoPlayoff[i] / runs) * 100, 1) } : {}),
     top4Pct: round((top4[i] / runs) * 100, 1),
     top6Pct: round((top6[i] / runs) * 100, 1),
     relegationPct: round((releg[i] / runs) * 100, 1),
+    ...(relegationPlayoff ? { relegationPlayoffPct: round((relegPlayoff[i] / runs) * 100, 1) } : {}),
     posDist: [...posHist[i]].slice(1).map(v => round((v / runs) * 100, 1)),
   })).sort((a, b) => b.expectedPoints - a.expectedPoints);
 }

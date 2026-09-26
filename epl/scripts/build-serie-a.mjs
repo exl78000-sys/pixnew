@@ -40,4 +40,6 @@ await buildLeague({
   fotmobId: 55, rounds: 38, backtestFile: 'backtest-serie-a.json',
   relegation: '義甲的升降級:後 3 名直接降級,沒有附加賽 —— 跟德甲法甲不一樣,'
     + '那兩個聯賽的第 16 名還要跟次級聯賽第 3 名打跨聯賽附加賽,義甲沒有這一關',
+  /* 模擬真的照著數的名額(跟上面那句話是同一件事的兩面,兩個都要給)。 */
+  relegated: 3, relegationPlayoff: false,
 });
