@@ -1,8 +1,8 @@
 /* 英超戰情室 —— 設計系統 */
 /* 字體選擇:Archivo 的方正大字面撐得住轉播式的大標與比分,JetBrains Mono 有真正等寬的
    表格數字;中文沒有對應字符,會逐字落回系統的思源/蘋方,不需要額外載入 CJK 字重。
-   字體以 data URI 內嵌(npm run fonts 產生),離線與單檔版都不會掉字。 */
-@import url('fonts.css');
+   字型的 @font-face 在 fonts.css,由每一頁的 <link> 跟這一份並行載(2026-09-26 起不再用 @import,
+   那要等這一份下載完才會被發現);字型檔在 assets/fonts/,npm run fonts 產生,單檔版打包時內嵌。 */
 
 :root {
   --bg: #0b0710;

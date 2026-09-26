@@ -414,11 +414,14 @@ jobs:
         run: npm run laliga:odds
         continue-on-error: true
 
-      # 西甲回測要在 laliga:build **之前**跑:模型頁上的準度數字是 build 讀
-      # data/backtest-laliga.json 帶進 meta 的。順序反過來的話,這次抓回來的新賽果
+      # 五個聯賽的走查回測要在各自的 build **之前**跑:模型頁上的準度數字是 build 讀
+      # data/backtest-*.json 帶進 meta 的。順序反過來的話,這次抓回來的新賽果
       # 要等下一次執行才會反映在頁面上 —— 畫面比資料晚一輪,而且沒人看得出來。
-      - name: 西甲走查回測(模型準度)
-        run: npm run laliga:backtest
+      # 2026-09-26 起五支**並行**跑(scripts/backtest-all.mjs,清單跟 npm test 同一份 lib/test-steps.mjs):
+      # 它們彼此獨立,串行只是白等。零 fetch 的本地計算,失敗不容忍 —— 失敗代表真的有 bug。
+      # 英超的走查回測在 test.mjs 裡(它的斷言直接吃回測結果),不在這一步。
+      - name: 五個聯賽走查回測(模型準度,並行)
+        run: npm run backtests
 
       # 人工交付的租借紀錄要先過核對器才會被 build 採用。
       # 核對是離線的(只讀倉庫裡的逐季聯賽成員資格、FPL 逐季分鐘與西甲逐季球員),
@@ -437,9 +440,6 @@ jobs:
       - name: 建立西甲資料集
         run: npm run laliga:build
 
-      # 英冠回測同樣要在 en2:build **之前**:模型頁的準度數字是 build 讀
-      # data/backtest-championship.json 帶進 meta 的。零 fetch 的本地計算,
-      # 所以失敗不容忍 —— 失敗代表真的有 bug。
       # 人工交付的球隊資料(隊色、城市、球場、容量、綽號)要先過核對器才會被 build 採用。
       # 核對是離線的:對照 12 支本站既有球隊的既有欄位、拿倉庫裡的隊徽獨立比隊色、
       # 檢查容量量級與逐欄位出處。有一項對不上就整份不採用,不挑著用。
@@ -450,17 +450,12 @@ jobs:
       - name: 核對人工交付的英冠教練
         run: npm run en2:verify-coaches
 
-      - name: 英冠走查回測(模型準度)
-        run: npm run en2:backtest
-
       # 英冠也要排在英超 build 之前:stamp-assets 掛在 build 最後,
       # 會把資產戳寫進**每一個聯賽**的 meta.json;反過來跑的話戳會被重寫掉,
       # npm test 的「meta 記的戳跟實際檔案一致」就會紅。
       - name: 建立英冠資料集
         run: npm run en2:build
 
-      # 德甲走查回測 —— 跟上面兩個聯賽同一支實作(lib/backtest-runner.mjs),
-      # 零 fetch 的本地計算,所以失敗不容忍。
       # 人工交付的隊色/城市/球場/教練。收件匣還沒到時這幾支會印「略過」,不是錯 ——
       # 先掛上去,交付一到當次部署就會核對並上站,不用有人記得回來加這一步。
       - name: 核對人工交付的德義法球隊資料與教練
@@ -473,23 +468,12 @@ jobs:
           npm run fr1:verify-coaches || true
         continue-on-error: true
 
-      - name: 德甲走查回測(模型準度)
-        run: npm run de1:backtest
-
       # 德甲也要排在英超 build 之前,理由跟英冠那一步一模一樣(資產戳)。
       - name: 建立德甲資料集
         run: npm run de1:build
 
-      # 義甲與法甲走查回測 —— 跟前面幾個聯賽同一支實作(lib/backtest-runner.mjs),
-      # 零 fetch 的本地計算,所以失敗不容忍。
-      - name: 義甲走查回測(模型準度)
-        run: npm run it1:backtest
-
       - name: 建立義甲資料集
         run: npm run it1:build
-
-      - name: 法甲走查回測(模型準度)
-        run: npm run fr1:backtest
 
       # **這是最後一個聯賽的 build**,後面只剩英超那一支(它的 stamp-assets 會把戳
       # 寫進每一個聯賽的 meta.json)。任何聯賽的 build 排到英超後面,那個聯賽的戳就沒了。
@@ -681,8 +665,14 @@ jobs:
       # 原本這一步夾在 laliga:build 與 build 中間 —— 那個時間點 es1 的 meta 剛被
       # laliga:build 重寫、戳還沒補回來,所以那兩條**每次 CI 都假紅**,
       # 只是 continue-on-error 讓沒有人去看。2026-08-28 修正。
-      - name: 走查回測與自我檢查(要在 build 之後,資產戳才是最終狀態)
-        run: npm test
+      # 2026-09-26 逐步計時這一步的 855 秒花在哪:npm test 462 秒(本機)裡模擬引擎的測試一支 422 秒,
+      # 五個聯賽的回測合計 10 秒、其餘 30 秒。所以兩個旗標:
+      #   --skip-backtests  五個聯賽的回測前面已經並行跑過(同一次 checkout、同一批 raw),不重跑;
+      #                     test-laliga 那幾支照樣驗前面寫出的產物。
+      #   --skip-game       模擬引擎的測試搬到下面的 game-tests job,跟這個 job **並行**;deploy 兩邊都等。
+      # 英超的走查回測在 test.mjs 裡(斷言直接吃回測結果),照跑。
+      - name: 自我檢查與英超走查回測(要在 build 之後,資產戳才是最終狀態)
+        run: npm test -- --skip-backtests --skip-game
 
       - name: 打包單檔版
         run: npm run bundle
@@ -717,8 +707,29 @@ jobs:
         with:
           path: epl/web
 
+  # 模擬引擎的測試(scripts/game/test-game.mjs)一支就要 7 分鐘,而它只讀倉庫裡的程式、產物與 raw,
+  # 不需要 build job 剛抓的東西 —— 所以跟 build **並行**,deploy 同時等兩邊(閘門沒有放鬆,
+  # 只是不再串在 fetch / build 後面)。先重建一次模擬側寫再測,讓「側寫對回來源」比的是同一批 raw。
+  game-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: epl
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 重建模擬側寫(讀倉庫裡的產物與 raw)
+        run: npm run game:build
+
+      - name: 模擬引擎自我檢查(跟 build 並行;deploy 等它)
+        run: node scripts/game/test-game.mjs
+
   deploy:
-    needs: build
+    needs: [build, game-tests]
     if: needs.build.outputs.pages_enabled == 'true'
     runs-on: ubuntu-latest
     environment:
@@ -765,7 +776,7 @@ jobs:
             if (hours > 48) core.setFailed(`點火器 ${hours} 小時沒有心跳(每天該有一次)。看 Cloudflare 的 warroom-ignition Worker 與 /status。`);
 
   notify:
-    needs: [build, deploy, ignition-watch]
+    needs: [build, game-tests, deploy, ignition-watch]
     if: always()
     permissions:
       issues: write
