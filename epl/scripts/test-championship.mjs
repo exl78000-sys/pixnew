@@ -265,7 +265,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
      就會撞上「載入失敗…請先執行 npm run build」(給開發者的訊息,而且理由是錯的)。
      實際壞過一次,所以釘死。 */
   const need = ['tactics', 'experts', 'lineups', 'live', 'shapes', 'official',
-    'meta', 'clubs', 'teams', 'fixtures', 'players', 'reports', 'analysis', 'goals', 'h2h', 'form'];
+    'meta', 'clubs', 'teams', 'fixtures', 'players', 'reports', 'analysis', 'goals', 'h2h', 'form', 'overview'];
   const miss = need.filter(n => !existsSync(join(ROOT, 'web', 'data', 'leagues', 'en2', `${n}.json`)));
   check('單場分析頁要的資料集一份都不缺', miss.length === 0, miss.join('、'));
 

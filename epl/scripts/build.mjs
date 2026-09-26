@@ -59,6 +59,7 @@ import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPla
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
+import { overviewFrom } from './lib/overview.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
@@ -118,10 +119,15 @@ function attachAdvancedCodes(detail, report) {
 /* 圖(隊徽、頭貼、國旗、賽事圖)在寫檔前落成 assets/img/h/ 的獨立檔,產物裡只留路徑(2026-09-26,A2 + A3;
    理由在 lib/image-files.mjs)。所有產物都走這一個 write,所以不必逐個資料集記得要做。 */
 const IMG = { webDir: join(ROOT, 'web') };
+/* written:每一份寫出去的產物(圖已外置)留一份在記憶體 —— 總覽摘要(overview.json)從這裡抽,
+   跟各自的產物永遠一致,不必記得哪個變數是「最後那一版」(teams 有的 build 會重寫兩次)。 */
+const written = {};
 const write = async (name, data) => {
   const path = join(OUT, name);
   const stats = {};
-  const json = JSON.stringify(externalizeImages(data, { ...IMG, stats }));
+  const out = externalizeImages(data, { ...IMG, stats });
+  written[name.replace(/\.json$/, '')] = out;
+  const json = JSON.stringify(out);
   await writeFile(path, json);
   const kb = (json.length / 1024).toFixed(0);
   console.log(`  ✓ ${name.padEnd(16)} ${kb.padStart(5)} KB${stats.images ? `(圖 ${stats.images} 張外置)` : ''}`);
@@ -1695,6 +1701,9 @@ async function main() {
     const slim = slimMatch(m);
     return pred ? { ...slim, prediction: pred } : slim;
   }));
+
+  // 總覽頁的摘要(2026-09-26,A4):從剛寫出去的 meta / teams / fixtures / news / live 抽,理由在 lib/overview.mjs
+  await write('overview.json', overviewFrom(written));
 
   console.log(`\n✔ 完成:${teams.length} 隊 / ${players.length} 名球員 / ${fixtures.length} 場賽程 / ${news.length} 則動態`);
   const photoHits = players.filter(p => p.photo || photoData[p.code]).length;
