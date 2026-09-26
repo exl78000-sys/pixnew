@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-26T12:18:07.267Z",
+ "retrievedAt": "2026-09-26T15:59:37.581Z",
  "matches": [
   {
    "id": "5181812",
@@ -170,10 +170,13 @@
     "shortName": "Scotland",
     "fmId": "8498"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "1"
@@ -1076,36 +1079,36 @@
    ],
    "rows": [
     {
-     "fmId": "8260",
-     "name": "North Macedonia",
-     "idx": 1,
-     "played": 0,
-     "wins": 0,
-     "draws": 0,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
      "fmId": "8498",
      "name": "Scotland",
-     "idx": 2,
-     "played": 0,
+     "idx": 1,
+     "played": 1,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
      "gf": 0,
      "ga": 0,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
      "live": null
     },
     {
      "fmId": "5787",
      "name": "Slovenia",
+     "idx": 2,
+     "played": 1,
+     "wins": 0,
+     "draws": 1,
+     "losses": 0,
+     "gf": 0,
+     "ga": 0,
+     "pts": 1,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8260",
+     "name": "North Macedonia",
      "idx": 3,
      "played": 0,
      "wins": 0,

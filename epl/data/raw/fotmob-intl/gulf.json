@@ -14,7 +14,7 @@
   "2013",
   "2010"
  ],
- "retrievedAt": "2026-09-26T12:18:13.577Z",
+ "retrievedAt": "2026-09-26T15:59:43.506Z",
  "matches": [
   {
    "id": "6052027",
@@ -114,7 +114,7 @@
   },
   {
    "id": "6052041",
-   "kickoff": "2026-09-26T15:00:00.000Z",
+   "kickoff": "2026-09-26T15:55:00.000Z",
    "home": {
     "name": "Kuwait",
     "shortName": "Kuwait",
@@ -125,7 +125,7 @@
     "shortName": "Iraq",
     "fmId": "5819"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -374,22 +374,22 @@
      "live": null
     },
     {
-     "fmId": "5824",
-     "name": "Oman",
+     "fmId": "5819",
+     "name": "Iraq",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 1,
+     "draws": 2,
      "losses": 0,
      "gf": 1,
      "ga": 1,
-     "pts": 1,
+     "pts": 2,
      "deduction": null,
-     "live": null
+     "live": "6052041"
     },
     {
-     "fmId": "5819",
-     "name": "Iraq",
+     "fmId": "5824",
+     "name": "Oman",
      "idx": 3,
      "played": 1,
      "wins": 0,
@@ -405,15 +405,15 @@
      "fmId": "5821",
      "name": "Kuwait",
      "idx": 4,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 0,
      "ga": 1,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "6052041"
     }
    ]
   },
