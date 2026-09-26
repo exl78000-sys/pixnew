@@ -150,6 +150,88 @@ console.log('\n▶ Obsidian vault:筆記裡的宣稱跟得上產物');
   });
   check('盃賽比賽筆記的來源是產物說的那一個(不是寫死的 SportMonks)', cupNotes.length > 0 && wrongSrc.length === 0,
     `${cupNotes.length} 則・產物說 ${cups?.source}${wrongSrc.length ? `,不對的 ${wrongSrc.length} 則` : ''}`);
+  /* 冠軍的形狀換過(FotMob 那一版是 { team: { name } }),讀舊欄位的話那一行整個不見,不拋錯 */
+  const champs = (cups?.cups ?? []).flatMap(c => (c.seasons ?? []).map(s => ({ c, s, name: s.champion?.team?.name ?? s.champion?.name })))
+    .filter(x => x.name);
+  const champBad = champs.filter(x => !note(`英格蘭盃賽/${sanitize(x.c.zh)}.md`).includes(`冠軍:**${x.name}**`));
+  check('盃賽每一季的冠軍寫在賽事筆記上', champBad.length === 0,
+    `${champs.length} 季有冠軍${champBad.length ? `,沒寫的:${champBad.map(x => `${x.c.zh} ${x.s.label}`).join('、')}` : ''}`);
+}
+
+// ── 盃賽與歐冠的賽後報告 ────────────────────────────
+console.log('\n▶ Obsidian vault:盃賽與歐冠的賽後報告(cup-details / ucl-details)');
+{
+  /* 用 frontmatter 的比賽 id 把筆記找回來 —— 檔名是日期與隊名拼的,這裡再拼一次就是抄一份產生器 */
+  const byId = new Map();
+  for (const f of list('英格蘭盃賽/比賽')) { const t = note(`英格蘭盃賽/比賽/${f}`); const id = fm(t, 'FotMob比賽id'); if (id) byId.set('cup:' + id, t); }
+  for (const f of list('歐冠/比賽')) { const t = note(`歐冠/比賽/${f}`); const id = fm(t, 'footballData比賽id'); if (id) byId.set('ucl:' + id, t); }
+  const CD = product('pl', 'cup-details'), UD = product('pl', 'ucl-details');
+  const reps = [
+    ...Object.entries(CD?.reports ?? {}).map(([id, x]) => ({ k: 'cup:' + id, id, idx: x, rel: `cup-details/${x.cup}/${x.season}/${id}` })),
+    ...Object.entries(UD?.reports ?? {}).map(([id, x]) => ({ k: 'ucl:' + id, id, idx: x, rel: `ucl-details/${x.season}/${id}` })),
+  ];
+  const nCup = reps.filter(r => r.k.startsWith('cup:')).length, nUcl = reps.length - nCup;
+  /* 要比對**真的報告的標題**:沒有報告的場次也有一節「## 賽後報告」(講為什麼沒有),只找那四個字的話,
+     報告整份不見也會過(負向對照 r9 抓到的) */
+  const missing = reps.filter(r => !(byId.get(r.k) ?? '').includes('## 賽後報告(FotMob 逐場詳情)'));
+  check('產物裡有報告的每一場(盃賽 + 歐冠),比賽筆記裡都有賽後報告', nCup > 0 && nUcl > 0 && missing.length === 0,
+    `盃賽 ${nCup}・歐冠 ${nUcl}${missing.length ? `;沒有的 ${missing.length}:${missing.slice(0, 3).map(r => r.k).join('、')}` : ''}`);
+
+  /* xG:射門圖完整才有,數字就是產物那一個 */
+  const xgBad = reps.filter(r => {
+    const t = byId.get(r.k) ?? '';
+    return r.idx.xG && r.idx.shotmapComplete !== false
+      ? fm(t, '主隊xG') !== String(r.idx.xG[0]) || fm(t, '客隊xG') !== String(r.idx.xG[1])
+      : fm(t, '主隊xG') !== undefined;
+  });
+  check('報告的 xG 就是產物那一個;射門圖不完整的場次沒有 xG', xgBad.length === 0, xgBad.slice(0, 3).map(r => r.k).join('、'));
+
+  /* PK 大戰的十二碼不算射門:射門表的次數 = 逐場檔扣掉互射(規則是 lib/matchstats.mjs 那一支,不另寫) */
+  const { isShootoutShot } = await import('./lib/matchstats.mjs');
+  let withShootout = 0;
+  const shotBad = reps.filter(r => {
+    const rep = read(join(ROOT, 'web', 'data', r.rel + '.json'));
+    const all = rep.advanced?.shots ?? [];
+    const n = all.filter(s => !isShootoutShot(s, { pens: rep.advanced?.pens === true })).length;
+    if (n < all.length) withShootout++;
+    const got = /### 射門\((\d+) 次/.exec(byId.get(r.k) ?? '')?.[1];
+    return n ? Number(got) !== n : got !== undefined;
+  });
+  check('射門表的次數 = 逐場檔的射門扣掉 PK 大戰', shotBad.length === 0,
+    `有互射的 ${withShootout} 場${shotBad.length ? `;對不上 ${shotBad.length}:${shotBad.slice(0, 3).map(r => r.k).join('、')}` : ''}`);
+
+  /* 盃賽的比分核對是同一家供應商的一致性檢查 —— 產物說不是獨立來源,筆記就要講 */
+  const indepBad = CD?.scoreCheck?.independent === false
+    ? reps.filter(r => r.k.startsWith('cup:') && !(byId.get(r.k) ?? '').includes('比分核對不是獨立來源')) : [];
+  check('盃賽報告講出「比分核對不是獨立來源」', indepBad.length === 0, indepBad.slice(0, 3).map(r => r.k).join('、'));
+
+  /* 上游缺的那幾塊要講出來,不畫空表 */
+  const partialBad = reps.filter(r => {
+    const rep = read(join(ROOT, 'web', 'data', r.rel + '.json'));
+    return (rep.partial ?? []).length && !(byId.get(r.k) ?? '').includes('上游這一場沒有');
+  });
+  check('上游缺逐人統計的場次講出來', partialBad.length === 0, partialBad.slice(0, 3).map(r => r.k).join('、'));
+
+  /* 被拒收的場次講出產物記的理由(不然讀者看到踢完的比賽沒有報告而筆記不解釋) */
+  const rej = (CD?.rejected ?? []).map(x => ({ id: String(x.key ?? '').split('|').pop(), reason: x.reason }));
+  const rejBad = rej.filter(x => !(byId.get('cup:' + x.id) ?? '').includes(x.reason));
+  check('被拒收的盃賽場次講出產物記的理由', rejBad.length === 0, `${rej.length} 場${rejBad.length ? `,沒講的 ${rejBad.map(x => x.id).join('、')}` : ''}`);
+}
+
+// ── 上游的物件欄位 ──────────────────────────────────
+console.log('\n▶ Obsidian vault:沒有一則筆記印出 [object Object]');
+{
+  /* FotMob 的 detail / comments 有時是 { defaultText } 物件 —— 直接塞進字串就是這個(網站上踩過 57 列) */
+  const bad = [];
+  const walk = d => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const p = join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (p.endsWith('.md') && readFileSync(p, 'utf8').includes('[object Object]')) bad.push(p.slice(OUT.length + 1));
+    }
+  };
+  walk(OUT);
+  check('全部筆記裡沒有 [object Object]', bad.length === 0, bad.slice(0, 3).join('、'));
 }
 
 // ── 同名球員 ────────────────────────────────────────
