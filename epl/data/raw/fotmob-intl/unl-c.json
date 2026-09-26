@@ -11,11 +11,11 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-25T20:24:20.970Z",
+ "retrievedAt": "2026-09-26T03:59:27.122Z",
  "matches": [
   {
    "id": "5181921",
-   "kickoff": "2026-09-25T16:00:00.000Z",
+   "kickoff": "2026-09-25T16:00:00Z",
    "home": {
     "name": "Armenia",
     "shortName": "Armenia",
@@ -39,7 +39,7 @@
   },
   {
    "id": "5181922",
-   "kickoff": "2026-09-25T18:45:00.000Z",
+   "kickoff": "2026-09-25T18:45:00Z",
    "home": {
     "name": "Montenegro",
     "shortName": "Montenegro",
@@ -50,17 +50,20 @@
     "shortName": "Cyprus",
     "fmId": "5793"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1",
    "group": "2"
   },
   {
    "id": "5181949",
-   "kickoff": "2026-09-26T16:00:00Z",
+   "kickoff": "2026-09-26T16:00:00.000Z",
    "home": {
     "name": "Bulgaria",
     "shortName": "Bulgaria",
@@ -81,7 +84,7 @@
   },
   {
    "id": "5181933",
-   "kickoff": "2026-09-26T16:00:00Z",
+   "kickoff": "2026-09-26T16:00:00.000Z",
    "home": {
     "name": "Faroe Islands",
     "shortName": "Faroe Islands",
@@ -102,7 +105,7 @@
   },
   {
    "id": "5181950",
-   "kickoff": "2026-09-26T16:00:00Z",
+   "kickoff": "2026-09-26T16:00:00.000Z",
    "home": {
     "name": "Iceland",
     "shortName": "Iceland",
@@ -123,7 +126,7 @@
   },
   {
    "id": "5181894",
-   "kickoff": "2026-09-26T16:00:00Z",
+   "kickoff": "2026-09-26T16:00:00.000Z",
    "home": {
     "name": "San Marino",
     "shortName": "San Marino",
@@ -144,7 +147,7 @@
   },
   {
    "id": "5181895",
-   "kickoff": "2026-09-26T18:45:00Z",
+   "kickoff": "2026-09-26T18:45:00.000Z",
    "home": {
     "name": "Albania",
     "shortName": "Albania",
@@ -165,7 +168,7 @@
   },
   {
    "id": "5181934",
-   "kickoff": "2026-09-26T18:45:00Z",
+   "kickoff": "2026-09-26T18:45:00.000Z",
    "home": {
     "name": "Slovakia",
     "shortName": "Slovakia",
@@ -1153,32 +1156,32 @@
      "live": null
     },
     {
-     "fmId": "5793",
-     "name": "Cyprus",
-     "idx": 2,
-     "played": 1,
-     "wins": 0,
-     "draws": 1,
-     "losses": 0,
-     "gf": 1,
-     "ga": 1,
-     "pts": 1,
-     "deduction": null,
-     "live": "5181922"
-    },
-    {
      "fmId": "49437",
      "name": "Montenegro",
+     "idx": 2,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 2,
+     "ga": 1,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5793",
+     "name": "Cyprus",
      "idx": 3,
      "played": 1,
      "wins": 0,
-     "draws": 1,
-     "losses": 0,
+     "draws": 0,
+     "losses": 1,
      "gf": 1,
-     "ga": 1,
-     "pts": 1,
+     "ga": 2,
+     "pts": 0,
      "deduction": null,
-     "live": "5181922"
+     "live": null
     },
     {
      "fmId": "5795",
