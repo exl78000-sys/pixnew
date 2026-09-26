@@ -591,6 +591,9 @@ Node 端要本體(測試、Obsidian、單檔打包)走 `lib/match-archive.mjs` �
 **總覽只讀每個聯賽的 `overview.json`(2026-09-26 起)。** 那是 `lib/overview.mjs` 的 `overviewFrom` 在四份 build 的最後
 從**剛寫出去的**產物抽的摘要(meta 整份、teams / fixtures / news / live 只留總覽用到的欄位),六份合計 367 KB,原本四份整載是 5 MB。
 要在總覽多畫一個欄位,先去 overview.mjs 加那個欄位,**不要回頭 loadFrom 整份 teams / fixtures**;`npm test` 守著鍵、大小與筆數。
+跨聯賽那幾份(cups / ucl / ucl-teams / ucl-elo / intl)同一個道理:總覽只讀 `overview-shared.json`(`lib/overview-shared.mjs`,
+`build-overview-shared.mjs` 在 build 鏈的 build-intl 之後抽),要多畫一個跨聯賽的欄位先去那裡加。
+總覽的 HTML 預載是依頁面的(`stamp-assets` 的 `preloadScriptFor`):它不依 league,預載六份 overview.json 與跨聯賽摘要,不預載 teams.json。
 
 **首頁與總覽先畫框再填(B3)。** `C.nav()` 在任何 `await C.load` 之前;只要 meta 就畫得出來的區塊先畫,要賽程或動態的
 區塊放 `C.skel()` 骨架,資料到了再填。骨架只是佔位,**不寫任何數字** —— 骨架上不能有看起來像答案的東西。

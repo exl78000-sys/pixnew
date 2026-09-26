@@ -56,12 +56,14 @@ try {
   const leagues = loaded.filter(x => x.data.meta && x.data.fixtures);
   const skipped = loaded.filter(x => !x.data.meta || !x.data.fixtures);
 
-  // 跨聯賽的資料集掛在英超目錄下(它們本來就是跨聯賽的一份)
-  const { data: shared } = await C.loadFrom('pl', ['cups', 'ucl', 'ucl-teams']);
-  /* 歐冠的勝率與國家隊各自讀,**讀不到就當沒有**:這兩份不是這一頁的主體,少一份不該讓整個總覽載入失敗
-     (英超目錄的 404 在 loadFrom 裡是直接拋錯的)。 */
-  const uclElo = (await C.loadFrom('pl', ['ucl-elo']).catch(() => ({ data: {} }))).data['ucl-elo'] ?? null;
-  const intl = (await C.loadFrom('pl', ['intl']).catch(() => ({ data: {} }))).data.intl ?? null;
+  /* 跨聯賽的資料集掛在英超目錄下(它們本來就是跨聯賽的一份)。
+     **只載摘要那一份**(2026-09-26,A4b):cups / ucl / ucl-teams / ucl-elo / intl 五份整載是 1.2 MB,這一頁用到的
+     不到一成 —— build 最後從寫出去的那五份抽成 overview-shared.json(lib/overview-shared.mjs),形狀同名同層,
+     下面的程式一個字沒改。歐冠勝率與國家隊在摘要裡是 null 就當沒有(跟以前「讀不到就當沒有」同一個意思)。 */
+  const S = (await C.loadFrom('pl', ['overview-shared'])).data['overview-shared'] ?? {};
+  const shared = { cups: S.cups ?? null, ucl: S.ucl ?? null, 'ucl-teams': S.uclTeams ?? null };
+  const uclElo = S.uclElo ?? null;
+  const intl = S.intl ?? null;
   /* 盃賽的球隊身分(隊徽/隊名)。**跨聯賽的一頁不能靠目前聯賽的名冊** ——
      而這一頁連目前聯賽的名冊都不是問題:cups.json 的 crests 查表**刻意只收本站沒有隊碼的球隊**,
      所以有隊碼的那些(英超 + 英冠 27 支)在這張「即將到來」的表上**一張隊徽都沒有**,

@@ -57,7 +57,7 @@ import { tierKey, lookupTier } from './lib/adapters/england-tiers.mjs';
 import { mergeCupSeasons } from './lib/cup-seasons.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef, IMG_DIR } from './lib/image-files.mjs';
-import { PRELOAD_SCRIPT, PRELOAD_START, PRELOAD_END } from './stamp-assets.mjs';
+import { PRELOAD_SCRIPT, PRELOAD_START, PRELOAD_END, preloadScriptFor } from './stamp-assets.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -4671,6 +4671,48 @@ async function checkDataGap() {
         && ix.indexOf('C.nav()') > 0 && ix.indexOf('C.nav()') < firstAwait(ix)
         && /C\.skel\(/.test(ov) && /C\.skel\(/.test(ix);
     })()],
+    /* ── 跨聯賽摘要(2026-09-26,A4b)──
+       總覽的盃賽 / 歐冠 / 歐冠球隊 / 歐冠勝率 / 國家隊只讀 overview-shared.json(build 最後從那五份產物抽,
+       lib/overview-shared.mjs)。守:那一份在、五個鍵都在、沒帶整份才有的區塊、未賽場次的數目跟來源一樣
+       (少一場就是「即將到來」靜靜少一列);總覽不再整載那五份;總覽的 HTML 預載它而不是 teams.json。 */
+    ['overview-shared.json 是瘦的,而且盃賽 / 歐冠 / 國家隊的未賽場次數跟來源一樣', (() => {
+      const D = join(ROOT, 'web', 'data');
+      const p = join(D, 'overview-shared.json');
+      if (!existsSync(p)) { console.log('    沒有 overview-shared.json'); return false; }
+      const raw = readFileSync(p, 'utf8');
+      const o = JSON.parse(raw);
+      const bad = [];
+      for (const k of ['cups', 'ucl', 'uclTeams', 'uclElo', 'intl']) if (!(k in o)) bad.push(`少 ${k}`);
+      if (/"results"|"standings"|"ranking"|"leaderPool"|"squads"|"table"|"ft90"/.test(raw)) bad.push('帶了整份產物才有的區塊');
+      if (raw.length > 200 * 1024) bad.push(`${Math.round(raw.length / 1024)} KB,不像摘要`);
+      const pending = m => !m.played || m.state === 'LIVE' || m.status === 'IN_PLAY' || m.status === 'PAUSED';
+      const cupsSrc = JSON.parse(readFileSync(join(D, 'cups.json'), 'utf8'));
+      const cupN = j => (j?.cups ?? []).reduce((n, c) => n + (c.seasons ?? []).filter(s => s.current).reduce((m, s) =>
+        m + (s.rounds ?? []).reduce((k, r) => k + (r.matches ?? []).filter(pending).length, 0), 0), 0);
+      if (cupN(o.cups) !== cupN(cupsSrc)) bad.push(`盃賽未賽 ${cupN(o.cups)} ≠ 來源 ${cupN(cupsSrc)}`);
+      const uclSrc = JSON.parse(readFileSync(join(D, 'ucl.json'), 'utf8'));
+      const uclN = j => (j?.seasons ?? []).filter(s => s.current).reduce((n, s) => n + (s.leagueMatches ?? []).filter(pending).length
+        + (s.rounds ?? []).reduce((m, r) => m + (r.ties ?? []).reduce((k, t) => k + (t.legs ?? []).filter(pending).length, 0), 0), 0);
+      if (uclN(o.ucl) !== uclN(uclSrc)) bad.push(`歐冠未賽 ${uclN(o.ucl)} ≠ 來源 ${uclN(uclSrc)}`);
+      if ((o.ucl?.seasons ?? []).length !== (uclSrc.seasons ?? []).length) bad.push('歐冠的賽季數跟來源不同(「哪幾季完整」那句會講錯)');
+      if (existsSync(join(D, 'intl.json'))) {
+        const intlSrc = JSON.parse(readFileSync(join(D, 'intl.json'), 'utf8'));
+        if ((o.intl?.fixtures ?? []).length !== (intlSrc.fixtures ?? []).length) bad.push(`國家隊 ${o.intl?.fixtures?.length} 場 ≠ 來源 ${intlSrc.fixtures?.length}`);
+        if (Object.keys(o.intl?.teams ?? {}).length !== Object.keys(intlSrc.teams ?? {}).length) bad.push('國家隊的隊名對照少了');
+      }
+      if (bad.length) console.log(`    ${bad.join(' / ')}`);
+      return bad.length === 0;
+    })()],
+    ['總覽只載 overview-shared.json,不再整載 cups / ucl / ucl-teams / ucl-elo / intl;總覽的 HTML 預載它', (() => {
+      const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      const html = readFileSync(join(ROOT, 'web', 'overview.html'), 'utf8');
+      const chain = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).scripts.build;
+      return /loadFrom\('pl', \['overview-shared'\]\)/.test(ov)
+        && !/\['cups', 'ucl', 'ucl-teams'\]/.test(ov) && !/\['ucl-elo'\]/.test(ov) && !/loadFrom\('pl', \['intl'\]\)/.test(ov)
+        && /href="data\/overview-shared\.json"/.test(html) && !/teams\.json/.test(html)
+        && chain.indexOf('build-intl.mjs') < chain.indexOf('build-overview-shared.mjs')
+        && chain.indexOf('build-overview-shared.mjs') < chain.indexOf('stamp-assets.mjs');
+    })()],
     /* ── 預載(2026-09-26,B1)──
        每一頁的 <head> 由 stamp-assets 注入:這一頁模組圖裡每一支的 modulepreload(含現行的戳)、
        以及依 league 預載 meta / clubs / teams 的那段 script。守的是「每一頁都有、而且戳跟 import 一字不差」——
@@ -4688,7 +4730,10 @@ async function checkDataGap() {
         const s = html.indexOf(PRELOAD_START), e = html.indexOf(PRELOAD_END);
         if (s < 0 || e < s) { bad.push(`${f}:沒有預載區塊`); continue; }
         const block = html.slice(s, e);
-        if (!block.includes(PRELOAD_SCRIPT)) bad.push(`${f}:資料預載 script 不是現行版本`);
+        // 總覽那一頁預載的是六份 overview.json 與跨聯賽摘要(靜態 link),其他頁是依 league 的那段 script
+        const leagues2 = readdirSync(join(W2, 'data', 'leagues'), { withFileTypes: true }).filter(x => x.isDirectory()).map(x => x.name).sort();
+        if (!block.includes(preloadScriptFor(page, leagues2))) bad.push(`${f}:資料預載那一段不是現行版本`);
+        if (page === 'page-overview.js' && (block.includes(PRELOAD_SCRIPT) || /teams\.json/.test(block))) bad.push(`${f}:總覽不該預載目前聯賽的 teams.json`);
         const links = new Set([...block.matchAll(/<link rel="modulepreload" href="assets\/js\/([^"]+)">/g)].map(m => m[1]));
         // 遞移引用:從頁面模組出發,把每一層 import 的 './x.js?v=…' 都收進來,每一支都要有一模一樣的 modulepreload
         const seen = new Set();

@@ -8,7 +8,15 @@
 <meta name="description" content="跨聯賽入口:各聯賽、歐冠與英格蘭盃賽。每個聯賽做到哪一層、缺什麼,都直說。">
 <!-- preload:start -->
 <link rel="modulepreload" href="assets/js/core.js?v=7a065aae">
-<script>(function(){var m=/[?&]league=([a-z0-9]+)/.exec(location.search);var d=m&&m[1]!=='pl'?'data/leagues/'+m[1]+'/':'data/';["meta","clubs","teams"].forEach(function(n){var l=document.createElement('link');l.rel='preload';l.as='fetch';l.crossOrigin='anonymous';l.href=d+n+'.json';document.head.appendChild(l);});})()</script>
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/competitions.json">
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/clubs.json">
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/overview-shared.json">
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/overview.json">
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/leagues/de1/overview.json">
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/leagues/en2/overview.json">
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/leagues/es1/overview.json">
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/leagues/fr1/overview.json">
+<link rel="preload" as="fetch" crossorigin="anonymous" href="data/leagues/it1/overview.json">
 <!-- preload:end -->
 <link rel="preload" href="assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
@@ -18,6 +26,6 @@
 </head>
 <body>
 <main class="wrap" id="app"><div class="loading">載入資料中…</div></main>
-<script type="module" src="assets/js/page-overview.js?v=9584a944"></script>
+<script type="module" src="assets/js/page-overview.js?v=b21c4064"></script>
 </body>
 </html>

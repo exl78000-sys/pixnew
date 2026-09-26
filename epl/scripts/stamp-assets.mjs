@@ -23,6 +23,7 @@
       一字不差(含 ?v=),不然預載的那份用不到,等於白抓 —— 所以戳在這裡算完才寫得出來。
    2. 一段內嵌 script,依網址上的 league 預載 meta / clubs / teams 三份每一頁都會載的資料
       (放 HTML 靜態 link 做不到:西甲的資料在 data/leagues/es1/,而同一份 HTML 六個聯賽共用)。
+      總覽例外:它不依 league,預載的是六份 overview.json 與跨聯賽摘要,用靜態 link(見 preloadScriptFor)。
    兩段都夾在 <!-- preload:start --> … <!-- preload:end --> 之間,每次重跑整段換掉,不會越長越多。
    單檔版有自己的 HTML,不經過這裡。 */
 import { createHash } from 'node:crypto';
@@ -45,6 +46,16 @@ const read = async f => strip(await readFile(f, 'utf8'));
    多預載一份頁面用不到的等於多下載一次。變動時要看 page-*.js 的 C.load 清單。 */
 export const PRELOAD_DATASETS = ['meta', 'clubs', 'teams'];
 export const PRELOAD_SCRIPT = `<script>(function(){var m=/[?&]league=([a-z0-9]+)/.exec(location.search);var d=m&&m[1]!=='pl'?'data/leagues/'+m[1]+'/':'data/';${JSON.stringify(PRELOAD_DATASETS)}.forEach(function(n){var l=document.createElement('link');l.rel='preload';l.as='fetch';l.crossOrigin='anonymous';l.href=d+n+'.json';document.head.appendChild(l);});})()</script>`;
+/* 總覽是例外(2026-09-26,A4b):它不讀目前聯賽的 meta / teams,讀的是六個聯賽各自的 overview.json、跨聯賽的
+   overview-shared.json、賽事圖 competitions.json,盃賽身分讀 clubs.json。照上面那段預載的話英超 teams.json(379 KB)
+   在這一頁是白抓的 —— 正式站量到它是總覽第二大的一筆下載。這一頁的清單不依 league,所以是靜態 <link>;
+   聯賽清單由呼叫端掃 web/data/leagues/ 目錄給,不手寫。 */
+export const OVERVIEW_PRELOAD_DATASETS = ['competitions', 'clubs', 'overview-shared', 'overview'];
+export function preloadScriptFor(page, leagues) {
+  if (page !== 'page-overview.js') return PRELOAD_SCRIPT;
+  const hrefs = [...OVERVIEW_PRELOAD_DATASETS.map(n => `data/${n}.json`), ...leagues.map(lg => `data/leagues/${lg}/overview.json`)];
+  return hrefs.map(h => `<link rel="preload" as="fetch" crossorigin="anonymous" href="${h}">`).join('\n');
+}
 export const PRELOAD_START = '<!-- preload:start -->';
 export const PRELOAD_END = '<!-- preload:end -->';
 
@@ -104,6 +115,9 @@ async function main() {
   let fontsHash = null;
   try { fontsHash = hash(await read(join(CSS, 'fonts.css'))); } catch { /* 沒有字型檔 */ }
 
+  // 聯賽清單掃目錄(總覽的預載要列六個聯賽的 overview.json),加第七個聯賽不必回來改這裡
+  const leagues = (await readdir(join(WEB, 'data', 'leagues'), { withFileTypes: true }).catch(() => []))
+    .filter(e => e.isDirectory()).map(e => e.name).sort();
   let htmlChanged = 0;
   for (const f of (await readdir(WEB)).filter(x => x.endsWith('.html'))) {
     const before = await readFile(join(WEB, f), 'utf8');
@@ -119,7 +133,7 @@ async function main() {
     out = out.replace(new RegExp(`\\n?[ \\t]*${PRELOAD_START}[\\s\\S]*?${PRELOAD_END}`), '');
     if (page) {
       const links = closureOf(page).map(dep => `<link rel="modulepreload" href="assets/js/${dep}?v=${stamped.get(dep)}">`);
-      const block = `\n${PRELOAD_START}\n${links.join('\n')}\n${PRELOAD_SCRIPT}\n${PRELOAD_END}`;
+      const block = `\n${PRELOAD_START}\n${links.join('\n')}\n${preloadScriptFor(page, leagues)}\n${PRELOAD_END}`;
       out = out.replace(/\n<link rel="(?:preload|stylesheet)" href="assets\//, `${block}$&`);
     }
     if (out !== before) { await writeFile(join(WEB, f), out); htmlChanged++; }
