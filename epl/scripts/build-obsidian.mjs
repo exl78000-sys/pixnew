@@ -492,6 +492,14 @@ function renderTeam(t, ctx) {
       + `「已確認」= 有獨立來源正面確認;「無矛盾」= 查得動的檢查都通過但沒有正面確認 —— 兩者可信度不同。\n`);
   }
 
+  /* 本季的賽季模擬與近況(2026-09-26):只有本季在這個聯賽的球隊有(teams.json / form.json 只收它們) */
+  if (t.rich) {
+    body.push(renderSim(t.sim, ctx));
+    const fr = renderForm(t.code, ctx);
+    body.push(fr.text);
+    links.push(...fr.links);
+  }
+
   if (ls) {
     body.push(`\n## ${ctx.lastSeason} 全季\n\n`);
     body.push(statTable([['名次', 'pos'], ['場次', 'p'], ['勝', 'w'], ['和', 'd'], ['負', 'l'],
@@ -513,6 +521,12 @@ function renderTeam(t, ctx) {
       body.push(statTable([['連勝', 'win'], ['不敗', 'unbeaten'], ['不勝', 'winless'],
         ['連續零封', 'cleanSheet'], ['連續進球', 'scoring']], L));
     }
+  }
+
+  /* 上季數據風格與本季陣型(2026-09-26):teams.json 的 tactics(戰術頁同一份)與 shapes.json */
+  if (t.rich) {
+    body.push(renderTactics(t, ctx));
+    body.push(renderShape(ctx.shapeFor(t.code), ctx));
   }
 
   /* 逐場進球明細在發布的資料裡是**球隊層級的整季彙總**,不是逐顆球的紀錄。
@@ -583,6 +597,20 @@ function renderTeam(t, ctx) {
     }
   }
 
+  /* 外電與動態(2026-09-26):提到這一隊的每一則(看產物的 teams / team 標記,不用隊名關鍵字撈 ——
+     United / City 會把別隊混進來,站上動態頁同一條規矩)。全部的在聯賽那一則。 */
+  const news = ctx.newsFor(t.code);
+  if (news.length) {
+    body.push(`\n## 外電與動態(${news.length} 則,提到這一隊的)\n\n`);
+    for (const n of news) {
+      const u = mdUrl(n.link);
+      body.push(`- ${n.date}・${n.cat}・${n.titleZh ?? n.title}${n.body ? ` —— ${n.bodyZh ?? n.body}` : ''}${u ? ` [${n.source ?? '原文'}](${u})` : ''}`
+        + `${n.curated ? (n.curator?.kind === 'ai' ? '(AI 整理摘要)' : '(人工整理摘要)') : ''}\n`);
+    }
+    body.push(`\n> 每一則的來源與整理方式見 ${wl(ctx.newsFile)}。\n`);
+    links.push(ctx.newsFile);
+  }
+
   const past = ctx.historyByTeam.get(t.code) ?? [];
   if (past.length) {
     body.push(`\n## 歷史比賽(${past.length} 場)\n\n`);
@@ -616,12 +644,18 @@ function renderMatch(f, ctx) {
   const links = [H, A].filter(Boolean);
   const body = [];
   const rep = f.played ? ctx.reportFor(f) : null;
+  /* 站上單場頁的其餘幾塊(2026-09-26):本站的分析文章、真人專家觀點、即時勝率的變化。
+     都只有本季有(產物只收本季);查法照站上那一頁(analysis 的賽前鍵沒有季、賽後鍵有季)。 */
+  const preArt = ctx.preArticleFor(f), postArt = ctx.postArticleFor(f);
+  const experts = ctx.expertsFor(f), prob = ctx.probFor(f);
   body.push(frontmatter({
     類型: '比賽', 聯賽: ctx.lg.zh, 賽季: f.season, 輪次: f.round, 日期: f.date,
     開球: f.kickoff, 主隊: f.home, 客隊: f.away, 已完賽: f.played,
     主隊進球: f.played ? f.fh : null, 客隊進球: f.played ? f.fa : null,
     /* 跟盃賽與歐冠同一個欄位:Dataview 查得到哪幾場有賽後報告,測試也靠它對回產物(本季的索引 + 往季的 archive) */
     賽後報告: rep ? true : null,
+    賽前分析: preArt ? true : null, 賽後分析: postArt ? true : null,
+    專家觀點: experts.length || null, 勝率曲線點數: prob?.pts?.length >= 3 ? prob.pts.length : null,
     產生時間: ctx.builtAt,
   }));
   body.push(`\n# ${ctx.lg.zh} ${f.season} 第 ${f.round} 輪 ${H} vs ${A}\n`);
@@ -645,12 +679,25 @@ function renderMatch(f, ctx) {
       if (ex) body.push(`\n${ex}`);
       body.push(`\n> 這是**走查回測**的預測:訓練資料只到這一輪開賽前,模型沒有看過這場結果。\n`
         + `> 跟 \`fixtures.json\` 裡建置時重算的那一份不是同一個東西。\n`);
+    } else if (f.prediction?.snapshot === true) {
+      /* **開賽前凍結的快照**:比賽日迴圈在開賽時存下來、之後不覆寫(lib/prob-history.mjs 的 preMatchSnapshots),
+         模型當時沒有看過這場結果。2026-09-01 起 build 對已完賽場次的 prediction 只給這一份,沒有就是 null。
+         這一段原本一律寫「本站沒有保存這場的賽前機率快照」—— 那句話 9/1 之後對有即時追蹤的場次就不成立了
+         (英超本季 50 場裡 40 場有快照),而同一則筆記的勝率變化第 0 分就是這一份。2026-09-26 改。 */
+      const p = f.prediction;
+      body.push(`\n## 賽前預測(開賽前存下來的快照)\n\n| 主勝 | 和 | 客勝 |\n|---|---|---|\n| ${pct(p.home)} | ${pct(p.draw)} | ${pct(p.away)} |\n`);
+      if (Number.isFinite(p.xgHome) && Number.isFinite(p.xgAway)) body.push(`\n預期進球 ${p.xgHome} : ${p.xgAway}\n`);
+      body.push(`\n> 比賽日迴圈在開賽時凍結的機率(Poisson 與 Elo 兩個模型的平均),之後不會被覆寫 —— 模型當時沒有看過這場結果。\n`);
     } else {
       body.push(`\n## 賽前預測\n\n`);
-      body.push(`本站沒有保存這場的**賽前機率快照**,所以這裡不放預測數字。\n\n`);
-      body.push(`資料集裡的 \`prediction\` 是建置時重算的 —— 模型的訓練資料已經包含這場結果,`
-        + `拿它當賽前預測會是假的。走查回測(真正的賽前預測)只涵蓋 ${ctx.walkForwardSeason ?? '另一個賽季'}。\n`);
+      body.push(`本站沒有保存這場的**賽前機率快照**(只有比賽日迴圈即時追蹤過的場次才有),所以這裡不放預測數字。\n\n`);
+      body.push(`建置時的模型已經看過這場結果,拿它當賽前預測會是假的。`
+        + `走查回測(真正的賽前預測)只涵蓋 ${ctx.walkForwardSeason ?? '另一個賽季'}。\n`);
     }
+
+    body.push(renderProbCurve(prob, H, A));
+    body.push(renderArticle(postArt, 'post'));
+    body.push(renderExperts(experts, ctx.expertsInfo));
 
     const ms = ctx.matchStatsFor(f);
     if (rep) body.push(renderLeagueReport(rep, f, ctx, ms));
@@ -716,6 +763,19 @@ function renderMatch(f, ctx) {
       body.push(`\n最可能比分:${p.topScores.slice(0, 3).map(s => `${s.s}(${(s.p * 100).toFixed(1)}%)`).join('、')}\n`);
     }
     body.push(`\n> 模型:${ctx.modelName}。預測僅供分析參考,不構成投注建議。\n`);
+  }
+  if (!f.played && f.season === ctx.currentSeason) {
+    /* 建置當下正在踢的場次:賽程還沒記成完賽,但即時勝率已經有點了(表上會標「比賽還在進行」) */
+    body.push(renderProbCurve(prob, H, A));
+    body.push(renderArticle(preArt, 'pre'));
+    if (ctx.h2hAvailable) {
+      const h = renderH2H(ctx.h2hFor(f), f, ctx);
+      body.push(h.text);
+      links.push(...h.links);
+    }
+    if (ctx.formFor(f.home) || ctx.formFor(f.away)) {
+      body.push(`\n兩隊的近況${ctx.hasAvailability ? '、傷停與拿牌' : ''}見 ${wl(H)}、${wl(A)} 的球隊筆記(截至 ${ctx.formAsOf} 的快照)。\n`);
+    }
   }
 
   body.push(`\n## 資料界線\n\n- 賽程與比分來源見 ${wl(ctx.lg.zh)} 的來源清單\n`);
@@ -823,6 +883,336 @@ function renderLeagueReport(rep, f, ctx, ms) {
   return out.join('');
 }
 
+/* ── 站上單場頁與球隊頁的其餘幾塊(2026-09-26,使用者:「繼續」)──────────
+   補齊規劃「產生器沒有讀的產物」那一串:本站的分析文章(analysis)、真人專家觀點(experts)、
+   即時勝率的變化(prob-history)、歷來交手(h2h)、近況與可用人手(form)、賽季模擬(sim)、
+   上季數據風格與陣型(tactics / shapes / formation)、外電與動態(news)。
+   **標籤與界線照站上那一頁寫** —— 站上講「非真人觀點」「沒有進模型」「這是推論」「不是市場盤口」的地方,
+   這裡一句都不能少(鐵則四)。各聯賽有哪幾塊由產物決定(沒有檔或空的就整塊不寫),不按聯賽代碼寫死。 */
+const ARTICLE_LABEL = { template: '本站統計模板', llm: '本站 AI 分析' };
+/* 分析文章:站上單場頁的「賽前分析 / 賽後分析」。本站依模型與逐場數據寫的,**不是真人觀點**;
+   每篇都過了報告層的數字驗證器(對不上就退回模板)。說明照站上:模板「由統計結果自動生成」、AI「AI 撰寫,數字經過驗證」。 */
+function renderArticle(art, phase) {
+  if (!art?.paragraphs?.length) return '';
+  const out = [`\n## ${phase === 'pre' ? '賽前分析' : '賽後分析'}(${ARTICLE_LABEL[art.source] ?? '本站自動分析'}・非真人觀點)\n\n`];
+  out.push(`> ${art.source === 'llm' ? 'AI 撰寫,數字經過驗證' : '由統計結果自動生成'}`
+    + `${art.verified === false ? ';**這一篇的數字驗證沒有通過**' : ''}。\n`);
+  out.push(`\n### ${art.title}\n\n${art.paragraphs.join('\n\n')}\n`);
+  if (art.caveat) out.push(`\n> ${art.caveat}\n`);
+  if (art.note) out.push(`\n> ${art.note}\n`);
+  return out.join('');
+}
+
+/* 連結只收 http(s),而且把會把 Markdown 連結提早結束的括號與空白編碼掉 */
+const mdUrl = u => (/^https?:\/\//.test(String(u ?? '')) ? String(u).replace(/ /g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29') : null);
+const cellText = s => String(s ?? '').replace(/\|/g, '\\|').replace(/\n+/g, ' ');
+
+/* 真人專家觀點(experts.json):具名、有原始連結、人工核對後才發布。順序照站上:新聞 → 名宿 → 專家 */
+const EXPERT_CAT = { news: '新聞', legend: '名宿', expert: '專家' };
+const EXPERT_ORDER = { news: 0, legend: 1, expert: 2 };
+const EXPERT_TYPE = { article: '文章', broadcast: '轉播', video: '影片', podcast: 'Podcast', 'press-conference': '記者會' };
+function renderExperts(rows, info) {
+  if (!rows?.length) return '';
+  const list = [...rows].sort((a, b) => (EXPERT_ORDER[a.category] ?? 9) - (EXPERT_ORDER[b.category] ?? 9));
+  const out = [`\n## 新聞/名宿/專家觀點(${list.length} 則,真人)\n\n`];
+  out.push(`> 具名來源與原始連結,人工核對後才發布${info?.updatedAt ? `(${info.updatedAt} 更新)` : ''}。`
+    + '只摘要原始來源可證實的觀點,不代表本站立場;跟本站的分析文章是兩回事。\n');
+  for (const x of list) {
+    out.push(`\n### ${x.expert}(${EXPERT_CAT[x.category] ?? '觀點'})\n\n`);
+    out.push(`${[x.role, x.publisher ? `**${x.publisher}**` : null, EXPERT_TYPE[x.sourceType] ?? x.sourceType, x.publishedAt].filter(Boolean).join('・')}\n\n`);
+    out.push(`${x.summary}\n`);
+    if (x.topics?.length) out.push(`\n主題:${x.topics.join('、')}\n`);
+    if (x.evidence?.length) out.push(`\n與本站數據對照:${x.evidence.join(';')}\n`);
+    const u = mdUrl(x.url);
+    if (u) out.push(`\n[原始來源](${u})${x.summaryType ? `・${x.summaryType}` : ''}\n`);
+  }
+  return out.join('');
+}
+
+/* 勝率變化(prob-history.json):本站模型比賽中每 2 分鐘算一次的即時機率,**不是市場盤口**。
+   第 0 分那一點是賽前機率(Poisson 與 Elo 的平均);比賽中只用 Poisson —— 有 kick 就另列一行「開球」,
+   那一步是換算法不是場上發生了什麼(站上 probCurve 的說明,2026-09-25)。
+   表只列開球、比分改變與最後一個點;全部的點收在一個可折疊的 callout 裡,一點不少。 */
+const pctOf = x => (x * 100).toFixed(1) + '%';
+function renderProbCurve(rec, H, A) {
+  const pts = rec?.pts;
+  if (!Array.isArray(pts) || pts.length < 3) return '';   // 站上也是三點以上才畫
+  const anchored = pts[0][0] === 0;
+  const kick = anchored && Array.isArray(rec.kick) && rec.kick.length === 3 && rec.kick.every(Number.isFinite) ? rec.kick : null;
+  const score = s => `${s[4]}-${s[5]}`;
+  const row = (when, s, what) => `| ${when} | ${score(s)} | ${pctOf(s[1])} | ${pctOf(s[2])} | ${pctOf(s[3])} | ${what} |\n`;
+  const out = [`\n## 勝率變化(本站模型的即時機率)\n\n| 時間 | 比分 | ${H} 勝 | 和 | ${A} 勝 | 這一點是 |\n|---|---|---|---|---|---|\n`];
+  if (anchored) out.push(row('賽前', pts[0], '賽前機率(Poisson 與 Elo 兩個模型的平均)'));
+  else out.push(row(`${pts[0][0]}'`, pts[0], '第一個點(開賽後才開始記錄)'));
+  if (kick) {
+    const step = Math.max(...[1, 2, 3].map(i => Math.abs(pts[0][i] - kick[i - 1]))) * 100;
+    out.push(row('開球', [0, ...kick, 0, 0], `比賽中的模型只用 Poisson;跟上一列差 ${step.toFixed(1)} 個百分點是換算法,不是場上發生了什麼`));
+  }
+  const last = pts.length - 1;
+  for (let k = 1; k < pts.length; k++) {
+    const changed = pts[k][4] !== pts[k - 1][4] || pts[k][5] !== pts[k - 1][5];
+    if (!changed && k !== last) continue;
+    out.push(row(`${pts[k][0]}'`, pts[k], [changed ? '比分改變後的第一個點' : null,
+      k === last ? (rec.done ? '最後一個點(完場)' : '最後一個點(建置當下比賽還在進行)') : null].filter(Boolean).join(';')));
+  }
+  out.push(`\n> 這是**本站模型**的即時機率,不是市場盤口。比賽中約每 2 分鐘一個點(這一場 ${pts.length} 點);`
+    + '上表只列開球、比分改變與最後一個點,全部的點在下面。\n');
+  out.push(`\n> [!note]- 全部 ${pts.length} 個點\n> | 分鐘 | 比分 | ${H} 勝 | 和 | ${A} 勝 |\n> |---|---|---|---|---|\n`);
+  for (const s of pts) out.push(`> | ${s[0]} | ${score(s)} | ${pctOf(s[1])} | ${pctOf(s[2])} | ${pctOf(s[3])} |\n`);
+  return out.join('');
+}
+
+/* 歷來交手(h2h.json,鍵是排序過的兩隊 —— 站上同一個查法)。只算聯賽,盃賽不在這份資料裡。
+   這一聯賽整份 h2h 是空的就整塊不寫:那不代表「沒有交手過」(英冠德義法 2026-09-26 前就是整份空的)。 */
+function renderH2H(rec, f, ctx) {
+  const links = [];
+  const nm = c => ctx.teamNameOf(c) ?? c;
+  const since = ctx.h2hSince;
+  if (!rec) {
+    return { links, text: `\n## 歷來交手\n\n${since ? `${since} 以來` : ''}沒有在${ctx.lg.zh}交手過(多半是剛升上來或剛降下來的球隊)。\n` };
+  }
+  const homeIsA = [f.home, f.away].sort()[0] === f.home;
+  const [hw, aw] = homeIsA ? [rec.aWin, rec.bWin] : [rec.bWin, rec.aWin];
+  const [hg, ag] = homeIsA ? [rec.aGoals, rec.bGoals] : [rec.bGoals, rec.aGoals];
+  const out = [`\n## 歷來交手(${since ? `${since} 起的` : ''}${ctx.lg.zh}聯賽,${rec.games} 場)\n\n`];
+  out.push(`| ${nm(f.home)} 勝 | 和 | ${nm(f.away)} 勝 | 進球 |\n|---|---|---|---|\n| ${hw} | ${rec.draw} | ${aw} | ${hg} : ${ag} |\n\n`);
+  for (const m of rec.list ?? []) {
+    const file = ctx.matchFileOf(m);
+    if (file) links.push(file);
+    out.push(`- ${m.date} ${nm(m.home)} ${m.fh}-${m.fa} ${nm(m.away)}${file ? ` → ${wl(file)}` : ''}\n`);
+  }
+  out.push(`\n> 只算${ctx.lg.zh}聯賽的交手(盃賽不在這份資料裡)。${ctx.formNote ?? ''}\n`);
+  return { links, text: out.join('') };
+}
+
+/* 賽季模擬(teams.json 的 sim,跟 sim.json 同一份)。欄位看資料有什麼:有直升的聯賽(英冠)不印前四、
+   有降級附加賽的(德甲法甲)多一欄 —— 名額照各聯賽的規則(2026-09-26 起模擬真的照著數,見變更紀錄)。 */
+const simCols = s => [
+  ['期望積分', s.expectedPoints], ['期望名次', s.expectedPos], ['奪冠', `${s.titlePct}%`],
+  ...(s.promotionPct != null
+    ? [['直升', `${s.promotionPct}%`], ...(s.playoffPct != null ? [['附加賽區', `${s.playoffPct}%`]] : [])]
+    : [['前四', `${s.top4Pct}%`]]),
+  ['降級', `${s.relegationPct}%`],
+  ...(s.relegationPlayoffPct != null ? [['降級附加賽', `${s.relegationPlayoffPct}%`]] : []),
+];
+function simNote(ctx) {
+  return `\n> ${ctx.simRuns ? `${Number(ctx.simRuns).toLocaleString('en-US')} 次` : ''}賽季模擬的平均:`
+    + '期望積分 = 已經拿到的分數 + 剩餘賽程的模擬結果;每次 build 重算。'
+    + (ctx.zoneRule ? `\n> ${ctx.zoneRule}` : '') + '\n';
+}
+function renderSim(s, ctx) {
+  if (!s) return '';
+  const cols = simCols(s);
+  const out = [`\n## ${ctx.currentSeason} 賽季模擬\n\n| ${cols.map(c => c[0]).join(' | ')} |\n|${cols.map(() => '---').join('|')}|\n| ${cols.map(c => c[1]).join(' | ')} |\n`];
+  const dist = (s.posDist ?? []).map((v, i) => (v >= 0.1 ? `第 ${i + 1} 名 ${v}%` : null)).filter(Boolean);
+  if (dist.length) out.push(`\n名次分布(0.1% 以上):${dist.join('・')}\n`);
+  out.push(simNote(ctx));
+  return out.join('');
+}
+
+/* 近況與可用人手(form.json)。**截至 asOf 的快照** —— 近五場與傷停都是會變的東西。
+   近況跟交手都跑過走查回測、沒有進模型:說法照產物自己那一句(form.note)。
+   可用人手只有英超有(官方 FPL 的傷停欄位);其他聯賽的 availability 是 null,整塊不寫。 */
+const RES_ZH = { W: '勝', D: '和', L: '負' };
+function renderForm(code, ctx) {
+  const t = ctx.formFor(code);
+  const links = [];
+  if (!t?.recent?.length) return { links, text: '' };
+  const s = t.summary ?? {};
+  const out = [`\n## 近況(截至 ${ctx.formAsOf})\n\n| 日期 | 主客 | 對手 | 比分 | 結果 |\n|---|---|---|---|---|\n`];
+  for (const r of t.recent) {
+    const opp = ctx.teamNameOf(r.opp);
+    if (opp) links.push(opp);
+    out.push(`| ${r.date} | ${r.venue === 'H' ? '主' : '客'} | ${opp ? wl(opp) : r.opp} | ${r.gf}-${r.ga} | ${RES_ZH[r.res] ?? r.res} |\n`);
+  }
+  out.push(`\n近 ${s.games} 場 ${s.w} 勝 ${s.d} 和 ${s.l} 負・進 ${s.gf} 失 ${s.ga}・場均 ${s.ppg} 分\n`);
+  if (ctx.formNote) out.push(`\n> ${ctx.formNote}\n`);
+  const a = t.availability;
+  if (a) {
+    const base = a.baseline === 'current' ? '本季' : '上季';
+    const who = p => { const f = ctx.playerFileByFpl(p.code); if (f) links.push(f); return f ? wl(f) : p.name; };
+    const share = v => (v == null ? '—' : `${(v * 100).toFixed(1)}%`);
+    out.push(`\n### 可用人手(截至 ${ctx.formAsOf},英超官方 FPL)\n\n`);
+    out.push(`**確定缺陣**(${a.outCount} 人${a.outCount > a.out.length ? `,列出影響最大的 ${a.out.length} 位` : ''})\n\n`);
+    out.push(a.out.length
+      ? `| 球員 | 位置 | 狀態 | 佔${base}上場時間 | FPL 原文 |\n|---|---|---|---|---|\n`
+        + a.out.map(o => `| ${who(o)} | ${o.pos} | ${o.statusZh} | ${share(o.minutesShare)} | ${cellText(o.news)} |\n`).join('')
+      : '沒有確定缺陣的球員。\n');
+    if (a.doubt?.length) {
+      out.push(`\n**有疑慮**(可能趕不上)\n\n| 球員 | 位置 | 下一場出賽機率 | 佔${base}上場時間 | FPL 原文 |\n|---|---|---|---|---|\n`);
+      for (const o of a.doubt) out.push(`| ${who(o)} | ${o.pos} | ${o.chanceNext == null ? '—' : o.chanceNext + '%'} | ${share(o.minutesShare)} | ${cellText(o.news)} |\n`);
+    }
+    if (a.departed?.count) {
+      out.push(`\n**夏天離隊**(不算這場的傷兵):${a.departed.names.join('、')}${a.departed.count > a.departed.names.length ? ` 等 ${a.departed.count} 人` : ''}`
+        + ` —— 上季佔 ${share(a.departed.minutes)} 上場時間\n`);
+    }
+    if (a.cards?.length) {
+      out.push(`\n**本季拿牌**\n\n| 球員 | 位置 | 黃牌 | 紅牌 | 停賽門檻 |\n|---|---|---|---|---|\n`);
+      for (const c of a.cards) {
+        const w = c.watch;
+        out.push(`| ${who(c)} | ${c.pos} | ${c.yellow} | ${c.red} | ${w ? `再 ${w.away} 張黃牌停 ${w.ban} 場(第 ${w.byMatch} 場前累積 ${w.next} 張)` : '—'} |\n`);
+      }
+    }
+    out.push(`\n> 缺陣佔比算的是**確定不能上場**的球員佔球隊${base}上場時間的比例`
+      + (a.noBaseline ? `;${a.noBaseline} 名球員沒有參考賽季數據(多半是新援),缺陣算不進去,所以會低估` : '')
+      + `。目前踢了 ${a.teamMatches} 場。這一段沒有進預測模型。\n`);
+  }
+  return { links, text: out.join('') };
+}
+
+/* 上季數據風格(teams.json 的 tactics,戰術頁與球隊頁同一份)。兩個聯賽的欄位不同(英超有球員級的人力配置、
+   西甲有整隊的射門與快攻佔比),所以逐欄位看有沒有值 —— 跟站上 styleBlock 同一組。
+   雷達的級分規則跟 core.js 的 radar 同一條:百分位每 10 分一級,10 最高。 */
+const levelOf = v => Math.min(10, Math.floor((v ?? 0) / 10) + 1);
+const signedFx = (v, d) => (v == null ? null : (v > 0 ? '+' : '') + Number(v).toFixed(d));
+const SP_ZH = { openPlay: '運動戰', corner: '角球', otherSetPiece: '其他定位球', directFreeKick: '直接任意球', penalty: '十二碼' };
+function renderTactics(t, ctx) {
+  const tac = t.tactics;
+  if (!tac) return '';
+  const a = tac.attack ?? {}, d = tac.defence ?? {}, sp = tac.setPieces ?? {};
+  const rows = [
+    a.goals90 != null ? ['進球 / xG(每場)', `${a.goals90} / ${a.xG90}`] : ['每場期望進球 xG', a.xG90],
+    d.conceded90 != null ? ['失球 / xGA(每場)', `${d.conceded90} / ${d.xGA90}`] : ['每場期望失球 xGA', d.xGA90],
+    a.shots90 != null ? ['射門 / 被射門(每場)', `${a.shots90} / ${d.shots90}`] : null,
+    ['終結超出期望(進球 − xG)', signedFx(a.finishing, 1)],
+    d.overperform != null ? ['門將守住的期望失球', signedFx(d.overperform, 1)] : null,
+    a.fastXGShare != null ? ['快速進攻 xG 佔比', `${a.fastXGShare}%`] : null,
+    a.boxShotShare != null ? ['禁區內射門佔比', `${a.boxShotShare}%`] : null,
+    /* 定位球那三列照站上:進失球在分類對不回總進球時是 null,寫明原因而不是印 null */
+    sp.available ? ['非十二碼定位球 進 / 失', sp.goals == null || sp.conceded == null ? '—(分類對不回總進球)' : `${sp.goals} / ${sp.conceded}`] : null,
+    sp.available ? ['定位球 xG / 場', sp.xG90] : null,
+    sp.available ? ['定位球 xGA / 場', sp.xGA90] : null,
+    /* 人力配置只有英超有(def / mid / fwd);西甲的 label 是陣型名稱,跟「主要陣型」同一個值(站上同一個判斷) */
+    tac.formation?.def != null && tac.formation?.label ? ['後場 / 中場 / 鋒線人力', tac.formation.label] : null,
+    tac.formation?.shape ? ['體系判讀', tac.formation.shape] : null,
+    tac.formation?.primary ? ['主要陣型', tac.formation.primary] : null,
+    tac.squad ? ['使用球員數', tac.squad.used] : null,
+    tac.squad ? ['前 11 人出場佔比', `${tac.squad.top11Share}%`] : null,
+    tac.squad ? ['出場加權平均年齡', tac.squad.avgAgeWeighted] : null,
+    tac.discipline ? ['每場黃紅牌加權', tac.discipline.perGame] : null,
+    tac.resilience?.leadHoldPct != null ? ['領先後拿下', `${tac.resilience.leadHoldPct}%`] : null,
+    tac.resilience?.trailRescuePct != null ? ['落後後搶到分', `${tac.resilience.trailRescuePct}%`] : null,
+    tac.resilience ? ['逆轉 / 被逆轉', `${tac.resilience.comeback} / ${tac.resilience.collapse}`] : null,
+    tac.homePpg != null ? ['主場 / 客場場均積分', `${tac.homePpg} / ${tac.awayPpg}`] : null,
+  ].filter(Boolean);
+  const out = [`\n## 上季數據風格(${ctx.lastSeason})\n\n${defTable(rows)}`];
+  const formations = tac.formation?.list ?? [];
+  if (formations.length) out.push(`\n整季陣型佔比(出場分鐘):${formations.map(f => `${f.name} ${f.share}%(${f.minutes} 分)`).join('・')}\n`);
+  if (tac.formation?.notes?.length) out.push(`\n${tac.formation.notes.join('・')}\n`);
+  if (tac.radar?.length) {
+    out.push(`\n### 風格雷達\n\n| 指標 | 級分 | 百分位 | 原始值 |\n|---|---|---|---|\n`);
+    for (const r of tac.radar) out.push(`| ${r.label} | ${levelOf(r.value)} | ${r.value} | ${r.raw} |\n`);
+    out.push(`\n> 級分 = 該指標在 ${ctx.lastSeason} 全聯盟 ${ctx.tacticsTeams} 隊中的百分位,每 10 分一級(10 最高),不是主觀評分。`
+      + '控球與壓迫沒有可靠來源,所以沒有這兩軸。\n');
+    const rc = t.radarCoverage;
+    if (rc && rc.lastSeasonTotal > 0) {
+      if (rc.changed || rc.lastSeasonGames == null) {
+        out.push(`> **這是上季全季的風格,而現任教練${rc.coach ? ` ${rc.coach}` : ''} 是之後才上任 —— 它描述的是前任的打法**,參考時要打折。\n`);
+      } else if (rc.lastSeasonGames < rc.lastSeasonTotal) {
+        out.push(`> 上季 ${rc.lastSeasonTotal} 場中${rc.coach ?? '現任教練'}帶了 ${rc.lastSeasonGames} 場,其餘是前任 —— 雷達是全季混合。\n`);
+      }
+    }
+  }
+  if (tac.tags?.length) out.push(`\n標籤:${tac.tags.join('・')}\n`);
+  if (sp.available && sp.breakdown) {
+    const unreliable = sp.goalsReliable === false;
+    out.push(`\n### 進球情境(${sp.source ?? '整季分類'}${sp.matches ? `,${sp.matches} 場` : ''})\n\n`
+      + '| 情境 | 射門 | 進球 | xG | 被射門 | 失球 | 被 xG |\n|---|---|---|---|---|---|---|\n');
+    for (const [k, v] of Object.entries(sp.breakdown)) {
+      const g = x => (unreliable ? '—' : x);
+      out.push(`| ${SP_ZH[k] ?? k} | ${v.shots} | ${g(v.goals)} | ${fixed(v.xG, 1)} | ${v.against?.shots ?? '—'} | ${g(v.against?.goals ?? '—')} | ${fixed(v.against?.xG, 1)} |\n`);
+    }
+    if (unreliable) out.push('\n> 這一隊的進球情境分類加起來對不回整季總進球,所以進球數不印;xG 不受影響。\n');
+    const takers = [['十二碼', sp.takers?.pen], ['任意球', sp.takers?.fk], ['角球', sp.takers?.corner]]
+      .filter(([, l]) => l?.length).map(([k, l]) => `${k} ${l.map(x => x.name).join(' → ')}`);
+    if (takers.length) out.push(`\n主罰順位:${takers.join(';')}\n`);
+    if (sp.defenderGoalShare != null) out.push(`\n後衛進球 ${sp.defenderGoals} 球,佔整季進球 ${sp.defenderGoalShare}%\n`);
+  }
+  out.push('\n> 風格只描述上季表現,不改動本季單場的模型機率。\n');
+  return out.join('');
+}
+
+/* 陣型(shapes.json):官方公布的正式先發陣型(本季),加上英超有的「攻守分型」—— 那是**推論**,
+   官方沒有這個東西(站上戰術頁同一句)。樣本不足的球隊寧可標示資料不足,也不編一個陣型。 */
+function renderShape(sh, ctx) {
+  if (!sh || (!sh.official && !sh.base && !sh.insufficient)) return '';
+  const out = [`\n## 陣型(${ctx.currentSeason})\n\n`];
+  const o = sh.official;
+  if (o?.formation) {
+    out.push(`**官方先發陣型**:最常用 ${o.formation}(${o.games} 場有正式先發)`
+      + (o.used?.length > 1 ? `;用過 ${o.used.map(u => `${u.formation} ${u.games} 場`).join('、')}` : '')
+      + (o.latest?.formation ? `;最近一場 ${o.latest.formation}(${String(o.latest.kickoff ?? '').slice(0, 10)})` : '') + '\n');
+  }
+  if (sh.note) out.push(`\n> ${sh.note}\n`);
+  if (sh.insufficient) {
+    out.push(`\n攻守分型:只有 ${sh.contributors} 名球員有足夠的樣本,不推導(寧可標示資料不足,也不編一個陣型)。\n`);
+  } else if (sh.base) {
+    out.push('\n| | 陣型 | 角色配置 |\n|---|---|---|\n');
+    out.push(`| 標準(推導) | ${sh.base.label} | ${sh.base.detail} |\n`);
+    if (sh.attacking) out.push(`| 進攻時 | ${sh.attacking.label} | ${sh.attacking.detail}${sh.attacking.pushedUp ? `・邊後衛前壓 ${sh.attacking.pushedUp}` : ''} |\n`);
+    if (sh.defending) out.push(`| 防守時 | ${sh.defending.label} | ${sh.defending.detail}${sh.defending.droppedBack ? `・邊鋒回收 ${sh.defending.droppedBack}` : ''} |\n`);
+    out.push('\n> **攻守分型永遠是推論,官方沒有這個東西。** 官方只公布一個陣型,不分有球無球;這裡用兩條規則推:'
+      + '創造力排在同角色前段的邊後衛進攻時前壓、防守貢獻排在同角色前段的邊鋒無球時退回中場線 —— 推的是傾向,不是實測位置。\n');
+  }
+  return out.join('');
+}
+
+/* 外電與動態(news.json)。每一則的來源照實標:FPL 官方欄位(傷停、轉會)、本站模型與上季數據的敘事、
+   RSS 外電(只存標題、短摘要與原文連結,不抓全文)、人工或 AI 整理的摘要(站上同樣分開標)。
+   AI 整理的**不寫成人工整理**(page-news 的規矩);翻譯要標是機器還是人工,原文留著。 */
+const NEWS_CHECK = { verified: '比分已與本站賽果逐場核對', unverified: '比分沒有跟本站賽果核對過(本站沒有那個賽事或那一輪的賽果)' };
+const newsTeams = n => (n.teams?.length ? n.teams : (n.team ? [n.team] : []));
+function newsMarks(n) {
+  const marks = [];
+  if (n.curated) {
+    marks.push(n.curator?.kind === 'ai'
+      ? `AI 整理摘要:${n.curator?.method ?? '整理自搜尋結果的摘要與本站抓到的 RSS'};完整內容以原文為準`
+      : '人工整理摘要:不是機器翻譯、也不是原文照抄;完整內容以原文為準');
+    if (NEWS_CHECK[n.scoreCheck]) marks.push(NEWS_CHECK[n.scoreCheck]);
+    if (n.statusLabel) marks.push(n.statusLabel);
+  }
+  if (n.titleZh) marks.push(`${n.translatedByHuman ? '人工翻譯' : '機器翻譯'}:只翻譯不改寫;原文標題 ${n.title}`);
+  return marks;
+}
+
+/* 外電與動態的整份筆記(一個聯賽一則)。依日期分節,新的在前;每一則照實標來源與整理方式(newsMarks)。
+   **這是快照**:站上的動態只保留最近幾週,舊的會滾出去,所以筆記裡也只有這一次建置時還在的那些。 */
+function renderNewsNote(items, ctx) {
+  const links = [];
+  const dates = items.map(n => n.date).filter(Boolean).sort();
+  const body = [frontmatter({ 類型: '外電與動態', 聯賽: ctx.lg.zh, 則數: items.length, 最早: dates[0], 最新: dates.at(-1), 產生時間: ctx.builtAt })];
+  body.push(`\n# ${ctx.lg.zh} 外電與動態\n\n`);
+  body.push(`${items.length} 則,${dates[0]} ~ ${dates.at(-1)} 的快照(每次建置重抓,舊的會滾出去)。\n\n`);
+  body.push('每一則標著類別。來源有四種:**FPL 官方欄位**(傷停、轉會)、**本站模型與上季數據跑出來的敘事**(賽程、數據、戰術、陣容)、'
+    + '**RSS 外電**(每天抓一次,只存標題、短摘要與原文連結,不抓全文)、**人工或 AI 整理的外電摘要**(每一則照實標是誰整理的)。'
+    + '球隊標記看產物的欄位,不用隊名關鍵字撈 —— 沒有標記的那幾則就是沒有,不猜。\n');
+  const byDate = new Map();
+  for (const n of [...items].sort((a, b) => String(b.date).localeCompare(String(a.date)))) {
+    if (!byDate.has(n.date)) byDate.set(n.date, []);
+    byDate.get(n.date).push(n);
+  }
+  for (const [date, list] of byDate) {
+    body.push(`\n## ${date ?? '日期不詳'}\n`);
+    for (const n of list) {
+      const teams = newsTeams(n).map(c => ctx.teamNameOf(c)).filter(Boolean);
+      links.push(...teams);
+      body.push(`\n### ${n.titleZh ?? n.title}\n\n`);
+      body.push(`**${n.cat}**${teams.length ? '・' + teams.map(wl).join('・') : ''}${n.competitionName ? `・${n.competitionName}` : ''}\n`);
+      const text = n.bodyZh ?? n.body;
+      if (text) body.push(`\n${text}\n`);
+      if (n.raw) body.push(`\nFPL 原文:${n.raw}\n`);
+      const marks = newsMarks(n);
+      if (marks.length) body.push(`\n> ${marks.join('\n> ')}\n`);
+      const fx = n.fixtureId ? ctx.fixtureFileById(n.fixtureId) : null;
+      if (fx) { links.push(fx); body.push(`\n這一場:${wl(fx)}\n`); }
+      const u = mdUrl(n.link);
+      if (u) body.push(`\n[${n.source ?? '原文'}](${u})\n`);
+    }
+  }
+  body.push(`\n## 資料界線\n\n- 建置時間 ${ctx.builtAt}\n- 外電的內容以原文為準;這裡只有標題、短摘要與連結\n`);
+  return { body: body.join(''), links };
+}
+
 /* ── 聯賽首頁(MOC)─────────────────────────────────────── */
 function renderLeague(ctx, teams, players, fixtures) {
   const links = [];
@@ -846,12 +1236,58 @@ function renderLeague(ctx, teams, players, fixtures) {
     }
   }
 
+  /* 賽季模擬(sim.json,站上實時戰況頁的「本季預測積分榜」同一份) */
+  const simRows = ctx.simTable ?? [];
+  if (simRows.length) {
+    const cols = simCols(simRows[0]).map(c => c[0]);
+    body.push(`\n## ${ctx.currentSeason} 賽季模擬\n\n| # | 球隊 | ${cols.join(' | ')} |\n|---|---|${cols.map(() => '---').join('|')}|\n`);
+    simRows.forEach((r, i) => {
+      const nm = ctx.teamNameOf(r.code);
+      if (nm) links.push(nm);
+      body.push(`| ${i + 1} | ${nm ? wl(nm) : r.code} | ${simCols(r).map(c => c[1]).join(' | ')} |\n`);
+    });
+    body.push(simNote(ctx));
+  }
+
   body.push(`\n## 球隊\n\n`);
   body.push(teams.map(t => { links.push(t.en); return wl(t.en); }).join(' · ') + '\n');
 
   if (ctx.boardNotes?.length) {
     body.push(`\n## 球員榜\n\n`);
     for (const b of ctx.boardNotes) { links.push(b.file); body.push(`- ${wl(b.file)} —— ${b.phase}・${b.boards} 張榜\n`); }
+  }
+
+  /* 上季數據風格總表(tactics.json,戰術頁那幾張表的來源)。**含上季在、本季已經離開的球隊** ——
+     那幾隊的球隊筆記只有身分與歷史比賽(本季不在這個聯賽),上季的風格只在這裡 */
+  const tacs = [...(ctx.tacticsAll ?? [])].sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99) || (b.ppg ?? 0) - (a.ppg ?? 0));
+  if (tacs.length) {
+    body.push(`\n## ${ctx.lastSeason} 數據風格(全聯盟 ${tacs.length} 隊)\n\n`
+      + '| 球隊 | 人力 / 主要陣型 | 體系判讀 | xG / 場 | xGA / 場 | 定位球 xG / 場 | 領先後拿下 | 落後後搶到分 | 標籤 |\n'
+      + '|---|---|---|---|---|---|---|---|---|\n');
+    for (const x of tacs) {
+      const nm = ctx.teamNameOf(x.code);
+      if (nm) links.push(nm);
+      const v = y => (y == null ? '—' : y);
+      body.push(`| ${nm ? wl(nm) : x.code} | ${v(x.formation?.def != null ? x.formation.label : x.formation?.primary)} | ${v(x.formation?.shape)} | ${v(x.attack?.xG90)} | ${v(x.defence?.xGA90)}`
+        + ` | ${v(x.setPieces?.xG90)} | ${x.resilience?.leadHoldPct == null ? '—' : x.resilience.leadHoldPct + '%'} | ${x.resilience?.trailRescuePct == null ? '—' : x.resilience.trailRescuePct + '%'}`
+        + ` | ${(x.tags ?? []).join('・') || '—'} |\n`);
+    }
+    body.push('\n> 風格只描述上季表現,不改動本季單場的模型機率。各隊的完整側寫(雷達、進球情境、主罰順位)在本季還在這個聯賽的球隊筆記裡。\n');
+  }
+
+  /* 陣型與成績(formation.json,只有英超有):相關不是因果,站上戰術頁同一段話 */
+  const fm = ctx.formation;
+  if (fm?.pairs?.length) {
+    body.push(`\n## 陣型與成績(${ctx.lastSeason},${fm.n} 隊)\n\n| 關係 | r | 強度 | 過門檻 |\n|---|---|---|---|\n`);
+    for (const x of fm.pairs) body.push(`| ${x.x} vs ${x.y} | ${x.r} | ${x.strength} | ${x.significant ? '是' : '否'} |\n`);
+    body.push(`\n> 以 ${fm.n} 隊的樣本量,|r| 要達到 ${fm.critical} 以上才勉強算得上不是雜訊。**就算過了門檻,也最可能是反過來的因果**:`
+      + '強隊控球多所以中場站得住,弱隊常落後只好多推一個前鋒追分 —— 陣型反映的是處境與實力,不是陣型造就了成績。'
+      + '人數是用出場分鐘反推的平均值(FPL 把邊鋒歸為中場),不是轉播畫面上的陣型圖。\n');
+  }
+
+  if (ctx.newsCount) {
+    body.push(`\n## 外電與動態\n\n${wl(ctx.newsFile)} —— ${ctx.newsCount} 則(${ctx.newsRange})\n`);
+    links.push(ctx.newsFile);
   }
 
   if (ctx.sources?.length) {
@@ -1175,6 +1611,17 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
 
   const matchFile = m => sanitize(lg.zh + ' ' + m.season
     + ' R' + String(m.round ?? 0).padStart(2, '0') + ' ' + m.home + '-' + m.away);
+  /* 站上單場頁與球隊頁的其餘幾塊(2026-09-26):缺檔就是 null / 空,對應的區塊整個不寫 */
+  const analysis = load(lg.key, 'analysis');
+  const expertsFile = load(lg.key, 'experts');
+  const probHistory = load(lg.key, 'prob-history');
+  const formFile = load(lg.key, 'form');
+  const h2hFile = load(lg.key, 'h2h') ?? {};
+  const shapesFile = load(lg.key, 'shapes') ?? {};
+  const tacticsAll = arr(load(lg.key, 'tactics'));
+  const simAll = arr(load(lg.key, 'sim'));
+  const formationFile = load(lg.key, 'formation');
+  const newsAll = arr(load(lg.key, 'news')).filter(n => n?.title);
 
   /* 本季賽程 + 歷史賽果。results.json 與 fixtures.json 在本季是重疊的
      (results 只收已完賽),所以用 season|home|away 去重,以 fixtures 為準 ——
@@ -1187,6 +1634,14 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     .filter(m => m && m.home && m.away && !seen.has(m.season + '|' + m.home + '|' + m.away))
     .map(m => ({ ...m, file: matchFile(m), 歷史: true }));
   const matches = [...fixtures, ...history];
+  /* 「季|主|客」→ 那一場的筆記。英冠的升級附加賽會跟聯賽撞同一個鍵,所以只收聯賽場次(交手紀錄也只算聯賽),
+     查的時候再用日期收斂一次 —— 對不上寧可不連,連錯場比沒有連結糟 */
+  const matchByKey = new Map();
+  for (const m of matches) {
+    const k = m.season + '|' + m.home + '|' + m.away;
+    if (!m.stage && !matchByKey.has(k)) matchByKey.set(k, m);
+  }
+  const fixtureById = new Map(fixtures.filter(f => f.id != null).map(f => [String(f.id), f.file]));
 
   const playersByTeam = new Map();
   for (const p of players) {
@@ -1256,6 +1711,39 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     builtAt: meta.builtAt, currentSeason: meta.currentSeason, lastSeason: meta.lastSeason,
     modelName: meta.model?.name ?? 'Dixon-Coles Poisson + Elo',
     sources: meta.sources, table,
+    /* ── 站上單場頁與球隊頁的其餘幾塊(2026-09-26)。查法照站上:賽前文章的鍵沒有季(只收即將開賽的)、
+       賽後文章與專家觀點的鍵有季、勝率曲線的鍵沒有季但檔頭有季、交手的鍵是排序過的兩隊 ── */
+    preArticleFor: f => (!f.played && f.season === meta.currentSeason ? analysis?.pre?.[f.home + '|' + f.away] ?? null : null),
+    postArticleFor: f => (f.played && f.season === meta.currentSeason ? analysis?.post?.[f.season + '|' + f.home + '|' + f.away] ?? null : null),
+    expertsFor: f => arr(expertsFile?.matches?.[f.season + '|' + f.home + '|' + f.away] ?? []),
+    expertsInfo: expertsFile ? { updatedAt: expertsFile.updatedAt } : null,
+    probFor: f => (probHistory?.season === f.season ? probHistory.matches?.[f.home + '|' + f.away] ?? null : null),
+    h2hAvailable: Object.keys(h2hFile).length > 0,
+    h2hFor: f => h2hFile[[f.home, f.away].sort().join('|')] ?? null,
+    h2hSince: meta.h2hSeasons?.[0] ?? null,
+    matchFileOf: m => {
+      const x = matchByKey.get(m.season + '|' + m.home + '|' + m.away);
+      return x && (!m.date || !x.date || x.date === m.date) ? x.file : null;
+    },
+    formFor: code => formFile?.teams?.[code] ?? null,
+    formAsOf: formFile?.asOf ?? meta.asOf ?? null,
+    formNote: formFile?.note ?? null,
+    hasAvailability: Object.values(formFile?.teams ?? {}).some(x => x?.availability),
+    playerFileByFpl: (() => {
+      const by = new Map(players.filter(p => p.fplCode).map(p => [String(p.fplCode), p.file]));
+      return code => by.get(String(code)) ?? null;
+    })(),
+    shapeFor: code => shapesFile?.[code] ?? null,
+    tacticsTeams: tacticsAll.length,
+    simRuns: meta.model?.simulationRuns ?? null,
+    /* 名額的說法照各聯賽自己寫在資料界線裡的那一句(英冠「前 2 直升、3~6 附加賽、後 3 降級」、德義法的升降級規則) */
+    zoneRule: (meta.boundaries ?? []).filter(x => /升降級|直升|附加賽/.test(x)).map(x => x.replace(/^[✓—]\s*/, '')).join(' ') || null,
+    newsFor: code => newsAll.filter(n => newsTeams(n).includes(code)),
+    newsFile: sanitize(lg.zh + ' 外電與動態'),
+    fixtureFileById: id => fixtureById.get(String(id)) ?? null,
+    simTable: simAll, tacticsAll, formation: formationFile,
+    newsCount: newsAll.length,
+    newsRange: newsAll.length ? (d => `${d[0]} ~ ${d.at(-1)}`)(newsAll.map(n => n.date).filter(Boolean).sort()) : null,
   };
 
   const D = lg.dir;
@@ -1265,6 +1753,10 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   });
   const leagueNote = renderLeague(ctx, [...clubs.values()], players, matches);
   addNote(D + '/' + lg.zh + '.md', leagueNote.body, leagueNote.links);
+  if (newsAll.length) {
+    const nn = renderNewsNote(newsAll, ctx);
+    addNote(D + '/' + ctx.newsFile + '.md', nn.body, nn.links);
+  }
   for (const t of clubs.values()) {
     const r = renderTeam(t, ctx);
     const also = teamAlsoIn.get(lg.key + ':' + t.code) ?? [];
@@ -2891,10 +3383,10 @@ writeFileSync(join(OUT, 'README.md'), [
   '',
   '## 這裡不做的事',
   '',
-  '**已完賽的場次不放預測數字。** 本站沒有保存本季的賽前機率快照,',
-  '而資料集裡的 `prediction` 是建置時重算的 —— `build.mjs` 的訓練資料',
-  '(`trainMatches = [...history, ...curPlayed]`)已經包含那場結果。',
-  '拿它當賽前預測是假的。未賽場次的預測則是真的賽前預測,照放。',
+  '**已完賽的場次只放兩種預測:走查回測的,以及開賽前存下來的快照。** 建置時的模型',
+  '(`trainMatches = [...history, ...curPlayed]`)已經看過那場結果,拿它當賽前預測是假的,所以不放;',
+  '快照是比賽日迴圈在開賽時凍結的(只有即時追蹤過的場次有),之後不覆寫。兩種都沒有的場次照實寫沒有。',
+  '未賽場次的預測則是真的賽前預測,照放。',
   '',
   /* 這一段原本寫死「跨聯賽有 13 組同名、0 組可以核對」—— 那是只有英超西甲時量的。
      數字改成這一次產生時算的(homonymStats),判準寫在 assignFilenames 的檔頭。 */

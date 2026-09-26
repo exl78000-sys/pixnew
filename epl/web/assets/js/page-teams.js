@@ -1080,7 +1080,9 @@ try {
       sp.available ? ['定位球 xG / 場', sp.xG90] : null,
       sp.available ? ['定位球 xGA / 場', sp.xGA90] : null,
       !sp.available && sp.defenderGoalShare != null ? ['後場球員進球佔比(代理)', `${sp.defenderGoalShare}%`] : null,
-      tac.formation?.label ? ['後場 / 中場 / 鋒線人力', tac.formation.label] : null,
+      /* 人力配置只有英超有(FPL 出場分鐘反推的 def / mid / fwd)。西甲的 formation.label 是 Understat 的陣型名稱
+         (跟 primary 同一個值),原本也印在這一列 ——「後場 / 中場 / 鋒線人力 4-2-3-1」,講的是另一件事 */
+      tac.formation?.def != null && tac.formation?.label ? ['後場 / 中場 / 鋒線人力', tac.formation.label] : null,
       tac.formation?.shape ? ['體系判讀', tac.formation.shape] : null,
       tac.formation?.primary ? ['主要陣型', tac.formation.primary] : null,
       tac.squad ? ['使用球員數', tac.squad.used] : null,

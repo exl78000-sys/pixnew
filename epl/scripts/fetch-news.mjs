@@ -34,6 +34,10 @@ export const strip = s => s
   .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
   .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+  /* 數字實體(2026-09-26):Sky Sports 的摘要帶 `&#160;`,原本只認具名的那幾個,於是站上外電印出字面的「&#160;」
+     (前端會再跳脫一次 &)。解成字元之後,不換行空白由下面的 \s+ 收成一般空白。 */
+  .replace(/&#(\d+);/g, (m, n) => (Number(n) > 0 && Number(n) <= 0x10ffff ? String.fromCodePoint(Number(n)) : m))
+  .replace(/&#x([0-9a-f]+);/gi, (m, h) => (parseInt(h, 16) > 0 && parseInt(h, 16) <= 0x10ffff ? String.fromCodePoint(parseInt(h, 16)) : m))
   .replace(/<\/?(?:p|br|div|li|ul|ol|h[1-6]|tr|td|th|table|blockquote|figure|figcaption|section|article|hr)\b[^>]*>/gi, ' ')
   .replace(/<[^>]+>/g, '')
   .replace(/\s+/g, ' ')

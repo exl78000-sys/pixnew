@@ -4315,7 +4315,12 @@ async function checkDataGap() {
          刪掉標籤而不留空白的話兩段的字會黏在一起(「own goalManchester United」)。 */
       const glued = parseFeed(`<item><title>t</title><description>&lt;p&gt;Martínez’s own goal&lt;/p&gt;&lt;p&gt;Manchester United are &lt;a href="x"&gt;rocking&lt;/a&gt;, again&lt;br/&gt;Next&lt;/p&gt;</description>`
         + `<link>http://x/1</link><pubDate>Mon, 31 Aug 2026 10:00:00 GMT</pubDate></item>`, 'probe', 8, []);
+      /* 數字實體(2026-09-26):`&#160;` 原本原樣留著,站上印出字面的「&#160;」 */
+      const ent = parseFeed(`<item><title>Arsenal&#8217;s win</title><description>talks&#160;from bigger clubs&#x2019; interest&amp;#160;x</description>`
+        + `<link>http://x/2</link><pubDate>Mon, 31 Aug 2026 10:00:00 GMT</pubDate></item>`, 'probe', 8, []);
       return [
+        ['外電:數字實體解成字元(&#160; 變成空白、&#8217; 變成撇號),不留字面的 &#…;',
+          ent[0]?.title === 'Arsenal’s win' && ent[0]?.body === 'talks from bigger clubs’ interest x', `${ent[0]?.title}|${ent[0]?.body}`],
         ['外電:段落 / 換行標籤變成空白(兩段的字不黏在一起),行內標籤不留空白',
           glued[0]?.body === 'Martínez’s own goal Manchester United are rocking, again Next', glued[0]?.body],
         ['外電:關鍵字篩選在切之前(綜合 feed 才收得到少數命中的那幾則)',

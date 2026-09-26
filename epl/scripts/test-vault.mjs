@@ -433,6 +433,202 @@ console.log('\n▶ Obsidian vault:球員榜(六個聯賽 + 盃賽 + 歐冠)');
     `${notesSeen} 則・${rowsChecked} 列(${linked} 列有連結)${problems.length ? `;${problems.length} 個問題:${problems.slice(0, 3).join('、')}` : ''}`);
 }
 
+// ── 站上單場頁與球隊頁的其餘幾塊(2026-09-26)──────
+console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、交手、近況、模擬、戰術、陣型、外電');
+{
+  /* 產物這一側各自獨立講一次該長什麼樣(標籤、交手的主隊角度、雷達級分、模擬欄位),不 import 產生器 ——
+     拿產生器自己的函式來對,等於自己對自己 */
+  const ARTICLE_LABEL = { template: '本站統計模板', llm: '本站 AI 分析' };
+  const pct = x => (x * 100).toFixed(1) + '%';
+  const teamsOf = n => (n.teams?.length ? n.teams : (n.team ? [n.team] : []));
+  const mdUrl = u => String(u).replace(/ /g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29');
+  const sectionOf = (text, head) => (text.split('\n## ' + head)[1] ?? '').split('\n## ')[0];
+  const P = {};   // 類別 → 問題清單
+  const bad = (k, msg) => (P[k] ??= []).push(msg);
+  const N = {};   // 類別 → 驗了幾筆
+  const seen = k => { N[k] = (N[k] ?? 0) + 1; };
+
+  for (const [lg, zh] of LEAGUE_DIRS) {
+    const meta = product(lg, 'meta');
+    if (!meta) continue;
+    const cur = meta.currentSeason;
+    const matchNote = new Map(), teamNote = new Map();
+    for (const f of list(`${zh}/比賽`)) {
+      const t = note(`${zh}/比賽/${f}`);
+      matchNote.set(`${fm(t, '賽季')}|${fm(t, '主隊')}|${fm(t, '客隊')}`, t);
+    }
+    for (const f of list(`${zh}/球隊`)) { const t = note(`${zh}/球隊/${f}`); teamNote.set(fm(t, '隊碼'), t); }
+    const fx = product(lg, 'fixtures');
+    const fixtures = (fx?.fixtures ?? fx ?? []).filter(f => f.season === cur);
+    const teams = arr(product(lg, 'teams'));
+
+    // 分析文章:賽前(未賽、鍵沒有季)與賽後(已賽、鍵有季),每一段逐字在、標籤照來源
+    const A = product(lg, 'analysis');
+    let preN = 0, postN = 0;
+    for (const [key, art] of Object.entries(A?.pre ?? {})) {
+      const t = matchNote.get(`${cur}|${key}`) ?? '';
+      seen('文章'); preN++;
+      const sec = sectionOf(t, `賽前分析(${ARTICLE_LABEL[art.source] ?? '本站自動分析'}・非真人觀點)`);
+      if (!sec) { bad('文章', `${zh} ${key}:沒有賽前分析(或標籤不對)`); continue; }
+      if (!sec.includes(`### ${art.title}`) || art.paragraphs.some(x => !sec.includes(x)) || (art.caveat && !sec.includes(art.caveat))) bad('文章', `${zh} ${key}:賽前分析的標題、段落或但書不齊`);
+    }
+    for (const [key, art] of Object.entries(A?.post ?? {})) {
+      const t = matchNote.get(key) ?? '';
+      seen('文章'); postN++;
+      const sec = sectionOf(t, `賽後分析(${ARTICLE_LABEL[art.source] ?? '本站自動分析'}・非真人觀點)`);
+      if (!sec) { bad('文章', `${zh} ${key}:沒有賽後分析(或標籤不對)`); continue; }
+      if (!sec.includes(`### ${art.title}`) || art.paragraphs.some(x => !sec.includes(x)) || (art.caveat && !sec.includes(art.caveat))) bad('文章', `${zh} ${key}:賽後分析的標題、段落或但書不齊`);
+    }
+    const flaggedPre = [...matchNote.values()].filter(t => fm(t, '賽前分析') === 'true').length;
+    const flaggedPost = [...matchNote.values()].filter(t => fm(t, '賽後分析') === 'true').length;
+    if (flaggedPre !== preN || flaggedPost !== postN) bad('文章', `${zh}:標了賽前 / 賽後分析的筆記 ${flaggedPre} / ${flaggedPost} 則,產物 ${preN} / ${postN} 篇`);
+
+    /* 已完賽的賽前預測:有開賽前快照(prediction.snapshot)的印那一份,沒有的照實寫沒有 ——
+       原本一律寫「本站沒有保存這場的賽前機率快照」,9/1 之後對有即時追蹤的場次就不成立了 */
+    for (const f of fixtures.filter(x => x.played)) {
+      const t = matchNote.get(`${cur}|${f.home}|${f.away}`) ?? '';
+      seen('快照');
+      const snap = f.prediction?.snapshot === true;
+      const has = t.includes('## 賽前預測(開賽前存下來的快照)');
+      if (snap ? !has || !t.includes(`| ${pct(f.prediction.home)} | ${pct(f.prediction.draw)} | ${pct(f.prediction.away)} |`) || t.includes('沒有保存這場的**賽前機率快照**')
+        : has) bad('快照', `${zh} ${f.home}-${f.away}:${snap ? '有開賽前快照卻沒印或數字不對' : '沒有快照卻印了一份'}`);
+    }
+
+    // 真人專家觀點:每一則的人、摘要與原文連結都在
+    const E = product(lg, 'experts');
+    for (const [key, rows] of Object.entries(E?.matches ?? {})) {
+      const t = matchNote.get(key) ?? '';
+      const sec = sectionOf(t, `新聞/名宿/專家觀點(${rows.length} 則,真人)`);
+      for (const x of rows) {
+        seen('專家');
+        if (!sec.includes(`### ${x.expert}`) || !sec.includes(x.summary) || !sec.includes(`](${mdUrl(x.url)})`)) bad('專家', `${zh} ${key} ${x.expert}:人、摘要或原文連結不在`);
+      }
+      if (fm(t, '專家觀點') !== String(rows.length)) bad('專家', `${zh} ${key}:frontmatter 的專家觀點數不對`);
+    }
+
+    // 勝率變化:每一個點都在全部點的表裡;比分改變的列數對;有 kick 就有「開球」那一列
+    const PH = product(lg, 'prob-history');
+    /* 只掛在那一季的那一場:勝率曲線的鍵沒有季(檔頭才有),查的時候漏看季的話,上一季同一組對戰也會掛上一條 */
+    const recs = Object.values(PH?.matches ?? {}).filter(r => (r.pts ?? []).length >= 3).length;
+    const flaggedProb = [...matchNote.values()].filter(t => fm(t, '勝率曲線點數') !== undefined).length;
+    if (flaggedProb !== recs) bad('勝率', `${zh}:有勝率曲線的筆記 ${flaggedProb} 則,產物 ${recs} 場`);
+    for (const [key, rec] of Object.entries(PH?.matches ?? {})) {
+      if ((rec.pts ?? []).length < 3) continue;
+      const t = matchNote.get(`${PH.season}|${key}`) ?? '';
+      seen('勝率');
+      const sec = sectionOf(t, '勝率變化(本站模型的即時機率)');
+      if (!sec.includes(`全部 ${rec.pts.length} 個點`) || !sec.includes('不是市場盤口')) { bad('勝率', `${zh} ${key}:沒有勝率變化或點數 / 界線不對`); continue; }
+      const missPt = rec.pts.filter(s => !sec.includes(`> | ${s[0]} | ${s[4]}-${s[5]} | ${pct(s[1])} | ${pct(s[2])} | ${pct(s[3])} |`));
+      if (missPt.length) bad('勝率', `${zh} ${key}:${missPt.length} 個點不在表裡`);
+      const changes = rec.pts.filter((s, i) => i > 0 && (s[4] !== rec.pts[i - 1][4] || s[5] !== rec.pts[i - 1][5])).length;
+      if ((sec.match(/比分改變後的第一個點/g) ?? []).length !== changes) bad('勝率', `${zh} ${key}:比分改變 ${changes} 次,表上的列數不同`);
+      if (rec.pts[0][0] === 0 && rec.kick && !sec.includes(`| 開球 | 0-0 | ${pct(rec.kick[0])} | ${pct(rec.kick[1])} | ${pct(rec.kick[2])} |`)) bad('勝率', `${zh} ${key}:有開球那一步卻沒有那一列`);
+    }
+
+    // 歷來交手:本季未賽的每一場,主隊角度的勝和負與進球、逐場列表的筆數
+    const H2 = product(lg, 'h2h') ?? {};
+    if (Object.keys(H2).length) {
+      for (const f of fixtures.filter(x => !x.played)) {
+        const t = matchNote.get(`${cur}|${f.home}|${f.away}`) ?? '';
+        const rec = H2[[f.home, f.away].sort().join('|')];
+        seen('交手');
+        if (!rec) { if (!/## 歷來交手\n\n.*沒有在.*交手過/.test(t)) bad('交手', `${zh} ${f.home}-${f.away}:沒有交手紀錄,卻沒講`); continue; }
+        const aIsHome = [f.home, f.away].sort()[0] === f.home;
+        const want = aIsHome ? `| ${rec.aWin} | ${rec.draw} | ${rec.bWin} | ${rec.aGoals} : ${rec.bGoals} |` : `| ${rec.bWin} | ${rec.draw} | ${rec.aWin} | ${rec.bGoals} : ${rec.aGoals} |`;
+        const sec = sectionOf(t, '歷來交手');
+        const lines = (sec.match(/^- \d{4}-\d{2}-\d{2} /gm) ?? []).length;
+        if (!sec.includes(want) || lines !== rec.list.length) bad('交手', `${zh} ${f.home}-${f.away}:勝和負(主隊角度)或逐場筆數不對`);
+      }
+    }
+
+    // 賽季模擬:每一隊的那一列,欄位照資料(有直升不印前四、有降級附加賽多一欄);聯賽首頁有整張表
+    const moc = note(`${zh}/${zh}.md`);
+    for (const s of arr(product(lg, 'sim'))) {
+      seen('模擬');
+      const cells = [s.expectedPoints, s.expectedPos, `${s.titlePct}%`,
+        ...(s.promotionPct != null ? [`${s.promotionPct}%`, ...(s.playoffPct != null ? [`${s.playoffPct}%`] : [])] : [`${s.top4Pct}%`]),
+        `${s.relegationPct}%`, ...(s.relegationPlayoffPct != null ? [`${s.relegationPlayoffPct}%`] : [])].join(' | ');
+      const t = teamNote.get(s.code) ?? '';
+      const sec = sectionOf(t, `${cur} 賽季模擬`);
+      if (!sec.includes(`| ${cells} |`)) bad('模擬', `${zh} ${s.code}:球隊筆記的模擬那一列對不上`);
+      if (s.promotionPct != null && /\| 前四 \|/.test(sec)) bad('模擬', `${zh} ${s.code}:有直升的聯賽印了前四`);
+      if (s.relegationPlayoffPct != null && !sec.includes('降級附加賽')) bad('模擬', `${zh} ${s.code}:沒有降級附加賽那一欄`);
+      if (!moc.includes(` | ${cells} |`)) bad('模擬', `${zh} ${s.code}:聯賽首頁的模擬表沒有這一列`);
+    }
+
+    // 近況:近五場逐場、合計那一行;英超另有可用人手與拿牌
+    const FO = product(lg, 'form');
+    const RES = { W: '勝', D: '和', L: '負' };
+    for (const tm of teams) {
+      const x = FO?.teams?.[tm.code];
+      if (!x?.recent?.length) continue;
+      seen('近況');
+      const sec = sectionOf(teamNote.get(tm.code) ?? '', `近況(截至 ${FO.asOf})`);
+      const miss = x.recent.filter(r => !new RegExp(`\\| ${r.date} \\| ${r.venue === 'H' ? '主' : '客'} \\| [^|]+ \\| ${r.gf}-${r.ga} \\| ${RES[r.res]} \\|`).test(sec));
+      const s = x.summary;
+      if (miss.length || !sec.includes(`近 ${s.games} 場 ${s.w} 勝 ${s.d} 和 ${s.l} 負・進 ${s.gf} 失 ${s.ga}`)) bad('近況', `${zh} ${tm.code}:近況逐場或合計不對`);
+      const a = x.availability;
+      if (a) {
+        const av = sec.split('### 可用人手')[1] ?? '';
+        if (!av || !av.includes(`**確定缺陣**(${a.outCount} 人`) || (a.cards ?? []).some(c => c.watch && !av.includes(`再 ${c.watch.away} 張黃牌停 ${c.watch.ban} 場`))) bad('近況', `${zh} ${tm.code}:可用人手或停賽門檻不對`);
+        if (a.out.length + (a.doubt?.length ?? 0) + (a.cards?.length ?? 0) > 0 && (av.match(/^\| (?!球員|---)/gm) ?? []).length !== a.out.length + (a.doubt?.length ?? 0) + (a.cards?.length ?? 0)) bad('近況', `${zh} ${tm.code}:可用人手的列數跟產物不同`);
+      }
+    }
+
+    // 上季數據風格:雷達的級分(百分位每 10 分一級)與原始值、標籤;人力配置只有有 def 的聯賽印
+    for (const tm of teams) {
+      const tac = tm.tactics;
+      if (!tac) continue;
+      seen('風格');
+      const sec = sectionOf(teamNote.get(tm.code) ?? '', `上季數據風格(${meta.lastSeason})`);
+      const radarBad = (tac.radar ?? []).filter(r => !sec.includes(`| ${r.label} | ${Math.min(10, Math.floor((r.value ?? 0) / 10) + 1)} | ${r.value} | ${r.raw} |`));
+      if (!sec || radarBad.length || (tac.tags?.length && !sec.includes(`標籤:${tac.tags.join('・')}`))) bad('風格', `${zh} ${tm.code}:雷達 / 標籤不對`);
+      if (tac.formation?.def == null && sec.includes('後場 / 中場 / 鋒線人力')) bad('風格', `${zh} ${tm.code}:沒有人力資料卻印了人力那一列`);
+    }
+
+    // 陣型:官方先發陣型;推導的攻守分型要掛「推論」那一句
+    const SH = product(lg, 'shapes') ?? {};
+    for (const [code, sh] of Object.entries(SH)) {
+      if (!teamNote.has(code)) continue;
+      seen('陣型');
+      const sec = sectionOf(teamNote.get(code), `陣型(${cur})`);
+      if (sh.official?.formation && !sec.includes(`**官方先發陣型**:最常用 ${sh.official.formation}(${sh.official.games} 場有正式先發)`)) bad('陣型', `${zh} ${code}:官方先發陣型不對`);
+      if (sh.base && !sh.insufficient && (!sec.includes(`| 標準(推導) | ${sh.base.label} |`) || !sec.includes('攻守分型永遠是推論,官方沒有這個東西'))) bad('陣型', `${zh} ${code}:推導的陣型沒有標成推論`);
+      if (sh.insufficient && !sec.includes('不推導')) bad('陣型', `${zh} ${code}:樣本不足卻沒講`);
+    }
+
+    // 外電與動態:整份筆記有每一則(標題與原文連結);球隊筆記的則數等於提到那一隊的則數;AI 整理的照實標
+    const NW = arr(product(lg, 'news')).filter(n => n?.title);
+    if (NW.length) {
+      const nn = note(`${zh}/${sanitize(zh + ' 外電與動態')}.md`);
+      if (!moc.includes(`[[${sanitize(zh + ' 外電與動態')}]]`)) bad('外電', `${zh} 首頁沒有連到外電筆記`);
+      for (const n of NW) {
+        seen('外電');
+        if (!nn.includes(`### ${n.titleZh ?? n.title}`) || (n.link && /^https?:/.test(n.link) && !nn.includes(`](${mdUrl(n.link)})`))) bad('外電', `${zh}:外電筆記少了「${(n.titleZh ?? n.title).slice(0, 20)}」或它的連結`);
+        if (n.curated && n.curator?.kind === 'ai' && !nn.includes(`AI 整理摘要:${n.curator.method ?? ''}`)) bad('外電', `${zh}:AI 整理的「${n.title.slice(0, 20)}」沒有照實標`);
+      }
+      for (const tm of teams) {
+        const mine = NW.filter(n => teamsOf(n).includes(tm.code));
+        const t = teamNote.get(tm.code) ?? '';
+        if (mine.length ? !t.includes(`## 外電與動態(${mine.length} 則,提到這一隊的)`) : t.includes('## 外電與動態(')) bad('外電', `${zh} ${tm.code}:球隊筆記的外電則數不是 ${mine.length}`);
+      }
+    }
+
+    // 陣型與成績(只有英超有 formation.json):每一組相關係數與「過門檻」照產物
+    const FM = product(lg, 'formation');
+    if (FM?.pairs?.length) {
+      for (const x of FM.pairs) {
+        seen('陣型與成績');
+        if (!moc.includes(`| ${x.x} vs ${x.y} | ${x.r} | ${x.strength} | ${x.significant ? '是' : '否'} |`)) bad('陣型與成績', `${zh}:${x.x} vs ${x.y} 那一列不對`);
+      }
+      if (!moc.includes('反過來的因果')) bad('陣型與成績', `${zh}:沒講「相關不是因果」`);
+    }
+  }
+  for (const k of ['文章', '快照', '專家', '勝率', '交手', '模擬', '近況', '風格', '陣型', '外電', '陣型與成績']) {
+    check(`${k}:筆記跟產物一致`, (N[k] ?? 0) > 0 && !(P[k]?.length), `驗了 ${N[k] ?? 0} 筆${P[k]?.length ? `;${P[k].length} 個問題:${P[k].slice(0, 3).join('、')}` : ''}`);
+  }
+}
+
 // ── 上游的物件欄位 ──────────────────────────────────
 console.log('\n▶ Obsidian vault:沒有一則筆記印出 [object Object]');
 {
