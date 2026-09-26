@@ -41,6 +41,7 @@ import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPla
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
+import { playersListFrom } from './lib/players-list.mjs';
 import { recordFor } from './lib/coaches.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { percentile, round } from './lib/util.mjs';
@@ -1373,6 +1374,7 @@ async function main() {
   await write('players', playersOut);
   // 跨聯賽統一層(lib/player-core.mjs):聯集 + null(西甲沒有身價與傷停 → null 不是 0)
   await write('players-core', coreFromUnderstat(playersOut));
+  await write('players-list', playersListFrom(written.players, { source: 'Understat' }));   // 球員頁列表用的摘要(2026-09-27,A6)
   await write('leaders', {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
     currentAvailable: Boolean(playerSeasons[CURRENT_SEASON]?.players?.length),

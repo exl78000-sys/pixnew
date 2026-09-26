@@ -4772,17 +4772,47 @@ async function checkDataGap() {
     })()],
     /* ── 頁面資料預算(2026-09-27,E)──
        首頁與球員頁的資料集清單**從頁面原始碼解析**(C.load(...) 的字串引數),六個聯賽各自加總解壓後的大小。
-       預算:首頁 1.5 MB(A1 / A4 之後六個聯賽 0.6–1.25 MB);球員頁先設 2.0 MB —— 量到英超 1.7 MB、西甲 1.8 MB,
-       players.json 本身 1.25–1.45 MB,要到 1.5 MB 得把球員頁列表用不到的欄位搬走(補齊規劃另記一項),
-       在那之前把預算設成過不了的數字只會讓每次部署都紅。 */
-    ['頁面資料預算:首頁 ≤ 1.5 MB、球員頁 ≤ 2.0 MB(六個聯賽,資料集清單從 C.load 解析)', (() => {
+       預算都是 1.5 MB:首頁 A1 / A4 之後六個聯賽 0.6–1.25 MB;球員頁 A6(列表只讀 players-list)之後 0.6–1.25 MB
+       (英冠最大,它的 leaders 就 400 KB)。A6 之前球員頁是 1.7–1.8 MB,那時先設 2.0;只算主載入那一清單,點到才 loadFrom 的不算。 */
+    /* ── 球員頁列表只讀 players-list(2026-09-27,A6)──
+       每個聯賽一份、筆數跟 players.json 相同、沒帶雷達 / 追蹤 / 租借那些重欄位、比整份小得多;
+       page-players.js 的主載入清單是 players-list,整份 players 只在 loadFrom(詳情與對比)那條路。 */
+    ['每個聯賽都有 players-list.json:筆數跟 players.json 相同、沒帶重欄位、不到整份的六成;球員頁列表只讀它', (() => {
+      const dirs = [{ key: 'pl', dir: join(ROOT, 'web', 'data') },
+        ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+          .filter(e => e.isDirectory()).map(e => ({ key: e.name, dir: join(ROOT, 'web', 'data', 'leagues', e.name) }))];
+      const bad = [];
+      const HEAVY = /"radar"|"radarCurrent"|"tracking"|"loans"|"setPieces"|"dataSources"|"contractStart"/;
+      for (const { key, dir } of dirs) {
+        const p = join(dir, 'players-list.json');
+        if (!existsSync(p)) { bad.push(`${key}:沒有 players-list.json`); continue; }
+        const raw = readFileSync(p, 'utf8');
+        const list = JSON.parse(raw);
+        const fullRaw = readFileSync(join(dir, 'players.json'), 'utf8');
+        const full = JSON.parse(fullRaw);
+        const rows = Array.isArray(full) ? full : (full.players ?? []);
+        if (!Array.isArray(list) || list.length !== rows.length) bad.push(`${key}:列表 ${list?.length} 筆 ≠ players ${rows.length}`);
+        if (HEAVY.test(raw)) bad.push(`${key}:列表帶了整份才有的欄位`);
+        /* 逐場累加那一層(英冠)沒有逐人頁,整份 players.json 本來就只有列表要的欄位 —— 列表跟整份一樣大是對的,
+           不比大小;有整季來源的聯賽(FPL / Understat)列表要明顯小於整份 */
+        const source = JSON.parse(readFileSync(join(dir, 'leaders.json'), 'utf8')).source;
+        if (rows.length && source !== 'match-aggregate' && raw.length > fullRaw.length * 0.6) bad.push(`${key}:列表 ${Math.round(raw.length / 1024)} KB 不像摘要(整份 ${Math.round(fullRaw.length / 1024)} KB)`);
+      }
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
+      const mainLoad = /C\.load\(([^)]*)\)/.exec(src)?.[1] ?? '';
+      if (!/'players-list'/.test(mainLoad) || /'players'/.test(mainLoad)) bad.push('page-players.js 的主載入清單不是 players-list');
+      if (!/loadFrom\(C\.league\(\), \['players'\]\)/.test(src)) bad.push('page-players.js 沒有「點到才讀整份 players」那條路');
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      return bad.length === 0;
+    })()],
+    ['頁面資料預算:首頁 ≤ 1.5 MB、球員頁 ≤ 1.5 MB(六個聯賽,資料集清單從 C.load 解析)', (() => {
       const listOf = f => {
         const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
         const names = new Set();
         for (const m of src.matchAll(/C\.load\(([^)]*)\)/g)) for (const s of m[1].matchAll(/'([\w-]+)'/g)) names.add(s[1]);
         return [...names];
       };
-      const budgets = [['page-index.js', 1.5], ['page-players.js', 2.0]];
+      const budgets = [['page-index.js', 1.5], ['page-players.js', 1.5]];
       const dirs = [['pl', join(ROOT, 'web', 'data')],
         ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true }).filter(e => e.isDirectory())
           .map(e => [e.name, join(ROOT, 'web', 'data', 'leagues', e.name)])];

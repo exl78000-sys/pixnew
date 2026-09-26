@@ -46,6 +46,7 @@ import { buildLiveProviderReport, buildProviderMatchReport } from './lib/postmat
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
+import { playersListFrom } from './lib/players-list.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
@@ -787,6 +788,7 @@ async function main() {
       }
       for (const e of byPlayer.values()) e.seasons.sort((a, b) => a.season.localeCompare(b.season));
       await write('players-core', [...byPlayer.values()]);
+      await write('players-list', playersListFrom(written.players, { source: 'match-aggregate' }));   // 球員頁列表用的摘要(2026-09-27,A6)
     }
     await write('leaders', {
       available: true, source: 'match-aggregate', statMeta: PLAYER_STAT_META,
@@ -808,6 +810,7 @@ async function main() {
     });
   } else {
     await write('players', []);
+    await write('players-list', []);
     await write('leaders', { available: false, note: noPlayerData, boards: [] });
   }
   /* 教練。人工交付 → 核對器(npm run en2:verify-coaches)→ 產物,build 只讀產物。
