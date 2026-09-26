@@ -1,4 +1,4 @@
-import * as C from './core.js?v=712282cc';
+import * as C from './core.js?v=ebd92f11';
 
 const app = document.getElementById('app');
 
@@ -56,11 +56,15 @@ try {
   };
   /* 聯賽的即時比分(2026-09-12,使用者回報「重新整理後比分退回去」):
      data.live 是 Pages 上那份 —— 部署當下的快照,離部署越久越舊。畫完立刻去拿 raw 那份,
-     比較新才收(只進不退:raw CDN 會新舊副本交替回應),有變才重畫。英冠不列在這張表,就不抓。 */
-  const overlayLeagueLive = async () => {
+     比較新才收(只進不退:raw CDN 會新舊副本交替回應),有變才重畫。
+     **只抓讀者勾著的聯賽**(沒勾的不在這張表上);之後才勾的,由勾選那一步補抓(overlaid 記誰拿過了)——
+     不補的話,新勾的那個聯賽印的是部署快照的比分,而且沒有任何地方講它是舊的。 */
+  const overlaid = new Set();
+  const overlayLeagueLive = async (list = leagues.filter(x => shownNow().has(x.lg))) => {
     let changed = 0;
     const t = s => Date.parse(s ?? '') || 0;
-    await Promise.all(leagues.filter(x => !UPCOMING_HIDE.has(x.lg)).map(async ({ lg, data }) => {
+    await Promise.all(list.map(async ({ lg, data }) => {
+      overlaid.add(lg);
       const fresh = await C.fetchFeed(C.liveFeeds(data.meta, lg));
       if (!fresh?.fetchedAt || t(fresh.fetchedAt) <= t(data.live?.fetchedAt)) return;
       data.live = fresh; changed++;
@@ -135,8 +139,24 @@ try {
        一輪有幾百場第七八九級球隊的比賽,全列進來總覽就不是總覽了。
      - 抽籤後上游常給「日期+00:00Z」占位,照印會變成「台北 08:00」的假時間 ——
        標成「時間待定」(跟球隊賽程頁同一個規則)。 */
-  // 即將賽程不列的聯賽(使用者指定)。用集合不用「是不是某一個」的二元式
-  const UPCOMING_HIDE = new Set(['en2']);
+  /* 勾選清單(2026-09-26,使用者:「總攬可以勾選要看到即將到來的賽事類別 例如 英超 歐冠」)。
+
+     **從資料長出來,不手寫**:聯賽照註冊表(載得到的那些)、歐冠與盃賽要**有本季**才列 ——
+     足總盃 2026-27 上游還沒發布,給它一格的話是「按鈕在但點了沒東西」;它發布的那天這一格自己出現。
+
+     英冠**預設不勾**:那是使用者先前的決定(「總覽的即將賽程不列英冠」,一輪 12 場會蓋過主要聯賽)。
+     以前是寫死的排除、讀者沒有辦法看到;現在是預設,想看的人勾起來就有。
+     用集合不用「是不是某一個」的二元式。 */
+  const UPCOMING_DEFAULT_OFF = new Set(['en2']);
+  const upcomingComps = [
+    ...leagues.map(({ lg }) => ({ key: lg, label: C.LEAGUES[lg].zh, on: !UPCOMING_DEFAULT_OFF.has(lg) })),
+    ...((shared.ucl?.seasons ?? []).some(s => s.current) ? [{ key: 'ucl', label: '歐冠', on: true }] : []),
+    ...cupList.filter(c => (c.seasons ?? []).some(s => s.current))
+      .map(c => ({ key: c.key, label: c.zh ?? c.en, on: true })),
+  ];
+  let picks = C.readCompPicks();
+  let picksSaved = true;       // 上一次寫進瀏覽器有沒有成功(無痕視窗會失敗,要講)
+  const shownNow = () => C.shownComps(upcomingComps, picks);
   /* 歐冠場次的輪次說明。**淘汰賽的 legs 也有 matchday(1 / 2 = 首 / 次回合)** ——
      照 `m.matchday ? '聯賽階段第 N 輪'` 寫的話,二月的十六強首回合會被標成
      「聯賽階段第 1 輪」,而畫面完全正常。輪次中文用產物裡的 `rounds[].zh`,
@@ -151,10 +171,9 @@ try {
     const now = Date.now(), end = now + 7 * 86400000;
     const inWindow = k => { const t = Date.parse(k); return t >= now - 2 * 3600000 && t <= end; };
     const rows = [];
+    /* 這裡收**全部**賽事的場次,勾不勾在 upcomingHtml 那一步濾 —— 勾選列上每一格的場數
+       (包括沒勾的)要從同一份算,讀者才知道不勾的那幾個裡有幾場。 */
     for (const { lg, data } of leagues) {
-      /* 使用者要求:總覽的即將賽程不列英冠(一輪 12 場會蓋過主要聯賽)。
-         只影響這張表 —— 盃賽裡英冠球隊的場次照列,英冠自己的頁面不受影響。 */
-      if (UPCOMING_HIDE.has(lg)) continue;
       /* 隊徽從**這個聯賽自己的**名冊拿,不走全域登錄 —— 隊碼跨聯賽會重複
          (Burnley 在英超與英冠都是 BUR),全域登錄是後蓋前。 */
       const tBy = new Map((data.teams ?? []).map(t => [t.code, t]));
@@ -228,8 +247,10 @@ try {
      自己就是這樣排的),六個聯賽一模一樣。這是本站的老坑「只讀了資料的其中一個區塊」。
 
      而且條件從「這個賽事窗外還有場次」改成「這個賽事**窗裡一場都沒有**」——
-     那才是這一行本來要回答的問題(舊註解寫的就是這個,實作寫寬了)。 */
-  const beyondOf = present => {
+     那才是這一行本來要回答的問題(舊註解寫的就是這個,實作寫寬了)。
+
+     **只講勾著的賽事**(2026-09-26):讀者取消勾選的,在摘要裡冒出來等於沒取消。 */
+  const beyondOf = (present, shown) => {
     const now = Date.now(), end = now + 7 * 86400000;
     /* 沒有開球時間的場次只比得了日期,所以要一個**當地**的今天(上游是逐月公布開球時間的,
        西甲現在 311 場未賽而只有 20 場有時間 —— 拿「有開球時間」當分母會講出假數字)。 */
@@ -239,7 +260,7 @@ try {
        日期已過卻還沒踢的(改期而上游還沒給新日期)不算「接下來」—— 本站沒有延賽的資料源,
        把它當成下一批會印出一個已經過去的日期。 */
     for (const { lg, data } of leagues) {
-      if (UPCOMING_HIDE.has(lg) || present.has(lg)) continue;
+      if (!shown.has(lg) || present.has(lg)) continue;
       const rest = (data.fixtures ?? []).filter(f => !f.played && f.date >= todayISO);
       if (!rest.length) continue;
       const first = rest.reduce((a, b) => (a.date <= b.date ? a : b));
@@ -252,7 +273,7 @@ try {
       (data.teams ?? []).flatMap(t => [t.en, t.of].filter(Boolean).map(x => x.toLowerCase()))));
     const covered = s => s && (s.code || known.has(String(s.name ?? '').toLowerCase()));
     for (const cup of cupList) {
-      if (present.has(cup.key)) continue;
+      if (!shown.has(cup.key) || present.has(cup.key)) continue;
       const season = (cup.seasons ?? []).find(s => s.current);
       const future = (season?.rounds ?? []).flatMap(r => (r.matches ?? [])
         .filter(m => !m.played && m.kickoff && Date.parse(m.kickoff) > end
@@ -264,7 +285,7 @@ try {
     }
     // 歐冠也一樣:窗裡沒有歐冠時,用一行講下一批是聯賽階段第幾輪、幾號起
     const uclSeason = (shared.ucl?.seasons ?? []).find(s => s.current);
-    const uclFuture = present.has('ucl') ? [] : C.uclSeasonMatches(uclSeason)
+    const uclFuture = !shown.has('ucl') || present.has('ucl') ? [] : C.uclSeasonMatches(uclSeason)
       .filter(m => !m.played && m.kickoff && Date.parse(m.kickoff) > end && (m.home?.code || m.away?.code))
       .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
     if (uclFuture.length) {
@@ -274,11 +295,35 @@ try {
     return out;
   };
 
+  /* 勾選列。每一格帶**未來 7 天的場數,沒勾的也算** —— 取消勾選的賽事從表上消失之後,
+     讀者要看得出它裡面還有幾場,不然「這 7 天沒有比賽」跟「被我關掉了」長得一模一樣。
+     用真的 checkbox(鍵盤與讀屏都認得),外面包 label 讓整格都點得到。 */
+  const picksHtml = (all, shown) => `<div class="comp-picks" role="group" aria-label="即將到來要列哪些賽事">
+    ${upcomingComps.map(c => {
+      const n = all.filter(u => u.compKey === c.key).length, on = shown.has(c.key);
+      return `<label class="comp-pick${on ? ' on' : ''}" title="${C.esc(c.label)}:未來 7 天 ${n} 場"><input type="checkbox" data-upcoming-comp="${
+        C.esc(c.key)}"${on ? ' checked' : ''}>${C.compBadge(c.key)}<span>${C.esc(c.label)}</span><span class="n">${n}</span></label>`;
+    }).join('')}
+    <span class="comp-picks-act"><button class="btn tiny" type="button" data-upcoming-all>全選</button><button class="btn tiny" type="button" data-upcoming-none>全不選</button></span>
+    ${picksSaved ? '' : `<span class="tiny warn-text">這個瀏覽器存不起來(無痕視窗,或擋掉了網站資料)——
+      勾選只在這一頁有效,重新整理會回到預設。</span>`}</div>`;
+
   // 每次 render() 重算:覆蓋(盃賽小檔、聯賽 raw feed)改的是資料,表要跟著資料重畫
-  const upcomingHtml = () => { const upcoming = buildUpcoming();
-    const beyond = beyondOf(new Set(upcoming.map(u => u.compKey))); return `
-  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・${leagues.filter(x => !UPCOMING_HIDE.has(x.lg)).map(x => C.LEAGUES[x.lg].zh).join('、')} + 歐冠、盃賽</span></div>
-  ${upcoming.length ? `<div class="card">${C.table(upcoming, [
+  const upcomingHtml = () => { const all = buildUpcoming();
+    const shown = shownNow();
+    const upcoming = all.filter(u => shown.has(u.compKey));
+    const beyond = beyondOf(new Set(upcoming.map(u => u.compKey)), shown);
+    const partial = shown.size < upcomingComps.length;
+    const offIn = upcomingComps.filter(c => !shown.has(c.key))
+      .map(c => [c.label, all.filter(u => u.compKey === c.key).length]).filter(([, n]) => n > 0);
+    const offLine = offIn.length
+      ? `沒勾的賽事另有 ${offIn.reduce((t, [, n]) => t + n, 0)} 場(${offIn.map(([l, n]) => `${C.esc(l)} ${n}`).join('、')})。` : '';
+    return `
+  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・勾選存在這個瀏覽器</span></div>
+  ${upcomingComps.length ? picksHtml(all, shown) : ''}
+  ${upcomingComps.length && !shown.size ? `<div class="note"><b>沒有勾選任何賽事。</b>按上面的「全選」,或勾你要看的那幾個${
+      all.length ? `(這 7 天一共 ${all.length} 場)` : ''}。</div>`
+  : upcoming.length ? `<div class="card">${C.table(upcoming, [
     { key: 'kick', label: '開球(台北)', value: u => u.kick,
       render: u => (u.pending
         ? `<span class="small">${C.dateFull(u.kick.slice(0, 10))} <span class="dim">・時間待定</span></span>`
@@ -311,12 +356,12 @@ try {
        是因為這張表只列**還沒踢的**場次(上面的 `if (m.played) continue`),
        而單場頁是賽後報告,還沒踢的場次點進去沒有東西可看。 */
     onRow: u => { if (u.link) location.href = u.link; } })}
-  <div class="tiny dim" style="margin-top:8px">${beyond.length ? `窗外的下一批:${beyond.map(C.esc).join(';')}。` : ''}
+  <div class="tiny dim" style="margin-top:8px">${beyond.length ? `窗外的下一批:${beyond.map(C.esc).join(';')}。` : ''}${offLine}
     聯賽場次點對戰直接進賽前分析,歐冠場次進歐冠單場頁(賽前對比、勝率與賽後報告都在那一頁);盃賽場次開盃賽頁的對應分頁。
     只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
-  : `<div class="note"><b>未來 7 天沒有已排定的比賽。</b>${beyond.length
-      ? `本站涵蓋的賽事接下來是 —— ${beyond.map(C.esc).join(';')}。`
-      : '而且每個賽事的下一場都還沒公布日期。'}
+  : `<div class="note"><b>${partial ? '勾選的賽事' : ''}未來 7 天沒有已排定的比賽。</b>${offLine}${beyond.length
+      ? `${partial ? '' : '本站涵蓋的賽事'}接下來是 —— ${beyond.map(C.esc).join(';')}。`
+      : (partial ? '而且勾選的賽事,下一場都還沒公布日期。' : '而且每個賽事的下一場都還沒公布日期。')}
     <div class="tiny dim" style="margin-top:6px">場次的日期來自賽程資料源;<b>沒有場次不等於資料沒更新</b> ——
       國際賽週、盃賽的輪次之間都會出現這種空窗。改期而上游還沒給新日期的場次不算在上面那幾批裡。</div></div>`}`; };
 
@@ -335,9 +380,59 @@ try {
     .map(s => `<a href="${C.esc(s.url)}" target="_blank" rel="noopener">${C.esc(s.name)}</a>`)
     .join('、');
 
+  /* 勾選只重畫「即將到來」那一區,不重畫整頁:整頁重畫會把讀者正在按的那一格換掉,
+     鍵盤的焦點跟著不見(Tab 到第五格按空白鍵,下一次又要從頭 Tab)。重畫後把焦點放回同一格。
+     事件掛在元素的 onchange / onclick 上,**不在 #app 上 addEventListener** ——
+     單檔版換頁不會換掉 #app,掛在它上面的監聽每回到總覽一次就多一份。 */
+  const focusSel = el => (el?.dataset?.upcomingComp != null ? `[data-upcoming-comp="${el.dataset.upcomingComp}"]`
+    : el?.hasAttribute?.('data-upcoming-all') ? '[data-upcoming-all]'
+      : el?.hasAttribute?.('data-upcoming-none') ? '[data-upcoming-none]' : null);
+  const bindUpcoming = () => {
+    const box = document.getElementById('upcoming');
+    if (!box) return;
+    box.querySelectorAll('[data-upcoming-comp]').forEach(el => {
+      el.onchange = () => setPicks({ ...picks, [el.dataset.upcomingComp]: el.checked });
+    });
+    for (const [sel, on] of [['[data-upcoming-all]', true], ['[data-upcoming-none]', false]]) {
+      const b = box.querySelector(sel);
+      if (b) b.onclick = () => setPicks(Object.fromEntries(upcomingComps.map(c => [c.key, on])));
+    }
+  };
+  const drawUpcoming = () => {
+    const box = document.getElementById('upcoming');
+    if (!box) return;
+    const focus = focusSel(document.activeElement);
+    box.innerHTML = upcomingHtml();
+    bindUpcoming();
+    C.startCountdowns();
+    if (focus) box.querySelector(focus)?.focus({ preventScroll: true });
+  };
+  const setPicks = next => {
+    picks = next;
+    picksSaved = C.writeCompPicks(picks);
+    drawUpcoming();
+    // 新勾的聯賽還沒拿過 raw 那份即時快照:補拿(只拿沒拿過的),拿回來也可能發現有比賽在踢
+    const late = leagues.filter(x => shownNow().has(x.lg) && !overlaid.has(x.lg));
+    if (late.length) overlayLeagueLive(late).then(ensurePolling);
+  };
+  /* 有比賽在踢就每 60 秒再拿一次(盃賽頁同一個節奏;聯賽的迴圈本來就是 2 分鐘推一次),
+     沒有比賽在踢的日子不輪詢 —— 這一頁不是實時頁。
+     要不要輪詢看覆蓋**之後**的狀態:部署快照可能還在開賽前,而 raw 那份已經在踢了。
+     包成一支、只開一次:之後才勾的聯賽補抓回來,也可能是那一場讓它該開始輪詢。 */
+  let polling = false;
+  const ensurePolling = () => {
+    if (polling) return;
+    const anyLive = leagues.some(({ data }) => (data.live?.matches ?? []).some(m => m.started && !m.finished))
+      || C.cupsHaveLive(shared.cups);
+    if (!anyLive) return;
+    polling = true;
+    C.pageInterval(async () => { await overlayLeagueLive(); await overlayCupsLive(); }, 60000);
+  };
+
   const uclPred = uclElo?.model?.passes ? (uclElo.fixtures?.length ?? 0) : 0;
   const render = () => {
   const scrollY = window.scrollY;
+  const focus = focusSel(document.activeElement);   // 覆蓋重畫時讀者可能正停在某一格勾選上
   const nowT = Date.now();
   const intlSoon = (intl?.fixtures ?? []).filter(f => f.state !== 'CANCELLED'
     && Date.parse(f.kickoff) > nowT && Date.parse(f.kickoff) <= nowT + 7 * 86400000);   // 覆蓋後重畫不要把讀者捲回頂端(跟實時頁同一招)
@@ -359,7 +454,7 @@ try {
     ${kpi('盃賽', cupList.length, cupList.map(c => C.esc(c.zh ?? c.en)).join('、') || '尚未接入')}
   </div>
 
-  ${upcomingHtml()}
+  <div id="upcoming">${upcomingHtml()}</div>
 
   <div class="section"><h2>各聯賽</h2><span class="hint">點分頁直接進去・只列這個聯賽真的做得出來的頁</span></div>
   <div class="grid g2">${leagues.map(leagueCard).join('')}</div>
@@ -415,18 +510,13 @@ try {
 
   <footer class="foot wrap">資料來源:${sources || '見各頁'}。
     預測僅供分析參考,不構成任何投注建議。</footer>`;
+  bindUpcoming();
   C.startCountdowns();   // 「即將到來」的倒數要會走,不然停在載入當下慢慢變錯
+  if (focus) app.querySelector(focus)?.focus({ preventScroll: true });
   window.scrollTo(0, scrollY);
   };
 
   render();
   overlayCupsLive();     // 畫完才去拿盃賽的即時比分,有變才重畫
-  overlayLeagueLive().then(() => {
-    /* 有比賽在踢就每 60 秒再拿一次(盃賽頁同一個節奏;聯賽的迴圈本來就是 2 分鐘推一次),
-       沒有比賽在踢的日子不輪詢 —— 這一頁不是實時頁。
-       要不要輪詢看覆蓋**之後**的狀態:部署快照可能還在開賽前,而 raw 那份已經在踢了。 */
-    const anyLive = leagues.some(({ data }) => (data.live?.matches ?? []).some(m => m.started && !m.finished))
-      || C.cupsHaveLive(shared.cups);
-    if (anyLive) C.pageInterval(async () => { await overlayLeagueLive(); await overlayCupsLive(); }, 60000);
-  });
+  overlayLeagueLive().then(ensurePolling);
 } catch (err) { C.fail(err); }

@@ -632,6 +632,9 @@ async function main() {
   console.log('\n▶ 關注球隊');
   const followFail = await checkFollow();
 
+  console.log('\n▶ 總覽「即將到來」的賽事勾選');
+  const picksFail = await checkUpcomingPicks();
+
   console.log('\n▶ 盃賽的球隊身分(跨聯賽)');
   const cupIdFail = await checkCupIdentity();
 
@@ -652,7 +655,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
+  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -2394,11 +2397,14 @@ async function checkDataGap() {
     })()],
     /* 兩頁都是直線腳本,所以「原始碼裡誰先出現」就是「誰先執行」。
        第一版把覆蓋 await 在繪製之前,這一條就是釘住那個順序。
-       (只驗「有沒有 await」不行 —— 覆蓋本來就要 await,差別在它在繪製的前面還是後面。) */
+       (只驗「有沒有 await」不行 —— 覆蓋本來就要 await,差別在它在繪製的前面還是後面。)
+       **總覽的錨是頂層敘述(`\n  overlayCupsLive();`,try 裡縮兩格)**(2026-09-26):
+       勾選那一輪把輪詢包成 ensurePolling、定義在 render() 之前,函式本體裡就有
+       `await overlayCupsLive();` —— 那是定義不是執行,照「第一次出現」找會把它當成覆蓋先跑。 */
     ['盃賽頁、總覽、實時頁與單場面板都是「先畫再覆蓋」:繪製的呼叫在覆蓋之前', (() =>
       [['page-cups.js', '\n  renderComp();', 'overlayLive();'],
-       ['page-overview.js', '\n  render();', 'overlayCupsLive();'],
-       ['page-overview.js', '\n  render();', 'overlayLeagueLive()'],
+       ['page-overview.js', '\n  render();', '\n  overlayCupsLive();'],
+       ['page-overview.js', '\n  render();', '\n  overlayLeagueLive()'],
        ['page-live.js', '\n  renderPage();', 'overlayLive();'],
        ['page-analysis.js', 'renderLive(findIn(data.live), data.live?.fetchedAt);', 'overlayLive();']].every(([f, draw, overlay]) => {
         const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
@@ -2437,7 +2443,7 @@ async function checkDataGap() {
       const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       const r = ov.indexOf('const render = () => {');
       return r >= 0 && !/const upcomingBlock\b/.test(ov) && ov.slice(r).includes('${upcomingHtml()}')
-        && /const upcomingHtml = \(\) => \{ const upcoming = buildUpcoming\(\)/.test(ov);
+        && /const upcomingHtml = \(\) => \{ const all = buildUpcoming\(\)/.test(ov);
     })()],
     ['盃賽頁與總覽都走共用的覆蓋函式,而且盃賽頁用 pageInterval 輪詢(不是裸 setInterval)', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
@@ -3008,13 +3014,17 @@ async function checkDataGap() {
       return /hCrest: h\?\.crest/.test(src) && /hCrest: C\.cupCrest\(m\.home, cupIdent\)/.test(src)
         && /onRow: u => \{ if \(u\.link\) location\.href = u\.link; \}/.test(src);
     })()],
-    /* 使用者指定:總覽的即將賽程不列英冠(盃賽裡英冠球隊的場次照列)。
-       用集合宣告,hint 文案跟著同一個集合走,不會表拿掉了標題還寫著英冠。 */
-    ['總覽即將賽程排除英冠,hint 文案跟著同一個集合', (() => {
+    /* 使用者指定:總覽的即將賽程不列英冠(一輪 12 場會蓋過主要聯賽;盃賽裡英冠球隊的場次照列)。
+       **2026-09-26 起這是「預設不勾」,不是寫死的排除** —— 使用者要了勾選(「總攬可以勾選要看到
+       即將到來的賽事類別」),英冠成了勾選列上的一格。這一條以前釘的是 `if (UPCOMING_HIDE.has(lg)) continue;`,
+       照那個寫法讀者勾了也看不到;改的時候在這裡寫明,不要看到「測試紅了」就把寫法改回去。
+       勾選本身的規則在 checkUpcomingPicks。 */
+    ['總覽即將到來:英冠預設不勾(使用者先前的決定),而且是預設不是寫死的排除', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
-      return /UPCOMING_HIDE = new Set\(\['en2'\]\)/.test(src)
-        && /if \(UPCOMING_HIDE\.has\(lg\)\) continue;/.test(src)
-        && /leagues\.filter\(x => !UPCOMING_HIDE\.has\(x\.lg\)\)/.test(src);
+      return /UPCOMING_DEFAULT_OFF = new Set\(\['en2'\]\)/.test(src)
+        && /on: !UPCOMING_DEFAULT_OFF\.has\(lg\)/.test(src)
+        && !/UPCOMING_DEFAULT_OFF\.has\(lg\)\) continue/.test(src)
+        && !/UPCOMING_HIDE/.test(src);
     })()],
     /* 賽事圖像(使用者要求):即將到來的每一列用 compBadge 標賽事,而且歐冠也在表裡 ——
        以前只列英格蘭盃賽,歐冠週的比賽在總覽上看不到。
@@ -7525,6 +7535,101 @@ async function checkFollow() {
     ok(/LEAGUE_STAGE/.test(strip(src('page-overview.js'))),
       '總覽的輪次說明分得出聯賽階段與淘汰賽(不然十六強會標成「聯賽階段第 1 輪」)');
   }
+  return fail;
+}
+
+/* 總覽「即將到來」的賽事勾選(2026-09-26,使用者:「總攬可以勾選要看到即將到來的賽事類別 例如 英超 歐冠」)。
+
+   測試看不到 DOM,所以規則收在 core.js 的純函式(parseCompPicks / shownComps / 讀寫),這裡逐條驗;
+   頁面那一頭守的是「表、窗外摘要、格子上的場數、新勾的聯賽補抓即時比分」都走同一份勾選。
+   真的在瀏覽器裡點過(兩個時間點 × 兩個寬度、重新整理、鍵盤、無痕視窗)—— 變更紀錄 2026-09-26。 */
+async function checkUpcomingPicks() {
+  let fail = 0;
+  const ok = (cond, label, extra = '') => {
+    if (!cond) fail++;
+    console.log(`  ${cond ? '✔' : '✗'} ${label}${!cond && extra ? ` —— 得到 ${extra}` : ''}`);
+  };
+  // 被測的函式拋例外時要記成一條 ✗,不是讓整支測試掛掉(掛掉的話負向對照數不到它)
+  const tryOr = (fn, dflt) => { try { return fn(); } catch { return dflt; } };
+  const src = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+  const strip = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+  globalThis.document ??= { addEventListener() {} };
+  const V = await import('../web/assets/js/core.js');
+  const keys = set => [...(set ?? [])].sort().join(',');
+
+  /* 一、要顯示哪幾個。**存的是讀者改過的那幾格**,沒改過的照預設 ——
+     存整份「要顯示的」的話,以後多一個賽事,存過選擇的人永遠看不到它。 */
+  const comps = [{ key: 'pl', on: true }, { key: 'en2', on: false }, { key: 'ucl' }];
+  ok(keys(V.shownComps(comps, {})) === 'pl,ucl', '沒改過就照預設(英冠預設不勾;沒寫 on 的是勾)', keys(V.shownComps(comps, {})));
+  ok(keys(V.shownComps(comps, { en2: true, pl: false })) === 'en2,ucl', '改過的照讀者,沒改過的那一格照預設',
+    keys(V.shownComps(comps, { en2: true, pl: false })));
+  ok(V.shownComps([...comps, { key: 'facup', on: true }], { pl: false, en2: true }).has('facup'),
+    '讀者存過選擇之後才出現的賽事,照它自己的預設出現(足總盃 2026-27 上游還沒發布)');
+  ok(keys(V.shownComps(comps, { zz: true })) === 'pl,ucl', '存著的鍵不在清單上的不理(不會冒出一個不存在的賽事)');
+  ok(keys(V.shownComps(comps, { pl: 'false', en2: 1 })) === 'pl,ucl', '只認布林值:字串 "false" 與 1 都當成沒改過',
+    keys(V.shownComps(comps, { pl: 'false', en2: 1 })));
+
+  // 二、從瀏覽器讀進來的東西一律可能是壞的
+  const bad = tryOr(() => V.parseCompPicks('{壞掉的 json'), 'threw');
+  ok(bad !== 'threw' && Object.keys(bad).length === 0, '壞掉的 JSON 讀成沒改過,不拋錯', String(bad === 'threw' ? '拋了例外' : JSON.stringify(bad)));
+  ok([null, '[1,2]', '"x"', JSON.stringify({ v: 1 })].every(r => Object.keys(tryOr(() => V.parseCompPicks(r), { x: 1 })).length === 0),
+    'null、陣列、字串與沒有 picks 的舊形狀都讀成沒改過');
+  const parsed = tryOr(() => V.parseCompPicks(JSON.stringify({ v: 1, picks: { pl: false, en2: true, x: 'y', z: null } })), null);
+  ok(JSON.stringify(parsed) === JSON.stringify({ pl: false, en2: true }), '只留布林值', JSON.stringify(parsed));
+
+  /* 三、存取。**這個鍵存在讀者的瀏覽器裡,發布之後就是契約** —— 改了名字,
+     每個人存過的選擇都變成對不到的孤兒,而且一個錯都不報(「我的預測」那條坑)。 */
+  ok(V.UPCOMING_PICKS_KEY === 'warroom:upcoming-comps:v1', '儲存鍵沒有改名(改了,讀者存過的勾選會全部失效)', V.UPCOMING_PICKS_KEY);
+  const store = new Map();
+  const had = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+  const fake = { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)) };
+  Object.defineProperty(globalThis, 'localStorage', { value: fake, configurable: true, writable: true });
+  try {
+    ok(tryOr(() => V.writeCompPicks({ es1: false, en2: true }), 'threw') === true
+      && JSON.stringify(tryOr(() => V.readCompPicks(), null)) === JSON.stringify({ es1: false, en2: true }),
+      '寫進去讀得回來(只存改過的那兩格)', store.get('warroom:upcoming-comps:v1'));
+    /* 無痕視窗與擋掉網站資料時 localStorage 會**直接拋例外** —— 讀要當成沒改過,
+       寫要回 false,畫面才講得出「存不起來」(靜靜失敗的話讀者會以為存了) */
+    fake.setItem = () => { throw new Error('QuotaExceeded'); };
+    ok(tryOr(() => V.writeCompPicks({ pl: false }), 'threw') === false, '存不進去時 writeCompPicks 回 false,不拋錯');
+    fake.getItem = () => { throw new Error('SecurityError'); };
+    const r = tryOr(() => V.readCompPicks(), 'threw');
+    ok(r !== 'threw' && Object.keys(r).length === 0, '讀不到時 readCompPicks 當成沒改過,不拋錯');
+  } finally {
+    if (had) Object.defineProperty(globalThis, 'localStorage', had); else delete globalThis.localStorage;
+  }
+
+  /* 四、頁面接線。規則在 core,頁面要守的是**每一個會顯示賽事的地方都走同一份勾選** ——
+     表濾了而窗外摘要沒濾,讀者取消的賽事就會從摘要冒出來;格子上的場數若從「濾過的」算,
+     沒勾的那幾格永遠是 0,讀者看不出關掉的那裡面還有比賽。 */
+  const ov = strip(src('page-overview.js'));
+  const list = ov.match(/const upcomingComps = \[([\s\S]*?)\n  \];/)?.[1] ?? '';
+  ok(/leagues\.map\(\(\{ lg \}\) =>/.test(list)
+    && /\(shared\.ucl\?\.seasons \?\? \[\]\)\.some\(s => s\.current\) \?/.test(list)
+    && /cupList\.filter\(c => \(c\.seasons \?\? \[\]\)\.some\(s => s\.current\)\)/.test(list)
+    && !/key: '(pl|es1|en2|de1|it1|fr1|facup|eflcup)'/.test(list),
+    '勾選清單從資料長出來(聯賽照載得到的、盃賽與歐冠要有本季),不是手寫', list.slice(0, 60));
+  ok(/C\.readCompPicks\(\)/.test(ov) && /C\.writeCompPicks\(/.test(ov) && /C\.shownComps\(upcomingComps, picks\)/.test(ov)
+    && !/warroom:upcoming-comps/.test(ov), '頁面走 core 的讀寫與判斷,沒有自己再讀一次那個鍵');
+  ok(/const upcoming = all\.filter\(u => shown\.has\(u\.compKey\)\)/.test(ov) && /C\.table\(upcoming,/.test(ov),
+    '表只列勾著的賽事');
+  const beyond = ov.slice(ov.indexOf('const beyondOf = (present, shown) =>'), ov.indexOf('const picksHtml'));
+  ok(/beyondOf\(new Set\(upcoming\.map\(u => u\.compKey\)\), shown\)/.test(ov)
+    && /!shown\.has\(lg\) \|\| present\.has\(lg\)/.test(beyond)
+    && /!shown\.has\(cup\.key\) \|\| present\.has\(cup\.key\)/.test(beyond)
+    && /!shown\.has\('ucl'\) \|\| present\.has\('ucl'\)/.test(beyond),
+    '窗外的下一批也只講勾著的(聯賽、盃賽、歐冠三段都是)');
+  ok(/picksHtml\(all, shown\)/.test(ov) && /const n = all\.filter\(u => u\.compKey === c\.key\)\.length/.test(ov)
+    && /沒勾的賽事另有/.test(ov), '格子上的場數從全部場次算(沒勾的也算),沒勾的有場次時講出來');
+  ok(/沒有勾選任何賽事/.test(ov) && /picksSaved = C\.writeCompPicks\(picks\)/.test(ov) && /存不起來/.test(ov),
+    '全部取消時講「沒有勾選任何賽事」;存不起來(無痕視窗)時講出來');
+  /* 單檔版換頁不會換掉 #app,掛在它上面的監聽每回到總覽一次就多一份 —— 所以掛在元素的屬性上 */
+  ok(!/app\.addEventListener\(/.test(ov) && /el\.onchange = \(\) => setPicks\(/.test(ov),
+    '勾選的事件掛在元素的 onchange 上,不在 #app 上 addEventListener(單檔版會一次比一次多)');
+  /* 新勾的聯賽還沒拿過 raw 那份即時快照:不補抓的話,它印的是部署快照的比分,而沒有任何地方講它是舊的 */
+  ok(/overlaid\.add\(lg\)/.test(ov) && /!overlaid\.has\(x\.lg\)/.test(ov) && /overlayLeagueLive\(late\)/.test(ov)
+    && /async \(list = leagues\.filter\(x => shownNow\(\)\.has\(x\.lg\)\)\)/.test(ov),
+    '即時比分只抓勾著的聯賽,之後才勾的補抓一次');
   return fail;
 }
 
