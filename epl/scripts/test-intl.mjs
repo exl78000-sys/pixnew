@@ -484,7 +484,15 @@ console.log('\n▶ 國家隊:國旗(開源國旗集;屬地用宗主國的旗不�
   const page = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8'));
   check('頁面只用產物裡內嵌的國旗,不從外部網址載', !/flag-icons|raw\.githubusercontent|\.svg['"`]/.test(page) && /FLAGS\[key\]/.test(page));
   const ov = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8'));
-  check('總覽頁不載國旗那一份', !ov.includes('intl-flags'));
+  /* 總覽頁不為了一張小卡多下載國旗(2026-09-25 的決定)。2026-09-26 起總覽的「即將到來」可以勾國家隊
+     (使用者:「國家隊也加進勾選」),勾了那幾列要有國旗 —— 所以這一條從「總覽一個字都不准提國旗」
+     改成守原本的意圖:**只有 ensureFlags 會載,而它在沒勾國家隊時直接回去**。
+     看到這條紅了不要把總覽的國旗拿掉,那是使用者要的;要擋的是「一打開總覽就載」。 */
+  const flagLoads = ov.match(/C\.loadFrom\([^)]*intl-flags[^)]*\)/g) ?? [];
+  const ensure = ov.slice(ov.indexOf('const ensureFlags ='), ov.indexOf('const ensureFlags =') + 420);
+  check('總覽頁只在勾了國家隊時才載國旗(不為了小卡多下載)', flagLoads.length === 1 && ensure.includes(flagLoads[0])
+    && /\|\| !\[\.\.\.shown\]\.some\(k => k\.startsWith\('intl:'\)\)\) return;/.test(ensure),
+    `載國旗的地方 ${flagLoads.length} 處`);
   /* 畫面上的字是給讀者看的:「npm run …」那種指令本站其他頁都拿掉了(模型頁、球隊頁),
      國旗那一句第一版寫了「圖還沒抓(npm run intl:flags)」—— 當時沒有新隊所以沒露出來,有新隊那天就會。 */
   check('國家隊頁不對讀者印開發指令', !/npm (run|test)/.test(page));
