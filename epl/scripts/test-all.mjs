@@ -15,48 +15,23 @@
 
 import { spawn } from 'node:child_process';
 import { dirname, join } from 'node:path';
-import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+import { STEPS, isBacktestStep, isGameStep } from './lib/test-steps.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-/* 順序不能動:backtest-laliga 產生的數字是 test-laliga 要驗的。
+/* 步驟清單在 lib/test-steps.mjs(2026-09-26 抽出去:部署 workflow 的 backtest-all 要挑同一份清單裡的回測並行跑)。
 
-   後面兩步是 2026-08-28 補的:
-   - check-docs  文件裡的數字對不對得回實際資料(手動維護一定會歪,實測過三份三個數)
-   - obsidian    vault 的產生器自己有兩道守門(同檔名、壞連結),但**沒有任何流程在跑它** ——
-                 資料結構一變會安靜壞掉,要等有人手動跑 local:sync 才發現。
-                 寫到暫存目錄,不動使用者真正在用的那一份(他可能正開著 Obsidian)。 */
-const VAULT_TMP = join(tmpdir(), 'epl-vault-test');
-const STEPS = [
-  ['scripts/test.mjs', []],
-  ['scripts/backtest-laliga.mjs', []],
-  ['scripts/test-laliga.mjs', []],
-  /* 英冠同理:backtest-championship 產生的數字是 test-championship 要驗的,順序不能反。 */
-  ['scripts/backtest-championship.mjs', []],
-  ['scripts/test-championship.mjs', []],
-  /* 德甲(2026-09-15 加的第四個聯賽)同理:backtest-bundesliga 產生的數字是
-     test-bundesliga 要驗的,順序不能反。 */
-  ['scripts/backtest-bundesliga.mjs', []],
-  ['scripts/test-bundesliga.mjs', []],
-  /* 義甲與法甲(2026-09-15 加的第五、六個聯賽)同理:backtest 產生的數字是 test 要驗的,
-     順序不能反。三個聯賽的 test 都只是 `lib/test-league.mjs` 的薄包裝。 */
-  ['scripts/backtest-serie-a.mjs', []],
-  ['scripts/test-serie-a.mjs', []],
-  ['scripts/backtest-ligue-1.mjs', []],
-  ['scripts/test-ligue-1.mjs', []],
-  /* 國家隊(2026-09-24):只讀產物與 raw,不產生別的測試要驗的數字;抓取器那一段用假的 fetch,不連網。 */
-  ['scripts/test-intl.mjs', []],
-  /* 模擬遊玩(2026-09-03):獨立管線的守門 + 側寫對回來源 + 引擎不變量。
-     排在英冠之後、文件檢查之前 —— 它只讀產物,不產生別的測試要驗的數字。 */
-  ['scripts/game/test-game.mjs', []],
-  ['scripts/check-docs.mjs', []],
-  ['scripts/build-obsidian.mjs', [`--out=${VAULT_TMP}`]],
-  /* vault 的**內容**(2026-09-26):產生器的守門只看形狀(同檔名、壞連結),筆記裡印著過期的宣稱、
-     或者少了一整區資料,它都照樣放行 —— 國家隊整區不在、歐冠寫「不做勝率預測」、盃賽寫「來源:SportMonks」
-     都是這樣留下來的。這一支自己產一份到暫存目錄,逐則拿筆記跟產物對。 */
-  ['scripts/test-vault.mjs', []],
-];
+   --skip-backtests:部署 workflow 用。五個聯賽的走查回測在同一個 job 前面已經並行跑過(backtest-all.mjs,
+   同一次 checkout、同一批 raw),這裡不重跑;test-laliga 那幾支照樣驗它們寫出的產物。
+   本機 npm test 不帶旗標,全部跑 —— 本機沒有前面那一步。 */
+const SKIP_BACKTESTS = process.argv.includes('--skip-backtests');
+/* --skip-game:同樣是部署 workflow 用。模擬引擎的測試一支 7 分鐘、只讀倉庫裡的東西,
+   workflow 另開 game-tests job 跟 build 並行跑它,deploy 兩邊都等。本機 npm test 照跑。 */
+const SKIP_GAME = process.argv.includes('--skip-game');
+const steps = STEPS.filter(s => !(SKIP_BACKTESTS && isBacktestStep(s)) && !(SKIP_GAME && isGameStep(s)));
+if (SKIP_BACKTESTS) console.log(`· --skip-backtests:略過 ${STEPS.filter(isBacktestStep).length} 支走查回測(部署 workflow 前面已並行跑過,產物照驗)`);
+if (SKIP_GAME) console.log('· --skip-game:略過模擬引擎的測試(部署 workflow 的 game-tests job 並行跑它)');
 
 const tally = { blocks: 0, pass: 0, fail: 0 };
 /* 逐行掃輸出來數。用 stdout 而不是去改三十幾個各自的 ok()/check() 閉包 ——
@@ -94,8 +69,11 @@ function run(file, args = []) {
 
 let exitCode = 0;
 const failedSteps = [];
-for (const [step, args] of STEPS) {
+/* 每一步印耗時(2026-09-26,D1):部署那一步 855 秒到底花在哪裡,以前只能猜。 */
+for (const [step, args] of steps) {
+  const t0 = Date.now();
   const code = await run(step, args);
+  console.log(`  ⏱ ${step} ${((Date.now() - t0) / 1000).toFixed(1)} 秒`);
   if (code !== 0) {
     exitCode = exitCode || code;
     failedSteps.push(step);

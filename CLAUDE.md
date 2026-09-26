@@ -516,7 +516,8 @@ Understat 給的是球隊層級的季摘要,把某一類掛到某位球員的某
 
 ```bash
 cd epl
-npm test          # 走查回測 + 各聯賽與各主題的自我檢查區塊,零依賴(數量看它自己印的那一行)
+npm test          # 走查回測 + 各聯賽與各主題的自我檢查區塊,零依賴(數量看它自己印的那一行;每一步印 ⏱ 耗時)
+npm run backtests # 五個聯賽的走查回測並行跑(部署 workflow 用;那邊的 npm test 帶 --skip-backtests --skip-game)
 npm run build     # 產生 web/data/*.json
 npm run bundle    # 產生單檔版 dist/warroom.html
 ```
@@ -526,7 +527,14 @@ npm run bundle    # 產生單檔版 dist/warroom.html
 (本機 `core.autocrlf=true`),於是資產戳的內容雜湊、results.csv 的 sha256、掃原始碼文字的測試全部對不上 ——
 同一個 commit CI 綠、本機紅 16 條(2,252 條裡)。舊的工作樹要重新展開一次才會變成 LF;
 展開之後 `git status` 可能把幾百個沒改的檔標成 modified(索引記的是 CRLF 時的大小,git 看大小不同就不比內容),
-`git update-index --really-refresh` 或對那些檔 `git add` 就清掉,內容沒有變。
+`git update-index --really-refresh` 或對那些檔 `git add` 就清掉,內容沒有變。合併或 rebase 寫出來的檔在 `core.autocrlf=true` 下仍可能是 CRLF,
+所以這台機器把**這個 repo** 的 `core.autocrlf` 設成 false(`git config core.autocrlf false`,只影響這個倉庫)。
+
+**部署 workflow 的測試分三段(2026-09-26,D1)**:五個聯賽的走查回測在各聯賽 build 之前**並行**跑一次
+(`npm run backtests`);模擬引擎的測試(`scripts/game/test-game.mjs`,一支 7 分鐘)在 `game-tests` job 跟 build **並行**;
+build 最後的 `npm test -- --skip-backtests --skip-game` 只剩 40 秒。deploy 同時等 build 與 game-tests,閘門沒有放鬆。
+逐步計時(本機):npm test 462 秒裡 test-game 422 秒、五個回測合計 10 秒、test.mjs 4 秒 —— **慢的是模擬引擎測試,不是回測**。
+步驟清單只有 `lib/test-steps.mjs` 一份,backtest-all 與 test-all 都從它挑。
 
 進球事件的 `description` 子代碼目前已見過 **`G`(一般)、`P`(十二碼)、`O`(烏龍球)** ——
 `O` 已用名單核對過(踢進的人在對方名單裡)。這三種已經在單場分析頁的

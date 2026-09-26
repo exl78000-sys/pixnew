@@ -3,6 +3,7 @@
 // 用途:寄給別人、丟上任何靜態空間、或直接用瀏覽器開 —— 不需要伺服器。
 // 用法: npm run bundle  → dist/warroom.html
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { readMatchReports } from './lib/match-archive.mjs';
 import { inlineImages } from './lib/image-files.mjs';
 import { dirname, join } from 'node:path';
@@ -32,10 +33,14 @@ function coreExports(src) {
 }
 
 async function main() {
-  // app.css 會 @import 內嵌字體,單檔版要把它一起攤平進來
-  const fonts = await readFile(join(WEB, 'assets', 'css', 'fonts.css'), 'utf8');
-  const css = (await readFile(join(WEB, 'assets', 'css', 'app.css'), 'utf8'))
-    .replace(/@import url\('fonts\.css'\);/, fonts);
+  /* 字型 2026-09-26 起是獨立檔(assets/fonts/*.woff2;fonts.css 用 url('../fonts/…') 指過去,HTML 直接 <link>)。
+     單檔版沒有外部檔,這裡把 .woff2 讀回來內嵌成 data URI、接在 app.css 前面 —— 跟以前 @import 攤平的效果一樣。 */
+  const fontsCss = (await readFile(join(WEB, 'assets', 'css', 'fonts.css'), 'utf8'))
+    .replace(/url\('\.\.\/fonts\/([^']+)'\)/g, (m, file) => {
+      const buf = readFileSync(join(WEB, 'assets', 'fonts', file));
+      return `url(data:font/woff2;base64,${buf.toString('base64')})`;
+    });
+  const css = fontsCss + '\n' + await readFile(join(WEB, 'assets', 'css', 'app.css'), 'utf8');
   const coreSrc = await readFile(join(WEB, 'assets', 'js', 'core.js'), 'utf8');
   const exportNames = coreExports(coreSrc);
   const core = coreSrc.replace(/^export /gm, '');

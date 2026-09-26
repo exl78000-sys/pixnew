@@ -488,7 +488,7 @@ epl/
 │   ├── probe-*.mjs        資料源探測(沙箱連不到外網,交給 Actions 跑)
 │   ├── explore-apis.mjs   探勘 API 回傳結構
 │   ├── bundle.mjs         打包成單一 HTML 檔
-│   ├── fetch-fonts.mjs    下載字體內嵌成 data URI
+│   ├── fetch-fonts.mjs    下載字體 → web/assets/fonts/*.woff2 + fonts.css(單檔版打包時內嵌)
 │   ├── serve.mjs          零依賴靜態伺服器
 │   ├── live-server.mjs    即時模式:服務網站 + 背景輪詢官方 API
 │   └── lib/
@@ -642,7 +642,7 @@ export const HISTORY_SEASONS = ['2023-24', '2024-25', '2025-26'];
 | 連結 | `teams.html?code=ARS` | `#teams?code=ARS` |
 | 資料 | `fetch('data/*.json')` | 內嵌於 `window.__DATA__` |
 | 倒數計時 | 兩者相同,純前端計算,不需要伺服器 | |
-| 字體 | `fonts.css` 的 data URI | 同上,一併攤平進單檔 |
+| 字體 | `assets/fonts/*.woff2`(fonts.css 指過去,每頁 preload) | 打包時讀回來內嵌成 data URI |
 
 寫程式時一律用 `C.link(page, params)` 與 `C.go(page, params)`,不要寫死 `.html` 連結,
 兩種模式才會同時正確。
