@@ -1,4 +1,4 @@
-import * as C from './core.js?v=7a065aae';
+import * as C from './core.js?v=126d954f';
 
 const app = document.getElementById('app');
 
@@ -206,7 +206,7 @@ try {
       nameCell: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.playerPhoto(p, 28)} ${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}`,
       teamCol: { key: 'team', label: '球隊', value: p => C.name(p.team), render: p => C.teamCell(p.team) },
       afterId: [{ key: 'appearances', label: '出場', value: p => mode === 'current' ? (p.appearances ?? 0) : 0, num: true, render: p => mode === 'current' ? (p.appearances ?? '—') : '—' }],
-    }), { sortKey: 'minutes', desc: true, onRow: p => (cmpMode ? toggleCompare(p) : C.go('players', { code: p.code })) });
+    }), { sortKey: 'minutes', desc: true, pageSize: 100, onRow: p => (cmpMode ? toggleCompare(p) : C.go('players', { code: p.code })) });   // 先畫 100 列(B5)
   };
 
   renderSeasonUI();
@@ -510,7 +510,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       nameCell: p => `<span class="player-cell">${C.playerPhoto(playerForPhoto(p), 28)}<span>${C.esc(p.name)}</span></span>`,
       teamCol: { key: 'team', label: '球隊', value: p => codeName(currentTeamCode(p)), left: true, render: teamCell },
       afterId: [{ key: 'games', label: '出場', value: p => p.games ?? 0, num: true }],
-    }), { sortKey: 'goals', desc: true, onRow: p => C.go('players', { code: p.id }) })
+    }), { sortKey: 'goals', desc: true, pageSize: 100, onRow: p => C.go('players', { code: p.id }) })   // 先畫 100 列(B5)
       + `<div class="tiny dim" style="margin-top:8px">共 ${rows.length} 人。點欄位標題可換排序。
         <span class="mono">xGI/90</span> 只在上場時間達 ${leaders.minMinutes} 分鐘時給出。</div>`;
   };
@@ -765,7 +765,7 @@ function renderAggregate({ meta, players, leaders }) {
     const rows = seasonPlayers().filter(p => (!t || p.team === t) && (!pos || p.pos === pos)
       && p.minutes >= minMin && (!q || p.name.toLowerCase().includes(q)));
     document.getElementById('count').textContent = `共 ${rows.length} 人・點欄位標題可換排序`;
-    document.getElementById('list').innerHTML = C.table(rows, columns(), { sortKey: 'mins_played', desc: true });
+    document.getElementById('list').innerHTML = C.table(rows, columns(), { sortKey: 'mins_played', desc: true, pageSize: 100 });   // 先畫 100 列(B5)
     updateXLeague(q);
   };
 

@@ -34,7 +34,10 @@ console.log('\n▶ 模擬遊玩:獨立管線');
   const offenders = realFiles.filter(f => /from ['"][^'"]*(?:scripts\/game\/|\/game\/|\.\/game-)[^'"]*['"]/.test(readFileSync(f, 'utf8')));
   check('真實管線沒有任何檔案 import 遊戲模組(宿主 page-explore.js 除外)', offenders.length === 0, offenders.map(f => f.replace(ROOT, '')).join('、'));
   const explore = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8');
-  check('宿主只 import view 的 render,不碰遊戲資料', /import \{ renderGame \} from '\.\/game-view\.js/.test(explore) && !/game\/pl|game-engine/.test(explore));
+  /* 2026-09-26(B4)起是點到分頁才 `import()`:靜態 import 會讓知識與球員搜尋分頁也揹 314 KB 的引擎。 */
+  check('宿主只在點到分頁時 import() view 的 render,不靜態 import、不碰遊戲資料',
+    /import\('\.\/game-view\.js(\?v=[0-9a-f]+)?'\)/.test(explore) && !/from '\.\/game-view\.js/.test(explore)
+    && /renderGame/.test(explore) && !/game\/pl|game-engine/.test(explore));
 
   const build = readFileSync(join(ROOT, 'scripts', 'game', 'build-game.mjs'), 'utf8');
   const writes = [...build.matchAll(/writeFile\(([^)]*)\)/g)].map(m => m[1]);
