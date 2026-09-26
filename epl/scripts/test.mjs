@@ -21,6 +21,7 @@ import { round } from './lib/util.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { simZoneIssues } from './lib/sim-zones.mjs';
 import { h2hIssues } from './lib/h2h-check.mjs';
+import { formIssues } from './lib/form-check.mjs';
 import { inPlay, remainingFraction } from './lib/inplay.mjs';
 import { loadInplayCurve, validCurve, reconcile as reconcileEvents, happened, goalTimingCurve, pairedScores, outcome0, anchorLambdas, splitLambdas, kickStep } from './lib/inplay-tuning.mjs';
 import { appendSamples, historyForSite } from './lib/prob-history.mjs';
@@ -667,9 +668,12 @@ async function main() {
   console.log('\n▶ 歷來交手(六個聯賽;聯賽清單掃目錄)');
   const h2hFail = checkH2H();
 
+  console.log('\n▶ 近況的形狀與內容(六個聯賽;聯賽清單掃目錄)');
+  const formShapeFail = checkFormShape();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail) process.exitCode = 1;
+  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail || formShapeFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -7433,6 +7437,38 @@ function checkH2H() {
   ok(h2hIssues({ h2h: { 'AAA|BBB': { ...good['AAA|BBB'], games: 1, draw: 0, list: list.slice(0, 1) } }, results, fixtures, currentSeason: '2026-27' }).issues.length > 0,
     '核對器抓得到少一場(負向對照)');
   ok(h2hIssues({ h2h: { 'BBB|AAA': good['AAA|BBB'] }, results, fixtures, currentSeason: '2026-27' }).issues.length > 0, '核對器抓得到鍵沒排序(負向對照)');
+  return fail;
+}
+
+/* 近況(2026-09-26)。英冠與德義法的 build 原本把 form.teams 寫成陣列,前端照隊碼查不到 ——
+   四個聯賽的球隊頁印「尚無近期賽果。」、單場頁的近況整塊不見,而資料明明在。
+   六個聯賽一起守(不變量見 lib/form-check.mjs),聯賽清單掃目錄。 */
+function checkFormShape() {
+  let fail = 0;
+  const ok = (cond, msg, extra = '') => { if (cond) console.log(`  ✓ ${msg}`); else { console.log(`  ✗ ${msg}${extra ? ` (${extra})` : ''}`); fail++; } };
+  const base = join(ROOT, 'web', 'data');
+  const dirs = [['pl', base], ...(existsSync(join(base, 'leagues')) ? readdirSync(join(base, 'leagues')) : [])
+    .filter(d => existsSync(join(base, 'leagues', d, 'form.json'))).map(d => [d, join(base, 'leagues', d)])];
+  for (const [lg, dir] of dirs) {
+    if (!['meta', 'fixtures', 'results', 'form'].every(n => existsSync(join(dir, `${n}.json`)))) { console.log(`  (${lg} 還沒建置,略過)`); continue; }
+    const rd = n => JSON.parse(readFileSync(join(dir, `${n}.json`), 'utf8'));
+    const fx = rd('fixtures');
+    const { issues, checked, skipped } = formIssues({ form: rd('form'), results: rd('results'), fixtures: fx.fixtures ?? fx, currentSeason: rd('meta').currentSeason });
+    ok(issues.length === 0 && checked > 0, `${lg} 近況:以隊碼為鍵、每一隊加得起來,近五場逐場對回 results.json(${checked} 場${skipped ? `,早於賽果檔的 ${skipped} 場不判` : ''})`,
+      issues.slice(0, 3).join(' / '));
+  }
+  /* 負向對照:陣列形狀(原本那個 bug)、加總錯、比分錯,核對器都要抓得到 */
+  const results = [{ season: '2026-27', date: '2026-09-01', home: 'AAA', away: 'BBB', played: true, fh: 2, fa: 1 }];
+  const fixtures = [{ season: '2026-27', home: 'AAA', away: 'BBB' }];
+  const rowA = { date: '2026-09-01', season: '2026-27', opp: 'BBB', venue: 'H', gf: 2, ga: 1, res: 'W' };
+  const rowB = { date: '2026-09-01', season: '2026-27', opp: 'AAA', venue: 'A', gf: 1, ga: 2, res: 'L' };
+  const sumOf = r => ({ games: 1, w: r.res === 'W' ? 1 : 0, d: 0, l: r.res === 'L' ? 1 : 0, gf: r.gf, ga: r.ga });
+  const good = { teams: { AAA: { recent: [rowA], summary: sumOf(rowA) }, BBB: { recent: [rowB], summary: sumOf(rowB) } } };
+  const run = form => formIssues({ form, results, fixtures, currentSeason: '2026-27' }).issues.length;
+  ok(run(good) === 0, '核對器:對的那一份過得去');
+  ok(run({ teams: [{ code: 'AAA', matches: [rowA] }] }) > 0, '核對器抓得到陣列形狀(原本那個 bug,負向對照)');
+  ok(run({ teams: { ...good.teams, AAA: { recent: [rowA], summary: { ...sumOf(rowA), w: 0 } } } }) > 0, '核對器抓得到加總錯(負向對照)');
+  ok(run({ teams: { ...good.teams, AAA: { recent: [{ ...rowA, gf: 3 }], summary: sumOf({ ...rowA, gf: 3 }) } } }) > 0, '核對器抓得到比分對不回賽果(負向對照)');
   return fail;
 }
 

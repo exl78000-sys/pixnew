@@ -418,10 +418,14 @@ export async function buildLeague(L) {
   const crestCount = teams.filter(t => t.crest).length;
 
   const formIndex = buildFormIndex([...priorMatches, ...lastMatches, ...curPlayed]);
-  const teamForm = curCodes.map(code => {
+  /* **形狀照英超西甲**:teams 是「隊碼 → { recent, summary }」—— 前端(球隊頁的近期比賽、單場頁的近況)
+     照隊碼查 `form.teams[code].recent`。原本這裡寫成陣列(每隊攤平 + matches),查不到就走「沒有資料」那條:
+     球隊頁印「尚無近期賽果。」、單場頁的近況整塊不見,而資料明明在(2026-09-26 修;見變更紀錄同日那則)。
+     傷停來源這個聯賽沒有,所以 availability 是 null(前端與 vault 看到 null 就整塊不畫)。 */
+  const teamForm = Object.fromEntries(curCodes.map(code => {
     const rows = recentForm(formIndex, code, AS_OF, 5);
-    return { code, ...formSummary(rows), matches: rows };
-  });
+    return [code, { recent: rows, summary: formSummary(rows), availability: null }];
+  }));
 
   const h2h = {};
   for (let i = 0; i < curCodes.length; i++) {
