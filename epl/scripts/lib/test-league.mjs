@@ -23,6 +23,7 @@ import { loadTeams } from './teams.mjs';
 import { simulateSeason } from './simulate.mjs';
 import { europeanKickoff } from './league-matches.mjs';
 import { nameCheckVerdict } from './build-league.mjs';
+import { readMatchReports } from './match-archive.mjs';
 
 
 export function testLeague(L) {
@@ -172,8 +173,8 @@ export function testLeague(L) {
       && Object.keys(meta.model.sim.teams).length === meta.competition.teams);
 
     const rep = out('reports');
-    check('reports 的形狀跟英冠一致(seasons / count / reports)',
-      ['seasons', 'count', 'reports'].every(k => k in rep && k in en2('reports')));
+    check('reports 的形狀跟英冠一致(seasons / count / index —— 本體是逐場檔)',
+      ['seasons', 'count', 'index'].every(k => k in rep && k in en2('reports')));
 
     /* 前端沒有任何 Markdown 處理器,`**強調**` 會原樣印出兩顆星號。
        掃**整份 meta** —— 第一版只掃 caveats,而星號就在 intro 與 boundaries 裡。 */
@@ -535,7 +536,7 @@ export function testLeague(L) {
     /* raw 由 runner 抓(沙箱連不到 fotmob.com),所以本機可能一場都沒有 ——
        **那不是失敗**。這一節分兩半:沒有資料時守「講的是還沒抓、不是沒有來源」,
        有資料時才逐條驗內容。斷言只能守本站自己算的東西(上游時差不是 bug)。 */
-    const rep = out('reports');
+    const rep = readMatchReports(join(ROOT, 'web', 'data', 'leagues', L.key));   // 本體是逐場檔,讀回來形狀跟以前一樣
     const msPath = join(ROOT, 'web', 'data', 'leagues', L.key, 'matchstats.json');
     if (!rep.count) {
       check('沒有賽後報告時講的是「還沒抓」而不是「沒有來源」',

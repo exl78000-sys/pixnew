@@ -1,6 +1,6 @@
-import * as C from './core.js?v=bd9a38a8';
+import * as C from './core.js?v=15d4daad';
 import { followedIn } from './follow.js?v=02130043';
-import { mountSimTable } from './sim-table.js?v=36e2649e';
+import { mountSimTable } from './sim-table.js?v=472f4184';
 
 const app = document.getElementById('app');
 

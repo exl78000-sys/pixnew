@@ -1,0 +1,20 @@
+# 換行一律 LF(2026-09-26)。
+# 為什麼:Windows 本機 core.autocrlf=true 會把 checkout 的檔案換成 CRLF,於是
+# 資產戳的內容雜湊、results.csv 的 sha256、掃原始碼文字的測試全部對不上 ——
+# 同一個 commit 在 CI 是綠的,本機卻紅 16 條。有了這一份,任何機器 checkout 出來都是 LF。
+* text=auto eol=lf
+
+# 原始資料要跟下載時的位元組完全相同(抓取器記了 sha256,測試會核):git 不碰它們的換行。
+# football-data.co.uk 的 70 個 CSV 本來就是 CRLF,照原樣存。
+epl/data/raw/** -text
+
+# 二進位,防 text=auto 猜錯
+*.png binary
+*.webp binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary

@@ -20,6 +20,7 @@ import { backfillScores } from './lib/league-matches.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
 import { preMatchBundle, postMatchBundle, templateFor, verify } from './lib/report/index.mjs';
+import { readMatchReports } from './lib/match-archive.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEASONS = ['2023-24', '2024-25', '2025-26', '2026-27'];
@@ -145,8 +146,8 @@ const table = out('table'), results = out('results'), sim = out('sim');
   check('meta.model 用 caveats 而不是自己取的名字',
     Array.isArray(meta.model.caveats) && typeof meta.model.type === 'string');
   const rep = out('reports');
-  check('reports 的形狀跟西甲一致(seasons / count / reports)',
-    ['seasons', 'count', 'reports'].every(k => k in rep && k in es1('reports')));
+  check('reports 的形狀跟西甲一致(seasons / count / index —— 本體是逐場檔)',
+    ['seasons', 'count', 'index'].every(k => k in rep && k in es1('reports')));
   check('meta 沒有設 edition(設了會被前端當成西甲)', !('edition' in meta));
 }
 
@@ -438,7 +439,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
 {
   const D = join(ROOT, 'web', 'data', 'leagues', 'en2');
   const rd = f => JSON.parse(readFileSync(join(D, f), 'utf8'));
-  const fx = rd('fixtures.json'), rep = rd('reports.json'), teams = rd('teams.json');
+  const fx = rd('fixtures.json'), rep = readMatchReports(D), teams = rd('teams.json');
   const msPath = join(D, 'matchstats.json');
   check('英冠有 matchstats.json(FotMob 逐場統計)', existsSync(msPath));
   if (existsSync(msPath)) {
@@ -500,7 +501,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
 
 /* 分析文章(2026-09-05):跟另外兩個聯賽同一層。英冠沒有球隊側寫,賽前文章不准出現「升班馬」那句(那是沒側寫,不是升班馬) */
 {
-  const an = out('analysis'), fixtures = out('fixtures'), teams = out('teams'), h2h = out('h2h'), reports = out('reports');
+  const an = out('analysis'), fixtures = out('fixtures'), teams = out('teams'), h2h = out('h2h'), reports = readMatchReports(join(ROOT, 'web', 'data', 'leagues', 'en2'));
   const byCode = new Map(teams.map(t => [t.code, t]));
   const league = { key: 'en2', zh: '英冠' };
   const pre = fixtures.filter(f => !f.played && f.prediction).slice(0, 20).map(f => preMatchBundle({

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=bd9a38a8';
+import * as C from './core.js?v=15d4daad';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=1610cd7c';
 import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=9818603d';

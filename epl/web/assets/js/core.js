@@ -163,6 +163,21 @@ export async function load(...names) {
   return out;
 }
 
+/* ── 賽後報告的逐場檔 ────────────────────
+   `reports.json` 只有索引(往季 2026-09-16 起、本季 2026-09-26 起):
+   `index` 是「季|主|客」→ 場次 id,本體在 `match-reports/{季}/{id}.json`,點開那一場才載。
+   之前本季整份內嵌 3.2 MB,首頁載它只問「這場有沒有」、單場頁只用其中一場。
+   走 loadFrom 不走 load:單檔版沒打包往季的逐場檔,404 不是錯誤,要分得出來。
+   賽程表(fixture-list)與單場頁(page-analysis)都用這兩支,不各自拼路徑。 */
+export const hasMatchReport = (reports, f) => !!reports?.index?.[`${f.season}|${f.home}|${f.away}`];
+export async function loadMatchReport(reports, f, lg = league()) {
+  const id = reports?.index?.[`${f.season}|${f.home}|${f.away}`] ?? null;
+  if (!id) return null;
+  const name = `match-reports/${f.season}/${id}`;
+  const { data } = await loadFrom(lg, [name]);
+  return data?.[name] ?? null;
+}
+
 /* 判斷「這個聯賽有沒有這一頁」。抽成獨立函式是為了能在 npm test 裡直接驗 ——
    判錯的話讀者就會看到錯的訊息,這種事不能只靠開瀏覽器用眼睛看。
 

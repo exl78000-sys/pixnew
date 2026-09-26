@@ -1,4 +1,4 @@
-import * as C from './core.js?v=bd9a38a8';
+import * as C from './core.js?v=15d4daad';
 import { followedIn } from './follow.js?v=02130043';
 
 // 有英格蘭盃賽(足總盃/聯賽盃)的聯賽。用集合不用「是不是某一個」的二元式
@@ -27,15 +27,18 @@ export function mountFixtureList({
   const bySeason = season => season === meta.currentSeason
     ? fixtures
     : results.filter(m => m.season === season).map(m => ({ ...m, kickoff: null }));
-  const reportFor = f => reports.reports[`${f.season}|${f.home}|${f.away}`] ?? null;
-  /* 往季的賽後報告不在 `reports.reports` 裡(那一份只內嵌本季,不然首頁會變成幾十 MB),
+  /* 賽後報告只問索引(`reports.index`,「季|主|客」→ 場次 id;2026-09-26 起本季也是逐場檔):
+     這張表只需要「有沒有」,本體在讀者點開速覽時才載(openMatch)。
+     整份內嵌的時候首頁揹 3.2 MB 只為了這個布林值 —— 而且 live.json 裡還有一份一模一樣的。 */
+  const hasReport = f => C.hasMatchReport(reports, f);
+  /* 往季的賽後報告不在本季的索引裡,
      它們是 `match-reports/{季}/{id}.json` 逐場檔,`reports.archive.ids` 是索引。
      這一行原本寫死 `f.season === meta.currentSeason` —— 上一季的列因此沒有連結,
      而 2026-09-16 起那些報告是真的存在的(「東西在但沒有按鈕」)。 */
   const archived = new Set(reports.archive?.ids ?? []);
   const hasFullAnalysis = f => (f.season === meta.currentSeason
     ? (f.played
-      ? !!reportFor(f) || !!analysis.post[`${f.season}|${f.home}|${f.away}`]
+      ? hasReport(f) || !!analysis.post[`${f.season}|${f.home}|${f.away}`]
       : !!analysis.pre[`${f.home}|${f.away}`])
     : archived.has(f.id));
 
@@ -48,7 +51,7 @@ export function mountFixtureList({
     const rows = bySeason(season).filter(f =>
       (!r || f.round === +r) && (!t || f.home === t || f.away === t) &&
       (!st || (st === '已賽' ? f.played : !f.played)));
-    const withReport = rows.filter(f => reportFor(f)).length;
+    const withReport = rows.filter(f => hasReport(f)).length;
     document.getElementById(countId).textContent =
       `共 ${rows.length} 場${withReport ? `・其中 ${withReport} 場有完整賽後分析` : ''}`;
     /* 關注的球隊(這個聯賽的)。**在這裡取一次,不要每一列都讀 localStorage** ——
@@ -64,7 +67,7 @@ export function mountFixtureList({
         render: f => `<span class="small">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}</span>` },
       { key: 'cd', label: isCurrent ? '倒數' : '狀態', value: f => f.kickoff ?? '', sortable: false, fold: 1,
         render: f => (f.played
-          ? (reportFor(f) ? '<span class="pill accent tiny">有賽後分析</span>' : '<span class="dim small">完場</span>')
+          ? (hasReport(f) ? '<span class="pill accent tiny">有賽後分析</span>' : '<span class="dim small">完場</span>')
           : (f.kickoff ? `<span class="small">${C.countdown(f.kickoff)}</span>` : '<span class="dim small">時間待定</span>')) },
       { key: 'round', label: '輪', value: f => f.round, num: true },
       { key: 'home', label: '主隊', value: f => C.name(f.home), render: f => `${star(f.home)}${C.teamCell(f.home)}` },
@@ -186,9 +189,10 @@ export function mountFixtureList({
     </div>`;
   }
 
-  function openMatch(f) {
+  async function openMatch(f) {
     const p = f.prediction;
-    const rep = reportFor(f);
+    // 報告本體點開才載(逐場檔);沒有的話下面那句「還沒到齊」照講
+    const rep = await C.loadMatchReport(reports, f);
     const full = `<a class="pill accent" href="${C.link('analysis', { id: f.id })}">${f.played ? '完整賽前／賽後對比' : '完整賽前分析'} →</a>`;
 
     C.drawer(`${C.badge(f.home)} ${C.name(f.home)} <span class="dim">vs</span> ${C.name(f.away)} ${C.badge(f.away)}`, `

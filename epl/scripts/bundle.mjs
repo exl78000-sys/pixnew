@@ -3,6 +3,7 @@
 // 用途:寄給別人、丟上任何靜態空間、或直接用瀏覽器開 —— 不需要伺服器。
 // 用法: npm run bundle  → dist/warroom.html
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { readMatchReports } from './lib/match-archive.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -111,6 +112,14 @@ async function main() {
   /* matchstats.json(4 MB)不進單檔版:沒有任何頁面直接載它 —— 單場用 reports.json 的 advanced、
      球隊頁用 teams.json 的 matchStats,它是給 Obsidian vault 與逐場查詢用的。打進去只會讓單檔版多 9 MB。 */
   const SKIP_DATASETS = new Set(['matchstats']);
+  /* 本季賽後報告 2026-09-26 起是逐場檔(`reports.json` 只剩索引)。單檔版要把**本季**的打進去,
+     鍵用 'match-reports/{季}/{id}' —— 跟分頁版 loadFrom 組出來的名字一致,漏了的話單檔版的
+     單場頁會說「還沒抓到」而分頁版明明有。往季照舊不打(一季十幾 MB,六個聯賽上百 MB)。 */
+  const addMatchReports = (dir, into) => {
+    const rr = readMatchReports(dir);
+    if (!rr) return;
+    for (const [key, body] of Object.entries(rr.reports)) into[`match-reports/${key.split('|')[0]}/${rr.index[key]}`] = body;
+  };
   const dataFiles = (await readdir(join(WEB, 'data'))).filter(f => f.endsWith('.json') && !SKIP_DATASETS.has(f.replace(/\.json$/, '')));
   const data = {};
   for (const f of dataFiles) data[f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(WEB, 'data', f), 'utf8'));
@@ -121,6 +130,7 @@ async function main() {
       data[`game/${f.replace(/\.json$/, '')}`] = JSON.parse(await readFile(join(WEB, 'data', 'game', f), 'utf8'));
     }
   } catch { /* 沒跑過 game:build 時單檔版就沒有這一頁的資料,頁面會照實講 */ }
+  addMatchReports(join(WEB, 'data'), data);
   const datasets = { pl: data };
   const leaguesDir = join(WEB, 'data', 'leagues');
   try {
@@ -133,6 +143,7 @@ async function main() {
         if (SKIP_DATASETS.has(f.replace(/\.json$/, ''))) continue;   // 各聯賽的 matchstats 一樣不進單檔版
         datasets[ent.name][f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(dir, f), 'utf8'));
       }
+      addMatchReports(dir, datasets[ent.name]);
     }
   } catch { /* 沒有額外聯賽時維持只有英超 */ }
   const meta = data.meta;

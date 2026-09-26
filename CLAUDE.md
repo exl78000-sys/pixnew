@@ -521,6 +521,13 @@ npm run build     # 產生 web/data/*.json
 npm run bundle    # 產生單檔版 dist/warroom.html
 ```
 
+**Windows 本機要先看換行。** repo 從 2026-09-26 起有 `.gitattributes`(`* text=auto eol=lf`;
+`epl/data/raw/**` 標 `-text`,原始資料要跟下載時位元組相同)。在那之前 checkout 出來的工作樹是 CRLF
+(本機 `core.autocrlf=true`),於是資產戳的內容雜湊、results.csv 的 sha256、掃原始碼文字的測試全部對不上 ——
+同一個 commit CI 綠、本機紅 16 條(2,252 條裡)。舊的工作樹要重新展開一次才會變成 LF;
+展開之後 `git status` 可能把幾百個沒改的檔標成 modified(索引記的是 CRLF 時的大小,git 看大小不同就不比內容),
+`git update-index --really-refresh` 或對那些檔 `git add` 就清掉,內容沒有變。
+
 進球事件的 `description` 子代碼目前已見過 **`G`(一般)、`P`(十二碼)、`O`(烏龍球)** ——
 `O` 已用名單核對過(踢進的人在對方名單裡)。這三種已經在單場分析頁的
 進球時間軸上顯示。**沒見過的代碼一律不給分類**,原碼留在 `kindRaw`,
@@ -548,12 +555,17 @@ Understat 進球情境、SportMonks 欄位與賽後資料轉換、西甲球隊�
 `build.mjs` 與 `build-laliga.mjs` **各呼叫一次同一個函式**,產出的 JSON 逐字元相同
 (`npm test` 有一條守著)。複製一份轉換過去的話,改了一邊另一邊會悄悄過期。
 
-**往季的賽後報告是逐場檔,不是內嵌。** `reports.json` 是**首頁與單場頁整份載**的,
-所以只內嵌本季;上一季走 `match-reports/{季}/{id}.json`(2026-09-16,六個聯賽 2,299 場、141 MB),
-索引是 `reports.archive.ids`(只有 id)。跟盃賽的 `cup-details/` 同一條路、同一個理由。
+**賽後報告是逐場檔,不是內嵌 —— 本季 2026-09-26 起也是。** `reports.json` 只剩索引:
+本季是 `index`(「季|主|客」→ 場次 id)、往季是 `archive.ids`(只有 id);本體都在
+`match-reports/{季}/{id}.json`(往季 2026-09-16,六個聯賽 2,299 場、141 MB;本季 2026-09-26),點開那一場才載。
+為什麼:量過正式站,本季整份內嵌的 `reports.json` 3.2 MB(解壓後),而首頁載它只問「這場有沒有」、
+單場頁只用其中一場。前端問索引用 `C.hasMatchReport`、載本體用 `C.loadMatchReport`(core.js);
+Node 端要本體(測試、Obsidian、單檔打包)走 `lib/match-archive.mjs` 的 `readMatchReports(dir)`,
+讀回來的形狀跟以前整份內嵌時一樣。**不要把本體塞回 `reports.json`**,`npm test` 有一條守著
+(索引不超過 64 KB、沒有 advanced / sides)。跟盃賽的 `cup-details/` 同一條路、同一個理由。
 兩件事不能忘:**逐場檔必須逐次建置位元組相同**(部署一天兩次整份重寫,有時間戳就每次塞
 2,299 個新 blob),以及**檔名用場次 id、撞鍵的不寫**(英冠的升級附加賽會讓「季|主|客」不唯一,
-挑一個 id 去命名等於把某一場的報告掛到另一場的網址上)。單檔版不打包它們,畫面要講出來。
+挑一個 id 去命名等於把某一場的報告掛到另一場的網址上)。單檔版打包**本季**的逐場檔、不打包往季的,畫面要講出來。
 
 **頁面清單有三份。** `core.js` 的 `SITE_PAGES` 與 `PAGES`,加上 `scripts/bundle.mjs`
 自己那一份。**忘了改 bundle 那份的話,新頁不會壞 —— 只會從單檔版靜靜消失**,
