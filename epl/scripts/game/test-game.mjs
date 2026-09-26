@@ -9,6 +9,7 @@ import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { teamMatchRows } from '../lib/style-trend.mjs';
+import { createMatchPool } from './lib/match-pool.mjs';
 import { loadTeams } from '../lib/teams.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -368,15 +369,41 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
     const pred = { xgHome: 1.6, xgAway: 1.1 };
     const names = { home: 'Arsenal', away: 'Liverpool' };
 
+    /* 這一節二十幾場完整模擬全部交給 worker 池並行跑(2026-09-26,D1b;lib/match-pool.mjs 檔頭講為什麼)。
+       引擎是決定性的,所以同一個 (種子, 賽前預測) 只跑一次:下面有三處原本把同一批種子再跑一遍
+       (11–13 兩次、13 一次、31–32 兩次、3 一次),現在拿到的是同一份快照。
+       先把整節要用的種子排進去 —— 前面那些不用模擬的斷言在跑的時候,worker 已經在算了。
+       **要逐格觀察的**(vmax 逐格不增那一條)不走池子,那一條自己 createSim。 */
+    const pool = createMatchPool({ root: ROOT, profile });
+    const POOL_SEEDS = [7, 11, 12, 13, 17, 18, 19, 21, 22, 23, 31, 32, 41, 42, 5];
+    pool.warm([
+      ...[1, 2, 3, 4].map(seed => ({ seed, pred })),
+      ...POOL_SEEDS.map(seed => ({ seed })),
+      { seed: 3, pred: { xgHome: 1.99, xgAway: 0.70 } },
+    ]);
+    const full = (seed, p = null) => pool.get(p ? { seed, pred: p } : { seed });
+    /* 池子的守門:worker 裡跑的必須跟主執行緒同種子同一場。主執行緒只跑前 10 分鐘(0.8 秒),
+       它的事件流要剛好是池子那一場完整事件流的**前綴** —— 引擎是決定性的,差一個事件就是
+       worker 載到別的引擎、或 over 每 60 格才查那一步改了行為(它沒有:完場後 advance 是 no-op)。 */
+    {
+      const direct = eng.createSim({ profile, home: 'ARS', away: 'LIV', pred, seed: 1 });
+      for (let i = 0; i < 10 * 60 * 60; i++) direct.advance(1 / 60);
+      const head = direct.events();
+      const whole = (await full(1, pred)).events();
+      check('worker 池跑的跟主執行緒同種子同一場(前 10 分鐘的事件流是完整賽的前綴)',
+        head.length > 0 && whole.length >= head.length
+          && JSON.stringify(whole.slice(0, head.length)) === JSON.stringify(head),
+        `前 10 分鐘 ${head.length} 個事件・整場 ${whole.length} 個・worker ${pool.size()} 個`);
+    }
+
     /* 一場跑到完場,然後照 game-view 那條路組出判讀的輸入 ——
        事件、控球串、控球秒數三樣都是畫面上會有的那一份(`renderGame` 就是這樣叫的)。 */
-    const playOne = seed => {
-      const m = eng.createSim({ profile, home: 'ARS', away: 'LIV', pred, seed });
-      for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !m.state().over; i++) m.advance(1 / 60);
+    const playOne = async seed => {
+      const m = await full(seed, pred);
       const s = m.state();
       return { m, s, input: { events: m.events(), chains: m.chains(), poss: s.possSec } };
     };
-    const runs = [1, 2, 3, 4].map(playOne);
+    const runs = await Promise.all([1, 2, 3, 4].map(playOne));
 
     /* 1. 判讀的計數要對得回引擎自己的 counts。
        「我數不出來 ≠ 上游沒有」的同一條:分母跟被比較的那一邊要是同一批。
@@ -922,9 +949,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       /* **兩種都要真的出現** —— 跑一場真的模擬來數,不是掃原始碼。
          只有一種的話,上面那兩條就是在守一個不會發生的分支。 */
       {
-        const S2 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
-        const sim2 = S2.createSim({ profile, home: 'ARS', away: 'LIV', seed: 7 });
-        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim2.state().over; i++) sim2.advance(1 / 60);
+        const sim2 = await full(7);
         const hf = sim2.state().counts.hoofFrom ?? {};
         check('一場真模擬裡兩種來源都出現(拆解不是在守一件不存在的事)',
           (hf.loose ?? 0) > 0 && (hf.teamPass ?? 0) > 0,
@@ -961,11 +986,9 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
          不是「某一場兩邊都搶到第二球」—— 階段 5n 之後種子 11 那一場防守方剛好 0 次
          (一場平均兩三次,一場是 0 的機率約 6%),單場版本就紅在抽樣上(「斷言是抓樣意外」那條坑)。 */
       {
-        const S3 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
         let att3 = 0, def3 = 0, played3 = 0;
         for (const sd of [11, 12, 13]) {
-          const sim3 = S3.createSim({ profile, home: 'ARS', away: 'LIV', seed: sd });
-          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim3.state().over; i++) sim3.advance(1 / 60);
+          const sim3 = await full(sd);
           const nb = sim3.state().counts.cornerNextBins ?? {};
           const tot = k => (nb[k] ?? []).reduce((a, b) => a + b, 0);
           att3 += tot('att'); def3 += tot('def'); played3++;
@@ -1012,9 +1035,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
          只驗「大於 0」:它離錨還很遠(×0.26),把目前的值寫成紅線就是
          「把會隨資料變動的數字當 CI 紅線」,而修好它的那一天這條會紅在「補上了」。 */
       {
-        const S4 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
-        const sim4 = S4.createSim({ profile, home: 'ARS', away: 'LIV', seed: 13 });
-        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim4.state().over; i++) sim4.advance(1 / 60);
+        const sim4 = await full(13);   // 跟上面 11–13 那一批同一場,池子直接給快照
         const c4 = sim4.state().counts, ev4 = sim4.events();
         const blk = c4.blockedBy.home + c4.blockedBy.away;
         const gk4 = c4.gkStopBy.home + c4.gkStopBy.away;
@@ -1064,11 +1085,9 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           `切出來 ${seg7.length} 字元`);
       }
       {
-        const S5 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
         let binSum = 0, blk5 = 0, head = 0, headBlk = 0, shots5 = 0, blkXg = 0;
         for (const seed of [17, 18, 19]) {
-          const sim5 = S5.createSim({ profile, home: 'ARS', away: 'LIV', seed });
-          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim5.state().over; i++) sim5.advance(1 / 60);
+          const sim5 = await full(seed);
           const c5 = sim5.state().counts;
           binSum += c5.shotBlkBins.reduce((a, b) => a + b, 0);
           blk5 += c5.blockedBy.home + c5.blockedBy.away;
@@ -1117,11 +1136,9 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         /const DEFLECT_R = \(\[0-9.\]|DEFLECT_R = \(readFileSync/.test(chkBare8)
         || /match\(\/const DEFLECT_R/.test(chkBare8));
       {
-        const S6 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
         let shots = 0, ls = 0, bad = 0;
         for (const seed of [11, 12, 13]) {
-          const sim6 = S6.createSim({ profile, home: 'ARS', away: 'LIV', seed });
-          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim6.state().over; i++) sim6.advance(1 / 60);
+          const sim6 = await full(seed);   // 同一批種子,跟前面那一節共用快照
           const c6 = sim6.state().counts;
           shots += c6.shots; ls += c6.laneShots.reduce((a, b) => a + b, 0);
           for (let k = 0; k < 7; k++) if (!(c6.laneOcc[k] <= c6.laneNear[k] && c6.laneNear[k] <= c6.laneShots[k])) bad++;
@@ -1183,11 +1200,9 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('check-sim 把「4 m 內」與「撲得到的天花板」兩排都印出來',
         /laneFar/.test(chkBare9) && /laneReach/.test(chkBare9) && /撲得到/.test(chkBare9));
       {
-        const S9 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
         let bad = 0, far = 0, rch = 0, shots = 0;
         for (const seed of [21, 22, 23]) {
-          const sim9 = S9.createSim({ profile, home: 'ARS', away: 'LIV', seed });
-          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim9.state().over; i++) sim9.advance(1 / 60);
+          const sim9 = await full(seed);
           const c9 = sim9.state().counts;
           st5e.push(c9);                        // 第 23 節(5e)共用這三場,不要再跑三場
           for (let k = 0; k < 7; k++) {
@@ -1377,21 +1392,22 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
          (在 STAM_FADE = 0 下,`p.vmax = p.vmax0 * p.fatigue` 那一行在 guard 裡不會跑,
           所以只剝 `* fat` 就等於把疲勞整個拿掉。) */
       {
-        const load = async s => import('data:text/javascript;base64,' + Buffer.from(s, 'utf8').toString('base64'));
         const zeroed = simRaw.replace(/^const STAM_FADE = [0-9.]+;/m, 'const STAM_FADE = 0;');
         const stripped = zeroed.replace(' * fat,', ' * 1,');
         check('把疲勞那個乘數拿掉的對照版真的不一樣了(不然下一條在比兩份相同的程式)',
           stripped !== zeroed && zeroed !== simRaw);
-        const [A, B] = [await load(zeroed), await load(stripped)];
-        const fin = (M, seed) => {
-          const s = M.createSim({ profile, home: 'ARS', away: 'LIV', seed, pred });
-          for (let i = 0; i < Math.round(110 * 60 / STEP25) && !s.state().over; i++) s.advance(STEP25);
+        /* 兩個對照版走 worker 池(給原始碼文字,worker 從 data: URL 載),四場並行;
+           鍵是原始碼的雜湊,所以 A 與 B 一定是各自跑的,不會拿同一份快照比自己。 */
+        const [A, B] = [zeroed, stripped];
+        const fin = async (M, seed) => {
+          const s = await pool.get({ seed, pred, source: M });
           const c = s.state();
           return `${c.score[0]}-${c.score[1]}/${c.counts.shots}/${c.counts.corners.home + c.counts.corners.away}`
             + `/${c.counts.fouls.home + c.counts.fouls.away}/${c.counts.passes}`;
         };
         let same = 0; const seeds = [1, 2];
-        for (const sd of seeds) if (fin(A, sd) === fin(B, sd)) same++;
+        const [finA, finB] = await Promise.all([Promise.all(seeds.map(sd => fin(A, sd))), Promise.all(seeds.map(sd => fin(B, sd)))]);
+        for (let k = 0; k < seeds.length; k++) if (finA[k] === finB[k]) same++;
         check('STAM_FADE = 0 是恆等元(跟「整段拿掉」逐場相同)',
           same === seeds.length, `${same} / ${seeds.length} 場逐場相同`);
       }
@@ -1506,11 +1522,9 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         && simB.indexOf('const dl = laneAtDecision(') < simB.indexOf('st.decShotOcc[oppBin] += dl.occ')
         && (simB.match(/laneAtDecision\(/g) ?? []).length === 2);   // 宣告 + 唯一的呼叫點
       {
-        const S26 = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
         let bad = 0, N = 0, SN = 0, O = 0, F = 0;
         for (const seed of [31, 32]) {
-          const sim = S26.createSim({ profile, home: 'ARS', away: 'LIV', seed });
-          for (let i = 0, M = Math.round(110 * 60 * 60); i < M && !sim.state().over; i++) sim.advance(1 / 60);
+          const sim = await full(seed);
           const c = sim.state().counts;
           for (let k = 0; k < 7; k++) {
             /* 一層套一層:射門 ⊂ 決策點、0.75 m ⊂ 4 m ⊂ 決策點,而射門那一份
@@ -1608,11 +1622,9 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       /* 上下界:對齊版一定 ≥ 只數接到球那一版(它多算了踢出去);
          「出去 0.5 秒以上才算」一定 ≤ 原始的進出次數;禁區內的射門不會多過總射門。 */
       {
-        const SA = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
         let bad = 0, recv = 0, all_ = 0, ent = 0, ent2 = 0, sec = 0, sbn = 0, shots = 0;
         for (const seed of [31, 32]) {
-          const simA = SA.createSim({ profile, home: 'ARS', away: 'LIV', seed });
-          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !simA.state().over; i++) simA.advance(1 / 60);
+          const simA = await full(seed);   // 同一批種子,跟前面那一節共用快照
           const c = simA.state().counts;
           const two = o => (o?.home ?? 0) + (o?.away ?? 0);
           recv += two(c.boxTouch); all_ += two(c.boxTouchAll);
@@ -1714,11 +1726,9 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           /typeof v === 'number'/.test(chkB2) && !/\['visits', 'cand', 'near'/.test(chkB2));
       }
       {
-        const SB = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
         let bad = 0, vis = 0, cand = 0, ceil = 0, came = 0, miss = 0, whoTot = 0;
         for (const seed of [41, 42]) {
-          const simB = SB.createSim({ profile, home: 'ARS', away: 'LIV', seed });
-          for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !simB.state().over; i++) simB.advance(1 / 60);
+          const simB = await full(seed);
           const f = simB.state().counts.boxFollow ?? {};
           vis += f.visits ?? 0; cand += f.cand ?? 0; ceil += f.ceil ?? 0; came += f.came ?? 0; miss += f.missN ?? 0;
           whoTot += Object.values(simB.state().counts.boxWho ?? {}).reduce((a, b) => a + b, 0);
@@ -1965,9 +1975,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       /* **加起來要等於真的跑掉的距離。** 掃原始碼守不住這一條 —— 漏掉一整類的症狀是
          「剩下幾類的百分比看起來完全正常」,只有拿總和對一次才看得出來。 */
       {
-        const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
-        const simM = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 5 });
-        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !simM.state().over; i++) simM.advance(1 / 60);
+        const simM = await full(5);
         const run = simM.state().counts.run ?? {};
         const why = Object.values(run.why ?? {}).reduce((a, b) => a + b, 0);
         const role = Object.values(run.role ?? {}).reduce((a, b) => a + b, 0);
@@ -2050,9 +2058,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         /真實封阻 [0-9.]+%\(腳下 [0-9.]+%・頭球 [0-9.]+%/.test(chkOut) && !/腳下 —|頭球 —/.test(chkOut),
         (chkOut.match(/真實封阻 [^,]*/) ?? ['(找不到)'])[0]);
       {
-        const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
-        const sim = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 3, pred: { xgHome: 1.99, xgAway: 0.70 } });
-        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim.state().over; i++) sim.advance(1 / 60);
+        const sim = await full(3, { xgHome: 1.99, xgAway: 0.70 });
         const c = sim.state().counts, sum = a => a.reduce((x, y) => x + y, 0);
         const on = sum(c.shotCrowd?.open?.n ?? []), cn = sum(c.shotCrowd?.corner?.n ?? []);
         check('shotCrowd 跟 shotBox 同一批:兩種情境的腳數一模一樣(同一個呼叫點記的)',
@@ -2096,8 +2102,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         !!sb && JSON.stringify(SM.PRESS_BINS) === JSON.stringify(sb.bins) && sb.laneR === deflectR,
         `引擎 ${JSON.stringify(SM.PRESS_BINS)} / DEFLECT_R ${deflectR}・真值 ${JSON.stringify(sb?.bins)} / ${sb?.laneR}`);
       {
-        const sim = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 3, pred: { xgHome: 1.99, xgAway: 0.70 } });
-        for (let i = 0, N = Math.round(110 * 60 * 60); i < N && !sim.state().over; i++) sim.advance(1 / 60);
+        const sim = await full(3, { xgHome: 1.99, xgAway: 0.70 });   // 跟上面同一場,池子直接給快照
         const c = sim.state().counts, sum = a => a.reduce((x, y) => x + y, 0);
         const P = c.shotPress ?? {}, bad = [];
         for (const sit of ['open', 'corner']) {
@@ -2143,7 +2148,6 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
        每個 bug 只紅它對應的那一條。 */
     {
       const simRawN = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
-      const loadN = async s => import('data:text/javascript;base64,' + Buffer.from(s, 'utf8').toString('base64'));
       const trackRaw = (simRawN.match(/^const PRESS_TRACK = ([A-Za-z_0-9.]+);/m) ?? [])[1];
       check('PRESS_TRACK 是一個讀得出來的常數,而且現在是開的', trackRaw != null && trackRaw !== '0', `PRESS_TRACK = ${trackRaw}`);
       const zeroed = simRawN.replace(/^const PRESS_TRACK = [A-Za-z_0-9.]+;/m, 'const PRESS_TRACK = 0;');
@@ -2167,22 +2171,23 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         i0 > 0 && i1 > i0 && i2 > i1 && m0 > 0 && m1 > m0 && !/want\.tvx/.test(strippedBare) && !/if \(PRESS_TRACK > 0\) \{/.test(strippedBare)
         && stripped !== zeroed && zeroed !== simRawN,
         `剝除點 ${i0} / ${i1} / ${i2}・movePlayer ${m0} / ${m1}`);
-      const [Z, X, C] = [await loadN(zeroed), await loadN(stripped),
-        await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')))];
-      const STEPN = 1 / 60, MINS = 20;
-      const fp = (M, seed) => {
-        const s = M.createSim({ profile, home: 'ARS', away: 'LIV', seed, pred });
-        for (let i = 0; i < Math.round(MINS * 60 / STEPN) && !s.state().over; i++) s.advance(STEPN);
-        const c = s.state();
+      /* 三個版本(設成 0、整段拿掉、現行)的 20 分鐘各兩場交給 worker 池並行跑:
+         鍵含原始碼雜湊,三個版本一定各自跑;現行版給 null 就是 web/assets/js/game-sim.js 本尊。 */
+      const [Z, X, C] = [zeroed, stripped, null];
+      const MINS = 20;
+      const fp = async (M, seed) => {
+        const c = (await pool.get({ seed, pred, minutes: MINS, source: M })).state();
         const pos = c.players.reduce((a, q) => a + q.x * 3 + q.y, 0).toFixed(6);
         return `${c.score[0]}-${c.score[1]}/${c.counts.shots}/${c.counts.passes}/${c.counts.fouls.home + c.counts.fouls.away}/${pos}`;
       };
       const seedsN = [1, 2];
       let same = 0;
-      for (const sd of seedsN) if (fp(Z, sd) === fp(X, sd)) same++;
+      const [fz, fx, c1, z1] = await Promise.all([
+        Promise.all(seedsN.map(sd => fp(Z, sd))), Promise.all(seedsN.map(sd => fp(X, sd))), fp(C, 1), fp(Z, 1)]);
+      for (let k = 0; k < seedsN.length; k++) if (fz[k] === fx[k]) same++;
       check(`PRESS_TRACK = 0 是恆等元(跟「整段拿掉」逐場相同:${MINS} 分鐘的比分 / 射門 / 傳球 / 犯規 / 二十二人的位置)`,
         same === seedsN.length, `${same} / ${seedsN.length} 場相同`);
-      check('現行的版本跟 PRESS_TRACK = 0 不一樣(新那一支是活的,不是寫了沒跑)', fp(C, 1) !== fp(Z, 1));
+      check('現行的版本跟 PRESS_TRACK = 0 不一樣(新那一支是活的,不是寫了沒跑)', c1 !== z1);
       /* ③ 會動的目標只給逼搶者。先剝註解(註解裡本來就在講 tvx),再看每一個落在哪裡。
          **不數出現次數**(加一處就紅在「多了一個」),只問每一處在不在它該在的地方。 */
       const bareN = simRawN.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
