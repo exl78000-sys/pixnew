@@ -1,4 +1,4 @@
-import * as C from './core.js?v=ebd92f11';
+import * as C from './core.js?v=bd9a38a8';
 
 const app = document.getElementById('app');
 
@@ -552,7 +552,8 @@ const TOUR_ZH = {
 };
 const tourZh = t => TOUR_ZH[t] ?? t;
 // 對手的稱呼:認得的印中文名,還沒決定的(海灣盃四強的 1A)照產物的說法,其餘照上游
-const sideLabel = t => (t?.key ? zhOf(t.key) : t?.tbd ? t.label : t?.name ?? '待定');
+// 一邊叫什麼:總覽的國家隊列也用同一支(core 的 intlSideName),不在這裡再寫一份
+const sideLabel = t => C.intlSideName(t, D.teams);
 const VENUE = { H: '主', A: '客', N: '中立' };
 const outcome = ([gf, ga]) => (gf > ga ? 'W' : gf === ga ? 'D' : 'L');
 const OUT = { W: ['勝', 'win'], D: ['和', 'draw'], L: ['負', 'loss'] };

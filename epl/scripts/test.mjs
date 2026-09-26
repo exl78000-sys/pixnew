@@ -7619,8 +7619,8 @@ async function checkUpcomingPicks() {
     && /!shown\.has\(cup\.key\) \|\| present\.has\(cup\.key\)/.test(beyond)
     && /!shown\.has\('ucl'\) \|\| present\.has\('ucl'\)/.test(beyond),
     '窗外的下一批也只講勾著的(聯賽、盃賽、歐冠三段都是)');
-  ok(/picksHtml\(all, shown\)/.test(ov) && /const n = all\.filter\(u => u\.compKey === c\.key\)\.length/.test(ov)
-    && /沒勾的賽事另有/.test(ov), '格子上的場數從全部場次算(沒勾的也算),沒勾的有場次時講出來');
+  ok(/picksHtml\(all, shown\)/.test(ov) && /const count = key => all\.filter\(u => u\.compKey === key\)\.length/.test(ov)
+    && /const n = count\(c\.key\)/.test(ov) && /沒勾的賽事另有/.test(ov), '格子上的場數從全部場次算(沒勾的也算),沒勾的有場次時講出來');
   ok(/沒有勾選任何賽事/.test(ov) && /picksSaved = C\.writeCompPicks\(picks\)/.test(ov) && /存不起來/.test(ov),
     '全部取消時講「沒有勾選任何賽事」;存不起來(無痕視窗)時講出來');
   /* 單檔版換頁不會換掉 #app,掛在它上面的監聽每回到總覽一次就多一份 —— 所以掛在元素的屬性上 */
@@ -7630,6 +7630,43 @@ async function checkUpcomingPicks() {
   ok(/overlaid\.add\(lg\)/.test(ov) && /!overlaid\.has\(x\.lg\)/.test(ov) && /overlayLeagueLive\(late\)/.test(ov)
     && /async \(list = leagues\.filter\(x => shownNow\(\)\.has\(x\.lg\)\)\)/.test(ov),
     '即時比分只抓勾著的聯賽,之後才勾的補抓一次');
+
+  /* 五、國家隊(2026-09-26,使用者:「國家隊也加進勾選」)。一格一個賽事家族,前面一格一次勾整組;
+     名字走國家隊頁同一支 —— 各寫一份的話,「還沒決定的參與者」那種形狀改了一邊另一邊會悄悄過期。 */
+  const teams = { Japan: { zh: '日本' } };
+  ok(V.intlSideName({ key: 'Japan' }, teams) === '日本' && V.intlSideName({ key: 'Wales' }, teams) === 'Wales'
+    && V.intlSideName({ name: '1A', key: null, tbd: true, label: 'A 組第 1 名' }, teams) === 'A 組第 1 名'
+    && V.intlSideName({ name: 'Tahiti', key: null }, teams) === 'Tahiti' && V.intlSideName(null, teams) === '待定',
+    'intlSideName:認得的印中文、字典裡沒有的印 key、還沒決定的印產物的說法、對不上的照印上游、沒有就是「待定」');
+  const intlSrc = strip(src('page-intl.js'));
+  ok(/const sideLabel = t => C\.intlSideName\(t, D\.teams\)/.test(intlSrc) && !/t\?\.tbd \? t\.label/.test(intlSrc),
+    '國家隊頁的 sideLabel 走 core 那一支,沒有自己再寫一份');
+  ok(/C\.intlSideName\(f\.home, intl\.teams\)/.test(ov) && /C\.intlSideName\(f\.away, intl\.teams\)/.test(ov),
+    '總覽的國家隊列也走 core 那一支');
+  ok(/const intlFams = \(intl\?\.families \?\? \[\]\)\.filter\(/.test(ov)
+    && /intlFams\.map\(fam => \(\{ key: `intl:\$\{fam\.key\}`, label: fam\.zh, text: `國家隊・\$\{fam\.zh\}`, on: false, group: 'intl' \}\)\)/.test(ov),
+    '國家隊一格一個家族(從產物的 families 長出來、有未賽場次才列),預設不勾');
+  ok(/const intlOpen = f => f\.state !== 'CANCELLED'/.test(ov) && /if \(!intlOpen\(f\) \|\| !inWindow\(f\.kickoff\)\) continue;/.test(ov)
+    && /compKey: `intl:\$\{fam\}`/.test(ov) && /pending: false, live: null, link: C\.link\('intl'\)/.test(ov),
+    '國家隊的列:取消的不列、不印比分(一天兩次的快照不是即時)、點下去開國家隊頁');
+  /* 整組那一格**不另外存**:另外存的話會有「整組勾著而底下全沒勾」這種自己跟自己矛盾的組合 */
+  ok(/g\.onchange = \(\) => setPicks\(\{ \.\.\.picks,\s*\.\.\.Object\.fromEntries\(upcomingComps\.filter\(c => c\.group === 'intl'\)\.map\(c => \[c\.key, g\.checked\]\)\) \}\)/.test(ov)
+    && /g\.indeterminate = g\.dataset\.some === '1'/.test(ov) && !/\[?['"`]intl['"`]\]?\s*:\s*(true|false|g\.checked)/.test(ov),
+    '「國家隊」那一格一次勾整組、半勾從家族算出來,自己不存一個鍵');
+  // 'intl-flags' 整份只出現兩次(載入那一行與取值那一行,都在 ensureFlags 裡);多一次就是有人在開頁時先載了
+  ok(/ensureFlags\(shown\);/.test(ov) && /C\.loadFrom\('pl', \['intl-flags'\]\)/.test(ov)
+    && (ov.match(/'intl-flags'/g) ?? []).length === 2,
+    '國旗(187 KB)有人勾了國家隊才載,不是每個打開總覽的人都下載');
+  const beyondIntl = ov.slice(ov.indexOf('const beyondOf = (present, shown) =>'), ov.indexOf('const picksHtml'));
+  ok(/for \(const fam of intlFams\)/.test(beyondIntl) && /if \(!shown\.has\(k\) \|\| present\.has\(k\)\) continue;/.test(beyondIntl),
+    '窗外的下一批也講勾著的國家隊家族');
+
+  /* 六、表依時間排,不依字串排。英超、盃賽與歐冠寫 `…Z`,另外五個聯賽寫 `…+02:00`,國家隊寫 `….000Z` ——
+     字典序只在同一種寫法裡成立。之前比字串,10/10 13:00Z 的義甲排在 14:00Z 的英超後面(截圖上看得到)。 */
+  ok(/return rows\.sort\(\(a, b\) => Date\.parse\(a\.kick\) - Date\.parse\(b\.kick\)\);/.test(ov)
+    && /key: 'kick', label: '開球\(台北\)', value: u => Date\.parse\(u\.kick\)/.test(ov)
+    && !/a\.kick < b\.kick/.test(ov.slice(ov.indexOf('const buildUpcoming'), ov.indexOf('const beyondOf'))),
+    '即將到來依開球「時間」排(列的順序與表頭排序都是),不比字串');
   return fail;
 }
 

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=ebd92f11';
+import * as C from './core.js?v=bd9a38a8';
 
 const app = document.getElementById('app');
 
@@ -148,12 +148,24 @@ try {
      以前是寫死的排除、讀者沒有辦法看到;現在是預設,想看的人勾起來就有。
      用集合不用「是不是某一個」的二元式。 */
   const UPCOMING_DEFAULT_OFF = new Set(['en2']);
+  /* 國家隊(2026-09-26,使用者:「國家隊也加進勾選」)。一格一個**賽事家族**(歐國聯 / 中北美國聯 /
+     非洲盃資格賽 / 海灣盃 / 友誼賽)—— 跟國家隊頁的篩選同一套分法;前面一格「國家隊」一次勾整組,
+     它勾不勾是從家族算出來的,不另外存。
+     **預設不勾**:國際賽週一週一百多場(9/26 起 7 天 160 場),預設勾著的話總覽就變成國家隊的賽程表 ——
+     這張表原本沒有國家隊,讀者勾了才有。有未賽場次的家族才列(海灣盃踢完之後給它一格是「按鈕在但點了沒東西」)。 */
+  const intlComps = new Map((intl?.comps ?? []).map(c => [c.key, c]));
+  const intlFamOf = key => intlComps.get(key)?.family ?? null;
+  const intlOpen = f => f.state !== 'CANCELLED' && !!f.kickoff;
+  const intlFams = (intl?.families ?? []).filter(fam => (intl.fixtures ?? []).some(f => intlOpen(f)
+    && intlFamOf(f.comp) === fam.key && Date.parse(f.kickoff) >= Date.now() - 2 * 3600000));
   const upcomingComps = [
     ...leagues.map(({ lg }) => ({ key: lg, label: C.LEAGUES[lg].zh, on: !UPCOMING_DEFAULT_OFF.has(lg) })),
     ...((shared.ucl?.seasons ?? []).some(s => s.current) ? [{ key: 'ucl', label: '歐冠', on: true }] : []),
     ...cupList.filter(c => (c.seasons ?? []).some(s => s.current))
       .map(c => ({ key: c.key, label: c.zh ?? c.en, on: true })),
+    ...intlFams.map(fam => ({ key: `intl:${fam.key}`, label: fam.zh, text: `國家隊・${fam.zh}`, on: false, group: 'intl' })),
   ];
+  const compText = c => c.text ?? c.label;   // 句子裡用的名字(「友誼賽」單獨出現分不出是誰的友誼賽)
   let picks = C.readCompPicks();
   let picksSaved = true;       // 上一次寫進瀏覽器有沒有成功(無痕視窗會失敗,要講)
   const shownNow = () => C.shownComps(upcomingComps, picks);
@@ -234,7 +246,21 @@ try {
         note: uclNote(m, uclSeason), pending: false,
         link: m.id != null ? C.link('ucl-match', { id: m.id }) : C.link('cups', { cup: 'ucl' }) });
     }
-    return rows.sort((a, b) => (a.kick < b.kick ? -1 : 1));
+    /* 國家隊。名字與「還沒決定的參與者」走國家隊頁同一支(C.intlSideName);國旗是另一份產物,
+       有人勾了國家隊才載(ensureFlags),載到之前只印名字。**不印比分**:國家隊沒有即時路徑(一天兩次),
+       產物裡的 LIVE 是半天前的快照,拿它說「進行中」就是假話 —— 開賽了倒數那一格會自己講。 */
+    for (const f of intl?.fixtures ?? []) {
+      if (!intlOpen(f) || !inWindow(f.kickoff)) continue;
+      const fam = intlFamOf(f.comp);
+      if (!fam) continue;
+      rows.push({ kick: f.kickoff, comp: intlComps.get(f.comp)?.short ?? f.comp, compKey: `intl:${fam}`,
+        home: C.intlSideName(f.home, intl.teams), away: C.intlSideName(f.away, intl.teams),
+        hFlag: intlFlags?.[f.home?.key] ?? null, aFlag: intlFlags?.[f.away?.key] ?? null,
+        note: [f.roundZh, f.groupZh].filter(Boolean).join('・'), pending: false, live: null, link: C.link('intl') });
+    }
+    /* **依時間排,不依字串排**:英超、盃賽與歐冠寫 `…Z`,另外五個聯賽寫 `…+02:00`,國家隊寫 `….000Z` ——
+       字典序只在同一種寫法裡成立。之前這一行比字串,10/10 13:00Z 的義甲排在 14:00Z 的英超後面。 */
+    return rows.sort((a, b) => Date.parse(a.kick) - Date.parse(b.kick));
   };
 
   /* 窗外的下一批:窗裡沒有那個賽事時,讀者會以為它沒接上 —— 所以用一行摘要講
@@ -292,21 +318,41 @@ try {
       const f = uclFuture[0];
       out.push(`歐冠 ${uclNote(f, uclSeason)}:${C.dateFull(f.kickoff.slice(0, 10))} 起(本站球隊 ${uclFuture.length} 場)`);
     }
+    // 國家隊:勾著的家族在窗裡一場都沒有時,講下一批幾號起(跟盃賽同一個寫法)
+    for (const fam of intlFams) {
+      const k = `intl:${fam.key}`;
+      if (!shown.has(k) || present.has(k)) continue;
+      const future = (intl?.fixtures ?? []).filter(f => intlOpen(f) && intlFamOf(f.comp) === fam.key && Date.parse(f.kickoff) > end);
+      if (!future.length) continue;
+      const first = future.reduce((a, b) => (Date.parse(a.kickoff) <= Date.parse(b.kickoff) ? a : b));
+      out.push(`國家隊・${fam.zh}:${C.dateFull(first.kickoff.slice(0, 10))} 起(${future.length} 場)`);
+    }
     return out;
   };
 
   /* 勾選列。每一格帶**未來 7 天的場數,沒勾的也算** —— 取消勾選的賽事從表上消失之後,
      讀者要看得出它裡面還有幾場,不然「這 7 天沒有比賽」跟「被我關掉了」長得一模一樣。
      用真的 checkbox(鍵盤與讀屏都認得),外面包 label 讓整格都點得到。 */
-  const picksHtml = (all, shown) => `<div class="comp-picks" role="group" aria-label="即將到來要列哪些賽事">
-    ${upcomingComps.map(c => {
-      const n = all.filter(u => u.compKey === c.key).length, on = shown.has(c.key);
-      return `<label class="comp-pick${on ? ' on' : ''}" title="${C.esc(c.label)}:未來 7 天 ${n} 場"><input type="checkbox" data-upcoming-comp="${
+  const picksHtml = (all, shown) => {
+    const count = key => all.filter(u => u.compKey === key).length;
+    const chip = c => {
+      const n = count(c.key), on = shown.has(c.key);
+      return `<label class="comp-pick${on ? ' on' : ''}" title="${C.esc(compText(c))}:未來 7 天 ${n} 場"><input type="checkbox" data-upcoming-comp="${
         C.esc(c.key)}"${on ? ' checked' : ''}>${C.compBadge(c.key)}<span>${C.esc(c.label)}</span><span class="n">${n}</span></label>`;
-    }).join('')}
+    };
+    /* 國家隊自己一行,最前面一格一次勾整組。那一格勾不勾是**算出來的**(全勾 / 部分 / 沒勾,部分的時候是半勾),
+       不另外存 —— 另外存的話會有「整組勾著而底下全沒勾」這種自己跟自己矛盾的組合。 */
+    const nat = upcomingComps.filter(c => c.group === 'intl');
+    const natOn = nat.filter(c => shown.has(c.key)).length;
+    const natN = nat.reduce((t, c) => t + count(c.key), 0);
+    return `<div class="comp-picks" role="group" aria-label="即將到來要列哪些賽事">
+    ${upcomingComps.filter(c => c.group !== 'intl').map(chip).join('')}
+    ${nat.length ? `<span class="comp-picks-break"></span><label class="comp-pick comp-group${natOn === nat.length ? ' on' : ''}" title="國家隊:未來 7 天 ${natN} 場(一次勾整組)"><input type="checkbox" data-upcoming-group="intl"${
+      natOn === nat.length ? ' checked' : ''}${natOn && natOn < nat.length ? ' data-some="1"' : ''}><span>國家隊</span><span class="n">${natN}</span></label>${nat.map(chip).join('')}` : ''}
     <span class="comp-picks-act"><button class="btn tiny" type="button" data-upcoming-all>全選</button><button class="btn tiny" type="button" data-upcoming-none>全不選</button></span>
     ${picksSaved ? '' : `<span class="tiny warn-text">這個瀏覽器存不起來(無痕視窗,或擋掉了網站資料)——
       勾選只在這一頁有效,重新整理會回到預設。</span>`}</div>`;
+  };
 
   // 每次 render() 重算:覆蓋(盃賽小檔、聯賽 raw feed)改的是資料,表要跟著資料重畫
   const upcomingHtml = () => { const all = buildUpcoming();
@@ -314,8 +360,9 @@ try {
     const upcoming = all.filter(u => shown.has(u.compKey));
     const beyond = beyondOf(new Set(upcoming.map(u => u.compKey)), shown);
     const partial = shown.size < upcomingComps.length;
+    ensureFlags(shown);
     const offIn = upcomingComps.filter(c => !shown.has(c.key))
-      .map(c => [c.label, all.filter(u => u.compKey === c.key).length]).filter(([, n]) => n > 0);
+      .map(c => [compText(c), all.filter(u => u.compKey === c.key).length]).filter(([, n]) => n > 0);
     const offLine = offIn.length
       ? `沒勾的賽事另有 ${offIn.reduce((t, [, n]) => t + n, 0)} 場(${offIn.map(([l, n]) => `${C.esc(l)} ${n}`).join('、')})。` : '';
     return `
@@ -324,7 +371,8 @@ try {
   ${upcomingComps.length && !shown.size ? `<div class="note"><b>沒有勾選任何賽事。</b>按上面的「全選」,或勾你要看的那幾個${
       all.length ? `(這 7 天一共 ${all.length} 場)` : ''}。</div>`
   : upcoming.length ? `<div class="card">${C.table(upcoming, [
-    { key: 'kick', label: '開球(台北)', value: u => u.kick,
+    // 排序值是時間不是字串(三種寫法混著,字典序會排錯 —— 見 buildUpcoming 最後那一行)
+    { key: 'kick', label: '開球(台北)', value: u => Date.parse(u.kick),
       render: u => (u.pending
         ? `<span class="small">${C.dateFull(u.kick.slice(0, 10))} <span class="dim">・時間待定</span></span>`
         : `<span class="small">${C.kickoffLocal(u.kick)}</span>`) },
@@ -344,8 +392,10 @@ try {
     { key: 'match', label: '對戰', value: u => u.home, left: true,
       render: u => {
         const img = c => (c ? `<img class="crest" src="${c}" loading="lazy" width="20" height="20" style="vertical-align:middle">` : '');
-        const body = `<span style="display:inline-flex;align-items:center;gap:6px">${img(u.hCrest)}<span>${C.esc(u.home)}</span>
-          <span class="dim">vs</span> <span>${C.esc(u.away)}</span>${img(u.aCrest)}</span>`;
+        // 國家隊是國旗(國家隊頁同一個樣式;旁邊就是隊名,所以 alt 是空的)
+        const flag = f => (f ? `<img class="intl-flag" src="${f}" alt="" width="20" height="15">` : '');
+        const body = `<span style="display:inline-flex;align-items:center;gap:6px">${img(u.hCrest)}${flag(u.hFlag)}<span>${C.esc(u.home)}</span>
+          <span class="dim">vs</span> <span>${C.esc(u.away)}</span>${flag(u.aFlag)}${img(u.aCrest)}</span>`;
         return u.link ? `<a href="${u.link}" style="color:inherit;text-decoration:none">${body}</a>` : body;
       } },
     { key: 'note', label: '輪次', value: u => u.note, sortable: false,
@@ -357,7 +407,8 @@ try {
        而單場頁是賽後報告,還沒踢的場次點進去沒有東西可看。 */
     onRow: u => { if (u.link) location.href = u.link; } })}
   <div class="tiny dim" style="margin-top:8px">${beyond.length ? `窗外的下一批:${beyond.map(C.esc).join(';')}。` : ''}${offLine}
-    聯賽場次點對戰直接進賽前分析,歐冠場次進歐冠單場頁(賽前對比、勝率與賽後報告都在那一頁);盃賽場次開盃賽頁的對應分頁。
+    聯賽場次點對戰直接進賽前分析,歐冠場次進歐冠單場頁(賽前對比、勝率與賽後報告都在那一頁);盃賽場次開盃賽頁的對應分頁。${
+      upcoming.some(u => u.compKey.startsWith('intl:')) ? '國家隊場次開國家隊頁(勝率在那一頁);國家隊一天只更新兩次,沒有即時比分,開賽之後這裡不印比分。' : ''}
     只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
   : `<div class="note"><b>${partial ? '勾選的賽事' : ''}未來 7 天沒有已排定的比賽。</b>${offLine}${beyond.length
       ? `${partial ? '' : '本站涵蓋的賽事'}接下來是 —— ${beyond.map(C.esc).join(';')}。`
@@ -385,6 +436,7 @@ try {
      事件掛在元素的 onchange / onclick 上,**不在 #app 上 addEventListener** ——
      單檔版換頁不會換掉 #app,掛在它上面的監聽每回到總覽一次就多一份。 */
   const focusSel = el => (el?.dataset?.upcomingComp != null ? `[data-upcoming-comp="${el.dataset.upcomingComp}"]`
+    : el?.dataset?.upcomingGroup != null ? `[data-upcoming-group="${el.dataset.upcomingGroup}"]`
     : el?.hasAttribute?.('data-upcoming-all') ? '[data-upcoming-all]'
       : el?.hasAttribute?.('data-upcoming-none') ? '[data-upcoming-none]' : null);
   const bindUpcoming = () => {
@@ -397,6 +449,24 @@ try {
       const b = box.querySelector(sel);
       if (b) b.onclick = () => setPicks(Object.fromEntries(upcomingComps.map(c => [c.key, on])));
     }
+    // 「國家隊」那一格:半勾是 DOM 屬性(HTML 寫不出來),畫完才設;按下去整組跟著它
+    const g = box.querySelector('[data-upcoming-group="intl"]');
+    if (g) {
+      g.indeterminate = g.dataset.some === '1';
+      g.onchange = () => setPicks({ ...picks,
+        ...Object.fromEntries(upcomingComps.filter(c => c.group === 'intl').map(c => [c.key, g.checked])) });
+    }
+  };
+  /* 國旗是另一份產物(intl-flags.json,187 KB),**有人勾了國家隊才載** —— 大部分時候這張表沒有國家隊,
+     沒有理由讓每個打開總覽的人都多下載它。載到之前只印隊名;載不到(英超目錄的 404 會拋錯)就一直只印隊名。 */
+  let intlFlags = null;
+  let flagsPending = false;
+  const ensureFlags = shown => {
+    if (intlFlags || flagsPending || ![...shown].some(k => k.startsWith('intl:'))) return;
+    flagsPending = true;
+    C.loadFrom('pl', ['intl-flags']).then(({ data }) => { intlFlags = data['intl-flags']?.flags ?? {}; })
+      .catch(() => { intlFlags = {}; })
+      .then(() => drawUpcoming());
   };
   const drawUpcoming = () => {
     const box = document.getElementById('upcoming');
