@@ -1,4 +1,4 @@
-import * as C from './core.js?v=712282cc';
+import * as C from './core.js?v=ebd92f11';
 import { followedIn, followStar, bindFollowStars } from './follow.js?v=02130043';
 
 /* ── 本季預測積分榜(共用模組) ─────────────────────────

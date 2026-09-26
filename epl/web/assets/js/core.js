@@ -482,6 +482,47 @@ export function compBadge(key, { label = null, size = '' } = {}) {
   const text = label === true ? c.zh : label;
   return text ? `<span class="comp-cell">${mark}<span>${esc(text)}</span></span>` : mark;
 }
+
+/* 總覽「即將到來」勾選哪些賽事(2026-09-26,使用者:「總攬可以勾選要看到即將到來的賽事類別 例如 英超 歐冠」)。
+
+   **存的是讀者改過的那幾格(`{ 賽事鍵: true / false }`),不是「要顯示的」整份清單。**
+   存整份的話,以後多一個賽事(足總盃 2026-27 上游還沒發布、下一個聯賽),存過選擇的人
+   永遠看不到它:它不在清單裡就等於沒勾,而那一格會安靜地空著 —— 本站記過好幾次的
+   「手寫清單靜靜漏掉新成員」,只是這一次清單在讀者的瀏覽器裡、我們改不到。
+   只存改過的,新賽事就照它自己的預設。
+
+   這個鍵存在讀者的瀏覽器裡,**發布之後就是契約**(「我的預測」那條坑):要改格式只能用加的。
+   localStorage 在無痕視窗與擋掉網站資料時會直接拋例外,讀不到當成沒改過、寫不進去回 false,
+   畫面要講出「存不起來」(關注球隊那一套)。 */
+export const UPCOMING_PICKS_KEY = 'warroom:upcoming-comps:v1';
+
+/* 只收布林值:壞掉的 JSON、舊形狀、字串 'false' 這種一律當成沒改過 ——
+   'false' 是真值,照收的話讀者取消勾選的那一格會被當成勾著。 */
+export function parseCompPicks(raw) {
+  try {
+    const obj = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    const picks = obj && typeof obj === 'object' && !Array.isArray(obj) ? obj.picks : null;
+    if (!picks || typeof picks !== 'object' || Array.isArray(picks)) return {};
+    return Object.fromEntries(Object.entries(picks).filter(([, v]) => typeof v === 'boolean'));
+  } catch { return {}; }
+}
+export function readCompPicks() {
+  try { return parseCompPicks(localStorage.getItem(UPCOMING_PICKS_KEY)); } catch { return {}; }
+}
+export function writeCompPicks(picks) {
+  try {
+    localStorage.setItem(UPCOMING_PICKS_KEY, JSON.stringify({ v: 1, picks, updatedAt: new Date().toISOString() }));
+    return true;
+  } catch { return false; }
+}
+/* 要顯示的賽事鍵。`comps` 是 [{ key, on }](on = 沒改過時勾不勾,沒寫就是勾);
+   讀者改過的照讀者。存著的鍵裡**不在 comps 的不理、也不刪** —— 那個賽事這一季不在
+   (足總盃本季還沒發布),等它回來時讀者的選擇還在。 */
+export function shownComps(comps, picks = {}) {
+  return new Set((comps ?? [])
+    .filter(c => (typeof picks?.[c.key] === 'boolean' ? picks[c.key] : c.on !== false))
+    .map(c => c.key));
+}
 export function badge(code, size = '') {
   const t = team(code);
   // 有隊徽就用隊徽(已內嵌為 data URI);沒有才退回配色方塊
