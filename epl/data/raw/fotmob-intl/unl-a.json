@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-27T03:33:11.347Z",
+ "retrievedAt": "2026-09-27T16:35:59.339Z",
  "matches": [
   {
    "id": "5181825",
@@ -218,7 +218,7 @@
     "shortName": "Wales",
     "fmId": "5790"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -239,7 +239,7 @@
     "shortName": "Netherlands",
     "fmId": "6708"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1162,9 +1162,23 @@
    ],
    "rows": [
     {
+     "fmId": "6708",
+     "name": "Netherlands",
+     "idx": 1,
+     "played": 2,
+     "wins": 1,
+     "draws": 1,
+     "losses": 0,
+     "gf": 2,
+     "ga": 1,
+     "pts": 4,
+     "deduction": null,
+     "live": null
+    },
+    {
      "fmId": "6383",
      "name": "Greece",
-     "idx": 1,
+     "idx": 2,
      "played": 1,
      "wins": 1,
      "draws": 0,
@@ -1178,20 +1192,6 @@
     {
      "fmId": "8570",
      "name": "Germany",
-     "idx": 2,
-     "played": 1,
-     "wins": 0,
-     "draws": 1,
-     "losses": 0,
-     "gf": 1,
-     "ga": 1,
-     "pts": 1,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "6708",
-     "name": "Netherlands",
      "idx": 3,
      "played": 1,
      "wins": 0,
@@ -1207,12 +1207,12 @@
      "fmId": "8205",
      "name": "Serbia",
      "idx": 4,
-     "played": 1,
+     "played": 2,
      "wins": 0,
      "draws": 0,
-     "losses": 1,
+     "losses": 2,
      "gf": 1,
-     "ga": 2,
+     "ga": 3,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -1365,29 +1365,29 @@
      "fmId": "8238",
      "name": "Denmark",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 2,
      "ga": 3,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181863"
     },
     {
      "fmId": "5790",
      "name": "Wales",
      "idx": 4,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 0,
      "ga": 1,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181863"
     }
    ]
   }

@@ -16,7 +16,7 @@
   "2012/2013",
   "2010/2011"
  ],
- "retrievedAt": "2026-09-27T03:33:17.726Z",
+ "retrievedAt": "2026-09-27T16:36:04.965Z",
  "matches": [
   {
    "id": "5224974",
@@ -949,14 +949,14 @@
    "id": "6040346",
    "kickoff": "2026-09-28T19:00:00Z",
    "home": {
-    "name": "Botswana",
-    "shortName": "Botswana",
-    "fmId": "5887"
-   },
-   "away": {
     "name": "Tunisia",
     "shortName": "Tunisia",
     "fmId": "6719"
+   },
+   "away": {
+    "name": "Botswana",
+    "shortName": "Botswana",
+    "fmId": "5887"
    },
    "state": "NS",
    "final": null,
@@ -2920,6 +2920,27 @@
    "group": "I"
   },
   {
+   "id": "6040355",
+   "kickoff": "2027-03-28T16:00:00Z",
+   "home": {
+    "name": "Botswana",
+    "shortName": "Botswana",
+    "fmId": "5887"
+   },
+   "away": {
+    "name": "Tunisia",
+    "shortName": "Tunisia",
+    "fmId": "6719"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": "6",
+   "group": "H"
+  },
+  {
    "id": "6040283",
    "kickoff": "2027-03-28T16:00:00Z",
    "home": {
@@ -3380,27 +3401,6 @@
    "awarded": false,
    "round": "6",
    "group": "I"
-  },
-  {
-   "id": "6040355",
-   "kickoff": "2027-03-28T16:00:00Z",
-   "home": {
-    "name": "Tunisia",
-    "shortName": "Tunisia",
-    "fmId": "6719"
-   },
-   "away": {
-    "name": "Botswana",
-    "shortName": "Botswana",
-    "fmId": "5887"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": "6",
-   "group": "H"
   }
  ],
  "groups": [

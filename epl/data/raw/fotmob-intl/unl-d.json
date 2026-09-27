@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-27T03:33:15.243Z",
+ "retrievedAt": "2026-09-27T16:36:02.595Z",
  "matches": [
   {
    "id": "5181874",
@@ -74,10 +74,13 @@
     "shortName": "Azerbaijan",
     "fmId": "8566"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "2"
@@ -95,7 +98,7 @@
     "shortName": "Andorra",
     "fmId": "10045"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -311,29 +314,29 @@
      "fmId": "507764",
      "name": "Gibraltar",
      "idx": 2,
-     "played": 0,
+     "played": 1,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
      "gf": 0,
      "ga": 0,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181875"
     },
     {
      "fmId": "10045",
      "name": "Andorra",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 1,
      "ga": 2,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181875"
     }
    ]
   },
@@ -361,13 +364,13 @@
      "fmId": "8254",
      "name": "Lithuania",
      "idx": 1,
-     "played": 1,
+     "played": 2,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 2,
-     "ga": 0,
-     "pts": 3,
+     "gf": 3,
+     "ga": 1,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
@@ -375,13 +378,13 @@
      "fmId": "8566",
      "name": "Azerbaijan",
      "idx": 2,
-     "played": 0,
+     "played": 1,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 0,
+     "gf": 1,
+     "ga": 1,
+     "pts": 1,
      "deduction": null,
      "live": null
     },
