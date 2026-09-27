@@ -596,6 +596,11 @@ Node 端要本體(測試、Obsidian、單檔打包)走 `lib/match-archive.mjs` �
 球員也一樣(2026-09-27,A6):**全站讀 `players-list.json`**(`lib/players-list.mjs`,三種形狀照球員頁的三個渲染器;球隊頁、單場頁、實時頁、
 球員搜尋都讀它),整份 `players.json` 只在球員頁 ?code= 詳情與對比模式 `loadFrom` —— `npm test` 守著「清單裡名字剛好是 'players' 的只准在
 page-players.js」。要在哪一頁多用一個球員欄位,先去 players-list.mjs 加那個欄位,不要回頭載整份。`players-core.json` 是跨聯賽搜尋的另一個契約,兩份不要混。
+
+**官方逐場資料是索引 + 逐場檔(2026-09-27 起)。** `official.json` 只有索引與 managers,本體在 `official/{HOME}-{AWAY}.json`
+(`lib/official-files.mjs`);Node 端要讀先發或時間軸一律走 `readOfficialMatches(dir)`,不要自己讀 official.json 找 timeline —— 那裡已經沒有了。
+單場頁讀 `live-lite.json`(沒有 advanced)與 overview 的名冊;實時頁的報告抽屜才讀整份 live。依 league 的預載只給那一頁真的載的那幾份
+(`preloadDatasetsFor`),頁面改了主清單,預載會自己跟著變。
 總覽的 HTML 預載是依頁面的(`stamp-assets` 的 `preloadScriptFor`):它不依 league,預載六份 overview.json 與跨聯賽摘要,不預載 teams.json。
 
 **幾百列的長表用 `C.table` 的 `pageSize`(2026-09-27 起,球員列表掛 100):** 排序照整份排、只畫前 N 列,下方有「再顯示 / 全部顯示」;

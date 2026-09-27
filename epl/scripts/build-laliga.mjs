@@ -42,6 +42,7 @@ import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
 import { playersListFrom } from './lib/players-list.mjs';
+import { writeOfficialFiles } from './lib/official-files.mjs';
 import { recordFor } from './lib/coaches.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
 import { percentile, round } from './lib/util.mjs';
@@ -1568,14 +1569,19 @@ async function main() {
     if (calib.matches) console.log(`  即時校準:${calib.matches} 場完賽・${calib.points} 個時點(${calib.verdict === 'ok' ? '樣本足夠' : `樣本不足,門檻 ${calib.minMatches} 場`})`);
   }
   await write('shapes', shapes);
-  await write('official', {
+  // 官方逐場本體一場一檔(2026-09-27,跟英超同一條路;理由在 lib/official-files.mjs)
+  const offFiles = writeOfficialFiles({ outDir: OUT, img: IMG, official: {
     available: officialLineupCount > 0 || reportCount > 0,
     season: CURRENT_SEASON,
     source: officialLineupCount > 0 ? [...new Set(Object.values(officialMatches).map(x => x.source))].join(' + ') : (reportCount ? 'api-football' : null),
     sources: [...new Set(Object.values(officialMatches).map(x => x.source))],
     matches: officialMatches,
-  });
+  } });
+  console.log(`  ✓ official/ 逐場本體 ${offFiles.bodies} 場${offFiles.pruned ? `(清掉舊檔 ${offFiles.pruned})` : ''}`);
+  await write('official', offFiles.index);
   await write('live', liveOut);
+  // 單場頁讀的瘦版(2026-09-27):去掉每場 41 KB 的 advanced(那是實時頁報告抽屜用的),sides 留著(先發與場上數據)
+  await write('live-lite', { ...liveOut, matches: (liveOut.matches ?? []).map(({ advanced, ...rest }) => rest) });
   await write('overview', overviewFrom(written));   // 總覽頁的摘要(2026-09-26,A4),理由在 lib/overview.mjs
 
   const crestHits = teams.filter(t => t.crest).length;

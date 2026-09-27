@@ -61,6 +61,7 @@ import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
 import { playersListFrom } from './lib/players-list.mjs';
+import { writeOfficialFiles } from './lib/official-files.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
@@ -1221,10 +1222,15 @@ async function main() {
   }
   await write('lineups.json', lineups);
 
-  await write('official.json', offLineups
+  /* 官方逐場本體一場一檔(2026-09-27,單場頁的摘要;理由在 lib/official-files.mjs):official.json 只剩索引 + managers,
+     本體在 web/data/official/{HOME}-{AWAY}.json,單場頁只載那一場的。 */
+  const officialOut = offLineups
     ? { available: true, asOf: offLineups.asOf, season: offLineups.season, matches: offLineups.matches,
         managers: offManagers?.managers ?? {}, managersAsOf: offManagers?.asOf ?? null }
-    : { available: false, matches: {}, managers: {} });
+    : { available: false, matches: {}, managers: {} };
+  const offFiles = writeOfficialFiles({ outDir: OUT, official: officialOut, img: IMG });
+  console.log(`  ✓ official/ 逐場本體 ${offFiles.bodies} 場${offFiles.pruned ? `(清掉舊檔 ${offFiles.pruned})` : ''}`);
+  await write('official.json', offFiles.index);
   /* 英格蘭盃賽(足總盃 / 聯賽盃)。來源與聯賽完全不同(FotMob 的盃賽端點;SportMonks 2026-09-03 退訂,
      那份快取留在 data/raw/sportmonks-cups 當獨立來源核對用),
      所以**獨立一份產物、獨立一頁**,不混進 fixtures.json ——
@@ -1527,6 +1533,8 @@ async function main() {
     console.log(`  即時勝率時間曲線:${INPLAY_CURVE ? '使用中' : t ? `未使用(${t.validation?.reason ?? '沒有驗收結果'})` : '沒有 data/inplay-tuning.json(npm run tune:inplay),維持線性'}`);
   }
   await write('live.json', liveOut);
+  // 單場頁讀的瘦版(2026-09-27):去掉每場 41 KB 的 advanced(那是實時頁報告抽屜用的),sides 留著(先發與場上數據)
+  await write('live-lite.json', { ...liveOut, matches: (liveOut.matches ?? []).map(({ advanced, ...rest }) => rest) });
   await write('h2h.json', h2h);
   /* 調參與驗收的完整數字(npm run tune:form 產生)。
      沒跑過就沒有 —— 前端會據實顯示「尚未驗證」而不是留白。 */
