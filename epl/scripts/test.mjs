@@ -4802,6 +4802,15 @@ async function checkDataGap() {
       const mainLoad = /C\.load\(([^)]*)\)/.exec(src)?.[1] ?? '';
       if (!/'players-list'/.test(mainLoad) || /'players'/.test(mainLoad)) bad.push('page-players.js 的主載入清單不是 players-list');
       if (!/loadFrom\(C\.league\(\), \['players'\]\)/.test(src)) bad.push('page-players.js 沒有「點到才讀整份 players」那條路');
+      /* 第二段:球隊頁、單場頁、實時頁、球員搜尋也都讀 players-list —— 整份 players 全站只剩球員頁的那一條 loadFrom。
+         掃每一支 JS 的 C.load(...) / loadFrom(..., [...]) 清單,名字剛好是 'players' 的只准出現在 page-players.js。 */
+      const jsDir2 = join(ROOT, 'web', 'assets', 'js');
+      for (const f of readdirSync(jsDir2).filter(x => x.endsWith('.js') && x !== 'page-players.js')) {
+        const s = readFileSync(join(jsDir2, f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+        for (const m of s.matchAll(/(?:C\.load|loadFrom)\(([^)]*)\)/g)) {
+          if (/'players'/.test(m[1])) bad.push(`${f} 還在整載 players.json`);
+        }
+      }
       if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
       return bad.length === 0;
     })()],

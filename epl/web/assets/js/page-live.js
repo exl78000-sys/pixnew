@@ -17,11 +17,13 @@ try {
   let live = liveInitial;
   // 即時模式(npm run live:watch)會在資料裡自報;靜態站沒有這個旗標
   const isLiveMode = () => !!live.liveMode;
-  // 球員檔約 3 MB，平常不跟即時戰況一起載入；第一次點球員才取得，之後沿用快取。
+  /* 球員檔平常不跟即時戰況一起載入;第一次開報告才取得,之後沿用快取。
+     讀的是 players-list(2026-09-27,A6 第二段):這裡只拿它對賽後報告的頭貼(code → photo),列表那一份就有;
+     球員連結本身直接進球員的完整頁(bindPlayerLinks 不用 resolvePlayer)。 */
   let playerByCodePromise = null;
   const getPlayerByCode = async () => {
     if (!playerByCodePromise) {
-      playerByCodePromise = C.load('players').then(({ players }) => new Map(players.map(p => [String(p.code), p])));
+      playerByCodePromise = C.load('players-list').then(({ 'players-list': players }) => new Map(players.map(p => [String(p.code), p])));
     }
     return playerByCodePromise;
   };

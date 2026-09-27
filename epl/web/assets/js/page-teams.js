@@ -4,8 +4,10 @@ import { followStar, bindFollowStars } from './follow.js?v=02130043';
 const app = document.getElementById('app');
 
 try {
-  const { meta, clubs, teams, players, fixtures, coaches, goals, h2h, form, table } =
-    await C.load('meta', 'clubs', 'teams', 'players', 'fixtures', 'coaches', 'goals', 'h2h', 'form', 'table');
+  /* 球員讀 players-list(2026-09-27,A6 第二段):陣容表只用每人十幾個欄位,整份 players.json(雷達、追蹤、租借…)這一頁沒有地方用。
+     形狀同名同層(FPL 的 last / current 子物件、Understat 的一人一季一列),下面的 squadRows / squadColumns 一個字沒改。 */
+  const { meta, clubs, teams, 'players-list': players, fixtures, coaches, goals, h2h, form, table } =
+    await C.load('meta', 'clubs', 'teams', 'players-list', 'fixtures', 'coaches', 'goals', 'h2h', 'form', 'table');
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
 

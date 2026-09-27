@@ -4,8 +4,10 @@ const app = document.getElementById('app');
 
 try {
   // prob-history 的鍵帶連字號,解構拿不到,所以先收整包再取
-  const data = await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form', 'prob-history', 'news');
-  const { meta, clubs, teams, fixtures, h2h, players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } = data;
+  /* 球員讀 players-list(2026-09-27,A6 第二段):這一頁只用 code / sportmonksId → 頭貼、關鍵球員的幾個數字、傷停,
+     整份 players.json(1.2 MB)沒有地方用。形狀同名同層,下面的 playerEntries / squadCard / squadHtml 一個字沒改。 */
+  const data = await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players-list', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form', 'prob-history', 'news');
+  const { meta, clubs, teams, fixtures, h2h, 'players-list': players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } = data;
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
   /* 完整版(renderMatch)吃的是英超才有的東西:FPL 球員欄位、傷停、預估先發、官方事件。

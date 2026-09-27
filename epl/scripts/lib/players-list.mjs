@@ -11,6 +11,8 @@
    players-core.json 是另一份、另一個契約(跨聯賽搜尋,六個聯賽同一個鍵集合),不動它。 */
 
 const FPL_STAT = ['minutes', 'goals', 'assists', 'ga', 'xG', 'xA', 'xGI', 'xg90', 'xa90', 'xgi90', 'shots', 'keyPasses', 'yellow', 'red'];
+// 球隊頁的陣容表另外要 defCon90(FPL 才有)
+const FPL_STAT_EXT = [...FPL_STAT, 'defCon90'];
 const US_STAT = ['games', ...FPL_STAT];
 const AGG_STAT = ['mins_played', 'goals', 'goal_assist', 'expected_goals', 'expected_assists', 'ontarget_total', 'shots_total',
   'total_att_assist', 'tackles_total', 'interceptions_total', 'yellow_card', 'red_card', 'saves_total', 'rating'];
@@ -28,20 +30,25 @@ export function playersListFrom(players, { source }) {
       stats: pick(p.stats, AGG_STAT),
     }));
   }
+  /* 球隊頁(陣容表)、單場頁(關鍵球員、傷停、頭貼對照)與實時頁也改讀這一份(2026-09-27 第二段):
+     多留 team(隊碼)、sportmonksId(西甲的賽後報告用 SportMonks 的 id 對頭貼)、transferred / lastTeam / price / news / qualified(FPL 陣容表)。 */
   if (source === 'Understat') {
     return rows.map(p => ({
       id: p.id, code: p.code ?? p.id, season: p.season ?? null, name: p.name, fullName: p.fullName ?? null,
-      teams: p.teams ?? null, teamCodes: p.teamCodes ?? null, multiTeam: !!p.multiTeam, sportmonksTeam: p.sportmonksTeam ?? null,
+      team: p.team ?? null, teams: p.teams ?? null, teamCodes: p.teamCodes ?? null, multiTeam: !!p.multiTeam,
+      sportmonksTeam: p.sportmonksTeam ?? null, sportmonksId: p.sportmonksId ?? null,
       pos: p.pos ?? null, posZh: p.posZh ?? null, age: p.age ?? null, squadNumber: p.squadNumber ?? null, photo: p.photo ?? null,
       ...pick(p, US_STAT),
     }));
   }
   if (source !== 'fpl') throw new Error(`playersListFrom:不認得的來源 ${source}(fpl / Understat / match-aggregate)`);
   return rows.map(p => ({
-    code: p.code, name: p.name, fullName: p.fullName ?? null, team: p.team ?? null, pos: p.pos ?? null, posZh: p.posZh ?? null,
-    age: p.age ?? null, squadNumber: p.squadNumber ?? null, squadNumberSource: p.squadNumberSource ?? null, photo: p.photo ?? null,
-    status: p.status ?? null, statusZh: p.statusZh ?? null, appearances: p.appearances ?? null,
-    current: p.current ? pick(p.current, FPL_STAT) : null, last: p.last ? pick(p.last, FPL_STAT) : null,
+    code: p.code, name: p.name, fullName: p.fullName ?? null, team: p.team ?? null, lastTeam: p.lastTeam ?? null,
+    transferred: !!p.transferred, pos: p.pos ?? null, posZh: p.posZh ?? null, age: p.age ?? null, price: p.price ?? null,
+    squadNumber: p.squadNumber ?? null, squadNumberSource: p.squadNumberSource ?? null, sportmonksId: p.sportmonksId ?? null,
+    photo: p.photo ?? null, status: p.status ?? null, statusZh: p.statusZh ?? null, news: p.news ?? null,
+    appearances: p.appearances ?? null, qualified: !!p.qualified,
+    current: p.current ? pick(p.current, FPL_STAT) : null, last: p.last ? pick(p.last, FPL_STAT_EXT) : null,
   }));
 }
 

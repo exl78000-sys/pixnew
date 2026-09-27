@@ -67,8 +67,9 @@ export async function renderAllPlayers(app) {
     (async () => {
       await Promise.all(pools.map(async x => {
         try {
-          const { data } = await C.loadFrom(x.lg, ['players']);
-          const list = data.players?.players ?? data.players ?? [];
+          // 頭貼路徑在 players-list 就有(2026-09-27,A6 第二段)—— 以前為了照片背景載整份 players.json,六個聯賽 5 MB
+          const { data } = await C.loadFrom(x.lg, ['players-list']);
+          const list = Array.isArray(data['players-list']) ? data['players-list'] : [];
           for (const p of list) if (p.photo && p.code != null) photoBy.set(`${x.lg}|${p.code}`, p.photo);
         } catch { /* 沒有就沒有(英冠),不擋表 */ }
       }));
