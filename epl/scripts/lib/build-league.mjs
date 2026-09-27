@@ -977,10 +977,12 @@ export async function buildLeague(L) {
     counts: { matches: 0 }, matches: {}, count: 0 });
   await write('official', { available: false, season: CURRENT_SEASON, source: null, sources: [],
     matches: {}, note: `${L.zh}還沒有接正式先發名單來源。` });
-  await write('live', { available: false, source: null, sourceLabel: null, demo: false,
+  const liveOut = { available: false, source: null, sourceLabel: null, demo: false,
     season: CURRENT_SEASON, fetchedAt: null,
     counts: { total: 0, live: 0, finished: 0, upcoming: 0, today: 0 },
-    matches: [], note: meta.live.note });
+    matches: [], note: meta.live.note };
+  await write('live', liveOut);
+  await write('live-lite', liveOut);   // 單場頁讀的瘦版(2026-09-27);這幾個聯賽沒有即時快照,兩份一樣
   /* blocked 有明確語意(整季拿不到)。德甲**不是**沒有資料源 —— 來源在,只是 raw 還沒抓,
      所以是 'not-fetched',不是 'no-source'。這兩句對讀者的意義完全不同(CLAUDE.md 一整條在講)。 */
   await write('reports', {

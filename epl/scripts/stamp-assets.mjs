@@ -51,8 +51,18 @@ export const PRELOAD_SCRIPT = `<script>(function(){var m=/[?&]league=([a-z0-9]+)
    在這一頁是白抓的 —— 正式站量到它是總覽第二大的一筆下載。這一頁的清單不依 league,所以是靜態 <link>;
    聯賽清單由呼叫端掃 web/data/leagues/ 目錄給,不手寫。 */
 export const OVERVIEW_PRELOAD_DATASETS = ['competitions', 'clubs', 'overview-shared', 'overview'];
-export function preloadScriptFor(page, leagues) {
-  if (page !== 'page-overview.js') return PRELOAD_SCRIPT;
+/* 依 league 的預載只給**那一頁真的載**的那幾份(2026-09-27):從頁面原始碼的第一個 C.load(...) 解析,
+   跟 PRELOAD_DATASETS 取交集 —— 單場頁 2026-09-27 起讀 overview 的名冊、不讀 teams.json,還一律預載 teams(385 KB)就是白抓。
+   沒給原始碼(或解析不到)就退回三份全預載。 */
+export function preloadDatasetsFor(src) {
+  const list = /C\.load\(([^)]*)\)/.exec(src ?? '')?.[1];
+  if (!list) return PRELOAD_DATASETS;
+  const loads = [...list.matchAll(/'([\w-]+)'/g)].map(m => m[1]);
+  const mine = PRELOAD_DATASETS.filter(n => loads.includes(n));
+  return mine.length ? mine : PRELOAD_DATASETS;
+}
+export function preloadScriptFor(page, leagues, src = null) {
+  if (page !== 'page-overview.js') return PRELOAD_SCRIPT.replace(JSON.stringify(PRELOAD_DATASETS), JSON.stringify(preloadDatasetsFor(src)));
   const hrefs = [...OVERVIEW_PRELOAD_DATASETS.map(n => `data/${n}.json`), ...leagues.map(lg => `data/leagues/${lg}/overview.json`)];
   return hrefs.map(h => `<link rel="preload" as="fetch" crossorigin="anonymous" href="${h}">`).join('\n');
 }
@@ -137,7 +147,7 @@ async function main() {
     out = out.replace(new RegExp(`\\n?[ \\t]*${PRELOAD_START}[\\s\\S]*?${PRELOAD_END}`), '');
     if (page) {
       const links = closureOf(page).map(dep => `<link rel="modulepreload" href="assets/js/${dep}?v=${stamped.get(dep)}">`);
-      const block = `\n${PRELOAD_START}\n${links.join('\n')}\n${preloadScriptFor(page, leagues)}\n${PRELOAD_END}`;
+      const block = `\n${PRELOAD_START}\n${links.join('\n')}\n${preloadScriptFor(page, leagues, srcs.get(page))}\n${PRELOAD_END}`;
       out = out.replace(/\n<link rel="(?:preload|stylesheet)" href="assets\//, `${block}$&`);
     }
     if (out !== before) { await writeFile(join(WEB, f), out); htmlChanged++; }

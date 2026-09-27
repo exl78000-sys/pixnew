@@ -23,6 +23,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
 const situations = () => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'understat-la-liga', '2025-26-team-situations.json'), 'utf8'));
 const out = name => JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', `${name}.json`), 'utf8'));
+import { readOfficialMatches } from './lib/official-files.mjs';
 const check = (label, ok, detail = '') => {
   console.log(`  ${ok ? '✓' : '✗'} ${label}${detail ? ` (${detail})` : ''}`);
   if (!ok) process.exitCode = 1;
@@ -31,7 +32,7 @@ const check = (label, ok, detail = '') => {
 console.log('\n▶ 西甲球隊數據第二版自我檢查');
 const last = raw('2025-26'), current = raw('2026-27');
 const understat = situations();
-const meta = out('meta'), fixtures = out('fixtures'), teams = out('teams'), official = out('official'), shapes = out('shapes');
+const meta = out('meta'), fixtures = out('fixtures'), teams = out('teams'), official = readOfficialMatches(join(ROOT, 'web', 'data', 'leagues', 'es1')), shapes = out('shapes');   // official:索引 + 逐場本體併回原形(2026-09-27)
 const players = out('players');
 
 check('只納入指定兩季', meta.lastSeason === '2025-26' && meta.currentSeason === '2026-27');

@@ -58,6 +58,7 @@ import { mergeCupSeasons } from './lib/cup-seasons.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef, IMG_DIR } from './lib/image-files.mjs';
 import { PRELOAD_SCRIPT, PRELOAD_START, PRELOAD_END, preloadScriptFor } from './stamp-assets.mjs';
+import { readOfficialMatches } from './lib/official-files.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -1266,7 +1267,7 @@ async function checkTimeline() {
   ];
 
   /* 正式資料裡出現沒見過的代碼就要紅 —— 先核對過才放行(跟進球子類型同一套規矩)。 */
-  const off = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'official.json'), 'utf8'));
+  const off = readOfficialMatches(join(ROOT, 'web', 'data'));   // 索引 + 逐場本體併回原形(2026-09-27 起本體一場一檔)
   const unknownCards = new Set(), unknownDirs = new Set();
   /* 「查不到隊伍」要分兩種,結論完全不同:
        有 person 卻查不到 → 名單或反查壞了,是本站的 bug,要紅
@@ -1825,7 +1826,7 @@ async function checkPlayerChip() {
   const offPath = join(ROOT, 'web', 'data', 'official.json');
   const plPath = join(ROOT, 'web', 'data', 'players.json');
   if (existsSync(offPath) && existsSync(plPath)) {
-    const off = JSON.parse(readFileSync(offPath, 'utf8'));
+    const off = readOfficialMatches(join(ROOT, 'web', 'data'));
     const raw = JSON.parse(readFileSync(plPath, 'utf8'));
     const codes = new Set((raw.players ?? raw).map(p => String(p.code)));
     const evCodes = Object.values(off.matches ?? {}).flatMap(m => [
@@ -2429,7 +2430,7 @@ async function checkDataGap() {
        ['page-overview.js', '\n  render();', '\n  overlayCupsLive();'],
        ['page-overview.js', '\n  render();', '\n  overlayLeagueLive()'],
        ['page-live.js', '\n  renderPage();', 'overlayLive();'],
-       ['page-analysis.js', 'renderLive(findIn(data.live), data.live?.fetchedAt);', 'overlayLive();']].every(([f, draw, overlay]) => {
+       ['page-analysis.js', 'renderLive(findIn(live), live?.fetchedAt);', 'overlayLive();']].every(([f, draw, overlay]) => {
         const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
         const a = src.indexOf(draw), b = src.indexOf(overlay);
         if (a < 0 || b < 0) { console.log(`      ${f}:找不到 ${a < 0 ? draw.trim() : overlay}`); return false; }
@@ -4770,6 +4771,47 @@ async function checkDataGap() {
       const fetches = js.filter(s => /['"`]matchstats['"`]|matchstats\.json/.test(s)).length;
       return del > 0 && up > del && back > 0 && back < del && test > 0 && test < del && fetches === 0;
     })()],
+    /* ── 單場頁的摘要(2026-09-27)──
+       官方逐場本體一場一檔(official/{HOME}-{AWAY}.json),official.json 只剩索引;單場頁不載 live、名冊改讀 overview 的 teams。
+       守:索引每一項都有 body 且本體檔在、本體併回來跟索引筆數一樣、索引裡沒有先發與時間軸(那是本體的東西);
+       overview 的 teams 帶 colors 與 elo;單場頁的主清單沒有 'live' / 'teams'、有 'overview',而且走 official/ 那條路。 */
+    ['官方逐場本體一場一檔、official.json 只剩索引;單場頁讀 live-lite(沒有 advanced)與 overview 的名冊,不載整份 live / teams', (() => {
+      const dirs = [{ key: 'pl', dir: join(ROOT, 'web', 'data') },
+        ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+          .filter(e => e.isDirectory()).map(e => ({ key: e.name, dir: join(ROOT, 'web', 'data', 'leagues', e.name) }))];
+      const bad = [];
+      for (const { key, dir } of dirs) {
+        const p = join(dir, 'official.json');
+        if (!existsSync(p)) continue;
+        const raw = readFileSync(p, 'utf8');
+        const idx = JSON.parse(raw);
+        const n = Object.keys(idx.matches ?? {}).length;
+        if (!n) continue;
+        if (/"timeline"|"xi"|"rows"/.test(raw)) bad.push(`${key}:索引裡還有先發或時間軸`);
+        const merged = readOfficialMatches(dir);
+        if (merged.missingBodies.length) bad.push(`${key}:${merged.missingBodies.length} 場的本體檔不在`);
+        const withBody = Object.values(merged.matches).filter(m => m?.home && m?.away).length;
+        if (withBody !== n) bad.push(`${key}:本體併回來 ${withBody} 場 ≠ 索引 ${n} 場`);
+        const ov = JSON.parse(readFileSync(join(dir, 'overview.json'), 'utf8'));
+        if (!(ov.teams ?? []).every(t => 'colors' in t && 'elo' in t)) bad.push(`${key}:overview 的名冊沒有 colors / elo`);
+      }
+      // live-lite:每個聯賽都有、場次數跟 live.json 一樣、沒有 advanced(sides 要在,單場頁的實際先發靠它)
+      for (const { key, dir } of dirs) {
+        const lp = join(dir, 'live-lite.json');
+        if (!existsSync(lp)) { bad.push(`${key}:沒有 live-lite.json`); continue; }
+        const liteRaw = readFileSync(lp, 'utf8');
+        const lite = JSON.parse(liteRaw), full = JSON.parse(readFileSync(join(dir, 'live.json'), 'utf8'));
+        if ((lite.matches ?? []).length !== (full.matches ?? []).length) bad.push(`${key}:live-lite ${lite.matches?.length} 場 ≠ live ${full.matches?.length}`);
+        if (/"advanced"/.test(liteRaw)) bad.push(`${key}:live-lite 還帶著 advanced`);
+        if ((full.matches ?? []).some(m => m.sides) && !(lite.matches ?? []).some(m => m.sides)) bad.push(`${key}:live-lite 少了 sides`);
+      }
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+      const mainLoad = /C\.load\(([^)]*)\)/.exec(src)?.[1] ?? '';
+      if (/'live'|'teams'/.test(mainLoad) || !/'overview'/.test(mainLoad) || !/'live-lite'/.test(mainLoad)) bad.push('page-analysis.js 的主清單還有整份 live / teams,或沒有 overview / live-lite');
+      if (!/const name = `official\/\$\{target\.home\}-\$\{target\.away\}`/.test(src)) bad.push('page-analysis.js 沒有走 official/ 逐場檔那條路');
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      return bad.length === 0;
+    })()],
     /* ── 頁面資料預算(2026-09-27,E)──
        首頁與球員頁的資料集清單**從頁面原始碼解析**(C.load(...) 的字串引數),六個聯賽各自加總解壓後的大小。
        預算都是 1.5 MB:首頁 A1 / A4 之後六個聯賽 0.6–1.25 MB;球員頁 A6(列表只讀 players-list)之後 0.6–1.25 MB
@@ -4821,7 +4863,8 @@ async function checkDataGap() {
         for (const m of src.matchAll(/C\.load\(([^)]*)\)/g)) for (const s of m[1].matchAll(/'([\w-]+)'/g)) names.add(s[1]);
         return [...names];
       };
-      const budgets = [['page-index.js', 1.5], ['page-players.js', 1.5]];
+      // 單場頁 2026-09-27 起也算(不載 live、名冊改摘要、官方本體逐場檔之後量到英超約 1.5 MB;fixtures 429 KB 仍是整份)
+      const budgets = [['page-index.js', 1.5], ['page-players.js', 1.5], ['page-analysis.js', 2.0]];
       const dirs = [['pl', join(ROOT, 'web', 'data')],
         ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true }).filter(e => e.isDirectory())
           .map(e => [e.name, join(ROOT, 'web', 'data', 'leagues', e.name)])];
@@ -4859,8 +4902,11 @@ async function checkDataGap() {
         const block = html.slice(s, e);
         // 總覽那一頁預載的是六份 overview.json 與跨聯賽摘要(靜態 link),其他頁是依 league 的那段 script
         const leagues2 = readdirSync(join(W2, 'data', 'leagues'), { withFileTypes: true }).filter(x => x.isDirectory()).map(x => x.name).sort();
-        if (!block.includes(preloadScriptFor(page, leagues2))) bad.push(`${f}:資料預載那一段不是現行版本`);
+        const pageSrc = readFileSync(join(JS2, page), 'utf8');
+        if (!block.includes(preloadScriptFor(page, leagues2, pageSrc))) bad.push(`${f}:資料預載那一段不是現行版本`);
         if (page === 'page-overview.js' && (block.includes(PRELOAD_SCRIPT) || /teams\.json/.test(block))) bad.push(`${f}:總覽不該預載目前聯賽的 teams.json`);
+        // 依 league 的那段只預載這一頁真的載的:單場頁不讀 teams.json,預載清單裡就不該有它
+        if (page === 'page-analysis.js' && /"teams"/.test(block)) bad.push(`${f}:單場頁不讀 teams.json,卻預載了它`);
         const links = new Set([...block.matchAll(/<link rel="modulepreload" href="assets\/js\/([^"]+)">/g)].map(m => m[1]));
         // 遞移引用:從頁面模組出發,把每一層 import 的 './x.js?v=…' 都收進來,每一支都要有一模一樣的 modulepreload
         const seen = new Set();

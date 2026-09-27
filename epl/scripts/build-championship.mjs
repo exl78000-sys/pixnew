@@ -943,6 +943,8 @@ async function main() {
     }
   }
   await write('live', liveOut);
+  // 單場頁讀的瘦版(2026-09-27):去掉每場 41 KB 的 advanced(那是實時頁報告抽屜用的),sides 留著(先發與場上數據)
+  await write('live-lite', { ...liveOut, matches: (liveOut.matches ?? []).map(({ advanced, ...rest }) => rest) });
   /* reports 的形狀要跟另外兩個聯賽一樣(seasons / count / reports 是個以
      「賽季|主|客」為鍵的物件)。第一版自己編了 {pre,post},
      fixture-list 去讀 reports.reports[key] 就炸了 —— 又一次自己取名字的代價。

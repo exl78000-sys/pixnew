@@ -6,6 +6,7 @@ import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import { readMatchReports } from './lib/match-archive.mjs';
 import { inlineImages } from './lib/image-files.mjs';
+import { officialBodyEntries } from './lib/official-files.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -148,6 +149,8 @@ async function main() {
     }
   } catch { /* 沒跑過 game:build 時單檔版就沒有這一頁的資料,頁面會照實講 */ }
   addMatchReports(join(WEB, 'data'), data);
+  // 官方逐場本體(2026-09-27 起一場一檔):鍵 'official/HOME-AWAY',跟單場頁 loadFrom 組出來的名字一致
+  for (const [k, v] of officialBodyEntries(join(WEB, 'data'))) data[k] = v;
   const datasets = { pl: data };
   const leaguesDir = join(WEB, 'data', 'leagues');
   try {
@@ -161,6 +164,7 @@ async function main() {
         datasets[ent.name][f.replace(/\.json$/, '')] = JSON.parse(await readFile(join(dir, f), 'utf8'));
       }
       addMatchReports(dir, datasets[ent.name]);
+      for (const [k, v] of officialBodyEntries(dir)) datasets[ent.name][k] = v;
     }
   } catch { /* 沒有額外聯賽時維持只有英超 */ }
   const meta = data.meta;

@@ -6,8 +6,15 @@ try {
   // prob-history 的鍵帶連字號,解構拿不到,所以先收整包再取
   /* 球員讀 players-list(2026-09-27,A6 第二段):這一頁只用 code / sportmonksId → 頭貼、關鍵球員的幾個數字、傷停,
      整份 players.json(1.2 MB)沒有地方用。形狀同名同層,下面的 playerEntries / squadCard / squadHtml 一個字沒改。 */
-  const data = await C.load('meta', 'clubs', 'teams', 'fixtures', 'h2h', 'players-list', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live', 'shapes', 'official', 'form', 'prob-history', 'news');
-  const { meta, clubs, teams, fixtures, h2h, 'players-list': players, tactics, analysis, reports, experts, lineups, live, shapes, official, form } = data;
+  /* 單場頁的摘要(2026-09-27):
+     - 名冊讀 overview.json 的 teams(隊碼 / 名字 / 隊徽 / 隊色 / Elo,就是這一頁用到的),不再整載 teams.json(385 KB,
+       matchStats 一隊 12 KB 這裡沒有地方用);兩隊的戰術從 tactics.json 拿(跟 teams[].tactics 是同一份,逐字相同)。
+     - 官方逐場資料只讀索引 official.json,這一場的本體(先發 / 進球 / 時間軸)另外 loadFrom 一檔(official/{HOME}-{AWAY})。
+     - 即時快照讀 live-lite.json(live.json 去掉每場 41 KB 的 advanced —— 那是實時頁報告抽屜用的,這一頁只用 sides 的先發與場上數據):
+       646 KB → 兩百多 KB;即時面板之後照舊走 feed(C.liveFeeds)覆蓋。 */
+  const data = await C.load('meta', 'clubs', 'overview', 'fixtures', 'h2h', 'players-list', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live-lite', 'shapes', 'official', 'form', 'prob-history', 'news');
+  const { meta, clubs, overview, fixtures, h2h, 'players-list': players, tactics, analysis, reports, experts, lineups, 'live-lite': live, shapes, official, form } = data;
+  const teams = overview?.teams ?? [];
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
   /* 完整版(renderMatch)吃的是英超才有的東西:FPL 球員欄位、傷停、預估先發、官方事件。
@@ -50,6 +57,15 @@ try {
      逐場檔,點開這一場才載;整份內嵌的話首頁會從 1.6 MB 變成二十幾 MB)。
      不在索引裡的 id 才是真的沒有這一場,那時候才導回賽程表。 */
   const archivedId = !target && id && (reports.archive?.ids ?? []).includes(id) ? id : null;
+  /* 這一場的官方本體(正式先發、進球、牌與換人):索引說有(body)才載那一檔;讀不到就當沒有(跟以前「official 沒這一場」同一個意思)。
+     舊產物(還沒拆檔)的索引項就是本體本身,照用。 */
+  const officialRec = await (async () => {
+    if (!target) return null;
+    const idx = official?.matches?.[`${target.home}|${target.away}`] ?? null;
+    if (!idx?.body) return idx;
+    const name = `official/${target.home}-${target.away}`;
+    try { return (await C.loadFrom(C.league(), [name])).data[name] ?? null; } catch { return null; }
+  })();
 
   /* 這一頁只處理「一場比賽」。沒指定是哪一場就導回賽程表 ——
      以前這裡有自己的列表,但它是賽程表的子集(只有未開賽且有文章的場次,
@@ -361,9 +377,9 @@ try {
     // 賽後那七張卡現在分四段畫,頭貼只投影一次就好(每段各投影一次是白做工)
     const rep = report ? C.reportWithPlayerPhotos(report, players) : null;
     const expertRows = expertsFor(f);
-    const lineup = official?.matches?.[`${f.home}|${f.away}`] ?? null;
+    const lineup = officialRec;
     const H = teamBy.get(f.home), A = teamBy.get(f.away);
-    const ht = H?.tactics, at = A?.tactics;
+    const ht = tacBy.get(f.home), at = tacBy.get(f.away);   // teams[].tactics 跟 tactics.json 逐字相同,名冊那一份已經瘦身
     // 跟英超那一頁同一套:pre 是真的賽前機率,p 是拿來畫「模型怎麼看」的那一組
     const p = f.postFit ?? f.prediction;
     const rec = h2h[[f.home, f.away].sort().join('|')] ?? null;
@@ -719,7 +735,7 @@ try {
         }
       }
     };
-    renderLive(findIn(data.live), data.live?.fetchedAt);
+    renderLive(findIn(live), live?.fetchedAt);
     /* 先畫再覆蓋(2026-09-12):data.live 是 Pages 上那份 —— 部署當下的快照。
        只靠 20 秒後的第一次輪詢,重新整理的頭 20 秒比分會退回部署時的狀態(使用者回報的)。
        畫完立刻拿一次;抓取走共用的 C.fetchFeed(raw 優先、有逾時、失敗退回站上那份)。 */
@@ -775,7 +791,7 @@ try {
           : `<span class="pill bad"><span class="livedot"></span><span data-liveclock>${C.minuteText(mn)}</span></span>`}
           <span class="tiny dim">${C.kickoffLocal(m.kickoff)}</span></div>
         <div class="tiny dim" style="margin-top:4px">${done
-          ? `${C.esc(data.live?.sourceLabel ?? data.live?.source ?? '即時來源')}・${C.ageText(fetchedAt)}抓的。獨立賽果核對通過後才會進積分榜與模型,球隊統計、正式陣容與球員評分會在下一次部署出現。`
+          ? `${C.esc(live?.sourceLabel ?? live?.source ?? '即時來源')}・${C.ageText(fetchedAt)}抓的。獨立賽果核對通過後才會進積分榜與模型,球隊統計、正式陣容與球員評分會在下一次部署出現。`
           : mn.ht ? `${mn.src}・下半場開踢後分鐘會接著走` : `${mn.src}・分鐘由抓取後的實際時間推進(推算;中場與補時長度沒有資料,顯示停在 45+/90+)`}</div>
         <div class="scoreline" style="margin:14px 0">
           <div class="side">${C.badge(m.home)}<b>${C.name(m.home)}</b></div>
@@ -823,7 +839,7 @@ try {
   }
 
   function goalsCard(f, { live = false } = {}) {
-    const rec = official?.matches?.[`${f.home}|${f.away}`];
+    const rec = officialRec;
     const goals = rec?.goals ?? [];
     const timeline = rec?.timeline ?? null;
     const extras = (timeline?.cards?.length ?? 0) + (timeline?.subs?.length ?? 0);
@@ -1183,7 +1199,7 @@ try {
   // 英超官方在開賽前約一小時就公布正式名單,比 FPL(開賽後才給)早得多。
   // 所以賽前優先用官方的;開賽後改用 live,因為那裡才有進球、換人、紅牌等場中狀態。
   function officialXI(f) {
-    const m = official?.matches?.[`${f.home}|${f.away}`];
+    const m = officialRec;
     if (!m?.home?.xi?.length || !m?.away?.xi?.length) return null;
     const pic = x => ({ ...x, photo: x.code ? photoOf(x.code) : null });
     const side = s => m[s].xi.map(pic);

@@ -25,7 +25,9 @@ export function overviewFrom({ meta, teams, fixtures, news, live }) {
   }
   return {
     meta,
-    teams: teams.map(t => ({ code: t.code, en: t.en, zh: t.zh ?? null, of: t.of ?? null, crest: t.crest ?? null })),
+    /* colors 與 elo 是單場頁(2026-09-27 起也讀這一份當名冊)要的:隊色給徽章與雷達、Elo 給賽前對比。都很小。 */
+    teams: teams.map(t => ({ code: t.code, en: t.en, zh: t.zh ?? null, of: t.of ?? null, crest: t.crest ?? null,
+      colors: t.colors ?? null, elo: t.elo ?? null })),
     fixtures: fixtures.map(f => ({
       id: f.id, round: f.round, date: f.date, kickoff: f.kickoff ?? null,
       home: f.home, away: f.away, played: !!f.played,
