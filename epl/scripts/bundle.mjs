@@ -128,7 +128,7 @@ async function main() {
   }
 
   /* matchstats.json(4 MB)不進單檔版:沒有任何頁面直接載它 —— 單場用 reports.json 的 advanced、
-     球隊頁用 teams.json 的 matchStats,它是給 Obsidian vault 與逐場查詢用的。打進去只會讓單檔版多 9 MB。 */
+     球隊頁用 team-stats.json,它是給 Obsidian vault 與逐場查詢用的。打進去只會讓單檔版多 9 MB。 */
   const SKIP_DATASETS = new Set(['matchstats']);
   /* 本季賽後報告 2026-09-26 起是逐場檔(`reports.json` 只剩索引)。單檔版要把**本季**的打進去,
      鍵用 'match-reports/{季}/{id}' —— 跟分頁版 loadFrom 組出來的名字一致,漏了的話單檔版的

@@ -61,6 +61,7 @@ import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
 import { playersListFrom } from './lib/players-list.mjs';
+import { teamStatsFrom } from './lib/team-stats.mjs';
 import { writeOfficialFiles } from './lib/official-files.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
@@ -1084,14 +1085,11 @@ async function main() {
     ai: aiSummary,
   });
   await write('clubs.json', T.list); // 27 隊完整名稱登錄(含已降級球隊,顯示歷史資料用)
-  /* 逐隊的逐場統計彙總(FotMob)掛到球隊上;沒有資料的球隊**不加這個鍵**(不留空欄位)。 */
-  for (const t of teams) {
-    const ms = fotmobStats.teams[t.code];
-    if (ms?.games) t.matchStats = ms;
-  }
   await write('teams.json', teams);
+  /* 逐隊的逐場統計彙總(FotMob)另存一份,只有球隊頁詳情載(2026-09-28,A8,理由在 lib/team-stats.mjs);沒有資料的球隊不留鍵。 */
+  await write('team-stats.json', teamStatsFrom(fotmobStats.teams, teams));
   /* 逐場統計的完整產物:給 Obsidian vault(使用者指定它是這批資料的資料庫)與任何要逐場查的人。
-     頁面不直接載這一份 —— 單場用 reports.json 的 advanced,球隊頁用 teams.json 的 matchStats。 */
+     頁面不直接載這一份 —— 單場用逐場賽後報告的 advanced,球隊頁用 team-stats.json。 */
   await write('matchstats.json', {
     source: fotmobStats.source, note: '英超逐場統計(FotMob):控球(全場與上下半場)、球隊統計、逐射門 xG 與情境、逐分鐘動能、事件、名單。比分已逐場對回本站賽果;控球率以英超官網後端抽核。',
     seasons: fotmobStats.seasons, count: fotmobStats.count, rejected: fotmobStats.rejected, verification: fotmobStats.verification,

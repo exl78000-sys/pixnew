@@ -42,6 +42,7 @@ import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
 import { playersListFrom } from './lib/players-list.mjs';
+import { teamStatsFrom } from './lib/team-stats.mjs';
 import { writeOfficialFiles } from './lib/official-files.mjs';
 import { recordFor } from './lib/coaches.mjs';
 import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './lib/report/index.mjs';
@@ -1257,8 +1258,8 @@ async function main() {
   await write('clubs', T.list);
   /* 逐場統計(FotMob,2026-09-04 接進西甲):控球、球隊統計、逐射門 xG、動能、跑動、熱區、逐人統計。
      跟英超同一個讀取器;西甲沒有官網端點可抽核控球,產物照實標未抽核。 */
-  for (const t of teams) { const ms = fotmobStats.teams[t.code]; if (ms?.games) t.matchStats = ms; }
   await write('teams', teams);
+  await write('team-stats', teamStatsFrom(fotmobStats.teams, teams));   // 球隊頁詳情才載(2026-09-28,A8)
   if (fotmobStats.count) {
     await write('matchstats', { source: fotmobStats.source, note: '西甲逐場統計(FotMob):控球、球隊統計、逐射門 xG、動能、事件、名單、跑動、熱區、逐人統計。比分已逐場對回本站賽果;控球率沒有第二來源可抽核。',
       seasons: fotmobStats.seasons, count: fotmobStats.count, rejected: fotmobStats.rejected, verification: fotmobStats.verification, teams: fotmobStats.teams, matches: fotmobStats.matches });

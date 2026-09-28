@@ -17,6 +17,13 @@ try {
   const loansAll = (await C.loadFrom('pl', ['loans']).catch(() => ({ data: {} }))).data?.loans ?? null;
 
   const code = C.qs('code');
+  /* 逐場統計彙總(2026-09-28,A8):從 teams.json 拆出去的 team-stats.json,只有詳情(帶 ?code=)才讀 ——
+     列表那一層用不到它,而 teams.json 首頁等十幾頁都在載。掛回 t.matchStats,下面的 matchStatsBlock 一個字沒改。
+     缺檔(還沒 build)就整塊不畫,跟沒資料的隊一樣。 */
+  if (code) {
+    const stats = (await C.loadFrom(C.league(), ['team-stats']).catch(() => ({ data: {} }))).data?.['team-stats'] ?? {};
+    for (const t of teams) if (stats[t.code]?.games) t.matchStats = stats[t.code];
+  }
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
 

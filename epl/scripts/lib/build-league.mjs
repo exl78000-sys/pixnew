@@ -57,6 +57,7 @@ import { writeMatchArchive, idMapForArchive } from './match-archive.mjs';
 import { externalizeImages } from './image-files.mjs';
 import { overviewFrom } from './overview.mjs';
 import { playersListFrom } from './players-list.mjs';
+import { teamStatsFrom } from './team-stats.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
@@ -501,8 +502,7 @@ export async function buildLeague(L) {
       + `・退回 ${fotmobStats.rejected.length} 場・控球率未經第二來源抽核`);
   }
 
-  /* 逐場統計掛到球隊上(球隊頁的那一區)。沒有的隊不掛欄位,前端的判斷會讓它整塊消失。 */
-  for (const t of teams) { const ms = fotmobStats.teams[t.code]; if (ms?.games) t.matchStats = ms; }
+  /* 逐場統計的逐隊彙總另存 team-stats.json(球隊頁詳情才載,2026-09-28 A8),寫在下面 write('teams') 旁邊。 */
 
   /* 賽後報告:逐場詳情轉成 canonical detail,走跟西甲英冠同一個 buildProviderMatchReport。
      它自己會再核對一次比分、要求五種 coverage 齊全 —— 不齊的那一場不發布(不是硬塞一份殘缺的)。 */
@@ -883,6 +883,7 @@ export async function buildLeague(L) {
   await write('meta', meta);
   await write('clubs', T.list);
   await write('teams', teams);
+  await write('team-stats', teamStatsFrom(fotmobStats.teams, teams));   // 球隊頁詳情才載(2026-09-28,A8)
   await write('fixtures', fixtures);
   await write('table', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
   await write('sim', sim);

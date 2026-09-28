@@ -3979,6 +3979,7 @@ async function checkDataGap() {
       const score = new Map(results.map(r => [`${r.season}|${r.home}|${r.away}`, [r.fh, r.fa]]));
       const list = Object.values(ms.matches);
       const teamsJson = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
+      const teamStats = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'team-stats.json'), 'utf8'));
       const reports = readMatchReports(join(ROOT, 'web', 'data'))?.reports ?? {};
       const fmReports = Object.values(reports).filter(r => r.advanced?.source === 'fotmob');
       const mci = list.filter(m => m.home === 'MCI').map(m => m.possession.all[0]);
@@ -3989,7 +3990,7 @@ async function checkDataGap() {
         ['每一場兩隊控球相加 = 100', list.every(m => m.possession.all[0] + m.possession.all[1] === 100)],
         ['控球率有第二來源的抽核紀錄且全部通過', Object.values(ms.verification).some(v => v && v.checked >= 10 && v.agree === v.checked)],
         ['逐隊彙總對得回逐場重算(MCI 主場控球均值)', ms.teams.MCI.home.possession.mean === mean && ms.teams.MCI.home.games === mci.length, `${ms.teams.MCI.home.possession.mean} vs ${mean}`],
-        ['teams.json 掛的 matchStats 跟產物一致,沒資料的隊不留空鍵', teamsJson.every(t => (t.matchStats ? t.matchStats.games === ms.teams[t.code]?.games : !ms.teams[t.code]?.games))],
+        ['team-stats.json 的逐隊彙總跟產物一致,沒資料的隊不留空鍵', teamsJson.every(t => (teamStats[t.code] ? teamStats[t.code].games === ms.teams[t.code]?.games : !ms.teams[t.code]?.games))],
         /* 2026-09-04 起逐人統計與評分也進來了:coverage 照實標 true,每隊至少 14 人(11 先發 + 上場替補),評分要有 */
         ['本季賽後報告掛上 FotMob 的 advanced(球隊統計、事件、逐人統計與評分)', fmReports.length > 0 && fmReports.every(r => r.advanced.coverage.playerStatistics === true && r.advanced.coverage.ratings === true && r.advanced.teamStats[r.home]?.possession != null && Array.isArray(r.advanced.events) && (r.advanced.players?.[r.home]?.length ?? 0) >= 14 && r.advanced.players[r.home].some(p => p.rating != null)), String(fmReports.length)],
         ['賽後報告的逐人統計對到本站球員代碼(每隊至少 8 人有 code)', fmReports.every(r => [r.home, r.away].every(c => (r.advanced.players?.[c] ?? []).filter(p => p.code).length >= 8)), fmReports.map(r => [r.home, r.away].map(c => (r.advanced.players?.[c] ?? []).filter(p => p.code).length).join('/')).slice(0, 4).join(' ')],
@@ -4757,7 +4758,7 @@ async function checkDataGap() {
         && /\.analysis-switch \{[\s\S]{0,200}top: var\(--topbar-h, 61px\)/.test(css);
     })()],
     /* ── matchstats.json 不進 Pages 上傳物(2026-09-27,D2)──
-       六份約 98 MB、沒有任何頁面會 fetch(單場用 match-reports、球隊頁用 teams.json 的 matchStats)。
+       六份約 98 MB、沒有任何頁面會 fetch(單場用 match-reports、球隊頁用 team-stats.json)。
        守:部署工作流在「回寫」與「自我檢查」之後、「上傳網站」之前把它從 web/data 拿掉;前端仍然沒有人 fetch 它。 */
     ['部署工作流在上傳 Pages 之前拿掉 matchstats.json(回寫與測試之後),而且前端沒有人 fetch 它', (() => {
       const y = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
@@ -4816,6 +4817,37 @@ async function checkDataGap() {
        首頁與球員頁的資料集清單**從頁面原始碼解析**(C.load(...) 的字串引數),六個聯賽各自加總解壓後的大小。
        預算都是 1.5 MB:首頁 A1 / A4 之後六個聯賽 0.6–1.25 MB;球員頁 A6(列表只讀 players-list)之後 0.6–1.25 MB
        (英冠最大,它的 leaders 就 400 KB)。A6 之前球員頁是 1.7–1.8 MB,那時先設 2.0;只算主載入那一清單,點到才 loadFrom 的不算。 */
+    /* ── 逐場統計彙總拆出 teams.json(2026-09-28,A8)──
+       teams.json 十幾頁在載,matchStats 只有球隊頁詳情讀 —— 每個聯賽一份 team-stats.json(隊碼 → 彙總,沒資料的隊不留鍵),
+       teams.json 不准再帶 matchStats;前端只有 page-teams.js 讀 team-stats,而且走 loadFrom(詳情才載),不在主清單。 */
+    ['每個聯賽都有 team-stats.json、teams.json 不帶 matchStats;只有球隊頁詳情 loadFrom 它', (() => {
+      const dirs = [{ key: 'pl', dir: join(ROOT, 'web', 'data') },
+        ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+          .filter(e => e.isDirectory()).map(e => ({ key: e.name, dir: join(ROOT, 'web', 'data', 'leagues', e.name) }))];
+      const bad = [];
+      for (const { key, dir } of dirs) {
+        if (!existsSync(join(dir, 'teams.json'))) continue;
+        const teamsRaw = readFileSync(join(dir, 'teams.json'), 'utf8');
+        if (/"matchStats"/.test(teamsRaw)) bad.push(`${key}:teams.json 還帶著 matchStats`);
+        const p = join(dir, 'team-stats.json');
+        if (!existsSync(p)) { bad.push(`${key}:沒有 team-stats.json`); continue; }
+        const st = JSON.parse(readFileSync(p, 'utf8'));
+        const codes = new Set(JSON.parse(teamsRaw).map(t => t.code));
+        for (const [c, v] of Object.entries(st)) {
+          if (!codes.has(c)) bad.push(`${key}:team-stats 有 teams.json 沒有的隊 ${c}`);
+          if (!(v?.games > 0)) bad.push(`${key}:team-stats 的 ${c} 是空的(沒資料不該留鍵)`);
+        }
+      }
+      const JS = join(ROOT, 'web', 'assets', 'js');
+      const users = readdirSync(JS).filter(f => f.endsWith('.js') && /'team-stats'/.test(readFileSync(join(JS, f), 'utf8')));
+      if (users.join() !== 'page-teams.js') bad.push(`讀 team-stats 的是 ${users.join('、') || '沒有人'}(只該是 page-teams.js)`);
+      const pt = readFileSync(join(JS, 'page-teams.js'), 'utf8');
+      const mainLoad = (pt.match(/C\.load\(([^)]*)\)/) ?? [])[1] ?? '';
+      if (/'team-stats'/.test(mainLoad) || !/loadFrom\(C\.league\(\), \['team-stats'\]\)/.test(pt)) bad.push('page-teams.js 要在詳情那條路 loadFrom team-stats,不是放進主清單');
+      const builds = ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs', 'lib/build-league.mjs'].map(f => readFileSync(join(ROOT, 'scripts', f), 'utf8')).join('\n');
+      if (/\bt\.matchStats\s*=/.test(builds)) bad.push('有 build 還把 matchStats 掛回 teams');
+      return [bad.length === 0, bad.slice(0, 6).join(';')];
+    })()],
     /* ── 球員頁列表只讀 players-list(2026-09-27,A6)──
        每個聯賽一份、筆數跟 players.json 相同、沒帶雷達 / 追蹤 / 租借那些重欄位、比整份小得多;
        page-players.js 的主載入清單是 players-list,整份 players 只在 loadFrom(詳情與對比)那條路。 */
