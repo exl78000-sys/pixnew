@@ -265,7 +265,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
      就會撞上「載入失敗…請先執行 npm run build」(給開發者的訊息,而且理由是錯的)。
      實際壞過一次,所以釘死。 */
   const need = ['tactics', 'experts', 'lineups', 'live', 'shapes', 'official',
-    'meta', 'clubs', 'teams', 'fixtures', 'players', 'reports', 'analysis', 'goals', 'h2h', 'form', 'overview', 'players-list', 'live-lite'];
+    'meta', 'clubs', 'teams', 'fixtures', 'players', 'reports', 'analysis', 'goals', 'h2h', 'form', 'overview', 'players-list', 'live-lite', 'team-stats'];
   const miss = need.filter(n => !existsSync(join(ROOT, 'web', 'data', 'leagues', 'en2', `${n}.json`)));
   check('單場分析頁要的資料集一份都不缺', miss.length === 0, miss.join('、'));
 
@@ -457,7 +457,9 @@ const table = out('table'), results = out('results'), sim = out('sim');
     check('逐場統計:本季每一場的比分等於本站賽果', cur.length > 0 && cur.every(m => { const f = byKey.get(m.key); return m.score[0] === f.fh && m.score[1] === f.fa; }), `${cur.length} 場`);
     check('逐場統計:每場控球率相加 100', Object.values(ms.matches).every(m => m.possession.all[0] + m.possession.all[1] === 100));
     check('逐場統計:控球率沒有第二來源,verified 是 false', Object.values(ms.teams).every(t => t.verified === false));
-    check('每支英冠球隊都掛了逐場統計', teams.every(t => t.matchStats?.games > 0), `${teams.filter(t => t.matchStats?.games > 0).length} / ${teams.length}`);
+    // 2026-09-28(A8)起逐隊彙總不掛在 teams.json,另存 team-stats.json(球隊頁詳情才載)
+    const teamStats = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'en2', 'team-stats.json'), 'utf8'));
+    check('每支英冠球隊都有逐場統計彙總(team-stats.json)', teams.every(t => teamStats[t.code]?.games > 0), `${teams.filter(t => teamStats[t.code]?.games > 0).length} / ${teams.length}`);
     const played = fx.filter(f => f.played);
     const withStats = played.filter(f => ms.matches[`${f.season}|${f.home}|${f.away}`]);
     check('賽後報告:有逐場資料的本季場次每一場都有報告', rep.count === withStats.length && withStats.every(f => rep.reports[`${f.season}|${f.home}|${f.away}`]), `${rep.count} / ${withStats.length}`);

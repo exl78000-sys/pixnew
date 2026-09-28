@@ -47,6 +47,7 @@ import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
 import { playersListFrom } from './lib/players-list.mjs';
+import { teamStatsFrom } from './lib/team-stats.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
@@ -719,10 +720,10 @@ async function main() {
   };
 
   console.log('寫入英冠資料集:');
-  for (const t of teams) { const ms = fotmobStats.teams[t.code]; if (ms?.games) t.matchStats = ms; }
   await write('meta', meta);
   await write('clubs', T.list);
   await write('teams', teams);
+  await write('team-stats', teamStatsFrom(fotmobStats.teams, teams));   // 球隊頁詳情才載(2026-09-28,A8)
   /* 官方賽程狀態(延期/取消)—— 跟英超同一份實作,快照太舊不掛 */
   {
     const ssPath = join(ROOT, 'data', 'raw', 'schedule-status.json');
