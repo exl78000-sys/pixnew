@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-27T16:36:02.595Z",
+ "retrievedAt": "2026-09-28T02:19:51.163Z",
  "matches": [
   {
    "id": "5181874",
@@ -63,7 +63,7 @@
   },
   {
    "id": "5181881",
-   "kickoff": "2026-09-27T13:00:00.000Z",
+   "kickoff": "2026-09-27T13:00:00Z",
    "home": {
     "name": "Lithuania",
     "shortName": "Lithuania",
@@ -87,7 +87,7 @@
   },
   {
    "id": "5181875",
-   "kickoff": "2026-09-27T16:00:00.000Z",
+   "kickoff": "2026-09-27T16:00:00Z",
    "home": {
     "name": "Gibraltar",
     "shortName": "Gibraltar",
@@ -98,10 +98,13 @@
     "shortName": "Andorra",
     "fmId": "10045"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "1"
@@ -322,7 +325,7 @@
      "ga": 0,
      "pts": 1,
      "deduction": null,
-     "live": "5181875"
+     "live": null
     },
     {
      "fmId": "10045",
@@ -336,7 +339,7 @@
      "ga": 2,
      "pts": 1,
      "deduction": null,
-     "live": "5181875"
+     "live": null
     }
    ]
   },

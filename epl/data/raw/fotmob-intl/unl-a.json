@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-27T16:35:59.339Z",
+ "retrievedAt": "2026-09-28T02:19:47.617Z",
  "matches": [
   {
    "id": "5181825",
@@ -207,7 +207,7 @@
   },
   {
    "id": "5181863",
-   "kickoff": "2026-09-27T16:00:00.000Z",
+   "kickoff": "2026-09-27T16:00:00Z",
    "home": {
     "name": "Denmark",
     "shortName": "Denmark",
@@ -218,17 +218,20 @@
     "shortName": "Wales",
     "fmId": "5790"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "4"
   },
   {
    "id": "5181827",
-   "kickoff": "2026-09-27T16:00:00.000Z",
+   "kickoff": "2026-09-27T16:00:00Z",
    "home": {
     "name": "Serbia",
     "shortName": "Serbia",
@@ -239,17 +242,20 @@
     "shortName": "Netherlands",
     "fmId": "6708"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "2"
   },
   {
    "id": "5181828",
-   "kickoff": "2026-09-27T18:45:00.000Z",
+   "kickoff": "2026-09-27T18:45:00Z",
    "home": {
     "name": "Germany",
     "shortName": "Germany",
@@ -260,17 +266,20 @@
     "shortName": "Greece",
     "fmId": "6383"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "2"
   },
   {
    "id": "5181864",
-   "kickoff": "2026-09-27T18:45:00.000Z",
+   "kickoff": "2026-09-27T18:45:00Z",
    "home": {
     "name": "Norway",
     "shortName": "Norway",
@@ -281,17 +290,20 @@
     "shortName": "Portugal",
     "fmId": "8361"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "4"
   },
   {
    "id": "5181790",
-   "kickoff": "2026-09-28T18:45:00Z",
+   "kickoff": "2026-09-28T18:45:00.000Z",
    "home": {
     "name": "Belgium",
     "shortName": "Belgium",
@@ -312,7 +324,7 @@
   },
   {
    "id": "5181791",
-   "kickoff": "2026-09-28T18:45:00Z",
+   "kickoff": "2026-09-28T18:45:00.000Z",
    "home": {
     "name": "Turkiye",
     "shortName": "Turkiye",
@@ -1162,30 +1174,30 @@
    ],
    "rows": [
     {
-     "fmId": "6708",
-     "name": "Netherlands",
+     "fmId": "6383",
+     "name": "Greece",
      "idx": 1,
      "played": 2,
-     "wins": 1,
-     "draws": 1,
+     "wins": 2,
+     "draws": 0,
      "losses": 0,
-     "gf": 2,
+     "gf": 3,
      "ga": 1,
-     "pts": 4,
+     "pts": 6,
      "deduction": null,
      "live": null
     },
     {
-     "fmId": "6383",
-     "name": "Greece",
+     "fmId": "6708",
+     "name": "Netherlands",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 2,
-     "ga": 1,
-     "pts": 3,
+     "gf": 3,
+     "ga": 2,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
@@ -1193,12 +1205,12 @@
      "fmId": "8570",
      "name": "Germany",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
      "draws": 1,
-     "losses": 0,
+     "losses": 1,
      "gf": 1,
-     "ga": 1,
+     "ga": 2,
      "pts": 1,
      "deduction": null,
      "live": null
@@ -1211,8 +1223,8 @@
      "wins": 0,
      "draws": 0,
      "losses": 2,
-     "gf": 1,
-     "ga": 3,
+     "gf": 2,
+     "ga": 4,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -1334,29 +1346,29 @@
    ],
    "rows": [
     {
-     "fmId": "8492",
-     "name": "Norway",
+     "fmId": "8361",
+     "name": "Portugal",
      "idx": 1,
-     "played": 1,
-     "wins": 1,
+     "played": 2,
+     "wins": 2,
      "draws": 0,
      "losses": 0,
      "gf": 3,
-     "ga": 2,
-     "pts": 3,
+     "ga": 1,
+     "pts": 6,
      "deduction": null,
      "live": null
     },
     {
-     "fmId": "8361",
-     "name": "Portugal",
+     "fmId": "8492",
+     "name": "Norway",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 1,
      "draws": 0,
-     "losses": 0,
-     "gf": 1,
-     "ga": 0,
+     "losses": 1,
+     "gf": 4,
+     "ga": 4,
      "pts": 3,
      "deduction": null,
      "live": null
@@ -1366,14 +1378,14 @@
      "name": "Denmark",
      "idx": 3,
      "played": 2,
-     "wins": 0,
-     "draws": 1,
+     "wins": 1,
+     "draws": 0,
      "losses": 1,
-     "gf": 2,
+     "gf": 4,
      "ga": 3,
-     "pts": 1,
+     "pts": 3,
      "deduction": null,
-     "live": "5181863"
+     "live": null
     },
     {
      "fmId": "5790",
@@ -1381,13 +1393,13 @@
      "idx": 4,
      "played": 2,
      "wins": 0,
-     "draws": 1,
-     "losses": 1,
+     "draws": 0,
+     "losses": 2,
      "gf": 0,
-     "ga": 1,
-     "pts": 1,
+     "ga": 3,
+     "pts": 0,
      "deduction": null,
-     "live": "5181863"
+     "live": null
     }
    ]
   }
