@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-09-28T02:19:56.230Z",
+ "retrievedAt": "2026-09-28T19:23:50.901Z",
  "matches": [
   {
    "id": "5120889",
@@ -7909,10 +7909,13 @@
     "shortName": "Venezuela",
     "fmId": "5800"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -7930,10 +7933,13 @@
     "shortName": "Uruguay",
     "fmId": "5796"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    4
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -7951,10 +7957,13 @@
     "shortName": "Palestine",
     "fmId": "6333"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    4
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -7972,10 +7981,13 @@
     "shortName": "Maldives",
     "fmId": "5899"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    5,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8003,7 +8015,7 @@
   },
   {
    "id": "6144112",
-   "kickoff": "2026-09-29T16:30:00Z",
+   "kickoff": "2026-09-29T16:00:00Z",
    "home": {
     "name": "Russia",
     "shortName": "Russia",
@@ -8013,27 +8025,6 @@
     "name": "Iran",
     "shortName": "Iran",
     "fmId": "6711"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": null,
-   "group": null
-  },
-  {
-   "id": "6266052",
-   "kickoff": "2026-09-29T23:00:00Z",
-   "home": {
-    "name": "Argentina",
-    "shortName": "Argentina",
-    "fmId": "6706"
-   },
-   "away": {
-    "name": "Bolivia",
-    "shortName": "Bolivia",
-    "fmId": "5797"
    },
    "state": "NS",
    "final": null,
@@ -8202,6 +8193,27 @@
     "name": "Andorra",
     "shortName": "Andorra",
     "fmId": "10045"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6266052",
+   "kickoff": "2026-09-30T23:00:00Z",
+   "home": {
+    "name": "Argentina",
+    "shortName": "Argentina",
+    "fmId": "6706"
+   },
+   "away": {
+    "name": "Bolivia",
+    "shortName": "Bolivia",
+    "fmId": "5797"
    },
    "state": "NS",
    "final": null,

@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-28T02:19:49.994Z",
+ "retrievedAt": "2026-09-28T19:23:45.385Z",
  "matches": [
   {
    "id": "5181921",
@@ -218,10 +218,13 @@
     "shortName": "Montenegro",
     "fmId": "49437"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "2"
@@ -239,10 +242,13 @@
     "shortName": "Cyprus",
     "fmId": "5793"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "2"
@@ -1160,29 +1166,29 @@
    ],
    "rows": [
     {
-     "fmId": "6583",
-     "name": "Armenia",
+     "fmId": "49437",
+     "name": "Montenegro",
      "idx": 1,
-     "played": 1,
-     "wins": 1,
+     "played": 2,
+     "wins": 2,
      "draws": 0,
      "losses": 0,
-     "gf": 2,
-     "ga": 0,
-     "pts": 3,
+     "gf": 5,
+     "ga": 3,
+     "pts": 6,
      "deduction": null,
      "live": null
     },
     {
-     "fmId": "49437",
-     "name": "Montenegro",
+     "fmId": "6583",
+     "name": "Armenia",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 1,
      "draws": 0,
-     "losses": 0,
-     "gf": 2,
-     "ga": 1,
+     "losses": 1,
+     "gf": 4,
+     "ga": 3,
      "pts": 3,
      "deduction": null,
      "live": null
@@ -1191,13 +1197,13 @@
      "fmId": "5793",
      "name": "Cyprus",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 1,
      "ga": 2,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
      "live": null
     },
@@ -1205,13 +1211,13 @@
      "fmId": "5795",
      "name": "Latvia",
      "idx": 4,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 0,
      "ga": 2,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
      "live": null
     }

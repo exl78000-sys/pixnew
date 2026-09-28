@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-09-28T02:19:52.584Z",
+ "retrievedAt": "2026-09-28T19:23:47.421Z",
  "matches": [
   {
    "id": "5991938",
@@ -602,10 +602,13 @@
     "shortName": "Dominican Republic",
     "fmId": "262134"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "1"
@@ -623,7 +626,7 @@
     "shortName": "Barbados",
     "fmId": "5886"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1642,222 +1645,6 @@
  ],
  "groups": [
   {
-   "name": "A Grp. 1",
-   "fmId": "941120",
-   "legend": [
-    {
-     "key": "championship_playoff",
-     "title": "Championship playoff",
-     "idx": [
-      0,
-      1
-     ]
-    },
-    {
-     "key": "relegation",
-     "title": "Relegation",
-     "idx": [
-      4,
-      5
-     ]
-    }
-   ],
-   "rows": [
-    {
-     "fmId": "287981",
-     "name": "Curacao",
-     "idx": 1,
-     "played": 2,
-     "wins": 2,
-     "draws": 0,
-     "losses": 0,
-     "gf": 10,
-     "ga": 4,
-     "pts": 6,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5934",
-     "name": "Haiti",
-     "idx": 2,
-     "played": 2,
-     "wins": 2,
-     "draws": 0,
-     "losses": 0,
-     "gf": 5,
-     "ga": 2,
-     "pts": 6,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "262134",
-     "name": "Dominican Republic",
-     "idx": 3,
-     "played": 2,
-     "wins": 2,
-     "draws": 0,
-     "losses": 0,
-     "gf": 5,
-     "ga": 3,
-     "pts": 6,
-     "deduction": null,
-     "live": "5991881"
-    },
-    {
-     "fmId": "7724",
-     "name": "Trinidad and Tobago",
-     "idx": 4,
-     "played": 2,
-     "wins": 0,
-     "draws": 0,
-     "losses": 2,
-     "gf": 3,
-     "ga": 5,
-     "pts": 0,
-     "deduction": null,
-     "live": "5991881"
-    },
-    {
-     "fmId": "6705",
-     "name": "Costa Rica",
-     "idx": 5,
-     "played": 2,
-     "wins": 0,
-     "draws": 0,
-     "losses": 2,
-     "gf": 3,
-     "ga": 6,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5807",
-     "name": "Nicaragua",
-     "idx": 6,
-     "played": 2,
-     "wins": 0,
-     "draws": 0,
-     "losses": 2,
-     "gf": 3,
-     "ga": 9,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    }
-   ]
-  },
-  {
-   "name": "A Grp. 2",
-   "fmId": "941121",
-   "legend": [
-    {
-     "key": "championship_playoff",
-     "title": "Championship playoff",
-     "idx": [
-      0,
-      1
-     ]
-    },
-    {
-     "key": "relegation",
-     "title": "Relegation",
-     "idx": [
-      4,
-      5
-     ]
-    }
-   ],
-   "rows": [
-    {
-     "fmId": "6327",
-     "name": "El Salvador",
-     "idx": 1,
-     "played": 1,
-     "wins": 1,
-     "draws": 0,
-     "losses": 0,
-     "gf": 3,
-     "ga": 1,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5806",
-     "name": "Jamaica",
-     "idx": 2,
-     "played": 1,
-     "wins": 1,
-     "draws": 0,
-     "losses": 0,
-     "gf": 3,
-     "ga": 2,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "127411",
-     "name": "Suriname",
-     "idx": 3,
-     "played": 1,
-     "wins": 1,
-     "draws": 0,
-     "losses": 0,
-     "gf": 3,
-     "ga": 2,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5858",
-     "name": "Guatemala",
-     "idx": 4,
-     "played": 1,
-     "wins": 0,
-     "draws": 0,
-     "losses": 1,
-     "gf": 2,
-     "ga": 3,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5808",
-     "name": "Honduras",
-     "idx": 5,
-     "played": 1,
-     "wins": 0,
-     "draws": 0,
-     "losses": 1,
-     "gf": 2,
-     "ga": 3,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5859",
-     "name": "Martinique",
-     "idx": 6,
-     "played": 1,
-     "wins": 0,
-     "draws": 0,
-     "losses": 1,
-     "gf": 1,
-     "ga": 3,
-     "pts": 0,
-     "deduction": null,
-     "live": null
-    }
-   ]
-  },
-  {
    "name": "B Grp. 1",
    "fmId": "941122",
    "legend": [
@@ -1959,29 +1746,29 @@
      "fmId": "5886",
      "name": "Barbados",
      "idx": 1,
-     "played": 1,
+     "played": 2,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
      "gf": 2,
      "ga": 0,
-     "pts": 3,
+     "pts": 4,
      "deduction": null,
-     "live": null
+     "live": "5991915"
     },
     {
      "fmId": "5757",
      "name": "Guadeloupe",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
      "gf": 2,
      "ga": 1,
-     "pts": 3,
+     "pts": 4,
      "deduction": null,
-     "live": null
+     "live": "5991915"
     },
     {
      "fmId": "5943",
@@ -2163,6 +1950,222 @@
      "losses": 1,
      "gf": 0,
      "ga": 1,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "A Grp. 1",
+   "fmId": "941120",
+   "legend": [
+    {
+     "key": "championship_playoff",
+     "title": "Championship playoff",
+     "idx": [
+      0,
+      1
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      4,
+      5
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "287981",
+     "name": "Curacao",
+     "idx": 1,
+     "played": 2,
+     "wins": 2,
+     "draws": 0,
+     "losses": 0,
+     "gf": 10,
+     "ga": 4,
+     "pts": 6,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5934",
+     "name": "Haiti",
+     "idx": 2,
+     "played": 2,
+     "wins": 2,
+     "draws": 0,
+     "losses": 0,
+     "gf": 5,
+     "ga": 2,
+     "pts": 6,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "262134",
+     "name": "Dominican Republic",
+     "idx": 3,
+     "played": 2,
+     "wins": 2,
+     "draws": 0,
+     "losses": 0,
+     "gf": 5,
+     "ga": 3,
+     "pts": 6,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "7724",
+     "name": "Trinidad and Tobago",
+     "idx": 4,
+     "played": 2,
+     "wins": 0,
+     "draws": 0,
+     "losses": 2,
+     "gf": 3,
+     "ga": 5,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6705",
+     "name": "Costa Rica",
+     "idx": 5,
+     "played": 2,
+     "wins": 0,
+     "draws": 0,
+     "losses": 2,
+     "gf": 3,
+     "ga": 6,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5807",
+     "name": "Nicaragua",
+     "idx": 6,
+     "played": 2,
+     "wins": 0,
+     "draws": 0,
+     "losses": 2,
+     "gf": 3,
+     "ga": 9,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    }
+   ]
+  },
+  {
+   "name": "A Grp. 2",
+   "fmId": "941121",
+   "legend": [
+    {
+     "key": "championship_playoff",
+     "title": "Championship playoff",
+     "idx": [
+      0,
+      1
+     ]
+    },
+    {
+     "key": "relegation",
+     "title": "Relegation",
+     "idx": [
+      4,
+      5
+     ]
+    }
+   ],
+   "rows": [
+    {
+     "fmId": "6327",
+     "name": "El Salvador",
+     "idx": 1,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 3,
+     "ga": 1,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5806",
+     "name": "Jamaica",
+     "idx": 2,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 3,
+     "ga": 2,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "127411",
+     "name": "Suriname",
+     "idx": 3,
+     "played": 1,
+     "wins": 1,
+     "draws": 0,
+     "losses": 0,
+     "gf": 3,
+     "ga": 2,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5858",
+     "name": "Guatemala",
+     "idx": 4,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 2,
+     "ga": 3,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5808",
+     "name": "Honduras",
+     "idx": 5,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 2,
+     "ga": 3,
+     "pts": 0,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "5859",
+     "name": "Martinique",
+     "idx": 6,
+     "played": 1,
+     "wins": 0,
+     "draws": 0,
+     "losses": 1,
+     "gf": 1,
+     "ga": 3,
      "pts": 0,
      "deduction": null,
      "live": null
