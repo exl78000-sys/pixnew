@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-28T19:23:44.356Z",
+ "retrievedAt": "2026-09-29T04:44:53.299Z",
  "matches": [
   {
    "id": "5181812",
@@ -255,7 +255,7 @@
   },
   {
    "id": "5181802",
-   "kickoff": "2026-09-28T16:00:00.000Z",
+   "kickoff": "2026-09-28T16:00:00Z",
    "home": {
     "name": "Georgia",
     "shortName": "Georgia",
@@ -279,7 +279,7 @@
   },
   {
    "id": "5181803",
-   "kickoff": "2026-09-28T18:45:00.000Z",
+   "kickoff": "2026-09-28T18:45:00Z",
    "home": {
     "name": "Northern Ireland",
     "shortName": "Northern Ireland",
@@ -290,17 +290,20 @@
     "shortName": "Hungary",
     "fmId": "8565"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "2"
   },
   {
    "id": "5181839",
-   "kickoff": "2026-09-28T18:45:00.000Z",
+   "kickoff": "2026-09-28T18:45:00Z",
    "home": {
     "name": "Romania",
     "shortName": "Romania",
@@ -311,17 +314,20 @@
     "shortName": "Bosnia and Herzegovina",
     "fmId": "10106"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    4
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "4"
   },
   {
    "id": "5181840",
-   "kickoff": "2026-09-28T18:45:00.000Z",
+   "kickoff": "2026-09-28T18:45:00Z",
    "home": {
     "name": "Sweden",
     "shortName": "Sweden",
@@ -332,17 +338,20 @@
     "shortName": "Poland",
     "fmId": "8568"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "4"
   },
   {
    "id": "5181778",
-   "kickoff": "2026-09-29T18:45:00Z",
+   "kickoff": "2026-09-29T18:45:00.000Z",
    "home": {
     "name": "Scotland",
     "shortName": "Scotland",
@@ -363,7 +372,7 @@
   },
   {
    "id": "5181779",
-   "kickoff": "2026-09-29T18:45:00Z",
+   "kickoff": "2026-09-29T18:45:00.000Z",
    "home": {
     "name": "Slovenia",
     "shortName": "Slovenia",
@@ -1183,8 +1192,8 @@
    ],
    "rows": [
     {
-     "fmId": "6718",
-     "name": "Ukraine",
+     "fmId": "10259",
+     "name": "Northern Ireland",
      "idx": 1,
      "played": 2,
      "wins": 1,
@@ -1197,8 +1206,8 @@
      "live": null
     },
     {
-     "fmId": "10259",
-     "name": "Northern Ireland",
+     "fmId": "6718",
+     "name": "Ukraine",
      "idx": 2,
      "played": 2,
      "wins": 1,
@@ -1208,7 +1217,7 @@
      "ga": 0,
      "pts": 4,
      "deduction": null,
-     "live": "5181803"
+     "live": null
     },
     {
      "fmId": "8268",
@@ -1236,7 +1245,7 @@
      "ga": 1,
      "pts": 1,
      "deduction": null,
-     "live": "5181803"
+     "live": null
     }
    ]
   },
@@ -1374,8 +1383,8 @@
      "wins": 2,
      "draws": 0,
      "losses": 0,
-     "gf": 3,
-     "ga": 1,
+     "gf": 5,
+     "ga": 2,
      "pts": 6,
      "deduction": null,
      "live": null
@@ -1388,8 +1397,8 @@
      "wins": 1,
      "draws": 1,
      "losses": 0,
-     "gf": 2,
-     "ga": 1,
+     "gf": 4,
+     "ga": 2,
      "pts": 4,
      "deduction": null,
      "live": null
@@ -1402,8 +1411,8 @@
      "wins": 0,
      "draws": 1,
      "losses": 1,
-     "gf": 0,
-     "ga": 1,
+     "gf": 1,
+     "ga": 3,
      "pts": 1,
      "deduction": null,
      "live": null
@@ -1416,8 +1425,8 @@
      "wins": 0,
      "draws": 0,
      "losses": 2,
-     "gf": 2,
-     "ga": 4,
+     "gf": 3,
+     "ga": 6,
      "pts": 0,
      "deduction": null,
      "live": null
