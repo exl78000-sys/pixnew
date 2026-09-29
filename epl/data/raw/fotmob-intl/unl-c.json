@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-29T04:44:54.400Z",
+ "retrievedAt": "2026-09-29T17:49:39.952Z",
  "matches": [
   {
    "id": "5181921",
@@ -266,7 +266,7 @@
     "shortName": "Belarus",
     "fmId": "10057"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -287,7 +287,7 @@
     "shortName": "Faroe Islands",
     "fmId": "8269"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1084,15 +1084,15 @@
      "fmId": "7871",
      "name": "Finland",
      "idx": 1,
-     "played": 1,
+     "played": 2,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
      "gf": 7,
      "ga": 0,
-     "pts": 3,
+     "pts": 4,
      "deduction": null,
-     "live": null
+     "live": "5181896"
     },
     {
      "fmId": "10024",
@@ -1112,15 +1112,15 @@
      "fmId": "10057",
      "name": "Belarus",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 0,
      "ga": 2,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181896"
     },
     {
      "fmId": "6035",
@@ -1265,22 +1265,22 @@
      "live": null
     },
     {
-     "fmId": "8265",
-     "name": "Kazakhstan",
+     "fmId": "8269",
+     "name": "Faroe Islands",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 1,
+     "draws": 2,
      "losses": 0,
-     "gf": 1,
-     "ga": 1,
-     "pts": 1,
+     "gf": 2,
+     "ga": 2,
+     "pts": 2,
      "deduction": null,
      "live": null
     },
     {
-     "fmId": "8269",
-     "name": "Faroe Islands",
+     "fmId": "8265",
+     "name": "Kazakhstan",
      "idx": 3,
      "played": 1,
      "wins": 0,
@@ -1296,13 +1296,13 @@
      "fmId": "5794",
      "name": "Moldova",
      "idx": 4,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
-     "gf": 0,
-     "ga": 2,
-     "pts": 0,
+     "gf": 1,
+     "ga": 3,
+     "pts": 1,
      "deduction": null,
      "live": null
     }
