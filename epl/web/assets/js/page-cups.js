@@ -1,6 +1,6 @@
-import * as C from './core.js?v=95f7e756';
+import * as C from './core.js?v=06f3a561';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=91f86801';
+import { renderUclView } from './ucl-view.js?v=0adb6bde';
 
 const app = document.getElementById('app');
 
@@ -375,10 +375,7 @@ try {
       cups ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `${cups.source ?? 'FotMob'}・${list.map(c => c.zh).join('與')}` }) : null,
     ])}
   </div>
-  <div class="filters">
-    ${COMPS.map(c => `<button class="btn${c.key === comp ? ' on' : ''}" data-comp="${c.key}"
-      style="display:inline-flex;align-items:center;gap:6px">${C.compBadge(c.key)}${c.zh}</button>`).join('')}
-  </div>
+  ${C.tabs(COMPS.map(c => ({ key: c.key, html: `${C.compBadge(c.key)}${C.esc(c.zh)}` })), comp, { attr: 'data-comp', label: '盃賽' })}
   <div id="compBody"></div>
   ${C.foot(meta, { sources: cupSources })}`;
 

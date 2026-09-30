@@ -763,6 +763,55 @@ export const skel = (lines = 3) => `<div class="card skel-card" aria-busy="true"
 export const stampRow = items =>
   `<div class="stamp-row">${items.filter(Boolean).join('')}</div>`;
 
+/* ── 頁內分頁(2026-09-30,方案 B)──────────
+   盤點時頁內的分頁 / 篩選有六種以上的長相(盃賽的帶圖示按鈕、單場頁的整條切換列、動態 12 顆篩選、國家隊 6 + 7 顆…),
+   各頁各自拼。收成這一支:同一種長相、role="tab" + aria-selected、超過 max 個選項的把多的收進「更多」。
+
+   **只管畫,不管事件**:每一格照頁面原本綁事件用的那個 data 屬性輸出(attr,例如 data-comp / data-season),
+   頁面原本的 onclick / 委派一行都不用改。點擊之後的 .on / aria-selected 與「更多」的收合由下面那個委派處理,
+   頁面自己再 toggle .on 也無妨(結果一樣)。
+   items:[{ key, label, html?, extra? }] —— html 給帶圖示的標籤(已跳脫好的),extra 是附加的屬性字串。 */
+export function tabs(items, active, { attr = 'data-tab', label = '', max = 0, cls = '', itemCls = '', id = '' } = {}) {
+  const btn = it => {
+    const on = String(it.key) === String(active);
+    return `<button type="button" class="seg-item${itemCls ? ' ' + itemCls : ''}${on ? ' on' : ''}" role="tab" aria-selected="${on}"
+      ${attr}="${esc(it.key)}"${it.extra ?? ''}>${it.html ?? esc(it.label)}</button>`;
+  };
+  let shown = items, rest = [];
+  if (max && items.length > max) {
+    shown = items.slice(0, max - 1);
+    rest = items.slice(max - 1);
+    // 選中的那一格在「更多」裡的話拉出來 —— 看不到自己選了什麼是最糟的
+    const ai = rest.findIndex(it => String(it.key) === String(active));
+    if (ai >= 0) { shown = [...shown, rest[ai]]; rest = rest.filter((_, i) => i !== ai); }
+  }
+  const more = rest.length
+    ? `<details class="seg-more"><summary class="seg-item">更多 ${rest.length}</summary><div class="seg-more-list">${rest.map(btn).join('')}</div></details>`
+    : '';
+  return `<div class="seg${cls ? ' ' + cls : ''}"${id ? ` id="${esc(id)}"` : ''} role="tablist"${label ? ` aria-label="${esc(label)}"` : ''}>${shown.map(btn).join('')}${more}</div>`;
+}
+if (typeof document !== 'undefined' && !globalThis.__segClick) {
+  globalThis.__segClick = true;
+  document.addEventListener('click', e => {
+    const b = e.target.closest?.('.seg .seg-item[role="tab"]');
+    const seg = b?.closest('.seg');
+    if (seg) for (const x of seg.querySelectorAll('.seg-item[role="tab"]')) {
+      const on = x === b;
+      x.classList.toggle('on', on);
+      x.setAttribute('aria-selected', String(on));
+    }
+    /* 選到「更多」裡的那一格時,「更多」的標題換成它的名字並亮起來 —— 不然收起來之後外面看不出選了什麼 */
+    const more = seg?.querySelector('.seg-more');
+    if (more) {
+      const sm = more.querySelector('summary'), inMore = more.contains(b);
+      sm.classList.toggle('on', inMore);
+      sm.textContent = inMore ? `${b.textContent.trim()} ▾` : `更多 ${more.querySelectorAll('.seg-item[role="tab"]').length}`;
+    }
+    // 「更多」:選了就收起來;點外面也收
+    for (const d of document.querySelectorAll('.seg-more[open]')) if (!d.contains(e.target) || b) d.removeAttribute('open');
+  });
+}
+
 /* ── 導覽列 ─────────────────────────── */
 // open 是「這個聯賽的導覽列開放哪幾頁」。西甲已補到外電動態與實時頁模板，
 // 其餘資料仍空的頁面先不掛上去 —— 但網址仍然進得來,
@@ -871,15 +920,53 @@ const SITE_PAGES = [
 
 ];
 
-/* 第二層:五個「看資料」的頁面收成一組。頂層列九個分頁的時候,
-   讀者要在一排等重的名字裡找自己要的那一個;收成一組之後頂層只剩四項,
-   而且進到組裡才會出現子分頁 —— 站在哪一層一眼看得出來。
+/* 導覽改成五區(2026-09-30,方案 B;使用者:「分頁按鈕過多、很分散」)。
 
-   分組不是只改名字:子分頁列只在「目前這一頁屬於這一組」時才畫出來。 */
-const GROUPS = [
-  { key: 'analysis', label: '分析', pages: ['teams', 'tactics', 'players', 'news', 'model'] },
+   原本的分法是「跨聯賽 / 這個聯賽 / 分析組」—— 那是**資料來源**的分法,讀者看不見:桌機上兩組被推到左右兩端、
+   聯賽切換只影響右半邊卻獨佔一行,手機上兩組擠進同一條橫捲列而右邊被切掉,「分析」那五頁內容前面是 255px 的導覽。
+   現在照**讀者要做的事**分五區,每個聯賽同一組:比賽、球隊、球員、賽事、更多。頂列五格,子列是目前那一區的頁
+   (只有一頁的區不畫子列);聯賽切換收成品牌旁邊的一個下拉;手機上五區搬到固定在底部的一列。
+
+   - 網址一個都沒改:區只是把既有的頁分組。探索的三個分頁(知識 / 模擬 / 球員搜尋)各自掛進該去的區,
+     連結帶 ?view=,explore.html 本身照舊是它們的宿主。
+   - 某聯賽沒開的頁照舊不列(LEAGUES.open 過濾);一區一頁都沒開就整區不出現。
+   - `also`:不在導覽上、但屬於這一區的頁(單場分析屬於「比賽」、歐冠單場屬於「賽事」)—— 站在那裡時那一區要亮。
+   - PAGES / SITE_PAGES 還在,它們是**頁名登錄**(標籤、缺口頁、closedPage 用),不再決定導覽列長什麼樣。 */
+const SECTIONS = [
+  { key: 'match', label: '比賽', icon: 'ball',
+    items: [{ page: 'index' }, { page: 'live' }], also: ['analysis', 'fixtures'] },
+  { key: 'club', label: '球隊', icon: 'shield',
+    items: [{ page: 'teams' }, { page: 'tactics' }], also: ['coaches'] },
+  { key: 'player', label: '球員', icon: 'person',
+    items: [{ page: 'players' }, { page: 'explore', view: 'allplayers', label: '球員搜尋' }], also: [] },
+  { key: 'comp', label: '賽事', icon: 'trophy',
+    items: [{ page: 'cups' }, { page: 'intl' }, { page: 'overview' }], also: ['ucl', 'ucl-match', 'cup-match'] },
+  { key: 'more', label: '更多', icon: 'dots',
+    items: [{ page: 'news' }, { page: 'model' }, { page: 'explore', view: 'knowledge', label: '足球知識' },
+      { page: 'explore', view: 'duel', label: '模擬遊玩' }, { page: 'predict' }], also: [] },
 ];
-const GROUP_OF = new Map(GROUPS.flatMap(g => g.pages.map(p => [p, g])));
+// 探索頁不帶 view 時停在第一個分頁(page-explore.js 的 VIEWS[0])—— 導覽列要亮同一個
+const EXPLORE_DEFAULT_VIEW = 'knowledge';
+/* 五區的小圖示(只在手機底部列畫)。線條圖、吃 currentColor,不引入圖示庫。 */
+const NAV_ICON = {
+  ball: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5l4 2.9-1.5 4.7h-5L8 10.4z"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+  person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>',
+  trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6"/>',
+  dots: '<circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/>',
+};
+/* 目前這一頁屬於哪一區、亮哪一格。npm test 直接呼叫它驗「每一頁都找得到自己的區」。 */
+export function navState(page = currentPage(), view = qs('view'), lg = league()) {
+  const L = LEAGUES[lg] ?? LEAGUES.pl;
+  const allow = p => (L.open ? L.open.includes(p) : true);
+  const v = page === 'explore' ? (view ?? EXPLORE_DEFAULT_VIEW) : null;
+  const sections = SECTIONS
+    .map(s => ({ ...s, items: s.items.filter(it => allow(it.page)) }))
+    .filter(s => s.items.length);
+  const isHere = it => it.page === page && (!it.view || it.view === v);
+  const here = sections.find(s => s.items.some(isHere)) ?? sections.find(s => s.also.includes(page)) ?? null;
+  return { sections, here, isHere };
+}
 
 const PAGES = [
   /* 「總覽」與「賽程與預測」合併成一頁。分成兩頁時,讀者看完積分榜想看下一輪
@@ -926,52 +1013,51 @@ export function nav() {
   const here = currentPage();
   const lg = league();
   const L = LEAGUES[lg] ?? LEAGUES.pl;
-  const allow = p => (L.open ? L.open.includes(p) : true);
-  const site = SITE_PAGES.filter(([p]) => allow(p));
+  const { sections, here: hereSection, isHere } = navState(here, qs('view'), lg);
   document.title = document.title.replace(/(?:英超|西甲)戰情室/, L.brand);
-  const labelOf = l => (typeof l === 'function' ? l(L) : l);
-  const tab = ([p, l]) => `<a href="${link(p)}" class="${p === here ? 'on' : ''}">${labelOf(l)}</a>`;
+  const itemLink = it => link(it.page, it.view ? { view: it.view } : {});
+  const itemLabel = it => it.label ?? pageLabel(it.page, lg);
+  const secLink = s => itemLink(s.items[0]);
+  const icon = k => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_ICON[k] ?? ''}</svg>`;
 
-  /* 頂層只列不在任何組裡的分頁,加上每一組一個入口。
-     組裡一個分頁都不開放的聯賽就整組不出現。 */
-  const top = PAGES.filter(([p]) => allow(p) && !GROUP_OF.has(p)).map(tab);
-  const hereGroup = GROUP_OF.get(here) ?? null;
-  for (const g of GROUPS) {
-    const open = g.pages.filter(allow);
-    if (!open.length) continue;
-    // 組的入口連到組裡第一個開放的分頁;目前正在組裡的話標成作用中
-    top.push(`<a href="${link(open[0])}" class="${g === hereGroup ? 'on' : ''}">${g.label}</a>`);
-  }
-
-  // 子分頁列只在「現在就在這一組裡」時才畫 —— 不然它只是一排跟情境無關的連結
-  const sub = hereGroup
-    ? `<div class="subbar"><div class="inner"><span class="sub-label">${hereGroup.label}</span>
-        <nav class="tabs sub">${PAGES.filter(([p]) => hereGroup.pages.includes(p) && allow(p)).map(tab).join('')}</nav>
+  // 頂列五區。目前那一區標成作用中;站在不在導覽上的頁(單場分析)時,它所屬的那一區亮
+  const top = sections.map(s =>
+    `<a href="${secLink(s)}" class="${s === hereSection ? 'on' : ''}"${s === hereSection ? ' aria-current="true"' : ''}>${s.label}</a>`).join('');
+  // 子列:目前那一區有兩頁以上才畫(只有一頁的區,子列只是把頂列那一格再印一次)
+  const sub = hereSection && hereSection.items.length > 1
+    ? `<div class="subbar"><div class="inner"><span class="sub-label">${hereSection.label}</span>
+        <nav class="tabs sub" aria-label="${hereSection.label}">${hereSection.items.map(it =>
+          `<a href="${itemLink(it)}" class="${isHere(it) ? 'on' : ''}"${isHere(it) ? ' aria-current="page"' : ''}>${esc(itemLabel(it))}</a>`).join('')}</nav>
       </div></div>`
     : '';
+  // 聯賽切換收成一個下拉(六顆 → 一個)。用 details/summary:不用 JS 也打得開,單檔版的 hash 連結照樣能點
+  const leagueMenu = `<details class="league-menu"><summary aria-label="切換聯賽">${L.zh}<span class="caret" aria-hidden="true"></span></summary>
+      <div class="league-list" role="menu">${Object.entries(LEAGUES).map(([k, v]) =>
+        `<a role="menuitem" href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div></details>`;
 
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
       <a class="brand" href="${link('index')}"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
-      ${/* 兩組分頁包在同一個容器裡。桌機是 `display: contents`(等於沒有這一層,
-           版面完全不變);**手機上它變成單一條橫向捲動列** —— 原本兩組各佔一行,
-           加上品牌那行,導覽列在 375px 下是 245px 而且 sticky,等於整個瀏覽過程
-           永遠有 30% 的螢幕是導覽。 */''}
-      <div class="tabwrap">
-      ${site.length ? `<nav class="tabs site">${site.map(tab).join('')}</nav><span class="nav-sep"></span>` : ''}
-      ${/* 分頁靠右,跟切換鈕排在同一側;左邊留給品牌與跨聯賽的足球知識。 */''}
-      <nav class="tabs main">${top.join('')}</nav>
-      </div>
-      ${/* 切換鈕固定在最右邊。原本排在品牌後面,位置會隨著分頁數量左右浮動 ——
-           換聯賽是最常按的東西之一,它應該永遠在同一個地方。 */''}
-      <div class="league-switch" aria-label="切換聯賽">${Object.entries(LEAGUES).map(([k, v]) =>
-        `<a href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div>
+      ${leagueMenu}
+      <nav class="tabs sections" aria-label="主選單">${top}</nav>
     </div>${sub}</header>`);
+  /* 手機的底部五格(桌機 display:none)。單檔版換頁時連同 .topbar 一起拿掉(bundle.mjs),這裡先清舊的,不會疊兩條。 */
+  document.querySelector('.bottombar')?.remove();
+  document.body.insertAdjacentHTML('beforeend', `<nav class="bottombar" aria-label="主選單">${sections.map(s =>
+    `<a href="${secLink(s)}" class="${s === hereSection ? 'on' : ''}">${icon(s.icon)}<span>${s.label}</span></a>`).join('')}</nav>`);
 
-  /* 手機上兩組分頁併成一條橫向捲動列,而作用中的那一個可能在可視範圍外 ——
-     **看不到自己在哪一頁**比要多捲一下糟得多。這裡把它捲進視野。
+  /* 下拉點外面就收起來(details 預設不會)。掛一次就好:單檔版每次換頁都重畫導覽列。 */
+  if (!globalThis.__leagueMenuClose) {
+    globalThis.__leagueMenuClose = true;
+    document.addEventListener('click', e => {
+      const m = document.querySelector('.league-menu[open]');
+      if (m && !m.contains(e.target)) m.removeAttribute('open');
+    });
+  }
+
+  /* 手機上子列是一條橫向捲動列,作用中的那一格可能在可視範圍外 —— 把它捲進視野。
      `block: 'nearest'` 是必要的:預設會連垂直方向一起捲,整頁會跳。 */
-  document.querySelector('.tabwrap')?.querySelector('a.on')
+  document.querySelector('.subbar nav.tabs.sub')?.querySelector('a.on')
     ?.scrollIntoView({ inline: 'center', block: 'nearest' });
 
   /* 手機上往下捲就收品牌列(2026-09-27,C1)。量過:375px 寬的導覽列 131px 而且 sticky,佔 812px 螢幕的 16%,

@@ -14,9 +14,9 @@
  *
  * 網址 `?view=teams|predict`,舊連結(沒帶 view)進來預設停在「我的球隊」——
  * 關注是新功能,而預測要一輪一輪填,先看關注比較合理。 */
-import * as C from './core.js?v=95f7e756';
-import { renderFollowTeams } from './follow-view.js?v=3458b2df';
-import { renderPredict } from './predict-view.js?v=a599eddc';
+import * as C from './core.js?v=06f3a561';
+import { renderFollowTeams } from './follow-view.js?v=43557dbc';
+import { renderPredict } from './predict-view.js?v=d7854d3b';
 
 const VIEWS = [
   { key: 'teams', zh: '我的球隊', render: renderFollowTeams },
@@ -31,10 +31,7 @@ try {
   let cur = VIEWS.some(v => v.key === asked) ? asked : VIEWS[0].key;
 
   app.innerHTML = `
-    <div class="filters" id="mineTabs">
-      ${VIEWS.map(v => `<button class="btn${v.key === cur ? ' on' : ''}" type="button"
-        data-mine="${v.key}">${C.esc(v.zh)}</button>`).join('')}
-    </div>
+    ${C.tabs(VIEWS.map(v => ({ key: v.key, label: v.zh })), cur, { attr: 'data-mine', id: 'mineTabs', label: '我的' })}
     <div id="mineBody"><div class="loading">載入資料中…</div></div>`;
 
   const body = document.getElementById('mineBody');

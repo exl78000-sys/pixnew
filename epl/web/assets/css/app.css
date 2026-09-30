@@ -74,9 +74,23 @@ a:hover { text-decoration: underline; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .3px; font-size: 16px; color: var(--ink); }
 .brand .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
 .brand small { font-weight: 500; color: var(--ink-3); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; }
-.league-switch { display:flex; gap:3px; padding:3px; border:1px solid var(--line); border-radius:999px; background:#ffffff08; }
-.league-switch a { color:var(--ink-3); padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; text-decoration:none; }
-.league-switch a.on { color:#0b0710; background:var(--accent); }
+/* 聯賽切換(2026-09-30 起是品牌旁邊的一個下拉;原本六顆常駐、在手機上自己佔一行)。
+   details/summary:不用 JS 就打得開,點外面收起來由 core.js 掛一個 click。 */
+.league-menu { position: relative; }
+.league-menu > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px; background: #ffffff08;
+  font-size: 12.5px; font-weight: 700; color: var(--ink); user-select: none; }
+.league-menu > summary::-webkit-details-marker { display: none; }
+.league-menu > summary:hover { background: #ffffff12; }
+.league-menu .caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 5px solid var(--ink-3); transition: transform .15s; }
+.league-menu[open] .caret { transform: rotate(180deg); }
+.league-list { position: absolute; top: calc(100% + 6px); left: 0; z-index: 45; min-width: 120px;
+  display: grid; gap: 2px; padding: 6px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--bg-2); box-shadow: 0 10px 30px #0008; }
+.league-list a { color: var(--ink-2); padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
+.league-list a:hover { background: #ffffff0d; color: var(--ink); text-decoration: none; }
+.league-list a.on { color: #0b0710; background: var(--accent); }
 nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
 .pick-group { display: contents; }
 
@@ -164,15 +178,10 @@ h1.intl-team { display: flex; gap: 12px; }
 .lead-team .crest { width: 20px; height: 20px; }
 .lead-team > * { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lead-team > * > span:not(.pill) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-/* 桌機上這一層不存在(display:contents),版面跟沒有它時完全一樣;
-   手機上它變成兩組分頁共用的那一條橫向捲動列。 */
-.tabwrap { display: contents; }
-/* 跨聯賽的那一組(足球知識)排最左,用一條細線跟聯賽分頁隔開 */
-.nav-sep { width: 1px; align-self: stretch; min-height: 22px; background: var(--line); }
-/* 分頁靠右,跟切換鈕排同一側;左邊留給品牌與足球知識 */
-nav.tabs.main { margin-left: auto; }
-/* 切換聯賽固定在最右邊 —— 它是最常按的東西之一,位置不該隨分頁數量浮動 */
-.league-switch { margin-left: 14px; }
+/* 五區靠右(2026-09-30,方案 B):左邊是品牌 + 聯賽下拉(「我在哪個聯賽」),右邊是五區(「我要做什麼」)。 */
+nav.tabs.sections { margin-left: auto; }
+/* 手機的底部五格。桌機不畫 —— 頂列那五格就是它。 */
+.bottombar { display: none; }
 
 /* 第二層分頁。只在「現在就在這一組裡」時才畫出來,所以它出現本身
    就是在說「你在分析這一組」——因此左邊掛一個組名,不用讀者自己推。 */
@@ -182,42 +191,36 @@ nav.tabs.main { margin-left: auto; }
 .sub-label { font-size: 11.5px; color: var(--ink-3); letter-spacing: 1px; }
 nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
 
-/* 窄螢幕上分頁會換成三行,切換鈕排在最後就會自己獨佔第四行。
-   改用 order 把它拉到品牌那一行的最右邊 —— 一樣是「最右邊」,但不多吃一行。 */
+/* 手機(2026-09-30,方案 B):頂列只剩「品牌 + 聯賽下拉」一行;五區搬到固定在底部的一列(拇指搆得到、不佔上方);
+   子列(目前那一區的頁)是一條橫向捲動列。原本「分析」那五頁內容前是 198 + 57 = 255px 的導覽。 */
 @media (max-width: 700px) {
-  .brand { order: -2; }
-  .league-switch { order: -1; margin-left: auto; }
-  nav.tabs.site { order: 0; }
-  nav.tabs.main { order: 1; margin-left: 0; }
-  /* 換行之後上下兩組本來就分開了,豎線反而變成一條沒有意義的裝飾 */
-  .nav-sep { display: none; }
-  .subbar .inner { padding: 6px 14px; }
-
-  /* 導覽列在手機上原本會折成三到四行,整片 **245px 而且是 sticky** ——
-     等於 812px 的螢幕永遠有 30% 是導覽,捲到哪裡都跟著。
-     改成每一組各自一行、橫向捲動:高度降到 ~130px,可視內容多兩成。
-     不用「收合成漢堡選單」是因為那要多一次點擊才看得到自己在哪一頁,
-     而這個站的分頁本來就是主要的動線。 */
-  .topbar .inner { padding: 8px 14px; gap: 10px; row-gap: 8px; }
-  /* 兩組分頁併成同一條捲動列:分開捲的話讀者要學兩個捲動區,而且多佔一行。 */
-  .tabwrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1 1 100%;
-    min-width: 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;              /* Firefox */
+  nav.tabs.sections { display: none; }
+  .league-menu { margin-left: auto; }
+  .league-list { left: auto; right: 0; }
+  .subbar .inner { padding: 6px 14px; flex-wrap: nowrap; }
+  .subbar nav.tabs.sub {
+    flex-wrap: nowrap; overflow-x: auto; min-width: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none;
     /* 右緣淡出,提示「還有」—— 沒有捲軸的話讀者不會知道右邊還有分頁 */
     mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
   }
-  .tabwrap::-webkit-scrollbar { display: none; }
-  nav.tabs { flex-wrap: nowrap; flex: 0 0 auto; }
-  nav.tabs.main { margin-left: 0; }
-  nav.tabs > a { flex: 0 0 auto; }
-  /* 併成一條之後,兩組之間需要那條豎線才分得出來 */
-  .nav-sep { display: block; flex: 0 0 auto; min-height: 20px; }
+  .subbar nav.tabs.sub::-webkit-scrollbar { display: none; }
+  .subbar nav.tabs.sub > a { flex: 0 0 auto; }
+  .bottombar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 38;
+    padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
+    background: #0b0710f0; backdrop-filter: blur(14px); border-top: 1px solid var(--line);
+  }
+  .bottombar a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    min-height: 48px; border-radius: 10px; color: var(--ink-3); font-size: 11px; font-weight: 700; text-decoration: none; }
+  .bottombar a.on { color: var(--accent); }
+  .bottombar a.on svg { filter: drop-shadow(0 0 6px var(--accent)); }
+  /* 內容不能被底部列蓋住 */
+  body { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+
+  .topbar .inner { padding: 8px 14px; gap: 10px; row-gap: 8px; flex-wrap: nowrap; }
+  .brand { min-width: 0; }
+  .brand small { display: none; }
 
   /* 「我的預測」的填答列:三個勝負鈕是同一組選項,折行時不可以被拆開。
      比分兩格 + 冒號也一樣。原因欄與儲存鈕各自占滿剩下的寬度。 */
@@ -253,14 +256,13 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
   .stat-line.tie-leg.intl-row .prob { min-width: 120px; }
   /* 觸控目標:原本 36px,低於一般建議的 44。單行之後高度省下來了,補回去 */
   nav.tabs > a { min-height: 40px; display: flex; align-items: center; }
-  /* 往下捲時收品牌列(2026-09-27,C1;規則在 core.js 的 nav()):品牌與切換聯賽那一行收起,分頁列留著,
-     導覽列從 131px 降到 ~70px;往上捲一點就放回來。 */
-  .topbar.compact .brand, .topbar.compact .league-switch { display: none; }
+  /* 往下捲時收品牌列(2026-09-27,C1;規則在 core.js 的 nav()):品牌與聯賽下拉那一行收起,子列留著;往上捲一點就放回來。 */
+  .topbar.compact > .inner { display: none; }
   /* 觸控目標拉到 36px(2026-09-27,C2)。375px 實測首頁 74 個可點的東西裡 50 個不到 32px:切換聯賽 42×25、
      分頁與卡片上的 pill 連結 24px、小按鈕 21–23px、勾選格 26–28px、表格裡的球隊連結 26px。
      只動**連結與按鈕形態的 pill**(a / button),當標籤用的 span.pill 不動;內文裡的文字連結(14–16px)不動 ——
      那是段落的一部分,撐高會把行距撐壞。 */
-  .league-switch a, a.pill, button.pill, .btn.tiny, .comp-pick { min-height: 36px; display: inline-flex; align-items: center; }
+  .league-menu > summary, .league-list a, a.pill, button.pill, .btn.tiny, .comp-pick { min-height: 36px; display: inline-flex; align-items: center; }
   .followstar { min-width: 36px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; }
   td .team-cell, td a .team-cell { min-height: 36px; align-items: center; }
 }
@@ -915,3 +917,22 @@ input:focus-visible, tbody tr.clickable:focus-visible {
   background: linear-gradient(90deg, transparent, #ffffff14, transparent); animation: skel 1.4s infinite; }
 @keyframes skel { to { transform: translateX(100%); } }
 @media (prefers-reduced-motion: reduce) { .skel::after { animation: none; } }
+
+/* ── 頁內分頁(2026-09-30,方案 B;core.js 的 tabs())──
+   全站頁內的分頁 / 篩選同一種長相。超過上限的收進「更多」下拉。 */
+.seg { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 12px 0; }
+.seg-item { appearance: none; font: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  min-height: 34px; padding: 5px 14px; border: 1px solid var(--line); border-radius: 999px; background: #ffffff08;
+  color: var(--ink-2); font-size: 13px; font-weight: 700; list-style: none; }
+.seg-item:hover { color: var(--ink); background: #ffffff12; }
+.seg-item.on { color: #0b0710; background: var(--accent); border-color: var(--accent); }
+.seg-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seg-more { position: relative; }
+.seg-more > summary::-webkit-details-marker { display: none; }
+.seg-more[open] > summary { color: var(--ink); background: #ffffff12; }
+.seg-more-list { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; display: grid; gap: 4px; padding: 6px;
+  min-width: 140px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-2); box-shadow: 0 10px 30px #0008; }
+.seg-more-list .seg-item { justify-content: flex-start; }
+@media (max-width: 700px) { .seg-item { min-height: 36px; } .seg-more-list { left: auto; right: 0; } }
+/* 單場頁的三格(綜合對比 / 賽前 / 賽後)在手機上排一行:原本 flex-basis 120px,375px 寬折成兩行、第三格自己一行 */
+@media (max-width: 700px) { .analysis-switch .analysis-tab { flex: 1 1 0; min-width: 0; padding: 5px 8px; justify-content: center; } }

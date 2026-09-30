@@ -10,6 +10,8 @@ import { bridgeUclTeamIds } from './lib/ucl-ids.mjs';
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
 import { attachFixtureGrids } from './lib/fixture-grids.mjs';
+// 導覽五區的 navState(2026-09-30):core.js 要先有假的 document 才載得進來,所以在下面那一節載入後才指派
+let NAV_CORE = null;
 import { isCupTbd } from './lib/adapters/fotmob-cups.mjs';
 import { matchPerson as loanMatchPerson, yearShifted as loanYearShifted } from './verify-loans.mjs';
 import { normName, matchOne as nameMatchOne } from './lib/names.mjs';
@@ -97,6 +99,7 @@ async function checkInplayKickoff() {
   // ② 顯示:中場講中場,每一個畫分鐘的地方都走 minuteText(core.js 載入時會掛鍵盤事件,跟其他節一樣先給一個假的 document)
   globalThis.document ??= { addEventListener() {} };
   const V = await import('../web/assets/js/core.js');
+  NAV_CORE = V;
   const htMin = V.liveMinute({ period: 'HT', minute: 45 }, new Date().toISOString());
   ok('liveMinute:資料源說中場就是中場(不從 45 往上推)', htMin.ht === true && V.minuteText(htMin) === '中場休息');
   ok('minuteText:一般分鐘照舊是「第 X 分鐘」', V.minuteText(V.liveMinute({ minute: 30 }, null)) === '第 30 分鐘');
@@ -2255,7 +2258,7 @@ async function checkDataGap() {
        而且不可以自己列一份聯賽清單。 */
     ['總覽只在 SITE_PAGES,不在 PAGES(兩邊都放會出現兩個一樣的分頁)', (() => {
       const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
-      const site = src.slice(src.indexOf('const SITE_PAGES = ['), src.indexOf('const GROUPS = ['));
+      const site = src.slice(src.indexOf('const SITE_PAGES = ['), src.indexOf('const SECTIONS = ['));
       const pages = src.slice(src.indexOf('const PAGES = ['), src.indexOf('const ESSENTIAL_') >= 0
         ? src.indexOf('const ESSENTIAL_') : src.indexOf('export function nav'));
       return /'overview'/.test(site) && !/\['overview'/.test(pages);
@@ -3397,8 +3400,8 @@ async function checkDataGap() {
       const pc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-core.js'), 'utf8');
       const bundleSrc = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
       const explore = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8');
-      const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS'));
-      const pagesBlock = core.slice(core.indexOf('const GROUPS'));
+      const sitePagesBlock = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const SECTIONS'));
+      const pagesBlock = core.slice(core.indexOf('const PAGES = ['), core.indexOf('export const pageLabel'));
       return sitePagesBlock.includes("['explore', '探索']")
         && sitePagesBlock.indexOf("'cups'") < sitePagesBlock.indexOf("'explore'")   // 盃賽旁邊
         && !sitePagesBlock.includes("['duel'")                        // 舊的三格都拿掉了
@@ -3539,7 +3542,7 @@ async function checkDataGap() {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
       const ex = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8');
       const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
-      const site = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS'));
+      const site = core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const SECTIONS'));
       const olds = ['knowledge', 'duel', 'allplayers'];
       return [
         ['三個舊分頁不再各佔導覽列一格',
@@ -3574,14 +3577,18 @@ async function checkDataGap() {
       const cups = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');
       const mobile = css.slice(css.indexOf('@media (max-width: 700px)'));
       return [
-        /* 手機上兩組分頁本來各佔一行,加品牌那行是 245px **而且 sticky** ——
-           812px 的螢幕永遠有 30% 是導覽,捲到哪都跟著。 */
-        ['兩組分頁包在同一個 tabwrap 裡(手機併成一條捲動列)',
-          /<div class="tabwrap">/.test(core) && /\.tabwrap \{ display: contents; \}/.test(css)],
-        ['桌機上 tabwrap 等於不存在(display:contents),版面不受影響',
-          /\.tabwrap \{ display: contents; \}/.test(css)],
-        ['手機上 tabwrap 是可橫向捲動的單行',
-          /\.tabwrap \{[\s\S]*?overflow-x: auto/.test(mobile) && /nav\.tabs \{ flex-wrap: nowrap/.test(mobile)],
+        /* 2026-09-30 方案 B:頂列五區 + 聯賽下拉;手機上五區搬到固定在底部的一列,頂列只剩品牌與下拉一行,
+           子列是一條橫向捲動列。原本「分析」那五頁內容前是 198 + 57 = 255px 的導覽(量過)。 */
+        ['導覽是五區 + 子列 + 聯賽下拉(details),手機另畫底部列',
+          /<nav class="tabs sections"/.test(core) && /<details class="league-menu">/.test(core)
+          && /<nav class="bottombar"/.test(core) && /class="subbar"/.test(core)],
+        ['桌機不畫底部列;手機藏頂列五區、底部列 fixed、內容留出底部列的高度',
+          /\.bottombar \{ display: none; \}/.test(css.slice(0, css.indexOf('@media (max-width: 700px)')))
+          && /nav\.tabs\.sections \{ display: none; \}/.test(mobile)
+          && /\.bottombar \{[\s\S]*?position: fixed/.test(mobile)
+          && /body \{ padding-bottom: calc\(60px/.test(mobile)],
+        ['手機上子列是可橫向捲動的單行',
+          /\.subbar nav\.tabs\.sub \{[\s\S]*?flex-wrap: nowrap; overflow-x: auto/.test(mobile)],
         /* 併成一條之後作用中的分頁可能在可視範圍外 —— 看不到自己在哪一頁,
            比要多捲一下糟得多。block:'nearest' 是必要的,不然整頁會跳。 */
         ['作用中的分頁會捲進視野,而且不會連垂直方向一起捲',
@@ -3780,8 +3787,8 @@ async function checkDataGap() {
            **頁面鍵仍是 `predict`** —— 改鍵的話三份清單、舊網址與書籤全部要跟著動。 */
         ['我的(球隊 + 預測)掛在跨聯賽那一組、三份清單都有',
           /\['predict', '我的'\]/.test(core)
-          && core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const GROUPS')).includes("'predict'")
-          && !core.slice(core.indexOf('const GROUPS')).includes("['predict'")
+          && core.slice(core.indexOf('const SITE_PAGES'), core.indexOf('const SECTIONS')).includes("'predict'")
+          && !core.slice(core.indexOf('const PAGES = ['), core.indexOf('export const pageLabel')).includes("['predict'")
           && /'explore', 'predict'\]/.test(bundle)
           && /'predict-score'/.test(bundle)
           /* **不要數出現次數**(第一版寫 `.length === 2`,加德甲就紅在「多了一個」)——
@@ -4753,8 +4760,8 @@ async function checkDataGap() {
       return /globalThis\.__topbarScroll/.test(core) && /classList\.toggle\('compact', want\)/.test(core)
         && /setProperty\('--topbar-h'/.test(core) && !/requestAnimationFrame\(\(\) => \{ ticking/.test(core)
         && /addEventListener\('scroll', onScroll, \{ passive: true \}\)/.test(core)
-        && /\.topbar\.compact \.brand, \.topbar\.compact \.league-switch \{ display: none; \}/.test(mobile)
-        && /\.league-switch a, a\.pill, button\.pill, \.btn\.tiny, \.comp-pick \{ min-height: 36px/.test(mobile)
+        && /\.topbar\.compact > \.inner \{ display: none; \}/.test(mobile)
+        && /\.league-menu > summary, \.league-list a, a\.pill, button\.pill, \.btn\.tiny, \.comp-pick \{ min-height: 36px/.test(mobile)
         && /\.followstar \{ min-width: 36px; min-height: 36px/.test(mobile)
         && /\.analysis-switch \{[\s\S]{0,200}top: var\(--topbar-h, 61px\)/.test(css);
     })()],
@@ -5633,18 +5640,38 @@ function checkAssetStamps() {
   ok(liveSrc.includes('live.demo ? new Set()'),
     '重播模式不做排除(重播的是別季比賽,配對鍵可能撞上本季)');
 
-  /* 第二層分頁。GROUPS 裡列的頁面都必須真的存在於 PAGES ——
-     打錯一個字的話那一頁會從導覽列整個消失(頂層排除它、子層又找不到它),
-     而且不會有任何地方報錯。 */
-  const groupPages = [...core.matchAll(/pages: \[([^\]]+)\]/g)]
-    .flatMap(m => m[1].split(',').map(x => x.trim().replace(/^'|'$/g, '')));
-  ok(groupPages.length >= 5, `分析組收了 ${groupPages.length} 個分頁`);
-  const declared = [...core.matchAll(/^  \['([\w-]+)',/gm)].map(m => m[1]);
-  const orphan = groupPages.filter(p => !declared.includes(p));
-  ok(orphan.length === 0, '分組列的分頁都真的存在於 PAGES', orphan.join('、'));
-  // 每一個被分組的頁面都要有對應的 html,否則子分頁會連到 404
-  const missingHtml = groupPages.filter(p => !existsSync(join(W, `${p}.html`)));
-  ok(missingHtml.length === 0, '分組的每一頁都有對應的 html', missingHtml.join('、'));
+  /* 導覽五區(2026-09-30,方案 B;取代原本的 GROUPS 那一段)。SECTIONS 裡列的頁都必須真的存在於 PAGES / SITE_PAGES ——
+     打錯一個字的話那一頁會從導覽列整個消失,而且不會有任何地方報錯。navState 直接呼叫(三個引數都給,不碰 location)。 */
+  {
+    const NV = NAV_CORE;
+    const declared = [...core.matchAll(/^  \['([\w-]+)',/gm)].map(m => m[1]);
+    const secBlock = core.slice(core.indexOf('const SECTIONS = ['), core.indexOf('const EXPLORE_DEFAULT_VIEW'));
+    const secPages = [...secBlock.matchAll(/page: '([\w-]+)'/g)].map(m => m[1]);
+    ok(secPages.length >= 12, `五區收了 ${secPages.length} 個分頁`);
+    const orphan = secPages.filter(p => !declared.includes(p));
+    ok(orphan.length === 0, '五區裡的分頁都真的存在於 PAGES / SITE_PAGES', orphan.join('、'));
+    const allPl = NV.navState('index', null, 'pl');
+    ok(allPl.sections.length === 5 && allPl.sections.map(x => x.label).join() === '比賽,球隊,球員,賽事,更多', '英超五區都在、順序固定');
+    const keys = allPl.sections.flatMap(x => x.items.map(it => it.page + (it.view ? ':' + it.view : '')));
+    ok(new Set(keys).size === keys.length, '同一頁(含 view)不會出現在兩個地方', keys.join(' '));
+    // 每個導覽上的頁,站在那裡時都有一區亮;單場分析亮「比賽」、歐冠單場亮「賽事」
+    const lost = [...new Set(secPages)].filter(pg => !NV.navState(pg, null, 'pl').here);
+    ok(lost.length === 0, '每一個導覽上的頁都找得到自己的區', lost.join('、'));
+    ok(NV.navState('analysis', null, 'pl').here?.key === 'match' && NV.navState('ucl-match', null, 'pl').here?.key === 'comp'
+      && NV.navState('explore', 'allplayers', 'pl').here?.key === 'player' && NV.navState('explore', null, 'pl').here?.key === 'more',
+      '不在導覽上的頁與探索的三個分頁各自亮對的區');
+    // 聯賽沒開的頁不列(例:德甲沒有戰術與實時)
+    const bad = [];
+    for (const lg of Object.keys(NV.LEAGUES)) {
+      const open = NV.LEAGUES[lg].open;
+      if (!open) continue;
+      for (const x of NV.navState('index', null, lg).sections) for (const it of x.items) if (!open.includes(it.page)) bad.push(`${lg}:${it.page}`);
+    }
+    ok(bad.length === 0, '每個聯賽只列 open 清單裡的頁', bad.join('、'));
+    // 五區裡的每一頁都要有對應的 html,否則導覽會連到 404
+    const missingHtml = [...new Set(secPages)].filter(p => !existsSync(join(W, `${p}.html`)));
+    ok(missingHtml.length === 0, '五區的每一頁都有對應的 html', missingHtml.join('、'));
+  }
   return fail;
 }
 

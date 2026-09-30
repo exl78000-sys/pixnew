@@ -1,4 +1,4 @@
-import * as C from './core.js?v=95f7e756';
+import * as C from './core.js?v=06f3a561';
 
 const app = document.getElementById('app');
 
@@ -175,10 +175,11 @@ try {
           所以 played 還是 false、但官方已經有事件時,把時間軸提到分頁之前直接顯示。 */''}
     ${!f.played ? `<div id="livePanel"></div>` + goalsCard(f, { live: true }) + probCurveCard(f) : ''}
 
-    <div class="analysis-switch" id="analysis-views" role="tablist" aria-label="分析階段">
-      ${f.played ? '<button class="btn analysis-tab" type="button" role="tab" data-view="compare" aria-controls="panel-compare">綜合對比</button>' : ''}
-      <button class="btn analysis-tab" type="button" role="tab" data-view="pre" aria-controls="panel-pre">賽前分析</button>
-      ${f.played ? '<button class="btn analysis-tab" type="button" role="tab" data-view="post" aria-controls="panel-post">賽後分析</button>' : ''}
+    ${C.tabs([
+      ...(f.played ? [{ key: 'compare', label: '綜合對比', extra: ' aria-controls="panel-compare"' }] : []),
+      { key: 'pre', label: '賽前分析', extra: ' aria-controls="panel-pre"' },
+      ...(f.played ? [{ key: 'post', label: '賽後分析', extra: ' aria-controls="panel-post"' }] : []),
+    ], null, { attr: 'data-view', cls: 'analysis-switch', itemCls: 'analysis-tab', id: 'analysis-views', label: '分析階段' }).replace(/<\/div>$/, '')}
     </div>
 
     ${f.played ? `<section class="analysis-panel" id="panel-compare" role="tabpanel">
@@ -530,10 +531,11 @@ try {
     </div>
     ${!f.played ? `<div id="livePanel"></div>` : ''}
 
-    ${f.played ? `<div class="analysis-switch" id="analysis-views" role="tablist" aria-label="分析階段">
-      <button class="btn analysis-tab" type="button" role="tab" data-view="compare" aria-controls="panel-compare">綜合對比</button>
-      <button class="btn analysis-tab" type="button" role="tab" data-view="pre" aria-controls="panel-pre">賽前分析</button>
-      <button class="btn analysis-tab" type="button" role="tab" data-view="post" aria-controls="panel-post">賽後分析</button>
+    ${f.played ? `${C.tabs([
+      { key: 'compare', label: '綜合對比', extra: ' aria-controls="panel-compare"' },
+      { key: 'pre', label: '賽前分析', extra: ' aria-controls="panel-pre"' },
+      { key: 'post', label: '賽後分析', extra: ' aria-controls="panel-post"' },
+    ], null, { attr: 'data-view', cls: 'analysis-switch', itemCls: 'analysis-tab', id: 'analysis-views', label: '分析階段' }).replace(/<\/div>$/, '')}
     </div>` : ''}
 
     ${/* 三個分頁的欄位順序**照英超那一份排**(2026-09-01)。以前是各排各的,

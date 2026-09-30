@@ -1,4 +1,4 @@
-import * as C from './core.js?v=95f7e756';
+import * as C from './core.js?v=06f3a561';
 import { followedIn } from './follow.js?v=02130043';
 import { scorePredictions, outcomeOf, pickOf, matchKey, OUTCOMES } from './predict-score.js?v=3cc21f65';
 
@@ -223,9 +223,7 @@ export async function renderPredict(host) {
           data-lg="${C.esc(p.lg)}">${C.esc(p.zh)}</button>`).join('')}
       </div>
 
-      <div class="analysis-switch" role="tablist" aria-label="模式">
-        <button class="btn analysis-tab ${state.tab === 'pick' ? 'on' : ''}" type="button" data-tab="pick">這一輪</button>
-        <button class="btn analysis-tab ${state.tab === 'table' ? 'on' : ''}" type="button" data-tab="table">成績</button>
+      ${C.tabs([{ key: 'pick', label: '這一輪' }, { key: 'table', label: '成績' }], state.tab, { attr: 'data-tab', label: '模式' }).replace(/<\/div>$/, '')}
       </div>
 
       ${state.tab === 'pick' ? pickPanel(L, recs) : tablePanel(L, scored)}

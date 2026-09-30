@@ -1,4 +1,4 @@
-import * as C from './core.js?v=95f7e756';
+import * as C from './core.js?v=06f3a561';
 
 const app = document.getElementById('app');
 
@@ -119,9 +119,8 @@ try {
     ])}
   </div>
 
-  <div class="filters" style="margin-bottom:0">
-    <button class="btn" data-season="current">${SEASONS.current.label}</button>
-    <button class="btn" data-season="last">${SEASONS.last.label}</button>
+  <div class="filters" style="margin-bottom:0;align-items:center">
+    ${C.tabs([{ key: 'current', label: SEASONS.current.label }, { key: 'last', label: SEASONS.last.label }], null, { attr: 'data-season', label: '賽季', cls: 'seg-inline' })}
     <span class="dim small" id="seasonNote"></span>
   </div>
   <div id="seasonBanner"></div>
@@ -149,7 +148,7 @@ try {
   ${C.foot(meta)}`;
 
   function renderSeasonUI() {
-    document.querySelectorAll('[data-season]').forEach(b => b.classList.toggle('on', b.dataset.season === mode));
+    document.querySelectorAll('[data-season]').forEach(b => { b.classList.toggle('on', b.dataset.season === mode); b.setAttribute('aria-selected', String(b.dataset.season === mode)); });
     const boards = mode === 'current' ? leaders.current : leaders.last;
     document.getElementById('boardHint').textContent = mode === 'current'
       ? `本季 ${leaders.seasons.current} 至今(${leaders.currentRounds} 輪)`
