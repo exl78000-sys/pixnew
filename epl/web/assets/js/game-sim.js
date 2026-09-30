@@ -1572,7 +1572,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 控球串:賽後解讀(game-diag.js)要的是「一次進攻怎麼結束的」。連續模擬裡沒有「回合」這個東西,
        所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
     chains: [], chain: null, pendingOrigin: null,
-    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, duels: 0, contacts: 0, contactFrames: 0, duelPair: null, duel: null, dribbles: 0, dribblesBy: { home: 0, away: 0 },
+    shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, decBy: { home: { n: new Array(7).fill(0), shot: new Array(7).fill(0), cap: new Array(7).fill(0), q: new Array(7).fill(0) }, away: { n: new Array(7).fill(0), shot: new Array(7).fill(0), cap: new Array(7).fill(0), q: new Array(7).fill(0) } }, duels: 0, contacts: 0, contactFrames: 0, duelPair: null, duel: null, dribbles: 0, dribblesBy: { home: 0, away: 0 },
     carryN: 0, carryFree: 0, carryMarked: 0, carryFoeD: 0, carryFoeN: 0,
     boxTouch: { home: 0, away: 0 }, okOwnHalf: { home: 0, away: 0 }, okOppHalf: { home: 0, away: 0 }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
     /* **禁區裡的活動量**(2026-09-21,階段 5h)。純計數,不呼叫 rng。
@@ -2536,6 +2536,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          「要生出真實的分佈,每一格的機率得是多少」。 */
       const oppBin = Math.min(6, Math.floor(dGoal / 5));
       st.oppBins.n[oppBin]++;
+      /* **分隊**的決策點(2026-09-30,「強隊 λ 偏低」那一項的量測)。只加計數、不碰 rng,行為逐字不變。
+         cap 記的是「意願已經撞到 0.9 的上限」—— 強隊的 urgeOf 乘數大,近距離的好機會會先撞上限,
+         遠射卻照比例放大,那會讓強隊射出來的球往遠射偏。這一格就是拿來驗那個候選的。 */
+      { const db = st.decBy[p.side]; db.n[oppBin]++; db.q[oppBin] += q; if (urge >= 0.9) db.cap[oppBin]++; }
       /* **階段 5g:球道佔比要在抽籤之前量**,而且射與不射用同一份。
          在這裡量、抽完再加射門那一份 —— 兩群逐字同一條線、同一個母體。
          放到抽籤後面分兩支各量一次的話,那就是兩份程式,遲早會分岔。 */
@@ -2547,6 +2551,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const snap = p.snap === true; p.snap = false;
       if (rng() < (snap ? CORNER_SNAP : cl(urge, 0, 0.9))) {
         st.oppBins.shot[oppBin]++;
+        st.decBy[p.side].shot[oppBin]++;
         st.decShot[oppBin]++; st.decShotOcc[oppBin] += dl.occ; st.decShotFar[oppBin] += dl.far;
         const xg = cl(q * xgScale, 0.01, 0.95);
         const c = cal[p.side];
@@ -3920,7 +3925,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         shotBlkBins: [...st.shotBlkBins], blkXg: st.blkXg, shotHead: st.shotHead, blkHead: st.blkHead,
         keeperSaves: st.keeperSaves, corners: { ...st.corners }, throwIns: st.throwIns, goalKicks: st.goalKicks,
         fouls: { ...st.fouls }, cards: { ...st.cards }, reds: { ...st.reds }, subs: { ...st.subs },
-        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
+        pens: { ...st.pens }, assists: { ...st.assists }, shotSit: { ...st.shotSit }, sitBins: JSON.parse(JSON.stringify(st.sitBins)), oppBins: { n: [...st.oppBins.n], shot: [...st.oppBins.shot] }, decBy: JSON.parse(JSON.stringify(st.decBy)), duels: st.duels, contacts: st.contacts, contactFrames: st.contactFrames, dribbles: st.dribbles, dribblesBy: { ...st.dribblesBy },
         boxTouch: { ...st.boxTouch }, okOwnHalf: { ...st.okOwnHalf }, okOppHalf: { ...st.okOppHalf }, goalSit: { ...st.goalSit },
         boxTouchAll: { ...st.boxTouchAll }, boxEntry: { ...st.boxEntry }, boxEntry2: { ...st.boxEntry2 },
         boxSec: { ...st.boxSec }, boxAttSec: { ...st.boxAttSec }, boxDefSec: { ...st.boxDefSec },

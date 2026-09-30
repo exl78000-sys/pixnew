@@ -1103,6 +1103,68 @@ if (simShots && realShots) {
   }
 }
 
+/* 3b-3b. **分隊:射門與決策點**(2026-09-30,「強隊的每球 xG 比弱隊低,λ 的主隊一直偏低」那一項)。
+         上面每一節都是兩隊合計 —— 強弱被壓縮這件事在合計裡看不見。這一節分主客,而且把
+         「進球 ÷ λ」拆成三個相乘的因子,偏差落在哪一個一眼就看得到:
+           進球 ÷ λ =(射門 ÷ 期望射門)×(每球 xG ÷ selectedXg)×(進球 ÷ Σ min(1, xG × k) ÷ SHOT_THROUGH)
+         λ 的錨正是用這三項的乘積反推 k(`k = λ ÷ (expShots × selectedXg × SHOT_THROUGH)`),
+         所以哪一個因子不是 1,就是哪一個假設在這一隊身上不成立。
+         決策點那一排從引擎的 `counts.decBy` 讀(只加計數、不碰 rng,6 場同種子逐位元組相同)。
+         `cap%` 是意願已經撞到 0.9 上限的決策點 —— 強隊的 urgeOf 乘數大,近距離先撞上限而遠射照比例放大,
+         那是本節要驗的第一個候選。真實那一列是**這一隊整季所有比賽**的 shotmap(主客場都算),只當參照。 */
+{
+  const LAB = ['0-5', '5-10', '10-15', '15-20', '20-25', '25-30', '30+'];
+  const selXg = cal.selectedXg;
+  console.log('');
+  console.log(`  ${'分隊:射門與決策點'.padEnd(20, '　')} (${RUNS} 場;k 主 ${cal.home.k} / 客 ${cal.away.k};selectedXg ${selXg})`);
+  const pc = a => a.map(v => `${Math.round(v * 100)}%`.padStart(4)).join(' ');
+  for (const [i, side, code, lam] of [[0, 'home', HOME, PRED.xgHome], [1, 'away', AWAY, PRED.xgAway]]) {
+    const c = cal[side];
+    let n = 0, xg = 0, ds = 0, box = 0, expW = 0, goals = 0;
+    const bins = new Array(7).fill(0);
+    const dec = { n: new Array(7).fill(0), shot: new Array(7).fill(0), cap: new Array(7).fill(0), q: new Array(7).fill(0) };
+    for (const r of rows) {
+      goals += r.st.score[i];
+      for (const e of r.sim.events()) {
+        if (e.type !== 'shot' || e.side !== side) continue;
+        n++; xg += e.xg; ds += e.dist; if (e.inBox) box++;
+        bins[Math.min(6, Math.floor(e.dist / 5))]++;
+        expW += Math.min(1, e.xg * c.k);
+      }
+      const d = r.st.counts.decBy?.[side];
+      if (d) for (const k of ['n', 'shot', 'cap', 'q']) d[k].forEach((v, j) => { dec[k][j] += v; });
+    }
+    if (!n) continue;
+    const fShots = n / RUNS / c.expShots, fXg = xg / n / selXg, fConv = expW ? goals / expW / SHOT_THROUGH_DOC : NaN;
+    const who = `${i ? '客' : '主'} ${code}`;
+    console.log(`  ${`${who} 進球 ÷ λ`.padEnd(20, '　')} ${(goals / RUNS / lam).toFixed(3)}`
+      + ` = 射門 ${fShots.toFixed(3)} × 每球 xG ${fXg.toFixed(3)} × 轉換 ${fConv.toFixed(3)}`
+      + `(進球 ${(goals / RUNS).toFixed(2)} 對 λ ${lam};射門 ${(n / RUNS).toFixed(1)} 對期望 ${c.expShots.toFixed(1)})`);
+    const real = collectReal(sh => sh.team === code);
+    console.log(`  ${`　${who} 射門`.padEnd(20, '　')} 每球 xG ${(xg / n).toFixed(4)}・離門 ${(ds / n).toFixed(1)} m・禁區內 ${(box / n * 100).toFixed(0)}%   ${pc(bins.map(b => b / n))}`);
+    if (real) console.log(`  ${`　${code} 真實(整季)`.padEnd(20, '　')} 每球 xG ${real.xg.toFixed(4)}・離門 ${real.dist.toFixed(1)} m・禁區內 ${(real.box * 100).toFixed(0)}%   ${pc(real.bins)}`);
+    {
+      // 角球那一條路(第一點頭球 + 第二波的一腳出手)用的是固定機率,不吃球隊的意願乘數 —— 分開看
+      let cn = 0, cxg = 0, cFar = 0;
+      for (const r of rows) for (const e of r.sim.events()) {
+        if (e.type !== 'shot' || e.side !== side || e.sit !== 'FromCorner') continue;
+        cn++; cxg += e.xg; if (e.dist >= 20) cFar++;
+      }
+      const rc = real?.bySit?.FromCorner?.n ?? null;
+      const tail = rc != null && real?.n ? `  (真實 ${code} 角球佔射門 ${(rc / real.n * 100).toFixed(0)}%)` : '';
+      console.log(`  ${`　${who} 角球射門`.padEnd(20, '　')} 佔射門 ${(cn / n * 100).toFixed(0)}%(每場 ${(cn / RUNS).toFixed(1)} 腳)・20 m 外 ${cn ? (cFar / cn * 100).toFixed(0) : '—'}%・`
+        + `xG/腳 ${cn ? (cxg / cn).toFixed(3) : '—'};角球以外每球 xG ${n > cn ? ((xg - cxg) / (n - cn)).toFixed(4) : '—'}${tail}`);
+    }
+    const totN = dec.n.reduce((a, b) => a + b, 0);
+    if (totN) {
+      console.log(`  ${`　${who} 決策點`.padEnd(20, '　')} 每場 ${(totN / RUNS).toFixed(0)} 個;逐格:機會% / 扣扳機 / 撞上限% / 平均質量`);
+      console.log(`  ${''.padEnd(20, '　')} ` + LAB.map((l, j) => dec.n[j]
+        ? `${l} ${(dec.n[j] / totN * 100).toFixed(0)}%/${(dec.shot[j] / dec.n[j]).toFixed(3)}/${(dec.cap[j] / dec.n[j] * 100).toFixed(0)}%/${(dec.q[j] / dec.n[j]).toFixed(3)}`
+        : `${l} —`).join('  '));
+    }
+  }
+}
+
 /* 3b-4. **對抗那一層**(階段 4q 找到錨,4r 照它重寫)。本站四輪防守側的修正(4k 放大半徑、
          4n 門將碰持球者、4o 逼搶者站到球門那一側、4p 換分母)全部死在「抄截與犯規爆炸」上,
          而我一路以為沒有東西可以校準那一層 —— **側寫的 `extra` 與 `rates` 裡就有**。
