@@ -9,6 +9,7 @@ import { uclPhotos as uclPhotosFn } from './lib/ucl.mjs';
 import { bridgeUclTeamIds } from './lib/ucl-ids.mjs';
 import { createHash } from 'node:crypto';
 import { loadTeams } from './lib/teams.mjs';
+import { attachFixtureGrids } from './lib/fixture-grids.mjs';
 import { isCupTbd } from './lib/adapters/fotmob-cups.mjs';
 import { matchPerson as loanMatchPerson, yearShifted as loanYearShifted } from './verify-loans.mjs';
 import { normName, matchOne as nameMatchOne } from './lib/names.mjs';
@@ -4817,6 +4818,42 @@ async function checkDataGap() {
        首頁與球員頁的資料集清單**從頁面原始碼解析**(C.load(...) 的字串引數),六個聯賽各自加總解壓後的大小。
        預算都是 1.5 MB:首頁 A1 / A4 之後六個聯賽 0.6–1.25 MB;球員頁 A6(列表只讀 players-list)之後 0.6–1.25 MB
        (英冠最大,它的 leaders 就 400 KB)。A6 之前球員頁是 1.7–1.8 MB,那時先設 2.0;只算主載入那一清單,點到才 loadFrom 的不算。 */
+    /* ── 比分機率格拆出 fixtures.json(2026-09-30,A9)──
+       fixtures.json 首頁、球隊頁、實時頁、我的預測都在載,grid 只有單場頁的熱圖讀 —— 每個聯賽一份 fixture-grids.json(場次 id → { prediction?, postFit? })。
+       fixtures.json 不准再帶 grid;掛回去之後「有最可能比分就有 grid」要成立(拆之前的產物就是這樣);前端只有 page-analysis.js 讀它,而且在主清單。 */
+    ['每個聯賽都有 fixture-grids.json、fixtures.json 不帶 grid,掛回去一場不少;只有單場頁載它', (() => {
+      const dirs = [{ key: 'pl', dir: join(ROOT, 'web', 'data') },
+        ...readdirSync(join(ROOT, 'web', 'data', 'leagues'), { withFileTypes: true })
+          .filter(e => e.isDirectory()).map(e => ({ key: e.name, dir: join(ROOT, 'web', 'data', 'leagues', e.name) }))];
+      const bad = [];
+      const is6x6 = g => Array.isArray(g) && g.length === 6 && g.every(r => Array.isArray(r) && r.length === 6 && r.every(Number.isFinite));
+      for (const { key, dir } of dirs) {
+        if (!existsSync(join(dir, 'fixtures.json'))) continue;
+        const raw = readFileSync(join(dir, 'fixtures.json'), 'utf8');
+        if (/"grid"/.test(raw)) bad.push(`${key}:fixtures.json 還帶著 grid`);
+        const p = join(dir, 'fixture-grids.json');
+        if (!existsSync(p)) { bad.push(`${key}:沒有 fixture-grids.json`); continue; }
+        const grids = JSON.parse(readFileSync(p, 'utf8'));
+        const fx = attachFixtureGrids(JSON.parse(raw), grids);
+        const ids = new Set(fx.map(f => f.id));
+        const orphan = Object.keys(grids).filter(id => !ids.has(id));
+        if (orphan.length) bad.push(`${key}:fixture-grids 有 ${orphan.length} 個對不到場次的 id(${orphan[0]})`);
+        const shape = Object.values(grids).flatMap(g => [g.prediction, g.postFit]).filter(Boolean).filter(g => !is6x6(g)).length;
+        if (shape) bad.push(`${key}:${shape} 張 grid 不是 6×6 的數字`);
+        const miss = fx.filter(f => (f.prediction?.topScores && !f.prediction.grid) || (f.postFit?.topScores && !f.postFit.grid)).length;
+        if (miss) bad.push(`${key}:${miss} 場有最可能比分卻掛不回 grid`);
+      }
+      const JS = join(ROOT, 'web', 'assets', 'js');
+      const users = readdirSync(JS).filter(f => f.endsWith('.js') && /'fixture-grids'/.test(readFileSync(join(JS, f), 'utf8')));
+      if (users.join() !== 'page-analysis.js') bad.push(`讀 fixture-grids 的是 ${users.join('、') || '沒有人'}(只該是 page-analysis.js)`);
+      const pa = readFileSync(join(JS, 'page-analysis.js'), 'utf8');
+      const mainLoad = (pa.match(/C\.load\(([^)]*)\)/) ?? [])[1] ?? '';
+      if (!/'fixture-grids'/.test(mainLoad)) bad.push('page-analysis.js 的主清單沒有 fixture-grids(熱圖會靜靜消失)');
+      for (const f of ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs', 'lib/build-league.mjs']) {
+        if (!/splitFixtureGrids\(fixtures\)/.test(readFileSync(join(ROOT, 'scripts', f), 'utf8'))) bad.push(`${f} 寫 fixtures 沒有走 splitFixtureGrids`);
+      }
+      return [bad.length === 0, bad.slice(0, 6).join(';')];
+    })()],
     /* ── 逐場統計彙總拆出 teams.json(2026-09-28,A8)──
        teams.json 十幾頁在載,matchStats 只有球隊頁詳情讀 —— 每個聯賽一份 team-stats.json(隊碼 → 彙總,沒資料的隊不留鍵),
        teams.json 不准再帶 matchStats;前端只有 page-teams.js 讀 team-stats,而且走 loadFrom(詳情才載),不在主清單。 */

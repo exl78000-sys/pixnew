@@ -12,9 +12,17 @@ try {
      - 官方逐場資料只讀索引 official.json,這一場的本體(先發 / 進球 / 時間軸)另外 loadFrom 一檔(official/{HOME}-{AWAY})。
      - 即時快照讀 live-lite.json(live.json 去掉每場 41 KB 的 advanced —— 那是實時頁報告抽屜用的,這一頁只用 sides 的先發與場上數據):
        646 KB → 兩百多 KB;即時面板之後照舊走 feed(C.liveFeeds)覆蓋。 */
-  const data = await C.load('meta', 'clubs', 'overview', 'fixtures', 'h2h', 'players-list', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live-lite', 'shapes', 'official', 'form', 'prob-history', 'news');
+  const data = await C.load('meta', 'clubs', 'overview', 'fixtures', 'h2h', 'players-list', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live-lite', 'shapes', 'official', 'form', 'prob-history', 'news', 'fixture-grids');
   const { meta, clubs, overview, fixtures, h2h, 'players-list': players, tactics, analysis, reports, experts, lineups, 'live-lite': live, shapes, official, form } = data;
   const teams = overview?.teams ?? [];
+  /* 比分機率格(2026-09-30,A9):fixtures.json 不再帶 grid,另存 fixture-grids.json(首頁那幾頁不用載它)。
+     掛回 prediction.grid / postFit.grid,下面的熱圖一個字沒改;缺檔就沒有熱圖(本來 p.grid 沒有就不畫)。 */
+  for (const f of fixtures ?? []) {
+    const g = data['fixture-grids']?.[f.id];
+    if (!g) continue;
+    if (g.prediction && f.prediction) f.prediction.grid = g.prediction;
+    if (g.postFit && f.postFit) f.postFit.grid = g.postFit;
+  }
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
   /* 完整版(renderMatch)吃的是英超才有的東西:FPL 球員欄位、傷停、預估先發、官方事件。

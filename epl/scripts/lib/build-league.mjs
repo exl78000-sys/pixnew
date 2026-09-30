@@ -58,6 +58,7 @@ import { externalizeImages } from './image-files.mjs';
 import { overviewFrom } from './overview.mjs';
 import { playersListFrom } from './players-list.mjs';
 import { teamStatsFrom } from './team-stats.mjs';
+import { splitFixtureGrids } from './fixture-grids.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
@@ -884,7 +885,11 @@ export async function buildLeague(L) {
   await write('clubs', T.list);
   await write('teams', teams);
   await write('team-stats', teamStatsFrom(fotmobStats.teams, teams));   // 球隊頁詳情才載(2026-09-28,A8)
-  await write('fixtures', fixtures);
+  {   // 比分機率格另存一份,只有單場頁載(2026-09-30,A9,理由在 lib/fixture-grids.mjs)
+    const fg = splitFixtureGrids(fixtures);
+    await write('fixtures', fg.fixtures);
+    await write('fixture-grids', fg.grids);
+  }
   await write('table', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
   await write('sim', sim);
   await write('form', { asOf: AS_OF, inModel: false, tuned: TUNED, tuning: null, situationTuning: null,
