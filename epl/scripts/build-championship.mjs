@@ -48,6 +48,7 @@ import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
 import { playersListFrom } from './lib/players-list.mjs';
 import { teamStatsFrom } from './lib/team-stats.mjs';
+import { splitFixtureGrids } from './lib/fixture-grids.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
@@ -736,7 +737,11 @@ async function main() {
       }
     }
   }
-  await write('fixtures', fixtures);
+  {   // 比分機率格另存一份,只有單場頁載(2026-09-30,A9,理由在 lib/fixture-grids.mjs)
+    const fg = splitFixtureGrids(fixtures);
+    await write('fixtures', fg.fixtures);
+    await write('fixture-grids', fg.grids);
+  }
   await write('table', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
   await write('sim', sim);
   await write('form', {

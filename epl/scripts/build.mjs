@@ -62,6 +62,7 @@ import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
 import { playersListFrom } from './lib/players-list.mjs';
 import { teamStatsFrom } from './lib/team-stats.mjs';
+import { splitFixtureGrids } from './lib/fixture-grids.mjs';
 import { writeOfficialFiles } from './lib/official-files.mjs';
 import { loadExpertOpinions } from './lib/experts.mjs';
 import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSportMonksPlayers } from './lib/adapters/sportmonks.mjs';
@@ -1108,7 +1109,11 @@ async function main() {
       }
     }
   }
-  await write('fixtures.json', fixtures);
+  {   // 比分機率格另存一份,只有單場頁載(2026-09-30,A9,理由在 lib/fixture-grids.mjs)
+    const fg = splitFixtureGrids(fixtures);
+    await write('fixtures.json', fg.fixtures);
+    await write('fixture-grids.json', fg.grids);
+  }
   await write('table.json', { last: lastTable, current: curTable, lastSeason: LAST_SEASON, currentSeason: CURRENT_SEASON });
   const roleOf = p => {
     const r = classify(p, p.last ?? p.current);
