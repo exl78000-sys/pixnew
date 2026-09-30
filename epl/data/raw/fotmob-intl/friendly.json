@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-09-30T04:29:24.709Z",
+ "retrievedAt": "2026-09-30T07:47:15.973Z",
  "matches": [
   {
    "id": "5120889",
@@ -8101,10 +8101,13 @@
     "shortName": "Solomon Islands",
     "fmId": "6319"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8122,7 +8125,7 @@
     "shortName": "New Caledonia",
     "fmId": "101595"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -8446,27 +8449,6 @@
    "group": null
   },
   {
-   "id": "6299696",
-   "kickoff": "2026-10-03T10:00:00Z",
-   "home": {
-    "name": "Tunisia",
-    "shortName": "Tunisia",
-    "fmId": "6719"
-   },
-   "away": {
-    "name": "Mali",
-    "shortName": "Mali",
-    "fmId": "5815"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": null,
-   "group": null
-  },
-  {
    "id": "5985687",
    "kickoff": "2026-10-03T14:00:00Z",
    "home": {
@@ -8541,6 +8523,27 @@
     "name": "Ivory Coast",
     "shortName": "Ivory Coast",
     "fmId": "6709"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6299696",
+   "kickoff": "2026-10-03T19:00:00Z",
+   "home": {
+    "name": "Tunisia",
+    "shortName": "Tunisia",
+    "fmId": "6719"
+   },
+   "away": {
+    "name": "Mali",
+    "shortName": "Mali",
+    "fmId": "5815"
    },
    "state": "NS",
    "final": null,
