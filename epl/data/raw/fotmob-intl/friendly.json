@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-09-29T17:49:46.195Z",
+ "retrievedAt": "2026-09-30T04:29:24.709Z",
  "matches": [
   {
    "id": "5120889",
@@ -7994,7 +7994,7 @@
   },
   {
    "id": "5924777",
-   "kickoff": "2026-09-29T10:00:00.000Z",
+   "kickoff": "2026-09-29T10:00:00Z",
    "home": {
     "name": "Australia",
     "shortName": "Australia",
@@ -8018,7 +8018,7 @@
   },
   {
    "id": "6144112",
-   "kickoff": "2026-09-29T16:05:00.000Z",
+   "kickoff": "2026-09-29T16:05:00Z",
    "home": {
     "name": "Russia",
     "shortName": "Russia",
@@ -8029,17 +8029,20 @@
     "shortName": "Iran",
     "fmId": "6711"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "5991874",
-   "kickoff": "2026-09-30T00:00:00Z",
+   "kickoff": "2026-09-30T00:00:00.000Z",
    "home": {
     "name": "USA",
     "shortName": "USA",
@@ -8050,17 +8053,20 @@
     "shortName": "Chile",
     "fmId": "9762"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    4,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6280444",
-   "kickoff": "2026-09-30T01:00:00Z",
+   "kickoff": "2026-09-30T01:00:00.000Z",
    "home": {
     "name": "Mexico",
     "shortName": "Mexico",
@@ -8071,10 +8077,13 @@
     "shortName": "Peru",
     "fmId": "5798"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8102,7 +8111,7 @@
   },
   {
    "id": "6280446",
-   "kickoff": "2026-09-30T07:00:00Z",
+   "kickoff": "2026-09-30T07:00:00.000Z",
    "home": {
     "name": "Fiji",
     "shortName": "Fiji",
@@ -8123,7 +8132,7 @@
   },
   {
    "id": "6280447",
-   "kickoff": "2026-09-30T12:00:00Z",
+   "kickoff": "2026-09-30T12:00:00.000Z",
    "home": {
     "name": "Mauritius",
     "shortName": "Mauritius",
@@ -8144,7 +8153,7 @@
   },
   {
    "id": "6280448",
-   "kickoff": "2026-09-30T13:00:00Z",
+   "kickoff": "2026-09-30T13:00:00.000Z",
    "home": {
     "name": "Seychelles",
     "shortName": "Seychelles",
@@ -8165,7 +8174,7 @@
   },
   {
    "id": "6315019",
-   "kickoff": "2026-09-30T14:00:00Z",
+   "kickoff": "2026-09-30T14:00:00.000Z",
    "home": {
     "name": "Botswana",
     "shortName": "Botswana",
@@ -8186,7 +8195,7 @@
   },
   {
    "id": "6140730",
-   "kickoff": "2026-09-30T16:00:00Z",
+   "kickoff": "2026-09-30T16:00:00.000Z",
    "home": {
     "name": "Lithuania",
     "shortName": "Lithuania",
@@ -8207,7 +8216,7 @@
   },
   {
    "id": "6266052",
-   "kickoff": "2026-09-30T23:00:00Z",
+   "kickoff": "2026-09-30T23:00:00.000Z",
    "home": {
     "name": "Argentina",
     "shortName": "Argentina",

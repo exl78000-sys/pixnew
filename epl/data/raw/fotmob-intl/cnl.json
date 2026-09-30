@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-09-29T17:49:42.757Z",
+ "retrievedAt": "2026-09-30T04:29:21.236Z",
  "matches": [
   {
    "id": "5991938",
@@ -687,7 +687,7 @@
   },
   {
    "id": "5991892",
-   "kickoff": "2026-09-29T00:00:00.000Z",
+   "kickoff": "2026-09-29T00:00:00Z",
    "home": {
     "name": "Jamaica",
     "shortName": "Jamaica",
@@ -711,7 +711,7 @@
   },
   {
    "id": "5991916",
-   "kickoff": "2026-09-29T00:00:00.000Z",
+   "kickoff": "2026-09-29T00:00:00Z",
    "home": {
     "name": "Saint Lucia",
     "shortName": "Saint Lucia",
@@ -735,7 +735,7 @@
   },
   {
    "id": "5991925",
-   "kickoff": "2026-09-29T00:00:00.000Z",
+   "kickoff": "2026-09-29T00:00:00Z",
    "home": {
     "name": "St. Kitts and Nevis",
     "shortName": "St. Kitts and Nevis",
@@ -759,7 +759,7 @@
   },
   {
    "id": "5991893",
-   "kickoff": "2026-09-29T02:00:00.000Z",
+   "kickoff": "2026-09-29T02:00:00Z",
    "home": {
     "name": "Guatemala",
     "shortName": "Guatemala",
@@ -783,7 +783,7 @@
   },
   {
    "id": "5991940",
-   "kickoff": "2026-09-29T19:00:00.000Z",
+   "kickoff": "2026-09-29T19:00:00Z",
    "home": {
     "name": "British Virgin Islands",
     "shortName": "British Virgin Islands",
@@ -794,17 +794,20 @@
     "shortName": "Turks and Caicos Islands",
     "fmId": "262137"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "1"
   },
   {
    "id": "5991952",
-   "kickoff": "2026-09-29T20:00:00.000Z",
+   "kickoff": "2026-09-29T20:00:00Z",
    "home": {
     "name": "U.S. Virgin Islands",
     "shortName": "U.S. Virgin Islands",
@@ -815,17 +818,20 @@
     "shortName": "Bahamas",
     "fmId": "73596"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "3"
   },
   {
    "id": "5991932",
-   "kickoff": "2026-09-29T21:00:00.000Z",
+   "kickoff": "2026-09-29T21:00:00Z",
    "home": {
     "name": "French Guiana",
     "shortName": "French Guiana",
@@ -836,17 +842,20 @@
     "shortName": "Sint Maarten",
     "fmId": "929190"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "4"
   },
   {
    "id": "5991946",
-   "kickoff": "2026-09-29T23:00:00.000Z",
+   "kickoff": "2026-09-29T23:00:00Z",
    "home": {
     "name": "Anguilla",
     "shortName": "Anguilla",
@@ -857,17 +866,20 @@
     "shortName": "Aruba",
     "fmId": "262131"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "2"
   },
   {
    "id": "5991933",
-   "kickoff": "2026-09-30T02:00:00Z",
+   "kickoff": "2026-09-30T02:00:00.000Z",
    "home": {
     "name": "Belize",
     "shortName": "Belize",
@@ -878,10 +890,13 @@
     "shortName": "Saint Vincent and The Grenadines",
     "fmId": "5923"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "4"
@@ -2139,12 +2154,26 @@
      "fmId": "5923",
      "name": "Saint Vincent and The Grenadines",
      "idx": 1,
-     "played": 1,
-     "wins": 1,
+     "played": 2,
+     "wins": 2,
      "draws": 0,
      "losses": 0,
-     "gf": 2,
+     "gf": 3,
      "ga": 1,
+     "pts": 6,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "835267",
+     "name": "French Guiana",
+     "idx": 2,
+     "played": 2,
+     "wins": 1,
+     "draws": 0,
+     "losses": 1,
+     "gf": 2,
+     "ga": 2,
      "pts": 3,
      "deduction": null,
      "live": null
@@ -2152,28 +2181,14 @@
     {
      "fmId": "127409",
      "name": "Belize",
-     "idx": 2,
-     "played": 1,
-     "wins": 1,
-     "draws": 0,
-     "losses": 0,
-     "gf": 1,
-     "ga": 0,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "835267",
-     "name": "French Guiana",
      "idx": 3,
-     "played": 1,
-     "wins": 0,
+     "played": 2,
+     "wins": 1,
      "draws": 0,
      "losses": 1,
      "gf": 1,
-     "ga": 2,
-     "pts": 0,
+     "ga": 1,
+     "pts": 3,
      "deduction": null,
      "live": null
     },
@@ -2181,12 +2196,12 @@
      "fmId": "929190",
      "name": "Sint Maarten",
      "idx": 4,
-     "played": 1,
+     "played": 2,
      "wins": 0,
      "draws": 0,
-     "losses": 1,
+     "losses": 2,
      "gf": 0,
-     "ga": 1,
+     "ga": 2,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -2231,13 +2246,13 @@
      "fmId": "262137",
      "name": "Turks and Caicos Islands",
      "idx": 2,
-     "played": 1,
-     "wins": 0,
+     "played": 2,
+     "wins": 1,
      "draws": 0,
      "losses": 1,
-     "gf": 0,
+     "gf": 3,
      "ga": 2,
-     "pts": 0,
+     "pts": 3,
      "deduction": null,
      "live": null
     },
@@ -2245,12 +2260,12 @@
      "fmId": "262135",
      "name": "British Virgin Islands",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
      "draws": 0,
-     "losses": 1,
+     "losses": 2,
      "gf": 0,
-     "ga": 3,
+     "ga": 6,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -2278,9 +2293,23 @@
    ],
    "rows": [
     {
+     "fmId": "262131",
+     "name": "Aruba",
+     "idx": 1,
+     "played": 2,
+     "wins": 2,
+     "draws": 0,
+     "losses": 0,
+     "gf": 3,
+     "ga": 0,
+     "pts": 6,
+     "deduction": null,
+     "live": null
+    },
+    {
      "fmId": "6101",
      "name": "Antigua and Barbuda",
-     "idx": 1,
+     "idx": 2,
      "played": 2,
      "wins": 1,
      "draws": 0,
@@ -2292,29 +2321,15 @@
      "live": null
     },
     {
-     "fmId": "262131",
-     "name": "Aruba",
-     "idx": 2,
-     "played": 1,
-     "wins": 1,
-     "draws": 0,
-     "losses": 0,
-     "gf": 1,
-     "ga": 0,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
      "fmId": "262132",
      "name": "Anguilla",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
      "draws": 0,
-     "losses": 1,
+     "losses": 2,
      "gf": 0,
-     "ga": 5,
+     "ga": 7,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -2342,9 +2357,23 @@
    ],
    "rows": [
     {
+     "fmId": "262136",
+     "name": "U.S. Virgin Islands",
+     "idx": 1,
+     "played": 2,
+     "wins": 2,
+     "draws": 0,
+     "losses": 0,
+     "gf": 5,
+     "ga": 1,
+     "pts": 6,
+     "deduction": null,
+     "live": null
+    },
+    {
      "fmId": "929189",
      "name": "Saint Martin",
-     "idx": 1,
+     "idx": 2,
      "played": 2,
      "wins": 1,
      "draws": 0,
@@ -2356,29 +2385,15 @@
      "live": null
     },
     {
-     "fmId": "262136",
-     "name": "U.S. Virgin Islands",
-     "idx": 2,
-     "played": 1,
-     "wins": 1,
-     "draws": 0,
-     "losses": 0,
-     "gf": 2,
-     "ga": 0,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
      "fmId": "73596",
      "name": "Bahamas",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
      "draws": 0,
-     "losses": 1,
-     "gf": 0,
-     "ga": 8,
+     "losses": 2,
+     "gf": 1,
+     "ga": 11,
      "pts": 0,
      "deduction": null,
      "live": null

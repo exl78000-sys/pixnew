@@ -16,7 +16,7 @@
   "2012/2013",
   "2010/2011"
  ],
- "retrievedAt": "2026-09-29T17:49:43.820Z",
+ "retrievedAt": "2026-09-30T04:29:22.451Z",
  "matches": [
   {
    "id": "5224974",
@@ -980,7 +980,7 @@
   },
   {
    "id": "6040334",
-   "kickoff": "2026-09-29T12:00:00.000Z",
+   "kickoff": "2026-09-29T12:00:00Z",
    "home": {
     "name": "Comoros",
     "shortName": "Comoros",
@@ -1004,7 +1004,7 @@
   },
   {
    "id": "6040358",
-   "kickoff": "2026-09-29T13:00:00.000Z",
+   "kickoff": "2026-09-29T13:00:00Z",
    "home": {
     "name": "Burundi",
     "shortName": "Burundi",
@@ -1028,7 +1028,7 @@
   },
   {
    "id": "6040398",
-   "kickoff": "2026-09-29T13:00:00.000Z",
+   "kickoff": "2026-09-29T13:00:00Z",
    "home": {
     "name": "Ethiopia",
     "shortName": "Ethiopia",
@@ -1052,7 +1052,7 @@
   },
   {
    "id": "6040202",
-   "kickoff": "2026-09-29T13:00:00.000Z",
+   "kickoff": "2026-09-29T13:00:00Z",
    "home": {
     "name": "Lesotho",
     "shortName": "Lesotho",
@@ -1076,7 +1076,7 @@
   },
   {
    "id": "6040399",
-   "kickoff": "2026-09-29T13:00:00.000Z",
+   "kickoff": "2026-09-29T13:00:00Z",
    "home": {
     "name": "Mozambique",
     "shortName": "Mozambique",
@@ -1100,7 +1100,7 @@
   },
   {
    "id": "6040215",
-   "kickoff": "2026-09-29T13:00:00.000Z",
+   "kickoff": "2026-09-29T13:00:00Z",
    "home": {
     "name": "South Sudan",
     "shortName": "South Sudan",
@@ -1124,7 +1124,7 @@
   },
   {
    "id": "6040387",
-   "kickoff": "2026-09-29T14:00:00.000Z",
+   "kickoff": "2026-09-29T14:00:00Z",
    "home": {
     "name": "Madagascar",
     "shortName": "Madagascar",
@@ -1148,7 +1148,7 @@
   },
   {
    "id": "6040374",
-   "kickoff": "2026-09-29T16:00:00.000Z",
+   "kickoff": "2026-09-29T16:00:00Z",
    "home": {
     "name": "Cape Verde",
     "shortName": "Cape Verde",
@@ -1159,17 +1159,20 @@
     "shortName": "Rwanda",
     "fmId": "5885"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "K"
   },
   {
    "id": "6040237",
-   "kickoff": "2026-09-29T16:00:00.000Z",
+   "kickoff": "2026-09-29T16:00:00Z",
    "home": {
     "name": "Ghana",
     "shortName": "Ghana",
@@ -1180,17 +1183,20 @@
     "shortName": "Gambia",
     "fmId": "5979"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    4
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "C"
   },
   {
    "id": "6040386",
-   "kickoff": "2026-09-29T16:00:00.000Z",
+   "kickoff": "2026-09-29T16:00:00Z",
    "home": {
     "name": "Guinea-Bissau",
     "shortName": "Guinea-Bissau",
@@ -1201,17 +1207,20 @@
     "shortName": "Nigeria",
     "fmId": "6346"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "L"
   },
   {
    "id": "6040347",
-   "kickoff": "2026-09-29T16:00:00.000Z",
+   "kickoff": "2026-09-29T16:00:00Z",
    "home": {
     "name": "Uganda",
     "shortName": "Uganda",
@@ -1222,17 +1231,20 @@
     "shortName": "Libya",
     "fmId": "6328"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "H"
   },
   {
    "id": "6040359",
-   "kickoff": "2026-09-29T16:00:00.000Z",
+   "kickoff": "2026-09-29T16:00:00Z",
    "home": {
     "name": "Zambia",
     "shortName": "Zambia",
@@ -1243,17 +1255,20 @@
     "shortName": "Togo",
     "fmId": "7740"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "I"
   },
   {
    "id": "6040275",
-   "kickoff": "2026-09-29T19:00:00.000Z",
+   "kickoff": "2026-09-29T19:00:00Z",
    "home": {
     "name": "Benin",
     "shortName": "Benin",
@@ -1264,17 +1279,20 @@
     "shortName": "Mauritania",
     "fmId": "68374"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "F"
   },
   {
    "id": "6040335",
-   "kickoff": "2026-09-29T19:00:00.000Z",
+   "kickoff": "2026-09-29T19:00:00Z",
    "home": {
     "name": "Congo",
     "shortName": "Congo",
@@ -1285,17 +1303,20 @@
     "shortName": "Cameroon",
     "fmId": "6629"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "G"
   },
   {
    "id": "6040201",
-   "kickoff": "2026-09-29T19:00:00.000Z",
+   "kickoff": "2026-09-29T19:00:00Z",
    "home": {
     "name": "Gabon",
     "shortName": "Gabon",
@@ -1306,17 +1327,20 @@
     "shortName": "Niger",
     "fmId": "121281"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "A"
   },
   {
    "id": "6040375",
-   "kickoff": "2026-09-29T19:00:00.000Z",
+   "kickoff": "2026-09-29T19:00:00Z",
    "home": {
     "name": "Liberia",
     "shortName": "Liberia",
@@ -1327,17 +1351,20 @@
     "shortName": "Mali",
     "fmId": "5815"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "K"
   },
   {
    "id": "6040238",
-   "kickoff": "2026-09-29T19:00:00.000Z",
+   "kickoff": "2026-09-29T19:00:00Z",
    "home": {
     "name": "Somalia",
     "shortName": "Somalia",
@@ -1348,17 +1375,20 @@
     "shortName": "Ivory Coast",
     "fmId": "6709"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "C"
   },
   {
    "id": "6040249",
-   "kickoff": "2026-09-30T16:00:00Z",
+   "kickoff": "2026-09-30T16:00:00.000Z",
    "home": {
     "name": "Eritrea",
     "shortName": "Eritrea",
@@ -3466,30 +3496,30 @@
      "live": null
     },
     {
-     "fmId": "121281",
-     "name": "Niger",
+     "fmId": "5889",
+     "name": "Gabon",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 1,
      "draws": 0,
-     "losses": 0,
+     "losses": 1,
      "gf": 2,
-     "ga": 1,
+     "ga": 2,
      "pts": 3,
      "deduction": null,
      "live": null
     },
     {
-     "fmId": "5889",
-     "name": "Gabon",
+     "fmId": "121281",
+     "name": "Niger",
      "idx": 3,
-     "played": 1,
-     "wins": 0,
+     "played": 2,
+     "wins": 1,
      "draws": 0,
      "losses": 1,
-     "gf": 0,
-     "ga": 2,
-     "pts": 0,
+     "gf": 2,
+     "ga": 3,
+     "pts": 3,
      "deduction": null,
      "live": null
     },
@@ -3596,30 +3626,30 @@
    ],
    "rows": [
     {
-     "fmId": "5979",
-     "name": "Gambia",
+     "fmId": "6709",
+     "name": "Ivory Coast",
      "idx": 1,
      "played": 2,
      "wins": 2,
      "draws": 0,
      "losses": 0,
-     "gf": 5,
-     "ga": 3,
+     "gf": 4,
+     "ga": 0,
      "pts": 6,
      "deduction": null,
-     "live": "6040237"
+     "live": null
     },
     {
-     "fmId": "6709",
-     "name": "Ivory Coast",
+     "fmId": "5979",
+     "name": "Gambia",
      "idx": 2,
-     "played": 1,
-     "wins": 1,
+     "played": 2,
+     "wins": 2,
      "draws": 0,
      "losses": 0,
-     "gf": 2,
-     "ga": 0,
-     "pts": 3,
+     "gf": 6,
+     "ga": 3,
+     "pts": 6,
      "deduction": null,
      "live": null
     },
@@ -3627,12 +3657,12 @@
      "fmId": "287978",
      "name": "Somalia",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
      "draws": 0,
-     "losses": 1,
+     "losses": 2,
      "gf": 1,
-     "ga": 2,
+     "ga": 4,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -3646,10 +3676,10 @@
      "draws": 0,
      "losses": 2,
      "gf": 2,
-     "ga": 5,
+     "ga": 6,
      "pts": 0,
      "deduction": null,
-     "live": "6040237"
+     "live": null
     }
    ]
   },
@@ -3812,9 +3842,23 @@
    ],
    "rows": [
     {
+     "fmId": "5883",
+     "name": "Benin",
+     "idx": 1,
+     "played": 2,
+     "wins": 1,
+     "draws": 1,
+     "losses": 0,
+     "gf": 3,
+     "ga": 2,
+     "pts": 4,
+     "deduction": null,
+     "live": null
+    },
+    {
      "fmId": "6323",
      "name": "Burkina Faso",
-     "idx": 1,
+     "idx": 2,
      "played": 2,
      "wins": 1,
      "draws": 1,
@@ -3828,28 +3872,14 @@
     {
      "fmId": "68374",
      "name": "Mauritania",
-     "idx": 2,
-     "played": 1,
+     "idx": 3,
+     "played": 2,
      "wins": 1,
      "draws": 0,
-     "losses": 0,
-     "gf": 3,
-     "ga": 1,
+     "losses": 1,
+     "gf": 4,
+     "ga": 3,
      "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5883",
-     "name": "Benin",
-     "idx": 3,
-     "played": 1,
-     "wins": 0,
-     "draws": 1,
-     "losses": 0,
-     "gf": 1,
-     "ga": 1,
-     "pts": 1,
      "deduction": null,
      "live": null
     },
@@ -3887,13 +3917,13 @@
      "fmId": "6629",
      "name": "Cameroon",
      "idx": 1,
-     "played": 1,
+     "played": 2,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 3,
-     "ga": 1,
-     "pts": 3,
+     "gf": 4,
+     "ga": 2,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
@@ -3929,13 +3959,13 @@
      "fmId": "5801",
      "name": "Congo",
      "idx": 4,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
-     "gf": 0,
-     "ga": 1,
-     "pts": 0,
+     "gf": 1,
+     "ga": 2,
+     "pts": 1,
      "deduction": null,
      "live": null
     }
@@ -3967,7 +3997,7 @@
      "ga": 1,
      "pts": 4,
      "deduction": null,
-     "live": "6040347"
+     "live": null
     },
     {
      "fmId": "5887",
@@ -4009,7 +4039,7 @@
      "ga": 3,
      "pts": 1,
      "deduction": null,
-     "live": "6040347"
+     "live": null
     }
    ]
   },
@@ -4049,11 +4079,11 @@
      "wins": 1,
      "draws": 0,
      "losses": 1,
-     "gf": 2,
+     "gf": 3,
      "ga": 3,
      "pts": 3,
      "deduction": null,
-     "live": "6040359"
+     "live": null
     },
     {
      "fmId": "7740",
@@ -4064,10 +4094,10 @@
      "draws": 0,
      "losses": 1,
      "gf": 1,
-     "ga": 1,
+     "ga": 2,
      "pts": 3,
      "deduction": null,
-     "live": "6040359"
+     "live": null
     },
     {
      "fmId": "121284",
@@ -4183,40 +4213,26 @@
      "ga": 2,
      "pts": 6,
      "deduction": null,
-     "live": "6040374"
+     "live": null
     },
     {
      "fmId": "5815",
      "name": "Mali",
      "idx": 2,
-     "played": 1,
-     "wins": 1,
+     "played": 2,
+     "wins": 2,
      "draws": 0,
      "losses": 0,
-     "gf": 3,
+     "gf": 4,
      "ga": 1,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "5804",
-     "name": "Liberia",
-     "idx": 3,
-     "played": 1,
-     "wins": 0,
-     "draws": 0,
-     "losses": 1,
-     "gf": 1,
-     "ga": 3,
-     "pts": 0,
+     "pts": 6,
      "deduction": null,
      "live": null
     },
     {
      "fmId": "5888",
      "name": "Cape Verde",
-     "idx": 4,
+     "idx": 3,
      "played": 2,
      "wins": 0,
      "draws": 0,
@@ -4225,7 +4241,21 @@
      "ga": 5,
      "pts": 0,
      "deduction": null,
-     "live": "6040374"
+     "live": null
+    },
+    {
+     "fmId": "5804",
+     "name": "Liberia",
+     "idx": 4,
+     "played": 2,
+     "wins": 0,
+     "draws": 0,
+     "losses": 2,
+     "gf": 1,
+     "ga": 4,
+     "pts": 0,
+     "deduction": null,
+     "live": null
     }
    ]
   },
@@ -4251,11 +4281,11 @@
      "wins": 2,
      "draws": 0,
      "losses": 0,
-     "gf": 4,
+     "gf": 5,
      "ga": 0,
      "pts": 6,
      "deduction": null,
-     "live": "6040386"
+     "live": null
     },
     {
      "fmId": "6346",
@@ -4266,10 +4296,10 @@
      "draws": 0,
      "losses": 1,
      "gf": 2,
-     "ga": 3,
+     "ga": 4,
      "pts": 3,
      "deduction": null,
-     "live": "6040386"
+     "live": null
     },
     {
      "fmId": "7941",

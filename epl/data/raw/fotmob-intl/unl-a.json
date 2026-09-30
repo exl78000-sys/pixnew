@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-09-29T17:49:37.974Z",
+ "retrievedAt": "2026-09-30T04:29:17.414Z",
  "matches": [
   {
    "id": "5181825",
@@ -351,7 +351,7 @@
   },
   {
    "id": "5181851",
-   "kickoff": "2026-09-29T18:45:00.000Z",
+   "kickoff": "2026-09-29T18:45:00Z",
    "home": {
     "name": "Czechia",
     "shortName": "Czechia",
@@ -362,17 +362,20 @@
     "shortName": "England",
     "fmId": "8491"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "3"
   },
   {
    "id": "5181852",
-   "kickoff": "2026-09-29T18:45:00.000Z",
+   "kickoff": "2026-09-29T18:45:00Z",
    "home": {
     "name": "Spain",
     "shortName": "Spain",
@@ -383,10 +386,13 @@
     "shortName": "Croatia",
     "fmId": "10155"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    4,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "3"
@@ -1269,12 +1275,26 @@
      "fmId": "6720",
      "name": "Spain",
      "idx": 1,
-     "played": 1,
-     "wins": 1,
+     "played": 2,
+     "wins": 2,
      "draws": 0,
      "losses": 0,
-     "gf": 3,
-     "ga": 2,
+     "gf": 7,
+     "ga": 3,
+     "pts": 6,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8491",
+     "name": "England",
+     "idx": 2,
+     "played": 2,
+     "wins": 1,
+     "draws": 0,
+     "losses": 1,
+     "gf": 4,
+     "ga": 3,
      "pts": 3,
      "deduction": null,
      "live": null
@@ -1282,28 +1302,14 @@
     {
      "fmId": "10155",
      "name": "Croatia",
-     "idx": 2,
-     "played": 1,
+     "idx": 3,
+     "played": 2,
      "wins": 1,
      "draws": 0,
-     "losses": 0,
-     "gf": 2,
-     "ga": 1,
-     "pts": 3,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "8491",
-     "name": "England",
-     "idx": 3,
-     "played": 1,
-     "wins": 0,
-     "draws": 0,
      "losses": 1,
-     "gf": 2,
-     "ga": 3,
-     "pts": 0,
+     "gf": 3,
+     "ga": 5,
+     "pts": 3,
      "deduction": null,
      "live": null
     },
@@ -1311,12 +1317,12 @@
      "fmId": "8496",
      "name": "Czechia",
      "idx": 4,
-     "played": 1,
+     "played": 2,
      "wins": 0,
      "draws": 0,
-     "losses": 1,
+     "losses": 2,
      "gf": 1,
-     "ga": 2,
+     "ga": 4,
      "pts": 0,
      "deduction": null,
      "live": null
