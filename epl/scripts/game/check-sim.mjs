@@ -33,7 +33,10 @@ const RUNS = Math.max(1, parseInt(process.argv.slice(2).find(a => !a.startsWith(
    `--seed0=1001` 就是從 1001 開始的 30 場;不給就是 1(跟以前逐字相同)。 */
 const SEED0 = Math.max(0, parseInt(process.argv.slice(2).find(a => a.startsWith('--seed0='))?.slice(8) ?? '1', 10));
 const MIN_JUDGE = 10;            // 少於這個場數只印不判(SE 的噪音比要驗的偏差還大)
-const HOME = 'ARS', AWAY = 'LIV';
+/* 對戰可以換(2026-09-30):`--home=ARS --away=TOT --lam=2.24,0.57`。預設 ARS vs LIV 那一組照舊 ——
+   它的 λ 是人為給的,兩隊真實側寫同一級,強弱全壓在扣扳機上;量「真實的強弱對戰」要換一場站上真的預測。 */
+const flagOf = k => process.argv.slice(2).find(a => a.startsWith(`--${k}=`))?.slice(k.length + 3) ?? null;
+const HOME = flagOf('home') ?? 'ARS', AWAY = flagOf('away') ?? 'LIV';
 
 /* 這一場兩隊自己的 extra 相加 —— 錨要跟被量的那一批同一批(4s 的教訓)。
    宣告在**檔案前段**:用它的地方都在後面,放在後面就是暫時死區 —— 那條坑本站記過,
@@ -175,7 +178,7 @@ const rows = [];
 /* 這一組 λ 是**測試用的**,不是站上對 ARS vs LIV 的預測(那一組是 ARS vs AVL 的)。
    錨要驗的是「給它一個 λ,它跑出來的平均進球回不回得到那個 λ」,所以用哪一組都成立 ——
    但註解不可以寫成「站上的預測」,那會變成一個沒有出處的宣稱。 */
-const PRED = { xgHome: 1.99, xgAway: 0.70 };
+const PRED = (() => { const v = flagOf('lam')?.split(',').map(Number); return v?.length === 2 && v.every(Number.isFinite) ? { xgHome: v[0], xgAway: v[1] } : { xgHome: 1.99, xgAway: 0.70 }; })();
 for (let seed = SEED0; seed < SEED0 + RUNS; seed++) rows.push(play(seed));
 const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
 const se = a => (a.length < 2 ? 0 : Math.sqrt(a.reduce((s, x) => s + (x - mean(a)) ** 2, 0) / (a.length - 1) / a.length));
@@ -1140,6 +1143,16 @@ if (simShots && realShots) {
     console.log(`  ${`${who} 進球 ÷ λ`.padEnd(20, '　')} ${(goals / RUNS / lam).toFixed(3)}`
       + ` = 射門 ${fShots.toFixed(3)} × 每球 xG ${fXg.toFixed(3)} × 轉換 ${fConv.toFixed(3)}`
       + `(進球 ${(goals / RUNS).toFixed(2)} 對 λ ${lam};射門 ${(n / RUNS).toFixed(1)} 對期望 ${c.expShots.toFixed(1)})`);
+    {
+      /* 機會的上游:這一隊有沒有比較常把球帶進禁區、控球比較多。引擎的 boxTouch 只數**接球**
+         (所以絕對值跟真實的 touches 不同尺度,上面「禁區觸球」那一節講過),這裡看的是**兩隊的比值**。
+         真實那一欄是這一隊整季的 extra.touches_opp_box(沒有對手調整,只當方向的參照)。 */
+      const bt = rows.reduce((a, r) => a + (r.st.counts.boxTouch?.[side] ?? 0), 0) / RUNS;
+      const ps = rows.reduce((a, r) => a + (r.st.poss?.[side] ?? 0), 0), pt = rows.reduce((a, r) => a + (r.st.poss?.home ?? 0) + (r.st.poss?.away ?? 0), 0);
+      const rb = profile.teams?.[code]?.extra?.touches_opp_box?.mean;
+      console.log(`  ${`　${who} 禁區接球`.padEnd(20, '　')} 每場 ${bt.toFixed(1)}・控球 ${pt ? (ps / pt * 100).toFixed(1) : '—'}%`
+        + (rb != null ? `  (真實整季禁區觸球 ${rb.toFixed(1)})` : ''));
+    }
     const real = collectReal(sh => sh.team === code);
     console.log(`  ${`　${who} 射門`.padEnd(20, '　')} 每球 xG ${(xg / n).toFixed(4)}・離門 ${(ds / n).toFixed(1)} m・禁區內 ${(box / n * 100).toFixed(0)}%   ${pc(bins.map(b => b / n))}`);
     if (real) console.log(`  ${`　${code} 真實(整季)`.padEnd(20, '　')} 每球 xG ${real.xg.toFixed(4)}・離門 ${real.dist.toFixed(1)} m・禁區內 ${(real.box * 100).toFixed(0)}%   ${pc(real.bins)}`);
