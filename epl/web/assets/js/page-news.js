@@ -1,4 +1,4 @@
-import * as C from './core.js?v=95f7e756';
+import * as C from './core.js?v=06f3a561';
 import { followedIn } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -111,9 +111,8 @@ try {
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算；本機同步後再手動發布' }),
     ])}
   </div>
+  ${C.tabs([{ key: '', label: '全部' }, ...cats.map(c => ({ key: c, label: c }))], '', { attr: 'data-c', label: '類別', max: 6 })}
   <div class="filters">
-    <button class="btn on" data-c="">全部</button>
-    ${cats.map(c => `<button class="btn" data-c="${c}">${c}</button>`).join('')}
     <select id="fTeam"><option value="">所有球隊</option>${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
     ${/* 只看我的球隊(2026-09-14)。**沒有關注任何球隊時整個開關不出現** ——
          一個點了什麼都不會發生的開關,讀者會以為壞了。 */''}

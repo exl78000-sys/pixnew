@@ -1,6 +1,6 @@
-import * as C from './core.js?v=95f7e756';
-import { renderKnowledge } from './knowledge-view.js?v=5ef3c8ca';
-import { renderAllPlayers } from './allplayers-view.js?v=5595fb34';
+import * as C from './core.js?v=06f3a561';
+import { renderKnowledge } from './knowledge-view.js?v=3ebb41a3';
+import { renderAllPlayers } from './allplayers-view.js?v=7fd11751';
 /* 模擬遊玩那一支**不在這裡 import**(2026-09-26,B4):game-view → game-live → game-sim,引擎本身 314 KB,
    而知識與球員搜尋兩個分頁根本用不到 —— 原本三個分頁都揹著它(explore.html 的 modulepreload 也一起預載)。
    改成點到那個分頁才 `import()`(見 VIEWS)。stamp-assets 照樣給那個字面路徑戳,但 modulepreload 只收靜態 import;
@@ -31,7 +31,7 @@ const VIEWS = [
   { key: 'knowledge', zh: '足球知識', render: renderKnowledge },
   /* 模擬遊玩(2026-09-03)取代了對戰模擬;view 鍵留 duel,舊書籤不斷。
      模組點到才載(B4);載入失敗會走 show() 的 catch,畫面講「載入失敗」而不是空白。 */
-  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=e9a86d31')).renderGame(body) },
+  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=02e435e7')).renderGame(body) },
   { key: 'allplayers', zh: '球員搜尋', render: renderAllPlayers },
 ];
 
@@ -42,11 +42,9 @@ try {
   const asked = C.qs('view');
   let cur = VIEWS.some(v => v.key === asked) ? asked : VIEWS[0].key;
 
+  /* 頁內那排三格拿掉了(2026-09-30,方案 B):三個分頁各自掛進導覽列該去的區 —— 球員搜尋在「球員」、
+     足球知識與模擬遊玩在「更多」—— 導覽的子列就是切換鈕,這裡再畫一排是同一件事印兩次,而且三格分屬兩區。 */
   app.innerHTML = `
-    <div class="filters" id="exploreTabs">
-      ${VIEWS.map(v => `<button class="btn${v.key === cur ? ' on' : ''}" type="button"
-        data-view="${v.key}">${C.esc(v.zh)}</button>`).join('')}
-    </div>
     <div id="exploreBody"><div class="loading">載入資料中…</div></div>`;
 
   const body = document.getElementById('exploreBody');
@@ -69,6 +67,5 @@ try {
     try { await v.render(body); } catch (err) { C.fail(err); }
   }
 
-  document.querySelectorAll('[data-view]').forEach(b => { b.onclick = () => show(b.dataset.view); });
   await show(cur);
 } catch (err) { C.fail(err); }

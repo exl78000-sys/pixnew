@@ -1,4 +1,4 @@
-import * as C from './core.js?v=95f7e756';
+import * as C from './core.js?v=06f3a561';
 
 const app = document.getElementById('app');
 
@@ -367,6 +367,8 @@ try {
   /* 勾選列。每一格帶**未來 7 天的場數,沒勾的也算** —— 取消勾選的賽事從表上消失之後,
      讀者要看得出它裡面還有幾場,不然「這 7 天沒有比賽」跟「被我關掉了」長得一模一樣。
      用真的 checkbox(鍵盤與讀屏都認得),外面包 label 讓整格都點得到。 */
+  let picksOpen = false;
+  document.addEventListener('toggle', e => { if (e.target.classList?.contains('picks-fold')) picksOpen = e.target.open; }, true);
   const picksHtml = (all, shown) => {
     const count = key => all.filter(u => u.compKey === key).length;
     const chip = c => {
@@ -379,13 +381,17 @@ try {
     const nat = upcomingComps.filter(c => c.group === 'intl');
     const natOn = nat.filter(c => shown.has(c.key)).length;
     const natN = nat.reduce((t, c) => t + count(c.key), 0);
-    return `<div class="comp-picks" role="group" aria-label="即將到來要列哪些賽事">
+    /* 十幾格勾選收進一個「篩選」摺疊(2026-09-30,方案 B):常駐的話它是整頁最長的一排按鈕,而大多數人不會動它。
+       摺起來時標題上印「已選幾個」,讀者不用打開也知道表上列的是不是全部。開合狀態跨 render 保留(picksOpen)。 */
+    const picked = upcomingComps.filter(c => shown.has(c.key)).length;
+    return `<details class="picks-fold"${picksOpen ? ' open' : ''}><summary class="seg-item">篩選賽事 <span class="dim">已選 ${picked} / ${upcomingComps.length}</span></summary>
+    <div class="comp-picks" role="group" aria-label="即將到來要列哪些賽事">
     ${upcomingComps.filter(c => c.group !== 'intl').map(chip).join('')}
     ${nat.length ? `<span class="comp-picks-break"></span><label class="comp-pick comp-group${natOn === nat.length ? ' on' : ''}" title="國家隊:未來 7 天 ${natN} 場(一次勾整組)"><input type="checkbox" data-upcoming-group="intl"${
       natOn === nat.length ? ' checked' : ''}${natOn && natOn < nat.length ? ' data-some="1"' : ''}><span>國家隊</span><span class="n">${natN}</span></label>${nat.map(chip).join('')}` : ''}
     <span class="comp-picks-act"><button class="btn tiny" type="button" data-upcoming-all>全選</button><button class="btn tiny" type="button" data-upcoming-none>全不選</button></span>
     ${picksSaved ? '' : `<span class="tiny warn-text">這個瀏覽器存不起來(無痕視窗,或擋掉了網站資料)——
-      勾選只在這一頁有效,重新整理會回到預設。</span>`}</div>`;
+      勾選只在這一頁有效,重新整理會回到預設。</span>`}</div></details>`;
   };
 
   // 每次 render() 重算:覆蓋(盃賽小檔、聯賽 raw feed)改的是資料,表要跟著資料重畫

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=95f7e756';
+import * as C from './core.js?v=06f3a561';
 
 const app = document.getElementById('app');
 
@@ -301,7 +301,7 @@ function standingsBlock(now) {
   const cur = list.find(x => x.comp === S.stand);
   const c = COMPS.get(cur.comp);
   const tabs = list.length > 1
-    ? `<div class="filters">${list.map(x => `<button class="btn${x.comp === cur.comp ? ' on' : ''}" data-stand="${esc(x.comp)}">${esc(COMPS.get(x.comp)?.short ?? x.comp)}</button>`).join('')}</div>` : '';
+    ? C.tabs(list.map(x => ({ key: x.comp, label: COMPS.get(x.comp)?.short ?? x.comp })), cur.comp, { attr: 'data-stand', label: '積分榜', max: 5 }) : '';
   const legend = new Map();
   for (const g of cur.groups) for (const l of g.legend) if (!legend.has(l.key)) legend.set(l.key, l);
   const n = k => cur.groups.filter(g => g.status === k).length;
@@ -485,7 +485,6 @@ function render() {
   const fetched = D.comps.map(c => c.retrievedAt).filter(Boolean).sort().at(0);
   const mj = D.sources.find(s => s.key === 'martj42');
   const h = D.model.holdout;
-  const chip = (key, label) => `<button class="btn${S.fam === key ? ' on' : ''}" data-fam="${key}">${esc(label)}</button>`;
   const y = window.scrollY;
   app.innerHTML = `
   <div class="page-head">
@@ -509,7 +508,7 @@ function render() {
       <div class="sub">${h ? `± ${h.se}・${h.n} 場・${D.model.passed ? '通過' : '沒通過'}` : '沒有驗收結果'}</div></div>
   </div>
 
-  <div class="filters">${chip('all', '全部')}${D.families.map(f => chip(f.key, f.zh)).join('')}</div>
+  ${C.tabs([{ key: 'all', label: '全部' }, ...D.families.map(f => ({ key: f.key, label: f.zh }))], S.fam, { attr: 'data-fam', label: '賽事', max: 5 })}
 
   ${pendingBlock(now)}
   ${upcomingBlock(now)}
