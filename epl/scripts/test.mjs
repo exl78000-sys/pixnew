@@ -3582,6 +3582,8 @@ async function checkDataGap() {
         ['導覽是五區 + 子列 + 聯賽下拉(details),手機另畫底部列',
           /<nav class="tabs sections"/.test(core) && /<details class="league-menu">/.test(core)
           && /<nav class="bottombar"/.test(core) && /class="subbar"/.test(core)],
+        ['站名連到總覽(2026-09-30,使用者要求)',
+          /<a class="brand" href="\$\{link\('overview'\)\}"/.test(core)],
         ['桌機不畫底部列;手機藏頂列五區、底部列 fixed、內容留出底部列的高度',
           /\.bottombar \{ display: none; \}/.test(css.slice(0, css.indexOf('@media (max-width: 700px)')))
           && /nav\.tabs\.sections \{ display: none; \}/.test(mobile)
