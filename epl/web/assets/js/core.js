@@ -1037,7 +1037,9 @@ export function nav() {
 
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
-      <a class="brand" href="${link('index')}"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
+      ${/* 站名連到**總覽**(2026-09-30,使用者要求):五區之後總覽收在「賽事」裡要點兩下,而它是全站的入口 ——
+           品牌是每一頁都在同一個位置的那一個連結,給它最合適。聯賽首頁仍在「比賽」區的第一格。 */''}
+      <a class="brand" href="${link('overview')}" title="回總覽"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
       ${leagueMenu}
       <nav class="tabs sections" aria-label="主選單">${top}</nav>
     </div>${sub}</header>`);

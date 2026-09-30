@@ -1,4 +1,4 @@
-import * as C from './core.js?v=06f3a561';
+import * as C from './core.js?v=5a4c76d4';
 
 /* 「賽程與預測」已經併進「積分與賽程」(index)。
    這一頁留成轉址殼而不是直接刪掉 —— 站內外都可能已經有指向
