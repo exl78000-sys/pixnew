@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-10-01T04:41:00.171Z",
+ "retrievedAt": "2026-10-01T18:11:05.639Z",
  "matches": [
   {
    "id": "5120889",
@@ -8182,30 +8182,6 @@
    "group": null
   },
   {
-   "id": "6315019",
-   "kickoff": "2026-09-30T14:00:00Z",
-   "home": {
-    "name": "Botswana",
-    "shortName": "Botswana",
-    "fmId": "5887"
-   },
-   "away": {
-    "name": "Mozambique",
-    "shortName": "Mozambique",
-    "fmId": "5965"
-   },
-   "state": "FT",
-   "final": [
-    0,
-    2
-   ],
-   "reason": "FT",
-   "reasonLong": "Full-Time",
-   "awarded": false,
-   "round": null,
-   "group": null
-  },
-  {
    "id": "6140730",
    "kickoff": "2026-09-30T16:00:00Z",
    "home": {
@@ -8266,10 +8242,13 @@
     "shortName": "Tahiti",
     "fmId": "5927"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8287,10 +8266,13 @@
     "shortName": "New Zealand",
     "fmId": "5820"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "Pen",
+   "reasonLong": "After penalties",
    "awarded": false,
    "round": null,
    "group": null
@@ -8308,17 +8290,20 @@
     "shortName": "Ecuador",
     "fmId": "6707"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "Pen",
+   "reasonLong": "After penalties",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6280450",
-   "kickoff": "2026-10-01T12:00:00.000Z",
+   "kickoff": "2026-10-01T14:00:00.000Z",
    "home": {
     "name": "Maldives",
     "shortName": "Maldives",
@@ -8329,10 +8314,13 @@
     "shortName": "Lebanon",
     "fmId": "5897"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    6
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8350,31 +8338,13 @@
     "shortName": "Syria",
     "fmId": "6320"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": null,
-   "group": null
-  },
-  {
-   "id": "6365754",
-   "kickoff": "2026-10-02T10:00:00Z",
-   "home": {
-    "name": "Mauritius",
-    "shortName": "Mauritius",
-    "fmId": "5750"
-   },
-   "away": {
-    "name": "Sri Lanka",
-    "shortName": "Sri Lanka",
-    "fmId": "5895"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    4,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8443,6 +8413,27 @@
    "group": null
   },
   {
+   "id": "6365754",
+   "kickoff": "2026-10-02T15:00:00Z",
+   "home": {
+    "name": "Mauritius",
+    "shortName": "Mauritius",
+    "fmId": "5750"
+   },
+   "away": {
+    "name": "Sri Lanka",
+    "shortName": "Sri Lanka",
+    "fmId": "5895"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
    "id": "6299693",
    "kickoff": "2026-10-03T00:00:00Z",
    "home": {
@@ -8454,6 +8445,27 @@
     "name": "Paraguay",
     "shortName": "Paraguay",
     "fmId": "6724"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6367253",
+   "kickoff": "2026-10-03T04:00:00Z",
+   "home": {
+    "name": "Fiji",
+    "shortName": "Fiji",
+    "fmId": "5925"
+   },
+   "away": {
+    "name": "Vanuatu",
+    "shortName": "Vanuatu",
+    "fmId": "5926"
    },
    "state": "NS",
    "final": null,
@@ -8581,10 +8593,10 @@
     "shortName": "Mali",
     "fmId": "5815"
    },
-   "state": "NS",
+   "state": "CANCELLED",
    "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "reason": "Can",
+   "reasonLong": "Cancelled",
    "awarded": false,
    "round": null,
    "group": null
@@ -8622,6 +8634,27 @@
     "name": "Mexico",
     "shortName": "Mexico",
     "fmId": "6710"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6367352",
+   "kickoff": "2026-10-04T12:00:00Z",
+   "home": {
+    "name": "Kyrgyzstan",
+    "shortName": "Kyrgyzstan",
+    "fmId": "5893"
+   },
+   "away": {
+    "name": "Lebanon",
+    "shortName": "Lebanon",
+    "fmId": "5897"
    },
    "state": "NS",
    "final": null,
@@ -8686,6 +8719,27 @@
     "shortName": "Ghana",
     "fmId": "6714"
    },
+   "state": "CANCELLED",
+   "final": null,
+   "reason": "Can",
+   "reasonLong": "Cancelled",
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6367353",
+   "kickoff": "2026-10-04T18:00:00Z",
+   "home": {
+    "name": "Morocco",
+    "shortName": "Morocco",
+    "fmId": "6262"
+   },
+   "away": {
+    "name": "Mali",
+    "shortName": "Mali",
+    "fmId": "5815"
+   },
    "state": "NS",
    "final": null,
    "reason": null,
@@ -8716,6 +8770,27 @@
    "group": null
   },
   {
+   "id": "6369013",
+   "kickoff": "2026-10-05T06:30:00Z",
+   "home": {
+    "name": "Ecuador",
+    "shortName": "Ecuador",
+    "fmId": "6707"
+   },
+   "away": {
+    "name": "Panama",
+    "shortName": "Panama",
+    "fmId": "5922"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
    "id": "6299702",
    "kickoff": "2026-10-05T10:00:00Z",
    "home": {
@@ -8727,6 +8802,27 @@
     "name": "DR Congo",
     "shortName": "DR Congo",
     "fmId": "6321"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6369014",
+   "kickoff": "2026-10-05T10:30:00Z",
+   "home": {
+    "name": "Japan",
+    "shortName": "Japan",
+    "fmId": "6715"
+   },
+   "away": {
+    "name": "New Zealand",
+    "shortName": "New Zealand",
+    "fmId": "5820"
    },
    "state": "NS",
    "final": null,
@@ -8779,6 +8875,48 @@
    "group": null
   },
   {
+   "id": "6368651",
+   "kickoff": "2026-10-06T10:00:00Z",
+   "home": {
+    "name": "South Korea",
+    "shortName": "South Korea",
+    "fmId": "7804"
+   },
+   "away": {
+    "name": "Uzbekistan",
+    "shortName": "Uzbekistan",
+    "fmId": "8700"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6368652",
+   "kickoff": "2026-10-06T11:35:00Z",
+   "home": {
+    "name": "China",
+    "shortName": "China",
+    "fmId": "5822"
+   },
+   "away": {
+    "name": "Tajikistan",
+    "shortName": "Tajikistan",
+    "fmId": "5898"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
    "id": "6162940",
    "kickoff": "2026-10-06T14:00:00Z",
    "home": {
@@ -8811,6 +8949,48 @@
     "name": "Nigeria",
     "shortName": "Nigeria",
     "fmId": "6346"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6368653",
+   "kickoff": "2026-10-06T19:00:00Z",
+   "home": {
+    "name": "Jordan",
+    "shortName": "Jordan",
+    "fmId": "5816"
+   },
+   "away": {
+    "name": "Venezuela",
+    "shortName": "Venezuela",
+    "fmId": "5800"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6366761",
+   "kickoff": "2026-10-06T19:30:00Z",
+   "home": {
+    "name": "Algeria",
+    "shortName": "Algeria",
+    "fmId": "6317"
+   },
+   "away": {
+    "name": "Niger",
+    "shortName": "Niger",
+    "fmId": "121281"
    },
    "state": "NS",
    "final": null,
@@ -8874,6 +9054,27 @@
     "name": "Canada",
     "shortName": "Canada",
     "fmId": "5810"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6368654",
+   "kickoff": "2026-10-07T02:30:00Z",
+   "home": {
+    "name": "Mexico",
+    "shortName": "Mexico",
+    "fmId": "6710"
+   },
+   "away": {
+    "name": "Chile",
+    "shortName": "Chile",
+    "fmId": "9762"
    },
    "state": "NS",
    "final": null,

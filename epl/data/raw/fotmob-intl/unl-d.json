@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-01T04:40:55.911Z",
+ "retrievedAt": "2026-10-01T18:11:01.583Z",
  "matches": [
   {
    "id": "5181874",
@@ -122,10 +122,13 @@
     "shortName": "Liechtenstein",
     "fmId": "5799"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "2"
@@ -381,13 +384,13 @@
      "fmId": "8566",
      "name": "Azerbaijan",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 1,
+     "draws": 2,
      "losses": 0,
      "gf": 1,
      "ga": 1,
-     "pts": 1,
+     "pts": 2,
      "deduction": null,
      "live": null
     },
@@ -395,13 +398,13 @@
      "fmId": "5799",
      "name": "Liechtenstein",
      "idx": 3,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 0,
      "ga": 2,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
      "live": null
     }

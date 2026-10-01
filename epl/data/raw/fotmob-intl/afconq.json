@@ -16,7 +16,7 @@
   "2012/2013",
   "2010/2011"
  ],
- "retrievedAt": "2026-10-01T04:40:57.863Z",
+ "retrievedAt": "2026-10-01T18:11:03.545Z",
  "matches": [
   {
    "id": "5224974",
@@ -1423,10 +1423,13 @@
     "shortName": "Kenya",
     "fmId": "5884"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "D"
@@ -3715,15 +3718,29 @@
      "live": null
     },
     {
+     "fmId": "6289",
+     "name": "Guinea",
+     "idx": 2,
+     "played": 2,
+     "wins": 1,
+     "draws": 0,
+     "losses": 1,
+     "gf": 2,
+     "ga": 2,
+     "pts": 3,
+     "deduction": null,
+     "live": null
+    },
+    {
      "fmId": "5884",
      "name": "Kenya",
-     "idx": 2,
-     "played": 1,
+     "idx": 3,
+     "played": 2,
      "wins": 0,
      "draws": 1,
-     "losses": 0,
+     "losses": 1,
      "gf": 1,
-     "ga": 1,
+     "ga": 2,
      "pts": 1,
      "deduction": null,
      "live": null
@@ -3731,7 +3748,7 @@
     {
      "fmId": "6011",
      "name": "Eritrea",
-     "idx": 3,
+     "idx": 4,
      "played": 2,
      "wins": 0,
      "draws": 1,
@@ -3739,20 +3756,6 @@
      "gf": 1,
      "ga": 6,
      "pts": 1,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "6289",
-     "name": "Guinea",
-     "idx": 4,
-     "played": 1,
-     "wins": 0,
-     "draws": 0,
-     "losses": 1,
-     "gf": 1,
-     "ga": 2,
-     "pts": 0,
      "deduction": null,
      "live": null
     }
