@@ -14,7 +14,7 @@
   "2013",
   "2010"
  ],
- "retrievedAt": "2026-09-30T15:07:54.347Z",
+ "retrievedAt": "2026-10-01T04:40:58.685Z",
  "matches": [
   {
    "id": "6052027",
@@ -258,7 +258,7 @@
   },
   {
    "id": "6052087",
-   "kickoff": "2026-09-30T17:30:00.000Z",
+   "kickoff": "2026-09-30T17:30:00Z",
    "home": {
     "name": "Bahrain",
     "shortName": "Bahrain",
@@ -269,17 +269,20 @@
     "shortName": "Yemen",
     "fmId": "5892"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    5
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": null
   },
   {
    "id": "6052086",
-   "kickoff": "2026-09-30T17:30:00.000Z",
+   "kickoff": "2026-09-30T17:30:00Z",
    "home": {
     "name": "UAE",
     "shortName": "UAE",
@@ -290,10 +293,13 @@
     "shortName": "Qatar",
     "fmId": "5902"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": null
@@ -307,9 +313,9 @@
     "fmId": "7795"
    },
    "away": {
-    "name": "2B",
-    "shortName": "2B",
-    "fmId": "1879"
+    "name": "Qatar",
+    "shortName": "Qatar",
+    "fmId": "5902"
    },
    "state": "NS",
    "final": null,
@@ -323,9 +329,9 @@
    "id": "6052095",
    "kickoff": "2026-10-03T18:30:00Z",
    "home": {
-    "name": "1B",
-    "shortName": "1B",
-    "fmId": "1871"
+    "name": "UAE",
+    "shortName": "UAE",
+    "fmId": "5789"
    },
    "away": {
     "name": "Oman",
@@ -344,14 +350,14 @@
    "id": "6052096",
    "kickoff": "2026-10-06T18:00:00Z",
    "home": {
-    "name": "Winner SF 1",
-    "shortName": "Winner SF 1",
-    "fmId": "1983"
+    "name": "Saudi Arabia/Qatar",
+    "shortName": "Saudi Arabia/Qatar",
+    "fmId": "2325517"
    },
    "away": {
-    "name": "Winner SF 2",
-    "shortName": "Winner SF 2",
-    "fmId": "1984"
+    "name": "UAE/Oman",
+    "shortName": "UAE/Oman",
+    "fmId": "2325518"
    },
    "state": "NS",
    "final": null,
@@ -453,13 +459,13 @@
      "fmId": "5789",
      "name": "UAE",
      "idx": 1,
-     "played": 2,
+     "played": 3,
      "wins": 2,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 7,
-     "ga": 0,
-     "pts": 6,
+     "gf": 8,
+     "ga": 1,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -467,13 +473,13 @@
      "fmId": "5902",
      "name": "Qatar",
      "idx": 2,
-     "played": 2,
+     "played": 3,
      "wins": 2,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 3,
-     "ga": 0,
-     "pts": 6,
+     "gf": 4,
+     "ga": 1,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -481,13 +487,13 @@
      "fmId": "5892",
      "name": "Yemen",
      "idx": 3,
-     "played": 2,
-     "wins": 0,
+     "played": 3,
+     "wins": 1,
      "draws": 0,
      "losses": 2,
-     "gf": 0,
-     "ga": 5,
-     "pts": 0,
+     "gf": 5,
+     "ga": 7,
+     "pts": 3,
      "deduction": null,
      "live": null
     },
@@ -495,12 +501,12 @@
      "fmId": "5901",
      "name": "Bahrain",
      "idx": 4,
-     "played": 2,
+     "played": 3,
      "wins": 0,
      "draws": 0,
-     "losses": 2,
-     "gf": 0,
-     "ga": 5,
+     "losses": 3,
+     "gf": 2,
+     "ga": 10,
      "pts": 0,
      "deduction": null,
      "live": null
