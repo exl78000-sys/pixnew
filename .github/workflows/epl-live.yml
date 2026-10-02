@@ -130,6 +130,11 @@ jobs:
           # 當先驗(用本季彙總預測本季就是偷看未來),所以 2023-24 與 2024-25 都要。
           npm run laliga:setpieces -- --season=2023-24
           npm run laliga:setpieces -- --season=2024-25
+          # 德義法上季(2026-10-02,戰術頁)。核對用的是站上發布的 results.json,所以排在那三個聯賽 build 之後也行、
+          # 之前也行(倉庫裡就有上一次的 results.json);抓過就跳過,只有新的一季第一次會連外(三個聯賽共 56 個請求)。
+          npm run de1:setpieces
+          npm run it1:setpieces
+          npm run fr1:setpieces
         continue-on-error: true
 
       # 三個聯賽的外電翻成中文。**只翻已經抓下來的快取,不連外抓新聞** ——

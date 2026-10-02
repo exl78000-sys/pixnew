@@ -857,8 +857,11 @@ export const LEAGUES = {
     /* players 2026-09-15 開:球員層走 Understat(整季彙總,一季一個請求)。
        它**不是**英超那一層 —— 沒有背號、頭貼、出生日期、身價與傷停,
        也沒有西甲那層 SportMonks 補充,所以年齡是 null。頁面自己把界線寫出來。
-       戰術與實時仍然沒有,不掛上去。 */
-    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'explore', 'predict'],
+       實時仍然沒有,不掛上去。戰術 2026-10-02 起有了(Understat 上季的球隊情境統計,逐場比分核對過)。 */
+    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'model', 'explore', 'predict'],
+    /* 盃賽頁只看歐冠(2026-10-02,使用者同意的提案):那一頁原本是歐冠 + 兩個英格蘭盃賽,9/15 因為英格蘭盃賽跟這個聯賽無關
+       而整頁不掛 —— 但這個聯賽的球隊本來就在歐冠裡。掛上去、只留歐冠分頁(page-cups.js 讀這個標記)。 */
+    cupsOnly: 'ucl',
     gapNote: '德甲目前做到球隊、比賽與球員那一層,還沒有的是陣容、傷停與即時比分 —— '
       + '球員層走 Understat(它涵蓋五大聯賽),所以剩下這幾頁是還沒做,不是做不出來。',
   },
@@ -866,10 +869,13 @@ export const LEAGUES = {
      (probe-new-leagues.mjs):openfootball + football-data.co.uk I1/F1、
      Understat `Serie_A` / `Ligue_1`、FotMob 聯賽 id 55 / 53。
      **它們缺的跟英冠缺的不是同一種** —— 跟德甲一樣是「還沒抓」,不是「沒有來源」。
-     open 清單照德甲那一份:戰術與實時沒有,不掛上去;盃賽也不掛(那一頁的兩個賽事是英格蘭的)。 */
+     open 清單照德甲那一份:實時沒有,不掛上去;戰術 2026-10-02 起有了;盃賽 2026-10-02 起掛上、只看歐冠(cupsOnly)。 */
   it1: {
     zh: '義甲', brand: '義甲戰情室', en: 'SERIE A WAR ROOM',
-    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'explore', 'predict'],
+    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'model', 'explore', 'predict'],
+    /* 盃賽頁只看歐冠(2026-10-02,使用者同意的提案):那一頁原本是歐冠 + 兩個英格蘭盃賽,9/15 因為英格蘭盃賽跟這個聯賽無關
+       而整頁不掛 —— 但這個聯賽的球隊本來就在歐冠裡。掛上去、只留歐冠分頁(page-cups.js 讀這個標記)。 */
+    cupsOnly: 'ucl',
     /* 義甲法甲的缺口說法原本停在「只做到球隊那一層、球員層還沒抓」—— 球員頁與賽後報告接上之後沒有回來改,
        於是站在義甲的戰術 / 實時 / 動態頁,讀者被告知「球員層還沒抓」,而導覽列上就掛著球員頁
        (「有哪一句還在講我們沒有它」第七次;2026-09-24 全站掃描抓到)。說法跟德甲那一份對齊。 */
@@ -878,7 +884,10 @@ export const LEAGUES = {
   },
   fr1: {
     zh: '法甲', brand: '法甲戰情室', en: 'LIGUE 1 WAR ROOM',
-    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'explore', 'predict'],
+    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'model', 'explore', 'predict'],
+    /* 盃賽頁只看歐冠(2026-10-02,使用者同意的提案):那一頁原本是歐冠 + 兩個英格蘭盃賽,9/15 因為英格蘭盃賽跟這個聯賽無關
+       而整頁不掛 —— 但這個聯賽的球隊本來就在歐冠裡。掛上去、只留歐冠分頁(page-cups.js 讀這個標記)。 */
+    cupsOnly: 'ucl',
     gapNote: '法甲目前做到球隊、比賽與球員那一層,還沒有的是陣容、傷停與即時比分 —— '
       + '球員層走 Understat(它涵蓋五大聯賽),所以剩下這幾頁是還沒做,不是做不出來。',
   },
@@ -901,7 +910,8 @@ const SITE_PAGES = [
   /* 盃賽(歐冠 + 足總盃 + 聯賽盃)收成一頁、三個頁內分頁 —— 2026-08-29 併的。
      它是跨聯賽的:歐冠兩邊看到同一份,英格蘭盃賽的層級標籤也涵蓋英冠球隊。
      ucl.html 保留為轉址,舊連結不斷。 */
-  ['cups', '盃賽'],
+  /* 只看歐冠的聯賽(德義法,LEAGUES[lg].cupsOnly)這一格叫「歐冠」—— 點進去只有歐冠,標籤寫「盃賽」是在說一件那一頁不做的事 */
+  ['cups', L => (L.cupsOnly ? '歐冠' : '盃賽')],
   /* 國家隊(2026-09-24):賽程、賽果、本站的國家隊 Elo 與勝率。跟聯賽無關,所以在這一組。
      資料是英超目錄那一份(data/intl.json),每個聯賽看到的都一樣。 */
   ['intl', '國家隊'],

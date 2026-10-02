@@ -535,6 +535,15 @@ export function testLeague(L) {
         check('驗證器:含數字的隊名不算未證實的數字,但同一個數字出現在別處仍會被抓',
           verify('Mainz 05 主場作戰', nf).ok && !verify('Mainz 05 贏了 5 場', nf).ok);
       }
+      /* 戰術頁(2026-10-02):Understat 上季的球隊情境統計,逐場比分核對過才用。每一隊都要有雷達六軸、主陣型、定位球;
+         隊數等於上季積分表(雷達的百分位是在全聯盟裡排的,少一隊就不是同一個母體) */
+      {
+        const tac = out('tactics'), tbl = out('table');
+        const lastN = (tbl.last ?? []).length;
+        check('戰術:每一隊都有雷達六軸、主陣型與定位球,隊數等於上季積分表',
+          tac.length > 0 && tac.length === lastN && tac.every(t => t.radar?.length === 6 && t.formation?.label && t.setPieces && t.source === 'Understat'),
+          `${tac.length} 隊 / 上季 ${lastN} 隊`);
+      }
       check('沒有過時的「要先有球員層與逐場詳情」那句', !/要先有球員層與逐場詳情/.test(JSON.stringify(an)));
     }
     /* 這幾份沒有內容的一律帶 available:false 與一句為什麼 —— 空殼不解釋等於看起來壞掉 */

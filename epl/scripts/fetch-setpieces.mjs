@@ -12,7 +12,7 @@
 // - 每抓完一隊就寫 checkpoint;中途失敗下次從缺的隊繼續。
 // - 每隊的五種情境進失球總和必須跟 openfootball 賽果完全一致,否則不標完成。
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,6 +40,18 @@ const PROFILES = {
     lastSeason: '2025-26', rawDir: 'openfootball-la-liga', cacheDir: 'understat-la-liga',
     providerLeague: 'La_liga',
   },
+  /* 德義法(2026-10-02,戰術頁要的球隊情境統計)。跟上面兩個不同的地方有兩個:
+     ① **核對用的賽果直接讀站上發布的 results.json** —— 那一份已經過 openfootball + football-data.co.uk + FotMob
+        的三方補齊與對帳(build-league 的 load()),在這裡重寫一次讀賽果的流程就是「同一個量兩個來源」。
+        所以先 build 過那個聯賽才抓得了(沒有 results.json 會直接說)。
+     ② **Understat 的隊名從球員原始檔對回來**(`understatDir/{季}-players.json` 每個人帶 team_title,名冊認得那些名字,
+        _understat 的 alias 是 9/15 接球員層時補的)—— 不另外手寫一張對照表。 */
+  de1: { label: '德甲', teamFile: 'teams-bundesliga.json', lastSeason: '2025-26', cacheDir: 'understat-bundesliga',
+    providerLeague: 'Bundesliga', results: 'web/data/leagues/de1/results.json' },
+  it1: { label: '義甲', teamFile: 'teams-serie-a.json', lastSeason: '2025-26', cacheDir: 'understat-serie-a',
+    providerLeague: 'Serie_A', results: 'web/data/leagues/it1/results.json' },
+  fr1: { label: '法甲', teamFile: 'teams-ligue-1.json', lastSeason: '2025-26', cacheDir: 'understat-ligue-1',
+    providerLeague: 'Ligue_1', results: 'web/data/leagues/fr1/results.json' },
 };
 const PROFILE = PROFILES[LEAGUE];
 if (!PROFILE) throw new Error(`不支援的聯賽 --league=${LEAGUE}`);
@@ -128,7 +140,28 @@ async function main() {
      而下面的逐場核對要求「供應商場次 === 我們的場次」——
      少 10 場會讓**整季 20 隊全部拒收**,看起來像 Understat 給錯資料,
      實際是我們這邊的賽果不完整。備援來源補完之前先核對過重疊場次(見該檔說明)。 */
-  const matches = LEAGUE === 'es1'
+  const fromResults = () => {
+    const f = join(ROOT, PROFILE.results);
+    if (!existsSync(f)) throw new Error(`${PROFILE.label}還沒 build(找不到 ${PROFILE.results})—— 核對要用站上發布的賽果`);
+    return JSON.parse(readFileSync(f, 'utf8')).filter(m => m.season === LAST_SEASON);
+  };
+  /* Understat 隊名:球員原始檔的 team_title(只取單一球隊的列;季中轉隊的人是「A,B」)→ 名冊的 codeOf */
+  const understatName = (() => {
+    if (!PROFILE.results) return new Map();
+    const f = join(DIR, `${LAST_SEASON}-players.json`);
+    if (!existsSync(f)) return new Map();
+    const j = JSON.parse(readFileSync(f, 'utf8'));
+    const rows = Array.isArray(j) ? j : (j.players ?? []);
+    const m = new Map();
+    for (const r of rows) {
+      const t = r.team_title;
+      if (!t || t.includes(',')) continue;
+      const code = T.codeOf(t);
+      if (code && !m.has(code)) m.set(code, t);
+    }
+    return m;
+  })();
+  const matches = PROFILE.results ? fromResults() : LEAGUE === 'es1'
     ? (() => {
       const { matches: ms, backfill } = laligaMatches(ROOT, LAST_SEASON, { codeOf: T.codeOf });
       const line = backfillLine(LAST_SEASON, backfill);
@@ -169,7 +202,7 @@ async function main() {
       continue;
     }
     if (fetched >= LIMIT) break;
-    const slug = T.byCode.get(code)?.understat ?? NAME[code] ?? T.byCode.get(code)?.en;
+    const slug = T.byCode.get(code)?.understat ?? understatName.get(code) ?? NAME[code] ?? T.byCode.get(code)?.en;
     if (!slug) throw new Error(`${code} 缺 Understat 隊名`);
     try {
       const { data, url } = await fetchTeam(slug);

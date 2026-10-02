@@ -45,6 +45,7 @@ import { buildFormIndex, recentForm, formSummary, TUNED } from './form.mjs';
 import { upcomingOdds, seasonMarket, pickMarket } from './odds.mjs';
 import { pickPair, intoBand } from './colour.mjs';
 import { round } from './util.mjs';
+import { buildTeamProfiles } from './team-profiles.mjs';
 /* 跨聯賽球員搜尋的統一層。**開了球員頁就一定要寫這一份** ——
    `allplayers-view.js` 與 `core.js` 的 crossLeaguePlayers 都是看
    `LEAGUES[lg].open` 有沒有 players 才去要它的,沒寫就是一個保證 404,
@@ -305,6 +306,20 @@ export async function buildLeague(L) {
   }
 
   const lastTable = buildTable(lastMatches, lastCodes);
+  /* 球隊側寫(戰術頁,2026-10-02):Understat 上季的球隊情境統計,跟西甲同一支 buildTeamProfiles。
+     抓取器(fetch-setpieces --league=...)拿站上發布的 results.json 逐場核對過比分,沒全數通過就不用 ——
+     半套的側寫會讓雷達的百分位是在一部分球隊裡排的,看起來正常、實際是錯的。沒有檔就寫空的,戰術頁走缺口頁。 */
+  let teamProfiles = [];
+  {
+    const f = join(ROOT, 'data', 'raw', L.understatDir ?? '', `${LAST_SEASON}-team-situations.json`);
+    if (L.understatDir && existsSync(f)) {
+      const raw = JSON.parse(readFileSync(f, 'utf8'));
+      if (raw.season === LAST_SEASON && raw.complete && raw.validation?.allScorelinesReconciled) {
+        teamProfiles = buildTeamProfiles(lastTable, raw);
+        console.log(`  Understat ${L.zh}攻守情境:${teamProfiles.length} 隊(逐場比分已核對)`);
+      } else console.log(`  ⚠ Understat ${L.zh}攻守情境未完整核對,本次不用(戰術頁維持缺口)`);
+    }
+  }
   const curTable = buildTable(curMatches, curCodes);
 
   const trainMatches = [...priorMatches, ...lastMatches, ...curPlayed];
@@ -1055,7 +1070,7 @@ export async function buildLeague(L) {
   /* 單場分析頁一定會去要這三份 —— 少一份就是 404 加「載入失敗」,
      而那是「這一站壞了」的訊息,不是「這個聯賽沒有這個功能」。既有聯賽沒有內容時
      寫的就是空物件 / 空陣列,照抄。 */
-  await write('tactics', []);
+  await write('tactics', teamProfiles);
   await write('lineups', {});
   await write('shapes', {});
 
