@@ -822,7 +822,8 @@ export const LEAGUES = {
   /* 英冠掛「球隊與比賽」那一層,加上 2026-09-15 起的**球員層**。
      沒有的是「整季的球員資料源」(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過)——
      但逐場資料每一場都帶雙方的逐人統計,加起來就是整季,所以球員頁開了;
-     它做不到的(球員 xG 模型、身價、年齡、傷停)由頁面自己講。戰術與實時仍然沒有,不掛上導覽列。
+     它做不到的(球員 xG 模型、身價、年齡、傷停)由頁面自己講。實時仍然沒有,不掛上導覽列。
+     戰術 2026-10-02 起有了:FotMob 逐場統計照 Understat 的形狀加總(陣型單位是先發場次,頁面照單位印)。
      **外電是 2026-08-28 補上的** —— BBC 與 Guardian 的英冠 feed 實測可用;
      Sky 那一個看名字像英冠、實際回的是英超內容,所以不用(理由記在 feeds-championship.json)。
      網址仍然進得來,由 LeagueGap 講一句實話,不是給一個空白頁。
@@ -837,7 +838,7 @@ export const LEAGUES = {
        沒有球員源不衝突;頁面上會照實列出英冠缺席的原因。 */
     /* players 2026-09-15 開:球員層由逐場統計累加而來(見 build-championship.mjs 檔頭)。
        它**不是** Understat / FPL 那一層(沒有球員 xG 模型、身價、年齡、傷停),頁面自己把界線寫在最上面。 */
-    open: ['overview', 'index', 'teams', 'players', 'model', 'news', 'cups', 'intl', 'explore', 'predict'],
+    open: ['overview', 'index', 'teams', 'tactics', 'players', 'model', 'news', 'cups', 'intl', 'explore', 'predict'],
     /* 缺口頁的預設說法是「資料還在補」—— 那對英冠是**錯的**,
        它不是還在補,是沒有來源(Understat 不做英冠、FPL 只有英超,兩者都實測過)。
        說成「還在補」等於暗示以後會有,而我們知道不會。 */

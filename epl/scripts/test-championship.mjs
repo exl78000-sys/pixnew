@@ -269,6 +269,25 @@ const table = out('table'), results = out('results'), sim = out('sim');
   const miss = need.filter(n => !existsSync(join(ROOT, 'web', 'data', 'leagues', 'en2', `${n}.json`)));
   check('單場分析頁要的資料集一份都不缺', miss.length === 0, miss.join('、'));
 
+  /* 戰術頁(2026-10-02):FotMob 逐場照 Understat 的形狀加總。守四件事 ——
+     ① 上季每一隊都有(雷達的百分位是在全聯盟裡排的);② 來源標 FotMob、陣型單位是先發場次(不是出場分鐘);
+     ③ 少場的隊有 coverage,而「終結 / 防守超額」是空值(整季進球不能拿去比部分場次的 xG);
+     ④ 全場數的隊,每場 xG = 整季 xG ÷ 積分表場數(分母沒有被偷換)。 */
+  {
+    const tac = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'en2', 'tactics.json'), 'utf8'));
+    const tbl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'en2', 'table.json'), 'utf8'));
+    const lastN = (tbl.last ?? []).length;
+    check('戰術:上季每一隊都有側寫,來源 FotMob、陣型單位是先發場次',
+      tac.length === lastN && tac.every(t => t.source === 'FotMob' && t.formation?.unit === 'starts' && t.radar?.length === 6),
+      `${tac.length} / ${lastN} 隊`);
+    const part = tac.filter(t => t.coverage);
+    check('戰術:少場的隊有 coverage,而且終結與防守超額是空值',
+      part.every(t => t.coverage.matches < t.coverage.of && t.attack.finishing === null && t.defence.overperform === null),
+      part.map(t => `${t.code} ${t.coverage.matches}/${t.coverage.of}`).join('、') || '沒有少場的隊');
+    const fullT = tac.filter(t => !t.coverage);
+    check('戰術:全場數的隊,每場 xG = 整季 xG ÷ 場數', fullT.length > 0 && fullT.every(t => Math.abs(t.attack.xG90 - t.attack.xG / t.matches) < 0.01));
+  }
+
   /* **live.matches 是陣列,official / experts 的 matches 是物件。**
      同一個名字兩種型別,照著別的檔案抄很容易抄反 —— 寫成物件的話
      `(live?.matches ?? []).find(...)` 直接拋錯,而測試不會知道。 */
