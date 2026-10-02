@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-10-02T04:33:08.314Z",
+ "retrievedAt": "2026-10-02T14:22:44.348Z",
  "matches": [
   {
    "id": "5120889",
@@ -8350,27 +8350,6 @@
    "group": null
   },
   {
-   "id": "6299692",
-   "kickoff": "2026-10-02T11:00:00.000Z",
-   "home": {
-    "name": "DR Congo",
-    "shortName": "DR Congo",
-    "fmId": "6321"
-   },
-   "away": {
-    "name": "Uganda",
-    "shortName": "Uganda",
-    "fmId": "5890"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": null,
-   "group": null
-  },
-  {
    "id": "6280452",
    "kickoff": "2026-10-02T11:00:00.000Z",
    "home": {
@@ -8383,10 +8362,13 @@
     "shortName": "Venezuela",
     "fmId": "5800"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8404,7 +8386,31 @@
     "shortName": "Palestine",
     "fmId": "6333"
    },
-   "state": "NS",
+   "state": "FT",
+   "final": [
+    0,
+    5
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6299692",
+   "kickoff": "2026-10-02T13:00:00.000Z",
+   "home": {
+    "name": "DR Congo",
+    "shortName": "DR Congo",
+    "fmId": "6321"
+   },
+   "away": {
+    "name": "Uganda",
+    "shortName": "Uganda",
+    "fmId": "5890"
+   },
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
