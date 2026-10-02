@@ -25,6 +25,7 @@ import { simZoneIssues } from './sim-zones.mjs';
 import { europeanKickoff } from './league-matches.mjs';
 import { nameCheckVerdict } from './build-league.mjs';
 import { readMatchReports } from './match-archive.mjs';
+import { preMatchBundle, postMatchBundle, templateFor, verify } from './report/index.mjs';
 
 
 export function testLeague(L) {
@@ -506,6 +507,36 @@ export function testLeague(L) {
       const an = out('analysis');
       return typeof an.enabled === 'boolean' && an.pre && an.post && typeof an.counts?.pre === 'number';
     })());
+    /* 分析文章(2026-10-02 起德義法也有,跟英冠那幾條同一套)。沒有球隊側寫 → 賽前文章不准出現「升班馬」那句;
+       賽後篇數等於本季發布的賽後報告數;模板每一篇都要通過數字驗證(文章裡的每個數字都對得回材料)。 */
+    {
+      const an = out('analysis'), fixtures = out('fixtures'), teams = out('teams'), h2h = out('h2h');
+      const rr = readMatchReports(join(ROOT, 'web', 'data', 'leagues', L.key));
+      const rep = out('reports');
+      const byCode = new Map(teams.map(t => [t.code, t]));
+      const league = { key: L.key, zh: L.zh ?? L.key };
+      const curReports = Object.values(rr?.reports ?? {});   // 索引就是本季發布的那一批(跟英冠那條同一個讀法)
+      const pre = fixtures.filter(f => !f.played && f.prediction).slice(0, 20).map(f => preMatchBundle({
+        fixture: f, home: byCode.get(f.home), away: byCode.get(f.away), h2h: h2h[[f.home, f.away].sort().join('|')] ?? null,
+        tacticsHome: null, tacticsAway: null, hasProfiles: false, asOf: 'test', seasonLabel: 'test', league,
+      }));
+      const post = curReports.map(r => postMatchBundle({
+        report: { ...r, preMatch: null }, home: byCode.get(r.home) ?? { en: r.home, zh: r.home }, away: byCode.get(r.away) ?? { en: r.away, zh: r.away },
+        asOf: 'test', seasonLabel: 'test', league,
+      }));
+      const bad = [...pre, ...post].filter(b => !verify(templateFor(b).paragraphs.join('\n'), b.facts).ok);
+      check('分析文章:賽前有文章', Object.keys(an.pre).length > 0, `${Object.keys(an.pre).length} 篇`);
+      check('分析文章:賽後篇數等於本季賽後報告數', Object.keys(an.post).length === rep.count, `${Object.keys(an.post).length} / ${rep.count}`);
+      check('分析文章:模板每篇通過數字驗證', bad.length === 0, bad.slice(0, 3).map(b => `${b.key}:${verify(templateFor(b).paragraphs.join('\n'), b.facts).reason}`).join(' / '));
+      check('賽前文章不講「升班馬 / 聯盟後段先驗」(沒側寫不是升班馬)', Object.values(an.pre).every(a => !/升班馬|後段先驗|沒有上季/.test(a.paragraphs.join(''))));
+      /* 隊名裡的數字(Mainz 05)不算統計量,但**不可以順便把同一個數字放行**:同一篇裡另外冒出來的 5 仍要被抓到 */
+      {
+        const nf = [{ id: 'name.0', label: '隊名', value: null, text: 'Mainz 05', name: true }];
+        check('驗證器:含數字的隊名不算未證實的數字,但同一個數字出現在別處仍會被抓',
+          verify('Mainz 05 主場作戰', nf).ok && !verify('Mainz 05 贏了 5 場', nf).ok);
+      }
+      check('沒有過時的「要先有球員層與逐場詳情」那句', !/要先有球員層與逐場詳情/.test(JSON.stringify(an)));
+    }
     /* 這幾份沒有內容的一律帶 available:false 與一句為什麼 —— 空殼不解釋等於看起來壞掉 */
     for (const n of ['leaders', 'coaches', 'goals', 'experts', 'official', 'live']) {
       const o = out(n);

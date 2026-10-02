@@ -60,6 +60,7 @@ import { playersListFrom } from './players-list.mjs';
 import { teamStatsFrom } from './team-stats.mjs';
 import { splitFixtureGrids } from './fixture-grids.mjs';
 import { buildProviderMatchReport } from './postmatch-report.mjs';
+import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled } from './report/index.mjs';
 /* 球員層跟西甲**共用同一支適配器**(只有 dir 不同)—— Understat 兩邊的欄位是
    同一組,那是 probe-understat-bundesliga.mjs 逐欄位比對過的,不是假設。 */
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES }
@@ -900,13 +901,52 @@ export async function buildLeague(L) {
      不寫的話前端拿到 404 會走「還沒 build」那條訊息,那是錯的:我們 build 了,
      是這個聯賽還沒有這種資料。每一份都帶 available:false 與一句為什麼。 */
   await write('news', []);
-  /* 德甲沒有 AI 報告層 —— 但 analysis.json **還是要寫**。
-     前端的單場分析頁拿到 404 會印「讀取 analysis 失敗」,那是「這一站壞了」的訊息;
-     寫一份 enabled:false 的空檔,它才講得出「這個聯賽沒有這個功能」。
-     (實測:第一版不寫,index.html?league=de1 只剩 93 個字元加一個 console 404。) */
-  await write('analysis', { enabled: false, pre: {}, post: {}, counts: { pre: 0, post: 0 },
-    llmWritten: 0, cacheHits: 0, cacheEntries: 0,
-    note: `${L.zh}還沒有 AI 賽前/賽後報告(要先有球員層與逐場詳情)。` });
+  /* ── 分析文章(2026-10-02 起德義法也有,跟英冠同一條路)──
+     原本這裡寫一份空的,說明是「要先有球員層與逐場詳情」—— 那兩樣 9/15、9/16 就有了,那句話過時了兩個禮拜
+     (「有哪一句還在講我們沒有它」那條坑)。現在走 lib/report 同一層:賽前(最近 20 場有預測的)、
+     賽後(本季每一場發布了賽後報告的)。沒有球隊側寫(hasProfiles false,不講升班馬那句)、沒有賽前機率快照
+     (賽後不寫賽前對照)。**只給本季寫賽後文章** —— 跟英冠同一個理由:analysis.json 是首頁與單場頁整份載的。
+     analysis.json 一定要寫(空的也要):前端拿到 404 會印「讀取 analysis 失敗」,那是「這一站壞了」的訊息。 */
+  {
+    const cache = await new ReportCache(ROOT, `reports-${L.key}.json`).load();
+    const usedHashes = new Set();
+    const aiPre = {}, aiPost = {};
+    const seasonLabel = `${CURRENT_SEASON} 賽季`;
+    const league = { key: L.key, zh: L.zh };
+    const teamFull = code => teams.find(t => t.code === code) ?? T.byCode.get(code) ?? { code, en: code, zh: code };
+    const upcoming = fixtures.filter(f => !f.played && f.prediction)
+      .sort((a, b) => (String(a.kickoff ?? a.date) < String(b.kickoff ?? b.date) ? -1 : 1)).slice(0, 20);
+    for (const f of upcoming) {
+      const bundle = preMatchBundle({
+        fixture: f, home: teamFull(f.home), away: teamFull(f.away),
+        h2h: h2h[[f.home, f.away].sort().join('|')] ?? null,
+        tacticsHome: null, tacticsAway: null, hasProfiles: false,
+        asOf: AS_OF, seasonLabel, league,
+        provenance: { source: 'openfootball 與 football-data.co.uk 賽果', model: 'Dixon-Coles Poisson 與 Elo 平均' },
+      });
+      const rep = await generateReport(bundle, { cache });
+      usedHashes.add(rep.hash);
+      aiPre[`${f.home}|${f.away}`] = rep;
+    }
+    for (const [key, r] of Object.entries(publishedReports)) {
+      const bundle = postMatchBundle({
+        report: { ...r, preMatch: null },   // 沒有賽前機率快照,不寫賽前對照
+        home: teamFull(r.home), away: teamFull(r.away), asOf: AS_OF, seasonLabel, league,
+        provenance: { source: 'FotMob 賽後統計(球隊統計、逐射門 xG、正式名單、評分)', model: '陣型為公布的正式陣型,換人時間由出場分鐘反推' },
+      });
+      const rep = await generateReport(bundle, { cache });
+      usedHashes.add(rep.hash);
+      aiPost[key] = rep;
+    }
+    const kept = await cache.save(usedHashes);
+    const all = [...Object.values(aiPre), ...Object.values(aiPost)];
+    await write('analysis', {
+      enabled: llmEnabled(), pre: aiPre, post: aiPost,
+      counts: { pre: Object.keys(aiPre).length, post: Object.keys(aiPost).length },
+      llmWritten: all.filter(x => x.source === 'llm').length, cacheHits: cache.hits, cacheEntries: kept,
+    });
+    console.log(`  分析文章:賽前 ${Object.keys(aiPre).length} 篇・賽後 ${Object.keys(aiPost).length} 篇` + (llmEnabled() ? '' : '(模板版)'));
+  }
   await write('prob-history', { season: null, matches: {} });
   await write('players', playersOut);
   // 跨聯賽統一層(聯集 + null):德甲沒有身價與傷停 → null 不是 0

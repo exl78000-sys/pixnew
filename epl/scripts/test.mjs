@@ -5670,6 +5670,11 @@ function checkAssetStamps() {
       for (const x of NV.navState('index', null, lg).sections) for (const it of x.items) if (!open.includes(it.page)) bad.push(`${lg}:${it.page}`);
     }
     ok(bad.length === 0, '每個聯賽只列 open 清單裡的頁', bad.join('、'));
+    /* open 清單裡每個名字都要是導覽登錄過的頁(2026-10-02 拿掉併進探索的 knowledge / allplayers / duel)。
+       留著死名字不會壞,但下一個人會以為它們有作用 —— 待辦清單裡留著一件已經被否決的事,下一輪就會有人照著去做。 */
+    const regd = new Set(declared);
+    const dead = Object.entries(NV.LEAGUES).flatMap(([lg, L]) => (L.open ?? []).filter(p => !regd.has(p)).map(p => `${lg}:${p}`));
+    ok(dead.length === 0, 'open 清單只有導覽登錄過的頁(沒有死名字)', dead.join('、'));
     // 五區裡的每一頁都要有對應的 html,否則導覽會連到 404
     const missingHtml = [...new Set(secPages)].filter(p => !existsSync(join(W, `${p}.html`)));
     ok(missingHtml.length === 0, '五區的每一頁都有對應的 html', missingHtml.join('、'));

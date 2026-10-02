@@ -818,7 +818,7 @@ if (typeof document !== 'undefined' && !globalThis.__segClick) {
 // 進來時由 LeagueGap 給一句實話,不是一個空白頁。
 export const LEAGUES = {
   pl: { zh: '英超', brand: '英超戰情室', en: 'PL WAR ROOM', open: null },
-  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['overview', 'index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'knowledge', 'cups', 'intl', 'allplayers', 'duel', 'explore', 'predict'] },
+  es1: { zh: '西甲', brand: '西甲戰情室', en: 'LA LIGA WAR ROOM', open: ['overview', 'index', 'teams', 'players', 'tactics', 'news', 'live', 'model', 'cups', 'intl', 'explore', 'predict'] },
   /* 英冠掛「球隊與比賽」那一層,加上 2026-09-15 起的**球員層**。
      沒有的是「整季的球員資料源」(Understat 只做五大聯賽、FPL 只有英超,兩者都實測過)——
      但逐場資料每一場都帶雙方的逐人統計,加起來就是整季,所以球員頁開了;
@@ -837,7 +837,7 @@ export const LEAGUES = {
        沒有球員源不衝突;頁面上會照實列出英冠缺席的原因。 */
     /* players 2026-09-15 開:球員層由逐場統計累加而來(見 build-championship.mjs 檔頭)。
        它**不是** Understat / FPL 那一層(沒有球員 xG 模型、身價、年齡、傷停),頁面自己把界線寫在最上面。 */
-    open: ['overview', 'index', 'teams', 'players', 'model', 'news', 'cups', 'intl', 'allplayers', 'duel', 'explore', 'predict'],
+    open: ['overview', 'index', 'teams', 'players', 'model', 'news', 'cups', 'intl', 'explore', 'predict'],
     /* 缺口頁的預設說法是「資料還在補」—— 那對英冠是**錯的**,
        它不是還在補,是沒有來源(Understat 不做英冠、FPL 只有英超,兩者都實測過)。
        說成「還在補」等於暗示以後會有,而我們知道不會。 */
@@ -858,7 +858,7 @@ export const LEAGUES = {
        它**不是**英超那一層 —— 沒有背號、頭貼、出生日期、身價與傷停,
        也沒有西甲那層 SportMonks 補充,所以年齡是 null。頁面自己把界線寫出來。
        戰術與實時仍然沒有,不掛上去。 */
-    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
+    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'explore', 'predict'],
     gapNote: '德甲目前做到球隊、比賽與球員那一層,還沒有的是陣容、傷停與即時比分 —— '
       + '球員層走 Understat(它涵蓋五大聯賽),所以剩下這幾頁是還沒做,不是做不出來。',
   },
@@ -869,7 +869,7 @@ export const LEAGUES = {
      open 清單照德甲那一份:戰術與實時沒有,不掛上去;盃賽也不掛(那一頁的兩個賽事是英格蘭的)。 */
   it1: {
     zh: '義甲', brand: '義甲戰情室', en: 'SERIE A WAR ROOM',
-    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
+    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'explore', 'predict'],
     /* 義甲法甲的缺口說法原本停在「只做到球隊那一層、球員層還沒抓」—— 球員頁與賽後報告接上之後沒有回來改,
        於是站在義甲的戰術 / 實時 / 動態頁,讀者被告知「球員層還沒抓」,而導覽列上就掛著球員頁
        (「有哪一句還在講我們沒有它」第七次;2026-09-24 全站掃描抓到)。說法跟德甲那一份對齊。 */
@@ -878,7 +878,7 @@ export const LEAGUES = {
   },
   fr1: {
     zh: '法甲', brand: '法甲戰情室', en: 'LIGUE 1 WAR ROOM',
-    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'allplayers', 'duel', 'explore', 'predict'],
+    open: ['overview', 'intl', 'index', 'teams', 'players', 'model', 'explore', 'predict'],
     gapNote: '法甲目前做到球隊、比賽與球員那一層,還沒有的是陣容、傷停與即時比分 —— '
       + '球員層走 Understat(它涵蓋五大聯賽),所以剩下這幾頁是還沒做,不是做不出來。',
   },
@@ -2471,7 +2471,7 @@ function gapScreen({ league: lg, page, needs }) {
   const app = document.getElementById('app') ?? document.querySelector('.wrap');
   if (!app) return;
   const what = (needs ?? []).map(n => DATASET_ZH[n] ?? n).join('、');
-  /* 只列導覽列上真的有的頁。open 清單裡還有 allplayers / duel / knowledge —— 那幾個是「探索」裡的分頁
+  /* 只列導覽列上真的有的頁。open 清單**曾經**留著 allplayers / duel / knowledge(2026-10-02 拿掉了,npm test 守著)—— 那幾個是「探索」裡的分頁
      (舊網址留著轉址),沒有自己的標籤,原本就在這一排印成英文鍵名「allplayers」「duel」(2026-09-24 全站掃描)。 */
   const open = (L.open ?? PAGES.map(([n]) => n))
     .filter(p => [...PAGES, ...SITE_PAGES].some(([n]) => n === p))
