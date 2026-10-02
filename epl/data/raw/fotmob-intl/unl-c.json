@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-02T14:22:38.075Z",
+ "retrievedAt": "2026-10-02T17:36:52.443Z",
  "matches": [
   {
    "id": "5181921",
@@ -410,10 +410,13 @@
     "shortName": "Moldova",
     "fmId": "5794"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "3"
@@ -431,7 +434,7 @@
     "shortName": "Armenia",
     "fmId": "6583"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -452,7 +455,7 @@
     "shortName": "Montenegro",
     "fmId": "49437"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1187,57 +1190,57 @@
      "fmId": "49437",
      "name": "Montenegro",
      "idx": 1,
-     "played": 2,
-     "wins": 2,
+     "played": 3,
+     "wins": 3,
      "draws": 0,
      "losses": 0,
-     "gf": 5,
+     "gf": 7,
      "ga": 3,
-     "pts": 6,
+     "pts": 9,
      "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "6583",
-     "name": "Armenia",
-     "idx": 2,
-     "played": 2,
-     "wins": 1,
-     "draws": 0,
-     "losses": 1,
-     "gf": 4,
-     "ga": 3,
-     "pts": 3,
-     "deduction": null,
-     "live": null
+     "live": "5181926"
     },
     {
      "fmId": "5793",
      "name": "Cyprus",
-     "idx": 3,
-     "played": 2,
-     "wins": 0,
+     "idx": 2,
+     "played": 3,
+     "wins": 1,
      "draws": 1,
      "losses": 1,
-     "gf": 1,
+     "gf": 3,
      "ga": 2,
-     "pts": 1,
+     "pts": 4,
      "deduction": null,
-     "live": null
+     "live": "5181925"
+    },
+    {
+     "fmId": "6583",
+     "name": "Armenia",
+     "idx": 3,
+     "played": 3,
+     "wins": 1,
+     "draws": 0,
+     "losses": 2,
+     "gf": 4,
+     "ga": 5,
+     "pts": 3,
+     "deduction": null,
+     "live": "5181925"
     },
     {
      "fmId": "5795",
      "name": "Latvia",
      "idx": 4,
-     "played": 2,
+     "played": 3,
      "wins": 0,
      "draws": 1,
-     "losses": 1,
+     "losses": 2,
      "gf": 0,
-     "ga": 2,
+     "ga": 4,
      "pts": 1,
      "deduction": null,
-     "live": null
+     "live": "5181926"
     }
    ]
   },
@@ -1283,9 +1286,23 @@
      "live": null
     },
     {
+     "fmId": "5794",
+     "name": "Moldova",
+     "idx": 2,
+     "played": 3,
+     "wins": 1,
+     "draws": 1,
+     "losses": 1,
+     "gf": 3,
+     "ga": 4,
+     "pts": 4,
+     "deduction": null,
+     "live": null
+    },
+    {
      "fmId": "8269",
      "name": "Faroe Islands",
-     "idx": 2,
+     "idx": 3,
      "played": 2,
      "wins": 0,
      "draws": 2,
@@ -1299,30 +1316,16 @@
     {
      "fmId": "8265",
      "name": "Kazakhstan",
-     "idx": 3,
-     "played": 3,
-     "wins": 0,
-     "draws": 2,
-     "losses": 1,
-     "gf": 2,
-     "ga": 3,
-     "pts": 2,
-     "deduction": null,
-     "live": "5181937"
-    },
-    {
-     "fmId": "5794",
-     "name": "Moldova",
      "idx": 4,
      "played": 3,
      "wins": 0,
-     "draws": 2,
-     "losses": 1,
-     "gf": 1,
-     "ga": 3,
-     "pts": 2,
+     "draws": 1,
+     "losses": 2,
+     "gf": 3,
+     "ga": 5,
+     "pts": 1,
      "deduction": null,
-     "live": "5181937"
+     "live": null
     }
    ]
   },
