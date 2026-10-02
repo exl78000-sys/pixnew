@@ -596,6 +596,9 @@ Node 端要本體(測試、Obsidian、單檔打包)走 `lib/match-archive.mjs` �
 球員也一樣(2026-09-27,A6):**全站讀 `players-list.json`**(`lib/players-list.mjs`,三種形狀照球員頁的三個渲染器;球隊頁、單場頁、實時頁、
 球員搜尋都讀它),整份 `players.json` 只在球員頁 ?code= 詳情與對比模式 `loadFrom` —— `npm test` 守著「清單裡名字剛好是 'players' 的只准在
 page-players.js」。要在哪一頁多用一個球員欄位,先去 players-list.mjs 加那個欄位,不要回頭載整份。`players-core.json` 是跨聯賽搜尋的另一個契約,兩份不要混。
+**戰術頁的球隊側寫走 `lib/team-profiles.mjs`(2026-10-02 起西甲與德義法共用)。** 來源是 Understat 上季的球隊情境統計
+(`data/raw/understat-*/{季}-team-situations.json`,`fetch-setpieces.mjs --league=`);德義法核對用站上發布的 results.json。
+**盃賽頁看 `LEAGUES[lg].cupsOnly`**:德義法是 'ucl',只列歐冠、導覽那一格叫「歐冠」。
 **teams.json 不帶 matchStats(2026-09-28 起,A8)。** FotMob 逐場統計的逐隊彙總在 `team-stats.json`(`lib/team-stats.mjs`,隊碼 → 彙總,沒資料的隊不留鍵),
 只有球隊頁**詳情**(?code=)`loadFrom` 後掛回 `t.matchStats`。teams.json 十幾頁在載,不要再把重欄位掛回去 —— `npm test` 守著。
 **fixtures.json 不帶比分機率格(2026-09-30 起,A9)。** `prediction.grid` / `postFit.grid` 在 `fixture-grids.json`(`lib/fixture-grids.mjs`,

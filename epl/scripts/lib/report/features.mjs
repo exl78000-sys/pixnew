@@ -22,6 +22,13 @@ const fact = (id, label, value, text = null) => ({
   id, label, value: typeof value === 'number' ? value : null,
   text: text ?? String(value),
 });
+/* **隊名裡的數字不是統計量**(2026-10-02,德甲文章上線時抓到:Mainz 05、SC Paderborn 07、FC Schalke 04)。
+   驗證器規定文章裡每個數字都要對得回 facts —— 隊名裡的 05 / 07 / 04 一定對不回,整篇退回。
+   **不能**把它們當數字放行(那等於整篇文章的 5 與 7 都過關),所以另立一種「名稱」fact:
+   verify.mjs 掃數字之前先把這些字串從文章裡拿掉,而且不把它們的數字加進允許清單。只收含數字的名字,
+   沒有數字的隊名不進來 —— 英超、西甲的材料一個字都不變(快取的 hash 也不變)。 */
+const nameFacts = (...teams) => [...new Set(teams.flatMap(t => [t?.en, t?.zh, t?.of]).filter(s => typeof s === 'string' && /\d/.test(s)))]
+  .map((s, i) => ({ id: `name.${i}`, label: '隊名(含數字,不是統計量)', value: null, text: s, name: true }));
 
 /* ── 賽前 ──────────────────────────────────── */
 /* league / provenance:三聯賽共用同一份 bundle 與模板(2026-09-04 起西甲也產文章)。
@@ -105,6 +112,7 @@ export function preMatchBundle({ fixture, home, away, h2h, tacticsHome, tacticsA
     F('diff.away', `${away.en} 這場的賽程難度`, fixture.difficulty.away);
   }
 
+  facts.push(...nameFacts(home, away));
   return {
     kind: 'pre',
     key: `${fixture.home}|${fixture.away}`,
@@ -218,6 +226,7 @@ export function postMatchBundle({ report, home, away, asOf, seasonLabel, league 
     }
   }
 
+  facts.push(...nameFacts(home, away));
   return {
     kind: 'post',
     key: report.key, season: report.season ?? null, kickoff: report.kickoff,

@@ -1,6 +1,6 @@
-import * as C from './core.js?v=5a4c76d4';
+import * as C from './core.js?v=ff8f6704';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=6a5defae';
+import { renderUclView } from './ucl-view.js?v=cb63c002';
 
 const app = document.getElementById('app');
 
@@ -330,7 +330,11 @@ try {
      **預設停在哪一個**則看資料:離現在最近的一場比賽屬於哪個賽事(C.defaultCup 有完整說明)——
      寫死歐冠的話,聯賽盃之夜的隔天早上打開這一頁會看到歐冠的「等待資料」,
      而昨晚的五個終場比分在第二個分頁後面,讀者會以為站上沒有盃賽賽果。 */
-  const list = cups?.cups ?? [];
+  /* 德義法(LEAGUES[lg].cupsOnly === 'ucl'):只列歐冠 —— 英格蘭的足總盃與聯賽盃跟那些聯賽無關。
+     list 清空之後,分頁、預設分頁、頁首、時效標籤、來源全部跟著它走,不另外各判一次。 */
+  const uclOnly = C.LEAGUES[C.league()]?.cupsOnly === 'ucl';
+  if (uclOnly) document.title = document.title.replace('盃賽', '歐冠');   // 分頁標題跟頁首一致
+  const list = uclOnly ? [] : (cups?.cups ?? []);
   const COMPS = [
     { key: 'ucl', zh: '歐冠' },
     ...list.map(c => ({ key: c.key, zh: c.zh })),
@@ -350,7 +354,7 @@ try {
      而這一頁一個英超數字都沒有 —— 讀者查不到 FotMob 是從哪裡來的。清單從各產物的 sources 讀,同名的併成一筆。 */
   const cupSources = (() => {
     const seen = new Map();
-    for (const s of [...(shared.ucl?.sources ?? []), ...(cups?.sources ?? []),
+    for (const s of [...(shared.ucl?.sources ?? []), ...(uclOnly ? [] : (cups?.sources ?? [])),
       ...(shared['ucl-elo']?.sources ?? []), ...(shared['ucl-standings']?.sources ?? [])]) {
       if (!s?.name) continue;
       const hit = seen.get(s.name);
@@ -362,20 +366,22 @@ try {
 
   app.innerHTML = `
   <div class="page-head">
-    <h1>盃賽</h1>
-    <p>歐冠、足總盃與聯賽盃收在同一頁。跟聯賽不一樣的地方都照實顯示:
+    <h1>${uclOnly ? '歐冠' : '盃賽'}</h1>
+    <p>${uclOnly
+      ? `${C.esc(C.LEAGUES[C.league()].zh)}球隊參加的盃賽這裡只列歐冠(英格蘭的足總盃與聯賽盃跟${C.esc(C.LEAGUES[C.league()].zh)}無關,不列)。跟聯賽不一樣的地方都照實顯示:`
+      : '歐冠、足總盃與聯賽盃收在同一頁。跟聯賽不一樣的地方都照實顯示:'}
        <b>兩回合總比分</b>、<b>延長賽</b>、<b>PK 大戰</b>,以及各隊走到了哪一輪。
        ${uclPred
-         ? `歐冠兩隊都有跨聯賽評分的場次有<b>賽前勝率</b>(本季 ${uclPred} 場,回測與界線在模型驗證頁);足總盃與聯賽盃<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在國內盃賽上驗收過,套上去就是編數字。`
-         : `三個賽事都<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字。`}
-       ${cupReportCount ? `英格蘭盃賽現在有 <b>${cupReportCount} 場賽後報告</b>(球隊統計、事件、正式名單、逐人評分與逐射門 xG),
+         ? `歐冠兩隊都有跨聯賽評分的場次有<b>賽前勝率</b>(本季 ${uclPred} 場,回測與界線在模型驗證頁)${uclOnly ? '。' : ';足總盃與聯賽盃<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在國內盃賽上驗收過,套上去就是編數字。'}`
+         : `${uclOnly ? '歐冠' : '三個賽事都'}<b>沒有勝率預測</b> —— 模型是用聯賽調的,沒在盃賽上驗收過,套上去就是編數字。`}
+       ${cupReportCount && !uclOnly ? `英格蘭盃賽現在有 <b>${cupReportCount} 場賽後報告</b>(球隊統計、事件、正式名單、逐人評分與逐射門 xG),
          在清單裡按「賽後 →」打開;還沒抓到詳情的場次沒有按鈕。` : ''}</p>
     ${C.stampRow([
       shared.ucl ? C.stamp('歐冠賽果', { iso: shared.ucl.retrievedAt, kind: 'daily', note: 'football-data.org + FotMob' }) : null,
-      cups ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `${cups.source ?? 'FotMob'}・${list.map(c => c.zh).join('與')}` }) : null,
+      cups && !uclOnly ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `${cups.source ?? 'FotMob'}・${list.map(c => c.zh).join('與')}` }) : null,
     ])}
   </div>
-  ${C.tabs(COMPS.map(c => ({ key: c.key, html: `${C.compBadge(c.key)}${C.esc(c.zh)}` })), comp, { attr: 'data-comp', label: '盃賽' })}
+  ${COMPS.length > 1 ? C.tabs(COMPS.map(c => ({ key: c.key, html: `${C.compBadge(c.key)}${C.esc(c.zh)}` })), comp, { attr: 'data-comp', label: '盃賽' }) : ''}
   <div id="compBody"></div>
   ${C.foot(meta, { sources: cupSources })}`;
 

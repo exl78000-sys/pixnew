@@ -21,6 +21,7 @@ function allowedValues(facts) {
     set.add(Number(v));
   };
   for (const f of facts) {
+    if (f.name) continue;   // 名稱 fact(含數字的隊名)不是數字的出處 —— 見 features.mjs 的 nameFacts
     add(f.value);
     if (typeof f.value === 'number') {
       add(Math.abs(f.value));   // 負值的量值也算有據:「比期望少進 4.9 球」來自 finishing = -4.9
@@ -38,6 +39,9 @@ function allowedValues(facts) {
 export function verifyNumbers(prose, facts) {
   const allowed = allowedValues(facts);
   const unattested = [];
+  /* 先把含數字的名字(Mainz 05、Schalke 04)從文章裡拿掉再掃 —— 長的先拿,短的才不會切到長的一半 */
+  const names = facts.filter(f => f.name && f.text).map(f => f.text).sort((a, b) => b.length - a.length);
+  for (const n of names) prose = prose.split(n).join(' ');
   for (const m of prose.matchAll(NUM)) {
     const token = m[0];
     const n = Number(token);

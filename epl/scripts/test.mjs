@@ -5670,6 +5670,17 @@ function checkAssetStamps() {
       for (const x of NV.navState('index', null, lg).sections) for (const it of x.items) if (!open.includes(it.page)) bad.push(`${lg}:${it.page}`);
     }
     ok(bad.length === 0, '每個聯賽只列 open 清單裡的頁', bad.join('、'));
+    /* open 清單裡每個名字都要是導覽登錄過的頁(2026-10-02 拿掉併進探索的 knowledge / allplayers / duel)。
+       留著死名字不會壞,但下一個人會以為它們有作用 —— 待辦清單裡留著一件已經被否決的事,下一輪就會有人照著去做。 */
+    const regd = new Set(declared);
+    const dead = Object.entries(NV.LEAGUES).flatMap(([lg, L]) => (L.open ?? []).filter(p => !regd.has(p)).map(p => `${lg}:${p}`));
+    ok(dead.length === 0, 'open 清單只有導覽登錄過的頁(沒有死名字)', dead.join('、'));
+    /* 德義法的盃賽頁只看歐冠(2026-10-02):open 有 cups、標記 cupsOnly、導覽那一格叫「歐冠」、頁面讀那個標記 */
+    const ucl3 = ['de1', 'it1', 'fr1'];
+    const cupsSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');
+    ok(ucl3.every(lg => NV.LEAGUES[lg].open.includes('cups') && NV.LEAGUES[lg].cupsOnly === 'ucl' && NV.pageLabel('cups', lg) === '歐冠')
+      && NV.pageLabel('cups', 'pl') === '盃賽' && /cupsOnly === 'ucl'/.test(cupsSrc) && /const list = uclOnly \? \[\]/.test(cupsSrc),
+      '德義法的盃賽頁只看歐冠、導覽那一格叫歐冠;英超照舊是盃賽');
     // 五區裡的每一頁都要有對應的 html,否則導覽會連到 404
     const missingHtml = [...new Set(secPages)].filter(p => !existsSync(join(W, `${p}.html`)));
     ok(missingHtml.length === 0, '五區的每一頁都有對應的 html', missingHtml.join('、'));
@@ -6371,8 +6382,8 @@ async function checkUclDetails() {
     /* 「只有一個」那句寫死在畫面上,第三次:盃賽頁**頁首**寫著「三個賽事都沒有勝率預測」,
        而同一頁的歐冠分頁掛著上百場勝率。歐冠那句改成從 ucl-elo 的場數來;
        字面那句只准留在「一場預測都沒有」的分支裡(回測沒過時它是真的)。 */
-    ok(/\$\{uclPred\s*\?/.test(cups) && /:\s*`三個賽事都<b>沒有勝率預測<\/b>/.test(cups)
-      && (strip(cups).match(/三個賽事都<b>沒有勝率預測/g) ?? []).length === 1,
+    ok(/\$\{uclPred\s*\?/.test(cups) && /:\s*`\$\{uclOnly \? '歐冠' : '三個賽事都'\}<b>沒有勝率預測<\/b>/.test(cups)
+      && (strip(cups).match(/'三個賽事都'\}<b>沒有勝率預測/g) ?? []).length === 1,
       '盃賽頁頁首的「沒有勝率預測」只在歐冠一場預測都沒有時才印,有預測時印場數(從 ucl-elo 讀)');
     // 頁尾署名:跨聯賽的頁要講自己的來源,不是目前聯賽的 meta.sources(那是英超的 FPL、pulselive)
     ok(/export function foot\(meta, \{ sources = null \} = \{\}\)/.test(core) && /C\.foot\(meta, \{ sources: cupSources \}\)/.test(cups),
