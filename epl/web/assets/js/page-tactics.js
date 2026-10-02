@@ -1,4 +1,4 @@
-import * as C from './core.js?v=ff8f6704';
+import * as C from './core.js?v=a0c8174c';
 
 const app = document.getElementById('app');
 
@@ -54,9 +54,15 @@ function quadrantBlock(tactics, xgNote) {
    原本是兩張表(西甲「各隊主要陣型」+「攻守與節奏對比」),而它們有一半的欄位相同。
    併成一張、欄位各自判斷:有主要陣型的聯賽多兩欄,沒有的少兩欄,英超因此也有了
    一張可以按 xG / xGA / 場均勝點排序的表(舊版只有四象限那張圖)。 */
+/* 資料沒涵蓋整季的隊(英冠 FotMob 少收的場次)照實講:每場平均用實際場數算,終結與防守超額兩項不給 —— 那兩項要拿整季進球比 xG。 */
+const coverageNote = tactics => {
+  const part = tactics.filter(t => t.coverage);
+  return part.length ? `<div class="note" style="margin-top:10px">${part.map(t => `${C.esc(C.name(t.code))} ${t.coverage.matches} / ${t.coverage.of} 場`).join('、')}
+    —— 資料來源少收了這幾場,每場平均用實際收到的場數算;「終結」與「防守超額」要拿整季進球比 xG,這幾隊不給。</div>` : '';
+};
 const overviewBlock = tactics => tactics.some(t => t.attack?.xG90 != null || t.ppg != null) ? `
   <div class="section"><h2>各隊攻守總表</h2><span class="hint">點球隊進各自的頁面</span></div>
-  <div id="overview"></div>` : '';
+  <div id="overview"></div>${coverageNote(tactics)}` : '';
 
 function renderOverview(tactics) {
   const el = document.getElementById('overview');
@@ -65,7 +71,7 @@ function renderOverview(tactics) {
     [() => true, { key: 'team', label: '球隊', value: t => C.name(t.code), render: t => C.teamCell(t.code) }],
     [t => t.formation?.primary, { key: 'primary', label: '主要陣型', value: t => t.formation?.primary ?? '',
       render: t => (t.formation?.primary ? `<b class="mono">${C.esc(t.formation.primary)}</b>` : '—') }],
-    [t => t.formation?.list?.[0]?.share != null, { key: 'share', label: '分鐘占比', num: true,
+    [t => t.formation?.list?.[0]?.share != null, { key: 'share', label: startsUnit(tactics) ? '先發場次占比' : '分鐘占比', num: true,
       value: t => t.formation?.list?.[0]?.share ?? -1,
       render: t => (t.formation?.list?.[0]?.share == null ? '—' : `${t.formation.list[0].share}%`) }],
     [t => t.matches != null, { key: 'matches', label: '整季場次', value: t => t.matches ?? -1, num: true,
@@ -187,14 +193,17 @@ function officialSection(shapes, meta) {
 }
 
 /* 整季實際使用的陣型(上季,單位=出場分鐘)。跟上面那一塊是兩件事:
-   不同季、不同單位、不同來源 —— 所以是兩個區塊,不是同一個區塊的兩種模式。 */
+   不同季、不同單位、不同來源 —— 所以是兩個區塊,不是同一個區塊的兩種模式。
+   **單位跟著資料走**(2026-10-02):英冠的側寫來自 FotMob 逐場的先發陣型,單位是**場次**(formation.unit 'starts'),
+   Understat 那幾個聯賽是出場分鐘。標籤寫死「分鐘」的話,英冠那一頁的說明就是假的。 */
+const startsUnit = tactics => tactics.some(t => t.formation?.unit === 'starts');
 const minuteFormationRows = tactics => tactics.flatMap(t => (t.formation?.list ?? []).map(f => ({
-  code: t.code, formation: f.name, share: f.share, detail: `${f.minutes} 分`,
+  code: t.code, formation: f.name, share: f.share, detail: f.minutes != null ? `${f.minutes} 分` : `${f.starts} 場`,
 })));
 
 const minutesSection = (tactics, meta) => minuteFormationRows(tactics).length ? `
   <div class="section"><h2>整季陣型佔比</h2>
-    <span class="hint">${meta.lastSeason} 完整賽季・佔比量的是出場分鐘</span></div>
+    <span class="hint">${meta.lastSeason} 完整賽季・佔比量的是${startsUnit(tactics) ? '先發陣型的場次(正式名單)' : '出場分鐘'}</span></div>
   <div id="minFormations"></div>` : '';
 
 /* ── 人力配置(需要 FPL 反推的 squad)──────
@@ -243,7 +252,9 @@ const setPieceSection = tactics => tactics.some(t => t.setPieces?.available) ? (
   <div id="setPiece"></div>
   <div class="note info" style="margin-top:10px">
     十二碼另外算,不混進定位球 —— 它是犯規的結果,不是戰術設計。
-    ${sp.source ? `資料來自 ${C.esc(sp.source)} 的整隊分類統計(五類相加等於該季總進球,核對過)。` : ''}
+    ${sp.source === 'FotMob'
+      ? '資料來自 FotMob 的逐射門紀錄,按每一腳的射門情境加總(五類相加對得回該季總進球的隊才顯示進球數)。'
+      : sp.source ? `資料來自 ${C.esc(sp.source)} 的整隊分類統計(五類相加等於該季總進球,核對過)。` : ''}
     ${unreliable.length ? `<div style="margin-top:6px">${unreliable.length} 隊(${unreliable.map(c => C.name(c)).join('、')})
       的分類加起來<b>對不回</b>整季總進球,所以它們的進球數不顯示 —— xG 不受影響,
       寧可空著也不給一個湊出來的數字。</div>` : ''}
@@ -515,7 +526,7 @@ try {
     missing: Object.entries(shapes).filter(([, sh]) => !sh?.official?.games).map(([code]) => code),
     missingNote: '正式名單要到開賽前約一小時才公布,這些球隊本季還沒有可採計的場次。',
   });
-  formationCompare('minFormations', minuteFormationRows(tactics), { unit: '整季出場分鐘' });
+  formationCompare('minFormations', minuteFormationRows(tactics), { unit: startsUnit(tactics) ? '整季先發場次' : '整季出場分鐘' });
   renderShape(tactics);
   renderShapeTable(shapes, tactics);
   if (formation) renderCorr(formation);

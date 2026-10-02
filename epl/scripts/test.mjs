@@ -2026,7 +2026,9 @@ async function checkDataGap() {
     ['英冠的球員頁開了(逐場累加),但資料空的仍然擋(保險)',
       !g('en2', 'players', ['players', 'leaders'], { players: [1], leaders: { boards: {} } })
       && !!g('en2', 'players', ['players', 'leaders'], { players: [], leaders: { boards: {} } })],
-    ['英冠的戰術頁要擋', !!g('en2', 'tactics', ['tactics'], { tactics: [1] })],
+    /* 2026-10-02 戰術頁開了(FotMob 逐場照 Understat 形狀加總)—— 同球員頁那一條的改法:釘「開了,但資料空的仍然擋」 */
+    ['英冠的戰術頁開了(FotMob 逐場),但資料空的仍然擋(保險)',
+      !g('en2', 'tactics', ['tactics'], { tactics: [1] }) && !!g('en2', 'tactics', ['tactics'], { tactics: [] })],
     ['英冠的實時頁要擋', !!g('en2', 'live', ['live'])],
     ['英冠的首頁、球隊、模型、動態不擋',
       ['index', 'teams', 'model', 'news'].every(p => !g('en2', p, Object.keys(full)))],

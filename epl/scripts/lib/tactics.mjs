@@ -54,7 +54,7 @@ export function setPieceProfile(raw, games, { takers, defenderGoals = null, team
   const goalsReliable = raw.validation.situationGoalsReconciled !== false;
   return {
     available: true,
-    source: 'Understat',
+    source: raw.source ?? 'Understat',
     sourceUrl: raw.url?.replace('/getTeamData/', '/team/'),
     sourceDataUrl: raw.url,
     matches: raw.matches,

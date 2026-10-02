@@ -48,6 +48,7 @@ import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
 import { playersListFrom } from './lib/players-list.mjs';
 import { teamStatsFrom } from './lib/team-stats.mjs';
+import { buildTeamProfiles, fotmobTeamStore } from './lib/team-profiles.mjs';
 import { splitFixtureGrids } from './lib/fixture-grids.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
@@ -896,7 +897,18 @@ async function main() {
 
      這一頁對英冠是**有內容的**:賽前機率、市場賠率、雙方近況、歷來交手都算得出來。
      所以是把缺的那幾份寫成「明確不可用」,不是把整頁擋掉。 */
-  await write('tactics', []);
+  /* 戰術頁(2026-10-02):Understat 不做英冠,改用 FotMob 逐場統計照 Understat 的形狀加總(lib/team-profiles.mjs 的
+     fotmobTeamStore),再走跟西甲德義法同一支 buildTeamProfiles。只收**上季聯賽**場次(不含升級附加賽);
+     陣型的單位是先發場次。SOU、MID 各少兩場(FotMob 沒收到),每場平均用實際場數當分母、終結那兩項給空值。 */
+  const teamProfiles = (() => {
+    const leagueKeys = new Set(lastLeague.map(m => `${m.season}|${m.home}|${m.away}`));
+    const store = fotmobTeamStore({ matches: fotmobStats.matches ?? {}, season: LAST_SEASON, tableRows: lastTable, leagueKeys });
+    const out = buildTeamProfiles(lastTable, store);
+    const partial = out.filter(t => t.coverage).map(t => `${t.code} ${t.coverage.matches}/${t.coverage.of}`);
+    console.log(`  FotMob 英冠球隊側寫:${out.length} / ${lastTable.length} 隊` + (partial.length ? `(少場:${partial.join('、')})` : ''));
+    return out;
+  })();
+  await write('tactics', teamProfiles);
   await write('shapes', {});
   await write('lineups', {});
   await write('experts', {
