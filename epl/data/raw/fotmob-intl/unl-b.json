@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-01T18:10:59.623Z",
+ "retrievedAt": "2026-10-02T04:33:00.915Z",
  "matches": [
   {
    "id": "5181812",
@@ -399,7 +399,7 @@
   },
   {
    "id": "5181817",
-   "kickoff": "2026-10-01T18:45:00.000Z",
+   "kickoff": "2026-10-01T18:45:00Z",
    "home": {
     "name": "Ireland",
     "shortName": "Ireland",
@@ -410,17 +410,20 @@
     "shortName": "Austria",
     "fmId": "8255"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "3"
   },
   {
    "id": "5181816",
-   "kickoff": "2026-10-01T18:45:00.000Z",
+   "kickoff": "2026-10-01T18:45:00Z",
    "home": {
     "name": "Israel",
     "shortName": "Israel",
@@ -431,17 +434,20 @@
     "shortName": "Kosovo",
     "fmId": "430156"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "3"
   },
   {
    "id": "5181841",
-   "kickoff": "2026-10-02T18:45:00Z",
+   "kickoff": "2026-10-02T18:45:00.000Z",
    "home": {
     "name": "Bosnia and Herzegovina",
     "shortName": "Bosnia and Herzegovina",
@@ -462,7 +468,7 @@
   },
   {
    "id": "5181804",
-   "kickoff": "2026-10-02T18:45:00Z",
+   "kickoff": "2026-10-02T18:45:00.000Z",
    "home": {
     "name": "Hungary",
     "shortName": "Hungary",
@@ -483,7 +489,7 @@
   },
   {
    "id": "5181842",
-   "kickoff": "2026-10-02T18:45:00Z",
+   "kickoff": "2026-10-02T18:45:00.000Z",
    "home": {
     "name": "Poland",
     "shortName": "Poland",
@@ -504,7 +510,7 @@
   },
   {
    "id": "5181805",
-   "kickoff": "2026-10-02T18:45:00Z",
+   "kickoff": "2026-10-02T18:45:00.000Z",
    "home": {
     "name": "Ukraine",
     "shortName": "Ukraine",
@@ -1293,13 +1299,13 @@
      "fmId": "8255",
      "name": "Austria",
      "idx": 1,
-     "played": 2,
+     "played": 3,
      "wins": 2,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 6,
-     "ga": 2,
-     "pts": 6,
+     "gf": 8,
+     "ga": 4,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -1307,13 +1313,13 @@
      "fmId": "430156",
      "name": "Kosovo",
      "idx": 2,
-     "played": 2,
+     "played": 3,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 2,
      "ga": 3,
-     "pts": 3,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
@@ -1321,13 +1327,13 @@
      "fmId": "5791",
      "name": "Ireland",
      "idx": 3,
-     "played": 2,
+     "played": 3,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
-     "gf": 3,
-     "ga": 1,
-     "pts": 3,
+     "gf": 5,
+     "ga": 3,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
@@ -1335,13 +1341,13 @@
      "fmId": "8567",
      "name": "Israel",
      "idx": 4,
-     "played": 2,
+     "played": 3,
      "wins": 0,
-     "draws": 0,
+     "draws": 1,
      "losses": 2,
      "gf": 1,
      "ga": 6,
-     "pts": 0,
+     "pts": 1,
      "deduction": null,
      "live": null
     }

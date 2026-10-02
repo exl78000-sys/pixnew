@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-01T18:11:01.583Z",
+ "retrievedAt": "2026-10-02T04:33:03.220Z",
  "matches": [
   {
    "id": "5181874",
@@ -111,7 +111,7 @@
   },
   {
    "id": "5181882",
-   "kickoff": "2026-10-01T16:00:00.000Z",
+   "kickoff": "2026-10-01T16:00:00Z",
    "home": {
     "name": "Azerbaijan",
     "shortName": "Azerbaijan",
@@ -135,7 +135,7 @@
   },
   {
    "id": "5181876",
-   "kickoff": "2026-10-01T18:45:00.000Z",
+   "kickoff": "2026-10-01T18:45:00Z",
    "home": {
     "name": "Malta",
     "shortName": "Malta",
@@ -146,10 +146,13 @@
     "shortName": "Gibraltar",
     "fmId": "507764"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "1"
@@ -306,13 +309,13 @@
      "fmId": "8495",
      "name": "Malta",
      "idx": 1,
-     "played": 1,
+     "played": 2,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 2,
-     "ga": 1,
-     "pts": 3,
+     "gf": 3,
+     "ga": 2,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
@@ -320,13 +323,13 @@
      "fmId": "507764",
      "name": "Gibraltar",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 0,
-     "draws": 1,
+     "draws": 2,
      "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 1,
+     "gf": 1,
+     "ga": 1,
+     "pts": 2,
      "deduction": null,
      "live": null
     },
