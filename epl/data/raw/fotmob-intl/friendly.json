@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-10-03T04:15:55.966Z",
+ "retrievedAt": "2026-10-03T14:16:49.690Z",
  "matches": [
   {
    "id": "5120889",
@@ -8482,10 +8482,13 @@
     "shortName": "Vanuatu",
     "fmId": "5926"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8524,7 +8527,7 @@
     "shortName": "Brazil",
     "fmId": "8256"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
