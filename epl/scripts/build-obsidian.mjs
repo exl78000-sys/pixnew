@@ -18,7 +18,7 @@
 import { readFileSync, existsSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isShootoutShot } from './lib/matchstats.mjs';
+import { isShootoutShot, pairOf } from './lib/matchstats.mjs';
 import { readMatchReports, readArchivedReports } from './lib/match-archive.mjs';
 import { imageBytes } from './lib/image-files.mjs';
 
@@ -1842,7 +1842,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     coachOf: code => coachBy.get(code) ?? null,
     coachFileOf: code => { const c = coachBy.get(code); return c ? coachFileOf(c, lg) : null; },
     reportFor: m => {
-      const k = m.season + '|' + m.home + '|' + m.away;
+      const k = m.season + '|' + pairOf(m);   // 附加賽帶 pair(主|客|日期),跟產生報告的 build 同一把鍵
       const r = reports[k];
       if (!r || r.demo) return null;
       /* 鍵是「季|主|客」,再用日期收斂一次(「同一組對戰在不同賽季會重複」那條坑的防線)。
@@ -1851,23 +1851,24 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
       repCount[m.season === meta.currentSeason ? 'current' : 'archive']++;
       return r;
     },
-    /* 走查回測與逐場統計的鍵也是「季|主|客」,而英冠的升級附加賽會跟同一季的聯賽撞鍵(2025-26 五組)——
-       走查回測只收聯賽場次;FotMob 的 raw 以主|客為鍵,三場聯賽(HUL-MIL、MIL-HUL、HUL-MID)被附加賽蓋掉了。
-       照鍵直接拿的話,附加賽的筆記印出聯賽那一場的賽前預測、聯賽的筆記印出附加賽的控球與射門 —— 兩個都是另一場比賽
-       (2026-10-03 前就是這樣)。跟 reportFor 同一道防線:日期對不上就不掛,記下來印出來。六個聯賽的日期寫法量過一致,
-       擋下來的只有真的撞鍵的那幾場。 */
+    /* 走查回測只收聯賽場次,鍵是「季|主|客」—— 英冠的升級附加賽跟同一季的聯賽同一組主客,照鍵直接拿的話
+       附加賽的筆記會印出聯賽那一場的賽前預測(2026-10-03 前就是這樣)。附加賽本來就沒有走查回測,直接不掛;
+       聯賽場次再用日期收斂一次(跟 reportFor 同一道防線),對不上的記下來印出來 —— 正常是 0 筆。 */
     walkForwardFor: m => {
+      if (m.stage) return null;
       const k = m.season + '|' + m.home + '|' + m.away;
       const w = walkForward.get(k);
       if (!w) return null;
-      if (m.stage || (w.date && m.date && w.date !== m.date)) { keyTrouble.push(`${lg.zh} 走查回測 ${k} ${m.date}`); return null; }
+      if (w.date && m.date && w.date !== m.date) { keyTrouble.push(`${lg.zh} 走查回測 ${k} ${m.date}`); return null; }
       return w.pred;
     },
     walkForwardSeason: walkForwardSeason,
     goalsFor: code => goalsFile?.data?.[meta.lastSeason]?.teams?.[code] ?? null,
     goalsSeason: meta.lastSeason, goalsNote: goalsFile?.note ?? null,
+    /* 逐場統計的鍵是「季|pairOf」(2026-10-03 起附加賽帶 pair = 主|客|日期,跟聯賽那一場各自一筆);
+       再用日期收斂一次,對不上的不掛、記下來印出來 —— 正常是 0 筆 */
     matchStatsFor: m => {
-      const k = m.season + '|' + m.home + '|' + m.away;
+      const k = m.season + '|' + pairOf(m);
       const x = matchStats?.matches?.[k];
       if (!x) return null;
       if (x.date && m.date && x.date !== m.date) { keyTrouble.push(`${lg.zh} 逐場統計 ${k} ${m.date}`); return null; }
@@ -1887,8 +1888,8 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     /* ── 站上單場頁與球隊頁的其餘幾塊(2026-09-26)。查法照站上:賽前文章的鍵沒有季(只收即將開賽的)、
        賽後文章與專家觀點的鍵有季、勝率曲線的鍵沒有季但檔頭有季、交手的鍵是排序過的兩隊 ── */
     preArticleFor: f => (!f.played && f.season === meta.currentSeason ? analysis?.pre?.[f.home + '|' + f.away] ?? null : null),
-    postArticleFor: f => (f.played && f.season === meta.currentSeason ? analysis?.post?.[f.season + '|' + f.home + '|' + f.away] ?? null : null),
-    expertsFor: f => arr(expertsFile?.matches?.[f.season + '|' + f.home + '|' + f.away] ?? []),
+    postArticleFor: f => (f.played && f.season === meta.currentSeason ? analysis?.post?.[f.season + '|' + pairOf(f)] ?? null : null),
+    expertsFor: f => arr(expertsFile?.matches?.[f.season + '|' + pairOf(f)] ?? []),
     expertsInfo: expertsFile ? { updatedAt: expertsFile.updatedAt } : null,
     probFor: f => (probHistory?.season === f.season ? probHistory.matches?.[f.home + '|' + f.away] ?? null : null),
     h2hAvailable: Object.keys(h2hFile).length > 0,

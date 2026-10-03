@@ -36,6 +36,7 @@ import { fileURLToPath } from 'node:url';
 import { loadTeams } from '../lib/teams.mjs';
 import { fotmobTeamStats, fotmobEvents, fotmobPos, fotmobPlayers } from '../lib/adapters/fotmob-match.mjs';
 import { pairOf, isShootoutShot } from '../lib/matchstats.mjs';
+import { rekeyByPair } from '../lib/pair-rekey.mjs';
 import { bridgeTeams } from '../lib/adapters/fotmob-ucl.mjs';
 import { uclResultsOf, UCL_RAW_DIR } from '../lib/ucl-details.mjs';
 import { cupResultsOf, readCupStore } from '../lib/cup-details.mjs';
@@ -396,16 +397,15 @@ async function main() {
   pstore.matches ??= {};
   const store = (await read(STORE)) ?? { season, source: 'fotmob', extractVersion: EXTRACT_VERSION, matches: {}, attempts: {} };
   store.matches ??= {}; store.attempts ??= {};
-  /* 歐冠的鍵是「主|客|日期」(pair),第一版是「主|客」—— 同一組主客在同一季出現兩次時第二場被當成已快取而跳過
-     (2025-26 有 7 組)。舊格式的紀錄在這裡就地改鍵(紀錄裡有 date),被跳過的那 7 場下面自然變成待補。 */
-  if (LG.ucl) {
-    for (const [k, m] of Object.entries(store.matches)) {
-      if (m.pair) continue;
-      const pair = `${m.home}|${m.away}|${m.date}`;
-      delete store.matches[k];
-      store.matches[pair] = { ...m, key: pair, pair };
-      if (pstore.matches[k]) { pstore.matches[pair] = { ...pstore.matches[k], key: pair }; delete pstore.matches[k]; }
-      console.log(`  · 舊鍵改成 ${pair}`);
+  /* 舊格式的紀錄就地改鍵(規則與理由在 lib/pair-rekey.mjs):歐冠(2025-26 有 7 組)與英冠的升級附加賽
+     (2025-26 五組;三組的 raw 存的是附加賽、聯賽那一場從來沒進來)。改完之後被蓋掉的那幾場在下面自然變成待補。
+     逐人統計那一檔各自用自己的 date 判(兩檔是分開寫的)。 */
+  {
+    const pairs = new Set(results.filter(r => r.season === season && r.pair).map(r => r.pair));
+    for (const [map, label, addPair] of [[store.matches, '逐場', true], [pstore.matches, '逐人統計', false]]) {
+      const { moved, conflicts } = rekeyByPair(map, pairs, { addPair });
+      for (const x of moved) console.log(`  · ${label}舊鍵 ${x.from} 改成 ${x.to}`);
+      for (const x of conflicts) console.log(`  ⚠ ${label} ${x.from} 要改成 ${x.to},而那個鍵已經有一筆 —— 不動,兩筆都留著給人看`);
     }
   }
   /* 萃取版本落後就重抓 —— 但只在這個聯賽要(pl:模擬遊玩的側寫要新欄位)。全部聯賽一起重抓是幾千個請求,
@@ -422,13 +422,14 @@ async function main() {
   if (verifyN > 0 && !LG.verify) console.log('  這個聯賽沒有官網端點可抽核控球率,略過 --verify');
   if (verifyN > 0 && LG.verify) { await verify(store, results, verifyN, teams); }
   else if (pending.length && limit > 0) {
-    if (dryRun) { pending.slice(0, limit).forEach(f => console.log(`  · ${f.date} ${label(f)}`)); return; }
+    /* 列的就是真的會抓的那幾場:跟 fetchPending 同一個切法(一個請求留給賽程端點、一場 PER_MATCH 個) */
+    if (dryRun) { pending.slice(0, Math.floor((limit - 1) / PER_MATCH)).forEach(f => console.log(`  · ${f.date} ${label(f)}`)); return; }
     /* 盃賽:matchId 已經在 results 裡(賽程快取帶的),所以**整段賽程端點跳過** ——
        少一個請求,也少一次「帶 season 參數回最新那季」與隊名對照的風險(兩條都踩過)。 */
     const byPair = LG.cup ? null : await leagueIndex(results, season, store, teams);
     if (!LG.cup && !byPair) return;
     await fetchPending(pending, { byPair, store, pstore, season, label, teams, STORE, PSTORE });
-  } else console.log('  沒有待補場次。');
+  } else console.log(pending.length ? `  本次上限 ${limit} 個請求,不抓(待補 ${pending.length} 場留到下一次)` : '  沒有待補場次。');
 
   store.updatedAt = new Date().toISOString();
   store.extractVersion = EXTRACT_VERSION;

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=a0c8174c';
+import * as C from './core.js?v=3c861f4a';
 
 const app = document.getElementById('app');
 
@@ -33,7 +33,7 @@ try {
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const tacBy = new Map(tactics.map(t => [t.code, t]));
   const preArticleFor = f => analysis.pre[`${f.home}|${f.away}`] ?? null;
-  const reportKey = f => `${f.season}|${f.home}|${f.away}`;
+  const reportKey = C.reportKey;   // 「季|主|客」;附加賽帶 pair(主|客|日期)—— 跟 build 同一把鍵,寫在 core.js
   const postArticleFor = f => analysis.post[reportKey(f)] ?? null;
   /* 賽後報告本體 2026-09-26 起是逐場檔(本季與往季同一條路):`reports.json` 只剩索引
      (`index`:「季|主|客」→ 場次 id),點開這一場才載那一個檔。整份內嵌時這一頁與首頁各揹 3.2 MB,

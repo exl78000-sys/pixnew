@@ -168,10 +168,14 @@ export async function load(...names) {
    `index` 是「季|主|客」→ 場次 id,本體在 `match-reports/{季}/{id}.json`,點開那一場才載。
    之前本季整份內嵌 3.2 MB,首頁載它只問「這場有沒有」、單場頁只用其中一場。
    走 loadFrom 不走 load:單檔版沒打包往季的逐場檔,404 不是錯誤,要分得出來。
-   賽程表(fixture-list)與單場頁(page-analysis)都用這兩支,不各自拼路徑。 */
-export const hasMatchReport = (reports, f) => !!reports?.index?.[`${f.season}|${f.home}|${f.away}`];
+   賽程表(fixture-list)與單場頁(page-analysis)都用這兩支,不各自拼路徑。
+   鍵是 `reportKey`:同一季同一組主客會踢兩場的(英冠的升級附加賽)帶 `pair`(主|客|日期),
+   跟 build 那一側(scripts/lib/matchstats.mjs 的 pairOf)同一個規則 —— 少了它附加賽會查到聯賽那一場的報告。
+   賽後文章(analysis.post)也是同一把鍵,所以匯出給頁面用。 */
+export const reportKey = f => `${f.season}|${f.pair ?? `${f.home}|${f.away}`}`;
+export const hasMatchReport = (reports, f) => !!reports?.index?.[reportKey(f)];
 export async function loadMatchReport(reports, f, lg = league()) {
-  const id = reports?.index?.[`${f.season}|${f.home}|${f.away}`] ?? null;
+  const id = reports?.index?.[reportKey(f)] ?? null;
   if (!id) return null;
   const name = `match-reports/${f.season}/${id}`;
   const { data } = await loadFrom(lg, [name]);

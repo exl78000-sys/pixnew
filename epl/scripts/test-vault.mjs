@@ -41,6 +41,11 @@ const fm = (text, key) => {
   const line = head.split('\n').find(l => l.startsWith(key + ': '));
   return line == null ? undefined : line.slice(key.length + 2).replace(/^"(.*)"$/, '$1');
 };
+/* 比賽筆記對回產物的鍵:「季|主|客」;有階段的(英冠的升級附加賽)多帶日期 —— 跟產物那一側的 pairOf 同一個規則
+   (lib/matchstats.mjs:非聯賽場次的 pair 是「主|客|日期」)。只用「季|主|客」的話,附加賽跟同一季的聯賽同一組主客,
+   兩則筆記會擠成一個鍵,對到的是哪一則看寫入順序(2026-10-03 前就是這樣)。 */
+const noteKey = t => [fm(t, '賽季'), fm(t, '主隊'), fm(t, '客隊'), ...(fm(t, '階段') ? [fm(t, '日期')] : [])].join('|');
+const fixtureKey = f => f.pair ?? `${f.home}|${f.away}`;
 
 console.log('\n▶ Obsidian vault:產生器跑得完');
 check('產生器結束碼是 0(兩道守門都過)', gen.status === 0, gen.status === 0 ? '' : (gen.stderr || gen.stdout).slice(-400).replace(/\s*\n\s*/g, ' ⏎ '));
@@ -258,7 +263,7 @@ const dataDirOf = lg => (lg === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'w
       const p = join(dir, 'match-reports', idx.archive.season, `${id}.json`);
       if (!existsSync(p)) continue;
       const rep = read(p);
-      want.push({ lg, zh, key: `${rep.season}|${rep.home}|${rep.away}`, rep, last: true });
+      want.push({ lg, zh, key: `${rep.season}|${rep.pair ?? `${rep.home}|${rep.away}`}`, rep, last: true });
     }
   }
   /* 往季的讀法(lib/match-archive.mjs 的 readArchivedReports)拿捏造的目錄單獨驗:它的規則在真資料裡碰不到
@@ -288,7 +293,7 @@ const dataDirOf = lg => (lg === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'w
   for (const [, zh] of LEAGUE_DIRS) {
     for (const f of list(`${zh}/比賽`)) {
       const t = note(`${zh}/比賽/${f}`);
-      const k = `${zh}|${fm(t, '賽季')}|${fm(t, '主隊')}|${fm(t, '客隊')}`;
+      const k = `${zh}|${noteKey(t)}`;
       noteOf.set(k, t);
       if (fm(t, '賽後報告') === 'true') flagged.push(k);
     }
@@ -477,7 +482,7 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
     const matchNote = new Map(), teamNote = new Map();
     for (const f of list(`${zh}/比賽`)) {
       const t = note(`${zh}/比賽/${f}`);
-      matchNote.set(`${fm(t, '賽季')}|${fm(t, '主隊')}|${fm(t, '客隊')}`, t);
+      matchNote.set(noteKey(t), t);
     }
     for (const f of list(`${zh}/球隊`)) { const t = note(`${zh}/球隊/${f}`); teamNote.set(fm(t, '隊碼'), t); }
     const fx = product(lg, 'fixtures');
@@ -508,7 +513,7 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
     /* 已完賽的賽前預測:有開賽前快照(prediction.snapshot)的印那一份,沒有的照實寫沒有 ——
        原本一律寫「本站沒有保存這場的賽前機率快照」,9/1 之後對有即時追蹤的場次就不成立了 */
     for (const f of fixtures.filter(x => x.played)) {
-      const t = matchNote.get(`${cur}|${f.home}|${f.away}`) ?? '';
+      const t = matchNote.get(`${cur}|${fixtureKey(f)}`) ?? '';
       seen('快照');
       const snap = f.prediction?.snapshot === true;
       const has = t.includes('## 賽前預測(開賽前存下來的快照)');
@@ -551,7 +556,7 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
     const H2 = product(lg, 'h2h') ?? {};
     if (Object.keys(H2).length) {
       for (const f of fixtures.filter(x => !x.played)) {
-        const t = matchNote.get(`${cur}|${f.home}|${f.away}`) ?? '';
+        const t = matchNote.get(`${cur}|${fixtureKey(f)}`) ?? '';
         const rec = H2[[f.home, f.away].sort().join('|')];
         seen('交手');
         if (!rec) { if (!/## 歷來交手\n\n.*沒有在.*交手過/.test(t)) bad('交手', `${zh} ${f.home}-${f.away}:沒有交手紀錄,卻沒講`); continue; }
@@ -618,9 +623,9 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
       }
     }
 
-    /* 撞鍵(2026-10-03):英冠的升級附加賽跟同一季的聯賽同主客,而逐場統計與走查回測都以「季|主|客」為鍵 ——
-       附加賽的筆記曾印著聯賽那一場的走查回測、聯賽的筆記曾印著附加賽的控球與射門。只能掛在**日期對得上**的那一場。
-       逐則走筆記、用每則自己的日期(matchNote 也是「季|主|客」當鍵,撞鍵的兩則只會留一則) */
+    /* 撞鍵(2026-10-03):英冠的升級附加賽跟同一季的聯賽同主客 —— 附加賽的筆記曾印著聯賽那一場的走查回測、
+       聯賽的筆記曾印著附加賽的控球與射門。逐場統計的鍵現在是「季|pairOf」(附加賽帶日期),筆記這一側用 noteKey 對;
+       走查回測只收聯賽(鍵「季|主|客」),附加賽的筆記一律不准有那一節。逐則走筆記、用每則自己的日期再收斂一次 */
     const MS = product(lg, 'matchstats');
     const wfName = WF_FILES.get(lg);
     const WF = wfName && existsSync(join(ROOT, 'data', wfName)) ? read(join(ROOT, 'data', wfName)) : null;
@@ -628,7 +633,7 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
     for (const f of list(`${zh}/比賽`)) {
       const t = note(`${zh}/比賽/${f}`);
       const k = `${fm(t, '賽季')}|${fm(t, '主隊')}|${fm(t, '客隊')}`, date = fm(t, '日期'), stage = fm(t, '階段');
-      const ms = MS?.matches?.[k];
+      const ms = MS?.matches?.[noteKey(t)];
       if (ms) {
         seen('撞鍵');
         const want = ms.date === date;
@@ -718,7 +723,7 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
         const lh = LU[f.home], la = LU[f.away];
         if (!lh && !la) continue;
         seen('預估先發');
-        const t = matchNote.get(`${cur}|${f.home}|${f.away}`) ?? '';
+        const t = matchNote.get(`${cur}|${fixtureKey(f)}`) ?? '';
         const sec = sectionOf(t, '預估先發陣容');
         for (const [lu, code] of [[lh, f.home], [la, f.away]]) {
           if (!lu) continue;

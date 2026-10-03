@@ -54,9 +54,12 @@ export function fixBlockedShots(m) {
   return out;
 }
 
-export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl' } = {}) {
+/* `excludeFromTeams(賽果那一場)`:逐場照收、但**不算進逐隊彙總**的場次(英冠的升級附加賽:不進積分榜也不進模型,
+   球隊頁那一塊照「這個聯賽」講)。刻意不寫成「有 stage 就排除」—— 歐冠與盃賽的賽果也帶 stage(那是輪次),那裡每一場都該算。
+   排除了幾場記在 `teamExcluded`,呼叫端印出來。 */
+export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl', excludeFromTeams = null } = {}) {
   const dir = join(root, 'data', 'raw', rawDir);
-  const out = { source: 'FotMob matchDetails', seasons: [], count: 0, rejected: [], verification: {}, matches: {}, teams: {} };
+  const out = { source: 'FotMob matchDetails', seasons: [], count: 0, rejected: [], verification: {}, matches: {}, teams: {}, teamExcluded: [] };
   if (!existsSync(dir)) return out;
   const scoreOf = new Map(results.filter(r => r.played).map(r => [`${r.season}|${pairOf(r)}`, [r.fh, r.fa]]));
   // 有沒有踢 PK(歐冠 results 有 pens;三個聯賽沒有 → 一律 false)
@@ -103,9 +106,12 @@ export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl'
   out.seasons = [...new Set(out.seasons)].sort();
 
   // 逐隊彙總(主客分開):控球分布、每場射門 / 被射門、xG / xGA、射門情境
-  const codes = new Set(Object.values(out.matches).flatMap(m => [m.home, m.away]));
+  const notForTeams = new Set(excludeFromTeams ? results.filter(r => excludeFromTeams(r)).map(r => `${r.season}|${pairOf(r)}`) : []);
+  const forTeams = Object.values(out.matches).filter(m => !notForTeams.has(m.key));
+  out.teamExcluded = Object.keys(out.matches).filter(k => notForTeams.has(k)).sort();
+  const codes = new Set(forTeams.flatMap(m => [m.home, m.away]));
   for (const code of codes) {
-    const mine = Object.values(out.matches).filter(m => m.home === code || m.away === code);
+    const mine = forTeams.filter(m => m.home === code || m.away === code);
     const side = (m, isHome) => (isHome ? m.home : m.away);
     const venue = isHome => {
       const rows = mine.filter(m => side(m, isHome) === code);

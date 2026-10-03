@@ -1,4 +1,4 @@
-import * as C from './core.js?v=a0c8174c';
+import * as C from './core.js?v=3c861f4a';
 
 const app = document.getElementById('app');
 

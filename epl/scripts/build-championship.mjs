@@ -50,7 +50,7 @@ import { playersListFrom } from './lib/players-list.mjs';
 import { teamStatsFrom } from './lib/team-stats.mjs';
 import { buildTeamProfiles, fotmobTeamStore } from './lib/team-profiles.mjs';
 import { splitFixtureGrids } from './lib/fixture-grids.mjs';
-import { loadFotmobMatchStats, toCanonicalDetail } from './lib/matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, pairOf } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
@@ -111,6 +111,8 @@ const slimMatch = m => {
   if (m.kickoff) out.kickoff = m.kickoff;
   if (m.scoreProvisional) { out.scoreProvisional = true; out.scoreSource = m.scoreSource ?? 'fotmob'; }   // FotMob 暫定賽果(社群檔還沒到);provisional 這個名字西甲另有用途
   if (m.stage) out.stage = m.stage;
+  /* 附加賽的配對鍵(主|客|日期):抓取器讀 results.json 決定 raw 的鍵,前端用它查賽後報告 —— 少了它就退回「主|客」而撞鍵 */
+  if (m.pair) out.pair = m.pair;
   if (m.scoreSource) out.scoreSource = m.scoreSource;
   return out;
 };
@@ -374,19 +376,30 @@ async function main() {
 
   /* 逐場統計(FotMob,2026-09-05):跟西甲同一份 lib。比分逐場對回本站賽果、控球率相加要是 100,
      不符的整場退回並印出來。英冠沒有第二來源可抽核控球率,verified 會是 false,畫面照這個講。 */
-  const fotmobStats = loadFotmobMatchStats(ROOT, { results: [...lastMatches, ...curMatches].filter(m => m.played), rawDir: 'fotmob-championship' });
+  /* 升級附加賽不算進逐隊彙總(球隊頁那一塊,team-stats.json):它不進積分榜也不進模型,彙總照「這個聯賽」講。
+     逐場那一筆照收(單場頁與 vault 要用),鍵是 pair(主|客|日期),跟聯賽那一場分開。
+     不能寫成通用的「有 stage 就排除」—— 歐冠與盃賽的賽果也帶 stage(那是輪次),那裡每一場都該算。 */
+  const fotmobStats = loadFotmobMatchStats(ROOT, {
+    results: [...lastMatches, ...curMatches].filter(m => m.played), rawDir: 'fotmob-championship',
+    excludeFromTeams: m => !!m.stage,
+  });
   if (fotmobStats.count) {
     console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})・退回 ${fotmobStats.rejected.length} 場・控球率未經第二來源抽核`);
     for (const r of fotmobStats.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
+    if (fotmobStats.teamExcluded.length) console.log(`    升級附加賽 ${fotmobStats.teamExcluded.length} 場有逐場統計,不算進逐隊彙總與球員層:${fotmobStats.teamExcluded.join('、')}`);
   }
 
   /* 球員層:由**逐場**的逐人統計累加(2026-09-15)。規則與歐冠共用(lib/season-players.mjs):
      每一場「該隊球員進球 + 對手烏龍球 = 本站賽果的比分」才計入,對不上的整場不計並記進 excluded。
-     英冠 60 場有烏龍球的實測:翻轉(記給對手)57 場對、不翻 1 場對 —— 跟三聯賽同一個語意。 */
+     英冠 60 場有烏龍球的實測:翻轉(記給對手)57 場對、不翻 1 場對 —— 跟三聯賽同一個語意。
+     **只算聯賽場次**(2026-10-03 起):升級附加賽不進積分榜,球員榜照同一條界線。之前 2025-26 的榜混著三場附加賽
+     (HUL-MIL、MIL-HUL、HUL-MID 決賽)而少了那三組的聯賽 —— 附加賽撞鍵把聯賽那一場從 raw 裡蓋掉了,
+     而這裡收「這一季的全部」,兩件事疊在一起,畫面完全看不出來。 */
   const teamNameOf = Object.fromEntries(T.list.map(t => [t.code, t.zh ?? t.en ?? t.code]));
   const playerSeasons = {};
+  const notLeague = new Set(fotmobStats.teamExcluded ?? []);
   for (const season of [CURRENT_SEASON, LAST_SEASON]) {
-    const ms = Object.values(fotmobStats.matches).filter(m => m.season === season).sort((a, b) => a.key.localeCompare(b.key));
+    const ms = Object.values(fotmobStats.matches).filter(m => m.season === season && !notLeague.has(m.key)).sort((a, b) => a.key.localeCompare(b.key));
     if (!ms.length) continue;
     const rows = ms.map(m => (m.players && Object.values(m.players).some(l => l?.length)
       ? { key: m.key, home: m.home, away: m.away, players: m.players, events: m.events ?? [], shots: m.shots ?? [], score: m.score, shotmapComplete: m.shotmapComplete }
@@ -801,7 +814,8 @@ async function main() {
       available: true, source: 'match-aggregate', statMeta: PLAYER_STAT_META,
       seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
       note: '由本站每次部署抓的 FotMob 逐場詳情累加 —— 英冠沒有整季的球員資料源(Understat 不涵蓋、FPL 只有英超),'
-        + '但逐場資料每一場都帶雙方的逐人統計。每一場的球員進球(烏龍球記給對方)要對回本站賽果的比分才計入。',
+        + '但逐場資料每一場都帶雙方的逐人統計。每一場的球員進球(烏龍球記給對方)要對回本站賽果的比分才計入。'
+        + '只算聯賽場次,升級附加賽不算(它不進積分榜,球員榜照同一條界線)。',
       boards: Object.fromEntries(Object.entries(playerSeasons).map(([k, v]) => [k, v.boards])),
       squads: Object.fromEntries(Object.entries(playerSeasons).map(([k, v]) => [k, v.squads.teams])),
       layer: Object.fromEntries(Object.entries(playerSeasons).map(([k, v]) => [k, {
@@ -899,7 +913,9 @@ async function main() {
      所以是把缺的那幾份寫成「明確不可用」,不是把整頁擋掉。 */
   /* 戰術頁(2026-10-02):Understat 不做英冠,改用 FotMob 逐場統計照 Understat 的形狀加總(lib/team-profiles.mjs 的
      fotmobTeamStore),再走跟西甲德義法同一支 buildTeamProfiles。只收**上季聯賽**場次(不含升級附加賽);
-     陣型的單位是先發場次。SOU、MID 各少兩場(FotMob 沒收到),每場平均用實際場數當分母、終結那兩項給空值。 */
+     陣型的單位是先發場次。少場的隊照實數(每場平均用實際場數當分母、終結那兩項給空值)。
+     2026-10-02 這裡寫「SOU、MID 各少兩場(FotMob 沒收到)」—— 那不是 FotMob 沒收到,是附加賽撞鍵:
+     raw 以主|客為鍵,MID-SOU / SOU-MID 等五組的聯賽那一場從來沒被抓(2026-10-03 改成 pair 帶日期、在 runner 上補抓)。 */
   const teamProfiles = (() => {
     const leagueKeys = new Set(lastLeague.map(m => `${m.season}|${m.home}|${m.away}`));
     const store = fotmobTeamStore({ matches: fotmobStats.matches ?? {}, season: LAST_SEASON, tableRows: lastTable, leagueKeys });
@@ -977,24 +993,32 @@ async function main() {
   /* 走**兩季**的已完賽場次,不是只走 `fixtures`(那只有本季)——
      上一季的報告 2026-09-16 起發布成逐場檔。`reports` 產物裡**內嵌的**仍然只有本季
      (首頁與單場頁是整份載那一份的,英冠已經 4.9 MB)。 */
+  /* 鍵是「季|pairOf」:聯賽場次照舊是「季|主|客」,升級附加賽是「季|主|客|日期」(2026-10-03 起)——
+     原本一律「季|主|客」,附加賽跟同一季的聯賽撞鍵,兩場的報告只能都不寫。 */
   for (const f of [...lastMatches, ...curMatches]) {
     if (!f.played) continue;
-    const ms = fotmobStats.matches?.[`${f.season}|${f.home}|${f.away}`];
+    const k = `${f.season}|${pairOf(f)}`;
+    const ms = fotmobStats.matches?.[k];
     if (!ms) continue;
     const report = buildProviderMatchReport({ fixture: f, detail: toCanonicalDetail(ms, { verified: false }), nameOf });
-    if (report) reports[`${f.season}|${f.home}|${f.away}`] = report;
+    if (report) reports[k] = report;
   }
+  /* 逐場檔自足:輪次與日期(單場頁頁首要印),附加賽另帶 pair 與 stage ——
+     讀回的人(readArchivedReports、vault)用檔案自己帶的 pair 組鍵,不然附加賽又會跟聯賽撞成同一個鍵 */
+  const archiveExtra = m => ({ round: m?.round ?? null, date: m?.date ?? null,
+    ...(m?.pair ? { pair: m.pair } : {}), ...(m?.stage ? { stage: m.stage } : {}) });
   const publishedReports = Object.fromEntries(
     Object.entries(reports).filter(([k]) => k.startsWith(`${CURRENT_SEASON}|`)));
   /* **英冠是唯一會撞鍵的那一個**:季末的升級附加賽由聯賽裡的四隊互打,
-     `NOR|LEE` 可以同時是聯賽場次與附加賽場次。撞到的一律不寫逐場檔 ——
+     `NOR|LEE` 可以同時是聯賽場次與附加賽場次。2026-10-03 起附加賽帶 pair(主|客|日期),idMapForArchive 照 pair 分開,
+     兩場各自有逐場檔;**還撞的就不是附加賽了**(賽程本身有問題),那幾場照舊不寫 ——
      挑一個 id 去命名等於把某一場的報告掛到另一場的網址上。 */
   const { map: lastByKey, duplicates: dupKeys } = idMapForArchive(lastMatches);
-  if (dupKeys.length) console.log(`  ⚠ 英冠往季有 ${dupKeys.length} 組撞鍵的對戰(附加賽),那幾場不寫逐場檔:${dupKeys.join('、')}`);
+  if (dupKeys.length) console.log(`  ⚠ 英冠往季有 ${dupKeys.length} 組撞鍵的對戰(附加賽已經用 pair 分開,這幾組是賽程本身重複),不寫逐場檔:${dupKeys.join('、')}`);
   const archive = writeMatchArchive({
     outDir: OUT, reports, season: LAST_SEASON,
     idOf: key => lastByKey.get(key)?.id ?? null,
-    extraOf: key => ({ round: lastByKey.get(key)?.round ?? null, date: lastByKey.get(key)?.date ?? null }),
+    extraOf: key => archiveExtra(lastByKey.get(key)),
   });
   if (archive.count || archive.missingId.length) {
     console.log(`  英冠往季賽後報告(${LAST_SEASON}):${archive.count} 場逐場檔、${archive.kb} KB`
@@ -1007,7 +1031,7 @@ async function main() {
   const current = writeMatchArchive({
     outDir: OUT, reports: publishedReports, season: CURRENT_SEASON,
     idOf: key => curByKey.get(key)?.id ?? null,
-    extraOf: key => ({ round: curByKey.get(key)?.round ?? null, date: curByKey.get(key)?.date ?? null }),
+    extraOf: key => archiveExtra(curByKey.get(key)),
   });
   if (current.missingId.length) console.log(`  ⚠ 英冠本季 ${current.missingId.length} 場對不到場次 id,沒寫逐場檔:${current.missingId.join('、')}`);
   const reportCount = current.count;
