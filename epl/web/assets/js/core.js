@@ -955,7 +955,8 @@ const SECTIONS = [
   { key: 'player', label: '球員', icon: 'person',
     items: [{ page: 'players' }, { page: 'explore', view: 'allplayers', label: '球員搜尋' }], also: [] },
   { key: 'comp', label: '賽事', icon: 'trophy',
-    items: [{ page: 'cups' }, { page: 'intl' }, { page: 'overview' }], also: ['ucl', 'ucl-match', 'cup-match'] },
+    /* 總覽排第一(2026-10-03,使用者要求):它是全站的入口,點「賽事」就該先到它;盃賽與國家隊在後 */
+    items: [{ page: 'overview' }, { page: 'cups' }, { page: 'intl' }], also: ['ucl', 'ucl-match', 'cup-match'] },
   { key: 'more', label: '更多', icon: 'dots',
     items: [{ page: 'news' }, { page: 'model' }, { page: 'explore', view: 'knowledge', label: '足球知識' },
       { page: 'explore', view: 'duel', label: '模擬遊玩' }, { page: 'predict' }], also: [] },
