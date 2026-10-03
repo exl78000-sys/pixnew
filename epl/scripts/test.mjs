@@ -3473,7 +3473,10 @@ async function checkDataGap() {
           const sim = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8'));
           const live = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-live.js'), 'utf8'));
           const view = strip(pg);
-          return /const POSS_K = [0-9.]+;/.test(sim) && /possession\?\.home\?\.mean/.test(sim)
+          /* 2026-10-03 讀法收進 possAt(中立場要用主客場加權平均),字面的 `possession?.home?.mean` 不在了 ——
+             守的還是同一件事:控球的輸入來自側寫的 possession,而且 pmRaw 真的走它。 */
+          return /const POSS_K = [0-9.]+;/.test(sim)
+            && /const possAt = [^\n]*\n\s*const p = teamOf\(code\)\?\.possession;/.test(sim) && /const pmRaw = possAt\(/.test(sim)
             && /possTarget:/.test(sim) && /possTarget:/.test(live)
             && /const pTarget = match\.possTarget\(\);/.test(view);
         })()

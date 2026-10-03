@@ -790,7 +790,8 @@ const DIRECT_STEP = 0.06;                      // 直接度每級在傳球權重
      真實                     1.23   1.19      1.09          +1.6 pp   1.24
    **反應很陡**:2 公尺就讓禁區觸球多七成、控球差九個百分點 —— 心態那一軸一級是 3 公尺,這個常數比它小六倍。
    0.5 到 1 公尺之間三格在雜訊裡分不開,挑 0.5 的理由是**控球**(其餘幾項都在 SE 內,而控球從 0.5 到 0.75 公尺
-   就多一個百分點,真實只有 +1.6)。控球的輸入(`keep`)照舊用分主客的真實控球率:改成主客平均那一格(0.75 m)量不出差別。
+   就多一個百分點,真實只有 +1.6)。控球的輸入(`keep`)照舊用分主客的真實控球率:改成主客平均那一格(0.75 m)在 12 場的解析度下分不出來
+   (控球 +3.9 對 +3.4 pp,隊間 SE 約 0.5)。
    **中立場**(遊戲頁的勾選)時兩邊都是 0,而且所有分主客的真實比率都改用主客場的加權平均。 */
 const HOME_PUSH = 0.5;
 /* **體能**(2026-09-20)。使用者要做體能,而它**沒有直接的真值可以校準**:
@@ -4149,8 +4150,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       xgScale: Math.round(xgScale * 1000) / 1000, selectedXg: Math.round(selectedXg * 10000) / 10000,
       home: cal.home && { ...cal.home, k: Math.round(cal.home.k * 1000) / 1000 },
       away: cal.away && { ...cal.away, k: Math.round(cal.away.k * 1000) / 1000 },
-      /* 主場那一份從哪裡來(2026-10-03):畫面與量測台讀這裡,不要各自再算一次 VENUE_SF */
-      venue: { neutral, homePush: neutral ? 0 : HOME_PUSH,
+      /* 主場那一份從哪裡來(2026-10-03):畫面與量測台讀這裡,不要各自再算一次 VENUE_SF。
+         位移讀兩隊**實際在用的那一份**(side 的 venuePush),不是照常數再算一次 —— 那樣中立場沒歸零、
+         或客隊推錯方向時,報出來的數字照樣是對的,測試也就守不到。 */
+      venue: { neutral, homePush: H.venuePush, awayPush: A.venuePush,
         venueSf: Math.round(VENUE_SF * 1000) / 1000 },
     }),
   };
