@@ -601,7 +601,7 @@ function renderTeam(t, ctx) {
       links.push(f.file);
       const vs = f.home === t.code ? `主場 vs ${ctx.teamNameOf(f.away)}` : `客場 @ ${ctx.teamNameOf(f.home)}`;
       const score = f.played ? ` —— ${f.fh}:${f.fa}` : '';
-      body.push(`- ${f.date} 第 ${f.round} 輪 ${vs}${score} → ${wl(f.file)}\n`);
+      body.push(`- ${[f.date, roundLabel(f), `${vs}${score}`].filter(Boolean).join(' ')} → ${wl(f.file)}\n`);
     }
   }
 
@@ -634,7 +634,7 @@ function renderTeam(t, ctx) {
         const opp = m.home === t.code ? ctx.teamNameOf(m.away) : ctx.teamNameOf(m.home);
         const ha = m.home === t.code ? '主' : '客';
         const score = m.played ? `${m.fh}:${m.fa}` : '未賽';
-        body.push(`- ${m.date} ${ha} vs ${opp ?? (m.home === t.code ? m.away : m.home)} ${score} → ${wl(m.file)}\n`);
+        body.push(`- ${m.date} ${ha} vs ${opp ?? (m.home === t.code ? m.away : m.home)} ${score}${m.stage ? `(${m.stage})` : ''} → ${wl(m.file)}\n`);
       }
       body.push('\n');
     }
@@ -644,6 +644,14 @@ function renderTeam(t, ctx) {
   body.push(`- 全部數值由本站資料集直接搬運,沒有在這裡重新計算或推估\n`);
   body.push(`- 建置時間 ${ctx.builtAt}\n`);
   return { body: body.join(''), links };
+}
+
+/* 「第幾輪」只對聯賽場次成立。英冠的升級附加賽(stage)沒有輪次 —— 照 `第 ${round} 輪` 印就是「第 null 輪」
+   (2025-26 五場,2026-10-03 前一直這樣印)。附加賽印階段名,其他沒有輪次的整段不印。
+   用函式宣告:renderTeam / renderMatch 在模組載入時就會被主流程呼叫,const 會掉進暫時死區(CLAUDE.md 記過兩次)。 */
+function roundLabel(m) {
+  if (m.stage) return m.stage;
+  return m.round != null ? `第 ${m.round} 輪` : null;
 }
 
 /* ── 比賽 ────────────────────────────────────────────────── */
@@ -657,7 +665,7 @@ function renderMatch(f, ctx) {
   const preArt = ctx.preArticleFor(f), postArt = ctx.postArticleFor(f);
   const experts = ctx.expertsFor(f), prob = ctx.probFor(f);
   body.push(frontmatter({
-    類型: '比賽', 聯賽: ctx.lg.zh, 賽季: f.season, 輪次: f.round, 日期: f.date,
+    類型: '比賽', 聯賽: ctx.lg.zh, 賽季: f.season, 輪次: f.stage ? null : f.round, 階段: f.stage ?? null, 日期: f.date,
     開球: f.kickoff, 主隊: f.home, 客隊: f.away, 已完賽: f.played,
     主隊進球: f.played ? f.fh : null, 客隊進球: f.played ? f.fa : null,
     /* 跟盃賽與歐冠同一個欄位:Dataview 查得到哪幾場有賽後報告,測試也靠它對回產物(本季的索引 + 往季的 archive) */
@@ -666,7 +674,7 @@ function renderMatch(f, ctx) {
     專家觀點: experts.length || null, 勝率曲線點數: prob?.pts?.length >= 3 ? prob.pts.length : null,
     產生時間: ctx.builtAt,
   }));
-  body.push(`\n# ${ctx.lg.zh} ${f.season} 第 ${f.round} 輪 ${H} vs ${A}\n`);
+  body.push(`\n# ${[ctx.lg.zh, f.season, roundLabel(f), `${H} vs ${A}`].filter(Boolean).join(' ')}\n`);
   body.push(`\n${wl(H)} vs ${wl(A)} —— ${f.date}\n`);
 
   if (f.played) {
@@ -699,8 +707,11 @@ function renderMatch(f, ctx) {
     } else {
       body.push(`\n## 賽前預測\n\n`);
       body.push(`本站沒有保存這場的**賽前機率快照**(只有比賽日迴圈即時追蹤過的場次才有),所以這裡不放預測數字。\n\n`);
+      /* 附加賽是 2025-26 的比賽,「只涵蓋 2025-26」放在它身上讀起來像漏了 —— 實際是回測只收聯賽場次 */
       body.push(`建置時的模型已經看過這場結果,拿它當賽前預測會是假的。`
-        + `走查回測(真正的賽前預測)只涵蓋 ${ctx.walkForwardSeason ?? '另一個賽季'}。\n`);
+        + (f.stage
+          ? `走查回測(真正的賽前預測)只收聯賽場次,${f.stage}不在裡面。\n`
+          : `走查回測(真正的賽前預測)只涵蓋 ${ctx.walkForwardSeason ?? '另一個賽季'}。\n`));
     }
 
     body.push(renderProbCurve(prob, H, A));
@@ -1076,7 +1087,10 @@ const levelOf = v => Math.min(10, Math.floor((v ?? 0) / 10) + 1);
 const signedFx = (v, d) => (v == null ? null : (v > 0 ? '+' : '') + Number(v).toFixed(d));
 const SP_ZH = { openPlay: '運動戰', corner: '角球', otherSetPiece: '其他定位球', directFreeKick: '直接任意球', penalty: '十二碼' };
 function renderTactics(t, ctx) {
-  const tac = t.tactics;
+  /* 英冠德義法的上季風格只在 tactics.json(戰術頁那一份,2026-10-02 上線),teams.json 不帶 t.tactics;
+     英超西甲兩份逐欄位相同(量過)。所以 teams.json 沒有就退回 tactics.json —— 同一份資料,不是另算一份。
+     沒有這一條的話,聯賽筆記那句「各隊的完整側寫在球隊筆記裡」對這四個聯賽是假的。 */
+  const tac = t.tactics ?? ctx.tacticsFor?.(t.code) ?? null;
   if (!tac) return '';
   const a = tac.attack ?? {}, d = tac.defence ?? {}, sp = tac.setPieces ?? {};
   const rows = [
@@ -1106,7 +1120,11 @@ function renderTactics(t, ctx) {
   ].filter(Boolean);
   const out = [`\n## 上季數據風格(${ctx.lastSeason})\n\n${defTable(rows)}`];
   const formations = tac.formation?.list ?? [];
-  if (formations.length) out.push(`\n整季陣型佔比(出場分鐘):${formations.map(f => `${f.name} ${f.share}%(${f.minutes} 分)`).join('・')}\n`);
+  /* 英冠的陣型來自 FotMob 逐場的先發陣型,單位是**先發場次**(formation.unit 'starts',minutes 是 null);
+     其他聯賽是出場分鐘。照抄分鐘那一行會印「(null 分)」—— 戰術頁 2026-10-02 修過同一條(startsUnit) */
+  const byStarts = tac.formation?.unit === 'starts';
+  const amount = f => { const n = byStarts ? f.starts : f.minutes; return n == null ? '' : `(${n} ${byStarts ? '場' : '分'})`; };
+  if (formations.length) out.push(`\n整季陣型佔比(${byStarts ? '先發場次' : '出場分鐘'}):${formations.map(f => `${f.name} ${f.share}%${amount(f)}`).join('・')}\n`);
   if (tac.formation?.notes?.length) out.push(`\n${tac.formation.notes.join('・')}\n`);
   if (tac.radar?.length) {
     out.push(`\n### 風格雷達\n\n| 指標 | 級分 | 百分位 | 原始值 |\n|---|---|---|---|\n`);
@@ -1425,7 +1443,10 @@ function renderLeague(ctx, teams, players, fixtures) {
   if (ctx.sources?.length) {
     body.push(`\n## 資料來源\n\n`);
     for (const s of ctx.sources) {
-      body.push(`- **${s.name}** —— ${s.use}${s.license ? `(${s.license})` : ''}\n`);
+      /* 德義法的 meta.sources 只有 name 與 url(抓取器真的下載的那支檔),沒有 use / license ——
+         照英超西甲的寫法印就是「—— undefined」(2026-09-15 上線起三週)。有用途印用途,沒有就印網址 */
+      const desc = s.use ?? s.url ?? null;
+      body.push(`- **${s.name}**${desc ? ` —— ${desc}` : ''}${s.license ? `(${s.license})` : ''}\n`);
     }
   }
   body.push(`\n## 資料界線\n\n- 建置時間 ${ctx.builtAt}\n`);
@@ -1654,6 +1675,8 @@ function buildLeagueBoards(lg, meta, D, { players, teamFile, builtAt }) {
 const summary = [];
 /* 聯賽賽後報告沒掛上的(索引指到檔案不在、往季撞鍵、日期對不上)—— 印出來,不靜靜略過 */
 const reportTrouble = [];
+/* 「季|主|客」撞鍵、日期對不上而沒有掛上的走查回測與逐場統計(見 walkForwardFor / matchStatsFor) */
+const keyTrouble = [];
 const allPlayers = [];
 
 for (const lg of LEAGUES) {
@@ -1738,7 +1761,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   if (existsSync(wfPath)) {
     const wf = read(wfPath);
     walkForwardSeason = wf.season;
-    for (const m of wf.matches ?? []) walkForward.set(m.season + '|' + m.home + '|' + m.away, m.pred);
+    for (const m of wf.matches ?? []) walkForward.set(m.season + '|' + m.home + '|' + m.away, { pred: m.pred, date: m.date ?? null });
   }
 
   const matchFile = m => sanitize(lg.zh + ' ' + m.season
@@ -1828,11 +1851,28 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
       repCount[m.season === meta.currentSeason ? 'current' : 'archive']++;
       return r;
     },
-    walkForwardFor: m => walkForward.get(m.season + '|' + m.home + '|' + m.away) ?? null,
+    /* 走查回測與逐場統計的鍵也是「季|主|客」,而英冠的升級附加賽會跟同一季的聯賽撞鍵(2025-26 五組)——
+       走查回測只收聯賽場次;FotMob 的 raw 以主|客為鍵,三場聯賽(HUL-MIL、MIL-HUL、HUL-MID)被附加賽蓋掉了。
+       照鍵直接拿的話,附加賽的筆記印出聯賽那一場的賽前預測、聯賽的筆記印出附加賽的控球與射門 —— 兩個都是另一場比賽
+       (2026-10-03 前就是這樣)。跟 reportFor 同一道防線:日期對不上就不掛,記下來印出來。六個聯賽的日期寫法量過一致,
+       擋下來的只有真的撞鍵的那幾場。 */
+    walkForwardFor: m => {
+      const k = m.season + '|' + m.home + '|' + m.away;
+      const w = walkForward.get(k);
+      if (!w) return null;
+      if (m.stage || (w.date && m.date && w.date !== m.date)) { keyTrouble.push(`${lg.zh} 走查回測 ${k} ${m.date}`); return null; }
+      return w.pred;
+    },
     walkForwardSeason: walkForwardSeason,
     goalsFor: code => goalsFile?.data?.[meta.lastSeason]?.teams?.[code] ?? null,
     goalsSeason: meta.lastSeason, goalsNote: goalsFile?.note ?? null,
-    matchStatsFor: m => matchStats?.matches?.[m.season + '|' + m.home + '|' + m.away] ?? null,
+    matchStatsFor: m => {
+      const k = m.season + '|' + m.home + '|' + m.away;
+      const x = matchStats?.matches?.[k];
+      if (!x) return null;
+      if (x.date && m.date && x.date !== m.date) { keyTrouble.push(`${lg.zh} 逐場統計 ${k} ${m.date}`); return null; }
+      return x;
+    },
     logsFor: code => playerLogs?.logs?.[String(code)] ?? null,
     teamMatchStatsFor: code => matchStats?.teams?.[code] ?? null,
     matchStatsVerification: matchStats?.verification ?? null,
@@ -1875,6 +1915,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     newsFile: sanitize(lg.zh + ' 外電與動態'),
     fixtureFileById: id => fixtureById.get(String(id)) ?? null,
     simTable: simAll, tacticsAll, formation: formationFile,
+    tacticsFor: (() => { const by = new Map(tacticsAll.filter(x => x?.code).map(x => [x.code, x])); return code => by.get(code) ?? null; })(),
     newsCount: newsAll.length,
     lineupFor: code => (lineupsFile && typeof lineupsFile === 'object' ? lineupsFile[code] ?? null : null),
     newsRange: newsAll.length ? (d => `${d[0]} ~ ${d.at(-1)}`)(newsAll.map(n => n.date).filter(Boolean).sort()) : null,
@@ -2013,9 +2054,13 @@ function renderDetailReport(rep, { caveats = [], heading = '## 賽後報告(FotM
     const SIT = SHOT_SIT_ZH;
     out.push(`\n### 射門(${shots.length} 次${d.shotmapComplete === false ? ',進球數跟比分對不上,清單不完整' : ''})\n\n`
       + '| 分鐘 | 球隊 | 球員 | 情境 | xG | 結果 |\n|---|---|---|---|---|---|\n'
-      + shots.map(s => `| ${s.min}${s.extra ? '+' + s.extra : ''} | ${nm(s.team)} | ${s.player ?? ''} | ${SIT[s.situation] ?? s.situation ?? ''} `
+      + shots.map(s => `| ${s.min}${s.extra ? '+' + s.extra : ''} | ${s.team == null ? '不詳' : nm(s.team)} | ${s.player ?? ''} | ${SIT[s.situation] ?? s.situation ?? ''} `
         + `| ${s.xg == null ? '' : s.xg.toFixed(2)} | ${s.type === 'Goal' ? '**進球**' : s.type ?? ''} |`).join('\n') + '\n');
     if (allShots.length > shots.length) out.push(`\n> PK 大戰的 ${allShots.length - shots.length} 球不算射門、也不算進 xG。\n`);
+    /* 射門圖的隊伍 id 跟賽程對不上時,逐場檔把那一腳的 team 留成 null(足總盃 2025-26 有 Macclesfield FC 的三場、44 腳:
+       事件與名單對得上,只有射門圖用的是另一個 id)。照印就是「null」;猜是哪一隊就是編資料 —— 印「不詳」並講出來 */
+    const noTeam = shots.filter(s => s.team == null).length;
+    if (noTeam) out.push(`\n> ${noTeam} 腳射門供應商的射門圖沒有對到隊伍(它用的隊伍 id 跟賽程不同),球隊欄印「不詳」;本站不替它猜是哪一隊。\n`);
   }
 
   // 逐人(有上場分鐘的;整欄都沒有值的欄位不列)
@@ -3549,5 +3594,6 @@ writeFileSync(join(OUT, 'README.md'), [
 console.log(`\n✔ Obsidian vault → ${OUT}`);
 summary.forEach(s => console.log(s));
 if (reportTrouble.length) console.log(`  ⚠ 聯賽賽後報告沒掛上 ${reportTrouble.length} 筆:${reportTrouble.slice(0, 5).join('、')}${reportTrouble.length > 5 ? '…' : ''}`);
+if (keyTrouble.length) console.log(`  ⚠ 同一組主客撞鍵、日期對不上而沒有掛上的 ${keyTrouble.length} 筆(不是另一場的資料就不掛):${keyTrouble.slice(0, 6).join('、')}${keyTrouble.length > 6 ? '…' : ''}`);
 console.log(`  共 ${notes.length} 則筆記・${[...known].length} 個唯一檔名・0 個壞連結`);
 console.log(`  手寫筆記放 ${MINE}/(產生器不碰)`);

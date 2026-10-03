@@ -200,6 +200,22 @@ console.log('\n▶ Obsidian vault:盃賽與歐冠的賽後報告(cup-details / u
   check('射門表的次數 = 逐場檔的射門扣掉 PK 大戰', shotBad.length === 0,
     `有互射的 ${withShootout} 場${shotBad.length ? `;對不上 ${shotBad.length}:${shotBad.slice(0, 3).map(r => r.k).join('、')}` : ''}`);
 
+  /* 射門圖沒對到隊伍的射門(2026-10-03):逐場檔的 team 是 null(足總盃 2025-26 Macclesfield FC 三場、44 腳)。
+     筆記照印就是「null」;要印「不詳」、講出幾腳,而且不准替它補一個隊名(那是編資料) */
+  let noTeamMatches = 0;
+  const noTeamBad = reps.filter(r => {
+    const rep = read(join(ROOT, 'web', 'data', r.rel + '.json'));
+    const shots = (rep.advanced?.shots ?? []).filter(s => !isShootoutShot(s, { pens: rep.advanced?.pens === true }));
+    const n = shots.filter(s => s.team == null).length;
+    if (!n) return false;
+    noTeamMatches++;
+    const t = byId.get(r.k) ?? '';
+    const rows = (t.match(/^\| \d+(\+\d+)? \| 不詳 \|/gm) ?? []).length;
+    return rows !== n || !t.includes(`${n} 腳射門供應商的射門圖沒有對到隊伍`);
+  });
+  check('射門圖沒對到隊伍的射門印「不詳」並講出幾腳(不替它猜隊伍)', noTeamBad.length === 0,
+    `${noTeamMatches} 場${noTeamBad.length ? `;不對的 ${noTeamBad.length}:${noTeamBad.slice(0, 3).map(r => r.k).join('、')}` : ''}`);
+
   /* 盃賽的比分核對是同一家供應商的一致性檢查 —— 產物說不是獨立來源,筆記就要講 */
   const indepBad = CD?.scoreCheck?.independent === false
     ? reps.filter(r => r.k.startsWith('cup:') && !(byId.get(r.k) ?? '').includes('比分核對不是獨立來源')) : [];
@@ -221,6 +237,10 @@ console.log('\n▶ Obsidian vault:盃賽與歐冠的賽後報告(cup-details / u
 // ── 聯賽的賽後報告(本季 + 上季)────────────────────
 console.log('\n▶ Obsidian vault:聯賽的賽後報告(本季的索引 + 上季的逐場檔)');
 const LEAGUE_DIRS = [['pl', '英超'], ['es1', '西甲'], ['en2', '英冠'], ['de1', '德甲'], ['it1', '義甲'], ['fr1', '法甲']];
+/* 走查回測逐場檔的檔名推不出來(pl → backtest、es1 → laliga…),照產生器自己的 LEAGUES 表讀;
+   那張表指的檔存不存在,test.mjs 另有一條守著。少了哪個聯賽,撞鍵那一節會靜靜跳過它 —— 所以下面先數一次 */
+const WF_FILES = new Map([...readFileSync(join(ROOT, 'scripts', 'build-obsidian.mjs'), 'utf8')
+  .matchAll(/\{ key: '([a-z0-9]+)'[^}\n]*?wf: '([^']+)'/g)].map(m => [m[1], m[2]]));
 const dataDirOf = lg => (lg === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'web', 'data', 'leagues', lg));
 {
   /* 產物這一側**不用** lib 的讀法(readArchivedReports)—— 要驗的就是產生器有沒有把它讀對,
@@ -439,6 +459,8 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
   /* 產物這一側各自獨立講一次該長什麼樣(標籤、交手的主隊角度、雷達級分、模擬欄位),不 import 產生器 ——
      拿產生器自己的函式來對,等於自己對自己 */
   const ARTICLE_LABEL = { template: '本站統計模板', llm: '本站 AI 分析' };
+  const noWf = LEAGUE_DIRS.filter(([lg]) => !WF_FILES.has(lg)).map(([lg]) => lg);
+  check('撞鍵那一節讀得到每個聯賽的走查回測逐場檔名(從產生器的 LEAGUES 表)', noWf.length === 0, noWf.length ? `讀不到:${noWf.join('、')}` : `${WF_FILES.size} 個聯賽`);
   const pct = x => (x * 100).toFixed(1) + '%';
   const teamsOf = n => (n.teams?.length ? n.teams : (n.team ? [n.team] : []));
   const mdUrl = u => String(u).replace(/ /g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29');
@@ -576,14 +598,50 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
     }
 
     // 上季數據風格:雷達的級分(百分位每 10 分一級)與原始值、標籤;人力配置只有有 def 的聯賽印
+    /* 英冠德義法的上季風格只在 tactics.json(戰術頁那一份),teams.json 不帶 —— 2026-10-03 前這四個聯賽的球隊筆記
+       一塊都沒有,而聯賽筆記寫著「各隊的完整側寫在球隊筆記裡」。所以要求的是**兩份任一份有,筆記就要有** */
+    const TAC = new Map(arr(product(lg, 'tactics')).filter(x => x?.code).map(x => [x.code, x]));
     for (const tm of teams) {
-      const tac = tm.tactics;
+      const tac = tm.tactics ?? TAC.get(tm.code);
       if (!tac) continue;
       seen('風格');
       const sec = sectionOf(teamNote.get(tm.code) ?? '', `上季數據風格(${meta.lastSeason})`);
       const radarBad = (tac.radar ?? []).filter(r => !sec.includes(`| ${r.label} | ${Math.min(10, Math.floor((r.value ?? 0) / 10) + 1)} | ${r.value} | ${r.raw} |`));
       if (!sec || radarBad.length || (tac.tags?.length && !sec.includes(`標籤:${tac.tags.join('・')}`))) bad('風格', `${zh} ${tm.code}:雷達 / 標籤不對`);
       if (tac.formation?.def == null && sec.includes('後場 / 中場 / 鋒線人力')) bad('風格', `${zh} ${tm.code}:沒有人力資料卻印了人力那一列`);
+      /* 陣型佔比的單位跟著資料:英冠是先發場次(formation.unit 'starts',minutes 是 null),其他是出場分鐘 */
+      const fl = tac.formation?.list ?? [];
+      if (fl.length) {
+        const st = tac.formation?.unit === 'starts';
+        const amt = f => { const n = st ? f.starts : f.minutes; return n == null ? '' : `(${n} ${st ? '場' : '分'})`; };
+        if (!sec.includes(`整季陣型佔比(${st ? '先發場次' : '出場分鐘'}):${fl.map(f => `${f.name} ${f.share}%${amt(f)}`).join('・')}`)) bad('風格', `${zh} ${tm.code}:陣型佔比那一行(單位${st ? '先發場次' : '出場分鐘'})對不上`);
+      }
+    }
+
+    /* 撞鍵(2026-10-03):英冠的升級附加賽跟同一季的聯賽同主客,而逐場統計與走查回測都以「季|主|客」為鍵 ——
+       附加賽的筆記曾印著聯賽那一場的走查回測、聯賽的筆記曾印著附加賽的控球與射門。只能掛在**日期對得上**的那一場。
+       逐則走筆記、用每則自己的日期(matchNote 也是「季|主|客」當鍵,撞鍵的兩則只會留一則) */
+    const MS = product(lg, 'matchstats');
+    const wfName = WF_FILES.get(lg);
+    const WF = wfName && existsSync(join(ROOT, 'data', wfName)) ? read(join(ROOT, 'data', wfName)) : null;
+    const wfBy = new Map((WF?.matches ?? []).map(x => [`${x.season}|${x.home}|${x.away}`, x]));
+    for (const f of list(`${zh}/比賽`)) {
+      const t = note(`${zh}/比賽/${f}`);
+      const k = `${fm(t, '賽季')}|${fm(t, '主隊')}|${fm(t, '客隊')}`, date = fm(t, '日期'), stage = fm(t, '階段');
+      const ms = MS?.matches?.[k];
+      if (ms) {
+        seen('撞鍵');
+        const want = ms.date === date;
+        if (want !== t.includes('\n## 逐場統計')) bad('撞鍵', `${zh} ${f}:逐場統計${want ? '沒掛上' : `掛了另一場(${ms.date})的`}`);
+      }
+      const w = wfBy.get(k);
+      if (w) {
+        seen('撞鍵');
+        const want = !stage && w.date === date;
+        if (want !== t.includes('\n## 賽前預測(走查回測)')) bad('撞鍵', `${zh} ${f}:走查回測${want ? '沒掛上' : `掛了另一場(${w.date})的`}`);
+      }
+      /* 附加賽沒有輪次:標題印階段名(原本是「第 null 輪」) */
+      if (stage && !t.includes(`\n# ${zh} ${fm(t, '賽季')} ${stage} `)) bad('撞鍵', `${zh} ${f}:附加賽的標題沒有印階段`);
     }
 
     // 陣型:官方先發陣型;推導的攻守分型要掛「推論」那一句
@@ -688,25 +746,31 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
     }
   }
   for (const k of ['文章', '快照', '專家', '勝率', '交手', '模擬', '近況', '風格', '陣型', '外電', '陣型與成績',
-    'Elo', '位移', 'xG走勢', '賽程難度', '預估先發', '模型驗證']) {
+    'Elo', '位移', 'xG走勢', '賽程難度', '預估先發', '模型驗證', '撞鍵']) {
     check(`${k}:筆記跟產物一致`, (N[k] ?? 0) > 0 && !(P[k]?.length), `驗了 ${N[k] ?? 0} 筆${P[k]?.length ? `;${P[k].length} 個問題:${P[k].slice(0, 3).join('、')}` : ''}`);
   }
 }
 
-// ── 上游的物件欄位 ──────────────────────────────────
-console.log('\n▶ Obsidian vault:沒有一則筆記印出 [object Object]');
+// ── 上游的物件欄位與缺值 ────────────────────────────
+console.log('\n▶ Obsidian vault:沒有一則筆記印出 [object Object] / undefined / NaN / null');
 {
-  /* FotMob 的 detail / comments 有時是 { defaultText } 物件 —— 直接塞進字串就是這個(網站上踩過 57 列) */
-  const bad = [];
+  /* FotMob 的 detail / comments 有時是 { defaultText } 物件 —— 直接塞進字串就是 [object Object](網站上踩過 57 列)。
+     另外三個是同一類「把缺值照印」(2026-10-03 一次找到三個,都在站上待了一到三週):
+     德義法的資料來源印「—— undefined」(meta.sources 只有 name / url)、英冠附加賽印「第 null 輪」、
+     足總盃射門表的球隊欄印「null」(射門圖沒對到隊伍)。筆記是給人讀的中文,這幾個字出現就是有欄位沒處理好。 */
+  const TOKENS = [['[object Object]', /\[object Object\]/], ['undefined', /\bundefined\b/], ['NaN', /\bNaN\b/], ['null', /\bnull\b/]];
+  const bad = Object.fromEntries(TOKENS.map(([k]) => [k, []]));
   const walk = d => {
     for (const e of readdirSync(d, { withFileTypes: true })) {
       const p = join(d, e.name);
-      if (e.isDirectory()) walk(p);
-      else if (p.endsWith('.md') && readFileSync(p, 'utf8').includes('[object Object]')) bad.push(p.slice(OUT.length + 1));
+      if (e.isDirectory()) { if (e.name !== '我的筆記') walk(p); continue; }   // 手寫筆記不歸產生器管
+      if (!p.endsWith('.md')) continue;
+      const txt = readFileSync(p, 'utf8');
+      for (const [k, re] of TOKENS) if (re.test(txt)) bad[k].push(p.slice(OUT.length + 1));
     }
   };
   walk(OUT);
-  check('全部筆記裡沒有 [object Object]', bad.length === 0, bad.slice(0, 3).join('、'));
+  for (const [k] of TOKENS) check(`全部筆記裡沒有 ${k}`, bad[k].length === 0, bad[k].length ? `${bad[k].length} 則:${bad[k].slice(0, 3).join('、')}` : '');
 }
 
 // ── 同名球員 ────────────────────────────────────────
