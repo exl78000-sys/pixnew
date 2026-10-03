@@ -1076,7 +1076,7 @@ async function main() {
       });
       const rep = await generateReport(bundle, { cache });
       usedHashes.add(rep.hash);
-      aiPre[`${f.home}|${f.away}`] = rep;
+      aiPre[pairOf(f)] = rep;   // 附加賽帶日期(pair),聯賽場次照舊「主|客」
     }
     /* **只給本季寫賽後文章。** `reports` 2026-09-16 起含兩季(往季要拿去寫逐場檔),
        照它全部生的話 `analysis.json` 會從 83 篇變成 633 篇 —— 而那一份是首頁與

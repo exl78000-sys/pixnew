@@ -37,7 +37,7 @@ import { buildTeamProfiles } from './lib/team-profiles.mjs';   // 2026-10-02 搬
 import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { fotmobMinute } from './lib/live-minute.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
-import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs, pairOf } from './lib/matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
@@ -313,8 +313,8 @@ async function main() {
          開賽前凍結的快照(prob-history 的第 0 分點),沒有就照實 null。
          「目前模型怎麼看」另外放 postFit,前端會標清楚那不是賽前預測。 */
       prediction: m.played
-        ? (preSnap.get(`${m.home}|${m.away}`)
-          ? { ...preSnap.get(`${m.home}|${m.away}`), snapshot: true } : null)
+        ? (preSnap.get(pairOf(m))
+          ? { ...preSnap.get(pairOf(m)), snapshot: true } : null)
         : {
         ...p,
         home: round((p.home + e.home) / 2, 4),
@@ -1419,12 +1419,12 @@ async function main() {
       });
       const rep = await generateReport(bundle, { cache });
       usedHashes.add(rep.hash);
-      aiPre[`${f.home}|${f.away}`] = rep;
+      aiPre[pairOf(f)] = rep;   // 附加賽帶日期(pair),聯賽場次照舊「主|客」
     }
     for (const [key, r] of Object.entries(reports)) {
       const bundle = postMatchBundle({
         // 賽前機率只認開賽前凍結的快照;沒有就不寫那一段
-        report: { ...r, preMatch: preSnap.get(`${r.home}|${r.away}`) ?? null },
+        report: { ...r, preMatch: preSnap.get(pairOf(r)) ?? null },
         home: teamFull(r.home), away: teamFull(r.away), asOf: AS_OF, seasonLabel, league,
         provenance: { source: 'SportMonks 賽後統計 + FotMob 逐射門 xG', model: '陣型為供應商公布的正式陣型,換人時間由出場分鐘反推' },
       });
@@ -1473,7 +1473,7 @@ async function main() {
       const site = historyForSite(store);
       if (liveOut.available) {
         for (const m of liveOut.matches) {
-          const rec = site.matches[`${m.home}|${m.away}`];
+          const rec = site.matches[pairOf(m)];
           if (rec) m.probHistory = rec.pts;
         }
       }

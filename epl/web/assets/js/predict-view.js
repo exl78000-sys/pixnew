@@ -1,6 +1,6 @@
-import * as C from './core.js?v=4a6863d3';
+import * as C from './core.js?v=0e4f3ff0';
 import { followedIn } from './follow.js?v=02130043';
-import { scorePredictions, outcomeOf, pickOf, matchKey, OUTCOMES } from './predict-score.js?v=3cc21f65';
+import { scorePredictions, outcomeOf, pickOf, matchKey, OUTCOMES } from './predict-score.js?v=ed79f760';
 
 /* 我的預測(跨聯賽單一頁,掛對戰模擬旁邊)。
  *
@@ -153,7 +153,11 @@ export async function renderPredict(host) {
         const { data } = await C.loadFrom(lg, ['meta', 'fixtures', 'teams']);
         if (!Array.isArray(data.fixtures)) return null;
         return {
-          lg, zh: C.LEAGUES[lg].zh, meta: data.meta, fixtures: data.fixtures,
+          /* 非聯賽場次(英冠的升級附加賽,fixtures 帶 stage)的鍵加上 stage —— 附加賽跟聯賽那一場可以是同一組主客,
+             不加的話兩場共用一筆預測。**加法**:沒有 stage 的場次一個字元都不變,瀏覽器裡已經存的預測照樣對得回。
+             用 stage 不用日期:改期會讓日期變、讓已填的預測變孤兒;附加賽內部不會撞(準決賽兩回合主客相反、決賽兩隊來自不同組)。 */
+          lg, zh: C.LEAGUES[lg].zh, meta: data.meta,
+          fixtures: data.fixtures.map(f => (f.stage ? { ...f, keySuffix: f.stage } : f)),
           nameBy: new Map((data.teams ?? []).map(t => [t.code, t.zh ?? t.en ?? t.code])),
           crestBy: new Map((data.teams ?? []).map(t => [t.code, t.crest ?? null])),
         };

@@ -53,7 +53,7 @@ import { buildTeamProfiles } from './team-profiles.mjs';
 import { coreFromUnderstat } from './player-core.mjs';
 /* 比賽層(2026-09-15):FotMob 逐場 → 逐場統計 + 賽後報告。跟西甲、英冠**同一份實作**,
    不各寫一套(buildProviderMatchReport 自己會再核對一次比分、要求 coverage 齊全)。 */
-import { loadFotmobMatchStats, toCanonicalDetail } from './matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, pairOf } from './matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './match-archive.mjs';
 import { externalizeImages } from './image-files.mjs';
 import { overviewFrom } from './overview.mjs';
@@ -941,7 +941,7 @@ export async function buildLeague(L) {
       });
       const rep = await generateReport(bundle, { cache });
       usedHashes.add(rep.hash);
-      aiPre[`${f.home}|${f.away}`] = rep;
+      aiPre[pairOf(f)] = rep;   // 附加賽帶日期(pair),聯賽場次照舊「主|客」
     }
     for (const [key, r] of Object.entries(publishedReports)) {
       const bundle = postMatchBundle({

@@ -16,10 +16,11 @@
  *   一季約 380 場 × ~50 點,足夠而且有界。
  *
  * 儲存形狀(緊湊陣列,一點 ~30 bytes):
- *   { season, matches: { "home|away": { pts: [[min,h,d,a,hs,as],...], done } } }
+ *   { season, matches: { "home|away"(附加賽 "home|away|date"): { pts: [[min,h,d,a,hs,as],...], done } } }
  */
 import { round } from './util.mjs';
 import { inPlay } from './inplay.mjs';
+import { pairOf } from './matchstats.mjs';
 
 export function appendSamples(store, liveOut, { now = Date.now() } = {}) {
   if (!liveOut?.available || liveOut.demo) return store ?? null;
@@ -29,7 +30,9 @@ export function appendSamples(store, liveOut, { now = Date.now() } = {}) {
 
   for (const m of liveOut.matches ?? []) {
     if (!m.started) continue;
-    const key = `${m.home}|${m.away}`;
+    /* 鍵是 pairOf:聯賽場次照舊「主|客」(舊累積檔一個字元都不變),有階段的場次(英冠的升級附加賽)帶 pair = 主|客|日期,
+       不然附加賽一進比賽日迴圈就跟同一組主客的聯賽那一場共用一條曲線(2026-10-03 起,本季附加賽之前補的) */
+    const key = pairOf(m);
     const rec = s.matches[key] ?? (s.matches[key] = { pts: [], done: false });
     if (rec.done) continue;
 

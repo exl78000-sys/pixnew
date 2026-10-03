@@ -55,7 +55,7 @@ import { buildGoals } from './lib/goals.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { numberProfile, traditionVsData, formationFromLineups } from './lib/knowledge.mjs';
 import { round } from './lib/util.mjs';
-import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs } from './lib/matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs, pairOf } from './lib/matchstats.mjs';
 import { buildProviderMatchReport } from './lib/postmatch-report.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
@@ -547,8 +547,8 @@ async function main() {
          已賽場次「目前模型怎麼看」另外放 postFit,前端標清楚那不是賽前預測 ——
          兩者混在同一個欄位就是這次要修掉的那個錯。 */
       prediction: m.played
-        ? (preSnap.get(`${m.home}|${m.away}`)
-          ? { ...preSnap.get(`${m.home}|${m.away}`), snapshot: true } : null)
+        ? (preSnap.get(pairOf(m))
+          ? { ...preSnap.get(pairOf(m)), snapshot: true } : null)
         : { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e },
       postFit: m.played
         ? { ...p, ...blend, poisson: { home: p.home, draw: p.draw, away: p.away }, elo: e } : null,
@@ -933,7 +933,7 @@ async function main() {
     });
     const rep = await generateReport(bundle, { cache });
     usedHashes.add(rep.hash);
-    aiPre[`${f.home}|${f.away}`] = rep;
+    aiPre[pairOf(f)] = rep;   // 附加賽帶日期(pair),聯賽場次照舊「主|客」
   }
 
   // 賽後:所有已經有出場名單的比賽
@@ -1510,7 +1510,7 @@ async function main() {
       const site = historyForSite(store);
       if (liveOut.available) {
         for (const m of liveOut.matches) {
-          const rec = site.matches[`${m.home}|${m.away}`];
+          const rec = site.matches[pairOf(m)];
           if (rec) m.probHistory = rec.pts;
         }
       }

@@ -223,6 +223,69 @@ const table = out('table'), results = out('results'), sim = out('sim');
     idup.length === 0 && im.get('2025-26|AAA|BBB')?.id === 'lg' && im.get('2025-26|AAA|BBB|2026-05-08')?.id === 'po' && idup2.length === 1);
 }
 
+/* ── 3c. 本季附加賽之前要先分開的三把鍵(2026-10-03)───────────
+   3b 修的是上季已經撞到的那幾層。這三把鍵只有本季的東西會用,本季附加賽 2027 年 5 月才進賽程,所以現在是空的 ——
+   拿**上季的真附加賽**當本季跑一次:勝率曲線(prob-history)、賽前文章(analysis.pre)、「我的預測」的瀏覽器鍵。
+   每一條同時驗「不分開真的會撞」,不然資料哪天本來就不撞,這幾條就是在守一件不存在的事。 */
+{
+  const { appendSamples, historyForSite, preMatchSnapshots } = await import('./lib/prob-history.mjs');
+  const { pairOf } = await import('./lib/matchstats.mjs');
+  globalThis.document ??= { addEventListener() {} };
+  const C = await import('../web/assets/js/core.js');
+  const ps = await import('../web/assets/js/predict-score.js');
+  const season = meta.lastSeason;
+  const games = results.filter(m => m.season === season);
+  const po = games.filter(m => m.stage);
+  /* 附加賽那幾組主客,聯賽裡也踢過的 —— 會撞的就是這幾組 */
+  const clashes = po.filter(p => games.some(m => !m.stage && m.home === p.home && m.away === p.away));
+  check(`${season} 有附加賽跟聯賽同一組主客(這一節才有東西可驗)`, clashes.length > 0, `${clashes.length} 組`);
+  const sample = [...clashes, ...clashes.map(p => games.find(m => !m.stage && m.home === p.home && m.away === p.away))];
+
+  /* 勝率曲線:每一場一條;鍵是 pairOf,聯賽場次照舊「主|客」 */
+  const liveOut = (mins) => ({ available: true, season, matches: sample.map((m, i) => ({
+    home: m.home, away: m.away, ...(m.pair ? { pair: m.pair } : {}), started: true, finished: false,
+    preMatch: { home: 0.4, draw: 0.3, away: 0.3 }, inplay: { minute: mins, home: 0.4 + i / 1000, draw: 0.3, away: 0.3 - i / 1000 },
+  })) });
+  let st = null;
+  for (const mn of [5, 20, 40]) st = appendSamples(st, liveOut(mn));
+  const site = historyForSite(st);
+  check('勝率曲線:附加賽與聯賽同一組主客各是一條(數 = 場數)', Object.keys(site.matches).length === sample.length,
+    `${Object.keys(site.matches).length} / ${sample.length}`);
+  check('勝率曲線:聯賽場次的鍵照舊是「主|客」、附加賽帶日期',
+    sample.every(m => site.matches[m.stage ? m.pair : `${m.home}|${m.away}`]) && sample.every(m => C.pairKey(m) in site.matches));
+  check('勝率曲線:賽前快照查得回每一場(build 用 pairOf 查)', sample.every(m => preMatchSnapshots(st).has(pairOf(m))));
+  /* 不帶 pair 的話真的會撞:同一份資料把 pair 拿掉,條數變少 */
+  let st0 = null;
+  for (const mn of [5, 20, 40]) st0 = appendSamples(st0, { ...liveOut(mn), matches: liveOut(mn).matches.map(({ pair, ...x }) => x) });
+  check('勝率曲線:不帶 pair 真的會撞(對照組)', Object.keys(historyForSite(st0).matches).length < sample.length);
+
+  /* 賽前文章與「我的預測」:前端的 pairKey 跟 build 的 pairOf 是同一把鍵;預測鍵用 stage 當後綴(加法) */
+  check('賽前文章的鍵:前端 pairKey 等於 build 的 pairOf', sample.every(m => C.pairKey(m) === pairOf(m))
+    && new Set(sample.map(C.pairKey)).size === sample.length);
+  const pv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'predict-view.js'), 'utf8');
+  /* 產生與讀取兩頭都要走同一把鍵:四份 build 寫 aiPre、兩支前端與 vault 讀 analysis.pre / prob-history。
+     只改一頭的話,附加賽的文章寫在帶日期的鍵底下、前端卻拿「主|客」查 —— 「東西在但沒有按鈕」。 */
+  const src = f => readFileSync(join(ROOT, f), 'utf8');
+  const writers = ['scripts/build.mjs', 'scripts/build-laliga.mjs', 'scripts/build-championship.mjs', 'scripts/lib/build-league.mjs'];
+  const badW = writers.filter(f => !/aiPre\[pairOf\(f\)\] = rep/.test(src(f)) || /aiPre\[`\$\{f\.home\}\|/.test(src(f)));
+  check('四份 build 的賽前文章都用 pairOf 當鍵', badW.length === 0, badW.join('、'));
+  const readers = [['web/assets/js/page-analysis.js', /analysis\.pre\[C\.pairKey\(f\)\]/], ['web/assets/js/page-analysis.js', /\['prob-history'\]\?\.matches\?\.\[C\.pairKey\(f\)\]/],
+    ['web/assets/js/fixture-list.js', /analysis\.pre\[C\.pairKey\(f\)\]/], ['scripts/build-obsidian.mjs', /analysis\?\.pre\?\.\[pairOf\(f\)\]/],
+    ['scripts/build-obsidian.mjs', /probHistory\.matches\?\.\[pairOf\(f\)\]/]];
+  const badR = readers.filter(([f, re]) => !re.test(src(f))).map(([f]) => f);
+  check('讀賽前文章與勝率曲線的地方都用同一把鍵(前端 pairKey、vault pairOf)', badR.length === 0, badR.join('、'));
+  check('我的預測:載聯賽賽程時,有 stage 的場次加 keySuffix(值是 stage)',
+    /fixtures: data\.fixtures\.map\(f => \(f\.stage \? \{ \.\.\.f, keySuffix: f\.stage \} : f\)\)/.test(pv));
+  const withSfx = sample.map(m => (m.stage ? { ...m, keySuffix: m.stage } : m));
+  check('我的預測:帶 stage 後每一場一把鍵、聯賽場次的鍵一個字元都不變',
+    new Set(withSfx.map(ps.matchKey)).size === sample.length
+    && sample.filter(m => !m.stage).every(m => ps.matchKey(m) === `${m.season}|${m.home}|${m.away}`));
+  check('我的預測:不帶 stage 真的會撞(對照組)', new Set(sample.map(ps.matchKey)).size < sample.length);
+  /* 產物這一側:本季賽程的附加賽(進來之後)一定帶 stage 與 pair —— 不帶就三把鍵全部退回「主|客」 */
+  check('本季賽程有 stage 的場次都帶 pair', fixtures.filter(f => f.stage).every(f => f.pair === `${f.home}|${f.away}|${f.date}`),
+    `${fixtures.filter(f => f.stage).length} 場`);
+}
+
 // ── 4. 產物的欄位名要跟另外兩個聯賽一致 ───────────────
 {
   /* 這一節守的是這一輪犯了四次的那種錯:自己給產物取欄位名,

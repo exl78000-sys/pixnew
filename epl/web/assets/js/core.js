@@ -172,7 +172,10 @@ export async function load(...names) {
    鍵是 `reportKey`:同一季同一組主客會踢兩場的(英冠的升級附加賽)帶 `pair`(主|客|日期),
    跟 build 那一側(scripts/lib/matchstats.mjs 的 pairOf)同一個規則 —— 少了它附加賽會查到聯賽那一場的報告。
    賽後文章(analysis.post)也是同一把鍵,所以匯出給頁面用。 */
-export const reportKey = f => `${f.season}|${f.pair ?? `${f.home}|${f.away}`}`;
+/* 不帶季的那一把(賽前文章 analysis.pre、勝率曲線 prob-history 的鍵 —— 那兩份本來就只有本季):
+   聯賽場次照舊是「主|客」,附加賽是「主|客|日期」。2026-10-03 起,本季附加賽(2027 年 5 月)之前補的。 */
+export const pairKey = f => f.pair ?? `${f.home}|${f.away}`;
+export const reportKey = f => `${f.season}|${pairKey(f)}`;
 export const hasMatchReport = (reports, f) => !!reports?.index?.[reportKey(f)];
 export async function loadMatchReport(reports, f, lg = league()) {
   const id = reports?.index?.[reportKey(f)] ?? null;

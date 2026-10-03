@@ -1,4 +1,4 @@
-import * as C from './core.js?v=4a6863d3';
+import * as C from './core.js?v=0e4f3ff0';
 
 const app = document.getElementById('app');
 
@@ -32,7 +32,7 @@ try {
 
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const tacBy = new Map(tactics.map(t => [t.code, t]));
-  const preArticleFor = f => analysis.pre[`${f.home}|${f.away}`] ?? null;
+  const preArticleFor = f => analysis.pre[C.pairKey(f)] ?? null;   // 附加賽帶日期,跟聯賽那一場分開
   const reportKey = C.reportKey;   // 「季|主|客」;附加賽帶 pair(主|客|日期)—— 跟 build 同一把鍵,寫在 core.js
   const postArticleFor = f => analysis.post[reportKey(f)] ?? null;
   /* 賽後報告本體 2026-09-26 起是逐場檔(本季與往季同一條路):`reports.json` 只剩索引
@@ -841,7 +841,7 @@ try {
   }
 
   function probCurveCard(f) {
-    const rec = data['prob-history']?.matches?.[`${f.home}|${f.away}`];
+    const rec = data['prob-history']?.matches?.[C.pairKey(f)];
     if (!rec) return '';
     return `<div class="section"><h2>勝率變化</h2>
         <span class="hint">本站模型的即時機率・比賽中約每 2 分鐘一點</span></div>

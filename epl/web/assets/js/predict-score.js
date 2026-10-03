@@ -56,8 +56,8 @@ const certain = pick => (pick ? Object.fromEntries(OUTCOMES.map(k => [k, k === p
    撞到的話兩場比賽共用一筆預測。**帶上 stage 之後兩季都是 0 組。**
    CLAUDE.md 為了同一件事記過兩次(英冠附加賽、歐冠逐場抓取器的快取鍵)。
 
-   以後開放有附加賽的聯賽(英冠)時照同一條:**只給非聯賽場次 keySuffix**,
-   聯賽場次的鍵維持原樣。 */
+   英冠(有升級附加賽)照同一條:**只給非聯賽場次 keySuffix**(值是 fixtures 的 stage,
+   predict-view.js 載聯賽賽程時加上),聯賽場次的鍵維持原樣 —— 2026-10-03 做的,本季附加賽 2027 年 5 月才進賽程。 */
 export const matchKey = f => `${f.season}|${f.home}|${f.away}${f.keySuffix ? `|${f.keySuffix}` : ''}`;
 
 /* 一筆紀錄能不能算分。**開賽後才存的不算** —— 那不是預測,是回顧。

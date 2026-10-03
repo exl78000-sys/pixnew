@@ -1887,11 +1887,11 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     sources: meta.sources, table,
     /* ── 站上單場頁與球隊頁的其餘幾塊(2026-09-26)。查法照站上:賽前文章的鍵沒有季(只收即將開賽的)、
        賽後文章與專家觀點的鍵有季、勝率曲線的鍵沒有季但檔頭有季、交手的鍵是排序過的兩隊 ── */
-    preArticleFor: f => (!f.played && f.season === meta.currentSeason ? analysis?.pre?.[f.home + '|' + f.away] ?? null : null),
+    preArticleFor: f => (!f.played && f.season === meta.currentSeason ? analysis?.pre?.[pairOf(f)] ?? null : null),
     postArticleFor: f => (f.played && f.season === meta.currentSeason ? analysis?.post?.[f.season + '|' + pairOf(f)] ?? null : null),
     expertsFor: f => arr(expertsFile?.matches?.[f.season + '|' + pairOf(f)] ?? []),
     expertsInfo: expertsFile ? { updatedAt: expertsFile.updatedAt } : null,
-    probFor: f => (probHistory?.season === f.season ? probHistory.matches?.[f.home + '|' + f.away] ?? null : null),
+    probFor: f => (probHistory?.season === f.season ? probHistory.matches?.[pairOf(f)] ?? null : null),
     h2hAvailable: Object.keys(h2hFile).length > 0,
     h2hFor: f => h2hFile[[f.home, f.away].sort().join('|')] ?? null,
     h2hSince: meta.h2hSeasons?.[0] ?? null,
