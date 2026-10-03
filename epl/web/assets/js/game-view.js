@@ -1,7 +1,7 @@
 import * as C from './core.js?v=0e4f3ff0';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=1610cd7c';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=cec5405c';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=de1f7551';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -217,7 +217,7 @@ export async function renderGame(app) {
       const box = document.getElementById('gStage');
       if (!box || !p || state.home === state.away) return;
       stop();
-      match = createLiveMatch({ profile, home: state.home, away: state.away, pred: p, seed: state.seed,
+      match = createLiveMatch({ profile, home: state.home, away: state.away, pred: p, seed: state.seed, neutral: state.neutral,
         setup: { home: { ...setupOf('home') }, away: { ...setupOf('away') } } });
       disp = freshDisp();
       if (tab === 'recap') tab = 'stats';
@@ -364,8 +364,17 @@ export async function renderGame(app) {
         foot.innerHTML = disp.finished ? `<img src="assets/img/duel-dice.webp" width="20" style="vertical-align:middle" ${HIDE}> 種子 ${state.seed} —— 「重播」用同一顆種子重現同一場。
         <b>這是遊戲模型,不是本站預測</b>:球與二十二個人用 1/60 秒的固定時步算,射門、角球、犯規、越位都是從場上長出來的,沒有劇本。
         進球沒有 Dixon-Coles 修正 —— 錨是 k = λ ÷ 期望射門 ÷ 每球 xG(主 ${cal.home?.k ?? '—'}、客 ${cal.away?.k ?? '—'};每球平均 xG ${cal.xgPerShotReal},來源 ${C.esc(cal.xgPerShotFrom)})——
-        所以「沒有改動時 N 場的平均進球回得到站上的 λ」是統計上的等式,不是逐場相等。` : '';
+        所以「沒有改動時 N 場的平均進球回得到站上的 λ」是統計上的等式,不是逐場相等。
+        ${venueNote(cal.venue)}` : '';
       }
+    }
+    /* 主場那一份是**遊戲變數**(鐵則四:要在畫面上講明)。數字從引擎讀,不在這裡另寫一份 ——
+       引擎改了幅度,這一句要自己跟上。 */
+    function venueNote(v) {
+      if (!v) return '';
+      return v.neutral
+        ? '<br>中立場:兩隊都用主客場平均的真實比率,陣型也沒有主場的位移。'
+        : `<br>主場優勢:主隊整塊陣型往前 ${v.homePush} 公尺、客隊往後同樣多 —— 這是遊戲變數,幅度照真實英超主客場的差(射門、禁區觸球)校準;扣扳機只帶這一隊自己比聯盟典型多或少的那一份。`;
     }
     function renderComm() {
       const comm = document.getElementById('gComm');

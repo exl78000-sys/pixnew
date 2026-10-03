@@ -430,7 +430,8 @@ const NEAR_GOAL = 8;                           // 「門前」的量測範圍(�
      0.044 → 射門 23.5、射正  8.5、進球 1.63 : 0.50 */
 /* 2026-09-17(階段 4e):0.06 → 0.05 → **0.040**。這一次改的不是數字,是**校準的目標**。
    在這之前它是對著「兩隊自己的 `sf` 相加」調的(ARS vs LIV = 30.4),而那個數字
-   **不看對手的防守**。λ 的錨用的卻是 `expShots = sf × (對手 sa ÷ 聯盟平均)`(= 23.5)——
+   **不看對手的防守**。λ 的錨用的卻是 `expShots = sf × (對手 sa ÷ 聯盟平均)`(= 23.5;
+   2026-10-03 起分母改成對手那個主客身分的聯盟平均失射,舊式把主客算了兩次 —— 見 expShots)——
    兩個目標根本不是同一個量,於是引擎照前者調、錨照後者驗,**系統性偏高 25%**,
    而且四組配對全都一樣(1.24 / 1.17 / 1.30 / 1.35),不是某一組的巧合。
 
@@ -771,6 +772,28 @@ const MENT_PUSH = 3;                           // 心態每級把整塊往前推
 const WIDE_STEP = 0.07;                        // 寬度每級把 y 偏移放大幾成(±14%)
 const TEMPO_STEP = 0.10;                       // 節奏每級改變出手機率幾成(±20%)
 const DIRECT_STEP = 0.06;                      // 直接度每級在傳球權重上加減多少
+/* **主場優勢在比賽過程裡**(2026-10-03)。真實英超 FotMob 逐場(430 場,主 ÷ 客):射門 1.23、xG 1.22、
+   禁區觸球 1.19、對方半場完成傳球 1.09,而**每球 xG 主客一樣**(0.111 對 0.112)、控球只差 1.6 個百分點 ——
+   主場多出來的是**機會的次數**,不是同一個位置射得比較勤。
+   在這之前引擎的主場只活在扣扳機,而且**期望射門把主客算了兩次**(見 expShots 那一段)。鏡像量測
+   (`npm run game:home`:同一隊、同一個對手,主 ÷ 客)量到射門 1.45、禁區觸球 1.01、每球 xG 主 0.101 對客 0.120、
+   **進球 0.83**(λ 給的比是 1.18)—— 逐隊逐主客看 λ 錨,主隊 z 平均 −0.65、客隊 +0.76(20 場那一輪 −1.13 / +0.70)。
+   所以聯盟典型的主客差改成**比賽過程長出來**:主隊整塊陣型往前 `HOME_PUSH` 公尺、客隊往後同樣多
+   (`shapeOf` 的 push,心態那一軸同一個作用點);扣扳機只留「這一隊的主客差比聯盟典型多或少的那一份」(venueF)。
+   掃描(期望射門已修正、扣扳機已中性化;6 組配對 × 兩方向 × 12 場,主 ÷ 客,隊間 SE 約 0.05):
+     位移    λ 錨 z 主 / 客   射門   禁區觸球  對方半場傳球  控球      進球
+     0 m     −0.54 / +0.81    1.02   1.02      1.01          +1.4 pp   0.86
+     0.5 m   −0.30 / −0.28    1.29   1.17      1.087         +2.4 pp   1.26   ← 選這個
+     0.75 m  −0.08 / +0.35    1.22   1.21      1.11          +3.4 pp   1.10
+     1 m     −0.69 / −0.16    1.15   1.18      1.12          +3.8 pp   0.98
+     2 m     +0.81 / −0.48    1.66   1.68      1.32          +9.3 pp   1.65
+     真實                     1.23   1.19      1.09          +1.6 pp   1.24
+   **反應很陡**:2 公尺就讓禁區觸球多七成、控球差九個百分點 —— 心態那一軸一級是 3 公尺,這個常數比它小六倍。
+   0.5 到 1 公尺之間三格在雜訊裡分不開,挑 0.5 的理由是**控球**(其餘幾項都在 SE 內,而控球從 0.5 到 0.75 公尺
+   就多一個百分點,真實只有 +1.6)。控球的輸入(`keep`)照舊用分主客的真實控球率:改成主客平均那一格(0.75 m)在 12 場的解析度下分不出來
+   (控球 +3.9 對 +3.4 pp,隊間 SE 約 0.5)。
+   **中立場**(遊戲頁的勾選)時兩邊都是 0,而且所有分主客的真實比率都改用主客場的加權平均。 */
+const HOME_PUSH = 0.5;
 /* **體能**(2026-09-20)。使用者要做體能,而它**沒有直接的真值可以校準**:
    FotMob 逐場的 `physical` 只有全場總計(distance / sprintDistance / sprints / running),
    **沒有逐半場**(dump 過);`zones` 的 firstHalf / secondHalf 是進攻路線不是體能。
@@ -1244,9 +1267,34 @@ export function shapeOf(slot, ball, att, opts = {}) {
  *   home / away —— 隊碼
  *   setup —— { home: { xi, bench, formation }, away: {...} },沒給就用側寫裡的推估先發
  * 回傳的東西只有一種用途:讓畫面把「現在這一刻」畫出來。沒有任何腳本、沒有預先決定的結局。 */
-export function createSim({ profile, home, away, seed = 1, setup = {}, pred = null } = {}) {
+export function createSim({ profile, home, away, seed = 1, setup = {}, pred = null, neutral = false } = {}) {
   const rng = simRng(seed);
   const teamOf = code => profile.teams[code];
+  /* **分主客的真實比率一律從這裡讀**(2026-10-03)。中立場時兩邊都用主客場的加權平均 ——
+     在這之前遊戲頁的「中立場」只改了 λ,引擎照樣給「主隊」主場的射門率、控球與犯規,
+     於是中立場的比賽畫面上主隊照樣多射一成多,k 再把進球壓回中立場的 λ(看起來對,其實是兩個錯抵銷)。
+     加權用各自的場數:主客場數不一樣時,平均要照樣本來。 */
+  const ratesAt = (code, side) => {
+    const r = teamOf(code)?.rates;
+    if (!neutral) return r?.[side] ?? {};
+    const h = r?.home ?? {}, a = r?.away ?? {}, gh = h.games ?? 0, ga = a.games ?? 0;
+    if (!(gh + ga)) return {};
+    const out = { games: gh + ga };
+    for (const k of new Set([...Object.keys(h), ...Object.keys(a)])) {
+      if (k === 'games') continue;
+      const x = h[k], y = a[k];
+      out[k] = x == null ? y : y == null ? x : (x * gh + y * ga) / (gh + ga);
+    }
+    return out;
+  };
+  const possAt = (code, side, blend = neutral) => {
+    const p = teamOf(code)?.possession;
+    if (!blend) return p?.[side]?.mean ?? null;
+    const h = p?.home, a = p?.away, nh = h?.n ?? 0, na = a?.n ?? 0;
+    if (h?.mean == null) return a?.mean ?? null;
+    if (a?.mean == null || !(nh + na)) return h.mean;
+    return (h.mean * nh + a.mean * na) / (nh + na);
+  };
   /* 壓迫五級各自的典型值(見 pressLevels):從同一份側寫算,側寫重算它會自己跟上 */
   const PRESS_AT = pressLevels(profile);
   /* 搶斷能力的**聯盟中位**,用來把 `ability.tkl` 變成相對值(見 `DUEL_SKILL_CLAMP`)。
@@ -1276,7 +1324,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      而 `npm run game:test` 擋下來了,不是上線才發現)。 */
   const YELLOW_LG = profile.league_?.rates?.yellowPerFoul ?? YELLOW_PER_FOUL_FALLBACK;
   const yellowPerFoulOf = (code, side) => {
-    const r = profile.teams?.[code]?.rates?.[side];
+    const r = ratesAt(code, side);
     return (r?.yellow == null || !r?.fouls) ? YELLOW_LG : r.yellow / r.fouls;
   };
   /* **一次對抗的三種結局,比例從側寫算**(以場數加權;兩隊合計 = 每隊 × 2)。
@@ -1353,7 +1401,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const pressLevel = tacticDefaults(profile, code).pressing;
     const press = pressOfValue(pv);
     // 犯規傾向:這一隊在**這個主客身分**下的真實犯規數 ÷ 聯盟平均(夾住樣本少的極端)
-    const fl = t.rates?.[side]?.fouls;
+    const fl = ratesAt(code, side).fouls;
     const foulRel = (fl == null || FOUL_LG == null) ? 1 : cl(fl / FOUL_LG, 0.7, 1.3);
     /* 抄截與過人成功也一樣,**這一隊自己的真實值除以聯盟平均**(階段 4w)。
        犯規那一個從 4r 就是這樣做的,而這兩個當時留在聯盟平均上 —— 於是 `check-sim`
@@ -1367,7 +1415,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 護球能力:用**這一隊在這個主客身分下**的真實控球率。50 是聯盟平均(控球是零和的,
        所以平均一定是 50,不必另外算)。夾在 ±15 個百分點內 —— 超出那個範圍的是樣本太少,
        不是真的有球隊能控 70%(實測全聯盟落在 27~61)。 */
-    const pmRaw = (side === 'home' ? t.possession?.home?.mean : t.possession?.away?.mean);
+    const pmRaw = possAt(code, side, neutral);
     const keep = pmRaw == null ? 1 : Math.exp(cl(pmRaw - 50, -15, 15) * POSS_K);
     /* 板凳:呼叫端給的優先,否則名單裡沒進先發的人。存成 Map 是因為換人查的是代碼,
        而且要記 `used` —— 一個人只能被換上來一次(規則,而且不擋的話畫面會出現兩個同一個人)。 */
@@ -1390,7 +1438,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        會讓同一次對抗的權重跟著板凳變,那更難解釋。 */
     const relMean = players.reduce((a, q) => a + relOf(q.ability?.tkl), 0) / (players.length || 1);
     return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, pressLevel, lineDrop: 1,
-      push: 0, wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, aerRel, relMean,
+      push: 0, venuePush: neutral ? 0 : (side === 'home' ? HOME_PUSH : -HOME_PUSH), wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, aerRel, relMean,
       ypf: yellowPerFoulOf(code, side), possMean: pmRaw ?? null, bench };
   };
 
@@ -1454,11 +1502,29 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   /* `rates` 是**分主客的**(`rates.home` / `rates.away`),不是平的。
      第一版寫 `t.rates.sf` —— 永遠是 undefined,於是每支球隊都退回聯盟平均、強弱完全沒進來。
      不拋錯、不報警,只是所有隊一模一樣(實測 expShots 兩邊都是 12.6)。 */
-  const ratesOf = (code, where) => teamOf(code)?.rates?.[where] ?? {};
+  const ratesOf = (code, where) => ratesAt(code, where);
+  /* **對手調整要除以對手那個主客身分的聯盟平均失射**(2026-10-03)。原本除的是全聯盟的平均射門 `lgSf`,
+     而 `sf` 與 `sa` 兩個都已經是分主客的 —— 主客的差被算了兩次:一般球隊照舊式在主場期望 15.5 腳、
+     客場 10.1 腳(比 1.53),真實是 14.5 對 11.7(比 1.235)。照算的話主隊的扣扳機乘數比真實大一截,
+     多出來的全是同一批位置上的遠射(主場每球 xG 0.101 對客場 0.120),而 k 用同一個膨脹的期望射門 ——
+     進球的主場優勢在遊戲裡被做成反的(鏡像量測,見變更紀錄 2026-10-03)。
+     中立場時 ratesAt 已經是主客平均,兩個主客身分的聯盟平均也就是同一個數。 */
+  const lgSaAt = (() => {
+    const avg = where => {
+      let g = 0, t = 0;
+      for (const code of Object.keys(profile.teams ?? {})) {
+        const r = ratesAt(code, where);
+        if (r.games && r.sa != null) { g += r.games; t += r.sa * r.games; }
+      }
+      return g ? t / g : lgSf;
+    };
+    return { home: avg('home'), away: avg('away') };
+  })();
   const expShots = s => {
-    const me = ratesOf(s.code, s.side), op = ratesOf(oppOf(s.side).code, s.side === 'home' ? 'away' : 'home');
-    const sf = me.sf ?? lgSf, sa = op.sa ?? lgSf;
-    return Math.max(1, sf * (sa / lgSf));
+    const where = s.side === 'home' ? 'away' : 'home';
+    const me = ratesOf(s.code, s.side), op = ratesOf(oppOf(s.side).code, where);
+    const sf = me.sf ?? lgSf, sa = op.sa ?? lgSaAt[where];
+    return Math.max(1, sf * (sa / lgSaAt[where]));
   };
   /* 射門機會的頻率乘數:球隊射門率越高,同樣的位置越常扣扳機。
      這樣「強隊射得多」是從球隊自己的真實資料來的,不是我給的偏好。 */
@@ -1492,7 +1558,21 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      ARS vs TOT 弱隊射出期望的 1.56 倍、強隊 0.84 倍,進球 +2.5 / −1.8 SE。每球 xG 的反轉是修好了
      (ARS vs TOT 0.72 → 0.90),但代價是進球的強弱被壓扁 —— 那是更大的錯。
      **要先做的是讓中度懸殊的配對長出機會的差距**(控球與禁區接球跟著強弱走),那之後這個次方才降得下來。 */
-  const urgeOf = s => SHOT_URGE * Math.pow(expShots(s) / lgSf, SHOT_STRENGTH_POW) * (1 - PEN_SHARE);
+  /* **扣扳機只帶這一隊自己的主客差**(2026-10-03,見 HOME_PUSH)。`VENUE_SF` 是聯盟典型的主 ÷ 客射門率
+     (側寫裡各隊的分主客射門率,以場數加權;不另外抄一個數字),`venueF` 把它從 expShots 裡除掉 ——
+     主場那一份改由比賽過程長出來,留在這裡就是算兩次。k 那一行**不動**:它要的是「這一隊在這個主客身分下
+     該射幾腳」,而那正是比賽過程 × 扣扳機加起來要交出來的。中立場時 expShots 本來就沒有主客,venueF 是 1。 */
+  const VENUE_SF = (() => {
+    let gh = 0, sh = 0, ga = 0, sa = 0;
+    for (const t of Object.values(profile.teams ?? {})) {
+      const h = t.rates?.home, a = t.rates?.away;
+      if (h?.games && h.sf != null) { gh += h.games; sh += h.sf * h.games; }
+      if (a?.games && a.sf != null) { ga += a.games; sa += a.sf * a.games; }
+    }
+    return gh && ga ? (sh / gh) / (sa / ga) : 1;
+  })();
+  const venueF = s => (neutral ? 1 : s.side === 'home' ? Math.sqrt(VENUE_SF) : 1 / Math.sqrt(VENUE_SF));
+  const urgeOf = s => SHOT_URGE * Math.pow(expShots(s) / lgSf / venueF(s), SHOT_STRENGTH_POW) * (1 - PEN_SHARE);
   /* xG 形狀的**水準**校準:在禁區前沿一片常見的射門點上取樣,算出這個形狀的平均值,
      再乘一個係數讓它等於聯盟真實的每球平均 xG。形狀是遊戲模型、水準有出處。
      取樣點是固定網格(不吃亂數),所以這個係數對同一份側寫永遠一樣。 */
@@ -2757,7 +2837,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const sp = st.restart?.spots;
         const spot = sp && (sp.att.get(p.code) ?? sp.def.get(p.code));
         const pos = pen ? { x: st.restart.x, y: st.restart.y }
-          : spot ?? shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
+          : spot ?? shapeOf(p.slot, st.focus, s.att, { push: s.push + s.venuePush, wide: s.wide });
         /* 死球時走回位置**也是跑動**(2026-09-21,階段 5m)。第一版的歸因只掛在活球那一支,
            於是逐分支加起來是 119 m/分・人而畫面上的錨是 129 —— **少了 8%**,
            而它看起來就像「來源列完了」。4h 的規矩是把來源逐類列出來,
@@ -3028,7 +3108,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           want = { x: gx + dx / d * 5.5, y: cl(PITCH_H / 2 + dy / d * 5.5, 20, PITCH_H - 20), speed: SIM_JOG };
         }
       } else {
-        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push, wide: s.wide });
+        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push + s.venuePush, wide: s.wide });
         const raw0 = { x: pos.x, y: pos.y };     // 階段 5m:夾之前的原始目標,用來拆「擺動是誰造成的」
         /* 有球的那一隊:前場的人不越過越位線。這一行是「看起來像足球」的另一半 ——
            沒有它前鋒會站到對方底線,防線跟著退,整場擠在門前。 */
@@ -4008,7 +4088,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       const mean = (c, k) => profile.teams?.[c]?.extra?.[k]?.mean;
       const tk = [mean(home, TEAM_TKL), mean(away, TEAM_TKL)];
       const dr = [mean(home, TEAM_DRB), mean(away, TEAM_DRB)];
-      const fl = [profile.teams?.[home]?.rates?.home?.fouls, profile.teams?.[away]?.rates?.away?.fouls];
+      const fl = [ratesAt(home, 'home').fouls, ratesAt(away, 'away').fouls];
       const ok = [...tk, ...dr, ...fl].every(v => v != null);
       const sum = a => a[0] + a[1];
       return {
@@ -4070,6 +4150,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       xgScale: Math.round(xgScale * 1000) / 1000, selectedXg: Math.round(selectedXg * 10000) / 10000,
       home: cal.home && { ...cal.home, k: Math.round(cal.home.k * 1000) / 1000 },
       away: cal.away && { ...cal.away, k: Math.round(cal.away.k * 1000) / 1000 },
+      /* 主場那一份從哪裡來(2026-10-03):畫面與量測台讀這裡,不要各自再算一次 VENUE_SF。
+         位移讀兩隊**實際在用的那一份**(side 的 venuePush),不是照常數再算一次 —— 那樣中立場沒歸零、
+         或客隊推錯方向時,報出來的數字照樣是對的,測試也就守不到。 */
+      venue: { neutral, homePush: H.venuePush, awayPush: A.venuePush,
+        venueSf: Math.round(VENUE_SF * 1000) / 1000 },
     }),
   };
 }

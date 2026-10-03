@@ -17,11 +17,18 @@
  * 「這個場數驗得出多大的偏差」,不夠的時候只印不判。
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const { createSim } = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+/* `--src=實驗版引擎的路徑`(2026-10-03):新舊兩版要在**同一批種子**上比,check-home 已經有這個旗標,
+   這一支沒有的話就得另外寫一支 harness 去跑舊版 —— 那就是同一個量兩個來源。原始碼裡讀常數(DEFLECT_R 那幾個)
+   也要讀同一份,不然印出來的是正式版的常數、跑的是實驗版的引擎。 */
+const SRC_PATH = process.argv.slice(2).find(a => a.startsWith('--src='))?.slice(6) ?? null;
+const ENGINE_SRC = readFileSync(SRC_PATH ? resolve(SRC_PATH) : join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+const { createSim } = await import(SRC_PATH
+  ? 'data:text/javascript;base64,' + Buffer.from(ENGINE_SRC, 'utf8').toString('base64')
+  : pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
 const profile = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'game', 'pl.json'), 'utf8'));
 /* 場數取**第一個不是旗標的參數** —— 直接讀 argv[2] 的話,`check-sim --seed0=1001`
    會把旗標 parseInt 成 NaN,迴圈一場都不跑而輸出看起來只是「沒有資料」。 */
@@ -45,12 +52,12 @@ const HOME = flagOf('home') ?? 'ARS', AWAY = flagOf('away') ?? 'LIV';
    三份同義的東西就是「同一個量三個來源」,改了算法會有兩份悄悄過期(階段 4w 併掉)。 */
 /* 這個數字只用在標題上。**不要自己寫一個** —— 引擎那邊改了 `DEFLECT_R`,
    這裡會靜靜過期。從引擎的原始碼讀出來,讀不到就印問號。 */
-const DEFLECT_R_DOC = (readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+const DEFLECT_R_DOC = (ENGINE_SRC
   .match(/const DEFLECT_R = ([0-9.]+)/)?.[1]) ?? '?';
 /* `SHOT_THROUGH`(k 那一行用的「該進的球有幾成真的進得去」)同樣從原始碼讀 ——
    它是拿「進球 ÷ 該進的球」校準的,而那個比例在階段 5n 之前**從來沒有被印出來過**
    (註解寫「實測兩輪、各 8~10 場:88~90%」,封阻變多之後它靜靜掉到 85%,λ 跟著兩隊一起偏低)。 */
-const SHOT_THROUGH_DOC = Number(readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8')
+const SHOT_THROUGH_DOC = Number(ENGINE_SRC
   .match(/const SHOT_THROUGH = ([0-9.]+)/)?.[1] ?? NaN);
 /* 射門那一瞬間的真值(StatsBomb freeze frame 的分箱計數,階段 5q)。「射手被逼住」與 5h 的人數兩節共用 ——
    各讀一次就是同一份資料兩個來源。只有分箱計數;要重算就跑 `npm run game:statsbomb`。 */
@@ -241,7 +248,8 @@ for (const [i, who, lam] of [[0, '主隊', PRED.xgHome], [1, '客隊', PRED.xgAw
 console.log('');
 const rt = (code, where) => profile.teams[code]?.rates?.[where] ?? {};
 const real = { sf: (rt(HOME, 'home').sf ?? 0) + (rt(AWAY, 'away').sf ?? 0), cf: (rt(HOME, 'home').cf ?? 0) + (rt(AWAY, 'away').cf ?? 0) };
-/* 射門數要對的是 **expShots**(= 自己的 sf × 對手的 sa ÷ 聯盟平均),不是兩隊 sf 相加。
+/* 射門數要對的是 **expShots**(= 自己的 sf × 對手的 sa ÷ 對手那個主客身分的聯盟平均失射,2026-10-03 起;
+   舊式除以全聯盟平均射門,主客的差被算兩次),不是兩隊 sf 相加。
    sf 相加**不看對手防守** —— 兩支防守好的隊碰在一起,它會高估一大截(ARS vs LIV:30.4 對 23.5)。
    而 λ 的錨用的就是 expShots(`k = λ ÷ expShots ÷ 每球 xG`),所以拿 sf 相加當目標去調 urge,
    等於引擎照一個量調、錨照另一個量驗 —— 那正是階段 4e 修的那個系統性 25% 偏高。
@@ -251,13 +259,13 @@ const real = { sf: (rt(HOME, 'home').sf ?? 0) + (rt(AWAY, 'away').sf ?? 0), cf: 
   const budget = (c0.home?.expShots ?? 0) + (c0.away?.expShots ?? 0);
   const got = mean(rows.map(r => r.st.counts.shots));
   line('每場射門', got.toFixed(1),
-    `期望 ${budget.toFixed(1)}(= 各自 sf × 對手 sa ÷ 聯盟平均,λ 的錨用的就是它)→ 比值 ${(got / budget).toFixed(2)}`);
+    `期望 ${budget.toFixed(1)}(= 各自 sf × 對手 sa ÷ 對手主客身分的聯盟平均失射,λ 的錨用的就是它)→ 比值 ${(got / budget).toFixed(2)}`);
   line('  (參考)兩隊 sf 相加', real.sf.toFixed(1), '不看對手防守,所以是上限 —— 不要拿它調 urge');
 }
 {
   /* **射正要比「率」不是比「次數」**(2026-09-18,階段 4l-2)。
      `stf` 與 `sf` 是同一份 CSV 的 HST / HS,兩個都是**賽季平均**;而引擎的射門數
-     校準的是 `expShots`(sf × 對手 sa ÷ 聯盟平均,這一場的期望,23.5 而不是 30.4)。
+     校準的是 `expShots`(sf × 對手 sa ÷ 聯盟平均失射,這一場的期望,當時是 23.5 而不是 30.4)。
      拿 8.2 去比 9.6 就是拿兩個不同基礎的數字相減 —— 那是 4w 那條坑
      (「錨與引擎各自用了不同的基礎」)的第三次,而 4l 因此把一個**改善**寫成了退步:
      射正率 4y 是 9.0/23.8 = 37.8%、4l 是 8.2/24.1 = 34.0%,而真實是 9.6/30.4 = **31.6%**。

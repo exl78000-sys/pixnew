@@ -112,7 +112,7 @@ async function main() {
   /* 兩個請求就夠:資產戳是內容雜湊、一層一層串起來的(explore.html → page-explore → game-view
      → game-live → game-sim),所以 explore.html 引用的戳對上本機那一份,整條鏈就是同一次建置;
      game-sim.js 直接抓(Pages 不看 ?v=),印 sha256 讓本機逐位元組比。
-     字面值查的是 5n 的兩個常數 —— 找不到就印 ✗,不印 0(那個檔不可能一處都沒有)。 */
+     字面值查的是 5n 的兩個常數與 2026-10-03 主場優勢那三處 —— 找不到就印 ✗,不印 0(那個檔不可能一處都沒有)。 */
   const explore = await get('explore.html');
   const exploreSrc = /["']((?:\.\/)?assets\/js\/page-explore\.js(?:\?v=[0-9a-f]{8})?)["']/.exec(explore.text)?.[1];
   console.log(`  explore.html  HTTP ${explore.status}  ${explore.buf.length} bytes・引用 ${exploreSrc ?? '✗ 找不到 page-explore.js'}`);
@@ -122,7 +122,10 @@ async function main() {
     const has = re => re.test(sim.text) ? '✓' : '✗';
     console.log(`  assets/js/game-sim.js  HTTP ${sim.status}  ${sim.buf.length} bytes  sha256:${sha(sim.buf)}`
       + `・PRESS_TRACK = SIM_RUN ${has(/^const PRESS_TRACK = SIM_RUN;/m)}・SHOT_PRESSED = 1 ${has(/^const SHOT_PRESSED = 1;/m)}`
-      + `・tacticDefaults ${has(/^export function tacticDefaults\(/m)}・壓迫五級 pressLevels ${has(/^function pressLevels\(/m)}`);
+      + `・tacticDefaults ${has(/^export function tacticDefaults\(/m)}・壓迫五級 pressLevels ${has(/^function pressLevels\(/m)}`
+      /* 主場優勢(2026-10-03):陣型位移常數、期望射門除以對手主客身分的失射、calibration 讀兩隊實際的位移 */
+      + `・HOME_PUSH ${has(/^const HOME_PUSH = [0-9.]+;/m)}・期望射門分母 lgSaAt ${has(/sa \/ lgSaAt\[where\]/)}`
+      + `・位移讀 side ${has(/homePush: H\.venuePush, awayPush: A\.venuePush/)}`);
   }
   /* 遊戲側寫(2026-09-25):射門池與熱區拿掉之後應該是 438 KB 上下(之前 722 KB)。
      印位元組數與兩個欄位**在不在** —— 還在的話站上是上一版的側寫。 */

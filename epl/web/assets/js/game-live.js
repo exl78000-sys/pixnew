@@ -11,7 +11,7 @@
  *
  * 這一層**不做任何模型上的決定** —— 不改機率、不改 λ、不補事件。它只翻譯。
  */
-import { createSim, tacticDefaults } from './game-sim.js?v=d8dedf7a';
+import { createSim, tacticDefaults } from './game-sim.js?v=37179f58';
 
 /* 播放速度是**時間倍率**,不是剪接。舊版四檔的差別在「演哪幾段」(cutTo / finishInstant /
    整段跳過),而使用者的原話是「根本沒有在踢球」。現在四檔的差別只有一個:一秒真實時間
@@ -37,8 +37,10 @@ export function defaultSetup(profile, code) {
    名字刻意跟引擎那支不同:單檔版把共用模組攤平在同一個作用域,同名就撞。 */
 export const engineTacticLevels = (profile, code) => tacticDefaults(profile, code);
 
-export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {} } = {}) {
-  const sim = createSim({ profile, home, away, seed, setup, pred });
+/* `neutral`(2026-10-03):遊戲頁的「中立場」勾選。原本只改了 λ(pred),引擎照樣給主隊主場的射門率、
+   控球與犯規 —— 中立場要兩邊都中立,所以一路傳進引擎。 */
+export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {}, neutral = false } = {}) {
+  const sim = createSim({ profile, home, away, seed, setup, pred, neutral });
   const cal = sim.calibration();
   const squads = {
     home: new Map((profile.teams[home]?.squad ?? []).map(p => [p.code, p])),

@@ -20,6 +20,7 @@ parentPort.on('message', async ({ id, spec }) => {
     const eng = await loadEngine(spec.source ?? null);
     const opts = { profile, home: spec.home ?? 'ARS', away: spec.away ?? 'LIV', seed: spec.seed };
     if (spec.pred) opts.pred = spec.pred;
+    if (spec.neutral) opts.neutral = true;
     const m = eng.createSim(opts);
     const N = Math.round((spec.minutes ?? 110) * 60 * 60);
     for (let i = 0; i < N; i++) {
