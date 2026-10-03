@@ -16,9 +16,10 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**21 個請求**(meta / overview.html / page-overview.js / core.js / app.css /
+ * 唯讀、零快取、**26 個請求**(meta / overview.html / page-overview.js / core.js / app.css /
  * intl.html / intl.json / intl-teams.json / intl-flags.json /
  * explore.html / game-sim.js / game/pl.json / model.html / inplay-tuning.json / prob-history.json /
+ * 足總盃 5089921 的逐場檔 / 英冠 reports.json / 英冠附加賽決賽的往季逐場檔 / 英冠 tactics.json / core.js /
  * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
  * 網址不寫死:從 runner 的 `GITHUB_REPOSITORY` 推(owner/repo → owner.github.io/repo/),
  * 本機測試用 `--base=` 覆寫。
@@ -206,6 +207,30 @@ async function main() {
           + (noId.length ? ` ← ✗ 那一欄不會畫隊徽:${noId.map(x => x.trim().slice(0, 40)).join(' / ')}` : ' ← ✓'));
       }
     }
+  }
+
+  // ── 英冠附加賽的鍵與足總盃射門的隊伍(2026-10-03)──────────────
+  /* 排在歐冠那一節**之前**:那一節讀不到檔會 return,排在後面的話它一失敗這一節就跟著不跑。
+     站上要看到的是:足總盃 Macclesfield 對 Crystal Palace 那一場的射門都有隊伍(13 腳是名單對回的)、
+     英冠往季索引有三場附加賽、附加賽決賽的逐場檔帶 pair 與 stage、戰術側寫 24 隊沒有少場、core.js 有 reportKey。 */
+  {
+    const cup = await get('data/cup-details/facup/2025-26/5089921.json');
+    const C = jsonOf(cup);
+    const sh = C?.advanced?.shots ?? [];
+    console.log(`  足總盃 5089921  HTTP ${cup.status}  sha256:${sha(cup.buf)}・射門 ${sh.length} 腳、沒有隊伍 ${sh.filter(x => x.team !== C?.home && x.team !== C?.away).length} 腳、`
+      + `名單對回 ${sh.filter(x => x.teamFrom === 'lineup').length} 腳・shotTeamFix ${JSON.stringify(C?.advanced?.shotTeamFix ?? null)}・xG ${C?.actual?.xGHome ?? '?'} : ${C?.actual?.xGAway ?? '?'}`);
+    const rep = await get('data/leagues/en2/reports.json');
+    const R = jsonOf(rep);
+    const ids = R?.archive?.ids ?? [];
+    console.log(`  英冠 reports.json  HTTP ${rep.status}・往季逐場檔 ${ids.length} 份・附加賽 552 / 554 / 556:${['2025-26-552', '2025-26-554', '2025-26-556'].map(i => (ids.includes(i) ? '有' : '沒有')).join(' / ')}`);
+    const po = await get('data/leagues/en2/match-reports/2025-26/2025-26-556.json');
+    const P = jsonOf(po);
+    console.log(`  英冠 2025-26-556  HTTP ${po.status}・${P?.home}-${P?.away} ${P?.hs}:${P?.as}・pair ${P?.pair ?? '(沒有)'}・stage ${P?.stage ?? '(沒有)'}・日期 ${P?.date ?? '?'}`);
+    const tac = await get('data/leagues/en2/tactics.json');
+    const T = jsonOf(tac) ?? [];
+    console.log(`  英冠 tactics.json  HTTP ${tac.status}・${T.length} 隊・少場 ${T.filter(t => t.coverage).map(t => `${t.code} ${t.coverage.matches}/${t.coverage.of}`).join('、') || '0 隊'}`);
+    const core = await get('assets/js/core.js');
+    console.log(`  core.js  HTTP ${core.status}  sha256:${sha(core.buf)}・reportKey ${/export const reportKey = /.test(core.text) ? '有' : '沒有'}・射門圖不畫沒有隊伍的 ${/const sided = allShots\.filter/.test(core.text) ? '有' : '沒有'}`);
   }
 
   // ── 三、歐冠的身分資料,以及「實際畫得出幾列」 ────────────
