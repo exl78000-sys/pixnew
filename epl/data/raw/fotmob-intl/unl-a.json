@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-02T17:36:50.511Z",
+ "retrievedAt": "2026-10-03T04:15:47.794Z",
  "matches": [
   {
    "id": "5181825",
@@ -495,7 +495,7 @@
   },
   {
    "id": "5181792",
-   "kickoff": "2026-10-02T18:45:00.000Z",
+   "kickoff": "2026-10-02T18:45:00Z",
    "home": {
     "name": "Belgium",
     "shortName": "Belgium",
@@ -506,17 +506,20 @@
     "shortName": "Turkiye",
     "fmId": "6595"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "1"
   },
   {
    "id": "5181793",
-   "kickoff": "2026-10-02T18:45:00.000Z",
+   "kickoff": "2026-10-02T18:45:00Z",
    "home": {
     "name": "France",
     "shortName": "France",
@@ -527,17 +530,20 @@
     "shortName": "Italy",
     "fmId": "8204"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "1"
   },
   {
    "id": "5181853",
-   "kickoff": "2026-10-03T16:00:00Z",
+   "kickoff": "2026-10-03T16:00:00.000Z",
    "home": {
     "name": "Croatia",
     "shortName": "Croatia",
@@ -558,7 +564,7 @@
   },
   {
    "id": "5181854",
-   "kickoff": "2026-10-03T18:45:00Z",
+   "kickoff": "2026-10-03T18:45:00.000Z",
    "home": {
     "name": "Spain",
     "shortName": "Spain",
@@ -1115,13 +1121,13 @@
      "fmId": "6723",
      "name": "France",
      "idx": 1,
-     "played": 2,
+     "played": 3,
      "wins": 2,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 2,
-     "ga": 0,
-     "pts": 6,
+     "gf": 3,
+     "ga": 1,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -1129,13 +1135,13 @@
      "fmId": "8263",
      "name": "Belgium",
      "idx": 2,
-     "played": 2,
-     "wins": 1,
+     "played": 3,
+     "wins": 2,
      "draws": 0,
      "losses": 1,
-     "gf": 2,
+     "gf": 5,
      "ga": 1,
-     "pts": 3,
+     "pts": 6,
      "deduction": null,
      "live": null
     },
@@ -1143,13 +1149,13 @@
      "fmId": "8204",
      "name": "Italy",
      "idx": 3,
-     "played": 2,
+     "played": 3,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
-     "gf": 4,
-     "ga": 3,
-     "pts": 3,
+     "gf": 5,
+     "ga": 4,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
@@ -1157,12 +1163,12 @@
      "fmId": "6595",
      "name": "Turkiye",
      "idx": 4,
-     "played": 2,
+     "played": 3,
      "wins": 0,
      "draws": 0,
-     "losses": 2,
+     "losses": 3,
      "gf": 1,
-     "ga": 5,
+     "ga": 8,
      "pts": 0,
      "deduction": null,
      "live": null

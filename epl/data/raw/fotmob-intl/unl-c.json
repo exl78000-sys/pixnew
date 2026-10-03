@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-02T17:36:52.443Z",
+ "retrievedAt": "2026-10-03T04:15:50.210Z",
  "matches": [
   {
    "id": "5181921",
@@ -399,7 +399,7 @@
   },
   {
    "id": "5181937",
-   "kickoff": "2026-10-02T14:00:00.000Z",
+   "kickoff": "2026-10-02T14:00:00Z",
    "home": {
     "name": "Kazakhstan",
     "shortName": "Kazakhstan",
@@ -423,7 +423,7 @@
   },
   {
    "id": "5181925",
-   "kickoff": "2026-10-02T16:00:00.000Z",
+   "kickoff": "2026-10-02T16:00:00Z",
    "home": {
     "name": "Cyprus",
     "shortName": "Cyprus",
@@ -434,17 +434,20 @@
     "shortName": "Armenia",
     "fmId": "6583"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "2"
   },
   {
    "id": "5181926",
-   "kickoff": "2026-10-02T16:00:00.000Z",
+   "kickoff": "2026-10-02T16:00:00Z",
    "home": {
     "name": "Latvia",
     "shortName": "Latvia",
@@ -455,17 +458,20 @@
     "shortName": "Montenegro",
     "fmId": "49437"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "2"
   },
   {
    "id": "5181938",
-   "kickoff": "2026-10-02T18:45:00.000Z",
+   "kickoff": "2026-10-02T18:45:00Z",
    "home": {
     "name": "Faroe Islands",
     "shortName": "Faroe Islands",
@@ -476,17 +482,20 @@
     "shortName": "Slovakia",
     "fmId": "8497"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "3"
   },
   {
    "id": "5181898",
-   "kickoff": "2026-10-03T13:00:00Z",
+   "kickoff": "2026-10-03T13:00:00.000Z",
    "home": {
     "name": "Finland",
     "shortName": "Finland",
@@ -507,7 +516,7 @@
   },
   {
    "id": "5181899",
-   "kickoff": "2026-10-03T16:00:00Z",
+   "kickoff": "2026-10-03T16:00:00.000Z",
    "home": {
     "name": "Belarus",
     "shortName": "Belarus",
@@ -528,7 +537,7 @@
   },
   {
    "id": "5181953",
-   "kickoff": "2026-10-03T16:00:00Z",
+   "kickoff": "2026-10-03T16:00:00.000Z",
    "home": {
     "name": "Estonia",
     "shortName": "Estonia",
@@ -549,7 +558,7 @@
   },
   {
    "id": "5181954",
-   "kickoff": "2026-10-03T16:00:00Z",
+   "kickoff": "2026-10-03T16:00:00.000Z",
    "home": {
     "name": "Iceland",
     "shortName": "Iceland",
@@ -1195,10 +1204,10 @@
      "draws": 0,
      "losses": 0,
      "gf": 7,
-     "ga": 3,
+     "ga": 4,
      "pts": 9,
      "deduction": null,
-     "live": "5181926"
+     "live": null
     },
     {
      "fmId": "5793",
@@ -1212,7 +1221,7 @@
      "ga": 2,
      "pts": 4,
      "deduction": null,
-     "live": "5181925"
+     "live": null
     },
     {
      "fmId": "6583",
@@ -1226,7 +1235,7 @@
      "ga": 5,
      "pts": 3,
      "deduction": null,
-     "live": "5181925"
+     "live": null
     },
     {
      "fmId": "5795",
@@ -1236,11 +1245,11 @@
      "wins": 0,
      "draws": 1,
      "losses": 2,
-     "gf": 0,
+     "gf": 1,
      "ga": 4,
      "pts": 1,
      "deduction": null,
-     "live": "5181926"
+     "live": null
     }
    ]
   },
@@ -1275,13 +1284,13 @@
      "fmId": "8497",
      "name": "Slovakia",
      "idx": 1,
-     "played": 2,
+     "played": 3,
      "wins": 2,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 4,
-     "ga": 1,
-     "pts": 6,
+     "gf": 5,
+     "ga": 2,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -1303,13 +1312,13 @@
      "fmId": "8269",
      "name": "Faroe Islands",
      "idx": 3,
-     "played": 2,
+     "played": 3,
      "wins": 0,
-     "draws": 2,
+     "draws": 3,
      "losses": 0,
-     "gf": 2,
-     "ga": 2,
-     "pts": 2,
+     "gf": 3,
+     "ga": 3,
+     "pts": 3,
      "deduction": null,
      "live": null
     },

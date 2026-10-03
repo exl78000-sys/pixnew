@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-02T17:36:51.462Z",
+ "retrievedAt": "2026-10-03T04:15:48.957Z",
  "matches": [
   {
    "id": "5181812",
@@ -447,7 +447,7 @@
   },
   {
    "id": "5181841",
-   "kickoff": "2026-10-02T18:45:00.000Z",
+   "kickoff": "2026-10-02T18:45:00Z",
    "home": {
     "name": "Bosnia and Herzegovina",
     "shortName": "Bosnia and Herzegovina",
@@ -458,17 +458,20 @@
     "shortName": "Sweden",
     "fmId": "8520"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "4"
   },
   {
    "id": "5181804",
-   "kickoff": "2026-10-02T18:45:00.000Z",
+   "kickoff": "2026-10-02T18:45:00Z",
    "home": {
     "name": "Hungary",
     "shortName": "Hungary",
@@ -479,17 +482,20 @@
     "shortName": "Georgia",
     "fmId": "8268"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "2"
   },
   {
    "id": "5181842",
-   "kickoff": "2026-10-02T18:45:00.000Z",
+   "kickoff": "2026-10-02T18:45:00Z",
    "home": {
     "name": "Poland",
     "shortName": "Poland",
@@ -500,17 +506,20 @@
     "shortName": "Romania",
     "fmId": "9730"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    6,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "4"
   },
   {
    "id": "5181805",
-   "kickoff": "2026-10-02T18:45:00.000Z",
+   "kickoff": "2026-10-02T18:45:00Z",
    "home": {
     "name": "Ukraine",
     "shortName": "Ukraine",
@@ -521,17 +530,20 @@
     "shortName": "Northern Ireland",
     "fmId": "10259"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "2"
   },
   {
    "id": "5181780",
-   "kickoff": "2026-10-03T18:45:00Z",
+   "kickoff": "2026-10-03T18:45:00.000Z",
    "home": {
     "name": "North Macedonia",
     "shortName": "North Macedonia",
@@ -552,7 +564,7 @@
   },
   {
    "id": "5181781",
-   "kickoff": "2026-10-03T18:45:00Z",
+   "kickoff": "2026-10-03T18:45:00.000Z",
    "home": {
     "name": "Switzerland",
     "shortName": "Switzerland",
@@ -1207,13 +1219,13 @@
      "fmId": "10259",
      "name": "Northern Ireland",
      "idx": 1,
-     "played": 2,
-     "wins": 1,
+     "played": 3,
+     "wins": 2,
      "draws": 1,
      "losses": 0,
-     "gf": 1,
+     "gf": 4,
      "ga": 0,
-     "pts": 4,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -1221,12 +1233,26 @@
      "fmId": "6718",
      "name": "Ukraine",
      "idx": 2,
-     "played": 2,
+     "played": 3,
      "wins": 1,
      "draws": 1,
-     "losses": 0,
+     "losses": 1,
      "gf": 1,
-     "ga": 0,
+     "ga": 3,
+     "pts": 4,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "8565",
+     "name": "Hungary",
+     "idx": 3,
+     "played": 3,
+     "wins": 1,
+     "draws": 1,
+     "losses": 1,
+     "gf": 1,
+     "ga": 1,
      "pts": 4,
      "deduction": null,
      "live": null
@@ -1234,27 +1260,13 @@
     {
      "fmId": "8268",
      "name": "Georgia",
-     "idx": 3,
-     "played": 2,
-     "wins": 0,
-     "draws": 1,
-     "losses": 1,
-     "gf": 0,
-     "ga": 1,
-     "pts": 1,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "8565",
-     "name": "Hungary",
      "idx": 4,
-     "played": 2,
+     "played": 3,
      "wins": 0,
      "draws": 1,
-     "losses": 1,
+     "losses": 2,
      "gf": 0,
-     "ga": 1,
+     "ga": 2,
      "pts": 1,
      "deduction": null,
      "live": null
@@ -1391,13 +1403,13 @@
      "fmId": "8520",
      "name": "Sweden",
      "idx": 1,
-     "played": 2,
+     "played": 3,
      "wins": 2,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 5,
-     "ga": 2,
-     "pts": 6,
+     "gf": 6,
+     "ga": 3,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -1405,13 +1417,13 @@
      "fmId": "10106",
      "name": "Bosnia and Herzegovina",
      "idx": 2,
-     "played": 2,
+     "played": 3,
      "wins": 1,
-     "draws": 1,
+     "draws": 2,
      "losses": 0,
-     "gf": 4,
-     "ga": 2,
-     "pts": 4,
+     "gf": 5,
+     "ga": 3,
+     "pts": 5,
      "deduction": null,
      "live": null
     },
@@ -1419,13 +1431,13 @@
      "fmId": "8568",
      "name": "Poland",
      "idx": 3,
-     "played": 2,
-     "wins": 0,
+     "played": 3,
+     "wins": 1,
      "draws": 1,
      "losses": 1,
-     "gf": 1,
+     "gf": 7,
      "ga": 3,
-     "pts": 1,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
@@ -1433,12 +1445,12 @@
      "fmId": "9730",
      "name": "Romania",
      "idx": 4,
-     "played": 2,
+     "played": 3,
      "wins": 0,
      "draws": 0,
-     "losses": 2,
+     "losses": 3,
      "gf": 3,
-     "ga": 6,
+     "ga": 12,
      "pts": 0,
      "deduction": null,
      "live": null

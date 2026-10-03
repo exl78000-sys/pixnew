@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-10-02T17:36:57.483Z",
+ "retrievedAt": "2026-10-03T04:15:55.966Z",
  "matches": [
   {
    "id": "5120889",
@@ -8351,7 +8351,7 @@
   },
   {
    "id": "6280452",
-   "kickoff": "2026-10-02T11:00:00.000Z",
+   "kickoff": "2026-10-02T11:00:00Z",
    "home": {
     "name": "South Korea",
     "shortName": "South Korea",
@@ -8375,7 +8375,7 @@
   },
   {
    "id": "6280453",
-   "kickoff": "2026-10-02T11:35:00.000Z",
+   "kickoff": "2026-10-02T11:35:00Z",
    "home": {
     "name": "China",
     "shortName": "China",
@@ -8399,7 +8399,7 @@
   },
   {
    "id": "6299692",
-   "kickoff": "2026-10-02T13:00:00.000Z",
+   "kickoff": "2026-10-02T13:00:00Z",
    "home": {
     "name": "DR Congo",
     "shortName": "DR Congo",
@@ -8423,7 +8423,7 @@
   },
   {
    "id": "6365754",
-   "kickoff": "2026-10-02T15:00:00.000Z",
+   "kickoff": "2026-10-02T15:00:00Z",
    "home": {
     "name": "Mauritius",
     "shortName": "Mauritius",
@@ -8447,7 +8447,7 @@
   },
   {
    "id": "6299693",
-   "kickoff": "2026-10-03T00:00:00Z",
+   "kickoff": "2026-10-03T00:00:00.000Z",
    "home": {
     "name": "Colombia",
     "shortName": "Colombia",
@@ -8458,17 +8458,20 @@
     "shortName": "Paraguay",
     "fmId": "6724"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6367253",
-   "kickoff": "2026-10-03T04:00:00Z",
+   "kickoff": "2026-10-03T04:00:00.000Z",
    "home": {
     "name": "Fiji",
     "shortName": "Fiji",
@@ -8479,7 +8482,7 @@
     "shortName": "Vanuatu",
     "fmId": "5926"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -8489,7 +8492,7 @@
   },
   {
    "id": "6299695",
-   "kickoff": "2026-10-03T10:00:00Z",
+   "kickoff": "2026-10-03T10:00:00.000Z",
    "home": {
     "name": "Sri Lanka",
     "shortName": "Sri Lanka",
@@ -8510,7 +8513,7 @@
   },
   {
    "id": "5985687",
-   "kickoff": "2026-10-03T14:00:00Z",
+   "kickoff": "2026-10-03T14:00:00.000Z",
    "home": {
     "name": "India",
     "shortName": "India",
@@ -8531,7 +8534,7 @@
   },
   {
    "id": "6210360",
-   "kickoff": "2026-10-03T15:00:00Z",
+   "kickoff": "2026-10-03T15:00:00.000Z",
    "home": {
     "name": "Russia",
     "shortName": "Russia",
@@ -8552,7 +8555,7 @@
   },
   {
    "id": "6006644",
-   "kickoff": "2026-10-03T18:00:00Z",
+   "kickoff": "2026-10-03T18:00:00.000Z",
    "home": {
     "name": "Canada",
     "shortName": "Canada",
@@ -8573,7 +8576,7 @@
   },
   {
    "id": "6299697",
-   "kickoff": "2026-10-03T19:00:00Z",
+   "kickoff": "2026-10-03T19:00:00.000Z",
    "home": {
     "name": "Cameroon",
     "shortName": "Cameroon",
@@ -8594,7 +8597,7 @@
   },
   {
    "id": "6299696",
-   "kickoff": "2026-10-03T19:00:00Z",
+   "kickoff": "2026-10-03T19:00:00.000Z",
    "home": {
     "name": "Tunisia",
     "shortName": "Tunisia",
