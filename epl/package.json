@@ -116,6 +116,7 @@
     "game:fetch": "node scripts/game/fetch-fotmob-epl.mjs",
     "game:test": "node scripts/game/test-game.mjs",
     "game:sim": "node scripts/game/check-sim.mjs",
+    "game:home": "node scripts/game/check-home.mjs",
     "game:statsbomb": "node scripts/game/fetch-statsbomb-shots.mjs",
     "probe:possession": "node scripts/probe-possession.mjs",
     "tune:xg": "node scripts/tune-xg.mjs",

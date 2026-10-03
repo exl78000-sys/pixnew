@@ -273,6 +273,66 @@ console.log('\n▶ 模擬遊玩:連續引擎的結構不變量');
   check('同種子同一場(前 10 分鐘的事件流逐字相同),換一個種子就不同', a === b && a !== c && a.length > 50);
 }
 
+console.log('\n▶ 模擬遊玩:主場優勢與中立場(2026-10-03)');
+{
+  /* 鏡像量測(`npm run game:home`)量到兩件事,這一節守它們的**結構**(會漂的比值由量測台印):
+       ① 期望射門的對手調整原本除以全聯盟平均射門,而 sf 與 sa 都已經分主客 —— 主客的差被算兩次
+          (一般球隊照舊式主場 15.5 腳、客場 10.1,比 1.53;真實 1.235)。現在除以**對手那個主客身分**的
+          聯盟平均失射,所有配對平均起來主 ÷ 客要回到側寫自己的主 ÷ 客射門率。
+       ② 中立場原本只改了 λ:引擎照樣給「主隊」主場的射門率、控球與犯規。現在兩邊都用主客加權平均,
+          陣型也沒有主場的位移 —— 中立場的 A 對 B 跟 B 對 A 要是同一件事。
+     每一條都附對照組(不分開 / 非中立時真的不一樣),不然資料哪天剛好對稱,這幾條就在守一件不存在的事。 */
+  const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+  const profile = read(join(ROOT, 'web', 'data', 'game', 'pl.json'));
+  const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
+  const PRED = { xgHome: 1.5, xgAway: 1.1 };
+  const codes = Object.keys(profile.teams);
+  const cal = (h, a, neutral = false) => SM.createSim({ profile, home: h, away: a, seed: 1, pred: PRED, neutral }).calibration();
+  /* 測試自己算一次聯盟的主客射門率(以場數加權),不讀引擎的 —— 讀引擎的就是拿它驗它自己 */
+  const W = (side, k) => { let g = 0, t = 0; for (const c of codes) { const r = profile.teams[c].rates?.[side]; if (r?.games && r[k] != null) { g += r.games; t += r[k] * r.games; } } return t / g; };
+  const sfH = W('home', 'sf'), sfA = W('away', 'sf');
+  /* ① 全部 20 × 19 組配對 */
+  let eh = 0, ea = 0, n = 0;
+  for (const h of codes) for (const a of codes) {
+    if (h === a) continue;
+    const c = cal(h, a); eh += c.home.expShots; ea += c.away.expShots; n++;
+  }
+  const ratio = (eh / n) / (ea / n);
+  check('期望射門的主客差只算一次:全部配對平均起來主 ÷ 客 = 側寫的主 ÷ 客射門率(±3%)',
+    Math.abs(ratio / (sfH / sfA) - 1) < 0.03, `${n} 組:${ratio.toFixed(3)} 對 ${(sfH / sfA).toFixed(3)}(舊式約 1.53)`);
+  check('期望射門的水準也回到側寫:主隊平均 ≈ 聯盟主場射門、客隊 ≈ 客場射門(±4%)',
+    Math.abs(eh / n / sfH - 1) < 0.04 && Math.abs(ea / n / sfA - 1) < 0.04,
+    `主 ${(eh / n).toFixed(2)} 對 ${sfH.toFixed(2)}・客 ${(ea / n).toFixed(2)} 對 ${sfA.toFixed(2)}`);
+  check('calibration 吐的 venueSf 就是側寫的主 ÷ 客射門率(引擎沒有另外抄一個數字)',
+    Math.abs(cal('ARS', 'LIV').venue?.venueSf - sfH / sfA) < 0.002, `${cal('ARS', 'LIV').venue?.venueSf} 對 ${(sfH / sfA).toFixed(3)}`);
+  /* ② 中立場的對稱:A 對 B 的主隊 = B 對 A 的客隊;非中立時真的不對稱(對照組) */
+  const pairs = [['ARS', 'LIV'], ['MCI', 'IPS'], ['BOU', 'BRE']].filter(([x, y]) => profile.teams[x] && profile.teams[y]);
+  const symN = pairs.every(([x, y]) => {
+    const a = cal(x, y, true), b = cal(y, x, true);
+    const sa = SM.createSim({ profile, home: x, away: y, seed: 1, pred: PRED, neutral: true }).possTarget();
+    const sb = SM.createSim({ profile, home: y, away: x, seed: 1, pred: PRED, neutral: true }).possTarget();
+    return Math.abs(a.home.expShots - b.away.expShots) < 1e-9 && Math.abs(a.away.expShots - b.home.expShots) < 1e-9
+      && (sa == null || Math.abs(sa + sb - 100) < 1e-9);
+  });
+  const asymV = pairs.every(([x, y]) => Math.abs(cal(x, y).home.expShots - cal(y, x).away.expShots) > 0.1);
+  check('中立場:A 對 B 跟 B 對 A 是同一件事(期望射門與控球目標對調之後逐位相同)', pairs.length === 3 && symN);
+  check('非中立時真的不對稱(上一條不是因為資料剛好對稱才綠)', asymV);
+  /* ③ 陣型的主場位移:從原始碼讀,中立場是 0 */
+  const hp = Number((simSrc.match(/^const HOME_PUSH = ([0-9.]+);/m) ?? [])[1]);
+  const v1 = cal('ARS', 'LIV').venue, v0 = cal('ARS', 'LIV', true).venue;
+  check('主場位移:calibration 吐的是原始碼那個常數,中立場時是 0',
+    Number.isFinite(hp) && hp >= 0 && v1?.homePush === hp && v1?.neutral === false && v0?.homePush === 0 && v0?.neutral === true,
+    `HOME_PUSH ${hp}・主場 ${v1?.homePush}・中立 ${v0?.homePush}`);
+  /* ④ 中立場一路傳進引擎:遊戲頁 → 轉接層 → createSim(剝註解再掃 —— 註解裡本來就在講 neutral) */
+  const bare = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const viewB = bare('game-view.js'), liveB = bare('game-live.js');
+  check('遊戲頁把中立場傳進 createLiveMatch,轉接層再傳進 createSim',
+    /createLiveMatch\(\{[^}]*neutral: state\.neutral/.test(viewB)
+    && /export function createLiveMatch\(\{[^}]*neutral = false/.test(liveB) && /createSim\(\{[^}]*neutral \}\)/.test(liveB));
+  check('畫面講主場那一份是遊戲變數、數字從引擎讀(不在頁面另寫一份)',
+    /venueNote\(cal\.venue\)/.test(viewB) && /v\.homePush/.test(viewB) && /遊戲變數/.test(viewB));
+}
+
 console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套意思)');
 {
   /* **2026-09-25 修的那個錯**:畫面上的五級是聯盟的五分位(側寫的 `style.*.level`,標「・本季」的是
