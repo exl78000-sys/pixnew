@@ -80,7 +80,8 @@ export function readMatchReports(dir) {
 /* 讀回**往季**的逐場檔(Node 端用;2026-09-26 為 Obsidian vault 加的:「上季聯賽的賽後報告也存進去」)。
    `readMatchReports` 只讀本季的 `index` —— 它的呼叫端(測試、單檔打包)要的就是本季,不能改它的意思。
    往季的索引是 `reports.archive.ids`(只有 id),所以鍵從**檔案自己帶的** season / home / away 組,
-   回傳同一個形狀:「季|主|客」→ 報告本體。
+   回傳同一個形狀:「季|主|客」→ 報告本體。檔案帶 `pair` 的(英冠的升級附加賽,2026-10-03 起)鍵是「季|主|客|日期」,
+   跟產生它的 build 用的鍵一樣 —— 不然附加賽跟同一季的聯賽又會組出同一個鍵、兩個都被當成衝突丟掉。
    兩種不採用,各自收起來讓呼叫端講:索引指到而檔案不在(`missing`)、
    檔案的季跟索引宣告的不同或兩個檔組出同一個鍵(`conflicts`,**兩個都不用** ——
    挑一個等於把某一場的報告掛到另一場上,跟 `idMapForArchive` 同一個理由)。 */
@@ -98,7 +99,7 @@ export function readArchivedReports(dir) {
     if (!existsSync(fp)) { missing.push(id); continue; }
     const r = JSON.parse(readFileSync(fp, 'utf8'));
     if (r.season !== a.season) { conflicts.push(id); continue; }
-    const key = `${r.season}|${r.home}|${r.away}`;
+    const key = `${r.season}|${r.pair ?? `${r.home}|${r.away}`}`;
     if (!byKey.has(key)) byKey.set(key, []);
     byKey.get(key).push({ id, r });
   }
@@ -113,12 +114,14 @@ export function readArchivedReports(dir) {
    2023-24 就出現過附加賽 `NOR|LEE 0-0` 與聯賽 `NOR|LEE 2-3` 撞同一個鍵)。
    撞到的話 `reports` 本來就只留得下一份,而這裡再挑一個 id 去命名檔案,
    等於**把某一場的報告掛到另一場的網址上** —— 比沒有檔案糟得多。
-   所以撞鍵的一律不寫,由呼叫端印出來。 */
+   所以撞鍵的一律不寫,由呼叫端印出來。
+   2026-10-03 起非聯賽場次帶 `pair`(主|客|日期,lib/matchstats.mjs 的 pairOf),鍵改用它:
+   附加賽與聯賽各是一個鍵、各自有逐場檔。還撞的就不是附加賽了(同一季兩場聯賽是同一組主客 = 賽程本身有問題),照舊不寫。 */
 export function idMapForArchive(matches) {
   const map = new Map();
   const duplicates = new Set();
   for (const m of matches) {
-    const k = `${m.season}|${m.home}|${m.away}`;
+    const k = `${m.season}|${m.pair ?? `${m.home}|${m.away}`}`;
     if (map.has(k)) duplicates.add(k); else map.set(k, m);
   }
   for (const k of duplicates) map.delete(k);

@@ -18,7 +18,7 @@
 import { readFileSync, existsSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isShootoutShot } from './lib/matchstats.mjs';
+import { isShootoutShot, pairOf } from './lib/matchstats.mjs';
 import { readMatchReports, readArchivedReports } from './lib/match-archive.mjs';
 import { imageBytes } from './lib/image-files.mjs';
 
@@ -1842,7 +1842,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     coachOf: code => coachBy.get(code) ?? null,
     coachFileOf: code => { const c = coachBy.get(code); return c ? coachFileOf(c, lg) : null; },
     reportFor: m => {
-      const k = m.season + '|' + m.home + '|' + m.away;
+      const k = m.season + '|' + pairOf(m);   // 附加賽帶 pair(主|客|日期),跟產生報告的 build 同一把鍵
       const r = reports[k];
       if (!r || r.demo) return null;
       /* 鍵是「季|主|客」,再用日期收斂一次(「同一組對戰在不同賽季會重複」那條坑的防線)。
@@ -1851,23 +1851,24 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
       repCount[m.season === meta.currentSeason ? 'current' : 'archive']++;
       return r;
     },
-    /* 走查回測與逐場統計的鍵也是「季|主|客」,而英冠的升級附加賽會跟同一季的聯賽撞鍵(2025-26 五組)——
-       走查回測只收聯賽場次;FotMob 的 raw 以主|客為鍵,三場聯賽(HUL-MIL、MIL-HUL、HUL-MID)被附加賽蓋掉了。
-       照鍵直接拿的話,附加賽的筆記印出聯賽那一場的賽前預測、聯賽的筆記印出附加賽的控球與射門 —— 兩個都是另一場比賽
-       (2026-10-03 前就是這樣)。跟 reportFor 同一道防線:日期對不上就不掛,記下來印出來。六個聯賽的日期寫法量過一致,
-       擋下來的只有真的撞鍵的那幾場。 */
+    /* 走查回測只收聯賽場次,鍵是「季|主|客」—— 英冠的升級附加賽跟同一季的聯賽同一組主客,照鍵直接拿的話
+       附加賽的筆記會印出聯賽那一場的賽前預測(2026-10-03 前就是這樣)。附加賽本來就沒有走查回測,直接不掛;
+       聯賽場次再用日期收斂一次(跟 reportFor 同一道防線),對不上的記下來印出來 —— 正常是 0 筆。 */
     walkForwardFor: m => {
+      if (m.stage) return null;
       const k = m.season + '|' + m.home + '|' + m.away;
       const w = walkForward.get(k);
       if (!w) return null;
-      if (m.stage || (w.date && m.date && w.date !== m.date)) { keyTrouble.push(`${lg.zh} 走查回測 ${k} ${m.date}`); return null; }
+      if (w.date && m.date && w.date !== m.date) { keyTrouble.push(`${lg.zh} 走查回測 ${k} ${m.date}`); return null; }
       return w.pred;
     },
     walkForwardSeason: walkForwardSeason,
     goalsFor: code => goalsFile?.data?.[meta.lastSeason]?.teams?.[code] ?? null,
     goalsSeason: meta.lastSeason, goalsNote: goalsFile?.note ?? null,
+    /* 逐場統計的鍵是「季|pairOf」(2026-10-03 起附加賽帶 pair = 主|客|日期,跟聯賽那一場各自一筆);
+       再用日期收斂一次,對不上的不掛、記下來印出來 —— 正常是 0 筆 */
     matchStatsFor: m => {
-      const k = m.season + '|' + m.home + '|' + m.away;
+      const k = m.season + '|' + pairOf(m);
       const x = matchStats?.matches?.[k];
       if (!x) return null;
       if (x.date && m.date && x.date !== m.date) { keyTrouble.push(`${lg.zh} 逐場統計 ${k} ${m.date}`); return null; }
@@ -1887,8 +1888,8 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     /* ── 站上單場頁與球隊頁的其餘幾塊(2026-09-26)。查法照站上:賽前文章的鍵沒有季(只收即將開賽的)、
        賽後文章與專家觀點的鍵有季、勝率曲線的鍵沒有季但檔頭有季、交手的鍵是排序過的兩隊 ── */
     preArticleFor: f => (!f.played && f.season === meta.currentSeason ? analysis?.pre?.[f.home + '|' + f.away] ?? null : null),
-    postArticleFor: f => (f.played && f.season === meta.currentSeason ? analysis?.post?.[f.season + '|' + f.home + '|' + f.away] ?? null : null),
-    expertsFor: f => arr(expertsFile?.matches?.[f.season + '|' + f.home + '|' + f.away] ?? []),
+    postArticleFor: f => (f.played && f.season === meta.currentSeason ? analysis?.post?.[f.season + '|' + pairOf(f)] ?? null : null),
+    expertsFor: f => arr(expertsFile?.matches?.[f.season + '|' + pairOf(f)] ?? []),
     expertsInfo: expertsFile ? { updatedAt: expertsFile.updatedAt } : null,
     probFor: f => (probHistory?.season === f.season ? probHistory.matches?.[f.home + '|' + f.away] ?? null : null),
     h2hAvailable: Object.keys(h2hFile).length > 0,
@@ -2057,10 +2058,13 @@ function renderDetailReport(rep, { caveats = [], heading = '## 賽後報告(FotM
       + shots.map(s => `| ${s.min}${s.extra ? '+' + s.extra : ''} | ${s.team == null ? '不詳' : nm(s.team)} | ${s.player ?? ''} | ${SIT[s.situation] ?? s.situation ?? ''} `
         + `| ${s.xg == null ? '' : s.xg.toFixed(2)} | ${s.type === 'Goal' ? '**進球**' : s.type ?? ''} |`).join('\n') + '\n');
     if (allShots.length > shots.length) out.push(`\n> PK 大戰的 ${allShots.length - shots.length} 球不算射門、也不算進 xG。\n`);
-    /* 射門圖的隊伍 id 跟賽程對不上時,逐場檔把那一腳的 team 留成 null(足總盃 2025-26 有 Macclesfield FC 的三場、44 腳:
-       事件與名單對得上,只有射門圖用的是另一個 id)。照印就是「null」;猜是哪一隊就是編資料 —— 印「不詳」並講出來 */
+    /* 射門圖的隊伍 id 跟賽程對不上時(足總盃 2025-26 有 Macclesfield FC 的三場、44 腳),讀取器用同一場的正式名單
+       對回、再拿逐隊射門數跟球隊統計核對(lib/matchstats.mjs 的 repairShotTeams,對回的標 teamFrom)——
+       對回的照實講是名單對回的;核對不過的整場照舊 null,印「不詳」並講出來,不替它猜是哪一隊 */
+    const viaLineup = shots.filter(s => s.teamFrom === 'lineup').length;
+    if (viaLineup) out.push(`\n> 其中 ${viaLineup} 腳的隊伍是本站用這一場的正式名單對回的:供應商射門圖用的隊伍 id 跟賽程對不上,射手的名字只出現在一隊的名單裡,對回之後兩隊的射門數跟球隊統計一致。\n`);
     const noTeam = shots.filter(s => s.team == null).length;
-    if (noTeam) out.push(`\n> ${noTeam} 腳射門供應商的射門圖沒有對到隊伍(它用的隊伍 id 跟賽程不同),球隊欄印「不詳」;本站不替它猜是哪一隊。\n`);
+    if (noTeam) out.push(`\n> ${noTeam} 腳射門供應商的射門圖沒有對到隊伍(它用的隊伍 id 跟賽程不同,名單也對不回),球隊欄印「不詳」;本站不替它猜是哪一隊。\n`);
   }
 
   // 逐人(有上場分鐘的;整欄都沒有值的欄位不列)

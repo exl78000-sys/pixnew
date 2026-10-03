@@ -127,7 +127,10 @@ export function fotmobTeamStore({ matches, season, tableRows, leagueKeys, maxMis
     const fast = { shots: 0, xG: 0 }; let box = 0, n = 0; const form = {};
     for (const m of Object.values(matches)) {
       if (m.season !== season || (m.home !== code && m.away !== code)) continue;
-      if (leagueKeys && !leagueKeys.has(`${m.season}|${m.home}|${m.away}`)) continue;
+      /* 判「是不是聯賽場次」用逐場那一筆自己的鍵(`key` = 季|pairOf,lib/matchstats.mjs),不自己拼「季|主|客」——
+         英冠的升級附加賽跟同一季的聯賽同一組主客,拼出來的鍵一樣,附加賽就被當成聯賽那一場算進側寫。
+         2026-10-02 那一版就是這樣:HUL、MIL 看起來 46/46,其實裡面三場是附加賽、那三組的聯賽一場都不在。 */
+      if (leagueKeys && !leagueKeys.has(m.key ?? `${m.season}|${m.home}|${m.away}`)) continue;
       n++;
       const f = m.lineups?.[code]?.formation;
       if (f) form[f] = (form[f] ?? 0) + 1;

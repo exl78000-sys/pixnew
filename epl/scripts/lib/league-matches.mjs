@@ -118,7 +118,11 @@ export function leagueMatches(root, season, {
      第一版是拿到 matches 之後才標的,於是 backfillScores 看不到 stage、
      附加賽照樣參與配對,主客組合撞鍵 —— 每季 5 場假警報。
      順序本身就是這個 bug,所以標記收進這裡。 */
-  if (stageOf) for (const m of matches) { const st = stageOf(m); if (st) m.stage = st; }
+  /* 非聯賽場次同時帶 `pair`(主|客|日期,歐冠那個慣例;lib/matchstats.mjs 的 pairOf 有就用它)。
+     2026-10-03 前沒有:英冠的 FotMob 逐場 raw、逐場統計、往季逐場檔都拿「主|客」當鍵,
+     2025-26 五組附加賽跟同一季的聯賽撞鍵 —— 抓取器把五場聯賽當成已快取(其中三組存的其實是附加賽),
+     聯賽那五場一場都沒抓。鍵帶日期之後兩場各自一筆。聯賽場次不帶 pair,鍵一個字元都不變。 */
+  if (stageOf) for (const m of matches) { const st = stageOf(m); if (st) { m.stage = st; m.pair = `${m.home}|${m.away}|${m.date}`; } }
   /* 順序:openfootball(主)→ football-data.co.uk(備援,逐場核對)→ FotMob(暫定,逐場核對)。
      後面的只補前面沒有的,不覆蓋。 */
   let backfill = null;

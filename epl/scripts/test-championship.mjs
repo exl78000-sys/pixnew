@@ -135,6 +135,94 @@ const table = out('table'), results = out('results'), sim = out('sim');
   check('聯賽裡真的出現重複對戰 → 整份不做', r2.duplicateKeys?.length === 1 && r2.filled === 0);
 }
 
+/* ── 3b. 附加賽的配對鍵(2026-10-03)────────────────────────
+   同一個坑的第三層:補比分那一層早就分開了,而**逐場 raw、逐場統計、往季逐場檔、戰術側寫**都還拿「主|客」當鍵 ——
+   2025-26 三組的 raw 存的是附加賽、聯賽那一場從來沒抓,球隊頁的彙總與戰術側寫把附加賽當聯賽算,一個錯都不報。
+   現在附加賽帶 pair(主|客|日期),每一層用 pairOf。這一節守的是**每一層都分開了**,不是只守一層。 */
+{
+  const { rekeyByPair } = await import('./lib/pair-rekey.mjs');
+  const { idMapForArchive, readArchivedReports } = await import('./lib/match-archive.mjs');
+  globalThis.document ??= { addEventListener() {} };   // core.js 載入時會掛鍵盤事件(test.mjs 同一個做法)
+  const C = await import('../web/assets/js/core.js');
+  const pairOf = m => m.pair ?? `${m.home}|${m.away}`;
+  const stage = results.filter(m => m.stage), league = results.filter(m => !m.stage);
+  check('附加賽都帶 pair(主|客|日期)、聯賽場次一個都不帶',
+    stage.length > 0 && stage.every(m => m.pair === `${m.home}|${m.away}|${m.date}`) && league.every(m => m.pair === undefined),
+    `附加賽 ${stage.length} 場`);
+  const dupPair = results.map(m => `${m.season}|${pairOf(m)}`).filter((k, i, a) => a.indexOf(k) !== i);
+  check('賽果的「季|pairOf」沒有重複(附加賽與聯賽各是一個鍵)', dupPair.length === 0, dupPair.slice(0, 3).join('、'));
+
+  /* 逐場統計:鍵是「季|pairOf」,而那一筆**一定是那一場**(日期相同)——
+     撞鍵的時候聯賽的鍵底下放的是附加賽,日期就對不上。 */
+  const MS = out('matchstats');
+  const msWrong = results.map(m => [m, MS.matches[`${m.season}|${pairOf(m)}`]]).filter(([m, x]) => x && x.date !== m.date);
+  check('逐場統計的每一筆都是那一場(鍵底下的日期等於賽果的日期)', msWrong.length === 0,
+    msWrong.slice(0, 3).map(([m, x]) => `${m.season} ${m.home}-${m.away} ${m.date} 底下是 ${x.date}`).join('、'));
+  const msStage = stage.filter(m => MS.matches[`${m.season}|${m.pair}`]);
+  check('有逐場統計的附加賽,鍵帶日期(不佔聯賽那一場的鍵)', msStage.length > 0
+    && msStage.every(m => MS.matches[`${m.season}|${m.home}|${m.away}`]?.date !== m.date), `${msStage.length} 場`);
+
+  /* 逐隊彙總(球隊頁那一塊)與戰術側寫只算聯賽:場數 = 那一隊在逐場統計裡的**聯賽**筆數 */
+  const leagueRec = Object.values(MS.matches).filter(x => !x.pair);
+  const TS = out('team-stats');
+  const tsWrong = Object.values(TS).filter(t => t.games !== leagueRec.filter(x => x.home === t.code || x.away === t.code).length);
+  check('球隊頁的逐場統計彙總只算聯賽(場數 = 聯賽的逐場統計筆數)', Object.keys(TS).length > 0 && tsWrong.length === 0,
+    tsWrong.slice(0, 3).map(t => `${t.code} ${t.games}`).join('、'));
+  const TAC = out('tactics');
+  /* 側寫的 `matches` 是賽季場數(積分榜),實際算進去幾場在 `coverage.matches`(少場才有;不少場時兩者相等) */
+  const tacN = t => t.coverage?.matches ?? t.matches;
+  const tacWrong = TAC.filter(t => tacN(t) !== leagueRec.filter(x => x.season === meta.lastSeason && (x.home === t.code || x.away === t.code)).length);
+  check('戰術側寫只算上季聯賽(算進去的場數 = 那一隊上季聯賽的逐場統計筆數)', TAC.length > 0 && tacWrong.length === 0,
+    tacWrong.slice(0, 3).map(t => `${t.code} ${tacN(t)}`).join('、'));
+  const L = out('leaders');
+  const lastLeagueRec = leagueRec.filter(x => x.season === meta.lastSeason).length;
+  check('球員層只算聯賽(上季的場數 = 上季聯賽的逐場統計筆數)', L.layer?.[meta.lastSeason]?.matches === lastLeagueRec,
+    `${L.layer?.[meta.lastSeason]?.matches} / ${lastLeagueRec}`);
+
+  /* 往季逐場檔:附加賽與聯賽各有一個檔,檔案自己帶 pair,讀回來沒有衝突 */
+  const archived = readArchivedReports(join(ROOT, 'web', 'data', 'leagues', 'en2'));
+  const stageWithRec = stage.filter(m => m.season === meta.lastSeason && MS.matches[`${m.season}|${m.pair}`]);
+  check('上季有逐場統計的附加賽都有自己的逐場檔(讀回的鍵帶日期)', stageWithRec.length > 0
+    && stageWithRec.every(m => archived.reports[`${m.season}|${m.pair}`]?.date === m.date), `${stageWithRec.length} 場`);
+  check('往季逐場檔讀回來沒有撞鍵、沒有缺檔', archived.conflicts.length === 0 && archived.missing.length === 0,
+    `撞鍵 ${archived.conflicts.length}・缺檔 ${archived.missing.length}`);
+
+  /* 前端查報告與賽後文章用 core.js 的 reportKey(同一把鍵):索引裡的每一個鍵都要查得到 —— 查不到就是「東西在但沒有按鈕」 */
+  const idx = out('reports').index ?? {};
+  const unreachable = Object.keys(idx).filter(k => !fixtures.some(f => C.reportKey(f) === k));
+  check('本季報告索引的每一個鍵,前端都查得到(core.js 的 reportKey)', unreachable.length === 0, unreachable.slice(0, 3).join('、'));
+  check('reportKey 對附加賽帶日期、對聯賽不帶',
+    C.reportKey({ season: '2025-26', home: 'HUL', away: 'MIL', pair: 'HUL|MIL|2026-05-08' }) === '2025-26|HUL|MIL|2026-05-08'
+    && C.reportKey({ season: '2025-26', home: 'HUL', away: 'MIL' }) === '2025-26|HUL|MIL');
+
+  /* 規則本身拿捏造的資料驗(真資料已經改完鍵,碰不到這幾條路) */
+  const pairs = new Set(['AAA|BBB|2026-05-08']);
+  const store = {
+    'AAA|BBB': { key: 'AAA|BBB', home: 'AAA', away: 'BBB', date: '2026-05-08', mark: 'po' },   // 附加賽佔著聯賽的鍵
+    'BBB|AAA': { key: 'BBB|AAA', home: 'BBB', away: 'AAA', date: '2025-12-01', mark: 'lg' },   // 聯賽:不准動
+  };
+  const r1 = rekeyByPair(store, pairs, { addPair: true });
+  check('改鍵:附加賽搬到帶日期的鍵(加 pair)、聯賽一個字元都不動',
+    r1.moved.length === 1 && !store['AAA|BBB'] && store['AAA|BBB|2026-05-08']?.mark === 'po' && store['AAA|BBB|2026-05-08'].pair === 'AAA|BBB|2026-05-08'
+      && JSON.stringify(store['BBB|AAA']) === JSON.stringify({ key: 'BBB|AAA', home: 'BBB', away: 'AAA', date: '2025-12-01', mark: 'lg' }));
+  const pstore = { 'AAA|BBB': { key: 'AAA|BBB', date: '2026-05-08', mark: 'po' } };   // 逐人統計那一檔沒有 home / away
+  const r2 = rekeyByPair(pstore, pairs);
+  check('改鍵:沒有 home / away 的紀錄從舊鍵拆,不加 pair', r2.moved.length === 1 && pstore['AAA|BBB|2026-05-08']?.mark === 'po' && !('pair' in pstore['AAA|BBB|2026-05-08']));
+  const clash = { 'AAA|BBB': { home: 'AAA', away: 'BBB', date: '2026-05-08', mark: 'old' }, 'AAA|BBB|2026-05-08': { home: 'AAA', away: 'BBB', date: '2026-05-08', pair: 'AAA|BBB|2026-05-08', mark: 'new' } };
+  const r3 = rekeyByPair(clash, pairs, { addPair: true });
+  check('改鍵:目標鍵已經有一筆就不動、記成衝突(不挑一個蓋掉另一個)',
+    r3.conflicts.length === 1 && clash['AAA|BBB']?.mark === 'old' && clash['AAA|BBB|2026-05-08']?.mark === 'new');
+  const { map: im, duplicates: idup } = idMapForArchive([
+    { season: '2025-26', home: 'AAA', away: 'BBB', id: 'lg' },
+    { season: '2025-26', home: 'AAA', away: 'BBB', id: 'po', pair: 'AAA|BBB|2026-05-08' },
+  ]);
+  const { duplicates: idup2 } = idMapForArchive([
+    { season: '2025-26', home: 'AAA', away: 'BBB', id: 'x' }, { season: '2025-26', home: 'AAA', away: 'BBB', id: 'y' },
+  ]);
+  check('往季逐場檔的命名:附加賽帶 pair 就不撞;兩場聯賽同一組主客仍然整組不寫',
+    idup.length === 0 && im.get('2025-26|AAA|BBB')?.id === 'lg' && im.get('2025-26|AAA|BBB|2026-05-08')?.id === 'po' && idup2.length === 1);
+}
+
 // ── 4. 產物的欄位名要跟另外兩個聯賽一致 ───────────────
 {
   /* 這一節守的是這一輪犯了四次的那種錯:自己給產物取欄位名,
@@ -174,8 +262,9 @@ const table = out('table'), results = out('results'), sim = out('sim');
       const codes = new Set(teams.map(t => t.code));
       return players.filter(p => p.season === meta.currentSeason).every(p => codes.has(p.team));
     })());
-    /* 上限是聯賽自己的:英冠一季 46 輪 + 最多 3 場附加賽,一場最多 90 分鐘多一點 */
-    check('出賽與分鐘不超過一季可能的上限', players.every(p => p.matches <= 49 && p.minutes <= p.matches * 98));
+    /* 上限是聯賽自己的:英冠一季 46 輪,一場最多 90 分鐘多一點。2026-10-03 前寫的是「46 + 最多 3 場附加賽」——
+       那是撞鍵讓附加賽混進球員層之後的上限;現在球員層只算聯賽,附加賽混回來就會超過 46 */
+    check('出賽與分鐘不超過一季可能的上限', players.every(p => p.matches <= 46 && p.minutes <= p.matches * 98));
     /* 這一層**沒有**的東西仍然要明講 —— 有了一部分之後最容易忘記講剩下的沒有 */
     check('明講這一層沒有球員 xG 模型 / 身價 / 傷停', Array.isArray(leaders.missing)
       && leaders.missing.length >= 3 && /xG/.test(leaders.missing.join('')) && /傷停/.test(leaders.missing.join('')));

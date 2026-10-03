@@ -1,4 +1,4 @@
-import * as C from './core.js?v=a5e2c82f';
+import * as C from './core.js?v=4a6863d3';
 import { followedIn } from './follow.js?v=02130043';
 
 // 有英格蘭盃賽(足總盃/聯賽盃)的聯賽。用集合不用「是不是某一個」的二元式
@@ -38,7 +38,7 @@ export function mountFixtureList({
   const archived = new Set(reports.archive?.ids ?? []);
   const hasFullAnalysis = f => (f.season === meta.currentSeason
     ? (f.played
-      ? hasReport(f) || !!analysis.post[`${f.season}|${f.home}|${f.away}`]
+      ? hasReport(f) || !!analysis.post[C.reportKey(f)]
       : !!analysis.pre[`${f.home}|${f.away}`])
     : archived.has(f.id));
 

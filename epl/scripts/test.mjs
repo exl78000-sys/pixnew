@@ -6064,7 +6064,11 @@ async function checkUclDetails() {
     ok(/import \{ pairOf, isShootoutShot \} from '\.\.\/lib\/matchstats\.mjs'/.test(src) && /store\.matches\[pairOf\(f\)\]/.test(src)
       && /const key = pairOf\(f\);/.test(src) && /byPair\.get\(`\$\{f\.home\}\|\$\{f\.away\}`\)/.test(src),
       '抓取器的快取鍵走 pairOf(歐冠帶日期),FotMob 賽程的查表仍是主|客');
-    ok(/舊鍵改成/.test(src) && /if \(m\.pair\) continue;/.test(src), '舊格式(主|客)的歐冠紀錄在載入時就地改鍵');
+    /* 改鍵的規則 2026-10-03 搬進 lib/pair-rekey.mjs(英冠的升級附加賽也要用,而且要拿捏造資料測 —— 行為由
+       test-championship 第 3b 節驗);這裡守的是抓取器**兩個快取都在載入時走它**,少走一個的話逐人統計會留在舊鍵 */
+    ok(/import \{ rekeyByPair \} from '\.\.\/lib\/pair-rekey\.mjs'/.test(src) && /rekeyByPair\(map, pairs, \{ addPair \}\)/.test(src)
+      && /\[store\.matches, '逐場', true\]/.test(src) && /\[pstore\.matches, '逐人統計', false\]/.test(src),
+      '舊格式(主|客)的紀錄在載入時就地改鍵(歐冠與英冠附加賽,逐場與逐人統計兩個快取都走 lib/pair-rekey.mjs)');
     ok(/byPair\.get\(k\)\.push\(/.test(src) && /cands\.find\(c => c\.date === f\.date\)/.test(src) && /remote\.missing/.test(src),
       'FotMob 賽程的查表一個鍵放一串,同一組主客多場時用日期挑(第一版後寫的蓋掉先寫的,13 場全部「日期不一致」)');
     ok(/const retryNow = process\.argv\.includes\('--retry'\)/.test(src) && /refresh \|\| retryNow \|\| !recentlyTried/.test(src)
@@ -6153,7 +6157,7 @@ async function checkUclDetails() {
       ok(idx.xg === 'shotmap' && typeof idx.xgNote === 'string', 'xG 只有一種算法(逐射門加總),說明在產物裡');
 
       const reports = Object.entries(idx.reports ?? {});
-      let fileOk = 0, keyOk = 0, xgOk = 0, scoreOk = 0, pensOk = 0;
+      let fileOk = 0, keyOk = 0, xgOk = 0, scoreOk = 0, pensOk = 0, sideOk = 0, viaLineup = 0;
       const cupsJson = JSON.parse(readFileSync(join(W, 'data', 'cups.json'), 'utf8'));
       const byId = new Map();
       for (const c of cupsJson.cups ?? []) for (const ss of c.seasons ?? []) for (const r of ss.rounds ?? []) for (const m of r.matches ?? []) byId.set(String(m.id), { cup: c.key, season: ss.label, m });
@@ -6175,6 +6179,13 @@ async function checkUclDetails() {
         if (rep.shotmapComplete === true ? xs.every(v => v != null) : xs.every(v => v == null)) xgOk++;
         // PK 場:比數要帶到報告(畫面要印「PK 4:2」,不是只印平手比分)
         if (!src?.m?.pens?.length || (Array.isArray(rep.pens) && rep.pens.length === 2)) pensOk++;
+        /* 射門的隊伍(2026-10-03):每一腳都要落在兩隊之一 —— null 會被射門圖畫到客隊那一半(Macclesfield 三場就是這樣)。
+           對不回的只准是讀取器記下來的那幾腳(shotTeamUnresolved),用名單對回的腳數要等於它自己的標記 */
+        const sh = rep.advanced?.shots ?? [];
+        const nulls = sh.filter(x => x.team !== rep.home && x.team !== rep.away).length;
+        const via = sh.filter(x => x.teamFrom === 'lineup').length;
+        viaLineup += via;
+        if (nulls === (rep.advanced?.shotTeamUnresolved ?? 0) && via === (rep.advanced?.shotTeamFix?.repaired ?? 0)) sideOk++;
       }
       console.log(`  · 盃賽賽後報告:索引 ${reports.length} 場・raw 快取 ${idx.cached ?? 0} 場・拒收 ${idx.rejected.length}・不完整 ${idx.incomplete.length}`
         + (reports.length ? '' : '(沙箱抓不到 FotMob;第一批要等 cup-backfill 或部署跑過)'));
@@ -6183,6 +6194,8 @@ async function checkUclDetails() {
       ok(keyOk === fileOk, '逐場檔的 home / away 都在 names 裡,而且比分跟索引一致', `${keyOk}/${fileOk}`);
       ok(xgOk === fileOk, 'xG:射門圖完整 → 有值;不完整 → null(一個聯賽一種算法)', `${xgOk}/${fileOk}`);
       ok(pensOk === fileOk, 'PK 場的比數有帶到報告(只印平手比分會把晉級講錯)', `${pensOk}/${fileOk}`);
+      ok(sideOk === fileOk, '每一腳射門都落在兩隊之一;對不回的只有讀取器記下來的那幾腳,名單對回的腳數等於標記',
+        `${sideOk}/${fileOk}・名單對回 ${viaLineup} 腳`);
       // 有 raw 的時候,每一場都要有去處:快取 − 拒收 − 不完整 = 報告
       if ((idx.cached ?? 0) > 0) {
         ok(idx.cached - idx.rejected.length - idx.incomplete.length === idx.count,
@@ -6200,6 +6213,48 @@ async function checkUclDetails() {
       const again = cupDetails(ROOT).index;
       ok(JSON.stringify({ ...again, retrievedAt: null }) === JSON.stringify({ ...idx, retrievedAt: null }),
         'build 寫出的索引就是 lib 算出來的(沒有另外加工)');
+    }
+
+    /* ── 射門的隊伍用同一場的名單對回(repairShotTeams,2026-10-03)──────────
+       真資料裡只有足總盃 Macclesfield 三場走得到這條路,而且那三場剛好每一腳都對得回 ——
+       「同名在兩隊」「核對不過」「烏龍球算在射手那一隊」「PK 大戰不算」都碰不到,所以拿捏造的一場逐條驗 */
+    {
+      const { repairShotTeams } = await import('./lib/matchstats.mjs');
+      const base = () => ({
+        home: 'AAA', away: 'BBB',
+        lineups: { AAA: { xi: [{ name: 'Ann' }, { name: 'Bea' }], bench: [{ name: 'Cid' }] }, BBB: { xi: [{ name: 'Dan' }, { name: 'Eve' }], bench: [] } },
+        teamStats: { AAA: { shots: 2 }, BBB: { shots: 1 } },
+        shots: [
+          { player: 'Ann', team: null, min: 10 }, { player: 'Cid', team: null, min: 50 },
+          { player: 'Dan', team: 'BBB', min: 30 },
+          { player: 'Bea', team: null, min: 70, ownGoal: true },   // 烏龍球:算在射手那一隊、不算進射門數
+        ],
+      });
+      const r1 = repairShotTeams(base());
+      ok(r1.repaired === 3 && r1.unresolved === 0 && r1.shots.filter(x => x.teamFrom === 'lineup').map(x => x.team).join(',') === 'AAA,AAA,AAA'
+        && r1.shots[2].teamFrom === undefined,
+        '名單對回:射手只在一隊的名單 → 那一隊(烏龍球也是射手那一隊),原本有隊伍的那一腳不動也不標');
+      const amb = base(); amb.lineups.BBB.bench.push({ name: 'Cid' });
+      const r2 = repairShotTeams(amb);
+      ok(r2.repaired === 0 && r2.unresolved === 3 && r2.shots.every((x, i) => x === amb.shots[i]),
+        '同名在兩隊的名單 → 整場一腳都不改(不挑對得上的那幾腳用)');
+      /* 上一條其實被核對那一道蘊含了(對不回的那一腳會讓逐隊射門數少 1),拿掉「整場不改」它照樣綠 ——
+         所以補一個**只有**那一道擋得住的:對不回的是烏龍球(不算射門數,核對照樣過) */
+      const ambOg = base(); ambOg.lineups.BBB.bench.push({ name: 'Bea' });
+      const r2b = repairShotTeams(ambOg);
+      ok(r2b.repaired === 0 && r2b.unresolved === 3 && r2b.shots.every((x, i) => x === ambOg.shots[i]),
+        '對不回的只有烏龍球那一腳(射門數照樣對得上)→ 仍然整場不改');
+      const bad = base(); bad.teamStats.AAA.shots = 3;
+      const r3 = repairShotTeams(bad);
+      ok(r3.repaired === 0 && r3.unresolved === 3, '對回之後逐隊射門數跟球隊統計對不上 → 整場不改');
+      const noStats = base(); delete noStats.teamStats.BBB;
+      ok(repairShotTeams(noStats).repaired === 0, '沒有球隊統計可以核對 → 不改(核對不了不等於核對過)');
+      const so = base(); so.shots.push({ player: 'Eve', team: null, min: 121, situation: 'Penalty' });
+      ok(repairShotTeams(so, { pens: true }).repaired === 4 && repairShotTeams(so, { pens: false }).repaired === 0,
+        'PK 大戰的十二碼照樣對回隊伍、但不算進核對的射門數(沒踢 PK 的場次它就是一腳射門,核對不過)');
+      const clean = base(); clean.shots = clean.shots.map(x => ({ ...x, team: x.team ?? 'AAA' }));
+      const r6 = repairShotTeams(clean);
+      ok(r6.shots === clean.shots && r6.repaired === 0 && r6.unresolved === 0, '射門都有隊伍的場次原樣回傳(同一個陣列)');
     }
 
     /* ── 盃賽球員榜(2026-09-15)──────────────────────────────
