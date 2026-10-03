@@ -291,18 +291,23 @@ console.log('\n▶ 模擬遊玩:主場優勢與中立場(2026-10-03)');
   /* 測試自己算一次聯盟的主客射門率(以場數加權),不讀引擎的 —— 讀引擎的就是拿它驗它自己 */
   const W = (side, k) => { let g = 0, t = 0; for (const c of codes) { const r = profile.teams[c].rates?.[side]; if (r?.games && r[k] != null) { g += r.games; t += r[k] * r.games; } } return t / g; };
   const sfH = W('home', 'sf'), sfA = W('away', 'sf');
-  /* ① 全部 20 × 19 組配對 */
-  let eh = 0, ea = 0, n = 0;
+  /* ① 全部 20 × 19 組配對,每一組以「主隊踢過幾場主場 × 客隊踢過幾場客場」加權 —— 等於從側寫裡
+     隨機抽一場真實比賽,期望值照定義就是側寫的主客射門率,所以門檻可以收到 ±1%。
+     第一版不加權、門檻 ±3% / ±4%:三支升班馬只有 2~3 場,它們的極端值讓客隊水準偏 +3.1%,
+     離門檻只差 0.9 個百分點,而側寫每次部署都會變 —— 那是一條會漂的紅線。加權之後實測 +0.07% / +0.09%。 */
+  const gOf = (c, side) => profile.teams[c].rates?.[side]?.games ?? 0;
+  let eh = 0, ea = 0, wt = 0, n = 0;
   for (const h of codes) for (const a of codes) {
     if (h === a) continue;
-    const c = cal(h, a); eh += c.home.expShots; ea += c.away.expShots; n++;
+    const c = cal(h, a), w = gOf(h, 'home') * gOf(a, 'away');
+    eh += w * c.home.expShots; ea += w * c.away.expShots; wt += w; n++;
   }
-  const ratio = (eh / n) / (ea / n);
-  check('期望射門的主客差只算一次:全部配對平均起來主 ÷ 客 = 側寫的主 ÷ 客射門率(±3%)',
-    Math.abs(ratio / (sfH / sfA) - 1) < 0.03, `${n} 組:${ratio.toFixed(3)} 對 ${(sfH / sfA).toFixed(3)}(舊式約 1.53)`);
-  check('期望射門的水準也回到側寫:主隊平均 ≈ 聯盟主場射門、客隊 ≈ 客場射門(±4%)',
-    Math.abs(eh / n / sfH - 1) < 0.04 && Math.abs(ea / n / sfA - 1) < 0.04,
-    `主 ${(eh / n).toFixed(2)} 對 ${sfH.toFixed(2)}・客 ${(ea / n).toFixed(2)} 對 ${sfA.toFixed(2)}`);
+  const ratio = eh / ea;
+  check('期望射門的主客差只算一次:全部配對(以場數加權)平均起來主 ÷ 客 = 側寫的主 ÷ 客射門率(±1%)',
+    Math.abs(ratio / (sfH / sfA) - 1) < 0.01, `${n} 組:${ratio.toFixed(4)} 對 ${(sfH / sfA).toFixed(4)}(舊式約 1.53)`);
+  check('期望射門的水準也回到側寫:主隊平均 = 聯盟主場射門、客隊 = 客場射門(±1%)',
+    Math.abs(eh / wt / sfH - 1) < 0.01 && Math.abs(ea / wt / sfA - 1) < 0.01,
+    `主 ${(eh / wt).toFixed(2)} 對 ${sfH.toFixed(2)}・客 ${(ea / wt).toFixed(2)} 對 ${sfA.toFixed(2)}`);
   check('calibration 吐的 venueSf 就是側寫的主 ÷ 客射門率(引擎沒有另外抄一個數字)',
     Math.abs(cal('ARS', 'LIV').venue?.venueSf - sfH / sfA) < 0.002, `${cal('ARS', 'LIV').venue?.venueSf} 對 ${(sfH / sfA).toFixed(3)}`);
   /* ② 中立場的對稱:A 對 B 的主隊 = B 對 A 的客隊;非中立時真的不對稱(對照組) */
@@ -317,20 +322,32 @@ console.log('\n▶ 模擬遊玩:主場優勢與中立場(2026-10-03)');
   const asymV = pairs.every(([x, y]) => Math.abs(cal(x, y).home.expShots - cal(y, x).away.expShots) > 0.1);
   check('中立場:A 對 B 跟 B 對 A 是同一件事(期望射門與控球目標對調之後逐位相同)', pairs.length === 3 && symN);
   check('非中立時真的不對稱(上一條不是因為資料剛好對稱才綠)', asymV);
-  /* ③ 陣型的主場位移:從原始碼讀,中立場是 0 */
+  /* ③ 陣型的主場位移:從原始碼讀。calibration 吐的是**兩隊實際在用的那一份**(side 物件的 venuePush),
+     不是照常數再算一次 —— 否則中立場時位移沒歸零、或客隊往前推,報出來的數字照樣是對的。 */
   const hp = Number((simSrc.match(/^const HOME_PUSH = ([0-9.]+);/m) ?? [])[1]);
   const v1 = cal('ARS', 'LIV').venue, v0 = cal('ARS', 'LIV', true).venue;
-  check('主場位移:calibration 吐的是原始碼那個常數,中立場時是 0',
-    Number.isFinite(hp) && hp >= 0 && v1?.homePush === hp && v1?.neutral === false && v0?.homePush === 0 && v0?.neutral === true,
-    `HOME_PUSH ${hp}・主場 ${v1?.homePush}・中立 ${v0?.homePush}`);
+  check('主場位移:主隊 = 原始碼那個常數、客隊 = 它的負值,中立場兩邊都是 0(讀兩隊實際在用的那一份)',
+    Number.isFinite(hp) && hp >= 0 && v1?.homePush === hp && v1?.awayPush === -hp && v1?.neutral === false
+    && v0?.homePush === 0 && v0?.awayPush === 0 && v0?.neutral === true,
+    `HOME_PUSH ${hp}・主場 ${v1?.homePush} / ${v1?.awayPush}・中立 ${v0?.homePush} / ${v0?.awayPush}`);
+  /* 回報的數字對了,還要真的進走位:每一個帶 push 的 shapeOf 呼叫都要加上 venuePush(剝註解再掃;
+     開球那一處不帶 push,開球站位不推 —— 那是死球的合法站位,不是比賽中的陣型) */
+  const simB = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const pushCalls = [...simB.matchAll(/shapeOf\([^;]*?\{ push: ([^,}]+)/g)].map(m => m[1].trim());
+  check('主場位移真的進了走位:每一個帶 push 的 shapeOf 呼叫都是 s.push + s.venuePush',
+    pushCalls.length >= 1 && pushCalls.every(x => x === 's.push + s.venuePush'), pushCalls.join(' / '));
   /* ④ 中立場一路傳進引擎:遊戲頁 → 轉接層 → createSim(剝註解再掃 —— 註解裡本來就在講 neutral) */
   const bare = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   const viewB = bare('game-view.js'), liveB = bare('game-live.js');
   check('遊戲頁把中立場傳進 createLiveMatch,轉接層再傳進 createSim',
     /createLiveMatch\(\{[^}]*neutral: state\.neutral/.test(viewB)
-    && /export function createLiveMatch\(\{[^}]*neutral = false/.test(liveB) && /createSim\(\{[^}]*neutral \}\)/.test(liveB));
+    /* 簽名那一條用 `[^)]*` 不用 `[^}]*`:參數裡有 `setup = {}`,右大括號會讓它在 neutral 之前就停(第一版就是這樣紅的) */
+    && /export function createLiveMatch\(\{[^)]*neutral = false/.test(liveB) && /createSim\(\{[^}]*neutral \}\)/.test(liveB));
+  /* 只在 venueNote 的本體裡找:「遊戲變數」在這個檔案裡不只出現一次,掃整份的話刪掉這一句照樣綠 */
+  const vnAt = viewB.indexOf('function venueNote('), vnEnd = viewB.indexOf('function ', vnAt + 1);
+  const vnBody = vnAt >= 0 ? viewB.slice(vnAt, vnEnd > vnAt ? vnEnd : undefined) : '';
   check('畫面講主場那一份是遊戲變數、數字從引擎讀(不在頁面另寫一份)',
-    /venueNote\(cal\.venue\)/.test(viewB) && /v\.homePush/.test(viewB) && /遊戲變數/.test(viewB));
+    /venueNote\(cal\.venue\)/.test(viewB) && /\$\{v\.homePush\}/.test(vnBody) && /遊戲變數/.test(vnBody) && /中立場/.test(vnBody));
 }
 
 console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套意思)');

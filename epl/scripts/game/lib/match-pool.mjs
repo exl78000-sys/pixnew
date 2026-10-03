@@ -28,12 +28,13 @@ export const asSim = snap => ({
   advance: () => { throw new Error('這是 worker 池的快照,不能再 advance();要逐格觀察的測試請自己 createSim'); },
 });
 
-/* spec:{ seed, pred = null, home = 'ARS', away = 'LIV', minutes = 110, source = null }
+/* spec:{ seed, pred = null, home = 'ARS', away = 'LIV', minutes = 110, source = null, neutral = false }
+   neutral(2026-10-03):中立場 —— 引擎兩邊都用主客平均的比率、陣型沒有主場位移。要進鍵,不然中立與非中立會共用快照。
    source 給引擎的**原始碼文字**時,worker 從 data: URL 載那一份(對照版實驗用);不給就載 web/assets/js/game-sim.js。
    鍵用內容:同一份原始碼不論傳幾次都是同一把鍵。 */
 const keyOf = spec => JSON.stringify({
   seed: spec.seed, pred: spec.pred ?? null, home: spec.home ?? 'ARS', away: spec.away ?? 'LIV',
-  minutes: spec.minutes ?? 110,
+  minutes: spec.minutes ?? 110, neutral: !!spec.neutral,
   source: spec.source == null ? null : createHash('sha1').update(spec.source).digest('hex'),
 });
 
