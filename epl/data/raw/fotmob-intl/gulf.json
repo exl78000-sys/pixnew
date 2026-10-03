@@ -14,7 +14,7 @@
   "2013",
   "2010"
  ],
- "retrievedAt": "2026-10-03T14:16:48.513Z",
+ "retrievedAt": "2026-10-03T23:12:25.849Z",
  "matches": [
   {
    "id": "6052027",
@@ -317,10 +317,13 @@
     "shortName": "Qatar",
     "fmId": "5902"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "Pen",
+   "reasonLong": "After penalties",
    "awarded": false,
    "round": "1/2",
    "group": null
@@ -338,10 +341,13 @@
     "shortName": "Oman",
     "fmId": "5824"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/2",
    "group": null
@@ -350,14 +356,14 @@
    "id": "6052096",
    "kickoff": "2026-10-06T18:00:00Z",
    "home": {
-    "name": "Saudi Arabia/Qatar",
-    "shortName": "Saudi Arabia/Qatar",
-    "fmId": "2325517"
+    "name": "Saudi Arabia",
+    "shortName": "Saudi Arabia",
+    "fmId": "7795"
    },
    "away": {
-    "name": "UAE/Oman",
-    "shortName": "UAE/Oman",
-    "fmId": "2325518"
+    "name": "UAE",
+    "shortName": "UAE",
+    "fmId": "5789"
    },
    "state": "NS",
    "final": null,

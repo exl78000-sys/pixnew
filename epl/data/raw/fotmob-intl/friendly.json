@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-10-03T14:16:49.690Z",
+ "retrievedAt": "2026-10-03T23:12:27.018Z",
  "matches": [
   {
    "id": "5120889",
@@ -8527,17 +8527,20 @@
     "shortName": "Brazil",
     "fmId": "8256"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    4
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6210360",
-   "kickoff": "2026-10-03T15:00:00.000Z",
+   "kickoff": "2026-10-03T15:40:00.000Z",
    "home": {
     "name": "Russia",
     "shortName": "Russia",
@@ -8548,10 +8551,13 @@
     "shortName": "Namibia",
     "fmId": "5802"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    6,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8569,10 +8575,13 @@
     "shortName": "Peru",
     "fmId": "5798"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8590,10 +8599,13 @@
     "shortName": "Ivory Coast",
     "fmId": "6709"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null

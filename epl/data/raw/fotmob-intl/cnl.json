@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-10-03T14:16:46.228Z",
+ "retrievedAt": "2026-10-03T23:12:23.510Z",
  "matches": [
   {
    "id": "5991938",
@@ -1274,10 +1274,13 @@
     "shortName": "Saint Vincent and The Grenadines",
     "fmId": "5923"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    4
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "4"
@@ -2535,13 +2538,13 @@
      "fmId": "5923",
      "name": "Saint Vincent and The Grenadines",
      "idx": 1,
-     "played": 2,
-     "wins": 2,
+     "played": 3,
+     "wins": 3,
      "draws": 0,
      "losses": 0,
-     "gf": 3,
-     "ga": 1,
-     "pts": 6,
+     "gf": 7,
+     "ga": 3,
+     "pts": 9,
      "deduction": null,
      "live": null
     },
@@ -2577,12 +2580,12 @@
      "fmId": "929190",
      "name": "Sint Maarten",
      "idx": 4,
-     "played": 2,
+     "played": 3,
      "wins": 0,
      "draws": 0,
-     "losses": 2,
-     "gf": 0,
-     "ga": 2,
+     "losses": 3,
+     "gf": 2,
+     "ga": 6,
      "pts": 0,
      "deduction": null,
      "live": null
