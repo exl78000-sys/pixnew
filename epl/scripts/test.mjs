@@ -5677,6 +5677,8 @@ function checkAssetStamps() {
     const regd = new Set(declared);
     const dead = Object.entries(NV.LEAGUES).flatMap(([lg, L]) => (L.open ?? []).filter(p => !regd.has(p)).map(p => `${lg}:${p}`));
     ok(dead.length === 0, 'open 清單只有導覽登錄過的頁(沒有死名字)', dead.join('、'));
+    ok(NV.navState('overview', null, 'pl').here?.items?.[0]?.page === 'overview' && NV.navState('overview', null, 'de1').here?.items?.[0]?.page === 'overview',
+      '「賽事」區第一格是總覽(2026-10-03,使用者要求;點「賽事」就到總覽)');
     /* 德義法的盃賽頁只看歐冠(2026-10-02):open 有 cups、標記 cupsOnly、導覽那一格叫「歐冠」、頁面讀那個標記 */
     const ucl3 = ['de1', 'it1', 'fr1'];
     const cupsSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');
