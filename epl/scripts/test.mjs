@@ -6064,7 +6064,11 @@ async function checkUclDetails() {
     ok(/import \{ pairOf, isShootoutShot \} from '\.\.\/lib\/matchstats\.mjs'/.test(src) && /store\.matches\[pairOf\(f\)\]/.test(src)
       && /const key = pairOf\(f\);/.test(src) && /byPair\.get\(`\$\{f\.home\}\|\$\{f\.away\}`\)/.test(src),
       '抓取器的快取鍵走 pairOf(歐冠帶日期),FotMob 賽程的查表仍是主|客');
-    ok(/舊鍵改成/.test(src) && /if \(m\.pair\) continue;/.test(src), '舊格式(主|客)的歐冠紀錄在載入時就地改鍵');
+    /* 改鍵的規則 2026-10-03 搬進 lib/pair-rekey.mjs(英冠的升級附加賽也要用,而且要拿捏造資料測 —— 行為由
+       test-championship 第 3b 節驗);這裡守的是抓取器**兩個快取都在載入時走它**,少走一個的話逐人統計會留在舊鍵 */
+    ok(/import \{ rekeyByPair \} from '\.\.\/lib\/pair-rekey\.mjs'/.test(src) && /rekeyByPair\(map, pairs, \{ addPair \}\)/.test(src)
+      && /\[store\.matches, '逐場', true\]/.test(src) && /\[pstore\.matches, '逐人統計', false\]/.test(src),
+      '舊格式(主|客)的紀錄在載入時就地改鍵(歐冠與英冠附加賽,逐場與逐人統計兩個快取都走 lib/pair-rekey.mjs)');
     ok(/byPair\.get\(k\)\.push\(/.test(src) && /cands\.find\(c => c\.date === f\.date\)/.test(src) && /remote\.missing/.test(src),
       'FotMob 賽程的查表一個鍵放一串,同一組主客多場時用日期挑(第一版後寫的蓋掉先寫的,13 場全部「日期不一致」)');
     ok(/const retryNow = process\.argv\.includes\('--retry'\)/.test(src) && /refresh \|\| retryNow \|\| !recentlyTried/.test(src)
