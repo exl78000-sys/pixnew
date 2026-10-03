@@ -1,5 +1,5 @@
-import * as C from './core.js?v=4f0bdcea';
-import { mountFixtureList } from './fixture-list.js?v=76a5592a';
+import * as C from './core.js?v=4a6863d3';
+import { mountFixtureList } from './fixture-list.js?v=87004d73';
 import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');

@@ -2058,10 +2058,13 @@ function renderDetailReport(rep, { caveats = [], heading = '## 賽後報告(FotM
       + shots.map(s => `| ${s.min}${s.extra ? '+' + s.extra : ''} | ${s.team == null ? '不詳' : nm(s.team)} | ${s.player ?? ''} | ${SIT[s.situation] ?? s.situation ?? ''} `
         + `| ${s.xg == null ? '' : s.xg.toFixed(2)} | ${s.type === 'Goal' ? '**進球**' : s.type ?? ''} |`).join('\n') + '\n');
     if (allShots.length > shots.length) out.push(`\n> PK 大戰的 ${allShots.length - shots.length} 球不算射門、也不算進 xG。\n`);
-    /* 射門圖的隊伍 id 跟賽程對不上時,逐場檔把那一腳的 team 留成 null(足總盃 2025-26 有 Macclesfield FC 的三場、44 腳:
-       事件與名單對得上,只有射門圖用的是另一個 id)。照印就是「null」;猜是哪一隊就是編資料 —— 印「不詳」並講出來 */
+    /* 射門圖的隊伍 id 跟賽程對不上時(足總盃 2025-26 有 Macclesfield FC 的三場、44 腳),讀取器用同一場的正式名單
+       對回、再拿逐隊射門數跟球隊統計核對(lib/matchstats.mjs 的 repairShotTeams,對回的標 teamFrom)——
+       對回的照實講是名單對回的;核對不過的整場照舊 null,印「不詳」並講出來,不替它猜是哪一隊 */
+    const viaLineup = shots.filter(s => s.teamFrom === 'lineup').length;
+    if (viaLineup) out.push(`\n> 其中 ${viaLineup} 腳的隊伍是本站用這一場的正式名單對回的:供應商射門圖用的隊伍 id 跟賽程對不上,射手的名字只出現在一隊的名單裡,對回之後兩隊的射門數跟球隊統計一致。\n`);
     const noTeam = shots.filter(s => s.team == null).length;
-    if (noTeam) out.push(`\n> ${noTeam} 腳射門供應商的射門圖沒有對到隊伍(它用的隊伍 id 跟賽程不同),球隊欄印「不詳」;本站不替它猜是哪一隊。\n`);
+    if (noTeam) out.push(`\n> ${noTeam} 腳射門供應商的射門圖沒有對到隊伍(它用的隊伍 id 跟賽程不同,名單也對不回),球隊欄印「不詳」;本站不替它猜是哪一隊。\n`);
   }
 
   // 逐人(有上場分鐘的;整欄都沒有值的欄位不列)

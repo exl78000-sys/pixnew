@@ -35,6 +35,31 @@ export const pairOf = m => m.pair ?? `${m.home}|${m.away}`;
 export const isShootoutShot = (s, { pens = false } = {}) => s?.period === 'PenaltyShootout'
   || (s?.period == null && !!pens && Number(s?.min) >= 120 && s?.situation === 'Penalty');
 
+/* 射門圖上沒有隊伍的射門,用**同一場的正式名單**對回(2026-10-03)。
+   FotMob 的射門圖有時用一個跟賽程不同的隊伍 id(實測:足總盃 2025-26 Macclesfield FC 三場、44 腳全是 null),
+   抓取器照對照表轉不出隊碼就留 null。站上的射門圖照 `s.team === 主隊` 分半場,null 一律畫到**客隊**那一半 ——
+   其中兩場 Macclesfield 是主隊,等於把他們的射門畫成對手的;算兩隊射門與 xG 時又整批不算。
+   對回的規則:射手的名字在**這一場**的正式名單(先發 + 替補)裡只出現在一隊 → 就是那一隊。烏龍球也一樣
+   (射門圖的烏龍球 team 是**射手自己那一隊**:全部 raw 裡帶隊伍的烏龍球 295 腳,能在名單上找到射手的 284 腳
+   全部是射手那一隊、0 腳相反)。對回之後要過一道核對:逐隊射門數(扣烏龍球與 PK 大戰)= 那一場的球隊統計射門數
+   —— 射門圖本來就帶隊伍的場次 3,283 場裡 3,280 場成立。**任何一腳對不上、或核對不過,整場一腳都不改**
+   (照舊 null,畫面照講),不挑對得上的那幾腳用。改過的射門標 `teamFrom: 'lineup'`,畫面講這是用名單對回的。 */
+export function repairShotTeams(m, { pens = false } = {}) {
+  const shots = m.shots ?? [];
+  const missing = shots.filter(s => s.team == null);
+  if (!missing.length) return { shots, repaired: 0, unresolved: 0 };
+  const codes = [m.home, m.away];
+  const roster = code => new Set([...(m.lineups?.[code]?.xi ?? []), ...(m.lineups?.[code]?.bench ?? [])].map(p => p.name).filter(Boolean));
+  const R = codes.map(roster);
+  const teamOf = s => { const hit = codes.filter((c, i) => s.player && R[i].has(s.player)); return hit.length === 1 ? hit[0] : null; };
+  const fixed = shots.map(s => (s.team == null ? { ...s, team: teamOf(s), teamFrom: 'lineup' } : s));
+  const fail = { shots, repaired: 0, unresolved: missing.length };
+  if (fixed.some(s => s.team == null)) return fail;
+  const counted = code => fixed.filter(s => s.team === code && !s.ownGoal && !isShootoutShot(s, { pens })).length;
+  if (!codes.every(c => Number.isFinite(m.teamStats?.[c]?.shots) && m.teamStats[c].shots === counted(c))) return fail;
+  return { shots: fixed, repaired: missing.length, unresolved: 0 };
+}
+
 /* 「被封阻射門」的語意修正(2026-09-15 深夜):對照表在版本 1 把 shot_blocks(自己做的封阻)當成被封阻的射門。
    不重抓幾千場,用**射門圖**回推:射門圖完整的場次,被封阻 = 該隊 blocked 的射門數(跟 blocked_shots 760/760 一致);
    有 teamExtra.blocked_shots(版本 2 抓的)就用它;兩者都沒有的舊紀錄,原值改記到 blocksMade、被封阻寫 null —— 不留一個語意錯的數字。 */
@@ -84,10 +109,14 @@ export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl'
       if (!m.possession?.all || m.possession.all[0] + m.possession.all[1] !== 100) { out.rejected.push({ key, reason: '控球率缺或相加不是 100' }); continue; }
       const pens = pensOf.get(key) === true;
       const shotGoals = (m.shots ?? []).filter(s => s.type === 'Goal' && !isShootoutShot(s, { pens })).length;
+      /* 射門圖上沒有隊伍的射門用同一場的名單對回(規則與核對見 repairShotTeams);被封阻的回推也用對回後的那一份 */
+      const fix = repairShotTeams(m, { pens });
       out.matches[key] = {
         key, season, date: m.date, home: m.home, away: m.away, score: [...truth], matchId: m.matchId,
         ...(m.pair ? { pair: m.pair } : {}), pens,
-        possession: m.possession, teamStats: fixBlockedShots(m), shots: m.shots ?? [], momentum: m.momentum ?? [],
+        possession: m.possession, teamStats: fixBlockedShots({ ...m, shots: fix.shots }), shots: fix.shots, momentum: m.momentum ?? [],
+        ...(fix.repaired ? { shotTeamFix: { repaired: fix.repaired, from: 'lineup' } } : {}),
+        ...(fix.unresolved ? { shotTeamUnresolved: fix.unresolved } : {}),
         events: m.events ?? [], lineups: m.lineups ?? null,
         /* 跑動 / 衝刺(2026-09-03 重探後加):供應商的追蹤資料,不是每場都有(2025-26 有 282/380,缺的集中在 11 座主場);沒有就是 null,不是 0 */
         physical: m.physical ?? null,
@@ -210,6 +239,8 @@ export function toCanonicalDetail(m, { verified = false } = {}) {
         detail: e.detail, comments: null, player: e.player ?? null, playerId: null, assist: null, assistId: null, ...(own ? { ownGoal: true, ownGoalBy: e.team } : {}) };
     }),
     lineups, possession: m.possession, momentum: m.momentum, shots: m.shots, shotmapComplete: m.shotmapComplete,
+    /* 射門的隊伍有幾腳是用名單對回的 / 有幾腳對不回(repairShotTeams);畫面照這兩個講 */
+    ...(m.shotTeamFix ? { shotTeamFix: m.shotTeamFix } : {}), ...(m.shotTeamUnresolved ? { shotTeamUnresolved: m.shotTeamUnresolved } : {}),
     physical: m.physical ?? null, possessionVerified: !!verified,
     coverage: { teamStatistics: true,
       playerStatistics: !!m.players && Object.values(m.players).some(l => l?.length),

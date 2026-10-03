@@ -1666,8 +1666,14 @@ export function matchReportCards(m, { order = null } = {}) {
          PenaltyShootout,或(舊 raw 沒有 period)**這一場有踢 PK**(d.pens)而且分鐘 ≥ 120 的 Penalty。 */
       const shootout = s => s.period === 'PenaltyShootout' || (s.period == null && d.pens === true && Number(s.min) >= 120 && s.situation === 'Penalty');
       const allShots = (d.shots ?? []).filter(s => Number.isFinite(s.x) && Number.isFinite(s.y));
-      const shots = allShots.filter(s => !shootout(s));
-      const pens = allShots.length - shots.length;
+      /* 沒有隊伍的射門不畫(2026-10-03):半場是照「是不是主隊」分的,null 會一律落到客隊那一半 ——
+         足總盃 Macclesfield 三場就是這樣,其中兩場他們是主隊。讀取器先用同一場的名單對回(lib/matchstats.mjs 的
+         repairShotTeams,對回的標 teamFrom),對不回的才會走到這裡,畫面照實講幾腳。 */
+      const sided = allShots.filter(s => s.team === m.home || s.team === m.away);
+      const noSide = allShots.length - sided.length;
+      const shots = sided.filter(s => !shootout(s));
+      const pens = sided.length - shots.length;
+      const viaLineup = shots.filter(s => s.teamFrom === 'lineup').length;
       if (!shots.length) return '';
       const W = 560, Hh = 360;
       const colour = code => team(code).chartColor ?? team(code).colors?.[0] ?? '#00ff85';
@@ -1681,13 +1687,16 @@ export function matchReportCards(m, { order = null } = {}) {
         return `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${r.toFixed(1)}" fill="${colour(s.team)}" fill-opacity="${goal ? 0.95 : 0.3}" stroke="${goal ? '#fff' : colour(s.team)}" stroke-width="${goal ? 2 : 1}"><title>${s.min}' ${esc(s.player ?? '')} xG ${(s.xg ?? 0).toFixed(2)}${goal ? ' ⚽' : ` ${s.type ?? ''}`}</title></circle>`;
       };
       const box = (x0, w) => `<rect x="${x0}" y="${((68 / 2 - 20.16) / 68 * Hh).toFixed(1)}" width="${w}" height="${(40.32 / 68 * Hh).toFixed(1)}" fill="none" stroke="var(--line)"/>`;
-      const sum = code => { const mine = shots.filter(s => s.team === code); return `${mine.length} 射門・xG ${mine.reduce((a, s) => a + (s.xg ?? 0), 0).toFixed(2)}`; };
+      /* 烏龍球畫在圖上(實心、在射手自己那一隊的位置),但不算射門:球隊統計的射門數本來就不含它
+         (射門圖逐隊數扣掉烏龍球 = 球隊統計,3,283 場裡 3,280 場成立),算進來的話同一頁兩個數字差 1 */
+      const ogs = shots.filter(s => s.ownGoal).length;
+      const sum = code => { const mine = shots.filter(s => s.team === code && !s.ownGoal); return `${mine.length} 射門・xG ${mine.reduce((a, s) => a + (s.xg ?? 0), 0).toFixed(2)}`; };
       return `<div class="card"><div class="row" style="justify-content:space-between"><h3>射門圖</h3><span class="pill accent tiny">${sourceLabel}・逐射門 xG</span></div>
         <div class="row small dim" style="justify-content:space-between"><span>${name(m.home)} → 攻右・${sum(m.home)}</span><span>${sum(m.away)}・攻左 ← ${name(m.away)}</span></div>
         <svg viewBox="0 0 ${W} ${Hh}" width="100%" style="display:block;margin:6px 0;background:#0a1018;border-radius:8px">
           <rect x="1" y="1" width="${W - 2}" height="${Hh - 2}" fill="none" stroke="var(--line)"/><line x1="${W / 2}" y1="0" x2="${W / 2}" y2="${Hh}" stroke="var(--line)"/>
           ${box(1, (16.5 / 105 * W).toFixed(1))}${box((W - 16.5 / 105 * W).toFixed(1), (16.5 / 105 * W).toFixed(1))}${shots.map(dot).join('')}</svg>
-        <div class="tiny dim">圓的大小是該次射門的 xG,實心是進球;把游標移到圓上看分鐘、射手與 xG。${pens ? `PK 大戰的 ${pens} 球不在圖上、也不算進 xG。` : ''}${d.shotmapComplete === false ? '<b>這場 shotmap 的進球數跟比分對不上,射門清單不完整。</b>' : ''}</div></div>`;
+        <div class="tiny dim">圓的大小是該次射門的 xG,實心是進球;把游標移到圓上看分鐘、射手與 xG。${pens ? `PK 大戰的 ${pens} 球不在圖上、也不算進 xG。` : ''}${ogs ? `烏龍球 ${ogs} 球畫在圖上(射手那一隊的顏色),但不算射門。` : ''}${viaLineup ? `其中 ${viaLineup} 腳的隊伍是本站用這一場的正式名單對回的(供應商射門圖用的隊伍代碼跟賽程對不上;對回之後兩隊的射門數跟球隊統計一致)。` : ''}${noSide ? `<b>有 ${noSide} 腳射門對不到隊伍,沒有畫在圖上,也不算進兩隊的射門與 xG。</b>` : ''}${d.shotmapComplete === false ? '<b>這場 shotmap 的進球數跟比分對不上,射門清單不完整。</b>' : ''}</div></div>`;
     };
     return {
       teamStats: `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start">

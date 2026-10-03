@@ -220,6 +220,21 @@ console.log('\n▶ Obsidian vault:盃賽與歐冠的賽後報告(cup-details / u
   });
   check('射門圖沒對到隊伍的射門印「不詳」並講出幾腳(不替它猜隊伍)', noTeamBad.length === 0,
     `${noTeamMatches} 場${noTeamBad.length ? `;不對的 ${noTeamBad.length}:${noTeamBad.slice(0, 3).map(r => r.k).join('、')}` : ''}`);
+  /* 讀取器用同一場的名單對回的那幾腳(lib/matchstats.mjs 的 repairShotTeams,標 teamFrom):筆記要講出幾腳是對回的,
+     球隊欄印那一隊 —— 還印「不詳」就是筆記沒跟上,不講是對回的就是把推得的東西寫成上游給的。
+     **不釘「一定要有對回的場次」**:哪天上游修好射門圖的隊伍 id、重抓之後這裡會是 0 場,那是好事不是錯 */
+  let viaMatches = 0;
+  const viaBad = reps.filter(r => {
+    const rep = read(join(ROOT, 'web', 'data', r.rel + '.json'));
+    const shots = (rep.advanced?.shots ?? []).filter(s => !isShootoutShot(s, { pens: rep.advanced?.pens === true }));
+    const n = shots.filter(s => s.teamFrom === 'lineup').length;
+    if (!n) return false;
+    viaMatches++;
+    const t = byId.get(r.k) ?? '';
+    return !t.includes(`其中 ${n} 腳的隊伍是本站用這一場的正式名單對回的`) || /^\| \d+(\+\d+)? \| 不詳 \|/m.test(t);
+  });
+  check('用名單對回隊伍的射門:講出幾腳是對回的,球隊欄印那一隊', viaBad.length === 0,
+    `${viaMatches} 場${viaBad.length ? `;不對的 ${viaBad.length}:${viaBad.slice(0, 3).map(r => r.k).join('、')}` : ''}`);
 
   /* 盃賽的比分核對是同一家供應商的一致性檢查 —— 產物說不是獨立來源,筆記就要講 */
   const indepBad = CD?.scoreCheck?.independent === false

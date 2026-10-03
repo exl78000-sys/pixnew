@@ -1,4 +1,4 @@
-import * as C from './core.js?v=4f0bdcea';
+import * as C from './core.js?v=4a6863d3';
 
 const app = document.getElementById('app');
 
@@ -359,7 +359,7 @@ try {
       <a class="small dim" href="${C.link('index')}">← 回積分與賽程</a>
       <h1 style="margin-top:6px">${C.teamLink(rep.home)} <span class="dim">vs</span> ${C.teamLink(rep.away)}</h1>
       <p>${C.esc(C.LEAGUES[C.league()]?.zh ?? '')} ${C.esc(rep.season)}${
-        rep.round ? `・第 ${rep.round} 輪` : ''}・${rep.date ? C.dateFull(rep.date) : ''}
+        rep.round ? `・第 ${rep.round} 輪` : rep.stage ? `・${C.esc(rep.stage)}` : ''}・${rep.date ? C.dateFull(rep.date) : ''}
         <span class="pill tiny">往季</span></p>
     </div>
     <div class="card">
