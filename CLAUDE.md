@@ -902,6 +902,9 @@ cd epl && npm test && npm run build && npm run snapshot && npm run bundle
 ```
 
 **不要手動編輯那些 JSON。** 它們是產物,重跑就對了。
+**改了產物的語意,就要連產物一起提交。** 部署的回寫只有 raw 與少數即時檔(`web/data/cups-live.json` 之類),不含 `web/data/intl*.json`、
+`overview-shared.json` 這種 —— 倉庫裡那幾份只有手動提交才會更新;不提交的話,乾淨 checkout 上新的測試對著舊產物紅
+(2026-10-05 `model.lag` 改量實際落後時,部署完才發現倉庫裡還是 `days: 7`)。部署本身不受影響(runner 上先 build 再測)。
 
 提交訊息用中文,寫清楚「為什麼」而不只是「改了什麼」。
 踩到坑就把坑寫進訊息裡 —— 那是給下一個人的。
