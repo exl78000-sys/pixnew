@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-10-05T04:35:42.224Z",
+ "retrievedAt": "2026-10-05T15:32:15.602Z",
  "matches": [
   {
    "id": "5120889",
@@ -8830,10 +8830,13 @@
     "shortName": "Panama",
     "fmId": "5922"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "Pen",
+   "reasonLong": "After penalties",
    "awarded": false,
    "round": null,
    "group": null
@@ -8851,10 +8854,13 @@
     "shortName": "New Zealand",
     "fmId": "5820"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8872,10 +8878,13 @@
     "shortName": "DR Congo",
     "fmId": "6321"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8893,7 +8902,7 @@
     "shortName": "Mauritius",
     "fmId": "5750"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -8945,7 +8954,7 @@
   },
   {
    "id": "6368651",
-   "kickoff": "2026-10-06T10:00:00Z",
+   "kickoff": "2026-10-06T11:00:00Z",
    "home": {
     "name": "South Korea",
     "shortName": "South Korea",
