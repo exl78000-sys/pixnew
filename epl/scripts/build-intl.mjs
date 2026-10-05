@@ -11,6 +11,7 @@
  *      改善沒有大過兩倍成對標準誤就整批不給(`intlPasses`)。
  *   2. **評分只從 martj42 算**,不拿 FotMob 還沒被核對的新賽果去改評分(鐵則五)。martj42 落後的那幾天,
  *      每一場的兩隊「評分之後又踢了幾場」寫進產物(`lag`),畫面講出來 —— 不確定性寫在畫面上(鐵則四)。
+ *      落後的代價(`model.lag`)量**實際**落後的天數(建置日 − 評分截止日,intlLagDays),不是固定的一個情境。
  *   3. **中立場是推的**:FotMob 賽程沒有這個欄位。第一版一律當名單上的主隊在主場(代價在調參時量過,
  *      neutralUnknown);2026-09-25 起用開賽前的 martj42 推一個機率 q(lib/intl.mjs 的 makeVenueModel,
  *      參數在調參期挑)。**每次建置重算推論的驗收**,沒過門檻就整批退回一律主場 —— q = 0 時勝率跟第一版逐位元組相同。
@@ -27,7 +28,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   parseIntlResults, parseShootouts, runIntlElo, backtestIntl, frequencyBaseline, pairedGain, calibration,
   tournamentClass, crossCheckIntl, proofFromCheck, makeVenueModel, venueProbs, venueBacktest,
-  intlLagCost, intlTeamHistory, intlH2H, intlStandings,
+  intlLagCost, intlLagDays, intlTeamHistory, intlH2H, intlStandings,
   INTL_HOLDOUT, INTL_MIN_GAMES, intlPasses,
 } from './lib/intl.mjs';
 import { loadIntlTeamTable, makeIntlResolver, intlFlagPlan } from './lib/intl-teams.mjs';
@@ -79,8 +80,11 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
   const all = pairedGain(hold, frequencyBaseline(hold));
   const pack = g => g && { n: g.n, model: r4(g.model), baseline: r4(g.baseline), gain: r4(g.gain), se: r4(g.se), z: r1(g.z) };
   const passed = intlPasses(all);
-  /* 評分落後一週的代價(每次建置重算;為什麼不拿未核對的賽果做暫定更新,見 lib/intl.mjs 的 intlLagCost) */
-  const lagRaw = intlLagCost(mj, P, { from: INTL_HOLDOUT.from, minGames, days: 7 });
+  /* 評分落後的代價(每次建置重算):量**實際**的落後 —— 評分截止日(martj42 最後一場)到建置日的整天數(intlLagDays)。
+     2026-10-05 之前這裡固定量 7 天:martj42 停了六週,畫面還在回答「一週的代價有沒有大過兩倍標準誤」。
+     為什麼不拿未核對的賽果做暫定更新,見 lib/intl.mjs 的 intlLagCost */
+  const lagDays = intlLagDays(lastDate, builtAt);
+  const lagRaw = lagDays == null ? null : intlLagCost(mj, P, { from: INTL_HOLDOUT.from, minGames, days: lagDays });
   const packLag = x => x && { n: x.n, cost: r4(x.cost), se: r4(x.se), z: x.z == null ? null : r1(x.z) };
   const lag = lagRaw && { days: lagRaw.days, all: packLag(lagRaw.all), affected: packLag(lagRaw.affected),
     passes: intlPasses(lagRaw.affected && { gain: lagRaw.affected.cost, se: lagRaw.affected.se }) };
@@ -367,8 +371,9 @@ async function main() {
   }
   const withProb = out.fixtures.filter(f => f.prob).length;
   const lg = out.model.lag;
-  if (lg?.affected) console.log(`  評分落後 ${lg.days} 天的代價:受影響的 ${lg.affected.n} 場每場 RPS +${lg.affected.cost} ± ${lg.affected.se}(${lg.affected.z} SE)`
-    + `・全部 ${lg.all.n} 場 +${lg.all.cost} → ${lg.passes ? '大過兩倍標準誤' : '沒有大過兩倍標準誤,不拿未核對的賽果做暫定更新'}`);
+  if (lg?.affected) console.log(`  評分實際落後 ${lg.days} 天(截止 ${out.model.ratingsAsOf})的代價:受影響的 ${lg.affected.n} 場每場 RPS +${lg.affected.cost} ± ${lg.affected.se}(${lg.affected.z} SE)`
+    + `・全部 ${lg.all.n} 場 +${lg.all.cost} → ${lg.passes ? '大過兩倍標準誤(評分仍只用 martj42,暫定更新要使用者決定:補齊規劃第 5 項)' : '沒有大過兩倍標準誤,不拿未核對的賽果做暫定更新'}`);
+  else if (lg) console.log(`  評分實際落後 ${lg.days} 天(截止 ${out.model.ratingsAsOf}):沒有受影響的場次可量`);
   const vn = out.model.venue;
   if (vn?.holdout) {
     const used = out.fixtures.filter(f => f.venue);

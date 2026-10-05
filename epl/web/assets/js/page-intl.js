@@ -93,8 +93,9 @@ function probCell(f) {
     ? `<div class="tiny dim" style="margin-top:3px" title="${esc(venueText(f))}">中立場機率 ${C.pct(f.venue.q, 0)}</div>` : '';
   if (!lag) return bar + venue;
   const who = [f.home, f.away].map((t, i) => (lags[i] ? `${zhOf(t.key)} ${lags[i]} 場` : null)).filter(Boolean).join('、');
+  // 天數是建置時**實際**的落後(model.lag.days),不是寫死的一個情境;精度跟模型那一段一樣印四位
   const lg = D.model.lag?.affected;
-  const cost = lg ? `量過這件事值多少:評分落後 ${D.model.lag.days} 天,受影響的場次每場 RPS 平均多 ${lg.cost} ± ${lg.se}(模型整體的改善是 ${D.model.holdout?.gain})。` : '';
+  const cost = lg ? `量過這件事值多少:建置時評分已落後 ${D.model.lag.days} 天,拿驗收那一批模擬同樣的落後,受影響的場次每場 RPS 平均多 ${Number(lg.cost).toFixed(4)} ± ${Number(lg.se).toFixed(4)}(模型整體的改善是 ${D.model.holdout ? Number(D.model.holdout.gain).toFixed(4) : '—'})。` : '';
   return `${bar}${venue}<div class="tiny dim" style="margin-top:3px" title="評分只算到 ${esc(D.model.ratingsAsOf)}(獨立來源收錄到的最後一天);之後踢的比賽還沒被核對,不拿來改評分。這兩隊之後又踢了:${esc(who)}。${esc(cost)}">評分未含最近 ${lag} 場</div>`;
 }
 
@@ -367,6 +368,22 @@ function venueBlock(m) {
       + `${C.pct(VENUE_SHOW, 0)} 以上的在勝率下面另外印一行。` : '這一次<b>沒有</b>通過門檻,所以未賽一律當主場算。'}</p>`;
 }
 
+/* 評分落後那一段。天數是建置時**實際**的落後(評分截止日到建置日,scripts/lib/intl.mjs 的 intlLagDays),不是寫死的一個情境:
+   2026-10-05 之前 build 固定量 7 天,martj42 停了六週這一段還在講「一週的代價沒大過兩倍標準誤」。
+   大過兩倍標準誤時不能再說「換來的好處量不出來」—— 那句是量過沒過才成立的理由;評分仍只從 martj42 算,
+   理由換成「提早更新要用的賽果還沒被獨立來源核對」。數字全部從產物讀。 */
+function lagBlock(m, h) {
+  const lg = m.lag, a = lg.affected;
+  const f4 = x => Number(x).toFixed(4);
+  return `<p class="small"><b>評分會落後,量過值多少。</b>martj42 收錄新賽果會晚幾天到幾週,那段時間踢的比賽不進評分。
+    這一次它收錄到 ${esc(m.ratingsAsOf)},到建置那天已經<b>落後 ${lg.days} 天</b>:拿驗收那一批模擬「評分晚 ${lg.days} 天」,
+    兩隊至少一隊在那幾天裡踢過的 ${a.n} 場,每場 RPS 平均多 ${f4(a.cost)} ± ${f4(a.se)}(${a.z} 倍標準誤;模型整體的改善是 ${h ? f4(h.gain) : '—'})。
+    ${lg.passes
+      ? `這個代價<b>大過</b>兩倍標準誤。評分仍然只從 martj42 算,還沒被獨立來源核對的賽果不拿來改評分(提早更新要冒用錯比分的風險,
+        而且它本身沒有歷史資料可以回測,這個代價是它最多能挽回的),所以這段期間的勝率是用舊評分算的 —— 有落後的場次,勝率下面寫了兩隊評分之後又踢了幾場。`
+      : '沒有大過兩倍標準誤 —— 所以本站<b>不</b>拿還沒被核對的賽果提早更新評分:換來的好處量不出來,卻要冒用錯比分的風險。'}</p>`;
+}
+
 function modelBlock() {
   const m = D.model;
   const h = m.holdout;
@@ -388,10 +405,7 @@ function modelBlock() {
             ? '<b class="accent-text">通過</b>,所以給勝率。'
             : '<b>沒通過</b>,所以這一頁<b>一場都不給</b>勝率。'}</p>` : '<p class="small">這一次沒有驗收結果,所以不給勝率。</p>'}
         ${venueBlock(m)}
-        ${m.lag?.affected ? `<p class="small"><b>評分會落後,量過值多少。</b>martj42 收錄新賽果會晚幾天到幾週,那段時間踢的比賽不進評分。
-          拿驗收那一批模擬「評分晚 ${m.lag.days} 天」:兩隊至少一隊在那幾天裡踢過的 ${m.lag.affected.n} 場,每場 RPS 平均多
-          ${m.lag.affected.cost} ± ${m.lag.affected.se}(${m.lag.affected.z} 倍標準誤;模型整體的改善是 ${h?.gain ?? '—'})。
-          ${m.lag.passes ? '這個代價大過兩倍標準誤。' : '沒有大過兩倍標準誤 —— 所以本站<b>不</b>拿還沒被核對的賽果提早更新評分:換來的好處量不出來,卻要冒用錯比分的風險。'}</p>` : ''}
+        ${m.lag?.affected ? lagBlock(m, h) : ''}
         <p class="small">沒有放進模型的:先發名單、傷停、總教練、旅途與時差 —— 本站沒有這些資料,
           勝率只看兩隊的歷史戰績。友誼賽常常大量輪換,那是模型看不到的。</p>
       </div>

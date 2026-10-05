@@ -300,6 +300,11 @@ export function proofFromCheck(rows, expect) {
    +0.0010 ± 0.0004(z 2.7)、90 天 z 3.6 —— 從兩週起就大過兩倍標準誤,一週那一格是差一點點沒過。
    `npm run intl:lag` 把曲線、分層與「現在上架那一批」的預期代價一次印出來(數字會隨資料變,引用就重跑)。
 
+   **同一天(2026-10-05,使用者:「先做第一個,model.lag 改量實際落後」)build 不再固定量 7 天**:`days` 由
+   `intlLagDays` 算 —— 評分截止日(martj42 最後一場)到建置日的整天數。martj42 跟得上的時候它是一兩天、
+   上游停了它就一直長,產物的 `model.lag` 與頁面、vault 的說明回答的永遠是「現在這麼落後的代價」。
+   **行為還是沒改**:評分仍然只從 martj42 算,要不要做暫定更新是另一個決定(補齊規劃第 5 項的 ②)。
+
    `detail: true` 多回 `rows`:逐場的 { d, diff, k },k = 凍結日(開賽日往前 `days` 天)到開賽日之間兩隊各自踢過幾場、加總
    (凍結日當天的比賽算沒看到:凍結的評分是那一天**開賽前**的)。分層與預期代價用它,算法只有這一份。 */
 export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, days = 7, detail = false } = {}) {
@@ -351,6 +356,18 @@ export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, 
     return { n, cost: m, se, z: se ? m / se : null };
   };
   return { days, all: stat(all), affected: stat(hit), ...(detail ? { rows: per } : {}) };
+}
+
+/* 評分落後幾天:評分截止日(martj42 最後一場的日期)到建置日(UTC)的整天數。build、`npm run intl:lag`、測試共用這一份。
+   跟 intlLagCost 的 `days` 對得起來:那邊凍結日 = 開賽日往前 days 天、凍結的評分**不含**凍結日當天的比賽,
+   而實際的評分**含**截止日當天 —— 所以對「建置日的隔天開賽」的場次,沒算到的剛好是截止日的隔天到建置日,B − L 天,
+   模擬跟現況一模一樣;再晚開賽的場次只會更多(假設上游一直沒更新),所以這是「至少」這麼落後。
+   建置日在截止日之前或同一天回 0(沒有落後);日期解不開回 null,由呼叫端決定(build 不給 `lag`)。 */
+export function intlLagDays(ratingsAsOf, builtAt) {
+  const a = Date.parse(`${String(ratingsAsOf ?? '').slice(0, 10)}T00:00:00Z`);
+  const b = Date.parse(`${String(builtAt ?? '').slice(0, 10)}T00:00:00Z`);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  return Math.max(0, Math.round((b - a) / 86400000));
 }
 
 /* ── 中立場的賽前推論(2026-09-25;補齊規劃第 6 項)──────────────────────

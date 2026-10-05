@@ -16,8 +16,8 @@
  *   三、**sha256**:讓「本機開瀏覽器看過的那份」與「站上這一份」能逐位元組比對 ——
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
- * 唯讀、零快取、**26 個請求**(meta / overview.html / page-overview.js / core.js / app.css /
- * intl.html / intl.json / intl-teams.json / intl-flags.json /
+ * 唯讀、零快取、**27 個請求**(meta / overview.html / page-overview.js / core.js / app.css /
+ * intl.html / page-intl.js / intl.json / intl-teams.json / intl-flags.json /
  * explore.html / game-sim.js / game/pl.json / model.html / inplay-tuning.json / prob-history.json /
  * 足總盃 5089921 的逐場檔 / 英冠 reports.json / 英冠附加賽決賽的往季逐場檔 / 英冠 tactics.json / core.js /
  * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
@@ -80,6 +80,10 @@ async function main() {
   const intlPage = await get('intl.html');
   const intlSrc = /["']((?:\.\/)?assets\/js\/page-intl\.js(?:\?v=[0-9a-f]{8})?)["']/.exec(intlPage.text)?.[1];
   console.log(`  intl.html  HTTP ${intlPage.status}  ${intlPage.buf.length} bytes・引用 ${intlSrc ?? '✗ 找不到 page-intl.js'}`);
+  /* 2026-10-05:落後那一段讀產物的實際天數(lagBlock);字面值找不到就印 ✗ —— 站上還是寫死「7 天」的上一版 */
+  const intlJs = await get('assets/js/page-intl.js');
+  console.log(`  assets/js/page-intl.js  HTTP ${intlJs.status}  ${intlJs.buf.length} bytes  sha256:${sha(intlJs.buf)}`
+    + `・lagBlock ${/^function lagBlock\(/m.test(intlJs.text) ? '✓' : '✗'}・說明讀產物的天數 ${/落後 \$\{lg\.days\} 天/.test(intlJs.text) ? '✓' : '✗'}`);
   const intl = await get('data/intl.json');
   const I = jsonOf(intl);
   console.log(`  data/intl.json  HTTP ${intl.status}  ${intl.buf.length} bytes  sha256:${sha(intl.buf)}`);
@@ -94,6 +98,11 @@ async function main() {
     console.log(`  分組積分榜 ${st ? `${st.length} 個賽事 ${st.reduce((a, c) => a + (c.groups?.length ?? 0), 0)} 組` : '(沒有這個欄位)'}`
       + `・排名 ${(I.ranking ?? []).length} 隊・不列的非會員 ${I.nonMembers ? I.nonMembers.length : '(沒有這個欄位)'}`
       + `・國旗 ${I.flags ? `${I.flags.count} 隊` : '(沒有這個欄位)'}`);
+    /* 2026-10-05:model.lag 量的是**實際**落後(建置日 − 評分截止日)。站上的天數對不上這個算法(例如還是 7)就印 ✗ —— 那是上一版 */
+    const lgI = I.model?.lag;
+    const wantDays = Math.max(0, Math.round((Date.parse(`${String(I.builtAt).slice(0, 10)}T00:00:00Z`) - Date.parse(`${I.model?.ratingsAsOf}T00:00:00Z`)) / 86400000));
+    console.log(`  評分落後 ${lgI ? `${lgI.days} 天(照建置日與評分截止日算應該是 ${wantDays} 天 ${lgI.days === wantDays ? '✓' : '✗'})` : '(沒有這個欄位)'}`
+      + (lgI?.affected ? `・受影響 ${lgI.affected.n} 場 +${lgI.affected.cost} ± ${lgI.affected.se}(${lgI.affected.z} SE)・${lgI.passes ? '大過兩倍標準誤' : '沒有大過'}` : ''));
     // 2026-09-25 的中立場推論:過了門檻的話,每一場給勝率的都要帶 venue
     const vn = I.model?.venue;
     const withVenue = fx.filter(f => f.prob && f.venue).length;

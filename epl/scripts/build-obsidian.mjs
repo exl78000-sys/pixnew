@@ -2869,8 +2869,8 @@ function buildIntl() {
     const lg = I.model?.lag;
     return `**評分未含最近 ${lag} 場**:評分只算到 ${asOf}(martj42 收錄到的最後一天),之後踢的比賽還沒被核對,不拿來改評分。`
       + `這兩隊之後又踢了:${who}。`
-      + (lg?.affected ? `量過這件事值多少:評分落後 ${lg.days} 天,受影響的場次每場 RPS 平均多 ${lg.affected.cost} ± ${lg.affected.se}`
-        + `(模型整體的改善是 ${I.model.holdout?.gain})。` : '');
+      + (lg?.affected ? `量過這件事值多少:建置時評分已落後 ${lg.days} 天,拿驗收那一批模擬同樣的落後,受影響的場次每場 RPS 平均多 ${Number(lg.affected.cost).toFixed(4)} ± ${Number(lg.affected.se).toFixed(4)}`
+        + `(模型整體的改善是 ${I.model.holdout ? Number(I.model.holdout.gain).toFixed(4) : '—'})。` : '');
   };
   const probShort = f => (f.prob ? `主勝 ${pc(f.prob[0])}・和 ${pc(f.prob[1])}・客勝 ${pc(f.prob[2])}` : (f.why ?? '不給勝率'));
   const stateOf = f => (f.state === 'CANCELLED' ? (f.reason === 'Ab' ? '中止' : '取消') : f.state === 'LIVE' ? '建置時進行中' : '未賽');
@@ -3234,10 +3234,15 @@ function buildIntl() {
         + (v.passes ? '這一次通過門檻,所以未賽的勝率用推的 —— 這是**推論**,不是賽事公布的場地。' : '這一次**沒有**通過門檻,所以未賽一律當主場算。') + '\n');
     }
     if (m.lag?.affected) {
-      b.push(`\n### 評分會落後\n\nmartj42 收錄新賽果會晚幾天到幾週,那段時間踢的比賽不進評分。拿驗收那一批模擬「評分晚 ${m.lag.days} 天」:`
-        + `兩隊至少一隊在那幾天裡踢過的 ${m.lag.affected.n} 場,每場 RPS 平均多 ${m.lag.affected.cost} ± ${m.lag.affected.se}`
-        + `(${m.lag.affected.z} 倍標準誤;模型整體的改善是 ${h.gain})。`
-        + (m.lag.passes ? '這個代價大過兩倍標準誤。' : '沒有大過兩倍標準誤 —— 所以本站**不**拿還沒被核對的賽果提早更新評分。') + '\n');
+      /* 天數是建置時**實際**的落後(評分截止日到建置日),不是寫死的一個情境 —— 跟頁面同一個說法(page-intl.js 的 lagBlock) */
+      const a = m.lag.affected, f4 = x => Number(x).toFixed(4);
+      b.push(`\n### 評分會落後\n\nmartj42 收錄新賽果會晚幾天到幾週,那段時間踢的比賽不進評分。這一次它收錄到 ${m.ratingsAsOf},到建置那天已經**落後 ${m.lag.days} 天**:`
+        + `拿驗收那一批模擬「評分晚 ${m.lag.days} 天」,兩隊至少一隊在那幾天裡踢過的 ${a.n} 場,每場 RPS 平均多 ${f4(a.cost)} ± ${f4(a.se)}`
+        + `(${a.z} 倍標準誤;模型整體的改善是 ${h ? f4(h.gain) : '—'})。`
+        + (m.lag.passes
+          ? '這個代價**大過**兩倍標準誤。評分仍然只從 martj42 算,還沒被獨立來源核對的賽果不拿來改評分(提早更新要冒用錯比分的風險,'
+            + '而且它本身沒有歷史資料可以回測,這個代價是它最多能挽回的),所以這段期間的勝率是用舊評分算的。'
+          : '沒有大過兩倍標準誤 —— 所以本站**不**拿還沒被核對的賽果提早更新評分。') + '\n');
     }
     b.push('\n沒有放進模型的:先發名單、傷停、總教練、旅途與時差 —— 本站沒有這些資料,勝率只看兩隊的歷史戰績。\n');
   }

@@ -18,8 +18,9 @@ import { fileURLToPath } from 'node:url';
 import {
   parseIntlResults, runIntlElo, backtestIntl, probsFromE, expectedScore, crossCheckIntl, proofFromCheck,
   frequencyBaseline, pairedGain, PROOF_MIN_MATCHED, INTL_TUNE, INTL_HOLDOUT, intlPasses,
-  intlStandings, intlLagCost, intlH2H, pairKey, makeVenueModel, venueProbs, venueBacktest, venueGroup, testExpect,
+  intlStandings, intlLagCost, intlLagDays, intlH2H, pairKey, makeVenueModel, venueProbs, venueBacktest, venueGroup, testExpect,
 } from './lib/intl.mjs';
+import { assembleIntl } from './build-intl.mjs';
 import { loadIntlTeamTable, makeIntlResolver, intlFlagPlan, flagDistance, FLAG_SAME } from './lib/intl-teams.mjs';
 import { decodePNG } from './lib/png.mjs';
 import { imageBytes } from './lib/image-files.mjs';
@@ -101,18 +102,26 @@ console.log('\n▶ 國家隊:模型(走查、門檻、參數)');
     check('給了勝率的場次,兩隊都有評分而且場數夠', withProb.every(f => f.home.key && f.away.key
       && (D.teams[f.home.key]?.games ?? 0) >= D.model.minGames && (D.teams[f.away.key]?.games ?? 0) >= D.model.minGames));
 
-    /* 評分落後的代價(2026-09-25 量的):沒大過兩倍標準誤,所以**不做暫定更新** —— 評分必須跟
-       「只用 martj42 走一次」逐隊一模一樣。哪天有人把 FotMob 還沒被核對的賽果塞進評分,這條會紅;
-       要那樣做,得先讓 lag.passes 變成 true(量出來值得),再改這條。 */
+    /* 評分落後的代價:量的是**實際**的落後 —— 評分截止日到建置日的整天數(2026-10-05 前固定量 7 天,
+       martj42 停了六週畫面還在回答「一週」)。判決照沒進位的數字重算,不拿產物裡進位過的數字比(cost 與 se 各進到四位,
+       貼著兩倍標準誤的那一天會比出相反的結果)。 */
     const lg = D.model.lag;
-    check('產物帶著「評分落後的代價」,而且判決跟它自己印的數字一致',
-      lg?.affected && lg.all && lg.days > 0 && lg.passes === (lg.affected.cost > 2 * lg.affected.se),
-      lg?.affected ? `${lg.days} 天:受影響 ${lg.affected.n} 場 ${lg.affected.cost} ± ${lg.affected.se}` : '—');
-    const re = intlLagCost(mj, P, { from: INTL_HOLDOUT.from, minGames: D.model.minGames, days: lg?.days ?? 7 });
-    check('落後的代價重算一次對得回產物', re && lg && re.affected.n === lg.affected.n && Math.abs(re.affected.cost - lg.affected.cost) < 1e-4);
+    const wantDays = intlLagDays(D.model.ratingsAsOf, D.builtAt);
+    check('產物的落後天數就是評分截止日到建置日的整天數(不是寫死的一個情境)', lg && wantDays != null && lg.days === wantDays, `${lg?.days} / ${wantDays}`);
+    const re = intlLagCost(mj, P, { from: INTL_HOLDOUT.from, minGames: D.model.minGames, days: lg?.days ?? 0 });
+    check('落後的代價重算一次對得回產物(沒有落後就沒有受影響的場次)',
+      lg && re && (lg.days === 0 ? !lg.affected && !re.affected
+        : lg.all && lg.affected && re.all.n === lg.all.n && re.affected.n === lg.affected.n
+          && Math.abs(re.affected.cost - lg.affected.cost) < 1e-4 && Math.abs(re.affected.se - lg.affected.se) < 1e-4),
+      lg?.affected ? `${lg.days} 天:受影響 ${lg.affected.n} 場 ${lg.affected.cost} ± ${lg.affected.se}` : `${lg?.days} 天`);
+    check('判決(大過兩倍標準誤)照沒進位的數字', lg && lg.passes === intlPasses(re?.affected && { gain: re.affected.cost, se: re.affected.se }));
+    /* **沒有暫定更新**:評分必須跟「只用 martj42 走一次」逐隊一模一樣。量出來大過兩倍標準誤(2026-10-05 起現況就是)
+       不代表可以放行 —— 要不要做暫定更新是使用者的決定(補齊規劃第 5 項 ②),不是這條測試會自己讓開的條件。
+       (第一版寫成 `lg.passes || drift.length === 0`:判決一變 true 這條就整個失效,而那正是它最該守的時候。)
+       哪天決定做了,是在這裡**有意識地**改這條,並且畫面要講「含 N 場尚未被獨立來源核對的賽果」。 */
     const { rating } = runIntlElo(mj, P);
     const drift = Object.entries(D.teams).filter(([k, t]) => t.rating != null && t.rating !== Math.round(rating.get(k)));
-    check('沒有暫定更新:每一隊的評分都等於只用 martj42 算的那一份', lg?.passes || drift.length === 0,
+    check('沒有暫定更新:每一隊的評分都等於只用 martj42 算的那一份(不管落後的代價有沒有大過兩倍標準誤)', drift.length === 0,
       drift.slice(0, 3).map(([k]) => k).join('、'));
     check('評分截止日就是 martj42 的最後一天', D.model.ratingsAsOf === mj.at(-1)?.date);
 
@@ -160,6 +169,72 @@ console.log('\n▶ 國家隊:落後的代價逐場分層(捏造資料手算)');
     r.rows.length === r.all.n && Math.abs(r.rows.reduce((a, x) => a + x.diff, 0) / r.rows.length - r.all.cost) < 1e-12);
   check('不要 detail 時沒有 rows,而且數字跟 detail 版逐位相同(build 用的那一條路沒被動到)',
     plain && !('rows' in plain) && plain.all.cost === r.all.cost && plain.affected.n === r.affected.n && plain.affected.cost === r.affected.cost);
+}
+
+// ── 2a-2. 落後的代價量「實際」落後(2026-10-05)──────────────────────
+/* build 不再固定量 7 天:`model.lag.days` = 評分截止日(martj42 最後一場)到建置日的整天數(`intlLagDays`)。
+   martj42 停了六週的時候,畫面與 vault 還在回答「一週的代價有沒有大過兩倍標準誤」(使用者:「先做第一個,model.lag 改量實際落後」)。
+   這一節守三件事:天數算得對(手算)、build 真的用它而不是寫死(同一份資料換建置日,結果跟著走)、
+   說明文字照產物的天數與判決講話(大過與沒大過的話不能互換)。 */
+console.log('\n▶ 國家隊:落後的代價量實際落後(建置日 − 評分截止日)');
+{
+  const at = d => `${d}T04:00:00.000Z`;
+  check('天數 = 建置日 − 評分截止日的整天數(手算:2026-08-26 → 10-05 是 40 天)', intlLagDays('2026-08-26', at('2026-10-05')) === 40);
+  check('當天的時間不影響整天數(23:59:59 還是 40,隔天零點才是 41)',
+    intlLagDays('2026-08-26', '2026-10-05T23:59:59Z') === 40 && intlLagDays('2026-08-26', '2026-10-06T00:00:00Z') === 41);
+  check('跨年與閏年(2023-12-31 → 2024-03-01 是 61 天)', intlLagDays('2023-12-31', at('2024-03-01')) === 61);
+  check('建置日不晚於截止日 → 0 天(沒有落後,不是負的)',
+    intlLagDays('2026-08-26', at('2026-08-26')) === 0 && intlLagDays('2026-08-26', at('2026-08-20')) === 0);
+  check('日期解不開 → null(交給呼叫端,不編一個天數)',
+    intlLagDays(null, at('2026-10-05')) === null && intlLagDays('2026-08-26', undefined) === null && intlLagDays('', '') === null);
+
+  if (mj.length) {
+    /* 同一份資料、不同的建置日:天數跟著走,代價就是 intlLagCost 在那個天數的結果。0 天 = martj42 跟上了,沒有受影響的場次;
+       7 天 = 過去固定量的那個情境(對得回去,代表舊的結論是新規則的一個特例);40 天 = 現況的量級。 */
+    const last = mj.at(-1).date;
+    const table = loadIntlTeamTable(ROOT);
+    const plus = n => at(new Date(Date.parse(`${last}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10));
+    const built = n => assembleIntl({ mj, params, table, raws: {}, builtAt: plus(n), flags: null }).model;
+    const [m0, m7, m40] = [0, 7, 40].map(built);
+    check('build 的天數跟著建置日走(0 / 7 / 40),不是寫死的一個情境',
+      m0.lag?.days === 0 && m7.lag?.days === 7 && m40.lag?.days === 40, [m0, m7, m40].map(m => m.lag?.days).join(' / '));
+    check('0 天(跟上了)沒有受影響的場次,也不給「大過兩倍標準誤」', m0.lag.affected === null && m0.lag.passes === false);
+    for (const [n, m] of [[7, m7], [40, m40]]) {
+      const re = intlLagCost(mj, params.params, { from: INTL_HOLDOUT.from, minGames: m.minGames, days: n });
+      check(`落後 ${n} 天:build 給的就是 intlLagCost 在 ${n} 天的結果,判決照沒進位的數字`,
+        m.lag.affected.n === re.affected.n && Math.abs(m.lag.affected.cost - re.affected.cost) < 1e-4
+        && m.lag.passes === intlPasses({ gain: re.affected.cost, se: re.affected.se }),
+        `${m.lag.affected.n} 場 ${m.lag.affected.cost} ± ${m.lag.affected.se}`);
+    }
+    check('落後越久,受影響的場次越多(7 → 40 天)', m40.lag.affected.n > m7.lag.affected.n, `${m7.lag.affected.n} → ${m40.lag.affected.n}`);
+  }
+
+  /* 說明文字:天數與判決一律從產物讀。lagBlock 在頁面裡(頁面載不進 Node),直接從原始碼取出來跑 —— 守的是行為,不是字串在不在 */
+  const pageSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8');
+  const i0 = pageSrc.indexOf('function lagBlock(');
+  let depth = 0, i1 = -1;
+  for (let i = pageSrc.indexOf('{', i0); i0 >= 0 && i < pageSrc.length; i++) {
+    if (pageSrc[i] === '{') depth++;
+    else if (pageSrc[i] === '}' && --depth === 0) { i1 = i + 1; break; }
+  }
+  check('頁面有 lagBlock,而且取得出來', i0 >= 0 && i1 > i0);
+  if (i1 > i0) {
+    const lagBlock = new Function('esc', `${pageSrc.slice(i0, i1)}\nreturn lagBlock;`)(s => String(s));
+    const mkM = (days, passes) => ({ ratingsAsOf: '2026-08-26', lag: { days, passes, affected: { n: 3447, cost: 0.001, se: 0.0004, z: 2.7 } } });
+    const hold = { gain: 0.0551 };
+    const yes = lagBlock(mkM(40, true), hold), no = lagBlock(mkM(13, false), hold);
+    check('說明裡的天數是產物給的(40 天印 40、13 天印 13),截止日也照產物',
+      yes.includes('落後 40 天') && yes.includes('評分晚 40 天') && no.includes('落後 13 天') && no.includes('評分晚 13 天') && yes.includes('2026-08-26'));
+    check('數字照產物、精度印四位(0.0010 ± 0.0004、2.7 倍標準誤、改善 0.0551)',
+      yes.includes('0.0010 ± 0.0004') && yes.includes('2.7 倍標準誤') && yes.includes('0.0551') && yes.includes('3447'));
+    check('大過兩倍標準誤時,不說「換來的好處量不出來」(那句只在沒大過時成立),而且照實講評分仍只從 martj42 算',
+      !yes.includes('好處量不出來') && yes.includes('大過') && yes.includes('仍然只從 martj42 算') && yes.includes('用舊評分算'));
+    check('沒大過時維持原本的說法:不拿未核對的賽果提早更新評分', no.includes('好處量不出來') && no.includes('沒有大過兩倍標準誤') && !no.includes('用舊評分算'));
+  }
+  const noC = stripComments(pageSrc);
+  check('頁面不寫死落後的天數(「晚 N 天」「落後 N 天」的 N 一律從產物讀)', !/(?:晚|落後)\s*\d+\s*天/.test(noC));
+  const vaultSrc = stripComments(readFileSync(join(ROOT, 'scripts', 'build-obsidian.mjs'), 'utf8'));
+  check('vault 產生器也一樣不寫死落後的天數', !/(?:晚|落後)\s*\d+\s*天/.test(vaultSrc));
 }
 
 // ── 2b. 中立場的賽前推論(2026-09-25)──────────────────────

@@ -87,6 +87,21 @@ if (!I) {
   const lagBad = (I.fixtures ?? []).filter(f => f.prob && Math.max(0, ...(f.lag ?? []).map(n => n ?? 0)) > 0)
     .filter(f => !note(matchRel(f)).includes(`評分未含最近 ${Math.max(0, ...f.lag.map(n => n ?? 0))} 場`));
   check('評分落後的場次講出「評分未含最近 N 場」', lagBad.length === 0, lagBad.slice(0, 3).map(matchRel).join('、'));
+  /* 落後的說明講**實際**的天數(建置日 − 評分截止日,2026-10-05 前固定量 7 天),判決照產物:
+     大過兩倍標準誤與沒大過是兩種話,不能互換(大過了還說「換來的好處量不出來」就是講假話) */
+  const lagI = I.model?.lag;
+  if (lagI?.affected) {
+    const home = note('國家隊/國家隊.md');
+    check('國家隊首頁的「評分會落後」講產物裡的天數與判決',
+      home.includes(`**落後 ${lagI.days} 天**`) && home.includes(`「評分晚 ${lagI.days} 天」`)
+      && (lagI.passes
+        ? home.includes('這個代價**大過**兩倍標準誤') && !home.includes('不**拿還沒被核對的賽果提早更新評分')
+        : home.includes('沒有大過兩倍標準誤') && home.includes('不**拿還沒被核對的賽果提早更新評分')),
+      `${lagI.days} 天・${lagI.passes ? '大過兩倍標準誤' : '沒有大過'}`);
+    const lagNotes = (I.fixtures ?? []).filter(f => f.prob && Math.max(0, ...(f.lag ?? []).map(n => n ?? 0)) > 0);
+    const lagDayBad = lagNotes.filter(f => !note(matchRel(f)).includes(`建置時評分已落後 ${lagI.days} 天`));
+    check('評分落後的場次筆記講的也是實際的天數', lagDayBad.length === 0, `${lagNotes.length} 則${lagDayBad.length ? `,不對的:${lagDayBad.slice(0, 3).map(matchRel).join('、')}` : ''}`);
+  }
   const venueBad = (I.fixtures ?? []).filter(f => f.prob && f.venue && !/中立場的機率 \d+%\(\*\*推論\*\*/.test(note(matchRel(f))));
   check('用了中立場推論的場次標成推論', venueBad.length === 0, venueBad.slice(0, 3).map(matchRel).join('、'));
 

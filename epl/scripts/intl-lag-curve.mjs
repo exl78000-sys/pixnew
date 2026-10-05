@@ -5,16 +5,21 @@
  * 而 martj42 的檔案 08-26 之後沒再更新 —— 上游自己停的(抓下來跟倉庫那份逐位元組相同),不是本站抓不到 ——
  * 實際落後已經六週以上,當時的結論回答的是另一個情境。這支把**同一個量**(lib/intl.mjs 的 intlLagCost)掃過
  * 7~90 天,再用「現在上架的未賽場次」的狀態推這一批預期多付多少。
+ * (同一天 build 改成量**實際**落後 —— `intlLagDays`,產物的 `model.lag` 從此回答「現在這麼落後的代價」;
+ *  這支留著看整條曲線:落後多久、代價怎麼長,以及現在這一批的預期。)
  *
- * 三節:
+ * 四節:
  *   A. 落後 N 天的代價。同一批驗收場次(2022 起),正常走查 vs N 天前凍結的評分,逐場成對比 RPS(正值 = 落後讓預測變差)。
- *      N = 7 那一行要逐位等於產物 intl.json 的 model.lag —— 對不上就是這支或 build 其中一個壞了。
+ *      「現在」那一行(intlLagDays)要逐位等於 build 的 model.lag(下面也印產物自己記的那一行,test-intl 守同一件事)——
+ *      對不上就是這支或 build 其中一個壞了。
  *   B. 依「評分沒算到的場數」分層:凍結日到開賽日之間兩隊各自踢了幾場、加總(0-2 / 3-4 / 5 以上)。
- *   C. 現在上架那一批(有勝率的未賽場次):兩隊合計沒算到的場數分佈、離評分截止日多遠,
+ *   C. 中立場推論對「落後」敏不敏感(「還有誰用同一個判斷?」)。推論的驗收是在「只用開賽前 7 天以前的資料」(參數檔 venue.lag)
+ *      下做的,而 martj42 停了的時候它實際看到的資料更舊。同一套驗收把 lag 換成 0~90 天各量一次,看增益有沒有掉、過不過門檻。
+ *   D. 現在上架那一批(有勝率的未賽場次):兩隊合計沒算到的場數分佈、離評分截止日多遠,
  *      以及用 B 的分層**照這一批的場數分佈加權**出來的預期代價。
- *      **C 是估計不是直接量到的**:分層的每一格是驗收期的樣本,現在這批沒有真值可以比;加權時把各格當成互相獨立,
+ *      **D 是估計不是直接量到的**:分層的每一格是驗收期的樣本,現在這批沒有真值可以比;加權時把各格當成互相獨立,
  *      SE 照這個算。場數是「現在」數的 —— 還沒開賽的場次到開賽時只會更多,所以這個估計偏低(假設上游一直沒更新)。
- *      C 要 FotMob 的快取(data/raw/fotmob-intl/,runner 抓、倉庫有回寫那一份);沒有就略過。
+ *      D 要 FotMob 的快取(data/raw/fotmob-intl/,runner 抓、倉庫有回寫那一份);沒有就略過。
  *
  *   npm run intl:lag
  * 唯讀:不寫任何檔、零請求。數字會隨資料變,引用就重跑,不要抄文件裡的。
@@ -23,7 +28,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  parseIntlResults, parseShootouts, backtestIntl, frequencyBaseline, pairedGain, intlLagCost,
+  parseIntlResults, parseShootouts, backtestIntl, frequencyBaseline, pairedGain, intlLagCost, intlLagDays, venueBacktest,
   INTL_HOLDOUT, INTL_MIN_GAMES, intlPasses,
 } from './lib/intl.mjs';
 import { loadIntlTeamTable } from './lib/intl-teams.mjs';
@@ -43,10 +48,11 @@ const lastDate = mj.at(-1)?.date;
 
 const hold = backtestIntl(mj, P, { from, minGames });
 const g = pairedGain(hold, frequencyBaseline(hold));
-console.log(`martj42 ${mj.length} 場(到 ${lastDate},距今 ${Math.round((Date.now() - Date.parse(lastDate)) / dayMs)} 天)・驗收 ${g.n} 場:模型對基準線改善 ${g.gain.toFixed(4)} ± ${g.se.toFixed(4)}`);
+/* 「現在」落後幾天:跟 build 同一條算法(intlLagDays:建置日 − 評分截止日的整天數,UTC) */
+const liveDays = intlLagDays(lastDate, new Date().toISOString());
+console.log(`martj42 ${mj.length} 場(到 ${lastDate},距今 ${liveDays} 天)・驗收 ${g.n} 場:模型對基準線改善 ${g.gain.toFixed(4)} ± ${g.se.toFixed(4)}`);
 
-/* ── A. 曲線。再加一列「現在實際落後幾天」(今天 − 評分截止日),build 固定量 7 天,看不到這一格 ── */
-const liveDays = Math.round((Date.now() - Date.parse(lastDate)) / dayMs);
+/* ── A. 曲線。7 天是 2026-10-05 之前 build 固定量的情境(留著對照),「現在」是實際落後 ── */
 const DAYS = [...new Set([7, 14, 21, 30, 38, 42, 45, 60, 90, liveDays])].sort((a, b) => a - b);
 console.log('\n▶ A. 落後 N 天的代價(正值 = 落後讓預測變差;受影響 = 兩隊至少一隊在那幾天裡踢過)');
 const row = x => `${String(x.n).padStart(5)} 場 ${f4(x.cost)} ± ${x.se.toFixed(4)} (z ${z1(x.z)})`;
@@ -54,6 +60,13 @@ for (const days of DAYS) {
   const r = intlLagCost(mj, P, { from, minGames, days });
   const pass = intlPasses({ gain: r.affected.cost, se: r.affected.se });
   console.log(`  ${String(days).padStart(3)} 天${days === liveDays ? '(現在)' : '      '} 全部 ${row(r.all)} | 受影響 ${row(r.affected)} | ${pass ? '大過兩倍標準誤' : '沒有大過'}・佔模型整體改善 ${(r.affected.cost / g.gain * 100).toFixed(1)}%`);
+}
+
+// 產物自己記的那一行(build 量的實際落後):跟上面同一天數的那一行逐位相同才對(建置後 results.csv 沒換過的話)
+const prodPath = join(ROOT, 'web', 'data', 'intl.json');
+if (existsSync(prodPath)) {
+  const pl = JSON.parse(readFileSync(prodPath, 'utf8')).model?.lag;
+  if (pl?.affected) console.log(`  產物 intl.json 記的:${pl.days} 天 受影響 ${pl.affected.n} 場 ${f4(pl.affected.cost)} ± ${pl.affected.se.toFixed(4)}(z ${z1(pl.affected.z)})・${pl.passes ? '大過兩倍標準誤' : '沒有大過'}`);
 }
 
 /* ── B. 依「評分沒算到的場數」分層 ── */
@@ -74,10 +87,22 @@ for (const days of [42, 60, 90]) {
   console.log(`  落後 ${days} 天:` + GROUPS.map(b => { const s = strata[days][b]; return `${b} 場 ${s.n} 場 ${f4(s.cost)} ± ${s.se?.toFixed(4) ?? '—'}(z ${z1(s.z)})`; }).join(' | '));
 }
 
-/* ── C. 現在上架那一批 ── */
+/* ── C. 中立場推論對落後敏不敏感 ──
+   venue.lag 是推論**不偷看**開賽前幾天的資料(調參與驗收都固定 7);落後的現況下推論看到的資料更舊,量一次增益有沒有掉。
+   沒有 venue 參數(npm run tune:intl 還沒跑)就略過。 */
+const V = params.venue;
+if (V) {
+  console.log(`\n▶ C. 中立場推論對落後敏不敏感(參數檔 venue.lag = ${V.lag};對「一律當主場」的增益,驗收 ${INTL_HOLDOUT.from} 起)`);
+  for (const lag of [...new Set([0, 7, 14, 21, 30, 40, 60, 90, liveDays])].sort((a, b) => a - b)) {
+    const gv = venueBacktest(mj, P, { ...V, lag }, { from, minGames }).inferred;
+    console.log(`  lag ${String(lag).padStart(3)} 天${lag === V.lag ? '(參數檔)' : lag === liveDays ? '(現在)  ' : '        '} ${gv.gain >= 0 ? '+' : ''}${gv.gain.toFixed(5)} ± ${gv.se.toFixed(5)}(z ${z1(gv.z)})・${intlPasses(gv) ? '過門檻' : '沒過門檻'}・驗收 ${gv.n} 場`);
+  }
+}
+
+/* ── D. 現在上架那一批 ── */
 const rawsDir = join(ROOT, 'data', 'raw', 'fotmob-intl');
 const raws = existsSync(rawsDir) ? loadRaws(rawsDir) : {};
-if (!Object.keys(raws).length) { console.log('\n▶ C. 沒有 FotMob 快取(data/raw/fotmob-intl/),略過現在上架那一批'); process.exit(0); }
+if (!Object.keys(raws).length) { console.log('\n▶ D. 沒有 FotMob 快取(data/raw/fotmob-intl/),略過現在上架那一批'); process.exit(0); }
 const soPath = join(ROOT, 'data', 'raw', 'intl', 'shootouts.csv');
 const out = assembleIntl({ mj, shootouts: existsSync(soPath) ? parseShootouts(readFileSync(soPath, 'utf8')) : new Map(), mjMeta: null, params,
   table: loadIntlTeamTable(ROOT), raws, builtAt: new Date().toISOString(), flags: null });
@@ -87,7 +112,7 @@ const kOf = f => (f.lag?.[0] ?? 0) + (f.lag?.[1] ?? 0);
 const asOfT = Date.parse(out.model.ratingsAsOf);
 const daysOf = f => (Date.parse(f.kickoff) - asOfT) / dayMs;
 const med = xs => [...xs].sort((a, b) => a - b)[xs.length >> 1];
-console.log(`\n▶ C. 現在上架(有勝率)的 ${slate.length} 場(FotMob 快取最後抓取 ${fetched};模型驗收 ${out.model.passed ? '通過' : '沒通過'};已完賽核對 ${JSON.stringify(out.checkCounts)})`);
+console.log(`\n▶ D. 現在上架(有勝率)的 ${slate.length} 場(FotMob 快取最後抓取 ${fetched};模型驗收 ${out.model.passed ? '通過' : '沒通過'};已完賽核對 ${JSON.stringify(out.checkCounts)})`);
 if (!slate.length) process.exit(0);
 const cnt = Object.fromEntries(GROUPS.map(b => [b, slate.filter(f => groupOf(kOf(f)) === b).length]));
 console.log(`  兩隊合計沒算到的場數:0-2 場 ${cnt['0-2']}・3-4 場 ${cnt['3-4']}・5 場以上 ${cnt['5+']}(其中至少一隊沒算到:${slate.filter(f => kOf(f) > 0).length} 場)`);
