@@ -292,9 +292,19 @@ export function proofFromCheck(rows, expect) {
    2026-09-25 第一次量:落後一週,全部 +0.0004 ± 0.0002(1.9 SE)、受影響的 60% +0.0006 ± 0.0003 ——
    模型整體對基準線的改善是 0.055,落後吃掉的大約 1%,而且沒有大過兩倍標準誤。
    所以**不**拿還沒被核對的 FotMob 賽果去做暫定更新(那要冒用錯比分的風險,換一個量不出來的好處)。
-   數字每次建置重算、畫面讀產物;上面那一行是當時的紀錄,不是現況。 */
-export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, days = 7 } = {}) {
+   數字每次建置重算、畫面讀產物;上面那一行是當時的紀錄,不是現況。
+
+   **2026-10-05 重量(使用者:「重量落後六週的代價」):上面那個結論只屬於「落後一週」。** build 固定量 `days: 7`,
+   而 martj42 的檔案 08-26 之後沒再更新(上游自己停的,抓下來跟倉庫那份逐位元組相同),實際落後已經六週以上。
+   同一批驗收場次掃 7~90 天:一週 z 1.9(沒過)、14~38 天 z 2.0~2.4、六週(42 天)受影響的 3,456 場
+   +0.0010 ± 0.0004(z 2.7)、90 天 z 3.6 —— 從兩週起就大過兩倍標準誤,一週那一格是差一點點沒過。
+   `npm run intl:lag` 把曲線、分層與「現在上架那一批」的預期代價一次印出來(數字會隨資料變,引用就重跑)。
+
+   `detail: true` 多回 `rows`:逐場的 { d, diff, k },k = 凍結日(開賽日往前 `days` 天)到開賽日之間兩隊各自踢過幾場、加總
+   (凍結日當天的比賽算沒看到:凍結的評分是那一天**開賽前**的)。分層與預期代價用它,算法只有這一份。 */
+export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, days = 7, detail = false } = {}) {
   const before = new Map();   // 隊 → [[比賽日, 那一天開賽前的評分], …]
+  const played = detail ? new Map() : null;   // 隊 → 它每一場的比賽日(依序);只有要分層時才記
   const rows = [];
   runIntlElo(matches, params, { onDay: (d, day) => {
     for (const r of day) {
@@ -302,6 +312,7 @@ export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, 
         let h = before.get(t);
         if (!h) before.set(t, (h = []));
         if (h.at(-1)?.[0] !== d) h.push([d, v]);
+        if (played) { let g = played.get(t); if (!g) played.set(t, (g = [])); g.push(d); }
       }
       if (d >= from && r.nh >= minGames && r.na >= minGames) rows.push({ ...r, d });
     }
@@ -316,7 +327,7 @@ export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, 
     return h[lo];
   };
   const back = d => new Date(Date.parse(`${d}T00:00:00Z`) - days * 86400000).toISOString().slice(0, 10);
-  const all = [], hit = [];
+  const all = [], hit = [], per = [];
   for (const r of rows) {
     const c = back(r.d);
     const [dh, rh] = asOf(r.m.home, c), [da, ra] = asOf(r.m.away, c);
@@ -327,6 +338,10 @@ export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, 
     all.push(diff);
     // 那幾天裡有踢過:凍結時查到的比賽日比這一場早
     if (dh < r.d || da < r.d) hit.push(diff);
+    if (detail) {
+      const unseen = t => played.get(t).filter(x => x >= c && x < r.d).length;
+      per.push({ d: r.d, diff, k: unseen(r.m.home) + unseen(r.m.away) });
+    }
   }
   const stat = xs => {
     const n = xs.length;
@@ -335,7 +350,7 @@ export function intlLagCost(matches, params, { from, minGames = INTL_MIN_GAMES, 
     const se = Math.sqrt(xs.reduce((a, x) => a + (x - m) ** 2, 0) / (n - 1) / n);
     return { n, cost: m, se, z: se ? m / se : null };
   };
-  return { days, all: stat(all), affected: stat(hit) };
+  return { days, all: stat(all), affected: stat(hit), ...(detail ? { rows: per } : {}) };
 }
 
 /* ── 中立場的賽前推論(2026-09-25;補齊規劃第 6 項)──────────────────────

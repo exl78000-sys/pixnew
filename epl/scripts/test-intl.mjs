@@ -136,6 +136,32 @@ console.log('\n▶ 國家隊:模型(走查、門檻、參數)');
   }
 }
 
+// ── 2a. 落後的代價逐場分層(2026-10-05;`npm run intl:lag` 用)──────────────
+/* `intlLagCost(…, { detail: true })` 多回逐場的 { d, diff, k }:k = 凍結日(開賽日往前 days 天)到開賽日之間,
+   兩隊各自踢過幾場、加總。分層與「現在上架那一批」的預期代價都吃它,算法只有這一份 —— 所以拿**捏造的四場**逐個手算:
+   每一個 k 都能數出來,而且凍結日**當天**的比賽算沒看到(凍結的評分是那一天開賽前的,第一版就是邊界寫錯的那一種)。 */
+console.log('\n▶ 國家隊:落後的代價逐場分層(捏造資料手算)');
+{
+  const mk = (date, home, away, fh, fa) => ({ date, home, away, fh, fa, tournament: 'Friendly', neutral: false });
+  const ms = [mk('2020-01-01', 'A', 'B', 1, 0), mk('2020-01-05', 'A', 'C', 2, 1), mk('2020-01-10', 'B', 'C', 0, 0), mk('2020-01-20', 'A', 'B', 1, 1)];
+  const Pf = { homeAdv: 100, kScale: 0.75, drawA: 0.38, drawB: 0.6 };
+  const run = days => intlLagCost(ms, Pf, { from: '2020-01-01', minGames: 1, days, detail: true });
+  const ks = r => r.rows.map(x => `${x.d}:${x.k}`).join(' ');
+  /* 兩隊都踢過至少一場的只有 01-10(B 對 C)與 01-20(A 對 B)。
+     days 14:01-10 凍結在 12-27 → B 的 01-01、C 的 01-05 都沒看到 = 2;01-20 凍結在 01-06 → A 沒有、B 的 01-10 = 1。 */
+  check('落後 14 天:逐場「沒算到的場數」跟手算一樣', ks(run(14)) === '2020-01-10:2 2020-01-20:1', ks(run(14)));
+  /* days 10:01-20 凍結在 01-10,**剛好是 B 踢 C 的那一天** —— 當天的比賽算沒看到(評分是開賽前的),所以 = 1。
+     邊界寫成「晚於凍結日」的話這裡是 0。 */
+  check('凍結日當天的比賽算沒看到(邊界含凍結日)', ks(run(10)) === '2020-01-10:2 2020-01-20:1', ks(run(10)));
+  /* days 400:凍結在所有比賽之前,場數 = 開賽日之前兩隊各自踢過的全部;開賽日當天的不算(那是這一場自己) */
+  check('凍結在最前面:場數 = 開賽前兩隊各自踢過的全部(不含這一場)', ks(run(400)) === '2020-01-10:2 2020-01-20:4', ks(run(400)));
+  const r = run(14), plain = intlLagCost(ms, Pf, { from: '2020-01-01', minGames: 1, days: 14 });
+  check('逐場的代價平均 = 全部的代價(同一批場次、同一個差)',
+    r.rows.length === r.all.n && Math.abs(r.rows.reduce((a, x) => a + x.diff, 0) / r.rows.length - r.all.cost) < 1e-12);
+  check('不要 detail 時沒有 rows,而且數字跟 detail 版逐位相同(build 用的那一條路沒被動到)',
+    plain && !('rows' in plain) && plain.all.cost === r.all.cost && plain.affected.n === r.affected.n && plain.affected.cost === r.affected.cost);
+}
+
 // ── 2b. 中立場的賽前推論(2026-09-25)──────────────────────
 /* FotMob 的賽程沒有「是不是中立場」。第一版一律當主場;現在用開賽前 lag 天以前的 martj42 推一個機率 q,
    調參期挑參數、驗收期驗,**建置每次重算、過門檻才用**。這一節守:推論不偷看、主辦國的判斷、

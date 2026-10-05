@@ -331,7 +331,7 @@ export function assembleIntlTeams({ mj, params, main, builtAt }) {
     h2h: Object.fromEntries([...h2h].sort(([a], [b]) => (a < b ? -1 : 1))),
   };
 }
-function loadRaws(dir) {
+export function loadRaws(dir) {   // 2026-10-05 匯出:npm run intl:lag 用同一份讀法,不另外寫一份
   const out = {};
   if (!existsSync(dir)) return out;
   for (const f of readdirSync(dir).filter(x => x.endsWith('.json'))) {
