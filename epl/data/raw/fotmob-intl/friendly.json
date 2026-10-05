@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-10-05T15:32:15.602Z",
+ "retrievedAt": "2026-10-05T20:20:47.034Z",
  "matches": [
   {
    "id": "5120889",
@@ -8902,10 +8902,13 @@
     "shortName": "Mauritius",
     "fmId": "5750"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8923,10 +8926,13 @@
     "shortName": "Kenya",
     "fmId": "5884"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -8944,7 +8950,7 @@
     "shortName": "Gibraltar",
     "fmId": "507764"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
