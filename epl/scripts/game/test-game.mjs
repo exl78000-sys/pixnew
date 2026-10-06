@@ -350,6 +350,82 @@ console.log('\n▶ 模擬遊玩:主場優勢與中立場(2026-10-03)');
     /venueNote\(cal\.venue\)/.test(viewB) && /\$\{v\.homePush\}/.test(vnBody) && /遊戲變數/.test(vnBody) && /中立場/.test(vnBody));
 }
 
+console.log('\n▶ 模擬遊玩:強弱量測台的估計量(2026-10-06)');
+{
+  /* `npm run game:strength` 的判決(校準斜率、強隊 / 弱隊進球 ÷ λ)由 lib/strength.mjs 的 `summarize` 算。
+     它抽成純函式、這一節拿**捏造的結果**驗估計量本身 —— 量測台要跑 35 分鐘,不進 npm test;
+     但「判決怎麼算」是會算錯的:斜率的權重、誰是強隊、SE 是 0 的那些筆。第一版量測台(scratch)
+     拿「第一個列出來的」當強隊,換個列法就整個反過來,而那一個數字正是補齊規劃結案的依據。
+     每一條都有對照組(壓縮 / 沒壓縮兩種都要得到對的答案),不然「全部都回 1」的壞版本也會綠。 */
+  const { summarize } = await import(pathToFileURL(join(ROOT, 'scripts', 'game', 'lib', 'strength.mjs')));
+  const PAIRS = [['AAA', 'BBB'], ['CCC', 'DDD']];
+  // pair、強隊、弱隊、λ(強隊主場 / 弱隊客場 / 弱隊主場 / 強隊客場)、控球目標(同樣四個位置;同一場兩隊加起來 100)
+  const L = [['AAA-BBB', 'AAA', 'BBB', 2.2, 0.8, 1.0, 1.8, 56, 44, 45, 55], ['CCC-DDD', 'CCC', 'DDD', 1.6, 1.0, 1.2, 1.4, 54, 46, 47, 53]];
+  const build = (goalsOf, { reversed = false, seOf = () => 0.1, possOf = () => 50, noTarget = false } = {}) => {
+    const ent = [];
+    for (const [pair, s, w, lSH, lWA, lWH, lSA, tSH, tWA, tWH, tSA] of L) {
+      const rows = [{ code: s, side: 'home', lam: lSH, xgps: 0.12, t: tSH }, { code: w, side: 'away', lam: lWA, xgps: 0.10, t: tWA },
+        { code: w, side: 'home', lam: lWH, xgps: 0.10, t: tWH }, { code: s, side: 'away', lam: lSA, xgps: 0.12, t: tSA }];
+      /* `reversed` = 弱隊的筆排在前面(不是單純倒過來 —— 倒過來第一筆還是強隊,「拿第一個列出來的當強隊」的壞版本照樣過) */
+      for (const { t, ...r } of (reversed ? [rows[1], rows[0], rows[3], rows[2]] : rows)) {
+        ent.push({ pair, ...r, goals: goalsOf(r.lam, pair), se: seOf(pair), shots: 12, expShots: 12, box: 30,
+          poss: possOf(t), possSe: 1, ...(noTarget ? {} : { possT: t }) });
+      }
+    }
+    return ent;
+  };
+  const lamMean = L.reduce((t, r) => t + r[3] + r[4] + r[5] + r[6], 0) / (L.length * 4);
+  const near = (x, y, e = 1e-9) => Math.abs(x - y) < e;
+  const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+
+  const flat = summarize({ ent: build(l => l), PAIRS });
+  check('沒有壓縮(進球 = λ):斜率 1、截距 0、強隊與弱隊的進球 ÷ λ 都是 1、沒有 |z| > 3',
+    near(flat.b, 1) && near(flat.a, 0) && near(mean(flat.gS), 1) && near(mean(flat.gW), 1) && flat.big === 0,
+    `b ${flat.b.toFixed(6)}・a ${flat.a.toFixed(6)}・強 ${mean(flat.gS).toFixed(4)}・弱 ${mean(flat.gW).toFixed(4)}`);
+  /* 權重:SE 小的筆要比 SE 大的筆重。一組配對(AAA-BBB)剛好落在 y = λ 上、SE 0.1;另一組(CCC-DDD)整個被推高 1 球、
+     SE 1.0 —— 加權之後斜率幾乎不受那組影響(權重差 100 倍),沒加權的話會被拖走。完全吻合的資料看不出權重有沒有算,
+     所以另外放這一條。 */
+  const wt = summarize({ ent: build((l, pair) => (pair === 'CCC-DDD' ? l + 1 : l), { seOf: p => (p === 'CCC-DDD' ? 1 : 0.1) }), PAIRS });
+  check('斜率是加權的:SE 大的那一組被推高 1 球,斜率仍在 1 ± 0.05(沒加權的話會被拖走)', Math.abs(wt.b - 1) < 0.05, `b ${wt.b.toFixed(4)}`);
+  /* 往平均壓 40%:進球 = m + 0.6(λ − m)。斜率必須剛好是 0.6,強隊 < 1 < 弱隊 —— 這是「被壓扁」的樣子 */
+  const squeeze = summarize({ ent: build(l => lamMean + 0.6 * (l - lamMean)), PAIRS });
+  check('壓縮(往平均壓 40%):斜率剛好 0.6,強隊進球 ÷ λ < 1 < 弱隊(對照組:上一條得到 1)',
+    near(squeeze.b, 0.6) && mean(squeeze.gS) < 0.95 && mean(squeeze.gW) > 1.05,
+    `b ${squeeze.b.toFixed(6)}・強 ${mean(squeeze.gS).toFixed(3)}・弱 ${mean(squeeze.gW).toFixed(3)}`);
+  /* 強弱看 λ,不看誰先列、誰在主場:把四筆倒著放,強隊還是 AAA 與 CCC */
+  const rev = summarize({ ent: build(l => l, { reversed: true }), PAIRS });
+  check('誰是強隊看 λ(兩個方向平均),不看列的順序:弱隊排前面、強弱也不變',
+    flat.strong.map(s => s.code).join() === 'AAA,CCC' && rev.strong.map(s => s.code).join() === 'AAA,CCC'
+    && rev.weak.map(s => s.code).join() === 'BBB,DDD');
+  check('每球 xG 強 − 弱、禁區觸球比、射門 ÷ 預算 照強弱算(強 0.12 對弱 0.10 → +0.02)',
+    flat.dq.every(d => near(d, 0.02)) && flat.rb.every(r => near(r, 1)) && flat.sS.every(r => near(r, 1)));
+  /* SE 是 0 的那一組沒有定義:不能讓 z 變成 Infinity / NaN 把平均污染掉,也不能被算成「|z| > 3」 */
+  const zero = summarize({ ent: build(l => l + 0.5, { seOf: p => (p === 'CCC-DDD' ? 0 : 0.1) }), PAIRS });
+  check('SE 是 0 的那一組不進 z(沒有定義),z 平均與 |z| > 3 的筆數都不被它污染',
+    [...zero.zS, ...zero.zW].every(Number.isFinite) && zero.zS.length === 1 && zero.zW.length === 1 && zero.big === 4,
+    `zS ${zero.zS.length} 筆・zW ${zero.zW.length} 筆・|z|>3 ${zero.big} 筆(只有 SE 0.1 的那四筆,差 5 SE)`);
+  /* 控球跟著目標走嗎:引擎控球 = 50 + 0.5 × (目標 − 50) → 斜率剛好 0.5;照目標 → 1;完全不理 → 0。
+     強 − 弱的目標差也要對(同一場兩隊目標加起來 100,所以每組是強隊的兩個目標平均減弱隊的)。
+     舊的結果檔沒有 possT —— 沒有就回 null,不是回一個 NaN 或 0(0 是一個看起來很像答案的數字)。 */
+  const pHalf = summarize({ ent: build(l => l, { possOf: t => 50 + 0.5 * (t - 50) }), PAIRS });
+  const pFull = summarize({ ent: build(l => l, { possOf: t => t }), PAIRS });
+  const pNone = summarize({ ent: build(l => l, { possOf: () => 50 }), PAIRS });
+  const pOld = summarize({ ent: build(l => l, { noTarget: true }), PAIRS });
+  check('控球斜率:減半 → 0.5、照目標 → 1、完全不理 → 0(三種都要得到對的答案)',
+    near(pHalf.possSlope, 0.5) && near(pFull.possSlope, 1) && near(pNone.possSlope, 0),
+    `${pHalf.possSlope?.toFixed(4)} / ${pFull.possSlope?.toFixed(4)} / ${pNone.possSlope?.toFixed(4)}`);
+  check('控球目標的強 − 弱:AAA-BBB 11、CCC-DDD 7;引擎減半的那一份是它的一半',
+    near(pHalf.pdT[0], 11) && near(pHalf.pdT[1], 7) && near(pHalf.pd[0], 5.5) && near(pHalf.pd[1], 3.5),
+    `目標 ${pHalf.pdT?.map(x => x.toFixed(2))}・引擎 ${pHalf.pd.map(x => x.toFixed(2))}`);
+  check('舊結果檔(沒有 possT)的控球斜率與目標差是 null,不是 NaN 或 0', pOld.possSlope === null && pOld.pdT === null);
+  /* 量測台自己不另寫一份估計量(兩份各算一次,改了定義有一份會悄悄過期) */
+  const csSrc = readFileSync(join(ROOT, 'scripts', 'game', 'check-strength.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const pkg = read(join(ROOT, 'package.json'));
+  check('量測台從 lib/strength.mjs 取估計量、不自己定義 summarize;npm run game:strength 指到它',
+    /from '\.\/lib\/strength\.mjs'/.test(csSrc) && !/(?:function|const) summarize\b/.test(csSrc)
+    && /check-strength\.mjs/.test(pkg.scripts?.['game:strength'] ?? ''));
+}
+
 console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套意思)');
 {
   /* **2026-09-25 修的那個錯**:畫面上的五級是聯盟的五分位(側寫的 `style.*.level`,標「・本季」的是
