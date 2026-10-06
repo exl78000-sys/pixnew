@@ -260,8 +260,12 @@ async function checkInplayCurve() {
   const gp = join(ROOT, 'web', 'data', 'game', 'pl.json');
   if (existsSync(gp)) {
     const game = JSON.parse(readFileSync(gp, 'utf8'));
-    ok('遊戲側寫帶的曲線 = 實時頁用的那一條(勝率條寫著「跟實時頁同一顆引擎」)',
-      JSON.stringify(game.inplayCurve ?? null) === JSON.stringify(inUse ?? null));
+    /* 這一條在**本機**常常紅、而 CI 不會:`data/inplay-tuning.json` 每次部署的回寫都重算(曲線第 4 位小數在漂),
+       `web/data/game/pl.json` 卻是手動提交的產物。紅的時候把原因寫在訊息裡 —— 2026-10-06 為了確認它跟自己的改動無關,
+       花了一輪 stash 掉再跑才看出來。通過的時候不印,免得每次都多一行。 */
+    const sameCurve = JSON.stringify(game.inplayCurve ?? null) === JSON.stringify(inUse ?? null);
+    ok('遊戲側寫帶的曲線 = 實時頁用的那一條(勝率條寫著「跟實時頁同一顆引擎」)', sameCurve,
+      sameCurve ? '' : '產物比輸入舊:本機先 `node scripts/game/build-game.mjs`(不提交)再測;部署先 build 再測,CI 不會因此紅');
   }
 
   // ④ 每一個算即時勝率的呼叫點都有傳曲線(剝註解之後逐個呼叫取括號內的內容)
