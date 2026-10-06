@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-05T20:20:40.053Z",
+ "retrievedAt": "2026-10-06T05:20:57.994Z",
  "matches": [
   {
    "id": "5181812",
@@ -639,7 +639,7 @@
   },
   {
    "id": "5181843",
-   "kickoff": "2026-10-05T18:45:00.000Z",
+   "kickoff": "2026-10-05T18:45:00Z",
    "home": {
     "name": "Bosnia and Herzegovina",
     "shortName": "Bosnia and Herzegovina",
@@ -650,17 +650,20 @@
     "shortName": "Poland",
     "fmId": "8568"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "4"
   },
   {
    "id": "5181806",
-   "kickoff": "2026-10-05T18:45:00.000Z",
+   "kickoff": "2026-10-05T18:45:00Z",
    "home": {
     "name": "Northern Ireland",
     "shortName": "Northern Ireland",
@@ -671,17 +674,20 @@
     "shortName": "Georgia",
     "fmId": "8268"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "2"
   },
   {
    "id": "5181844",
-   "kickoff": "2026-10-05T18:45:00.000Z",
+   "kickoff": "2026-10-05T18:45:00Z",
    "home": {
     "name": "Romania",
     "shortName": "Romania",
@@ -692,17 +698,20 @@
     "shortName": "Sweden",
     "fmId": "8520"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "4"
   },
   {
    "id": "5181807",
-   "kickoff": "2026-10-05T18:45:00.000Z",
+   "kickoff": "2026-10-05T18:45:00Z",
    "home": {
     "name": "Ukraine",
     "shortName": "Ukraine",
@@ -713,17 +722,20 @@
     "shortName": "Hungary",
     "fmId": "8565"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "2"
   },
   {
    "id": "5181782",
-   "kickoff": "2026-10-06T18:45:00Z",
+   "kickoff": "2026-10-06T18:45:00.000Z",
    "home": {
     "name": "Scotland",
     "shortName": "Scotland",
@@ -744,7 +756,7 @@
   },
   {
    "id": "5181783",
-   "kickoff": "2026-10-06T18:45:00Z",
+   "kickoff": "2026-10-06T18:45:00.000Z",
    "home": {
     "name": "Switzerland",
     "shortName": "Switzerland",
@@ -1225,7 +1237,7 @@
      "ga": 0,
      "pts": 8,
      "deduction": null,
-     "live": "5181806"
+     "live": null
     },
     {
      "fmId": "8565",
@@ -1235,11 +1247,11 @@
      "wins": 2,
      "draws": 1,
      "losses": 1,
-     "gf": 2,
-     "ga": 1,
+     "gf": 3,
+     "ga": 2,
      "pts": 7,
      "deduction": null,
-     "live": "5181807"
+     "live": null
     },
     {
      "fmId": "6718",
@@ -1249,11 +1261,11 @@
      "wins": 1,
      "draws": 1,
      "losses": 2,
-     "gf": 1,
-     "ga": 4,
+     "gf": 2,
+     "ga": 5,
      "pts": 4,
      "deduction": null,
-     "live": "5181807"
+     "live": null
     },
     {
      "fmId": "8268",
@@ -1267,7 +1279,7 @@
      "ga": 2,
      "pts": 2,
      "deduction": null,
-     "live": "5181806"
+     "live": null
     }
    ]
   },
@@ -1395,21 +1407,21 @@
      "ga": 3,
      "pts": 10,
      "deduction": null,
-     "live": "5181844"
+     "live": null
     },
     {
      "fmId": "10106",
      "name": "Bosnia and Herzegovina",
      "idx": 2,
      "played": 4,
-     "wins": 1,
-     "draws": 3,
+     "wins": 2,
+     "draws": 2,
      "losses": 0,
-     "gf": 5,
+     "gf": 6,
      "ga": 3,
-     "pts": 6,
+     "pts": 8,
      "deduction": null,
-     "live": "5181843"
+     "live": null
     },
     {
      "fmId": "8568",
@@ -1417,13 +1429,13 @@
      "idx": 3,
      "played": 4,
      "wins": 1,
-     "draws": 2,
-     "losses": 1,
+     "draws": 1,
+     "losses": 2,
      "gf": 7,
-     "ga": 3,
-     "pts": 5,
+     "ga": 4,
+     "pts": 4,
      "deduction": null,
-     "live": "5181843"
+     "live": null
     },
     {
      "fmId": "9730",
@@ -1437,7 +1449,7 @@
      "ga": 13,
      "pts": 0,
      "deduction": null,
-     "live": "5181844"
+     "live": null
     }
    ]
   }
