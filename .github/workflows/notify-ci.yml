@@ -60,17 +60,27 @@ jobs:
             const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
             const labels = ['ci-failure', `ci:${key}`];
 
-            /* 判定只看呼叫端的 needs 結論。三種各自的理由:
+            /* 判定只看呼叫端的 needs 結論。**紅 = 不是 success、也不是 skipped 的一切** ——
+               白名單,不是「failure 或 cancelled 才算紅」的黑名單。各個值的理由:
                  `skipped`   不算紅 —— 例如 Pages 沒開時 deploy 會被跳過
                  `failure`   算紅
                  `cancelled` **算紅**,而且是刻意的:6 小時上限、runner 掛掉都是這個結論,
                              漏掉就是靜靜失敗。代價是**人手動取消長迴圈也會開一張** ——
                              可以接受,因為 Issue 內文會直接寫 `cancelled` 而不是 failure,
-                             看一眼就知道是自己按的。 */
+                             看一眼就知道是自己按的。
+                 `abandoned` **算紅**(2026-10-06 補):job 從頭到尾沒有 runner 領走(Actions 頁寫
+                             「The job was not acquired by Runner of type hosted even after
+                             multiple attempts」)。這時 needs 的結論**不是 cancelled 而是
+                             abandoned** —— 2026-10-05 20:18 UTC 排程部署(#610)的 deploy 與
+                             ignition-watch 就是這樣:整個 run 標紅、站沒部署,黑名單兩個值都不認,
+                             notify 報 success、一張 Issue 都沒開。
+                 沒見過的值   也算紅 —— 這支通知存在的理由就是「紅了不能靜靜過去」,
+                             認不得的結論寧可多吵一張,不可以靜靜放行。 */
+            const isRed = r => r != null && r !== 'success' && r !== 'skipped';
             let results = {};
             try { results = JSON.parse(process.env.RESULTS || '{}'); } catch { results = {}; }
             const outcomes = Object.entries(results).map(([job, v]) => [job, v?.result]);
-            const failed = outcomes.some(([, r]) => r === 'failure' || r === 'cancelled');
+            const failed = outcomes.some(([, r]) => isRed(r));
 
             /* 哪一步紅的:加分項,拿不到就只講 job 層的結論。 */
             let bad = [];
@@ -82,9 +92,10 @@ jobs:
                   if (j.name.includes('notify')) continue;                    // 自己不算
                   const steps = (j.steps ?? []).filter(st => st.conclusion === 'failure');
                   for (const st of steps) bad.push(`${j.name} → ${st.name}`);
-                  /* 步驟層沒有 failure、整個 job 卻是紅的:逾時、runner 掛掉、被取消。
+                  /* 步驟層沒有 failure、整個 job 卻是紅的:逾時、runner 掛掉、被取消、
+                     沒有 runner 領走(那種 job 一個 step 都沒有)。
                      那些不會落在任何一個 step 上,不補這一句就會印出「失敗的步驟:」然後空白。 */
-                  if (!steps.length && ['failure', 'cancelled'].includes(j.conclusion)) {
+                  if (!steps.length && isRed(j.conclusion)) {
                     bad.push(`${j.name} → 整個 job ${j.conclusion}`);
                   }
                 }
@@ -92,8 +103,7 @@ jobs:
                 core.warning(`讀不到這次執行的逐步結果(${e.message}),只報 job 層的結論`);
               }
               if (!bad.length) {
-                bad = outcomes.filter(([, r]) => r === 'failure' || r === 'cancelled')
-                  .map(([job, r]) => `${job} → ${r}`);
+                bad = outcomes.filter(([, r]) => isRed(r)).map(([job, r]) => `${job} → ${r}`);
               }
             }
 
@@ -110,12 +120,23 @@ jobs:
               return;
             }
 
+            /* abandoned 不是程式或測試紅,是沒有 runner 領走 —— Issue 內文要直接講,
+               不然讀的人會去翻一個根本沒跑過的 job 的 log。jobs 那一側(Actions API)
+               對這種 job 寫的是 cancelled,所以這句要從 needs 結論(`outcomes`)補。 */
+            const abandoned = outcomes.filter(([, r]) => r === 'abandoned').map(([job]) => job);
+
             const body = [
               `執行:${runUrl}`,
               `分支:${context.ref}`,
               '',
               '失敗的:',
               ...bad.map(b => `- ${b}`),
+              ...(abandoned.length ? [
+                '',
+                `其中 ${abandoned.join('、')} 的結論是 \`abandoned\`:這個 job 沒有被任何 runner 領走` +
+                '(Actions 頁的訊息是「The job was not acquired by Runner of type hosted even after multiple attempts」),' +
+                '**不是程式或測試紅**,也沒有 log 可看。重跑那個 job,或等下一次排程。',
+              ] : []),
               '',
               `這個 Issue 由 \`notify-ci.yml\` 自動開(呼叫端 \`${key}\`);下一次成功會自動關。`,
             ].join('\n');

@@ -676,9 +676,12 @@ async function main() {
   console.log('\n▶ 近況的形狀與內容(六個聯賽;聯賽清單掃目錄)');
   const formShapeFail = checkFormShape();
 
+  console.log('\n▶ CI 失敗通知的判定(真的執行內嵌腳本:紅 = 不是 success 也不是 skipped 的一切)');
+  const notifyFail = await checkNotifyVerdict();
+
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail || formShapeFail) process.exitCode = 1;
+  if (!better || notifyFail || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail || formShapeFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1515,6 +1518,124 @@ async function checkLinks() {
   let fail = 0;
   for (const [name, pass, detail] of cases) {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* CI 失敗通知的判定(notify-ci.yml 內嵌的 github-script,2026-10-06)。
+
+   2026-10-05 20:18 UTC 的排程部署(#610):deploy 與 ignition-watch 兩個 job 從頭到尾沒有 runner 領走
+   (「The job was not acquired by Runner of type hosted even after multiple attempts」,沒有 step、沒有 log)。
+   呼叫端傳進來的 needs 結論是 `abandoned` —— 不是 failure、也不是 cancelled,而判定寫成
+   「failure 或 cancelled 才算紅」。結果:整個 run 標紅、站沒部署,**通知自己報 success、一張 Issue 都沒開**。
+   這支通知存在的理由就是「紅了不能靜靜過去」,卻被一個沒列進清單的結論值繞過去 ——
+   失敗通知自己的失敗,是最安靜的一種。
+
+   測的是**真的執行那段內嵌腳本**(從 YAML 抽出來、餵假的 github / context):掃字串守不住「判定對不對」——
+   既有那幾條只掃字串的斷言,#610 當天全是綠的(負向對照:把舊的黑名單貼回去,它們一條都沒紅,
+   紅的全是這一節)。第一組 fixture 是 #610 當天 job log 裡逐字的 RESULTS。 */
+async function checkNotifyVerdict() {
+  const results = [];
+  const ok = (name, pass, detail = '') => results.push([name, !!pass, detail]);
+
+  const lines = readFileSync(join(ROOT, '..', '.github', 'workflows', 'notify-ci.yml'), 'utf8').split('\n');
+  const head = lines.findIndex(l => /^\s*script: \|\s*$/.test(l));
+  let src = null;
+  if (head >= 0) {
+    const rest = lines.slice(head + 1);
+    const first = rest.find(l => l.trim() !== '') ?? '';
+    const indent = first.length - first.trimStart().length;
+    const body = [];
+    for (const l of rest) {
+      if (l.trim() === '') { body.push(''); continue; }
+      if (l.length - l.trimStart().length < indent) break;
+      body.push(l.slice(indent));
+    }
+    src = body.join('\n');
+  }
+  ok('抽得出內嵌腳本(`script: |` 區塊)', src && /const key = process\.env\.KEY/.test(src));
+
+  if (src) {
+    const AsyncFn = Object.getPrototypeOf(async () => {}).constructor;
+    const exec = new AsyncFn('github', 'context', 'core', 'process', src);
+    const run = async ({ needs, existing = null, jobs = [], jobsThrow = false }) => {
+      const rec = { created: [], comments: [], closed: [], warnings: [] };
+      const github = {
+        paginate: async () => { if (jobsThrow) throw new Error('boom'); return jobs; },
+        rest: {
+          actions: { listJobsForWorkflowRun() {} },
+          issues: {
+            listForRepo: async () => ({ data: existing ? [existing] : [] }),
+            create: async a => { rec.created.push(a); return { data: { number: 99 } }; },
+            createComment: async a => { rec.comments.push(a); },
+            update: async a => { if (a.state === 'closed') rec.closed.push(a); },
+          },
+        },
+      };
+      const context = { repo: { owner: 'o', repo: 'r' }, serverUrl: 'https://github.com', runId: 1, ref: 'refs/heads/x' };
+      const core = { warning: m => rec.warnings.push(m) };
+      /* 腳本丟例外也要變成一條紅的斷言,不可以讓整支 test.mjs 當掉(當掉的話只剩一段堆疊、沒有 ✗ 可數) */
+      try { await exec(github, context, core, { env: { KEY: 'epl-live', RESULTS: JSON.stringify(needs) } }); }
+      catch (e) { rec.threw = e.message; }
+      return rec;
+    };
+    const J = (build, tests, deploy, watch) => ({
+      build: { result: build, outputs: { pages_enabled: 'true' } },
+      'game-tests': { result: tests, outputs: {} },
+      deploy: { result: deploy, outputs: {} },
+      'ignition-watch': { result: watch, outputs: {} },
+    });
+    // Actions API 對沒領到 runner 的 job 的寫法(2026-10-05 實測:steps 是空的、conclusion 是 cancelled)
+    const stepsOk = [{ name: 'x', conclusion: 'success' }];
+    const jobs610 = [
+      { name: 'build', conclusion: 'success', steps: stepsOk },
+      { name: 'game-tests', conclusion: 'success', steps: stepsOk },
+      { name: 'ignition-watch', conclusion: 'cancelled', steps: [] },
+      { name: 'deploy', conclusion: 'cancelled', steps: [] },
+      { name: 'notify / notify', conclusion: null, steps: [] },
+    ];
+    const needs610 = J('success', 'success', 'abandoned', 'abandoned');   // #610 當天 log 裡逐字的 RESULTS
+
+    const r610 = await run({ needs: needs610, jobs: jobs610 });
+    const issue = r610.created[0] ?? {};
+    ok('#610 的 needs(deploy / ignition-watch = abandoned)要開一張 Issue', r610.created.length === 1, `開了 ${r610.created.length} 張`);
+    ok('…標題帶呼叫端,內文兩個 job 都列、講明 abandoned 不是程式或測試紅',
+      /epl-live/.test(issue.title ?? '') && /deploy/.test(issue.body ?? '') && /ignition-watch/.test(issue.body ?? '')
+      && /abandoned/.test(issue.body ?? '') && /不是程式或測試紅/.test(issue.body ?? ''));
+    ok('…標籤是 ci-failure + ci:<key>(幾支 workflow 不會互相關掉對方的 Issue)',
+      JSON.stringify(issue.labels) === JSON.stringify(['ci-failure', 'ci:epl-live']));
+
+    for (const v of ['failure', 'cancelled', 'abandoned', 'some-future-value']) {
+      const r = await run({ needs: J('success', 'success', v, 'success'), jobs: jobs610 });
+      ok(`結論 ${v}${v === 'some-future-value' ? '(沒見過的值,白名單寫法才會紅)' : ''} 算紅 → 開 Issue`,
+        r.created.length === 1, `開了 ${r.created.length} 張`);
+    }
+
+    const rSkip = await run({ needs: J('success', 'success', 'skipped', 'skipped') });
+    ok('success / skipped 不算紅(Pages 沒開時 deploy 是 skipped)→ 不開、不留言、不關',
+      rSkip.created.length + rSkip.comments.length + rSkip.closed.length === 0);
+
+    const open = { number: 7 };
+    const rBack = await run({ needs: J('success', 'success', 'success', 'success'), existing: open });
+    ok('全綠且有未關的 Issue → 留言「已恢復」並關掉',
+      rBack.comments.length === 1 && /已恢復/.test(rBack.comments[0].body) && rBack.closed.length === 1 && rBack.created.length === 0);
+
+    const rAgain = await run({ needs: needs610, jobs: jobs610, existing: open });
+    ok('又紅了且已有未關的 Issue → 留言、不重複開',
+      rAgain.comments.length === 1 && /又紅了/.test(rAgain.comments[0].body) && rAgain.created.length === 0 && rAgain.closed.length === 0);
+
+    const rBlind = await run({ needs: needs610, jobsThrow: true });
+    ok('讀不到逐步結果(jobs API 丟例外)時仍開 Issue,只報 job 層的結論(通知不可以被加分項帶走)',
+      rBlind.created.length === 1 && rBlind.warnings.length === 1 && /abandoned/.test(rBlind.created[0].title),
+      rBlind.threw ? `腳本丟了例外:${rBlind.threw}` : `開了 ${rBlind.created.length} 張・警告 ${rBlind.warnings.length} 則`);
+    ok('任何一種輸入腳本都不丟例外', ![r610, rSkip, rBack, rAgain, rBlind].some(r => r.threw),
+      [r610, rSkip, rBack, rAgain, rBlind].filter(r => r.threw).map(r => r.threw).join(';'));
+  }
+
+  let fail = 0;
+  for (const [name, pass, detail] of results) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || !detail ? '' : ` —— ${detail}`}`);
     if (!pass) fail++;
   }
   return fail;
