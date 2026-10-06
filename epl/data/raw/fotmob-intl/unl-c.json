@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-05T20:20:41.056Z",
+ "retrievedAt": "2026-10-06T05:20:58.995Z",
  "matches": [
   {
    "id": "5181921",
@@ -591,7 +591,7 @@
   },
   {
    "id": "5181927",
-   "kickoff": "2026-10-05T16:00:00.000Z",
+   "kickoff": "2026-10-05T16:00:00Z",
    "home": {
     "name": "Cyprus",
     "shortName": "Cyprus",
@@ -615,7 +615,7 @@
   },
   {
    "id": "5181928",
-   "kickoff": "2026-10-05T18:45:00.000Z",
+   "kickoff": "2026-10-05T18:45:00Z",
    "home": {
     "name": "Montenegro",
     "shortName": "Montenegro",
@@ -626,17 +626,20 @@
     "shortName": "Armenia",
     "fmId": "6583"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "2"
   },
   {
    "id": "5181939",
-   "kickoff": "2026-10-06T14:00:00Z",
+   "kickoff": "2026-10-06T14:00:00.000Z",
    "home": {
     "name": "Kazakhstan",
     "shortName": "Kazakhstan",
@@ -657,7 +660,7 @@
   },
   {
    "id": "5181900",
-   "kickoff": "2026-10-06T18:45:00Z",
+   "kickoff": "2026-10-06T18:45:00.000Z",
    "home": {
     "name": "Albania",
     "shortName": "Albania",
@@ -678,7 +681,7 @@
   },
   {
    "id": "5181901",
-   "kickoff": "2026-10-06T18:45:00Z",
+   "kickoff": "2026-10-06T18:45:00.000Z",
    "home": {
     "name": "Belarus",
     "shortName": "Belarus",
@@ -699,7 +702,7 @@
   },
   {
    "id": "5181955",
-   "kickoff": "2026-10-06T18:45:00Z",
+   "kickoff": "2026-10-06T18:45:00.000Z",
    "home": {
     "name": "Estonia",
     "shortName": "Estonia",
@@ -720,7 +723,7 @@
   },
   {
    "id": "5181956",
-   "kickoff": "2026-10-06T18:45:00Z",
+   "kickoff": "2026-10-06T18:45:00.000Z",
    "home": {
     "name": "Luxembourg",
     "shortName": "Luxembourg",
@@ -741,7 +744,7 @@
   },
   {
    "id": "5181940",
-   "kickoff": "2026-10-06T18:45:00Z",
+   "kickoff": "2026-10-06T18:45:00.000Z",
    "home": {
     "name": "Moldova",
     "shortName": "Moldova",
@@ -1208,7 +1211,7 @@
      "ga": 4,
      "pts": 10,
      "deduction": null,
-     "live": "5181928"
+     "live": null
     },
     {
      "fmId": "5793",
@@ -1236,7 +1239,7 @@
      "ga": 5,
      "pts": 4,
      "deduction": null,
-     "live": "5181928"
+     "live": null
     },
     {
      "fmId": "5795",
