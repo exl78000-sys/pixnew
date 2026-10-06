@@ -66,3 +66,43 @@ export function summarize({ ent, PAIRS }) {
     big: ent.filter(e => e.se > 0 && Math.abs((e.goals - e.lam) / e.se) > 3).length,
   };
 }
+
+/* 把同一個引擎、不同種子的幾份結果合成一份(2026-10-06)。
+ *
+ * 為什麼:一份(每方向 30 場、540 場、35 分鐘)的校準斜率,**同一個引擎換一組種子就差 0.46**
+ * (E4 的 101~130 是 1.031、201~230 是 0.575;兩組之差在「36 筆各自獨立」的模型裡抽 4000 次一次都沒超過),
+ * 所以它自己報的 SE(0.08~0.10)低估了真正的抽樣變異。判決要看**合起來的**場數,而不是挑一組。
+ *
+ * 規則:場數相加、平均數照場數加權、SE 照「各份的 n × SE 平方相加再除以總場數」合起來(獨立樣本的變異數相加);
+ * 每球 xG 是比值(進球的 xG ÷ 射門數),照射門總數加權才是合起來的那一個比值 —— 照場數加權會偏。
+ * **λ、射門預算、目標控球在每份裡必須逐位相同**:不同就代表那不是同一組配對與同一份側寫,合起來沒有意義。 */
+export function poolResults(results) {
+  if (!results?.length) throw new Error('沒有結果可以合併');
+  const key = e => `${e.pair}|${e.code}|${e.opp}|${e.side}`;
+  const pairsKey = r => JSON.stringify(r.PAIRS);
+  for (const r of results) if (pairsKey(r) !== pairsKey(results[0])) throw new Error(`配對清單不同:${pairsKey(r)} 對 ${pairsKey(results[0])}`);
+  const by = new Map();
+  for (const r of results) for (const e of r.ent) { const l = by.get(key(e)) ?? []; l.push(e); by.set(key(e), l); }
+  const ent = [];
+  for (const e0 of results[0].ent) {
+    const es = by.get(key(e0));
+    if (es.length !== results.length) throw new Error(`${key(e0)}:只出現在 ${es.length}/${results.length} 份裡`);
+    for (const e of es) for (const k of ['lam', 'expShots', 'possT']) {
+      if ((e[k] ?? null) !== (e0[k] ?? null) && !(Number.isFinite(e[k]) && Math.abs(e[k] - e0[k]) < 1e-9)) {
+        throw new Error(`${key(e0)}:${k} 兩份不同(${e[k]} 對 ${e0[k]}),不是同一組配對或同一份側寫`);
+      }
+    }
+    const n = es.reduce((t, e) => t + e.n, 0);
+    const wm = f => es.reduce((t, e) => t + e.n * f(e), 0) / n;
+    const wse = f => Math.sqrt(es.reduce((t, e) => t + (e.n * f(e)) ** 2, 0)) / n;
+    const totShots = es.reduce((t, e) => t + e.n * e.shots, 0);
+    ent.push({
+      pair: e0.pair, code: e0.code, opp: e0.opp, side: e0.side, lam: e0.lam,
+      goals: wm(e => e.goals), se: wse(e => e.se), n,
+      shots: totShots / n, expShots: e0.expShots,
+      xgps: totShots > 0 ? es.reduce((t, e) => t + e.xgps * e.n * e.shots, 0) / totShots : 0,
+      box: wm(e => e.box), poss: wm(e => e.poss), possSe: wse(e => e.possSe ?? 0), possT: e0.possT ?? null,
+    });
+  }
+  return { ent, PAIRS: results[0].PAIRS, N: ent[0].n, SEED0: results.map(r => r.SEED0).join('+') };
+}

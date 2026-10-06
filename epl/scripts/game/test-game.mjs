@@ -418,12 +418,43 @@ console.log('\n▶ 模擬遊玩:強弱量測台的估計量(2026-10-06)');
     near(pHalf.pdT[0], 11) && near(pHalf.pdT[1], 7) && near(pHalf.pd[0], 5.5) && near(pHalf.pd[1], 3.5),
     `目標 ${pHalf.pdT?.map(x => x.toFixed(2))}・引擎 ${pHalf.pd.map(x => x.toFixed(2))}`);
   check('舊結果檔(沒有 possT)的控球斜率與目標差是 null,不是 NaN 或 0', pOld.possSlope === null && pOld.pdT === null);
+  /* 合併同一個引擎、不同種子的幾份結果(`--pool`)。為什麼要有:同一個引擎換一組種子,校準斜率差 0.46
+     (單組自己報的 SE 是 0.08~0.10),所以判決要看合起來的場數。合併的算式是會算錯的 ——
+     SE 要用「各份 n × SE 的平方相加」(不是平均)、每球 xG 是比值要照射門數加權(不是照場數)、
+     λ / 預算 / 目標控球不同就不能合(那不是同一組配對與同一份側寫)。 */
+  const { poolResults } = await import(pathToFileURL(join(ROOT, 'scripts', 'game', 'lib', 'strength.mjs')));
+  const withN = (ent, n, patch = () => ({})) => ent.map(e => ({ ...e, n, ...patch(e) }));
+  const setA = { ent: withN(build(l => l, { seOf: () => 0.2 }), 30, () => ({ shots: 12, xgps: 0.10 })), PAIRS, N: 30, SEED0: 101 };
+  const setB = { ent: withN(build(l => l + 1, { seOf: () => 0.3 }), 10, () => ({ shots: 24, xgps: 0.20 })), PAIRS, N: 10, SEED0: 201 };
+  const pooled = poolResults([setA, setB]);
+  const p0 = pooled.ent[0], a0 = setA.ent[0];
+  check('合併:場數相加、進球照場數加權(30 場 + 10 場多 1 球 → 多 0.25 球)',
+    pooled.ent.every((e, i) => e.n === 40 && near(e.goals, setA.ent[i].lam + 0.25)) && pooled.N === 40,
+    `n ${p0.n}・進球 − λ ${(p0.goals - a0.lam).toFixed(6)}・N ${pooled.N}`);
+  check('合併:SE 是各份 n × SE 的平方相加再開根號除以總場數(√((30×0.2)² + (10×0.3)²) ÷ 40 = 0.16771),不是平均',
+    pooled.ent.every(e => near(e.se, Math.sqrt((30 * 0.2) ** 2 + (10 * 0.3) ** 2) / 40, 1e-9)), `${p0.se.toFixed(6)}`);
+  check('合併:每球 xG 照射門總數加權(0.10 × 360 + 0.20 × 240) ÷ 600 = 0.14,不是照場數的 0.125;射門平均 15',
+    pooled.ent.every(e => near(e.xgps, 0.14, 1e-12) && near(e.shots, 15, 1e-12)), `xG/腳 ${p0.xgps.toFixed(6)}・射門 ${p0.shots}`);
+  const self = poolResults([setA, setA]);
+  check('合併一份與自己:平均不變、SE 縮成 1/√2、場數加倍(對照:上面兩份不同的會動平均)',
+    self.ent.every((e, i) => near(e.goals, setA.ent[i].goals) && near(e.se, setA.ent[i].se / Math.SQRT2, 1e-12) && e.n === 60));
+  const assoc = poolResults([poolResults([setA, setB]), setA]), flatAll = poolResults([setA, setB, setA]);
+  check('合併可以分批做:先合兩份再合第三份 = 三份一次合(之後再追加一組種子不必重來)',
+    assoc.ent.every((e, i) => e.n === flatAll.ent[i].n && near(e.goals, flatAll.ent[i].goals, 1e-12) && near(e.se, flatAll.ent[i].se, 1e-12)
+      && near(e.xgps, flatAll.ent[i].xgps, 1e-12)));
+  const throwsOn = fn => { try { fn(); return false; } catch { return true; } };
+  check('合併不同的東西就拒絕:λ 不同、配對清單不同、某一筆只出現在一份裡 —— 三種都丟錯,不是靜靜合出一個數字',
+    throwsOn(() => poolResults([setA, { ...setB, ent: setB.ent.map((e, i) => (i === 0 ? { ...e, lam: e.lam + 0.01 } : e)) }]))
+    && throwsOn(() => poolResults([setA, { ...setB, PAIRS: [...PAIRS].reverse() }]))
+    && throwsOn(() => poolResults([setA, { ...setB, ent: setB.ent.slice(1) }])));
+  check('合併後的結果可以直接餵給 summarize(欄位齊全):進球 = λ + 0.25 → 斜率仍是 1、截距 0.25',
+    (() => { const s = summarize(pooled); return near(s.b, 1, 1e-9) && near(s.a, 0.25, 1e-9); })());
   /* 量測台自己不另寫一份估計量(兩份各算一次,改了定義有一份會悄悄過期) */
   const csSrc = readFileSync(join(ROOT, 'scripts', 'game', 'check-strength.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   const pkg = read(join(ROOT, 'package.json'));
-  check('量測台從 lib/strength.mjs 取估計量、不自己定義 summarize;npm run game:strength 指到它',
-    /from '\.\/lib\/strength\.mjs'/.test(csSrc) && !/(?:function|const) summarize\b/.test(csSrc)
-    && /check-strength\.mjs/.test(pkg.scripts?.['game:strength'] ?? ''));
+  check('量測台從 lib/strength.mjs 取估計量、不自己定義 summarize 與 poolResults;npm run game:strength 指到它',
+    /from '\.\/lib\/strength\.mjs'/.test(csSrc) && !/(?:function|const) summarize\b/.test(csSrc) && !/(?:function|const) poolResults\b/.test(csSrc)
+    && /\bpoolResults\(/.test(csSrc) && /check-strength\.mjs/.test(pkg.scripts?.['game:strength'] ?? ''));
 }
 
 console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套意思)');

@@ -21,6 +21,13 @@
  * 用法:node scripts/game/check-strength.mjs [每方向場數=30] [--seed0=101] [--pairs=ARS-TOT,MCI-IPS]
  *        [--src=實驗版引擎的路徑] [--out=結果.json] [--verbose]
  *      node scripts/game/check-strength.mjs --compare=a.json,b.json   (不跑模擬,只把幾份結果並排)
+ *      node scripts/game/check-strength.mjs --pool=a.json,b.json[,c.json] [--out=合併.json]
+ *        (同一個引擎、不同 --seed0 跑的幾份,場數相加後印報告;`--out` 存起來可以再丟給 --compare)
+ *
+ * **單組(每方向 30 場)的校準斜率不夠穩,判決要合併幾組種子再看**(2026-10-06 下午量到的):同一個實驗版引擎(E4)
+ * 種子 101~130 的斜率是 1.031 ± 0.099、種子 201~230 是 0.575 ± 0.078 —— 兩組之差 0.456,在「36 筆各自獨立」的模型裡
+ * 抽 4000 次沒有一次到這麼大;現況引擎兩組是 0.981 ± 0.080 與 0.942 ± 0.081(穩的)。所以單組自己報的 SE 會低估,
+ * 斜率只當線索,拍板用 `--pool` 合起來的場數(≥ 60 場 / 方向)。
  *
  * **比較兩個引擎版本時**:旗標改了 rng 的消耗次數,同一個種子跑出來就不是同一場比賽 —— 差值的 SE 要用
  * 兩個獨立樣本算(×√2),不是成對。`--compare` 印的每一格 ± 都是各自的 SE,自己相減再放大。
@@ -28,13 +35,63 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { summarize, mean, sd, se } from './lib/strength.mjs';
+import { summarize, poolResults, mean, sd, se } from './lib/strength.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const args = process.argv.slice(2);
 const flag = k => args.find(a => a.startsWith(`--${k}=`))?.slice(k.length + 3) ?? null;
 const f = (v, d = 2) => Number(v).toFixed(d);
 const pm = (a, d = 3) => `${f(mean(a), d)} ± ${f(se(a), d)}`;
+
+/* 印報告(跑完一輪、或把幾份結果合起來,都走這一份)。`ent` 是每個「隊 × 主客」一筆。 */
+function report({ ent, PAIRS, title, verbose = false }) {
+  console.log(`\n▶ 強弱量測台:${title}`);
+  if (verbose) {
+    console.log('  隊(主客) 對  λ    進球±SE   z     射門/預算   每球xG  禁區觸球  控球');
+    for (const e of ent) console.log(`  ${e.code}(${e.side === 'home' ? '主' : '客'}) ${e.opp}  ${f(e.lam)}  ${f(e.goals)}±${f(e.se)}  ${f((e.goals - e.lam) / (e.se || 1), 1).padStart(5)}`
+      + `  ${f(e.shots, 1)}/${f(e.expShots, 1)}  ${f(e.xgps, 4)}  ${f(e.box, 1)}  ${f(e.poss, 1)}`);
+  }
+  const R = summarize({ ent, PAIRS });
+  console.log(`\n  一、λ 錨(合起來的估計量,不是逐組的 z)`);
+  console.log(`    校準斜率:模擬進球 = ${f(R.a)} + ${f(R.b, 3)} × λ  (b 的 SE ${f(R.seB, 3)};b = 1、a = 0 才是沒有壓縮)`);
+  console.log(`    強隊 進球 ÷ λ ${pm(R.gS)}・弱隊 ${pm(R.gW)}   z 平均 強 ${f(mean(R.zS))} / 弱 ${f(mean(R.zW))}・|z| > 3 的 ${R.big} 筆`);
+  console.log(`    這個場數驗得出的偏差(2 SE):斜率 ±${f(2 * R.seB, 2)}・強隊 ±${f(2 * se(R.gS), 2)}・弱隊 ±${f(2 * se(R.gW), 2)}(比例)`);
+  console.log(`\n  二、強弱住在哪一層`);
+  console.log(`    射門 ÷ 預算:強隊 ${pm(R.sS)}・弱隊 ${pm(R.sW)}`);
+  console.log(`    禁區觸球 強 ÷ 弱 ${pm(R.rb, 2)}・控球差 強 − 弱 ${pm(R.pd, 1)} pp`);
+  if (R.possSlope != null) {
+    console.log(`    控球跟著目標走嗎:引擎控球對目標的斜率 ${f(R.possSlope, 2)} ± ${f(R.possSlopeSe, 2)}(1 = 照目標、0 = 不理它)`
+      + (R.pdT ? `・強 − 弱 引擎 ${pm(R.pd, 1)} 對目標 ${pm(R.pdT, 1)} pp` : ''));
+  }
+
+  /* 真實的每球 xG 強 − 弱:FotMob 逐場 shotmap,同一批配對、同一個「強弱」(λ 較大的那隊)。
+     烏龍球不算(座標在自己那一端,引擎產不出來)—— check-sim 的 collectReal 同一條。 */
+  {
+    const agg = {};
+    for (const fn of ['2025-26-game-details.json', '2026-27-game-details.json']) {
+      const path = join(ROOT, 'data', 'raw', 'fotmob-epl', fn);
+      if (!existsSync(path)) continue;
+      const j = JSON.parse(readFileSync(path, 'utf8'));
+      for (const m of Object.values(j.matches ?? {})) for (const sh of (m.shots ?? [])) {
+        if (sh.x == null || sh.y == null || sh.ownGoal || sh.xg == null || !sh.team) continue;
+        const o = (agg[sh.team] ??= { n: 0, xg: 0 }); o.n++; o.xg += sh.xg;
+      }
+    }
+    const per = c => (agg[c]?.n ? agg[c].xg / agg[c].n : null);
+    const real = R.strong.map((s, i) => (per(s.code) != null && per(R.weak[i].code) != null ? per(s.code) - per(R.weak[i].code) : null)).filter(v => v != null);
+    console.log(`    每球 xG 強 − 弱:引擎 ${pm(R.dq, 4)}`
+      + (real.length ? `・真實 ${pm(real, 4)}(同一批 ${real.length} 組配對、整季 shotmap)` : '・真實:沒有 shotmap'));
+    console.log('      真實那一欄的 SE 很大(各隊整季的每球 xG 彼此差 ±0.03),所以只看「引擎離它有幾個 SE」,不要拿來調到剛好。');
+  }
+  console.log(`\n  逐組(強 / 弱各兩個方向平均)`);
+  for (let i = 0; i < PAIRS.length; i++) {
+    const S = R.strong[i], W = R.weak[i];
+    console.log(`    ${S.pair}:強 ${S.code} λ ${f(S.lam)} 進球 ${f(S.goals)}(${f(S.goals / S.lam)}λ)・弱 ${W.code} λ ${f(W.lam)} 進球 ${f(W.goals)}(${f(W.goals / W.lam)}λ)`
+      + `・每球 xG ${f(S.xgps, 4)} / ${f(W.xgps, 4)}・禁區觸球 ${f(S.box, 1)} / ${f(W.box, 1)}・控球 ${f(S.poss, 1)} / ${f(W.poss, 1)}`);
+  }
+  console.log('\n  怎麼讀:一組配對的 SE 約 0.25 球(λ 的 15~40%),逐組的偏差在 2 SE 以內都是雜訊;判決看上面「一」那兩行。');
+  console.log('  單組(30 場 / 方向)的斜率會比它自己報的 SE 更會跳(同一個引擎換一組種子差過 0.46)—— 拍板前用 --pool 合起來再看。');
+}
 
 /* ── --compare:只並排幾份已經跑好的結果 ── */
 const cmp = flag('compare');
@@ -53,6 +110,16 @@ if (cmp) {
     ['|z| > 3 的筆數', x => x.s.big],
   ];
   for (const [name, fn] of rows) console.log(name.padEnd(18, '　') + S.map(x => String(fn(x)).padEnd(26)).join(''));
+  process.exit(0);
+}
+
+/* ── --pool:把同一個引擎、不同種子的幾份結果合成一份(場數相加),印報告;`--out` 可以存起來再丟給 --compare ── */
+const pooled = flag('pool');
+if (pooled) {
+  const rs = pooled.split(',').map(p => JSON.parse(readFileSync(resolve(p), 'utf8')));
+  const P = poolResults(rs);
+  report({ ent: P.ent, PAIRS: P.PAIRS, title: `合併 ${rs.length} 份(每方向共 ${P.N} 場,種子 ${P.SEED0})` });
+  if (flag('out')) writeFileSync(resolve(flag('out')), JSON.stringify(P, null, 1));
   process.exit(0);
 }
 
@@ -118,49 +185,5 @@ for (const [x, y] of PAIRS) for (const [h, a] of [[x, y], [y, x]]) {
   }
 }
 
-console.log(`\n▶ 強弱量測台:${PAIRS.length} 組 × 兩個方向 × ${N} 場(種子 ${SEED0}~${SEED0 + N - 1})${srcPath ? '・實驗版引擎 ' + srcPath : ''}`);
-if (VERBOSE) {
-  console.log('  隊(主客) 對  λ    進球±SE   z     射門/預算   每球xG  禁區觸球  控球');
-  for (const e of ent) console.log(`  ${e.code}(${e.side === 'home' ? '主' : '客'}) ${e.opp}  ${f(e.lam)}  ${f(e.goals)}±${f(e.se)}  ${f((e.goals - e.lam) / (e.se || 1), 1).padStart(5)}`
-    + `  ${f(e.shots, 1)}/${f(e.expShots, 1)}  ${f(e.xgps, 4)}  ${f(e.box, 1)}  ${f(e.poss, 1)}`);
-}
-const R = summarize({ ent, PAIRS });
-console.log(`\n  一、λ 錨(合起來的估計量,不是逐組的 z)`);
-console.log(`    校準斜率:模擬進球 = ${f(R.a)} + ${f(R.b, 3)} × λ  (b 的 SE ${f(R.seB, 3)};b = 1、a = 0 才是沒有壓縮)`);
-console.log(`    強隊 進球 ÷ λ ${pm(R.gS)}・弱隊 ${pm(R.gW)}   z 平均 強 ${f(mean(R.zS))} / 弱 ${f(mean(R.zW))}・|z| > 3 的 ${R.big} 筆`);
-console.log(`    這個場數驗得出的偏差(2 SE):斜率 ±${f(2 * R.seB, 2)}・強隊 ±${f(2 * se(R.gS), 2)}・弱隊 ±${f(2 * se(R.gW), 2)}(比例)`);
-console.log(`\n  二、強弱住在哪一層`);
-console.log(`    射門 ÷ 預算:強隊 ${pm(R.sS)}・弱隊 ${pm(R.sW)}`);
-console.log(`    禁區觸球 強 ÷ 弱 ${pm(R.rb, 2)}・控球差 強 − 弱 ${pm(R.pd, 1)} pp`);
-if (R.possSlope != null) {
-  console.log(`    控球跟著目標走嗎:引擎控球對目標的斜率 ${f(R.possSlope, 2)} ± ${f(R.possSlopeSe, 2)}(1 = 照目標、0 = 不理它)`
-    + (R.pdT ? `・強 − 弱 引擎 ${pm(R.pd, 1)} 對目標 ${pm(R.pdT, 1)} pp` : ''));
-}
-
-/* 真實的每球 xG 強 − 弱:FotMob 逐場 shotmap,同一批配對、同一個「強弱」(λ 較大的那隊)。
-   烏龍球不算(座標在自己那一端,引擎產不出來)—— check-sim 的 collectReal 同一條。 */
-{
-  const agg = {};
-  for (const fn of ['2025-26-game-details.json', '2026-27-game-details.json']) {
-    const path = join(ROOT, 'data', 'raw', 'fotmob-epl', fn);
-    if (!existsSync(path)) continue;
-    const j = JSON.parse(readFileSync(path, 'utf8'));
-    for (const m of Object.values(j.matches ?? {})) for (const sh of (m.shots ?? [])) {
-      if (sh.x == null || sh.y == null || sh.ownGoal || sh.xg == null || !sh.team) continue;
-      const o = (agg[sh.team] ??= { n: 0, xg: 0 }); o.n++; o.xg += sh.xg;
-    }
-  }
-  const per = c => (agg[c]?.n ? agg[c].xg / agg[c].n : null);
-  const real = R.strong.map((s, i) => (per(s.code) != null && per(R.weak[i].code) != null ? per(s.code) - per(R.weak[i].code) : null)).filter(v => v != null);
-  console.log(`    每球 xG 強 − 弱:引擎 ${pm(R.dq, 4)}`
-    + (real.length ? `・真實 ${pm(real, 4)}(同一批 ${real.length} 組配對、整季 shotmap)` : '・真實:沒有 shotmap'));
-  console.log('      真實那一欄的 SE 很大(各隊整季的每球 xG 彼此差 ±0.03),所以只看「引擎離它有幾個 SE」,不要拿來調到剛好。');
-}
-console.log(`\n  逐組(強 / 弱各兩個方向平均)`);
-for (let i = 0; i < PAIRS.length; i++) {
-  const S = R.strong[i], W = R.weak[i];
-  console.log(`    ${S.pair}:強 ${S.code} λ ${f(S.lam)} 進球 ${f(S.goals)}(${f(S.goals / S.lam)}λ)・弱 ${W.code} λ ${f(W.lam)} 進球 ${f(W.goals)}(${f(W.goals / W.lam)}λ)`
-    + `・每球 xG ${f(S.xgps, 4)} / ${f(W.xgps, 4)}・禁區觸球 ${f(S.box, 1)} / ${f(W.box, 1)}・控球 ${f(S.poss, 1)} / ${f(W.poss, 1)}`);
-}
-console.log('\n  怎麼讀:一組配對的 SE 約 0.25 球(λ 的 15~40%),逐組的偏差在 2 SE 以內都是雜訊;判決看上面「一」那兩行。');
+report({ ent, PAIRS, title: `${PAIRS.length} 組 × 兩個方向 × ${N} 場(種子 ${SEED0}~${SEED0 + N - 1})${srcPath ? '・實驗版引擎 ' + srcPath : ''}`, verbose: VERBOSE });
 if (flag('out')) writeFileSync(resolve(flag('out')), JSON.stringify({ ent, PAIRS, N, SEED0 }, null, 1));
