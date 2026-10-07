@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-10-06T18:04:30.762Z",
+ "retrievedAt": "2026-10-07T04:50:07.821Z",
  "matches": [
   {
    "id": "5120889",
@@ -8963,7 +8963,7 @@
   },
   {
    "id": "6368651",
-   "kickoff": "2026-10-06T11:00:00.000Z",
+   "kickoff": "2026-10-06T11:00:00Z",
    "home": {
     "name": "South Korea",
     "shortName": "South Korea",
@@ -8987,7 +8987,7 @@
   },
   {
    "id": "6368652",
-   "kickoff": "2026-10-06T11:35:00.000Z",
+   "kickoff": "2026-10-06T11:35:00Z",
    "home": {
     "name": "China",
     "shortName": "China",
@@ -9011,7 +9011,7 @@
   },
   {
    "id": "6162940",
-   "kickoff": "2026-10-06T14:00:00.000Z",
+   "kickoff": "2026-10-06T14:00:00Z",
    "home": {
     "name": "India",
     "shortName": "India",
@@ -9035,7 +9035,7 @@
   },
   {
    "id": "6210361",
-   "kickoff": "2026-10-06T16:00:00.000Z",
+   "kickoff": "2026-10-06T16:00:00Z",
    "home": {
     "name": "Russia",
     "shortName": "Russia",
@@ -9046,17 +9046,20 @@
     "shortName": "Nigeria",
     "fmId": "6346"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6366761",
-   "kickoff": "2026-10-06T17:00:00.000Z",
+   "kickoff": "2026-10-06T17:00:00Z",
    "home": {
     "name": "Algeria",
     "shortName": "Algeria",
@@ -9067,17 +9070,20 @@
     "shortName": "Niger",
     "fmId": "121281"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6368653",
-   "kickoff": "2026-10-06T17:00:00.000Z",
+   "kickoff": "2026-10-06T17:00:00Z",
    "home": {
     "name": "Jordan",
     "shortName": "Jordan",
@@ -9088,17 +9094,20 @@
     "shortName": "Venezuela",
     "fmId": "5800"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6266053",
-   "kickoff": "2026-10-06T23:00:00.000Z",
+   "kickoff": "2026-10-06T23:00:00Z",
    "home": {
     "name": "Argentina",
     "shortName": "Argentina",
@@ -9109,17 +9118,20 @@
     "shortName": "Benin",
     "fmId": "5883"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6299694",
-   "kickoff": "2026-10-06T23:45:00.000Z",
+   "kickoff": "2026-10-06T23:45:00Z",
    "home": {
     "name": "Colombia",
     "shortName": "Colombia",
@@ -9130,17 +9142,20 @@
     "shortName": "Peru",
     "fmId": "5798"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "5991876",
-   "kickoff": "2026-10-07T00:00:00Z",
+   "kickoff": "2026-10-07T00:00:00.000Z",
    "home": {
     "name": "USA",
     "shortName": "USA",
@@ -9151,17 +9166,20 @@
     "shortName": "Canada",
     "fmId": "5810"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
   },
   {
    "id": "6368654",
-   "kickoff": "2026-10-07T02:30:00Z",
+   "kickoff": "2026-10-07T02:30:00.000Z",
    "home": {
     "name": "Mexico",
     "shortName": "Mexico",
@@ -9172,10 +9190,13 @@
     "shortName": "Chile",
     "fmId": "9762"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null

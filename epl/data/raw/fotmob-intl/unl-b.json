@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-06T18:04:24.177Z",
+ "retrievedAt": "2026-10-07T04:50:01.233Z",
  "matches": [
   {
    "id": "5181812",
@@ -735,7 +735,7 @@
   },
   {
    "id": "5181782",
-   "kickoff": "2026-10-06T18:45:00.000Z",
+   "kickoff": "2026-10-06T18:45:00Z",
    "home": {
     "name": "Scotland",
     "shortName": "Scotland",
@@ -746,17 +746,20 @@
     "shortName": "Slovenia",
     "fmId": "5787"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "1"
   },
   {
    "id": "5181783",
-   "kickoff": "2026-10-06T18:45:00.000Z",
+   "kickoff": "2026-10-06T18:45:00Z",
    "home": {
     "name": "Switzerland",
     "shortName": "Switzerland",
@@ -767,10 +770,13 @@
     "shortName": "North Macedonia",
     "fmId": "8260"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "1"
@@ -1144,13 +1150,13 @@
      "fmId": "6717",
      "name": "Switzerland",
      "idx": 1,
-     "played": 3,
-     "wins": 3,
+     "played": 4,
+     "wins": 4,
      "draws": 0,
      "losses": 0,
-     "gf": 8,
+     "gf": 11,
      "ga": 1,
-     "pts": 9,
+     "pts": 12,
      "deduction": null,
      "live": null
     },
@@ -1158,13 +1164,13 @@
      "fmId": "5787",
      "name": "Slovenia",
      "idx": 2,
-     "played": 3,
-     "wins": 1,
+     "played": 4,
+     "wins": 2,
      "draws": 1,
      "losses": 1,
-     "gf": 3,
-     "ga": 2,
-     "pts": 4,
+     "gf": 5,
+     "ga": 3,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -1172,12 +1178,12 @@
      "fmId": "8498",
      "name": "Scotland",
      "idx": 3,
-     "played": 3,
+     "played": 4,
      "wins": 1,
      "draws": 1,
-     "losses": 1,
-     "gf": 2,
-     "ga": 3,
+     "losses": 2,
+     "gf": 3,
+     "ga": 5,
      "pts": 4,
      "deduction": null,
      "live": null
@@ -1186,12 +1192,12 @@
      "fmId": "8260",
      "name": "North Macedonia",
      "idx": 4,
-     "played": 3,
+     "played": 4,
      "wins": 0,
      "draws": 0,
-     "losses": 3,
+     "losses": 4,
      "gf": 0,
-     "ga": 7,
+     "ga": 10,
      "pts": 0,
      "deduction": null,
      "live": null

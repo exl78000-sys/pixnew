@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-10-06T18:04:23.156Z",
+ "retrievedAt": "2026-10-07T04:50:00.223Z",
  "matches": [
   {
    "id": "5181825",
@@ -735,7 +735,7 @@
   },
   {
    "id": "5181855",
-   "kickoff": "2026-10-06T18:45:00.000Z",
+   "kickoff": "2026-10-06T18:45:00Z",
    "home": {
     "name": "Croatia",
     "shortName": "Croatia",
@@ -746,17 +746,20 @@
     "shortName": "Spain",
     "fmId": "6720"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "3"
   },
   {
    "id": "5181856",
-   "kickoff": "2026-10-06T18:45:00.000Z",
+   "kickoff": "2026-10-06T18:45:00Z",
    "home": {
     "name": "England",
     "shortName": "England",
@@ -767,10 +770,13 @@
     "shortName": "Czechia",
     "fmId": "8496"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "4",
    "group": "3"
@@ -1317,13 +1323,13 @@
      "fmId": "6720",
      "name": "Spain",
      "idx": 1,
-     "played": 3,
-     "wins": 3,
+     "played": 4,
+     "wins": 4,
      "draws": 0,
      "losses": 0,
-     "gf": 10,
-     "ga": 4,
-     "pts": 9,
+     "gf": 12,
+     "ga": 5,
+     "pts": 12,
      "deduction": null,
      "live": null
     },
@@ -1331,13 +1337,13 @@
      "fmId": "8491",
      "name": "England",
      "idx": 2,
-     "played": 3,
-     "wins": 2,
+     "played": 4,
+     "wins": 3,
      "draws": 0,
      "losses": 1,
-     "gf": 11,
+     "gf": 14,
      "ga": 3,
-     "pts": 6,
+     "pts": 9,
      "deduction": null,
      "live": null
     },
@@ -1345,12 +1351,12 @@
      "fmId": "10155",
      "name": "Croatia",
      "idx": 3,
-     "played": 3,
+     "played": 4,
      "wins": 1,
      "draws": 0,
-     "losses": 2,
-     "gf": 3,
-     "ga": 12,
+     "losses": 3,
+     "gf": 4,
+     "ga": 14,
      "pts": 3,
      "deduction": null,
      "live": null
@@ -1359,12 +1365,12 @@
      "fmId": "8496",
      "name": "Czechia",
      "idx": 4,
-     "played": 3,
+     "played": 4,
      "wins": 0,
      "draws": 0,
-     "losses": 3,
+     "losses": 4,
      "gf": 2,
-     "ga": 7,
+     "ga": 10,
      "pts": 0,
      "deduction": null,
      "live": null

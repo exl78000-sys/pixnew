@@ -16,7 +16,7 @@
   "2012/2013",
   "2010/2011"
  ],
- "retrievedAt": "2026-10-06T18:04:28.393Z",
+ "retrievedAt": "2026-10-07T04:50:05.617Z",
  "matches": [
   {
    "id": "5224974",
@@ -1436,7 +1436,7 @@
   },
   {
    "id": "6040214",
-   "kickoff": "2026-10-06T19:00:00.000Z",
+   "kickoff": "2026-10-06T19:00:00Z",
    "home": {
     "name": "Angola",
     "shortName": "Angola",
@@ -1447,10 +1447,13 @@
     "shortName": "Malawi",
     "fmId": "6020"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "2",
    "group": "B"
@@ -3574,30 +3577,30 @@
      "live": null
     },
     {
-     "fmId": "6020",
-     "name": "Malawi",
+     "fmId": "6712",
+     "name": "Angola",
      "idx": 2,
-     "played": 1,
+     "played": 2,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
-     "gf": 2,
+     "gf": 3,
      "ga": 1,
-     "pts": 3,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
     {
-     "fmId": "6712",
-     "name": "Angola",
+     "fmId": "6020",
+     "name": "Malawi",
      "idx": 3,
-     "played": 1,
-     "wins": 0,
-     "draws": 1,
-     "losses": 0,
-     "gf": 0,
-     "ga": 0,
-     "pts": 1,
+     "played": 2,
+     "wins": 1,
+     "draws": 0,
+     "losses": 1,
+     "gf": 3,
+     "ga": 4,
+     "pts": 3,
      "deduction": null,
      "live": null
     },
