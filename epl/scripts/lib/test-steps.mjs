@@ -37,6 +37,8 @@ export const STEPS = [
   ['scripts/test-ligue-1.mjs', []],
   /* 國家隊(2026-09-24):只讀產物與 raw,不產生別的測試要驗的數字;抓取器那一段用假的 fetch,不連網。 */
   ['scripts/test-intl.mjs', []],
+  /* 德義法球隊頁(FotMob)→ 收件匣 → 核對器(2026-10-09):不連網,抓取器那段用假的 fetch。 */
+  ['scripts/test-league-teams.mjs', []],
   /* 模擬遊玩(2026-09-03):獨立管線的守門 + 側寫對回來源 + 引擎不變量。
      排在英冠之後、文件檢查之前 —— 它只讀產物,不產生別的測試要驗的數字。 */
   ['scripts/game/test-game.mjs', []],

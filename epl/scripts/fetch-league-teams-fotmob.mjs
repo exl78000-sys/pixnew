@@ -47,7 +47,7 @@ export function pickTeamPage(j) {
     venue: v.widget?.name ?? null, city: v.widget?.city ?? null, location: v.widget?.location ?? null,
     capacity: Number.isFinite(Number(pair('Capacity'))) ? Number(pair('Capacity')) : null,
     surface: pair('Surface'), opened: pair('Opened'),
-    coachHistory: Array.isArray(j?.overview?.coachHistory) ? j.overview.coachHistory.slice(0, 3) : (j?.overview?.coachHistory ?? null),
+    coachHistory: Array.isArray(j?.overview?.coachHistory) ? j.overview.coachHistory.slice(-3) : (j?.overview?.coachHistory ?? null),
   };
 }
 

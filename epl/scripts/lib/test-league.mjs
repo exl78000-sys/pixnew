@@ -347,6 +347,19 @@ export function testLeague(L) {
     check('隊徽抓齊之後界線不再說「還沒有…隊徽」',
       meta.counts.crests !== teams.length
         || !(meta.boundaries ?? []).some(x => /^—/.test(x) && /隊徽/.test(x)));
+    /* 球隊資料(隊色、城市、球場、容量)接上之後,界線那一句不能再說「還沒有隊色…」;沒接上時要照實說還沒有。
+       接上的時候還要講出**單一來源**與**原文名稱**(鐵則四)。2026-10-09 接 FotMob 球隊頁時加的 ——
+       那句話原本寫死,是本站記過很多次的「加了能力之後還有一句在講沒有它」。 */
+    {
+      const withInfo = teams.filter(t => t.venue && t.city && t.capacity).length;
+      const lines = meta.boundaries ?? [];
+      if (withInfo) {
+        check(`有球隊資料時(${withInfo} 隊)界線不再說「還沒有隊色、城市、球場」`, !lines.some(x => /還沒有隊色/.test(x)));
+        check('有球隊資料時界線講出單一來源與原文名稱', lines.some(x => /單一來源/.test(x) && /原文/.test(x)));
+      } else {
+        check('還沒有球隊資料時界線照實說還沒有', lines.some(x => /還沒有隊色、城市、球場/.test(x)));
+      }
+    }
     /* counts 的每一個數字都要對得回產物。**寫死的 0 就是在畫面上編數字** ——
        球員頁的標題直接印 counts.players,它停在 0 的時候那一頁寫著「0 名註冊球員」
        而下面列著 856 人。所以這裡逐個對,不是只對 crests。 */

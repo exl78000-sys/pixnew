@@ -461,10 +461,19 @@ jobs:
       - name: 建立英冠資料集
         run: npm run en2:build
 
+      # 德義法的球場、城市、容量、隊色(2026-10-09,使用者:「接 FotMob」):FotMob 球隊頁,**單一來源**。
+      # 每隊快取 30 天,所以平常只打 3 個聯賽頁(首次 59 個請求);抓失敗逐隊保留上一份。
+      # 抓到的 raw 回寫進倉庫(下面的回寫清單),收件匣由下一步從 raw 重產 —— 它是產物,不進版控。
+      - name: 抓德義法球隊頁(FotMob:球場、城市、容量、隊色)
+        run: npm run teams-fetch
+        continue-on-error: true
+
       # 人工交付的隊色/城市/球場/教練。收件匣還沒到時這幾支會印「略過」,不是錯 ——
       # 先掛上去,交付一到當次部署就會核對並上站,不用有人記得回來加這一步。
-      - name: 核對人工交付的德義法球隊資料與教練
+      # 球隊資料的收件匣現在由 FotMob 球隊頁的 raw 產生(teams-inbox);教練仍等人工交付。
+      - name: 核對德義法球隊資料(FotMob 球隊頁)與人工交付的教練
         run: |
+          npm run teams-inbox || true
           npm run de1:verify-teams || true
           npm run it1:verify-teams || true
           npm run fr1:verify-teams || true
@@ -597,6 +606,7 @@ jobs:
             epl/data/raw/fotmob-ligue-1/ \
             epl/data/raw/intl/ \
             epl/data/raw/fotmob-intl/ \
+            epl/data/raw/fotmob-teams/ \
             epl/data/backtest-ligue-1.json \
             epl/data/backtest-ligue-1-matches.json \
             epl/data/form-tuning.json \

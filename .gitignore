@@ -13,6 +13,14 @@ epl/dist/
 epl/vault/*
 !epl/vault/我的筆記/
 
+# 德義法球隊資料的收件匣與核對產物:每次部署從 data/raw/fotmob-teams/ 重產(進版控的是 raw,不是這些)
+epl/data/manual/bundesliga-teams-delivery.json
+epl/data/manual/serie-a-teams-delivery.json
+epl/data/manual/ligue-1-teams-delivery.json
+epl/data/bundesliga-teams-verified.json
+epl/data/serie-a-teams-verified.json
+epl/data/ligue-1-teams-verified.json
+
 # ── 通用 ──────────────────────────────
 *.log
 .DS_Store

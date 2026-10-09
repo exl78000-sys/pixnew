@@ -152,7 +152,9 @@
     "probe:league-teams-fetch": "node scripts/probe-league-teams-fetch.mjs",
     "de1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=de1",
     "it1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=it1",
-    "fr1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=fr1"
+    "fr1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=fr1",
+    "teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs",
+    "teams-inbox": "node scripts/build-league-teams-inbox.mjs"
   },
   "engines": {
     "node": ">=18"
