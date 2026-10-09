@@ -48,11 +48,11 @@ jobs:
         run: npm run probe:live
         continue-on-error: true
 
-      # **這是 latest job 的最後一步。** 德義法球場 / 城市 / 容量 / 教練 / 隊色:FotMob 球隊頁有沒有本來就給
-      # (2026-10-09;唯讀、最多 70 個請求、不寫快取)。結論看完 log 再寫進文件,用完搬去 all。
-      - name: 探測德義法的球場、城市、容量、教練、隊色(FotMob 球隊頁)
+      # **這是 latest job 的最後一步。** 德義法球隊頁抓取器真跑一次(2026-10-09;59 個請求、寫 runner 暫存目錄),
+      # 把原始欄位 DUMP 回來,`undump-probe-log.mjs` 還原進 data/raw/fotmob-teams/。用完搬去 all。
+      - name: 德義法球隊頁抓取器(FotMob;球場、城市、容量、隊色、教練歷任)
         working-directory: epl
-        run: npm run probe:league-venues
+        run: npm run probe:league-teams-fetch
         continue-on-error: true
 
   all:

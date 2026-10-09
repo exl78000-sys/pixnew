@@ -149,7 +149,10 @@
     "probe:understat-de1": "node scripts/probe-understat-bundesliga.mjs",
     "probe:fotmob-de1": "node scripts/probe-fotmob-bundesliga.mjs",
     "probe:new-leagues": "node scripts/probe-new-leagues.mjs",
-    "probe:league-venues": "node scripts/probe-league-venues.mjs"
+    "probe:league-teams-fetch": "node scripts/probe-league-teams-fetch.mjs",
+    "de1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=de1",
+    "it1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=it1",
+    "fr1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=fr1"
   },
   "engines": {
     "node": ">=18"
