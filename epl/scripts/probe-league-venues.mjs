@@ -7,7 +7,7 @@
  *
  * 做法:每個聯賽一個請求拿 FotMob 的隊 id(聯賽 id 54/55/53 是 probe-new-leagues 逐隊證明過的),
  * 每隊一個請求拿球隊頁。對照組:拜仁(德甲 id 的第一支)印完整的欄位路徑,其餘只印摘要。
- * 唯讀、不寫快取、最多 70 個請求(3 + 56 + 緩衝)。
+ * 唯讀、不寫快取、第一輪最多 70 個請求(3 + 56 + 緩衝)、第二輪最多 20 個(3 + 每聯賽 4 隊)。
  *   npm run probe:league-venues
  */
 const FM = 'https://www.fotmob.com';
@@ -15,7 +15,9 @@ const UA = 'Mozilla/5.0 (compatible; EPL-Warroom/1.0; local research)';
 const LEAGUES = [{ key: 'de1', zh: '德甲', id: 54, cc: 'GER' }, { key: 'it1', zh: '義甲', id: 55, cc: 'ITA' }, { key: 'fr1', zh: '法甲', id: 53, cc: 'FRA' }];
 /* 端點照本站抓取器用的那個:`/api/data/leagues`(第一版寫成 `/api/leagues`,三個聯賽全 404 —— 對照既有抓取器才發現) */
 let TEAM_EP = '/api/data/teams?id=';
-const MAX = 70; let used = 0;
+/* 第二輪:第一輪(最多 70 個請求、全部 56 隊)已確認隊色 56/56、城市 35/56;這輪只看球場 / 容量 / 教練的欄位名,每聯賽探 4 隊 */
+const MAX = 20, PER_LEAGUE = 4;
+let used = 0;
 const get = async url => {
   if (++used > MAX) throw new Error('請求數超過上限');
   const res = await fetch(url, { signal: AbortSignal.timeout(25000), headers: { accept: 'application/json', 'user-agent': UA, referer: `${FM}/` } });
@@ -31,6 +33,7 @@ function find(o, path = '', out = [], depth = 0) {
   if (typeof o === 'object') {
     for (const [k, v] of Object.entries(o)) {
       const p = path ? `${path}.${k}` : k;
+      if (k === 'table' || k === 'tables' || /qualColor|legend/.test(k)) continue; // 排名表的 qualColor 會把 40 條上限用光(第一輪就這樣漏掉球場欄位)
       if (KEYS.test(k) && (v == null || typeof v !== 'object')) out.push(`${p}=${JSON.stringify(v)}`);
       else find(v, p, out, depth + 1);
     }
@@ -44,12 +47,15 @@ for (const L of LEAGUES) {
   console.log(`\n▶ ${L.zh}(FotMob ${L.id}):聯賽頁 HTTP ${r.status},${r.bytes} 位元組,球隊 ${rows.length} 支`);
   if (!rows.length) { console.log('  頂層鍵:', Object.keys(r.j ?? {}).join(','), '| table[0].data 鍵:', Object.keys(r.j?.table?.[0]?.data ?? {}).join(','), '| tableData 鍵:', Object.keys(r.j?.tableData ?? {}).join(',')); continue; }
   let have = { venue: 0, city: 0, cap: 0, coach: 0, color: 0 };
-  for (const t of rows) {
+  for (const t of rows.slice(0, PER_LEAGUE)) {
     let p = await get(`${FM}${TEAM_EP}${t.id}`);
     if (!p.j && TEAM_EP === '/api/data/teams?id=') { TEAM_EP = '/api/teams?id='; p = await get(`${FM}${TEAM_EP}${t.id}`); } // 第一隊不通就換另一個端點,之後沿用
     if (first) console.log(`  球隊頁端點 ${TEAM_EP}(HTTP ${p.status})`);
     if (!p.j) { console.log(`  ${t.name}(${t.id}):HTTP ${p.status}`); continue; }
     const hits = find(p.j);
+    console.log(`  ${t.name} overview 鍵:${Object.keys(p.j.overview ?? {}).join(',')}`);
+    console.log(`  ${t.name} overview.venue = ${JSON.stringify(p.j.overview?.venue ?? null).slice(0, 700)}`);
+    console.log(`  ${t.name} 教練相關:${JSON.stringify(p.j.overview?.coach ?? p.j.coach ?? p.j.overview?.manager ?? null).slice(0, 300)}`);
     if (first) { console.log(`  ── ${t.name} 完整欄位路徑(對照組,只印這一隊)──`); hits.forEach(h => console.log('    ' + h)); first = false; }
     const pick = re => hits.find(h => re.test(h.split('=')[0]));
     const v = pick(/venue.*name|stadium/i), c = pick(/city/i), cap = pick(/capacity/i), co = pick(/coach|manager/i), col = pick(/colou?r/i);
