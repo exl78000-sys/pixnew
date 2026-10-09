@@ -42,11 +42,17 @@ jobs:
       # 同一天再加模擬遊玩那一頁與引擎,確認階段 5n 的引擎上線了),
       # 而且打的是本站自己的站台。
       #
-      # **這是 latest job 的最後一步。**(國家隊抓取器那一步 2026-09-25 搬去 all:積分榜的形狀驗完了,
-      # 每次部署後確認不必再多打 FotMob 8 個請求。)
+      # (國家隊抓取器那一步 2026-09-25 搬去 all:積分榜的形狀驗完了,每次部署後確認不必再多打 FotMob 8 個請求。)
       - name: 部署後到站上確認一次(Pages 實際供出來的那幾個檔)
         working-directory: epl
         run: npm run probe:live
+        continue-on-error: true
+
+      # **這是 latest job 的最後一步。** 德義法球場 / 城市 / 容量 / 教練 / 隊色:FotMob 球隊頁有沒有本來就給
+      # (2026-10-09;唯讀、最多 70 個請求、不寫快取)。結論看完 log 再寫進文件,用完搬去 all。
+      - name: 探測德義法的球場、城市、容量、教練、隊色(FotMob 球隊頁)
+        working-directory: epl
+        run: npm run probe:league-venues
         continue-on-error: true
 
   all:
