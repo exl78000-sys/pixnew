@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-09T18:10:34.807Z",
+ "fetchedAt": "2026-10-09T21:31:38.415Z",
  "teams": [
   {
    "code": "MON",
@@ -361,6 +361,66 @@
      "loss": 1,
      "pointsPerGame": 1.6,
      "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "LEN",
+   "fotmobId": 8588,
+   "fotmobName": "Lens",
+   "fetchedAt": "2026-10-09T12:42:08.639Z",
+   "color": "#d89f00",
+   "teamColors": {
+    "darkMode": "#FFCE00",
+    "lightMode": "#d89f00",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Bollaert-Delelis",
+   "city": "Lens",
+   "location": [
+    "50.432866762",
+    "2.814940810"
+   ],
+   "capacity": 41233,
+   "surface": "Grass",
+   "opened": 1933,
+   "coachHistory": [
+    {
+     "id": 1586853,
+     "name": "Pierre Sage",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 22,
+     "draw": 4,
+     "loss": 8,
+     "pointsPerGame": 2.06,
+     "winPercentage": 0.65
+    },
+    {
+     "id": 38847,
+     "name": "Dino Toppmöller",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1,
+     "winPercentage": 0.25
+    },
+    {
+     "id": 46243,
+     "name": "Yannick Cahuzac",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 0,
+     "draw": 0,
+     "loss": 1,
+     "pointsPerGame": 0,
+     "winPercentage": 0
     }
    ]
   },
@@ -841,66 +901,6 @@
      "loss": 2,
      "pointsPerGame": 1,
      "winPercentage": 0.2
-    }
-   ]
-  },
-  {
-   "code": "LEN",
-   "fotmobId": 8588,
-   "fotmobName": "Lens",
-   "fetchedAt": "2026-10-09T12:42:08.639Z",
-   "color": "#d89f00",
-   "teamColors": {
-    "darkMode": "#FFCE00",
-    "lightMode": "#d89f00",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Bollaert-Delelis",
-   "city": "Lens",
-   "location": [
-    "50.432866762",
-    "2.814940810"
-   ],
-   "capacity": 41233,
-   "surface": "Grass",
-   "opened": 1933,
-   "coachHistory": [
-    {
-     "id": 1586853,
-     "name": "Pierre Sage",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 22,
-     "draw": 4,
-     "loss": 8,
-     "pointsPerGame": 2.06,
-     "winPercentage": 0.65
-    },
-    {
-     "id": 38847,
-     "name": "Dino Toppmöller",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1,
-     "winPercentage": 0.25
-    },
-    {
-     "id": 46243,
-     "name": "Yannick Cahuzac",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 0,
-     "draw": 0,
-     "loss": 1,
-     "pointsPerGame": 0,
-     "winPercentage": 0
     }
    ]
   },
