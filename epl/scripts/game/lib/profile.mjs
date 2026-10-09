@@ -217,12 +217,21 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       put(home, true, 'H', 'A'); put(away, false, 'A', 'H');
     }
   }
+  const SHRINK_K = 4;
+  const venueMean = (isHome, k) => {
+    const all = [...rowsBy.values()].flat().filter(r => r.home === isHome);
+    return all.length ? mean(all.map(r => r[k])) : 0;
+  };
   const ratesOf = (code, isHome) => {
     const rows = (rowsBy.get(code) ?? []).filter(r => r.home === isHome);
     const fr = (foulRows.get(code) ?? []).filter(r => r.home === isHome);
     if (!rows.length) return null;
     const m = k => r2(mean(rows.map(r => r[k])));
-    return { games: rows.length, sf: m('sf'), sa: m('sa'), stf: m('stf'), sta: m('sta'), cf: m('cf'), ca: m('ca'),
+    /* sf / sa 往聯盟「同一個主客身分」的平均收(k = SHRINK_K 場的假想樣本,2026-10-09)。升班馬只有 2~3 場的主客失射
+       會撐大射門預算的主客比(MCI 對 IPS 主客反轉的原因)。k = 4 來自 check-shot-shrink 的回測(2 / 4 / 8 差不多),
+       驗收預先登記在變更紀錄。games 與其他欄位不動。 */
+    const sh = k => { const lg = venueMean(isHome, k); return r2((rows.length * mean(rows.map(r => r[k])) + SHRINK_K * lg) / (rows.length + SHRINK_K)); };
+    return { games: rows.length, sf: sh('sf'), sa: sh('sa'), stf: m('stf'), sta: m('sta'), cf: m('cf'), ca: m('ca'),
       gf: m('gf'), ga: m('ga'),
       fouls: fr.length ? r2(mean(fr.map(r => r.ff))) : null, foulsAgainst: fr.length ? r2(mean(fr.map(r => r.fa))) : null,
       yellow: fr.length ? r2(mean(fr.map(r => r.yf))) : null, red: fr.length ? r3(mean(fr.map(r => r.rf))) : null };
