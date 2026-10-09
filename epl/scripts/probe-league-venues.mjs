@@ -12,7 +12,9 @@
  */
 const FM = 'https://www.fotmob.com';
 const UA = 'Mozilla/5.0 (compatible; EPL-Warroom/1.0; local research)';
-const LEAGUES = [{ key: 'de1', zh: '德甲', id: 54 }, { key: 'it1', zh: '義甲', id: 55 }, { key: 'fr1', zh: '法甲', id: 53 }];
+const LEAGUES = [{ key: 'de1', zh: '德甲', id: 54, cc: 'GER' }, { key: 'it1', zh: '義甲', id: 55, cc: 'ITA' }, { key: 'fr1', zh: '法甲', id: 53, cc: 'FRA' }];
+/* 端點照本站抓取器用的那個:`/api/data/leagues`(第一版寫成 `/api/leagues`,三個聯賽全 404 —— 對照既有抓取器才發現) */
+let TEAM_EP = '/api/data/teams?id=';
 const MAX = 70; let used = 0;
 const get = async url => {
   if (++used > MAX) throw new Error('請求數超過上限');
@@ -37,13 +39,15 @@ function find(o, path = '', out = [], depth = 0) {
 }
 let first = true;
 for (const L of LEAGUES) {
-  const r = await get(`${FM}/api/leagues?id=${L.id}&ccode3=TWN`);
-  const rows = r.j?.table?.[0]?.data?.table?.all ?? r.j?.table?.[0]?.data?.tables?.[0]?.table?.all ?? [];
+  const r = await get(`${FM}/api/data/leagues?id=${L.id}&ccode3=${L.cc}&season=2026%2F2027`);
+  const rows = r.j?.table?.[0]?.data?.table?.all ?? r.j?.table?.[0]?.data?.tables?.[0]?.table?.all ?? r.j?.tableData?.table?.all ?? [];
   console.log(`\n▶ ${L.zh}(FotMob ${L.id}):聯賽頁 HTTP ${r.status},${r.bytes} 位元組,球隊 ${rows.length} 支`);
-  if (!rows.length) { console.log('  頂層鍵:', Object.keys(r.j ?? {}).join(',')); continue; }
+  if (!rows.length) { console.log('  頂層鍵:', Object.keys(r.j ?? {}).join(','), '| table[0].data 鍵:', Object.keys(r.j?.table?.[0]?.data ?? {}).join(','), '| tableData 鍵:', Object.keys(r.j?.tableData ?? {}).join(',')); continue; }
   let have = { venue: 0, city: 0, cap: 0, coach: 0, color: 0 };
   for (const t of rows) {
-    const p = await get(`${FM}/api/teams?id=${t.id}`);
+    let p = await get(`${FM}${TEAM_EP}${t.id}`);
+    if (!p.j && TEAM_EP === '/api/data/teams?id=') { TEAM_EP = '/api/teams?id='; p = await get(`${FM}${TEAM_EP}${t.id}`); } // 第一隊不通就換另一個端點,之後沿用
+    if (first) console.log(`  球隊頁端點 ${TEAM_EP}(HTTP ${p.status})`);
     if (!p.j) { console.log(`  ${t.name}(${t.id}):HTTP ${p.status}`); continue; }
     const hits = find(p.j);
     if (first) { console.log(`  ── ${t.name} 完整欄位路徑(對照組,只印這一隊)──`); hits.forEach(h => console.log('    ' + h)); first = false; }
