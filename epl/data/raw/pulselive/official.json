@@ -35983,7 +35983,7 @@
    "final": false,
    "score": {
     "home": 2,
-    "away": 1
+    "away": 2
    },
    "homeId": 2,
    "awayId": 130,
@@ -36412,16 +36412,16 @@
    "goals": [
     {
      "side": "H",
-     "person": 51423,
-     "assist": 304175,
-     "team": 2,
-     "min": 77,
-     "label": "77'00",
+     "person": 20113,
+     "assist": 50460,
+     "team": 130,
+     "min": 79,
+     "label": "79'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
      "hs": 2,
-     "as": 1
+     "as": 2
     }
    ],
    "timeline": {
@@ -36600,7 +36600,7 @@
      }
     ]
    },
-   "clock": "78'00"
+   "clock": "81'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -37078,6 +37078,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 119362,
+      "team": 34,
+      "min": 84,
+      "label": "84'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -37253,7 +37262,7 @@
      }
     ]
    },
-   "clock": "83'00"
+   "clock": "84'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37879,7 +37888,7 @@
      }
     ]
    },
-   "clock": "81'00"
+   "clock": "84'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -38476,6 +38485,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 3452,
+      "team": 4,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21998,
+      "team": 4,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -38505,7 +38532,7 @@
      }
     ]
    },
-   "clock": "82'00"
+   "clock": "83'00"
   },
   "MUN|TOT": {
    "fixtureId": 128981,
@@ -38905,5 +38932,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-10T15:40:52.825Z"
+ "fetchedAt": "2026-10-10T15:43:12.552Z"
 }
