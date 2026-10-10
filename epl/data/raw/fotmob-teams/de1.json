@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-10T14:31:53.737Z",
+ "fetchedAt": "2026-10-10T16:46:10.334Z",
  "teams": [
   {
    "code": "BVB",
@@ -185,6 +185,126 @@
    ]
   },
   {
+   "code": "B04",
+   "fotmobId": 8178,
+   "fotmobName": "Bayer Leverkusen",
+   "fetchedAt": "2026-10-09T12:41:43.679Z",
+   "color": "#cf1e1e",
+   "teamColors": {
+    "darkMode": "#e32221",
+    "lightMode": "#cf1e1e",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "BayArena",
+   "city": "Leverkusen",
+   "location": [
+    "51.038213121",
+    "7.002249956"
+   ],
+   "capacity": 30210,
+   "surface": "Grass",
+   "opened": 1958,
+   "coachHistory": [
+    {
+     "id": 656595,
+     "name": "Erik ten Hag",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 0,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 0.5,
+     "winPercentage": 0
+    },
+    {
+     "id": 91505,
+     "name": "Kasper Hjulmand",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 17,
+     "draw": 7,
+     "loss": 8,
+     "pointsPerGame": 1.81,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 1515447,
+     "name": "Carles Martínez",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "RBL",
+   "fotmobId": 178475,
+   "fotmobName": "RB Leipzig",
+   "fetchedAt": "2026-10-09T12:41:46.419Z",
+   "color": "#DD0741",
+   "teamColors": {
+    "darkMode": "#FFFFFF",
+    "lightMode": "#DD0741",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Red Bull Arena",
+   "city": "Leipzig",
+   "location": [
+    "51.345776141",
+    "12.348289490"
+   ],
+   "capacity": 47800,
+   "surface": "Grass",
+   "opened": 2004,
+   "coachHistory": [
+    {
+     "id": 36491,
+     "name": "Zsolt Löw",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 3,
+     "loss": 2,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 1099625,
+     "name": "Ole Werner",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 20,
+     "draw": 5,
+     "loss": 9,
+     "pointsPerGame": 1.91,
+     "winPercentage": 0.59
+    },
+    {
+     "id": 30459,
+     "name": "Martín Demichelis",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 0,
+     "loss": 2,
+     "pointsPerGame": 1.5,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
    "code": "FCA",
    "fotmobId": 8406,
    "fotmobName": "Augsburg",
@@ -245,54 +365,54 @@
    ]
   },
   {
-   "code": "B04",
-   "fotmobId": 8178,
-   "fotmobName": "Bayer Leverkusen",
-   "fetchedAt": "2026-10-09T12:41:43.679Z",
-   "color": "#cf1e1e",
+   "code": "SVW",
+   "fotmobId": 8697,
+   "fotmobName": "Werder Bremen",
+   "fetchedAt": "2026-10-09T12:41:45.287Z",
+   "color": "#007642",
    "teamColors": {
-    "darkMode": "#e32221",
-    "lightMode": "#cf1e1e",
+    "darkMode": "#009655",
+    "lightMode": "#007642",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "BayArena",
-   "city": "Leverkusen",
+   "venue": "Weserstadion",
+   "city": "Bremen",
    "location": [
-    "51.038213121",
-    "7.002249956"
+    "53.066427548",
+    "8.837546110"
    ],
-   "capacity": 30210,
+   "capacity": 42100,
    "surface": "Grass",
-   "opened": 1958,
+   "opened": 1924,
    "coachHistory": [
     {
-     "id": 656595,
-     "name": "Erik ten Hag",
+     "id": 5136,
+     "name": "Horst Steffen",
      "season": "2025/2026",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 0,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 0.5,
-     "winPercentage": 0
-    },
-    {
-     "id": 91505,
-     "name": "Kasper Hjulmand",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 17,
+     "win": 4,
      "draw": 7,
-     "loss": 8,
-     "pointsPerGame": 1.81,
-     "winPercentage": 0.53
+     "loss": 9,
+     "pointsPerGame": 0.95,
+     "winPercentage": 0.2
     },
     {
-     "id": 1515447,
-     "name": "Carles Martínez",
+     "id": 33244,
+     "name": "Daniel Thioune",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 4,
+     "draw": 1,
+     "loss": 9,
+     "pointsPerGame": 0.93,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 33244,
+     "name": "Daniel Thioune",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -425,126 +545,6 @@
    ]
   },
   {
-   "code": "SVW",
-   "fotmobId": 8697,
-   "fotmobName": "Werder Bremen",
-   "fetchedAt": "2026-10-09T12:41:45.287Z",
-   "color": "#007642",
-   "teamColors": {
-    "darkMode": "#009655",
-    "lightMode": "#007642",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Weserstadion",
-   "city": "Bremen",
-   "location": [
-    "53.066427548",
-    "8.837546110"
-   ],
-   "capacity": 42100,
-   "surface": "Grass",
-   "opened": 1924,
-   "coachHistory": [
-    {
-     "id": 5136,
-     "name": "Horst Steffen",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 4,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 0.95,
-     "winPercentage": 0.2
-    },
-    {
-     "id": 33244,
-     "name": "Daniel Thioune",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 4,
-     "draw": 1,
-     "loss": 9,
-     "pointsPerGame": 0.93,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 33244,
-     "name": "Daniel Thioune",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
-   "code": "RBL",
-   "fotmobId": 178475,
-   "fotmobName": "RB Leipzig",
-   "fetchedAt": "2026-10-09T12:41:46.419Z",
-   "color": "#DD0741",
-   "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#DD0741",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Red Bull Arena",
-   "city": "Leipzig",
-   "location": [
-    "51.345776141",
-    "12.348289490"
-   ],
-   "capacity": 47800,
-   "surface": "Grass",
-   "opened": 2004,
-   "coachHistory": [
-    {
-     "id": 36491,
-     "name": "Zsolt Löw",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 3,
-     "loss": 2,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 1099625,
-     "name": "Ole Werner",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 20,
-     "draw": 5,
-     "loss": 9,
-     "pointsPerGame": 1.91,
-     "winPercentage": 0.59
-    },
-    {
-     "id": 30459,
-     "name": "Martín Demichelis",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 0,
-     "loss": 2,
-     "pointsPerGame": 1.5,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
    "code": "VFB",
    "fotmobId": 10269,
    "fotmobName": "VfB Stuttgart",
@@ -605,61 +605,61 @@
    ]
   },
   {
-   "code": "SGE",
-   "fotmobId": 9810,
-   "fotmobName": "Eintracht Frankfurt",
-   "fetchedAt": "2026-10-09T12:41:47.452Z",
-   "color": "#000000",
+   "code": "HSV",
+   "fotmobId": 9790,
+   "fotmobName": "Hamburger SV",
+   "fetchedAt": "2026-10-09T12:41:50.681Z",
+   "color": "#005AAA",
    "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#000000",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "darkMode": "#1d63b4",
+    "lightMode": "#005AAA",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Deutsche Bank Park",
-   "city": "Frankfurt am Main",
+   "venue": "Volksparkstadion",
+   "city": "Hamburg",
    "location": [
-    "50.068577360",
-    "8.645448312"
+    "53.587134005",
+    "9.898579717"
    ],
-   "capacity": 60100,
+   "capacity": 57000,
    "surface": "Grass",
-   "opened": 2005,
+   "opened": 1998,
    "coachHistory": [
     {
-     "id": 571661,
-     "name": "Dennis Schmitt",
+     "id": 1611908,
+     "name": "Merlin Polzin",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 11,
+     "draw": 6,
+     "loss": 4,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.52
+    },
+    {
+     "id": 1611908,
+     "name": "Merlin Polzin",
      "season": "2025/2026",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 0,
-     "draw": 0,
-     "loss": 2,
-     "pointsPerGame": 0,
-     "winPercentage": 0
+     "win": 9,
+     "draw": 11,
+     "loss": 14,
+     "pointsPerGame": 1.12,
+     "winPercentage": 0.26
     },
     {
-     "id": 37920,
-     "name": "Albert Riera",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 4,
-     "draw": 5,
-     "loss": 5,
-     "pointsPerGame": 1.21,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 7484,
-     "name": "Adolf Hütter",
+     "id": 1611908,
+     "name": "Merlin Polzin",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
      "win": 1,
-     "draw": 2,
-     "loss": 1,
-     "pointsPerGame": 1.25,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
      "winPercentage": 0.25
     }
    ]
@@ -725,61 +725,61 @@
    ]
   },
   {
-   "code": "TSG",
-   "fotmobId": 8226,
-   "fotmobName": "Hoffenheim",
-   "fetchedAt": "2026-10-09T12:41:50.120Z",
-   "color": "#005098",
+   "code": "SGE",
+   "fotmobId": 9810,
+   "fotmobName": "Eintracht Frankfurt",
+   "fetchedAt": "2026-10-09T12:41:47.452Z",
+   "color": "#000000",
    "teamColors": {
-    "darkMode": "#0057a3",
-    "lightMode": "#005098",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "darkMode": "#FFFFFF",
+    "lightMode": "#000000",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "SNP Arena",
-   "city": "Sinsheim",
+   "venue": "Deutsche Bank Park",
+   "city": "Frankfurt am Main",
    "location": [
-    "49.238005290",
-    "8.887740970"
+    "50.068577360",
+    "8.645448312"
    ],
-   "capacity": 30164,
+   "capacity": 60100,
    "surface": "Grass",
-   "opened": 2009,
+   "opened": 2005,
    "coachHistory": [
     {
-     "id": 601384,
-     "name": "Christian Ilzer",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 5,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.21
-    },
-    {
-     "id": 601384,
-     "name": "Christian Ilzer",
+     "id": 571661,
+     "name": "Dennis Schmitt",
      "season": "2025/2026",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 18,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.53
+     "win": 0,
+     "draw": 0,
+     "loss": 2,
+     "pointsPerGame": 0,
+     "winPercentage": 0
     },
     {
-     "id": 601384,
-     "name": "Christian Ilzer",
+     "id": 37920,
+     "name": "Albert Riera",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 4,
+     "draw": 5,
+     "loss": 5,
+     "pointsPerGame": 1.21,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 7484,
+     "name": "Adolf Hütter",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
      "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
+     "draw": 2,
+     "loss": 1,
+     "pointsPerGame": 1.25,
      "winPercentage": 0.25
     }
    ]
@@ -905,66 +905,6 @@
    ]
   },
   {
-   "code": "HSV",
-   "fotmobId": 9790,
-   "fotmobName": "Hamburger SV",
-   "fetchedAt": "2026-10-09T12:41:50.681Z",
-   "color": "#005AAA",
-   "teamColors": {
-    "darkMode": "#1d63b4",
-    "lightMode": "#005AAA",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Volksparkstadion",
-   "city": "Hamburg",
-   "location": [
-    "53.587134005",
-    "9.898579717"
-   ],
-   "capacity": 57000,
-   "surface": "Grass",
-   "opened": 1998,
-   "coachHistory": [
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 11,
-     "draw": 6,
-     "loss": 4,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.52
-    },
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 9,
-     "draw": 11,
-     "loss": 14,
-     "pointsPerGame": 1.12,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
    "code": "FCU",
    "fotmobId": 8149,
    "fotmobName": "Union Berlin",
@@ -1021,6 +961,66 @@
      "loss": 3,
      "pointsPerGame": 0.25,
      "winPercentage": 0
+    }
+   ]
+  },
+  {
+   "code": "TSG",
+   "fotmobId": 8226,
+   "fotmobName": "Hoffenheim",
+   "fetchedAt": "2026-10-09T12:41:50.120Z",
+   "color": "#005098",
+   "teamColors": {
+    "darkMode": "#0057a3",
+    "lightMode": "#005098",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "SNP Arena",
+   "city": "Sinsheim",
+   "location": [
+    "49.238005290",
+    "8.887740970"
+   ],
+   "capacity": 30164,
+   "surface": "Grass",
+   "opened": 2009,
+   "coachHistory": [
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 5,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.21
+    },
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 18,
+     "draw": 7,
+     "loss": 9,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
+     "winPercentage": 0.25
     }
    ]
   },

@@ -2,68 +2,8 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-10T14:31:54.423Z",
+ "fetchedAt": "2026-10-10T16:46:11.232Z",
  "teams": [
-  {
-   "code": "ROM",
-   "fotmobId": 8686,
-   "fotmobName": "Roma",
-   "fetchedAt": "2026-10-09T12:41:51.611Z",
-   "color": "#96092B",
-   "teamColors": {
-    "darkMode": "#b90926",
-    "lightMode": "#96092B",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Olimpico",
-   "city": "Roma",
-   "location": [
-    "41.933947912",
-    "12.454757094"
-   ],
-   "capacity": 70634,
-   "surface": "Grass",
-   "opened": 1932,
-   "coachHistory": [
-    {
-     "id": 78620,
-     "name": "Claudio Ranieri",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 17,
-     "draw": 5,
-     "loss": 4,
-     "pointsPerGame": 2.15,
-     "winPercentage": 0.65
-    },
-    {
-     "id": 96945,
-     "name": "Gian Piero Gasperini",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 23,
-     "draw": 4,
-     "loss": 11,
-     "pointsPerGame": 1.92,
-     "winPercentage": 0.61
-    },
-    {
-     "id": 96945,
-     "name": "Gian Piero Gasperini",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
   {
    "code": "INT",
    "fotmobId": 8636,
@@ -113,6 +53,66 @@
     {
      "id": 27692,
      "name": "Cristian Chivu",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "ROM",
+   "fotmobId": 8686,
+   "fotmobName": "Roma",
+   "fetchedAt": "2026-10-09T12:41:51.611Z",
+   "color": "#96092B",
+   "teamColors": {
+    "darkMode": "#b90926",
+    "lightMode": "#96092B",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Olimpico",
+   "city": "Roma",
+   "location": [
+    "41.933947912",
+    "12.454757094"
+   ],
+   "capacity": 70634,
+   "surface": "Grass",
+   "opened": 1932,
+   "coachHistory": [
+    {
+     "id": 78620,
+     "name": "Claudio Ranieri",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 17,
+     "draw": 5,
+     "loss": 4,
+     "pointsPerGame": 2.15,
+     "winPercentage": 0.65
+    },
+    {
+     "id": 96945,
+     "name": "Gian Piero Gasperini",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 23,
+     "draw": 4,
+     "loss": 11,
+     "pointsPerGame": 1.92,
+     "winPercentage": 0.61
+    },
+    {
+     "id": 96945,
+     "name": "Gian Piero Gasperini",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -845,66 +845,6 @@
    ]
   },
   {
-   "code": "PAR",
-   "fotmobId": 10167,
-   "fotmobName": "Parma",
-   "fetchedAt": "2026-10-09T12:41:57.164Z",
-   "color": "#000000",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#000000",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Ennio Tardini",
-   "city": "Parma",
-   "location": [
-    "44.794905165",
-    "10.338386893"
-   ],
-   "capacity": 22885,
-   "surface": "Grass",
-   "opened": 1923,
-   "coachHistory": [
-    {
-     "id": 27692,
-     "name": "Cristian Chivu",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 7,
-     "loss": 3,
-     "pointsPerGame": 1.23,
-     "winPercentage": 0.23
-    },
-    {
-     "id": 1776681,
-     "name": "Carlos Cuesta",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 11,
-     "draw": 12,
-     "loss": 15,
-     "pointsPerGame": 1.18,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 1776681,
-     "name": "Carlos Cuesta",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.8,
-     "winPercentage": 0.2
-    }
-   ]
-  },
-  {
    "code": "MZA",
    "fotmobId": 6504,
    "fotmobName": "Monza",
@@ -1021,6 +961,66 @@
      "loss": 4,
      "pointsPerGame": 0.2,
      "winPercentage": 0
+    }
+   ]
+  },
+  {
+   "code": "PAR",
+   "fotmobId": 10167,
+   "fotmobName": "Parma",
+   "fetchedAt": "2026-10-09T12:41:57.164Z",
+   "color": "#000000",
+   "teamColors": {
+    "darkMode": "#ffffff",
+    "lightMode": "#000000",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Ennio Tardini",
+   "city": "Parma",
+   "location": [
+    "44.794905165",
+    "10.338386893"
+   ],
+   "capacity": 22885,
+   "surface": "Grass",
+   "opened": 1923,
+   "coachHistory": [
+    {
+     "id": 27692,
+     "name": "Cristian Chivu",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 7,
+     "loss": 3,
+     "pointsPerGame": 1.23,
+     "winPercentage": 0.23
+    },
+    {
+     "id": 1776681,
+     "name": "Carlos Cuesta",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 11,
+     "draw": 12,
+     "loss": 15,
+     "pointsPerGame": 1.18,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 1776681,
+     "name": "Carlos Cuesta",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.8,
+     "winPercentage": 0.2
     }
    ]
   },

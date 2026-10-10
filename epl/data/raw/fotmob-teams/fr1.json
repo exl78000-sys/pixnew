@@ -2,8 +2,68 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-10T14:31:55.181Z",
+ "fetchedAt": "2026-10-10T16:46:11.863Z",
  "teams": [
+  {
+   "code": "LIL",
+   "fotmobId": 8639,
+   "fotmobName": "Lille",
+   "fetchedAt": "2026-10-09T12:42:03.528Z",
+   "color": "#E01D13",
+   "teamColors": {
+    "darkMode": "#E01D13",
+    "lightMode": "#E01D13",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Decathlon Arena - Stade Pierre-Mauroy",
+   "city": "Villeneuve d'Ascq",
+   "location": [
+    "50.611965136",
+    "3.130483910"
+   ],
+   "capacity": 50083,
+   "surface": "Grass",
+   "opened": 2012,
+   "coachHistory": [
+    {
+     "id": 712734,
+     "name": "Bruno Génésio",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 17,
+     "draw": 9,
+     "loss": 8,
+     "pointsPerGame": 1.76,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 712734,
+     "name": "Bruno Génésio",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 18,
+     "draw": 7,
+     "loss": 9,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 1108529,
+     "name": "Davide Ancelotti",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
   {
    "code": "MON",
    "fotmobId": 9829,
@@ -180,66 +240,6 @@
      "draw": 2,
      "loss": 0,
      "pointsPerGame": 2.2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
-   "code": "LIL",
-   "fotmobId": 8639,
-   "fotmobName": "Lille",
-   "fetchedAt": "2026-10-09T12:42:03.528Z",
-   "color": "#E01D13",
-   "teamColors": {
-    "darkMode": "#E01D13",
-    "lightMode": "#E01D13",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Decathlon Arena - Stade Pierre-Mauroy",
-   "city": "Villeneuve d'Ascq",
-   "location": [
-    "50.611965136",
-    "3.130483910"
-   ],
-   "capacity": 50083,
-   "surface": "Grass",
-   "opened": 2012,
-   "coachHistory": [
-    {
-     "id": 712734,
-     "name": "Bruno Génésio",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 17,
-     "draw": 9,
-     "loss": 8,
-     "pointsPerGame": 1.76,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 712734,
-     "name": "Bruno Génésio",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 18,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 1108529,
-     "name": "Davide Ancelotti",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
      "winPercentage": 0.6
     }
    ]
