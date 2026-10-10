@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-10T19:00:29.882Z",
+ "fetchedAt": "2026-10-10T21:30:51.804Z",
  "teams": [
   {
    "code": "INT",
@@ -305,62 +305,62 @@
    ]
   },
   {
-   "code": "FRO",
-   "fotmobId": 9891,
-   "fotmobName": "Frosinone",
-   "fetchedAt": "2026-10-09T12:41:54.283Z",
-   "color": "#d5a300",
+   "code": "NAP",
+   "fotmobId": 9875,
+   "fotmobName": "Napoli",
+   "fetchedAt": "2026-10-09T12:41:54.798Z",
+   "color": "#12A0D7",
    "teamColors": {
-    "darkMode": "#E3AD00",
-    "lightMode": "#d5a300",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "darkMode": "#12A0D7",
+    "lightMode": "#12A0D7",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stadio Benito Stirpe",
-   "city": "Frosinone",
+   "venue": "Stadio Diego Armando Maradona",
+   "city": "Napoli",
    "location": [
-    "41.634077242",
-    "13.321822114"
+    "40.827974049",
+    "14.192930460"
    ],
-   "capacity": 16310,
+   "capacity": 54726,
    "surface": "Grass",
-   "opened": 2017,
+   "opened": 1959,
    "coachHistory": [
     {
-     "id": 39696,
-     "name": "Paolo Bianco",
+     "id": 22169,
+     "name": "Antonio Conte",
      "season": "2024/2025",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 5,
-     "draw": 5,
-     "loss": 2,
-     "pointsPerGame": 1.67,
-     "winPercentage": 0.42
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 24,
+     "draw": 10,
+     "loss": 4,
+     "pointsPerGame": 2.16,
+     "winPercentage": 0.63
     },
     {
-     "id": 1188285,
-     "name": "Massimiliano Alvini",
+     "id": 22169,
+     "name": "Antonio Conte",
      "season": "2025/2026",
-     "leagueId": 86,
-     "leagueName": "Serie B",
+     "leagueId": 55,
+     "leagueName": "Serie A",
      "win": 23,
-     "draw": 12,
-     "loss": 3,
-     "pointsPerGame": 2.13,
+     "draw": 7,
+     "loss": 8,
+     "pointsPerGame": 2,
      "winPercentage": 0.61
     },
     {
-     "id": 1188285,
-     "name": "Massimiliano Alvini",
+     "id": 129745,
+     "name": "Massimiliano Allegri",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 3,
+     "win": 2,
      "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
+     "loss": 2,
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
     }
    ]
   },
@@ -485,62 +485,62 @@
    ]
   },
   {
-   "code": "NAP",
-   "fotmobId": 9875,
-   "fotmobName": "Napoli",
-   "fetchedAt": "2026-10-09T12:41:54.798Z",
-   "color": "#12A0D7",
+   "code": "FRO",
+   "fotmobId": 9891,
+   "fotmobName": "Frosinone",
+   "fetchedAt": "2026-10-09T12:41:54.283Z",
+   "color": "#d5a300",
    "teamColors": {
-    "darkMode": "#12A0D7",
-    "lightMode": "#12A0D7",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "darkMode": "#E3AD00",
+    "lightMode": "#d5a300",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stadio Diego Armando Maradona",
-   "city": "Napoli",
+   "venue": "Stadio Benito Stirpe",
+   "city": "Frosinone",
    "location": [
-    "40.827974049",
-    "14.192930460"
+    "41.634077242",
+    "13.321822114"
    ],
-   "capacity": 54726,
+   "capacity": 16310,
    "surface": "Grass",
-   "opened": 1959,
+   "opened": 2017,
    "coachHistory": [
     {
-     "id": 22169,
-     "name": "Antonio Conte",
+     "id": 39696,
+     "name": "Paolo Bianco",
      "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 24,
-     "draw": 10,
-     "loss": 4,
-     "pointsPerGame": 2.16,
-     "winPercentage": 0.63
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 5,
+     "draw": 5,
+     "loss": 2,
+     "pointsPerGame": 1.67,
+     "winPercentage": 0.42
     },
     {
-     "id": 22169,
-     "name": "Antonio Conte",
+     "id": 1188285,
+     "name": "Massimiliano Alvini",
      "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
+     "leagueId": 86,
+     "leagueName": "Serie B",
      "win": 23,
-     "draw": 7,
-     "loss": 8,
-     "pointsPerGame": 2,
+     "draw": 12,
+     "loss": 3,
+     "pointsPerGame": 2.13,
      "winPercentage": 0.61
     },
     {
-     "id": 129745,
-     "name": "Massimiliano Allegri",
+     "id": 1188285,
+     "name": "Massimiliano Alvini",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 2,
+     "win": 3,
      "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
     }
    ]
   },

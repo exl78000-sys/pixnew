@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-10T19:00:30.348Z",
+ "fetchedAt": "2026-10-10T21:30:52.295Z",
  "teams": [
   {
    "code": "MON",
@@ -125,66 +125,6 @@
    ]
   },
   {
-   "code": "PFC",
-   "fotmobId": 6379,
-   "fotmobName": "Paris FC",
-   "fetchedAt": "2026-10-09T12:42:03.510Z",
-   "color": "#0C1C3D",
-   "teamColors": {
-    "darkMode": "#0453a6",
-    "lightMode": "#0C1C3D",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Jean Bouin",
-   "city": "Paris",
-   "location": [
-    "48.843148388",
-    "2.252916098"
-   ],
-   "capacity": 20000,
-   "surface": "Artificial turf",
-   "opened": 1925,
-   "coachHistory": [
-    {
-     "id": 1141972,
-     "name": "Stéphane Gilli",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 5,
-     "draw": 8,
-     "loss": 10,
-     "pointsPerGame": 1,
-     "winPercentage": 0.22
-    },
-    {
-     "id": 176574,
-     "name": "Antoine Kombouare",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 6,
-     "draw": 3,
-     "loss": 2,
-     "pointsPerGame": 1.91,
-     "winPercentage": 0.55
-    },
-    {
-     "id": 24105,
-     "name": "Liam Rosenior",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 3,
-     "draw": 2,
-     "loss": 0,
-     "pointsPerGame": 2.2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
    "code": "LYO",
    "fotmobId": 9748,
    "fotmobName": "Lyon",
@@ -245,61 +185,61 @@
    ]
   },
   {
-   "code": "REN",
-   "fotmobId": 9851,
-   "fotmobName": "Rennes",
-   "fetchedAt": "2026-10-09T12:42:03.978Z",
-   "color": "#E13327",
+   "code": "PFC",
+   "fotmobId": 6379,
+   "fotmobName": "Paris FC",
+   "fetchedAt": "2026-10-09T12:42:03.510Z",
+   "color": "#0C1C3D",
    "teamColors": {
-    "darkMode": "#E13327",
-    "lightMode": "#E13327",
+    "darkMode": "#0453a6",
+    "lightMode": "#0C1C3D",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Roazhon Park",
-   "city": "Rennes",
+   "venue": "Stade Jean Bouin",
+   "city": "Paris",
    "location": [
-    "48.107467009",
-    "-1.712884158"
+    "48.843148388",
+    "2.252916098"
    ],
-   "capacity": 31127,
-   "surface": "Grass",
-   "opened": 1912,
+   "capacity": 20000,
+   "surface": "Artificial turf",
+   "opened": 1925,
    "coachHistory": [
     {
-     "id": 1693064,
-     "name": "Sébastien Tambouret",
+     "id": 1141972,
+     "name": "Stéphane Gilli",
      "season": "2025/2026",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 0,
-     "loss": 0,
-     "pointsPerGame": 3,
-     "winPercentage": 1
+     "win": 5,
+     "draw": 8,
+     "loss": 10,
+     "pointsPerGame": 1,
+     "winPercentage": 0.22
     },
     {
-     "id": 804046,
-     "name": "Franck Haise",
+     "id": 176574,
+     "name": "Antoine Kombouare",
      "season": "2025/2026",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 8,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 2.08,
-     "winPercentage": 0.67
+     "win": 6,
+     "draw": 3,
+     "loss": 2,
+     "pointsPerGame": 1.91,
+     "winPercentage": 0.55
     },
     {
-     "id": 804046,
-     "name": "Franck Haise",
+     "id": 24105,
+     "name": "Liam Rosenior",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
      "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
+     "draw": 2,
+     "loss": 0,
+     "pointsPerGame": 2.2,
      "winPercentage": 0.6
     }
    ]
@@ -365,6 +305,66 @@
    ]
   },
   {
+   "code": "REN",
+   "fotmobId": 9851,
+   "fotmobName": "Rennes",
+   "fetchedAt": "2026-10-09T12:42:03.978Z",
+   "color": "#E13327",
+   "teamColors": {
+    "darkMode": "#E13327",
+    "lightMode": "#E13327",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Roazhon Park",
+   "city": "Rennes",
+   "location": [
+    "48.107467009",
+    "-1.712884158"
+   ],
+   "capacity": 31127,
+   "surface": "Grass",
+   "opened": 1912,
+   "coachHistory": [
+    {
+     "id": 1693064,
+     "name": "Sébastien Tambouret",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 0,
+     "loss": 0,
+     "pointsPerGame": 3,
+     "winPercentage": 1
+    },
+    {
+     "id": 804046,
+     "name": "Franck Haise",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 8,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 2.08,
+     "winPercentage": 0.67
+    },
+    {
+     "id": 804046,
+     "name": "Franck Haise",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
    "code": "BST",
    "fotmobId": 8521,
    "fotmobName": "Brest",
@@ -421,6 +421,66 @@
      "loss": 15,
      "pointsPerGame": 1.15,
      "winPercentage": 0.29
+    }
+   ]
+  },
+  {
+   "code": "LOR",
+   "fotmobId": 8689,
+   "fotmobName": "Lorient",
+   "fetchedAt": "2026-10-09T12:42:07.959Z",
+   "color": "#F05330",
+   "teamColors": {
+    "darkMode": "#F05330",
+    "lightMode": "#F05330",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade du Moustoir - Yves Allainmat",
+   "city": "Lorient",
+   "location": [
+    "47.748821296",
+    "-3.369020820"
+   ],
+   "capacity": 18970,
+   "surface": "Artificial turf",
+   "opened": 1959,
+   "coachHistory": [
+    {
+     "id": 278248,
+     "name": "Olivier Pantaloni",
+     "season": "2024/2025",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 22,
+     "draw": 5,
+     "loss": 7,
+     "pointsPerGame": 2.09,
+     "winPercentage": 0.65
+    },
+    {
+     "id": 278248,
+     "name": "Olivier Pantaloni",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 11,
+     "draw": 12,
+     "loss": 11,
+     "pointsPerGame": 1.32,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 41334,
+     "name": "Alexandre Dujeux",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 2,
+     "loss": 2,
+     "pointsPerGame": 1,
+     "winPercentage": 0.2
     }
    ]
   },
@@ -545,66 +605,6 @@
    ]
   },
   {
-   "code": "LMA",
-   "fotmobId": 8682,
-   "fotmobName": "Le Mans",
-   "fetchedAt": "2026-10-09T12:42:05.369Z",
-   "color": "#D60000",
-   "teamColors": {
-    "darkMode": "#D60000",
-    "lightMode": "#D60000",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Marie-Marvingt",
-   "city": "Le Mans",
-   "location": [
-    "47.959223534",
-    "0.223524570"
-   ],
-   "capacity": 25064,
-   "surface": "Grass",
-   "opened": 2011,
-   "coachHistory": [
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2022/2023",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 10,
-     "draw": 13,
-     "loss": 11,
-     "pointsPerGame": 1.26,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2023/2024",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 6,
-     "draw": 7,
-     "loss": 7,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.3
-    },
-    {
-     "id": 1141920,
-     "name": "Mathieu Chabert",
-     "season": "2023/2024",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 7,
-     "draw": 3,
-     "loss": 2,
-     "pointsPerGame": 2,
-     "winPercentage": 0.58
-    }
-   ]
-  },
-  {
    "code": "ANG",
    "fotmobId": 8121,
    "fotmobName": "Angers",
@@ -665,62 +665,62 @@
    ]
   },
   {
-   "code": "LOR",
-   "fotmobId": 8689,
-   "fotmobName": "Lorient",
-   "fetchedAt": "2026-10-09T12:42:07.959Z",
-   "color": "#F05330",
+   "code": "LMA",
+   "fotmobId": 8682,
+   "fotmobName": "Le Mans",
+   "fetchedAt": "2026-10-09T12:42:05.369Z",
+   "color": "#D60000",
    "teamColors": {
-    "darkMode": "#F05330",
-    "lightMode": "#F05330",
+    "darkMode": "#D60000",
+    "lightMode": "#D60000",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stade du Moustoir - Yves Allainmat",
-   "city": "Lorient",
+   "venue": "Stade Marie-Marvingt",
+   "city": "Le Mans",
    "location": [
-    "47.748821296",
-    "-3.369020820"
+    "47.959223534",
+    "0.223524570"
    ],
-   "capacity": 18970,
-   "surface": "Artificial turf",
-   "opened": 1959,
+   "capacity": 25064,
+   "surface": "Grass",
+   "opened": 2011,
    "coachHistory": [
     {
-     "id": 278248,
-     "name": "Olivier Pantaloni",
-     "season": "2024/2025",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 22,
-     "draw": 5,
-     "loss": 7,
-     "pointsPerGame": 2.09,
-     "winPercentage": 0.65
-    },
-    {
-     "id": 278248,
-     "name": "Olivier Pantaloni",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 11,
-     "draw": 12,
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2022/2023",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 10,
+     "draw": 13,
      "loss": 11,
-     "pointsPerGame": 1.32,
-     "winPercentage": 0.32
+     "pointsPerGame": 1.26,
+     "winPercentage": 0.29
     },
     {
-     "id": 41334,
-     "name": "Alexandre Dujeux",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 2,
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2023/2024",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 6,
+     "draw": 7,
+     "loss": 7,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.3
+    },
+    {
+     "id": 1141920,
+     "name": "Mathieu Chabert",
+     "season": "2023/2024",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 7,
+     "draw": 3,
      "loss": 2,
-     "pointsPerGame": 1,
-     "winPercentage": 0.2
+     "pointsPerGame": 2,
+     "winPercentage": 0.58
     }
    ]
   },
