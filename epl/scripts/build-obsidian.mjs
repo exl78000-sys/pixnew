@@ -2863,14 +2863,19 @@ function buildIntl() {
   /* 評分落後:martj42 還沒收的比賽不進評分,每一場講兩隊之後又踢了幾場,連同量過的代價 */
   const lagText = f => {
     const lags = (f.lag ?? []).map(n => n ?? 0);
-    const lag = Math.max(0, ...lags);
-    if (!lag) return null;
-    const who = [f.home, f.away].map((t, i) => (lags[i] ? `${sideName(t)} ${lags[i]} 場` : null)).filter(Boolean).join('、');
+    const provs = (f.prov ?? []).map(n => n ?? 0);
+    const rest = lags.map((n, i) => Math.max(0, n - (provs[i] ?? 0)));
+    const lag = Math.max(0, ...rest), prov = Math.max(0, ...provs);
+    if (!lag && !prov) return null;
+    const whoOf = arr => [f.home, f.away].map((t, i) => (arr[i] ? `${sideName(t)} ${arr[i]} 場` : null)).filter(Boolean).join('、');
     const lg = I.model?.lag;
-    return `**評分未含最近 ${lag} 場**:評分只算到 ${asOf}(martj42 收錄到的最後一天),之後踢的比賽還沒被核對,不拿來改評分。`
-      + `這兩隊之後又踢了:${who}。`
-      + (lg?.affected ? `量過這件事值多少:建置時評分已落後 ${lg.days} 天,拿驗收那一批模擬同樣的落後,受影響的場次每場 RPS 平均多 ${Number(lg.affected.cost).toFixed(4)} ± ${Number(lg.affected.se).toFixed(4)}`
-        + `(模型整體的改善是 ${I.model.holdout ? Number(I.model.holdout.gain).toFixed(4) : '—'})。` : '');
+    const cost = lg?.affected ? `量過這件事值多少:建置時評分已落後 ${lg.days} 天,拿驗收那一批模擬同樣的落後,受影響的場次每場 RPS 平均多 ${Number(lg.affected.cost).toFixed(4)} ± ${Number(lg.affected.se).toFixed(4)}`
+      + `(模型整體的改善是 ${I.model.holdout ? Number(I.model.holdout.gain).toFixed(4) : '—'})。` : '';
+    return [
+      prov ? `**含最近 ${prov} 場暫定賽果(未核對)**:評分只算到 ${asOf}(martj42 收錄到的最後一天);這兩隊之後又踢了 ${whoOf(provs)},那些賽果是 FotMob 的、還沒被獨立來源核對,暫時加進這一場的評分(排名與球隊頁的評分不含)。` : null,
+      lag ? `**評分未含最近 ${lag} 場**:評分只算到 ${asOf}(martj42 收錄到的最後一天),之後踢的比賽還沒被核對,不拿來改評分。這兩隊之後又踢了:${whoOf(rest)}。` : null,
+      cost || null,
+    ].filter(Boolean).join('');
   };
   const probShort = f => (f.prob ? `主勝 ${pc(f.prob[0])}・和 ${pc(f.prob[1])}・客勝 ${pc(f.prob[2])}` : (f.why ?? '不給勝率'));
   const stateOf = f => (f.state === 'CANCELLED' ? (f.reason === 'Ab' ? '中止' : '取消') : f.state === 'LIVE' ? '建置時進行中' : '未賽');
@@ -3240,8 +3245,12 @@ function buildIntl() {
         + `拿驗收那一批模擬「評分晚 ${m.lag.days} 天」,兩隊至少一隊在那幾天裡踢過的 ${a.n} 場,每場 RPS 平均多 ${f4(a.cost)} ± ${f4(a.se)}`
         + `(${a.z} 倍標準誤;模型整體的改善是 ${h ? f4(h.gain) : '—'})。`
         + (m.lag.passes
-          ? '這個代價**大過**兩倍標準誤。評分仍然只從 martj42 算,還沒被獨立來源核對的賽果不拿來改評分(提早更新要冒用錯比分的風險,'
-            + '而且它本身沒有歷史資料可以回測,這個代價是它最多能挽回的),所以這段期間的勝率是用舊評分算的。'
+          ? (m.provisional?.active
+            ? `這個代價**大過**兩倍標準誤,所以**未賽場次的勝率**另外加上 martj42 還沒收錄的 FotMob 賽果 ${m.provisional.n} 場(${m.provisional.from} ~ ${m.provisional.to},暫定):`
+              + `這些賽果沒有第二個來源核對、FotMob 也沒有「是不是中立場」(${m.provisional.neutralGuessed} 場照中立場推論當中立場算),判決比分不收,`
+              + '而且**暫定更新本身沒有歷史資料可以回測**(上面那個代價是它最多能挽回的量,不是它實際挽回的)。排名與球隊頁的評分仍然只從 martj42 算。'
+            : '這個代價**大過**兩倍標準誤。規則是:大過時,未賽場次的勝率另外加上 martj42 還沒收錄的 FotMob 賽果(暫定,不進排名);這一次沒有這樣的賽果,'
+              + '評分仍然只從 martj42 算,所以這段期間的勝率是用舊評分算的。')
           : '沒有大過兩倍標準誤 —— 所以本站**不**拿還沒被核對的賽果提早更新評分。') + '\n');
     }
     b.push('\n沒有放進模型的:先發名單、傷停、總教練、旅途與時差 —— 本站沒有這些資料,勝率只看兩隊的歷史戰績。\n');
@@ -3251,7 +3260,7 @@ function buildIntl() {
     + `- **核對**:FotMob 的每一場已完賽都跟 martj42 逐場對 —— 一致 ${cc.agree ?? 0}・待核對 ${cc.notYet ?? 0}・`
     + `獨立來源沒收 ${cc.unmatched ?? 0}・不一致 ${cc.mismatch ?? 0}。「待核對」是它還沒收到那一天,不等於不一致\n`
     + '- **沒有即時比分**:賽程與賽果跟著每天兩次的部署更新,比賽中不會動\n'
-    + '- **評分會落後**:獨立來源還沒收的比賽不拿來改評分,所以每一場的勝率旁邊會講兩隊之後又踢了幾場\n'
+    + '- **評分會落後**:排名與球隊評分只用獨立來源收錄的比賽;落後太多時,未賽場次的勝率另外加上它還沒收錄的 FotMob 賽果(暫定、未核對),每一場的勝率旁邊會講兩隊之後又踢了幾場、哪幾場是暫定\n'
     + '- **沒有陣容、傷停與賽後報告**:國家隊的逐場詳情還沒接\n'
     + '- **時間一律 UTC**;網站依讀者的時區分天,筆記是靜態的\n'
     + '- **martj42 的賽事名照原文**(Friendly、UEFA Nations League…);FotMob 那幾個賽事的中文名是產物給的\n');

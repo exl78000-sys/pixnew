@@ -246,6 +246,30 @@ export function crossCheckIntl(fmMatches, mjMatches, keyOf) {
   });
 }
 
+/* ── 評分的暫定更新(2026-10-10,使用者:「你完成」)────────────────────────
+   martj42 停更時評分會一直落後(2026-10-05 量過:六週落後的代價 2.7 SE,大過兩倍標準誤)。
+   暫定更新 = 把 **martj42 還沒收錄**(`notYet`:日期晚於它的最後一場)的 FotMob 已完賽場次,接在 martj42 後面再走一次 Elo。
+   只用在**未賽場次的勝率**;排名與球隊評分仍是只用 martj42 的那一份(畫面講)。
+   風險寫在這裡:這些賽果沒有第二個來源核對(對得上的場次裡兩邊不一致約 0.7%)、FotMob 沒有「是不是中立場」(下面用中立場推論,不是事實)、
+   判決比分(AW)記法不同所以不收、PK 場的 final 是和局(跟 martj42 的慣例一致:含延長、不含 PK)。
+   **這個更新本身沒有歷史資料可以回測** —— 能回測的是「落後的代價」(intlLagCost),它是暫定更新最多能挽回的量,不是它實際挽回的量。
+   所以啟用條件寫死在 build:驗收通過 **而且** 落後的代價大過兩倍標準誤(每次建置重算),任何一個不成立就退回只用 martj42。
+   `neutralOf(m)` 由呼叫端給(中立場推論過驗收才有;回 true/false/null,null = 當主場)。 */
+export function provisionalMatches(finished, checks, { neutralOf = () => null, tournamentOf = () => null } = {}) {
+  const out = [], skipped = { awarded: 0, noScore: 0 };
+  for (const f of finished) {
+    const c = checks.get(f.id);
+    if (!c || c.status !== 'notYet') continue;
+    if (f.awarded) { skipped.awarded++; continue; }
+    if (!Array.isArray(f.final) || !Number.isFinite(f.final[0]) || !Number.isFinite(f.final[1])) { skipped.noScore++; continue; }
+    out.push({ date: c.date, kickoff: f.kickoff, home: c.home, away: c.away, fh: f.final[0], fa: f.final[1],
+      tournament: tournamentOf(f), neutral: neutralOf(f) === true, provisional: true, id: f.id });
+  }
+  // 依日期排,同一天保持上游順序(跟 parseIntlResults 同一個慣例)
+  const sorted = out.map((m, i) => ({ m, i })).sort((a, b) => (a.m.date < b.m.date ? -1 : a.m.date > b.m.date ? 1 : a.i - b.i)).map(x => x.m);
+  return { matches: sorted, skipped };
+}
+
 /* ── 用內容證明 FotMob 的 id ─────────────────────────────────────────
    一個 id 是不是它自稱的那個賽事,**看對上的場次在 martj42 叫什麼**,不看名字
    (德甲那次:奧地利甲也叫 Bundesliga;這次:CONCACAF 也叫 Nations League、女足的 10557 在 allLeagues 沒有 Women's)。

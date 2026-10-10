@@ -84,9 +84,12 @@ if (!I) {
   check('已完賽的場次沒有勝率', resultWithProb.length === 0, resultWithProb.slice(0, 3).map(matchRel).join('、'));
 
   /* 不確定性要寫在筆記上(鐵則四):評分落後、中立場是推論 */
-  const lagBad = (I.fixtures ?? []).filter(f => f.prob && Math.max(0, ...(f.lag ?? []).map(n => n ?? 0)) > 0)
-    .filter(f => !note(matchRel(f)).includes(`評分未含最近 ${Math.max(0, ...f.lag.map(n => n ?? 0))} 場`));
-  check('評分落後的場次講出「評分未含最近 N 場」', lagBad.length === 0, lagBad.slice(0, 3).map(matchRel).join('、'));
+  const restOf = f => Math.max(0, ...(f.lag ?? []).map((n, i) => Math.max(0, (n ?? 0) - ((f.prov ?? [])[i] ?? 0))));
+  const provOf = f => Math.max(0, ...(f.prov ?? []).map(n => n ?? 0));
+  const lagBad = (I.fixtures ?? []).filter(f => f.prob && (restOf(f) > 0 || provOf(f) > 0))
+    .filter(f => (restOf(f) > 0 && !note(matchRel(f)).includes(`評分未含最近 ${restOf(f)} 場`))
+      || (provOf(f) > 0 && !note(matchRel(f)).includes(`含最近 ${provOf(f)} 場暫定賽果(未核對)`)));
+  check('評分落後的場次講出「評分未含最近 N 場」/ 暫定的講出「含最近 N 場暫定賽果(未核對)」', lagBad.length === 0, lagBad.slice(0, 3).map(matchRel).join('、'));
   /* 落後的說明講**實際**的天數(建置日 − 評分截止日,2026-10-05 前固定量 7 天),判決照產物:
      大過兩倍標準誤與沒大過是兩種話,不能互換(大過了還說「換來的好處量不出來」就是講假話) */
   const lagI = I.model?.lag;
@@ -96,9 +99,10 @@ if (!I) {
       home.includes(`**落後 ${lagI.days} 天**`) && home.includes(`「評分晚 ${lagI.days} 天」`)
       && (lagI.passes
         ? home.includes('這個代價**大過**兩倍標準誤') && !home.includes('不**拿還沒被核對的賽果提早更新評分')
+          && (I.model.provisional?.active ? home.includes('暫定更新本身沒有歷史資料可以回測') : home.includes('這一次沒有這樣的賽果'))
         : home.includes('沒有大過兩倍標準誤') && home.includes('不**拿還沒被核對的賽果提早更新評分')),
       `${lagI.days} 天・${lagI.passes ? '大過兩倍標準誤' : '沒有大過'}`);
-    const lagNotes = (I.fixtures ?? []).filter(f => f.prob && Math.max(0, ...(f.lag ?? []).map(n => n ?? 0)) > 0);
+    const lagNotes = (I.fixtures ?? []).filter(f => f.prob && restOf(f) + provOf(f) > 0);
     const lagDayBad = lagNotes.filter(f => !note(matchRel(f)).includes(`建置時評分已落後 ${lagI.days} 天`));
     check('評分落後的場次筆記講的也是實際的天數', lagDayBad.length === 0, `${lagNotes.length} 則${lagDayBad.length ? `,不對的:${lagDayBad.slice(0, 3).map(matchRel).join('、')}` : ''}`);
   }

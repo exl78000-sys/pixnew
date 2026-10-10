@@ -27,7 +27,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   parseIntlResults, parseShootouts, runIntlElo, backtestIntl, frequencyBaseline, pairedGain, calibration,
-  tournamentClass, crossCheckIntl, proofFromCheck, makeVenueModel, venueProbs, venueBacktest,
+  tournamentClass, provisionalMatches, crossCheckIntl, proofFromCheck, makeVenueModel, venueProbs, venueBacktest,
   intlLagCost, intlLagDays, intlTeamHistory, intlH2H, intlStandings,
   INTL_HOLDOUT, INTL_MIN_GAMES, intlPasses,
 } from './lib/intl.mjs';
@@ -132,6 +132,22 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
   // ── 已完賽:逐場核對 ──
   const finished = uniq.filter(m => m.state === 'FT' && Array.isArray(m.final));
   const checks = new Map(crossCheckIntl(finished, mj, resolver.keyOf).map(r => [r.fm.id, r]));
+  /* 暫定更新(lib/intl.mjs 的 provisionalMatches):啟用條件 = 驗收通過 且 落後的代價大過兩倍標準誤,每次建置重算。
+     只影響未賽場次的勝率;排名與 teams[].rating 仍是只用 martj42 的 `rating`。 */
+  const provOn = Boolean(passed && lag?.passes);
+  const provRaw = provisionalMatches(finished, checks, {
+    tournamentOf: f => COMP_TOURNAMENT.get(f.comp) ?? null,
+    neutralOf: f => {
+      if (!guessVenue) return null;
+      const c = checks.get(f.id);
+      const v = guessVenue({ home: c.home, tournament: COMP_TOURNAMENT.get(f.comp), date: c.date });
+      return v ? v.q >= 0.5 : null;
+    },
+  });
+  const prov = provOn && provRaw.matches.length ? provRaw : { matches: [], skipped: provRaw.skipped };
+  const elo2 = prov.matches.length ? runIntlElo([...mj, ...prov.matches], P) : { rating, games };
+  const provCount = new Map();
+  for (const m of prov.matches) for (const k of [m.home, m.away]) provCount.set(k, (provCount.get(k) ?? 0) + 1);
   // 評分沒算到的已完賽場次(martj42 還沒收 / 查不到):每一隊幾場
   const lagOf = new Map();
   for (const m of finished) {
@@ -167,7 +183,8 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
       reason: m.reason, reasonLong: m.reasonLong,
       // 中止的比賽上游會給「中止當下」的比分(友誼賽 Denmark v Ukraine 2-1 Abandoned)—— 照印,標清楚那不是終場
       ...(m.state === 'CANCELLED' && Array.isArray(m.final) ? { stoppedAt: m.final } : {}),
-      lag: [h.key ? lagOf.get(h.key) ?? 0 : null, a.key ? lagOf.get(a.key) ?? 0 : null] };
+      lag: [h.key ? lagOf.get(h.key) ?? 0 : null, a.key ? lagOf.get(a.key) ?? 0 : null],
+      prov: [h.key ? provCount.get(h.key) ?? 0 : null, a.key ? provCount.get(a.key) ?? 0 : null] };
     if (m.state === 'CANCELLED') return { ...out, prob: null, why: m.reason === 'Ab' ? '比賽中止' : '比賽取消' };
     const why = h.tbd || a.tbd ? '對戰組合還沒決定(上一階段還沒踢完)'
       : !passed ? '模型這一次重算的驗收沒有通過門檻(改善要大過兩倍標準誤),整批不給勝率'
@@ -176,7 +193,7 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
         ? `評分樣本不足:${[h, a].filter(t => (games.get(t.key) ?? 0) < minGames).map(t => `${t.key} 只有 ${games.get(t.key) ?? 0} 場`).join('、')}(要 ${minGames} 場,跟回測同一個門檻)`
       : null;
     if (why) return { ...out, prob: null, why };
-    const rh = rating.get(h.key), ra = rating.get(a.key);
+    const rh = elo2.rating.get(h.key), ra = elo2.rating.get(a.key);
     /* 中立場的機率 q(推論沒過驗收就是 null → 一律主場,跟第一版一樣)。日期用開球時間的 UTC 日期;
        沒有開球時間的(上游還沒公布)用建置當天 —— 推論只看 lag 天以前的資料,差幾天不影響它看到什麼 */
     const v = guessVenue ? guessVenue({ home: h.key, tournament: COMP_TOURNAMENT.get(m.comp), date: (m.kickoff ?? builtAt).slice(0, 10) }) : null;
@@ -288,10 +305,15 @@ export function assembleIntl({ mj, shootouts = new Map(), mjMeta = null, params,
       },
       ratingsAsOf: lastDate,
       lag,
+      /* 暫定更新:只影響未賽場次的勝率(fixtures[].elo / prob);排名與 teams[].rating 仍只用 martj42 */
+      provisional: { active: prov.matches.length > 0, gate: '驗收通過,而且評分落後的代價大過兩倍標準誤(每次建置重算)',
+        gateOk: provOn, n: prov.matches.length, from: prov.matches[0]?.date ?? null, to: prov.matches.at(-1)?.date ?? null,
+        neutralGuessed: prov.matches.filter(m => m.neutral).length, skipped: prov.skipped,
+        teams: provCount.size },
     },
     sources: [
       { key: 'martj42', name: 'martj42/international_results', url: 'https://github.com/martj42/international_results',
-        role: '歷史賽果:1872 年至今的男子 A 級國際賽,只收踢完的比賽。評分只從它算。',
+        role: '歷史賽果:1872 年至今的男子 A 級國際賽,只收踢完的比賽。排名與球隊評分只從它算;未賽場次的勝率在它落後太多時另外加上它還沒收錄的 FotMob 賽果(暫定,見模型說明)。',
         lastDate, rows: mjMeta?.files?.['results.csv']?.rows ?? mj.length, retrievedAt: mjMeta?.retrievedAt ?? null },
       { key: 'fotmob', name: 'FotMob', url: 'https://www.fotmob.com', role: '賽程與這一窗的賽果(八個賽事,一個賽事一個請求)' },
       { key: 'cldr', name: 'Unicode CLDR', url: 'https://cldr.unicode.org', role: '國名的中文(標準資料,不是翻譯);足球慣用名不同的由本站覆寫' },
@@ -372,7 +394,9 @@ async function main() {
   const withProb = out.fixtures.filter(f => f.prob).length;
   const lg = out.model.lag;
   if (lg?.affected) console.log(`  評分實際落後 ${lg.days} 天(截止 ${out.model.ratingsAsOf})的代價:受影響的 ${lg.affected.n} 場每場 RPS +${lg.affected.cost} ± ${lg.affected.se}(${lg.affected.z} SE)`
-    + `・全部 ${lg.all.n} 場 +${lg.all.cost} → ${lg.passes ? '大過兩倍標準誤(評分仍只用 martj42,暫定更新要使用者決定:補齊規劃第 5 項)' : '沒有大過兩倍標準誤,不拿未核對的賽果做暫定更新'}`);
+    + `・全部 ${lg.all.n} 場 +${lg.all.cost} → ${lg.passes ? '大過兩倍標準誤 → 未賽場次的勝率加上 martj42 還沒收錄的 FotMob 賽果(暫定,排名不含)' : '沒有大過兩倍標準誤,不拿未核對的賽果做暫定更新'}`);
+  const pv = out.model.provisional;
+  if (pv) console.log(`  暫定更新:${pv.active ? `啟用 —— ${pv.n} 場(${pv.from} ~ ${pv.to})・${pv.teams} 隊・推論中立場 ${pv.neutralGuessed} 場・判決比分略過 ${pv.skipped.awarded} 場` : pv.gateOk ? '門檻過了,但沒有 martj42 還沒收錄的賽果可加' : '門檻沒過,不啟用'}`);
   else if (lg) console.log(`  評分實際落後 ${lg.days} 天(截止 ${out.model.ratingsAsOf}):沒有受影響的場次可量`);
   const vn = out.model.venue;
   if (vn?.holdout) {

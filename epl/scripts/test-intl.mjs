@@ -18,9 +18,9 @@ import { fileURLToPath } from 'node:url';
 import {
   parseIntlResults, runIntlElo, backtestIntl, probsFromE, expectedScore, crossCheckIntl, proofFromCheck,
   frequencyBaseline, pairedGain, PROOF_MIN_MATCHED, INTL_TUNE, INTL_HOLDOUT, intlPasses,
-  intlStandings, intlLagCost, intlLagDays, intlH2H, pairKey, makeVenueModel, venueProbs, venueBacktest, venueGroup, testExpect,
+  intlStandings, provisionalMatches, intlLagCost, intlLagDays, intlH2H, pairKey, makeVenueModel, venueProbs, venueBacktest, venueGroup, testExpect,
 } from './lib/intl.mjs';
-import { assembleIntl } from './build-intl.mjs';
+import { assembleIntl, loadRaws } from './build-intl.mjs';
 import { loadIntlTeamTable, makeIntlResolver, intlFlagPlan, flagDistance, FLAG_SAME } from './lib/intl-teams.mjs';
 import { decodePNG } from './lib/png.mjs';
 import { imageBytes } from './lib/image-files.mjs';
@@ -115,13 +115,12 @@ console.log('\n▶ 國家隊:模型(走查、門檻、參數)');
           && Math.abs(re.affected.cost - lg.affected.cost) < 1e-4 && Math.abs(re.affected.se - lg.affected.se) < 1e-4),
       lg?.affected ? `${lg.days} 天:受影響 ${lg.affected.n} 場 ${lg.affected.cost} ± ${lg.affected.se}` : `${lg?.days} 天`);
     check('判決(大過兩倍標準誤)照沒進位的數字', lg && lg.passes === intlPasses(re?.affected && { gain: re.affected.cost, se: re.affected.se }));
-    /* **沒有暫定更新**:評分必須跟「只用 martj42 走一次」逐隊一模一樣。量出來大過兩倍標準誤(2026-10-05 起現況就是)
-       不代表可以放行 —— 要不要做暫定更新是使用者的決定(補齊規劃第 5 項 ②),不是這條測試會自己讓開的條件。
-       (第一版寫成 `lg.passes || drift.length === 0`:判決一變 true 這條就整個失效,而那正是它最該守的時候。)
-       哪天決定做了,是在這裡**有意識地**改這條,並且畫面要講「含 N 場尚未被獨立來源核對的賽果」。 */
+    /* **排名與球隊評分沒有暫定更新**(2026-10-10 起暫定更新只進未賽場次的勝率,見下面「暫定更新」那一節):
+       teams[].rating 必須跟「只用 martj42 走一次」逐隊一模一樣。第一版寫成 `lg.passes || drift.length === 0`,
+       判決一變 true 這條就整個失效,而那正是它最該守的時候 —— 所以這條不看判決。 */
     const { rating } = runIntlElo(mj, P);
     const drift = Object.entries(D.teams).filter(([k, t]) => t.rating != null && t.rating !== Math.round(rating.get(k)));
-    check('沒有暫定更新:每一隊的評分都等於只用 martj42 算的那一份(不管落後的代價有沒有大過兩倍標準誤)', drift.length === 0,
+    check('排名與球隊評分不含暫定賽果:每一隊的評分都等於只用 martj42 算的那一份(不管落後的代價有沒有大過兩倍標準誤)', drift.length === 0,
       drift.slice(0, 3).map(([k]) => k).join('、'));
     check('評分截止日就是 martj42 的最後一天', D.model.ratingsAsOf === mj.at(-1)?.date);
 
@@ -235,6 +234,64 @@ console.log('\n▶ 國家隊:落後的代價量實際落後(建置日 − 評分
   check('頁面不寫死落後的天數(「晚 N 天」「落後 N 天」的 N 一律從產物讀)', !/(?:晚|落後)\s*\d+\s*天/.test(noC));
   const vaultSrc = stripComments(readFileSync(join(ROOT, 'scripts', 'build-obsidian.mjs'), 'utf8'));
   check('vault 產生器也一樣不寫死落後的天數', !/(?:晚|落後)\s*\d+\s*天/.test(vaultSrc));
+}
+
+// ── 2a. 評分的暫定更新(2026-10-10)─────────────────────────
+/* martj42 停更時,把它還沒收錄的 FotMob 已完賽場次接在後面再走一次 Elo,**只用在未賽場次的勝率**。
+   啟用條件:驗收通過 且 落後的代價大過兩倍標準誤(每次建置重算)。排名與球隊評分仍只用 martj42。 */
+console.log('\n▶ 國家隊:評分的暫定更新(只進未賽場次的勝率、過門檻才用)');
+{
+  const fm = (id, kick, extra = {}) => ({ id, kickoff: kick, final: [2, 1], awarded: false, comp: 'x', ...extra });
+  const ck = (status, home, away, date) => ({ status, home, away, date });
+  const fins = [fm(1, '2026-10-07T18:00:00Z'), fm(2, '2026-10-07T19:00:00Z', { awarded: true }), fm(3, '2026-10-06T18:00:00Z'),
+    fm(4, '2026-10-09T18:00:00Z', { final: [null, 1] }), fm(5, '2026-10-08T18:00:00Z')];
+  const cks = new Map([[1, ck('notYet', 'A', 'B', '2026-10-07')], [2, ck('notYet', 'C', 'D', '2026-10-07')], [3, ck('agree', 'E', 'F', '2026-10-06')],
+    [4, ck('notYet', 'G', 'H', '2026-10-09')], [5, ck('notYet', 'I', 'J', '2026-10-08')]]);
+  const r = provisionalMatches(fins, cks, { tournamentOf: () => 'Friendly', neutralOf: f => (f.id === 5 ? true : null) });
+  check('只收 notYet:agree 的(martj42 已經有)不收', !r.matches.some(m => m.id === 3));
+  check('判決比分(AW)記法不同,不收,並且記下略過幾場', !r.matches.some(m => m.id === 2) && r.skipped.awarded === 1);
+  check('比分不是數字的不收,記下略過幾場(不編 0)', !r.matches.some(m => m.id === 4) && r.skipped.noScore === 1);
+  check('收進來的帶隊鍵、比分、賽事、日期,依日期排好', r.matches.map(m => m.id).join() === '1,5'
+    && r.matches[0].home === 'A' && r.matches[0].fh === 2 && r.matches[0].fa === 1 && r.matches[0].tournament === 'Friendly' && r.matches[0].date === '2026-10-07');
+  check('中立場只有呼叫端明講 true 才算(null = 當主場,跟一律主場同一個預設)', r.matches[0].neutral === false && r.matches[1].neutral === true);
+
+  const RAW = join(ROOT, 'data', 'raw', 'fotmob-intl');
+  if (mj.length && existsSync(RAW)) {
+    const raws = loadRaws(RAW), table = loadIntlTeamTable(ROOT);
+    const last = mj.at(-1).date;
+    const cut = new Date(Date.parse(`${last}T00:00:00Z`) - 30 * 86400000).toISOString().slice(0, 10);
+    const tr = mj.filter(m => m.date <= cut);
+    const P = params.params;
+    // 把 martj42 截掉最後 30 天,模擬「它停更了」;FotMob 那一段就成了 notYet
+    const on = assembleIntl({ mj: tr, params, table, raws, builtAt: `${last}T04:00:00Z` });
+    const pv = on.model.provisional;
+    check('落後 30 天以上、門檻過了 → 啟用,而且收的場數就是產物裡 notYet 扣掉略過的',
+      on.model.lag.passes && pv.active && pv.n === (on.checkCounts.notYet ?? 0) - pv.skipped.awarded - pv.skipped.noScore && pv.n > 0,
+      `${pv.n} 場・notYet ${on.checkCounts.notYet}`);
+    const base = runIntlElo(tr, P).rating;
+    const drift = Object.entries(on.teams).filter(([k, t]) => t.rating != null && t.rating !== Math.round(base.get(k)));
+    check('啟用時排名與球隊評分仍是只用 martj42 的那一份', drift.length === 0 && on.ranking.every(x => x.rating === Math.round(base.get(x.key))));
+    const withProv = on.fixtures.filter(f => f.prob && (f.prov[0] || f.prov[1]));
+    const noProv = on.fixtures.filter(f => f.prob && !f.prov[0] && !f.prov[1]);
+    const eloOf = (f, i) => f.elo[i];
+    const baseOf = (f, i) => Math.round(base.get((i ? f.away : f.home).key));
+    const sides = on.fixtures.filter(f => f.prob).flatMap(f => [0, 1].map(i => ({ f, i })));
+    check('有暫定賽果的那一隊,評分跟只用 martj42 的不同(至少多數);沒有的那一隊一模一樣',
+      sides.filter(x => x.f.prov[x.i] > 0).length > 0
+      && sides.filter(x => x.f.prov[x.i] > 0).some(x => eloOf(x.f, x.i) !== baseOf(x.f, x.i))
+      && sides.filter(x => !x.f.prov[x.i]).every(x => eloOf(x.f, x.i) === baseOf(x.f, x.i)),
+      `${sides.filter(x => x.f.prov[x.i] > 0).length} / ${sides.filter(x => !x.f.prov[x.i]).length} 隊次`);
+    check('prov 是這兩隊被算進去的暫定場數,不會超過評分沒算到的場數(lag)',
+      on.fixtures.every(f => f.prov.every((n, i) => n == null || n <= (f.lag[i] ?? 0))));
+    // 門檻沒過(建置日 = 截止日,沒有落後)→ 不啟用,即使 FotMob 有 notYet 的賽果
+    const off = assembleIntl({ mj: tr, params, table, raws, builtAt: `${tr.at(-1).date}T04:00:00Z` });
+    check('落後 0 天(門檻沒過)不啟用:全部未賽場次的評分就是只用 martj42 的',
+      !off.model.lag.passes && !off.model.provisional.active && off.model.provisional.n === 0
+      && off.fixtures.filter(f => f.prob).every(f => f.elo[0] === Math.round(base.get(f.home.key)) && f.elo[1] === Math.round(base.get(f.away.key)))
+      && off.fixtures.every(f => f.prov.every(n => !n)));
+  }
+  const pageSrc2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8');
+  check('頁面在有暫定賽果時標「未核對」,而且天數與場數不寫死', /暫定賽果\(未核對\)/.test(pageSrc2) && !/含最近\s*\d+\s*場/.test(stripComments(pageSrc2)));
 }
 
 // ── 2b. 中立場的賽前推論(2026-09-25)──────────────────────

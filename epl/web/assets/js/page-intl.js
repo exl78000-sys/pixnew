@@ -86,17 +86,22 @@ function venueText(f) {
 }
 function probCell(f) {
   const lags = (f.lag ?? []).map(n => n ?? 0);
-  const lag = Math.max(0, ...lags);
+  const provs = (f.prov ?? []).map(n => n ?? 0);
+  // 還沒被評分算進去的:暫定更新加進去的(prov)與還是沒算的(lag − prov;martj42 沒收也沒辦法暫定的)
+  const rest = lags.map((n, i) => Math.max(0, n - (provs[i] ?? 0)));
+  const lag = Math.max(0, ...rest), prov = Math.max(0, ...provs);
   const tip = `本站 Elo ${f.elo[0]} 對 ${f.elo[1]}・${venueText(f)}`;
   const bar = `<span title="${esc(tip)}">${C.probBar({ home: f.prob[0], draw: f.prob[1], away: f.prob[2] })}</span>`;
   const venue = f.venue && f.venue.q >= VENUE_SHOW
     ? `<div class="tiny dim" style="margin-top:3px" title="${esc(venueText(f))}">中立場機率 ${C.pct(f.venue.q, 0)}</div>` : '';
-  if (!lag) return bar + venue;
-  const who = [f.home, f.away].map((t, i) => (lags[i] ? `${zhOf(t.key)} ${lags[i]} 場` : null)).filter(Boolean).join('、');
+  if (!lag && !prov) return bar + venue;
+  const whoOf = arr => [f.home, f.away].map((t, i) => (arr[i] ? `${zhOf(t.key)} ${arr[i]} 場` : null)).filter(Boolean).join('、');
   // 天數是建置時**實際**的落後(model.lag.days),不是寫死的一個情境;精度跟模型那一段一樣印四位
   const lg = D.model.lag?.affected;
   const cost = lg ? `量過這件事值多少:建置時評分已落後 ${D.model.lag.days} 天,拿驗收那一批模擬同樣的落後,受影響的場次每場 RPS 平均多 ${Number(lg.cost).toFixed(4)} ± ${Number(lg.se).toFixed(4)}(模型整體的改善是 ${D.model.holdout ? Number(D.model.holdout.gain).toFixed(4) : '—'})。` : '';
-  return `${bar}${venue}<div class="tiny dim" style="margin-top:3px" title="評分只算到 ${esc(D.model.ratingsAsOf)}(獨立來源收錄到的最後一天);之後踢的比賽還沒被核對,不拿來改評分。這兩隊之後又踢了:${esc(who)}。${esc(cost)}">評分未含最近 ${lag} 場</div>`;
+  const provNote = prov ? `<div class="tiny dim" style="margin-top:3px" title="評分只算到 ${esc(D.model.ratingsAsOf)}(獨立來源收錄到的最後一天);這兩隊之後又踢了:${esc(whoOf(provs))},這些賽果是 FotMob 的、還沒被獨立來源核對,暫時加進這一場的評分(排名與球隊頁的評分不含)。${esc(cost)}">含最近 ${prov} 場暫定賽果(未核對)</div>` : '';
+  const lagNote = lag ? `<div class="tiny dim" style="margin-top:3px" title="評分只算到 ${esc(D.model.ratingsAsOf)}(獨立來源收錄到的最後一天);之後踢的比賽還沒被核對,不拿來改評分。這兩隊之後又踢了:${esc(whoOf(rest))}。${esc(cost)}">評分未含最近 ${lag} 場</div>` : '';
+  return `${bar}${venue}${provNote}${lagNote}`;
 }
 
 function fixtureRow(f) {
@@ -379,8 +384,12 @@ function lagBlock(m, h) {
     這一次它收錄到 ${esc(m.ratingsAsOf)},到建置那天已經<b>落後 ${lg.days} 天</b>:拿驗收那一批模擬「評分晚 ${lg.days} 天」,
     兩隊至少一隊在那幾天裡踢過的 ${a.n} 場,每場 RPS 平均多 ${f4(a.cost)} ± ${f4(a.se)}(${a.z} 倍標準誤;模型整體的改善是 ${h ? f4(h.gain) : '—'})。
     ${lg.passes
-      ? `這個代價<b>大過</b>兩倍標準誤。評分仍然只從 martj42 算,還沒被獨立來源核對的賽果不拿來改評分(提早更新要冒用錯比分的風險,
-        而且它本身沒有歷史資料可以回測,這個代價是它最多能挽回的),所以這段期間的勝率是用舊評分算的 —— 有落後的場次,勝率下面寫了兩隊評分之後又踢了幾場。`
+      ? (m.provisional?.active
+        ? `這個代價<b>大過</b>兩倍標準誤,所以<b>未賽場次的勝率</b>另外加上 martj42 還沒收錄的 FotMob 賽果 ${m.provisional.n} 場(${esc(m.provisional.from)} ~ ${esc(m.provisional.to)},暫定):
+          這些賽果沒有第二個來源核對、FotMob 也沒有「是不是中立場」(${m.provisional.neutralGuessed} 場照中立場推論當中立場算),判決比分不收,
+          而且<b>暫定更新本身沒有歷史資料可以回測</b>(上面那個代價是它最多能挽回的量,不是它實際挽回的)。排名與球隊頁的評分仍然只從 martj42 算。`
+        : `這個代價<b>大過</b>兩倍標準誤。規則是:大過時,未賽場次的勝率另外加上 martj42 還沒收錄的 FotMob 賽果(暫定,不進排名);這一次沒有這樣的賽果,
+          評分仍然只從 martj42 算,所以這段期間的勝率是用舊評分算的 —— 有落後的場次,勝率下面寫了兩隊評分之後又踢了幾場。`)
       : '沒有大過兩倍標準誤 —— 所以本站<b>不</b>拿還沒被核對的賽果提早更新評分:換來的好處量不出來,卻要冒用錯比分的風險。'}</p>`;
 }
 
