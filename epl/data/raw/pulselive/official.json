@@ -35233,7 +35233,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 1
    },
    "homeId": 1,
@@ -35663,15 +35663,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 69914,
-     "assist": 14548,
+     "person": 74761,
+     "assist": 15202,
      "team": 1,
-     "min": 62,
-     "label": "62'00",
+     "min": 70,
+     "label": "70'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 1,
+     "hs": 2,
      "as": 1
     }
    ],
@@ -35768,6 +35768,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 63289,
+      "team": 9,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 33162,
+      "team": 9,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 13961,
+      "team": 9,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 126426,
+      "team": 9,
+      "min": 71,
+      "label": "71'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -35797,7 +35833,7 @@
      }
     ]
    },
-   "clock": "68'00"
+   "clock": "71'00"
   },
   "AVL|BRE": {
    "fixtureId": 128974,
@@ -37388,5 +37424,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-10T12:58:42.596Z"
+ "fetchedAt": "2026-10-10T13:01:04.399Z"
 }
