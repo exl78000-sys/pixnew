@@ -36510,7 +36510,7 @@
      }
     ]
    },
-   "clock": "48'00"
+   "clock": "50'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -36945,7 +36945,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 14656,
+     "assist": null,
+     "team": 34,
+     "min": 55,
+     "label": "55'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -37004,7 +37018,7 @@
      }
     ]
    },
-   "clock": "52'00"
+   "clock": "55'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37439,7 +37453,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 67928,
+     "assist": null,
+     "team": 131,
+     "min": 53,
+     "label": "53'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -37499,7 +37527,7 @@
      }
     ]
    },
-   "clock": "52'00"
+   "clock": "53'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -37508,7 +37536,7 @@
    "final": false,
    "score": {
     "home": 3,
-    "away": 0
+    "away": 1
    },
    "homeId": 4,
    "awayId": 127,
@@ -37935,16 +37963,16 @@
    "goals": [
     {
      "side": "H",
-     "person": 72371,
-     "assist": 21998,
-     "team": 4,
-     "min": 46,
-     "label": "46'00",
+     "person": 33032,
+     "assist": null,
+     "team": 127,
+     "min": 51,
+     "label": "51'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
      "hs": 3,
-     "as": 0
+     "as": 1
     }
    ],
    "timeline": {
@@ -38015,8 +38043,8 @@
      }
     ]
    },
-   "clock": "51'00"
+   "clock": "53'00"
   }
  },
- "fetchedAt": "2026-10-10T15:10:33.797Z"
+ "fetchedAt": "2026-10-10T15:12:53.686Z"
 }
