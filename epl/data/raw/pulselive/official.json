@@ -36934,6 +36934,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -36944,10 +36950,16 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37931,5 +37943,5 @@
    "clock": "45+3'00"
   }
  },
- "fetchedAt": "2026-10-10T15:01:13.166Z"
+ "fetchedAt": "2026-10-10T15:03:33.067Z"
 }
