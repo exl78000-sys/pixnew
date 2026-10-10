@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-10T04:52:09.980Z",
+ "fetchedAt": "2026-10-10T14:31:54.423Z",
  "teams": [
   {
    "code": "ROM",
@@ -965,6 +965,66 @@
    ]
   },
   {
+   "code": "GEN",
+   "fotmobId": 10233,
+   "fotmobName": "Genoa",
+   "fetchedAt": "2026-10-09T12:41:59.575Z",
+   "color": "#CB1111",
+   "teamColors": {
+    "darkMode": "#CB1111",
+    "lightMode": "#CB1111",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Comunale Luigi Ferraris",
+   "city": "Genova",
+   "location": [
+    "44.416467178",
+    "8.952527046"
+   ],
+   "capacity": 36703,
+   "surface": "Grass",
+   "opened": 1911,
+   "coachHistory": [
+    {
+     "id": 34942,
+     "name": "Patrick Vieira",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 3,
+     "loss": 6,
+     "pointsPerGame": 0.33,
+     "winPercentage": 0
+    },
+    {
+     "id": 30682,
+     "name": "Daniele De Rossi",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 30682,
+     "name": "Daniele De Rossi",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 4,
+     "pointsPerGame": 0.2,
+     "winPercentage": 0
+    }
+   ]
+  },
+  {
    "code": "FIO",
    "fotmobId": 8535,
    "fotmobName": "Fiorentina",
@@ -1080,66 +1140,6 @@
      "draw": 1,
      "loss": 0,
      "pointsPerGame": 1,
-     "winPercentage": 0
-    }
-   ]
-  },
-  {
-   "code": "GEN",
-   "fotmobId": 10233,
-   "fotmobName": "Genoa",
-   "fetchedAt": "2026-10-09T12:41:59.575Z",
-   "color": "#CB1111",
-   "teamColors": {
-    "darkMode": "#CB1111",
-    "lightMode": "#CB1111",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Comunale Luigi Ferraris",
-   "city": "Genova",
-   "location": [
-    "44.416467178",
-    "8.952527046"
-   ],
-   "capacity": 36703,
-   "surface": "Grass",
-   "opened": 1911,
-   "coachHistory": [
-    {
-     "id": 34942,
-     "name": "Patrick Vieira",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 3,
-     "loss": 6,
-     "pointsPerGame": 0.33,
-     "winPercentage": 0
-    },
-    {
-     "id": 30682,
-     "name": "Daniele De Rossi",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 9,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 30682,
-     "name": "Daniele De Rossi",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 4,
-     "pointsPerGame": 0.2,
      "winPercentage": 0
     }
    ]
