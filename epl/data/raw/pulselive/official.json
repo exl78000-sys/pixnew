@@ -36275,7 +36275,7 @@
       "playerId": null,
       "name": "Keane Lewis-Potter",
       "shirt": 23,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Striker",
       "captain": false
      },
@@ -36311,7 +36311,7 @@
       "playerId": null,
       "name": "Jaidon Anthony",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -36411,19 +36411,6 @@
    },
    "goals": [
     {
-     "side": "A",
-     "person": 128891,
-     "assist": null,
-     "team": 130,
-     "min": 10,
-     "label": "10'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 0,
-     "as": 1
-    },
-    {
      "side": "H",
      "person": 110526,
      "assist": null,
@@ -36458,8 +36445,51 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 14164,
+      "team": 2,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 69196,
+      "team": 2,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 115166,
+      "team": 130,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 129096,
+      "team": 130,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -36471,10 +36501,16 @@
       "min": 45,
       "label": "45+6'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+6'00"
+   "clock": "47'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -36959,7 +36995,7 @@
      }
     ]
    },
-   "clock": "48'00"
+   "clock": "51'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37454,7 +37490,7 @@
      }
     ]
    },
-   "clock": "47'00"
+   "clock": "49'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -37973,5 +38009,5 @@
    "clock": "47'00"
   }
  },
- "fetchedAt": "2026-10-10T15:05:53.967Z"
+ "fetchedAt": "2026-10-10T15:08:13.973Z"
 }
