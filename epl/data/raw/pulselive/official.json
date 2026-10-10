@@ -35982,8 +35982,8 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
-    "away": 0
+    "home": 1,
+    "away": 1
    },
    "homeId": 2,
    "awayId": 130,
@@ -36409,7 +36409,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 110526,
+     "assist": null,
+     "team": 2,
+     "min": 12,
+     "label": "12'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
@@ -36428,7 +36442,7 @@
      }
     ]
    },
-   "clock": "09'00"
+   "clock": "12'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -36882,7 +36896,7 @@
      }
     ]
    },
-   "clock": "09'00"
+   "clock": "12'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37120,8 +37134,8 @@
       20505
      ],
      [
-      129259,
-      22542
+      22542,
+      129259
      ],
      [
       143240,
@@ -37336,7 +37350,7 @@
      }
     ]
    },
-   "clock": "09'00"
+   "clock": "11'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -37785,7 +37799,17 @@
     }
    ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 14846,
+      "team": 127,
+      "min": 10,
+      "label": "10'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -37802,8 +37826,8 @@
      }
     ]
    },
-   "clock": "09'00"
+   "clock": "12'00"
   }
  },
- "fetchedAt": "2026-10-10T14:09:51.367Z"
+ "fetchedAt": "2026-10-10T14:12:16.346Z"
 }
