@@ -71149,8 +71149,1645 @@
    "fetchedAt": "2026-10-10T16:44:37.125Z",
    "fdMatchId": "2026-27-41",
    "heat": null
+  },
+  "RBL|SGE": {
+   "key": "RBL|SGE",
+   "season": "2026-27",
+   "date": "2026-10-10",
+   "matchId": "5881186",
+   "home": "RBL",
+   "away": "SGE",
+   "score": [
+    6,
+    0
+   ],
+   "providerScore": [
+    6,
+    0
+   ],
+   "teamStats": {
+    "RBL": {
+     "possession": 47,
+     "shots": 20,
+     "shotsOn": 10,
+     "shotsOff": 5,
+     "blockedShots": 5,
+     "blocksMade": 4,
+     "corners": 3,
+     "offsides": 1,
+     "fouls": 16,
+     "saves": 9,
+     "passes": 433,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.28
+    },
+    "SGE": {
+     "possession": 53,
+     "shots": 18,
+     "shotsOn": 9,
+     "shotsOff": 5,
+     "blockedShots": 4,
+     "blocksMade": 4,
+     "corners": 6,
+     "offsides": 2,
+     "fouls": 13,
+     "saves": 4,
+     "passes": 490,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.44
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "RBL": {
+     "touches_opp_box": 37,
+     "big_chance": 8,
+     "big_chance_missed_title": 3,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 18,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 2.67,
+     "expected_goals_set_play": 0.61,
+     "expected_goals_non_penalty": 3.28,
+     "expected_goals_on_target": 4.97,
+     "own_half_passes": 258,
+     "opposition_half_passes": 118,
+     "long_balls_accurate": 25,
+     "long_balls_accurate_pct": 64,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 50,
+     "player_throws": 17,
+     "matchstats.headers.tackles": 23,
+     "interceptions": 8,
+     "clearances": 26,
+     "duel_won": 54,
+     "ground_duels_won": 45,
+     "ground_duels_won_pct": 51,
+     "aerials_won": 9,
+     "aerials_won_pct": 47,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 43,
+     "red_cards": 0
+    },
+    "SGE": {
+     "touches_opp_box": 31,
+     "big_chance": 6,
+     "big_chance_missed_title": 6,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 16,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 1.08,
+     "expected_goals_set_play": 0.36,
+     "expected_goals_non_penalty": 1.44,
+     "expected_goals_on_target": 2.33,
+     "own_half_passes": 217,
+     "opposition_half_passes": 207,
+     "long_balls_accurate": 24,
+     "long_balls_accurate_pct": 62,
+     "accurate_crosses": 6,
+     "accurate_crosses_pct": 29,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 20,
+     "interceptions": 8,
+     "clearances": 17,
+     "duel_won": 53,
+     "ground_duels_won": 43,
+     "ground_duels_won_pct": 49,
+     "aerials_won": 10,
+     "aerials_won_pct": 53,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 37,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     47,
+     53
+    ],
+    "h1": [
+     53,
+     47
+    ],
+    "h2": [
+     41,
+     59
+    ]
+   },
+   "events": [
+    {
+     "minute": 1,
+     "extra": null,
+     "team": "RBL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Ezechiel Banzuzi"
+    },
+    {
+     "minute": 5,
+     "extra": null,
+     "team": "RBL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Christopher Nkunku"
+    },
+    {
+     "minute": 27,
+     "extra": null,
+     "team": "RBL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Neil El Aynaoui"
+    },
+    {
+     "minute": 41,
+     "extra": null,
+     "team": "RBL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Christopher Nkunku"
+    },
+    {
+     "minute": 44,
+     "extra": null,
+     "team": "RBL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Christopher Nkunku"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "SGE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Elias Baum"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "SGE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Younes Ebnoutalib"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "RBL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Antonio Nusa"
+    },
+    {
+     "minute": 58,
+     "extra": 0,
+     "team": "RBL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Benjamin Henrichs"
+    },
+    {
+     "minute": 58,
+     "extra": 0,
+     "team": "RBL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nicolas Seiwald"
+    },
+    {
+     "minute": 62,
+     "extra": null,
+     "team": "SGE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Elias Baum"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "RBL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tidiam Gomis"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "RBL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Max Finkgräfe"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "RBL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rocco Reitz"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "SGE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Farès Chaïbi"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "SGE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Love Arrhov"
+    },
+    {
+     "minute": 76,
+     "extra": null,
+     "team": "SGE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ansgar Knauff"
+    },
+    {
+     "minute": 84,
+     "extra": null,
+     "team": "SGE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Raphael Onyedika"
+    },
+    {
+     "minute": 89,
+     "extra": null,
+     "team": "RBL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Tidiam Gomis"
+    }
+   ],
+   "shots": [
+    {
+     "min": 1,
+     "extra": null,
+     "team": "RBL",
+     "player": "Ezechiel Banzuzi",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.531,
+     "xgot": 0.969,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.8,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 3,
+     "extra": null,
+     "team": "RBL",
+     "player": "Rômulo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.152,
+     "xgot": 0.196,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.7,
+     "y": 45.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 5,
+     "extra": null,
+     "team": "RBL",
+     "player": "Christopher Nkunku",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.152,
+     "xgot": 0.874,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.7,
+     "y": 37.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "SGE",
+     "player": "Ansgar Knauff",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.007,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.2,
+     "y": 23.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "SGE",
+     "player": "Noël Aséko",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.006,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 20.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "SGE",
+     "player": "Ansgar Knauff",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.1,
+     "y": 23,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "SGE",
+     "player": "Robin Koch",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.025,
+     "xgot": 0.081,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 41.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "SGE",
+     "player": "Ritsu Doan",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.212,
+     "xgot": 0.172,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 25,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "RBL",
+     "player": "Antonio Nusa",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.2,
+     "y": 48,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "SGE",
+     "player": "Jonathan Burkardt",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.6,
+     "y": 31.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "SGE",
+     "player": "Jonathan Burkardt",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0.026,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 22.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "SGE",
+     "player": "Ansgar Knauff",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.211,
+     "xgot": 0.241,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 42.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "SGE",
+     "player": "Jonathan Burkardt",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0.758,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 32.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "RBL",
+     "player": "Rômulo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.319,
+     "xgot": 0.583,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.2,
+     "y": 36.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "RBL",
+     "player": "Christopher Nkunku",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.385,
+     "xgot": 0.585,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 34.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "RBL",
+     "player": "Ezechiel Banzuzi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.073,
+     "xgot": 0.066,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 46,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "RBL",
+     "player": "Christopher Nkunku",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.263,
+     "xgot": 0.752,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 35.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "RBL",
+     "player": "Ezechiel Banzuzi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.5,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "RBL",
+     "player": "Christopher Nkunku",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.112,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 25.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "SGE",
+     "player": "Lilian Brassier",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.146,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.8,
+     "y": 34.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "SGE",
+     "player": "Can Uzun",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 16.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "SGE",
+     "player": "Noël Aséko",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.4,
+     "y": 36.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "SGE",
+     "player": "Lilian Brassier",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.057,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.6,
+     "y": 46,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "RBL",
+     "player": "Antonio Nusa",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0.121,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 44.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "RBL",
+     "player": "Christopher Nkunku",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.112,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93,
+     "y": 42.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "RBL",
+     "player": "Andrija Maksimović",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 22.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "RBL",
+     "player": "Christopher Nkunku",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.064,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 25.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "RBL",
+     "player": "Ezechiel Banzuzi",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.83,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.8,
+     "y": 31.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "RBL",
+     "player": "Tidiam Gomis",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.5,
+     "y": 39.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "SGE",
+     "player": "Ansgar Knauff",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.172,
+     "xgot": 0.184,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 44.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "RBL",
+     "player": "Rocco Reitz",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.09,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.1,
+     "y": 34.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "RBL",
+     "player": "Tidiam Gomis",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.218,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 36.3,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "SGE",
+     "player": "Younes Ebnoutalib",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.131,
+     "xgot": 0.471,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.2,
+     "y": 25.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "SGE",
+     "player": "Can Uzun",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.053,
+     "xgot": 0.297,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.9,
+     "y": 21,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "SGE",
+     "player": "Can Uzun",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0.103,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.1,
+     "y": 47.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "RBL",
+     "player": "Tidiam Gomis",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.063,
+     "xgot": 0.052,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 23.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "RBL",
+     "player": "Tidiam Gomis",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.226,
+     "xgot": 0.698,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.1,
+     "y": 24,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "SGE",
+     "player": "Younes Ebnoutalib",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.119,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.2,
+     "y": 31,
+     "foot": "Header",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     71
+    ],
+    [
+     2,
+     71
+    ],
+    [
+     3,
+     87
+    ],
+    [
+     4,
+     27
+    ],
+    [
+     5,
+     100
+    ],
+    [
+     6,
+     100
+    ],
+    [
+     7,
+     100
+    ],
+    [
+     8,
+     -16
+    ],
+    [
+     9,
+     -11
+    ],
+    [
+     10,
+     -22
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     12,
+     5
+    ],
+    [
+     13,
+     5
+    ],
+    [
+     14,
+     -3
+    ],
+    [
+     15,
+     -8
+    ],
+    [
+     16,
+     -5
+    ],
+    [
+     17,
+     3
+    ],
+    [
+     18,
+     -3
+    ],
+    [
+     19,
+     -11
+    ],
+    [
+     20,
+     -22
+    ],
+    [
+     21,
+     -27
+    ],
+    [
+     22,
+     -27
+    ],
+    [
+     23,
+     -16
+    ],
+    [
+     24,
+     -33
+    ],
+    [
+     25,
+     -33
+    ],
+    [
+     26,
+     -52
+    ],
+    [
+     27,
+     49
+    ],
+    [
+     28,
+     49
+    ],
+    [
+     29,
+     49
+    ],
+    [
+     30,
+     -30
+    ],
+    [
+     31,
+     -46
+    ],
+    [
+     32,
+     -22
+    ],
+    [
+     33,
+     5
+    ],
+    [
+     34,
+     22
+    ],
+    [
+     35,
+     3
+    ],
+    [
+     36,
+     -41
+    ],
+    [
+     37,
+     -41
+    ],
+    [
+     38,
+     -76
+    ],
+    [
+     39,
+     -76
+    ],
+    [
+     40,
+     -65
+    ],
+    [
+     41,
+     100
+    ],
+    [
+     42,
+     100
+    ],
+    [
+     43,
+     100
+    ],
+    [
+     44,
+     38
+    ],
+    [
+     45,
+     27
+    ],
+    [
+     45.5,
+     24
+    ],
+    [
+     46,
+     11
+    ],
+    [
+     47,
+     11
+    ],
+    [
+     48,
+     100
+    ],
+    [
+     49,
+     100
+    ],
+    [
+     50,
+     100
+    ],
+    [
+     51,
+     46
+    ],
+    [
+     52,
+     24
+    ],
+    [
+     53,
+     -46
+    ],
+    [
+     54,
+     -71
+    ],
+    [
+     55,
+     -49
+    ],
+    [
+     56,
+     5
+    ],
+    [
+     57,
+     -11
+    ],
+    [
+     58,
+     -16
+    ],
+    [
+     59,
+     -16
+    ],
+    [
+     60,
+     -22
+    ],
+    [
+     61,
+     -16
+    ],
+    [
+     62,
+     54
+    ],
+    [
+     63,
+     100
+    ],
+    [
+     64,
+     98
+    ],
+    [
+     65,
+     33
+    ],
+    [
+     66,
+     -76
+    ],
+    [
+     67,
+     -54
+    ],
+    [
+     68,
+     -22
+    ],
+    [
+     69,
+     52
+    ],
+    [
+     70,
+     16
+    ],
+    [
+     71,
+     -38
+    ],
+    [
+     72,
+     -57
+    ],
+    [
+     73,
+     -24
+    ],
+    [
+     74,
+     8
+    ],
+    [
+     75,
+     19
+    ],
+    [
+     76,
+     16
+    ],
+    [
+     77,
+     11
+    ],
+    [
+     78,
+     0
+    ],
+    [
+     79,
+     11
+    ],
+    [
+     80,
+     84
+    ],
+    [
+     81,
+     79
+    ],
+    [
+     82,
+     73
+    ],
+    [
+     83,
+     -38
+    ],
+    [
+     84,
+     -43
+    ],
+    [
+     85,
+     -43
+    ],
+    [
+     86,
+     -38
+    ],
+    [
+     87,
+     -43
+    ],
+    [
+     88,
+     -62
+    ],
+    [
+     89,
+     -19
+    ],
+    [
+     90,
+     -3
+    ],
+    [
+     90.5,
+     -88
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "RBL": {
+     "team": "RBL",
+     "formation": "4-2-3-1",
+     "coach": "Martín Demichelis",
+     "xi": [
+      {
+       "name": "Maarten Vandevoordt",
+       "shirt": 26,
+       "pos": "G"
+      },
+      {
+       "name": "Ridle Baku",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Willi Orbán",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Castello Lukeba",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "David Raum",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Ezechiel Banzuzi",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Neil El Aynaoui",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Andrija Maksimović",
+       "shirt": 30,
+       "pos": "M"
+      },
+      {
+       "name": "Christopher Nkunku",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Antonio Nusa",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Rômulo",
+       "shirt": 40,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Benjamin Henrichs",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Nicolas Seiwald",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Tidiam Gomis",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Max Finkgräfe",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Rocco Reitz",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Ørjan Håskjold Nyland",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Lukas Klostermann",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Maxime Estève",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Brajan Gruda",
+       "shirt": 10,
+       "pos": "?"
+      }
+     ]
+    },
+    "SGE": {
+     "team": "SGE",
+     "formation": "3-4-2-1",
+     "coach": "Adolf Hütter",
+     "xi": [
+      {
+       "name": "Noah Atubolu",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Nnamdi Collins",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Robin Koch",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Lilian Brassier",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Ansgar Knauff",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Raphael Onyedika",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Noël Aséko",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Keita Kosugi",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Ritsu Doan",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Can Uzun",
+       "shirt": 42,
+       "pos": "M"
+      },
+      {
+       "name": "Jonathan Burkardt",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Elias Baum",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Younes Ebnoutalib",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Farès Chaïbi",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Love Arrhov",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Kauã",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Otávio",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Mario Götze",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Oscar Højlund",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Timothy Chandler",
+       "shirt": 22,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 37,
+      "center": 25,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 37,
+      "center": 20,
+      "right": 43
+     },
+     "secondHalf": {
+      "left": 37,
+      "center": 29,
+      "right": 34
+     }
+    },
+    "away": {
+     "total": {
+      "left": 36,
+      "center": 25,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 39,
+      "center": 23,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 34,
+      "center": 27,
+      "right": 39
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 6,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-10T18:59:11.775Z",
+   "fdMatchId": "2026-27-42",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-10T17:07:35.902Z"
+ "updatedAt": "2026-10-10T18:59:11.777Z"
 }

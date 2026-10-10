@@ -2,68 +2,8 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-10T17:08:39.528Z",
+ "fetchedAt": "2026-10-10T19:00:30.348Z",
  "teams": [
-  {
-   "code": "LIL",
-   "fotmobId": 8639,
-   "fotmobName": "Lille",
-   "fetchedAt": "2026-10-09T12:42:03.528Z",
-   "color": "#E01D13",
-   "teamColors": {
-    "darkMode": "#E01D13",
-    "lightMode": "#E01D13",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Decathlon Arena - Stade Pierre-Mauroy",
-   "city": "Villeneuve d'Ascq",
-   "location": [
-    "50.611965136",
-    "3.130483910"
-   ],
-   "capacity": 50083,
-   "surface": "Grass",
-   "opened": 2012,
-   "coachHistory": [
-    {
-     "id": 712734,
-     "name": "Bruno Génésio",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 17,
-     "draw": 9,
-     "loss": 8,
-     "pointsPerGame": 1.76,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 712734,
-     "name": "Bruno Génésio",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 18,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 1108529,
-     "name": "Davide Ancelotti",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
   {
    "code": "MON",
    "fotmobId": 9829,
@@ -125,61 +65,61 @@
    ]
   },
   {
-   "code": "LYO",
-   "fotmobId": 9748,
-   "fotmobName": "Lyon",
-   "fetchedAt": "2026-10-09T12:42:02.523Z",
-   "color": "#0160A0",
+   "code": "LIL",
+   "fotmobId": 8639,
+   "fotmobName": "Lille",
+   "fetchedAt": "2026-10-09T12:42:03.528Z",
+   "color": "#E01D13",
    "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#0160A0",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "darkMode": "#E01D13",
+    "lightMode": "#E01D13",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Groupama Stadium",
-   "city": "Décines-Charpieu",
+   "venue": "Decathlon Arena - Stade Pierre-Mauroy",
+   "city": "Villeneuve d'Ascq",
    "location": [
-    "45.765310356",
-    "4.982063884"
+    "50.611965136",
+    "3.130483910"
    ],
-   "capacity": 61556,
+   "capacity": 50083,
    "surface": "Grass",
-   "opened": 2016,
+   "opened": 2012,
    "coachHistory": [
     {
-     "id": 361759,
-     "name": "Paulo Fonseca",
+     "id": 712734,
+     "name": "Bruno Génésio",
      "season": "2024/2025",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 9,
-     "draw": 0,
-     "loss": 6,
-     "pointsPerGame": 1.8,
-     "winPercentage": 0.6
+     "win": 17,
+     "draw": 9,
+     "loss": 8,
+     "pointsPerGame": 1.76,
+     "winPercentage": 0.5
     },
     {
-     "id": 361759,
-     "name": "Paulo Fonseca",
+     "id": 712734,
+     "name": "Bruno Génésio",
      "season": "2025/2026",
      "leagueId": 53,
      "leagueName": "Ligue 1",
      "win": 18,
-     "draw": 6,
-     "loss": 10,
-     "pointsPerGame": 1.76,
+     "draw": 7,
+     "loss": 9,
+     "pointsPerGame": 1.79,
      "winPercentage": 0.53
     },
     {
-     "id": 361759,
-     "name": "Paulo Fonseca",
+     "id": 1108529,
+     "name": "Davide Ancelotti",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
      "win": 3,
-     "draw": 2,
-     "loss": 0,
-     "pointsPerGame": 2.2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
      "winPercentage": 0.6
     }
    ]
@@ -233,6 +173,66 @@
     {
      "id": 24105,
      "name": "Liam Rosenior",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 3,
+     "draw": 2,
+     "loss": 0,
+     "pointsPerGame": 2.2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
+   "code": "LYO",
+   "fotmobId": 9748,
+   "fotmobName": "Lyon",
+   "fetchedAt": "2026-10-09T12:42:02.523Z",
+   "color": "#0160A0",
+   "teamColors": {
+    "darkMode": "#ffffff",
+    "lightMode": "#0160A0",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Groupama Stadium",
+   "city": "Décines-Charpieu",
+   "location": [
+    "45.765310356",
+    "4.982063884"
+   ],
+   "capacity": 61556,
+   "surface": "Grass",
+   "opened": 2016,
+   "coachHistory": [
+    {
+     "id": 361759,
+     "name": "Paulo Fonseca",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 9,
+     "draw": 0,
+     "loss": 6,
+     "pointsPerGame": 1.8,
+     "winPercentage": 0.6
+    },
+    {
+     "id": 361759,
+     "name": "Paulo Fonseca",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 18,
+     "draw": 6,
+     "loss": 10,
+     "pointsPerGame": 1.76,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 361759,
+     "name": "Paulo Fonseca",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
@@ -365,6 +365,66 @@
    ]
   },
   {
+   "code": "BST",
+   "fotmobId": 8521,
+   "fotmobName": "Brest",
+   "fetchedAt": "2026-10-09T12:42:07.373Z",
+   "color": "#ED1C24",
+   "teamColors": {
+    "darkMode": "#ED1C24",
+    "lightMode": "#ED1C24",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Francis-Le Blé",
+   "city": "Brest",
+   "location": [
+    "48.402881677",
+    "-4.461457729"
+   ],
+   "capacity": 15931,
+   "surface": "Grass",
+   "opened": 1922,
+   "coachHistory": [
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2023/2024",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 17,
+     "draw": 10,
+     "loss": 7,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 15,
+     "draw": 5,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 10,
+     "draw": 9,
+     "loss": 15,
+     "pointsPerGame": 1.15,
+     "winPercentage": 0.29
+    }
+   ]
+  },
+  {
    "code": "LEN",
    "fotmobId": 8588,
    "fotmobName": "Lens",
@@ -421,66 +481,6 @@
      "loss": 1,
      "pointsPerGame": 0,
      "winPercentage": 0
-    }
-   ]
-  },
-  {
-   "code": "ANG",
-   "fotmobId": 8121,
-   "fotmobName": "Angers",
-   "fetchedAt": "2026-10-09T12:42:04.397Z",
-   "color": "#000000",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#000000",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Raymond Kopa",
-   "city": "Angers",
-   "location": [
-    "47.460412695",
-    "-0.530776978"
-   ],
-   "capacity": 19000,
-   "surface": "Grass",
-   "opened": 1912,
-   "coachHistory": [
-    {
-     "id": 41334,
-     "name": "Alexandre Dujeux",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 10,
-     "draw": 6,
-     "loss": 18,
-     "pointsPerGame": 1.06,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 41334,
-     "name": "Alexandre Dujeux",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 9,
-     "draw": 9,
-     "loss": 16,
-     "pointsPerGame": 1.06,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 1141972,
-     "name": "Stéphane Gilli",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 2,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
     }
    ]
   },
@@ -605,122 +605,62 @@
    ]
   },
   {
-   "code": "AUX",
-   "fotmobId": 8583,
-   "fotmobName": "Auxerre",
-   "fetchedAt": "2026-10-09T12:42:05.964Z",
-   "color": "#055DC6",
+   "code": "ANG",
+   "fotmobId": 8121,
+   "fotmobName": "Angers",
+   "fetchedAt": "2026-10-09T12:42:04.397Z",
+   "color": "#000000",
    "teamColors": {
     "darkMode": "#ffffff",
-    "lightMode": "#055DC6",
+    "lightMode": "#000000",
     "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stade de l'Abbé Deschamps",
-   "city": "Auxerre",
+   "venue": "Stade Raymond Kopa",
+   "city": "Angers",
    "location": [
-    "47.786835355",
-    "3.588516712"
+    "47.460412695",
+    "-0.530776978"
    ],
-   "capacity": 17897,
+   "capacity": 19000,
    "surface": "Grass",
-   "opened": 1918,
+   "opened": 1912,
    "coachHistory": [
     {
-     "id": 862636,
-     "name": "Christophe Pélissier",
+     "id": 41334,
+     "name": "Alexandre Dujeux",
      "season": "2024/2025",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 11,
-     "draw": 9,
-     "loss": 14,
-     "pointsPerGame": 1.24,
-     "winPercentage": 0.32
+     "win": 10,
+     "draw": 6,
+     "loss": 18,
+     "pointsPerGame": 1.06,
+     "winPercentage": 0.29
     },
     {
-     "id": 862636,
-     "name": "Christophe Pélissier",
+     "id": 41334,
+     "name": "Alexandre Dujeux",
      "season": "2025/2026",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 8,
-     "draw": 10,
+     "win": 9,
+     "draw": 9,
      "loss": 16,
-     "pointsPerGame": 1,
-     "winPercentage": 0.24
+     "pointsPerGame": 1.06,
+     "winPercentage": 0.26
     },
     {
-     "id": 1224987,
-     "name": "Will Still",
+     "id": 1141972,
+     "name": "Stéphane Gilli",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
      "win": 2,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 1.2,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.4,
      "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "BST",
-   "fotmobId": 8521,
-   "fotmobName": "Brest",
-   "fetchedAt": "2026-10-09T12:42:07.373Z",
-   "color": "#ED1C24",
-   "teamColors": {
-    "darkMode": "#ED1C24",
-    "lightMode": "#ED1C24",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Francis-Le Blé",
-   "city": "Brest",
-   "location": [
-    "48.402881677",
-    "-4.461457729"
-   ],
-   "capacity": 15931,
-   "surface": "Grass",
-   "opened": 1922,
-   "coachHistory": [
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2023/2024",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 17,
-     "draw": 10,
-     "loss": 7,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 15,
-     "draw": 5,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 10,
-     "draw": 9,
-     "loss": 15,
-     "pointsPerGame": 1.15,
-     "winPercentage": 0.29
     }
    ]
   },
@@ -841,6 +781,66 @@
      "loss": 2,
      "pointsPerGame": 1,
      "winPercentage": 0.2
+    }
+   ]
+  },
+  {
+   "code": "AUX",
+   "fotmobId": 8583,
+   "fotmobName": "Auxerre",
+   "fetchedAt": "2026-10-09T12:42:05.964Z",
+   "color": "#055DC6",
+   "teamColors": {
+    "darkMode": "#ffffff",
+    "lightMode": "#055DC6",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade de l'Abbé Deschamps",
+   "city": "Auxerre",
+   "location": [
+    "47.786835355",
+    "3.588516712"
+   ],
+   "capacity": 17897,
+   "surface": "Grass",
+   "opened": 1918,
+   "coachHistory": [
+    {
+     "id": 862636,
+     "name": "Christophe Pélissier",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 11,
+     "draw": 9,
+     "loss": 14,
+     "pointsPerGame": 1.24,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 862636,
+     "name": "Christophe Pélissier",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 8,
+     "draw": 10,
+     "loss": 16,
+     "pointsPerGame": 1,
+     "winPercentage": 0.24
+    },
+    {
+     "id": 1224987,
+     "name": "Will Still",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 2,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 1.2,
+     "winPercentage": 0.4
     }
    ]
   },
