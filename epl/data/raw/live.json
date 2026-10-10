@@ -955,7 +955,7 @@
    "away": "BRE",
    "kickoff": "2026-10-10T14:00:00Z",
    "started": true,
-   "finished": false,
+   "finished": true,
    "minutes": 90,
    "hs": 2,
    "as": 2,
@@ -1390,10 +1390,10 @@
       "creativity": 0,
       "threat": 0,
       "ict": 0,
-      "tackles": 0,
+      "tackles": 1,
       "recoveries": 1,
       "cbi": 1,
-      "defCon": 2,
+      "defCon": 3,
       "points": 1
      }
     ],
@@ -2889,7 +2889,7 @@
       "goals": 0,
       "assists": 0,
       "own": 0,
-      "yellow": 0,
+      "yellow": 1,
       "red": 0,
       "saves": 3,
       "conceded": 1,
@@ -2898,7 +2898,7 @@
       "xA": 0.01,
       "xGC": 1.81,
       "bonus": 0,
-      "bps": 14,
+      "bps": 11,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
@@ -2907,7 +2907,7 @@
       "recoveries": 6,
       "cbi": 1,
       "defCon": 0,
-      "points": 3
+      "points": 2
      },
      {
       "code": "216616",
@@ -4017,15 +4017,15 @@
       "xA": 0.04,
       "xGC": 1.12,
       "bonus": 0,
-      "bps": 19,
+      "bps": 21,
       "influence": 0,
       "creativity": 0,
       "threat": 0,
       "ict": 0,
-      "tackles": 1,
+      "tackles": 2,
       "recoveries": 5,
       "cbi": 1,
-      "defCon": 7,
+      "defCon": 8,
       "points": 2
      },
      {
@@ -4140,8 +4140,8 @@
       "ict": 0,
       "tackles": 0,
       "recoveries": 2,
-      "cbi": 1,
-      "defCon": 1,
+      "cbi": 2,
+      "defCon": 2,
       "points": 1
      },
      {
@@ -4747,5 +4747,5 @@
    }
   }
  ],
- "fetchedAt": "2026-10-10T16:01:47.391Z"
+ "fetchedAt": "2026-10-10T16:04:05.259Z"
 }
