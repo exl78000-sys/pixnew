@@ -36411,6 +36411,19 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 128891,
+     "assist": null,
+     "team": 130,
+     "min": 10,
+     "label": "10'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 110526,
      "assist": null,
@@ -36448,20 +36461,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+6'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+3'00"
+   "clock": "45+6'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -37918,5 +37931,5 @@
    "clock": "45+3'00"
   }
  },
- "fetchedAt": "2026-10-10T14:49:35.040Z"
+ "fetchedAt": "2026-10-10T14:51:54.859Z"
 }
