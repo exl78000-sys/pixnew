@@ -38937,7 +38937,7 @@
    "final": false,
    "score": {
     "home": 1,
-    "away": 0
+    "away": 1
    },
    "homeId": 12,
    "awayId": 21,
@@ -39376,6 +39376,19 @@
      "kind": "G",
      "hs": 1,
      "as": 0
+    },
+    {
+     "side": "A",
+     "person": 10443,
+     "assist": 71623,
+     "team": 21,
+     "min": 90,
+     "label": "90+2'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
     }
    ],
    "timeline": {
@@ -39608,8 +39621,8 @@
      }
     ]
    },
-   "clock": "90'00"
+   "clock": "90+3'00"
   }
  },
- "fetchedAt": "2026-10-10T18:18:00.609Z"
+ "fetchedAt": "2026-10-10T18:20:19.060Z"
 }
