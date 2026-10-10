@@ -954,7 +954,7 @@
    "home": "AVL",
    "away": "BRE",
    "kickoff": "2026-10-10T14:00:00Z",
-   "started": false,
+   "started": true,
    "finished": false,
    "minutes": 0,
    "hs": null,
@@ -969,11 +969,11 @@
    "home": "CHE",
    "away": "BOU",
    "kickoff": "2026-10-10T14:00:00Z",
-   "started": false,
+   "started": true,
    "finished": false,
-   "minutes": 0,
-   "hs": null,
-   "as": null,
+   "minutes": 1,
+   "hs": 0,
+   "as": 0,
    "lineups": {
     "CHE": [],
     "BOU": []
@@ -984,7 +984,7 @@
    "home": "IPS",
    "away": "FUL",
    "kickoff": "2026-10-10T14:00:00Z",
-   "started": false,
+   "started": true,
    "finished": false,
    "minutes": 0,
    "hs": null,
@@ -999,7 +999,7 @@
    "home": "SUN",
    "away": "BHA",
    "kickoff": "2026-10-10T14:00:00Z",
-   "started": false,
+   "started": true,
    "finished": false,
    "minutes": 0,
    "hs": null,
@@ -1085,5 +1085,5 @@
    }
   }
  ],
- "fetchedAt": "2026-10-10T14:00:12.384Z"
+ "fetchedAt": "2026-10-10T14:02:34.191Z"
 }
