@@ -35979,8 +35979,8 @@
   "AVL|BRE": {
    "fixtureId": 128974,
    "kickoff": "2026-10-10T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 2
@@ -36411,7 +36411,46 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 128891,
+     "assist": null,
+     "team": 130,
+     "min": 10,
+     "label": "10'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
+     "person": 110526,
+     "assist": null,
+     "team": 2,
+     "min": 12,
+     "label": "12'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 51423,
+     "assist": 304175,
+     "team": 2,
+     "min": 77,
+     "label": "77'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    },
+    {
+     "side": "A",
      "person": 20113,
      "assist": 50460,
      "team": 130,
@@ -36476,6 +36515,24 @@
       "team": 130,
       "min": 84,
       "label": "84'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 8454,
+      "team": 130,
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": null,
+      "team": 130,
+      "min": 90,
+      "label": "90+5'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -36647,12 +36704,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -36669,10 +36720,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+5'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-10T15:59:29.918Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -37417,8 +37481,8 @@
   "SUN|BHA": {
    "fixtureId": 128982,
    "kickoff": "2026-10-10T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 2
@@ -38062,12 +38126,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -38084,10 +38142,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+8'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+8'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-10T15:59:30.385Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -39257,5 +39328,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-10T15:57:11.293Z"
+ "fetchedAt": "2026-10-10T15:59:30.385Z"
 }
