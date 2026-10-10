@@ -36442,7 +36442,7 @@
      }
     ]
    },
-   "clock": "33'00"
+   "clock": "35'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -36906,7 +36906,7 @@
      }
     ]
    },
-   "clock": "32'00"
+   "clock": "35'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37344,7 +37344,26 @@
    "goals": [],
    "timeline": {
     "cards": [],
-    "subs": [],
+    "subs": [
+     {
+      "person": 125089,
+      "team": 29,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 12196,
+      "team": 29,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -37360,7 +37379,7 @@
      }
     ]
    },
-   "clock": "32'00"
+   "clock": "35'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -37836,8 +37855,8 @@
      }
     ]
    },
-   "clock": "32'00"
+   "clock": "36'00"
   }
  },
- "fetchedAt": "2026-10-10T14:33:11.809Z"
+ "fetchedAt": "2026-10-10T14:35:32.328Z"
 }
