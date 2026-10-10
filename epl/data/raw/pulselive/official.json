@@ -35233,7 +35233,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 1
    },
    "homeId": 1,
@@ -35662,16 +35662,16 @@
    },
    "goals": [
     {
-     "side": "A",
-     "person": 13515,
-     "assist": 75543,
-     "team": 9,
-     "min": 55,
-     "label": "55'00",
+     "side": "H",
+     "person": 69914,
+     "assist": 14548,
+     "team": 1,
+     "min": 62,
+     "label": "62'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 0,
+     "hs": 1,
      "as": 1
     }
    ],
@@ -35714,7 +35714,62 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 32728,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20810,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 67776,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14548,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 74761,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 114564,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -35742,7 +35797,7 @@
      }
     ]
    },
-   "clock": "62'00"
+   "clock": "65'00"
   },
   "AVL|BRE": {
    "fixtureId": 128974,
@@ -36934,7 +36989,404 @@
     "periods": []
    },
    "clock": "00'00"
+  },
+  "CHE|BOU": {
+   "fixtureId": 128975,
+   "kickoff": "2026-10-10T14:00:00.000Z",
+   "status": "U",
+   "final": false,
+   "score": {
+    "home": 0,
+    "away": 0
+   },
+   "homeId": 4,
+   "awayId": 127,
+   "home": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 23968,
+      "playerId": null,
+      "name": "Morgan Rogers",
+      "shirt": 17,
+      "pos": "M",
+      "posInfo": "Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 70585,
+      "playerId": null,
+      "name": "Pep Chavarría",
+      "shirt": 29,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 21998,
+      "playerId": null,
+      "name": "Pedro Neto",
+      "shirt": 7,
+      "pos": "F",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 4245,
+      "playerId": null,
+      "name": "Emiliano Martínez",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 112203,
+      "playerId": null,
+      "name": "Moisés Caicedo",
+      "shirt": 25,
+      "pos": "M",
+      "posInfo": "Centre Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 125075,
+      "playerId": null,
+      "name": "Josh Acheampong",
+      "shirt": 34,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 3712,
+      "playerId": null,
+      "name": "Jordan Henderson",
+      "shirt": 14,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 72371,
+      "playerId": null,
+      "name": "João Pedro",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 76104,
+      "playerId": null,
+      "name": "Maxence Lacroix",
+      "shirt": 5,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 49293,
+      "playerId": null,
+      "name": "Cole Palmer",
+      "shirt": 10,
+      "pos": "M",
+      "posInfo": "Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 51229,
+      "playerId": null,
+      "name": "Levi Colwill",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": true
+     }
+    ],
+    "subs": [
+     {
+      "id": 129425,
+      "playerId": null,
+      "name": "Geovany Quenda",
+      "shirt": 23,
+      "pos": "M",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 3452,
+      "playerId": null,
+      "name": "Danny Welbeck",
+      "shirt": 18,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 140055,
+      "playerId": null,
+      "name": "Marco Palestra",
+      "shirt": 2,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 304474,
+      "playerId": null,
+      "name": "Estêvão",
+      "shirt": 41,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 66284,
+      "playerId": null,
+      "name": "Wesley Fofana",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 99282,
+      "playerId": null,
+      "name": "Roméo Lavia",
+      "shirt": 45,
+      "pos": "M",
+      "posInfo": "Centre Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 121704,
+      "playerId": null,
+      "name": "Mike Penders",
+      "shirt": 39,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 68827,
+      "playerId": null,
+      "name": "Malo Gusto",
+      "shirt": 27,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 119041,
+      "playerId": null,
+      "name": "Jorrel Hato",
+      "shirt": 21,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     }
+    ]
+   },
+   "away": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 42894,
+      "playerId": null,
+      "name": "Tyler Adams",
+      "shirt": 12,
+      "pos": "M",
+      "posInfo": "Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 15572,
+      "playerId": null,
+      "name": "Ryan Christie",
+      "shirt": 10,
+      "pos": "M",
+      "posInfo": "Left/Centre/Right Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 33032,
+      "playerId": null,
+      "name": "Evanilson",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 134234,
+      "playerId": null,
+      "name": "Rayan",
+      "shirt": 37,
+      "pos": "F",
+      "posInfo": "Left/Centre/Right Striker",
+      "captain": false
+     },
+     {
+      "id": 14846,
+      "playerId": null,
+      "name": "Marcus Tavernier",
+      "shirt": 16,
+      "pos": "M",
+      "posInfo": "Left Winger",
+      "captain": false
+     },
+     {
+      "id": 120109,
+      "playerId": null,
+      "name": "António Silva",
+      "shirt": 14,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 134403,
+      "playerId": null,
+      "name": "Djordje Petrovic",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 13706,
+      "playerId": null,
+      "name": "David Brooks",
+      "shirt": 7,
+      "pos": "M",
+      "posInfo": "Left/Centre/Right Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 74965,
+      "playerId": null,
+      "name": "Adrien Truffert",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 3512,
+      "playerId": null,
+      "name": "Adam Smith",
+      "shirt": 15,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": true
+     },
+     {
+      "id": 51942,
+      "playerId": null,
+      "name": "James Hill",
+      "shirt": 5,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 75358,
+      "playerId": null,
+      "name": "Juanlu Sánchez",
+      "shirt": 24,
+      "pos": "M",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 120938,
+      "playerId": null,
+      "name": "Álvaro Rodríguez",
+      "shirt": 30,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 302305,
+      "playerId": null,
+      "name": "Julio Soler",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 121972,
+      "playerId": null,
+      "name": "Ben Gannon-Doak",
+      "shirt": 11,
+      "pos": "F",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 135304,
+      "playerId": null,
+      "name": "Alex Tóth",
+      "shirt": 27,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 111987,
+      "playerId": null,
+      "name": "Daniel Jebbison",
+      "shirt": 29,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 20429,
+      "playerId": null,
+      "name": "Michele Di Gregorio",
+      "shirt": 20,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 10766,
+      "playerId": null,
+      "name": "Lewis Cook",
+      "shirt": 4,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 132285,
+      "playerId": null,
+      "name": "Bafodé Diakité",
+      "shirt": 18,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     }
+    ]
+   },
+   "goals": [],
+   "timeline": {
+    "cards": [],
+    "subs": [],
+    "periods": []
+   },
+   "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-10T12:51:36.783Z"
+ "fetchedAt": "2026-10-10T12:53:59.193Z"
 }
