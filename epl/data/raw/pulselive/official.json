@@ -36528,7 +36528,7 @@
      }
     ]
    },
-   "clock": "55'00"
+   "clock": "58'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -37036,7 +37036,7 @@
      }
     ]
    },
-   "clock": "60'00"
+   "clock": "62'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37496,6 +37496,15 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 33124,
+      "team": 131,
+      "min": 57,
+      "label": "57'00",
+      "phase": "2",
+      "kindRaw": "R",
+      "kind": "紅牌"
      }
     ],
     "subs": [
@@ -37514,6 +37523,24 @@
       "min": 34,
       "label": "34'00",
       "phase": "1",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 8163,
+      "team": 131,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 145043,
+      "team": 131,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
      }
@@ -37545,7 +37572,7 @@
      }
     ]
    },
-   "clock": "57'00"
+   "clock": "61'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -37559,8 +37586,8 @@
    "homeId": 4,
    "awayId": 127,
    "home": {
-    "formation": "3-4-3",
-    "formationRaw": "3-4-3",
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
     "rows": [
      [
       4245
@@ -37578,8 +37605,10 @@
      ],
      [
       49293,
-      72371,
       23968
+     ],
+     [
+      72371
      ]
     ],
     "xi": [
@@ -38061,8 +38090,8 @@
      }
     ]
    },
-   "clock": "58'00"
+   "clock": "61'00"
   }
  },
- "fetchedAt": "2026-10-10T15:17:33.328Z"
+ "fetchedAt": "2026-10-10T15:19:53.015Z"
 }
