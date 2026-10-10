@@ -36481,6 +36481,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 108421,
+      "team": 130,
+      "min": 52,
+      "label": "52'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 127594,
+      "team": 130,
+      "min": 52,
+      "label": "52'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -36510,7 +36528,7 @@
      }
     ]
    },
-   "clock": "50'00"
+   "clock": "53'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -36519,7 +36537,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 8,
    "awayId": 34,
@@ -37018,7 +37036,7 @@
      }
     ]
    },
-   "clock": "55'00"
+   "clock": "56'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37027,7 +37045,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 29,
    "awayId": 131,
@@ -37457,7 +37475,7 @@
     {
      "side": "A",
      "person": 67928,
-     "assist": null,
+     "assist": 22542,
      "team": 131,
      "min": 53,
      "label": "53'00",
@@ -37527,7 +37545,7 @@
      }
     ]
    },
-   "clock": "53'00"
+   "clock": "55'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -38043,8 +38061,8 @@
      }
     ]
    },
-   "clock": "53'00"
+   "clock": "56'00"
   }
  },
- "fetchedAt": "2026-10-10T15:12:53.686Z"
+ "fetchedAt": "2026-10-10T15:15:13.553Z"
 }
