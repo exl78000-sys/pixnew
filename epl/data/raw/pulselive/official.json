@@ -36428,7 +36428,7 @@
      }
     ]
    },
-   "clock": "02'00"
+   "clock": "04'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -37336,7 +37336,7 @@
      }
     ]
    },
-   "clock": "00'00"
+   "clock": "04'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -37344,7 +37344,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 0
    },
    "homeId": 4,
@@ -37772,15 +37772,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 3712,
-     "assist": 49293,
+     "person": 120109,
+     "assist": null,
      "team": 4,
-     "min": 2,
-     "label": "02'00",
+     "min": 3,
+     "label": "03'00",
      "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 1,
+     "type": "O",
+     "kind": "O",
+     "hs": 2,
      "as": 0
     }
    ],
@@ -37805,5 +37805,5 @@
    "clock": "03'00"
   }
  },
- "fetchedAt": "2026-10-10T14:02:38.493Z"
+ "fetchedAt": "2026-10-10T14:05:03.023Z"
 }
