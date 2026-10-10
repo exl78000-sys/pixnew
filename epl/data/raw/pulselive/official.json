@@ -36452,7 +36452,7 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+2'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
@@ -36912,20 +36912,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+2'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -37408,7 +37408,7 @@
      }
     ]
    },
-   "clock": "43'00"
+   "clock": "45+2'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -37893,8 +37893,8 @@
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+8'00"
   }
  },
- "fetchedAt": "2026-10-10T14:44:55.977Z"
+ "fetchedAt": "2026-10-10T14:47:15.538Z"
 }
