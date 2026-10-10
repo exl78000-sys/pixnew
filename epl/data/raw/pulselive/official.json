@@ -36672,12 +36672,12 @@
      }
     ]
    },
-   "clock": "90'00"
+   "clock": "90+1'00"
   },
   "IPS|FUL": {
    "fixtureId": 128979,
    "kickoff": "2026-10-10T14:00:00.000Z",
-   "status": "L",
+   "status": "C",
    "final": false,
    "score": {
     "home": 2,
@@ -37109,6 +37109,19 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 14656,
+     "assist": null,
+     "team": 34,
+     "min": 55,
+     "label": "55'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 126111,
      "assist": null,
@@ -37169,6 +37182,15 @@
       "team": 34,
       "min": 84,
       "label": "84'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 14445,
+      "team": 34,
+      "min": 90,
+      "label": "90+4'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -37358,12 +37380,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -37380,10 +37396,16 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+7'00"
   },
   "SUN|BHA": {
    "fixtureId": 128982,
@@ -38058,7 +38080,7 @@
      }
     ]
    },
-   "clock": "90+3'00"
+   "clock": "90+4'00"
   },
   "CHE|BOU": {
    "fixtureId": 128975,
@@ -39156,5 +39178,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-10T15:52:32.600Z"
+ "fetchedAt": "2026-10-10T15:54:51.979Z"
 }
