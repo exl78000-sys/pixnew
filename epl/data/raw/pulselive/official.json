@@ -38933,7 +38933,7 @@
   "MUN|TOT": {
    "fixtureId": 128981,
    "kickoff": "2026-10-10T16:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -38942,9 +38942,31 @@
    "homeId": 12,
    "awayId": 21,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67910
+     ],
+     [
+      118591,
+      9566,
+      67191,
+      4608
+     ],
+     [
+      5865,
+      108936
+     ],
+     [
+      69176,
+      23396,
+      51202
+     ],
+     [
+      66360
+     ]
+    ],
     "xi": [
      {
       "id": 9566,
@@ -39005,7 +39027,7 @@
       "playerId": null,
       "name": "Amad Diallo",
       "shirt": 16,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -39041,7 +39063,7 @@
       "playerId": null,
       "name": "Matheus Cunha",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre Second Striker",
       "captain": false
      }
@@ -39131,9 +39153,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      117596,
+      76090,
+      54989,
+      126824
+     ],
+     [
+      133603,
+      71623
+     ],
+     [
+      126943,
+      21887,
+      51364
+     ],
+     [
+      10443
+     ]
+    ],
     "xi": [
      {
       "id": 21887,
@@ -39176,7 +39220,7 @@
       "playerId": null,
       "name": "Sávio",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -39185,7 +39229,7 @@
       "playerId": null,
       "name": "Archie Gray",
       "shirt": 14,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Central Midfielder",
       "captain": false
      },
@@ -39323,10 +39367,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-10-10T16:29:21.394Z"
+ "fetchedAt": "2026-10-10T16:31:40.032Z"
 }
