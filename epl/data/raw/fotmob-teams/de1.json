@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-09T12:41:51.193Z",
+ "fetchedAt": "2026-10-10T04:52:09.430Z",
  "teams": [
   {
    "code": "BVB",
@@ -181,6 +181,66 @@
      "loss": 0,
      "pointsPerGame": 2.5,
      "winPercentage": 0.75
+    }
+   ]
+  },
+  {
+   "code": "SVW",
+   "fotmobId": 8697,
+   "fotmobName": "Werder Bremen",
+   "fetchedAt": "2026-10-09T12:41:45.287Z",
+   "color": "#007642",
+   "teamColors": {
+    "darkMode": "#009655",
+    "lightMode": "#007642",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Weserstadion",
+   "city": "Bremen",
+   "location": [
+    "53.066427548",
+    "8.837546110"
+   ],
+   "capacity": 42100,
+   "surface": "Grass",
+   "opened": 1924,
+   "coachHistory": [
+    {
+     "id": 5136,
+     "name": "Horst Steffen",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 4,
+     "draw": 7,
+     "loss": 9,
+     "pointsPerGame": 0.95,
+     "winPercentage": 0.2
+    },
+    {
+     "id": 33244,
+     "name": "Daniel Thioune",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 4,
+     "draw": 1,
+     "loss": 9,
+     "pointsPerGame": 0.93,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 33244,
+     "name": "Daniel Thioune",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
     }
    ]
   },
@@ -413,66 +473,6 @@
     {
      "id": 94647,
      "name": "Vincent Wagner",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
-   "code": "SVW",
-   "fotmobId": 8697,
-   "fotmobName": "Werder Bremen",
-   "fetchedAt": "2026-10-09T12:41:45.287Z",
-   "color": "#007642",
-   "teamColors": {
-    "darkMode": "#009655",
-    "lightMode": "#007642",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Weserstadion",
-   "city": "Bremen",
-   "location": [
-    "53.066427548",
-    "8.837546110"
-   ],
-   "capacity": 42100,
-   "surface": "Grass",
-   "opened": 1924,
-   "coachHistory": [
-    {
-     "id": 5136,
-     "name": "Horst Steffen",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 4,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 0.95,
-     "winPercentage": 0.2
-    },
-    {
-     "id": 33244,
-     "name": "Daniel Thioune",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 4,
-     "draw": 1,
-     "loss": 9,
-     "pointsPerGame": 0.93,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 33244,
-     "name": "Daniel Thioune",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",

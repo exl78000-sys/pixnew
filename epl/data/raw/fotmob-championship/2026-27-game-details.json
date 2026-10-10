@@ -150675,8 +150675,1287 @@
    "fetchedAt": "2026-09-20T15:29:00.723Z",
    "fdMatchId": "2026-27-94",
    "heat": null
+  },
+  "WHU|QPR": {
+   "key": "WHU|QPR",
+   "season": "2026-27",
+   "date": "2026-10-09",
+   "matchId": "5836861",
+   "home": "WHU",
+   "away": "QPR",
+   "score": [
+    1,
+    1
+   ],
+   "providerScore": [
+    1,
+    1
+   ],
+   "teamStats": {
+    "WHU": {
+     "possession": 65,
+     "shots": 12,
+     "shotsOn": 5,
+     "shotsOff": 5,
+     "blockedShots": 2,
+     "blocksMade": 1,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 9,
+     "saves": 2,
+     "passes": 603,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.58
+    },
+    "QPR": {
+     "possession": 35,
+     "shots": 7,
+     "shotsOn": 3,
+     "shotsOff": 3,
+     "blockedShots": 1,
+     "blocksMade": 2,
+     "corners": 1,
+     "offsides": 1,
+     "fouls": 9,
+     "saves": 4,
+     "passes": 329,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.22
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "WHU": {
+     "touches_opp_box": 25,
+     "big_chance": 4,
+     "big_chance_missed_title": 3,
+     "yellow_cards": 0,
+     "shots_woodwork": 1,
+     "shots_inside_box": 8,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 0.5,
+     "expected_goals_set_play": 0.29,
+     "expected_goals_non_penalty": 0.79,
+     "expected_goals_on_target": 2.63,
+     "own_half_passes": 216,
+     "opposition_half_passes": 309,
+     "long_balls_accurate": 21,
+     "long_balls_accurate_pct": 49,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 6,
+     "player_throws": 21,
+     "matchstats.headers.tackles": 13,
+     "interceptions": 5,
+     "clearances": 6,
+     "duel_won": 40,
+     "ground_duels_won": 31,
+     "ground_duels_won_pct": 51,
+     "aerials_won": 9,
+     "aerials_won_pct": 41,
+     "dribbles_succeeded": 9,
+     "dribbles_succeeded_pct": 56,
+     "red_cards": 0
+    },
+    "QPR": {
+     "touches_opp_box": 10,
+     "big_chance": 2,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 5,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.3,
+     "expected_goals_set_play": 0.13,
+     "expected_goals_non_penalty": 0.43,
+     "expected_goals_on_target": 1.22,
+     "own_half_passes": 155,
+     "opposition_half_passes": 100,
+     "long_balls_accurate": 18,
+     "long_balls_accurate_pct": 33,
+     "accurate_crosses": 1,
+     "accurate_crosses_pct": 20,
+     "player_throws": 23,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 9,
+     "clearances": 41,
+     "duel_won": 43,
+     "ground_duels_won": 30,
+     "ground_duels_won_pct": 49,
+     "aerials_won": 13,
+     "aerials_won_pct": 59,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 58,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     65,
+     35
+    ],
+    "h1": [
+     61,
+     39
+    ],
+    "h2": [
+     70,
+     30
+    ]
+   },
+   "events": [
+    {
+     "minute": 17,
+     "extra": null,
+     "team": "WHU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Arne Engels"
+    },
+    {
+     "minute": 18,
+     "extra": null,
+     "team": "QPR",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Nicolas Madsen"
+    },
+    {
+     "minute": 24,
+     "extra": null,
+     "team": "QPR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Boy Kemper"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Edvin Austbø"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pablo"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Harvey Vale"
+    },
+    {
+     "minute": 62,
+     "extra": null,
+     "team": "WHU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Max Kilman"
+    },
+    {
+     "minute": 65,
+     "extra": null,
+     "team": "WHU",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Morato"
+    },
+    {
+     "minute": 66,
+     "extra": null,
+     "team": "QPR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Glen Kamara"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joël Piroe"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "WHU",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lewis Orford"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Richard Kone"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tariq Lamptey"
+    },
+    {
+     "minute": 70,
+     "extra": null,
+     "team": "WHU",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Jarrod Bowen"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "QPR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Amadou Salif Mbengue"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "QPR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Amadou Salif Mbengue"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "QPR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Richard Kone"
+    }
+   ],
+   "shots": [
+    {
+     "min": 15,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 29.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "QPR",
+     "player": "Nicolas Madsen",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.781,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "QPR",
+     "player": "Jimmy Dunne",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.4,
+     "y": 25.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "WHU",
+     "player": "Valentín Castellanos",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.6,
+     "y": 25.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "QPR",
+     "player": "Rayan Kolli",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.118,
+     "xgot": 0.13,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.7,
+     "y": 41.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "QPR",
+     "player": "Ronnie Edwards",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.6,
+     "y": 42.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "QPR",
+     "player": "Rayan Kolli",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.082,
+     "xgot": 0.304,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 27.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "QPR",
+     "player": "Kwame Poku",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 24.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.5,
+     "y": 22.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.26,
+     "xgot": 0.706,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 30.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "WHU",
+     "player": "Joël Piroe",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.8,
+     "y": 35.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 19.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "WHU",
+     "player": "Valentín Castellanos",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 32,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "QPR",
+     "player": "Jimmy Dunne",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 34.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "WHU",
+     "player": "Edvin Austbø",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.013,
+     "xgot": 0.01,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.1,
+     "y": 48.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.061,
+     "xgot": 0.875,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 24.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "WHU",
+     "player": "Jarrod Bowen",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.856,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "WHU",
+     "player": "Arne Engels",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.152,
+     "xgot": 0.18,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 29.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "WHU",
+     "player": "Joël Piroe",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.159,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.6,
+     "y": 30.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     -8
+    ],
+    [
+     3,
+     -27
+    ],
+    [
+     4,
+     -27
+    ],
+    [
+     5,
+     -5
+    ],
+    [
+     6,
+     14
+    ],
+    [
+     7,
+     14
+    ],
+    [
+     8,
+     0
+    ],
+    [
+     9,
+     0
+    ],
+    [
+     10,
+     -43
+    ],
+    [
+     11,
+     -49
+    ],
+    [
+     12,
+     -38
+    ],
+    [
+     13,
+     5
+    ],
+    [
+     14,
+     3
+    ],
+    [
+     15,
+     16
+    ],
+    [
+     16,
+     11
+    ],
+    [
+     17,
+     19
+    ],
+    [
+     18,
+     -5
+    ],
+    [
+     19,
+     0
+    ],
+    [
+     20,
+     0
+    ],
+    [
+     21,
+     -8
+    ],
+    [
+     22,
+     -100
+    ],
+    [
+     23,
+     -100
+    ],
+    [
+     24,
+     -100
+    ],
+    [
+     25,
+     -11
+    ],
+    [
+     26,
+     -5
+    ],
+    [
+     27,
+     27
+    ],
+    [
+     28,
+     43
+    ],
+    [
+     29,
+     54
+    ],
+    [
+     30,
+     54
+    ],
+    [
+     31,
+     27
+    ],
+    [
+     32,
+     27
+    ],
+    [
+     33,
+     11
+    ],
+    [
+     34,
+     27
+    ],
+    [
+     35,
+     14
+    ],
+    [
+     36,
+     19
+    ],
+    [
+     37,
+     8
+    ],
+    [
+     38,
+     22
+    ],
+    [
+     39,
+     -5
+    ],
+    [
+     40,
+     -5
+    ],
+    [
+     41,
+     -11
+    ],
+    [
+     42,
+     16
+    ],
+    [
+     43,
+     33
+    ],
+    [
+     44,
+     33
+    ],
+    [
+     45,
+     27
+    ],
+    [
+     45.5,
+     12
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     16
+    ],
+    [
+     48,
+     11
+    ],
+    [
+     49,
+     33
+    ],
+    [
+     50,
+     38
+    ],
+    [
+     51,
+     65
+    ],
+    [
+     52,
+     43
+    ],
+    [
+     53,
+     33
+    ],
+    [
+     54,
+     11
+    ],
+    [
+     55,
+     -5
+    ],
+    [
+     56,
+     -11
+    ],
+    [
+     57,
+     0
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     16
+    ],
+    [
+     60,
+     5
+    ],
+    [
+     61,
+     0
+    ],
+    [
+     62,
+     -5
+    ],
+    [
+     63,
+     11
+    ],
+    [
+     64,
+     16
+    ],
+    [
+     65,
+     22
+    ],
+    [
+     66,
+     11
+    ],
+    [
+     67,
+     0
+    ],
+    [
+     68,
+     -5
+    ],
+    [
+     69,
+     -16
+    ],
+    [
+     70,
+     0
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     72,
+     22
+    ],
+    [
+     73,
+     38
+    ],
+    [
+     74,
+     54
+    ],
+    [
+     75,
+     24
+    ],
+    [
+     76,
+     14
+    ],
+    [
+     77,
+     5
+    ],
+    [
+     78,
+     8
+    ],
+    [
+     79,
+     -8
+    ],
+    [
+     80,
+     -35
+    ],
+    [
+     81,
+     -3
+    ],
+    [
+     82,
+     19
+    ],
+    [
+     83,
+     49
+    ],
+    [
+     84,
+     38
+    ],
+    [
+     85,
+     41
+    ],
+    [
+     86,
+     62
+    ],
+    [
+     87,
+     52
+    ],
+    [
+     88,
+     33
+    ],
+    [
+     89,
+     27
+    ],
+    [
+     90,
+     33
+    ],
+    [
+     90.5,
+     27
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "WHU": {
+     "team": "WHU",
+     "formation": "4-2-3-1",
+     "coach": "Nuno Espírito Santo",
+     "xi": [
+      {
+       "name": "Mads Hermansen",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Kyle Walker-Peters",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Konstantinos Mavropanos",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Max Kilman",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Morato",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Tomás Souček",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Arne Engels",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Jarrod Bowen",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Divine Mukasa",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Manor Solomon",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Valentín Castellanos",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Edvin Austbø",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Lewis Orford",
+       "shirt": 61,
+       "pos": "?"
+      },
+      {
+       "name": "Joël Piroe",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Alphonse Areola",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Airidas Golambeckis",
+       "shirt": 58,
+       "pos": "?"
+      },
+      {
+       "name": "Joël Veltman",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Oliver Scarles",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Soungoutou Magassa",
+       "shirt": 27,
+       "pos": "?"
+      }
+     ]
+    },
+    "QPR": {
+     "team": "QPR",
+     "formation": "4-3-3",
+     "coach": "Julien Stéphan",
+     "xi": [
+      {
+       "name": "Pierce Charles",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Kealey Adamson",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Jimmy Dunne",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Jake Clarke-Salter",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Boy Kemper",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "Nicolas Madsen",
+       "shirt": 24,
+       "pos": "M"
+      },
+      {
+       "name": "Ronnie Edwards",
+       "shirt": 5,
+       "pos": "M"
+      },
+      {
+       "name": "Glen Kamara",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Kwame Poku",
+       "shirt": 17,
+       "pos": "F"
+      },
+      {
+       "name": "Rayan Kolli",
+       "shirt": 26,
+       "pos": "F"
+      },
+      {
+       "name": "Paul Smyth",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Harvey Vale",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Tariq Lamptey",
+       "shirt": 48,
+       "pos": "?"
+      },
+      {
+       "name": "Richard Kone",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Amadou Salif Mbengue",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Calum Ward",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Liam Morrison",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Jonathan Varane",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Leon Scarlett",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Justin Obikwu",
+       "shirt": 25,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 35,
+      "center": 27,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 27,
+      "center": 24,
+      "right": 49
+     },
+     "secondHalf": {
+      "left": 42,
+      "center": 29,
+      "right": 29
+     }
+    },
+    "away": {
+     "total": {
+      "left": 35,
+      "center": 26,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 33,
+      "center": 24,
+      "right": 43
+     },
+     "secondHalf": {
+      "left": 37,
+      "center": 28,
+      "right": 35
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-09T21:29:55.897Z",
+   "fdMatchId": "2026-27-95",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-09T12:40:09.847Z"
+ "updatedAt": "2026-10-10T04:50:39.653Z"
 }
