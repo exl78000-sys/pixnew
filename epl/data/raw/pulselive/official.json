@@ -41119,7 +41119,7 @@
   "LIV|MCI": {
    "fixtureId": 128980,
    "kickoff": "2026-10-11T15:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -41128,9 +41128,31 @@
    "homeId": 10,
    "awayId": 11,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      20559
+     ],
+     [
+      66133,
+      133104,
+      5140,
+      116665
+     ],
+     [
+      49909,
+      63633
+     ],
+     [
+      68840,
+      75382,
+      119386
+     ],
+     [
+      129671
+     ]
+    ],
     "xi": [
      {
       "id": 20559,
@@ -41155,7 +41177,7 @@
       "playerId": null,
       "name": "Bradley Barcola",
       "shirt": 29,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -41209,7 +41231,7 @@
       "playerId": null,
       "name": "Víctor Muñoz",
       "shirt": 23,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -41317,9 +41339,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      76204,
+      16431,
+      14569,
+      112948
+     ],
+     [
+      51593,
+      63741
+     ],
+     [
+      25474,
+      68150,
+      31936
+     ],
+     [
+      65970
+     ]
+    ],
     "xi": [
      {
       "id": 14569,
@@ -41371,7 +41415,7 @@
       "playerId": null,
       "name": "Antoine Semenyo",
       "shirt": 42,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -41389,7 +41433,7 @@
       "playerId": null,
       "name": "Matheus Nunes",
       "shirt": 27,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -41398,7 +41442,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -41509,10 +41553,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-11T15:29:48.114Z"
+ "fetchedAt": "2026-10-11T15:32:09.213Z"
 }
