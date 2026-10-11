@@ -674,7 +674,10 @@ check('摘要漏掉大部分數字 → 擋下',
   const sp = join(ROOT, 'data', 'raw', 'fotmob-la-liga', 'scores.json');
   if (existsSync(sp)) {
     const sc = JSON.parse(readFileSync(sp, 'utf8'));
-    const fin = new Map(sc.matches.filter(m => m.finished && m.score).map(m => [`${m.home}|${m.away}`, m.score]));
+    /* **中止的比賽不算已完賽**:FotMob 對中止的場次也給 `finished: true` 與停表當下的比分,但同時標 `cancelled: true`、reason `Ab`
+       (2026-10-10 RAY–ATH 0-0 中止,本站正確地沒有把它當完賽,而這條測試照字面把它當成「FotMob 完賽而本站還未賽」,
+       擋了連續三輪部署:#626~#628)。本站自己的規矩(單場頁的 CANCELLED、國家隊的 `stoppedAt`)早就把中止分開講。 */
+    const fin = new Map(sc.matches.filter(m => m.finished && m.score && !m.cancelled).map(m => [`${m.home}|${m.away}`, m.score]));
     const cur = fx.filter(f => f.season === sc.season && f.played && fin.has(`${f.home}|${f.away}`));
     check('本季已完賽場次的比分跟 FotMob 逐場一致(兩個獨立來源)', cur.every(f => { const s = fin.get(`${f.home}|${f.away}`); return s[0] === f.fh && s[1] === f.fa; }), `${cur.length} 場`);
     /* 抓得夠新的話,FotMob 已完賽而本站還「未賽」的場次不該存在(那就是第三來源沒接上) */
