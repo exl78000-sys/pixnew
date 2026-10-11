@@ -41123,7 +41123,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 10,
    "awayId": 11,
@@ -41621,6 +41621,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 130665,
+      "team": 10,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 75382,
+      "team": 10,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 67178,
+      "team": 11,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 112948,
+      "team": 11,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -41650,8 +41686,8 @@
      }
     ]
    },
-   "clock": "65'00"
+   "clock": "66'00"
   }
  },
- "fetchedAt": "2026-10-11T16:53:00.568Z"
+ "fetchedAt": "2026-10-11T16:55:16.016Z"
 }
