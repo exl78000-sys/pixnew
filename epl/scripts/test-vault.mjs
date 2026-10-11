@@ -281,17 +281,28 @@ const LEAGUE_DIRS = [['pl', '英超'], ['es1', '西甲'], ['en2', '英冠'], ['d
 const WF_FILES = new Map([...readFileSync(join(ROOT, 'scripts', 'build-obsidian.mjs'), 'utf8')
   .matchAll(/\{ key: '([a-z0-9]+)'[^}\n]*?wf: '([^']+)'/g)].map(m => [m[1], m[2]]));
 const dataDirOf = lg => (lg === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'web', 'data', 'leagues', lg));
+/* fixtures 裡還沒算完賽的場次(鍵:季|主|客)。場中快照產生的報告 / 賽後文章要排除,見下面「進行中的場次不算賽後報告」 */
+const unplayedOf = dir => {
+  try { return new Set(read(join(dir, 'fixtures.json')).filter(f => !f.played).map(f => `${f.season}|${f.home}|${f.away}`)); } catch { return new Set(); }
+};
 {
   /* 產物這一側**不用** lib 的讀法(readArchivedReports)—— 要驗的就是產生器有沒有把它讀對,
      拿同一支去對等於自己對自己。這裡直接從 reports.json 的索引與 archive.ids 走逐場檔。 */
   const want = [];        // { lg, zh, key, rep }
+  const inProgress = [];  // 有報告但 fixtures 還沒算完賽(場中快照)
   for (const [lg, zh] of LEAGUE_DIRS) {
     const dir = dataDirOf(lg);
     const idx = existsSync(join(dir, 'reports.json')) ? read(join(dir, 'reports.json')) : null;
     if (!idx) continue;
+    /* **進行中的場次不算賽後報告**(2026-10-11):build 對「開踢了而且有名單」的場次就會產生報告,比賽進行到一半的快照
+       也一樣 —— 那份是場中的,fixtures 還是 played:false,vault 的比賽筆記(未賽版)本來就不放賽後報告。
+       第一版這條沒分,部署剛好踩在 LIV–MCI 進行中,整個被擋(runner 與本機同樣 3 條)。 */
+    const unplayed = unplayedOf(dir);
     for (const [key, id] of Object.entries(idx.index ?? {})) {
       const p = join(dir, 'match-reports', key.split('|')[0], `${id}.json`);
-      if (existsSync(p)) want.push({ lg, zh, key, rep: read(p), last: false });
+      if (!existsSync(p)) continue;
+      if (unplayed.has(key)) { inProgress.push(`${zh} ${key}`); continue; }
+      want.push({ lg, zh, key, rep: read(p), last: false });
     }
     for (const id of idx.archive?.ids ?? []) {
       const p = join(dir, 'match-reports', idx.archive.season, `${id}.json`);
@@ -335,7 +346,7 @@ const dataDirOf = lg => (lg === 'pl' ? join(ROOT, 'web', 'data') : join(ROOT, 'w
   const lastN = want.filter(w => w.last).length;
   const miss = want.filter(w => { const t = noteOf.get(`${w.zh}|${w.key}`) ?? ''; return fm(t, '賽後報告') !== 'true' || !t.includes('\n## 賽後報告\n'); });
   check('產物裡的每一份聯賽賽後報告(本季 + 上季)都進了那一場的比賽筆記', lastN > 0 && miss.length === 0,
-    `本季 ${want.length - lastN}・上季 ${lastN}${miss.length ? `;沒進的 ${miss.length}:${miss.slice(0, 3).map(w => w.zh + ' ' + w.key).join('、')}` : ''}`);
+    `本季 ${want.length - lastN}・上季 ${lastN}${inProgress.length ? `・場中不算 ${inProgress.length}(${inProgress.join('、')})` : ''}${miss.length ? `;沒進的 ${miss.length}:${miss.slice(0, 3).map(w => w.zh + ' ' + w.key).join('、')}` : ''}`);
   const wantKeys = new Set(want.map(w => `${w.zh}|${w.key}`));
   const extra = flagged.filter(k => !wantKeys.has(k));
   check('沒有報告的場次不會標成有報告', extra.length === 0, extra.slice(0, 3).join('、'));
@@ -533,7 +544,9 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
       if (!sec) { bad('文章', `${zh} ${key}:沒有賽前分析(或標籤不對)`); continue; }
       if (!sec.includes(`### ${art.title}`) || art.paragraphs.some(x => !sec.includes(x)) || (art.caveat && !sec.includes(art.caveat))) bad('文章', `${zh} ${key}:賽前分析的標題、段落或但書不齊`);
     }
+    const unplayedA = unplayedOf(dataDirOf(lg));
     for (const [key, art] of Object.entries(A?.post ?? {})) {
+      if (unplayedA.has(key)) continue;   // 場中快照產生的「賽後」文章:比賽筆記是未賽版,不放(同上)
       const t = matchNote.get(key) ?? '';
       seen('文章'); postN++;
       const sec = sectionOf(t, `賽後分析(${ARTICLE_LABEL[art.source] ?? '本站自動分析'}・非真人觀點)`);
