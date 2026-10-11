@@ -125821,8 +125821,1890 @@
      }
     ]
    }
+  },
+  "BET|OSA": {
+   "key": "BET|OSA",
+   "season": "2026-27",
+   "date": "2026-10-11",
+   "matchId": "5868082",
+   "home": "BET",
+   "away": "OSA",
+   "score": [
+    5,
+    2
+   ],
+   "providerScore": [
+    5,
+    2
+   ],
+   "teamStats": {
+    "BET": {
+     "possession": 52,
+     "shots": 20,
+     "shotsOn": 7,
+     "shotsOff": 8,
+     "blockedShots": 5,
+     "blocksMade": 4,
+     "corners": 8,
+     "offsides": 0,
+     "fouls": 11,
+     "saves": 3,
+     "passes": 497,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.77
+    },
+    "OSA": {
+     "possession": 48,
+     "shots": 11,
+     "shotsOn": 5,
+     "shotsOff": 2,
+     "blockedShots": 4,
+     "blocksMade": 5,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 13,
+     "saves": 3,
+     "passes": 466,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.51
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "BET": {
+     "touches_opp_box": 29,
+     "big_chance": 3,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 13,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 1.88,
+     "expected_goals_set_play": 0.1,
+     "expected_goals_non_penalty": 1.98,
+     "expected_goals_on_target": 3.42,
+     "own_half_passes": 215,
+     "opposition_half_passes": 236,
+     "long_balls_accurate": 29,
+     "long_balls_accurate_pct": 67,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 22,
+     "player_throws": 17,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 9,
+     "clearances": 13,
+     "duel_won": 42,
+     "ground_duels_won": 33,
+     "ground_duels_won_pct": 45,
+     "aerials_won": 9,
+     "aerials_won_pct": 45,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 26,
+     "red_cards": 0
+    },
+    "OSA": {
+     "touches_opp_box": 18,
+     "big_chance": 2,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 5,
+     "shots_woodwork": 0,
+     "shots_inside_box": 6,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 0.79,
+     "expected_goals_set_play": 0.72,
+     "expected_goals_non_penalty": 1.51,
+     "expected_goals_on_target": 2.22,
+     "own_half_passes": 213,
+     "opposition_half_passes": 198,
+     "long_balls_accurate": 23,
+     "long_balls_accurate_pct": 53,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 16,
+     "player_throws": 10,
+     "matchstats.headers.tackles": 22,
+     "interceptions": 5,
+     "clearances": 32,
+     "duel_won": 52,
+     "ground_duels_won": 41,
+     "ground_duels_won_pct": 55,
+     "aerials_won": 11,
+     "aerials_won_pct": 55,
+     "dribbles_succeeded": 8,
+     "dribbles_succeeded_pct": 47,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     52,
+     48
+    ],
+    "h1": [
+     58,
+     42
+    ],
+    "h2": [
+     45,
+     55
+    ]
+   },
+   "events": [
+    {
+     "minute": 10,
+     "extra": null,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Isco"
+    },
+    {
+     "minute": 31,
+     "extra": null,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Abdessamad Ezzalzouli"
+    },
+    {
+     "minute": 41,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jon Moncayola"
+    },
+    {
+     "minute": 45,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Unai Santos"
+    },
+    {
+     "minute": 45,
+     "extra": 2,
+     "team": "BET",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Juan Hernández"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Asier Osambela"
+    },
+    {
+     "minute": 48,
+     "extra": null,
+     "team": "OSA",
+     "type": "Goal",
+     "detail": "Own Goal",
+     "player": null
+    },
+    {
+     "minute": 51,
+     "extra": null,
+     "team": "OSA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Ante Budimir"
+    },
+    {
+     "minute": 56,
+     "extra": null,
+     "team": "OSA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Raúl García"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Valentin Rosier"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mauro Echegoyen"
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lucas Torró"
+    },
+    {
+     "minute": 67,
+     "extra": null,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Isco"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Antony"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dani Ceballos"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jonathan Dubasin"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Iker Muñoz"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Troy Parrott"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nelson Deossa"
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "team": "BET",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Marc Roca"
+    },
+    {
+     "minute": 88,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Valentin Rosier"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "José Antonio Morante"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "José Antonio Morante"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Alejandro Catena"
+    }
+   ],
+   "shots": [
+    {
+     "min": 8,
+     "extra": null,
+     "team": "BET",
+     "player": "Juan Hernández",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.065,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 32.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.862,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "BET",
+     "player": "Pablo Fornals",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.5,
+     "y": 27.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl García",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.126,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.9,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "BET",
+     "player": "Fran García",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 46.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "OSA",
+     "player": "Ante Budimir",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.088,
+     "xgot": 0.15,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 33.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "BET",
+     "player": "Natan",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.051,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 30.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "BET",
+     "player": "Abdessamad Ezzalzouli",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.531,
+     "xgot": 0.746,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 38.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "BET",
+     "player": "Diego Llorente",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.1,
+     "y": 39.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.124,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 34.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.147,
+     "xgot": 0.332,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.4,
+     "y": 33.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "OSA",
+     "player": "Rubén Garcia",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 22,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "OSA",
+     "player": "Jon Moncayola",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.7,
+     "y": 17.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.118,
+     "xgot": 0.204,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 43,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "OSA",
+     "player": "Rubén Garcia",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0.027,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.9,
+     "y": 34.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "OSA",
+     "player": "Ante Budimir",
+     "type": "Goal",
+     "situation": "SetPiece",
+     "xg": 0,
+     "xgot": 0.739,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": true,
+     "x": 4.8,
+     "y": 29.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "BET",
+     "player": "Juan Hernández",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 45.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "OSA",
+     "player": "Ante Budimir",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.494,
+     "xgot": 0.986,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.5,
+     "y": 35.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "BET",
+     "player": "Héctor Bellerín",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 21.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "OSA",
+     "player": "Raúl García",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.927,
+     "xgot": 0.994,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.5,
+     "y": 36.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.314,
+     "xgot": 0.902,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 37.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.268,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 34.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "OSA",
+     "player": "Lucas Torró",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.3,
+     "y": 21.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "BET",
+     "player": "Juan Hernández",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.5,
+     "y": 27.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "OSA",
+     "player": "Jonathan Dubasin",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.5,
+     "y": 36.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "OSA",
+     "player": "Mauro Echegoyen",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83,
+     "y": 25.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "BET",
+     "player": "Nelson Deossa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.9,
+     "y": 44.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "BET",
+     "player": "Nelson Deossa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.8,
+     "y": 24,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "OSA",
+     "player": "Mauro Echegoyen",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.03,
+     "xgot": 0.06,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.9,
+     "y": 34.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "BET",
+     "player": "Nelson Deossa",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.3,
+     "y": 47.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 4,
+     "team": "BET",
+     "player": "Troy Parrott",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.043,
+     "xgot": 0.019,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.4,
+     "y": 41.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 6,
+     "team": "BET",
+     "player": "José Antonio Morante",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0.354,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81,
+     "y": 35.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     2,
+     27
+    ],
+    [
+     3,
+     49
+    ],
+    [
+     4,
+     71
+    ],
+    [
+     5,
+     52
+    ],
+    [
+     6,
+     43
+    ],
+    [
+     7,
+     27
+    ],
+    [
+     8,
+     57
+    ],
+    [
+     9,
+     43
+    ],
+    [
+     10,
+     27
+    ],
+    [
+     11,
+     -24
+    ],
+    [
+     12,
+     -19
+    ],
+    [
+     13,
+     -14
+    ],
+    [
+     14,
+     16
+    ],
+    [
+     15,
+     0
+    ],
+    [
+     16,
+     -5
+    ],
+    [
+     17,
+     -24
+    ],
+    [
+     18,
+     -3
+    ],
+    [
+     19,
+     -71
+    ],
+    [
+     20,
+     24
+    ],
+    [
+     21,
+     62
+    ],
+    [
+     22,
+     100
+    ],
+    [
+     23,
+     38
+    ],
+    [
+     24,
+     -19
+    ],
+    [
+     25,
+     -3
+    ],
+    [
+     26,
+     24
+    ],
+    [
+     27,
+     43
+    ],
+    [
+     28,
+     33
+    ],
+    [
+     29,
+     14
+    ],
+    [
+     30,
+     3
+    ],
+    [
+     31,
+     62
+    ],
+    [
+     32,
+     27
+    ],
+    [
+     33,
+     33
+    ],
+    [
+     34,
+     -27
+    ],
+    [
+     35,
+     35
+    ],
+    [
+     36,
+     52
+    ],
+    [
+     37,
+     62
+    ],
+    [
+     38,
+     49
+    ],
+    [
+     39,
+     54
+    ],
+    [
+     40,
+     49
+    ],
+    [
+     41,
+     27
+    ],
+    [
+     42,
+     16
+    ],
+    [
+     43,
+     38
+    ],
+    [
+     44,
+     -5
+    ],
+    [
+     45,
+     -16
+    ],
+    [
+     45.5,
+     -25
+    ],
+    [
+     46,
+     -8
+    ],
+    [
+     47,
+     -3
+    ],
+    [
+     48,
+     5
+    ],
+    [
+     49,
+     3
+    ],
+    [
+     50,
+     -19
+    ],
+    [
+     51,
+     -71
+    ],
+    [
+     52,
+     -54
+    ],
+    [
+     53,
+     -16
+    ],
+    [
+     54,
+     54
+    ],
+    [
+     55,
+     38
+    ],
+    [
+     56,
+     -100
+    ],
+    [
+     57,
+     -100
+    ],
+    [
+     58,
+     -100
+    ],
+    [
+     59,
+     -22
+    ],
+    [
+     60,
+     -22
+    ],
+    [
+     61,
+     27
+    ],
+    [
+     62,
+     46
+    ],
+    [
+     63,
+     46
+    ],
+    [
+     64,
+     -11
+    ],
+    [
+     65,
+     -8
+    ],
+    [
+     66,
+     -8
+    ],
+    [
+     67,
+     57
+    ],
+    [
+     68,
+     52
+    ],
+    [
+     69,
+     52
+    ],
+    [
+     70,
+     54
+    ],
+    [
+     71,
+     35
+    ],
+    [
+     72,
+     35
+    ],
+    [
+     73,
+     -24
+    ],
+    [
+     74,
+     -16
+    ],
+    [
+     75,
+     -24
+    ],
+    [
+     76,
+     -8
+    ],
+    [
+     77,
+     8
+    ],
+    [
+     78,
+     5
+    ],
+    [
+     79,
+     -11
+    ],
+    [
+     80,
+     -33
+    ],
+    [
+     81,
+     -16
+    ],
+    [
+     82,
+     -27
+    ],
+    [
+     83,
+     0
+    ],
+    [
+     84,
+     -11
+    ],
+    [
+     85,
+     -16
+    ],
+    [
+     86,
+     -41
+    ],
+    [
+     87,
+     -52
+    ],
+    [
+     88,
+     -24
+    ],
+    [
+     89,
+     16
+    ],
+    [
+     90,
+     71
+    ],
+    [
+     90.5,
+     35
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BET": {
+     "team": "BET",
+     "formation": "4-2-3-1",
+     "coach": "Manuel Pellegrini",
+     "xi": [
+      {
+       "name": "Álvaro Vallés",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Héctor Bellerín",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Diego Llorente",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Natan",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Fran García",
+       "shirt": 11,
+       "pos": "D"
+      },
+      {
+       "name": "Marc Roca",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo Fornals",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Riquelme",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Isco",
+       "shirt": 22,
+       "pos": "M"
+      },
+      {
+       "name": "Abdessamad Ezzalzouli",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Juan Hernández",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Antony",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Dani Ceballos",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Nelson Deossa",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Troy Parrott",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "José Antonio Morante",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Diego Conde",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Ángel Ortiz",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Marc Bartra",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Valentín Gómez",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Álvaro Fidalgo",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Facundo Bernal",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Giovani Lo Celso",
+       "shirt": 20,
+       "pos": "?"
+      }
+     ]
+    },
+    "OSA": {
+     "team": "OSA",
+     "formation": "4-4-2",
+     "coach": "Luis Ramis",
+     "xi": [
+      {
+       "name": "Aitor Fernández",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Iñigo Arguibide",
+       "shirt": 27,
+       "pos": "D"
+      },
+      {
+       "name": "Alejandro Catena",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Unai Santos",
+       "shirt": 35,
+       "pos": "D"
+      },
+      {
+       "name": "Abel Bretones",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Rubén Garcia",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Jon Moncayola",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Lucas Torró",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Moi Gómez",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Ante Budimir",
+       "shirt": 17,
+       "pos": "F"
+      },
+      {
+       "name": "Raúl García",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Asier Osambela",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Valentin Rosier",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Mauro Echegoyen",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Jonathan Dubasin",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Muñoz",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Mikel Bermejo",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Sergio Herrera",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Diego Rico",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Flavien Boyomo",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Rockson Yeboah",
+       "shirt": 48,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 40,
+      "center": 25,
+      "right": 35
+     },
+     "firstHalf": {
+      "left": 38,
+      "center": 23,
+      "right": 39
+     },
+     "secondHalf": {
+      "left": 43,
+      "center": 27,
+      "right": 30
+     }
+    },
+    "away": {
+     "total": {
+      "left": 38,
+      "center": 29,
+      "right": 33
+     },
+     "firstHalf": {
+      "left": 46,
+      "center": 28,
+      "right": 26
+     },
+     "secondHalf": {
+      "left": 33,
+      "center": 30,
+      "right": 37
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 7,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-11T18:58:54.147Z",
+   "fdMatchId": "2026-27-76",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "BET",
+      "name": "Juan Hernández",
+      "n": 49,
+      "cx": 69.7,
+      "cy": 31.5,
+      "spread": 26.2,
+      "grid": "0,1,4,3,4,0,1,0,2,2,6,4,0,0,0,3,8,3,0,0,3,0,3,2"
+     },
+     {
+      "team": "BET",
+      "name": "Isco",
+      "n": 72,
+      "cx": 69.8,
+      "cy": 32.2,
+      "spread": 29.9,
+      "grid": "0,0,4,7,4,5,2,0,5,4,5,4,0,1,3,2,2,3,0,2,0,3,10,6"
+     },
+     {
+      "team": "BET",
+      "name": "Marc Roca",
+      "n": 85,
+      "cx": 53.3,
+      "cy": 34.9,
+      "spread": 26.3,
+      "grid": "0,1,3,7,0,1,2,3,16,9,2,0,2,3,2,10,2,1,2,1,4,7,6,1"
+     },
+     {
+      "team": "BET",
+      "name": "Pablo Fornals",
+      "n": 80,
+      "cx": 58.3,
+      "cy": 34.2,
+      "spread": 25.7,
+      "grid": "1,0,4,5,8,1,0,3,5,10,1,2,0,3,7,8,5,0,0,1,6,4,6,0"
+     },
+     {
+      "team": "BET",
+      "name": "Héctor Bellerín",
+      "n": 65,
+      "cx": 46.6,
+      "cy": 57.8,
+      "spread": 25.5,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,6,3,0,2,0,2,3,14,15,10,8,2"
+     },
+     {
+      "team": "BET",
+      "name": "Diego Llorente",
+      "n": 77,
+      "cx": 40.4,
+      "cy": 45.2,
+      "spread": 23,
+      "grid": "0,0,0,0,0,1,1,0,0,2,1,4,3,17,19,5,0,0,5,5,9,4,1,0"
+     },
+     {
+      "team": "BET",
+      "name": "Natan",
+      "n": 68,
+      "cx": 36,
+      "cy": 20.7,
+      "spread": 22,
+      "grid": "4,8,8,3,0,0,8,10,17,4,2,0,1,0,1,0,0,2,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Fran García",
+      "n": 93,
+      "cx": 53.2,
+      "cy": 8.8,
+      "spread": 27.6,
+      "grid": "7,18,19,9,17,13,1,1,5,0,2,0,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Rodrigo Riquelme",
+      "n": 44,
+      "cx": 71.9,
+      "cy": 53.5,
+      "spread": 24.3,
+      "grid": "0,0,0,0,1,1,0,0,0,1,0,1,0,0,1,3,2,2,1,2,4,6,10,9"
+     },
+     {
+      "team": "BET",
+      "name": "Abdessamad Ezzalzouli",
+      "n": 50,
+      "cx": 63.9,
+      "cy": 17.3,
+      "spread": 22.5,
+      "grid": "0,1,7,11,10,2,0,1,1,1,6,2,0,2,1,3,1,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Aitor Fernández",
+      "n": 48,
+      "cx": 10.4,
+      "cy": 36.2,
+      "spread": 8.6,
+      "grid": "0,0,0,0,0,0,11,3,0,0,0,0,31,3,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Alejandro Catena",
+      "n": 95,
+      "cx": 32.8,
+      "cy": 32.8,
+      "spread": 24.6,
+      "grid": "2,8,6,4,0,0,11,11,8,5,0,1,9,5,5,1,0,1,1,8,8,1,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Rubén Garcia",
+      "n": 52,
+      "cx": 58.5,
+      "cy": 47.3,
+      "spread": 29.5,
+      "grid": "0,0,0,0,2,1,1,0,0,2,4,1,0,4,2,5,2,1,4,1,8,7,5,2"
+     },
+     {
+      "team": "OSA",
+      "name": "Unai Santos",
+      "n": 31,
+      "cx": 40.4,
+      "cy": 14.3,
+      "spread": 18.6,
+      "grid": "1,5,7,5,2,0,1,8,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Moi Gómez",
+      "n": 90,
+      "cx": 54.8,
+      "cy": 23.6,
+      "spread": 25.9,
+      "grid": "3,7,6,10,6,3,0,5,8,12,8,0,0,3,2,7,5,0,0,3,0,1,1,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Jon Moncayola",
+      "n": 42,
+      "cx": 48.5,
+      "cy": 40.2,
+      "spread": 28.2,
+      "grid": "2,1,0,0,0,0,1,0,5,2,4,0,1,3,4,4,1,2,0,3,6,1,2,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Iñigo Arguibide",
+      "n": 49,
+      "cx": 45.7,
+      "cy": 56.9,
+      "spread": 31.9,
+      "grid": "1,0,0,0,0,0,2,0,0,0,0,0,3,1,0,1,1,0,9,2,10,6,9,4"
+     },
+     {
+      "team": "OSA",
+      "name": "Lucas Torró",
+      "n": 87,
+      "cx": 43.8,
+      "cy": 32.1,
+      "spread": 23.7,
+      "grid": "0,6,0,5,1,0,0,18,10,8,3,0,4,13,6,5,2,1,0,0,1,2,0,2"
+     },
+     {
+      "team": "OSA",
+      "name": "Ante Budimir",
+      "n": 27,
+      "cx": 48.2,
+      "cy": 39.3,
+      "spread": 34.1,
+      "grid": "0,1,0,0,0,0,1,0,2,0,1,1,6,2,2,3,2,4,0,0,1,1,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Álvaro Vallés",
+      "n": 44,
+      "cx": 11.7,
+      "cy": 34.8,
+      "spread": 11.9,
+      "grid": "1,0,0,0,0,0,13,4,0,0,0,0,20,3,0,0,0,0,1,2,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Abel Bretones",
+      "n": 61,
+      "cx": 54.1,
+      "cy": 9.5,
+      "spread": 27.7,
+      "grid": "4,11,7,10,13,5,1,5,0,3,1,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Raúl García",
+      "n": 38,
+      "cx": 67,
+      "cy": 25.3,
+      "spread": 21.3,
+      "grid": "0,0,1,2,7,1,0,0,5,6,8,1,0,0,2,1,1,0,0,0,0,3,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Asier Osambela",
+      "n": 37,
+      "cx": 35.9,
+      "cy": 51,
+      "spread": 20.7,
+      "grid": "0,0,0,0,0,0,2,0,0,0,0,0,2,4,2,3,0,0,2,10,5,6,1,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Valentin Rosier",
+      "n": 31,
+      "cx": 50.3,
+      "cy": 51.6,
+      "spread": 30,
+      "grid": "0,0,2,0,0,0,0,0,1,0,0,1,3,1,0,0,1,1,1,3,3,11,3,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Mauro Echegoyen",
+      "n": 31,
+      "cx": 54.6,
+      "cy": 41.6,
+      "spread": 29.1,
+      "grid": "1,0,0,2,0,0,0,1,0,3,2,0,0,7,2,2,2,0,0,1,1,2,2,3"
+     },
+     {
+      "team": "BET",
+      "name": "Dani Ceballos",
+      "n": 27,
+      "cx": 54,
+      "cy": 16.3,
+      "spread": 23.2,
+      "grid": "0,3,5,5,1,2,0,2,2,3,2,0,0,0,1,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Antony",
+      "n": 16,
+      "cx": 51.1,
+      "cy": 58.4,
+      "spread": 20.7,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,4,6,3,0,1"
+     },
+     {
+      "team": "OSA",
+      "name": "Jonathan Dubasin",
+      "n": 22,
+      "cx": 67.1,
+      "cy": 23.1,
+      "spread": 30.9,
+      "grid": "0,0,1,4,3,2,0,2,2,0,1,3,1,0,0,0,0,0,0,0,0,1,2,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Iker Muñoz",
+      "n": 13,
+      "cx": 51.9,
+      "cy": 37.8,
+      "spread": 21.5,
+      "grid": "0,0,1,0,0,0,0,1,0,2,0,0,0,3,1,2,2,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Nelson Deossa",
+      "n": 15,
+      "cx": 59.4,
+      "cy": 30,
+      "spread": 30,
+      "grid": "0,2,1,0,0,1,0,0,0,0,4,0,0,1,0,1,1,1,0,1,1,1,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Troy Parrott",
+      "n": 8,
+      "cx": 54.5,
+      "cy": 38.5,
+      "spread": 33.4,
+      "grid": "0,0,1,0,0,0,0,0,0,1,1,0,2,0,0,0,1,0,0,0,0,1,0,1"
+     },
+     {
+      "team": "BET",
+      "name": "José Antonio Morante",
+      "n": 8,
+      "cx": 81.2,
+      "cy": 20.1,
+      "spread": 20.4,
+      "grid": "0,0,0,1,2,2,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-11T17:31:10.254Z"
+ "updatedAt": "2026-10-11T18:58:54.806Z"
 }

@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-11T17:32:12.149Z",
+ "fetchedAt": "2026-10-11T19:00:27.068Z",
  "teams": [
   {
    "code": "INT",
@@ -185,6 +185,66 @@
    ]
   },
   {
+   "code": "CAG",
+   "fotmobId": 8529,
+   "fotmobName": "Cagliari",
+   "fetchedAt": "2026-10-09T12:41:52.803Z",
+   "color": "#B51F2B",
+   "teamColors": {
+    "darkMode": "#B51F2B",
+    "lightMode": "#B51F2B",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Unipol Domus",
+   "city": "Cagliari",
+   "location": [
+    "39.199802357",
+    "9.137473349"
+   ],
+   "capacity": 16416,
+   "surface": "Grass",
+   "opened": 2017,
+   "coachHistory": [
+    {
+     "id": 42451,
+     "name": "Davide Nicola",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 9,
+     "loss": 20,
+     "pointsPerGame": 0.95,
+     "winPercentage": 0.24
+    },
+    {
+     "id": 41732,
+     "name": "Fabio Pisacane",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 11,
+     "draw": 10,
+     "loss": 17,
+     "pointsPerGame": 1.13,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 41732,
+     "name": "Fabio Pisacane",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 0,
+     "loss": 1,
+     "pointsPerGame": 2.4,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
    "code": "MLN",
    "fotmobId": 8564,
    "fotmobName": "Milan",
@@ -245,62 +305,62 @@
    ]
   },
   {
-   "code": "CAG",
-   "fotmobId": 8529,
-   "fotmobName": "Cagliari",
-   "fetchedAt": "2026-10-09T12:41:52.803Z",
-   "color": "#B51F2B",
+   "code": "JUV",
+   "fotmobId": 9885,
+   "fotmobName": "Juventus",
+   "fetchedAt": "2026-10-09T12:41:54.759Z",
+   "color": "#000001",
    "teamColors": {
-    "darkMode": "#B51F2B",
-    "lightMode": "#B51F2B",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "darkMode": "#FFFFFF",
+    "lightMode": "#000001",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Unipol Domus",
-   "city": "Cagliari",
+   "venue": "Allianz Stadium",
+   "city": "Torino",
    "location": [
-    "39.199802357",
-    "9.137473349"
+    "45.109527284",
+    "7.641302313"
    ],
-   "capacity": 16416,
+   "capacity": 41689,
    "surface": "Grass",
-   "opened": 2017,
+   "opened": 2011,
    "coachHistory": [
     {
-     "id": 42451,
-     "name": "Davide Nicola",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 9,
-     "draw": 9,
-     "loss": 20,
-     "pointsPerGame": 0.95,
-     "winPercentage": 0.24
-    },
-    {
-     "id": 41732,
-     "name": "Fabio Pisacane",
+     "id": 41959,
+     "name": "Massimo Brambilla",
      "season": "2025/2026",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 11,
-     "draw": 10,
-     "loss": 17,
-     "pointsPerGame": 1.13,
-     "winPercentage": 0.29
+     "win": 1,
+     "draw": 0,
+     "loss": 0,
+     "pointsPerGame": 3,
+     "winPercentage": 1
     },
     {
-     "id": 41732,
-     "name": "Fabio Pisacane",
+     "id": 78584,
+     "name": "Luciano Spalletti",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 15,
+     "draw": 9,
+     "loss": 5,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.52
+    },
+    {
+     "id": 78584,
+     "name": "Luciano Spalletti",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 4,
-     "draw": 0,
+     "win": 3,
+     "draw": 1,
      "loss": 1,
-     "pointsPerGame": 2.4,
-     "winPercentage": 0.8
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
     }
    ]
   },
@@ -421,66 +481,6 @@
      "loss": 2,
      "pointsPerGame": 1.4,
      "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "JUV",
-   "fotmobId": 9885,
-   "fotmobName": "Juventus",
-   "fetchedAt": "2026-10-09T12:41:54.759Z",
-   "color": "#000001",
-   "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#000001",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Allianz Stadium",
-   "city": "Torino",
-   "location": [
-    "45.109527284",
-    "7.641302313"
-   ],
-   "capacity": 41689,
-   "surface": "Grass",
-   "opened": 2011,
-   "coachHistory": [
-    {
-     "id": 41959,
-     "name": "Massimo Brambilla",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 0,
-     "loss": 0,
-     "pointsPerGame": 3,
-     "winPercentage": 1
-    },
-    {
-     "id": 78584,
-     "name": "Luciano Spalletti",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 15,
-     "draw": 9,
-     "loss": 5,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.52
-    },
-    {
-     "id": 78584,
-     "name": "Luciano Spalletti",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
     }
    ]
   },
