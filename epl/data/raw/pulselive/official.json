@@ -41123,7 +41123,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 2
    },
    "homeId": 10,
    "awayId": 11,
@@ -41549,7 +41549,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 54156,
+     "assist": 51593,
+     "team": 11,
+     "min": 68,
+     "label": "68'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 2
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -41569,9 +41583,82 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 112948,
+      "team": 11,
+      "min": 58,
+      "label": "58'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 49909,
+      "team": 10,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "kindRaw": "YR",
+      "kind": "兩黃罰下"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 54156,
+      "team": 11,
+      "min": 56,
+      "label": "56'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 31936,
+      "team": 11,
+      "min": 56,
+      "label": "56'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 130665,
+      "team": 10,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 75382,
+      "team": 10,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 67178,
+      "team": 11,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 112948,
+      "team": 11,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -41599,8 +41686,8 @@
      }
     ]
    },
-   "clock": "55'00"
+   "clock": "70'00"
   }
  },
- "fetchedAt": "2026-10-11T16:44:17.455Z"
+ "fetchedAt": "2026-10-11T16:57:29.880Z"
 }

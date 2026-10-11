@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-11T15:31:10.378Z",
+ "fetchedAt": "2026-10-11T16:46:31.171Z",
  "teams": [
   {
    "code": "INT",
@@ -185,66 +185,6 @@
    ]
   },
   {
-   "code": "CAG",
-   "fotmobId": 8529,
-   "fotmobName": "Cagliari",
-   "fetchedAt": "2026-10-09T12:41:52.803Z",
-   "color": "#B51F2B",
-   "teamColors": {
-    "darkMode": "#B51F2B",
-    "lightMode": "#B51F2B",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Unipol Domus",
-   "city": "Cagliari",
-   "location": [
-    "39.199802357",
-    "9.137473349"
-   ],
-   "capacity": 16416,
-   "surface": "Grass",
-   "opened": 2017,
-   "coachHistory": [
-    {
-     "id": 42451,
-     "name": "Davide Nicola",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 9,
-     "draw": 9,
-     "loss": 20,
-     "pointsPerGame": 0.95,
-     "winPercentage": 0.24
-    },
-    {
-     "id": 41732,
-     "name": "Fabio Pisacane",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 11,
-     "draw": 10,
-     "loss": 17,
-     "pointsPerGame": 1.13,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 41732,
-     "name": "Fabio Pisacane",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 0,
-     "loss": 1,
-     "pointsPerGame": 2.4,
-     "winPercentage": 0.8
-    }
-   ]
-  },
-  {
    "code": "MLN",
    "fotmobId": 8564,
    "fotmobName": "Milan",
@@ -301,6 +241,66 @@
      "loss": 0,
      "pointsPerGame": 2.2,
      "winPercentage": 0.6
+    }
+   ]
+  },
+  {
+   "code": "CAG",
+   "fotmobId": 8529,
+   "fotmobName": "Cagliari",
+   "fetchedAt": "2026-10-09T12:41:52.803Z",
+   "color": "#B51F2B",
+   "teamColors": {
+    "darkMode": "#B51F2B",
+    "lightMode": "#B51F2B",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Unipol Domus",
+   "city": "Cagliari",
+   "location": [
+    "39.199802357",
+    "9.137473349"
+   ],
+   "capacity": 16416,
+   "surface": "Grass",
+   "opened": 2017,
+   "coachHistory": [
+    {
+     "id": 42451,
+     "name": "Davide Nicola",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 9,
+     "loss": 20,
+     "pointsPerGame": 0.95,
+     "winPercentage": 0.24
+    },
+    {
+     "id": 41732,
+     "name": "Fabio Pisacane",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 11,
+     "draw": 10,
+     "loss": 17,
+     "pointsPerGame": 1.13,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 41732,
+     "name": "Fabio Pisacane",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 0,
+     "loss": 1,
+     "pointsPerGame": 2.4,
+     "winPercentage": 0.8
     }
    ]
   },
