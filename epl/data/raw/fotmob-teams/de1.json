@@ -2,8 +2,68 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-11T17:04:52.124Z",
+ "fetchedAt": "2026-10-11T17:32:12.123Z",
  "teams": [
+  {
+   "code": "SCF",
+   "fotmobId": 8358,
+   "fotmobName": "Freiburg",
+   "fetchedAt": "2026-10-09T12:41:42.199Z",
+   "color": "#BD1C2C",
+   "teamColors": {
+    "darkMode": "#BD1C2C",
+    "lightMode": "#BD1C2C",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Europa-Park Stadion",
+   "city": "Freiburg im Breisgau",
+   "location": [
+    "48.021617675",
+    "7.829695355"
+   ],
+   "capacity": 34700,
+   "surface": "Grass",
+   "opened": 2021,
+   "coachHistory": [
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 16,
+     "draw": 7,
+     "loss": 11,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 13,
+     "draw": 8,
+     "loss": 13,
+     "pointsPerGame": 1.38,
+     "winPercentage": 0.38
+    },
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 3,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.5,
+     "winPercentage": 0.75
+    }
+   ]
+  },
   {
    "code": "BVB",
    "fotmobId": 9789,
@@ -113,66 +173,6 @@
     {
      "id": 39027,
      "name": "Vincent Kompany",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 3,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.5,
-     "winPercentage": 0.75
-    }
-   ]
-  },
-  {
-   "code": "SCF",
-   "fotmobId": 8358,
-   "fotmobName": "Freiburg",
-   "fetchedAt": "2026-10-09T12:41:42.199Z",
-   "color": "#BD1C2C",
-   "teamColors": {
-    "darkMode": "#BD1C2C",
-    "lightMode": "#BD1C2C",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Europa-Park Stadion",
-   "city": "Freiburg im Breisgau",
-   "location": [
-    "48.021617675",
-    "7.829695355"
-   ],
-   "capacity": 34700,
-   "surface": "Grass",
-   "opened": 2021,
-   "coachHistory": [
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 16,
-     "draw": 7,
-     "loss": 11,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 13,
-     "draw": 8,
-     "loss": 13,
-     "pointsPerGame": 1.38,
-     "winPercentage": 0.38
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -665,66 +665,6 @@
    ]
   },
   {
-   "code": "S04",
-   "fotmobId": 10189,
-   "fotmobName": "Schalke 04",
-   "fetchedAt": "2026-10-09T12:41:47.826Z",
-   "color": "#083890",
-   "teamColors": {
-    "darkMode": "#0942ad",
-    "lightMode": "#083890",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "VELTINS-Arena",
-   "city": "Gelsenkirchen",
-   "location": [
-    "51.554580973",
-    "7.067384720"
-   ],
-   "capacity": 62278,
-   "surface": "Grass",
-   "opened": 2001,
-   "coachHistory": [
-    {
-     "id": 1682834,
-     "name": "Jakob Fimpel",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 1,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1,
-     "winPercentage": 0.25
-    },
-    {
-     "id": 7528,
-     "name": "Miron Muslić",
-     "season": "2025/2026",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 21,
-     "draw": 7,
-     "loss": 6,
-     "pointsPerGame": 2.06,
-     "winPercentage": 0.62
-    },
-    {
-     "id": 7528,
-     "name": "Miron Muslić",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 2,
-     "loss": 1,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
    "code": "HSV",
    "fotmobId": 9790,
    "fotmobName": "Hamburger SV",
@@ -780,6 +720,66 @@
      "draw": 0,
      "loss": 3,
      "pointsPerGame": 0.75,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
+   "code": "S04",
+   "fotmobId": 10189,
+   "fotmobName": "Schalke 04",
+   "fetchedAt": "2026-10-09T12:41:47.826Z",
+   "color": "#083890",
+   "teamColors": {
+    "darkMode": "#0942ad",
+    "lightMode": "#083890",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "VELTINS-Arena",
+   "city": "Gelsenkirchen",
+   "location": [
+    "51.554580973",
+    "7.067384720"
+   ],
+   "capacity": 62278,
+   "surface": "Grass",
+   "opened": 2001,
+   "coachHistory": [
+    {
+     "id": 1682834,
+     "name": "Jakob Fimpel",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 1,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1,
+     "winPercentage": 0.25
+    },
+    {
+     "id": 7528,
+     "name": "Miron Muslić",
+     "season": "2025/2026",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 21,
+     "draw": 7,
+     "loss": 6,
+     "pointsPerGame": 2.06,
+     "winPercentage": 0.62
+    },
+    {
+     "id": 7528,
+     "name": "Miron Muslić",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 2,
+     "loss": 1,
+     "pointsPerGame": 1.25,
      "winPercentage": 0.25
     }
    ]
