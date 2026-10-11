@@ -777,6 +777,13 @@ try {
     const act = s => s.threat + s.creativity + s.influence + s.tackles + s.recoveries + s.cbi;
     const statRows = sh && sa && (act(sh) + act(sa) > 0) ? [
       { label: '場上 xG', h: H.xG, a: A.xG, digits: 2, hint: '期望進球(FPL 即時)' },
+      /* 官方統計(pulselive /stats/match,2026-10-11):沒抓到就整三列不出現,不用估計值補。
+         總射門 = 射正 + 射偏 + 被封阻(零值上游不給,缺 = 0);進行中的數字沒有獨立來源可核對 */
+      ...(H.shots && A.shots ? [
+        { label: '射門', h: H.shots.total, a: A.shots.total, digits: 0, hint: '射正 + 射偏 + 被封阻(英超官方統計)' },
+        { label: '射正', h: H.shots.on, a: A.shots.on, digits: 0, hint: '英超官方統計' },
+        { label: '被封阻', h: H.shots.blocked, a: A.shots.blocked, digits: 0, hint: '射門被場上球員擋下(英超官方統計)' },
+      ] : []),
       { label: '威脅值', h: sh.threat, a: sa.threat, digits: 0, hint: 'FPL 官方進攻威脅指數' },
       { label: '創造力', h: sh.creativity, a: sa.creativity, digits: 0, hint: 'FPL 官方創造機會指數' },
       { label: '影響力', h: sh.influence, a: sa.influence, digits: 0, hint: 'FPL 官方比賽影響指數' },
@@ -828,7 +835,9 @@ try {
       </div>
       ${statRows ? `<div class="card" style="margin-top:10px"><h3>場上數據 <span class="pill tiny">${done ? '終場' : '每 20 秒更新'}</span></h3>
         ${C.versus(statRows, { home: m.home, away: m.away, colors,
-          note: '全隊加總自 FPL 的即時逐球員數據。控球率、射門次數、傳球數與角球沒有免費的即時來源,所以不顯示 —— 缺的欄位不會用估計值補。' })}
+          note: `全隊加總自 FPL 的即時逐球員數據${H?.shots && A?.shots
+            ? `;射門、射正與被封阻來自英超官方統計(${m.shotsMeta?.final ? '終場' : '場中'},${C.ageText(m.shotsMeta?.fetchedAt)}抓的${m.shotsMeta?.final ? '' : ';場中的數字沒有第二個來源可以核對'})`
+            : ''}。控球率、傳球數與角球${H?.shots && A?.shots ? '' : '、射門次數'}沒有免費的即時來源,所以不顯示 —— 缺的欄位不會用估計值補。` })}
         ${bestLine(H) || bestLine(A) ? `<div class="tiny dim" style="margin-top:8px">目前表現分(BPS)前三 ——
           ${C.name(m.home)}:${bestLine(H) || '—'}・${C.name(m.away)}:${bestLine(A) || '—'}</div>` : ''}
       </div>` : ''}

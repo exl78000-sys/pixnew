@@ -82,7 +82,8 @@ function sideReport(players, matchMinutes, seasonShape, official = null) {
     best: [...players].sort((a, b) => b.bps - a.bps).slice(0, 3).map(p => ({ name: p.name, pos: p.pos, bps: p.bps, minutes: p.minutes })),
     used: players.length,
     /* 場上數據合計:FPL 即時逐人欄位的全隊加總。只放 FPL 真的給的 ——
-       控球率/射門次數/角球沒有免費的即時來源,缺的欄位不出現,不用估計值補。
+       控球率/角球沒有免費的即時來源,缺的欄位不出現,不用估計值補。
+       射門 / 射正 / 被封阻另外來自 pulselive(lib/pulse-shots.mjs 的 attachShots 掛在 sides[code].shots),不是這裡算的。
        威脅/創造/影響是 FPL 官方指數(小數),防守三項是動作計數。 */
     stats: {
       threat: round(sum(players, p => p.threat ?? 0), 0),

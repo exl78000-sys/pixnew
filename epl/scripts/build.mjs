@@ -34,6 +34,7 @@ import { injuryFeed, dataStories, previewStories, scheduleStories } from './lib/
 import { loadCurated } from './lib/curated-archive.mjs';
 import { loadCompetitionLogos } from './lib/competitions.mjs';
 import { buildMatchReport } from './lib/matchreport.mjs';
+import { loadShots, attachShots } from './lib/pulse-shots.mjs';
 import {
   preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnabled,
 } from './lib/report/index.mjs';
@@ -390,6 +391,7 @@ async function main() {
   const offShapes = officialFormations(ROOT);
   // 官方只給「顯示名 + 背號」,這裡把它接回我們的球員庫,前端才畫得出頭貼、連得到球員頁
   const offLineups = attachCodes(officialLineups(ROOT), players);
+  const pulseShots = loadShots(ROOT);
   const offManagers = officialManagers(ROOT);
 
   /* 背號回填。FPL 快照有 66 人沒有背號,而官方名單本來就帶背號 ——
@@ -850,6 +852,8 @@ async function main() {
         official: offLineups?.matches?.[`${f.home}|${f.away}`] ?? null,
         inplayCurve: INPLAY_CURVE,
       });
+      /* 官方統計的射門 / 射正 / 被封阻(本季才有;pulselive 場中端點,2026-10-11):掛在 sides[code].shots */
+      if (isCurrentSeason && !liveState.demo) attachShots(rep, pulseShots);
       const report = {
         ...rep,
         fixtureId: fx?.id ?? null,
@@ -902,6 +906,7 @@ async function main() {
         }),
         season: src.season, demo: src.demo,
       };
+      if (isCur && !src.demo) attachShots(report, pulseShots);
       const detail = isCur ? advancedFor(src.season, f.key) : null;
       reports[key] = detail ? { ...report, advanced: attachAdvancedCodes(detail, report) } : report;
     }

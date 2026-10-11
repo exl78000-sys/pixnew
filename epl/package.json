@@ -42,6 +42,7 @@
     "probe:apifootball": "node scripts/probe-apifootball-coverage.mjs",
     "explore:apis": "node scripts/explore-apis.mjs",
     "official": "node scripts/fetch-official.mjs",
+    "shots:live": "node scripts/fetch-pulse-shots.mjs",
     "odds": "node scripts/fetch-odds.mjs",
     "laliga:odds": "node scripts/fetch-odds.mjs --league=es1",
     "setpieces": "node scripts/fetch-setpieces.mjs",
