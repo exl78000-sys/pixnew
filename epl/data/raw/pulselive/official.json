@@ -39687,8 +39687,8 @@
   "CRY|NFO": {
    "fixtureId": 128977,
    "kickoff": "2026-10-11T13:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 3,
     "away": 1
@@ -40119,6 +40119,45 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 50623,
+     "assist": null,
+     "team": 15,
+     "min": 3,
+     "label": "03'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 49759,
+     "assist": 67779,
+     "team": 6,
+     "min": 41,
+     "label": "41'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 37776,
+     "assist": 69595,
+     "team": 6,
+     "min": 45,
+     "label": "45+4'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 109117,
      "assist": null,
@@ -40157,6 +40196,15 @@
       "team": 15,
       "min": 73,
       "label": "73'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 139648,
+      "team": 15,
+      "min": 90,
+      "label": "90+4'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -40310,12 +40358,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -40332,16 +40374,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-11T15:01:35.381Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "HUL|EVE": {
    "fixtureId": 128978,
    "kickoff": "2026-10-11T13:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 2
@@ -40771,6 +40826,45 @@
    "goals": [
     {
      "side": "H",
+     "person": 51754,
+     "assist": 21455,
+     "team": 41,
+     "min": 48,
+     "label": "48'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 14706,
+     "assist": 10428,
+     "team": 7,
+     "min": 55,
+     "label": "55'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 143922,
+     "assist": 14706,
+     "team": 7,
+     "min": 68,
+     "label": "68'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 2
+    },
+    {
+     "side": "H",
      "person": 137549,
      "assist": 337382,
      "team": 41,
@@ -40988,12 +41082,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -41010,10 +41098,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+3'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-11T15:01:35.931Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "LIV|MCI": {
    "fixtureId": 128980,
@@ -41413,5 +41514,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-11T14:59:14.138Z"
+ "fetchedAt": "2026-10-11T15:01:35.931Z"
 }
