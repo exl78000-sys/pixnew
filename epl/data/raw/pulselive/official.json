@@ -41549,7 +41549,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 65970,
+     "assist": null,
+     "team": 11,
+     "min": 65,
+     "label": "65'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -41578,6 +41592,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 49909,
+      "team": 10,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "kindRaw": "YR",
+      "kind": "兩黃罰下"
      }
     ],
     "subs": [
@@ -41627,8 +41650,8 @@
      }
     ]
    },
-   "clock": "62'00"
+   "clock": "65'00"
   }
  },
- "fetchedAt": "2026-10-11T16:50:46.679Z"
+ "fetchedAt": "2026-10-11T16:53:00.568Z"
 }
