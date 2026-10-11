@@ -41123,7 +41123,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 2
+    "away": 3
    },
    "homeId": 10,
    "awayId": 11,
@@ -41552,16 +41552,16 @@
    "goals": [
     {
      "side": "A",
-     "person": 54156,
-     "assist": 51593,
+     "person": 68150,
+     "assist": 67178,
      "team": 11,
-     "min": 68,
-     "label": "68'00",
+     "min": 78,
+     "label": "78'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
      "hs": 0,
-     "as": 2
+     "as": 3
     }
    ],
    "timeline": {
@@ -41693,6 +41693,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 141425,
+      "team": 11,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 63741,
+      "team": 11,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 338602,
+      "team": 11,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 65970,
+      "team": 11,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -41722,8 +41758,8 @@
      }
     ]
    },
-   "clock": "78'00"
+   "clock": "81'00"
   }
  },
- "fetchedAt": "2026-10-11T17:06:24.230Z"
+ "fetchedAt": "2026-10-11T17:08:38.337Z"
 }
