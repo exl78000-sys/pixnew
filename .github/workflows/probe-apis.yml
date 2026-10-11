@@ -48,11 +48,18 @@ jobs:
         run: npm run probe:live
         continue-on-error: true
 
-      # **這是 latest job 的最後一步。** 德義法球隊頁抓取器真跑一次(2026-10-09;59 個請求、寫 runner 暫存目錄),
+      # 德義法球隊頁抓取器真跑一次(2026-10-09;59 個請求、寫 runner 暫存目錄),
       # 把原始欄位 DUMP 回來,`undump-probe-log.mjs` 還原進 data/raw/fotmob-teams/。用完搬去 all。
       - name: 德義法球隊頁抓取器(FotMob;球場、城市、容量、隊色、教練歷任)
         working-directory: epl
         run: npm run probe:league-teams-fetch
+        continue-on-error: true
+
+      # **這是 latest job 的最後一步。** pulselive `/stats/match` 有沒有射門 / 射正 / xG,以及進行中的場次有沒有資料
+      # (2026-10-11;最多 7 個請求、唯讀)。進行中那一段要在**有英超比賽在踢的時候**跑才量得到,否則腳本會講「這一輪沒量到」。
+      - name: pulselive 場中統計(射門、射正有沒有;進行中的場次有沒有資料)
+        working-directory: epl
+        run: npm run probe:pulselive-stats
         continue-on-error: true
 
   all:
