@@ -40153,7 +40153,26 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 108816,
+      "team": 15,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20335,
+      "team": 15,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -40181,7 +40200,7 @@
      }
     ]
    },
-   "clock": "65'00"
+   "clock": "68'00"
   },
   "HUL|EVE": {
    "fixtureId": 128978,
@@ -40688,7 +40707,7 @@
       "dir": "off"
      },
      {
-      "person": 337567,
+      "person": 66538,
       "team": 41,
       "min": 65,
       "label": "65'00",
@@ -40701,6 +40720,24 @@
       "team": 41,
       "min": 65,
       "label": "65'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 118442,
+      "team": 7,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49374,
+      "team": 7,
+      "min": 66,
+      "label": "66'00",
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
@@ -40733,7 +40770,7 @@
      }
     ]
    },
-   "clock": "66'00"
+   "clock": "68'00"
   },
   "LIV|MCI": {
    "fixtureId": 128980,
@@ -41133,5 +41170,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-11T14:28:24.514Z"
+ "fetchedAt": "2026-10-11T14:30:46.595Z"
 }
