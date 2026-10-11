@@ -40172,7 +40172,7 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "48'00"
   },
   "HUL|EVE": {
    "fixtureId": 128978,
@@ -40180,7 +40180,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 41,
@@ -40605,7 +40605,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 51754,
+     "assist": null,
+     "team": 41,
+     "min": 48,
+     "label": "48'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -40655,8 +40669,8 @@
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "50'00"
   }
  },
- "fetchedAt": "2026-10-11T14:09:23.136Z"
+ "fetchedAt": "2026-10-11T14:11:45.970Z"
 }
