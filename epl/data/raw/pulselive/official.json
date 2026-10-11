@@ -39687,7 +39687,7 @@
   "CRY|NFO": {
    "fixtureId": 128977,
    "kickoff": "2026-10-11T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -39696,9 +39696,31 @@
    "homeId": 6,
    "awayId": 15,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      20497
+     ],
+     [
+      50842,
+      37776,
+      147312
+     ],
+     [
+      123848,
+      67779,
+      69595,
+      24334
+     ],
+     [
+      49759,
+      109117
+     ],
+     [
+      35670
+     ]
+    ],
     "xi": [
      {
       "id": 147312,
@@ -39714,7 +39736,7 @@
       "playerId": null,
       "name": "Daichi Kamada",
       "shirt": 18,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Attacking Midfielder",
       "captain": false
      },
@@ -39732,7 +39754,7 @@
       "playerId": null,
       "name": "Anan Khalaili",
       "shirt": 25,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -39750,7 +39772,7 @@
       "playerId": null,
       "name": "Jefferson Lerma",
       "shirt": 8,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -39786,7 +39808,7 @@
       "playerId": null,
       "name": "Tyrick Mitchell",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -39795,7 +39817,7 @@
       "playerId": null,
       "name": "Yéremy Pino",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Right Winger",
       "captain": false
      }
@@ -39885,16 +39907,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      16723
+     ],
+     [
+      10439,
+      123299,
+      139648
+     ],
+     [
+      76353,
+      20335,
+      49270,
+      23811
+     ],
+     [
+      15259,
+      50623
+     ],
+     [
+      51813
+     ]
+    ],
     "xi": [
      {
       "id": 23811,
       "playerId": null,
       "name": "Neco Williams",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -39948,7 +39992,7 @@
       "playerId": null,
       "name": "Daniel Muñoz",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -39957,7 +40001,7 @@
       "playerId": null,
       "name": "Morgan Gibbs-White",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": true
      },
@@ -40077,14 +40121,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   },
   "HUL|EVE": {
    "fixtureId": 128978,
    "kickoff": "2026-10-11T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -40093,9 +40150,29 @@
    "homeId": 41,
    "awayId": 7,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      133314,
+      20081
+     ],
+     [
+      51754,
+      8885,
+      21385,
+      21455
+     ],
+     [
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 133314,
@@ -40111,7 +40188,7 @@
       "playerId": null,
       "name": "Sorba Thomas",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Winger",
       "captain": false
      },
@@ -40174,7 +40251,7 @@
       "playerId": null,
       "name": "Joe Gelhardt",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      },
@@ -40282,9 +40359,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4640
+     ],
+     [
+      10428,
+      8143,
+      4333,
+      66318
+     ],
+     [
+      23841,
+      134286
+     ],
+     [
+      49374,
+      14706,
+      4260
+     ],
+     [
+      143922
+     ]
+    ],
     "xi": [
      {
       "id": 134286,
@@ -40336,7 +40435,7 @@
       "playerId": null,
       "name": "Brennan Johnson",
       "shirt": 22,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -40363,7 +40462,7 @@
       "playerId": null,
       "name": "Ainsley Maitland-Niles",
       "shirt": 2,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre/Right Wing Back",
       "captain": false
      },
@@ -40474,10 +40573,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-10-11T13:00:35.709Z"
+ "fetchedAt": "2026-10-11T13:02:57.874Z"
 }
