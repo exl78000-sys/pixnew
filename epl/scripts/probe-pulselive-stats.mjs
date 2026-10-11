@@ -33,7 +33,7 @@ async function get(url) {
   if (!res.ok) throw new Error(`HTTP ${res.status} ${url.replace(API, '')}`);
   return res.json();
 }
-const NAME = /shot|target|attempt|goal|xg|expected|chance|blocked/i;
+const NAME = /shot|target|attempt|scoring_att|goal|xg|expected|chance|blocked/i;
 const statsOf = (d, teamId) => {
   const side = d?.data?.[teamId]; const M = side?.M ?? side;
   return Array.isArray(M) ? Object.fromEntries(M.map(x => [x.name, x.value])) : null;
