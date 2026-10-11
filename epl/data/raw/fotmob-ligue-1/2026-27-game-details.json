@@ -86026,8 +86026,1301 @@
    "fetchedAt": "2026-10-11T17:31:14.447Z",
    "fdMatchId": "2026-27-52",
    "heat": null
+  },
+  "TRO|MAR": {
+   "key": "TRO|MAR",
+   "season": "2026-27",
+   "date": "2026-10-11",
+   "matchId": "5802954",
+   "home": "TRO",
+   "away": "MAR",
+   "score": [
+    0,
+    2
+   ],
+   "providerScore": [
+    0,
+    2
+   ],
+   "teamStats": {
+    "TRO": {
+     "possession": 37,
+     "shots": 15,
+     "shotsOn": 3,
+     "shotsOff": 8,
+     "blockedShots": 4,
+     "blocksMade": 3,
+     "corners": 6,
+     "offsides": 2,
+     "fouls": 14,
+     "saves": 0,
+     "passes": 350,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.14
+    },
+    "MAR": {
+     "possession": 63,
+     "shots": 5,
+     "shotsOn": 2,
+     "shotsOff": 0,
+     "blockedShots": 3,
+     "blocksMade": 4,
+     "corners": 3,
+     "offsides": 2,
+     "fouls": 15,
+     "saves": 3,
+     "passes": 640,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.26
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "TRO": {
+     "touches_opp_box": 21,
+     "big_chance": 2,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 4,
+     "shots_woodwork": 2,
+     "shots_inside_box": 13,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.92,
+     "expected_goals_set_play": 0.21,
+     "expected_goals_non_penalty": 1.14,
+     "expected_goals_on_target": 0.23,
+     "own_half_passes": 160,
+     "opposition_half_passes": 121,
+     "long_balls_accurate": 16,
+     "long_balls_accurate_pct": 40,
+     "accurate_crosses": 11,
+     "accurate_crosses_pct": 41,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 17,
+     "interceptions": 10,
+     "clearances": 15,
+     "duel_won": 54,
+     "ground_duels_won": 34,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 20,
+     "aerials_won_pct": 63,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 42,
+     "red_cards": 0
+    },
+    "MAR": {
+     "touches_opp_box": 20,
+     "big_chance": 2,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 5,
+     "shots_outside_box": 0,
+     "expected_goals_open_play": 0.27,
+     "expected_goals_set_play": 0.2,
+     "expected_goals_non_penalty": 0.47,
+     "expected_goals_on_target": 1.02,
+     "own_half_passes": 352,
+     "opposition_half_passes": 220,
+     "long_balls_accurate": 13,
+     "long_balls_accurate_pct": 33,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 21,
+     "player_throws": 16,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 8,
+     "clearances": 31,
+     "duel_won": 43,
+     "ground_duels_won": 31,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 12,
+     "aerials_won_pct": 38,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 42,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     37,
+     63
+    ],
+    "h1": [
+     33,
+     67
+    ],
+    "h2": [
+     40,
+     60
+    ]
+   },
+   "events": [
+    {
+     "minute": 22,
+     "extra": null,
+     "team": "TRO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lucas Maronnier"
+    },
+    {
+     "minute": 45,
+     "extra": null,
+     "team": "MAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Angel Gomes"
+    },
+    {
+     "minute": 50,
+     "extra": null,
+     "team": "MAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Amine Harit"
+    },
+    {
+     "minute": 58,
+     "extra": null,
+     "team": "TRO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Dermane Karim"
+    },
+    {
+     "minute": 61,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Renaud Ripart"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Neal Maupay"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Keyliane Abdallah"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hugo Picard"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tochukwu Nnadi"
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alexandre Phliponeau"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Christ Batola"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Timothé Nkada"
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Faris Moumbagna"
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Geoffrey Kondogbia"
+    },
+    {
+     "minute": 88,
+     "extra": null,
+     "team": "TRO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Antoine Mille"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "TRO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Patrick Beach"
+    },
+    {
+     "minute": 90,
+     "extra": 8,
+     "team": "MAR",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Himad Abdelli"
+    }
+   ],
+   "shots": [
+    {
+     "min": 5,
+     "extra": null,
+     "team": "TRO",
+     "player": "Adrien Monfray",
+     "type": "Post",
+     "situation": "FromCorner",
+     "xg": 0.046,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 28.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 5,
+     "extra": null,
+     "team": "TRO",
+     "player": "Adrien Monfray",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 28.5,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "TRO",
+     "player": "Adrien Monfray",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.8,
+     "y": 33.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "TRO",
+     "player": "Jérémy Le Douaron",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 32,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "MAR",
+     "player": "Himad Abdelli",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.106,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 27.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "TRO",
+     "player": "Jérémy Le Douaron",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.055,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93,
+     "y": 36.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 50.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "MAR",
+     "player": "Amine Harit",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.236,
+     "xgot": 0.263,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 28.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "TRO",
+     "player": "Antoine Mille",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 23.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "TRO",
+     "player": "Dermane Karim",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.047,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.7,
+     "y": 41.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "TRO",
+     "player": "Jérémy Le Douaron",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.047,
+     "xgot": 0.182,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 32.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0.042,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 39.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.9,
+     "y": 42.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "TRO",
+     "player": "Christ Batola",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 40,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "TRO",
+     "player": "Timothé Nkada",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.055,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 30.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "TRO",
+     "player": "Timothé Nkada",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.022,
+     "xgot": 0.01,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 32.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.445,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 30.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "TRO",
+     "player": "Christ Batola",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.194,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 31.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "MAR",
+     "player": "Faris Moumbagna",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.091,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 27.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 8,
+     "team": "MAR",
+     "player": "Himad Abdelli",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.756,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     -5
+    ],
+    [
+     4,
+     -16
+    ],
+    [
+     5,
+     57
+    ],
+    [
+     6,
+     84
+    ],
+    [
+     7,
+     84
+    ],
+    [
+     8,
+     -11
+    ],
+    [
+     9,
+     -43
+    ],
+    [
+     10,
+     -49
+    ],
+    [
+     11,
+     -27
+    ],
+    [
+     12,
+     -16
+    ],
+    [
+     13,
+     -5
+    ],
+    [
+     14,
+     0
+    ],
+    [
+     15,
+     11
+    ],
+    [
+     16,
+     16
+    ],
+    [
+     17,
+     22
+    ],
+    [
+     18,
+     5
+    ],
+    [
+     19,
+     -3
+    ],
+    [
+     20,
+     -8
+    ],
+    [
+     21,
+     8
+    ],
+    [
+     22,
+     -16
+    ],
+    [
+     23,
+     16
+    ],
+    [
+     24,
+     3
+    ],
+    [
+     25,
+     19
+    ],
+    [
+     26,
+     0
+    ],
+    [
+     27,
+     3
+    ],
+    [
+     28,
+     -5
+    ],
+    [
+     29,
+     -38
+    ],
+    [
+     30,
+     -43
+    ],
+    [
+     31,
+     -52
+    ],
+    [
+     32,
+     -43
+    ],
+    [
+     33,
+     -16
+    ],
+    [
+     34,
+     -11
+    ],
+    [
+     35,
+     0
+    ],
+    [
+     36,
+     -54
+    ],
+    [
+     37,
+     -71
+    ],
+    [
+     38,
+     -49
+    ],
+    [
+     39,
+     -3
+    ],
+    [
+     40,
+     19
+    ],
+    [
+     41,
+     3
+    ],
+    [
+     42,
+     22
+    ],
+    [
+     43,
+     27
+    ],
+    [
+     44,
+     -5
+    ],
+    [
+     45,
+     -33
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -11
+    ],
+    [
+     48,
+     -38
+    ],
+    [
+     49,
+     -60
+    ],
+    [
+     50,
+     -100
+    ],
+    [
+     51,
+     -100
+    ],
+    [
+     52,
+     -73
+    ],
+    [
+     53,
+     11
+    ],
+    [
+     54,
+     11
+    ],
+    [
+     55,
+     14
+    ],
+    [
+     56,
+     8
+    ],
+    [
+     57,
+     -19
+    ],
+    [
+     58,
+     -49
+    ],
+    [
+     59,
+     -65
+    ],
+    [
+     60,
+     -38
+    ],
+    [
+     61,
+     5
+    ],
+    [
+     62,
+     5
+    ],
+    [
+     63,
+     0
+    ],
+    [
+     64,
+     -19
+    ],
+    [
+     65,
+     -3
+    ],
+    [
+     66,
+     8
+    ],
+    [
+     67,
+     5
+    ],
+    [
+     68,
+     -5
+    ],
+    [
+     69,
+     -27
+    ],
+    [
+     70,
+     -49
+    ],
+    [
+     71,
+     -76
+    ],
+    [
+     72,
+     -14
+    ],
+    [
+     73,
+     8
+    ],
+    [
+     74,
+     46
+    ],
+    [
+     75,
+     -5
+    ],
+    [
+     76,
+     33
+    ],
+    [
+     77,
+     38
+    ],
+    [
+     78,
+     43
+    ],
+    [
+     79,
+     14
+    ],
+    [
+     80,
+     0
+    ],
+    [
+     81,
+     27
+    ],
+    [
+     82,
+     35
+    ],
+    [
+     83,
+     38
+    ],
+    [
+     84,
+     33
+    ],
+    [
+     85,
+     22
+    ],
+    [
+     86,
+     33
+    ],
+    [
+     87,
+     5
+    ],
+    [
+     88,
+     5
+    ],
+    [
+     89,
+     5
+    ],
+    [
+     90,
+     8
+    ],
+    [
+     90.5,
+     52
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "TRO": {
+     "team": "TRO",
+     "formation": "4-2-3-1",
+     "coach": "Stéphane Dumont",
+     "xi": [
+      {
+       "name": "Patrick Beach",
+       "shirt": 33,
+       "pos": "G"
+      },
+      {
+       "name": "Lucas Maronnier",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Adrien Monfray",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Michel Diaz",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Paolo Gozzi",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Mouhamed Diop",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Dermane Karim",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Antoine Mille",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Iron Gomis",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Kandet Diawara",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Jérémy Le Douaron",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Renaud Ripart",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Picard",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Alexandre Phliponeau",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Christ Batola",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Timothé Nkada",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Hillel Konaté",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Lassana Simakha",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Noah Donkor",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Merwan Ifnaou",
+       "shirt": 10,
+       "pos": "?"
+      }
+     ]
+    },
+    "MAR": {
+     "team": "MAR",
+     "formation": "4-2-3-1",
+     "coach": "Bruno Génésio",
+     "xi": [
+      {
+       "name": "Jeffrey De Lange",
+       "shirt": 12,
+       "pos": "G"
+      },
+      {
+       "name": "Kelyann Bezahaf",
+       "shirt": 74,
+       "pos": "D"
+      },
+      {
+       "name": "CJ Egan-Riley",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Nayef Aguerd",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Emerson",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Nouhoum Kamissoko",
+       "shirt": 42,
+       "pos": "?"
+      },
+      {
+       "name": "Himad Abdelli",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Amine Harit",
+       "shirt": 77,
+       "pos": "M"
+      },
+      {
+       "name": "Angel Gomes",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Igor Paixão",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Amine Gouiri",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Keyliane Abdallah",
+       "shirt": 48,
+       "pos": "?"
+      },
+      {
+       "name": "Neal Maupay",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Tochukwu Nnadi",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Geoffrey Kondogbia",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Faris Moumbagna",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Théo Vermot",
+       "shirt": 92,
+       "pos": "?"
+      },
+      {
+       "name": "Alexi Koum",
+       "shirt": 46,
+       "pos": "?"
+      },
+      {
+       "name": "Bamo Meité",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Ulisses Garcia",
+       "shirt": 25,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 30,
+      "center": 21,
+      "right": 49
+     },
+     "firstHalf": {
+      "left": 31,
+      "center": 20,
+      "right": 49
+     },
+     "secondHalf": {
+      "left": 29,
+      "center": 22,
+      "right": 49
+     }
+    },
+    "away": {
+     "total": {
+      "left": 36,
+      "center": 21,
+      "right": 43
+     },
+     "firstHalf": {
+      "left": 40,
+      "center": 23,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 32,
+      "center": 19,
+      "right": 49
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-11T21:29:43.310Z",
+   "fdMatchId": "2026-27-53",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-11T18:58:57.487Z"
+ "updatedAt": "2026-10-11T21:29:43.312Z"
 }

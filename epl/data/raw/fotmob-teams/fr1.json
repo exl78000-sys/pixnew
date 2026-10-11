@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-11T19:00:27.535Z",
+ "fetchedAt": "2026-10-11T21:31:15.356Z",
  "teams": [
   {
    "code": "MON",
@@ -725,6 +725,66 @@
    ]
   },
   {
+   "code": "MAR",
+   "fotmobId": 8592,
+   "fotmobName": "Marseille",
+   "fetchedAt": "2026-10-09T12:42:09.613Z",
+   "color": "#0A60A8",
+   "teamColors": {
+    "darkMode": "#41b6ff",
+    "lightMode": "#0A60A8",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "CEPAC Vélodrome",
+   "city": "Marseille",
+   "location": [
+    "43.269870275",
+    "5.395853519"
+   ],
+   "capacity": 67394,
+   "surface": "Grass",
+   "opened": 1937,
+   "coachHistory": [
+    {
+     "id": 26308,
+     "name": "Jacques Abardonado",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 0,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 1,
+     "winPercentage": 0
+    },
+    {
+     "id": 25518,
+     "name": "Habib Beye",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 6,
+     "draw": 1,
+     "loss": 5,
+     "pointsPerGame": 1.58,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 712734,
+     "name": "Bruno Génésio",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 0,
+     "loss": 4,
+     "pointsPerGame": 0.6,
+     "winPercentage": 0.2
+    }
+   ]
+  },
+  {
    "code": "LMA",
    "fotmobId": 8682,
    "fotmobName": "Le Mans",
@@ -960,66 +1020,6 @@
      "draw": 1,
      "loss": 3,
      "pointsPerGame": 0.8,
-     "winPercentage": 0.2
-    }
-   ]
-  },
-  {
-   "code": "MAR",
-   "fotmobId": 8592,
-   "fotmobName": "Marseille",
-   "fetchedAt": "2026-10-09T12:42:09.613Z",
-   "color": "#0A60A8",
-   "teamColors": {
-    "darkMode": "#41b6ff",
-    "lightMode": "#0A60A8",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "CEPAC Vélodrome",
-   "city": "Marseille",
-   "location": [
-    "43.269870275",
-    "5.395853519"
-   ],
-   "capacity": 67394,
-   "surface": "Grass",
-   "opened": 1937,
-   "coachHistory": [
-    {
-     "id": 26308,
-     "name": "Jacques Abardonado",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 0,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 1,
-     "winPercentage": 0
-    },
-    {
-     "id": 25518,
-     "name": "Habib Beye",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 6,
-     "draw": 1,
-     "loss": 5,
-     "pointsPerGame": 1.58,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 712734,
-     "name": "Bruno Génésio",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 0,
-     "loss": 4,
-     "pointsPerGame": 0.6,
      "winPercentage": 0.2
     }
    ]
