@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-11T14:30:43.652Z",
+ "fetchedAt": "2026-10-11T15:31:10.378Z",
  "teams": [
   {
    "code": "INT",
@@ -605,6 +605,66 @@
    ]
   },
   {
+   "code": "ATA",
+   "fotmobId": 8524,
+   "fotmobName": "Atalanta",
+   "fetchedAt": "2026-10-09T12:41:55.565Z",
+   "color": "#004ca6",
+   "teamColors": {
+    "darkMode": "#0D68B1",
+    "lightMode": "#004ca6",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "New Balance Arena",
+   "city": "Bergamo",
+   "location": [
+    "45.709236083",
+    "9.680693150"
+   ],
+   "capacity": 24950,
+   "surface": "Grass",
+   "opened": 1928,
+   "coachHistory": [
+    {
+     "id": 41757,
+     "name": "Ivan Jurić",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 7,
+     "loss": 2,
+     "pointsPerGame": 1.18,
+     "winPercentage": 0.18
+    },
+    {
+     "id": 41413,
+     "name": "Raffaele Palladino",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 13,
+     "draw": 7,
+     "loss": 7,
+     "pointsPerGame": 1.7,
+     "winPercentage": 0.48
+    },
+    {
+     "id": 557567,
+     "name": "Maurizio Sarri",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 1.2,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
    "code": "LEC",
    "fotmobId": 9888,
    "fotmobName": "Lecce",
@@ -665,62 +725,62 @@
    ]
   },
   {
-   "code": "ATA",
-   "fotmobId": 8524,
-   "fotmobName": "Atalanta",
-   "fetchedAt": "2026-10-09T12:41:55.565Z",
-   "color": "#004ca6",
+   "code": "BLG",
+   "fotmobId": 9857,
+   "fotmobName": "Bologna",
+   "fetchedAt": "2026-10-09T12:41:59.110Z",
+   "color": "#102880",
    "teamColors": {
-    "darkMode": "#0D68B1",
-    "lightMode": "#004ca6",
+    "darkMode": "#004eca",
+    "lightMode": "#102880",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "New Balance Arena",
-   "city": "Bergamo",
+   "venue": "Stadio Renato Dall'Ara",
+   "city": "Bologna",
    "location": [
-    "45.709236083",
-    "9.680693150"
+    "44.492290396",
+    "11.309956759"
    ],
-   "capacity": 24950,
+   "capacity": 39279,
    "surface": "Grass",
-   "opened": 1928,
+   "opened": 1927,
    "coachHistory": [
     {
-     "id": 41757,
-     "name": "Ivan Jurić",
+     "id": 42581,
+     "name": "Vincenzo Italiano",
      "season": "2025/2026",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 2,
-     "draw": 7,
-     "loss": 2,
-     "pointsPerGame": 1.18,
-     "winPercentage": 0.18
+     "win": 16,
+     "draw": 8,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.42
+    },
+    {
+     "id": 853795,
+     "name": "Domenico Tedesco",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.25,
+     "winPercentage": 0
     },
     {
      "id": 41413,
      "name": "Raffaele Palladino",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 13,
-     "draw": 7,
-     "loss": 7,
-     "pointsPerGame": 1.7,
-     "winPercentage": 0.48
-    },
-    {
-     "id": 557567,
-     "name": "Maurizio Sarri",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 2,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 1.2,
-     "winPercentage": 0.4
+     "win": 0,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 1,
+     "winPercentage": 0
     }
    ]
   },
@@ -1081,66 +1141,6 @@
      "loss": 0,
      "pointsPerGame": 2,
      "winPercentage": 0.5
-    }
-   ]
-  },
-  {
-   "code": "BLG",
-   "fotmobId": 9857,
-   "fotmobName": "Bologna",
-   "fetchedAt": "2026-10-09T12:41:59.110Z",
-   "color": "#102880",
-   "teamColors": {
-    "darkMode": "#004eca",
-    "lightMode": "#102880",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Renato Dall'Ara",
-   "city": "Bologna",
-   "location": [
-    "44.492290396",
-    "11.309956759"
-   ],
-   "capacity": 39279,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 42581,
-     "name": "Vincenzo Italiano",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 16,
-     "draw": 8,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 853795,
-     "name": "Domenico Tedesco",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.25,
-     "winPercentage": 0
-    },
-    {
-     "id": 41413,
-     "name": "Raffaele Palladino",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 1,
-     "winPercentage": 0
     }
    ]
   },

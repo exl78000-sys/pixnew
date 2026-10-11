@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-11T14:30:42.686Z",
+ "fetchedAt": "2026-10-11T15:31:09.638Z",
  "teams": [
   {
    "code": "BVB",
@@ -545,6 +545,66 @@
    ]
   },
   {
+   "code": "KOE",
+   "fotmobId": 8722,
+   "fotmobName": "1. FC Köln",
+   "fetchedAt": "2026-10-09T12:41:49.200Z",
+   "color": "#E21718",
+   "teamColors": {
+    "darkMode": "#E21718",
+    "lightMode": "#E21718",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "RheinEnergieSTADION",
+   "city": "Köln",
+   "location": [
+    "50.933476533",
+    "6.875199080"
+   ],
+   "capacity": 50076,
+   "surface": "Grass",
+   "opened": 2004,
+   "coachHistory": [
+    {
+     "id": 1072070,
+     "name": "Gerhard Struber",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 16,
+     "draw": 7,
+     "loss": 9,
+     "pointsPerGame": 1.72,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 78639,
+     "name": "Friedhelm Funkel",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 2,
+     "draw": 0,
+     "loss": 0,
+     "pointsPerGame": 3,
+     "winPercentage": 1
+    },
+    {
+     "id": 1130966,
+     "name": "Lukas Kwasniok",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 6,
+     "draw": 8,
+     "loss": 13,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.22
+    }
+   ]
+  },
+  {
    "code": "VFB",
    "fotmobId": 10269,
    "fotmobName": "VfB Stuttgart",
@@ -593,66 +653,6 @@
     {
      "id": 36490,
      "name": "Sebastian Hoeneß",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
-   "code": "HSV",
-   "fotmobId": 9790,
-   "fotmobName": "Hamburger SV",
-   "fetchedAt": "2026-10-09T12:41:50.681Z",
-   "color": "#005AAA",
-   "teamColors": {
-    "darkMode": "#1d63b4",
-    "lightMode": "#005AAA",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Volksparkstadion",
-   "city": "Hamburg",
-   "location": [
-    "53.587134005",
-    "9.898579717"
-   ],
-   "capacity": 57000,
-   "surface": "Grass",
-   "opened": 1998,
-   "coachHistory": [
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 11,
-     "draw": 6,
-     "loss": 4,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.52
-    },
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 9,
-     "draw": 11,
-     "loss": 14,
-     "pointsPerGame": 1.12,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -725,62 +725,62 @@
    ]
   },
   {
-   "code": "KOE",
-   "fotmobId": 8722,
-   "fotmobName": "1. FC Köln",
-   "fetchedAt": "2026-10-09T12:41:49.200Z",
-   "color": "#E21718",
+   "code": "HSV",
+   "fotmobId": 9790,
+   "fotmobName": "Hamburger SV",
+   "fetchedAt": "2026-10-09T12:41:50.681Z",
+   "color": "#005AAA",
    "teamColors": {
-    "darkMode": "#E21718",
-    "lightMode": "#E21718",
+    "darkMode": "#1d63b4",
+    "lightMode": "#005AAA",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "RheinEnergieSTADION",
-   "city": "Köln",
+   "venue": "Volksparkstadion",
+   "city": "Hamburg",
    "location": [
-    "50.933476533",
-    "6.875199080"
+    "53.587134005",
+    "9.898579717"
    ],
-   "capacity": 50076,
+   "capacity": 57000,
    "surface": "Grass",
-   "opened": 2004,
+   "opened": 1998,
    "coachHistory": [
     {
-     "id": 1072070,
-     "name": "Gerhard Struber",
+     "id": 1611908,
+     "name": "Merlin Polzin",
      "season": "2024/2025",
      "leagueId": 146,
      "leagueName": "2. Bundesliga",
-     "win": 16,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 1.72,
-     "winPercentage": 0.5
+     "win": 11,
+     "draw": 6,
+     "loss": 4,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.52
     },
     {
-     "id": 78639,
-     "name": "Friedhelm Funkel",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 2,
-     "draw": 0,
-     "loss": 0,
-     "pointsPerGame": 3,
-     "winPercentage": 1
-    },
-    {
-     "id": 1130966,
-     "name": "Lukas Kwasniok",
+     "id": 1611908,
+     "name": "Merlin Polzin",
      "season": "2025/2026",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 6,
-     "draw": 8,
-     "loss": 13,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.22
+     "win": 9,
+     "draw": 11,
+     "loss": 14,
+     "pointsPerGame": 1.12,
+     "winPercentage": 0.26
+    },
+    {
+     "id": 1611908,
+     "name": "Merlin Polzin",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
+     "winPercentage": 0.25
     }
    ]
   },

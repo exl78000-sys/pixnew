@@ -111497,10 +111497,4096 @@
      }
     ]
    }
+  },
+  "HUL|EVE": {
+   "key": "HUL|EVE",
+   "season": "2026-27",
+   "date": "2026-10-11",
+   "matchId": "5795470",
+   "home": "HUL",
+   "away": "EVE",
+   "score": [
+    2,
+    2
+   ],
+   "providerScore": [
+    2,
+    2
+   ],
+   "teamStats": {
+    "HUL": {
+     "possession": 35,
+     "shots": 9,
+     "shotsOn": 5,
+     "shotsOff": 2,
+     "blockedShots": 2,
+     "blocksMade": 4,
+     "corners": 7,
+     "offsides": 1,
+     "fouls": 15,
+     "saves": 4,
+     "passes": 307,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.33
+    },
+    "EVE": {
+     "possession": 65,
+     "shots": 15,
+     "shotsOn": 7,
+     "shotsOff": 5,
+     "blockedShots": 3,
+     "blocksMade": 3,
+     "corners": 6,
+     "offsides": 4,
+     "fouls": 4,
+     "saves": 2,
+     "passes": 588,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.71
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "HUL": {
+     "touches_opp_box": 23,
+     "big_chance": 2,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 9,
+     "shots_outside_box": 0,
+     "expected_goals_open_play": 1.04,
+     "expected_goals_set_play": 0.3,
+     "expected_goals_non_penalty": 1.33,
+     "expected_goals_on_target": 1.2,
+     "physical_metrics_distance_covered": 116477,
+     "physical_metrics_running": 22031,
+     "physical_metrics_sprinting": 2848,
+     "physical_metrics_number_of_sprints": 107,
+     "own_half_passes": 105,
+     "opposition_half_passes": 118,
+     "long_balls_accurate": 28,
+     "long_balls_accurate_pct": 37,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 13,
+     "player_throws": 13,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 9,
+     "clearances": 22,
+     "duel_won": 36,
+     "ground_duels_won": 29,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 7,
+     "aerials_won_pct": 23,
+     "dribbles_succeeded": 11,
+     "dribbles_succeeded_pct": 73,
+     "red_cards": 0
+    },
+    "EVE": {
+     "touches_opp_box": 26,
+     "big_chance": 8,
+     "big_chance_missed_title": 6,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 11,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 0.88,
+     "expected_goals_set_play": 0.83,
+     "expected_goals_non_penalty": 1.71,
+     "expected_goals_on_target": 1.74,
+     "physical_metrics_distance_covered": 115172,
+     "physical_metrics_running": 21689,
+     "physical_metrics_sprinting": 2854,
+     "physical_metrics_number_of_sprints": 108,
+     "own_half_passes": 244,
+     "opposition_half_passes": 267,
+     "long_balls_accurate": 26,
+     "long_balls_accurate_pct": 50,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 19,
+     "player_throws": 20,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 6,
+     "clearances": 34,
+     "duel_won": 57,
+     "ground_duels_won": 33,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 24,
+     "aerials_won_pct": 77,
+     "dribbles_succeeded": 4,
+     "dribbles_succeeded_pct": 33,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     35,
+     65
+    ],
+    "h1": [
+     43,
+     57
+    ],
+    "h2": [
+     29,
+     71
+    ]
+   },
+   "events": [
+    {
+     "minute": 13,
+     "extra": null,
+     "team": "HUL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Matt Crooks"
+    },
+    {
+     "minute": 21,
+     "extra": null,
+     "team": "HUL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Oli McBurnie"
+    },
+    {
+     "minute": 48,
+     "extra": null,
+     "team": "HUL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Joe Gelhardt"
+    },
+    {
+     "minute": 55,
+     "extra": null,
+     "team": "EVE",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Kiernan Dewsbury-Hall"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "HUL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Elliot Stroud"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "HUL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mohamed Belloumi"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "HUL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tim Iroegbunam"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tyrique George"
+    },
+    {
+     "minute": 68,
+     "extra": null,
+     "team": "EVE",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Thierno Barry"
+    },
+    {
+     "minute": 74,
+     "extra": null,
+     "team": "HUL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Mohamed Belloumi"
+    },
+    {
+     "minute": 75,
+     "extra": 0,
+     "team": "HUL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hidemasa Morita"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hayden Hackney"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jake O'Brien"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "HUL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Robinio Vaz"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Charly Alcaraz"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tyler Dibling"
+    }
+   ],
+   "shots": [
+    {
+     "min": 5,
+     "extra": null,
+     "team": "EVE",
+     "player": "James Garner",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.3,
+     "y": 36.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "EVE",
+     "player": "Jack Grealish",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.019,
+     "xgot": 0.03,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.9,
+     "y": 44.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "HUL",
+     "player": "Joe Gelhardt",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.036,
+     "xgot": 0.032,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 16.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "EVE",
+     "player": "Thierno Barry",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.318,
+     "xgot": 0.302,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.6,
+     "y": 36.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "EVE",
+     "player": "Jarrad Branthwaite",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.075,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.8,
+     "y": 42,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "EVE",
+     "player": "Harrison Armstrong",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.185,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 34.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "HUL",
+     "player": "Sorba Thomas",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.7,
+     "y": 51.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "EVE",
+     "player": "Thierno Barry",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.055,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 24.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "EVE",
+     "player": "Michael Keane",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.008,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 27.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "HUL",
+     "player": "Joe Gelhardt",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.108,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.9,
+     "y": 26,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "HUL",
+     "player": "Nobel Mendy",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.299,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 35.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "HUL",
+     "player": "Joe Gelhardt",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.096,
+     "xgot": 0.033,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 25,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "EVE",
+     "player": "Jack Grealish",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.7,
+     "y": 49.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "EVE",
+     "player": "Thierno Barry",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.105,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 28.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 4,
+     "team": "EVE",
+     "player": "Brennan Johnson",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 21.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "HUL",
+     "player": "Joe Gelhardt",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.536,
+     "xgot": 0.863,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97,
+     "y": 42.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "EVE",
+     "player": "Harrison Armstrong",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0.026,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.4,
+     "y": 49.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "EVE",
+     "player": "Thierno Barry",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.145,
+     "xgot": 0.064,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.7,
+     "y": 34.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "EVE",
+     "player": "Kiernan Dewsbury-Hall",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.4,
+     "xgot": 0.891,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 30.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "EVE",
+     "player": "Thierno Barry",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.276,
+     "xgot": 0.427,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93,
+     "y": 26.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "HUL",
+     "player": "John Egan",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.041,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.6,
+     "y": 43.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "HUL",
+     "player": "Mohamed Belloumi",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.079,
+     "xgot": 0.268,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.8,
+     "y": 36.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "HUL",
+     "player": "Mohamed Belloumi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.127,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.1,
+     "y": 36.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "EVE",
+     "player": "Charly Alcaraz",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 20.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     -8
+    ],
+    [
+     4,
+     -11
+    ],
+    [
+     5,
+     -16
+    ],
+    [
+     6,
+     -33
+    ],
+    [
+     7,
+     -57
+    ],
+    [
+     8,
+     -68
+    ],
+    [
+     9,
+     -52
+    ],
+    [
+     10,
+     5
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     12,
+     38
+    ],
+    [
+     13,
+     16
+    ],
+    [
+     14,
+     19
+    ],
+    [
+     15,
+     3
+    ],
+    [
+     16,
+     0
+    ],
+    [
+     17,
+     11
+    ],
+    [
+     18,
+     33
+    ],
+    [
+     19,
+     19
+    ],
+    [
+     20,
+     -11
+    ],
+    [
+     21,
+     -22
+    ],
+    [
+     22,
+     11
+    ],
+    [
+     23,
+     19
+    ],
+    [
+     24,
+     3
+    ],
+    [
+     25,
+     -22
+    ],
+    [
+     26,
+     -52
+    ],
+    [
+     27,
+     -95
+    ],
+    [
+     28,
+     -98
+    ],
+    [
+     29,
+     -71
+    ],
+    [
+     30,
+     -11
+    ],
+    [
+     31,
+     -14
+    ],
+    [
+     32,
+     14
+    ],
+    [
+     33,
+     73
+    ],
+    [
+     34,
+     60
+    ],
+    [
+     35,
+     38
+    ],
+    [
+     36,
+     -22
+    ],
+    [
+     37,
+     0
+    ],
+    [
+     38,
+     3
+    ],
+    [
+     39,
+     8
+    ],
+    [
+     40,
+     22
+    ],
+    [
+     41,
+     -3
+    ],
+    [
+     42,
+     -24
+    ],
+    [
+     43,
+     -19
+    ],
+    [
+     44,
+     100
+    ],
+    [
+     45,
+     100
+    ],
+    [
+     45.5,
+     -45
+    ],
+    [
+     46,
+     -11
+    ],
+    [
+     47,
+     -16
+    ],
+    [
+     48,
+     22
+    ],
+    [
+     49,
+     33
+    ],
+    [
+     50,
+     38
+    ],
+    [
+     51,
+     0
+    ],
+    [
+     52,
+     14
+    ],
+    [
+     53,
+     -62
+    ],
+    [
+     54,
+     -79
+    ],
+    [
+     55,
+     -100
+    ],
+    [
+     56,
+     -90
+    ],
+    [
+     57,
+     -84
+    ],
+    [
+     58,
+     -35
+    ],
+    [
+     59,
+     -98
+    ],
+    [
+     60,
+     -87
+    ],
+    [
+     61,
+     -65
+    ],
+    [
+     62,
+     -11
+    ],
+    [
+     63,
+     -33
+    ],
+    [
+     64,
+     -33
+    ],
+    [
+     65,
+     -27
+    ],
+    [
+     66,
+     -11
+    ],
+    [
+     67,
+     -24
+    ],
+    [
+     68,
+     -14
+    ],
+    [
+     69,
+     -8
+    ],
+    [
+     70,
+     16
+    ],
+    [
+     71,
+     33
+    ],
+    [
+     72,
+     33
+    ],
+    [
+     73,
+     22
+    ],
+    [
+     74,
+     54
+    ],
+    [
+     75,
+     54
+    ],
+    [
+     76,
+     33
+    ],
+    [
+     77,
+     -41
+    ],
+    [
+     78,
+     -57
+    ],
+    [
+     79,
+     -68
+    ],
+    [
+     80,
+     -5
+    ],
+    [
+     81,
+     0
+    ],
+    [
+     82,
+     27
+    ],
+    [
+     83,
+     -38
+    ],
+    [
+     84,
+     -60
+    ],
+    [
+     85,
+     -33
+    ],
+    [
+     86,
+     -11
+    ],
+    [
+     87,
+     5
+    ],
+    [
+     88,
+     -16
+    ],
+    [
+     89,
+     -38
+    ],
+    [
+     90,
+     -30
+    ],
+    [
+     90.5,
+     -65
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "HUL": {
+     "team": "HUL",
+     "formation": "5-4-1",
+     "coach": "Sergej Jakirović",
+     "xi": [
+      {
+       "name": "Konstantinos Tzolakis",
+       "shirt": 19,
+       "pos": "G"
+      },
+      {
+       "name": "Semi Ajayi",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "John Egan",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Nobel Mendy",
+       "shirt": 32,
+       "pos": "D"
+      },
+      {
+       "name": "Lewie Coyle",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Ryan Giles",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Joe Gelhardt",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Matt Crooks",
+       "shirt": 25,
+       "pos": "M"
+      },
+      {
+       "name": "Regan Slater",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Sorba Thomas",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Oli McBurnie",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Elliot Stroud",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Mohamed Belloumi",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Tim Iroegbunam",
+       "shirt": 42,
+       "pos": "?"
+      },
+      {
+       "name": "Hidemasa Morita",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Robinio Vaz",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Dillon Phillips",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Herrington",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Paddy McNair",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Brooke Norton-Cuffy",
+       "shirt": 18,
+       "pos": "?"
+      }
+     ]
+    },
+    "EVE": {
+     "team": "EVE",
+     "formation": "4-2-3-1",
+     "coach": "David Moyes",
+     "xi": [
+      {
+       "name": "Jordan Pickford",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Ainsley Maitland-Niles",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "James Tarkowski",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Michael Keane",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Jarrad Branthwaite",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "James Garner",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Harrison Armstrong",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Brennan Johnson",
+       "shirt": 22,
+       "pos": "M"
+      },
+      {
+       "name": "Kiernan Dewsbury-Hall",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Jack Grealish",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Thierno Barry",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Tyrique George",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Jake O'Brien",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Hayden Hackney",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Charly Alcaraz",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Tyler Dibling",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Mark Travers",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Merlin Röhl",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Christian Nørgaard",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Braiden Graham",
+       "shirt": 58,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      116477,
+      115172
+     ],
+     "sprintDistance": [
+      2848,
+      2854
+     ],
+     "sprints": [
+      107,
+      108
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      22031,
+      21689
+     ]
+    },
+    "players": [
+     {
+      "team": "HUL",
+      "name": "Konstantinos Tzolakis",
+      "shirt": 19,
+      "distance": 5426,
+      "topSpeed": 27.600000381469727,
+      "rating": 6.9
+     },
+     {
+      "team": "HUL",
+      "name": "Semi Ajayi",
+      "shirt": 6,
+      "distance": 9781,
+      "topSpeed": 31.200000762939453,
+      "rating": 6.9
+     },
+     {
+      "team": "HUL",
+      "name": "John Egan",
+      "shirt": 15,
+      "distance": 10212,
+      "topSpeed": 30.799999237060547,
+      "rating": 5.9
+     },
+     {
+      "team": "HUL",
+      "name": "Nobel Mendy",
+      "shirt": 32,
+      "distance": 10564,
+      "topSpeed": 31.899999618530273,
+      "rating": 6.8
+     },
+     {
+      "team": "HUL",
+      "name": "Lewie Coyle",
+      "shirt": 2,
+      "distance": 10353,
+      "topSpeed": 32.5,
+      "rating": 6.8
+     },
+     {
+      "team": "HUL",
+      "name": "Ryan Giles",
+      "shirt": 3,
+      "distance": 7845,
+      "topSpeed": 33.900001525878906,
+      "rating": 6.4
+     },
+     {
+      "team": "HUL",
+      "name": "Joe Gelhardt",
+      "shirt": 11,
+      "distance": 7475,
+      "topSpeed": 30.299999237060547,
+      "rating": 7.7
+     },
+     {
+      "team": "HUL",
+      "name": "Matt Crooks",
+      "shirt": 25,
+      "distance": 8542,
+      "topSpeed": 34.79999923706055,
+      "rating": 6.6
+     },
+     {
+      "team": "HUL",
+      "name": "Regan Slater",
+      "shirt": 27,
+      "distance": 9654,
+      "topSpeed": 30.799999237060547,
+      "rating": 6.6
+     },
+     {
+      "team": "HUL",
+      "name": "Sorba Thomas",
+      "shirt": 7,
+      "distance": 10416,
+      "topSpeed": 33.900001525878906,
+      "rating": 7.6
+     },
+     {
+      "team": "HUL",
+      "name": "Oli McBurnie",
+      "shirt": 9,
+      "distance": 10685,
+      "topSpeed": 31.299999237060547,
+      "rating": 6.4
+     },
+     {
+      "team": "HUL",
+      "name": "Elliot Stroud",
+      "shirt": 21,
+      "distance": 3788,
+      "topSpeed": 32.70000076293945,
+      "rating": 7
+     },
+     {
+      "team": "HUL",
+      "name": "Mohamed Belloumi",
+      "shirt": 10,
+      "distance": 3753,
+      "topSpeed": 31.700000762939453,
+      "rating": 7.6
+     },
+     {
+      "team": "HUL",
+      "name": "Tim Iroegbunam",
+      "shirt": 42,
+      "distance": 3785,
+      "topSpeed": 33.099998474121094,
+      "rating": 6
+     },
+     {
+      "team": "HUL",
+      "name": "Hidemasa Morita",
+      "shirt": 5,
+      "distance": 2935,
+      "topSpeed": 28.399999618530273,
+      "rating": 6.2
+     },
+     {
+      "team": "HUL",
+      "name": "Robinio Vaz",
+      "shirt": 47,
+      "distance": 1256,
+      "topSpeed": 33.599998474121094,
+      "rating": null
+     },
+     {
+      "team": "EVE",
+      "name": "Jordan Pickford",
+      "shirt": 1,
+      "distance": 5331,
+      "topSpeed": 25.299999237060547,
+      "rating": 6
+     },
+     {
+      "team": "EVE",
+      "name": "Ainsley Maitland-Niles",
+      "shirt": 2,
+      "distance": 9014,
+      "topSpeed": 29.700000762939453,
+      "rating": 6.1
+     },
+     {
+      "team": "EVE",
+      "name": "James Tarkowski",
+      "shirt": 6,
+      "distance": 9850,
+      "topSpeed": 31.600000381469727,
+      "rating": 7.9
+     },
+     {
+      "team": "EVE",
+      "name": "Michael Keane",
+      "shirt": 5,
+      "distance": 9958,
+      "topSpeed": 31.399999618530273,
+      "rating": 6.8
+     },
+     {
+      "team": "EVE",
+      "name": "Jarrad Branthwaite",
+      "shirt": 4,
+      "distance": 10016,
+      "topSpeed": 30.700000762939453,
+      "rating": 7.5
+     },
+     {
+      "team": "EVE",
+      "name": "James Garner",
+      "shirt": 37,
+      "distance": 11717,
+      "topSpeed": 32.79999923706055,
+      "rating": 7.5
+     },
+     {
+      "team": "EVE",
+      "name": "Harrison Armstrong",
+      "shirt": 45,
+      "distance": 10021,
+      "topSpeed": 33.29999923706055,
+      "rating": 7.8
+     },
+     {
+      "team": "EVE",
+      "name": "Brennan Johnson",
+      "shirt": 22,
+      "distance": 8157,
+      "topSpeed": 31.5,
+      "rating": 6.5
+     },
+     {
+      "team": "EVE",
+      "name": "Kiernan Dewsbury-Hall",
+      "shirt": 8,
+      "distance": 11544,
+      "topSpeed": 33,
+      "rating": 8.9
+     },
+     {
+      "team": "EVE",
+      "name": "Jack Grealish",
+      "shirt": 10,
+      "distance": 9449,
+      "topSpeed": 32.599998474121094,
+      "rating": 7
+     },
+     {
+      "team": "EVE",
+      "name": "Thierno Barry",
+      "shirt": 11,
+      "distance": 9527,
+      "topSpeed": 36.099998474121094,
+      "rating": 8
+     },
+     {
+      "team": "EVE",
+      "name": "Tyrique George",
+      "shirt": 19,
+      "distance": 3279,
+      "topSpeed": 29.5,
+      "rating": 6
+     },
+     {
+      "team": "EVE",
+      "name": "Jake O'Brien",
+      "shirt": 15,
+      "distance": 2321,
+      "topSpeed": 32.70000076293945,
+      "rating": 6
+     },
+     {
+      "team": "EVE",
+      "name": "Hayden Hackney",
+      "shirt": 30,
+      "distance": 2547,
+      "topSpeed": 28.299999237060547,
+      "rating": 6
+     },
+     {
+      "team": "EVE",
+      "name": "Charly Alcaraz",
+      "shirt": 24,
+      "distance": 1262,
+      "topSpeed": 28.200000762939453,
+      "rating": null
+     },
+     {
+      "team": "EVE",
+      "name": "Tyler Dibling",
+      "shirt": 20,
+      "distance": 1172,
+      "topSpeed": 31.299999237060547,
+      "rating": null
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 37,
+      "center": 29,
+      "right": 34
+     },
+     "firstHalf": {
+      "left": 35,
+      "center": 26,
+      "right": 39
+     },
+     "secondHalf": {
+      "left": 41,
+      "center": 32,
+      "right": 27
+     }
+    },
+    "away": {
+     "total": {
+      "left": 43,
+      "center": 23,
+      "right": 34
+     },
+     "firstHalf": {
+      "left": 43,
+      "center": 30,
+      "right": 27
+     },
+     "secondHalf": {
+      "left": 43,
+      "center": 19,
+      "right": 38
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-11T15:29:25.828Z",
+   "fdMatchId": "2026-27-56",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "EVE",
+      "name": "Kiernan Dewsbury-Hall",
+      "n": 85,
+      "cx": 58.8,
+      "cy": 27.8,
+      "spread": 29.7,
+      "grid": "0,7,2,7,8,5,3,1,6,8,5,0,2,3,7,9,3,2,0,0,1,0,2,4"
+     },
+     {
+      "team": "EVE",
+      "name": "James Garner",
+      "n": 114,
+      "cx": 51.8,
+      "cy": 30.2,
+      "spread": 27.9,
+      "grid": "1,2,4,11,7,4,2,7,18,7,8,1,2,3,13,7,3,0,4,1,4,4,1,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Jordan Pickford",
+      "n": 55,
+      "cx": 15.6,
+      "cy": 28,
+      "spread": 13.7,
+      "grid": "3,3,1,0,0,0,21,11,1,0,0,0,11,4,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Thierno Barry",
+      "n": 46,
+      "cx": 64,
+      "cy": 35.8,
+      "spread": 31,
+      "grid": "0,0,3,4,0,1,1,0,3,0,2,5,4,0,2,6,4,6,0,0,3,2,0,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Nobel Mendy",
+      "n": 52,
+      "cx": 33.7,
+      "cy": 21.7,
+      "spread": 24.8,
+      "grid": "3,8,7,6,0,0,8,6,4,2,0,1,1,1,0,0,0,0,0,1,3,1,0,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Regan Slater",
+      "n": 41,
+      "cx": 52.9,
+      "cy": 31.4,
+      "spread": 22.8,
+      "grid": "0,2,1,2,1,0,0,4,5,6,3,0,0,3,3,5,3,0,0,0,1,1,1,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Harrison Armstrong",
+      "n": 63,
+      "cx": 53.9,
+      "cy": 39.6,
+      "spread": 29.5,
+      "grid": "0,2,2,1,1,0,4,1,1,6,4,2,2,4,4,1,7,0,0,2,5,6,7,1"
+     },
+     {
+      "team": "EVE",
+      "name": "James Tarkowski",
+      "n": 109,
+      "cx": 39.6,
+      "cy": 48.2,
+      "spread": 21.3,
+      "grid": "0,0,0,0,0,0,1,3,1,1,0,0,14,16,23,13,0,0,1,8,9,16,3,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Sorba Thomas",
+      "n": 62,
+      "cx": 71.1,
+      "cy": 10.7,
+      "spread": 24.2,
+      "grid": "0,2,9,15,6,17,0,0,0,3,5,2,0,1,0,0,0,0,0,0,0,2,0,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Oli McBurnie",
+      "n": 46,
+      "cx": 58.4,
+      "cy": 37.4,
+      "spread": 25.6,
+      "grid": "0,2,3,1,1,0,0,0,5,5,1,1,0,0,3,5,4,3,0,0,8,2,2,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Ryan Giles",
+      "n": 36,
+      "cx": 48.9,
+      "cy": 9.7,
+      "spread": 29.7,
+      "grid": "2,8,2,6,7,3,2,2,0,0,0,1,1,0,2,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Konstantinos Tzolakis",
+      "n": 67,
+      "cx": 11.2,
+      "cy": 34,
+      "spread": 12.7,
+      "grid": "2,0,0,0,0,0,23,7,0,0,0,0,29,4,1,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Semi Ajayi",
+      "n": 44,
+      "cx": 42.4,
+      "cy": 48.2,
+      "spread": 27.9,
+      "grid": "1,0,0,0,0,1,1,1,0,0,0,0,2,5,3,5,2,0,6,4,2,9,1,1"
+     },
+     {
+      "team": "EVE",
+      "name": "Jarrad Branthwaite",
+      "n": 98,
+      "cx": 50.4,
+      "cy": 9,
+      "spread": 25.1,
+      "grid": "5,9,22,29,10,5,5,3,5,2,0,2,1,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Ainsley Maitland-Niles",
+      "n": 54,
+      "cx": 46.6,
+      "cy": 57,
+      "spread": 27.4,
+      "grid": "0,0,0,0,0,0,0,0,0,1,3,0,4,3,0,0,1,0,4,11,7,11,8,1"
+     },
+     {
+      "team": "EVE",
+      "name": "Michael Keane",
+      "n": 94,
+      "cx": 42.8,
+      "cy": 21.2,
+      "spread": 21.6,
+      "grid": "2,9,16,4,0,0,3,11,25,8,0,1,1,3,5,1,0,5,0,0,0,0,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Jack Grealish",
+      "n": 64,
+      "cx": 65.6,
+      "cy": 13.3,
+      "spread": 24.6,
+      "grid": "0,7,7,12,12,9,1,1,2,1,4,5,0,0,0,1,1,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "HUL",
+      "name": "John Egan",
+      "n": 44,
+      "cx": 38.7,
+      "cy": 28.2,
+      "spread": 27.6,
+      "grid": "0,3,1,1,1,0,10,5,8,2,0,3,0,5,2,0,1,1,0,0,1,0,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Brennan Johnson",
+      "n": 35,
+      "cx": 66.5,
+      "cy": 54.2,
+      "spread": 29.5,
+      "grid": "0,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,1,4,2,3,2,6,9,4"
+     },
+     {
+      "team": "HUL",
+      "name": "Lewie Coyle",
+      "n": 48,
+      "cx": 53.7,
+      "cy": 58.1,
+      "spread": 31.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,1,3,0,2,2,0,2,3,10,5,6,9,5"
+     },
+     {
+      "team": "HUL",
+      "name": "Joe Gelhardt",
+      "n": 45,
+      "cx": 58.9,
+      "cy": 50.2,
+      "spread": 31.7,
+      "grid": "0,0,0,0,0,0,0,0,2,0,0,2,4,3,2,2,3,5,4,1,1,7,5,4"
+     },
+     {
+      "team": "HUL",
+      "name": "Matt Crooks",
+      "n": 36,
+      "cx": 57.4,
+      "cy": 39.4,
+      "spread": 29.5,
+      "grid": "0,1,2,1,0,0,1,1,1,1,0,2,1,3,3,5,1,4,0,0,3,4,1,1"
+     },
+     {
+      "team": "HUL",
+      "name": "Tim Iroegbunam",
+      "n": 20,
+      "cx": 49.4,
+      "cy": 41.6,
+      "spread": 25.1,
+      "grid": "0,0,0,1,0,0,0,1,2,2,1,0,2,0,2,2,0,0,0,0,5,0,2,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Mohamed Belloumi",
+      "n": 15,
+      "cx": 57.4,
+      "cy": 47.2,
+      "spread": 33.9,
+      "grid": "0,0,0,0,0,0,0,0,0,0,1,3,0,2,0,0,1,0,2,1,2,0,2,1"
+     },
+     {
+      "team": "EVE",
+      "name": "Tyrique George",
+      "n": 23,
+      "cx": 56.4,
+      "cy": 22.8,
+      "spread": 28.4,
+      "grid": "0,1,3,6,4,0,0,0,2,0,0,0,0,0,0,1,0,0,0,3,1,1,0,1"
+     },
+     {
+      "team": "HUL",
+      "name": "Elliot Stroud",
+      "n": 25,
+      "cx": 55.1,
+      "cy": 12,
+      "spread": 32.8,
+      "grid": "3,1,5,3,1,5,1,2,1,1,0,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "HUL",
+      "name": "Hidemasa Morita",
+      "n": 12,
+      "cx": 45,
+      "cy": 43,
+      "spread": 29.5,
+      "grid": "1,0,0,0,0,0,1,0,0,0,1,0,0,2,2,0,1,0,0,1,0,2,1,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Jake O'Brien",
+      "n": 20,
+      "cx": 62.4,
+      "cy": 60.7,
+      "spread": 25.3,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,3,4,4,4,4"
+     },
+     {
+      "team": "EVE",
+      "name": "Hayden Hackney",
+      "n": 22,
+      "cx": 65.1,
+      "cy": 30.6,
+      "spread": 23.8,
+      "grid": "0,2,1,2,3,0,0,0,0,1,2,1,0,0,0,4,2,0,0,0,0,2,2,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Charly Alcaraz",
+      "n": 7,
+      "cx": 67.2,
+      "cy": 41,
+      "spread": 21.5,
+      "grid": "0,0,0,0,0,0,0,0,0,0,1,1,0,1,1,1,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Tyler Dibling",
+      "n": 9,
+      "cx": 75.8,
+      "cy": 53,
+      "spread": 28.5,
+      "grid": "0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,2,0,0,1,3"
+     },
+     {
+      "team": "HUL",
+      "name": "Robinio Vaz",
+      "n": 2,
+      "cx": 63.5,
+      "cy": 10.8,
+      "spread": 22.1,
+      "grid": "0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
+  },
+  "CRY|NFO": {
+   "key": "CRY|NFO",
+   "season": "2026-27",
+   "date": "2026-10-11",
+   "matchId": "5795469",
+   "home": "CRY",
+   "away": "NFO",
+   "score": [
+    3,
+    1
+   ],
+   "providerScore": [
+    3,
+    1
+   ],
+   "teamStats": {
+    "CRY": {
+     "possession": 43,
+     "shots": 13,
+     "shotsOn": 7,
+     "shotsOff": 4,
+     "blockedShots": 2,
+     "blocksMade": 8,
+     "corners": 5,
+     "offsides": 2,
+     "fouls": 11,
+     "saves": 4,
+     "passes": 385,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.38
+    },
+    "NFO": {
+     "possession": 57,
+     "shots": 24,
+     "shotsOn": 6,
+     "shotsOff": 10,
+     "blockedShots": 8,
+     "blocksMade": 2,
+     "corners": 8,
+     "offsides": 1,
+     "fouls": 10,
+     "saves": 4,
+     "passes": 492,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.97
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "CRY": {
+     "touches_opp_box": 23,
+     "big_chance": 4,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 11,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 1.82,
+     "expected_goals_set_play": 0.56,
+     "expected_goals_non_penalty": 2.38,
+     "expected_goals_on_target": 2.79,
+     "physical_metrics_distance_covered": 117128,
+     "physical_metrics_running": 24209,
+     "physical_metrics_sprinting": 2558,
+     "physical_metrics_number_of_sprints": 117,
+     "own_half_passes": 134,
+     "opposition_half_passes": 154,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 40,
+     "accurate_crosses": 6,
+     "accurate_crosses_pct": 40,
+     "player_throws": 12,
+     "matchstats.headers.tackles": 21,
+     "interceptions": 5,
+     "clearances": 34,
+     "duel_won": 50,
+     "ground_duels_won": 32,
+     "ground_duels_won_pct": 49,
+     "aerials_won": 18,
+     "aerials_won_pct": 56,
+     "dribbles_succeeded": 2,
+     "dribbles_succeeded_pct": 33,
+     "red_cards": 0
+    },
+    "NFO": {
+     "touches_opp_box": 44,
+     "big_chance": 8,
+     "big_chance_missed_title": 7,
+     "yellow_cards": 2,
+     "shots_woodwork": 3,
+     "shots_inside_box": 17,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 2.25,
+     "expected_goals_set_play": 0.71,
+     "expected_goals_non_penalty": 2.97,
+     "expected_goals_on_target": 1.7,
+     "physical_metrics_distance_covered": 115066,
+     "physical_metrics_running": 23823,
+     "physical_metrics_sprinting": 2127,
+     "physical_metrics_number_of_sprints": 93,
+     "own_half_passes": 210,
+     "opposition_half_passes": 192,
+     "long_balls_accurate": 32,
+     "long_balls_accurate_pct": 60,
+     "accurate_crosses": 11,
+     "accurate_crosses_pct": 38,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 12,
+     "interceptions": 11,
+     "clearances": 18,
+     "duel_won": 47,
+     "ground_duels_won": 33,
+     "ground_duels_won_pct": 51,
+     "aerials_won": 14,
+     "aerials_won_pct": 44,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 56,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     43,
+     57
+    ],
+    "h1": [
+     48,
+     52
+    ],
+    "h2": [
+     39,
+     61
+    ]
+   },
+   "events": [
+    {
+     "minute": 3,
+     "extra": null,
+     "team": "NFO",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Dan Ndoye"
+    },
+    {
+     "minute": 16,
+     "extra": null,
+     "team": "CRY",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jefferson Lerma"
+    },
+    {
+     "minute": 41,
+     "extra": null,
+     "team": "CRY",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Daichi Kamada"
+    },
+    {
+     "minute": 45,
+     "extra": 4,
+     "team": "CRY",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Jefferson Lerma"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "CRY",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Yéremi Pino"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "CRY",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Yéremi Pino"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "NFO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ibrahim Sangaré"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "NFO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Callum Hudson-Odoi"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "NFO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Chris Wood"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "CRY",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Honest Ahanor"
+    },
+    {
+     "minute": 73,
+     "extra": null,
+     "team": "NFO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ola Aina"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "CRY",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Edward Nketiah"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "CRY",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ismaïla Sarr"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "NFO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Arnaud Kalimuendo-Muinga"
+    },
+    {
+     "minute": 90,
+     "extra": 0,
+     "team": "CRY",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dwight McNeil"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "NFO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Murillo"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "NFO",
+     "player": "Dan Ndoye",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0.464,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.9,
+     "y": 46.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "NFO",
+     "player": "Murillo",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.121,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 30.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "CRY",
+     "player": "Jørgen Strand Larsen",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.466,
+     "xgot": 0.528,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.6,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "CRY",
+     "player": "Jørgen Strand Larsen",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.2,
+     "y": 26.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "CRY",
+     "player": "Jefferson Lerma",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.3,
+     "y": 43.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "CRY",
+     "player": "Quinten Timber",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.103,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.3,
+     "y": 36.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "NFO",
+     "player": "James McAtee",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 45,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "NFO",
+     "player": "Murillo",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.065,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.2,
+     "y": 35.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "NFO",
+     "player": "Xaver Schlager",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 41.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "NFO",
+     "player": "Murillo",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.1,
+     "y": 45,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "NFO",
+     "player": "Dan Ndoye",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.171,
+     "xgot": 0.569,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 40,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "NFO",
+     "player": "Ousmane Diomande",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.9,
+     "y": 34.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "NFO",
+     "player": "Daniel Muñoz",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.29,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.6,
+     "y": 27.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "NFO",
+     "player": "Morgan Gibbs-White",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.041,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.9,
+     "y": 21,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "NFO",
+     "player": "Morgan Gibbs-White",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 22.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "NFO",
+     "player": "Liam Delap",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.565,
+     "xgot": 0.229,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.2,
+     "y": 34.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "NFO",
+     "player": "Liam Delap",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.331,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 37.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "CRY",
+     "player": "Daichi Kamada",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.549,
+     "xgot": 0.868,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.5,
+     "y": 36,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 3,
+     "team": "CRY",
+     "player": "Tyrick Mitchell",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.017,
+     "xgot": 0.04,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 39.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 4,
+     "team": "CRY",
+     "player": "Jefferson Lerma",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.193,
+     "xgot": 0.476,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 36.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 6,
+     "team": "NFO",
+     "player": "Xaver Schlager",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.7,
+     "y": 26.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 6,
+     "team": "NFO",
+     "player": "Neco Williams",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.046,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 36.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 6,
+     "team": "NFO",
+     "player": "Dan Ndoye",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.271,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 41.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "NFO",
+     "player": "Xaver Schlager",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.084,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 27.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "NFO",
+     "player": "Murillo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.083,
+     "xgot": 0.118,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.2,
+     "y": 28.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "NFO",
+     "player": "Ola Aina",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.6,
+     "y": 25.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "CRY",
+     "player": "Jefferson Lerma",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.102,
+     "xgot": 0.312,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.7,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "CRY",
+     "player": "Jørgen Strand Larsen",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.486,
+     "xgot": 0.291,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 37,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "CRY",
+     "player": "Yéremi Pino",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.341,
+     "xgot": 0.588,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 38.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "NFO",
+     "player": "Dan Ndoye",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.073,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 43.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "NFO",
+     "player": "Neco Williams",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 45.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "NFO",
+     "player": "Neco Williams",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.2,
+     "y": 34.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "CRY",
+     "player": "Anan Khalaili",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.6,
+     "y": 22.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "CRY",
+     "player": "Anan Khalaili",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.151,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.2,
+     "y": 34.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "NFO",
+     "player": "Chris Wood",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.431,
+     "xgot": 0.323,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.2,
+     "y": 35.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "CRY",
+     "player": "Chris Richards",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.064,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 30.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "NFO",
+     "player": "Daniel Muñoz",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.1,
+     "y": 39.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     5,
+     11
+    ],
+    [
+     6,
+     0
+    ],
+    [
+     7,
+     -11
+    ],
+    [
+     8,
+     62
+    ],
+    [
+     9,
+     95
+    ],
+    [
+     10,
+     90
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     12,
+     -33
+    ],
+    [
+     13,
+     -27
+    ],
+    [
+     14,
+     -38
+    ],
+    [
+     15,
+     -27
+    ],
+    [
+     16,
+     -27
+    ],
+    [
+     17,
+     -22
+    ],
+    [
+     18,
+     -19
+    ],
+    [
+     19,
+     -24
+    ],
+    [
+     20,
+     -24
+    ],
+    [
+     21,
+     -81
+    ],
+    [
+     22,
+     -81
+    ],
+    [
+     23,
+     -92
+    ],
+    [
+     24,
+     -11
+    ],
+    [
+     25,
+     5
+    ],
+    [
+     26,
+     -60
+    ],
+    [
+     27,
+     -100
+    ],
+    [
+     28,
+     -100
+    ],
+    [
+     29,
+     -68
+    ],
+    [
+     30,
+     14
+    ],
+    [
+     31,
+     3
+    ],
+    [
+     32,
+     -11
+    ],
+    [
+     33,
+     -11
+    ],
+    [
+     34,
+     -22
+    ],
+    [
+     35,
+     -11
+    ],
+    [
+     36,
+     -16
+    ],
+    [
+     37,
+     -5
+    ],
+    [
+     38,
+     -11
+    ],
+    [
+     39,
+     -24
+    ],
+    [
+     40,
+     -100
+    ],
+    [
+     41,
+     -52
+    ],
+    [
+     42,
+     -38
+    ],
+    [
+     43,
+     43
+    ],
+    [
+     44,
+     16
+    ],
+    [
+     45,
+     16
+    ],
+    [
+     45.5,
+     52
+    ],
+    [
+     46,
+     -5
+    ],
+    [
+     47,
+     -5
+    ],
+    [
+     48,
+     -33
+    ],
+    [
+     49,
+     -92
+    ],
+    [
+     50,
+     -100
+    ],
+    [
+     51,
+     -100
+    ],
+    [
+     52,
+     -81
+    ],
+    [
+     53,
+     -54
+    ],
+    [
+     54,
+     -33
+    ],
+    [
+     55,
+     87
+    ],
+    [
+     56,
+     76
+    ],
+    [
+     57,
+     65
+    ],
+    [
+     58,
+     -5
+    ],
+    [
+     59,
+     33
+    ],
+    [
+     60,
+     38
+    ],
+    [
+     61,
+     33
+    ],
+    [
+     62,
+     11
+    ],
+    [
+     63,
+     22
+    ],
+    [
+     64,
+     11
+    ],
+    [
+     65,
+     -11
+    ],
+    [
+     66,
+     -33
+    ],
+    [
+     67,
+     -11
+    ],
+    [
+     68,
+     -11
+    ],
+    [
+     69,
+     5
+    ],
+    [
+     70,
+     -22
+    ],
+    [
+     71,
+     -14
+    ],
+    [
+     72,
+     -14
+    ],
+    [
+     73,
+     14
+    ],
+    [
+     74,
+     76
+    ],
+    [
+     75,
+     81
+    ],
+    [
+     76,
+     49
+    ],
+    [
+     77,
+     -22
+    ],
+    [
+     78,
+     -43
+    ],
+    [
+     79,
+     -38
+    ],
+    [
+     80,
+     -95
+    ],
+    [
+     81,
+     -90
+    ],
+    [
+     82,
+     -95
+    ],
+    [
+     83,
+     -27
+    ],
+    [
+     84,
+     -14
+    ],
+    [
+     85,
+     -27
+    ],
+    [
+     86,
+     -49
+    ],
+    [
+     87,
+     -73
+    ],
+    [
+     88,
+     -60
+    ],
+    [
+     89,
+     -43
+    ],
+    [
+     90,
+     -27
+    ],
+    [
+     90.5,
+     -3
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "CRY": {
+     "team": "CRY",
+     "formation": "3-4-2-1",
+     "coach": "Pierre Sage",
+     "xi": [
+      {
+       "name": "Walter Benítez",
+       "shirt": 44,
+       "pos": "G"
+      },
+      {
+       "name": "Jefferson Lerma",
+       "shirt": 8,
+       "pos": "D"
+      },
+      {
+       "name": "Chris Richards",
+       "shirt": 26,
+       "pos": "D"
+      },
+      {
+       "name": "Jaydee Canvot",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Anan Khalaili",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Adam Wharton",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Quinten Timber",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Tyrick Mitchell",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Daichi Kamada",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Yéremi Pino",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Jørgen Strand Larsen",
+       "shirt": 22,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Honest Ahanor",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Edward Nketiah",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Ismaïla Sarr",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Dwight McNeil",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Remi Matthews",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Cheick Oumar Doucouré",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Óscar Mingueza",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Will Hughes",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Evann Guessand",
+       "shirt": 29,
+       "pos": "?"
+      }
+     ]
+    },
+    "NFO": {
+     "team": "NFO",
+     "formation": "3-4-2-1",
+     "coach": "Oliver Glasner",
+     "xi": [
+      {
+       "name": "Matz Sels",
+       "shirt": 26,
+       "pos": "G"
+      },
+      {
+       "name": "Ola Aina",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Ousmane Diomande",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Murillo",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Daniel Muñoz",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Xaver Schlager",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "James McAtee",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Neco Williams",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Morgan Gibbs-White",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Dan Ndoye",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Liam Delap",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Ibrahim Sangaré",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Callum Hudson-Odoi",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Chris Wood",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Arnaud Kalimuendo-Muinga",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "John Victor",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Jair Cunha",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Luca Netz",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Nicolás Dominguez",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Ryan Yates",
+       "shirt": 22,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      117128,
+      115066
+     ],
+     "sprintDistance": [
+      2558,
+      2127
+     ],
+     "sprints": [
+      117,
+      93
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      24209,
+      23823
+     ]
+    },
+    "players": [
+     {
+      "team": "CRY",
+      "name": "Walter Benítez",
+      "shirt": 44,
+      "distance": 5408,
+      "topSpeed": 25.100000381469727,
+      "rating": 7.7
+     },
+     {
+      "team": "CRY",
+      "name": "Jefferson Lerma",
+      "shirt": 8,
+      "distance": 8539,
+      "topSpeed": 30.700000762939453,
+      "rating": 7.8
+     },
+     {
+      "team": "CRY",
+      "name": "Chris Richards",
+      "shirt": 26,
+      "distance": 11152,
+      "topSpeed": 32.70000076293945,
+      "rating": 7.3
+     },
+     {
+      "team": "CRY",
+      "name": "Jaydee Canvot",
+      "shirt": 6,
+      "distance": 10800,
+      "topSpeed": 30.799999237060547,
+      "rating": 7.4
+     },
+     {
+      "team": "CRY",
+      "name": "Anan Khalaili",
+      "shirt": 25,
+      "distance": 10910,
+      "topSpeed": 33,
+      "rating": 5.6
+     },
+     {
+      "team": "CRY",
+      "name": "Adam Wharton",
+      "shirt": 20,
+      "distance": 11456,
+      "topSpeed": 28.299999237060547,
+      "rating": 8.3
+     },
+     {
+      "team": "CRY",
+      "name": "Quinten Timber",
+      "shirt": 23,
+      "distance": 10951,
+      "topSpeed": 28.799999237060547,
+      "rating": 8
+     },
+     {
+      "team": "CRY",
+      "name": "Tyrick Mitchell",
+      "shirt": 3,
+      "distance": 11551,
+      "topSpeed": 32.20000076293945,
+      "rating": 7.8
+     },
+     {
+      "team": "CRY",
+      "name": "Daichi Kamada",
+      "shirt": 18,
+      "distance": 10581,
+      "topSpeed": 29,
+      "rating": 8
+     },
+     {
+      "team": "CRY",
+      "name": "Yéremi Pino",
+      "shirt": 10,
+      "distance": 10202,
+      "topSpeed": 31.399999618530273,
+      "rating": 8.3
+     },
+     {
+      "team": "CRY",
+      "name": "Jørgen Strand Larsen",
+      "shirt": 22,
+      "distance": 9389,
+      "topSpeed": 32.5,
+      "rating": 7
+     },
+     {
+      "team": "CRY",
+      "name": "Honest Ahanor",
+      "shirt": 21,
+      "distance": 2484,
+      "topSpeed": 27.100000381469727,
+      "rating": 6.4
+     },
+     {
+      "team": "CRY",
+      "name": "Edward Nketiah",
+      "shirt": 9,
+      "distance": 1447,
+      "topSpeed": 29.899999618530273,
+      "rating": null
+     },
+     {
+      "team": "CRY",
+      "name": "Ismaïla Sarr",
+      "shirt": 7,
+      "distance": 1566,
+      "topSpeed": 30.200000762939453,
+      "rating": null
+     },
+     {
+      "team": "CRY",
+      "name": "Dwight McNeil",
+      "shirt": 11,
+      "distance": 684,
+      "topSpeed": 33,
+      "rating": null
+     },
+     {
+      "team": "NFO",
+      "name": "Matz Sels",
+      "shirt": 26,
+      "distance": 4872,
+      "topSpeed": 25.5,
+      "rating": 6.4
+     },
+     {
+      "team": "NFO",
+      "name": "Ola Aina",
+      "shirt": 34,
+      "distance": 8914,
+      "topSpeed": 32.70000076293945,
+      "rating": 6.5
+     },
+     {
+      "team": "NFO",
+      "name": "Ousmane Diomande",
+      "shirt": 2,
+      "distance": 9766,
+      "topSpeed": 31.899999618530273,
+      "rating": 6.3
+     },
+     {
+      "team": "NFO",
+      "name": "Murillo",
+      "shirt": 5,
+      "distance": 10502,
+      "topSpeed": 32.599998474121094,
+      "rating": 6.5
+     },
+     {
+      "team": "NFO",
+      "name": "Daniel Muñoz",
+      "shirt": 27,
+      "distance": 11515,
+      "topSpeed": 30.700000762939453,
+      "rating": 6.5
+     },
+     {
+      "team": "NFO",
+      "name": "Xaver Schlager",
+      "shirt": 21,
+      "distance": 8032,
+      "topSpeed": 27.700000762939453,
+      "rating": 6.4
+     },
+     {
+      "team": "NFO",
+      "name": "James McAtee",
+      "shirt": 24,
+      "distance": 12449,
+      "topSpeed": 33.29999923706055,
+      "rating": 6.8
+     },
+     {
+      "team": "NFO",
+      "name": "Neco Williams",
+      "shirt": 3,
+      "distance": 10855,
+      "topSpeed": 31.399999618530273,
+      "rating": 6.6
+     },
+     {
+      "team": "NFO",
+      "name": "Morgan Gibbs-White",
+      "shirt": 10,
+      "distance": 10942,
+      "topSpeed": 31.100000381469727,
+      "rating": 6.8
+     },
+     {
+      "team": "NFO",
+      "name": "Dan Ndoye",
+      "shirt": 14,
+      "distance": 8582,
+      "topSpeed": 33.20000076293945,
+      "rating": 7.8
+     },
+     {
+      "team": "NFO",
+      "name": "Liam Delap",
+      "shirt": 19,
+      "distance": 8541,
+      "topSpeed": 32.70000076293945,
+      "rating": 6.2
+     },
+     {
+      "team": "NFO",
+      "name": "Ibrahim Sangaré",
+      "shirt": 6,
+      "distance": 3557,
+      "topSpeed": 31.200000762939453,
+      "rating": 6.7
+     },
+     {
+      "team": "NFO",
+      "name": "Callum Hudson-Odoi",
+      "shirt": 7,
+      "distance": 2469,
+      "topSpeed": 30.299999237060547,
+      "rating": 6.3
+     },
+     {
+      "team": "NFO",
+      "name": "Arnaud Kalimuendo-Muinga",
+      "shirt": 15,
+      "distance": 1455,
+      "topSpeed": 31.600000381469727,
+      "rating": null
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 33,
+      "center": 42,
+      "right": 25
+     },
+     "firstHalf": {
+      "left": 30,
+      "center": 39,
+      "right": 31
+     },
+     "secondHalf": {
+      "left": 37,
+      "center": 45,
+      "right": 18
+     }
+    },
+    "away": {
+     "total": {
+      "left": 30,
+      "center": 31,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 27,
+      "center": 33,
+      "right": 40
+     },
+     "secondHalf": {
+      "left": 32,
+      "center": 30,
+      "right": 38
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-11T15:29:27.380Z",
+   "fdMatchId": "2026-27-57",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "CRY",
+      "name": "Yéremi Pino",
+      "n": 56,
+      "cx": 58.1,
+      "cy": 23.2,
+      "spread": 30,
+      "grid": "0,7,6,5,4,4,0,1,1,4,5,2,2,0,0,5,3,0,0,1,3,2,1,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Walter Benítez",
+      "n": 60,
+      "cx": 8.5,
+      "cy": 32.7,
+      "spread": 10.1,
+      "grid": "2,1,0,0,0,0,24,1,0,0,0,0,28,3,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Xaver Schlager",
+      "n": 53,
+      "cx": 45.5,
+      "cy": 35.1,
+      "spread": 27.8,
+      "grid": "1,3,4,1,0,0,1,4,2,1,1,1,2,8,4,4,5,2,0,5,0,2,2,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Adam Wharton",
+      "n": 71,
+      "cx": 59.3,
+      "cy": 35.9,
+      "spread": 26.8,
+      "grid": "0,0,1,1,2,1,1,4,9,14,4,0,3,2,1,12,4,0,0,0,1,1,6,4"
+     },
+     {
+      "team": "CRY",
+      "name": "Daichi Kamada",
+      "n": 42,
+      "cx": 56.3,
+      "cy": 37.5,
+      "spread": 28.6,
+      "grid": "2,1,1,0,0,0,0,1,1,6,5,2,1,2,1,4,3,0,0,4,2,4,1,1"
+     },
+     {
+      "team": "CRY",
+      "name": "Jørgen Strand Larsen",
+      "n": 40,
+      "cx": 60.2,
+      "cy": 26.3,
+      "spread": 28.8,
+      "grid": "0,0,2,6,0,1,3,1,2,4,8,1,2,0,1,3,0,4,0,0,1,0,1,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Morgan Gibbs-White",
+      "n": 87,
+      "cx": 68.1,
+      "cy": 50.2,
+      "spread": 24.1,
+      "grid": "0,0,0,0,3,0,0,0,1,2,4,0,0,3,5,6,5,6,0,2,10,14,18,8"
+     },
+     {
+      "team": "NFO",
+      "name": "Ola Aina",
+      "n": 79,
+      "cx": 46.2,
+      "cy": 54.1,
+      "spread": 25.4,
+      "grid": "0,0,0,0,0,0,1,1,3,1,1,0,2,7,2,4,2,0,5,11,17,9,11,2"
+     },
+     {
+      "team": "NFO",
+      "name": "Daniel Muñoz",
+      "n": 90,
+      "cx": 55.7,
+      "cy": 55.2,
+      "spread": 29.3,
+      "grid": "0,0,0,0,0,0,3,0,0,1,0,2,5,3,1,2,3,4,1,13,12,18,13,9"
+     },
+     {
+      "team": "NFO",
+      "name": "Matz Sels",
+      "n": 40,
+      "cx": 10.4,
+      "cy": 33.8,
+      "spread": 10,
+      "grid": "0,1,0,0,0,0,12,3,0,0,0,0,21,3,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Murillo",
+      "n": 98,
+      "cx": 38.6,
+      "cy": 22,
+      "spread": 27.9,
+      "grid": "6,9,7,10,3,0,10,16,7,5,1,3,6,2,5,2,2,4,0,0,0,0,0,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Neco Williams",
+      "n": 76,
+      "cx": 56,
+      "cy": 10.2,
+      "spread": 28.1,
+      "grid": "4,15,14,7,14,9,1,0,3,1,5,1,0,0,0,2,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NFO",
+      "name": "James McAtee",
+      "n": 84,
+      "cx": 56.4,
+      "cy": 36.6,
+      "spread": 25.8,
+      "grid": "0,2,4,2,0,1,0,3,4,12,8,1,1,7,10,11,1,2,0,0,3,2,7,3"
+     },
+     {
+      "team": "CRY",
+      "name": "Anan Khalaili",
+      "n": 62,
+      "cx": 52.1,
+      "cy": 56.3,
+      "spread": 34.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,1,2,5,0,0,1,2,3,7,13,7,5,12,4"
+     },
+     {
+      "team": "NFO",
+      "name": "Ousmane Diomande",
+      "n": 87,
+      "cx": 41.1,
+      "cy": 39.7,
+      "spread": 25.6,
+      "grid": "0,1,0,0,0,0,3,7,6,1,1,7,9,13,17,7,1,1,1,2,10,0,0,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Jaydee Canvot",
+      "n": 62,
+      "cx": 39.2,
+      "cy": 18.4,
+      "spread": 27,
+      "grid": "3,17,6,6,5,0,5,4,3,2,2,1,2,2,0,0,0,0,1,0,1,0,2,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Liam Delap",
+      "n": 25,
+      "cx": 72.3,
+      "cy": 33.7,
+      "spread": 27.2,
+      "grid": "0,1,0,1,2,0,0,1,0,0,4,6,0,0,0,3,1,0,0,1,1,1,1,2"
+     },
+     {
+      "team": "NFO",
+      "name": "Dan Ndoye",
+      "n": 39,
+      "cx": 76.1,
+      "cy": 16.3,
+      "spread": 21.9,
+      "grid": "0,2,3,3,9,7,0,0,1,2,4,6,0,0,0,1,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Jefferson Lerma",
+      "n": 72,
+      "cx": 38.8,
+      "cy": 49.6,
+      "spread": 30.8,
+      "grid": "0,0,0,0,0,0,2,3,1,0,0,7,8,5,1,4,0,1,10,14,8,5,3,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Tyrick Mitchell",
+      "n": 66,
+      "cx": 48.5,
+      "cy": 12,
+      "spread": 30.8,
+      "grid": "7,9,9,5,10,7,8,2,3,1,3,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Chris Richards",
+      "n": 74,
+      "cx": 33.9,
+      "cy": 30.4,
+      "spread": 28.3,
+      "grid": "2,3,5,0,0,2,15,7,5,7,0,0,8,1,6,2,0,2,0,1,7,1,0,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Quinten Timber",
+      "n": 73,
+      "cx": 53.2,
+      "cy": 29.3,
+      "spread": 27.9,
+      "grid": "0,4,3,2,5,0,3,9,3,6,10,2,5,2,5,8,3,2,0,0,0,0,1,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Ibrahim Sangaré",
+      "n": 34,
+      "cx": 57.7,
+      "cy": 35.4,
+      "spread": 26.5,
+      "grid": "0,0,3,1,0,2,1,2,2,1,5,1,0,2,3,3,3,0,0,0,2,3,0,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Honest Ahanor",
+      "n": 11,
+      "cx": 25,
+      "cy": 22.4,
+      "spread": 22.4,
+      "grid": "0,0,0,1,0,0,6,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Callum Hudson-Odoi",
+      "n": 18,
+      "cx": 85.5,
+      "cy": 8.4,
+      "spread": 14.4,
+      "grid": "0,0,0,2,4,11,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Chris Wood",
+      "n": 11,
+      "cx": 61.7,
+      "cy": 33.5,
+      "spread": 32,
+      "grid": "0,0,0,0,0,0,1,2,0,0,2,1,0,0,2,0,0,3,0,0,0,0,0,0"
+     },
+     {
+      "team": "NFO",
+      "name": "Arnaud Kalimuendo-Muinga",
+      "n": 8,
+      "cx": 65.7,
+      "cy": 47.3,
+      "spread": 33.5,
+      "grid": "0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,1,0,1,2,0,1"
+     },
+     {
+      "team": "CRY",
+      "name": "Ismaïla Sarr",
+      "n": 8,
+      "cx": 52.7,
+      "cy": 37.9,
+      "spread": 21,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,1,0,2,2,3,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Edward Nketiah",
+      "n": 4,
+      "cx": 53.7,
+      "cy": 42.7,
+      "spread": 21.4,
+      "grid": "0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0"
+     },
+     {
+      "team": "CRY",
+      "name": "Dwight McNeil",
+      "n": 2,
+      "cx": 64.9,
+      "cy": 56.6,
+      "spread": 0.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-11T14:29:19.900Z",
+ "updatedAt": "2026-10-11T15:29:28.089Z",
  "verification": {
   "source": "pulselive /stats/match possession_percentage",
   "tolerance": 2,
