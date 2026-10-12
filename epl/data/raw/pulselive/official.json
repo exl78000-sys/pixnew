@@ -41850,8 +41850,8 @@
   "COV|NEW": {
    "fixtureId": 128976,
    "kickoff": "2026-10-12T19:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 4,
     "away": 1
@@ -42283,6 +42283,58 @@
    "goals": [
     {
      "side": "H",
+     "person": 66304,
+     "assist": null,
+     "team": 5,
+     "min": 6,
+     "label": "06'00",
+     "phase": "1",
+     "type": "P",
+     "kind": "P",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
+     "person": 337821,
+     "assist": null,
+     "team": 5,
+     "min": 48,
+     "label": "48'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 49908,
+     "assist": 67849,
+     "team": 23,
+     "min": 70,
+     "label": "70'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 19925,
+     "assist": 19694,
+     "team": 5,
+     "min": 81,
+     "label": "81'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 3,
+     "as": 1
+    },
+    {
+     "side": "H",
      "person": 128136,
      "assist": 10438,
      "team": 5,
@@ -42500,12 +42552,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -42522,11 +42568,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+2'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-12T20:54:34.529Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-10-12T20:52:11.831Z"
+ "fetchedAt": "2026-10-12T20:54:34.530Z"
 }
