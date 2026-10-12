@@ -41853,7 +41853,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 5,
@@ -42280,7 +42280,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 66304,
+     "assist": null,
+     "team": 5,
+     "min": 6,
+     "label": "06'00",
+     "phase": "1",
+     "type": "P",
+     "kind": "P",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
@@ -42299,8 +42313,8 @@
      }
     ]
    },
-   "clock": "04'00"
+   "clock": "07'00"
   }
  },
- "fetchedAt": "2026-10-12T19:05:22.099Z"
+ "fetchedAt": "2026-10-12T19:07:44.223Z"
 }
