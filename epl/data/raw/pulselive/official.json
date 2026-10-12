@@ -41850,7 +41850,7 @@
   "COV|NEW": {
    "fixtureId": 128976,
    "kickoff": "2026-10-12T19:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -41859,9 +41859,31 @@
    "homeId": 5,
    "awayId": 23,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      55556
+     ],
+     [
+      75413,
+      22043,
+      63836,
+      10438
+     ],
+     [
+      337310,
+      8650
+     ],
+     [
+      19694,
+      66304,
+      20930
+     ],
+     [
+      337821
+     ]
+    ],
     "xi": [
      {
       "id": 337310,
@@ -41940,7 +41962,7 @@
       "playerId": null,
       "name": "Brandon Thomas-Asante",
       "shirt": 23,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      },
@@ -42048,16 +42070,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      117647,
+      124462,
+      49908,
+      108922
+     ],
+     [
+      67849,
+      14446
+     ],
+     [
+      9662,
+      117497,
+      14716
+     ],
+     [
+      135108
+     ]
+    ],
     "xi": [
      {
       "id": 117647,
       "playerId": null,
       "name": "Lewis Miley",
       "shirt": 67,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -42102,7 +42146,7 @@
       "playerId": null,
       "name": "Yoane Wissa",
       "shirt": 9,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      },
@@ -42240,10 +42284,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-12T18:58:15.667Z"
+ "fetchedAt": "2026-10-12T19:00:37.354Z"
 }
