@@ -557,6 +557,15 @@ export function testLeague(L) {
           tac.length > 0 && tac.length === lastN && tac.every(t => t.radar?.length === 6 && t.formation?.label && t.setPieces && t.source === 'Understat'),
           `${tac.length} 隊 / 上季 ${lastN} 隊`);
       }
+      /* 教練(2026-10-14):FotMob 正式名單 × 球隊頁逐季紀錄。發布的每一位都要兩邊都說是他、標 fotmobDerived;
+         沒發布的隊數寫進 note。積分 = 勝×3 + 和(跟英冠同一個算法)。 */
+      {
+        const co = out('coaches'), teams2 = out('teams');
+        const ok = co.available === true && co.coaches.length >= teams2.length - 6
+          && co.coaches.every(c => c.fotmobDerived && c.name && (c.since || c.sinceSeason)
+            && (!c.currentSeasonRecord || c.currentSeasonRecord.pts === c.currentSeasonRecord.w * 3 + c.currentSeasonRecord.d));
+        check('教練:FotMob 正式名單 × 球隊頁核對過才發布,每位都有上任資訊、積分算法跟英冠一致', ok, `${co.coaches.length} / ${teams2.length} 隊`);
+      }
       check('沒有過時的「要先有球員層與逐場詳情」那句', !/要先有球員層與逐場詳情/.test(JSON.stringify(an)));
     }
     /* 這幾份沒有內容的一律帶 available:false 與一句為什麼 —— 空殼不解釋等於看起來壞掉 */

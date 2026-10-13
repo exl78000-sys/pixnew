@@ -45,6 +45,7 @@ import { buildFormIndex, recentForm, formSummary, TUNED } from './form.mjs';
 import { upcomingOdds, seasonMarket, pickMarket } from './odds.mjs';
 import { pickPair, intoBand } from './colour.mjs';
 import { round } from './util.mjs';
+import { normName } from './names.mjs';
 import { buildTeamProfiles } from './team-profiles.mjs';
 /* 跨聯賽球員搜尋的統一層。**開了球員頁就一定要寫這一份** ——
    `allplayers-view.js` 與 `core.js` 的 crossLeaguePlayers 都是看
@@ -743,11 +744,67 @@ export async function buildLeague(L) {
   }
 
 
+  /* ── 教練名冊(2026-10-14,使用者同意:「教練同意」)──
+     人工交付等了一個月,10/10 拿搜尋摘要自交被核對器全退回。而核對器拿來比的那一份 —— FotMob 逐場正式名單的教練欄 ——
+     本來就在倉庫裡(每一隊每一場都有)。所以直接用它,再拿 FotMob 球隊頁(data/raw/fotmob-teams/{聯賽}.json,每天重抓)的
+     逐季教練紀錄交叉核對:**兩個端點都說是這個人才發布**,球隊頁的紀錄裡找不到他就這一隊不發布(畫面講「待確認」)。
+     同一個供應商的兩個端點 —— 單一來源,畫面照實講(跟 10/09 隊色球場那一次同一個規矩)。
+       上任:他在本站資料裡**連續帶隊的第一場**(精度 match:實際就任可能早幾天);如果從本站最早一場就是他,
+             改用球隊頁的逐季紀錄講「從哪一季起」(精度 season,since 留空,不編日期)。
+       戰績:本站賽果依上任切分,只含這個聯賽、本站資料範圍內的比賽。國籍、中文名、是不是看守教練:沒有來源,不寫。 */
+  const coachRoster = (() => {
+    const tf = join(ROOT, 'data', 'raw', 'fotmob-teams', `${L.key}.json`);
+    const page = existsSync(tf) ? JSON.parse(readFileSync(tf, 'utf8')) : null;
+    const histOf = new Map((page?.teams ?? []).map(t => [t.code, t.coachHistory ?? []]));
+    const same = (a, b) => normName(a) === normName(b);
+    const played = [...lastMatches, ...curMatches].filter(m => m.played && m.fh != null);
+    const withPpg = r => ({ ...r, pts: r.w * 3 + r.d, ppg: r.p ? round((r.w * 3 + r.d) / r.p, 2) : 0 });   // 跟英冠同一個算法
+    const out = [], skipped = [];
+    for (const t of teams) {
+      const code = t.code;
+      const ms = Object.values(fotmobStats.matches ?? {})
+        .filter(m => (m.home === code || m.away === code) && m.lineups?.[code]?.coach)
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+      if (!ms.length) { skipped.push(`${code}:沒有正式名單`); continue; }
+      const name = ms.at(-1).lineups[code].coach;
+      let i = ms.length - 1;
+      while (i > 0 && same(ms[i - 1].lineups[code].coach, name)) i--;
+      const fromStart = i === 0;
+      const hist = histOf.get(code) ?? [];
+      const mine = hist.filter(h => same(h.name, name));
+      if (!mine.length) { skipped.push(`${code}:名單是 ${name},球隊頁的逐季紀錄沒有他`); continue; }
+      let since = null, sincePrecision = null, sinceSeason = null;
+      if (!fromStart) { since = ms[i].date; sincePrecision = 'match'; }
+      else {
+        // 球隊頁的逐季紀錄:從最近一季往回,連續都是他的最早那一季
+        const seasons = [...new Set(hist.map(h => h.season))].sort();
+        let k = seasons.length - 1;
+        while (k > 0 && hist.some(h => h.season === seasons[k - 1] && same(h.name, name))) k--;
+        sinceSeason = seasons[k]?.replace('/', '-').replace(/-(\d{2})(\d{2})$/, '-$2') ?? null;   // 2024/2025 → 2024-25
+        sincePrecision = 'season';
+      }
+      const inTenure = m => (since ? m.date >= since : true) && (m.home === code || m.away === code);
+      const startSeason = since ? null : sinceSeason;
+      const tenure = played.filter(m => inTenure(m) && (!startSeason || m.season >= startSeason));
+      const lastTen = tenure.filter(m => m.season === LAST_SEASON), curTen = tenure.filter(m => m.season === CURRENT_SEASON);
+      out.push({
+        team: code, name, nat: null, since, sincePrecision, sinceSeason, caretaker: null,
+        fotmobDerived: true, lastMatch: ms.at(-1).date,
+        seasonRecord: lastTen.length ? withPpg(teamRecord(lastTen, code)) : null,
+        currentSeasonRecord: curTen.length ? withPpg(teamRecord(curTen, code)) : null,
+        allRecord: tenure.length ? withPpg(teamRecord(tenure, code)) : null,
+      });
+    }
+    if (skipped.length) console.log(`  ⚠ ${L.zh}教練沒發布 ${skipped.length} 隊:${skipped.join('、')}`);
+    console.log(`  ${L.zh}教練:${out.length} / ${teams.length} 隊(FotMob 正式名單 × 球隊頁逐季紀錄)`);
+    return { coaches: out, skipped, pageFetchedAt: page?.fetchedAt ?? null };
+  })();
+
   const meta = {
     /* **不要設 edition**(英冠那條註解同一個理由):那個欄位在前端被當成「是不是西甲」的二元旗標。 */
     league: L.key, leagueLabel: L.zh,
     /* capabilities 是前端用來決定「這一頁要不要畫」的旗標。沒有的一律 false,不要留空不寫。 */
-    capabilities: { players: hasPlayers, injuries: false, coaches: false,
+    capabilities: { players: hasPlayers, injuries: false, coaches: coachRoster.coaches.length > 0,
       xg: hasPlayers || reportCount > 0, lineups: reportCount > 0, live: false },
     builtAt: new Date().toISOString(), asOf: AS_OF,
     currentSeason: CURRENT_SEASON, lastSeason: LAST_SEASON,
@@ -876,7 +933,7 @@ export async function buildLeague(L) {
       /* **數字一律從資料算。** 這三個原本是寫死的 0(球隊層那一輪留下來的),
          而球員層與賽後報告接上之後它們就在畫面上說謊了 —— 球員頁的標題直接印
          `counts.players`,所以那一頁一直寫著「0 名註冊球員」而下面列著 856 人。 */
-      players: playersOut.length, news: 0, injuries: 0, coaches: 0,
+      players: playersOut.length, news: 0, injuries: 0, coaches: coachRoster.coaches.length,
       crests: crestCount, matchReports: reportCount,
       currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
     },
@@ -1025,8 +1082,14 @@ export async function buildLeague(L) {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
     boards: {}, squads: {}, layer: {}, missing: [], nameCheck: [], note: meta.players.note,
   });
-  await write('coaches', { available: false, season: CURRENT_SEASON, source: null, verifiedAt: null,
-    note: `${L.zh}教練名冊還沒交付(要人工交付並過核對器,比照英冠那條路)。`, coaches: [] });
+  await write('coaches', coachRoster.coaches.length ? {
+    available: true, season: CURRENT_SEASON,
+    source: 'FotMob(逐場正式名單的教練欄 × 球隊頁的逐季教練紀錄)', verifiedAt: coachRoster.pageFetchedAt,
+    note: `教練取自 FotMob 最新一場正式名單,並與 FotMob 球隊頁的逐季教練紀錄對過(同一個供應商的兩個端點,單一來源)。`
+      + (coachRoster.skipped.length ? `${coachRoster.skipped.length} 隊兩邊對不上,暫不顯示。` : ''),
+    coaches: coachRoster.coaches,
+  } : { available: false, season: CURRENT_SEASON, source: null, verifiedAt: null,
+    note: `${L.zh}教練名冊還沒有(FotMob 的正式名單或球隊頁不在)。`, coaches: [] });
   /* 足球知識的資料層。**這一份漏掉的代價是整個「探索」頁進不去** ——
      `explore.html` 的第一個分頁就 `C.load('knowledge')`,404 之後畫面停在
      「載入資料中…」不動,連錯誤訊息都沒有。德義法三個聯賽都是這樣壞的

@@ -40,7 +40,10 @@ const clubKey = s => norm(s).replace(/\b(fc|afc|cf|sad|sd|rcd|ud|cd)$/, '').trim
 // ── 獨立來源 1:逐季聯賽成員資格 ──────────────────────────
 function membership() {
   const m = new Map();   // lg|season → Set(code)
-  const dirs = [['pl', join(ROOT, 'web', 'data')], ['es1', join(ROOT, 'web', 'data', 'leagues', 'es1')]];
+  /* 2026-10-14 起六個聯賽都收(原本只有英超、西甲 —— 母隊或目的地在英冠、德義法的租借一項檢查都跑不到,
+     2024-25 / 2025-26 / 2026-27 共 164 筆因此「無法核對」)。 */
+  const dirs = [['pl', join(ROOT, 'web', 'data')],
+    ...['es1', 'en2', 'de1', 'it1', 'fr1'].map(lg => [lg, join(ROOT, 'web', 'data', 'leagues', lg)])];
   for (const [lg, dir] of dirs) {
     for (const f of ['results', 'fixtures']) {
       const p = join(dir, `${f}.json`);
@@ -57,17 +60,33 @@ function membership() {
 }
 
 // ── 隊名 → 隊碼 ──────────────────────────────────────────
+/* 回傳 Map(名字 → 第一個候選),每個候選帶 `all`(這個名字對到的全部 { lg, code })。
+   第一個候選照舊是英超 → 西甲 → 其他的順序,所以原本兩個聯賽的判定不變;要知道「當季在哪個聯賽」用 seasonLeague()。 */
 function clubIndex() {
   const idx = new Map();
   const add = (lg, code, ...names) => {
-    for (const n of names) { const k = clubKey(n); if (k && !idx.has(k)) idx.set(k, { lg, code }); }
+    for (const n of names) {
+      const k = clubKey(n); if (!k) continue;
+      if (!idx.has(k)) idx.set(k, { lg, code, all: [] });
+      const e = idx.get(k);
+      if (!e.all.some(x => x.lg === lg && x.code === code)) e.all.push({ lg, code });
+    }
   };
   for (const c of arr(read(join(ROOT, 'web', 'data', 'clubs.json')))) add('pl', c.code, c.en, c.of, c.fpl);
   for (const c of arr(read(join(ROOT, 'data', 'manual', 'teams-la-liga.json')).teams)) {
     add('es1', c.code, c.en, c.of, c.understat, ...(c.alias ?? []));
   }
+  const en2Clubs = join(ROOT, 'web', 'data', 'leagues', 'en2', 'clubs.json');
+  if (existsSync(en2Clubs)) for (const c of arr(read(en2Clubs))) add('en2', c.code, c.en, c.of, c.fd, ...(c.alias ?? []));
+  for (const [lg, f] of [['de1', 'teams-bundesliga.json'], ['it1', 'teams-serie-a.json'], ['fr1', 'teams-ligue-1.json']]) {
+    const fp = join(ROOT, 'data', 'manual', f);
+    if (existsSync(fp)) for (const c of arr(read(fp).teams)) add(lg, c.code, c.en, c.of, c.fd, c.understat, ...(c.alias ?? []));
+  }
   return idx;
 }
+/* 這個俱樂部當季在哪個聯賽(本站的逐季成員資格)。對不到就是 null —— 不在本站六個聯賽裡(國外、低級別)。 */
+const seasonLeague = (entry, season, mem) =>
+  (entry?.all ?? []).find(x => mem.get(`${x.lg}|${season}`)?.has(x.code)) ?? null;
 
 /* ── 獨立來源 2:FPL 逐季出賽分鐘 ─────────────────────────
 
@@ -121,6 +140,37 @@ function fplSeason(season) {
    跟 lib/loans.mjs 分岔之後造成 20 筆掛錯人。不要再複製回來。 */
 export function matchPerson(rows, name, nameOf) {
   return matchOne(rows, name, { nameOf });
+}
+
+// ── 獨立來源 3b:Understat 原始名冊(2026-10-14)─────────
+/* data/raw/understat-*\/{季}-players.json,每列 player_name 與 team_title(季中轉隊是「A,B」)。
+   隊名照那個聯賽自己的名冊換成隊碼。2024-25 那一季是 fetch-understat-history.mjs 抓的(使用者同意)。 */
+const UNDERSTAT_DIR = { pl: 'understat', es1: 'understat-la-liga', de1: 'understat-bundesliga', it1: 'understat-serie-a', fr1: 'understat-ligue-1' };
+const TEAM_FILE = { pl: null, es1: 'teams-la-liga.json', de1: 'teams-bundesliga.json', it1: 'teams-serie-a.json', fr1: 'teams-ligue-1.json' };
+const rosterCache = new Map();
+function understatRoster(lg, season, idx) {
+  const key = `${lg}|${season}`;
+  if (rosterCache.has(key)) return rosterCache.get(key);
+  let out = [];
+  const fp = UNDERSTAT_DIR[lg] && join(ROOT, 'data', 'raw', UNDERSTAT_DIR[lg], `${season}-players.json`);
+  if (fp && existsSync(fp)) {
+    const codeOf = name => (idx.get(clubKey(name))?.all ?? []).find(x => x.lg === lg)?.code ?? null;
+    out = arr(read(fp).players).map(r => ({
+      name: r.player_name,
+      codes: String(r.team_title ?? '').split(',').map(x => codeOf(x.trim())).filter(Boolean),
+      games: Number(r.games) || null,
+      multi: String(r.team_title ?? '').includes(','),
+    }));
+  }
+  rosterCache.set(key, out);
+  return out;
+}
+/* 英冠:逐場統計累加的名冊(players.json,一隊一季一列)。**只拿來正面確認** —— 同一個人轉隊會是兩列,
+   拿「在別隊」當矛盾太危險。 */
+function en2Roster(season) {
+  const fp = join(ROOT, 'web', 'data', 'leagues', 'en2', 'players.json');
+  if (!existsSync(fp)) return [];
+  return arr(read(fp)).filter(p => p.season === season).map(p => ({ name: p.name, codes: [p.team].filter(Boolean), games: p.matches ?? null }));
 }
 
 // ── 獨立來源 3:西甲逐季球員(Understat)─────────────────
@@ -206,6 +256,18 @@ function main() {
   if (decoded) console.log(`  · 解掉 ${decoded} 個沒解碼的 HTML entity(交付檔是從 HTML 抽的)`);
   const mem = membership();
   const clubs = clubIndex();
+  /* 成員資格補季(2026-10-14):results.json 只有上季與本季,西甲與德義法的 2024-25 因此對不到聯賽,
+     那一季的租借一項檢查都跑不動。Understat 那一季的名冊列著每個人的球隊 —— 有球員出場的隊就是那一季在那個聯賽。
+     只補 results 沒有的季,只收單一球隊的列(季中轉隊的「A,B」不拿來定成員)。 */
+  for (const lg of Object.keys(UNDERSTAT_DIR)) {
+    for (const season of ['2023-24', '2024-25', '2025-26', '2026-27']) {
+      const k = `${lg}|${season}`;
+      if (mem.has(k)) continue;
+      const roster = understatRoster(lg, season, clubs).filter(x => !x.multi && x.codes.length === 1);
+      if (!roster.length) continue;
+      mem.set(k, new Set(roster.map(x => x.codes[0])));
+    }
+  }
   const es1 = laLigaPlayers();
   const fpl = {
     '2024-25': fplSeason('2024-25'),
@@ -244,8 +306,13 @@ function main() {
     /* 2026-08-28 的重做版把 `league` 拆成 `parentLeague` / `loanLeague`,
        這正是我們請對方改的 —— 舊的單一欄位有時是母隊的聯賽、有時是目的地的,
        拿它當索引會誤判。舊格式仍然讀得動(fallback 到 league)。 */
-    const LEAGUE_OF = { 'Premier League': 'pl', LaLiga: 'es1' };
+    const LEAGUE_OF = { 'Premier League': 'pl', LaLiga: 'es1', 'La Liga': 'es1', Championship: 'en2',
+      Bundesliga: 'de1', 'Serie A': 'it1', 'Ligue 1': 'fr1' };
     const parentLeague = r.parentLeague !== undefined ? r.parentLeague : r.league;
+    /* 母隊當季**實際**在哪個聯賽,從本站的逐季成員資格推(2026-10-14)。標籤錯的照樣記 labelIssue,
+       但不再只是「回報給交付方」—— 發布的紀錄帶 parentLeagueActual,下游讀這個,不讀交付方的標籤。 */
+    const parentActual = seasonLeague(parent, r.season, mem);
+    const ZH = { pl: '英超', es1: '西甲', en2: '英冠', de1: '德甲', it1: '義甲', fr1: '法甲' };
     /* 母隊的 parentLeague 標錯**不退回這一筆**。
 
        標錯不代表這筆租借是假的,而且這個欄位下游根本沒有用到
@@ -254,12 +321,15 @@ function main() {
 
        原本用它抓到 Leeds 那批偽造的 —— 但真正定罪的是出賽分鐘與年份平移,
        這一條只是最便宜的偵測器,不該單獨當判決依據。 */
-    if (parent && LEAGUE_OF[parentLeague] === parent.lg) {
-      const set = mem.get(`${parent.lg}|${r.season}`);
-      if (set && !set.has(parent.code)) {
+    const labeled = LEAGUE_OF[parentLeague] ?? null;
+    if (parent && labeled && (parent.all ?? []).some(x => x.lg === labeled)) {
+      const set = mem.get(`${labeled}|${r.season}`);
+      if (set && parentActual?.lg !== labeled) {
         labelIssues.push({ season: r.season, player: r.player, club: r.parentClub,
-          why: `標成${parent.lg === 'pl' ? '英超' : '西甲'},但該隊當季不在那個聯賽` });
-      } else if (set) info(`母隊 ${parent.code} 當季確實在該聯賽`);
+          why: `標成${ZH[labeled]},但該隊當季不在那個聯賽`,
+          corrected: parentActual ? parentActual.lg : null,
+          note: parentActual ? `依本站逐季名冊標正為${ZH[parentActual.lg]}` : '當季不在本站六個聯賽裡,標成 null' });
+      } else if (set) info(`母隊 ${parentActual.code} 當季確實在${ZH[labeled]}`);
     }
 
     // 檢查二:從英超外借出去,當季卻有大量英超出賽分鐘
@@ -302,6 +372,30 @@ function main() {
       }
     }
 
+    /* 檢查三之二(2026-10-14):目的地當季在德甲 / 義甲 / 法甲 —— 或在西甲但上面那份西甲產物沒有那一季(2024-25)——
+       就拿 Understat 原始名冊找他是不是在那一隊。判「矛盾」的門檻跟西甲那條一樣:只有**全名精確對上唯一一人**、
+       而他在別隊,才說資料錯;姓氏推出來的配對只當參考。英冠的名冊只做正面確認。 */
+    const loanActual = seasonLeague(loanTo, r.season, mem);
+    const es1Covered = loanActual?.lg === 'es1' && es1.some(p => p.season === r.season);
+    if (loanActual && ['de1', 'it1', 'fr1', 'es1'].includes(loanActual.lg) && !es1Covered) {
+      const roster = understatRoster(loanActual.lg, r.season, clubs);
+      if (roster.length) {
+        const exact = roster.filter(x => norm(x.name) === norm(r.player));
+        const hit = exact.length === 1 ? exact[0] : matchPerson(roster, r.player, x => x.name);
+        const lgZh = { es1: '西甲', de1: '德甲', it1: '義甲', fr1: '法甲' }[loanActual.lg];
+        if (hit && hit.codes.includes(loanActual.code)) {
+          pass(`${lgZh} ${r.season} Understat 名冊確認他在 ${loanActual.code}(出賽 ${hit.games ?? '?'} 場)`);
+        } else if (exact.length === 1 && hit.codes.length) {
+          fail(`${lgZh} ${r.season} Understat 名冊把他放在 ${hit.codes.join('/')},不是 ${loanActual.code}`);
+        } else if (hit) {
+          info(`${lgZh} ${r.season} 有姓名相近的人,但全名對不精確或隊名對不上,不當證據`);
+        }
+      }
+    }
+    if (loanActual?.lg === 'en2') {
+      const hit = matchPerson(en2Roster(r.season), r.player, x => x.name);
+      if (hit && hit.codes.includes(loanActual.code)) pass(`英冠 ${r.season} 逐場累加名冊確認他在 ${loanActual.code}(${hit.games ?? '?'} 場)`);
+    }
     // 檢查四:租進英超的人,當季 FPL 名單裡在不在
     if (loanTo?.lg === 'pl' && fpl[r.season]) {
       const hit = matchPerson(fpl[r.season], r.player, x => x.full)
@@ -322,8 +416,9 @@ function main() {
       claimedStatus: r.verification?.status ?? null,
       checks: checks.map(c => (c.ok ? '✓ ' : '✗ ') + c.msg),
       dataFail: checks.some(c => !c.ok && c.kind === 'data'),
-      parentCode: parent?.code ?? null,
-      loanCode: loanTo?.code ?? null,
+      parentCode: parentActual?.code ?? parent?.code ?? null,
+      loanCode: loanActual?.code ?? loanTo?.code ?? null,
+      parentLeagueActual: parentActual?.lg ?? null,
     });
   }
 
@@ -380,7 +475,7 @@ function main() {
     records: published.map(r => ({
       season: r.season, player: r.player,
       parentClub: r.parentClub, loanClub: r.loanClub,
-      parentCode: r.parentCode, loanCode: r.loanCode,
+      parentCode: r.parentCode, loanCode: r.loanCode, parentLeagueActual: r.parentLeagueActual,
       date: r.date ?? null, datePrecision: r.datePrecision ?? null,
       verdict: r.verdict,
       evidence: r.checks.filter(c => c.startsWith('✓')),
@@ -409,8 +504,8 @@ function main() {
     console.log(`    ✗ ${r.season} ${r.player}(${r.parentClub} → ${r.loanClub}):${r.checks.filter(c => c.startsWith('✗')).join(';')}`);
   }
   if (labelIssues.length) {
-    console.log(`\n  ⚠ ${labelIssues.length} 筆的母隊聯賽標籤對不上(照樣發布,標籤下游沒用到,但要回報):`);
-    for (const x of labelIssues.slice(0, 8)) console.log(`     ${x.season} ${x.player} —— ${x.club} ${x.why}`);
+    console.log(`\n  ⚠ ${labelIssues.length} 筆的母隊聯賽標籤對不上(照樣發布;已依本站逐季名冊標正,發布紀錄帶 parentLeagueActual):`);
+    for (const x of labelIssues.slice(0, 8)) console.log(`     ${x.season} ${x.player} —— ${x.club} ${x.why}・${x.note}`);
     if (labelIssues.length > 8) console.log(`     …還有 ${labelIssues.length - 8} 筆`);
   }
   console.log('\n→ data/loans-verified.json');

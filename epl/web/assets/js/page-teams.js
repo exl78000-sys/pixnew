@@ -48,6 +48,11 @@ try {
     if (c.sourceVerified) {
       return '<span class="pill accent tiny" title="人工交付,已過核對器(6 支英超對照組跟官方每日名單全對)">交付已核對</span>';
     }
+    /* 德義法(2026-10-14):FotMob 正式名單的教練欄 × 球隊頁的逐季教練紀錄,兩個端點都說是他才發布。
+       同一個供應商 —— 單一來源,標籤照實講,不寫成「官方確認」。 */
+    if (c.fotmobDerived) {
+      return '<span class="pill info tiny" title="取自 FotMob 最新一場正式名單的教練欄,並與 FotMob 球隊頁的逐季教練紀錄對過(同一個供應商的兩個端點)">FotMob 名單</span>';
+    }
     /* **沒有任期資料就不准說「長期在任」。** confidence=high 的原意是
        「這個人選我們有把握」,但標籤寫成「長期在任」講的是任期長短 ——
        而西甲的 since / tenureDays 全部是 null,我們根本不知道他帶多久。
@@ -234,7 +239,8 @@ try {
        (頭像 / 姓名 / 標籤),姓名那格在沒有第二行說明時(西甲沒有任期)
        會被 space-between 推到正中間,看起來像跟頭像沒關係。 */
     // 交付來的教練沒有 tenureDays —— years 是 null 就別印「約 null 年」
-    const meta2 = [c.nat, c.since ? `${c.since} 上任${years != null ? `(約 ${years} 年)` : ''}` : null].filter(Boolean).join('・');
+    const meta2 = [c.nat, c.since ? `${c.since} ${c.sincePrecision === 'match' ? '起帶隊' : '上任'}${years != null ? `(約 ${years} 年)` : ''}`
+      : c.sinceSeason ? `${c.sinceSeason} 季起帶隊` : null].filter(Boolean).join('・');
     const head = `<div class="spread" style="align-items:flex-start">
       <div class="row" style="gap:10px;align-items:flex-start">${coachAvatar(c, 48)}
         <div><h3 style="margin:0">${c.name ? C.esc(c.zh ?? c.name) : '教練待確認'}
@@ -289,9 +295,11 @@ try {
           ${c.note ? `<div class="small muted" style="margin-top:8px">${C.esc(c.note)}</div>` : ''}
           ${/* 交付來的教練:戰績是拿本站賽果依 since 切分的,而本站只有這個聯賽的比賽 ——
                 任期跨其他聯賽的部分(升班馬教練帶低級別那幾季)不在內,要講清楚。 */''}
-          ${c.sourceVerified && (c.allRecord?.p || c.seasonRecord?.p || c.currentSeasonRecord?.p) ? `<div class="tiny dim" style="margin-top:6px">
+          ${(c.sourceVerified || c.fotmobDerived) && (c.allRecord?.p || c.seasonRecord?.p || c.currentSeasonRecord?.p) ? `<div class="tiny dim" style="margin-top:6px">
             戰績由本站賽果依上任日期自動切分,只含本站資料範圍內的${C.esc(meta.competition?.short ?? '')}比賽
-            ${c.sincePrecision === 'month' ? ';上任日期只有月精度,該月內的比賽可能仍是前任帶的' : ''}。</div>` : ''}
+            ${c.sincePrecision === 'month' ? ';上任日期只有月精度,該月內的比賽可能仍是前任帶的' : ''}${
+              c.sincePrecision === 'match' ? ';上任日是他在本站資料裡帶的第一場,實際就任可能早幾天' : ''}${
+              c.sincePrecision === 'season' ? `;他從 ${C.esc(c.sinceSeason ?? '')} 季起帶隊(確切日期沒有來源),戰績從本站資料裡他帶的第一場算` : ''}。</div>` : ''}
           ${c.predecessors?.length ? `<div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px">
             <div class="tiny dim" style="margin-bottom:4px">同隊前任(${meta.lastSeason} 任內)</div>
             ${c.predecessors.map(p => `<div class="stat-line"><span class="small">${C.esc(p.zh ?? p.name)}
@@ -304,7 +312,8 @@ try {
        而且西甲的任期與風格**根本還沒整理**,照抄過去兩句都是假的。 */
     const hint = [
       coaches.officialAsOf ? `現任由 ${C.esc(coaches.source ?? '聯賽官方')} 核對` : null,
-      c.since || c.style?.length ? '任期與風格為人工整理' : '任期與風格尚未整理',
+      c.fotmobDerived ? '教練與任期取自 FotMob(正式名單 × 球隊頁),國籍與風格沒有來源'
+        : c.since || c.style?.length ? '任期與風格為人工整理' : '任期與風格尚未整理',
     ].filter(Boolean).join('・');
     return `<div class="section" style="margin-top:18px"><h2>教練</h2>
       <span class="hint">${hint}</span></div>

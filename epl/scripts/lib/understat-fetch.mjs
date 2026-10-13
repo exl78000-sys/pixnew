@@ -78,6 +78,9 @@ export async function fetchUnderstatSeason(league, season, { retries = 3 } = {})
  *           (本季會一直長,所以只有它在有檔案時仍然重抓) */
 export async function fetchUnderstatPlayers({
   root, league, label, teamFile, dir, seasons, force = false, delay = 1500, note,
+  /* 哪一季是「本季」(有檔案也重抓)。不給就是清單最後一個(原本的行為);給 null 就沒有本季 ——
+     歷史季的一次性抓取用(fetch-understat-history.mjs,2026-10-14),抓過就快取。 */
+  current,
 }) {
   const T = loadTeams(root, { file: teamFile });
   const outDir = join(root, 'data', 'raw', dir);
@@ -87,7 +90,7 @@ export async function fetchUnderstatPlayers({
   let requests = 0;
   const summary = [];
   for (const { label: season, provider } of seasons) {
-    const isCurrent = season === seasons.at(-1).label;
+    const isCurrent = season === (current === undefined ? seasons.at(-1).label : current);
     if (!force && existsSync(file(season)) && !isCurrent) {
       const prev = JSON.parse(await readFile(file(season), 'utf8'));
       console.log(`  · ${season} 已有 ${prev.players?.length ?? 0} 筆,跳過(加 --force 重抓)`);
