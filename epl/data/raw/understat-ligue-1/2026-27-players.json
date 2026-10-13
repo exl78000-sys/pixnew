@@ -4,10 +4,10 @@
   "source": "Understat",
   "sourceUrl": "https://understat.com/main/getPlayersStats/",
   "note": "POST league=Ligue_1&season=YYYY，整季一個請求。無背號、無頭貼、無傷停、無出生日期。",
-  "retrievedAt": "2026-10-13T05:52:17.975Z",
-  "count": 441,
-  "matched": 441,
-  "multiClub": 0,
+  "retrievedAt": "2026-10-13T18:59:53.279Z",
+  "count": 411,
+  "matched": 380,
+  "multiClub": 31,
   "unmatchedTeams": {},
   "players": [
     {
@@ -30,6 +30,35 @@
       "xGChain": "3.860463559627533",
       "xGBuildup": "0.9486725963652134",
       "code": "MAR"
+    },
+    {
+      "id": "6441",
+      "player_name": "Ferrán Torres",
+      "games": "6",
+      "time": "339",
+      "goals": "4",
+      "xG": "1.9799673296511173",
+      "assists": "0",
+      "xA": "0.2922734506428242",
+      "shots": "11",
+      "key_passes": "4",
+      "yellow_cards": "0",
+      "red_cards": "0",
+      "position": "F S",
+      "team_title": "Paris Saint Germain,Rennes",
+      "npg": "4",
+      "npxG": "1.9799673296511173",
+      "xGChain": "2.622888207435608",
+      "xGBuildup": "0.4023579526692629",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "9912",
@@ -137,6 +166,35 @@
       "code": "MON"
     },
     {
+      "id": "12850",
+      "player_name": "Esteban Lepaul",
+      "games": "6",
+      "time": "455",
+      "goals": "4",
+      "xG": "4.001336231827736",
+      "assists": "0",
+      "xA": "0.5356780216097832",
+      "shots": "24",
+      "key_passes": "5",
+      "yellow_cards": "2",
+      "red_cards": "0",
+      "position": "F S",
+      "team_title": "Paris Saint Germain,Rennes",
+      "npg": "3",
+      "npxG": "3.2412410527467728",
+      "xGChain": "3.986781120300293",
+      "xGBuildup": "0.5734943561255932",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
+    },
+    {
       "id": "12855",
       "player_name": "Casper Tengstedt",
       "games": "4",
@@ -181,23 +239,31 @@
     {
       "id": "3297",
       "player_name": "Marquinhos",
-      "games": "4",
-      "time": "360",
+      "games": "5",
+      "time": "450",
       "goals": "3",
       "xG": "1.8040736019611359",
       "assists": "0",
       "xA": "0.08677959814667702",
       "shots": "4",
       "key_passes": "2",
-      "yellow_cards": "0",
+      "yellow_cards": "1",
       "red_cards": "0",
       "position": "D",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "3",
       "npxG": "1.8040736019611359",
-      "xGChain": "3.2107361257076263",
-      "xGBuildup": "2.583793491125107",
-      "code": "PSG"
+      "xGChain": "3.4019363820552826",
+      "xGBuildup": "2.774993747472763",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "12060",
@@ -219,27 +285,6 @@
       "xGChain": "3.149984359741211",
       "xGBuildup": "0.437014639377594",
       "code": "LYO"
-    },
-    {
-      "id": "12850",
-      "player_name": "Esteban Lepaul",
-      "games": "5",
-      "time": "365",
-      "goals": "3",
-      "xG": "3.5756189972162247",
-      "assists": "0",
-      "xA": "0.5356780216097832",
-      "shots": "22",
-      "key_passes": "5",
-      "yellow_cards": "2",
-      "red_cards": "0",
-      "position": "F S",
-      "team_title": "Rennes",
-      "npg": "2",
-      "npxG": "2.8155238181352615",
-      "xGChain": "3.3653897643089294",
-      "xGBuildup": "0.3778202347457409",
-      "code": "REN"
     },
     {
       "id": "14817",
@@ -265,23 +310,31 @@
     {
       "id": "3549",
       "player_name": "Adrien Thomasson",
-      "games": "5",
-      "time": "348",
+      "games": "6",
+      "time": "438",
       "goals": "2",
       "xG": "1.8069261759519577",
-      "assists": "1",
-      "xA": "0.9601093828678131",
+      "assists": "2",
+      "xA": "1.0189607068896294",
       "shots": "5",
-      "key_passes": "13",
-      "yellow_cards": "1",
+      "key_passes": "14",
+      "yellow_cards": "2",
       "red_cards": "0",
       "position": "M S",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "2",
       "npxG": "1.8069261759519577",
-      "xGChain": "2.396481432020664",
-      "xGBuildup": "0.6732646524906158",
-      "code": "REN"
+      "xGChain": "2.859050042927265",
+      "xGBuildup": "1.07698193192482",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "5745",
@@ -303,27 +356,6 @@
       "xGChain": "3.1400531753897667",
       "xGBuildup": "1.5794351287186146",
       "code": "LEN"
-    },
-    {
-      "id": "6441",
-      "player_name": "Ferrán Torres",
-      "games": "5",
-      "time": "297",
-      "goals": "2",
-      "xG": "1.4457446672022343",
-      "assists": "0",
-      "xA": "0.19279858097434044",
-      "shots": "9",
-      "key_passes": "3",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "F S",
-      "team_title": "Paris Saint Germain",
-      "npg": "2",
-      "npxG": "1.4457446672022343",
-      "xGChain": "1.989190697669983",
-      "xGBuildup": "0.4023579526692629",
-      "code": "PSG"
     },
     {
       "id": "6905",
@@ -727,8 +759,8 @@
     {
       "id": "3673",
       "player_name": "Valentin Rongier",
-      "games": "5",
-      "time": "436",
+      "games": "6",
+      "time": "526",
       "goals": "1",
       "xG": "0.2733267955482006",
       "assists": "0",
@@ -738,12 +770,20 @@
       "yellow_cards": "1",
       "red_cards": "0",
       "position": "M",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "1",
       "npxG": "0.2733267955482006",
-      "xGChain": "3.097645290195942",
-      "xGBuildup": "2.623057559132576",
-      "code": "REN"
+      "xGChain": "3.156496614217758",
+      "xGBuildup": "2.6819088831543922",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "3721",
@@ -958,23 +998,60 @@
     {
       "id": "7453",
       "player_name": "Khvicha Kvaratskhelia",
-      "games": "5",
-      "time": "273",
+      "games": "6",
+      "time": "321",
       "goals": "1",
-      "xG": "1.6417868062853813",
+      "xG": "1.7171227559447289",
       "assists": "1",
-      "xA": "1.320311028510332",
-      "shots": "13",
-      "key_passes": "9",
+      "xA": "1.3430395182222128",
+      "shots": "14",
+      "key_passes": "10",
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "F S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "1",
-      "npxG": "1.6417868062853813",
-      "xGChain": "2.0233878642320633",
-      "xGBuildup": "0.8009939678013325",
-      "code": "PSG"
+      "npxG": "1.7171227559447289",
+      "xGChain": "2.164850428700447",
+      "xGBuildup": "0.9197280518710613",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
+    },
+    {
+      "id": "7631",
+      "player_name": "Sebastian Szymanski",
+      "games": "4",
+      "time": "234",
+      "goals": "1",
+      "xG": "0.11462299898266792",
+      "assists": "1",
+      "xA": "0.26904487423598766",
+      "shots": "3",
+      "key_passes": "6",
+      "yellow_cards": "0",
+      "red_cards": "0",
+      "position": "M S",
+      "team_title": "Paris Saint Germain,Rennes",
+      "npg": "1",
+      "npxG": "0.11462299898266792",
+      "xGChain": "1.9483903497457504",
+      "xGBuildup": "1.6830442417412996",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "7747",
@@ -1063,8 +1140,8 @@
     {
       "id": "8777",
       "player_name": "Vitinha",
-      "games": "5",
-      "time": "387",
+      "games": "6",
+      "time": "458",
       "goals": "1",
       "xG": "0.5665592476725578",
       "assists": "1",
@@ -1074,12 +1151,20 @@
       "yellow_cards": "1",
       "red_cards": "0",
       "position": "M S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "1",
       "npxG": "0.5665592476725578",
-      "xGChain": "4.047726988792419",
-      "xGBuildup": "3.3583529889583588",
-      "code": "PSG"
+      "xGChain": "4.595808506011963",
+      "xGBuildup": "3.906434506177902",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "9182",
@@ -1126,23 +1211,31 @@
     {
       "id": "9633",
       "player_name": "Przemyslaw Frankowski",
-      "games": "5",
-      "time": "327",
+      "games": "6",
+      "time": "417",
       "goals": "1",
       "xG": "0.2910924609750509",
-      "assists": "0",
-      "xA": "0.7771240621805191",
+      "assists": "1",
+      "xA": "1.093073382973671",
       "shots": "5",
-      "key_passes": "6",
+      "key_passes": "7",
       "yellow_cards": "1",
       "red_cards": "0",
       "position": "D S",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "1",
       "npxG": "0.2910924609750509",
-      "xGChain": "3.2644536793231964",
-      "xGBuildup": "2.5996691957116127",
-      "code": "REN"
+      "xGChain": "3.604081690311432",
+      "xGBuildup": "2.6233478877693415",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "9656",
@@ -1168,8 +1261,8 @@
     {
       "id": "10058",
       "player_name": "Maghnes Akliouche",
-      "games": "5",
-      "time": "282",
+      "games": "6",
+      "time": "310",
       "goals": "1",
       "xG": "1.4701562821865082",
       "assists": "0",
@@ -1179,12 +1272,20 @@
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "F M S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "1",
       "npxG": "1.4701562821865082",
       "xGChain": "2.122292071580887",
       "xGBuildup": "1.1962216943502426",
-      "code": "PSG"
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "10125",
@@ -1483,8 +1584,8 @@
     {
       "id": "12346",
       "player_name": "Beraldo",
-      "games": "3",
-      "time": "135",
+      "games": "4",
+      "time": "154",
       "goals": "1",
       "xG": "0.7600951194763184",
       "assists": "0",
@@ -1494,12 +1595,20 @@
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "M S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0",
-      "xGChain": "1.040255829691887",
-      "xGBuildup": "1.040255829691887",
-      "code": "PSG"
+      "xGChain": "1.087648905813694",
+      "xGBuildup": "1.087648905813694",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "12426",
@@ -2260,44 +2369,60 @@
     {
       "id": "2276",
       "player_name": "Lucas Hernández",
-      "games": "2",
-      "time": "114",
+      "games": "3",
+      "time": "204",
       "goals": "0",
       "xG": "0",
       "assists": "0",
-      "xA": "0.021293658763170242",
+      "xA": "0.040618857368826866",
       "shots": "0",
-      "key_passes": "1",
+      "key_passes": "2",
       "yellow_cards": "1",
       "red_cards": "0",
       "position": "D S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0",
-      "xGChain": "1.1996335983276367",
-      "xGBuildup": "1.1783399432897568",
-      "code": "PSG"
+      "xGChain": "1.9278566241264343",
+      "xGBuildup": "1.9065629690885544",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "2447",
       "player_name": "Fabián",
-      "games": "5",
-      "time": "301",
+      "games": "6",
+      "time": "329",
       "goals": "0",
       "xG": "0.2651032339781523",
-      "assists": "0",
-      "xA": "0.5726569909602404",
+      "assists": "2",
+      "xA": "1.1372921485453844",
       "shots": "8",
-      "key_passes": "6",
+      "key_passes": "9",
       "yellow_cards": "1",
       "red_cards": "0",
       "position": "M S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0.2651032339781523",
-      "xGChain": "1.7367392629384995",
-      "xGBuildup": "1.1262598484754562",
-      "code": "PSG"
+      "xGChain": "2.3013744205236435",
+      "xGBuildup": "1.3899237364530563",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "2674",
@@ -2319,27 +2444,6 @@
       "xGChain": "0",
       "xGBuildup": "0",
       "code": "MON"
-    },
-    {
-      "id": "2721",
-      "player_name": "Dimitri Barinov",
-      "games": "1",
-      "time": "65",
-      "goals": "0",
-      "xG": "0.09721410274505615",
-      "assists": "0",
-      "xA": "0.022205647081136703",
-      "shots": "1",
-      "key_passes": "1",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "M",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.09721410274505615",
-      "xGChain": "0.2221570611000061",
-      "xGBuildup": "0.10273731499910355",
-      "code": "PSG"
     },
     {
       "id": "2897",
@@ -2407,23 +2511,31 @@
     {
       "id": "3226",
       "player_name": "Ousmane Dembélé",
-      "games": "3",
-      "time": "172",
+      "games": "4",
+      "time": "220",
       "goals": "0",
-      "xG": "1.7235247381031513",
+      "xG": "2.206928450614214",
       "assists": "1",
-      "xA": "0.5515217892825603",
-      "shots": "13",
-      "key_passes": "7",
+      "xA": "0.6523365341126919",
+      "shots": "16",
+      "key_passes": "9",
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "F S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "1.7235247381031513",
-      "xGChain": "3.1122232377529144",
-      "xGBuildup": "1.1893949210643768",
-      "code": "PSG"
+      "npxG": "2.206928450614214",
+      "xGChain": "3.6182510554790497",
+      "xGBuildup": "1.247335072606802",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "3239",
@@ -2533,23 +2645,31 @@
     {
       "id": "3475",
       "player_name": "Ludovic Blas",
-      "games": "5",
-      "time": "211",
+      "games": "6",
+      "time": "227",
       "goals": "0",
-      "xG": "1.3092310037463903",
+      "xG": "1.7129482831805944",
       "assists": "1",
       "xA": "1.0512977428734303",
-      "shots": "10",
+      "shots": "12",
       "key_passes": "9",
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "M S",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "1.3092310037463903",
-      "xGChain": "3.823534056544304",
+      "npxG": "1.7129482831805944",
+      "xGChain": "4.227251335978508",
       "xGBuildup": "1.993009090423584",
-      "code": "REN"
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "3621",
@@ -2678,27 +2798,6 @@
       "code": "LOR"
     },
     {
-      "id": "3720",
-      "player_name": "Milan Gajic",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0.018571762368083",
-      "assists": "0",
-      "xA": "0.03688473254442215",
-      "shots": "1",
-      "key_passes": "1",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "D",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.018571762368083",
-      "xGChain": "0.06783661991357803",
-      "xGBuildup": "0.012380121275782585",
-      "code": "PSG"
-    },
-    {
       "id": "3772",
       "player_name": "Maxime Lopez",
       "games": "6",
@@ -2722,8 +2821,8 @@
     {
       "id": "4748",
       "player_name": "Brice Samba",
-      "games": "4",
-      "time": "360",
+      "games": "5",
+      "time": "450",
       "goals": "0",
       "xG": "0",
       "assists": "0",
@@ -2733,33 +2832,49 @@
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "GK",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0",
-      "xGChain": "1.2502230107784271",
-      "xGBuildup": "1.2502230107784271",
-      "code": "REN"
+      "xGChain": "1.271416211500764",
+      "xGBuildup": "1.271416211500764",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "5197",
       "player_name": "Achraf Hakimi",
-      "games": "4",
-      "time": "294",
+      "games": "5",
+      "time": "384",
       "goals": "0",
-      "xG": "1.0895583648234606",
+      "xG": "1.109237365424633",
       "assists": "0",
-      "xA": "0.20020410604774952",
-      "shots": "12",
-      "key_passes": "5",
-      "yellow_cards": "0",
+      "xA": "0.5874978620558977",
+      "shots": "13",
+      "key_passes": "6",
+      "yellow_cards": "1",
       "red_cards": "0",
       "position": "D",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "1.0895583648234606",
-      "xGChain": "2.049336224794388",
-      "xGBuildup": "1.1104367151856422",
-      "code": "PSG"
+      "npxG": "1.109237365424633",
+      "xGChain": "2.727305084466934",
+      "xGBuildup": "1.7884055748581886",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "5352",
@@ -2783,52 +2898,10 @@
       "code": "TOU"
     },
     {
-      "id": "5442",
-      "player_name": "Ivan Oblyakov",
-      "games": "1",
-      "time": "65",
-      "goals": "0",
-      "xG": "0.13263772428035736",
-      "assists": "0",
-      "xA": "0",
-      "shots": "2",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "M",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.13263772428035736",
-      "xGChain": "0.2575806677341461",
-      "xGBuildup": "0.12494295835494995",
-      "code": "PSG"
-    },
-    {
-      "id": "5459",
-      "player_name": "Konstantin Kuchaev",
-      "games": "1",
-      "time": "77",
-      "goals": "0",
-      "xG": "0.10957761853933334",
-      "assists": "0",
-      "xA": "0",
-      "shots": "2",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "M",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0.10957761853933334",
-      "xGChain": "0.14697489142417908",
-      "xGBuildup": "0.03739728033542633",
-      "code": "REN"
-    },
-    {
       "id": "5480",
       "player_name": "Matvey Safonov",
-      "games": "5",
-      "time": "450",
+      "games": "6",
+      "time": "540",
       "goals": "0",
       "xG": "0",
       "assists": "0",
@@ -2838,12 +2911,20 @@
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "GK",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0",
-      "xGChain": "1.5636338833719492",
-      "xGBuildup": "1.5636338833719492",
-      "code": "PSG"
+      "xGChain": "1.9509276393800974",
+      "xGBuildup": "1.9509276393800974",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "5619",
@@ -2890,8 +2971,8 @@
     {
       "id": "5684",
       "player_name": "Arnaud Nordin",
-      "games": "2",
-      "time": "91",
+      "games": "3",
+      "time": "92",
       "goals": "0",
       "xG": "0.8376582190394402",
       "assists": "0",
@@ -2901,12 +2982,20 @@
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "M S",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0.8376582190394402",
-      "xGChain": "0.8376582190394402",
-      "xGBuildup": "0",
-      "code": "REN"
+      "xGChain": "0.8588514197617769",
+      "xGBuildup": "0.02119320072233677",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "5727",
@@ -3182,27 +3271,6 @@
       "code": "NIC"
     },
     {
-      "id": "6800",
-      "player_name": "Daniil Krugovoy",
-      "games": "1",
-      "time": "67",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0.030533697456121445",
-      "shots": "0",
-      "key_passes": "2",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "M",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0.030533697456121445",
-      "xGBuildup": "0",
-      "code": "PSG"
-    },
-    {
       "id": "6816",
       "player_name": "Jean-Clair Todibo",
       "games": "2",
@@ -3371,27 +3439,6 @@
       "code": "PFC"
     },
     {
-      "id": "7185",
-      "player_name": "Alexey Mironov",
-      "games": "1",
-      "time": "89",
-      "goals": "0",
-      "xG": "0.05272922292351723",
-      "assists": "0",
-      "xA": "0.07170666754245758",
-      "shots": "2",
-      "key_passes": "1",
-      "yellow_cards": "1",
-      "red_cards": "0",
-      "position": "M",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0.05272922292351723",
-      "xGChain": "0.16183316707611084",
-      "xGBuildup": "0.03739728033542633",
-      "code": "REN"
-    },
-    {
       "id": "7206",
       "player_name": "Jonathan Gradit",
       "games": "3",
@@ -3539,48 +3586,6 @@
       "code": "NIC"
     },
     {
-      "id": "7631",
-      "player_name": "Sebastian Szymanski",
-      "games": "3",
-      "time": "154",
-      "goals": "0",
-      "xG": "0.05577167496085167",
-      "assists": "1",
-      "xA": "0.2539464756846428",
-      "shots": "2",
-      "key_passes": "5",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "M S",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0.05577167496085167",
-      "xGChain": "1.8507619351148605",
-      "xGBuildup": "1.6593655496835709",
-      "code": "REN"
-    },
-    {
-      "id": "7681",
-      "player_name": "Danila Prokhin",
-      "games": "1",
-      "time": "1",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0",
-      "xGBuildup": "0",
-      "code": "REN"
-    },
-    {
       "id": "7732",
       "player_name": "Haris Belkebla",
       "games": "2",
@@ -3621,48 +3626,6 @@
       "xGChain": "1.630499992519617",
       "xGBuildup": "0.9492995664477348",
       "code": "BST"
-    },
-    {
-      "id": "7761",
-      "player_name": "Timur Suleymanov",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0.06388304382562637",
-      "shots": "0",
-      "key_passes": "2",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "F",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0.4824109971523285",
-      "xGBuildup": "0.4185279607772827",
-      "code": "REN"
-    },
-    {
-      "id": "7895",
-      "player_name": "Vladislav Torop",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "GK",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0.03458577021956444",
-      "xGBuildup": "0.03458577021956444",
-      "code": "PSG"
     },
     {
       "id": "7967",
@@ -3726,27 +3689,6 @@
       "xGChain": "0.5588482618331909",
       "xGBuildup": "0.5290200114250183",
       "code": "NIC"
-    },
-    {
-      "id": "8069",
-      "player_name": "Maksim Mukhin",
-      "games": "1",
-      "time": "46",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "F",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0",
-      "xGBuildup": "0",
-      "code": "REN"
     },
     {
       "id": "8076",
@@ -3831,27 +3773,6 @@
       "xGChain": "0.21466880291700363",
       "xGBuildup": "0.13423029705882072",
       "code": "NIC"
-    },
-    {
-      "id": "8451",
-      "player_name": "Ivan Komarov",
-      "games": "1",
-      "time": "77",
-      "goals": "0",
-      "xG": "0.22880153357982635",
-      "assists": "0",
-      "xA": "0.4356122612953186",
-      "shots": "5",
-      "key_passes": "2",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "M",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0.22880153357982635",
-      "xGChain": "0.6099322438240051",
-      "xGBuildup": "0.03739728033542633",
-      "code": "REN"
     },
     {
       "id": "8647",
@@ -4001,31 +3922,10 @@
       "code": "STR"
     },
     {
-      "id": "9158",
-      "player_name": "Andrey Langovich",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0.044852327555418015",
-      "shots": "0",
-      "key_passes": "1",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "D",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0.1617245376110077",
-      "xGBuildup": "0.11687220633029938",
-      "code": "REN"
-    },
-    {
       "id": "9220",
       "player_name": "Charlie Cresswell",
-      "games": "5",
-      "time": "450",
+      "games": "6",
+      "time": "540",
       "goals": "0",
       "xG": "0.24509422294795513",
       "assists": "1",
@@ -4035,12 +3935,20 @@
       "yellow_cards": "1",
       "red_cards": "0",
       "position": "D",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0.24509422294795513",
-      "xGChain": "3.6630586087703705",
-      "xGBuildup": "3.366851031780243",
-      "code": "REN"
+      "xGChain": "3.9790079295635223",
+      "xGBuildup": "3.6828003525733948",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "9239",
@@ -4108,23 +4016,31 @@
     {
       "id": "9399",
       "player_name": "Quentin Merlin",
-      "games": "3",
-      "time": "227",
+      "games": "4",
+      "time": "237",
       "goals": "0",
       "xG": "0.0133792320266366",
       "assists": "0",
-      "xA": "0.44862088561058044",
+      "xA": "0.8311449587345123",
       "shots": "1",
-      "key_passes": "2",
+      "key_passes": "3",
       "yellow_cards": "1",
       "red_cards": "0",
-      "position": "D",
-      "team_title": "Rennes",
+      "position": "D S",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0.0133792320266366",
-      "xGChain": "1.0361423790454865",
-      "xGBuildup": "0.9354390799999237",
-      "code": "REN"
+      "xGChain": "1.4186664521694183",
+      "xGBuildup": "1.3179631531238556",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "9403",
@@ -4150,8 +4066,8 @@
     {
       "id": "9419",
       "player_name": "Bryan Reynolds",
-      "games": "3",
-      "time": "126",
+      "games": "4",
+      "time": "127",
       "goals": "0",
       "xG": "0",
       "assists": "2",
@@ -4161,12 +4077,20 @@
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "D S",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0",
       "xGChain": "0.3661356270313263",
       "xGBuildup": "0.22842052578926086",
-      "code": "REN"
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "9444",
@@ -4230,27 +4154,6 @@
       "xGChain": "0.3706747889518738",
       "xGBuildup": "0.3706747889518738",
       "code": "PFC"
-    },
-    {
-      "id": "9569",
-      "player_name": "Viktor Melekhin",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0.028014499694108963",
-      "assists": "0",
-      "xA": "0",
-      "shots": "1",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "D",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0.028014499694108963",
-      "xGChain": "0.47328245639801025",
-      "xGBuildup": "0.4452679455280304",
-      "code": "REN"
     },
     {
       "id": "9618",
@@ -4780,23 +4683,31 @@
     {
       "id": "10431",
       "player_name": "Désiré Doué",
-      "games": "5",
-      "time": "230",
+      "games": "6",
+      "time": "320",
       "goals": "0",
-      "xG": "1.3213882818818092",
+      "xG": "1.5695003494620323",
       "assists": "1",
-      "xA": "1.0030149146914482",
-      "shots": "11",
-      "key_passes": "9",
+      "xA": "1.0609550662338734",
+      "shots": "16",
+      "key_passes": "10",
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "F S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "0.5612931214272976",
-      "xGChain": "2.3155515883117914",
-      "xGBuildup": "0.8977204654365778",
-      "code": "PSG"
+      "npxG": "0.8094051890075207",
+      "xGChain": "2.9079961869865656",
+      "xGBuildup": "1.3221721444278955",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "10517",
@@ -4818,27 +4729,6 @@
       "xGChain": "2.5805934742093086",
       "xGBuildup": "2.4228978976607323",
       "code": "ANG"
-    },
-    {
-      "id": "10530",
-      "player_name": "Olakunle Olusegun",
-      "games": "1",
-      "time": "44",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0.10621491074562073",
-      "shots": "0",
-      "key_passes": "2",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0.10621491074562073",
-      "xGBuildup": "0",
-      "code": "REN"
     },
     {
       "id": "10581",
@@ -4881,27 +4771,6 @@
       "xGChain": "2.3185049928724766",
       "xGBuildup": "0.7023566775023937",
       "code": "PFC"
-    },
-    {
-      "id": "10688",
-      "player_name": "Yaroslav Mikhaylov",
-      "games": "1",
-      "time": "13",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0",
-      "xGBuildup": "0",
-      "code": "REN"
     },
     {
       "id": "10701",
@@ -4948,23 +4817,31 @@
     {
       "id": "10786",
       "player_name": "Warren Zaïre-Emery",
-      "games": "5",
-      "time": "355",
+      "games": "6",
+      "time": "417",
       "goals": "0",
-      "xG": "0.6589250043034554",
+      "xG": "1.102085329592228",
       "assists": "1",
       "xA": "0.7955816090106964",
-      "shots": "2",
+      "shots": "5",
       "key_passes": "4",
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "D M S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "0.6589250043034554",
-      "xGChain": "3.645589891821146",
-      "xGBuildup": "2.2182792611420155",
-      "code": "PSG"
+      "npxG": "1.102085329592228",
+      "xGChain": "4.594778064638376",
+      "xGBuildup": "2.7470355816185474",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "10788",
@@ -5156,27 +5033,6 @@
       "code": "MON"
     },
     {
-      "id": "11183",
-      "player_name": "Daniel Shantaliy",
-      "games": "1",
-      "time": "13",
-      "goals": "0",
-      "xG": "0.03473295271396637",
-      "assists": "0",
-      "xA": "0.02107464149594307",
-      "shots": "1",
-      "key_passes": "1",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0.03473295271396637",
-      "xGChain": "0.05580759420990944",
-      "xGBuildup": "0",
-      "code": "REN"
-    },
-    {
       "id": "11294",
       "player_name": "Lilian Raolisoa",
       "games": "5",
@@ -5240,27 +5096,6 @@
       "code": "NIC"
     },
     {
-      "id": "11345",
-      "player_name": "João Victor",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "D",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0.06740590184926987",
-      "xGBuildup": "0.06740590184926987",
-      "code": "PSG"
-    },
-    {
       "id": "11406",
       "player_name": "Giovani Versini",
       "games": "3",
@@ -5280,69 +5115,6 @@
       "xGChain": "0.18199414387345314",
       "xGBuildup": "0.014980558305978775",
       "code": "BST"
-    },
-    {
-      "id": "11433",
-      "player_name": "Danila Kozlov",
-      "games": "1",
-      "time": "25",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0",
-      "xGBuildup": "0",
-      "code": "PSG"
-    },
-    {
-      "id": "11455",
-      "player_name": "Kirill Glebov",
-      "games": "1",
-      "time": "59",
-      "goals": "0",
-      "xG": "0.12494295835494995",
-      "assists": "0",
-      "xA": "0.0687236338853836",
-      "shots": "2",
-      "key_passes": "2",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "M",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.12494295835494995",
-      "xGChain": "0.2908806800842285",
-      "xGBuildup": "0.09721410274505615",
-      "code": "PSG"
-    },
-    {
-      "id": "11456",
-      "player_name": "Matvey Kislyak",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0.13132299482822418",
-      "assists": "0",
-      "xA": "0.012380121275782585",
-      "shots": "3",
-      "key_passes": "1",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "M",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.13132299482822418",
-      "xGChain": "0.07106909155845642",
-      "xGBuildup": "0.030951883643865585",
-      "code": "PSG"
     },
     {
       "id": "11486",
@@ -5385,27 +5157,6 @@
       "xGChain": "0",
       "xGBuildup": "0",
       "code": "LYO"
-    },
-    {
-      "id": "11673",
-      "player_name": "Tamerlan Musaev",
-      "games": "1",
-      "time": "31",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0",
-      "xGBuildup": "0",
-      "code": "PSG"
     },
     {
       "id": "11752",
@@ -5515,23 +5266,31 @@
     {
       "id": "11782",
       "player_name": "Mousa Al Tamari",
-      "games": "5",
-      "time": "284",
+      "games": "6",
+      "time": "358",
       "goals": "0",
-      "xG": "0.6704832389950752",
+      "xG": "0.7092603296041489",
       "assists": "0",
       "xA": "1.5944881811738014",
-      "shots": "7",
+      "shots": "9",
       "key_passes": "6",
-      "yellow_cards": "0",
+      "yellow_cards": "1",
       "red_cards": "0",
       "position": "F M S",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "0.6704832389950752",
-      "xGChain": "3.9128611385822296",
-      "xGBuildup": "1.734789565205574",
-      "code": "REN"
+      "npxG": "0.7092603296041489",
+      "xGChain": "4.267587572336197",
+      "xGBuildup": "2.050738885998726",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "11789",
@@ -5578,23 +5337,31 @@
     {
       "id": "11792",
       "player_name": "Issa Soumaré",
-      "games": "4",
-      "time": "206",
+      "games": "5",
+      "time": "296",
       "goals": "0",
       "xG": "0.8355345148593187",
       "assists": "1",
-      "xA": "0.023122187703847885",
+      "xA": "0.04680087976157665",
       "shots": "10",
-      "key_passes": "1",
+      "key_passes": "2",
       "yellow_cards": "1",
       "red_cards": "0",
       "position": "F M S",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0.8355345148593187",
-      "xGChain": "0.8577879592776299",
-      "xGBuildup": "0.3070775642991066",
-      "code": "REN"
+      "xGChain": "1.3737586662173271",
+      "xGBuildup": "0.7993695512413979",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "11799",
@@ -5662,8 +5429,8 @@
     {
       "id": "11910",
       "player_name": "William Pacho",
-      "games": "4",
-      "time": "360",
+      "games": "5",
+      "time": "450",
       "goals": "0",
       "xG": "0.043136242777109146",
       "assists": "0",
@@ -5673,12 +5440,20 @@
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "D",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0.043136242777109146",
-      "xGChain": "2.22869885712862",
-      "xGBuildup": "2.22869885712862",
-      "code": "PSG"
+      "xGChain": "2.9286050274968147",
+      "xGBuildup": "2.9286050274968147",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "12045",
@@ -5746,23 +5521,31 @@
     {
       "id": "12159",
       "player_name": "Mahamadou Nagida",
-      "games": "5",
-      "time": "220",
+      "games": "6",
+      "time": "300",
       "goals": "0",
-      "xG": "0",
+      "xG": "0.2052762806415558",
       "assists": "0",
-      "xA": "0.3518441617488861",
-      "shots": "0",
-      "key_passes": "5",
+      "xA": "0.4616120755672455",
+      "shots": "2",
+      "key_passes": "6",
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "D S",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "0",
-      "xGChain": "1.1288911625742912",
+      "npxG": "0.2052762806415558",
+      "xGChain": "1.4439353570342064",
       "xGBuildup": "1.0218425616621971",
-      "code": "REN"
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "12170",
@@ -6080,69 +5863,6 @@
       "code": "REN"
     },
     {
-      "id": "12462",
-      "player_name": "Matija Popovic",
-      "games": "1",
-      "time": "31",
-      "goals": "0",
-      "xG": "0.05502578243613243",
-      "assists": "0",
-      "xA": "0",
-      "shots": "1",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.05502578243613243",
-      "xGChain": "0.05502578243613243",
-      "xGBuildup": "0",
-      "code": "PSG"
-    },
-    {
-      "id": "12476",
-      "player_name": "Oumar Sako",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0.054481588304042816",
-      "assists": "0",
-      "xA": "0",
-      "shots": "1",
-      "key_passes": "0",
-      "yellow_cards": "1",
-      "red_cards": "0",
-      "position": "D",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0.054481588304042816",
-      "xGChain": "0.4185279607772827",
-      "xGBuildup": "0.4185279607772827",
-      "code": "REN"
-    },
-    {
-      "id": "12477",
-      "player_name": "Ronaldo",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0.40220531821250916",
-      "assists": "0",
-      "xA": "0.03739728033542633",
-      "shots": "2",
-      "key_passes": "1",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "F",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0.40220531821250916",
-      "xGChain": "0.47993963956832886",
-      "xGBuildup": "0.07773430645465851",
-      "code": "REN"
-    },
-    {
       "id": "12556",
       "player_name": "Rayan Bamba",
       "games": "5",
@@ -6183,27 +5903,6 @@
       "xGChain": "1.2521673813462257",
       "xGBuildup": "0.7026868388056755",
       "code": "TOU"
-    },
-    {
-      "id": "12666",
-      "player_name": "Rustam Yatimov",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "GK",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0",
-      "xGBuildup": "0",
-      "code": "REN"
     },
     {
       "id": "12730",
@@ -6271,23 +5970,31 @@
     {
       "id": "12734",
       "player_name": "João Neves",
-      "games": "4",
-      "time": "332",
+      "games": "5",
+      "time": "394",
       "goals": "0",
-      "xG": "1.2843661773949862",
+      "xG": "1.4058418292552233",
       "assists": "0",
-      "xA": "0.22791733592748642",
-      "shots": "8",
-      "key_passes": "3",
+      "xA": "0.2490423284471035",
+      "shots": "11",
+      "key_passes": "4",
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "M",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "1.2843661773949862",
-      "xGChain": "2.6938367784023285",
-      "xGBuildup": "1.2876109257340431",
-      "code": "PSG"
+      "npxG": "1.4058418292552233",
+      "xGChain": "3.270097464323044",
+      "xGBuildup": "1.8129639402031898",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "12769",
@@ -6542,27 +6249,6 @@
       "code": "STR"
     },
     {
-      "id": "13023",
-      "player_name": "Luciano Gondou",
-      "games": "1",
-      "time": "59",
-      "goals": "0",
-      "xG": "0.046102374792099",
-      "assists": "0",
-      "xA": "0.19849030673503876",
-      "shots": "1",
-      "key_passes": "2",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "F",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.046102374792099",
-      "xGChain": "0.24459268152713776",
-      "xGBuildup": "0.10273731499910355",
-      "code": "PSG"
-    },
-    {
       "id": "13042",
       "player_name": "Mohamed Abdelmonem",
       "games": "6",
@@ -6754,8 +6440,8 @@
     {
       "id": "13329",
       "player_name": "Abdelhamid Aït Boudlal",
-      "games": "2",
-      "time": "180",
+      "games": "3",
+      "time": "270",
       "goals": "0",
       "xG": "0",
       "assists": "0",
@@ -6765,12 +6451,41 @@
       "yellow_cards": "1",
       "red_cards": "0",
       "position": "D",
-      "team_title": "Rennes",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
       "npxG": "0",
-      "xGChain": "0.7003791630268097",
-      "xGBuildup": "0.7003791630268097",
-      "code": "REN"
+      "xGChain": "0.8338257670402527",
+      "xGBuildup": "0.8338257670402527",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
+    },
+    {
+      "id": "13356",
+      "player_name": "Henrick Do Marcolino",
+      "games": "1",
+      "time": "10",
+      "goals": "0",
+      "xG": "0",
+      "assists": "0",
+      "xA": "0.02119320072233677",
+      "shots": "0",
+      "key_passes": "1",
+      "yellow_cards": "0",
+      "red_cards": "0",
+      "position": "S",
+      "team_title": "Paris Saint Germain",
+      "npg": "0",
+      "npxG": "0",
+      "xGChain": "0.02119320072233677",
+      "xGBuildup": "0",
+      "code": "PSG"
     },
     {
       "id": "13372",
@@ -7023,27 +6738,6 @@
       "xGChain": "2.2898741140961647",
       "xGBuildup": "2.006483346223831",
       "code": "STR"
-    },
-    {
-      "id": "13673",
-      "player_name": "Matheus Alves",
-      "games": "1",
-      "time": "25",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0",
-      "xGBuildup": "0",
-      "code": "PSG"
     },
     {
       "id": "13718",
@@ -7422,27 +7116,6 @@
       "xGChain": "0.43194663524627686",
       "xGBuildup": "0.43194663524627686",
       "code": "LIL"
-    },
-    {
-      "id": "13786",
-      "player_name": "Kirill Danilov",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0.011961935088038445",
-      "assists": "0",
-      "xA": "0",
-      "shots": "1",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "D",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.011961935088038445",
-      "xGChain": "0.02434205636382103",
-      "xGBuildup": "0.012380121275782585",
-      "code": "PSG"
     },
     {
       "id": "13794",
@@ -7865,48 +7538,6 @@
       "code": "LYO"
     },
     {
-      "id": "14495",
-      "player_name": "Matheus Reis",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "1",
-      "red_cards": "0",
-      "position": "D",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0",
-      "xGBuildup": "0",
-      "code": "PSG"
-    },
-    {
-      "id": "14497",
-      "player_name": "Imran Firov",
-      "games": "1",
-      "time": "23",
-      "goals": "0",
-      "xG": "0.012380121275782585",
-      "assists": "0",
-      "xA": "0",
-      "shots": "1",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "S",
-      "team_title": "Paris Saint Germain",
-      "npg": "0",
-      "npxG": "0.012380121275782585",
-      "xGChain": "0.012380121275782585",
-      "xGBuildup": "0",
-      "code": "PSG"
-    },
-    {
       "id": "14499",
       "player_name": "Tochukwu Nnadi",
       "games": "3",
@@ -8073,27 +7704,6 @@
       "xGChain": "0.11126748472452164",
       "xGBuildup": "0.09310491383075714",
       "code": "AUX"
-    },
-    {
-      "id": "14661",
-      "player_name": "Ygor Nogueira",
-      "games": "1",
-      "time": "90",
-      "goals": "0",
-      "xG": "0",
-      "assists": "0",
-      "xA": "0",
-      "shots": "0",
-      "key_passes": "0",
-      "yellow_cards": "0",
-      "red_cards": "0",
-      "position": "D",
-      "team_title": "Rennes",
-      "npg": "0",
-      "npxG": "0",
-      "xGChain": "0.4420740008354187",
-      "xGBuildup": "0.4420740008354187",
-      "code": "REN"
     },
     {
       "id": "14754",
@@ -9022,23 +8632,31 @@
     {
       "id": "14932",
       "player_name": "Mika Godts",
-      "games": "5",
-      "time": "123",
+      "games": "6",
+      "time": "165",
       "goals": "0",
-      "xG": "0.20655612647533417",
+      "xG": "0.2369686160236597",
       "assists": "1",
-      "xA": "0.08889091201126575",
-      "shots": "4",
-      "key_passes": "4",
+      "xA": "0.187956178560853",
+      "shots": "5",
+      "key_passes": "6",
       "yellow_cards": "0",
       "red_cards": "0",
       "position": "F S",
-      "team_title": "Paris Saint Germain",
+      "team_title": "Paris Saint Germain,Rennes",
       "npg": "0",
-      "npxG": "0.20655612647533417",
-      "xGChain": "1.6040502488613129",
-      "xGBuildup": "1.3716944307088852",
-      "code": "PSG"
+      "npxG": "0.2369686160236597",
+      "xGChain": "1.9648449122905731",
+      "xGBuildup": "1.6546835154294968",
+      "code": null,
+      "codes": [
+        "PSG",
+        "REN"
+      ],
+      "teams": [
+        "Paris Saint Germain",
+        "Rennes"
+      ]
     },
     {
       "id": "14996",
