@@ -156,7 +156,8 @@
     "it1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=it1",
     "fr1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=fr1",
     "teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs",
-    "teams-inbox": "node scripts/build-league-teams-inbox.mjs"
+    "teams-inbox": "node scripts/build-league-teams-inbox.mjs",
+    "understat:history": "node scripts/fetch-understat-history.mjs"
   },
   "engines": {
     "node": ">=18"

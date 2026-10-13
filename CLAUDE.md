@@ -610,6 +610,9 @@ Node 端要本體(測試、Obsidian、單檔打包)走 `lib/match-archive.mjs` �
 page-players.js」。要在哪一頁多用一個球員欄位,先去 players-list.mjs 加那個欄位,不要回頭載整份。`players-core.json` 是跨聯賽搜尋的另一個契約,兩份不要混。
 **戰術頁的球隊側寫走 `lib/team-profiles.mjs`(2026-10-02 起西甲與德義法共用)。** 來源是 Understat 上季的球隊情境統計
 (`data/raw/understat-*/{季}-team-situations.json`,`fetch-setpieces.mjs --league=`);德義法核對用站上發布的 results.json。
+**德義法的教練來自 FotMob(2026-10-14 起,使用者同意單一來源)**:`lib/build-league.mjs` 的 coachRoster,最新一場正式名單 × 球隊頁逐季紀錄,
+兩邊都說是他才發布(`fotmobDerived`)。人工交付的那條路(verify-league-coaches)不再是必要條件。
+**租借核對器涵蓋六個聯賽**(2026-10-14):成員資格依當季選聯賽、Understat 原始名冊確認、聯賽標籤由本站推(`parentLeagueActual`)。
 **盃賽頁看 `LEAGUES[lg].cupsOnly`**:德義法是 'ucl',只列歐冠、導覽那一格叫「歐冠」。
 **teams.json 不帶 matchStats(2026-09-28 起,A8)。** FotMob 逐場統計的逐隊彙總在 `team-stats.json`(`lib/team-stats.mjs`,隊碼 → 彙總,沒資料的隊不留鍵),
 只有球隊頁**詳情**(?code=)`loadFrom` 後掛回 `t.matchStats`。teams.json 十幾頁在載,不要再把重欄位掛回去 —— `npm test` 守著。
@@ -842,7 +845,7 @@ build → laliga:build,跑完 `npm run local:sync` 再跑 `npm test` 就會紅�
 兩者對讀者的意義不同,不可以混成一句「有租借紀錄」。
 
 **Obsidian vault 是產物,而且有一個不能刪的例外。**
-`npm run obsidian` 產生 `epl/vault/`(11,953 則筆記,會隨資料變動:六個聯賽 + 歐冠 +
+`npm run obsidian` 產生 `epl/vault/`(11,942 則筆記,會隨資料變動:六個聯賽 + 歐冠 +
 英格蘭盃賽 + 國家隊 + 足球知識;聯賽兩季的賽後報告、各處的球員榜,以及分析文章、專家觀點、勝率變化、交手、近況、模擬、戰術與外電 2026-09-26 起也在裡面),比照 `dist/` 不進版控。
 **筆記的內容跟產物對不對得上,由 `npm test` 的 `test-vault.mjs` 守**(2026-09-26)——
 產生器自己那兩道守門只看形狀(同檔名、壞連結),過期的宣稱與少掉的一整區它看不到。

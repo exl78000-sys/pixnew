@@ -5805,6 +5805,13 @@ function checkAssetStamps() {
     const regd = new Set(declared);
     const dead = Object.entries(NV.LEAGUES).flatMap(([lg, L]) => (L.open ?? []).filter(p => !regd.has(p)).map(p => `${lg}:${p}`));
     ok(dead.length === 0, 'open 清單只有導覽登錄過的頁(沒有死名字)', dead.join('、'));
+    /* 租借(2026-10-14):核對器擴到六個聯賽 + Understat 2024-25 名冊。發布的紀錄都帶 parentLeagueActual(本站逐季名冊推的,
+       下游讀它不讀交付方的標籤);標籤錯的 labelIssue 都有標正結果(corrected 是聯賽或 null)。 */
+    {
+      const lv = JSON.parse(readFileSync(join(ROOT, 'data', 'loans-verified.json'), 'utf8'));
+      ok(lv.records.every(r => 'parentLeagueActual' in r) && lv.labelIssues.every(x => 'corrected' in x),
+        '租借:發布紀錄都帶本站推出的母隊聯賽、聯賽標籤錯的都有標正結果', `${lv.records.length} 筆發布・標籤錯 ${lv.labelIssues.length}`);
+    }
     ok(NV.navState('overview', null, 'pl').here?.items?.[0]?.page === 'overview' && NV.navState('overview', null, 'de1').here?.items?.[0]?.page === 'overview',
       '「賽事」區第一格是總覽(2026-10-03,使用者要求;點「賽事」就到總覽)');
     /* 德義法的盃賽頁只看歐冠(2026-10-02):open 有 cups、標記 cupsOnly、導覽那一格叫「歐冠」、頁面讀那個標記 */
