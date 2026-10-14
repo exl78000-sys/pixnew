@@ -47,6 +47,7 @@ import { pickPair, intoBand } from './colour.mjs';
 import { round } from './util.mjs';
 import { normName } from './names.mjs';
 import { buildTeamProfiles } from './team-profiles.mjs';
+import { buildTeamMatchers, tagNewsTeams } from './news-tag.mjs';
 /* 跨聯賽球員搜尋的統一層。**開了球員頁就一定要寫這一份** ——
    `allplayers-view.js` 與 `core.js` 的 crossLeaguePlayers 都是看
    `LEAGUES[lg].open` 有沒有 players 才去要它的,沒寫就是一個保證 404,
@@ -752,6 +753,20 @@ export async function buildLeague(L) {
        上任:他在本站資料裡**連續帶隊的第一場**(精度 match:實際就任可能早幾天);如果從本站最早一場就是他,
              改用球隊頁的逐季紀錄講「從哪一季起」(精度 season,since 留空,不編日期)。
        戰績:本站賽果依上任切分,只含這個聯賽、本站資料範圍內的比賽。國籍、中文名、是不是看守教練:沒有來源,不寫。 */
+  const externalNews = (() => {
+    const slug = { de1: 'bundesliga', it1: 'serie-a', fr1: 'ligue-1' }[L.key];
+    const fp = slug && join(ROOT, 'data', 'raw', `news-${slug}.json`);
+    if (!fp || !existsSync(fp)) return [];
+    let list = [];
+    try {
+      const raw = JSON.parse(readFileSync(fp, 'utf8'));
+      list = Array.isArray(raw) ? raw.filter(x => x && x.title && x.link && x.source).slice(0, 100) : [];
+    } catch { list = []; }
+    const tagged = tagNewsTeams(list, buildTeamMatchers(teams));
+    console.log(`  ${L.zh}外電:${list.length} 則(對到球隊 ${tagged ?? 0} 則,不翻譯)`);
+    return list;
+  })();
+
   const coachRoster = (() => {
     const tf = join(ROOT, 'data', 'raw', 'fotmob-teams', `${L.key}.json`);
     const page = existsSync(tf) ? JSON.parse(readFileSync(tf, 'utf8')) : null;
@@ -933,7 +948,7 @@ export async function buildLeague(L) {
       /* **數字一律從資料算。** 這三個原本是寫死的 0(球隊層那一輪留下來的),
          而球員層與賽後報告接上之後它們就在畫面上說謊了 —— 球員頁的標題直接印
          `counts.players`,所以那一頁一直寫著「0 名註冊球員」而下面列著 856 人。 */
-      players: playersOut.length, news: 0, injuries: 0, coaches: coachRoster.coaches.length,
+      players: playersOut.length, news: externalNews.length, injuries: 0, coaches: coachRoster.coaches.length,
       crests: crestCount, matchReports: reportCount,
       currentSeasonRounds: Math.max(0, ...curPlayed.map(m => m.round ?? 0)),
     },
@@ -979,7 +994,10 @@ export async function buildLeague(L) {
   /* 下面這幾份這個聯賽沒有內容 —— **寫空的而不是不寫**。
      不寫的話前端拿到 404 會走「還沒 build」那條訊息,那是錯的:我們 build 了,
      是這個聯賽還沒有這種資料。每一份都帶 available:false 與一句為什麼。 */
-  await write('news', []);
+  /* 外電(2026-10-14,使用者:「德義法的動態頁:不翻譯」):Guardian 的分聯賽 feed,fetch-news.mjs --league= 抓、
+     laliga-news-daily 每天回寫 raw。跟英冠同一條路(最小欄位驗證、對到球隊),**不接翻譯** —— 畫面顯示原文。
+     沒有 raw 就寫空的(動態頁走缺口頁,不是一個空白頁)。 */
+  await write('news', externalNews);
   /* ── 分析文章(2026-10-02 起德義法也有,跟英冠同一條路)──
      原本這裡寫一份空的,說明是「要先有球員層與逐場詳情」—— 那兩樣 9/15、9/16 就有了,那句話過時了兩個禮拜
      (「有哪一句還在講我們沒有它」那條坑)。現在走 lib/report 同一層:賽前(最近 20 場有預測的)、

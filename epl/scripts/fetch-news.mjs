@@ -16,6 +16,10 @@ const LEAGUES = {
   pl: { config: 'feeds.json', out: 'news.json', cat: '外電' },
   es1: { config: 'feeds-laliga.json', out: 'news-la-liga.json', cat: '西甲外電' },
   en2: { config: 'feeds-championship.json', out: 'news-championship.json', cat: '英冠外電' },
+  // 德義法(2026-10-14):Guardian 的分聯賽 feed,不翻譯(使用者決定)
+  de1: { config: 'feeds-bundesliga.json', out: 'news-bundesliga.json', cat: '德甲外電' },
+  it1: { config: 'feeds-serie-a.json', out: 'news-serie-a.json', cat: '義甲外電' },
+  fr1: { config: 'feeds-ligue-1.json', out: 'news-ligue-1.json', cat: '法甲外電' },
 };
 const want = arg('league') ?? 'pl';
 if (!Object.hasOwn(LEAGUES, want)) {
