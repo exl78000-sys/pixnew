@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0e4f3ff0';
+import * as C from './core.js?v=452a8844';
 import { followedIn } from './follow.js?v=02130043';
 
 // 有英格蘭盃賽(足總盃/聯賽盃)的聯賽。用集合不用「是不是某一個」的二元式

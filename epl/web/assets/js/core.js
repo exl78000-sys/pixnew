@@ -866,7 +866,7 @@ export const LEAGUES = {
        它**不是**英超那一層 —— 沒有背號、頭貼、出生日期、身價與傷停,
        也沒有西甲那層 SportMonks 補充,所以年齡是 null。頁面自己把界線寫出來。
        實時仍然沒有,不掛上去。戰術 2026-10-02 起有了(Understat 上季的球隊情境統計,逐場比分核對過)。 */
-    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'model', 'explore', 'predict'],
+    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'news', 'model', 'explore', 'predict'],
     /* 盃賽頁只看歐冠(2026-10-02,使用者同意的提案):那一頁原本是歐冠 + 兩個英格蘭盃賽,9/15 因為英格蘭盃賽跟這個聯賽無關
        而整頁不掛 —— 但這個聯賽的球隊本來就在歐冠裡。掛上去、只留歐冠分頁(page-cups.js 讀這個標記)。 */
     cupsOnly: 'ucl',
@@ -880,7 +880,7 @@ export const LEAGUES = {
      open 清單照德甲那一份:實時沒有,不掛上去;戰術 2026-10-02 起有了;盃賽 2026-10-02 起掛上、只看歐冠(cupsOnly)。 */
   it1: {
     zh: '義甲', brand: '義甲戰情室', en: 'SERIE A WAR ROOM',
-    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'model', 'explore', 'predict'],
+    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'news', 'model', 'explore', 'predict'],
     /* 盃賽頁只看歐冠(2026-10-02,使用者同意的提案):那一頁原本是歐冠 + 兩個英格蘭盃賽,9/15 因為英格蘭盃賽跟這個聯賽無關
        而整頁不掛 —— 但這個聯賽的球隊本來就在歐冠裡。掛上去、只留歐冠分頁(page-cups.js 讀這個標記)。 */
     cupsOnly: 'ucl',
@@ -892,7 +892,7 @@ export const LEAGUES = {
   },
   fr1: {
     zh: '法甲', brand: '法甲戰情室', en: 'LIGUE 1 WAR ROOM',
-    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'model', 'explore', 'predict'],
+    open: ['overview', 'intl', 'cups', 'index', 'teams', 'tactics', 'players', 'news', 'model', 'explore', 'predict'],
     /* 盃賽頁只看歐冠(2026-10-02,使用者同意的提案):那一頁原本是歐冠 + 兩個英格蘭盃賽,9/15 因為英格蘭盃賽跟這個聯賽無關
        而整頁不掛 —— 但這個聯賽的球隊本來就在歐冠裡。掛上去、只留歐冠分頁(page-cups.js 讀這個標記)。 */
     cupsOnly: 'ucl',

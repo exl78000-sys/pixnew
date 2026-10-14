@@ -5812,6 +5812,13 @@ function checkAssetStamps() {
       ok(lv.records.every(r => 'parentLeagueActual' in r) && lv.labelIssues.every(x => 'corrected' in x),
         '租借:發布紀錄都帶本站推出的母隊聯賽、聯賽標籤錯的都有標正結果', `${lv.records.length} 筆發布・標籤錯 ${lv.labelIssues.length}`);
     }
+    /* 動態頁頁首(2026-10-14):判斷看資料本身(全是外部 RSS 就講外電版),不看有沒有球員層 ——
+       英冠與德義法有了球員層之後,原本那條條件讓它們全掉進英超的「FPL 官方欄位…上季 380 場」。 */
+    {
+      const pn = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+      ok(!/capabilities\?\.players === false/.test(pn) && pn.includes('news.every(n => n.link && n.source)'),
+        '動態頁頁首看資料本身(全是外部 RSS 才講外電版),不看有沒有球員層');
+    }
     ok(NV.navState('overview', null, 'pl').here?.items?.[0]?.page === 'overview' && NV.navState('overview', null, 'de1').here?.items?.[0]?.page === 'overview',
       '「賽事」區第一格是總覽(2026-10-03,使用者要求;點「賽事」就到總覽)');
     /* 德義法的盃賽頁只看歐冠(2026-10-02):open 有 cups、標記 cupsOnly、導覽那一格叫「歐冠」、頁面讀那個標記 */

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=0e4f3ff0';
+import * as C from './core.js?v=452a8844';
 import { followedIn } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -95,11 +95,14 @@ try {
           news.some(n => n.titleZh)
             ? `標題與摘要為<b>${news.some(n => n.titleZh && !n.translatedByHuman) ? '機器翻譯' : '人工翻譯'}</b>,原文保留在旁邊 —— 翻譯只做語言轉換,不摘要、不補背景,數字與人名隊名照原文。`
             : '目前顯示原文(尚未產生譯文)。'}`
-      : meta.capabilities?.players === false
+      /* 判斷改看**資料本身**(2026-10-14):原本是 `capabilities.players === false` —— 英冠 9/15、德義法之後都有了球員層,
+         三個聯賽於是全掉進最後那句英超的說法(「FPL 官方欄位…上季 380 場」),而它們的動態只有外部 RSS。
+         「有沒有球員層」跟「動態頁上有什麼」是兩件事;翻譯也照實際有沒有譯文講。 */
+      : meta.league !== 'pl' && news.length && news.every(n => n.link && n.source)
       ? `這一頁<b>只有外部新聞 RSS</b>:${[...new Set(news.map(n => n.source))].join('、')}。
-         每日快取一次,只保存標題、短摘要與原文連結,不抓全文,也不做翻譯。
-         <b>沒有</b>傷停、轉會、賽前看點與戰術敘事 —— 那些要靠球員級資料,
-         而${C.LEAGUES[C.league()]?.zh ?? '這個聯賽'}沒有免費的來源(實測過)。
+         每日快取一次,只保存標題、短摘要與原文連結,不抓全文${news.some(n => n.titleZh)
+           ? ';有譯文的標題與摘要是機器翻譯,原文保留在旁邊' : ',畫面顯示原文、不做翻譯'}。
+         <b>沒有</b>傷停、轉會、賽前看點與戰術敘事 —— 本站沒有${C.LEAGUES[C.league()]?.zh ?? '這個聯賽'}這幾種資料的來源。
          來源自己歸錯類的項目會混進來(例如英超的轉會快訊),我們<b>不用關鍵字去殺</b> ——
          那會誤傷真文章。`
       /* 2026-09-03 精簡:每一則卡片本身就標著它是哪一類,頁首不必再把三類各解釋

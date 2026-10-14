@@ -566,6 +566,12 @@ export function testLeague(L) {
             && (!c.currentSeasonRecord || c.currentSeasonRecord.pts === c.currentSeasonRecord.w * 3 + c.currentSeasonRecord.d));
         check('教練:FotMob 正式名單 × 球隊頁核對過才發布,每位都有上任資訊、積分算法跟英冠一致', ok, `${co.coaches.length} / ${teams2.length} 隊`);
       }
+      /* 外電(2026-10-14):Guardian 分聯賽 feed,不翻譯。每則都有標題、連結、來源;沒有中文譯文欄位(不是空字串,是沒有)。 */
+      {
+        const nw = out('news');
+        check('外電:每則都有標題、原文連結與來源,不帶譯文', Array.isArray(nw) && nw.length > 0
+          && nw.every(x => x.title && /^https?:\/\//.test(x.link) && x.source && !x.titleZh), `${nw.length} 則`);
+      }
       check('沒有過時的「要先有球員層與逐場詳情」那句', !/要先有球員層與逐場詳情/.test(JSON.stringify(an)));
     }
     /* 這幾份沒有內容的一律帶 available:false 與一句為什麼 —— 空殼不解釋等於看起來壞掉 */

@@ -1,0 +1,16 @@
+{
+  "_note": "法甲外電 RSS(2026-10-14,使用者:「德義法的動態頁:不翻譯」)。只保存標題、短摘要、來源與原文連結,不抓整篇文章;每日最多執行一次。**不翻譯** —— 畫面顯示原文。",
+  "_warning": "加來源之前先抓一次看標題,不要只看名字(Sky 11663 那一次:名字像英冠,內容是英超)。",
+  "_relevance": "2026-10-14 實測:20 則裡 17 則提到法甲球隊(拿 data/manual/teams-ligue-1.json 的隊名與 alias 比對標題與摘要);其餘多半是 Guardian 的「European football」週報(跨聯賽,仍相關)與少數英超。離題比例跟英冠那兩份差不多,不用關鍵字黑名單去殺。",
+  "_rejected": {
+    "https://feeds.bbci.co.uk/sport/football/european/rss.xml": "2026-10-14 實測:BBC 沒有分聯賽的 feed,這一個是全歐洲混在一起(PSG、Lille、巴薩…),要用隊名去分流才能用 —— 那是過濾,不是來源,先不收。",
+    "https://feeds.bbci.co.uk/sport/football/german/rss.xml": "404(italian / french 同樣 404)"
+  },
+  "feeds": [
+    {
+      "name": "The Guardian Ligue 1",
+      "url": "https://www.theguardian.com/football/ligue1football/rss"
+    }
+  ],
+  "maxPerFeed": 20
+}
