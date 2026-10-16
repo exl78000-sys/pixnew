@@ -75578,8 +75578,1345 @@
    "fetchedAt": "2026-10-11T17:31:12.425Z",
    "fdMatchId": "2026-27-44",
    "heat": null
+  },
+  "SGE|KOE": {
+   "key": "SGE|KOE",
+   "season": "2026-27",
+   "date": "2026-10-16",
+   "matchId": "5881191",
+   "home": "SGE",
+   "away": "KOE",
+   "score": [
+    1,
+    0
+   ],
+   "providerScore": [
+    1,
+    0
+   ],
+   "teamStats": {
+    "SGE": {
+     "possession": 56,
+     "shots": 15,
+     "shotsOn": 7,
+     "shotsOff": 4,
+     "blockedShots": 4,
+     "blocksMade": 4,
+     "corners": 7,
+     "offsides": 1,
+     "fouls": 8,
+     "saves": 3,
+     "passes": 448,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.34
+    },
+    "KOE": {
+     "possession": 44,
+     "shots": 9,
+     "shotsOn": 3,
+     "shotsOff": 2,
+     "blockedShots": 4,
+     "blocksMade": 4,
+     "corners": 3,
+     "offsides": 0,
+     "fouls": 17,
+     "saves": 6,
+     "passes": 362,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.65
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "SGE": {
+     "touches_opp_box": 27,
+     "big_chance": 2,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 11,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 1.15,
+     "expected_goals_set_play": 0.19,
+     "expected_goals_non_penalty": 1.34,
+     "expected_goals_on_target": 1.1,
+     "own_half_passes": 166,
+     "opposition_half_passes": 190,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 45,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 25,
+     "player_throws": 31,
+     "matchstats.headers.tackles": 22,
+     "interceptions": 14,
+     "clearances": 27,
+     "duel_won": 71,
+     "ground_duels_won": 47,
+     "ground_duels_won_pct": 57,
+     "aerials_won": 24,
+     "aerials_won_pct": 57,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 40,
+     "red_cards": 0
+    },
+    "KOE": {
+     "touches_opp_box": 22,
+     "big_chance": 2,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.41,
+     "expected_goals_set_play": 0.24,
+     "expected_goals_non_penalty": 0.65,
+     "expected_goals_on_target": 1.16,
+     "own_half_passes": 134,
+     "opposition_half_passes": 134,
+     "long_balls_accurate": 16,
+     "long_balls_accurate_pct": 30,
+     "accurate_crosses": 1,
+     "accurate_crosses_pct": 10,
+     "player_throws": 28,
+     "matchstats.headers.tackles": 27,
+     "interceptions": 11,
+     "clearances": 31,
+     "duel_won": 54,
+     "ground_duels_won": 36,
+     "ground_duels_won_pct": 43,
+     "aerials_won": 18,
+     "aerials_won_pct": 43,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 17,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     56,
+     44
+    ],
+    "h1": [
+     58,
+     42
+    ],
+    "h2": [
+     53,
+     47
+    ]
+   },
+   "events": [
+    {
+     "minute": 24,
+     "extra": null,
+     "team": "SGE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Mario Götze"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "SGE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lilian Brassier"
+    },
+    {
+     "minute": 45,
+     "extra": null,
+     "team": "KOE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ísak Jóhannesson"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "KOE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Paul Okon-Engstler"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "KOE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mikey Moore"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "KOE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alessio Castro-Montes"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "SGE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Noël Aséko"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "SGE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ansgar Knauff"
+    },
+    {
+     "minute": 77,
+     "extra": null,
+     "team": "SGE",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Younes Ebnoutalib"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "SGE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Elias Baum"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "KOE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Reigan Heskey"
+    },
+    {
+     "minute": 84,
+     "extra": 0,
+     "team": "KOE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gian-Luca Waldschmidt"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "KOE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Borna Sosa"
+    }
+   ],
+   "shots": [
+    {
+     "min": 1,
+     "extra": null,
+     "team": "KOE",
+     "player": "Marius Bülter",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.093,
+     "xgot": 0.115,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 47.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 3,
+     "extra": null,
+     "team": "SGE",
+     "player": "Younes Ebnoutalib",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.201,
+     "xgot": 0.596,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 29.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "SGE",
+     "player": "Farès Chaïbi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0.096,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.9,
+     "y": 47.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "KOE",
+     "player": "Saïd El Mala",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 50.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "SGE",
+     "player": "Farès Chaïbi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.166,
+     "xgot": 0.182,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.8,
+     "y": 42.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "KOE",
+     "player": "Marius Bülter",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.177,
+     "xgot": 0.286,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 37.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "KOE",
+     "player": "Ísak Jóhannesson",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 24,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "KOE",
+     "player": "Sebastian Sebulonsen",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.8,
+     "y": 16.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "SGE",
+     "player": "Farès Chaïbi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 17.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "KOE",
+     "player": "Saïd El Mala",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 46.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 3,
+     "team": "KOE",
+     "player": "Saïd El Mala",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.081,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 43.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "SGE",
+     "player": "Younes Ebnoutalib",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.44,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 33.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "SGE",
+     "player": "Younes Ebnoutalib",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 22.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "SGE",
+     "player": "Lilian Brassier",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.021,
+     "xgot": 0.026,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 42.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "SGE",
+     "player": "Jonathan Burkardt",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.6,
+     "y": 35.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "SGE",
+     "player": "Farès Chaïbi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.083,
+     "xgot": 0.05,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "SGE",
+     "player": "Farès Chaïbi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.9,
+     "y": 36.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "SGE",
+     "player": "Younes Ebnoutalib",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.6,
+     "y": 38.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "SGE",
+     "player": "Lilian Brassier",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.1,
+     "y": 35.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "KOE",
+     "player": "Marius Bülter",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.135,
+     "xgot": 0.755,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 31.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "SGE",
+     "player": "Younes Ebnoutalib",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0.123,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 22.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "KOE",
+     "player": "Reigan Heskey",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 40.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "SGE",
+     "player": "Farès Chaïbi",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.044,
+     "xgot": 0.028,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 25,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "SGE",
+     "player": "Ritsu Doan",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.066,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 32,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -24
+    ],
+    [
+     2,
+     41
+    ],
+    [
+     3,
+     90
+    ],
+    [
+     4,
+     100
+    ],
+    [
+     5,
+     68
+    ],
+    [
+     6,
+     24
+    ],
+    [
+     7,
+     11
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     9,
+     22
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     0
+    ],
+    [
+     12,
+     -27
+    ],
+    [
+     13,
+     -16
+    ],
+    [
+     14,
+     -11
+    ],
+    [
+     15,
+     -5
+    ],
+    [
+     16,
+     0
+    ],
+    [
+     17,
+     -11
+    ],
+    [
+     18,
+     -5
+    ],
+    [
+     19,
+     -11
+    ],
+    [
+     20,
+     0
+    ],
+    [
+     21,
+     -5
+    ],
+    [
+     22,
+     27
+    ],
+    [
+     23,
+     43
+    ],
+    [
+     24,
+     49
+    ],
+    [
+     25,
+     11
+    ],
+    [
+     26,
+     5
+    ],
+    [
+     27,
+     -11
+    ],
+    [
+     28,
+     0
+    ],
+    [
+     29,
+     22
+    ],
+    [
+     30,
+     43
+    ],
+    [
+     31,
+     38
+    ],
+    [
+     32,
+     -41
+    ],
+    [
+     33,
+     -57
+    ],
+    [
+     34,
+     -35
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     36,
+     5
+    ],
+    [
+     37,
+     -16
+    ],
+    [
+     38,
+     5
+    ],
+    [
+     39,
+     11
+    ],
+    [
+     40,
+     11
+    ],
+    [
+     41,
+     0
+    ],
+    [
+     42,
+     0
+    ],
+    [
+     43,
+     5
+    ],
+    [
+     44,
+     -5
+    ],
+    [
+     45,
+     -16
+    ],
+    [
+     45.5,
+     -4
+    ],
+    [
+     46,
+     14
+    ],
+    [
+     47,
+     8
+    ],
+    [
+     48,
+     84
+    ],
+    [
+     49,
+     65
+    ],
+    [
+     50,
+     73
+    ],
+    [
+     51,
+     14
+    ],
+    [
+     52,
+     19
+    ],
+    [
+     53,
+     33
+    ],
+    [
+     54,
+     33
+    ],
+    [
+     55,
+     76
+    ],
+    [
+     56,
+     65
+    ],
+    [
+     57,
+     43
+    ],
+    [
+     58,
+     49
+    ],
+    [
+     59,
+     41
+    ],
+    [
+     60,
+     46
+    ],
+    [
+     61,
+     8
+    ],
+    [
+     62,
+     33
+    ],
+    [
+     63,
+     33
+    ],
+    [
+     64,
+     22
+    ],
+    [
+     65,
+     27
+    ],
+    [
+     66,
+     27
+    ],
+    [
+     67,
+     0
+    ],
+    [
+     68,
+     -27
+    ],
+    [
+     69,
+     -27
+    ],
+    [
+     70,
+     -16
+    ],
+    [
+     71,
+     -27
+    ],
+    [
+     72,
+     -33
+    ],
+    [
+     73,
+     0
+    ],
+    [
+     74,
+     35
+    ],
+    [
+     75,
+     -100
+    ],
+    [
+     76,
+     -100
+    ],
+    [
+     77,
+     -100
+    ],
+    [
+     78,
+     16
+    ],
+    [
+     79,
+     0
+    ],
+    [
+     80,
+     -27
+    ],
+    [
+     81,
+     -22
+    ],
+    [
+     82,
+     -22
+    ],
+    [
+     83,
+     -5
+    ],
+    [
+     84,
+     0
+    ],
+    [
+     85,
+     -41
+    ],
+    [
+     86,
+     -52
+    ],
+    [
+     87,
+     -43
+    ],
+    [
+     88,
+     -8
+    ],
+    [
+     89,
+     -8
+    ],
+    [
+     90,
+     -16
+    ],
+    [
+     90.5,
+     -15
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "SGE": {
+     "team": "SGE",
+     "formation": "4-4-2",
+     "coach": "Adolf Hütter",
+     "xi": [
+      {
+       "name": "Noah Atubolu",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Nnamdi Collins",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Robin Koch",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Lilian Brassier",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Keita Kosugi",
+       "shirt": 26,
+       "pos": "D"
+      },
+      {
+       "name": "Ritsu Doan",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Raphael Onyedika",
+       "shirt": 25,
+       "pos": "M"
+      },
+      {
+       "name": "Mario Götze",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Farès Chaïbi",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Jonathan Burkardt",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Younes Ebnoutalib",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Noël Aséko",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Ansgar Knauff",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Elias Baum",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Kauã",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Jeremiaha Maluze",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Can Uzun",
+       "shirt": 42,
+       "pos": "?"
+      },
+      {
+       "name": "Timothy Chandler",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Ayoube Amaimouni-Echghouyab",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Love Arrhov",
+       "shirt": 31,
+       "pos": "?"
+      }
+     ]
+    },
+    "KOE": {
+     "team": "KOE",
+     "formation": "3-4-2-1",
+     "coach": "Rene Wagner",
+     "xi": [
+      {
+       "name": "Marvin Schwäbe",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Joël Schmied",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Jahmai Simpson-Pusey",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Luka Lochoshvili",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Sebastian Sebulonsen",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Ísak Jóhannesson",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Tom Krauß",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Borna Sosa",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Linton Maina",
+       "shirt": 37,
+       "pos": "M"
+      },
+      {
+       "name": "Saïd El Mala",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Marius Bülter",
+       "shirt": 30,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Alessio Castro-Montes",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Paul Okon-Engstler",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Mikey Moore",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Gian-Luca Waldschmidt",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Reigan Heskey",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Ron-Robert Zieler",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Assad Kotya Fofana",
+       "shirt": 46,
+       "pos": "?"
+      },
+      {
+       "name": "Gideon Mensah",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Jan Thielmann",
+       "shirt": 29,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 31,
+      "center": 22,
+      "right": 47
+     },
+     "firstHalf": {
+      "left": 38,
+      "center": 19,
+      "right": 43
+     },
+     "secondHalf": {
+      "left": 26,
+      "center": 24,
+      "right": 50
+     }
+    },
+    "away": {
+     "total": {
+      "left": 48,
+      "center": 22,
+      "right": 30
+     },
+     "firstHalf": {
+      "left": 41,
+      "center": 21,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 53,
+      "center": 23,
+      "right": 24
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-16T21:29:51.700Z",
+   "fdMatchId": "2026-27-45",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-16T16:18:27.272Z"
+ "updatedAt": "2026-10-16T21:29:51.702Z"
 }

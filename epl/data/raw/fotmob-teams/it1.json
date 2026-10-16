@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-16T16:19:44.207Z",
+ "fetchedAt": "2026-10-16T21:31:29.077Z",
  "teams": [
   {
    "code": "INT",
@@ -181,6 +181,66 @@
      "loss": 0,
      "pointsPerGame": 2.6,
      "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "FRO",
+   "fotmobId": 9891,
+   "fotmobName": "Frosinone",
+   "fetchedAt": "2026-10-09T12:41:54.283Z",
+   "color": "#d5a300",
+   "teamColors": {
+    "darkMode": "#E3AD00",
+    "lightMode": "#d5a300",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Benito Stirpe",
+   "city": "Frosinone",
+   "location": [
+    "41.634077242",
+    "13.321822114"
+   ],
+   "capacity": 16310,
+   "surface": "Grass",
+   "opened": 2017,
+   "coachHistory": [
+    {
+     "id": 39696,
+     "name": "Paolo Bianco",
+     "season": "2024/2025",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 5,
+     "draw": 5,
+     "loss": 2,
+     "pointsPerGame": 1.67,
+     "winPercentage": 0.42
+    },
+    {
+     "id": 1188285,
+     "name": "Massimiliano Alvini",
+     "season": "2025/2026",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 23,
+     "draw": 12,
+     "loss": 3,
+     "pointsPerGame": 2.13,
+     "winPercentage": 0.61
+    },
+    {
+     "id": 1188285,
+     "name": "Massimiliano Alvini",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
     }
    ]
   },
@@ -481,66 +541,6 @@
      "loss": 2,
      "pointsPerGame": 1.4,
      "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "FRO",
-   "fotmobId": 9891,
-   "fotmobName": "Frosinone",
-   "fetchedAt": "2026-10-09T12:41:54.283Z",
-   "color": "#d5a300",
-   "teamColors": {
-    "darkMode": "#E3AD00",
-    "lightMode": "#d5a300",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Benito Stirpe",
-   "city": "Frosinone",
-   "location": [
-    "41.634077242",
-    "13.321822114"
-   ],
-   "capacity": 16310,
-   "surface": "Grass",
-   "opened": 2017,
-   "coachHistory": [
-    {
-     "id": 39696,
-     "name": "Paolo Bianco",
-     "season": "2024/2025",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 5,
-     "draw": 5,
-     "loss": 2,
-     "pointsPerGame": 1.67,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 1188285,
-     "name": "Massimiliano Alvini",
-     "season": "2025/2026",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 23,
-     "draw": 12,
-     "loss": 3,
-     "pointsPerGame": 2.13,
-     "winPercentage": 0.61
-    },
-    {
-     "id": 1188285,
-     "name": "Massimiliano Alvini",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
     }
    ]
   },

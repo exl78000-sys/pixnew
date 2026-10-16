@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-16T16:19:44.835Z",
+ "fetchedAt": "2026-10-16T21:31:29.875Z",
  "teams": [
   {
    "code": "MON",
@@ -361,6 +361,66 @@
      "loss": 1,
      "pointsPerGame": 1.6,
      "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "TOU",
+   "fotmobId": 9941,
+   "fotmobName": "Toulouse",
+   "fetchedAt": "2026-10-09T12:42:08.276Z",
+   "color": "#5b417b",
+   "teamColors": {
+    "darkMode": "#7b5f99",
+    "lightMode": "#5b417b",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadium de Toulouse",
+   "city": "Toulouse",
+   "location": [
+    "43.583289762",
+    "1.434037685"
+   ],
+   "capacity": 33150,
+   "surface": "Grass",
+   "opened": 1937,
+   "coachHistory": [
+    {
+     "id": 1515447,
+     "name": "Carles Martínez",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 11,
+     "draw": 9,
+     "loss": 14,
+     "pointsPerGame": 1.24,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 1515447,
+     "name": "Carles Martínez",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 12,
+     "draw": 9,
+     "loss": 13,
+     "pointsPerGame": 1.32,
+     "winPercentage": 0.35
+    },
+    {
+     "id": 26831,
+     "name": "Jens Berthel Askou",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 2,
+     "loss": 2,
+     "pointsPerGame": 1,
+     "winPercentage": 0.2
     }
    ]
   },
@@ -841,66 +901,6 @@
      "loss": 2,
      "pointsPerGame": 2,
      "winPercentage": 0.58
-    }
-   ]
-  },
-  {
-   "code": "TOU",
-   "fotmobId": 9941,
-   "fotmobName": "Toulouse",
-   "fetchedAt": "2026-10-09T12:42:08.276Z",
-   "color": "#5b417b",
-   "teamColors": {
-    "darkMode": "#7b5f99",
-    "lightMode": "#5b417b",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadium de Toulouse",
-   "city": "Toulouse",
-   "location": [
-    "43.583289762",
-    "1.434037685"
-   ],
-   "capacity": 33150,
-   "surface": "Grass",
-   "opened": 1937,
-   "coachHistory": [
-    {
-     "id": 1515447,
-     "name": "Carles Martínez",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 11,
-     "draw": 9,
-     "loss": 14,
-     "pointsPerGame": 1.24,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 1515447,
-     "name": "Carles Martínez",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 12,
-     "draw": 9,
-     "loss": 13,
-     "pointsPerGame": 1.32,
-     "winPercentage": 0.35
-    },
-    {
-     "id": 26831,
-     "name": "Jens Berthel Askou",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 2,
-     "loss": 2,
-     "pointsPerGame": 1,
-     "winPercentage": 0.2
     }
    ]
   },
