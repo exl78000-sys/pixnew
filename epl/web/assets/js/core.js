@@ -127,6 +127,9 @@ export async function loadFrom(lg, names) {
        用 `in` 而不是取值比對 undefined —— 打包時沒收進來的資料集要認得出來,
        不然單檔模式會退回去 fetch 一個不存在的路徑,錯誤訊息就變成網路錯誤。 */
     const bundled = globalThis.__DATASETS__?.[lg] ?? (lg === 'pl' ? globalThis.__DATA__ : undefined);
+    /* 單檔版只打包英超(2026-10-16,D4):沒打包的聯賽不去 fetch(file:// 下只會是網路錯誤),
+       直接說「不在這份檔案裡」。 */
+    if (!bundled && globalThis.__WARROOM_BUNDLE__) { absent.push(n); return; }
     if (bundled) {
       if (n in bundled) out[n] = bundled[n]; else absent.push(n);
       return;
@@ -215,8 +218,10 @@ export function league() {
      第一版寫死成「是不是 es1」,加第三個聯賽時網址帶 ?league=en2
      會靜靜退回英超:頁面正常顯示、只是顯示的是另一個聯賽的資料。 */
   const v = params.get('league');
-  return v && Object.hasOwn(LEAGUES, v) ? v : 'pl';
+  return v && Object.hasOwn(LEAGUES, v) && bundledLeague(v) ? v : 'pl';
 }
+/* 單檔版只含打包時收進來的聯賽(預設只有英超);分頁版全部都在。 */
+export const bundledLeague = lg => !globalThis.__WARROOM_BUNDLE__ || lg === 'pl' || !!globalThis.__DATASETS__?.[lg];
 
 /* league 三種寫法,意思不一樣:
    - 沒給:繼承目前聯賽(站內連結的預設)。
@@ -1051,8 +1056,10 @@ export function nav() {
     : '';
   // 聯賽切換收成一個下拉(六顆 → 一個)。用 details/summary:不用 JS 也打得開,單檔版的 hash 連結照樣能點
   const leagueMenu = `<details class="league-menu"><summary aria-label="切換聯賽">${L.zh}<span class="caret" aria-hidden="true"></span></summary>
-      <div class="league-list" role="menu">${Object.entries(LEAGUES).map(([k, v]) =>
-        `<a role="menuitem" href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}</div></details>`;
+      <div class="league-list" role="menu">${Object.entries(LEAGUES).filter(([k]) => bundledLeague(k)).map(([k, v]) =>
+        `<a role="menuitem" href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}${
+          BUNDLE && Object.keys(LEAGUES).some(k => !bundledLeague(k))
+            ? '<span class="hint" style="display:block;padding:6px 10px">單檔版只含英超;其他聯賽請開網站</span>' : ''}</div></details>`;
 
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">

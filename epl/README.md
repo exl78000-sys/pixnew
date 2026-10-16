@@ -46,7 +46,7 @@ npm run serve           # 頁首可在英超／西甲間切換
 ```bash
 npm run game:fetch    # 模擬遊玩用的英超逐場資料(FotMob,永久快取、比分核對過才收)
 npm run game:build    # → web/data/game/pl.json(npm run build 已含這一步)
-npm run bundle    # → dist/warroom.html(約 12 MB,含兩聯賽資料、隊徽與字體,零外部請求)
+npm run bundle    # → dist/warroom.html(預設只含英超,約 22 MB;BUNDLE_LEAGUES=all 才收六個聯賽,約 67 MB;隊徽與字體內嵌,零外部請求)
 ```
 
 **想看進行中的比賽,用即時模式**(一個指令搞定,不用反覆重建):

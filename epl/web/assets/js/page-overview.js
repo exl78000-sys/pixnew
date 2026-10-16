@@ -1,4 +1,4 @@
-import * as C from './core.js?v=452a8844';
+import * as C from './core.js?v=3b973d9a';
 
 const app = document.getElementById('app');
 
@@ -569,8 +569,10 @@ try {
   <div class="section"><h2>各聯賽</h2><span class="hint">點分頁直接進去・只列這個聯賽真的做得出來的頁</span></div>
   <div class="grid g2">${leagues.map(leagueCard).join('')}</div>
   ${skipped.length ? `<div class="note" style="margin-top:10px">
-    ${skipped.map(x => C.esc(C.LEAGUES[x.lg]?.zh ?? x.lg)).join('、')} 的資料集還沒建置,
-    這一輪先不畫 —— 少了 ${C.esc(skipped[0].absent.join('、'))}。</div>` : ''}
+    ${C.BUNDLE
+      ? `單檔版只打包英超(檔案太大):${skipped.map(x => C.esc(C.LEAGUES[x.lg]?.zh ?? x.lg)).join('、')} 請開網站看。`
+      : `${skipped.map(x => C.esc(C.LEAGUES[x.lg]?.zh ?? x.lg)).join('、')} 的資料集還沒建置,
+    這一輪先不畫 —— 少了 ${C.esc(skipped[0].absent.join('、'))}。`}</div>` : ''}
 
   <div class="section"><h2>跨聯賽</h2><span class="hint">這幾頁不分聯賽,每個聯賽看到的是同一份資料</span></div>
   <div class="grid g3">

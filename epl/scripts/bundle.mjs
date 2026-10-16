@@ -152,10 +152,15 @@ async function main() {
   // 官方逐場本體(2026-09-27 起一場一檔):鍵 'official/HOME-AWAY',跟單場頁 loadFrom 組出來的名字一致
   for (const [k, v] of officialBodyEntries(join(WEB, 'data'))) data[k] = v;
   const datasets = { pl: data };
+  /* 單檔版預設只打包英超(2026-10-16,D4,使用者「先做 D3 D4」):六個聯賽 67 MB,其中另外五個聯賽佔四分之三,
+     而單檔版本來就是離線備份用的。要全收:BUNDLE_LEAGUES=all,或逗號列出(BUNDLE_LEAGUES=es1,de1)。
+     沒收的聯賽畫面上要講(導覽下拉、總覽),loadFrom 對它們不發請求。 */
+  const want = (process.env.BUNDLE_LEAGUES ?? 'pl').split(',').map(x => x.trim()).filter(Boolean);
   const leaguesDir = join(WEB, 'data', 'leagues');
   try {
     for (const ent of await readdir(leaguesDir, { withFileTypes: true })) {
       if (!ent.isDirectory()) continue;
+      if (!want.includes('all') && !want.includes(ent.name)) continue;
       const dir = join(leaguesDir, ent.name);
       const files = (await readdir(dir)).filter(f => f.endsWith('.json'));
       datasets[ent.name] = {};
@@ -172,7 +177,8 @@ async function main() {
   // 資料裡若出現 </script 會提前關掉標籤,要先拆開
   /* 產物裡的圖 2026-09-26 起是 assets/img/h/ 的獨立檔;單檔版沒有外部檔,這裡換回 data URI 內嵌
      (datasets.pl 跟 data 是同一個物件,兩邊各換一次,結果一樣)。 */
-  const dataJson = JSON.stringify(inlineImages(data, { webDir: WEB })).replace(/<\/script/gi, '<\\/script');
+  /* 英超的資料只寫一份:datasets.pl 跟 data 是同一個物件,之前兩邊各 stringify 一次,
+     英超那一塊在檔案裡出現兩遍(2026-10-16,D4)。頁面載入時再把 __DATA__ 指回 __DATASETS__.pl。 */
   const datasetsJson = JSON.stringify(inlineImages(datasets, { webDir: WEB })).replace(/<\/script/gi, '<\\/script');
 
   /* 單檔版也標 noindex —— 它可能被丟到任何靜態空間上,不該被收錄。
@@ -186,7 +192,7 @@ async function main() {
 ${css}
 </style>
 <main class="wrap" id="app"><div class="loading">載入資料中…</div></main>
-<script>window.__WARROOM_BUNDLE__ = true; window.__DATA__ = ${dataJson}; window.__DATASETS__ = ${datasetsJson};</script>
+<script>window.__WARROOM_BUNDLE__ = true; window.__DATASETS__ = ${datasetsJson}; window.__DATA__ = window.__DATASETS__.pl;</script>
 <script type="module">
 ${core}
 
