@@ -2,68 +2,8 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-17T12:03:03.395Z",
+ "fetchedAt": "2026-10-17T14:29:49.854Z",
  "teams": [
-  {
-   "code": "SCF",
-   "fotmobId": 8358,
-   "fotmobName": "Freiburg",
-   "fetchedAt": "2026-10-09T12:41:42.199Z",
-   "color": "#BD1C2C",
-   "teamColors": {
-    "darkMode": "#BD1C2C",
-    "lightMode": "#BD1C2C",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Europa-Park Stadion",
-   "city": "Freiburg im Breisgau",
-   "location": [
-    "48.021617675",
-    "7.829695355"
-   ],
-   "capacity": 34700,
-   "surface": "Grass",
-   "opened": 2021,
-   "coachHistory": [
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 16,
-     "draw": 7,
-     "loss": 11,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 13,
-     "draw": 8,
-     "loss": 13,
-     "pointsPerGame": 1.38,
-     "winPercentage": 0.38
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 3,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.5,
-     "winPercentage": 0.75
-    }
-   ]
-  },
   {
    "code": "BVB",
    "fotmobId": 9789,
@@ -121,6 +61,66 @@
      "loss": 0,
      "pointsPerGame": 3,
      "winPercentage": 1
+    }
+   ]
+  },
+  {
+   "code": "SCF",
+   "fotmobId": 8358,
+   "fotmobName": "Freiburg",
+   "fetchedAt": "2026-10-09T12:41:42.199Z",
+   "color": "#BD1C2C",
+   "teamColors": {
+    "darkMode": "#BD1C2C",
+    "lightMode": "#BD1C2C",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Europa-Park Stadion",
+   "city": "Freiburg im Breisgau",
+   "location": [
+    "48.021617675",
+    "7.829695355"
+   ],
+   "capacity": 34700,
+   "surface": "Grass",
+   "opened": 2021,
+   "coachHistory": [
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 16,
+     "draw": 7,
+     "loss": 11,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 13,
+     "draw": 8,
+     "loss": 13,
+     "pointsPerGame": 1.38,
+     "winPercentage": 0.38
+    },
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 3,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.5,
+     "winPercentage": 0.75
     }
    ]
   },
@@ -233,6 +233,126 @@
     {
      "id": 1515447,
      "name": "Carles Martínez",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "M05",
+   "fotmobId": 9905,
+   "fotmobName": "Mainz 05",
+   "fetchedAt": "2026-10-09T12:41:44.025Z",
+   "color": "#B8121C",
+   "teamColors": {
+    "darkMode": "#B8121C",
+    "lightMode": "#B8121C",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "MEWA ARENA",
+   "city": "Mainz",
+   "location": [
+    "49.984627000",
+    "8.224125000"
+   ],
+   "capacity": 34034,
+   "surface": "Grass",
+   "opened": 2011,
+   "coachHistory": [
+    {
+     "id": 1862227,
+     "name": "Benjamin Hoffmann",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 0,
+     "draw": 0,
+     "loss": 1,
+     "pointsPerGame": 0,
+     "winPercentage": 0
+    },
+    {
+     "id": 266042,
+     "name": "Urs Fischer",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 9,
+     "draw": 7,
+     "loss": 5,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.43
+    },
+    {
+     "id": 266042,
+     "name": "Urs Fischer",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "ELV",
+   "fotmobId": 8232,
+   "fotmobName": "Elversberg",
+   "fetchedAt": "2026-10-09T12:41:45.270Z",
+   "color": "#141414",
+   "teamColors": {
+    "darkMode": "#FFFFFF",
+    "lightMode": "#141414",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "URSAPHARM-Arena an der Kaiserlinde",
+   "city": "Spiesen-Elversberg",
+   "location": [
+    "49.318814181",
+    "7.121704817"
+   ],
+   "capacity": 11150,
+   "surface": "Grass",
+   "opened": 1925,
+   "coachHistory": [
+    {
+     "id": 5136,
+     "name": "Horst Steffen",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 16,
+     "draw": 10,
+     "loss": 8,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 94647,
+     "name": "Vincent Wagner",
+     "season": "2025/2026",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 18,
+     "draw": 8,
+     "loss": 8,
+     "pointsPerGame": 1.82,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 94647,
+     "name": "Vincent Wagner",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -485,102 +605,102 @@
    ]
   },
   {
-   "code": "M05",
-   "fotmobId": 9905,
-   "fotmobName": "Mainz 05",
-   "fetchedAt": "2026-10-09T12:41:44.025Z",
-   "color": "#B8121C",
+   "code": "VFB",
+   "fotmobId": 10269,
+   "fotmobName": "VfB Stuttgart",
+   "fetchedAt": "2026-10-09T12:41:50.140Z",
+   "color": "#D30029",
    "teamColors": {
-    "darkMode": "#B8121C",
-    "lightMode": "#B8121C",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "darkMode": "#ffffff",
+    "lightMode": "#D30029",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "MEWA ARENA",
-   "city": "Mainz",
+   "venue": "MHPArena",
+   "city": "Stuttgart",
    "location": [
-    "49.984627000",
-    "8.224125000"
+    "48.792284176",
+    "9.232023954"
    ],
-   "capacity": 34034,
+   "capacity": 60469,
    "surface": "Grass",
-   "opened": 2011,
+   "opened": 1933,
    "coachHistory": [
     {
-     "id": 1862227,
-     "name": "Benjamin Hoffmann",
+     "id": 36490,
+     "name": "Sebastian Hoeneß",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 14,
+     "draw": 8,
+     "loss": 12,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.41
+    },
+    {
+     "id": 36490,
+     "name": "Sebastian Hoeneß",
      "season": "2025/2026",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 0,
-     "draw": 0,
-     "loss": 1,
-     "pointsPerGame": 0,
-     "winPercentage": 0
+     "win": 18,
+     "draw": 8,
+     "loss": 8,
+     "pointsPerGame": 1.82,
+     "winPercentage": 0.53
     },
     {
-     "id": 266042,
-     "name": "Urs Fischer",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 9,
-     "draw": 7,
-     "loss": 5,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.43
-    },
-    {
-     "id": 266042,
-     "name": "Urs Fischer",
+     "id": 36490,
+     "name": "Sebastian Hoeneß",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
+     "win": 1,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
+     "winPercentage": 0.25
     }
    ]
   },
   {
-   "code": "ELV",
-   "fotmobId": 8232,
-   "fotmobName": "Elversberg",
-   "fetchedAt": "2026-10-09T12:41:45.270Z",
-   "color": "#141414",
+   "code": "SCP",
+   "fotmobId": 8460,
+   "fotmobName": "Paderborn",
+   "fetchedAt": "2026-10-09T12:41:48.242Z",
+   "color": "#004A99",
    "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#141414",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "darkMode": "#004A99",
+    "lightMode": "#004A99",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "URSAPHARM-Arena an der Kaiserlinde",
-   "city": "Spiesen-Elversberg",
+   "venue": "Home Deluxe Arena",
+   "city": "Paderborn",
    "location": [
-    "49.318814181",
-    "7.121704817"
+    "51.730769438",
+    "8.711031675"
    ],
-   "capacity": 11150,
+   "capacity": 15306,
    "surface": "Grass",
-   "opened": 1925,
+   "opened": 2008,
    "coachHistory": [
     {
-     "id": 5136,
-     "name": "Horst Steffen",
+     "id": 1130966,
+     "name": "Lukas Kwasniok",
      "season": "2024/2025",
      "leagueId": 146,
      "leagueName": "2. Bundesliga",
-     "win": 16,
+     "win": 15,
      "draw": 10,
-     "loss": 8,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
+     "loss": 9,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.44
     },
     {
-     "id": 94647,
-     "name": "Vincent Wagner",
+     "id": 141102,
+     "name": "Ralf Kettemann",
      "season": "2025/2026",
      "leagueId": 146,
      "leagueName": "2. Bundesliga",
@@ -591,16 +711,16 @@
      "winPercentage": 0.53
     },
     {
-     "id": 94647,
-     "name": "Vincent Wagner",
+     "id": 141102,
+     "name": "Ralf Kettemann",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 2,
+     "win": 1,
      "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
+     "loss": 2,
+     "pointsPerGame": 1,
+     "winPercentage": 0.25
     }
    ]
   },
@@ -661,66 +781,6 @@
      "loss": 13,
      "pointsPerGame": 0.96,
      "winPercentage": 0.22
-    }
-   ]
-  },
-  {
-   "code": "VFB",
-   "fotmobId": 10269,
-   "fotmobName": "VfB Stuttgart",
-   "fetchedAt": "2026-10-09T12:41:50.140Z",
-   "color": "#D30029",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#D30029",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "MHPArena",
-   "city": "Stuttgart",
-   "location": [
-    "48.792284176",
-    "9.232023954"
-   ],
-   "capacity": 60469,
-   "surface": "Grass",
-   "opened": 1933,
-   "coachHistory": [
-    {
-     "id": 36490,
-     "name": "Sebastian Hoeneß",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 14,
-     "draw": 8,
-     "loss": 12,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.41
-    },
-    {
-     "id": 36490,
-     "name": "Sebastian Hoeneß",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 18,
-     "draw": 8,
-     "loss": 8,
-     "pointsPerGame": 1.82,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 36490,
-     "name": "Sebastian Hoeneß",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
-     "winPercentage": 0.25
     }
    ]
   },
@@ -840,66 +900,6 @@
      "draw": 2,
      "loss": 1,
      "pointsPerGame": 1.25,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
-   "code": "SCP",
-   "fotmobId": 8460,
-   "fotmobName": "Paderborn",
-   "fetchedAt": "2026-10-09T12:41:48.242Z",
-   "color": "#004A99",
-   "teamColors": {
-    "darkMode": "#004A99",
-    "lightMode": "#004A99",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Home Deluxe Arena",
-   "city": "Paderborn",
-   "location": [
-    "51.730769438",
-    "8.711031675"
-   ],
-   "capacity": 15306,
-   "surface": "Grass",
-   "opened": 2008,
-   "coachHistory": [
-    {
-     "id": 1130966,
-     "name": "Lukas Kwasniok",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 15,
-     "draw": 10,
-     "loss": 9,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 141102,
-     "name": "Ralf Kettemann",
-     "season": "2025/2026",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 18,
-     "draw": 8,
-     "loss": 8,
-     "pointsPerGame": 1.82,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 141102,
-     "name": "Ralf Kettemann",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1,
      "winPercentage": 0.25
     }
    ]
