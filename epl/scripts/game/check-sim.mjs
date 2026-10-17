@@ -385,7 +385,14 @@ const clockEpl = goalClock(true), clockAll = goalClock(false);
 const realShots = collectReal(() => true);                                   // 全聯盟:形狀與逐情境用它(樣本大)
 const realFx = collectReal(sh => sh.team === HOME || sh.team === AWAY);      // 這一場兩隊:判定用它
 
-line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.corners.away)).toFixed(1), `真實 ${real.cf.toFixed(1)}`);
+/* **角球要判,不只印**(2026-10-17)。5p 把量測台改成踢真實陣型之後,這一行從 8.9 掉到 5.2(真實 11.4),
+   而它沒有 ✓ / 旗標 —— 八輪驗收都只盯有判定的那幾行,這一行就在旁邊被讀漏了。判準跟對抗那一層同一條(2 SE)。 */
+{
+  const cs = rows.map(r => r.st.counts.corners.home + r.st.counts.corners.away), cm = mean(cs);
+  const ce = cs.length > 1 ? Math.sqrt(cs.reduce((a, x) => a + (x - cm) ** 2, 0) / (cs.length - 1) / cs.length) : 0;
+  const 判 = ce > 0 && Math.abs(cm - real.cf) > 2 * ce ? `**差 ${((cm - real.cf) / ce).toFixed(1)} SE**` : '✓';
+  line('每場角球', `${cm.toFixed(1)} ± ${ce.toFixed(1)}`, `真實 ${real.cf.toFixed(1)}  ${判}`);
+}
 /* **角球的三排來源分類**(2026-09-18,階段 4l)。本站的規矩是「找為什麼某個量偏低,
    先把它的來源逐類列出來,再看有沒有哪一類是 0」(階段 4h)——0 不是「少」,
    是那條路根本沒鋪,而它在總數上看起來只是「有點低」。
