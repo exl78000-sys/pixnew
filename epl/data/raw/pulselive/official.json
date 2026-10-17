@@ -43298,7 +43298,7 @@
   "BRE|LIV": {
    "fixtureId": 128984,
    "kickoff": "2026-10-17T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -43732,14 +43732,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   },
   "FUL|HUL": {
    "fixtureId": 128987,
    "kickoff": "2026-10-17T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -43959,9 +43972,29 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      337567,
+      108919
+     ],
+     [
+      137549,
+      8885,
+      21385,
+      21455
+     ],
+     [
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 55642,
@@ -44151,14 +44184,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
   "MCI|IPS": {
    "fixtureId": 128989,
    "kickoff": "2026-10-17T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -44378,9 +44424,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      8159
+     ],
+     [
+      15154,
+      49884,
+      49254,
+      51454
+     ],
+     [
+      63851,
+      40161
+     ],
+     [
+      126111,
+      125827,
+      122002
+     ],
+     [
+      313194
+     ]
+    ],
     "xi": [
      {
       "id": 15154,
@@ -44570,10 +44638,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-17T13:53:14.662Z"
+ "fetchedAt": "2026-10-17T14:03:11.916Z"
 }
