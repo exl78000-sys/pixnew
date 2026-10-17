@@ -44023,8 +44023,8 @@
   "FUL|HUL": {
    "fixtureId": 128987,
    "kickoff": "2026-10-17T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 0
@@ -44503,6 +44503,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 14656,
+      "team": 34,
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2",
+      "kindRaw": "R",
+      "kind": "紅牌"
      }
     ],
     "subs": [
@@ -44649,15 +44658,27 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": null,
+      "team": 41,
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 303085,
+      "team": 41,
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -44675,16 +44696,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+1'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-17T16:05:50.505Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "MCI|IPS": {
    "fixtureId": 128989,
    "kickoff": "2026-10-17T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 3,
     "away": 2
@@ -45116,6 +45150,58 @@
    "goals": [
     {
      "side": "H",
+     "person": 14805,
+     "assist": 54156,
+     "team": 11,
+     "min": 19,
+     "label": "19'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 122002,
+     "assist": 126111,
+     "team": 8,
+     "min": 21,
+     "label": "21'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 65970,
+     "assist": 12520,
+     "team": 11,
+     "min": 34,
+     "label": "34'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 65970,
+     "assist": 31936,
+     "team": 11,
+     "min": 69,
+     "label": "69'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 3,
+     "as": 1
+    },
+    {
+     "side": "A",
      "person": 75735,
      "assist": null,
      "team": 8,
@@ -45135,6 +45221,24 @@
       "team": 8,
       "min": 73,
       "label": "73'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 67178,
+      "team": 11,
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 51454,
+      "team": 8,
+      "min": 90,
+      "label": "90+12'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -45324,12 +45428,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -45346,10 +45444,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+13'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+13'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-17T16:05:51.235Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "NEW|AVL": {
    "fixtureId": 128990,
@@ -45749,5 +45860,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-17T15:56:01.808Z"
+ "fetchedAt": "2026-10-17T16:05:51.235Z"
 }
