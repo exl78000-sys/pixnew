@@ -43786,20 +43786,20 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+11'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+9'00"
+   "clock": "45+11'00"
   },
   "FUL|HUL": {
    "fixtureId": 128987,
@@ -44277,8 +44277,33 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 66538,
+      "team": 41,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 337567,
+      "team": 41,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -44290,10 +44315,16 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45'00"
   },
   "MCI|IPS": {
    "fixtureId": 128989,
@@ -44790,5 +44821,5 @@
    "clock": "45+3'00"
   }
  },
- "fetchedAt": "2026-10-17T14:54:22.551Z"
+ "fetchedAt": "2026-10-17T15:04:16.438Z"
 }
