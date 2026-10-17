@@ -45507,7 +45507,7 @@
   "NEW|AVL": {
    "fixtureId": 128990,
    "kickoff": "2026-10-17T16:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -45516,16 +45516,38 @@
    "homeId": 23,
    "awayId": 2,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      117647,
+      124462,
+      49908,
+      108922
+     ],
+     [
+      67849,
+      20607
+     ],
+     [
+      117497,
+      135108,
+      14716
+     ],
+     [
+      14446
+     ]
+    ],
     "xi": [
      {
       "id": 135108,
       "playerId": null,
       "name": "Matias Fernandez-Pardo",
       "shirt": 20,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Striker",
       "captain": false
      },
@@ -45561,7 +45583,7 @@
       "playerId": null,
       "name": "Joe Willock",
       "shirt": 28,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Attacking Midfielder",
       "captain": false
      },
@@ -45579,7 +45601,7 @@
       "playerId": null,
       "name": "Yoane Wissa",
       "shirt": 9,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      },
@@ -45588,7 +45610,7 @@
       "playerId": null,
       "name": "Lewis Miley",
       "shirt": 67,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -45705,9 +45727,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      125556
+     ],
+     [
+      13344,
+      5066,
+      8900,
+      14164
+     ],
+     [
+      25067,
+      133679
+     ],
+     [
+      326089,
+      26408,
+      304175
+     ],
+     [
+      110526
+     ]
+    ],
     "xi": [
      {
       "id": 13344,
@@ -45750,7 +45794,7 @@
       "playerId": null,
       "name": "Alysson",
       "shirt": 47,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -45897,10 +45941,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "04'00"
   }
  },
- "fetchedAt": "2026-10-17T16:27:17.825Z"
+ "fetchedAt": "2026-10-17T16:34:30.298Z"
 }
