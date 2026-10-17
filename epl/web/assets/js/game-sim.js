@@ -212,7 +212,7 @@ const SIM_TACKLE_R = 1.3;                      // 撲上去之後進到這麼近
    1.3 公尺的比例是 28.0% → **66.4%**(×2.37)—— 那等於又把幾何接回來。
    所以結局與判罰都在宣告的那一刻決定(見下面那一段:「等兩個人真的碰到」的三個版本都更糟)。 */
 const DUEL_R = 3.0;                            // 有對手在這麼近的時候還帶球,才算一次「敢過他」的決定
-const DUEL_P = 0.29;                           /* 那些決定裡有多少真的變成一次對抗。
+const DUEL_P = 0.27;                           /* 那些決定裡有多少真的變成一次對抗。
    **它只定總數,不影響三種結局的分配。** 原本是 0.273(90 場 × 兩輪,0.26 → 64.2、0.273 → 68.1)。
    4v 重量成 0.382 —— `forward` 從 0.45 降到 0.30 讓帶球決策變少,對抗的觸發掛在帶球決策上,
    所以這個常數跟著漂。
@@ -229,7 +229,10 @@ const DUEL_P = 0.29;                           /* 那些決定裡有多少真的
    **2026-09-25 階段 5n 重量成 0.29。** 逼搶者站到門側、跟著持球者退(`PRESS_TRACK`)之後,
    「帶球決策時最近的對手在 `DUEL_R` 內」的比例變高 —— 0.35 讓對抗漲到 78(這一場的錨 64.5)、
    犯規 26 / 抄截 34 / 過人 18 一起膨脹兩成。0.29 在 30 場上是 64.3,之後三輪
-   (每球 xG 的水準、犯規權重、`SHOT_ALPHA`)各跑 120 場都落在 63.5~66.9。 */
+   (每球 xG 的水準、犯規權重、`SHOT_ALPHA`)各跑 120 場都落在 63.5~66.9。
+   **2026-10-17 階段 5p 重量成 0.27。** 量測台從這一天起踢的是**側寫的真實陣型**(之前一律 4-3-3,見 `profileFormation`),
+   而且雙後腰收到中路、有球時前腰前壓(`SLOT_LATERAL` / `adv`)—— 對抗漲到 70 / 67(錨 64.5)。
+   0.27 在兩組獨立種子各 30 場是 64.0 / 63.4;0.25 掉到 58。 */
 /* 三種結局的比例**從側寫算**(見 createSim 的 `DW`),不寫死在這裡 ——
    寫死的話側寫重算它就會悄悄過期,而那正是本站記過三次的坑。量到的是(以場數加權):
      抄截      `matchstats.headers.tackles` × 2 = 32.7
@@ -504,7 +507,7 @@ const NEAR_GOAL = 8;                           // 「門前」的量測範圍(�
    (第一點不再必然是進攻方的),所以這個常數跟 `CORNER_SNAP`、`SELECT_FIX` 三個一起重量。
    50 場固定 snap=0.42:射門/預算 **0.98**、每球 xG 0.1120(真實 0.1125)、
    進球 1.92 ± 0.16 : 0.72 ± 0.13(λ 1.99 : 0.70)。 */
-const SHOT_URGE = 0.084;      /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632)。
+const SHOT_URGE = 0.1035;     /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632)。
    4w 換掉對抗的結局分配之後,球權流向跟著變,射門掉到預算的 0.91 —— 而同一批裡每球 xG
    卻高了 9.6%,**兩個方向相反的錯乘起來剛好等於 λ**(0.91 × 1.096),總量看起來完全正常。
    那是本站記過的坑,所以兩個一起重量。40 場逐值掃(`SELECT_FIX` 固定 0.93):
@@ -515,7 +518,11 @@ const SHOT_URGE = 0.084;      /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.063
    **2026-09-25 階段 5n:0.0675 → 0.095 → 0.084。** 防守者站到門側之後射門砍半(22.8 → 13.7 / 場),
    **大半是 `SHOT_PRESSED` 那個懲罰**:同一個站位拿掉懲罰就回到 19.9,另外那 2.9 腳才是持球者真的被逼住。
    懲罰拿掉(見 `SHOT_PRESSED`)再把這個拉到 0.095,射門回到預算的 1.02;`SHOT_ALPHA` 0.7 → 1.1
-   之後同一個值會多出 16% 的射門,降到 0.084,驗收的 120 場是 1.02。 */
+   之後同一個值會多出 16% 的射門,降到 0.084,驗收的 120 場是 1.02。
+   **2026-10-17 階段 5p:0.084 → 0.10 → 0.1035。** 照真實陣型踢、雙後腰收回中路之後射門掉到 17.5 / 18.4(預算 23.4)——
+   中路擠了,持球者進不了禁區。有球時前腰前壓(`adv`)把它拉回一半,0.10 補到 23.0 / 22.5;
+   強弱量測(9 組 × 540 場)弱隊的射門 ÷ 預算 0.879,再 ×1.035。**SHOT_ALPHA 那條路試過、不行**:
+   α 1.3 / 1.5 射門多了(25~28)而進球更少,因為 `rawSelected` 跟著 α 重算,水準被壓下去 —— α 不是自由旋鈕。 */
 /* xG 的**形狀**是遊戲模型(距離與張角),**水準**對回真實資料:
    XG_SCALE 調到模擬的每球平均 xG 等於聯盟真實的每球平均(league_.shotSituations)。
    形狀自己編、水準有出處 —— 兩件事要分開講,不然畫面上的 xG 就是編的。 */
@@ -1123,6 +1130,17 @@ export function simRng(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 
+/* 側寫的 `formation` 是**物件**(latest / predicted / options / used),不是字串(2026-10-17,5p 的 6a)。
+   `createSim` 原本寫 `su.formation ?? t.formation`,沒傳 setup 的呼叫者(check-sim、check-home、check-strength、
+   test-game 的 worker 池)於是拿物件去解析 → 失敗 → 一律 4-3-3;而頁面的 defaultSetup 傳的是字串,
+   所以**畫面上踢真實陣型(多數 4-2-3-1)、量測台踢 4-3-3** —— λ 錨一直驗在別的陣型上,
+   畫面上的比賽少了四分之一的抄截(21.5 對 28.7)而量測台看不到。現在兩邊都走這一支。 */
+export function profileFormation(t) {
+  const f = t?.formation;
+  if (typeof f === 'string') return f;
+  return f?.latest ?? f?.predicted ?? f?.options?.[0] ?? '4-3-3';
+}
+
 /* 陣型字串 → 每一列幾個人。"4-3-3" / "4-2-3-1" 都吃得下 */
 export function formationRows(spec) {
   const n = String(spec ?? '4-3-3').split('-').map(x => parseInt(x, 10)).filter(x => x > 0);
@@ -1132,16 +1150,33 @@ export function formationRows(spec) {
 /* 陣型 → 每個位置在「自己進攻方向」的基準座標(x 往 105 是進攻方向)。
    門將自己一格,其餘逐列平均分配寬度。列的深度照列數均分在 8~62 m 之間 —— 這是版面不是戰術,
    真正的深度由防線高度指令在 shapeOf() 裡調。 */
+/* 每一列的橫向站位:離中線幾公尺(負 = y 小的那一側)。這是**版面**,不是資料 —— 沒有逐位置的站位資料可以校準;
+   原則只有一條:兩個人的那一列在中路(雙後腰、雙前鋒、雙前腰),四人以上與前場三叉才拉到邊路。 */
+const SLOT_LATERAL = {
+  DEF: { 3: [-14, 0, 14], 4: [-24, -8, 8, 24], 5: [-27, -13, 0, 13, 27] },
+  MID: { 1: [0], 2: [-8, 8], 3: [-16, 0, 16], 4: [-24, -8, 8, 24], 5: [-27, -14, 0, 14, 27] },
+  AM: { 1: [0], 2: [-11, 11], 3: [-22, 0, 22], 4: [-24, -8, 8, 24] },
+  FWD: { 1: [0], 2: [-8, 8], 3: [-22, 0, 22] },
+};
+/* **有球時往前壓**(公尺,`slot.adv`;2026-10-17,5p)。只收中路的話射門掉到 17.5 / 場 —— 4-2-3-1 只有中鋒一個人
+   在最前面那一排,前腰那一排落後 17 m,禁區裡沒人。真實的 4-2-3-1 進攻時前腰壓到跟中鋒齊、邊後衛前插(近 4-2-4)。
+   掃過 12 / 16 m 與邊後衛 0 / 8 m:16 + 8 是射門與抄截一起最接近的那一格。這是「陣形變化」在有球那一半的樣子。 */
+const ADV_AM = 16, ADV_FB = 8;
 export function formationSlots(spec) {
   const rows = formationRows(spec);
   const out = [{ role: 'GK', x: 5, y: PITCH_H / 2 }];
   const depth = (i) => 18 + (i / Math.max(1, rows.length - 1)) * 52;   // 18 → 70
   rows.forEach((count, i) => {
     const role = i === 0 ? 'DEF' : i === rows.length - 1 ? 'FWD' : 'MID';
+    /* 橫向站位照**這一列幾個人、在第幾列**(2026-10-17,5p 的 6b)。原本每一列都從邊線攤到邊線(y 7~61),
+       於是 4-2-3-1 的兩個後腰站在兩條邊線上(場上中位離中線 23.5 m)、三中衛的邊中衛也是、4-4-2 的雙前鋒也是。
+       四列以上時倒數第二列是前腰那一排(4-2-3-1 的「3」、3-4-2-1 的「2」)。表外的人數照舊均分。 */
+    const band = role === 'MID' && rows.length >= 4 && i === rows.length - 2 ? 'AM' : role;
+    const lat = SLOT_LATERAL[band]?.[count];
     for (let k = 0; k < count; k++) {
-      // 左右對稱分佈,邊路留 7 m 的邊
       const t = count === 1 ? 0.5 : k / (count - 1);
-      out.push({ role, x: depth(i), y: 7 + t * (PITCH_H - 14) });
+      const fb = band === 'DEF' && count >= 4 && (k === 0 || k === count - 1);
+      out.push({ role, x: depth(i), y: lat ? PITCH_H / 2 + lat[k] : 7 + t * (PITCH_H - 14), adv: band === 'AM' ? ADV_AM : fb ? ADV_FB : 0 });
     }
   });
   return out;
@@ -1415,7 +1450,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   const mkSide = (code, side, att) => {
     const t = teamOf(code);
     const su = setup[side] ?? {};
-    const spec = su.formation ?? t.formation ?? '4-3-3';
+    const spec = su.formation ?? profileFormation(t);
     const slots = formationSlots(spec);
     const byCode = new Map(t.squad.map(p => [p.code, p]));
     /* 先發:呼叫端給的優先,否則用側寫的推估先發。不足就從名單補 —— 缺人不是這一層該處理的事,
@@ -1705,7 +1740,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      漂到 **0.0992**(真實 0.1123,−12%),兩隊的 λ 一起偏低(強弱比沒有動 —— 那是水準不是形狀)。
      0.915 × 0.1123 / 0.0992 = 1.036。之後 `SHOT_ALPHA` 改成 1.1,`rawSelected` 本來就依 α 重算,
      120 場量到 0.1133、最後驗收的 120 場 0.1152(+2.6%),不用再動。 */
-  const SELECT_FIX = 1.036;
+  /* **2026-10-17 階段 5p 重量成 1.205。** 版面換了(真實陣型 + 雙後腰在中路)射門往外推:禁區內 68 → 60%,
+     強弱量測 9 組配對的每球 xG 平均 **0.0988**(真實 0.1127,×0.877),強 / 弱進球 ÷ λ 一起掉到 0.89 / 0.87 ——
+     跟 5n 同一個病,水準不是形狀。1.036 ÷ 0.877 = 1.18 → 每球 0.1103(−2%)、強弱 0.948 / 0.946;
+     再 ×1.0215 = 1.205(射門那 3.5% 同時由 SHOT_URGE 補)。 */
+  const SELECT_FIX = 1.205;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
   const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
@@ -3176,7 +3215,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           want = { x: gx + dx / d * 5.5, y: cl(PITCH_H / 2 + dy / d * 5.5, 20, PITCH_H - 20), speed: SIM_JOG };
         }
       } else {
-        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push + s.venuePush, wide: s.wide });
+        // 有球的那一隊:前腰與邊後衛往前壓(slot.adv,見 ADV_AM)—— 死球走位那一支不壓,那是排站位
+        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push + s.venuePush + (holder?.side === p.side ? (p.slot.adv ?? 0) : 0), wide: s.wide });
         const raw0 = { x: pos.x, y: pos.y };     // 階段 5m:夾之前的原始目標,用來拆「擺動是誰造成的」
         /* 有球的那一隊:前場的人不越過越位線。這一行是「看起來像足球」的另一半 ——
            沒有它前鋒會站到對方底線,防線跟著退,整場擠在門前。 */
@@ -4219,6 +4259,39 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       return { pressing: s.press / s.pressBase, line: s.lineDrop,
         mentality: s.push, width: s.wide, tempo: s.tempo, directness: s.direct };
     },
+    /* 比賽中換陣型(2026-10-17,5p 的 6c)。**只換每個人的 slot 與 role** —— 沒有人被搬家:
+       目標點(shapeOf 讀 slot)換了,他們就照自己的速度**跑過去**,所以瞬移的量測照樣守得到。
+       誰去哪一格:場上的外場球員對新陣型的外場格子做**最小總移動**的配對(在「自己的進攻座標」裡量,
+       跟主客、上下半場無關),所以 4-2-3-1 → 4-4-2 是前腰往前、邊鋒退一點,不是整隊重新洗牌。
+       門將不動。紅牌少人時,少掉的那一格空著(跟原本一樣)。**不消耗 rng**:沒有呼叫它的比賽逐位元不變。 */
+    setFormation(side, spec) {
+      const s = sideOf(side);
+      const rows = formationRows(spec);
+      if (rows.reduce((a, b) => a + b, 0) !== 10 || String(spec) !== rows.join('-')) return false;
+      const slots = formationSlots(spec).slice(1);
+      const field = s.players.filter(p => !p.off && p.role !== 'GK');
+      // 10 × 10 以內的最小總移動配對:窮舉所有排列太多(10!),用「全部配對照距離由小到大取」的貪婪法,
+      // 再做一輪兩兩交換改善 —— 兩兩交換到不能再降為止,對這個大小是足夠的(結果寫進測試)。
+      const d = (p, q) => hypot(p.slot.x - q.x, p.slot.y - q.y);
+      const pairs = [];
+      field.forEach((p, i) => slots.forEach((q, j) => pairs.push([d(p, q), i, j])));
+      pairs.sort((a, b) => a[0] - b[0]);
+      const of = new Array(field.length).fill(-1), used = new Set();
+      for (const [, i, j] of pairs) if (of[i] < 0 && !used.has(j)) { of[i] = j; used.add(j); }
+      for (let again = true, guard = 0; again && guard < 50; guard++) {
+        again = false;
+        for (let a = 0; a < field.length; a++) for (let b = a + 1; b < field.length; b++) {
+          const now = d(field[a], slots[of[a]]) + d(field[b], slots[of[b]]);
+          const sw = d(field[a], slots[of[b]]) + d(field[b], slots[of[a]]);
+          if (sw < now - 1e-9) { [of[a], of[b]] = [of[b], of[a]]; again = true; }
+        }
+      }
+      field.forEach((p, i) => { p.slot = slots[of[i]]; p.role = slots[of[i]].role; });
+      s.spec = String(spec);
+      emit({ type: 'formation', side, spec: s.spec });
+      return true;
+    },
+    formationOf: side => sideOf(side).spec,
     /* 換人。**規則檢查在這裡做,不是在畫面**:下場的人要在場上、上場的人要在板凳上。
        換上來的人接手原本那個位置的 slot —— 不然他會從場邊瞬移到一個陣型算出來的新位置。 */
     substitute(side, offCode, onCode) {
@@ -4240,7 +4313,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       emit({ type: 'sub', side, off: offCode, on: onCode, name: now.name, offName: out.name });
       return true;
     },
-    teams: { home: { code: H.code, spec: H.spec }, away: { code: A.code, spec: A.spec } },
+    // spec 用 getter:比賽中換陣型(setFormation)之後讀到的要是現在的,不是開賽那一刻的
+    teams: { home: { code: H.code, get spec() { return H.spec; } }, away: { code: A.code, get spec() { return A.spec; } } },
     /* λ 錨的來源要**看得到**:哪一項是真實資料、哪一項是遊戲模型,畫面與測試都讀這裡。
        不給這個的話「E[進球] = λ」就變成一句沒有出處的宣稱。 */
     calibration: () => ({

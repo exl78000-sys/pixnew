@@ -11,7 +11,7 @@
  *
  * 這一層**不做任何模型上的決定** —— 不改機率、不改 λ、不補事件。它只翻譯。
  */
-import { createSim, tacticDefaults } from './game-sim.js?v=b79bbfa0';
+import { createSim, tacticDefaults, profileFormation } from './game-sim.js?v=143bda33';
 
 /* 播放速度是**時間倍率**,不是剪接。舊版四檔的差別在「演哪幾段」(cutTo / finishInstant /
    整段跳過),而使用者的原話是「根本沒有在踢球」。現在四檔的差別只有一個:一秒真實時間
@@ -29,7 +29,8 @@ export const LIVE_SPEEDS = {
 export function defaultSetup(profile, code) {
   const t = profile.teams[code];
   return { xi: [...t.xi], bench: [...t.bench],
-    formation: t.formation.latest ?? t.formation.predicted ?? t.formation.options[0] ?? '4-4-2' };
+    // 陣型的預設規則**只有一份**,在引擎(2026-10-17,5p):這裡原本自己寫一份,引擎那一邊寫錯了也沒人看得到
+    formation: profileFormation(t) };
 }
 
 /* 引擎沒收到指令時實際在踢的那一級(戰術面板要亮的就是它)。**語意由引擎決定**,這裡只轉交 ——
@@ -96,5 +97,8 @@ export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {
     benchOf: side => sim.benchOf(side),
     sub: (side, off, on) => sim.substitute(side, off, on),
     setTactics: (side, levels) => sim.setTactics(side, levels),
+    // 比賽中換陣型(2026-10-17):規則檢查在引擎(人數加起來要 10、格式要對),這裡只轉交
+    setFormation: (side, spec) => sim.setFormation(side, spec),
+    formationOf: side => sim.formationOf(side),
   };
 }

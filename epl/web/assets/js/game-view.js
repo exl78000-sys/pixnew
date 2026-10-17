@@ -1,7 +1,7 @@
 import * as C from './core.js?v=3b973d9a';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=1610cd7c';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=267ecec5';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=91a9dd73';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -404,6 +404,7 @@ export async function renderGame(app) {
         case 'corner': return `${m} ${t} 角球`;
         case 'card': return `${m} ${e.card === 'red' ? '🟥' : '🟨'} ${t} ${who}${e.card === 'red' ? ' 兩黃罰下' : ' 黃牌'}`;
         case 'sub': return `${m} 🔁 ${t} ${who} 換 ${C.esc(e.offName ?? '')}`;
+        case 'formation': return `${m} 🧩 ${t} 改踢 <b>${C.esc(e.spec)}</b>`;
         case 'offside': return `${m} <span class="dim">${t} ${who} 越位</span>`;
         case 'foul': return null;            // 犯規太多,只進統計不進播報(一場二十次,印出來會把進球洗掉)
         default: return null;
@@ -528,7 +529,7 @@ export async function renderGame(app) {
         };
         const reds = L.off.length - L.subs;
         return `<div class="card" style="margin-bottom:8px">
-          <h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">${setupOf(sd).formation}・換人 ${L.subs} 次${reds > 0 ? `・紅牌 ${reds}` : ''}</span></h3>
+          <h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">${match?.formationOf?.(sd) ?? setupOf(sd).formation}・換人 ${L.subs} 次${reds > 0 ? `・紅牌 ${reds}` : ''}</span></h3>
           <div class="tiny dim">場上</div><div class="row" style="gap:4px;flex-wrap:wrap;margin:4px 0">${L.on.map(c => btn(c, 'on')).join('')}</div>
           <div class="tiny dim">替補席</div><div class="row" style="gap:4px;flex-wrap:wrap;margin:4px 0">${L.bench.map(c => btn(c, 'bench')).join('')}</div>
           ${L.off.length ? `<div class="tiny dim">已下場:${L.off.map(c => C.esc(sq.get(c)?.name ?? c)).join('、')}</div>` : ''}
@@ -570,12 +571,27 @@ export async function renderGame(app) {
        (傳球 15.9→25.2 公尺、射門 17.7→17.2 幾乎不動 = 改踢法不改強弱),
        而它在那之後一直留在「還沒接」那一行 —— 那是「東西在但沒有按鈕」。
        **軸的數量不要寫死**:這一段講的話從 LIVE_TACTICS / TACTIC_TODO 算出來。 */
+    /* 比賽中換陣型的選項(2026-10-17,5p 的 6c):本季用過的 + 這幾個常見的。**常見的那幾個是遊戲變數** ——
+       20 隊裡 16 隊本季只用過一種陣型,只給「用過的」等於沒有這個按鈕。畫面上標「本季」的才是真實用過的。 */
+    const FORMATION_COMMON = ['4-2-3-1', '4-3-3', '4-4-2', '4-1-4-1', '3-4-2-1', '3-5-2', '5-3-2', '5-4-1'];
+    function formationRowHtml(sd) {
+      if (!match) return '';
+      const t = profile.teams[state[sd]], used = new Set(t.formation.options);
+      const cur = match.formationOf(sd);
+      const list = [...t.formation.options, ...FORMATION_COMMON.filter(f => !used.has(f))];
+      return `<div class="tac-row" style="display:grid;grid-template-columns:52px 1fr;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)">
+        <span class="small"><b>陣型</b></span>
+        <span class="row" style="gap:3px;flex-wrap:wrap">${list.map(f => `<button class="btn tiny${f === cur ? ' on' : ''}" data-form-side="${sd}" data-form-spec="${f}">${f}${used.has(f) ? '<span class="dim">・本季</span>' : ''}</button>`).join('')}</span>
+        <span></span><span class="tiny dim">立刻生效:每個人換到新陣型裡離自己最近的那一格,<b>跑過去</b>(不瞬移)。標「本季」的是真實用過的;其餘是遊戲加的選項。</span>
+      </div>`;
+    }
     function tacticsPanelHtml(sd) {
       const t = profile.teams[state[sd]], axes = profile.styleAxes ?? {};
       const cur = { ...engineTactics(state[sd]), ...(setupOf(sd).tactics ?? {}) };
       const def = seasonTactics(state[sd]);
       const todo = TACTIC_TODO.map(k => axes[k]?.zh ?? k).join('、');
       return `<div class="card" style="margin-bottom:8px"><h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">戰術指令</span></h3>
+        ${formationRowHtml(sd)}
         ${LIVE_TACTICS.map(k => { const a = axes[k] ?? { zh: k, levels: ['1', '2', '3', '4', '5'] }; const st = t.style?.[k]; return `
           <div class="tac-row" style="display:grid;grid-template-columns:52px 1fr;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)">
             <span class="small"><b>${C.esc(a.zh)}</b></span>
@@ -586,6 +602,13 @@ export async function renderGame(app) {
       </div>`;
     }
     function bindTactics() {
+      document.querySelectorAll('[data-form-spec]').forEach(b => {
+        b.onclick = () => {
+          const { formSide: sd, formSpec: f } = b.dataset;
+          /* 不寫回 setupOf:賽前的下拉只列本季用過的,寫一個不在清單裡的值會讓下拉顯示的跟實際踢的不一樣 */
+          if (match && match.setFormation(sd, f)) renderPanel();
+        };
+      });
       document.querySelectorAll('[data-tac-key]').forEach(b => {
         b.onclick = () => {
           const { tacSide: sd, tacKey: k, tacLevel: lv } = b.dataset;
