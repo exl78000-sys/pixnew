@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-17T14:29:49.854Z",
+ "fetchedAt": "2026-10-17T15:13:01.914Z",
  "teams": [
   {
    "code": "BVB",
@@ -425,66 +425,6 @@
    ]
   },
   {
-   "code": "FCA",
-   "fotmobId": 8406,
-   "fotmobName": "Augsburg",
-   "fetchedAt": "2026-10-09T12:41:42.579Z",
-   "color": "#B93733",
-   "teamColors": {
-    "darkMode": "#B93733",
-    "lightMode": "#B93733",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "WWK Arena",
-   "city": "Augsburg",
-   "location": [
-    "48.323101360",
-    "10.885949135"
-   ],
-   "capacity": 30662,
-   "surface": "Grass",
-   "opened": 2009,
-   "coachHistory": [
-    {
-     "id": 36889,
-     "name": "Sandro Wagner",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 3,
-     "draw": 1,
-     "loss": 8,
-     "pointsPerGame": 0.83,
-     "winPercentage": 0.25
-    },
-    {
-     "id": 816800,
-     "name": "Manuel Baum",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 9,
-     "draw": 6,
-     "loss": 7,
-     "pointsPerGame": 1.5,
-     "winPercentage": 0.41
-    },
-    {
-     "id": 816800,
-     "name": "Manuel Baum",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
    "code": "SVW",
    "fotmobId": 8697,
    "fotmobName": "Werder Bremen",
@@ -533,6 +473,66 @@
     {
      "id": 33244,
      "name": "Daniel Thioune",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "FCA",
+   "fotmobId": 8406,
+   "fotmobName": "Augsburg",
+   "fetchedAt": "2026-10-09T12:41:42.579Z",
+   "color": "#B93733",
+   "teamColors": {
+    "darkMode": "#B93733",
+    "lightMode": "#B93733",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "WWK Arena",
+   "city": "Augsburg",
+   "location": [
+    "48.323101360",
+    "10.885949135"
+   ],
+   "capacity": 30662,
+   "surface": "Grass",
+   "opened": 2009,
+   "coachHistory": [
+    {
+     "id": 36889,
+     "name": "Sandro Wagner",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 3,
+     "draw": 1,
+     "loss": 8,
+     "pointsPerGame": 0.83,
+     "winPercentage": 0.25
+    },
+    {
+     "id": 816800,
+     "name": "Manuel Baum",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 9,
+     "draw": 6,
+     "loss": 7,
+     "pointsPerGame": 1.5,
+     "winPercentage": 0.41
+    },
+    {
+     "id": 816800,
+     "name": "Manuel Baum",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -660,66 +660,6 @@
      "draw": 0,
      "loss": 3,
      "pointsPerGame": 0.75,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
-   "code": "SCP",
-   "fotmobId": 8460,
-   "fotmobName": "Paderborn",
-   "fetchedAt": "2026-10-09T12:41:48.242Z",
-   "color": "#004A99",
-   "teamColors": {
-    "darkMode": "#004A99",
-    "lightMode": "#004A99",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Home Deluxe Arena",
-   "city": "Paderborn",
-   "location": [
-    "51.730769438",
-    "8.711031675"
-   ],
-   "capacity": 15306,
-   "surface": "Grass",
-   "opened": 2008,
-   "coachHistory": [
-    {
-     "id": 1130966,
-     "name": "Lukas Kwasniok",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 15,
-     "draw": 10,
-     "loss": 9,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 141102,
-     "name": "Ralf Kettemann",
-     "season": "2025/2026",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 18,
-     "draw": 8,
-     "loss": 8,
-     "pointsPerGame": 1.82,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 141102,
-     "name": "Ralf Kettemann",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1,
      "winPercentage": 0.25
     }
    ]
@@ -900,6 +840,66 @@
      "draw": 2,
      "loss": 1,
      "pointsPerGame": 1.25,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
+   "code": "SCP",
+   "fotmobId": 8460,
+   "fotmobName": "Paderborn",
+   "fetchedAt": "2026-10-09T12:41:48.242Z",
+   "color": "#004A99",
+   "teamColors": {
+    "darkMode": "#004A99",
+    "lightMode": "#004A99",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Home Deluxe Arena",
+   "city": "Paderborn",
+   "location": [
+    "51.730769438",
+    "8.711031675"
+   ],
+   "capacity": 15306,
+   "surface": "Grass",
+   "opened": 2008,
+   "coachHistory": [
+    {
+     "id": 1130966,
+     "name": "Lukas Kwasniok",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 15,
+     "draw": 10,
+     "loss": 9,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 141102,
+     "name": "Ralf Kettemann",
+     "season": "2025/2026",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 18,
+     "draw": 8,
+     "loss": 8,
+     "pointsPerGame": 1.82,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 141102,
+     "name": "Ralf Kettemann",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1,
      "winPercentage": 0.25
     }
    ]

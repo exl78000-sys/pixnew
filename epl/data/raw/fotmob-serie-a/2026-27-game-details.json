@@ -102997,8 +102997,1637 @@
    "fetchedAt": "2026-10-16T21:29:53.647Z",
    "fdMatchId": "2026-27-60",
    "heat": null
+  },
+  "VEN|NAP": {
+   "key": "VEN|NAP",
+   "season": "2026-27",
+   "date": "2026-10-17",
+   "matchId": "5749709",
+   "home": "VEN",
+   "away": "NAP",
+   "score": [
+    1,
+    0
+   ],
+   "providerScore": [
+    1,
+    0
+   ],
+   "teamStats": {
+    "VEN": {
+     "possession": 29,
+     "shots": 9,
+     "shotsOn": 4,
+     "shotsOff": 5,
+     "blockedShots": 0,
+     "blocksMade": 12,
+     "corners": 0,
+     "offsides": 0,
+     "fouls": 7,
+     "saves": 9,
+     "passes": 310,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.63
+    },
+    "NAP": {
+     "possession": 71,
+     "shots": 29,
+     "shotsOn": 10,
+     "shotsOff": 7,
+     "blockedShots": 12,
+     "blocksMade": 0,
+     "corners": 12,
+     "offsides": 5,
+     "fouls": 6,
+     "saves": 3,
+     "passes": 733,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.44
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "VEN": {
+     "touches_opp_box": 14,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 8,
+     "shots_outside_box": 1,
+     "expected_goals_open_play": 0.63,
+     "expected_goals_set_play": 0,
+     "expected_goals_non_penalty": 0.63,
+     "expected_goals_on_target": 1.47,
+     "own_half_passes": 110,
+     "opposition_half_passes": 122,
+     "long_balls_accurate": 21,
+     "long_balls_accurate_pct": 34,
+     "accurate_crosses": 1,
+     "accurate_crosses_pct": 20,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 12,
+     "interceptions": 10,
+     "clearances": 51,
+     "duel_won": 35,
+     "ground_duels_won": 20,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 15,
+     "aerials_won_pct": 54,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 30,
+     "red_cards": 0
+    },
+    "NAP": {
+     "touches_opp_box": 38,
+     "big_chance": 2,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 22,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 1.06,
+     "expected_goals_set_play": 0.6,
+     "expected_goals_non_penalty": 1.66,
+     "expected_goals_on_target": 2.03,
+     "own_half_passes": 275,
+     "opposition_half_passes": 382,
+     "long_balls_accurate": 27,
+     "long_balls_accurate_pct": 60,
+     "accurate_crosses": 7,
+     "accurate_crosses_pct": 23,
+     "player_throws": 22,
+     "matchstats.headers.tackles": 11,
+     "interceptions": 4,
+     "clearances": 20,
+     "duel_won": 35,
+     "ground_duels_won": 22,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 13,
+     "aerials_won_pct": 46,
+     "dribbles_succeeded": 4,
+     "dribbles_succeeded_pct": 44,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     29,
+     71
+    ],
+    "h1": [
+     36,
+     64
+    ],
+    "h2": [
+     21,
+     79
+    ]
+   },
+   "events": [
+    {
+     "minute": 49,
+     "extra": null,
+     "team": "VEN",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Akor Adams"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "NAP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rasmus Højlund"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "NAP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kevin De Bruyne"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "NAP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alisson Santos"
+    },
+    {
+     "minute": 61,
+     "extra": null,
+     "team": "VEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Toma Bašić"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Albion Rrahmani"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "NAP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matteo Politano"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pasquale Mazzocchi"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Thórir Helgason"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joël Schingtienne"
+    },
+    {
+     "minute": 80,
+     "extra": null,
+     "team": "VEN",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kike Pérez"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "VEN",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lamine Fanne"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "NAP",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mathías Olivera"
+    }
+   ],
+   "shots": [
+    {
+     "min": 7,
+     "extra": null,
+     "team": "NAP",
+     "player": "Lorenzo Lucca",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 32.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0.258,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.1,
+     "y": 23,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "VEN",
+     "player": "John Yeboah",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 32.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 45.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "NAP",
+     "player": "Giovane Nascimento",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.6,
+     "y": 38.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "NAP",
+     "player": "Benoît Badiashile",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "NAP",
+     "player": "Amir Rrahmani",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.051,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 36.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "NAP",
+     "player": "Giovanni Di Lorenzo",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 29.5,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "NAP",
+     "player": "Scott McTominay",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.046,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.2,
+     "y": 30.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "NAP",
+     "player": "Scott McTominay",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 31.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "NAP",
+     "player": "Scott McTominay",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 18.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "NAP",
+     "player": "Sam Beukema",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 43.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.079,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 34.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.153,
+     "xgot": 0.416,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 39.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "VEN",
+     "player": "John Yeboah",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 51.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "NAP",
+     "player": "Alisson Santos",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 49.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "NAP",
+     "player": "Alisson Santos",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0.071,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.5,
+     "y": 48.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "NAP",
+     "player": "Amir Rrahmani",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.142,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.6,
+     "y": 35.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "NAP",
+     "player": "Rasmus Højlund",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.081,
+     "xgot": 0.203,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 32.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "NAP",
+     "player": "Rasmus Højlund",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.6,
+     "y": 46.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "NAP",
+     "player": "Alisson Santos",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.7,
+     "y": 44.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.125,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 27,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "NAP",
+     "player": "Kevin De Bruyne",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.756,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "NAP",
+     "player": "Kevin De Bruyne",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 29,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "VEN",
+     "player": "Albion Rrahmani",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.099,
+     "xgot": 0.154,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 23.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "VEN",
+     "player": "Akor Adams",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.062,
+     "xgot": 0.638,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 29.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "NAP",
+     "player": "Scott McTominay",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 32,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "NAP",
+     "player": "Kevin De Bruyne",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 45.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "NAP",
+     "player": "Scott McTominay",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.112,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.2,
+     "y": 27.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "NAP",
+     "player": "Stanislav Lobotka",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0.129,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.6,
+     "y": 38,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "NAP",
+     "player": "Alisson Santos",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.2,
+     "y": 42.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "NAP",
+     "player": "Scott McTominay",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.054,
+     "xgot": 0.085,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 42,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "NAP",
+     "player": "Giovanni Di Lorenzo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.08,
+     "xgot": 0.117,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 31.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "NAP",
+     "player": "Matteo Politano",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.7,
+     "y": 19.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "NAP",
+     "player": "Alisson Santos",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.135,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 44.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "NAP",
+     "player": "Matteo Politano",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.073,
+     "xgot": 0.04,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 27.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "NAP",
+     "player": "Alisson Santos",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.059,
+     "xgot": 0.354,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.8,
+     "y": 42.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "NAP",
+     "player": "Benoît Badiashile",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.228,
+     "xgot": 0.278,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 32.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     -49
+    ],
+    [
+     4,
+     -71
+    ],
+    [
+     5,
+     -65
+    ],
+    [
+     6,
+     -27
+    ],
+    [
+     7,
+     -43
+    ],
+    [
+     8,
+     -33
+    ],
+    [
+     9,
+     -8
+    ],
+    [
+     10,
+     35
+    ],
+    [
+     11,
+     35
+    ],
+    [
+     12,
+     11
+    ],
+    [
+     13,
+     3
+    ],
+    [
+     14,
+     -14
+    ],
+    [
+     15,
+     -8
+    ],
+    [
+     16,
+     -16
+    ],
+    [
+     17,
+     -19
+    ],
+    [
+     18,
+     -3
+    ],
+    [
+     19,
+     -3
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     21,
+     -5
+    ],
+    [
+     22,
+     -11
+    ],
+    [
+     23,
+     -14
+    ],
+    [
+     24,
+     -30
+    ],
+    [
+     25,
+     -46
+    ],
+    [
+     26,
+     -46
+    ],
+    [
+     27,
+     -35
+    ],
+    [
+     28,
+     -8
+    ],
+    [
+     29,
+     -30
+    ],
+    [
+     30,
+     -60
+    ],
+    [
+     31,
+     -76
+    ],
+    [
+     32,
+     -76
+    ],
+    [
+     33,
+     -57
+    ],
+    [
+     34,
+     -57
+    ],
+    [
+     35,
+     -100
+    ],
+    [
+     36,
+     -87
+    ],
+    [
+     37,
+     -60
+    ],
+    [
+     38,
+     27
+    ],
+    [
+     39,
+     11
+    ],
+    [
+     40,
+     -5
+    ],
+    [
+     41,
+     -27
+    ],
+    [
+     42,
+     -14
+    ],
+    [
+     43,
+     -24
+    ],
+    [
+     44,
+     -8
+    ],
+    [
+     45,
+     5
+    ],
+    [
+     45.5,
+     11
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -11
+    ],
+    [
+     48,
+     -43
+    ],
+    [
+     49,
+     -5
+    ],
+    [
+     50,
+     5
+    ],
+    [
+     51,
+     43
+    ],
+    [
+     52,
+     3
+    ],
+    [
+     53,
+     5
+    ],
+    [
+     54,
+     0
+    ],
+    [
+     55,
+     3
+    ],
+    [
+     56,
+     -5
+    ],
+    [
+     57,
+     -16
+    ],
+    [
+     58,
+     -22
+    ],
+    [
+     59,
+     -100
+    ],
+    [
+     60,
+     -100
+    ],
+    [
+     61,
+     -100
+    ],
+    [
+     62,
+     -49
+    ],
+    [
+     63,
+     -38
+    ],
+    [
+     64,
+     -38
+    ],
+    [
+     65,
+     5
+    ],
+    [
+     66,
+     -5
+    ],
+    [
+     67,
+     5
+    ],
+    [
+     68,
+     -16
+    ],
+    [
+     69,
+     -11
+    ],
+    [
+     70,
+     5
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     72,
+     27
+    ],
+    [
+     73,
+     -11
+    ],
+    [
+     74,
+     -49
+    ],
+    [
+     75,
+     -81
+    ],
+    [
+     76,
+     -76
+    ],
+    [
+     77,
+     -54
+    ],
+    [
+     78,
+     -38
+    ],
+    [
+     79,
+     -24
+    ],
+    [
+     80,
+     -14
+    ],
+    [
+     81,
+     -73
+    ],
+    [
+     82,
+     -71
+    ],
+    [
+     83,
+     -76
+    ],
+    [
+     84,
+     -65
+    ],
+    [
+     85,
+     -87
+    ],
+    [
+     86,
+     -100
+    ],
+    [
+     87,
+     -87
+    ],
+    [
+     88,
+     -87
+    ],
+    [
+     89,
+     -65
+    ],
+    [
+     90,
+     -54
+    ],
+    [
+     90.5,
+     -51
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "VEN": {
+     "team": "VEN",
+     "formation": "3-5-2",
+     "coach": "Davide Nicola",
+     "xi": [
+      {
+       "name": "Filip Stanković",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Redouane Halhal",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Matías Moreno",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Juan Jesus",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Antoine Hainaut",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Kike Pérez",
+       "shirt": 71,
+       "pos": "M"
+      },
+      {
+       "name": "Simon Sohm",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Toma Bašić",
+       "shirt": 26,
+       "pos": "M"
+      },
+      {
+       "name": "Ridgeciano Haps",
+       "shirt": 5,
+       "pos": "M"
+      },
+      {
+       "name": "John Yeboah",
+       "shirt": 10,
+       "pos": "F"
+      },
+      {
+       "name": "Akor Adams",
+       "shirt": 45,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Albion Rrahmani",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Pasquale Mazzocchi",
+       "shirt": 70,
+       "pos": "?"
+      },
+      {
+       "name": "Thórir Helgason",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Joël Schingtienne",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Lamine Fanne",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Lorenzo Montipò",
+       "shirt": 96,
+       "pos": "?"
+      },
+      {
+       "name": "Ale Gomes",
+       "shirt": 95,
+       "pos": "?"
+      },
+      {
+       "name": "Rufai Mohammed",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Lorenzo Berardi",
+       "shirt": 36,
+       "pos": "?"
+      },
+      {
+       "name": "Matteo Dagasso",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Richie Sagrado",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Simone Panada",
+       "shirt": 55,
+       "pos": "?"
+      },
+      {
+       "name": "Toni Fernández",
+       "shirt": 77,
+       "pos": "?"
+      },
+      {
+       "name": "Kornel Lisman",
+       "shirt": 56,
+       "pos": "?"
+      },
+      {
+       "name": "Lion Lauberbach",
+       "shirt": 29,
+       "pos": "?"
+      }
+     ]
+    },
+    "NAP": {
+     "team": "NAP",
+     "formation": "3-4-2-1",
+     "coach": "Massimiliano Allegri",
+     "xi": [
+      {
+       "name": "Alex Meret",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Sam Beukema",
+       "shirt": 31,
+       "pos": "D"
+      },
+      {
+       "name": "Amir Rrahmani",
+       "shirt": 13,
+       "pos": "D"
+      },
+      {
+       "name": "Benoît Badiashile",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Giovanni Di Lorenzo",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Billy Gilmour",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Stanislav Lobotka",
+       "shirt": 68,
+       "pos": "?"
+      },
+      {
+       "name": "Leonardo Spinazzola",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Giovane Nascimento",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Scott McTominay",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Lorenzo Lucca",
+       "shirt": 20,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Alisson Santos",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Kevin De Bruyne",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Rasmus Højlund",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Matteo Politano",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Mathías Olivera",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Nikita Contini",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Vanja Milinković-Savić",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Luca Marianucci",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Rafa Marín",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Frank Anguissa",
+       "shirt": 99,
+       "pos": "?"
+      },
+      {
+       "name": "Noa Lang",
+       "shirt": 70,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 41,
+      "center": 29,
+      "right": 30
+     },
+     "firstHalf": {
+      "left": 41,
+      "center": 30,
+      "right": 29
+     },
+     "secondHalf": {
+      "left": 40,
+      "center": 27,
+      "right": 33
+     }
+    },
+    "away": {
+     "total": {
+      "left": 40,
+      "center": 24,
+      "right": 36
+     },
+     "firstHalf": {
+      "left": 32,
+      "center": 24,
+      "right": 44
+     },
+     "secondHalf": {
+      "left": 48,
+      "center": 23,
+      "right": 29
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-17T15:11:47.983Z",
+   "fdMatchId": "2026-27-61",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-17T14:28:48.825Z"
+ "updatedAt": "2026-10-17T15:11:47.984Z"
 }
