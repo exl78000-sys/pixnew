@@ -43298,8 +43298,8 @@
   "BRE|LIV": {
    "fixtureId": 128984,
    "kickoff": "2026-10-17T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 2
@@ -43731,6 +43731,32 @@
    "goals": [
     {
      "side": "H",
+     "person": 24369,
+     "assist": 124052,
+     "team": 130,
+     "min": 44,
+     "label": "44'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 119386,
+     "assist": 75382,
+     "team": 10,
+     "min": 62,
+     "label": "62'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "A",
      "person": 21737,
      "assist": 68840,
      "team": 10,
@@ -43807,6 +43833,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 23194,
+      "team": 130,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "kindRaw": "YR",
+      "kind": "兩黃罰下"
      }
     ],
     "subs": [
@@ -43993,12 +44028,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -44015,10 +44044,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "88'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-17T16:13:06.663Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "FUL|HUL": {
    "fixtureId": 128987,
@@ -45860,5 +45902,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-17T16:05:51.235Z"
+ "fetchedAt": "2026-10-17T16:13:06.663Z"
 }
