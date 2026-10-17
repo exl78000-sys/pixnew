@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-17T19:01:16.535Z",
+ "fetchedAt": "2026-10-17T21:30:43.175Z",
  "teams": [
   {
    "code": "PSG",
@@ -65,66 +65,6 @@
    ]
   },
   {
-   "code": "MON",
-   "fotmobId": 9829,
-   "fotmobName": "Monaco",
-   "fetchedAt": "2026-10-09T12:42:01.944Z",
-   "color": "#C80C13",
-   "teamColors": {
-    "darkMode": "#C80C13",
-    "lightMode": "#C80C13",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Louis-II",
-   "city": "Monaco",
-   "location": [
-    "43.727563789",
-    "7.415542156"
-   ],
-   "capacity": 18523,
-   "surface": "Grass",
-   "opened": 1985,
-   "coachHistory": [
-    {
-     "id": 7484,
-     "name": "Adolf Hütter",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 4,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.57
-    },
-    {
-     "id": 38795,
-     "name": "Sébastien Pocognoli",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 12,
-     "draw": 5,
-     "loss": 10,
-     "pointsPerGame": 1.52,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 41167,
-     "name": "Filipe Luís",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
-  {
    "code": "LIL",
    "fotmobId": 8639,
    "fotmobName": "Lille",
@@ -181,6 +121,66 @@
      "loss": 1,
      "pointsPerGame": 2,
      "winPercentage": 0.6
+    }
+   ]
+  },
+  {
+   "code": "MON",
+   "fotmobId": 9829,
+   "fotmobName": "Monaco",
+   "fetchedAt": "2026-10-09T12:42:01.944Z",
+   "color": "#C80C13",
+   "teamColors": {
+    "darkMode": "#C80C13",
+    "lightMode": "#C80C13",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Louis-II",
+   "city": "Monaco",
+   "location": [
+    "43.727563789",
+    "7.415542156"
+   ],
+   "capacity": 18523,
+   "surface": "Grass",
+   "opened": 1985,
+   "coachHistory": [
+    {
+     "id": 7484,
+     "name": "Adolf Hütter",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 4,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.57
+    },
+    {
+     "id": 38795,
+     "name": "Sébastien Pocognoli",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 12,
+     "draw": 5,
+     "loss": 10,
+     "pointsPerGame": 1.52,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 41167,
+     "name": "Filipe Luís",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
     }
    ]
   },
@@ -305,66 +305,6 @@
    ]
   },
   {
-   "code": "BST",
-   "fotmobId": 8521,
-   "fotmobName": "Brest",
-   "fetchedAt": "2026-10-09T12:42:07.373Z",
-   "color": "#ED1C24",
-   "teamColors": {
-    "darkMode": "#ED1C24",
-    "lightMode": "#ED1C24",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Francis-Le Blé",
-   "city": "Brest",
-   "location": [
-    "48.402881677",
-    "-4.461457729"
-   ],
-   "capacity": 15931,
-   "surface": "Grass",
-   "opened": 1922,
-   "coachHistory": [
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2023/2024",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 17,
-     "draw": 10,
-     "loss": 7,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 15,
-     "draw": 5,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 10,
-     "draw": 9,
-     "loss": 15,
-     "pointsPerGame": 1.15,
-     "winPercentage": 0.29
-    }
-   ]
-  },
-  {
    "code": "PFC",
    "fotmobId": 6379,
    "fotmobName": "Paris FC",
@@ -481,6 +421,66 @@
      "loss": 1,
      "pointsPerGame": 0,
      "winPercentage": 0
+    }
+   ]
+  },
+  {
+   "code": "BST",
+   "fotmobId": 8521,
+   "fotmobName": "Brest",
+   "fetchedAt": "2026-10-09T12:42:07.373Z",
+   "color": "#ED1C24",
+   "teamColors": {
+    "darkMode": "#ED1C24",
+    "lightMode": "#ED1C24",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Francis-Le Blé",
+   "city": "Brest",
+   "location": [
+    "48.402881677",
+    "-4.461457729"
+   ],
+   "capacity": 15931,
+   "surface": "Grass",
+   "opened": 1922,
+   "coachHistory": [
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2023/2024",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 17,
+     "draw": 10,
+     "loss": 7,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 15,
+     "draw": 5,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 10,
+     "draw": 9,
+     "loss": 15,
+     "pointsPerGame": 1.15,
+     "winPercentage": 0.29
     }
    ]
   },

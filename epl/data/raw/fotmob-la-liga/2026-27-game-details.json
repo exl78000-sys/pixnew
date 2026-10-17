@@ -138443,8 +138443,1710 @@
      }
     ]
    }
+  },
+  "VAL|ATH": {
+   "key": "VAL|ATH",
+   "season": "2026-27",
+   "date": "2026-10-17",
+   "matchId": "5868099",
+   "home": "VAL",
+   "away": "ATH",
+   "score": [
+    0,
+    0
+   ],
+   "providerScore": [
+    0,
+    0
+   ],
+   "teamStats": {
+    "VAL": {
+     "possession": 37,
+     "shots": 16,
+     "shotsOn": 3,
+     "shotsOff": 12,
+     "blockedShots": 1,
+     "blocksMade": 1,
+     "corners": 2,
+     "offsides": 2,
+     "fouls": 14,
+     "saves": 1,
+     "passes": 334,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.41
+    },
+    "ATH": {
+     "possession": 63,
+     "shots": 9,
+     "shotsOn": 2,
+     "shotsOff": 7,
+     "blockedShots": 0,
+     "blocksMade": 1,
+     "corners": 6,
+     "offsides": 1,
+     "fouls": 13,
+     "saves": 3,
+     "passes": 568,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.59
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "VAL": {
+     "touches_opp_box": 19,
+     "big_chance": 5,
+     "big_chance_missed_title": 5,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 13,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 1.29,
+     "expected_goals_set_play": 0.12,
+     "expected_goals_non_penalty": 1.41,
+     "expected_goals_on_target": 0.55,
+     "own_half_passes": 158,
+     "opposition_half_passes": 109,
+     "long_balls_accurate": 28,
+     "long_balls_accurate_pct": 48,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 29,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 17,
+     "interceptions": 16,
+     "clearances": 35,
+     "duel_won": 51,
+     "ground_duels_won": 36,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 15,
+     "aerials_won_pct": 54,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 47,
+     "red_cards": 0
+    },
+    "ATH": {
+     "touches_opp_box": 30,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.55,
+     "expected_goals_set_play": 0.04,
+     "expected_goals_non_penalty": 0.59,
+     "expected_goals_on_target": 0.1,
+     "own_half_passes": 186,
+     "opposition_half_passes": 297,
+     "long_balls_accurate": 29,
+     "long_balls_accurate_pct": 51,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 13,
+     "player_throws": 13,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 7,
+     "clearances": 18,
+     "duel_won": 45,
+     "ground_duels_won": 32,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 13,
+     "aerials_won_pct": 46,
+     "dribbles_succeeded": 4,
+     "dribbles_succeeded_pct": 24,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     37,
+     63
+    ],
+    "h1": [
+     37,
+     63
+    ],
+    "h2": [
+     36,
+     64
+    ]
+   },
+   "events": [
+    {
+     "minute": 19,
+     "extra": null,
+     "team": "VAL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Dani Raba"
+    },
+    {
+     "minute": 38,
+     "extra": null,
+     "team": "ATH",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Aymeric Laporte"
+    },
+    {
+     "minute": 42,
+     "extra": null,
+     "team": "ATH",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Beñat Gerenabarrena"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mikel Jauregizar"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Luis Rioja"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "David Otorbi"
+    },
+    {
+     "minute": 57,
+     "extra": null,
+     "team": "ATH",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Íñigo Ruíz de Galarreta"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jesús Areso"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alejandro Rego"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gorka Guruzeta"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Maroan Sannadi"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Harvey Elliott"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jesus Vázquez"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Filip Ugrinic"
+    },
+    {
+     "minute": 87,
+     "extra": null,
+     "team": "VAL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Pepelu"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "VAL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "César Tárrega"
+    }
+   ],
+   "shots": [
+    {
+     "min": 7,
+     "extra": null,
+     "team": "VAL",
+     "player": "Hugo Duro",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 31.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "VAL",
+     "player": "Pablo Maffeo",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 38.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "ATH",
+     "player": "Johaneko Louis-Jean",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.072,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 41.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ATH",
+     "player": "Iñaki Williams",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 18.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "ATH",
+     "player": "Aymeric Laporte",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 35,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "VAL",
+     "player": "Hugo Duro",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.8,
+     "y": 25.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "ATH",
+     "player": "Iñaki Williams",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.8,
+     "y": 36.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "VAL",
+     "player": "Javier Guerra",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 35.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "VAL",
+     "player": "José Gayà",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.176,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 43.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "ATH",
+     "player": "Peio Canales",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.227,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 30.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "ATH",
+     "player": "Johaneko Louis-Jean",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 48.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "VAL",
+     "player": "Hugo Duro",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 31.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "VAL",
+     "player": "Dani Raba",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 24.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "ATH",
+     "player": "Iñaki Williams",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0.103,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 48.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "VAL",
+     "player": "Dani Raba",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 49.6,
+     "y": 37.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "VAL",
+     "player": "Arnaut Danjuma",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.104,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 44.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "VAL",
+     "player": "José Gayà",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.052,
+     "xgot": 0.059,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 46.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "VAL",
+     "player": "David Otorbi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.425,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.2,
+     "y": 21.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "ATH",
+     "player": "Johaneko Louis-Jean",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.4,
+     "y": 46,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "ATH",
+     "player": "Robert Navarro",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.088,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 25,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "VAL",
+     "player": "David Otorbi",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 20.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "VAL",
+     "player": "Luis Rioja",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 50.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "VAL",
+     "player": "Javier Guerra",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0.199,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 41.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "VAL",
+     "player": "Javier Guerra",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.181,
+     "xgot": 0.296,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "VAL",
+     "player": "Harvey Elliott",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.8,
+     "y": 44.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -3
+    ],
+    [
+     2,
+     -24
+    ],
+    [
+     3,
+     -35
+    ],
+    [
+     4,
+     -27
+    ],
+    [
+     5,
+     -16
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     7,
+     30
+    ],
+    [
+     8,
+     98
+    ],
+    [
+     9,
+     76
+    ],
+    [
+     10,
+     84
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     12,
+     -5
+    ],
+    [
+     13,
+     -33
+    ],
+    [
+     14,
+     -35
+    ],
+    [
+     15,
+     -14
+    ],
+    [
+     16,
+     -46
+    ],
+    [
+     17,
+     -27
+    ],
+    [
+     18,
+     -76
+    ],
+    [
+     19,
+     -22
+    ],
+    [
+     20,
+     -33
+    ],
+    [
+     21,
+     -5
+    ],
+    [
+     22,
+     -38
+    ],
+    [
+     23,
+     -16
+    ],
+    [
+     24,
+     -16
+    ],
+    [
+     25,
+     -14
+    ],
+    [
+     26,
+     30
+    ],
+    [
+     27,
+     22
+    ],
+    [
+     28,
+     19
+    ],
+    [
+     29,
+     -46
+    ],
+    [
+     30,
+     -33
+    ],
+    [
+     31,
+     8
+    ],
+    [
+     32,
+     3
+    ],
+    [
+     33,
+     -24
+    ],
+    [
+     34,
+     -100
+    ],
+    [
+     35,
+     -100
+    ],
+    [
+     36,
+     -95
+    ],
+    [
+     37,
+     -100
+    ],
+    [
+     38,
+     -68
+    ],
+    [
+     39,
+     -52
+    ],
+    [
+     40,
+     5
+    ],
+    [
+     41,
+     24
+    ],
+    [
+     42,
+     19
+    ],
+    [
+     43,
+     19
+    ],
+    [
+     44,
+     -22
+    ],
+    [
+     45,
+     -33
+    ],
+    [
+     45.5,
+     -35
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -22
+    ],
+    [
+     48,
+     -22
+    ],
+    [
+     49,
+     -49
+    ],
+    [
+     50,
+     -22
+    ],
+    [
+     51,
+     -5
+    ],
+    [
+     52,
+     -8
+    ],
+    [
+     53,
+     3
+    ],
+    [
+     54,
+     -14
+    ],
+    [
+     55,
+     5
+    ],
+    [
+     56,
+     -27
+    ],
+    [
+     57,
+     16
+    ],
+    [
+     58,
+     41
+    ],
+    [
+     59,
+     19
+    ],
+    [
+     60,
+     -46
+    ],
+    [
+     61,
+     -81
+    ],
+    [
+     62,
+     -38
+    ],
+    [
+     63,
+     -16
+    ],
+    [
+     64,
+     0
+    ],
+    [
+     65,
+     -5
+    ],
+    [
+     66,
+     -5
+    ],
+    [
+     67,
+     11
+    ],
+    [
+     68,
+     11
+    ],
+    [
+     69,
+     0
+    ],
+    [
+     70,
+     100
+    ],
+    [
+     71,
+     100
+    ],
+    [
+     72,
+     100
+    ],
+    [
+     73,
+     8
+    ],
+    [
+     74,
+     3
+    ],
+    [
+     75,
+     -27
+    ],
+    [
+     76,
+     -22
+    ],
+    [
+     77,
+     -11
+    ],
+    [
+     78,
+     -33
+    ],
+    [
+     79,
+     -57
+    ],
+    [
+     80,
+     -100
+    ],
+    [
+     81,
+     3
+    ],
+    [
+     82,
+     43
+    ],
+    [
+     83,
+     95
+    ],
+    [
+     84,
+     52
+    ],
+    [
+     85,
+     16
+    ],
+    [
+     86,
+     -3
+    ],
+    [
+     87,
+     -24
+    ],
+    [
+     88,
+     -33
+    ],
+    [
+     89,
+     -76
+    ],
+    [
+     90,
+     -49
+    ],
+    [
+     90.5,
+     -26
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "VAL": {
+     "team": "VAL",
+     "formation": "4-2-3-1",
+     "coach": "Javier Aguirre",
+     "xi": [
+      {
+       "name": "Stole Dimitrievski",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Pablo Maffeo",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "César Tárrega",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Justin De Haas",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "José Gayà",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Pepelu",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Guido Rodríguez",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Dani Raba",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Javier Guerra",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Arnaut Danjuma",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Hugo Duro",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "David Otorbi",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Luis Rioja",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Harvey Elliott",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Jesus Vázquez",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Filip Ugrinic",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Kayne van Oevelen",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Arnau Martínez",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Mouctar Diakhaby",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Aaron Mayol",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Aliou Dieng",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Ryunosuke Sato",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Aimar Blázquez",
+       "shirt": 37,
+       "pos": "?"
+      }
+     ]
+    },
+    "ATH": {
+     "team": "ATH",
+     "formation": "4-2-3-1",
+     "coach": "Edin Terzić",
+     "xi": [
+      {
+       "name": "Unai Simón",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Hugo Rincón",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Aitor Paredes",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Aymeric Laporte",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Johaneko Louis-Jean",
+       "shirt": 31,
+       "pos": "D"
+      },
+      {
+       "name": "Íñigo Ruíz de Galarreta",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Beñat Gerenabarrena",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Alex Berenguer",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Peio Canales",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "Robert Navarro",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Iñaki Williams",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Mikel Jauregizar",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Jesús Areso",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Alejandro Rego",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Gorka Guruzeta",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Maroan Sannadi",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Álex Padilla",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel Vivian",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Yeray Álvarez",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Yuri Berchiche",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Beñat Prados",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Christian Imga",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Nico Serrano",
+       "shirt": 22,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 43,
+      "center": 27,
+      "right": 30
+     },
+     "firstHalf": {
+      "left": 36,
+      "center": 36,
+      "right": 28
+     },
+     "secondHalf": {
+      "left": 50,
+      "center": 19,
+      "right": 31
+     }
+    },
+    "away": {
+     "total": {
+      "left": 37,
+      "center": 25,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 40,
+      "center": 26,
+      "right": 34
+     },
+     "secondHalf": {
+      "left": 34,
+      "center": 24,
+      "right": 42
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 0,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-17T21:28:55.912Z",
+   "fdMatchId": "2026-27-83",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "ATH",
+      "name": "Robert Navarro",
+      "n": 50,
+      "cx": 68.8,
+      "cy": 45.3,
+      "spread": 28.2,
+      "grid": "0,0,0,3,3,1,0,0,3,0,0,0,0,1,2,4,5,4,1,1,3,6,7,6"
+     },
+     {
+      "team": "ATH",
+      "name": "Unai Simón",
+      "n": 56,
+      "cx": 11.3,
+      "cy": 33.7,
+      "spread": 8.6,
+      "grid": "0,0,0,0,0,0,28,1,0,0,0,0,21,6,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Guido Rodríguez",
+      "n": 82,
+      "cx": 37.3,
+      "cy": 31.4,
+      "spread": 24.6,
+      "grid": "0,6,2,6,2,0,9,13,8,0,1,0,3,11,7,3,4,0,0,3,2,1,1,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Hugo Rincón",
+      "n": 96,
+      "cx": 46.3,
+      "cy": 42.3,
+      "spread": 28.4,
+      "grid": "1,6,3,3,2,0,3,2,1,7,0,0,6,3,9,4,2,0,0,4,19,14,6,1"
+     },
+     {
+      "team": "ATH",
+      "name": "Aitor Paredes",
+      "n": 100,
+      "cx": 47.3,
+      "cy": 43,
+      "spread": 21.1,
+      "grid": "0,0,0,0,0,0,1,3,9,2,1,1,3,14,31,12,0,3,0,3,4,9,3,1"
+     },
+     {
+      "team": "ATH",
+      "name": "Aymeric Laporte",
+      "n": 118,
+      "cx": 40.9,
+      "cy": 21.9,
+      "spread": 22.4,
+      "grid": "2,7,14,14,2,0,11,21,13,12,1,2,1,6,3,6,2,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Íñigo Ruíz de Galarreta",
+      "n": 58,
+      "cx": 55.4,
+      "cy": 31.1,
+      "spread": 20.2,
+      "grid": "0,0,2,4,0,0,0,3,6,12,3,1,1,1,11,6,6,1,0,0,0,1,0,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Johaneko Louis-Jean",
+      "n": 68,
+      "cx": 67.8,
+      "cy": 10.5,
+      "spread": 21.8,
+      "grid": "1,1,10,23,7,12,1,0,0,3,6,4,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Alex Berenguer",
+      "n": 86,
+      "cx": 66.2,
+      "cy": 36.6,
+      "spread": 37.7,
+      "grid": "0,2,2,4,11,9,0,0,1,0,3,6,3,1,2,2,2,3,7,2,1,12,9,4"
+     },
+     {
+      "team": "VAL",
+      "name": "José Gayà",
+      "n": 53,
+      "cx": 41.7,
+      "cy": 12.6,
+      "spread": 32.6,
+      "grid": "9,15,2,3,8,3,1,3,1,0,2,2,1,1,0,0,0,0,0,0,2,0,0,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Peio Canales",
+      "n": 56,
+      "cx": 67.5,
+      "cy": 36.9,
+      "spread": 24.8,
+      "grid": "0,0,3,4,0,1,0,1,3,2,11,0,0,2,1,2,7,1,0,0,2,3,11,2"
+     },
+     {
+      "team": "VAL",
+      "name": "Javier Guerra",
+      "n": 57,
+      "cx": 60.2,
+      "cy": 26.3,
+      "spread": 30.2,
+      "grid": "0,1,2,2,8,6,1,10,3,2,2,3,0,1,5,3,3,1,0,0,0,2,2,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Pepelu",
+      "n": 67,
+      "cx": 42.4,
+      "cy": 34.3,
+      "spread": 24.4,
+      "grid": "0,4,3,3,3,0,2,9,9,4,1,0,3,5,1,3,1,0,0,3,7,6,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "César Tárrega",
+      "n": 59,
+      "cx": 28.7,
+      "cy": 46.7,
+      "spread": 21.4,
+      "grid": "0,0,0,1,0,0,6,1,0,0,0,0,9,14,4,3,0,0,3,8,7,2,1,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Pablo Maffeo",
+      "n": 78,
+      "cx": 37.9,
+      "cy": 54.4,
+      "spread": 27.8,
+      "grid": "0,0,0,0,0,1,0,0,2,0,0,1,6,3,3,4,1,1,15,16,10,9,6,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Dani Raba",
+      "n": 39,
+      "cx": 53.3,
+      "cy": 49.3,
+      "spread": 21.5,
+      "grid": "0,0,0,1,0,0,0,1,1,2,1,0,0,1,5,3,4,0,0,3,10,4,3,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Beñat Gerenabarrena",
+      "n": 46,
+      "cx": 57.6,
+      "cy": 34.8,
+      "spread": 23.1,
+      "grid": "0,0,1,1,1,1,1,1,6,6,2,1,0,1,7,6,6,0,0,1,0,2,2,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Iñaki Williams",
+      "n": 24,
+      "cx": 75.9,
+      "cy": 27.6,
+      "spread": 23.9,
+      "grid": "0,0,0,0,3,4,1,0,1,2,2,3,0,0,0,3,2,1,0,0,0,0,2,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Justin De Haas",
+      "n": 53,
+      "cx": 30.3,
+      "cy": 21.2,
+      "spread": 21.7,
+      "grid": "3,9,0,0,2,0,11,12,8,4,1,1,1,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Hugo Duro",
+      "n": 26,
+      "cx": 69.1,
+      "cy": 32.6,
+      "spread": 24.6,
+      "grid": "0,0,1,2,0,0,0,2,3,4,0,1,0,0,0,2,4,6,0,0,0,0,0,1"
+     },
+     {
+      "team": "VAL",
+      "name": "Stole Dimitrievski",
+      "n": 40,
+      "cx": 7.2,
+      "cy": 33.4,
+      "spread": 7.1,
+      "grid": "0,0,0,0,0,0,21,0,0,0,0,0,18,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Arnaut Danjuma",
+      "n": 39,
+      "cx": 58.7,
+      "cy": 23.5,
+      "spread": 30.6,
+      "grid": "1,1,2,1,5,5,0,5,7,0,2,3,2,0,2,0,1,0,0,0,1,0,1,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Mikel Jauregizar",
+      "n": 42,
+      "cx": 58.4,
+      "cy": 36.1,
+      "spread": 27.7,
+      "grid": "1,1,2,1,0,0,2,1,4,5,4,0,0,1,1,3,6,1,0,0,2,4,2,1"
+     },
+     {
+      "team": "VAL",
+      "name": "Luis Rioja",
+      "n": 22,
+      "cx": 61,
+      "cy": 14.2,
+      "spread": 34.2,
+      "grid": "0,1,0,4,6,3,4,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "VAL",
+      "name": "David Otorbi",
+      "n": 20,
+      "cx": 71,
+      "cy": 52.9,
+      "spread": 29.6,
+      "grid": "0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,3,1,3,1,2,6,3"
+     },
+     {
+      "team": "ATH",
+      "name": "Alejandro Rego",
+      "n": 26,
+      "cx": 56.8,
+      "cy": 29.7,
+      "spread": 25.5,
+      "grid": "0,3,1,2,0,0,1,0,3,4,2,0,0,1,0,3,4,1,0,0,0,0,1,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Gorka Guruzeta",
+      "n": 3,
+      "cx": 38.3,
+      "cy": 17.5,
+      "spread": 20.2,
+      "grid": "0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Jesús Areso",
+      "n": 29,
+      "cx": 62.5,
+      "cy": 63.1,
+      "spread": 27.9,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,2,4,4,9,6"
+     },
+     {
+      "team": "VAL",
+      "name": "Harvey Elliott",
+      "n": 12,
+      "cx": 60.1,
+      "cy": 26.6,
+      "spread": 32.2,
+      "grid": "0,0,0,1,3,0,1,0,0,0,1,1,0,3,1,0,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "ATH",
+      "name": "Maroan Sannadi",
+      "n": 8,
+      "cx": 64.1,
+      "cy": 34.7,
+      "spread": 28.8,
+      "grid": "0,0,2,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,3,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Jesus Vázquez",
+      "n": 7,
+      "cx": 23.6,
+      "cy": 8.8,
+      "spread": 27.3,
+      "grid": "3,0,0,1,1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Filip Ugrinic",
+      "n": 1,
+      "cx": 83.5,
+      "cy": 12.2,
+      "spread": 0,
+      "grid": "0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-17T18:59:36.950Z"
+ "updatedAt": "2026-10-17T21:28:56.537Z"
 }

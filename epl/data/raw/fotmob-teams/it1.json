@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-17T19:01:16.019Z",
+ "fetchedAt": "2026-10-17T21:30:42.475Z",
  "teams": [
   {
    "code": "INT",
@@ -65,66 +65,6 @@
    ]
   },
   {
-   "code": "LAZ",
-   "fotmobId": 8543,
-   "fotmobName": "Lazio",
-   "fetchedAt": "2026-10-09T12:41:52.062Z",
-   "color": "#75acd4",
-   "teamColors": {
-    "darkMode": "#4096da",
-    "lightMode": "#75acd4",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Olimpico",
-   "city": "Roma",
-   "location": [
-    "41.933947912",
-    "12.454757094"
-   ],
-   "capacity": 70634,
-   "surface": "Grass",
-   "opened": 1932,
-   "coachHistory": [
-    {
-     "id": 187735,
-     "name": "Marco Baroni",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 18,
-     "draw": 11,
-     "loss": 9,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 557567,
-     "name": "Maurizio Sarri",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 14,
-     "draw": 12,
-     "loss": 12,
-     "pointsPerGame": 1.42,
-     "winPercentage": 0.37
-    },
-    {
-     "id": 30721,
-     "name": "Gennaro Gattuso",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
-  {
    "code": "ROM",
    "fotmobId": 8686,
    "fotmobName": "Roma",
@@ -173,6 +113,66 @@
     {
      "id": 96945,
      "name": "Gian Piero Gasperini",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "LAZ",
+   "fotmobId": 8543,
+   "fotmobName": "Lazio",
+   "fetchedAt": "2026-10-09T12:41:52.062Z",
+   "color": "#75acd4",
+   "teamColors": {
+    "darkMode": "#4096da",
+    "lightMode": "#75acd4",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Olimpico",
+   "city": "Roma",
+   "location": [
+    "41.933947912",
+    "12.454757094"
+   ],
+   "capacity": 70634,
+   "surface": "Grass",
+   "opened": 1932,
+   "coachHistory": [
+    {
+     "id": 187735,
+     "name": "Marco Baroni",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 18,
+     "draw": 11,
+     "loss": 9,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 557567,
+     "name": "Maurizio Sarri",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 14,
+     "draw": 12,
+     "loss": 12,
+     "pointsPerGame": 1.42,
+     "winPercentage": 0.37
+    },
+    {
+     "id": 30721,
+     "name": "Gennaro Gattuso",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -845,66 +845,6 @@
    ]
   },
   {
-   "code": "GEN",
-   "fotmobId": 10233,
-   "fotmobName": "Genoa",
-   "fetchedAt": "2026-10-09T12:41:59.575Z",
-   "color": "#CB1111",
-   "teamColors": {
-    "darkMode": "#CB1111",
-    "lightMode": "#CB1111",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Comunale Luigi Ferraris",
-   "city": "Genova",
-   "location": [
-    "44.416467178",
-    "8.952527046"
-   ],
-   "capacity": 36703,
-   "surface": "Grass",
-   "opened": 1911,
-   "coachHistory": [
-    {
-     "id": 34942,
-     "name": "Patrick Vieira",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 3,
-     "loss": 6,
-     "pointsPerGame": 0.33,
-     "winPercentage": 0
-    },
-    {
-     "id": 30682,
-     "name": "Daniele De Rossi",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 9,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 30682,
-     "name": "Daniele De Rossi",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 4,
-     "pointsPerGame": 0.2,
-     "winPercentage": 0
-    }
-   ]
-  },
-  {
    "code": "UDI",
    "fotmobId": 8600,
    "fotmobName": "Udinese",
@@ -1141,6 +1081,66 @@
      "loss": 0,
      "pointsPerGame": 2,
      "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "GEN",
+   "fotmobId": 10233,
+   "fotmobName": "Genoa",
+   "fetchedAt": "2026-10-09T12:41:59.575Z",
+   "color": "#CB1111",
+   "teamColors": {
+    "darkMode": "#CB1111",
+    "lightMode": "#CB1111",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Comunale Luigi Ferraris",
+   "city": "Genova",
+   "location": [
+    "44.416467178",
+    "8.952527046"
+   ],
+   "capacity": 36703,
+   "surface": "Grass",
+   "opened": 1911,
+   "coachHistory": [
+    {
+     "id": 34942,
+     "name": "Patrick Vieira",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 3,
+     "loss": 6,
+     "pointsPerGame": 0.33,
+     "winPercentage": 0
+    },
+    {
+     "id": 30682,
+     "name": "Daniele De Rossi",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 30682,
+     "name": "Daniele De Rossi",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 4,
+     "pointsPerGame": 0.2,
+     "winPercentage": 0
     }
    ]
   },
