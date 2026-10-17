@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-17T16:46:02.795Z",
+ "fetchedAt": "2026-10-17T19:01:16.019Z",
  "teams": [
   {
    "code": "INT",
@@ -725,6 +725,66 @@
    ]
   },
   {
+   "code": "LEC",
+   "fotmobId": 9888,
+   "fotmobName": "Lecce",
+   "fetchedAt": "2026-10-09T12:41:55.962Z",
+   "color": "#e12300",
+   "teamColors": {
+    "darkMode": "#e12300",
+    "lightMode": "#e12300",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Ettore Giardiniero - Via del Mare",
+   "city": "Lecce",
+   "location": [
+    "40.365103138",
+    "18.208851814"
+   ],
+   "capacity": 33876,
+   "surface": "Grass",
+   "opened": 1966,
+   "coachHistory": [
+    {
+     "id": 78712,
+     "name": "Marco Giampaolo",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 6,
+     "draw": 7,
+     "loss": 13,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.23
+    },
+    {
+     "id": 5615,
+     "name": "Eusebio Di Francesco",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 10,
+     "draw": 8,
+     "loss": 20,
+     "pointsPerGame": 1,
+     "winPercentage": 0.26
+    },
+    {
+     "id": 5615,
+     "name": "Eusebio Di Francesco",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 1.2,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
    "code": "BLG",
    "fotmobId": 9857,
    "fotmobName": "Bologna",
@@ -785,62 +845,62 @@
    ]
   },
   {
-   "code": "LEC",
-   "fotmobId": 9888,
-   "fotmobName": "Lecce",
-   "fetchedAt": "2026-10-09T12:41:55.962Z",
-   "color": "#e12300",
+   "code": "GEN",
+   "fotmobId": 10233,
+   "fotmobName": "Genoa",
+   "fetchedAt": "2026-10-09T12:41:59.575Z",
+   "color": "#CB1111",
    "teamColors": {
-    "darkMode": "#e12300",
-    "lightMode": "#e12300",
+    "darkMode": "#CB1111",
+    "lightMode": "#CB1111",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stadio Ettore Giardiniero - Via del Mare",
-   "city": "Lecce",
+   "venue": "Stadio Comunale Luigi Ferraris",
+   "city": "Genova",
    "location": [
-    "40.365103138",
-    "18.208851814"
+    "44.416467178",
+    "8.952527046"
    ],
-   "capacity": 33876,
+   "capacity": 36703,
    "surface": "Grass",
-   "opened": 1966,
+   "opened": 1911,
    "coachHistory": [
     {
-     "id": 78712,
-     "name": "Marco Giampaolo",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 6,
-     "draw": 7,
-     "loss": 13,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.23
-    },
-    {
-     "id": 5615,
-     "name": "Eusebio Di Francesco",
+     "id": 34942,
+     "name": "Patrick Vieira",
      "season": "2025/2026",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 10,
-     "draw": 8,
-     "loss": 20,
-     "pointsPerGame": 1,
-     "winPercentage": 0.26
+     "win": 0,
+     "draw": 3,
+     "loss": 6,
+     "pointsPerGame": 0.33,
+     "winPercentage": 0
     },
     {
-     "id": 5615,
-     "name": "Eusebio Di Francesco",
+     "id": 30682,
+     "name": "Daniele De Rossi",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 30682,
+     "name": "Daniele De Rossi",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 2,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 1.2,
-     "winPercentage": 0.4
+     "win": 0,
+     "draw": 1,
+     "loss": 4,
+     "pointsPerGame": 0.2,
+     "winPercentage": 0
     }
    ]
   },
@@ -961,66 +1021,6 @@
      "loss": 3,
      "pointsPerGame": 0.8,
      "winPercentage": 0.2
-    }
-   ]
-  },
-  {
-   "code": "GEN",
-   "fotmobId": 10233,
-   "fotmobName": "Genoa",
-   "fetchedAt": "2026-10-09T12:41:59.575Z",
-   "color": "#CB1111",
-   "teamColors": {
-    "darkMode": "#CB1111",
-    "lightMode": "#CB1111",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Comunale Luigi Ferraris",
-   "city": "Genova",
-   "location": [
-    "44.416467178",
-    "8.952527046"
-   ],
-   "capacity": 36703,
-   "surface": "Grass",
-   "opened": 1911,
-   "coachHistory": [
-    {
-     "id": 34942,
-     "name": "Patrick Vieira",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 3,
-     "loss": 6,
-     "pointsPerGame": 0.33,
-     "winPercentage": 0
-    },
-    {
-     "id": 30682,
-     "name": "Daniele De Rossi",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 9,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 30682,
-     "name": "Daniele De Rossi",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 4,
-     "pointsPerGame": 0.2,
-     "winPercentage": 0
     }
    ]
   },

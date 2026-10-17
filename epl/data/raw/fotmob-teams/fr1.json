@@ -2,8 +2,68 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-17T16:46:03.348Z",
+ "fetchedAt": "2026-10-17T19:01:16.535Z",
  "teams": [
+  {
+   "code": "PSG",
+   "fotmobId": 9847,
+   "fotmobName": "Paris Saint-Germain",
+   "fetchedAt": "2026-10-09T12:42:03.995Z",
+   "color": "#273F6D",
+   "teamColors": {
+    "darkMode": "#245593",
+    "lightMode": "#273F6D",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Parc des Princes",
+   "city": "Paris",
+   "location": [
+    "48.841433445",
+    "2.253048867"
+   ],
+   "capacity": 47929,
+   "surface": "Grass",
+   "opened": 1897,
+   "coachHistory": [
+    {
+     "id": 11532,
+     "name": "Luis Enrique",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 26,
+     "draw": 6,
+     "loss": 2,
+     "pointsPerGame": 2.47,
+     "winPercentage": 0.76
+    },
+    {
+     "id": 11532,
+     "name": "Luis Enrique",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 24,
+     "draw": 4,
+     "loss": 6,
+     "pointsPerGame": 2.24,
+     "winPercentage": 0.71
+    },
+    {
+     "id": 11532,
+     "name": "Luis Enrique",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 2,
+     "draw": 2,
+     "loss": 1,
+     "pointsPerGame": 1.6,
+     "winPercentage": 0.4
+    }
+   ]
+  },
   {
    "code": "MON",
    "fotmobId": 9829,
@@ -245,6 +305,66 @@
    ]
   },
   {
+   "code": "BST",
+   "fotmobId": 8521,
+   "fotmobName": "Brest",
+   "fetchedAt": "2026-10-09T12:42:07.373Z",
+   "color": "#ED1C24",
+   "teamColors": {
+    "darkMode": "#ED1C24",
+    "lightMode": "#ED1C24",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Francis-Le Blé",
+   "city": "Brest",
+   "location": [
+    "48.402881677",
+    "-4.461457729"
+   ],
+   "capacity": 15931,
+   "surface": "Grass",
+   "opened": 1922,
+   "coachHistory": [
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2023/2024",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 17,
+     "draw": 10,
+     "loss": 7,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 15,
+     "draw": 5,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 10,
+     "draw": 9,
+     "loss": 15,
+     "pointsPerGame": 1.15,
+     "winPercentage": 0.29
+    }
+   ]
+  },
+  {
    "code": "PFC",
    "fotmobId": 6379,
    "fotmobName": "Paris FC",
@@ -305,122 +425,62 @@
    ]
   },
   {
-   "code": "PSG",
-   "fotmobId": 9847,
-   "fotmobName": "Paris Saint-Germain",
-   "fetchedAt": "2026-10-09T12:42:03.995Z",
-   "color": "#273F6D",
+   "code": "LEN",
+   "fotmobId": 8588,
+   "fotmobName": "Lens",
+   "fetchedAt": "2026-10-09T12:42:08.639Z",
+   "color": "#d89f00",
    "teamColors": {
-    "darkMode": "#245593",
-    "lightMode": "#273F6D",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "darkMode": "#FFCE00",
+    "lightMode": "#d89f00",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Parc des Princes",
-   "city": "Paris",
+   "venue": "Stade Bollaert-Delelis",
+   "city": "Lens",
    "location": [
-    "48.841433445",
-    "2.253048867"
+    "50.432866762",
+    "2.814940810"
    ],
-   "capacity": 47929,
+   "capacity": 41233,
    "surface": "Grass",
-   "opened": 1897,
+   "opened": 1933,
    "coachHistory": [
     {
-     "id": 11532,
-     "name": "Luis Enrique",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 26,
-     "draw": 6,
-     "loss": 2,
-     "pointsPerGame": 2.47,
-     "winPercentage": 0.76
-    },
-    {
-     "id": 11532,
-     "name": "Luis Enrique",
+     "id": 1586853,
+     "name": "Pierre Sage",
      "season": "2025/2026",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 24,
+     "win": 22,
      "draw": 4,
-     "loss": 6,
-     "pointsPerGame": 2.24,
-     "winPercentage": 0.71
+     "loss": 8,
+     "pointsPerGame": 2.06,
+     "winPercentage": 0.65
     },
     {
-     "id": 11532,
-     "name": "Luis Enrique",
+     "id": 38847,
+     "name": "Dino Toppmöller",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 2,
-     "draw": 2,
-     "loss": 1,
-     "pointsPerGame": 1.6,
-     "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "STR",
-   "fotmobId": 9848,
-   "fotmobName": "Strasbourg",
-   "fetchedAt": "2026-10-09T12:42:05.056Z",
-   "color": "#294A92",
-   "teamColors": {
-    "darkMode": "#294A92",
-    "lightMode": "#294A92",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade de la Meinau",
-   "city": "Strasbourg",
-   "location": [
-    "48.560068724",
-    "7.755156755"
-   ],
-   "capacity": 32047,
-   "surface": "Grass",
-   "opened": 1906,
-   "coachHistory": [
-    {
-     "id": 24105,
-     "name": "Liam Rosenior",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 7,
-     "draw": 3,
-     "loss": 7,
-     "pointsPerGame": 1.41,
-     "winPercentage": 0.41
-    },
-    {
-     "id": 24393,
-     "name": "Gary O'Neil",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 8,
-     "draw": 5,
-     "loss": 4,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 1700757,
-     "name": "Hugo Oliveira",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 2,
+     "win": 1,
      "draw": 1,
      "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
+     "pointsPerGame": 1,
+     "winPercentage": 0.25
+    },
+    {
+     "id": 46243,
+     "name": "Yannick Cahuzac",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 0,
+     "draw": 0,
+     "loss": 1,
+     "pointsPerGame": 0,
+     "winPercentage": 0
     }
    ]
   },
@@ -481,66 +541,6 @@
      "loss": 2,
      "pointsPerGame": 1,
      "winPercentage": 0.2
-    }
-   ]
-  },
-  {
-   "code": "BST",
-   "fotmobId": 8521,
-   "fotmobName": "Brest",
-   "fetchedAt": "2026-10-09T12:42:07.373Z",
-   "color": "#ED1C24",
-   "teamColors": {
-    "darkMode": "#ED1C24",
-    "lightMode": "#ED1C24",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Francis-Le Blé",
-   "city": "Brest",
-   "location": [
-    "48.402881677",
-    "-4.461457729"
-   ],
-   "capacity": 15931,
-   "surface": "Grass",
-   "opened": 1922,
-   "coachHistory": [
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2023/2024",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 17,
-     "draw": 10,
-     "loss": 7,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 15,
-     "draw": 5,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 10,
-     "draw": 9,
-     "loss": 15,
-     "pointsPerGame": 1.15,
-     "winPercentage": 0.29
     }
    ]
   },
@@ -665,62 +665,62 @@
    ]
   },
   {
-   "code": "LEN",
-   "fotmobId": 8588,
-   "fotmobName": "Lens",
-   "fetchedAt": "2026-10-09T12:42:08.639Z",
-   "color": "#d89f00",
+   "code": "STR",
+   "fotmobId": 9848,
+   "fotmobName": "Strasbourg",
+   "fetchedAt": "2026-10-09T12:42:05.056Z",
+   "color": "#294A92",
    "teamColors": {
-    "darkMode": "#FFCE00",
-    "lightMode": "#d89f00",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "darkMode": "#294A92",
+    "lightMode": "#294A92",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stade Bollaert-Delelis",
-   "city": "Lens",
+   "venue": "Stade de la Meinau",
+   "city": "Strasbourg",
    "location": [
-    "50.432866762",
-    "2.814940810"
+    "48.560068724",
+    "7.755156755"
    ],
-   "capacity": 41233,
+   "capacity": 32047,
    "surface": "Grass",
-   "opened": 1933,
+   "opened": 1906,
    "coachHistory": [
     {
-     "id": 1586853,
-     "name": "Pierre Sage",
+     "id": 24105,
+     "name": "Liam Rosenior",
      "season": "2025/2026",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 22,
-     "draw": 4,
-     "loss": 8,
-     "pointsPerGame": 2.06,
-     "winPercentage": 0.65
+     "win": 7,
+     "draw": 3,
+     "loss": 7,
+     "pointsPerGame": 1.41,
+     "winPercentage": 0.41
     },
     {
-     "id": 38847,
-     "name": "Dino Toppmöller",
+     "id": 24393,
+     "name": "Gary O'Neil",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 8,
+     "draw": 5,
+     "loss": 4,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 1700757,
+     "name": "Hugo Oliveira",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 1,
+     "win": 2,
      "draw": 1,
      "loss": 2,
-     "pointsPerGame": 1,
-     "winPercentage": 0.25
-    },
-    {
-     "id": 46243,
-     "name": "Yannick Cahuzac",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 0,
-     "draw": 0,
-     "loss": 1,
-     "pointsPerGame": 0,
-     "winPercentage": 0
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
     }
    ]
   },
