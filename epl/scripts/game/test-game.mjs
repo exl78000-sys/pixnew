@@ -583,6 +583,21 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         `前 10 分鐘 ${head.length} 個事件・整場 ${whole.length} 個・worker ${pool.size()} 個`);
     }
 
+    /* 撲救發生在門將身上(2026-10-17,使用者列的動畫四項之「撲救」)。
+       改前量到的樣子:6 場 31 次撲救,球過門線那一刻門將離它 6.8 m(中位)—— 球越過門將飛到門線上才被判撲出,
+       然後瞬間交到他手上;畫面上是一顆看起來進了、卻被記成撲出的球。守兩件事:
+       ① 多數撲救在門將身上(where = keeper),門線那條只是搆不到時的保險;② 撲到那一刻門將離球的中位數在伸手範圍內。 */
+    {
+      const ms = await Promise.all(POOL_SEEDS.map(seed => full(seed)));
+      const sv = ms.flatMap(m => m.events().filter(e => e.type === 'save'));
+      const atK = sv.filter(e => e.where === 'keeper');
+      const gaps = atK.map(e => e.gap).sort((a, b) => a - b);
+      const med = gaps.length ? gaps[gaps.length >> 1] : Infinity;
+      check('撲救發生在門將身上:多數撲救 where = keeper,撲到那一刻門將離球中位 ≤ 2.6 m(改前 6.8 m、在門線上)',
+        sv.length >= 30 && atK.length >= sv.length * 0.6 && med <= 2.6 && sv.every(e => e.where === 'keeper' || e.where === 'line'),
+        `${POOL_SEEDS.length} 場 ${sv.length} 次撲救・門將身上 ${atK.length}・門線保險 ${sv.length - atK.length}・離球中位 ${med} m`);
+    }
+
     /* 一場跑到完場,然後照 game-view 那條路組出判讀的輸入 ——
        事件、控球串、控球秒數三樣都是畫面上會有的那一份(`renderGame` 就是這樣叫的)。 */
     const playOne = async seed => {

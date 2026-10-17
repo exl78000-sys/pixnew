@@ -430,6 +430,16 @@ const GOAL_HEIGHT = 2.44;
    **憑推算填的話會填錯**:我先用「5.6 次撲救 × 脫手比例 × 四成往外撥」推出 0.69,
    而實際答案是 0.80 —— 因為擋回場內的那些球也會在下一腳被解圍出底線,角球不只來自「往外撥」那一支。 */
 const SAVE_HOLD = 0.80;
+/* **門將撲向球、撲救發生在門將身上**(2026-10-17,使用者列的動畫四項之「撲救」)。
+   先量了畫面:6 場 31 次撲救,球過門線那一刻門將離它 **6.8 m**(中位,p90 7.9)、站在門線前 5.9 m ——
+   球是**越過門將、飛到門線上**才被判撲出,然後瞬間交到門將手上;最後半秒門將朝球移動超過 0.5 m 的只有 11 / 31。
+   畫面上那是一顆看起來進了、卻被記成撲出的球。
+   改法:球飛向自家球門時門將衝向「球會經過自己那條線」的點(撲);球經過他那條線、而且照軌跡會落在門框內時,
+   在他伸手範圍內就**在那裡**撲救(三種下場與機率不變,saveShot)。搆不到的照舊在門線上撲(保險,量測台印次數)。
+   進不進仍然在射門那一刻決定(willScore),所以 λ 的錨不受影響。 */
+const KEEPER_DIVE = true;
+const KEEPER_REACH = 2.6;        // 公尺:橫向的伸手 + 撲倒(手臂約 1 m、撲出去約 1.6 m)
+const KEEPER_REACH_Z = 2.6;      // 公尺:高度(跳起來的手)
 /* 門將**會出來收自家門前的鬆球**(2026-09-17,階段 4i)。在這之前他整場只做一件事:
    站在自家球門與球的連線上、離門線 5.5 公尺 —— 球滾到他腳邊三公尺他也不動,
    於是六碼區裡的鬆球一律被對方先拿到。量出來:運動戰的射門有 **11%** 在 0~5 公尺,
@@ -1215,6 +1225,19 @@ function moveBall(ball, dt) {
     else { ball.vx = 0; ball.vy = 0; }
   }
   ball.x += ball.vx * dt; ball.y += ball.vy * dt;
+}
+
+/* 這一球照現在的速度飛下去,會在門線的哪裡過線(KEEPER_DIVE 用)。
+   **跑同一支 moveBall**,不是直線外插 —— 第一版用 y + vy·t 外插,沒算空氣阻力與落地摩擦,
+   把到不了門線的球也算成射正:8 場射正 7.9 → 11.8 / 場。回傳 null = 到不了門線(停了或飛出邊線)。 */
+function predictLine(ball, lineX, dt = 1 / 60) {
+  const b = { x: ball.x, y: ball.y, z: ball.z ?? 0, vx: ball.vx, vy: ball.vy, vz: ball.vz ?? 0, holder: null };
+  for (let i = 0; i < 600; i++) {
+    moveBall(b, dt);
+    if ((lineX === 0 && b.x < 0) || (lineX !== 0 && b.x > lineX)) return { y: b.y, z: b.z };
+    if (hypot(b.vx, b.vy) < 0.2 || b.y < 0 || b.y > PITCH_H) return null;
+  }
+  return null;
 }
 
 /* 一腳射門的 xG。
@@ -3122,9 +3145,22 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         /* 自家禁區裡的鬆球:出來收(見 GK_RUSH)。沒有這一條的話六碼區的鬆球一律被對方先拿到,
            而那就是 0~5 公尺那一格 11% 對真實 3% 的來源。**只對鬆球**:對方持球時出擊
            是另一件事(那要判斷角度與時機,本站沒有資料可以校準),不做。 */
+        /* 撲(KEEPER_DIVE):對方的射門正飛向自家球門 → 衝向「球經過自己這條線時」的位置。
+           只動橫向(x 不動):門將撲的是橫向,往前衝出去是出擊,那是另一件事(4j)。 */
+        const incoming = KEEPER_DIVE && ball.shot?.side && ball.shot.side !== p.side && !ball.holder
+          && (gx === 0 ? ball.vx < -2 : ball.vx > 2);
+        const tHit = incoming ? (p.x - ball.x) / ball.vx : -1;
         const looseInBox = GK_RUSH && !ball.holder && ball.z < 2
           && Math.abs(ball.x - gx) < BOX_D && Math.abs(ball.y - PITCH_H / 2) < BOX_W;
-        if (looseInBox) { want = { x: ball.x, y: ball.y, speed: p.vmax }; }
+        if (incoming && tHit > 0 && tHit < 2.5) {
+          p.wantWhy = 'dive';
+          const yAt = ball.y + ball.vy * tHit;
+          /* 會進的球(willScore,射門那一刻就決定了):撲,但停在伸手搆不到的地方 —— 撲了、被打穿。
+             撲進球路的話他會在飛行中把這顆該進的球收走(只開撲的動作那一版:客隊 8 場只進 2 球)。 */
+          const beatenBy = ball.shot.willScore ? KEEPER_REACH + 0.6 : 0;
+          const ty = beatenBy ? yAt + (p.y >= yAt ? beatenBy : -beatenBy) : yAt;
+          want = { x: p.x, y: cl(ty, PITCH_H / 2 - SIM_GOAL_HALF - 1, PITCH_H / 2 + SIM_GOAL_HALF + 1), speed: p.vmax };
+        } else if (looseInBox) { want = { x: ball.x, y: ball.y, speed: p.vmax }; }
         else {
           /* 門將:站在自己球門與球的連線上,離門線不遠。
              **這裡有一個量到的幾何錯誤,而修它沒有用(2026-09-17,階段 4n)。**
@@ -3481,6 +3517,24 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       }
       /* 越過門線的三種結果:進球 / 角球 / 球門球。哪一種由「最後碰到球的是誰」決定,
          那是足球規則,不是我挑的 —— 攻方最後碰到就是球門球,守方碰到就是角球。 */
+      /* 撲救發生在門將身上(KEEPER_DIVE):不進的射正球經過門將那條線、在他伸手範圍內,就在那裡撲 ——
+         不再等它越過門將飛到門線上。射正的計數跟門線那一條同一個定義(照軌跡會在門框內過線)。 */
+      if (KEEPER_DIVE && ball.shot?.side && !ball.shot.willScore && !ball.shot.gkDone && !ball.holder && Math.abs(ball.vx) > 2) {
+        const toZero = ball.vx < 0;
+        const conceding = toZero === (H.att > 0) ? 'home' : 'away';
+        const gk = sideOf(conceding).players.find(q => q.role === 'GK' && !q.off);
+        if (gk && ball.shot.side !== conceding && (toZero ? ball.x <= gk.x : ball.x >= gk.x)) {
+          ball.shot.gkDone = true;
+          const hit = predictLine(ball, toZero ? 0 : PITCH_W);
+          const yL = hit?.y ?? ball.y;
+          const inFrameL = !!hit && Math.abs(hit.y - PITCH_H / 2) < SIM_GOAL_HALF && hit.z < GOAL_HEIGHT;
+          if (inFrameL && Math.abs(gk.y - ball.y) <= KEEPER_REACH && (ball.z ?? 0) <= KEEPER_REACH_Z) {
+            st.onTarget++; st.onTargetBy[ball.shot.side]++;
+            st.gkSaves = (st.gkSaves ?? 0) + 1;
+            saveShot(conceding, conceding === 'home' ? 'away' : 'home', yL, gk);
+          } else if (inFrameL) st.gkBeaten = (st.gkBeaten ?? 0) + 1;   // 搆不到 → 門線那一條保險
+        }
+      }
       if (ball.x < 0 || ball.x > PITCH_W) {
         const inFrame = Math.abs(ball.y - PITCH_H / 2) < SIM_GOAL_HALF && ball.z < GOAL_HEIGHT;
         /* 哪一邊的球門 —— **要從進攻方向算,不可以寫死**。第一版寫 `ball.x < 0 ? 'home' : 'away'`,
@@ -3501,35 +3555,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           if (ball.shot?.side) { st.onTarget++; st.onTargetBy[ball.shot.side]++; }
           else st.crossedNotShot++;
           if (ball.shot?.willScore && ball.shot.side === scoring) scoreGoal(scoring, ball.shot.by);
-          else {
-            if (ball.shot?.side) st.keeperSaves++;
-            if (ball.shot?.side) emit({ type: 'save', side: ball.shot.side, by: ball.shot.by?.code ?? null, name: ball.shot.by?.name ?? null });
-            /* 撲救有三種下場,不是只有「抱住」(見 SAVE_HOLD)。抱不住的往哪去由**幾何**決定:
-               `off` 是這一球過門線的位置離球門中心多遠(0 = 正中間、1 = 貼著門柱),
-               越貼柱越只能往外撥掉(出底線 → 角球,最後碰到的是門將所以是角球不是球門球),
-               越正中間越是擋回場內變成鬆球。`off` 不是我挑的分配,是射門自己落在哪裡。
-               非射門的球(解圍 / 折射越過自家門線)不走這條 —— 那不是撲救。 */
-            const shotSave = !!ball.shot?.side;
-            const off = Math.min(1, Math.abs(ball.y - PITCH_H / 2) / SIM_GOAL_HALF);
-            if (!shotSave || rng() < SAVE_HOLD) keeperCollect(conceding);
-            else if (rng() < off) {
-              st.lastTouch = conceding;             // 最後碰到的是門將 → 角球(足球規則)
-              ball.shot = null; st.lastKick = 'save'; st.ballFrom = 'save';
-              corner(scoring, ball.y < PITCH_H / 2 ? 0.5 : PITCH_H - 0.5, ball.x < 0 ? 0.5 : PITCH_W - 0.5);
-            } else {
-              /* 擋回場內:球回到門線前一點點,往場內帶一個不大的速度。
-                 之後誰搶到、要不要補射,交給既有的鬆球與射門邏輯 ——
-                 補射**不另外給一套進球機率**,那會變成在畫面上編數字(鐵則一)。 */
-              const gx = ball.x < 0 ? 0 : PITCH_W, inward = ball.x < 0 ? 1 : -1;
-              const ang = (rng() - 0.5) * 1.6;
-              const sp2 = 5 + rng() * 6;
-              ball.shot = null; st.lastTouch = conceding; st.lastKick = 'save';
-              ball.holder = null; ball.x = gx + inward * 1.2; ball.y = cl(ball.y, 2, PITCH_H - 2);
-              ball.z = 0.3; ball.vz = 1 + rng() * 2;
-              ball.vx = Math.cos(ang) * sp2 * inward; ball.vy = Math.sin(ang) * sp2;
-              ball.passSide = null; ball.passTo = null; ball.passer = null; ball.wasDeflected = false;
-            }
-          }
+          else saveShot(conceding, scoring, ball.y, null);   // 撲救的三種下場搬進 saveShot(2026-10-17,共用給門將那條線的撲救)
         } else if (st.lastTouch === scoring) {
           goalKick(conceding);                               // 攻方碰出底線 → 球門球
         } else {
@@ -4008,6 +4034,45 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   };
 
   /* 門將沒收:球回到自己的門將腳下,死球一下再開出去 */
+  /* 射正但不進(willScore 在射門那一刻就決定了)→ 撲救的三種下場。2026-10-17 從門線那一段抽出來,
+     門將那條線的撲救(KEEPER_DIVE)也走這一支 —— 兩條路逐字同一份,亂數抽的順序也不變。
+     yLine:這一球**會**在門線上的哪裡過線(off 用它算,所以貼柱 / 正中的分配跟原本一樣由射門自己決定);
+     at:撲到球的門將(門線那條路是 null —— 球回到門線前一點點,跟原本一樣)。 */
+  function saveShot(conceding, scoring, yLine, at) {
+      if (ball.shot?.side) st.keeperSaves++;
+      /* where / gap(2026-10-17):在門將身上撲(keeper)還是門線保險(line);gap = 撲到那一刻門將離球幾公尺。
+         測試拿它守「撲救發生在門將身上」—— 改前的樣子是 line、離球 6.8 m。 */
+      if (ball.shot?.side) emit({ type: 'save', side: ball.shot.side, by: ball.shot.by?.code ?? null, name: ball.shot.by?.name ?? null,
+        where: at ? 'keeper' : 'line', gap: at ? Math.round(hypot(at.x - ball.x, at.y - ball.y) * 10) / 10 : null });
+      /* 撲救有三種下場,不是只有「抱住」(見 SAVE_HOLD)。抱不住的往哪去由**幾何**決定:
+         `off` 是這一球過門線的位置離球門中心多遠(0 = 正中間、1 = 貼著門柱),
+         越貼柱越只能往外撥掉(出底線 → 角球,最後碰到的是門將所以是角球不是球門球),
+         越正中間越是擋回場內變成鬆球。`off` 不是我挑的分配,是射門自己落在哪裡。
+         非射門的球(解圍 / 折射越過自家門線)不走這條 —— 那不是撲救。 */
+      const shotSave = !!ball.shot?.side;
+      const off = Math.min(1, Math.abs(yLine - PITCH_H / 2) / SIM_GOAL_HALF);
+      if (!shotSave || rng() < SAVE_HOLD) keeperCollect(conceding);
+      else if (rng() < off) {
+        st.lastTouch = conceding;             // 最後碰到的是門將 → 角球(足球規則)
+        ball.shot = null; st.lastKick = 'save'; st.ballFrom = 'save';
+        corner(scoring, yLine < PITCH_H / 2 ? 0.5 : PITCH_H - 0.5, (at ? ball.vx < 0 : ball.x < 0) ? 0.5 : PITCH_W - 0.5);
+      } else {
+        /* 擋回場內:球回到門線前一點點,往場內帶一個不大的速度。
+           之後誰搶到、要不要補射,交給既有的鬆球與射門邏輯 ——
+           補射**不另外給一套進球機率**,那會變成在畫面上編數字(鐵則一)。 */
+        const toZero = at ? ball.vx < 0 : ball.x < 0;
+        const gx = toZero ? 0 : PITCH_W, inward = toZero ? 1 : -1;
+        const ang = (rng() - 0.5) * 1.6;
+        const sp2 = 5 + rng() * 6;
+        ball.shot = null; st.lastTouch = conceding; st.lastKick = 'save';
+        /* 門將撲出的:球從**他身前**彈出去,不是從門線(那是 2026-10-17 之前「越過門將才撲」的樣子) */
+        ball.holder = null; ball.x = at ? at.x + inward * 0.8 : gx + inward * 1.2; ball.y = cl(at ? ball.y : ball.y, 2, PITCH_H - 2);
+        ball.z = 0.3; ball.vz = 1 + rng() * 2;
+        ball.vx = Math.cos(ang) * sp2 * inward; ball.vy = Math.sin(ang) * sp2;
+        ball.passSide = null; ball.passTo = null; ball.passer = null; ball.wasDeflected = false;
+      }
+  }
+
   function keeperCollect(side) {
     const s = sideOf(side);
     deadBall({ kind: 'keeper', side, taker: s.gk, x: cl(s.att > 0 ? 6 : PITCH_W - 6, 1, PITCH_W - 1), y: PITCH_H / 2, wait: 1.8 + rng() * 1.4 });
@@ -4050,6 +4115,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         intercepts: { ...st.intercepts }, passBy: { ...st.passBy }, tacklesBy: { ...st.tacklesBy }, passOk: { ...st.passOk },
         offsides: { ...st.offsides }, why: { ...(st.why ?? {}) },
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
+        gkSaves: st.gkSaves ?? 0, gkBeaten: st.gkBeaten ?? 0,
         laneShots: [...st.laneShots], laneOcc: [...st.laneOcc], laneNear: [...st.laneNear],
         laneFar: [...st.laneFar], laneReach: [...st.laneReach],
         laneLen: [...st.laneLen], laneN: [...st.laneN], gsN: [...st.gsN], gsLineN: [...st.gsLineN],
