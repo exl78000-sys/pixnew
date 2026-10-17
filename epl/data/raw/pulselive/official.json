@@ -42589,8 +42589,8 @@
   "EVE|CHE": {
    "fixtureId": 128986,
    "kickoff": "2026-10-17T11:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 2
@@ -43025,6 +43025,19 @@
      "person": 21998,
      "assist": null,
      "team": 4,
+     "min": 46,
+     "label": "46'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 21998,
+     "assist": null,
+     "team": 4,
      "min": 90,
      "label": "90'00",
      "phase": "2",
@@ -43226,15 +43239,27 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 129425,
+      "team": 4,
+      "min": 90,
+      "label": "90+12'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21998,
+      "team": 4,
+      "min": 90,
+      "label": "90+12'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -43252,10 +43277,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+14'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+14'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-17T13:45:50.395Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "BRE|LIV": {
    "fixtureId": 128984,
@@ -44537,5 +44575,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-17T13:35:52.941Z"
+ "fetchedAt": "2026-10-17T13:45:50.803Z"
 }
