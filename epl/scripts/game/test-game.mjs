@@ -334,8 +334,10 @@ console.log('\n▶ 模擬遊玩:主場優勢與中立場(2026-10-03)');
      開球那一處不帶 push,開球站位不推 —— 那是死球的合法站位,不是比賽中的陣型) */
   const simB = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   const pushCalls = [...simB.matchAll(/shapeOf\([^;]*?\{ push: ([^,}]+)/g)].map(m => m[1].trim());
-  check('主場位移真的進了走位:每一個帶 push 的 shapeOf 呼叫都是 s.push + s.venuePush',
-    pushCalls.length >= 1 && pushCalls.every(x => x === 's.push + s.venuePush'), pushCalls.join(' / '));
+  /* 2026-10-17(5p):有球那一支多了前壓(`+ (holder?.side === p.side ? p.slot.adv … )`),所以守「以它開頭」——
+     守的性質沒變:主場位移有進每一個走位呼叫,沒有哪一支漏掉它。 */
+  check('主場位移真的進了走位:每一個帶 push 的 shapeOf 呼叫都以 s.push + s.venuePush 開頭',
+    pushCalls.length >= 1 && pushCalls.every(x => x.startsWith('s.push + s.venuePush')), pushCalls.join(' / '));
   /* ④ 中立場一路傳進引擎:遊戲頁 → 轉接層 → createSim(剝註解再掃 —— 註解裡本來就在講 neutral) */
   const bare = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   const viewB = bare('game-view.js'), liveB = bare('game-live.js');
@@ -474,6 +476,46 @@ console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套�
   const PRED = { xgHome: 1.99, xgAway: 0.70 };
   const codes = Object.keys(profile.teams);
   const OTHER = ['line', 'directness', 'mentality', 'width', 'tempo'];
+
+  /* 陣形(2026-10-17,補齊規劃 5p)。三個坑各一條:
+     ① 側寫的 formation 是物件 —— 沒傳 setup 的 createSim(量測台、worker 池)曾經一律踢 4-3-3,而畫面踢真實陣型。
+        守:引擎沒收到 setup 時踢的陣型 = 頁面 defaultSetup 給的,每一隊都一樣;而且頁面那一支呼叫引擎的同一個函式。
+     ② 每一列從邊線攤到邊線 —— 4-2-3-1 的雙後腰站在兩條邊線上。守:兩個人的那一列都在中路(離中線 ≤ 12 m)。
+     ③ 比賽中換陣型:人是**跑**過去的(沒有任何一格超過自己的最高速)、壞格式被拒、事件有記、格子一人一格。 */
+  {
+    const wrong = codes.filter(c => SM.createSim({ profile, home: c, away: codes.find(x => x !== c), seed: 1, pred: PRED }).teams.home.spec
+      !== LV.defaultSetup(profile, c).formation);
+    check('沒傳 setup 的引擎踢的陣型 = 頁面 defaultSetup 的(每一隊)', wrong.length === 0, wrong.join('、') || `${codes.length} 隊`);
+    const liveSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-live.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    check('頁面的預設陣型走引擎的 profileFormation(規則只有一份)', /formation: profileFormation\(t\)/.test(liveSrc));
+    const pairs = ['4-2-3-1', '4-4-2', '3-4-2-1', '3-5-2', '5-3-2'].flatMap(f => {
+      const sl = SM.formationSlots(f).slice(1), rows = SM.formationRows(f);
+      let i = 0; return rows.flatMap(n => { const r = sl.slice(i, i += n); return n === 2 ? [[f, r]] : []; });
+    });
+    const bad = pairs.filter(([, r]) => r.some(q => Math.abs(q.y - 34) > 12));
+    check('兩個人的那一列都在中路(雙後腰、雙前鋒、雙前腰離中線 ≤ 12 m)', pairs.length >= 5 && bad.length === 0,
+      bad.map(([f]) => f).join('、') || `${pairs.length} 列`);
+  }
+  {
+    const STEP = 1 / 60, sim = SM.createSim({ profile, home: 'ARS', away: 'LIV', seed: 3, pred: PRED });
+    for (let i = 0; i < 20 * 60 * 60; i++) sim.advance(STEP);
+    const okBad = [sim.setFormation('home', '4-4-3'), sim.setFormation('home', 'x'), sim.setFormation('home', '4-4-2-')];
+    const ok = sim.setFormation('home', '4-4-2');
+    let prev = new Map(sim.state().players.map(p => [p.code, p])), jumps = 0;
+    for (let i = 0; i < 2 * 60 * 60; i++) {
+      sim.advance(STEP);
+      const st = sim.state();
+      for (const p of st.players) { const q = prev.get(p.code); if (q && Math.hypot(p.x - q.x, p.y - q.y) > p.vmax * STEP * 1.5 + 0.02) jumps++; }
+      prev = new Map(st.players.map(p => [p.code, p]));
+    }
+    const roles = sim.state().players.filter(p => p.side === 'home' && p.role !== 'GK').map(p => p.role);
+    const n = r => roles.filter(x => x === r).length;
+    check('比賽中換陣型:壞格式被拒、換了之後兩分鐘沒有人瞬移、角色照新陣型(4-4-2 = 4 / 4 / 2)、事件有記',
+      okBad.every(x => x === false) && ok === true && jumps === 0 && sim.formationOf('home') === '4-4-2'
+        && sim.teams.home.spec === '4-4-2' && n('DEF') === 4 && n('MID') === 4 && n('FWD') === 2
+        && sim.events().filter(e => e.type === 'formation').length === 1,
+      `瞬移 ${jumps}・角色 ${n('DEF')}/${n('MID')}/${n('FWD')}`);
+  }
 
   /* ① */
   const badDef = codes.filter(c => {
