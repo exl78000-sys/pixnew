@@ -43730,8 +43730,37 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
-    "subs": [],
+    "cards": [
+     {
+      "person": 68840,
+      "team": 10,
+      "min": 31,
+      "label": "31'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 130665,
+      "team": 10,
+      "min": 32,
+      "label": "32'00",
+      "phase": "1",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 33231,
+      "team": 10,
+      "min": 32,
+      "label": "32'00",
+      "phase": "1",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -43747,7 +43776,7 @@
      }
     ]
    },
-   "clock": "26'00"
+   "clock": "37'00"
   },
   "FUL|HUL": {
    "fixtureId": 128987,
@@ -43755,7 +43784,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 34,
@@ -44180,7 +44209,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 4717,
+     "assist": 21614,
+     "team": 34,
+     "min": 33,
+     "label": "33'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -44188,6 +44231,24 @@
       "team": 41,
       "min": 22,
       "label": "22'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 128976,
+      "team": 34,
+      "min": 27,
+      "label": "27'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 21385,
+      "team": 41,
+      "min": 27,
+      "label": "27'00",
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -44209,7 +44270,7 @@
      }
     ]
    },
-   "clock": "27'00"
+   "clock": "37'00"
   },
   "MCI|IPS": {
    "fixtureId": 128989,
@@ -44217,7 +44278,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 1
    },
    "homeId": 11,
@@ -44647,15 +44708,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 122002,
-     "assist": 126111,
-     "team": 8,
-     "min": 21,
-     "label": "21'00",
+     "person": 65970,
+     "assist": 12520,
+     "team": 11,
+     "min": 34,
+     "label": "34'00",
      "phase": "1",
      "type": "G",
      "kind": "G",
-     "hs": 1,
+     "hs": 2,
      "as": 1
     }
    ],
@@ -44677,8 +44738,8 @@
      }
     ]
    },
-   "clock": "24'00"
+   "clock": "34'00"
   }
  },
- "fetchedAt": "2026-10-17T14:27:05.885Z"
+ "fetchedAt": "2026-10-17T14:37:03.360Z"
 }
