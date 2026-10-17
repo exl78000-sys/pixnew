@@ -42589,7 +42589,7 @@
   "EVE|CHE": {
    "fixtureId": 128986,
    "kickoff": "2026-10-17T11:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -42849,7 +42849,7 @@
       "playerId": null,
       "name": "Cole Palmer",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -42867,7 +42867,7 @@
       "playerId": null,
       "name": "Jorrel Hato",
       "shirt": 21,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -42885,7 +42885,7 @@
       "playerId": null,
       "name": "Morgan Rogers",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -43023,10 +43023,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-10-17T11:24:31.008Z"
+ "fetchedAt": "2026-10-17T11:34:29.114Z"
 }
