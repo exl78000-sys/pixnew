@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-17T15:13:03.327Z",
+ "fetchedAt": "2026-10-17T16:46:03.348Z",
  "teams": [
   {
    "code": "MON",
@@ -365,6 +365,66 @@
    ]
   },
   {
+   "code": "STR",
+   "fotmobId": 9848,
+   "fotmobName": "Strasbourg",
+   "fetchedAt": "2026-10-09T12:42:05.056Z",
+   "color": "#294A92",
+   "teamColors": {
+    "darkMode": "#294A92",
+    "lightMode": "#294A92",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade de la Meinau",
+   "city": "Strasbourg",
+   "location": [
+    "48.560068724",
+    "7.755156755"
+   ],
+   "capacity": 32047,
+   "surface": "Grass",
+   "opened": 1906,
+   "coachHistory": [
+    {
+     "id": 24105,
+     "name": "Liam Rosenior",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 7,
+     "draw": 3,
+     "loss": 7,
+     "pointsPerGame": 1.41,
+     "winPercentage": 0.41
+    },
+    {
+     "id": 24393,
+     "name": "Gary O'Neil",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 8,
+     "draw": 5,
+     "loss": 4,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 1700757,
+     "name": "Hugo Oliveira",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 2,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
    "code": "TOU",
    "fotmobId": 9941,
    "fotmobName": "Toulouse",
@@ -661,66 +721,6 @@
      "loss": 1,
      "pointsPerGame": 0,
      "winPercentage": 0
-    }
-   ]
-  },
-  {
-   "code": "STR",
-   "fotmobId": 9848,
-   "fotmobName": "Strasbourg",
-   "fetchedAt": "2026-10-09T12:42:05.056Z",
-   "color": "#294A92",
-   "teamColors": {
-    "darkMode": "#294A92",
-    "lightMode": "#294A92",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade de la Meinau",
-   "city": "Strasbourg",
-   "location": [
-    "48.560068724",
-    "7.755156755"
-   ],
-   "capacity": 32047,
-   "surface": "Grass",
-   "opened": 1906,
-   "coachHistory": [
-    {
-     "id": 24105,
-     "name": "Liam Rosenior",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 7,
-     "draw": 3,
-     "loss": 7,
-     "pointsPerGame": 1.41,
-     "winPercentage": 0.41
-    },
-    {
-     "id": 24393,
-     "name": "Gary O'Neil",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 8,
-     "draw": 5,
-     "loss": 4,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 1700757,
-     "name": "Hugo Oliveira",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 2,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
     }
    ]
   },

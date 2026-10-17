@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-17T15:13:02.768Z",
+ "fetchedAt": "2026-10-17T16:46:02.795Z",
  "teams": [
   {
    "code": "INT",
@@ -725,66 +725,6 @@
    ]
   },
   {
-   "code": "LEC",
-   "fotmobId": 9888,
-   "fotmobName": "Lecce",
-   "fetchedAt": "2026-10-09T12:41:55.962Z",
-   "color": "#e12300",
-   "teamColors": {
-    "darkMode": "#e12300",
-    "lightMode": "#e12300",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Ettore Giardiniero - Via del Mare",
-   "city": "Lecce",
-   "location": [
-    "40.365103138",
-    "18.208851814"
-   ],
-   "capacity": 33876,
-   "surface": "Grass",
-   "opened": 1966,
-   "coachHistory": [
-    {
-     "id": 78712,
-     "name": "Marco Giampaolo",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 6,
-     "draw": 7,
-     "loss": 13,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.23
-    },
-    {
-     "id": 5615,
-     "name": "Eusebio Di Francesco",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 10,
-     "draw": 8,
-     "loss": 20,
-     "pointsPerGame": 1,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 5615,
-     "name": "Eusebio Di Francesco",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 1.2,
-     "winPercentage": 0.4
-    }
-   ]
-  },
-  {
    "code": "BLG",
    "fotmobId": 9857,
    "fotmobName": "Bologna",
@@ -841,6 +781,66 @@
      "loss": 0,
      "pointsPerGame": 1,
      "winPercentage": 0
+    }
+   ]
+  },
+  {
+   "code": "LEC",
+   "fotmobId": 9888,
+   "fotmobName": "Lecce",
+   "fetchedAt": "2026-10-09T12:41:55.962Z",
+   "color": "#e12300",
+   "teamColors": {
+    "darkMode": "#e12300",
+    "lightMode": "#e12300",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Ettore Giardiniero - Via del Mare",
+   "city": "Lecce",
+   "location": [
+    "40.365103138",
+    "18.208851814"
+   ],
+   "capacity": 33876,
+   "surface": "Grass",
+   "opened": 1966,
+   "coachHistory": [
+    {
+     "id": 78712,
+     "name": "Marco Giampaolo",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 6,
+     "draw": 7,
+     "loss": 13,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.23
+    },
+    {
+     "id": 5615,
+     "name": "Eusebio Di Francesco",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 10,
+     "draw": 8,
+     "loss": 20,
+     "pointsPerGame": 1,
+     "winPercentage": 0.26
+    },
+    {
+     "id": 5615,
+     "name": "Eusebio Di Francesco",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 1.2,
+     "winPercentage": 0.4
     }
    ]
   },
