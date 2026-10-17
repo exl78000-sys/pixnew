@@ -44018,7 +44018,7 @@
      }
     ]
    },
-   "clock": "81'00"
+   "clock": "88'00"
   },
   "FUL|HUL": {
    "fixtureId": 128987,
@@ -44687,7 +44687,7 @@
    "final": false,
    "score": {
     "home": 3,
-    "away": 1
+    "away": 2
    },
    "homeId": 11,
    "awayId": 8,
@@ -45116,16 +45116,16 @@
    "goals": [
     {
      "side": "H",
-     "person": 65970,
-     "assist": 31936,
-     "team": 11,
-     "min": 69,
-     "label": "69'00",
+     "person": 75735,
+     "assist": null,
+     "team": 8,
+     "min": 90,
+     "label": "90'00",
      "phase": "2",
-     "type": "G",
-     "kind": "G",
+     "type": "P",
+     "kind": "P",
      "hs": 3,
-     "as": 1
+     "as": 2
     }
    ],
    "timeline": {
@@ -45302,6 +45302,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 32715,
+      "team": 8,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49254,
+      "team": 8,
+      "min": 90,
+      "label": "90+1'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -45331,7 +45349,7 @@
      }
     ]
    },
-   "clock": "88'00"
+   "clock": "90+6'00"
   },
   "NEW|AVL": {
    "fixtureId": 128990,
@@ -45731,5 +45749,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-17T15:48:41.246Z"
+ "fetchedAt": "2026-10-17T15:56:01.808Z"
 }
