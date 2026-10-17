@@ -43301,7 +43301,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 130,
@@ -43728,7 +43728,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 24369,
+     "assist": 124052,
+     "team": 130,
+     "min": 44,
+     "label": "44'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -43739,6 +43753,15 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 128891,
+      "team": 130,
+      "min": 45,
+      "label": "45+8'00",
+      "phase": "1",
+      "kindRaw": "R",
+      "kind": "紅牌"
      }
     ],
     "subs": [
@@ -43776,7 +43799,7 @@
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+9'00"
   },
   "FUL|HUL": {
    "fixtureId": 128987,
@@ -44257,20 +44280,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "43'00"
+   "clock": "45+2'00"
   },
   "MCI|IPS": {
    "fixtureId": 128989,
@@ -44708,6 +44731,32 @@
    "goals": [
     {
      "side": "H",
+     "person": 14805,
+     "assist": 54156,
+     "team": 11,
+     "min": 19,
+     "label": "19'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
+     "person": 122002,
+     "assist": 126111,
+     "team": 8,
+     "min": 21,
+     "label": "21'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
      "person": 65970,
      "assist": 12520,
      "team": 11,
@@ -44725,21 +44774,21 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "42'00"
+   "clock": "45+3'00"
   }
  },
- "fetchedAt": "2026-10-17T14:44:28.674Z"
+ "fetchedAt": "2026-10-17T14:54:22.551Z"
 }
