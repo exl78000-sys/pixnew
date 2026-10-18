@@ -46212,18 +46212,40 @@
   "BOU|SUN": {
    "fixtureId": 128983,
    "kickoff": "2026-10-18T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 127,
    "awayId": 29,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      134403
+     ],
+     [
+      3512,
+      51942,
+      120109,
+      74965
+     ],
+     [
+      42894,
+      15572
+     ],
+     [
+      134234,
+      10766,
+      14846
+     ],
+     [
+      33032
+     ]
+    ],
     "xi": [
      {
       "id": 134403,
@@ -46410,9 +46432,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75692
+     ],
+     [
+      51199,
+      25892,
+      66659,
+      63733
+     ],
+     [
+      12136,
+      124944
+     ],
+     [
+      122126,
+      119614,
+      138104
+     ],
+     [
+      135764
+     ]
+    ],
     "xi": [
      {
       "id": 51199,
@@ -46598,21 +46642,48 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 14846,
+     "assist": 33032,
+     "team": 127,
+     "min": 6,
+     "label": "06'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "09'00"
   },
   "BHA|CRY": {
    "fixtureId": 128985,
    "kickoff": "2026-10-18T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 2,
     "away": 0
    },
    "homeId": 131,
@@ -47039,18 +47110,45 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 143240,
+     "assist": 20505,
+     "team": 131,
+     "min": 7,
+     "label": "07'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "09'00"
   },
   "LEE|MUN": {
    "fixtureId": 128988,
    "kickoff": "2026-10-18T13:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -47270,9 +47368,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67910
+     ],
+     [
+      118591,
+      9566,
+      67191,
+      24252
+     ],
+     [
+      133245,
+      124396
+     ],
+     [
+      69176,
+      5865,
+      23396
+     ],
+     [
+      66360
+     ]
+    ],
     "xi": [
      {
       "id": 69176,
@@ -47462,10 +47582,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "09'00"
   }
  },
- "fetchedAt": "2026-10-18T13:00:20.838Z"
+ "fetchedAt": "2026-10-18T13:09:54.314Z"
 }
