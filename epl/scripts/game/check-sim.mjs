@@ -385,7 +385,14 @@ const clockEpl = goalClock(true), clockAll = goalClock(false);
 const realShots = collectReal(() => true);                                   // 全聯盟:形狀與逐情境用它(樣本大)
 const realFx = collectReal(sh => sh.team === HOME || sh.team === AWAY);      // 這一場兩隊:判定用它
 
-line('每場角球', mean(rows.map(r => r.st.counts.corners.home + r.st.counts.corners.away)).toFixed(1), `真實 ${real.cf.toFixed(1)}`);
+/* **角球要判,不只印**(2026-10-17)。5p 把量測台改成踢真實陣型之後,這一行從 8.9 掉到 5.2(真實 11.4),
+   而它沒有 ✓ / 旗標 —— 八輪驗收都只盯有判定的那幾行,這一行就在旁邊被讀漏了。判準跟對抗那一層同一條(2 SE)。 */
+{
+  const cs = rows.map(r => r.st.counts.corners.home + r.st.counts.corners.away), cm = mean(cs);
+  const ce = cs.length > 1 ? Math.sqrt(cs.reduce((a, x) => a + (x - cm) ** 2, 0) / (cs.length - 1) / cs.length) : 0;
+  const 判 = ce > 0 && Math.abs(cm - real.cf) > 2 * ce ? `**差 ${((cm - real.cf) / ce).toFixed(1)} SE**` : '✓';
+  line('每場角球', `${cm.toFixed(1)} ± ${ce.toFixed(1)}`, `真實 ${real.cf.toFixed(1)}  ${判}`);
+}
 /* **角球的三排來源分類**(2026-09-18,階段 4l)。本站的規矩是「找為什麼某個量偏低,
    先把它的來源逐類列出來,再看有沒有哪一類是 0」(階段 4h)——0 不是「少」,
    是那條路根本沒鋪,而它在總數上看起來只是「有點低」。
@@ -632,6 +639,30 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
     }
     line('情境(引擎不分)', `FreeKick ${((real.FreeKick?.share ?? 0) * 100).toFixed(1)}% · IndividualPlay ${((real.IndividualPlay?.share ?? 0) * 100).toFixed(1)}%`,
       `直接罰球射門與單人突破沒有可靠判準,不假裝分得出來 —— 上面那一欄的分母已經把這 ${(100 - keep * 100).toFixed(1)}% 扣掉`);
+  }
+}
+
+/* 2f-2. **運動戰傳中**(2026-10-18,補齊規劃 5r)。有真值的都判(2 SE),不要再只印(5q 的教訓)。
+   ① 成功傳中:側寫 `extra.accurate_crosses`(這一場兩隊相加)—— FotMob 的數字分不出含不含角球開出的那一腳,
+      引擎這一欄只數運動戰,所以真值是**上限**,判的時候照實講。
+   ② 運動戰射門裡頭球的佔比:側寫 `shotSituations.RegularPlay.byFoot.header.share`(二項式的 SE)。 */
+if (rows[0]?.st.counts.cross) {
+  const per = f => rows.map(r => f(r.st.counts));
+  const sd = a => { const m = mean(a); return a.length > 1 ? Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1) / a.length) : 0; };
+  const judge = (v, e, real) => e > 0 && Math.abs(v - real) > 2 * e ? `**差 ${((v - real) / e).toFixed(1)} SE**` : '✓';
+  const cr = per(c => c.cross.home + c.cross.away), ok = per(c => c.crossOk.home + c.crossOk.away);
+  const realOk = (profile.teams?.[HOME]?.extra?.accurate_crosses?.mean ?? NaN) + (profile.teams?.[AWAY]?.extra?.accurate_crosses?.mean ?? NaN);
+  console.log('');
+  line('運動戰傳中', `${mean(cr).toFixed(1)} / 場・傳到人 ${(100 * ok.reduce((a, b) => a + b, 0) / Math.max(1, cr.reduce((a, b) => a + b, 0))).toFixed(0)}%`,
+    `真實每隊 18.2 次、成功率 23.8%(FotMob 2025-26 英超 743 隊-場,由 accurate_crosses 與 _pct 反推;分不出含不含角球)—— 只印`);
+  line('成功傳中', `${mean(ok).toFixed(1)} ± ${sd(ok).toFixed(1)}`,
+    Number.isFinite(realOk) ? `真實 ${realOk.toFixed(1)}(這一場兩隊,可能含角球 → 上限)  ${judge(mean(ok), sd(ok), realOk)}` : '側寫沒有 accurate_crosses');
+  const rh = profile.league_?.shotSituations?.RegularPlay?.byFoot?.header?.share;
+  const heads = rows.reduce((a, r) => a + r.st.counts.crossHead.home + r.st.counts.crossHead.away, 0);
+  const rp = rows.reduce((a, r) => a + (r.st.counts.shotSit?.RegularPlay ?? 0), 0);
+  if (rh != null && rp > 0) {
+    const v = heads / rp, e = Math.sqrt(rh * (1 - rh) / rp);
+    line('運動戰射門的頭球', `${(100 * v).toFixed(1)}%`, `真實 ${(100 * rh).toFixed(1)}%(RegularPlay 的 byFoot.header)  ${judge(v, e, rh)}`);
   }
 }
 

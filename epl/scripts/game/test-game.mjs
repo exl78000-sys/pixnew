@@ -1102,7 +1102,9 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         + `・離門 ${fc.byFoot.header.distMean} vs ${fc.byFoot.foot.distMean}`);
       check('頭球的 xG 用頭球那一種的真值,不是混合的',
         /CORNER_HEAD_XG = [^;]*byFoot\?\.header\?\.xgPerShot/.test(bare)
-        && /const xg = cl\(CORNER_HEAD_XG,/.test(bare));
+        // 5r(2026-10-18)之後頭球分兩種:角球用 CORNER_HEAD_XG、運動戰用 OPEN_HEAD_XG(RegularPlay 的頭球真值)—— 兩個都要是頭球那一種
+        && bare.includes("const xg = cl(sit === 'FromCorner' ? CORNER_HEAD_XG : OPEN_HEAD_XG,")
+        && /OPEN_HEAD_XG = [^;]*RegularPlay\?\.byFoot\?\.header\?\.xgPerShot/.test(bare));
       /* 站位的**性質**:瞄得到的那幾個裡要有一個在 5 公尺內(真實的角球頭球 19% 在 5 m 內),
          而二點球那一個要在瞄得到的範圍外(`BOX_D + 2`)。比性質不比字面的數字。 */
       {
@@ -1129,7 +1131,8 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
     {
       const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
       const bare = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-      const c0 = bare.indexOf("st.lastKick === 'corner' && ball.passer");
+      // 5r(2026-10-18)之後同一段也處理運動戰傳中:條件變成 (corner || cross) —— 切的位置跟著改,守的性質不變
+      const c0 = bare.indexOf("(st.lastKick === 'corner' || st.lastKick === 'cross') && ball.passer");
       const c1 = bare.indexOf('function headerAt');
       const duelSrc = c0 >= 0 && c1 > c0 ? bare.slice(c0, c1) : '';
       check('傳中的第一點是兩邊各派最近的一個人(不是全場最近的一個)',
@@ -2276,6 +2279,36 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           s0 === 1 && s1 === 1001 && r1 === 30 && s2 === 1001 && r2 === 12 && r0 === 12,
           `預設 ${r0} 場 / 種子 ${s0};帶旗標 ${r1} 場 / 種子 ${s1};只帶旗標 ${r2} 場 / 種子 ${s2}`);
       }
+    }
+
+    /* 33b. 運動戰傳中(2026-10-18,補齊規劃 5r)與角球的判定(5q)。守四件事:
+       ① check-sim **真的印出**傳中那三行,而且「每場角球」那一行有判定(✓ 或「差 … SE」)—— 5q 的坑是它只印不判,八輪驗收讀漏;
+       ② 傳中真的會發生,記帳是一條漏斗:傳中 ≥ 傳到人 ≥ 頭球攻門,頭球攻門記在 RegularPlay 裡;
+       ③ 運動戰傳中追的是**頭球點**(爭頂在球降到頭球高度那一刻判,落地點在它後面 ~6 m —— 追落地點的版本傳中全落在沒人的地方);
+       ④ 角球那一條路沒有被改到:角球的頭球攻門仍然走預設的 FromCorner。 */
+    {
+      check('check-sim **真的印出**運動戰傳中三行,而且「每場角球」有判定(5q:只印不判會被讀漏)',
+        ['運動戰傳中', '成功傳中', '運動戰射門的頭球'].every(t => chkOut.includes(t))
+          && (() => { const ln = chkOut.split('\n').find(l => l.includes('每場角球')) ?? ''; return ln.includes('真實') && (ln.includes('✓') || /差 -?[0-9.]+ SE/.test(ln)); })(),
+        `check-sim 輸出 ${chkOut.length} 字元`);
+      const SMc = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+      const prof = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'game', 'pl.json'), 'utf8'));
+      const tot = { cross: 0, ok: 0, head: 0, rp: 0 };
+      for (const seed of [1, 2]) {
+        const sim = SMc.createSim({ profile: prof, home: 'ARS', away: 'LIV', seed, pred: { xgHome: 1.99, xgAway: 0.70 } });
+        while (!sim.state().over) sim.advance(1);
+        const c = sim.state().counts;
+        tot.cross += c.cross.home + c.cross.away; tot.ok += c.crossOk.home + c.crossOk.away;
+        tot.head += c.crossHead.home + c.crossHead.away; tot.rp += c.shotSit?.RegularPlay ?? 0;
+      }
+      check('運動戰傳中會發生,而且漏斗不倒掛(傳中 ≥ 傳到人 ≥ 頭球攻門;頭球攻門記在 RegularPlay)',
+        tot.cross > 0 && tot.ok <= tot.cross && tot.head <= tot.ok && tot.head <= tot.rp,
+        `兩場:傳中 ${tot.cross}・傳到人 ${tot.ok}・頭球攻門 ${tot.head}・RegularPlay 射門 ${tot.rp}`);
+      const simB2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      check('運動戰傳中追頭球點、爭頂認得傳中、角球的頭球仍走 FromCorner',
+        simB2.includes("st.lastKick === 'cross' && !holder ? (headPointOf(ball)")
+          && simB2.includes("st.lastKick === 'corner' || st.lastKick === 'cross'")
+          && simB2.includes("headerAt(who, 'RegularPlay')") && simB2.includes("cornerFirst('attHead'); headerAt(who);"));
     }
 
     /* 34. 階段 5p:**人堆值多少封阻**(2026-09-24)。5o-3 登記「角球有排好的站位而運動戰沒有」
