@@ -107519,8 +107519,1534 @@
    "fetchedAt": "2026-10-17T21:28:59.419Z",
    "fdMatchId": "2026-27-63",
    "heat": null
+  },
+  "UDI|LEC": {
+   "key": "UDI|LEC",
+   "season": "2026-27",
+   "date": "2026-10-18",
+   "matchId": "5749708",
+   "home": "UDI",
+   "away": "LEC",
+   "score": [
+    0,
+    3
+   ],
+   "providerScore": [
+    0,
+    3
+   ],
+   "teamStats": {
+    "UDI": {
+     "possession": 67,
+     "shots": 14,
+     "shotsOn": 2,
+     "shotsOff": 7,
+     "blockedShots": 5,
+     "blocksMade": 1,
+     "corners": 1,
+     "offsides": 3,
+     "fouls": 10,
+     "saves": 8,
+     "passes": 520,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.55
+    },
+    "LEC": {
+     "possession": 33,
+     "shots": 17,
+     "shotsOn": 11,
+     "shotsOff": 4,
+     "blockedShots": 2,
+     "blocksMade": 5,
+     "corners": 4,
+     "offsides": 8,
+     "fouls": 11,
+     "saves": 2,
+     "passes": 258,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.4
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "UDI": {
+     "touches_opp_box": 22,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 0.29,
+     "expected_goals_set_play": 0.26,
+     "expected_goals_non_penalty": 0.55,
+     "expected_goals_on_target": 0.1,
+     "own_half_passes": 221,
+     "opposition_half_passes": 214,
+     "long_balls_accurate": 14,
+     "long_balls_accurate_pct": 37,
+     "accurate_crosses": 7,
+     "accurate_crosses_pct": 27,
+     "player_throws": 24,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 8,
+     "clearances": 14,
+     "duel_won": 38,
+     "ground_duels_won": 26,
+     "ground_duels_won_pct": 46,
+     "aerials_won": 12,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 23,
+     "red_cards": 0
+    },
+    "LEC": {
+     "touches_opp_box": 33,
+     "big_chance": 8,
+     "big_chance_missed_title": 5,
+     "yellow_cards": 0,
+     "shots_woodwork": 2,
+     "shots_inside_box": 15,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 2.15,
+     "expected_goals_set_play": 1.25,
+     "expected_goals_non_penalty": 3.4,
+     "expected_goals_on_target": 2.63,
+     "own_half_passes": 67,
+     "opposition_half_passes": 115,
+     "long_balls_accurate": 15,
+     "long_balls_accurate_pct": 35,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 31,
+     "player_throws": 20,
+     "matchstats.headers.tackles": 21,
+     "interceptions": 13,
+     "clearances": 36,
+     "duel_won": 43,
+     "ground_duels_won": 31,
+     "ground_duels_won_pct": 54,
+     "aerials_won": 12,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 1,
+     "dribbles_succeeded_pct": 17,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     67,
+     33
+    ],
+    "h1": [
+     63,
+     37
+    ],
+    "h2": [
+     71,
+     29
+    ]
+   },
+   "events": [
+    {
+     "minute": 11,
+     "extra": null,
+     "team": "LEC",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Kialonda Gaspar"
+    },
+    {
+     "minute": 33,
+     "extra": null,
+     "team": "LEC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Konan N’Dri"
+    },
+    {
+     "minute": 41,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mohamed Kaba"
+    },
+    {
+     "minute": 43,
+     "extra": null,
+     "team": "UDI",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Hassane Kamara"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "UDI",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matteo Palma"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "UDI",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Juan Arizala"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "UDI",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jakub Piotrowski"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "UDI",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Unai Gómez"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "UDI",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alessandro Zanoli"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Santiago Pierotti"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Paco Esteban"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joël Monteiro"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "LEC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jamil Siebert"
+    },
+    {
+     "minute": 86,
+     "extra": null,
+     "team": "LEC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Jamil Siebert"
+    }
+   ],
+   "shots": [
+    {
+     "min": 7,
+     "extra": null,
+     "team": "UDI",
+     "player": "Giorgi Chakvetadze",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.019,
+     "xgot": 0.05,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.5,
+     "y": 46.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "LEC",
+     "player": "Kialonda Gaspar",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.155,
+     "xgot": 0.423,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.9,
+     "y": 36.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "UDI",
+     "player": "Oumar Solet",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0.05,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.7,
+     "y": 30.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "LEC",
+     "player": "Tiago Gabriel",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 35.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "LEC",
+     "player": "Konan N’Dri",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.746,
+     "xgot": 0.885,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.3,
+     "y": 35.5,
+     "foot": "OtherBodyParts",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "LEC",
+     "player": "Amar Fatah",
+     "type": "Post",
+     "situation": "FastBreak",
+     "xg": 0.166,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.9,
+     "y": 38.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "UDI",
+     "player": "Keinan Davis",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.8,
+     "y": 20.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "LEC",
+     "player": "Konan N’Dri",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.078,
+     "xgot": 0.112,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 22.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "LEC",
+     "player": "Konan N’Dri",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.018,
+     "xgot": 0.019,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 18.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "LEC",
+     "player": "Willem Geubbels",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.252,
+     "xgot": 0.438,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.2,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "LEC",
+     "player": "Mohamed Kaba",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.026,
+     "xgot": 0.067,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.1,
+     "y": 20.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "LEC",
+     "player": "Amar Fatah",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.076,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 26.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "LEC",
+     "player": "Willem Geubbels",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.537,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 42.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "LEC",
+     "player": "Konan N’Dri",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.04,
+     "xgot": 0.045,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.9,
+     "y": 18.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "UDI",
+     "player": "Keinan Davis",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 28,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "LEC",
+     "player": "Willem Geubbels",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.27,
+     "xgot": 0.077,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88.5,
+     "y": 34.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "UDI",
+     "player": "Jurgen Ekkelenkamp",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.3,
+     "y": 44.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "LEC",
+     "player": "Konan N’Dri",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 20,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "UDI",
+     "player": "Juan Arizala",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.9,
+     "y": 52.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "LEC",
+     "player": "Willem Geubbels",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.515,
+     "xgot": 0.344,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.5,
+     "y": 28.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "UDI",
+     "player": "Juan Arizala",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 50.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "UDI",
+     "player": "Jakub Piotrowski",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.8,
+     "y": 38.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "UDI",
+     "player": "Jakub Piotrowski",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.6,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "UDI",
+     "player": "Jakub Piotrowski",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 36.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "UDI",
+     "player": "Matteo Palma",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 71.8,
+     "y": 29.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "LEC",
+     "player": "Paco Esteban",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0.252,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 46.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "UDI",
+     "player": "Matteo Palma",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 39.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "LEC",
+     "player": "Paco Esteban",
+     "type": "Post",
+     "situation": "FastBreak",
+     "xg": 0.133,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 28.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "LEC",
+     "player": "Jamil Siebert",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.276,
+     "xgot": 0.22,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 24.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "UDI",
+     "player": "Oumar Solet",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.4,
+     "y": 43.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "UDI",
+     "player": "Unai Gómez",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.201,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 32,
+     "foot": "Header",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     -16
+    ],
+    [
+     4,
+     -33
+    ],
+    [
+     5,
+     -73
+    ],
+    [
+     6,
+     -52
+    ],
+    [
+     7,
+     -46
+    ],
+    [
+     8,
+     19
+    ],
+    [
+     9,
+     46
+    ],
+    [
+     10,
+     46
+    ],
+    [
+     11,
+     -33
+    ],
+    [
+     12,
+     -65
+    ],
+    [
+     13,
+     -54
+    ],
+    [
+     14,
+     27
+    ],
+    [
+     15,
+     11
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     17,
+     0
+    ],
+    [
+     18,
+     22
+    ],
+    [
+     19,
+     8
+    ],
+    [
+     20,
+     -3
+    ],
+    [
+     21,
+     8
+    ],
+    [
+     22,
+     27
+    ],
+    [
+     23,
+     38
+    ],
+    [
+     24,
+     27
+    ],
+    [
+     25,
+     27
+    ],
+    [
+     26,
+     16
+    ],
+    [
+     27,
+     -5
+    ],
+    [
+     28,
+     0
+    ],
+    [
+     29,
+     22
+    ],
+    [
+     30,
+     49
+    ],
+    [
+     31,
+     27
+    ],
+    [
+     32,
+     -16
+    ],
+    [
+     33,
+     -62
+    ],
+    [
+     34,
+     -52
+    ],
+    [
+     35,
+     -30
+    ],
+    [
+     36,
+     -33
+    ],
+    [
+     37,
+     -38
+    ],
+    [
+     38,
+     -11
+    ],
+    [
+     39,
+     0
+    ],
+    [
+     40,
+     16
+    ],
+    [
+     41,
+     0
+    ],
+    [
+     42,
+     24
+    ],
+    [
+     43,
+     8
+    ],
+    [
+     44,
+     -35
+    ],
+    [
+     45,
+     -100
+    ],
+    [
+     45.5,
+     -100
+    ],
+    [
+     46,
+     -5
+    ],
+    [
+     47,
+     -49
+    ],
+    [
+     48,
+     -54
+    ],
+    [
+     49,
+     -43
+    ],
+    [
+     50,
+     0
+    ],
+    [
+     51,
+     11
+    ],
+    [
+     52,
+     30
+    ],
+    [
+     53,
+     35
+    ],
+    [
+     54,
+     24
+    ],
+    [
+     55,
+     5
+    ],
+    [
+     56,
+     0
+    ],
+    [
+     57,
+     -3
+    ],
+    [
+     58,
+     -3
+    ],
+    [
+     59,
+     33
+    ],
+    [
+     60,
+     41
+    ],
+    [
+     61,
+     35
+    ],
+    [
+     62,
+     0
+    ],
+    [
+     63,
+     -8
+    ],
+    [
+     64,
+     -30
+    ],
+    [
+     65,
+     -73
+    ],
+    [
+     66,
+     -60
+    ],
+    [
+     67,
+     -33
+    ],
+    [
+     68,
+     24
+    ],
+    [
+     69,
+     19
+    ],
+    [
+     70,
+     19
+    ],
+    [
+     71,
+     22
+    ],
+    [
+     72,
+     22
+    ],
+    [
+     73,
+     65
+    ],
+    [
+     74,
+     27
+    ],
+    [
+     75,
+     38
+    ],
+    [
+     76,
+     3
+    ],
+    [
+     77,
+     41
+    ],
+    [
+     78,
+     46
+    ],
+    [
+     79,
+     27
+    ],
+    [
+     80,
+     5
+    ],
+    [
+     81,
+     -3
+    ],
+    [
+     82,
+     3
+    ],
+    [
+     83,
+     8
+    ],
+    [
+     84,
+     -24
+    ],
+    [
+     85,
+     -24
+    ],
+    [
+     86,
+     -41
+    ],
+    [
+     87,
+     -16
+    ],
+    [
+     88,
+     -22
+    ],
+    [
+     89,
+     11
+    ],
+    [
+     90,
+     43
+    ],
+    [
+     90.5,
+     13
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "UDI": {
+     "team": "UDI",
+     "formation": "3-4-2-1",
+     "coach": "Kosta Runjaić",
+     "xi": [
+      {
+       "name": "Maduka Okoye",
+       "shirt": 40,
+       "pos": "G"
+      },
+      {
+       "name": "Oumar Solet",
+       "shirt": 28,
+       "pos": "D"
+      },
+      {
+       "name": "David Alaba",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Enzo Ebosse",
+       "shirt": 77,
+       "pos": "D"
+      },
+      {
+       "name": "Mërgim Vojvoda",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Jesper Karlström",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Oier Zarraga",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Hassane Kamara",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Jurgen Ekkelenkamp",
+       "shirt": 32,
+       "pos": "M"
+      },
+      {
+       "name": "Giorgi Chakvetadze",
+       "shirt": 30,
+       "pos": "M"
+      },
+      {
+       "name": "Keinan Davis",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Matteo Palma",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Jakub Piotrowski",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Juan Arizala",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Alessandro Zanoli",
+       "shirt": 59,
+       "pos": "?"
+      },
+      {
+       "name": "Unai Gómez",
+       "shirt": 46,
+       "pos": "?"
+      },
+      {
+       "name": "Bartosz Mrozek",
+       "shirt": 41,
+       "pos": "?"
+      },
+      {
+       "name": "Daniele Padelli",
+       "shirt": 93,
+       "pos": "?"
+      },
+      {
+       "name": "Christian Kabasele",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "James Abankwah",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Nicolò Bertola",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Lennon Miller",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Sandi Lovrić",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Giulio Vinciati",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Lazar Jovanović",
+       "shirt": 91,
+       "pos": "?"
+      }
+     ]
+    },
+    "LEC": {
+     "team": "LEC",
+     "formation": "4-3-3",
+     "coach": "Eusebio Di Francesco",
+     "xi": [
+      {
+       "name": "Wladimiro Falcone",
+       "shirt": 30,
+       "pos": "G"
+      },
+      {
+       "name": "Danilo Veiga",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Kialonda Gaspar",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Tiago Gabriel",
+       "shirt": 44,
+       "pos": "D"
+      },
+      {
+       "name": "Antonino Gallo",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Lassana Coulibaly",
+       "shirt": 29,
+       "pos": "M"
+      },
+      {
+       "name": "Oumar Ngom",
+       "shirt": 79,
+       "pos": "M"
+      },
+      {
+       "name": "Youssef Maleh",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Konan N’Dri",
+       "shirt": 11,
+       "pos": "F"
+      },
+      {
+       "name": "Willem Geubbels",
+       "shirt": 69,
+       "pos": "F"
+      },
+      {
+       "name": "Amar Fatah",
+       "shirt": 7,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Mohamed Kaba",
+       "shirt": 77,
+       "pos": "?"
+      },
+      {
+       "name": "Santiago Pierotti",
+       "shirt": 50,
+       "pos": "?"
+      },
+      {
+       "name": "Paco Esteban",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Jamil Siebert",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Joël Monteiro",
+       "shirt": 99,
+       "pos": "?"
+      },
+      {
+       "name": "Alexandru Borbei",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Marco Bleve",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Ali Dembélé",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Corrie Ndaba",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Elijah Scott",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Gaby Jean",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Olaf Gorter",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Omri Gandelman",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Sadik Fofana",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Nikola Štulić",
+       "shirt": 9,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 36,
+      "center": 25,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 41,
+      "center": 26,
+      "right": 33
+     },
+     "secondHalf": {
+      "left": 33,
+      "center": 24,
+      "right": 43
+     }
+    },
+    "away": {
+     "total": {
+      "left": 32,
+      "center": 25,
+      "right": 43
+     },
+     "firstHalf": {
+      "left": 25,
+      "center": 28,
+      "right": 47
+     },
+     "secondHalf": {
+      "left": 42,
+      "center": 21,
+      "right": 37
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-18T14:29:44.968Z",
+   "fdMatchId": "2026-27-64",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-18T04:04:42.510Z"
+ "updatedAt": "2026-10-18T14:29:44.970Z"
 }

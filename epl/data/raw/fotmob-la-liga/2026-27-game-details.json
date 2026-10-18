@@ -140145,8 +140145,1790 @@
      }
     ]
    }
+  },
+  "OSA|RAC": {
+   "key": "OSA|RAC",
+   "season": "2026-27",
+   "date": "2026-10-18",
+   "matchId": "5868097",
+   "home": "OSA",
+   "away": "RAC",
+   "score": [
+    2,
+    0
+   ],
+   "providerScore": [
+    2,
+    0
+   ],
+   "teamStats": {
+    "OSA": {
+     "possession": 44,
+     "shots": 20,
+     "shotsOn": 7,
+     "shotsOff": 9,
+     "blockedShots": 4,
+     "blocksMade": 2,
+     "corners": 7,
+     "offsides": 4,
+     "fouls": 21,
+     "saves": 1,
+     "passes": 327,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 3.38
+    },
+    "RAC": {
+     "possession": 56,
+     "shots": 9,
+     "shotsOn": 1,
+     "shotsOff": 5,
+     "blockedShots": 3,
+     "blocksMade": 3,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 9,
+     "saves": 5,
+     "passes": 424,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.28
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "OSA": {
+     "touches_opp_box": 30,
+     "big_chance": 3,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 16,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 0.72,
+     "expected_goals_set_play": 1.88,
+     "expected_goals_non_penalty": 2.59,
+     "expected_goals_on_target": 4.23,
+     "own_half_passes": 148,
+     "opposition_half_passes": 96,
+     "long_balls_accurate": 34,
+     "long_balls_accurate_pct": 45,
+     "accurate_crosses": 7,
+     "accurate_crosses_pct": 41,
+     "player_throws": 24,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 5,
+     "clearances": 22,
+     "duel_won": 41,
+     "ground_duels_won": 28,
+     "ground_duels_won_pct": 41,
+     "aerials_won": 13,
+     "aerials_won_pct": 57,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 46,
+     "red_cards": 0
+    },
+    "RAC": {
+     "touches_opp_box": 5,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 1,
+     "shots_outside_box": 8,
+     "expected_goals_open_play": 0.24,
+     "expected_goals_set_play": 0.05,
+     "expected_goals_non_penalty": 0.28,
+     "expected_goals_on_target": 0.01,
+     "own_half_passes": 184,
+     "opposition_half_passes": 178,
+     "long_balls_accurate": 5,
+     "long_balls_accurate_pct": 17,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 11,
+     "player_throws": 26,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 8,
+     "clearances": 32,
+     "duel_won": 50,
+     "ground_duels_won": 40,
+     "ground_duels_won_pct": 59,
+     "aerials_won": 10,
+     "aerials_won_pct": 43,
+     "dribbles_succeeded": 8,
+     "dribbles_succeeded_pct": 62,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     44,
+     56
+    ],
+    "h1": [
+     48,
+     52
+    ],
+    "h2": [
+     40,
+     60
+    ]
+   },
+   "events": [
+    {
+     "minute": 6,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Álvaro Mantilla"
+    },
+    {
+     "minute": 9,
+     "extra": null,
+     "team": "OSA",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Ante Budimir"
+    },
+    {
+     "minute": 28,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Valentin Rosier"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Andrés Martin"
+    },
+    {
+     "minute": 51,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jorge Salinas"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "OSA",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ante Budimir"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Asier Osambela"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lucas Torró"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pablo García"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Raúl Moro"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Iñigo Arguibide"
+    },
+    {
+     "minute": 80,
+     "extra": null,
+     "team": "RAC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Iván Martin"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Aarón Martín"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Asier Villalibre"
+    },
+    {
+     "minute": 88,
+     "extra": null,
+     "team": "OSA",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Asier Osambela"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "OSA",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Raúl García"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "RAC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Giorgi Guliashvili"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "OSA",
+     "player": "Iker Muñoz",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.047,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 28.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 3,
+     "extra": null,
+     "team": "OSA",
+     "player": "Alejandro Catena",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.392,
+     "xgot": 0.964,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 33.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "OSA",
+     "player": "Ante Budimir",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.915,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "OSA",
+     "player": "Ante Budimir",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.6,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "RAC",
+     "player": "André Almeida",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.1,
+     "y": 41.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "OSA",
+     "player": "Rubén Garcia",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 29.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "RAC",
+     "player": "Sergio Canales",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81,
+     "y": 26.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "RAC",
+     "player": "Matteo Prati",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.4,
+     "y": 45.6,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "OSA",
+     "player": "Jonathan Dubasin",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.281,
+     "xgot": 0.135,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 37.1,
+     "foot": "OtherBodyParts",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "OSA",
+     "player": "Jonathan Dubasin",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.604,
+     "xgot": 0.397,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 36.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "OSA",
+     "player": "Jonathan Dubasin",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.883,
+     "xgot": 0.836,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.3,
+     "y": 35.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "RAC",
+     "player": "Yassir Zabiri",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.2,
+     "y": 34.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "OSA",
+     "player": "Rubén Garcia",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.6,
+     "y": 22.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "OSA",
+     "player": "Ante Budimir",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.1,
+     "y": 46.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "OSA",
+     "player": "Valentin Rosier",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.6,
+     "y": 30.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "RAC",
+     "player": "Sergio Canales",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0.011,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.4,
+     "y": 32.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "RAC",
+     "player": "Andrés Martin",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 17.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "OSA",
+     "player": "Iker Muñoz",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 53.8,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "OSA",
+     "player": "Ante Budimir",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.072,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 34.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "OSA",
+     "player": "Jonathan Dubasin",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.254,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 34.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "RAC",
+     "player": "Sergio Canales",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.8,
+     "y": 24,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "OSA",
+     "player": "Asier Osambela",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 22.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "OSA",
+     "player": "Flavien Boyomo",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.007,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103,
+     "y": 46.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "RAC",
+     "player": "Pablo García",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88.3,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "OSA",
+     "player": "Asier Osambela",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.4,
+     "y": 43.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "OSA",
+     "player": "Iñigo Arguibide",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.026,
+     "xgot": 0.026,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.2,
+     "y": 17.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "OSA",
+     "player": "Asier Osambela",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.492,
+     "xgot": 0.962,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 31.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "RAC",
+     "player": "Pablo García",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 69,
+     "y": 32.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "OSA",
+     "player": "Raúl Moro",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.111,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 42.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     -8
+    ],
+    [
+     3,
+     62
+    ],
+    [
+     4,
+     62
+    ],
+    [
+     5,
+     71
+    ],
+    [
+     6,
+     27
+    ],
+    [
+     7,
+     27
+    ],
+    [
+     8,
+     27
+    ],
+    [
+     9,
+     0
+    ],
+    [
+     10,
+     0
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     12,
+     60
+    ],
+    [
+     13,
+     76
+    ],
+    [
+     14,
+     60
+    ],
+    [
+     15,
+     5
+    ],
+    [
+     16,
+     -33
+    ],
+    [
+     17,
+     -54
+    ],
+    [
+     18,
+     -54
+    ],
+    [
+     19,
+     -33
+    ],
+    [
+     20,
+     0
+    ],
+    [
+     21,
+     -11
+    ],
+    [
+     22,
+     -11
+    ],
+    [
+     23,
+     -16
+    ],
+    [
+     24,
+     -11
+    ],
+    [
+     25,
+     -22
+    ],
+    [
+     26,
+     -27
+    ],
+    [
+     27,
+     -16
+    ],
+    [
+     28,
+     -16
+    ],
+    [
+     29,
+     -22
+    ],
+    [
+     30,
+     -33
+    ],
+    [
+     31,
+     3
+    ],
+    [
+     32,
+     19
+    ],
+    [
+     33,
+     24
+    ],
+    [
+     34,
+     -22
+    ],
+    [
+     35,
+     -24
+    ],
+    [
+     36,
+     -16
+    ],
+    [
+     37,
+     5
+    ],
+    [
+     38,
+     -19
+    ],
+    [
+     39,
+     -35
+    ],
+    [
+     40,
+     -30
+    ],
+    [
+     41,
+     100
+    ],
+    [
+     42,
+     100
+    ],
+    [
+     43,
+     100
+    ],
+    [
+     44,
+     0
+    ],
+    [
+     45,
+     8
+    ],
+    [
+     45.5,
+     3
+    ],
+    [
+     46,
+     19
+    ],
+    [
+     47,
+     35
+    ],
+    [
+     48,
+     41
+    ],
+    [
+     49,
+     38
+    ],
+    [
+     50,
+     22
+    ],
+    [
+     51,
+     -5
+    ],
+    [
+     52,
+     -19
+    ],
+    [
+     53,
+     -8
+    ],
+    [
+     54,
+     33
+    ],
+    [
+     55,
+     24
+    ],
+    [
+     56,
+     19
+    ],
+    [
+     57,
+     16
+    ],
+    [
+     58,
+     11
+    ],
+    [
+     59,
+     11
+    ],
+    [
+     60,
+     -11
+    ],
+    [
+     61,
+     0
+    ],
+    [
+     62,
+     -16
+    ],
+    [
+     63,
+     -38
+    ],
+    [
+     64,
+     -33
+    ],
+    [
+     65,
+     -11
+    ],
+    [
+     66,
+     54
+    ],
+    [
+     67,
+     100
+    ],
+    [
+     68,
+     100
+    ],
+    [
+     69,
+     41
+    ],
+    [
+     70,
+     -30
+    ],
+    [
+     71,
+     -16
+    ],
+    [
+     72,
+     5
+    ],
+    [
+     73,
+     0
+    ],
+    [
+     74,
+     14
+    ],
+    [
+     75,
+     14
+    ],
+    [
+     76,
+     24
+    ],
+    [
+     77,
+     0
+    ],
+    [
+     78,
+     0
+    ],
+    [
+     79,
+     -22
+    ],
+    [
+     80,
+     -16
+    ],
+    [
+     81,
+     -16
+    ],
+    [
+     82,
+     -16
+    ],
+    [
+     83,
+     -11
+    ],
+    [
+     84,
+     -33
+    ],
+    [
+     85,
+     -22
+    ],
+    [
+     86,
+     -38
+    ],
+    [
+     87,
+     -43
+    ],
+    [
+     88,
+     -38
+    ],
+    [
+     89,
+     -16
+    ],
+    [
+     90,
+     5
+    ],
+    [
+     90.5,
+     32
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "OSA": {
+     "team": "OSA",
+     "formation": "4-3-3",
+     "coach": "Jagoba Arrasate",
+     "xi": [
+      {
+       "name": "Aitor Fernández",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Valentin Rosier",
+       "shirt": 19,
+       "pos": "D"
+      },
+      {
+       "name": "Alejandro Catena",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Flavien Boyomo",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Abel Bretones",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Jon Moncayola",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Iker Muñoz",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Moi Gómez",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Rubén Garcia",
+       "shirt": 14,
+       "pos": "F"
+      },
+      {
+       "name": "Ante Budimir",
+       "shirt": 17,
+       "pos": "F"
+      },
+      {
+       "name": "Jonathan Dubasin",
+       "shirt": 21,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Asier Osambela",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Torró",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Iñigo Arguibide",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Raúl Moro",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Raúl García",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Rafa Fernández",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Sergio Herrera",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Diego Rico",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Rockson Yeboah",
+       "shirt": 48,
+       "pos": "?"
+      },
+      {
+       "name": "Unai Santos",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Mauro Echegoyen",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Enrique Barja",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    },
+    "RAC": {
+     "team": "RAC",
+     "formation": "4-2-3-1",
+     "coach": "José López",
+     "xi": [
+      {
+       "name": "Julen Agirrezabala",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Álvaro Mantilla",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Pablo Ramón",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Jeanuël Belocian",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Jorge Salinas",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Matteo Prati",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "André Almeida",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Iván Martin",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Sergio Canales",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Iñigo Vicente",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Yassir Zabiri",
+       "shirt": 21,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Andrés Martin",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo García",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Aarón Martín",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Asier Villalibre",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Giorgi Guliashvili",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Laro Gómez",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Facundo González",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Pedro Felipe",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Íñigo Sainz-Maza",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Maguette Gueye",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Luque",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Juan Carlos Arana",
+       "shirt": 9,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 48,
+      "center": 22,
+      "right": 30
+     },
+     "firstHalf": {
+      "left": 51,
+      "center": 26,
+      "right": 23
+     },
+     "secondHalf": {
+      "left": 46,
+      "center": 19,
+      "right": 35
+     }
+    },
+    "away": {
+     "total": {
+      "left": 25,
+      "center": 23,
+      "right": 52
+     },
+     "firstHalf": {
+      "left": 45,
+      "center": 18,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 9,
+      "center": 27,
+      "right": 64
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-18T14:29:41.591Z",
+   "fdMatchId": "2026-27-84",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "OSA",
+      "name": "Moi Gómez",
+      "n": 46,
+      "cx": 49.5,
+      "cy": 22.2,
+      "spread": 25.8,
+      "grid": "0,8,6,3,4,2,0,2,5,5,3,0,0,0,1,1,0,0,0,4,1,0,1,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Iker Muñoz",
+      "n": 50,
+      "cx": 45.9,
+      "cy": 29.4,
+      "spread": 25.7,
+      "grid": "0,1,9,5,0,1,0,2,8,2,0,0,2,6,6,1,0,2,0,1,2,2,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Alejandro Catena",
+      "n": 41,
+      "cx": 34.1,
+      "cy": 46.3,
+      "spread": 25.8,
+      "grid": "0,0,1,0,0,0,1,2,1,0,0,0,5,9,4,0,0,3,1,7,7,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Flavien Boyomo",
+      "n": 42,
+      "cx": 30.9,
+      "cy": 19.8,
+      "spread": 22.8,
+      "grid": "6,7,2,3,0,0,3,13,1,1,0,2,0,3,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Abel Bretones",
+      "n": 85,
+      "cx": 44.8,
+      "cy": 7.5,
+      "spread": 26.6,
+      "grid": "12,23,12,16,11,5,0,1,2,1,0,0,0,0,0,0,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Pablo Ramón",
+      "n": 111,
+      "cx": 31.5,
+      "cy": 45.7,
+      "spread": 23,
+      "grid": "0,0,5,1,0,0,1,4,8,2,1,0,11,17,7,7,0,1,17,18,9,2,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Álvaro Mantilla",
+      "n": 114,
+      "cx": 45.5,
+      "cy": 60.4,
+      "spread": 23.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,8,1,1,1,0,0,6,22,31,28,12,4"
+     },
+     {
+      "team": "RAC",
+      "name": "André Almeida",
+      "n": 30,
+      "cx": 61.1,
+      "cy": 39.3,
+      "spread": 28.4,
+      "grid": "0,1,0,1,4,0,0,2,0,0,3,0,1,0,4,1,0,0,0,0,0,8,5,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Jonathan Dubasin",
+      "n": 61,
+      "cx": 63.6,
+      "cy": 17.1,
+      "spread": 27.2,
+      "grid": "1,5,11,13,11,2,0,1,2,1,4,6,0,0,0,0,0,0,0,0,0,2,2,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Rubén Garcia",
+      "n": 57,
+      "cx": 64.6,
+      "cy": 44.5,
+      "spread": 33.6,
+      "grid": "0,0,0,0,1,6,0,3,1,1,0,1,1,3,2,2,6,3,2,2,6,6,7,4"
+     },
+     {
+      "team": "RAC",
+      "name": "Julen Agirrezabala",
+      "n": 45,
+      "cx": 7.9,
+      "cy": 34.8,
+      "spread": 8.4,
+      "grid": "0,0,0,0,0,0,18,0,0,0,0,0,24,2,0,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Iván Martin",
+      "n": 78,
+      "cx": 50.7,
+      "cy": 49.1,
+      "spread": 24.1,
+      "grid": "0,0,0,0,0,0,3,1,2,3,0,0,0,8,8,10,4,0,2,6,10,11,6,4"
+     },
+     {
+      "team": "RAC",
+      "name": "Yassir Zabiri",
+      "n": 7,
+      "cx": 67.9,
+      "cy": 35.2,
+      "spread": 19.6,
+      "grid": "0,0,0,0,0,0,0,0,0,2,2,0,0,1,0,0,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Ante Budimir",
+      "n": 52,
+      "cx": 60,
+      "cy": 26.2,
+      "spread": 29.1,
+      "grid": "0,5,5,3,1,0,0,1,4,5,3,8,2,0,5,0,3,3,0,0,0,3,1,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Jeanuël Belocian",
+      "n": 48,
+      "cx": 35.5,
+      "cy": 23,
+      "spread": 20.3,
+      "grid": "3,5,5,2,0,0,6,2,13,4,0,0,2,2,1,3,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Aitor Fernández",
+      "n": 49,
+      "cx": 8.2,
+      "cy": 34.9,
+      "spread": 9.8,
+      "grid": "0,0,0,0,0,0,19,3,0,0,0,0,26,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Sergio Canales",
+      "n": 57,
+      "cx": 68.6,
+      "cy": 40.2,
+      "spread": 29.7,
+      "grid": "0,0,0,2,7,3,0,2,0,3,4,0,1,1,4,1,3,0,1,0,2,6,11,6"
+     },
+     {
+      "team": "RAC",
+      "name": "Matteo Prati",
+      "n": 68,
+      "cx": 53,
+      "cy": 38.5,
+      "spread": 27.2,
+      "grid": "2,2,1,3,1,0,0,3,4,2,3,5,0,5,7,6,5,0,0,3,8,7,1,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Jorge Salinas",
+      "n": 58,
+      "cx": 52.6,
+      "cy": 9.9,
+      "spread": 30.6,
+      "grid": "7,12,7,6,10,7,0,3,1,0,1,2,1,0,0,0,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Valentin Rosier",
+      "n": 51,
+      "cx": 47,
+      "cy": 54,
+      "spread": 33.9,
+      "grid": "0,0,2,0,0,0,0,0,0,0,0,0,7,0,2,1,3,1,6,9,2,8,4,6"
+     },
+     {
+      "team": "RAC",
+      "name": "Iñigo Vicente",
+      "n": 81,
+      "cx": 62.8,
+      "cy": 31.5,
+      "spread": 32.7,
+      "grid": "1,2,5,6,12,6,0,1,5,5,0,1,0,1,4,1,3,0,2,2,1,11,12,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Jon Moncayola",
+      "n": 52,
+      "cx": 49.9,
+      "cy": 34.4,
+      "spread": 31,
+      "grid": "0,5,2,1,3,0,2,5,4,2,3,0,1,2,4,2,1,0,2,0,3,3,3,4"
+     },
+     {
+      "team": "RAC",
+      "name": "Andrés Martin",
+      "n": 31,
+      "cx": 65.6,
+      "cy": 52.8,
+      "spread": 28.8,
+      "grid": "0,0,0,0,0,0,1,1,0,0,1,0,1,0,0,0,6,1,0,3,2,6,2,7"
+     },
+     {
+      "team": "OSA",
+      "name": "Asier Osambela",
+      "n": 19,
+      "cx": 82.8,
+      "cy": 30.8,
+      "spread": 25.5,
+      "grid": "0,0,0,0,5,0,0,0,0,1,2,3,0,0,0,0,0,4,0,0,2,0,0,2"
+     },
+     {
+      "team": "OSA",
+      "name": "Lucas Torró",
+      "n": 15,
+      "cx": 42.7,
+      "cy": 19,
+      "spread": 15.7,
+      "grid": "0,0,5,3,0,0,1,1,3,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Iñigo Arguibide",
+      "n": 13,
+      "cx": 55.9,
+      "cy": 54,
+      "spread": 40.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,1,1,0,0,1,3,3"
+     },
+     {
+      "team": "OSA",
+      "name": "Raúl Moro",
+      "n": 9,
+      "cx": 46.9,
+      "cy": 14.6,
+      "spread": 31.1,
+      "grid": "0,0,2,1,0,1,1,3,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Pablo García",
+      "n": 11,
+      "cx": 78.5,
+      "cy": 43.2,
+      "spread": 15.1,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,2,0,0,1,1,3,1,0,0,0,0,2,1"
+     },
+     {
+      "team": "RAC",
+      "name": "Aarón Martín",
+      "n": 3,
+      "cx": 74.1,
+      "cy": 9.8,
+      "spread": 4.8,
+      "grid": "0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Asier Villalibre",
+      "n": 5,
+      "cx": 73.3,
+      "cy": 38,
+      "spread": 24,
+      "grid": "0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "OSA",
+      "name": "Raúl García",
+      "n": 5,
+      "cx": 94.3,
+      "cy": 13.4,
+      "spread": 11.6,
+      "grid": "0,0,0,0,0,4,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "RAC",
+      "name": "Giorgi Guliashvili",
+      "n": 1,
+      "cx": 83.1,
+      "cy": 60.9,
+      "spread": 0,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-18T04:04:42.073Z"
+ "updatedAt": "2026-10-18T14:29:42.260Z"
 }

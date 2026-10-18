@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-18T04:05:44.763Z",
+ "fetchedAt": "2026-10-18T14:31:18.049Z",
  "teams": [
   {
    "code": "INT",
@@ -181,6 +181,66 @@
      "loss": 0,
      "pointsPerGame": 2.6,
      "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "COM",
+   "fotmobId": 10171,
+   "fotmobName": "Como",
+   "fetchedAt": "2026-10-09T12:41:54.778Z",
+   "color": "#005ea9",
+   "teamColors": {
+    "darkMode": "#005ea9",
+    "lightMode": "#005ea9",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Sinigaglia",
+   "city": "Como",
+   "location": [
+    "45.813856655",
+    "9.072376192"
+   ],
+   "capacity": 13602,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 13,
+     "draw": 10,
+     "loss": 15,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.34
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 20,
+     "draw": 11,
+     "loss": 7,
+     "pointsPerGame": 1.87,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
     }
    ]
   },
@@ -425,66 +485,6 @@
    ]
   },
   {
-   "code": "COM",
-   "fotmobId": 10171,
-   "fotmobName": "Como",
-   "fetchedAt": "2026-10-09T12:41:54.778Z",
-   "color": "#005ea9",
-   "teamColors": {
-    "darkMode": "#005ea9",
-    "lightMode": "#005ea9",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Sinigaglia",
-   "city": "Como",
-   "location": [
-    "45.813856655",
-    "9.072376192"
-   ],
-   "capacity": 13602,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 13,
-     "draw": 10,
-     "loss": 15,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.34
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 20,
-     "draw": 11,
-     "loss": 7,
-     "pointsPerGame": 1.87,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
    "code": "NAP",
    "fotmobId": 9875,
    "fotmobName": "Napoli",
@@ -593,6 +593,66 @@
     {
      "id": 557567,
      "name": "Maurizio Sarri",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 1.2,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "LEC",
+   "fotmobId": 9888,
+   "fotmobName": "Lecce",
+   "fetchedAt": "2026-10-09T12:41:55.962Z",
+   "color": "#e12300",
+   "teamColors": {
+    "darkMode": "#e12300",
+    "lightMode": "#e12300",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Ettore Giardiniero - Via del Mare",
+   "city": "Lecce",
+   "location": [
+    "40.365103138",
+    "18.208851814"
+   ],
+   "capacity": 33876,
+   "surface": "Grass",
+   "opened": 1966,
+   "coachHistory": [
+    {
+     "id": 78712,
+     "name": "Marco Giampaolo",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 6,
+     "draw": 7,
+     "loss": 13,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.23
+    },
+    {
+     "id": 5615,
+     "name": "Eusebio Di Francesco",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 10,
+     "draw": 8,
+     "loss": 20,
+     "pointsPerGame": 1,
+     "winPercentage": 0.26
+    },
+    {
+     "id": 5615,
+     "name": "Eusebio Di Francesco",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -725,66 +785,6 @@
    ]
   },
   {
-   "code": "LEC",
-   "fotmobId": 9888,
-   "fotmobName": "Lecce",
-   "fetchedAt": "2026-10-09T12:41:55.962Z",
-   "color": "#e12300",
-   "teamColors": {
-    "darkMode": "#e12300",
-    "lightMode": "#e12300",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Ettore Giardiniero - Via del Mare",
-   "city": "Lecce",
-   "location": [
-    "40.365103138",
-    "18.208851814"
-   ],
-   "capacity": 33876,
-   "surface": "Grass",
-   "opened": 1966,
-   "coachHistory": [
-    {
-     "id": 78712,
-     "name": "Marco Giampaolo",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 6,
-     "draw": 7,
-     "loss": 13,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.23
-    },
-    {
-     "id": 5615,
-     "name": "Eusebio Di Francesco",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 10,
-     "draw": 8,
-     "loss": 20,
-     "pointsPerGame": 1,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 5615,
-     "name": "Eusebio Di Francesco",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 1.2,
-     "winPercentage": 0.4
-    }
-   ]
-  },
-  {
    "code": "BLG",
    "fotmobId": 9857,
    "fotmobName": "Bologna",
@@ -841,66 +841,6 @@
      "loss": 0,
      "pointsPerGame": 1,
      "winPercentage": 0
-    }
-   ]
-  },
-  {
-   "code": "UDI",
-   "fotmobId": 8600,
-   "fotmobName": "Udinese",
-   "fetchedAt": "2026-10-09T12:41:56.348Z",
-   "color": "#101010",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#101010",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Bluenergy Stadium",
-   "city": "Udine",
-   "location": [
-    "46.081644302",
-    "13.200062513"
-   ],
-   "capacity": 25952,
-   "surface": "Grass",
-   "opened": 1976,
-   "coachHistory": [
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 12,
-     "draw": 8,
-     "loss": 18,
-     "pointsPerGame": 1.16,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 14,
-     "draw": 8,
-     "loss": 16,
-     "pointsPerGame": 1.32,
-     "winPercentage": 0.37
-    },
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.8,
-     "winPercentage": 0.2
     }
    ]
   },
@@ -1025,62 +965,62 @@
    ]
   },
   {
-   "code": "FIO",
-   "fotmobId": 8535,
-   "fotmobName": "Fiorentina",
-   "fetchedAt": "2026-10-09T12:41:58.664Z",
-   "color": "#5F259F",
+   "code": "UDI",
+   "fotmobId": 8600,
+   "fotmobName": "Udinese",
+   "fetchedAt": "2026-10-09T12:41:56.348Z",
+   "color": "#101010",
    "teamColors": {
-    "darkMode": "#6f34af",
-    "lightMode": "#5F259F",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "darkMode": "#ffffff",
+    "lightMode": "#101010",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stadio Artemio Franchi",
-   "city": "Firenze",
+   "venue": "Bluenergy Stadium",
+   "city": "Udine",
    "location": [
-    "43.780787925",
-    "11.282712221"
+    "46.081644302",
+    "13.200062513"
    ],
-   "capacity": 43147,
+   "capacity": 25952,
    "surface": "Grass",
-   "opened": 1931,
+   "opened": 1976,
    "coachHistory": [
     {
-     "id": 42632,
-     "name": "Paolo Vanoli",
-     "season": "2025/2026",
+     "id": 812065,
+     "name": "Kosta Runjaić",
+     "season": "2024/2025",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 9,
-     "draw": 11,
-     "loss": 8,
-     "pointsPerGame": 1.36,
+     "win": 12,
+     "draw": 8,
+     "loss": 18,
+     "pointsPerGame": 1.16,
      "winPercentage": 0.32
     },
     {
-     "id": 34320,
-     "name": "Fabio Grosso",
-     "season": "2026/2027",
+     "id": 812065,
+     "name": "Kosta Runjaić",
+     "season": "2025/2026",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 0,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0,
-     "winPercentage": 0
+     "win": 14,
+     "draw": 8,
+     "loss": 16,
+     "pointsPerGame": 1.32,
+     "winPercentage": 0.37
     },
     {
-     "id": 42632,
-     "name": "Paolo Vanoli",
+     "id": 812065,
+     "name": "Kosta Runjaić",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
      "win": 1,
      "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2,
-     "winPercentage": 0.5
+     "loss": 3,
+     "pointsPerGame": 0.8,
+     "winPercentage": 0.2
     }
    ]
   },
@@ -1141,6 +1081,66 @@
      "loss": 4,
      "pointsPerGame": 0.2,
      "winPercentage": 0
+    }
+   ]
+  },
+  {
+   "code": "FIO",
+   "fotmobId": 8535,
+   "fotmobName": "Fiorentina",
+   "fetchedAt": "2026-10-09T12:41:58.664Z",
+   "color": "#5F259F",
+   "teamColors": {
+    "darkMode": "#6f34af",
+    "lightMode": "#5F259F",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Artemio Franchi",
+   "city": "Firenze",
+   "location": [
+    "43.780787925",
+    "11.282712221"
+   ],
+   "capacity": 43147,
+   "surface": "Grass",
+   "opened": 1931,
+   "coachHistory": [
+    {
+     "id": 42632,
+     "name": "Paolo Vanoli",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 11,
+     "loss": 8,
+     "pointsPerGame": 1.36,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 34320,
+     "name": "Fabio Grosso",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0,
+     "winPercentage": 0
+    },
+    {
+     "id": 42632,
+     "name": "Paolo Vanoli",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2,
+     "winPercentage": 0.5
     }
    ]
   },

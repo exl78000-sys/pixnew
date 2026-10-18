@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-18T04:05:44.078Z",
+ "fetchedAt": "2026-10-18T14:31:17.403Z",
  "teams": [
   {
    "code": "FCB",
@@ -53,6 +53,66 @@
     {
      "id": 39027,
      "name": "Vincent Kompany",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 3,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.5,
+     "winPercentage": 0.75
+    }
+   ]
+  },
+  {
+   "code": "SCF",
+   "fotmobId": 8358,
+   "fotmobName": "Freiburg",
+   "fetchedAt": "2026-10-09T12:41:42.199Z",
+   "color": "#BD1C2C",
+   "teamColors": {
+    "darkMode": "#BD1C2C",
+    "lightMode": "#BD1C2C",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Europa-Park Stadion",
+   "city": "Freiburg im Breisgau",
+   "location": [
+    "48.021617675",
+    "7.829695355"
+   ],
+   "capacity": 34700,
+   "surface": "Grass",
+   "opened": 2021,
+   "coachHistory": [
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 16,
+     "draw": 7,
+     "loss": 11,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 13,
+     "draw": 8,
+     "loss": 13,
+     "pointsPerGame": 1.38,
+     "winPercentage": 0.38
+    },
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -121,66 +181,6 @@
      "loss": 0,
      "pointsPerGame": 3,
      "winPercentage": 1
-    }
-   ]
-  },
-  {
-   "code": "SCF",
-   "fotmobId": 8358,
-   "fotmobName": "Freiburg",
-   "fetchedAt": "2026-10-09T12:41:42.199Z",
-   "color": "#BD1C2C",
-   "teamColors": {
-    "darkMode": "#BD1C2C",
-    "lightMode": "#BD1C2C",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Europa-Park Stadion",
-   "city": "Freiburg im Breisgau",
-   "location": [
-    "48.021617675",
-    "7.829695355"
-   ],
-   "capacity": 34700,
-   "surface": "Grass",
-   "opened": 2021,
-   "coachHistory": [
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 16,
-     "draw": 7,
-     "loss": 11,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 13,
-     "draw": 8,
-     "loss": 13,
-     "pointsPerGame": 1.38,
-     "winPercentage": 0.38
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 3,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.5,
-     "winPercentage": 0.75
     }
    ]
   },
