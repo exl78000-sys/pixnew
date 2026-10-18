@@ -46215,14 +46215,14 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 0
    },
    "homeId": 127,
    "awayId": 29,
    "home": {
-    "formation": "4-2-3-1",
-    "formationRaw": "4-2-3-1",
+    "formation": "4-1-4-1",
+    "formationRaw": "4-1-4-1",
     "rows": [
      [
       134403
@@ -46234,11 +46234,11 @@
       74965
      ],
      [
-      42894,
-      15572
+      42894
      ],
      [
       134234,
+      15572,
       10766,
       14846
      ],
@@ -46645,15 +46645,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 14846,
-     "assist": 33032,
+     "person": 33032,
+     "assist": null,
      "team": 127,
-     "min": 6,
-     "label": "06'00",
-     "phase": "1",
+     "min": 48,
+     "label": "48'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 1,
+     "hs": 2,
      "as": 0
     }
    ],
@@ -46699,6 +46699,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -46709,10 +46715,16 @@
       "min": 45,
       "label": "45+7'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+7'00"
+   "clock": "50'00"
   },
   "BHA|CRY": {
    "fixtureId": 128985,
@@ -46720,7 +46732,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 3,
+    "home": 4,
     "away": 0
    },
    "homeId": 131,
@@ -47150,41 +47162,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 147312,
+     "person": 145043,
      "assist": null,
      "team": 131,
-     "min": 4,
-     "label": "04'00",
-     "phase": "1",
-     "type": "O",
-     "kind": "O",
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "H",
-     "person": 143240,
-     "assist": 20505,
-     "team": 131,
-     "min": 7,
-     "label": "07'00",
-     "phase": "1",
+     "min": 49,
+     "label": "49'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 2,
-     "as": 0
-    },
-    {
-     "side": "H",
-     "person": 134333,
-     "assist": 145043,
-     "team": 131,
-     "min": 10,
-     "label": "10'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 3,
+     "hs": 4,
      "as": 0
     }
    ],
@@ -47198,10 +47184,62 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 49759,
+      "team": 6,
+      "min": 51,
+      "label": "51'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 24797,
+      "team": 6,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67779,
+      "team": 6,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 37776,
+      "team": 6,
+      "min": 53,
+      "label": "53'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 304106,
+      "team": 6,
+      "min": 53,
+      "label": "53'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -47213,10 +47251,16 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "53'00"
   },
   "LEE|MUN": {
    "fixtureId": 128988,
@@ -47224,7 +47268,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 1
    },
    "homeId": 9,
@@ -47653,16 +47697,16 @@
    },
    "goals": [
     {
-     "side": "A",
-     "person": 66360,
-     "assist": 5865,
-     "team": 12,
-     "min": 35,
-     "label": "35'00",
-     "phase": "1",
+     "side": "H",
+     "person": 9576,
+     "assist": 114504,
+     "team": 9,
+     "min": 51,
+     "label": "51'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 0,
+     "hs": 1,
      "as": 1
     }
    ],
@@ -47687,8 +47731,33 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 33245,
+      "team": 12,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67191,
+      "team": 12,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -47700,11 +47769,17 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "53'00"
   }
  },
- "fetchedAt": "2026-10-18T14:02:12.237Z"
+ "fetchedAt": "2026-10-18T14:11:47.638Z"
 }
