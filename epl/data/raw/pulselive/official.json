@@ -48288,8 +48288,8 @@
   "NFO|ARS": {
    "fixtureId": 128991,
    "kickoff": "2026-10-18T15:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 1
@@ -48902,12 +48902,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -48924,11 +48918,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "88'00"
+   "clock": "90+4'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-18T17:35:04.337Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-10-18T17:25:22.894Z"
+ "fetchedAt": "2026-10-18T17:35:04.337Z"
 }
