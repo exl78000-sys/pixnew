@@ -48288,7 +48288,7 @@
   "NFO|ARS": {
    "fixtureId": 128991,
    "kickoff": "2026-10-18T15:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -48310,12 +48310,12 @@
      ],
      [
       76353,
+      49270,
       20335,
-      115172,
       23811
      ],
      [
-      49270,
+      115172,
       50623
      ],
      [
@@ -48337,7 +48337,7 @@
       "playerId": null,
       "name": "James McAtee",
       "shirt": 24,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre/Right Attacking Midfielder",
       "captain": false
      },
@@ -48355,7 +48355,7 @@
       "playerId": null,
       "name": "Nicolás Domínguez",
       "shirt": 8,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -48508,9 +48508,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      7975
+     ],
+     [
+      14548,
+      13274,
+      50234,
+      69914
+     ],
+     [
+      15202,
+      74761
+     ],
+     [
+      49481,
+      11419,
+      21584
+     ],
+     [
+      20810
+     ]
+    ],
     "xi": [
      {
       "id": 69914,
@@ -48700,10 +48722,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "11'00"
   }
  },
- "fetchedAt": "2026-10-18T15:29:16.577Z"
+ "fetchedAt": "2026-10-18T15:42:00.782Z"
 }
