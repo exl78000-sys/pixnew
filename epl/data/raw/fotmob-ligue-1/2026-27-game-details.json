@@ -92944,8 +92944,1537 @@
    "fetchedAt": "2026-10-17T21:29:02.109Z",
    "fdMatchId": "2026-27-57",
    "heat": null
+  },
+  "ANG|MAR": {
+   "key": "ANG|MAR",
+   "season": "2026-27",
+   "date": "2026-10-18",
+   "matchId": "5802955",
+   "home": "ANG",
+   "away": "MAR",
+   "score": [
+    2,
+    5
+   ],
+   "providerScore": [
+    2,
+    5
+   ],
+   "teamStats": {
+    "ANG": {
+     "possession": 42,
+     "shots": 11,
+     "shotsOn": 3,
+     "shotsOff": 4,
+     "blockedShots": 4,
+     "blocksMade": 5,
+     "corners": 2,
+     "offsides": 0,
+     "fouls": 11,
+     "saves": 3,
+     "passes": 390,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.02
+    },
+    "MAR": {
+     "possession": 58,
+     "shots": 21,
+     "shotsOn": 8,
+     "shotsOff": 8,
+     "blockedShots": 5,
+     "blocksMade": 4,
+     "corners": 5,
+     "offsides": 0,
+     "fouls": 12,
+     "saves": 1,
+     "passes": 564,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.74
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "ANG": {
+     "touches_opp_box": 18,
+     "big_chance": 2,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 1,
+     "shots_woodwork": 1,
+     "shots_inside_box": 7,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 1.2,
+     "expected_goals_set_play": 0.03,
+     "expected_goals_non_penalty": 1.23,
+     "expected_goals_on_target": 1.96,
+     "own_half_passes": 202,
+     "opposition_half_passes": 126,
+     "long_balls_accurate": 35,
+     "long_balls_accurate_pct": 60,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 19,
+     "player_throws": 19,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 10,
+     "clearances": 33,
+     "duel_won": 40,
+     "ground_duels_won": 31,
+     "ground_duels_won_pct": 58,
+     "aerials_won": 9,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 67,
+     "red_cards": 0
+    },
+    "MAR": {
+     "touches_opp_box": 33,
+     "big_chance": 5,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 13,
+     "shots_outside_box": 8,
+     "expected_goals_open_play": 1.65,
+     "expected_goals_set_play": 0.31,
+     "expected_goals_non_penalty": 1.95,
+     "expected_goals_on_target": 4.51,
+     "own_half_passes": 221,
+     "opposition_half_passes": 273,
+     "long_balls_accurate": 21,
+     "long_balls_accurate_pct": 51,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 29,
+     "player_throws": 22,
+     "matchstats.headers.tackles": 8,
+     "interceptions": 12,
+     "clearances": 21,
+     "duel_won": 31,
+     "ground_duels_won": 22,
+     "ground_duels_won_pct": 42,
+     "aerials_won": 9,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 4,
+     "dribbles_succeeded_pct": 40,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     42,
+     58
+    ],
+    "h1": [
+     42,
+     58
+    ],
+    "h2": [
+     42,
+     58
+    ]
+   },
+   "events": [
+    {
+     "minute": 14,
+     "extra": null,
+     "team": "ANG",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Lilian Rao-Lisoa"
+    },
+    {
+     "minute": 37,
+     "extra": null,
+     "team": "MAR",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Himad Abdelli"
+    },
+    {
+     "minute": 43,
+     "extra": null,
+     "team": "MAR",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Nouhoum Kamissoko"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "ANG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Prosper Peter"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nayef Aguerd"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "MAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Amine Gouiri"
+    },
+    {
+     "minute": 68,
+     "extra": null,
+     "team": "ANG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Emmanuel Biumla"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "ANG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joseph Kalulu"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "ANG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Harouna Djibirin"
+    },
+    {
+     "minute": 74,
+     "extra": null,
+     "team": "MAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Tochukwu Nnadi"
+    },
+    {
+     "minute": 75,
+     "extra": null,
+     "team": "ANG",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Amine El Ouazzani"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Keyliane Abdallah"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Angel Gomes"
+    },
+    {
+     "minute": 83,
+     "extra": null,
+     "team": "MAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Amine Harit"
+    },
+    {
+     "minute": 85,
+     "extra": null,
+     "team": "MAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Igor Paixão"
+    },
+    {
+     "minute": 89,
+     "extra": 0,
+     "team": "ANG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bane Diatta"
+    },
+    {
+     "minute": 89,
+     "extra": 0,
+     "team": "ANG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Anthony Bermont"
+    },
+    {
+     "minute": 90,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ulisses Garcia"
+    },
+    {
+     "minute": 90,
+     "extra": 0,
+     "team": "MAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Neal Maupay"
+    }
+   ],
+   "shots": [
+    {
+     "min": 9,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 47.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "MAR",
+     "player": "Tochukwu Nnadi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.2,
+     "y": 33.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "ANG",
+     "player": "Lilian Rao-Lisoa",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.608,
+     "xgot": 0.992,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.4,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "MAR",
+     "player": "Himad Abdelli",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90,
+     "y": 47.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "ANG",
+     "player": "Lilian Rao-Lisoa",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 51.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.5,
+     "y": 48.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "ANG",
+     "player": "Amine El Ouazzani",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.086,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.8,
+     "y": 30.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.01,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.4,
+     "y": 21.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.16,
+     "xgot": 0.08,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.1,
+     "y": 35.5,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 34,
+     "extra": null,
+     "team": "MAR",
+     "player": "Amine Gouiri",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.3,
+     "y": 42.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "ANG",
+     "player": "Louis Mouton",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.162,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 38.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "ANG",
+     "player": "Lilian Rao-Lisoa",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.5,
+     "y": 46.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 49.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "MAR",
+     "player": "Himad Abdelli",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.505,
+     "xgot": 0.653,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.7,
+     "y": 34.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "MAR",
+     "player": "Timothy Weah",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.149,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 26.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "MAR",
+     "player": "Amine Gouiri",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.047,
+     "xgot": 0.425,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.1,
+     "y": 24.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "MAR",
+     "player": "Nouhoum Kamissoko",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.152,
+     "xgot": 0.842,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.2,
+     "y": 35.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.076,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 43.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "MAR",
+     "player": "Emerson",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.8,
+     "y": 50.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 37.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "MAR",
+     "player": "Amine Gouiri",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.632,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "MAR",
+     "player": "Amine Gouiri",
+     "type": "Goal",
+     "situation": "SetPiece",
+     "xg": 0.695,
+     "xgot": 0.964,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.3,
+     "y": 31.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "ANG",
+     "player": "Prosper Peter",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 39.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "ANG",
+     "player": "Prosper Peter",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.075,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 31.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "ANG",
+     "player": "Amine El Ouazzani",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.737,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "ANG",
+     "player": "Harouna Djibirin",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 23.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "MAR",
+     "player": "Amine Harit",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.073,
+     "xgot": 0.108,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 34.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "MAR",
+     "player": "Igor Paixão",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.248,
+     "xgot": 0.804,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "MAR",
+     "player": "Keyliane Abdallah",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 18.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "ANG",
+     "player": "Prosper Peter",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.102,
+     "xgot": 0.233,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.5,
+     "y": 42.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "MAR",
+     "player": "Keyliane Abdallah",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.05,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78,
+     "y": 32.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "ANG",
+     "player": "Bane Diatta",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.087,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -5
+    ],
+    [
+     2,
+     -3
+    ],
+    [
+     3,
+     -3
+    ],
+    [
+     4,
+     -11
+    ],
+    [
+     5,
+     -14
+    ],
+    [
+     6,
+     -19
+    ],
+    [
+     7,
+     33
+    ],
+    [
+     8,
+     27
+    ],
+    [
+     9,
+     27
+    ],
+    [
+     10,
+     -5
+    ],
+    [
+     11,
+     5
+    ],
+    [
+     12,
+     0
+    ],
+    [
+     13,
+     0
+    ],
+    [
+     14,
+     11
+    ],
+    [
+     15,
+     22
+    ],
+    [
+     16,
+     -11
+    ],
+    [
+     17,
+     -19
+    ],
+    [
+     18,
+     -3
+    ],
+    [
+     19,
+     19
+    ],
+    [
+     20,
+     -54
+    ],
+    [
+     21,
+     -71
+    ],
+    [
+     22,
+     -71
+    ],
+    [
+     23,
+     -22
+    ],
+    [
+     24,
+     -27
+    ],
+    [
+     25,
+     -27
+    ],
+    [
+     26,
+     -16
+    ],
+    [
+     27,
+     -27
+    ],
+    [
+     28,
+     -38
+    ],
+    [
+     29,
+     -16
+    ],
+    [
+     30,
+     5
+    ],
+    [
+     31,
+     11
+    ],
+    [
+     32,
+     -30
+    ],
+    [
+     33,
+     -14
+    ],
+    [
+     34,
+     -57
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     36,
+     -16
+    ],
+    [
+     37,
+     -33
+    ],
+    [
+     38,
+     -71
+    ],
+    [
+     39,
+     -60
+    ],
+    [
+     40,
+     -5
+    ],
+    [
+     41,
+     -41
+    ],
+    [
+     42,
+     -68
+    ],
+    [
+     43,
+     -100
+    ],
+    [
+     44,
+     -76
+    ],
+    [
+     45,
+     -60
+    ],
+    [
+     45.5,
+     11
+    ],
+    [
+     46,
+     -30
+    ],
+    [
+     47,
+     -30
+    ],
+    [
+     48,
+     -30
+    ],
+    [
+     49,
+     -16
+    ],
+    [
+     50,
+     -98
+    ],
+    [
+     51,
+     -100
+    ],
+    [
+     52,
+     -100
+    ],
+    [
+     53,
+     -33
+    ],
+    [
+     54,
+     -22
+    ],
+    [
+     55,
+     -16
+    ],
+    [
+     56,
+     -33
+    ],
+    [
+     57,
+     -68
+    ],
+    [
+     58,
+     -35
+    ],
+    [
+     59,
+     -14
+    ],
+    [
+     60,
+     16
+    ],
+    [
+     61,
+     5
+    ],
+    [
+     62,
+     16
+    ],
+    [
+     63,
+     27
+    ],
+    [
+     64,
+     -33
+    ],
+    [
+     65,
+     -11
+    ],
+    [
+     66,
+     14
+    ],
+    [
+     67,
+     35
+    ],
+    [
+     68,
+     -3
+    ],
+    [
+     69,
+     -65
+    ],
+    [
+     70,
+     -33
+    ],
+    [
+     71,
+     -27
+    ],
+    [
+     72,
+     0
+    ],
+    [
+     73,
+     76
+    ],
+    [
+     74,
+     76
+    ],
+    [
+     75,
+     71
+    ],
+    [
+     76,
+     -5
+    ],
+    [
+     77,
+     -5
+    ],
+    [
+     78,
+     11
+    ],
+    [
+     79,
+     0
+    ],
+    [
+     80,
+     16
+    ],
+    [
+     81,
+     19
+    ],
+    [
+     82,
+     8
+    ],
+    [
+     83,
+     -24
+    ],
+    [
+     84,
+     -24
+    ],
+    [
+     85,
+     -33
+    ],
+    [
+     86,
+     -16
+    ],
+    [
+     87,
+     -73
+    ],
+    [
+     88,
+     73
+    ],
+    [
+     89,
+     68
+    ],
+    [
+     90,
+     100
+    ],
+    [
+     90.5,
+     17
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "ANG": {
+     "team": "ANG",
+     "formation": "4-2-3-1",
+     "coach": "Stéphane Gilli",
+     "xi": [
+      {
+       "name": "Anthony Lopes",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Carlens Arcus",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Emmanuel Biumla",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Mael Gernigon",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Lilian Rao-Lisoa",
+       "shirt": 27,
+       "pos": "D"
+      },
+      {
+       "name": "Yassin Belkhdim",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Branco van den Boomen",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Jim Allevinah",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Louis Mouton",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Amine Sbaï",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Amine El Ouazzani",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Prosper Peter",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Joseph Kalulu",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Harouna Djibirin",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Anthony Bermont",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Bane Diatta",
+       "shirt": 36,
+       "pos": "?"
+      },
+      {
+       "name": "Oumar Pona",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Marius Louër",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Jules Bouffandeau",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Usman Simbakoli",
+       "shirt": 7,
+       "pos": "?"
+      }
+     ]
+    },
+    "MAR": {
+     "team": "MAR",
+     "formation": "4-2-3-1",
+     "coach": "Bruno Génésio",
+     "xi": [
+      {
+       "name": "Jeffrey De Lange",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Timothy Weah",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "CJ Egan-Riley",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Geoffrey Kondogbia",
+       "shirt": 19,
+       "pos": "D"
+      },
+      {
+       "name": "Emerson",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Tochukwu Nnadi",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Nouhoum Kamissoko",
+       "shirt": 42,
+       "pos": "?"
+      },
+      {
+       "name": "Amine Harit",
+       "shirt": 77,
+       "pos": "M"
+      },
+      {
+       "name": "Himad Abdelli",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Igor Paixão",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "Amine Gouiri",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Nayef Aguerd",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Angel Gomes",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Keyliane Abdallah",
+       "shirt": 48,
+       "pos": "?"
+      },
+      {
+       "name": "Ulisses Garcia",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Neal Maupay",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Théo Vermot",
+       "shirt": 92,
+       "pos": "?"
+      },
+      {
+       "name": "Bamo Meité",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Kelyann Bezahaf",
+       "shirt": 74,
+       "pos": "?"
+      },
+      {
+       "name": "Tadjidine Mmadi",
+       "shirt": 43,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 41,
+      "center": 22,
+      "right": 37
+     },
+     "firstHalf": {
+      "left": 34,
+      "center": 17,
+      "right": 49
+     },
+     "secondHalf": {
+      "left": 48,
+      "center": 26,
+      "right": 26
+     }
+    },
+    "away": {
+     "total": {
+      "left": 43,
+      "center": 25,
+      "right": 32
+     },
+     "firstHalf": {
+      "left": 44,
+      "center": 23,
+      "right": 33
+     },
+     "secondHalf": {
+      "left": 42,
+      "center": 26,
+      "right": 32
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 7,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-18T15:29:11.434Z",
+   "fdMatchId": "2026-27-58",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-18T14:29:45.191Z"
+ "updatedAt": "2026-10-18T15:29:11.436Z"
 }

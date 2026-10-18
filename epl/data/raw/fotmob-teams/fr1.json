@@ -2,8 +2,68 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-18T14:31:18.541Z",
+ "fetchedAt": "2026-10-18T15:30:19.079Z",
  "teams": [
+  {
+   "code": "MON",
+   "fotmobId": 9829,
+   "fotmobName": "Monaco",
+   "fetchedAt": "2026-10-09T12:42:01.944Z",
+   "color": "#C80C13",
+   "teamColors": {
+    "darkMode": "#C80C13",
+    "lightMode": "#C80C13",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Louis-II",
+   "city": "Monaco",
+   "location": [
+    "43.727563789",
+    "7.415542156"
+   ],
+   "capacity": 18523,
+   "surface": "Grass",
+   "opened": 1985,
+   "coachHistory": [
+    {
+     "id": 7484,
+     "name": "Adolf Hütter",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 4,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.57
+    },
+    {
+     "id": 38795,
+     "name": "Sébastien Pocognoli",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 12,
+     "draw": 5,
+     "loss": 10,
+     "pointsPerGame": 1.52,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 41167,
+     "name": "Filipe Luís",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
+    }
+   ]
+  },
   {
    "code": "PSG",
    "fotmobId": 9847,
@@ -125,66 +185,6 @@
    ]
   },
   {
-   "code": "MON",
-   "fotmobId": 9829,
-   "fotmobName": "Monaco",
-   "fetchedAt": "2026-10-09T12:42:01.944Z",
-   "color": "#C80C13",
-   "teamColors": {
-    "darkMode": "#C80C13",
-    "lightMode": "#C80C13",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Louis-II",
-   "city": "Monaco",
-   "location": [
-    "43.727563789",
-    "7.415542156"
-   ],
-   "capacity": 18523,
-   "surface": "Grass",
-   "opened": 1985,
-   "coachHistory": [
-    {
-     "id": 7484,
-     "name": "Adolf Hütter",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 4,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.57
-    },
-    {
-     "id": 38795,
-     "name": "Sébastien Pocognoli",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 12,
-     "draw": 5,
-     "loss": 10,
-     "pointsPerGame": 1.52,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 41167,
-     "name": "Filipe Luís",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
-  {
    "code": "REN",
    "fotmobId": 9851,
    "fotmobName": "Rennes",
@@ -245,66 +245,6 @@
    ]
   },
   {
-   "code": "LYO",
-   "fotmobId": 9748,
-   "fotmobName": "Lyon",
-   "fetchedAt": "2026-10-09T12:42:02.523Z",
-   "color": "#0160A0",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#0160A0",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Groupama Stadium",
-   "city": "Décines-Charpieu",
-   "location": [
-    "45.765310356",
-    "4.982063884"
-   ],
-   "capacity": 61556,
-   "surface": "Grass",
-   "opened": 2016,
-   "coachHistory": [
-    {
-     "id": 361759,
-     "name": "Paulo Fonseca",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 9,
-     "draw": 0,
-     "loss": 6,
-     "pointsPerGame": 1.8,
-     "winPercentage": 0.6
-    },
-    {
-     "id": 361759,
-     "name": "Paulo Fonseca",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 18,
-     "draw": 6,
-     "loss": 10,
-     "pointsPerGame": 1.76,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 361759,
-     "name": "Paulo Fonseca",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 3,
-     "draw": 2,
-     "loss": 0,
-     "pointsPerGame": 2.2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
    "code": "PFC",
    "fotmobId": 6379,
    "fotmobName": "Paris FC",
@@ -353,6 +293,66 @@
     {
      "id": 24105,
      "name": "Liam Rosenior",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 3,
+     "draw": 2,
+     "loss": 0,
+     "pointsPerGame": 2.2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
+   "code": "LYO",
+   "fotmobId": 9748,
+   "fotmobName": "Lyon",
+   "fetchedAt": "2026-10-09T12:42:02.523Z",
+   "color": "#0160A0",
+   "teamColors": {
+    "darkMode": "#ffffff",
+    "lightMode": "#0160A0",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Groupama Stadium",
+   "city": "Décines-Charpieu",
+   "location": [
+    "45.765310356",
+    "4.982063884"
+   ],
+   "capacity": 61556,
+   "surface": "Grass",
+   "opened": 2016,
+   "coachHistory": [
+    {
+     "id": 361759,
+     "name": "Paulo Fonseca",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 9,
+     "draw": 0,
+     "loss": 6,
+     "pointsPerGame": 1.8,
+     "winPercentage": 0.6
+    },
+    {
+     "id": 361759,
+     "name": "Paulo Fonseca",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 18,
+     "draw": 6,
+     "loss": 10,
+     "pointsPerGame": 1.76,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 361759,
+     "name": "Paulo Fonseca",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
@@ -425,66 +425,6 @@
    ]
   },
   {
-   "code": "BST",
-   "fotmobId": 8521,
-   "fotmobName": "Brest",
-   "fetchedAt": "2026-10-09T12:42:07.373Z",
-   "color": "#ED1C24",
-   "teamColors": {
-    "darkMode": "#ED1C24",
-    "lightMode": "#ED1C24",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Francis-Le Blé",
-   "city": "Brest",
-   "location": [
-    "48.402881677",
-    "-4.461457729"
-   ],
-   "capacity": 15931,
-   "surface": "Grass",
-   "opened": 1922,
-   "coachHistory": [
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2023/2024",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 17,
-     "draw": 10,
-     "loss": 7,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 15,
-     "draw": 5,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 10,
-     "draw": 9,
-     "loss": 15,
-     "pointsPerGame": 1.15,
-     "winPercentage": 0.29
-    }
-   ]
-  },
-  {
    "code": "MAR",
    "fotmobId": 8592,
    "fotmobName": "Marseille",
@@ -541,6 +481,66 @@
      "loss": 4,
      "pointsPerGame": 0.6,
      "winPercentage": 0.2
+    }
+   ]
+  },
+  {
+   "code": "BST",
+   "fotmobId": 8521,
+   "fotmobName": "Brest",
+   "fetchedAt": "2026-10-09T12:42:07.373Z",
+   "color": "#ED1C24",
+   "teamColors": {
+    "darkMode": "#ED1C24",
+    "lightMode": "#ED1C24",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Francis-Le Blé",
+   "city": "Brest",
+   "location": [
+    "48.402881677",
+    "-4.461457729"
+   ],
+   "capacity": 15931,
+   "surface": "Grass",
+   "opened": 1922,
+   "coachHistory": [
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2023/2024",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 17,
+     "draw": 10,
+     "loss": 7,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 15,
+     "draw": 5,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 10,
+     "draw": 9,
+     "loss": 15,
+     "pointsPerGame": 1.15,
+     "winPercentage": 0.29
     }
    ]
   },
@@ -845,66 +845,6 @@
    ]
   },
   {
-   "code": "LMA",
-   "fotmobId": 8682,
-   "fotmobName": "Le Mans",
-   "fetchedAt": "2026-10-09T12:42:05.369Z",
-   "color": "#D60000",
-   "teamColors": {
-    "darkMode": "#D60000",
-    "lightMode": "#D60000",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Marie-Marvingt",
-   "city": "Le Mans",
-   "location": [
-    "47.959223534",
-    "0.223524570"
-   ],
-   "capacity": 25064,
-   "surface": "Grass",
-   "opened": 2011,
-   "coachHistory": [
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2022/2023",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 10,
-     "draw": 13,
-     "loss": 11,
-     "pointsPerGame": 1.26,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2023/2024",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 6,
-     "draw": 7,
-     "loss": 7,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.3
-    },
-    {
-     "id": 1141920,
-     "name": "Mathieu Chabert",
-     "season": "2023/2024",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 7,
-     "draw": 3,
-     "loss": 2,
-     "pointsPerGame": 2,
-     "winPercentage": 0.58
-    }
-   ]
-  },
-  {
    "code": "AUX",
    "fotmobId": 8583,
    "fotmobName": "Auxerre",
@@ -961,6 +901,66 @@
      "loss": 3,
      "pointsPerGame": 1.2,
      "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "LMA",
+   "fotmobId": 8682,
+   "fotmobName": "Le Mans",
+   "fetchedAt": "2026-10-09T12:42:05.369Z",
+   "color": "#D60000",
+   "teamColors": {
+    "darkMode": "#D60000",
+    "lightMode": "#D60000",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Marie-Marvingt",
+   "city": "Le Mans",
+   "location": [
+    "47.959223534",
+    "0.223524570"
+   ],
+   "capacity": 25064,
+   "surface": "Grass",
+   "opened": 2011,
+   "coachHistory": [
+    {
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2022/2023",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 10,
+     "draw": 13,
+     "loss": 11,
+     "pointsPerGame": 1.26,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2023/2024",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 6,
+     "draw": 7,
+     "loss": 7,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.3
+    },
+    {
+     "id": 1141920,
+     "name": "Mathieu Chabert",
+     "season": "2023/2024",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 7,
+     "draw": 3,
+     "loss": 2,
+     "pointsPerGame": 2,
+     "winPercentage": 0.58
     }
    ]
   },
