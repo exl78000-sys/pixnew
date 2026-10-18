@@ -46675,7 +46675,7 @@
      }
     ]
    },
-   "clock": "09'00"
+   "clock": "16'00"
   },
   "BHA|CRY": {
    "fixtureId": 128985,
@@ -46683,7 +46683,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 2,
+    "home": 3,
     "away": 0
    },
    "homeId": 131,
@@ -47113,15 +47113,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 143240,
-     "assist": 20505,
+     "person": 134333,
+     "assist": 145043,
      "team": 131,
-     "min": 7,
-     "label": "07'00",
+     "min": 10,
+     "label": "10'00",
      "phase": "1",
      "type": "G",
      "kind": "G",
-     "hs": 2,
+     "hs": 3,
      "as": 0
     }
    ],
@@ -47143,7 +47143,7 @@
      }
     ]
    },
-   "clock": "09'00"
+   "clock": "17'00"
   },
   "LEE|MUN": {
    "fixtureId": 128988,
@@ -47580,7 +47580,17 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 23396,
+      "team": 12,
+      "min": 17,
+      "label": "17'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -47597,8 +47607,8 @@
      }
     ]
    },
-   "clock": "09'00"
+   "clock": "17'00"
   }
  },
- "fetchedAt": "2026-10-18T13:09:54.314Z"
+ "fetchedAt": "2026-10-18T13:17:02.865Z"
 }
