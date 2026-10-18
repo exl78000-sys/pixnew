@@ -46699,20 +46699,20 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+7'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+6'00"
+   "clock": "45+7'00"
   },
   "BHA|CRY": {
    "fixtureId": 128985,
@@ -47706,5 +47706,5 @@
    "clock": "45+2'00"
   }
  },
- "fetchedAt": "2026-10-18T13:50:31.241Z"
+ "fetchedAt": "2026-10-18T13:52:47.975Z"
 }
