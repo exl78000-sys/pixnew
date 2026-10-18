@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-18T15:30:17.661Z",
+ "fetchedAt": "2026-10-18T21:32:46.585Z",
  "teams": [
   {
    "code": "FCB",
@@ -785,6 +785,66 @@
    ]
   },
   {
+   "code": "TSG",
+   "fotmobId": 8226,
+   "fotmobName": "Hoffenheim",
+   "fetchedAt": "2026-10-09T12:41:50.120Z",
+   "color": "#005098",
+   "teamColors": {
+    "darkMode": "#0057a3",
+    "lightMode": "#005098",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "SNP Arena",
+   "city": "Sinsheim",
+   "location": [
+    "49.238005290",
+    "8.887740970"
+   ],
+   "capacity": 30164,
+   "surface": "Grass",
+   "opened": 2009,
+   "coachHistory": [
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 5,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.21
+    },
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 18,
+     "draw": 7,
+     "loss": 9,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
    "code": "S04",
    "fotmobId": 10189,
    "fotmobName": "Schalke 04",
@@ -961,66 +1021,6 @@
      "loss": 3,
      "pointsPerGame": 0.25,
      "winPercentage": 0
-    }
-   ]
-  },
-  {
-   "code": "TSG",
-   "fotmobId": 8226,
-   "fotmobName": "Hoffenheim",
-   "fetchedAt": "2026-10-09T12:41:50.120Z",
-   "color": "#005098",
-   "teamColors": {
-    "darkMode": "#0057a3",
-    "lightMode": "#005098",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "SNP Arena",
-   "city": "Sinsheim",
-   "location": [
-    "49.238005290",
-    "8.887740970"
-   ],
-   "capacity": 30164,
-   "surface": "Grass",
-   "opened": 2009,
-   "coachHistory": [
-    {
-     "id": 601384,
-     "name": "Christian Ilzer",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 5,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.21
-    },
-    {
-     "id": 601384,
-     "name": "Christian Ilzer",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 18,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 601384,
-     "name": "Christian Ilzer",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
-     "winPercentage": 0.25
     }
    ]
   },
