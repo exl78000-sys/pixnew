@@ -48292,7 +48292,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 15,
    "awayId": 1,
@@ -48718,7 +48718,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 67407,
+     "assist": 15202,
+     "team": 1,
+     "min": 80,
+     "label": "80'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -48848,6 +48862,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 3756,
+      "team": 15,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 304238,
+      "team": 15,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 23702,
+      "team": 15,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49270,
+      "team": 15,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -48877,8 +48927,8 @@
      }
     ]
    },
-   "clock": "78'00"
+   "clock": "88'00"
   }
  },
- "fetchedAt": "2026-10-18T17:08:26.412Z"
+ "fetchedAt": "2026-10-18T17:18:09.643Z"
 }
