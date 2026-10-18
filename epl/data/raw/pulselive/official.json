@@ -46212,8 +46212,8 @@
   "BOU|SUN": {
    "fixtureId": 128983,
    "kickoff": "2026-10-18T13:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 0
@@ -46645,6 +46645,19 @@
    "goals": [
     {
      "side": "H",
+     "person": 14846,
+     "assist": 33032,
+     "team": 127,
+     "min": 6,
+     "label": "06'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
      "person": 33032,
      "assist": null,
      "team": 127,
@@ -46862,12 +46875,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -46884,16 +46891,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+1'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-18T15:02:01.020Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "BHA|CRY": {
    "fixtureId": 128985,
    "kickoff": "2026-10-18T13:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 5,
     "away": 0
@@ -47325,6 +47345,58 @@
    "goals": [
     {
      "side": "H",
+     "person": 147312,
+     "assist": null,
+     "team": 131,
+     "min": 4,
+     "label": "04'00",
+     "phase": "1",
+     "type": "O",
+     "kind": "O",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
+     "person": 143240,
+     "assist": 20505,
+     "team": 131,
+     "min": 7,
+     "label": "07'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 0
+    },
+    {
+     "side": "H",
+     "person": 134333,
+     "assist": 145043,
+     "team": 131,
+     "min": 10,
+     "label": "10'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 3,
+     "as": 0
+    },
+    {
+     "side": "H",
+     "person": 145043,
+     "assist": null,
+     "team": 131,
+     "min": 49,
+     "label": "49'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 4,
+     "as": 0
+    },
+    {
+     "side": "H",
      "person": 112739,
      "assist": null,
      "team": 131,
@@ -47551,12 +47623,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -47573,16 +47639,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-18T15:02:01.418Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "LEE|MUN": {
    "fixtureId": 128988,
    "kickoff": "2026-10-18T13:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 1
@@ -48013,6 +48092,19 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 66360,
+     "assist": 5865,
+     "team": 12,
+     "min": 35,
+     "label": "35'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 9576,
      "assist": 114504,
@@ -48159,12 +48251,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -48181,10 +48267,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-18T15:02:01.815Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "NFO|ARS": {
    "fixtureId": 128991,
@@ -48606,5 +48705,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-18T14:52:29.588Z"
+ "fetchedAt": "2026-10-18T15:02:01.815Z"
 }
