@@ -1091,6 +1091,24 @@ const NEXT_BINS = 10;
    真實的角球不是「一定找得到人」:`extra.accurate_crosses` 一隊一場只有 4.28 次(傳中成功率的量級),
    所以誤差本來就該跟盯人的距離同量級**以上**。這個值用錨掃出來 ——
    錨是「進攻方的頭球 ÷ 角球」:真實 FromCorner 頭球 46% × 每個角球 0.44 腳射門 = **0.20**。 */
+/* **運動戰傳中**(2026-10-17,補齊規劃 5r)。在這之前程式裡的「傳中」只有角球開出的那一腳 ——
+   邊路球員到了底線不會傳,真實比賽裡最大宗的角球來源(傳中被擋 / 被頂出底線)不存在,角球一場 5.2(真實 11.4)。
+   錨:FotMob 2025-26 英超 743 隊-場,每隊每場傳中 18.2、成功率 23.8%(`accurate_crosses` 與 `_pct` 反推;分不出含不含角球);
+   運動戰射門的頭球佔 10.8%、每腳 xG 0.133(側寫 `shotSituations.RegularPlay.byFoot.header`)。
+   飛行、第一點的空中對抗、頭球攻門**共用角球那一套**;被擋或出底線由幾何決定(折射那一段本來就對所有低空快球有效)。 */
+const CROSS_ON = true;
+const CROSS_URGE = 0.9;                    // 在傳中區每次持球決定的傳中機率(掃出來的,見上)
+const CROSS_ZONE_X = 45;                  // 離對方底線這麼近才會傳中(公尺)
+const CROSS_WIDE = 8;                     // 離中線這麼遠(邊路)才會傳中(公尺)
+const CROSS_APEX_OPEN = 3.5;                // 運動戰傳中的弧頂(公尺):比角球(CROSS_APEX)低,是一記快的弧線球
+const CROSS_AIM_OPEN = 9;                  // 運動戰傳中落點的誤差(公尺,每軸 ±一半):在跑動中傳,比角球不準
+const CROSS_OPEN_HEAD = 0.45;               // 運動戰傳中在禁區裡被進攻方頂到 → 攻門的機率(角球那一個是 CORNER_HEAD;這一個對「運動戰頭球佔比 10.8%」校準)
+const CROSS_CLEAR_SPREAD = 1.6;           // 防守方頂運動戰傳中的方向:來球方向與「遠離自家門」各半,再加這麼寬的隨機(弧度,±一半)
+/* 傳中被擋(5r):出腳那一刻,傳中方向上(±60°)CROSS_BLOCK_R 內的防守者有 CROSS_BLOCK_P 的機率擋到。
+   彈去哪是幾何:沿「擋的人 → 接觸點」的方向彈開再加隨機 —— 傳中的人多半已經貼近底線,所以常常出底線(角球)。
+   **CROSS_BLOCK_P 沒有上游的錨**(倉庫裡沒有「傳中被擋」的資料),是拿每場角球 11.4 反推的 —— 它是一個對總數校準的係數,照實標。 */
+const CROSS_BLOCK_R = 4;
+const CROSS_BLOCK_P = 0.6;
 const CROSS_AIM_ERR = 2.5;                     // 傳中落點的誤差範圍(公尺,每軸 ±一半)
 const CROSS_APEX = 6;                          // 傳中弧頂(公尺)
 const CROSS_HEAD = 2.6;                        // 頭球高度:低於它才搶得到第一點
@@ -1300,6 +1318,14 @@ export function goalAngle(x, y, goalX) {
 /* 空中球的落點 —— 追球的人要追這裡,不是追球本身。
    朝球跑會在半路迎上一顆 21 m/s 的球(控不住),球飛過頭落在身後 20 m,回頭要兩秒。
    實測過:normal 模式 68 次逾時全是這個(CLAUDE.md)。 */
+/* 球下一次**往下**經過頭球高度(CROSS_HEAD)的位置;已經在那以下、或不會再到那裡就回 null(5r)。 */
+function headPointOf(ball) {
+  const z = ball.z ?? 0, vz = ball.vz ?? 0, H = CROSS_HEAD;
+  const disc = vz * vz + 2 * GRAVITY * (z - H);
+  if (disc < 0 || (z <= H && vz <= 0)) return null;
+  const t = (vz + Math.sqrt(disc)) / GRAVITY;
+  return t > 0 ? { x: ball.x + ball.vx * t, y: ball.y + ball.vy * t, t } : null;
+}
 export function landingOf(ball) {
   if (ball.holder) return { x: ball.x, y: ball.y, t: 0 };
   if (ball.z <= 0.01 && ball.vz <= 0) {
@@ -1566,6 +1592,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      腳下那一種本站走 q 模型(距離與張角),所以只要改頭球這一條。
      側寫沒有這個欄位時退回混合值(舊側寫仍然跑得動)。 */
   const CORNER_HEAD_XG = L.shotSituations?.FromCorner?.byFoot?.header?.xgPerShot ?? CORNER_XG;
+  // 運動戰頭球的每腳 xG(5r):側寫的真值;沒有就用角球頭球那一個(兩者都是「頭球」)
+  const OPEN_HEAD_XG = L.shotSituations?.RegularPlay?.byFoot?.header?.xgPerShot ?? CORNER_HEAD_XG;
   const CORNER_SHARE = CORNER_XG == null ? 0 : (L.shotSituations?.FromCorner?.share ?? 0);
   const SET_SHARE = PEN_SHARE + CORNER_SHARE;      // 從運動戰扣掉的總份額
   /* 運動戰那一份的平均 xG:把已經獨立處理的情境(十二碼、角球)排除之後重新加權。 */
@@ -1744,7 +1772,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      強弱量測 9 組配對的每球 xG 平均 **0.0988**(真實 0.1127,×0.877),強 / 弱進球 ÷ λ 一起掉到 0.89 / 0.87 ——
      跟 5n 同一個病,水準不是形狀。1.036 ÷ 0.877 = 1.18 → 每球 0.1103(−2%)、強弱 0.948 / 0.946;
      再 ×1.0215 = 1.205(射門那 3.5% 同時由 SHOT_URGE 補)。 */
-  const SELECT_FIX = 1.205;
+  /* **2026-10-18 階段 5r 重量成 1.241。** 運動戰傳中接上之後射門的組合變了(多了運動戰頭球,其 xG 用真值、不經這個係數),
+     強弱量測每方向 120 場的每球 xG 平均 **0.1094**(真實 0.1127,×0.971),強 / 弱進球 ÷ λ 0.949 / 0.919 —— 水準不是形狀。
+     1.205 × 0.1127 / 0.1094 = 1.241。(「傳中把強弱壓扁」那個判斷是 60 場的雜訊:120 場 K 0.942 對 P 0.868,差 0.8 SE。) */
+  const SELECT_FIX = 1.241;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
   const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
@@ -1772,6 +1803,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 控球串:賽後解讀(game-diag.js)要的是「一次進攻怎麼結束的」。連續模擬裡沒有「回合」這個東西,
        所以在**球權換手或死球**的時候把上一串收起來 —— 那就是一次進攻。 */
     chains: [], chain: null, pendingOrigin: null,
+    cross: { home: 0, away: 0 }, crossOk: { home: 0, away: 0 }, crossHead: { home: 0, away: 0 }, crossLive: null,
     shotSit: {}, sitBins: {}, oppBins: { n: new Array(7).fill(0), shot: new Array(7).fill(0) }, decBy: { home: { n: new Array(7).fill(0), shot: new Array(7).fill(0), cap: new Array(7).fill(0), q: new Array(7).fill(0) }, away: { n: new Array(7).fill(0), shot: new Array(7).fill(0), cap: new Array(7).fill(0), q: new Array(7).fill(0) } }, duels: 0, contacts: 0, contactFrames: 0, duelPair: null, duel: null, dribbles: 0, dribblesBy: { home: 0, away: 0 },
     carryN: 0, carryFree: 0, carryMarked: 0, carryFoeD: 0, carryFoeN: 0,
     boxTouch: { home: 0, away: 0 }, okOwnHalf: { home: 0, away: 0 }, okOppHalf: { home: 0, away: 0 }, goalSit: {}, assists: { home: 0, away: 0 }, pens: { home: 0, away: 0 },
@@ -2540,6 +2572,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      第一版就是這樣寫的,結果助攻整場 0 筆而**一個錯都不報**:對不上永遠是安靜的。 */
   function giveTo(p, from = null) {
     noteNearBall(p); noteAerial(p);
+    if (st.crossLive) { if (p.side === st.crossLive.side && st.t <= st.crossLive.until) st.crossOk[p.side]++; st.crossLive = null; }   // 5r:傳中第一個碰到的是誰
     /* **在 openChain 之前先看** —— 它會把 pendingOrigin 領走清掉(見 CORNER_SNAP)。 */
     const second = st.pendingOrigin?.kind === 'corner' && st.pendingOrigin.side === p.side;
     p.assistBy = from && from !== p && from.side === p.side ? from : null;
@@ -2808,6 +2841,42 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        `tempo` 是 1 時乘法是恆等的,所以中性級數跟接四軸之前一模一樣。
        夾在 [0.05, 0.95]:任何一級都不可以變成「永遠傳」或「永遠不傳」——
        那不是一個踢法,那是把一整條行為關掉。 */
+    /* 運動戰傳中(5r):在對方底線附近的邊路,禁區裡有隊友就可能傳中。目標是禁區裡的一個隊友,
+       落點帶誤差;飛行與第一點交給角球那一套(`st.lastKick = 'cross'`)。 */
+    if (CROSS_ON && p.role !== 'GK' && Math.abs(goalX - p.x) < CROSS_ZONE_X && Math.abs(p.y - PITCH_H / 2) > CROSS_WIDE) {
+      const tg = s.players.filter(m => m !== p && !m.off && m.role !== 'GK' && inBoxAt(m.x, m.y, goalX));
+      if (tg.length && rng() < CROSS_URGE) {
+        const m = tg[Math.floor(rng() * tg.length)];
+        const tx = cl(m.x + (rng() - 0.5) * CROSS_AIM_OPEN, 2, PITCH_W - 2), ty = cl(m.y + (rng() - 0.5) * CROSS_AIM_OPEN, 4, PITCH_H - 4);
+        const d = hypot(tx - p.x, ty - p.y);
+        const vz = Math.sqrt(2 * GRAVITY * CROSS_APEX_OPEN), tt = 2 * vz / GRAVITY;
+        kick(p, tx, ty, d / tt + BALL_AIR * tt / 2, vz, 'pass');
+        st.lastKick = 'cross';
+        ball.passTo = null;
+        st.cross[p.side]++; st.crossLive = { side: p.side, until: st.t + tt + 0.5 };   // 落地後半秒內控到才算「傳到人」(Opta 的 accurate cross)
+        /* 被擋(見 CROSS_BLOCK_P):找傳中方向上最近的防守者 */
+        const ux = (tx - p.x) / Math.max(0.1, d), uy = (ty - p.y) / Math.max(0.1, d);
+        let blk = null, bd = CROSS_BLOCK_R;
+        for (const q of o.players) {
+          if (q.off || q.role === 'GK') continue;
+          const qx = q.x - p.x, qy = q.y - p.y, qd = hypot(qx, qy);
+          if (qd < bd && (qx * ux + qy * uy) > qd * 0.5) { bd = qd; blk = q; }
+        }
+        if (blk && rng() < CROSS_BLOCK_P) {
+          const cxp = p.x + ux * 0.8, cyp = p.y + uy * 0.8;            // 接觸點:出腳後 0.8 m
+          const a = Math.atan2(cyp - blk.y, cxp - blk.x) + (rng() - 0.5) * 1.8;
+          const sp1 = hypot(ball.vx, ball.vy) * DEFLECT_KEEP * (0.6 + rng() * 0.5);
+          ball.x = cxp; ball.y = cyp; ball.vx = Math.cos(a) * sp1; ball.vy = Math.sin(a) * sp1;
+          ball.z = 0.5; ball.vz = rng() * 3;
+          st.lastTouch = blk.side; st.lastKick = null; st.ballFrom = 'block';
+          ball.passSide = null; ball.passTo = null; ball.passer = null;
+          st.crossLive = null; st.crossBlock = (st.crossBlock ?? 0) + 1;
+          blk.kickLock = KICK_LOCK;
+        }
+        p.intent = null;
+        return { kind: 'cross' };
+      }
+    }
     const wantPass = best && rng() < cl((pressure < 4.5 ? 0.75 : 0.25) * (s.tempo ?? 1), 0.05, 0.95);
     if (wantPass) {
       const d = hypot(best.x - p.x, best.y - p.y);
@@ -2987,7 +3056,11 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     }
 
     // ── 每個人要往哪走 ──
-    const land = landingOf(ball);
+    /* 運動戰傳中飛行中,追的是**頭球點**(球降到 CROSS_HEAD 的那一點),不是落地點(5r)。
+       爭頂在球降到頭球高度那一刻判,而那一點在落地點前 ~6 m(弧頂 3.5 m、25 m 的傳中):追落地點的話,
+       兩邊最近的人在爭頂那一刻都離球 ~4 m(實測中位 3.8 / 4.0 m,2.5 m 內 9% / 6%),傳中落在沒有人的地方。
+       真人攻的是空中的球。角球不改(它的站位與錨是另一套校準)。 */
+    const land = st.lastKick === 'cross' && !holder ? (headPointOf(ball) ?? landingOf(ball)) : landingOf(ball);
     const chasers = { home: null, away: null };
     if (!holder) {
       // 球是鬆的:兩隊各派離落點最近的人去追(追落點,不是追球)
@@ -3445,9 +3518,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          所以真正缺的行為不是「讓門將參加爭頂」,是「**門將會出擊搶傳中**」,那是另一件事。
          沒做的理由要講清楚:它會把 FromCorner 往**下**壓,而現在本站還比真實低
          —— 先拿一個少的行為去抵另一個少的行為,兩邊都看不出來還差什麼。 */
-      if (CORNER_XG != null && st.lastKick === 'corner' && ball.passer
+      if (CORNER_XG != null && (st.lastKick === 'corner' || st.lastKick === 'cross') && ball.passer
           && ball.z < CROSS_HEAD && ball.vz < 0) {
         const att = ball.passer.side;
+        const open = st.lastKick === 'cross';           // 運動戰傳中(5r):同一套爭頂,記帳分開
         /* **兩邊各派最近的一個人**,不是全場最近的一個(見 AERIAL_DEF_EDGE)。
            只有一邊在範圍裡就沒有爭頂,那一個直接拿到 —— 爭頂是兩個人的事。 */
         let na = null, nd = null, da = 2.5, dd = 2.5;   // 傳中誤差就有 2.5 m,抓太緊會變成誰都碰不到
@@ -3473,13 +3547,25 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           const inBox = Math.abs(who.x - wgx) < BOX_D && Math.abs(who.y - PITCH_H / 2) < BOX_W;
           st.lastKick = null;                        // 這一球處理掉了,別再觸發第二次
           noteAerial(who);
-          if (who.side === att && inBox && rng() < CORNER_HEAD) { cornerFirst('attHead'); headerAt(who); }
+          if (open) { st.crossDuel = (st.crossDuel ?? 0) + (na && nd ? 1 : 0); if (who.side === att) st.crossOk[att]++; st.crossLive = null; }
+          if (who.side === att && inBox && rng() < (open ? CROSS_OPEN_HEAD : CORNER_HEAD)) {
+            if (open) { st.crossHead[att]++; headerAt(who, 'RegularPlay'); } else { cornerFirst('attHead'); headerAt(who); }
+          }
           else {
-            cornerFirst(who.side === att ? 'attMiss' : 'defHead');
+            if (!open) cornerFirst(who.side === att ? 'attMiss' : 'defHead');
             /* 防守方頂到就是解圍(往場外 / 往前大腳),進攻方沒頂成就變鬆球 ——
                兩種都不是「控球」,所以不走 giveTo。 */
             const dir = who.side === att ? 1 : -1;
-            const ang = Math.atan2(PITCH_H / 2 - who.y, (wgx - who.x) * dir) + (rng() - 0.5) * 2.2;
+            /* 運動戰傳中被防守方頂到(5r):頭球是**改變**來球的方向,不是重新踢一腳 —— 方向取「來球方向」與
+               「原本的解圍方向」的角平分,再加 CROSS_CLEAR_SPREAD 的隨機。從邊路底線飛進來的球被頂到,常常順著來勢
+               偏出底線(角球)或邊線(界外球)—— 由幾何決定,不寫機率。角球那一支照舊(它的錨是另一套校準)。 */
+            const base = Math.atan2(PITCH_H / 2 - who.y, (wgx - who.x) * dir);
+            const ang = open && who.side !== att
+              ? (() => { const cx = Math.cos(base) * dir, cy = Math.sin(base);                 // 原本那一腳在球場座標的方向(x 乘 dir)
+                  const sp0 = Math.max(0.1, hypot(ball.vx, ball.vy)), ix = ball.vx / sp0, iy = ball.vy / sp0;
+                  const a = Math.atan2(cy + iy, cx + ix) + (rng() - 0.5) * CROSS_CLEAR_SPREAD;
+                  return Math.atan2(Math.sin(a), Math.cos(a) * dir); })()                    // 轉回下面那兩行用的「乘 dir」座標
+              : base + (rng() - 0.5) * 2.2;
             const sp2 = 8 + rng() * 10;
             ball.holder = null; ball.z = 0.4; ball.vz = 2 + rng() * 3;
             ball.x = who.x; ball.y = who.y;
@@ -4005,10 +4091,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      q 模型會因為離門近而給出過高的值,而真實資料已經直接說了角球射門平均就是 0.103
      (跟運動戰的 0.105 幾乎一樣:近歸近,頭球難度高)。跟十二碼完全同一個處理。
      助攻算給開角球的人 —— 那正是「進球前一腳傳到射手腳下」。 */
-  function headerAt(p) {
+  function headerAt(p, sit = 'FromCorner') {
     const s = sideOf(p.side);
     const goalX = s.att > 0 ? PITCH_W : 0;
-    const xg = cl(CORNER_HEAD_XG, 0.01, 0.95);
+    const xg = cl(sit === 'FromCorner' ? CORNER_HEAD_XG : OPEN_HEAD_XG, 0.01, 0.95);
     const c = cal[p.side];
     const miss = rng() >= cl(xg * (c?.k ?? 1), 0, 1);
     const err = miss
@@ -4019,20 +4105,22 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const assist = ball.passer && ball.passer.side === p.side && ball.passer !== p ? ball.passer : null;
     kick(p, goalX, cl(PITCH_H / 2 + err, PITCH_H / 2 - 14, PITCH_H / 2 + 14),
       cl(14 + rng() * 8, need, SHOT_MAX), 0, 'shot');
-    ball.shot = { dist: dGoal, head: true, by: p, side: p.side, xg, willScore: !miss, sit: 'FromCorner', assist };
+    ball.shot = { dist: dGoal, head: true, by: p, side: p.side, xg, willScore: !miss, sit, assist };
     if (!miss) st.willScore++;
     st.shots++; st.shotsBy[p.side]++;
-    st.shotSit.FromCorner = (st.shotSit.FromCorner ?? 0) + 1;
+    st.shotSit[sit] = (st.shotSit[sit] ?? 0) + 1;
     st.shotHead++;
-    st.cornerShot.header = (st.cornerShot.header ?? 0) + 1;
-    st.cornerShotBins.header[Math.min(6, Math.floor(dGoal / 5))]++;
-    st.cornerShotXg.header += xg;
-    noteShotDist('FromCorner', dGoal);
+    if (sit === 'FromCorner') {                // 角球那幾個帳只記角球(5r 之後頭球也可能是運動戰傳中來的)
+      st.cornerShot.header = (st.cornerShot.header ?? 0) + 1;
+      st.cornerShotBins.header[Math.min(6, Math.floor(dGoal / 5))]++;
+      st.cornerShotXg.header += xg;
+    }
+    noteShotDist(sit, dGoal);
     st.xg[p.side] = Math.round((st.xg[p.side] + xg) * 1000) / 1000;
-    emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit: 'FromCorner', inBox: inBoxAt(p.x, p.y, goalX) });
+    emit({ type: 'shot', side: p.side, player: p.code, name: p.name, xg, dist: Math.round(dGoal * 10) / 10, sit, inBox: inBoxAt(p.x, p.y, goalX) });
     st.shotBins[Math.min(6, Math.floor(dGoal / 5))]++; st.shotDsum += dGoal;
     noteShotLane(p, dGoal);
-    noteShotBox(p, 'FromCorner');              // 階段 5h
+    noteShotBox(p, sit);                       // 階段 5h
     if (inBoxAt(p.x, p.y, goalX)) st.shotInBox++;
   }
 
@@ -4052,6 +4140,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   }
   function deadBall({ kind, side, taker, x, y, wait, spots = null }) {
     const s = sideOf(side);
+    st.crossLive = null;                       // 5r:傳中直接出界 / 死球 = 沒有找到人
     ball.holder = null; ball.vx = 0; ball.vy = 0; ball.vz = 0; ball.z = 0; ball.x = x; ball.y = y; ball.shot = null;
     st.phase = 'dead'; st.deadT = wait;
     st.restart = { kind, side, taker: taker ?? s.players[1], x, y, spots };
@@ -4156,6 +4245,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         offsides: { ...st.offsides }, why: { ...(st.why ?? {}) },
         shotBins: [...st.shotBins], shotDsum: st.shotDsum, shotInBox: st.shotInBox,
         gkSaves: st.gkSaves ?? 0, gkBeaten: st.gkBeaten ?? 0,
+        cross: { ...st.cross }, crossOk: { ...st.crossOk }, crossHead: { ...st.crossHead }, crossDuel: st.crossDuel ?? 0, crossBlock: st.crossBlock ?? 0,
         laneShots: [...st.laneShots], laneOcc: [...st.laneOcc], laneNear: [...st.laneNear],
         laneFar: [...st.laneFar], laneReach: [...st.laneReach],
         laneLen: [...st.laneLen], laneN: [...st.laneN], gsN: [...st.gsN], gsLineN: [...st.gsLineN],
