@@ -88,5 +88,28 @@ namespace Pixnew.Tests
             Assert.AreNotEqual(a.Pos, b.Pos);
             Assert.AreEqual(1, Mathf.Abs(b.Pos.x - 4) + Mathf.Abs(b.Pos.y - 5), "b 應停在互動點相鄰格");
         }
+        [Test]
+        public void FurnitureUsePointFallsBackBesideCurrentFootprint()
+        {
+            var g = OpenGrid(12, 8);
+            var furniture = new RectInt(6, 3, 2, 2);
+            for (int x = furniture.xMin; x < furniture.xMax; x++)
+                for (int y = furniture.yMin; y < furniture.yMax; y++)
+                    g.SetWalkable(x, y, false);
+
+            Assert.IsTrue(g.TryResolveUsePoint(
+                furniture,
+                new Vector2Int(6, 3),
+                out Vector2Int resolved));
+            Assert.IsTrue(g.IsWalkable(resolved.x, resolved.y));
+
+            int dx = resolved.x < furniture.xMin
+                ? furniture.xMin - resolved.x
+                : resolved.x >= furniture.xMax ? resolved.x - furniture.xMax + 1 : 0;
+            int dy = resolved.y < furniture.yMin
+                ? furniture.yMin - resolved.y
+                : resolved.y >= furniture.yMax ? resolved.y - furniture.yMax + 1 : 0;
+            Assert.AreEqual(1, dx + dy, "Fallback should be directly beside the furniture.");
+        }
     }
 }

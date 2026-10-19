@@ -71,8 +71,8 @@ namespace Pixnew.View
             foreach (var o in _layout.Objects)
             {
                 if (!o.Walkable) continue;
-                for (int dx = 0; dx < o.Atlas[2]; dx++)
-                    for (int dy = 0; dy < o.Atlas[3]; dy++)
+                for (int dx = 0; dx < o.FootprintWidth; dx++)
+                    for (int dy = 0; dy < o.FootprintHeight; dy++)
                     {
                         int x = o.Pos[0] + dx, y = o.Pos[1] + dy;
                         var cell = new Vector3Int(x, h - 1 - y, 0);
@@ -85,9 +85,21 @@ namespace Pixnew.View
                 Grid.AddRoom(r.Id, new RectInt(r.Rect[0], r.Rect[1], r.Rect[2], r.Rect[3]));
 
             foreach (var o in _layout.Objects)
-                Grid.AddObject(o.Id,
-                    new RectInt(o.Pos[0], o.Pos[1], o.Atlas[2], o.Atlas[3]),
-                    new Vector2Int(o.Use[0], o.Use[1]));
+            {
+                var rect = new RectInt(o.Pos[0], o.Pos[1], o.FootprintWidth, o.FootprintHeight);
+                var configuredUsePoint = new Vector2Int(o.Use[0], o.Use[1]);
+                if (!Grid.TryResolveUsePoint(rect, configuredUsePoint, out Vector2Int usePoint))
+                {
+                    Debug.LogWarning($"[ApartmentScene] No walkable interaction point for {o.Id}.");
+                    usePoint = configuredUsePoint;
+                }
+                else if (usePoint != configuredUsePoint)
+                {
+                    Debug.Log($"[ApartmentScene] Corrected {o.Id} interaction point: {configuredUsePoint} -> {usePoint}.");
+                }
+
+                Grid.AddObject(o.Id, rect, usePoint);
+            }
 
             foreach (var d in _layout.Doors)
                 Grid.AddObject(d.Id,

@@ -28,9 +28,10 @@ namespace Pixnew.Tests
                 r.Id == "living_room" || r.Id == "dining_room"));
             Assert.AreEqual(2, layout.Rooms.Count(r => r.Id.StartsWith("bathroom_")));
             Assert.AreEqual(2, layout.Rooms.Count(r => r.Id.StartsWith("balcony_")));
-            CollectionAssert.IsSubsetOf(
-                new[] { "bed_1", "bed_2", "bed_3", "bed_4" },
-                layout.Objects.Select(o => o.Id).ToArray());
+            Assert.AreEqual(
+                layout.Objects.Count,
+                layout.Objects.Select(o => o.Id).Distinct().Count(),
+                "Furniture IDs must remain unique after manual layout editing.");
         }
 
         [Test]
@@ -48,27 +49,35 @@ namespace Pixnew.Tests
         {
             var layout = LoadLayout();
             bool[,] walkable = BakeWalkability(layout);
-            ObjectSpec startObject = layout.Objects.Single(o => o.Id == "bed_1");
+            ObjectSpec startObject = layout.Objects.FirstOrDefault(o =>
+            {
+                var use = new Vector2Int(o.Use[0], o.Use[1]);
+                return IsWalkable(walkable, use);
+            });
+            Assert.IsNotNull(startObject, "The layout needs at least one walkable furniture use point.");
             var start = new Vector2Int(startObject.Use[0], startObject.Use[1]);
             HashSet<Vector2Int> reachable = FloodFill(walkable, start);
+            var problems = new List<string>();
 
             foreach (var obj in layout.Objects)
             {
                 var use = new Vector2Int(obj.Use[0], obj.Use[1]);
-                Assert.IsTrue(IsWalkable(walkable, use),
-                    $"{obj.Id} use point {use} must be walkable.");
-                Assert.IsTrue(reachable.Contains(use),
-                    $"{obj.Id} use point {use} must be reachable from bed_1.");
+                if (!IsWalkable(walkable, use))
+                    problems.Add($"{obj.Id} use point {use} is not walkable");
+                else if (!reachable.Contains(use))
+                    problems.Add($"{obj.Id} use point {use} is not reachable from {startObject.Id}");
             }
 
             foreach (var door in layout.Doors)
             {
                 var pos = new Vector2Int(door.Pos[0], door.Pos[1]);
-                Assert.IsTrue(IsWalkable(walkable, pos),
-                    $"{door.Id} at {pos} must be walkable.");
-                Assert.IsTrue(reachable.Contains(pos),
-                    $"{door.Id} at {pos} must be reachable from bed_1.");
+                if (!IsWalkable(walkable, pos))
+                    problems.Add($"{door.Id} at {pos} is not walkable");
+                else if (!reachable.Contains(pos))
+                    problems.Add($"{door.Id} at {pos} is not reachable from {startObject.Id}");
             }
+
+            Assert.IsEmpty(problems, string.Join("\n", problems));
         }
 
         private static bool[,] BakeWalkability(ApartmentLayout layout)
@@ -100,8 +109,8 @@ namespace Pixnew.Tests
 
             foreach (var obj in layout.Objects.Where(o => !o.Walkable))
             {
-                for (int x = 0; x < obj.Atlas[2]; x++)
-                    for (int y = 0; y < obj.Atlas[3]; y++)
+                for (int x = 0; x < obj.FootprintWidth; x++)
+                    for (int y = 0; y < obj.FootprintHeight; y++)
                         Set(result, obj.Pos[0] + x, obj.Pos[1] + y, false);
             }
 

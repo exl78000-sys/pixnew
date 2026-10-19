@@ -278,7 +278,23 @@ namespace Pixnew.EditorTools
                 int ax = o.Atlas[0], ay = o.Atlas[1], w = o.Atlas[2], h = o.Atlas[3];
                 for (int dx = 0; dx < w; dx++)
                     for (int dy = 0; dy < h; dy++)
-                        map.SetTile(Tm(o.Pos[0] + dx, o.Pos[1] + dy), GetTile(o.Sheet, ax + dx, ay + dy));
+                    {
+                        int destX;
+                        int destY;
+                        switch (o.NormalizedRotation)
+                        {
+                            case 90: destX = h - 1 - dy; destY = dx; break;
+                            case 180: destX = w - 1 - dx; destY = h - 1 - dy; break;
+                            case 270: destX = dy; destY = w - 1 - dx; break;
+                            default: destX = dx; destY = dy; break;
+                        }
+
+                        Vector3Int cell = Tm(o.Pos[0] + destX, o.Pos[1] + destY);
+                        map.SetTile(cell, GetTile(o.Sheet, ax + dx, ay + dy));
+                        map.SetTileFlags(cell, TileFlags.None);
+                        map.SetTransformMatrix(cell, Matrix4x4.Rotate(
+                            Quaternion.Euler(0f, 0f, -o.NormalizedRotation)));
+                    }
             }
         }
 

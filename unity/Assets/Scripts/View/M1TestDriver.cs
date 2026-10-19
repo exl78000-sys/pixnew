@@ -14,7 +14,7 @@ namespace Pixnew.View
     /// </summary>
     public class M1TestDriver : MonoBehaviour
     {
-        private static readonly string[] SpawnObjects =
+        private static readonly string[] PreferredSpawnObjects =
             { "bed_1", "bed_2", "bed_3", "bed_4", "sofa", "dining_table" };
 
         private WorldGrid _grid;
@@ -39,15 +39,50 @@ namespace Pixnew.View
             _targets = _grid.ObjectIds.Where(id => !id.StartsWith("door_")).ToList();
 
             Persona[] visibleCast = root.Cast.Take(6).ToArray();
+            List<Vector2Int> spawnPoints = ResolveSpawnPoints(visibleCast.Length);
+            if (spawnPoints.Count < visibleCast.Length)
+            {
+                Debug.LogError($"[M1TestDriver] Need {visibleCast.Length} walkable spawn points, but found {spawnPoints.Count}.");
+                enabled = false;
+                return;
+            }
+
             for (int i = 0; i < visibleCast.Length; i++)
             {
                 Persona persona = visibleCast[i];
-                string spawnObject = SpawnObjects[i];
-                _grid.TryGetUsePoint(spawnObject, out var spawn);
-                _grid.RegisterAgent(persona.Id, spawn);
+                _grid.RegisterAgent(persona.Id, spawnPoints[i]);
                 RoommateView.Create(persona.Id, persona.Name, i + 1, _grid);
             }
             AssignRandomTargets();
+        }
+
+        private List<Vector2Int> ResolveSpawnPoints(int requiredCount)
+        {
+            var result = new List<Vector2Int>(requiredCount);
+            var occupied = new HashSet<Vector2Int>();
+            IEnumerable<string> candidates = PreferredSpawnObjects
+                .Concat(_grid.ObjectIds)
+                .Distinct();
+
+            foreach (string objectId in candidates)
+            {
+                if (!_grid.TryGetUsePoint(objectId, out Vector2Int point) ||
+                    !_grid.IsWalkable(point.x, point.y) ||
+                    !occupied.Add(point))
+                    continue;
+
+                result.Add(point);
+                if (result.Count == requiredCount) return result;
+            }
+
+            for (int y = 0; y < _grid.Height && result.Count < requiredCount; y++)
+            for (int x = 0; x < _grid.Width && result.Count < requiredCount; x++)
+            {
+                var point = new Vector2Int(x, y);
+                if (_grid.IsWalkable(x, y) && occupied.Add(point)) result.Add(point);
+            }
+
+            return result;
         }
 
         private void OnTick(long simTime)
@@ -59,11 +94,15 @@ namespace Pixnew.View
         /// <summary>給每位閒著的室友隨機指派一個物件點位</summary>
         private void AssignRandomTargets()
         {
+            if (_targets.Count == 0) return;
             foreach (var agent in _grid.Agents)
             {
                 if (agent.IsMoving) continue;
-                string target = _targets[_random.Next(0, _targets.Count)];
-                _grid.MoveAgentTo(agent.Id, target);
+                for (int attempt = 0; attempt < _targets.Count; attempt++)
+                {
+                    string target = _targets[_random.Next(0, _targets.Count)];
+                    if (_grid.MoveAgentTo(agent.Id, target)) break;
+                }
             }
         }
     }

@@ -103,6 +103,43 @@ namespace Pixnew.Sim
             return false;
         }
 
+        /// <summary>
+        /// Resolve a furniture interaction point after manual moving or rotation.
+        /// The configured point is kept when valid; otherwise the closest walkable
+        /// cell beside the current furniture footprint is selected deterministically.
+        /// </summary>
+        public bool TryResolveUsePoint(RectInt rect, Vector2Int preferred, out Vector2Int resolved)
+        {
+            if (IsWalkable(preferred.x, preferred.y))
+            {
+                resolved = preferred;
+                return true;
+            }
+
+            int bestScore = int.MaxValue;
+            resolved = default;
+            bool found = false;
+
+            for (int y = 0; y < Height; y++)
+            for (int x = 0; x < Width; x++)
+            {
+                if (!IsWalkable(x, y)) continue;
+
+                int dx = x < rect.xMin ? rect.xMin - x : x >= rect.xMax ? x - rect.xMax + 1 : 0;
+                int dy = y < rect.yMin ? rect.yMin - y : y >= rect.yMax ? y - rect.yMax + 1 : 0;
+                int distanceFromFurniture = dx + dy;
+                int distanceFromPreferred = Mathf.Abs(x - preferred.x) + Mathf.Abs(y - preferred.y);
+                int score = distanceFromFurniture * (Width + Height + 1) + distanceFromPreferred;
+
+                if (score >= bestScore) continue;
+                bestScore = score;
+                resolved = new Vector2Int(x, y);
+                found = true;
+            }
+
+            return found;
+        }
+
         // ── 角色移動(P-04)────────────────────────────
 
         /// <summary>單一角色的移動狀態</summary>

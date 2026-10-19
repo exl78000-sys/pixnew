@@ -70,6 +70,11 @@ namespace Pixnew.Sim
         [JsonProperty("pos")] public int[] Pos;      // [x, y] 左上格
         [JsonProperty("use")] public int[] Use;      // [x, y] 互動點
         [JsonProperty("walkable")] public bool Walkable;
+        [JsonProperty("rotation", DefaultValueHandling = DefaultValueHandling.Ignore)] public int Rotation; // 0/90/180/270 順時針
+
+        [JsonIgnore] public int NormalizedRotation => ((Rotation % 360) + 360) % 360;
+        [JsonIgnore] public int FootprintWidth => NormalizedRotation == 90 || NormalizedRotation == 270 ? Atlas[3] : Atlas[2];
+        [JsonIgnore] public int FootprintHeight => NormalizedRotation == 90 || NormalizedRotation == 270 ? Atlas[2] : Atlas[3];
     }
 
     /// <summary>門(牆上的洞)的具名點位</summary>
