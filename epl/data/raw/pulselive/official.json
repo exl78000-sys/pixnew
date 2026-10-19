@@ -48942,7 +48942,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 1
    },
    "homeId": 21,
@@ -49372,15 +49372,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 66304,
-     "assist": 19694,
-     "team": 5,
-     "min": 49,
-     "label": "49'00",
+     "person": 76216,
+     "assist": 10458,
+     "team": 21,
+     "min": 58,
+     "label": "58'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 1,
+     "hs": 2,
      "as": 1
     }
    ],
@@ -49412,9 +49412,55 @@
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 66304,
+      "team": 5,
+      "min": 64,
+      "label": "64'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 15340,
+      "team": 5,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 337821,
+      "team": 5,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 108612,
+      "team": 5,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 337310,
+      "team": 5,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -49442,8 +49488,8 @@
      }
     ]
    },
-   "clock": "58'00"
+   "clock": "68'00"
   }
  },
- "fetchedAt": "2026-10-19T20:18:03.545Z"
+ "fetchedAt": "2026-10-19T20:27:57.895Z"
 }
