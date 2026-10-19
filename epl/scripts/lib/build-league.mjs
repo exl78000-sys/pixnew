@@ -176,6 +176,7 @@ export async function buildLeague(L) {
     };
     if (m.hh !== null) { out.hh = m.hh; out.ha = m.ha; }
     if (m.kickoff) out.kickoff = m.kickoff;
+    if (m.status) out.status = m.status;   // 中止 / 延期 / 取消(FotMob,2026-10-19):前端不再當成接下來的比賽
     if (m.scoreProvisional) { out.scoreProvisional = true; out.scoreSource = m.scoreSource ?? 'fotmob'; }
     if (m.scoreSource) out.scoreSource = m.scoreSource;
     return out;

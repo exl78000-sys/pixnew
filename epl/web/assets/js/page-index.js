@@ -1,5 +1,5 @@
-import * as C from './core.js?v=3b973d9a';
-import { mountFixtureList } from './fixture-list.js?v=0fb17ba2';
+import * as C from './core.js?v=984f09fe';
+import { mountFixtureList } from './fixture-list.js?v=45c3666a';
 import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -171,7 +171,9 @@ try {
   fixturesAll = fixtures;
 
   const played = fixtures.filter(f => f.played);
-  const upcoming = fixtures.filter(f => !f.played).sort((a, b) => (a.date < b.date ? -1 : 1));
+  /* 中止 / 延期 / 取消的不算「接下來的比賽」(見 core.js 的 isSuspended),另外一行講出來 —— 不要讓它靜靜消失 */
+  const suspended = fixtures.filter(f => C.isSuspended(f));
+  const upcoming = fixtures.filter(f => !f.played && !C.isSuspended(f)).sort((a, b) => (a.date < b.date ? -1 : 1));
   const injuries = news.filter(n => n.cat === '傷停' || n.cat === '禁賽');
   document.getElementById('kpis').innerHTML = kpisHtml({ played, fixtures, injuries });
 
@@ -187,7 +189,9 @@ try {
           ${f.kickoff ? `<div class="tiny"><span class="dim">開賽倒數 </span>${C.countdown(f.kickoff)}</div>` : '<div class="tiny dim">開球時間待賽程來源確認</div>'}
         </div>
         ${C.probBar(f.prediction)}
-      </div></a>`).join('');
+      </div></a>`).join('')
+    + (suspended.length ? `<div class="tiny dim" style="padding-top:8px">${suspended.map(f =>
+        `${C.esc(C.SUSPENDED_ZH[f.status])}:${C.name(f.home)} vs ${C.name(f.away)}(原訂 ${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}・第 ${f.round} 輪)`).join('<br>')}</div>` : '');
 
   /* 動態 */
   // 賽前預告已經在左邊那塊呈現了,這裡只放真正的動態
