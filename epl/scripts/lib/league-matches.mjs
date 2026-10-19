@@ -85,7 +85,15 @@ export function fotmobBackfill(matches, scores, { season } = {}) {
   let checked = 0;
   const fills = [];
   for (const f of scores.matches) {
-    if (!f.finished || !f.score || f.cancelled) continue;
+    /* 中止 / 延期 / 取消(2026-10-19):原本直接跳過,於是賽程上它只是「沒有比分」—— 開球時間一過,
+       首頁「接下來的比賽」把它排第一個、倒數寫「已開賽・等待資料」(西甲 RAY–ATH 10/10 中止,九天後還掛著)。
+       記在比賽上(`status`),前端照它講「中止・待補賽」,不再當成接下來的比賽。已經有比分的不動。 */
+    if (f.cancelled) {
+      const m = byKey.get(`${f.home}|${f.away}`);
+      if (m && !m.played) m.status = f.reason === 'Ab' ? 'abandoned' : /^p/i.test(f.reason ?? '') ? 'postponed' : 'cancelled';
+      continue;
+    }
+    if (!f.finished || !f.score) continue;
     const m = byKey.get(`${f.home}|${f.away}`);
     if (!m) continue;
     if (m.played && m.fh != null) {

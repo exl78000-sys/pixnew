@@ -116,6 +116,7 @@ const slimMatch = m => {
   };
   if (m.hh !== null) { out.hh = m.hh; out.ha = m.ha; }
   if (m.kickoff) out.kickoff = m.kickoff;
+  if (m.status) out.status = m.status;   // 中止 / 延期 / 取消(FotMob,2026-10-19):前端不再當成接下來的比賽
   if (m.scoreProvisional) { out.scoreProvisional = true; out.scoreSource = m.scoreSource ?? 'fotmob'; }   // FotMob 暫定賽果(社群檔還沒到);provisional 這個名字西甲另有用途
   return out;
 };

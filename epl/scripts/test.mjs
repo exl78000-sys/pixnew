@@ -611,6 +611,9 @@ async function main() {
   console.log('\n▶ FPL 官方 API 補賽果自我檢查(整季,不只當前輪)');
   const liveFillFail = await checkLiveFill();
 
+  console.log('\n▶ 中止 / 延期 / 取消的比賽自我檢查');
+  const suspendedFail = await checkSuspended();
+
   console.log('\n▶ 折疊式表格自我檢查');
   const foldFail = await checkFoldPlan();
 
@@ -688,7 +691,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || notifyFail || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || liveFillFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail || formShapeFail) process.exitCode = 1;
+  if (!better || notifyFail || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || liveFillFail || suspendedFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail || formShapeFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1818,6 +1821,55 @@ async function checkLiveFill() {
   return fail;
 }
 
+/* 中止 / 延期 / 取消(2026-10-19,查「其他聯賽有沒有同樣的漏洞」時發現)。
+   坑:FotMob 標 `cancelled` 的比賽原本在補比分時直接跳過,賽程上它只是「沒有比分」——
+   西甲 RAY–ATH 10/10 中止,九天後還排在首頁「接下來的比賽」第一個、寫「已開賽・等待資料」。
+   守:① 補比分時把狀態記到比賽上(Ab → abandoned、P… → postponed、其他 → cancelled),已有比分的不動;
+   ② `scheduleState` 對它回 suspended(不是 awaiting —— 實時戰況頁不該把它當成「等賽果」);
+   ③ 三個聯賽 build 的 slimMatch 都把 status 帶出去(白名單式,漏一個就靜靜消失);
+   ④ 首頁「接下來的比賽」排除它,而且另外一行講出來。 */
+async function checkSuspended() {
+  globalThis.document ??= { addEventListener() {} };
+  const { fotmobBackfill } = await import('./lib/league-matches.mjs');
+  const V = await import('../web/assets/js/core.js');
+  const ms = [
+    { home: 'RAY', away: 'ATH', played: false, fh: null, fa: null },
+    { home: 'GET', away: 'RAY', played: false, fh: null, fa: null },
+    { home: 'BAR', away: 'RMA', played: true, fh: 2, fa: 1 },
+    { home: 'SEV', away: 'BET', played: false, fh: null, fa: null },
+  ];
+  const r = fotmobBackfill(ms, { season: '2026-27', matches: [
+    { home: 'RAY', away: 'ATH', finished: true, cancelled: true, score: [0, 0], reason: 'Ab' },
+    { home: 'GET', away: 'RAY', finished: false, cancelled: true, score: null, reason: 'PPD' },
+    { home: 'BAR', away: 'RMA', finished: true, cancelled: true, score: [2, 1], reason: 'Can' },
+    { home: 'SEV', away: 'BET', finished: true, cancelled: false, score: [1, 0], reason: 'FT' },
+  ] }, { season: '2026-27' });
+  const by = k => ms.find(m => `${m.home}|${m.away}` === k);
+  const now = Date.parse('2026-10-19T12:00:00Z');
+  const srcOf = f => readFileSync(join(ROOT, f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const idx = srcOf('web/assets/js/page-index.js');
+  const cases = [
+    ['中止(Ab)記成 abandoned,而且沒有被當成 0-0 的比分', by('RAY|ATH').status === 'abandoned' && !by('RAY|ATH').played, JSON.stringify(by('RAY|ATH'))],
+    ['延期(P…)記成 postponed', by('GET|RAY').status === 'postponed', by('GET|RAY').status],
+    ['已經有比分的不動(不加 status、比分不變)', !by('BAR|RMA').status && by('BAR|RMA').fh === 2, JSON.stringify(by('BAR|RMA'))],
+    ['正常完賽的照樣補比分', by('SEV|BET').played && by('SEV|BET').fh === 1 && r.filled === 1, JSON.stringify(by('SEV|BET'))],
+    ['scheduleState 對中止的比賽回 suspended(不是 awaiting)',
+      V.scheduleState({ played: false, status: 'abandoned', kickoff: '2026-10-10T12:00:00Z' }, now).phase === 'suspended'],
+    ['沒有 status 的未賽、開球已過的仍然是 awaiting(行為沒被改到)',
+      V.scheduleState({ played: false, kickoff: '2026-10-10T12:00:00Z' }, now).phase === 'awaiting'],
+    ['三個聯賽 build 的 slimMatch 都把 status 帶出去',
+      ['scripts/build-laliga.mjs', 'scripts/build-championship.mjs', 'scripts/lib/build-league.mjs'].every(f => srcOf(f).includes('if (m.status) out.status = m.status;'))],
+    ['首頁「接下來的比賽」排除中止 / 延期,而且另外一行講出來',
+      idx.includes('!f.played && !C.isSuspended(f)') && idx.includes('C.SUSPENDED_ZH[f.status]')],
+  ];
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || detail === undefined ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
 /* 折疊式表格(2026-09-12,使用者選的做法):視窗放不下時依優先序收欄。
    決策是純函式 foldPlan(量寬度那一層在 DOM,測不到),這裡守規則本身;
    再用正則守「兩張會放不下的表真的標了 fold」與「元件真的有收欄那條路」。
@@ -2693,13 +2745,15 @@ async function checkDataGap() {
                  **這裡刻意不寫死聯賽清單**:第一版寫 ['es1','en2'],加德甲之後在 CI 上紅了 ——
                  而本機是綠的,因為沙箱抓不到 football-data.co.uk,本機的德甲根本沒有補過比分,
                  那個欄位當然不會出現。分界線是「主來源是不是官方 feed」,那只有英超,
-                 所以條件寫成「英超以外的都可以有」。 */
+                 所以條件寫成「英超以外的都可以有」。
+         status —— 中止 / 延期 / 取消(2026-10-19),同一條補比分的路從 FotMob 帶來;**只有那一季剛好有
+                 這種比賽的聯賽才會出現**(現在只有西甲 RAY–ATH),所以跟 scoreSource 同一個條件。 */
       const fieldsOf = rows => new Set((rows ?? []).flatMap(r => Object.keys(r)));
       const have = Object.fromEntries(Object.entries(sets).filter(([, v]) => Array.isArray(v)).map(([k, v]) => [k, fieldsOf(v)]));
       const leagues = Object.keys(have);
       if (leagues.length < 2) return true;                       // 還沒 build 出來就不判
       const exceptPl = leagues.filter(k => k !== 'pl');
-      const KNOWN = { time: ['pl'], provisional: ['es1'], scoreSource: exceptPl, scoreProvisional: exceptPl };
+      const KNOWN = { time: ['pl'], provisional: ['es1'], scoreSource: exceptPl, scoreProvisional: exceptPl, status: exceptPl };
       const all = new Set(leagues.flatMap(k => [...have[k]]));
       const problems = [];
       for (const field of all) {

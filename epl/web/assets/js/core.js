@@ -1277,7 +1277,12 @@ export const feedFresh = (live, now = Date.now()) => {
 
    快照知道的比兩邊都新,所以它說完場就是完場、它說還在踢就還在踢(不受 115 分鐘限制:
    真有延長到 120 分以上的情況,而快照是實況)。`fromLive` 讓畫面講得出比分的出處(鐵則四)。 */
+/* 中止 / 延期 / 取消(2026-10-19):build 從 FotMob 的 `cancelled` 帶來 `status`。它不是「接下來的比賽」,
+   也不是「時間上早該結束、還沒拿到賽果」—— 西甲 RAY–ATH 10/10 中止,九天後還排在首頁「接下來的比賽」第一個。 */
+export const SUSPENDED_ZH = { abandoned: '比賽中止・待補賽', postponed: '延期・待補賽', cancelled: '取消' };
+export const isSuspended = f => !f.played && !!f.status && f.status in SUSPENDED_ZH;
 export function scheduleState(fixture, now = Date.now(), m = null) {
+  if (isSuspended(fixture)) return { phase: 'suspended', status: fixture.status };
   if (!fixture.kickoff) return { phase: fixture.played ? 'finished' : 'unknown' };
   const t = new Date(fixture.kickoff).getTime();
   const elapsed = Math.floor((now - t) / 60000);
