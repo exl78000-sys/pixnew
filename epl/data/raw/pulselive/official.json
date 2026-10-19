@@ -48948,8 +48948,8 @@
    "homeId": 21,
    "awayId": 5,
    "home": {
-    "formation": "4-2-3-1",
-    "formationRaw": "4-2-3-1",
+    "formation": "3-1-4-2",
+    "formationRaw": "3-1-4-2",
     "rows": [
      [
       123998
@@ -48957,20 +48957,20 @@
      [
       76090,
       13549,
-      75582,
-      10458
+      75582
      ],
      [
-      117596,
       71623
      ],
      [
       51364,
+      117596,
       8456,
-      76216
+      10458
      ],
      [
-      10443
+      10443,
+      76216
      ]
     ],
     "xi": [
@@ -49024,7 +49024,7 @@
       "playerId": null,
       "name": "Omar Marmoush",
       "shirt": 22,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Striker",
       "captain": false
      },
@@ -49033,7 +49033,7 @@
       "playerId": null,
       "name": "Andy Robertson",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -49417,6 +49417,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -49427,11 +49433,17 @@
       "min": 45,
       "label": "45+4'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+4'00"
+   "clock": "48'00"
   }
  },
- "fetchedAt": "2026-10-19T20:00:45.903Z"
+ "fetchedAt": "2026-10-19T20:08:10.330Z"
 }
