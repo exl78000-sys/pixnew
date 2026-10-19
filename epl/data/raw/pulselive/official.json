@@ -48939,7 +48939,7 @@
   "TOT|COV": {
    "fixtureId": 128992,
    "kickoff": "2026-10-19T19:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -48948,9 +48948,31 @@
    "homeId": 21,
    "awayId": 5,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      76090,
+      13549,
+      75582,
+      10458
+     ],
+     [
+      117596,
+      71623
+     ],
+     [
+      51364,
+      8456,
+      76216
+     ],
+     [
+      10443
+     ]
+    ],
     "xi": [
      {
       "id": 71623,
@@ -49002,7 +49024,7 @@
       "playerId": null,
       "name": "Omar Marmoush",
       "shirt": 22,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Striker",
       "captain": false
      },
@@ -49137,9 +49159,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      55556
+     ],
+     [
+      75413,
+      63836,
+      22043,
+      10438
+     ],
+     [
+      337310,
+      8650
+     ],
+     [
+      122134,
+      66304,
+      19694
+     ],
+     [
+      337821
+     ]
+    ],
     "xi": [
      {
       "id": 337310,
@@ -49182,7 +49226,7 @@
       "playerId": null,
       "name": "Brandon Thomas-Asante",
       "shirt": 23,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      },
@@ -49329,10 +49373,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "10'00"
   }
  },
- "fetchedAt": "2026-10-19T19:01:16.278Z"
+ "fetchedAt": "2026-10-19T19:11:11.644Z"
 }
