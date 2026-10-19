@@ -9052,25 +9052,9 @@
    "as": null
   },
   {
-   "key": "AVL|EVE",
+   "key": "COV|IPS",
    "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "BOU|BHA",
-   "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "BRE|ARS",
-   "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
+   "kickoff": "2026-12-01T20:00:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9078,15 +9062,7 @@
   {
    "key": "CHE|CRY",
    "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "COV|IPS",
-   "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
+   "kickoff": "2026-12-02T19:30:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9094,7 +9070,7 @@
   {
    "key": "HUL|NFO",
    "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
+   "kickoff": "2026-12-02T19:30:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9102,7 +9078,7 @@
   {
    "key": "LIV|SUN",
    "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
+   "kickoff": "2026-12-02T19:30:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9110,7 +9086,31 @@
   {
    "key": "MCI|LEE",
    "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
+   "kickoff": "2026-12-02T19:30:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "AVL|EVE",
+   "event": 13,
+   "kickoff": "2026-12-02T20:15:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "BOU|BHA",
+   "event": 13,
+   "kickoff": "2026-12-02T20:15:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "BRE|ARS",
+   "event": 13,
+   "kickoff": "2026-12-02T20:15:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9118,7 +9118,7 @@
   {
    "key": "NEW|MUN",
    "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
+   "kickoff": "2026-12-02T20:15:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9126,7 +9126,15 @@
   {
    "key": "TOT|FUL",
    "event": 13,
-   "kickoff": "2026-12-02T20:00:00Z",
+   "kickoff": "2026-12-03T20:00:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "CHE|LIV",
+   "event": 14,
+   "kickoff": "2026-12-05T12:30:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9141,30 +9149,6 @@
   },
   {
    "key": "BOU|HUL",
-   "event": 14,
-   "kickoff": "2026-12-05T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "BRE|MCI",
-   "event": 14,
-   "kickoff": "2026-12-05T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "CHE|LIV",
-   "event": 14,
-   "kickoff": "2026-12-05T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "EVE|FUL",
    "event": 14,
    "kickoff": "2026-12-05T15:00:00Z",
    "finished": false,
@@ -9188,17 +9172,33 @@
    "as": null
   },
   {
-   "key": "NEW|SUN",
+   "key": "NFO|BHA",
    "event": 14,
-   "kickoff": "2026-12-05T15:00:00Z",
+   "kickoff": "2026-12-05T17:30:00Z",
    "finished": false,
    "hs": null,
    "as": null
   },
   {
-   "key": "NFO|BHA",
+   "key": "BRE|MCI",
    "event": 14,
-   "kickoff": "2026-12-05T15:00:00Z",
+   "kickoff": "2026-12-05T20:00:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "EVE|FUL",
+   "event": 14,
+   "kickoff": "2026-12-06T14:00:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "NEW|SUN",
+   "event": 14,
+   "kickoff": "2026-12-06T14:00:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9206,53 +9206,13 @@
   {
    "key": "TOT|ARS",
    "event": 14,
-   "kickoff": "2026-12-05T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "ARS|BOU",
-   "event": 15,
-   "kickoff": "2026-12-12T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "BHA|EVE",
-   "event": 15,
-   "kickoff": "2026-12-12T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "COV|AVL",
-   "event": 15,
-   "kickoff": "2026-12-12T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "CRY|MUN",
-   "event": 15,
-   "kickoff": "2026-12-12T15:00:00Z",
+   "kickoff": "2026-12-06T16:30:00Z",
    "finished": false,
    "hs": null,
    "as": null
   },
   {
    "key": "FUL|BRE",
-   "event": 15,
-   "kickoff": "2026-12-12T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "HUL|TOT",
    "event": 15,
    "kickoff": "2026-12-12T15:00:00Z",
    "finished": false,
@@ -9278,7 +9238,23 @@
   {
    "key": "MCI|CHE",
    "event": 15,
-   "kickoff": "2026-12-12T15:00:00Z",
+   "kickoff": "2026-12-12T17:30:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "ARS|BOU",
+   "event": 15,
+   "kickoff": "2026-12-13T14:00:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "BHA|EVE",
+   "event": 15,
+   "kickoff": "2026-12-13T14:00:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9286,15 +9262,39 @@
   {
    "key": "SUN|NFO",
    "event": 15,
-   "kickoff": "2026-12-12T15:00:00Z",
+   "kickoff": "2026-12-13T14:00:00Z",
    "finished": false,
    "hs": null,
    "as": null
   },
   {
-   "key": "ARS|MUN",
+   "key": "COV|AVL",
+   "event": 15,
+   "kickoff": "2026-12-13T16:30:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "CRY|MUN",
+   "event": 15,
+   "kickoff": "2026-12-13T19:00:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "HUL|TOT",
+   "event": 15,
+   "kickoff": "2026-12-14T20:00:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "BRE|NEW",
    "event": 16,
-   "kickoff": "2026-12-19T15:00:00Z",
+   "kickoff": "2026-12-19T12:30:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -9308,39 +9308,7 @@
    "as": null
   },
   {
-   "key": "BRE|NEW",
-   "event": 16,
-   "kickoff": "2026-12-19T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "BHA|IPS",
-   "event": 16,
-   "kickoff": "2026-12-19T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "CHE|AVL",
-   "event": 16,
-   "kickoff": "2026-12-19T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
    "key": "LEE|FUL",
-   "event": 16,
-   "kickoff": "2026-12-19T15:00:00Z",
-   "finished": false,
-   "hs": null,
-   "as": null
-  },
-  {
-   "key": "LIV|TOT",
    "event": 16,
    "kickoff": "2026-12-19T15:00:00Z",
    "finished": false,
@@ -9364,9 +9332,41 @@
    "as": null
   },
   {
+   "key": "LIV|TOT",
+   "event": 16,
+   "kickoff": "2026-12-19T17:30:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "BHA|IPS",
+   "event": 16,
+   "kickoff": "2026-12-20T14:00:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
    "key": "SUN|CRY",
    "event": 16,
-   "kickoff": "2026-12-19T15:00:00Z",
+   "kickoff": "2026-12-20T14:00:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "ARS|MUN",
+   "event": 16,
+   "kickoff": "2026-12-20T16:30:00Z",
+   "finished": false,
+   "hs": null,
+   "as": null
+  },
+  {
+   "key": "CHE|AVL",
+   "event": 16,
+   "kickoff": "2026-12-21T20:00:00Z",
    "finished": false,
    "hs": null,
    "as": null
@@ -11132,5 +11132,5 @@
    "as": null
   }
  ],
- "fetchedAt": "2026-10-19T15:03:04.956Z"
+ "fetchedAt": "2026-10-19T17:52:31.869Z"
 }
