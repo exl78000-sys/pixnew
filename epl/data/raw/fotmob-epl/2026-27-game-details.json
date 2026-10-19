@@ -137260,10 +137260,2045 @@
      }
     ]
    }
+  },
+  "TOT|COV": {
+   "key": "TOT|COV",
+   "season": "2026-27",
+   "date": "2026-10-19",
+   "matchId": "5795484",
+   "home": "TOT",
+   "away": "COV",
+   "score": [
+    3,
+    1
+   ],
+   "providerScore": [
+    3,
+    1
+   ],
+   "teamStats": {
+    "TOT": {
+     "possession": 65,
+     "shots": 16,
+     "shotsOn": 5,
+     "shotsOff": 7,
+     "blockedShots": 4,
+     "blocksMade": 4,
+     "corners": 4,
+     "offsides": 6,
+     "fouls": 15,
+     "saves": 0,
+     "passes": 559,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.87
+    },
+    "COV": {
+     "possession": 35,
+     "shots": 12,
+     "shotsOn": 1,
+     "shotsOff": 7,
+     "blockedShots": 4,
+     "blocksMade": 4,
+     "corners": 4,
+     "offsides": 1,
+     "fouls": 14,
+     "saves": 2,
+     "passes": 287,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.82
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "TOT": {
+     "touches_opp_box": 24,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 10,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 0.78,
+     "expected_goals_set_play": 0.09,
+     "expected_goals_non_penalty": 0.87,
+     "expected_goals_on_target": 0.83,
+     "physical_metrics_distance_covered": 120334,
+     "physical_metrics_running": 23964,
+     "physical_metrics_sprinting": 3286,
+     "physical_metrics_number_of_sprints": 132,
+     "own_half_passes": 219,
+     "opposition_half_passes": 280,
+     "long_balls_accurate": 10,
+     "long_balls_accurate_pct": 37,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 16,
+     "player_throws": 13,
+     "matchstats.headers.tackles": 13,
+     "interceptions": 6,
+     "clearances": 29,
+     "duel_won": 55,
+     "ground_duels_won": 34,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 21,
+     "aerials_won_pct": 51,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 39,
+     "red_cards": 0
+    },
+    "COV": {
+     "touches_opp_box": 26,
+     "big_chance": 1,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 11,
+     "shots_outside_box": 1,
+     "expected_goals_open_play": 0.74,
+     "expected_goals_set_play": 0.08,
+     "expected_goals_non_penalty": 0.82,
+     "expected_goals_on_target": 0.19,
+     "physical_metrics_distance_covered": 118398,
+     "physical_metrics_running": 24265,
+     "physical_metrics_sprinting": 2586,
+     "physical_metrics_number_of_sprints": 111,
+     "own_half_passes": 116,
+     "opposition_half_passes": 106,
+     "long_balls_accurate": 30,
+     "long_balls_accurate_pct": 48,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 26,
+     "player_throws": 10,
+     "matchstats.headers.tackles": 17,
+     "interceptions": 13,
+     "clearances": 23,
+     "duel_won": 58,
+     "ground_duels_won": 38,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 20,
+     "aerials_won_pct": 49,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     65,
+     35
+    ],
+    "h1": [
+     72,
+     28
+    ],
+    "h2": [
+     58,
+     42
+    ]
+   },
+   "events": [
+    {
+     "minute": 14,
+     "extra": null,
+     "team": "TOT",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "James Maddison"
+    },
+    {
+     "minute": 20,
+     "extra": null,
+     "team": "COV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Caleb Yirenkyi"
+    },
+    {
+     "minute": 22,
+     "extra": null,
+     "team": "TOT",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Dominic Solanke"
+    },
+    {
+     "minute": 45,
+     "extra": null,
+     "team": "COV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jay Dasilva"
+    },
+    {
+     "minute": 49,
+     "extra": null,
+     "team": "COV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Jack Rudoni"
+    },
+    {
+     "minute": 58,
+     "extra": null,
+     "team": "TOT",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Omar Marmoush"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Taiwo Awoniyi"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Frank Onyeka"
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "COV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jack Rudoni"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "TOT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ben Davies"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "TOT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Conor Gallagher"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "TOT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mateus Fernandes"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ephron Mason-Clark"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Gustavo Hamer"
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "TOT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dejan Kulusevski"
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "TOT",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mathys Tel"
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "COV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kaine Kesler-Hayden"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "TOT",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Ben Davies"
+    }
+   ],
+   "shots": [
+    {
+     "min": 1,
+     "extra": null,
+     "team": "COV",
+     "player": "Brandon Thomas-Asante",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 20.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "COV",
+     "player": "Brandon Thomas-Asante",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 41.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "COV",
+     "player": "Tatsuhiro Sakamoto",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.214,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 26.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "TOT",
+     "player": "Dominic Solanke",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.8,
+     "y": 29.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "TOT",
+     "player": "James Maddison",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.052,
+     "xgot": 0.639,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 23,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "TOT",
+     "player": "Archie Gray",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.089,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.3,
+     "y": 27.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "COV",
+     "player": "Sidiki Cherif",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 73.4,
+     "y": 31.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "TOT",
+     "player": "James Maddison",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 18.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "TOT",
+     "player": "Dominic Solanke",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.163,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 40.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "COV",
+     "player": "Jack Rudoni",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.3,
+     "y": 51.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "COV",
+     "player": "Jack Rudoni",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.119,
+     "xgot": 0.191,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 41.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "TOT",
+     "player": "Micky van de Ven",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.071,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97,
+     "y": 25.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "TOT",
+     "player": "Sandro Tonali",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 25.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "TOT",
+     "player": "Omar Marmoush",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0.016,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 52,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "TOT",
+     "player": "Sandro Tonali",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 34.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "TOT",
+     "player": "Omar Marmoush",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.051,
+     "xgot": 0.067,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.1,
+     "y": 44.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "TOT",
+     "player": "Mohammed Kudus",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.01,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.6,
+     "y": 19.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "TOT",
+     "player": "Dominic Solanke",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.077,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 28,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "COV",
+     "player": "Taiwo Awoniyi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.065,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 34.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "COV",
+     "player": "Bobby Thomas",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.057,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 39.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "COV",
+     "player": "Ethan Pinnock",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 41.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "TOT",
+     "player": "Mohammed Kudus",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.027,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 18.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "TOT",
+     "player": "Mateus Fernandes",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.06,
+     "xgot": 0.037,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.9,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "COV",
+     "player": "Taiwo Awoniyi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 34.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "COV",
+     "player": "Bobby Thomas",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 38,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "COV",
+     "player": "Taiwo Awoniyi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.172,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101,
+     "y": 37.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "TOT",
+     "player": "Mathys Tel",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 50.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 6,
+     "team": "TOT",
+     "player": "Ben Davies",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0.074,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.8,
+     "y": 33.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -27
+    ],
+    [
+     2,
+     -16
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     54
+    ],
+    [
+     5,
+     87
+    ],
+    [
+     6,
+     71
+    ],
+    [
+     7,
+     38
+    ],
+    [
+     8,
+     -11
+    ],
+    [
+     9,
+     -14
+    ],
+    [
+     10,
+     -57
+    ],
+    [
+     11,
+     -41
+    ],
+    [
+     12,
+     -24
+    ],
+    [
+     13,
+     52
+    ],
+    [
+     14,
+     73
+    ],
+    [
+     15,
+     54
+    ],
+    [
+     16,
+     76
+    ],
+    [
+     17,
+     65
+    ],
+    [
+     18,
+     71
+    ],
+    [
+     19,
+     27
+    ],
+    [
+     20,
+     16
+    ],
+    [
+     21,
+     11
+    ],
+    [
+     22,
+     22
+    ],
+    [
+     23,
+     -41
+    ],
+    [
+     24,
+     -24
+    ],
+    [
+     25,
+     -35
+    ],
+    [
+     26,
+     16
+    ],
+    [
+     27,
+     0
+    ],
+    [
+     28,
+     -5
+    ],
+    [
+     29,
+     5
+    ],
+    [
+     30,
+     27
+    ],
+    [
+     31,
+     22
+    ],
+    [
+     32,
+     11
+    ],
+    [
+     33,
+     -5
+    ],
+    [
+     34,
+     5
+    ],
+    [
+     35,
+     0
+    ],
+    [
+     36,
+     0
+    ],
+    [
+     37,
+     -5
+    ],
+    [
+     38,
+     33
+    ],
+    [
+     39,
+     90
+    ],
+    [
+     40,
+     90
+    ],
+    [
+     41,
+     62
+    ],
+    [
+     42,
+     38
+    ],
+    [
+     43,
+     49
+    ],
+    [
+     44,
+     33
+    ],
+    [
+     45,
+     -5
+    ],
+    [
+     45.5,
+     12
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     47,
+     38
+    ],
+    [
+     48,
+     54
+    ],
+    [
+     49,
+     33
+    ],
+    [
+     50,
+     0
+    ],
+    [
+     51,
+     -11
+    ],
+    [
+     52,
+     46
+    ],
+    [
+     53,
+     35
+    ],
+    [
+     54,
+     35
+    ],
+    [
+     55,
+     11
+    ],
+    [
+     56,
+     43
+    ],
+    [
+     57,
+     60
+    ],
+    [
+     58,
+     54
+    ],
+    [
+     59,
+     33
+    ],
+    [
+     60,
+     11
+    ],
+    [
+     61,
+     16
+    ],
+    [
+     62,
+     35
+    ],
+    [
+     63,
+     35
+    ],
+    [
+     64,
+     68
+    ],
+    [
+     65,
+     38
+    ],
+    [
+     66,
+     33
+    ],
+    [
+     67,
+     -52
+    ],
+    [
+     68,
+     -100
+    ],
+    [
+     69,
+     -100
+    ],
+    [
+     70,
+     -92
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     72,
+     -43
+    ],
+    [
+     73,
+     -60
+    ],
+    [
+     74,
+     -65
+    ],
+    [
+     75,
+     -24
+    ],
+    [
+     76,
+     -3
+    ],
+    [
+     77,
+     8
+    ],
+    [
+     78,
+     16
+    ],
+    [
+     79,
+     22
+    ],
+    [
+     80,
+     -11
+    ],
+    [
+     81,
+     16
+    ],
+    [
+     82,
+     5
+    ],
+    [
+     83,
+     43
+    ],
+    [
+     84,
+     16
+    ],
+    [
+     85,
+     -27
+    ],
+    [
+     86,
+     -38
+    ],
+    [
+     87,
+     -43
+    ],
+    [
+     88,
+     14
+    ],
+    [
+     89,
+     14
+    ],
+    [
+     90,
+     16
+    ],
+    [
+     90.5,
+     -32
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "TOT": {
+     "team": "TOT",
+     "formation": "4-1-2-3",
+     "coach": "Roberto De Zerbi",
+     "xi": [
+      {
+       "name": "Antonín Kinský",
+       "shirt": 31,
+       "pos": "G"
+      },
+      {
+       "name": "Jan Paul van Hecke",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Tosin Adarabioyo",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Micky van de Ven",
+       "shirt": 37,
+       "pos": "D"
+      },
+      {
+       "name": "Andrew Robertson",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Sandro Tonali",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Archie Gray",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "James Maddison",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Mohammed Kudus",
+       "shirt": 20,
+       "pos": "F"
+      },
+      {
+       "name": "Dominic Solanke",
+       "shirt": 19,
+       "pos": "F"
+      },
+      {
+       "name": "Omar Marmoush",
+       "shirt": 22,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Ben Davies",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Conor Gallagher",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Mateus Fernandes",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Dejan Kulusevski",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Mathys Tel",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Martin Dúbravka",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Marcos Senesi",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Callum Olusesi",
+       "shirt": 52,
+       "pos": "?"
+      },
+      {
+       "name": "Luca Williams-Barnett",
+       "shirt": 68,
+       "pos": "?"
+      }
+     ]
+    },
+    "COV": {
+     "team": "COV",
+     "formation": "4-2-3-1",
+     "coach": "Frank Lampard",
+     "xi": [
+      {
+       "name": "Carl Rushworth",
+       "shirt": 19,
+       "pos": "G"
+      },
+      {
+       "name": "Milan van Ewijk",
+       "shirt": 27,
+       "pos": "D"
+      },
+      {
+       "name": "Bobby Thomas",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Ethan Pinnock",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Jay Dasilva",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Caleb Yirenkyi",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Matt Grimes",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Tatsuhiro Sakamoto",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Jack Rudoni",
+       "shirt": 5,
+       "pos": "M"
+      },
+      {
+       "name": "Brandon Thomas-Asante",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Sidiki Cherif",
+       "shirt": 49,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Frank Onyeka",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Taiwo Awoniyi",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Ephron Mason-Clark",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Gustavo Hamer",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Kaine Kesler-Hayden",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel Bentley",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Stephen Mfuni",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Victor Torp",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Ellis Simms",
+       "shirt": 9,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      120334,
+      118398
+     ],
+     "sprintDistance": [
+      3286,
+      2586
+     ],
+     "sprints": [
+      132,
+      111
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      23964,
+      24265
+     ]
+    },
+    "players": [
+     {
+      "team": "TOT",
+      "name": "Antonín Kinský",
+      "shirt": 31,
+      "distance": 6118,
+      "topSpeed": 27,
+      "rating": 6.3
+     },
+     {
+      "team": "TOT",
+      "name": "Jan Paul van Hecke",
+      "shirt": 6,
+      "distance": 10956,
+      "topSpeed": 31.799999237060547,
+      "rating": 7.9
+     },
+     {
+      "team": "TOT",
+      "name": "Tosin Adarabioyo",
+      "shirt": 4,
+      "distance": 7232,
+      "topSpeed": 34.20000076293945,
+      "rating": 7.2
+     },
+     {
+      "team": "TOT",
+      "name": "Micky van de Ven",
+      "shirt": 37,
+      "distance": 9922,
+      "topSpeed": 34.20000076293945,
+      "rating": 7.7
+     },
+     {
+      "team": "TOT",
+      "name": "Andrew Robertson",
+      "shirt": 3,
+      "distance": 7721,
+      "topSpeed": 31.5,
+      "rating": 7.6
+     },
+     {
+      "team": "TOT",
+      "name": "Sandro Tonali",
+      "shirt": 16,
+      "distance": 12363,
+      "topSpeed": 32.5,
+      "rating": 7.9
+     },
+     {
+      "team": "TOT",
+      "name": "Archie Gray",
+      "shirt": 14,
+      "distance": 12544,
+      "topSpeed": 34.099998474121094,
+      "rating": 7.7
+     },
+     {
+      "team": "TOT",
+      "name": "James Maddison",
+      "shirt": 10,
+      "distance": 8861,
+      "topSpeed": 33,
+      "rating": 8.3
+     },
+     {
+      "team": "TOT",
+      "name": "Mohammed Kudus",
+      "shirt": 20,
+      "distance": 9625,
+      "topSpeed": 34.29999923706055,
+      "rating": 8.1
+     },
+     {
+      "team": "TOT",
+      "name": "Dominic Solanke",
+      "shirt": 19,
+      "distance": 12029,
+      "topSpeed": 31.5,
+      "rating": 7.7
+     },
+     {
+      "team": "TOT",
+      "name": "Omar Marmoush",
+      "shirt": 22,
+      "distance": 9663,
+      "topSpeed": 35.70000076293945,
+      "rating": 7.8
+     },
+     {
+      "team": "TOT",
+      "name": "Ben Davies",
+      "shirt": 33,
+      "distance": 3214,
+      "topSpeed": 30.600000381469727,
+      "rating": 7.2
+     },
+     {
+      "team": "TOT",
+      "name": "Conor Gallagher",
+      "shirt": 8,
+      "distance": 3682,
+      "topSpeed": 29,
+      "rating": 6.3
+     },
+     {
+      "team": "TOT",
+      "name": "Mateus Fernandes",
+      "shirt": 18,
+      "distance": 3582,
+      "topSpeed": 32.5,
+      "rating": 6.2
+     },
+     {
+      "team": "TOT",
+      "name": "Dejan Kulusevski",
+      "shirt": 21,
+      "distance": 1325,
+      "topSpeed": 31.200000762939453,
+      "rating": null
+     },
+     {
+      "team": "TOT",
+      "name": "Mathys Tel",
+      "shirt": 11,
+      "distance": 1489,
+      "topSpeed": 30.799999237060547,
+      "rating": null
+     },
+     {
+      "team": "COV",
+      "name": "Carl Rushworth",
+      "shirt": 19,
+      "distance": 5798,
+      "topSpeed": 22.600000381469727,
+      "rating": 3.5
+     },
+     {
+      "team": "COV",
+      "name": "Milan van Ewijk",
+      "shirt": 27,
+      "distance": 9785,
+      "topSpeed": 36.29999923706055,
+      "rating": 6.6
+     },
+     {
+      "team": "COV",
+      "name": "Bobby Thomas",
+      "shirt": 4,
+      "distance": 10341,
+      "topSpeed": 33.20000076293945,
+      "rating": 6.1
+     },
+     {
+      "team": "COV",
+      "name": "Ethan Pinnock",
+      "shirt": 2,
+      "distance": 10126,
+      "topSpeed": 32.29999923706055,
+      "rating": 5.9
+     },
+     {
+      "team": "COV",
+      "name": "Jay Dasilva",
+      "shirt": 3,
+      "distance": 10693,
+      "topSpeed": 30.700000762939453,
+      "rating": 5.5
+     },
+     {
+      "team": "COV",
+      "name": "Caleb Yirenkyi",
+      "shirt": 8,
+      "distance": 7797,
+      "topSpeed": 32.5,
+      "rating": 6.1
+     },
+     {
+      "team": "COV",
+      "name": "Matt Grimes",
+      "shirt": 6,
+      "distance": 12107,
+      "topSpeed": 30.799999237060547,
+      "rating": 6.5
+     },
+     {
+      "team": "COV",
+      "name": "Tatsuhiro Sakamoto",
+      "shirt": 7,
+      "distance": 9155,
+      "topSpeed": 29.399999618530273,
+      "rating": 6.6
+     },
+     {
+      "team": "COV",
+      "name": "Jack Rudoni",
+      "shirt": 5,
+      "distance": 11860,
+      "topSpeed": 31.700000762939453,
+      "rating": 7.1
+     },
+     {
+      "team": "COV",
+      "name": "Brandon Thomas-Asante",
+      "shirt": 23,
+      "distance": 8920,
+      "topSpeed": 34.5,
+      "rating": 7.4
+     },
+     {
+      "team": "COV",
+      "name": "Sidiki Cherif",
+      "shirt": 49,
+      "distance": 7215,
+      "topSpeed": 34.5,
+      "rating": 6.4
+     },
+     {
+      "team": "COV",
+      "name": "Frank Onyeka",
+      "shirt": 16,
+      "distance": 4678,
+      "topSpeed": 29.700000762939453,
+      "rating": 6.8
+     },
+     {
+      "team": "COV",
+      "name": "Taiwo Awoniyi",
+      "shirt": 14,
+      "distance": 3816,
+      "topSpeed": 30.700000762939453,
+      "rating": 5.9
+     },
+     {
+      "team": "COV",
+      "name": "Ephron Mason-Clark",
+      "shirt": 10,
+      "distance": 2441,
+      "topSpeed": 30.799999237060547,
+      "rating": 6.3
+     },
+     {
+      "team": "COV",
+      "name": "Gustavo Hamer",
+      "shirt": 38,
+      "distance": 2476,
+      "topSpeed": 32.70000076293945,
+      "rating": 6.4
+     },
+     {
+      "team": "COV",
+      "name": "Kaine Kesler-Hayden",
+      "shirt": 20,
+      "distance": 1184,
+      "topSpeed": 31.799999237060547,
+      "rating": null
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 34,
+      "center": 29,
+      "right": 37
+     },
+     "firstHalf": {
+      "left": 34,
+      "center": 29,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 35,
+      "center": 30,
+      "right": 35
+     }
+    },
+    "away": {
+     "total": {
+      "left": 44,
+      "center": 30,
+      "right": 26
+     },
+     "firstHalf": {
+      "left": 38,
+      "center": 32,
+      "right": 30
+     },
+     "secondHalf": {
+      "left": 49,
+      "center": 28,
+      "right": 23
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-19T21:32:42.800Z",
+   "fdMatchId": "2026-27-69",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "COV",
+      "name": "Matt Grimes",
+      "n": 66,
+      "cx": 43.2,
+      "cy": 26.8,
+      "spread": 23.3,
+      "grid": "5,1,6,2,2,1,1,5,15,6,2,0,1,5,8,5,0,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Carl Rushworth",
+      "n": 56,
+      "cx": 13.5,
+      "cy": 33,
+      "spread": 13.7,
+      "grid": "1,1,1,0,0,0,20,7,0,0,0,0,15,9,0,0,0,0,0,2,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Sidiki Cherif",
+      "n": 28,
+      "cx": 57.2,
+      "cy": 37.7,
+      "spread": 27.7,
+      "grid": "0,0,0,2,1,1,0,1,3,0,0,1,2,0,3,2,4,1,0,0,3,4,0,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Micky van de Ven",
+      "n": 107,
+      "cx": 45,
+      "cy": 20.2,
+      "spread": 21.9,
+      "grid": "0,10,15,20,3,0,4,8,17,13,6,0,4,1,2,0,0,1,0,3,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Brandon Thomas-Asante",
+      "n": 45,
+      "cx": 60.8,
+      "cy": 21.3,
+      "spread": 28,
+      "grid": "1,5,5,7,1,2,0,1,3,3,2,4,0,0,1,3,3,1,0,0,0,3,0,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Antonín Kinský",
+      "n": 39,
+      "cx": 10.7,
+      "cy": 33.3,
+      "spread": 9.8,
+      "grid": "1,0,0,0,0,0,18,3,0,0,0,0,13,4,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Jan Paul van Hecke",
+      "n": 130,
+      "cx": 48.9,
+      "cy": 48,
+      "spread": 22.8,
+      "grid": "0,0,2,0,0,0,5,5,2,3,2,0,5,4,20,19,7,0,1,12,9,23,10,1"
+     },
+     {
+      "team": "TOT",
+      "name": "Tosin Adarabioyo",
+      "n": 83,
+      "cx": 42.3,
+      "cy": 35.7,
+      "spread": 19.5,
+      "grid": "1,4,2,2,0,0,1,3,15,6,0,0,3,9,12,15,3,0,2,2,3,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Milan van Ewijk",
+      "n": 57,
+      "cx": 44,
+      "cy": 52.4,
+      "spread": 28.1,
+      "grid": "0,0,1,1,1,1,0,0,3,3,0,0,2,0,3,2,0,0,3,15,11,7,1,3"
+     },
+     {
+      "team": "COV",
+      "name": "Caleb Yirenkyi",
+      "n": 28,
+      "cx": 43.3,
+      "cy": 39.2,
+      "spread": 26.6,
+      "grid": "1,0,1,1,0,0,0,0,0,3,1,1,2,5,6,1,0,0,0,3,0,2,1,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Andrew Robertson",
+      "n": 45,
+      "cx": 66,
+      "cy": 9.2,
+      "spread": 28.5,
+      "grid": "2,3,0,11,14,7,2,1,0,1,0,3,1,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Sandro Tonali",
+      "n": 97,
+      "cx": 53,
+      "cy": 32,
+      "spread": 27.6,
+      "grid": "0,1,6,11,2,1,2,0,8,14,9,0,3,4,4,7,2,1,3,5,4,4,6,0"
+     },
+     {
+      "team": "TOT",
+      "name": "James Maddison",
+      "n": 75,
+      "cx": 62.2,
+      "cy": 34.8,
+      "spread": 25.8,
+      "grid": "0,1,2,7,4,4,0,4,6,5,1,0,0,1,7,8,6,1,0,0,4,2,11,1"
+     },
+     {
+      "team": "TOT",
+      "name": "Omar Marmoush",
+      "n": 46,
+      "cx": 62,
+      "cy": 17.2,
+      "spread": 26.6,
+      "grid": "2,2,6,5,6,4,0,1,2,4,9,0,0,1,1,0,0,0,0,0,1,0,2,0"
+     },
+     {
+      "team": "COV",
+      "name": "Jack Rudoni",
+      "n": 46,
+      "cx": 61.8,
+      "cy": 38.4,
+      "spread": 34,
+      "grid": "0,0,2,4,3,5,0,1,2,1,0,1,1,0,1,3,2,0,2,2,6,3,4,3"
+     },
+     {
+      "team": "COV",
+      "name": "Tatsuhiro Sakamoto",
+      "n": 25,
+      "cx": 56,
+      "cy": 56.2,
+      "spread": 29.9,
+      "grid": "0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,3,1,6,4,4,3,2"
+     },
+     {
+      "team": "TOT",
+      "name": "Mohammed Kudus",
+      "n": 61,
+      "cx": 62.2,
+      "cy": 54.5,
+      "spread": 26.5,
+      "grid": "0,0,0,0,0,0,0,4,0,0,0,0,2,1,3,4,3,2,0,1,13,8,11,9"
+     },
+     {
+      "team": "TOT",
+      "name": "Archie Gray",
+      "n": 58,
+      "cx": 56.5,
+      "cy": 52.5,
+      "spread": 31.1,
+      "grid": "0,0,0,0,0,0,1,0,1,5,1,0,2,1,1,0,2,4,2,10,5,10,6,7"
+     },
+     {
+      "team": "TOT",
+      "name": "Dominic Solanke",
+      "n": 47,
+      "cx": 61.4,
+      "cy": 40.6,
+      "spread": 33.5,
+      "grid": "0,0,1,0,2,0,1,2,0,3,1,4,4,0,4,4,3,4,2,0,2,2,5,3"
+     },
+     {
+      "team": "COV",
+      "name": "Ethan Pinnock",
+      "n": 50,
+      "cx": 43.3,
+      "cy": 20.2,
+      "spread": 27.7,
+      "grid": "4,5,7,5,4,0,7,2,4,1,3,3,1,2,0,1,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Bobby Thomas",
+      "n": 61,
+      "cx": 47.3,
+      "cy": 41.9,
+      "spread": 32.7,
+      "grid": "0,0,1,0,0,0,5,2,1,1,0,5,7,8,8,1,6,5,0,2,5,2,1,1"
+     },
+     {
+      "team": "COV",
+      "name": "Jay Dasilva",
+      "n": 49,
+      "cx": 54.7,
+      "cy": 9.3,
+      "spread": 27.4,
+      "grid": "5,8,7,11,6,7,1,0,0,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Taiwo Awoniyi",
+      "n": 18,
+      "cx": 69.7,
+      "cy": 31.3,
+      "spread": 23.5,
+      "grid": "0,0,0,0,2,0,0,0,1,4,1,4,0,0,4,1,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "COV",
+      "name": "Frank Onyeka",
+      "n": 27,
+      "cx": 42.6,
+      "cy": 37.5,
+      "spread": 25.8,
+      "grid": "0,0,0,3,1,0,0,1,6,0,0,0,1,2,3,1,2,0,3,2,2,0,0,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Conor Gallagher",
+      "n": 20,
+      "cx": 57.6,
+      "cy": 47.9,
+      "spread": 23,
+      "grid": "0,0,0,0,0,0,1,0,2,0,0,0,0,0,5,1,2,0,0,0,2,4,1,2"
+     },
+     {
+      "team": "TOT",
+      "name": "Mateus Fernandes",
+      "n": 31,
+      "cx": 48.9,
+      "cy": 33.4,
+      "spread": 20.3,
+      "grid": "1,1,0,4,0,0,0,0,4,4,0,0,0,2,7,4,1,0,0,0,3,0,0,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Ben Davies",
+      "n": 20,
+      "cx": 58.2,
+      "cy": 8.1,
+      "spread": 22.5,
+      "grid": "0,1,7,3,7,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Gustavo Hamer",
+      "n": 10,
+      "cx": 68.9,
+      "cy": 32.1,
+      "spread": 24.5,
+      "grid": "0,0,0,0,1,1,0,0,1,3,0,0,0,0,0,0,1,0,0,0,0,2,1,0"
+     },
+     {
+      "team": "COV",
+      "name": "Ephron Mason-Clark",
+      "n": 9,
+      "cx": 76.5,
+      "cy": 21.3,
+      "spread": 28.7,
+      "grid": "0,0,0,0,1,2,0,0,1,1,1,2,0,1,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "COV",
+      "name": "Kaine Kesler-Hayden",
+      "n": 10,
+      "cx": 61,
+      "cy": 39.5,
+      "spread": 31.1,
+      "grid": "0,0,0,3,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,2,2,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Mathys Tel",
+      "n": 11,
+      "cx": 81.3,
+      "cy": 11.1,
+      "spread": 25.7,
+      "grid": "0,0,1,0,3,5,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "TOT",
+      "name": "Dejan Kulusevski",
+      "n": 14,
+      "cx": 56.3,
+      "cy": 57.1,
+      "spread": 23,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,3,3,3,2,1"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-19T18:32:17.431Z",
+ "updatedAt": "2026-10-19T21:32:43.494Z",
  "verification": {
   "source": "pulselive /stats/match possession_percentage",
   "tolerance": 2,
