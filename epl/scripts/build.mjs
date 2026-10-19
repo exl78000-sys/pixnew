@@ -70,6 +70,7 @@ import { loadSquadStore as loadSportMonksSquadStore, enrichPlayers as enrichSpor
 import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 import { loadVerifiedLoans, attachLoans } from './lib/loans.mjs';
+import { fillFromLive, liveKickoffs } from './lib/live-fill.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 /* 即時勝率的時間曲線(npm run tune:inplay 產生;驗收沒過或檔案不在就是 null → 線性)。 */
@@ -277,16 +278,13 @@ async function main() {
 
   // 即時來源已完賽、但 openfootball 還沒更新的場次,先補進本季賽果,
   // 這樣積分榜不用等上游更新就是最新的。
-  let liveFilled = 0;
-  if (liveState && !liveState.demo) {
-    const byKey = new Map(curMatches.map(m => [`${m.home}|${m.away}`, m]));
-    for (const f of liveState.fixtures) {
-      if (!f.finished || f.hs == null) continue;
-      const m = byKey.get(f.key);
-      if (!m || m.played) continue;
-      Object.assign(m, { played: true, fh: f.hs, fa: f.as, fromLive: true });
-      liveFilled++;
-    }
+  /* 2026-10-19:範圍從「當前這一輪」擴大到**整季**(`live.json` 的 `seasonFixtures`,見 lib/live-fill.mjs)——
+     原本 openfootball 落後超過一輪,中間那一輪就永遠補不到(第 6 輪的十場就是這樣掛在首頁九天)。 */
+  const liveFilledList = fillFromLive(curMatches, liveState);
+  const liveFilled = liveFilledList.length;
+  if (liveFilled) {
+    const rounds = [...new Set(liveFilledList.map(x => x.round))].sort((a, b) => a - b);
+    console.log(`  FPL 官方 API 補賽果:${liveFilled} 場(第 ${rounds.join('、')} 輪;openfootball 還沒有)`);
   }
 
   /* **開球時間也要信最新的那一份**(2026-09-20 使用者回報「還沒到開賽時間卻顯示等賽果」)。
@@ -301,13 +299,9 @@ async function main() {
 
      FPL 官方 API(`live.json`,`source: 'fpl-api'`)是比賽日每兩分鐘重抓的,它就是最新的
      那一份 —— 跟上面補賽果**同一條規矩:誰最新就信誰**(`scheduleState` 在前端也是這樣)。
-     界線要講清楚:**它只涵蓋當前這一輪**(本季一輪 10 場),更遠的輪次仍然只有鏡像那一份,
-     所以改期要等到那一輪變成「當前輪」才會被修正。真正根治要讓鏡像自己更新
-     (`epl-live.yml` 的回寫清單已補上 `*-fixtures.csv`,但鏡像上游夠不夠新沙箱驗不到)。 */
-  const liveKickoff = new Map();
-  if (liveState && !liveState.demo) {
-    for (const f of liveState.fixtures) if (f.key && f.kickoff) liveKickoff.set(f.key, f.kickoff);
-  }
+     界線(2026-09-20 寫的):它原本只涵蓋當前這一輪,更遠的輪次只有鏡像那一份,改期要等那一輪變成當前輪。
+     **2026-10-19 起涵蓋整季**(`seasonFixtures`,FPL `/api/fixtures/`),那個界線沒了。 */
+  const liveKickoff = liveKickoffs(liveState);
   const curPlayed = curMatches.filter(m => m.played);
   const curTable = buildTable(curMatches, curCodes);
 
