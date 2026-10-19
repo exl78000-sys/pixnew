@@ -82,7 +82,21 @@ async function fromApi({ codeOf, round }) {
       lineups: { [home]: dedupe(lineups[home]), [away]: dedupe(lineups[away]) },
     };
   });
-  return { source: 'fpl-api', sourceLabel: '官方 FPL API(比賽進行中會即時更新)', demo: false, round: event, fixtures: out };
+  /* 整季賽程與賽果(2026-10-19):`fixtures` 只有當前這一輪,openfootball 落後超過一輪時中間那一輪會永遠補不到
+     (見 lib/live-fill.mjs)。同一個 API 不帶 event 就是整季,一次請求。只留補資料要用的欄位;
+     抓不到就是 null —— 這一份是補強,不可以讓當前輪的即時資料跟著失敗。 */
+  let seasonFixtures = null;
+  try {
+    const all = await (await get(`${API}/fixtures/`)).json();
+    seasonFixtures = all.map(f => {
+      const home = teamCode.get(f.team_h), away = teamCode.get(f.team_a);
+      return home && away ? { key: `${home}|${away}`, event: f.event, kickoff: f.kickoff_time ?? null,
+        finished: !!f.finished, hs: f.team_h_score ?? null, as: f.team_a_score ?? null } : null;
+    }).filter(Boolean);
+  } catch (err) {
+    console.warn(`  ⚠ 整季賽程抓不到(${err.message}),只用當前這一輪`);
+  }
+  return { source: 'fpl-api', sourceLabel: '官方 FPL API(比賽進行中會即時更新)', demo: false, round: event, fixtures: out, seasonFixtures };
 }
 
 /* ── 來源 B/C:GitHub 鏡像與重播 ─────────────────── */

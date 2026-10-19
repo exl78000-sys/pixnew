@@ -608,6 +608,9 @@ async function main() {
   console.log('\n▶ 歐冠預設輪次自我檢查');
   const matchdayFail = await checkMatchdayDefault();
 
+  console.log('\n▶ FPL 官方 API 補賽果自我檢查(整季,不只當前輪)');
+  const liveFillFail = await checkLiveFill();
+
   console.log('\n▶ 折疊式表格自我檢查');
   const foldFail = await checkFoldPlan();
 
@@ -685,7 +688,7 @@ async function main() {
 
   const better = report.models.blend.rps < report.models.baseline.rps;
   console.log(better ? '\n✔ 預測引擎優於基準線' : '\n✗ 預測引擎未勝過基準線,請檢查參數');
-  if (!better || notifyFail || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail || formShapeFail) process.exitCode = 1;
+  if (!better || notifyFail || inplayFail || inplayCurveFail || inplayKickFail || reportFail || expertFail || apiFootballFail || nameFail || oddsFail || colourFail || formFail || availFail || barFail || linkFail || teamFail || gapFail || cupDefaultFail || matchdayFail || liveFillFail || foldFail || chipFail || uclCmpFail || goalFail || kindFail || timelineFail || detailFail || situationFail || nullFail || shirtFail || btFail || knFail || cupFail || followFail || picksFail || cupIdFail || uclFail || uclDetailFail || curatedFail || loanFail || stampFail || simZoneFail || h2hFail || formShapeFail) process.exitCode = 1;
 }
 
 /* 建置後的 goals.json:守兩件真的踩過的事。
@@ -1757,6 +1760,56 @@ async function checkMatchdayDefault() {
     ['每一輪都有切換鈕(data-md)—— 東西在但沒有按鈕那一族', /data-md=/.test(src) && /\[data-md\]/.test(src)],
     ['舊規則「還沒踢完的最小輪次」已經拿掉', !/Math\.min\(\.\.\.open\)/.test(src)],
   );
+  let fail = 0;
+  for (const [name, pass, detail] of cases) {
+    console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || detail === undefined ? '' : ` —— 得到 ${detail}`}`);
+    if (!pass) fail++;
+  }
+  return fail;
+}
+
+/* FPL 官方 API 補賽果(2026-10-19,使用者回報「比賽頁 接下來比賽日期錯誤」)。
+   坑:補賽果只看 `live.json` 的當前輪,openfootball 落後超過一輪時中間那一輪永遠補不到 ——
+   第 6 輪十場 10/10~12 踢完,10/19 首頁「接下來的比賽」最前面還掛著它們(「已開賽・等待資料」)。
+   守:① 非當前輪的已完賽場次會從 `seasonFixtures` 補上;② 上游已有的比分不被覆寫;③ 沒完賽的不補;
+   ④ 同一場兩份都有時,當前輪那一份贏(它比較新);⑤ 示範資料不補;⑥ 開球時間涵蓋整季;
+   ⑦ 抓取端真的有抓整季那一份(掃原始碼,剝註解)。 */
+async function checkLiveFill() {
+  const { fillFromLive, liveKickoffs } = await import('./lib/live-fill.mjs');
+  const mk = () => [
+    { home: 'ARS', away: 'LEE', round: 6, played: false, fh: null, fa: null },
+    { home: 'LIV', away: 'MCI', round: 6, played: true, fh: 9, fa: 9 },           // 上游已經有(故意寫怪比分,看有沒有被覆寫)
+    { home: 'EVE', away: 'CHE', round: 7, played: false, fh: null, fa: null },
+    { home: 'TOT', away: 'COV', round: 7, played: false, fh: null, fa: null },
+  ];
+  const live = {
+    source: 'fpl-api', demo: false, round: 7,
+    fixtures: [
+      { key: 'EVE|CHE', kickoff: '2026-10-17T11:30:00Z', finished: true, hs: 0, as: 2 },
+      { key: 'TOT|COV', kickoff: '2026-10-19T19:00:00Z', finished: false, hs: null, as: null },
+    ],
+    seasonFixtures: [
+      { key: 'ARS|LEE', event: 6, kickoff: '2026-10-10T11:30:00Z', finished: true, hs: 2, as: 1 },
+      { key: 'LIV|MCI', event: 6, kickoff: '2026-10-11T15:30:00Z', finished: true, hs: 0, as: 3 },
+      { key: 'EVE|CHE', event: 7, kickoff: '2026-10-17T11:00:00Z', finished: true, hs: 1, as: 1 },   // 舊的一份,當前輪那份要贏
+      { key: 'TOT|COV', event: 7, kickoff: '2026-10-19T19:00:00Z', finished: false, hs: null, as: null },
+    ],
+  };
+  const m1 = mk(); const filled = fillFromLive(m1, live);
+  const by = k => m1.find(m => `${m.home}|${m.away}` === k);
+  const m2 = mk(); const none = fillFromLive(m2, { ...live, demo: true });
+  const ko = liveKickoffs(live);
+  const src = readFileSync(join(ROOT, 'scripts', 'lib', 'live.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const cases = [
+    ['非當前輪(第 6 輪)的已完賽場次從整季那一份補上', by('ARS|LEE').played && by('ARS|LEE').fh === 2 && by('ARS|LEE').fa === 1, JSON.stringify(by('ARS|LEE'))],
+    ['上游已經有的比分不被覆寫', by('LIV|MCI').fh === 9 && by('LIV|MCI').fa === 9, JSON.stringify(by('LIV|MCI'))],
+    ['同一場兩份都有時,當前輪那一份贏(0-2,不是整季那份的 1-1)', by('EVE|CHE').fh === 0 && by('EVE|CHE').fa === 2, JSON.stringify(by('EVE|CHE'))],
+    ['沒完賽的不補', !by('TOT|COV').played],
+    ['補了哪幾場有回報(兩場)', filled.length === 2, filled.length],
+    ['示範資料不補', none.length === 0 && !m2[0].played],
+    ['開球時間涵蓋整季,同一場以當前輪那一份為準', ko.get('ARS|LEE') === '2026-10-10T11:30:00Z' && ko.get('EVE|CHE') === '2026-10-17T11:30:00Z', [...ko].join(' ')],
+    ['抓取端真的有抓整季那一份(/fixtures/ 不帶 event,寫進 seasonFixtures)', src.includes('`${API}/fixtures/`') && src.includes('seasonFixtures')],
+  ];
   let fail = 0;
   for (const [name, pass, detail] of cases) {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || detail === undefined ? '' : ` —— 得到 ${detail}`}`);
