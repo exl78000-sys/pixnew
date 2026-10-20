@@ -3,7 +3,7 @@
   "competition": "CL",
   "season": "2026-27",
   "seasonParam": "2026",
-  "retrievedAt": "2026-10-20T18:13:46.603Z",
+  "retrievedAt": "2026-10-20T18:18:29.949Z",
   "schemaVersion": 2,
   "availability": "available",
   "status": 200,
@@ -2878,11 +2878,11 @@
       },
       "id": 575359,
       "utcDate": "2026-10-20T16:45:00Z",
-      "status": "TIMED",
+      "status": "IN_PLAY",
       "matchday": 3,
       "stage": "LEAGUE_STAGE",
       "group": null,
-      "lastUpdated": "2026-10-20T00:20:28Z",
+      "lastUpdated": "2026-10-20T18:17:57Z",
       "homeTeam": {
         "id": 10233,
         "name": "Sabah FK",
@@ -2898,15 +2898,15 @@
         "crest": "https://crests.football-data.org/4.png"
       },
       "score": {
-        "winner": null,
+        "winner": "AWAY_TEAM",
         "duration": "REGULAR",
         "fullTime": {
-          "home": null,
-          "away": null
+          "home": 1,
+          "away": 2
         },
         "halfTime": {
-          "home": null,
-          "away": null
+          "home": 1,
+          "away": 1
         }
       },
       "odds": {
@@ -2944,11 +2944,11 @@
       },
       "id": 575360,
       "utcDate": "2026-10-20T16:45:00Z",
-      "status": "TIMED",
+      "status": "IN_PLAY",
       "matchday": 3,
       "stage": "LEAGUE_STAGE",
       "group": null,
-      "lastUpdated": "2026-10-20T00:20:28Z",
+      "lastUpdated": "2026-10-20T18:17:57Z",
       "homeTeam": {
         "id": 613,
         "name": "Fenerbahçe SK",
@@ -2964,15 +2964,15 @@
         "crest": "https://crests.football-data.org/930.png"
       },
       "score": {
-        "winner": null,
+        "winner": "HOME_TEAM",
         "duration": "REGULAR",
         "fullTime": {
-          "home": null,
-          "away": null
+          "home": 2,
+          "away": 1
         },
         "halfTime": {
-          "home": null,
-          "away": null
+          "home": 2,
+          "away": 1
         }
       },
       "odds": {
