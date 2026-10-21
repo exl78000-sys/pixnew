@@ -3,7 +3,7 @@
   "competition": "CL",
   "season": "2026-27",
   "seasonParam": "2026",
-  "retrievedAt": "2026-10-21T16:49:11.126Z",
+  "retrievedAt": "2026-10-21T16:59:11.223Z",
   "schemaVersion": 2,
   "availability": "available",
   "status": 200,
@@ -3472,11 +3472,11 @@
       },
       "id": 575368,
       "utcDate": "2026-10-21T16:45:00Z",
-      "status": "TIMED",
+      "status": "IN_PLAY",
       "matchday": 3,
       "stage": "LEAGUE_STAGE",
       "group": null,
-      "lastUpdated": "2026-10-21T01:32:00Z",
+      "lastUpdated": "2026-10-21T16:57:57Z",
       "homeTeam": {
         "id": 7397,
         "name": "Como 1907",
@@ -3492,11 +3492,11 @@
         "crest": "https://crests.football-data.org/66.png"
       },
       "score": {
-        "winner": null,
+        "winner": "HOME_TEAM",
         "duration": "REGULAR",
         "fullTime": {
-          "home": null,
-          "away": null
+          "home": 1,
+          "away": 0
         },
         "halfTime": {
           "home": null,
@@ -3538,11 +3538,11 @@
       },
       "id": 575369,
       "utcDate": "2026-10-21T16:45:00Z",
-      "status": "TIMED",
+      "status": "IN_PLAY",
       "matchday": 3,
       "stage": "LEAGUE_STAGE",
       "group": null,
-      "lastUpdated": "2026-10-21T00:20:27Z",
+      "lastUpdated": "2026-10-21T16:57:57Z",
       "homeTeam": {
         "id": 521,
         "name": "Lille OSC",
@@ -3558,11 +3558,11 @@
         "crest": "https://crests.football-data.org/610.png"
       },
       "score": {
-        "winner": null,
+        "winner": "DRAW",
         "duration": "REGULAR",
         "fullTime": {
-          "home": null,
-          "away": null
+          "home": 1,
+          "away": 1
         },
         "halfTime": {
           "home": null,
