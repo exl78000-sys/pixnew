@@ -149227,8 +149227,1758 @@
      }
     ]
    }
+  },
+  "LEV|ATH": {
+   "key": "LEV|ATH",
+   "season": "2026-27",
+   "date": "2026-10-21",
+   "matchId": "5868067",
+   "home": "LEV",
+   "away": "ATH",
+   "score": [
+    3,
+    1
+   ],
+   "providerScore": [
+    3,
+    1
+   ],
+   "teamStats": {
+    "LEV": {
+     "possession": 38,
+     "shots": 12,
+     "shotsOn": 7,
+     "shotsOff": 3,
+     "blockedShots": 2,
+     "blocksMade": 5,
+     "corners": 3,
+     "offsides": 0,
+     "fouls": 13,
+     "saves": 3,
+     "passes": 331,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.98
+    },
+    "ATH": {
+     "possession": 62,
+     "shots": 21,
+     "shotsOn": 4,
+     "shotsOff": 12,
+     "blockedShots": 5,
+     "blocksMade": 2,
+     "corners": 9,
+     "offsides": 0,
+     "fouls": 12,
+     "saves": 4,
+     "passes": 542,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.9
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "LEV": {
+     "touches_opp_box": 30,
+     "big_chance": 3,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 9,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 1.92,
+     "expected_goals_set_play": 0.06,
+     "expected_goals_non_penalty": 1.98,
+     "expected_goals_on_target": 3.22,
+     "own_half_passes": 164,
+     "opposition_half_passes": 90,
+     "long_balls_accurate": 30,
+     "long_balls_accurate_pct": 46,
+     "accurate_crosses": 6,
+     "accurate_crosses_pct": 38,
+     "player_throws": 11,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 7,
+     "clearances": 40,
+     "duel_won": 38,
+     "ground_duels_won": 31,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 7,
+     "aerials_won_pct": 26,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 56,
+     "red_cards": 0
+    },
+    "ATH": {
+     "touches_opp_box": 29,
+     "big_chance": 1,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 13,
+     "shots_outside_box": 8,
+     "expected_goals_open_play": 0.76,
+     "expected_goals_set_play": 0.34,
+     "expected_goals_non_penalty": 1.11,
+     "expected_goals_on_target": 1.04,
+     "own_half_passes": 213,
+     "opposition_half_passes": 245,
+     "long_balls_accurate": 39,
+     "long_balls_accurate_pct": 56,
+     "accurate_crosses": 9,
+     "accurate_crosses_pct": 32,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 10,
+     "interceptions": 9,
+     "clearances": 24,
+     "duel_won": 49,
+     "ground_duels_won": 29,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 20,
+     "aerials_won_pct": 74,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 60,
+     "red_cards": 1
+    }
+   },
+   "possession": {
+    "all": [
+     38,
+     62
+    ],
+    "h1": [
+     39,
+     61
+    ],
+    "h2": [
+     37,
+     63
+    ]
+   },
+   "events": [
+    {
+     "minute": 20,
+     "extra": null,
+     "team": "LEV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Roger Brugué"
+    },
+    {
+     "minute": 22,
+     "extra": null,
+     "team": "LEV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Roger Brugué"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Iñaki Williams"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ATH",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Peio Canales"
+    }
+   ],
+   "shots": [
+    {
+     "min": 6,
+     "extra": null,
+     "team": "ATH",
+     "player": "Hugo Rincón",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.9,
+     "y": 21,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 6,
+     "extra": null,
+     "team": "ATH",
+     "player": "Hugo Rincón",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.6,
+     "y": 22.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "ATH",
+     "player": "Alex Berenguer",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0.171,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80,
+     "y": 33.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "ATH",
+     "player": "Johaneko Louis-Jean",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.085,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.9,
+     "y": 44.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "LEV",
+     "player": "Iván Romero",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0.037,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.2,
+     "y": 37.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "ATH",
+     "player": "Mikel Jauregizar",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.2,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "ATH",
+     "player": "Yuri Berchiche",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.007,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.1,
+     "y": 35,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "ATH",
+     "player": "Robert Navarro",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0.026,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.2,
+     "y": 44.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "LEV",
+     "player": "Roger Brugué",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.204,
+     "xgot": 0.561,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.6,
+     "y": 37.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "LEV",
+     "player": "Thiago Fernández",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0.074,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.8,
+     "y": 41.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "LEV",
+     "player": "Roger Brugué",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.509,
+     "xgot": 0.932,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.5,
+     "y": 34.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ATH",
+     "player": "Íñigo Ruíz de Galarreta",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.153,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 30.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "ATH",
+     "player": "Alex Berenguer",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 19.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "LEV",
+     "player": "Jon Olasagasti",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.8,
+     "y": 42.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "LEV",
+     "player": "Jeremy Toljan",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.7,
+     "y": 25.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "ATH",
+     "player": "Yuri Berchiche",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.1,
+     "y": 36.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "ATH",
+     "player": "Íñigo Ruíz de Galarreta",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.04,
+     "xgot": 0.058,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.2,
+     "y": 45.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "ATH",
+     "player": "Mikel Jauregizar",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.4,
+     "y": 21.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "LEV",
+     "player": "Dani Requena",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 35.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "ATH",
+     "player": "Maroan Sannadi",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.106,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 40.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "ATH",
+     "player": "Maroan Sannadi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.064,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 33,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "ATH",
+     "player": "Maroan Sannadi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.4,
+     "y": 35,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "ATH",
+     "player": "Alex Berenguer",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.786,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "LEV",
+     "player": "Iván Romero",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.2,
+     "y": 41.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "LEV",
+     "player": "Manuel Sánchez",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0.042,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 47.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "ATH",
+     "player": "Nico Williams",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 37.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "ATH",
+     "player": "Yuri Berchiche",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 44.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "ATH",
+     "player": "Alex Berenguer",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 21.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "LEV",
+     "player": "Paco Cortés",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 48.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "ATH",
+     "player": "Alex Berenguer",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 22.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "ATH",
+     "player": "Yeray Álvarez",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.092,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 37.8,
+     "foot": "OtherBodyParts",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 8,
+     "team": "LEV",
+     "player": "Dani Requena",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.233,
+     "xgot": 0.584,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 32.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 8,
+     "team": "LEV",
+     "player": "Etta Eyong",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.964,
+     "xgot": 0.994,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 34.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     -8
+    ],
+    [
+     4,
+     -3
+    ],
+    [
+     5,
+     -22
+    ],
+    [
+     6,
+     -54
+    ],
+    [
+     7,
+     -71
+    ],
+    [
+     8,
+     -52
+    ],
+    [
+     9,
+     -35
+    ],
+    [
+     10,
+     -24
+    ],
+    [
+     11,
+     -24
+    ],
+    [
+     12,
+     -3
+    ],
+    [
+     13,
+     33
+    ],
+    [
+     14,
+     33
+    ],
+    [
+     15,
+     19
+    ],
+    [
+     16,
+     -41
+    ],
+    [
+     17,
+     -41
+    ],
+    [
+     18,
+     -8
+    ],
+    [
+     19,
+     43
+    ],
+    [
+     20,
+     65
+    ],
+    [
+     21,
+     54
+    ],
+    [
+     22,
+     76
+    ],
+    [
+     23,
+     54
+    ],
+    [
+     24,
+     14
+    ],
+    [
+     25,
+     -41
+    ],
+    [
+     26,
+     -41
+    ],
+    [
+     27,
+     -22
+    ],
+    [
+     28,
+     -8
+    ],
+    [
+     29,
+     -19
+    ],
+    [
+     30,
+     -8
+    ],
+    [
+     31,
+     -27
+    ],
+    [
+     32,
+     -16
+    ],
+    [
+     33,
+     16
+    ],
+    [
+     34,
+     22
+    ],
+    [
+     35,
+     49
+    ],
+    [
+     36,
+     5
+    ],
+    [
+     37,
+     5
+    ],
+    [
+     38,
+     -41
+    ],
+    [
+     39,
+     -43
+    ],
+    [
+     40,
+     -57
+    ],
+    [
+     41,
+     -54
+    ],
+    [
+     42,
+     -41
+    ],
+    [
+     43,
+     -33
+    ],
+    [
+     44,
+     16
+    ],
+    [
+     45,
+     22
+    ],
+    [
+     45.5,
+     -32
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     47,
+     -27
+    ],
+    [
+     48,
+     -33
+    ],
+    [
+     49,
+     -46
+    ],
+    [
+     50,
+     -19
+    ],
+    [
+     51,
+     -14
+    ],
+    [
+     52,
+     -43
+    ],
+    [
+     53,
+     -38
+    ],
+    [
+     54,
+     -60
+    ],
+    [
+     55,
+     -27
+    ],
+    [
+     56,
+     11
+    ],
+    [
+     57,
+     27
+    ],
+    [
+     58,
+     24
+    ],
+    [
+     59,
+     -14
+    ],
+    [
+     60,
+     -14
+    ],
+    [
+     61,
+     -52
+    ],
+    [
+     62,
+     -52
+    ],
+    [
+     63,
+     -46
+    ],
+    [
+     64,
+     0
+    ],
+    [
+     65,
+     0
+    ],
+    [
+     66,
+     0
+    ],
+    [
+     67,
+     0
+    ],
+    [
+     68,
+     -5
+    ],
+    [
+     69,
+     76
+    ],
+    [
+     70,
+     62
+    ],
+    [
+     71,
+     68
+    ],
+    [
+     72,
+     -14
+    ],
+    [
+     73,
+     5
+    ],
+    [
+     74,
+     5
+    ],
+    [
+     75,
+     5
+    ],
+    [
+     76,
+     5
+    ],
+    [
+     77,
+     5
+    ],
+    [
+     78,
+     27
+    ],
+    [
+     79,
+     30
+    ],
+    [
+     80,
+     30
+    ],
+    [
+     81,
+     3
+    ],
+    [
+     82,
+     -43
+    ],
+    [
+     83,
+     -68
+    ],
+    [
+     84,
+     -62
+    ],
+    [
+     85,
+     -24
+    ],
+    [
+     86,
+     8
+    ],
+    [
+     87,
+     -19
+    ],
+    [
+     88,
+     -5
+    ],
+    [
+     89,
+     14
+    ],
+    [
+     90,
+     35
+    ],
+    [
+     90.5,
+     -18
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "LEV": {
+     "team": "LEV",
+     "formation": "4-4-2",
+     "coach": "Luís Castro",
+     "xi": [
+      {
+       "name": "Mathew Ryan",
+       "shirt": 13,
+       "pos": "G"
+      },
+      {
+       "name": "Jeremy Toljan",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Aïssa Mandi",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Ifeanyi Ndukwe",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Manuel Sánchez",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Roger Brugué",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Jon Olasagasti",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Dani Requena",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Thiago Fernández",
+       "shirt": 24,
+       "pos": "M"
+      },
+      {
+       "name": "Petar Ratkov",
+       "shirt": 10,
+       "pos": "F"
+      },
+      {
+       "name": "Iván Romero",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Álex Primo",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Pablo Campos",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Jorge Cabello",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Marc Santos",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Nacho Pérez",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Axel Tape",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Sotelo",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Oriol Rey",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Etta Eyong",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Paco Cortés",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Víctor García",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Yanis Musuayi",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    },
+    "ATH": {
+     "team": "ATH",
+     "formation": "4-2-3-1",
+     "coach": "Edin Terzić",
+     "xi": [
+      {
+       "name": "Unai Simón",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Hugo Rincón",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Yeray Álvarez",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Aymeric Laporte",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Yuri Berchiche",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Íñigo Ruíz de Galarreta",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Mikel Jauregizar",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Alex Berenguer",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Robert Navarro",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Johaneko Louis-Jean",
+       "shirt": 31,
+       "pos": "M"
+      },
+      {
+       "name": "Maroan Sannadi",
+       "shirt": 21,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Peio Canales",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Iñaki Williams",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Álex Padilla",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Aitor Paredes",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Daniel Vivian",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Jesús Areso",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Alejandro Rego",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Beñat Gerenabarrena",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Beñat Prados",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Christian Imga",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Nico Serrano",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Nico Williams",
+       "shirt": 10,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 28,
+      "center": 34,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 33,
+      "center": 38,
+      "right": 29
+     },
+     "secondHalf": {
+      "left": 21,
+      "center": 30,
+      "right": 49
+     }
+    },
+    "away": {
+     "total": {
+      "left": 30,
+      "center": 27,
+      "right": 43
+     },
+     "firstHalf": {
+      "left": 32,
+      "center": 31,
+      "right": 37
+     },
+     "secondHalf": {
+      "left": 28,
+      "center": 23,
+      "right": 49
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-21T20:29:49.672Z",
+   "fdMatchId": "2026-27-89",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "ATH",
+      "name": "Íñigo Ruíz de Galarreta",
+      "n": 74,
+      "cx": 56.8,
+      "cy": 33.9,
+      "spread": 24.2,
+      "grid": "0,2,2,1,0,0,1,6,4,14,6,2,1,3,6,14,6,1,0,0,1,0,4,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Unai Simón",
+      "n": 65,
+      "cx": 14.8,
+      "cy": 35.6,
+      "spread": 15.2,
+      "grid": "3,0,1,0,0,0,17,2,2,0,0,0,22,11,0,0,0,0,4,3,0,0,0,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Jon Olasagasti",
+      "n": 77,
+      "cx": 45.3,
+      "cy": 34.6,
+      "spread": 28.3,
+      "grid": "0,7,4,1,0,0,0,7,6,5,6,0,2,15,4,1,4,1,2,3,1,3,2,3"
+     },
+     {
+      "team": "LEV",
+      "name": "Aïssa Mandi",
+      "n": 47,
+      "cx": 25.8,
+      "cy": 46.2,
+      "spread": 17.3,
+      "grid": "0,0,0,0,0,0,3,0,1,0,0,0,10,11,9,2,0,0,4,5,1,1,0,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Petar Ratkov",
+      "n": 24,
+      "cx": 50.9,
+      "cy": 40.8,
+      "spread": 27.1,
+      "grid": "0,0,1,0,1,0,2,0,2,2,0,0,1,1,2,3,1,1,0,0,3,3,1,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Roger Brugué",
+      "n": 32,
+      "cx": 58.5,
+      "cy": 51.7,
+      "spread": 31.6,
+      "grid": "0,0,0,0,0,0,2,0,0,0,0,2,0,1,0,0,4,4,3,1,6,6,2,1"
+     },
+     {
+      "team": "ATH",
+      "name": "Yuri Berchiche",
+      "n": 115,
+      "cx": 48.3,
+      "cy": 16.2,
+      "spread": 28.2,
+      "grid": "3,13,19,21,7,2,12,3,13,10,4,1,2,0,0,1,0,0,0,0,0,0,0,4"
+     },
+     {
+      "team": "ATH",
+      "name": "Aymeric Laporte",
+      "n": 84,
+      "cx": 40.9,
+      "cy": 27,
+      "spread": 21.6,
+      "grid": "1,8,2,5,0,0,4,14,16,11,0,1,2,4,8,6,0,1,0,1,0,0,0,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Yeray Álvarez",
+      "n": 128,
+      "cx": 46,
+      "cy": 46.7,
+      "spread": 20.3,
+      "grid": "0,0,0,0,0,1,1,3,3,4,0,1,6,15,32,20,0,0,2,8,13,13,6,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Maroan Sannadi",
+      "n": 22,
+      "cx": 69.5,
+      "cy": 27.7,
+      "spread": 26.8,
+      "grid": "0,0,1,1,0,0,1,0,3,5,1,5,0,0,0,0,2,2,0,0,0,0,1,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Ifeanyi Ndukwe",
+      "n": 55,
+      "cx": 22.8,
+      "cy": 21.7,
+      "spread": 16,
+      "grid": "6,11,3,0,0,0,13,10,7,0,0,0,1,3,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Manuel Sánchez",
+      "n": 64,
+      "cx": 40.7,
+      "cy": 11.4,
+      "spread": 25.6,
+      "grid": "2,19,8,5,4,4,6,12,0,1,2,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Mathew Ryan",
+      "n": 67,
+      "cx": 8.9,
+      "cy": 34.1,
+      "spread": 8.4,
+      "grid": "1,0,0,0,0,0,20,2,0,0,0,0,40,3,0,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Iván Romero",
+      "n": 42,
+      "cx": 54,
+      "cy": 21.6,
+      "spread": 25.7,
+      "grid": "0,4,9,3,1,0,0,1,3,5,3,4,2,1,1,4,0,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "LEV",
+      "name": "Thiago Fernández",
+      "n": 51,
+      "cx": 57.1,
+      "cy": 16.2,
+      "spread": 29.6,
+      "grid": "3,11,6,5,4,3,0,2,2,0,6,3,0,0,0,1,3,0,0,0,0,0,1,1"
+     },
+     {
+      "team": "ATH",
+      "name": "Alex Berenguer",
+      "n": 84,
+      "cx": 64,
+      "cy": 43.4,
+      "spread": 31.9,
+      "grid": "2,1,3,3,4,2,2,0,1,3,4,0,1,2,5,2,3,6,1,3,3,11,17,5"
+     },
+     {
+      "team": "ATH",
+      "name": "Hugo Rincón",
+      "n": 67,
+      "cx": 66.6,
+      "cy": 58.8,
+      "spread": 28.5,
+      "grid": "0,0,0,0,0,0,1,0,0,0,0,0,2,0,0,1,0,7,3,4,6,14,16,13"
+     },
+     {
+      "team": "ATH",
+      "name": "Johaneko Louis-Jean",
+      "n": 33,
+      "cx": 61.9,
+      "cy": 10.1,
+      "spread": 29.4,
+      "grid": "4,0,6,5,8,5,1,0,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Dani Requena",
+      "n": 56,
+      "cx": 56.7,
+      "cy": 35.6,
+      "spread": 27.9,
+      "grid": "1,1,1,3,0,0,3,2,3,2,6,1,0,4,7,5,2,6,0,1,2,2,3,1"
+     },
+     {
+      "team": "ATH",
+      "name": "Mikel Jauregizar",
+      "n": 36,
+      "cx": 51.4,
+      "cy": 33.6,
+      "spread": 26.7,
+      "grid": "1,1,2,3,0,0,2,1,4,1,1,0,0,3,3,4,5,0,0,0,0,3,2,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Jeremy Toljan",
+      "n": 41,
+      "cx": 47.2,
+      "cy": 58.7,
+      "spread": 33.4,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,2,8,7,6,5,5,6"
+     },
+     {
+      "team": "ATH",
+      "name": "Robert Navarro",
+      "n": 44,
+      "cx": 68.8,
+      "cy": 37.5,
+      "spread": 31.2,
+      "grid": "0,1,1,3,3,3,0,2,1,1,4,0,1,1,0,2,3,1,0,0,2,2,12,1"
+     },
+     {
+      "team": "ATH",
+      "name": "Peio Canales",
+      "n": 39,
+      "cx": 53,
+      "cy": 31.8,
+      "spread": 26.4,
+      "grid": "2,0,0,4,0,0,0,5,3,7,2,0,0,1,5,4,0,0,0,0,2,1,2,1"
+     },
+     {
+      "team": "ATH",
+      "name": "Iñaki Williams",
+      "n": 18,
+      "cx": 64.3,
+      "cy": 40.9,
+      "spread": 34.4,
+      "grid": "0,0,0,2,0,0,1,1,1,0,3,0,0,1,0,0,0,2,0,0,2,2,0,3"
+     },
+     {
+      "team": "LEV",
+      "name": "Oriol Rey",
+      "n": 20,
+      "cx": 45.7,
+      "cy": 27.5,
+      "spread": 27,
+      "grid": "2,0,2,3,0,0,1,0,4,0,0,0,0,1,3,1,1,0,0,0,0,1,1,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Etta Eyong",
+      "n": 14,
+      "cx": 65.9,
+      "cy": 35.8,
+      "spread": 32.4,
+      "grid": "0,0,1,0,1,0,1,0,4,0,0,1,0,0,0,1,0,1,0,0,0,1,0,3"
+     },
+     {
+      "team": "LEV",
+      "name": "Víctor García",
+      "n": 14,
+      "cx": 72.8,
+      "cy": 56.2,
+      "spread": 28.9,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,2,0,3,0,1,1,5"
+     },
+     {
+      "team": "ATH",
+      "name": "Nico Williams",
+      "n": 10,
+      "cx": 76.5,
+      "cy": 8.3,
+      "spread": 19.6,
+      "grid": "0,0,0,4,2,3,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Aitor Paredes",
+      "n": 16,
+      "cx": 38.9,
+      "cy": 26.7,
+      "spread": 19.2,
+      "grid": "1,0,2,0,0,0,1,2,5,1,0,0,0,0,3,0,0,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "ATH",
+      "name": "Alejandro Rego",
+      "n": 17,
+      "cx": 50.4,
+      "cy": 26,
+      "spread": 24,
+      "grid": "1,0,2,2,0,0,0,2,3,2,0,0,0,0,0,4,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "LEV",
+      "name": "Nacho Pérez",
+      "n": 9,
+      "cx": 41.5,
+      "cy": 58,
+      "spread": 29.2,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,3,3,0,0,2"
+     },
+     {
+      "team": "LEV",
+      "name": "Paco Cortés",
+      "n": 12,
+      "cx": 41.8,
+      "cy": 10,
+      "spread": 30,
+      "grid": "2,3,2,1,0,1,0,1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-21T16:50:47.242Z"
+ "updatedAt": "2026-10-21T20:29:50.342Z"
 }
