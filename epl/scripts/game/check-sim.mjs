@@ -583,7 +583,12 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
      30 場只會出現一兩球十二碼,次數的 Poisson 雜訊蓋過要量的東西 ——
      4v 就是靠期望值才看出 `forward` 改了之後十二碼塌了(次數 0.03、期望值一起掉)。 */
   const pe = rows.reduce((a, r) => a + (r.st.counts.penExp ?? 0), 0) / rows.length;
-  line('\u3000十二碼的期望值', pe.toFixed(3), '次數是 Poisson 雜訊,校準看這個');
+  /* **期望值要判,不只印**(2026-10-23)。5s(邊路推進到底線)把它從 0.12 推到 0.34 / 0.24(真實 0.23),
+     而這一行只印不判,驗收時沒被看見 —— 5q 角球那一條的同一個坑,第二次。SE 用逐場期望值的離散。 */
+  const pes = rows.map(r => r.st.counts.penExp ?? 0);
+  const peSe = pes.length > 1 ? Math.sqrt(pes.reduce((a, x) => a + (x - pe) ** 2, 0) / (pes.length - 1) / pes.length) : 0;
+  const peJudge = realPen == null || !peSe ? '' : Math.abs(pe - realPen) > 2 * peSe ? `**差 ${((pe - realPen) / peSe).toFixed(1)} SE**` : '✓';
+  line('　十二碼的期望值', `${pe.toFixed(3)} ± ${peSe.toFixed(3)}`, `次數是 Poisson 雜訊,校準看這個  ${peJudge}`);
   /* **把期望值拆成「次數 × 機率」**(2026-09-18,階段 4y)。4x 把 `DUEL_FOUL_FIT` 降 7%、
      犯規跟著降,而期望值 0.248 → 0.249 一動都沒動 —— 只看期望值分不出是禁區裡的對抗變多
      還是每次吹的機率變高,而那兩件事要改的地方完全不同(領土 vs `BOX_CARE`)。 */
