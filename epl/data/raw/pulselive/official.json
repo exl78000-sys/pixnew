@@ -50115,19 +50115,6 @@
    },
    "goals": [
     {
-     "side": "A",
-     "person": 23811,
-     "assist": 76353,
-     "team": 15,
-     "min": 13,
-     "label": "13'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 0,
-     "as": 1
-    },
-    {
      "side": "H",
      "person": 125827,
      "assist": null,
@@ -50146,6 +50133,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -50156,11 +50149,17 @@
       "min": 45,
       "label": "45+3'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+3'00"
+   "clock": "45'00"
   }
  },
- "fetchedAt": "2026-10-23T19:55:48.871Z"
+ "fetchedAt": "2026-10-23T20:05:16.984Z"
 }
