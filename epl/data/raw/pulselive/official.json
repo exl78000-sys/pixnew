@@ -50133,14 +50133,60 @@
      {
       "person": 49884,
       "team": 8,
-      "min": 52,
-      "label": "52'00",
+      "min": 51,
+      "label": "51'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 139648,
+      "team": 15,
+      "min": 54,
+      "label": "54'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 75735,
+      "team": 8,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 313194,
+      "team": 8,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 32715,
+      "team": 8,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 64519,
+      "team": 8,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -50168,8 +50214,8 @@
      }
     ]
    },
-   "clock": "53'00"
+   "clock": "62'00"
   }
  },
- "fetchedAt": "2026-10-23T20:12:21.813Z"
+ "fetchedAt": "2026-10-23T20:21:52.452Z"
 }
