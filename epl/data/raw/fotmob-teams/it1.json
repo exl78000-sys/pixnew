@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-23T16:38:54.711Z",
+ "fetchedAt": "2026-10-23T21:31:24.790Z",
  "teams": [
   {
    "code": "INT",
@@ -365,6 +365,66 @@
    ]
   },
   {
+   "code": "TOR",
+   "fotmobId": 9804,
+   "fotmobName": "Torino",
+   "fetchedAt": "2026-10-09T12:41:56.773Z",
+   "color": "#80110B",
+   "teamColors": {
+    "darkMode": "#9b2d22",
+    "lightMode": "#80110B",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Olimpico Grande Torino",
+   "city": "Torino",
+   "location": [
+    "45.041752184",
+    "7.650015503"
+   ],
+   "capacity": 27958,
+   "surface": "Grass",
+   "opened": 1933,
+   "coachHistory": [
+    {
+     "id": 187735,
+     "name": "Marco Baroni",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 7,
+     "draw": 6,
+     "loss": 13,
+     "pointsPerGame": 1.04,
+     "winPercentage": 0.27
+    },
+    {
+     "id": 24853,
+     "name": "Roberto D'Aversa",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 5,
+     "draw": 3,
+     "loss": 4,
+     "pointsPerGame": 1.5,
+     "winPercentage": 0.42
+    },
+    {
+     "id": 39555,
+     "name": "Ignazio Abate",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.8,
+     "winPercentage": 0.2
+    }
+   ]
+  },
+  {
    "code": "CAG",
    "fotmobId": 8529,
    "fotmobName": "Cagliari",
@@ -541,66 +601,6 @@
      "loss": 2,
      "pointsPerGame": 1.4,
      "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "TOR",
-   "fotmobId": 9804,
-   "fotmobName": "Torino",
-   "fetchedAt": "2026-10-09T12:41:56.773Z",
-   "color": "#80110B",
-   "teamColors": {
-    "darkMode": "#9b2d22",
-    "lightMode": "#80110B",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Olimpico Grande Torino",
-   "city": "Torino",
-   "location": [
-    "45.041752184",
-    "7.650015503"
-   ],
-   "capacity": 27958,
-   "surface": "Grass",
-   "opened": 1933,
-   "coachHistory": [
-    {
-     "id": 187735,
-     "name": "Marco Baroni",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 7,
-     "draw": 6,
-     "loss": 13,
-     "pointsPerGame": 1.04,
-     "winPercentage": 0.27
-    },
-    {
-     "id": 24853,
-     "name": "Roberto D'Aversa",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 5,
-     "draw": 3,
-     "loss": 4,
-     "pointsPerGame": 1.5,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 39555,
-     "name": "Ignazio Abate",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.8,
-     "winPercentage": 0.2
     }
    ]
   },

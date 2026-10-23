@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-23T16:38:55.204Z",
+ "fetchedAt": "2026-10-23T21:31:25.175Z",
  "teams": [
   {
    "code": "LYO",
@@ -425,6 +425,66 @@
    ]
   },
   {
+   "code": "NIC",
+   "fotmobId": 9831,
+   "fotmobName": "Nice",
+   "fetchedAt": "2026-10-09T12:42:08.619Z",
+   "color": "#181818",
+   "teamColors": {
+    "darkMode": "#ED1C24",
+    "lightMode": "#181818",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Allianz Riviera",
+   "city": "Nice",
+   "location": [
+    "43.705119412",
+    "7.192622423"
+   ],
+   "capacity": 35624,
+   "surface": "Grass",
+   "opened": 2013,
+   "coachHistory": [
+    {
+     "id": 804046,
+     "name": "Franck Haise",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 5,
+     "draw": 2,
+     "loss": 9,
+     "pointsPerGame": 1.06,
+     "winPercentage": 0.31
+    },
+    {
+     "id": 78704,
+     "name": "Claude Puel",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 2,
+     "draw": 9,
+     "loss": 7,
+     "pointsPerGame": 0.83,
+     "winPercentage": 0.11
+    },
+    {
+     "id": 278248,
+     "name": "Olivier Pantaloni",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 2,
+     "loss": 2,
+     "pointsPerGame": 1,
+     "winPercentage": 0.2
+    }
+   ]
+  },
+  {
    "code": "LEN",
    "fotmobId": 8588,
    "fotmobName": "Lens",
@@ -721,66 +781,6 @@
      "loss": 3,
      "pointsPerGame": 1.2,
      "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "NIC",
-   "fotmobId": 9831,
-   "fotmobName": "Nice",
-   "fetchedAt": "2026-10-09T12:42:08.619Z",
-   "color": "#181818",
-   "teamColors": {
-    "darkMode": "#ED1C24",
-    "lightMode": "#181818",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Allianz Riviera",
-   "city": "Nice",
-   "location": [
-    "43.705119412",
-    "7.192622423"
-   ],
-   "capacity": 35624,
-   "surface": "Grass",
-   "opened": 2013,
-   "coachHistory": [
-    {
-     "id": 804046,
-     "name": "Franck Haise",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 5,
-     "draw": 2,
-     "loss": 9,
-     "pointsPerGame": 1.06,
-     "winPercentage": 0.31
-    },
-    {
-     "id": 78704,
-     "name": "Claude Puel",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 2,
-     "draw": 9,
-     "loss": 7,
-     "pointsPerGame": 0.83,
-     "winPercentage": 0.11
-    },
-    {
-     "id": 278248,
-     "name": "Olivier Pantaloni",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 2,
-     "loss": 2,
-     "pointsPerGame": 1,
-     "winPercentage": 0.2
     }
    ]
   },

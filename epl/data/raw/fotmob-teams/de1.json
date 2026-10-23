@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-23T16:38:54.145Z",
+ "fetchedAt": "2026-10-23T21:31:24.361Z",
  "teams": [
   {
    "code": "FCB",
@@ -725,66 +725,6 @@
    ]
   },
   {
-   "code": "VFB",
-   "fotmobId": 10269,
-   "fotmobName": "VfB Stuttgart",
-   "fetchedAt": "2026-10-09T12:41:50.140Z",
-   "color": "#D30029",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#D30029",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "MHPArena",
-   "city": "Stuttgart",
-   "location": [
-    "48.792284176",
-    "9.232023954"
-   ],
-   "capacity": 60469,
-   "surface": "Grass",
-   "opened": 1933,
-   "coachHistory": [
-    {
-     "id": 36490,
-     "name": "Sebastian Hoeneß",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 14,
-     "draw": 8,
-     "loss": 12,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.41
-    },
-    {
-     "id": 36490,
-     "name": "Sebastian Hoeneß",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 18,
-     "draw": 8,
-     "loss": 8,
-     "pointsPerGame": 1.82,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 36490,
-     "name": "Sebastian Hoeneß",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
    "code": "TSG",
    "fotmobId": 8226,
    "fotmobName": "Hoffenheim",
@@ -833,6 +773,66 @@
     {
      "id": 601384,
      "name": "Christian Ilzer",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
+   "code": "VFB",
+   "fotmobId": 10269,
+   "fotmobName": "VfB Stuttgart",
+   "fetchedAt": "2026-10-09T12:41:50.140Z",
+   "color": "#D30029",
+   "teamColors": {
+    "darkMode": "#ffffff",
+    "lightMode": "#D30029",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "MHPArena",
+   "city": "Stuttgart",
+   "location": [
+    "48.792284176",
+    "9.232023954"
+   ],
+   "capacity": 60469,
+   "surface": "Grass",
+   "opened": 1933,
+   "coachHistory": [
+    {
+     "id": 36490,
+     "name": "Sebastian Hoeneß",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 14,
+     "draw": 8,
+     "loss": 12,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.41
+    },
+    {
+     "id": 36490,
+     "name": "Sebastian Hoeneß",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 18,
+     "draw": 8,
+     "loss": 8,
+     "pointsPerGame": 1.82,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 36490,
+     "name": "Sebastian Hoeneß",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",

@@ -100083,8 +100083,1373 @@
    "fetchedAt": "2026-10-18T21:31:31.883Z",
    "fdMatchId": "2026-27-62",
    "heat": null
+  },
+  "BST|NIC": {
+   "key": "BST|NIC",
+   "season": "2026-27",
+   "date": "2026-10-23",
+   "matchId": "5802966",
+   "home": "BST",
+   "away": "NIC",
+   "score": [
+    1,
+    2
+   ],
+   "providerScore": [
+    1,
+    2
+   ],
+   "teamStats": {
+    "BST": {
+     "possession": 50,
+     "shots": 13,
+     "shotsOn": 7,
+     "shotsOff": 4,
+     "blockedShots": 2,
+     "blocksMade": 2,
+     "corners": 3,
+     "offsides": 1,
+     "fouls": 14,
+     "saves": 0,
+     "passes": 462,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.46
+    },
+    "NIC": {
+     "possession": 50,
+     "shots": 9,
+     "shotsOn": 2,
+     "shotsOff": 4,
+     "blockedShots": 3,
+     "blocksMade": 2,
+     "corners": 7,
+     "offsides": 4,
+     "fouls": 15,
+     "saves": 6,
+     "passes": 453,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.47
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "BST": {
+     "touches_opp_box": 21,
+     "big_chance": 4,
+     "big_chance_missed_title": 3,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 1.57,
+     "expected_goals_set_play": 0.11,
+     "expected_goals_non_penalty": 1.68,
+     "expected_goals_on_target": 2.05,
+     "own_half_passes": 252,
+     "opposition_half_passes": 121,
+     "long_balls_accurate": 27,
+     "long_balls_accurate_pct": 40,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 29,
+     "player_throws": 21,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 7,
+     "clearances": 19,
+     "duel_won": 51,
+     "ground_duels_won": 34,
+     "ground_duels_won_pct": 50,
+     "aerials_won": 17,
+     "aerials_won_pct": 68,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 38,
+     "red_cards": 0
+    },
+    "NIC": {
+     "touches_opp_box": 15,
+     "big_chance": 1,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 5,
+     "shots_woodwork": 0,
+     "shots_inside_box": 4,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 0.15,
+     "expected_goals_set_play": 0.32,
+     "expected_goals_non_penalty": 0.47,
+     "expected_goals_on_target": 1.37,
+     "own_half_passes": 216,
+     "opposition_half_passes": 153,
+     "long_balls_accurate": 19,
+     "long_balls_accurate_pct": 36,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 21,
+     "player_throws": 11,
+     "matchstats.headers.tackles": 20,
+     "interceptions": 13,
+     "clearances": 27,
+     "duel_won": 42,
+     "ground_duels_won": 34,
+     "ground_duels_won_pct": 50,
+     "aerials_won": 8,
+     "aerials_won_pct": 32,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 21,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     50,
+     50
+    ],
+    "h1": [
+     47,
+     53
+    ],
+    "h2": [
+     54,
+     46
+    ]
+   },
+   "events": [
+    {
+     "minute": 15,
+     "extra": null,
+     "team": "BST",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Ludovic Ajorque"
+    },
+    {
+     "minute": 54,
+     "extra": 0,
+     "team": "NIC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hamza Koutoune"
+    },
+    {
+     "minute": 58,
+     "extra": null,
+     "team": "NIC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Hamza Koutoune"
+    },
+    {
+     "minute": 61,
+     "extra": null,
+     "team": "NIC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Elye Wahi"
+    },
+    {
+     "minute": 62,
+     "extra": null,
+     "team": "BST",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kamory Doumbia"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "NIC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sofiane Diop"
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "BST",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ludovic Ajorque"
+    },
+    {
+     "minute": 68,
+     "extra": null,
+     "team": "NIC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Elye Wahi"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "BST",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Joseph Boende"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "BST",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Noah Edjouma"
+    },
+    {
+     "minute": 71,
+     "extra": null,
+     "team": "BST",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Bradley Locko"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "NIC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Djibril Coulibaly"
+    },
+    {
+     "minute": 76,
+     "extra": 0,
+     "team": "NIC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Isak Jansson"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "BST",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ibrahim Kanté"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "BST",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mamady Diambou"
+    },
+    {
+     "minute": 83,
+     "extra": null,
+     "team": "NIC",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Sofiane Diop"
+    },
+    {
+     "minute": 85,
+     "extra": null,
+     "team": "NIC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Yéhvann Diouf"
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "BST",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mathis Laine"
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "NIC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Niels Nkounkou"
+    },
+    {
+     "minute": 90,
+     "extra": 1,
+     "team": "NIC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Olivier Pantaloni"
+    },
+    {
+     "minute": 90,
+     "extra": 8,
+     "team": "NIC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Isak Jansson"
+    }
+   ],
+   "shots": [
+    {
+     "min": 8,
+     "extra": null,
+     "team": "NIC",
+     "player": "Alidu Seidu",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 72.1,
+     "y": 17.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "BST",
+     "player": "Bradley Locko",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.9,
+     "y": 47.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "BST",
+     "player": "Bradley Locko",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88.1,
+     "y": 38.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "BST",
+     "player": "Pathé Mboup",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.086,
+     "xgot": 0.242,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.7,
+     "y": 24.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "NIC",
+     "player": "Mohamed Amoura",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.9,
+     "y": 46.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "BST",
+     "player": "Ludovic Ajorque",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.873,
+     "xgot": 0.995,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.6,
+     "y": 29.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "NIC",
+     "player": "Mohamed Amoura",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.3,
+     "y": 45.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "NIC",
+     "player": "Mohamed Amoura",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.5,
+     "y": 34.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "NIC",
+     "player": "Jonathan Clauss",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.018,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 48.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "NIC",
+     "player": "Mohamed Amoura",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.006,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.9,
+     "y": 55.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "BST",
+     "player": "Kamory Doumbia",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.427,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 37.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "BST",
+     "player": "Pathé Mboup",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.3,
+     "y": 45.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "BST",
+     "player": "Kenny Lala",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0.013,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.4,
+     "y": 15.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "BST",
+     "player": "Hugo Magnetti",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0.016,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83,
+     "y": 22.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "NIC",
+     "player": "Elye Wahi",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.221,
+     "xgot": 0.676,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.3,
+     "y": 31.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "NIC",
+     "player": "Sofiane Diop",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 36.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "BST",
+     "player": "Lucas Tousart",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.026,
+     "xgot": 0.03,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 33.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "BST",
+     "player": "Hugo Magnetti",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.8,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "NIC",
+     "player": "Sofiane Diop",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.072,
+     "xgot": 0.695,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 26.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "BST",
+     "player": "Gautier Lloris",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.019,
+     "xgot": 0.01,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 25.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 10,
+     "team": "BST",
+     "player": "Kenny Lala",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.748,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 10,
+     "team": "BST",
+     "player": "Noah Edjouma",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.5,
+     "y": 46.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -8
+    ],
+    [
+     2,
+     -8
+    ],
+    [
+     3,
+     43
+    ],
+    [
+     4,
+     52
+    ],
+    [
+     5,
+     41
+    ],
+    [
+     6,
+     -11
+    ],
+    [
+     7,
+     -16
+    ],
+    [
+     8,
+     -11
+    ],
+    [
+     9,
+     33
+    ],
+    [
+     10,
+     43
+    ],
+    [
+     11,
+     76
+    ],
+    [
+     12,
+     43
+    ],
+    [
+     13,
+     27
+    ],
+    [
+     14,
+     0
+    ],
+    [
+     15,
+     33
+    ],
+    [
+     16,
+     38
+    ],
+    [
+     17,
+     33
+    ],
+    [
+     18,
+     -22
+    ],
+    [
+     19,
+     -41
+    ],
+    [
+     20,
+     -35
+    ],
+    [
+     21,
+     -19
+    ],
+    [
+     22,
+     -5
+    ],
+    [
+     23,
+     -5
+    ],
+    [
+     24,
+     -11
+    ],
+    [
+     25,
+     0
+    ],
+    [
+     26,
+     5
+    ],
+    [
+     27,
+     22
+    ],
+    [
+     28,
+     -3
+    ],
+    [
+     29,
+     5
+    ],
+    [
+     30,
+     100
+    ],
+    [
+     31,
+     100
+    ],
+    [
+     32,
+     100
+    ],
+    [
+     33,
+     -30
+    ],
+    [
+     34,
+     -30
+    ],
+    [
+     35,
+     -24
+    ],
+    [
+     36,
+     5
+    ],
+    [
+     37,
+     16
+    ],
+    [
+     38,
+     33
+    ],
+    [
+     39,
+     27
+    ],
+    [
+     40,
+     16
+    ],
+    [
+     41,
+     -19
+    ],
+    [
+     42,
+     -30
+    ],
+    [
+     43,
+     -19
+    ],
+    [
+     44,
+     19
+    ],
+    [
+     45,
+     22
+    ],
+    [
+     45.5,
+     16
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     47,
+     22
+    ],
+    [
+     48,
+     22
+    ],
+    [
+     49,
+     11
+    ],
+    [
+     50,
+     -33
+    ],
+    [
+     51,
+     -33
+    ],
+    [
+     52,
+     -41
+    ],
+    [
+     53,
+     -19
+    ],
+    [
+     54,
+     -30
+    ],
+    [
+     55,
+     5
+    ],
+    [
+     56,
+     16
+    ],
+    [
+     57,
+     33
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     16
+    ],
+    [
+     60,
+     5
+    ],
+    [
+     61,
+     -60
+    ],
+    [
+     62,
+     -60
+    ],
+    [
+     63,
+     -54
+    ],
+    [
+     64,
+     19
+    ],
+    [
+     65,
+     14
+    ],
+    [
+     66,
+     3
+    ],
+    [
+     67,
+     -30
+    ],
+    [
+     68,
+     -52
+    ],
+    [
+     69,
+     -24
+    ],
+    [
+     70,
+     0
+    ],
+    [
+     71,
+     22
+    ],
+    [
+     72,
+     -3
+    ],
+    [
+     73,
+     -14
+    ],
+    [
+     74,
+     -14
+    ],
+    [
+     75,
+     -11
+    ],
+    [
+     76,
+     0
+    ],
+    [
+     77,
+     5
+    ],
+    [
+     78,
+     16
+    ],
+    [
+     79,
+     35
+    ],
+    [
+     80,
+     30
+    ],
+    [
+     81,
+     30
+    ],
+    [
+     82,
+     5
+    ],
+    [
+     83,
+     -11
+    ],
+    [
+     84,
+     -16
+    ],
+    [
+     85,
+     -22
+    ],
+    [
+     86,
+     -5
+    ],
+    [
+     87,
+     -5
+    ],
+    [
+     88,
+     0
+    ],
+    [
+     89,
+     43
+    ],
+    [
+     90,
+     49
+    ],
+    [
+     90.5,
+     10
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BST": {
+     "team": "BST",
+     "formation": "4-2-3-1",
+     "coach": "Julien Lachuer",
+     "xi": [
+      {
+       "name": "Egil Selvik",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Kenny Lala",
+       "shirt": 70,
+       "pos": "D"
+      },
+      {
+       "name": "Lucas Tousart",
+       "shirt": 29,
+       "pos": "D"
+      },
+      {
+       "name": "Gautier Lloris",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Bradley Locko",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Joris Chotard",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Magnetti",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Mama Baldé",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Kamory Doumbia",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "Pathé Mboup",
+       "shirt": 9,
+       "pos": "M"
+      },
+      {
+       "name": "Ludovic Ajorque",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Joseph Boende",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Noah Edjouma",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Mamady Diambou",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Ibrahim Kanté",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Mathis Laine",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Mathieu Patouillet",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Justin Bourgault",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Luck Zogbé",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Djylian N'Guessan",
+       "shirt": 39,
+       "pos": "?"
+      }
+     ]
+    },
+    "NIC": {
+     "team": "NIC",
+     "formation": "3-4-2-1",
+     "coach": "Olivier Pantaloni",
+     "xi": [
+      {
+       "name": "Yéhvann Diouf",
+       "shirt": 23,
+       "pos": "G"
+      },
+      {
+       "name": "Alidu Seidu",
+       "shirt": 36,
+       "pos": "D"
+      },
+      {
+       "name": "Youssouf Ndayishimiye",
+       "shirt": 55,
+       "pos": "D"
+      },
+      {
+       "name": "Mohamed Abdelmonem",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Jonathan Clauss",
+       "shirt": 92,
+       "pos": "?"
+      },
+      {
+       "name": "Axel Witsel",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Hicham Boudaoui",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Niels Nkounkou",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Gauthier Hein",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Mohamed Amoura",
+       "shirt": 9,
+       "pos": "M"
+      },
+      {
+       "name": "Elye Wahi",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Hamza Koutoune",
+       "shirt": 84,
+       "pos": "?"
+      },
+      {
+       "name": "Sofiane Diop",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Djibril Coulibaly",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Isak Jansson",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Teddy Boulhendi",
+       "shirt": 77,
+       "pos": "?"
+      },
+      {
+       "name": "Xavier Mandza",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Morgan Sanson",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Djelan Morana",
+       "shirt": 41,
+       "pos": "?"
+      },
+      {
+       "name": "Nathan N'Goumou",
+       "shirt": 29,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 35,
+      "center": 31,
+      "right": 34
+     },
+     "firstHalf": {
+      "left": 30,
+      "center": 28,
+      "right": 42
+     },
+     "secondHalf": {
+      "left": 40,
+      "center": 33,
+      "right": 27
+     }
+    },
+    "away": {
+     "total": {
+      "left": 37,
+      "center": 19,
+      "right": 44
+     },
+     "firstHalf": {
+      "left": 41,
+      "center": 18,
+      "right": 41
+     },
+     "secondHalf": {
+      "left": 31,
+      "center": 21,
+      "right": 48
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-23T21:29:51.351Z",
+   "fdMatchId": "2026-27-63",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-23T16:37:09.750Z"
+ "updatedAt": "2026-10-23T21:29:51.353Z"
 }

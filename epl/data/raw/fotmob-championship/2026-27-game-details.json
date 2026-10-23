@@ -203281,8 +203281,1737 @@
    "fetchedAt": "2026-10-21T03:44:46.595Z",
    "fdMatchId": "2026-27-131",
    "heat": null
+  },
+  "BOL|MID": {
+   "key": "BOL|MID",
+   "season": "2026-27",
+   "date": "2026-10-23",
+   "matchId": "5836887",
+   "home": "BOL",
+   "away": "MID",
+   "score": [
+    1,
+    5
+   ],
+   "providerScore": [
+    1,
+    5
+   ],
+   "teamStats": {
+    "BOL": {
+     "possession": 39,
+     "shots": 12,
+     "shotsOn": 4,
+     "shotsOff": 5,
+     "blockedShots": 3,
+     "blocksMade": 10,
+     "corners": 2,
+     "offsides": 0,
+     "fouls": 9,
+     "saves": 8,
+     "passes": 367,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.91
+    },
+    "MID": {
+     "possession": 61,
+     "shots": 31,
+     "shotsOn": 12,
+     "shotsOff": 8,
+     "blockedShots": 11,
+     "blocksMade": 3,
+     "corners": 12,
+     "offsides": 4,
+     "fouls": 9,
+     "saves": 3,
+     "passes": 557,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 4.17
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "BOL": {
+     "touches_opp_box": 21,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 0.89,
+     "expected_goals_set_play": 0.02,
+     "expected_goals_non_penalty": 0.91,
+     "expected_goals_on_target": 0.45,
+     "own_half_passes": 179,
+     "opposition_half_passes": 129,
+     "long_balls_accurate": 30,
+     "long_balls_accurate_pct": 50,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 25,
+     "player_throws": 15,
+     "matchstats.headers.tackles": 11,
+     "interceptions": 12,
+     "clearances": 29,
+     "duel_won": 35,
+     "ground_duels_won": 25,
+     "ground_duels_won_pct": 49,
+     "aerials_won": 10,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 38,
+     "red_cards": 0
+    },
+    "MID": {
+     "touches_opp_box": 47,
+     "big_chance": 6,
+     "big_chance_missed_title": 3,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 20,
+     "shots_outside_box": 11,
+     "expected_goals_open_play": 3.18,
+     "expected_goals_set_play": 0.99,
+     "expected_goals_non_penalty": 4.17,
+     "expected_goals_on_target": 4.93,
+     "own_half_passes": 259,
+     "opposition_half_passes": 235,
+     "long_balls_accurate": 24,
+     "long_balls_accurate_pct": 56,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 22,
+     "player_throws": 11,
+     "matchstats.headers.tackles": 10,
+     "interceptions": 4,
+     "clearances": 7,
+     "duel_won": 36,
+     "ground_duels_won": 26,
+     "ground_duels_won_pct": 51,
+     "aerials_won": 10,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 8,
+     "dribbles_succeeded_pct": 57,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     39,
+     61
+    ],
+    "h1": [
+     34,
+     66
+    ],
+    "h2": [
+     44,
+     56
+    ]
+   },
+   "events": [
+    {
+     "minute": 13,
+     "extra": null,
+     "team": "MID",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Aidan Morris"
+    },
+    {
+     "minute": 31,
+     "extra": null,
+     "team": "MID",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Will Lankshear"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "BOL",
+     "type": "Goal",
+     "detail": "Own Goal",
+     "player": null
+    },
+    {
+     "minute": 45,
+     "extra": 2,
+     "team": "BOL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Thelonius Bair"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Atsuki Ito"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Max Conway"
+    },
+    {
+     "minute": 55,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sam Dalby"
+    },
+    {
+     "minute": 55,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ryan Hardie"
+    },
+    {
+     "minute": 63,
+     "extra": null,
+     "team": "BOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Josh Sheehan"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Max Arfsten"
+    },
+    {
+     "minute": 73,
+     "extra": null,
+     "team": "MID",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Amario Cozier-Duberry"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Xavier Simons"
+    },
+    {
+     "minute": 78,
+     "extra": null,
+     "team": "MID",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Will Lankshear"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Leo Castledine"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jeremy Sarmiento"
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kyle Joseph"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "MID",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Myles Peart-Harris"
+    }
+   ],
+   "shots": [
+    {
+     "min": 2,
+     "extra": null,
+     "team": "MID",
+     "player": "Tommy Conway",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.4,
+     "y": 44.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 6,
+     "extra": null,
+     "team": "MID",
+     "player": "Riley McGree",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0.047,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.4,
+     "y": 44.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "MID",
+     "player": "Sebastian Berhalter",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.5,
+     "y": 40.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "MID",
+     "player": "Tommy Conway",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.1,
+     "y": 47.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 22,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "MID",
+     "player": "Callum Brittain",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.3,
+     "y": 19.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "BOL",
+     "player": "Rúben Rodrigues",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.11,
+     "xgot": 0.177,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.3,
+     "y": 27.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "MID",
+     "player": "Aidan Morris",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.826,
+     "xgot": 0.995,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.2,
+     "y": 35.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BOL",
+     "player": "Rúben Rodrigues",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0.04,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.5,
+     "y": 27.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BOL",
+     "player": "Josh Sheehan",
+     "type": "Miss",
+     "situation": "IndividualPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.9,
+     "y": 51,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "BOL",
+     "player": "Thelonius Bair",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 22.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "MID",
+     "player": "Tommy Conway",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 45.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 22.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "MID",
+     "player": "Riley McGree",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 21.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.092,
+     "xgot": 0.551,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 20.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "MID",
+     "player": "Aidan Morris",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.097,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.9,
+     "y": 33.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "MID",
+     "player": "Callum Brittain",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.131,
+     "xgot": 0.151,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101,
+     "y": 24.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.234,
+     "xgot": 0.131,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.4,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.62,
+     "xgot": 0.866,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 33.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "MID",
+     "player": "Tommy Conway",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.189,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 34.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "BOL",
+     "player": "Lewis Brunt",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0,
+     "xgot": 0.779,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": true,
+     "x": 6.5,
+     "y": 36.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "MID",
+     "player": "Adilson Malanda",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.111,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 32.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "MID",
+     "player": "Ashley Phillips",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85,
+     "y": 18.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "MID",
+     "player": "Tommy Conway",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 44.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 35.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "BOL",
+     "player": "Thierry Gale",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.7,
+     "y": 46.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "BOL",
+     "player": "Rúben Rodrigues",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.103,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.7,
+     "y": 39.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "BOL",
+     "player": "Kyliane Dong",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.08,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 29.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "BOL",
+     "player": "Thelonius Bair",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.192,
+     "xgot": 0.148,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 31.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "BOL",
+     "player": "Kyliane Dong",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.124,
+     "xgot": 0.08,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 39.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0.019,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.8,
+     "y": 24.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.193,
+     "xgot": 0.299,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.3,
+     "y": 24.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "MID",
+     "player": "Tommy Conway",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.039,
+     "xgot": 0.041,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.3,
+     "y": 34.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "MID",
+     "player": "Adilson Malanda",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.8,
+     "y": 34.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.14,
+     "xgot": 0.223,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 46.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.5,
+     "y": 32.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "BOL",
+     "player": "Max Conway",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 49,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "MID",
+     "player": "Amario Cozier-Duberry",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.161,
+     "xgot": 0.638,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.4,
+     "y": 25.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "MID",
+     "player": "Will Lankshear",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.601,
+     "xgot": 0.971,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 30,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "BOL",
+     "player": "Xavier Simons",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.5,
+     "y": 23.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "BOL",
+     "player": "Ryan Hardie",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 20.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "MID",
+     "player": "Max Arfsten",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 44.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "MID",
+     "player": "Sebastian Berhalter",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.1,
+     "y": 42.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "MID",
+     "player": "Neto Borges",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 47.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -38
+    ],
+    [
+     2,
+     -76
+    ],
+    [
+     3,
+     -76
+    ],
+    [
+     4,
+     -38
+    ],
+    [
+     5,
+     0
+    ],
+    [
+     6,
+     -11
+    ],
+    [
+     7,
+     -16
+    ],
+    [
+     8,
+     -11
+    ],
+    [
+     9,
+     -33
+    ],
+    [
+     10,
+     -27
+    ],
+    [
+     11,
+     -33
+    ],
+    [
+     12,
+     -27
+    ],
+    [
+     13,
+     -100
+    ],
+    [
+     14,
+     -100
+    ],
+    [
+     15,
+     -100
+    ],
+    [
+     16,
+     0
+    ],
+    [
+     17,
+     14
+    ],
+    [
+     18,
+     14
+    ],
+    [
+     19,
+     8
+    ],
+    [
+     20,
+     16
+    ],
+    [
+     21,
+     -5
+    ],
+    [
+     22,
+     -27
+    ],
+    [
+     23,
+     -60
+    ],
+    [
+     24,
+     -27
+    ],
+    [
+     25,
+     -5
+    ],
+    [
+     26,
+     5
+    ],
+    [
+     27,
+     -19
+    ],
+    [
+     28,
+     -16
+    ],
+    [
+     29,
+     -92
+    ],
+    [
+     30,
+     -100
+    ],
+    [
+     31,
+     -100
+    ],
+    [
+     32,
+     -100
+    ],
+    [
+     33,
+     -100
+    ],
+    [
+     34,
+     0
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     36,
+     -11
+    ],
+    [
+     37,
+     -27
+    ],
+    [
+     38,
+     -60
+    ],
+    [
+     39,
+     -100
+    ],
+    [
+     40,
+     -100
+    ],
+    [
+     41,
+     -87
+    ],
+    [
+     42,
+     -19
+    ],
+    [
+     43,
+     -14
+    ],
+    [
+     44,
+     -33
+    ],
+    [
+     45,
+     -24
+    ],
+    [
+     45.5,
+     57
+    ],
+    [
+     46,
+     60
+    ],
+    [
+     47,
+     60
+    ],
+    [
+     48,
+     5
+    ],
+    [
+     49,
+     -57
+    ],
+    [
+     50,
+     -79
+    ],
+    [
+     51,
+     -35
+    ],
+    [
+     52,
+     -33
+    ],
+    [
+     53,
+     -27
+    ],
+    [
+     54,
+     -16
+    ],
+    [
+     55,
+     -16
+    ],
+    [
+     56,
+     -5
+    ],
+    [
+     57,
+     -16
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     43
+    ],
+    [
+     60,
+     65
+    ],
+    [
+     61,
+     11
+    ],
+    [
+     62,
+     5
+    ],
+    [
+     63,
+     -5
+    ],
+    [
+     64,
+     16
+    ],
+    [
+     65,
+     0
+    ],
+    [
+     66,
+     -24
+    ],
+    [
+     67,
+     -30
+    ],
+    [
+     68,
+     -35
+    ],
+    [
+     69,
+     -11
+    ],
+    [
+     70,
+     16
+    ],
+    [
+     71,
+     33
+    ],
+    [
+     72,
+     43
+    ],
+    [
+     73,
+     -100
+    ],
+    [
+     74,
+     -100
+    ],
+    [
+     75,
+     -100
+    ],
+    [
+     76,
+     35
+    ],
+    [
+     77,
+     46
+    ],
+    [
+     78,
+     -90
+    ],
+    [
+     79,
+     -100
+    ],
+    [
+     80,
+     -100
+    ],
+    [
+     81,
+     -8
+    ],
+    [
+     82,
+     -27
+    ],
+    [
+     83,
+     -49
+    ],
+    [
+     84,
+     -27
+    ],
+    [
+     85,
+     -60
+    ],
+    [
+     86,
+     -43
+    ],
+    [
+     87,
+     -65
+    ],
+    [
+     88,
+     -22
+    ],
+    [
+     89,
+     -79
+    ],
+    [
+     90,
+     -62
+    ],
+    [
+     90.5,
+     -20
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BOL": {
+     "team": "BOL",
+     "formation": "4-2-3-1",
+     "coach": "Steven Schumacher",
+     "xi": [
+      {
+       "name": "Gavin Bazunu",
+       "shirt": 31,
+       "pos": "G"
+      },
+      {
+       "name": "Gaizka Larrazabal",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Eoin Toal",
+       "shirt": 18,
+       "pos": "D"
+      },
+      {
+       "name": "Lewis Brunt",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Akin Famewo",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Josh Sheehan",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Ethan Erhahon",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Kyliane Dong",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Rúben Rodrigues",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Thierry Gale",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Thelonius Bair",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Max Conway",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Atsuki Ito",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Sam Dalby",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Ryan Hardie",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Xavier Simons",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Jack Bonham",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Ben Davies",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Luca Stephenson",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Samuel Iling-Junior",
+       "shirt": 16,
+       "pos": "?"
+      }
+     ]
+    },
+    "MID": {
+     "team": "MID",
+     "formation": "4-2-3-1",
+     "coach": "Kim Hellberg",
+     "xi": [
+      {
+       "name": "Radek Vítek",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Callum Brittain",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Ashley Phillips",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Adilson Malanda",
+       "shirt": 29,
+       "pos": "D"
+      },
+      {
+       "name": "Neto Borges",
+       "shirt": 30,
+       "pos": "D"
+      },
+      {
+       "name": "Aidan Morris",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Sebastian Berhalter",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Amario Cozier-Duberry",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Riley McGree",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Tommy Conway",
+       "shirt": 9,
+       "pos": "M"
+      },
+      {
+       "name": "Will Lankshear",
+       "shirt": 7,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Max Arfsten",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Leo Castledine",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Kyle Joseph",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Jeremy Sarmiento",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Myles Peart-Harris",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Solomon Brynn",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Luke Ayling",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Sam Byram",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Connor Barron",
+       "shirt": 18,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 41,
+      "center": 29,
+      "right": 30
+     },
+     "firstHalf": {
+      "left": 38,
+      "center": 28,
+      "right": 34
+     },
+     "secondHalf": {
+      "left": 44,
+      "center": 30,
+      "right": 26
+     }
+    },
+    "away": {
+     "total": {
+      "left": 43,
+      "center": 23,
+      "right": 34
+     },
+     "firstHalf": {
+      "left": 47,
+      "center": 23,
+      "right": 30
+     },
+     "secondHalf": {
+      "left": 40,
+      "center": 22,
+      "right": 38
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 6,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-23T21:29:45.436Z",
+   "fdMatchId": "2026-27-132",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-23T16:37:09.092Z"
+ "updatedAt": "2026-10-23T21:29:45.438Z"
 }
