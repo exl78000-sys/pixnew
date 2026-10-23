@@ -106,9 +106,10 @@ export function mountPitch(canvas, opts = {}) {
     const c = { type: e.type, t0: now(), side: e.side ?? null, x: at.x, y: at.y };
     if (e.type === 'shot') {
       const p = who(e.player); if (p) { c.x = p.x; c.y = p.y; }
-      // 射門往哪一邊的門:球的速度方向比「主客 + 上下半場」可靠(換邊不用另外算)
-      const vx = st.ball?.vx ?? 0;
-      c.gx = Math.abs(vx) > 0.5 ? (vx > 0 ? PITCH_L : 0) : (c.x > PITCH_L / 2 ? PITCH_L : 0);
+      /* 射門往哪一邊的門:看**射手的位置**(射程 32 m 內才會出腳,一定在進攻的那半場),離他近的那個門。
+         第一版看球的速度方向 —— 而提示是在推進完這一小段之後才畫,球可能已經被撲出、往回飛,
+         正式站上就畫出一條從右邊禁區橫跨全場到左邊球門的線(2026-10-23 部署後看到的)。 */
+      c.gx = c.x > PITCH_L / 2 ? PITCH_L : 0;
     } else if (e.type === 'save') {
       const k = keeperOf(other(e.side)); if (k) { c.x = k.x; c.y = k.y; }
     } else if (e.type === 'goal') {

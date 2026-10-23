@@ -504,6 +504,11 @@ console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套�
         && skipSrc.indexOf('running = false') >= 0 && skipSrc.indexOf('running = false') < skipSrc.indexOf('applyEvent'));
     const pitchSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-pitch.js'), 'utf8');
     check('球場仍然只畫:不 import 任何模組', !/^\s*import\s/m.test(pitchSrc));
+    /* 射門提示的目標門看**射手位置**,不看球的速度:提示在推進完一小段後才畫,球可能已被撲出往回飛 ——
+       第一版在正式站上畫出一條從右邊禁區橫跨全場到左邊球門的線(2026-10-23)。 */
+    const pitchBare = pitchSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    check('射門提示的目標門看射手位置,不看球的速度方向',
+      pitchBare.includes('c.gx = c.x > PITCH_L / 2 ? PITCH_L : 0;') && !/ball\?\.vx/.test(pitchBare));
   }
 
   /* 陣形(2026-10-17,補齊規劃 5p)。三個坑各一條:
