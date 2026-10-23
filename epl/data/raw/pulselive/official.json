@@ -49683,8 +49683,8 @@
   "IPS|NFO": {
    "fixtureId": 128999,
    "kickoff": "2026-10-23T19:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 1
@@ -50115,6 +50115,19 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 23811,
+     "assist": 76353,
+     "team": 15,
+     "min": 13,
+     "label": "13'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 125827,
      "assist": null,
@@ -50297,12 +50310,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -50319,11 +50326,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+9'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+8'00"
+   "clock": "90+9'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-23T21:01:49.922Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-10-23T20:59:35.132Z"
+ "fetchedAt": "2026-10-23T21:01:49.922Z"
 }
