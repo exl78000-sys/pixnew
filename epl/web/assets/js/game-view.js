@@ -1,6 +1,6 @@
 import * as C from './core.js?v=984f09fe';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
-import { mountPitch } from './game-pitch.js?v=1610cd7c';
+import { mountPitch } from './game-pitch.js?v=737f6420';
 import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=d4498b18';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
@@ -178,6 +178,9 @@ export async function renderGame(app) {
     /* 把一筆事件套進顯示狀態(不畫)。跳到結果時整串事件都走這裡,所以它跟逐筆回報用同一條路。 */
     function applyEvent(e) {
       disp.events.push(e);
+      /* 球場上的事件提示(2026-10-23):在事件發生的位置畫一下。只在正常播放時給 ——
+         「跳到結果」一口氣套幾百個事件,畫出來也沒有人看得到。 */
+      if (running && pitch && match) pitch.cue(e, match.pitch());
       if (e.type === 'goal') { disp.score = [...e.score]; disp.lastGoalAt = performance.now(); }
       if (e.type === 'half') disp.half = 2;
       if (e.type === 'full') disp.finished = true;
@@ -309,10 +312,11 @@ export async function renderGame(app) {
     function skipToEnd() {
       if (!match) return;
       let guard = 0;
+      running = false;                     // 先關:這段是同步的,而 applyEvent 看它決定要不要畫事件提示
       while (!match.state().finished && guard++ < 20000) {
         for (const e of match.advance(0.5)) applyEvent(e);
       }
-      running = false; paused = false;
+      paused = false;
       disp.finished = true;
       tab = 'recap'; renderTabs();
       pitch?.draw(match.pitch());

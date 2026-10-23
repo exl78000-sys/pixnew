@@ -477,6 +477,35 @@ console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套�
   const codes = Object.keys(profile.teams);
   const OTHER = ['line', 'directness', 'mentality', 'width', 'tempo'];
 
+  /* 球場的畫法(2026-10-23,「依照模擬遊玩完善 動畫優化為目標」)。守三件事:
+     ① 門將球衣跟兩隊主色、跟對方門將都分得開(全部隊伍兩兩配對,用球場自己的撞色門檻)——
+        原本門將跟隊友同色,畫面上找不到門將;
+     ② 事件提示有接上,而且「跳到結果」那一段不畫(running 先關,再套事件);
+     ③ 球場仍然只畫:不 import 任何模組(引擎與統計不知道有提示這一層)。 */
+  {
+    const PT = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-pitch.js')));
+    const teamList = Object.values(JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'))).flat()
+      .filter(t => t?.colors?.[0]);
+    let worst = Infinity, worstPair = '';
+    for (const a of teamList) for (const b of teamList) {
+      if (a === b) continue;
+      const gk = PT.pickKeeperKits(a.colors[0], b.colors[0]);
+      const d = Math.min(PT.kitApart(gk.home, a.colors[0]), PT.kitApart(gk.home, b.colors[0]),
+        PT.kitApart(gk.away, a.colors[0]), PT.kitApart(gk.away, b.colors[0]), PT.kitApart(gk.home, gk.away));
+      if (d < worst) { worst = d; worstPair = `${a.code}-${b.code}`; }
+    }
+    check('門將球衣跟兩隊主色、跟對方門將都分得開(全部隊伍兩兩配對)', teamList.length >= 20 && worst >= PT.KIT_CLASH,
+      `${teamList.length} 隊・最小距離 ${Math.round(worst)}(${worstPair})・門檻 ${PT.KIT_CLASH}`);
+    const viewSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const skipAt = viewSrc.indexOf('function skipToEnd');
+    const skipSrc = skipAt >= 0 ? viewSrc.slice(skipAt, viewSrc.indexOf('\n    }', skipAt)) : '';
+    check('事件提示有接上,而且「跳到結果」先關 running 再套事件(不畫幾百個看不到的提示)',
+      viewSrc.includes('if (running && pitch && match) pitch.cue(e, match.pitch())')
+        && skipSrc.indexOf('running = false') >= 0 && skipSrc.indexOf('running = false') < skipSrc.indexOf('applyEvent'));
+    const pitchSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-pitch.js'), 'utf8');
+    check('球場仍然只畫:不 import 任何模組', !/^\s*import\s/m.test(pitchSrc));
+  }
+
   /* 陣形(2026-10-17,補齊規劃 5p)。三個坑各一條:
      ① 側寫的 formation 是物件 —— 沒傳 setup 的 createSim(量測台、worker 池)曾經一律踢 4-3-3,而畫面踢真實陣型。
         守:引擎沒收到 setup 時踢的陣型 = 頁面 defaultSetup 給的,每一隊都一樣;而且頁面那一支呼叫引擎的同一個函式。
