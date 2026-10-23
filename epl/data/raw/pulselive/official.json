@@ -49687,7 +49687,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 8,
    "awayId": 15,
@@ -50113,7 +50113,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 23811,
+     "assist": 76353,
+     "team": 15,
+     "min": 13,
+     "label": "13'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
@@ -50132,8 +50146,8 @@
      }
     ]
    },
-   "clock": "12'00"
+   "clock": "19'00"
   }
  },
- "fetchedAt": "2026-10-23T19:13:32.110Z"
+ "fetchedAt": "2026-10-23T19:20:38.340Z"
 }
