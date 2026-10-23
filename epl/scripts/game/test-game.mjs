@@ -2322,14 +2322,23 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         `check-sim 輸出 ${chkOut.length} 字元`);
       const SMc = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
       const prof = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'game', 'pl.json'), 'utf8'));
-      const tot = { cross: 0, ok: 0, head: 0, rp: 0 };
+      const tot = { cross: 0, ok: 0, head: 0, rp: 0, corners: 0 };
       for (const seed of [1, 2]) {
         const sim = SMc.createSim({ profile: prof, home: 'ARS', away: 'LIV', seed, pred: { xgHome: 1.99, xgAway: 0.70 } });
         while (!sim.state().over) sim.advance(1);
         const c = sim.state().counts;
         tot.cross += c.cross.home + c.cross.away; tot.ok += c.crossOk.home + c.crossOk.away;
         tot.head += c.crossHead.home + c.crossHead.away; tot.rp += c.shotSit?.RegularPlay ?? 0;
+        tot.corners += c.corners.home + c.corners.away;
       }
+      /* 5s(2026-10-23)邊路推進到底線:下底傳中與早傳中分兩段、邊路少回傳 —— 角球從一場 ~6 回到 ~10.5(真實 11.4)。
+         守的是**傳中數**,不是角球數:兩場的角球雜訊太大(同一個引擎前 6 場 4~10 一場),第一版拿「兩場角球 ≥ 14」當門檻,
+         一跑就剛好 14 踩在線上。傳中改前 ~19 / 場、改後 ~40 / 場,兩場合計 ≥ 55 分得開;分兩段與少回傳掃原始碼。
+         角球本身由 check-sim 判(30 場 10.3 / 10.7,真實 11.4)。 */
+      const simB5 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      check('邊路推進到底線:下底 / 早傳中分兩段、邊路少回傳,兩場運動戰傳中合計 ≥ 55(改前 ~38)',
+        simB5.includes('nearLine ? CROSS_URGE_NEAR : CROSS_URGE_FAR') && simB5.includes('(wideRun ? WIDE_PASS : 1)') && tot.cross >= 55,
+        `兩場傳中 ${tot.cross}・角球 ${tot.corners}`);
       check('運動戰傳中會發生,而且漏斗不倒掛(傳中 ≥ 傳到人 ≥ 頭球攻門;頭球攻門記在 RegularPlay)',
         tot.cross > 0 && tot.ok <= tot.cross && tot.head <= tot.ok && tot.head <= tot.rp,
         `兩場:傳中 ${tot.cross}・傳到人 ${tot.ok}・頭球攻門 ${tot.head}・RegularPlay 射門 ${tot.rp}`);
