@@ -49683,7 +49683,7 @@
   "IPS|NFO": {
    "fixtureId": 128999,
    "kickoff": "2026-10-23T19:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -49692,9 +49692,31 @@
    "homeId": 8,
    "awayId": 15,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      8159
+     ],
+     [
+      126111,
+      49884,
+      15154,
+      51454
+     ],
+     [
+      40161,
+      63851
+     ],
+     [
+      127644,
+      125827,
+      64519
+     ],
+     [
+      313194
+     ]
+    ],
     "xi": [
      {
       "id": 8159,
@@ -49746,7 +49768,7 @@
       "playerId": null,
       "name": "Jaden Philogene",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -49755,7 +49777,7 @@
       "playerId": null,
       "name": "Abdul Fatawu",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -49881,9 +49903,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      16723
+     ],
+     [
+      304238,
+      16035,
+      139648
+     ],
+     [
+      76353,
+      49270,
+      20335,
+      23811
+     ],
+     [
+      50623,
+      15259
+     ],
+     [
+      51813
+     ]
+    ],
     "xi": [
      {
       "id": 16723,
@@ -49899,7 +49943,7 @@
       "playerId": null,
       "name": "Neco Williams",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -49944,7 +49988,7 @@
       "playerId": null,
       "name": "Daniel Muñoz",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -49962,7 +50006,7 @@
       "playerId": null,
       "name": "Morgan Gibbs-White",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": true
      },
@@ -50073,10 +50117,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-23T18:57:00.956Z"
+ "fetchedAt": "2026-10-23T19:04:03.294Z"
 }
