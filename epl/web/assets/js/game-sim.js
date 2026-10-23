@@ -212,7 +212,7 @@ const SIM_TACKLE_R = 1.3;                      // 撲上去之後進到這麼近
    1.3 公尺的比例是 28.0% → **66.4%**(×2.37)—— 那等於又把幾何接回來。
    所以結局與判罰都在宣告的那一刻決定(見下面那一段:「等兩個人真的碰到」的三個版本都更糟)。 */
 const DUEL_R = 3.0;                            // 有對手在這麼近的時候還帶球,才算一次「敢過他」的決定
-const DUEL_P = 0.27;                           /* 那些決定裡有多少真的變成一次對抗。
+const DUEL_P = 0.205;                           /* 那些決定裡有多少真的變成一次對抗。
    **它只定總數,不影響三種結局的分配。** 原本是 0.273(90 場 × 兩輪,0.26 → 64.2、0.273 → 68.1)。
    4v 重量成 0.382 —— `forward` 從 0.45 降到 0.30 讓帶球決策變少,對抗的觸發掛在帶球決策上,
    所以這個常數跟著漂。
@@ -232,7 +232,8 @@ const DUEL_P = 0.27;                           /* 那些決定裡有多少真的
    (每球 xG 的水準、犯規權重、`SHOT_ALPHA`)各跑 120 場都落在 63.5~66.9。
    **2026-10-17 階段 5p 重量成 0.27。** 量測台從這一天起踢的是**側寫的真實陣型**(之前一律 4-3-3,見 `profileFormation`),
    而且雙後腰收到中路、有球時前腰前壓(`SLOT_LATERAL` / `adv`)—— 對抗漲到 70 / 67(錨 64.5)。
-   0.27 在兩組獨立種子各 30 場是 64.0 / 63.4;0.25 掉到 58。 */
+   0.27 在兩組獨立種子各 30 場是 64.0 / 63.4;0.25 掉到 58。
+   **2026-10-23 階段 5s 重量成 0.205。** 邊路多帶球,帶球決策變多 → 對抗 82~86;0.27 × 64.5 / 85 ≈ 0.205,兩組 67.6 / 63.7。 */
 /* 三種結局的比例**從側寫算**(見 createSim 的 `DW`),不寫死在這裡 ——
    寫死的話側寫重算它就會悄悄過期,而那正是本站記過三次的坑。量到的是(以場數加權):
      抄截      `matchstats.headers.tackles` × 2 = 32.7
@@ -507,7 +508,7 @@ const NEAR_GOAL = 8;                           // 「門前」的量測範圍(�
    (第一點不再必然是進攻方的),所以這個常數跟 `CORNER_SNAP`、`SELECT_FIX` 三個一起重量。
    50 場固定 snap=0.42:射門/預算 **0.98**、每球 xG 0.1120(真實 0.1125)、
    進球 1.92 ± 0.16 : 0.72 ± 0.13(λ 1.99 : 0.70)。 */
-const SHOT_URGE = 0.1035;     /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632)。
+const SHOT_URGE = 0.051;     /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632)。
    4w 換掉對抗的結局分配之後,球權流向跟著變,射門掉到預算的 0.91 —— 而同一批裡每球 xG
    卻高了 9.6%,**兩個方向相反的錯乘起來剛好等於 λ**(0.91 × 1.096),總量看起來完全正常。
    那是本站記過的坑,所以兩個一起重量。40 場逐值掃(`SELECT_FIX` 固定 0.93):
@@ -522,7 +523,9 @@ const SHOT_URGE = 0.1035;     /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.063
    **2026-10-17 階段 5p:0.084 → 0.10 → 0.1035。** 照真實陣型踢、雙後腰收回中路之後射門掉到 17.5 / 18.4(預算 23.4)——
    中路擠了,持球者進不了禁區。有球時前腰前壓(`adv`)把它拉回一半,0.10 補到 23.0 / 22.5;
    強弱量測(9 組 × 540 場)弱隊的射門 ÷ 預算 0.879,再 ×1.035。**SHOT_ALPHA 那條路試過、不行**:
-   α 1.3 / 1.5 射門多了(25~28)而進球更少,因為 `rawSelected` 跟著 α 重算,水準被壓下去 —— α 不是自由旋鈕。 */
+   α 1.3 / 1.5 射門多了(25~28)而進球更少,因為 `rawSelected` 跟著 α 重算,水準被壓下去 —— α 不是自由旋鈕。
+   **2026-10-23 階段 5s:0.1035 → 0.051。** 邊路持球者少回傳、多往底線帶(`WIDE_PASS`),每一次帶球都是一個射門決策點 ——
+   射門從 23 漲到 39~41。0.06 → 27.4、0.051 → 24.7 / 24.3(預算 23.4)。 */
 /* xG 的**形狀**是遊戲模型(距離與張角),**水準**對回真實資料:
    XG_SCALE 調到模擬的每球平均 xG 等於聯盟真實的每球平均(league_.shotSituations)。
    形狀自己編、水準有出處 —— 兩件事要分開講,不然畫面上的 xG 就是編的。 */
@@ -1102,13 +1105,21 @@ const CROSS_ZONE_X = 45;                  // 離對方底線這麼近才會傳�
 const CROSS_WIDE = 8;                     // 離中線這麼遠(邊路)才會傳中(公尺)
 const CROSS_APEX_OPEN = 3.5;                // 運動戰傳中的弧頂(公尺):比角球(CROSS_APEX)低,是一記快的弧線球
 const CROSS_AIM_OPEN = 9;                  // 運動戰傳中落點的誤差(公尺,每軸 ±一半):在跑動中傳,比角球不準
-const CROSS_OPEN_HEAD = 0.45;               // 運動戰傳中在禁區裡被進攻方頂到 → 攻門的機率(角球那一個是 CORNER_HEAD;這一個對「運動戰頭球佔比 10.8%」校準)
+const CROSS_OPEN_HEAD = 0.2;   // 2026-10-23 5s:0.45 → 0.2 —— 下底傳中多了一倍,運動戰頭球佔比衝到 15~18%,0.2 回到 12.8 / 13.7%(真實 10.8)               // 運動戰傳中在禁區裡被進攻方頂到 → 攻門的機率(角球那一個是 CORNER_HEAD;這一個對「運動戰頭球佔比 10.8%」校準)
 const CROSS_CLEAR_SPREAD = 1.6;           // 防守方頂運動戰傳中的方向:來球方向與「遠離自家門」各半,再加這麼寬的隨機(弧度,±一半)
 /* 傳中被擋(5r):出腳那一刻,傳中方向上(±60°)CROSS_BLOCK_R 內的防守者有 CROSS_BLOCK_P 的機率擋到。
    彈去哪是幾何:沿「擋的人 → 接觸點」的方向彈開再加隨機 —— 傳中的人多半已經貼近底線,所以常常出底線(角球)。
    **CROSS_BLOCK_P 沒有上游的錨**(倉庫裡沒有「傳中被擋」的資料),是拿每場角球 11.4 反推的 —— 它是一個對總數校準的係數,照實標。 */
 const CROSS_BLOCK_R = 4;
 const CROSS_BLOCK_P = 0.6;
+/* 邊路推進到底線(5s,2026-10-23):傳中分兩段。離對方底線 BYLINE_D 以內是「下底傳中」,機率 CROSS_URGE_NEAR;
+   更遠的是「早傳中」,機率 CROSS_URGE_FAR。而且邊路持球者在對方三分之一、還沒到底線時,回傳的機率乘 WIDE_PASS ——
+   他多往底線帶(帶球的目標本來就是往前 12 m,沿著邊線就是往底線)。出腳位置一靠底線,被擋 / 被頂的球照幾何就更常出底線。
+   **傳中的出腳位置沒有上游資料**,這三個是對「傳中數 + 每場角球」校準的。 */
+const BYLINE_D = 14;
+const CROSS_URGE_FAR = 0.15;
+const CROSS_URGE_NEAR = 0.75;
+const WIDE_PASS = 0.5;
 const CROSS_AIM_ERR = 2.5;                     // 傳中落點的誤差範圍(公尺,每軸 ±一半)
 const CROSS_APEX = 6;                          // 傳中弧頂(公尺)
 const CROSS_HEAD = 2.6;                        // 頭球高度:低於它才搶得到第一點
@@ -1775,7 +1786,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   /* **2026-10-18 階段 5r 重量成 1.241。** 運動戰傳中接上之後射門的組合變了(多了運動戰頭球,其 xG 用真值、不經這個係數),
      強弱量測每方向 120 場的每球 xG 平均 **0.1094**(真實 0.1127,×0.971),強 / 弱進球 ÷ λ 0.949 / 0.919 —— 水準不是形狀。
      1.205 × 0.1127 / 0.1094 = 1.241。(「傳中把強弱壓扁」那個判斷是 60 場的雜訊:120 場 K 0.942 對 P 0.868,差 0.8 SE。) */
-  const SELECT_FIX = 1.241;
+  /* **2026-10-23 階段 5s 重量成 1.085。** 下底傳中讓射門往禁區裡擠(禁區內 60 → 70%,真實 68.3),每球 xG 漂到 0.129 ——
+     這次是**往上**漂。1.241 × 0.1127 / 0.129 ≈ 1.085(1.15 那一格對照:每球 0.131 / 0.122,較高)。 */
+  const SELECT_FIX = 1.085;
   /* 水準對的是**非十二碼**的每球平均(階段 4d):運動戰射出來的球不該帶著十二碼的重量。
      十二碼自己那一份由 takePenalty 用 PEN_XG 加進來。 */
   const xgScale = rawSelected > 0 ? openXgPerShot / rawSelected * SELECT_FIX : 1;
@@ -2845,7 +2858,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        落點帶誤差;飛行與第一點交給角球那一套(`st.lastKick = 'cross'`)。 */
     if (CROSS_ON && p.role !== 'GK' && Math.abs(goalX - p.x) < CROSS_ZONE_X && Math.abs(p.y - PITCH_H / 2) > CROSS_WIDE) {
       const tg = s.players.filter(m => m !== p && !m.off && m.role !== 'GK' && inBoxAt(m.x, m.y, goalX));
-      if (tg.length && rng() < CROSS_URGE) {
+      const nearLine = Math.abs(goalX - p.x) < BYLINE_D;
+      if (tg.length && rng() < (nearLine ? CROSS_URGE_NEAR : CROSS_URGE_FAR)) {
         const m = tg[Math.floor(rng() * tg.length)];
         const tx = cl(m.x + (rng() - 0.5) * CROSS_AIM_OPEN, 2, PITCH_W - 2), ty = cl(m.y + (rng() - 0.5) * CROSS_AIM_OPEN, 4, PITCH_H - 4);
         const d = hypot(tx - p.x, ty - p.y);
@@ -2877,7 +2891,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         return { kind: 'cross' };
       }
     }
-    const wantPass = best && rng() < cl((pressure < 4.5 ? 0.75 : 0.25) * (s.tempo ?? 1), 0.05, 0.95);
+    /* 邊路、對方三分之一、還沒到底線:少回傳、多往底線帶(5s) */
+    const wideRun = Math.abs(goalX - p.x) < CROSS_ZONE_X && Math.abs(goalX - p.x) >= BYLINE_D && Math.abs(p.y - PITCH_H / 2) > CROSS_WIDE;
+    const wantPass = best && rng() < cl((pressure < 4.5 ? 0.75 : 0.25) * (s.tempo ?? 1) * (wideRun ? WIDE_PASS : 1), 0.05, 0.95);
     if (wantPass) {
       const d = hypot(best.x - p.x, best.y - p.y);
       // 力道:讓球到得了、而且到的時候還控得住
