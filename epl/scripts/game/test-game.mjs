@@ -672,6 +672,14 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('撲救發生在門將身上:多數撲救 where = keeper,撲到那一刻門將離球中位 ≤ 2.6 m(改前 6.8 m、在門線上)',
         sv.length >= 30 && atK.length >= sv.length * 0.6 && med <= 2.6 && sv.every(e => e.where === 'keeper' || e.where === 'line'),
         `${POOL_SEEDS.length} 場 ${sv.length} 次撲救・門將身上 ${atK.length}・門線保險 ${sv.length - atK.length}・離球中位 ${med} m`);
+      /* 射門不會在飛行中被「控住」(2026-10-23)。爭頂把球頂成 14~22 m/s 之後,同一格的控球判定還拿這一格開頭的舊速度
+         (傳中下墜的 8~12 m/s),旁邊的後衛就把頭球控走 —— 30 場 17 次,全部是頭球。修法是爭頂處理過的那一格不做控球判定。 */
+      /* 守的是 `ctlTooFast`(控到那一刻球速 > CONTROL_SPEED,一般控球規則不可能),不是 lostShot ——
+         弱頭球(≤ 14 m/s)被後衛擋下是一般規則,角球多的時候 30 場會有十來次,那不是這個錯。 */
+      const tooFast = ms.reduce((a, m) => a + (m.state().diag?.ctlTooFast ?? -999), 0);
+      const lost = ms.reduce((a, m) => a + (m.state().diag?.lostShot ?? 0), 0);
+      check('沒有人控到比控球上限還快的球(爭頂處理過的那一格不做控球判定)', tooFast === 0,
+        `${POOL_SEEDS.length} 場:超速控球 ${tooFast} 次・被控走的射門(含一般規則的弱頭球)${lost} 次`);
     }
 
     /* 一場跑到完場,然後照 game-view 那條路組出判讀的輸入 ——

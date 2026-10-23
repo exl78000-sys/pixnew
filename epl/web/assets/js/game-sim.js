@@ -1115,14 +1115,14 @@ const CROSS_CLEAR_SPREAD = 1.6;           // 防守方頂運動戰傳中的方�
    彈去哪是幾何:沿「擋的人 → 接觸點」的方向彈開再加隨機 —— 傳中的人多半已經貼近底線,所以常常出底線(角球)。
    **CROSS_BLOCK_P 沒有上游的錨**(倉庫裡沒有「傳中被擋」的資料),是拿每場角球 11.4 反推的 —— 它是一個對總數校準的係數,照實標。 */
 const CROSS_BLOCK_R = 4;
-const CROSS_BLOCK_P = 0.6;
+const CROSS_BLOCK_P = 0.8;     // 2026-10-24:0.6 → 0.8,同上;兩個一起把角球拉回 10.8 / 9.3(真實 11.4)
 /* 邊路推進到底線(5s,2026-10-23):傳中分兩段。離對方底線 BYLINE_D 以內是「下底傳中」,機率 CROSS_URGE_NEAR;
    更遠的是「早傳中」,機率 CROSS_URGE_FAR。而且邊路持球者在對方三分之一、還沒到底線時,回傳的機率乘 WIDE_PASS ——
    他多往底線帶(帶球的目標本來就是往前 12 m,沿著邊線就是往底線)。出腳位置一靠底線,被擋 / 被頂的球照幾何就更常出底線。
    **傳中的出腳位置沒有上游資料**,這三個是對「傳中數 + 每場角球」校準的。 */
 const BYLINE_D = 14;
 const CROSS_URGE_FAR = 0.15;
-const CROSS_URGE_NEAR = 0.75;
+const CROSS_URGE_NEAR = 0.9;   // 2026-10-24:0.75 → 0.9(頭球那一格用舊速度的錯修掉之後,角球掉到 7.7 / 8.6 —— 見 aerialDone)
 const WIDE_PASS = 0.5;
 const CROSS_AIM_ERR = 2.5;                     // 傳中落點的誤差範圍(公尺,每軸 ±一半)
 const CROSS_APEX = 6;                          // 傳中弧頂(公尺)
@@ -2603,6 +2603,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     ball.holder = p; ball.vx = 0; ball.vy = 0; ball.vz = 0; ball.z = 0;
     openChain(p.side);
     if (ball.shot) { st.lostShot++; if (ball.shot.willScore) st.lostGoal++; }
+    /* 控到的那一刻球速超過控球上限 = 不可能走一般控球規則控到的(2026-10-23 爭頂那一格用了舊速度,後衛把 20 m/s 的頭球控住)。
+       純計數、不呼叫 rng;測試守它是 0。弱頭球(≤ 14 m/s)被後衛擋下是一般規則,不算在這裡。 */
+    if (hypot(ball.vx, ball.vy) > CONTROL_SPEED) st.ctlTooFast = (st.ctlTooFast ?? 0) + 1;
     ball.shot = null;               // 被人控到就不再是「飛向球門的那一腳」
     st.touches[p.side]++;
     /* **球在哪裡**(2026-09-18,階段 4s)。這三個數字側寫裡本來就有錨,而在這之前沒有人讀:
@@ -3538,6 +3541,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          所以真正缺的行為不是「讓門將參加爭頂」,是「**門將會出擊搶傳中**」,那是另一件事。
          沒做的理由要講清楚:它會把 FromCorner 往**下**壓,而現在本站還比真實低
          —— 先拿一個少的行為去抵另一個少的行為,兩邊都看不出來還差什麼。 */
+      /* 這一格的爭頂已經處理過球(頭球攻門 / 頭球解圍)的話,**同一格不再做控球判定**(2026-10-23)。
+         控球判定用的 `sp` 是這一格開頭算的 —— 傳中下墜時的 8~12 m/s;爭頂之後球已經被頂成 14~22 m/s、高度 0 / 0.4,
+         而控球那一段看到的還是舊速度,於是旁邊 1.2 m 內的後衛把一顆 20 m/s 的頭球「控住」:30 場 17 次,**全部是頭球、
+         全部被守方場上球員控走**(角球 9、運動戰傳中 8;其中 2 球本來會進)。畫面上是頭球剛出去就黏在後衛腳下。
+         4f 加角球頭球時就有,5r / 5s 傳中變多之後變明顯。 */
+      let aerialDone = false;
       if (CORNER_XG != null && (st.lastKick === 'corner' || st.lastKick === 'cross') && ball.passer
           && ball.z < CROSS_HEAD && ball.vz < 0) {
         const att = ball.passer.side;
@@ -3563,6 +3572,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           who = rng() < pAtt ? na : nd;
         } else who = na ?? nd;
         if (who) {
+          aerialDone = true;
           const ws = sideOf(who.side), wgx = ws.att > 0 ? PITCH_W : 0;
           const inBox = Math.abs(who.x - wgx) < BOX_D && Math.abs(who.y - PITCH_H / 2) < BOX_W;
           st.lastKick = null;                        // 這一球處理掉了,別再觸發第二次
@@ -3597,7 +3607,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           }
         }
       }
-      if (ball.z < 0.6) {
+      if (!aerialDone && ball.z < 0.6) {
         let best = null, bd = SIM_CONTROL_R;
         for (const p of all()) {
           if ((p.kickLock ?? 0) > 0) continue;          // 剛把球踢出去的人不算
@@ -4257,7 +4267,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       ball: { x: ball.x, y: ball.y, z: ball.z, vx: ball.vx, vy: ball.vy, holder: ball.holder?.code ?? null, holderSide: ball.holder?.side ?? null },
       players: all().map(p => ({ code: p.code, side: p.side, name: p.name, role: p.role, x: p.x, y: p.y, vx: p.vx, vy: p.vy, vmax: p.vmax, vmaxReal: p.vmaxReal })),
       score: [st.goals.home, st.goals.away], xg: { ...st.xg },
-      diag: { willScore: st.willScore, crossedLine: st.crossedLine, lostShot: st.lostShot, lostGoal: st.lostGoal },
+      diag: { willScore: st.willScore, crossedLine: st.crossedLine, lostShot: st.lostShot, lostGoal: st.lostGoal, ctlTooFast: st.ctlTooFast ?? 0 },
       poss: { ...st.possSec },
       counts: { outs: st.outs, tackles: st.tackles, passes: st.passes, loose: st.loose, shots: st.shots, onTarget: st.onTarget,
         carryN: st.carryN, carryFree: st.carryFree, carryMarked: st.carryMarked, carryFoeD: st.carryFoeD, carryFoeN: st.carryFoeN,
