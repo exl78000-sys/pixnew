@@ -554,9 +554,10 @@ console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套�
   /* ① */
   const badDef = codes.filter(c => {
     const d = SM.tacticDefaults(profile, c);
-    return d.pressing !== profile.teams[c].style.pressing.level || OTHER.some(k => d[k] !== 3);
+    return d.pressing !== profile.teams[c].style.pressing.level || d.directness !== profile.teams[c].style.directness.level
+      || OTHER.filter(k => k !== 'directness').some(k => d[k] !== 3);
   });
-  check('沒下指令時引擎在踢的那一級:壓迫 = 這一隊自己那一級,其餘五軸 = 3(20 隊)', badDef.length === 0 && codes.length === 20, badDef.join('、'));
+  check('沒下指令時引擎在踢的那一級:壓迫與直接度 = 這一隊自己那一級(5v),其餘四軸 = 3(20 隊)', badDef.length === 0 && codes.length === 20, badDef.join('、'));
   check('轉接層轉出去的就是引擎那一份(頁面不自己寫一份「哪一級是恆等元」)',
     codes.every(c => JSON.stringify(LV.engineTacticLevels(profile, c)) === JSON.stringify(SM.tacticDefaults(profile, c))));
 
@@ -598,6 +599,31 @@ console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套�
     Number.isFinite(LG) && Number.isFinite(SPAN) && worst < 1e-12, `最大差 ${worst.toExponential(1)}・五級 ${want.map(w => w.toFixed(3)).join(' / ')}`);
   check('壓迫的五級非遞減,而且落在聯盟真實的範圍裡(不是遊戲規則的 ±30%)', mono && inRange,
     `聯盟 ${Math.min(...bases).toFixed(3)}~${Math.max(...bases).toFixed(3)}`);
+
+  /* ③b 直接度(5v):每一隊有自己的基準(真實 `style.directness` 對聯盟平均的相對值 × DIR_K),五級是五分位的中位數。
+        坑:在這之前 `direct` 對每一隊都是 0,自家半場的完成傳球二十隊都是 ~260(真實 149~239),
+        控球對目標的斜率只有 0.61 —— 一條「真資料在側寫裡、引擎沒讀」的同一家族。期望值自己從側寫算一次。 */
+  {
+    const K = Number(simSrc.match(/const DIR_K = ([0-9.]+)/)?.[1]);
+    const dv = codes.map(c => profile.teams[c].style.directness);
+    const nTot = dv.reduce((x, d) => x + d.n, 0), lgD = dv.reduce((x, d) => x + d.value * d.n, 0) / nTot;
+    const full = Math.max(...dv.map(d => d.n)) / 2, rr = dv.filter(d => d.n >= full).map(d => d.value / lgD);
+    const dconv = v => K * (Math.min(Math.max(...rr), Math.max(Math.min(...rr), v / lgD)) - 1);
+    const dwant = [1, 2, 3, 4, 5].map(L => dconv(med(codes.filter(c => profile.teams[c].style.directness.level === L).map(c => profile.teams[c].style.directness.value))));
+    let dworst = 0, dmono = true;
+    for (const c of codes) {
+      const own = profile.teams[c].style.directness.level, base = dconv(profile.teams[c].style.directness.value);
+      const got = [1, 2, 3, 4, 5].map(L => {
+        const m = SM.createSim({ profile, home: c, away: codes.find(x => x !== c), seed: 1, pred: PRED });
+        return m.setTactics('home', { directness: L }).directness + base;
+      });
+      got.forEach((g, i) => { dworst = Math.max(dworst, Math.abs(g - (i + 1 === own ? base : dwant[i]))); });
+      if (got.some((g, i) => i && g < got[i - 1] - 1e-12)) dmono = false;
+    }
+    check('直接度:每一隊的基準是自己的真實值、每一級 = 那一級球隊的中位數、五級非遞減(5v)',
+      Number.isFinite(K) && K > 0 && dworst < 1e-12 && dmono && /direct: dirBase, dirBase, dirLevel/.test(simSrc),
+      `DIR_K ${K}・最大差 ${dworst.toExponential(1)}・五級 ${dwant.map(w => w.toFixed(3)).join(' / ')}`);
+  }
 
   /* ④ 畫面:用原始碼守(剝掉註解再掃 —— 這一段註解本身就在講舊的寫法) */
   const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
@@ -645,18 +671,21 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       { seed: 3, pred: { xgHome: 1.99, xgAway: 0.70 } },
     ]);
     const full = (seed, p = null) => pool.get(p ? { seed, pred: p } : { seed });
-    /* 池子的守門:worker 裡跑的必須跟主執行緒同種子同一場。主執行緒只跑前 10 分鐘(0.8 秒),
+    /* 池子的守門:worker 裡跑的必須跟主執行緒同種子同一場。主執行緒只跑到前 3 個事件(一秒上下),
        它的事件流要剛好是池子那一場完整事件流的**前綴** —— 引擎是決定性的,差一個事件就是
        worker 載到別的引擎、或 over 每 60 格才查那一步改了行為(它沒有:完場後 advance 是 no-op)。 */
+    /* 2026-10-24 5v:原本固定跑 10 分鐘,5v 之後這個種子頭 11 分鐘一腳射門、一次犯規都沒有(比賽照常在踢,
+       控球秒數一路在加),head 是空的、斷言就把它當成池子壞了。改成跑到**至少 3 個事件**為止(最多 30 分鐘)。 */
     {
       const direct = eng.createSim({ profile, home: 'ARS', away: 'LIV', pred, seed: 1 });
-      for (let i = 0; i < 10 * 60 * 60; i++) direct.advance(1 / 60);
+      let f = 0;
+      for (; f < 30 * 60 * 60 && (f % 600 || direct.events().length < 3); f++) direct.advance(1 / 60);
       const head = direct.events();
       const whole = (await full(1, pred)).events();
-      check('worker 池跑的跟主執行緒同種子同一場(前 10 分鐘的事件流是完整賽的前綴)',
-        head.length > 0 && whole.length >= head.length
+      check('worker 池跑的跟主執行緒同種子同一場(主執行緒跑到 3 個事件,它的事件流是完整賽的前綴)',
+        head.length >= 3 && whole.length >= head.length
           && JSON.stringify(whole.slice(0, head.length)) === JSON.stringify(head),
-        `前 10 分鐘 ${head.length} 個事件・整場 ${whole.length} 個・worker ${pool.size()} 個`);
+        `主執行緒 ${Math.round(f / 3600)} 分鐘 ${head.length} 個事件・整場 ${whole.length} 個・worker ${pool.size()} 個`);
     }
 
     /* 撲救發生在門將身上(2026-10-17,使用者列的動畫四項之「撲救」)。

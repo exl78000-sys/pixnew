@@ -1,7 +1,7 @@
 import * as C from './core.js?v=984f09fe';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=b835ac67';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=805bf6eb';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=2be8556e';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -71,7 +71,7 @@ export async function renderGame(app) {
     const LIVE_TACTICS = ['pressing', 'line', 'directness'];
     const TACTIC_TODO = ['mentality', 'width', 'tempo'];
     /* 兩種「預設」要分開(2026-09-25):**引擎沒收到指令時實際在踢的那一級**(亮起來的就是它,語意由引擎給)
-       與**這一隊本季真實所在的那一級**(標「・本季」)。壓迫兩者相同;防線與直接度引擎沒有逐隊的基準,
+       與**這一隊本季真實所在的那一級**(標「・本季」)。壓迫與直接度(5v 起)兩者相同;防線引擎沒有逐隊的基準,
        引擎的預設是中間那一級。第一版把側寫的級同時當成兩者,而且**建立設定時就塞進 tactics、開賽就送進引擎** ——
        每一場(使用者什麼都沒碰)都在跑一組沒校準過的偏移(ARS 的防線被壓到最深一級),
        而動任何一顆按鈕,另外兩軸也會跟著被送出去。 */
@@ -640,7 +640,7 @@ export async function renderGame(app) {
         </div>`;
       };
       return tacticsPanelHtml('home') + tacticsPanelHtml('away')
-        + `<div class="tiny dim" style="margin-bottom:8px"><b>指令改的是踢法,結果會跟著變。</b>壓迫的五級是聯盟真實的五分位:選哪一級,就照那一組球隊的中位數逼搶,選自己那一級等於沒下指令。防線與直接度引擎沒有逐隊的基準,預設是中間那一級,每一級改多少是遊戲規則(沒有資料能校準,刻意做小)。引擎不會把進球期望調回來 —— 沒下指令時兩隊的預期進球等於站上的 λ,下了就會偏離。標「代理指標」的軸用的是替代量(例如防線用對手越位數)。改了立刻生效。</div>`
+        + `<div class="tiny dim" style="margin-bottom:8px"><b>指令改的是踢法,結果會跟著變。</b>壓迫與直接度的五級是聯盟真實的五分位:選哪一級,就照那一組球隊的中位數逼搶 / 出長傳,選自己那一級等於沒下指令。防線引擎沒有逐隊的基準,預設是中間那一級,每一級改多少是遊戲規則(沒有資料能校準,刻意做小)。引擎不會把進球期望調回來 —— 沒下指令時兩隊的預期進球等於站上的 λ,下了就會偏離。標「代理指標」的軸用的是替代量(例如防線用對手越位數)。改了立刻生效。</div>`
         + side('home') + side('away') + `<div class="tiny dim">下面這些是真資料(逐場 CSV、FotMob、Understat、FPL),唯讀。</div>`;
     }
 
