@@ -105,6 +105,11 @@ export function fotmobBackfill(matches, scores, { season } = {}) {
   for (const [m, f] of fills) {
     m.played = true; m.fh = f.score[0]; m.fa = f.score[1];
     m.scoreSource = 'fotmob'; m.scoreProvisional = true;   // 不叫 provisional:西甲賽程物件那個名字已經是「未賽但即時來源記到終場」的物件
+    /* **改期的比賽要跟著 FotMob 的日期走**(2026-10-24):西甲 ALA–MAL 從週日 10/25 改到週五 10/23,
+       openfootball 還是 10/25。這裡補成已完賽,build 接著「日期在基準日之後一律當未賽」又把它清掉 ——
+       於是一場踢完的比賽顯示未賽,自我檢查兩條紅線擋了部署(#682、#683)。FotMob 說完賽的那一天就是比賽日。
+       f.date 是 UTC 日期;歐洲聯賽要到當地凌晨開球才會差一天,不會發生。 */
+    if (f.date && f.date !== m.date) { m.date = f.date; if (f.utcTime) m.kickoff = f.utcTime; }
     if (!m.kickoff && f.utcTime) m.kickoff = f.utcTime;
   }
   return { duplicateKeys: false, filled: fills.length, checked, mismatches: [], fetchedAt: scores.fetchedAt };

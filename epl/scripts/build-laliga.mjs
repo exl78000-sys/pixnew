@@ -235,7 +235,8 @@ async function main() {
   const curPlayed = curMatches.filter(m => m.played && m.date <= AS_OF);
   // 上游若先填入未來賽果，基準日之後仍一律當未賽，避免模型偷看未來。
   for (const m of curMatches) {
-    if (m.date > AS_OF && m.played) Object.assign(m, { played: false, fh: null, fa: null, hh: null, ha: null });
+    // 暫定旗標一起清(build-league 那一條的同一個理由:不然是「未賽卻掛著 FotMob 暫定賽果」)
+    if (m.date > AS_OF && m.played) { Object.assign(m, { played: false, fh: null, fa: null, hh: null, ha: null }); delete m.scoreProvisional; delete m.scoreSource; }
   }
 
   const curCodes = [...new Set(curMatches.flatMap(m => [m.home, m.away]))].sort();
