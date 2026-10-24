@@ -4487,6 +4487,18 @@ async function checkDataGap() {
         && /if \[ "\$ACTIVE" = "false" \]; then/.test(w)       // 只有明確 false 才收工
         && !/!= "true" \]; then\n\s*echo "  比賽都結束了/.test(w));
     })()],
+    ['比賽日迴圈的截止時間從進場那一刻算(睡醒再加滿會撞 timeout-minutes 被取消、寄紅信)', (() => {
+      /* 2026-10-25:兩支都是「先睡到開賽前,再 END = 現在 + 固定時數」。進場可以睡到 75 分鐘,
+         睡久一點就超過 timeout-minutes,GitHub 取消 job,notify-ci 把 cancelled 當紅開 Issue(#481、#510)。
+         守的是性質:T0 在 sleep 之前、END 從 T0 算,而且 END 的秒數比 timeout-minutes 少至少 10 分鐘。 */
+      return ['epl-matchday.yml', 'laliga-matchday.yml'].every(f => {
+        const w = readFileSync(join(ROOT, '..', '.github', 'workflows', f), 'utf8');
+        const t0 = w.indexOf('T0=$(date +%s)'), sl = w.indexOf('sleep "$SLEEP"');
+        const end = Number(w.match(/END=\$\(\( T0 \+ (\d+) \)\)/)?.[1]);
+        const tmo = Number(w.match(/timeout-minutes:\s*(\d+)/)?.[1]);
+        return t0 >= 0 && sl > t0 && end > 0 && tmo > 0 && end <= (tmo - 10) * 60 && !/END=\$\(\( \$\(date \+%s\)/.test(w);
+      });
+    })()],
     /* 新加的探測要排在 **`latest` job 的**最後一步。2026-09-21 踩到:我把它加在**檔尾**,
        而檔尾是 `all` job —— 勾 quick 時 `all` 整個 skipped,於是 run #39 報 success、
        十一個步驟全綠,而那一步**根本沒有執行**。症狀跟「新加的探測排在 workflow 前面 →
