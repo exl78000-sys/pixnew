@@ -76,6 +76,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           cd epl
 
+          # 截止時間從**這一步開始**算(2026-10-25,跟 epl-matchday 同一個錯):原本睡醒才 +3 小時 50 分,
+          # 睡超過 ~18 分鐘就撞 timeout-minutes 250 被取消,notify-ci 當紅寄信。
+          T0=$(date +%s)
           # 還沒開賽就先睡到開賽前,不要空轉
           SLEEP='${{ steps.win.outputs.sleep }}'
           if [ "$SLEEP" -gt 0 ] 2>/dev/null; then
@@ -102,7 +105,7 @@ jobs:
           echo "  這一輪涵蓋的聯賽:$LGS"
 
           POLL=180
-          END=$(( $(date +%s) + 13800 ))   # 3 小時 50 分,低於 timeout-minutes
+          END=$(( T0 + 14100 ))            # 從這一步開始最多 3 小時 55 分(timeout 250 分減掉 setup 與最後一輪的餘裕)
           N=0; PUSHED=0
           while [ "$(date +%s)" -lt "$END" ]; do
             N=$((N+1))

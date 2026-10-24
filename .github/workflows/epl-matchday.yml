@@ -74,6 +74,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           cd epl
 
+          # 迴圈的截止時間要從**這一步開始**算,不是從睡醒開始算(2026-10-25):
+          # 原本是睡醒之後再 +5 小時,而進場前可以睡到 75 分鐘 —— 睡超過半小時就撞上 timeout-minutes 330,
+          # job 被 GitHub 取消,notify-ci 把 cancelled 當紅,寄信。#481(10-20)、#510(10-24)都是這樣:09:03 → 14:34 剛好 331 分鐘。
+          T0=$(date +%s)
           # 還沒開賽就先睡到開賽前,不要空轉燒時間
           SLEEP='${{ steps.win.outputs.sleep }}'
           if [ "$SLEEP" -gt 0 ] 2>/dev/null; then
@@ -82,7 +86,7 @@ jobs:
           fi
 
           POLL=120                      # 每 2 分鐘一次
-          END=$(( $(date +%s) + 18000 )) # 這次執行最多撐 5 小時
+          END=$(( T0 + 18900 ))         # 從這一步開始最多 5 小時 15 分(timeout 330 分減掉 checkout / setup 與最後一輪推送的餘裕)
           N=0; PUSHED=0
 
           while [ "$(date +%s)" -lt "$END" ]; do
