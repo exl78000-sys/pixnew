@@ -50351,7 +50351,7 @@
    "final": false,
    "score": {
     "home": 1,
-    "away": 0
+    "away": 1
    },
    "homeId": 2,
    "awayId": 11,
@@ -50780,16 +50780,16 @@
    "goals": [
     {
      "side": "H",
-     "person": 110526,
-     "assist": 51423,
-     "team": 2,
-     "min": 6,
-     "label": "06'00",
-     "phase": "1",
+     "person": 65970,
+     "assist": 31936,
+     "team": 11,
+     "min": 52,
+     "label": "52'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
      "hs": 1,
-     "as": 0
+     "as": 1
     }
    ],
    "timeline": {
@@ -50809,6 +50809,24 @@
       "min": 38,
       "label": "38'00",
       "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 304175,
+      "team": 2,
+      "min": 54,
+      "label": "54'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 13344,
+      "team": 2,
+      "min": 55,
+      "label": "55'00",
+      "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
      }
@@ -50878,8 +50896,8 @@
      }
     ]
    },
-   "clock": "49'00"
+   "clock": "59'00"
   }
  },
- "fetchedAt": "2026-10-24T12:36:46.623Z"
+ "fetchedAt": "2026-10-24T12:46:48.083Z"
 }
