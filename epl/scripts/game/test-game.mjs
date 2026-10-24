@@ -2335,7 +2335,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         `check-sim 輸出 ${chkOut.length} 字元`);
       const SMc = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
       const prof = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'game', 'pl.json'), 'utf8'));
-      const tot = { cross: 0, ok: 0, head: 0, rp: 0, corners: 0 };
+      const tot = { cross: 0, ok: 0, head: 0, rp: 0, corners: 0, react: 0 };
       for (const seed of [1, 2]) {
         const sim = SMc.createSim({ profile: prof, home: 'ARS', away: 'LIV', seed, pred: { xgHome: 1.99, xgAway: 0.70 } });
         while (!sim.state().over) sim.advance(1);
@@ -2343,6 +2343,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         tot.cross += c.cross.home + c.cross.away; tot.ok += c.crossOk.home + c.crossOk.away;
         tot.head += c.crossHead.home + c.crossHead.away; tot.rp += c.shotSit?.RegularPlay ?? 0;
         tot.corners += c.corners.home + c.corners.away;
+        tot.react += (c.hoofFrom?.loose ?? 0) + (c.hoofFrom?.steal ?? 0) + (c.clearWhy?.cross ?? 0) + (c.clearWhy?.out ?? 0);
       }
       /* 5s(2026-10-23)邊路推進到底線:下底傳中與早傳中分兩段、邊路少回傳 —— 角球從一場 ~6 回到 ~10.5(真實 11.4)。
          守的是**傳中數**,不是角球數:兩場的角球雜訊太大(同一個引擎前 6 場 4~10 一場),第一版拿「兩場角球 ≥ 14」當門檻,
@@ -2352,6 +2353,15 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       check('邊路推進到底線:下底 / 早傳中分兩段、邊路少回傳,兩場運動戰傳中合計 ≥ 55(改前 ~38)',
         simB5.includes('nearLine ? CROSS_URGE_NEAR : CROSS_URGE_FAR') && simB5.includes('(wideRun ? WIDE_PASS : 1)') && tot.cross >= 55,
         `兩場傳中 ${tot.cross}・角球 ${tot.corners}`);
+      /* 5u(2026-10-24)解圍分兩種情境:門前被貼身維持 0.7,其餘降到 CLEAR_P_CALM × 這一隊的真實解圍相對值。
+         改前每場反應式解圍 92.4(真實 48.5)、兩場 ~185;改後 30 場 52 / 場、兩場 ~105 —— 門檻 ≤ 140 分得開。
+         坑:整個降成一個數字(0.30)解圍對了,角球掉到 8.6 —— 「門前逼出底線」一起被砍;不接 clrRel 控球斜率 0.69 → 0.45。
+         所以兩條都掃原始碼(urgent 那一支與 clrRel),量由 check-sim 判。 */
+      const simU = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      check('解圍分門前 / 其餘兩種情境、其餘乘這一隊的解圍相對值,兩場反應式解圍 ≤ 140(改前 ~185)',
+        simU.includes('rng() < (urgent ? CLEAR_P_URGENT : CLEAR_P_CALM * s.clrRel)') && simU.includes('if (urgent && rng() < 0.45)')
+          && simU.includes('clr: lim(TEAM_CLR)') && tot.react > 0 && tot.react <= 140,
+        `兩場反應式解圍 ${tot.react}・角球 ${tot.corners}`);
       check('運動戰傳中會發生,而且漏斗不倒掛(傳中 ≥ 傳到人 ≥ 頭球攻門;頭球攻門記在 RegularPlay)',
         tot.cross > 0 && tot.ok <= tot.cross && tot.head <= tot.ok && tot.head <= tot.rp,
         `兩場:傳中 ${tot.cross}・傳到人 ${tot.ok}・頭球攻門 ${tot.head}・RegularPlay 射門 ${tot.rp}`);
