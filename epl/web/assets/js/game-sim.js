@@ -146,13 +146,15 @@ function pressLevels(profile) {
   });
 }
 /* **沒收到任何指令時,引擎實際在踢的是哪一級**(2026-09-25)。畫面要亮的是這一級,不是側寫的級:
-   壓迫的恆等元是這一隊自己那一級(pressBase 就是它的真實值);其餘五軸引擎沒有逐隊的基準,
+   壓迫的恆等元是這一隊自己那一級(pressBase 就是它的真實值),直接度 5v 起也是(dirBase);其餘四軸引擎沒有逐隊的基準,
    恆等元一律是中間那一級(3)。第一版的畫面把側寫的級同時當成「目前」與「本季」,
    而且開賽時就把它們送進 setTactics —— 每一場(使用者什麼都沒碰)都在跑一組沒校準過的偏移,
    λ 的錨量的是另一場比賽。 */
+/* **直接度 2026-10-24(5v)起也有逐隊的基準**(見 DIR_K),所以跟壓迫同一套:恆等元是這一隊自己那一級。 */
 export function tacticDefaults(profile, code) {
-  const lv = profile?.teams?.[code]?.style?.pressing?.level;
-  return { pressing: lv >= 1 && lv <= 5 ? lv : 3, line: 3, directness: 3, mentality: 3, width: 3, tempo: 3 };
+  const st = profile?.teams?.[code]?.style;
+  const lv = st?.pressing?.level, dl = st?.directness?.level;
+  return { pressing: lv >= 1 && lv <= 5 ? lv : 3, line: 3, directness: dl >= 1 && dl <= 5 ? dl : 3, mentality: 3, width: 3, tempo: 3 };
 }
 const COVER_BACK = 7;                          // 補位者站在逼搶者身後幾公尺(往自家門的方向)
 /* 抄截半徑 1.3 m,而逼搶者刻意維持 `JOCKEY_R` = **2.4 m** —— 也就是說一個完全照設計在做事的
@@ -417,6 +419,21 @@ const SHOT_ALPHA = 1.1;
 /* 球隊射門率進扣扳機的次方(2026-09-30 試過,**退回 1**;否定的證據在 urgeOf 那一行的註解)。
    1 的時候 Math.pow(x, 1) 就是 x,行為跟加這個常數之前逐位元組相同(同種子 6 場比過)。 */
 const SHOT_STRENGTH_POW = 1;
+/* **扣扳機的意願除以這一場的控球目標**(5v,2026-10-24)。`urgeOf` 只吃射門預算,而預算是「一場該射幾腳」——
+   要變成「每一個決策點該射幾成」,得除掉這一隊會有幾個決策點。5v 之前控球被壓扁(對目標斜率 0.61),
+   每一隊的決策點都差不多,這個差別看不出來;接上逐隊直接度(DIR_K)、控球照目標走之後,
+   **直接的隊少了球、射門跟著少**:EVE / SUN / LEE 射門 ÷ 預算 0.80~0.90、對手 1.1~1.3,
+   120 場 / 方向有 8 筆 |z| > 3。真實的直接隊是用更少的控球射出一樣多的門。
+   乘 (50 ÷ 這一隊在這一場的控球目標)^POW —— 目標是 `possTarget` 那一份(兩隊真實主客控球率),不是引擎跑出來的控球。
+   掃描(9 組 × 兩方向 × 30 場,種子 101~130,DIR_K 0.3):
+     POW    射門÷預算 強 / 弱    進球÷λ 強 / 弱    校準斜率      |z|>3
+     0      1.069 / 0.952        1.037 / 0.937     1.079        1
+     0.5    1.065 / 0.965        1.043 / 0.928     1.069        3
+     1      1.045 / 0.976        1.017 / 0.925     1.008        2
+     1.5    1.018 / 0.980        0.941 / 0.949     0.951        2
+     2      1.001 / 0.996        0.970 / 0.935     0.931        2     ← 選這個(射門那一層兩邊都對上)
+   決策點比控球長得快(一次控球多的隊,在射程裡的時間也多),所以 1 不夠。 */
+const SHOT_POSS_POW = 2;
 const SHOT_SPEED = [18, 26];
 const SHOT_ARRIVE = 12;                        // 射門到門線時至少還有這個速度(m/s)
 const SHOT_MAX = 34;                           // 人踢得出來的上限(m/s,約 122 km/h)
@@ -509,7 +526,7 @@ const NEAR_GOAL = 8;                           // 「門前」的量測範圍(�
    (第一點不再必然是進攻方的),所以這個常數跟 `CORNER_SNAP`、`SELECT_FIX` 三個一起重量。
    50 場固定 snap=0.42:射門/預算 **0.98**、每球 xG 0.1120(真實 0.1125)、
    進球 1.92 ± 0.16 : 0.72 ± 0.13(λ 1.99 : 0.70)。 */
-const SHOT_URGE = 0.051;     /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632)。
+const SHOT_URGE = 0.0525;    /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632)。
    4w 換掉對抗的結局分配之後,球權流向跟著變,射門掉到預算的 0.91 —— 而同一批裡每球 xG
    卻高了 9.6%,**兩個方向相反的錯乘起來剛好等於 λ**(0.91 × 1.096),總量看起來完全正常。
    那是本站記過的坑,所以兩個一起重量。40 場逐值掃(`SELECT_FIX` 固定 0.93):
@@ -526,7 +543,9 @@ const SHOT_URGE = 0.051;     /* 2026-09-18 階段 4w 量成 0.0696(4v 是 0.0632
    強弱量測(9 組 × 540 場)弱隊的射門 ÷ 預算 0.879,再 ×1.035。**SHOT_ALPHA 那條路試過、不行**:
    α 1.3 / 1.5 射門多了(25~28)而進球更少,因為 `rawSelected` 跟著 α 重算,水準被壓下去 —— α 不是自由旋鈕。
    **2026-10-23 階段 5s:0.1035 → 0.051。** 邊路持球者少回傳、多往底線帶(`WIDE_PASS`),每一次帶球都是一個射門決策點 ——
-   射門從 23 漲到 39~41。0.06 → 27.4、0.051 → 24.7 / 24.3(預算 23.4)。 */
+   射門從 23 漲到 39~41。0.06 → 27.4、0.051 → 24.7 / 24.3(預算 23.4)。
+   **2026-10-24 5v:0.051 → 0.0525。** 接上 `SHOT_POSS_POW` 之後總射門掉到預算的 0.99、xG ÷ λ 0.974,補 ×1.03;
+   120 場 / 方向合起來射門 ÷ 預算 1.011、進球 ÷ λ 0.992。 */
 /* xG 的**形狀**是遊戲模型(距離與張角),**水準**對回真實資料:
    XG_SCALE 調到模擬的每球平均 xG 等於聯盟真實的每球平均(league_.shotSituations)。
    形狀自己編、水準有出處 —— 兩件事要分開講,不然畫面上的 xG 就是編的。 */
@@ -828,7 +847,22 @@ const LONG_BALL_25 = 22.86;   // 25 碼:另一個常見的定義,兩個都量才
 const MENT_PUSH = 3;                           // 心態每級把整塊往前推幾公尺(±2 級 = ±6 m)
 const WIDE_STEP = 0.07;                        // 寬度每級把 y 偏移放大幾成(±14%)
 const TEMPO_STEP = 0.10;                       // 節奏每級改變出手機率幾成(±20%)
-const DIRECT_STEP = 0.06;                      // 直接度每級在傳球權重上加減多少
+/* 直接度原本也是「3 = 恆等元、每級 ±0.06」(DIRECT_STEP);5v 起改成跟壓迫同一套 —— 五級是聯盟五分位的真實中位數,
+   換算跟這一隊的基準同一條(`dirOf`,在 createSim 裡,因為聯盟平均與夾子要從側寫算)。 */
+/* **每一隊自己的直接度**(5v,2026-10-24)。在這之前 `s.direct` 對每一隊都是 0 —— 二十隊用同一套傳球選擇,
+   於是**自家半場的完成傳球每一隊都是 ~260**(真實 149 EVE ~ 239 CHE;逐隊對真實的斜率 0.16),
+   強弱的控球差在這一段被抹平:控球對目標的斜率 0.61(1 = 照目標走)。
+   側寫的 `style.directness` 是**真資料**(每 100 次傳球的成功長傳,FotMob 逐場,proxy: false),
+   換成對聯盟平均(場數加權)的相對值、夾子跟 DW 同一套(場數 ≥ 最多場數一半的那些隊實際走到哪裡),
+   乘上 `DIR_K` 當這一隊的基準。戰術指令的直接度改成**在這個基準上**加減(第 3 級 = 這一隊自己)。
+   掃描(9 組配對 × 兩方向 × 12 場,同一批種子):
+     DIR_K   控球斜率   自家半場傳球斜率   對方半場傳球斜率   射門 / 場
+     0       0.63       0.16               0.49               13.41
+     0.3     0.94       0.53               0.58               13.19   ← 選這個
+     0.6     1.31       0.71               0.70               13.50
+   **它沒有像 POSS_K 那樣把禁區觸球一起拉走**:強弱量測台(K 0.3)禁區觸球 強 ÷ 弱 1.31(真實 1.30)——
+   直接的隊是把球早一點踢到前面而丟掉,不是在禁區裡多拿球。驗收數字見變更紀錄 5v。 */
+const DIR_K = 0.3;
 /* **主場優勢在比賽過程裡**(2026-10-03)。真實英超 FotMob 逐場(430 場,主 ÷ 客):射門 1.23、xG 1.22、
    禁區觸球 1.19、對方半場完成傳球 1.09,而**每球 xG 主客一樣**(0.111 對 0.112)、控球只差 1.6 個百分點 ——
    主場多出來的是**機會的次數**,不是同一個位置射得比較勤。
@@ -1016,7 +1050,10 @@ const CARDED_CARE = 0.15;
    check-sim 那一行原本只印不判,5s 驗收時沒被看見(5q 角球同一個坑,第二次;現在要判了)。
    0.155 那一格**每次對抗**判犯規的機率降了 12%,而頭球變少讓地面帶進禁區的對抗變多(3.5 / 2.4 → 4.0 / 2.8),期望值幾乎沒動(0.285);
    0.125 → 0.286 / 0.196(平均 0.24)。改這個要跟 DUEL_FOUL_FIT 一起看(兩個乘在同一條式子上)。 */
-const BOX_CARE = 0.125;
+/* **2026-10-24 5v 重量成 0.165。** 每隊讀自己的長傳比例之後,直接的隊少在自家半場繞、禁區裡的對抗每場 3.5 → 2.6 次,
+   期望值 0.239 → 0.179 / 0.186(種子 1 / 1001)。掃兩格:0.165 → 0.227 / 0.241(平均 0.234)、0.185 → 0.252 / 0.259;
+   取 0.165。進球、角球沒動(主 2.13 / 1.80、客 0.83 / 0.83,λ 1.99 / 0.70)。 */
+const BOX_CARE = 0.165;
 /* 角球(2026-09-17,階段 4f)。在這之前**根本沒有角球戰術**:開角球的人照一般傳球處理,
    而其他人留在「跟著球平移的正常陣型」裡 —— 所以禁區裡一個人都沒有。
    量出來每個角球只生 0.084 腳射門,真實是 0.440(`FromCorner` 佔射門 17.3% ÷ 每場 9.9 個角球),
@@ -1499,6 +1536,28 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
              lg: { tkl: tk, drb: dr, aer: ex(TEAM_AER), clr: ex(TEAM_CLR) },
              lim: { tkl: lim(TEAM_TKL), drb: lim(TEAM_DRB), aer: lim(TEAM_AER), clr: lim(TEAM_CLR) } };
   })();
+  /* 直接度的聯盟平均與夾子(5v,見 DIR_K)。跟 DW 的 `ex` / `lim` 同一個算法,只是值在 `style` 不在 `extra`。 */
+  const DIRW = (() => {
+    const v = Object.values(profile.teams ?? {}).map(t => t.style?.directness).filter(x => x?.value != null && x.n);
+    const n = v.reduce((a, b) => a + b.n, 0);
+    if (!n) return { lg: null, lim: [1, 1] };
+    const lg = v.reduce((a, b) => a + b.value * b.n, 0) / n;
+    const full = Math.max(...v.map(x => x.n)) / 2;
+    const r = v.filter(x => x.n >= full).map(x => x.value / lg);
+    return { lg, lim: [Math.min(...r), Math.max(...r)] };
+  })();
+  /* 真實的直接度 → 傳球權重的偏移。**只有這一條換算** —— 每隊的 dirBase 與戰術指令的五級都走它(pressOfValue 的同一個道理)。 */
+  const dirOf = v => (DIRW.lg && v != null ? DIR_K * (cl(v / DIRW.lg, DIRW.lim[0], DIRW.lim[1]) - 1) : 0);
+  /* 五級各自的典型值:那一級球隊真實值的中位數(pressLevels 的同一個寫法) */
+  const DIR_AT = [[], [], [], [], [], []];
+  for (const t of Object.values(profile.teams ?? {})) {
+    const st = t.style?.directness;
+    if (st?.value != null && st.level >= 1 && st.level <= 5) DIR_AT[st.level].push(st.value);
+  }
+  for (let i = 0; i < 6; i++) {
+    const v = [...DIR_AT[i]].sort((a, b) => a - b), m = v.length >> 1;
+    DIR_AT[i] = v.length ? dirOf(v.length % 2 ? v[m] : (v[m - 1] + v[m]) / 2) : null;
+  }
   /* 個人的搶斷能力,壓成相對值。**只留隊內差異** —— 隊的層級由 `tklRel` 那一個帶
      (兩者量的是同一件事:`ability.tkl` 是每 90 分的抄截數,一隊的抄截數就約等於
      場上十一個人的加總,所以兩個都放等於把同一個差異算兩次)。 */
@@ -1556,6 +1615,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        不是真的有球隊能控 70%(實測全聯盟落在 27~61)。 */
     const pmRaw = possAt(code, side, neutral);
     const keep = pmRaw == null ? 1 : Math.exp(cl(pmRaw - 50, -15, 15) * POSS_K);
+    /* 這一隊的直接度基準(5v,見 DIR_K)。側寫沒有這一隊的值 → 聯盟平均 → 0,跟接上之前一樣。 */
+    const dirBase = dirOf(t.style?.directness?.value), dirLevel = tacticDefaults(profile, code).directness;
     /* 板凳:呼叫端給的優先,否則名單裡沒進先發的人。存成 Map 是因為換人查的是代碼,
        而且要記 `used` —— 一個人只能被換上來一次(規則,而且不擋的話畫面會出現兩個同一個人)。 */
     const benchCodes = (su.bench ?? t.bench ?? t.squad.map(x => x.code)).filter(c => !xi.includes(c) && byCode.has(c));
@@ -1577,7 +1638,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        會讓同一次對抗的權重跟著板凳變,那更難解釋。 */
     const relMean = players.reduce((a, q) => a + relOf(q.ability?.tkl), 0) / (players.length || 1);
     return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, pressLevel, lineDrop: 1,
-      push: 0, venuePush: neutral ? 0 : (side === 'home' ? HOME_PUSH : -HOME_PUSH), wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, aerRel, clrRel, relMean,
+      push: 0, venuePush: neutral ? 0 : (side === 'home' ? HOME_PUSH : -HOME_PUSH), wide: 1, tempo: 1, direct: dirBase, dirBase, dirLevel, keep, foulRel, tklRel, drbRel, aerRel, clrRel, relMean,
       ypf: yellowPerFoulOf(code, side), possMean: pmRaw ?? null, bench };
   };
 
@@ -1723,7 +1784,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     return gh && ga ? (sh / gh) / (sa / ga) : 1;
   })();
   const venueF = s => (neutral ? 1 : s.side === 'home' ? Math.sqrt(VENUE_SF) : 1 / Math.sqrt(VENUE_SF));
-  const urgeOf = s => SHOT_URGE * Math.pow(expShots(s) / lgSf / venueF(s), SHOT_STRENGTH_POW) * (1 - PEN_SHARE);
+  /* 控球目標(5v,見 SHOT_POSS_POW):跟 `possTarget` 同一條式子;側寫缺控球就是 1(跟接上之前一樣) */
+  const possT0 = H.possMean == null || A.possMean == null ? null : (H.possMean + (100 - A.possMean)) / 2;
+  const possF = s => (possT0 == null ? 1 : Math.pow(50 / (s === H ? possT0 : 100 - possT0), SHOT_POSS_POW));
+  const urgeOf = s => SHOT_URGE * Math.pow(expShots(s) / lgSf / venueF(s), SHOT_STRENGTH_POW) * (1 - PEN_SHARE) * possF(s);
   /* xG 形狀的**水準**校準:在禁區前沿一片常見的射門點上取樣,算出這個形狀的平均值,
      再乘一個係數讓它等於聯盟真實的每球平均 xG。形狀是遊戲模型、水準有出處。
      取樣點是固定網格(不吃亂數),所以這個係數對同一份側寫永遠一樣。 */
@@ -4381,8 +4445,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     benchOf: side => [...(sideOf(side).bench ?? new Map()).entries()]
       .filter(([, v]) => !v.used).map(([code, v]) => ({ code, name: v.p.name, pos: v.p.pos })),
     /* 指令:level 1~5,**每一軸的恆等元是 `tacticDefaults` 回的那一級**(壓迫 = 這一隊自己那一級,
-       其餘 = 3)。壓迫的五級是聯盟五分位的真實中位數(見 pressLevels);防線與另外四軸引擎沒有逐隊的
-       基準,每一級改多少仍是遊戲規則(沒有資料能校準),所以刻意小:防線 ±25% —— 大到會讓 λ 的錨
+       直接度 = 這一隊自己那一級(5v),其餘 = 3)。壓迫與直接度的五級是聯盟五分位的真實中位數(見 pressLevels、DIR_AT);
+       防線與另外三軸引擎沒有逐隊的基準,每一級改多少仍是遊戲規則(沒有資料能校準),所以刻意小:防線 ±25% —— 大到會讓 λ 的錨
        失效的話,這一頁就在編數字了。**沒送的軸不動** —— 呼叫端只送使用者真的改過的那幾軸。 */
     setTactics(side, levels = {}) {
       const s = sideOf(side);
@@ -4395,9 +4459,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (levels.mentality != null) s.push = (cl(levels.mentality, 1, 5) - 3) * MENT_PUSH;
       if (levels.width != null) s.wide = 1 + (cl(levels.width, 1, 5) - 3) * WIDE_STEP;
       if (levels.tempo != null) s.tempo = 1 + (cl(levels.tempo, 1, 5) - 3) * TEMPO_STEP;
-      if (levels.directness != null) s.direct = (cl(levels.directness, 1, 5) - 3) * DIRECT_STEP;
+      if (levels.directness != null) {
+        const L = cl(Math.round(levels.directness), 1, 5);
+        s.direct = L === s.dirLevel || DIR_AT[L] == null ? s.dirBase : DIR_AT[L];   // 5v:跟壓迫同一套
+      }
       return { pressing: s.press / s.pressBase, line: s.lineDrop,
-        mentality: s.push, width: s.wide, tempo: s.tempo, directness: s.direct };
+        mentality: s.push, width: s.wide, tempo: s.tempo, directness: s.direct - s.dirBase };
     },
     /* 比賽中換陣型(2026-10-17,5p 的 6c)。**只換每個人的 slot 與 role** —— 沒有人被搬家:
        目標點(shapeOf 讀 slot)換了,他們就照自己的速度**跑過去**,所以瞬移的量測照樣守得到。
