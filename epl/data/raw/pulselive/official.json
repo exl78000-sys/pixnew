@@ -51078,8 +51078,8 @@
   "ARS|EVE": {
    "fixtureId": 128993,
    "kickoff": "2026-10-24T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 0
@@ -51511,6 +51511,19 @@
    "goals": [
     {
      "side": "H",
+     "person": 13274,
+     "assist": 32728,
+     "team": 1,
+     "min": 7,
+     "label": "07'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
      "person": 50234,
      "assist": 14548,
      "team": 1,
@@ -51728,12 +51741,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -51750,16 +51757,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+9'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+5'00"
+   "clock": "90+9'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-24T16:03:29.452Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "COV|FUL": {
    "fixtureId": 128996,
    "kickoff": "2026-10-24T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 1
@@ -52408,12 +52428,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -52430,10 +52444,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+5'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-24T16:03:29.891Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "CHE|TOT": {
    "fixtureId": 128995,
@@ -52833,5 +52860,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-24T15:53:27.843Z"
+ "fetchedAt": "2026-10-24T16:03:29.891Z"
 }
