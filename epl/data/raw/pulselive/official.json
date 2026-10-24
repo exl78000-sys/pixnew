@@ -51524,24 +51524,34 @@
     }
    ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 24983,
+      "team": 7,
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
      {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "44'00"
+   "clock": "45+3'00"
   },
   "COV|FUL": {
    "fixtureId": 128996,
@@ -51779,8 +51789,8 @@
       14624
      ],
      [
-      118739,
-      75201
+      75201,
+      118739
      ],
      [
       66657,
@@ -51992,21 +52002,21 @@
     "subs": [],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+3'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45'00"
+   "clock": "45+3'00"
   }
  },
- "fetchedAt": "2026-10-24T14:45:37.175Z"
+ "fetchedAt": "2026-10-24T14:53:06.633Z"
 }
