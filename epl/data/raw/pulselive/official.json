@@ -52465,7 +52465,7 @@
   "CHE|TOT": {
    "fixtureId": 128995,
    "kickoff": "2026-10-24T16:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -52474,9 +52474,31 @@
    "homeId": 4,
    "awayId": 21,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      121704
+     ],
+     [
+      125075,
+      76104,
+      51229
+     ],
+     [
+      21998,
+      112203,
+      3712,
+      119041
+     ],
+     [
+      49293,
+      129425
+     ],
+     [
+      23968
+     ]
+    ],
     "xi": [
      {
       "id": 76104,
@@ -52492,7 +52514,7 @@
       "playerId": null,
       "name": "Cole Palmer",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -52501,7 +52523,7 @@
       "playerId": null,
       "name": "Pedro Neto",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -52537,7 +52559,7 @@
       "playerId": null,
       "name": "Morgan Rogers",
       "shirt": 17,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -52555,7 +52577,7 @@
       "playerId": null,
       "name": "Geovany Quenda",
       "shirt": 23,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -52573,7 +52595,7 @@
       "playerId": null,
       "name": "Jorrel Hato",
       "shirt": 21,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      }
@@ -52663,9 +52685,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      117596,
+      76090,
+      75582,
+      10458
+     ],
+     [
+      119072,
+      71623
+     ],
+     [
+      51364,
+      8456,
+      76614
+     ],
+     [
+      76216
+     ]
+    ],
     "xi": [
      {
       "id": 76090,
@@ -52726,7 +52770,7 @@
       "playerId": null,
       "name": "Archie Gray",
       "shirt": 14,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Central Midfielder",
       "captain": false
      },
@@ -52753,7 +52797,7 @@
       "playerId": null,
       "name": "Mathys Tel",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -52855,10 +52899,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "04'00"
   }
  },
- "fetchedAt": "2026-10-24T16:30:00.271Z"
+ "fetchedAt": "2026-10-24T16:35:48.718Z"
 }
