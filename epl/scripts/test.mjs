@@ -1837,12 +1837,14 @@ async function checkSuspended() {
     { home: 'GET', away: 'RAY', played: false, fh: null, fa: null },
     { home: 'BAR', away: 'RMA', played: true, fh: 2, fa: 1 },
     { home: 'SEV', away: 'BET', played: false, fh: null, fa: null },
+    { home: 'ALA', away: 'MAL', played: false, fh: null, fa: null, date: '2026-10-25', kickoff: null },
   ];
   const r = fotmobBackfill(ms, { season: '2026-27', matches: [
     { home: 'RAY', away: 'ATH', finished: true, cancelled: true, score: [0, 0], reason: 'Ab' },
     { home: 'GET', away: 'RAY', finished: false, cancelled: true, score: null, reason: 'PPD' },
     { home: 'BAR', away: 'RMA', finished: true, cancelled: true, score: [2, 1], reason: 'Can' },
     { home: 'SEV', away: 'BET', finished: true, cancelled: false, score: [1, 0], reason: 'FT' },
+    { home: 'ALA', away: 'MAL', finished: true, cancelled: false, score: [1, 1], reason: 'FT', date: '2026-10-23', utcTime: '2026-10-23T19:00:00Z' },
   ] }, { season: '2026-27' });
   const by = k => ms.find(m => `${m.home}|${m.away}` === k);
   const now = Date.parse('2026-10-19T12:00:00Z');
@@ -1852,7 +1854,12 @@ async function checkSuspended() {
     ['中止(Ab)記成 abandoned,而且沒有被當成 0-0 的比分', by('RAY|ATH').status === 'abandoned' && !by('RAY|ATH').played, JSON.stringify(by('RAY|ATH'))],
     ['延期(P…)記成 postponed', by('GET|RAY').status === 'postponed', by('GET|RAY').status],
     ['已經有比分的不動(不加 status、比分不變)', !by('BAR|RMA').status && by('BAR|RMA').fh === 2, JSON.stringify(by('BAR|RMA'))],
-    ['正常完賽的照樣補比分', by('SEV|BET').played && by('SEV|BET').fh === 1 && r.filled === 1, JSON.stringify(by('SEV|BET'))],
+    ['正常完賽的照樣補比分', by('SEV|BET').played && by('SEV|BET').fh === 1 && r.filled === 2, JSON.stringify(by('SEV|BET'))],
+    /* 2026-10-24 #682/#683:改期提前的比賽,主來源日期還在未來 → 補完又被「基準日之後當未賽」清掉 */
+    ['改期的比賽補比分時日期與開球跟著 FotMob(ALA–MAL 10/25 → 10/23)',
+      by('ALA|MAL').played && by('ALA|MAL').date === '2026-10-23' && by('ALA|MAL').kickoff === '2026-10-23T19:00:00Z', JSON.stringify(by('ALA|MAL'))],
+    ['西甲 / 英冠 build 把未來場次清成未賽時,暫定旗標一起清',
+      ['scripts/build-laliga.mjs', 'scripts/build-championship.mjs', 'scripts/lib/build-league.mjs'].every(f => /m\.date > AS_OF && m\.played\)[\s\S]{0,160}delete m\.scoreProvisional/.test(srcOf(f)))],
     ['scheduleState 對中止的比賽回 suspended(不是 awaiting)',
       V.scheduleState({ played: false, status: 'abandoned', kickoff: '2026-10-10T12:00:00Z' }, now).phase === 'suspended'],
     ['沒有 status 的未賽、開球已過的仍然是 awaiting(行為沒被改到)',
