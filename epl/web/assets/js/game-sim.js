@@ -212,7 +212,7 @@ const SIM_TACKLE_R = 1.3;                      // 撲上去之後進到這麼近
    1.3 公尺的比例是 28.0% → **66.4%**(×2.37)—— 那等於又把幾何接回來。
    所以結局與判罰都在宣告的那一刻決定(見下面那一段:「等兩個人真的碰到」的三個版本都更糟)。 */
 const DUEL_R = 3.0;                            // 有對手在這麼近的時候還帶球,才算一次「敢過他」的決定
-const DUEL_P = 0.205;                           /* 那些決定裡有多少真的變成一次對抗。
+const DUEL_P = 0.186;                           /* 那些決定裡有多少真的變成一次對抗。
    **它只定總數,不影響三種結局的分配。** 原本是 0.273(90 場 × 兩輪,0.26 → 64.2、0.273 → 68.1)。
    4v 重量成 0.382 —— `forward` 從 0.45 降到 0.30 讓帶球決策變少,對抗的觸發掛在帶球決策上,
    所以這個常數跟著漂。
@@ -233,7 +233,8 @@ const DUEL_P = 0.205;                           /* 那些決定裡有多少真�
    **2026-10-17 階段 5p 重量成 0.27。** 量測台從這一天起踢的是**側寫的真實陣型**(之前一律 4-3-3,見 `profileFormation`),
    而且雙後腰收到中路、有球時前腰前壓(`SLOT_LATERAL` / `adv`)—— 對抗漲到 70 / 67(錨 64.5)。
    0.27 在兩組獨立種子各 30 場是 64.0 / 63.4;0.25 掉到 58。
-   **2026-10-23 階段 5s 重量成 0.205。** 邊路多帶球,帶球決策變多 → 對抗 82~86;0.27 × 64.5 / 85 ≈ 0.205,兩組 67.6 / 63.7。 */
+   **2026-10-23 階段 5s 重量成 0.205。** 邊路多帶球,帶球決策變多 → 對抗 82~86;0.27 × 64.5 / 85 ≈ 0.205,兩組 67.6 / 63.7。
+   **2026-10-24 階段 5u 重量成 0.186。** 解圍降回真實量級之後球多留在場上,對抗 69~73;0.205 × 64.5 / 71 ≈ 0.186,兩組 64.0 / 66.6。 */
 /* 三種結局的比例**從側寫算**(見 createSim 的 `DW`),不寫死在這裡 ——
    寫死的話側寫重算它就會悄悄過期,而那正是本站記過三次的坑。量到的是(以場數加權):
      抄截      `matchstats.headers.tackles` × 2 = 32.7
@@ -731,6 +732,20 @@ const DEFLECT_P = 0.10;
    沒有這個動作的話球權一贏就是從自家門前開始帶,那既不像足球、也生不出角球。 */
 const CLEAR_ZONE = 30;                         // 離自家門這麼近算自家三分之一(公尺)
 const CLEAR_SPEED = [18, 25];
+/* **解圍分兩種情境**(2026-10-24,階段 5u)。原本是一個 0.7:自家三分之一、6 m 內有人就七成大腳,
+   每場反應式解圍 **92.4**(ARS + LIV 真實 48.5,1.9 倍)。整個降到 0.30 解圍對了(55),
+   但角球掉到 8.6~9.2 —— 因為「門前被貼身逼出底線」也一起被砍掉,它是角球最大的來源之一。
+   所以拆開:**門前 CLEAR_URGENT_D 內、對手 CLEAR_URGENT_PRESS 內**維持 0.7(真的後衛就是這樣做),
+   其餘的「有空間但被靠近」降到 CLEAR_P_CALM,再乘上**這一隊自己的真實解圍數 ÷ 聯盟平均**(`clrRel`)。
+   只降一個數字(CG18,沒有 clrRel)λ 與角球都過,但控球對目標的斜率從 0.69 掉到 **0.45**
+   (四組種子 0.42~0.47)—— 弱隊少解圍、多留球,強弱的控球差被壓扁。真實的解圍一隊一場 21(MCI)~33(CRY),
+   低控球的隊解得多,接上 clrRel 之後斜率回到 0.61。量過模擬的逐隊解圍:相對斜率已經 1.32(真實 = 1),
+   所以**不是 clrRel 不夠強**,剩下的控球落差另外登記(補齊規劃 5v),沒有把它放大調到剛好。
+   ARS–LIV 兩組 30 場:解圍 52.1 / 52.6、角球 12.0 / 11.9、λ 兩組都過。 */
+const CLEAR_URGENT_D = 12;                     // 離自家門這麼近……
+const CLEAR_URGENT_PRESS = 3;                  // ……而且對手這麼近,才算「被逼到門前」
+const CLEAR_P_URGENT = 0.7;
+const CLEAR_P_CALM = 0.18;
 /* 判定「該進」的那一腳,還要真的到得了球門 —— 中間會被封阻 / 折射掉。
    實測(兩輪、各 8~10 場):該進的球有 **88~90%** 進得去。
    k 如果不把這一項算進去,期望進球就會系統性地比 λ 少一成多,
@@ -1115,7 +1130,7 @@ const CROSS_CLEAR_SPREAD = 1.6;           // 防守方頂運動戰傳中的方�
    彈去哪是幾何:沿「擋的人 → 接觸點」的方向彈開再加隨機 —— 傳中的人多半已經貼近底線,所以常常出底線(角球)。
    **CROSS_BLOCK_P 沒有上游的錨**(倉庫裡沒有「傳中被擋」的資料),是拿每場角球 11.4 反推的 —— 它是一個對總數校準的係數,照實標。 */
 const CROSS_BLOCK_R = 4;
-const CROSS_BLOCK_P = 0.8;     // 2026-10-24:0.6 → 0.8,同上;兩個一起把角球拉回 10.8 / 9.3(真實 11.4)
+const CROSS_BLOCK_P = 0.9;     // 2026-10-24:0.6 → 0.8,同上;兩個一起把角球拉回 10.8 / 9.3(真實 11.4)。5u 再 0.8 → 0.9(見 CLEAR_P_CALM)
 /* 邊路推進到底線(5s,2026-10-23):傳中分兩段。離對方底線 BYLINE_D 以內是「下底傳中」,機率 CROSS_URGE_NEAR;
    更遠的是「早傳中」,機率 CROSS_URGE_FAR。而且邊路持球者在對方三分之一、還沒到底線時,回傳的機率乘 WIDE_PASS ——
    他多往底線帶(帶球的目標本來就是往前 12 m,沿著邊線就是往底線)。出腳位置一靠底線,被擋 / 被頂的球照幾何就更常出底線。
@@ -1455,6 +1470,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
      而模擬的是 ARS vs LIV —— 抄截差 −12%、過人 +7%,那是「錨用了聯盟平均」的第二次。 */
   const TEAM_TKL = 'matchstats.headers.tackles', TEAM_DRB = 'dribbles_succeeded';
   const TEAM_AER = 'aerials_won';
+  const TEAM_CLR = 'clearances';   // 5u:解圍傾向(見 CLEAR_P_CALM)
   const DW = (() => {
     const per = k => Object.values(profile.teams ?? {}).map(t => t.extra?.[k]).filter(x => x?.mean != null);
     const ex = k => {
@@ -1480,8 +1496,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const rTk = tk * 2, rDr = dr * 2, rFl = FOUL_LG * 2, tot = rTk + rDr + rFl;
     return { tackle: rTk / tot, foul: rFl / tot * DUEL_FOUL_FIT, beat: rDr / tot,
              real: { tackles: rTk, fouls: rFl, dribbles: rDr, duels: tot },
-             lg: { tkl: tk, drb: dr, aer: ex(TEAM_AER) },
-             lim: { tkl: lim(TEAM_TKL), drb: lim(TEAM_DRB), aer: lim(TEAM_AER) } };
+             lg: { tkl: tk, drb: dr, aer: ex(TEAM_AER), clr: ex(TEAM_CLR) },
+             lim: { tkl: lim(TEAM_TKL), drb: lim(TEAM_DRB), aer: lim(TEAM_AER), clr: lim(TEAM_CLR) } };
   })();
   /* 個人的搶斷能力,壓成相對值。**只留隊內差異** —— 隊的層級由 `tklRel` 那一個帶
      (兩者量的是同一件事:`ability.tkl` 是每 90 分的抄截數,一隊的抄截數就約等於
@@ -1532,6 +1548,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const tklRel = DW.lg ? cl((t.extra?.[TEAM_TKL]?.mean ?? DW.lg.tkl) / DW.lg.tkl, DW.lim.tkl[0], DW.lim.tkl[1]) : 1;
     const drbRel = DW.lg ? cl((t.extra?.[TEAM_DRB]?.mean ?? DW.lg.drb) / DW.lg.drb, DW.lim.drb[0], DW.lim.drb[1]) : 1;
     /* 空中能力(見 AERIAL_DEF_EDGE):夾子跟上面兩個同一套,從側寫自己算。 */
+    /* 解圍傾向(5u,見 CLEAR_P_CALM):夾子同一套。 */
+    const clrRel = DW.lg?.clr ? cl((t.extra?.[TEAM_CLR]?.mean ?? DW.lg.clr) / DW.lg.clr, DW.lim.clr[0], DW.lim.clr[1]) : 1;
     const aerRel = DW.lg?.aer ? cl((t.extra?.[TEAM_AER]?.mean ?? DW.lg.aer) / DW.lg.aer, DW.lim.aer[0], DW.lim.aer[1]) : 1;
     /* 護球能力:用**這一隊在這個主客身分下**的真實控球率。50 是聯盟平均(控球是零和的,
        所以平均一定是 50,不必另外算)。夾在 ±15 個百分點內 —— 超出那個範圍的是樣本太少,
@@ -1559,7 +1577,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        會讓同一次對抗的權重跟著板凳變,那更難解釋。 */
     const relMean = players.reduce((a, q) => a + relOf(q.ability?.tkl), 0) / (players.length || 1);
     return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, pressLevel, lineDrop: 1,
-      push: 0, venuePush: neutral ? 0 : (side === 'home' ? HOME_PUSH : -HOME_PUSH), wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, aerRel, relMean,
+      push: 0, venuePush: neutral ? 0 : (side === 'home' ? HOME_PUSH : -HOME_PUSH), wide: 1, tempo: 1, direct: 0, keep, foulRel, tklRel, drbRel, aerRel, clrRel, relMean,
       ypf: yellowPerFoulOf(code, side), possMean: pmRaw ?? null, bench };
   };
 
@@ -2684,10 +2702,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
 
     /* 解圍:在自家三分之一被逼住就大腳往前,不帶球也不找短傳。
        真的後衛就是這樣做的,而且它是轉換的來源 —— 沒有它球權一換就是從自家門前開始帶。 */
-    if (Math.abs(p.x - ownGoalX) < CLEAR_ZONE && pressure < 6 && p.role !== 'GK' && rng() < 0.7) {
+    const urgent = Math.abs(p.x - ownGoalX) < CLEAR_URGENT_D && pressure < CLEAR_URGENT_PRESS;
+    if (Math.abs(p.x - ownGoalX) < CLEAR_ZONE && pressure < 6 && p.role !== 'GK'
+        && rng() < (urgent ? CLEAR_P_URGENT : CLEAR_P_CALM * s.clrRel)) {
       /* 逼到自家門前就**把球捅出底線** —— 那是標準的防守動作,不是失誤。
          而且它是角球的第三個來源(另外兩個是封阻與傳中被碰),沒有它角球一場 0~1 次。 */
-      if (Math.abs(p.x - ownGoalX) < 12 && pressure < 3 && rng() < 0.45) {
+      if (urgent && rng() < 0.45) {
         const ty = cl(p.y + (rng() - 0.5) * 14, 1, PITCH_H - 1);
         kick(p, ownGoalX + (ownGoalX === 0 ? -6 : 6), ty, 12 + rng() * 6, 0, 'clear');
         st.clears++; st.clearWhy.out = (st.clearWhy.out ?? 0) + 1; p.intent = null;
