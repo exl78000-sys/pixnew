@@ -50347,7 +50347,7 @@
   "AVL|MCI": {
    "fixtureId": 128994,
    "kickoff": "2026-10-24T11:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -50356,16 +50356,38 @@
    "homeId": 2,
    "awayId": 11,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      125556
+     ],
+     [
+      13344,
+      5066,
+      21529,
+      51223
+     ],
+     [
+      25067,
+      133679
+     ],
+     [
+      326089,
+      51423,
+      304175
+     ],
+     [
+      110526
+     ]
+    ],
     "xi": [
      {
       "id": 326089,
       "playerId": null,
       "name": "Alysson",
       "shirt": 47,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -50545,9 +50567,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      137371,
+      14569,
+      16431,
+      67178
+     ],
+     [
+      51593,
+      63741
+     ],
+     [
+      31936,
+      68150,
+      54156
+     ],
+     [
+      65970
+     ]
+    ],
     "xi": [
      {
       "id": 67178,
@@ -50626,7 +50670,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -50635,7 +50679,7 @@
       "playerId": null,
       "name": "Jérémy Doku",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -50737,10 +50781,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "06'00"
   }
  },
- "fetchedAt": "2026-10-24T11:27:41.321Z"
+ "fetchedAt": "2026-10-24T11:37:40.818Z"
 }
