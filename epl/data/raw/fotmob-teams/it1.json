@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-24T14:00:46.233Z",
+ "fetchedAt": "2026-10-24T15:37:47.798Z",
  "teams": [
   {
    "code": "INT",
@@ -185,66 +185,6 @@
    ]
   },
   {
-   "code": "MLN",
-   "fotmobId": 8564,
-   "fotmobName": "Milan",
-   "fetchedAt": "2026-10-09T12:41:53.188Z",
-   "color": "#CF2C27",
-   "teamColors": {
-    "darkMode": "#CF2C27",
-    "lightMode": "#CF2C27",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Meazza",
-   "city": "Milano",
-   "location": [
-    "45.478083998",
-    "9.123979211"
-   ],
-   "capacity": 75817,
-   "surface": "Grass",
-   "opened": 1926,
-   "coachHistory": [
-    {
-     "id": 39588,
-     "name": "Sérgio Conceição",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 11,
-     "draw": 3,
-     "loss": 7,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.52
-    },
-    {
-     "id": 129745,
-     "name": "Massimiliano Allegri",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 20,
-     "draw": 10,
-     "loss": 8,
-     "pointsPerGame": 1.84,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 11754,
-     "name": "Ruben Amorim",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 2,
-     "loss": 0,
-     "pointsPerGame": 2.2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
    "code": "COM",
    "fotmobId": 10171,
    "fotmobName": "Como",
@@ -305,62 +245,62 @@
    ]
   },
   {
-   "code": "CAG",
-   "fotmobId": 8529,
-   "fotmobName": "Cagliari",
-   "fetchedAt": "2026-10-09T12:41:52.803Z",
-   "color": "#B51F2B",
+   "code": "MLN",
+   "fotmobId": 8564,
+   "fotmobName": "Milan",
+   "fetchedAt": "2026-10-09T12:41:53.188Z",
+   "color": "#CF2C27",
    "teamColors": {
-    "darkMode": "#B51F2B",
-    "lightMode": "#B51F2B",
+    "darkMode": "#CF2C27",
+    "lightMode": "#CF2C27",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Unipol Domus",
-   "city": "Cagliari",
+   "venue": "Stadio Giuseppe Meazza",
+   "city": "Milano",
    "location": [
-    "39.199802357",
-    "9.137473349"
+    "45.478083998",
+    "9.123979211"
    ],
-   "capacity": 16416,
+   "capacity": 75817,
    "surface": "Grass",
-   "opened": 2017,
+   "opened": 1926,
    "coachHistory": [
     {
-     "id": 42451,
-     "name": "Davide Nicola",
+     "id": 39588,
+     "name": "Sérgio Conceição",
      "season": "2024/2025",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 9,
-     "draw": 9,
-     "loss": 20,
-     "pointsPerGame": 0.95,
-     "winPercentage": 0.24
+     "win": 11,
+     "draw": 3,
+     "loss": 7,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.52
     },
     {
-     "id": 41732,
-     "name": "Fabio Pisacane",
+     "id": 129745,
+     "name": "Massimiliano Allegri",
      "season": "2025/2026",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 11,
+     "win": 20,
      "draw": 10,
-     "loss": 17,
-     "pointsPerGame": 1.13,
-     "winPercentage": 0.29
+     "loss": 8,
+     "pointsPerGame": 1.84,
+     "winPercentage": 0.53
     },
     {
-     "id": 41732,
-     "name": "Fabio Pisacane",
+     "id": 11754,
+     "name": "Ruben Amorim",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 4,
-     "draw": 0,
-     "loss": 1,
-     "pointsPerGame": 2.4,
-     "winPercentage": 0.8
+     "win": 3,
+     "draw": 2,
+     "loss": 0,
+     "pointsPerGame": 2.2,
+     "winPercentage": 0.6
     }
    ]
   },
@@ -481,6 +421,66 @@
      "loss": 3,
      "pointsPerGame": 0.8,
      "winPercentage": 0.2
+    }
+   ]
+  },
+  {
+   "code": "CAG",
+   "fotmobId": 8529,
+   "fotmobName": "Cagliari",
+   "fetchedAt": "2026-10-09T12:41:52.803Z",
+   "color": "#B51F2B",
+   "teamColors": {
+    "darkMode": "#B51F2B",
+    "lightMode": "#B51F2B",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Unipol Domus",
+   "city": "Cagliari",
+   "location": [
+    "39.199802357",
+    "9.137473349"
+   ],
+   "capacity": 16416,
+   "surface": "Grass",
+   "opened": 2017,
+   "coachHistory": [
+    {
+     "id": 42451,
+     "name": "Davide Nicola",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 9,
+     "loss": 20,
+     "pointsPerGame": 0.95,
+     "winPercentage": 0.24
+    },
+    {
+     "id": 41732,
+     "name": "Fabio Pisacane",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 11,
+     "draw": 10,
+     "loss": 17,
+     "pointsPerGame": 1.13,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 41732,
+     "name": "Fabio Pisacane",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 0,
+     "loss": 1,
+     "pointsPerGame": 2.4,
+     "winPercentage": 0.8
     }
    ]
   },
@@ -665,66 +665,6 @@
    ]
   },
   {
-   "code": "SAS",
-   "fotmobId": 7943,
-   "fotmobName": "Sassuolo",
-   "fetchedAt": "2026-10-09T12:41:55.202Z",
-   "color": "#009A44",
-   "teamColors": {
-    "darkMode": "#009A44",
-    "lightMode": "#009A44",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "MAPEI Stadium - Città del Tricolore",
-   "city": "Reggio Emilia",
-   "location": [
-    "44.714636965",
-    "10.649710894"
-   ],
-   "capacity": 23717,
-   "surface": "Grass",
-   "opened": 1995,
-   "coachHistory": [
-    {
-     "id": 34320,
-     "name": "Fabio Grosso",
-     "season": "2024/2025",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 25,
-     "draw": 7,
-     "loss": 6,
-     "pointsPerGame": 2.16,
-     "winPercentage": 0.66
-    },
-    {
-     "id": 34320,
-     "name": "Fabio Grosso",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 14,
-     "draw": 7,
-     "loss": 17,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.37
-    },
-    {
-     "id": 27694,
-     "name": "Alberto Aquilani",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
-    }
-   ]
-  },
-  {
    "code": "LEC",
    "fotmobId": 9888,
    "fotmobName": "Lecce",
@@ -780,6 +720,126 @@
      "draw": 0,
      "loss": 3,
      "pointsPerGame": 1.2,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "BLG",
+   "fotmobId": 9857,
+   "fotmobName": "Bologna",
+   "fetchedAt": "2026-10-09T12:41:59.110Z",
+   "color": "#102880",
+   "teamColors": {
+    "darkMode": "#004eca",
+    "lightMode": "#102880",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Renato Dall'Ara",
+   "city": "Bologna",
+   "location": [
+    "44.492290396",
+    "11.309956759"
+   ],
+   "capacity": 39279,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 42581,
+     "name": "Vincenzo Italiano",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 16,
+     "draw": 8,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.42
+    },
+    {
+     "id": 853795,
+     "name": "Domenico Tedesco",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.25,
+     "winPercentage": 0
+    },
+    {
+     "id": 41413,
+     "name": "Raffaele Palladino",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 1,
+     "winPercentage": 0
+    }
+   ]
+  },
+  {
+   "code": "SAS",
+   "fotmobId": 7943,
+   "fotmobName": "Sassuolo",
+   "fetchedAt": "2026-10-09T12:41:55.202Z",
+   "color": "#009A44",
+   "teamColors": {
+    "darkMode": "#009A44",
+    "lightMode": "#009A44",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "MAPEI Stadium - Città del Tricolore",
+   "city": "Reggio Emilia",
+   "location": [
+    "44.714636965",
+    "10.649710894"
+   ],
+   "capacity": 23717,
+   "surface": "Grass",
+   "opened": 1995,
+   "coachHistory": [
+    {
+     "id": 34320,
+     "name": "Fabio Grosso",
+     "season": "2024/2025",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 25,
+     "draw": 7,
+     "loss": 6,
+     "pointsPerGame": 2.16,
+     "winPercentage": 0.66
+    },
+    {
+     "id": 34320,
+     "name": "Fabio Grosso",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 14,
+     "draw": 7,
+     "loss": 17,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.37
+    },
+    {
+     "id": 27694,
+     "name": "Alberto Aquilani",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.4,
      "winPercentage": 0.4
     }
    ]
@@ -841,66 +901,6 @@
      "loss": 3,
      "pointsPerGame": 0.8,
      "winPercentage": 0.2
-    }
-   ]
-  },
-  {
-   "code": "BLG",
-   "fotmobId": 9857,
-   "fotmobName": "Bologna",
-   "fetchedAt": "2026-10-09T12:41:59.110Z",
-   "color": "#102880",
-   "teamColors": {
-    "darkMode": "#004eca",
-    "lightMode": "#102880",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Renato Dall'Ara",
-   "city": "Bologna",
-   "location": [
-    "44.492290396",
-    "11.309956759"
-   ],
-   "capacity": 39279,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 42581,
-     "name": "Vincenzo Italiano",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 16,
-     "draw": 8,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 853795,
-     "name": "Domenico Tedesco",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.25,
-     "winPercentage": 0
-    },
-    {
-     "id": 41413,
-     "name": "Raffaele Palladino",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 1,
-     "winPercentage": 0
     }
    ]
   },
