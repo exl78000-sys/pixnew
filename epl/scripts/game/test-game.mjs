@@ -2297,7 +2297,10 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         const run = simM.state().counts.run ?? {};
         const why = Object.values(run.why ?? {}).reduce((a, b) => a + b, 0);
         const role = Object.values(run.role ?? {}).reduce((a, b) => a + b, 0);
-        const real = simM.motion().players.filter(q => q.role !== 'GK').reduce((a, q) => a + q.dist, 0);
+        /* 紅牌下場的人要加回來(2026-10-24):`players` 只有場上的,而他下場前跑的已經在歸因裡。
+           本機 Node 24 那一場沒紅牌、CI 的 Node 22 有(同種子在兩個 V8 上踢得不一樣),所以只在 CI 紅、差 3.52%。 */
+        const mo = simM.motion();
+        const real = [...mo.players, ...(mo.offPlayers ?? [])].filter(q => q.role !== 'GK').reduce((a, q) => a + q.dist, 0);
         const rel = real > 0 ? Math.abs(why - real) / real : 1;
         check('逐分支與逐位置的歸因加起來 = 外場球員真的跑掉的距離(漏一整類就會紅)',
           real > 50000 && rel < 0.005 && Math.abs(role - why) / Math.max(1, why) < 0.005,
