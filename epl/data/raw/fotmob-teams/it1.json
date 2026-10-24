@@ -2,68 +2,8 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-24T16:31:11.407Z",
+ "fetchedAt": "2026-10-24T20:39:20.594Z",
  "teams": [
-  {
-   "code": "INT",
-   "fotmobId": 8636,
-   "fotmobName": "Inter",
-   "fetchedAt": "2026-10-09T12:41:51.633Z",
-   "color": "#010E80",
-   "teamColors": {
-    "darkMode": "#0039d0",
-    "lightMode": "#010E80",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Meazza",
-   "city": "Milano",
-   "location": [
-    "45.478083998",
-    "9.123979211"
-   ],
-   "capacity": 75817,
-   "surface": "Grass",
-   "opened": 1926,
-   "coachHistory": [
-    {
-     "id": 25590,
-     "name": "Simone Inzaghi",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 24,
-     "draw": 9,
-     "loss": 5,
-     "pointsPerGame": 2.13,
-     "winPercentage": 0.63
-    },
-    {
-     "id": 27692,
-     "name": "Cristian Chivu",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 27,
-     "draw": 6,
-     "loss": 5,
-     "pointsPerGame": 2.29,
-     "winPercentage": 0.71
-    },
-    {
-     "id": 27692,
-     "name": "Cristian Chivu",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
   {
    "code": "LAZ",
    "fotmobId": 8543,
@@ -113,6 +53,66 @@
     {
      "id": 30721,
      "name": "Gennaro Gattuso",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "INT",
+   "fotmobId": 8636,
+   "fotmobName": "Inter",
+   "fetchedAt": "2026-10-09T12:41:51.633Z",
+   "color": "#010E80",
+   "teamColors": {
+    "darkMode": "#0039d0",
+    "lightMode": "#010E80",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Meazza",
+   "city": "Milano",
+   "location": [
+    "45.478083998",
+    "9.123979211"
+   ],
+   "capacity": 75817,
+   "surface": "Grass",
+   "opened": 1926,
+   "coachHistory": [
+    {
+     "id": 25590,
+     "name": "Simone Inzaghi",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 24,
+     "draw": 9,
+     "loss": 5,
+     "pointsPerGame": 2.13,
+     "winPercentage": 0.63
+    },
+    {
+     "id": 27692,
+     "name": "Cristian Chivu",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 27,
+     "draw": 6,
+     "loss": 5,
+     "pointsPerGame": 2.29,
+     "winPercentage": 0.71
+    },
+    {
+     "id": 27692,
+     "name": "Cristian Chivu",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -365,66 +365,6 @@
    ]
   },
   {
-   "code": "NAP",
-   "fotmobId": 9875,
-   "fotmobName": "Napoli",
-   "fetchedAt": "2026-10-09T12:41:54.798Z",
-   "color": "#12A0D7",
-   "teamColors": {
-    "darkMode": "#12A0D7",
-    "lightMode": "#12A0D7",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Diego Armando Maradona",
-   "city": "Napoli",
-   "location": [
-    "40.827974049",
-    "14.192930460"
-   ],
-   "capacity": 54726,
-   "surface": "Grass",
-   "opened": 1959,
-   "coachHistory": [
-    {
-     "id": 22169,
-     "name": "Antonio Conte",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 24,
-     "draw": 10,
-     "loss": 4,
-     "pointsPerGame": 2.16,
-     "winPercentage": 0.63
-    },
-    {
-     "id": 22169,
-     "name": "Antonio Conte",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 23,
-     "draw": 7,
-     "loss": 8,
-     "pointsPerGame": 2,
-     "winPercentage": 0.61
-    },
-    {
-     "id": 129745,
-     "name": "Massimiliano Allegri",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
-    }
-   ]
-  },
-  {
    "code": "TOR",
    "fotmobId": 9804,
    "fotmobName": "Torino",
@@ -541,6 +481,66 @@
      "loss": 1,
      "pointsPerGame": 2.4,
      "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "NAP",
+   "fotmobId": 9875,
+   "fotmobName": "Napoli",
+   "fetchedAt": "2026-10-09T12:41:54.798Z",
+   "color": "#12A0D7",
+   "teamColors": {
+    "darkMode": "#12A0D7",
+    "lightMode": "#12A0D7",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Diego Armando Maradona",
+   "city": "Napoli",
+   "location": [
+    "40.827974049",
+    "14.192930460"
+   ],
+   "capacity": 54726,
+   "surface": "Grass",
+   "opened": 1959,
+   "coachHistory": [
+    {
+     "id": 22169,
+     "name": "Antonio Conte",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 24,
+     "draw": 10,
+     "loss": 4,
+     "pointsPerGame": 2.16,
+     "winPercentage": 0.63
+    },
+    {
+     "id": 22169,
+     "name": "Antonio Conte",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 23,
+     "draw": 7,
+     "loss": 8,
+     "pointsPerGame": 2,
+     "winPercentage": 0.61
+    },
+    {
+     "id": 129745,
+     "name": "Massimiliano Allegri",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
     }
    ]
   },

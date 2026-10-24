@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-24T16:31:10.814Z",
+ "fetchedAt": "2026-10-24T20:39:20.563Z",
  "teams": [
   {
    "code": "BVB",
@@ -545,66 +545,6 @@
    ]
   },
   {
-   "code": "SGE",
-   "fotmobId": 9810,
-   "fotmobName": "Eintracht Frankfurt",
-   "fetchedAt": "2026-10-09T12:41:47.452Z",
-   "color": "#000000",
-   "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#000000",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Deutsche Bank Park",
-   "city": "Frankfurt am Main",
-   "location": [
-    "50.068577360",
-    "8.645448312"
-   ],
-   "capacity": 60100,
-   "surface": "Grass",
-   "opened": 2005,
-   "coachHistory": [
-    {
-     "id": 571661,
-     "name": "Dennis Schmitt",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 0,
-     "draw": 0,
-     "loss": 2,
-     "pointsPerGame": 0,
-     "winPercentage": 0
-    },
-    {
-     "id": 37920,
-     "name": "Albert Riera",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 4,
-     "draw": 5,
-     "loss": 5,
-     "pointsPerGame": 1.21,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 7484,
-     "name": "Adolf Hütter",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 2,
-     "loss": 1,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
    "code": "HSV",
    "fotmobId": 9790,
    "fotmobName": "Hamburger SV",
@@ -780,6 +720,66 @@
      "draw": 1,
      "loss": 2,
      "pointsPerGame": 1,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
+   "code": "SGE",
+   "fotmobId": 9810,
+   "fotmobName": "Eintracht Frankfurt",
+   "fetchedAt": "2026-10-09T12:41:47.452Z",
+   "color": "#000000",
+   "teamColors": {
+    "darkMode": "#FFFFFF",
+    "lightMode": "#000000",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Deutsche Bank Park",
+   "city": "Frankfurt am Main",
+   "location": [
+    "50.068577360",
+    "8.645448312"
+   ],
+   "capacity": 60100,
+   "surface": "Grass",
+   "opened": 2005,
+   "coachHistory": [
+    {
+     "id": 571661,
+     "name": "Dennis Schmitt",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 0,
+     "draw": 0,
+     "loss": 2,
+     "pointsPerGame": 0,
+     "winPercentage": 0
+    },
+    {
+     "id": 37920,
+     "name": "Albert Riera",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 4,
+     "draw": 5,
+     "loss": 5,
+     "pointsPerGame": 1.21,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 7484,
+     "name": "Adolf Hütter",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 2,
+     "loss": 1,
+     "pointsPerGame": 1.25,
      "winPercentage": 0.25
     }
    ]
