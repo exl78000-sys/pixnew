@@ -52469,7 +52469,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 4,
    "awayId": 21,
@@ -52895,7 +52895,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 121704,
+     "assist": null,
+     "team": 21,
+     "min": 77,
+     "label": "77'00",
+     "phase": "2",
+     "type": "O",
+     "kind": "O",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -52933,6 +52947,33 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": null,
+      "team": 21,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 21998,
+      "team": 4,
+      "min": 79,
+      "label": "79'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 49293,
+      "team": 4,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "kindRaw": "YR",
+      "kind": "兩黃罰下"
      }
     ],
     "subs": [
@@ -53011,8 +53052,8 @@
      {
       "person": 304474,
       "team": 4,
-      "min": 73,
-      "label": "73'00",
+      "min": 72,
+      "label": "72'00",
       "phase": "2",
       "dirRaw": "ON",
       "dir": "on"
@@ -53020,8 +53061,8 @@
      {
       "person": 129425,
       "team": 4,
-      "min": 73,
-      "label": "73'00",
+      "min": 72,
+      "label": "72'00",
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
@@ -53054,8 +53095,8 @@
      }
     ]
    },
-   "clock": "73'00"
+   "clock": "82'00"
   }
  },
- "fetchedAt": "2026-10-24T17:59:50.951Z"
+ "fetchedAt": "2026-10-24T18:09:50.109Z"
 }
