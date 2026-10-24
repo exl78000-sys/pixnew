@@ -51078,10 +51078,10 @@
   "ARS|EVE": {
    "fixtureId": 128993,
    "kickoff": "2026-10-24T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 1,
@@ -51298,9 +51298,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4640
+     ],
+     [
+      128411,
+      8143,
+      112589,
+      24983
+     ],
+     [
+      134286,
+      23841
+     ],
+     [
+      49374,
+      14706,
+      118442
+     ],
+     [
+      143922
+     ]
+    ],
     "xi": [
      {
       "id": 4640,
@@ -51486,18 +51508,45 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 13274,
+     "assist": 32728,
+     "team": 1,
+     "min": 7,
+     "label": "07'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "11'00"
   },
   "COV|FUL": {
    "fixtureId": 128996,
    "kickoff": "2026-10-24T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -51717,9 +51766,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4985
+     ],
+     [
+      6712,
+      68651,
+      23793,
+      14624
+     ],
+     [
+      118739,
+      75201
+     ],
+     [
+      66657,
+      128976,
+      4717
+     ],
+     [
+      119364
+     ]
+    ],
     "xi": [
      {
       "id": 23793,
@@ -51909,10 +51980,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "11'00"
   }
  },
- "fetchedAt": "2026-10-24T13:59:34.829Z"
+ "fetchedAt": "2026-10-24T14:11:44.873Z"
 }
