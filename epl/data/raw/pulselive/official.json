@@ -51081,7 +51081,7 @@
    "status": "L",
    "final": false,
    "score": {
-    "home": 1,
+    "home": 2,
     "away": 0
    },
    "homeId": 1,
@@ -51511,15 +51511,15 @@
    "goals": [
     {
      "side": "H",
-     "person": 13274,
-     "assist": 32728,
+     "person": 50234,
+     "assist": 14548,
      "team": 1,
-     "min": 7,
-     "label": "07'00",
-     "phase": "1",
+     "min": 68,
+     "label": "68'00",
+     "phase": "2",
      "type": "G",
      "kind": "G",
-     "hs": 1,
+     "hs": 2,
      "as": 0
     }
    ],
@@ -51551,9 +51551,109 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 23841,
+      "team": 7,
+      "min": 66,
+      "label": "66'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 74761,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 19778,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 69914,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 114564,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 20810,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 32728,
+      "team": 1,
+      "min": 68,
+      "label": "68'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 112917,
+      "team": 7,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 49374,
+      "team": 7,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 25375,
+      "team": 7,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 24983,
+      "team": 7,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -51581,7 +51681,7 @@
      }
     ]
    },
-   "clock": "65'00"
+   "clock": "75'00"
   },
   "COV|FUL": {
    "fixtureId": 128996,
@@ -52065,6 +52165,96 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 20930,
+      "team": 5,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 19694,
+      "team": 5,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 15340,
+      "team": 5,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 337821,
+      "team": 5,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 108612,
+      "team": 5,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 337310,
+      "team": 5,
+      "min": 67,
+      "label": "67'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 117763,
+      "team": 34,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 119364,
+      "team": 34,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 123594,
+      "team": 34,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 4717,
+      "team": 34,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -52094,7 +52284,7 @@
      }
     ]
    },
-   "clock": "64'00"
+   "clock": "74'00"
   },
   "CHE|TOT": {
    "fixtureId": 128995,
@@ -52494,5 +52684,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-24T15:23:17.927Z"
+ "fetchedAt": "2026-10-24T15:33:20.820Z"
 }
