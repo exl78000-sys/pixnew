@@ -624,6 +624,20 @@ console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套�
       Number.isFinite(K) && K > 0 && dworst < 1e-12 && dmono && /direct: dirBase, dirBase, dirLevel/.test(simSrc),
       `DIR_K ${K}・最大差 ${dworst.toExponential(1)}・五級 ${dwant.map(w => w.toFixed(3)).join(' / ')}`);
   }
+  /* ③c 傳球失準逐隊(5w):真實的傳球失敗率(1 − 自家 + 對方半場成功傳球 ÷ 嘗試)對聯盟的相對值乘在 PASS_ERR 上。
+        坑:一個 PASS_ERR 給二十隊,弱隊跟 MCI 一樣準 —— 強弱斜率第二組種子 0.68。守三件事:
+        失準那一行乘 `s.errRel`、每一隊接上 `PFAIL.of(t)`、從側寫自己算的相對值 MCI < 1 < CRY(真實 88.6% / 78.6%)。 */
+  {
+    const fail = t => { const h = t.play?.home, a = t.play?.away, g = (h?.games ?? 0) + (a?.games ?? 0);
+      const att = g ? ((h?.passes ?? 0) * (h?.games ?? 0) + (a?.passes ?? 0) * (a?.games ?? 0)) / g : NaN;
+      return 1 - ((t.extra?.own_half_passes?.mean ?? NaN) + (t.extra?.opposition_half_passes?.mean ?? NaN)) / att; };
+    const fv = codes.map(c => ({ f: fail(profile.teams[c]), n: profile.teams[c].extra?.own_half_passes?.n ?? 0 })).filter(x => x.f > 0 && x.n);
+    const lgF = fv.reduce((x, d) => x + d.f * d.n, 0) / fv.reduce((x, d) => x + d.n, 0);
+    const rel = c => fail(profile.teams[c]) / lgF;
+    check('傳球失準逐隊:失準乘這一隊真實的傳球失敗率相對值,MCI 比聯盟準、CRY 比聯盟偏(5w)',
+      /PASS_ERR \* \(s\.errRel \?\? 1\) \* d/.test(simSrc) && /errRel: PFAIL\.of\(t\)/.test(simSrc) && rel('MCI') < 1 && rel('CRY') > 1,
+      `聯盟失敗率 ${(100 * lgF).toFixed(1)}%・MCI ${rel('MCI').toFixed(3)}・CRY ${rel('CRY').toFixed(3)}`);
+  }
 
   /* ④ 畫面:用原始碼守(剝掉註解再掃 —— 這一段註解本身就在講舊的寫法) */
   const view = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
@@ -686,6 +700,22 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         head.length >= 3 && whole.length >= head.length
           && JSON.stringify(whole.slice(0, head.length)) === JSON.stringify(head),
         `主執行緒 ${Math.round(f / 3600)} 分鐘 ${head.length} 個事件・整場 ${whole.length} 個・worker ${pool.size()} 個`);
+    }
+
+    /* 傳球的準度(2026-10-24 5w)。`PASS_ERR` 曾經被推到 0.032 去生界外球 —— 16 m 的傳球偏 ±29 度,
+       成功率 69%(真實 82.6%)、對方半場的傳球只有 56% 到人,球被困在自家半場(佔完成傳球 40%,真實 55.6%)。
+       守兩件事:常數在 20 m 的最大偏角 ≤ 0.2 弧度(不准再拿失準去補別的錨),以及四場完整賽的成功率與對方半場佔比。 */
+    {
+      const pe = Number(readFileSync(simPath, 'utf8').match(/const PASS_ERR = ([0-9.]+)/)?.[1]);
+      let by = 0, ok = 0, own = 0, opp = 0;
+      for (const seed of [7, 11, 12, 13]) {
+        const c = (await full(seed)).state().counts;
+        by += c.passBy.home + c.passBy.away; ok += c.passOk.home + c.passOk.away;
+        own += c.okOwnHalf.home + c.okOwnHalf.away; opp += c.okOppHalf.home + c.okOppHalf.away;
+      }
+      check('傳球失準是失準不是亂踢:PASS_ERR × 20 m ≤ 0.2 弧度,四場的傳球成功率 76~90%、對方半場佔完成傳球 ≥ 48%',
+        pe > 0 && pe * 20 <= 0.2 && ok / by >= 0.76 && ok / by <= 0.90 && opp / (own + opp) >= 0.48,
+        `PASS_ERR ${pe}・成功率 ${(100 * ok / by).toFixed(1)}%・對方半場 ${(100 * opp / (own + opp)).toFixed(1)}%`);
     }
 
     /* 撲救發生在門將身上(2026-10-17,使用者列的動畫四項之「撲救」)。
