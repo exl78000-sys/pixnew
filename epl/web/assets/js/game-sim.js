@@ -4411,6 +4411,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     motion: () => ({
       secs: st.t,
       players: all().map(p => ({ code: p.code, side: p.side, role: p.role, pos: p.pos, dist: p.dist, vtop: p.vtop, vmax: p.vmax, vmaxReal: p.vmaxReal })),
+      /* 紅牌下場的人不在 `players`(all() 濾掉 off),而他下場前跑的距離已經記進跑動的歸因 ——
+         「歸因加起來 = 真的跑掉的距離」那條要把他加回來(2026-10-24:CI 的 Node 22 那一場有紅牌,差 3.5% 紅了)。分開放,`players` 的消費端不受影響。 */
+      offPlayers: [...H.players, ...A.players].filter(p => p.off).map(p => ({ code: p.code, side: p.side, role: p.role, dist: p.dist })),
     }),
     events: () => st.events.map(e => ({ ...e })),
     /* 一次進攻怎麼結束的 —— 賽後解讀吃這個(舊引擎那邊是「回合」,這裡是控球串) */
