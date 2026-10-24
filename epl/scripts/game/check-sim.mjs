@@ -1320,7 +1320,8 @@ if (simShots && realShots) {
     line('成功傳球・對方半場', opp, realOpp);
     const shr = 100 * opp / Math.max(1, own + opp), rshr = 100 * realOpp / (realOwn + realOpp);
     console.log(`  ${'對方半場佔完成傳球'.padEnd(16, '\u3000')} ${shr.toFixed(1).padStart(6)}%`
-      + `\u3000真實 ${rshr.toFixed(1)}%\u3000${Math.abs(shr - rshr) > 5 ? '**球住得太前面**' : '✓'}`);
+      + `\u3000真實 ${rshr.toFixed(1)}%\u3000${Math.abs(shr - rshr) > 5 ? (shr > rshr ? '**球住得太前面**' : '**球住得太後面**') : '✓'}`);
+    /* 方向要分(2026-10-24 5w):原本差多少都印「球住得太前面」,而 5v 時是 41% 對 55.6% —— 球住得太**後面**,標籤講反了。 */
     /* 這兩行原本寫「傳球總量只高兩成,錯的是位置不是數量」—— 那是 4s 的診斷,
        而 4v 把佔比從 71.5% 校到 53.2% 之後那句已經不是現況了。改成從資料算:
        描述句一律講「現在量到什麼」,不要複述上一輪的結論(「核對的定義換了而畫面上
@@ -1636,7 +1637,13 @@ for (const [side, code, opp] of [['home', HOME, 'away'], ['away', AWAY, 'home']]
   const pv = profile.teams[code]?.style?.pressing?.value;
   line(`${code} 越位`, off.toFixed(2), realOffside == null ? '' : `真實 ${realOffside.toFixed(2)}`);
   line(`${code} 逼搶(每100對手傳球)`, (acts / Math.max(1, oppPass) * 100).toFixed(2), pv == null ? '' : `真實 ${pv}`);
-  line(`${code} 傳球 / 傳到隊友`, `${mine.toFixed(0)} / ${ok.toFixed(0)} = ${(ok / Math.max(1, mine) * 100).toFixed(1)}%`, '只回報(本站沒有真實的傳球成功率)');
+  /* 真實的傳球成功率(2026-10-24 5w):側寫的「自家 + 對方半場成功傳球」÷ `play` 的傳球嘗試(主客照場數加權)。
+     原本這一行寫「本站沒有真實的傳球成功率」—— 兩個欄位一直都在,只是沒人把它們除起來(引擎的 PFAIL 用同一個算法)。 */
+  const tp = profile.teams[code], pg = (tp?.play?.home?.games ?? 0) + (tp?.play?.away?.games ?? 0);
+  const realAtt = pg ? ((tp.play.home?.passes ?? 0) * (tp.play.home?.games ?? 0) + (tp.play.away?.passes ?? 0) * (tp.play.away?.games ?? 0)) / pg : null;
+  const realOk = (tp?.extra?.own_half_passes?.mean ?? NaN) + (tp?.extra?.opposition_half_passes?.mean ?? NaN);
+  line(`${code} 傳球 / 傳到隊友`, `${mine.toFixed(0)} / ${ok.toFixed(0)} = ${(ok / Math.max(1, mine) * 100).toFixed(1)}%`,
+    realAtt > 0 && Number.isFinite(realOk) ? `真實 ${realAtt.toFixed(0)} / ${realOk.toFixed(0)} = ${(100 * realOk / realAtt).toFixed(1)}%` : '只回報(側寫缺這一隊的傳球數)');
 }
 /* 逼搶那一行的**定義對不齊**,要講出來:本站數的是「對方踢出來的球被我方控到」的全部次數,
    而 FotMob 的 tackles + interceptions 是兩個特定事件,亂戰中的解圍與撿球不算。
