@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-24T12:49:47.052Z",
+ "fetchedAt": "2026-10-24T14:00:46.233Z",
  "teams": [
   {
    "code": "INT",
@@ -305,6 +305,66 @@
    ]
   },
   {
+   "code": "CAG",
+   "fotmobId": 8529,
+   "fotmobName": "Cagliari",
+   "fetchedAt": "2026-10-09T12:41:52.803Z",
+   "color": "#B51F2B",
+   "teamColors": {
+    "darkMode": "#B51F2B",
+    "lightMode": "#B51F2B",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Unipol Domus",
+   "city": "Cagliari",
+   "location": [
+    "39.199802357",
+    "9.137473349"
+   ],
+   "capacity": 16416,
+   "surface": "Grass",
+   "opened": 2017,
+   "coachHistory": [
+    {
+     "id": 42451,
+     "name": "Davide Nicola",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 9,
+     "loss": 20,
+     "pointsPerGame": 0.95,
+     "winPercentage": 0.24
+    },
+    {
+     "id": 41732,
+     "name": "Fabio Pisacane",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 11,
+     "draw": 10,
+     "loss": 17,
+     "pointsPerGame": 1.13,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 41732,
+     "name": "Fabio Pisacane",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 0,
+     "loss": 1,
+     "pointsPerGame": 2.4,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
    "code": "FRO",
    "fotmobId": 9891,
    "fotmobName": "Frosinone",
@@ -421,66 +481,6 @@
      "loss": 3,
      "pointsPerGame": 0.8,
      "winPercentage": 0.2
-    }
-   ]
-  },
-  {
-   "code": "CAG",
-   "fotmobId": 8529,
-   "fotmobName": "Cagliari",
-   "fetchedAt": "2026-10-09T12:41:52.803Z",
-   "color": "#B51F2B",
-   "teamColors": {
-    "darkMode": "#B51F2B",
-    "lightMode": "#B51F2B",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Unipol Domus",
-   "city": "Cagliari",
-   "location": [
-    "39.199802357",
-    "9.137473349"
-   ],
-   "capacity": 16416,
-   "surface": "Grass",
-   "opened": 2017,
-   "coachHistory": [
-    {
-     "id": 42451,
-     "name": "Davide Nicola",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 9,
-     "draw": 9,
-     "loss": 20,
-     "pointsPerGame": 0.95,
-     "winPercentage": 0.24
-    },
-    {
-     "id": 41732,
-     "name": "Fabio Pisacane",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 11,
-     "draw": 10,
-     "loss": 17,
-     "pointsPerGame": 1.13,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 41732,
-     "name": "Fabio Pisacane",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 0,
-     "loss": 1,
-     "pointsPerGame": 2.4,
-     "winPercentage": 0.8
     }
    ]
   },
@@ -665,66 +665,6 @@
    ]
   },
   {
-   "code": "LEC",
-   "fotmobId": 9888,
-   "fotmobName": "Lecce",
-   "fetchedAt": "2026-10-09T12:41:55.962Z",
-   "color": "#e12300",
-   "teamColors": {
-    "darkMode": "#e12300",
-    "lightMode": "#e12300",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Ettore Giardiniero - Via del Mare",
-   "city": "Lecce",
-   "location": [
-    "40.365103138",
-    "18.208851814"
-   ],
-   "capacity": 33876,
-   "surface": "Grass",
-   "opened": 1966,
-   "coachHistory": [
-    {
-     "id": 78712,
-     "name": "Marco Giampaolo",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 6,
-     "draw": 7,
-     "loss": 13,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.23
-    },
-    {
-     "id": 5615,
-     "name": "Eusebio Di Francesco",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 10,
-     "draw": 8,
-     "loss": 20,
-     "pointsPerGame": 1,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 5615,
-     "name": "Eusebio Di Francesco",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 1.2,
-     "winPercentage": 0.4
-    }
-   ]
-  },
-  {
    "code": "SAS",
    "fotmobId": 7943,
    "fotmobName": "Sassuolo",
@@ -780,6 +720,66 @@
      "draw": 1,
      "loss": 2,
      "pointsPerGame": 1.4,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "LEC",
+   "fotmobId": 9888,
+   "fotmobName": "Lecce",
+   "fetchedAt": "2026-10-09T12:41:55.962Z",
+   "color": "#e12300",
+   "teamColors": {
+    "darkMode": "#e12300",
+    "lightMode": "#e12300",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Ettore Giardiniero - Via del Mare",
+   "city": "Lecce",
+   "location": [
+    "40.365103138",
+    "18.208851814"
+   ],
+   "capacity": 33876,
+   "surface": "Grass",
+   "opened": 1966,
+   "coachHistory": [
+    {
+     "id": 78712,
+     "name": "Marco Giampaolo",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 6,
+     "draw": 7,
+     "loss": 13,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.23
+    },
+    {
+     "id": 5615,
+     "name": "Eusebio Di Francesco",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 10,
+     "draw": 8,
+     "loss": 20,
+     "pointsPerGame": 1,
+     "winPercentage": 0.26
+    },
+    {
+     "id": 5615,
+     "name": "Eusebio Di Francesco",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 1.2,
      "winPercentage": 0.4
     }
    ]
