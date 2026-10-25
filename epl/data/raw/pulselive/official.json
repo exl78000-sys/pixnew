@@ -53674,6 +53674,15 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 147312,
+      "team": 6,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -53766,6 +53775,42 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 303043,
+      "team": 23,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20607,
+      "team": 23,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 124462,
+      "team": 23,
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68637,
+      "team": 23,
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -53795,7 +53840,7 @@
      }
     ]
    },
-   "clock": "85'00"
+   "clock": "90+7'00"
   },
   "HUL|BRE": {
    "fixtureId": 128998,
@@ -55007,6 +55052,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 16006,
+      "team": 10,
+      "min": 88,
+      "label": "88'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 116665,
+      "team": 10,
+      "min": 88,
+      "label": "88'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -55036,12 +55099,12 @@
      }
     ]
    },
-   "clock": "81'00"
+   "clock": "90+4'00"
   },
   "MUN|BOU": {
    "fixtureId": 129001,
    "kickoff": "2026-10-25T14:00:00.000Z",
-   "status": "L",
+   "status": "C",
    "final": false,
    "score": {
     "home": 0,
@@ -55474,6 +55537,32 @@
    "goals": [
     {
      "side": "A",
+     "person": 134234,
+     "assist": 21519,
+     "team": 127,
+     "min": 38,
+     "label": "38'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
+     "person": 14846,
+     "assist": 74965,
+     "team": 127,
+     "min": 43,
+     "label": "43'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 2
+    },
+    {
+     "side": "A",
      "person": 33032,
      "assist": 10766,
      "team": 127,
@@ -55642,15 +55731,63 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 132285,
+      "team": 127,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 3512,
+      "team": 127,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 137832,
+      "team": 127,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 33032,
+      "team": 127,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 118080,
+      "team": 127,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14846,
+      "team": 127,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -55668,10 +55805,16 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "82'00"
+   "clock": "90+6'00"
   },
   "SUN|LEE": {
    "fixtureId": 129002,
@@ -56071,5 +56214,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-25T15:41:17.466Z"
+ "fetchedAt": "2026-10-25T15:54:04.064Z"
 }
