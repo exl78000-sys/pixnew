@@ -53183,8 +53183,8 @@
   "CRY|NEW": {
    "fixtureId": 128997,
    "kickoff": "2026-10-25T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 2
@@ -53616,6 +53616,19 @@
    "goals": [
     {
      "side": "A",
+     "person": 114590,
+     "assist": 9662,
+     "team": 23,
+     "min": 47,
+     "label": "47'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "A",
      "person": 14716,
      "assist": 68637,
      "team": 23,
@@ -53815,12 +53828,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -53837,16 +53844,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+9'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+7'00"
+   "clock": "90+9'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-25T16:04:14.250Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "HUL|BRE": {
    "fixtureId": 128998,
    "kickoff": "2026-10-25T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 1
@@ -54276,6 +54296,19 @@
    "goals": [
     {
      "side": "H",
+     "person": 8107,
+     "assist": null,
+     "team": 41,
+     "min": 24,
+     "label": "24'00",
+     "phase": "1",
+     "type": "P",
+     "kind": "P",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "A",
      "person": 133890,
      "assist": 124052,
      "team": 130,
@@ -54426,15 +54459,45 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 303085,
+      "team": 41,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 8107,
+      "team": 41,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 51754,
+      "team": 41,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 137549,
+      "team": 41,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -54452,16 +54515,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "81'00"
+   "clock": "90+4'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-25T16:04:14.702Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "LIV|BHA": {
    "fixtureId": 129000,
    "kickoff": "2026-10-25T14:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
     "away": 0
@@ -54893,6 +54969,19 @@
    "goals": [
     {
      "side": "H",
+     "person": 22542,
+     "assist": null,
+     "team": 10,
+     "min": 17,
+     "label": "17'00",
+     "phase": "1",
+     "type": "O",
+     "kind": "O",
+     "hs": 1,
+     "as": 0
+    },
+    {
+     "side": "H",
      "person": 21737,
      "assist": 68840,
      "team": 10,
@@ -55074,12 +55163,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -55096,16 +55179,29 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+4'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-25T16:04:15.156Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "MUN|BOU": {
    "fixtureId": 129001,
    "kickoff": "2026-10-25T14:00:00.000Z",
    "status": "C",
-   "final": false,
+   "final": true,
    "score": {
     "home": 0,
     "away": 3
@@ -55814,7 +55910,14 @@
      }
     ]
    },
-   "clock": "90+6'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-25T16:04:15.609Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "SUN|LEE": {
    "fixtureId": 129002,
@@ -56214,5 +56317,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-25T15:54:04.064Z"
+ "fetchedAt": "2026-10-25T16:04:15.609Z"
 }
