@@ -56377,6 +56377,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -56387,11 +56393,17 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "46'00"
   }
  },
- "fetchedAt": "2026-10-25T17:24:03.836Z"
+ "fetchedAt": "2026-10-25T17:34:03.079Z"
 }
