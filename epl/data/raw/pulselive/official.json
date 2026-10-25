@@ -53615,7 +53615,17 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 67849,
+      "team": 23,
+      "min": 36,
+      "label": "36'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
     "periods": [
      {
@@ -53632,7 +53642,7 @@
      }
     ]
    },
-   "clock": "35'00"
+   "clock": "44'00"
   },
   "HUL|BRE": {
    "fixtureId": 128998,
@@ -54108,7 +54118,7 @@
      }
     ]
    },
-   "clock": "34'00"
+   "clock": "44'00"
   },
   "LIV|BHA": {
    "fixtureId": 129000,
@@ -54595,7 +54605,7 @@
      }
     ]
    },
-   "clock": "34'00"
+   "clock": "44'00"
   },
   "MUN|BOU": {
    "fixtureId": 129001,
@@ -54604,7 +54614,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 2
    },
    "homeId": 12,
    "awayId": 127,
@@ -55030,7 +55040,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 14846,
+     "assist": 74965,
+     "team": 127,
+     "min": 43,
+     "label": "43'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 2
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -55047,6 +55071,24 @@
       "team": 127,
       "min": 27,
       "label": "27'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 133114,
+      "team": 12,
+      "min": 37,
+      "label": "37'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 5865,
+      "team": 12,
+      "min": 40,
+      "label": "40'00",
       "phase": "1",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -55068,8 +55110,8 @@
      }
     ]
    },
-   "clock": "35'00"
+   "clock": "44'00"
   }
  },
- "fetchedAt": "2026-10-25T14:34:49.403Z"
+ "fetchedAt": "2026-10-25T14:45:01.928Z"
 }
